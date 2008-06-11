@@ -1,0 +1,56 @@
+// Copyright 2008 The MITRE Corporation. ALL RIGHTS RESERVED.
+
+package org.mitre.schemastore.model;
+
+import java.io.Serializable;
+
+/**
+ * Class for storing a mapping
+ * @author CWOLF
+ */
+public class Mapping implements Serializable
+{
+	/** Stores the mapping id */
+	private Integer id;
+	
+	/** Stores the mapping name */
+	private String name;
+	
+	/** Stores the mapping description */
+	private String description;
+	
+	/** Stores the mapping author */
+	private String author;
+	
+	/** Stores the mapping schemas */
+	private Integer[] schemas;
+	
+	/** Constructs a default mapping */
+	public Mapping() {}
+	
+	/** Constructs a mapping */
+	public Mapping(Integer id, String name, String description, String author, Integer[] schemas)
+		{ this.id = id; this.name = name; this.description = description; this.author = author; this.schemas = schemas; }
+	
+	// Handles all mapping getters
+	public Integer getId() { return id; }
+	public String getName() { return name; }
+	public String getDescription() { return description; }
+	public String getAuthor() { return author; }
+	public Integer[] getSchemas() { return schemas; }
+	
+	// Handles all mapping setters
+	public void setId(Integer id) { this.id = id; }
+	public void setName(String name) { this.name = name; }
+	public void setDescription(String description) { this.description = description; }
+	public void setAuthor(String author) { this.author = author; }
+	public void setSchemas(Integer[] schemas) { this.schemas = schemas; }
+	
+	/** Indicates that two mappings are equals */
+	public boolean equals(Object mapping)
+		{ return mapping instanceof Mapping && ((Mapping)mapping).id.equals(id); }
+	
+	/** String representation of the mapping */
+	public String toString()
+		{ return name; }
+}

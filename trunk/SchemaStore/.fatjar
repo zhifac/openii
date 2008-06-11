@@ -1,0 +1,14 @@
+#Fat Jar Configuration File
+#Fri Feb 22 11:49:07 EST 2008
+onejar.license.required=true
+manifest.classpath=
+manifest.removesigners=true
+onejar.checkbox=false
+jarname=SchemaStoreModel.jar
+manifest.mergeall=true
+manifest.mainclass=
+manifest.file=<createnew>
+jarname.isextern=false
+onejar.expand=
+excludes=<po|SchemaStore>~CVS/;<po|SchemaStore>~org/~mitre/~schemastore/~database/;<po|SchemaStore>~org/~mitre/~schemastore/~servlet/;<jar|commons-el.jar>;<jar|jasper-compiler-jdt.jar>;<jar|jasper-compiler.jar>;<jar|jasper-runtime.jar>;<jar|jsp-api.jar>;<jar|naming-factory-dbcp.jar>;<jar|naming-factory.jar>;<jar|naming-resources.jar>;<jar|servlet-api.jar>;<jar|postgresql-8.2-504.jdbc3.jar>;<jar|axis.jar>;<jar|commons-discovery-0.2.jar>;<jar|commons-logging.jar>;<jar|jaxrpc.jar>;<jar|saaj.jar>;<jar|wsdl4j-1.5.1.jar>
+includes=
