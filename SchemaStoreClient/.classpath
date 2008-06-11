@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="con" path="org.eclipse.jst.server.core.container/org.eclipse.jst.server.tomcat.runtimeTarget/Apache Tomcat v5.5"/>
+	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/SchemaStore"/>
+	<classpathentry kind="lib" path="activation-1.1.jar"/>
+	<classpathentry kind="lib" path="mail-1.4.jar"/>
+	<classpathentry kind="lib" path="axis.jar"/>
+	<classpathentry kind="lib" path="commons-discovery-0.2.jar"/>
+	<classpathentry kind="lib" path="jaxrpc.jar"/>
+	<classpathentry kind="lib" path="org.apache.commons.logging_1.0.4.v200706111724.jar"/>
+	<classpathentry kind="lib" path="saaj.jar"/>
+	<classpathentry kind="lib" path="wsdl4j-1.5.1.jar"/>
+	<classpathentry kind="output" path="build/classes"/>
+</classpath>
