@@ -7,7 +7,7 @@ public class SchemaStoreTest
 {
 	static public void main(String args[])
 	{
-		SchemaStoreClient client = new SchemaStoreClient("http://localhost:8080/SchemaStore/services/SchemaStore");
+		SchemaStoreClient client = new SchemaStoreClient("http://brainsrv2:8090/SchemaStore/services/SchemaStore");
 
 		// Display remaining schemas
 		try {
