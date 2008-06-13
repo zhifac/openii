@@ -89,8 +89,11 @@ public class Database
 				db.setAutoCommit(false);
 			}
 		}
-		catch (Exception e)
-			{ System.out.println("(E) Failed to connect to database"); }
+		catch (Exception e) 
+		{ 
+			System.out.println("(E) Failed to connect to database"); 
+			e.printStackTrace();
+		}
 	}
 	
 	//---------------------------------
