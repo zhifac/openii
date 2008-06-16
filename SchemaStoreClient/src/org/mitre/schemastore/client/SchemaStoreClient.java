@@ -66,9 +66,13 @@ public class SchemaStoreClient
 	public boolean updateSchema(Schema schema) throws RemoteException
 		{ return proxy.updateSchema(schema); }
 	
-	/** Commits the specified schema in the web service */
-	public boolean commitSchema(Integer schemaID) throws RemoteException
-		{ return proxy.commitSchema(schemaID); }
+	/** Unlocks the specified schema in the web service */
+	public boolean unlockSchema(Integer schemaID) throws RemoteException
+		{ return proxy.unlockSchema(schemaID); }
+	
+	/** Locks the specified schema in the web service */
+	public boolean lockSchema(Integer schemaID) throws RemoteException
+		{ return proxy.lockSchema(schemaID); }
 	
 	/** Delete the specified schema from the web service */
 	public boolean deleteSchema(Integer schemaID) throws RemoteException
