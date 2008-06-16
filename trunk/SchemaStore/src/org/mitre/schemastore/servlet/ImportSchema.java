@@ -98,7 +98,7 @@ public class ImportSchema
 		try
 		{
 			// Adds the schema to the web service
-			schema.setCommitted(false);
+			schema.setLocked(false);
 			schemaID = client.addSchema(schema);
 			if(schemaID==null) throw new RemoteException("Failed to import schema "+schema.getName());
 			alterID(schemaElements, schema.getId(), schemaID);
@@ -138,8 +138,8 @@ public class ImportSchema
 				alterID(schemaElements,schemaElement.getId(),schemaElementID);
 			}
 	
-			// Commits the schema once everything has been imported
-			client.commitSchema(schemaID);
+			// Locks the schema once everything has been imported
+			client.lockSchema(schemaID);
 		}
 		catch(RemoteException e)
 		{

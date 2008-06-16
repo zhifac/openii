@@ -58,9 +58,13 @@ public class SchemaStore
 	public Boolean updateSchema(Schema schema)
 		{ return Schemas.updateSchema(schema); }
 
-	/** Web service to commit the specified schema */
-	public Boolean commitSchema(Integer schemaID)
-		{ return Schemas.commitSchema(schemaID); }
+	/** Web service to unlock the specified schema */
+	public Boolean unlockSchema(Integer schemaID)
+		{ return Schemas.unlockSchema(schemaID); }
+	
+	/** Web service to lock the specified schema */
+	public Boolean lockSchema(Integer schemaID)
+		{ return Schemas.lockSchema(schemaID); }
 
 	/** Web service to delete the specified schema */
 	public Boolean deleteSchema(Integer schemaID)
