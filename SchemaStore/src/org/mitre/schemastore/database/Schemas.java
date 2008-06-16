@@ -34,14 +34,24 @@ public class Schemas
 	static public boolean updateSchema(Schema schema)
 	{
 		Schema oldSchema = getSchema(schema.getId());
-		if(oldSchema!=null && !oldSchema.getCommitted())
+		if(oldSchema!=null && !oldSchema.getLocked())
 			return Database.updateSchema(schema);
 		return false;
 	}
 	
-	/** Commits the specified schema */
-	static public boolean commitSchema(Integer schemaID)
-		{ return Database.commitSchema(schemaID); }
+	/** Unlocks the specified schema */
+	static public boolean unlockSchema(Integer schemaID)
+	{
+		if(Database.getSchemaMappingIDs(schemaID).size()>0) return false;
+		if(!getSchema(schemaID).getType().equals("Manual")) return false;
+		for(Integer childSchemaID : SchemaRelationships.getChildren(schemaID))
+			if(getSchema(childSchemaID).getLocked()) return false;
+		return Database.lockSchema(schemaID,false);
+	}
+	
+	/** Locks the specified schema */
+	static public boolean lockSchema(Integer schemaID)
+		{ return Database.lockSchema(schemaID,true); }
 	
 	/** Removes the specified schema */
 	static public boolean deleteSchema(Integer schemaID)

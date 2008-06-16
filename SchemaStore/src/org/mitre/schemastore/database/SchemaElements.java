@@ -74,7 +74,7 @@ public class SchemaElements
 	static public Integer addSchemaElement(SchemaElement schemaElement)
 	{
 		Schema schema = Schemas.getSchema(schemaElement.getBase());
-		if(schema!=null && !schema.getCommitted())
+		if(schema!=null && !schema.getLocked())
 			return Database.addSchemaElement(schemaElement);
 		return 0;
 	}
@@ -83,7 +83,7 @@ public class SchemaElements
 	static public boolean updateSchemaElement(SchemaElement schemaElement)
 	{
 		Schema schema = Schemas.getSchema(schemaElement.getBase());
-		if(schema!=null && !schema.getCommitted())
+		if(schema!=null && !schema.getLocked())
 			return Database.updateSchemaElement(schemaElement);
 		return false;
 	}
@@ -93,7 +93,7 @@ public class SchemaElements
 	{
 		SchemaElement schemaElement = getSchemaElement(schemaElementID);
 		Schema schema = Schemas.getSchema(schemaElement.getBase());
-		if(schema!=null && !schema.getCommitted())
+		if(schema!=null && !schema.getLocked())
 			return Database.deleteSchemaElement(schemaElementID);
 		return false;
 	}

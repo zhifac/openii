@@ -89,11 +89,8 @@ public class Database
 				db.setAutoCommit(false);
 			}
 		}
-		catch (Exception e) 
-		{ 
-			System.out.println("(E) Failed to connect to database"); 
-			e.printStackTrace();
-		}
+		catch (Exception e)
+			{ System.out.println("(E) Failed to connect to database"); }
 	}
 	
 	//---------------------------------
@@ -106,9 +103,9 @@ public class Database
 		ArrayList<Schema> schemas = new ArrayList<Schema>();
 		try {
 			Statement stmt = db.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT id,name,description,committed FROM schema");
+			ResultSet rs = stmt.executeQuery("SELECT id,name,author,source,type,description,locked FROM schema");
 			while(rs.next())
-				schemas.add(new Schema(rs.getInt("id"),rs.getString("name"),rs.getString("description"),rs.getBoolean("committed")));
+				schemas.add(new Schema(rs.getInt("id"),rs.getString("name"),rs.getString("author"),rs.getString("source"),rs.getString("type"),rs.getString("description"),rs.getBoolean("locked")));
 			stmt.close();
 		} catch(SQLException e) { System.out.println("(E) Database:getSchemas: "+e.getMessage()); }
 		return schemas;
@@ -120,9 +117,9 @@ public class Database
 		Schema schema = null;
 		try {
 			Statement stmt = db.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT id,name,description,committed FROM schema WHERE id="+schemaID);
+			ResultSet rs = stmt.executeQuery("SELECT id,name,author,source,type,description,locked FROM schema WHERE id="+schemaID);
 			if(rs.next())
-				schema = new Schema(rs.getInt("id"),rs.getString("name"),rs.getString("description"),rs.getBoolean("committed"));
+				schema = new Schema(rs.getInt("id"),rs.getString("name"),rs.getString("author"),rs.getString("source"),rs.getString("type"),rs.getString("description"),rs.getBoolean("locked"));
 			stmt.close();
 		} catch(SQLException e) { System.out.println("(E) Database:getSchema: "+e.getMessage()); }
 		return schema;
@@ -137,11 +134,11 @@ public class Database
 			ResultSet rs = stmt.executeQuery("SELECT nextval('universalSeq') AS schemaID");
 			rs.next();
 			int schemaID = rs.getInt("schemaID");
-			stmt.executeUpdate("INSERT INTO schema(id,name,description,committed) VALUES("+schemaID+",'"+schema.getName()+" Extension','Extension of "+schema.getName()+"',false)");
+			stmt.executeUpdate("INSERT INTO schema(id,name,author,source,type,description,locked) VALUES("+schemaID+",'"+schema.getName()+" Extension','"+schema.getAuthor()+"','"+schema.getSource()+"','"+schema.getType()+"','Extension of "+schema.getName()+"',false)");
 			stmt.executeUpdate("INSERT INTO extensions(schema_id,action,element_id) VALUES("+schemaID+",'Base Schema',"+schema.getId()+")");
 			stmt.close();
 			db.commit();
-			extendedSchema = new Schema(schemaID,schema.getName()+" Extension","Extension of "+schema.getName(),false);
+			extendedSchema = new Schema(schemaID,schema.getName()+" Extension",schema.getAuthor(),schema.getSource(),schema.getType(),"Extension of "+schema.getName(),false);
 		}
 		catch(SQLException e)
 		{
@@ -160,7 +157,7 @@ public class Database
 			ResultSet rs = stmt.executeQuery("SELECT nextval('universalSeq') AS schemaID");
 			rs.next();
 			schemaID = rs.getInt("schemaID");
-			stmt.executeUpdate("INSERT INTO schema(id,name,description,committed) VALUES("+schemaID+",'"+schema.getName()+"','"+schema.getDescription()+"',"+(schema.getCommitted()?"true":"false")+")");
+			stmt.executeUpdate("INSERT INTO schema(id,name,author,source,type,description,committed) VALUES("+schemaID+",'"+schema.getName()+"','"+schema.getAuthor()+"','"+schema.getSource()+"','"+schema.getType()+"','"+schema.getDescription()+"',"+(schema.getLocked()?"true":"false")+")");
 			stmt.close();
 			db.commit();
 		}
@@ -179,7 +176,7 @@ public class Database
 		boolean success = false;
 		try {
 			Statement stmt = db.createStatement();
-			stmt.executeUpdate("UPDATE schema SET name='"+schema.getName()+"', description='"+schema.getDescription()+"' WHERE id="+schema.getId());
+			stmt.executeUpdate("UPDATE schema SET name='"+schema.getName()+"', author='"+schema.getAuthor()+", source='"+schema.getSource()+", type='"+schema.getType()+", description='"+schema.getDescription()+"' WHERE id="+schema.getId());
 			stmt.close();
 			db.commit();
 			success = true;
@@ -188,25 +185,6 @@ public class Database
 		{
 			try { db.rollback(); } catch(SQLException e2) {}
 			System.out.println("(E) Database:updateSchema: "+e.getMessage());
-		}
-		return success;
-	}
-	
-	/** Commits the specified schema */
-	static boolean commitSchema(int schemaID)
-	{
-		boolean success = false;
-		try {
-			Statement stmt = db.createStatement();
-			stmt.executeUpdate("UPDATE schema SET committed=true WHERE id="+schemaID);
-			stmt.close();
-			db.commit();
-			success = true;
-		}
-		catch(SQLException e)
-		{
-			try { db.rollback(); } catch(SQLException e2) {}
-			System.out.println("(E) Database:commitSchema: "+e.getMessage());
 		}
 		return success;
 	}
@@ -274,6 +252,25 @@ public class Database
 		{
 			try { db.rollback(); } catch(SQLException e2) {}
 			System.out.println("(E) Database:deleteSchema: "+e.getMessage());
+		}
+		return success;
+	}
+
+	/** Locks the specified schema */
+	static boolean lockSchema(int schemaID, boolean locked)
+	{
+		boolean success = false;
+		try {
+			Statement stmt = db.createStatement();
+			stmt.executeUpdate("UPDATE schema SET locked="+locked+" WHERE id="+schemaID);
+			stmt.close();
+			db.commit();
+			success = true;
+		}
+		catch(SQLException e)
+		{
+			try { db.rollback(); } catch(SQLException e2) {}
+			System.out.println("(E) Database:lockSchema: "+e.getMessage());
 		}
 		return success;
 	}

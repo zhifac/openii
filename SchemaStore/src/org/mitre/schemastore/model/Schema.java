@@ -16,30 +16,45 @@ public class Schema implements Serializable
 	/** Stores the schema name */
 	private String name;
 	
-	/** Stores the schema description */
-	private String description;
+	/** Stores the schema author */
+	private String author;
 	
-	/** Indicates if the schema has been committed */
-	private boolean committed;
+	/** Stores the schema source */
+	private String source;
+
+	/** Stores the schema type */
+	private String type;
+	
+	/** Stores the schema description */
+	private String description;	
+	
+	/** Indicates if the schema is locked */
+	private boolean locked;
 	
 	/** Constructs a default schema */
 	public Schema() {}
 	
 	/** Constructs a schema */
-	public Schema(Integer id, String name, String description, boolean committed)
-		{ this.id = id; this.name = name; this.description = description; this.committed = committed; }
+	public Schema(Integer id, String name, String author, String source, String type, String description, boolean locked)
+		{ this.id = id; this.name = name; this.author = author;  this.source = source; this.type = type; this.description = description; this.locked = locked; }
 	
 	// Handles all schema getters
 	public Integer getId() { return id; }
 	public String getName() { return name; }
+	public String getAuthor() { return author; }
+	public String getSource() { return source; }
+	public String getType() { return type; }
 	public String getDescription() { return description; }
-	public boolean getCommitted() { return committed; }
+	public boolean getLocked() { return locked; }
 
 	// Handles all schema setters
 	public void setId(Integer id) { this.id = id; }
-	public void setCommitted(boolean committed) { this.committed = committed; }
-	public void setDescription(String description) { this.description = description; }
 	public void setName(String name) { this.name = name; }
+	public void setAuthor(String author) { this.author = author; }
+	public void setSource(String source) { this.source = source; }
+	public void setType(String type) { this.type = type; }
+	public void setDescription(String description) { this.description = description; }
+	public void setLocked(boolean locked) { this.locked = locked; }
 	
 	/** Indicates that two schemas are equals */
 	public boolean equals(Object schema)
