@@ -1,4 +1,10 @@
+// Copyright 2008 The MITRE Corporation. ALL RIGHTS RESERVED.
 package org.mitre.schemastore.graph;
+
+/**
+ * Class GraphDomain
+ * @author MDMORSE
+ */
 
 import java.util.ArrayList;
 
@@ -10,7 +16,8 @@ public class GraphDomain extends GraphObject{
 	ArrayList<GraphDomain> subtypes;
 	ArrayList<GraphDomain> supertypes;
 	
-	public GraphDomain(){
+	public GraphDomain(int id, String name, String description, int base){
+		super(id, name, description, base);
 		parentEntities = new ArrayList<GraphEntity>();
 		gDomains = new ArrayList<GraphDomainValue>();
 		subtypes = new ArrayList<GraphDomain>();
@@ -41,15 +48,15 @@ public class GraphDomain extends GraphObject{
 		subtypes.add(gD);
 	}
 	
-	public GraphEntity getEntity(int n){
+	public GraphEntity getParentEntity(int n){
 		return parentEntities.get(n);
 	}
 	
-	public int getNumberOfEntities(){
+	public int getNumberOfParentEntities(){
 		return parentEntities.size();
 	}
 	
-	public void addEntity(GraphEntity gE){
+	public void addParentEntity(GraphEntity gE){
 		parentEntities.add(gE);
 	}
 	

@@ -1,23 +1,33 @@
+// Copyright 2008 The MITRE Corporation. ALL RIGHTS RESERVED.
 package org.mitre.schemastore.graph;
+
+/**
+ * Class GraphEntity
+ * @author MDMORSE
+ */
 
 import java.util.ArrayList;
 
 public class GraphEntity extends GraphObject{
 	
 	//relationships and containments that are my children.
-	ArrayList<GraphEntity> childcontainments;
-	ArrayList<GraphEntity> childrelationships;
+	ArrayList<GraphObject> childcontainments;
+	ArrayList<GraphEntity> childsubtypes;
 	//relationships and containments that I am a child of - are my parents.
-	ArrayList<GraphEntity> parentcontainments;
-	ArrayList<GraphEntity> parentrelationships;
+	ArrayList<GraphObject> parentcontainments;
+	ArrayList<GraphEntity> parentsubtypes;
+	//relationships
+	ArrayList<GraphEntity> outgoingrelationships;
 	//my attributes
 	ArrayList<GraphAttribute> attributes;
 	
-	public GraphEntity(){
-		childcontainments = new ArrayList<GraphEntity>();
-		childrelationships = new ArrayList<GraphEntity>();
-		parentcontainments = new ArrayList<GraphEntity>();
-		parentrelationships = new ArrayList<GraphEntity>();
+	public GraphEntity(int id, String name, String description, int base){
+		super(id, name, description, base);
+		childcontainments = new ArrayList<GraphObject>();
+		outgoingrelationships = new ArrayList<GraphEntity>();
+		childsubtypes = new ArrayList<GraphEntity>();
+		parentcontainments = new ArrayList<GraphObject>();
+		parentsubtypes = new ArrayList<GraphEntity>();
 		attributes = new ArrayList<GraphAttribute>();
 	}
 	
@@ -33,7 +43,7 @@ public class GraphEntity extends GraphObject{
 		attributes.add(gE);
 	}
 	
-	public GraphEntity getChildContainment(int n){
+	public GraphObject getChildContainment(int n){
 		return childcontainments.get(n);
 	}
 	
@@ -41,24 +51,36 @@ public class GraphEntity extends GraphObject{
 		return childcontainments.size();
 	}
 	
-	public void addChildContainment(GraphEntity gE){
+	public void addChildContainment(GraphObject gE){
 		childcontainments.add(gE);
 	}
 	
-	public GraphEntity getChildRelationship(int n){
-		return childrelationships.get(n);
+	public GraphEntity getOutgoingRelationship(int n){
+		return outgoingrelationships.get(n);
 	}
 	
-	public int getNumberOfChildRelationships(){
-		return childrelationships.size();
+	public int getNumberOfOutgoingRelationships(){
+		return outgoingrelationships.size();
 	}
 	
-	public void addChildRelationship(GraphEntity gE){
-		childrelationships.add(gE);
+	public void addOutgoingRelationship(GraphEntity gE){
+		outgoingrelationships.add(gE);
+	}
+	
+	public GraphEntity getChildSubtype(int n){
+		return childsubtypes.get(n);
+	}
+	
+	public int getNumberOfChildSubtypes(){
+		return childsubtypes.size();
+	}
+	
+	public void addChildSubtype(GraphEntity gE){
+		childsubtypes.add(gE);
 	}
 	// end
 	
-	public GraphEntity getParentContainment(int n){
+	public GraphObject getParentContainment(int n){
 		return parentcontainments.get(n);
 	}
 	
@@ -66,21 +88,20 @@ public class GraphEntity extends GraphObject{
 		return parentcontainments.size();
 	}
 	
-	public void addParentContainment(GraphEntity gE){
+	public void addParentContainment(GraphObject gE){
 		parentcontainments.add(gE);
 	}
 	
-	public GraphEntity getParentRelationship(int n){
-		return parentrelationships.get(n);
+	public GraphEntity getParentSubtype(int n){
+		return parentsubtypes.get(n);
 	}
 	
-	public int getNumberOfParentRelationships(){
-		return parentrelationships.size();
+	public int getNumberOfParentSubtypes(){
+		return parentsubtypes.size();
 	}
 	
-	public void addParentRelationship(GraphEntity gE){
-		parentrelationships.add(gE);
+	public void addParentSubtype(GraphEntity gE){
+		parentsubtypes.add(gE);
 	}
-	
 	
 }
