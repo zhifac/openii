@@ -55,7 +55,9 @@ CREATE TABLE attribute (
     name character varying(50) NOT NULL,
     description character varying(200),
     entity_id bigint,
-    domain_id bigint
+    domain_id bigint,
+	min bigint,
+	max bigint
 );
 
 
