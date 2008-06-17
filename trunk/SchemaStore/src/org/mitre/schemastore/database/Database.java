@@ -157,7 +157,7 @@ public class Database
 			ResultSet rs = stmt.executeQuery("SELECT nextval('universalSeq') AS schemaID");
 			rs.next();
 			schemaID = rs.getInt("schemaID");
-			stmt.executeUpdate("INSERT INTO schema(id,name,author,source,type,description,committed) VALUES("+schemaID+",'"+schema.getName()+"','"+schema.getAuthor()+"','"+schema.getSource()+"','"+schema.getType()+"','"+schema.getDescription()+"',"+(schema.getLocked()?"true":"false")+")");
+			stmt.executeUpdate("INSERT INTO schema(id,name,author,source,type,description,locked) VALUES("+schemaID+",'"+schema.getName()+"','"+schema.getAuthor()+"','"+schema.getSource()+"','"+schema.getType()+"','"+schema.getDescription()+"',"+(schema.getLocked()?"true":"false")+")");
 			stmt.close();
 			db.commit();
 		}
