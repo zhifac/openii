@@ -1,0 +1,37 @@
+<!-- Copyright 2008 The MITRE Corporation. ALL RIGHTS RESERVED. -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+    <title>Galaxy</title>
+    <script>
+      function calcDimensions()
+      {
+        if (navigator.appName.indexOf("Microsoft") != -1)
+        {
+          width=document.documentElement.clientWidth;
+          height=document.documentElement.clientHeight-4;
+        }
+        else
+        {
+          width=window.innerWidth;
+          height=window.innerHeight;
+        }
+      }
+      function resize()
+      {
+        calcDimensions();
+        document.myApplet.width = width;
+        document.myApplet.height = height;
+        window.scroll(0,0);
+      }
+    </script>
+  </head>
+  
+  <SCRIPT LANGUAGE="JavaScript"><!--
+    calcDimensions();
+    document.write("<body topmargin=0 leftmargin=0 marginwidth=0 marginheight=0 onload=resize() onresize=resize()>");
+    document.write("  <applet name=myApplet code=view/GalaxyApplet.class codebase=GalaxyApplet archive=prefuse.jar,SchemaStoreModel.jar width=",width," height=",height,"></applet>");
+    document.write("</body>");
+  --></script>
+</html>
