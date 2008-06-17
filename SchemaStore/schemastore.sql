@@ -840,15 +840,6 @@ ALTER TABLE ONLY attribute
 ALTER TABLE ONLY relationship
     ADD CONSTRAINT "$1" FOREIGN KEY (left_id) REFERENCES entity(id);
 
-
---
--- Name: $1; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY containment
-    ADD CONSTRAINT "$1" FOREIGN KEY (parent_id) REFERENCES entity(id);
-
-
 --
 -- Name: $1; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
