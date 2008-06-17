@@ -3,7 +3,6 @@
 --
 
 SET client_encoding = 'SQL_ASCII';
--- SET standard_conforming_strings = off; (kc: invalid for postgres 8.1)
 SET check_function_bodies = false;
 SET client_min_messages = warning;
 SET escape_string_warning = off;
@@ -543,7 +542,7 @@ COPY relationship (id, name, left_id, left_min, left_max, right_id, right_min, r
 -- Data for Name: schema; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY "schema" (id, name, author, source, type, description, "locked") FROM stdin;
+COPY "schema" (id, name, author, source, type, description, locked) FROM stdin;
 9	Human Patient	Chris Wolf		Manual	Information about a human patient that could be recruited into a study	t
 10	Protocol Subject	Chris Wolf		Manual	Information about a subject enrolled in one or more protocols	t
 11	Chemlab Subject	Chris Wolf		Manual	Information about a subject with chem-lab analyses	t
