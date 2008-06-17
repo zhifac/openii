@@ -1,0 +1,59 @@
+{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf330
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;\f1\froman\fcharset0 Times-Roman;\f2\fmodern\fcharset0 CourierNewPSMT;
+\f3\fmodern\fcharset0 CourierNewPS-BoldMT;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;\red127\green0\blue85;\red42\green0\blue255;
+}
+{\*\listtable{\list\listtemplateid1\listhybrid{\listlevel\levelnfc23\levelnfcn23\leveljc2\leveljcn2\levelfollow0\levelstartat1\levelspace360\levelindent0{\*\levelmarker \{disc\}}{\leveltext\leveltemplateid0\'02\'05.;}{\levelnumbers\'01;}}{\listname ;}\listid1}
+{\list\listtemplateid2\listhybrid{\listlevel\levelnfc23\levelnfcn23\leveljc2\leveljcn2\levelfollow0\levelstartat1\levelspace360\levelindent0{\*\levelmarker \{disc\}}{\leveltext\leveltemplateid0\'02\'05.;}{\levelnumbers\'01;}}{\listname ;}\listid2}
+{\list\listtemplateid3\listhybrid{\listlevel\levelnfc23\levelnfcn23\leveljc2\leveljcn2\levelfollow0\levelstartat1\levelspace360\levelindent0{\*\levelmarker \{disc\}}{\leveltext\leveltemplateid0\'02\'05.;}{\levelnumbers\'01;}}{\listname ;}\listid3}}
+{\*\listoverridetable{\listoverride\listid1\listoverridecount0\ls1}{\listoverride\listid2\listoverridecount0\ls2}{\listoverride\listid3\listoverridecount0\ls3}}
+{\info
+{\author CWOLF}
+{\*\company The MITRE Corporation}}\margl1440\margr1440\vieww9000\viewh8400\viewkind0
+\deftab720
+\pard\pardeftab720\ql\qnatural\pardirnatural
+
+\f0\fs24 \cf0 \
+\pard\tx220\tx720\pardeftab720\li720\fi-720\ql\qnatural\pardirnatural
+\ls1\ilvl0
+\f1\fs28 \cf0 {\listtext	\'95	}Installing the Database\
+\pard\pardeftab720\ql\qnatural\pardirnatural
+\cf0 \
+\pard\pardeftab720\ql\qnatural\pardirnatural
+
+\fs24 \cf0 Before installing the database, Postgres (www.postgres.org) must be installed on the machine.  Once installed, create a new database called \'93schemastore\'94 by using the command \'93create database schemastore\'94.  Access this database and then run the \'93schemastore.sql\'94 script using the command \'93\\i schemastore.sql\'94.  Verify that the database has been loaded by using the \'93\\dt\'94 command to see what tables exist in the database.\
+\
+\pard\tx220\tx720\pardeftab720\li720\fi-720\ql\qnatural\pardirnatural
+\ls2\ilvl0
+\fs28 \cf0 {\listtext	\'95	}Installing the Schema Repository\
+\pard\pardeftab720\ql\qnatural\pardirnatural
+\cf0 \
+\pard\pardeftab720\ql\qnatural\pardirnatural
+
+\fs24 \cf0 Before installing the schema repository, Apache Tomcat (or an equivalent web server) must be installed on the machine.  This web server can be retrieved from tomcat.apache.org.  Once loaded and running, go to the web server manager (typically through the url localhost:8080/manager/html) and load the war file \'93SchemaStore.war\'94.  The generic install of the repository assumes that the database is located in a database named \'93schemastore\'94 on the local machine.  If this is not true, find the web.xml file in the web service and modify the script to point to the correct database location.\
+\
+A java client (SchemaStoreClient.jar) has been included to access the repository.  To test that the repository is up and running, one can write a simple java script using this jar file.  A basic set of statements to test repository access would be:\
+\
+\pard\pardeftab720\li720\ql\qnatural\pardirnatural
+
+\f2\fs18 \cf2 SchemaStoreClient client = 
+\f3\b \cf3 new 
+\f2\b0 \cf2 SchemaStoreClient(\'93\cf0 http://localhost:8080/\cf4 \'94 +   \
+\'93SchemaStore/services/SchemaStore"\cf2 );\
+\pard\pardeftab720\ql\qnatural\pardirnatural
+\cf2 	ArrayList<Schema> schemas = client.getSchemas();\
+\
+\pard\tx220\tx720\pardeftab720\li720\fi-720\ql\qnatural\pardirnatural
+\ls3\ilvl0
+\f1\fs28 \cf0 {\listtext	\'95	}Installing Galaxy\
+\pard\pardeftab720\ql\qnatural\pardirnatural
+\cf0 \
+\pard\pardeftab720\ql\qnatural\pardirnatural
+
+\fs24 \cf0 Galaxy is a web application which also must be run under Apache Tomcat (or an equivalent web server).  As with the schema repository, go to the web server manager and load the war file \'93Galaxy.war\'94.  The generic install of Galaxy assumes that SchemaStore is located on the same Apache Tomcat server.  If this is not true, find the web.xml file in the web service and modify the script to point to the correct database location.  Verification that Galaxy is properly working is as simple as opening up the web browser to \'93localhost:8080/Galaxy\'94 and seeing if the program properly launches.\
+\
+\
+\
+\pard\pardeftab720\qc\pardirnatural
+\cf0 Problems or Questions?  Please contact Christopher Wolf at 703-983-4565\
+}
