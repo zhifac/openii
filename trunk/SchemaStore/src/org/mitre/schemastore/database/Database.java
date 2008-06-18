@@ -77,9 +77,18 @@ public class Database
 		public Integer getGroupID() { return groupID; }
 	}
 	
-	/** Initializes a connection to the database */
-	static
+	/** Creates a sql statement */
+	static private Statement createStatement() throws SQLException
 	{
+		// Check to make sure database connection still works
+		if(db!=null)
+			try {
+				Statement stmt = db.createStatement();
+				stmt.executeQuery("SELECT 1");
+				return stmt;
+			} catch(Exception e) { db=null; }
+		
+		// Attempt to connect to database
 		try {
 			if(db==null)
 			{
@@ -87,10 +96,14 @@ public class Database
 				Class.forName("org.postgresql.Driver");
 				db = DriverManager.getConnection((String)env.lookup("dbURL"),(String)env.lookup("dbUsername"),(String)env.lookup("dbPassword"));
 				db.setAutoCommit(false);
+				return db.createStatement();
 			}
 		}
 		catch (Exception e)
 			{ System.out.println("(E) Failed to connect to database"); }
+
+		// Indicates that a statement failed to be created
+		throw new SQLException();
 	}
 	
 	//---------------------------------
@@ -102,7 +115,7 @@ public class Database
 	{
 		ArrayList<Schema> schemas = new ArrayList<Schema>();
 		try {
-			Statement stmt = db.createStatement();
+			Statement stmt = createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT id,name,author,source,type,description,locked FROM schema");
 			while(rs.next())
 				schemas.add(new Schema(rs.getInt("id"),rs.getString("name"),rs.getString("author"),rs.getString("source"),rs.getString("type"),rs.getString("description"),rs.getBoolean("locked")));
@@ -116,7 +129,7 @@ public class Database
 	{
 		Schema schema = null;
 		try {
-			Statement stmt = db.createStatement();
+			Statement stmt = createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT id,name,author,source,type,description,locked FROM schema WHERE id="+schemaID);
 			if(rs.next())
 				schema = new Schema(rs.getInt("id"),rs.getString("name"),rs.getString("author"),rs.getString("source"),rs.getString("type"),rs.getString("description"),rs.getBoolean("locked"));
@@ -130,7 +143,7 @@ public class Database
 	{
 		Schema extendedSchema = null;
 		try {
-			Statement stmt = db.createStatement();
+			Statement stmt = createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT nextval('universalSeq') AS schemaID");
 			rs.next();
 			int schemaID = rs.getInt("schemaID");
@@ -153,7 +166,7 @@ public class Database
 	{
 		Integer schemaID = 0;
 		try {
-			Statement stmt = db.createStatement();
+			Statement stmt = createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT nextval('universalSeq') AS schemaID");
 			rs.next();
 			schemaID = rs.getInt("schemaID");
@@ -175,7 +188,7 @@ public class Database
 	{
 		boolean success = false;
 		try {
-			Statement stmt = db.createStatement();
+			Statement stmt = createStatement();
 			stmt.executeUpdate("UPDATE schema SET name='"+schema.getName()+"', author='"+schema.getAuthor()+", source='"+schema.getSource()+", type='"+schema.getType()+", description='"+schema.getDescription()+"' WHERE id="+schema.getId());
 			stmt.close();
 			db.commit();
@@ -229,7 +242,7 @@ public class Database
 		boolean success = false;
 		try {
 			// Identify which schema elements should be deleted
-			Statement stmt = db.createStatement();
+			Statement stmt = createStatement();
 			ArrayList<DeletableSchemaElement> deletableElements = new ArrayList<DeletableSchemaElement>();
 			ResultSet rs = stmt.executeQuery("SELECT element_id,type FROM extensions,schema_element WHERE schema_id="+schemaID+" AND action='Add' AND element_id=id");
 			while(rs.next())
@@ -261,7 +274,7 @@ public class Database
 	{
 		boolean success = false;
 		try {
-			Statement stmt = db.createStatement();
+			Statement stmt = createStatement();
 			stmt.executeUpdate("UPDATE schema SET locked="+locked+" WHERE id="+schemaID);
 			stmt.close();
 			db.commit();
@@ -284,7 +297,7 @@ public class Database
 	{
 		Integer validationNumber = 0;
 		try {
-			Statement stmt = db.createStatement();
+			Statement stmt = createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT sum(1.0*(schema_id+1)*(group_id+1))%10000000 AS validation_number FROM schema_group");
 			if(rs.next())
 				validationNumber = rs.getInt("validation_number");
@@ -298,7 +311,7 @@ public class Database
 	{
 		ArrayList<Group> groups = new ArrayList<Group>();
 		try {
-			Statement stmt = db.createStatement();
+			Statement stmt = createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT id,name,parent_id FROM groups");
 			while(rs.next())
 				groups.add(new Group(rs.getInt("id"),rs.getString("name"),rs.getInt("parent_id")));
@@ -312,7 +325,7 @@ public class Database
 	{
 		Integer groupID = 0;
 		try {
-			Statement stmt = db.createStatement();
+			Statement stmt = createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT nextval('universalSeq') AS groupID");
 			rs.next();
 			groupID = rs.getInt("groupID");
@@ -334,7 +347,7 @@ public class Database
 	{
 		boolean success = false;
 		try {
-			Statement stmt = db.createStatement();
+			Statement stmt = createStatement();
 			stmt.executeUpdate("UPDATE groups SET name='"+group.getName()+"' WHERE id="+group.getId());
 			stmt.close();
 			db.commit();
@@ -353,7 +366,7 @@ public class Database
 	{	
 		boolean success = false;
 		try {
-			Statement stmt = db.createStatement();
+			Statement stmt = createStatement();
 			stmt.executeUpdate("DELETE FROM schema_group WHERE group_id="+groupID);
 			stmt.executeUpdate("DELETE FROM groups WHERE id="+groupID);
 			stmt.close();
@@ -373,7 +386,7 @@ public class Database
 	{
 		ArrayList<SchemaGroup> schemaGroups = new ArrayList<SchemaGroup>();
 		try {
-			Statement stmt = db.createStatement();
+			Statement stmt = createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT schema_id, group_id FROM schema_group");
 			while(rs.next())
 				schemaGroups.add(new SchemaGroup(rs.getInt("schema_id"),rs.getInt("group_id")));
@@ -387,7 +400,7 @@ public class Database
 	{
 		Boolean success = false;
 		try {
-			Statement stmt = db.createStatement();
+			Statement stmt = createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT count(*) AS count FROM schema_group WHERE schema_id="+schemaID+" AND group_id="+groupID);
 			rs.next();
 			if(rs.getInt("count")==0)
@@ -409,7 +422,7 @@ public class Database
 	{
 		Boolean success = false;
 		try {
-			Statement stmt = db.createStatement();
+			Statement stmt = createStatement();
 			stmt.executeUpdate("DELETE FROM schema_group WHERE schema_id="+schemaID+" AND group_id="+groupID);
 			stmt.close();
 			db.commit();
@@ -432,7 +445,7 @@ public class Database
 	{
 		Integer validationNumber = 0;
 		try {
-			Statement stmt = db.createStatement();
+			Statement stmt = createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT sum(1.0*(schema_id+1)*(element_id+1))%10000000 AS validation_number FROM extensions WHERE action='Base Schema'");
 			if(rs.next())
 				validationNumber = rs.getInt("validation_number");
@@ -446,7 +459,7 @@ public class Database
 	{
 		ArrayList<Extension> extensions = new ArrayList<Extension>();
 		try {
-			Statement stmt = db.createStatement();
+			Statement stmt = createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT schema_id,element_id FROM extensions WHERE action='Base Schema'");
 			while(rs.next())
 				extensions.add(new Extension(rs.getInt("element_id"),rs.getInt("schema_id")));
@@ -460,7 +473,7 @@ public class Database
 	{
 		boolean success = false;
 		try {
-			Statement stmt = db.createStatement();
+			Statement stmt = createStatement();
 			stmt.executeUpdate("DELETE FROM extensions WHERE schema_id="+schemaID+" AND action='Base Schema'");
 			for(Integer parentSchemaID : parentIDs)
 				stmt.executeUpdate("INSERT INTO extensions(schema_id,action,element_id) VALUES("+schemaID+",'Base Schema',"+parentSchemaID+")");			
@@ -483,7 +496,7 @@ public class Database
 	/** Retrieves the schema element type */
 	static private String getSchemaElementType(Integer schemaElementID) throws SQLException
 	{
-		Statement stmt = db.createStatement();
+		Statement stmt = createStatement();
 		ResultSet rs = stmt.executeQuery("SELECT type FROM schema_element WHERE id="+schemaElementID);
 		rs.next();
 		String type = rs.getString("type");
@@ -496,7 +509,7 @@ public class Database
 	{
 		ArrayList<Domain> defaultDomains = new ArrayList<Domain>();
 		try {
-			Statement stmt = db.createStatement();
+			Statement stmt = createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT id,name,description FROM domain WHERE id<0");
 			while(rs.next())
 				defaultDomains.add(new Domain(rs.getInt("id"),rs.getString("name"),rs.getString("description"),null));
@@ -510,7 +523,7 @@ public class Database
 	{
 		Integer defaultDomainCount = 0;
 		try {
-			Statement stmt = db.createStatement();
+			Statement stmt = createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT count(*) AS count FROM domain WHERE id<0");
 			if(rs.next()) defaultDomainCount = rs.getInt("count");
 			stmt.close();
@@ -523,7 +536,7 @@ public class Database
 	{
 		ArrayList<SchemaElement> baseElements = new ArrayList<SchemaElement>();
 		try {
-			Statement stmt = db.createStatement();
+			Statement stmt = createStatement();
 			
 			// Gets the schema entities
 			ResultSet rs = stmt.executeQuery("SELECT id,name,description FROM extensions,entity WHERE schema_id="+schemaID+" AND element_id=id");
@@ -608,7 +621,7 @@ public class Database
 	{
 		Integer elementCount = 0;
 		try {
-			Statement stmt = db.createStatement();
+			Statement stmt = createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT count(*) AS count FROM extensions WHERE schema_id="+schemaID+" AND action='Add'");
 			if(rs.next()) elementCount = rs.getInt("count");
 			stmt.close();
@@ -621,7 +634,7 @@ public class Database
 	{
 		SchemaElement schemaElement = null;
 		try {
-			Statement stmt = db.createStatement();
+			Statement stmt = createStatement();
 			
 			// Determine the base
 			ResultSet rs = stmt.executeQuery("SELECT schema_id FROM extensions WHERE element_id="+schemaElementID+" AND action='Add'");
@@ -732,7 +745,7 @@ public class Database
 	{
 		Integer schemaElementID = 0;
 		try {
-			Statement stmt = db.createStatement();
+			Statement stmt = createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT nextval('universalSeq') AS universalID");
 			rs.next();
 			schemaElementID = rs.getInt("universalID");
@@ -823,7 +836,7 @@ public class Database
 	{
 		boolean success = false;
 		try {
-			Statement stmt = db.createStatement();
+			Statement stmt = createStatement();
 
 			// Updates an entity
 			if(schemaElement instanceof Entity)
@@ -898,7 +911,7 @@ public class Database
 	{
 		boolean success = false;
 		try {
-			Statement stmt = db.createStatement();
+			Statement stmt = createStatement();
 			stmt.executeUpdate("DELETE FROM extensions WHERE action='Add' AND element_id="+schemaElementID);
 			stmt.executeUpdate("DELETE FROM "+getSchemaElementType(schemaElementID)+" WHERE id="+schemaElementID);
 			stmt.close();
@@ -923,7 +936,7 @@ public class Database
 	{
 		ArrayList<DataSource> dataSources = new ArrayList<DataSource>();
 		try {
-			Statement stmt = db.createStatement();
+			Statement stmt = createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT id,name,schema_id,url FROM data_source" + (schemaID!=null?" WHERE schema_id="+schemaID:""));
 			while(rs.next())
 				dataSources.add(new DataSource(rs.getInt("id"),rs.getString("name"),rs.getInt("schema_id"),rs.getString("url")));
@@ -937,7 +950,7 @@ public class Database
 	{
 		DataSource dataSource = null;
 		try {
-			Statement stmt = db.createStatement();
+			Statement stmt = createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT id,name,schema_id,url FROM data_source WHERE id="+dataSourceID);
 			if(rs.next())
 				dataSource = new DataSource(rs.getInt("id"),rs.getString("name"),rs.getInt("schema_id"),rs.getString("url"));
@@ -951,7 +964,7 @@ public class Database
 	{
 		DataSource dataSource = null;
 		try {
-			Statement stmt = db.createStatement();
+			Statement stmt = createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT id,name,schema_id,url FROM data_source WHERE url='"+url+"'");
 			if(rs.next())
 				dataSource = new DataSource(rs.getInt("id"),rs.getString("name"),rs.getInt("schema_id"),rs.getString("url"));
@@ -965,7 +978,7 @@ public class Database
 	{
 		Integer dataSourceID = 0;
 		try {
-			Statement stmt = db.createStatement();
+			Statement stmt = createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT nextval('universalSeq') AS dataSourceID");
 			rs.next();
 			dataSourceID = rs.getInt("dataSourceID");
@@ -987,7 +1000,7 @@ public class Database
 	{
 		boolean success = false;
 		try {
-			Statement stmt = db.createStatement();
+			Statement stmt = createStatement();
 			stmt.executeUpdate("UPDATE data_source SET name='"+dataSource.getName()+"', url='"+dataSource.getUrl()+"' WHERE id="+dataSource.getId());
 			stmt.close();
 			db.commit();
@@ -1006,7 +1019,7 @@ public class Database
 	{
 		boolean success = false;
 		try {
-			Statement stmt = db.createStatement();
+			Statement stmt = createStatement();
 			stmt.executeUpdate("DELETE FROM data_source WHERE id="+dataSourceID);
 			stmt.close();
 			db.commit();
@@ -1029,7 +1042,7 @@ public class Database
 	{
 		Mapping mapping = null;
 		try {
-			Statement stmt = db.createStatement();
+			Statement stmt = createStatement();
 
 			// Get the schemas associated with mapping
 			ArrayList<Integer> schemas = new ArrayList<Integer>();
@@ -1051,7 +1064,7 @@ public class Database
 	{
 		ArrayList<Mapping> mappings = new ArrayList<Mapping>();
 		try {
-			Statement stmt = db.createStatement();
+			Statement stmt = createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT id FROM mapping");
 			while(rs.next())
 				mappings.add(getMapping(rs.getInt("id")));
@@ -1065,7 +1078,7 @@ public class Database
 	{
 		ArrayList<Integer> mappingIDs = new ArrayList<Integer>();
 		try {
-			Statement stmt = db.createStatement();
+			Statement stmt = createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT DISTINCT mapping_id FROM mapping_schema WHERE schema_id="+schemaID);
 			while(rs.next())
 				mappingIDs.add(rs.getInt("mapping_id"));
@@ -1079,7 +1092,7 @@ public class Database
 	{
 		Integer mappingID = 0;
 		try {
-			Statement stmt = db.createStatement();
+			Statement stmt = createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT nextval('universalSeq') AS mappingID");
 			rs.next();
 			mappingID = rs.getInt("mappingID");
@@ -1103,7 +1116,7 @@ public class Database
 	{
 		boolean success = false;
 		try {
-			Statement stmt = db.createStatement();
+			Statement stmt = createStatement();
 			stmt.executeUpdate("UPDATE mapping SET name='"+mapping.getName()+"', description='"+mapping.getDescription()+"', author='"+mapping.getAuthor()+"' WHERE id="+mapping.getId());
 			stmt.executeUpdate("DELETE FROM mapping_schema WHERE mapping_id="+mapping.getId());
 			for(Integer schema : mapping.getSchemas())
@@ -1125,7 +1138,7 @@ public class Database
 	{	
 		boolean success = false;
 		try {
-			Statement stmt = db.createStatement();
+			Statement stmt = createStatement();
 			stmt.executeUpdate("DELETE FROM mapping_cell WHERE mapping_id="+mappingID);
 			stmt.executeUpdate("DELETE FROM mapping_schema WHERE mapping_id="+mappingID);
 			stmt.executeUpdate("DELETE FROM mapping WHERE id="+mappingID);
@@ -1146,7 +1159,7 @@ public class Database
 	{
 		ArrayList<MappingCell> mappingCells = new ArrayList<MappingCell>();
 		try {
-			Statement stmt = db.createStatement();
+			Statement stmt = createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT id,element1_id,element2_id,score,scorer,validated FROM mapping_cell WHERE mapping_id="+mappingID);
 			while(rs.next())
 				mappingCells.add(new MappingCell(rs.getInt("id"),mappingID,rs.getInt("element1_id"),rs.getInt("element2_id"),rs.getDouble("score"),rs.getString("scorer"),rs.getBoolean("validated")));
@@ -1160,7 +1173,7 @@ public class Database
 	{
 		Integer mappingCellID = 0;
 		try {
-			Statement stmt = db.createStatement();
+			Statement stmt = createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT nextval('universalSeq') AS mappingCellID");
 			rs.next();
 			mappingCellID = rs.getInt("mappingCellID");
@@ -1182,7 +1195,7 @@ public class Database
 	{
 		boolean success = false;
 		try {
-			Statement stmt = db.createStatement();
+			Statement stmt = createStatement();
 			stmt.executeUpdate("UPDATE mapping_cell SET score="+mappingCell.getScore()+", scorer='"+mappingCell.getScorer()+"' WHERE id="+mappingCell.getId());
 			stmt.close();
 			db.commit();
@@ -1201,7 +1214,7 @@ public class Database
 	{	
 		boolean success = false;
 		try {
-			Statement stmt = db.createStatement();
+			Statement stmt = createStatement();
 			stmt.executeUpdate("DELETE FROM mapping_cell WHERE id="+mappingCellID);
 			stmt.close();
 			db.commit();
