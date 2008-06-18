@@ -199,18 +199,23 @@ public class Database
 			private int id;
 			
 			/** Constructs a deletable schema element */
-			private DeletableSchemaElement(String schemaElementTypeString, int schemaElementID)
+			private DeletableSchemaElement(String typeString, int schemaElementID)
 			{
-				if(schemaElementTypeString.equals("Entity")) type = Entity.class;
-				else if(schemaElementTypeString.equals("Attribute")) type = Attribute.class;
-				else if(schemaElementTypeString.equals("Domain")) type = Domain.class;
-				else if(schemaElementTypeString.equals("Domain Value")) type = DomainValue.class;
-				else if(schemaElementTypeString.equals("Relationship")) type = Relationship.class;
-				this.id = schemaElementID; }
+				try {
+					type = Class.forName(Entity.class.getPackage().getName() + "." + typeString);
+				} catch(Exception e) { type = Entity.class; }
+				this.id = schemaElementID;
+			}
 
 			/** Returns a deletion priority score */
 			private int getPriority()
-				{ return type.equals(Attribute.class) ? 5 : type.equals(DomainValue.class) ? 4 : type.equals(Domain.class) ? 3 : type.equals(Relationship.class) ? 2 : 1; }
+			{
+				if(type.equals(Attribute.class)) return 5;
+				if(type.equals(DomainValue.class)) return 4;
+				if(type.equals(Domain.class)) return 3;
+				if(type.equals(Relationship.class) || type.equals(Subtype.class)) return 2;
+				return 1;
+			}
 			
 			/** Deletes the schema element */
 			private void delete()
@@ -226,14 +231,9 @@ public class Database
 			// Identify which schema elements should be deleted
 			Statement stmt = db.createStatement();
 			ArrayList<DeletableSchemaElement> deletableElements = new ArrayList<DeletableSchemaElement>();
-			ResultSet rs = stmt.executeQuery("SELECT action,element_id FROM extensions WHERE schema_id="+schemaID+" AND action LIKE 'Add %'");
+			ResultSet rs = stmt.executeQuery("SELECT element_id,type FROM extensions,schema_element WHERE schema_id="+schemaID+" AND action='Add' AND element_id=id");
 			while(rs.next())
-			{
-				// Retrieve the schema element type and id
-				String schemaElementTypeString = rs.getString("action").replaceFirst("Add ","");
-				int schemaElementID = rs.getInt("element_id");
-				deletableElements.add(new DeletableSchemaElement(schemaElementTypeString,schemaElementID));
-			}
+				deletableElements.add(new DeletableSchemaElement(rs.getString("type"),rs.getInt("element_id")));
 			
 			// Delete the schema elements
 			Collections.sort(deletableElements);
