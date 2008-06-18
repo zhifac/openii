@@ -56,7 +56,7 @@ public class Schemas
 	/** Removes the specified schema */
 	static public boolean deleteSchema(Integer schemaID)
 	{
-		if(SchemaRelationships.getChildren(schemaID).size()==0 && Database.getSchemaMappingIDs(schemaID).size()==0)
+		if(DataSources.getDataSources(schemaID).size()==0 && SchemaRelationships.getChildren(schemaID).size()==0 && Database.getSchemaMappingIDs(schemaID).size()==0)
 			return Database.deleteSchema(schemaID);
 		return false;
 	}
