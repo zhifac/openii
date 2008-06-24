@@ -24,13 +24,13 @@ import org.mitre.schemastore.model.Subtype;
 import org.mitre.schemastore.servlet.SchemaStoreProxy;
 
 /**
- * Handles all commuications to the schema store web service
+ * Handles all communications to the schema store web service
  * @author CWOLF
  */
 public class SchemaStoreClient
 {
 	/** Stores the location of the web service */
-	static private SchemaStoreProxy proxy;
+	private SchemaStoreProxy proxy;
 
 	/** Constructor for the Schema Store Client */
 	public SchemaStoreClient(String serviceAddress)
