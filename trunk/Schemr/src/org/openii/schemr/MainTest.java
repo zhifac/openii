@@ -133,7 +133,7 @@ public class MainTest extends TestCase {
         for(SchemaElement schemaElement : client.getSchemaElements(schema.getId())) {
           String schemaType = schemaElement.getClass().getSimpleName().toLowerCase();
           schemaDoc.add(new Field(schemaType, schemaElement.getName(), Field.Store.YES, Field.Index.TOKENIZED));
-          schemaDoc.add(new Field(schemaType, schemaElement.getDescription(), Field.Store.NO, Field.Index.TOKENIZED));          
+          schemaDoc.add(new Field(schemaType, schemaElement.getDescription(), Field.Store.YES, Field.Index.TOKENIZED));          
         }
 
         List<Field> fields = schemaDoc.getFields();
