@@ -41,15 +41,18 @@ public class GraphDomain extends Domain{
 			
 
 	// getters
-	ArrayList<GraphEntity> 		getParentEntities()    { return parentEntities; }
-	ArrayList<GraphAttribute>   getParentAttributes()  { return parentAttributes; }
-	ArrayList<GraphDomainValue> getChildDomainValues() { return childDomainValues; }
-	ArrayList<GraphContainment> getChildContainments() { return childContainments; };
+	public ArrayList<GraphEntity> 		getParentEntities()    { return parentEntities; }
+	public ArrayList<GraphAttribute>   getParentAttributes()  { return parentAttributes; }
+	public ArrayList<GraphDomainValue> getChildDomainValues() { return childDomainValues; }
+	public ArrayList<GraphContainment> getChildContainments() { return childContainments; };
 	
 	// adders 
-	void addParentEntities(GraphEntity e) { parentEntities.add(e); }
-	void addParentAttributes(GraphAttribute a) { parentAttributes.add(a); }
-	void addChildDomainValues(GraphDomainValue dv) { childDomainValues.add(dv); }
-	void addChildContainments(GraphContainment c) {childContainments.add(c); }
+	public void addParentEntities(GraphEntity e) { parentEntities.add(e); }
+	public void addParentAttributes(GraphAttribute a) { parentAttributes.add(a); }
+	public void addChildDomainValues(GraphDomainValue dv) { childDomainValues.add(dv); }
+	public void addChildContainments(GraphContainment c) {childContainments.add(c); }
+	
+
+	
 	
 }

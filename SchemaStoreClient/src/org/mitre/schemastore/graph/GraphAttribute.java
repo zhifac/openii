@@ -41,6 +41,11 @@ public class GraphAttribute extends Attribute {
 	public void setParentEntity(GraphEntity pE)
 		{ parentEntity = pE; }
 
+	public String toString(){
+		return new String(" NAME: " + super.getName() + " ENTITY-ID: " +  super.getEntityID() + 
+				" DOMAIN-ID: " + super.getDomainID());
+	}
+	
 }
 
 
