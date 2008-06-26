@@ -8,23 +8,7 @@ import org.mitre.schemastore.model.*;
 public class GraphBuilder{
 	
 	
-	public static void main(){
-		
-		
-		SchemaStoreClient clientLocal = new SchemaStoreClient("http://localhost:8080/SchemaStore/services/SchemaStore");
-////	Integer schemaID = 54131; // uno
-		    Integer schemaID = 54029; // PO1
-////	Integer schemaID = 54006; // ejournal
-////	Integer schemaID = 53901; // CoT
-////	Integer schemaID = 52510; // EntityProduct
-		    
-//			Schema s = clientLocal.getSchema(schemaID);
-//			ArrayList<SchemaElement> elementList =  clientLocal.getSchemaElements(schemaID);
-			
-	//		build(elementList, schemaID);
-	
-	
-	}
+
 	
 	public static ArrayList<SchemaElement> build(ArrayList<SchemaElement> schemaElements, int schemaID){
 		
