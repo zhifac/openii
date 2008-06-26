@@ -7,70 +7,40 @@ package org.mitre.schemastore.graph;
  */
 
 import java.util.ArrayList;
+import org.mitre.schemastore.model.*;
 
-public class GraphDomain extends GraphObject{
+public class GraphDomain extends Domain{
 	
-	ArrayList<GraphEntity> parentEntities;
-	ArrayList<GraphDomainValue> gDomains;
+	// parent entities 
+	private ArrayList<GraphEntity> parentEntities;
 	
-	ArrayList<GraphDomain> subtypes;
-	ArrayList<GraphDomain> supertypes;
+	// parent attributes
+	private ArrayList<GraphAttribute> parentAttributes;
 	
-	public GraphDomain(int id, String name, String description, int base){
+	// child domain Values
+	private ArrayList<GraphDomainValue> childDomainValues;
+		
+	public GraphDomain(Integer id, String name, String description, int base){
 		super(id, name, description, base);
 		parentEntities = new ArrayList<GraphEntity>();
-		gDomains = new ArrayList<GraphDomainValue>();
-		subtypes = new ArrayList<GraphDomain>();
-		supertypes = new ArrayList<GraphDomain>();
+		childDomainValues = new ArrayList<GraphDomainValue>();	
 	}
 	
-	public GraphDomain getSuperType(int n){
-		return supertypes.get(n);
+	public GraphDomain(Domain d){
+		super(d.getId(), d.getName(), d.getDescription(), d.getBase());
+		parentEntities = new ArrayList<GraphEntity>();
+		childDomainValues = new ArrayList<GraphDomainValue>();	
 	}
+			
+
+	// getters
+	ArrayList<GraphEntity> getParentEntities() { return parentEntities; }
+	ArrayList<GraphAttribute> getParentAttributes() { return parentAttributes; }
+	ArrayList<GraphDomainValue> getChildDomainValues() { return childDomainValues; }
 	
-	public int getNumberOfSuperTypes(){
-		return supertypes.size();
-	}
-	
-	public void addSuperType(GraphDomain gD){
-		supertypes.add(gD);
-	}
-	
-	public GraphDomain getSubType(int n){
-		return subtypes.get(n);
-	}
-	
-	public int getNumberOfSubTypes(){
-		return subtypes.size();
-	}
-	
-	public void addSubType(GraphDomain gD){
-		subtypes.add(gD);
-	}
-	
-	public GraphEntity getParentEntity(int n){
-		return parentEntities.get(n);
-	}
-	
-	public int getNumberOfParentEntities(){
-		return parentEntities.size();
-	}
-	
-	public void addParentEntity(GraphEntity gE){
-		parentEntities.add(gE);
-	}
-	
-	public GraphDomainValue getDomainValue(int n){
-		return gDomains.get(n);
-	}
-	
-	//I think that only 1 domain is ever possible.
-	public int getNumberOfDomains(){
-		return gDomains.size();
-	}
-	
-	public void addDomainValue(GraphDomainValue gE){
-		gDomains.add(gE);
-	}
+	// adders 
+	void addParentEntities(GraphEntity e) { parentEntities.add(e); }
+	void addParentAttributes(GraphAttribute a) { parentAttributes.add(a); }
+	void addChildDomainValues(GraphDomainValue dv) { childDomainValues.add(dv); }
 	
 }
