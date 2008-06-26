@@ -8,43 +8,7 @@ import org.mitre.schemastore.model.*;
 public class GraphBuilder{
 	
 	
-	public static void main() throws Exception {
-		
-		
-		SchemaStoreClient clientLocal = new SchemaStoreClient("http://localhost:8080/SchemaStore/services/SchemaStore");
-////	Integer schemaID = 54131; // uno
-		    Integer schemaID = 54029; // PO1
-////	Integer schemaID = 54006; // ejournal
-////	Integer schemaID = 53901; // CoT
-////	Integer schemaID = 52510; // EntityProduct
-		    
-			Schema s = clientLocal.getSchema(schemaID);
-			ArrayList<SchemaElement> elementList =  clientLocal.getSchemaElements(schemaID);
-			
-			ArrayList<SchemaElement> graphObject = build(elementList, schemaID);
-	
-			for (SchemaElement se : graphObject){
-				
-				if (se instanceof GraphAttribute) {
-				
-				} else if (se instanceof GraphContainment) {
-					
-				} else if (se instanceof GraphDomain) {
-					
-				} else if (se instanceof GraphDomainValue) {
-					
-				} else if (se instanceof GraphEntity) {
-				
-				} else if (se instanceof GraphRelationship) {
-				
-				} else if (se instanceof GraphSubtype) {
-				
-				}
-				
-			}
-			
-	
-	}
+
 	
 	public static ArrayList<SchemaElement> build(ArrayList<SchemaElement> schemaElements, int schemaID){
 		
@@ -156,8 +120,8 @@ public class GraphBuilder{
 					GraphEntity childEntity  = (GraphEntity)graphHash.get(subtype.getChildID());
 					
 					//should be all hooked up now.
-					parentEntity.addChildSubtypes(childEntity);
-					childEntity.addParentSubtypes(parentEntity);
+					parentEntity.addSubtypes(childEntity);
+					childEntity.addSupertypes(parentEntity);
 				}
 				
 			} // end for(SchemaElement schemaElement: edges){
