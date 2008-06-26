@@ -1,155 +1,148 @@
 package org.mitre.schemastore.graph;
 
-import java.util.Hashtable;
-import java.util.Vector;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import org.mitre.schemastore.model.*;
+import java.util.*;
 
-import org.mitre.schemastore.model.SchemaElement;
+import org.mitre.schemastore.client.SchemaStoreClient;
+import org.mitre.schemastore.model.*;
 
 public class GraphBuilder{
 	
-	//Hashtable<Integer,GraphObject> hashGraph;
 	
-	public static GraphObject build(ArrayList<SchemaElement> schema){
+	public static void main(){
+		
+		
+		SchemaStoreClient clientLocal = new SchemaStoreClient("http://localhost:8080/SchemaStore/services/SchemaStore");
+////	Integer schemaID = 54131; // uno
+		    Integer schemaID = 54029; // PO1
+////	Integer schemaID = 54006; // ejournal
+////	Integer schemaID = 53901; // CoT
+////	Integer schemaID = 52510; // EntityProduct
+		    
+//			Schema s = clientLocal.getSchema(schemaID);
+//			ArrayList<SchemaElement> elementList =  clientLocal.getSchemaElements(schemaID);
+			
+	//		build(elementList, schemaID);
+	
+	
+	}
+	
+	public static ArrayList<SchemaElement> build(ArrayList<SchemaElement> schemaElements, int schemaID){
+		
 		//Graph hash stores all of the nodes.  I make no assumptions about the order of things
 		//in the list.  So, edges may appear before nodes.  hence, store nodes into the 
 		//hashtable.  then, iterate through the edges and connect them.
-		Hashtable<Integer, GraphObject> graphHash = new Hashtable<Integer, GraphObject>();
-		Vector<SchemaElement> Edges = new Vector<SchemaElement>();
-		for(SchemaElement schemaElement : schema){
-			if(schemaElement instanceof Attribute){ //node
-				Attribute Attr = (Attribute) schemaElement;
-				GraphAttribute GAttr = new GraphAttribute(Attr.getId(), Attr.getName(), Attr.getDescription(), Attr.getBase());
-				GAttr.setAttr(Attr);
-				graphHash.put(Attr.getId(), GAttr);
-			}
-			else if(schemaElement instanceof Containment){ //edge
-				Edges.add(schemaElement);
-			}
-			else if(schemaElement instanceof Domain){ //node
-				Domain Dom = (Domain) schemaElement;
-				GraphDomain GDom = new GraphDomain(Dom.getId(), Dom.getName(), Dom.getDescription(), Dom.getBase());
-				graphHash.put(Dom.getId(), GDom);
-			}
-			else if(schemaElement instanceof DomainValue){ //node
-				DomainValue DomVal = (DomainValue) schemaElement;
-				GraphDomainValue GDomVal = new GraphDomainValue(DomVal.getId(), DomVal.getName(), DomVal.getDescription(), DomVal.getBase());
-				GDomVal.setDomainID(DomVal.getDomainID());
-				graphHash.put(DomVal.getId(), GDomVal);
-			}
-			else if(schemaElement instanceof Relationship){ //edge
-				Edges.add(schemaElement);
-			}
-			else if(schemaElement instanceof Entity){ //node
-				Entity Ent = (Entity) schemaElement;
-				GraphEntity GEntity = new GraphEntity(Ent.getId(), Ent.getName(), Ent.getDescription(), Ent.getBase());
-				graphHash.put(Ent.getId(), GEntity);
-			}
-			else if(schemaElement instanceof Subtype){ //edge
-				Edges.add(schemaElement);
-			}
-		}
+		HashMap<Integer, SchemaElement> graphHash = new HashMap<Integer, SchemaElement>();
+		ArrayList<SchemaElement> edges = new ArrayList<SchemaElement>();
 		
-		int rootParent=0;
-		
-		//now, iterate through the edges, and connect.
-		for(SchemaElement schemaElement: Edges){
-			if(schemaElement instanceof Containment){ 
-				Containment connie = (Containment) schemaElement;
-				Integer parent = connie.getParentID();
-				Integer child = connie.getChildID();
-				//The schema node is a virtual node, meaning that the
-				//schema store representation of the graph doesn't contain
-				//an actual node, even though the containment from the schema to a top
-				//level node in the graph exists, and references the non-existant
-				//node.  Thus, we must add the node.
-				if(!graphHash.containsKey(parent)){
-					//we've found the missing schema node.
-					GraphSchemaRootNode gsrn = new GraphSchemaRootNode(parent, "Schema Root","Scheam Root", 0);
-					graphHash.put(parent,gsrn);
-					rootParent = parent;
-				}
-				GraphObject pObject = graphHash.get(parent);
-				GraphObject cObject = graphHash.get(child);
-				//pObject has to be an entity.
-				//GraphEntity pEntity = null;
-				if(pObject instanceof GraphEntity){
-					GraphEntity pEntity = (GraphEntity) pObject;
-					pEntity.addChildContainment(cObject);
-				}
-				else if(pObject instanceof GraphSchemaRootNode){
-					GraphSchemaRootNode gsrn = (GraphSchemaRootNode) pObject;
-					gsrn.addChildContainment(cObject);
-				}
-				else{ //error.
-					System.out.println("Error, Parent Object not valid");
+		// add schema
+		try {
+			graphHash.put(schemaID, new GraphEntity(schemaID));
+			for(SchemaElement schemaElement : schemaElements){
+				
+				// process the nodes 
+				if(schemaElement instanceof Attribute){ //node
+					GraphAttribute graphAttribute = new GraphAttribute((Attribute)schemaElement);
+					graphHash.put(graphAttribute.getId(), graphAttribute);
 				}
 				
-				if(cObject instanceof GraphEntity){
-					GraphEntity cEntity = (GraphEntity) cObject;
-					cEntity.addParentContainment(pObject);
+				else if(schemaElement instanceof Domain){ //node
+					GraphDomain graphDomain = new GraphDomain((Domain) schemaElement);
+					graphHash.put(graphDomain.getId(), graphDomain);
 				}
-				else if(cObject instanceof GraphDomain){
-					GraphDomain cGraphDomain = (GraphDomain) cObject;
-					cGraphDomain.addParentEntity((GraphEntity)pObject);
+				
+				else if(schemaElement instanceof DomainValue){ //node
+					GraphDomainValue graphDomainValue = new GraphDomainValue((DomainValue) schemaElement);
+					graphHash.put(graphDomainValue.getId(), graphDomainValue);
 				}
-				else{ //error
-					System.out.println("Error, Child Object not Valid");
+				
+				else if(schemaElement instanceof Entity){ //node
+					GraphEntity graphEntity = new GraphEntity((Entity) schemaElement);
+					graphHash.put(graphEntity.getId(), graphEntity);
+				}
+				else {
+					// add edges
+					edges.add(schemaElement);
 				}
 			}
-			else if(schemaElement instanceof Relationship){ 
-				Relationship rel = (Relationship) schemaElement;
-				Integer left = rel.getLeftID();
-				Integer right = rel.getRightID();
-				GraphObject lObject = graphHash.get(left);
-				GraphObject rObject = graphHash.get(right);
-				//lObject and rObject have to be an entity.
-				GraphEntity lEntity = (GraphEntity) lObject;
-				GraphEntity rEntity = (GraphEntity) rObject;
-				//should be all hooked up now.
-				lEntity.addOutgoingRelationship(rEntity);
-				rEntity.addOutgoingRelationship(lEntity);
+		
+		
+			// make SECOND interation through nodes to make IMPLICIT connections without
+			// a corresponding edge, specifically: 1) attributes --> entities, 
+			// 2) entities --> attrs, 3) domain values --> domains, 
+			// 4) domains --> attributes (NOTE ARROW DIRECTION)
+			for(SchemaElement schemaElement : schemaElements){
+	
+				if(schemaElement instanceof GraphAttribute){ //node
+					GraphAttribute attribute = (GraphAttribute)graphHash.get(schemaElement.getId());
+					GraphDomain domain = (GraphDomain)graphHash.get(attribute.getDomainID());
+					attribute.domainType = domain;
+					domain.addParentAttributes(attribute);
+					GraphEntity entity = (GraphEntity)graphHash.get(attribute.getEntityID());
+					attribute.parentEntity = entity;
+					entity.addChildAttributes(attribute);
+				}
+			
+				else if(schemaElement instanceof GraphDomainValue){ //node
+					GraphDomainValue domainValue = (GraphDomainValue)graphHash.get(schemaElement.getId());
+					GraphDomain domain = (GraphDomain)graphHash.get(domainValue.getDomainID());
+					domainValue.setParentDomain(domain);
+					domain.addChildDomainValues(domainValue);
+				}
 			}
-			else if(schemaElement instanceof Subtype){ 
-				Subtype subt = (Subtype) schemaElement;
-				Integer parent = subt.getParentID();
-				Integer child = subt.getChildID();
-				GraphObject pObject = graphHash.get(parent);
-				GraphObject cObject = graphHash.get(child);
-				//pObject and cObject have to be an entity.
-				GraphEntity pEntity = (GraphEntity) pObject;
-				GraphEntity cEntity = (GraphEntity) cObject;
-				//should be all hooked up now.
-				pEntity.addChildSubtype(cEntity);
-				pEntity.addParentSubtype(pEntity);
-			}
+		} catch(Exception e){
+			System.out.println("[E] GraphBuilder:build -- Error assigning implicit connections for schemaElements");
+			e.printStackTrace();
 		}
 		
-		//now, iterate through the elements themselves, and connect Entity to attribute,
-		//domain to domain values, etc.
-		for(GraphObject gObject: graphHash.values()){
-			if(gObject instanceof GraphDomainValue){
-				GraphDomainValue gdv = (GraphDomainValue) gObject;
-				int domainhook = gdv.domainID;
-				GraphObject go = graphHash.get(domainhook);
-				//graph object should be a domain.
-				gdv.addDomain(((GraphDomain)go));
-			}
-			else if(gObject instanceof GraphAttribute){
-				GraphAttribute ga = (GraphAttribute) gObject;
-				//hook up domain and entity.
-				int domainhook = ga.getDomainID();
-				GraphObject go = graphHash.get(domainhook);
-				//graph object should be a domain.
-				ga.addDomain(((GraphDomain)go));
-				//now, hook up entity.
-				int entityhook = ga.getParentEntityID();
-				GraphObject go2 = graphHash.get(entityhook);
-				ga.addParentEntity(((GraphEntity)go2));
-			}
+		try {
+			//now, iterate through the edges, and connect.
+			for(SchemaElement schemaElement : edges){
+				
+				if(schemaElement instanceof Containment){
+					GraphEntity parent = (GraphEntity)graphHash.get(((Containment)schemaElement).getParentID());
+					SchemaElement child = graphHash.get(((Containment)schemaElement).getChildID());
+					// add entity <--> entity connections
+					if (child instanceof GraphEntity){
+						parent.addChildEnititiesContained((GraphEntity)child);
+						((GraphEntity)child).addParentEnitiesContained(parent);
+					}
+					else if (child instanceof GraphDomain){
+						parent.addChildDomains((GraphDomain)child);
+						((GraphDomain)child).addParentEntities(parent);
+					}
+				} // end if(schemaElement instanceof Containment){
+				
+				else if(schemaElement instanceof Relationship){ 
+					Relationship rel = (Relationship) schemaElement;
+					GraphEntity leftEntity  = (GraphEntity)graphHash.get(rel.getLeftID());
+					GraphEntity rightEntity = (GraphEntity)graphHash.get(rel.getRightID());
+		
+					leftEntity.addRightEntitiesRelated(rightEntity);
+					rightEntity.addLeftEntitiesRelated(leftEntity);
+				}
+				
+				else if(schemaElement instanceof Subtype){ 
+					Subtype subtype = (Subtype) schemaElement;
+					GraphEntity parentEntity = (GraphEntity)graphHash.get(subtype.getParentID());
+					GraphEntity childEntity  = (GraphEntity)graphHash.get(subtype.getChildID());
+					
+					//should be all hooked up now.
+					parentEntity.addChildSubtypes(childEntity);
+					childEntity.addParentSubtypes(parentEntity);
+				}
+				
+			} // end for(SchemaElement schemaElement: edges){
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-		return graphHash.get(rootParent);
-	}
+		
+		// return the graph elements (both NODES and EDGES)
+		ArrayList<SchemaElement> retVal = new ArrayList<SchemaElement>();
+		retVal.addAll(graphHash.values());
+		retVal.addAll(edges);
+		return retVal;
+		
+	} // end method build
+		
+	
 }

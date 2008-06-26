@@ -7,67 +7,40 @@ package org.mitre.schemastore.graph;
  */
 
 import org.mitre.schemastore.model.Attribute;
+import org.mitre.schemastore.model.SchemaElement;
 
-public class GraphAttribute extends GraphObject{
+public class GraphAttribute extends Attribute {
 	
 	GraphEntity parentEntity;
-	GraphDomain DomainType;
+	GraphDomain domainType;
 	
-	/** Stores the attribute's entity id */
-	Integer entityID;
+	/** Constructs the attribute */
+	public GraphAttribute(Integer id, String name, String description, Integer entityID, Integer domainID, Integer min, Integer max, Integer base){ 
+		super(id,name,description,entityID,domainID,min,max,base);
+		parentEntity = null; 
+		domainType = null;
+		} 
 	
-	/** Stores the attribute's domain id */
-	Integer domainID;
+	public GraphAttribute (Attribute a){ 
+		super(a.getId(),a.getName(),a.getDescription(),a.getEntityID(),a.getDomainID(),a.getMin(),a.getMax(),a.getBase());
+		parentEntity = null; 
+		domainType = null;	
+	} 
 	
-	/** Stores the attribute's min cardinality */
-	Integer min;
+	// handles class getters  
+	public GraphEntity getParentEntity()
+		{return parentEntity; }
 	
-	/** Stores the attribute's max cardinality */
-	Integer max;
+	public GraphDomain getDomainType()
+		{ return domainType; }
 	
-	public GraphAttribute(int id,String name, String description, int base){
-		super(id, name, description, base);
-	}
+	// handles class setters 
+	public void setDomainType(GraphDomain gD)
+		{ domainType = gD; }
 	
-	public GraphEntity getParentEntity(){
-		return parentEntity;
-	}
-	
-	public void addParentEntity(GraphEntity gE){
-		parentEntity = gE;
-	}
-	
-	public GraphDomain getDomain(){
-		return DomainType;
-	}
-	
-	public void addDomain(GraphDomain gD){
-		DomainType = gD;
-	}
-	
-	public void setParentEntityID(Integer id){
-		entityID = id;
-	}
-	public void setDomainID(Integer id){
-		domainID = id;
-	}
-	
-	public int getParentEntityID(){
-		return entityID;
-	}
-	public int getDomainID(){
-		return domainID;
-	}
-	
-	public void setMin(Integer min) { this.min = min; }
-	public void setMax(Integer max) { this.max = max; }
-	public Integer getMin() { return min; }
-	public Integer getMax() { return max; }
-	
-	public void setAttr(Attribute Attr){
-		setMin(Attr.getMin());
-		setMax(Attr.getMax());
-		setParentEntityID(Attr.getEntityID());
-		setDomainID(Attr.getDomainID());
-	}
+	public void setParentEntity(GraphEntity pE)
+		{ parentEntity = pE; }
+
 }
+
+

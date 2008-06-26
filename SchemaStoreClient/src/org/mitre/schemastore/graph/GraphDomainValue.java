@@ -6,31 +6,26 @@ package org.mitre.schemastore.graph;
  */
 
 import java.util.ArrayList;
+import org.mitre.schemastore.model.*;
 
-public class GraphDomainValue extends GraphObject{
+public class GraphDomainValue extends DomainValue{
 	
 	GraphDomain parentDomain;
 	
-	int domainID;
+	/** Constructs the graph domain value */
+	public GraphDomainValue(Integer id, String name, String description, Integer domainID, Integer base)
+		{ super(id,name,description,domainID,base); }
+		
+	public GraphDomainValue(DomainValue dv)
+	{ super(dv.getId(),dv.getName(),dv.getDescription(),dv.getDomainID(),dv.getBase()); }
 	
-	public GraphDomainValue(int id, String name, String description, int base){
-		super(id, name, description, base);
-	}
 	
-	public GraphDomain getDomain(){
+	public GraphDomain getDomainValue(){
 		return parentDomain;
 	}
 	
-	public void addDomain(GraphDomain parent){
+	public void setParentDomain(GraphDomain parent){
 		parentDomain = parent;
 	}
-	
-	public int getDomainID(){
-		return domainID;
-	}
-	
-	public void setDomainID(int d){
-		domainID = d;
-	}
-	
+		
 }
