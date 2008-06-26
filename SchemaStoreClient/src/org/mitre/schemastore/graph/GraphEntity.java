@@ -28,8 +28,8 @@ public class GraphEntity extends Entity {
 	private ArrayList<GraphEntity> rightEntitiesRelated;
 	
 	// store containments and relationships
-	private ArrayList<GraphContainment> parentContainments;
-	private ArrayList<GraphContainment> childContainments;
+	private ArrayList<GraphContainment> parentContainments; // containments where this entity IS PARENT
+	private ArrayList<GraphContainment> childContainments;  // containments where this entity IS CHILD
 	private ArrayList<GraphRelationship> relationships;
 	
 	

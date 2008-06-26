@@ -14,8 +14,8 @@ public class GraphDomain extends Domain{
 	// parent entities 
 	private ArrayList<GraphEntity> parentEntities;
 	
-	// containments the domain appears in
-	private ArrayList<GraphContainment> parentContainments;
+	// containments the domain appears in AS A CHILD
+	private ArrayList<GraphContainment> childContainments;
 	
 	// parent attributes
 	private ArrayList<GraphAttribute> parentAttributes;
@@ -26,7 +26,7 @@ public class GraphDomain extends Domain{
 	public GraphDomain(Integer id, String name, String description, int base){
 		super(id, name, description, base);
 		parentEntities = new ArrayList<GraphEntity>();
-		parentContainments = new ArrayList<GraphContainment>();
+		childContainments = new ArrayList<GraphContainment>();
 		parentAttributes = new ArrayList<GraphAttribute>();
 		childDomainValues = new ArrayList<GraphDomainValue>();	
 	}
@@ -34,7 +34,7 @@ public class GraphDomain extends Domain{
 	public GraphDomain(Domain d){
 		super(d.getId(), d.getName(), d.getDescription(), d.getBase());	
 		parentEntities = new ArrayList<GraphEntity>();
-		parentContainments = new ArrayList<GraphContainment>();
+		childContainments = new ArrayList<GraphContainment>();
 		parentAttributes = new ArrayList<GraphAttribute>();
 		childDomainValues = new ArrayList<GraphDomainValue>();	
 	}
@@ -44,12 +44,12 @@ public class GraphDomain extends Domain{
 	ArrayList<GraphEntity> 		getParentEntities()    { return parentEntities; }
 	ArrayList<GraphAttribute>   getParentAttributes()  { return parentAttributes; }
 	ArrayList<GraphDomainValue> getChildDomainValues() { return childDomainValues; }
-	ArrayList<GraphContainment> getParentContainments() { return parentContainments; };
+	ArrayList<GraphContainment> getChildContainments() { return childContainments; };
 	
 	// adders 
 	void addParentEntities(GraphEntity e) { parentEntities.add(e); }
 	void addParentAttributes(GraphAttribute a) { parentAttributes.add(a); }
 	void addChildDomainValues(GraphDomainValue dv) { childDomainValues.add(dv); }
-	void addParentContainments(GraphContainment c) {parentContainments.add(c); }
+	void addChildContainments(GraphContainment c) {childContainments.add(c); }
 	
 }

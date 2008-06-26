@@ -8,7 +8,43 @@ import org.mitre.schemastore.model.*;
 public class GraphBuilder{
 	
 	
-
+	public static void main() throws Exception {
+		
+		
+		SchemaStoreClient clientLocal = new SchemaStoreClient("http://localhost:8080/SchemaStore/services/SchemaStore");
+////	Integer schemaID = 54131; // uno
+		    Integer schemaID = 54029; // PO1
+////	Integer schemaID = 54006; // ejournal
+////	Integer schemaID = 53901; // CoT
+////	Integer schemaID = 52510; // EntityProduct
+		    
+			Schema s = clientLocal.getSchema(schemaID);
+			ArrayList<SchemaElement> elementList =  clientLocal.getSchemaElements(schemaID);
+			
+			ArrayList<SchemaElement> graphObject = build(elementList, schemaID);
+	
+			for (SchemaElement se : graphObject){
+				
+				if (se instanceof GraphAttribute) {
+				
+				} else if (se instanceof GraphContainment) {
+					
+				} else if (se instanceof GraphDomain) {
+					
+				} else if (se instanceof GraphDomainValue) {
+					
+				} else if (se instanceof GraphEntity) {
+				
+				} else if (se instanceof GraphRelationship) {
+				
+				} else if (se instanceof GraphSubtype) {
+				
+				}
+				
+			}
+			
+	
+	}
 	
 	public static ArrayList<SchemaElement> build(ArrayList<SchemaElement> schemaElements, int schemaID){
 		
@@ -83,30 +119,39 @@ public class GraphBuilder{
 			for(SchemaElement schemaElement : edges){
 				
 				if(schemaElement instanceof Containment){
-					GraphEntity parent = (GraphEntity)graphHash.get(((Containment)schemaElement).getParentID());
-					SchemaElement child = graphHash.get(((Containment)schemaElement).getChildID());
+					GraphContainment graphElement = new GraphContainment((Containment)schemaElement);
+					
+					GraphEntity parent = (GraphEntity)graphHash.get(((GraphContainment)graphElement).getParentID());
+					SchemaElement child = graphHash.get(((GraphContainment)graphElement).getChildID());
 					// add entity <--> entity connections
 					if (child instanceof GraphEntity){
 						parent.addChildEnititiesContained((GraphEntity)child);
+						parent.addParentContainments(graphElement);
 						((GraphEntity)child).addParentEnitiesContained(parent);
+						((GraphEntity)child).addChildContainments(graphElement);
+						
 					}
 					else if (child instanceof GraphDomain){
 						parent.addChildDomains((GraphDomain)child);
+						parent.addParentContainments(graphElement);
 						((GraphDomain)child).addParentEntities(parent);
+						((GraphDomain)child).addChildContainments(graphElement);
 					}
 				} // end if(schemaElement instanceof Containment){
 				
 				else if(schemaElement instanceof Relationship){ 
-					Relationship rel = (Relationship) schemaElement;
+					GraphRelationship rel = new GraphRelationship((Relationship) schemaElement);
 					GraphEntity leftEntity  = (GraphEntity)graphHash.get(rel.getLeftID());
 					GraphEntity rightEntity = (GraphEntity)graphHash.get(rel.getRightID());
 		
-					leftEntity.addRightEntitiesRelated(rightEntity);
-					rightEntity.addLeftEntitiesRelated(leftEntity);
+					leftEntity.addLeftEntitiesRelated(rightEntity);
+					leftEntity.addRelationships(rel);
+					rightEntity.addRightEntitiesRelated(leftEntity);
+					leftEntity.addRelationships(rel);
 				}
 				
 				else if(schemaElement instanceof Subtype){ 
-					Subtype subtype = (Subtype) schemaElement;
+					GraphSubtype subtype = new GraphSubtype((Subtype) schemaElement);
 					GraphEntity parentEntity = (GraphEntity)graphHash.get(subtype.getParentID());
 					GraphEntity childEntity  = (GraphEntity)graphHash.get(subtype.getChildID());
 					
