@@ -6,10 +6,7 @@ import org.mitre.schemastore.client.SchemaStoreClient;
 import org.mitre.schemastore.model.*;
 
 public class GraphBuilder{
-	
-	
-
-	
+		
 	public static ArrayList<SchemaElement> build(ArrayList<SchemaElement> schemaElements, int schemaID){
 		
 		//Graph hash stores all of the nodes.  I make no assumptions about the order of things
@@ -50,7 +47,7 @@ public class GraphBuilder{
 			}
 		
 		
-			// make SECOND interation through nodes to make IMPLICIT connections without
+			// Make SECOND interation through nodes to make IMPLICIT connections without
 			// a corresponding edge, specifically: 1) attributes --> entities, 
 			// 2) entities --> attrs, 3) domain values --> domains, 
 			// 4) domains --> attributes (NOTE ARROW DIRECTION)
