@@ -6,8 +6,8 @@
 <body>
 
 <p align="center">
-Welcome to Schemr.
+Schemr!
 </p>
 <p align="center">
-Try "MRI" or "funding agency" or "africa"
+Try "berkeley" or "lecture" or "africa"
 </p>

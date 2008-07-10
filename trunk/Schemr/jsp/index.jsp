@@ -1,5 +1,5 @@
 <%@include file="header.jsp"%>
-s<center> 
+<center> 
 	<form name="search" action="results.jsp" method="get">
 		<p>
 			<input name="query" size="44"/>&nbsp;Search Criteria

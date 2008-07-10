@@ -1,5 +1,5 @@
 <%
 String appTitle = "Schemr!";
-String indexLocation = "/home/kuang/workspace/lucene/schemr/index";
-String appfooter = "OpenII Schemr 0.0000001";
+String indexLocation = "/Users/kuangc/workspace/eclipse/openii/Schemr/build/index";
+String appfooter = "OpenII Schemr 0.001";
 %>
