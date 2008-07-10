@@ -90,7 +90,7 @@ public class Tests extends TestCase {
 
 	public static String TEST_INDEX_DIR = SchemaUtility.DEFAULT_ROOT + "/unitest/index";;
 	
-	public void testAllSchemas() {
+	public void testBuildIndex() {
 
 		assertFalse("Cannot save index to '" +TEST_INDEX_DIR+ "' directory, please delete it first", new File(TEST_INDEX_DIR).exists());
 

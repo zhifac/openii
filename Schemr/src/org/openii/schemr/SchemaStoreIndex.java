@@ -2,12 +2,16 @@ package org.openii.schemr;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
+import java.util.Date;
 import java.util.List;
 
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.store.LockObtainFailedException;
 import org.mitre.schemastore.client.SchemaStoreClient;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
@@ -50,4 +54,45 @@ public class SchemaStoreIndex {
 		}
 	}
 
+	
+	public static void main( String [] args ) {
+
+		System.out.println(args.length+" args:");
+		for (String s : args) {
+			System.out.println("\t"+s);
+		}
+		
+		if (args.length < 2) {
+			System.out.println("Usage: java SchemStoreIndex <SchemaStore client URL> <index directory>");
+			return;
+		}
+		
+		String ssUrl = args[0];
+		SchemaStoreClient ssclient = new SchemaStoreClient(ssUrl);
+		String testIndexDir = args[1];
+
+		Date start = new Date();
+
+		Analyzer analyzer = new StandardAnalyzer();
+		IndexWriter iwriter;
+		try {
+			iwriter = new IndexWriter(testIndexDir, analyzer, true);
+			iwriter.setMaxFieldLength(25000);
+
+			SchemaStoreIndex.createIndex(iwriter, ssclient);
+
+			iwriter.optimize();
+			iwriter.close();
+
+		} catch (CorruptIndexException e) {
+			e.printStackTrace();
+		} catch (LockObtainFailedException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		Date end = new Date();
+		System.out.println("Elapse time: " + (end.getTime() - start.getTime()) / 1000 + " s");
+	}
 }
