@@ -1,0 +1,12 @@
+<schemastore>http://localhost:8080/SchemaStore/services/SchemaStore</schemastore>
+<importers>
+  <importer>org.mitre.flexidata.ygg.importers.NewSchemaImporter</importer>
+  <importer>org.mitre.flexidata.ygg.importers.ExtendSchemaImporter</importer>
+  <importer>org.mitre.flexidata.ygg.importers.CopySchemaImporter</importer>
+  <importer>org.mitre.flexidata.ygg.importers.DDLImporter</importer>
+  <importer>org.mitre.flexidata.ygg.importers.OWLImporter</importer>
+  <importer>org.mitre.flexidata.ygg.importers.XSDImporter</importer>
+</importers>
+<exporters>
+  <exporter>org.mitre.flexidata.ygg.exporters.XSDExporter</exporter>
+</exporters>
