@@ -1,7 +1,5 @@
 // Copyright 2008 The MITRE Corporation. ALL RIGHTS RESERVED.
 
-// Copyright 2008 The MITRE Corporation. ALL RIGHTS RESERVED.
-
 package org.mitre.flexidata.ygg.view.shared;
 
 import java.awt.BorderLayout;
@@ -11,6 +9,7 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.util.ArrayList;
 
 import javax.swing.JButton;
@@ -191,7 +190,7 @@ public class ParameterPane extends JPanel
 		public String getValue()
 		{
 			String value = fileField.getText();
-			return value==null || value.length()==0 ? null : value;
+			return value==null || value.length()==0 ? null : (new File(value).toURI()).toString();
 		}
 		
 		/** Highlights the parameter */

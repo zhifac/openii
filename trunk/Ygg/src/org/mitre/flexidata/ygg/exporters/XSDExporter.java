@@ -1,4 +1,5 @@
-// Copyright 2008 The MITRE Corporation. ALL RIGHTS RESERVED.
+// Copyright (C) The MITRE Corporation 2008
+// ALL RIGHTS RESERVED
 
 package org.mitre.flexidata.ygg.exporters;
 
@@ -7,7 +8,9 @@ import java.util.*;
 import org.mitre.schemastore.model.*;
 
 /**
- * Class for converting Entity-Relationship format to XSD files 
+ * Class for converting SchemaStore format to XSD files
+ * NOTE: m-to-n relationships are converted to 1-to-n relationships
+ *  
  * @author DBURDICK
  */
 public class XSDExporter extends Exporter
@@ -27,8 +30,12 @@ public class XSDExporter extends Exporter
 	// stores domainValues by domainID
 	HashMap<Integer, ArrayList<DomainValue>> domainValueSet = new HashMap<Integer, ArrayList<DomainValue>>();
 	
-	// stores containments by childID
+	// stores containments by parentID
 	HashMap<Integer, ArrayList<Containment>> containmentSet = new HashMap<Integer, ArrayList<Containment>>();
+	
+	// stores 1-to-m relationships by ID for entity with 1 
+	// assumes left-right m-to-n relationships converted to 1-to-n relationships
+	HashMap<Integer, ArrayList<Relationship>> relationshipSet = new HashMap<Integer, ArrayList<Relationship>>();
 	
 	// stores Subsets by ID
 	HashMap<Integer, Subtype> subtypeSet = new HashMap<Integer, Subtype>();
@@ -92,25 +99,48 @@ public class XSDExporter extends Exporter
 				domainSet.put(elem.getId(), (Domain)elem);
 				
 			} else if (elem instanceof Attribute){
-				ArrayList attrs = attrSet.get(((Attribute)elem).getEntityID());
+				ArrayList<Attribute> attrs = attrSet.get(((Attribute)elem).getEntityID());
 				if (attrs == null)
 					attrs = new ArrayList<Attribute>();
-				attrs.add(elem);
+				attrs.add((Attribute)elem);
 				attrSet.put(((Attribute)elem).getEntityID(), attrs);
 				
 			} else if (elem instanceof DomainValue){
-				ArrayList domVals = domainValueSet.get(((DomainValue)elem).getDomainID());
+				ArrayList<DomainValue> domVals = domainValueSet.get(((DomainValue)elem).getDomainID());
 				if (domVals == null)
 					domVals = new ArrayList<DomainValue>();
-				domVals.add(elem);
+				domVals.add((DomainValue)elem);
 				domainValueSet.put(((DomainValue)elem).getDomainID(), domVals);
 				
 			} else if (elem instanceof Containment){
-				ArrayList containVals = containmentSet.get(((Containment)elem).getParentID()); 
+				ArrayList<Containment> containVals = containmentSet.get(((Containment)elem).getParentID()); 
 				if (containVals == null)
-					containVals = new ArrayList();
-				containVals.add(elem);
+					containVals = new ArrayList<Containment>();
+				containVals.add((Containment)elem);
 				containmentSet.put(((Containment)elem).getParentID(), containVals);
+				
+			} else if (elem instanceof Relationship){
+				
+				// store 1-to-m, m-to-1 relationships by left ot right ID respectively
+				// store m-to-n relationships by leftID (as 1-to-n)
+				Relationship rel = (Relationship)elem;
+				Integer leftCard = rel.getLeftMax();
+				Integer rightCard = rel.getRightMax(); 
+				Integer keyID = null; 
+				if (leftCard == 1){
+					keyID = rel.getLeftID();
+				} else if (rightCard == 1){
+					keyID = rel.getRightID();
+				} else {
+					rel.setLeftMax(1);
+					keyID = rel.getLeftID();
+				}
+				
+				ArrayList<Relationship> relationVals = relationshipSet.get(keyID); 
+				if (relationVals == null)
+					relationVals = new ArrayList<Relationship>();
+				relationVals.add((Relationship)elem);
+				relationshipSet.put(keyID, relationVals);
 				
 			} else if (elem instanceof Subtype){
 				subtypeSet.put(((Subtype)elem).getChildID(), (Subtype)elem);
@@ -144,7 +174,6 @@ public class XSDExporter extends Exporter
 				// CASE 1: Element has annonymous complex type
 				if (schemaElement instanceof Entity && schemaElement.getName().equals("")){
 					
-						
 					retVal.add(new String(INDENT6 + "<xs:element name=\"" +  containment.getName() + "\" " 
 							+ " minOccurs=\"" + minOccursString + "\"" + " maxOccurs=\"" + maxOccursString +  "\">"));
 					if (schemaElement.getDescription().length() > 0){
@@ -153,7 +182,7 @@ public class XSDExporter extends Exporter
 					}
 					retVal.addAll(outputEntity((Entity)schemaElement,INDENT10));
 				
-				// CASE 2: Element has type named Entity or named Domain 
+				// CASE 2: Element has child that is named Entity or named Domain 
 				} else{
 					
 					retVal.add(new String(INDENT6 + "<xs:element name=\"" +  containment.getName() + "\" " 
@@ -224,6 +253,7 @@ public class XSDExporter extends Exporter
 		ArrayList<String> retVal = new ArrayList<String>();
 		
 		// put all elements together
+		ArrayList<Relationship> relationships = relationshipSet.get(entity.getId());
 		ArrayList<Containment> containments = containmentSet.get(entity.getId());
 		ArrayList<Attribute> attributes = attrSet.get(entity.getId());
 		
@@ -243,48 +273,88 @@ public class XSDExporter extends Exporter
 			retVal.add(new String(indentBase + INDENT2 + "<xs:extension base=\"" + parentTypeName + "\">"));
 		} 
 		
-		// add sequence of elements for complex type (by processing containments)
-		if (containments != null) {
+		// add sequence of elements for complex type (by processing 
+		// containments and relationships referencing this entity)
+		if ((containments != null) || (relationships != null)) {
 			retVal.add(new String(indentBase + INDENT4 + "<xs:sequence>"));
-			for (Containment containment : containments){
+			
+			if (relationships != null){
+				for (Relationship relationship : relationships){
 				
-				// find min and max occurs strings
-				String minOccursString, maxOccursString;
-				if (containment.getMin() < 0) minOccursString = "0";
-				else minOccursString = containment.getMin().toString();
-				if (containment.getMax() < 0) maxOccursString = "unbounded";
-				else maxOccursString = containment.getMax().toString();
-				
-				// check if child is either 1) entity or 2) domain or 3) common domain
-				SchemaElement schemaElement = entitySet.get(containment.getChildID());
-				if (schemaElement == null) 
-					schemaElement = domainSet.get(containment.getChildID());
+					Entity childEntity;
+					String minOccursString, maxOccursString;
+					// find which side of relationship is (left or right)
+					if (relationship.getLeftID().equals(entity.getId())){
+						childEntity = entitySet.get(relationship.getRightID());		
+						if ((relationship.getRightMin() == null) || (relationship.getRightMin() < 0)) minOccursString = "0";
+						else minOccursString = relationship.getRightMin().toString();
+						if (relationship.getRightMax() == null || relationship.getRightMax() < 0 || relationship.getRightMax() > 1) 
+							maxOccursString = "unbounded";
+						else maxOccursString = relationship.getRightMax().toString();
 					
-				// CASE 1: Entity is Annonymous Complex Type
-				if (schemaElement instanceof Entity && schemaElement.getName().equals("")){
-					retVal.add(new String(indentBase + INDENT6 + "<xs:element name=\"" +  containment.getName() + "\" " 
-							+ " minOccurs=\"" + minOccursString + "\"" + " maxOccurs=\"" + maxOccursString +  "\">"));			
-					if (schemaElement.getDescription().length() > 0){
-						retVal.add(new String(indentBase + INDENT8 + "<xs:annotation><xs:documentation>" + 
-								schemaElement.getDescription() + "</xs:documentation></xs:annotation>"));
+					} else {
+						childEntity = entitySet.get(relationship.getLeftID());		
+						if (relationship.getLeftMin() == null || relationship.getLeftMin() < 0) minOccursString = "0";
+						else minOccursString = relationship.getLeftMin().toString();
+						if (relationship.getLeftMax() == null || relationship.getLeftMax() < 0 || relationship.getLeftMax() > 1) 
+							maxOccursString = "unbounded";
+						else maxOccursString = relationship.getRightMax().toString();
 					}
-					retVal.addAll(outputEntity((Entity)schemaElement, new String(indentBase + INDENT10)));
+					
+					retVal.add(new String(indentBase + INDENT6 + "<xs:element name=\"" +  
+							relationship.getName() + "\" " + " type= \"" + childEntity.getName()+ 
+							"\"" + " minOccurs=\"" + minOccursString + "\"" + " maxOccurs=\"" 
+							+ maxOccursString +  "\">"));	
+					if (childEntity.getDescription().length() > 0){
+						retVal.add(new String(indentBase + INDENT8 + "<xs:annotation><xs:documentation>" + 
+								childEntity.getDescription() + "</xs:documentation></xs:annotation>"));
+					}
+					retVal.add(new String(indentBase + INDENT6 + "</xs:element>"));
+				} // end for (Relationship relationship : relationships){ 
+			} // end if (relationship != null) {
 		
-				// CASE 2: Named entity / domain (include just name)
-				} else{
-					retVal.add(new String(indentBase + INDENT6 + "<xs:element name=\"" +  containment.getName() + "\" " 
-							+ " minOccurs=\"" + minOccursString + "\"" + " maxOccurs=\"" + maxOccursString +  "\">"));	
-					if (schemaElement.getDescription().length() > 0){
-						retVal.add(new String(indentBase + INDENT8 + "<xs:annotation><xs:documentation>" + 
-								schemaElement.getDescription() + "</xs:documentation></xs:annotation>"));
+			if (containments != null) {
+				for (Containment containment : containments){
+				
+					// find min and max occurs strings
+					String minOccursString, maxOccursString;
+					if (containment.getMin() < 0) minOccursString = "0";
+					else minOccursString = containment.getMin().toString();
+					if (containment.getMax() < 0) maxOccursString = "unbounded";
+					else maxOccursString = containment.getMax().toString();
+					
+					// check if child is either 1) entity or 2) domain or 3) common domain
+					SchemaElement schemaElement = entitySet.get(containment.getChildID());
+					if (schemaElement == null) 
+						schemaElement = domainSet.get(containment.getChildID());
+						
+					// CASE 1: Entity is Annonymous Complex Type
+					if (schemaElement instanceof Entity && schemaElement.getName().equals("")){
+						retVal.add(new String(indentBase + INDENT6 + "<xs:element name=\"" +  containment.getName() + "\" " 
+								+ " minOccurs=\"" + minOccursString + "\"" + " maxOccurs=\"" + maxOccursString +  "\">"));			
+						if (schemaElement.getDescription().length() > 0){
+							retVal.add(new String(indentBase + INDENT8 + "<xs:annotation><xs:documentation>" + 
+									schemaElement.getDescription() + "</xs:documentation></xs:annotation>"));
+						}
+						retVal.addAll(outputEntity((Entity)schemaElement, new String(indentBase + INDENT10)));
+			
+					// CASE 2: Named entity / domain (include just name)
+					} else{
+						retVal.add(new String(indentBase + INDENT6 + "<xs:element name=\"" +  containment.getName() + "\" " 
+								+ " type=\"" + schemaElement.getName() + "\"" + " minOccurs=\"" + minOccursString + "\"" + " maxOccurs=\"" + maxOccursString +  "\">"));	
+						if (schemaElement.getDescription().length() > 0){
+							retVal.add(new String(indentBase + INDENT8 + "<xs:annotation><xs:documentation>" + 
+									schemaElement.getDescription() + "</xs:documentation></xs:annotation>"));
+						}
 					}
-				}
-				retVal.add(new String(indentBase + INDENT6 + "</xs:element>"));
-			}
+					retVal.add(new String(indentBase + INDENT6 + "</xs:element>"));
+				} // for (Containment containment : containments){
+			} // end if (containments != null) {
+			
 		    retVal.add(new String(indentBase + INDENT4 + "</xs:sequence>"));
-		} // end if (containments != null){
+		} // end if (containments != null) || (relationships != null) {
 	
-		// put all attributes together at end of sequence 
+		// put all attributes together at end
 		if (attributes != null){
 			for (Attribute a : attributes){
 				Domain dom = domainSet.get(a.getDomainID());
