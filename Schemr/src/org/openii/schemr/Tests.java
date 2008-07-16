@@ -92,7 +92,9 @@ public class Tests extends TestCase {
 	
 	public void testBuildIndex() {
 
-		assertFalse("Cannot save index to '" +TEST_INDEX_DIR+ "' directory, please delete it first", new File(TEST_INDEX_DIR).exists());
+		File f = new File(TEST_INDEX_DIR);
+		f.deleteOnExit();
+		assertFalse("Cannot save index to '" +TEST_INDEX_DIR+ "' directory, please delete it first", f.exists());
 
 		Date start = new Date();
 
@@ -129,11 +131,15 @@ public class Tests extends TestCase {
 			e.printStackTrace();
 		} catch (ParseException e) {
 			e.printStackTrace();
+		} finally {
+			f.deleteOnExit();
 		}
 
 		Date end = new Date();
 
 		System.out.println("Elapse time: " + (end.getTime() - start.getTime()) / 1000 + " s");
+		
+		
 
 	}
 
