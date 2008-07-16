@@ -53,7 +53,7 @@ public class GraphBuilder{
 			// 4) domains --> attributes (NOTE ARROW DIRECTION)
 			for(SchemaElement schemaElement : schemaElements){
 	
-				if(schemaElement instanceof GraphAttribute){ //node
+				if(schemaElement instanceof Attribute){ //node
 					GraphAttribute attribute = (GraphAttribute)graphHash.get(schemaElement.getId());
 					GraphDomain domain = (GraphDomain)graphHash.get(attribute.getDomainID());
 					attribute.domainType = domain;
@@ -63,7 +63,7 @@ public class GraphBuilder{
 					entity.addChildAttributes(attribute);
 				}
 			
-				else if(schemaElement instanceof GraphDomainValue){ //node
+				else if(schemaElement instanceof DomainValue){ //node
 					GraphDomainValue domainValue = (GraphDomainValue)graphHash.get(schemaElement.getId());
 					GraphDomain domain = (GraphDomain)graphHash.get(domainValue.getDomainID());
 					domainValue.setParentDomain(domain);
