@@ -22,10 +22,10 @@ import org.mitre.flexidata.ygg.view.GenericView;
 import org.mitre.flexidata.ygg.view.schema.view.SchemaView;
 import org.mitre.flexidata.ygg.view.shared.ColoredButton;
 import org.mitre.flexidata.ygg.view.shared.DescriptionPane;
-import org.mitre.flexidata.ygg.view.shared.ParameterPane;
 import org.mitre.flexidata.ygg.view.shared.RoundedPane;
 import org.mitre.flexidata.ygg.view.shared.SelectionPane;
-import org.mitre.flexidata.ygg.view.shared.ParameterPane.FileParameter;
+import org.mitre.flexidata.ygg.view.shared.parameters.FileParameter;
+import org.mitre.flexidata.ygg.view.shared.parameters.ParameterPane;
 import org.mitre.schemastore.model.Schema;
 
 /** Class for displaying the exporter view */
