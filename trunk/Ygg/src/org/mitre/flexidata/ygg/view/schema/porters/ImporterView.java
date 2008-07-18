@@ -19,14 +19,14 @@ import org.mitre.flexidata.ygg.view.Consts;
 import org.mitre.flexidata.ygg.view.GenericView;
 import org.mitre.flexidata.ygg.view.shared.ColoredButton;
 import org.mitre.flexidata.ygg.view.shared.DescriptionPane;
-import org.mitre.flexidata.ygg.view.shared.ParameterPane;
 import org.mitre.flexidata.ygg.view.shared.RoundedPane;
 import org.mitre.flexidata.ygg.view.shared.SelectionPane;
-import org.mitre.flexidata.ygg.view.shared.ParameterPane.EditAreaParameter;
-import org.mitre.flexidata.ygg.view.shared.ParameterPane.EditFieldParameter;
-import org.mitre.flexidata.ygg.view.shared.ParameterPane.FileParameter;
-import org.mitre.flexidata.ygg.view.shared.ParameterPane.SchemaParameter;
-import org.mitre.flexidata.ygg.view.shared.ParameterPane.RepositoryParameter;
+import org.mitre.flexidata.ygg.view.shared.parameters.EditAreaParameter;
+import org.mitre.flexidata.ygg.view.shared.parameters.EditFieldParameter;
+import org.mitre.flexidata.ygg.view.shared.parameters.FileParameter;
+import org.mitre.flexidata.ygg.view.shared.parameters.ParameterPane;
+import org.mitre.flexidata.ygg.view.shared.parameters.RepositoryParameter;
+import org.mitre.flexidata.ygg.view.shared.parameters.SchemaParameter;
 
 /** Class for displaying the importer view */
 public class ImporterView extends GenericView implements ActionListener

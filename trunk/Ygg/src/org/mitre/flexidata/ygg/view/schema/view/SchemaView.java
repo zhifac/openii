@@ -19,8 +19,8 @@ import org.mitre.flexidata.ygg.view.GenericView;
 import org.mitre.flexidata.ygg.view.schema.edit.EditSchemaView;
 import org.mitre.flexidata.ygg.view.schema.porters.ExporterView;
 import org.mitre.flexidata.ygg.view.shared.ColoredButton;
-import org.mitre.flexidata.ygg.view.shared.ParameterPane;
-import org.mitre.flexidata.ygg.view.shared.ParameterPane.TextParameter;
+import org.mitre.flexidata.ygg.view.shared.parameters.ParameterPane;
+import org.mitre.flexidata.ygg.view.shared.parameters.TextParameter;
 import org.mitre.schemastore.model.Schema;
 
 /** Class for displaying the schema view */
