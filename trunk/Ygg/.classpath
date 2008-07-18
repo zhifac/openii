@@ -6,5 +6,6 @@
 	<classpathentry kind="lib" path="lib/SchemaStoreClient.jar" sourcepath="/SchemaStore/src"/>
 	<classpathentry kind="lib" path="lib/jena.jar"/>
 	<classpathentry kind="lib" path="lib/antlr.jar"/>
+	<classpathentry kind="lib" path="lib/xercesImpl.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
