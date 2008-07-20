@@ -125,7 +125,7 @@ public class CopySchemaImporter extends Importer
 		ArrayList<SchemaElement> schemaElements = new ArrayList<SchemaElement>();
 		try {
 			for(SchemaElement schemaElement : repository.getSchemaElements(repositorySchemaID))
-				if(schemaElement.getBase().equals(repositorySchemaID))
+				if(schemaElement.getBase() != null && schemaElement.getBase().equals(repositorySchemaID))
 					schemaElements.add(schemaElement);
 		} catch(Exception e) { throw new ImporterException(ImporterException.PARSE_FAILURE,e.getMessage()); }
 		return schemaElements; 	
