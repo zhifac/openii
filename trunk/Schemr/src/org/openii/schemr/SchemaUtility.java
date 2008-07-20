@@ -6,8 +6,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.rmi.RemoteException;
-import java.util.ArrayList;
 import java.util.Properties;
 import java.util.logging.Logger;
 
@@ -28,11 +26,11 @@ import com.thoughtworks.xstream.XStream;
 
 public class SchemaUtility {
 
-	private static final Logger logger = Logger.getLogger("org.openii.schemr.SchemaUtility");
-	static {
+	private static final Logger logger = Logger.getLogger(SchemaUtility.class.getName());
+//	static {
 //	    Handler fh = new FileHandler("%t/wombat.log");
 //	    Logger.getLogger("").addHandler(fh);
-	}
+//	}
 	
 	public static String DEFAULT_ROOT = null;
 	
@@ -53,32 +51,18 @@ public class SchemaUtility {
 		}
 	}
 
-	
-	static SchemaStoreClient CLIENT = new SchemaStoreClient("http://localhost:8080/SchemaStore/services/SchemaStore");		
+
+	private static SchemaStoreClient CLIENT;		
+
+	public static SchemaStoreClient getCLIENT() {
+		if (CLIENT == null) {
+			CLIENT = new SchemaStoreClient("http://localhost:8080/SchemaStore/services/SchemaStore");
+		}
+		return CLIENT;
+	}
 
 	static XStream XSTREAM = new XStream();
 
-	public static ArrayList<Schema> getAllSchemas(SchemaStoreClient client) {
-		ArrayList<Schema> schemas = null;
-		try {
-			schemas = client.getSchemas();
-		} catch (RemoteException e) {
-			e.printStackTrace();
-		}		
-		
-		return schemas;
-	}
-
-	public static SchemaElementList getSchemaElementList(SchemaStoreClient client, Integer schemaID) {
-
-		try {
-			return new SchemaElementList(client.getSchemaElements(schemaID).toArray(new SchemaElement[0]));
-		} catch (RemoteException e) {
-			e.printStackTrace();
-		}		
-		return null;
-	}
-	
 	public static void serializeSchema(Schema schema, SchemaElementList elementList, OutputStream out) {		
 		XSTREAM.toXML(new SchemaXml(schema, elementList), out);
 	}

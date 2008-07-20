@@ -5,8 +5,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 
@@ -29,6 +29,7 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.LockObtainFailedException;
 import org.apache.lucene.store.RAMDirectory;
 import org.mitre.schemastore.client.SchemaStoreClient;
+import org.mitre.schemastore.graph.GraphBuilder;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.SchemaElementList;
@@ -144,7 +145,13 @@ public class Tests extends TestCase {
 	}
 
 	public void testSerializeDeserialize() {
-		ArrayList<Schema> schemas = SchemaUtility.getAllSchemas(CLIENT);
+		ArrayList<Schema> schemas = null;
+		try {
+			schemas = CLIENT.getSchemas();
+		} catch (RemoteException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		
 		String filePath = SchemaUtility.DEFAULT_ROOT+"/unitest";
 		int i = 0;
@@ -155,7 +162,7 @@ public class Tests extends TestCase {
 				String name = s.getName();
 				try {
 					FileOutputStream fos = new FileOutputStream(filePath+"/"+name+"_"+i);
-					SchemaElementList elementList = SchemaUtility.getSchemaElementList(CLIENT, schemaID);
+					SchemaElementList elementList = new SchemaElementList(CLIENT.getSchemaElements(schemaID).toArray(new SchemaElement [0]));
 					SchemaUtility.serializeSchema(s, elementList, fos);
 					fos.close();
 					
@@ -187,6 +194,28 @@ public class Tests extends TestCase {
 					e.printStackTrace();
 				}
 			}
+		}
+	}
+	
+	public void testBuilder() {
+		try {
+			for (Schema schema : CLIENT.getSchemas()) {
+				System.out.println("id: " + schema.getId() + " | name: " + schema.getName());
+			}
+			ArrayList<SchemaElement> schemaElements = CLIENT.getSchemaElements(10);
+
+			for(SchemaElement schemaElement : schemaElements) {
+				System.out.println("element id: "+schemaElement.getId() + " | element name: " + schemaElement.getName());				
+			}
+
+			ArrayList<SchemaElement> builtElements = GraphBuilder.build(schemaElements, 0);
+
+			for(SchemaElement schemaElement : builtElements) {
+				System.out.println("element id: "+schemaElement.getId() + " | name: " + schemaElement.getName() + " | type: " + schemaElement.getClass().getSimpleName());				
+			}
+
+		} catch(Exception e) {
+			assertTrue(false);
 		}
 	}
 }
