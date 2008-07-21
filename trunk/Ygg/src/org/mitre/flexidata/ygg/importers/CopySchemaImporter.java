@@ -4,15 +4,23 @@ package org.mitre.flexidata.ygg.importers;
 
 import org.mitre.flexidata.ygg.model.SchemaManager;
 import org.mitre.schemastore.client.SchemaStoreClient;
+import org.mitre.schemastore.model.Alias;
+import org.mitre.schemastore.model.Attribute;
+import org.mitre.schemastore.model.Containment;
+import org.mitre.schemastore.model.DomainValue;
+import org.mitre.schemastore.model.Relationship;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
+import org.mitre.schemastore.model.Subtype;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 
 /** Importer for copying schemas from other repositories */
 public class CopySchemaImporter extends Importer
-{	
+{		
 	/** Stores the repository */
 	private SchemaStoreClient repository = null;
 
@@ -21,6 +29,10 @@ public class CopySchemaImporter extends Importer
 
 	/** Stores the list of schemas */
 	private ArrayList<Schema> schemaList = null;
+	
+	/** Store the mapping of oldID --> newID for schemaElements */
+	private HashMap<Integer, Integer> IDmapping;
+	 
 	
 	/** Returns the importer name */
 	public String getName()
@@ -55,7 +67,9 @@ public class CopySchemaImporter extends Importer
 		// Search for schemas with a shared name and the same amount of schema elements
 		if(schemaList==null) schemaList = SchemaManager.getSchemas();
 		for(Schema schema : schemaList)
+		{
 			if(schema.getName().equals(repositorySchema.getName()))
+			{
 				if(SchemaManager.getSchemaElementCount(schema.getId()).equals(repository.getSchemaElementCount(repositorySchemaID)))
 				{
 					// Get the schema elements for the possible matching schemas
@@ -80,7 +94,8 @@ public class CopySchemaImporter extends Importer
 					}
 					if(match) return schema.getId();
 				}
-		
+			}
+		}
 		// Indicates that no matched schema was found
 		return null;
 	}
@@ -90,14 +105,24 @@ public class CopySchemaImporter extends Importer
 	{
 		// Initialize the importer if needed
 		initIfNeeded(uri);
-
+	
 		// Get the list of extended schemas
 		ArrayList<Integer> extendedSchemas = new ArrayList<Integer>();
 		try {
+			 
+			IDmapping = new HashMap<Integer,Integer>();
+			HashMap<String,Integer> elementToOldID = new HashMap<String,Integer>();
+			
 			for(Integer parentSchemaID : repository.getParentSchemas(repositorySchemaID))
 			{
 				// Get the repository schema
 				Schema repositorySchema = repository.getSchema(parentSchemaID);
+			
+				// Create a mapping of these elements to 
+				for (SchemaElement se : repository.getSchemaElements(parentSchemaID))
+				{
+					elementToOldID.put(new String(se.getName().toString()+se.getClass().toString()),se.getId());
+				}
 				
 				// Get the extended schema ID
 				Integer schemaID = getMatchedSchema(repositorySchema);
@@ -109,8 +134,16 @@ public class CopySchemaImporter extends Importer
 					importer.schemaList = schemaList;
 					schemaID = importer.importSchema(repositorySchema.getName(), repositorySchema.getAuthor(), repositorySchema.getDescription(), uri);
 				}
-				extendedSchemas.add(schemaID);
+				extendedSchemas.add(schemaID);		
+				
+				// get the schemaElements for the 
+				for (SchemaElement se : SchemaManager.getSchemaElements(schemaID))
+				{
+					IDmapping.put(elementToOldID.get(new String(se.getName().toString()+se.getClass().toString())), se.getId());	
+				}
 			}
+			
+			
 		} catch(Exception e) { throw new ImporterException(ImporterException.PARSE_FAILURE,e.getMessage()); }
 		return extendedSchemas;
 	}
@@ -125,9 +158,63 @@ public class CopySchemaImporter extends Importer
 		ArrayList<SchemaElement> schemaElements = new ArrayList<SchemaElement>();
 		try {
 			for(SchemaElement schemaElement : repository.getSchemaElements(repositorySchemaID))
+			{
 				if(schemaElement.getBase() != null && schemaElement.getBase().equals(repositorySchemaID))
+				{
 					schemaElements.add(schemaElement);
+				}
+			}
+			// replace each OLD ID with NEW ID assigned during parent's import to schemaStore
+			for (Integer oldID : IDmapping.keySet())
+			{
+				alterID(schemaElements, oldID, IDmapping.get(oldID));
+			}
+			
 		} catch(Exception e) { throw new ImporterException(ImporterException.PARSE_FAILURE,e.getMessage()); }
 		return schemaElements; 	
 	}
+	
+	static private void alterID(ArrayList<SchemaElement> schemaElements, Integer oldID, Integer newID)
+	{
+		// Replace all references to old ID with new ID
+		for(SchemaElement schemaElement : schemaElements)
+		{
+			if(schemaElement.getId().equals(oldID)) schemaElement.setId(newID);
+			if(schemaElement instanceof Attribute)
+			{
+				Attribute attribute = (Attribute)schemaElement;
+				if(attribute.getDomainID().equals(oldID)) attribute.setDomainID(newID);
+				if(attribute.getEntityID().equals(oldID)) attribute.setEntityID(newID);
+			}
+			if(schemaElement instanceof DomainValue)
+			{
+				DomainValue domainValue = (DomainValue)schemaElement;
+				if(domainValue.getDomainID().equals(oldID)) domainValue.setDomainID(newID);
+			}
+			if(schemaElement instanceof Relationship)
+			{
+				Relationship relationship = (Relationship)schemaElement;
+				if(relationship.getLeftID().equals(oldID)) relationship.setLeftID(newID);
+				if(relationship.getRightID().equals(oldID)) relationship.setRightID(newID);
+			}
+			if(schemaElement instanceof Containment)
+			{
+				Containment containment = (Containment)schemaElement;
+				if(containment.getParentID().equals(oldID)) containment.setParentID(newID);
+				if(containment.getChildID().equals(oldID)) containment.setChildID(newID);				
+			}
+			if(schemaElement instanceof Subtype)
+			{
+				Subtype subtype = (Subtype)schemaElement;
+				if(subtype.getParentID().equals(oldID)) subtype.setParentID(newID);
+				if(subtype.getChildID().equals(oldID)) subtype.setChildID(newID);				
+			}
+			if(schemaElement instanceof Alias)
+			{
+				Alias alias = (Alias)schemaElement;
+				if(alias.getElementID().equals(oldID)) alias.setElementID(newID);
+			}
+		}
+	} // end method alterID
+	
 }
