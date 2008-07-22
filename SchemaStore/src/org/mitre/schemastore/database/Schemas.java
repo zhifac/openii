@@ -53,10 +53,19 @@ public class Schemas
 	static public boolean lockSchema(Integer schemaID)
 		{ return Database.lockSchema(schemaID,true); }
 	
+	/** Indicates that the schema is able to be deleted */
+	static public boolean isDeletable(Integer schemaID)
+	{
+		Integer children = SchemaRelationships.getChildren(schemaID).size();
+		Integer dataSources = DataSources.getDataSources(schemaID).size();
+		Integer mappings = Database.getSchemaMappingIDs(schemaID).size();
+		return children==0 && dataSources==0 && mappings==0;
+	}
+	
 	/** Removes the specified schema */
 	static public boolean deleteSchema(Integer schemaID)
 	{
-		if(DataSources.getDataSources(schemaID).size()==0 && SchemaRelationships.getChildren(schemaID).size()==0 && Database.getSchemaMappingIDs(schemaID).size()==0)
+		if(isDeletable(schemaID))
 			return Database.deleteSchema(schemaID);
 		return false;
 	}
