@@ -66,30 +66,53 @@ public class CopySchemaImporter extends Importer
 	{		
 		// Search for schemas with a shared name and the same amount of schema elements
 		if(schemaList==null) schemaList = SchemaManager.getSchemas();
+		
+		
 		for(Schema schema : schemaList)
 		{
+			System.out.println("SCHEMA: " + schema.getName() + ": " + SchemaManager.getSchemaElementCount(schema.getId()));
+			System.out.println("REPO SCHEMA: " + repositorySchema.getName() + ": " );
+			System.out.flush();
+			
 			if(schema.getName().equals(repositorySchema.getName()))
 			{
-				if(SchemaManager.getSchemaElementCount(schema.getId()).equals(repository.getSchemaElementCount(repositorySchemaID)))
+				
+				// check whether the two schemas have the same number of elements
+				// isolate the elements with the base for each schema
+				ArrayList<SchemaElement> repoSchemaElementsWithThisBase = new ArrayList<SchemaElement>();
+				for (SchemaElement se : repository.getSchemaElements(repositorySchema.getId()))
 				{
-					// Get the schema elements for the possible matching schemas
-					ArrayList<SchemaElement> schemaElements = SchemaManager.getSchemaElements(schema.getId());
-					ArrayList<SchemaElement> repositorySchemaElements = repository.getSchemaElements(repositorySchemaID);
-
+					if (se.getBase() != null && se.getBase().equals(repositorySchema.getId()))
+					{
+						repoSchemaElementsWithThisBase.add(se);
+					}
+				}
+				ArrayList<SchemaElement> schemaElementsWithThisBase = new ArrayList<SchemaElement>();
+				for (SchemaElement se : SchemaManager.getSchemaElements(schema.getId()))
+				{
+					if (se.getBase() != null && se.getBase().equals(schema.getId()))
+					{
+						schemaElementsWithThisBase.add(se);
+					}
+				}
+			
+				// check the two schemas have the same number of elements
+				if(schemaElementsWithThisBase.size() == repoSchemaElementsWithThisBase.size())
+				{
 					// Sort the schema elements
 					class SchemaComparator implements Comparator<SchemaElement>
 						{ public int compare(SchemaElement schemaElement1, SchemaElement schemaElement2)
 							{ return schemaElement1.getName().compareTo(schemaElement2.getName()); } }
-					Collections.sort(schemaElements,new SchemaComparator());
-					Collections.sort(repositorySchemaElements,new SchemaComparator());
+					Collections.sort(schemaElementsWithThisBase,new SchemaComparator());
+					Collections.sort(repoSchemaElementsWithThisBase,new SchemaComparator());
 
 					// Check to ensure that all schema elements match
 					boolean match = true;
-					for(int i=0; i<schemaElements.size(); i++)
+					for(int i=0; i<schemaElementsWithThisBase.size(); i++)
 					{
-						SchemaElement s1 = schemaElements.get(i);
-						SchemaElement s2 = repositorySchemaElements.get(i);
-						if(!s1.getClass().equals(s2.getClass()) || s1.getName().equals(s2.getName()))
+						SchemaElement s1 = schemaElementsWithThisBase.get(i);
+						SchemaElement s2 = repoSchemaElementsWithThisBase.get(i);
+						if((s1.getClass().equals(s2.getClass()) && s1.getName().equals(s2.getName())) == false)
 							{ match = false; break; }
 					}
 					if(match) return schema.getId();
@@ -120,9 +143,7 @@ public class CopySchemaImporter extends Importer
 			
 				// Create a mapping of these elements to 
 				for (SchemaElement se : repository.getSchemaElements(parentSchemaID))
-				{
-					elementToOldID.put(new String(se.getName().toString()+se.getClass().toString()),se.getId());
-				}
+				{	elementToOldID.put(new String(se.getName().toString()+se.getClass().toString()),se.getId());}
 				
 				// Get the extended schema ID
 				Integer schemaID = getMatchedSchema(repositorySchema);
@@ -170,7 +191,7 @@ public class CopySchemaImporter extends Importer
 				alterID(schemaElements, oldID, IDmapping.get(oldID));
 			}
 			
-		} catch(Exception e) { throw new ImporterException(ImporterException.PARSE_FAILURE,e.getMessage()); }
+		} catch(Exception e) {throw new ImporterException(ImporterException.PARSE_FAILURE,e.getMessage()); }
 		return schemaElements; 	
 	}
 	
