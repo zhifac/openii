@@ -17,32 +17,19 @@ public class NGramMatcher extends BaseMatcher implements Matcher {
 	private static final int NUM_GRAMS = 3;
 
 	public NGramMatcher(Schema candidateSchema, ArrayList<QueryFragment> queryFragments) {
-		super(candidateSchema, queryFragments);		
+		super(candidateSchema, queryFragments);
+		
+		applyPreprocessor(Preprocessor.TOKENIZER);
+		applyPreprocessor(Preprocessor.LOWERCASER);
+		updateTokenSets();
 	}
 	
-	// TODO test me!
-	public void applyPreprocessor(Preprocessor preprocessor) {
-		for (Entry<SchemaElement,TokenSet> e : colTSMap.entrySet()) {
-			TokenSet ts = e.getValue();
-			TokenSet newTS = new TokenSet(ts.getName());
-			newTS.add(preprocessor.process(ts));
-			e.setValue(newTS);
-		}
-		for (Entry<QueryFragment,TokenSet> e : rowTSMap.entrySet()) {
-			TokenSet ts = e.getValue();
-			TokenSet newTS = new TokenSet(ts.getName());
-			newTS.add(preprocessor.process(ts));
-			e.setValue(newTS);
-		}		
-	}
-
 	// TODO test me!
 	public void updateTokenSets() {		
 		NGramQueryConverter converter = new NGramQueryConverter(NUM_GRAMS);
 
 		for (Entry<SchemaElement,TokenSet> e : colTSMap.entrySet()) {
 			TokenSet existingTS = e.getValue();
-		System.out.println("\tBEFORE: "+e.getValue());
 			TokenSet newTS = new TokenSet(existingTS.getName());
 			for (Token t : existingTS.getTokens()) {
 				ArrayList<Token> list = converter.getTokenSet(t.getToken());
@@ -51,12 +38,10 @@ public class NGramMatcher extends BaseMatcher implements Matcher {
 				}
 			}
 			e.setValue(newTS);
-		System.out.println("\tAFTER: "+e.getValue());
 		}
 
 		for (Entry<QueryFragment,TokenSet> e : rowTSMap.entrySet()) {
 			TokenSet existingTS = e.getValue();
-		System.out.println("\tBEFORE: "+e.getValue());
 			TokenSet newTS = new TokenSet(existingTS.getName());
 			for (Token t : existingTS.getTokens()) {
 				ArrayList<Token> list = converter.getTokenSet(t.getToken());
@@ -65,16 +50,11 @@ public class NGramMatcher extends BaseMatcher implements Matcher {
 				}
 			}
 			e.setValue(newTS);
-		System.out.println("\tAFTER: "+e.getValue());
-		}
-		
+		}		
 	}
 
 	public SimilarityMatrix calculateSimilarityMatrix() {
-		
-		this.similarityMatrix = new SimilarityMatrix(
-				this.colTSMap.keySet().toArray(new Object[0]), 
-				this.rowTSMap.keySet().toArray(new Object[0]));
+		super.calculateSimilarityMatrix();
 
 		// fill it in
 		for (SchemaElement se : colTSMap.keySet()) {
@@ -82,6 +62,7 @@ public class NGramMatcher extends BaseMatcher implements Matcher {
 				TokenSet colTokens = colTSMap.get(se);
 				TokenSet rowTokens = this.rowTSMap.get(qf);
 				double overlap = countOverlap(colTokens, rowTokens);
+				// TODO: alternative approach: use row+col size for symmetric score
 				double totalQueryTokens = rowTokens.size();
 				double score = overlap / totalQueryTokens;
 				similarityMatrix.setScore(se, qf, score);
@@ -90,7 +71,7 @@ public class NGramMatcher extends BaseMatcher implements Matcher {
 		return similarityMatrix;
 	}
 
-	/*
+	/**
 	 * count overlap returns the # of overlapping tokens 
 	 * (a, b, c) vs (a, a, d) = 1 overlapping token, not 2
 	 */

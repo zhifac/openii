@@ -40,6 +40,9 @@ public class Tests extends TestCase {
 		return new TestSuite(Tests.class);
 	}
 
+	public void testIdentityMatch() {
+		//TODO: add testIdentityMatch
+	}
 	/**
 	 * 
 	 */
