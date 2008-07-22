@@ -5,6 +5,7 @@ package org.mitre.flexidata.ygg.view.shared.parameters;
 import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.util.ArrayList;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -30,7 +31,7 @@ public class ParameterPane extends JPanel
 		// Initialize the parameter label
 		JLabel parmLabel = new JLabel(parameter.getName() + ": ");
 		parmLabel.setFont(Consts.PARAMETER_FONT);
-			
+		
 		// Position the parameter label
 		GridBagConstraints constraints = new GridBagConstraints();
 		constraints.gridx = 0;
@@ -48,20 +49,20 @@ public class ParameterPane extends JPanel
 	}
 	
 	/** Returns the requested parameter */
-	public AbstractParameter getParameter(Integer loc)
-		{ try { return (AbstractParameter)getComponent(2*loc+1); } catch(Exception e) { return null; } }
-	
-	/** Checks to make sure the parameter pane is completed */
-	public boolean isCompleted()
+	public AbstractParameter getParameter(String name)
 	{
-		boolean completed = true;
 		for(int i=0; i<getComponentCount()/2; i++)
-		{
-			AbstractParameter parameter = getParameter(i);
-			boolean parameterCompleted = parameter.getValue()!=null;
-			parameter.setHighlight(!parameterCompleted);
-			completed &= parameterCompleted;
-		}
-		return completed;
+			if(((JLabel)getComponent(2*i)).getText().equals(name+": "))
+				return (AbstractParameter)getComponent(2*i+1);
+		return null;
+	}
+	
+	/** Returns the list of available parameters */
+	public ArrayList<String> getParameters()
+	{
+		ArrayList<String> parameters = new ArrayList<String>();
+		for(int i=0; i<getComponentCount()/2; i++)
+			parameters.add(((JLabel)getComponent(2*i)).getText().replaceAll(": ",""));
+		return parameters;
 	}
 }

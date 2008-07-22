@@ -35,7 +35,15 @@ public class SchemaParameter extends AbstractParameter
 		return value==null || value.length()==0 ? null : value;
 	}		
 	
+	/** Sets the parameter value */
+	public void setValue(String value)
+	{
+		for(int i=0; i<schemaList.getItemCount(); i++)
+			if(((Schema)schemaList.getItemAt(i)).getId().equals(value))
+				{ schemaList.setSelectedIndex(i); break; }
+	}
+	
 	/** Highlights the parameter */
-	protected void setHighlight(boolean highlight)
+	public void setHighlight(boolean highlight)
 		{ schemaList.setBackground(highlight ? Consts.YELLOW : Consts.WHITE); }
 }

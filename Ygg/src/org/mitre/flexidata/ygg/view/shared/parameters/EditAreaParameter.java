@@ -1,8 +1,11 @@
 package org.mitre.flexidata.ygg.view.shared.parameters;
 
+import java.awt.Color;
+
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
 
 import org.mitre.flexidata.ygg.view.Consts;
 
@@ -13,7 +16,7 @@ public class EditAreaParameter extends AbstractParameter
 	private JTextArea textArea = new JTextArea();
 	
 	/** Constructs the edit area parameter */
-	public EditAreaParameter(String name, String value)
+	public EditAreaParameter(String name, String value, boolean editable)
 	{
 		super(name);
 		setBorder(new EmptyBorder(2,0,2,0));
@@ -30,6 +33,14 @@ public class EditAreaParameter extends AbstractParameter
 		scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 		add(scrollPane);
+
+		// Adjust items if not editable
+		if(!editable)
+		{
+			textArea.setEditable(false);
+			textArea.setBackground(new Color(0xeeeeee));
+			scrollPane.setBorder(new LineBorder(new Color(0xccccff)));
+		}
 	}
 
 	/** Returns the parameter value */
@@ -39,8 +50,12 @@ public class EditAreaParameter extends AbstractParameter
 		return value==null || value.length()==0 ? null : value;
 	}
 	
+	/** Sets the parameter value */
+	public void setValue(String value)
+		{ textArea.setText(value); }
+	
 	/** Highlights the parameter */
-	protected void setHighlight(boolean highlight)
+	public void setHighlight(boolean highlight)
 		{ textArea.setBackground(highlight ? Consts.YELLOW : Consts.WHITE); }
 }
 

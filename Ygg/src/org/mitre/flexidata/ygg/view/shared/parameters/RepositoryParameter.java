@@ -3,6 +3,7 @@ package org.mitre.flexidata.ygg.view.shared.parameters;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.GridLayout;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
 import javax.swing.JComboBox;
@@ -14,6 +15,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
 
+import org.mitre.flexidata.ygg.model.ConfigManager;
 import org.mitre.flexidata.ygg.view.Consts;
 import org.mitre.schemastore.client.SchemaStoreClient;
 import org.mitre.schemastore.model.Schema;
@@ -27,10 +29,16 @@ public class RepositoryParameter extends AbstractParameter implements CaretListe
 		/** Runs the procedure to update the schema list */
 		public void run()
 		{
+			// Clear out the schema list first
+			schemaList.removeAllItems();
+			
 			// First check to make sure that the server and port information is not still changing
 			int length = serverField.getText().length() + portField.getText().length();
 			try { Thread.sleep(500); } catch(Exception e) {}
 			if(length != serverField.getText().length() + portField.getText().length()) return;
+		
+			// Don't allow connection to current repository
+			if(getServerString().equals(ConfigManager.getSchemaStoreLoc())) return;
 			
 			// Update the list of schemas
 			try {
@@ -117,6 +125,10 @@ public class RepositoryParameter extends AbstractParameter implements CaretListe
 	private String getServerString()
 		{ return "http://"+serverField.getText()+":"+portField.getText()+"/SchemaStore/services/SchemaStore"; }
 	
+	/** Returns the selected schema */
+	public Schema getSchema()
+		{ return (Schema)schemaList.getSelectedItem(); }
+	
 	/** Returns the parameter value */
 	public String getValue()
 	{
@@ -125,8 +137,22 @@ public class RepositoryParameter extends AbstractParameter implements CaretListe
 		return getServerString() + "#" + schema.getId();
 	}
 
+	/** Sets the parameter value */
+	public void setValue(String value)
+	{
+		// Set the server and port values
+		serverField.setText(value.replaceAll("http://","").replaceAll(":.*",""));
+		portField.setText(value.replaceAll("/SchemaStore/services/SchemaStore.*","").replaceAll(".*:",""));
+
+		// Select the schema
+		String schemaID = value.replaceAll(".*#","");
+		for(int i=0; i<schemaList.getItemCount(); i++)
+			if(((Schema)schemaList.getItemAt(i)).getId().equals(schemaID))
+				{ schemaList.setSelectedIndex(i); break; }
+	}
+	
 	/** Highlights the parameter */
-	protected void setHighlight(boolean highlight)
+	public void setHighlight(boolean highlight)
 	{
 		Color color = highlight ? Consts.YELLOW : Consts.WHITE;
 		serverField.setBackground(color); portField.setBackground(color);
@@ -136,4 +162,12 @@ public class RepositoryParameter extends AbstractParameter implements CaretListe
 	/** Handles the entry of server information */
 	public void caretUpdate(CaretEvent arg0)
 		{ new UpdateSchemaList().start(); }
+
+	/** Adds an action listener */
+	public void addActionListener(ActionListener listener)
+		{ schemaList.addActionListener(listener); }
+
+	/** Removes an action listener */
+	public void removeActionListener(ActionListener listener)
+		{ schemaList.removeActionListener(listener); }
 }

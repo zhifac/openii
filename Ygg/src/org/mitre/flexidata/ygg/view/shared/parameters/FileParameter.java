@@ -57,8 +57,12 @@ public class FileParameter extends AbstractParameter implements ActionListener
 		return value==null || value.length()==0 ? null : (new File(value).toURI()).toString();
 	}
 	
+	/** Sets the parameter value */
+	public void setValue(String value)
+		{ fileField.setText(value); }
+	
 	/** Highlights the parameter */
-	protected void setHighlight(boolean highlight)
+	public void setHighlight(boolean highlight)
 		{ fileField.setBackground(highlight ? Consts.YELLOW : Consts.WHITE); }
 	
 	/** Handles the pressing of the file button */

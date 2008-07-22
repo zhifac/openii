@@ -22,6 +22,10 @@ public class TextParameter extends AbstractParameter
 	/** Returns the parameter value */
 	public String getValue() { return label.getText(); }
 	
+	/** Sets the parameter value */
+	public void setValue(String value)
+		{ label.setText(value); }
+	
 	/** Highlights the parameter */
-	protected void setHighlight(boolean highlight) {}
+	public void setHighlight(boolean highlight) {}
 }
