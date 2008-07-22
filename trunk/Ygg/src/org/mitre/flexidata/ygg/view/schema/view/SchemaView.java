@@ -56,7 +56,8 @@ public class SchemaView extends GenericView implements ActionListener
 		add(generalInfoPane,BorderLayout.NORTH);
 		add(new SchemaElementPane(schema.getId()),BorderLayout.CENTER);
 		
-		// Add button listeners
+		// Initialize the schema view buttons
+		deleteButton.setEnabled(SchemaManager.isDeletable(schema));
 		editButton.addActionListener(this);
 		exportButton.addActionListener(this);
 		deleteButton.addActionListener(this);

@@ -36,6 +36,13 @@ public class SchemaManager
 		return success;
 	}
 
+	/** Indicates if the schema is deletable */
+	static public boolean isDeletable(Schema schema)
+	{
+		try { return SchemaStore.getClient().isDeletable(schema.getId()); } catch(Exception e) {}
+		return false;
+	}
+	
 	/** Deletes the specified schema */
 	static public void deleteSchema(Schema schema)
 	{
