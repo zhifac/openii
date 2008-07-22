@@ -140,25 +140,11 @@ public class SimilarityMatrix {
 	}
 
 	private double getMaxScoreForColumn(Object o) {
-		double score = 0;
-		for(Object rowObj: rowObjs) {
-			double currScore = this.getScore(o, rowObj);
-			if (currScore > score) {
-				score = currScore;
-			}
-		}
-		return score;
+		return this.getScore(o, getMaxCorrespondentObjectForColumn(o));
 	}
 
 	private double getMaxScoreForRow(Object o) {
-		double score = 0;
-		for(Object colObj: colObjs) {
-			double currScore = this.getScore(colObj, o);
-			if (currScore > score) {
-				score = currScore;
-			}
-		}
-		return score;
+		return this.getScore(getMaxCorrespondentObjectForRow(o), o);
 	}
 
 	private Object getMaxCorrespondentObject(Object o) {
@@ -173,7 +159,7 @@ public class SimilarityMatrix {
 	}
 
 	private Object getMaxCorrespondentObjectForColumn(Object o) {
-		double score = 0;
+		double score = Double.NEGATIVE_INFINITY;
 		Object result = null;
 		for(Object rowObj: rowObjs) {
 			double currScore = this.getScore(o, rowObj);
@@ -186,7 +172,7 @@ public class SimilarityMatrix {
 	}
 
 	private Object getMaxCorrespondentObjectForRow(Object o) {
-		double score = 0;
+		double score = Double.NEGATIVE_INFINITY;
 		Object result = null;
 		for(Object colObj: colObjs) {
 			double currScore = this.getScore(colObj, o);
@@ -200,11 +186,13 @@ public class SimilarityMatrix {
 
 
 	/**
-	 * Default conjunctive scorer
+	 * scorer addes best values together
+	 * TODO: alternative approach: take average and normalize scores
+	 * TODO: alternative approach: non-greedy approach w/ stable 
+	 * pairings would potentially yield better scores
 	 * @return the total score
 	 */
 	public double getTotalScore() {		
-		// FIXME: scorer is not great
 		double score = 0;
 		for (Object rowObj : rowObjs) {
 			double maxScore = this.getMaxScoreForRow(rowObj);
@@ -212,9 +200,6 @@ public class SimilarityMatrix {
 		}
 		return score;
 	}
-
-
-
 
 }
 

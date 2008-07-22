@@ -3,16 +3,20 @@ package org.openii.schemr.matcher;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mitre.schemastore.graph.GraphBuilder;
+import org.mitre.schemastore.model.Attribute;
+import org.mitre.schemastore.model.Entity;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
 import org.openii.schemr.MatchSummary;
 import org.openii.schemr.QueryFragment;
 import org.openii.schemr.SchemaUtility;
 import org.openii.schemr.matcher.SimilarityMatrix.ScoreEvidence;
+import org.openii.schemr.preprocessor.Preprocessor;
 
 
 public abstract class BaseMatcher implements Matcher {
@@ -36,6 +40,9 @@ public abstract class BaseMatcher implements Matcher {
 		buildTokenSets();
 	}
 
+	/**
+	 * TODO: only using Entity and Attribute from corpus schemas
+	 */
 	public void buildTokenSets() {
 		// make column objects -- candidate schema elements
 		try {
@@ -43,12 +50,16 @@ public abstract class BaseMatcher implements Matcher {
 			ArrayList<SchemaElement> schemaElements = SchemaUtility.getCLIENT().getSchemaElements(id);
 			schemaElements = GraphBuilder.build(schemaElements, id);
 			for (SchemaElement e : schemaElements) {
-				if (e != null && !"".equals(e.getName().trim())) {
-					TokenSet ts = new TokenSet(e.getName().trim());
-					ts.add(new Token(ts.getName()));
-					this.colTSMap.put(e, ts);
+				if (e instanceof Entity || e instanceof Attribute) {
+					if (e != null && !"".equals(e.getName().trim())) {
+						TokenSet ts = new TokenSet(e.getName().trim());
+						ts.add(new Token(ts.getName()));
+						this.colTSMap.put(e, ts);
+					} else {
+//						logger.warning("Ignored empty/null SchemaElement: "+e);
+					}					
 				} else {
-					logger.warning("Ignored empty/null SchemaElement: "+e);
+//					logger.warning("Ignored SchemaElement: "+e.getClass().getSimpleName());					
 				}
 			}
 		} catch (RemoteException e) {
@@ -65,17 +76,41 @@ public abstract class BaseMatcher implements Matcher {
 					ts.add(new Token(ts.getName()));
 					this.rowTSMap.put(q, ts);
 				} else {
-					logger.warning("Ignored empty/null QueryFragment: "+q);
+//					logger.warning("Ignored empty/null QueryFragment: "+q);
 				}
 			}
 		}
+	}
+	
+	// TODO test me!
+	public void applyPreprocessor(Preprocessor preprocessor) {
+		for (Entry<SchemaElement,TokenSet> e : colTSMap.entrySet()) {
+			TokenSet ts = e.getValue();
+			TokenSet newTS = new TokenSet(ts.getName());
+			newTS.add(preprocessor.process(ts));
+			e.setValue(newTS);
+		}
+		for (Entry<QueryFragment,TokenSet> e : rowTSMap.entrySet()) {
+			TokenSet ts = e.getValue();
+			TokenSet newTS = new TokenSet(ts.getName());
+			newTS.add(preprocessor.process(ts));
+			e.setValue(newTS);
+		}		
+	}
+	
+	public SimilarityMatrix calculateSimilarityMatrix() {
+		this.similarityMatrix = new SimilarityMatrix(
+				this.colTSMap.keySet().toArray(new Object[0]), 
+				this.rowTSMap.keySet().toArray(new Object[0]));
+		return this.similarityMatrix;
 	}
 	
 	public MatchSummary getMatchSummary() {
 		if (this.colTSMap == null || this.colTSMap.isEmpty() ||
 				this.rowTSMap == null || this.rowTSMap.isEmpty() ||
 				this.similarityMatrix == null) {
-			throw new IllegalStateException("Matcher is not ready to produce MatchSummary. Did you forget to call a method?");
+			logger.warning("This schema has no matchable elements: "+ this.candidateSchema.getName());
+			return null;
 		}
 		
 		double score = this.similarityMatrix.getTotalScore();

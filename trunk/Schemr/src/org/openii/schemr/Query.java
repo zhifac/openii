@@ -11,10 +11,10 @@ import org.mitre.schemastore.graph.GraphBuilder;
 import org.mitre.schemastore.model.Attribute;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
+import org.openii.schemr.matcher.EditDistanceMatcher;
 import org.openii.schemr.matcher.Matcher;
 import org.openii.schemr.matcher.NGramMatcher;
 import org.openii.schemr.matcher.SimilarityMatrix;
-import org.openii.schemr.preprocessor.Preprocessor;
 import org.openii.schemr.viz.TextVisualizer;
 import org.openii.schemr.viz.Visualizer;
 
@@ -39,7 +39,6 @@ public class Query {
 		this.querySchema = querySchema;
 		this.queryKeywords = queryKeywords;
 		this.querySchemaElements = GraphBuilder.build(querySchemaElements, querySchema.getId());
-		System.out.println(this.toString());
 	}
 
 	@Override
@@ -81,6 +80,7 @@ public class Query {
 			e.printStackTrace();
 			System.exit(-1);
 		}
+	System.out.println("Searching with: "+querySchema.getName());
 
 		HashMap<String,String> queryKeywords = new HashMap<String,String>();
 		queryKeywords.put("elephant", "");
@@ -88,42 +88,58 @@ public class Query {
 		queryKeywords.put("telephone", "attribute");
 		
 		Query q = new Query(querySchema, querySchemaElements, queryKeywords);
+
+		MATCHER = "NGRAM";
+		q.processQuery(candidateSchemas);
+		MATCHER = "EDITDISTANCE";
+		q.processQuery(candidateSchemas);
+
+	System.out.println("All done.");		
+	}
+
+	public void processQuery(ArrayList<Schema> candidateSchemas) {
+		QueryParser qp = new QueryParser(this);				
+//	System.out.println(qp.toString());
 		
-		QueryParser qp = new QueryParser(q);				
-		System.out.println(qp.toString());
-		
-		
-		MatchSummary [] matchSummaries = new MatchSummary [candidateSchemas.size()];
+		ArrayList<MatchSummary> matchSummaries = new ArrayList<MatchSummary>();
 		
 		for (int i = 0; i < candidateSchemas.size(); i++) {
 			Schema candidateSchema = candidateSchemas.get(i);
 			ArrayList<QueryFragment> queryFragments = qp.getQueryFragments();
-			Matcher m = new NGramMatcher(candidateSchema, queryFragments);
-			
-			System.out.println("TOKENIZING: ");
-			m.applyPreprocessor(Preprocessor.TOKENIZER);
-			System.out.println("LOWERCASING: ");
-			m.applyPreprocessor(Preprocessor.LOWERCASER);
-			m.updateTokenSets();
-			SimilarityMatrix sm = m.calculateSimilarityMatrix();
-			System.out.println(sm.toString());
-			
-			// match summary contains schema, queryfragments, score, and evidence
-			matchSummaries[i] = m.getMatchSummary();
-			
+			MatchSummary ms = match(candidateSchema, queryFragments);
+			if (ms != null) matchSummaries.add(ms);	
 		}
 		
 		// sort according to score
-		Arrays.sort(matchSummaries);
+		MatchSummary [] msarray = matchSummaries.toArray(new MatchSummary[0]);
+		Arrays.sort(msarray);
 
-		System.out.println("Ranked results");
-		for (MatchSummary matchSummary : matchSummaries) {
-			System.out.println("\tschema: "+matchSummary.getSchema().getName() + " | score: "+matchSummary.getScore());
+		int i = 0;
+	System.out.println(MATCHER+" ranked results");
+		for (MatchSummary matchSummary : msarray) {
+			i++;
+	System.out.println(i+"\tschema: "+matchSummary.getSchema().getName() + "\t\t\tscore: "+matchSummary.getScore());
 			Visualizer v = new TextVisualizer(matchSummary);
 			v.show();
 
 		}
-		System.out.println("All done.");		
+	}
+
+	private static String MATCHER = null;
+
+	public MatchSummary match(Schema candidateSchema, ArrayList<QueryFragment> queryFragments) {
+		
+		Matcher m = null;
+		if (MATCHER.equals("NGRAM")) {
+			m = new NGramMatcher(candidateSchema, queryFragments);			
+		} else if (MATCHER.equals("EDITDISTANCE")) {
+			m = new EditDistanceMatcher(candidateSchema, queryFragments);			
+		}
+
+		SimilarityMatrix sm = m.calculateSimilarityMatrix();
+//	System.out.println(sm.toString());
+		// match summary contains schema, queryfragments, score, and evidence
+		return m.getMatchSummary();
 	}
 
 	
