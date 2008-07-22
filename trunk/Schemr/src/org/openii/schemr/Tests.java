@@ -149,8 +149,8 @@ public class Tests extends TestCase {
 		try {
 			schemas = CLIENT.getSchemas();
 		} catch (RemoteException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
+			assertTrue(false);
 		}
 		
 		String filePath = SchemaUtility.DEFAULT_ROOT+"/unitest";

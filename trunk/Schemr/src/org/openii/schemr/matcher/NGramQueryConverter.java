@@ -8,8 +8,7 @@ import org.openii.schemr.QueryFragment;
 
 public class NGramQueryConverter implements QueryConverter {
 
-	private static final Logger logger = Logger
-			.getLogger(NGramQueryConverter.class.getName());
+	private static final Logger logger = Logger.getLogger(NGramQueryConverter.class.getName());
 
 	private final int numGrams;
 
@@ -18,28 +17,28 @@ public class NGramQueryConverter implements QueryConverter {
 	}
 
 	public TokenSet getTokenSet(QueryFragment q) {
-		return getTokenSet(q.getName());
+		return new TokenSet(q.getName());
 	}
 
 	public TokenSet getTokenSet(SchemaElement e) {
-		return getTokenSet(e.getName());
+		return new TokenSet(e.getName());
 	}
 
-	public TokenSet getTokenSet(String s) {
+	public ArrayList<Token> getTokenSet(String s) {
 		if (s == null)
 			throw new IllegalArgumentException("Unexpected null input");
-		TokenSet ts = null;
+		ArrayList<Token> list = null;
 		if (s != null && !"".equals(s.trim())) {
-			ts = new TokenSet(s);
+			list = new ArrayList<Token>();
 			ArrayList<String> ngrams = MatcherUtility.getNGrams(s, this.numGrams);
 			for (String ngram : ngrams) {
 				if (ngram == null || "".equals(ngram)) {
 					logger.warning("Skipped null or empty ngram");
 					continue;
 				}
-				ts.add(new Token(ngram));
+				list.add(new Token(ngram));
 			}
 		}
-		return ts;
+		return list;
 	}
 }

@@ -2,6 +2,7 @@ package org.openii.schemr;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.logging.Logger;
@@ -13,6 +14,9 @@ import org.mitre.schemastore.model.SchemaElement;
 import org.openii.schemr.matcher.Matcher;
 import org.openii.schemr.matcher.NGramMatcher;
 import org.openii.schemr.matcher.SimilarityMatrix;
+import org.openii.schemr.preprocessor.Preprocessor;
+import org.openii.schemr.viz.TextVisualizer;
+import org.openii.schemr.viz.Visualizer;
 
 /**
  * 
@@ -35,7 +39,7 @@ public class Query {
 		this.querySchema = querySchema;
 		this.queryKeywords = queryKeywords;
 		this.querySchemaElements = GraphBuilder.build(querySchemaElements, querySchema.getId());
-		logger.info(this.toString());
+		System.out.println(this.toString());
 	}
 
 	@Override
@@ -66,7 +70,12 @@ public class Query {
 		ArrayList<SchemaElement> querySchemaElements = null;
 		try {
 			candidateSchemas = SchemaUtility.getCLIENT().getSchemas();
-			querySchema = candidateSchemas.remove(0);
+			
+			for (Schema s : candidateSchemas) {
+				if (s.getId() == 17) {
+					querySchema = s;
+				}
+			}
 			querySchemaElements = SchemaUtility.getCLIENT().getSchemaElements(querySchema.getId());
 		} catch (RemoteException e) {
 			e.printStackTrace();
@@ -81,17 +90,40 @@ public class Query {
 		Query q = new Query(querySchema, querySchemaElements, queryKeywords);
 		
 		QueryParser qp = new QueryParser(q);				
-		logger.info(qp.toString());
+		System.out.println(qp.toString());
 		
 		
-//		candidateSchemas --> text terms
-		for (Schema candidateSchema : candidateSchemas) {
-			Matcher m = new NGramMatcher(candidateSchema, qp.getQueryFragments());
+		MatchSummary [] matchSummaries = new MatchSummary [candidateSchemas.size()];
+		
+		for (int i = 0; i < candidateSchemas.size(); i++) {
+			Schema candidateSchema = candidateSchemas.get(i);
+			ArrayList<QueryFragment> queryFragments = qp.getQueryFragments();
+			Matcher m = new NGramMatcher(candidateSchema, queryFragments);
+			
+			System.out.println("TOKENIZING: ");
+			m.applyPreprocessor(Preprocessor.TOKENIZER);
+			System.out.println("LOWERCASING: ");
+			m.applyPreprocessor(Preprocessor.LOWERCASER);
+			m.updateTokenSets();
 			SimilarityMatrix sm = m.calculateSimilarityMatrix();
-			logger.info(sm.toString());
+			System.out.println(sm.toString());
+			
+			// match summary contains schema, queryfragments, score, and evidence
+			matchSummaries[i] = m.getMatchSummary();
+			
 		}
 		
-		logger.info("All done.");
+		// sort according to score
+		Arrays.sort(matchSummaries);
+
+		System.out.println("Ranked results");
+		for (MatchSummary matchSummary : matchSummaries) {
+			System.out.println("\tschema: "+matchSummary.getSchema().getName() + " | score: "+matchSummary.getScore());
+			Visualizer v = new TextVisualizer(matchSummary);
+			v.show();
+
+		}
+		System.out.println("All done.");		
 	}
 
 	

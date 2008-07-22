@@ -1,92 +1,93 @@
 package org.openii.schemr.matcher;
 
-import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.logging.Level;
+import java.util.Map.Entry;
 import java.util.logging.Logger;
 
-import org.mitre.schemastore.graph.GraphBuilder;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
 import org.openii.schemr.QueryFragment;
-import org.openii.schemr.SchemaUtility;
+import org.openii.schemr.preprocessor.Preprocessor;
 
 
-public class NGramMatcher implements Matcher {
+public class NGramMatcher extends BaseMatcher implements Matcher {
 	
 	private static final Logger logger = Logger.getLogger(NGramMatcher.class.getName());
 
 	private static final int NUM_GRAMS = 3;
 
-	Schema candidateSchema = null; 
-	ArrayList<QueryFragment> queryFragments = null;
-	
 	public NGramMatcher(Schema candidateSchema, ArrayList<QueryFragment> queryFragments) {
-		this.candidateSchema = candidateSchema;
-		this.queryFragments = queryFragments;
-		
+		super(candidateSchema, queryFragments);		
+	}
+	
+	// TODO test me!
+	public void applyPreprocessor(Preprocessor preprocessor) {
+		for (Entry<SchemaElement,TokenSet> e : colTSMap.entrySet()) {
+			TokenSet ts = e.getValue();
+			TokenSet newTS = new TokenSet(ts.getName());
+			newTS.add(preprocessor.process(ts));
+			e.setValue(newTS);
+		}
+		for (Entry<QueryFragment,TokenSet> e : rowTSMap.entrySet()) {
+			TokenSet ts = e.getValue();
+			TokenSet newTS = new TokenSet(ts.getName());
+			newTS.add(preprocessor.process(ts));
+			e.setValue(newTS);
+		}		
 	}
 
-	public static void main(String[] args) {
+	// TODO test me!
+	public void updateTokenSets() {		
+		NGramQueryConverter converter = new NGramQueryConverter(NUM_GRAMS);
+
+		for (Entry<SchemaElement,TokenSet> e : colTSMap.entrySet()) {
+			TokenSet existingTS = e.getValue();
+		System.out.println("\tBEFORE: "+e.getValue());
+			TokenSet newTS = new TokenSet(existingTS.getName());
+			for (Token t : existingTS.getTokens()) {
+				ArrayList<Token> list = converter.getTokenSet(t.getToken());
+				if (list != null && !list.isEmpty()) {
+					newTS.add(list);
+				}
+			}
+			e.setValue(newTS);
+		System.out.println("\tAFTER: "+e.getValue());
+		}
+
+		for (Entry<QueryFragment,TokenSet> e : rowTSMap.entrySet()) {
+			TokenSet existingTS = e.getValue();
+		System.out.println("\tBEFORE: "+e.getValue());
+			TokenSet newTS = new TokenSet(existingTS.getName());
+			for (Token t : existingTS.getTokens()) {
+				ArrayList<Token> list = converter.getTokenSet(t.getToken());
+				if (list != null && !list.isEmpty()) {					
+					newTS.add(list);
+				}
+			}
+			e.setValue(newTS);
+		System.out.println("\tAFTER: "+e.getValue());
+		}
+		
 	}
 
 	public SimilarityMatrix calculateSimilarityMatrix() {
 		
-		NGramQueryConverter converter = new NGramQueryConverter(NUM_GRAMS);
-		
-		HashMap<SchemaElement, TokenSet> colTSMap = new HashMap<SchemaElement, TokenSet>();
-		HashMap<QueryFragment, TokenSet> rowTSMap = new HashMap<QueryFragment, TokenSet>();
-		
-		// make column objects -- candidate schema elements
-		try {
-			int id = this.candidateSchema.getId();
-			ArrayList<SchemaElement> schemaElements = SchemaUtility.getCLIENT().getSchemaElements(id);
-			schemaElements = GraphBuilder.build(schemaElements, id);
-			for (SchemaElement e : schemaElements) {
-				TokenSet ts = converter.getTokenSet(e);
-				if (ts != null && ts.size() > 0) {
-					colTSMap.put(e, ts);					
-				} else {
-					logger.warning("Ignored SchemaElement produced empty TokenSet: "+e);
-				}
-			}
-		} catch (RemoteException e) {
-			logger.log(Level.SEVERE, "Failed to get schema elements", e);
-		}
-				
-		// make row objects -- query fragments			
-		for (QueryFragment qf : this.queryFragments) {
-			ArrayList<QueryFragment> list = new ArrayList<QueryFragment>();
-			QueryFragment.flatten(qf, list);
-			for (QueryFragment q : list) {
-				TokenSet ts = converter.getTokenSet(q);
-				if (ts != null && ts.size() > 0) {
-					rowTSMap.put(q, ts);
-				} else {
-					logger.warning("Ignored SchemaElement produced empty TokenSet: "+q);
-				}
-			}
-		}
-
-		SimilarityMatrix sm = new SimilarityMatrix(
-				colTSMap.keySet().toArray(new Object[0]), 
-				rowTSMap.keySet().toArray(new Object[0]));
+		this.similarityMatrix = new SimilarityMatrix(
+				this.colTSMap.keySet().toArray(new Object[0]), 
+				this.rowTSMap.keySet().toArray(new Object[0]));
 
 		// fill it in
 		for (SchemaElement se : colTSMap.keySet()) {
-			for (QueryFragment qf : rowTSMap.keySet()) {
+			for (QueryFragment qf : this.rowTSMap.keySet()) {
 				TokenSet colTokens = colTSMap.get(se);
-				TokenSet rowTokens = rowTSMap.get(qf);
+				TokenSet rowTokens = this.rowTSMap.get(qf);
 				double overlap = countOverlap(colTokens, rowTokens);
 				double totalQueryTokens = rowTokens.size();
 				double score = overlap / totalQueryTokens;
-				if (score > 0) logger.info("\t\t\t\tscore: "+ overlap + "/" + totalQueryTokens + " = " + score);
-				sm.setScore(se, qf, score);
+				similarityMatrix.setScore(se, qf, score);
 			}
 		}
-		
-		return sm;
+		return similarityMatrix;
 	}
 
 	/*
@@ -100,9 +101,8 @@ public class NGramMatcher implements Matcher {
 				if (t1.equals(t2)) result += 1;
 			}			
 		}
-		if (result > 0) logger.info("\t\t\t"+tokenSet1.toString() + " | " + tokenSet2);
-
 		return result;
 	}
+
 
 }
