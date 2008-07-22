@@ -36,7 +36,7 @@ public class DDLImporter extends Importer
 	public ArrayList<String> getURIFileTypes()
 	{
 		ArrayList<String> fileTypes = new ArrayList<String>();
-		fileTypes.add(".ddl");
+		fileTypes.add(".ddl"); fileTypes.add(".sql");
 		return fileTypes;
 	}
 	
