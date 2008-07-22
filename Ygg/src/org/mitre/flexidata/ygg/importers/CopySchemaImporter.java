@@ -70,9 +70,6 @@ public class CopySchemaImporter extends Importer
 		
 		for(Schema schema : schemaList)
 		{
-			System.out.println("SCHEMA: " + schema.getName() + ": " + SchemaManager.getSchemaElementCount(schema.getId()));
-			System.out.println("REPO SCHEMA: " + repositorySchema.getName() + ": " );
-			System.out.flush();
 			
 			if(schema.getName().equals(repositorySchema.getName()))
 			{
@@ -112,7 +109,7 @@ public class CopySchemaImporter extends Importer
 					{
 						SchemaElement s1 = schemaElementsWithThisBase.get(i);
 						SchemaElement s2 = repoSchemaElementsWithThisBase.get(i);
-						if((s1.getClass().equals(s2.getClass()) && s1.getName().equals(s2.getName())) == false)
+						if( (s1.getClass().equals(s2.getClass()) && s1.getName().equals(s2.getName())) == false)
 							{ match = false; break; }
 					}
 					if(match) return schema.getId();
