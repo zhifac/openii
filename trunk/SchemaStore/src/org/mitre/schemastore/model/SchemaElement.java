@@ -8,7 +8,7 @@ import java.io.Serializable;
  * Class for storing a schema element
  * @author CWOLF
  */
-abstract public class SchemaElement implements Serializable
+public class SchemaElement implements Serializable
 {
 	/** Stores the schema element id */
 	private Integer id;

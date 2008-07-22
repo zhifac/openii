@@ -66,6 +66,10 @@ public class SchemaStore
 	public Boolean lockSchema(Integer schemaID)
 		{ return Schemas.lockSchema(schemaID); }
 
+	/** Indicates that the schema is able to be deleted */
+	public Boolean isDeletable(Integer schemaID)
+		{ return Schemas.isDeletable(schemaID); }
+	
 	/** Web service to delete the specified schema */
 	public Boolean deleteSchema(Integer schemaID)
 		{ return Schemas.deleteSchema(schemaID); }
@@ -341,7 +345,7 @@ public class SchemaStore
 	/** Web service to add the specified mapping */
 	public Integer addMapping(Mapping mapping)
 		{ return Mappings.addMapping(mapping); }
-	
+
 	/** Web service to update the specified mapping */
 	public Boolean updateMapping(Mapping mapping)
 		{ return Mappings.updateMapping(mapping); }
