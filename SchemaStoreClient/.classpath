@@ -12,5 +12,11 @@
 	<classpathentry kind="lib" path="org.apache.commons.logging_1.0.4.v200706111724.jar"/>
 	<classpathentry kind="lib" path="saaj.jar"/>
 	<classpathentry kind="lib" path="wsdl4j-1.5.1.jar"/>
+	<classpathentry kind="lib" path="C:/eclipse/plugins/org.apache.axis_1.4.0.v200706191647/lib/axis.jar"/>
+	<classpathentry kind="lib" path="C:/eclipse/plugins/org.apache.commons.discovery_0.2.0.v200706111329/lib/commons-discovery-0.2.jar"/>
+	<classpathentry kind="lib" path="C:/eclipse/plugins/javax.xml.rpc_1.1.0.v200706111329/lib/jaxrpc.jar"/>
+	<classpathentry kind="lib" path="C:/eclipse/plugins/javax.xml.soap_1.2.0.v200706111329/lib/saaj.jar"/>
+	<classpathentry kind="lib" path="C:/eclipse/configuration/org.eclipse.osgi/bundles/11/1/.cp/lib/wsdl4j-1.5.1.jar"/>
+	<classpathentry kind="lib" path="C:/eclipse/plugins/org.apache.commons.logging_1.0.4.v200706111724.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

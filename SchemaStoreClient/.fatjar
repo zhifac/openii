@@ -1,5 +1,5 @@
 #Fat Jar Configuration File
-#Mon Jun 16 11:20:53 EDT 2008
+#Tue Jul 22 14:30:29 EDT 2008
 onejar.license.required=true
 manifest.classpath=
 manifest.removesigners=true
@@ -10,5 +10,5 @@ manifest.mainclass=
 manifest.file=<createnew>
 jarname.isextern=false
 onejar.expand=
-excludes=<po|SchemaStoreClient>~META-INF/;<po|SchemaStoreClient>~org/~mitre/~schemastore/~client/~SchemaStoreTest.class;<po|SchemaStore>~org/~mitre/~schemastore/~database/;<po|SchemaStore>~org/~mitre/~schemastore/~servlet/;<jar|commons-el.jar>;<jar|jasper-compiler-jdt.jar>;<jar|jasper-compiler.jar>;<jar|jasper-runtime.jar>;<jar|jsp-api.jar>;<jar|naming-factory-dbcp.jar>;<jar|naming-factory.jar>;<jar|naming-resources.jar>;<jar|servlet-api.jar>;<jar|axis.jar>;<jar|commons-discovery-0.2.jar>;<jar|jaxrpc.jar>;<jar|saaj.jar>;<jar|wsdl4j-1.5.1.jar>;<jar|postgresql-8.2-504.jdbc3.jar>;<jar|commons-logging.jar>
+excludes=<po|SchemaStoreClient>~META-INF/;<po|SchemaStoreClient>~org/~mitre/~schemastore/~client/~SchemaStoreTest.class;<po|SchemaStore>~org/~mitre/~schemastore/~database/;<po|SchemaStore>~org/~mitre/~schemastore/~servlet/;<jar|commons-el.jar>;<jar|jasper-compiler-jdt.jar>;<jar|jasper-compiler.jar>;<jar|jasper-runtime.jar>;<jar|jsp-api.jar>;<jar|naming-factory-dbcp.jar>;<jar|naming-factory.jar>;<jar|naming-resources.jar>;<jar|servlet-api.jar>;<jar|axis.jar>;<jar|commons-discovery-0.2.jar>;<jar|jaxrpc.jar>;<jar|saaj.jar>;<jar|wsdl4j-1.5.1.jar>;<jar|commons-logging.jar>;<jar|postgresql-8.2-504.jdbc3.jar>
 includes=
