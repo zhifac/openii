@@ -12,12 +12,13 @@ public class EditFieldParameter extends AbstractParameter
 	private JTextField textField = new JTextField();
 	
 	/** Constructs the edit field parameter */
-	public EditFieldParameter(String name, String value)
+	public EditFieldParameter(String name, String value, boolean editable)
 	{
 		super(name);
 		setBorder(new EmptyBorder(2,0,2,0));
 
 		// Constructs the text field
+		textField.setEditable(editable);
 		textField.setText(value);
 		textField.setFont(Consts.PARAMETER_EDIT_FONT);
 		add(textField);
@@ -30,7 +31,11 @@ public class EditFieldParameter extends AbstractParameter
 		return value==null || value.length()==0 ? null : value;
 	}
 	
+	/** Sets the parameter value */
+	public void setValue(String value)
+		{ textField.setText(value); }
+	
 	/** Highlights the parameter */
-	protected void setHighlight(boolean highlight)
+	public void setHighlight(boolean highlight)
 		{ textField.setBackground(highlight ? Consts.YELLOW : Consts.WHITE); }
 }

@@ -24,6 +24,9 @@ abstract public class AbstractParameter extends JPanel
 	/** Returns the parameter value */
 	abstract public String getValue();
 	
+	/** Sets the parameter value */
+	abstract public void setValue(String value);
+	
 	/** Highlights the parameter */
-	abstract protected void setHighlight(boolean highlight);
+	abstract public void setHighlight(boolean highlight);
 }

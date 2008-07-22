@@ -21,12 +21,14 @@ import org.mitre.flexidata.ygg.view.shared.ColoredButton;
 import org.mitre.flexidata.ygg.view.shared.DescriptionPane;
 import org.mitre.flexidata.ygg.view.shared.RoundedPane;
 import org.mitre.flexidata.ygg.view.shared.SelectionPane;
+import org.mitre.flexidata.ygg.view.shared.parameters.AbstractParameter;
 import org.mitre.flexidata.ygg.view.shared.parameters.EditAreaParameter;
 import org.mitre.flexidata.ygg.view.shared.parameters.EditFieldParameter;
 import org.mitre.flexidata.ygg.view.shared.parameters.FileParameter;
 import org.mitre.flexidata.ygg.view.shared.parameters.ParameterPane;
 import org.mitre.flexidata.ygg.view.shared.parameters.RepositoryParameter;
 import org.mitre.flexidata.ygg.view.shared.parameters.SchemaParameter;
+import org.mitre.schemastore.model.Schema;
 
 /** Class for displaying the importer view */
 public class ImporterView extends GenericView implements ActionListener
@@ -59,7 +61,7 @@ public class ImporterView extends GenericView implements ActionListener
 	}
 	
 	/** Class for displaying the information pane */
-	private class InformationPane extends RoundedPane
+	private class InformationPane extends RoundedPane implements ActionListener
 	{
 		/** Stores the parameter pane */
 		private ParameterPane parameterPane = null;
@@ -75,24 +77,40 @@ public class ImporterView extends GenericView implements ActionListener
 		/** Sets the type of URI needed for the currently selected importer */
 		private void displayImporter(Importer importer)
 		{
+			// Determines if the name, author, and description should be editable
+			Integer uriType = importer.getURIType();
+			boolean editable = uriType!=Importer.REPOSITORY;
+			
 			// Generate the parameter pane
 			parameterPane = new ParameterPane();
 			parameterPane.setBorder(new EmptyBorder(5,5,5,5));
-			parameterPane.addParameter(new EditFieldParameter("Name",""));
-			parameterPane.addParameter(new EditFieldParameter("Author",System.getProperty("user.name")));
-			parameterPane.addParameter(new EditAreaParameter("Description",""));
+			parameterPane.addParameter(new EditFieldParameter("Name","",editable));
+			parameterPane.addParameter(new EditFieldParameter("Author",editable?System.getProperty("user.name"):"",editable));
+			parameterPane.addParameter(new EditAreaParameter("Description","",editable));
 			
 			// Determine what type of URI needs to be retrieved
-			Integer uriType = importer.getURIType();
 			if(uriType==Importer.FILE)
 				parameterPane.addParameter(new FileParameter("File",importer.getFileFilter()));
 			else if(uriType==Importer.SCHEMA)
 				parameterPane.addParameter(new SchemaParameter("Schema"));
 			else if(uriType==Importer.REPOSITORY)
-				parameterPane.addParameter(new RepositoryParameter("Repository"));
-
+			{
+				RepositoryParameter repositoryParameter = new RepositoryParameter("Repository");
+				repositoryParameter.addActionListener(this);
+				parameterPane.addParameter(repositoryParameter);
+			}
+			
 			// Reset the view with the new parameter pane
 			setView(parameterPane);
+		}
+
+		/** Handles the changing of the selected schema */
+		public void actionPerformed(ActionEvent e)
+		{
+			Schema schema = ((RepositoryParameter)parameterPane.getParameter("Repository")).getSchema();
+			parameterPane.getParameter("Name").setValue(schema.getName());
+			parameterPane.getParameter("Author").setValue(schema.getAuthor());
+			parameterPane.getParameter("Description").setValue(schema.getDescription());
 		}
 	}
 	
@@ -122,21 +140,38 @@ public class ImporterView extends GenericView implements ActionListener
 		return buttons;
 	}
 
+	/** Determines if the parameter has been completed */
+	public boolean isCompleted(AbstractParameter parameter)
+	{
+		boolean parameterCompleted = parameter.getValue()!=null;
+		parameter.setHighlight(!parameterCompleted);
+		return parameterCompleted;
+	}
+	
 	/** Handles the running of the importer */
 	public void actionPerformed(ActionEvent e)
 	{
-		// Checks to make sure parameter pane is completed
+		// Get the current importer being used
+		Importer importer = selectionPane.getSelection();
+		
+		// Retrieve the name, author, and description parameters
 		ParameterPane parameterPane = informationPane.parameterPane;
-		if(parameterPane.isCompleted())
-		{
-			// Retrieve the parameter
-			String name = parameterPane.getParameter(0).getValue();
-			String author = parameterPane.getParameter(1).getValue();
-			String description = parameterPane.getParameter(2).getValue();
-			String uri = parameterPane.getParameter(3)==null ? null : parameterPane.getParameter(3).getValue();
+		AbstractParameter nameParm = parameterPane.getParameter("Name");
+		AbstractParameter authorParm = parameterPane.getParameter("Author");
+		AbstractParameter descriptionParm = parameterPane.getParameter("Description");
+		AbstractParameter uriParm = parameterPane.getParameter(importer.getURIType()==Importer.FILE ? "File" : importer.getURIType()==Importer.SCHEMA ? "Schema" : "Repository");
 
+		boolean completed = true;
+		if(importer.getURIType()==Importer.REPOSITORY)
+			completed = isCompleted(uriParm);
+		else completed = isCompleted(nameParm) && isCompleted(authorParm) && isCompleted(descriptionParm) && isCompleted(uriParm);
+
+		// If completed, run importer
+		if(completed)
+		{
 			// Run the importer
-			try { selectionPane.getSelection().importSchema(name, author, description, uri); }
+			String uri = uriParm==null ? null : uriParm.getValue();
+			try { importer.importSchema(nameParm.getValue(), authorParm.getValue(), descriptionParm.getValue(), uri); }
 			catch(ImporterException e2) { descriptionPane.setText(e2.getMessage(), true); }
 		}
 		else descriptionPane.setText("All fields must be completed before import!",true);
