@@ -13,6 +13,7 @@ import javax.swing.DefaultListModel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.ListSelectionModel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -50,6 +51,7 @@ public class SchemaMenu extends JPanel implements ActionListener, ListSelectionL
 		DefaultListModel model = new DefaultListModel();
 		for(Schema schema : schemas) model.addElement(schema);
 		schemaList = new JList(model);
+		schemaList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
 		// Generate the scroll pane for showing the items being managed
 		JScrollPane schemaListPane = new JScrollPane();
