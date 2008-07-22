@@ -1,12 +1,12 @@
 package org.openii.schemr.matcher;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-
-import org.mitre.schemastore.model.Schema;
+import java.util.logging.Logger;
 
 
 public class SimilarityMatrix {
+
+	private static final Logger logger = Logger.getLogger(SimilarityMatrix.class.getName());
 
 	/**
 	 * @param args
@@ -19,26 +19,26 @@ public class SimilarityMatrix {
 	}
 	
 	double [][] score;
-	final Object [] columnIDs;
-	final Object [] rowIDs;
+	final Object [] colObjs;
+	final Object [] rowObjs;
 
 	HashMap<Object, Integer> colMap;
 	HashMap<Object, Integer> rowMap;
 
 	public SimilarityMatrix(final Object [] cols, final Object [] rows) {
 		this.score = new double [cols.length][rows.length];
-		this.columnIDs = cols;
-		this.rowIDs = rows;
+		this.colObjs = cols;
+		this.rowObjs = rows;
 		
 		colMap = new HashMap<Object, Integer>();
 		int i = 0;
-		for (Object col : columnIDs) {
+		for (Object col : colObjs) {
 			colMap.put(col, i);
 			i++;
 		}
 		rowMap = new HashMap<Object, Integer>();
 		i = 0;
-		for (Object row : rowIDs) {
+		for (Object row : rowObjs) {
 			rowMap.put(row, i);
 			i++;
 		}
@@ -52,7 +52,7 @@ public class SimilarityMatrix {
 	}
 
 	public double getScore(int x, int y) {
-		if (x > columnIDs.length || y > rowIDs.length) {
+		if (x > colObjs.length || y > rowObjs.length) {
 			throw new IllegalArgumentException("Invalid column or row index: " + x + ", " + y);			
 		}
 		return score[x][y];
@@ -66,27 +66,29 @@ public class SimilarityMatrix {
 	}
 	
 	public void setScore(int x, int y, double score) {
-		if (x > columnIDs.length || y > rowIDs.length) {
+		if (x > colObjs.length || y > rowObjs.length) {
 			throw new IllegalArgumentException("Invalid column or row index: " + x + ", " + y);			
 		}
 		this.score[x][y] = score;
 	}
 	
-	private final String GAP = "       ";
+	private final String GAP = "         ";
 	private final int LEN = GAP.length();
 	@Override
 	public String toString() {
 		StringBuffer sb = new StringBuffer();
-		sb.append("\n  "+GAP+GAP+" ");
-		for (Object o : columnIDs) {
+		sb.append("\n"+GAP+GAP+" ");
+		for (Object o : colObjs) {
 			sb.append("| " + fixLength(o.toString().trim(), LEN) + " ");
 		}
 		sb.append("\n");
-		for (Object o : rowIDs) {
-			sb.append("| " + fixLength(o.toString().trim(), LEN*2) + " ");		
+		for (Object o : rowObjs) {
+			sb.append(fixLength(o.toString().trim(), LEN*2) + " ");		
 			int rowIndex = rowMap.get(o);
-			for (int i = 0; i < columnIDs.length; i++) {
-				sb.append("| " + fixLength(""+score[i][rowIndex], LEN) + " ");
+			for (int i = 0; i < colObjs.length; i++) {
+				double val = score[i][rowIndex];
+				String sval = val == 0.0 ? "" : Double.toString(val); 
+				sb.append("| " + fixLength(sval, LEN) + " ");
 			}
 			sb.append("\n");
 		}
@@ -94,15 +96,128 @@ public class SimilarityMatrix {
 	}
 	
 	private static String fixLength(String s, int len) {
-		String result;
+		String result = s.trim();
 		if (s.length() > len) {
-			result =  s.substring(0, len);
-		} else {
-			result = s;
+			result =  result.substring(0, len).trim();
+		}
+		if (result.length() < len) {
 			while (result.length() < len) {
 				result = result + " ";
 			}
 		}
 		return result;	
 	}
+
+	
+	public class ScoreEvidence {
+		private Object obj;
+		private double score;
+		public ScoreEvidence(Object obj, double score) {
+			this.obj = obj;
+			this.score = score;
+		}
+		public Object getObj() {
+			return obj;
+		}
+		public double getScore() {
+			return score;
+		}
+	}
+	
+	public ScoreEvidence getMaxScoreEvidence(Object o) {
+		return new ScoreEvidence(this.getMaxCorrespondentObject(o), this.getMaxScore(o));
+	}
+	
+	private double getMaxScore(Object o) {
+		if (rowMap.keySet().contains(o)) {
+			return getMaxScoreForRow(o);
+		} else if (colMap.keySet().contains(o)) {
+			return getMaxScoreForColumn(o);
+		} else {
+			logger.warning("Unknow object requested");
+			return 0;
+		}
+	}
+
+	private double getMaxScoreForColumn(Object o) {
+		double score = 0;
+		for(Object rowObj: rowObjs) {
+			double currScore = this.getScore(o, rowObj);
+			if (currScore > score) {
+				score = currScore;
+			}
+		}
+		return score;
+	}
+
+	private double getMaxScoreForRow(Object o) {
+		double score = 0;
+		for(Object colObj: colObjs) {
+			double currScore = this.getScore(colObj, o);
+			if (currScore > score) {
+				score = currScore;
+			}
+		}
+		return score;
+	}
+
+	private Object getMaxCorrespondentObject(Object o) {
+		if (rowMap.keySet().contains(o)) {
+			return getMaxCorrespondentObjectForRow(o);
+		} else if (colMap.keySet().contains(o)) {
+			return getMaxCorrespondentObjectForColumn(o);
+		} else {
+			logger.warning("Unknow object requested");
+			return null;
+		}
+	}
+
+	private Object getMaxCorrespondentObjectForColumn(Object o) {
+		double score = 0;
+		Object result = null;
+		for(Object rowObj: rowObjs) {
+			double currScore = this.getScore(o, rowObj);
+			if (currScore > score) {
+				score = currScore;
+				result = rowObj;
+			}
+		}
+		return result;
+	}
+
+	private Object getMaxCorrespondentObjectForRow(Object o) {
+		double score = 0;
+		Object result = null;
+		for(Object colObj: colObjs) {
+			double currScore = this.getScore(colObj, o);
+			if (currScore > score) {
+				score = currScore;
+				result = colObj;
+			}
+		}
+		return result;
+	}
+
+
+	/**
+	 * Default conjunctive scorer
+	 * @return the total score
+	 */
+	public double getTotalScore() {		
+		// FIXME: scorer is not great
+		double score = 0;
+		for (Object rowObj : rowObjs) {
+			double maxScore = this.getMaxScoreForRow(rowObj);
+			score += maxScore;
+		}
+		return score;
+	}
+
+
+
+
 }
+
+
+
+

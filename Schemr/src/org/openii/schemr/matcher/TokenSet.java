@@ -2,8 +2,11 @@ package org.openii.schemr.matcher;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.logging.Logger;
 
 public class TokenSet {
+
+	private static final Logger logger = Logger.getLogger(TokenSet.class.getName());
 
 	private String name;
 	private ArrayList<Token> tokens;
@@ -21,23 +24,24 @@ public class TokenSet {
 	}
 
 	public void clear() {
-		tokens = new ArrayList<Token>();
+		this.tokens = new ArrayList<Token>();
 	}
 
 	public String getName() {
-		return name;
+		return this.name;
 	}
 
 	public ArrayList<Token> getTokens() {
-		return tokens;
+		return this.tokens;
 	}
 
+
 	public void add(Token t) {
-		tokens.add(t);
+		this.tokens.add(t);
 	}
 
 	public void add(ArrayList<Token> tokens) {
-		tokens.addAll(tokens);
+		this.tokens.addAll(tokens);
 	}
 
 //	public void add(TokenSet tokenSet) {
@@ -89,25 +93,25 @@ public class TokenSet {
 //	}
 
 	public int size() {
-		return tokens.size();
+		return this.tokens.size();
 	}
 
 	public int indexOf(Object o) {
-		return tokens.indexOf(o);
+		return this.tokens.indexOf(o);
 	}
 
 	public Iterator<Token> iterator() {
-		return tokens.iterator();
+		return this.tokens.iterator();
 	}
 	
 	@Override
 	public String toString() {
 		StringBuffer writer = new StringBuffer();
-		writer.append("name=" + name + " | ");
-		Iterator<Token> it = tokens.iterator();
+		writer.append("set named: " + name + " | ");
+		Iterator<Token> it = this.tokens.iterator();
 		while (it.hasNext()) {
 			Token token = it.next();
-			writer.append(token.toString() + " |");
+			writer.append(token.toString() + " | ");
 		}
 		return writer.toString();
 	}
