@@ -57,7 +57,7 @@ public class SchemaStoreClient
 		Integer schemaID = proxy.addSchema(schema);
 		return schemaID==0 ? null : schemaID;
 	}
-	
+
 	/** Extends the specified schema in the web service */
 	public Schema extendSchema(Integer schemaID) throws RemoteException
 		{ return proxy.extendSchema(schemaID); }
@@ -73,6 +73,10 @@ public class SchemaStoreClient
 	/** Locks the specified schema in the web service */
 	public boolean lockSchema(Integer schemaID) throws RemoteException
 		{ return proxy.lockSchema(schemaID); }
+	
+	/** Indicates that the schema is able to be deleted from the web service */
+	public Boolean isDeletable(Integer schemaID) throws RemoteException
+		{ return proxy.isDeletable(schemaID); }
 	
 	/** Delete the specified schema from the web service */
 	public boolean deleteSchema(Integer schemaID) throws RemoteException
