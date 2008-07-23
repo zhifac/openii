@@ -5,6 +5,9 @@ package org.mitre.flexidata.ygg.view.schema.porters;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.util.ArrayList;
 
 import javax.swing.JButton;
@@ -27,23 +30,30 @@ import org.mitre.flexidata.ygg.view.shared.SelectionPane;
 import org.mitre.flexidata.ygg.view.shared.parameters.FileParameter;
 import org.mitre.flexidata.ygg.view.shared.parameters.ParameterPane;
 import org.mitre.schemastore.model.Schema;
+import org.mitre.schemastore.model.SchemaElement;
 
 /** Class for displaying the exporter view */
 public class ExporterView extends GenericView implements ActionListener
 {
-	/** Stores the schema being exported */
+	/** Stores the schema and schema elements being exported */
 	private Schema schema;
+	private ArrayList<SchemaElement> schemaElements;
+
+	/** Stores the text to be outputted */
+	private StringBuffer output = null;
 	
 	// Stores various objects used by the schema view
+	private JTextArea previewArea = null;
+	private ParameterPane parameterPane = null;
 	private ExporterSelectionPane selectionPane;
 	private InformationPane informationPane;
 	private DescriptionPane descriptionPane;
-	
+
 	/** Stores the preview and save buttons used to run the exporter */
 	private ColoredButton backButton = new ColoredButton("Back");
 	private ColoredButton previewButton = new ColoredButton("Preview");
 	private ColoredButton saveButton = new ColoredButton("Save");
-	
+
 	/** Class for displaying the exporter selection pane */
 	private class ExporterSelectionPane extends SelectionPane<Exporter> implements ActionListener
 	{
@@ -53,7 +63,7 @@ public class ExporterView extends GenericView implements ActionListener
 			super("Method",ConfigManager.getExporters());
 			addActionListener(this);
 		}
-			
+
 		/** Handles the selection of an exporter */
 		public void actionPerformed(ActionEvent e)
 		{
@@ -66,12 +76,6 @@ public class ExporterView extends GenericView implements ActionListener
 	/** Class for displaying the information pane */
 	private class InformationPane extends RoundedPane
 	{
-		/** Stores the parameter pane */
-		private ParameterPane parameterPane = null;
-		
-		/** Stores the preview pane */
-		private JTextArea previewArea = null;
-		
 		/** Constructs the information pane */
 		private InformationPane()
 		{			
@@ -105,7 +109,9 @@ public class ExporterView extends GenericView implements ActionListener
 			// Generate the parameter pane
 			parameterPane = new ParameterPane();
 			parameterPane.setBorder(new EmptyBorder(5,5,5,5));
-			parameterPane.addParameter(new FileParameter("File",exporter.getFileFilter()));
+			ArrayList<String> fileTypes = new ArrayList<String>();
+			fileTypes.add(exporter.getFileType());
+			parameterPane.addParameter(new FileParameter("File",fileTypes));
 			
 			// Generate the information pane
 			JPanel infoPane = new JPanel();
@@ -119,10 +125,22 @@ public class ExporterView extends GenericView implements ActionListener
 		}
 	}
 	
+	/** Retrieves the text to be outputted */
+	private StringBuffer getOutput()
+	{
+		if(output==null)
+		{
+			Exporter exporter = selectionPane.getSelection();
+			output = exporter.exportSchema(schema.getId(), schemaElements);
+		}
+		return output;
+	}
+	
 	/** Constructs the importer view */
-	public ExporterView(Schema schema)
+	public ExporterView(Schema schema, ArrayList<SchemaElement> schemaElements)
 	{
 		this.schema = schema;
+		this.schemaElements = schemaElements;
 		
 		// Generate the schema view
 		setOpaque(false);
@@ -158,10 +176,26 @@ public class ExporterView extends GenericView implements ActionListener
 			
 		// Displays a preview of the schema export file
 		if(e.getSource()==previewButton)
-			System.out.println("Show preview");
-		
+		{
+			previewArea.setText(getOutput().toString());
+			previewArea.setCaretPosition(0);
+		}
+			
 		// Exports the schema to the specified file
 		if(e.getSource()==saveButton)
-			System.out.println("Save schema");
+		{
+			try {
+				// Export the schema to file
+				File file = new File(parameterPane.getParameter("File").getValue());
+				BufferedWriter out = new BufferedWriter(new FileWriter(file));
+				out.write(getOutput().toString());
+				out.close();
+
+				// Switch back to schema view
+				Ygg.setView(new SchemaView(schema));
+			}
+			catch(Exception e2)
+				{ descriptionPane.setText("Unable to export to specified file!",true); }
+		}
 	}
 }

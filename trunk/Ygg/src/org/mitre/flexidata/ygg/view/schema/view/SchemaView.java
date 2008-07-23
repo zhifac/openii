@@ -22,15 +22,14 @@ import org.mitre.flexidata.ygg.view.shared.ColoredButton;
 import org.mitre.flexidata.ygg.view.shared.parameters.ParameterPane;
 import org.mitre.flexidata.ygg.view.shared.parameters.TextParameter;
 import org.mitre.schemastore.model.Schema;
+import org.mitre.schemastore.model.SchemaElement;
 
 /** Class for displaying the schema view */
 public class SchemaView extends GenericView implements ActionListener
 {	
-	/** Stores the schema associated with this view */
+	/** Stores the schema and schema elements associated with this view */
 	private Schema schema;
-	
-	/** Stores the schema elements associated with this view */
-	//private ArrayList<>
+	private ArrayList<SchemaElement> schemaElements;
 	
 	// Stores the various objects associated with the schema view
 	private ParameterPane generalInfoPane = new ParameterPane();
@@ -43,6 +42,7 @@ public class SchemaView extends GenericView implements ActionListener
 	{
 		// Stores the schema associated with this view
 		this.schema = schema;
+		this.schemaElements = SchemaManager.getSchemaElements(schema.getId());
 
 		// Generate the general info pane
 		generalInfoPane.addParameter(new TextParameter("Description",schema.getDescription()));
@@ -79,7 +79,7 @@ public class SchemaView extends GenericView implements ActionListener
 	public void actionPerformed(ActionEvent e)
 	{
 		if(e.getSource()==editButton) Ygg.setView(new EditSchemaView(schema));
-		if(e.getSource()==exportButton) Ygg.setView(new ExporterView(schema));
+		if(e.getSource()==exportButton) Ygg.setView(new ExporterView(schema, schemaElements));
 		if(e.getSource()==deleteButton)
 		{
 			int response = JOptionPane.showConfirmDialog(Ygg.ygg,"Delete the '"+schema.getName()+"' schema?","Delete Schema",JOptionPane.YES_NO_OPTION);

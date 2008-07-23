@@ -2,14 +2,10 @@
 
 package org.mitre.flexidata.ygg.importers;
 
-import java.io.File;
-
 import org.mitre.flexidata.ygg.model.SchemaManager;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
 import java.util.ArrayList;
-
-import javax.swing.filechooser.FileFilter;
 
 /** Abstract Importer class */
 public abstract class Importer
@@ -45,7 +41,7 @@ public abstract class Importer
 	abstract public Integer getURIType();
 	
 	/** Returns the importer URI file types (only needed when URI type is FILE) */
-	public ArrayList<String> getURIFileTypes() { return new ArrayList<String>(); }
+	public ArrayList<String> getFileTypes() { return new ArrayList<String>(); }
 	
 	/** Returns the list of schemas which this schema extends */
 	public ArrayList<Integer> getExtendedSchemaIDs(String uri) throws ImporterException
@@ -53,32 +49,6 @@ public abstract class Importer
 	
 	/** Returns the schema elements from the specified URI */
 	abstract public ArrayList<SchemaElement> getSchemaElements(Integer schemaID, String uri) throws ImporterException;
-	
-	/** Returns the file filter associated with this importer */
-	final public FileFilter getFileFilter()
-	{
-		final class ImporterFileFilter extends FileFilter
-		{
-			/** Indicates if the file is acceptable */
-			public boolean accept(File file)
-			{
-				if(file.isDirectory()) return true;
-				for(String uriFileType : getURIFileTypes())
-					if(file.getName().endsWith(uriFileType)) return true;
-				return false;
-			}
-			
-			/** Provides a description of what constitutes an acceptable file */
-			public String getDescription()
-			{
-				String description = getName() + "(";
-				for(String uriFileType : getURIFileTypes())
-					description += uriFileType + ",";
-				return description.replaceAll(",$",")");
-			}
-		}
-		return new ImporterFileFilter();
-	}
 	
 	/** Imports the specified URI */
 	final public Integer importSchema(String name, String author, String description, String uri) throws ImporterException

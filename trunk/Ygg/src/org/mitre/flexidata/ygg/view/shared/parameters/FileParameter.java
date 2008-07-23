@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.util.ArrayList;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -18,17 +19,39 @@ import org.mitre.flexidata.ygg.view.Consts;
 /** File parameter class */
 public class FileParameter extends AbstractParameter implements ActionListener
 {
+	/** File filter class associated with this file parameter */
+	private class ParameterFileFilter extends FileFilter
+	{
+		/** Indicates if the file is acceptable */
+		public boolean accept(File file)
+		{
+			if(file.isDirectory()) return true;
+			for(String uriFileType : fileTypes)
+				if(file.getName().endsWith(uriFileType)) return true;
+			return false;
+		}
+			
+		/** Provides a description of what constitutes an acceptable file */
+		public String getDescription()
+		{
+			String description = getName() + "(";
+			for(String uriFileType : fileTypes)
+				description += "*" + uriFileType + ",";
+			return description.replaceAll(",$",")");
+		}
+	}
+	
 	/** Stores the file field */
 	private JTextField fileField = new JTextField();
 	
-	/** Stores the specified file filter */
-	private FileFilter fileFilter = null;
+	/** Stores the specified file types */
+	private ArrayList<String> fileTypes = null;
 	
 	/** Constructs the file parameter */
-	public FileParameter(String name, FileFilter fileFilter)
+	public FileParameter(String name, ArrayList<String> fileTypes)
 	{
 		super(name);
-		this.fileFilter = fileFilter;
+		this.fileTypes = fileTypes;
 		setBorder(new EmptyBorder(2,0,2,0));
 
 		// Constructs the file field
@@ -54,7 +77,7 @@ public class FileParameter extends AbstractParameter implements ActionListener
 	public String getValue()
 	{
 		String value = fileField.getText();
-		return value==null || value.length()==0 ? null : (new File(value).toURI()).toString();
+		return value==null || value.length()==0 ? null : value;
 	}
 	
 	/** Sets the parameter value */
@@ -68,12 +91,19 @@ public class FileParameter extends AbstractParameter implements ActionListener
 	/** Handles the pressing of the file button */
 	public void actionPerformed(ActionEvent e)
 	{
+		// Create the file filter for use
+		ParameterFileFilter filter = new ParameterFileFilter();
+		
 		// Ask the user to specify a file
 		JFileChooser chooser = new JFileChooser();
 		chooser.setDialogType(JFileChooser.OPEN_DIALOG);
 		chooser.setAcceptAllFileFilterUsed(false);
-		chooser.addChoosableFileFilter(fileFilter);
+		chooser.addChoosableFileFilter(filter);
 		if(chooser.showDialog(Ygg.ygg,"Select")==JFileChooser.APPROVE_OPTION)
-			fileField.setText(chooser.getSelectedFile().getPath());
+		{
+			String path = chooser.getSelectedFile().getPath();
+			if(!filter.accept(new File(path))) path += fileTypes.get(0);
+			fileField.setText(path);
+		}
 	}
 }
