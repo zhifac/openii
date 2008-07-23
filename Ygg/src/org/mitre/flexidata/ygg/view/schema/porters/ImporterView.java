@@ -90,7 +90,7 @@ public class ImporterView extends GenericView implements ActionListener
 			
 			// Determine what type of URI needs to be retrieved
 			if(uriType==Importer.FILE)
-				parameterPane.addParameter(new FileParameter("File",importer.getFileFilter()));
+				parameterPane.addParameter(new FileParameter("File",importer.getFileTypes()));
 			else if(uriType==Importer.SCHEMA)
 				parameterPane.addParameter(new SchemaParameter("Schema"));
 			else if(uriType==Importer.REPOSITORY)

@@ -54,7 +54,7 @@ public class XSDImporter extends Importer
 		{ return FILE; }
 	
 	/** Returns the importer URI file types */
-	public ArrayList<String> getURIFileTypes()
+	public ArrayList<String> getFileTypes()
 	{
 		ArrayList<String> fileTypes = new ArrayList<String>();
 		fileTypes.add(".xsd");

@@ -47,7 +47,7 @@ public class CopySchemaImporter extends Importer
 		{ return REPOSITORY; }
 	
 	/** Returns the importer URI file types (only needed when URI type is FILE) */
-	public ArrayList<String> getURIFileTypes()
+	public ArrayList<String> getFileTypes()
 		{ return null; }
 	
 	/** Returns the ID of parent schemas */

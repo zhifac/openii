@@ -67,7 +67,7 @@ public class OWLImporter extends Importer implements RDFErrorHandler
 		{ return FILE; }
 	
 	/** Returns the importer URI file types */
-	public ArrayList<String> getURIFileTypes()
+	public ArrayList<String> getFileTypes()
 	{
 		ArrayList<String> fileTypes = new ArrayList<String>();
 		fileTypes.add(".owl"); fileTypes.add(".rdf"); fileTypes.add(".rdfs");

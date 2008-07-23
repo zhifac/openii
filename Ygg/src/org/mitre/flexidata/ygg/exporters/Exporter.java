@@ -2,9 +2,9 @@
 
 package org.mitre.flexidata.ygg.exporters;
 
-import java.io.File;
+import java.util.ArrayList;
 
-import javax.swing.filechooser.FileFilter;
+import org.mitre.schemastore.model.SchemaElement;
 
 /** Abstract Exporter class */
 public abstract class Exporter
@@ -17,29 +17,9 @@ public abstract class Exporter
 	
 	/** Returns the exporter file type */
 	abstract public String getFileType();
-
-	/** Returns the file filter associated with this importer */
-	public FileFilter getFileFilter()
-	{
-		final class ImporterFileFilter extends FileFilter
-		{
-			/** Indicates if the file is acceptable */
-			public boolean accept(File file)
-			{
-				if(file.isDirectory()) return true;
-				if(file.getName().endsWith(getFileType())) return true;
-				return false;
-			}
-			
-			/** Provides a description of what constitutes an acceptable file */
-			public String getDescription()
-			{
-				String description = getName() + "(" + getFileType() + ")";
-				return description.replaceAll(",$",")");
-			}
-		}
-		return new ImporterFileFilter();
-	}
+	
+	/** Exports the specified schema*/
+	abstract public StringBuffer exportSchema(Integer schemaID, ArrayList<SchemaElement> schemaElements);
 	
 	/** Outputs the exporter name */
 	public String toString()
