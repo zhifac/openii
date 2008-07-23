@@ -140,12 +140,12 @@ protected SIMPLE_LETTER :'a'..'z' | 'A'..'Z' | '\177'..'\377'
 
 // inherited from grammar DmlSQL2Lexer
 protected SEPARATOR :'-' {$setType(MINUS_SIGN);}
-	| COMMENT //{ $setType(ANTLR_USE_NAMESPACE(antlr)Token::SKIP); }
+	| LINE_COMMENT //{ $setType(ANTLR_USE_NAMESPACE(antlr)Token::SKIP); }
 	| (SPACE | NEWLINE)+	//{ $setType(ANTLR_USE_NAMESPACE(antlr)Token::SKIP); }
 ;
 
 // inherited from grammar DmlSQL2Lexer
-COMMENT :"--"
+LINE_COMMENT :"--"
 		(~('\n'|'\r'))* ('\n'|'\r'('\n')?)
 		{$setType(Token.SKIP); newline();}
 	;
@@ -191,8 +191,7 @@ public ArrayList<SchemaElement> getSchemaObjects()
 
 //  Class body inset ends here
 }
-sql_stmt :COMMENT
-	| ( sql_data_stmt
+sql_stmt :( sql_data_stmt
 	| sql_schema_stmt
 	| sql_transaction_stmt
 	|
@@ -223,6 +222,8 @@ sql_schema_def_stmt :schema_def
 	| collation_def
 	| translation_def
 	| assertion_def
+    | comment_def
+
 ;
 
 sql_schema_manipulat_stmt :drop_schema_stmt
@@ -236,6 +237,10 @@ sql_schema_manipulat_stmt :drop_schema_stmt
 	| drop_collation_stmt
 	| drop_translation_stmt
 	| drop_assertion_stmt
+;
+
+comment_def {System.out.println( "matched comment_def" );}
+:"comment" "on" "table" table_name "is" ( ANY_CHAR )+
 ;
 
 sql_transaction_stmt :commit_stmt
@@ -287,6 +292,7 @@ schema_element :table_def
 	| collation_def
 	| translation_def
     | rule_def
+
 ;
 
 rule_def :"create" "rule" (~(SEMICOLON))* SEMICOLON

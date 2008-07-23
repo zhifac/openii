@@ -11,6 +11,8 @@ import org.mitre.flexidata.ygg.importers.ddl.DdlFilteredReader;
 import org.mitre.flexidata.ygg.importers.ddl.SqlSQL2Lexer;
 import org.mitre.flexidata.ygg.importers.ddl.SqlSQL2Parser;
 import org.mitre.schemastore.model.SchemaElement;
+import java.net.URI
+;
 
 /**
  * DOCUMENT ME!
@@ -23,15 +25,15 @@ public class DDLImporter extends Importer
 	/** Returns the importer name */
 	public String getName()
 		{ return "DDL Importer"; }
-	
+
 	/** Returns the importer description */
 	public String getDescription()
 		{ return "This importer can be used to import schemas from a ddl format"; }
-	
+
 	/** Returns the importer URI type */
 	public Integer getURIType()
 		{ return FILE; }
-	
+
 	/** Returns the importer URI file types */
 	public ArrayList<String> getFileTypes()
 	{
@@ -44,7 +46,8 @@ public class DDLImporter extends Importer
 	protected ArrayList<SchemaElement> getSchemaElements(Integer schemaID, String uri) throws ImporterException
 	{
 		try {
-	        SqlSQL2Lexer lexer = new SqlSQL2Lexer( new DdlFilteredReader( new FileReader( new File(uri) ) ) );
+            URI schemaLoc = new URI(uri);
+	        SqlSQL2Lexer lexer = new SqlSQL2Lexer( new DdlFilteredReader( new FileReader( new File(schemaLoc) ) ) );
 	        SqlSQL2Parser parser = new SqlSQL2Parser( lexer );
 	        try
 	        {
@@ -58,8 +61,9 @@ public class DDLImporter extends Importer
 	                }
 	                catch (NoViableAltException e)
 	                {
+                        System.out.print( e.getClass().getName() + ": " );
 	                    e.printStackTrace();
-	                    break;
+	                    return parser.getSchemaObjects();
 	                }
 	            }
 	        }
@@ -70,6 +74,7 @@ public class DDLImporter extends Importer
 	        }
 	        return parser.getSchemaObjects();
 		}
-		catch(Exception e) { throw new ImporterException(ImporterException.PARSE_FAILURE,e.getMessage()); }
+		catch(Exception e) { System.out.print( e.getClass().getName() + ": " ); e.printStackTrace();
+        throw new ImporterException(ImporterException.PARSE_FAILURE,e.getMessage()); }
 	}
 }

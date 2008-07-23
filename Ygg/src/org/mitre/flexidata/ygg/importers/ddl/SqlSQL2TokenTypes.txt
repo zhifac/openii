@@ -316,11 +316,12 @@ RIGHT_BRACKET("]")=317
 INTRODUCER("introducing _")=318
 SIMPLE_LETTER("a letter")=319
 SEPARATOR("a separator")=320
-COMMENT("a comment")=321
+LINE_COMMENT("a comment")=321
 NEWLINE("the new line character")=322
 SPACE("the space character")=323
 ANY_CHAR("any character")=324
-LITERAL_rule="rule"=325
-LITERAL_index="index"=326
-LITERAL_sysdate="sysdate"=327
-LITERAL_text="text"=328
+SQL2W_comment="comment"=325
+LITERAL_rule="rule"=326
+LITERAL_index="index"=327
+LITERAL_sysdate="sysdate"=328
+LITERAL_text="text"=329
