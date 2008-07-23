@@ -21,7 +21,7 @@ public class ExtendSchemaImporter extends Importer
 		{ return SCHEMA; }
 	
 	/** Returns the list of schemas which this schema extends */
-	public ArrayList<Integer> getExtendedSchemaIDs(String uri)
+	protected ArrayList<Integer> getExtendedSchemaIDs(String uri)
 	{
 		ArrayList<Integer> extendedSchemaIDs = new ArrayList<Integer>();
 		extendedSchemaIDs.add(Integer.parseInt(uri));
@@ -29,6 +29,6 @@ public class ExtendSchemaImporter extends Importer
 	}
 	
 	/** Returns the schema elements from the specified URI */
-	public ArrayList<SchemaElement> getSchemaElements(Integer schemaID, String uri) throws ImporterException
+	protected ArrayList<SchemaElement> getSchemaElements(Integer schemaID, String uri) throws ImporterException
 		{ return new ArrayList<SchemaElement>(); }
 }

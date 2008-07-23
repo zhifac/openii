@@ -32,7 +32,6 @@ public class CopySchemaImporter extends Importer
 	
 	/** Store the mapping of oldID --> newID for schemaElements */
 	private HashMap<Integer, Integer> IDmapping;
-	 
 	
 	/** Returns the importer name */
 	public String getName()
@@ -66,7 +65,6 @@ public class CopySchemaImporter extends Importer
 	{		
 		// Search for schemas with a shared name and the same amount of schema elements
 		if(schemaList==null) schemaList = SchemaManager.getSchemas();
-		
 		
 		for(Schema schema : schemaList)
 		{
@@ -121,7 +119,7 @@ public class CopySchemaImporter extends Importer
 	}
 	
 	/** Returns the list of schemas which this schema extends */
-	public ArrayList<Integer> getExtendedSchemaIDs(String uri) throws ImporterException
+	protected ArrayList<Integer> getExtendedSchemaIDs(String uri) throws ImporterException
 	{
 		// Initialize the importer if needed
 		initIfNeeded(uri);
@@ -167,7 +165,7 @@ public class CopySchemaImporter extends Importer
 	}
 	
 	/** Returns the schema elements from the specified URI with form [SRC SCHEMA REPO]#[SRC SCHEMA NAME]*/
-	public ArrayList<SchemaElement> getSchemaElements(Integer schemaID, String uri) throws ImporterException 
+	protected ArrayList<SchemaElement> getSchemaElements(Integer schemaID, String uri) throws ImporterException 
 	{ 	
 		// Initialize the importer if needed
 		initIfNeeded(uri);		
