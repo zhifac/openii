@@ -1,4 +1,4 @@
-<schemastore>http://localhost:8080/SchemaStore/services/SchemaStore</schemastore>
+<schemastore>http://brainsrv2:8090/SchemaStore/services/SchemaStore</schemastore>
 <importers>
   <importer>org.mitre.flexidata.ygg.importers.NewSchemaImporter</importer>
   <importer>org.mitre.flexidata.ygg.importers.ExtendSchemaImporter</importer>
@@ -9,4 +9,5 @@
 </importers>
 <exporters>
   <exporter>org.mitre.flexidata.ygg.exporters.XSDExporter</exporter>
+  <exporter>org.mitre.flexidata.ygg.exporters.SQLExporter</exporter>
 </exporters>
