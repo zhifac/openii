@@ -137,9 +137,6 @@ public class ImportSchema
 				if(schemaElementID==null) throw new RemoteException("Failed to import schema element "+schemaElement.getName());
 				alterID(schemaElements,schemaElement.getId(),schemaElementID);
 			}
-	
-			// Locks the schema once everything has been imported
-			client.lockSchema(schemaID);
 		}
 		catch(RemoteException e)
 		{
