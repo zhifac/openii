@@ -280,18 +280,18 @@ SIMPLE_LETTER :
 //}
 
 //{ Rule #479 <SEPARATOR>
-//  It was originally a protected rule set to be filtered out but the <COMMENT> and <MINUS_SIGN> clashed.
+//  It was originally a protected rule set to be filtered out but the <LINE_COMMENT> and <MINUS_SIGN> clashed.
 protected
 SEPARATOR :
     '-' {$setType(MINUS_SIGN);}
-	| COMMENT //{ $setType(ANTLR_USE_NAMESPACE(antlr)Token::SKIP); }
+	| LINE_COMMENT //{ $setType(ANTLR_USE_NAMESPACE(antlr)Token::SKIP); }
 	| (SPACE | NEWLINE)+	//{ $setType(ANTLR_USE_NAMESPACE(antlr)Token::SKIP); }
 ;
 //}
 
-//{ Rule #097 <COMMENT>
+//{ Rule #097 <LINE_COMMENT>
 //protected
-//COMMENT :
+//LINE_COMMENT :
     //'-' '-' ( ~('\r' | '\n') )* NEWLINE
     // '-' '-' ( ~('\r' | '\n') )* NEWLINE { $setType(Token::SKIP);}
     // '-' '-' (' ' | SIMPLE_LETTER)*
@@ -301,11 +301,15 @@ SEPARATOR :
     //"--" ( ~('\r' | '\n') )* NEWLINE
 //;
 //}
-COMMENT
+LINE_COMMENT
 	:	"--"
 		(~('\n'|'\r'))* ('\n'|'\r'('\n')?)
 		{$setType(Token.SKIP); newline();}
 	;
+
+// FREE_TEXT :
+//     (~(';'))+
+// ;
 
 //{ Rule #360 <NEWLINE>
 protected

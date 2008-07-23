@@ -3,6 +3,12 @@
 //  Global header starts here, at the top of all generated files
 package org.mitre.flexidata.ygg.importers.ddl;
 
+import java.util.*;
+import org.mitre.schemastore.model.*;
+import org.mitre.flexidata.ygg.importers.*;
+
+//  Global header ends here
+
 public interface SqlSQL2TokenTypes {
 	int EOF = 1;
 	int NULL_TREE_LOOKAHEAD = 3;
@@ -322,12 +328,13 @@ public interface SqlSQL2TokenTypes {
 	int INTRODUCER = 318;
 	int SIMPLE_LETTER = 319;
 	int SEPARATOR = 320;
-	int COMMENT = 321;
+	int LINE_COMMENT = 321;
 	int NEWLINE = 322;
 	int SPACE = 323;
 	int ANY_CHAR = 324;
-	int LITERAL_rule = 325;
-	int LITERAL_index = 326;
-	int LITERAL_sysdate = 327;
-	int LITERAL_text = 328;
+	int SQL2W_comment = 325;
+	int LITERAL_rule = 326;
+	int LITERAL_index = 327;
+	int LITERAL_sysdate = 328;
+	int LITERAL_text = 329;
 }

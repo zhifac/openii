@@ -148,8 +148,7 @@ public ArrayList<SchemaElement> getSchemaObjects()
 // ---------------
 //{ Rule #--- <sql_stmt> is a proxy rule for all types of sql statements
 sql_stmt :
-    COMMENT
-	| ( sql_data_stmt
+    ( sql_data_stmt
 	| sql_schema_stmt
 	| sql_transaction_stmt
 	|
@@ -186,6 +185,8 @@ sql_schema_def_stmt :
 	| collation_def
 	| translation_def
 	| assertion_def
+    | comment_def
+
 ;
 //}
 
@@ -203,6 +204,17 @@ sql_schema_manipulat_stmt :
 	| drop_translation_stmt
 	| drop_assertion_stmt
 ;
+//}
+
+//{ attempt to parse a schem comment statement
+comment_def {System.out.println( "matched comment_def" );}:
+	"comment" "on" "table" table_name "is" ( ANY_CHAR )+
+;
+
+ //( "column" table_name "." column_name | "table" table_name)
+    //"is"
+    //( CHAR_STRING )+
+    //( ANY_CHAR )+
 //}
 
 //{ Rule #551 <sql_transaction_stmt>
@@ -279,6 +291,7 @@ schema_element :
 	| collation_def
 	| translation_def
     | rule_def
+
 ;
 //}
 
