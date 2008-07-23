@@ -3,7 +3,7 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/lucene-core-2.3.jar" sourcepath="/lucene-2.3.2/src/java"/>
-	<classpathentry kind="lib" path="lib/prefuse.jar"/>
+	<classpathentry kind="lib" path="lib/prefuse.jar" sourcepath="/prefuse-beta/src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/3"/>
 	<classpathentry kind="lib" path="lib/xstream/cglib-nodep-2.1_3.jar"/>
 	<classpathentry kind="lib" path="lib/xstream/dom4j-1.6.1.jar"/>
@@ -19,5 +19,6 @@
 	<classpathentry kind="lib" path="lib/xstream/xstream-1.3.jar"/>
 	<classpathentry kind="lib" path="lib/xstream/xstream-benchmark-1.3.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/SchemaStoreClient"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/prefuse-beta"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
