@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mitre.schemastore.graph.GraphBuilder;
@@ -15,7 +16,7 @@ import org.openii.schemr.matcher.EditDistanceMatcher;
 import org.openii.schemr.matcher.Matcher;
 import org.openii.schemr.matcher.NGramMatcher;
 import org.openii.schemr.matcher.SimilarityMatrix;
-import org.openii.schemr.viz.TextVisualizer;
+import org.openii.schemr.viz.PrefuseVisualizer;
 import org.openii.schemr.viz.Visualizer;
 
 /**
@@ -68,13 +69,11 @@ public class Query {
 		Schema querySchema = null;
 		ArrayList<SchemaElement> querySchemaElements = null;
 		try {
-			candidateSchemas = SchemaUtility.getCLIENT().getSchemas();
+//			candidateSchemas = SchemaUtility.getCLIENT().getSchemas();			
+			candidateSchemas = new ArrayList<Schema>();
+			candidateSchemas.add(SchemaUtility.getCLIENT().getSchema(16));
 			
-			for (Schema s : candidateSchemas) {
-				if (s.getId() == 17) {
-					querySchema = s;
-				}
-			}
+			querySchema = SchemaUtility.getCLIENT().getSchema(17);
 			querySchemaElements = SchemaUtility.getCLIENT().getSchemaElements(querySchema.getId());
 		} catch (RemoteException e) {
 			e.printStackTrace();
@@ -91,8 +90,8 @@ public class Query {
 
 		MATCHER = "NGRAM";
 		q.processQuery(candidateSchemas);
-		MATCHER = "EDITDISTANCE";
-		q.processQuery(candidateSchemas);
+//		MATCHER = "EDITDISTANCE";
+//		q.processQuery(candidateSchemas);
 
 	System.out.println("All done.");		
 	}
@@ -119,9 +118,14 @@ public class Query {
 		for (MatchSummary matchSummary : msarray) {
 			i++;
 	System.out.println(i+"\tschema: "+matchSummary.getSchema().getName() + "\t\t\tscore: "+matchSummary.getScore());
-			Visualizer v = new TextVisualizer(matchSummary);
-			v.show();
-
+			Visualizer v;
+			try {
+				v = new PrefuseVisualizer(matchSummary);
+				v.show();
+			} catch (RemoteException e) {
+				logger.log(Level.SEVERE, "Connection to SchemaStore failed.", e);
+				break;
+			}
 		}
 	}
 
