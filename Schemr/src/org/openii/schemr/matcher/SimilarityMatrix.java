@@ -186,10 +186,8 @@ public class SimilarityMatrix {
 
 
 	/**
-	 * scorer addes best values together
-	 * TODO: alternative approach: take average and normalize scores
-	 * TODO: alternative approach: non-greedy approach w/ stable 
-	 * pairings would potentially yield better scores
+	 * scorer averages best values together
+	 * TODO: alternative approach: non-greedy approach w/ stable pairings would potentially yield better scores
 	 * @return the total score
 	 */
 	public double getTotalScore() {		
@@ -198,6 +196,7 @@ public class SimilarityMatrix {
 			double maxScore = this.getMaxScoreForRow(rowObj);
 			score += maxScore;
 		}
+		score = score / (double) rowObjs.length;
 		return score;
 	}
 

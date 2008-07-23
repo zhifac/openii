@@ -1,11 +1,11 @@
 package org.openii.schemr;
 
-import java.rmi.RemoteException;
+import static org.openii.schemr.Schemr.MATCHER;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mitre.schemastore.graph.GraphBuilder;
@@ -16,8 +16,6 @@ import org.openii.schemr.matcher.EditDistanceMatcher;
 import org.openii.schemr.matcher.Matcher;
 import org.openii.schemr.matcher.NGramMatcher;
 import org.openii.schemr.matcher.SimilarityMatrix;
-import org.openii.schemr.viz.PrefuseVisualizer;
-import org.openii.schemr.viz.Visualizer;
 
 /**
  * 
@@ -56,49 +54,10 @@ public class Query {
 		}
 		return super.toString();
 	}
-	
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		
-		// take a set of schema, keywords, and data
-		
-		// find a schema with which to query
-		ArrayList<Schema> candidateSchemas = null;
-		Schema querySchema = null;
-		ArrayList<SchemaElement> querySchemaElements = null;
-		try {
-//			candidateSchemas = SchemaUtility.getCLIENT().getSchemas();			
-			candidateSchemas = new ArrayList<Schema>();
-			candidateSchemas.add(SchemaUtility.getCLIENT().getSchema(16));
-			
-			querySchema = SchemaUtility.getCLIENT().getSchema(17);
-			querySchemaElements = SchemaUtility.getCLIENT().getSchemaElements(querySchema.getId());
-		} catch (RemoteException e) {
-			e.printStackTrace();
-			System.exit(-1);
-		}
-	System.out.println("Searching with: "+querySchema.getName());
 
-		HashMap<String,String> queryKeywords = new HashMap<String,String>();
-		queryKeywords.put("elephant", "");
-		queryKeywords.put("africa", "entity");
-		queryKeywords.put("telephone", "attribute");
-		
-		Query q = new Query(querySchema, querySchemaElements, queryKeywords);
-
-		MATCHER = "NGRAM";
-		q.processQuery(candidateSchemas);
-//		MATCHER = "EDITDISTANCE";
-//		q.processQuery(candidateSchemas);
-
-	System.out.println("All done.");		
-	}
-
-	public void processQuery(ArrayList<Schema> candidateSchemas) {
+	public MatchSummary [] processQuery(ArrayList<Schema> candidateSchemas) {
 		QueryParser qp = new QueryParser(this);				
-//	System.out.println(qp.toString());
+		//	System.out.println(qp.toString());
 		
 		ArrayList<MatchSummary> matchSummaries = new ArrayList<MatchSummary>();
 		
@@ -112,24 +71,9 @@ public class Query {
 		// sort according to score
 		MatchSummary [] msarray = matchSummaries.toArray(new MatchSummary[0]);
 		Arrays.sort(msarray);
-
-		int i = 0;
-	System.out.println(MATCHER+" ranked results");
-		for (MatchSummary matchSummary : msarray) {
-			i++;
-	System.out.println(i+"\tschema: "+matchSummary.getSchema().getName() + "\t\t\tscore: "+matchSummary.getScore());
-			Visualizer v;
-			try {
-				v = new PrefuseVisualizer(matchSummary);
-				v.show();
-			} catch (RemoteException e) {
-				logger.log(Level.SEVERE, "Connection to SchemaStore failed.", e);
-				break;
-			}
-		}
+		
+		return msarray;
 	}
-
-	private static String MATCHER = null;
 
 	public MatchSummary match(Schema candidateSchema, ArrayList<QueryFragment> queryFragments) {
 		
@@ -141,7 +85,7 @@ public class Query {
 		}
 
 		SimilarityMatrix sm = m.calculateSimilarityMatrix();
-//	System.out.println(sm.toString());
+		//	System.out.println(sm.toString());
 		// match summary contains schema, queryfragments, score, and evidence
 		return m.getMatchSummary();
 	}
