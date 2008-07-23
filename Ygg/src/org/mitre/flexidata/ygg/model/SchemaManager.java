@@ -36,6 +36,10 @@ public class SchemaManager
 		return success;
 	}
 
+	/** Locks the specified schema in the repository */
+	static public void lockSchema(Integer schemaID)
+		{ try { SchemaStore.getClient().lockSchema(schemaID); } catch(Exception e) {} }
+	
 	/** Indicates if the schema is deletable */
 	static public boolean isDeletable(Schema schema)
 	{

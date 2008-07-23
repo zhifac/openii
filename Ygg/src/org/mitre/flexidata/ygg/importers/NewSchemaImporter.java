@@ -21,6 +21,6 @@ public class NewSchemaImporter extends Importer
 		{ return NONE; }
 	
 	/** Returns the schema elements from the specified URI */
-	public ArrayList<SchemaElement> getSchemaElements(Integer schemaID, String uri) throws ImporterException
+	protected ArrayList<SchemaElement> getSchemaElements(Integer schemaID, String uri) throws ImporterException
 		{ return new ArrayList<SchemaElement>(); }
 }

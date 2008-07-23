@@ -39,9 +39,9 @@ public class DDLImporter extends Importer
 		fileTypes.add(".ddl"); fileTypes.add(".sql");
 		return fileTypes;
 	}
-	
+
 	/** Returns the schema elements from the specified URI */
-	public ArrayList<SchemaElement> getSchemaElements(Integer schemaID, String uri) throws ImporterException
+	protected ArrayList<SchemaElement> getSchemaElements(Integer schemaID, String uri) throws ImporterException
 	{
 		try {
 	        SqlSQL2Lexer lexer = new SqlSQL2Lexer( new DdlFilteredReader( new FileReader( new File(uri) ) ) );

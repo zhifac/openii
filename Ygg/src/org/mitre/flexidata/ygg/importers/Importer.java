@@ -44,11 +44,11 @@ public abstract class Importer
 	public ArrayList<String> getFileTypes() { return new ArrayList<String>(); }
 	
 	/** Returns the list of schemas which this schema extends */
-	public ArrayList<Integer> getExtendedSchemaIDs(String uri) throws ImporterException
+	protected ArrayList<Integer> getExtendedSchemaIDs(String uri) throws ImporterException
 		{ return new ArrayList<Integer>(); }
 	
 	/** Returns the schema elements from the specified URI */
-	abstract public ArrayList<SchemaElement> getSchemaElements(Integer schemaID, String uri) throws ImporterException;
+	abstract protected ArrayList<SchemaElement> getSchemaElements(Integer schemaID, String uri) throws ImporterException;
 	
 	/** Imports the specified URI */
 	final public Integer importSchema(String name, String author, String description, String uri) throws ImporterException
@@ -61,6 +61,8 @@ public abstract class Importer
 		// Import the schema into the repository
 		if(!SchemaManager.importSchema(schema, extendedSchemaIDs, schemaElements))
 			throw new ImporterException(ImporterException.IMPORT_FAILURE,"A failure occurred in transferring the schema to the repository");
+		if(getURIType()==REPOSITORY || getURIType()==FILE)
+			SchemaManager.lockSchema(schema.getId());
 		return schema.getId();
 	}
 	

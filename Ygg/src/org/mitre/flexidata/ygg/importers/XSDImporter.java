@@ -62,7 +62,7 @@ public class XSDImporter extends Importer
 	}
 	
 	/** Returns the schema elements from the specified URI */
-	public ArrayList<SchemaElement> getSchemaElements(Integer schemaID, String uri) throws ImporterException
+	protected ArrayList<SchemaElement> getSchemaElements(Integer schemaID, String uri) throws ImporterException
 	{
 		try {
 			// Parse the schema
