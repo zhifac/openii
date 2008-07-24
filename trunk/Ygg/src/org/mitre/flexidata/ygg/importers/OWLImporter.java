@@ -5,7 +5,7 @@ package org.mitre.flexidata.ygg.importers;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
-import java.net.URI;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -22,6 +22,7 @@ import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntProperty;
 import com.hp.hpl.jena.ontology.OntResource;
+import com.hp.hpl.jena.ontology.Profile;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.RDFErrorHandler;
 import com.hp.hpl.jena.rdf.model.RDFReader;
@@ -33,7 +34,6 @@ import com.hp.hpl.jena.util.iterator.ExtendedIterator;
  * Caveat:
  * -- The converter doesn't handle multiple imported repository
  * -- Convert object properties with multiple domains and ranges by connecting whatever relationship available
- * -- there are null classes in the ontology. :(  
  * -- Does not handle restrictions
  * 
  * @author HAOLI
@@ -42,9 +42,8 @@ import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 
 public class OWLImporter extends Importer implements RDFErrorHandler
 {
-	// Defines the various owl domain types
+	// Defines the additional owl domain types
 	public static final String FLOAT = "Float";
-	public static final String INTEGER = "Int";
 	public static final String DATE = "Date";
 	public static final String TIME = "Time";
 
@@ -52,7 +51,7 @@ public class OWLImporter extends Importer implements RDFErrorHandler
 	private ArrayList<SchemaElement> _schemaElements = new ArrayList<SchemaElement>();
 
 	private HashMap<String, Entity> _entityList = new HashMap<String, Entity>();
-	private HashMap<String, Domain> _domainList = new HashMap<String, Domain>();
+	private HashMap<String, Domain> _domainList = new HashMap<String, Domain>(); // <owl domain, ygg domain>
 
 	/** Returns the importer name */
 	public String getName()
@@ -75,7 +74,7 @@ public class OWLImporter extends Importer implements RDFErrorHandler
 	}
 	
 	/** Returns the schema elements from the specified URI */
-	protected ArrayList<SchemaElement> getSchemaElements(Integer schemaID, URI uri) throws ImporterException
+	protected ArrayList<SchemaElement> getSchemaElements(Integer schemaID, String uri) throws ImporterException
 	{
 		try {
 			loadDomains();
@@ -87,11 +86,11 @@ public class OWLImporter extends Importer implements RDFErrorHandler
 	}
 
 	/** Handles the loading of the specified domain */
-	private void loadDomain(String name, String description)
+	private void loadDomain(String name, String description )
 	{
 		Domain domain = new Domain(nextId(), name, description, 0);
 		_schemaElements.add(domain);
-		_domainList.put(ANY.toLowerCase(), domain);		
+		_domainList.put(name, domain);		
 	}
 	
 	/** Handles the loading of all default domains */
@@ -99,7 +98,7 @@ public class OWLImporter extends Importer implements RDFErrorHandler
 	{
 		loadDomain(ANY, "The Any wildcard domain");
 		loadDomain(INTEGER, "The Integer domain");
-		loadDomain(FLOAT, "The Float domain");
+		loadDomain(FLOAT, "The Float domain" );
 		loadDomain(STRING, "The String domain");
 		loadDomain(BOOLEAN, "The Boolean domain");
 		loadDomain(DATETIME, "The DateTime domain");
@@ -108,33 +107,33 @@ public class OWLImporter extends Importer implements RDFErrorHandler
 	}
 
 	/** Initializes the ontology model */
-	private void initializeOntModel(URI uri) throws MalformedURLException, IOException
+	private void initializeOntModel(String uri) throws MalformedURLException, IOException
 	{
 		// Determine what version of owl to use
 		String language = "";
-		if(uri.toString().endsWith(".owl")) language = "http://www.w3.org/2002/07/owl#";
-		else if(uri.toString().endsWith(".rdf")) language = "http://www.w3.org/2000/01/rdf-schema#";
-		else if(uri.toString().endsWith("rdfs")) language = "http://www.w3.org/2000/01/rdf-schema#";
+		if(uri.endsWith(".owl")) language = "http://www.w3.org/2002/07/owl#";
+		else if(uri.endsWith(".rdf")) language = "http://www.w3.org/2000/01/rdf-schema#";
+		else if(uri.endsWith("rdfs")) language = "http://www.w3.org/2000/01/rdf-schema#";
 		
 		// Create a stream to read from and a model to read into.
-		InputStream ontologyStream = uri.toURL().openStream();
+		InputStream ontologyStream = new URL(uri).openStream();
 		_ontModel = ModelFactory.createOntologyModel(language);
 
 		// Use Jena to read from the stream into the model.
 		RDFReader reader = _ontModel.getReader();
 		reader.setErrorHandler(this);
-		reader.read(_ontModel, ontologyStream, uri.toString());
+		reader.read(_ontModel, ontologyStream, uri);
 		ontologyStream.close();
 	}
 	
 	private void linearGen() {
-		convertAllClasses();
-		convertAllDatatypeProperties();
-		convertAllObjectProperties();
-		convertAllIsARelationships();
+		convertClasses();
+		convertDatatypeProperties();
+		convertObjectProperties();
+		convertIsARelationships();
 	}
 
-	private void convertAllIsARelationships() {
+	private void convertIsARelationships() {
 		// Iterate through all classes
 		ExtendedIterator classes = _ontModel.listClasses();
 		while (classes.hasNext()) {
@@ -144,10 +143,8 @@ public class OWLImporter extends Importer implements RDFErrorHandler
 			if (ontClass.getLocalName() == null)
 				continue;
 
-			Entity entity = _entityList.get(ontClass.getLocalName());
-
 			// create a subType edge for for each direct parent class
-			// DEBUG listSuperClasses returns returns "resource" 
+			Entity entity = _entityList.get(ontClass.getLocalName());
 			ExtendedIterator parentClasses = ontClass.listSuperClasses(true);
 			while (parentClasses.hasNext()) {
 				OntClass parent = (OntClass) parentClasses.next();
@@ -155,7 +152,6 @@ public class OWLImporter extends Importer implements RDFErrorHandler
 				if (parentEntity == null)
 					continue;
 
-				System.out.println(ontClass.getLocalName() + " isA -->" + parent.getLocalName());
 				Subtype subtype = new Subtype(nextId(), parentEntity.getId(), entity
 						.getId(), entity.getBase());
 				_schemaElements.add(subtype);
@@ -164,7 +160,7 @@ public class OWLImporter extends Importer implements RDFErrorHandler
 	}
 
 	// convert all datatypeProperties
-	private void convertAllDatatypeProperties() {
+	private void convertDatatypeProperties() {
 		ExtendedIterator dataProperties = _ontModel.listDatatypeProperties();
 		while (dataProperties.hasNext()) {
 			DatatypeProperty dataProp = (DatatypeProperty) dataProperties.next();
@@ -185,34 +181,35 @@ public class OWLImporter extends Importer implements RDFErrorHandler
 							comment, entity.getId(), domain.getId(), null,null,0);
 					_schemaElements.add(attribute);
 				}
-				
-				System.out.println( containerCls.getLocalName() + "***  has property --> " + dataProp.getLocalName() );
 			}
 		}
 	}
 
-	// convert all objectProperties
-	private void convertAllObjectProperties() {
+	// convert all objectProperties to relationships
+	private void convertObjectProperties() {
 		ExtendedIterator objProperties = _ontModel.listObjectProperties();
 		while (objProperties.hasNext()) {
 			ObjectProperty objProp = (ObjectProperty) objProperties.next();
-			System.out.println(objProp.getLocalName() + "==>");
 
-			// Iterate through the objProperty's domain classes, create a
-			// relationship for each of the range classes
-			// DEBUG jena returns null for multiple domains
+			/*
+			 * If an object property has multiple classes defined in its range, the range is 
+			 * taken as an conjunction of all the classes (as opposed to independent classes).
+			 * Jena returns a null named class for the collection. Here we create a new class 
+			 * that's named by concatenating all classes names.
+			 * DEBUG This may need to be changed to conjunctive relationships 
+			 */
 			ExtendedIterator objPropDomainItr = objProp.listDomain();
 			while (objPropDomainItr.hasNext()) {
 				// LEFT entity
 				OntClass leftOntClass = (OntClass) objPropDomainItr.next();
 				if (leftOntClass == null || leftOntClass.getLocalName() == null) {
-					System.err.println("\t &&&& no left entity for " + objProp.getLocalName());
-					System.err.println( leftOntClass.isClass() );
+					System.err.println("\t &&&& null left entity for " + objProp.getLocalName());
 					continue;
 				}
-				
+
 				Entity leftEntity = _entityList.get(leftOntClass.getLocalName());
-				System.out.println("\tleft Entity for " + objProp.getLocalName() + " = " + leftOntClass.getLocalName());
+				System.out.println("\tleft Entity for " + objProp.getLocalName() + " = "
+						+ leftOntClass.getLocalName());
 
 				// RIGHT entity
 				ExtendedIterator objPropRangeItr = objProp.listRange();
@@ -222,7 +219,7 @@ public class OWLImporter extends Importer implements RDFErrorHandler
 						System.out
 								.println("\t"
 										+ objProp.getLocalName()
-										+ " is an objectProperty but its range is not a valid ontClass :( ");
+										+ " is an objectProperty but its range is null :( ");
 						continue;
 					}
 					OntClass rightCls = objProp.getRange().asClass();
@@ -231,32 +228,26 @@ public class OWLImporter extends Importer implements RDFErrorHandler
 							+ rightCls.getLocalName());
 					System.out.println("cardinality = " + rightCls.getCardinality(objProp));
 
-					// TODO get cardinality
-					Integer leftClsMin = 1;
-					Integer leftClsMax = 1;
-					Integer rightClsMin = 0;
-					Integer rightClsMax = objProp.isFunctionalProperty() ? 1 : 0;
-
-					Relationship rel = new Relationship(nextId(), objProp
+					Profile prof = objProp.getProfile();
+					int relMin = objProp.getCardinality(prof.MIN_CARDINALITY());
+					int relMax = objProp.getCardinality(prof.MAX_CARDINALITY());
+					
+					Integer leftClsMin = ( relMin > 0 )? relMin : 0;
+					Integer leftClsMax = null;
+					Integer rightClsMin = null;
+					Integer rightClsMax = ( relMax > 0 )? relMax : 0;
+					
+					Relationship rel = new Relationship(ImporterUtils.nextId(), objProp
 							.getLocalName(), leftEntity.getId(), leftClsMin, leftClsMax,
 							rightEntity.getId(), rightClsMin, rightClsMax, 0);
 					_schemaElements.add(rel);
 				}
 			}
-
-			// add object properties as ANY data type properties to draw in GUI
-			// Domain domain = convertDomain(objProp);
-			// OntResource containerCls = objProp.getDomain();
-			// Entity entity = _entityList.get(containerCls.getLocalName());
-			// Attribute attribute = new Attribute(ImporterUtils.nextId(),
-			// objProp.getLocalName(),
-			// objProp.getComment(null), entity.getId(), domain.getId(), 0);
-			// _schemaElements.add(attribute);
 		}
 	}
 
 	// convert all classes to entities
-	private void convertAllClasses() {
+	private void convertClasses() {
 		ExtendedIterator classes = _ontModel.listClasses();
 		while (classes.hasNext()) {
 			OntClass ontClass = (OntClass) classes.next();
