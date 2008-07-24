@@ -3,9 +3,9 @@
 package org.mitre.flexidata.ygg.model;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -38,12 +38,11 @@ public class ConfigManager
 	/** Initializes the configuration settings */
 	static
 	{		
-		File toolFile = new File("config.xml");
-		
 		// Load tool information from file
-		try {
+		try {			
 			// Pull the entire file into a string
-			BufferedReader in = new BufferedReader(new FileReader(toolFile));
+			InputStream configStream = new ConfigManager().getClass().getResourceAsStream("config.xml");
+			BufferedReader in = new BufferedReader(new InputStreamReader(configStream));
 			StringBuffer buffer = new StringBuffer("");
 			String line; while((line=in.readLine())!=null) buffer.append(line);
 			in.close();
@@ -75,7 +74,7 @@ public class ConfigManager
 			}
 		}
 		catch(IOException e)
-			{ System.out.println("(E)ConfigManager - The tools have failed to load!\n"+e.getMessage()); }
+			{ System.out.println("(E)ConfigManager - Config.xml has failed to load!\n"+e.getMessage()); }
 	}
 	
 	/** Returns the schema store location */
@@ -89,4 +88,8 @@ public class ConfigManager
 	/** Returns the list of exporters */
 	static public ArrayList<Exporter> getExporters()
 		{ return exporters; }
+	
+	/** Sets the schema store location */
+	static public void setSchemaStoreLoc(String schemaStoreLocIn)
+		{ schemaStoreLoc = schemaStoreLocIn; }
 }
