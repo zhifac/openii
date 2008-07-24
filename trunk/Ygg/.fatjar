@@ -1,0 +1,14 @@
+#Fat Jar Configuration File
+#Wed Jul 23 17:02:52 EDT 2008
+onejar.license.required=true
+manifest.classpath=
+manifest.removesigners=true
+onejar.checkbox=false
+jarname=YggAPI.jar
+manifest.mergeall=true
+manifest.mainclass=
+manifest.file=<createnew>
+jarname.isextern=false
+onejar.expand=
+excludes=<po|Ygg>~org/~mitre/~flexidata/~ygg/~model/~GroupManager.class;<po|Ygg>~org/~mitre/~flexidata/~ygg/~model/~MappingManager.class;<po|Ygg>~org/~mitre/~flexidata/~ygg/~model/~SchemaListener.class;<po|Ygg>~org/~mitre/~flexidata/~ygg/~view/
+includes=
