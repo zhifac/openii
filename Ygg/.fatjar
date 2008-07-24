@@ -1,5 +1,5 @@
 #Fat Jar Configuration File
-#Wed Jul 23 17:02:52 EDT 2008
+#Thu Jul 24 13:06:44 EDT 2008
 onejar.license.required=true
 manifest.classpath=
 manifest.removesigners=true
@@ -10,5 +10,5 @@ manifest.mainclass=
 manifest.file=<createnew>
 jarname.isextern=false
 onejar.expand=
-excludes=<po|Ygg>~org/~mitre/~flexidata/~ygg/~model/~GroupManager.class;<po|Ygg>~org/~mitre/~flexidata/~ygg/~model/~MappingManager.class;<po|Ygg>~org/~mitre/~flexidata/~ygg/~model/~SchemaListener.class;<po|Ygg>~org/~mitre/~flexidata/~ygg/~view/
+excludes=<po|Ygg>~org/~mitre/~flexidata/~ygg/~model/~GroupManager.class;<po|Ygg>~org/~mitre/~flexidata/~ygg/~model/~MappingManager.class;<po|Ygg>~org/~mitre/~flexidata/~ygg/~model/~SchemaListener.class;<po|Ygg>~org/~mitre/~flexidata/~ygg/~view/;<po|Ygg>~org/~mitre/~flexidata/~ygg/~Ygg.class
 includes=

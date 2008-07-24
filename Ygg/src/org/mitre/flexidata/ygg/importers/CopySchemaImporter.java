@@ -13,6 +13,7 @@ import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.Subtype;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -54,10 +55,10 @@ public class CopySchemaImporter extends Importer
 		{ return new ArrayList<Integer>(); }
 	
 	/** Initialize the importer if needed */
-	private void initIfNeeded(String uri)
+	private void initIfNeeded(URI uri)
 	{
-		if(repository==null) repository = new SchemaStoreClient(uri.replaceAll("#.*",""));
-		if(repositorySchemaID==null) repositorySchemaID = Integer.parseInt(uri.replaceAll(".*#",""));
+		if(repository==null) repository = new SchemaStoreClient(uri.toString().replaceAll("#.*",""));
+		if(repositorySchemaID==null) repositorySchemaID = Integer.parseInt(uri.toString().replaceAll(".*#",""));
 	}
 	
 	/** Identifies the matching schema in the repository if one exists */
@@ -119,7 +120,7 @@ public class CopySchemaImporter extends Importer
 	}
 	
 	/** Returns the list of schemas which this schema extends */
-	protected ArrayList<Integer> getExtendedSchemaIDs(String uri) throws ImporterException
+	protected ArrayList<Integer> getExtendedSchemaIDs(URI uri) throws ImporterException
 	{
 		// Initialize the importer if needed
 		initIfNeeded(uri);
@@ -165,7 +166,7 @@ public class CopySchemaImporter extends Importer
 	}
 	
 	/** Returns the schema elements from the specified URI with form [SRC SCHEMA REPO]#[SRC SCHEMA NAME]*/
-	protected ArrayList<SchemaElement> getSchemaElements(Integer schemaID, String uri) throws ImporterException 
+	protected ArrayList<SchemaElement> getSchemaElements(Integer schemaID, URI uri) throws ImporterException 
 	{ 	
 		// Initialize the importer if needed
 		initIfNeeded(uri);		

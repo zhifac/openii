@@ -5,6 +5,8 @@ package org.mitre.flexidata.ygg.importers;
 import org.mitre.flexidata.ygg.model.SchemaManager;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
+
+import java.net.URI;
 import java.util.ArrayList;
 
 /** Abstract Importer class */
@@ -44,17 +46,17 @@ public abstract class Importer
 	public ArrayList<String> getFileTypes() { return new ArrayList<String>(); }
 	
 	/** Returns the list of schemas which this schema extends */
-	protected ArrayList<Integer> getExtendedSchemaIDs(String uri) throws ImporterException
+	protected ArrayList<Integer> getExtendedSchemaIDs(URI uri) throws ImporterException
 		{ return new ArrayList<Integer>(); }
 	
 	/** Returns the schema elements from the specified URI */
-	abstract protected ArrayList<SchemaElement> getSchemaElements(Integer schemaID, String uri) throws ImporterException;
+	abstract protected ArrayList<SchemaElement> getSchemaElements(Integer schemaID, URI uri) throws ImporterException;
 	
 	/** Imports the specified URI */
-	final public Integer importSchema(String name, String author, String description, String uri) throws ImporterException
+	final public Integer importSchema(String name, String author, String description, URI uri) throws ImporterException
 	{
 		// Generate the schema
-		Schema schema = new Schema(nextId(),name,author,uri==null?"":uri,"",description,false);
+		Schema schema = new Schema(nextId(),name,author,uri==null?"":uri.toString(),"",description,false);
 		ArrayList<Integer> extendedSchemaIDs = getExtendedSchemaIDs(uri);
 		ArrayList<SchemaElement> schemaElements = getSchemaElements(schema.getId(),uri);		
 		

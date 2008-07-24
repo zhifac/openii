@@ -7,13 +7,13 @@ package org.mitre.flexidata.ygg.view.schema.porters;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.net.URI;
 import java.util.ArrayList;
 
 import javax.swing.JButton;
 import javax.swing.border.EmptyBorder;
 
 import org.mitre.flexidata.ygg.importers.Importer;
-import org.mitre.flexidata.ygg.importers.ImporterException;
 import org.mitre.flexidata.ygg.model.ConfigManager;
 import org.mitre.flexidata.ygg.view.Consts;
 import org.mitre.flexidata.ygg.view.GenericView;
@@ -170,9 +170,11 @@ public class ImporterView extends GenericView implements ActionListener
 		if(completed)
 		{
 			// Run the importer
-			String uri = uriParm==null ? null : uriParm.getValue();
-			try { importer.importSchema(nameParm.getValue(), authorParm.getValue(), descriptionParm.getValue(), uri); }
-			catch(ImporterException e2) { descriptionPane.setText(e2.getMessage(), true); }
+			try {
+				URI uri = uriParm==null ? null : new URI(uriParm.getValue());
+				importer.importSchema(nameParm.getValue(), authorParm.getValue(), descriptionParm.getValue(), uri);
+			}
+			catch(Exception e2) { descriptionPane.setText(e2.getMessage(), true); }
 		}
 		else descriptionPane.setText("All fields must be completed before import!",true);
 	}

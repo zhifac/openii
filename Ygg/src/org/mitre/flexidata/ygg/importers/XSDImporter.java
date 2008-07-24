@@ -2,6 +2,7 @@
 
 package org.mitre.flexidata.ygg.importers;
 
+import java.net.URI;
 import java.util.*;
 
 import org.exolab.castor.xml.schema.*;
@@ -62,12 +63,12 @@ public class XSDImporter extends Importer
 	}
 	
 	/** Returns the schema elements from the specified URI */
-	protected ArrayList<SchemaElement> getSchemaElements(Integer schemaID, String uri) throws ImporterException
+	protected ArrayList<SchemaElement> getSchemaElements(Integer schemaID, URI uri) throws ImporterException
 	{
 		try {
 			// Parse the schema
 			this.schemaID = schemaID;
-			xmlSchema = new SchemaReader(uri).read();
+			xmlSchema = new SchemaReader(uri.toString()).read();
 			
 			// Preset domains and then identify entities, attributes, and relationships in this schema
 			loadDomains();

@@ -43,10 +43,9 @@ public class DDLImporter extends Importer
 	}
 
 	/** Returns the schema elements from the specified URI */
-	protected ArrayList<SchemaElement> getSchemaElements(Integer schemaID, String uri) throws ImporterException
+	protected ArrayList<SchemaElement> getSchemaElements(Integer schemaID, URI schemaLoc) throws ImporterException
 	{
 		try {
-            URI schemaLoc = new URI(uri);
 	        SqlSQL2Lexer lexer = new SqlSQL2Lexer( new DdlFilteredReader( new FileReader( new File(schemaLoc) ) ) );
 	        SqlSQL2Parser parser = new SqlSQL2Parser( lexer );
 	        try
