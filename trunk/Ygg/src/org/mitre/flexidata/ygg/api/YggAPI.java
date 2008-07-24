@@ -19,10 +19,22 @@ public class YggAPI
 		{ ConfigManager.setSchemaStoreLoc(schemaStoreLoc); }
 	
 	/** Returns the list of importers */
-	public ArrayList<Importer> getImporters()
-		{ return ConfigManager.getImporters(); }
+	public ArrayList<Importer> getImporters(String fileType)
+	{
+		ArrayList<Importer> importers = new ArrayList<Importer>();
+		for(Importer importer : ConfigManager.getImporters())
+			if(fileType==null || importer.getFileTypes().contains(fileType))
+				importers.add(importer);
+		return importers;
+	}
 	
 	/** Returns the list of exporters */
-	public ArrayList<Exporter> getExporters()
-		{ return ConfigManager.getExporters(); }
+	public ArrayList<Exporter> getExporters(String fileType)
+	{
+		ArrayList<Exporter> exporters = new ArrayList<Exporter>();
+		for(Exporter exporter : ConfigManager.getExporters())
+			if(fileType==null || exporter.getFileType().equals(fileType))
+				exporters.add(exporter);
+		return exporters;
+	}
 }

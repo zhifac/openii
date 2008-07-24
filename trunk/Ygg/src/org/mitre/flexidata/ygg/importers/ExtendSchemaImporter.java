@@ -3,6 +3,8 @@
 package org.mitre.flexidata.ygg.importers;
 
 import org.mitre.schemastore.model.SchemaElement;
+
+import java.net.URI;
 import java.util.ArrayList;
 
 /** Importer for extending schemas within the repository */
@@ -21,14 +23,14 @@ public class ExtendSchemaImporter extends Importer
 		{ return SCHEMA; }
 	
 	/** Returns the list of schemas which this schema extends */
-	protected ArrayList<Integer> getExtendedSchemaIDs(String uri)
+	protected ArrayList<Integer> getExtendedSchemaIDs(URI uri)
 	{
 		ArrayList<Integer> extendedSchemaIDs = new ArrayList<Integer>();
-		extendedSchemaIDs.add(Integer.parseInt(uri));
+		extendedSchemaIDs.add(Integer.parseInt(uri.toString()));
 		return extendedSchemaIDs;
 	}
 	
 	/** Returns the schema elements from the specified URI */
-	protected ArrayList<SchemaElement> getSchemaElements(Integer schemaID, String uri) throws ImporterException
+	protected ArrayList<SchemaElement> getSchemaElements(Integer schemaID, URI uri) throws ImporterException
 		{ return new ArrayList<SchemaElement>(); }
 }

@@ -5,7 +5,7 @@ package org.mitre.flexidata.ygg.importers;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -75,7 +75,7 @@ public class OWLImporter extends Importer implements RDFErrorHandler
 	}
 	
 	/** Returns the schema elements from the specified URI */
-	protected ArrayList<SchemaElement> getSchemaElements(Integer schemaID, String uri) throws ImporterException
+	protected ArrayList<SchemaElement> getSchemaElements(Integer schemaID, URI uri) throws ImporterException
 	{
 		try {
 			loadDomains();
@@ -108,22 +108,22 @@ public class OWLImporter extends Importer implements RDFErrorHandler
 	}
 
 	/** Initializes the ontology model */
-	private void initializeOntModel(String uri) throws MalformedURLException, IOException
+	private void initializeOntModel(URI uri) throws MalformedURLException, IOException
 	{
 		// Determine what version of owl to use
 		String language = "";
-		if(uri.endsWith(".owl")) language = "http://www.w3.org/2002/07/owl#";
-		else if(uri.endsWith(".rdf")) language = "http://www.w3.org/2000/01/rdf-schema#";
-		else if(uri.endsWith("rdfs")) language = "http://www.w3.org/2000/01/rdf-schema#";
+		if(uri.toString().endsWith(".owl")) language = "http://www.w3.org/2002/07/owl#";
+		else if(uri.toString().endsWith(".rdf")) language = "http://www.w3.org/2000/01/rdf-schema#";
+		else if(uri.toString().endsWith("rdfs")) language = "http://www.w3.org/2000/01/rdf-schema#";
 		
 		// Create a stream to read from and a model to read into.
-		InputStream ontologyStream = new URL(uri).openStream();
+		InputStream ontologyStream = uri.toURL().openStream();
 		_ontModel = ModelFactory.createOntologyModel(language);
 
 		// Use Jena to read from the stream into the model.
 		RDFReader reader = _ontModel.getReader();
 		reader.setErrorHandler(this);
-		reader.read(_ontModel, ontologyStream, uri);
+		reader.read(_ontModel, ontologyStream, uri.toString());
 		ontologyStream.close();
 	}
 	

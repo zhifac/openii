@@ -5,9 +5,6 @@ package org.mitre.flexidata.ygg.importers.ddl;
 
 import java.util.*;
 
-import org.mitre.flexidata.ygg.importers.ddl.*;
-import java.io.*;
-import java.net.URI;
 import org.mitre.flexidata.ygg.importers.*;
 import org.mitre.schemastore.model.*;
 
@@ -23,7 +20,7 @@ public class SchemaBuilder
 {
     int currentEntityId;
     int currentAttributeId;
-    Schema schema = new Schema( ImporterUtils.nextId(), "name", "","","","desc", false );
+    Schema schema = new Schema( Importer.nextId(), "name", "","","","desc", false );
     ArrayList<SchemaElement> schemaObjects = new ArrayList<SchemaElement>();
     private HashMap<String, Domain> domainList = new HashMap<String, Domain>();
 
@@ -42,7 +39,7 @@ public class SchemaBuilder
      */
     public void addEntity(String name)
     {
-        Entity newEntity = new Entity( ImporterUtils.nextId(), name, "", schema.getId() );
+        Entity newEntity = new Entity( Importer.nextId(), name, "", schema.getId() );
         currentEntityId = newEntity.getId();
         schemaObjects.add( newEntity );
         //System.out.println( this.getClass().getName() + " ( addEntity ) added entity number: " + currentEntityId );
@@ -55,7 +52,7 @@ public class SchemaBuilder
     public void addAttributeToLastEntity( String name )
     {
         System.out.println( "Adding " + name );
-        Attribute newAttribute = new Attribute( ImporterUtils.nextId(), name, "", currentEntityId, domainList.get("String").getId(), 1, 1, schema.getId() );
+        Attribute newAttribute = new Attribute( Importer.nextId(), name, "", currentEntityId, domainList.get("String").getId(), 1, 1, schema.getId() );
         currentAttributeId = newAttribute.getId();
         schemaObjects.add( newAttribute );
     }
@@ -75,7 +72,7 @@ public class SchemaBuilder
     public void addReferenceTo(String tablename)
     {
         System.out.println(  );
-        int id = ImporterUtils.nextId();
+        int id = Importer.nextId();
         String name = getSchemaObject( currentEntityId ).getName() + ":" + tablename;
         int leftMin =0;
         int leftMax=-1;
@@ -94,19 +91,19 @@ public class SchemaBuilder
 	 * list for use during Attribute creation
 	 */
 	private void loadDomains() {
-		Domain domain = new Domain(ImporterUtils.nextId(), "Integer", "The Integer domain", 0);
+		Domain domain = new Domain(Importer.nextId(), "Integer", "The Integer domain", 0);
 		schemaObjects.add(domain);
 		domainList.put("Integer", domain);
-		domain = new Domain(ImporterUtils.nextId(), "Double", "The Double domain", 0);
+		domain = new Domain(Importer.nextId(), "Double", "The Double domain", 0);
 		schemaObjects.add(domain);
 		domainList.put("Double", domain);
-		domain = new Domain(ImporterUtils.nextId(), "String", "The String domain", 0);
+		domain = new Domain(Importer.nextId(), "String", "The String domain", 0);
 		schemaObjects.add(domain);
 		domainList.put("String", domain);
-		domain = new Domain(ImporterUtils.nextId(), "DateTime", "The DateTime domain", 0);
+		domain = new Domain(Importer.nextId(), "DateTime", "The DateTime domain", 0);
 		schemaObjects.add(domain);
 		domainList.put("DateTime", domain);
-		domain = new Domain(ImporterUtils.nextId(), "Boolean", "The Boolean domain", 0);
+		domain = new Domain(Importer.nextId(), "Boolean", "The Boolean domain", 0);
 		schemaObjects.add(domain);
 		domainList.put("Boolean", domain);
 	}

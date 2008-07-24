@@ -3,6 +3,8 @@
 package org.mitre.flexidata.ygg.importers;
 
 import org.mitre.schemastore.model.SchemaElement;
+
+import java.net.URI;
 import java.util.ArrayList;
 
 /** Importer for generating new schemas */
@@ -21,6 +23,6 @@ public class NewSchemaImporter extends Importer
 		{ return NONE; }
 	
 	/** Returns the schema elements from the specified URI */
-	protected ArrayList<SchemaElement> getSchemaElements(Integer schemaID, String uri) throws ImporterException
+	protected ArrayList<SchemaElement> getSchemaElements(Integer schemaID, URI uri) throws ImporterException
 		{ return new ArrayList<SchemaElement>(); }
 }

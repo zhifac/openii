@@ -11,22 +11,14 @@ import org.mitre.flexidata.ygg.importers.*;
 
 import antlr.TokenBuffer;
 import antlr.TokenStreamException;
-import antlr.TokenStreamIOException;
-import antlr.ANTLRException;
-import antlr.LLkParser;
-import antlr.Token;
 import antlr.TokenStream;
 import antlr.RecognitionException;
 import antlr.NoViableAltException;
-import antlr.MismatchedTokenException;
-import antlr.SemanticException;
 import antlr.ParserSharedInputState;
 import antlr.collections.impl.BitSet;
 import antlr.collections.AST;
-import java.util.Hashtable;
 import antlr.ASTFactory;
 import antlr.ASTPair;
-import antlr.collections.impl.ASTArray;
 
 //  Class preamble starts here - right before the class definition in the generated class file
 
@@ -3622,7 +3614,7 @@ inputState.guessing--;
 
 			}
 			if ( inputState.guessing==0 ) {
-				builder.setDomainOfLastAttribute( ImporterUtils.STRING );
+				builder.setDomainOfLastAttribute( Importer.STRING );
 			}
 			data_type_AST = (AST)currentAST.root;
 			break;
@@ -3633,7 +3625,7 @@ inputState.guessing--;
 			national_char_string_type();
 			astFactory.addASTChild(currentAST, returnAST);
 			if ( inputState.guessing==0 ) {
-				builder.setDomainOfLastAttribute( ImporterUtils.STRING );
+				builder.setDomainOfLastAttribute( Importer.STRING );
 			}
 			data_type_AST = (AST)currentAST.root;
 			break;
@@ -3643,7 +3635,7 @@ inputState.guessing--;
 			bit_string_type();
 			astFactory.addASTChild(currentAST, returnAST);
 			if ( inputState.guessing==0 ) {
-				builder.setDomainOfLastAttribute( ImporterUtils.BOOLEAN );
+				builder.setDomainOfLastAttribute( Importer.BOOLEAN );
 			}
 			data_type_AST = (AST)currentAST.root;
 			break;
@@ -3671,7 +3663,7 @@ inputState.guessing--;
 			datetime_type();
 			astFactory.addASTChild(currentAST, returnAST);
 			if ( inputState.guessing==0 ) {
-				builder.setDomainOfLastAttribute( ImporterUtils.DATETIME );
+				builder.setDomainOfLastAttribute( Importer.DATETIME );
 			}
 			data_type_AST = (AST)currentAST.root;
 			break;
@@ -9969,7 +9961,7 @@ inputState.guessing--;
 			exact_num_type();
 			astFactory.addASTChild(currentAST, returnAST);
 			if ( inputState.guessing==0 ) {
-				builder.setDomainOfLastAttribute( ImporterUtils.INTEGER );
+				builder.setDomainOfLastAttribute( Importer.INTEGER );
 			}
 			num_type_AST = (AST)currentAST.root;
 		}
@@ -9977,7 +9969,7 @@ inputState.guessing--;
 			approximate_num_type();
 			astFactory.addASTChild(currentAST, returnAST);
 			if ( inputState.guessing==0 ) {
-				builder.setDomainOfLastAttribute( ImporterUtils.DOUBLE );
+				builder.setDomainOfLastAttribute( Importer.DOUBLE );
 			}
 			num_type_AST = (AST)currentAST.root;
 		}
