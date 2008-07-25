@@ -38,7 +38,9 @@ public class ExcelImporter extends Importer {
 
 	// get rid of characters
 	protected String despace(String s) {
-		return s.trim().replaceAll(" ", "_");
+		s = s.trim().replaceAll(" ", "_");
+		s = s.replaceAll("'", "\'");
+		return s;
 	}
 
 	protected void generate() {

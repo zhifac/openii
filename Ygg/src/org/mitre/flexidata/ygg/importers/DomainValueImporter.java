@@ -59,14 +59,12 @@ public class DomainValueImporter extends ExcelImporter {
 		} else
 			domain = _domains.get(domainName);
 
-		// create an attribute
+		// create a domain value
 		if (domainValueStr.length() > 0) {
-			// TODO what should the domain Id be for a domain value? 
-			Integer domainID = 0;
-			domainValue = new DomainValue(nextId(), domainValueStr, documentation, domainID, 0);
+			domainValue = new DomainValue(nextId(), domainValueStr, documentation, domain.getId(), 0);
 			_domainValues.put(domainValue.getName(), domainValue);
 		} else {
-			// doc describes table if attribute doesn't exist
+			// doc describes domain if domain value is absent
 			domain.setDescription(documentation);
 		}
 	}
