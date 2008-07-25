@@ -87,11 +87,6 @@ public class ExcelImporter extends Importer {
 		}
 	}
 
-	private void loadDomains() {
-		Domain anyDomain = new Domain(nextId(), ANY, "unknown domain", 0);
-		_domains.put(anyDomain.getName(), anyDomain);
-	}
-
 	public ArrayList<String> getFileTypes() {
 		ArrayList<String> filetypes = new ArrayList<String>(2);
 		filetypes.add("xls");
@@ -115,7 +110,7 @@ public class ExcelImporter extends Importer {
 		File excel = new File("Example.xls");
 		ExcelImporter tester = new ExcelImporter();
 		try {
-			tester.importSchema(excel.getName(), "", "", excel.toURI().toString());
+			tester.importSchema(excel.getName(), "", "", excel.toURI());
 		} catch (ImporterException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -129,7 +124,7 @@ public class ExcelImporter extends Importer {
 
 	@Override
 	public String getName() {
-		return "Excel Importer";
+		return "Excel Importer (xls)";
 	}
 
 	protected ArrayList<SchemaElement> generateSchemaElementList() {
@@ -144,13 +139,10 @@ public class ExcelImporter extends Importer {
 
 	@Override
 	// TODO why schemaID in the parameter list?
-	protected ArrayList<SchemaElement> getSchemaElements(Integer schemaID, String uri)
+	protected ArrayList<SchemaElement> getSchemaElements(Integer schemaID, URI uri)
 			throws ImporterException {
-		URI importUri;
 		try {
-			importUri = new URI(uri);
-			initialize(importUri);
-			loadDomains();
+			initialize(uri);
 			generate();
 		} catch (URISyntaxException e) {
 			throw new ImporterException (ImporterException.INVALID_URI, e.getMessage());
