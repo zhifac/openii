@@ -641,102 +641,100 @@ public class Database
 			Statement stmt = createStatement();
 			
 			// Determine the base
+			Integer base = null;
 			ResultSet rs = stmt.executeQuery("SELECT schema_id FROM extensions WHERE element_id="+schemaElementID+" AND action='Add'");
-			if(rs.next())
+			if(rs.next()) base = rs.getInt("schema_id");
+	
+			// Retrieve the schema element
+			String type = getSchemaElementType(schemaElementID);
+
+			// Gets the specified entity
+			if(type.equals("Entity"))
 			{
-				Integer base = rs.getInt("schema_id");
-	
-				// Retrieve the schema element
-				String type = getSchemaElementType(schemaElementID);
-	
-				// Gets the specified entity
-				if(type.equals("Entity"))
-				{
-					rs = stmt.executeQuery("SELECT id,name,description FROM entity WHERE id="+schemaElementID);
-					rs.next();
-					schemaElement = new Entity(rs.getInt("id"),rs.getString("name"),rs.getString("description"),base);
-				}
-						
-				// Gets the specified attribute
-				else if(type.equals("Attribute"))
-				{
-					rs = stmt.executeQuery("SELECT id,name,description,entity_id,domain_id,min,max FROM attribute WHERE id="+schemaElementID);
-					rs.next();
-					Integer id = rs.getInt("id");
-					String name = rs.getString("name");
-					String description = rs.getString("description");
-					Integer entityID = rs.getInt("entity_id");
-					Integer domainID = rs.getInt("domain_id");
-					Integer min = rs.getString("min")==null?null:rs.getInt("min");
-					Integer max = rs.getString("max")==null?null:rs.getInt("max");
-					schemaElement = new Attribute(id,name,description,entityID,domainID,min,max,base);
-				}
+				rs = stmt.executeQuery("SELECT id,name,description FROM entity WHERE id="+schemaElementID);
+				rs.next();
+				schemaElement = new Entity(rs.getInt("id"),rs.getString("name"),rs.getString("description"),base);
+			}
 					
-				// Gets the specified domain			
-				else if(type.equals("Domain"))
-				{
-					rs = stmt.executeQuery("SELECT id,name,description FROM domain WHERE id="+schemaElementID);
-					rs.next();
-					schemaElement = new Domain(rs.getInt("id"),rs.getString("name"),rs.getString("description"),base);
-				}
-	
-				// Gets the specified domain value
-				else if(type.equals("Values"))
-				{
-					rs = stmt.executeQuery("SELECT id,value,description,domain_id FROM values WHERE id="+schemaElementID);
-					rs.next();
-					schemaElement = new DomainValue(rs.getInt("id"),rs.getString("value"),rs.getString("description"),rs.getInt("domain_id"),base);
-				}
-					
-				// Gets the specified relationship			
-				else if(type.equals("Relationship"))
-				{
-					rs = stmt.executeQuery("SELECT id,name,left_id,left_min,left_max,right_id,right_min,right_max FROM relationship WHERE id="+schemaElementID);
-					rs.next();
-					Integer id = rs.getInt("id");
-					String name = rs.getString("name");
-					Integer leftID = rs.getInt("left_id");
-					Integer leftMin = rs.getString("left_min")==null?null:rs.getInt("left_min");
-					Integer leftMax = rs.getString("left_max")==null?null:rs.getInt("left_max");
-					Integer rightID = rs.getInt("right_id");
-					Integer rightMin = rs.getString("right_min")==null?null:rs.getInt("right_min");
-					Integer rightMax = rs.getString("right_max")==null?null:rs.getInt("right_max");
-					schemaElement = new Relationship(id,name,leftID,leftMin,leftMax,rightID,rightMin,rightMax,base);
-				}
-					
-				// Gets the specified containment relationship
-				else if(type.equals("Containment"))
-				{
-					rs = stmt.executeQuery("SELECT id,name,description,parent_id,child_id,min,max FROM containment WHERE id="+schemaElementID);
-					rs.next();
-					Integer id = rs.getInt("id");
-					String name = rs.getString("name");
-					String description = rs.getString("description");
-					Integer parentID = rs.getInt("parent_id");
-					Integer childID = rs.getInt("child_id");
-					Integer min = rs.getString("min")==null?null:rs.getInt("min");
-					Integer max = rs.getString("max")==null?null:rs.getInt("max");
-					schemaElement = new Containment(id,name,description,parentID,childID,min,max,base);
-				}
-					
-				// Gets the specified subset relationship
-				else if(type.equals("Subtype"))
-				{
-					rs = stmt.executeQuery("SELECT id,parent_id,child_id FROM subtype WHERE id="+schemaElementID);
-					rs.next();
-					Integer id = rs.getInt("id");
-					Integer parentID = rs.getInt("parent_id");
-					Integer childID = rs.getInt("child_id");
-					schemaElement = new Subtype(id,parentID,childID,base);
-				}
+			// Gets the specified attribute
+			else if(type.equals("Attribute"))
+			{
+				rs = stmt.executeQuery("SELECT id,name,description,entity_id,domain_id,min,max FROM attribute WHERE id="+schemaElementID);
+				rs.next();
+				Integer id = rs.getInt("id");
+				String name = rs.getString("name");
+				String description = rs.getString("description");
+				Integer entityID = rs.getInt("entity_id");
+				Integer domainID = rs.getInt("domain_id");
+				Integer min = rs.getString("min")==null?null:rs.getInt("min");
+				Integer max = rs.getString("max")==null?null:rs.getInt("max");
+				schemaElement = new Attribute(id,name,description,entityID,domainID,min,max,base);
+			}
 				
-				// Gets the specified alias			
-				else if(type.equals("Alias"))
-				{
-					rs = stmt.executeQuery("SELECT id,name,element_id FROM alias WHERE id="+schemaElementID);
-					rs.next();
-					schemaElement = new Alias(rs.getInt("id"),rs.getString("name"),rs.getInt("element_id"),base);
-				}
+			// Gets the specified domain			
+			else if(type.equals("Domain"))
+			{
+				rs = stmt.executeQuery("SELECT id,name,description FROM domain WHERE id="+schemaElementID);
+				rs.next();
+				schemaElement = new Domain(rs.getInt("id"),rs.getString("name"),rs.getString("description"),base);
+			}
+
+			// Gets the specified domain value
+			else if(type.equals("Values"))
+			{
+				rs = stmt.executeQuery("SELECT id,value,description,domain_id FROM values WHERE id="+schemaElementID);
+				rs.next();
+				schemaElement = new DomainValue(rs.getInt("id"),rs.getString("value"),rs.getString("description"),rs.getInt("domain_id"),base);
+			}
+				
+			// Gets the specified relationship			
+			else if(type.equals("Relationship"))
+			{
+				rs = stmt.executeQuery("SELECT id,name,left_id,left_min,left_max,right_id,right_min,right_max FROM relationship WHERE id="+schemaElementID);
+				rs.next();
+				Integer id = rs.getInt("id");
+				String name = rs.getString("name");
+				Integer leftID = rs.getInt("left_id");
+				Integer leftMin = rs.getString("left_min")==null?null:rs.getInt("left_min");
+				Integer leftMax = rs.getString("left_max")==null?null:rs.getInt("left_max");
+				Integer rightID = rs.getInt("right_id");
+				Integer rightMin = rs.getString("right_min")==null?null:rs.getInt("right_min");
+				Integer rightMax = rs.getString("right_max")==null?null:rs.getInt("right_max");
+				schemaElement = new Relationship(id,name,leftID,leftMin,leftMax,rightID,rightMin,rightMax,base);
+			}
+				
+			// Gets the specified containment relationship
+			else if(type.equals("Containment"))
+			{
+				rs = stmt.executeQuery("SELECT id,name,description,parent_id,child_id,min,max FROM containment WHERE id="+schemaElementID);
+				rs.next();
+				Integer id = rs.getInt("id");
+				String name = rs.getString("name");
+				String description = rs.getString("description");
+				Integer parentID = rs.getInt("parent_id");
+				Integer childID = rs.getInt("child_id");
+				Integer min = rs.getString("min")==null?null:rs.getInt("min");
+				Integer max = rs.getString("max")==null?null:rs.getInt("max");
+				schemaElement = new Containment(id,name,description,parentID,childID,min,max,base);
+			}
+				
+			// Gets the specified subset relationship
+			else if(type.equals("Subtype"))
+			{
+				rs = stmt.executeQuery("SELECT id,parent_id,child_id FROM subtype WHERE id="+schemaElementID);
+				rs.next();
+				Integer id = rs.getInt("id");
+				Integer parentID = rs.getInt("parent_id");
+				Integer childID = rs.getInt("child_id");
+				schemaElement = new Subtype(id,parentID,childID,base);
+			}
+			
+			// Gets the specified alias			
+			else if(type.equals("Alias"))
+			{
+				rs = stmt.executeQuery("SELECT id,name,element_id FROM alias WHERE id="+schemaElementID);
+				rs.next();
+				schemaElement = new Alias(rs.getInt("id"),rs.getString("name"),rs.getInt("element_id"),base);
 			}
 				
 			stmt.close();
