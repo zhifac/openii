@@ -143,6 +143,7 @@ public class ImporterView extends GenericView implements ActionListener
 	/** Determines if the parameter has been completed */
 	public boolean isCompleted(AbstractParameter parameter)
 	{
+		if(parameter==null) return true;
 		boolean parameterCompleted = parameter.getValue()!=null;
 		parameter.setHighlight(!parameterCompleted);
 		return parameterCompleted;
