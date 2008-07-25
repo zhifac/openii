@@ -77,7 +77,7 @@ public class FileParameter extends AbstractParameter implements ActionListener
 	public String getValue()
 	{
 		String value = fileField.getText();
-		return value==null || value.length()==0 ? null : value;
+		return value==null || value.length()==0 ? null : new File(value).toURI().toString();
 	}
 	
 	/** Sets the parameter value */
