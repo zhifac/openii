@@ -377,6 +377,9 @@ COPY "domain" (id, name, description) FROM stdin;
 -1	Integer	Domain covering all integer values
 -2	Double	Domain covering all double values
 -3	String	Domain covering all strings
+-4	Timestamp	Domain consisting of date and/or time values
+-5	Boolean	Domain covering all boolean values
+-6	Any	Domain covering all values
 81	Species	Codes for common species
 83	Gender	Codes for gender
 84	Status	Codes describing a patient's willingness to participate in a study
@@ -385,9 +388,6 @@ COPY "domain" (id, name, description) FROM stdin;
 97	Handedness	Codes for handedness
 106	Modality	Codes describing the technique used to acquire an image
 107	Language	Codes for common languages
--5	Boolean	Domain covering all boolean values
--6	Any	Domain covering all values
--4	Timestamp	Domain consisting of date and/or time values
 \.
 
 
@@ -563,6 +563,12 @@ COPY "schema" (id, name, author, source, type, description, locked) FROM stdin;
 --
 
 COPY schema_element (id, "type") FROM stdin;
+-1  Domain
+-2  Domain
+-3  Domain
+-4  Domain
+-5  Domain
+-6  Domain
 9	Schema
 10	Schema
 11	Schema
