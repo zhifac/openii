@@ -1,9 +1,9 @@
 package org.mitre.schemastore.graph;
 
-import org.mitre.schemastore.model.Relationship;
-import org.mitre.schemastore.model.Subtype;
+import org.mitre.schemastore.model.*;
+import java.util.*;
 
-public class GraphSubtype extends Subtype {
+public class GraphSubtype extends Subtype implements GraphSchemaElement{
 
 	/** Constructs the subtype relationship */
 	public GraphSubtype(Integer id, Integer parentID, Integer childID, Integer base)
@@ -12,5 +12,12 @@ public class GraphSubtype extends Subtype {
 	public GraphSubtype(Subtype s)
 		{ super(s.getId(), s.getParentID(), s.getChildID(), s.getBase()); }
 	
+	public ArrayList<SchemaElement> getParents(){
+		return new ArrayList<SchemaElement>();
+	}
+	
+	public ArrayList<SchemaElement> getChildren(){
+		return new ArrayList<SchemaElement>();
+	}
 	
 }
