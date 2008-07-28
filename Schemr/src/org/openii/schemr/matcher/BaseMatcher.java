@@ -48,7 +48,7 @@ public abstract class BaseMatcher implements Matcher {
 		try {
 			int id = this.candidateSchema.getId();
 			ArrayList<SchemaElement> schemaElements = SchemaUtility.getCLIENT().getSchemaElements(id);
-			schemaElements = GraphBuilder.build(schemaElements, id);
+			schemaElements = new GraphBuilder(schemaElements, id).getSchemaElements();
 			for (SchemaElement e : schemaElements) {
 				if (e instanceof Entity || e instanceof Attribute) {
 					if (e != null && !"".equals(e.getName().trim())) {

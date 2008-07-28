@@ -211,7 +211,7 @@ public class Tests extends TestCase {
 				System.out.println("element id: "+schemaElement.getId() + " | element name: " + schemaElement.getName());				
 			}
 
-			ArrayList<SchemaElement> builtElements = GraphBuilder.build(schemaElements, 0);
+			ArrayList<SchemaElement> builtElements = new GraphBuilder(schemaElements, 0).getSchemaElements();
 
 			for(SchemaElement schemaElement : builtElements) {
 				System.out.println("element id: "+schemaElement.getId() + " | name: " + schemaElement.getName() + " | type: " + schemaElement.getClass().getSimpleName());				
