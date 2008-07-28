@@ -235,8 +235,8 @@ public class Database
 			}
 			
 			/** Deletes the schema element */
-			private void delete()
-				{ deleteSchemaElement(id); }
+			private boolean delete()
+				{ return deleteSchemaElement(id); }
 			
 			/** Compares two deletable schema elements */
 			public int compareTo(DeletableSchemaElement object)
@@ -254,9 +254,9 @@ public class Database
 			
 			// Delete the schema elements
 			Collections.sort(deletableElements);
-			for(DeletableSchemaElement deletableElement : deletableElements)	
-				deletableElement.delete();
-			
+			for(DeletableSchemaElement deletableElement : deletableElements)
+				if(!deletableElement.delete()) throw new SQLException("Failed to delete schema element");
+				
 			// Delete the schema from the database
 			stmt.executeUpdate("DELETE FROM schema_group WHERE schema_id="+schemaID);
 			stmt.executeUpdate("DELETE FROM extensions WHERE schema_id="+schemaID);
@@ -567,7 +567,7 @@ public class Database
 				baseElements.add(new Domain(rs.getInt("id"),rs.getString("name"),rs.getString("description"),schemaID));
 
 			// Gets the schema domain values
-			rs = stmt.executeQuery("SELECT id,value,description,domain_id FROM extensions,values WHERE schema_id="+schemaID+" AND element_id=id");
+			rs = stmt.executeQuery("SELECT id,value,description,domain_id FROM extensions,domainvalue WHERE schema_id="+schemaID+" AND element_id=id");
 			while(rs.next())
 				baseElements.add(new DomainValue(rs.getInt("id"),rs.getString("value"),rs.getString("description"),rs.getInt("domain_id"),schemaID));
 				
@@ -680,9 +680,9 @@ public class Database
 			}
 
 			// Gets the specified domain value
-			else if(type.equals("Values"))
+			else if(type.equals("DomainValue"))
 			{
-				rs = stmt.executeQuery("SELECT id,value,description,domain_id FROM values WHERE id="+schemaElementID);
+				rs = stmt.executeQuery("SELECT id,value,description,domain_id FROM domainvalue WHERE id="+schemaElementID);
 				rs.next();
 				schemaElement = new DomainValue(rs.getInt("id"),rs.getString("value"),rs.getString("description"),rs.getInt("domain_id"),base);
 			}
@@ -784,8 +784,8 @@ public class Database
 			if(schemaElement instanceof DomainValue)
 			{
 				DomainValue domainValue = (DomainValue)schemaElement;
-				stmt.executeUpdate("INSERT INTO values(id,value,description,domain_id) VALUES("+schemaElementID+",'"+scrub(name)+"','"+scrub(description)+"',"+domainValue.getDomainID()+")");
-				stmt.executeUpdate("INSERT INTO schema_element(id,type) VALUES("+schemaElementID+",'Values')");
+				stmt.executeUpdate("INSERT INTO domainvalue(id,value,description,domain_id) VALUES("+schemaElementID+",'"+scrub(name)+"','"+scrub(description)+"',"+domainValue.getDomainID()+")");
+				stmt.executeUpdate("INSERT INTO schema_element(id,type) VALUES("+schemaElementID+",'DomainValue')");
 			}
 			
 			// Inserts a relationship
@@ -865,7 +865,7 @@ public class Database
 			if(schemaElement instanceof DomainValue)
 			{
 				DomainValue domainValue = (DomainValue)schemaElement;
-				stmt.executeUpdate("UPDATE values SET value='"+scrub(domainValue.getName())+"', description='"+scrub(domainValue.getDescription())+"', domain_id="+domainValue.getDomainID()+" WHERE id="+domainValue.getId());
+				stmt.executeUpdate("UPDATE domainvalue SET value='"+scrub(domainValue.getName())+"', description='"+scrub(domainValue.getDescription())+"', domain_id="+domainValue.getDomainID()+" WHERE id="+domainValue.getId());
 			}
 			
 			// Updates a relationship
