@@ -49,7 +49,6 @@ public class OWLImporter extends Importer implements RDFErrorHandler
 
 	private OntModel _ontModel;
 	private ArrayList<SchemaElement> _schemaElements = new ArrayList<SchemaElement>();
-
 	private HashMap<String, Entity> _entityList = new HashMap<String, Entity>();
 	private HashMap<String, Domain> _domainList = new HashMap<String, Domain>(); // <owl domain, ygg domain>
 
@@ -76,6 +75,10 @@ public class OWLImporter extends Importer implements RDFErrorHandler
 	/** Returns the schema elements from the specified URI */
 	protected ArrayList<SchemaElement> getSchemaElements(Integer schemaID, URI uri) throws ImporterException
 	{
+		_schemaElements = new ArrayList<SchemaElement>();
+		_entityList = new HashMap<String, Entity>();
+		_domainList = new HashMap<String, Domain>();
+
 		try {
 			loadDomains();
 			initializeOntModel(uri);

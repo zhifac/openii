@@ -32,9 +32,9 @@ import org.mitre.schemastore.model.SchemaElement;
 public class ExcelImporter extends Importer {
 	private Workbook _excelWorkbook;
 	private URI _excelURI;
-	private HashMap<String, Entity> _entities = new HashMap<String, Entity>();
-	private HashMap<String, Attribute> _attributes = new HashMap<String, Attribute>();
-	private HashMap<String, Domain> _domains = new HashMap<String, Domain>();
+	private HashMap<String, Entity> _entities;
+	private HashMap<String, Attribute> _attributes;
+	private static Domain D_ANY  = new Domain(nextId(), ANY, null, 0 ); 
 
 	// get rid of characters
 	protected String despace(String s) {
@@ -77,9 +77,8 @@ public class ExcelImporter extends Importer {
 
 		// create an attribute
 		if (attName.length() > 0) {
-			Integer domainID = _domains.get(ANY).getId();
 			attribute = new Attribute(nextId(), attName, documentation, tblEntity.getId(),
-					domainID, null, null, 0);
+					D_ANY.getId(), null, null, 0);
 			_attributes.put(attribute.getName(), attribute);
 		} else {
 			// doc describes table if attribute doesn't exist
@@ -94,8 +93,11 @@ public class ExcelImporter extends Importer {
 		return filetypes;
 	}
 
-	private void initialize(URI uri) throws IOException, URISyntaxException, BiffException {
+	protected void initialize(URI uri) throws IOException, URISyntaxException, BiffException {
 		InputStream excelStream;
+		_entities = new HashMap<String, Entity>();
+		_attributes = new HashMap<String, Attribute>();
+
 		// Do nothing if the excel sheet has been cached.
 		if (_excelURI != null && _excelURI.equals(uri))
 			return;
@@ -106,15 +108,11 @@ public class ExcelImporter extends Importer {
 		excelStream.close();
 	}
 
-	public static void main(String[] args) throws IOException, URISyntaxException {
+	public static void main(String[] args) throws IOException, URISyntaxException,
+			ImporterException {
 		File excel = new File("Example.xls");
 		ExcelImporter tester = new ExcelImporter();
-		try {
-			tester.importSchema(excel.getName(), "", "", excel.toURI());
-		} catch (ImporterException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		tester.importSchema(excel.getName(), "", "", excel.toURI());
 	}
 
 	@Override
@@ -145,10 +143,10 @@ public class ExcelImporter extends Importer {
 			initialize(uri);
 			generate();
 		} catch (URISyntaxException e) {
-			throw new ImporterException (ImporterException.INVALID_URI, e.getMessage());
+			throw new ImporterException(ImporterException.INVALID_URI, e.getMessage());
 		} catch (IOException e) {
-			throw new ImporterException( ImporterException.PARSE_FAILURE, e.getMessage());
-		} catch (BiffException b){
+			throw new ImporterException(ImporterException.PARSE_FAILURE, e.getMessage());
+		} catch (BiffException b) {
 			throw new ImporterException(ImporterException.IMPORT_FAILURE, b.getMessage());
 		}
 		return generateSchemaElementList();

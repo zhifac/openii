@@ -58,7 +58,12 @@ public abstract class Importer
 		// Generate the schema
 		Schema schema = new Schema(nextId(),name,author,uri==null?"":uri.toString(),"",description,false);
 		ArrayList<Integer> extendedSchemaIDs = getExtendedSchemaIDs(uri);
-		ArrayList<SchemaElement> schemaElements = getSchemaElements(schema.getId(),uri);		
+		ArrayList<SchemaElement> schemaElements = getSchemaElements(schema.getId(),uri);
+		
+		// DEBUG what are the elements? 
+		for ( SchemaElement e : schemaElements ){
+			System.out.println( e.getClass() + ": " + e.getName() );
+		}
 		
 		// Import the schema into the repository
 		if(!SchemaManager.importSchema(schema, extendedSchemaIDs, schemaElements))

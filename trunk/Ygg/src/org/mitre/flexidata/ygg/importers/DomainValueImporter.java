@@ -1,9 +1,13 @@
 package org.mitre.flexidata.ygg.importers;
 
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import jxl.Cell;
+import jxl.read.biff.BiffException;
 
 import org.mitre.schemastore.model.Domain;
 import org.mitre.schemastore.model.DomainValue;
@@ -18,17 +22,26 @@ import org.mitre.schemastore.model.SchemaElement;
  */
 
 public class DomainValueImporter extends ExcelImporter {
-	HashMap<String, Domain> _domains = new HashMap<String, Domain>();
-	HashMap<String, DomainValue> _domainValues = new HashMap<String, DomainValue>();
+	private HashMap<String, Domain> _domains = new HashMap<String, Domain>();
+	private HashMap<String, DomainValue> _domainValues = new HashMap<String, DomainValue>();
 
 	@Override
 	public String getDescription() {
-		return "Imports Excel formatted domain and domain values.";
+		return "Imports Excel formatted domain and domain values. Domains are synonymous to "
+				+ "referenced look up lists for controled vocabulary or controled data inputs.";
 	}
 
 	@Override
 	public String getName() {
-		return "Domain Value Importer (xls)";
+		return "Domain Importer (.xls)";
+	}
+
+	@Override
+	protected void initialize(URI uri) throws IOException, URISyntaxException, BiffException {
+		super.initialize(uri);
+		_domains = new HashMap<String, Domain>();
+		_domainValues = new HashMap<String, DomainValue>();
+
 	}
 
 	protected ArrayList<SchemaElement> generateSchemaElementList() {
@@ -56,7 +69,7 @@ public class DomainValueImporter extends ExcelImporter {
 			domain = _domains.get(domainName);
 		else {
 			domain = new Domain(nextId(), domainName, "", 0);
-			System.err.println ("adding new domain " + domainName);
+			System.err.println("adding new domain " + domainName);
 			_domains.put(domainName, domain);
 		}
 
@@ -64,7 +77,8 @@ public class DomainValueImporter extends ExcelImporter {
 		if (domainValueStr.length() > 0) {
 			domainValue = new DomainValue(nextId(), domainValueStr, documentation, domain.getId(),
 					0);
-			System.err.println ("adding new domain value " + domain.getName() + " : " + domainValueStr);
+			System.err.println("adding new domain value " + domain.getName() + " : "
+					+ domainValueStr);
 			_domainValues.put(domainValueStr, domainValue);
 		} else {
 			// doc describes domain if domain value is absent
