@@ -3,13 +3,14 @@ package org.mitre.schemastore.graph;
 
 /**
  * Class GraphAttribute 
- * @author MDMORSE
+ * @author MDMORSE, DBURDICK
  */
 
 import org.mitre.schemastore.model.Attribute;
 import org.mitre.schemastore.model.SchemaElement;
+import java.util.*;
 
-public class GraphAttribute extends Attribute {
+public class GraphAttribute extends Attribute implements GraphSchemaElement{
 	
 	GraphEntity parentEntity;
 	GraphDomain domainType;
@@ -35,16 +36,28 @@ public class GraphAttribute extends Attribute {
 		{ return domainType; }
 	
 	// handles class setters 
-	public void setDomainType(GraphDomain gD)
-		{ domainType = gD; }
+	public void setDomainType(GraphDomain domain)
+		{ domainType = domain; }
 	
-	public void setParentEntity(GraphEntity pE)
-		{ parentEntity = pE; }
+	public void setParentEntity(GraphEntity entity)
+		{ parentEntity = entity; }
 
 	public String toString(){
 		return new String(" NAME: " + super.getName() + " ENTITY-ID: " +  super.getEntityID() + 
 				" DOMAIN-ID: " + super.getDomainID());
 	}
+	
+	public ArrayList<SchemaElement> getParents(){
+		ArrayList<SchemaElement> retVal = new ArrayList<SchemaElement>();
+		retVal.add(parentEntity);
+		return retVal;
+	}
+	
+	public ArrayList<SchemaElement> getChildren(){
+		ArrayList<SchemaElement> retVal = new ArrayList<SchemaElement>();
+		retVal.add(parentEntity);
+		return retVal;
+	}	
 	
 }
 

@@ -3,13 +3,13 @@ package org.mitre.schemastore.graph;
 
 /**
  * Class GraphEntity
- * @author MDMORSE
+ * @author MDMORSE, DBURDICK
  */
 
 import java.util.ArrayList;
 import org.mitre.schemastore.model.*;
 
-public class GraphEntity extends Entity {
+public class GraphEntity extends Entity implements GraphSchemaElement{
 	
 	// parents and child types (supertype and subtype)
 	private ArrayList<GraphEntity> subtypes;
@@ -93,17 +93,80 @@ public class GraphEntity extends Entity {
 	public ArrayList<GraphRelationship> getRelationships() { return relationships; }
 	
 	// class adders
-	public void addSubtypes(GraphEntity e) { subtypes.add(e);}
-	public void addSupertypes(GraphEntity e) { supertypes.add(e); }
-	public void addChildDomains(GraphDomain e) { childDomains.add(e); }
-	public void addChildEnititiesContained(GraphEntity e) { childEnititiesContained.add(e); }
+	public void addSubtype(GraphEntity e) { subtypes.add(e);}
+	public void addSupertype(GraphEntity e) { supertypes.add(e); }
+	public void addChildDomain(GraphDomain e) { childDomains.add(e); }
+	public void addChildEnitityContained(GraphEntity e) { childEnititiesContained.add(e); }
 	public void addLeftEntitiesRelated(GraphEntity e) { leftEntitiesRelated.add(e); }
-	public void addChildAttributes(GraphAttribute a) { childAttributes.add(a); }
-	public void addParentEnitiesContained(GraphEntity e) { parentEnitiesContained.add(e); }
-	public void addRightEntitiesRelated(GraphEntity e) { rightEntitiesRelated.add(e); }
-	public void addParentContainments(GraphContainment c) { parentContainments.add(c); }
-	public void addChildContainments(GraphContainment c) { childContainments.add(c); }
-	public void addRelationships(GraphRelationship r) { relationships.add(r); }
+	public void addChildAttribute(GraphAttribute a) { childAttributes.add(a); }
+	public void addParentEnitityContained(GraphEntity e) { parentEnitiesContained.add(e); }
+	public void addRightEntityRelated(GraphEntity e) { rightEntitiesRelated.add(e); }
+	public void addParentContainment(GraphContainment c) { parentContainments.add(c); }
+	public void addChildContainment(GraphContainment c) { childContainments.add(c); }
+	public void addRelationship(GraphRelationship r) { relationships.add(r); }
+	
+//	 class removers
+	public void removeSubtype(Integer id) { 
+		for (int i=0;i<subtypes.size();i++)
+			if (subtypes.get(i).getId().equals(id)) subtypes.remove(i);
+	}
+	public void removeSupertype(Integer id) { 
+		for (int i=0;i<supertypes.size();i++)
+			if (supertypes.get(i).getId().equals(id)) supertypes.remove(i);
+	}
+	public void removeChildDomain(Integer id) { 
+		for (int i=0;i<childDomains.size();i++)
+			if (childDomains.get(i).getId().equals(id)) childDomains.remove(i);
+	}
+	public void removeChildEnitityContained(Integer id) {
+		for (int i=0;i<childEnititiesContained.size();i++)
+			if (childEnititiesContained.get(i).getId().equals(id)) childEnititiesContained.remove(i);
+	}
+	public void removeLeftEntitiesRelated(Integer id) { 
+		for (int i=0;i<leftEntitiesRelated.size();i++)
+			if (leftEntitiesRelated.get(i).getId().equals(id)) leftEntitiesRelated.remove(i);	
+	}
+	public void removeChildAttribute(Integer id) { 
+		for (int i=0;i<childAttributes.size();i++)
+			if (childAttributes.get(i).getId().equals(id)) childAttributes.remove(i);
+	}
+	public void removeParentEnitityContained(Integer id) { 
+		for (int i=0;i<parentEnitiesContained.size();i++)
+			if (parentEnitiesContained.get(i).getId().equals(id)) parentEnitiesContained.remove(i);	
+	}
+	public void removeRightEntityRelated(Integer id) { 
+		for (int i=0;i<rightEntitiesRelated.size();i++)
+			if (rightEntitiesRelated.get(i).getId().equals(id)) rightEntitiesRelated.remove(i);	
+	}
+	public void removeParentContainment(Integer id) { 
+		for (int i=0;i<parentContainments.size();i++)
+			if (parentContainments.get(i).getId().equals(id)) parentContainments.remove(i);	
+	}
+	public void removeChildContainment(Integer id) { 
+		for (int i=0;i<childContainments.size();i++)
+			if (childContainments.get(i).getId().equals(id)) childContainments.remove(i);	
+	}
+	public void removeRelationship(Integer id) { 
+		for (int i=0;i<relationships.size();i++)
+			if (relationships.get(i).getId().equals(id)) relationships.remove(i);	
+	}
+	
+	
+	public ArrayList<SchemaElement> getParents(){
+		ArrayList<SchemaElement> retVal = new ArrayList<SchemaElement>();
+		retVal.addAll(getParentEnitiesContained()); 
+		retVal.addAll(getLeftEntitiesRelated());
+		return retVal;
+	}
+	
+	public ArrayList<SchemaElement> getChildren() {
+		ArrayList<SchemaElement> retVal = new ArrayList<SchemaElement>();
+		retVal.addAll(getChildAttributes());
+		retVal.addAll(getChildDomains());
+		retVal.addAll(getChildEnititiesContained());
+		retVal.addAll(getRightEntitiesRelated());
+		return retVal;
+	}
 	
 	
 }

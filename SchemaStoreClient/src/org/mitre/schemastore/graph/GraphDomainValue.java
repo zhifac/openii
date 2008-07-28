@@ -2,13 +2,13 @@ package org.mitre.schemastore.graph;
 
 /**
  * Class GraphDomainValue
- * @author MDMORSE
+ * @author MDMORSE, DBURDICK
  */
 
 import java.util.ArrayList;
 import org.mitre.schemastore.model.*;
 
-public class GraphDomainValue extends DomainValue{
+public class GraphDomainValue extends DomainValue implements GraphSchemaElement{
 	
 	GraphDomain parentDomain;
 	
@@ -27,5 +27,16 @@ public class GraphDomainValue extends DomainValue{
 	public void setParentDomain(GraphDomain parent){
 		parentDomain = parent;
 	}
+	
+	public ArrayList<SchemaElement> getParents(){
+		ArrayList<SchemaElement> retVal = new ArrayList<SchemaElement>();
+		retVal.add(parentDomain);
 		
+		return retVal;
+	}
+	
+	public ArrayList<SchemaElement>getChildren() {
+		ArrayList<SchemaElement> retVal = new ArrayList<SchemaElement>();
+		return retVal;
+	}
 }

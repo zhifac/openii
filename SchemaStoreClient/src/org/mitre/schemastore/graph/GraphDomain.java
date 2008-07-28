@@ -3,13 +3,13 @@ package org.mitre.schemastore.graph;
 
 /**
  * Class GraphDomain
- * @author MDMORSE
+ * @author MDMORSE, DBURDICK
  */
 
 import java.util.ArrayList;
 import org.mitre.schemastore.model.*;
 
-public class GraphDomain extends Domain{
+public class GraphDomain extends Domain implements GraphSchemaElement{
 	
 	// parent entities 
 	private ArrayList<GraphEntity> parentEntities;
@@ -41,18 +41,47 @@ public class GraphDomain extends Domain{
 			
 
 	// getters
-	public ArrayList<GraphEntity> 		getParentEntities()    { return parentEntities; }
+	public ArrayList<GraphEntity> 	   getParentEntities()    { return parentEntities; }
 	public ArrayList<GraphAttribute>   getParentAttributes()  { return parentAttributes; }
 	public ArrayList<GraphDomainValue> getChildDomainValues() { return childDomainValues; }
 	public ArrayList<GraphContainment> getChildContainments() { return childContainments; };
 	
 	// adders 
-	public void addParentEntities(GraphEntity e) { parentEntities.add(e); }
-	public void addParentAttributes(GraphAttribute a) { parentAttributes.add(a); }
-	public void addChildDomainValues(GraphDomainValue dv) { childDomainValues.add(dv); }
-	public void addChildContainments(GraphContainment c) {childContainments.add(c); }
+	public void addParentEntity(GraphEntity e) { parentEntities.add(e); }
+	public void addParentAttribute(GraphAttribute a) { parentAttributes.add(a); }
+	public void addChildDomainValue(GraphDomainValue dv) { childDomainValues.add(dv); }
+	public void addChildContainment(GraphContainment c) {childContainments.add(c); }
 	
-
+	// removers
+	public void removeParentEntity(Integer id) { 
+		for (int i=0;i<this.parentEntities.size();i++)
+			if (parentEntities.get(i).getId().equals(id)) parentEntities.remove(i);
+	}
+	public void removeParentAttribute(Integer id) { 
+		for (int i=0;i<this.parentAttributes.size();i++)
+			if (parentAttributes.get(i).getId().equals(id)) parentAttributes.remove(i);
+	}
+	public void removeChildDomainValue(Integer id) { 
+		for (int i=0;i<childDomainValues.size();i++)
+			if (childDomainValues.get(i).getId().equals(id)) childDomainValues.remove(i);
+	}
+	public void removeChildContainment(Integer id) {
+		for (int i=0;i<childContainments.size();i++)
+			if (childContainments.get(i).getId().equals(id)) childContainments.remove(i);
+	}
+	
+	public ArrayList<SchemaElement> getParents(){
+		ArrayList<SchemaElement> retVal = new ArrayList<SchemaElement>();
+		retVal.addAll(getParentEntities()); 
+		retVal.addAll(getParentAttributes());
+		return retVal;
+	}
+	
+	public ArrayList<SchemaElement> getChildren() {
+		ArrayList<SchemaElement> retVal = new ArrayList<SchemaElement>();
+		retVal.addAll(getChildDomainValues()); 
+		return retVal;
+	}
 	
 	
 }
