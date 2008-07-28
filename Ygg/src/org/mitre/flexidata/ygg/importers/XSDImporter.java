@@ -70,11 +70,18 @@ public class XSDImporter extends Importer
 			this.schemaID = schemaID;
 			xmlSchema = new SchemaReader(uri.toString()).read();
 			
+			// reset the Importer
+			schemaElementsHS = new HashMap<String, SchemaElement>();
+			processedComplexTypeList = new HashMap<String, Entity>();
+			domainList = new HashMap<String, Domain>();
+			containmentList = new HashMap<String, ArrayList<Containment>>();
+			
 			// Preset domains and then identify entities, attributes, and relationships in this schema
 			loadDomains();
 			getRootElements();
 
 			// Return the list of generated schema elements
+			System.out.println("SIZE: " + new ArrayList<SchemaElement>(schemaElementsHS.values()).size());
 			return new ArrayList<SchemaElement>(schemaElementsHS.values());
 		}
 		catch(Exception e) { throw new ImporterException(ImporterException.PARSE_FAILURE,e.getMessage()); }
