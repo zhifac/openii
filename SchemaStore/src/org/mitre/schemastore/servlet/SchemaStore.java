@@ -75,12 +75,8 @@ public class SchemaStore
 		{ return Schemas.deleteSchema(schemaID); }
 
 	/** Web service to retrieve the synonym list for the specified schema */
-	public ArrayList<String> getSynonyms(Integer schemaID)
-		{ 
-			//fixme: broken version just to get the WSDL from Chris
-			return new ArrayList<String>();
-		}//return Schemas.getSynonyms(schemaID); }
-
+	public String[] getSynonyms(Integer schemaID)
+		{ return new String[0]; }
 	
 	//---------------------------------
 	// Handles schema group operations
