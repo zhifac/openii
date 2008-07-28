@@ -3,9 +3,8 @@ package org.mitre.schemastore.graph;
 import java.util.ArrayList;
 
 import org.mitre.schemastore.model.Alias;
-import org.mitre.schemastore.model.Attribute;
 import org.mitre.schemastore.model.SchemaElement;
-import org.mitre.schemastore.graph.*;
+
 
 public class GraphAlias extends Alias implements GraphSchemaElement {
 	
