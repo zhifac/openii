@@ -94,16 +94,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
      <element maxOccurs="unbounded" minOccurs="0" name="item" type="xsd:int"/>
     </sequence>
    </complexType>
-   <element name="getMappings">
-    <complexType/>
-   </element>
-   <element name="getMappingsResponse">
-    <complexType>
-     <sequence>
-      <element maxOccurs="unbounded" name="getMappingsReturn" type="tns1:Mapping"/>
-     </sequence>
-    </complexType>
-   </element>
    <element name="addMapping">
     <complexType>
      <sequence>
@@ -132,6 +122,16 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
      </sequence>
     </complexType>
    </element>
+   <element name="getMappings">
+    <complexType/>
+   </element>
+   <element name="getMappingsResponse">
+    <complexType>
+     <sequence>
+      <element maxOccurs="unbounded" name="getMappingsReturn" type="tns1:Mapping"/>
+     </sequence>
+    </complexType>
+   </element>
    <element name="getGroups">
     <complexType/>
    </element>
@@ -139,20 +139,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
     <complexType>
      <sequence>
       <element maxOccurs="unbounded" name="getGroupsReturn" type="tns1:Group"/>
-     </sequence>
-    </complexType>
-   </element>
-   <element name="getEntity">
-    <complexType>
-     <sequence>
-      <element name="entityID" type="xsd:int"/>
-     </sequence>
-    </complexType>
-   </element>
-   <element name="getEntityResponse">
-    <complexType>
-     <sequence>
-      <element name="getEntityReturn" type="tns1:Entity"/>
      </sequence>
     </complexType>
    </element>
@@ -167,6 +153,20 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
     <complexType>
      <sequence>
       <element name="getRelationshipReturn" type="tns1:Relationship"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getEntity">
+    <complexType>
+     <sequence>
+      <element name="entityID" type="xsd:int"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getEntityResponse">
+    <complexType>
+     <sequence>
+      <element name="getEntityReturn" type="tns1:Entity"/>
      </sequence>
     </complexType>
    </element>
@@ -363,6 +363,20 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
     <complexType>
      <sequence>
       <element name="deleteSchemaReturn" type="xsd:boolean"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getSynonyms">
+    <complexType>
+     <sequence>
+      <element name="schemaID" type="xsd:int"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getSynonymsResponse">
+    <complexType>
+     <sequence>
+      <element maxOccurs="unbounded" name="getSynonymsReturn" type="xsd:string"/>
      </sequence>
     </complexType>
    </element>
@@ -1214,13 +1228,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
      <element name="parentId" nillable="true" type="xsd:int"/>
     </sequence>
    </complexType>
-   <complexType name="Entity">
-    <complexContent>
-     <extension base="tns1:SchemaElement">
-      <sequence/>
-     </extension>
-    </complexContent>
-   </complexType>
    <complexType name="Relationship">
     <complexContent>
      <extension base="tns1:SchemaElement">
@@ -1232,6 +1239,13 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
        <element name="rightMax" nillable="true" type="xsd:int"/>
        <element name="rightMin" nillable="true" type="xsd:int"/>
       </sequence>
+     </extension>
+    </complexContent>
+   </complexType>
+   <complexType name="Entity">
+    <complexContent>
+     <extension base="tns1:SchemaElement">
+      <sequence/>
      </extension>
     </complexContent>
    </complexType>
@@ -1355,15 +1369,15 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
    </wsdl:message>
 
-   <wsdl:message name="deleteGroupRequest">
-
-      <wsdl:part element="impl:deleteGroup" name="parameters"/>
-
-   </wsdl:message>
-
    <wsdl:message name="getSchemaRequest">
 
       <wsdl:part element="impl:getSchema" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="deleteGroupRequest">
+
+      <wsdl:part element="impl:deleteGroup" name="parameters"/>
 
    </wsdl:message>
 
@@ -1490,6 +1504,12 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
    <wsdl:message name="updateAliasRequest">
 
       <wsdl:part element="impl:updateAlias" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getSynonymsResponse">
+
+      <wsdl:part element="impl:getSynonymsResponse" name="parameters"/>
 
    </wsdl:message>
 
@@ -1865,15 +1885,15 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
    </wsdl:message>
 
-   <wsdl:message name="addAttributeRequest">
-
-      <wsdl:part element="impl:addAttribute" name="parameters"/>
-
-   </wsdl:message>
-
    <wsdl:message name="addMappingRequest">
 
       <wsdl:part element="impl:addMapping" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="addAttributeRequest">
+
+      <wsdl:part element="impl:addAttribute" name="parameters"/>
 
    </wsdl:message>
 
@@ -1904,6 +1924,12 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
    <wsdl:message name="updateDomainResponse">
 
       <wsdl:part element="impl:updateDomainResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getSynonymsRequest">
+
+      <wsdl:part element="impl:getSynonyms" name="parameters"/>
 
    </wsdl:message>
 
@@ -2299,14 +2325,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
       </wsdl:operation>
 
-      <wsdl:operation name="getMappings">
-
-         <wsdl:input message="impl:getMappingsRequest" name="getMappingsRequest"/>
-
-         <wsdl:output message="impl:getMappingsResponse" name="getMappingsResponse"/>
-
-      </wsdl:operation>
-
       <wsdl:operation name="addMapping">
 
          <wsdl:input message="impl:addMappingRequest" name="addMappingRequest"/>
@@ -2323,6 +2341,14 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
       </wsdl:operation>
 
+      <wsdl:operation name="getMappings">
+
+         <wsdl:input message="impl:getMappingsRequest" name="getMappingsRequest"/>
+
+         <wsdl:output message="impl:getMappingsResponse" name="getMappingsResponse"/>
+
+      </wsdl:operation>
+
       <wsdl:operation name="getGroups">
 
          <wsdl:input message="impl:getGroupsRequest" name="getGroupsRequest"/>
@@ -2331,19 +2357,19 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
       </wsdl:operation>
 
-      <wsdl:operation name="getEntity">
-
-         <wsdl:input message="impl:getEntityRequest" name="getEntityRequest"/>
-
-         <wsdl:output message="impl:getEntityResponse" name="getEntityResponse"/>
-
-      </wsdl:operation>
-
       <wsdl:operation name="getRelationship">
 
          <wsdl:input message="impl:getRelationshipRequest" name="getRelationshipRequest"/>
 
          <wsdl:output message="impl:getRelationshipResponse" name="getRelationshipResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getEntity">
+
+         <wsdl:input message="impl:getEntityRequest" name="getEntityRequest"/>
+
+         <wsdl:output message="impl:getEntityResponse" name="getEntityResponse"/>
 
       </wsdl:operation>
 
@@ -2432,6 +2458,14 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
          <wsdl:input message="impl:deleteSchemaRequest" name="deleteSchemaRequest"/>
 
          <wsdl:output message="impl:deleteSchemaResponse" name="deleteSchemaResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getSynonyms">
+
+         <wsdl:input message="impl:getSynonymsRequest" name="getSynonymsRequest"/>
+
+         <wsdl:output message="impl:getSynonymsResponse" name="getSynonymsResponse"/>
 
       </wsdl:operation>
 
@@ -2997,24 +3031,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
       </wsdl:operation>
 
-      <wsdl:operation name="getMappings">
-
-         <wsdlsoap:operation soapAction=""/>
-
-         <wsdl:input name="getMappingsRequest">
-
-            <wsdlsoap:body use="literal"/>
-
-         </wsdl:input>
-
-         <wsdl:output name="getMappingsResponse">
-
-            <wsdlsoap:body use="literal"/>
-
-         </wsdl:output>
-
-      </wsdl:operation>
-
       <wsdl:operation name="addMapping">
 
          <wsdlsoap:operation soapAction=""/>
@@ -3051,6 +3067,24 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
       </wsdl:operation>
 
+      <wsdl:operation name="getMappings">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="getMappingsRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="getMappingsResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
       <wsdl:operation name="getGroups">
 
          <wsdlsoap:operation soapAction=""/>
@@ -3069,24 +3103,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
       </wsdl:operation>
 
-      <wsdl:operation name="getEntity">
-
-         <wsdlsoap:operation soapAction=""/>
-
-         <wsdl:input name="getEntityRequest">
-
-            <wsdlsoap:body use="literal"/>
-
-         </wsdl:input>
-
-         <wsdl:output name="getEntityResponse">
-
-            <wsdlsoap:body use="literal"/>
-
-         </wsdl:output>
-
-      </wsdl:operation>
-
       <wsdl:operation name="getRelationship">
 
          <wsdlsoap:operation soapAction=""/>
@@ -3098,6 +3114,24 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
          </wsdl:input>
 
          <wsdl:output name="getRelationshipResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getEntity">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="getEntityRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="getEntityResponse">
 
             <wsdlsoap:body use="literal"/>
 
@@ -3296,6 +3330,24 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
          </wsdl:input>
 
          <wsdl:output name="deleteSchemaResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getSynonyms">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="getSynonymsRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="getSynonymsResponse">
 
             <wsdlsoap:body use="literal"/>
 
