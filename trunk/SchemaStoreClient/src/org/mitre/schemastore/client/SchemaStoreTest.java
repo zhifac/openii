@@ -7,6 +7,7 @@ public class SchemaStoreTest
 {
 	static public void main(String args[])
 	{
+		System.out.println("begin...");
 		SchemaStoreClient client = new SchemaStoreClient("http://localhost:8080/SchemaStore/services/SchemaStore");
 
 		// Display remaining schemas
@@ -15,6 +16,9 @@ public class SchemaStoreTest
 				System.out.println(schema.getId() + " " + schema.getName());
 			for(SchemaElement schemaElement : client.getSchemaElements(0))
 				System.out.println(schemaElement.getId() + " " + schemaElement.getName());
-		} catch(Exception e) {}
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		System.out.println("end...");
 	}
 }

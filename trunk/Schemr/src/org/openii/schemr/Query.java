@@ -37,7 +37,7 @@ public class Query {
 	public Query(Schema querySchema, ArrayList<SchemaElement> querySchemaElements, HashMap<String,String> queryKeywords) {
 		this.querySchema = querySchema;
 		this.queryKeywords = queryKeywords;
-		this.querySchemaElements = GraphBuilder.build(querySchemaElements, querySchema.getId());
+		this.querySchemaElements = new GraphBuilder(querySchemaElements, querySchema.getId()).getSchemaElements();
 	}
 
 	@Override

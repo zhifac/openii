@@ -50,7 +50,7 @@ public class PrefuseVisualizer implements Visualizer {
     	// -- 1. create schema graph for visualization
     	Schema schema = this.matchSummary.getSchema();
 		ArrayList<SchemaElement> schemaElements = SchemaUtility.getCLIENT().getSchemaElements(schema.getId());
-		schemaElements = GraphBuilder.build(schemaElements, schema.getId());
+		schemaElements = new GraphBuilder(schemaElements, schema.getId()).getSchemaElements();
 
 //		Graph graph = new SchemaGraphReader().constructGraph(schema, schemaElements, this.matchSummary.getQueryFragmentToScoreEvidencePairMap());
 		Tree graph = new SchemaGraphReader().constructGraph(schema, schemaElements, this.matchSummary.getQueryFragmentToScoreEvidencePairMap());
