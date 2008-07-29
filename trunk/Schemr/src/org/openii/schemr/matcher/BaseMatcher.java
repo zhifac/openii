@@ -9,6 +9,7 @@ import java.util.logging.Logger;
 
 import org.mitre.schemastore.graph.GraphBuilder;
 import org.mitre.schemastore.model.Attribute;
+import org.mitre.schemastore.model.Containment;
 import org.mitre.schemastore.model.Entity;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
@@ -50,7 +51,15 @@ public abstract class BaseMatcher implements Matcher {
 			ArrayList<SchemaElement> schemaElements = SchemaUtility.getCLIENT().getSchemaElements(id);
 			schemaElements = new GraphBuilder(schemaElements, id).getSchemaElements();
 			for (SchemaElement e : schemaElements) {
-				if (e instanceof Entity || e instanceof Attribute) {
+				if (e instanceof Entity || e instanceof Containment || e instanceof Attribute) {
+//			if (e instanceof Containment) {
+//				System.out.println("Containment: "+e.getName()+ " "+e.getId());
+//				Containment cnt = (Containment) e;
+//				SchemaElement p = SchemaUtility.getCLIENT().getSchemaElement(cnt.getParentID());
+//				SchemaElement c = SchemaUtility.getCLIENT().getSchemaElement(cnt.getChildID());
+//				if (p!=null) System.out.println("\tParent: "+p.getName()+ " " + p.getClass().getSimpleName() + " "+p.getId());
+//				if (c!=null) System.out.println("\tChild: "+c.getName()+" "+c.getClass().getSimpleName()+ " "+c.getId());
+//			}
 					if (e != null && !"".equals(e.getName().trim())) {
 						TokenSet ts = new TokenSet(e.getName().trim());
 						ts.add(new Token(ts.getName()));

@@ -56,7 +56,13 @@ public class MatchSummary implements Comparable<MatchSummary> {
 	}
 
 	public int compareTo(MatchSummary o) {
-		return (int) (o.getScore() - this.getScore());
+		if (o.getScore() == this.getScore()) {
+			return 0;
+		} else if (o.getScore() > this.getScore()) {
+			return 1;
+		} else {
+			return -1;
+		}
 	}
 
 }

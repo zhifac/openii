@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.logging.Logger;
 
 import org.mitre.schemastore.graph.GraphAttribute;
+import org.mitre.schemastore.graph.GraphContainment;
 import org.mitre.schemastore.graph.GraphEntity;
+import org.mitre.schemastore.model.Containment;
 import org.mitre.schemastore.model.Entity;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
@@ -39,6 +41,12 @@ public class QueryFragment {
 				GraphEntity ge = (GraphEntity) schemaElement;
 				if (ge.getParentEnitiesContained().isEmpty() && !ge.getName().equals("")) {
 					this.queryFragments.add(new QueryFragment(schemaElement));
+				}
+			}
+			if (schemaElement instanceof Containment) {
+				Containment c = (Containment) schemaElement;
+				if (c.getParentID() < 0 && !c.getName().equals("")) {
+					this.queryFragments.add(new QueryFragment(c));
 				}
 			}
 		}

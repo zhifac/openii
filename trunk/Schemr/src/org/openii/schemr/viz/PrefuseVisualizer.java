@@ -74,7 +74,8 @@ public class PrefuseVisualizer implements Visualizer {
         int[] palette = new int[] {
             ColorLib.rgb(255,180,180), // blue
             ColorLib.rgb(25,180,180),  // green
-            ColorLib.rgb(190,190,255) // pink
+            ColorLib.rgb(190,190,255),  // pink
+            ColorLib.rgb(100,200,200) // 
         };
         // map nominal data values to colors using our provided palette
         DataColorAction fill = new DataColorAction(VIZ_NODES, TYPE,

@@ -1,6 +1,7 @@
 package org.openii.schemr.viz;
 
 import static org.openii.schemr.viz.Visualizer.ATTRIBUTE;
+import static org.openii.schemr.viz.Visualizer.CONTAINMENT;
 import static org.openii.schemr.viz.Visualizer.DESC;
 import static org.openii.schemr.viz.Visualizer.ENTITY;
 import static org.openii.schemr.viz.Visualizer.ID;
@@ -20,6 +21,7 @@ import java.util.logging.Logger;
 
 import org.mitre.schemastore.graph.GraphAttribute;
 import org.mitre.schemastore.graph.GraphEntity;
+import org.mitre.schemastore.model.Containment;
 import org.mitre.schemastore.model.Entity;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
@@ -104,32 +106,28 @@ public class SchemaGraphReader {
 		}
 		addNode(schema.getName().trim(), schema.getDescription().trim(), SCHEMA, schema.getId(), matched, score, matchedObj);
 
-		// first pass
 		for (SchemaElement schemaElement : schemaElements) {
 			if (schemaElement instanceof Entity) {
 				GraphEntity e = (GraphEntity) schemaElement;
 				
-				// add entity w/ valid name
-				if (!"".equals(e.getName().trim())) {
-					matched = idScoreEvidenceMap.keySet().contains(e.getId());
-					score = 1;
-					matchedObj = "";
-					if (matched) { 
-						score += idScoreEvidenceMap.get(e.getId()).getScore() * 3 + 1;
-						matchedObj = idQueryFragmentMap.get(e.getId()).getName().trim();
-					}
-					addNode(e.getName().trim(), e.getDescription().trim(), ENTITY, e.getId(), matched, score, matchedObj);
-
-					// TODO: assum all entities connect with schema
-					addEdge(RELATIONSHIP, schema.getId(), e.getId());
+				String name = e.getName().trim();
+				if ("".equals(name)) {
+					name = "-";
 				}
-						
-				// TODO: assume no child entities, relational only
-//				for (GraphEntity ce : e.getChildEnititiesContained()) {
-//					// only add edges, because child entities will be covered
-//					addEdge(RELATIONSHIP, e.getId(), ce.getId());
-//				}
+				
+				matched = idScoreEvidenceMap.keySet().contains(e.getId());
+				score = 1;
+				matchedObj = "";
+				if (matched) { 
+					score += idScoreEvidenceMap.get(e.getId()).getScore() * 3 + 1;
+					matchedObj = idQueryFragmentMap.get(e.getId()).getName().trim();
+				}
+				addNode(name, e.getDescription().trim(), ENTITY, e.getId(), matched, score, matchedObj);
 
+				// TODO: assume all entities connect with schema
+				addEdge(RELATIONSHIP, schema.getId(), e.getId());
+				
+				// add child attributes
 				for (GraphAttribute ca : e.getChildAttributes()) {
 					matched = idScoreEvidenceMap.keySet().contains(ca.getId());
 					score = 1;
@@ -141,6 +139,26 @@ public class SchemaGraphReader {
 					addNode(ca.getName().trim(), ca.getDescription().trim(), ATTRIBUTE, ca.getId(), matched, score, matchedObj);
 					addEdge(RELATIONSHIP, e.getId(), ca.getId());
 				}
+
+			} else if (schemaElement instanceof Containment) {
+				Containment c = (Containment) schemaElement;
+				String name = c.getName().trim();
+				if ("".equals(name)) {
+					name = "-";
+				}
+				
+				matched = idScoreEvidenceMap.keySet().contains(c.getId());
+				score = 1;
+				matchedObj = "";
+				if (matched) { 
+					score += idScoreEvidenceMap.get(c.getId()).getScore() * 3 + 1;
+					matchedObj = idQueryFragmentMap.get(c.getId()).getName().trim();
+				}
+				addNode(c.getName().trim(), c.getDescription().trim(), CONTAINMENT, c.getId(), matched, score, matchedObj);
+				System.out.println(CONTAINMENT+": "+c.getName().trim()+" "+c.getId());			
+				int pid = c.getParentID();
+				addEdge(RELATIONSHIP, pid , c.getId());
+				System.out.println("\tedge: "+pid+" <-> "+c.getId());
 			}
 		}
 

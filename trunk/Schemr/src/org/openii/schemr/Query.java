@@ -2,6 +2,7 @@ package org.openii.schemr;
 
 import static org.openii.schemr.Schemr.MATCHER;
 
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -10,6 +11,7 @@ import java.util.logging.Logger;
 
 import org.mitre.schemastore.graph.GraphBuilder;
 import org.mitre.schemastore.model.Attribute;
+import org.mitre.schemastore.model.Containment;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
 import org.openii.schemr.matcher.EditDistanceMatcher;
@@ -49,15 +51,26 @@ public class Query {
 				+ "\n");
 		for (SchemaElement s : this.querySchemaElements) {
 			sb.append("\t"+SchemaUtility.getType(s)+":"+s.getName()+":"+s.getId());
-			if (s instanceof Attribute) sb.append(":"+(((Attribute) s).getEntityID())+"\n");
-			else sb.append("\n");
+			if (s instanceof Attribute) {
+				sb.append(":"+(((Attribute) s).getEntityID())+"\n");
+//			} else if (s instanceof Containment) {
+//				Containment cnt = (Containment) s;
+//				SchemaElement p, c;
+//				try {
+//					p = SchemaUtility.getCLIENT().getSchemaElement(cnt.getParentID());
+//					c = SchemaUtility.getCLIENT().getSchemaElement(cnt.getChildID());
+//					if (p!=null) sb.append("\tParent: "+p.getName()+ " " + p.getClass().getSimpleName() + " "+p.getId());
+//					if (c!=null) sb.append("\tChild: "+c.getName()+" "+c.getClass().getSimpleName()+ " "+c.getId());
+//				} catch (RemoteException e) {
+//					e.printStackTrace();
+//				}
+			} else sb.append("\n");
 		}
-		return super.toString();
+		return sb.toString();
 	}
 
 	public MatchSummary [] processQuery(ArrayList<Schema> candidateSchemas) {
 		QueryParser qp = new QueryParser(this);				
-		//	System.out.println(qp.toString());
 		
 		ArrayList<MatchSummary> matchSummaries = new ArrayList<MatchSummary>();
 		
@@ -85,7 +98,7 @@ public class Query {
 		}
 
 		SimilarityMatrix sm = m.calculateSimilarityMatrix();
-		//	System.out.println(sm.toString());
+	System.out.println(sm.toString());
 		// match summary contains schema, queryfragments, score, and evidence
 		return m.getMatchSummary();
 	}
@@ -121,15 +134,6 @@ public class Query {
 
 		public ArrayList<QueryFragment> getQueryFragments() {
 			return this.queryFragments;
-		}
-
-		@Override
-		public String toString() {
-			StringBuffer sb = new StringBuffer();
-			for (QueryFragment f : this.queryFragments) {
-				sb.append(f.toString());
-			}
-			return sb.toString();
 		}
 
 	}
