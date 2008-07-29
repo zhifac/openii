@@ -12,8 +12,8 @@ import org.mitre.schemastore.model.*;
 public class GraphEntity extends Entity implements GraphSchemaElement{
 	
 	// parents and child types (supertype and subtype)
-	private ArrayList<GraphEntity> subtypes;
-	private ArrayList<GraphEntity> supertypes;
+	private ArrayList<GraphEntity> subtypeEntities;
+	private ArrayList<GraphEntity> supertypeEntities;
 	
 	// child domains and other entities contained or related
 	private ArrayList<GraphDomain> childDomains;
@@ -27,16 +27,19 @@ public class GraphEntity extends Entity implements GraphSchemaElement{
 	private ArrayList<GraphEntity> parentEnitiesContained;
 	private ArrayList<GraphEntity> rightEntitiesRelated;
 	
-	// store containments and relationships
+	// store containments, relationships, and subtypeEntities
 	private ArrayList<GraphContainment> parentContainments; // containments where this entity IS PARENT
 	private ArrayList<GraphContainment> childContainments;  // containments where this entity IS CHILD
 	private ArrayList<GraphRelationship> relationships;
-	
+	private ArrayList<GraphSubtype> subtypes;
+	private ArrayList<GraphSubtype> supertypes;
 	
 	public GraphEntity(Integer id, String name, String description, int base){
 		super(id, name, description, base);
-		subtypes  = new ArrayList<GraphEntity>();
-		supertypes = new ArrayList<GraphEntity>();
+		subtypes	  = new ArrayList<GraphSubtype>();
+		supertypes	  = new ArrayList<GraphSubtype>();
+		subtypeEntities  = new ArrayList<GraphEntity>();
+		supertypeEntities = new ArrayList<GraphEntity>();
 		childDomains   = new ArrayList<GraphDomain>();
 		childEnititiesContained = new ArrayList<GraphEntity>();
 		rightEntitiesRelated    = new ArrayList<GraphEntity>();
@@ -50,8 +53,9 @@ public class GraphEntity extends Entity implements GraphSchemaElement{
 	
 	public GraphEntity(Entity e){
 		super(e.getId(), e.getName(), e.getDescription(), e.getBase());
-		subtypes  = new ArrayList<GraphEntity>();
-		supertypes = new ArrayList<GraphEntity>();
+		subtypes	  = new ArrayList<GraphSubtype>();
+		subtypeEntities  = new ArrayList<GraphEntity>();
+		supertypeEntities = new ArrayList<GraphEntity>();
 		childDomains   = new ArrayList<GraphDomain>();
 		childEnititiesContained = new ArrayList<GraphEntity>();
 		leftEntitiesRelated    = new ArrayList<GraphEntity>();
@@ -65,8 +69,10 @@ public class GraphEntity extends Entity implements GraphSchemaElement{
 	
 	public GraphEntity(Integer id){
 		super(id,"","",0);
-		subtypes  = new ArrayList<GraphEntity>();
-		supertypes = new ArrayList<GraphEntity>();
+		subtypes = new ArrayList<GraphSubtype>();
+		supertypes = new ArrayList<GraphSubtype>();
+		subtypeEntities  = new ArrayList<GraphEntity>();
+		supertypeEntities = new ArrayList<GraphEntity>();
 		childDomains   = new ArrayList<GraphDomain>();
 		childEnititiesContained = new ArrayList<GraphEntity>();
 		leftEntitiesRelated    = new ArrayList<GraphEntity>();
@@ -79,9 +85,10 @@ public class GraphEntity extends Entity implements GraphSchemaElement{
 	}
 	
 	// class getters
-
-	public ArrayList<GraphEntity> getSubtypes() { return subtypes;}
-	public ArrayList<GraphEntity> getSupertypes() { return supertypes; }
+	public ArrayList<GraphSubtype> getSubtypes() { return subtypes;}
+	public ArrayList<GraphSubtype> getSupertypes() { return subtypes;}
+	public ArrayList<GraphEntity> getSubtypeEntity() { return subtypeEntities;}
+	public ArrayList<GraphEntity> getSupertypeEntity() { return supertypeEntities; }
 	public ArrayList<GraphDomain> getChildDomains() { return childDomains; }
 	public ArrayList<GraphEntity> getChildEnititiesContained() { return childEnititiesContained; }
 	public ArrayList<GraphEntity> getLeftEntitiesRelated() { return leftEntitiesRelated; }
@@ -93,8 +100,10 @@ public class GraphEntity extends Entity implements GraphSchemaElement{
 	public ArrayList<GraphRelationship> getRelationships() { return relationships; }
 	
 	// class adders
-	public void addSubtype(GraphEntity e) { subtypes.add(e);}
-	public void addSupertype(GraphEntity e) { supertypes.add(e); }
+	public void addSubtype(GraphSubtype s) { subtypes.add(s);}
+	public void addSupertype(GraphSubtype s) { supertypes.add(s);}
+	public void addSubtypeEntity(GraphEntity e) { subtypeEntities.add(e);}
+	public void addSupertypeEntity(GraphEntity e) { supertypeEntities.add(e); }
 	public void addChildDomain(GraphDomain e) { childDomains.add(e); }
 	public void addChildEnitityContained(GraphEntity e) { childEnititiesContained.add(e); }
 	public void addLeftEntitiesRelated(GraphEntity e) { leftEntitiesRelated.add(e); }
@@ -107,22 +116,32 @@ public class GraphEntity extends Entity implements GraphSchemaElement{
 	
 //	 class removers
 	public void removeSubtype(Integer id) { 
-		for (int i=0;i<subtypes.size();i++)
+		for (int i=0;i<subtypes.size();i++){
 			if (subtypes.get(i).getId().equals(id)) subtypes.remove(i);
+		}
 	}
 	public void removeSupertype(Integer id) { 
-		for (int i=0;i<supertypes.size();i++)
+		for (int i=0;i<supertypes.size();i++){
 			if (supertypes.get(i).getId().equals(id)) supertypes.remove(i);
+		}
+	}
+	public void removeSubtypeEntity(Integer id) { 
+		for (int i=0;i<subtypeEntities.size();i++)
+			{if (subtypeEntities.get(i).getId().equals(id)) subtypeEntities.remove(i);}
+	}
+	public void removeSupertypeEntity(Integer id){ 
+		for (int i=0;i<supertypeEntities.size();i++)
+			if (supertypeEntities.get(i).getId().equals(id)) supertypeEntities.remove(i);
 	}
 	public void removeChildDomain(Integer id) { 
 		for (int i=0;i<childDomains.size();i++)
 			if (childDomains.get(i).getId().equals(id)) childDomains.remove(i);
 	}
-	public void removeChildEnitityContained(Integer id) {
+	public void removeChildEntityContained(Integer id) {
 		for (int i=0;i<childEnititiesContained.size();i++)
 			if (childEnititiesContained.get(i).getId().equals(id)) childEnititiesContained.remove(i);
 	}
-	public void removeLeftEntitiesRelated(Integer id) { 
+	public void removeLeftEntityRelated(Integer id) { 
 		for (int i=0;i<leftEntitiesRelated.size();i++)
 			if (leftEntitiesRelated.get(i).getId().equals(id)) leftEntitiesRelated.remove(i);	
 	}

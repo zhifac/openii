@@ -55,7 +55,7 @@ public class GraphAttribute extends Attribute implements GraphSchemaElement{
 	
 	public ArrayList<SchemaElement> getChildren(){
 		ArrayList<SchemaElement> retVal = new ArrayList<SchemaElement>();
-		retVal.add(parentEntity);
+		retVal.add(domainType);
 		return retVal;
 	}	
 	
