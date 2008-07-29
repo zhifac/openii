@@ -1,8 +1,6 @@
 package org.mitre.schemastore.graph;
 
 import java.util.*;
-
-import org.mitre.schemastore.client.SchemaStoreClient;
 import org.mitre.schemastore.model.*;
 /**
  * Class GraphBuilder 
