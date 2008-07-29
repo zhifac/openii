@@ -365,6 +365,9 @@ public class GraphBuilder{
 					
 					GraphEntity parent = (GraphEntity)graphHash.get(((GraphContainment)graphElement).getParentID());
 					SchemaElement child = graphHash.get(((GraphContainment)graphElement).getChildID());
+					graphElement.setParent(parent);
+					graphElement.setChild(child);
+					
 					// add entity <--> entity connections
 					if (child instanceof GraphEntity){
 						parent.addChildEnitityContained((GraphEntity)child);
@@ -386,6 +389,8 @@ public class GraphBuilder{
 					graphHash.put(rel.getId(), rel);
 					GraphEntity leftEntity  = (GraphEntity)graphHash.get(rel.getLeftID());
 					GraphEntity rightEntity = (GraphEntity)graphHash.get(rel.getRightID());
+					rel.setParent(leftEntity);
+					rel.setChild(rightEntity);
 					leftEntity.addRelationship(rel);
 					rightEntity.addRelationship(rel);
 					
@@ -400,6 +405,8 @@ public class GraphBuilder{
 					graphHash.put(subtype.getId(), subtype);
 					GraphEntity parentEntity = (GraphEntity)graphHash.get(subtype.getParentID());
 					GraphEntity childEntity  = (GraphEntity)graphHash.get(subtype.getChildID());
+					subtype.setParent(parentEntity);
+					subtype.setChild(childEntity);
 					
 					parentEntity.addSubtypeEntity(childEntity);
 					parentEntity.addSubtype(subtype);

@@ -15,6 +15,33 @@ import org.mitre.schemastore.model.SchemaElement;
 
 public class GraphContainment extends Containment implements GraphSchemaElement{
 
+	GraphEntity parent;
+	SchemaElement child;
+	
+	public GraphEntity getParent(){
+		return parent;
+	}
+	public SchemaElement getChild(){
+		return child;
+	}
+	public void setChild(SchemaElement passedChild){
+		child = passedChild;
+	}
+	public void setParent(GraphEntity passedParent){
+		parent = passedParent;
+	}
+	
+	public ArrayList<SchemaElement> getParents(){
+		ArrayList<SchemaElement> retVal = new ArrayList<SchemaElement>();
+		retVal.add(parent);
+		return retVal;
+	}
+	
+	public ArrayList<SchemaElement> getChildren(){
+		ArrayList<SchemaElement> retVal = new ArrayList<SchemaElement>();
+		retVal.add(child);
+		return retVal;
+	}
 	/** Constructs the containment relationship */
 	public GraphContainment(Integer id, String name, String description, Integer parentID, Integer childID, Integer min, Integer max, Integer base)
 		{ super(id,name,description,parentID,childID,min,max,base); }
@@ -22,11 +49,5 @@ public class GraphContainment extends Containment implements GraphSchemaElement{
 	public GraphContainment(Containment c)
 		{ super(c.getId(),c.getName(),c.getDescription(),c.getParentID(),c.getChildID(),c.getMin(),c.getMax(),c.getBase()); }
 	
-	public ArrayList<SchemaElement> getParents(){
-		return new ArrayList<SchemaElement>();
-	}
 	
-	public ArrayList<SchemaElement> getChildren(){
-		return new ArrayList<SchemaElement>();
-	}
 }

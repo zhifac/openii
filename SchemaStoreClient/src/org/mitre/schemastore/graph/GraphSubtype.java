@@ -3,10 +3,14 @@
 package org.mitre.schemastore.graph;
 
 import org.mitre.schemastore.model.*;
+
 import java.util.*;
 
 public class GraphSubtype extends Subtype implements GraphSchemaElement{
 
+	private GraphEntity parent;
+	private GraphEntity child;
+		
 	/** Constructs the subtype relationship */
 	public GraphSubtype(Integer id, Integer parentID, Integer childID, Integer base)
 		{ super(id, parentID, childID, base); }
@@ -14,12 +18,29 @@ public class GraphSubtype extends Subtype implements GraphSchemaElement{
 	public GraphSubtype(Subtype s)
 		{ super(s.getId(), s.getParentID(), s.getChildID(), s.getBase()); }
 	
+	public GraphEntity getParent(){
+		return parent;
+	}
+	public GraphEntity getChild(){
+		return child;
+	}
+	public void setChild(GraphEntity passedChild){
+		child = passedChild;
+	}
+	public void setParent(GraphEntity passedParent){
+		parent= passedParent;
+	}
+	
 	public ArrayList<SchemaElement> getParents(){
-		return new ArrayList<SchemaElement>();
+		ArrayList<SchemaElement> retVal = new ArrayList<SchemaElement>();
+		retVal.add(parent);
+		return retVal;
 	}
 	
 	public ArrayList<SchemaElement> getChildren(){
-		return new ArrayList<SchemaElement>();
+		ArrayList<SchemaElement> retVal = new ArrayList<SchemaElement>();
+		retVal.add(child);
+		return retVal;
 	}
-	
+
 }
