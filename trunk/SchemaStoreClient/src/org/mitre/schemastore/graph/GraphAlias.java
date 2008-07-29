@@ -1,3 +1,5 @@
+// Copyright 2008 The MITRE Corporation. ALL RIGHTS RESERVED.
+
 package org.mitre.schemastore.graph;
 
 import java.util.ArrayList;
