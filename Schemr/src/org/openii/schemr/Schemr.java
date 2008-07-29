@@ -28,11 +28,13 @@ public class Schemr {
 		Schema querySchema = null;
 		ArrayList<SchemaElement> querySchemaElements = null;
 		try {
-			candidateSchemas = SchemaUtility.getCLIENT().getSchemas();			
+			candidateSchemas = SchemaUtility.getCLIENT().getSchemas();
 //			candidateSchemas = new ArrayList<Schema>();
-//			candidateSchemas.add(SchemaUtility.getCLIENT().getSchema(400));
-			
-			querySchema = SchemaUtility.getCLIENT().getSchema(17);
+//			candidateSchemas.add(SchemaUtility.getCLIENT().getSchema(17));
+//			candidateSchemas.add(SchemaUtility.getCLIENT().getSchema(52453));
+
+//			querySchema = SchemaUtility.getCLIENT().getSchema(17);
+			querySchema = SchemaUtility.getCLIENT().getSchema(52453);
 			querySchemaElements = SchemaUtility.getCLIENT().getSchemaElements(querySchema.getId());
 		} catch (RemoteException e) {
 			e.printStackTrace();
@@ -46,7 +48,7 @@ public class Schemr {
 		queryKeywords.put("telephone", "attribute");
 		
 		Query q = new Query(querySchema, querySchemaElements, queryKeywords);
-
+		System.out.println(q.toString());
 		MatchSummary [] msarray = q.processQuery(candidateSchemas);
 
 		
