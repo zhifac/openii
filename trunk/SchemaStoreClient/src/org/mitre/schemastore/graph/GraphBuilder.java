@@ -16,27 +16,22 @@ public class GraphBuilder{
 	private Integer schemaID;
 	
 	public static void main(String[] args){
-		SchemaStoreClient client = new SchemaStoreClient("http://localhost:8080/SchemaStore/services/SchemaStore");
-		try {
-			GraphBuilder graph = new GraphBuilder(client.getSchemaElements(2766), 2766);
-			ArrayList<SchemaElement> addedElements = new ArrayList<SchemaElement>();
-			Containment c = new Containment(3000,"new top","new top",2766,3001,0,1,2766); 
-			Entity e = new Entity(3001,"new top","",2766);
-			Containment c2 = new Containment(3002,"new top","new top",3001,3003,0,1,2766); 
-			Entity e2 = new Entity(3003,"new second","",2766);
-			addedElements.add(c); addedElements.add(e);
-			addedElements.add(c2); addedElements.add(e2);
-			graph.addElements(addedElements,2766);
-			graph.enumerateGraph();
-			
-		}catch (Exception e) {
-			e.printStackTrace();
-		}
+
 	}
 	
 	public GraphBuilder(ArrayList<SchemaElement> elements, Integer id){
 		schemaID = id;
 		addElements(elements,id);
+	}
+	
+	public ArrayList<SchemaElement> getSchemaElements(){
+		ArrayList<SchemaElement> retVal = new ArrayList<SchemaElement>();
+		for (SchemaElement se : graphHash.values()){
+			if (se.getId().equals(schemaID) == false){
+				retVal.add(se);
+			}
+		}
+		return retVal;
 	}
 	
 	public ArrayList<SchemaElement> getParents(Integer schemaID){
@@ -92,74 +87,87 @@ public class GraphBuilder{
 		} // end while
 	} // end method enumerateGraph()
 	
+	public void printGraph(){
+		
+		
+		for (SchemaElement se : graphHash.values()){
+			System.out.println(" " + se.getId() + " " + se.getName() + " " + se.getClass());	
+		}
+	} // end method enumerateGraph()
 	
-	public Boolean deleteSchemaElement(Integer schemaID){
+	/***
+	 * deleteSchemaElement(): Removes a schema element from the graph; 
+	 * @param schemaID ID of element being deleted
+	 * @return TRUE if element successfully deleted; FALSE otherwise
+	 *
+	 */
+	public synchronized Boolean deleteSchemaElement(Integer schemaID){
 		
 		SchemaElement element = graphHash.get(schemaID);
 		
-		if ((element instanceof GraphSchemaElement) == false){
-			System.out.println("[E] GraphBuilder:deleteSchemaElement -- schema ID " + schemaID + " is unexpected type " + element.getClass().toString());
-			graphHash.remove(schemaID);
+		if (element == null){
+			System.out.println("[E] GraphBuilder:deleteSchemaElement -- schema ID " + schemaID + 
+					" does not exist ");
+			return false;
 		}
 		
-		// CASE: Domain
+		if ((element instanceof GraphSchemaElement) == false){
+			System.out.println("[E] GraphBuilder:deleteSchemaElement -- schema ID " + schemaID + 
+					" is unexpected type " + element.getClass().toString());
+			graphHash.remove(schemaID);
+			return true;
+		}
+		
+		////////////////////// CASE: Domain ///////////////////////////////////
 		if (element instanceof Domain){
 			if (((GraphSchemaElement)element).getParents().size() == 0){
 				
 				// find containments refering to domain
 				//    remove enity --> domain containment 
-				for (SchemaElement se : ((GraphDomain)element).getChildContainments()){
-					GraphEntity entity = (GraphEntity)graphHash.get(((GraphContainment)se).getParentID());  
+				for (SchemaElement containment : ((GraphDomain)element).getChildContainments()){
+					GraphEntity entity = (GraphEntity)graphHash.get(((GraphContainment)containment).getParentID());  
 					if (entity == null){
 						System.out.println("[E] GraphBuilder:deleteSchemaElement -- entity ID " + schemaID + " is invalid ");
 						return false;
 					} else {
-						for (SchemaElement domain : entity.getChildDomains()){
-							if (domain.getId().equals(element.getId()))
-								entity.removeChildDomain(domain.getId());
-						}
+						entity.removeChildDomain(element.getId());
 					}
 					// remove the containment itself in graph
-					graphHash.remove(se.getId());
+					graphHash.remove(containment.getId());
 				}
 				// remove all domainValues for deleted domain
-				for (SchemaElement se : ((GraphSchemaElement)element).getChildren()){
-					graphHash.remove(se.getId());
+				for (SchemaElement dv : ((GraphSchemaElement)element).getChildren()){
+					graphHash.remove(dv.getId());
 				}
 				// remove the domain
 				graphHash.remove(element.getId());
 			} else {
-				System.out.println("[E] GraphBuilder:deleteSchemaElement -- schema ID " + schemaID + " is a domain used by attributes or entities");
+				System.out.println("[E] GraphBuilder:deleteSchemaElement -- schema ID " + schemaID + 
+						" is a domain used by attributes or entities");
 				return false;
 			}
 		}
 		
-		// CASE: DomainValue
+		///////////////////// CASE: DomainValue ///////////////////////////////
 		else if (element instanceof DomainValue){
 			GraphDomain domain = (GraphDomain)graphHash.get(((DomainValue)element).getDomainID());
 			domain.removeChildDomainValue(element.getId());
 		}
 		
-		// CASE: Attribute
+		////////////////////// CASE: Attribute ////////////////////////////////
 		else if (element instanceof Attribute){
 			// remove attribute from domainList
-			GraphDomain domain = (GraphDomain)graphHash.get( ((GraphAttribute)element).getDomainID() );
+			GraphDomain domain = (GraphDomain)graphHash.get(((GraphAttribute)element).getDomainID());
 			if (domain == null){
 				System.out.println("[E] GraphBuilder:deleteSchemaElement -- Attribute with ID " + schemaID + 
 						" refers to a non-existant domain (ID " + ((GraphAttribute)element).getDomainID() + ")");
 				return false;
 			}
 			else{
-				for (Attribute a : domain.getParentAttributes()){
-					if (a.getId().equals(element.getId()) ){
-						domain.removeParentAttribute(element.getId());
-						
-						// if deleted last attribute referring to domain, delete domain
-						if (domain.getParents().size() == 0){
-							deleteSchemaElement(domain.getId());
-						}
-						break;
-					}
+				domain.removeParentAttribute(element.getId());
+				// if deleted last attribute referring to domain, delete domain
+				if (domain.getParents().size() == 0){
+					deleteSchemaElement(domain.getId());
 				}
 			}
 			
@@ -171,55 +179,117 @@ public class GraphBuilder{
 				return false;
 			}
 			else {
-				for (SchemaElement se : entity.getChildAttributes()){
-					if (se.getId().equals(element.getId())){
-						entity.removeChildAttribute(element.getId());
-						break;
-					}
-				}
+				entity.removeChildAttribute(element.getId());
 			}
 			graphHash.remove(element.getId());
 		}
-		
-		// CASE: Entity
+	
+		///////////////////////////// CASE: Entity ////////////////////////////
 		else if (element instanceof Entity){
-			// cannot delete entity with child Entities
-			if (((GraphEntity)element).getChildEnititiesContained().size() > 0){
+			
+			// cannot delete entity with child Entities OR subtypes
+			if (((GraphEntity)element).getChildEnititiesContained().size() > 0 || ((GraphEntity)element).getSubtypeEntity().size() > 0) {
 				System.out.println("[E] GraphBuilder:deleteSchemaElement -- Entity with ID " + element.getId() + 
 						" has child Entities and cannot be deleted");
 				return false;
 			}
 			
 			// delete all attributes for entity
-			for (SchemaElement se : ((GraphEntity)element).getChildAttributes()){
-				deleteSchemaElement(se.getId());
-			}
-			// delete containments domains domain from gra
-			for (SchemaElement se : ((GraphEntity)element).getChildDomains()){
-				((GraphDomain)se).removeParentEntity(element.getId());
+			
+			for (GraphAttribute attribute : ((GraphEntity)element).getChildAttributes()){
+				// remove attribute from domainList
+				GraphDomain domain = (GraphDomain)graphHash.get(attribute.getDomainID());
+				if (domain == null){
+					System.out.println("[E] GraphBuilder:deleteSchemaElement -- Attribute with ID " + schemaID + 
+							" refers to a non-existant domain (ID " + ((GraphAttribute)element).getDomainID() + ")");
+					return false;
+				}
+				else{
+					domain.removeParentAttribute(attribute.getId());
+					// if deleted last attribute referring to domain, delete domain
+					if (domain.getParents().size() == 0){
+						deleteSchemaElement(domain.getId());
+					}
+				}
 			}
 			
-			// delete all containments where entity is parent / child
-			 
-			// delete all relationships where entity left / right
+			// delete all containments where entity is child
+			for (GraphContainment se : ((GraphEntity)element).getChildContainments()){
+				
+				// delete containment reference in child 
+				GraphEntity parent = (GraphEntity) graphHash.get(se.getParentID());
+				parent.removeChildEntityContained(element.getId());
+				parent.removeChildContainment(se.getId());
+				// delete containment in graph
+				graphHash.remove(se.getId());
+			}
+			for (Containment se : ((GraphEntity)element).getParentContainments()){
+				SchemaElement child = (GraphEntity) graphHash.get(se.getChildID());
+				if (child instanceof GraphDomain){
+					((GraphDomain)child).removeParentEntity(element.getId()); 
+					((GraphDomain)child).removeChildContainment(se.getId()); 	
+				} 
+				else if (child instanceof GraphEntity){
+					((GraphEntity)child).removeParentEnitityContained(element.getId()); 
+					((GraphEntity)child).removeChildContainment(se.getId()); 
+				}
+				// delete containment in graph
+				graphHash.remove(se.getId());
+			}
 			
+			// delete all relationships where entity left / right related
+			for (GraphRelationship rel : ((GraphEntity)element).getRelationships()){
+				GraphEntity other = null;
+				if (rel.getLeftID().equals(element.getId())) other = (GraphEntity)graphHash.get(rel.getRightID()); 
+				else other = (GraphEntity)graphHash.get(rel.getLeftID()); 
+				
+				if (other == null){
+					System.out.println("[E] GraphBuilder:deleteSchemaElement -- Entity with ID " + element.getId() + 
+						" has relationship that refers to non-existant entity ");
+					return false;
+				}
+				// 1) remove relationship 2) remove leftRelated 3) remove rightRelated
+				other.removeLeftEntityRelated(element.getId());
+				other.removeRightEntityRelated(element.getId());
+				graphHash.remove(rel.getId());
+			}
+			
+			// delete all supertypes / subtypes 
+			for (GraphSubtype subType : ((GraphEntity)element).getSubtypes()){
+				GraphEntity subtypeEntity = (GraphEntity)graphHash.get(subType.getChildID());
+				if (subtypeEntity == null){
+					System.out.println("[E] GraphBuilder:deleteSchemaElement -- Entity with ID " + element.getId() + 
+						" has relationship that refers to non-existant entity ");
+					return false;
+				}
+				subtypeEntity.removeSupertype(subType.getId());
+				subtypeEntity.removeSupertypeEntity(element.getId());
+				graphHash.remove(subType.getId());
+			}
+			for (GraphSubtype superType : ((GraphEntity)element).getSupertypes()){
+				GraphEntity supertypeEntity = (GraphEntity)graphHash.get(superType.getChildID());
+				if (supertypeEntity == null){
+					System.out.println("[E] GraphBuilder:deleteSchemaElement -- Entity with ID " + element.getId() + 
+						" has relationship that refers to non-existant entity ");
+					return false;
+				}
+				supertypeEntity.removeSubtype(superType.getId());
+				supertypeEntity.removeSubtypeEntity(element.getId());
+				graphHash.remove(superType.getId());
+			}
 		}
 		
-		// TODO: figure out better way to process aliases
-		// For now, go through all aliases and delete
-		
+		// process aliases
+		ArrayList<SchemaElement> elems = new ArrayList<SchemaElement>(graphHash.values());
+		for (int i=0; i<graphHash.keySet().size(); i++){
+			if (elems.get(i) instanceof GraphAlias && ((GraphAlias)elems.get(i)).getElementID().equals(element.getId()))  {
+				graphHash.remove(elems.get(i).getId());
+			}
+		}
 		return true;
 	}
 
-	public ArrayList<SchemaElement> getSchemaElements(){
-		ArrayList<SchemaElement> retVal = new ArrayList<SchemaElement>();
-		for (SchemaElement se : graphHash.values()){
-			if (se.getId().equals(schemaID) == false){
-				retVal.add(se);
-			}
-		}
-		return retVal;
-	}
+	
 	
 	public ArrayList<SchemaElement> addElements(ArrayList<SchemaElement> schemaElements, int schemaID){
 		
@@ -231,27 +301,21 @@ public class GraphBuilder{
 		}
 		
 		ArrayList<SchemaElement> edges = new ArrayList<SchemaElement>();
-		
 		try {		 
-		
 			for(SchemaElement schemaElement : schemaElements){
-				
 				// process the nodes 
 				if(schemaElement instanceof Attribute){ //node
 					GraphAttribute graphAttribute = new GraphAttribute((Attribute)schemaElement);
 					graphHash.put(graphAttribute.getId(), graphAttribute);
 				}
-				
 				else if(schemaElement instanceof Domain){ //node
 					GraphDomain graphDomain = new GraphDomain((Domain) schemaElement);
 					graphHash.put(graphDomain.getId(), graphDomain);
 				}
-				
 				else if(schemaElement instanceof DomainValue){ //node
 					GraphDomainValue graphDomainValue = new GraphDomainValue((DomainValue) schemaElement);
 					graphHash.put(graphDomainValue.getId(), graphDomainValue);
 				}
-				
 				else if(schemaElement instanceof Entity){ //node
 					GraphEntity graphEntity = new GraphEntity((Entity) schemaElement);
 					graphHash.put(graphEntity.getId(), graphEntity);
@@ -322,7 +386,9 @@ public class GraphBuilder{
 					graphHash.put(rel.getId(), rel);
 					GraphEntity leftEntity  = (GraphEntity)graphHash.get(rel.getLeftID());
 					GraphEntity rightEntity = (GraphEntity)graphHash.get(rel.getRightID());
-		
+					leftEntity.addRelationship(rel);
+					rightEntity.addRelationship(rel);
+					
 					leftEntity.addLeftEntitiesRelated(rightEntity);
 					leftEntity.addRelationship(rel);
 					rightEntity.addRightEntityRelated(leftEntity);
@@ -335,8 +401,10 @@ public class GraphBuilder{
 					GraphEntity parentEntity = (GraphEntity)graphHash.get(subtype.getParentID());
 					GraphEntity childEntity  = (GraphEntity)graphHash.get(subtype.getChildID());
 					
-					parentEntity.addSubtype(childEntity);
-					childEntity.addSupertype(parentEntity);
+					parentEntity.addSubtypeEntity(childEntity);
+					parentEntity.addSubtype(subtype);
+					childEntity.addSupertypeEntity(parentEntity);
+					childEntity.addSupertype(subtype);
 				}
 				
 				else if (schemaElement instanceof Alias){
