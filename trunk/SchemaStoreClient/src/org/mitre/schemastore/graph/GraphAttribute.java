@@ -12,14 +12,23 @@ import java.util.*;
 
 public class GraphAttribute extends Attribute implements GraphSchemaElement{
 	
-	GraphEntity parentEntity;
-	GraphDomain domainType;
+	private GraphEntity parentEntity;
+	private GraphDomain domainType;
+	private GraphAlias alias;
+	
+	void setAlias(GraphAlias a){
+		alias = a;
+	}
+	GraphAlias getAlias(){
+		return alias;
+	}
 	
 	/** Constructs the attribute */
 	public GraphAttribute(Integer id, String name, String description, Integer entityID, Integer domainID, Integer min, Integer max, Integer base){ 
 		super(id,name,description,entityID,domainID,min,max,base);
 		parentEntity = null; 
 		domainType = null;
+		alias = null;
 		} 
 	
 	public GraphAttribute (Attribute a){ 

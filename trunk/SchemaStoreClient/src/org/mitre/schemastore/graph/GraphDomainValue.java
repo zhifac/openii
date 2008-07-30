@@ -12,7 +12,15 @@ import org.mitre.schemastore.model.*;
 
 public class GraphDomainValue extends DomainValue implements GraphSchemaElement{
 	
-	GraphDomain parentDomain;
+	private GraphDomain parentDomain;
+	private GraphAlias alias;
+	
+	void setAlias(GraphAlias a){
+		alias = a;
+	}
+	GraphAlias getAlias(){
+		return alias;
+	}
 	
 	/** Constructs the graph domain value */
 	public GraphDomainValue(Integer id, String name, String description, Integer domainID, Integer base)

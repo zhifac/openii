@@ -10,7 +10,14 @@ public class GraphSubtype extends Subtype implements GraphSchemaElement{
 
 	private GraphEntity parent;
 	private GraphEntity child;
-		
+	private GraphAlias alias;
+	
+	public void setAlias(GraphAlias a){
+		alias = a;
+	}
+	public GraphAlias getAlias(){
+		return alias;
+	}
 	/** Constructs the subtype relationship */
 	public GraphSubtype(Integer id, Integer parentID, Integer childID, Integer base)
 		{ super(id, parentID, childID, base); }

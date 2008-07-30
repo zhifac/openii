@@ -12,6 +12,7 @@ public class GraphAlias extends Alias implements GraphSchemaElement {
 	
 	public GraphAlias (Alias a)
 		{ super(a.getId(),a.getName(),a.getElementID(),a.getBase()); }		
+	
 		/** Constructs the alias */
 	public GraphAlias (Integer id, String name, Integer elementID, Integer base)
 		{  super(id, name, elementID, base);}

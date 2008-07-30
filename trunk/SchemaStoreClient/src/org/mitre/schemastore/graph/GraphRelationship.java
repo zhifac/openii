@@ -17,6 +17,14 @@ public class GraphRelationship extends Relationship implements GraphSchemaElemen
 
 	private GraphEntity parent;
 	private GraphEntity child;
+	private GraphAlias alias;
+	
+	public void setAlias(GraphAlias a){
+		alias = a;
+	}
+	public GraphAlias getAlias(){
+		return alias;
+	}
 	
 	/** Constructs the containment relationship */
 	public GraphRelationship(Integer id, String name, Integer leftID, Integer leftMin, Integer leftMax, Integer rightID, Integer rightMin, Integer rightMax, Integer base)	

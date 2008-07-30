@@ -22,7 +22,16 @@ public class GraphDomain extends Domain implements GraphSchemaElement{
 	
 	// child domain Values
 	private ArrayList<GraphDomainValue> childDomainValues;
-		
+	private GraphAlias alias;
+	
+	void setAlias(GraphAlias a){
+		alias = a;
+	}
+	GraphAlias getAlias(){
+		return alias;
+	}
+	
+	
 	public GraphDomain(Integer id, String name, String description, int base){
 		super(id, name, description, base);
 		parentEntities = new ArrayList<GraphEntity>();
