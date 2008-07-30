@@ -1,0 +1,541 @@
+<database name="JohnKeto-small">
+  <createdby name="JohnKeto-small"> Created from JohnKeto in keto.xml by filering tables. </createdby>
+  <Schema>
+    <table name="Products">
+      <column key="no" name="ProductId" null="no" type="int_mid"/>
+      <column key="no" name="Description" null="no" type="text"/>
+</table>
+    <table name="ProductCategories">
+      <column key="no" name="ProductCategoryId" null="no" ref="Products/ProductId" type="int"/>
+      <column key="no" name="Category" null="no" type="text"/>
+</table>
+    <table name="Books">
+      <column key="no" name="ProductId" null="no" ref="Products/ProductId" type="int_mid"/>
+      <column key="no" name="Title" null="no" type="varchar_large"/>
+      <column key="no" name="ISBN" null="no" type="varchar_mid"/>
+      <column key="no" name="Price" null="no" type="decimal_point"/>
+</table>
+    <table name="Discounts">
+      <column key="no" name="DiscountId" null="no" type="int_mid"/>
+      <column key="no" name="ISBN" null="no" ref="Books/ISBN" type="varchar_mid"/>
+      <column key="no" name="Rate" null="no" type="decimal_point"/>
+      <column key="no" name="Quantity" null="no" type="int"/>
+      <column key="no" name="Expire" null="no" type="timestamp"/>
+</table>
+    <table name="Authors">
+      <column key="no" name="AuthorId" null="no" type="int_mid"/>
+      <column key="no" name="ISBN" null="no" ref="Books/ISBN" type="varchar_mid"/>
+      <column key="no" name="FirstName" null="no" type="varchar"/>
+      <column key="no" name="LastName" null="no" type="varchar_mid"/>
+</table>
+    <table name="Categories">
+      <column key="no" name="CategoryId" null="no" type="int_mid"/>
+      <column key="no" name="ISBN" null="no" ref="Books/ISBN" type="varchar_mid"/>
+      <column key="no" name="Category" null="no" type="varchar"/>
+</table>
+    <table name="Availability">
+      <column key="no" name="Id" null="no" type="int_mid"/>
+      <column key="no" name="ProductId" null="no" ref="Products/ProductId" type="int_mid"/>
+      <column key="no" name="WharehouseId" null="no" type="int"></column>
+      <column key="no" name="Quantity" null="no" type="int"/>
+</table>
+  </Schema>
+  <Data>
+    <Categories>
+<tuple>
+<CategoryId>1</CategoryId>
+<ISBN>48697839.58</ISBN>
+<Category>Romance</Category>
+</tuple>
+<tuple>
+<CategoryId>2</CategoryId>
+<ISBN>68111960.61</ISBN>
+<Category>Sci-Fi</Category>
+</tuple>
+<tuple>
+<CategoryId>3</CategoryId>
+<ISBN>66108031.69</ISBN>
+<Category>Thriller</Category>
+</tuple>
+<tuple>
+<CategoryId>4</CategoryId>
+<ISBN>37841866.95</ISBN>
+<Category>Action</Category>
+</tuple>
+<tuple>
+<CategoryId>5</CategoryId>
+<ISBN>37268782.12</ISBN>
+<Category>Comedy</Category>
+</tuple>
+<tuple>
+<CategoryId>6</CategoryId>
+<ISBN>87314543.94</ISBN>
+<Category>Graphic Novel</Category>
+</tuple>
+<tuple>
+<CategoryId>7</CategoryId>
+<ISBN>39238996.22</ISBN>
+<Category>Fiction</Category>
+</tuple>
+<tuple>
+<CategoryId>8</CategoryId>
+<ISBN>22413003.39</ISBN>
+<Category>Non Fiction</Category>
+</tuple>
+<tuple>
+<CategoryId>9</CategoryId>
+<ISBN>66317206.02</ISBN>
+<Category>Mystery</Category>
+</tuple>
+<tuple>
+<CategoryId>10</CategoryId>
+<ISBN>77186150.55</ISBN>
+<Category>Western</Category>
+</tuple>
+<tuple>
+<CategoryId>11</CategoryId>
+<ISBN>22783428.72</ISBN>
+<Category>International</Category>
+</tuple>
+<tuple>
+<CategoryId>12</CategoryId>
+<ISBN>76733698.27</ISBN>
+<Category>Language</Category>
+</tuple>
+<tuple>
+<CategoryId>13</CategoryId>
+<ISBN>22895387.54</ISBN>
+<Category>Childrens</Category>
+</tuple>
+<tuple>
+<CategoryId>14</CategoryId>
+<ISBN>34467138.04</ISBN>
+<Category>Fantasy</Category>
+</tuple>
+<tuple>
+<CategoryId>15</CategoryId>
+<ISBN>9939245.94</ISBN>
+<Category>Murder</Category>
+</tuple>
+<tuple>
+<CategoryId>16</CategoryId>
+<ISBN>19701538.19</ISBN>
+<Category>Dictionaries</Category>
+</tuple>
+<tuple>
+<CategoryId>17</CategoryId>
+<ISBN>33957699.71</ISBN>
+<Category>Suspense</Category>
+</tuple>
+<tuple>
+<CategoryId>18</CategoryId>
+<ISBN>79402588.84</ISBN>
+<Category>Historical</Category>
+</tuple>
+<tuple>
+<CategoryId>19</CategoryId>
+<ISBN>9872545.55</ISBN>
+<Category>Classic</Category>
+</tuple>
+<tuple>
+<CategoryId>20</CategoryId>
+<ISBN>47926763.04</ISBN>
+<Category>Drama</Category>
+</tuple>
+</Categories>
+    <Products>
+<tuple>
+<ProductId>1</ProductId>
+<Description>Twelve Chinks and aFig Leaf</Description>
+</tuple>
+<tuple>
+<ProductId>2</ProductId>
+<Description>Trusted Like the Real</Description>
+</tuple>
+<tuple>
+<ProductId>3</ProductId>
+<Description>Get a Load of Violent</Description>
+</tuple>
+<tuple>
+<ProductId>4</ProductId>
+<Description>Mission to Tail</Description>
+</tuple>
+<tuple>
+<ProductId>5</ProductId>
+<Description>The Things Men That Again</Description>
+</tuple>
+<tuple>
+<ProductId>6</ProductId>
+<Description>Just Another AfraidFree</Description>
+</tuple>
+<tuple>
+<ProductId>7</ProductId>
+<Description>Want to Stay Pocket</Description>
+</tuple>
+<tuple>
+<ProductId>8</ProductId>
+<Description>You Can Say Money</Description>
+</tuple>
+<tuple>
+<ProductId>9</ProductId>
+<Description>Hit Them Where Head</Description>
+</tuple>
+<tuple>
+<ProductId>10</ProductId>
+<Description>The World in My Worms</Description>
+</tuple>
+<tuple>
+<ProductId>11</ProductId>
+<Description>Consider Yourself Now</Description>
+</tuple>
+<tuple>
+<ProductId>12</ProductId>
+<Description>A Coffin from Yourself</Description>
+</tuple>
+<tuple>
+<ProductId>13</ProductId>
+<Description>I'll Get You for Deal</Description>
+</tuple>
+<tuple>
+<ProductId>14</ProductId>
+<Description>What's Better Than Rolfe</Description>
+</tuple>
+<tuple>
+<ProductId>15</ProductId>
+<Description>Ground</Description>
+</tuple>
+<tuple>
+<ProductId>16</ProductId>
+<Description>Like a Hole in the Morning</Description>
+</tuple>
+<tuple>
+<ProductId>17</ProductId>
+<Description>Hit Them Where Thing</Description>
+</tuple>
+<tuple>
+<ProductId>18</ProductId>
+<Description>Get a Load of Sleeve</Description>
+</tuple>
+<tuple>
+<ProductId>19</ProductId>
+<Description>There's Always a Punch</Description>
+</tuple>
+<tuple>
+<ProductId>20</ProductId>
+<Description>The Whiff of Transgressor</Description>
+</tuple>
+</Products>
+    <Books>
+<tuple>
+<ProductId>1</ProductId>
+<Title>Twelve Chinks and aFig Leaf</Title>
+<ISBN>5431710478 </ISBN>
+<Price>3.56</Price>
+</tuple>
+<tuple>
+<ProductId>2</ProductId>
+<Title>Trusted Like the Real      </Title>
+<ISBN>4145536956 </ISBN>
+<Price>45.25</Price>
+</tuple>
+<tuple>
+<ProductId>3</ProductId>
+<Title>Get a Load of Violent      </Title>
+<ISBN>7584974266 </ISBN>
+<Price>42.12</Price>
+</tuple>
+<tuple>
+<ProductId>4</ProductId>
+<Title>Mission to Tail            </Title>
+<ISBN>2660164108 </ISBN>
+<Price>23.12</Price>
+</tuple>
+<tuple>
+<ProductId>5</ProductId>
+<Title>The Things Men That Again  </Title>
+<ISBN>1679110772 </ISBN>
+<Price>15.25</Price>
+</tuple>
+<tuple>
+<ProductId>6</ProductId>
+<Title>Just Another AfraidFree    </Title>
+<ISBN>9306543717 </ISBN>
+<Price>98.25</Price>
+</tuple>
+<tuple>
+<ProductId>7</ProductId>
+<Title>Want to Stay Pocket        </Title>
+<ISBN>9961021614 </ISBN>
+<Price>12.32</Price>
+</tuple>
+<tuple>
+<ProductId>8</ProductId>
+<Title>You Can Say Money          </Title>
+<ISBN>3733616511 </ISBN>
+<Price>154.12</Price>
+</tuple>
+<tuple>
+<ProductId>9</ProductId>
+<Title>Hit Them Where Head        </Title>
+<ISBN>3711599669 </ISBN>
+<Price>1.12</Price>
+</tuple>
+<tuple>
+<ProductId>10</ProductId>
+<Title>The World in My Worms      </Title>
+<ISBN>4656511387 </ISBN>
+<Price>12.45</Price>
+</tuple>
+<tuple>
+<ProductId>11</ProductId>
+<Title>Consider Yourself Now      </Title>
+<ISBN>3696420247 </ISBN>
+<Price>65.65</Price>
+</tuple>
+<tuple>
+<ProductId>12</ProductId>
+<Title>A Coffin from Yourself     </Title>
+<ISBN>4994560956 </ISBN>
+<Price>18.23</Price>
+</tuple>
+<tuple>
+<ProductId>13</ProductId>
+<Title>I'll Get You for Deal      </Title>
+<ISBN>6048557305 </ISBN>
+<Price>34.54</Price>
+</tuple>
+<tuple>
+<ProductId>14</ProductId>
+<Title>What's Better Than Rolfe   </Title>
+<ISBN>2803577567 </ISBN>
+<Price>29.99</Price>
+</tuple>
+<tuple>
+<ProductId>15</ProductId>
+<Title>Ground                     </Title>
+<ISBN>3183045546 </ISBN>
+<Price>18.99</Price>
+</tuple>
+<tuple>
+<ProductId>16</ProductId>
+<Title>Like a Hole in the Morning </Title>
+<ISBN>995961574.8</ISBN>
+<Price>20.05</Price>
+</tuple>
+<tuple>
+<ProductId>17</ProductId>
+<Title>Hit Them Where Thing       </Title>
+<ISBN>3451895914 </ISBN>
+<Price>11.11</Price>
+</tuple>
+<tuple>
+<ProductId>18</ProductId>
+<Title>Get a Load of Sleeve       </Title>
+<ISBN>8838090082 </ISBN>
+<Price>9.99</Price>
+</tuple>
+<tuple>
+<ProductId>19</ProductId>
+<Title>There's Always a Punch     </Title>
+<ISBN>9639214420 </ISBN>
+<Price>8.99</Price>
+</tuple>
+<tuple>
+<ProductId>20</ProductId>
+<Title>The Whiff of Transgressor  </Title>
+<ISBN>3297782909 </ISBN>
+<Price>6.99</Price>
+</tuple>
+</Books>
+    <ProductCategories>
+<tuple>
+<ProductCategoryId>1</ProductCategoryId>
+<Category>Books</Category>
+</tuple>
+<tuple>
+<ProductCategoryId>2</ProductCategoryId>
+<Category>Music</Category>
+</tuple>
+<tuple>
+<ProductCategoryId>3</ProductCategoryId>
+<Category>DVDs</Category>
+</tuple>
+<tuple>
+<ProductCategoryId>4</ProductCategoryId>
+<Category>Cameras</Category>
+</tuple>
+<tuple>
+<ProductCategoryId>5</ProductCategoryId>
+<Category>Video Cameras</Category>
+</tuple>
+<tuple>
+<ProductCategoryId>6</ProductCategoryId>
+<Category>Digital Cameras</Category>
+</tuple>
+<tuple>
+<ProductCategoryId>7</ProductCategoryId>
+<Category>VCRs</Category>
+</tuple>
+<tuple>
+<ProductCategoryId>12</ProductCategoryId>
+<Category>Pants</Category>
+</tuple>
+<tuple>
+<ProductCategoryId>9</ProductCategoryId>
+<Category>Movies</Category>
+</tuple>
+<tuple>
+<ProductCategoryId>10</ProductCategoryId>
+<Category>Lawn Ornaments</Category>
+</tuple>
+<tuple>
+<ProductCategoryId>11</ProductCategoryId>
+<Category>Hats</Category>
+</tuple>
+<tuple>
+<ProductCategoryId>13</ProductCategoryId>
+<Category>Jackets</Category>
+</tuple>
+<tuple>
+<ProductCategoryId>14</ProductCategoryId>
+<Category>Shirts</Category>
+</tuple>
+<tuple>
+<ProductCategoryId>15</ProductCategoryId>
+<Category>Cars</Category>
+</tuple>
+<tuple>
+<ProductCategoryId>16</ProductCategoryId>
+<Category>Scooters</Category>
+</tuple>
+<tuple>
+<ProductCategoryId>17</ProductCategoryId>
+<Category>Skateboards</Category>
+</tuple>
+</ProductCategories>
+    <Availability/>
+    <Authors>
+<tuple>
+<AuthorId>1</AuthorId>
+<ISBN>7338587.90</ISBN>
+<FirstName>Bob      </FirstName>
+<LastName>McLaughlin</LastName>
+</tuple>
+<tuple>
+<AuthorId>2</AuthorId>
+<ISBN>66989979.26</ISBN>
+<FirstName>Sid      </FirstName>
+<LastName>Schmidt</LastName>
+</tuple>
+<tuple>
+<AuthorId>3</AuthorId>
+<ISBN>95172203.02</ISBN>
+<FirstName>Rocio    </FirstName>
+<LastName>Emard</LastName>
+</tuple>
+<tuple>
+<AuthorId>4</AuthorId>
+<ISBN>24526426.99</ISBN>
+<FirstName>Keaton   </FirstName>
+<LastName>Abernathy</LastName>
+</tuple>
+<tuple>
+<AuthorId>5</AuthorId>
+<ISBN>37257244.04</ISBN>
+<FirstName>Thyra    </FirstName>
+<LastName>Jaskolski</LastName>
+</tuple>
+<tuple>
+<AuthorId>6</AuthorId>
+<ISBN>14307720.65</ISBN>
+<FirstName>Linnea   </FirstName>
+<LastName>Pollich</LastName>
+</tuple>
+<tuple>
+<AuthorId>7</AuthorId>
+<ISBN>71030768.25</ISBN>
+<FirstName>Leone    </FirstName>
+<LastName>Rutherford</LastName>
+</tuple>
+<tuple>
+<AuthorId>8</AuthorId>
+<ISBN>88916596.89</ISBN>
+<FirstName>Bishop   </FirstName>
+<LastName>Batz</LastName>
+</tuple>
+<tuple>
+<AuthorId>9</AuthorId>
+<ISBN>43780448.42</ISBN>
+<FirstName>Imogene  </FirstName>
+<LastName>Moen</LastName>
+</tuple>
+<tuple>
+<AuthorId>10</AuthorId>
+<ISBN>12852321.33</ISBN>
+<FirstName>Quentin  </FirstName>
+<LastName>Yundt</LastName>
+</tuple>
+<tuple>
+<AuthorId>11</AuthorId>
+<ISBN>9845404.70</ISBN>
+<FirstName>Terrell  </FirstName>
+<LastName>Wuckert</LastName>
+</tuple>
+<tuple>
+<AuthorId>12</AuthorId>
+<ISBN>25851615.18</ISBN>
+<FirstName>Fausto   </FirstName>
+<LastName>Powlowski</LastName>
+</tuple>
+<tuple>
+<AuthorId>13</AuthorId>
+<ISBN>48610601.66</ISBN>
+<FirstName>Vernell  </FirstName>
+<LastName>Collins</LastName>
+</tuple>
+<tuple>
+<AuthorId>14</AuthorId>
+<ISBN>20357140.61</ISBN>
+<FirstName>Misael   </FirstName>
+<LastName>Dickinson</LastName>
+</tuple>
+<tuple>
+<AuthorId>15</AuthorId>
+<ISBN>27166197.38</ISBN>
+<FirstName>Burl     </FirstName>
+<LastName>Ryan</LastName>
+</tuple>
+<tuple>
+<AuthorId>16</AuthorId>
+<ISBN>84605033.45</ISBN>
+<FirstName>Henrietta</FirstName>
+<LastName>Reilly</LastName>
+</tuple>
+<tuple>
+<AuthorId>17</AuthorId>
+<ISBN>61120402.44</ISBN>
+<FirstName>Lance    </FirstName>
+<LastName>Ziemann</LastName>
+</tuple>
+<tuple>
+<AuthorId>18</AuthorId>
+<ISBN>41221870.25</ISBN>
+<FirstName>May      </FirstName>
+<LastName>Oberbrunner</LastName>
+</tuple>
+<tuple>
+<AuthorId>19</AuthorId>
+<ISBN>91418398.25</ISBN>
+<FirstName>Jonah    </FirstName>
+<LastName>Yundt</LastName>
+</tuple>
+<tuple>
+<AuthorId>20</AuthorId>
+<ISBN>29718998.65</ISBN>
+<FirstName>Modesto  </FirstName>
+<LastName>Lind</LastName>
+</tuple>
+</Authors>
+    <Discounts/>
+  </Data>
+</database>

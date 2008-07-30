@@ -1,0 +1,1366 @@
+<database name="AimanErbad">
+<createdby name="AimanErbad"/>
+<Schema><table name="warehouse">
+<column name="warehousecode" type="char_mid" key="no" null="yes"/>
+<column name="numEmployee" type="int" key="no" null="yes"/>
+<column name="volBusiness" type="decimal" key="no" null="yes"/>
+<column name="capacity" type="decimal" key="no" null="yes"/>
+</table>
+<table name="books">
+<column name="title" type="char_mid" key="no" null="no"/>
+<column name="author" type="char_mid" key="no" null="no"/>
+<column name="ISBN" type="char_mid" key="no" null="yes"/>
+<column name="price" type="decimal" key="no" null="yes"/>
+<column name="discprice" type="decimal" key="no" null="yes"/>
+<column name="bookcategory" type="char_mid" key="no" null="yes"/>
+<column name="keywords" type="varchar_mid" key="no" null="yes"/>
+</table>
+<table name="cds">
+<column name="name" type="char_mid" key="no" null="no"/>
+<column name="artist" type="char_mid" key="no" null="no"/>
+<column name="company" type="char_mid" key="no" null="no"/>
+<column name="ISBN" type="char_mid" key="no" null="yes"/>
+<column name="price" type="decimal" key="no" null="no"/>
+<column name="category" type="char_mid" key="no" null="yes"/>
+<column name="types" type="char_mid" key="no" null="yes"/>
+</table>
+<table name="available">
+<column name="BISBN" type="char_mid" key="no" null="yes" ref="books/ISBN"/>
+<column name="CISBN" type="char_mid" key="no" null="yes" ref="cds/ISBN"/>
+<column name="stock" type="char_small" key="no" null="yes"/>
+<column name="quantity" type="int" key="no" null="yes"/>
+<column name="warehousecode" type="char_mid" key="no"
+null="yes" ref="warehouse/warehousecode"/>
+</table>
+<table name="location">
+<column name="warehousecode" type="char_mid" key="no" null="yes"
+ref="warehouse/warehousecode"/>
+<column name="location" type="char_mid" key="no" null="yes"/>
+<column name="streetAddress" type="char_mid" key="no" null="yes"/>
+<column name="city" type="char_mid" key="no" null="yes"/>
+<column name="state" type="char_small" key="no" null="yes"/>
+<column name="zip" type="int" key="no" null="yes"/>
+</table>
+<table name="info">
+<column name="warehousecode" type="char_mid" key="no" null="yes"
+ref="warehouse/warehousecode"/>
+<column name="fax" type="char_mid" key="no" null="yes"/>
+<column name="telephone" type="char_mid" key="no" null="yes"/>
+<column name="managername" type="char_mid" key="no" null="yes"/>
+</table>
+</Schema>
+<Data>
+<warehouse>
+<tuple>
+<warehousecode>505460</warehousecode>
+<numEmployee>1</numEmployee>
+<volBusiness>3.99</volBusiness>
+<capacity>55.99</capacity>
+</tuple>
+<tuple>
+<warehousecode>612814</warehousecode>
+<numEmployee>1</numEmployee>
+<volBusiness>3.99</volBusiness>
+<capacity>55.99</capacity>
+</tuple>
+<tuple>
+<warehousecode>677333</warehousecode>
+<numEmployee>1</numEmployee>
+<volBusiness>3.99</volBusiness>
+<capacity>55.99</capacity>
+</tuple>
+<tuple>
+<warehousecode>124818</warehousecode>
+<numEmployee>1</numEmployee>
+<volBusiness>3.99</volBusiness>
+<capacity>55.99</capacity>
+</tuple>
+<tuple>
+<warehousecode>596020</warehousecode>
+<numEmployee>1</numEmployee>
+<volBusiness>3.99</volBusiness>
+<capacity>55.99</capacity>
+</tuple>
+<tuple>
+<warehousecode>47919</warehousecode>
+<numEmployee>1</numEmployee>
+<volBusiness>3.99</volBusiness>
+<capacity>55.99</capacity>
+</tuple>
+<tuple>
+<warehousecode>676574</warehousecode>
+<numEmployee>1</numEmployee>
+<volBusiness>3.99</volBusiness>
+<capacity>55.99</capacity>
+</tuple>
+<tuple>
+<warehousecode>413441</warehousecode>
+<numEmployee>1</numEmployee>
+<volBusiness>3.99</volBusiness>
+<capacity>55.99</capacity>
+</tuple>
+<tuple>
+<warehousecode>490026</warehousecode>
+<numEmployee>1</numEmployee>
+<volBusiness>3.99</volBusiness>
+<capacity>55.99</capacity>
+</tuple>
+<tuple>
+<warehousecode>710905</warehousecode>
+<numEmployee>1</numEmployee>
+<volBusiness>3.99</volBusiness>
+<capacity>55.99</capacity>
+</tuple>
+<tuple>
+<warehousecode>40246</warehousecode>
+<numEmployee>1</numEmployee>
+<volBusiness>3.99</volBusiness>
+<capacity>55.99</capacity>
+</tuple>
+<tuple>
+<warehousecode>987318</warehousecode>
+<numEmployee>1</numEmployee>
+<volBusiness>3.99</volBusiness>
+<capacity>55.99</capacity>
+</tuple>
+<tuple>
+<warehousecode>190368</warehousecode>
+<numEmployee>1</numEmployee>
+<volBusiness>3.99</volBusiness>
+<capacity>55.99</capacity>
+</tuple>
+<tuple>
+<warehousecode>270983</warehousecode>
+<numEmployee>1</numEmployee>
+<volBusiness>3.99</volBusiness>
+<capacity>55.99</capacity>
+</tuple>
+<tuple>
+<warehousecode>493356</warehousecode>
+<numEmployee>1</numEmployee>
+<volBusiness>3.99</volBusiness>
+<capacity>55.99</capacity>
+</tuple>
+<tuple>
+<warehousecode>561315</warehousecode>
+<numEmployee>1</numEmployee>
+<volBusiness>3.99</volBusiness>
+<capacity>55.99</capacity>
+</tuple>
+<tuple>
+<warehousecode>909092</warehousecode>
+<numEmployee>1</numEmployee>
+<volBusiness>3.99</volBusiness>
+<capacity>55.99</capacity>
+</tuple>
+<tuple>
+<warehousecode>14255</warehousecode>
+<numEmployee>1</numEmployee>
+<volBusiness>3.99</volBusiness>
+<capacity>55.99</capacity>
+</tuple>
+<tuple>
+<warehousecode>802109</warehousecode>
+<numEmployee>1</numEmployee>
+<volBusiness>3.99</volBusiness>
+<capacity>55.99</capacity>
+</tuple>
+<tuple>
+<warehousecode>751432</warehousecode>
+<numEmployee>1</numEmployee>
+<volBusiness>3.99</volBusiness>
+<capacity>55.99</capacity>
+</tuple>
+<tuple>
+<warehousecode>190286</warehousecode>
+<numEmployee>1</numEmployee>
+<volBusiness>3.99</volBusiness>
+<capacity>55.99</capacity>
+</tuple>
+<tuple>
+<warehousecode>18773</warehousecode>
+<numEmployee>1</numEmployee>
+<volBusiness>3.99</volBusiness>
+<capacity>55.99</capacity>
+</tuple>
+<tuple>
+<warehousecode>673968</warehousecode>
+<numEmployee>1</numEmployee>
+<volBusiness>3.99</volBusiness>
+<capacity>55.99</capacity>
+</tuple>
+<tuple>
+<warehousecode>771629</warehousecode>
+<numEmployee>1</numEmployee>
+<volBusiness>3.99</volBusiness>
+<capacity>55.99</capacity>
+</tuple>
+<tuple>
+<warehousecode>684100</warehousecode>
+<numEmployee>1</numEmployee>
+<volBusiness>3.99</volBusiness>
+<capacity>55.99 </capacity>
+</tuple>
+</warehouse>
+<books>
+<tuple>
+<title>Burch                         </title>
+<author>Linnea                        </author>
+<ISBN>120979</ISBN>
+<price>1.66</price>
+<discprice>2.44</discprice>
+<bookcategory>classic                       </bookcategory>
+<keywords>Kemmer </keywords>
+</tuple>
+<tuple>
+<title>Dooley                        </title>
+<author>Lucian                        </author>
+<ISBN>131900</ISBN>
+<price>1.66</price>
+<discprice>2.44</discprice>
+<bookcategory>jazz                          </bookcategory>
+<keywords>Gorczany </keywords>
+</tuple>
+<tuple>
+<title>Jewess                        </title>
+<author>Jeannette                     </author>
+<ISBN>152311</ISBN>
+<price>1.66</price>
+<discprice>2.44</discprice>
+<bookcategory>jazz                          </bookcategory>
+<keywords>Wisozk </keywords>
+</tuple>
+<tuple>
+<title>Mann                          </title>
+<author>India                         </author>
+<ISBN>217609</ISBN>
+<price>1.66</price>
+<discprice>2.44</discprice>
+<bookcategory>roll                          </bookcategory>
+<keywords>Davis </keywords>
+</tuple>
+<tuple>
+<title>Krajcik                       </title>
+<author>Jayson                        </author>
+<ISBN>220366</ISBN>
+<price>1.66</price>
+<discprice>2.44</discprice>
+<bookcategory>roll                          </bookcategory>
+<keywords>Simonis </keywords>
+</tuple>
+<tuple>
+<title>Abernathy                     </title>
+<author>Jamey                         </author>
+<ISBN>223777</ISBN>
+<price>1.66</price>
+<discprice>2.44</discprice>
+<bookcategory>roll                          </bookcategory>
+<keywords>Schneider </keywords>
+</tuple>
+<tuple>
+<title>Satterfield                   </title>
+<author>Sergio                        </author>
+<ISBN>230969</ISBN>
+<price>1.66</price>
+<discprice>2.44</discprice>
+<bookcategory>jazz                          </bookcategory>
+<keywords>Daniel </keywords>
+</tuple>
+<tuple>
+<title>Zemlak                        </title>
+<author>Reed                          </author>
+<ISBN>257512</ISBN>
+<price>1.66</price>
+<discprice>2.44</discprice>
+<bookcategory>roll                          </bookcategory>
+<keywords>Crist </keywords>
+</tuple>
+<tuple>
+<title>Dare                          </title>
+<author>Clemens                       </author>
+<ISBN>274420</ISBN>
+<price>1.66</price>
+<discprice>2.44</discprice>
+<bookcategory>classic                       </bookcategory>
+<keywords>Bednar </keywords>
+</tuple>
+<tuple>
+<title>Gislason                      </title>
+<author>Isom                          </author>
+<ISBN>284881</ISBN>
+<price>1.66</price>
+<discprice>2.44</discprice>
+<bookcategory>classic                       </bookcategory>
+<keywords>Senger </keywords>
+</tuple>
+<tuple>
+<title>Walter                        </title>
+<author>Thad                          </author>
+<ISBN>294403</ISBN>
+<price>1.66</price>
+<discprice>2.44</discprice>
+<bookcategory>classic                       </bookcategory>
+<keywords>Kemmer </keywords>
+</tuple>
+<tuple>
+<title>Will                          </title>
+<author>Reuben                        </author>
+<ISBN>305911</ISBN>
+<price>1.66</price>
+<discprice>2.44</discprice>
+<bookcategory>classic                       </bookcategory>
+<keywords>Cummings </keywords>
+</tuple>
+<tuple>
+<title>Glover                        </title>
+<author>Dallas                        </author>
+<ISBN>306142</ISBN>
+<price>1.66</price>
+<discprice>2.44</discprice>
+<bookcategory>jazz                          </bookcategory>
+<keywords>Tillman </keywords>
+</tuple>
+<tuple>
+<title>Armstrong                     </title>
+<author>Nathalie                      </author>
+<ISBN>371444</ISBN>
+<price>1.66</price>
+<discprice>2.44</discprice>
+<bookcategory>roll                          </bookcategory>
+<keywords>Lind </keywords>
+</tuple>
+<tuple>
+<title>Watsica                       </title>
+<author>Stephania                     </author>
+<ISBN>379068</ISBN>
+<price>1.66</price>
+<discprice>2.44</discprice>
+<bookcategory>classic                       </bookcategory>
+<keywords>Lesch </keywords>
+</tuple>
+<tuple>
+<title>Friesen                       </title>
+<author>Fredy                         </author>
+<ISBN>392199</ISBN>
+<price>1.66</price>
+<discprice>2.44</discprice>
+<bookcategory>roll                          </bookcategory>
+<keywords>McCullough </keywords>
+</tuple>
+<tuple>
+<title>Kris                          </title>
+<author>Jeanie                        </author>
+<ISBN>413502</ISBN>
+<price>1.66</price>
+<discprice>2.44</discprice>
+<bookcategory>jazz                          </bookcategory>
+<keywords>Kunze </keywords>
+</tuple>
+<tuple>
+<title>Lowe                          </title>
+<author>Kierra                        </author>
+<ISBN>431063</ISBN>
+<price>1.66</price>
+<discprice>2.44</discprice>
+<bookcategory>roll                          </bookcategory>
+<keywords>Rowe </keywords>
+</tuple>
+<tuple>
+<title>Pruscha                       </title>
+<author>George                        </author>
+<ISBN>462583</ISBN>
+<price>1.66</price>
+<discprice>2.44</discprice>
+<bookcategory>classic                       </bookcategory>
+<keywords>Monahan </keywords>
+</tuple>
+<tuple>
+<title>Kshlerin                      </title>
+<author>Dangelo                       </author>
+<ISBN>470186</ISBN>
+<price>1.66</price>
+<discprice>2.44</discprice>
+<bookcategory>roll                          </bookcategory>
+<keywords>Mills </keywords>
+</tuple>
+<tuple>
+<title>Schuppe                       </title>
+<author>Tomas                         </author>
+<ISBN>486207</ISBN>
+<price>1.66</price>
+<discprice>2.44</discprice>
+<bookcategory>jazz                          </bookcategory>
+<keywords>Frami </keywords>
+</tuple>
+<tuple>
+<title>Zulauf                        </title>
+<author>Jarrett                       </author>
+<ISBN>488056</ISBN>
+<price>1.66</price>
+<discprice>2.44</discprice>
+<bookcategory>jazz                          </bookcategory>
+<keywords>Strosin </keywords>
+</tuple>
+<tuple>
+<title>Johns                         </title>
+<author>Gunner                        </author>
+<ISBN>550342</ISBN>
+<price>1.66</price>
+<discprice>2.44</discprice>
+<bookcategory>jazz                          </bookcategory>
+<keywords>Larkin </keywords>
+</tuple>
+<tuple>
+<title>Oberbrunner                   </title>
+<author>Eliseo                        </author>
+<ISBN>57949</ISBN>
+<price>1.66</price>
+<discprice>2.44</discprice>
+<bookcategory>jazz                          </bookcategory>
+<keywords>Gaylord </keywords>
+</tuple>
+<tuple>
+<title>Greenfelder                   </title>
+<author>Tania                         </author>
+<ISBN>71136</ISBN>
+<price>1.66</price>
+<discprice>2.44</discprice>
+<bookcategory>classic                       </bookcategory>
+<keywords>Towne </keywords>
+</tuple>
+</books>
+<cds>
+<tuple>
+<name>Lebsack                       </name>
+<artist>Chelsey                       </artist>
+<company>Greenmaster                   </company>
+<ISBN>129353</ISBN>
+<price>2.88</price>
+<category>history                       </category>
+<types>album               </types>
+</tuple>
+<tuple>
+<name>Kub                           </name>
+<artist>Leland                        </artist>
+<company>Fay                           </company>
+<ISBN>152374</ISBN>
+<price>2.88</price>
+<category>drama                         </category>
+<types>comm                </types>
+</tuple>
+<tuple>
+<name>Barrows                       </name>
+<artist>Nikko                         </artist>
+<company>Rolfsonmasters                </company>
+<ISBN>19351</ISBN>
+<price>2.88</price>
+<category>history                       </category>
+<types>single              </types>
+</tuple>
+<tuple>
+<name>Morar                         </name>
+<artist>Alexandrine                   </artist>
+<company>Quitzon                       </company>
+<ISBN>222971</ISBN>
+<price>2.88</price>
+<category>drama                         </category>
+<types>album               </types>
+</tuple>
+<tuple>
+<name>Walter                        </name>
+<artist>Abel                          </artist>
+<company>Cruickshank                   </company>
+<ISBN>24089</ISBN>
+<price>2.88</price>
+<category>fantasy                       </category>
+<types>comm                </types>
+</tuple>
+<tuple>
+<name>Bailey                        </name>
+<artist>Theo                          </artist>
+<company>Conroy                        </company>
+<ISBN>260901</ISBN>
+<price>2.88</price>
+<category>fiction                       </category>
+<types>album               </types>
+</tuple>
+<tuple>
+<name>Nolan                         </name>
+<artist>Al                            </artist>
+<company>Halvorson                     </company>
+<ISBN>265333</ISBN>
+<price>2.88</price>
+<category>drama                         </category>
+<types>comm                </types>
+</tuple>
+<tuple>
+<name>Mayer                         </name>
+<artist>Elvera                        </artist>
+<company>Hand                          </company>
+<ISBN>293975</ISBN>
+<price>2.88</price>
+<category>fiction                       </category>
+<types>album               </types>
+</tuple>
+<tuple>
+<name>Schmidt                       </name>
+<artist>Dasia                         </artist>
+<company>Collins                       </company>
+<ISBN>299318</ISBN>
+<price>2.88</price>
+<category>drama                         </category>
+<types>single              </types>
+</tuple>
+<tuple>
+<name>Labadie                       </name>
+<artist>Male                          </artist>
+<company>Goldnerworth                  </company>
+<ISBN>366546</ISBN>
+<price>2.88</price>
+<category>fantasy                       </category>
+<types>single              </types>
+</tuple>
+<tuple>
+<name>Durgan                        </name>
+<artist>Keshaun                       </artist>
+<company>Mayer                         </company>
+<ISBN>398131</ISBN>
+<price>2.88</price>
+<category>fiction                       </category>
+<types>album               </types>
+</tuple>
+<tuple>
+<name>Mraz                          </name>
+<artist>Marguerite                    </artist>
+<company>Conn                          </company>
+<ISBN>419395</ISBN>
+<price>2.88</price>
+<category>drama                         </category>
+<types>comm                </types>
+</tuple>
+<tuple>
+<name>Greenholt                     </name>
+<artist>Fleta                         </artist>
+<company>Lind                          </company>
+<ISBN>443993</ISBN>
+<price>2.88</price>
+<category>fiction                       </category>
+<types>single              </types>
+</tuple>
+<tuple>
+<name>Lynch                         </name>
+<artist>Jonatan                       </artist>
+<company>Nolan                         </company>
+<ISBN>452137</ISBN>
+<price>2.88</price>
+<category>drama                         </category>
+<types>album               </types>
+</tuple>
+<tuple>
+<name>Bode                          </name>
+<artist>Rhoda                         </artist>
+<company>Jakubowskivark                </company>
+<ISBN>45774</ISBN>
+<price>2.88</price>
+<category>fantasy                       </category>
+<types>single              </types>
+</tuple>
+<tuple>
+<name>Wilkinson                     </name>
+<artist>Elbert                        </artist>
+<company>Kunze                         </company>
+<ISBN>112233</ISBN>
+<price>2.88</price>
+<category>fantasy                       </category>
+<types>single              </types>
+</tuple>
+<tuple>
+<name>Robel                         </name>
+<artist>Oswald                        </artist>
+<company>Creminmix                     </company>
+<ISBN>51829</ISBN>
+<price>2.88</price>
+<category>history                       </category>
+<types>single              </types>
+</tuple>
+<tuple>
+<name>Goyette                       </name>
+<artist>Joanny                        </artist>
+<company>Pollich                       </company>
+<ISBN>528336</ISBN>
+<price>2.88</price>
+<category>fiction                       </category>
+<types>single              </types>
+</tuple>
+<tuple>
+<name>Harber                        </name>
+<artist>Melissa                       </artist>
+<company>Ortiz                         </company>
+<ISBN>606004</ISBN>
+<price>2.88</price>
+<category>history                       </category>
+<types>single              </types>
+</tuple>
+<tuple>
+<name>Wunsch                        </name>
+<artist>Dandre                        </artist>
+<company>Gorczany                      </company>
+<ISBN>700420</ISBN>
+<price>2.88</price>
+<category>fiction                       </category>
+<types>comm                </types>
+</tuple>
+<tuple>
+<name>Russel                        </name>
+<artist>Clovis                        </artist>
+<company>Thompson                      </company>
+<ISBN>793097</ISBN>
+<price>2.88</price>
+<category>history                       </category>
+<types>album               </types>
+</tuple>
+<tuple>
+<name>O'Connell                     </name>
+<artist>Imani                         </artist>
+<company>Plautff                       </company>
+<ISBN>827505</ISBN>
+<price>2.88</price>
+<category>fantasy                       </category>
+<types>comm                </types>
+</tuple>
+<tuple>
+<name>Trantow                       </name>
+<artist>Marietta                      </artist>
+<company>Crist                         </company>
+<ISBN>829258</ISBN>
+<price>2.88</price>
+<category>history                       </category>
+<types>comm                </types>
+</tuple>
+<tuple>
+<name>Beahan                        </name>
+<artist>Justina                       </artist>
+<company>Harris                        </company>
+<ISBN>926139</ISBN>
+<price>2.88</price>
+<category>drama                         </category>
+<types>album               </types>
+</tuple>
+<tuple>
+<name>Fisher                        </name>
+<artist>Toney                         </artist>
+<company>Wunsch Press                  </company>
+<ISBN>999450</ISBN>
+<price>2.88</price>
+<category>fantasy                       </category>
+<types>comm                </types>
+</tuple>
+</cds>
+<available>
+<tuple>
+<BISBN>120979</BISBN>
+<CISBN>null</CISBN>
+<stock>in</stock>
+<quantity>228</quantity>
+<warehousecode>505460</warehousecode>
+</tuple>
+<tuple>
+<BISBN>131900</BISBN>
+<CISBN>null</CISBN>
+<stock>out</stock>
+<quantity>92</quantity>
+<warehousecode>612814</warehousecode>
+</tuple>
+<tuple>
+<BISBN>152311</BISBN>
+<CISBN>null</CISBN>
+<stock>out </stock>
+<quantity>219</quantity>
+<warehousecode>677333</warehousecode>
+</tuple>
+<tuple>
+<BISBN>217609</BISBN>
+<CISBN>null</CISBN>
+<stock>in</stock>
+<quantity>161</quantity>
+<warehousecode>124818</warehousecode>
+</tuple>
+<tuple>
+<BISBN>220366</BISBN>
+<CISBN>null</CISBN>
+<stock>out</stock>
+<quantity>118</quantity>
+<warehousecode>596020</warehousecode>
+</tuple>
+<tuple>
+<BISBN>223777</BISBN>
+<CISBN>null</CISBN>
+<stock>in</stock>
+<quantity>232</quantity>
+<warehousecode>47919</warehousecode>
+</tuple>
+<tuple>
+<BISBN>230969</BISBN>
+<CISBN>null</CISBN>
+<stock>out</stock>
+<quantity>62</quantity>
+<warehousecode>676574</warehousecode>
+</tuple>
+<tuple>
+<BISBN>257512</BISBN>
+<CISBN>null</CISBN>
+<stock>out </stock>
+<quantity>280</quantity>
+<warehousecode>413441</warehousecode>
+</tuple>
+<tuple>
+<BISBN>274420</BISBN>
+<CISBN>null</CISBN>
+<stock>in</stock>
+<quantity>174</quantity>
+<warehousecode>490026</warehousecode>
+</tuple>
+<tuple>
+<BISBN>284881</BISBN>
+<CISBN>null</CISBN>
+<stock>out</stock>
+<quantity>116</quantity>
+<warehousecode>710905</warehousecode>
+</tuple>
+<tuple>
+<BISBN>294403</BISBN>
+<CISBN>null</CISBN>
+<stock>in</stock>
+<quantity>103</quantity>
+<warehousecode>40246</warehousecode>
+</tuple>
+<tuple>
+<BISBN>305911</BISBN>
+<CISBN>null</CISBN>
+<stock>out</stock>
+<quantity>295</quantity>
+<warehousecode>987318</warehousecode>
+</tuple>
+<tuple>
+<BISBN>306142</BISBN>
+<CISBN>null</CISBN>
+<stock>out </stock>
+<quantity>101</quantity>
+<warehousecode>190368</warehousecode>
+</tuple>
+<tuple>
+<BISBN>371444</BISBN>
+<CISBN>null</CISBN>
+<stock>in</stock>
+<quantity>143</quantity>
+<warehousecode>270983</warehousecode>
+</tuple>
+<tuple>
+<BISBN>379068</BISBN>
+<CISBN>null</CISBN>
+<stock>out</stock>
+<quantity>10</quantity>
+<warehousecode>493356</warehousecode>
+</tuple>
+<tuple>
+<BISBN>392199</BISBN>
+<CISBN>null</CISBN>
+<stock>out</stock>
+<quantity>95</quantity>
+<warehousecode>561315</warehousecode>
+</tuple>
+<tuple>
+<BISBN>413502</BISBN>
+<CISBN>null</CISBN>
+<stock>out</stock>
+<quantity>206</quantity>
+<warehousecode>909092</warehousecode>
+</tuple>
+<tuple>
+<BISBN>431063</BISBN>
+<CISBN>null</CISBN>
+<stock>in</stock>
+<quantity>296</quantity>
+<warehousecode>14255</warehousecode>
+</tuple>
+<tuple>
+<BISBN>462583</BISBN>
+<CISBN>null</CISBN>
+<stock>out</stock>
+<quantity>91</quantity>
+<warehousecode>802109</warehousecode>
+</tuple>
+<tuple>
+<BISBN>470186</BISBN>
+<CISBN>null</CISBN>
+<stock>out </stock>
+<quantity>178</quantity>
+<warehousecode>751432</warehousecode>
+</tuple>
+<tuple>
+<BISBN>486207</BISBN>
+<CISBN>null</CISBN>
+<stock>in</stock>
+<quantity>259</quantity>
+<warehousecode>190286</warehousecode>
+</tuple>
+<tuple>
+<BISBN>488056</BISBN>
+<CISBN>null</CISBN>
+<stock>out</stock>
+<quantity>107</quantity>
+<warehousecode>18773</warehousecode>
+</tuple>
+<tuple>
+<BISBN>550342</BISBN>
+<CISBN>null</CISBN>
+<stock>in</stock>
+<quantity>79</quantity>
+<warehousecode>673968</warehousecode>
+</tuple>
+<tuple>
+<BISBN>57949</BISBN>
+<CISBN>null</CISBN>
+<stock>in</stock>
+<quantity>131</quantity>
+<warehousecode>771629</warehousecode>
+</tuple>
+<tuple>
+<BISBN>71136</BISBN>
+<CISBN>null</CISBN>
+<stock>out</stock>
+<quantity>110</quantity>
+<warehousecode>684100</warehousecode>
+</tuple>
+<tuple>
+<BISBN>null</BISBN>
+<CISBN>112233</CISBN>
+<stock>in</stock>
+<quantity>137</quantity>
+<warehousecode>505460</warehousecode>
+</tuple>
+<tuple>
+<BISBN>null</BISBN>
+<CISBN>129353</CISBN>
+<stock>in</stock>
+<quantity>189</quantity>
+<warehousecode>612814</warehousecode>
+</tuple>
+<tuple>
+<BISBN>null</BISBN>
+<CISBN>152374</CISBN>
+<stock>out</stock>
+<quantity>216</quantity>
+<warehousecode>677333</warehousecode>
+</tuple>
+<tuple>
+<BISBN>null</BISBN>
+<CISBN>19351</CISBN>
+<stock>out </stock>
+<quantity>255</quantity>
+<warehousecode>124818</warehousecode>
+</tuple>
+<tuple>
+<BISBN>null</BISBN>
+<CISBN>222971</CISBN>
+<stock>in</stock>
+<quantity>130</quantity>
+<warehousecode>596020</warehousecode>
+</tuple>
+<tuple>
+<BISBN>null</BISBN>
+<CISBN>24089</CISBN>
+<stock>out</stock>
+<quantity>18</quantity>
+<warehousecode>47919</warehousecode>
+</tuple>
+<tuple>
+<BISBN>null</BISBN>
+<CISBN>260901</CISBN>
+<stock>out</stock>
+<quantity>113</quantity>
+<warehousecode>676574</warehousecode>
+</tuple>
+<tuple>
+<BISBN>null</BISBN>
+<CISBN>265333</CISBN>
+<stock>in</stock>
+<quantity>4</quantity>
+<warehousecode>413441</warehousecode>
+</tuple>
+<tuple>
+<BISBN>null</BISBN>
+<CISBN>293975</CISBN>
+<stock>out</stock>
+<quantity>25</quantity>
+<warehousecode>490026</warehousecode>
+</tuple>
+<tuple>
+<BISBN>null</BISBN>
+<CISBN>299318</CISBN>
+<stock>out </stock>
+<quantity>215</quantity>
+<warehousecode>710905</warehousecode>
+</tuple>
+<tuple>
+<BISBN>null</BISBN>
+<CISBN>366546</CISBN>
+<stock>in</stock>
+<quantity>166</quantity>
+<warehousecode>40246</warehousecode>
+</tuple>
+<tuple>
+<BISBN>null</BISBN>
+<CISBN>398131</CISBN>
+<stock>out</stock>
+<quantity>239</quantity>
+<warehousecode>987318</warehousecode>
+</tuple>
+<tuple>
+<BISBN>null</BISBN>
+<CISBN>419395</CISBN>
+<stock>out</stock>
+<quantity>164</quantity>
+<warehousecode>190368</warehousecode>
+</tuple>
+<tuple>
+<BISBN>null</BISBN>
+<CISBN>443993</CISBN>
+<stock>out</stock>
+<quantity>194</quantity>
+<warehousecode>270983</warehousecode>
+</tuple>
+<tuple>
+<BISBN>null</BISBN>
+<CISBN>452137</CISBN>
+<stock>in</stock>
+<quantity>20</quantity>
+<warehousecode>493356</warehousecode>
+</tuple>
+<tuple>
+<BISBN>null</BISBN>
+<CISBN>45774</CISBN>
+<stock>out</stock>
+<quantity>170</quantity>
+<warehousecode>561315</warehousecode>
+</tuple>
+<tuple>
+<BISBN>null</BISBN>
+<CISBN>51829</CISBN>
+<stock>out </stock>
+<quantity>96</quantity>
+<warehousecode>909092</warehousecode>
+</tuple>
+<tuple>
+<BISBN>null</BISBN>
+<CISBN>528336</CISBN>
+<stock>in</stock>
+<quantity>295</quantity>
+<warehousecode>14255</warehousecode>
+</tuple>
+<tuple>
+<BISBN>null</BISBN>
+<CISBN>606004</CISBN>
+<stock>out</stock>
+<quantity>101</quantity>
+<warehousecode>802109</warehousecode>
+</tuple>
+<tuple>
+<BISBN>null</BISBN>
+<CISBN>700420</CISBN>
+<stock>out</stock>
+<quantity>143</quantity>
+<warehousecode>751432</warehousecode>
+</tuple>
+<tuple>
+<BISBN>null</BISBN>
+<CISBN>793097</CISBN>
+<stock>out</stock>
+<quantity>10</quantity>
+<warehousecode>190286</warehousecode>
+</tuple>
+<tuple>
+<BISBN>null</BISBN>
+<CISBN>827505</CISBN>
+<stock>in</stock>
+<quantity>95</quantity>
+<warehousecode>18773</warehousecode>
+</tuple>
+<tuple>
+<BISBN>null</BISBN>
+<CISBN>829258</CISBN>
+<stock>out</stock>
+<quantity>206</quantity>
+<warehousecode>673968</warehousecode>
+</tuple>
+<tuple>
+<BISBN>null</BISBN>
+<CISBN>926139</CISBN>
+<stock>out </stock>
+<quantity>296</quantity>
+<warehousecode>771629</warehousecode>
+</tuple>
+<tuple>
+<BISBN>null</BISBN>
+<CISBN>999450</CISBN>
+<stock>in</stock>
+<quantity>91</quantity>
+<warehousecode>684100</warehousecode>
+</tuple>
+</available>
+<location>
+<tuple>
+<warehousecode>505460</warehousecode>
+<location>8,Apollo Pier Close,Stowdonground,VA,47244</location>
+<streetAddress>Apollo Pier Close</streetAddress>
+<city>Stowdonground</city>
+<state>VA</state>
+<zip>47244</zip>
+</tuple>
+<tuple>
+<warehousecode>612814</warehousecode>
+<location>33,Harkness Park,Kimbordham,IA,80514</location>
+<streetAddress>Harkness Park</streetAddress>
+<city>Kimbordham</city>
+<state>IA</state>
+<zip>80514</zip>
+</tuple>
+<tuple>
+<warehousecode>677333</warehousecode>
+<location>61,Marine Gardens,Kadterhoe,NY,88241</location>
+<streetAddress>Marine Gardens</streetAddress>
+<city>Kadterhoe</city>
+<state>NY</state>
+<zip>88241</zip>
+</tuple>
+<tuple>
+<warehousecode>124818</warehousecode>
+<location>28,Chapman Road,Godesster,CO,37686</location>
+<streetAddress>Chapman Road</streetAddress>
+<city>Godesster</city>
+<state>CO</state>
+<zip>37686</zip>
+</tuple>
+<tuple>
+<warehousecode>596020</warehousecode>
+<location>48,Arthur Drive,Jinordford,VT,27206</location>
+<streetAddress>Arthur Drive</streetAddress>
+<city>Jinordford</city>
+<state>VT</state>
+<zip>27206</zip>
+</tuple>
+<tuple>
+<warehousecode>47919</warehousecode>
+<location>46,Governor Gardens,Birmanworth,IA,82073</location>
+<streetAddress>Governor Gardens</streetAddress>
+<city>Birmanworth</city>
+<state>IA</state>
+<zip>82073</zip>
+</tuple>
+<tuple>
+<warehousecode>676574</warehousecode>
+<location>15,Grantham Way,East Needstan,RI,92245</location>
+<streetAddress>Grantham Way</streetAddress>
+<city>East Needstan</city>
+<state>RI</state>
+<zip>92245</zip>
+</tuple>
+<tuple>
+<warehousecode>413441</warehousecode>
+<location>76,Dougal Street,Offche on sea,OR,68182</location>
+<streetAddress>Dougal Street</streetAddress>
+<city>Offche on sea</city>
+<state>OR</state>
+<zip>68182</zip>
+</tuple>
+<tuple>
+<warehousecode>490026</warehousecode>
+<location>93,Warden Lane,Old Yellsapbrook,NH,80026</location>
+<streetAddress>Warden Lane</streetAddress>
+<city>Old Yellsapbrook</city>
+<state>NH</state>
+<zip>80026</zip>
+</tuple>
+<tuple>
+<warehousecode>710905</warehousecode>
+<location>25,Peterson Gardens,Abbing,MO,60916</location>
+<streetAddress>Peterson Gardens</streetAddress>
+<city>Abbing</city>
+<state>MO</state>
+<zip>60916</zip>
+</tuple>
+<tuple>
+<warehousecode>40246</warehousecode>
+<location>10,South Road,Spaldterworth,OR,40460</location>
+<streetAddress>South Road</streetAddress>
+<city>Spaldterworth</city>
+<state>OR</state>
+<zip>40460</zip>
+</tuple>
+<tuple>
+<warehousecode>987318</warehousecode>
+<location>90,South Brownell Crescent,Leighvelester,IA,71447</location>
+<streetAddress>South Brownell Crescent</streetAddress>
+<city>Leighvelester</city>
+<state>IA</state>
+<zip>71447</zip>
+</tuple>
+<tuple>
+<warehousecode>190368</warehousecode>
+<location>22,King's Road,Tilingester,WI,36917</location>
+<streetAddress>King's Road</streetAddress>
+<city>Tilingester</city>
+<state>WI</state>
+<zip>36917</zip>
+</tuple>
+<tuple>
+<warehousecode>270983</warehousecode>
+<location>6,West Butternut Street,Bytashland,MS,79214</location>
+<streetAddress>West Butternut Street</streetAddress>
+<city>Bytashland</city>
+<state>MS</state>
+<zip>79214</zip>
+</tuple>
+<tuple>
+<warehousecode>493356</warehousecode>
+<location>31,Carmel Drive,West Holmman,WA,40625</location>
+<streetAddress>Carmel Drive</streetAddress>
+<city>West Holmman</city>
+<state>WA</state>
+<zip>40625</zip>
+</tuple>
+<tuple>
+<warehousecode>561315</warehousecode>
+<location>94,Mayonnaise Street,Hepesshead,MO,24417</location>
+<streetAddress>Mayonnaise Street</streetAddress>
+<city>Hepesshead</city>
+<state>MO</state>
+<zip>24417</zip>
+</tuple>
+<tuple>
+<warehousecode>909092</warehousecode>
+<location>14,Napoleon Road,Warwes,WY,29205</location>
+<streetAddress>Napoleon Road</streetAddress>
+<city>Warwes</city>
+<state>WY</state>
+<zip>29205</zip>
+</tuple>
+<tuple>
+<warehousecode>14255</warehousecode>
+<location>58,Grantham Way,Sibcon,RI,80343</location>
+<streetAddress>Grantham Way</streetAddress>
+<city>Sibcon</city>
+<state>RI</state>
+<zip>80343</zip>
+</tuple>
+<tuple>
+<warehousecode>802109</warehousecode>
+<location>53,Van Sicklen Circle,Holyforots,IN,06063</location>
+<streetAddress>Van Sicklen Circle</streetAddress>
+<city>Holyforots</city>
+<state>IN</state>
+<zip>6063</zip>
+</tuple>
+<tuple>
+<warehousecode>751432</warehousecode>
+<location>92,Bakelite Lane,Little Shefridgesden,MD,96533</location>
+<streetAddress>Bakelite Lane</streetAddress>
+<city>Little Shefridgesden</city>
+<state>MD</state>
+<zip>96533</zip>
+</tuple>
+<tuple>
+<warehousecode>190286</warehousecode>
+<location>2,Flora Fountain End,Caldecstan,ID,33038</location>
+<streetAddress>Flora Fountain End</streetAddress>
+<city>Caldecstan</city>
+<state>ID</state>
+<zip>33038</zip>
+</tuple>
+<tuple>
+<warehousecode>18773</warehousecode>
+<location>95,Badden Way,West Hembolworth,HI,21978</location>
+<streetAddress>Badden Way</streetAddress>
+<city>West Hembolworth</city>
+<state>HI</state>
+<zip>21978</zip>
+</tuple>
+<tuple>
+<warehousecode>673968</warehousecode>
+<location>67,Tulip Hill,Haddforwell,HI,37405</location>
+<streetAddress>Tulip Hill</streetAddress>
+<city>Haddforwell</city>
+<state>HI</state>
+<zip>37405</zip>
+</tuple>
+<tuple>
+<warehousecode>771629</warehousecode>
+<location>86,Rampart Lane,East Maddon,NM,60949</location>
+<streetAddress>Rampart Lane</streetAddress>
+<city>East Maddon</city>
+<state>NM</state>
+<zip>60949</zip>
+</tuple>
+<tuple>
+<warehousecode>684100</warehousecode>
+<location>30,Sandhurst Park,Folksbin,PA,87857</location>
+<streetAddress>Sandhurst Park</streetAddress>
+<city>Folksbin</city>
+<state>PA</state>
+<zip>87857</zip>
+</tuple>
+</location>
+<info>
+<tuple>
+<warehousecode>505460</warehousecode>
+<fax>832-5593</fax>
+<telephone>793-4864</telephone>
+<managername>Hilario</managername>
+</tuple>
+<tuple>
+<warehousecode>612814</warehousecode>
+<fax>993-6251</fax>
+<telephone>566-6950</telephone>
+<managername>Grover</managername>
+</tuple>
+<tuple>
+<warehousecode>677333</warehousecode>
+<fax>779-6325</fax>
+<telephone>012-7588</telephone>
+<managername>Edson</managername>
+</tuple>
+<tuple>
+<warehousecode>124818</warehousecode>
+<fax>112-4950</fax>
+<telephone>905-9340</telephone>
+<managername>Nicolas</managername>
+</tuple>
+<tuple>
+<warehousecode>596020</warehousecode>
+<fax>734-7919</fax>
+<telephone>032-8017</telephone>
+<managername>Ashleigh</managername>
+</tuple>
+<tuple>
+<warehousecode>47919</warehousecode>
+<fax>423-4364</fax>
+<telephone>022-3810</telephone>
+<managername>Randell</managername>
+</tuple>
+<tuple>
+<warehousecode>676574</warehousecode>
+<fax>472-4084</fax>
+<telephone>741-8485</telephone>
+<managername>Tyreek</managername>
+</tuple>
+<tuple>
+<warehousecode>413441</warehousecode>
+<fax>096-8686</fax>
+<telephone>962-8706</telephone>
+<managername>Louvenia</managername>
+</tuple>
+<tuple>
+<warehousecode>490026</warehousecode>
+<fax>302-6314</fax>
+<telephone>163-4938</telephone>
+<managername>Garnett</managername>
+</tuple>
+<tuple>
+<warehousecode>710905</warehousecode>
+<fax>352-1936</fax>
+<telephone>660-4848</telephone>
+<managername>Granville</managername>
+</tuple>
+<tuple>
+<warehousecode>40246</warehousecode>
+<fax>320-3247</fax>
+<telephone>309-2299</telephone>
+<managername>Bridget</managername>
+</tuple>
+<tuple>
+<warehousecode>987318</warehousecode>
+<fax>951-6175</fax>
+<telephone>460-5635</telephone>
+<managername>Joe</managername>
+</tuple>
+<tuple>
+<warehousecode>190368</warehousecode>
+<fax>737-7947</fax>
+<telephone>909-1068</telephone>
+<managername>Garnet</managername>
+</tuple>
+<tuple>
+<warehousecode>270983</warehousecode>
+<fax>781-7878</fax>
+<telephone>343-6534</telephone>
+<managername>Chandler</managername>
+</tuple>
+<tuple>
+<warehousecode>493356</warehousecode>
+<fax>095-3656</fax>
+<telephone>735-0180</telephone>
+<managername>Nathen</managername>
+</tuple>
+<tuple>
+<warehousecode>561315</warehousecode>
+<fax>303-9175</fax>
+<telephone>593-0773</telephone>
+<managername>Adrianna</managername>
+</tuple>
+<tuple>
+<warehousecode>909092</warehousecode>
+<fax>793-6412</fax>
+<telephone>376-8511</telephone>
+<managername>Ryne</managername>
+</tuple>
+<tuple>
+<warehousecode>14255</warehousecode>
+<fax>409-5291</fax>
+<telephone>000-5978</telephone>
+<managername>Lucas</managername>
+</tuple>
+<tuple>
+<warehousecode>802109</warehousecode>
+<fax>093-4228</fax>
+<telephone>262-9526</telephone>
+<managername>Percival</managername>
+</tuple>
+<tuple>
+<warehousecode>751432</warehousecode>
+<fax>751-5829</fax>
+<telephone>253-2010</telephone>
+<managername>Chadwick</managername>
+</tuple>
+<tuple>
+<warehousecode>190286</warehousecode>
+<fax>811-7590</fax>
+<telephone>016-3803</telephone>
+<managername>Jody</managername>
+</tuple>
+<tuple>
+<warehousecode>18773</warehousecode>
+<fax>755-3957</fax>
+<telephone>533-3507</telephone>
+<managername>Andreas</managername>
+</tuple>
+<tuple>
+<warehousecode>673968</warehousecode>
+<fax>097-1263</fax>
+<telephone>556-7254</telephone>
+<managername>Joana</managername>
+</tuple>
+<tuple>
+<warehousecode>771629</warehousecode>
+<fax>478-9333</fax>
+<telephone>307-2548</telephone>
+<managername>Emma</managername>
+</tuple>
+<tuple>
+<warehousecode>684100</warehousecode>
+<fax>552-9281</fax>
+<telephone>988-7716</telephone>
+<managername>Kamryn</managername>
+</tuple>
+</info>
+</Data>
+</database>

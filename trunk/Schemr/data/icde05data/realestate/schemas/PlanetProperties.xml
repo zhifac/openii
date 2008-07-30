@@ -1,0 +1,125 @@
+<search>
+<form>
+<source name="PlanetProperties"/>
+<element>
+<element vname="LCountry" text=" Country" type="select">
+<values>
+<item nicevalue="American Samoa"/>
+<item nicevalue="Argentina"/>
+<item nicevalue="Australia"/>
+<item nicevalue="Barbados"/>
+<item nicevalue="Belize"/>
+<item nicevalue="Bermuda"/>
+<item nicevalue="Bolivia"/>
+<item nicevalue="Brazil"/>
+<item nicevalue="Canada"/>
+<item nicevalue="Caribbean"/>
+<item nicevalue="Chile"/>
+<item nicevalue="China"/>
+<item nicevalue="Columbia"/>
+<item nicevalue="Costa Rica"/>
+<item nicevalue="Croatia"/>
+<item nicevalue="Cyprus"/>
+<item nicevalue="Czech Republic"/>
+<item nicevalue="Ecuador"/>
+<item nicevalue="Egypt"/>
+<item nicevalue="Fiji"/>
+<item nicevalue="France"/>
+<item nicevalue="French Polynesia"/>
+<item nicevalue="Greece"/>
+<item nicevalue="Guam"/>
+<item nicevalue="Guatemala"/>
+<item nicevalue="Honduras"/>
+<item nicevalue="India"/>
+<item nicevalue="Indonesia"/>
+<item nicevalue="Ireland"/>
+<item nicevalue="Italy"/>
+<item nicevalue="Jamaica"/>
+<item nicevalue="Japan"/>
+<item nicevalue="Kenya"/>
+<item nicevalue="Malta"/>
+<item nicevalue="Mexico"/>
+<item nicevalue="Monaco"/>
+<item nicevalue="Morocco"/>
+<item nicevalue="Netherlands Antilles"/>
+<item nicevalue="New Caledonia"/>
+<item nicevalue="New Zealand"/>
+<item nicevalue="Nicaragua"/>
+<item nicevalue="Panama"/>
+<item nicevalue="Portugal"/>
+<item nicevalue="South Africa"/>
+<item nicevalue="Spain"/>
+<item nicevalue="Switzerland"/>
+<item nicevalue="Thailand"/>
+<item nicevalue="Turks and Caicos Islands"/>
+<item nicevalue="United Kingdom"/>
+<item nicevalue="United States"/>
+<item nicevalue="Uruguay"/>
+<item nicevalue="Venezuela"/>
+<item nicevalue="Virgin Islands British"/>
+<item nicevalue="Virgin Islands U.S."/>
+</values>
+</element>
+<element vname="Price range" text="Price range" type="select">
+<values>
+<item nicevalue="$1 - $200k"/>
+<item nicevalue="$200k - $400k"/>
+<item nicevalue="$400k - $600k"/>
+<item nicevalue="$600k - $800k"/>
+<item nicevalue="$800k - $1m"/>
+<item nicevalue="$1m - $2m"/>
+<item nicevalue="$2m - $5m"/>
+<item nicevalue="$5m - $10m"/>
+<item nicevalue="$10m +"/>
+</values>
+</element>
+<element vname="PropertyType" text=" Property Type" type="select">
+<values>
+<item nicevalue="House/Residential"/>
+<item nicevalue="Condo/Apartment"/>
+<item nicevalue="Commercial"/>
+</values>
+</element>
+<element vname="Property Characteristics" type="select">
+<values>
+<item nicevalue="Beach"/>
+<item nicevalue="Coastal"/>
+<item nicevalue="Desert"/>
+<item nicevalue="Island"/>
+<item nicevalue="Farm"/>
+<item nicevalue="Rural"/>
+<item nicevalue="Mountain"/>
+<item nicevalue="Urban"/>
+<item nicevalue="Tropical"/>
+</values>
+</element>
+<element vname="TOTL_BED" text=" Features Bedrooms" type="select">
+<values>
+<item nicevalue="1+"/>
+<item nicevalue="2+"/>
+<item nicevalue="3+"/>
+<item nicevalue="4+"/>
+<item nicevalue="5+"/>
+<item nicevalue="6+"/>
+<item nicevalue="7+"/>
+<item nicevalue="8+"/>
+<item nicevalue="9+"/>
+<item nicevalue="10+"/>
+</values>
+</element>
+<element vname="TOTL_FBATH" text=" Features Bathrooms" type="select">
+<values>
+<item nicevalue="1+"/>
+<item nicevalue="2+"/>
+<item nicevalue="3+"/>
+<item nicevalue="4+"/>
+<item nicevalue="5+"/>
+</values>
+</element>
+<element vname="TOTL_FL_SQ" text=" Features Minimum Floor Area Sq. Ft., Sq. M." type="text">
+</element>
+<element vname="TOTL_LOT_SQ" text=" Features Minimum Lot Size Acres, Hectares, Sq. M., Sq. Ft." type="text">
+</element>
+</element>
+</form>
+</search>

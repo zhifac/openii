@@ -98,7 +98,7 @@ public class Query {
 		}
 
 		SimilarityMatrix sm = m.calculateSimilarityMatrix();
-	System.out.println(sm.toString());
+//	System.out.println(sm.toString());
 		// match summary contains schema, queryfragments, score, and evidence
 		return m.getMatchSummary();
 	}

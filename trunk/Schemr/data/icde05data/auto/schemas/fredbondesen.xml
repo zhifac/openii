@@ -1,0 +1,48 @@
+<domain name="Automobile">
+	<search>            
+		<source name="BondesenChevrolet_Cadillac" url="http://www.fredbondesen.com/frameset2.asp?LINK=UsedCars&amp;MAIN=Used_vehicle_search"></source>
+		<element>     
+			<element vname="PARAMD" text = "MAKE">
+				<selectbox>
+					<item>ALL MAKES</item>
+					<item>BUICK</item>
+					<item>CADILLAC</item>
+					<item>CHEVROLET</item>
+					<item>DODGE</item>
+					<item>GMC</item>
+					<item>HONDA</item>
+					<item>MAZDA</item>
+					<item>OLDSMOBILE</item>
+				</selectbox>
+	  		</element>
+	  		<element vname="PARAME" text = "MODEL" depends="PARAMD">
+				<selectbox>
+					<item>ALL MODELS</item>
+					<item>ASTRO</item>
+					<item>AURORA</item>
+					<item>AVALANCHE</item>
+					<item>BLAZER</item>
+					<item>BONNEVILLE</item>
+				</selectbox>
+	  		</element>
+	  		<element vname="PARAML" text = "MILEAGE">
+				<selectbox>
+					<item>ALL MILEAGE</item>
+					<item>Up To 10,000</item>
+					<item>Up To 20,000</item>
+					<item>Up To 30,000</item>
+				</selectbox>
+			</element>
+			<element vname="PARAMK" text="YEAR">
+				<selectbox>
+					<item>ALL YEARS</item>
+					<item>2003</item>
+					<item>2002</item>
+					<item>2001</item>
+					<item>2000</item>
+					<item>1999</item>
+				</selectbox>
+			</element>
+		</element>
+	</search>
+</domain>

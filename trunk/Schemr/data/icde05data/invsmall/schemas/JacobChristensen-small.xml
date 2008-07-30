@@ -1,0 +1,489 @@
+<database name="JacobChristensen-small">
+  <createdby name="JacobChristensen-small"> Created from JacobChristensen in christensen.xml by filering tables. </createdby>
+  <Schema>
+    <table name="Products">
+      <column key="yes" name="itemNum" null="yes" type="int"/>
+      <column key="no" name="name" null="no" type="varchar_mid"/>
+      <column key="no" name="price" null="no" type="money"/>
+      <column key="no" name="review" null="yes" type="int"/>
+      <column key="no" name="suggestion" null="yes" type="int"/>
+</table>
+    <table name="Stock">
+      <column key="no" name="itemNum" null="no" ref="Products/itemNum" type="int"/>
+      <column key="no" name="warehouseNum" null="no" type="int"></column>
+      <column key="no" name="quantity" null="no" type="int"/>
+</table>
+    <table name="Books">
+      <column key="no" name="itemNum" null="no" ref="Products/itemNum" type="int"/>
+      <column key="no" name="salePrice" null="no" type="money"/>
+      <column key="no" name="publisher" null="yes" type="varchar_mid"/>
+      <column key="no" name="cover" null="no" type="char_small"/>
+      <column key="no" name="category" null="yes" type="varchar_mid"/>
+</table>
+    <table name="Keywords">
+      <column key="no" name="itemNum" null="no" ref="Products/itemNum" type="int"/>
+      <column key="no" name="keyword" null="no" type="varchar_mid"/>
+</table>
+    <table name="AuthorsArtists">
+      <column key="no" name="itemNum" null="no" ref="Products/itemNum" type="int"/>
+      <column key="no" name="authorArtist" null="no" type="varchar_mid"/>
+</table>
+  </Schema>
+  <Data>
+    <AuthorsArtists>
+<tuple><itemNum>77017631</itemNum>
+<authorArtist>Raul R
+</authorArtist>
+</tuple><tuple><itemNum>80173621</itemNum>
+<authorArtist>Bryan V
+</authorArtist>
+</tuple><tuple><itemNum>87621388</itemNum>
+<authorArtist>Cyril G
+</authorArtist>
+</tuple><tuple><itemNum>26607505</itemNum>
+<authorArtist>Raquel D
+</authorArtist>
+</tuple><tuple><itemNum>15614462</itemNum>
+<authorArtist>Meredith N
+</authorArtist>
+</tuple><tuple><itemNum>60695388</itemNum>
+<authorArtist>Remington O
+</authorArtist>
+</tuple><tuple><itemNum>89883205</itemNum>
+<authorArtist>Lonny S
+</authorArtist>
+</tuple><tuple><itemNum>21680957</itemNum>
+<authorArtist>Chadrick P
+</authorArtist>
+</tuple><tuple><itemNum>51362305</itemNum>
+<authorArtist>Sally H
+</authorArtist>
+</tuple><tuple><itemNum>95428750</itemNum>
+<authorArtist>Lorine W
+</authorArtist>
+</tuple><tuple><itemNum>30243745</itemNum>
+<authorArtist>Lera R
+</authorArtist>
+</tuple><tuple><itemNum>32074465</itemNum>
+<authorArtist>Laron S
+</authorArtist>
+</tuple><tuple><itemNum>28654364</itemNum>
+<authorArtist>Leonor P
+</authorArtist>
+</tuple><tuple><itemNum>67172978</itemNum>
+<authorArtist>Ardell V
+</authorArtist>
+</tuple><tuple><itemNum>20411334</itemNum>
+<authorArtist>Jayden O
+</authorArtist>
+</tuple><tuple><itemNum>41942409</itemNum>
+<authorArtist>Zena K
+</authorArtist>
+</tuple><tuple><itemNum>66549503</itemNum>
+<authorArtist>Vernie U
+</authorArtist>
+</tuple><tuple><itemNum>10138958</itemNum>
+<authorArtist>Laury P
+</authorArtist>
+</tuple><tuple><itemNum>24549662</itemNum>
+<authorArtist>Chasity Y
+</authorArtist>
+</tuple><tuple><itemNum>88918999</itemNum>
+<authorArtist>Landon B
+</authorArtist>
+</tuple><tuple><itemNum>88918999</itemNum>
+<authorArtist>Deloris E
+</authorArtist>
+</tuple></AuthorsArtists>
+    <Stock>
+<tuple><itemNum>77017631</itemNum>
+<warehouseNum>61249</warehouseNum>
+<quantity>96
+</quantity>
+</tuple><tuple><itemNum>80173621</itemNum>
+<warehouseNum>231759</warehouseNum>
+<quantity>54
+</quantity>
+</tuple><tuple><itemNum>87621388</itemNum>
+<warehouseNum>254852</warehouseNum>
+<quantity>33
+</quantity>
+</tuple><tuple><itemNum>26607505</itemNum>
+<warehouseNum>478227</warehouseNum>
+<quantity>24
+</quantity>
+</tuple><tuple><itemNum>15614462</itemNum>
+<warehouseNum>913958</warehouseNum>
+<quantity>66
+</quantity>
+</tuple><tuple><itemNum>60695388</itemNum>
+<warehouseNum>322734</warehouseNum>
+<quantity>71
+</quantity>
+</tuple><tuple><itemNum>89883205</itemNum>
+<warehouseNum>850240</warehouseNum>
+<quantity>16
+</quantity>
+</tuple><tuple><itemNum>21680957</itemNum>
+<warehouseNum>855505</warehouseNum>
+<quantity>38
+</quantity>
+</tuple><tuple><itemNum>51362305</itemNum>
+<warehouseNum>982298</warehouseNum>
+<quantity>81
+</quantity>
+</tuple><tuple><itemNum>95428750</itemNum>
+<warehouseNum>942221</warehouseNum>
+<quantity>73
+</quantity>
+</tuple><tuple><itemNum>30243745</itemNum>
+<warehouseNum>63382</warehouseNum>
+<quantity>79
+</quantity>
+</tuple><tuple><itemNum>28654364</itemNum>
+<warehouseNum>754438</warehouseNum>
+<quantity>56
+</quantity>
+</tuple><tuple><itemNum>67172978</itemNum>
+<warehouseNum>322734</warehouseNum>
+<quantity>83
+</quantity>
+</tuple><tuple><itemNum>20411334</itemNum>
+<warehouseNum>894433</warehouseNum>
+<quantity>49
+</quantity>
+</tuple><tuple><itemNum>66549503</itemNum>
+<warehouseNum>297220</warehouseNum>
+<quantity>19
+</quantity>
+</tuple><tuple><itemNum>10138958</itemNum>
+<warehouseNum>982298</warehouseNum>
+<quantity>90
+</quantity>
+</tuple><tuple><itemNum>24549662</itemNum>
+<warehouseNum>867874</warehouseNum>
+<quantity>23
+</quantity>
+</tuple><tuple><itemNum>88918999</itemNum>
+<warehouseNum>743424</warehouseNum>
+<quantity>91
+</quantity>
+</tuple><tuple><itemNum>95428750</itemNum>
+<warehouseNum>390279</warehouseNum>
+<quantity>36
+</quantity>
+</tuple><tuple><itemNum>30243745</itemNum>
+<warehouseNum>390279</warehouseNum>
+<quantity>4
+</quantity>
+</tuple><tuple><itemNum>28654364</itemNum>
+<warehouseNum>199437</warehouseNum>
+<quantity>11
+</quantity>
+</tuple><tuple><itemNum>67172978</itemNum>
+<warehouseNum>390279</warehouseNum>
+<quantity>34
+</quantity>
+</tuple><tuple><itemNum>20411334</itemNum>
+<warehouseNum>982298</warehouseNum>
+<quantity>22
+</quantity>
+</tuple><tuple><itemNum>66549503</itemNum>
+<warehouseNum>390279</warehouseNum>
+<quantity>37
+</quantity>
+</tuple><tuple><itemNum>10138958</itemNum>
+<warehouseNum>322734</warehouseNum>
+<quantity>30
+</quantity>
+</tuple><tuple><itemNum>24549662</itemNum>
+<warehouseNum>61249</warehouseNum>
+<quantity>32
+</quantity>
+</tuple><tuple><itemNum>88918999</itemNum>
+<warehouseNum>867874</warehouseNum>
+<quantity>43
+</quantity>
+</tuple><tuple><itemNum>77017631</itemNum>
+<warehouseNum>894433</warehouseNum>
+<quantity>2
+</quantity>
+</tuple><tuple><itemNum>80173621</itemNum>
+<warehouseNum>982298</warehouseNum>
+<quantity>1
+</quantity>
+</tuple><tuple><itemNum>87621388</itemNum>
+<warehouseNum>199437</warehouseNum>
+<quantity>41
+</quantity>
+</tuple><tuple><itemNum>26607505</itemNum>
+<warehouseNum>231759</warehouseNum>
+<quantity>47
+</quantity>
+</tuple></Stock>
+    <Products>
+<tuple><itemNum>10138958</itemNum>
+<name>My Garage is My Best Friend</name>
+<price>27.85</price>
+<review>5</review>
+<suggestion>NULL
+</suggestion>
+</tuple><tuple><itemNum>15614462</itemNum>
+<name>Database Systems</name>
+<price>36.87</price>
+<review>5</review>
+<suggestion>NULL
+</suggestion>
+</tuple><tuple><itemNum>20411334</itemNum>
+<name>Timeless Classics</name>
+<price>33.45</price>
+<review>1</review>
+<suggestion>NULL
+</suggestion>
+</tuple><tuple><itemNum>21680957</itemNum>
+<name>For Whom the Bell Tolls</name>
+<price>24.21</price>
+<review>4</review>
+<suggestion>77017631
+</suggestion>
+</tuple><tuple><itemNum>24549662</itemNum>
+<name>Feel the Beat</name>
+<price>10.69</price>
+<review>5</review>
+<suggestion>NULL
+</suggestion>
+</tuple><tuple><itemNum>26607505</itemNum>
+<name>The Little Train That Could</name>
+<price>11.22</price>
+<review>3</review>
+<suggestion>NULL
+</suggestion>
+</tuple><tuple><itemNum>28654364</itemNum>
+<name>Come on Baby</name>
+<price>16.13</price>
+<review>4</review>
+<suggestion>NULL
+</suggestion>
+</tuple><tuple><itemNum>30243745</itemNum>
+<name>Yo Yo</name>
+<price>11.35</price>
+<review>2</review>
+<suggestion>66549503
+</suggestion>
+</tuple><tuple><itemNum>32074465</itemNum>
+<name>Party Time</name>
+<price>14.22</price>
+<review>5</review>
+<suggestion>41942409
+</suggestion>
+</tuple><tuple><itemNum>41942409</itemNum>
+<name>Bring the Noise</name>
+<price>11.71</price>
+<review>1</review>
+<suggestion>32074465
+</suggestion>
+</tuple><tuple><itemNum>51362305</itemNum>
+<name>Pride and Prejudice</name>
+<price>20.72</price>
+<review>3</review>
+<suggestion>67172978
+</suggestion>
+</tuple><tuple><itemNum>60695388</itemNum>
+<name>Green Eggs and Ham</name>
+<price>68.72</price>
+<review>5</review>
+<suggestion>89883205
+</suggestion>
+</tuple><tuple><itemNum>66549503</itemNum>
+<name>Preach It Brother</name>
+<price>42.78</price>
+<review>2</review>
+<suggestion>30243745
+</suggestion>
+</tuple><tuple><itemNum>67172978</itemNum>
+<name>The Meadows of El Paso</name>
+<price>22.47</price>
+<review>3</review>
+<suggestion>NULL
+</suggestion>
+</tuple><tuple><itemNum>77017631</itemNum>
+<name>Mystic River</name>
+<price>30.37</price>
+<review>1</review>
+<suggestion>87621388
+</suggestion>
+</tuple><tuple><itemNum>80173621</itemNum>
+<name>Seabiscuit: An American Legend</name>
+<price>15.54</price>
+<review>2</review>
+<suggestion>95428750
+</suggestion>
+</tuple><tuple><itemNum>87621388</itemNum>
+<name>The Secret Life of Bees</name>
+<price>14.85</price>
+<review>4</review>
+<suggestion>80173621
+</suggestion>
+</tuple><tuple><itemNum>88918999</itemNum>
+<name>The 50's</name>
+<price>45.00</price>
+<review>4</review>
+<suggestion>NULL
+</suggestion>
+</tuple><tuple><itemNum>89883205</itemNum>
+<name>A Tale of Two Cities</name>
+<price>18.76</price>
+<review>2</review>
+<suggestion>80173621
+</suggestion>
+</tuple><tuple><itemNum>95428750</itemNum>
+<name>The Life of Pi</name>
+<price>7.15</price>
+<review>5</review>
+<suggestion>77017631
+</suggestion>
+</tuple></Products>
+    <Books>
+<tuple><itemNum>77017631</itemNum>
+<salePrice>25.37</salePrice>
+<publisher>Heller Developments</publisher>
+<cover>hard</cover>
+<category>mystery
+</category>
+</tuple><tuple><itemNum>80173621</itemNum>
+<salePrice>9.99</salePrice>
+<publisher>Howe Micro</publisher>
+<cover>hard</cover>
+<category>history
+</category>
+</tuple><tuple><itemNum>87621388</itemNum>
+<salePrice>NULL</salePrice>
+<publisher>Will Creations</publisher>
+<cover>soft</cover>
+<category>horror
+</category>
+</tuple><tuple><itemNum>26607505</itemNum>
+<salePrice>5.46</salePrice>
+<publisher>Pfeffer Media</publisher>
+<cover>hard</cover>
+<category>educational
+</category>
+</tuple><tuple><itemNum>15614462</itemNum>
+<salePrice>NULL</salePrice>
+<publisher>Murray Lab</publisher>
+<cover>soft</cover>
+<category>fiction
+</category>
+</tuple><tuple><itemNum>60695388</itemNum>
+<salePrice>34.56</salePrice>
+<publisher>Blanda Arts</publisher>
+<cover>soft</cover>
+<category>drama
+</category>
+</tuple><tuple><itemNum>89883205</itemNum>
+<salePrice>NULL</salePrice>
+<publisher>Jacobsonmasters</publisher>
+<cover>soft</cover>
+<category>fantasy
+</category>
+</tuple><tuple><itemNum>21680957</itemNum>
+<salePrice>19.99</salePrice>
+<publisher>Marks Interactive</publisher>
+<cover>hard</cover>
+<category>childrens
+</category>
+</tuple><tuple><itemNum>51362305</itemNum>
+<salePrice>20.72</salePrice>
+<publisher>Bechtelarmix</publisher>
+<cover>hard</cover>
+<category>reference
+</category>
+</tuple><tuple><itemNum>95428750</itemNum>
+<salePrice>NULL</salePrice>
+<publisher>Feil Arts</publisher>
+<cover>soft</cover>
+<category>fiction
+</category>
+</tuple></Books>
+    <Keywords>
+<tuple><itemNum>51362305</itemNum>
+<keyword>quote
+</keyword>
+</tuple><tuple><itemNum>26607505</itemNum>
+<keyword>collectively
+</keyword>
+</tuple><tuple><itemNum>15614462</itemNum>
+<keyword>because
+</keyword>
+</tuple><tuple><itemNum>60695388</itemNum>
+<keyword>snowing
+</keyword>
+</tuple><tuple><itemNum>80173621</itemNum>
+<keyword>programmers
+</keyword>
+</tuple><tuple><itemNum>80173621</itemNum>
+<keyword>emit
+</keyword>
+</tuple><tuple><itemNum>95428750</itemNum>
+<keyword>bathroom
+</keyword>
+</tuple><tuple><itemNum>95428750</itemNum>
+<keyword>potatoes
+</keyword>
+</tuple><tuple><itemNum>60695388</itemNum>
+<keyword>horse
+</keyword>
+</tuple><tuple><itemNum>21680957</itemNum>
+<keyword>chocolate
+</keyword>
+</tuple><tuple><itemNum>21680957</itemNum>
+<keyword>contemplate
+</keyword>
+</tuple><tuple><itemNum>15614462</itemNum>
+<keyword>mongers
+</keyword>
+</tuple><tuple><itemNum>60695388</itemNum>
+<keyword>suffocate
+</keyword>
+</tuple><tuple><itemNum>95428750</itemNum>
+<keyword>chaotically
+</keyword>
+</tuple><tuple><itemNum>60695388</itemNum>
+<keyword>supporters
+</keyword>
+</tuple><tuple><itemNum>60695388</itemNum>
+<keyword>microwave
+</keyword>
+</tuple><tuple><itemNum>51362305</itemNum>
+<keyword>march
+</keyword>
+</tuple><tuple><itemNum>21680957</itemNum>
+<keyword>chocolate
+</keyword>
+</tuple><tuple><itemNum>15614462</itemNum>
+<keyword>Copenhagen
+</keyword>
+</tuple><tuple><itemNum>60695388</itemNum>
+<keyword>contemplate
+</keyword>
+</tuple><tuple><itemNum>95428750</itemNum>
+<keyword>painters
+</keyword>
+</tuple><tuple><itemNum>60695388</itemNum>
+<keyword>dinner
+</keyword>
+</tuple><tuple><itemNum>80173621</itemNum>
+<keyword>slice
+</keyword>
+</tuple><tuple><itemNum>26607505</itemNum>
+<keyword>mongers
+</keyword>
+</tuple><tuple><itemNum>15614462</itemNum>
+<keyword>slice
+</keyword>
+</tuple><tuple><itemNum>51362305</itemNum>
+<keyword>horse
+</keyword>
+</tuple></Keywords>
+  </Data>
+</database>

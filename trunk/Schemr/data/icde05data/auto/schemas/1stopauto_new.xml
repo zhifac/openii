@@ -1,0 +1,108 @@
+<domain name="Automobile">
+	<search>
+		<source name="1stopauto_new" url="http://www.car.com/qp/(pvsi3m450wz15tbmb1w23y55)/NewVehicleSearch.aspx"></source>
+		<element>
+	  		<element vname="Make" text = "Make">
+				<selectbox>
+			        <item>Acura</item>
+			        <item>Aston Martin</item>
+			        <item>Audi</item>
+			        <item>Bentley</item>
+			        <item>BMW</item>
+			        <item>Buick</item>
+			        <item>Cadillac</item>
+			        <item>Chevrolet</item>
+			        <item>Chrysler</item>
+			        <item>Dodge</item>
+			        <item>Ferrari</item>
+			        <item>Ford</item>
+			        <item>GMC</item>
+			        <item>Honda</item>
+			        <item>Hummer</item>
+			        <item>Hyundai</item>
+			        <item>Infiniti</item>
+			        <item>Isuzu</item>
+			        <item>Jaguar</item>
+			        <item>Jeep</item>
+			        <item>Kia</item>
+			        <item>Lamborghini</item>
+			        <item>Land Rover</item>
+			        <item>Lexus</item>
+			        <item>Lincoln</item>
+			        <item>Lotus</item>
+			        <item>Maserati</item>
+			        <item>Maybach</item>
+			        <item>Mazda</item>
+			        <item>Mercedes Benz</item>
+			        <item>Mercury</item>
+			        <item>MINI</item>
+			        <item>Mitsubishi</item>
+			        <item>Morgan</item>
+			        <item>Nissan</item>
+			        <item>Oldsmobile</item>
+			        <item>Panoz</item>
+			        <item>Pontiac</item>
+			        <item>Porsche</item>
+			        <item>Rolls Royce</item>
+			        <item>Saab</item>
+			        <item>Saturn</item>
+			        <item>Scion</item>
+			        <item>Subaru</item>
+			        <item>Suzuki</item>
+			        <item>Toyota</item>
+			        <item>Volkswagen</item>
+			        <item>Volvo</item>
+				</selectbox>
+			</element>
+			<element vname="Model" depends = "Make" text = "Model">
+				<selectbox >
+					<item>Crown Victoria</item>
+					<item>E150</item>
+					<item>E250</item>
+					<item>E350</item>
+					<item>Escape</item>
+					<item>Excursion</item>
+					<item>Expedition</item>
+					<item>Explorer</item>
+					<item>Explorer Sport</item>
+					<item>Explorer Sport Trac</item>
+					<item>Explorer Sport Trac</item>
+					<item>Explorer Sport Trac</item>
+					<item>F150</item>
+					<item>F250</item>
+					<item>F350</item>
+					<item>Focus</item>
+					<item>GT40</item>
+					<item>Mustang</item>
+					<item>Ranger</item>
+					<item>Taurus</item>
+					<item>Thunderbird</item>
+					<item>Windstar</item>
+					<item>ZX2</item>
+		            <item>Envoy</item>
+		            <item>Safari</item>
+		            <item>Savana</item>
+		            <item>Sierra</item>
+		            <item>Sonoma</item>
+		            <item>Yukon</item>
+		            <item>Yukon Denali</item>
+		            <item>Yukon XL</item>
+					<item>Accent</item>
+					<item>Elantra</item>
+					<item>Santa Fe</item>
+					<item>Sonata</item>
+					<item>Tiburon</item>
+					<item>XG350</item>
+				</selectbox>
+			</element>
+      
+		
+			<element vname="ZipCode" text = "ZipCode">
+				<textbox/>
+	  		</element>
+			<element vname="Email" text = "Email (e.g. mark@aol.com)">
+				<textbox/>
+			</element>
+		</element>
+	</search>
+</domain>

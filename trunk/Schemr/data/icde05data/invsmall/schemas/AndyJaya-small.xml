@@ -1,0 +1,704 @@
+<database name="AndyJaya-small">
+  <createdby name="AndyJaya-small"> Created from AndyJaya in jaya.xml by filering tables. </createdby>
+  <Schema>
+    <table name="Product">
+      <column key="yes" name="prodID" null="yes" type="varchar_mid"/>
+      <column key="no" name="category" null="yes" type="char_small"/>
+      <column key="no" name="price" null="yes" type="money"/>
+      <column key="no" name="discount" null="yes" type="float"/>
+</table>
+    <table name="Inventory">
+      <column key="no" name="warehouseid" null="yes" type="varchar_mid"></column>
+      <column key="no" name="prodID" null="yes" ref="Product/prodID" type="varchar_mid"/>
+      <column key="no" name="stock" null="yes" type="int"/>
+</table>
+    <table name="Books">
+      <column key="no" name="title" null="no" type="varchar_mid"/>
+      <column key="no" name="author" null="yes" type="varchar_mid"/>
+      <column key="yes" name="isbn" null="yes" ref="Product/prodID" type="varchar_mid"/>
+      <column key="no" name="publisher" null="yes" type="varchar_mid"/>
+      <column key="no" name="CustomerRating" null="yes" type="int"/>
+      <column key="no" name="SalesRating" null="yes" type="int"/>
+</table>
+    <table name="BooksKeywords">
+      <column key="no" name="isbn" null="yes" ref="Books/isbn" type="varchar_mid"/>
+      <column key="no" name="keyword" null="yes" type="varchar_mid"/>
+</table>
+    <table name="BooksCategories">
+      <column key="no" name="isbn" null="yes" ref="Books/isbn" type="varchar_mid"/>
+      <column key="no" name="category" null="yes" type="varchar_mid"/>
+</table>
+  </Schema>
+  <Data>
+    <BooksCategories>
+<tuple>
+<isbn>1A2A3A4A5A6A7A</isbn>
+<category>fiction</category>
+</tuple>
+<tuple>
+<isbn>1B2B3B4B5B6B7B</isbn>
+<category>drama</category>
+</tuple>
+<tuple>
+<isbn>1C2C3C4C5C6C7C</isbn>
+<category>fantasy</category>
+</tuple>
+<tuple>
+<isbn>1D2D3D4D5D6D7D</isbn>
+<category>history</category>
+</tuple>
+<tuple>
+<isbn>1E2E3E4E5E6E7E</isbn>
+<category>health</category>
+</tuple>
+<tuple>
+<isbn>1F2F3F4F5F6F7F</isbn>
+<category>music</category>
+</tuple>
+<tuple>
+<isbn>1G2G3G4G5G6G7G</isbn>
+<category>education</category>
+</tuple>
+<tuple>
+<isbn>1H2H3H4H5H6H7H</isbn>
+<category>fiction</category>
+</tuple>
+<tuple>
+<isbn>1I2I3I4I5I6I7I</isbn>
+<category>drama</category>
+</tuple>
+<tuple>
+<isbn>1J2J3J4J5J6J7J</isbn>
+<category>fantasy</category>
+</tuple>
+<tuple>
+<isbn>1K2K3K4K5K6K7K</isbn>
+<category>history</category>
+</tuple>
+<tuple>
+<isbn>1L2L3L4L5L6L7L</isbn>
+<category>health</category>
+</tuple>
+<tuple>
+<isbn>1M2M3M4M5M6M7M</isbn>
+<category>music</category>
+</tuple>
+<tuple>
+<isbn>1N2N3N4N5N6N7N</isbn>
+<category>education</category>
+</tuple>
+<tuple>
+<isbn>1O2O3O4O5O6O7O</isbn>
+<category>fiction</category>
+</tuple>
+<tuple>
+<isbn>1P2P3P4P5P6P7P</isbn>
+<category>drama</category>
+</tuple>
+<tuple>
+<isbn>1Q2Q3Q4Q5Q6Q7Q</isbn>
+<category>history</category>
+</tuple>
+<tuple>
+<isbn>1R2R3R4R5R6R7R</isbn>
+<category>fantasy</category>
+</tuple>
+<tuple>
+<isbn>1S2S3S4S5S6S7S</isbn>
+<category>education</category>
+</tuple>
+<tuple>
+<isbn>1T2T3T4T5T6T7T</isbn>
+<category>music</category>
+</tuple>
+</BooksCategories>
+    <Inventory>
+<tuple>
+<warehouseid>Cartwright Power</warehouseid>
+<prodID>A1A2A3A4A5A6A7</prodID>
+<stock>2000</stock>
+</tuple>
+<tuple>
+<warehouseid>Gleichner Productions</warehouseid>
+<prodID>A1A2A3A4A5A6A7</prodID>
+<stock>245</stock>
+</tuple>
+<tuple>
+<warehouseid>Gleichner Productions</warehouseid>
+<prodID>L1L2L3L4L5L6L7</prodID>
+<stock>45</stock>
+</tuple>
+<tuple>
+<warehouseid>Gleichner Productions</warehouseid>
+<prodID>P1P2P3P4P5P6P7</prodID>
+<stock>5</stock>
+</tuple>
+<tuple>
+<warehouseid>Hamill Arts</warehouseid>
+<prodID>M1M2M3M4M5M6M7</prodID>
+<stock>46</stock>
+</tuple>
+<tuple>
+<warehouseid>Hand Arts</warehouseid>
+<prodID>E1E2E3E4E5E6E7</prodID>
+<stock>56</stock>
+</tuple>
+<tuple>
+<warehouseid>Hilpertmasters</warehouseid>
+<prodID>1H2H3H4H5H6H7H</prodID>
+<stock>78</stock>
+</tuple>
+<tuple>
+<warehouseid>Hilpertmasters</warehouseid>
+<prodID>F1F2F3F4F5F6F7</prodID>
+<stock>22</stock>
+</tuple>
+<tuple>
+<warehouseid>Hilpertmasters</warehouseid>
+<prodID>G1G2G3G4G5G6G7</prodID>
+<stock>235</stock>
+</tuple>
+<tuple>
+<warehouseid>Hudson Technologies</warehouseid>
+<prodID>A1A2A3A4A5A6A7</prodID>
+<stock>122</stock>
+</tuple>
+<tuple>
+<warehouseid>Kohler Logic</warehouseid>
+<prodID>1K2K3K4K5K6K7K</prodID>
+<stock>78</stock>
+</tuple>
+<tuple>
+<warehouseid>Lowe Computer Services</warehouseid>
+<prodID>1B2B3B4B5B6B7B</prodID>
+<stock>100</stock>
+</tuple>
+<tuple>
+<warehouseid>Ortiz-Wesley</warehouseid>
+<prodID>E1E2E3E4E5E6E7</prodID>
+<stock>198</stock>
+</tuple>
+<tuple>
+<warehouseid>Parisian Corporation</warehouseid>
+<prodID>B1B2B3B4B5B6B7</prodID>
+<stock>144</stock>
+</tuple>
+<tuple>
+<warehouseid>Schowaltertronic</warehouseid>
+<prodID>S1S2S3S4S5S6S7</prodID>
+<stock>203</stock>
+</tuple>
+<tuple>
+<warehouseid>Stocke Productions</warehouseid>
+<prodID>1G2G3G4G5G6G7G</prodID>
+<stock>100</stock>
+</tuple>
+<tuple>
+<warehouseid>Stocke Productions</warehouseid>
+<prodID>F1F2F3F4F5F6F7</prodID>
+<stock>89</stock>
+</tuple>
+<tuple>
+<warehouseid>Strosin Research</warehouseid>
+<prodID>1D2D3D4D5D6D7D</prodID>
+<stock>100</stock>
+</tuple>
+<tuple>
+<warehouseid>Strosin Research</warehouseid>
+<prodID>C1C2C3C4C5C6C7</prodID>
+<stock>945</stock>
+</tuple>
+<tuple>
+<warehouseid>Ziemeworth</warehouseid>
+<prodID>1M2M3M4M5M6M7M</prodID>
+<stock>99</stock>
+</tuple>
+</Inventory>
+    <Books>
+<tuple>
+<title>An Ace up My Alive</title>
+<author>Kunde Darrin</author>
+<isbn>1A2A3A4A5A6A7A</isbn>
+<publisher>Blanda Workshop</publisher>
+<CustomerRating>0</CustomerRating>
+<SalesRating>3</SalesRating>
+</tuple>
+<tuple>
+<title>Have a Change of Crumbles</title>
+<author>Vandervort Haylie</author>
+<isbn>1B2B3B4B5B6B7B</isbn>
+<publisher>Terrystyle</publisher>
+<CustomerRating>1</CustomerRating>
+<SalesRating>5</SalesRating>
+</tuple>
+<tuple>
+<title>The Soft Fix Him</title>
+<author>Jewess Angel</author>
+<isbn>1C2C3C4C5C6C7C</isbn>
+<publisher>Hahn Graphics</publisher>
+<CustomerRating>1</CustomerRating>
+<SalesRating>7</SalesRating>
+</tuple>
+<tuple>
+<title>Have This One onFuneral</title>
+<author>Funk Miller</author>
+<isbn>1D2D3D4D5D6D7D</isbn>
+<publisher>Flatley Concepts</publisher>
+<CustomerRating>10</CustomerRating>
+<SalesRating>9</SalesRating>
+</tuple>
+<tuple>
+<title>Just Another Hurts</title>
+<author>Ritchie Dwight</author>
+<isbn>1E2E3E4E5E6E7E</isbn>
+<publisher>Waters Projects</publisher>
+<CustomerRating>9</CustomerRating>
+<SalesRating>11</SalesRating>
+</tuple>
+<tuple>
+<title>Try This One for Mine</title>
+<author>Price Gerardo</author>
+<isbn>1F2F3F4F5F6F7F</isbn>
+<publisher>Ward Microtech</publisher>
+<CustomerRating>8</CustomerRating>
+<SalesRating>12</SalesRating>
+</tuple>
+<tuple>
+<title>You're Lonely When You're Price Tag</title>
+<author>Goldner Gail</author>
+<isbn>1G2G3G4G5G6G7G</isbn>
+<publisher>Effertzmix</publisher>
+<CustomerRating>7</CustomerRating>
+<SalesRating>14</SalesRating>
+</tuple>
+<tuple>
+<title>You're Dead Without Siena</title>
+<author>Bednar Marilou</author>
+<isbn>1H2H3H4H5H6H7H</isbn>
+<publisher>Burany Group PLC</publisher>
+<CustomerRating>6</CustomerRating>
+<SalesRating>100</SalesRating>
+</tuple>
+<tuple>
+<title>The Soft Dumb</title>
+<author>Wiza Napoleon</author>
+<isbn>1I2I3I4I5I6I7I</isbn>
+<publisher>Wiegand Simulations</publisher>
+<CustomerRating>5</CustomerRating>
+<SalesRating>120</SalesRating>
+</tuple>
+<tuple>
+<title>Figure It Out for Highway</title>
+<author>Halvorson Mohammad</author>
+<isbn>1J2J3J4J5J6J7J</isbn>
+<publisher>Volkman House</publisher>
+<CustomerRating>4</CustomerRating>
+<SalesRating>20</SalesRating>
+</tuple>
+<tuple>
+<title>Consider Yourself Miss Quon</title>
+<author>Dach Matilda</author>
+<isbn>1K2K3K4K5K6K7K</isbn>
+<publisher>Hills Ltd</publisher>
+<CustomerRating>3</CustomerRating>
+<SalesRating>1</SalesRating>
+</tuple>
+<tuple>
+<title>Mallory Run</title>
+<author>Feil Kobe</author>
+<isbn>1L2L3L4L5L6L7L</isbn>
+<publisher>Rohan Developments</publisher>
+<CustomerRating>2</CustomerRating>
+<SalesRating>2</SalesRating>
+</tuple>
+<tuple>
+<title>My Laugh Comes Transgressor</title>
+<author>Cruickshank Richie</author>
+<isbn>1M2M3M4M5M6M7M</isbn>
+<publisher>Balistreridreams</publisher>
+<CustomerRating>1</CustomerRating>
+<SalesRating>15</SalesRating>
+</tuple>
+<tuple>
+<title>My Laugh Comes Orchid</title>
+<author>Ullrich Julio</author>
+<isbn>1N2N3N4N5N6N7N</isbn>
+<publisher>Ullrichdeal</publisher>
+<CustomerRating>0</CustomerRating>
+<SalesRating>16</SalesRating>
+</tuple>
+<tuple>
+<title>Twelve Chinks and aMine</title>
+<author>Cummings Macy</author>
+<isbn>1O2O3O4O5O6O7O</isbn>
+<publisher>Leuschke Projects</publisher>
+<CustomerRating>10</CustomerRating>
+<SalesRating>17</SalesRating>
+</tuple>
+<tuple>
+<title>I Hold the Four Stay Poor</title>
+<author>Runte Amari</author>
+<isbn>1P2P3P4P5P6P7P</isbn>
+<publisher>McCulloughmasters</publisher>
+<CustomerRating>1</CustomerRating>
+<SalesRating>18</SalesRating>
+</tuple>
+<tuple>
+<title>No Orchids for Morning</title>
+<author>Daugherty Jade</author>
+<isbn>1Q2Q3Q4Q5Q6Q7Q</isbn>
+<publisher>Howe Studios</publisher>
+<CustomerRating>2</CustomerRating>
+<SalesRating>19</SalesRating>
+</tuple>
+<tuple>
+<title>Not My Page</title>
+<author>Goldner Adelle</author>
+<isbn>1R2R3R4R5R6R7R</isbn>
+<publisher>Blandamix</publisher>
+<CustomerRating>3</CustomerRating>
+<SalesRating>21</SalesRating>
+</tuple>
+<tuple>
+<title>The World in My Orchid</title>
+<author>Streich Wendy</author>
+<isbn>1S2S3S4S5S6S7S</isbn>
+<publisher>Schaefer Design</publisher>
+<CustomerRating>4</CustomerRating>
+<SalesRating>23</SalesRating>
+</tuple>
+<tuple>
+<title>Hit Them Where Kidding</title>
+<author>Waters Blake</author>
+<isbn>1T2T3T4T5T6T7T</isbn>
+<publisher>Johnson Micro</publisher>
+<CustomerRating>5</CustomerRating>
+<SalesRating>24</SalesRating>
+</tuple>
+</Books>
+    <BooksKeywords>
+<tuple>
+<isbn>1A2A3A4A5A6A7A</isbn>
+<keyword>eldorado</keyword>
+</tuple>
+<tuple>
+<isbn>1B2B3B4B5B6B7B</isbn>
+<keyword>casuary</keyword>
+</tuple>
+<tuple>
+<isbn>1C2C3C4C5C6C7C</isbn>
+<keyword>xenon world</keyword>
+</tuple>
+<tuple>
+<isbn>1D2D3D4D5D6D7D</isbn>
+<keyword>france era</keyword>
+</tuple>
+<tuple>
+<isbn>1E2E3E4E5E6E7E</isbn>
+<keyword>scrizophenia</keyword>
+</tuple>
+<tuple>
+<isbn>1F2F3F4F5F6F7F</isbn>
+<keyword>beethoven era</keyword>
+</tuple>
+<tuple>
+<isbn>1G2G3G4G5G6G7G</isbn>
+<keyword>teacher principles</keyword>
+</tuple>
+<tuple>
+<isbn>1H2H3H4H5H6H7H</isbn>
+<keyword>plasma beam</keyword>
+</tuple>
+<tuple>
+<isbn>1I2I3I4I5I6I7I</isbn>
+<keyword>yogyakarta</keyword>
+</tuple>
+<tuple>
+<isbn>1J2J3J4J5J6J7J</isbn>
+<keyword>neptunus solar</keyword>
+</tuple>
+<tuple>
+<isbn>1K2K3K4K5K6K7K</isbn>
+<keyword>marcopolo</keyword>
+</tuple>
+<tuple>
+<isbn>1L2L3L4L5L6L7L</isbn>
+<keyword>stress</keyword>
+</tuple>
+<tuple>
+<isbn>1M2M3M4M5M6M7M</isbn>
+<keyword>jazz era</keyword>
+</tuple>
+<tuple>
+<isbn>1N2N3N4N5N6N7N</isbn>
+<keyword>student tips</keyword>
+</tuple>
+<tuple>
+<isbn>1O2O3O4O5O6O7O</isbn>
+<keyword>laser beam</keyword>
+</tuple>
+<tuple>
+<isbn>1P2P3P4P5P6P7P</isbn>
+<keyword>suicide</keyword>
+</tuple>
+<tuple>
+<isbn>1Q2Q3Q4Q5Q6Q7Q</isbn>
+<keyword>suez canal</keyword>
+</tuple>
+<tuple>
+<isbn>1R2R3R4R5R6R7R</isbn>
+<keyword>dream world</keyword>
+</tuple>
+<tuple>
+<isbn>1S2S3S4S5S6S7S</isbn>
+<keyword>computer technology</keyword>
+</tuple>
+<tuple>
+<isbn>1T2T3T4T5T6T7T</isbn>
+<keyword>instrumentalia era</keyword>
+</tuple>
+</BooksKeywords>
+    <Product>
+<tuple>
+<prodID>1A2A3A4A5A6A7A</prodID>
+<category>Book      </category>
+<price>50.00</price>
+<discount>0.67</discount>
+</tuple>
+<tuple>
+<prodID>1B2B3B4B5B6B7B</prodID>
+<category>Book      </category>
+<price>20.00</price>
+<discount>0.55</discount>
+</tuple>
+<tuple>
+<prodID>1C2C3C4C5C6C7C</prodID>
+<category>Book      </category>
+<price>30.00</price>
+<discount>0.22</discount>
+</tuple>
+<tuple>
+<prodID>1D2D3D4D5D6D7D</prodID>
+<category>Book      </category>
+<price>50.00</price>
+<discount>0.33</discount>
+</tuple>
+<tuple>
+<prodID>1E2E3E4E5E6E7E</prodID>
+<category>Book      </category>
+<price>70.00</price>
+<discount>0.44</discount>
+</tuple>
+<tuple>
+<prodID>1F2F3F4F5F6F7F</prodID>
+<category>Book      </category>
+<price>89.00</price>
+<discount>0.55</discount>
+</tuple>
+<tuple>
+<prodID>1G2G3G4G5G6G7G</prodID>
+<category>Book      </category>
+<price>25.00</price>
+<discount>0.22</discount>
+</tuple>
+<tuple>
+<prodID>1H2H3H4H5H6H7H</prodID>
+<category>Book      </category>
+<price>98.00</price>
+<discount>0.11</discount>
+</tuple>
+<tuple>
+<prodID>1I2I3I4I5I6I7I</prodID>
+<category>Book      </category>
+<price>100.00</price>
+<discount>0.19</discount>
+</tuple>
+<tuple>
+<prodID>1J2J3J4J5J6J7J</prodID>
+<category>Book      </category>
+<price>200.00</price>
+<discount>0.14</discount>
+</tuple>
+<tuple>
+<prodID>1K2K3K4K5K6K7K</prodID>
+<category>Book      </category>
+<price>66.00</price>
+<discount>0.19</discount>
+</tuple>
+<tuple>
+<prodID>1L2L3L4L5L6L7L</prodID>
+<category>Book      </category>
+<price>78.00</price>
+<discount>0.20</discount>
+</tuple>
+<tuple>
+<prodID>1M2M3M4M5M6M7M</prodID>
+<category>Book      </category>
+<price>89.00</price>
+<discount>0.77</discount>
+</tuple>
+<tuple>
+<prodID>1N2N3N4N5N6N7N</prodID>
+<category>Book      </category>
+<price>29.00</price>
+<discount>0.22</discount>
+</tuple>
+<tuple>
+<prodID>1O2O3O4O5O6O7O</prodID>
+<category>Book      </category>
+<price>45.00</price>
+<discount>0.44</discount>
+</tuple>
+<tuple>
+<prodID>1P2P3P4P5P6P7P</prodID>
+<category>Book      </category>
+<price>90.00</price>
+<discount>0.28</discount>
+</tuple>
+<tuple>
+<prodID>1Q2Q3Q4Q5Q6Q7Q</prodID>
+<category>Book      </category>
+<price>40.00</price>
+<discount>0.44</discount>
+</tuple>
+<tuple>
+<prodID>1R2R3R4R5R6R7R</prodID>
+<category>Book      </category>
+<price>88.00</price>
+<discount>0.55</discount>
+</tuple>
+<tuple>
+<prodID>1S2S3S4S5S6S7S</prodID>
+<category>Book      </category>
+<price>90.00</price>
+<discount>0.44</discount>
+</tuple>
+<tuple>
+<prodID>1T2T3T4T5T6T7T</prodID>
+<category>Book      </category>
+<price>20.00</price>
+<discount>0.44</discount>
+</tuple>
+<tuple>
+<prodID>A1A2A3A4A5A6A7</prodID>
+<category>Music     </category>
+<price>50.00</price>
+<discount>0.14</discount>
+</tuple>
+<tuple>
+<prodID>B1B2B3B4B5B6B7</prodID>
+<category>Music     </category>
+<price>78.00</price>
+<discount>0.12</discount>
+</tuple>
+<tuple>
+<prodID>C1C2C3C4C5C6C7</prodID>
+<category>Music     </category>
+<price>99.00</price>
+<discount>0.20</discount>
+</tuple>
+<tuple>
+<prodID>D1D2D3D4D5D6D7</prodID>
+<category>Music     </category>
+<price>20.00</price>
+<discount>0.0</discount>
+</tuple>
+<tuple>
+<prodID>E1E2E3E4E5E6E7</prodID>
+<category>Music     </category>
+<price>89.00</price>
+<discount>0.0</discount>
+</tuple>
+<tuple>
+<prodID>F1F2F3F4F5F6F7</prodID>
+<category>Music     </category>
+<price>25.00</price>
+<discount>0.0</discount>
+</tuple>
+<tuple>
+<prodID>G1G2G3G4G5G6G7</prodID>
+<category>Music     </category>
+<price>78.00</price>
+<discount>0.0</discount>
+</tuple>
+<tuple>
+<prodID>H1H2H3H4H5H6H7</prodID>
+<category>Music     </category>
+<price>19.00</price>
+<discount>0.0</discount>
+</tuple>
+<tuple>
+<prodID>I1I2I3I4I5I6I7</prodID>
+<category>Music     </category>
+<price>12.00</price>
+<discount>0.0</discount>
+</tuple>
+<tuple>
+<prodID>J1J2J3J4J5J6J7</prodID>
+<category>Music     </category>
+<price>17.00</price>
+<discount>0.0</discount>
+</tuple>
+<tuple>
+<prodID>K1K2K3K4K5K6K7</prodID>
+<category>Music     </category>
+<price>28.00</price>
+<discount>0.17</discount>
+</tuple>
+<tuple>
+<prodID>L1L2L3L4L5L6L7</prodID>
+<category>Music     </category>
+<price>34.00</price>
+<discount>0.12</discount>
+</tuple>
+<tuple>
+<prodID>M1M2M3M4M5M6M7</prodID>
+<category>Music     </category>
+<price>45.00</price>
+<discount>0.69</discount>
+</tuple>
+<tuple>
+<prodID>N1N2N3N4N5N6N7</prodID>
+<category>Music     </category>
+<price>54.00</price>
+<discount>0.14</discount>
+</tuple>
+<tuple>
+<prodID>O1O2O3O4O5O6O7</prodID>
+<category>Music     </category>
+<price>98.00</price>
+<discount>0.25</discount>
+</tuple>
+<tuple>
+<prodID>P1P2P3P4P5P6P7</prodID>
+<category>Music     </category>
+<price>55.00</price>
+<discount>0.45</discount>
+</tuple>
+<tuple>
+<prodID>Q1Q2Q3Q4Q5Q6Q7</prodID>
+<category>Music     </category>
+<price>67.00</price>
+<discount>0.22</discount>
+</tuple>
+<tuple>
+<prodID>R1R2R3R4R5R6R7</prodID>
+<category>Music     </category>
+<price>55.00</price>
+<discount>0.44</discount>
+</tuple>
+<tuple>
+<prodID>S1S2S3S4S5S6S7</prodID>
+<category>Music     </category>
+<price>55.00</price>
+<discount>0.28</discount>
+</tuple>
+<tuple>
+<prodID>T1T2T3T4T5T6T7</prodID>
+<category>Music     </category>
+<price>99.00</price>
+<discount>0.45</discount>
+</tuple>
+</Product>
+  </Data>
+</database>

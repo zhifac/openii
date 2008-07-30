@@ -1,0 +1,66 @@
+<search>
+<form>
+<source name="Apartments"/>
+<element>
+<element vname="city" text=" City" type="text">
+</element>
+<element vname="state" text=" State" type="select">
+<values>
+<item nicevalue="Alabama"/>
+<item nicevalue="Alaska"/>
+<item nicevalue="Arizona"/>
+<item nicevalue="Arkansas"/>
+<item nicevalue="California"/>
+<item nicevalue="Colorado"/>
+<item nicevalue="Connecticut"/>
+<item nicevalue="Delaware"/>
+<item nicevalue="Florida"/>
+<item nicevalue="Georgia"/>
+<item nicevalue="Hawaii"/>
+<item nicevalue="Idaho"/>
+<item nicevalue="Illinois"/>
+<item nicevalue="Indiana"/>
+<item nicevalue="Iowa"/>
+<item nicevalue="Kansas"/>
+<item nicevalue="Kentucky"/>
+<item nicevalue="Louisiana"/>
+<item nicevalue="Maine"/>
+<item nicevalue="Maryland"/>
+<item nicevalue="Massachusetts"/>
+<item nicevalue="Michigan"/>
+<item nicevalue="Minnesota"/>
+<item nicevalue="Mississippi"/>
+<item nicevalue="Missouri"/>
+<item nicevalue="Montana"/>
+<item nicevalue="Nebraska"/>
+<item nicevalue="Nevada"/>
+<item nicevalue="New Hampshire"/>
+<item nicevalue="New Jersey"/>
+<item nicevalue="New Mexico"/>
+<item nicevalue="New York"/>
+<item nicevalue="North Carolina"/>
+<item nicevalue="North Dakota"/>
+<item nicevalue="Ohio"/>
+<item nicevalue="Oklahoma"/>
+<item nicevalue="Oregon"/>
+<item nicevalue="Pennsylvania"/>
+<item nicevalue="Rhode Island"/>
+<item nicevalue="South Carolina"/>
+<item nicevalue="South Dakota"/>
+<item nicevalue="Tennessee"/>
+<item nicevalue="Texas"/>
+<item nicevalue="Utah"/>
+<item nicevalue="Vermont"/>
+<item nicevalue="Virginia"/>
+<item nicevalue="Washington"/>
+<item nicevalue="Washington D.C."/>
+<item nicevalue="West Virginia"/>
+<item nicevalue="Wisconsin"/>
+<item nicevalue="Wyoming"/>
+</values>
+</element>
+<element vname="maxrnt" text=" Max Rent" type="text">
+</element>
+</element>
+</form>
+</search>

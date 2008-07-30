@@ -1,0 +1,194 @@
+<domain name="Automobile">
+	<search>
+		<source name = "AutoPoint" url = "http://xtra.autopoint.co.nz/marketplace/UsedCarHome.asp"/>
+		<element>
+			<element vname="lstMake" text = " Make"> 
+            	<selectbox>
+			        <item>Any make</item>
+			        <item>AC</item>
+			        <item>ALFA ROMEO</item>
+			        <item>ASTON MARTIN</item>
+			        <item>AUDI</item>
+			        <item>AUSTIN HEALEY</item>
+			        <item>BENTLEY</item>
+			        <item>BMW</item>
+			        <item>BMW APPROVED</item>
+			        <item>BUICK</item>
+			        <item>CADILLAC</item>
+			        <item>CHEVROLET</item>
+			        <item>CHRYSLER</item>
+			        <item>CITROEN</item>
+			        <item>CLENET</item>
+			        <item>CORSA</item>
+			        <item>DAEWOO</item>
+			        <item>DAF</item>
+			        <item>DAIHATSU</item>
+			        <item>DAIMLER</item>
+			        <item>DATSUN</item>
+			        <item>DE TOMASO</item>
+			        <item>DODGE</item>
+			        <item>DUCATI</item>
+			        <item>EUNOS</item>
+			        <item>FERRARI</item>
+			        <item>FIAT</item>
+			        <item>FORD</item>
+			        <item>FRASER</item>
+			        <item>GMC</item>
+			        <item>GOLDSTREAM</item>
+			        <item>HINO</item>
+			        <item>HOLDEN</item>
+			        <item>HONDA</item>
+			        <item>HSV</item>
+			        <item>HUMMER</item>
+			        <item>HYUNDAI</item>
+			        <item>ISUZU</item>
+			        <item>JAGUAR</item>
+			        <item>JEEP</item>
+			        <item>KIA</item>
+			        <item>KTM</item>
+			        <item>LAND ROVER</item>
+			        <item>LEXUS</item>
+			        <item>LEYLAND</item>
+			        <item>LOTUS</item>
+			        <item>MARCOS</item>
+			        <item>MASERATI</item>
+			        <item>MAZDA</item>
+			        <item>MERCEDES-BENZ</item>
+			        <item>MG</item>
+			        <item>MINI</item>
+			        <item>MITSUBISHI</item>
+			        <item>MORRIS</item>
+			        <item>NISSAN</item>
+			        <item>OLDSMOBILE</item>
+			        <item>OPEL</item>
+			        <item>PEUGEOT</item>
+			        <item>PLYMOUTH</item>
+			        <item>PONTIAC</item>
+			        <item>PORSCHE</item>
+			        <item>PROTON</item>
+			        <item>RAMBLER</item>
+			        <item>RANGE ROVER</item>
+			        <item>RENAULT</item>
+			        <item>RILEY</item>
+			        <item>ROLLS-ROYCE</item>
+			        <item>ROLLSROYCE</item>
+			        <item>ROVER</item>
+			        <item>SAAB</item>
+			        <item>SATURN</item>
+			        <item>SEAT</item>
+			        <item>SEDDON</item>
+			        <item>SSANGYONG</item>
+			        <item>STUDEBAKER</item>
+			        <item>SUBARU</item>
+			        <item>SUZUKI</item>
+			        <item>TATA</item>
+			        <item>TOYOTA</item>
+			        <item>TRIUMPH</item>
+			        <item>ULTIMA</item>
+			        <item>VOLKSWAGEN</item>
+			        <item>VOLVO</item>
+			        <item>W/S</item>
+			        <item>YAMAHA</item>
+			    </selectbox>
+			</element>
+			<element vname="lstModels" text = "Model">
+				<selectbox>
+		            <item>Any model  </item>
+		            <item>COBRA</item>
+		        </selectbox>
+		    </element>
+		    <element vname="lstPriceMin" text = "Price Range (between)">
+		    	<selectbox>
+	                <item>Any</item>
+	                <item>$0</item>
+	                <item>$5,000</item>
+	                <item>$10,000</item>
+	                <item>$20,000</item>
+	                <item>$30,000</item>
+	                <item>$40,000</item>
+	                <item>$50,000</item>
+	                <item>$60,000</item>
+	                <item>$70,000</item>
+	                <item>$80,000</item>
+	                <item>$90,000</item>
+	                <item>$100,000</item>
+	                <item>$110,000</item>
+	                <item>$120,000</item>
+	                <item>$130,000</item>
+	                <item>$140,000</item>
+	                <item>$150,000</item>
+	                <item>$160,000</item>
+	                <item>$170,000</item>
+	                <item>$180,000</item>
+	                <item>$190,000</item>
+	                <item>$200,000</item>
+	                <item>$200,000+</item>
+	            </selectbox>
+	       </element>
+	       <element vname ="lstPriceMax" text = "to">
+                 <selectbox>
+                      <item>Any</item>
+                      <item>$0</item>
+                      <item>$5,000</item>
+                      <item>$10,000</item>
+                      <item>$20,000</item>
+                      <item>$30,000</item>
+                      <item>$40,000</item>
+                      <item>$50,000</item>
+                      <item>$60,000</item>
+                      <item>$70,000</item>
+                      <item>$80,000</item>
+                      <item>$90,000</item>
+                      <item>$100,000</item>
+                      <item>$110,000</item>
+                      <item>$120,000</item>
+                      <item>$130,000</item>
+                      <item>$140,000</item>
+                      <item>$150,000</item>
+                      <item>$160,000</item>
+                      <item>$170,000</item>
+                      <item>$180,000</item>
+                      <item>$190,000</item>
+                      <item>$200,000</item>
+                      <item>$200,000+</item>
+                 </selectbox>
+             </element>
+             <element vname="lstRegion" text = "Region">
+				<selectbox>             
+		             <item>All States</item>
+		             <item>AKL</item>
+		             <item>CENT</item>
+		             <item>CTL</item>
+		             <item>NZ</item>
+		             <item>STH</item>
+		             <item>VIC</item>
+		             <item>WBOP</item>
+		             <item>WTN</item>
+		        </selectbox>
+		     </element> 
+		     <element vname =  "lstCategory" text = "Category">
+		     	<selectbox>
+                  <item>Any category</item>
+                  <item>Small Passenger</item>
+                  <item>Medium Passenger</item>
+                  <item>Large Passenger</item>
+                  <item>Small 4x4</item>
+                  <item>Medium 4x4</item>
+                  <item>Large 4x4</item>
+                  <item>Sports</item>
+                  <item>Classic Rare</item>
+                  <item>MPV Campervan</item>
+                  <item>Commercial</item>
+                  <item>Prestige Luxury</item>
+               </selectbox>
+            </element>
+		</element>
+	</search>             
+</domain>                 
+                          
+                          
+                          
+                          
+                          
+                          
+                          

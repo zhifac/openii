@@ -1,0 +1,503 @@
+<database name="yana">
+<createdby name="Yana"/>
+<Schema>
+<table name="Addresses">
+<comment>user addresses</comment>
+<column name="user" type="text"/>
+<column name="street" type="text">
+<comment>Street address</comment>
+</column>
+<column name="city" type="text"/>
+<column name="zip" type="int"/>
+<column name="state" type="char_small"/>
+<column name="date_created" type="date">
+<comment>the date the address was provided by the user.</comment>
+</column>
+<column name="type" type="text">
+<comment> billing or shipping</comment>
+</column>
+</table>
+
+<table name="Employee">
+<column name="SSN" type="int"/>
+<column name="First_Name" type="text"/>
+<column name="Last_Name" type="text"/>
+<column name="DOB" type="date"/>
+<column name="Salary" type="double"/>
+<column name="Date_of_Hire" type="date"/>
+<column name="Department" type="text"/>
+<column name="Position" type="text"/>
+<column name="Address" type="text"/>
+<column name="Home_Phone" type="text"/>
+</table>
+
+
+<table name="Warehouses">
+<column name="WarehouseId" type="text"/>
+<column name="Address" type="text"/>
+<column name="City" type="text"/>
+<column name="Zip" type="number"/>
+<column name="Manager" type="text" ref="Employee/SSN"/>
+<column name="Phone_number" type="number"/>
+</table>
+
+<table name="Categories">
+<column name="Category" type="text">
+<comment>name of the category</comment>
+</column>
+<column name="Description" type="text">
+<comment>what this category represents</comment>
+</column>
+</table>
+
+<table name="Books">
+<column name="ISBN" type="int"/>
+<column name="title" type="text"/>
+<column name="Author" type="text"/>
+<column name="Publisher" type="text"/>
+<column name="Year_of_Publication" type="date"/>
+</table>
+
+<table name="BookClassification">
+<column name="ISBN" type="int" ref="Books/ISBN"/>
+<column name="Category" type="text" ref="Categories/Category">
+<comment>category name</comment>
+</column>
+</table>
+
+
+<table name="CD">
+<column name="ISBN" type="int"/>
+<column name="title" type="text"/>
+<column name="artist" type="text"/>
+<column name="Label" type="text"/>
+<column name="Year" type="int"/>
+</table>
+
+<table name="CDClassification">
+<column name="ISBN" type="int" ref="CD/ISBN"/>
+<column name="Category" type="text" ref="Categories/Category"/>
+</table>
+
+
+<table name="Availability">
+<column name="ISBN" type="int" ref="Books/ISBN CD/ISBN">
+<comment>an ISBN of either a book or a CD</comment>
+</column>
+<column name="Warehouse" type="text" ref="Warehouses/WarehouseId"/>
+<column name="quantity" type="int"/>
+<column name="price" type="double"/>
+</table>
+
+
+
+
+<table name="CreditCard">
+<column name="user" type="text"/>
+<column name="type" type="text">
+<comment>{MC,DIscover, Visa}</comment>
+</column>
+<column name="exp_date" type="date">
+<comment>card expires</comment>
+</column>
+<column name="card_number" type="int"/>
+</table>
+
+<table name="Users">
+<column name="username" type="text"/>
+<column name="password" type="text">
+<comment>cleartext at that =)</comment>
+</column>
+<column name="contact_info" type="text">
+<comment>email or phone</comment>
+</column>
+</table>
+
+<table name="Reviews">
+<column name="Rating" type="int">
+<comment>scale of 1-10</comment>
+</column>
+<column name="comments" type="text"/>
+<column name="User" type="text" ref="Users/username"/>
+<column name="ISBN" type="int"  ref="Books/ISBN CD/ISBN"/>
+</table>
+
+<table name="Discounts">
+<column name="ISBN" type="int"  ref="Books/ISBN CD/ISBN">
+<comment>an ISBN of either a book or a CD</comment>
+</column>
+<column name="Amount" type="double"/>
+<column name="Start" type="date">
+<comment>start date</comment>
+</column>
+<column name="End" type="data">
+<comment>end date</comment>
+</column>
+<column name="Restrictions" type="text"/>
+</table>
+</Schema>
+
+<Data>
+<Addresses>
+<tuple>
+<user>Bob Doe</user>
+<street>1232 No str</street>
+<city>Seattle</city>
+<zip>98103</zip>
+<state>WA</state>
+<date_created>10/28/2003</date_created>
+<type>billing</type>
+</tuple>
+<tuple>
+<user>Bob Doe</user>
+<street>1232 No str</street>
+<city>Seattle</city>
+<zip>98103</zip>
+<state>WA</state>
+<date_created>10/29/2003</date_created>
+<type>shipping</type>
+</tuple>
+<tuple>
+<user>Mary Poppins</user>
+<street>1435 Fake str</street>
+<city>NY</city>
+<zip>43567</zip>
+<state>NY</state>
+<date_created>08/23/2000</date_created>
+<type>shipping</type>
+</tuple>
+<tuple>
+<user>Mary Poppins</user>
+<street>2546 More Fake Str</street>
+<city>Newarl</city>
+<zip>87680</zip>
+<state>NJ</state>
+<date_created>02/03/2001</date_created>
+<type>shipping</type>
+</tuple>
+<tuple>
+<user>SallySmith</user>
+<street>2343 Elm St</street>
+<city>Houson</city>
+<zip>123453</zip>
+<state>TX</state>
+<date_created>01/04/1981</date_created>
+<type>billing</type>
+</tuple>
+</Addresses>
+<Availability>
+<tuple>
+<ISBN>101</ISBN>
+<Warehouse>Seattle1</Warehouse>
+<quantity>300</quantity>
+<price>500</price>
+</tuple>
+<tuple>
+<ISBN>1001</ISBN>
+<Warehouse>Seattle2</Warehouse>
+<quantity>200</quantity>
+<price>300</price>
+</tuple>
+<tuple>
+<ISBN>103</ISBN>
+<Warehouse>Seattle1</Warehouse>
+<quantity>50000</quantity>
+<price>10</price>
+</tuple>
+<tuple>
+<ISBN>1004</ISBN>
+<Warehouse>Houston1</Warehouse>
+<quantity>4000</quantity>
+<price>30</price>
+</tuple>
+</Availability>
+<BookClassification>
+<tuple>
+<ISBN>1001</ISBN>
+<Category>Sob Story</Category>
+</tuple>
+<tuple>
+<ISBN>1002</ISBN>
+<Category>Macho macho man</Category>
+</tuple>
+<tuple>
+<ISBN>1003</ISBN>
+<Category>Spring in Cancun</Category>
+</tuple>
+</BookClassification>
+<Books>
+<tuple>
+<ISBN>1001</ISBN>
+<title>How to read for dummies</title>
+<Author>Joe Dummy</Author>
+<Publisher>Adison Wesley</Publisher>
+<Year_of_Publication>2000</Year_of_Publication>
+</tuple>
+<tuple>
+<ISBN>1002</ISBN>
+<title>How to marry a millionaire</title>
+<Author>Jenny Loser</Author>
+<Publisher>Sad Wife Inc</Publisher>
+<Year_of_Publication>2001</Year_of_Publication>
+</tuple>
+<tuple>
+<ISBN>1003</ISBN>
+<title>How Elizabeth got kidnapped</title>
+<Author>Oprah Winfrey</Author>
+<Publisher>Oprah Empire</Publisher>
+<Year_of_Publication>2000</Year_of_Publication>
+</tuple>
+<tuple>
+<ISBN>1004</ISBN>
+<title>If you're fat, might as well be stupid too</title>
+<Author>Anna Nicole Smith</Author>
+<Publisher>Milionaire Club inc</Publisher>
+<Year_of_Publication>1999</Year_of_Publication>
+</tuple>
+</Books>
+<Categories>
+<tuple>
+<Category>Sob Story</Category>
+<Description>Stories for housewifes</Description>
+</tuple>
+<tuple>
+<Category>Macho macho man</Category>
+<Description>Stories for 50 year old bachelors</Description>
+</tuple>
+<tuple>
+<Category>Spring in Cancun</Category>
+<Description>Stories for horny freshmen</Description>
+</tuple>
+<tuple>
+<Category>RandB</Category>
+<Description>NULL</Description>
+</tuple>
+<tuple>
+<Category>Hip-Hop</Category>
+<Description>NULL</Description>
+</tuple>
+<tuple>
+<Category>American Idol</Category>
+<Description>That's one of its own</Description>
+</tuple>
+<tuple>
+<Category>People who actually can sing</Category>
+<Description>NULL</Description>
+</tuple>
+<tuple>
+<Category>Adult contemporary</Category>
+<Description>NULL</Description>
+</tuple>
+</Categories>
+<CD>
+<tuple>
+<ISBN>100</ISBN>
+<title>Hit me babe</title>
+<artist>Britney</artist>
+<Label>RCA</Label>
+<Year>2002</Year>
+</tuple>
+<tuple>
+<ISBN>101</ISBN>
+<title>One more bitch</title>
+<artist>50 cent</artist>
+<Label>RCA</Label>
+<Year>2000</Year>
+</tuple>
+<tuple>
+<ISBN>103</ISBN>
+<title>Why can't I make it</title>
+<artist>Kelly Clarkson</artist>
+<Label>Simon</Label>
+<Year>2002</Year>
+</tuple>
+<tuple>
+<ISBN>104</ISBN>
+<title>Measure of a loser</title>
+<artist>Clay Aiken</artist>
+<Label>Simon</Label>
+<Year>2003</Year>
+</tuple>
+<tuple>
+<ISBN>105</ISBN>
+<title>Once I was a ho</title>
+<artist>Madonna</artist>
+<Label>Madona Inc</Label>
+<Year>2001</Year>
+</tuple>
+</CD>
+<CDClassification>
+<tuple>
+<ISBN>101</ISBN>
+<Category>RandB</Category>
+</tuple>
+<tuple>
+<ISBN>103</ISBN>
+<Category>People who actually can sing</Category>
+</tuple>
+<tuple>
+<ISBN>104</ISBN>
+<Category>RandB</Category>
+</tuple>
+<tuple>
+<ISBN>105</ISBN>
+<Category>Hip-hop</Category>
+</tuple>
+</CDClassification>
+<CreditCard>
+<tuple>
+<user>SallySmith</user>
+<type>Master</type>
+<exp_date>12/1/2001 0:00:00</exp_date>
+<card_number>23459808</card_number>
+</tuple>
+<tuple>
+<user>Mary Poppins</user>
+<type>Discover</type>
+<exp_date>10/3/1987 0:00:00</exp_date>
+<card_number>867786780</card_number>
+</tuple>
+<tuple>
+<user>Will Smith</user>
+<type>Visa</type>
+<exp_date>11/2/2993 0:00:00</exp_date>
+<card_number>879878769</card_number>
+</tuple>
+<tuple>
+<user>Will Smith</user>
+<type>Visa</type>
+<exp_date>11/3/2003 0:00:00</exp_date>
+<card_number>878797976</card_number>
+</tuple>
+</CreditCard>
+<Employee>
+<tuple>
+<SSN>1001</SSN>
+<First_Name>Joe</First_Name>
+<Last_Name>Loser</Last_Name>
+<DOB>5/12/1953</DOB>
+<Salary>2000</Salary>
+<Date_of_Hire>10/12/1968 0:00:00</Date_of_Hire>
+<Department>Sanitation</Department>
+<Position>General Manager</Position>
+<Address>No Str 800</Address>
+<Home_Phone>2067929876</Home_Phone>
+</tuple>
+<tuple>
+<SSN>1002</SSN>
+<First_Name>Sally</First_Name>
+<Last_Name>Manager</Last_Name>
+<DOB>6/10/1970</DOB>
+<Salary>56000</Salary>
+<Date_of_Hire>6/13/1990 0:00:00</Date_of_Hire>
+<Department>Warehouses</Department>
+<Position>Regional Manager</Position>
+<Address>No Str 801</Address>
+<Home_Phone>2065789765</Home_Phone>
+</tuple>
+<tuple>
+<SSN>1003</SSN>
+<First_Name>Mary</First_Name>
+<Last_Name>Manager</Last_Name>
+<DOB>6/10/1970</DOB>
+<Salary>60000</Salary>
+<Date_of_Hire>6/13/1995 0:00:00</Date_of_Hire>
+<Department>Warehouses</Department>
+<Position>Regional Manager</Position>
+<Address>No Str 801</Address>
+<Home_Phone>2065789765</Home_Phone>
+</tuple>
+</Employee>
+<Reviews>
+<tuple>
+<Rating>0</Rating>
+<comments>The book sucks like nothing else. Can't believe I</comments>
+<User>Will Smith</User>
+<ISBN>1001</ISBN>
+</tuple>
+<tuple>
+<Rating>10</Rating>
+<comments>I liked that book--Will doesn't know s$%t</comments>
+<User>Mary Poppins</User>
+<ISBN>1001</ISBN>
+</tuple>
+<tuple>
+<Rating>4</Rating>
+<comments>Seen better seen worse. But don't buy it</comments>
+<User>SallySmith</User>
+<ISBN>1001</ISBN>
+</tuple>
+</Reviews>
+<Users>
+<tuple>
+<username>SallySmith</username>
+<password>0001</password>
+<contact_info>SallySmith@aol.com</contact_info>
+</tuple>
+<tuple>
+<username>Bob Doe</username>
+<password>0002</password>
+<contact_info>Bob@yahoo.com</contact_info>
+</tuple>
+<tuple>
+<username>Will Smith</username>
+<password>0003</password>
+<contact_info>Will@smith.org</contact_info>
+</tuple>
+<tuple>
+<username>Mary Poppins</username>
+<password>0004</password>
+<contact_info>mary@poppins.org</contact_info>
+</tuple>
+</Users>
+<Warehouses>
+<tuple>
+<WarehouseId>Seattle1</WarehouseId>
+<Address>300 Fake Street</Address>
+<City>Seattle</City>
+<Zip>98122</Zip>
+<Manager>1001</Manager>
+<Phone_number>2063453245</Phone_number>
+</tuple>
+<tuple>
+<WarehouseId>Seattle2</WarehouseId>
+<Address>500 NoFake Str</Address>
+<City>Seattle</City>
+<Zip>98123</Zip>
+<Manager>1001</Manager>
+<Phone_number>425687023</Phone_number>
+</tuple>
+<tuple>
+<WarehouseId>Houston1</WarehouseId>
+<Address>3000 Fake H.Str</Address>
+<City>Houston</City>
+<Zip>45812</Zip>
+<Manager>1002</Manager>
+<Phone_number>325876542</Phone_number>
+</tuple>
+</Warehouses>
+<Discounts>
+<tuple>
+<ISBN>101</ISBN>
+<Amount>1.50</Amount>
+<Start>1/2/1998</Start>
+<End>1/10/1999</End>
+<Restrictions>Valued customers only</Restrictions>
+</tuple>
+<tuple>
+<ISBN>1001</ISBN>
+<Amount>8.50</Amount>
+<Start>1/2/1998</Start>
+<End>1/10/1999</End>
+<Restrictions>With purchase of $30 or more</Restrictions>
+</tuple>
+<tuple>
+<ISBN>1001</ISBN>
+<Amount>8.50</Amount>
+<Start>3/2/2001</Start>
+<End>1/10/2004</End>
+<Restrictions>With purchase of Clay Aiken CD</Restrictions>
+</tuple>
+</Discounts>
+</Data>
+</database>

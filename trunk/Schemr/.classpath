@@ -20,5 +20,6 @@
 	<classpathentry kind="lib" path="lib/xstream/xstream-benchmark-1.3.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/SchemaStoreClient"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/prefuse-beta"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/Ygg"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

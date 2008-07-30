@@ -1,0 +1,107 @@
+<domain name="Automobile">
+	<search>
+		<source name = "AutoWeb" url = "http://www.autoweb.com/content/buy/used/index.cfm"/>
+		<element>
+			<element vname="vehicle" text = "Select Vehicle">
+				<selectbox>	
+                          <item>Acura CL</item>
+                          <item>Acura Integra</item>
+                          <item>Acura Legend</item>
+                          <item>Acura MDX</item>
+                          <item>Acura NSX</item>
+                          <item>Acura NSX-T</item>
+                          <item>Acura RL</item>
+                          <item>Acura RSX</item>
+                          <item>Acura SLX</item>
+                          <item>Acura TL</item>
+                          <item>Acura Vigor</item>
+                          <item>Alfa Romeo 164</item>
+                          <item>Chevrolet G10</item>
+                          <item>Chevrolet G15</item>
+                          <item>Chevrolet G20</item>
+                          <item>Chevrolet G25</item>
+                          <item>Chevrolet G30</item>
+                          <item>Chevrolet G35</item>
+                          <item>Volvo 240</item>
+                          <item>Volvo 240dl</item>
+                          <item>Volvo 740</item>
+                          <item>Volvo 760</item>
+                          <item>Volvo 780</item>
+                          <item>Volvo 850</item>
+                          <item>Volvo 940</item>
+                          <item>Volvo 960</item>
+                          <item>Volvo C70</item>
+                          <item>Volvo GLT</item>
+                          <item>Volvo S40</item>
+                          <item>Volvo S60</item>
+                          <item>Volvo S70</item>
+                          <item>Volvo S80</item>
+                          <item>Volvo S90</item>
+                          <item>Volvo V40</item>
+                          <item>Volvo V70</item>
+                          <item>Volvo V90</item>
+                          <item>Volvo XC70</item>
+                          <item>Volvo XC90</item>
+                          <item>Yugo Cabrio</item>
+               </selectbox>
+			</element>
+			<element vname="search_mileage_int" text = "search within">
+				<selectbox>
+                          <item>25</item>
+                          <item>50</item>
+                          <item>100</item>
+                          <item>150</item>
+                          <item>250</item>
+                          <item>500</item>
+                </selectbox>
+            </element>
+            <element vname="Entered_Postal_Code_vch" text = "miles of">
+            	<textbox/>
+           	</element>
+           	<element vname="Low_Price" text = "Price Range">
+           			<selectbox>
+                          <item>Any</item>
+                          <item>$5,000</item>
+                          <item>$10,000</item>
+                          <item>$15,000</item>
+                          <item>$20,000</item>
+                          <item>$25,000</item>
+                          <item>$30,000</item>
+                          <item>$35,000</item>
+                          <item>$40,000</item>
+                     </selectbox>
+             </element>
+             <element vname="High_Price" text ="to">
+             		<selectbox>
+                          <item>Any</item>
+                          <item>$5,000</item>
+                          <item>$10,000</item>
+                          <item>$15,000</item>
+                          <item>$20,000</item>
+                          <item>$25,000</item>
+                          <item>$30,000</item>
+                          <item>$35,000</item>
+                          <item>$40,000</item>
+                          <item>$40,000 +</item>
+                   </selectbox>
+             </element>
+             <element vname="numCarsOnOnePage" text = "Vehicles per page">
+             		<selectbox>
+                              <item>5</item>
+                              <item>10</item>
+                              <item>15</item>
+                              <item>25</item>
+                              <item>50</item>
+                              <item>75</item>
+                    </selectbox>
+             </element>
+		</element>
+	</search>             
+</domain>                 
+                          
+                          
+                          
+                          
+                          
+                          
+                          

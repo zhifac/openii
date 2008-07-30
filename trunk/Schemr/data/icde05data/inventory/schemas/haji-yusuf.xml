@@ -1,0 +1,1070 @@
+<database name="NemoHaji-Yusuf">
+<createdby name="NemoHaji-Yusuf"/>
+<Schema><table name="Books">
+<column name="Title" type="varchar_mid" key="no" null="yes"/>
+<column name="AuthorName" type="char_mid" key="no" null="yes"/>
+<column name="ISBN" type="char_mid" key="yes" null="yes"/>
+<column name="Price" type="int" key="no" null="yes"/>
+<column name="BookCategory" type="char_mid" key="no" null="yes"/>
+<column name="KeyWord" type="varchar_mid" key="no" null="yes"/>
+<column name="DisPrice" type="int" key="no" null="yes"/>
+</table>
+<table name="CD">
+<column name="name" type="varchar_mid" key="no" null="yes"/>
+<column name="ISBN" type="char_mid" key="yes" null="yes"/>
+<column name="Company" type="char_mid" key="no" null="yes"/>
+<column name="Artist" type="char_mid" key="no" null="yes"/>
+<column name="Category" type="char_mid" key="no" null="yes"/>
+<column name="Type" type="char_mid" key="no" null="yes"/>
+<column name="price" type="int" key="no" null="yes"/>
+</table>
+<table name="WareHouse">
+<column name="WareHouseCode" type="char_mid" key="yes" null="yes"/>
+<column name="NumEmployees" type="int" key="no" null="yes"/>
+<column name="Volume" type="int" key="no" null="yes"/>
+</table>
+<table name="Availability">
+<column name="IsCD" type="char_mid" key="no" null="yes" ref="CD/ISBN"/>
+<column name="ISBook" type="char_small" key="no" null="yes" ref="Books/ISBN"/>
+<column name="Stock" type="char_small" key="no" null="yes"/>
+<column name="Quantity" type="int" key="no" null="yes"/>
+<column name="WareHouseCode" type="char_mid" key="no" null="yes" ref="WareHouse/WareHouseCode"/>
+</table>
+<table name="Information">
+<column name="WareHouseCode" type="char_mid" key="no" null="yes" ref="WareHouse/WareHouseCode"/>
+<column name="Telephone" type="char_mid" key="no" null="yes"/>
+<column name="ManagerName" type="char_mid" key="no" null="yes"/>
+</table>
+<table name="Location">
+<column name="WareHouseCode" type="char_small" key="no" null="yes" ref="WareHouse/WareHouseCode"/>
+<column name="StreetAddress" type="varchar_mid" key="no" null="yes"/>
+<column name="City" type="char_small" key="no" null="yes"/>
+<column name="State" type="char_mid" key="no" null="yes"/>
+<column name="ZipCode" type="char_small" key="no" null="yes"/>
+</table>
+</Schema>
+<Data>
+<Books>
+<tuple>
+<Title>Ratke</Title>
+<AuthorName>Rice,Angelo                   </AuthorName>
+<ISBN>102824              </ISBN>
+<Price>60</Price>
+<BookCategory>Fiction                       </BookCategory>
+<KeyWord>goodbook </KeyWord>
+<DisPrice>0
+</DisPrice>
+</tuple>
+<tuple>
+<Title>Jones</Title>
+<AuthorName>Schaden,Tracy                 </AuthorName>
+<ISBN>110570              </ISBN>
+<Price>55</Price>
+<BookCategory>Drama                         </BookCategory>
+<KeyWord>goodbook </KeyWord>
+<DisPrice>0
+</DisPrice>
+</tuple>
+<tuple>
+<Title>Runolfsdottir</Title>
+<AuthorName>Langosh,Laila</AuthorName>
+<ISBN>126856              </ISBN>
+<Price>55</Price>
+<BookCategory>Drama                   </BookCategory>
+<KeyWord>goodbook </KeyWord>
+<DisPrice>0
+</DisPrice>
+</tuple>
+<tuple>
+<Title>O'Connell</Title>
+<AuthorName>Harris,Deshawn</AuthorName>
+<ISBN>211221              </ISBN>
+<Price>55</Price>
+<BookCategory>Drama                   </BookCategory>
+<KeyWord>goodbook </KeyWord>
+<DisPrice>0
+</DisPrice>
+</tuple>
+<tuple>
+<Title>Sawayn</Title>
+<AuthorName>Reinger,Ralph</AuthorName>
+<ISBN>285559              </ISBN>
+<Price>55</Price>
+<BookCategory>Drama                         </BookCategory>
+<KeyWord>goodbook </KeyWord>
+<DisPrice>0
+</DisPrice>
+</tuple>
+<tuple>
+<Title>Aufderhar</Title>
+<AuthorName>Kshlerin,Freddie</AuthorName>
+<ISBN>309820              </ISBN>
+<Price>60</Price>
+<BookCategory>Fiction                 </BookCategory>
+<KeyWord>goodbook </KeyWord>
+<DisPrice>0
+</DisPrice>
+</tuple>
+<tuple>
+<Title>Ebert</Title>
+<AuthorName>Bradtke,Christian             </AuthorName>
+<ISBN>377708              </ISBN>
+<Price>60</Price>
+<BookCategory>Drama                         </BookCategory>
+<KeyWord>goodbook </KeyWord>
+<DisPrice>0
+</DisPrice>
+</tuple>
+<tuple>
+<Title>Mann</Title>
+<AuthorName>Welch,Roel                    </AuthorName>
+<ISBN>430631              </ISBN>
+<Price>55</Price>
+<BookCategory>Drama                         </BookCategory>
+<KeyWord>goodbook </KeyWord>
+<DisPrice>0
+</DisPrice>
+</tuple>
+<tuple>
+<Title>Weissnat</Title>
+<AuthorName>Renner,Odis</AuthorName>
+<ISBN>43279               </ISBN>
+<Price>60</Price>
+<BookCategory>Fiction                 </BookCategory>
+<KeyWord>goodbook </KeyWord>
+<DisPrice>0
+</DisPrice>
+</tuple>
+<tuple>
+<Title>O'Connell</Title>
+<AuthorName>Kshlerin,Freddie</AuthorName>
+<ISBN>55992               </ISBN>
+<Price>60</Price>
+<BookCategory>Fiction                 </BookCategory>
+<KeyWord>goodbook </KeyWord>
+<DisPrice>0
+</DisPrice>
+</tuple>
+<tuple>
+<Title>Douglas</Title>
+<AuthorName>Kshlerin,Freddie              </AuthorName>
+<ISBN>572395              </ISBN>
+<Price>60</Price>
+<BookCategory>Fiction                       </BookCategory>
+<KeyWord>goodbook </KeyWord>
+<DisPrice>0
+</DisPrice>
+</tuple>
+<tuple>
+<Title>Bernhard</Title>
+<AuthorName>Lynch,Esperanza</AuthorName>
+<ISBN>584185              </ISBN>
+<Price>55</Price>
+<BookCategory>Drama                   </BookCategory>
+<KeyWord>goodbook </KeyWord>
+<DisPrice>0
+</DisPrice>
+</tuple>
+<tuple>
+<Title>Auer</Title>
+<AuthorName>Cummerata,Adelaide            </AuthorName>
+<ISBN>6337                </ISBN>
+<Price>60</Price>
+<BookCategory>Fiction                       </BookCategory>
+<KeyWord>goodbook </KeyWord>
+<DisPrice>0
+</DisPrice>
+</tuple>
+<tuple>
+<Title>Sawayn</Title>
+<AuthorName>Kshlerin,Freddie              </AuthorName>
+<ISBN>641345              </ISBN>
+<Price>60</Price>
+<BookCategory>Fiction                       </BookCategory>
+<KeyWord>goodbook </KeyWord>
+<DisPrice>0
+</DisPrice>
+</tuple>
+<tuple>
+<Title>Mann</Title>
+<AuthorName>Kshlerin,Freddie              </AuthorName>
+<ISBN>697396              </ISBN>
+<Price>60</Price>
+<BookCategory>Fiction                       </BookCategory>
+<KeyWord>goodbook </KeyWord>
+<DisPrice>0
+</DisPrice>
+</tuple>
+<tuple>
+<Title>Keebler</Title>
+<AuthorName>Kerluke,Curtis                </AuthorName>
+<ISBN>714383              </ISBN>
+<Price>55</Price>
+<BookCategory>Drama                         </BookCategory>
+<KeyWord>goodbook </KeyWord>
+<DisPrice>0
+</DisPrice>
+</tuple>
+<tuple>
+<Title>Kutch</Title>
+<AuthorName>Wyman,Herta                   </AuthorName>
+<ISBN>736808              </ISBN>
+<Price>60</Price>
+<BookCategory>Fiction                       </BookCategory>
+<KeyWord>goodbook </KeyWord>
+<DisPrice>0
+</DisPrice>
+</tuple>
+<tuple>
+<Title>Harris</Title>
+<AuthorName>Pollich,Cora                  </AuthorName>
+<ISBN>754381              </ISBN>
+<Price>55</Price>
+<BookCategory>Drama                         </BookCategory>
+<KeyWord>goodbook </KeyWord>
+<DisPrice>0
+</DisPrice>
+</tuple>
+<tuple>
+<Title>Reichert</Title>
+<AuthorName>Spinka,Dorris</AuthorName>
+<ISBN>759332              </ISBN>
+<Price>60</Price>
+<BookCategory>Fiction                 </BookCategory>
+<KeyWord>goodbook </KeyWord>
+<DisPrice>0
+</DisPrice>
+</tuple>
+<tuple>
+<Title>Douglas</Title>
+<AuthorName>Waters,Ryley                  </AuthorName>
+<ISBN>793382              </ISBN>
+<Price>55</Price>
+<BookCategory>Drama                         </BookCategory>
+<KeyWord>goodbook </KeyWord>
+<DisPrice>0
+</DisPrice>
+</tuple>
+<tuple>
+<Title>Haley</Title>
+<AuthorName>Feest,Elvera                  </AuthorName>
+<ISBN>804101              </ISBN>
+<Price>60</Price>
+<BookCategory>Fiction                       </BookCategory>
+<KeyWord>goodbook </KeyWord>
+<DisPrice>0
+</DisPrice>
+</tuple>
+<tuple>
+<Title>Bednar</Title>
+<AuthorName>Bergstrom,Baby                </AuthorName>
+<ISBN>868367              </ISBN>
+<Price>60</Price>
+<BookCategory>Drama                         </BookCategory>
+<KeyWord>goodbook </KeyWord>
+<DisPrice>0
+</DisPrice>
+</tuple>
+<tuple>
+<Title>Kohler</Title>
+<AuthorName>Renner,Cleve                  </AuthorName>
+<ISBN>872554              </ISBN>
+<Price>60</Price>
+<BookCategory>Fiction                       </BookCategory>
+<KeyWord>goodbook </KeyWord>
+<DisPrice>0
+</DisPrice>
+</tuple>
+<tuple>
+<Title>Hammes</Title>
+<AuthorName>Kshlerin,Freddie              </AuthorName>
+<ISBN>874784              </ISBN>
+<Price>60</Price>
+<BookCategory>Fiction                       </BookCategory>
+<KeyWord>goodbook </KeyWord>
+<DisPrice>0
+</DisPrice>
+</tuple>
+<tuple>
+<Title>Hammes</Title>
+<AuthorName>Osinski,Erling                </AuthorName>
+<ISBN>895122              </ISBN>
+<Price>55</Price>
+<BookCategory>Drama                         </BookCategory>
+<KeyWord>goodbook </KeyWord>
+<DisPrice>0
+</DisPrice>
+</tuple>
+</Books>
+<CD>
+<tuple>
+<name>Ortash</name>
+<ISBN>116716              </ISBN>
+<Company>Kovacek Illusions             </Company>
+<Artist>Hegmann                                           </Artist>
+<Category>roll                                              </Category>
+<Type>single                        </Type>
+<price>50
+</price>
+</tuple>
+<tuple>
+<name>Catingling</name>
+<ISBN>122414              </ISBN>
+<Company>Stehr Leisure                 </Company>
+<Artist>Mueller                                           </Artist>
+<Category>roll                                              </Category>
+<Type>single                        </Type>
+<price>20
+</price>
+</tuple>
+<tuple>
+<name>North Molesridge on sea</name>
+<ISBN>124292              </ISBN>
+<Company>Block Workshop                </Company>
+<Artist>Kilback                                           </Artist>
+<Category>roll                                              </Category>
+<Type>single                        </Type>
+<price>100
+</price>
+</tuple>
+<tuple>
+<name>Bytmouthground</name>
+<ISBN>185827              </ISBN>
+<Company>Pacocha House                 </Company>
+<Artist>Hoeger                                            </Artist>
+<Category>Jazz                                              </Category>
+<Type>albums                        </Type>
+<price>20
+</price>
+</tuple>
+<tuple>
+<name>Warvel</name>
+<ISBN>268540              </ISBN>
+<Company>Gutmann Graphics              </Company>
+<Artist>Hilpert                                           </Artist>
+<Category>roll                                              </Category>
+<Type>single                        </Type>
+<price>50
+</price>
+</tuple>
+<tuple>
+<name>Leighing</name>
+<ISBN>299141              </ISBN>
+<Company>Kub Group PLC                 </Company>
+<Artist>Bailey                                            </Artist>
+<Category>Jazz                                              </Category>
+<Type>albums                        </Type>
+<price>0
+</price>
+</tuple>
+<tuple>
+<name>Great Keysforwell</name>
+<ISBN>302184              </ISBN>
+<Company>Prosacco House                </Company>
+<Artist>Romaguera                                         </Artist>
+<Category>Jazz                                              </Category>
+<Type>albums                        </Type>
+<price>30
+</price>
+</tuple>
+<tuple>
+<name>Wudsap</name>
+<ISBN>319944              </ISBN>
+<Company>Quigley Department            </Company>
+<Artist>Blanda                                            </Artist>
+<Category>roll                                              </Category>
+<Type>single                        </Type>
+<price>0
+</price>
+</tuple>
+<tuple>
+<name>Buryinghoe</name>
+<ISBN>351693              </ISBN>
+<Company>Jast Consultants              </Company>
+<Artist>Stamm                                             </Artist>
+<Category>roll                                              </Category>
+<Type>single                        </Type>
+<price>0
+</price>
+</tuple>
+<tuple>
+<name>Fletashson</name>
+<ISBN>375627              </ISBN>
+<Company>Kingmasters                   </Company>
+<Artist>Gerhold                                           </Artist>
+<Category>roll                                              </Category>
+<Type>single                        </Type>
+<price>0
+</price>
+</tuple>
+<tuple>
+<name>Stowmouth</name>
+<ISBN>401240              </ISBN>
+<Company>Mueller Group PLC             </Company>
+<Artist>Erdman                                            </Artist>
+<Category>roll                                              </Category>
+<Type>single                        </Type>
+<price>0
+</price>
+</tuple>
+<tuple>
+<name>Stibces</name>
+<ISBN>467104              </ISBN>
+<Company>Windler Publishing            </Company>
+<Artist>Turcotte                                          </Artist>
+<Category>roll                                              </Category>
+<Type>single                        </Type>
+<price>20
+</price>
+</tuple>
+<tuple>
+<name>Greater Pidsapbridge</name>
+<ISBN>507489              </ISBN>
+<Company>Bins Data                     </Company>
+<Artist>Hintz                                             </Artist>
+<Category>Jazz                                              </Category>
+<Type>single                        </Type>
+<price>0
+</price>
+</tuple>
+<tuple>
+<name>Ramsfield</name>
+<ISBN>650024              </ISBN>
+<Company>Reilly Department             </Company>
+<Artist>Rippin                                            </Artist>
+<Category>Jazz                                              </Category>
+<Type>albums                        </Type>
+<price>0
+</price>
+</tuple>
+<tuple>
+<name>Shefwesister</name>
+<ISBN>677277              </ISBN>
+<Company>Kuphal Media                  </Company>
+<Artist>Smitham                                           </Artist>
+<Category>Jazz                                              </Category>
+<Type>albums                        </Type>
+<price>0
+</price>
+</tuple>
+<tuple>
+<name>Buckes</name>
+<ISBN>686968              </ISBN>
+<Company>Walter Press                  </Company>
+<Artist>Adams                                             </Artist>
+<Category>Jazz                                              </Category>
+<Type>albums                        </Type>
+<price>0
+</price>
+</tuple>
+<tuple>
+<name>Yellmid</name>
+<ISBN>722569              </ISBN>
+<Company>Hegmann Lab                   </Company>
+<Artist>Howell                                            </Artist>
+<Category>Jazz                                              </Category>
+<Type>albums                        </Type>
+<price>0
+</price>
+</tuple>
+<tuple>
+<name>Greater Lisbinsden</name>
+<ISBN>88207               </ISBN>
+<Company>Robel Department              </Company>
+<Artist>Anderson                                          </Artist>
+<Category>Jazz                                              </Category>
+<Type>albums                        </Type>
+<price>0
+</price>
+</tuple>
+<tuple>
+<name>Barham</name>
+<ISBN>935126              </ISBN>
+<Company>Walter Group PLC              </Company>
+<Artist>Satterfield                                       </Artist>
+<Category>Jazz                                              </Category>
+<Type>albums                        </Type>
+<price>0
+</price>
+</tuple>
+<tuple>
+<name>East Upbolhurst</name>
+<ISBN>993156              </ISBN>
+<Company>Witting Research              </Company>
+<Artist>Collins                                           </Artist>
+<Category>roll                                              </Category>
+<Type>single                        </Type>
+<price>0
+</price>
+</tuple>
+</CD>
+<Availability>
+<tuple>
+<IsCD>375627              </IsCD>
+<ISBook>285559              </ISBook>
+<Stock>yes</Stock>
+<Quantity>50</Quantity>
+<WareHouseCode>175325                        
+</WareHouseCode>
+</tuple>
+<tuple>
+<IsCD>319944              </IsCD>
+<ISBook>430631              </ISBook>
+<Stock>yes</Stock>
+<Quantity>50</Quantity>
+<WareHouseCode>199400                        
+</WareHouseCode>
+</tuple>
+<tuple>
+<IsCD>124292              </IsCD>
+<ISBook>211221              </ISBook>
+<Stock>yes</Stock>
+<Quantity>50</Quantity>
+<WareHouseCode>213028                        
+</WareHouseCode>
+</tuple>
+<tuple>
+<IsCD>401240              </IsCD>
+<ISBook>895122              </ISBook>
+<Stock>yes</Stock>
+<Quantity>50</Quantity>
+<WareHouseCode>287363                        
+</WareHouseCode>
+</tuple>
+<tuple>
+<IsCD>993156              </IsCD>
+<ISBook>793382              </ISBook>
+<Stock>yes</Stock>
+<Quantity>50</Quantity>
+<WareHouseCode>325833                        
+</WareHouseCode>
+</tuple>
+<tuple>
+<IsCD>122414              </IsCD>
+<ISBook>584185              </ISBook>
+<Stock>yes</Stock>
+<Quantity>50</Quantity>
+<WareHouseCode>416054                        
+</WareHouseCode>
+</tuple>
+<tuple>
+<IsCD>268540              </IsCD>
+<ISBook>110570              </ISBook>
+<Stock>no </Stock>
+<Quantity>50</Quantity>
+<WareHouseCode>438349                        
+</WareHouseCode>
+</tuple>
+<tuple>
+<IsCD>467104              </IsCD>
+<ISBook>714383              </ISBook>
+<Stock>no </Stock>
+<Quantity>0</Quantity>
+<WareHouseCode>472305                        
+</WareHouseCode>
+</tuple>
+<tuple>
+<IsCD>116716              </IsCD>
+<ISBook>126856              </ISBook>
+<Stock>no </Stock>
+<Quantity>0</Quantity>
+<WareHouseCode>58743                         
+</WareHouseCode>
+</tuple>
+<tuple>
+<IsCD>351693              </IsCD>
+<ISBook>754381              </ISBook>
+<Stock>no </Stock>
+<Quantity>0</Quantity>
+<WareHouseCode>615156                        
+</WareHouseCode>
+</tuple>
+<tuple>
+<IsCD>507489              </IsCD>
+<ISBook>868367              </ISBook>
+<Stock>no </Stock>
+<Quantity>0</Quantity>
+<WareHouseCode>693637                        
+</WareHouseCode>
+</tuple>
+<tuple>
+<IsCD>677277              </IsCD>
+<ISBook>377708              </ISBook>
+<Stock>no </Stock>
+<Quantity>0</Quantity>
+<WareHouseCode>714980                        
+</WareHouseCode>
+</tuple>
+<tuple>
+<IsCD>650024              </IsCD>
+<ISBook>759332              </ISBook>
+<Stock>no </Stock>
+<Quantity>0</Quantity>
+<WareHouseCode>72433                         
+</WareHouseCode>
+</tuple>
+<tuple>
+<IsCD>722569              </IsCD>
+<ISBook>872554              </ISBook>
+<Stock>no </Stock>
+<Quantity>0</Quantity>
+<WareHouseCode>797676                        
+</WareHouseCode>
+</tuple>
+<tuple>
+<IsCD>88207               </IsCD>
+<ISBook>804101              </ISBook>
+<Stock>no </Stock>
+<Quantity>0</Quantity>
+<WareHouseCode>845732                        
+</WareHouseCode>
+</tuple>
+<tuple>
+<IsCD>686968              </IsCD>
+<ISBook>6337                </ISBook>
+<Stock>no </Stock>
+<Quantity>0</Quantity>
+<WareHouseCode>880737                        
+</WareHouseCode>
+</tuple>
+<tuple>
+<IsCD>302184              </IsCD>
+<ISBook>736808              </ISBook>
+<Stock>no </Stock>
+<Quantity>0</Quantity>
+<WareHouseCode>887458                        
+</WareHouseCode>
+</tuple>
+<tuple>
+<IsCD>935126              </IsCD>
+<ISBook>43279               </ISBook>
+<Stock>no </Stock>
+<Quantity>0</Quantity>
+<WareHouseCode>935333                        
+</WareHouseCode>
+</tuple>
+<tuple>
+<IsCD>299141              </IsCD>
+<ISBook>102824              </ISBook>
+<Stock>no </Stock>
+<Quantity>0</Quantity>
+<WareHouseCode>937322                        
+</WareHouseCode>
+</tuple>
+<tuple>
+<IsCD>185827              </IsCD>
+<ISBook>309820              </ISBook>
+<Stock>no </Stock>
+<Quantity>0</Quantity>
+<WareHouseCode>962619   
+</WareHouseCode>
+</tuple>
+</Availability>
+<WareHouse>
+<tuple>
+<WareHouseCode>175325                        </WareHouseCode>
+<NumEmployees>20</NumEmployees>
+<Volume>50
+</Volume>
+</tuple>
+<tuple>
+<WareHouseCode>199400                        </WareHouseCode>
+<NumEmployees>50</NumEmployees>
+<Volume>100
+</Volume>
+</tuple>
+<tuple>
+<WareHouseCode>213028                        </WareHouseCode>
+<NumEmployees>50</NumEmployees>
+<Volume>100
+</Volume>
+</tuple>
+<tuple>
+<WareHouseCode>287363                        </WareHouseCode>
+<NumEmployees>20</NumEmployees>
+<Volume>50
+</Volume>
+</tuple>
+<tuple>
+<WareHouseCode>325833                        </WareHouseCode>
+<NumEmployees>50</NumEmployees>
+<Volume>100
+</Volume>
+</tuple>
+<tuple>
+<WareHouseCode>416054                        </WareHouseCode>
+<NumEmployees>20</NumEmployees>
+<Volume>50
+</Volume>
+</tuple>
+<tuple>
+<WareHouseCode>438349                        </WareHouseCode>
+<NumEmployees>50</NumEmployees>
+<Volume>100
+</Volume>
+</tuple>
+<tuple>
+<WareHouseCode>472305                        </WareHouseCode>
+<NumEmployees>20</NumEmployees>
+<Volume>100
+</Volume>
+</tuple>
+<tuple>
+<WareHouseCode>58743                         </WareHouseCode>
+<NumEmployees>20</NumEmployees>
+<Volume>50
+</Volume>
+</tuple>
+<tuple>
+<WareHouseCode>615156                        </WareHouseCode>
+<NumEmployees>50</NumEmployees>
+<Volume>100
+</Volume>
+</tuple>
+<tuple>
+<WareHouseCode>693637                        </WareHouseCode>
+<NumEmployees>50</NumEmployees>
+<Volume>100
+</Volume>
+</tuple>
+<tuple>
+<WareHouseCode>714980                        </WareHouseCode>
+<NumEmployees>50</NumEmployees>
+<Volume>100
+</Volume>
+</tuple>
+<tuple>
+<WareHouseCode>72433                         </WareHouseCode>
+<NumEmployees>20</NumEmployees>
+<Volume>100
+</Volume>
+</tuple>
+<tuple>
+<WareHouseCode>797676                        </WareHouseCode>
+<NumEmployees>20</NumEmployees>
+<Volume>50
+</Volume>
+</tuple>
+<tuple>
+<WareHouseCode>845732                        </WareHouseCode>
+<NumEmployees>20</NumEmployees>
+<Volume>100
+</Volume>
+</tuple>
+<tuple>
+<WareHouseCode>880737                        </WareHouseCode>
+<NumEmployees>50</NumEmployees>
+<Volume>100
+</Volume>
+</tuple>
+<tuple>
+<WareHouseCode>887458                        </WareHouseCode>
+<NumEmployees>20</NumEmployees>
+<Volume>50
+</Volume>
+</tuple>
+<tuple>
+<WareHouseCode>935333                        </WareHouseCode>
+<NumEmployees>20</NumEmployees>
+<Volume>50
+</Volume>
+</tuple>
+<tuple>
+<WareHouseCode>937322                        </WareHouseCode>
+<NumEmployees>50</NumEmployees>
+<Volume>100
+</Volume>
+</tuple>
+<tuple>
+<WareHouseCode>962619                        </WareHouseCode>
+<NumEmployees>20</NumEmployees>
+<Volume>50
+</Volume>
+</tuple>
+</WareHouse>
+<Information>
+<tuple>
+<WareHouseCode>880737                        </WareHouseCode>
+<Telephone>722-1120            </Telephone>
+<ManagerName>Kasandra                      
+</ManagerName>
+</tuple>
+<tuple>
+<WareHouseCode>714980                        </WareHouseCode>
+<Telephone>050-5924            </Telephone>
+<ManagerName>Eladio                        
+</ManagerName>
+</tuple>
+<tuple>
+<WareHouseCode>199400                        </WareHouseCode>
+<Telephone>531-3811            </Telephone>
+<ManagerName>Brandy                        
+</ManagerName>
+</tuple>
+<tuple>
+<WareHouseCode>693637                        </WareHouseCode>
+<Telephone>105-6726            </Telephone>
+<ManagerName>Aidan                         
+</ManagerName>
+</tuple>
+<tuple>
+<WareHouseCode>937322                        </WareHouseCode>
+<Telephone>375-9702            </Telephone>
+<ManagerName>Hillary                       
+</ManagerName>
+</tuple>
+<tuple>
+<WareHouseCode>615156                        </WareHouseCode>
+<Telephone>290-1901            </Telephone>
+<ManagerName>Anouk                         
+</ManagerName>
+</tuple>
+<tuple>
+<WareHouseCode>325833                        </WareHouseCode>
+<Telephone>225-5447            </Telephone>
+<ManagerName>Lon                           
+</ManagerName>
+</tuple>
+<tuple>
+<WareHouseCode>438349                        </WareHouseCode>
+<Telephone>775-9576            </Telephone>
+<ManagerName>Johnson                       
+</ManagerName>
+</tuple>
+<tuple>
+<WareHouseCode>213028                        </WareHouseCode>
+<Telephone>613-6173            </Telephone>
+<ManagerName>Thad                          
+</ManagerName>
+</tuple>
+<tuple>
+<WareHouseCode>472305                        </WareHouseCode>
+<Telephone>724-2427            </Telephone>
+<ManagerName>King                          
+</ManagerName>
+</tuple>
+<tuple>
+<WareHouseCode>72433                         </WareHouseCode>
+<Telephone>317-7043            </Telephone>
+<ManagerName>Rosalind                      
+</ManagerName>
+</tuple>
+<tuple>
+<WareHouseCode>845732                        </WareHouseCode>
+<Telephone>317-3181            </Telephone>
+<ManagerName>Hilbert                       
+</ManagerName>
+</tuple>
+<tuple>
+<WareHouseCode>935333                        </WareHouseCode>
+<Telephone>231-4242            </Telephone>
+<ManagerName>Kristofer                     
+</ManagerName>
+</tuple>
+<tuple>
+<WareHouseCode>416054                        </WareHouseCode>
+<Telephone>579-0445            </Telephone>
+<ManagerName>Salvatore                     
+</ManagerName>
+</tuple>
+<tuple>
+<WareHouseCode>175325                        </WareHouseCode>
+<Telephone>204-9086            </Telephone>
+<ManagerName>Yasmeen                       
+</ManagerName>
+</tuple>
+<tuple>
+<WareHouseCode>287363                        </WareHouseCode>
+<Telephone>417-9642            </Telephone>
+<ManagerName>Benedict                      
+</ManagerName>
+</tuple>
+<tuple>
+<WareHouseCode>58743                         </WareHouseCode>
+<Telephone>948-4773            </Telephone>
+<ManagerName>Alexe                         
+</ManagerName>
+</tuple>
+<tuple>
+<WareHouseCode>887458                        </WareHouseCode>
+<Telephone>528-7374            </Telephone>
+<ManagerName>Maddison                      
+</ManagerName>
+</tuple>
+<tuple>
+<WareHouseCode>797676                        </WareHouseCode>
+<Telephone>109-9494            </Telephone>
+<ManagerName>Chanelle                      
+</ManagerName>
+</tuple>
+<tuple>
+<WareHouseCode>962619                        </WareHouseCode>
+<Telephone>556-7156            </Telephone>
+<ManagerName>Viviane   
+</ManagerName>
+</tuple>
+</Information>
+<Location>
+<tuple>
+<WareHouseCode>880737                        </WareHouseCode>
+<StreetAddress>Meadow Lane</StreetAddress>
+<City>Greater Midche                </City>
+<State>WA                            </State>
+<ZipCode>30496     
+</ZipCode>
+</tuple>
+<tuple>
+<WareHouseCode>714980                        </WareHouseCode>
+<StreetAddress>Peterson Fountain</StreetAddress>
+<City>Densawisham                   </City>
+<State>WA                            </State>
+<ZipCode>83731     
+</ZipCode>
+</tuple>
+<tuple>
+<WareHouseCode>199400                        </WareHouseCode>
+<StreetAddress>Waterfield Street</StreetAddress>
+<City>Stanmanton                    </City>
+<State>WA                            </State>
+<ZipCode>31906     
+</ZipCode>
+</tuple>
+<tuple>
+<WareHouseCode>693637                        </WareHouseCode>
+<StreetAddress>Gloucester End</StreetAddress>
+<City>Bringcheland                  </City>
+<State>WA                            </State>
+<ZipCode>42108     
+</ZipCode>
+</tuple>
+<tuple>
+<WareHouseCode>937322                        </WareHouseCode>
+<StreetAddress>Queens Lane</StreetAddress>
+<City>Konbolling                    </City>
+<State>WA                            </State>
+<ZipCode>29849     
+</ZipCode>
+</tuple>
+<tuple>
+<WareHouseCode>615156                        </WareHouseCode>
+<StreetAddress>Bannay View</StreetAddress>
+<City>Moonfieldwick                 </City>
+<State>WA                            </State>
+<ZipCode>12542     
+</ZipCode>
+</tuple>
+<tuple>
+<WareHouseCode>325833                        </WareHouseCode>
+<StreetAddress>Avuncular Street</StreetAddress>
+<City>Brampone                      </City>
+<State>WA                            </State>
+<ZipCode>39059     
+</ZipCode>
+</tuple>
+<tuple>
+<WareHouseCode>438349                        </WareHouseCode>
+<StreetAddress>Gloucester View</StreetAddress>
+<City>Stanbinland                   </City>
+<State>WA                            </State>
+<ZipCode>49029     
+</ZipCode>
+</tuple>
+<tuple>
+<WareHouseCode>213028                        </WareHouseCode>
+<StreetAddress>Harkness Hill</StreetAddress>
+<City>Holyvelhoe                    </City>
+<State>WA                            </State>
+<ZipCode>80258     
+</ZipCode>
+</tuple>
+<tuple>
+<WareHouseCode>472305                        </WareHouseCode>
+<StreetAddress>Carnegy Road</StreetAddress>
+<City>Catmouthden                   </City>
+<State>WA                            </State>
+<ZipCode>9777      
+</ZipCode>
+</tuple>
+<tuple>
+<WareHouseCode>72433                         </WareHouseCode>
+<StreetAddress>Foreshore Gardens</StreetAddress>
+<City>Barmidsden                    </City>
+<State>CA                            </State>
+<ZipCode>91052     
+</ZipCode>
+</tuple>
+<tuple>
+<WareHouseCode>845732                        </WareHouseCode>
+<StreetAddress>Flora Fountain Circle</StreetAddress>
+<City>Old Toseridgeith              </City>
+<State>CA                            </State>
+<ZipCode>43103     
+</ZipCode>
+</tuple>
+<tuple>
+<WareHouseCode>935333                        </WareHouseCode>
+<StreetAddress>West Butternut Street</StreetAddress>
+<City>Barfor                        </City>
+<State>CA                            </State>
+<ZipCode>20651     
+</ZipCode>
+</tuple>
+<tuple>
+<WareHouseCode>416054                        </WareHouseCode>
+<StreetAddress>Tardis Way</StreetAddress>
+<City>Eltdon                        </City>
+<State>CA                            </State>
+<ZipCode>52426     
+</ZipCode>
+</tuple>
+<tuple>
+<WareHouseCode>175325                        </WareHouseCode>
+<StreetAddress>Linking Street</StreetAddress>
+<City>Abbsapwood                    </City>
+<State>OR                            </State>
+<ZipCode>73367     
+</ZipCode>
+</tuple>
+<tuple>
+<WareHouseCode>287363                        </WareHouseCode>
+<StreetAddress>Butternut Crescent</StreetAddress>
+<City>South Eltridgesley            </City>
+<State>OR                            </State>
+<ZipCode>74301     
+</ZipCode>
+</tuple>
+<tuple>
+<WareHouseCode>58743                         </WareHouseCode>
+<StreetAddress>Bombay Gardens</StreetAddress>
+<City>Pidridge                      </City>
+<State>OR                            </State>
+<ZipCode>96987     
+</ZipCode>
+</tuple>
+<tuple>
+<WareHouseCode>887458                        </WareHouseCode>
+<StreetAddress>Maple Drive</StreetAddress>
+<City>Pinridge                      </City>
+<State>OR                            </State>
+<ZipCode>99462     
+</ZipCode>
+</tuple>
+<tuple>
+<WareHouseCode>797676                        </WareHouseCode>
+<StreetAddress>Home Hill</StreetAddress>
+<City>Fenham                        </City>
+<State>OR                            </State>
+<ZipCode>81405     
+</ZipCode>
+</tuple>
+<tuple>
+<WareHouseCode>962619                        </WareHouseCode>
+<StreetAddress>Thakurdwar Close</StreetAddress>
+<City>South Buryfieldville          </City>
+<State>OR                            </State>
+<ZipCode>4980      
+</ZipCode>
+</tuple>
+</Location>
+</Data>
+</database>

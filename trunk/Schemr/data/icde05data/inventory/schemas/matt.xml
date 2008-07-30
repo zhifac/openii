@@ -1,0 +1,632 @@
+<database name="matt">
+<createdby name="Matt"/>
+<Schema>
+<table name="Book">
+<comment>Table contains information about all books</comment>
+<column name="id" type="int">
+<comment>unique id</comment>
+</column>
+<column name="title" type="string"/>
+<column name="author" type="string"/>
+<column name="ISBN" type="string"/>
+<column name="publisher" type="string"/>
+<column name="format" type="enumeration">
+<comment>{paperback, hardcover, trade}</comment>
+</column>
+<column name="published_date" type="date"/>
+<column name="pages" type="int"/>
+<column name="width" type="float">
+<comment>in inches</comment>
+</column>
+<column name="height" type="float">
+<comment>in inches</comment>
+</column>
+<column name="depth" type="float">
+<comment>in inches</comment>
+</column>
+<column name="weight" type="float">
+<comment>in pounds</comment>
+</column>
+<column name="category" type="string"/>
+<column name="summary" type="string"/>
+<column name="list_price" type="float">
+<comment>in dollars</comment>
+</column>
+</table>
+<table name="CD">
+<comment>Table contains information about all CDs</comment>
+<column name="id" type="int">
+<comment>unique id</comment>
+</column>
+<column name="title" type="string"/>
+<column name="artist" type="string"/>
+<column name="label" type="string"/>
+<column name="genre" type="string"/>
+<column name="tracks" type="int">
+<comment>number of tracks on the CD</comment>
+</column>
+<column name="discs" type="int">
+<comment>number of CDs in the package</comment>
+</column>
+<column name="release_date" type="date"/>
+<column name="type" type="enumeration">
+<comment>{single, album, boxed_set}</comment>
+</column>
+<column name="cover_art" type="string">
+<comment>a URL to the cover art image</comment>
+</column>
+<column name="length" type="int">
+<comment>time in seconds</comment>
+</column>
+<column name="list_price" type="float">
+<comment>in dollars</comment>
+</column>
+</table>
+<table name="CD_Track">
+<comment>A listing of all the songs on the CDs</comment>
+<column name="id" type="int"/>
+<column name="cd_id" type="int" ref="CD/id">
+<comment>points to CD.id of the CD the sample is from</comment>
+</column>
+<column name="track" type="int">
+<comment>track number</comment>
+</column>
+<column name="name" type="string">
+<comment>name of the song</comment>
+</column>
+<column name="url" type="string">
+<comment>URL to the sample of the track</comment>
+</column>
+</table>
+<table name="Item">
+<comment></comment>
+<column name="uid" type="int">
+<comment>global unique id for all items</comment>
+</column>
+<column name="type" type="enumeration">
+<comment>{Book, CD}</comment>
+</column>
+<column name="id" type="int" ref="Book/id CD/id">
+<comment>either the Book.id or the CD.id of this item</comment>
+</column>
+<column name="price" type="float">
+<comment>in dollars</comment>
+</column>
+</table>
+<table name="Warehouse">
+<comment>Stores information about the company warehouses</comment>
+<column name="id" type="int">
+<comment>unique id</comment>
+</column>
+<column name="street" type="string"/>
+<column name="city" type="string"/>
+<column name="state" type="string"/>
+<column name="zipcode" type="int"/>
+<column name="phone" type="string"/>
+<column name="fax" type="string"/>
+<column name="squarefeet" type="int">
+<comment>Size of the warehouse floor in square feet</comment>
+</column>
+<column name="cubicfeet" type="int">
+<comment>amount of area usable for storage</comment>
+</column>
+<column name="employees" type="int">
+<comment>number of employees</comment>
+</column>
+<column name="cost_per_month" type="float">
+<comment>approximate cost per month to run this warehouse (in dollars)</comment>
+</column>
+</table>
+<table name="Review">
+<comment></comment>
+<column name="id" type="int">
+<comment>unique id</comment>
+</column>
+<column name="item_uid" type="int" ref="Item/uid">
+<comment>review is for this Item.uid</comment>
+</column>
+<column name="name" type="string">
+<comment>name of reviewer</comment>
+</column>
+<column name="email" type="string">
+<comment>email of reviewer</comment>
+</column>
+<column name="rating" type="int">
+<comment>out of 5 stars</comment>
+</column>
+<column name="title" type="string">
+<comment>title of the review</comment>
+</column>
+<column name="text" type="string">
+<comment>the review itself</comment>
+</column>
+</table>
+<table name="Inventory">
+<comment>Tracks inventory of items</comment>
+<column name="id" type="int">
+<comment>unique id</comment>
+</column>
+<column name="warehouse_id" type="int" ref="Warehouse/id">
+<comment>Warehouse.id of warehouse storing this item</comment>
+</column>
+<column name="item_uid" type="int" ref="Item/uid">
+<comment>Item.uid of item being stored</comment>
+</column>
+<column name="quantity" type="int">
+<comment>number of this item sitting in this warehouse</comment>
+</column>
+</table>
+<table name="InventoryOrders">
+<comment>Table containing list of all ordered items (ordered by the company, shipping to the warehouses)</comment>
+<column name="id" type="int">
+<comment>unique id</comment>
+</column>
+<column name="warehouse_id" type="int" ref="Warehouse/id">
+<comment>Warehouse.id of warehouse the item is arriving at</comment>
+</column>
+<column name="item_uid" type="int" ref="Item/uid">
+<comment>Item.uid of item being stored</comment>
+</column>
+<column name="quantity" type="int">
+<comment>number of this item sitting in this warehouse</comment>
+</column>
+<column name="eta" type="date">
+<comment>estimated time of arrival</comment>
+</column>
+<column name="source" type="string">
+<comment>where are we ordering it from</comment>
+</column>
+<column name="tracking_number" type="string">
+<comment>shipping tracking information</comment>
+</column>
+</table>
+</Schema>
+<Data>
+<Book>
+<tuple>
+<id>1</id>
+<title>Principles of Data Mining</title>
+<author>David J. Hand</author>
+<ISBN>026208290X</ISBN>
+<publisher>MIT Press</publisher>
+<format>hardcover</format>
+<published_date>August 1 2001</published_date>
+<pages>425</pages>
+<width>8.29</width>
+<height>9.33</height>
+<depth>1.30</depth>
+<weight>4.2</weight>
+<category>Machine Learning</category>
+<summary>The growing interest in data mining is motivated by a common problem across disciplines: how does one store, access, model, and ultimately describe and understand very large data sets? Historically, different aspects of data mining have been addressed independently by different disciplines. This is the first truly interdisciplinary text on data mining, blending the contributions of information science, computer science, and statistics.</summary>
+<list_price>58.0</list_price>
+</tuple>
+<tuple>
+<id>2</id>
+<title>One Fine Day</title>
+<author>Nonny Hogrogian</author>
+<ISBN>0027440001</ISBN>
+<publisher>Simon and Schuster</publisher>
+<format>hardcover</format>
+<published_date>August 1971</published_date>
+<pages>32</pages>
+<width>10.37</width>
+<height>8.31</height>
+<depth>0.48</depth>
+<weight>1.3</weight>
+<category>Childrens Stories</category>
+<summary>A delightful telling makes this story of a greedy fox's adventure as catchy as a nursery rhyme. Crisp, happy pictures add to the fun. Inspired by an Armenian folktale, the rhythmic, cumulative text will have small listeners reading along and matching words to pictures well before the story is ended.</summary>
+<list_price>16.0</list_price>
+</tuple>
+<tuple>
+<id>3</id>
+<title>Little Rabbit Foo Foo</title>
+<author>Michael Rosen</author>
+<ISBN>0671796046</ISBN>
+<publisher>Aladdin Library</publisher>
+<format>paperback</format>
+<published_date>March 1993</published_date>
+<pages>32</pages>
+<width>7.44</width>
+<height>9.02</height>
+<depth>0.15</depth>
+<weight>1.4</weight>
+<category>Childrens Stories</category>
+<summary>Little Rabbit Foo Foo hops through the forest, picking up various creatures--field mice, wriggly worms, tigers, and goblins--and bopping them on the head with his red mallet. The Good Fairy warns him to stop, but finally turns him into a goon. This slightly retold version of a popular children's song has a lot of energy; unfortunately, Rosen includes neither music nor even a preface to let readers know that the tune is the same as Down by the Railroad. The illustrations are bright, cheerful, and clearly detailed, if somewhat reminiscent of Saturday morning cartoons. Amusing, but not an essential purchase--acting out the song is still more fun than reading it aloud.</summary>
+<list_price>6.99</list_price>
+</tuple>
+<tuple>
+<id>4</id>
+<title>Life of Pi</title>
+<author>Yann Martel</author>
+<ISBN>0156027321</ISBN>
+<publisher>Harvest Books</publisher>
+<format>paperback</format>
+<published_date>May 2003</published_date>
+<pages>336</pages>
+<width>6.42</width>
+<height>7.86</height>
+<depth>0.93</depth>
+<weight>3.9</weight>
+<category>Fiction:Adventure</category>
+<summary>Yann Martel's imaginative and unforgettable Life of Pi is a magical reading experience, an endless blue expanse of storytelling about adventure, survival, and ultimately, faith. The precocious son of a zookeeper, 16-year-old Pi Patel is raised in Pondicherry, India, where he tries on various faiths for size, attracting religions the way a dog attracts fleas. Planning a move to Canada, his father packs up the family and their menagerie and they hitch a ride on an enormous freighter. After a harrowing shipwreck, Pi finds himself adrift in the Pacific Ocean, trapped on a 26-foot lifeboat with a wounded zebra, a spotted hyena, a seasick orangutan, and a 450-pound Bengal tiger named Richard Parker (His head was the size and color of the lifebuoy, with teeth). </summary>
+<list_price>14.0</list_price>
+</tuple>
+<tuple>
+<id>5</id>
+<title>History of Pi</title>
+<author>Peter Beckman</author>
+<ISBN>0312381859</ISBN>
+<publisher>St. Marten's Press</publisher>
+<format>paperback</format>
+<published_date>August 1976</published_date>
+<pages>200</pages>
+<width>5.50</width>
+<height>8.23</height>
+<depth>0.56</depth>
+<weight>3.2</weight>
+<category>Mathematics</category>
+<summary></summary>
+<list_price>12.95</list_price>
+</tuple>
+</Book>
+<CD>
+<tuple>
+<id>1</id>
+<title>Fallen</title>
+<artist>Evanescence</artist>
+<label>Wind-Up</label>
+<genre>Rock</genre>
+<tracks>11</tracks>
+<discs>1</discs>
+<release_date>March 4 2003</release_date>
+<type>album</type>
+<cover_art>/covers/evan00045.jpg</cover_art>
+<length>2945</length>
+<list_price>18.98</list_price>
+</tuple>
+<tuple>
+<id>2</id>
+<title>Bring Me to Life</title>
+<artist>Evanescence</artist>
+<label>Wind-Up</label>
+<genre>Rock</genre>
+<tracks>4</tracks>
+<discs>1</discs>
+<release_date>April 22 2003</release_date>
+<type>single</type>
+<cover_art>/covers/evan00166.jpg</cover_art>
+<length>973</length>
+<list_price>12.99</list_price>
+</tuple>
+<tuple>
+<id>3</id>
+<title>Busted Stuff</title>
+<artist>Dave Matthews Band</artist>
+<label>RCA</label>
+<genre>Pop</genre>
+<tracks>11</tracks>
+<discs>2</discs>
+<release_date>July 16 2002</release_date>
+<type>album</type>
+<cover_art>/covers/dave00219.jpg</cover_art>
+<length>3272</length>
+<list_price>18.98</list_price>
+</tuple>
+<tuple>
+<id>4</id>
+<title>All That You Can't Leave Behind</title>
+<artist>U2</artist>
+<label>Polygram Records</label>
+<genre>Rock</genre>
+<tracks>11</tracks>
+<discs>1</discs>
+<release_date>October 31 2000</release_date>
+<type>album</type>
+<cover_art>/covers/u20231.jpg</cover_art>
+<length>3216</length>
+<list_price>18.98</list_price>
+</tuple>
+<tuple>
+<id>5</id>
+<title>Jars of Clay</title>
+<artist>Jars of Clay</artist>
+<label>Jive</label>
+<genre>Christian</genre>
+<tracks>10</tracks>
+<discs>1</discs>
+<release_date>October 24 1995</release_date>
+<type>album</type>
+<cover_art>/covers/jars01291.jpg</cover_art>
+<length>2679</length>
+<list_price>17.98</list_price>
+</tuple>
+</CD>
+<CD_Track>
+<tuple>
+<id>1</id>
+<cd_id>1</cd_id>
+<track>1</track>
+<name>Going Under</name>
+<url>/tracks/evan01291.mp3</url>
+</tuple>
+<tuple>
+<id>2</id>
+<cd_id>1</cd_id>
+<track>3</track>
+<name>Everybody's Fool</name>
+<url>/tracks/evan01293.mp3</url>
+</tuple>
+<tuple>
+<id>3</id>
+<cd_id>5</cd_id>
+<track>1</track>
+<name>Liquid</name>
+<url>/tracks/jars12381.mp3</url>
+</tuple>
+<tuple>
+<id>4</id>
+<cd_id>5</cd_id>
+<track>2</track>
+<name>Sinking</name>
+<url>/tracks/jars18217.mp3</url>
+</tuple>
+<tuple>
+<id>5</id>
+<cd_id>5</cd_id>
+<track>9</track>
+<name>Worlds Apart</name>
+<url></url>
+</tuple>
+<tuple>
+<id>6</id>
+<cd_id>5</cd_id>
+<track>10</track>
+<name>Blind</name>
+<url></url>
+</tuple>
+</CD_Track>
+<Item>
+<tuple>
+<uid>1</uid>
+<type>Book</type>
+<id>1</id>
+<price>58.0</price>
+</tuple>
+<tuple>
+<uid>2</uid>
+<type>Book</type>
+<id>2</id>
+<price>12.95</price>
+</tuple>
+<tuple>
+<uid>3</uid>
+<type>CD</type>
+<id>1</id>
+<price>13.95</price>
+</tuple>
+<tuple>
+<uid>4</uid>
+<type>Book</type>
+<id>3</id>
+<price>5.99</price>
+</tuple>
+<tuple>
+<uid>5</uid>
+<type>CD</type>
+<id>2</id>
+<price>11.99</price>
+</tuple>
+<tuple>
+<uid>6</uid>
+<type>CD</type>
+<id>3</id>
+<price>16.75</price>
+</tuple>
+<tuple>
+<uid>7</uid>
+<type>CD</type>
+<id>4</id>
+<price>15.95</price>
+</tuple>
+<tuple>
+<uid>8</uid>
+<type>CD</type>
+<id>5</id>
+<price>15.95</price>
+</tuple>
+</Item>
+<Warehouse>
+<tuple>
+<id>1</id>
+<street>476 S. Hadley Street</street>
+<city>Vancouver</city>
+<state>WA</state>
+<zipcode>98662</zipcode>
+<phone>(360)256-9182</phone>
+<fax>(360)256-9183</fax>
+<squarefeet>40000</squarefeet>
+<cubicfeet>9100000</cubicfeet>
+<employees>50</employees>
+<cost_per_month>92000</cost_per_month>
+</tuple>
+<tuple>
+<id>2</id>
+<street>926 NE 43rd Ave.</street>
+<city>Chicago</city>
+<state>IL</state>
+<zipcode>53821</zipcode>
+<phone>(303)951-3927</phone>
+<fax>(303)992-4711</fax>
+<squarefeet>10000</squarefeet>
+<cubicfeet>1300000</cubicfeet>
+<employees>20</employees>
+<cost_per_month>47000</cost_per_month>
+</tuple>
+<tuple>
+<id>3</id>
+<street>1271 Village Road</street>
+<city>Los Angeles</city>
+<state>CA</state>
+<zipcode>95013</zipcode>
+<phone>(818)378-3478</phone>
+<fax>(818)378-1987</fax>
+<squarefeet>200000</squarefeet>
+<cubicfeet>30000000</cubicfeet>
+<employees>100</employees>
+<cost_per_month>356000</cost_per_month>
+</tuple>
+<tuple>
+<id>4</id>
+<street>121 Orange Blvd</street>
+<city>New York</city>
+<state>NY</state>
+<zipcode>01921</zipcode>
+<phone>(481)722-8237</phone>
+<fax>(481)722-3817</fax>
+<squarefeet>20000</squarefeet>
+<cubicfeet>2000000</cubicfeet>
+<employees>20</employees>
+<cost_per_month>20000</cost_per_month>
+</tuple>
+<tuple>
+<id>5</id>
+<street>18171 N. 134th St</street>
+<city>Atlanta</city>
+<state>GA</state>
+<zipcode>27181</zipcode>
+<phone>(371)321-3481</phone>
+<fax>(371)321-3811</fax>
+<squarefeet>80000</squarefeet>
+<cubicfeet>8000000</cubicfeet>
+<employees>100</employees>
+<cost_per_month>97000</cost_per_month>
+</tuple>
+</Warehouse>
+<Review>
+<tuple>
+<id>1</id>
+<item_uid>3</item_uid>
+<name>kurlebj</name>
+<email>curly@indiana.edu</email>
+<rating>4</rating>
+<title>A Breath of Fresh Air</title>
+<text>I haven't written a review in a very long time now, (Probably over a year) but I was inspired to share my opinion on a great new band that has some solid potential. Evanescence has, probably, one of the best overall sounds I've heard in a "new" band in quite a while. While the music does sound comparable to Linkin Park (who I also like) - The Vocals and overall feel of the album is something unique and exciting. I'll do a quick breakdown of the songs:</text>
+</tuple>
+<tuple>
+<id>2</id>
+<item_uid>3</item_uid>
+<name>didi2317</name>
+<email>howdoyoulikemenow@hotmail.com</email>
+<rating>5</rating>
+<title>beyond amazed...</title>
+<text>the first time i saw evanescence was when i was browsing through one of the many cd departments/stores in town. since i hadn't paid my cable bill in awhile, and the radio stations down here [are bad]. (the only alternative station was shut down, blleeccckkk!) i took a look at the cover, read the list of songs and generally assumed it was another female attempt at 21st century folk rock, and dismissed the album. i realized that i had made a huge mistake when i heard the song "bring me to life" while staying up late, watching mtv. i know many have said it's "linkin park-ish", but it's a new twist on the whole "rap rock/epic rock/dark rock" genre (or wherever you choose to place it), plus amy lee is an amazing singer. you hear more of a classical (as well as goth, and hard rock) influence in the songs, other than the usual rap beats, and computer blips, which i'm very sure that most of the population is sick of by now. what really saves it is the haunting true-to-life lyrics that read like a diary of a troubled soul...quite frankly, i think it's a breath of fresh air from the depth-lessness of preppy rock/neo 60's-70's rock.</text>
+</tuple>
+<tuple>
+<id>3</id>
+<item_uid>3</item_uid>
+<name>mr_rainmaker</name>
+<email>rainmaker@rain.net</email>
+<rating>3</rating>
+<title>Decent formula but formulaic nontheless</title>
+<text> bought this initially because I thought Amy Lee?s face looked beautiful on the cover. Yup, hadn't heard a single track at that point. This is a departure from my usual preferences, but I did enjoy it overall. I'll go straight to the packaging and track-by-track review. As I mentioned, Amy's face gracing the cover was a good thing, and the back shows a rather somber shot of the rest of the band, along with the track-listing. Straightforward group portrait spread over the front and back of the cover in blue/black/white hues. Lyrics included, which is always a plus with me.</text>
+</tuple>
+<tuple>
+<id>4</id>
+<item_uid>1</item_uid>
+<name>Dumitru Erhan</name>
+<email>dumitru@washington.edu</email>
+<rating>5</rating>
+<title>Very good introduction to the topic</title>
+<text>Principles of Data Mining was my first book on the subject, and although I haven't read it all, I can state that this book has done its job in explaining the fundamentals of the topic. It has a very well written recap of statistics and probability and is consistent throughout the chapters in terms of notation, which is important for such texts. Although my primary interest in this book was the EM algorithm (the coverage of which could have been better and longer), the other chapters that I read were fairly well written. I might be however a bit biased in my judgement, because one of the authors' office is 10 metres from mine. Bottom line: a good book, if you're interested in the subject. It's also not too expensive, considering other titles.</text>
+</tuple>
+<tuple>
+<id>5</id>
+<item_uid>8</item_uid>
+<name>x-files@qx.net</name>
+<email>x-files@qx.net</email>
+<rating>5</rating>
+<title>The only Christian music I listen to other than Christmas</title>
+<text>I spent a considerable amount of time listening to this album when it was first released, but not to the lyrics so much. The rhythm, bass and strings all mesh together in beautiful harmony. I love the arrangement of He. I was digging through my CD collection and recently pulled out this gem. I am hearing the lyrics for the first time so to speak and it sends chills down my spine. Not alot of music can do that to me these days.</text>
+</tuple>
+</Review>
+<Inventory>
+<tuple>
+<id>1</id>
+<warehouse_id>3</warehouse_id>
+<item_uid>1</item_uid>
+<quantity>118</quantity>
+</tuple>
+<tuple>
+<id>2</id>
+<warehouse_id>5</warehouse_id>
+<item_uid>8</item_uid>
+<quantity>203</quantity>
+</tuple>
+<tuple>
+<id>3</id>
+<warehouse_id>1</warehouse_id>
+<item_uid>4</item_uid>
+<quantity>5</quantity>
+</tuple>
+<tuple>
+<id>4</id>
+<warehouse_id>2</warehouse_id>
+<item_uid>8</item_uid>
+<quantity>81</quantity>
+</tuple>
+<tuple>
+<id>5</id>
+<warehouse_id>2</warehouse_id>
+<item_uid>7</item_uid>
+<quantity>73</quantity>
+</tuple>
+</Inventory>
+<InventoryOrders>
+<tuple>
+<id>1</id>
+<warehouse_id>3</warehouse_id>
+<item_uid>2</item_uid>
+<quantity>45</quantity>
+<eta>October 21 2003</eta>
+<source>Wholesale Suppliers, Inc.</source>
+<tracking_number>Z178236181</tracking_number>
+</tuple>
+<tuple>
+<id>2</id>
+<warehouse_id>3</warehouse_id>
+<item_uid>4</item_uid>
+<quantity>19</quantity>
+<eta>October 22 2003</eta>
+<source>Books, Inc.</source>
+<tracking_number>Z18346113</tracking_number>
+</tuple>
+<tuple>
+<id>3</id>
+<warehouse_id>1</warehouse_id>
+<item_uid>5</item_uid>
+<quantity>199</quantity>
+<eta>October 20 2003</eta>
+<source>Wholesale Suppliers, Inc.</source>
+<tracking_number>Z118123712</tracking_number>
+</tuple>
+<tuple>
+<id>4</id>
+<warehouse_id>2</warehouse_id>
+<item_uid>2</item_uid>
+<quantity>45</quantity>
+<eta>October 21 2003</eta>
+<source>Wholesale Suppliers, Inc.</source>
+<tracking_number>Z184810311</tracking_number>
+</tuple>
+<tuple>
+<id>5</id>
+<warehouse_id>5</warehouse_id>
+<item_uid>8</item_uid>
+<quantity>10</quantity>
+<eta>October 23 2003</eta>
+<source>Music Wholesale LLC</source>
+<tracking_number>Z184502828</tracking_number>
+</tuple>
+</InventoryOrders>
+</Data>
+</database>

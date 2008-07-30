@@ -1,0 +1,1765 @@
+<database name="MattewHiggins">
+<createdby name="MattewHiggins"/>
+<Schema><table name="Warehouses">
+<column name="warehouseID" type="int" key="yes" null="yes"/>
+<column name="employmentCount" type="int" key="no" null="yes"/>
+<column name="maxVolume" type="int" key="no" null="yes"/>
+<column name="managerName" type="varchar_mid" key="no" null="yes"/>
+<column name="telephone" type="varchar_mid" key="no" null="yes"/>
+<column name="fax" type="varchar_mid" key="no" null="yes"/>
+<column name="address" type="varchar_mid" key="no" null="yes"/>
+<column name="city" type="varchar_mid" key="no" null="yes"/>
+<column name="state" type="varchar_mid" key="no" null="yes"/>
+</table>
+<table name="BookGenres">
+<column name="genreID" type="int" key="yes" null="no"/>
+<column name="genreName" type="varchar_mid" key="no" null="no"/>
+<column name="genreDescription" type="varchar_large" key="no" null="yes"/>
+</table>
+<table name="MusicGenres">
+<column name="genreID" type="int" key="yes" null="no"/>
+<column name="genreName" type="varchar_mid" key="no" null="no"/>
+<column name="genreDescription" type="varchar_large" key="no" null="yes"/>
+</table>
+<table name="CDTypes">
+<column name="cdTypeID" type="int" key="yes" null="no"/>
+<column name="typeName" type="varchar_mid" key="no" null="no"/>
+</table>
+<table name="Authors">
+<column name="authorID" type="int" key="yes" null="no"/>
+<column name="firstName" type="varchar_mid" key="no" null="yes"/>
+<column name="lastName" type="varchar_mid" key="no" null="yes"/>
+</table>
+<table name="Artists">
+<column name="artistID" type="int" key="yes" null="no"/>
+<column name="firstName" type="varchar_mid" key="no" null="yes"/>
+<column name="lastName" type="varchar_mid" key="no" null="yes"/>
+</table>
+<table name="Books">
+<column name="ISBN" type="int" key="yes" null="no"/>
+<column name="title" type="varchar" key="no" null="no"/>
+<column name="price" type="money" key="no" null="no"/>
+<column name="discountPrice" type="money" key="no" null="yes"/>
+<column name="genreID" type="int" key="no" null="no" ref="BookGenres/genreID"/>
+<column name="yearPublished" type="int" key="no" null="yes"/>
+</table>
+<table name="Music">
+<column name="musicID" type="int" key="yes" null="no"/>
+<column name="albumName" type="varchar_mid" key="no" null="no"/>
+<column name="price" type="money" key="no" null="no"/>
+<column name="genreID" type="int" key="no" null="no" ref="MusicGenres/genreID"/>
+<column name="cdTypeID" type="int" key="no" null="no" ref="CDTypes/cdTypeID"/>
+</table>
+<table name="BooksWarehouses">
+<column name="warehouseID" type="int" key="no" null="no" ref="Warehouses/warehouseID"/>
+<column name="ISBN" type="int" key="no" null="no" ref="Books/ISBN"/>
+<column name="quantity" type="int" key="no" null="no"/>
+</table>
+<table name="BooksAuthors">
+<column name="ISBN" type="int" key="no" null="no" ref="Books/ISBN"/>
+<column name="authorID" type="int" key="no" null="no" ref="Authors/authorID"/>
+</table>
+<table name="MusicArtists">
+<column name="musicID" type="int" key="no" null="no" ref="Music/musicID"/>
+<column name="artistID" type="int" key="no" null="no" ref="Artists/artistID"/>
+</table>
+<table name="MusicWarehouses">
+<column name="warehouseID" type="int" key="no" null="no" ref="Warehouses/warehouseID"/>
+<column name="musicID" type="int" key="no" null="no" ref="Music/musicID"/>
+<column name="quantity" type="int" key="no" null="no"/>
+</table>
+</Schema>
+<Data>
+<Warehouses>
+<tuple>
+<warehouseID>1322</warehouseID>
+<employmentCount>1322</employmentCount>
+<maxVolume>1322</maxVolume>
+<managerName>Sammie</managerName>
+<telephone>279-4613</telephone>
+<fax>279-4613</fax>
+<address>Bastion Lane</address>
+<city>Bastion Lane</city>
+<state>IN</state>
+</tuple>
+<tuple>
+<warehouseID>1093</warehouseID>
+<employmentCount>1093</employmentCount>
+<maxVolume>1093</maxVolume>
+<managerName>Kathryn</managerName>
+<telephone>019-9190</telephone>
+<fax>019-9190</fax>
+<address>Gravel Pit Lane</address>
+<city>Gravel Pit Lane</city>
+<state>OH</state>
+</tuple>
+<tuple>
+<warehouseID>1515</warehouseID>
+<employmentCount>1515</employmentCount>
+<maxVolume>1515</maxVolume>
+<managerName>Wilma</managerName>
+<telephone>788-6965</telephone>
+<fax>788-6965</fax>
+<address>Bruce Road</address>
+<city>Bruce Road</city>
+<state>SC</state>
+</tuple>
+<tuple>
+<warehouseID>1825</warehouseID>
+<employmentCount>1825</employmentCount>
+<maxVolume>1825</maxVolume>
+<managerName>Lucienne</managerName>
+<telephone>754-3830</telephone>
+<fax>754-3830</fax>
+<address>Pedder Avenue</address>
+<city>Pedder Avenue</city>
+<state>MN</state>
+</tuple>
+<tuple>
+<warehouseID>1592</warehouseID>
+<employmentCount>1592</employmentCount>
+<maxVolume>1592</maxVolume>
+<managerName>Giovanna</managerName>
+<telephone>899-2587</telephone>
+<fax>899-2587</fax>
+<address>Queen Victoria Road</address>
+<city>Queen Victoria Road</city>
+<state>TX</state>
+</tuple>
+<tuple>
+<warehouseID>481</warehouseID>
+<employmentCount>481</employmentCount>
+<maxVolume>481</maxVolume>
+<managerName>Rosanna</managerName>
+<telephone>296-1801</telephone>
+<fax>296-1801</fax>
+<address>Marine Crescent</address>
+<city>Marine Crescent</city>
+<state>ME</state>
+</tuple>
+<tuple>
+<warehouseID>116</warehouseID>
+<employmentCount>116</employmentCount>
+<maxVolume>116</maxVolume>
+<managerName>Paola</managerName>
+<telephone>292-0135</telephone>
+<fax>292-0135</fax>
+<address>Bombay Way</address>
+<city>Bombay Way</city>
+<state>VT</state>
+</tuple>
+<tuple>
+<warehouseID>1098</warehouseID>
+<employmentCount>1098</employmentCount>
+<maxVolume>1098</maxVolume>
+<managerName>Benjamin</managerName>
+<telephone>535-3276</telephone>
+<fax>535-3276</fax>
+<address>Ballard Gardens</address>
+<city>Ballard Gardens</city>
+<state>SD</state>
+</tuple>
+<tuple>
+<warehouseID>1431</warehouseID>
+<employmentCount>1431</employmentCount>
+<maxVolume>1431</maxVolume>
+<managerName>Jared</managerName>
+<telephone>053-3286</telephone>
+<fax>053-3286</fax>
+<address>Joshua Hill</address>
+<city>Joshua Hill</city>
+<state>ND</state>
+</tuple>
+<tuple>
+<warehouseID>54</warehouseID>
+<employmentCount>54</employmentCount>
+<maxVolume>54</maxVolume>
+<managerName>Nolan</managerName>
+<telephone>655-0896</telephone>
+<fax>655-0896</fax>
+<address>Home Drive</address>
+<city>Home Drive</city>
+<state>RI</state>
+</tuple>
+<tuple>
+<warehouseID>1438</warehouseID>
+<employmentCount>1438</employmentCount>
+<maxVolume>1438</maxVolume>
+<managerName>Nova</managerName>
+<telephone>824-2562</telephone>
+<fax>824-2562</fax>
+<address>River Cove Gardens</address>
+<city>River Cove Gardens</city>
+<state>CA</state>
+</tuple>
+<tuple>
+<warehouseID>597</warehouseID>
+<employmentCount>597</employmentCount>
+<maxVolume>597</maxVolume>
+<managerName>Zola</managerName>
+<telephone>678-2808</telephone>
+<fax>678-2808</fax>
+<address>Chapman Circle</address>
+<city>Chapman Circle</city>
+<state>TX</state>
+</tuple>
+<tuple>
+<warehouseID>522</warehouseID>
+<employmentCount>522</employmentCount>
+<maxVolume>522</maxVolume>
+<managerName>Laurie</managerName>
+<telephone>828-5429</telephone>
+<fax>828-5429</fax>
+<address>Bombay Close</address>
+<city>Bombay Close</city>
+<state>SC</state>
+</tuple>
+<tuple>
+<warehouseID>1908</warehouseID>
+<employmentCount>1908</employmentCount>
+<maxVolume>1908</maxVolume>
+<managerName>Ena</managerName>
+<telephone>345-0974</telephone>
+<fax>345-0974</fax>
+<address>Penny Gardens</address>
+<city>Penny Gardens</city>
+<state>NE</state>
+</tuple>
+<tuple>
+<warehouseID>1156</warehouseID>
+<employmentCount>1156</employmentCount>
+<maxVolume>1156</maxVolume>
+<managerName>Jeff</managerName>
+<telephone>969-3185</telephone>
+<fax>969-3185</fax>
+<address>Tardis Road</address>
+<city>Tardis Road</city>
+<state>LA</state>
+</tuple>
+<tuple>
+<warehouseID>168</warehouseID>
+<employmentCount>168</employmentCount>
+<maxVolume>168</maxVolume>
+<managerName>Morgan</managerName>
+<telephone>029-8256</telephone>
+<fax>029-8256</fax>
+<address>Mayonnaise Fountain</address>
+<city>Mayonnaise Fountain</city>
+<state>DE</state>
+</tuple>
+<tuple>
+<warehouseID>1386</warehouseID>
+<employmentCount>1386</employmentCount>
+<maxVolume>1386</maxVolume>
+<managerName>Elroy</managerName>
+<telephone>667-6326</telephone>
+<fax>667-6326</fax>
+<address>Napoleon Gardens</address>
+<city>Napoleon Gardens</city>
+<state>IA</state>
+</tuple>
+<tuple>
+<warehouseID>512</warehouseID>
+<employmentCount>512</employmentCount>
+<maxVolume>512</maxVolume>
+<managerName>Ceasar</managerName>
+<telephone>771-9658</telephone>
+<fax>771-9658</fax>
+<address>Marine Lane</address>
+<city>Marine Lane</city>
+<state>IA</state>
+</tuple>
+<tuple>
+<warehouseID>897</warehouseID>
+<employmentCount>897</employmentCount>
+<maxVolume>897</maxVolume>
+<managerName>Brycen</managerName>
+<telephone>370-8156</telephone>
+<fax>370-8156</fax>
+<address>South Street</address>
+<city>South Street</city>
+<state>TX</state>
+</tuple>
+<tuple>
+<warehouseID>1078</warehouseID>
+<employmentCount>1078</employmentCount>
+<maxVolume>1078</maxVolume>
+<managerName>Llewellyn</managerName>
+<telephone>641-1432</telephone>
+<fax>641-1432</fax>
+<address>Badden End</address>
+<city>Badden End</city>
+<state>NM</state>
+</tuple>
+<tuple>
+<warehouseID>208</warehouseID>
+<employmentCount>208</employmentCount>
+<maxVolume>208</maxVolume>
+<managerName>Ryann</managerName>
+<telephone>010-5697</telephone>
+<fax>010-5697</fax>
+<address>Hanes Park</address>
+<city>Hanes Park</city>
+<state>UT</state>
+</tuple>
+<tuple>
+<warehouseID>1554</warehouseID>
+<employmentCount>1554</employmentCount>
+<maxVolume>1554</maxVolume>
+<managerName>Stacy</managerName>
+<telephone>055-6386</telephone>
+<fax>055-6386</fax>
+<address>South Circle</address>
+<city>South Circle</city>
+<state>WA</state>
+</tuple>
+<tuple>
+<warehouseID>1900</warehouseID>
+<employmentCount>1900</employmentCount>
+<maxVolume>1900</maxVolume>
+<managerName>Lempi</managerName>
+<telephone>855-7829</telephone>
+<fax>855-7829</fax>
+<address>Carnegy View</address>
+<city>Carnegy View</city>
+<state>WY</state>
+</tuple>
+<tuple>
+<warehouseID>1421</warehouseID>
+<employmentCount>1421</employmentCount>
+<maxVolume>1421</maxVolume>
+<managerName>Gideon</managerName>
+<telephone>037-3433</telephone>
+<fax>037-3433</fax>
+<address>Gospel Road</address>
+<city>Gospel Road</city>
+<state>FL</state>
+</tuple>
+<tuple>
+<warehouseID>788</warehouseID>
+<employmentCount>788</employmentCount>
+<maxVolume>788</maxVolume>
+<managerName>Ottie</managerName>
+<telephone>407-1025</telephone>
+<fax>407-1025</fax>
+<address>Sunset Hill End</address>
+<city>Sunset Hill End</city>
+<state>KS</state>
+</tuple>
+</Warehouses>
+<Music>
+<tuple>
+<musicID>4</musicID>
+<albumName>Kimbmidding</albumName>
+<price>5660.65</price>
+<genreID>113</genreID>
+<cdTypeID>46</cdTypeID>
+</tuple>
+<tuple>
+<musicID>7</musicID>
+<albumName>Fellby</albumName>
+<price>3032.40</price>
+<genreID>113</genreID>
+<cdTypeID>46</cdTypeID>
+</tuple>
+<tuple>
+<musicID>9</musicID>
+<albumName>Old Alconmidshead</albumName>
+<price>2544.85</price>
+<genreID>113</genreID>
+<cdTypeID>46</cdTypeID>
+</tuple>
+<tuple>
+<musicID>11</musicID>
+<albumName>West Farham</albumName>
+<price>3050.23</price>
+<genreID>113</genreID>
+<cdTypeID>46</cdTypeID>
+</tuple>
+<tuple>
+<musicID>12</musicID>
+<albumName>Greater Stiling</albumName>
+<price>3354.55</price>
+<genreID>113</genreID>
+<cdTypeID>46</cdTypeID>
+</tuple>
+<tuple>
+<musicID>14</musicID>
+<albumName>Stilithwick</albumName>
+<price>1519.29</price>
+<genreID>113</genreID>
+<cdTypeID>46</cdTypeID>
+</tuple>
+<tuple>
+<musicID>16</musicID>
+<albumName>Iliding</albumName>
+<price>6969.37</price>
+<genreID>113</genreID>
+<cdTypeID>46</cdTypeID>
+</tuple>
+<tuple>
+<musicID>17</musicID>
+<albumName>Spaldfieldots</albumName>
+<price>3345.90</price>
+<genreID>113</genreID>
+<cdTypeID>46</cdTypeID>
+</tuple>
+<tuple>
+<musicID>22</musicID>
+<albumName>Upces</albumName>
+<price>1680.66</price>
+<genreID>113</genreID>
+<cdTypeID>46</cdTypeID>
+</tuple>
+<tuple>
+<musicID>23</musicID>
+<albumName>East Houghcon</albumName>
+<price>3244.73</price>
+<genreID>113</genreID>
+<cdTypeID>46</cdTypeID>
+</tuple>
+<tuple>
+<musicID>26</musicID>
+<albumName>Queenschethorn</albumName>
+<price>211.10</price>
+<genreID>113</genreID>
+<cdTypeID>46</cdTypeID>
+</tuple>
+<tuple>
+<musicID>29</musicID>
+<albumName>East Yaxveltry</albumName>
+<price>7517.24</price>
+<genreID>113</genreID>
+<cdTypeID>46</cdTypeID>
+</tuple>
+<tuple>
+<musicID>41</musicID>
+<albumName>Great Conworththorn</albumName>
+<price>1380.70</price>
+<genreID>113</genreID>
+<cdTypeID>46</cdTypeID>
+</tuple>
+<tuple>
+<musicID>44</musicID>
+<albumName>Queenswes</albumName>
+<price>9012.64</price>
+<genreID>113</genreID>
+<cdTypeID>46</cdTypeID>
+</tuple>
+<tuple>
+<musicID>49</musicID>
+<albumName>Kingsashwick</albumName>
+<price>1447.42</price>
+<genreID>113</genreID>
+<cdTypeID>46</cdTypeID>
+</tuple>
+<tuple>
+<musicID>60</musicID>
+<albumName>Radmouthville</albumName>
+<price>8335.23</price>
+<genreID>113</genreID>
+<cdTypeID>46</cdTypeID>
+</tuple>
+<tuple>
+<musicID>65</musicID>
+<albumName>Greater Keysdin</albumName>
+<price>3455.75</price>
+<genreID>113</genreID>
+<cdTypeID>46</cdTypeID>
+</tuple>
+<tuple>
+<musicID>68</musicID>
+<albumName>East Fenridge</albumName>
+<price>6955.58</price>
+<genreID>113</genreID>
+<cdTypeID>46</cdTypeID>
+</tuple>
+<tuple>
+<musicID>69</musicID>
+<albumName>West Kingsforground</albumName>
+<price>8450.21</price>
+<genreID>113</genreID>
+<cdTypeID>46</cdTypeID>
+</tuple>
+<tuple>
+<musicID>74</musicID>
+<albumName>Constanthorn</albumName>
+<price>6075.85</price>
+<genreID>113</genreID>
+<cdTypeID>46</cdTypeID>
+</tuple>
+<tuple>
+<musicID>80</musicID>
+<albumName>Keyswesground</albumName>
+<price>7366.69</price>
+<genreID>113</genreID>
+<cdTypeID>46</cdTypeID>
+</tuple>
+<tuple>
+<musicID>83</musicID>
+<albumName>Little Buryworth</albumName>
+<price>1778.96</price>
+<genreID>113</genreID>
+<cdTypeID>46</cdTypeID>
+</tuple>
+<tuple>
+<musicID>84</musicID>
+<albumName>Fendenshead</albumName>
+<price>1137.74</price>
+<genreID>113</genreID>
+<cdTypeID>46</cdTypeID>
+</tuple>
+<tuple>
+<musicID>92</musicID>
+<albumName>Grafmanister</albumName>
+<price>6834.23</price>
+<genreID>113</genreID>
+<cdTypeID>46</cdTypeID>
+</tuple>
+</Music>
+<Authors>
+<tuple>
+<authorID>11</authorID>
+<firstName>Male</firstName>
+<lastName>Ankunding</lastName>
+</tuple>
+<tuple>
+<authorID>13</authorID>
+<firstName>Vinnie</firstName>
+<lastName>Kemmer</lastName>
+</tuple>
+<tuple>
+<authorID>17</authorID>
+<firstName>Landon</firstName>
+<lastName>Nienow</lastName>
+</tuple>
+<tuple>
+<authorID>18</authorID>
+<firstName>Trevion</firstName>
+<lastName>Johns</lastName>
+</tuple>
+<tuple>
+<authorID>22</authorID>
+<firstName>Reuben</firstName>
+<lastName>Runolfsson</lastName>
+</tuple>
+<tuple>
+<authorID>24</authorID>
+<firstName>Hester</firstName>
+<lastName>Mante</lastName>
+</tuple>
+<tuple>
+<authorID>28</authorID>
+<firstName>Parker</firstName>
+<lastName>Jakubowski</lastName>
+</tuple>
+<tuple>
+<authorID>34</authorID>
+<firstName>Roxie</firstName>
+<lastName>Willms</lastName>
+</tuple>
+<tuple>
+<authorID>39</authorID>
+<firstName>Mallie</firstName>
+<lastName>Quigley</lastName>
+</tuple>
+<tuple>
+<authorID>46</authorID>
+<firstName>Jerome</firstName>
+<lastName>Douglas</lastName>
+</tuple>
+<tuple>
+<authorID>49</authorID>
+<firstName>Imelda</firstName>
+<lastName>Towne</lastName>
+</tuple>
+<tuple>
+<authorID>50</authorID>
+<firstName>Keira</firstName>
+<lastName>Walter</lastName>
+</tuple>
+<tuple>
+<authorID>53</authorID>
+<firstName>Forrest</firstName>
+<lastName>Kihn</lastName>
+</tuple>
+<tuple>
+<authorID>54</authorID>
+<firstName>Brianne</firstName>
+<lastName>Mohr</lastName>
+</tuple>
+<tuple>
+<authorID>64</authorID>
+<firstName>Kathlyn</firstName>
+<lastName>Mohr</lastName>
+</tuple>
+<tuple>
+<authorID>68</authorID>
+<firstName>Rico</firstName>
+<lastName>Swaniawski</lastName>
+</tuple>
+<tuple>
+<authorID>72</authorID>
+<firstName>Zelma</firstName>
+<lastName>Strosin</lastName>
+</tuple>
+<tuple>
+<authorID>76</authorID>
+<firstName>Tyler</firstName>
+<lastName>Bartoletti</lastName>
+</tuple>
+<tuple>
+<authorID>82</authorID>
+<firstName>Millard</firstName>
+<lastName>Johnston</lastName>
+</tuple>
+<tuple>
+<authorID>85</authorID>
+<firstName>Alvaro</firstName>
+<lastName>Lesch</lastName>
+</tuple>
+<tuple>
+<authorID>87</authorID>
+<firstName>Sherwood</firstName>
+<lastName>Moore</lastName>
+</tuple>
+<tuple>
+<authorID>94</authorID>
+<firstName>Carlos</firstName>
+<lastName>Little</lastName>
+</tuple>
+<tuple>
+<authorID>95</authorID>
+<firstName>Sydney</firstName>
+<lastName>Jewess</lastName>
+</tuple>
+<tuple>
+<authorID>98</authorID>
+<firstName>Delpha</firstName>
+<lastName>Leannon</lastName>
+</tuple>
+<tuple>
+<authorID>99</authorID>
+<firstName>Alden</firstName>
+<lastName>Hintz</lastName>
+</tuple>
+</Authors>
+<BookGenres>
+<tuple>
+<genreID>18</genreID>
+<genreName>Oak Hill Fountain</genreName>
+<genreDescription>Women who look like spiders attack indecently with good reason. </genreDescription>
+</tuple>
+<tuple>
+<genreID>30</genreID>
+<genreName>Marine Park</genreName>
+<genreDescription>People who eat too little vitamin E strip extremely with Noel Edmonds. </genreDescription>
+</tuple>
+<tuple>
+<genreID>60</genreID>
+<genreName>Massen Circle</genreName>
+<genreDescription>Grandmothers groan indulgently in the London Paladium. </genreDescription>
+</tuple>
+<tuple>
+<genreID>118</genreID>
+<genreName>Thakurdwar View</genreName>
+<genreDescription>Genghis Khan and Marco Polo chair spasmodically in the dining room. </genreDescription>
+</tuple>
+<tuple>
+<genreID>186</genreID>
+<genreName>Gloucester End</genreName>
+<genreDescription>Nintendo owners crunch critically in Madrid. </genreDescription>
+</tuple>
+<tuple>
+<genreID>297</genreID>
+<genreName>Bell Drive</genreName>
+<genreDescription>Operatic singers sink emphatically on the motorway. </genreDescription>
+</tuple>
+<tuple>
+<genreID>422</genreID>
+<genreName>Delisle Avenue</genreName>
+<genreDescription>Cement Mixers contemplate cryogenically some of the time. </genreDescription>
+</tuple>
+<tuple>
+<genreID>438</genreID>
+<genreName>Van Sicklen View</genreName>
+<genreDescription>Shopkeepers suffocate awfully with a shoe horn. </genreDescription>
+</tuple>
+<tuple>
+<genreID>466</genreID>
+<genreName>Woodhouse Park</genreName>
+<genreDescription>Actors point backwardly in the dining room. </genreDescription>
+</tuple>
+<tuple>
+<genreID>638</genreID>
+<genreName>Van Sicklen Close</genreName>
+<genreDescription>Train Spotters strip agreeably using red ink. </genreDescription>
+</tuple>
+<tuple>
+<genreID>640</genreID>
+<genreName>Carnac Way</genreName>
+<genreDescription>The Marx brothers chuck enormously on the QE2. </genreDescription>
+</tuple>
+<tuple>
+<genreID>835</genreID>
+<genreName>Low rise Lane</genreName>
+<genreDescription>Very tall jockeys save forensically in Berlin. </genreDescription>
+</tuple>
+<tuple>
+<genreID>992</genreID>
+<genreName>Woodby Close</genreName>
+<genreDescription>Nuthatches paddle vacuously with a cup of coffee. </genreDescription>
+</tuple>
+<tuple>
+<genreID>1026</genreID>
+<genreName>South Brownell Way</genreName>
+<genreDescription>People who speak Latin punctuate esoterically while eating cabbage. </genreDescription>
+</tuple>
+<tuple>
+<genreID>1061</genreID>
+<genreName>Bakelite Drive</genreName>
+<genreDescription>Authors hypnotise openly - who can tell why? </genreDescription>
+</tuple>
+<tuple>
+<genreID>1065</genreID>
+<genreName>Redmond Street</genreName>
+<genreDescription>Goblins watch hugely in a garage. </genreDescription>
+</tuple>
+<tuple>
+<genreID>1150</genreID>
+<genreName>Harvey Way</genreName>
+<genreDescription>Kirk and Spock hide ingeniously with sawdust. </genreDescription>
+</tuple>
+<tuple>
+<genreID>1218</genreID>
+<genreName>Marine End</genreName>
+<genreDescription>Tradespeople impore apricotly because it's snowing. </genreDescription>
+</tuple>
+<tuple>
+<genreID>1248</genreID>
+<genreName>Essex Way</genreName>
+<genreDescription>Gnomes magnetize esoterically with some melted chocolate. </genreDescription>
+</tuple>
+<tuple>
+<genreID>1530</genreID>
+<genreName>Woodby Drive</genreName>
+<genreDescription>Students emigrate exceptionally in a telephone kiosk. </genreDescription>
+</tuple>
+<tuple>
+<genreID>1614</genreID>
+<genreName>Oak Hill End</genreName>
+<genreDescription>Silly people dance fadedly on a desk. </genreDescription>
+</tuple>
+<tuple>
+<genreID>1695</genreID>
+<genreName>Grant Lane</genreName>
+<genreDescription>Judges slave drearily on a Tuesday. </genreDescription>
+</tuple>
+<tuple>
+<genreID>1704</genreID>
+<genreName>West Butternut Street</genreName>
+<genreDescription>People with red hair describe microscopically with a calendar. </genreDescription>
+</tuple>
+<tuple>
+<genreID>1753</genreID>
+<genreName>West Oak Road</genreName>
+<genreDescription>Red Cheeses hang splendidly on a Thursday. </genreDescription>
+</tuple>
+<tuple>
+<genreID>1885</genreID>
+<genreName>Harvey Hill</genreName>
+<genreDescription>Hang Gliders enjoy solidly in the Doctor's waiting room.</genreDescription>
+</tuple>
+</BookGenres>
+<MusicGenres>
+<tuple>
+<genreID>113</genreID>
+<genreName>Arthur Drive</genreName>
+<genreDescription>Arthur Drive</genreDescription>
+</tuple>
+<tuple>
+<genreID>139</genreID>
+<genreName>Essex Hill</genreName>
+<genreDescription>Essex Hill</genreDescription>
+</tuple>
+<tuple>
+<genreID>168</genreID>
+<genreName>Gravel Pit Street</genreName>
+<genreDescription>Gravel Pit Street</genreDescription>
+</tuple>
+<tuple>
+<genreID>410</genreID>
+<genreName>Elphinstone Hill</genreName>
+<genreDescription>Elphinstone Hill</genreDescription>
+</tuple>
+<tuple>
+<genreID>429</genreID>
+<genreName>Waterfield Fountain</genreName>
+<genreDescription>Waterfield Fountain</genreDescription>
+</tuple>
+<tuple>
+<genreID>465</genreID>
+<genreName>Low rise Avenue</genreName>
+<genreDescription>Low rise Avenue</genreDescription>
+</tuple>
+<tuple>
+<genreID>480</genreID>
+<genreName>Bruce Street</genreName>
+<genreDescription>Bruce Street</genreDescription>
+</tuple>
+<tuple>
+<genreID>488</genreID>
+<genreName>Essex Crescent</genreName>
+<genreDescription>Essex Crescent</genreDescription>
+</tuple>
+<tuple>
+<genreID>529</genreID>
+<genreName>Bell Hill</genreName>
+<genreDescription>Bell Hill</genreDescription>
+</tuple>
+<tuple>
+<genreID>533</genreID>
+<genreName>Graham View</genreName>
+<genreDescription>Graham View</genreDescription>
+</tuple>
+<tuple>
+<genreID>581</genreID>
+<genreName>Esplanade Circle</genreName>
+<genreDescription>Esplanade Circle</genreDescription>
+</tuple>
+<tuple>
+<genreID>725</genreID>
+<genreName>Gospel Lane</genreName>
+<genreDescription>Gospel Lane</genreDescription>
+</tuple>
+<tuple>
+<genreID>801</genreID>
+<genreName>Apollo Fountain</genreName>
+<genreDescription>Apollo Fountain</genreDescription>
+</tuple>
+<tuple>
+<genreID>851</genreID>
+<genreName>Bannay Avenue</genreName>
+<genreDescription>Bannay Avenue</genreDescription>
+</tuple>
+<tuple>
+<genreID>1002</genreID>
+<genreName>Chapman View</genreName>
+<genreDescription>Chapman View</genreDescription>
+</tuple>
+<tuple>
+<genreID>1003</genreID>
+<genreName>Foray Hill</genreName>
+<genreDescription>Foray Hill</genreDescription>
+</tuple>
+<tuple>
+<genreID>1283</genreID>
+<genreName>Peterson Close</genreName>
+<genreDescription>Peterson Close</genreDescription>
+</tuple>
+<tuple>
+<genreID>1363</genreID>
+<genreName>Woodhouse Park</genreName>
+<genreDescription>Woodhouse Park</genreDescription>
+</tuple>
+<tuple>
+<genreID>1486</genreID>
+<genreName>Mayonnaise Lane</genreName>
+<genreDescription>Mayonnaise Lane</genreDescription>
+</tuple>
+<tuple>
+<genreID>1606</genreID>
+<genreName>Hanes Gardens</genreName>
+<genreDescription>Hanes Gardens</genreDescription>
+</tuple>
+<tuple>
+<genreID>1626</genreID>
+<genreName>Tardis View</genreName>
+<genreDescription>Tardis View</genreDescription>
+</tuple>
+<tuple>
+<genreID>1722</genreID>
+<genreName>Awhent Fountain</genreName>
+<genreDescription>Awhent Fountain</genreDescription>
+</tuple>
+<tuple>
+<genreID>1765</genreID>
+<genreName>Ballard Gardens</genreName>
+<genreDescription>Ballard Gardens</genreDescription>
+</tuple>
+<tuple>
+<genreID>1794</genreID>
+<genreName>Whippet Hill</genreName>
+<genreDescription>Whippet Hill</genreDescription>
+</tuple>
+<tuple>
+<genreID>1950</genreID>
+<genreName>Portuguese Crescent</genreName>
+<genreDescription>Portuguese Crescent</genreDescription>
+</tuple>
+</MusicGenres>
+<Artists>
+<tuple>
+<artistID>11</artistID>
+<firstName>Male</firstName>
+<lastName>Ankunding</lastName>
+</tuple>
+<tuple>
+<artistID>13</artistID>
+<firstName>Vinnie</firstName>
+<lastName>Kemmer</lastName>
+</tuple>
+<tuple>
+<artistID>17</artistID>
+<firstName>Landon</firstName>
+<lastName>Nienow</lastName>
+</tuple>
+<tuple>
+<artistID>18</artistID>
+<firstName>Trevion</firstName>
+<lastName>Johns</lastName>
+</tuple>
+<tuple>
+<artistID>22</artistID>
+<firstName>Reuben</firstName>
+<lastName>Runolfsson</lastName>
+</tuple>
+<tuple>
+<artistID>24</artistID>
+<firstName>Hester</firstName>
+<lastName>Mante</lastName>
+</tuple>
+<tuple>
+<artistID>28</artistID>
+<firstName>Parker</firstName>
+<lastName>Jakubowski</lastName>
+</tuple>
+<tuple>
+<artistID>34</artistID>
+<firstName>Roxie</firstName>
+<lastName>Willms</lastName>
+</tuple>
+<tuple>
+<artistID>39</artistID>
+<firstName>Mallie</firstName>
+<lastName>Quigley</lastName>
+</tuple>
+<tuple>
+<artistID>46</artistID>
+<firstName>Jerome</firstName>
+<lastName>Douglas</lastName>
+</tuple>
+<tuple>
+<artistID>49</artistID>
+<firstName>Imelda</firstName>
+<lastName>Towne</lastName>
+</tuple>
+<tuple>
+<artistID>50</artistID>
+<firstName>Keira</firstName>
+<lastName>Walter</lastName>
+</tuple>
+<tuple>
+<artistID>53</artistID>
+<firstName>Forrest</firstName>
+<lastName>Kihn</lastName>
+</tuple>
+<tuple>
+<artistID>54</artistID>
+<firstName>Brianne</firstName>
+<lastName>Mohr</lastName>
+</tuple>
+<tuple>
+<artistID>64</artistID>
+<firstName>Kathlyn</firstName>
+<lastName>Mohr</lastName>
+</tuple>
+<tuple>
+<artistID>68</artistID>
+<firstName>Rico</firstName>
+<lastName>Swaniawski</lastName>
+</tuple>
+<tuple>
+<artistID>72</artistID>
+<firstName>Zelma</firstName>
+<lastName>Strosin</lastName>
+</tuple>
+<tuple>
+<artistID>76</artistID>
+<firstName>Tyler</firstName>
+<lastName>Bartoletti</lastName>
+</tuple>
+<tuple>
+<artistID>82</artistID>
+<firstName>Millard</firstName>
+<lastName>Johnston</lastName>
+</tuple>
+<tuple>
+<artistID>85</artistID>
+<firstName>Alvaro</firstName>
+<lastName>Lesch</lastName>
+</tuple>
+<tuple>
+<artistID>87</artistID>
+<firstName>Sherwood</firstName>
+<lastName>Moore</lastName>
+</tuple>
+<tuple>
+<artistID>94</artistID>
+<firstName>Carlos</firstName>
+<lastName>Little</lastName>
+</tuple>
+<tuple>
+<artistID>95</artistID>
+<firstName>Sydney</firstName>
+<lastName>Jewess</lastName>
+</tuple>
+<tuple>
+<artistID>98</artistID>
+<firstName>Delpha</firstName>
+<lastName>Leannon</lastName>
+</tuple>
+<tuple>
+<artistID>99</artistID>
+<firstName>Alden</firstName>
+<lastName>Hintz</lastName>
+</tuple>
+</Artists>
+<CDTypes>
+<tuple>
+<cdTypeID>46</cdTypeID>
+<typeName>Mallie</typeName>
+</tuple>
+<tuple>
+<cdTypeID>137</cdTypeID>
+<typeName>Carlos</typeName>
+</tuple>
+<tuple>
+<cdTypeID>207</cdTypeID>
+<typeName>Alden</typeName>
+</tuple>
+<tuple>
+<cdTypeID>234</cdTypeID>
+<typeName>Roxie</typeName>
+</tuple>
+<tuple>
+<cdTypeID>241</cdTypeID>
+<typeName>Trevion</typeName>
+</tuple>
+<tuple>
+<cdTypeID>255</cdTypeID>
+<typeName>Male</typeName>
+</tuple>
+<tuple>
+<cdTypeID>298</cdTypeID>
+<typeName>Tyler</typeName>
+</tuple>
+<tuple>
+<cdTypeID>363</cdTypeID>
+<typeName>Brianne</typeName>
+</tuple>
+<tuple>
+<cdTypeID>364</cdTypeID>
+<typeName>Parker</typeName>
+</tuple>
+<tuple>
+<cdTypeID>515</cdTypeID>
+<typeName>Hester</typeName>
+</tuple>
+<tuple>
+<cdTypeID>536</cdTypeID>
+<typeName>Reuben</typeName>
+</tuple>
+<tuple>
+<cdTypeID>696</cdTypeID>
+<typeName>Forrest</typeName>
+</tuple>
+<tuple>
+<cdTypeID>759</cdTypeID>
+<typeName>Keira</typeName>
+</tuple>
+<tuple>
+<cdTypeID>845</cdTypeID>
+<typeName>Alvaro</typeName>
+</tuple>
+<tuple>
+<cdTypeID>964</cdTypeID>
+<typeName>Sherwood</typeName>
+</tuple>
+<tuple>
+<cdTypeID>1035</cdTypeID>
+<typeName>Rico</typeName>
+</tuple>
+<tuple>
+<cdTypeID>1077</cdTypeID>
+<typeName>Jerome</typeName>
+</tuple>
+<tuple>
+<cdTypeID>1278</cdTypeID>
+<typeName>Sydney</typeName>
+</tuple>
+<tuple>
+<cdTypeID>1292</cdTypeID>
+<typeName>Vinnie</typeName>
+</tuple>
+<tuple>
+<cdTypeID>1354</cdTypeID>
+<typeName>Millard</typeName>
+</tuple>
+<tuple>
+<cdTypeID>1476</cdTypeID>
+<typeName>Delpha</typeName>
+</tuple>
+<tuple>
+<cdTypeID>1586</cdTypeID>
+<typeName>Imelda</typeName>
+</tuple>
+<tuple>
+<cdTypeID>1646</cdTypeID>
+<typeName>Kathlyn</typeName>
+</tuple>
+<tuple>
+<cdTypeID>1832</cdTypeID>
+<typeName>Landon</typeName>
+</tuple>
+<tuple>
+<cdTypeID>1845</cdTypeID>
+<typeName>Zelma</typeName>
+</tuple>
+</CDTypes>
+<Books>
+<tuple>
+<ISBN>4</ISBN>
+<title>Kimbmidding</title>
+<price>5660.65</price>
+<discountPrice>5660.65</discountPrice>
+<genreID>18</genreID>
+<yearPublished>1885</yearPublished>
+</tuple>
+<tuple>
+<ISBN>7</ISBN>
+<title>Fellby</title>
+<price>3032.40</price>
+<discountPrice>3032.40</discountPrice>
+<genreID>18</genreID>
+<yearPublished>640</yearPublished>
+</tuple>
+<tuple>
+<ISBN>9</ISBN>
+<title>Old Alconmidshead</title>
+<price>2544.85</price>
+<discountPrice>2544.85</discountPrice>
+<genreID>18</genreID>
+<yearPublished>1695</yearPublished>
+</tuple>
+<tuple>
+<ISBN>11</ISBN>
+<title>West Farham</title>
+<price>3050.23</price>
+<discountPrice>3050.23</discountPrice>
+<genreID>18</genreID>
+<yearPublished>992</yearPublished>
+</tuple>
+<tuple>
+<ISBN>12</ISBN>
+<title>Greater Stiling</title>
+<price>3354.55</price>
+<discountPrice>3354.55</discountPrice>
+<genreID>18</genreID>
+<yearPublished>1150</yearPublished>
+</tuple>
+<tuple>
+<ISBN>14</ISBN>
+<title>Stilithwick</title>
+<price>1519.29</price>
+<discountPrice>1519.29</discountPrice>
+<genreID>18</genreID>
+<yearPublished>18</yearPublished>
+</tuple>
+<tuple>
+<ISBN>16</ISBN>
+<title>Iliding</title>
+<price>6969.37</price>
+<discountPrice>6969.37</discountPrice>
+<genreID>18</genreID>
+<yearPublished>1065</yearPublished>
+</tuple>
+<tuple>
+<ISBN>17</ISBN>
+<title>Spaldfieldots</title>
+<price>3345.90</price>
+<discountPrice>3345.90</discountPrice>
+<genreID>18</genreID>
+<yearPublished>1614</yearPublished>
+</tuple>
+<tuple>
+<ISBN>22</ISBN>
+<title>Upces</title>
+<price>1680.66</price>
+<discountPrice>1680.66</discountPrice>
+<genreID>18</genreID>
+<yearPublished>438</yearPublished>
+</tuple>
+<tuple>
+<ISBN>23</ISBN>
+<title>East Houghcon</title>
+<price>3244.73</price>
+<discountPrice>3244.73</discountPrice>
+<genreID>18</genreID>
+<yearPublished>422</yearPublished>
+</tuple>
+<tuple>
+<ISBN>26</ISBN>
+<title>Queenschethorn</title>
+<price>211.10</price>
+<discountPrice>211.10</discountPrice>
+<genreID>18</genreID>
+<yearPublished>1218</yearPublished>
+</tuple>
+<tuple>
+<ISBN>29</ISBN>
+<title>East Yaxveltry</title>
+<price>7517.24</price>
+<discountPrice>7517.24</discountPrice>
+<genreID>18</genreID>
+<yearPublished>1530</yearPublished>
+</tuple>
+<tuple>
+<ISBN>41</ISBN>
+<title>Great Conworththorn</title>
+<price>1380.70</price>
+<discountPrice>1380.70</discountPrice>
+<genreID>18</genreID>
+<yearPublished>1026</yearPublished>
+</tuple>
+<tuple>
+<ISBN>44</ISBN>
+<title>Queenswes</title>
+<price>9012.64</price>
+<discountPrice>9012.64</discountPrice>
+<genreID>18</genreID>
+<yearPublished>297</yearPublished>
+</tuple>
+<tuple>
+<ISBN>49</ISBN>
+<title>Kingsashwick</title>
+<price>1447.42</price>
+<discountPrice>1447.42</discountPrice>
+<genreID>18</genreID>
+<yearPublished>466</yearPublished>
+</tuple>
+<tuple>
+<ISBN>60</ISBN>
+<title>Radmouthville</title>
+<price>8335.23</price>
+<discountPrice>8335.23</discountPrice>
+<genreID>18</genreID>
+<yearPublished>60</yearPublished>
+</tuple>
+<tuple>
+<ISBN>65</ISBN>
+<title>Greater Keysdin</title>
+<price>3455.75</price>
+<discountPrice>3455.75</discountPrice>
+<genreID>18</genreID>
+<yearPublished>1248</yearPublished>
+</tuple>
+<tuple>
+<ISBN>68</ISBN>
+<title>East Fenridge</title>
+<price>6955.58</price>
+<discountPrice>6955.58</discountPrice>
+<genreID>18</genreID>
+<yearPublished>30</yearPublished>
+</tuple>
+<tuple>
+<ISBN>69</ISBN>
+<title>West Kingsforground</title>
+<price>8450.21</price>
+<discountPrice>8450.21</discountPrice>
+<genreID>18</genreID>
+<yearPublished>186</yearPublished>
+</tuple>
+<tuple>
+<ISBN>74</ISBN>
+<title>Constanthorn</title>
+<price>6075.85</price>
+<discountPrice>6075.85</discountPrice>
+<genreID>18</genreID>
+<yearPublished>118</yearPublished>
+</tuple>
+<tuple>
+<ISBN>80</ISBN>
+<title>Keyswesground</title>
+<price>7366.69</price>
+<discountPrice>7366.69</discountPrice>
+<genreID>18</genreID>
+<yearPublished>638</yearPublished>
+</tuple>
+<tuple>
+<ISBN>83</ISBN>
+<title>Little Buryworth</title>
+<price>1778.96</price>
+<discountPrice>1778.96</discountPrice>
+<genreID>18</genreID>
+<yearPublished>835</yearPublished>
+</tuple>
+<tuple>
+<ISBN>84</ISBN>
+<title>Fendenshead</title>
+<price>1137.74</price>
+<discountPrice>1137.74</discountPrice>
+<genreID>18</genreID>
+<yearPublished>1704</yearPublished>
+</tuple>
+<tuple>
+<ISBN>92</ISBN>
+<title>Grafmanister</title>
+<price>6834.23</price>
+<discountPrice>6834.23</discountPrice>
+<genreID>18</genreID>
+<yearPublished>1061</yearPublished>
+</tuple>
+</Books>
+<BooksAuthors>
+<tuple>
+<ISBN>4</ISBN>
+<authorID>11</authorID>
+</tuple>
+<tuple>
+<ISBN>7</ISBN>
+<authorID>11</authorID>
+</tuple>
+<tuple>
+<ISBN>9</ISBN>
+<authorID>11</authorID>
+</tuple>
+<tuple>
+<ISBN>11</ISBN>
+<authorID>11</authorID>
+</tuple>
+<tuple>
+<ISBN>12</ISBN>
+<authorID>11</authorID>
+</tuple>
+<tuple>
+<ISBN>14</ISBN>
+<authorID>11</authorID>
+</tuple>
+<tuple>
+<ISBN>16</ISBN>
+<authorID>11</authorID>
+</tuple>
+<tuple>
+<ISBN>17</ISBN>
+<authorID>11</authorID>
+</tuple>
+<tuple>
+<ISBN>22</ISBN>
+<authorID>11</authorID>
+</tuple>
+<tuple>
+<ISBN>23</ISBN>
+<authorID>11</authorID>
+</tuple>
+<tuple>
+<ISBN>26</ISBN>
+<authorID>11</authorID>
+</tuple>
+<tuple>
+<ISBN>29</ISBN>
+<authorID>11</authorID>
+</tuple>
+<tuple>
+<ISBN>41</ISBN>
+<authorID>11</authorID>
+</tuple>
+<tuple>
+<ISBN>44</ISBN>
+<authorID>11</authorID>
+</tuple>
+<tuple>
+<ISBN>49</ISBN>
+<authorID>11</authorID>
+</tuple>
+<tuple>
+<ISBN>60</ISBN>
+<authorID>11</authorID>
+</tuple>
+<tuple>
+<ISBN>65</ISBN>
+<authorID>11</authorID>
+</tuple>
+<tuple>
+<ISBN>68</ISBN>
+<authorID>11</authorID>
+</tuple>
+<tuple>
+<ISBN>69</ISBN>
+<authorID>11</authorID>
+</tuple>
+<tuple>
+<ISBN>74</ISBN>
+<authorID>11</authorID>
+</tuple>
+<tuple>
+<ISBN>80</ISBN>
+<authorID>11</authorID>
+</tuple>
+<tuple>
+<ISBN>83</ISBN>
+<authorID>11</authorID>
+</tuple>
+<tuple>
+<ISBN>84</ISBN>
+<authorID>11</authorID>
+</tuple>
+<tuple>
+<ISBN>92</ISBN>
+<authorID>11</authorID>
+</tuple>
+</BooksAuthors>
+<BooksWarehouses>
+<tuple>
+<warehouseID>54</warehouseID>
+<ISBN>4</ISBN>
+<quantity>10</quantity>
+</tuple>
+<tuple>
+<warehouseID>54</warehouseID>
+<ISBN>7</ISBN>
+<quantity>10</quantity>
+</tuple>
+<tuple>
+<warehouseID>54</warehouseID>
+<ISBN>9</ISBN>
+<quantity>10</quantity>
+</tuple>
+<tuple>
+<warehouseID>54</warehouseID>
+<ISBN>11</ISBN>
+<quantity>10</quantity>
+</tuple>
+<tuple>
+<warehouseID>54</warehouseID>
+<ISBN>12</ISBN>
+<quantity>10</quantity>
+</tuple>
+<tuple>
+<warehouseID>54</warehouseID>
+<ISBN>14</ISBN>
+<quantity>10</quantity>
+</tuple>
+<tuple>
+<warehouseID>54</warehouseID>
+<ISBN>16</ISBN>
+<quantity>10</quantity>
+</tuple>
+<tuple>
+<warehouseID>54</warehouseID>
+<ISBN>17</ISBN>
+<quantity>10</quantity>
+</tuple>
+<tuple>
+<warehouseID>54</warehouseID>
+<ISBN>22</ISBN>
+<quantity>10</quantity>
+</tuple>
+<tuple>
+<warehouseID>54</warehouseID>
+<ISBN>23</ISBN>
+<quantity>10</quantity>
+</tuple>
+<tuple>
+<warehouseID>54</warehouseID>
+<ISBN>26</ISBN>
+<quantity>10</quantity>
+</tuple>
+<tuple>
+<warehouseID>54</warehouseID>
+<ISBN>29</ISBN>
+<quantity>10</quantity>
+</tuple>
+<tuple>
+<warehouseID>54</warehouseID>
+<ISBN>41</ISBN>
+<quantity>10</quantity>
+</tuple>
+<tuple>
+<warehouseID>54</warehouseID>
+<ISBN>44</ISBN>
+<quantity>10</quantity>
+</tuple>
+<tuple>
+<warehouseID>54</warehouseID>
+<ISBN>49</ISBN>
+<quantity>10</quantity>
+</tuple>
+<tuple>
+<warehouseID>54</warehouseID>
+<ISBN>60</ISBN>
+<quantity>10</quantity>
+</tuple>
+<tuple>
+<warehouseID>54</warehouseID>
+<ISBN>65</ISBN>
+<quantity>10</quantity>
+</tuple>
+<tuple>
+<warehouseID>54</warehouseID>
+<ISBN>68</ISBN>
+<quantity>10</quantity>
+</tuple>
+<tuple>
+<warehouseID>54</warehouseID>
+<ISBN>69</ISBN>
+<quantity>10</quantity>
+</tuple>
+<tuple>
+<warehouseID>54</warehouseID>
+<ISBN>74</ISBN>
+<quantity>10</quantity>
+</tuple>
+<tuple>
+<warehouseID>54</warehouseID>
+<ISBN>80</ISBN>
+<quantity>10</quantity>
+</tuple>
+<tuple>
+<warehouseID>54</warehouseID>
+<ISBN>83</ISBN>
+<quantity>10</quantity>
+</tuple>
+<tuple>
+<warehouseID>54</warehouseID>
+<ISBN>84</ISBN>
+<quantity>10</quantity>
+</tuple>
+<tuple>
+<warehouseID>54</warehouseID>
+<ISBN>92</ISBN>
+<quantity>10</quantity>
+</tuple>
+</BooksWarehouses>
+<MusicWarehouses>
+<tuple>
+<warehouseID>54</warehouseID>
+<musicID>4</musicID>
+<quantity>10</quantity>
+</tuple>
+<tuple>
+<warehouseID>54</warehouseID>
+<musicID>7</musicID>
+<quantity>10</quantity>
+</tuple>
+<tuple>
+<warehouseID>54</warehouseID>
+<musicID>9</musicID>
+<quantity>10</quantity>
+</tuple>
+<tuple>
+<warehouseID>54</warehouseID>
+<musicID>11</musicID>
+<quantity>10</quantity>
+</tuple>
+<tuple>
+<warehouseID>54</warehouseID>
+<musicID>12</musicID>
+<quantity>10</quantity>
+</tuple>
+<tuple>
+<warehouseID>54</warehouseID>
+<musicID>14</musicID>
+<quantity>10</quantity>
+</tuple>
+<tuple>
+<warehouseID>54</warehouseID>
+<musicID>16</musicID>
+<quantity>10</quantity>
+</tuple>
+<tuple>
+<warehouseID>54</warehouseID>
+<musicID>17</musicID>
+<quantity>10</quantity>
+</tuple>
+<tuple>
+<warehouseID>54</warehouseID>
+<musicID>22</musicID>
+<quantity>10</quantity>
+</tuple>
+<tuple>
+<warehouseID>54</warehouseID>
+<musicID>23</musicID>
+<quantity>10</quantity>
+</tuple>
+<tuple>
+<warehouseID>54</warehouseID>
+<musicID>26</musicID>
+<quantity>10</quantity>
+</tuple>
+<tuple>
+<warehouseID>54</warehouseID>
+<musicID>29</musicID>
+<quantity>10</quantity>
+</tuple>
+<tuple>
+<warehouseID>54</warehouseID>
+<musicID>41</musicID>
+<quantity>10</quantity>
+</tuple>
+<tuple>
+<warehouseID>54</warehouseID>
+<musicID>44</musicID>
+<quantity>10</quantity>
+</tuple>
+<tuple>
+<warehouseID>54</warehouseID>
+<musicID>49</musicID>
+<quantity>10</quantity>
+</tuple>
+<tuple>
+<warehouseID>54</warehouseID>
+<musicID>60</musicID>
+<quantity>10</quantity>
+</tuple>
+<tuple>
+<warehouseID>54</warehouseID>
+<musicID>65</musicID>
+<quantity>10</quantity>
+</tuple>
+<tuple>
+<warehouseID>54</warehouseID>
+<musicID>68</musicID>
+<quantity>10</quantity>
+</tuple>
+<tuple>
+<warehouseID>54</warehouseID>
+<musicID>69</musicID>
+<quantity>10</quantity>
+</tuple>
+<tuple>
+<warehouseID>54</warehouseID>
+<musicID>74</musicID>
+<quantity>10</quantity>
+</tuple>
+<tuple>
+<warehouseID>54</warehouseID>
+<musicID>80</musicID>
+<quantity>10</quantity>
+</tuple>
+<tuple>
+<warehouseID>54</warehouseID>
+<musicID>83</musicID>
+<quantity>10</quantity>
+</tuple>
+<tuple>
+<warehouseID>54</warehouseID>
+<musicID>84</musicID>
+<quantity>10</quantity>
+</tuple>
+<tuple>
+<warehouseID>54</warehouseID>
+<musicID>92</musicID>
+<quantity>10</quantity>
+</tuple>
+</MusicWarehouses>
+<MusicArtists>
+<tuple>
+<musicID>4</musicID>
+<artistID>11</artistID>
+</tuple>
+<tuple>
+<musicID>7</musicID>
+<artistID>11</artistID>
+</tuple>
+<tuple>
+<musicID>9</musicID>
+<artistID>11</artistID>
+</tuple>
+<tuple>
+<musicID>11</musicID>
+<artistID>11</artistID>
+</tuple>
+<tuple>
+<musicID>12</musicID>
+<artistID>11</artistID>
+</tuple>
+<tuple>
+<musicID>14</musicID>
+<artistID>11</artistID>
+</tuple>
+<tuple>
+<musicID>16</musicID>
+<artistID>11</artistID>
+</tuple>
+<tuple>
+<musicID>17</musicID>
+<artistID>11</artistID>
+</tuple>
+<tuple>
+<musicID>22</musicID>
+<artistID>11</artistID>
+</tuple>
+<tuple>
+<musicID>23</musicID>
+<artistID>11</artistID>
+</tuple>
+<tuple>
+<musicID>26</musicID>
+<artistID>11</artistID>
+</tuple>
+<tuple>
+<musicID>29</musicID>
+<artistID>11</artistID>
+</tuple>
+<tuple>
+<musicID>41</musicID>
+<artistID>11</artistID>
+</tuple>
+<tuple>
+<musicID>44</musicID>
+<artistID>11</artistID>
+</tuple>
+<tuple>
+<musicID>49</musicID>
+<artistID>11</artistID>
+</tuple>
+<tuple>
+<musicID>60</musicID>
+<artistID>11</artistID>
+</tuple>
+<tuple>
+<musicID>65</musicID>
+<artistID>11</artistID>
+</tuple>
+<tuple>
+<musicID>68</musicID>
+<artistID>11</artistID>
+</tuple>
+<tuple>
+<musicID>69</musicID>
+<artistID>11</artistID>
+</tuple>
+<tuple>
+<musicID>74</musicID>
+<artistID>11</artistID>
+</tuple>
+<tuple>
+<musicID>80</musicID>
+<artistID>11</artistID>
+</tuple>
+<tuple>
+<musicID>83</musicID>
+<artistID>11</artistID>
+</tuple>
+<tuple>
+<musicID>84</musicID>
+<artistID>11</artistID>
+</tuple>
+<tuple>
+<musicID>92</musicID>
+<artistID>11</artistID>
+</tuple>
+</MusicArtists>
+</Data>
+</database>

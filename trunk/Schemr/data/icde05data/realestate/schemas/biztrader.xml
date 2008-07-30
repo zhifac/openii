@@ -1,0 +1,174 @@
+<search>
+<form>
+<source name="biztrader"/>
+<element>
+<element vname="iCategory" text=" Category" type="select">
+<values>
+<item nicevalue="Agricultural"/>
+<item nicevalue="Apartment Complexes"/>
+<item nicevalue="Commercial Land"/>
+<item nicevalue="Executive Suites"/>
+<item nicevalue="Farms/Ranches"/>
+<item nicevalue="High Rises"/>
+<item nicevalue="Hotels/ Resorts"/>
+<item nicevalue="Industrial Space For Lease"/>
+<item nicevalue="Industrial Space For Sale"/>
+<item nicevalue="Medical Space"/>
+<item nicevalue="Office Space For Lease"/>
+<item nicevalue="Office Space For Sale"/>
+<item nicevalue="Other"/>
+<item nicevalue="Restaurant Space"/>
+<item nicevalue="Retail Space For Lease"/>
+<item nicevalue="Retail Space For Sale"/>
+<item nicevalue="Shopping Centers For Sale"/>
+<item nicevalue="Showrooms"/>
+<item nicevalue="Sublet Situations"/>
+</values>
+</element>
+<element vname="szState" text=" Location US State" type="select">
+<values>
+<item nicevalue="Alabama"/>
+<item nicevalue="Alaska"/>
+<item nicevalue="Arizona"/>
+<item nicevalue="Arkansas"/>
+<item nicevalue="California"/>
+<item nicevalue="Colorado"/>
+<item nicevalue="Connecticut"/>
+<item nicevalue="Delaware"/>
+<item nicevalue="District of Columbia"/>
+<item nicevalue="Florida"/>
+<item nicevalue="Georgia"/>
+<item nicevalue="Hawaii"/>
+<item nicevalue="Idaho"/>
+<item nicevalue="Illinois"/>
+<item nicevalue="Indiana"/>
+<item nicevalue="Iowa"/>
+<item nicevalue="Kansas"/>
+<item nicevalue="Kentucky"/>
+<item nicevalue="Louisiana"/>
+<item nicevalue="Maine"/>
+<item nicevalue="Maryland"/>
+<item nicevalue="Massachusetts"/>
+<item nicevalue="Michigan"/>
+<item nicevalue="Minnesota"/>
+<item nicevalue="Mississippi"/>
+<item nicevalue="Missouri"/>
+<item nicevalue="Montana"/>
+<item nicevalue="Nebraska"/>
+<item nicevalue="Nevada"/>
+<item nicevalue="New Hampshire"/>
+<item nicevalue="New Jersey"/>
+<item nicevalue="New Mexico"/>
+<item nicevalue="New York"/>
+<item nicevalue="North Carolina"/>
+<item nicevalue="North Dakota"/>
+<item nicevalue="Ohio"/>
+<item nicevalue="Oklahoma"/>
+<item nicevalue="Oregon"/>
+<item nicevalue="Pennsylvania"/>
+<item nicevalue="Rhode Island"/>
+<item nicevalue="South Carolina"/>
+<item nicevalue="South Dakota"/>
+<item nicevalue="Tennessee"/>
+<item nicevalue="Texas"/>
+<item nicevalue="Utah"/>
+<item nicevalue="Vermont"/>
+<item nicevalue="Virginia"/>
+<item nicevalue="Washington"/>
+<item nicevalue="West Virginia"/>
+<item nicevalue="Wisconsin"/>
+<item nicevalue="Wyoming"/>
+</values>
+</element>
+<element vname="szCountry" text=" Location International" type="select">
+<values>
+<item nicevalue="Africa Algeria"/>
+<item nicevalue="Africa Congo"/>
+<item nicevalue="Africa Egypt"/>
+<item nicevalue="Africa Ethiopia"/>
+<item nicevalue="Africa Libya"/>
+<item nicevalue="Africa Madagascar"/>
+<item nicevalue="Africa South Africa"/>
+<item nicevalue="Africa Sudan"/>
+<item nicevalue="Asia China"/>
+<item nicevalue="Asia India"/>
+<item nicevalue="Asia Iran"/>
+<item nicevalue="Asia Iraq"/>
+<item nicevalue="Asia Israel"/>
+<item nicevalue="Asia Japan"/>
+<item nicevalue="Asia Kuwait"/>
+<item nicevalue="Asia Mongolia"/>
+<item nicevalue="Asia Pakistan"/>
+<item nicevalue="Asia Russia"/>
+<item nicevalue="Asia Saudi Arabia"/>
+<item nicevalue="Asia Syria"/>
+<item nicevalue="Asia Taiwan"/>
+<item nicevalue="Australia"/>
+<item nicevalue="Canada Alberta"/>
+<item nicevalue="Canada British Columbia"/>
+<item nicevalue="Canada Labrador"/>
+<item nicevalue="Canada Manitoba"/>
+<item nicevalue="Canada New Brunswick"/>
+<item nicevalue="Canada Newfoundland"/>
+<item nicevalue="Canada Northwest Territories"/>
+<item nicevalue="Canada Nova Scotia"/>
+<item nicevalue="Canada Ontario"/>
+<item nicevalue="Canada Prince Edward Island"/>
+<item nicevalue="Canada Quebec"/>
+<item nicevalue="Canada Saskatchewan"/>
+<item nicevalue="Canada Yukon"/>
+<item nicevalue="Caribbean Bahamas"/>
+<item nicevalue="Caribbean Cuba"/>
+<item nicevalue="Caribbean Dominican Republic"/>
+<item nicevalue="Caribbean Haiti"/>
+<item nicevalue="Caribbean Jamaica"/>
+<item nicevalue="Central America Belize"/>
+<item nicevalue="Central America Costa Rica"/>
+<item nicevalue="Central America El Salvador"/>
+<item nicevalue="Central America Guatemala"/>
+<item nicevalue="Central America Honduras"/>
+<item nicevalue="Central America Mexico"/>
+<item nicevalue="Central America Nicaragua"/>
+<item nicevalue="Central America Panama"/>
+<item nicevalue="Europe Austria"/>
+<item nicevalue="Europe Belgium"/>
+<item nicevalue="Europe Finland"/>
+<item nicevalue="Europe France"/>
+<item nicevalue="Europe Germany"/>
+<item nicevalue="Europe Great Britain"/>
+<item nicevalue="Europe Greece"/>
+<item nicevalue="Europe Hungary"/>
+<item nicevalue="Europe Iceland"/>
+<item nicevalue="Europe Ireland"/>
+<item nicevalue="Europe Italy"/>
+<item nicevalue="Europe Luxembourg"/>
+<item nicevalue="Europe Netherlands"/>
+<item nicevalue="Europe Norway"/>
+<item nicevalue="Europe Poland"/>
+<item nicevalue="Europe Portugal"/>
+<item nicevalue="Europe Spain"/>
+<item nicevalue="Europe Sweden"/>
+<item nicevalue="Europe Switzerland"/>
+<item nicevalue="Europe Turkey"/>
+<item nicevalue="New Zealand"/>
+<item nicevalue="South America Argentina"/>
+<item nicevalue="South America Bolivia"/>
+<item nicevalue="South America Brazil"/>
+<item nicevalue="South America Chile"/>
+<item nicevalue="South America Colombia"/>
+<item nicevalue="South America Ecuador"/>
+<item nicevalue="South America French Guiana"/>
+<item nicevalue="South America Guyana"/>
+<item nicevalue="South America Paraguay"/>
+<item nicevalue="South America Peru"/>
+<item nicevalue="South America Suriname"/>
+<item nicevalue="South America Uruguay"/>
+<item nicevalue="South America Venezuela"/>
+<item nicevalue="US Territories Guam"/>
+<item nicevalue="US Territories Puerto Rico"/>
+<item nicevalue="US Territorries Virgin Islands"/>
+</values>
+</element>
+</element>
+</form>
+</search>
