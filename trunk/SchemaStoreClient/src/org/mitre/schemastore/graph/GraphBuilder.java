@@ -95,13 +95,17 @@ public class GraphBuilder{
 		}
 	} // end method enumerateGraph()
 	
+	public SchemaElement getSchemaElement(Integer id){
+		return graphHash.get(id);
+	}
+	
 	/***
 	 * deleteSchemaElement(): Removes a schema element from the graph; 
 	 * @param schemaID ID of element being deleted
 	 * @return TRUE if element successfully deleted; FALSE otherwise
 	 *
 	 */
-	public synchronized Boolean deleteSchemaElement(Integer schemaID){
+	public Boolean deleteSchemaElement(Integer schemaID){
 		
 		SchemaElement element = graphHash.get(schemaID);
 		
