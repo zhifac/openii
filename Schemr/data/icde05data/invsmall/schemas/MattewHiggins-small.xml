@@ -1,0 +1,702 @@
+<database name="MattewHiggins-small">
+  <createdby name="MattewHiggins-small"> Created from MattewHiggins in higgins.xml by filering tables. </createdby>
+  <Schema>
+    <table name="BookGenres">
+      <column key="yes" name="genreID" null="no" type="int"/>
+      <column key="no" name="genreName" null="no" type="varchar_mid"/>
+      <column key="no" name="genreDescription" null="yes" type="varchar_large"/>
+</table>
+    <table name="Authors">
+      <column key="yes" name="authorID" null="no" type="int"/>
+      <column key="no" name="firstName" null="yes" type="varchar_mid"/>
+      <column key="no" name="lastName" null="yes" type="varchar_mid"/>
+</table>
+    <table name="Books">
+      <column key="yes" name="ISBN" null="no" type="int"/>
+      <column key="no" name="title" null="no" type="varchar"/>
+      <column key="no" name="price" null="no" type="money"/>
+      <column key="no" name="discountPrice" null="yes" type="money"/>
+      <column key="no" name="genreID" null="no" ref="BookGenres/genreID" type="int"/>
+      <column key="no" name="yearPublished" null="yes" type="int"/>
+</table>
+    <table name="BooksWarehouses">
+      <column key="no" name="warehouseID" null="no" type="int"></column>
+      <column key="no" name="ISBN" null="no" ref="Books/ISBN" type="int"/>
+      <column key="no" name="quantity" null="no" type="int"/>
+</table>
+    <table name="BooksAuthors">
+      <column key="no" name="ISBN" null="no" ref="Books/ISBN" type="int"/>
+      <column key="no" name="authorID" null="no" ref="Authors/authorID" type="int"/>
+</table>
+  </Schema>
+  <Data>
+    <BookGenres>
+<tuple>
+<genreID>18</genreID>
+<genreName>Oak Hill Fountain</genreName>
+<genreDescription>Women who look like spiders attack indecently with good reason. </genreDescription>
+</tuple>
+<tuple>
+<genreID>30</genreID>
+<genreName>Marine Park</genreName>
+<genreDescription>People who eat too little vitamin E strip extremely with Noel Edmonds. </genreDescription>
+</tuple>
+<tuple>
+<genreID>60</genreID>
+<genreName>Massen Circle</genreName>
+<genreDescription>Grandmothers groan indulgently in the London Paladium. </genreDescription>
+</tuple>
+<tuple>
+<genreID>118</genreID>
+<genreName>Thakurdwar View</genreName>
+<genreDescription>Genghis Khan and Marco Polo chair spasmodically in the dining room. </genreDescription>
+</tuple>
+<tuple>
+<genreID>186</genreID>
+<genreName>Gloucester End</genreName>
+<genreDescription>Nintendo owners crunch critically in Madrid. </genreDescription>
+</tuple>
+<tuple>
+<genreID>297</genreID>
+<genreName>Bell Drive</genreName>
+<genreDescription>Operatic singers sink emphatically on the motorway. </genreDescription>
+</tuple>
+<tuple>
+<genreID>422</genreID>
+<genreName>Delisle Avenue</genreName>
+<genreDescription>Cement Mixers contemplate cryogenically some of the time. </genreDescription>
+</tuple>
+<tuple>
+<genreID>438</genreID>
+<genreName>Van Sicklen View</genreName>
+<genreDescription>Shopkeepers suffocate awfully with a shoe horn. </genreDescription>
+</tuple>
+<tuple>
+<genreID>466</genreID>
+<genreName>Woodhouse Park</genreName>
+<genreDescription>Actors point backwardly in the dining room. </genreDescription>
+</tuple>
+<tuple>
+<genreID>638</genreID>
+<genreName>Van Sicklen Close</genreName>
+<genreDescription>Train Spotters strip agreeably using red ink. </genreDescription>
+</tuple>
+<tuple>
+<genreID>640</genreID>
+<genreName>Carnac Way</genreName>
+<genreDescription>The Marx brothers chuck enormously on the QE2. </genreDescription>
+</tuple>
+<tuple>
+<genreID>835</genreID>
+<genreName>Low rise Lane</genreName>
+<genreDescription>Very tall jockeys save forensically in Berlin. </genreDescription>
+</tuple>
+<tuple>
+<genreID>992</genreID>
+<genreName>Woodby Close</genreName>
+<genreDescription>Nuthatches paddle vacuously with a cup of coffee. </genreDescription>
+</tuple>
+<tuple>
+<genreID>1026</genreID>
+<genreName>South Brownell Way</genreName>
+<genreDescription>People who speak Latin punctuate esoterically while eating cabbage. </genreDescription>
+</tuple>
+<tuple>
+<genreID>1061</genreID>
+<genreName>Bakelite Drive</genreName>
+<genreDescription>Authors hypnotise openly - who can tell why? </genreDescription>
+</tuple>
+<tuple>
+<genreID>1065</genreID>
+<genreName>Redmond Street</genreName>
+<genreDescription>Goblins watch hugely in a garage. </genreDescription>
+</tuple>
+<tuple>
+<genreID>1150</genreID>
+<genreName>Harvey Way</genreName>
+<genreDescription>Kirk and Spock hide ingeniously with sawdust. </genreDescription>
+</tuple>
+<tuple>
+<genreID>1218</genreID>
+<genreName>Marine End</genreName>
+<genreDescription>Tradespeople impore apricotly because it's snowing. </genreDescription>
+</tuple>
+<tuple>
+<genreID>1248</genreID>
+<genreName>Essex Way</genreName>
+<genreDescription>Gnomes magnetize esoterically with some melted chocolate. </genreDescription>
+</tuple>
+<tuple>
+<genreID>1530</genreID>
+<genreName>Woodby Drive</genreName>
+<genreDescription>Students emigrate exceptionally in a telephone kiosk. </genreDescription>
+</tuple>
+<tuple>
+<genreID>1614</genreID>
+<genreName>Oak Hill End</genreName>
+<genreDescription>Silly people dance fadedly on a desk. </genreDescription>
+</tuple>
+<tuple>
+<genreID>1695</genreID>
+<genreName>Grant Lane</genreName>
+<genreDescription>Judges slave drearily on a Tuesday. </genreDescription>
+</tuple>
+<tuple>
+<genreID>1704</genreID>
+<genreName>West Butternut Street</genreName>
+<genreDescription>People with red hair describe microscopically with a calendar. </genreDescription>
+</tuple>
+<tuple>
+<genreID>1753</genreID>
+<genreName>West Oak Road</genreName>
+<genreDescription>Red Cheeses hang splendidly on a Thursday. </genreDescription>
+</tuple>
+<tuple>
+<genreID>1885</genreID>
+<genreName>Harvey Hill</genreName>
+<genreDescription>Hang Gliders enjoy solidly in the Doctor's waiting room.</genreDescription>
+</tuple>
+</BookGenres>
+    <Books>
+<tuple>
+<ISBN>4</ISBN>
+<title>Kimbmidding</title>
+<price>5660.65</price>
+<discountPrice>5660.65</discountPrice>
+<genreID>18</genreID>
+<yearPublished>1885</yearPublished>
+</tuple>
+<tuple>
+<ISBN>7</ISBN>
+<title>Fellby</title>
+<price>3032.40</price>
+<discountPrice>3032.40</discountPrice>
+<genreID>18</genreID>
+<yearPublished>640</yearPublished>
+</tuple>
+<tuple>
+<ISBN>9</ISBN>
+<title>Old Alconmidshead</title>
+<price>2544.85</price>
+<discountPrice>2544.85</discountPrice>
+<genreID>18</genreID>
+<yearPublished>1695</yearPublished>
+</tuple>
+<tuple>
+<ISBN>11</ISBN>
+<title>West Farham</title>
+<price>3050.23</price>
+<discountPrice>3050.23</discountPrice>
+<genreID>18</genreID>
+<yearPublished>992</yearPublished>
+</tuple>
+<tuple>
+<ISBN>12</ISBN>
+<title>Greater Stiling</title>
+<price>3354.55</price>
+<discountPrice>3354.55</discountPrice>
+<genreID>18</genreID>
+<yearPublished>1150</yearPublished>
+</tuple>
+<tuple>
+<ISBN>14</ISBN>
+<title>Stilithwick</title>
+<price>1519.29</price>
+<discountPrice>1519.29</discountPrice>
+<genreID>18</genreID>
+<yearPublished>18</yearPublished>
+</tuple>
+<tuple>
+<ISBN>16</ISBN>
+<title>Iliding</title>
+<price>6969.37</price>
+<discountPrice>6969.37</discountPrice>
+<genreID>18</genreID>
+<yearPublished>1065</yearPublished>
+</tuple>
+<tuple>
+<ISBN>17</ISBN>
+<title>Spaldfieldots</title>
+<price>3345.90</price>
+<discountPrice>3345.90</discountPrice>
+<genreID>18</genreID>
+<yearPublished>1614</yearPublished>
+</tuple>
+<tuple>
+<ISBN>22</ISBN>
+<title>Upces</title>
+<price>1680.66</price>
+<discountPrice>1680.66</discountPrice>
+<genreID>18</genreID>
+<yearPublished>438</yearPublished>
+</tuple>
+<tuple>
+<ISBN>23</ISBN>
+<title>East Houghcon</title>
+<price>3244.73</price>
+<discountPrice>3244.73</discountPrice>
+<genreID>18</genreID>
+<yearPublished>422</yearPublished>
+</tuple>
+<tuple>
+<ISBN>26</ISBN>
+<title>Queenschethorn</title>
+<price>211.10</price>
+<discountPrice>211.10</discountPrice>
+<genreID>18</genreID>
+<yearPublished>1218</yearPublished>
+</tuple>
+<tuple>
+<ISBN>29</ISBN>
+<title>East Yaxveltry</title>
+<price>7517.24</price>
+<discountPrice>7517.24</discountPrice>
+<genreID>18</genreID>
+<yearPublished>1530</yearPublished>
+</tuple>
+<tuple>
+<ISBN>41</ISBN>
+<title>Great Conworththorn</title>
+<price>1380.70</price>
+<discountPrice>1380.70</discountPrice>
+<genreID>18</genreID>
+<yearPublished>1026</yearPublished>
+</tuple>
+<tuple>
+<ISBN>44</ISBN>
+<title>Queenswes</title>
+<price>9012.64</price>
+<discountPrice>9012.64</discountPrice>
+<genreID>18</genreID>
+<yearPublished>297</yearPublished>
+</tuple>
+<tuple>
+<ISBN>49</ISBN>
+<title>Kingsashwick</title>
+<price>1447.42</price>
+<discountPrice>1447.42</discountPrice>
+<genreID>18</genreID>
+<yearPublished>466</yearPublished>
+</tuple>
+<tuple>
+<ISBN>60</ISBN>
+<title>Radmouthville</title>
+<price>8335.23</price>
+<discountPrice>8335.23</discountPrice>
+<genreID>18</genreID>
+<yearPublished>60</yearPublished>
+</tuple>
+<tuple>
+<ISBN>65</ISBN>
+<title>Greater Keysdin</title>
+<price>3455.75</price>
+<discountPrice>3455.75</discountPrice>
+<genreID>18</genreID>
+<yearPublished>1248</yearPublished>
+</tuple>
+<tuple>
+<ISBN>68</ISBN>
+<title>East Fenridge</title>
+<price>6955.58</price>
+<discountPrice>6955.58</discountPrice>
+<genreID>18</genreID>
+<yearPublished>30</yearPublished>
+</tuple>
+<tuple>
+<ISBN>69</ISBN>
+<title>West Kingsforground</title>
+<price>8450.21</price>
+<discountPrice>8450.21</discountPrice>
+<genreID>18</genreID>
+<yearPublished>186</yearPublished>
+</tuple>
+<tuple>
+<ISBN>74</ISBN>
+<title>Constanthorn</title>
+<price>6075.85</price>
+<discountPrice>6075.85</discountPrice>
+<genreID>18</genreID>
+<yearPublished>118</yearPublished>
+</tuple>
+<tuple>
+<ISBN>80</ISBN>
+<title>Keyswesground</title>
+<price>7366.69</price>
+<discountPrice>7366.69</discountPrice>
+<genreID>18</genreID>
+<yearPublished>638</yearPublished>
+</tuple>
+<tuple>
+<ISBN>83</ISBN>
+<title>Little Buryworth</title>
+<price>1778.96</price>
+<discountPrice>1778.96</discountPrice>
+<genreID>18</genreID>
+<yearPublished>835</yearPublished>
+</tuple>
+<tuple>
+<ISBN>84</ISBN>
+<title>Fendenshead</title>
+<price>1137.74</price>
+<discountPrice>1137.74</discountPrice>
+<genreID>18</genreID>
+<yearPublished>1704</yearPublished>
+</tuple>
+<tuple>
+<ISBN>92</ISBN>
+<title>Grafmanister</title>
+<price>6834.23</price>
+<discountPrice>6834.23</discountPrice>
+<genreID>18</genreID>
+<yearPublished>1061</yearPublished>
+</tuple>
+</Books>
+    <BooksAuthors>
+<tuple>
+<ISBN>4</ISBN>
+<authorID>11</authorID>
+</tuple>
+<tuple>
+<ISBN>7</ISBN>
+<authorID>11</authorID>
+</tuple>
+<tuple>
+<ISBN>9</ISBN>
+<authorID>11</authorID>
+</tuple>
+<tuple>
+<ISBN>11</ISBN>
+<authorID>11</authorID>
+</tuple>
+<tuple>
+<ISBN>12</ISBN>
+<authorID>11</authorID>
+</tuple>
+<tuple>
+<ISBN>14</ISBN>
+<authorID>11</authorID>
+</tuple>
+<tuple>
+<ISBN>16</ISBN>
+<authorID>11</authorID>
+</tuple>
+<tuple>
+<ISBN>17</ISBN>
+<authorID>11</authorID>
+</tuple>
+<tuple>
+<ISBN>22</ISBN>
+<authorID>11</authorID>
+</tuple>
+<tuple>
+<ISBN>23</ISBN>
+<authorID>11</authorID>
+</tuple>
+<tuple>
+<ISBN>26</ISBN>
+<authorID>11</authorID>
+</tuple>
+<tuple>
+<ISBN>29</ISBN>
+<authorID>11</authorID>
+</tuple>
+<tuple>
+<ISBN>41</ISBN>
+<authorID>11</authorID>
+</tuple>
+<tuple>
+<ISBN>44</ISBN>
+<authorID>11</authorID>
+</tuple>
+<tuple>
+<ISBN>49</ISBN>
+<authorID>11</authorID>
+</tuple>
+<tuple>
+<ISBN>60</ISBN>
+<authorID>11</authorID>
+</tuple>
+<tuple>
+<ISBN>65</ISBN>
+<authorID>11</authorID>
+</tuple>
+<tuple>
+<ISBN>68</ISBN>
+<authorID>11</authorID>
+</tuple>
+<tuple>
+<ISBN>69</ISBN>
+<authorID>11</authorID>
+</tuple>
+<tuple>
+<ISBN>74</ISBN>
+<authorID>11</authorID>
+</tuple>
+<tuple>
+<ISBN>80</ISBN>
+<authorID>11</authorID>
+</tuple>
+<tuple>
+<ISBN>83</ISBN>
+<authorID>11</authorID>
+</tuple>
+<tuple>
+<ISBN>84</ISBN>
+<authorID>11</authorID>
+</tuple>
+<tuple>
+<ISBN>92</ISBN>
+<authorID>11</authorID>
+</tuple>
+</BooksAuthors>
+    <BooksWarehouses>
+<tuple>
+<warehouseID>54</warehouseID>
+<ISBN>4</ISBN>
+<quantity>10</quantity>
+</tuple>
+<tuple>
+<warehouseID>54</warehouseID>
+<ISBN>7</ISBN>
+<quantity>10</quantity>
+</tuple>
+<tuple>
+<warehouseID>54</warehouseID>
+<ISBN>9</ISBN>
+<quantity>10</quantity>
+</tuple>
+<tuple>
+<warehouseID>54</warehouseID>
+<ISBN>11</ISBN>
+<quantity>10</quantity>
+</tuple>
+<tuple>
+<warehouseID>54</warehouseID>
+<ISBN>12</ISBN>
+<quantity>10</quantity>
+</tuple>
+<tuple>
+<warehouseID>54</warehouseID>
+<ISBN>14</ISBN>
+<quantity>10</quantity>
+</tuple>
+<tuple>
+<warehouseID>54</warehouseID>
+<ISBN>16</ISBN>
+<quantity>10</quantity>
+</tuple>
+<tuple>
+<warehouseID>54</warehouseID>
+<ISBN>17</ISBN>
+<quantity>10</quantity>
+</tuple>
+<tuple>
+<warehouseID>54</warehouseID>
+<ISBN>22</ISBN>
+<quantity>10</quantity>
+</tuple>
+<tuple>
+<warehouseID>54</warehouseID>
+<ISBN>23</ISBN>
+<quantity>10</quantity>
+</tuple>
+<tuple>
+<warehouseID>54</warehouseID>
+<ISBN>26</ISBN>
+<quantity>10</quantity>
+</tuple>
+<tuple>
+<warehouseID>54</warehouseID>
+<ISBN>29</ISBN>
+<quantity>10</quantity>
+</tuple>
+<tuple>
+<warehouseID>54</warehouseID>
+<ISBN>41</ISBN>
+<quantity>10</quantity>
+</tuple>
+<tuple>
+<warehouseID>54</warehouseID>
+<ISBN>44</ISBN>
+<quantity>10</quantity>
+</tuple>
+<tuple>
+<warehouseID>54</warehouseID>
+<ISBN>49</ISBN>
+<quantity>10</quantity>
+</tuple>
+<tuple>
+<warehouseID>54</warehouseID>
+<ISBN>60</ISBN>
+<quantity>10</quantity>
+</tuple>
+<tuple>
+<warehouseID>54</warehouseID>
+<ISBN>65</ISBN>
+<quantity>10</quantity>
+</tuple>
+<tuple>
+<warehouseID>54</warehouseID>
+<ISBN>68</ISBN>
+<quantity>10</quantity>
+</tuple>
+<tuple>
+<warehouseID>54</warehouseID>
+<ISBN>69</ISBN>
+<quantity>10</quantity>
+</tuple>
+<tuple>
+<warehouseID>54</warehouseID>
+<ISBN>74</ISBN>
+<quantity>10</quantity>
+</tuple>
+<tuple>
+<warehouseID>54</warehouseID>
+<ISBN>80</ISBN>
+<quantity>10</quantity>
+</tuple>
+<tuple>
+<warehouseID>54</warehouseID>
+<ISBN>83</ISBN>
+<quantity>10</quantity>
+</tuple>
+<tuple>
+<warehouseID>54</warehouseID>
+<ISBN>84</ISBN>
+<quantity>10</quantity>
+</tuple>
+<tuple>
+<warehouseID>54</warehouseID>
+<ISBN>92</ISBN>
+<quantity>10</quantity>
+</tuple>
+</BooksWarehouses>
+    <Authors>
+<tuple>
+<authorID>11</authorID>
+<firstName>Male</firstName>
+<lastName>Ankunding</lastName>
+</tuple>
+<tuple>
+<authorID>13</authorID>
+<firstName>Vinnie</firstName>
+<lastName>Kemmer</lastName>
+</tuple>
+<tuple>
+<authorID>17</authorID>
+<firstName>Landon</firstName>
+<lastName>Nienow</lastName>
+</tuple>
+<tuple>
+<authorID>18</authorID>
+<firstName>Trevion</firstName>
+<lastName>Johns</lastName>
+</tuple>
+<tuple>
+<authorID>22</authorID>
+<firstName>Reuben</firstName>
+<lastName>Runolfsson</lastName>
+</tuple>
+<tuple>
+<authorID>24</authorID>
+<firstName>Hester</firstName>
+<lastName>Mante</lastName>
+</tuple>
+<tuple>
+<authorID>28</authorID>
+<firstName>Parker</firstName>
+<lastName>Jakubowski</lastName>
+</tuple>
+<tuple>
+<authorID>34</authorID>
+<firstName>Roxie</firstName>
+<lastName>Willms</lastName>
+</tuple>
+<tuple>
+<authorID>39</authorID>
+<firstName>Mallie</firstName>
+<lastName>Quigley</lastName>
+</tuple>
+<tuple>
+<authorID>46</authorID>
+<firstName>Jerome</firstName>
+<lastName>Douglas</lastName>
+</tuple>
+<tuple>
+<authorID>49</authorID>
+<firstName>Imelda</firstName>
+<lastName>Towne</lastName>
+</tuple>
+<tuple>
+<authorID>50</authorID>
+<firstName>Keira</firstName>
+<lastName>Walter</lastName>
+</tuple>
+<tuple>
+<authorID>53</authorID>
+<firstName>Forrest</firstName>
+<lastName>Kihn</lastName>
+</tuple>
+<tuple>
+<authorID>54</authorID>
+<firstName>Brianne</firstName>
+<lastName>Mohr</lastName>
+</tuple>
+<tuple>
+<authorID>64</authorID>
+<firstName>Kathlyn</firstName>
+<lastName>Mohr</lastName>
+</tuple>
+<tuple>
+<authorID>68</authorID>
+<firstName>Rico</firstName>
+<lastName>Swaniawski</lastName>
+</tuple>
+<tuple>
+<authorID>72</authorID>
+<firstName>Zelma</firstName>
+<lastName>Strosin</lastName>
+</tuple>
+<tuple>
+<authorID>76</authorID>
+<firstName>Tyler</firstName>
+<lastName>Bartoletti</lastName>
+</tuple>
+<tuple>
+<authorID>82</authorID>
+<firstName>Millard</firstName>
+<lastName>Johnston</lastName>
+</tuple>
+<tuple>
+<authorID>85</authorID>
+<firstName>Alvaro</firstName>
+<lastName>Lesch</lastName>
+</tuple>
+<tuple>
+<authorID>87</authorID>
+<firstName>Sherwood</firstName>
+<lastName>Moore</lastName>
+</tuple>
+<tuple>
+<authorID>94</authorID>
+<firstName>Carlos</firstName>
+<lastName>Little</lastName>
+</tuple>
+<tuple>
+<authorID>95</authorID>
+<firstName>Sydney</firstName>
+<lastName>Jewess</lastName>
+</tuple>
+<tuple>
+<authorID>98</authorID>
+<firstName>Delpha</firstName>
+<lastName>Leannon</lastName>
+</tuple>
+<tuple>
+<authorID>99</authorID>
+<firstName>Alden</firstName>
+<lastName>Hintz</lastName>
+</tuple>
+</Authors>
+  </Data>
+</database>

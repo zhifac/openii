@@ -1,0 +1,555 @@
+<database name="BrankicaBokanTomic-small">
+  <createdby name="BrankicaBokanTomic-small"> Created from BrankicaBokanTomic in bokan-tomic.xml by filering tables. </createdby>
+  <Schema>
+    <table name="Product">
+      <column key="yes" name="Number" null="yes" type="char_mid"/>
+      <column key="no" name="Category" null="yes" type="char_mid"/>
+</table>
+    <table name="Availability">
+      <column key="no" name="ProductNumber" null="yes" ref="Product/Number" type="char_mid"/>
+      <column key="no" name="WarehouseName" null="yes" type="varchar_mid"></column>
+      <column key="no" name="QuantityInStock" null="yes" type="int"/>
+</table>
+    <table name="DiscountedItem">
+      <column key="no" name="ProductNumber" null="yes" ref="Product/Number" type="char_mid"/>
+      <column key="no" name="DiscountPrice" null="yes" type="decimal_point"/>
+</table>
+    <table name="Book">
+      <column key="no" name="ProductNumber" null="yes" ref="Product/Number" type="char_mid"/>
+      <column key="yes" name="ISBN" null="yes" type="char_mid"/>
+      <column key="no" name="Title" null="yes" type="varchar_mid"/>
+      <column key="no" name="Edition" null="yes" type="varchar_mid"/>
+      <column key="no" name="Year" null="yes" type="int"/>
+      <column key="no" name="CopyWrite" null="yes" type="varchar_mid"/>
+      <column key="no" name="Publisher" null="yes" type="varchar_mid"/>
+      <column key="no" name="Category" null="yes" type="varchar_mid"/>
+      <column key="no" name="Keywords" null="yes" type="varchar_mid"/>
+      <column key="no" name="Price" null="yes" type="decimal_point"/>
+</table>
+    <table name="BookToAuthor">
+      <column key="no" name="BookISBN" null="yes" ref="Book/ISBN" type="char_mid"/>
+      <column key="no" name="AuthorName" null="yes" type="char_mid"/>
+</table>
+  </Schema>
+  <Data>
+    <BookToAuthor>
+<tuple><BookISBN>ISBN 0-13-031995-3            </BookISBN>
+<AuthorName>Hector Garcia-Molina                              
+</AuthorName>
+</tuple><tuple><BookISBN>ISBN 0-13-031995-3            </BookISBN>
+<AuthorName>Jeffrey D.Ullman                                  
+</AuthorName>
+</tuple><tuple><BookISBN>ISBN 0-13-031995-3            </BookISBN>
+<AuthorName>Jennifer Widom                                    
+</AuthorName>
+</tuple><tuple><BookISBN>ISBN 0-01-536064-4            </BookISBN>
+<AuthorName>Michael Sipser                                    
+</AuthorName>
+</tuple><tuple><BookISBN>ISBN 1-99-144296-2            </BookISBN>
+<AuthorName>Allen Tucker                                      
+</AuthorName>
+</tuple><tuple><BookISBN>ISBN 1-99-144296-2            </BookISBN>
+<AuthorName>Robert Noonan                                     
+</AuthorName>
+</tuple><tuple><BookISBN>ISBN 0-17-844474-0            </BookISBN>
+<AuthorName>Lois J. McDermott                                 
+</AuthorName>
+</tuple><tuple><BookISBN>ISBN 0-65-954347-1            </BookISBN>
+<AuthorName>Sarah Trenholm                                    
+</AuthorName>
+</tuple><tuple><BookISBN>ISBN 1-22-200311-6            </BookISBN>
+<AuthorName>Seth Morgan                                       
+</AuthorName>
+</tuple><tuple><BookISBN>ISBN 1-46-835707-3            </BookISBN>
+<AuthorName>Frank McCourt                                     
+</AuthorName>
+</tuple><tuple><BookISBN>ISBN 0-15-864338-5            </BookISBN>
+<AuthorName>Arthur C. Clarke                                  
+</AuthorName>
+</tuple><tuple><BookISBN>ISBN 1-30-246686-1            </BookISBN>
+<AuthorName>Frank M. Robinson                                 
+</AuthorName>
+</tuple><tuple><BookISBN>ISBN 0-26-271026-4            </BookISBN>
+<AuthorName>Anne Bronte                                       
+</AuthorName>
+</tuple><tuple><BookISBN>ISBN 0-51-516035-5            </BookISBN>
+<AuthorName>Kim Carlson                                       
+</AuthorName>
+</tuple><tuple><BookISBN>ISBN 0-26-218442-6            </BookISBN>
+<AuthorName>Alfred A. Knopf                                   
+</AuthorName>
+</tuple><tuple><BookISBN>ISBN 0-14-028258-1            </BookISBN>
+<AuthorName>Shakti Gawain                                     
+</AuthorName>
+</tuple><tuple><BookISBN>ISBN 0-45-803961-3            </BookISBN>
+<AuthorName>Vernor Vinge                                      
+</AuthorName>
+</tuple><tuple><BookISBN>ISBN 0-90-186328-1            </BookISBN>
+<AuthorName>Alfred A. Knopf                                   
+</AuthorName>
+</tuple><tuple><BookISBN>ISBN 1-48-927789-0            </BookISBN>
+<AuthorName>Silva Mehta                                       
+</AuthorName>
+</tuple><tuple><BookISBN>ISBN 1-48-927789-0            </BookISBN>
+<AuthorName>Mira Mehta                                        
+</AuthorName>
+</tuple><tuple><BookISBN>ISBN 1-48-927789-0            </BookISBN>
+<AuthorName>Shyam Mehta                                       
+</AuthorName>
+</tuple><tuple><BookISBN>ISBN 1-44-053131-8            </BookISBN>
+<AuthorName>Carl Hanson                                       
+</AuthorName>
+</tuple><tuple><BookISBN>ISBN 1-87-487197-4            </BookISBN>
+<AuthorName>Steven J. Molinsky                                
+</AuthorName>
+</tuple><tuple><BookISBN>ISBN 1-87-487197-4            </BookISBN>
+<AuthorName>Bill Bliss                                        
+</AuthorName>
+</tuple><tuple><BookISBN>ISBN 0-78-175773-2            </BookISBN>
+<AuthorName>Alfred A. Knopf                                   
+</AuthorName>
+</tuple></BookToAuthor>
+    <Book>
+<tuple><ProductNumber>048386                        </ProductNumber>
+<ISBN>ISBN 0-01-536064-4            </ISBN>
+<Title>Introduction To The Theory Of Computation</Title>
+<Edition>?</Edition>
+<Year>1997</Year>
+<CopyWrite>PWS Publishing Company</CopyWrite>
+<Publisher>International Thompson Publishing</Publisher>
+<Category>textbook</Category>
+<Keywords>?</Keywords>
+<Price>62.82
+</Price>
+</tuple><tuple><ProductNumber>029573                        </ProductNumber>
+<ISBN>ISBN 0-13-031995-3            </ISBN>
+<Title>Database Systems - The Complete Book</Title>
+<Edition>?</Edition>
+<Year>2002</Year>
+<CopyWrite>?</CopyWrite>
+<Publisher>?</Publisher>
+<Category>textbook</Category>
+<Keywords>?</Keywords>
+<Price>70.00
+</Price>
+</tuple><tuple><ProductNumber>459256                        </ProductNumber>
+<ISBN>ISBN 0-14-028258-1            </ISBN>
+<Title>Reflections In The Light</Title>
+<Edition>original</Edition>
+<Year>1988</Year>
+<CopyWrite>Shakti Gawain</CopyWrite>
+<Publisher>Group West</Publisher>
+<Category>new age</Category>
+<Keywords>?</Keywords>
+<Price>22.26
+</Price>
+</tuple><tuple><ProductNumber>317119                        </ProductNumber>
+<ISBN>ISBN 0-15-864338-5            </ISBN>
+<Title>Rama II</Title>
+<Edition>original</Edition>
+<Year>1989</Year>
+<CopyWrite>Arthur C. Clarke</CopyWrite>
+<Publisher>Bantham Books</Publisher>
+<Category>science fiction</Category>
+<Keywords>?</Keywords>
+<Price>31.33
+</Price>
+</tuple><tuple><ProductNumber>065922                        </ProductNumber>
+<ISBN>ISBN 0-17-844474-0            </ISBN>
+<Title>Human Sexuality</Title>
+<Edition>third</Edition>
+<Year>2000</Year>
+<CopyWrite>Pearson Custom Publishing</CopyWrite>
+<Publisher>?</Publisher>
+<Category>textbook</Category>
+<Keywords>?</Keywords>
+<Price>46.33
+</Price>
+</tuple><tuple><ProductNumber>403807                        </ProductNumber>
+<ISBN>ISBN 0-26-218442-6            </ISBN>
+<Title>New York</Title>
+<Edition>third</Edition>
+<Year>2001</Year>
+<CopyWrite>Alfred A. Knopf</CopyWrite>
+<Publisher>Random Hause INC.</Publisher>
+<Category>travel</Category>
+<Keywords>?</Keywords>
+<Price>34.89
+</Price>
+</tuple><tuple><ProductNumber>383329                        </ProductNumber>
+<ISBN>ISBN 0-26-271026-4            </ISBN>
+<Title>The Tenant Of Wildfell Hall</Title>
+<Edition>original</Edition>
+<Year>1994</Year>
+<CopyWrite>Wordsforth Editions Limited</CopyWrite>
+<Publisher>?</Publisher>
+<Category>fiction</Category>
+<Keywords>?</Keywords>
+<Price>14.50
+</Price>
+</tuple><tuple><ProductNumber>502250                        </ProductNumber>
+<ISBN>ISBN 0-45-803961-3            </ISBN>
+<Title>A Fire Upon The Deep</Title>
+<Edition>original</Edition>
+<Year>1992</Year>
+<CopyWrite>Vernor Vinge</CopyWrite>
+<Publisher>Tom Doherty Associates, INC.</Publisher>
+<Category>science fiction</Category>
+<Keywords>?</Keywords>
+<Price>37.76
+</Price>
+</tuple><tuple><ProductNumber>391823                        </ProductNumber>
+<ISBN>ISBN 0-51-516035-5            </ISBN>
+<Title>Best Places - Portland</Title>
+<Edition>fourth</Edition>
+<Year>1998</Year>
+<CopyWrite>Sasquatch Books</CopyWrite>
+<Publisher>?</Publisher>
+<Category>travel</Category>
+<Keywords>?</Keywords>
+<Price>32.80
+</Price>
+</tuple><tuple><ProductNumber>067630                        </ProductNumber>
+<ISBN>ISBN 0-65-954347-1            </ISBN>
+<Title>Thinking Through Communication</Title>
+<Edition>second</Edition>
+<Year>2001</Year>
+<CopyWrite>Allyn And Bacon</CopyWrite>
+<Publisher>?</Publisher>
+<Category>textbook</Category>
+<Keywords>?</Keywords>
+<Price>50.20
+</Price>
+</tuple><tuple><ProductNumber>631465                        </ProductNumber>
+<ISBN>ISBN 0-78-175773-2            </ISBN>
+<Title>Chicago</Title>
+<Edition>second</Edition>
+<Year>2002</Year>
+<CopyWrite>Alfred A. Knopf</CopyWrite>
+<Publisher>Random House INC.</Publisher>
+<Category>travel</Category>
+<Keywords>?</Keywords>
+<Price>38.79
+</Price>
+</tuple><tuple><ProductNumber>572271                        </ProductNumber>
+<ISBN>ISBN 0-90-186328-1            </ISBN>
+<Title>San Francisco</Title>
+<Edition>second</Edition>
+<Year>2002</Year>
+<CopyWrite>Alfred A. Knopf</CopyWrite>
+<Publisher>Random House INC.</Publisher>
+<Category>travel</Category>
+<Keywords>?</Keywords>
+<Price>15.16
+</Price>
+</tuple><tuple><ProductNumber>139160                        </ProductNumber>
+<ISBN>ISBN 1-17-125682-2            </ISBN>
+<Title>Life Form</Title>
+<Edition>original</Edition>
+<Year>1995</Year>
+<CopyWrite>ACE</CopyWrite>
+<Publisher>Alan Dean Foster</Publisher>
+<Category>fiction</Category>
+<Keywords>?</Keywords>
+<Price>44.40
+</Price>
+</tuple><tuple><ProductNumber>271300                        </ProductNumber>
+<ISBN>ISBN 1-22-200311-6            </ISBN>
+<Title>Homeboy</Title>
+<Edition>first</Edition>
+<Year>1990</Year>
+<CopyWrite>Seth Morgan</CopyWrite>
+<Publisher>Vintage Books</Publisher>
+<Category>fiction</Category>
+<Keywords>?</Keywords>
+<Price>23.56
+</Price>
+</tuple><tuple><ProductNumber>348334                        </ProductNumber>
+<ISBN>ISBN 1-30-246686-1            </ISBN>
+<Title>The Dark Beyond The Stars</Title>
+<Edition>original</Edition>
+<Year>1991</Year>
+<CopyWrite>Frank M. Robinson</CopyWrite>
+<Publisher>Thomas Doherty Associates, INC.</Publisher>
+<Category>science fiction</Category>
+<Keywords>?</Keywords>
+<Price>17.66
+</Price>
+</tuple><tuple><ProductNumber>625213                        </ProductNumber>
+<ISBN>ISBN 1-44-053131-8            </ISBN>
+<Title>Bed  and  Breakfast - New Mexico</Title>
+<Edition>first</Edition>
+<Year>1999</Year>
+<CopyWrite>Sasquatch Books</CopyWrite>
+<Publisher>?</Publisher>
+<Category>travel</Category>
+<Keywords>?</Keywords>
+<Price>20.64
+</Price>
+</tuple><tuple><ProductNumber>305434                        </ProductNumber>
+<ISBN>ISBN 1-46-835707-3            </ISBN>
+<Title>Angelas Ashes</Title>
+<Edition>?</Edition>
+<Year>1996</Year>
+<CopyWrite>Frank McCourt</CopyWrite>
+<Publisher>Touchstone</Publisher>
+<Category>fiction</Category>
+<Keywords>?</Keywords>
+<Price>36.19
+</Price>
+</tuple><tuple><ProductNumber>597262                        </ProductNumber>
+<ISBN>ISBN 1-48-927789-0            </ISBN>
+<Title>Yoga - The Iyengar Way</Title>
+<Edition>original</Edition>
+<Year>1990</Year>
+<CopyWrite>Dorling Kindersley Limited</CopyWrite>
+<Publisher>Alfred A. Knopf</Publisher>
+<Category>new age</Category>
+<Keywords>?</Keywords>
+<Price>60.31
+</Price>
+</tuple><tuple><ProductNumber>627664                        </ProductNumber>
+<ISBN>ISBN 1-87-487197-4            </ISBN>
+<Title>Side By Side</Title>
+<Edition>original</Edition>
+<Year>1997</Year>
+<CopyWrite>Prentice Hall Regents</CopyWrite>
+<Publisher>Louisa B. Hellgers</Publisher>
+<Category>fiction</Category>
+<Keywords>?</Keywords>
+<Price>21.54
+</Price>
+</tuple><tuple><ProductNumber>051405                        </ProductNumber>
+<ISBN>ISBN 1-99-144296-2            </ISBN>
+<Title>Programing Languages</Title>
+<Edition>second</Edition>
+<Year>2002</Year>
+<CopyWrite>The McGrawhill Companies INC.</CopyWrite>
+<Publisher>?</Publisher>
+<Category>textbook</Category>
+<Keywords>?</Keywords>
+<Price>87.43
+</Price>
+</tuple></Book>
+    <Availability>
+<tuple><ProductNumber>029573                        </ProductNumber>
+<WarehouseName>Heidenreich House</WarehouseName>
+<QuantityInStock>30
+</QuantityInStock>
+</tuple><tuple><ProductNumber>048386                        </ProductNumber>
+<WarehouseName>Heidenreich House</WarehouseName>
+<QuantityInStock>10
+</QuantityInStock>
+</tuple><tuple><ProductNumber>051405                        </ProductNumber>
+<WarehouseName>Heidenreich House</WarehouseName>
+<QuantityInStock>20
+</QuantityInStock>
+</tuple><tuple><ProductNumber>065922                        </ProductNumber>
+<WarehouseName>Heidenreich House</WarehouseName>
+<QuantityInStock>15
+</QuantityInStock>
+</tuple><tuple><ProductNumber>067630                        </ProductNumber>
+<WarehouseName>Heidenreich House</WarehouseName>
+<QuantityInStock>10
+</QuantityInStock>
+</tuple><tuple><ProductNumber>139160                        </ProductNumber>
+<WarehouseName>Heidenreich House</WarehouseName>
+<QuantityInStock>30
+</QuantityInStock>
+</tuple><tuple><ProductNumber>271300                        </ProductNumber>
+<WarehouseName>Heidenreich House</WarehouseName>
+<QuantityInStock>10
+</QuantityInStock>
+</tuple><tuple><ProductNumber>305434                        </ProductNumber>
+<WarehouseName>Heidenreich House</WarehouseName>
+<QuantityInStock>10
+</QuantityInStock>
+</tuple><tuple><ProductNumber>317119                        </ProductNumber>
+<WarehouseName>Heidenreich House</WarehouseName>
+<QuantityInStock>20
+</QuantityInStock>
+</tuple><tuple><ProductNumber>348334                        </ProductNumber>
+<WarehouseName>Heidenreich House</WarehouseName>
+<QuantityInStock>20
+</QuantityInStock>
+</tuple><tuple><ProductNumber>383329</ProductNumber>
+<WarehouseName>Roghahn</WarehouseName>
+<QuantityInStock>10
+</QuantityInStock>
+</tuple><tuple><ProductNumber>391823                        </ProductNumber>
+<WarehouseName>Roghahn</WarehouseName>
+<QuantityInStock>15
+</QuantityInStock>
+</tuple><tuple><ProductNumber>403807                        </ProductNumber>
+<WarehouseName>Roghahn</WarehouseName>
+<QuantityInStock>10
+</QuantityInStock>
+</tuple><tuple><ProductNumber>459256                        </ProductNumber>
+<WarehouseName>Roghahn</WarehouseName>
+<QuantityInStock>10
+</QuantityInStock>
+</tuple><tuple><ProductNumber>502250                        </ProductNumber>
+<WarehouseName>Roghahn</WarehouseName>
+<QuantityInStock>20
+</QuantityInStock>
+</tuple><tuple><ProductNumber>572271                        </ProductNumber>
+<WarehouseName>Roghahn</WarehouseName>
+<QuantityInStock>25
+</QuantityInStock>
+</tuple><tuple><ProductNumber>597262                        </ProductNumber>
+<WarehouseName>Roghahn</WarehouseName>
+<QuantityInStock>15
+</QuantityInStock>
+</tuple><tuple><ProductNumber>625213                        </ProductNumber>
+<WarehouseName>Roghahn</WarehouseName>
+<QuantityInStock>10
+</QuantityInStock>
+</tuple><tuple><ProductNumber>627664                        </ProductNumber>
+<WarehouseName>Roghahn</WarehouseName>
+<QuantityInStock>18
+</QuantityInStock>
+</tuple><tuple><ProductNumber>631465                        </ProductNumber>
+<WarehouseName>Roghahn</WarehouseName>
+<QuantityInStock>30
+</QuantityInStock>
+</tuple><tuple><ProductNumber>732211                        </ProductNumber>
+<WarehouseName>Frami</WarehouseName>
+<QuantityInStock>21
+</QuantityInStock>
+</tuple><tuple><ProductNumber>746105                        </ProductNumber>
+<WarehouseName>Frami</WarehouseName>
+<QuantityInStock>15
+</QuantityInStock>
+</tuple><tuple><ProductNumber>753451                        </ProductNumber>
+<WarehouseName>Cormier</WarehouseName>
+<QuantityInStock>10
+</QuantityInStock>
+</tuple><tuple><ProductNumber>789740                        </ProductNumber>
+<WarehouseName>Cormier</WarehouseName>
+<QuantityInStock>20
+</QuantityInStock>
+</tuple><tuple><ProductNumber>830142                        </ProductNumber>
+<WarehouseName>Cormier</WarehouseName>
+<QuantityInStock>14
+</QuantityInStock>
+</tuple><tuple><ProductNumber>842032                        </ProductNumber>
+<WarehouseName>Cormier</WarehouseName>
+<QuantityInStock>15
+</QuantityInStock>
+</tuple><tuple><ProductNumber>889944                        </ProductNumber>
+<WarehouseName>Cormier</WarehouseName>
+<QuantityInStock>15
+</QuantityInStock>
+</tuple><tuple><ProductNumber>898790                        </ProductNumber>
+<WarehouseName>Prohaska</WarehouseName>
+<QuantityInStock>30</QuantityInStock>
+</tuple><tuple><ProductNumber>922806                        </ProductNumber>
+<WarehouseName>Prohaska</WarehouseName>
+<QuantityInStock>20</QuantityInStock>
+</tuple><tuple><ProductNumber>948079                        </ProductNumber>
+<WarehouseName>Prohaska</WarehouseName>
+<QuantityInStock>8
+</QuantityInStock>
+</tuple></Availability>
+    <Product>
+<tuple><Number>029573                        </Number>
+<Category>music                         
+</Category>
+</tuple><tuple><Number>048386                        </Number>
+<Category>textbook                      
+</Category>
+</tuple><tuple><Number>051405                        </Number>
+<Category>music                         
+</Category>
+</tuple><tuple><Number>065922                        </Number>
+<Category>book                          
+</Category>
+</tuple><tuple><Number>067630                        </Number>
+<Category>book                          
+</Category>
+</tuple><tuple><Number>139160                        </Number>
+<Category>book                          
+</Category>
+</tuple><tuple><Number>271300                        </Number>
+<Category>music                         
+</Category>
+</tuple><tuple><Number>305434                        </Number>
+<Category>music                         
+</Category>
+</tuple><tuple><Number>317119                        </Number>
+<Category>book                          
+</Category>
+</tuple><tuple><Number>348334                        </Number>
+<Category>music                         
+</Category>
+</tuple><tuple><Number>383329                        </Number>
+<Category>book                          
+</Category>
+</tuple><tuple><Number>391823                        </Number>
+<Category>music                         
+</Category>
+</tuple><tuple><Number>403807                        </Number>
+<Category>music                         
+</Category>
+</tuple><tuple><Number>459256                        </Number>
+<Category>book                          
+</Category>
+</tuple><tuple><Number>502250                        </Number>
+<Category>book                          
+</Category>
+</tuple><tuple><Number>572271                        </Number>
+<Category>music                         
+</Category>
+</tuple><tuple><Number>597262                        </Number>
+<Category>book                          
+</Category>
+</tuple><tuple><Number>625213                        </Number>
+<Category>textbook                      
+</Category>
+</tuple><tuple><Number>627664                        </Number>
+<Category>book                          
+</Category>
+</tuple><tuple><Number>631465                        </Number>
+<Category>music                         
+</Category>
+</tuple><tuple><Number>732211                        </Number>
+<Category>book                          
+</Category>
+</tuple><tuple><Number>746105                        </Number>
+<Category>book                          
+</Category>
+</tuple><tuple><Number>753451                        </Number>
+<Category>textbook                      
+</Category>
+</tuple><tuple><Number>789740                        </Number>
+<Category>textbook                      
+</Category>
+</tuple><tuple><Number>830142                        </Number>
+<Category>music                         
+</Category>
+</tuple><tuple><Number>842032                        </Number>
+<Category>textbook                      
+</Category>
+</tuple><tuple><Number>889944                        </Number>
+<Category>book                          
+</Category>
+</tuple><tuple><Number>898790                        </Number>
+<Category>book                          
+</Category>
+</tuple><tuple><Number>922806                        </Number>
+<Category>textbook                      
+</Category>
+</tuple><tuple><Number>948079                        </Number>
+<Category>music                         
+</Category>
+</tuple></Product>
+    <DiscountedItem>
+<tuple><ProductNumber>625213                        </ProductNumber>
+<DiscountPrice>40.50
+</DiscountPrice>
+</tuple><tuple><ProductNumber>753451                        </ProductNumber>
+<DiscountPrice>10.85
+</DiscountPrice>
+</tuple></DiscountedItem>
+  </Data>
+</database>

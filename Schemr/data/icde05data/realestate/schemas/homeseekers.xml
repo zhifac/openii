@@ -1,0 +1,95 @@
+<search>
+<form>
+<source name="homeseekers"/>
+<element>
+<element vname="property type" text=" property type" type="select">
+<values>
+<item nicevalue="single family"/>
+<item nicevalue="duplex"/>
+<item nicevalue="townhouse"/>
+<item nicevalue="cabin timeshare"/>
+<item nicevalue="mfg mobile home"/>
+<item nicevalue="apartment"/>
+<item nicevalue="foreclosures"/>
+<item nicevalue="new homes"/>
+<item nicevalue="farm"/>
+<item nicevalue="ranch"/>
+<item nicevalue="land"/>
+<item nicevalue="lease"/>
+<item nicevalue="income"/>
+<item nicevalue="commercial"/>
+</values>
+</element>
+<element vname="list price" text=" price range" type="select">
+<values>
+<item nicevalue="$100k $200k"/>
+<item nicevalue="$200k $300k"/>
+<item nicevalue="$300k $400k"/>
+<item nicevalue="$400k $500k"/>
+<item nicevalue="$500k $750k"/>
+<item nicevalue="$750k 1m"/>
+<item nicevalue="1m+"/>
+</values>
+</element>
+<element vname="city name" text=" city" type="text">
+</element>
+<element vname="state" text=" state" type="select">
+<values>
+<item nicevalue="alabama"/>
+<item nicevalue="alaska"/>
+<item nicevalue="arizona"/>
+<item nicevalue="arkansas"/>
+<item nicevalue="california"/>
+<item nicevalue="colorado"/>
+<item nicevalue="connecticut"/>
+<item nicevalue="delaware"/>
+<item nicevalue="district of columbia"/>
+<item nicevalue="florida"/>
+<item nicevalue="georgia"/>
+<item nicevalue="hawaii"/>
+<item nicevalue="idaho"/>
+<item nicevalue="illinois"/>
+<item nicevalue="indiana"/>
+<item nicevalue="iowa"/>
+<item nicevalue="kansas"/>
+<item nicevalue="kentucky"/>
+<item nicevalue="louisiana"/>
+<item nicevalue="maine"/>
+<item nicevalue="maryland"/>
+<item nicevalue="massachusetts"/>
+<item nicevalue="michigan"/>
+<item nicevalue="minnesota"/>
+<item nicevalue="mississippi"/>
+<item nicevalue="missouri"/>
+<item nicevalue="montana"/>
+<item nicevalue="nebraska"/>
+<item nicevalue="nevada"/>
+<item nicevalue="new hampshire"/>
+<item nicevalue="new jersey"/>
+<item nicevalue="new mexico"/>
+<item nicevalue="new york"/>
+<item nicevalue="north carolina"/>
+<item nicevalue="north dakota"/>
+<item nicevalue="ohio"/>
+<item nicevalue="oklahoma"/>
+<item nicevalue="oregon"/>
+<item nicevalue="pennsylvania"/>
+<item nicevalue="rhode island"/>
+<item nicevalue="south carolina"/>
+<item nicevalue="south dakota"/>
+<item nicevalue="tennessee"/>
+<item nicevalue="texas"/>
+<item nicevalue="utah"/>
+<item nicevalue="vermont"/>
+<item nicevalue="virginia"/>
+<item nicevalue="washington"/>
+<item nicevalue="west virginia"/>
+<item nicevalue="wisconsin"/>
+<item nicevalue="wyoming"/>
+</values>
+</element>
+<element vname="zip code" text=" zip" type="text">
+</element>
+</element>
+</form>
+</search>

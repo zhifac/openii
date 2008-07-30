@@ -1,0 +1,102 @@
+<domain name="Automobile">
+	<search>
+		<source name="GetAuto" url="http://www2.getauto.com/autolinks_dealer_searchinventory.html?x_dealer_id=AADdr"></source>
+		<element>
+			<element vname="x_make_id" text ="Make">
+				<selectbox>
+					<item>Any</item>
+					<item>ACURA</item>
+					<item>AUDI</item>
+					<item>BMW</item>
+					<item>BUICK</item>
+					<item>CADILLAC</item>
+					<item>CHEVROLET</item>
+					<item>CHRYSLER</item>
+					<item>DODGE</item>
+					<item>FORD</item>
+				</selectbox>
+		  	</element>
+		  	<element vname="x_model" text ="Model" depends="x_make_id">
+				<selectbox>
+					<item>Choose a Model[itemal]</item>
+					<item>2.5TL</item>
+					<item>A4</item>
+					<item>318</item>
+					<item>CENTURY</item>
+					<item>REGAL</item>
+					<item>CATERA</item>
+					<item>DEVILLE</item>
+					<item>ASTRO</item>
+					<item>BLAZER</item>
+			 	</selectbox>
+			</element>
+			<element vname="keywords" text ="Or, enter some keywords">
+				<textbox/>
+			</element>
+			<element vname="body_type" text ="Body Type">
+				<selectbox>
+					<item>Choose a Body Type</item>
+					<item>2 Door Cars</item>
+					<item>4 Door Cars</item>
+					<item>Covertibles</item>
+					<item>Minivan/Vans</item>
+					<item>Pickup/Trucks</item>
+					<item>Sport Utility Vehicles</item>
+					<item>Wagons</item>
+					<item>Other</item>
+				</selectbox>
+		  	</element>
+		  	<element vname="x_price_range" text ="Price Range">
+				<selectbox>
+					<item>Any</item>
+					<item>1-5,000</item>
+					<item>5,000-10,000</item>
+					<item>10,000-15,000</item>
+					<item>15,000-20,000</item>
+					<item>20,000-25,000</item>
+					<item>25,000+</item>
+				</selectbox>
+		  	</element>
+		  	<element vname="ON" text="Show vehicles with prices only">
+				<checkbox>
+					<item> </item>
+				</checkbox>
+		  	</element>
+		  	<element vname="x_yearqual" text="Year is">
+				<checkbox>
+					<item>Any</item>
+					<item>Newer Than</item>
+					<item>Older Than</item>
+					<item>Exactly</item>
+				</checkbox>
+			</element>
+			<element vname = "x_year">
+				<selectbox>
+					<item>Any</item>
+					<item>2002</item>
+					<item>2001</item>
+					<item>2000</item>
+					<item>1999</item>
+					<item>1998</item>
+					<item>1997</item>
+					<item>1996</item>
+					<item>1995</item>
+					<item>1994</item>
+					<item>1993</item>
+					<item>1992</item>
+			  	</selectbox>
+			</element>
+			<element vname="vpp" text = "Listings Per Page">
+				<textbox>10</textbox>
+		  	</element>
+		  	<element vname="sort_order" text="Sort By">
+				<selectbox>
+			  		<item>Make</item>
+			  		<item>Year</item>
+			  		<item>Mileage</item>
+			  		<item>Price</item>
+				</selectbox>
+		  	</element>
+		</element>
+	</search>
+</domain>

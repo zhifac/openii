@@ -31,10 +31,10 @@ public class Schemr {
 			candidateSchemas = SchemaUtility.getCLIENT().getSchemas();
 //			candidateSchemas = new ArrayList<Schema>();
 //			candidateSchemas.add(SchemaUtility.getCLIENT().getSchema(17));
-//			candidateSchemas.add(SchemaUtility.getCLIENT().getSchema(52453));
+			
 
-//			querySchema = SchemaUtility.getCLIENT().getSchema(17);
-			querySchema = SchemaUtility.getCLIENT().getSchema(52453);
+			querySchema = SchemaUtility.getCLIENT().getSchema(17);
+//			querySchema = SchemaUtility.getCLIENT().getSchema(52453);
 			querySchemaElements = SchemaUtility.getCLIENT().getSchemaElements(querySchema.getId());
 		} catch (RemoteException e) {
 			e.printStackTrace();
@@ -48,20 +48,20 @@ public class Schemr {
 		queryKeywords.put("telephone", "attribute");
 		
 		Query q = new Query(querySchema, querySchemaElements, queryKeywords);
-		System.out.println(q.toString());
+//		System.out.println(q.toString());
 		MatchSummary [] msarray = q.processQuery(candidateSchemas);
 
+		int page = 30;
 		
-		int i = 0;
 		System.out.println(MATCHER+" ranked results");
-		for (MatchSummary matchSummary : msarray) {
-			i++;
-			System.out.println(i+"\tschema: "+matchSummary.getSchema().getName() + "\t\t\tscore: "+matchSummary.getScore());
-			Visualizer v;
+		MatchSummary [] topResultsArray = new MatchSummary [page];
+		for (int i = 0; i < page; i++) {
+			topResultsArray[i] = msarray[i];
+			System.out.println(i+"\tschema: "+topResultsArray[i].getSchema().getName() + "\t\t\tscore: "+topResultsArray[i].getScore());
 		}
 		
 		SearchResultsUI app;
-		app = new SearchResultsUI(msarray);
+		app = new SearchResultsUI(topResultsArray);
 	}
 	
 }

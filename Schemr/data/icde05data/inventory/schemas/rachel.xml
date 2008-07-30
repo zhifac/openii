@@ -1,0 +1,558 @@
+<database name="rachel">
+<createdby name="Rachel"/>
+<Schema>
+<table name="Book_title">
+<comment>information about the given title regardless of edition (e.g., pb, etc)</comment>
+<column name="id" type="int"/>
+<column name="series" type="varchar">
+<comment>e.g., Harry Potter</comment>
+</column>
+<column name="blurb" type="varchar">
+<comment>the main blurb about this title</comment>
+</column>
+<column name="title" type="varchar">
+<comment>title</comment>
+</column>
+<column name="sampleurl" type="varchar">
+<comment>e.g., PDF location of sample pages</comment>
+</column>
+</table>
+<table name="author_artist">
+<column name="id" type="int"/>
+<column name="name" type="varchar"/>
+<column name="date_of_birth" type="date"/>
+</table>
+<table name="book_edition">
+<column name="book_title_id" type="int" ref="Book_title/id"/>
+<column name="ISBN" type="int"/>
+<column name="Format" type="varchar">
+<comment>e.g., paper back</comment>
+</column>
+<column name="num_pages" type="int"/>
+<column name="Publication_date" type="date"/>
+<column name="Publisher" type="varchar"/>
+<column name="Num_sold" type="int"/>
+<column name="MSRP" type="double">
+<comment>in dollars</comment>
+</column>
+<column name="Standard_price" type="double"/>
+<column name="other" type="varchar">
+<comment>catchall</comment>
+</column>
+<column name="weight" type="double">
+<comment>in ounces</comment>
+</column>
+<column name="length" type="double">
+<comment>in inches</comment>
+</column>
+<column name="width" type="double">
+<comment>in inches</comment>
+</column>
+<column name="height" type="double">
+<comment>in inches</comment>
+</column>
+<column name="blurb" type="varchar"/>
+<column name="illustrator" type="varchar">
+<comment>not true across all editions</comment>
+</column>
+</table>
+<table name="category">
+<comment>this table keeps track of categories, e.g., fiction, hip-hop</comment>
+<column name="category" type="varchar"/>
+<column name="item_id" type="int" ref="book_edition/ISBN Album_edition/id"/>/>
+</table>
+<table name="Keywords">
+<comment>this table keeps track of keywords, e.g., "wizards"</comment>
+<column name="item_id" type="int" ref="book_edition/ISBN Album_edition/id"/>/>
+<column name="keyword" type="varchar"/>
+</table>
+<table name="Album">
+<column name="id" type="int"/>
+<column name="blurb" type="varchar"/>
+</table>
+<table name="Album_edition">
+<column name="id" type="int"/>
+<column name="album_id" type="int" ref="Album/id"/>
+<column name="ASIN" type="int"/>
+<column name="Label" type="varchar">
+<comment>e.g., EMI</comment>
+</column>
+<column name="Release_date" type="date"/>
+<column name="num_discs" type="int"/>
+<column name="format" type="varchar"/>
+<column name="weight" type="double">
+<comment>oz</comment>
+</column>
+<column name="length" type="double">
+<comment>inches</comment>
+</column>
+<column name="width" type="double">
+<comment>inches</comment>
+</column>
+<column name="height" type="double">
+<comment>inechs</comment>
+</column>
+<column name="blurb" type="varchar"/>
+</table>
+
+
+<table name="artist_item">
+<comment>this table keeps track of the ordering</comment>
+<column name="item_id" type="int" ref="book_edition/ISBN Album_edition/id"/>
+<column name="artist_id" type="int" ref="author_artist/id"/>
+<column name="artist_order" type="int"/>
+</table>
+
+
+
+<table name="Track">
+<comment>Track_sample</comment>
+<column name="id" type="int"/>
+<column name="album" type="int" ref="Album_edition/id"/>
+<column name="track_number" type="int"/>
+<column name="track_name" type="varchar"/>
+<column name="url" type="varchar">
+<comment>where the track sample is stored</comment>
+</column>
+<column name="format" type="varchar">
+<comment>e.g., real audio</comment>
+</column>
+</table>
+
+
+<table name="Warehouse">
+<column name="id" type="int"/>
+<column name="street_address" type="varchar"/>
+<column name="city" type="varchar"/>
+<column name="state_province" type="varchar"/>
+<column name="postal_code" type="varchar"/>
+<column name="country" type="varchar"/>
+<column name="ups_pickups" type="varchar">
+<comment>when UPS can pickup</comment>
+</column>
+<column name="usps_pickups" type="varchar"/>
+<column name="fedex_pickups" type="varchar"/>
+<column name="additional_location_information" type="varchar">
+<comment>catchall</comment>
+</column>
+<column name="Hours_of_operation" type="varchar"/>
+<column name="phone_number" type="varchar"/>
+<column name="manager" type="varchar"/>
+<column name="num_employees" type="varchar"/>
+<column name="num_shifts" type="varchar"/>
+</table>
+
+
+<table name="Location">
+<column name="loc-id" type="int"/>
+<column name="length" type="double">
+<comment>inches</comment>
+</column>
+<column name="width" type="double">
+<comment>inches</comment>
+</column>
+<column name="height" type="double">
+<comment>inches</comment>
+</column>
+<column name="special_features" type="varchar"/>
+<column name="warehouse_id" type="int" ref="Warehouse/id"/>
+</table>
+
+<table name="Item_location">
+<comment>int</comment>
+<column name="location_id" type="int" ref="Location/loc-id"/>
+<column name="item_id" type="int" ref="book_edition/ISBN Album_edition/id"/>
+<column name="num_at_location" type="int">
+<comment>num currently there</comment>
+</column>
+<column name="num_sold_at_item_location" type="int">
+<comment>num that have been sold from there</comment>
+</column>
+<column name="total_time_to_dispatch" type="int">
+<comment>amount of time it's taken for this item from this location to be dispatched.  used to calculate average amount of time</comment>
+</column>
+</table>
+
+
+<table name="reviewer">
+<column name="reviewer_id" type="int"/>
+<column name="name" type="varchar"/>
+<column name="affiliation" type="varchar"/>
+</table>
+
+
+<table name="Review">
+<column name="rev_id" type="int"/>
+<column name="product_id" type="int" ref="book_edition/ISBN Album_edition/id"/>
+<column name="is_editoral" type="boolean">
+<comment>note that this is per review 'cause isn't same for all items</comment>
+</column>
+<column name="is_creator" type="boolean">
+<comment>e.g., is author of book</comment>
+</column>
+<column name="date" type="date">
+</column>
+<column name="reviewer_id" type="int" ref="reviewer/reviewer_id"/>
+<column name="rating" type="int">
+<comment>e.g., 3/5 stars</comment>
+</column>
+<column name="text" type="varchar"/>
+</table>
+
+</Schema>
+<Data>
+<Book_title>
+<tuple>
+<id>1</id>
+<series>Harry Potter</series>
+<blurb>The first Harry Potter book</blurb>
+<title>Harry Potter and the Sorcerer's stone</title>
+<sampleurl>null</sampleurl>
+</tuple>
+<tuple>
+<id>2</id>
+<series>Little House on the Prairie</series>
+<blurb>Laura's family moves to the Shores of Silver Lake and Laura struggles with the changes caused by Mary's blindness</blurb>
+<title>By the Shores of Silver Lake</title>
+<sampleurl>null</sampleurl>
+</tuple>
+</Book_title>
+<author_artist>
+<tuple>
+<id>1</id>
+<name>J.K. Rowlings</name>
+<date_of_birth>1/1/1956</date_of_birth>
+</tuple>
+<tuple>
+<id>2</id>
+<name>Laura Ingalls Wilder</name>
+<date_of_birth>5/6/1865</date_of_birth>
+</tuple>
+<tuple>
+<id>3</id>
+<name>Mya</name>
+<date_of_birth>1/19/1976</date_of_birth>
+</tuple>
+<tuple>
+<id>4</id>
+<name>Jim Henson</name>
+<date_of_birth>1/12/1942</date_of_birth>
+</tuple>
+<tuple>
+<id>5</id>
+<name>Frank Oz</name>
+<date_of_birth>1/12/1949</date_of_birth>
+</tuple>
+</author_artist>
+<artist_item>
+<tuple>
+<item_id>1</item_id>
+<artist_id>1</artist_id>
+<artist_order>1</artist_order>
+</tuple>
+<tuple>
+<item_id>2</item_id>
+<artist_id>2</artist_id>
+<artist_order>1</artist_order>
+</tuple>
+<tuple>
+<item_id>3</item_id>
+<artist_id>3</artist_id>
+<artist_order>1</artist_order>
+</tuple>
+<tuple>
+<item_id>4</item_id>
+<artist_id>4</artist_id>
+<artist_order>1</artist_order>
+</tuple>
+<tuple>
+<item_id>4</item_id>
+<artist_id>5</artist_id>
+<artist_order>2</artist_order>
+</tuple>
+</artist_item>
+<book_edition>
+<tuple>
+<book_title_id>1</book_title_id>
+<ISBN>1234567</ISBN>
+<Format>paper back</Format>
+<num_pages>256</num_pages>
+<Publication_date>1/1/1992</Publication_date>
+<Publisher>DoubleDay</Publisher>
+<Num_sold>1000000</Num_sold>
+<MSRP>9.95</MSRP>
+<Standard_price>7.85</Standard_price>
+<other>null</other>
+<weight>6.2</weight>
+<length>5</length>
+<width>7</width>
+<height>8</height>
+<blurb>The first paperback edition of the book - adapted for the US audience</blurb>
+<illustrator>null</illustrator>
+</tuple>
+<tuple>
+<book_title_id>1</book_title_id>
+<ISBN>1245678</ISBN>
+<Format>hard back</Format>
+<num_pages>180</num_pages>
+<Publication_date>6/1/1991</Publication_date>
+<Publisher>Scholastic</Publisher>
+<Num_sold>5000</Num_sold>
+<MSRP>19.95</MSRP>
+<Standard_price>1217.00</Standard_price>
+<other>null</other>
+<weight>8</weight>
+<length>9</length>
+<width>10</width>
+<height>11</height>
+<blurb>Original printing - collectors edition</blurb>
+<illustrator>null</illustrator>
+</tuple>
+<tuple>
+<book_title_id>2</book_title_id>
+<ISBN>2345678</ISBN>
+<Format>hard back</Format>
+<num_pages>156</num_pages>
+<Publication_date>9/10/2001</Publication_date>
+<Publisher>Scholastic</Publisher>
+<Num_sold>2352</Num_sold>
+<MSRP>7.95</MSRP>
+<Standard_price>6.92</Standard_price>
+<other>null</other>
+<weight>5.6</weight>
+<length>8</length>
+<width>9</width>
+<height>10</height>
+<blurb>beautiful edition of a timeless classic</blurb>
+<illustrator>Garth Williams</illustrator>
+</tuple>
+</book_edition>
+<category>
+<tuple>
+<category>Childrens</category>
+<item_id>1</item_id>
+</tuple>
+<tuple>
+<category>Childrens</category>
+<item_id>2</item_id>
+</tuple>
+<tuple>
+<category>Magic</category>
+<item_id>1</item_id>
+</tuple>
+<tuple>
+<category>Pioneering</category>
+<item_id>2</item_id>
+</tuple>
+</category>
+<Keywords>
+<tuple>
+<item_id>1</item_id>
+<keyword>wizards</keyword>
+</tuple>
+<tuple>
+<item_id>1</item_id>
+<keyword>Hogwarts</keyword>
+</tuple>
+<tuple>
+<item_id>1</item_id>
+<keyword>Muggles</keyword>
+</tuple>
+<tuple>
+<item_id>2</item_id>
+<keyword>Nellie Olsen</keyword>
+</tuple>
+</Keywords>
+<Album>
+<tuple>
+<id>3</id>
+<blurb>Fear of Flying</blurb>
+</tuple>
+<tuple>
+<id>4</id>
+<blurb>A Sesame Street Celebration</blurb>
+</tuple>
+</Album>
+<Album_edition>
+<tuple>
+<id>31</id>
+<album_id>3</album_id>
+<ASIN>12348912</ASIN>
+<Label>BMG</Label>
+<Release_date>2000</Release_date>
+<num_discs>1</num_discs>
+<format>CD</format>
+<weight>5</weight>
+<length>5</length>
+<width>5</width>
+<height>.2</height>
+<blurb>extended edition</blurb>
+</tuple>
+<tuple>
+<id>32</id>
+<album_id>3</album_id>
+<ASIN>12345891</ASIN>
+<Label>BMG</Label>
+<Release_date>2000</Release_date>
+<num_discs>1</num_discs>
+<format>CD</format>
+<weight>5</weight>
+<length>5</length>
+<width>5</width>
+<height>.2</height>
+<blurb>imported</blurb>
+</tuple>
+<tuple>
+<id>41</id>
+<album_id>4</album_id>
+<ASIN>12323451</ASIN>
+<Label>CTW</Label>
+<Release_date>1996</Release_date>
+<num_discs>1</num_discs>
+<format>CD</format>
+<weight>5</weight>
+<length>5</length>
+<width>5</width>
+<height>.2</height>
+<blurb>A celebration of Jim Henson's music</blurb>
+</tuple>
+</Album_edition>
+
+<Track>
+<tuple>
+<id>123</id>
+<album_edition>31</album_edition>
+<track_number>8</track_number>
+<track_name>Fear of Flying</track_name>
+<url>\\data\tracks\31\8.ram</url>
+<format>real audio</format>
+</tuple>
+<tuple>
+<id>123</id>
+<album_edition>32</album_edition>
+<track_number>8</track_number>
+<track_name>Fear of Flying</track_name>
+<url>\\data\tracks\31\8.ram</url>
+<format>real audio</format>
+</tuple>
+<tuple>
+<id>124</id>
+<album_edition>41</album_edition>
+<track_number>1</track_number>
+<track_name>Rubber Duckie</track_name>
+<url>\\data\tracks\41\1.ram</url>
+<format>real audio</format>
+</tuple>
+</Track>
+
+<Item_location>
+</Item_location>
+
+<Location>
+<tuple>
+<loc-id>1234</loc-id>
+<length>50</length>
+<width>50</width>
+<height>20</height>
+<special_features>padded</special_features>
+<warehouse_id>12345</warehouse_id>
+</tuple>
+<tuple>
+<loc-id>1235</loc-id>
+<length>50</length>
+<width>50</width>
+<height>20</height>
+<special_features>null</special_features>
+<warehouse_id>12345</warehouse_id>
+</tuple>
+<tuple>
+<loc-id>1236</loc-id>
+<length>50</length>
+<width>50</width>
+<height>10</height>
+<special_features>CD rack</special_features>
+<warehouse_id>13456</warehouse_id>
+</tuple>
+<tuple>
+<loc-id>1237</loc-id>
+<length>50</length>
+<width>50</width>
+<height>10</height>
+<special_features>null</special_features>
+<warehouse_id>13456</warehouse_id>
+</tuple>
+</Location>
+<Warehouse>
+<tuple>
+<id>12345</id>
+<street_address>123 Foo Street</street_address>
+<city>Plano</city>
+<state_province>TX</state_province>
+<postal_code>75093</postal_code>
+<country>USA</country>
+<ups_pickups>MWF</ups_pickups>
+<usps_pickups>MTWThF</usps_pickups>
+<fedex_pickups>null</fedex_pickups>
+<additional_location_information>very secure</additional_location_information>
+<Hours_of_operation>m-f 9-5</Hours_of_operation>
+<phone_number>972-555-1212</phone_number>
+<manager>Bob Smith</manager>
+<num_employees>52</num_employees>
+<num_shifts>1</num_shifts>
+</tuple>
+<tuple>
+<id>13456</id>
+<street_address>121 Bar Street</street_address>
+<city>Durham</city>
+<state_province>NC</state_province>
+<postal_code>27705</postal_code>
+<country>USA</country>
+<ups_pickups>MTWThFSSu</ups_pickups>
+<usps_pickups>MTWThF</usps_pickups>
+<fedex_pickups>MTWThF</fedex_pickups>
+<additional_location_information>null</additional_location_information>
+<Hours_of_operation>all</Hours_of_operation>
+<phone_number>919-555-1212</phone_number>
+<manager>Billy Bo Bob Brain</manager>
+<num_employees>200</num_employees>
+<num_shifts>4</num_shifts>
+</tuple>
+</Warehouse>
+<Review>
+<tuple>
+<rev_id>1</rev_id>
+<product_id>1</product_id>
+<is_editoral>false</is_editoral>
+<is_creator>false</is_creator>
+<date>1/2/2003</date>
+<reviewer_id>123457</reviewer_id>
+<rating>5</rating>
+<text>Best book ever, narf</text>
+</tuple>
+<tuple>
+<rev_id>2</rev_id>
+<product_id>4</product_id>
+<is_editoral>false</is_editoral>
+<is_creator>false</is_creator>
+<date>1/4/2003</date>
+<reviewer_id>124683</reviewer_id>
+<rating>4</rating>
+<text>Requires more songs about small helpless rodents</text>
+</tuple>
+</Review>
+
+<reviewer>
+<tuple>
+<reviewer_id>123457</reviewer_id>
+<name>Pinky</name>
+<affiliation>null</affiliation>
+</tuple>
+<tuple>
+<reviewer_id>124683</reviewer_id>
+<name>Fauna NMI Xerxon</name>
+<affiliation>NY times</affiliation>
+</tuple>
+</reviewer>
+
+</Data>
+</database>
