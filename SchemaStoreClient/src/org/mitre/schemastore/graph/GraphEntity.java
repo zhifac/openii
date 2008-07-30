@@ -34,6 +34,15 @@ public class GraphEntity extends Entity implements GraphSchemaElement{
 	private ArrayList<GraphSubtype> subtypes;
 	private ArrayList<GraphSubtype> supertypes;
 	
+	private GraphAlias alias;
+	
+	public void setAlias(GraphAlias a){
+		alias = a;
+	}
+	public GraphAlias getAlias(){
+		return alias;
+	}
+	
 	public GraphEntity(Integer id, String name, String description, int base){
 		super(id, name, description, base);
 		subtypes	  = new ArrayList<GraphSubtype>();

@@ -15,8 +15,23 @@ import org.mitre.schemastore.model.SchemaElement;
 
 public class GraphContainment extends Containment implements GraphSchemaElement{
 
-	GraphEntity parent;
-	SchemaElement child;
+	private GraphEntity parent;
+	private SchemaElement child;
+	private GraphAlias alias;
+
+	/** Constructs the containment relationship */
+	public GraphContainment(Integer id, String name, String description, Integer parentID, Integer childID, Integer min, Integer max, Integer base)
+		{ super(id,name,description,parentID,childID,min,max,base); }
+
+	public GraphContainment(Containment c)
+		{ super(c.getId(),c.getName(),c.getDescription(),c.getParentID(),c.getChildID(),c.getMin(),c.getMax(),c.getBase()); }
+	
+	void setAlias(GraphAlias a){
+		alias = a;
+	}
+	GraphAlias getAlias(){
+		return alias;
+	}
 	
 	public GraphEntity getParent(){
 		return parent;
@@ -42,12 +57,5 @@ public class GraphContainment extends Containment implements GraphSchemaElement{
 		retVal.add(child);
 		return retVal;
 	}
-	/** Constructs the containment relationship */
-	public GraphContainment(Integer id, String name, String description, Integer parentID, Integer childID, Integer min, Integer max, Integer base)
-		{ super(id,name,description,parentID,childID,min,max,base); }
-
-	public GraphContainment(Containment c)
-		{ super(c.getId(),c.getName(),c.getDescription(),c.getParentID(),c.getChildID(),c.getMin(),c.getMax(),c.getBase()); }
-	
 	
 }

@@ -340,10 +340,10 @@ public class GraphBuilder{
 				if(schemaElement instanceof Attribute){ //node
 					GraphAttribute attribute = (GraphAttribute)graphHash.get(schemaElement.getId());
 					GraphDomain domain = (GraphDomain)graphHash.get(attribute.getDomainID());
-					attribute.domainType = domain;
+					attribute.setDomainType(domain);
 					domain.addParentAttribute(attribute);
 					GraphEntity entity = (GraphEntity)graphHash.get(attribute.getEntityID());
-					attribute.parentEntity = entity;
+					attribute.setParentEntity(entity);
 					entity.addChildAttribute(attribute);
 				}
 			
@@ -422,6 +422,7 @@ public class GraphBuilder{
 					// add Alias top schemaElement
 					GraphAlias alias = new GraphAlias((Alias) schemaElement);
 					graphHash.put(alias.getId(), alias);
+					
 				}
 				else {
 					System.out.println("[E] GraphBuilder:build -- SchemaElement " + schemaElement.getId() + " has unexpected type " + schemaElement.getClass().toString());
