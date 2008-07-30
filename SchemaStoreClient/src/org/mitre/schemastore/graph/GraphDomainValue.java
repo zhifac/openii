@@ -15,10 +15,10 @@ public class GraphDomainValue extends DomainValue implements GraphSchemaElement{
 	private GraphDomain parentDomain;
 	private GraphAlias alias;
 	
-	void setAlias(GraphAlias a){
+	public void setAlias(GraphAlias a){
 		alias = a;
 	}
-	GraphAlias getAlias(){
+	public GraphAlias getAlias(){
 		return alias;
 	}
 	

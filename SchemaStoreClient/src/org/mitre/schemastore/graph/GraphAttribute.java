@@ -16,10 +16,10 @@ public class GraphAttribute extends Attribute implements GraphSchemaElement{
 	private GraphDomain domainType;
 	private GraphAlias alias;
 	
-	void setAlias(GraphAlias a){
+	public void setAlias(GraphAlias a){
 		alias = a;
 	}
-	GraphAlias getAlias(){
+	public GraphAlias getAlias(){
 		return alias;
 	}
 	

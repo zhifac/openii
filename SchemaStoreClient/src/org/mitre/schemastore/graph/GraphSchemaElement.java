@@ -9,5 +9,6 @@ public abstract interface GraphSchemaElement {
 
 	abstract public ArrayList<SchemaElement> getParents(); 
 	abstract public ArrayList<SchemaElement> getChildren(); 
-	
+	abstract public GraphAlias getAlias(); 
+	abstract public void setAlias(GraphAlias a); 
 }

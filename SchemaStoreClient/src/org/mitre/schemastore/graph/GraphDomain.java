@@ -24,10 +24,10 @@ public class GraphDomain extends Domain implements GraphSchemaElement{
 	private ArrayList<GraphDomainValue> childDomainValues;
 	private GraphAlias alias;
 	
-	void setAlias(GraphAlias a){
+	public void setAlias(GraphAlias a){
 		alias = a;
 	}
-	GraphAlias getAlias(){
+	public GraphAlias getAlias(){
 		return alias;
 	}
 	
