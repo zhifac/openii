@@ -10,6 +10,15 @@ import org.mitre.schemastore.model.SchemaElement;
 
 public class GraphAlias extends Alias implements GraphSchemaElement {
 	
+	GraphAlias alias;
+	public void setAlias(GraphAlias a){
+		alias = a;
+	}
+	public GraphAlias getAlias(){
+		return alias;
+	}
+	
+	
 	public GraphAlias (Alias a)
 		{ super(a.getId(),a.getName(),a.getElementID(),a.getBase()); }		
 	

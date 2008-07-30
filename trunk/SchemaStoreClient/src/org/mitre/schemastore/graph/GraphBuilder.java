@@ -305,6 +305,7 @@ public class GraphBuilder{
 		}
 		
 		ArrayList<SchemaElement> edges = new ArrayList<SchemaElement>();
+		ArrayList<SchemaElement> aliases = new ArrayList<SchemaElement>();
 		try {		 
 			for(SchemaElement schemaElement : schemaElements){
 				// process the nodes 
@@ -323,6 +324,9 @@ public class GraphBuilder{
 				else if(schemaElement instanceof Entity){ //node
 					GraphEntity graphEntity = new GraphEntity((Entity) schemaElement);
 					graphHash.put(graphEntity.getId(), graphEntity);
+				}
+				else if (schemaElement instanceof Alias){
+					aliases.add(schemaElement);
 				}
 				else {
 					// add edges (Containment, Relationship, Subtype, Alias)
@@ -418,18 +422,22 @@ public class GraphBuilder{
 					childEntity.addSupertype(subtype);
 				}
 				
-				else if (schemaElement instanceof Alias){
-					// add Alias top schemaElement
-					GraphAlias alias = new GraphAlias((Alias) schemaElement);
-					graphHash.put(alias.getId(), alias);
-					
-				}
 				else {
 					System.out.println("[E] GraphBuilder:build -- SchemaElement " + schemaElement.getId() + " has unexpected type " + schemaElement.getClass().toString());
 					graphHash.put(schemaElement.getId(), schemaElement);
 				}
 				
 			} // end for(SchemaElement schemaElement: edges){
+			
+			for(SchemaElement schemaElement : aliases){
+				GraphAlias alias = new GraphAlias((Alias) schemaElement);
+				GraphSchemaElement parent = (GraphSchemaElement)graphHash.get(alias.getElementID());
+				if (parent != null) parent.setAlias(alias);
+				else {
+					System.out.println("[E] GraphBuilder:build -- SchemaElement " + alias.getId() + " is alias referrning to non-existent element id " + alias.getElementID());
+				}
+				graphHash.put(alias.getId(), alias);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

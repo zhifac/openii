@@ -26,10 +26,10 @@ public class GraphContainment extends Containment implements GraphSchemaElement{
 	public GraphContainment(Containment c)
 		{ super(c.getId(),c.getName(),c.getDescription(),c.getParentID(),c.getChildID(),c.getMin(),c.getMax(),c.getBase()); }
 	
-	void setAlias(GraphAlias a){
+	public void setAlias(GraphAlias a){
 		alias = a;
 	}
-	GraphAlias getAlias(){
+	public GraphAlias getAlias(){
 		return alias;
 	}
 	
