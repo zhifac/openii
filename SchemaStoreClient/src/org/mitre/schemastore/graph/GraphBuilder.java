@@ -294,14 +294,21 @@ public class GraphBuilder{
 	}
 
 	
-	
+	/**
+	 * addElements(): Adds a set of schema elements to the graph. NOTE: assumes the
+	 * elements are a CONSISTENT set (e.g., if a new node is added, all proper edges 
+	 * are being added as well)
+	 * 
+	 * @param schemaElements set of schema elements to add to graph
+	 * @param schemaID the id of the schema
+	 * @return
+	 */
 	public ArrayList<SchemaElement> addElements(ArrayList<SchemaElement> schemaElements, int schemaID){
 		
 		// Initialize graphHash if not already initialized
-	
 		if (graphHash == null){
 			graphHash = new HashMap<Integer, SchemaElement>();
-			graphHash.put(schemaID, new GraphEntity(schemaID));
+			graphHash.put(schemaID, new GraphEntity(schemaID, new String("The Schema"),new String("The Schema"),schemaID));
 		}
 		
 		ArrayList<SchemaElement> edges = new ArrayList<SchemaElement>();
@@ -429,6 +436,7 @@ public class GraphBuilder{
 				
 			} // end for(SchemaElement schemaElement: edges){
 			
+			// Add the alias information to the graph
 			for(SchemaElement schemaElement : aliases){
 				GraphAlias alias = new GraphAlias((Alias) schemaElement);
 				GraphSchemaElement parent = (GraphSchemaElement)graphHash.get(alias.getElementID());
@@ -438,6 +446,41 @@ public class GraphBuilder{
 				}
 				graphHash.put(alias.getId(), alias);
 			}
+			
+			// Calculate the pathNames for all "non-named" entities
+			for (SchemaElement entity : graphHash.values()){
+				if (entity instanceof GraphEntity && (entity.getName() == null || entity.getName().length() == 0)){
+					// calculate path to root
+					String pathString = "/";
+					GraphEntity current = (GraphEntity)entity;
+					boolean done = false;
+					while (done == false){
+						// get set of containments where current entity is a child
+						ArrayList<GraphContainment> containments = current.getChildContainments();	
+						if (containments.size() == 0){
+							System.out.println("[E] GraphBuilder:build -- SchemaElement " + current.getId() + "has no containments in which they are children" );
+							done = true;
+						}
+						else {
+							pathString = new String("/" + containments.get(0).getName() + pathString);
+							GraphEntity parent = containments.get(0).getParent();
+							if ((parent.getName().length() > 0 && parent.getName().contains("/") == false)  || parent.getId().equals(schemaID)){ 
+								
+								if (parent.getId().equals(schemaID) == false){
+									// add parent 
+									pathString = new String(parent.getName() + pathString);
+								}
+								done = true; 
+							}
+							else {
+								current = parent;
+							}
+						}
+					}
+					((GraphEntity)entity).setPath(pathString);
+				}
+			}
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
