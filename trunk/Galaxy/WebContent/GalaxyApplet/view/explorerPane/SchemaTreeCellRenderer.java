@@ -18,6 +18,7 @@ import view.sharedComponents.LinkedTreeNodeRenderer;
 import model.AliasedSchemaElement;
 import model.Schemas;
 import model.SelectedObjects;
+import org.mitre.schemastore.graph.*;
 
 /** Class for rendering schema components */
 class SchemaTreeCellRenderer extends LinkedTreeNodeRenderer
@@ -73,7 +74,7 @@ class SchemaTreeCellRenderer extends LinkedTreeNodeRenderer
 		String iconName = "Schema";
 		if(userObject instanceof AliasedSchemaElement)
 		{
-			if(((AliasedSchemaElement)userObject).getElement() instanceof Attribute)
+			if( ((AliasedSchemaElement)userObject).getElement().getClass().toString().contains("Attribute"))
 				iconName = "Attribute";
 			else iconName = "SchemaElement";
 		}
