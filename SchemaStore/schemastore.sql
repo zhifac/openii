@@ -563,12 +563,12 @@ COPY "schema" (id, name, author, source, type, description, locked) FROM stdin;
 --
 
 COPY schema_element (id, "type") FROM stdin;
--1  Domain
--2  Domain
--3  Domain
--4  Domain
--5  Domain
--6  Domain
+-1	Domain
+-2	Domain
+-3	Domain
+-4	Domain
+-5	Domain
+-6	Domain
 9	Schema
 10	Schema
 11	Schema
