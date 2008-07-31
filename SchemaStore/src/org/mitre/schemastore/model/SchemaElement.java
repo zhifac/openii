@@ -14,7 +14,7 @@ public class SchemaElement implements Serializable
 	private Integer id;
 	
 	/** Stores the schema element name */
-	private String name;
+	protected String name;
 	
 	/** Stores the schema element description */
 	private String description;
