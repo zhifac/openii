@@ -14,6 +14,8 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
+import org.mitre.schemastore.graph.GraphBuilder;
+import org.mitre.schemastore.graph.GraphEntity;
 import org.mitre.schemastore.model.Attribute;
 import org.mitre.schemastore.model.Domain;
 import org.mitre.schemastore.model.Entity;
@@ -42,11 +44,13 @@ class SchemaTree extends LinkedTree implements MouseListener, MouseMotionListene
 	private SchemaTreeNode domainsNode;
 	private SchemaTreeNode parentsNode;
 	
+	private GraphBuilder graph;
+	
 	/** Generates a schema tree node */
 	private SchemaTreeNode getSchemaTreeNode(Object object)
 	{
 		if(object instanceof Integer && Schemas.getSchemaElement((Integer)object)!=null)
-			object = new AliasedSchemaElement(schemaID, (Integer)object);
+			object = new AliasedSchemaElement(new GraphEntity((Integer) object,"","", (Integer) object));
 		return new SchemaTreeNode(Schemas.getSchema(schemaID),object,parent);
 	}
 	
@@ -152,6 +156,8 @@ class SchemaTree extends LinkedTree implements MouseListener, MouseMotionListene
 		this.parent = parent;
 		this.schemaID = schemaID;
 
+		graph = new GraphBuilder(Schemas.getSchemaElements(schemaID, null), schemaID);
+		
 		// Place the schema into the schema tree
 		SchemaTreeNode root = new SchemaTreeNode(Schemas.getSchema(schemaID),schemaID,parent);
 		setBorder(new EmptyBorder(0,3,0,0));
