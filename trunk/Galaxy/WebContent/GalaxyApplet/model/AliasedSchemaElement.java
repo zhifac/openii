@@ -4,45 +4,51 @@ package model;
 
 import org.mitre.schemastore.model.Alias;
 import org.mitre.schemastore.model.SchemaElement;
+import org.mitre.schemastore.graph.*;
+import java.util.*;
 
 /** Stores a schema element and its associated alias ID */
-public class AliasedSchemaElement implements Comparable<AliasedSchemaElement>
+public class AliasedSchemaElement extends SchemaElement implements Comparable<AliasedSchemaElement>, GraphSchemaElement
 {
-	/** Stores the schema element ID */
-	private Integer schemaElementID;
-	
-	/** Stores the schema element alias */
-	private Integer aliasID;
+
+	private GraphSchemaElement graphElement;
 	
 	/** Constructs the aliased schema element */
-	public AliasedSchemaElement(Integer schemaID, Integer schemaElementID)
-	{
-		this.schemaElementID = schemaElementID;
-		for(SchemaElement schemaElement : Schemas.getSchemaElements(schemaID, Alias.class))
-			if(((Alias)schemaElement).getElementID().equals(schemaElementID))
-				aliasID = schemaElement.getId();
-	}
-	
+	public AliasedSchemaElement(GraphSchemaElement ge)
+		{ graphElement = ge; }
+
+	public ArrayList<SchemaElement> getChildren()
+		{ return graphElement.getChildren();}
+	public ArrayList<SchemaElement> getParents()
+		{ return graphElement.getParents();}
+		
 	/** Returns the schema element ID */
 	public Integer getId()
-		{ return schemaElementID; }
+		{ return ((SchemaElement)graphElement).getId(); }
 	
 	/** Returns the schema element alias ID */
 	public Integer getAliasId()
-		{ return aliasID; }
+		{ return graphElement.getAlias().getId(); }
 	
 	/** Returns the schema element */
 	public SchemaElement getElement()
-		{ return Schemas.getSchemaElement(schemaElementID); }
+		{ return (SchemaElement)graphElement; }
 	
 	/** Returns the schema element alias */
-	public Alias getAlias()
-		{ return (Alias)Schemas.getSchemaElement(aliasID); }
+	public GraphAlias getAlias()
+		{ return graphElement.getAlias(); }
+	
+	public void setAlias(GraphAlias a)
+		{ }
+
 	
 	/** Returns the schema element name */
 	public String getName()
-		{ return Schemas.getSchemaElement(aliasID!=null?aliasID:schemaElementID).getName(); }
-
+	{ 
+		if (graphElement.getAlias() != null) return graphElement.getAlias().getName();
+		else return ((SchemaElement)graphElement).getName(); 
+	}
+	
 	/** Compares two aliased schema elements to one another */
 	public int compareTo(AliasedSchemaElement aliasedSchemaElement)
 		{ return getName().compareTo(aliasedSchemaElement.getName()); }
