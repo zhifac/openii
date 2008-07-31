@@ -11,6 +11,9 @@ import org.mitre.schemastore.model.*;
 
 public class GraphEntity extends Entity implements GraphSchemaElement{
 	
+	// calculate the path from unnamed entity to either first named entity OR root
+	private String path;
+
 	// parents and child types (supertype and subtype)
 	private ArrayList<GraphEntity> subtypeEntities;
 	private ArrayList<GraphEntity> supertypeEntities;
@@ -36,15 +39,9 @@ public class GraphEntity extends Entity implements GraphSchemaElement{
 	
 	private GraphAlias alias;
 	
-	public void setAlias(GraphAlias a){
-		alias = a;
-	}
-	public GraphAlias getAlias(){
-		return alias;
-	}
-	
 	public GraphEntity(Integer id, String name, String description, int base){
 		super(id, name, description, base);
+		path = new String();
 		subtypes	  = new ArrayList<GraphSubtype>();
 		supertypes	  = new ArrayList<GraphSubtype>();
 		subtypeEntities  = new ArrayList<GraphEntity>();
@@ -76,22 +73,21 @@ public class GraphEntity extends Entity implements GraphSchemaElement{
 		relationships = new ArrayList<GraphRelationship>();
 	}
 	
-	public GraphEntity(Integer id){
-		super(id,"","",0);
-		subtypes = new ArrayList<GraphSubtype>();
-		supertypes = new ArrayList<GraphSubtype>();
-		subtypeEntities  = new ArrayList<GraphEntity>();
-		supertypeEntities = new ArrayList<GraphEntity>();
-		childDomains   = new ArrayList<GraphDomain>();
-		childEnititiesContained = new ArrayList<GraphEntity>();
-		leftEntitiesRelated    = new ArrayList<GraphEntity>();
-		childAttributes         = new ArrayList<GraphAttribute>();
-		parentEnitiesContained = new ArrayList<GraphEntity>();
-		rightEntitiesRelated  = new ArrayList<GraphEntity>();
-		parentContainments = new ArrayList<GraphContainment>();
-		childContainments =  new ArrayList<GraphContainment>();
-		relationships = new ArrayList<GraphRelationship>();
+	
+	public void setAlias(GraphAlias a){alias = a;}
+	public GraphAlias getAlias(){return alias;}
+	
+	public void setPath(String name){ path = name;}
+	public String getPath() { return path;} 
+	
+	public String getName(){
+		if (name == null || name.length() == 0)
+			return path;
+		else
+			return name;
+		
 	}
+	
 	
 	// class getters
 	public ArrayList<GraphSubtype> getSubtypes() { return subtypes;}
