@@ -106,6 +106,10 @@ public class SchemaBuilder
 		domain = new Domain(Importer.nextId(), "Boolean", "The Boolean domain", 0);
 		schemaObjects.add(domain);
 		domainList.put("Boolean", domain);
+		domain = new Domain(Importer.nextId(), "Any", "The Any domain", 0);
+		schemaObjects.add(domain);
+		domainList.put("Any", domain);
+		
 	}
 
 
