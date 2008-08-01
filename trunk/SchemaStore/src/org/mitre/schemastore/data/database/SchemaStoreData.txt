@@ -1,0 +1,294 @@
+INSERT INTO "schema" (id, name, author, source, type, description, locked)
+9, 'Human Patient', 'Chris Wolf', '', 'Manual', 'Information about a human patient that could be recruited into a study', 't'
+10, 'Protocol Subject', 'Chris Wolf', '', 'Manual', 'Information about a subject enrolled in one or more protocols', 't'
+11, 'Chemlab Subject', 'Chris Wolf', '', 'Manual', 'Information about a subject with chem-lab analyses', 't'
+12, 'Imaging Subject', 'Chris Wolf', '', 'Manual', 'Additional information about imaging studies and associated metadata', 't'
+13, 'Lab + Imaging', 'Chris Wolf', '', 'Manual', 'Merge of laboratory and imaging measurements', 't'
+15, 'Neuro-Imaging Study', 'Chris Wolf', '', 'Manual', 'Additional measurements necessary to interpret brain scans', 't'
+16, 'Neuro w/ Extended Language', 'Chris Wolf', '', 'Manual', 'Adds additional language codes needed in many locations', 't'
+17, 'African Neuro', 'Chris Wolf', '', 'Manual', 'Adds languages common in Africa', 't'
+14, 'Obesity Study', 'Chris Wolf', '', 'Manual', 'Additional lab measurements for obesity-related studies', 't'
+400, 'Organism', 'Chris Wolf', '', 'Manual', 'Root for living things', 't'
+
+INSERT INTO entity (id, name, description)
+20, 'Organism', 'Information about any organism for which health information is available'
+21, 'HealthHistory', 'Information about an organism''s health history'
+22, 'Measurement', 'Data recorded about a test subject at a particular time'
+23, 'Protocol', 'Information about the scientific protocol associated with a measurement'
+24, 'Image', 'Metadata associated with a particular image'
+
+INSERT INTO "domain" (id, name, description)
+-1, 'Integer', 'Domain covering all integer values'
+-2, 'Double', 'Domain covering all double values'
+-3, 'String', 'Domain covering all strings'
+-4, 'Timestamp', 'Domain consisting of date and/or time values'
+-5, 'Boolean', 'Domain covering all boolean values'
+-6, 'Any', 'Domain covering all values'
+81, 'Species', 'Codes for common species'
+83, 'Gender', 'Codes for gender'
+84, 'Status', 'Codes describing a patient''s willingness to participate in a study'
+85, 'Race', 'Codes for common human races'
+95, 'Memory', 'Codes for common memory tests'
+97, 'Handedness', 'Codes for handedness'
+106, 'Modality', 'Codes describing the technique used to acquire an image'
+107, 'Language', 'Codes for common languages'
+
+INSERT INTO domainvalue (id, value, description, domain_id)
+144, 'homo Sapiens', NULL, 81
+145, 'mauesi Mittermeier', NULL, 81
+146, 'cinerea Nadler', NULL, 81
+164, 'Male', 'XY male', 83
+165, 'Female', 'XX female', 83
+166, 'Male (ZZ)', 'ZZ male (for certain species)', 83
+167, 'Female (WZ)', 'WZ female (for certain species)', 83
+174, 'Contacted', 'Subject was contacted, but has not responded', 84
+175, 'Accepted', 'Subject agreed to be contacted about future studies', 84
+176, 'Declined', 'Subject asked not to be contacted further', 84
+184, 'W', 'W (from the DoJ)', 85
+185, 'A', 'Asian or Pacific Islander (from the DoJ)', 85
+186, 'B', 'Black (from the DoJ)', 85
+187, 'I', 'American Indian or Pacific Islander (from the DoJ)', 85
+188, 'U', 'Unknown (from the DoJ)', 85
+284, 'Lo', 'A score below 25', 95
+285, 'Med', 'A score between 25 and 75', 95
+286, 'Hi', 'A score above 75', 95
+304, 'L', 'Left-handed', 97
+305, 'R', 'Right-handed', 97
+306, 'A', 'Ambidextrous', 97
+307, '0', 'Completely left-handed', 97
+308, '1', 'Mostly left-handed', 97
+309, '2', 'Ambidextrous', 97
+310, '3', 'Mostly right-handed', 97
+311, '4', 'Completely right-handed', 97
+394, 'MRI', 'MRI', 106
+395, 'CT', 'CT', 106
+396, 'DTI', 'DTI', 106
+404, 'Eng', 'English', 107
+405, 'Fr', 'French', 107
+406, 'Sp', 'Spanish', 107
+407, 'Bi', 'Bilingual', 107
+408, 'Bi', 'Kirundi (spoken in Burundi)', 107
+
+INSERT INTO attribute (id, name, description, entity_id, domain_id)
+48, 'DOB', 'The organism''s date of birth', 20, -4
+52, 'VisitDate', 'The date associated with a particular diagnosis', 21, -4
+53, 'Diagnosis', 'The organism''s health status on a particular date', 21, -3
+54, 'Start', 'The date the protocol started', 23, -4
+55, 'Stop', 'The projected or actual stop date', 23, -4
+56, 'Funding', 'The name of the agency funding the protocol', 23, -3
+57, 'GrantNum', 'The grant identifier provided by the funding agency', 23, -1
+58, 'MeasurementDate', 'Date on which the measurements were acquired', 22, -4
+59, 'Ht', 'The organism''s height (in inches)', 22, -1
+60, 'Wt', 'The organism''s weight (in pounds)', 22, -1
+64, 'Hglb', 'Hemoglobin count', 22, -1
+65, 'TotProt', 'Total protein count', 22, -1
+66, 'Alb', 'Albumin count', 22, -1
+67, 'hdl', 'Indicates the measured high-density lipids', 22, -1
+68, 'ldl', 'Indicates the measured low-density lipids', 22, -1
+69, 'XRes', 'X-resolution', 24, -2
+70, 'YRes', 'Y-resolution', 24, -2
+71, 'ZRes', 'Z-resolution', 24, -2
+47, 'Species', 'The species of the test organism', 20, 81
+49, 'Gender', 'The organism''s gender', 20, 83
+50, 'ConsentStatus', 'Indicates the subject''s willingness to be contacted', 20, 84
+51, 'Race', 'Indicates a human subject''s race/ethnicity', 20, 85
+61, 'VerbalMemory', 'Stores the subject''s score on a verbal memory test', 22, 95
+62, 'VisualMemory', 'Stores the subject''s score on a visual memory test', 22, 95
+63, 'Handedness', 'Stores the subject''s observed handedness', 22, 97
+72, 'Modality', 'Modality', 24, 106
+73, 'PrimaryLanguage', NULL, 22, 107
+
+INSERT INTO relationship (id, name, left_id, left_min, left_max, right_id, right_min, right_max)
+435, 'CapturedFor', 22, 1, 1, 23, 0, NULL
+
+INSERT INTO containment (id, parent_id, child_id, min, max, description, name)
+410, 20, 22, NULL, NULL, NULL, NULL
+412, 22, 24, NULL, NULL, NULL, NULL
+
+INSERT INTO extensions (schema_id, "action", element_id)
+10, 'Base Schema', 9
+11, 'Base Schema', 10
+12, 'Base Schema', 10
+13, 'Base Schema', 11
+13, 'Base Schema', 12
+14, 'Base Schema', 13
+15, 'Base Schema', 12
+16, 'Base Schema', 15
+17, 'Base Schema', 15
+10, 'Add', 22
+10, 'Add', 23
+12, 'Add', 24
+10, 'Add', 54
+9, 'Add', 50
+9, 'Add', 51
+10, 'Add', 55
+10, 'Add', 56
+10, 'Add', 57
+10, 'Add', 58
+10, 'Add', 59
+10, 'Add', 60
+15, 'Add', 61
+15, 'Add', 62
+15, 'Add', 63
+11, 'Add', 64
+11, 'Add', 65
+11, 'Add', 66
+14, 'Add', 67
+14, 'Add', 68
+12, 'Add', 69
+12, 'Add', 70
+12, 'Add', 71
+12, 'Add', 72
+15, 'Add', 73
+9, 'Add', 174
+9, 'Add', 175
+9, 'Add', 176
+9, 'Add', 184
+9, 'Add', 185
+9, 'Add', 186
+9, 'Add', 187
+9, 'Add', 188
+15, 'Add', 284
+15, 'Add', 285
+15, 'Add', 286
+15, 'Add', 304
+15, 'Add', 305
+17, 'Add', 306
+16, 'Add', 307
+16, 'Add', 308
+16, 'Add', 309
+16, 'Add', 310
+16, 'Add', 311
+12, 'Add', 394
+12, 'Add', 395
+12, 'Add', 396
+15, 'Add', 404
+15, 'Add', 405
+15, 'Add', 406
+16, 'Add', 407
+17, 'Add', 408
+10, 'Add', 410
+12, 'Add', 412
+10, 'Add', 435
+9, 'Add', 84
+9, 'Add', 85
+15, 'Add', 95
+15, 'Add', 97
+12, 'Add', 106
+15, 'Add', 107
+400, 'Add', 20
+400, 'Add', 21
+400, 'Add', 47
+400, 'Add', 48
+400, 'Add', 49
+400, 'Add', 52
+400, 'Add', 53
+400, 'Add', 144
+400, 'Add', 145
+400, 'Add', 146
+400, 'Add', 164
+400, 'Add', 165
+400, 'Add', 166
+400, 'Add', 167
+400, 'Add', 81
+400, 'Add', 83
+9, 'Base Schema', 400
+
+INSERT INTO schema_element (id, "type")
+-1, 'Domain'
+-2, 'Domain'
+-3, 'Domain'
+-4, 'Domain'
+-5, 'Domain'
+-6, 'Domain'
+9, 'Schema'
+10, 'Schema'
+11, 'Schema'
+12, 'Schema'
+13, 'Schema'
+15, 'Schema'
+20, 'Entity'
+21, 'Entity'
+22, 'Entity'
+23, 'Entity'
+24, 'Entity'
+48, 'Attribute'
+52, 'Attribute'
+53, 'Attribute'
+54, 'Attribute'
+55, 'Attribute'
+56, 'Attribute'
+57, 'Attribute'
+58, 'Attribute'
+59, 'Attribute'
+60, 'Attribute'
+64, 'Attribute'
+65, 'Attribute'
+66, 'Attribute'
+67, 'Attribute'
+68, 'Attribute'
+69, 'Attribute'
+70, 'Attribute'
+71, 'Attribute'
+47, 'Attribute'
+49, 'Attribute'
+50, 'Attribute'
+51, 'Attribute'
+61, 'Attribute'
+62, 'Attribute'
+63, 'Attribute'
+72, 'Attribute'
+73, 'Attribute'
+81, 'Domain'
+83, 'Domain'
+84, 'Domain'
+85, 'Domain'
+95, 'Domain'
+97, 'Domain'
+106, 'Domain'
+107, 'Domain'
+144, 'Values'
+145, 'Values'
+146, 'Values'
+164, 'Values'
+165, 'Values'
+166, 'Values'
+167, 'Values'
+174, 'Values'
+175, 'Values'
+176, 'Values'
+184, 'Values'
+185, 'Values'
+186, 'Values'
+187, 'Values'
+188, 'Values'
+284, 'Values'
+285, 'Values'
+286, 'Values'
+304, 'Values'
+305, 'Values'
+306, 'Values'
+307, 'Values'
+308, 'Values'
+309, 'Values'
+310, 'Values'
+311, 'Values'
+394, 'Values'
+395, 'Values'
+396, 'Values'
+404, 'Values'
+405, 'Values'
+406, 'Values'
+407, 'Values'
+408, 'Values'
+435, 'Relationship'
+410, 'Containment'
+412, 'Containment'
+400, 'Schema'
+
+INSERT INTO data_source (id, name, url, schema_id)
+426, 'ProtocolSubject', 'http://localhost:8080/mrald?database=db_ProtocolSubject.props', 10
+430, 'ObesityStudy', 'http://localhost:8080/mrald?database=db_ObesityStudy.props', 14
+432, 'NeuroExtendedLanguage', 'http://localhost:8080/mrald?database=db_NeuroExtendedLanguage.props', 16
+433, 'AfricanNeuro', 'http://localhost:8080/mrald?database=db_AfricanNeuro.props', 17
+424, 'Organism', 'http://localhost:8080/mrald?database=db_Organism.props', 400

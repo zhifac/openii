@@ -6,12 +6,12 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import org.mitre.schemastore.database.DataSources;
-import org.mitre.schemastore.database.Groups;
-import org.mitre.schemastore.database.Mappings;
-import org.mitre.schemastore.database.SchemaElements;
-import org.mitre.schemastore.database.SchemaRelationships;
-import org.mitre.schemastore.database.Schemas;
+import org.mitre.schemastore.data.DataSources;
+import org.mitre.schemastore.data.Groups;
+import org.mitre.schemastore.data.Mappings;
+import org.mitre.schemastore.data.SchemaElements;
+import org.mitre.schemastore.data.SchemaRelationships;
+import org.mitre.schemastore.data.Schemas;
 import org.mitre.schemastore.model.Alias;
 import org.mitre.schemastore.model.Attribute;
 import org.mitre.schemastore.model.Containment;
