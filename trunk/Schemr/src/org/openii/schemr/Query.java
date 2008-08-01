@@ -1,8 +1,5 @@
 package org.openii.schemr;
 
-import static org.openii.schemr.Schemr.MATCHER;
-
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -11,7 +8,6 @@ import java.util.logging.Logger;
 
 import org.mitre.schemastore.graph.GraphBuilder;
 import org.mitre.schemastore.model.Attribute;
-import org.mitre.schemastore.model.Containment;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
 import org.openii.schemr.matcher.EditDistanceMatcher;
@@ -91,9 +87,9 @@ public class Query {
 	public MatchSummary match(Schema candidateSchema, ArrayList<QueryFragment> queryFragments) {
 		
 		Matcher m = null;
-		if (MATCHER.equals("NGRAM")) {
+		if (Matcher.MATCHER == Matcher.NGRAM) {
 			m = new NGramMatcher(candidateSchema, queryFragments);			
-		} else if (MATCHER.equals("EDITDISTANCE")) {
+		} else if (Matcher.MATCHER == Matcher.EDIT_DISTANCE) {
 			m = new EditDistanceMatcher(candidateSchema, queryFragments);			
 		}
 

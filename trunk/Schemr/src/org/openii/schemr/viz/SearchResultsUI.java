@@ -13,7 +13,6 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import org.openii.schemr.MatchSummary;
-import org.openii.schemr.Schemr;
 
 public class SearchResultsUI extends JFrame {
 	
