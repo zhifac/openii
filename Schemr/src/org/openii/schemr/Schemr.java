@@ -8,52 +8,26 @@ import java.util.logging.Logger;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
 import org.openii.schemr.viz.SearchResultsUI;
-import org.openii.schemr.viz.Visualizer;
 
 public class Schemr {
 
 	private static final Logger logger = Logger.getLogger(Schemr.class.getName());
 
-	public static String MATCHER = "NGRAM";
+	public static void main(String[] args) {new Schemr();}
 
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		
-		// take a set of schema, keywords, and data
-		
-		// find a schema with which to query
-		ArrayList<Schema> candidateSchemas = null;
-		Schema querySchema = null;
-		ArrayList<SchemaElement> querySchemaElements = null;
-		try {
-			candidateSchemas = SchemaUtility.getCLIENT().getSchemas();
-//			candidateSchemas = new ArrayList<Schema>();
-//			candidateSchemas.add(SchemaUtility.getCLIENT().getSchema(17));
-			
+	public Schemr() {
 
-			querySchema = SchemaUtility.getCLIENT().getSchema(17);
-//			querySchema = SchemaUtility.getCLIENT().getSchema(52453);
-			querySchemaElements = SchemaUtility.getCLIENT().getSchemaElements(querySchema.getId());
-		} catch (RemoteException e) {
-			e.printStackTrace();
-			System.exit(-1);
-		}
-	System.out.println("Searching with: "+querySchema.getName());
+		// get query
+		Query q = getQuery();
 
-		HashMap<String,String> queryKeywords = new HashMap<String,String>();
-		queryKeywords.put("elephant", "");
-		queryKeywords.put("africa", "entity");
-		queryKeywords.put("telephone", "attribute");
-		
-		Query q = new Query(querySchema, querySchemaElements, queryKeywords);
-//		System.out.println(q.toString());
+		// filter for candidate schemas
+		ArrayList<Schema> candidateSchemas = getCandidateSchemas();
+
+		// process query against candidate schemas
 		MatchSummary [] msarray = q.processQuery(candidateSchemas);
 
-		int page = 30;
-		
-		System.out.println(MATCHER+" ranked results");
+		int page = Math.min(30, msarray.length);
+		System.out.println("Ranked results");
 		MatchSummary [] topResultsArray = new MatchSummary [page];
 		for (int i = 0; i < page; i++) {
 			topResultsArray[i] = msarray[i];
@@ -62,6 +36,42 @@ public class Schemr {
 		
 		SearchResultsUI app;
 		app = new SearchResultsUI(topResultsArray);
+	}
+
+	private Query getQuery() {
+		Schema querySchema = null;
+		ArrayList<SchemaElement> querySchemaElements = null;
+		try {
+
+//			querySchema = SchemaUtility.getCLIENT().getSchema(52384);
+			querySchema = SchemaUtility.getCLIENT().getSchema(17);
+			querySchemaElements = SchemaUtility.getCLIENT().getSchemaElements(querySchema.getId());
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
+	System.out.println("Searching with: "+querySchema.getName());
+
+		HashMap<String,String> queryKeywords = new HashMap<String,String>();
+		queryKeywords.put("elephant", "");
+		queryKeywords.put("africa", "entity");
+		queryKeywords.put("telephone", "attribute");
+
+		// construct new query
+		Query q = new Query(querySchema, querySchemaElements, queryKeywords);
+		return q;
+	}
+
+	private ArrayList<Schema> getCandidateSchemas() {
+		ArrayList<Schema> candidateSchemas = null;
+		try {
+//			candidateSchemas = SchemaUtility.getCLIENT().getSchemas();
+			candidateSchemas = new ArrayList<Schema>();
+			candidateSchemas.add(SchemaUtility.getCLIENT().getSchema(52384));			
+			candidateSchemas.add(SchemaUtility.getCLIENT().getSchema(17));			
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
+		return candidateSchemas;
 	}
 	
 }

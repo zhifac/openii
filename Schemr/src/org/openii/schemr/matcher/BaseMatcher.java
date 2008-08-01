@@ -21,7 +21,7 @@ import org.openii.schemr.preprocessor.Preprocessor;
 
 
 public abstract class BaseMatcher implements Matcher {
-	
+
 	private static final Logger logger = Logger.getLogger(BaseMatcher.class.getName());
 
 	Schema candidateSchema; 
