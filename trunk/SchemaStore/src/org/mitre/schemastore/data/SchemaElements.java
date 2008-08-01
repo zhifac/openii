@@ -121,7 +121,12 @@ public class SchemaElements
 		elements.addAll(Database.getBaseElements(schemaID));
 		for(Integer ancestorID : SchemaRelationships.getAncestors(schemaID))
 			elements.addAll(Database.getBaseElements(ancestorID));
-		elements.addAll(Database.getDefaultDomains());
+		
+		// Add in all used default domains
+		for(Domain domain : Database.getDefaultDomains())
+			for(SchemaElement element : elements)
+				if(element instanceof Attribute && ((Attribute)element).getDomainID().equals(domain.getId()))
+					{ elements.add(domain); break; }
 
 		// Filter out conflicting aliases as needed
 		SchemaRelationships.recacheAsNeeded();
