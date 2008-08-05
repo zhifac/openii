@@ -80,13 +80,13 @@ public class GraphEntity extends Entity implements GraphSchemaElement{
 	public void setPath(String name){ path = name;}
 	public String getPath() { return path;} 
 	
-	public String getName(){
-		if (name == null || name.length() == 0)
-			return path;
-		else
-			return name;
-		
-	}
+//	public String getName(){
+//		if (name == null || name.length() == 0)
+//			return path;
+//		else
+//			return name;
+//		
+//	}
 	
 	
 	// class getters
@@ -186,7 +186,8 @@ public class GraphEntity extends Entity implements GraphSchemaElement{
 	public ArrayList<SchemaElement> getChildren() {
 		ArrayList<SchemaElement> retVal = new ArrayList<SchemaElement>();
 		retVal.addAll(getChildAttributes());
-		retVal.addAll(getChildDomains());
+		//retVal.addAll(getChildDomains());
+		//retVal.addAll(getParentContainments());
 		retVal.addAll(getChildEnititiesContained());
 		retVal.addAll(getRightEntitiesRelated());
 		return retVal;

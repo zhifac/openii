@@ -14,7 +14,7 @@ public class GraphAttribute extends Attribute implements GraphSchemaElement{
 	
 	private GraphEntity parentEntity;
 	private GraphDomain domainType;
-	private GraphAlias alias;
+	private GraphAlias alias = null;
 	
 	public void setAlias(GraphAlias a){
 		alias = a;

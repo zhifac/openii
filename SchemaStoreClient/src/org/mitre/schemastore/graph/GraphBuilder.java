@@ -3,6 +3,7 @@
 package org.mitre.schemastore.graph;
 
 import java.util.*;
+
 import org.mitre.schemastore.model.*;
 /**
  * Class GraphBuilder 
@@ -16,18 +17,35 @@ public class GraphBuilder{
 	private Integer schemaID;
 	
 	public static void main(String[] args){
+	
+	}
 
+	public GraphBuilder(ArrayList<SchemaElement> elements, Integer id){
+		this.schemaID = id;
+		
+		addElements(elements,id);
+		printGraph();
+		if (getSchemaElement(id) == null){
+			System.out.println("[E] GraphBuilder:GraphBuilder -- graph does not contain element for schema (id " + id + ")");
+		}
 	}
 	
-	public GraphBuilder(ArrayList<SchemaElement> elements, Integer id){
-		schemaID = id;
-		addElements(elements,id);
+	public ArrayList<SchemaElement> getSchemaElements(Class type){
+		
+		// Filter on the specified type
+		ArrayList<SchemaElement> retVal = new ArrayList<SchemaElement>();
+		for (SchemaElement se : getSchemaElements()){
+			if(type==null || type.isInstance(se))
+				retVal.add(se);
+		}
+		return retVal;
+		
 	}
 	
 	public ArrayList<SchemaElement> getSchemaElements(){
 		ArrayList<SchemaElement> retVal = new ArrayList<SchemaElement>();
 		for (SchemaElement se : graphHash.values()){
-			if (se.getId().equals(schemaID) == false){
+			if (se.getId().equals(this.schemaID) == false){
 				retVal.add(se);
 			}
 		}
@@ -63,8 +81,8 @@ public class GraphBuilder{
 		
 		// stores the current "frontier" of the graph
 		ArrayList<SchemaElement> queue = new ArrayList<SchemaElement>();
-		queue.add(graphHash.get(schemaID));
-		visitedElements.add(schemaID);
+		queue.add(graphHash.get(this.schemaID));
+		visitedElements.add(this.schemaID);
 		
 		while (queue.size() > 0){
 			SchemaElement currentElement = queue.remove(0);
@@ -89,10 +107,13 @@ public class GraphBuilder{
 	
 	public void printGraph(){
 		
-		
+		System.err.println("****************************");
+		System.err.println("schemaID: " + this.schemaID);
 		for (SchemaElement se : graphHash.values()){
-			System.out.println(" " + se.getId() + " " + se.getName() + " " + se.getClass());	
+			System.err.println(se.getId() + " , " + se.getName() + " , " + se.getClass());
 		}
+		System.err.println("****************************");
+	
 	} // end method enumerateGraph()
 	
 	public SchemaElement getSchemaElement(Integer id){
@@ -281,6 +302,7 @@ public class GraphBuilder{
 				supertypeEntity.removeSubtypeEntity(element.getId());
 				graphHash.remove(superType.getId());
 			}
+			graphHash.remove(element.getId());
 		}
 		
 		// process aliases
@@ -303,12 +325,26 @@ public class GraphBuilder{
 	 * @param schemaID the id of the schema
 	 * @return
 	 */
-	public ArrayList<SchemaElement> addElements(ArrayList<SchemaElement> schemaElements, int schemaID){
+	public ArrayList<SchemaElement> addElements(ArrayList<SchemaElement> schemaElements, Integer passedSchemaID){
 		
-		// Initialize graphHash if not already initialized
 		if (graphHash == null){
 			graphHash = new HashMap<Integer, SchemaElement>();
-			graphHash.put(schemaID, new GraphEntity(schemaID, new String("The Schema"),new String("The Schema"),schemaID));
+			graphHash.put(passedSchemaID, new GraphEntity(passedSchemaID, new String("The Schema"),new String("The Schema"),passedSchemaID));
+			
+		} 
+		// Update The Schema (if schema changes)
+		else if (passedSchemaID.equals(schemaID) == false){
+				
+			for (SchemaElement se : getSchemaElements(GraphContainment.class)){
+				GraphContainment c = (GraphContainment)se;
+				if (c.getParentID().equals(this.schemaID)){
+					c.setParentID(passedSchemaID);
+				}
+			}
+			graphHash.remove(this.schemaID);
+			graphHash.put(passedSchemaID, new GraphEntity(passedSchemaID, new String("The Schema"),new String("The Schema"),passedSchemaID));
+			this.schemaID = passedSchemaID;
+					
 		}
 		
 		ArrayList<SchemaElement> edges = new ArrayList<SchemaElement>();
@@ -351,9 +387,17 @@ public class GraphBuilder{
 				if(schemaElement instanceof Attribute){ //node
 					GraphAttribute attribute = (GraphAttribute)graphHash.get(schemaElement.getId());
 					GraphDomain domain = (GraphDomain)graphHash.get(attribute.getDomainID());
+					if (domain == null){
+						System.out.println("[E] GraphBuilder:build -- NAME: " + schemaElement.getName() + " [" + schemaElement.getId() + "]" + " is attribute referencing non-existent domain with id " + attribute.getDomainID());
+						throw new NullPointerException();
+					}
 					attribute.setDomainType(domain);
 					domain.addParentAttribute(attribute);
 					GraphEntity entity = (GraphEntity)graphHash.get(attribute.getEntityID());
+					if (entity == null){
+						System.out.println("[E] GraphBuilder:build -- NAME: " + schemaElement.getName() +" " + " "+" [" + schemaElement.getId() + "]" + " is attribute referencing non-existent entity with id " +  attribute.getEntityID());
+						throw new NullPointerException();
+					}
 					attribute.setParentEntity(entity);
 					entity.addChildAttribute(attribute);
 				}
@@ -361,6 +405,10 @@ public class GraphBuilder{
 				else if(schemaElement instanceof DomainValue){ //node
 					GraphDomainValue domainValue = (GraphDomainValue)graphHash.get(schemaElement.getId());
 					GraphDomain domain = (GraphDomain)graphHash.get(domainValue.getDomainID());
+					if (domain == null){
+						System.out.println("[E] GraphBuilder:build -- NAME: " + schemaElement.getName() + " [" + schemaElement.getId() + "]" + " is domain value referencing non-existent domain with id " + domainValue.getDomainID());
+						throw new NullPointerException();
+					}
 					domainValue.setParentDomain(domain);
 					domain.addChildDomainValue(domainValue);
 				}
@@ -380,6 +428,16 @@ public class GraphBuilder{
 					
 					GraphEntity parent = (GraphEntity)graphHash.get(((GraphContainment)graphElement).getParentID());
 					SchemaElement child = graphHash.get(((GraphContainment)graphElement).getChildID());
+					// TODO: This is a patch to fix Galaxy bug
+					if (parent == null){
+						graphElement.setParentID(passedSchemaID);
+						parent = (GraphEntity)graphHash.get(passedSchemaID);
+						//System.out.println("[E] GraphBuilder:build -- NAME: " + schemaElement.getName() + " [" + schemaElement.getId() + "]" +  " is containment that references non-existent parent with id " +  ((Containment)schemaElement).getParentID());
+					}
+					if (child == null)
+						System.out.println("[E] GraphBuilder:build -- NAME: " + schemaElement.getName() + " [" + schemaElement.getId() + "]" +  " is containment that references non-existent child with id " +  ((Containment)schemaElement).getChildID());
+					if (parent == null || child == null) throw new NullPointerException();
+					
 					graphElement.setParent(parent);
 					graphElement.setChild(child);
 					
@@ -404,11 +462,14 @@ public class GraphBuilder{
 					graphHash.put(rel.getId(), rel);
 					GraphEntity leftEntity  = (GraphEntity)graphHash.get(rel.getLeftID());
 					GraphEntity rightEntity = (GraphEntity)graphHash.get(rel.getRightID());
+					if (leftEntity == null) System.out.println("[E] GraphBuilder:build --  " + schemaElement.getId() + " is relationship referencing non-existent left entity with id " + rel.getLeftID());
+					if (rightEntity == null) System.out.println("[E] GraphBuilder:build --  " + schemaElement.getId() + " is relationship referencing non-existent right entity with id " + rel.getRightID());  
+					if (leftEntity == null || rightEntity == null) throw new NullPointerException();
+					
 					rel.setParent(leftEntity);
 					rel.setChild(rightEntity);
 					leftEntity.addRelationship(rel);
 					rightEntity.addRelationship(rel);
-					
 					leftEntity.addLeftEntitiesRelated(rightEntity);
 					leftEntity.addRelationship(rel);
 					rightEntity.addRightEntityRelated(leftEntity);
@@ -420,9 +481,12 @@ public class GraphBuilder{
 					graphHash.put(subtype.getId(), subtype);
 					GraphEntity parentEntity = (GraphEntity)graphHash.get(subtype.getParentID());
 					GraphEntity childEntity  = (GraphEntity)graphHash.get(subtype.getChildID());
-					subtype.setParent(parentEntity);
-					subtype.setChild(childEntity);
+					if (parentEntity == null) System.out.println("[E] GraphBuilder:build --  " + schemaElement.getId() + " is subtype referencing non-existent parent element with id " + subtype.getParentID());
+					if (childEntity == null) System.out.println("[E] GraphBuilder:build --  " + schemaElement.getId() + " is subtype referencing non-existent child element with id " + subtype.getChildID());
+					if (parentEntity == null || childEntity == null) throw new NullPointerException();
 					
+					subtype.setParent(parentEntity);
+					subtype.setChild(childEntity);	
 					parentEntity.addSubtypeEntity(childEntity);
 					parentEntity.addSubtype(subtype);
 					childEntity.addSupertypeEntity(parentEntity);
@@ -443,6 +507,7 @@ public class GraphBuilder{
 				if (parent != null) parent.setAlias(alias);
 				else {
 					System.out.println("[E] GraphBuilder:build -- SchemaElement " + alias.getId() + " is alias referrning to non-existent element id " + alias.getElementID());
+					throw new Exception();
 				}
 				graphHash.put(alias.getId(), alias);
 			}
@@ -464,9 +529,9 @@ public class GraphBuilder{
 						else {
 							pathString = new String("/" + containments.get(0).getName() + pathString);
 							GraphEntity parent = containments.get(0).getParent();
-							if ((parent.getName().length() > 0 && parent.getName().contains("/") == false)  || parent.getId().equals(schemaID)){ 
+							if ((parent.getName().length() > 0 && parent.getName().contains("/") == false)  || parent.getId().equals(this.schemaID)){ 
 								
-								if (parent.getId().equals(schemaID) == false){
+								if (parent.getId().equals(this.schemaID) == false){
 									// add parent 
 									pathString = new String(parent.getName() + pathString);
 								}
@@ -481,7 +546,8 @@ public class GraphBuilder{
 				}
 			}
 			
-		} catch (Exception e) {
+		} catch(Exception e){
+			System.out.println("[E] GraphBuilder:build -- Error assigning implicit connections for schemaElements");		
 			e.printStackTrace();
 		}
 		
@@ -489,6 +555,5 @@ public class GraphBuilder{
 		return getSchemaElements();
 		
 	} // end method build
-		
 	
 }
