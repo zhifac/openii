@@ -178,7 +178,8 @@ public class GraphEntity extends Entity implements GraphSchemaElement{
 	
 	public ArrayList<SchemaElement> getParents(){
 		ArrayList<SchemaElement> retVal = new ArrayList<SchemaElement>();
-		retVal.addAll(getParentEnitiesContained()); 
+		//retVal.addAll(getParentEnitiesContained()); 
+		retVal.addAll(getChildContainments());
 		retVal.addAll(getLeftEntitiesRelated());
 		return retVal;
 	}
@@ -187,8 +188,8 @@ public class GraphEntity extends Entity implements GraphSchemaElement{
 		ArrayList<SchemaElement> retVal = new ArrayList<SchemaElement>();
 		retVal.addAll(getChildAttributes());
 		//retVal.addAll(getChildDomains());
-		//retVal.addAll(getParentContainments());
-		retVal.addAll(getChildEnititiesContained());
+		retVal.addAll(getParentContainments());
+		//retVal.addAll(getChildEnititiesContained());
 		retVal.addAll(getRightEntitiesRelated());
 		return retVal;
 	}
