@@ -523,14 +523,23 @@ public class GraphBuilder{
 						// get set of containments where current entity is a child
 						ArrayList<GraphContainment> containments = current.getChildContainments();	
 						if (containments.size() == 0){
-							System.out.println("[E] GraphBuilder:build -- SchemaElement " + current.getId() + "has no containments in which they are children" );
+							System.out.println("[E] GraphBuilder:build -- SchemaElement " + current.getId() + " has no containments in which they are children" );
 							done = true;
 						}
 						else {
 							pathString = new String("/" + containments.get(0).getName() + pathString);
 							GraphEntity parent = containments.get(0).getParent();
-							if ((parent.getName().length() > 0 && parent.getName().contains("/") == false)  || parent.getId().equals(this.schemaID)){ 
-								
+							if (parent == null){
+								System.out.println("[E] GraphBuilder:build -- SchemaElement " + containments.get(0).getId() + " is containments which has non-existent parent " );
+								done = true;
+								throw new NullPointerException();
+							}
+							if (parent.getName() == null){
+								System.out.println("[E] WARNING: GraphBuilder:build -- SchemaElement " + parent.getId() + " has null name " );
+								done = true;
+							//	throw new NullPointerException();
+							}
+							else if ((parent.getName().length() > 0 && parent.getName().contains("/") == false)  || parent.getId().equals(this.schemaID)){ 
 								if (parent.getId().equals(this.schemaID) == false){
 									// add parent 
 									pathString = new String(parent.getName() + pathString);
