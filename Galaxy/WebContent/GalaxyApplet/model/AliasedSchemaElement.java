@@ -11,16 +11,18 @@ import java.util.*;
 public class AliasedSchemaElement extends SchemaElement implements Comparable<AliasedSchemaElement>, GraphSchemaElement
 {
 
-	private GraphSchemaElement graphElement;
+	private SchemaElement graphElement;
 	
 	/** Constructs the aliased schema element */
-	public AliasedSchemaElement(GraphSchemaElement ge)
-		{ graphElement = ge; }
+	public AliasedSchemaElement(SchemaElement ge)
+		{ 
+			graphElement = ge; 
+		}
 
 	public ArrayList<SchemaElement> getChildren()
-		{ return graphElement.getChildren();}
+		{ return ((GraphSchemaElement)graphElement).getChildren();}
 	public ArrayList<SchemaElement> getParents()
-		{ return graphElement.getParents();}
+		{ return ((GraphSchemaElement)graphElement).getParents();}
 		
 	/** Returns the schema element ID */
 	public Integer getId()
@@ -28,7 +30,7 @@ public class AliasedSchemaElement extends SchemaElement implements Comparable<Al
 	
 	/** Returns the schema element alias ID */
 	public Integer getAliasId()
-		{ return graphElement.getAlias().getId(); }
+		{ return ((GraphSchemaElement)graphElement).getAlias().getId(); }
 	
 	/** Returns the schema element */
 	public SchemaElement getElement()
@@ -36,7 +38,7 @@ public class AliasedSchemaElement extends SchemaElement implements Comparable<Al
 	
 	/** Returns the schema element alias */
 	public GraphAlias getAlias()
-		{ return graphElement.getAlias(); }
+		{ return ((GraphSchemaElement)graphElement).getAlias(); }
 	
 	public void setAlias(GraphAlias a)
 		{ }
@@ -45,8 +47,16 @@ public class AliasedSchemaElement extends SchemaElement implements Comparable<Al
 	/** Returns the schema element name */
 	public String getName()
 	{ 
-		if (graphElement.getAlias() != null) return graphElement.getAlias().getName();
-		else return ((SchemaElement)graphElement).getName(); 
+		if (((GraphSchemaElement)graphElement).getAlias() != null) {
+			return ((GraphSchemaElement)graphElement).getAlias().getName();
+			
+		}
+		else {
+			if (graphElement instanceof GraphEntity && (((SchemaElement)graphElement).getName() == null || ((SchemaElement)graphElement).getName().length() == 0)) 
+				return ((GraphEntity)graphElement).getPath();
+			else
+				return ((SchemaElement)graphElement).getName(); 
+		}
 	}
 	
 	/** Compares two aliased schema elements to one another */

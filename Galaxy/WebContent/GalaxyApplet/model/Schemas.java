@@ -47,7 +47,7 @@ public class Schemas
 	{
 		schemas = new HashMap<Integer,Schema>();
 		for(Schema schema : ServletConnection.getSchemas())
-			if(ServletConnection.getSchemaElementCount(schema.getId())<1000)
+			if(ServletConnection.getSchemaElementCount(schema.getId())<10000)
 			{
 				schemas.put(schema.getId(),schema);
 				for(SchemasListener listener : listeners)
@@ -263,14 +263,25 @@ public class Schemas
 	/** Returns the name for the specified schema element */
 	static public String getSchemaElementName(Integer schemaID, Integer schemaElementID)
 	{
-		for(SchemaElement schemaElement : Schemas.getSchemaElements(schemaID, Alias.class))
+		for(SchemaElement schemaElement : Schemas.getSchemaElements(schemaID, Alias.class)){
 			if(((Alias)schemaElement).getElementID().equals(schemaElementID))
 				return schemaElement.getName();
-		return getSchemaElement(schemaElementID).getName();
+		}
+		SchemaElement se = getSchemaElement(schemaElementID);
+		if (se == null){
+			Schema s = getSchema(schemaElementID);
+			if (s != null)
+				return 	s.getName();
+			else
+				return new String("") ;
+		} else{
+			return se.getName();
+		}
+		
 	}
 	
 	/** Adds the specified schema element */
-	static public boolean addSchemaElement(SchemaElement schemaElement)
+	static public Integer addSchemaElement(SchemaElement schemaElement)
 	{
 		Integer schemaElementID = ServletConnection.addSchemaElement(schemaElement);
 		if(schemaElementID!=null)
@@ -280,10 +291,12 @@ public class Schemas
 			schemaSchemaElements.get(schemaElement.getBase()).add(schemaElement);
 			for(SchemasListener listener : listeners)
 				listener.schemaElementAdded(schemaElement);
-			return true;
+			return schemaElementID;
 		}
-		return false;
+		return schemaElementID;
 	}
+	
+
 	
 	/** Updates the specified schema element */
 	static public Boolean updateSchemaElement(SchemaElement schemaElement)

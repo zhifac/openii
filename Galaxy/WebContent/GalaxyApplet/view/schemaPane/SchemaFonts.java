@@ -7,6 +7,7 @@ import java.awt.Font;
 import model.AliasedSchemaElement;
 
 import org.mitre.schemastore.model.DomainValue;
+import org.mitre.schemastore.graph.*;
 
 import prefuse.action.ActionList;
 import prefuse.action.assignment.FontAction;
@@ -31,9 +32,8 @@ public class SchemaFonts
 			final Font dataSourceFont = FontLib.getFont("SansSerif",Font.PLAIN,10);
 			
 			// Determine which color the node should be
-			Object object = ((NodeItem)item).get("SchemaObject");
-			if(object instanceof Integer) return schemaFont;
-			if(((AliasedSchemaElement)object).getElement() instanceof DomainValue) return dataSourceFont;
+//			Object object = ((NodeItem)item).get("SchemaObject");
+//			if(((AliasedSchemaElement)object).getElement() instanceof DomainValue) return dataSourceFont;
 			return schemaFont;
 		}
 	}
