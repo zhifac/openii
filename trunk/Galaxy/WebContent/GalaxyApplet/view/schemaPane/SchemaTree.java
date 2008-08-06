@@ -23,22 +23,19 @@ import prefuse.data.Tree;
 /** Model for storing schema extensions */
 public class SchemaTree extends Tree
 {	
-	SchemaStoreClient client = new SchemaStoreClient("http://localhost:8080/SchemaStore/services/SchemaStore");
 	GraphBuilder graph;
 	Integer schemaID;
 	
 	/** Constructs the Schema Tree */
 	SchemaTree()
 	{
-		getNodeTable().addColumn("SchemaObject",Object.class);
+		getNodeTable().addColumn("SchemaObject",AliasedSchemaElement.class);
 		addRoot();		
 	}
 	
 	void buildTree(Integer schemaID, Integer comparisonID)
 	{		
 		// Constructs the base object
-		 
-		// TODO: figure out what this code does?
 		 Node schemaNode = getRoot();
 		ArrayList<Node> nodes = new ArrayList<Node>();
 		for(int i=0; i<schemaNode.getChildCount(); i++) nodes.add(schemaNode.getChild(i));
@@ -47,57 +44,24 @@ public class SchemaTree extends Tree
 		
 		
 		try {
-			graph = new GraphBuilder(client.getSchemaElements(schemaID),schemaID);
-			schemaNode.set("SchemaObject", graph.getSchemaElement(schemaID));
-		} catch (RemoteException e) {
+			graph = new GraphBuilder(Schemas.getSchemaElements(schemaID,null),schemaID);	
+			if (graph.getSchemaElement(schemaID) == null){
+				System.err.println("DOES NOT CONTAIN SCHEMA ELEMENT " + schemaID);
+			}
+			graph.getSchemaElement(schemaID).setName(Schemas.getSchema(schemaID).getName());
+			schemaNode.set("SchemaObject", new AliasedSchemaElement(graph.getSchemaElement(schemaID)));
+		} catch (Exception e) {
 			System.out.println("[E] SchemaTree:buildTree: Problem getting schemaElements for schemaID " + schemaID);
 			e.printStackTrace();
 		}
-	//	recursiveBuildTree(schemaNode);
+		recursiveBuildTree(schemaNode);
 	}
 	void recursiveBuildTree(Node rootNode){
 		SchemaElement root = (SchemaElement)rootNode.get("SchemaObject");
 		for (SchemaElement child : graph.getChildren(root.getId()) ){
 			Node childNode = addChild(rootNode);
-			childNode.set("SchemaObject", child);
+			childNode.set("SchemaObject", new AliasedSchemaElement(child));
 			recursiveBuildTree(childNode);
 		}
 	}
-		
-	/**	
-		//HashSet<SchemaElement> entities = new HashSet<SchemaElement>(Schemas.getSchemaElements(schemaID,Entity.class));
-		
-		//if(comparisonID!=null) entities.addAll(Schemas.getSchemaElements(comparisonID,Entity.class));
-		
-		
-		
-		for(SchemaElement entity : entities)
-		{
-			Node entityNode = addChild(schemaNode);
-			entityNode.set("SchemaObject",new AliasedSchemaElement(schemaID,entity.getId()));
-			
-			// Constructs the attribute objects
-			HashSet<Attribute> attributes = new HashSet<Attribute>(Schemas.getAttributesFromEntity(schemaID,entity.getId()));
-			if(comparisonID!=null) attributes.addAll(Schemas.getAttributesFromEntity(comparisonID,entity.getId()));			
-			for(SchemaElement attribute : attributes)
-			{
-				Node attributeNode = addChild(entityNode);
-				
-				attributeNode.set("SchemaObject",new AliasedSchemaElement(schemaID,attribute.getId()));
-				
-				// Constructs the domain values objects
-				HashSet<DomainValue> domainValues = new HashSet<DomainValue>(Schemas.getDomainValues(schemaID,((Attribute)attribute).getDomainID()));
-				if(comparisonID!=null) domainValues.addAll(Schemas.getDomainValues(comparisonID,((Attribute)attribute).getDomainID()));
-				
-				for(SchemaElement domainValue : domainValues)
-				{
-					Node domainNode = addChild(attributeNode);
-					domainNode.set("SchemaObject",new AliasedSchemaElement(schemaID,domainValue.getId()));
-				}
-			}
-		}
-		
-	}
-	
-*/
 }

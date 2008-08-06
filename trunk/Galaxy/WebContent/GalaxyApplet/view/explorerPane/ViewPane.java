@@ -22,6 +22,7 @@ import org.mitre.schemastore.model.Domain;
 import org.mitre.schemastore.model.DomainValue;
 import org.mitre.schemastore.model.Relationship;
 import org.mitre.schemastore.model.SchemaElement;
+import org.mitre.schemastore.graph.*;
 
 /** Class for viewing information about a schema object */
 class ViewPane extends JPanel
@@ -90,19 +91,45 @@ class ViewPane extends JPanel
 	}
 	
 	/** Displays the specified schema element in the view pane */
-	void displayInfo(SchemaElement schemaElement, Integer schemaID)
+	void displayInfo(GraphBuilder graph, SchemaElement schemaElement, Integer schemaID)
 	{
+		String elementName = schemaElement.getName();
+		System.out.println(schemaElement.getClass() +  " elementName: " + elementName);
+		
 		// Update the title pane
-		title.setText("Information on " + Schemas.getSchemaElementName(schemaID, schemaElement.getId()));
+		if (schemaElement instanceof GraphEntity){
+			if (schemaElement.getName() == null || schemaElement.getName().length() == 0)
+				elementName = ((GraphEntity)schemaElement).getPath(); 
+			
+			
+		if (((GraphSchemaElement)schemaElement).getAlias() != null)
+				elementName = ((GraphSchemaElement)schemaElement).getAlias().getName(); 
+			else
+				elementName = schemaElement.getName(); 
+		}
+			
+		System.out.println(schemaElement.getClass() +  " elementName: " + elementName);
+		title.setText("Information on " + elementName);
 		
 		// Update the view pane
 		StringBuffer text = new StringBuffer("");
 		text.append("<html>");
 		text.append("  <div style='font-family:ialog; font-size:10px'>");
 		
-		// Display the schema name		
-		text.append("    <b>Originating Schema: </b>"+Schemas.getSchema(schemaElement.getBase()).getName());
-
+		// Display the schema name
+		
+		System.out.println("Schemas.getSchema(2964) " + Schemas.getSchema(2964));
+		System.out.println("schemaElement.getBase(): " + schemaElement.getBase() + " -- " + schemaElement.getName());
+			
+		if (Schemas.getSchema(schemaElement.getBase()) != null) 
+			text.append("    <b>Originating Schema: </b>"+Schemas.getSchema(graph.getSchemaElement(schemaElement.getId()).getBase()).getName());
+		else{
+			
+			System.err.println("base: " + graph.getSchemaElement(schemaElement.getId()).getBase());
+			text.append("    <b>Originating Schema: </b> BASE TYPE");
+			
+		}
+		
 		// Display the schema description
 		if(!schemaElement.getDescription().equals(""))
 		{

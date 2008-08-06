@@ -21,6 +21,8 @@ import model.SelectedObjects;
 import model.listeners.SchemasListener;
 import model.listeners.SelectedObjectsListener;
 
+import org.mitre.schemastore.graph.*;
+
 /** Class for displaying the Explorer Pane of Galaxy */
 public class ExplorerPane extends JPanel implements EditPaneParent, SchemasListener, SelectedObjectsListener
 {
@@ -80,8 +82,8 @@ public class ExplorerPane extends JPanel implements EditPaneParent, SchemasListe
 		{ viewPane.clearInfo(); }
 	
 	/** Display info on the specified schema element */
-	public void displayInfo(SchemaElement schemaElement, Integer schemaID)
-		{ viewPane.displayInfo(schemaElement,schemaID); }
+	public void displayInfo(GraphBuilder graph, SchemaElement schemaElement, Integer schemaID)
+		{ viewPane.displayInfo(graph, schemaElement,schemaID); }
 	
 	/** Edit info about a specified schema object */
 	public void editInfo(Integer action, Schema schema, SchemaElement schemaElement)

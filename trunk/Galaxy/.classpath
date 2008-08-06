@@ -11,5 +11,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="WebContent/GalaxyApplet/prefuse.jar"/>
 	<classpathentry kind="lib" path="WebContent/GalaxyApplet/SchemaStoreModel.jar"/>
+	<classpathentry kind="lib" path="/SchemaStoreClient/SchemaStoreClient.jar" sourcepath="/SchemaStoreClient"/>
 	<classpathentry kind="output" path="WebContent/WEB-INF/classes"/>
 </classpath>

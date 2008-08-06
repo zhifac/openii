@@ -72,10 +72,19 @@ class SchemaTreeCellRenderer extends LinkedTreeNodeRenderer
 	public String getIconName(Object userObject)
 	{
 		String iconName = "Schema";
-		if(userObject instanceof AliasedSchemaElement)
+		if(userObject instanceof SchemaElement)
 		{
-			if( ((AliasedSchemaElement)userObject).getElement().getClass().toString().contains("Attribute"))
+			if( ((AliasedSchemaElement)userObject).getElement() instanceof Attribute)
 				iconName = "Attribute";
+		//	else if( ((AliasedSchemaElement)userObject).getElement() instanceof Domain)
+		//		iconName = "Entity";
+		//	else if( ((AliasedSchemaElement)userObject).getElement() instanceof Domain)
+		//		iconName = "Containment";
+		//	else if( ((AliasedSchemaElement)userObject).getElement() instanceof Domain)
+		//		iconName = "Domain";
+		//	else if( ((AliasedSchemaElement)userObject).getElement() instanceof DomainValue)
+		//		iconName = "DomainValue";
+			
 			else iconName = "SchemaElement";
 		}
 		else if(userObject instanceof String)

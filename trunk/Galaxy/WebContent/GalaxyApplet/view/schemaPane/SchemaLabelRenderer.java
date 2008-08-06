@@ -28,9 +28,9 @@ public class SchemaLabelRenderer extends LabelRenderer
 
 		// Generate the text for this schema element
 		Object object = ((NodeItem)item).get("SchemaObject");
-		if(object instanceof Integer) text += Schemas.getSchema((Integer)object).getName();
-		else text += ((AliasedSchemaElement)object).getName();
+		text += ((AliasedSchemaElement)object).getName();
 
+		
 		// Display comparison information if needed
 		Integer comparisonSchemaID = SelectedObjects.getSelectedComparisonSchema();
 		if(comparisonSchemaID != null)
