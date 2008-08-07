@@ -26,12 +26,13 @@ public class Query {
 	private ArrayList<SchemaElement> querySchemaElements = null;
 	private HashMap<String,String> queryKeywords = null;
 	
-	public Query() {
-		this.querySchema = new Schema();
+
+	public Query(HashMap<String,String> queryKeywords) {
+		this.querySchema = null;
 		this.querySchemaElements = new ArrayList<SchemaElement>();
-		this.queryKeywords = new HashMap<String,String>();
+		this.queryKeywords = queryKeywords;
+		
 	}
-	
 	public Query(Schema querySchema, ArrayList<SchemaElement> querySchemaElements, HashMap<String,String> queryKeywords) {
 		this.querySchema = querySchema;
 		this.queryKeywords = queryKeywords;
