@@ -52,6 +52,18 @@ public abstract class Importer
 	/** Returns the schema elements from the specified URI */
 	abstract protected ArrayList<SchemaElement> getSchemaElements(Integer schemaID, URI uri) throws ImporterException;
 	
+	// TODO: send this patch to Chris/Doug
+	public static Schema buildSchema(String name, String author, String description, URI uri)
+			throws ImporterException {
+		return new Schema(nextId(), name, author, uri == null ? "" : uri.toString(), "",
+				description, false);
+	}
+
+	public ArrayList<SchemaElement> buildSchemaElements(Schema schema, URI uri)
+			throws ImporterException {
+		return getSchemaElements(schema.getId(), uri);
+	}
+	
 	/** Imports the specified URI */
 	final public Integer importSchema(String name, String author, String description, URI uri) throws ImporterException
 	{

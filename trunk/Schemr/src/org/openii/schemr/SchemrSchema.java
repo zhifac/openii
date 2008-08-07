@@ -3,13 +3,13 @@ package org.openii.schemr;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElementList;
 
-public class SchemaXml {
+public class SchemrSchema {
 
 	private Schema schema = null;
 
 	private SchemaElementList schemaElementList = null;
 	
-	public SchemaXml(Schema schema, SchemaElementList sel) {
+	public SchemrSchema(Schema schema, SchemaElementList sel) {
 		this.schema = schema;
 		this.schemaElementList = sel;
 	}

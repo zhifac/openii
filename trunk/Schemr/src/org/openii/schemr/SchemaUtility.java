@@ -64,11 +64,11 @@ public class SchemaUtility {
 	static XStream XSTREAM = new XStream();
 
 	public static void serializeSchema(Schema schema, SchemaElementList elementList, OutputStream out) {		
-		XSTREAM.toXML(new SchemaXml(schema, elementList), out);
+		XSTREAM.toXML(new SchemrSchema(schema, elementList), out);
 	}
 
-	public static SchemaXml deserializeSchema(InputStream is) {
-		return (SchemaXml) XSTREAM.fromXML(is);
+	public static SchemrSchema deserializeSchema(InputStream is) {
+		return (SchemrSchema) XSTREAM.fromXML(is);
 	}
 	
 	public static final String ENTITY = "entity";

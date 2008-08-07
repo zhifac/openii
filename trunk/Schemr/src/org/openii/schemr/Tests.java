@@ -170,7 +170,7 @@ public class Tests extends TestCase {
 					fos.close();
 					
 					FileInputStream fis = new FileInputStream(filePath+"/"+name+"_"+i);
-					SchemaXml result = SchemaUtility.deserializeSchema(fis);
+					SchemrSchema result = SchemaUtility.deserializeSchema(fis);
 					
 					assertTrue("", s.equals(result.getSchema()));
 					

@@ -13,15 +13,13 @@ public class Schemr {
 
 	private static final Logger logger = Logger.getLogger(Schemr.class.getName());
 
-	public static void main(String[] args) {new Schemr();}
-
-	public Schemr() {
+	public static void main(String[] args) {
 
 		// get query
 		Query q = getQuery();
 
 		// filter for candidate schemas
-		ArrayList<Schema> candidateSchemas = getCandidateSchemas();
+		ArrayList<Schema> candidateSchemas = getCandidateSchemas(q);
 
 		// process query against candidate schemas
 		MatchSummary [] msarray = q.processQuery(candidateSchemas);
@@ -38,7 +36,7 @@ public class Schemr {
 		app = new SearchResultsUI(topResultsArray);
 	}
 
-	private Query getQuery() {
+	public static Query getQuery() {
 		Schema querySchema = null;
 		ArrayList<SchemaElement> querySchemaElements = null;
 		try {
@@ -61,7 +59,7 @@ public class Schemr {
 		return q;
 	}
 
-	private ArrayList<Schema> getCandidateSchemas() {
+	public static ArrayList<Schema> getCandidateSchemas(Query query) {
 		ArrayList<Schema> candidateSchemas = null;
 		try {
 //			candidateSchemas = SchemaUtility.getCLIENT().getSchemas();
