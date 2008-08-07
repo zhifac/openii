@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import jxl.Cell;
+import jxl.Sheet;
 import jxl.read.biff.BiffException;
 
 import org.mitre.schemastore.model.Domain;
@@ -44,6 +45,36 @@ public class DomainValueImporter extends ExcelImporter {
 
 	}
 
+	protected void generate() {
+		Sheet[] sheets = _excelWorkbook.getSheets();
+
+		// iterate and load individual work sheets
+		for (int s = 0; s < sheets.length; s++) {
+			Sheet sheet = sheets[s];
+
+			// add sheet name as a domain
+			String domainName = sheet.getName();
+			addDomain(domainName);
+
+			int numRows = sheet.getRows();
+			// iterate through rows and create table/attribute nodes
+			for (int i = 0; i < numRows; i++) {
+				readRow(sheet.getRow(i));
+			}
+		}
+	}
+
+	private Domain addDomain(String domainName) {
+		Domain domain;
+		if (!_domains.containsKey(domainName)) {
+			domain = new Domain(nextId(), domainName, "", 0);
+			_domains.put(domainName, domain);
+			// System.err.println("adding new domain " + domainName);
+		} else
+			domain = _domains.get(domainName);
+		return domain;
+	}
+
 	protected ArrayList<SchemaElement> generateSchemaElementList() {
 		ArrayList<SchemaElement> schemaElements = new ArrayList<SchemaElement>();
 
@@ -55,34 +86,28 @@ public class DomainValueImporter extends ExcelImporter {
 	}
 
 	protected void readRow(Cell[] cells) {
+		if (cells.length < 1) return;
+		
 		String domainName = despace(cells[0].getContents());
 		String domainValueStr = despace(cells[1].getContents());
-		String documentation = cells[2].getContents().trim();
+		String documentation = (cells.length > 2) ? cells[2].getContents().trim() : "";
+
 		Domain domain;
 		DomainValue domainValue;
 
 		if (domainName.length() == 0 && domainValueStr.length() == 0)
 			return;
 
-		// create an entity for a table
-		if (_domains.containsKey(domainName))
-			domain = _domains.get(domainName);
-		else {
-			domain = new Domain(nextId(), domainName, "", 0);
-			System.err.println("adding new domain " + domainName);
-			_domains.put(domainName, domain);
-		}
+		// get the domain if it doesn't exist
+		domain = addDomain(domainName);
 
 		// create a domain value
 		if (domainValueStr.length() > 0) {
 			domainValue = new DomainValue(nextId(), domainValueStr, documentation, domain.getId(),
 					0);
-			System.err.println("adding new domain value " + domain.getName() + " : "
-					+ domainValueStr);
 			_domainValues.put(domainValueStr, domainValue);
-		} else {
-			// doc describes domain if domain value is absent
-			domain.setDescription(documentation);
+//			 System.err.println("adding new domain value " + domain.getName() + " : "
+//					 + domainValueStr);
 		}
 	}
 
