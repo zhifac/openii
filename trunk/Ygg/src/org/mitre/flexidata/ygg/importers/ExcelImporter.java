@@ -30,11 +30,11 @@ import org.mitre.schemastore.model.SchemaElement;
  */
 
 public class ExcelImporter extends Importer {
-	private Workbook _excelWorkbook;
+	protected Workbook _excelWorkbook;
 	private URI _excelURI;
 	private HashMap<String, Entity> _entities;
 	private HashMap<String, Attribute> _attributes;
-	private static Domain D_ANY  = new Domain(nextId(), ANY, null, 0 ); 
+	private static Domain D_ANY = new Domain(nextId(), ANY, null, 0);
 
 	// get rid of characters
 	protected String despace(String s) {
@@ -77,12 +77,9 @@ public class ExcelImporter extends Importer {
 
 		// create an attribute
 		if (attName.length() > 0) {
-			attribute = new Attribute(nextId(), attName, documentation, tblEntity.getId(),
-					D_ANY.getId(), null, null, 0);
+			attribute = new Attribute(nextId(), attName, documentation, tblEntity.getId(), D_ANY
+					.getId(), null, null, 0);
 			_attributes.put(attribute.getName(), attribute);
-		} else {
-			// doc describes table if attribute doesn't exist
-			tblEntity.setDescription(documentation);
 		}
 	}
 
@@ -136,7 +133,6 @@ public class ExcelImporter extends Importer {
 	}
 
 	@Override
-	// TODO why schemaID in the parameter list?
 	protected ArrayList<SchemaElement> getSchemaElements(Integer schemaID, URI uri)
 			throws ImporterException {
 		try {
@@ -147,7 +143,7 @@ public class ExcelImporter extends Importer {
 		} catch (IOException e) {
 			throw new ImporterException(ImporterException.PARSE_FAILURE, e.getMessage());
 		} catch (BiffException b) {
-			throw new ImporterException(ImporterException.IMPORT_FAILURE, b.getMessage());
+			 throw new ImporterException(ImporterException.IMPORT_FAILURE, b.getMessage());
 		}
 		return generateSchemaElementList();
 	}
@@ -156,5 +152,4 @@ public class ExcelImporter extends Importer {
 	public Integer getURIType() {
 		return FILE;
 	}
-
 }
