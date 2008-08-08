@@ -91,6 +91,7 @@ public class DomainValueImporter extends ExcelImporter {
 		String domainName = despace(cells[0].getContents());
 		String domainValueStr = despace(cells[1].getContents());
 		String documentation = (cells.length > 2) ? cells[2].getContents().trim() : "";
+		String hashKey = domainName + "/" + domainValueStr;
 
 		Domain domain;
 		DomainValue domainValue;
@@ -105,10 +106,9 @@ public class DomainValueImporter extends ExcelImporter {
 		if (domainValueStr.length() > 0) {
 			domainValue = new DomainValue(nextId(), domainValueStr, documentation, domain.getId(),
 					0);
-			_domainValues.put(domainValueStr, domainValue);
+			_domainValues.put(hashKey, domainValue);
 //			 System.err.println("adding new domain value " + domain.getName() + " : "
 //					 + domainValueStr);
 		}
 	}
-
 }
