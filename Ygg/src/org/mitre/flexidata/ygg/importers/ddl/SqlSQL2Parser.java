@@ -7281,7 +7281,7 @@ inputState.guessing--;
 	public final void any_token() throws RecognitionException, TokenStreamException {
 
 		returnAST = null;
-		ASTPair currentAST = new ASTPair();
+//		ASTPair currentAST = new ASTPair();
 		AST any_token_AST = null;
 
 		matchNot(EOF);
