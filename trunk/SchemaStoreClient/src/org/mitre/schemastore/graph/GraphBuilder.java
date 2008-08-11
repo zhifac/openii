@@ -30,7 +30,7 @@ public class GraphBuilder{
 		}
 	}
 	
-	public ArrayList<SchemaElement> getSchemaElements(Class type){
+	public ArrayList<SchemaElement> getSchemaElements(Class<GraphContainment> type){
 		
 		// Filter on the specified type
 		ArrayList<SchemaElement> retVal = new ArrayList<SchemaElement>();
