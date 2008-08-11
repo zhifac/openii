@@ -7,11 +7,19 @@
 
 package org.mitre.schemastore.servlet;
 
+import java.io.Serializable;
+
+import javax.xml.namespace.QName;
+
+import org.apache.axis.encoding.ser.BeanDeserializerFactory;
+import org.apache.axis.encoding.ser.BeanSerializerFactory;
+
 public class SchemaStoreSoapBindingStub extends org.apache.axis.client.Stub implements org.mitre.schemastore.servlet.SchemaStore {
-    private java.util.Vector cachedSerClasses = new java.util.Vector();
-    private java.util.Vector cachedSerQNames = new java.util.Vector();
-    private java.util.Vector cachedSerFactories = new java.util.Vector();
-    private java.util.Vector cachedDeserFactories = new java.util.Vector();
+    @SuppressWarnings("unchecked")
+	private java.util.Vector<Class> cachedSerClasses = new java.util.Vector<Class>();
+    private java.util.Vector<QName> cachedSerQNames = new java.util.Vector<QName>();
+    private java.util.Vector<Serializable> cachedSerFactories = new java.util.Vector<Serializable>();
+    private java.util.Vector<Serializable> cachedDeserFactories = new java.util.Vector<Serializable>();
 
     static org.apache.axis.description.OperationDesc [] _operations;
 
@@ -960,7 +968,8 @@ public class SchemaStoreSoapBindingStub extends org.apache.axis.client.Stub impl
          super.cachedEndpoint = endpointURL;
     }
 
-    public SchemaStoreSoapBindingStub(javax.xml.rpc.Service service) throws org.apache.axis.AxisFault {
+    @SuppressWarnings("unchecked")
+	public SchemaStoreSoapBindingStub(javax.xml.rpc.Service service) throws org.apache.axis.AxisFault {
         if (service == null) {
             super.service = new org.apache.axis.client.Service();
         } else {
@@ -970,16 +979,16 @@ public class SchemaStoreSoapBindingStub extends org.apache.axis.client.Stub impl
             java.lang.Class cls;
             javax.xml.namespace.QName qName;
             javax.xml.namespace.QName qName2;
-            java.lang.Class beansf = org.apache.axis.encoding.ser.BeanSerializerFactory.class;
-            java.lang.Class beandf = org.apache.axis.encoding.ser.BeanDeserializerFactory.class;
-            java.lang.Class enumsf = org.apache.axis.encoding.ser.EnumSerializerFactory.class;
-            java.lang.Class enumdf = org.apache.axis.encoding.ser.EnumDeserializerFactory.class;
-            java.lang.Class arraysf = org.apache.axis.encoding.ser.ArraySerializerFactory.class;
-            java.lang.Class arraydf = org.apache.axis.encoding.ser.ArrayDeserializerFactory.class;
-            java.lang.Class simplesf = org.apache.axis.encoding.ser.SimpleSerializerFactory.class;
-            java.lang.Class simpledf = org.apache.axis.encoding.ser.SimpleDeserializerFactory.class;
-            java.lang.Class simplelistsf = org.apache.axis.encoding.ser.SimpleListSerializerFactory.class;
-            java.lang.Class simplelistdf = org.apache.axis.encoding.ser.SimpleListDeserializerFactory.class;
+            java.lang.Class<BeanSerializerFactory> beansf = org.apache.axis.encoding.ser.BeanSerializerFactory.class;
+            java.lang.Class<BeanDeserializerFactory> beandf = org.apache.axis.encoding.ser.BeanDeserializerFactory.class;
+//            java.lang.Class enumsf = org.apache.axis.encoding.ser.EnumSerializerFactory.class;
+//            java.lang.Class enumdf = org.apache.axis.encoding.ser.EnumDeserializerFactory.class;
+//            java.lang.Class arraysf = org.apache.axis.encoding.ser.ArraySerializerFactory.class;
+//            java.lang.Class arraydf = org.apache.axis.encoding.ser.ArrayDeserializerFactory.class;
+//            java.lang.Class simplesf = org.apache.axis.encoding.ser.SimpleSerializerFactory.class;
+//            java.lang.Class simpledf = org.apache.axis.encoding.ser.SimpleDeserializerFactory.class;
+//            java.lang.Class simplelistsf = org.apache.axis.encoding.ser.SimpleListSerializerFactory.class;
+//            java.lang.Class simplelistdf = org.apache.axis.encoding.ser.SimpleListDeserializerFactory.class;
             qName = new javax.xml.namespace.QName("http://model.schemastore.mitre.org", "Alias");
             cachedSerQNames.add(qName);
             cls = org.mitre.schemastore.model.Alias.class;
@@ -1177,7 +1186,8 @@ public class SchemaStoreSoapBindingStub extends org.apache.axis.client.Stub impl
 
     }
 
-    protected org.apache.axis.client.Call createCall() throws java.rmi.RemoteException {
+    @SuppressWarnings("unchecked")
+	protected org.apache.axis.client.Call createCall() throws java.rmi.RemoteException {
         try {
             org.apache.axis.client.Call _call = super._createCall();
             if (super.maintainSessionSet) {
