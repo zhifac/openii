@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.logging.Logger;
 
 import org.mitre.schemastore.graph.GraphBuilder;
 import org.mitre.schemastore.model.Attribute;
@@ -14,14 +13,13 @@ import org.openii.schemr.SchemaUtility;
 import org.openii.schemr.matcher.EditDistanceMatcher;
 import org.openii.schemr.matcher.Matcher;
 import org.openii.schemr.matcher.NGramMatcher;
-import org.openii.schemr.matcher.SimilarityMatrix;
 
 /**
  * 
  */
 public class Query {
 
-	private static final Logger logger = Logger.getLogger(Query.class.getName());
+//	private static final Logger logger = Logger.getLogger(Query.class.getName());
 
 	private Schema querySchema = null;
 	private ArrayList<SchemaElement> querySchemaElements = null;
@@ -95,7 +93,7 @@ public class Query {
 			m = new EditDistanceMatcher(candidateSchema, queryFragments);			
 		}
 
-		SimilarityMatrix sm = m.calculateSimilarityMatrix();
+//		SimilarityMatrix sm = m.calculateSimilarityMatrix();
 //	System.out.println(sm.toString());
 		// match summary contains schema, queryfragments, score, and evidence
 		return m.getMatchSummary();

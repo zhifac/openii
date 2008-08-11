@@ -2,11 +2,10 @@ package org.openii.schemr.matcher;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.logging.Logger;
 
 public class TokenSet {
 
-	private static final Logger logger = Logger.getLogger(TokenSet.class.getName());
+//	private static final Logger logger = Logger.getLogger(TokenSet.class.getName());
 
 	private String name;
 	private ArrayList<Token> tokens;

@@ -2,13 +2,11 @@ package org.openii.schemr.client.view;
 
 import java.io.File;
 
-import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -79,7 +77,7 @@ public class SearchBoxView extends ViewPart implements SelectionListener {
 		searchBoxControl.setLayout(layout);
 
 		// setup bold font
-		Font boldFont = JFaceResources.getFontRegistry().getBold(JFaceResources.DEFAULT_FONT);
+//		Font boldFont = JFaceResources.getFontRegistry().getBold(JFaceResources.DEFAULT_FONT);
 
 		_textBox = new Text(searchBoxControl, SWT.SINGLE | SWT.BORDER);
 		_textBox.setText("Example: human entity:zipcode");
