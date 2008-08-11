@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/J2SE-1.5"/>
+	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="lib" path="lib/schema_store_client/SchemaStoreClient.jar"/>
+	<classpathentry kind="lib" path="lib/schema_store_client/wsdl4j-1.5.1.jar"/>
+	<classpathentry kind="lib" path="lib/schema_store_client/activation-1.1.jar"/>
+	<classpathentry kind="lib" path="lib/schema_store_client/axis.jar"/>
+	<classpathentry kind="lib" path="lib/schema_store_client/commons-discovery-0.2.jar"/>
+	<classpathentry kind="lib" path="lib/schema_store_client/jaxrpc.jar"/>
+	<classpathentry kind="lib" path="lib/schema_store_client/mail-1.4.jar"/>
+	<classpathentry kind="lib" path="lib/schema_store_client/org.apache.commons.logging_1.0.4.v200706111724.jar"/>
+	<classpathentry kind="lib" path="lib/schema_store_client/saaj.jar"/>
+	<classpathentry kind="lib" path="lib/prefuse.jar" sourcepath="/prefuse-beta/src"/>
+	<classpathentry kind="lib" path="lib/ygg/antlr.jar"/>
+	<classpathentry kind="lib" path="lib/ygg/arq.jar"/>
+	<classpathentry kind="lib" path="lib/ygg/castor-0.9.9.1-xml.jar"/>
+	<classpathentry kind="lib" path="lib/ygg/commons-logging.jar"/>
+	<classpathentry kind="lib" path="lib/ygg/icu4j_3_4.jar"/>
+	<classpathentry kind="lib" path="lib/ygg/jcommon-1.0.5.jar"/>
+	<classpathentry kind="lib" path="lib/ygg/jena.jar"/>
+	<classpathentry kind="lib" path="lib/ygg/jxl.jar"/>
+	<classpathentry kind="lib" path="lib/ygg/log4j-1.2.11.jar"/>
+	<classpathentry kind="lib" path="lib/ygg/xercesImpl.jar"/>
+	<classpathentry kind="lib" path="lib/ygg/Ygg.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
