@@ -3,9 +3,6 @@
 //  Global header starts here, at the top of all generated files
 package org.mitre.flexidata.ygg.importers.ddl;
 
-import java.util.*;
-import org.mitre.schemastore.model.*;
-import org.mitre.flexidata.ygg.importers.*;
 
 //  Global header ends here
 

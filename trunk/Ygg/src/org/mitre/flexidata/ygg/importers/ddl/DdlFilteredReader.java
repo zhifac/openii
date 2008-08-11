@@ -2,18 +2,10 @@
 
 package org.mitre.flexidata.ygg.importers.ddl;
 
-import java.util.*;
-
-import org.mitre.flexidata.ygg.importers.ddl.*;
-import antlr.*;
-import antlr.collections.*;
-import java.io.*;
-import java.net.URI;
-import org.mitre.schemastore.model.Attribute;
-import org.mitre.schemastore.model.Entity;
-import org.mitre.schemastore.model.Schema;
-import org.mitre.schemastore.model.Domain;
-import org.mitre.schemastore.model.SchemaElement;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.Reader;
 
 /**
  *  This class filters out all the crap^H^H^H^H lines that the parser can't handle.  Currently it lets through the
