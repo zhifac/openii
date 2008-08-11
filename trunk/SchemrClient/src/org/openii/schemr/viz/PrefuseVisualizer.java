@@ -2,7 +2,6 @@ package org.openii.schemr.viz;
 import java.awt.Component;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.logging.Logger;
 
 import org.mitre.schemastore.graph.GraphBuilder;
 import org.mitre.schemastore.model.Schema;
@@ -32,7 +31,7 @@ import prefuse.visual.VisualItem;
 
 public class PrefuseVisualizer implements Visualizer {
 
-	private static final Logger logger = Logger.getLogger(PrefuseVisualizer.class.getName());
+	//private static final Logger logger = Logger.getLogger(PrefuseVisualizer.class.getName());
 
 	private static final String VIZ_NAME = "schema";
 	private static final String VIZ_EDGES = VIZ_NAME+".edges";

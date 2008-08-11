@@ -17,7 +17,6 @@ import static prefuse.data.Graph.DEFAULT_TARGET_KEY;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.logging.Logger;
 
 import org.mitre.schemastore.graph.GraphAttribute;
 import org.mitre.schemastore.graph.GraphEntity;
@@ -33,7 +32,7 @@ import prefuse.data.Tree;
 
 public class SchemaGraphReader {
 	
-	private static final Logger logger = Logger.getLogger(SchemaGraphReader.class.getName());
+//	private static final Logger logger = Logger.getLogger(SchemaGraphReader.class.getName());
 	
 	private Table nodesTable;
 	private Table edgesTable;

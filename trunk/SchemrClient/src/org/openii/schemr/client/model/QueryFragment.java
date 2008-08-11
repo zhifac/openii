@@ -1,7 +1,6 @@
 package org.openii.schemr.client.model;
 
 import java.util.ArrayList;
-import java.util.logging.Logger;
 
 import org.mitre.schemastore.graph.GraphAttribute;
 import org.mitre.schemastore.graph.GraphEntity;
@@ -16,7 +15,7 @@ import org.openii.schemr.SchemaUtility;
  */
 public class QueryFragment {
 
-	private static final Logger logger = Logger.getLogger(QueryFragment.class.getName());
+//	private static final Logger logger = Logger.getLogger(QueryFragment.class.getName());
 
 	private ArrayList<QueryFragment> queryFragments = null;
 	private String name = null;

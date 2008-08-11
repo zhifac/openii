@@ -2,7 +2,6 @@ package org.openii.schemr.matcher;
 
 import java.util.ArrayList;
 import java.util.Map.Entry;
-import java.util.logging.Logger;
 
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
@@ -12,7 +11,7 @@ import org.openii.schemr.preprocessor.Preprocessor;
 
 public class NGramMatcher extends BaseMatcher implements Matcher {
 	
-	private static final Logger logger = Logger.getLogger(NGramMatcher.class.getName());
+//	private static final Logger logger = Logger.getLogger(NGramMatcher.class.getName());
 
 	private static final int NUM_GRAMS = 3;
 

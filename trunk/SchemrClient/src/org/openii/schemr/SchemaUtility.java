@@ -5,8 +5,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.mitre.schemastore.client.SchemaStoreClient;
 import org.mitre.schemastore.model.Alias;
@@ -22,7 +20,7 @@ import org.mitre.schemastore.model.Subtype;
 public class SchemaUtility {
 	
 	public static String DEFAULT_ROOT = System.getProperty("user.home");
-	public static String SCHEMA_STORE_URL = "http://localhost:8080/SchemaStore/services/SchemaStore";
+	public static String SCHEMA_STORE_URL = "http://brainsrv2.mitre.org:8090/SchemaStore/services/SchemaStore";
 	private static SchemaStoreClient CLIENT = null;
 
 	private static String CONFIG_FILE_PATH = "local.properties";
