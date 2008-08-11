@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+
+   <extension
+         id="application"
+         point="org.eclipse.core.runtime.applications">
+      <application>
+         <run
+               class="org.openii.schemr.client.Application">
+         </run>
+      </application>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectives">
+      <perspective
+            name="Schemr Search Perspective"
+            class="org.openii.schemr.client.Perspective"
+            id="org.openii.schemr.client.perspective">
+      </perspective>
+   </extension>
+   <extension
+         point="org.eclipse.ui.views">
+      <view
+            name="Schemr Search View"
+            allowMultiple="false"
+            icon="icons/xmag16.png"
+            class="org.openii.schemr.client.view.SearchBoxView"
+            id="org.openii.schemr.client.view.searchBoxView">
+      </view>
+      <view
+            allowMultiple="true"
+            class="org.openii.schemr.client.view.ResultVizView"
+            icon="icons/xeyes16.png"
+            id="org.openii.schemr.client.view.resultVizView"
+            name="Schemr Visualization View">
+      </view>
+   </extension>
+   <extension
+         point="org.eclipse.ui.commands">
+      <category
+            name="Schemr"
+            id="SchemrClient.category">
+      </category>
+      <command
+            name="Search Schemas"
+            description="Search for Schemas"
+            categoryId="SchemrClient.category"
+            id="SchemrClient.search">
+      </command>
+      <command
+            name="Visualize Search Result"
+            description="Visualize a Search Result"
+            categoryId="SchemrClient.category"
+            id="SchemrClient.visualizeResult">
+      </command>
+   </extension>
+   <extension
+         point="org.eclipse.ui.bindings">
+      <key
+            commandId="org.eclipse.ui.file.exit"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="CTRL+X">
+      </key>
+   </extension>
+   <extension
+         id="product"
+         point="org.eclipse.core.runtime.products">
+      <product
+            application="SchemrClient.application"
+            name="Schemr">
+         <property
+               name="aboutText"
+               value="Schemr by OpenII">
+         </property>
+         <property
+               name="windowImages"
+               value="icons/xeyes128.png">
+         </property>
+         <property
+               name="aboutImage"
+               value="icons/xeyes128.png">
+         </property>
+      </product>
+   </extension>
+
+</plugin>
