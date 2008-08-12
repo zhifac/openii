@@ -71,11 +71,16 @@
             name="Schemr">
          <property
                name="aboutText"
-               value="Schemr by OpenII">
+               value="Schemr is a Schema Search tool, and is a piece of the Open Information Integration Framework.
+
+For more information about OpenII, goto code.google.com/p/openii
+
+Kuang Chen
+kuangc@gmail.com">
          </property>
          <property
                name="windowImages"
-               value="icons/xeyes128.png">
+               value="icons/xeyes16.png,icons/xeyes32.png,icons/xeyes64.png,icons/xeyes128.png">
          </property>
          <property
                name="aboutImage"
@@ -84,6 +89,14 @@
          <property
                name="appName"
                value="Schemr">
+         </property>
+         <property
+               name="startupProgressRect"
+               value="5,275,445,15">
+         </property>
+         <property
+               name="preferenceCustomization"
+               value="plugin_customization.ini">
          </property>
       </product>
    </extension>
