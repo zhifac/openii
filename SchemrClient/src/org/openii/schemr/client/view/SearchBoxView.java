@@ -1,7 +1,6 @@
 package org.openii.schemr.client.view;
 
 import java.io.File;
-import java.rmi.RemoteException;
 
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.SWT;
@@ -180,7 +179,7 @@ public class SearchBoxView extends ViewPart implements SelectionListener {
 			MatchSummary[] msarray = null;
 			try {
 				msarray = SearchAction.performSearch(_textBox.getText(), f, _parent.getShell());
-			} catch (RemoteException e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 				// TODO e.getMessage is not a good error message
 				MessageDialogFactory.displayError(_parent.getShell(), "Error", e.getMessage());

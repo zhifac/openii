@@ -29,7 +29,7 @@
             id="org.openii.schemr.client.view.searchBoxView">
       </view>
       <view
-            allowMultiple="true"
+            allowMultiple="false"
             class="org.openii.schemr.client.view.ResultVizView"
             icon="icons/xeyes16.png"
             id="org.openii.schemr.client.view.resultVizView"
@@ -71,12 +71,7 @@
             name="Schemr">
          <property
                name="aboutText"
-               value="Schemr is a Schema Search tool, and is a piece of the Open Information Integration Framework.
-
-For more information about OpenII, goto code.google.com/p/openii
-
-Kuang Chen
-kuangc@gmail.com">
+               value="Schemr is a Schema Search tool, and is a piece of the Open Information Integration Framework.&#x0A;&#x0A;For more information about OpenII, goto code.google.com/p/openii&#x0A;&#x0A;Kuang Chen&#x0A;kuangc@gmail.com">
          </property>
          <property
                name="windowImages"
@@ -99,6 +94,20 @@ kuangc@gmail.com">
                value="plugin_customization.ini">
          </property>
       </product>
+   </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="org.openii.schemr.client.PreferenceInitializer">
+      </initializer>
+   </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            class="org.openii.schemr.client.SchemrPreferencePage"
+            id="org.openii.schemr.client.schemrPreferencePage"
+            name="Schemr Preferences">
+      </page>
    </extension>
 
 </plugin>
