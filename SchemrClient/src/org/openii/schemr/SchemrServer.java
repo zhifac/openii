@@ -13,6 +13,7 @@ public class SchemrServer {
 		try {
 			candidateSchemas = new ArrayList<Schema>();
 			
+			// TODO BIG OL' HACK
 			ArrayList<Schema> all = SchemaUtility.getCLIENT().getSchemas();
 			for (int i=0;i<30;i++) {
 				candidateSchemas.add(all.get(i));
