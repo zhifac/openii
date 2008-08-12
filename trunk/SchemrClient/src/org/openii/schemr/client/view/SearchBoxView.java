@@ -1,12 +1,15 @@
 package org.openii.schemr.client.view;
 
 import java.io.File;
+import java.rmi.RemoteException;
 
+import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -31,9 +34,9 @@ public class SearchBoxView extends ViewPart implements SelectionListener {
 	public static final String ID = "org.openii.schemr.client.view.searchBoxView";
 
 	// TODO: set back to ""
-	private static final String DEFAULT_FILE_PATH = "";
-
-	private static final int SEARCH_BOX_WIDTH = 235;
+	private static final String DEFAULT_FILE_PATH = "/path/to/xsd_or_ddl";
+	private static final String DEFAULT_SEARCH_KEYWORDS = "berkeley location attribute:course ";
+	private static final int SEARCH_BOX_WIDTH = 240;
 
 	private Composite _parent;
 	private Text _textBox;
@@ -60,7 +63,7 @@ public class SearchBoxView extends ViewPart implements SelectionListener {
 		sashForm.setLayoutData(gridData);
 		buildSearchControl(sashForm);
 		buildSearchResult(sashForm);
-		sashForm.setWeights(new int[] { 1, 5 });
+		sashForm.setWeights(new int[] { 2, 7 });
 				
 	}
 	
@@ -77,38 +80,31 @@ public class SearchBoxView extends ViewPart implements SelectionListener {
 		searchBoxControl.setLayout(layout);
 
 		// setup bold font
-//		Font boldFont = JFaceResources.getFontRegistry().getBold(JFaceResources.DEFAULT_FONT);
+		Font boldFont = JFaceResources.getFontRegistry().getBold(JFaceResources.DEFAULT_FONT);
 
+		Label l1 = new Label(searchBoxControl, SWT.NONE);
+		l1.setText("Enter keywords:");
+		l1.setFont(boldFont);
+		GridData data = new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING, GridData.VERTICAL_ALIGN_BEGINNING, false, false);
+		data.horizontalSpan = 3;
+		l1.setLayoutData(data);
+		
 		_textBox = new Text(searchBoxControl, SWT.SINGLE | SWT.BORDER);
-		_textBox.setText("Example: human entity:zipcode");
+		_textBox.setText(DEFAULT_SEARCH_KEYWORDS);
 		_textBox.setSelection(0, _textBox.getText().length());
 		_textBox.setToolTipText("Enter search keywords, for example: africa attribute:name");
-		GridData data = new GridData(GridData.HORIZONTAL_ALIGN_FILL, GridData.VERTICAL_ALIGN_BEGINNING, true, false);
+		data = new GridData(GridData.HORIZONTAL_ALIGN_FILL, GridData.VERTICAL_ALIGN_BEGINNING, true, false);
 		data.horizontalSpan = 3;
 		data.minimumWidth = SEARCH_BOX_WIDTH;
 		_textBox.setLayoutData(data);
 
-		_filePathText = new Text(searchBoxControl, SWT.SINGLE | SWT.BORDER);
-		_filePathText.setText(DEFAULT_FILE_PATH);
-		_filePathText.setToolTipText("Enter path for schema file");
-		data = new GridData(GridData.HORIZONTAL_ALIGN_FILL, GridData.VERTICAL_ALIGN_BEGINNING, true, false);
-		data.horizontalSpan = 2;
-		data.minimumWidth = SEARCH_BOX_WIDTH-60;
-		_filePathText.setLayoutData(data);
+		Label l2 = new Label(searchBoxControl, SWT.NONE);
+		l2.setText("(And/Or) Specify a schema file:");
+		l2.setFont(boldFont);
+		data = new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING, GridData.VERTICAL_ALIGN_BEGINNING, false, false);
+		data.horizontalSpan = 3;
+		l2.setLayoutData(data);
 
-//		_clearFileButton = new Button(searchBoxControl, SWT.PUSH);
-//		_clearFileButton.setText("X");
-//		_clearFileButton.setEnabled(new File(_filePathText.getText()).isFile());
-//		data = new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING, GridData.VERTICAL_ALIGN_BEGINNING, false, false);
-//		_clearFileButton.setLayoutData(data);
-//		_clearFileButton.addSelectionListener(new SelectionAdapter() {
-//			public void widgetSelected(SelectionEvent event) {				
-//				System.out.println("\nClear file button pressed");
-//		        _filePathText.setText("");
-//		        _clearFileButton.setEnabled(false);
-//			}
-//		});
-				
 		_uploadButton = new Button(searchBoxControl, SWT.PUSH);
 		_uploadButton.setImage(Activator.getImageDescriptor("/icons/attach16.png").createImage());
 		_uploadButton.setToolTipText("Launch file browser");
@@ -130,6 +126,27 @@ public class SearchBoxView extends ViewPart implements SelectionListener {
 		        System.out.println(selected);				
 			}
 		});
+
+		_filePathText = new Text(searchBoxControl, SWT.SINGLE | SWT.BORDER);
+		_filePathText.setText(DEFAULT_FILE_PATH);
+		_filePathText.setToolTipText("Enter path for schema file");
+		data = new GridData(GridData.HORIZONTAL_ALIGN_FILL, GridData.VERTICAL_ALIGN_BEGINNING, true, false);
+		data.horizontalSpan = 2;
+		data.minimumWidth = SEARCH_BOX_WIDTH-65;
+		_filePathText.setLayoutData(data);
+
+//		_clearFileButton = new Button(searchBoxControl, SWT.PUSH);
+//		_clearFileButton.setText("X");
+//		_clearFileButton.setEnabled(new File(_filePathText.getText()).isFile());
+//		data = new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING, GridData.VERTICAL_ALIGN_BEGINNING, false, false);
+//		_clearFileButton.setLayoutData(data);
+//		_clearFileButton.addSelectionListener(new SelectionAdapter() {
+//			public void widgetSelected(SelectionEvent event) {				
+//				System.out.println("\nClear file button pressed");
+//		        _filePathText.setText("");
+//		        _clearFileButton.setEnabled(false);
+//			}
+//		});
 		
 		_searchButton = new Button(searchBoxControl, SWT.PUSH);
 		_searchButton.setImage(Activator.getImageDescriptor("/icons/xmag16.png").createImage());
@@ -160,7 +177,14 @@ public class SearchBoxView extends ViewPart implements SelectionListener {
 			if (path.length() > 0 && new File(path).exists()) {
 				f = new File(path);
 			}
-			MatchSummary [] msarray = SearchAction.performSearch(_textBox.getText(), f, _parent.getShell());
+			MatchSummary[] msarray = null;
+			try {
+				msarray = SearchAction.performSearch(_textBox.getText(), f, _parent.getShell());
+			} catch (RemoteException e) {
+				e.printStackTrace();
+				// TODO e.getMessage is not a good error message
+				MessageDialogFactory.displayError(_parent.getShell(), "Error", e.getMessage());
+			}
 			updateResults(msarray);
 		} else {
 			System.out.println("Unknown selection action by "+se.getSource());

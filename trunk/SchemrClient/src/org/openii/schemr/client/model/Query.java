@@ -1,15 +1,19 @@
 package org.openii.schemr.client.model;
 
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map.Entry;
 
 import org.mitre.schemastore.graph.GraphBuilder;
 import org.mitre.schemastore.model.Attribute;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
+import org.openii.schemr.SchemaStoreIndex;
 import org.openii.schemr.SchemaUtility;
+import org.openii.schemr.SchemaStoreIndex.CandidateSchema;
 import org.openii.schemr.matcher.EditDistanceMatcher;
 import org.openii.schemr.matcher.Matcher;
 import org.openii.schemr.matcher.NGramMatcher;
@@ -64,16 +68,46 @@ public class Query {
 		}
 		return sb.toString();
 	}
+	
+	public String toKeywordSearchString() {
+		StringBuffer sb = new StringBuffer();
+		
+		for (Entry<String, String> e : queryKeywords.entrySet()) {
+			String key = e.getKey();
+			String val = e.getValue();
+			
+			if (!val.equals("")) {
+				sb.append(val+":");
+//			} else {
+//				sb.append(" ");
+			}
+			sb.append(key+" ");
+		}
+		
+		if (querySchema != null) {
+			sb.append("title:" + this.querySchema.getName());
+			for (SchemaElement s : this.querySchemaElements) {
+				String type = SchemaUtility.getType(s);
+				if (SchemaStoreIndex.TYPES_SET.contains(type)) {
+					sb.append(" "+type+":"+s.getName());					
+				}				
+			}			
+		}
+		return sb.toString();		
+	}
 
-	public MatchSummary [] processQuery(ArrayList<Schema> candidateSchemas) {
+	public MatchSummary [] processQuery(CandidateSchema [] candidateSchemas) throws RemoteException {
 		QueryParser qp = new QueryParser(this);				
 		
 		ArrayList<MatchSummary> matchSummaries = new ArrayList<MatchSummary>();
 		
-		for (int i = 0; i < candidateSchemas.size(); i++) {
-			Schema candidateSchema = candidateSchemas.get(i);
+		for (int i = 0; i < candidateSchemas.length; i++) {
+			CandidateSchema candidateSchema = candidateSchemas[i];
+			
+			Schema s = SchemaUtility.getCLIENT().getSchema(candidateSchema.uid);
+			
 			ArrayList<QueryFragment> queryFragments = qp.getQueryFragments();
-			MatchSummary ms = match(candidateSchema, queryFragments);
+			MatchSummary ms = match(s, queryFragments);
 			if (ms != null) matchSummaries.add(ms);	
 		}
 		
