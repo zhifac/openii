@@ -20,13 +20,17 @@ public class GraphBuilder{
 	
 	}
 
-	public GraphBuilder(ArrayList<SchemaElement> elements, Integer id){
-		this.schemaID = id;
+	public SchemaElement getRoot(){
+		return getSchemaElement(this.schemaID);
+	}
+	
+	public GraphBuilder(ArrayList<SchemaElement> elements, Integer passedSchemaID){
+		this.schemaID = passedSchemaID;
 		
-		addElements(elements,id);
-		printGraph();
-		if (getSchemaElement(id) == null){
-			System.out.println("[E] GraphBuilder:GraphBuilder -- graph does not contain element for schema (id " + id + ")");
+		addElements(elements,passedSchemaID);
+		//printGraph();
+		if (getSchemaElement(passedSchemaID) == null){
+			System.out.println("[E] GraphBuilder:GraphBuilder -- graph does not contain element for schema (id " + passedSchemaID + ")");
 		}
 	}
 	
@@ -51,6 +55,7 @@ public class GraphBuilder{
 		}
 		return retVal;
 	}
+	
 	
 	public ArrayList<SchemaElement> getParents(Integer schemaID){
 		SchemaElement element = graphHash.get(schemaID);
@@ -332,9 +337,10 @@ public class GraphBuilder{
 			graphHash.put(passedSchemaID, new GraphEntity(passedSchemaID, new String("The Schema"),new String("The Schema"),passedSchemaID));
 			
 		} 
-		// Update The Schema (if schema changes)
-		else if (passedSchemaID.equals(schemaID) == false){
-				
+		// IF schema has been updated, need to replace schema element with a new root
+		else if (passedSchemaID.equals(this.schemaID) == false){
+			
+			// replace referencces to the schema in containments to the OLD schema
 			for (SchemaElement se : getSchemaElements(GraphContainment.class)){
 				GraphContainment c = (GraphContainment)se;
 				if (c.getParentID().equals(this.schemaID)){
