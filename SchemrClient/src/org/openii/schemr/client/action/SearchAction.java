@@ -14,7 +14,6 @@ import org.mitre.flexidata.ygg.importers.ImporterException;
 import org.mitre.flexidata.ygg.importers.XSDImporter;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
-import org.openii.schemr.SchemaUtility;
 import org.openii.schemr.SchemrServer;
 import org.openii.schemr.SchemaStoreIndex.CandidateSchema;
 import org.openii.schemr.client.model.MatchSummary;
