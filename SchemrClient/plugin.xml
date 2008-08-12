@@ -81,6 +81,10 @@
                name="aboutImage"
                value="icons/xeyes128.png">
          </property>
+         <property
+               name="appName"
+               value="Schemr">
+         </property>
       </product>
    </extension>
 
