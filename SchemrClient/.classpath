@@ -22,7 +22,7 @@
 	<classpathentry kind="lib" path="lib/ygg/jena.jar"/>
 	<classpathentry kind="lib" path="lib/ygg/jxl.jar"/>
 	<classpathentry kind="lib" path="lib/ygg/log4j-1.2.11.jar"/>
-	<classpathentry kind="lib" path="lib/ygg/xercesImpl.jar"/>
 	<classpathentry kind="lib" path="lib/ygg/Ygg.jar"/>
+	<classpathentry kind="lib" path="lib/lucene-core-2.3.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

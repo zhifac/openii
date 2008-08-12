@@ -5,7 +5,8 @@ Bundle-SymbolicName: SchemrClient; singleton:=true
 Bundle-Version: 1.0.0
 Bundle-Activator: org.openii.schemr.client.Activator
 Require-Bundle: org.eclipse.ui,
- org.eclipse.core.runtime
+ org.eclipse.core.runtime,
+ org.junit
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Export-Package: org.openii.schemr.client;
@@ -29,6 +30,7 @@ Export-Package: org.openii.schemr.client;
 Import-Package: org.eclipse.ui.forms.events,
  org.eclipse.ui.forms.widgets
 Bundle-ClassPath: .,
+ lib/lucene-core-2.3.jar,
  lib/prefuse.jar,
  lib/schema_store_client/activation-1.1.jar,
  lib/schema_store_client/axis.jar,
