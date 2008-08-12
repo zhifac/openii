@@ -22,7 +22,7 @@ public class SchemaStoreProxy implements org.mitre.schemastore.servlet.SchemaSto
       }
       
     }
-    catch (javax.xml.rpc.ServiceException serviceException) {}
+    catch (javax.xml.rpc.ServiceException serviceException) {serviceException.printStackTrace();}
   }
 
   
