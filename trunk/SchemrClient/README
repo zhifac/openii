@@ -1,31 +1,41 @@
-Requirements
-------------
-- Eclipse 3.4 with plugins for RCP and JEE development
-- Subversive plugin for SVN access
-- SchemaStore webservice
+Development Environment Requirements
+------------------------------------
 
-Running
+- Eclipse 3.4 with plugins for RCP and JEE development (from eclipse.org)
+- Subversive plugin for SVN access (search for 'eclipse subversive' - as for 7/2008, this is a bit tricky)
+
+- Source code checkout
+	- from code.google.com/o/openii 
+		(https://openii.googlecode.com/svn via SVN)
+	- get SchemrClient, SchemaStore, SchemaStoreClient
+- (optional source files)
+	- SWT v3.4 for Eclipse Ganymede source code: http://www.eclipse.org/swt/eclipse.php
+	- Prefuse source code: www.prefuse.org
+
+Set up SchemaStore
+------------------
+- set up postgresql 8.3 
+	- run schemastore.sql to make schema and data
+- set up tomcat5.5
+- specify db access information in SchemaStore configuration files
+- deploy SchemaStore.war in tomcat instance (use 'Run on Server' in Eclipse)
+	- form within Eclipse, define a Tomcat5.5 server
+See SchemaStore documentation for more details
+
+Running Schemr from Development Environment
 -------
-- Set up SchemaStore (see SchemaStore)
-	- set up postgresql 8.3 
-		- run schema_store.sql to make schema and data
-	- set up tomcat5.5
-		- configure db access credentials
-		- deploy SchemaStore.war
-- Configure SchemaStore URL
-- Run Schemr as Eclipse Application
+- Set up SchemaStore; run SchemaStore webservice 
+- Configure SchemaStore URL in SchemrClient
+	- right now this is hardcoded in SchemrUtility.java
+- Run 'Schemr as Eclipse Application'
 	- the first run will create a client-side text index of all schemas in repository
-
-Developing
-----------
-(optional)
-- SWT v3.4 for Eclipse Ganymede source code: http://www.eclipse.org/swt/eclipse.php
-- Prefuse source code: www.prefuse.org
 
 Updating
 --------
 - When SchemaStore, SchemaStoreClient or Ygg changes
-	- Run *.jardesc
+	- Run *.jardesc at the root of the project that changed
+	- Copy the resulting jar file to SchemrClient/lib/ and replace the old jar file
+	- Run tests
 
 BEWARE!
 -----
@@ -34,8 +44,6 @@ BEWARE!
 Major issues / todos
 --------------------
 - Configurable SchemaStore URL, index location
-- Button for refreshing index
-- install procedure, test
 
 - Memory leak? Probably MatchSummary objects sticking around... or the AWT-SWT bridge not behaving
 
