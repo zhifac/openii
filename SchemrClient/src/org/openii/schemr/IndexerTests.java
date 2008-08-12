@@ -1,14 +1,8 @@
 package org.openii.schemr;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.rmi.RemoteException;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
 
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
@@ -29,10 +23,6 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.LockObtainFailedException;
 import org.apache.lucene.store.RAMDirectory;
 import org.mitre.schemastore.client.SchemaStoreClient;
-import org.mitre.schemastore.graph.GraphBuilder;
-import org.mitre.schemastore.model.Schema;
-import org.mitre.schemastore.model.SchemaElement;
-import org.mitre.schemastore.model.SchemaElementList;
 
 public class IndexerTests extends TestCase {
 

@@ -50,8 +50,8 @@ public class ResultVizView extends ViewPart implements IPropertyChangeListener {
 	public void dispose() {
 		super.dispose();
 		_swingHolder.dispose();
+		_ms = null;
 		SearchResultManager.getInstance().removePropertyChangeListener(this);
-		System.out.println("ResultVizView dispose call");
 	}
 
 	public void propertyChange(PropertyChangeEvent e) {

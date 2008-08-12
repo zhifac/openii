@@ -3,6 +3,7 @@ package org.openii.schemr.client.action;
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -13,7 +14,9 @@ import org.mitre.flexidata.ygg.importers.ImporterException;
 import org.mitre.flexidata.ygg.importers.XSDImporter;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
+import org.openii.schemr.SchemaUtility;
 import org.openii.schemr.SchemrServer;
+import org.openii.schemr.SchemaStoreIndex.CandidateSchema;
 import org.openii.schemr.client.model.MatchSummary;
 import org.openii.schemr.client.model.Query;
 import org.openii.schemr.client.view.MessageDialogFactory;
@@ -40,7 +43,7 @@ public class SearchAction
 //		performSearch()
 //    }
 
-	public static MatchSummary [] performSearch(String keywordString, File schemaFile, Shell shell) {
+	public static MatchSummary [] performSearch(String keywordString, File schemaFile, Shell shell) throws RemoteException {
 		Query q = null;
 		
 		HashMap<String,String> queryKeywords = getKeywordMap(keywordString);
@@ -80,12 +83,18 @@ public class SearchAction
 		}
 
 		// filter for candidate schemas
-		ArrayList<Schema> candidateSchemas = SchemrServer.getCandidateSchemas(q);
+		CandidateSchema [] candidateSchemas = SchemrServer.getCandidateSchemas(q);
 
+		int page = Math.min(RESULT_PAGE_SIZE, candidateSchemas.length);
+		
+		CandidateSchema [] filteredSchemas = new CandidateSchema [page];
+		for (int i = 0; i < page; i++) {
+			filteredSchemas[i] = candidateSchemas[i];
+		}
+		
 		// process query against candidate schemas
-		MatchSummary [] msarray = q.processQuery(candidateSchemas);
+		MatchSummary [] msarray = q.processQuery(filteredSchemas);
 
-		int page = Math.min(RESULT_PAGE_SIZE, msarray.length);
 		System.out.println("Ranked results");
 		MatchSummary [] topResultsArray = new MatchSummary [page];
 		for (int i = 0; i < page; i++) {
@@ -93,7 +102,7 @@ public class SearchAction
 			System.out.println(i+"\tschema: "+topResultsArray[i].getSchema().getName() + "\t\t\tscore: "+topResultsArray[i].getScore());
 		}
 		
-		return msarray;
+		return topResultsArray;
 	}
 
 	private static HashMap<String, String> getKeywordMap(String keywordString) {
@@ -104,7 +113,7 @@ public class SearchAction
 			if (ka.length == 1) {
 				queryKeywords.put(ka[0], "");
 			} else if (ka.length > 1) {
-				queryKeywords.put(ka[0], ka[1]);
+				queryKeywords.put(ka[1], ka[0]);
 			} else {
 				continue;
 			}
