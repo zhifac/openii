@@ -1,0 +1,43 @@
+Requirements
+------------
+- Eclipse 3.4 with plugins for RCP and JEE development
+- Subversive plugin for SVN access
+- SchemaStore webservice
+
+Running
+-------
+- Set up SchemaStore (see SchemaStore)
+- Configure SchemaStore URL
+- Run Schemr as Eclipse Application
+	- the first run will create a client-side text index of all schemas in repository
+
+Developing
+----------
+(optional)
+- SWT v3.4 for Eclipse Ganymede source code: http://www.eclipse.org/swt/eclipse.php
+- Prefuse source code: www.prefuse.org
+
+Updating
+--------
+- When SchemaStore, SchemaStoreClient or Ygg changes
+	- Run *.jardesc
+
+BEWARE!
+-----
+- xercesImpl.jar should be included on classpath w/ Linux and Windows platforms, but NOT on OS X Java 1.4+
+
+Major issues / todos
+--------------------
+- Memory leak? Probably MatchSummary objects sticking around... or the AWT-SWT bridge not behaving
+
+- Using Lucene index probably introduces a recall problem
+- Test schemr recall/precision against something... like a TF/IDF score of itself
+- Lucene index is static... build.xml regenerates, as well as if you delete the index folder (for now)
+
+- Define collaborative use cases
+- Push Lucene text index to server-side OR! push matching to Lucene
+
+- Define Eclipse plugin extension points
+- Refactor for extensibility
+
+
