@@ -93,8 +93,8 @@ public class Query {
 			m = new EditDistanceMatcher(candidateSchema, queryFragments);			
 		}
 
-//		SimilarityMatrix sm = m.calculateSimilarityMatrix();
-//	System.out.println(sm.toString());
+		m.calculateSimilarityMatrix();
+		//	System.out.println(sm.toString());
 		// match summary contains schema, queryfragments, score, and evidence
 		return m.getMatchSummary();
 	}
