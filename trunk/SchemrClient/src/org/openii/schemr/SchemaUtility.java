@@ -1,6 +1,6 @@
 package org.openii.schemr;
 
-import java.io.FileNotFoundException;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
@@ -18,10 +18,12 @@ import org.mitre.schemastore.model.Subtype;
 
 public class SchemaUtility {
 	
+	public static final String LOCAL_INDEX_DIR = System.getProperty("user.home")+File.separator+"schemr"+File.separator+"index";
 	public static final String SCHEMA_STORE_URL_DEFAULT = "http://localhost:8080/SchemaStore/services/SchemaStore";
 	public static String SCHEMA_STORE_URL = SCHEMA_STORE_URL_DEFAULT;
 	private static SchemaStoreClient CLIENT = null;
 
+	// TODO: fix me, this doesn't work right now...
 	private static String CONFIG_FILE_PATH = "/schemr.local.properties";
 	static {
 		try {
