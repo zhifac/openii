@@ -1,9 +1,8 @@
 package org.openii.schemr;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Properties;
 
 import org.mitre.schemastore.client.SchemaStoreClient;
@@ -19,37 +18,36 @@ import org.mitre.schemastore.model.Subtype;
 
 public class SchemaUtility {
 	
-	public static String DEFAULT_ROOT = System.getProperty("user.home");
-	public static String SCHEMA_STORE_URL = "http://brainsrv2.mitre.org:8090/SchemaStore/services/SchemaStore";
+	public static final String SCHEMA_STORE_URL_DEFAULT = "http://localhost:8080/SchemaStore/services/SchemaStore";
+	public static String SCHEMA_STORE_URL = SCHEMA_STORE_URL_DEFAULT;
 	private static SchemaStoreClient CLIENT = null;
 
-	private static String CONFIG_FILE_PATH = "local.properties";
+	private static String CONFIG_FILE_PATH = "/schemr.local.properties";
 	static {
-		File localPropsFile = new File(CONFIG_FILE_PATH);
-		Properties p = new Properties();
 		try {
-			p.load(new FileInputStream(localPropsFile));
-			String dir = p.getProperty("local_working_dir");
-			if (dir != null) {
-				DEFAULT_ROOT = dir;
+			Properties p = new Properties();
+			InputStream inputStream = ClassLoader.getSystemResourceAsStream(CONFIG_FILE_PATH);
+			if (inputStream != null) {
+				p.load(inputStream);				
+			} else {
+				System.out.println("Configuration file not found, using defaults: "+CONFIG_FILE_PATH);				
 			}
 			String server = p.getProperty("schema_store_server");
 			if (server != null) {
 				SCHEMA_STORE_URL = server;
 			}
-		} catch (FileNotFoundException e) {
-			System.out.println("Configuration file not found, using defaults: "+CONFIG_FILE_PATH);
 		} catch (IOException e) {
 			System.out.println("Configuration file access error, using defaults: "+CONFIG_FILE_PATH);
 		} finally {
-			System.out.println("DEFAULT_ROOT = "+DEFAULT_ROOT);
 			System.out.println("SCHEMA STORE SERVER initialized to "+SCHEMA_STORE_URL);
 		}
+		
 	}
 
 	public static SchemaStoreClient getCLIENT() {
 		if (CLIENT == null) {
 			CLIENT = new SchemaStoreClient(SCHEMA_STORE_URL);
+			System.out.println("SchemaStoreClient created to "+SCHEMA_STORE_URL);
 		}
 		return CLIENT;
 	}
