@@ -3,12 +3,14 @@ package org.openii.schemr.client;
 import org.eclipse.jface.action.GroupMarker;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.actions.ActionFactory.IWorkbenchAction;
 import org.eclipse.ui.application.ActionBarAdvisor;
 import org.eclipse.ui.application.IActionBarConfigurer;
+import org.openii.schemr.client.action.BuildIndexAction;
 
 /**
  * An action bar advisor is responsible for creating, adding, and disposing of the
@@ -23,6 +25,8 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
     private IWorkbenchAction exitAction;
     private IWorkbenchAction aboutAction;
     private IWorkbenchAction newWindowAction;
+    private IWorkbenchAction launchPreferencesAction;
+    private BuildIndexAction rebuildIndexAction;
 //    private SearchAction searchAction;
 //    private ResultVizSelectAction resultVizSelectAction;
     
@@ -46,6 +50,10 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
         
         newWindowAction = ActionFactory.OPEN_NEW_WINDOW.create(window);
         register(newWindowAction);
+
+//        launchPreferencesAction = ActionFactory.PREFERENCES.create(window);
+        
+        rebuildIndexAction = new BuildIndexAction(window, "Rebuild Index");
         
 //        searchAction = new SearchAction(window, "Search for something", SearchBoxView.ID);
 //      searchAction = new SearchAction(window, "Search for Schemas");
@@ -65,8 +73,10 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
         menuBar.add(helpMenu);
         
         // File
+        fileMenu.add(rebuildIndexAction);
+        fileMenu.add(new Separator());
         fileMenu.add(newWindowAction);
-//        fileMenu.add(new Separator());
+//        fileMenu.add(launchPreferencesAction);
 //        fileMenu.add(searchAction);
 //        fileMenu.add(resultVizSelectAction);
 //        fileMenu.add(new Separator());

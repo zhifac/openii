@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?pde version="3.1"?>
+<?pde version="3.4"?>
 
 <product name="Schemr" id="SchemrClient.product" application="SchemrClient.application" useFeatures="false">
 
@@ -15,7 +15,8 @@ kuangc@gmail.com
       </text>
    </aboutInfo>
 
-   <configIni use="default"/>
+   <configIni use="default">
+   </configIni>
 
    <launcherArgs>
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts</vmArgsMac>
@@ -23,8 +24,7 @@ kuangc@gmail.com
 
    <windowImages i16="/SchemrClient/icons/xeyes16.png" i32="/SchemrClient/icons/xeyes32.png" i64="/SchemrClient/icons/xeyes64.png" i128="/SchemrClient/icons/xeyes128.png"/>
 
-   <splash
-      startupProgressRect="5,275,445,15" />
+
    <launcher name="Schemr">
       <solaris/>
       <win useIco="false">
@@ -54,7 +54,7 @@ kuangc@gmail.com
       <plugin id="org.eclipse.jface.databinding"/>
       <plugin id="org.eclipse.osgi"/>
       <plugin id="org.eclipse.swt"/>
-      <plugin id="org.eclipse.swt.gtk.linux.x86" fragment="true"/>
+      <plugin id="org.eclipse.swt.gtk.linux.x86"/>
       <plugin id="org.eclipse.ui"/>
       <plugin id="org.eclipse.ui.forms"/>
       <plugin id="org.eclipse.ui.workbench"/>
