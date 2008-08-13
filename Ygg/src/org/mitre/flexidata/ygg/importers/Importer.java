@@ -50,19 +50,7 @@ public abstract class Importer
 		{ return new ArrayList<Integer>(); }
 	
 	/** Returns the schema elements from the specified URI */
-	abstract protected ArrayList<SchemaElement> getSchemaElements(Integer schemaID, URI uri) throws ImporterException;
-	
-	// TODO: send this patch to Chris/Doug
-	public static Schema buildSchema(String name, String author, String description, URI uri)
-			throws ImporterException {
-		return new Schema(nextId(), name, author, uri == null ? "" : uri.toString(), "",
-				description, false);
-	}
-
-	public ArrayList<SchemaElement> buildSchemaElements(Schema schema, URI uri)
-			throws ImporterException {
-		return getSchemaElements(schema.getId(), uri);
-	}
+	abstract public ArrayList<SchemaElement> getSchemaElements(URI uri) throws ImporterException;
 	
 	/** Imports the specified URI */
 	final public Integer importSchema(String name, String author, String description, URI uri) throws ImporterException
@@ -70,12 +58,7 @@ public abstract class Importer
 		// Generate the schema
 		Schema schema = new Schema(nextId(),name,author,uri==null?"":uri.toString(),"",description,false);
 		ArrayList<Integer> extendedSchemaIDs = getExtendedSchemaIDs(uri);
-		ArrayList<SchemaElement> schemaElements = getSchemaElements(schema.getId(),uri);
-		
-		// DEBUG what are the elements? 
-		for ( SchemaElement e : schemaElements ){
-			System.out.println( e.getClass() + ": " + e.getName() );
-		}
+		ArrayList<SchemaElement> schemaElements = getSchemaElements(uri);		
 		
 		// Import the schema into the repository
 		if(!SchemaManager.importSchema(schema, extendedSchemaIDs, schemaElements))

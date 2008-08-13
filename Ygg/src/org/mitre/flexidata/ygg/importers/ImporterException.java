@@ -15,8 +15,7 @@ public class ImporterException extends Exception
 	
 	/** Constructs an importer exception */
 	public ImporterException(Integer exceptionType, String message)
-		{ super(message); 
-		this.exceptionType = exceptionType; }
+		{ super(message); this.exceptionType = exceptionType; }
 	
 	/** Returns the exception type */
 	public Integer getExceptionType()

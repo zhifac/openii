@@ -31,6 +31,6 @@ public class ExtendSchemaImporter extends Importer
 	}
 	
 	/** Returns the schema elements from the specified URI */
-	protected ArrayList<SchemaElement> getSchemaElements(Integer schemaID, URI uri) throws ImporterException
+	public ArrayList<SchemaElement> getSchemaElements(URI uri) throws ImporterException
 		{ return new ArrayList<SchemaElement>(); }
 }

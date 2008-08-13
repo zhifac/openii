@@ -166,7 +166,7 @@ public class CopySchemaImporter extends Importer
 	}
 	
 	/** Returns the schema elements from the specified URI with form [SRC SCHEMA REPO]#[SRC SCHEMA NAME]*/
-	protected ArrayList<SchemaElement> getSchemaElements(Integer schemaID, URI uri) throws ImporterException 
+	public ArrayList<SchemaElement> getSchemaElements(URI uri) throws ImporterException 
 	{ 	
 		// Initialize the importer if needed
 		initIfNeeded(uri);		
