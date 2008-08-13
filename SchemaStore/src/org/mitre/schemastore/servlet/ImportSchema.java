@@ -101,7 +101,6 @@ public class ImportSchema
 			schema.setLocked(false);
 			schemaID = client.addSchema(schema);
 			if(schemaID==null) throw new RemoteException("Failed to import schema "+schema.getName());
-			alterID(schemaElements, schema.getId(), schemaID);
 	
 			// Replace all default domain schema elements
 			for(SchemaElement schemaElement : new ArrayList<SchemaElement>(schemaElements))
