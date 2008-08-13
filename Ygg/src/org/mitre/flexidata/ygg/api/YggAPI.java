@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import org.mitre.flexidata.ygg.exporters.Exporter;
 import org.mitre.flexidata.ygg.importers.Importer;
 import org.mitre.flexidata.ygg.model.ConfigManager;
+import org.mitre.flexidata.ygg.model.SchemaStore;
+import org.mitre.schemastore.client.SchemaStoreClient;
 
 /**
  * The Ygg API
@@ -15,8 +17,8 @@ import org.mitre.flexidata.ygg.model.ConfigManager;
 public class YggAPI
 {
 	/** Constructs the YggAPI */
-	public YggAPI(String schemaStoreLoc)
-		{ ConfigManager.setSchemaStoreLoc(schemaStoreLoc); }
+	public YggAPI(SchemaStoreClient client)
+		{ SchemaStore.setClient(client); }
 	
 	/** Returns the list of importers */
 	public ArrayList<Importer> getImporters(String fileType)

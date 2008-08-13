@@ -88,8 +88,4 @@ public class ConfigManager
 	/** Returns the list of exporters */
 	static public ArrayList<Exporter> getExporters()
 		{ return exporters; }
-	
-	/** Sets the schema store location */
-	static public void setSchemaStoreLoc(String schemaStoreLocIn)
-		{ schemaStoreLoc = schemaStoreLocIn; }
 }
