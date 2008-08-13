@@ -77,7 +77,8 @@ public class SchemaStoreIndex {
 	public static final String SUMMARY = "summary";
 	public static final String UID = "uid";
 	// TODO is this the right set?
-	private static final String [] TYPES = new String [] {TITLE, SUMMARY, "entity", "attribute", "domain", "domainvalue"};
+//	private static final String [] TYPES = new String [] {TITLE, SUMMARY, "entity", "attribute", "domain", "domainvalue"};
+	private static final String [] TYPES = new String [] {TITLE, SUMMARY, "entity", "attribute", "containment", "domainvalue"};
 	public static final HashSet<String> TYPES_SET = new HashSet<String>();
 	static {
 		TYPES_SET.addAll(Arrays.asList(TYPES));
