@@ -37,6 +37,13 @@ Updating
 	- Copy the resulting jar file to SchemrClient/lib/ and replace the old jar file
 	- Run tests
 
+Building Schemr product
+-----------------------
+Export via the SchemrClient.*.product configurations in the SchemrClient root directory
+By default, the exported SchemrClient product will be for your platform, e.g. OS X beget OS X product
+To enable building for other platforms, look here: http://wiki.eclipse.org/index.php/RCP_FAQ
+Follow directions in the section "How can I build and run my RCP app against a different version of the Eclipse base?"
+
 BEWARE!
 -----
 - xercesImpl.jar should be included on classpath w/ Linux and Windows platforms, but NOT on OS X Java 1.4+
