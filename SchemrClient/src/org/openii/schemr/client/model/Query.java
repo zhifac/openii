@@ -76,28 +76,34 @@ public class Query {
 			String key = e.getKey();
 			String val = e.getValue();
 			
-			if (!val.equals("")) {
-				sb.append(val+":");
-//			} else {
-//				sb.append(" ");
+			if (!key.equals("")) {
+				if (!val.equals("")) {
+					sb.append(val+":");
+				}
+				sb.append(key+" ");				
 			}
-			sb.append(key+" ");
 		}
 		
 		if (querySchema != null) {
-			sb.append("title:" + this.querySchema.getName());
+			String schemaName = this.querySchema.getName();
+			if (schemaName != null && !schemaName.equals("")) {
+				sb.append("title:" + schemaName);				
+			}
 			for (SchemaElement s : this.querySchemaElements) {
 				String type = SchemaUtility.getType(s);
-				if (SchemaStoreIndex.TYPES_SET.contains(type)) {
+				String name = s.getName();
+				if (SchemaStoreIndex.TYPES_SET.contains(type) 
+						&& name != null && !name.equals("")) {
 					sb.append(" "+type+":"+s.getName());					
 				}				
 			}			
 		}
+		System.out.println("Query flattened: "+sb.toString());
 		return sb.toString();		
 	}
 
 	public MatchSummary [] processQuery(CandidateSchema [] candidateSchemas) throws RemoteException {
-		QueryParser qp = new QueryParser(this);				
+		QueryParser qp = new QueryParser(this);
 		
 		ArrayList<MatchSummary> matchSummaries = new ArrayList<MatchSummary>();
 		
@@ -153,7 +159,7 @@ public class Query {
 			if (query == null) {
 				throw new IllegalArgumentException("ERROR: query must not be null");
 			}
-			Schema s = query.getQuerySchema();			
+			Schema s = query.getQuerySchema();
 			ArrayList<SchemaElement> se = query.getQuerySchemaElements();
 			if (s != null && se != null) {
 				this.queryFragments.add(new QueryFragment(s, se));				

@@ -44,7 +44,8 @@ public class QueryFragment {
 			}
 			if (schemaElement instanceof Containment) {
 				Containment c = (Containment) schemaElement;
-				if (c.getParentID() < 0 && !c.getName().equals("")) {
+				// if the parent is valid and name is not null
+				if (c.getParentID() > 0 && !c.getName().equals("")) {
 					this.queryFragments.add(new QueryFragment(c));
 				}
 			}

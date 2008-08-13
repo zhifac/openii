@@ -46,10 +46,11 @@ public class SearchAction
 		Query q = null;
 		
 		HashMap<String,String> queryKeywords = getKeywordMap(keywordString);
+		Schema schema = null;
+		ArrayList<SchemaElement> schemaElements = null;
 		
 		if (schemaFile != null) {
 			Importer importer = null;
-
 			String s = "file:///" + schemaFile.getAbsolutePath().replace("\\", "/").replace(" ", "%20");
 			// pick a loader
 			if (schemaFile.getName().endsWith("xsd")) {
@@ -62,23 +63,25 @@ public class SearchAction
 
 			// TODO: set this as preference
 			String author = System.getProperty("user.name");
-			Schema schema = null;
-			ArrayList<SchemaElement> schemaElements = null;
 			try {
 				schema = Importer.buildSchema(schemaFile.getName(), author, "", new URI(s));
 				schemaElements = importer.buildSchemaElements(schema, new URI(s));
-				q = new Query(schema, schemaElements, queryKeywords);
 			} catch (ImporterException e) {
 				MessageDialogFactory.displayError(shell, "Error", "Error importing "+s+": "+e.getMessage());
 			} catch (URISyntaxException e) {
 				MessageDialogFactory.displayError(shell, "Error", "Error accessing "+s+": "+e.getMessage());
 			}
-
 		}
-		
-		// if no schema was specified, use the constructor for keywords only
-		if (q == null) {
-			q = new Query(queryKeywords);
+
+		if (queryKeywords.size() < 1 && schemaElements == null) {
+			MessageDialogFactory.displayError(shell, "Warning", "The query must have either keywords or a valid schema!");
+			return new MatchSummary [0];
+		}
+
+		if (schema != null && schemaElements != null) {
+			q = new Query(schema, schemaElements, queryKeywords);			
+		} else {
+			q = new Query(queryKeywords);			
 		}
 
 		// filter for candidate schemas
@@ -106,18 +109,18 @@ public class SearchAction
 
 	private static HashMap<String, String> getKeywordMap(String keywordString) {
 		HashMap<String,String> queryKeywords = new HashMap<String,String>();
-		
-		for(String keyword : keywordString.split("\\s+")) {
-			String [] ka = keyword.split(":");
-			if (ka.length == 1) {
-				queryKeywords.put(ka[0], "");
-			} else if (ka.length > 1) {
-				queryKeywords.put(ka[1], ka[0]);
-			} else {
-				continue;
-			}
-		}		
-		
+		if (keywordString != null && !keywordString.equals("")) {
+			for(String keyword : keywordString.split("\\s+")) {
+				String [] ka = keyword.split(":");
+				if (ka.length == 1) {
+					queryKeywords.put(ka[0], "");
+				} else if (ka.length > 1) {
+					queryKeywords.put(ka[1], ka[0]);
+				} else {
+					continue;
+				}
+			}			
+		}
 		return queryKeywords;
 	}
 
