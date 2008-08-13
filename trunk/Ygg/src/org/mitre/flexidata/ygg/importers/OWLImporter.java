@@ -73,7 +73,7 @@ public class OWLImporter extends Importer implements RDFErrorHandler
 	}
 	
 	/** Returns the schema elements from the specified URI */
-	protected ArrayList<SchemaElement> getSchemaElements(Integer schemaID, URI uri) throws ImporterException
+	public ArrayList<SchemaElement> getSchemaElements(URI uri) throws ImporterException
 	{
 		_schemaElements = new ArrayList<SchemaElement>();
 		_entityList = new HashMap<String, Entity>();

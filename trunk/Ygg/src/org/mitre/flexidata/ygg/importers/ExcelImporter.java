@@ -133,7 +133,7 @@ public class ExcelImporter extends Importer {
 	}
 
 	@Override
-	protected ArrayList<SchemaElement> getSchemaElements(Integer schemaID, URI uri)
+	public ArrayList<SchemaElement> getSchemaElements(URI uri)
 			throws ImporterException {
 		try {
 			initialize(uri);
