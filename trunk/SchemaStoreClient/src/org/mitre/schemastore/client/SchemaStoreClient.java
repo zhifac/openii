@@ -6,6 +6,8 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import org.mitre.schemastore.graph.GraphFactory;
+import org.mitre.schemastore.graph.HierarchicalGraph;
 import org.mitre.schemastore.model.Alias;
 import org.mitre.schemastore.model.Attribute;
 import org.mitre.schemastore.model.Containment;
@@ -232,9 +234,9 @@ public class SchemaStoreClient
 		return proxy.setParentSchemas(schemaID, parentIDArray);
 	}
 	
-	//-------------------------
-	// Schema Object Functions
-	//-------------------------
+	//--------------------------
+	// Schema Element Functions
+	//--------------------------
 
 	/** Adds the specified schema element to the web service */
 	public Integer addSchemaElement(SchemaElement schemaElement) throws RemoteException
@@ -300,10 +302,11 @@ public class SchemaStoreClient
 		{ return proxy.getSchemaElementCount(schemaID); }
 	
 	/** Retrieves the schema elements for the specified schema from the web service */
-	public ArrayList<SchemaElement> getSchemaElements(Integer schemaID) throws RemoteException
+	public HierarchicalGraph getSchemaElementGraph(Integer schemaID) throws RemoteException
 	{
 		SchemaElement[] schemaElements = proxy.getSchemaElements(schemaID).getSchemaElements();
-		return schemaElements==null ? new ArrayList<SchemaElement>() : new ArrayList<SchemaElement>(Arrays.asList(schemaElements));
+		ArrayList<SchemaElement> elements = schemaElements==null ? new ArrayList<SchemaElement>() : new ArrayList<SchemaElement>(Arrays.asList(schemaElements));
+		return GraphFactory.generateGraph(schemaID, elements);
 	}
 	
 	//-----------------------
