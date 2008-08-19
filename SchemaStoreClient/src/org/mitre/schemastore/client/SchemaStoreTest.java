@@ -1,24 +1,22 @@
 package org.mitre.schemastore.client;
 
+import org.mitre.schemastore.graph.HierarchicalGraph;
 import org.mitre.schemastore.model.Schema;
-import org.mitre.schemastore.model.SchemaElement;
 
 public class SchemaStoreTest
 {
 	static public void main(String args[])
 	{
-		System.out.println("begin...");
-		SchemaStoreClient client = new SchemaStoreClient("http://localhost:8080/SchemaStore/services/SchemaStore");
+		SchemaStoreClient client = new SchemaStoreClient("http://brainsrv2:8090/SchemaStore/services/SchemaStore");
 
 		// Display remaining schemas
 		try {
 			for(Schema schema : client.getSchemas())
 				System.out.println(schema.getId() + " " + schema.getName());
-			for(SchemaElement schemaElement : client.getSchemaElements(0))
-				System.out.println(schemaElement.getId() + " " + schemaElement.getName());
-		} catch(Exception e) {
-			e.printStackTrace();
+			
+			HierarchicalGraph graph = client.getSchemaElementGraph(107691);
+			System.out.println(graph.toString());
 		}
-		System.out.println("end...");
+		catch(Exception e) { e.printStackTrace(); }
 	}
 }
