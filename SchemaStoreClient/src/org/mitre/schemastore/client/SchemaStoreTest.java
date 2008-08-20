@@ -1,7 +1,7 @@
 package org.mitre.schemastore.client;
 
-import org.mitre.schemastore.graph.HierarchicalGraph;
 import org.mitre.schemastore.model.Schema;
+import org.mitre.schemastore.model.graph.HierarchicalGraph;
 
 public class SchemaStoreTest
 {

@@ -6,8 +6,6 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import org.mitre.schemastore.graph.GraphFactory;
-import org.mitre.schemastore.graph.HierarchicalGraph;
 import org.mitre.schemastore.model.Alias;
 import org.mitre.schemastore.model.Attribute;
 import org.mitre.schemastore.model.Containment;
@@ -23,6 +21,8 @@ import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.SchemaElementList;
 import org.mitre.schemastore.model.Subtype;
+import org.mitre.schemastore.model.graph.GraphFactory;
+import org.mitre.schemastore.model.graph.HierarchicalGraph;
 import org.mitre.schemastore.servlet.SchemaStoreProxy;
 
 /**
