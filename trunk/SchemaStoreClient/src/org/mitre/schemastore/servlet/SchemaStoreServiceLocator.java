@@ -7,8 +7,6 @@
 
 package org.mitre.schemastore.servlet;
 
-import javax.xml.namespace.QName;
-
 public class SchemaStoreServiceLocator extends org.apache.axis.client.Service implements org.mitre.schemastore.servlet.SchemaStoreService {
 
     public SchemaStoreServiceLocator() {
@@ -72,8 +70,7 @@ public class SchemaStoreServiceLocator extends org.apache.axis.client.Service im
      * If this service has no port for the given interface,
      * then ServiceException is thrown.
      */
-    @SuppressWarnings("unchecked")
-	public java.rmi.Remote getPort(Class serviceEndpointInterface) throws javax.xml.rpc.ServiceException {
+    public java.rmi.Remote getPort(Class serviceEndpointInterface) throws javax.xml.rpc.ServiceException {
         try {
             if (org.mitre.schemastore.servlet.SchemaStore.class.isAssignableFrom(serviceEndpointInterface)) {
                 org.mitre.schemastore.servlet.SchemaStoreSoapBindingStub _stub = new org.mitre.schemastore.servlet.SchemaStoreSoapBindingStub(new java.net.URL(SchemaStore_address), this);
@@ -92,8 +89,7 @@ public class SchemaStoreServiceLocator extends org.apache.axis.client.Service im
      * If this service has no port for the given interface,
      * then ServiceException is thrown.
      */
-    @SuppressWarnings("unchecked")
-	public java.rmi.Remote getPort(javax.xml.namespace.QName portName, Class serviceEndpointInterface) throws javax.xml.rpc.ServiceException {
+    public java.rmi.Remote getPort(javax.xml.namespace.QName portName, Class serviceEndpointInterface) throws javax.xml.rpc.ServiceException {
         if (portName == null) {
             return getPort(serviceEndpointInterface);
         }
@@ -112,11 +108,11 @@ public class SchemaStoreServiceLocator extends org.apache.axis.client.Service im
         return new javax.xml.namespace.QName("http://servlet.schemastore.mitre.org", "SchemaStoreService");
     }
 
-    private java.util.HashSet<QName> ports = null;
+    private java.util.HashSet ports = null;
 
-    public java.util.Iterator<QName> getPorts() {
+    public java.util.Iterator getPorts() {
         if (ports == null) {
-            ports = new java.util.HashSet<QName>();
+            ports = new java.util.HashSet();
             ports.add(new javax.xml.namespace.QName("http://servlet.schemastore.mitre.org", "SchemaStore"));
         }
         return ports.iterator();

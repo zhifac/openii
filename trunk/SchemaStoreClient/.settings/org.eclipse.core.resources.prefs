@@ -1,0 +1,6 @@
+#Wed Aug 20 10:54:32 EDT 2008
+eclipse.preferences.version=1
+encoding//src/org/mitre/schemastore/servlet/SchemaStore.java=UTF-8
+encoding//src/org/mitre/schemastore/servlet/SchemaStoreService.java=UTF-8
+encoding//src/org/mitre/schemastore/servlet/SchemaStoreServiceLocator.java=UTF-8
+encoding//src/org/mitre/schemastore/servlet/SchemaStoreSoapBindingStub.java=UTF-8
