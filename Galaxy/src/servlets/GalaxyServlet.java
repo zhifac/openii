@@ -228,10 +228,10 @@ public class GalaxyServlet extends HttpServlet
 			}
 			
 			// Retrieves the schema elements for the specified schema and type
-			if(action.equals("getSchemaElements"))
+			if(action.equals("getSchemaElementGraph"))
 			{
 				Integer schemaID = (Integer)in.readObject();
-				output = client.getSchemaElements(schemaID);
+				output = client.getSchemaElementGraph(schemaID);
 			}
 			
 			// Retrieves the specified schema element

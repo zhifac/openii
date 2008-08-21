@@ -105,7 +105,7 @@ class EditRelationshipPane extends EditPaneInterface
 		// Retrieve the relationship
 		Relationship relationship = getRelationship();
 		if(relationshipID==null || !Schemas.getSchemaElement(relationshipID).getName().equals(relationship.getName()))
-			relationship.setName(getUniqueName(relationship.getName(),new ArrayList<Object>(Schemas.getSchemaElements(schema.getId(),Relationship.class))));
+			relationship.setName(getUniqueName(relationship.getName(),new ArrayList<Object>(Schemas.getGraph(schema.getId()).getElements(Relationship.class))));
 
 		// Handle the adding or editing of a relationship
 		if(relationshipID==null) Schemas.addSchemaElement(relationship);

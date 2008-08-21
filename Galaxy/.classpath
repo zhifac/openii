@@ -2,7 +2,6 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" output="WebContent/GalaxyApplet" path="WebContent/GalaxyApplet"/>
-	<classpathentry kind="con" path="org.eclipse.jst.server.core.container/org.eclipse.jst.server.tomcat.runtimeTarget/Apache Tomcat v5.5"/>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.web.container">
 		<attributes>
 			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="Galaxy/WebContent/WEB-INF/lib"/>
@@ -11,6 +10,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="WebContent/GalaxyApplet/prefuse.jar"/>
 	<classpathentry kind="lib" path="WebContent/GalaxyApplet/SchemaStoreModel.jar"/>
-	<classpathentry kind="lib" path="/SchemaStoreClient/SchemaStoreClient.jar" sourcepath="/SchemaStoreClient"/>
+	<classpathentry kind="con" path="org.eclipse.jst.server.core.container/org.eclipse.jst.server.tomcat.runtimeTarget/Apache Tomcat v6.0"/>
 	<classpathentry kind="output" path="WebContent/WEB-INF/classes"/>
 </classpath>

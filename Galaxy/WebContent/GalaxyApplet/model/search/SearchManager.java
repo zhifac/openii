@@ -58,13 +58,13 @@ public class SearchManager
 							searchResult.addMatch(keyword,schema);
 					
 					// For schema elements, check the name and description
-					for(SchemaElement schemaElement : Schemas.getSchemaElements(schema.getId(),keyword.getType()))
+					for(SchemaElement schemaElement : Schemas.getGraph(schema.getId()).getElements(keyword.getType()))
 						if(keyword.isContainedIn(schemaElement.getName()) || keyword.isContainedIn(schemaElement.getDescription()))
 							searchResult.addMatch(keyword,schemaElement);
 					
 					// For domain values, also check domain name and description
 					if(keyword.getType() == null || keyword.getType() == DomainValue.class)
-						for(SchemaElement schemaElement : Schemas.getSchemaElements(schema.getId(),Domain.class))
+						for(SchemaElement schemaElement : Schemas.getGraph(schema.getId()).getElements(Domain.class))
 							if(keyword.isContainedIn(schemaElement.getName()) || keyword.isContainedIn(schemaElement.getDescription()))
 								searchResult.addMatch(keyword,schemaElement);
 					
@@ -78,7 +78,7 @@ public class SearchManager
 					for(Object match : searchResult.getMatches())
 					{
 						if(match instanceof SchemaElement)
-							if(!Schemas.containsSchemaElement(parentSchemaID,((SchemaElement)match).getId()))
+							if(!Schemas.getGraph(parentSchemaID).containsElement(((SchemaElement)match).getId()))
 								continue ParentSchemaLoop;
 						if(match instanceof Schema) break ParentSchemaLoop;
 					}
