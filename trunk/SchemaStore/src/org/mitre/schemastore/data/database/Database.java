@@ -88,7 +88,7 @@ public class Database
 			Statement stmt = connection.getStatement();
 			ResultSet rs = stmt.executeQuery("SELECT id,name,author,source,type,description,locked FROM schema");
 			while(rs.next())
-				schemas.add(new Schema(rs.getInt("id"),rs.getString("name"),rs.getString("author"),rs.getString("source"),rs.getString("type"),rs.getString("description"),rs.getBoolean("locked")));
+				schemas.add(new Schema(rs.getInt("id"),rs.getString("name"),rs.getString("author"),rs.getString("source"),rs.getString("type"),rs.getString("description"),rs.getString("locked").equals("t")));
 			stmt.close();
 		} catch(SQLException e) { System.out.println("(E) Database:getSchemas: "+e.getMessage()); }
 		return schemas;
@@ -102,7 +102,7 @@ public class Database
 			Statement stmt = connection.getStatement();
 			ResultSet rs = stmt.executeQuery("SELECT id,name,author,source,type,description,locked FROM schema WHERE id="+schemaID);
 			if(rs.next())
-				schema = new Schema(rs.getInt("id"),rs.getString("name"),rs.getString("author"),rs.getString("source"),rs.getString("type"),rs.getString("description"),rs.getBoolean("locked"));
+				schema = new Schema(rs.getInt("id"),rs.getString("name"),rs.getString("author"),rs.getString("source"),rs.getString("type"),rs.getString("description"),rs.getString("locked").equals("t"));
 			stmt.close();
 		} catch(SQLException e) { System.out.println("(E) Database:getSchema: "+e.getMessage()); }
 		return schema;
@@ -117,7 +117,7 @@ public class Database
 			ResultSet rs = stmt.executeQuery("SELECT nextval('universalSeq') AS schemaID");
 			rs.next();
 			int schemaID = rs.getInt("schemaID");
-			stmt.executeUpdate("INSERT INTO schema(id,name,author,source,type,description,locked) VALUES("+schemaID+",'"+scrub(schema.getName())+" Extension','"+scrub(schema.getAuthor())+"','"+scrub(schema.getSource())+"','"+scrub(schema.getType())+"','Extension of "+scrub(schema.getName())+"',false)");
+			stmt.executeUpdate("INSERT INTO schema(id,name,author,source,type,description,locked) VALUES("+schemaID+",'"+scrub(schema.getName())+" Extension','"+scrub(schema.getAuthor())+"','"+scrub(schema.getSource())+"','"+scrub(schema.getType())+"','Extension of "+scrub(schema.getName())+"','f')");
 			stmt.executeUpdate("INSERT INTO extensions(schema_id,action,element_id) VALUES("+schemaID+",'Base Schema',"+schema.getId()+")");
 			stmt.close();
 			connection.commit();
@@ -140,7 +140,7 @@ public class Database
 			ResultSet rs = stmt.executeQuery("SELECT nextval('universalSeq') AS schemaID");
 			rs.next();
 			schemaID = rs.getInt("schemaID");
-			stmt.executeUpdate("INSERT INTO schema(id,name,author,source,type,description,locked) VALUES("+schemaID+",'"+scrub(schema.getName())+"','"+scrub(schema.getAuthor())+"','"+scrub(schema.getSource())+"','"+scrub(schema.getType())+"','"+scrub(schema.getDescription())+"',"+(schema.getLocked()?"true":"false")+")");
+			stmt.executeUpdate("INSERT INTO schema(id,name,author,source,type,description,locked) VALUES("+schemaID+",'"+scrub(schema.getName())+"','"+scrub(schema.getAuthor())+"','"+scrub(schema.getSource())+"','"+scrub(schema.getType())+"','"+scrub(schema.getDescription())+"','"+(schema.getLocked()?"t":"f")+"')");
 			stmt.close();
 			connection.commit();
 		}
@@ -159,7 +159,7 @@ public class Database
 		boolean success = false;
 		try {
 			Statement stmt = connection.getStatement();
-			stmt.executeUpdate("UPDATE schema SET name='"+scrub(schema.getName())+"', author='"+scrub(schema.getAuthor())+"', source='"+scrub(schema.getSource())+"', type='"+scrub(schema.getType())+"', description='"+scrub(schema.getDescription())+"' WHERE id="+schema.getId());
+			stmt.executeUpdate("UPDATE schema SET name='"+scrub(schema.getName())+"', author='"+scrub(schema.getAuthor())+", source='"+scrub(schema.getSource())+"', type='"+scrub(schema.getType())+"', description='"+scrub(schema.getDescription())+"' WHERE id="+schema.getId());
 			stmt.close();
 			connection.commit();
 			success = true;
@@ -245,7 +245,7 @@ public class Database
 		boolean success = false;
 		try {
 			Statement stmt = connection.getStatement();
-			stmt.executeUpdate("UPDATE schema SET locked="+locked+" WHERE id="+schemaID);
+			stmt.executeUpdate("UPDATE schema SET locked='"+(locked?"t":"f")+"' WHERE id="+schemaID);
 			stmt.close();
 			connection.commit();
 			success = true;
@@ -466,10 +466,10 @@ public class Database
 	/** Retrieves the schema element type */
 	static private String getSchemaElementType(Integer schemaElementID) throws SQLException
 	{
+		String type = "";
 		Statement stmt = connection.getStatement();
 		ResultSet rs = stmt.executeQuery("SELECT type FROM schema_element WHERE id="+schemaElementID);
-		rs.next();
-		String type = rs.getString("type");
+		if(rs.next()) type = rs.getString("type");
 		stmt.close();
 		return type;
 	}
@@ -1130,7 +1130,7 @@ public class Database
 			Statement stmt = connection.getStatement();
 			ResultSet rs = stmt.executeQuery("SELECT id,element1_id,element2_id,score,scorer,validated FROM mapping_cell WHERE mapping_id="+mappingID);
 			while(rs.next())
-				mappingCells.add(new MappingCell(rs.getInt("id"),mappingID,rs.getInt("element1_id"),rs.getInt("element2_id"),rs.getDouble("score"),rs.getString("scorer"),rs.getBoolean("validated")));
+				mappingCells.add(new MappingCell(rs.getInt("id"),mappingID,rs.getInt("element1_id"),rs.getInt("element2_id"),rs.getDouble("score"),rs.getString("scorer"),rs.getString("validated").equals("t")));
 			stmt.close();
 		} catch(SQLException e) { System.out.println("(E) Database:getMappingCells: "+e.getMessage()); }
 		return mappingCells;
@@ -1145,7 +1145,7 @@ public class Database
 			ResultSet rs = stmt.executeQuery("SELECT nextval('universalSeq') AS mappingCellID");
 			rs.next();
 			mappingCellID = rs.getInt("mappingCellID");
-			stmt.executeUpdate("INSERT INTO mapping_cell(id,mapping_id,element1_id,element2_id,score,scorer,validated) VALUES("+mappingCellID+","+mappingCell.getMappingId()+","+mappingCell.getElement1()+","+mappingCell.getElement2()+","+mappingCell.getScore()+",'"+mappingCell.getScorer()+"',"+mappingCell.getValidated()+")");
+			stmt.executeUpdate("INSERT INTO mapping_cell(id,mapping_id,element1_id,element2_id,score,scorer,validated) VALUES("+mappingCellID+","+mappingCell.getMappingId()+","+mappingCell.getElement1()+","+mappingCell.getElement2()+","+mappingCell.getScore()+",'"+mappingCell.getScorer()+"','"+(mappingCell.getValidated()?"t":"f")+"')");
 			stmt.close();
 			connection.commit();
 		}

@@ -2,6 +2,7 @@
 
 package org.mitre.schemastore.model.graph;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -17,7 +18,7 @@ import org.mitre.schemastore.model.SchemaElement;
  * Class for storing the graph of schema elements 
  * @author MDMORSE, DBURDICK
  */
-public class Graph
+public class Graph implements Serializable
 {
 	/** Stores the schema associated with this graph */
 	private Integer schemaID;
@@ -29,11 +30,11 @@ public class Graph
 	private ArrayList<GraphListener> listeners = new ArrayList<GraphListener>();
 	
 	/** Constructs the base graph */
-	public Graph(Integer schemaID, ArrayList<SchemaElement> schemaElements)
+	public Graph(Integer schemaID, ArrayList<SchemaElement> elements)
 	{
 		this.schemaID = schemaID;
-		for(SchemaElement schemaElement : schemaElements)
-			addElement(schemaElement);
+		for(SchemaElement element : elements)
+			addElement(element);
 	}
 
 	/** Copy the base graph */
@@ -43,43 +44,63 @@ public class Graph
 		this.graphHash = graph.graphHash;
 	}
 
-	/** Returns all schema elements */
-	public ArrayList<SchemaElement> getSchemaElements()
-		{ return getSchemaElements(null); }
+	/** Returns the size of the graph */
+	public Integer size()
+		{ return graphHash.size(); }
+	
+	/** Returns the specified schema element */
+	public SchemaElement getElement(Integer elementID)
+		{ return graphHash.get(elementID); }
+	
+	/** Indicates if the schema contains the specified schema element */
+	public boolean containsElement(Integer elementID)
+		{ return getElement(elementID)!=null; }
 	
 	/** Returns the schema elements associated with the specified type */
-	public ArrayList<SchemaElement> getSchemaElements(Class type)
+	public ArrayList<SchemaElement> getElements(Class type)
 	{	
-		ArrayList<SchemaElement> schemaElements = new ArrayList<SchemaElement>();
+		ArrayList<SchemaElement> elements = new ArrayList<SchemaElement>();
 		
 		// Filter out schemas of the specified type
-		for(SchemaElement schemaElement : graphHash.values())
-			if(type==null || type.isInstance(schemaElement))
-				schemaElements.add(schemaElement);
+		for(SchemaElement element : graphHash.values())
+			if(type==null || type.isInstance(element))
+				elements.add(element);
 		
-		return schemaElements;		
+		return elements;		
 	}
 
-	/** Returns the specified schema element */
-	public SchemaElement getSchemaElement(Integer id)
-		{ return graphHash.get(id); }
+	/** Returns the base schema elements associated with the specified type */
+	public ArrayList<SchemaElement> getBaseElements(Class type)
+	{
+		ArrayList<SchemaElement> baseElements = new ArrayList<SchemaElement>();
+		
+		// Filter out base schema elements of the specified type
+		for(SchemaElement element : getElements(type))
+			if(element.getBase().equals(schemaID))
+				baseElements.add(element);
+		
+		return baseElements;
+	}
 	
 	/** Returns the entity associated with the specified attribute */
 	public Entity getEntity(Integer attributeID)
 	{
-		Attribute attribute = (Attribute)getSchemaElement(attributeID);
-		return (Entity)getSchemaElement(attribute.getEntityID());
+		Attribute attribute = (Attribute)getElement(attributeID);
+		return (Entity)getElement(attribute.getEntityID());
 	}
 	
 	/** Returns the attributes associated with the specified entity */
-	public ArrayList<Attribute> getAttributes(Integer entityID)
+	public ArrayList<Attribute> getAttributes(Integer elementID)
 	{
 		ArrayList<Attribute> attributes = new ArrayList<Attribute>();
-		
-		// Identify all attributes associated with the specified entity
-		for(SchemaElement attribute : getSchemaElements(Attribute.class))
-			if(((Attribute)attribute).getEntityID().equals(entityID))
-			   attributes.add((Attribute)attribute);
+	
+		// Identify all attributes associated with the specified schema element
+		for(SchemaElement element: getElements(Attribute.class))
+		{
+			Attribute attribute = (Attribute)element;
+			if(attribute.getEntityID().equals(elementID) || attribute.getDomainID().equals(elementID))
+				attributes.add(attribute);
+		}
 		
 		return attributes;
 	}
@@ -90,7 +111,7 @@ public class Graph
 		ArrayList<Containment> containments = new ArrayList<Containment>();
 		
 		// Identify all containments associated with the specified schema element
-		for(SchemaElement containment : getSchemaElements(Containment.class))
+		for(SchemaElement containment : getElements(Containment.class))
 		{
 			Integer parentID = ((Containment)containment).getParentID();
 			Integer childID = ((Containment)containment).getChildID();
@@ -104,54 +125,50 @@ public class Graph
 	/** Returns the domain associated with the specified domain value */
 	public Domain getDomain(Integer domainValueID)
 	{
-		DomainValue domainValue = (DomainValue)getSchemaElement(domainValueID);
-		return (Domain)getSchemaElement(domainValue.getDomainID());
+		DomainValue domainValue = (DomainValue)getElement(domainValueID);
+		return (Domain)getElement(domainValue.getDomainID());
 	}
 	
 	/** Returns the domain values associated with the specified domain */
 	public ArrayList<DomainValue> getDomainValues(Integer domainID)
 	{
 		ArrayList<DomainValue> domainValues = new ArrayList<DomainValue>();
-		for(SchemaElement domainValue : getSchemaElements(DomainValue.class))
+		for(SchemaElement domainValue : getElements(DomainValue.class))
 			if(((DomainValue)domainValue).getDomainID().equals(domainID))
 				domainValues.add((DomainValue)domainValue);
 		return domainValues;
 	}
 
-	/** Returns the name associated with the specified element */
-	public String getName(Integer elementID)
+	/** Returns the alias associated with the specified element */
+	public Alias getAlias(Integer elementID)
 	{
-		// Return aliased name if one exists
-		for(SchemaElement schemaElement : getSchemaElements(Alias.class))
-			if(((Alias)schemaElement).getElementID().equals(elementID))
-				return schemaElement.getName();
-		
-		// Otherwise, return element name
-		SchemaElement element = getSchemaElement(elementID);
-		return element.getName()==null ? "" : element.getName();
+		for(SchemaElement element : getElements(Alias.class))
+			if(((Alias)element).getElementID().equals(elementID))
+				return (Alias)element;
+		return null;
 	}
 
 	/** Adds a list of elements to the graph */
-	public void addElement(SchemaElement schemaElement)
+	public void addElement(SchemaElement element)
 	{
 		// Add element to the graph
-		graphHash.put(schemaElement.getId(),schemaElement);
+		graphHash.put(element.getId(),element);
 
 		// Inform listeners of the added element
 		for(GraphListener listener : listeners)
-			listener.schemaElementAdded(schemaElement);
+			listener.schemaElementAdded(element);
 	}
 	
 	/** Removes a list of elements from the graph */
 	public void deleteElement(Integer schemaID)
 	{
 		// Remove element from graph
-		SchemaElement schemaElement = graphHash.get(schemaID);
+		SchemaElement element = graphHash.get(schemaID);
 		graphHash.remove(schemaID);
 		
 		// Inform listeners of the removed element
 		for(GraphListener listener : listeners)
-			listener.schemaElementRemoved(schemaElement);
+			listener.schemaElementRemoved(element);
 	}
 	
 	/** Adds a graph listener */

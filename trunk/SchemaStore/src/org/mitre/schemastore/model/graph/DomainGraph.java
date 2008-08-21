@@ -19,7 +19,7 @@ public class DomainGraph extends HierarchicalGraph
 
 	/** Returns the root elements in this graph */
 	public ArrayList<SchemaElement> getRootElements()
-		{ return getSchemaElements(Domain.class); }
+		{ return getElements(Domain.class); }
 	
 	/** Returns the parent elements of the specified element in this graph */
 	public ArrayList<SchemaElement> getParentElements(SchemaElement element)

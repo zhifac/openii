@@ -58,7 +58,11 @@ public class DBConnection
 				StringBuffer buffer = getFileContents("SchemaStoreStructure.txt");
 				String commands[] = buffer.toString().split(";");
 				for(String command : commands)
-					stmt.addBatch(command.trim() + ";");
+				{
+					String text = command.trim().replaceAll("\n","");
+					System.out.println(text);
+					stmt.executeUpdate(text);
+				}
 				stmt.executeBatch();
 				
 				// Generate the database data
@@ -116,11 +120,13 @@ public class DBConnection
 			{
 				// Connect to the database
 	    		Context env = (Context) new	InitialContext().lookup("java:comp/env");
-				Class.forName("org.postgresql.Driver");
-				connection = DriverManager.getConnection((String)env.lookup("dbURL"),(String)env.lookup("dbUsername"),(String)env.lookup("dbPassword"));
-				connection.setAutoCommit(false);
-				
-				// Initialize the database if needed
+	    		boolean useDerby = ((String)env.lookup("dbURL")).equals("");
+    			Class.forName(useDerby ? "org.apache.derby.jdbc.EmbeddedDriver" : "org.postgresql.Driver");
+	    		String dbURL = useDerby ? "jdbc:derby:schemastore;create=true" : (String)env.lookup("dbURL");
+    			connection = DriverManager.getConnection(dbURL,(String)env.lookup("dbUsername"),(String)env.lookup("dbPassword"));
+	    		connection.setAutoCommit(false);
+
+	    		// Initialize the database if needed
 				initializeDatabaseIfNeeded();
 				
 				// Return a sql statement

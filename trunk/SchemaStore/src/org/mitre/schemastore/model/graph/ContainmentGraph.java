@@ -23,8 +23,8 @@ public class ContainmentGraph extends HierarchicalGraph
 		ArrayList<SchemaElement> rootElements = new ArrayList<SchemaElement>();
 
 		// Find all containments whose root is null
-		for(SchemaElement element : getSchemaElements(Containment.class))
-			if(getSchemaElement(((Containment)element).getParentID())==null)
+		for(SchemaElement element : getElements(Containment.class))
+			if(getElement(((Containment)element).getParentID())==null)
 				rootElements.add(element);
 			
 		return rootElements;
@@ -72,7 +72,7 @@ public class ContainmentGraph extends HierarchicalGraph
 		if(element instanceof Containment)
 		{
 			Integer elementID = ((Containment)element).getChildID();
-			SchemaElement childElement = getSchemaElement(elementID);
+			SchemaElement childElement = getElement(elementID);
 			if(childElement instanceof Domain)
 				return (Domain)childElement;
 		}			
