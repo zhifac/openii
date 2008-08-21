@@ -42,7 +42,7 @@ public class SchemaView extends GenericView implements ActionListener
 	{
 		// Stores the schema associated with this view
 		this.schema = schema;
-		this.schemaElements = SchemaManager.getSchemaElements(schema.getId());
+		this.schemaElements = SchemaManager.getGraph(schema.getId()).getElements(null);
 
 		// Generate the general info pane
 		generalInfoPane.addParameter(new TextParameter("Description",schema.getDescription()));

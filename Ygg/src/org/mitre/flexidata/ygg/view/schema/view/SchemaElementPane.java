@@ -168,7 +168,7 @@ class SchemaElementPane extends JPanel
 			}
 			else
 			{
-				if(schemaElements==null) schemaElements = SchemaManager.getSchemaElements(schemaID);
+				if(schemaElements==null) schemaElements = SchemaManager.getGraph(schemaID).getElements(null);
 				for(SchemaElement schemaElement : schemaElements)
 					if(schemaElement.getClass()==type) listData.add(schemaElement);
 			}

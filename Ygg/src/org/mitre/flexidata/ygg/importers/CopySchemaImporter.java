@@ -76,7 +76,7 @@ public class CopySchemaImporter extends Importer
 				// check whether the two schemas have the same number of elements
 				// isolate the elements with the base for each schema
 				ArrayList<SchemaElement> repoSchemaElementsWithThisBase = new ArrayList<SchemaElement>();
-				for (SchemaElement se : repository.getSchemaElements(repositorySchema.getId()))
+				for (SchemaElement se : repository.getSchemaElementGraph(repositorySchema.getId()).getElements(null))
 				{
 					if (se.getBase() != null && se.getBase().equals(repositorySchema.getId()))
 					{
@@ -84,7 +84,7 @@ public class CopySchemaImporter extends Importer
 					}
 				}
 				ArrayList<SchemaElement> schemaElementsWithThisBase = new ArrayList<SchemaElement>();
-				for (SchemaElement se : SchemaManager.getSchemaElements(schema.getId()))
+				for (SchemaElement se : SchemaManager.getGraph(schema.getId()).getElements(null))
 				{
 					if (se.getBase() != null && se.getBase().equals(schema.getId()))
 					{
@@ -138,7 +138,7 @@ public class CopySchemaImporter extends Importer
 				Schema repositorySchema = repository.getSchema(parentSchemaID);
 			
 				// Create a mapping of these elements to 
-				for (SchemaElement se : repository.getSchemaElements(parentSchemaID))
+				for (SchemaElement se : repository.getSchemaElementGraph(parentSchemaID).getElements(null))
 				{	elementToOldID.put(new String(se.getName().toString()+se.getClass().toString()),se.getId());}
 				
 				// Get the extended schema ID
@@ -154,7 +154,7 @@ public class CopySchemaImporter extends Importer
 				extendedSchemas.add(schemaID);		
 				
 				// get the schemaElements for the 
-				for (SchemaElement se : SchemaManager.getSchemaElements(schemaID))
+				for (SchemaElement se : SchemaManager.getGraph(schemaID).getElements(null))
 				{
 					IDmapping.put(elementToOldID.get(new String(se.getName().toString()+se.getClass().toString())), se.getId());	
 				}
@@ -174,7 +174,7 @@ public class CopySchemaImporter extends Importer
 		// Generate the list of schema elements to import for this schema
 		ArrayList<SchemaElement> schemaElements = new ArrayList<SchemaElement>();
 		try {
-			for(SchemaElement schemaElement : repository.getSchemaElements(repositorySchemaID))
+			for(SchemaElement schemaElement : repository.getSchemaElementGraph(repositorySchemaID).getElements(null))
 			{
 				if(schemaElement.getBase() != null && schemaElement.getBase().equals(repositorySchemaID))
 				{
