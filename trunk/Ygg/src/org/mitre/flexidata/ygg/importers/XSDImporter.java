@@ -825,4 +825,5 @@ public class XSDImporter extends Importer
 			} // end else if 
 		}
 	} // end method processGroup
+
 } // end class
