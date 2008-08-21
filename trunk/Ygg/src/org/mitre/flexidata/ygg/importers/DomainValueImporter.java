@@ -6,10 +6,8 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import jxl.Cell;
-import jxl.Sheet;
-import jxl.read.biff.BiffException;
-
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.mitre.schemastore.model.Domain;
 import org.mitre.schemastore.model.DomainValue;
 import org.mitre.schemastore.model.SchemaElement;
@@ -38,7 +36,7 @@ public class DomainValueImporter extends ExcelImporter {
 	}
 
 	@Override
-	protected void initialize(URI uri) throws IOException, URISyntaxException, BiffException {
+	protected void initialize(URI uri) throws IOException, URISyntaxException {
 		super.initialize(uri);
 		_domains = new HashMap<String, Domain>();
 		_domainValues = new HashMap<String, DomainValue>();
@@ -46,19 +44,18 @@ public class DomainValueImporter extends ExcelImporter {
 	}
 
 	protected void generate() {
-		Sheet[] sheets = _excelWorkbook.getSheets();
+		int numSheets = _excelWorkbook.getNumberOfSheets();
 
 		// iterate and load individual work sheets
-		for (int s = 0; s < sheets.length; s++) {
-			Sheet sheet = sheets[s];
+		for (int s = 0; s < numSheets; s++) {
+			HSSFSheet sheet = _excelWorkbook.getSheetAt(s);
 
 			// add sheet name as a domain
-			String domainName = sheet.getName();
+			String domainName = _excelWorkbook.getSheetName(s);
 			addDomain(domainName);
 
-			int numRows = sheet.getRows();
 			// iterate through rows and create table/attribute nodes
-			for (int i = 0; i < numRows; i++) {
+			for (int i = sheet.getFirstRowNum(); i < sheet.getLastRowNum(); i++) {
 				readRow(sheet.getRow(i));
 			}
 		}
@@ -85,12 +82,12 @@ public class DomainValueImporter extends ExcelImporter {
 		return schemaElements;
 	}
 
-	protected void readRow(Cell[] cells) {
-		if (cells.length < 1) return;
+	protected void readRow(HSSFRow row) {
+		if (row.getPhysicalNumberOfCells() == 0) return;
 		
-		String domainName = despace(cells[0].getContents());
-		String domainValueStr = despace(cells[1].getContents());
-		String documentation = (cells.length > 2) ? cells[2].getContents().trim() : "";
+		String domainName = despace(row.getCell(0).getStringCellValue());
+		String domainValueStr = despace(row.getCell(1).getStringCellValue());
+		String documentation = (row.getLastCellNum() >= 2) ? despace(row.getCell(2).getStringCellValue()) : "";
 		String hashKey = domainName + "/" + domainValueStr;
 
 		Domain domain;
@@ -107,8 +104,6 @@ public class DomainValueImporter extends ExcelImporter {
 			domainValue = new DomainValue(nextId(), domainValueStr, documentation, domain.getId(),
 					0);
 			_domainValues.put(hashKey, domainValue);
-//			 System.err.println("adding new domain value " + domain.getName() + " : "
-//					 + domainValueStr);
 		}
 	}
 }
