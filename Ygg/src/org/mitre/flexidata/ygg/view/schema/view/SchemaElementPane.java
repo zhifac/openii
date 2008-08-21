@@ -27,6 +27,7 @@ import org.mitre.schemastore.model.Domain;
 import org.mitre.schemastore.model.Entity;
 import org.mitre.schemastore.model.Relationship;
 import org.mitre.schemastore.model.SchemaElement;
+import org.mitre.schemastore.model.graph.HierarchicalGraph;
 
 /** Class for displaying the schema element information */
 class SchemaElementPane extends JPanel
@@ -34,8 +35,8 @@ class SchemaElementPane extends JPanel
 	/** Stores the schema associated with this pane */
 	private Integer schemaID = null;
 	
-	/** Stores the schema elements to be displayed */
-	private ArrayList<SchemaElement> schemaElements = null;
+	/** Stores the schema element graph being displayed */
+	private HierarchicalGraph graph = null;
 	
 	/** Stores the data sources to be displayed */
 	private ArrayList<DataSource> dataSources = null;
@@ -168,9 +169,9 @@ class SchemaElementPane extends JPanel
 			}
 			else
 			{
-				if(schemaElements==null) schemaElements = SchemaManager.getGraph(schemaID).getElements(null);
-				for(SchemaElement schemaElement : schemaElements)
-					if(schemaElement.getClass()==type) listData.add(schemaElement);
+				if(graph==null) graph = SchemaManager.getGraph(schemaID);
+				for(SchemaElement schemaElement : graph.getElements(type))
+					listData.add(schemaElement);
 			}
 			Collections.sort(listData, new ObjectComparator());
 			
