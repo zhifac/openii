@@ -13,5 +13,6 @@
 	<classpathentry kind="lib" path="lib/jcommon-1.0.5.jar"/>
 	<classpathentry kind="lib" path="lib/log4j-1.2.11.jar"/>
 	<classpathentry kind="lib" path="lib/jxl.jar"/>
+	<classpathentry kind="lib" path="lib/poi-3.1-FINAL-20080629.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
