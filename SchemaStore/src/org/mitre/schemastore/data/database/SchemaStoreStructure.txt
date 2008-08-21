@@ -3,118 +3,118 @@
 //-----------------
 
 CREATE TABLE alias (
-	id bigint NOT NULL,
-	element_id bigint,
-	name character varying);
+	id integer NOT NULL,
+	element_id integer,
+	name character varying(50));
 
 CREATE TABLE annotation (
-	object_id bigint,
-	attribute character varying,
-	value character varying);
+	object_id integer,
+	attribute character varying(50),
+	value character varying(200));
 
 CREATE TABLE attribute (
-	id bigint NOT NULL,
+	id integer NOT NULL,
 	name character varying(50) NOT NULL,
 	description character varying(200),
-	entity_id bigint,
-	domain_id bigint,
-	min bigint,
-	max bigint);
+	entity_id integer,
+	domain_id integer,
+	"min" integer,
+	"max" integer);
 
 CREATE TABLE containment (
-	id bigint NOT NULL,
-	parent_id bigint NOT NULL,
-	child_id bigint NOT NULL,
-    min bigint,
-    max bigint,
-    description character varying,
-    name character varying
+	id integer NOT NULL,
+	parent_id integer NOT NULL,
+	child_id integer NOT NULL,
+    "min" integer,
+    "max" integer,
+    description character varying(200),
+    name character varying(50)
 );
 
 CREATE TABLE data_source (
-    id bigint NOT NULL,
-    name character varying,
-    url character varying,
-    schema_id bigint
+    id integer NOT NULL,
+    name character varying(50),
+    url character varying(200),
+    schema_id integer
 );
 
 CREATE TABLE "domain" (
-    id bigint NOT NULL,
+    id integer NOT NULL,
     name character varying(50) NOT NULL,
     description character varying(200)
 );
 
-CREATE TABLE "domainvalue" (
-    id bigint NOT NULL,
+CREATE TABLE domainvalue (
+    id integer NOT NULL,
     value character varying(50),
     description character varying(200),
-    domain_id bigint
+    domain_id integer
 );
 
 CREATE TABLE entity (
-    id bigint NOT NULL,
+    id integer NOT NULL,
     name character varying(50) NOT NULL,
     description character varying(200)
 );
 
 CREATE TABLE extensions (
-    schema_id bigint NOT NULL,
+    schema_id integer NOT NULL,
     "action" character varying(20),
-    element_id bigint NOT NULL
+    element_id integer NOT NULL
 );
 
 CREATE TABLE groups (
     id integer NOT NULL,
-    name character varying NOT NULL,
+    name character varying(50) NOT NULL,
     parent_id integer
 );
 
 CREATE TABLE mapping (
-    id bigint NOT NULL,
-    author character varying,
-    description character varying,
-    name character varying
+    id integer NOT NULL,
+    author character varying(50),
+    description character varying(200),
+    name character varying(50)
 );
 
 CREATE TABLE mapping_cell (
-    id bigint NOT NULL,
-    mapping_id bigint,
-    element1_id bigint,
-    element2_id bigint,
+    id integer NOT NULL,
+    mapping_id integer,
+    element1_id integer,
+    element2_id integer,
     score numeric,
-    scorer character varying,
-    validated boolean
+    scorer character varying(50),
+    validated character
 );
 
 CREATE TABLE mapping_schema (
-    mapping_id bigint NOT NULL,
-    schema_id bigint NOT NULL
+    mapping_id integer NOT NULL,
+    schema_id integer NOT NULL
 );
 
 CREATE TABLE relationship (
-    id bigint NOT NULL,
+    id integer NOT NULL,
     name character varying(50) NOT NULL,
-    left_id bigint NOT NULL,
+    left_id integer NOT NULL,
     left_min integer,
     left_max integer,
-    right_id bigint NOT NULL,
+    right_id integer NOT NULL,
     right_min integer,
     right_max integer
 );
 
 CREATE TABLE "schema" (
-    id bigint NOT NULL,
+    id integer NOT NULL,
     name character varying(50) NOT NULL,
-    author character varying(200) NOT NULL,
+    author character varying(50) NOT NULL,
     source character varying(200) NOT NULL,
     "type" character varying(50) NOT NULL,
     description character varying(200),
-    locked boolean NOT NULL
+    locked character NOT NULL
 );
 
 CREATE TABLE schema_element (
-    id bigint NOT NULL,
-    "type" character varying
+    id integer NOT NULL,
+    "type" character varying(50)
 );
 
 CREATE TABLE schema_group (
@@ -123,10 +123,102 @@ CREATE TABLE schema_group (
 );
 
 CREATE TABLE subtype (
-    id bigint,
-    parent_id bigint,
-    child_id bigint
+    id integer,
+    parent_id integer,
+    child_id integer
 );
+
+//-----------------------
+// Generate Primary Keys
+//-----------------------
+
+ALTER TABLE alias
+    ADD CONSTRAINT alias_pkey PRIMARY KEY (id);
+
+ALTER TABLE attribute
+    ADD CONSTRAINT attribute_pkey PRIMARY KEY (id);
+
+ALTER TABLE containment
+    ADD CONSTRAINT containment_pkey PRIMARY KEY (id);
+
+ALTER TABLE "domain"
+    ADD CONSTRAINT domain_pkey PRIMARY KEY (id);
+
+ALTER TABLE domainvalue
+    ADD CONSTRAINT domainvalue_pkey PRIMARY KEY (id);
+
+ALTER TABLE entity
+    ADD CONSTRAINT entity_pkey PRIMARY KEY (id);
+
+ALTER TABLE groups
+    ADD CONSTRAINT groups_pkey PRIMARY KEY (id);
+
+ALTER TABLE data_source
+    ADD CONSTRAINT instance_pkey PRIMARY KEY (id);
+
+ALTER TABLE mapping_cell
+    ADD CONSTRAINT mapping_cell_pkey PRIMARY KEY (id);
+
+ALTER TABLE mapping
+    ADD CONSTRAINT mapping_pkey PRIMARY KEY (id);
+
+ALTER TABLE relationship
+    ADD CONSTRAINT relationship_pkey PRIMARY KEY (id);
+
+ALTER TABLE schema_element
+    ADD CONSTRAINT schema_element_pkey PRIMARY KEY (id);
+
+ALTER TABLE "schema"
+    ADD CONSTRAINT schema_pkey PRIMARY KEY (id);
+
+//-----------------------
+// Generate Foreign Keys
+//-----------------------
+
+ALTER TABLE domainvalue
+    ADD CONSTRAINT domainvalue_domain_fkey FOREIGN KEY (domain_id) REFERENCES "domain"(id);
+
+ALTER TABLE attribute
+    ADD CONSTRAINT attribute_entity_fkey FOREIGN KEY (entity_id) REFERENCES entity(id);
+
+ALTER TABLE relationship
+    ADD CONSTRAINT relationship_leftentity_fkey FOREIGN KEY (left_id) REFERENCES entity(id);
+
+ALTER TABLE extensions
+    ADD CONSTRAINT extensions_schema_fkey FOREIGN KEY (schema_id) REFERENCES "schema"(id);
+
+ALTER TABLE data_source
+    ADD CONSTRAINT datasource_schema_fkey FOREIGN KEY (schema_id) REFERENCES "schema"(id);
+
+ALTER TABLE groups
+    ADD CONSTRAINT groups_groups_fkey FOREIGN KEY (parent_id) REFERENCES groups(id);
+
+ALTER TABLE schema_group
+    ADD CONSTRAINT schemagroup_groups_fkey FOREIGN KEY (group_id) REFERENCES groups(id);
+
+ALTER TABLE attribute
+    ADD CONSTRAINT attribute_domain_fkey FOREIGN KEY (domain_id) REFERENCES "domain"(id);
+
+ALTER TABLE relationship
+    ADD CONSTRAINT relationship_rightentity_fkey FOREIGN KEY (right_id) REFERENCES entity(id);
+
+ALTER TABLE schema_group
+    ADD CONSTRAINT schemagroup_schema_fkey FOREIGN KEY (schema_id) REFERENCES "schema"(id);
+
+ALTER TABLE mapping_cell
+    ADD CONSTRAINT mappingcell_mapping_id_fkey FOREIGN KEY (mapping_id) REFERENCES mapping(id);
+
+ALTER TABLE mapping_schema
+    ADD CONSTRAINT mappingschema_mapping_fkey FOREIGN KEY (mapping_id) REFERENCES mapping(id);
+
+ALTER TABLE mapping_schema
+    ADD CONSTRAINT mappingschema_schema_fkey FOREIGN KEY (schema_id) REFERENCES "schema"(id);
+
+//------------------
+// Generate Indexes
+//------------------
+
+CREATE UNIQUE INDEX schema_group_idx ON schema_group (schema_id, group_id);
 
 //-------------------
 // Generate Sequence
@@ -138,98 +230,3 @@ CREATE SEQUENCE universalseq
     NO MAXVALUE
     NO MINVALUE
     CACHE 1;
-
-//-----------------------
-// Generate Primary Keys
-//-----------------------
-
-ALTER TABLE ONLY alias
-    ADD CONSTRAINT alias_pkey PRIMARY KEY (id);
-
-ALTER TABLE ONLY attribute
-    ADD CONSTRAINT attribute_pkey PRIMARY KEY (id);
-
-ALTER TABLE ONLY containment
-    ADD CONSTRAINT containment_pkey PRIMARY KEY (id);
-
-ALTER TABLE ONLY "domain"
-    ADD CONSTRAINT domain_pkey PRIMARY KEY (id);
-
-ALTER TABLE ONLY entity
-    ADD CONSTRAINT entity_pkey PRIMARY KEY (id);
-
-ALTER TABLE ONLY groups
-    ADD CONSTRAINT groups_pkey PRIMARY KEY (id);
-
-ALTER TABLE ONLY data_source
-    ADD CONSTRAINT instance_pkey PRIMARY KEY (id);
-
-ALTER TABLE ONLY mapping_cell
-    ADD CONSTRAINT mapping_cell_pkey PRIMARY KEY (id);
-
-ALTER TABLE ONLY mapping
-    ADD CONSTRAINT mapping_pkey PRIMARY KEY (id);
-
-ALTER TABLE ONLY relationship
-    ADD CONSTRAINT relationship_pkey PRIMARY KEY (id);
-
-ALTER TABLE ONLY schema_element
-    ADD CONSTRAINT schema_object_pkey PRIMARY KEY (id);
-
-ALTER TABLE ONLY "schema"
-    ADD CONSTRAINT schema_pkey PRIMARY KEY (id);
-
-ALTER TABLE ONLY "domainvalue"
-    ADD CONSTRAINT values_pkey PRIMARY KEY (id);
-
-//------------------
-// Generate Indexes
-//------------------
-
-CREATE UNIQUE INDEX schema_group_idx ON schema_group USING btree (schema_id, group_id);
-
-//-----------------------
-// Generate Foreign Keys
-//-----------------------
-
-ALTER TABLE ONLY "domainvalue"
-    ADD CONSTRAINT "$1" FOREIGN KEY (domain_id) REFERENCES "domain"(id);
-
-ALTER TABLE ONLY attribute
-    ADD CONSTRAINT "$1" FOREIGN KEY (entity_id) REFERENCES entity(id);
-
-ALTER TABLE ONLY relationship
-    ADD CONSTRAINT "$1" FOREIGN KEY (left_id) REFERENCES entity(id);
-
-ALTER TABLE ONLY extensions
-    ADD CONSTRAINT "$1" FOREIGN KEY (schema_id) REFERENCES "schema"(id);
-
-ALTER TABLE ONLY data_source
-    ADD CONSTRAINT "$1" FOREIGN KEY (schema_id) REFERENCES "schema"(id);
-
-ALTER TABLE ONLY groups
-    ADD CONSTRAINT "$1" FOREIGN KEY (parent_id) REFERENCES groups(id);
-
-ALTER TABLE ONLY schema_group
-    ADD CONSTRAINT "$1" FOREIGN KEY (group_id) REFERENCES groups(id);
-
-ALTER TABLE ONLY attribute
-    ADD CONSTRAINT "$2" FOREIGN KEY (domain_id) REFERENCES "domain"(id);
-
-ALTER TABLE ONLY relationship
-    ADD CONSTRAINT "$2" FOREIGN KEY (right_id) REFERENCES entity(id);
-
-ALTER TABLE ONLY schema_group
-    ADD CONSTRAINT "$4" FOREIGN KEY (schema_id) REFERENCES "schema"(id);
-
-ALTER TABLE ONLY attribute
-    ADD CONSTRAINT attribute_domain_id_fkey FOREIGN KEY (domain_id) REFERENCES "domain"(id);
-
-ALTER TABLE ONLY mapping_cell
-    ADD CONSTRAINT mapping_cell_mapping_id_fkey FOREIGN KEY (mapping_id) REFERENCES mapping(id);
-
-ALTER TABLE ONLY mapping_schema
-    ADD CONSTRAINT mapping_schema_mapping_id_fkey FOREIGN KEY (mapping_id) REFERENCES mapping(id);
-
-ALTER TABLE ONLY mapping_schema
-    ADD CONSTRAINT mapping_schema_schema_id_fkey FOREIGN KEY (schema_id) REFERENCES "schema"(id);

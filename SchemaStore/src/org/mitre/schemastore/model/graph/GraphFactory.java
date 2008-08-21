@@ -22,7 +22,7 @@ public class GraphFactory
 
 		// Determine the makeup of the schema
 		Integer totalCount=0, domainCount=0, containmentCount=0;
-		for(SchemaElement element : graph.getSchemaElements())
+		for(SchemaElement element : graph.getElements(null))
 		{
 			if(element instanceof Domain || element instanceof DomainValue) domainCount++;
 			if(element instanceof Containment) containmentCount++;
