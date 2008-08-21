@@ -8,11 +8,11 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import jxl.Cell;
-import jxl.Sheet;
-import jxl.Workbook;
-import jxl.read.biff.BiffException;
 
+
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.mitre.schemastore.model.Attribute;
 import org.mitre.schemastore.model.Domain;
 import org.mitre.schemastore.model.Entity;
@@ -30,7 +30,7 @@ import org.mitre.schemastore.model.SchemaElement;
  */
 
 public class ExcelImporter extends Importer {
-	protected Workbook _excelWorkbook;
+	protected HSSFWorkbook _excelWorkbook;
 	private URI _excelURI;
 	private HashMap<String, Entity> _entities;
 	private HashMap<String, Attribute> _attributes;
@@ -44,24 +44,23 @@ public class ExcelImporter extends Importer {
 	}
 
 	protected void generate() {
-		Sheet[] sheets = _excelWorkbook.getSheets();
-
+		int numSheets = _excelWorkbook.getNumberOfSheets();
+		
 		// iterate and load individual work sheets
-		for (int s = 0; s < sheets.length; s++) {
-			Sheet sheet = sheets[s];
-			int numRows = sheet.getRows();
+		for (int s = 0; s < numSheets; s++) {
+			HSSFSheet sheet = _excelWorkbook.getSheetAt(s);
 
 			// iterate through rows and create table/attribute nodes
-			for (int i = 0; i < numRows; i++) {
+			for (int i = sheet.getFirstRowNum(); i <= sheet.getLastRowNum(); i++) {
 				readRow(sheet.getRow(i));
 			}
 		}
 	}
 
-	protected void readRow(Cell[] cells) {
-		String tblName = despace(cells[0].getContents());
-		String attName = despace(cells[1].getContents());
-		String documentation = cells[2].getContents().trim();
+	protected void readRow(HSSFRow row) {
+		String tblName = despace(row.getCell(0).getStringCellValue());
+		String attName = despace(row.getCell(1).getStringCellValue());
+		String documentation = despace(row.getCell(2).getStringCellValue());
 		Entity tblEntity;
 		Attribute attribute;
 
@@ -87,10 +86,11 @@ public class ExcelImporter extends Importer {
 		ArrayList<String> filetypes = new ArrayList<String>(2);
 		filetypes.add("xls");
 		filetypes.add("csv");
+		filetypes.add("xlsx");
 		return filetypes;
 	}
 
-	protected void initialize(URI uri) throws IOException, URISyntaxException, BiffException {
+	protected void initialize(URI uri) throws IOException, URISyntaxException {
 		InputStream excelStream;
 		_entities = new HashMap<String, Entity>();
 		_attributes = new HashMap<String, Attribute>();
@@ -101,7 +101,7 @@ public class ExcelImporter extends Importer {
 
 		_excelURI = uri;
 		excelStream = _excelURI.toURL().openStream();
-		_excelWorkbook = Workbook.getWorkbook(excelStream);
+		_excelWorkbook = new HSSFWorkbook(excelStream);
 		excelStream.close();
 	}
 
@@ -142,9 +142,7 @@ public class ExcelImporter extends Importer {
 			throw new ImporterException(ImporterException.INVALID_URI, e.getMessage());
 		} catch (IOException e) {
 			throw new ImporterException(ImporterException.PARSE_FAILURE, e.getMessage());
-		} catch (BiffException b) {
-			 throw new ImporterException(ImporterException.IMPORT_FAILURE, b.getMessage());
-		}
+		} 
 		return generateSchemaElementList();
 	}
 
