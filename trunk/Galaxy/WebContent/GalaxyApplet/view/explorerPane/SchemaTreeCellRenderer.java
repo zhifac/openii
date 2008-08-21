@@ -12,13 +12,13 @@ import org.mitre.schemastore.model.Domain;
 import org.mitre.schemastore.model.DomainValue;
 import org.mitre.schemastore.model.Entity;
 import org.mitre.schemastore.model.SchemaElement;
+import org.mitre.schemastore.model.graph.HierarchicalGraph;
 
 import view.sharedComponents.LinkedTreeNodeRenderer;
 
 import model.AliasedSchemaElement;
 import model.Schemas;
 import model.SelectedObjects;
-import org.mitre.schemastore.graph.*;
 
 /** Class for rendering schema components */
 class SchemaTreeCellRenderer extends LinkedTreeNodeRenderer
@@ -26,15 +26,17 @@ class SchemaTreeCellRenderer extends LinkedTreeNodeRenderer
 	/** Returns if this schema element has any new children for specified schema */
 	private boolean hasNewChildren(SchemaElement schemaElement, Integer schemaID)
 	{
+		HierarchicalGraph graph = Schemas.getGraph(schemaID);
+		
 		// Checks for new children in entities
 		if(schemaElement instanceof Entity)
-			for(Attribute attribute : Schemas.getAttributesFromEntity(schemaID,((Entity)schemaElement).getId()))
+			for(Attribute attribute : graph.getAttributes(((Entity)schemaElement).getId()))
 				if(schemaID.equals(attribute.getBase()) || hasNewChildren(attribute,schemaID))
 					return true;
 		
 		// Checks for new children in attributes
 		if(schemaElement instanceof Domain)
-			for(DomainValue domainValue : Schemas.getDomainValues(schemaID,((Domain)schemaElement).getId()))
+			for(DomainValue domainValue : graph.getDomainValues(((Domain)schemaElement).getId()))
 				if(schemaID.equals(domainValue.getBase()))
 					return true;
 		
@@ -72,19 +74,10 @@ class SchemaTreeCellRenderer extends LinkedTreeNodeRenderer
 	public String getIconName(Object userObject)
 	{
 		String iconName = "Schema";
-		if(userObject instanceof SchemaElement)
+		if(userObject instanceof AliasedSchemaElement)
 		{
-			if( ((AliasedSchemaElement)userObject).getElement() instanceof Attribute)
+			if(((AliasedSchemaElement)userObject).getElement() instanceof Attribute)
 				iconName = "Attribute";
-		//	else if( ((AliasedSchemaElement)userObject).getElement() instanceof Domain)
-		//		iconName = "Entity";
-		//	else if( ((AliasedSchemaElement)userObject).getElement() instanceof Domain)
-		//		iconName = "Containment";
-		//	else if( ((AliasedSchemaElement)userObject).getElement() instanceof Domain)
-		//		iconName = "Domain";
-		//	else if( ((AliasedSchemaElement)userObject).getElement() instanceof DomainValue)
-		//		iconName = "DomainValue";
-			
 			else iconName = "SchemaElement";
 		}
 		else if(userObject instanceof String)

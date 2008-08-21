@@ -73,7 +73,7 @@ public class ExplorerEditPane extends EditPane
 		if(action==EDIT_SOURCES && ServletConnection.getChildSchemas(schema.getId()).size()>0) deleteEnabled = false;
 		if(action==EDIT_DOMAIN && !addInfo)
 		{
-			int associatedAttributes = Schemas.getAttributesFromDomain(schema.getId(),((Domain)schemaElement).getId()).size();
+			int associatedAttributes = Schemas.getGraph(schema.getId()).getAttributes(((Domain)schemaElement).getId()).size();
 			if(associatedAttributes>0) deleteEnabled = false;
 		}
 

@@ -40,7 +40,7 @@ public class SchemaLabelRenderer extends LabelRenderer
 			else
 			{
 				AliasedSchemaElement aliasedElement = (AliasedSchemaElement)object;
-				String comparisonName = Schemas.getSchemaElementName(comparisonSchemaID, aliasedElement.getId());
+				String comparisonName = Schemas.getGraph(comparisonSchemaID).getElement(aliasedElement.getId()).getName();
 				if(!aliasedElement.getName().equals(comparisonName))
 					text += " (" + comparisonName + ")";
 			}

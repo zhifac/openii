@@ -94,7 +94,7 @@ class EditAttributePane extends EditPaneInterface
 		// Retrieve the attribute
 		Attribute attribute = getAttribute();
 		if(attributeID==null || !Schemas.getSchemaElement(attributeID).getName().equals(attribute.getName()))
-			attribute.setName(getUniqueName(attribute.getName(),new ArrayList<Object>(Schemas.getAttributesFromEntity(schema.getId(), entityID))));
+			attribute.setName(getUniqueName(attribute.getName(),new ArrayList<Object>(Schemas.getGraph(schema.getId()).getAttributes(entityID))));
 			
 		// Handle the addition or editing of an attribute
 		if(attributeID==null) Schemas.addSchemaElement(attribute);

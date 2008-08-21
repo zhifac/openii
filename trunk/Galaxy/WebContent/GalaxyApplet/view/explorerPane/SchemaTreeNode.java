@@ -53,8 +53,7 @@ public class SchemaTreeNode extends LinkedTreeNode
 		if(object instanceof AliasedSchemaElement && !schema.getLocked())
 		{
 			SchemaElement schemaElement = ((AliasedSchemaElement)object).getElement();
-
-			boolean base = (schemaElement.getBase() == null) ? true : schema.getId().equals(schemaElement.getBase());
+			boolean base = schema.getId().equals(schemaElement.getBase());
 			if(schemaElement instanceof Entity) link = base ? EDIT_ENTITY : ADD_ATTRIBUTE;
 			if(schemaElement instanceof Relationship && base) link = EDIT_RELATIONSHIP;
 			if(schemaElement instanceof Attribute && base) link = EDIT_ATTRIBUTE;

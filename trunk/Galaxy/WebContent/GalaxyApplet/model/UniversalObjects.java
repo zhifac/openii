@@ -34,6 +34,7 @@ public class UniversalObjects
 		return null;
 	}
 	
+	/** Returns the name associated with the universal ID */
 	static public String getName(Integer objectID)
 	{
 		if(isSchema(objectID)) return Schemas.getSchema(objectID).getName();

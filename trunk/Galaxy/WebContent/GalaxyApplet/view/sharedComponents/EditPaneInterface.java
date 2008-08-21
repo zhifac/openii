@@ -46,8 +46,8 @@ abstract public class EditPaneInterface extends JPanel
 			setBackground(Color.white);
 			setBorder(new EmptyBorder(0,0,0,1));
 			setFocusable(false);
-			for(SchemaElement entity : Schemas.getSchemaElements(schema.getId(),Entity.class))
-				addItem(entity);
+			for(SchemaElement entity : Schemas.getGraph(schema.getId()).getElements(Entity.class))
+				addItem((Entity)entity);
 		}
 		
 		/** Returns the id of the selected entity */
@@ -72,13 +72,13 @@ abstract public class EditPaneInterface extends JPanel
 			setBackground(Color.white);
 			setBorder(new EmptyBorder(0,0,0,1));
 			setFocusable(false);
-			
+
 			// Add in default domains
-			for(SchemaElement domain : Schemas.getSchemaElements(schema.getId(),Domain.class))
+			for(SchemaElement domain : Schemas.getGraph(schema.getId()).getElements(Domain.class))
 				if(domain.getId()<0) addItem(domain);
 			
 			// Add in defined domains
-			for(SchemaElement domain : Schemas.getSchemaElements(schema.getId(),Domain.class))
+			for(SchemaElement domain : Schemas.getGraph(schema.getId()).getElements(Domain.class))
 				if(domain.getId()>=0) addItem(domain);
 		}
 		

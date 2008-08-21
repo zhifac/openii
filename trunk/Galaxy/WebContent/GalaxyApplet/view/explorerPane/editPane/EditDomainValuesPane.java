@@ -96,7 +96,7 @@ class EditDomainValuesPane extends EditPaneInterface implements ActionListener, 
 	{
 		this.schema = schema;
 		this.domainID = domain.getId();
-		domainValues = Schemas.getDomainValues(schema.getId(),domainID);
+		domainValues = Schemas.getGraph(schema.getId()).getDomainValues(domainID);
 		updateValuesList();
 
 		// Constructs the label pane

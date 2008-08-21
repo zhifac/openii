@@ -65,7 +65,7 @@ public class PrimaryMatches
 		if(match instanceof DomainValue)
 		{
 			Integer domainID = ((DomainValue)match).getDomainID();
-			for(Attribute attribute : Schemas.getAttributesFromDomain(schemaID,domainID))
+			for(Attribute attribute : Schemas.getGraph(schemaID).getAttributes(domainID))
 			{
 				Integer entityID = attribute.getEntityID();
 				SchemaElement entity = Schemas.getSchemaElement(entityID);

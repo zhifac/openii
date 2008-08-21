@@ -7,6 +7,7 @@ import java.awt.Color;
 import org.mitre.schemastore.model.Attribute;
 import org.mitre.schemastore.model.Entity;
 import org.mitre.schemastore.model.SchemaElement;
+import org.mitre.schemastore.model.graph.HierarchicalGraph;
 
 import model.AliasedSchemaElement;
 import model.Schemas;
@@ -46,9 +47,14 @@ public class SchemaColors
 				SchemaElement element = aliasedElement.getElement();
 				if(SelectedObjects.getSelectedComparisonSchema()!=null)
 				{
-					if(!Schemas.containsSchemaElement(SelectedObjects.getSelectedComparisonSchema(),aliasedElement.getId()))
+					// Highlights the items only existent in the selected schema
+					HierarchicalGraph graph = Schemas.getGraph(SelectedObjects.getSelectedComparisonSchema());
+					if(!graph.containsElement(aliasedElement.getId()))
 						return selectedSchemaOnlyColor;
-					if(!Schemas.containsSchemaElement(SelectedObjects.getSelectedSchema(),aliasedElement.getId()))
+					
+					// Highlight the items only existent in the compared schema
+					graph = Schemas.getGraph(SelectedObjects.getSelectedSchema());
+					if(!graph.containsElement(aliasedElement.getId()))
 						return comparisonSchemaOnlyColor;
 				}
 				if(element instanceof Entity) return entityColor;

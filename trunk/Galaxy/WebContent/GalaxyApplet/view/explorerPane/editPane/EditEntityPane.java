@@ -83,7 +83,7 @@ class EditEntityPane extends EditPaneInterface implements MouseListener, MouseMo
 		{
 			name.setText(entity.getName());
 			description.setText(entity.getDescription());
-			attributes = Schemas.getAttributesFromEntity(schema.getId(),entity.getId());
+			attributes = Schemas.getGraph(schema.getId()).getAttributes(entity.getId());
 		}
 		
 		// Initialize the add link
@@ -154,7 +154,7 @@ class EditEntityPane extends EditPaneInterface implements MouseListener, MouseMo
 		// Retrieve the entity
 		Entity entity = getEntity();
 		if(entityID==null || !Schemas.getSchemaElement(entityID).getName().equals(entity.getName()))
-			entity.setName(getUniqueName(entity.getName(),new ArrayList<Object>(Schemas.getSchemaElements(schema.getId(),Entity.class))));			
+			entity.setName(getUniqueName(entity.getName(),new ArrayList<Object>(Schemas.getGraph(schema.getId()).getElements(Entity.class))));			
 		
 		// Handle the addition of an entity
 		if(entityID==null)
@@ -186,7 +186,7 @@ class EditEntityPane extends EditPaneInterface implements MouseListener, MouseMo
 	public boolean delete()
 	{
 		Entity entity = getEntity();
-		for(Attribute attribute : Schemas.getAttributesFromEntity(schema.getId(),entity.getId()))
+		for(Attribute attribute : Schemas.getGraph(schema.getId()).getAttributes(entity.getId()))
 			Schemas.deleteSchemaElement(attribute);
 		return Schemas.deleteSchemaElement(entity);
 	}
