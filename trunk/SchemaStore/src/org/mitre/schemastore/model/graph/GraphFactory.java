@@ -25,7 +25,8 @@ public class GraphFactory
 		for(SchemaElement element : graph.getElements(null))
 		{
 			if(element instanceof Domain || element instanceof DomainValue) domainCount++;
-			if(element instanceof Containment) containmentCount++;
+			if(element instanceof Containment && ((Containment)element).getName().length()>0)
+				containmentCount++;
 			totalCount++;
 		}
 		
