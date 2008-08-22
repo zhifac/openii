@@ -9,7 +9,6 @@ import java.util.HashMap;
 import org.mitre.schemastore.model.Alias;
 import org.mitre.schemastore.model.Attribute;
 import org.mitre.schemastore.model.Containment;
-import org.mitre.schemastore.model.Domain;
 import org.mitre.schemastore.model.DomainValue;
 import org.mitre.schemastore.model.Entity;
 import org.mitre.schemastore.model.SchemaElement;
@@ -44,6 +43,10 @@ public class Graph implements Serializable
 		this.graphHash = graph.graphHash;
 	}
 
+	/** Returns the schema referenced by this graph */
+	public Integer getSchemaID()
+		{ return schemaID; }
+	
 	/** Returns the size of the graph */
 	public Integer size()
 		{ return graphHash.size(); }
@@ -122,15 +125,8 @@ public class Graph implements Serializable
 		return containments;
 	}
 	
-	/** Returns the domain associated with the specified domain value */
-	public Domain getDomain(Integer domainValueID)
-	{
-		DomainValue domainValue = (DomainValue)getElement(domainValueID);
-		return (Domain)getElement(domainValue.getDomainID());
-	}
-	
 	/** Returns the domain values associated with the specified domain */
-	public ArrayList<DomainValue> getDomainValues(Integer domainID)
+	public ArrayList<DomainValue> getDomainValuesForDomain(Integer domainID)
 	{
 		ArrayList<DomainValue> domainValues = new ArrayList<DomainValue>();
 		for(SchemaElement domainValue : getElements(DomainValue.class))

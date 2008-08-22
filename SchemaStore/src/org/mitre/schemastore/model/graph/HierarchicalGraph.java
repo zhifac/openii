@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 
 import org.mitre.schemastore.model.Domain;
+import org.mitre.schemastore.model.DomainValue;
 import org.mitre.schemastore.model.SchemaElement;
 
 /**
@@ -21,13 +22,23 @@ abstract public class HierarchicalGraph extends Graph
 	abstract public ArrayList<SchemaElement> getRootElements();
 	
 	/** Returns the parent elements of the specified element in this graph */
-	abstract public ArrayList<SchemaElement> getParentElements(SchemaElement element);
+	abstract public ArrayList<SchemaElement> getParentElements(Integer elementID);
 	
 	/** Returns the children elements of the specified element in this graph */
-	abstract public ArrayList<SchemaElement> getChildElements(SchemaElement element);
+	abstract public ArrayList<SchemaElement> getChildElements(Integer elementID);
 	
 	/** Returns the domain of the specified element in this graph */
-	abstract public Domain getDomain(SchemaElement element);
+	abstract public Domain getDomainForElement(Integer elementID);
+
+	/** Returns the domain values associated with the specified element in this graph */
+	public ArrayList<DomainValue> getDomainValuesForElement(Integer elementID)
+	{
+		ArrayList<DomainValue> domainValues = new ArrayList<DomainValue>();
+		Domain domain = getDomainForElement(elementID);
+		if(domain!=null)
+			domainValues.addAll(getDomainValuesForDomain(domain.getId()));
+		return domainValues;
+	}
 	
 	/** Private class for displaying elements */
 	private StringBuffer displayElement(SchemaElement schemaElement, int depth, HashSet<Integer> displayedElements)
@@ -40,7 +51,7 @@ abstract public class HierarchicalGraph extends Graph
 			displayedElements.add(schemaElement.getId());
 			for(int i=0; i<depth; i++) out.append("  ");
 			out.append(schemaElement.getName() + "("+schemaElement.getId()+")\n");
-			for(SchemaElement childElement : getChildElements(schemaElement))
+			for(SchemaElement childElement : getChildElements(schemaElement.getId()))
 				out.append(displayElement(childElement,depth+1,displayedElements));
 		}
 		

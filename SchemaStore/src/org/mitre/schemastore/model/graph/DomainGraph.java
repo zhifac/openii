@@ -22,31 +22,33 @@ public class DomainGraph extends HierarchicalGraph
 		{ return getElements(Domain.class); }
 	
 	/** Returns the parent elements of the specified element in this graph */
-	public ArrayList<SchemaElement> getParentElements(SchemaElement element)
+	public ArrayList<SchemaElement> getParentElements(Integer elementID)
 	{
 		ArrayList<SchemaElement> parentElements = new ArrayList<SchemaElement>();
 		
 		// If domain value, return domain as parent
+		SchemaElement element = getElement(elementID);
 		if(element instanceof DomainValue)
-			parentElements.add(getDomain(element.getId()));
+			parentElements.add((Domain)getElement(((DomainValue)element).getDomainID()));
 		
 		return parentElements;
 	}
 	
 	/** Returns the children elements of the specified element in this graph */
-	public ArrayList<SchemaElement> getChildElements(SchemaElement element)
+	public ArrayList<SchemaElement> getChildElements(Integer elementID)
 	{
 		ArrayList<SchemaElement> childElements = new ArrayList<SchemaElement>();
 		
 		// If domain, return domain values as children
+		SchemaElement element = getElement(elementID);
 		if(element instanceof Domain)
-			for(DomainValue value : getDomainValues(element.getId()))
+			for(DomainValue value : getDomainValuesForDomain(elementID))
 				childElements.add(value);
 
 		return childElements;
 	}
 	
 	/** Returns the domains of the specified element in this graph */
-	public Domain getDomain(SchemaElement element)
+	public Domain getDomainForElement(Integer elementID)
 		{ return null; }
 }

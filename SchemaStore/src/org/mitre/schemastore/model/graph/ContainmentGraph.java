@@ -31,17 +31,18 @@ public class ContainmentGraph extends HierarchicalGraph
 	}
 	
 	/** Returns the parent elements of the specified element in this graph */
-	public ArrayList<SchemaElement> getParentElements(SchemaElement element)
+	public ArrayList<SchemaElement> getParentElements(Integer elementID)
 	{
 		ArrayList<SchemaElement> parentElements = new ArrayList<SchemaElement>();
 		
 		// Find all containments one level higher up the graph
+		SchemaElement element = getElement(elementID);
 		if(element instanceof Containment)
 		{
-			Integer elementID = ((Containment)element).getParentID();
-			if(elementID!=null)
-				for(Containment containment : getContainments(elementID))
-					if(containment.getChildID().equals(elementID))
+			Integer containmentID = ((Containment)element).getParentID();
+			if(containmentID!=null)
+				for(Containment containment : getContainments(containmentID))
+					if(containment.getChildID().equals(containmentID))
 						parentElements.add(containment);
 		}
 			
@@ -49,16 +50,17 @@ public class ContainmentGraph extends HierarchicalGraph
 	}
 	
 	/** Returns the children elements of the specified element in this graph */
-	public ArrayList<SchemaElement> getChildElements(SchemaElement element)
+	public ArrayList<SchemaElement> getChildElements(Integer elementID)
 	{
 		ArrayList<SchemaElement> childElements = new ArrayList<SchemaElement>();
 		
 		// Find all containments one level lower on the graph
+		SchemaElement element = getElement(elementID);
 		if(element instanceof Containment)
 		{
-			Integer elementID = ((Containment)element).getChildID();
-			for(Containment containment : getContainments(elementID))
-				if(containment.getParentID().equals(elementID))
+			Integer containmentID = ((Containment)element).getChildID();
+			for(Containment containment : getContainments(containmentID))
+				if(containment.getParentID().equals(containmentID))
 					childElements.add(containment);
 		}
 			
@@ -66,13 +68,14 @@ public class ContainmentGraph extends HierarchicalGraph
 	}
 
 	/** Returns the domains of the specified element in this graph */
-	public Domain getDomain(SchemaElement element)
+	public Domain getDomainForElement(Integer elementID)
 	{
 		// Find the domain attached to this containment
+		SchemaElement element = getElement(elementID);
 		if(element instanceof Containment)
 		{
-			Integer elementID = ((Containment)element).getChildID();
-			SchemaElement childElement = getElement(elementID);
+			Integer containmentID = ((Containment)element).getChildID();
+			SchemaElement childElement = getElement(containmentID);
 			if(childElement instanceof Domain)
 				return (Domain)childElement;
 		}			

@@ -23,35 +23,38 @@ public class RelationalGraph extends HierarchicalGraph
 		{ return getElements(Entity.class); }
 	
 	/** Returns the parent elements of the specified element in this graph */
-	public ArrayList<SchemaElement> getParentElements(SchemaElement element)
+	public ArrayList<SchemaElement> getParentElements(Integer elementID)
 	{
 		ArrayList<SchemaElement> parentElements = new ArrayList<SchemaElement>();
 		
 		// If attribute, return entity as parent
+		SchemaElement element = getElement(elementID);
 		if(element instanceof Attribute)
-			parentElements.add(getEntity(element.getId()));
+			parentElements.add(getEntity(elementID));
 		
 		return parentElements;
 	}
 	
 	/** Returns the children elements of the specified element in this graph */
-	public ArrayList<SchemaElement> getChildElements(SchemaElement element)
+	public ArrayList<SchemaElement> getChildElements(Integer elementID)
 	{
 		ArrayList<SchemaElement> childElements = new ArrayList<SchemaElement>();
 		
 		// If entity, return attributes as children
+		SchemaElement element = getElement(elementID);
 		if(element instanceof Entity)
-			for(Attribute value : getAttributes(element.getId()))
+			for(Attribute value : getAttributes(elementID))
 				childElements.add(value);
 
 		return childElements;
 	}
 	
 	/** Returns the domains of the specified element in this graph */
-	public Domain getDomain(SchemaElement element)
+	public Domain getDomainForElement(Integer elementID)
 	{
+		SchemaElement element = getElement(elementID);
 		if(element instanceof Attribute)
-			return getDomain(element.getId());
+			return (Domain)getElement(((Attribute)element).getDomainID());
 		return null;
 	}
 }
