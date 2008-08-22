@@ -36,7 +36,7 @@ class SchemaTreeCellRenderer extends LinkedTreeNodeRenderer
 		
 		// Checks for new children in attributes
 		if(schemaElement instanceof Domain)
-			for(DomainValue domainValue : graph.getDomainValues(((Domain)schemaElement).getId()))
+			for(DomainValue domainValue : graph.getDomainValuesForDomain(((Domain)schemaElement).getId()))
 				if(schemaID.equals(domainValue.getBase()))
 					return true;
 		
