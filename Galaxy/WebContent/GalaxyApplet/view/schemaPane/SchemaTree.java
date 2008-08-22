@@ -17,6 +17,9 @@ import prefuse.data.Tree;
 /** Model for storing schema extensions */
 public class SchemaTree extends Tree
 {	
+	/** Hash set used to prohibit cycles in tree */
+	private HashSet<Integer> usedElements = new HashSet<Integer>();
+	
 	/** Constructs the Schema Tree */
 	SchemaTree()
 	{
@@ -30,6 +33,9 @@ public class SchemaTree extends Tree
 		// Cycle through all elements associated with this branch
 		for(SchemaElement element : elements)
 		{
+			if(usedElements.contains(element.getId())) continue;
+			usedElements.add(element.getId());
+			
 			// Attach the branch to the tree
 			Node childNode = addChild(node);
 			childNode.set("SchemaObject", new SchemaTreeObject(element.getId(),sGraph,cGraph));
@@ -60,7 +66,7 @@ public class SchemaTree extends Tree
 		for(Node node : nodes) removeChild(node);
 		try { Thread.sleep(50); } catch(Exception e) {}
 		schemaNode.set("SchemaObject", schemaID);
-		
+
 		// Build the first layer of the tree
 		HierarchicalGraph sGraph = Schemas.getGraph(schemaID);
 		HierarchicalGraph cGraph = comparisonID==null ? null : Schemas.getGraph(comparisonID);
