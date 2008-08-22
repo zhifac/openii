@@ -123,7 +123,7 @@ class ViewPane extends JPanel
 			Attribute attribute = (Attribute)schemaElement;
 			Domain domain = (Domain)Schemas.getSchemaElement(attribute.getDomainID());
 			boolean newDomain = schemaID.equals(domain.getBase());
-			ArrayList<DomainValue> domainValues = graph.getDomainValues(attribute.getDomainID());
+			ArrayList<DomainValue> domainValues = graph.getDomainValuesForDomain(attribute.getDomainID());
 			text.append("    <table cellPadding=0 cellSpacing=0>");
 			text.append("      <tr>");
 			text.append("        <td nowrap valign=top><b>Domain: </b></td>");
@@ -149,7 +149,7 @@ class ViewPane extends JPanel
 		{
 			// Display domain values
 			Domain domain = (Domain)schemaElement;
-			ArrayList<DomainValue> domainValues = graph.getDomainValues(domain.getId());
+			ArrayList<DomainValue> domainValues = graph.getDomainValuesForDomain(domain.getId());
 			text.append("    <table cellPadding=0 cellSpacing=0>");
 			text.append("      <tr>");
 			text.append("        <td nowrap valign=top><b>Domain Values: </b></td>");

@@ -65,7 +65,7 @@ class EditDomainPane extends EditPaneInterface implements MouseListener, MouseMo
 		{
 			name.setText(domain.getName());
 			description.setText(domain.getDescription());
-			domainValues = Schemas.getGraph(schema.getId()).getDomainValues(domain.getId());
+			domainValues = Schemas.getGraph(schema.getId()).getDomainValuesForDomain(domain.getId());
 		}
 		
 		// Initialize the edit link
@@ -139,7 +139,7 @@ class EditDomainPane extends EditPaneInterface implements MouseListener, MouseMo
 	/** Handles the deletion of a domain */
 	public boolean delete()
 	{
-		for(DomainValue domainValue : Schemas.getGraph(schema.getId()).getDomainValues(domainID))
+		for(DomainValue domainValue : Schemas.getGraph(schema.getId()).getDomainValuesForDomain(domainID))
 			Schemas.deleteSchemaElement(domainValue);
 		return Schemas.deleteSchemaElement(getDomain());
 	}

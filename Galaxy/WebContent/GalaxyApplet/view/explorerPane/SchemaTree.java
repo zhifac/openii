@@ -27,6 +27,7 @@ import view.sharedComponents.LinkedTree;
 import model.AliasedSchemaElement;
 import model.Schemas;
 import model.SelectedObjects;
+import model.UniversalObjects;
 
 /** Class for displaying the schema tree for the specified schema */
 class SchemaTree extends LinkedTree implements MouseListener, MouseMotionListener, TreeExpansionListener
@@ -46,7 +47,7 @@ class SchemaTree extends LinkedTree implements MouseListener, MouseMotionListene
 	/** Generates a schema tree node */
 	private SchemaTreeNode getSchemaTreeNode(Object object)
 	{
-		if(object instanceof Integer && Schemas.getSchemaElement((Integer)object)!=null)
+		if(object instanceof Integer && UniversalObjects.isSchemaElement((Integer)object))
 			object = new AliasedSchemaElement(schemaID, (Integer)object);
 		return new SchemaTreeNode(Schemas.getSchema(schemaID),object,parent);
 	}

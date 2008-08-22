@@ -4,12 +4,6 @@ package view.schemaPane;
 
 import java.awt.Color;
 
-import org.mitre.schemastore.model.Attribute;
-import org.mitre.schemastore.model.Entity;
-import org.mitre.schemastore.model.SchemaElement;
-import org.mitre.schemastore.model.graph.HierarchicalGraph;
-
-import model.AliasedSchemaElement;
 import model.Schemas;
 import model.SelectedObjects;
 import model.search.SearchManager;
@@ -41,24 +35,20 @@ public class SchemaColors
 			
 			// Sets the fill color for the node
 			Object object = ((NodeItem)item).get("SchemaObject");
-			if(object instanceof AliasedSchemaElement)
+			if(object instanceof SchemaTreeObject)
 			{
-				AliasedSchemaElement aliasedElement = (AliasedSchemaElement)object;
-				SchemaElement element = aliasedElement.getElement();
+				SchemaTreeObject schemaObject = (SchemaTreeObject)object;
 				if(SelectedObjects.getSelectedComparisonSchema()!=null)
 				{
 					// Highlights the items only existent in the selected schema
-					HierarchicalGraph graph = Schemas.getGraph(SelectedObjects.getSelectedComparisonSchema());
-					if(!graph.containsElement(aliasedElement.getId()))
+					if(!schemaObject.inComparedGraph())
 						return selectedSchemaOnlyColor;
 					
 					// Highlight the items only existent in the compared schema
-					graph = Schemas.getGraph(SelectedObjects.getSelectedSchema());
-					if(!graph.containsElement(aliasedElement.getId()))
+					if(!schemaObject.inSelectedGraph())
 						return comparisonSchemaOnlyColor;
 				}
-				if(element instanceof Entity) return entityColor;
-				if(element instanceof Attribute) return attributeColor;
+				return schemaObject.getType()==SchemaTreeObject.ATTRIBUTE ? attributeColor : entityColor;
 			}
 			return defaultColor;
 		}
@@ -95,13 +85,13 @@ public class SchemaColors
 			
 			// Draw a colored border around the node
 			Object object = ((NodeItem)item).get("SchemaObject");
-			if(object instanceof AliasedSchemaElement)
+			if(object instanceof SchemaTreeObject)
 			{
-				SchemaElement element = ((AliasedSchemaElement)object).getElement();
-				SchemaElement alias = ((AliasedSchemaElement)object).getAlias();
-				if(SearchManager.containsObject(element) || SearchManager.containsObject(alias)) return selectedColor;
-				if(element instanceof Entity) return entityColor;
-				if(element instanceof Attribute) return attributeColor;
+				SchemaTreeObject sObject = (SchemaTreeObject)object;
+				for(Integer id : sObject.getIDs())
+					if(SearchManager.containsObject(Schemas.getSchemaElement(id))) return selectedColor;
+				if(sObject.getType()==SchemaTreeObject.ENTITY) return entityColor;
+				if(sObject.getType()==SchemaTreeObject.ATTRIBUTE) return attributeColor;
 			}
 			return defaultColor;
 		}

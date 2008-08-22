@@ -4,10 +4,6 @@ package view.schemaPane;
 
 import java.awt.Font;
 
-import model.AliasedSchemaElement;
-
-import org.mitre.schemastore.model.DomainValue;
-
 import prefuse.action.ActionList;
 import prefuse.action.assignment.FontAction;
 import prefuse.util.FontLib;
@@ -33,7 +29,7 @@ public class SchemaFonts
 			// Determine which color the node should be
 			Object object = ((NodeItem)item).get("SchemaObject");
 			if(object instanceof Integer) return schemaFont;
-			if(((AliasedSchemaElement)object).getElement() instanceof DomainValue) return dataSourceFont;
+			if(((SchemaTreeObject)object).getType()==SchemaTreeObject.DOMAIN_VALUE) return dataSourceFont;
 			return schemaFont;
 		}
 	}

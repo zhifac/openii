@@ -5,9 +5,6 @@ package view.schemaPane;
 import java.awt.BasicStroke;
 import java.awt.Image;
 
-import org.mitre.schemastore.model.SchemaElement;
-
-import model.AliasedSchemaElement;
 import model.Schemas;
 import model.SelectedObjects;
 import model.search.SearchManager;
@@ -24,29 +21,19 @@ public class SchemaLabelRenderer extends LabelRenderer
 	/** Returns the text to display for the schema label */
 	protected String getText(VisualItem item)
 	{
-		String text = "";
-
-		// Generate the text for this schema element
+		// Generate the text for schema node
 		Object object = ((NodeItem)item).get("SchemaObject");
-		text += ((AliasedSchemaElement)object).getName();
-
-		
-		// Display comparison information if needed
-		Integer comparisonSchemaID = SelectedObjects.getSelectedComparisonSchema();
-		if(comparisonSchemaID != null)
+		if(object instanceof Integer)
 		{
-			if(object instanceof Integer)
+			String text = Schemas.getSchema((Integer)object).getName();
+			Integer comparisonSchemaID = SelectedObjects.getSelectedComparisonSchema();
+			if(comparisonSchemaID != null)
 				text += " (vs "+Schemas.getSchema(comparisonSchemaID).getName()+")";
-			else
-			{
-				AliasedSchemaElement aliasedElement = (AliasedSchemaElement)object;
-				String comparisonName = Schemas.getGraph(comparisonSchemaID).getElement(aliasedElement.getId()).getName();
-				if(!aliasedElement.getName().equals(comparisonName))
-					text += " (" + comparisonName + ")";
-			}
+			return text;
 		}
-		
-		return text;
+
+		// Generate the text for schema element nodes
+		return ((SchemaTreeObject)object).getName();
 	}
 
 	/** Returns the stroke used in the schema label border */
@@ -54,13 +41,11 @@ public class SchemaLabelRenderer extends LabelRenderer
 	{
 		Object object = ((NodeItem)item).get("SchemaObject");
 		boolean selectedItem = false;
-		if(object instanceof AliasedSchemaElement)
+		if(object instanceof SchemaTreeObject)
 		{
-			AliasedSchemaElement aliasedElement = (AliasedSchemaElement)object;
-			SchemaElement element = aliasedElement.getElement();
-			SchemaElement alias = aliasedElement.getAlias();
-			if(SearchManager.containsObject(element) || (alias!=null && SearchManager.containsObject(alias)))
-				selectedItem = true;
+			for(Integer id : ((SchemaTreeObject)object).getIDs())
+				if(SearchManager.containsObject(Schemas.getSchemaElement(id)))
+					selectedItem = true;
 		}
 		return new BasicStroke(selectedItem ? 3 : 1);
 	}
