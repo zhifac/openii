@@ -306,7 +306,7 @@ public class SchemaStoreClient
 	{
 		SchemaElement[] schemaElements = proxy.getSchemaElements(schemaID).getSchemaElements();
 		ArrayList<SchemaElement> elements = schemaElements==null ? new ArrayList<SchemaElement>() : new ArrayList<SchemaElement>(Arrays.asList(schemaElements));
-		return new HierarchicalGraph(new Graph(schemaID, elements));
+		return new HierarchicalGraph(new Graph(getSchema(schemaID), elements));
 	}
 	
 	//-----------------------
