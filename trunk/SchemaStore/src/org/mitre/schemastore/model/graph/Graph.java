@@ -11,6 +11,7 @@ import org.mitre.schemastore.model.Attribute;
 import org.mitre.schemastore.model.Containment;
 import org.mitre.schemastore.model.DomainValue;
 import org.mitre.schemastore.model.Entity;
+import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
 
 /**
@@ -20,7 +21,7 @@ import org.mitre.schemastore.model.SchemaElement;
 public class Graph implements Serializable
 {
 	/** Stores the schema associated with this graph */
-	private Integer schemaID;
+	private Schema schema;
 
 	/** Stores the schema elements associated with this graph */
 	private HashMap<Integer,SchemaElement> graphHash = new HashMap<Integer,SchemaElement>();
@@ -29,9 +30,9 @@ public class Graph implements Serializable
 	private ArrayList<GraphListener> listeners = new ArrayList<GraphListener>();
 	
 	/** Constructs the base graph */
-	public Graph(Integer schemaID, ArrayList<SchemaElement> elements)
+	public Graph(Schema schema, ArrayList<SchemaElement> elements)
 	{
-		this.schemaID = schemaID;
+		this.schema = schema;
 		for(SchemaElement element : elements)
 			addElement(element);
 	}
@@ -39,13 +40,13 @@ public class Graph implements Serializable
 	/** Copy the base graph */
 	protected Graph(Graph graph)
 	{
-		this.schemaID = graph.schemaID;
+		this.schema = graph.schema;
 		this.graphHash = graph.graphHash;
 	}
 
 	/** Returns the schema referenced by this graph */
-	public Integer getSchemaID()
-		{ return schemaID; }
+	public Schema getSchema()
+		{ return schema; }
 	
 	/** Returns the size of the graph */
 	public Integer size()
@@ -79,7 +80,7 @@ public class Graph implements Serializable
 		
 		// Filter out base schema elements of the specified type
 		for(SchemaElement element : getElements(type))
-			if(element.getBase().equals(schemaID))
+			if(element.getBase().equals(schema.getId()))
 				baseElements.add(element);
 		
 		return baseElements;

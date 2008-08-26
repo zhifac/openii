@@ -35,7 +35,7 @@ public class FilteredGraph extends HierarchicalGraph implements GraphListener
 		// Proceed to fill in depth hash with child elements
 		for(SchemaElement element : getChildElements(elementID))
 			if(!filteredElements.contains(element.getId()))
-				findFilteredElements(element.getId(),depth++);
+				findFilteredElements(element.getId(),depth+1);
 	}
 	
 	/** Generates the filtered elements */
