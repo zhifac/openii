@@ -21,7 +21,7 @@ import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.SchemaElementList;
 import org.mitre.schemastore.model.Subtype;
-import org.mitre.schemastore.model.graph.GraphFactory;
+import org.mitre.schemastore.model.graph.Graph;
 import org.mitre.schemastore.model.graph.HierarchicalGraph;
 import org.mitre.schemastore.servlet.SchemaStoreProxy;
 
@@ -306,7 +306,7 @@ public class SchemaStoreClient
 	{
 		SchemaElement[] schemaElements = proxy.getSchemaElements(schemaID).getSchemaElements();
 		ArrayList<SchemaElement> elements = schemaElements==null ? new ArrayList<SchemaElement>() : new ArrayList<SchemaElement>(Arrays.asList(schemaElements));
-		return GraphFactory.generateGraph(schemaID, elements);
+		return new HierarchicalGraph(new Graph(schemaID, elements));
 	}
 	
 	//-----------------------
