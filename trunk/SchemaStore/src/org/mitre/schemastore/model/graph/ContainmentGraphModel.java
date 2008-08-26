@@ -11,10 +11,10 @@ import org.mitre.schemastore.model.SchemaElement;
 /**
  *  Class for displaying containment hierarchy
  */
-public class ContainmentGraph extends HierarchicalGraph
+public class ContainmentGraphModel extends GraphModel
 {
 	/** Constructs the containment graph */
-	public ContainmentGraph(Graph graph)
+	public ContainmentGraphModel(HierarchicalGraph graph)
 		{ super(graph); }
 
 	/** Returns the root elements in this graph */
@@ -23,8 +23,8 @@ public class ContainmentGraph extends HierarchicalGraph
 		ArrayList<SchemaElement> rootElements = new ArrayList<SchemaElement>();
 
 		// Find all containments whose root is null
-		for(SchemaElement element : getElements(Containment.class))
-			if(getElement(((Containment)element).getParentID())==null)
+		for(SchemaElement element : graph.getElements(Containment.class))
+			if(graph.getElement(((Containment)element).getParentID())==null)
 				rootElements.add(element);
 			
 		return rootElements;
@@ -36,12 +36,12 @@ public class ContainmentGraph extends HierarchicalGraph
 		ArrayList<SchemaElement> parentElements = new ArrayList<SchemaElement>();
 		
 		// Find all containments one level higher up the graph
-		SchemaElement element = getElement(elementID);
+		SchemaElement element = graph.getElement(elementID);
 		if(element instanceof Containment)
 		{
 			Integer containmentID = ((Containment)element).getParentID();
 			if(containmentID!=null)
-				for(Containment containment : getContainments(containmentID))
+				for(Containment containment : graph.getContainments(containmentID))
 					if(containment.getChildID().equals(containmentID))
 						parentElements.add(containment);
 		}
@@ -55,11 +55,11 @@ public class ContainmentGraph extends HierarchicalGraph
 		ArrayList<SchemaElement> childElements = new ArrayList<SchemaElement>();
 		
 		// Find all containments one level lower on the graph
-		SchemaElement element = getElement(elementID);
+		SchemaElement element = graph.getElement(elementID);
 		if(element instanceof Containment)
 		{
 			Integer containmentID = ((Containment)element).getChildID();
-			for(Containment containment : getContainments(containmentID))
+			for(Containment containment : graph.getContainments(containmentID))
 				if(containment.getParentID().equals(containmentID))
 					childElements.add(containment);
 		}
@@ -71,14 +71,27 @@ public class ContainmentGraph extends HierarchicalGraph
 	public Domain getDomainForElement(Integer elementID)
 	{
 		// Find the domain attached to this containment
-		SchemaElement element = getElement(elementID);
+		SchemaElement element = graph.getElement(elementID);
 		if(element instanceof Containment)
 		{
 			Integer containmentID = ((Containment)element).getChildID();
-			SchemaElement childElement = getElement(containmentID);
+			SchemaElement childElement = graph.getElement(containmentID);
 			if(childElement instanceof Domain)
 				return (Domain)childElement;
 		}			
 		return null;	
+	}
+	
+	/** Returns the elements referenced by the specified domain */
+	public ArrayList<SchemaElement> getElementsForDomain(Integer domainID)
+	{
+		ArrayList<SchemaElement> domainElements = new ArrayList<SchemaElement>();
+		
+		// Find all containments that reference this domain
+		for(Containment containment : graph.getContainments(domainID))
+			if(containment.getChildID().equals(domainID))
+				domainElements.add(containment);
+			
+		return domainElements;		
 	}
 }

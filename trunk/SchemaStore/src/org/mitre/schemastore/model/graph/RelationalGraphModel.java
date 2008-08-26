@@ -12,15 +12,15 @@ import org.mitre.schemastore.model.SchemaElement;
 /**
  *  Class for displaying relationship hierarchy
  */
-public class RelationalGraph extends HierarchicalGraph
+public class RelationalGraphModel extends GraphModel
 {
 	/** Constructs the relational graph */
-	public RelationalGraph(Graph graph)
+	public RelationalGraphModel(HierarchicalGraph graph)
 		{ super(graph); }
 
 	/** Returns the root elements in this graph */
 	public ArrayList<SchemaElement> getRootElements()
-		{ return getElements(Entity.class); }
+		{ return graph.getElements(Entity.class); }
 	
 	/** Returns the parent elements of the specified element in this graph */
 	public ArrayList<SchemaElement> getParentElements(Integer elementID)
@@ -28,9 +28,9 @@ public class RelationalGraph extends HierarchicalGraph
 		ArrayList<SchemaElement> parentElements = new ArrayList<SchemaElement>();
 		
 		// If attribute, return entity as parent
-		SchemaElement element = getElement(elementID);
+		SchemaElement element = graph.getElement(elementID);
 		if(element instanceof Attribute)
-			parentElements.add(getEntity(elementID));
+			parentElements.add(graph.getEntity(elementID));
 		
 		return parentElements;
 	}
@@ -41,9 +41,9 @@ public class RelationalGraph extends HierarchicalGraph
 		ArrayList<SchemaElement> childElements = new ArrayList<SchemaElement>();
 		
 		// If entity, return attributes as children
-		SchemaElement element = getElement(elementID);
+		SchemaElement element = graph.getElement(elementID);
 		if(element instanceof Entity)
-			for(Attribute value : getAttributes(elementID))
+			for(Attribute value : graph.getAttributes(elementID))
 				childElements.add(value);
 
 		return childElements;
@@ -52,9 +52,18 @@ public class RelationalGraph extends HierarchicalGraph
 	/** Returns the domains of the specified element in this graph */
 	public Domain getDomainForElement(Integer elementID)
 	{
-		SchemaElement element = getElement(elementID);
+		SchemaElement element = graph.getElement(elementID);
 		if(element instanceof Attribute)
-			return (Domain)getElement(((Attribute)element).getDomainID());
+			return (Domain)graph.getElement(((Attribute)element).getDomainID());
 		return null;
+	}
+
+	/** Returns the elements referenced by the specified domain */
+	public ArrayList<SchemaElement> getElementsForDomain(Integer domainID)
+	{
+		ArrayList<SchemaElement> domainElements = new ArrayList<SchemaElement>();
+		for(Attribute attribute : graph.getAttributes(domainID))
+			domainElements.add(attribute);
+		return domainElements;
 	}
 }
