@@ -18,10 +18,6 @@ import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
-import model.Groups;
-
-import view.groupPane.managePane.editPane.EditGroupStructuresPane;
-
 /** Class for editing information */
 abstract public class EditPane extends JPanel implements ActionListener
 {	
@@ -108,8 +104,6 @@ abstract public class EditPane extends JPanel implements ActionListener
 	public void editInfo(String titleText, EditPaneInterface pane, Boolean deleteVisible, Boolean deleteEnabled)
 	{
 		// Remove old edit pane
-		if(editPane.getComponentCount()<0 && editPane.getComponent(0) instanceof EditGroupStructuresPane)
-			Groups.removeGroupsListener(((EditGroupStructuresPane)editPane.getComponent(0)).getGroupTree());
 		editPane.removeAll();
 		
 		// Set up the title and info pane
@@ -124,10 +118,6 @@ abstract public class EditPane extends JPanel implements ActionListener
 		
 		// Reset the labeling on the save button
 		saveButton.setText("Save");
-		
-		// Set up edit pane listeners
-		if(pane instanceof EditGroupStructuresPane)
-			Groups.addGroupsListener(((EditGroupStructuresPane)pane).getGroupTree());
 	}
 	
 	/** Displays a secondary pane */
