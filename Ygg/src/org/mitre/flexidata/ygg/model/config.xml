@@ -6,6 +6,7 @@
   <importer>org.mitre.flexidata.ygg.importers.DDLImporter</importer>
   <importer>org.mitre.flexidata.ygg.importers.OWLImporter</importer>
   <importer>org.mitre.flexidata.ygg.importers.XSDImporter</importer>
+  <importer>org.mitre.flexidata.ygg.importers.DomainValueImporter</importer>
 </importers>
 <exporters>
   <exporter>org.mitre.flexidata.ygg.exporters.XSDExporter</exporter>
