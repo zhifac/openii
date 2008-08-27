@@ -66,7 +66,6 @@ public class DomainValueImporter extends ExcelImporter {
 		if (!_domains.containsKey(domainName)) {
 			domain = new Domain(nextId(), domainName, "", 0);
 			_domains.put(domainName, domain);
-			// System.err.println("adding new domain " + domainName);
 		} else
 			domain = _domains.get(domainName);
 		return domain;
@@ -83,11 +82,16 @@ public class DomainValueImporter extends ExcelImporter {
 	}
 
 	protected void readRow(HSSFRow row) {
-		if (row.getPhysicalNumberOfCells() == 0) return;
-		
-		String domainName = despace(row.getCell(0).getStringCellValue());
-		String domainValueStr = despace(row.getCell(1).getStringCellValue());
-		String documentation = (row.getLastCellNum() >= 2) ? despace(row.getCell(2).getStringCellValue()) : "";
+		if (row.getPhysicalNumberOfCells() == 0)
+			return;
+
+		String domainName = despace(row.getCell(0).getRichStringCellValue().toString());
+		String domainValueStr = despace(row.getCell(1).getRichStringCellValue().toString());
+
+		String documentation = "";
+		if (row.getCell(2) != null)
+			documentation = (row.getLastCellNum() >= 2) ? despace(row.getCell(2)
+					.getRichStringCellValue().toString()) : "";
 		String hashKey = domainName + "/" + domainValueStr;
 
 		Domain domain;
