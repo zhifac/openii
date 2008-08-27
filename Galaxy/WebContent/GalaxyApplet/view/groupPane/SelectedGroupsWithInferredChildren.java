@@ -1,6 +1,6 @@
 // Copyright 2008 The MITRE Corporation. ALL RIGHTS RESERVED.
 
-package view.groupPane.groupSelectionTree;
+package view.groupPane;
 
 import java.util.ArrayList;
 import java.util.HashSet;
