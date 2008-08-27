@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import org.mitre.schemastore.model.DataSource;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
-import org.mitre.schemastore.model.graph.GraphFactory;
 import org.mitre.schemastore.model.graph.HierarchicalGraph;
 
 /** Manages schema information */
@@ -75,7 +74,7 @@ public class SchemaManager
 	{
 		try {
 			return SchemaStore.getClient().getSchemaElementGraph(schemaID);
-		} catch(Exception e) { return GraphFactory.generateGraph(schemaID, new ArrayList<SchemaElement>()); }
+		} catch(Exception e) { return null; }
 	}
 
 	/** Returns the data sources associated with the specified schema in the repository */
