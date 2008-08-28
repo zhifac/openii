@@ -7,12 +7,10 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 
-import org.mitre.schemastore.model.DataSource;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.graph.HierarchicalGraph;
 
-import model.listeners.SchemasListener;
 import model.server.ServletConnection;
 
 /**
@@ -32,9 +30,6 @@ public class Schemas
 	
 	/** Caches schema elements associated with schemas */
 	static private HashMap<Integer,HierarchicalGraph> schemaGraphs = new HashMap<Integer,HierarchicalGraph>();
-	
-	/** List of listeners monitoring schema events */
-	static private ArrayList<SchemasListener> listeners = new ArrayList<SchemasListener>();
 		
 	//----------------
 	// Schema Actions
@@ -46,11 +41,7 @@ public class Schemas
 		schemas = new HashMap<Integer,Schema>();
 		for(Schema schema : ServletConnection.getSchemas())
 			if(ServletConnection.getSchemaElementCount(schema.getId())<5000)
-			{
 				schemas.put(schema.getId(),schema);
-				for(SchemasListener listener : listeners)
-					listener.schemaAdded(schema);
-			}
 	}
 	
 	/** Returns a list of all schemas */
@@ -67,77 +58,7 @@ public class Schemas
 		return schemas.get(schemaID);
 	}
 	
-	/** Locks the specified schema */
-	static public void lockSchema(Integer schemaID)
-	{
-		if(ServletConnection.lockSchema(schemaID))
-		{
-			Schema schema = schemas.get(schemaID);
-			Schema newSchema = new Schema(schema.getId(),schema.getName(),schema.getAuthor(),schema.getSource(),schema.getType(),schema.getDescription(),true);
-			schemas.put(schemaID, newSchema);
-			for(SchemasListener listener : listeners)
-				listener.schemaLocked(newSchema);
-		}
-	}
-	
-	/** Extends the specified schema */
-	static public void extendSchema(Integer schemaID)
-	{
-		Schema extendedSchema = ServletConnection.extendSchema(schemaID);
-		if(extendedSchema!=null)
-		{
-			// Update Galaxy to contain extended schema
-			schemas.put(extendedSchema.getId(), extendedSchema);
-			for(SchemasListener listener : listeners)
-				listener.schemaAdded(extendedSchema);
-			SelectedObjects.setSelectedSchema(extendedSchema.getId());
-
-			// Set schema groups to match base schema
-			Groups.setSchemaGroups(extendedSchema.getId(), Groups.getSchemaGroups(schemaID));
-		}
-	}
-	
-	/** Updates the specified schema */
-	static public void updateSchema(Schema schema)
-	{
-		if(ServletConnection.updateSchema(schema))
-		{
-			schemas.put(schema.getId(), schema);
-			for(SchemasListener listener : listeners)
-				listener.schemaUpdated(schema);
-		}
-	}
-	
-	/** Delete the specified schema */
-	static public void deleteSchema(Schema schema)
-	{
-		// Delete all data sources associated with the schema
-		for(DataSource dataSource : DataSources.getDataSources(schema.getId()))
-			DataSources.deleteDataSource(DataSources.getDataSource(dataSource.getId()));
-
-		// Delete all schema group associations
-		Groups.setSchemaGroups(schema.getId(),new ArrayList<Integer>());
-
-		// Identify the parent schema ID
-		Integer parentSchemaID = null;
-		ArrayList<Integer> parentSchemas = getParentSchemas(schema.getId());
-		if(parentSchemas.size()>0)
-			parentSchemaID = parentSchemas.get(0);
-
-		// Delete the schema
-		if(ServletConnection.deleteSchema(schema.getId()))
-		{
-			schemas.remove(schema.getId());
-			for(SchemasListener listener : listeners)
-				listener.schemaRemoved(schema);
-			
-			// Modify the selected schema
-			if(parentSchemaID!=null) SelectedObjects.setSelectedSchema(parentSchemaID);
-			else if(schemas.size()>0) SelectedObjects.setSelectedSchema(schemas.get(0).getId());
-		}
-	}
-	
-	/** Filter the list of schemas to only include schemas existent in Galaxy (<=1000) */
+	/** Filter the list of schemas to only include schemas existent in Galaxy (<5000) */
 	static public ArrayList<Integer> filter(ArrayList<Integer> schemas)
 	{
 		ArrayList<Integer> filteredSchemas = new ArrayList<Integer>();
@@ -197,17 +118,6 @@ public class Schemas
 	/** Returns the schema path between the specified root and schema */
 	static public ArrayList<Integer> getSchemaPath(Integer rootID, Integer schemaID)
 		{ return ServletConnection.getSchemaPath(rootID, schemaID); }
-
-	/** Updates the parent schemas for the specified schema */
-	static public void setParentSchemas(Schema schema, ArrayList<Integer> parentIDs)
-	{
-		if(ServletConnection.setParentSchemas(schema.getId(), parentIDs))
-		{
-			schemaGraphs.remove(schema.getId());
-			for(SchemasListener listener : listeners)
-				listener.schemaParentsUpdated(schema);		
-		}
-	}
 	
 	//------------------------
 	// Schema Element Actions
@@ -250,69 +160,9 @@ public class Schemas
 				schemaElements.put(element.getId(), element);
 		}
 		return schemaGraphs.get(schemaID);
-	}	
-	
-	/** Adds the specified schema element */
-	static public boolean addSchemaElement(SchemaElement schemaElement)
-	{
-//		Integer schemaElementID = ServletConnection.addSchemaElement(schemaElement);
-//		if(schemaElementID!=null)
-//		{
-//			schemaElement.setId(schemaElementID);
-//			schemaElements.put(schemaElement.getId(), schemaElement);
-//			schemaSchemaElements.get(schemaElement.getBase()).add(schemaElement);
-//			for(SchemasListener listener : listeners)
-//				listener.schemaElementAdded(schemaElement);
-//			return true;
-//		}
-		return false;
-	}
-
-	/** Updates the specified schema element */
-	static public Boolean updateSchemaElement(SchemaElement schemaElement)
-	{
-//		if(ServletConnection.updateSchemaElement(schemaElement))
-//		{
-//			schemaElements.put(schemaElement.getId(), schemaElement);
-//			schemaSchemaElements.get(schemaElement.getBase()).remove(schemaElement);
-//			schemaSchemaElements.get(schemaElement.getBase()).add(schemaElement);
-//			for(SchemasListener listener : listeners)
-//			{
-//				listener.schemaElementRemoved(schemaElement);
-//				listener.schemaElementAdded(schemaElement);
-//			}
-//			return true;
-//		}
-		return false;
 	}
 	
-	/** Deletes the specified schema element */
-	static public Boolean deleteSchemaElement(SchemaElement schemaElement)
-	{
-//		if(ServletConnection.deleteSchemaElement(schemaElement.getId()))
-//		{
-//			schemaElements.remove(schemaElement.getId());
-//			schemaSchemaElements.get(schemaElement.getBase()).remove(schemaElement);
-//			for(SchemasListener listener : listeners)
-//				listener.schemaElementRemoved(schemaElement);
-//			return true;
-//		}
-		return false;
-	}
-
-	//------------------
-	// Schema Listeners
-	//------------------
-	
-	/** Adds a listener monitoring schema events */
-	static public void addSchemasListener(SchemasListener listener)
-		{ listeners.add(listener); }
-	
-	/** Removes a listener monitoring schema events */
-	static public void removeSchemasListener(SchemasListener listener)
-		{ listeners.remove(listener); }
-	
-	/** Gets the current schema listeners */
-	static public ArrayList<SchemasListener> getSchemasListeners()
-		{ return new ArrayList<SchemasListener>(listeners); }
+	/** Retrieves a temporary copy of the schema element graph */
+	static public HierarchicalGraph getTempGraph(Integer schemaID)
+		{ return ServletConnection.getSchemaElementGraph(schemaID); }
 }

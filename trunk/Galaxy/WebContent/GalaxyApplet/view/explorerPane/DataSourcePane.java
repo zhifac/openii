@@ -23,11 +23,10 @@ import org.mitre.schemastore.model.DataSource;
 
 import model.DataSources;
 import model.SelectedObjects;
-import model.listeners.DataSourceListener;
 import model.listeners.SelectedObjectsListener;
 
 /** Class for displaying the data source list for the explorer pane */
-class DataSourcePane extends JPanel implements ActionListener, DataSourceListener, SelectedObjectsListener
+class DataSourcePane extends JPanel implements ActionListener, SelectedObjectsListener
 {
 	/** Stores the list of currently available data sources */
 	private JComboBox dataSourceList = new JComboBox();
@@ -83,7 +82,6 @@ class DataSourcePane extends JPanel implements ActionListener, DataSourceListene
 		add(dataSourceList,BorderLayout.CENTER);
 
 		// Add a listener to monitor for changes in the data sources
-		DataSources.addDataSourceListener(this);
 		SelectedObjects.addSelectedObjectsListener(this);
 
 		// Initializes the data sources
@@ -101,30 +99,6 @@ class DataSourcePane extends JPanel implements ActionListener, DataSourceListene
 			SelectedObjects.setSelectedSchema(schemaID);
 			SelectedObjects.addSelectedObjectsListener(this);
 		}
-	}
-	
-	/** Handles the addition of a data source */
-	public void dataSourceAdded(DataSource dataSource)
-	{
-		DefaultComboBoxModel model = (DefaultComboBoxModel)dataSourceList.getModel();
-		for(int i=1; i<model.getSize(); i++)
-		{
-			String name = DataSources.getDataSource((Integer)model.getElementAt(i)).getName();
-			if(name.compareTo(dataSource.getName())>0)
-				{ model.insertElementAt(dataSource.getId(), i); break; }
-		}
-	}
-
-	/** Handles the updating of a data source */
-	public void dataSourceUpdated(DataSource dataSource)
-		{ repaint(); }
-	
-	/** Handles the removal of a data source */
-	public void dataSourceRemoved(DataSource dataSource)
-	{
-		dataSourceList.removeItem(dataSource.getId());
-		if(dataSourceList.getSelectedItem()==null && dataSourceList.getItemCount()>0)
-			SelectedObjects.setSelectedSchema((Integer)dataSourceList.getItemAt(0));
 	}
 
 	/** Handles changes to the data source list */
