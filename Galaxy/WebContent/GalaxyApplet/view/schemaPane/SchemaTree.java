@@ -58,7 +58,10 @@ public class SchemaTree extends Tree
 	
 	/** Builds the schema tree */
 	void buildTree(Integer schemaID, Integer comparisonID)
-	{		
+	{
+		// Clear out the used element array before building the tree
+		usedElements.clear();
+		
 		// Constructs the base object
 		Node schemaNode = getRoot();
 		ArrayList<Node> nodes = new ArrayList<Node>();

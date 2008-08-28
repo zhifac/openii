@@ -12,12 +12,7 @@ import javax.swing.JDesktopPane;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
-import org.mitre.schemastore.model.Schema;
-import org.mitre.schemastore.model.SchemaElement;
-
-import model.Schemas;
 import model.SelectedObjects;
-import model.listeners.SchemasListener;
 import model.listeners.SearchListener;
 import model.listeners.SelectedObjectsListener;
 import model.search.SearchManager;
@@ -35,7 +30,7 @@ import prefuse.render.EdgeRenderer;
 import view.schemaPane.navigatorPane.NavigatorPane;
 
 /** Class for displaying the explorer pane of Galaxy */
-public class SchemaPane extends JPanel implements ComponentListener, SchemasListener, SelectedObjectsListener, SearchListener
+public class SchemaPane extends JPanel implements ComponentListener, SelectedObjectsListener, SearchListener
 {	
 	/** Keeps track of if the schema graph needs to be updated */
 	private boolean updated = false;
@@ -114,7 +109,6 @@ public class SchemaPane extends JPanel implements ComponentListener, SchemasList
 		
 		// Add listeners for various actions which affect this pane
 		addComponentListener(this);
-		Schemas.addSchemasListener(this);
 		SelectedObjects.addSelectedObjectsListener(this);
 		SearchManager.addSearchListener(this);
 	}
@@ -137,10 +131,6 @@ public class SchemaPane extends JPanel implements ComponentListener, SchemasList
 	// Handles various actions which require the schema pane to be reset
 	public void selectedSchemaChanged() { update(); }
 	public void selectedComparisonSchemaChanged() { update(); }
-	public void schemaUpdated(Schema schema) { update(); }
-	public void schemaParentsUpdated(Schema schema) { update(); }
-	public void schemaElementAdded(SchemaElement schemaElement) { update(); }
-	public void schemaElementRemoved(SchemaElement schemaElement) { update(); }
 
 	/** Handles the selection of schema objects */
 	public void searchResultsChanged()
@@ -154,8 +144,5 @@ public class SchemaPane extends JPanel implements ComponentListener, SchemasList
 	public void componentShown(ComponentEvent e) {}
 	public void componentHidden(ComponentEvent e) {}
 	public void componentMoved(ComponentEvent e) {}
-	public void schemaAdded(Schema schema) {}
-	public void schemaRemoved(Schema schema) {}
-	public void schemaLocked(Schema schema) {}
 	public void selectedGroupsChanged() {}
 }
