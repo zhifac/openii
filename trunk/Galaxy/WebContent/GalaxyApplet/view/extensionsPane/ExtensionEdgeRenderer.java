@@ -8,8 +8,9 @@ import java.awt.Shape;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
+import org.mitre.schemastore.model.Schema;
+
 import model.Schemas;
-import model.UniversalObjects;
 
 import prefuse.Constants;
 import prefuse.data.Node;
@@ -27,13 +28,15 @@ public class ExtensionEdgeRenderer extends EdgeRenderer
 		super.render(g, item);
 		
 		// Show similarity percentage if schema extension edge
-		Integer targetID = (Integer)((Node)((EdgeItem)item).getTargetItem()).get("NodeObject");
-		if(UniversalObjects.isSchema(targetID))
+		Object tObject = ((Node)((EdgeItem)item).getTargetItem()).get("NodeObject");
+		if(tObject instanceof Schema)
 		{
+			Integer tSchemaID = ((Schema)tObject).getId();
+			
 			// Calculate out the percentage of shared items
 			int percentage = 0;
-			Integer sourceID = (Integer)((Node)((EdgeItem)item).getSourceItem()).get("NodeObject");
-			try { percentage = (int)(100*Schemas.getSchemaElementCount(sourceID)/Schemas.getSchemaElementCount(targetID)); } catch(Exception e) {}
+			Object sObject = ((Node)((EdgeItem)item).getSourceItem()).get("NodeObject");
+			try { percentage = (int)(100*Schemas.getSchemaElementCount(((Schema)sObject).getId())/Schemas.getSchemaElementCount(tSchemaID)); } catch(Exception e) {}
 			String text = Integer.toString(percentage)+"%";
 			
 			// Find the point centered between the source and target nodes
@@ -57,8 +60,8 @@ public class ExtensionEdgeRenderer extends EdgeRenderer
 	/** Overrides the raw shape function to only have schema to schema edges have arrows */
 	protected Shape getRawShape(VisualItem item)
 	{
-		Integer nodeID = (Integer)((Node)((EdgeItem)item).getTargetItem()).get("NodeObject");
-		m_edgeArrow = UniversalObjects.isSchema(nodeID) ? Constants.EDGE_ARROW_FORWARD : Constants.EDGE_ARROW_NONE;
+		Object object = ((Node)((EdgeItem)item).getTargetItem()).get("NodeObject");
+		m_edgeArrow = object instanceof Schema ? Constants.EDGE_ARROW_FORWARD : Constants.EDGE_ARROW_NONE;
 		return super.getRawShape(item);
 	}
 }

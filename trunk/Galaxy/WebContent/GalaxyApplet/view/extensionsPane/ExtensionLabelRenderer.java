@@ -7,10 +7,10 @@ import java.awt.Image;
 import java.awt.Shape;
 import java.awt.geom.Rectangle2D;
 
-import model.DataSources;
-import model.Schemas;
+import org.mitre.schemastore.model.DataSource;
+import org.mitre.schemastore.model.Schema;
+
 import model.SelectedObjects;
-import model.UniversalObjects;
 import model.server.ImageManager;
 
 import prefuse.Constants;
@@ -25,8 +25,8 @@ public class ExtensionLabelRenderer extends LabelRenderer
 	public Shape getShape(VisualItem item)
 	{
 		Rectangle2D.Double shape = (Rectangle2D.Double)super.getShape(item);
-		Integer nodeID = (Integer)((NodeItem)item).get("NodeObject");
-		if(UniversalObjects.isSchema(nodeID))
+		Object object = ((NodeItem)item).get("NodeObject");
+		if(object instanceof Schema)
 			shape.setRect(shape.getMinX(), shape.getMinY(), shape.getWidth()+20, shape.getHeight());
 		return shape;
 	}
@@ -34,21 +34,22 @@ public class ExtensionLabelRenderer extends LabelRenderer
 	/** Returns the text used in the extension label */
 	protected String getText(VisualItem item)
 	{
-		Integer nodeID = (Integer)((NodeItem)item).get("NodeObject");
-		if(UniversalObjects.isSchema(nodeID)) return Schemas.getSchema(nodeID).getName();
-		return DataSources.getDataSource(nodeID).getName();
+		Object object = ((NodeItem)item).get("NodeObject");
+		if(object instanceof Schema) return ((Schema)object).getName();
+		return ((DataSource)object).getName();
 	}
 
 	/** Returns the image used in the extension label */
 	protected Image getImage(VisualItem item)
 	{
-		Integer nodeID = (Integer)((NodeItem)item).get("NodeObject");
-		if(UniversalObjects.isSchema(nodeID))
+		Object object = ((NodeItem)item).get("NodeObject");
+		if(object instanceof Schema)
 		{
+			Integer schemaID = ((Schema)object).getId();
 			String image = "Schema";
-			if(!SelectedObjects.inSelectedGroups(nodeID)) image += "Unavailable";
-			else if(nodeID.equals(SelectedObjects.getSelectedSchema())) image += "Selected";
-			else if(nodeID.equals(SelectedObjects.getSelectedComparisonSchema())) image += "Comparison";
+			if(!SelectedObjects.inSelectedGroups(schemaID)) image += "Unavailable";
+			else if(schemaID.equals(SelectedObjects.getSelectedSchema())) image += "Selected";
+			else if(schemaID.equals(SelectedObjects.getSelectedComparisonSchema())) image += "Comparison";
 			return ImageManager.getImage(image);
 		}
 		return null;
@@ -57,8 +58,8 @@ public class ExtensionLabelRenderer extends LabelRenderer
 	/** Returns the stroke used in the extension label border */
 	protected BasicStroke getStroke(VisualItem item)
 	{
-		Integer nodeID = (Integer)((NodeItem)item).get("NodeObject");
-		if(UniversalObjects.isSchema(nodeID) && !Schemas.getSchema(nodeID).getLocked())
+		Object object = ((NodeItem)item).get("NodeObject");
+		if(object instanceof Schema && !((Schema)object).getLocked())
 			return new BasicStroke(1,0,0,1,new float[] {4,4},0); 
 		return super.getStroke(item);
 	}

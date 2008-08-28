@@ -4,7 +4,7 @@ package view.extensionsPane;
 
 import java.awt.Font;
 
-import model.UniversalObjects;
+import org.mitre.schemastore.model.Schema;
 
 import prefuse.action.ActionList;
 import prefuse.action.assignment.FontAction;
@@ -29,8 +29,8 @@ public class ExtensionFonts
 			final Font dataSourceFont = FontLib.getFont("SansSerif",Font.PLAIN,10);
 			
 			// Determine which color the node should be
-			Integer nodeID = (Integer)((NodeItem)item).get("NodeObject");
-			if(UniversalObjects.isSchema(nodeID)) return schemaFont;
+			Object object = ((NodeItem)item).get("NodeObject");
+			if(object instanceof Schema) return schemaFont;
 			else return dataSourceFont;
 		}
 	}

@@ -4,8 +4,9 @@ package view.extensionsPane;
 
 import java.awt.Color;
 
+import org.mitre.schemastore.model.Schema;
+
 import model.SelectedObjects;
-import model.UniversalObjects;
 import prefuse.action.ActionList;
 import prefuse.action.assignment.ColorAction;
 import prefuse.util.ColorLib;
@@ -32,12 +33,13 @@ public class ExtensionColors
 			final int dataSourceColor = ColorLib.color(new Color((float)0.8,(float)0.8,(float)1.0));
 			
 			// Determine which fill color the node should be
-			Integer nodeID = (Integer)((NodeItem)item).get("NodeObject");
-			if(UniversalObjects.isSchema(nodeID))
+			Object object = ((NodeItem)item).get("NodeObject");
+			if(object instanceof Schema)
 			{
-				if(!SelectedObjects.inSelectedGroups(nodeID)) return unavailableGroupColor;
-				else if(nodeID.equals(SelectedObjects.getSelectedSchema())) return selectedSchemaColor;
-				else if(nodeID.equals(SelectedObjects.getSelectedComparisonSchema())) return comparisonSchemaColor;
+				Integer schemaID = ((Schema)object).getId();
+				if(!SelectedObjects.inSelectedGroups(schemaID)) return unavailableGroupColor;
+				else if(schemaID.equals(SelectedObjects.getSelectedSchema())) return selectedSchemaColor;
+				else if(schemaID.equals(SelectedObjects.getSelectedComparisonSchema())) return comparisonSchemaColor;
 				return schemaColor;
 			}
 			else return dataSourceColor;
@@ -58,8 +60,8 @@ public class ExtensionColors
 			final int dataSourceColor = ColorLib.color(Color.blue);
 			
 			// Determine which color the node text should be
-			Integer nodeID = (Integer)((NodeItem)item).get("NodeObject");
-			return UniversalObjects.isSchema(nodeID) ? schemaColor : dataSourceColor;
+			Object object = ((NodeItem)item).get("NodeObject");
+			return object instanceof Schema ? schemaColor : dataSourceColor;
 		}
 	}
 	
