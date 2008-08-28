@@ -3,9 +3,17 @@
 package view.explorerPane;
 
 import java.awt.Color;
+import java.awt.Component;
+import java.awt.Font;
 
+import javax.swing.BoxLayout;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTree;
 import javax.swing.border.EmptyBorder;
+import javax.swing.tree.DefaultTreeCellRenderer;
 
 import org.mitre.schemastore.model.Attribute;
 import org.mitre.schemastore.model.Domain;
@@ -14,15 +22,17 @@ import org.mitre.schemastore.model.Entity;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.graph.HierarchicalGraph;
 
-import view.sharedComponents.LinkedTreeNodeRenderer;
-
 import model.AliasedSchemaElement;
 import model.Schemas;
 import model.SelectedObjects;
+import model.server.ImageManager;
 
 /** Class for rendering schema components */
-class SchemaTreeCellRenderer extends LinkedTreeNodeRenderer
+class SchemaTreeCellRenderer extends DefaultTreeCellRenderer
 {
+	static public Font defaultFont = new Font(null,Font.PLAIN,12);
+	static public Font newFont = new Font(null,Font.BOLD,12);
+	
 	/** Returns if this schema element has any new children for specified schema */
 	private boolean hasNewChildren(SchemaElement schemaElement, Integer schemaID)
 	{
@@ -104,5 +114,25 @@ class SchemaTreeCellRenderer extends LinkedTreeNodeRenderer
 				return Color.orange;
 		}
 		return Color.white;
+	}
+	
+	/** Handles the rendering of a schema tree cell node */
+	public Component getTreeCellRendererComponent(JTree tree, Object value, boolean selected, boolean expanded, boolean leaf, int row, boolean hasFocus)
+	{
+		// Fetch the user object
+		SchemaTreeNode node = (SchemaTreeNode)value;
+		Object userObject = node.getUserObject();
+
+		// Constructs the icon
+		String iconName = getIconName(userObject);
+		Icon icon = iconName==null ? null : new ImageIcon(ImageManager.getImage(iconName));
+			
+		// Construct the rendered linked node
+		JPanel pane = new JPanel();
+		pane.setBackground(getBackgroundColor(userObject));
+		pane.setLayout(new BoxLayout(pane,BoxLayout.X_AXIS));
+		pane.add(new JLabel(icon));
+		pane.add(getLabel(userObject));
+		return pane;
 	}
 }

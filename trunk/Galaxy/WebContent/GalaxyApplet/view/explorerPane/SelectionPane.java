@@ -5,13 +5,8 @@ package view.explorerPane;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Cursor;
-import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
 import java.util.Vector;
 
@@ -25,18 +20,15 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import org.mitre.schemastore.model.Schema;
-import org.mitre.schemastore.model.SchemaElement;
 
 import model.Schemas;
 import model.SelectedObjects;
-import model.listeners.SchemasListener;
 import model.listeners.SelectedObjectsListener;
 
 /** Class for displaying the selection pane for the explorer pane */
-class SelectionPane extends JPanel implements ActionListener, MouseListener, MouseMotionListener, SchemasListener, SelectedObjectsListener
+class SelectionPane extends JPanel implements ActionListener, SelectedObjectsListener
 {
 	// Objects used by the selection pane
-	private JLabel link = new JLabel();
 	private JComboBox schemaList = new JComboBox();
 
 	/** Selection pane renderer */
@@ -92,12 +84,6 @@ class SelectionPane extends JPanel implements ActionListener, MouseListener, Mou
 	/** Constructs the Selection Pane */
 	SelectionPane()
 	{
-		// Initialize the schema link
-		link.setForeground(Color.blue);
-		link.setFont(new Font(null,Font.BOLD,10));
-		link.addMouseListener(this);
-		link.addMouseMotionListener(this);
-		
 		// Set up the selection options
 		schemaList.setBackground(Color.white);
 		schemaList.setFocusable(false);
@@ -109,7 +95,6 @@ class SelectionPane extends JPanel implements ActionListener, MouseListener, Mou
 		labelPane.setOpaque(false);
 		labelPane.setLayout(new BorderLayout());
 		labelPane.add(new JLabel("Current Schema:"),BorderLayout.WEST);
-		labelPane.add(link,BorderLayout.EAST);
 		
 		// Creates the selection options pane
 		setBackground(Color.white);
@@ -119,7 +104,6 @@ class SelectionPane extends JPanel implements ActionListener, MouseListener, Mou
 		add(schemaList,BorderLayout.CENTER);
 
 		// Add a listener to monitor for changes in the selected schema
-		Schemas.addSchemasListener(this);
 		SelectedObjects.addSelectedObjectsListener(this);
 
 		// Initializes the schemas
@@ -133,35 +117,6 @@ class SelectionPane extends JPanel implements ActionListener, MouseListener, Mou
 			SelectedObjects.setSelectedSchema((Integer)schemaList.getSelectedItem());
 	}
 	
-	/** Handles the addition of a schema */
-	public void schemaAdded(Schema schema)
-	{
-		DefaultComboBoxModel model = (DefaultComboBoxModel)schemaList.getModel();
-		for(int i=0; i<model.getSize(); i++)
-		{
-			String name = Schemas.getSchema((Integer)model.getElementAt(i)).getName();
-			if(name.compareTo(schema.getName())>0)
-				{ model.insertElementAt(schema.getId(), i); break; }
-		}
-	}
-
-	/** Handles the updating of a schema */
-	public void schemaUpdated(Schema schema)
-		{ repaint(); }
-
-	/** Handles the locking of a schema */
-	public void schemaLocked(Schema schema)
-		{ link.setText("Extend"); validate(); revalidate(); repaint(); }
-	
-	/** Handles the removal of a schema */
-	public void schemaRemoved(Schema schema)
-	{		
-		// Removes the schema from the list
-		schemaList.removeItem(schema.getId());
-		if(schemaList.getSelectedItem()==null && schemaList.getItemCount()>0)
-			SelectedObjects.setSelectedSchema((Integer)schemaList.getItemAt(0));
-	}
-	
 	/** Handles the selection of a schema external to the selection pane */
 	public void selectedSchemaChanged()
 	{
@@ -173,11 +128,6 @@ class SelectionPane extends JPanel implements ActionListener, MouseListener, Mou
 			schemaList.removeActionListener(this);
 			schemaList.getModel().setSelectedItem(selectedSchemaID);
 			schemaList.addActionListener(this);
-			
-			// Update the link text
-			boolean committed = Schemas.getSchema(selectedSchemaID).getLocked();
-			link.setText(committed ? "Extend" : "Commit");
-			validate(); revalidate(); repaint();
 		}
 	}
 
@@ -185,29 +135,6 @@ class SelectionPane extends JPanel implements ActionListener, MouseListener, Mou
 	public void selectedGroupsChanged()
 		{ updateSchemaList(); }
 	
-	/** Handles the selection of a schema nodes */
-	public void mouseClicked(MouseEvent e)
-	{
-		Schema schema = Schemas.getSchema(SelectedObjects.getSelectedSchema());
-		if(schema.getLocked()) Schemas.extendSchema(SelectedObjects.getSelectedSchema());
-		else Schemas.lockSchema(schema.getId());
-	}
-	
-	/** Displays hand when over link */
-	public void mouseMoved(MouseEvent e)
-		{ setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)); }
-	
-	/** Displays arrow when not over link */
-	public void mouseExited(MouseEvent e)
-		{ setCursor(Cursor.getDefaultCursor()); }
-	
 	// Unused listener events
-	public void mouseEntered(MouseEvent e) {}
-	public void mousePressed(MouseEvent e) {}
-	public void mouseReleased(MouseEvent e) {}
-	public void mouseDragged(MouseEvent e) {}
-	public void schemaParentsUpdated(Schema schema) {}
 	public void selectedComparisonSchemaChanged() {}
-	public void schemaElementAdded(SchemaElement schemaElement) {}
-	public void schemaElementRemoved(SchemaElement schemaElement) {}
 }
