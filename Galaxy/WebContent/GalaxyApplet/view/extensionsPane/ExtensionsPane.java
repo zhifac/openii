@@ -16,10 +16,11 @@ import java.util.HashMap;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
-import model.DataSources;
+import org.mitre.schemastore.model.DataSource;
+import org.mitre.schemastore.model.Schema;
+
 import model.Schemas;
 import model.SelectedObjects;
-import model.UniversalObjects;
 import model.listeners.SelectedObjectsListener;
 
 import prefuse.Constants;
@@ -52,15 +53,16 @@ public class ExtensionsPane extends JPanel implements ComponentListener, Selecte
 		{
 			if(item instanceof NodeItem)
 			{
-				Integer nodeID = (Integer)((NodeItem)item).get("NodeObject");
-				if(UniversalObjects.isSchema(nodeID))
+				Object object = ((NodeItem)item).get("NodeObject");
+				if(object instanceof Schema)
 				{
-					if(SelectedObjects.inSelectedGroups(nodeID))
+					Integer schemaID = ((Schema)object).getId();
+					if(SelectedObjects.inSelectedGroups(schemaID))
 					{
 						if(e.getButton()==MouseEvent.BUTTON1 && !e.isMetaDown())
-							SelectedObjects.setSelectedSchema(nodeID);
-						else if(nodeID!=SelectedObjects.getSelectedSchema())
-							SelectedObjects.setSelectedComparisonSchema(nodeID);
+							SelectedObjects.setSelectedSchema(schemaID);
+						else if(schemaID!=SelectedObjects.getSelectedSchema())
+							SelectedObjects.setSelectedComparisonSchema(schemaID);
 					}
 				}
 				else
@@ -68,7 +70,7 @@ public class ExtensionsPane extends JPanel implements ComponentListener, Selecte
 				    try
 				    {
 				      AppletContext a = GalaxyApplet.galaxyApplet.getAppletContext();
-				      URL url = new URL((DataSources.getDataSource(nodeID)).getUrl());
+				      URL url = new URL(((DataSource)object).getUrl());
 				      if(url!=null) a.showDocument(url,"_blank");
 				    }
 				    catch (MalformedURLException exp){}
