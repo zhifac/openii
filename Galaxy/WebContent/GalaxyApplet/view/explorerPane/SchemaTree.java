@@ -3,14 +3,13 @@
 package view.explorerPane;
 
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
 
+import javax.swing.JTree;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeExpansionListener;
-import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
@@ -22,15 +21,13 @@ import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.graph.HierarchicalGraph;
 
-import view.sharedComponents.LinkedTree;
-
 import model.AliasedSchemaElement;
 import model.Schemas;
 import model.SelectedObjects;
 import model.UniversalObjects;
 
 /** Class for displaying the schema tree for the specified schema */
-class SchemaTree extends LinkedTree implements MouseListener, MouseMotionListener, TreeExpansionListener
+class SchemaTree extends JTree implements MouseMotionListener, TreeExpansionListener
 {
 	/** Stores the parent of this schema tree */
 	private ExplorerPane parent;
@@ -38,18 +35,12 @@ class SchemaTree extends LinkedTree implements MouseListener, MouseMotionListene
 	/** Stores the schema associated with this tree */
 	private Integer schemaID;
 	
-	// Keeps track of various tree objects
-	private SchemaTreeNode entitiesNode;
-	private SchemaTreeNode relationshipsNode;
-	private SchemaTreeNode domainsNode;
-	private SchemaTreeNode parentsNode;
-	
 	/** Generates a schema tree node */
 	private SchemaTreeNode getSchemaTreeNode(Object object)
 	{
 		if(object instanceof Integer && UniversalObjects.isSchemaElement((Integer)object))
 			object = new AliasedSchemaElement(schemaID, (Integer)object);
-		return new SchemaTreeNode(Schemas.getSchema(schemaID),object,parent);
+		return new SchemaTreeNode(object);
 	}
 	
 	/** Expands the specified schema tree */
@@ -68,7 +59,7 @@ class SchemaTree extends LinkedTree implements MouseListener, MouseMotionListene
 				graph.getElements(Entity.class);
 			if(entities.size()>0)
 			{
-				entitiesNode = getSchemaTreeNode("Entities");
+				SchemaTreeNode entitiesNode = getSchemaTreeNode("Entities");
 				for(SchemaElement entity : entities)
 				{
 					// Display the entity attributes
@@ -87,7 +78,7 @@ class SchemaTree extends LinkedTree implements MouseListener, MouseMotionListene
 			ArrayList<SchemaElement> relationships = graph.getElements(Relationship.class);
 			if(relationships.size()>0)
 			{
-				relationshipsNode = getSchemaTreeNode("Relationships");
+				SchemaTreeNode relationshipsNode = getSchemaTreeNode("Relationships");
 				for(SchemaElement relationship : relationships)
 					relationshipsNode.add(getSchemaTreeNode(relationship.getId()));
 				root.add(relationshipsNode);
@@ -99,7 +90,7 @@ class SchemaTree extends LinkedTree implements MouseListener, MouseMotionListene
 			for(SchemaElement domain : domains) if(domain.getId()>0) domainCount++;
 			if(domainCount>0)
 			{
-				domainsNode = getSchemaTreeNode("Domains");
+				SchemaTreeNode domainsNode = getSchemaTreeNode("Domains");
 				for(SchemaElement domain : domains)
 					if(domain.getId()>=0) domainsNode.add(getSchemaTreeNode(domain.getId()));
 				root.add(domainsNode);
@@ -110,7 +101,7 @@ class SchemaTree extends LinkedTree implements MouseListener, MouseMotionListene
 		ArrayList<Integer> parentSchemaIDs = Schemas.getParentSchemas(schemaID);
 		if(parentSchemaIDs!=null && parentSchemaIDs.size()>0)
 		{
-			parentsNode = getSchemaTreeNode("Parents");
+			SchemaTreeNode parentsNode = getSchemaTreeNode("Parents");
 			for(Integer parentSchemaID : parentSchemaIDs)
 				parentsNode.add(getSchemaTreeNode(parentSchemaID));
 			root.add(parentsNode);
@@ -134,20 +125,6 @@ class SchemaTree extends LinkedTree implements MouseListener, MouseMotionListene
 		if(schemaNode!=null) expandPath(new TreePath(schemaNode.getPath()));
 		return schemaNode;
 	}
-
-	/** Returns the base node to which the specified schema object attaches */
-	private SchemaTreeNode getBaseNode(SchemaElement schemaElement)
-	{
-		if(schemaElement instanceof Entity) return entitiesNode;
-		else if(schemaElement instanceof Domain) return domainsNode;
-		else if(schemaElement instanceof Relationship) return relationshipsNode;	
-		else if(schemaElement instanceof Attribute)
-		{
-			Integer entityID = ((Attribute)schemaElement).getEntityID();
-			return (SchemaTreeNode)entitiesNode.getChildNode(entityID);
-		}
-		return null;
-	}
 	
 	/** Constructs the base schema tree */
 	SchemaTree(Integer schemaID, ExplorerPane parent)
@@ -156,13 +133,12 @@ class SchemaTree extends LinkedTree implements MouseListener, MouseMotionListene
 		this.schemaID = schemaID;
 
 		// Place the schema into the schema tree
-		SchemaTreeNode root = new SchemaTreeNode(Schemas.getSchema(schemaID),schemaID,parent);
+		SchemaTreeNode root = new SchemaTreeNode(schemaID);
 		setBorder(new EmptyBorder(0,3,0,0));
 		setModel(new DefaultTreeModel(root));
 		setCellRenderer(new SchemaTreeCellRenderer());
 
 		// Listens for tree actions
-		addMouseListener(this);
 		addMouseMotionListener(this);
 		addTreeExpansionListener(this);
 		
@@ -208,39 +184,6 @@ class SchemaTree extends LinkedTree implements MouseListener, MouseMotionListene
 		repaint();
 	}
 	
-	/** Updates the schema name */
-	public void schemaUpdated(Schema schema)
-		{ ((DefaultTreeModel)getModel()).nodeChanged((SchemaTreeNode)getModel().getRoot()); }
-	
-	/** Handles the addition of a schema object */
-	public void schemaElementAdded(SchemaElement schemaElement)
-	{
-		SchemaTreeNode baseNode = getBaseNode(schemaElement);
-		if(baseNode!=null)
-		{
-			SchemaTreeNode node = getSchemaTreeNode(schemaElement.getId());
-			if(schemaElement instanceof Entity) node.add(getSchemaTreeNode("<No Attributes>"));
-			if(schemaElement instanceof Attribute && baseNode.getChildCount()==1)
-				if(((DefaultMutableTreeNode)baseNode.getChildAt(0)).getUserObject() instanceof String)
-					baseNode.removeAllChildren();
-			baseNode.insert(node);
-			((DefaultTreeModel)getModel()).nodeStructureChanged(baseNode);
-		}
-	}
-	  
-	/** Handles the removal of a schema object */
-	public void schemaElementRemoved(SchemaElement schemaElement)
-	{
-		SchemaTreeNode baseNode = getBaseNode(schemaElement);
-		if(baseNode!=null)
-		{
-			baseNode.delete(schemaElement.getId());
-			if(schemaElement instanceof Attribute)
-				if(baseNode.getChildCount()==0) baseNode.add(getSchemaTreeNode("<No Attributes>"));
-			((DefaultTreeModel)getModel()).nodeStructureChanged(baseNode);
-		}
-	}
-	
 	/** Generate schema nodes as tree is expanded outward */
 	public void treeExpanded(TreeExpansionEvent e)
 	{
@@ -261,9 +204,6 @@ class SchemaTree extends LinkedTree implements MouseListener, MouseMotionListene
 	/**Displays info on whatever schema object the mouse is over */
 	public void mouseMoved(MouseEvent e)
 	{
-		// Inform extended class of mouse motion
-		super.mouseMoved(e);
-		
 		// Identify the path over which the mouse is hovering
 		TreePath path = getPathForLocation(e.getX(),e.getY());
 		
@@ -281,8 +221,9 @@ class SchemaTree extends LinkedTree implements MouseListener, MouseMotionListene
 	
 	/** Clears displayed info if mouse moves off of schema tree pane */
 	public void mouseExited(MouseEvent e)
-		{ super.mouseExited(e); parent.clearInfo(); }
+		{ parent.clearInfo(); }
 
 	// Unused listener event
 	public void treeCollapsed(TreeExpansionEvent e) {}
+	public void mouseDragged(MouseEvent e) {}
 }
