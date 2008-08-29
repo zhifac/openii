@@ -159,7 +159,7 @@ public class Database
 		boolean success = false;
 		try {
 			Statement stmt = connection.getStatement();
-			stmt.executeUpdate("UPDATE schema SET name='"+scrub(schema.getName())+"', author='"+scrub(schema.getAuthor())+", source='"+scrub(schema.getSource())+"', type='"+scrub(schema.getType())+"', description='"+scrub(schema.getDescription())+"' WHERE id="+schema.getId());
+			stmt.executeUpdate("UPDATE schema SET name='"+scrub(schema.getName())+"', author='"+scrub(schema.getAuthor())+"', source='"+scrub(schema.getSource())+"', type='"+scrub(schema.getType())+"', description='"+scrub(schema.getDescription())+"' WHERE id="+schema.getId());
 			stmt.close();
 			connection.commit();
 			success = true;
