@@ -22,7 +22,7 @@ import org.mitre.schemastore.model.Relationship;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.Subtype;
-
+import org.mitre.schemastore.data.SchemaRelationships;
 /**
  * Handles access to the database
  * @author CWOLF
