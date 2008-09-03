@@ -10,7 +10,27 @@ public class SchemaStoreTest
 		SchemaStoreClient client = new SchemaStoreClient("http://brainsrv2:8090/SchemaStore/services/SchemaStore");
 
 		// Display remaining schemas
+//		try {
+//			for(Schema schema : client.getSchemas())
+//				System.out.println(schema.getId() + " " + schema.getName());
+//			for(SchemaElement schemaElement : client.getSchemaElements(0))
+//				System.out.println(schemaElement.getId() + " " + schemaElement.getName());
+//		} catch(Exception e) { System.out.println(e.getMessage());}
+
+		//test getSynonyms
 		try {
+			for (String synset: client.getSynonyms(52527))
+				{
+				System.out.println(synset);
+			}
+		} catch(Exception e) { System.out.println(e.getMessage());}
+
+//		//test addWordsAndSynonymsForAllSchemas
+//		try {
+//			client.addWordsAndSynonymsForAllSchemas()
+//			}
+//		} catch(Exception e) { System.out.println(e.getMessage());}
+//		
 			for(Schema schema : client.getSchemas())
 				System.out.println(schema.getId() + " " + schema.getName());
 			
