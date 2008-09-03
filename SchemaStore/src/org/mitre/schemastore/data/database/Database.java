@@ -238,6 +238,83 @@ public class Database
 		}
 		return success;
 	}
+	
+	
+	
+	
+	/** Goes through every schema in repository, checks to see if there are corresponding
+	 * words and syns in the repository.  If not, it adds them. */
+//	static public void addAllWordsAndSynonyms() {
+//	
+//		try {
+//			Statement stmt = connection.getStatement();
+//		
+//			//Get list of all schemas in repository
+//			for (Schema schema: getSchemas()) {
+//				int id = schema.getId();
+//			}
+//			
+//			//See if words from that schema have already been added
+//			ResultSet rs = stmt.executeQuery("SELECT * from words join extensions" +
+//					"							 on extensions.element_id = word.element_id" +
+//					"							 where schema_id = schemaId");
+//			
+//			// If there are no words in the repository for this schema, add them and the syns
+//			if (!rs.first()) {
+//				get all elements
+//				addWordsAndSynonyms(stmt, id, String, String);
+//				
+//				here
+//			}
+//	
+//	//				stmt.executeUpdate("INSERT INTO words (element_id, word) VALUES ("+schemaElementID+", '"+word+"')");				
+////					stmt.executeUpdate("INSERT INTO syns (word, syn_id) VALUES ('"+word+"', '"+syn_id+"')");				
+//
+//		}
+//		catch (SQLException e) {
+//			System.out.println("(E) Database:addAllWordsAndSynonyms: "+e.getMessage());
+//		}
+//	}
+	
+	
+	/** Returns list of all(element_id, word, syn_id) in the db for the specified schema and its
+	 * ancestors. */
+	static public String[] getSynonyms(Integer schemaID) 
+	{
+		ArrayList<String> results = new ArrayList<String>();
+		ArrayList<Integer> schemaIDs = SchemaRelationships.getAncestors(schemaID);
+		schemaIDs.add(schemaID);
+		
+		for (int id : schemaIDs) {
+			results.addAll(getSynonymHelper(id));
+		}
+		
+//		Convert to String[]
+		String[] stringArray = new String[results.size()];
+		return results.toArray(stringArray);
+	}
+	
+	/** Returns list of all (element_id, word, syn_id) in the db for the specified schema*/
+	static public ArrayList<String> getSynonymHelper(Integer schemaID) 
+	{
+		ArrayList<String> results = new ArrayList<String>();
+		try {
+			Statement stmt = connection.getStatement();
+			ResultSet rs = stmt.executeQuery("SELECT words.element_id, words.word, syn_id " +
+					"FROM extensions join (words LEFT OUTER JOIN syns ON words.word = syns.word) " +
+					"on extensions.element_id = words.element_id where schema_id=" + schemaID);
+				
+			while(rs.next())
+				results.add(rs.getInt("element_id") + "," + rs.getString("word") + "," + rs.getInt("syn_id"));
+	
+			stmt.close();	
+		}
+		catch (SQLException e) {
+			System.out.println("(E) Database:getSynonymHelper: "+e.getMessage());
+		}
+		return results;
+	}
+
 
 	/** Locks the specified schema */
 	static public boolean lockSchema(int schemaID, boolean locked)
