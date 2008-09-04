@@ -6,6 +6,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.mitre.schemastore.model.Domain;
@@ -85,8 +86,16 @@ public class DomainValueImporter extends ExcelImporter {
 		if (row.getPhysicalNumberOfCells() == 0)
 			return;
 
+		// get domain name, assume cell contains string value
 		String domainName = despace(row.getCell(0).getRichStringCellValue().toString());
-		String domainValueStr = despace(row.getCell(1).getRichStringCellValue().toString());
+		String domainValueStr = "";
+
+		// get domain values. this can be either string or number
+		HSSFCell dvcell = row.getCell(1);
+		if (dvcell.getCellType() == HSSFCell.CELL_TYPE_NUMERIC)
+			domainValueStr = Double.toString(dvcell.getNumericCellValue());
+		else
+			domainValueStr = despace(row.getCell(1).getRichStringCellValue().toString());
 
 		String documentation = "";
 		if (row.getCell(2) != null)
