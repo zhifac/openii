@@ -58,9 +58,10 @@ public class ExcelImporter extends Importer {
 	}
 
 	protected void readRow(HSSFRow row) {
-		String tblName = despace(row.getCell(0).getStringCellValue());
-		String attName = despace(row.getCell(1).getStringCellValue());
-		String documentation = despace(row.getCell(2).getStringCellValue());
+		
+		String tblName = despace(row.getCell(0).getRichStringCellValue().toString());
+		String attName = despace(row.getCell(1).getRichStringCellValue().toString());
+		String documentation = despace(row.getCell(2).getRichStringCellValue().toString());
 		Entity tblEntity;
 		Attribute attribute;
 
