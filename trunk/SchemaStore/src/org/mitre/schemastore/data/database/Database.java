@@ -6,8 +6,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Collections;
 
+import org.mitre.schemastore.data.SchemaRelationships;
 import org.mitre.schemastore.model.Alias;
 import org.mitre.schemastore.model.Attribute;
 import org.mitre.schemastore.model.Containment;
@@ -22,7 +22,7 @@ import org.mitre.schemastore.model.Relationship;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.Subtype;
-import org.mitre.schemastore.data.SchemaRelationships;
+
 /**
  * Handles access to the database
  * @author CWOLF
@@ -174,54 +174,21 @@ public class Database
 	
 	/** Deletes the specified schema */
 	static public boolean deleteSchema(int schemaID)
-	{
-		/** Stores a deletable schema element */
-		class DeletableSchemaElement implements Comparable<DeletableSchemaElement>
-		{
-			private Class type;
-			private int id;
-			
-			/** Constructs a deletable schema element */
-			private DeletableSchemaElement(String typeString, int schemaElementID)
-			{
-				try {
-					type = Class.forName(Entity.class.getPackage().getName() + "." + typeString);
-				} catch(Exception e) { type = Entity.class; }
-				this.id = schemaElementID;
-			}
-
-			/** Returns a deletion priority score */
-			private int getPriority()
-			{
-				if(type.equals(Attribute.class)) return 5;
-				if(type.equals(DomainValue.class)) return 4;
-				if(type.equals(Domain.class)) return 3;
-				if(type.equals(Relationship.class) || type.equals(Subtype.class)) return 2;
-				return 1;
-			}
-			
-			/** Deletes the schema element */
-			private boolean delete()
-				{ return deleteSchemaElement(id); }
-			
-			/** Compares two deletable schema elements */
-			public int compareTo(DeletableSchemaElement object)
-				{ return object.getPriority()-getPriority(); }
-		}
-		
+	{		
 		boolean success = false;
 		try {
 			// Identify which schema elements should be deleted
 			Statement stmt = connection.getStatement();
-			ArrayList<DeletableSchemaElement> deletableElements = new ArrayList<DeletableSchemaElement>();
-			ResultSet rs = stmt.executeQuery("SELECT element_id,type FROM extensions,schema_element WHERE schema_id="+schemaID+" AND action='Add' AND element_id=id");
-			while(rs.next())
-				deletableElements.add(new DeletableSchemaElement(rs.getString("type"),rs.getInt("element_id")));
 			
 			// Delete the schema elements
-			Collections.sort(deletableElements);
-			for(DeletableSchemaElement deletableElement : deletableElements)
-				if(!deletableElement.delete()) throw new SQLException("Failed to delete schema element");
+			stmt.executeUpdate("DELETE FROM alias WHERE id IN (SELECT element_id FROM extensions WHERE schema_id="+schemaID+")");
+			stmt.executeUpdate("DELETE FROM subtype WHERE id IN (SELECT element_id FROM extensions WHERE schema_id="+schemaID+")");
+			stmt.executeUpdate("DELETE FROM containment WHERE id IN (SELECT element_id FROM extensions WHERE schema_id="+schemaID+")");
+			stmt.executeUpdate("DELETE FROM relationship WHERE id IN (SELECT element_id FROM extensions WHERE schema_id="+schemaID+")");
+			stmt.executeUpdate("DELETE FROM attribute WHERE id IN (SELECT element_id FROM extensions WHERE schema_id="+schemaID+")");
+			stmt.executeUpdate("DELETE FROM domainvalue WHERE id IN (SELECT element_id FROM extensions WHERE schema_id="+schemaID+")");
+			stmt.executeUpdate("DELETE FROM domain WHERE id IN (SELECT element_id FROM extensions WHERE schema_id="+schemaID+")");
+			stmt.executeUpdate("DELETE FROM entity WHERE id IN (SELECT element_id FROM extensions WHERE schema_id="+schemaID+")");
 				
 			// Delete the schema from the database
 			stmt.executeUpdate("DELETE FROM schema_group WHERE schema_id="+schemaID);
@@ -238,83 +205,31 @@ public class Database
 		}
 		return success;
 	}
-	
-	
-	
-	
-	/** Goes through every schema in repository, checks to see if there are corresponding
-	 * words and syns in the repository.  If not, it adds them. */
-//	static public void addAllWordsAndSynonyms() {
-//	
-//		try {
-//			Statement stmt = connection.getStatement();
-//		
-//			//Get list of all schemas in repository
-//			for (Schema schema: getSchemas()) {
-//				int id = schema.getId();
-//			}
-//			
-//			//See if words from that schema have already been added
-//			ResultSet rs = stmt.executeQuery("SELECT * from words join extensions" +
-//					"							 on extensions.element_id = word.element_id" +
-//					"							 where schema_id = schemaId");
-//			
-//			// If there are no words in the repository for this schema, add them and the syns
-//			if (!rs.first()) {
-//				get all elements
-//				addWordsAndSynonyms(stmt, id, String, String);
-//				
-//				here
-//			}
-//	
-//	//				stmt.executeUpdate("INSERT INTO words (element_id, word) VALUES ("+schemaElementID+", '"+word+"')");				
-////					stmt.executeUpdate("INSERT INTO syns (word, syn_id) VALUES ('"+word+"', '"+syn_id+"')");				
-//
-//		}
-//		catch (SQLException e) {
-//			System.out.println("(E) Database:addAllWordsAndSynonyms: "+e.getMessage());
-//		}
-//	}
-	
-	
-	/** Returns list of all(element_id, word, syn_id) in the db for the specified schema and its
-	 * ancestors. */
-	static public String[] getSynonyms(Integer schemaID) 
-	{
-		ArrayList<String> results = new ArrayList<String>();
-		ArrayList<Integer> schemaIDs = SchemaRelationships.getAncestors(schemaID);
-		schemaIDs.add(schemaID);
-		
-		for (int id : schemaIDs) {
-			results.addAll(getSynonymHelper(id));
-		}
-		
-//		Convert to String[]
-		String[] stringArray = new String[results.size()];
-		return results.toArray(stringArray);
-	}
-	
-	/** Returns list of all (element_id, word, syn_id) in the db for the specified schema*/
-	static public ArrayList<String> getSynonymHelper(Integer schemaID) 
-	{
-		ArrayList<String> results = new ArrayList<String>();
-		try {
-			Statement stmt = connection.getStatement();
-			ResultSet rs = stmt.executeQuery("SELECT words.element_id, words.word, syn_id " +
-					"FROM extensions join (words LEFT OUTER JOIN syns ON words.word = syns.word) " +
-					"on extensions.element_id = words.element_id where schema_id=" + schemaID);
-				
-			while(rs.next())
-				results.add(rs.getInt("element_id") + "," + rs.getString("word") + "," + rs.getInt("syn_id"));
-	
-			stmt.close();	
-		}
-		catch (SQLException e) {
-			System.out.println("(E) Database:getSynonymHelper: "+e.getMessage());
-		}
-		return results;
-	}
 
+	/** Returns list of all(element_id, word, syn_id) in the database for the specified schema and its ancestors. */
+	static public ArrayList<String> getSynonyms(Integer schemaID)
+	{
+		ArrayList<String> synonyms = new ArrayList<String>();
+
+		// Cycle through all schemas
+		ArrayList<Integer> schemaIDs = SchemaRelationships.getAncestors(schemaID); schemaIDs.add(schemaID);
+		for(Integer currSchemaID : schemaIDs)
+		{
+			// Retrieve all synonyms for the current schema 
+			try {
+				Statement stmt = connection.getStatement();
+				ResultSet rs = stmt.executeQuery("SELECT words.element_id, words.word, syn_id " +
+						"FROM extensions join (words LEFT OUTER JOIN syns ON words.word = syns.word) " +
+						"on extensions.element_id = words.element_id where schema_id=" + currSchemaID);	
+				while(rs.next())
+					synonyms.add(rs.getInt("element_id") + "," + rs.getString("word") + "," + rs.getInt("syn_id"));
+				stmt.close();	
+			}
+			catch (SQLException e) { System.out.println("(E) Database:getSynonyms: "+e.getMessage()); }
+		}
+			
+		return synonyms;
+	}
 
 	/** Locks the specified schema */
 	static public boolean lockSchema(int schemaID, boolean locked)
