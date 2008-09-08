@@ -9,10 +9,13 @@ import java.util.HashMap;
 import org.mitre.schemastore.model.Alias;
 import org.mitre.schemastore.model.Attribute;
 import org.mitre.schemastore.model.Containment;
+import org.mitre.schemastore.model.Domain;
 import org.mitre.schemastore.model.DomainValue;
 import org.mitre.schemastore.model.Entity;
+import org.mitre.schemastore.model.Relationship;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
+import org.mitre.schemastore.model.Subtype;
 
 /**
  * Class for storing the graph of schema elements 
@@ -146,26 +149,110 @@ public class Graph implements Serializable
 	}
 
 	/** Adds a list of elements to the graph */
-	public void addElement(SchemaElement element)
+	public boolean addElement(SchemaElement element)
 	{
+		// Checks to ensure that referenced elements exist
+		if(element instanceof Attribute)
+		{
+			Attribute attribute = (Attribute)element;
+			SchemaElement domain = getElement(attribute.getDomainID());
+			SchemaElement entity = getElement(attribute.getEntityID());
+			if(domain==null || !(domain instanceof Domain)) return false;
+			if(entity==null || !(entity instanceof Entity)) return false;
+		}
+		if(element instanceof DomainValue)
+		{
+			DomainValue domainValue = (DomainValue)element;
+			SchemaElement domain = getElement(domainValue.getDomainID());
+			if(domain==null || !(domain instanceof Domain)) return false;
+		}
+		if(element instanceof Relationship)
+		{
+			Relationship relationship = (Relationship)element;
+			if(getElement(relationship.getLeftID())==null) return false;
+			if(getElement(relationship.getRightID())==null) return false;
+		}
+		if(element instanceof Containment)
+		{
+			Containment containment = (Containment)element;
+			if(getElement(containment.getParentID())==null) return false;
+			if(getElement(containment.getChildID())==null) return false;
+		}
+		if(element instanceof Subtype)
+		{
+			Subtype subtype = (Subtype)element;
+			if(getElement(subtype.getParentID())==null) return false;
+			if(getElement(subtype.getChildID())==null) return false;
+		}
+		if(element instanceof Alias)
+		{
+			Alias alias = (Alias)element;
+			if(getElement(alias.getElementID())==null) return false;
+		}
+		
 		// Add element to the graph
 		graphHash.put(element.getId(),element);
 
 		// Inform listeners of the added element
 		for(GraphListener listener : listeners)
 			listener.schemaElementAdded(element);
+		
+		return true;
 	}
 	
 	/** Removes a list of elements from the graph */
-	public void deleteElement(Integer schemaID)
+	public boolean deleteElement(Integer elementID)
 	{
+		// Checks to ensure that element is not referenced elsewhere
+		boolean referenced = false;
+		for(SchemaElement element : getElements(null))
+		{
+			if(element instanceof Attribute)
+			{
+				Attribute attribute = (Attribute)element;
+				referenced |= attribute.getDomainID().equals(elementID);
+				referenced |= attribute.getEntityID().equals(elementID);
+			}
+			if(element instanceof DomainValue)
+			{
+				DomainValue domainValue = (DomainValue)element;
+				referenced |= domainValue.getDomainID().equals(elementID);
+			}
+			if(element instanceof Relationship)
+			{
+				Relationship relationship = (Relationship)element;
+				referenced |= relationship.getLeftID().equals(elementID);
+				referenced |= relationship.getRightID().equals(elementID);
+			}
+			if(element instanceof Containment)
+			{
+				Containment containment = (Containment)element;
+				referenced |= containment.getParentID().equals(elementID);
+				referenced |= containment.getChildID().equals(elementID);				
+			}
+			if(element instanceof Subtype)
+			{
+				Subtype subtype = (Subtype)element;
+				referenced |= subtype.getParentID().equals(elementID);
+				referenced |= subtype.getChildID().equals(elementID);				
+			}
+			if(element instanceof Alias)
+			{
+				Alias alias = (Alias)element;
+				referenced |= alias.getElementID().equals(elementID);
+			}
+			if(referenced) return false;
+		}
+		
 		// Remove element from graph
-		SchemaElement element = graphHash.get(schemaID);
-		graphHash.remove(schemaID);
+		SchemaElement element = graphHash.get(elementID);
+		graphHash.remove(elementID);
 		
 		// Inform listeners of the removed element
 		for(GraphListener listener : listeners)
 			listener.schemaElementRemoved(element);
+
+		return true;
 	}
 	
 	/** Adds a graph listener */
