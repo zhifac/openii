@@ -85,21 +85,6 @@ public class DBConnection
 				{ connection.rollback(); System.out.println("(E) Failed to initialize database"); }
 		}
 		
-		// Run database updates
-		try {
-			// Generate the database structure
-			StringBuffer buffer = getFileContents("SchemaStoreUpdates.txt");
-			String commands[] = buffer.toString().split(";");
-			for(String command : commands)
-				stmt.addBatch(command.trim() + ";");
-			stmt.executeBatch();
-
-			// Commit all changes
-			connection.commit();
-		}
-		catch (Exception e)
-			{ connection.rollback(); System.out.println("(E) Failed to update database"); }
-		
 		stmt.close();
 	}
 	

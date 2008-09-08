@@ -118,7 +118,7 @@ public class Database
 			rs.next();
 			int schemaID = rs.getInt("schemaID");
 			stmt.executeUpdate("INSERT INTO schema(id,name,author,source,type,description,locked) VALUES("+schemaID+",'"+scrub(schema.getName())+" Extension','"+scrub(schema.getAuthor())+"','"+scrub(schema.getSource())+"','"+scrub(schema.getType())+"','Extension of "+scrub(schema.getName())+"','f')");
-			stmt.executeUpdate("INSERT INTO extensions(schema_id,action,element_id) VALUES("+schemaID+",'Base Schema',"+schema.getId()+")");
+			stmt.executeUpdate("INSERT INTO extensions(schema_id,action,element_id,type) VALUES("+schemaID+",'Base Schema',"+schema.getId()+",'Schema',)");
 			stmt.close();
 			connection.commit();
 			extendedSchema = new Schema(schemaID,schema.getName()+" Extension",schema.getAuthor(),schema.getSource(),schema.getType(),"Extension of "+schema.getName(),false);
@@ -455,17 +455,6 @@ public class Database
 	// Handles Schema Elements in the Database 
 	//-----------------------------------------
 	
-	/** Retrieves the schema element type */
-	static private String getSchemaElementType(Integer schemaElementID) throws SQLException
-	{
-		String type = "";
-		Statement stmt = connection.getStatement();
-		ResultSet rs = stmt.executeQuery("SELECT type FROM schema_element WHERE id="+schemaElementID);
-		if(rs.next()) type = rs.getString("type");
-		stmt.close();
-		return type;
-	}
-	
 	/** Retrieves the default domain values from the repository */
 	static public ArrayList<Domain> getDefaultDomains()
 	{
@@ -598,13 +587,12 @@ public class Database
 		try {
 			Statement stmt = connection.getStatement();
 			
-			// Determine the base
+			// Determine the base and type
 			Integer base = null;
-			ResultSet rs = stmt.executeQuery("SELECT schema_id FROM extensions WHERE element_id="+schemaElementID+" AND action='Add'");
-			if(rs.next()) base = rs.getInt("schema_id");
-	
-			// Retrieve the schema element
-			String type = getSchemaElementType(schemaElementID);
+			String type = null;
+			ResultSet rs = stmt.executeQuery("SELECT schema_id, type FROM extensions WHERE element_id="+schemaElementID+" AND action='Add'");
+			if(rs.next())
+				{ base = rs.getInt("schema_id"); type = rs.getString("type"); }
 
 			// Gets the specified entity
 			if(type.equals("Entity"))
@@ -718,32 +706,24 @@ public class Database
 			
 			// Inserts an entity
 			if(schemaElement instanceof Entity)
-			{
 				stmt.executeUpdate("INSERT INTO entity(id,name,description) VALUES("+schemaElementID+",'"+scrub(name)+"','"+scrub(description)+"')");
-				stmt.executeUpdate("INSERT INTO schema_element(id,type) VALUES("+schemaElementID+",'Entity')");
-			}
 
 			// Inserts an attribute
 			if(schemaElement instanceof Attribute)
 			{
 				Attribute attribute = (Attribute)schemaElement;
 				stmt.executeUpdate("INSERT INTO attribute(id,name,description,entity_id,domain_id,min,max) VALUES("+schemaElementID+",'"+scrub(name)+"','"+scrub(description)+"',"+attribute.getEntityID()+","+attribute.getDomainID()+","+attribute.getMin()+","+attribute.getMax()+")");
-				stmt.executeUpdate("INSERT INTO schema_element(id,type) VALUES("+schemaElementID+",'Attribute')");
 			}
 
 			// Inserts a domain
 			if(schemaElement instanceof Domain)
-			{
 				stmt.executeUpdate("INSERT INTO domain(id,name,description) VALUES("+schemaElementID+",'"+scrub(name)+"','"+scrub(description)+"')");
-				stmt.executeUpdate("INSERT INTO schema_element(id,type) VALUES("+schemaElementID+",'Domain')");
-			}
 
 			// Inserts a domain value
 			if(schemaElement instanceof DomainValue)
 			{
 				DomainValue domainValue = (DomainValue)schemaElement;
 				stmt.executeUpdate("INSERT INTO domainvalue(id,value,description,domain_id) VALUES("+schemaElementID+",'"+scrub(name)+"','"+scrub(description)+"',"+domainValue.getDomainID()+")");
-				stmt.executeUpdate("INSERT INTO schema_element(id,type) VALUES("+schemaElementID+",'DomainValue')");
 			}
 			
 			// Inserts a relationship
@@ -751,7 +731,6 @@ public class Database
 			{
 				Relationship relationship = (Relationship)schemaElement;
 				stmt.executeUpdate("INSERT INTO relationship(id,name,left_id,left_min,left_max,right_id,right_min,right_max) VALUES("+schemaElementID+",'"+scrub(name)+"',"+relationship.getLeftID()+","+relationship.getLeftMin()+","+relationship.getLeftMax()+","+relationship.getRightID()+","+relationship.getRightMin()+","+relationship.getRightMax()+")");
-				stmt.executeUpdate("INSERT INTO schema_element(id,type) VALUES("+schemaElementID+",'Relationship')");
 			}
 			
 			// Inserts a containment relationship
@@ -759,7 +738,6 @@ public class Database
 			{
 				Containment containment = (Containment)schemaElement;
 				stmt.executeUpdate("INSERT INTO containment(id,name,description,parent_id,child_id,min,max) VALUES("+schemaElementID+",'"+scrub(name)+"','"+scrub(description)+"',"+containment.getParentID()+","+containment.getChildID()+","+containment.getMin()+","+containment.getMax()+")");
-				stmt.executeUpdate("INSERT INTO schema_element(id,type) VALUES("+schemaElementID+",'Containment')");
 			}
 			
 			// Inserts a subset relationship
@@ -767,7 +745,6 @@ public class Database
 			{
 				Subtype subtype = (Subtype)schemaElement;
 				stmt.executeUpdate("INSERT INTO subtype(id,parent_id,child_id) VALUES("+schemaElementID+",'"+subtype.getParentID()+"',"+subtype.getChildID()+")");
-				stmt.executeUpdate("INSERT INTO schema_element(id,type) VALUES("+schemaElementID+",'Subtype')");
 			}
 			
 			// Inserts an alias
@@ -775,10 +752,9 @@ public class Database
 			{
 				Alias alias = (Alias)schemaElement;
 				stmt.executeUpdate("INSERT INTO alias(id,name,element_id) VALUES("+schemaElementID+",'"+scrub(name)+"',"+alias.getElementID()+")");
-				stmt.executeUpdate("INSERT INTO schema_element(id,type) VALUES("+schemaElementID+",'Alias')");
 			}
 
-			stmt.executeUpdate("INSERT INTO extensions(schema_id,action,element_id) VALUES("+schemaElement.getBase()+",'Add',"+schemaElementID+")");
+			stmt.executeUpdate("INSERT INTO extensions(schema_id,action,element_id,type) VALUES("+schemaElement.getBase()+",'Add',"+schemaElementID+",'"+schemaElement.getClass()+"')");
 			stmt.close();
 			connection.commit();
 		}
@@ -873,7 +849,6 @@ public class Database
 		try {
 			Statement stmt = connection.getStatement();
 			stmt.executeUpdate("DELETE FROM extensions WHERE action='Add' AND element_id="+schemaElementID);
-			stmt.executeUpdate("DELETE FROM "+getSchemaElementType(schemaElementID)+" WHERE id="+schemaElementID);
 			stmt.close();
 			connection.commit();
 			success = true;
