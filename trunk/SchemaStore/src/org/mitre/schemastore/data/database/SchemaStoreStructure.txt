@@ -60,7 +60,8 @@ CREATE TABLE entity (
 CREATE TABLE extensions (
     schema_id integer NOT NULL,
     "action" character varying(20),
-    element_id integer NOT NULL
+    element_id integer NOT NULL,
+    "type" character varying(50)
 );
 
 CREATE TABLE groups (
@@ -110,11 +111,6 @@ CREATE TABLE "schema" (
     "type" character varying(50) NOT NULL,
     description character varying(200),
     locked character NOT NULL
-);
-
-CREATE TABLE schema_element (
-    id integer NOT NULL,
-    "type" character varying(50)
 );
 
 CREATE TABLE schema_group (

@@ -106,185 +106,93 @@ INSERT INTO containment (id, parent_id, child_id, min, max, description, name)
 412, 22, 24, NULL, NULL, NULL, NULL
 
 INSERT INTO extensions (schema_id, "action", element_id)
-10, 'Base Schema', 9
-11, 'Base Schema', 10
-12, 'Base Schema', 10
-13, 'Base Schema', 11
-13, 'Base Schema', 12
-14, 'Base Schema', 13
-15, 'Base Schema', 12
-16, 'Base Schema', 15
-17, 'Base Schema', 15
-10, 'Add', 22
-10, 'Add', 23
-12, 'Add', 24
-10, 'Add', 54
-9, 'Add', 50
-9, 'Add', 51
-10, 'Add', 55
-10, 'Add', 56
-10, 'Add', 57
-10, 'Add', 58
-10, 'Add', 59
-10, 'Add', 60
-15, 'Add', 61
-15, 'Add', 62
-15, 'Add', 63
-11, 'Add', 64
-11, 'Add', 65
-11, 'Add', 66
-14, 'Add', 67
-14, 'Add', 68
-12, 'Add', 69
-12, 'Add', 70
-12, 'Add', 71
-12, 'Add', 72
-15, 'Add', 73
-9, 'Add', 174
-9, 'Add', 175
-9, 'Add', 176
-9, 'Add', 184
-9, 'Add', 185
-9, 'Add', 186
-9, 'Add', 187
-9, 'Add', 188
-15, 'Add', 284
-15, 'Add', 285
-15, 'Add', 286
-15, 'Add', 304
-15, 'Add', 305
-17, 'Add', 306
-16, 'Add', 307
-16, 'Add', 308
-16, 'Add', 309
-16, 'Add', 310
-16, 'Add', 311
-12, 'Add', 394
-12, 'Add', 395
-12, 'Add', 396
-15, 'Add', 404
-15, 'Add', 405
-15, 'Add', 406
-16, 'Add', 407
-17, 'Add', 408
-10, 'Add', 410
-12, 'Add', 412
-10, 'Add', 435
-9, 'Add', 84
-9, 'Add', 85
-15, 'Add', 95
-15, 'Add', 97
-12, 'Add', 106
-15, 'Add', 107
-400, 'Add', 20
-400, 'Add', 21
-400, 'Add', 47
-400, 'Add', 48
-400, 'Add', 49
-400, 'Add', 52
-400, 'Add', 53
-400, 'Add', 144
-400, 'Add', 145
-400, 'Add', 146
-400, 'Add', 164
-400, 'Add', 165
-400, 'Add', 166
-400, 'Add', 167
-400, 'Add', 81
-400, 'Add', 83
-9, 'Base Schema', 400
-
-INSERT INTO schema_element (id, "type")
--1, 'Domain'
--2, 'Domain'
--3, 'Domain'
--4, 'Domain'
--5, 'Domain'
--6, 'Domain'
-9, 'Schema'
-10, 'Schema'
-11, 'Schema'
-12, 'Schema'
-13, 'Schema'
-15, 'Schema'
-20, 'Entity'
-21, 'Entity'
-22, 'Entity'
-23, 'Entity'
-24, 'Entity'
-48, 'Attribute'
-52, 'Attribute'
-53, 'Attribute'
-54, 'Attribute'
-55, 'Attribute'
-56, 'Attribute'
-57, 'Attribute'
-58, 'Attribute'
-59, 'Attribute'
-60, 'Attribute'
-64, 'Attribute'
-65, 'Attribute'
-66, 'Attribute'
-67, 'Attribute'
-68, 'Attribute'
-69, 'Attribute'
-70, 'Attribute'
-71, 'Attribute'
-47, 'Attribute'
-49, 'Attribute'
-50, 'Attribute'
-51, 'Attribute'
-61, 'Attribute'
-62, 'Attribute'
-63, 'Attribute'
-72, 'Attribute'
-73, 'Attribute'
-81, 'Domain'
-83, 'Domain'
-84, 'Domain'
-85, 'Domain'
-95, 'Domain'
-97, 'Domain'
-106, 'Domain'
-107, 'Domain'
-144, 'Values'
-145, 'Values'
-146, 'Values'
-164, 'Values'
-165, 'Values'
-166, 'Values'
-167, 'Values'
-174, 'Values'
-175, 'Values'
-176, 'Values'
-184, 'Values'
-185, 'Values'
-186, 'Values'
-187, 'Values'
-188, 'Values'
-284, 'Values'
-285, 'Values'
-286, 'Values'
-304, 'Values'
-305, 'Values'
-306, 'Values'
-307, 'Values'
-308, 'Values'
-309, 'Values'
-310, 'Values'
-311, 'Values'
-394, 'Values'
-395, 'Values'
-396, 'Values'
-404, 'Values'
-405, 'Values'
-406, 'Values'
-407, 'Values'
-408, 'Values'
-435, 'Relationship'
-410, 'Containment'
-412, 'Containment'
-400, 'Schema'
+9, 'Base Schema', 400, 'Schema'
+10, 'Base Schema', 9, 'Schema'
+11, 'Base Schema', 10, 'Schema'
+12, 'Base Schema', 10, 'Schema'
+13, 'Base Schema', 11, 'Schema'
+13, 'Base Schema', 12, 'Schema'
+14, 'Base Schema', 13, 'Schema'
+15, 'Base Schema', 12, 'Schema'
+16, 'Base Schema', 15, 'Schema'
+17, 'Base Schema', 15, 'Schema'
+10, 'Add', 22, 'Entity'
+10, 'Add', 23, 'Entity'
+12, 'Add', 24, 'Entity'
+10, 'Add', 54, 'Attribute'
+9, 'Add', 50, 'Attribute'
+9, 'Add', 51, 'Attribute'
+10, 'Add', 55, 'Attribute'
+10, 'Add', 56, 'Attribute'
+10, 'Add', 57, 'Attribute'
+10, 'Add', 58, 'Attribute'
+10, 'Add', 59, 'Attribute'
+10, 'Add', 60, 'Attribute'
+15, 'Add', 61, 'Attribute'
+15, 'Add', 62, 'Attribute'
+15, 'Add', 63, 'Attribute'
+11, 'Add', 64, 'Attribute'
+11, 'Add', 65, 'Attribute'
+11, 'Add', 66, 'Attribute'
+14, 'Add', 67, 'Attribute'
+14, 'Add', 68, 'Attribute'
+12, 'Add', 69, 'Attribute'
+12, 'Add', 70, 'Attribute'
+12, 'Add', 71, 'Attribute'
+12, 'Add', 72, 'Attribute'
+15, 'Add', 73, 'Attribute'
+9, 'Add', 174, 'Values'
+9, 'Add', 175, 'Values'
+9, 'Add', 176, 'Values'
+9, 'Add', 184, 'Values'
+9, 'Add', 185, 'Values'
+9, 'Add', 186, 'Values'
+9, 'Add', 187, 'Values'
+9, 'Add', 188, 'Values'
+15, 'Add', 284, 'Values'
+15, 'Add', 285, 'Values'
+15, 'Add', 286, 'Values'
+15, 'Add', 304, 'Values'
+15, 'Add', 305, 'Values'
+17, 'Add', 306, 'Values'
+16, 'Add', 307, 'Values'
+16, 'Add', 308, 'Values'
+16, 'Add', 309, 'Values'
+16, 'Add', 310, 'Values'
+16, 'Add', 311, 'Values'
+12, 'Add', 394, 'Values'
+12, 'Add', 395, 'Values'
+12, 'Add', 396, 'Values'
+15, 'Add', 404, 'Values'
+15, 'Add', 405, 'Values'
+15, 'Add', 406, 'Values'
+16, 'Add', 407, 'Values'
+17, 'Add', 408, 'Values'
+10, 'Add', 410, 'Containment'
+12, 'Add', 412, 'Containment'
+10, 'Add', 435, 'Relationship'
+9, 'Add', 84, 'Domain'
+9, 'Add', 85, 'Domain'
+15, 'Add', 95, 'Domain'
+15, 'Add', 97, 'Domain'
+12, 'Add', 106, 'Domain'
+15, 'Add', 107, 'Domain'
+400, 'Add', 20, 'Entity'
+400, 'Add', 21, 'Entity'
+400, 'Add', 47, 'Attribute'
+400, 'Add', 48, 'Attribute'
+400, 'Add', 49, 'Attribute'
+400, 'Add', 52, 'Attribute'
+400, 'Add', 53, 'Attribute'
+400, 'Add', 144, 'Values'
+400, 'Add', 145, 'Values'
+400, 'Add', 146, 'Values'
+400, 'Add', 164, 'Values'
+400, 'Add', 165, 'Values'
+400, 'Add', 166, 'Values'
+400, 'Add', 167, 'Values'
+400, 'Add', 81, 'Domain'
+400, 'Add', 83, 'Domain'
 
 INSERT INTO data_source (id, name, url, schema_id)
 426, 'ProtocolSubject', 'http://localhost:8080/mrald?database=db_ProtocolSubject.props', 10
