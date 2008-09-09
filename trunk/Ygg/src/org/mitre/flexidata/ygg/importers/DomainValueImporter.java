@@ -52,8 +52,8 @@ public class DomainValueImporter extends ExcelImporter {
 			HSSFSheet sheet = _excelWorkbook.getSheetAt(s);
 
 			// add sheet name as a domain
-			String domainName = _excelWorkbook.getSheetName(s);
-			addDomain(domainName);
+//			String domainName = _excelWorkbook.getSheetName(s);
+//			addDomain(domainName);
 
 			// iterate through rows and create table/attribute nodes
 			for (int i = sheet.getFirstRowNum(); i <= sheet.getLastRowNum(); i++) {
