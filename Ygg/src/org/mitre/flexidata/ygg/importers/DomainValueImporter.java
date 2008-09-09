@@ -56,7 +56,7 @@ public class DomainValueImporter extends ExcelImporter {
 			addDomain(domainName);
 
 			// iterate through rows and create table/attribute nodes
-			for (int i = sheet.getFirstRowNum(); i < sheet.getLastRowNum(); i++) {
+			for (int i = sheet.getFirstRowNum(); i <= sheet.getLastRowNum(); i++) {
 				readRow(sheet.getRow(i));
 			}
 		}
@@ -83,15 +83,19 @@ public class DomainValueImporter extends ExcelImporter {
 	}
 
 	protected void readRow(HSSFRow row) {
-		if (row.getPhysicalNumberOfCells() == 0)
+		if (row == null || row.getPhysicalNumberOfCells() == 0)
 			return;
 
 		// get domain name, assume cell contains string value
-		String domainName = despace(row.getCell(0).getRichStringCellValue().toString());
+		HSSFCell domainCell = row.getCell(0); 
+		HSSFCell dvcell = row.getCell(1);
+
+		if ( domainCell == null ) return;
+
+		String domainName = despace(domainCell.getRichStringCellValue().toString());
 		String domainValueStr = "";
 
 		// get domain values. this can be either string or number
-		HSSFCell dvcell = row.getCell(1);
 		if (dvcell.getCellType() == HSSFCell.CELL_TYPE_NUMERIC)
 			domainValueStr = Double.toString(dvcell.getNumericCellValue());
 		else
