@@ -52,20 +52,21 @@ public class DomainValueImporter extends ExcelImporter {
 			HSSFSheet sheet = _excelWorkbook.getSheetAt(s);
 
 			// add sheet name as a domain
-//			String domainName = _excelWorkbook.getSheetName(s);
-//			addDomain(domainName);
+			// String domainName = _excelWorkbook.getSheetName(s);
+			// addDomain(domainName);
 
 			// iterate through rows and create table/attribute nodes
-			for (int i = sheet.getFirstRowNum(); i <= sheet.getLastRowNum(); i++) {
+			for (int i = sheet.getFirstRowNum(); i < sheet.getLastRowNum(); i++) {
 				readRow(sheet.getRow(i));
 			}
 		}
 	}
 
-	private Domain addDomain(String domainName) {
+	private Domain getDomain(String domainName) {
 		Domain domain;
 		if (!_domains.containsKey(domainName)) {
 			domain = new Domain(nextId(), domainName, "", 0);
+			System.out.println("     new domain " + domainName);
 			_domains.put(domainName, domain);
 		} else
 			domain = _domains.get(domainName);
@@ -79,6 +80,10 @@ public class DomainValueImporter extends ExcelImporter {
 			schemaElements.add(d);
 		for (DomainValue v : _domainValues.values())
 			schemaElements.add(v);
+
+		System.out.println("Imported # domains " + _domains.size());
+		System.out.println("Imported # domain values " + _domainValues.size());
+
 		return schemaElements;
 	}
 
@@ -86,38 +91,46 @@ public class DomainValueImporter extends ExcelImporter {
 		if (row == null || row.getPhysicalNumberOfCells() == 0)
 			return;
 
-		// get domain name, assume cell contains string value
-		HSSFCell domainCell = row.getCell(0); 
-		HSSFCell dvcell = row.getCell(1);
+		// if a row has only domain defined, the description is for the domain
+		boolean domainDefOnly = false;
 
-		if ( domainCell == null ) return;
+		// get domain name, assume cell contains string value
+		HSSFCell domainCell = row.getCell(0);
+		HSSFCell dvcell = row.getCell(1);
+		HSSFCell descrCell = row.getCell(2);
+
+		// ignore rows without domain specified
+		if (domainCell == null) {
+			return;
+		}
+
+		if (dvcell == null)
+			domainDefOnly = true;
 
 		String domainName = despace(domainCell.getRichStringCellValue().toString());
 		String domainValueStr = "";
 
 		// get domain values. this can be either string or number
-		if (dvcell.getCellType() == HSSFCell.CELL_TYPE_NUMERIC)
-			domainValueStr = Double.toString(dvcell.getNumericCellValue());
-		else
-			domainValueStr = despace(row.getCell(1).getRichStringCellValue().toString());
+		if (!domainDefOnly) {
+			if (dvcell.getCellType() == HSSFCell.CELL_TYPE_NUMERIC)
+				domainValueStr = Double.toString(dvcell.getNumericCellValue());
+			else
+				domainValueStr = despace(row.getCell(1).getRichStringCellValue().toString());
+		}
 
 		String documentation = "";
-		if (row.getCell(2) != null)
-			documentation = (row.getLastCellNum() >= 2) ? despace(row.getCell(2)
-					.getRichStringCellValue().toString()) : "";
+		if (descrCell != null)
+			documentation = despace(descrCell.getRichStringCellValue().toString());
+
 		String hashKey = domainName + "/" + domainValueStr;
 
-		Domain domain;
+		Domain domain = getDomain(domainName);
 		DomainValue domainValue;
 
-		if (domainName.length() == 0 && domainValueStr.length() == 0)
-			return;
-
-		// get the domain if it doesn't exist
-		domain = addDomain(domainName);
-
-		// create a domain value
-		if (domainValueStr.length() > 0) {
+		if (domainDefOnly)
+			domain.setDescription(documentation);
+		else {
+			// create a domain value
 			domainValue = new DomainValue(nextId(), domainValueStr, documentation, domain.getId(),
 					0);
 			_domainValues.put(hashKey, domainValue);
