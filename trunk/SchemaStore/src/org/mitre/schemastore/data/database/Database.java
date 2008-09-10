@@ -269,7 +269,7 @@ public class Database
 		Integer validationNumber = 0;
 		try {
 			Statement stmt = connection.getStatement();
-			ResultSet rs = stmt.executeQuery("SELECT sum(1.0*(schema_id+1)*(group_id+1))%10000000 AS validation_number FROM schema_group");
+			ResultSet rs = stmt.executeQuery("SELECT mod(sum((schema_id+1)*(group_id+1)),10000000) AS validation_number FROM schema_group");
 			if(rs.next())
 				validationNumber = rs.getInt("validation_number");
 			stmt.close();
@@ -415,7 +415,7 @@ public class Database
 		Integer validationNumber = 0;
 		try {
 			Statement stmt = connection.getStatement();
-			ResultSet rs = stmt.executeQuery("SELECT sum(1.0*(schema_id+1)*(element_id+1))%10000000 AS validation_number FROM extensions WHERE \"action\"='Base Schema'");
+			ResultSet rs = stmt.executeQuery("SELECT mod(sum((schema_id+1)*(element_id+1)),10000000) AS validation_number FROM extensions WHERE \"action\"='Base Schema'");
 			if(rs.next())
 				validationNumber = rs.getInt("validation_number");
 			stmt.close();
