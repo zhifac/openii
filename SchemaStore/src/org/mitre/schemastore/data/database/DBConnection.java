@@ -60,8 +60,7 @@ public class DBConnection
 				for(String command : commands)
 				{
 					String text = command.trim().replaceAll("\n","");
-					System.out.println(text);
-					stmt.executeUpdate(text);
+					if(text.length()>0) stmt.addBatch(text);
 				}
 				stmt.executeBatch();
 				
@@ -74,7 +73,7 @@ public class DBConnection
 					String rows[] = command.split("\\n");
 					String header = rows[0];
 					for(int i=1; i<rows.length; i++)
-						stmt.addBatch(header + " VALUES (" + rows[i] + ");");
+						stmt.addBatch(header + " VALUES (" + rows[i] + ")");
 				}
 				stmt.executeBatch();
 				
@@ -102,13 +101,19 @@ public class DBConnection
 		// Attempt to connect to database
 		try {
 			if(connection==null)
-			{
+			{				
+				// Get environment variables
+				Context env = (Context) new	InitialContext().lookup("java:comp/env");
+	    		String server = (String)env.lookup("dbServer");
+	    		String database = (String)env.lookup("dbDatabase");
+	    		String username = (String)env.lookup("dbUsername");
+	    		String password = (String)env.lookup("dbPassword");
+				
 				// Connect to the database
-	    		Context env = (Context) new	InitialContext().lookup("java:comp/env");
-	    		boolean useDerby = ((String)env.lookup("dbURL")).equals("");
+	    		boolean useDerby = server.equals("");
     			Class.forName(useDerby ? "org.apache.derby.jdbc.EmbeddedDriver" : "org.postgresql.Driver");
-	    		String dbURL = useDerby ? "jdbc:derby:schemastore;create=true" : (String)env.lookup("dbURL");
-    			connection = DriverManager.getConnection(dbURL,(String)env.lookup("dbUsername"),(String)env.lookup("dbPassword"));
+	    		String dbURL = useDerby ? "jdbc:derby:"+database+";create=true" : "jdbc:postgresql://"+server+":5432/"+database;
+    			connection = DriverManager.getConnection(dbURL,username,password);
 	    		connection.setAutoCommit(false);
 
 	    		// Initialize the database if needed

@@ -72,6 +72,19 @@ public class Database
 		public Integer getGroupID() { return groupID; }
 	}
 	
+	/** Retrieves a universal id */
+	static private Integer getUniversalID() throws SQLException
+	{
+		Statement stmt = connection.getStatement();
+		stmt.executeUpdate("LOCK TABLE universal_id IN exclusive MODE");
+		stmt.executeUpdate("UPDATE universal_id SET id = id+1");
+		ResultSet rs = stmt.executeQuery("SELECT id FROM universal_id");
+		rs.next();
+		Integer universalID = rs.getInt("id");
+		stmt.close();
+		return universalID;
+	}
+	
 	/** Scrub strings to avoid database errors */
 	static private String scrub(String word)
 		{ return word.replace("'","''"); }
@@ -86,7 +99,7 @@ public class Database
 		ArrayList<Schema> schemas = new ArrayList<Schema>();
 		try {
 			Statement stmt = connection.getStatement();
-			ResultSet rs = stmt.executeQuery("SELECT id,name,author,source,type,description,locked FROM schema");
+			ResultSet rs = stmt.executeQuery("SELECT id,name,author,source,\"type\",description,locked FROM \"schema\"");
 			while(rs.next())
 				schemas.add(new Schema(rs.getInt("id"),rs.getString("name"),rs.getString("author"),rs.getString("source"),rs.getString("type"),rs.getString("description"),rs.getString("locked").equals("t")));
 			stmt.close();
@@ -100,7 +113,7 @@ public class Database
 		Schema schema = null;
 		try {
 			Statement stmt = connection.getStatement();
-			ResultSet rs = stmt.executeQuery("SELECT id,name,author,source,type,description,locked FROM schema WHERE id="+schemaID);
+			ResultSet rs = stmt.executeQuery("SELECT id,name,author,source,\"type\",description,locked FROM \"schema\" WHERE id="+schemaID);
 			if(rs.next())
 				schema = new Schema(rs.getInt("id"),rs.getString("name"),rs.getString("author"),rs.getString("source"),rs.getString("type"),rs.getString("description"),rs.getString("locked").equals("t"));
 			stmt.close();
@@ -113,12 +126,10 @@ public class Database
 	{
 		Schema extendedSchema = null;
 		try {
+			int schemaID = getUniversalID();
 			Statement stmt = connection.getStatement();
-			ResultSet rs = stmt.executeQuery("SELECT nextval('universalSeq') AS schemaID");
-			rs.next();
-			int schemaID = rs.getInt("schemaID");
-			stmt.executeUpdate("INSERT INTO schema(id,name,author,source,type,description,locked) VALUES("+schemaID+",'"+scrub(schema.getName())+" Extension','"+scrub(schema.getAuthor())+"','"+scrub(schema.getSource())+"','"+scrub(schema.getType())+"','Extension of "+scrub(schema.getName())+"','f')");
-			stmt.executeUpdate("INSERT INTO extensions(schema_id,action,element_id,type) VALUES("+schemaID+",'Base Schema',"+schema.getId()+",'Schema',)");
+			stmt.executeUpdate("INSERT INTO \"schema\"(id,name,author,source,\"type\",description,locked) VALUES("+schemaID+",'"+scrub(schema.getName())+" Extension','"+scrub(schema.getAuthor())+"','"+scrub(schema.getSource())+"','"+scrub(schema.getType())+"','Extension of "+scrub(schema.getName())+"','f')");
+			stmt.executeUpdate("INSERT INTO extensions(schema_id,\"action\",element_id,\"type\") VALUES("+schemaID+",'Base Schema',"+schema.getId()+",'Schema',)");
 			stmt.close();
 			connection.commit();
 			extendedSchema = new Schema(schemaID,schema.getName()+" Extension",schema.getAuthor(),schema.getSource(),schema.getType(),"Extension of "+schema.getName(),false);
@@ -136,11 +147,9 @@ public class Database
 	{
 		Integer schemaID = 0;
 		try {
+			schemaID = getUniversalID();
 			Statement stmt = connection.getStatement();
-			ResultSet rs = stmt.executeQuery("SELECT nextval('universalSeq') AS schemaID");
-			rs.next();
-			schemaID = rs.getInt("schemaID");
-			stmt.executeUpdate("INSERT INTO schema(id,name,author,source,type,description,locked) VALUES("+schemaID+",'"+scrub(schema.getName())+"','"+scrub(schema.getAuthor())+"','"+scrub(schema.getSource())+"','"+scrub(schema.getType())+"','"+scrub(schema.getDescription())+"','"+(schema.getLocked()?"t":"f")+"')");
+			stmt.executeUpdate("INSERT INTO \"schema\"(id,name,author,source,\"type\",description,locked) VALUES("+schemaID+",'"+scrub(schema.getName())+"','"+scrub(schema.getAuthor())+"','"+scrub(schema.getSource())+"','"+scrub(schema.getType())+"','"+scrub(schema.getDescription())+"','"+(schema.getLocked()?"t":"f")+"')");
 			stmt.close();
 			connection.commit();
 		}
@@ -159,7 +168,7 @@ public class Database
 		boolean success = false;
 		try {
 			Statement stmt = connection.getStatement();
-			stmt.executeUpdate("UPDATE schema SET name='"+scrub(schema.getName())+"', author='"+scrub(schema.getAuthor())+"', source='"+scrub(schema.getSource())+"', type='"+scrub(schema.getType())+"', description='"+scrub(schema.getDescription())+"' WHERE id="+schema.getId());
+			stmt.executeUpdate("UPDATE \"schema\" SET name='"+scrub(schema.getName())+"', author='"+scrub(schema.getAuthor())+"', source='"+scrub(schema.getSource())+"', \"type\"='"+scrub(schema.getType())+"', description='"+scrub(schema.getDescription())+"' WHERE id="+schema.getId());
 			stmt.close();
 			connection.commit();
 			success = true;
@@ -187,13 +196,13 @@ public class Database
 			stmt.executeUpdate("DELETE FROM relationship WHERE id IN (SELECT element_id FROM extensions WHERE schema_id="+schemaID+")");
 			stmt.executeUpdate("DELETE FROM attribute WHERE id IN (SELECT element_id FROM extensions WHERE schema_id="+schemaID+")");
 			stmt.executeUpdate("DELETE FROM domainvalue WHERE id IN (SELECT element_id FROM extensions WHERE schema_id="+schemaID+")");
-			stmt.executeUpdate("DELETE FROM domain WHERE id IN (SELECT element_id FROM extensions WHERE schema_id="+schemaID+")");
+			stmt.executeUpdate("DELETE FROM \"domain\" WHERE id IN (SELECT element_id FROM extensions WHERE schema_id="+schemaID+")");
 			stmt.executeUpdate("DELETE FROM entity WHERE id IN (SELECT element_id FROM extensions WHERE schema_id="+schemaID+")");
 				
 			// Delete the schema from the database
 			stmt.executeUpdate("DELETE FROM schema_group WHERE schema_id="+schemaID);
 			stmt.executeUpdate("DELETE FROM extensions WHERE schema_id="+schemaID);
-			stmt.executeUpdate("DELETE FROM schema WHERE id="+schemaID);
+			stmt.executeUpdate("DELETE FROM \"schema\" WHERE id="+schemaID);
 			stmt.close();
 			connection.commit();
 			success = true;
@@ -237,7 +246,7 @@ public class Database
 		boolean success = false;
 		try {
 			Statement stmt = connection.getStatement();
-			stmt.executeUpdate("UPDATE schema SET locked='"+(locked?"t":"f")+"' WHERE id="+schemaID);
+			stmt.executeUpdate("UPDATE \"schema\" SET locked='"+(locked?"t":"f")+"' WHERE id="+schemaID);
 			stmt.close();
 			connection.commit();
 			success = true;
@@ -287,10 +296,8 @@ public class Database
 	{
 		Integer groupID = 0;
 		try {
+			groupID = getUniversalID();
 			Statement stmt = connection.getStatement();
-			ResultSet rs = stmt.executeQuery("SELECT nextval('universalSeq') AS groupID");
-			rs.next();
-			groupID = rs.getInt("groupID");
 			stmt.executeUpdate("INSERT INTO groups(id,name,parent_id) VALUES("+groupID+",'"+scrub(group.getName())+"',"+group.getParentId()+")");
 			stmt.close();
 			connection.commit();
@@ -408,7 +415,7 @@ public class Database
 		Integer validationNumber = 0;
 		try {
 			Statement stmt = connection.getStatement();
-			ResultSet rs = stmt.executeQuery("SELECT sum(1.0*(schema_id+1)*(element_id+1))%10000000 AS validation_number FROM extensions WHERE action='Base Schema'");
+			ResultSet rs = stmt.executeQuery("SELECT sum(1.0*(schema_id+1)*(element_id+1))%10000000 AS validation_number FROM extensions WHERE \"action\"='Base Schema'");
 			if(rs.next())
 				validationNumber = rs.getInt("validation_number");
 			stmt.close();
@@ -422,7 +429,7 @@ public class Database
 		ArrayList<Extension> extensions = new ArrayList<Extension>();
 		try {
 			Statement stmt = connection.getStatement();
-			ResultSet rs = stmt.executeQuery("SELECT schema_id,element_id FROM extensions WHERE action='Base Schema'");
+			ResultSet rs = stmt.executeQuery("SELECT schema_id,element_id FROM extensions WHERE \"action\"='Base Schema'");
 			while(rs.next())
 				extensions.add(new Extension(rs.getInt("element_id"),rs.getInt("schema_id")));
 			stmt.close();
@@ -436,9 +443,9 @@ public class Database
 		boolean success = false;
 		try {
 			Statement stmt = connection.getStatement();
-			stmt.executeUpdate("DELETE FROM extensions WHERE schema_id="+schemaID+" AND action='Base Schema'");
+			stmt.executeUpdate("DELETE FROM extensions WHERE schema_id="+schemaID+" AND \"action\"='Base Schema'");
 			for(Integer parentSchemaID : parentIDs)
-				stmt.executeUpdate("INSERT INTO extensions(schema_id,action,element_id) VALUES("+schemaID+",'Base Schema',"+parentSchemaID+")");			
+				stmt.executeUpdate("INSERT INTO extensions(schema_id,\"action\",element_id) VALUES("+schemaID+",'Base Schema',"+parentSchemaID+")");			
 			stmt.close();
 			connection.commit();
 			success = true;
@@ -461,7 +468,7 @@ public class Database
 		ArrayList<Domain> defaultDomains = new ArrayList<Domain>();
 		try {
 			Statement stmt = connection.getStatement();
-			ResultSet rs = stmt.executeQuery("SELECT id,name,description FROM domain WHERE id<0");
+			ResultSet rs = stmt.executeQuery("SELECT id,name,description FROM \"domain\" WHERE id<0");
 			while(rs.next())
 				defaultDomains.add(new Domain(rs.getInt("id"),rs.getString("name"),rs.getString("description"),null));
 			stmt.close();
@@ -475,7 +482,7 @@ public class Database
 		Integer defaultDomainCount = 0;
 		try {
 			Statement stmt = connection.getStatement();
-			ResultSet rs = stmt.executeQuery("SELECT count(*) AS count FROM domain WHERE id<0");
+			ResultSet rs = stmt.executeQuery("SELECT count(*) AS count FROM \"domain\" WHERE id<0");
 			if(rs.next()) defaultDomainCount = rs.getInt("count");
 			stmt.close();
 		} catch(SQLException e) { System.out.println("(E) Database:getDefaultDomainCount: "+e.getMessage()); }
@@ -495,7 +502,7 @@ public class Database
 				baseElements.add(new Entity(rs.getInt("id"),rs.getString("name"),rs.getString("description"),schemaID));
 					
 			// Gets the schema attributes
-			rs = stmt.executeQuery("SELECT id,name,description,entity_id,domain_id,min,max FROM extensions,attribute WHERE schema_id="+schemaID+" AND element_id=id");
+			rs = stmt.executeQuery("SELECT id,name,description,entity_id,domain_id,\"min\",\"max\" FROM extensions,attribute WHERE schema_id="+schemaID+" AND element_id=id");
 			while(rs.next())
 			{
 				Integer id = rs.getInt("id");
@@ -509,7 +516,7 @@ public class Database
 			}
 			
 			// Gets the schema domains
-			rs = stmt.executeQuery("SELECT id,name,description FROM extensions,domain WHERE schema_id="+schemaID+" AND element_id=id");
+			rs = stmt.executeQuery("SELECT id,name,description FROM extensions,\"domain\" WHERE schema_id="+schemaID+" AND element_id=id");
 			while(rs.next())
 				baseElements.add(new Domain(rs.getInt("id"),rs.getString("name"),rs.getString("description"),schemaID));
 
@@ -534,7 +541,7 @@ public class Database
 			}
 				
 			// Gets the schema containment relationships
-			rs = stmt.executeQuery("SELECT id,name,description,parent_id,child_id,min,max FROM extensions,containment WHERE schema_id="+schemaID+" AND element_id=id");
+			rs = stmt.executeQuery("SELECT id,name,description,parent_id,child_id,\"min\",\"max\" FROM extensions,containment WHERE schema_id="+schemaID+" AND element_id=id");
 			while(rs.next())
 			{
 				Integer id = rs.getInt("id");
@@ -573,7 +580,7 @@ public class Database
 		Integer elementCount = 0;
 		try {
 			Statement stmt = connection.getStatement();
-			ResultSet rs = stmt.executeQuery("SELECT count(*) AS count FROM extensions WHERE schema_id="+schemaID+" AND action='Add'");
+			ResultSet rs = stmt.executeQuery("SELECT count(*) AS count FROM extensions WHERE schema_id="+schemaID+" AND \"action\"='Add'");
 			if(rs.next()) elementCount = rs.getInt("count");
 			stmt.close();
 		} catch(SQLException e) { System.out.println("(E) Database:getBaseElementCount: "+e.getMessage()); }
@@ -590,7 +597,7 @@ public class Database
 			// Determine the base and type
 			Integer base = null;
 			String type = null;
-			ResultSet rs = stmt.executeQuery("SELECT schema_id, type FROM extensions WHERE element_id="+schemaElementID+" AND action='Add'");
+			ResultSet rs = stmt.executeQuery("SELECT schema_id, \"type\" FROM extensions WHERE element_id="+schemaElementID+" AND \"action\"='Add'");
 			if(rs.next())
 				{ base = rs.getInt("schema_id"); type = rs.getString("type"); }
 
@@ -605,7 +612,7 @@ public class Database
 			// Gets the specified attribute
 			else if(type.equals("Attribute"))
 			{
-				rs = stmt.executeQuery("SELECT id,name,description,entity_id,domain_id,min,max FROM attribute WHERE id="+schemaElementID);
+				rs = stmt.executeQuery("SELECT id,name,description,entity_id,domain_id,\"min\",\"max\" FROM attribute WHERE id="+schemaElementID);
 				rs.next();
 				Integer id = rs.getInt("id");
 				String name = rs.getString("name");
@@ -620,7 +627,7 @@ public class Database
 			// Gets the specified domain			
 			else if(type.equals("Domain"))
 			{
-				rs = stmt.executeQuery("SELECT id,name,description FROM domain WHERE id="+schemaElementID);
+				rs = stmt.executeQuery("SELECT id,name,description FROM \"domain\" WHERE id="+schemaElementID);
 				rs.next();
 				schemaElement = new Domain(rs.getInt("id"),rs.getString("name"),rs.getString("description"),base);
 			}
@@ -652,7 +659,7 @@ public class Database
 			// Gets the specified containment relationship
 			else if(type.equals("Containment"))
 			{
-				rs = stmt.executeQuery("SELECT id,name,description,parent_id,child_id,min,max FROM containment WHERE id="+schemaElementID);
+				rs = stmt.executeQuery("SELECT id,name,description,parent_id,child_id,\"min\",\"max\" FROM containment WHERE id="+schemaElementID);
 				rs.next();
 				Integer id = rs.getInt("id");
 				String name = rs.getString("name");
@@ -694,9 +701,7 @@ public class Database
 		Integer schemaElementID = 0;
 		try {
 			Statement stmt = connection.getStatement();
-			ResultSet rs = stmt.executeQuery("SELECT nextval('universalSeq') AS universalID");
-			rs.next();
-			schemaElementID = rs.getInt("universalID");
+			schemaElementID = getUniversalID();
 
 			// Retrieve the schema element name and description
 			String name = schemaElement.getName().replaceAll("'","''");
@@ -712,12 +717,12 @@ public class Database
 			if(schemaElement instanceof Attribute)
 			{
 				Attribute attribute = (Attribute)schemaElement;
-				stmt.executeUpdate("INSERT INTO attribute(id,name,description,entity_id,domain_id,min,max) VALUES("+schemaElementID+",'"+scrub(name)+"','"+scrub(description)+"',"+attribute.getEntityID()+","+attribute.getDomainID()+","+attribute.getMin()+","+attribute.getMax()+")");
+				stmt.executeUpdate("INSERT INTO attribute(id,name,description,entity_id,domain_id,\"min\",\"max\") VALUES("+schemaElementID+",'"+scrub(name)+"','"+scrub(description)+"',"+attribute.getEntityID()+","+attribute.getDomainID()+","+attribute.getMin()+","+attribute.getMax()+")");
 			}
 
 			// Inserts a domain
 			if(schemaElement instanceof Domain)
-				stmt.executeUpdate("INSERT INTO domain(id,name,description) VALUES("+schemaElementID+",'"+scrub(name)+"','"+scrub(description)+"')");
+				stmt.executeUpdate("INSERT INTO \"domain\"(id,name,description) VALUES("+schemaElementID+",'"+scrub(name)+"','"+scrub(description)+"')");
 
 			// Inserts a domain value
 			if(schemaElement instanceof DomainValue)
@@ -737,7 +742,7 @@ public class Database
 			if(schemaElement instanceof Containment)
 			{
 				Containment containment = (Containment)schemaElement;
-				stmt.executeUpdate("INSERT INTO containment(id,name,description,parent_id,child_id,min,max) VALUES("+schemaElementID+",'"+scrub(name)+"','"+scrub(description)+"',"+containment.getParentID()+","+containment.getChildID()+","+containment.getMin()+","+containment.getMax()+")");
+				stmt.executeUpdate("INSERT INTO containment(id,name,description,parent_id,child_id,\"min\",\"max\") VALUES("+schemaElementID+",'"+scrub(name)+"','"+scrub(description)+"',"+containment.getParentID()+","+containment.getChildID()+","+containment.getMin()+","+containment.getMax()+")");
 			}
 			
 			// Inserts a subset relationship
@@ -754,7 +759,7 @@ public class Database
 				stmt.executeUpdate("INSERT INTO alias(id,name,element_id) VALUES("+schemaElementID+",'"+scrub(name)+"',"+alias.getElementID()+")");
 			}
 
-			stmt.executeUpdate("INSERT INTO extensions(schema_id,action,element_id,type) VALUES("+schemaElement.getBase()+",'Add',"+schemaElementID+",'"+schemaElement.getClass()+"')");
+			stmt.executeUpdate("INSERT INTO extensions(schema_id,\"action\",element_id,\"type\") VALUES("+schemaElement.getBase()+",'Add',"+schemaElementID+",'"+schemaElement.getClass()+"')");
 			stmt.close();
 			connection.commit();
 		}
@@ -813,7 +818,7 @@ public class Database
 			if(schemaElement instanceof Containment)
 			{
 				Containment containment = (Containment)schemaElement;
-				stmt.executeUpdate("UPDATE containment SET name='"+scrub(containment.getName())+"', description='"+containment.getDescription()+"' parent_id="+containment.getParentID()+", child_id="+containment.getChildID()+", min="+containment.getMin()+", max="+containment.getMax()+" WHERE id="+containment.getId());
+				stmt.executeUpdate("UPDATE containment SET name='"+scrub(containment.getName())+"', description='"+containment.getDescription()+"' parent_id="+containment.getParentID()+", child_id="+containment.getChildID()+", \"min\"="+containment.getMin()+", \"max\"="+containment.getMax()+" WHERE id="+containment.getId());
 			}
 			
 			// Updates a subset relationship
@@ -848,7 +853,7 @@ public class Database
 		boolean success = false;
 		try {
 			Statement stmt = connection.getStatement();
-			stmt.executeUpdate("DELETE FROM extensions WHERE action='Add' AND element_id="+schemaElementID);
+			stmt.executeUpdate("DELETE FROM extensions WHERE \"action\"='Add' AND element_id="+schemaElementID);
 			stmt.close();
 			connection.commit();
 			success = true;
@@ -913,10 +918,8 @@ public class Database
 	{
 		Integer dataSourceID = 0;
 		try {
+			dataSourceID = getUniversalID();
 			Statement stmt = connection.getStatement();
-			ResultSet rs = stmt.executeQuery("SELECT nextval('universalSeq') AS dataSourceID");
-			rs.next();
-			dataSourceID = rs.getInt("dataSourceID");
 			stmt.executeUpdate("INSERT INTO data_source(id,name,url,schema_id) VALUES("+dataSourceID+",'"+scrub(dataSource.getName())+"','"+scrub(dataSource.getUrl())+"',"+dataSource.getSchemaID()+")");
 			stmt.close();
 			connection.commit();
@@ -1027,10 +1030,8 @@ public class Database
 	{
 		Integer mappingID = 0;
 		try {
+			mappingID = getUniversalID();
 			Statement stmt = connection.getStatement();
-			ResultSet rs = stmt.executeQuery("SELECT nextval('universalSeq') AS mappingID");
-			rs.next();
-			mappingID = rs.getInt("mappingID");
 			stmt.executeUpdate("INSERT INTO mapping(id,name,description,author) VALUES("+mappingID+",'"+scrub(mapping.getName())+"','"+scrub(mapping.getDescription())+"','"+scrub(mapping.getAuthor())+"')");
 			for(Integer schema : mapping.getSchemas())
 				stmt.executeUpdate("INSERT INTO mapping_schema(mapping_id,schema_id) VALUES("+mappingID+","+schema+")");
@@ -1108,10 +1109,8 @@ public class Database
 	{
 		Integer mappingCellID = 0;
 		try {
+			mappingCellID = getUniversalID();
 			Statement stmt = connection.getStatement();
-			ResultSet rs = stmt.executeQuery("SELECT nextval('universalSeq') AS mappingCellID");
-			rs.next();
-			mappingCellID = rs.getInt("mappingCellID");
 			stmt.executeUpdate("INSERT INTO mapping_cell(id,mapping_id,element1_id,element2_id,score,scorer,validated) VALUES("+mappingCellID+","+mappingCell.getMappingId()+","+mappingCell.getElement1()+","+mappingCell.getElement2()+","+mappingCell.getScore()+",'"+mappingCell.getScorer()+"','"+(mappingCell.getValidated()?"t":"f")+"')");
 			stmt.close();
 			connection.commit();

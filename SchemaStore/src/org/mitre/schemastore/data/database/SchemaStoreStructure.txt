@@ -124,6 +124,10 @@ CREATE TABLE subtype (
     child_id integer
 );
 
+CREATE TABLE universal_id (
+	id integer
+);
+
 //-----------------------
 // Generate Primary Keys
 //-----------------------
@@ -160,9 +164,6 @@ ALTER TABLE mapping
 
 ALTER TABLE relationship
     ADD CONSTRAINT relationship_pkey PRIMARY KEY (id);
-
-ALTER TABLE schema_element
-    ADD CONSTRAINT schema_element_pkey PRIMARY KEY (id);
 
 ALTER TABLE "schema"
     ADD CONSTRAINT schema_pkey PRIMARY KEY (id);
@@ -215,14 +216,3 @@ ALTER TABLE mapping_schema
 //------------------
 
 CREATE UNIQUE INDEX schema_group_idx ON schema_group (schema_id, group_id);
-
-//-------------------
-// Generate Sequence
-//-------------------
-
-CREATE SEQUENCE universalseq
-	START WITH 1000
-    INCREMENT BY 1
-    NO MAXVALUE
-    NO MINVALUE
-    CACHE 1;
