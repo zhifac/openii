@@ -82,6 +82,7 @@ public class Database
 		rs.next();
 		Integer universalID = rs.getInt("id");
 		stmt.close();
+		connection.commit();
 		return universalID;
 	}
 	
