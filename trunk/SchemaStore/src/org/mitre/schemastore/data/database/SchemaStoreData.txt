@@ -1,4 +1,4 @@
-INSERT INTO "schema" (id, name, author, source, type, description, locked)
+INSERT INTO "schema" (id, name, author, source, "type", description, locked)
 9, 'Human Patient', 'Chris Wolf', '', 'Manual', 'Information about a human patient that could be recruited into a study', 't'
 10, 'Protocol Subject', 'Chris Wolf', '', 'Manual', 'Information about a subject enrolled in one or more protocols', 't'
 11, 'Chemlab Subject', 'Chris Wolf', '', 'Manual', 'Information about a subject with chem-lab analyses', 't'
@@ -101,11 +101,11 @@ INSERT INTO attribute (id, name, description, entity_id, domain_id)
 INSERT INTO relationship (id, name, left_id, left_min, left_max, right_id, right_min, right_max)
 435, 'CapturedFor', 22, 1, 1, 23, 0, NULL
 
-INSERT INTO containment (id, parent_id, child_id, min, max, description, name)
+INSERT INTO containment (id, parent_id, child_id, "min", "max", description, name)
 410, 20, 22, NULL, NULL, NULL, NULL
 412, 22, 24, NULL, NULL, NULL, NULL
 
-INSERT INTO extensions (schema_id, "action", element_id)
+INSERT INTO extensions (schema_id, "action", element_id, "type")
 9, 'Base Schema', 400, 'Schema'
 10, 'Base Schema', 9, 'Schema'
 11, 'Base Schema', 10, 'Schema'
@@ -200,3 +200,6 @@ INSERT INTO data_source (id, name, url, schema_id)
 432, 'NeuroExtendedLanguage', 'http://localhost:8080/mrald?database=db_NeuroExtendedLanguage.props', 16
 433, 'AfricanNeuro', 'http://localhost:8080/mrald?database=db_AfricanNeuro.props', 17
 424, 'Organism', 'http://localhost:8080/mrald?database=db_Organism.props', 400
+
+INSERT INTO universal_id (id)
+1000
