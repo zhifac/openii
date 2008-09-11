@@ -27,6 +27,7 @@ import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.SchemaElementList;
 import org.mitre.schemastore.model.Subtype;
+import org.mitre.schemastore.model.graph.Graph;
 
 /**
  * Web service for retrieving schema information from SchemaStore
@@ -76,7 +77,7 @@ public class SchemaStore
 
 	/** Web service to retrieve the synonym list for the specified schema */
 	public String[] getSynonyms(Integer schemaID)
-		{ return Schemas.getSynonyms(schemaID); }
+		{ return Schemas.getSynonyms(schemaID).toArray(new String[0]); }
 	
 	//---------------------------------
 	// Handles schema group operations
@@ -382,7 +383,8 @@ public class SchemaStore
 	public Integer importSchema(Schema schema, SchemaElementList schemaElementList) throws RemoteException
 	{
 		ArrayList<SchemaElement> schemaElements = new ArrayList<SchemaElement>(Arrays.asList(schemaElementList.getSchemaElements()));
-		return ImportSchema.importSchema(this, schema, schemaElements);
+		Graph graph = new Graph(schema,schemaElements);
+		return ImportSchema.importSchema(this, schema, graph);
 	}
 	
 	/** Web service to save the mapping and mapping cells */

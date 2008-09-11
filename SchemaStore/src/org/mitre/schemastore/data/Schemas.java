@@ -72,8 +72,6 @@ public class Schemas
 	}
 	
 	/** Removes the specified schema */
-	static public String[] getSynonyms(Integer schemaID)
-	{
-		return Database.getSynonyms(schemaID);
-	}
+	static public ArrayList<String> getSynonyms(Integer schemaID)
+		{ return Database.getSynonyms(schemaID); }
 }
