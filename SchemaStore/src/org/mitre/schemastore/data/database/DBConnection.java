@@ -94,7 +94,7 @@ public class DBConnection
 		if(connection!=null)
 			try {
 				Statement stmt = connection.createStatement();
-				stmt.executeQuery("SELECT 1");
+				stmt.executeQuery("SELECT id FROM universal_id");
 				return stmt;
 			} catch(Exception e) { connection=null; }
 		
