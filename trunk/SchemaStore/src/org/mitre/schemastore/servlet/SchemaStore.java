@@ -76,7 +76,7 @@ public class SchemaStore
 
 	/** Web service to retrieve the synonym list for the specified schema */
 	public String[] getSynonyms(Integer schemaID)
-		{ return new String[0]; }
+		{ return Schemas.getSynonyms(schemaID); }
 	
 	//---------------------------------
 	// Handles schema group operations
