@@ -147,7 +147,7 @@ public class Graph implements Serializable
 				return (Alias)element;
 		return null;
 	}
-
+	
 	/** Adds a list of elements to the graph */
 	public boolean addElement(SchemaElement element)
 	{
@@ -200,7 +200,7 @@ public class Graph implements Serializable
 		return true;
 	}
 	
-	/** Removes a list of elements from the graph */
+	/** Removes an element from the graph */
 	public boolean deleteElement(Integer elementID)
 	{
 		// Checks to ensure that element is not referenced elsewhere
@@ -253,6 +253,50 @@ public class Graph implements Serializable
 			listener.schemaElementRemoved(element);
 
 		return true;
+	}
+	
+	/** Updates the id of an element in the graph */
+	public void updateElementID(Integer oldID, Integer newID)
+	{
+		// Replace all references to old ID with new ID
+		for(SchemaElement schemaElement : getElements(null))
+		{
+			if(schemaElement.getId().equals(oldID)) schemaElement.setId(newID);
+			if(schemaElement instanceof Attribute)
+			{
+				Attribute attribute = (Attribute)schemaElement;
+				if(attribute.getDomainID().equals(oldID)) attribute.setDomainID(newID);
+				if(attribute.getEntityID().equals(oldID)) attribute.setEntityID(newID);
+			}
+			if(schemaElement instanceof DomainValue)
+			{
+				DomainValue domainValue = (DomainValue)schemaElement;
+				if(domainValue.getDomainID().equals(oldID)) domainValue.setDomainID(newID);
+			}
+			if(schemaElement instanceof Relationship)
+			{
+				Relationship relationship = (Relationship)schemaElement;
+				if(relationship.getLeftID().equals(oldID)) relationship.setLeftID(newID);
+				if(relationship.getRightID().equals(oldID)) relationship.setRightID(newID);
+			}
+			if(schemaElement instanceof Containment)
+			{
+				Containment containment = (Containment)schemaElement;
+				if(containment.getParentID().equals(oldID)) containment.setParentID(newID);
+				if(containment.getChildID().equals(oldID)) containment.setChildID(newID);				
+			}
+			if(schemaElement instanceof Subtype)
+			{
+				Subtype subtype = (Subtype)schemaElement;
+				if(subtype.getParentID().equals(oldID)) subtype.setParentID(newID);
+				if(subtype.getChildID().equals(oldID)) subtype.setChildID(newID);				
+			}
+			if(schemaElement instanceof Alias)
+			{
+				Alias alias = (Alias)schemaElement;
+				if(alias.getElementID().equals(oldID)) alias.setElementID(newID);
+			}
+		}
 	}
 	
 	/** Adds a graph listener */
