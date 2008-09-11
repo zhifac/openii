@@ -4,7 +4,7 @@
 	<env-entry>
 		<env-entry-name>dbServer</env-entry-name>
 		<env-entry-type>java.lang.String</env-entry-type>
-		<env-entry-value></env-entry-value>
+		<env-entry-value>localhost</env-entry-value>
 	</env-entry>
 	<env-entry>
 		<env-entry-name>dbDatabase</env-entry-name>
