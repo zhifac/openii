@@ -309,10 +309,12 @@ public class SchemaStoreClient
 		return new HierarchicalGraph(new Graph(getSchema(schemaID), elements));
 	}
 	
-	/** Retreives the synsets for all words in the specified schema from the web service */
-	public String[] getSynonyms(Integer schemaID) throws RemoteException
+	/** Retrieves the synonyms for all words in the specified schema from the web service */
+	public ArrayList<String> getSynonyms(Integer schemaID) throws RemoteException
 	{
-		return proxy.getSynonyms(schemaID);
+		String[] synonymList = proxy.getSynonyms(schemaID);
+		ArrayList<String> synonyms = synonymList==null ? new ArrayList<String>() : new ArrayList<String>(Arrays.asList(synonymList));
+		return synonyms;
 	}
 	
 	//-----------------------
