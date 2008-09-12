@@ -11,8 +11,6 @@ import org.mitre.flexidata.ygg.importers.ddl.DdlFilteredReader;
 import org.mitre.flexidata.ygg.importers.ddl.SqlSQL2Lexer;
 import org.mitre.flexidata.ygg.importers.ddl.SqlSQL2Parser;
 import org.mitre.schemastore.model.SchemaElement;
-import java.net.URI
-;
 
 /**
  * DOCUMENT ME!
@@ -42,11 +40,18 @@ public class DDLImporter extends Importer
 		return fileTypes;
 	}
 
+	/** Initializes the importer for the specified URI */
+	protected void initialize() throws ImporterException {}
+	
+	/** Returns the list of schemas which this schema extends */
+	protected ArrayList<Integer> getExtendedSchemaIDs() throws ImporterException
+		{ return new ArrayList<Integer>(); }
+	
 	/** Returns the schema elements from the specified URI */
-	public ArrayList<SchemaElement> getSchemaElements(URI schemaLoc) throws ImporterException
+	public ArrayList<SchemaElement> getSchemaElements() throws ImporterException
 	{
 		try {
-	        SqlSQL2Lexer lexer = new SqlSQL2Lexer( new DdlFilteredReader( new FileReader( new File(schemaLoc) ) ) );
+	        SqlSQL2Lexer lexer = new SqlSQL2Lexer( new DdlFilteredReader( new FileReader( new File(uri) ) ) );
 	        SqlSQL2Parser parser = new SqlSQL2Parser( lexer );
 	        try
 	        {

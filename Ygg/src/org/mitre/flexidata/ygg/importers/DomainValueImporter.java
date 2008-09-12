@@ -1,8 +1,5 @@
 package org.mitre.flexidata.ygg.importers;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -37,8 +34,9 @@ public class DomainValueImporter extends ExcelImporter {
 	}
 
 	@Override
-	protected void initialize(URI uri) throws IOException, URISyntaxException {
-		super.initialize(uri);
+	protected void initialize() throws ImporterException
+	{
+		super.initialize();
 		_domains = new HashMap<String, Domain>();
 		_domainValues = new HashMap<String, DomainValue>();
 
