@@ -22,7 +22,6 @@ import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.SchemaElementList;
 import org.mitre.schemastore.model.Subtype;
 import org.mitre.schemastore.model.graph.Graph;
-import org.mitre.schemastore.model.graph.HierarchicalGraph;
 import org.mitre.schemastore.servlet.SchemaStoreProxy;
 
 /**
@@ -301,12 +300,12 @@ public class SchemaStoreClient
 	public Integer getSchemaElementCount(Integer schemaID) throws RemoteException
 		{ return proxy.getSchemaElementCount(schemaID); }
 	
-	/** Retrieves the schema elements for the specified schema from the web service */
-	public HierarchicalGraph getSchemaElementGraph(Integer schemaID) throws RemoteException
+	/** Retrieves the schema element graph for the specified schema from the web service */
+	public Graph getGraph(Integer schemaID) throws RemoteException
 	{
 		SchemaElement[] schemaElements = proxy.getSchemaElements(schemaID).getSchemaElements();
 		ArrayList<SchemaElement> elements = schemaElements==null ? new ArrayList<SchemaElement>() : new ArrayList<SchemaElement>(Arrays.asList(schemaElements));
-		return new HierarchicalGraph(new Graph(getSchema(schemaID), elements));
+		return new Graph(getSchema(schemaID),elements);
 	}
 	
 	/** Retrieves the synonyms for all words in the specified schema from the web service */
