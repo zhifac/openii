@@ -83,7 +83,21 @@ public class ExcelImporter extends Importer {
 		}
 	}
 
-	public ArrayList<String> getFileTypes() {
+	/** Returns the importer name */
+	public String getName()
+		{ return "Excel Importer (xls)"; }
+	
+	/** Returns the importer description */
+	public String getDescription()
+		{ return "Imports Excel formatted schema into the schema store."; }
+
+	/** Returns the importer URI type */
+	public Integer getURIType()
+		{ return FILE; }
+	
+	/** Returns the importer URI file types */
+	public ArrayList<String> getFileTypes()
+	{
 		ArrayList<String> filetypes = new ArrayList<String>(3);
 		filetypes.add("xls");
 		filetypes.add("csv");
@@ -91,19 +105,24 @@ public class ExcelImporter extends Importer {
 		return filetypes;
 	}
 
-	protected void initialize(URI uri) throws IOException, URISyntaxException {
-		InputStream excelStream;
-		_entities = new HashMap<String, Entity>();
-		_attributes = new HashMap<String, Attribute>();
+	protected void initialize() throws ImporterException
+	{
+		try {
+			InputStream excelStream;
+			_entities = new HashMap<String, Entity>();
+			_attributes = new HashMap<String, Attribute>();
 
-		// Do nothing if the excel sheet has been cached.
-		if (_excelURI != null && _excelURI.equals(uri))
-			return;
+			// Do nothing if the excel sheet has been cached.
+			if (_excelURI != null && _excelURI.equals(uri))
+				return;
 
-		_excelURI = uri;
-		excelStream = _excelURI.toURL().openStream();
-		_excelWorkbook = new HSSFWorkbook(excelStream);
-		excelStream.close();
+			_excelURI = uri;
+			excelStream = _excelURI.toURL().openStream();
+			_excelWorkbook = new HSSFWorkbook(excelStream);
+			excelStream.close();
+		} catch (IOException e) {
+			throw new ImporterException(ImporterException.PARSE_FAILURE, e.getMessage());
+		} 
 	}
 
 	public static void main(String[] args) throws IOException, URISyntaxException,
@@ -111,16 +130,6 @@ public class ExcelImporter extends Importer {
 		File excel = new File("Example.xls");
 		ExcelImporter tester = new ExcelImporter();
 		tester.importSchema(excel.getName(), "", "", excel.toURI());
-	}
-
-	@Override
-	public String getDescription() {
-		return "Imports Excel formatted schema into the schema store.";
-	}
-
-	@Override
-	public String getName() {
-		return "Excel Importer (xls)";
 	}
 
 	protected ArrayList<SchemaElement> generateSchemaElementList() {
@@ -133,22 +142,14 @@ public class ExcelImporter extends Importer {
 		return schemaElements;
 	}
 
-	@Override
-	public ArrayList<SchemaElement> getSchemaElements(URI uri)
-			throws ImporterException {
-		try {
-			initialize(uri);
-			generate();
-		} catch (URISyntaxException e) {
-			throw new ImporterException(ImporterException.INVALID_URI, e.getMessage());
-		} catch (IOException e) {
-			throw new ImporterException(ImporterException.PARSE_FAILURE, e.getMessage());
-		} 
+	/** Returns the list of schemas which this schema extends */
+	protected ArrayList<Integer> getExtendedSchemaIDs() throws ImporterException
+		{ return new ArrayList<Integer>(); }
+	
+	/** Generate the schema elements */
+	public ArrayList<SchemaElement> getSchemaElements() throws ImporterException
+	{
+		generate();
 		return generateSchemaElementList();
-	}
-
-	@Override
-	public Integer getURIType() {
-		return FILE;
 	}
 }

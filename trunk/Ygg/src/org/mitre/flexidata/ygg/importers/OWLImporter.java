@@ -72,8 +72,8 @@ public class OWLImporter extends Importer implements RDFErrorHandler
 		return fileTypes;
 	}
 	
-	/** Returns the schema elements from the specified URI */
-	public ArrayList<SchemaElement> getSchemaElements(URI uri) throws ImporterException
+	/** Initializes the importer for the specified URI */
+	protected void initialize() throws ImporterException
 	{
 		_schemaElements = new ArrayList<SchemaElement>();
 		_entityList = new HashMap<String, Entity>();
@@ -83,10 +83,17 @@ public class OWLImporter extends Importer implements RDFErrorHandler
 			loadDomains();
 			initializeOntModel(uri);
 			linearGen();
-			return _schemaElements;
 		}
 		catch(Exception e) { throw new ImporterException(ImporterException.PARSE_FAILURE,e.getMessage()); }
 	}
+	
+	/** Returns the list of schemas which this schema extends */
+	protected ArrayList<Integer> getExtendedSchemaIDs() throws ImporterException
+		{ return new ArrayList<Integer>(); }
+	
+	/** Returns the schema elements from the specified URI */
+	public ArrayList<SchemaElement> getSchemaElements() throws ImporterException
+		{ return _schemaElements; }
 
 	/** Handles the loading of the specified domain */
 	private void loadDomain(String name, String description )

@@ -26,6 +26,9 @@ public abstract class Importer
 	public static final String DATETIME = "DateTime";
 	public static final String BOOLEAN = "Boolean";
 	
+	/** Stores the URI being imported */
+	protected URI uri;
+	
 	/** Stores a auto-increment counter for handing out IDs */
 	private static Integer autoIncrementedId = 0;
 	
@@ -45,24 +48,43 @@ public abstract class Importer
 	/** Returns the importer URI file types (only needed when URI type is FILE) */
 	public ArrayList<String> getFileTypes() { return new ArrayList<String>(); }
 	
+	/** Initializes the importer */
+	abstract protected void initialize() throws ImporterException;
+	
 	/** Returns the list of schemas which this schema extends */
-	protected ArrayList<Integer> getExtendedSchemaIDs(URI uri) throws ImporterException
-		{ return new ArrayList<Integer>(); }
+	abstract protected ArrayList<Integer> getExtendedSchemaIDs() throws ImporterException;
 	
 	/** Returns the schema elements from the specified URI */
-	abstract public ArrayList<SchemaElement> getSchemaElements(URI uri) throws ImporterException;
+	abstract protected ArrayList<SchemaElement> getSchemaElements() throws ImporterException;
+	
+	/** Generate the schema elements */
+	final public ArrayList<SchemaElement> generateSchemaElements(URI uri) throws ImporterException
+	{
+		// Schema elements can generated separately only for file importers
+		if(getURIType()!=FILE)
+			throw new ImporterException(ImporterException.PARSE_FAILURE,"Schema elements can only be retrieved for file importers");
+
+		// Generate the schema elements
+		this.uri = uri;
+		initialize();
+		return getSchemaElements();
+	}
 	
 	/** Imports the specified URI */
 	final public Integer importSchema(String name, String author, String description, URI uri) throws ImporterException
 	{
 		// Generate the schema
 		Schema schema = new Schema(nextId(),name,author,uri==null?"":uri.toString(),"",description,false);
-		ArrayList<Integer> extendedSchemaIDs = getExtendedSchemaIDs(uri);
-		ArrayList<SchemaElement> schemaElements = getSchemaElements(uri);		
+
+		// Generate the schema components
+		this.uri = uri;
+		initialize();
+		ArrayList<Integer> extendedSchemaIDs = getExtendedSchemaIDs();
+		ArrayList<SchemaElement> schemaElements = getSchemaElements();
 		
 		// Import the schema into the repository
 		if(!SchemaManager.importSchema(schema, extendedSchemaIDs, schemaElements))
-			throw new ImporterException(ImporterException.IMPORT_FAILURE,"A failure occurred in transferring the schema to the repository");
+			throw new ImporterException(ImporterException.IMPORT_FAILURE,"A failure occured in transferring the schema to the repository");
 		if(getURIType()==REPOSITORY || getURIType()==FILE)
 			SchemaManager.lockSchema(schema.getId());
 		return schema.getId();
