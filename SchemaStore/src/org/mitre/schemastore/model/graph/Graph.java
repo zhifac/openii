@@ -41,7 +41,7 @@ public class Graph implements Serializable
 	}
 
 	/** Copy the base graph */
-	protected Graph(Graph graph)
+	public Graph(Graph graph)
 	{
 		this.schema = graph.schema;
 		this.graphHash = graph.graphHash;
