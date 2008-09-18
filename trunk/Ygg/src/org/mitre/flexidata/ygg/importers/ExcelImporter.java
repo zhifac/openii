@@ -105,7 +105,7 @@ public class ExcelImporter extends Importer {
 		return filetypes;
 	}
 
-	protected void initialize() throws ImporterException
+	protected void initialize(URI uri) throws ImporterException
 	{
 		try {
 			InputStream excelStream;
@@ -151,5 +151,11 @@ public class ExcelImporter extends Importer {
 	{
 		generate();
 		return generateSchemaElementList();
+	}
+
+	@Override
+	public ArrayList<SchemaElement> getSchemaElements(URI uri) throws ImporterException {
+		initialize(uri);
+		return getSchemaElements();
 	}
 }

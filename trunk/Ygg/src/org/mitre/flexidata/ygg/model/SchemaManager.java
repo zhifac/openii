@@ -32,7 +32,9 @@ public class SchemaManager
 			schema.setId(schemaID);
 			success = SchemaStore.getClient().setParentSchemas(schema.getId(), extendedSchemaIDs);
 			for(SchemaListener listener : listeners) listener.schemaAdded(schema);
-		} catch(Exception e) {}
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
 		if(!success) deleteSchema(schema);
 		return success;
 	}
