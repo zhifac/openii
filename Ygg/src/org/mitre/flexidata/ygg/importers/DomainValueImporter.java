@@ -1,5 +1,6 @@
 package org.mitre.flexidata.ygg.importers;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -34,12 +35,14 @@ public class DomainValueImporter extends ExcelImporter {
 	}
 
 	@Override
-	protected void initialize() throws ImporterException
-	{
-		super.initialize();
+	protected void initialize(URI uri) {
+		try {
+			super.initialize(uri);
+		} catch (ImporterException e) {
+			throw new RuntimeException(e);
+		}
 		_domains = new HashMap<String, Domain>();
 		_domainValues = new HashMap<String, DomainValue>();
-
 	}
 
 	protected void generate() {
@@ -49,12 +52,8 @@ public class DomainValueImporter extends ExcelImporter {
 		for (int s = 0; s < numSheets; s++) {
 			HSSFSheet sheet = _excelWorkbook.getSheetAt(s);
 
-			// add sheet name as a domain
-			// String domainName = _excelWorkbook.getSheetName(s);
-			// addDomain(domainName);
-
 			// iterate through rows and create table/attribute nodes
-			for (int i = sheet.getFirstRowNum(); i < sheet.getLastRowNum(); i++) {
+			for (int i = sheet.getFirstRowNum(); i <= sheet.getLastRowNum(); i++) {
 				readRow(sheet.getRow(i));
 			}
 		}
