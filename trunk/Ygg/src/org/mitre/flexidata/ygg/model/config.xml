@@ -1,4 +1,4 @@
-<schemastore>http://mm124911-pc:8080/SchemaStore/services/SchemaStore</schemastore>
+<schemastore>http://localhost:8080/SchemaStore/services/SchemaStore</schemastore>
 <importers>
   <importer>org.mitre.flexidata.ygg.importers.NewSchemaImporter</importer>
   <importer>org.mitre.flexidata.ygg.importers.ExtendSchemaImporter</importer>
