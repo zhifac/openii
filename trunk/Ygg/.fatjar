@@ -1,12 +1,12 @@
 #Fat Jar Configuration File
-#Thu Jul 24 13:06:44 EDT 2008
+#Tue Sep 09 14:24:30 EDT 2008
 onejar.license.required=true
 manifest.classpath=
 manifest.removesigners=true
 onejar.checkbox=false
 jarname=YggAPI.jar
 manifest.mergeall=true
-manifest.mainclass=
+manifest.mainclass=org.mitre.flexidata.ygg.Ygg
 manifest.file=<createnew>
 jarname.isextern=false
 onejar.expand=

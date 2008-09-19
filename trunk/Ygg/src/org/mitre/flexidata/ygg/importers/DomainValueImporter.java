@@ -96,14 +96,13 @@ public class DomainValueImporter extends ExcelImporter {
 		HSSFCell descrCell = row.getCell(2);
 
 		// ignore rows without domain specified
-		if (domainCell == null) {
-			return;
-		}
+		if (domainCell == null  )	return;
+		String domainName = cleanup(domainCell.getRichStringCellValue().toString());
+		if ( domainName.length() == 0 ) return;
 
-		if (dvcell == null)
+		if (dvcell == null|| dvcell.getRichStringCellValue().toString().length()==0)
 			domainDefOnly = true;
 
-		String domainName = despace(domainCell.getRichStringCellValue().toString());
 		String domainValueStr = "";
 
 		// get domain values. this can be either string or number
@@ -111,12 +110,12 @@ public class DomainValueImporter extends ExcelImporter {
 			if (dvcell.getCellType() == HSSFCell.CELL_TYPE_NUMERIC)
 				domainValueStr = Double.toString(dvcell.getNumericCellValue());
 			else
-				domainValueStr = despace(row.getCell(1).getRichStringCellValue().toString());
+				domainValueStr = cleanup(row.getCell(1).getRichStringCellValue().toString());
 		}
 
 		String documentation = "";
 		if (descrCell != null)
-			documentation = despace(descrCell.getRichStringCellValue().toString());
+			documentation = cleanup(descrCell.getRichStringCellValue().toString());
 
 		String hashKey = domainName + "/" + domainValueStr;
 

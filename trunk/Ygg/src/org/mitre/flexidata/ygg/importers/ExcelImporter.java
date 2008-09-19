@@ -35,11 +35,11 @@ public class ExcelImporter extends Importer {
 	private HashMap<String, Entity> _entities;
 	private HashMap<String, Attribute> _attributes;
 	private static Domain D_ANY = new Domain(nextId(), ANY, null, 0);
-
+	
+	
 	// get rid of characters
-	protected String despace(String s) {
-		s = s.trim().replaceAll(" ", "_");
-		s = s.replaceAll("'", "\'");
+	protected String cleanup(String s) {
+		s = s.trim().replaceAll("'", "\'").replaceAll("\"", "\\\"");  //.replaceAll(" ", "_");
 		return s;
 	}
 
@@ -59,9 +59,9 @@ public class ExcelImporter extends Importer {
 
 	protected void readRow(HSSFRow row) {
 		
-		String tblName = despace(row.getCell(0).getRichStringCellValue().toString());
-		String attName = despace(row.getCell(1).getRichStringCellValue().toString());
-		String documentation = despace(row.getCell(2).getRichStringCellValue().toString());
+		String tblName = cleanup(row.getCell(0).getRichStringCellValue().toString());
+		String attName = cleanup(row.getCell(1).getRichStringCellValue().toString());
+		String documentation = cleanup(row.getCell(2).getRichStringCellValue().toString());
 		Entity tblEntity;
 		Attribute attribute;
 
