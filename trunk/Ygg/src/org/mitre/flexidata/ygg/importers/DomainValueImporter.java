@@ -1,6 +1,5 @@
 package org.mitre.flexidata.ygg.importers;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -35,9 +34,9 @@ public class DomainValueImporter extends ExcelImporter {
 	}
 
 	@Override
-	protected void initialize(URI uri) {
+	protected void initialize() {
 		try {
-			super.initialize(uri);
+			super.initialize();
 		} catch (ImporterException e) {
 			throw new RuntimeException(e);
 		}
