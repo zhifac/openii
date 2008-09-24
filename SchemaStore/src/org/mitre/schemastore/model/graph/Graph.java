@@ -4,6 +4,8 @@ package org.mitre.schemastore.model.graph;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 
 import org.mitre.schemastore.model.Alias;
@@ -35,7 +37,23 @@ public class Graph implements Serializable
 	/** Constructs the base graph */
 	public Graph(Schema schema, ArrayList<SchemaElement> elements)
 	{
+		/** Class for defining the proper order for inserting elements */
+		class ElementComparator implements Comparator<SchemaElement>
+		{
+			public int compare(SchemaElement e1, SchemaElement e2)
+			{
+				if(e1 instanceof Domain) return -1; if(e2 instanceof Domain) return 1;
+				if(e1 instanceof DomainValue) return -1; if(e2 instanceof DomainValue) return 1;
+				if(e1 instanceof Entity) return -1; if(e2 instanceof Entity) return 1;
+				if(e1 instanceof Attribute) return -1; if(e2 instanceof Attribute) return 1;
+				if(!(e1 instanceof Alias)) return -1; if(!(e2 instanceof Alias)) return 1;
+				return 0;
+			}		
+		}
+		
+		// Populates the graph with elements
 		this.schema = schema;
+		Collections.sort(elements, new ElementComparator());
 		for(SchemaElement element : elements)
 			addElement(element);
 	}
@@ -130,7 +148,6 @@ public class Graph implements Serializable
 	}
 	
 	/** Returns the sub-type relationships for a given entity */
-	// PMORK: Access to the sub-type relationships now included.
 	public ArrayList<Subtype> getSubTypes(Integer elementID)
 	{
 		ArrayList<Subtype> subtypes = new ArrayList<Subtype>();
