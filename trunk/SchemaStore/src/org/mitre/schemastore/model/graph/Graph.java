@@ -129,6 +129,25 @@ public class Graph implements Serializable
 		return containments;
 	}
 	
+	/** Returns the sub-type relationships for a given entity */
+	// PMORK: Access to the sub-type relationships now included.
+	public ArrayList<Subtype> getSubTypes(Integer elementID)
+	{
+		ArrayList<Subtype> subtypes = new ArrayList<Subtype>();
+		
+		// Identify all subtype relationships for which the indicated element is the child element.
+		for(SchemaElement se : getElements(Subtype.class))
+		{
+			Subtype subtype = (Subtype)se;
+			Integer parentID = subtype.getParentID();
+			Integer childID = subtype.getChildID();
+			if(parentID.equals(elementID) || childID.equals(elementID))
+				subtypes.add(subtype);
+		}
+		
+		return subtypes;
+	}
+	
 	/** Returns the domain values associated with the specified domain */
 	public ArrayList<DomainValue> getDomainValuesForDomain(Integer domainID)
 	{
