@@ -1,0 +1,14 @@
+#Fat Jar Configuration File
+#Wed Sep 24 14:47:30 EDT 2008
+onejar.license.required=true
+manifest.classpath=
+manifest.removesigners=true
+onejar.checkbox=false
+jarname=SchemaStoreClient.jar
+manifest.mergeall=false
+manifest.mainclass=
+manifest.file=<createnew>
+jarname.isextern=false
+onejar.expand=
+excludes=<po|SchemaStoreClient>~META-INF/;<po|SchemaStoreClient>~org/~mitre/~schemastore/~client/~SchemaStoreTest.class;<po|SchemaStore>~org/~mitre/~schemastore/~data/;<po|SchemaStore>~org/~mitre/~schemastore/~servlet/;<jar|axis.jar>;<jar|commons-discovery-0.2.jar>;<jar|jaxrpc.jar>;<jar|saaj.jar>;<jar|wsdl4j-1.5.1.jar>;<jar|derby.jar>;<jar|derbytools.jar>;<jar|commons-logging.jar>;<jar|postgresql-8.2-504.jdbc3.jar>
+includes=
