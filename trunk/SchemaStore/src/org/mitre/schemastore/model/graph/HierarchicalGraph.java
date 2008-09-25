@@ -34,9 +34,10 @@ public class HierarchicalGraph extends Graph
 		}
 		
 		// Identify which model to use
-		if(domainCount.equals(totalCount)) model = new DomainGraphModel(this);
-		else if(containmentCount>0) model = new ContainmentGraphModel(this);
-		else model = new RelationalGraphModel(this);
+//		if(domainCount.equals(totalCount)) model = new DomainGraphModel(this);
+//		else if(containmentCount>0) model = new ContainmentGraphModel(this);
+//		else model = new RelationalGraphModel(this);
+		model = new RelationalGraphModelWithContainments(this);
 	}
 
 	/** Returns the root elements in this graph */
