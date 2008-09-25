@@ -51,13 +51,9 @@ public class SchemaElement implements Serializable
 		{ return id; }
 	
 	/** Indicates that two schema elements are equals */
-	// PMORK: Also allow one to compare a schema element with an integer.
-	public boolean equals(Object obj)
+	public final boolean equals(Object schemaElement)
 	{
-		if (obj instanceof SchemaElement) return id.equals(((SchemaElement)obj).id);
-		if (obj instanceof Integer) return id.equals(obj);
-		return false;
-//		return schemaElement instanceof SchemaElement && ((SchemaElement)schemaElement).id.equals(id);
+		return schemaElement instanceof SchemaElement && ((SchemaElement)schemaElement).id.equals(id);
 	}
 	
 	/** String representation of the schema element */
