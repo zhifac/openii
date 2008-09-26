@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import org.mitre.schemastore.model.DataSource;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
-import org.mitre.schemastore.model.graph.HierarchicalGraph;
+import org.mitre.schemastore.model.graph.Graph;
 
 /** Manages schema information */
 public class SchemaManager
@@ -32,9 +32,8 @@ public class SchemaManager
 			schema.setId(schemaID);
 			success = SchemaStore.getClient().setParentSchemas(schema.getId(), extendedSchemaIDs);
 			for(SchemaListener listener : listeners) listener.schemaAdded(schema);
-		} catch(Exception e) {
-			e.printStackTrace();
 		}
+		catch(Exception e) { e.printStackTrace(); }
 		if(!success) deleteSchema(schema);
 		return success;
 	}
@@ -72,10 +71,10 @@ public class SchemaManager
 		{ try { return SchemaStore.getClient().getSchemaElementCount(schemaID); } catch(Exception e) { return null; } }
 	
 	/** Returns the schema elements associated with the specified schema in the repository */
-	static public HierarchicalGraph getGraph(Integer schemaID)
+	static public Graph getGraph(Integer schemaID)
 	{
 		try {
-			return SchemaStore.getClient().getSchemaElementGraph(schemaID);
+			return SchemaStore.getClient().getGraph(schemaID);
 		} catch(Exception e) { return null; }
 	}
 

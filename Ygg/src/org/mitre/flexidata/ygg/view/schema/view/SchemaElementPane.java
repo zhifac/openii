@@ -27,7 +27,7 @@ import org.mitre.schemastore.model.Domain;
 import org.mitre.schemastore.model.Entity;
 import org.mitre.schemastore.model.Relationship;
 import org.mitre.schemastore.model.SchemaElement;
-import org.mitre.schemastore.model.graph.HierarchicalGraph;
+import org.mitre.schemastore.model.graph.Graph;
 
 /** Class for displaying the schema element information */
 class SchemaElementPane extends JPanel
@@ -36,7 +36,7 @@ class SchemaElementPane extends JPanel
 	private Integer schemaID = null;
 	
 	/** Stores the schema element graph being displayed */
-	private HierarchicalGraph graph = null;
+	private Graph graph = null;
 	
 	/** Stores the data sources to be displayed */
 	private ArrayList<DataSource> dataSources = null;
