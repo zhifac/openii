@@ -193,37 +193,37 @@ public class Graph implements Serializable
 			Attribute attribute = (Attribute)element;
 			SchemaElement domain = getElement(attribute.getDomainID());
 			SchemaElement entity = getElement(attribute.getEntityID());
-//			if(domain==null || !(domain instanceof Domain)) return false;
-//			if(entity==null || !(entity instanceof Entity)) return false;
+			if(domain==null || !(domain instanceof Domain)) return false;
+			if(entity==null || !(entity instanceof Entity)) return false;
 		}
 		if(element instanceof DomainValue)
 		{
 			DomainValue domainValue = (DomainValue)element;
 			SchemaElement domain = getElement(domainValue.getDomainID());
-//			if(domain==null || !(domain instanceof Domain)) return false;
+			if(domain==null || !(domain instanceof Domain)) return false;
 		}
 		if(element instanceof Relationship)
 		{
 			Relationship relationship = (Relationship)element;
-//			if(getElement(relationship.getLeftID())==null) return false;
-//			if(getElement(relationship.getRightID())==null) return false;
+			if(getElement(relationship.getLeftID())==null) return false;
+			if(getElement(relationship.getRightID())==null) return false;
 		}
 		if(element instanceof Containment)
 		{
 			Containment containment = (Containment)element;
-//			if(getElement(containment.getParentID())==null) return false;
-//			if(getElement(containment.getChildID())==null) return false;
+			if(getElement(containment.getParentID())==null) return false;
+			if(getElement(containment.getChildID())==null) return false;
 		}
 		if(element instanceof Subtype)
 		{
 			Subtype subtype = (Subtype)element;
-//			if(getElement(subtype.getParentID())==null) return false;
-//			if(getElement(subtype.getChildID())==null) return false;
+			if(getElement(subtype.getParentID())==null) return false;
+			if(getElement(subtype.getChildID())==null) return false;
 		}
 		if(element instanceof Alias)
 		{
 			Alias alias = (Alias)element;
-//			if(getElement(alias.getElementID())==null) return false;
+			if(getElement(alias.getElementID())==null) return false;
 		}
 		
 		// Add element to the graph
