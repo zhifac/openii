@@ -388,7 +388,7 @@ public class SQLExporter extends Exporter {
 		} else {
 			SQLExporter exporter = new SQLExporter();
 			try {
-				System.out.println( exporter.exportSchema(new Integer(schemaId), ss.getSchemaElementGraph(schemaId).getElements(null)) );
+				System.out.println( exporter.exportSchema(new Integer(schemaId), ss.getGraph(schemaId).getElements(null)) );
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
