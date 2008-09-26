@@ -211,7 +211,8 @@ public class Graph implements Serializable
 		if(element instanceof Containment)
 		{
 			Containment containment = (Containment)element;
-			if(getElement(containment.getParentID())==null) return false;
+			Integer parentID = containment.getParentID();
+			if(parentID!=null && getElement(parentID)==null) return false;
 			if(getElement(containment.getChildID())==null) return false;
 		}
 		if(element instanceof Subtype)
@@ -263,7 +264,8 @@ public class Graph implements Serializable
 			if(element instanceof Containment)
 			{
 				Containment containment = (Containment)element;
-				referenced |= containment.getParentID().equals(elementID);
+				Integer parentID = containment.getParentID();
+				referenced |= parentID!=null && parentID.equals(elementID);
 				referenced |= containment.getChildID().equals(elementID);				
 			}
 			if(element instanceof Subtype)
@@ -318,7 +320,8 @@ public class Graph implements Serializable
 			if(schemaElement instanceof Containment)
 			{
 				Containment containment = (Containment)schemaElement;
-				if(containment.getParentID().equals(oldID)) containment.setParentID(newID);
+				Integer parentID = containment.getParentID();
+				if(parentID!=null && parentID.equals(oldID)) containment.setParentID(newID);
 				if(containment.getChildID().equals(oldID)) containment.setChildID(newID);				
 			}
 			if(schemaElement instanceof Subtype)
