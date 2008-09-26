@@ -23,7 +23,7 @@ CREATE TABLE attribute (
 
 CREATE TABLE containment (
 	id integer NOT NULL,
-	parent_id integer NOT NULL,
+	parent_id integer,
 	child_id integer NOT NULL,
     "min" integer,
     "max" integer,

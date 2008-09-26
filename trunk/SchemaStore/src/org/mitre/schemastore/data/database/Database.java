@@ -750,7 +750,7 @@ public class Database
 			if(schemaElement instanceof Subtype)
 			{
 				Subtype subtype = (Subtype)schemaElement;
-				stmt.executeUpdate("INSERT INTO subtype(id,parent_id,child_id) VALUES("+schemaElementID+",'"+subtype.getParentID()+"',"+subtype.getChildID()+")");
+				stmt.executeUpdate("INSERT INTO subtype(id,parent_id,child_id) VALUES("+schemaElementID+","+subtype.getParentID()+","+subtype.getChildID()+")");
 			}
 			
 			// Inserts an alias
