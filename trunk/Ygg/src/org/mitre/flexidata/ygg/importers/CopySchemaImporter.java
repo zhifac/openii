@@ -66,7 +66,7 @@ public class CopySchemaImporter extends Importer
 				// check whether the two schemas have the same number of elements
 				// isolate the elements with the base for each schema
 				ArrayList<SchemaElement> repoSchemaElementsWithThisBase = new ArrayList<SchemaElement>();
-				for (SchemaElement se : repository.getSchemaElementGraph(repositorySchema.getId()).getElements(null))
+				for (SchemaElement se : repository.getGraph(repositorySchema.getId()).getElements(null))
 				{
 					if (se.getBase() != null && se.getBase().equals(repositorySchema.getId()))
 					{
@@ -125,7 +125,7 @@ public class CopySchemaImporter extends Importer
 				Schema repositorySchema = repository.getSchema(parentSchemaID);
 			
 				// Create a mapping of these elements to 
-				for (SchemaElement se : repository.getSchemaElementGraph(parentSchemaID).getElements(null))
+				for (SchemaElement se : repository.getGraph(parentSchemaID).getElements(null))
 				{	elementToOldID.put(new String(se.getName().toString()+se.getClass().toString()),se.getId());}
 				
 				// Get the extended schema ID
@@ -158,7 +158,7 @@ public class CopySchemaImporter extends Importer
 		// Generate the list of schema elements to import for this schema
 		ArrayList<SchemaElement> schemaElements = new ArrayList<SchemaElement>();
 		try {
-			Graph graph = repository.getSchemaElementGraph(repositorySchemaID);
+			Graph graph = repository.getGraph(repositorySchemaID);
 			for(SchemaElement schemaElement : graph.getElements(null))
 			{
 				if(schemaElement.getBase() != null && schemaElement.getBase().equals(repositorySchemaID))

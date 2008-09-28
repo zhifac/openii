@@ -82,6 +82,10 @@ public abstract class Importer
 		ArrayList<Integer> extendedSchemaIDs = getExtendedSchemaIDs();
 		ArrayList<SchemaElement> schemaElements = getSchemaElements();
 		
+		for (SchemaElement e : schemaElements) {
+			System.out.println(e.getClass() + "::" + e.getName());
+		}
+		
 		// Import the schema into the repository
 		if(!SchemaManager.importSchema(schema, extendedSchemaIDs, schemaElements))
 			throw new ImporterException(ImporterException.IMPORT_FAILURE,"A failure occured in transferring the schema to the repository");
