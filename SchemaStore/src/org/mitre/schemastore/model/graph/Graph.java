@@ -25,6 +25,130 @@ import org.mitre.schemastore.model.Subtype;
  */
 public class Graph implements Serializable
 {
+	/** Private class for caching graph data */
+	private class GraphCache
+	{
+		/** Stores the lists of elements of each type */
+		private HashMap<Class,ArrayList<SchemaElement>> typeLists = null;
+		private HashMap<Integer,ArrayList<Attribute>> attributeLists = null;
+		private HashMap<Integer,ArrayList<Containment>> containmentLists = null;
+		private HashMap<Integer,ArrayList<Subtype>> subtypeLists = null;
+		private HashMap<Integer,ArrayList<DomainValue>> domainValueLists = null;
+		private HashMap<Integer,Alias> aliasList = null;
+		
+		/** Resets the cache */
+		private void reset()
+		{
+			typeLists = null;
+			attributeLists = null;
+			containmentLists = null;
+			subtypeLists = null;
+			domainValueLists = null;
+			aliasList = null;
+		}
+		
+		/** Adds an element to the list of elements */
+		private <S,T> void addElement(S identifier, T element, HashMap<S,ArrayList<T>> lists)
+		{
+			ArrayList<T> list = lists.get(identifier);
+			if(list==null) lists.put(identifier,list = new ArrayList<T>());
+			list.add(element);
+		}
+		
+		/** Retrieves the elements of the specified type */
+		private ArrayList<SchemaElement> getElements(Class type)
+		{
+			if(typeLists==null)
+			{
+				typeLists = new HashMap<Class,ArrayList<SchemaElement>>();
+				for(SchemaElement element : graphHash.values())
+					addElement(element.getClass(),element,typeLists);
+			}
+			ArrayList<SchemaElement> typeList = typeLists.get(type);
+			return typeList==null ? new ArrayList<SchemaElement>() : typeList;
+		}
+
+		/** Retrieves the attributes for the specified schema element */
+		private ArrayList<Attribute> getAttributes(Integer elementID)
+		{
+			if(attributeLists==null)
+			{
+				attributeLists = new HashMap<Integer,ArrayList<Attribute>>();
+				for(SchemaElement element : getElements(Attribute.class))
+				{
+					Attribute attribute = (Attribute)element;
+					addElement(attribute.getEntityID(),attribute,attributeLists);
+					addElement(attribute.getDomainID(),attribute,attributeLists);
+				}
+			}
+			ArrayList<Attribute> attributeList = attributeLists.get(elementID);
+			return attributeList==null ? new ArrayList<Attribute>() : attributeList;
+		}
+
+		/** Retrieves the containments for the specified schema element */
+		private ArrayList<Containment> getContainments(Integer elementID)
+		{
+			if(containmentLists==null)
+			{
+				containmentLists = new HashMap<Integer,ArrayList<Containment>>();
+				for(SchemaElement element : getElements(Containment.class))
+				{
+					Containment containment = (Containment)element;
+					addElement(containment.getParentID(),containment,containmentLists);
+					addElement(containment.getChildID(),containment,containmentLists);
+				}
+			}
+			ArrayList<Containment> containmentList = containmentLists.get(elementID);
+			return containmentList==null ? new ArrayList<Containment>() : containmentList;
+		}
+
+		/** Retrieves the subtypes for the specified schema element */
+		private ArrayList<Subtype> getSubtypes(Integer elementID)
+		{
+			if(subtypeLists==null)
+			{
+				subtypeLists = new HashMap<Integer,ArrayList<Subtype>>();
+				for(SchemaElement element : getElements(Subtype.class))
+				{
+					Subtype subtype = (Subtype)element;
+					addElement(subtype.getParentID(),subtype,subtypeLists);
+					addElement(subtype.getChildID(),subtype,subtypeLists);
+				}
+			}
+			ArrayList<Subtype> subtypeList = subtypeLists.get(elementID);
+			return subtypeList==null ? new ArrayList<Subtype>() : subtypeList;
+		}
+
+		/** Retrieves the domain values for the specified schema element */
+		private ArrayList<DomainValue> getDomainValues(Integer elementID)
+		{
+			if(domainValueLists==null)
+			{
+				domainValueLists = new HashMap<Integer,ArrayList<DomainValue>>();
+				for(SchemaElement element : getElements(DomainValue.class))
+				{
+					DomainValue domainValue = (DomainValue)element;
+					addElement(domainValue.getDomainID(),domainValue,domainValueLists);
+				}
+			}
+			ArrayList<DomainValue> domainValueList = domainValueLists.get(elementID);
+			return domainValueList==null ? new ArrayList<DomainValue>() : domainValueList;
+		}
+
+		/** Retrieves the alias for the specified schema element */
+		private Alias getAlias(Integer elementID)
+		{
+			if(aliasList==null)
+			{
+				aliasList = new HashMap<Integer,Alias>();
+				for(SchemaElement element : getElements(Alias.class))
+					aliasList.put(elementID,(Alias)element);
+			}
+			return aliasList.get(elementID);
+		}
+	}
+	private GraphCache cache = new GraphCache();
+	
 	/** Stores the schema associated with this graph */
 	private Schema schema;
 
@@ -83,15 +207,9 @@ public class Graph implements Serializable
 	
 	/** Returns the schema elements associated with the specified type */
 	public ArrayList<SchemaElement> getElements(Class type)
-	{	
-		ArrayList<SchemaElement> elements = new ArrayList<SchemaElement>();
-		
-		// Filter out schemas of the specified type
-		for(SchemaElement element : graphHash.values())
-			if(type==null || type.isInstance(element))
-				elements.add(element);
-		
-		return elements;		
+	{
+		if(type==null) return new ArrayList<SchemaElement>(graphHash.values());
+		return new ArrayList<SchemaElement>(cache.getElements(type));
 	}
 
 	/** Returns the base schema elements associated with the specified type */
@@ -109,80 +227,27 @@ public class Graph implements Serializable
 	
 	/** Returns the entity associated with the specified attribute */
 	public Entity getEntity(Integer attributeID)
-	{
-		Attribute attribute = (Attribute)getElement(attributeID);
-		return (Entity)getElement(attribute.getEntityID());
-	}
+		{ return (Entity)getElement(((Attribute)getElement(attributeID)).getEntityID()); }
 	
 	/** Returns the attributes associated with the specified entity */
 	public ArrayList<Attribute> getAttributes(Integer elementID)
-	{
-		ArrayList<Attribute> attributes = new ArrayList<Attribute>();
-	
-		// Identify all attributes associated with the specified schema element
-		for(SchemaElement element: getElements(Attribute.class))
-		{
-			Attribute attribute = (Attribute)element;
-			if(attribute.getEntityID().equals(elementID) || attribute.getDomainID().equals(elementID))
-				attributes.add(attribute);
-		}
-		
-		return attributes;
-	}
+		{ return cache.getAttributes(elementID); }
 	
 	/** Returns the containments associated with the specified schema element */
 	public ArrayList<Containment> getContainments(Integer elementID)
-	{
-		ArrayList<Containment> containments = new ArrayList<Containment>();
-		
-		// Identify all containments associated with the specified schema element
-		for(SchemaElement containment : getElements(Containment.class))
-		{
-			Integer parentID = ((Containment)containment).getParentID();
-			Integer childID = ((Containment)containment).getChildID();
-			if(parentID.equals(elementID) || childID.equals(elementID))
-			   containments.add((Containment)containment);
-		}
-		
-		return containments;
-	}
+		{ return cache.getContainments(elementID); }
 	
 	/** Returns the sub-type relationships for a given entity */
 	public ArrayList<Subtype> getSubTypes(Integer elementID)
-	{
-		ArrayList<Subtype> subtypes = new ArrayList<Subtype>();
-		
-		// Identify all subtype relationships for which the indicated element is the child element.
-		for(SchemaElement se : getElements(Subtype.class))
-		{
-			Subtype subtype = (Subtype)se;
-			Integer parentID = subtype.getParentID();
-			Integer childID = subtype.getChildID();
-			if(parentID.equals(elementID) || childID.equals(elementID))
-				subtypes.add(subtype);
-		}
-		
-		return subtypes;
-	}
+		{ return cache.getSubtypes(elementID); }
 	
 	/** Returns the domain values associated with the specified domain */
 	public ArrayList<DomainValue> getDomainValuesForDomain(Integer domainID)
-	{
-		ArrayList<DomainValue> domainValues = new ArrayList<DomainValue>();
-		for(SchemaElement domainValue : getElements(DomainValue.class))
-			if(((DomainValue)domainValue).getDomainID().equals(domainID))
-				domainValues.add((DomainValue)domainValue);
-		return domainValues;
-	}
+		{ return cache.getDomainValues(domainID); }
 
 	/** Returns the alias associated with the specified element */
 	public Alias getAlias(Integer elementID)
-	{
-		for(SchemaElement element : getElements(Alias.class))
-			if(((Alias)element).getElementID().equals(elementID))
-				return (Alias)element;
-		return null;
-	}
+		{ return cache.getAlias(elementID); }
 	
 	/** Adds a list of elements to the graph */
 	public boolean addElement(SchemaElement element)
@@ -234,6 +299,7 @@ public class Graph implements Serializable
 		for(GraphListener listener : listeners)
 			listener.schemaElementAdded(element);
 		
+		cache.reset();
 		return true;
 	}
 	
@@ -289,7 +355,8 @@ public class Graph implements Serializable
 		// Inform listeners of the removed element
 		for(GraphListener listener : listeners)
 			listener.schemaElementRemoved(element);
-
+		
+		cache.reset();
 		return true;
 	}
 	
@@ -336,6 +403,9 @@ public class Graph implements Serializable
 				if(alias.getElementID().equals(oldID)) alias.setElementID(newID);
 			}
 		}
+		
+		// Resets the cache
+		cache.reset();
 	}
 	
 	/** Adds a graph listener */
