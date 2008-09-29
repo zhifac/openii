@@ -60,7 +60,7 @@ public class ContainmentGraphModel extends GraphModel
 		{
 			Integer containmentID = ((Containment)element).getChildID();
 			for(Containment containment : graph.getContainments(containmentID))
-				if(containment.getParentID().equals(containmentID))
+				if(containmentID.equals(containment.getParentID()))
 					childElements.add(containment);
 		}
 			
