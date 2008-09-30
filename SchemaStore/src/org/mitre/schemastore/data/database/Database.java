@@ -88,7 +88,7 @@ public class Database
 	
 	/** Scrub strings to avoid database errors */
 	static private String scrub(String word)
-		{ return word.replace("'","''"); }
+		{ return word==null ? null : word.replace("'","''"); }
 	
 	//---------------------------------
 	// Handles Schemas in the Database 
