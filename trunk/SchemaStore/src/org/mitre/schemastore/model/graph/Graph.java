@@ -219,7 +219,7 @@ public class Graph implements Serializable
 		
 		// Filter out base schema elements of the specified type
 		for(SchemaElement element : getElements(type))
-			if(element.getBase().equals(schema.getId()))
+			if(schema.getId().equals(element.getBase()))
 				baseElements.add(element);
 		
 		return baseElements;
