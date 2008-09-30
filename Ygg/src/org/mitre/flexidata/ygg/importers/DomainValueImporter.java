@@ -92,7 +92,7 @@ public class DomainValueImporter extends ExcelImporter {
 
 		// get domain name, assume cell contains string value
 		HSSFCell domainCell = row.getCell(0);
-		HSSFCell dvcell = row.getCell(1);
+		HSSFCell valueCell = row.getCell(1);
 		HSSFCell descrCell = row.getCell(2);
 
 		// ignore rows without domain specified
@@ -100,17 +100,20 @@ public class DomainValueImporter extends ExcelImporter {
 		String domainName = cleanup(domainCell.getRichStringCellValue().toString());
 		if ( domainName.length() == 0 ) return;
 
-		if (dvcell == null|| dvcell.getRichStringCellValue().toString().length()==0)
+		if (valueCell == null ) // getRichStringCellValue().toString().length()==0)
 			domainDefOnly = true;
 
 		String domainValueStr = "";
 
 		// get domain values. this can be either string or number
 		if (!domainDefOnly) {
-			if (dvcell.getCellType() == HSSFCell.CELL_TYPE_NUMERIC)
-				domainValueStr = Double.toString(dvcell.getNumericCellValue());
+			if (valueCell.getCellType() == HSSFCell.CELL_TYPE_NUMERIC)
+				domainValueStr = Double.toString(valueCell.getNumericCellValue());
 			else
-				domainValueStr = cleanup(row.getCell(1).getRichStringCellValue().toString());
+				domainValueStr = cleanup(valueCell.getRichStringCellValue().toString());
+			
+			if ( domainValueStr.trim().length() == 0 )
+				domainDefOnly = true;
 		}
 
 		String documentation = "";
