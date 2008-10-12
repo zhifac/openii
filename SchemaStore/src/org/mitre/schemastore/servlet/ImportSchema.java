@@ -31,6 +31,7 @@ public class ImportSchema
 	{
 		public int compare(SchemaElement so1, SchemaElement so2)
 		{
+			if(so1.getClass().equals(so2.getClass())) return so1.getId().compareTo(so2.getId());
 			if(so1.getClass()==Entity.class) return -1; if(so2.getClass()==Entity.class) return 1;
 			if(so1.getClass()==Domain.class) return -1; if(so2.getClass()==Domain.class) return 1;
 			if(so1.getClass()==Attribute.class) return -1; if(so2.getClass()==Attribute.class) return 1;
@@ -41,17 +42,6 @@ public class ImportSchema
 			if(so1.getClass()==Alias.class) return -1; if(so2.getClass()==Alias.class) return 1;		
 			return 1;
 		}
-	}
-	
-	/** Alters all references to the specified ID */
-	static private void alterID(Graph graph, Integer oldID, Integer newID)
-	{
-		// First, determine if new ID is already used (and switch this ID if true)
-		if(graph.getElement(newID)!=null)
-			{ alterID(graph,newID,newID+10000); }
-		
-		// Replace all references to old ID with new ID
-		graph.updateElementID(oldID, newID);
 	}
 	
 	/** Imports the specified schema into the web services */
@@ -82,8 +72,9 @@ public class ImportSchema
 				// Remove the default domain element
 				if(newID!=null)
 				{
+					if(!newID.equals(domain.getId()))
+						graph.updateElementID(domain.getId(), newID);
 					graph.deleteElement(schemaElement.getId());
-					alterID(graph, domain.getId(), newID);
 				}
 			}
 						
@@ -97,7 +88,7 @@ public class ImportSchema
 				element.setBase(schemaID);
 				Integer schemaElementID = SchemaElements.addSchemaElement(element);
 				if(schemaElementID==null) throw new RemoteException("Failed to import schema element "+element.getName());
-				alterID(graph,element.getId(),schemaElementID);
+				graph.updateElementID(element.getId(),schemaElementID);
 			}
 		}
 		catch(RemoteException e)

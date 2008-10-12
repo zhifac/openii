@@ -308,45 +308,46 @@ public class Graph implements Serializable
 	{
 		// Checks to ensure that element is not referenced elsewhere
 		boolean referenced = false;
-		for(SchemaElement element : getElements(null))
-		{
-			if(element instanceof Attribute)
+		if(elementID>=0)
+			for(SchemaElement element : getElements(null))
 			{
-				Attribute attribute = (Attribute)element;
-				referenced |= attribute.getDomainID().equals(elementID);
-				referenced |= attribute.getEntityID().equals(elementID);
+				if(element instanceof Attribute)
+				{
+					Attribute attribute = (Attribute)element;
+					referenced |= attribute.getDomainID().equals(elementID);
+					referenced |= attribute.getEntityID().equals(elementID);
+				}
+				if(element instanceof DomainValue)
+				{
+					DomainValue domainValue = (DomainValue)element;
+					referenced |= domainValue.getDomainID().equals(elementID);
+				}
+				if(element instanceof Relationship)
+				{
+					Relationship relationship = (Relationship)element;
+					referenced |= relationship.getLeftID().equals(elementID);
+					referenced |= relationship.getRightID().equals(elementID);
+				}
+				if(element instanceof Containment)
+				{
+					Containment containment = (Containment)element;
+					Integer parentID = containment.getParentID();
+					referenced |= parentID!=null && parentID.equals(elementID);
+					referenced |= containment.getChildID().equals(elementID);				
+				}
+				if(element instanceof Subtype)
+				{
+					Subtype subtype = (Subtype)element;
+					referenced |= subtype.getParentID().equals(elementID);
+					referenced |= subtype.getChildID().equals(elementID);				
+				}
+				if(element instanceof Alias)
+				{
+					Alias alias = (Alias)element;
+					referenced |= alias.getElementID().equals(elementID);
+				}
+				if(referenced) return false;
 			}
-			if(element instanceof DomainValue)
-			{
-				DomainValue domainValue = (DomainValue)element;
-				referenced |= domainValue.getDomainID().equals(elementID);
-			}
-			if(element instanceof Relationship)
-			{
-				Relationship relationship = (Relationship)element;
-				referenced |= relationship.getLeftID().equals(elementID);
-				referenced |= relationship.getRightID().equals(elementID);
-			}
-			if(element instanceof Containment)
-			{
-				Containment containment = (Containment)element;
-				Integer parentID = containment.getParentID();
-				referenced |= parentID!=null && parentID.equals(elementID);
-				referenced |= containment.getChildID().equals(elementID);				
-			}
-			if(element instanceof Subtype)
-			{
-				Subtype subtype = (Subtype)element;
-				referenced |= subtype.getParentID().equals(elementID);
-				referenced |= subtype.getChildID().equals(elementID);				
-			}
-			if(element instanceof Alias)
-			{
-				Alias alias = (Alias)element;
-				referenced |= alias.getElementID().equals(elementID);
-			}
-			if(referenced) return false;
-		}
 		
 		// Remove element from graph
 		SchemaElement element = graphHash.get(elementID);
@@ -363,6 +364,10 @@ public class Graph implements Serializable
 	/** Updates the id of an element in the graph */
 	public void updateElementID(Integer oldID, Integer newID)
 	{
+		// Shift the ID of any elements that conflict with this updated ID
+		if(getElement(newID)!=null)
+			{ updateElementID(newID,newID+10000); }
+		
 		// Replace all references to old ID with new ID
 		for(SchemaElement schemaElement : getElements(null))
 		{
