@@ -8,25 +8,29 @@ import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.graph.Graph;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 
 /** Importer for copying schemas from other repositories */
 public class CopySchemaImporter extends Importer
-{		
-	/** Stores the repository */
+{
+	/** Private class for sorting schema elements */
+	class SchemaComparator implements Comparator<SchemaElement>
+	{
+		public int compare(SchemaElement element1, SchemaElement element2)
+			{ return element1.getId().compareTo(element2.getId()); }
+	}
+	
+	/** Stores the repository being accessed */
 	private SchemaStoreClient repository = null;
 
-	/** Stores the repository schema ID */
-	private Integer repositorySchemaID = null;
-
 	/** Stores the list of schemas */
-	private ArrayList<Schema> schemaList = null;
-	
-	/** Store the mapping of oldID --> newID for schemaElements */
-	private HashMap<Integer, Integer> IDmapping;
+	private ArrayList<Integer> extendedSchemaIDs = new ArrayList<Integer>();
+
+	/** Stores the list of schema elements */
+	private ArrayList<SchemaElement> schemaElements = null;
 	
 	/** Returns the importer name */
 	public String getName()
@@ -44,133 +48,108 @@ public class CopySchemaImporter extends Importer
 	public ArrayList<Integer> getParents()
 		{ return new ArrayList<Integer>(); }
 	
-	/** Initialize the importer if needed */
-	protected void initialize()
-	{
-		if(repository==null) repository = new SchemaStoreClient(uri.toString().replaceAll("#.*",""));
-		if(repositorySchemaID==null) repositorySchemaID = Integer.parseInt(uri.toString().replaceAll(".*#",""));
-	}
-	
 	/** Identifies the matching schema in the repository if one exists */
-	private Integer getMatchedSchema(Schema repositorySchema) throws Exception
-	{		
-		// Search for schemas with a shared name and the same amount of schema elements
-		if(schemaList==null) schemaList = SchemaManager.getSchemas();
+	private Integer getMatchedSchema(ArrayList<Schema> availableSchemas, Schema schema) throws Exception
+	{
+		Graph graph = null;
 		
-		for(Schema schema : schemaList)
-		{
-			
-			if(schema.getName().equals(repositorySchema.getName()))
+		// Search through available schemas to find if one matches
+		for(Schema possSchema : availableSchemas)
+			if(possSchema.getName().equals(schema.getName()))
 			{
+				// Generate graphs for both schemas
+				if(graph==null) graph = repository.getGraph(schema.getId());
+				Graph possGraph = SchemaManager.getGraph(possSchema.getId());
 				
-				// check whether the two schemas have the same number of elements
-				// isolate the elements with the base for each schema
-				ArrayList<SchemaElement> repoSchemaElementsWithThisBase = new ArrayList<SchemaElement>();
-				for (SchemaElement se : repository.getGraph(repositorySchema.getId()).getElements(null))
+				// Check to see if number of elements matches
+				ArrayList<SchemaElement> graphElements = graph.getElements(null);
+				ArrayList<SchemaElement> possGraphElements = possGraph.getElements(null);
+				if(graphElements.size()==possGraphElements.size())
 				{
-					if (se.getBase() != null && se.getBase().equals(repositorySchema.getId()))
-					{
-						repoSchemaElementsWithThisBase.add(se);
-					}
-				}
-				ArrayList<SchemaElement> schemaElementsWithThisBase = new ArrayList<SchemaElement>();
-				for (SchemaElement se : SchemaManager.getGraph(schema.getId()).getElements(null))
-				{
-					if (se.getBase() != null && se.getBase().equals(schema.getId()))
-					{
-						schemaElementsWithThisBase.add(se);
-					}
-				}
-			
-				// check the two schemas have the same number of elements
-				if(schemaElementsWithThisBase.size() == repoSchemaElementsWithThisBase.size())
-				{
-					// Sort the schema elements
-					class SchemaComparator implements Comparator<SchemaElement>
-						{ public int compare(SchemaElement schemaElement1, SchemaElement schemaElement2)
-							{ return schemaElement1.getName().compareTo(schemaElement2.getName()); } }
-					Collections.sort(schemaElementsWithThisBase,new SchemaComparator());
-					Collections.sort(repoSchemaElementsWithThisBase,new SchemaComparator());
+					// Sort the elements in each list
+					Collections.sort(graphElements,new SchemaComparator());
+					Collections.sort(possGraphElements,new SchemaComparator());
 
-					// Check to ensure that all schema elements match
+					// Validate that all of the elements are indeed the same
 					boolean match = true;
-					for(int i=0; i<schemaElementsWithThisBase.size(); i++)
+					for(int i=0; i<graphElements.size(); i++)
 					{
-						SchemaElement s1 = schemaElementsWithThisBase.get(i);
-						SchemaElement s2 = repoSchemaElementsWithThisBase.get(i);
-						if( (s1.getClass().equals(s2.getClass()) && s1.getName().equals(s2.getName())) == false)
+						SchemaElement s1 = graphElements.get(i);
+						SchemaElement s2 = possGraphElements.get(i);
+						if((s1.getClass().equals(s2.getClass()) && s1.getName().equals(s2.getName()))==false)
 							{ match = false; break; }
 					}
-					if(match) return schema.getId();
+					if(match) return possSchema.getId();					
 				}
-			}
 		}
+
 		// Indicates that no matched schema was found
 		return null;
 	}
-	
-	/** Returns the list of schemas which this schema extends */
-	protected ArrayList<Integer> getExtendedSchemaIDs() throws ImporterException
-	{
-		// Get the list of extended schemas
-		ArrayList<Integer> extendedSchemas = new ArrayList<Integer>();
+
+	/** Initialize the importer if needed */
+	protected void initialize() throws ImporterException
+	{	
+		// Define repository to be copied from
+		if(repository==null) repository = new SchemaStoreClient(uri.toString().replaceAll("#.*",""));
+		Integer repositorySchemaID = Integer.parseInt(uri.toString().replaceAll(".*#",""));
+		
 		try {
-			 
-			IDmapping = new HashMap<Integer,Integer>();
-			HashMap<String,Integer> elementToOldID = new HashMap<String,Integer>();
+			// Retrieve the repository graph
+			Graph repositoryGraph = repository.getGraph(repositorySchemaID);
 			
+			// Transfer all schemas from which this schema is extended
+			ArrayList<Schema> availableSchemas = SchemaManager.getSchemas();
 			for(Integer parentSchemaID : repository.getParentSchemas(repositorySchemaID))
 			{
 				// Get the repository schema
 				Schema repositorySchema = repository.getSchema(parentSchemaID);
-			
-				// Create a mapping of these elements to 
-				for (SchemaElement se : repository.getGraph(parentSchemaID).getElements(null))
-				{	elementToOldID.put(new String(se.getName().toString()+se.getClass().toString()),se.getId());}
 				
 				// Get the extended schema ID
-				Integer schemaID = getMatchedSchema(repositorySchema);
+				Integer schemaID = getMatchedSchema(availableSchemas, repositorySchema);
 				if(schemaID==null)
 				{
+					// Copy over the parent schema
 					CopySchemaImporter importer = new CopySchemaImporter();
 					importer.repository = repository;
-					importer.repositorySchemaID = parentSchemaID;
-					importer.schemaList = schemaList;
-					schemaID = importer.importSchema(repositorySchema.getName(), repositorySchema.getAuthor(), repositorySchema.getDescription(), uri);
+					URI parentURI = new URI(uri.toString().replaceAll("#.*","")+"#"+parentSchemaID);
+					schemaID = importer.importSchema(repositorySchema.getName(), repositorySchema.getAuthor(), repositorySchema.getDescription(), parentURI);
 				}
-				extendedSchemas.add(schemaID);		
+				extendedSchemaIDs.add(schemaID);
+
+				// Collect and sort the elements from the two repositories
+				ArrayList<SchemaElement> origElements = repository.getGraph(parentSchemaID).getElements(null);
+				ArrayList<SchemaElement> newElements = SchemaManager.getGraph(schemaID).getElements(null);				
+				Collections.sort(origElements,new SchemaComparator());
+				Collections.sort(newElements,new SchemaComparator());
 				
-				// get the schemaElements for the 
-				for (SchemaElement se : SchemaManager.getGraph(schemaID).getElements(null))
+				// Update the graph to reflect altered element IDs
+				for(int i=0; i<origElements.size(); i++)
 				{
-					IDmapping.put(elementToOldID.get(new String(se.getName().toString()+se.getClass().toString())), se.getId());	
+					Integer origID = origElements.get(i).getId();
+					Integer newID = newElements.get(i).getId();
+					if(newID>=0) repositoryGraph.updateElementID(newID,origID);
 				}
 			}
 			
-			
-		} catch(Exception e) { throw new ImporterException(ImporterException.PARSE_FAILURE,e.getMessage()); }
-		return extendedSchemas;
+			// Retrieve the base elements to be displayed
+			schemaElements = new ArrayList<SchemaElement>();
+			for(SchemaElement element : repositoryGraph.getElements(null))
+				if(element.getId()<0 || element.getBase().equals(repositorySchemaID))
+					schemaElements.add(element);
+			Collections.sort(schemaElements,new SchemaComparator());
+		}
+		catch(Exception e)
+			{ repository=null; throw new ImporterException(ImporterException.PARSE_FAILURE,e.getMessage()); }
+
+		repository = null;
 	}
 	
-	/** Returns the schema elements from the specified URI with form [SRC SCHEMA REPO]#[SRC SCHEMA NAME]*/
+	/** Returns the list of schemas which this schema extends */
+	protected ArrayList<Integer> getExtendedSchemaIDs() throws ImporterException
+		{ return extendedSchemaIDs; }
+	
+	/** Returns the schema elements from the specified URI */
 	public ArrayList<SchemaElement> getSchemaElements() throws ImporterException 
-	{ 	
-		// Generate the list of schema elements to import for this schema
-		ArrayList<SchemaElement> schemaElements = new ArrayList<SchemaElement>();
-		try {
-			Graph graph = repository.getGraph(repositorySchemaID);
-			for(SchemaElement schemaElement : graph.getElements(null))
-			{
-				if(schemaElement.getBase() != null && schemaElement.getBase().equals(repositorySchemaID))
-				{
-					schemaElements.add(schemaElement);
-				}
-			}
-			// replace each OLD ID with NEW ID assigned during parent's import to schemaStore
-			for (Integer oldID : IDmapping.keySet())
-				graph.updateElementID(oldID, IDmapping.get(oldID));
-			
-		} catch(Exception e) {throw new ImporterException(ImporterException.PARSE_FAILURE,e.getMessage()); }
-		return schemaElements; 	
-	}	
+		{ return schemaElements; }
 }
