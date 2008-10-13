@@ -8,14 +8,10 @@ public class SchemaStoreTest
 	{
 		SchemaStoreClient client = new SchemaStoreClient("http://brainsrv2:8090/SchemaStore/services/SchemaStore");
 
-		// Display remaining schemas
+		// Display the schemas found within the repository
 		try {
 			for(Schema schema : client.getSchemas())
 				System.out.println(schema.getId() + ": " + schema.getName());
-
-//			Graph graph = client.getGraph(3032);
-//			for(SchemaElement element : graph.getElements(null))
-//				System.out.println(element.getName());
 		}
 		catch(Exception e) { e.printStackTrace(); }
 	}
