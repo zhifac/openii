@@ -10,6 +10,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Properties;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -102,12 +103,15 @@ public class DBConnection
 		try {
 			if(connection==null)
 			{				
+				// Retrieve the configuration properties
+				Properties properties = new Properties();
+				properties.load(getClass().getClassLoader().getResourceAsStream("config.properties"));
+				
 				// Get environment variables
-				Context env = (Context) new	InitialContext().lookup("java:comp/env");
-	    		String server = (String)env.lookup("dbServer");
-	    		String database = (String)env.lookup("dbDatabase");
-	    		String username = (String)env.lookup("dbUsername");
-	    		String password = (String)env.lookup("dbPassword");
+	    		String server = properties.getProperty("dbServer");
+	    		String database = properties.getProperty("dbDatabase");
+	    		String username = properties.getProperty("dbUsername");
+	    		String password = properties.getProperty("dbPassword");
 				
 				// Connect to the database
 	    		boolean useDerby = server.equals("");
