@@ -39,7 +39,7 @@ public class SchemaStoreServiceLocator extends org.apache.axis.client.Service im
         SchemaStoreWSDDServiceName = name;
     }
 
-    public org.mitre.schemastore.servlet.SchemaStore getSchemaStore() throws javax.xml.rpc.ServiceException {
+    public org.mitre.schemastore.servlet.SchemaStoreObject getSchemaStore() throws javax.xml.rpc.ServiceException {
        java.net.URL endpoint;
         try {
             endpoint = new java.net.URL(SchemaStore_address);
@@ -50,7 +50,7 @@ public class SchemaStoreServiceLocator extends org.apache.axis.client.Service im
         return getSchemaStore(endpoint);
     }
 
-    public org.mitre.schemastore.servlet.SchemaStore getSchemaStore(java.net.URL portAddress) throws javax.xml.rpc.ServiceException {
+    public org.mitre.schemastore.servlet.SchemaStoreObject getSchemaStore(java.net.URL portAddress) throws javax.xml.rpc.ServiceException {
         try {
             org.mitre.schemastore.servlet.SchemaStoreSoapBindingStub _stub = new org.mitre.schemastore.servlet.SchemaStoreSoapBindingStub(portAddress, this);
             _stub.setPortName(getSchemaStoreWSDDServiceName());
@@ -72,7 +72,7 @@ public class SchemaStoreServiceLocator extends org.apache.axis.client.Service im
      */
     public java.rmi.Remote getPort(Class serviceEndpointInterface) throws javax.xml.rpc.ServiceException {
         try {
-            if (org.mitre.schemastore.servlet.SchemaStore.class.isAssignableFrom(serviceEndpointInterface)) {
+            if (org.mitre.schemastore.servlet.SchemaStoreObject.class.isAssignableFrom(serviceEndpointInterface)) {
                 org.mitre.schemastore.servlet.SchemaStoreSoapBindingStub _stub = new org.mitre.schemastore.servlet.SchemaStoreSoapBindingStub(new java.net.URL(SchemaStore_address), this);
                 _stub.setPortName(getSchemaStoreWSDDServiceName());
                 return _stub;

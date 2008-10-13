@@ -10,7 +10,7 @@ package org.mitre.schemastore.servlet;
 public interface SchemaStoreService extends javax.xml.rpc.Service {
     public java.lang.String getSchemaStoreAddress();
 
-    public org.mitre.schemastore.servlet.SchemaStore getSchemaStore() throws javax.xml.rpc.ServiceException;
+    public org.mitre.schemastore.servlet.SchemaStoreObject getSchemaStore() throws javax.xml.rpc.ServiceException;
 
-    public org.mitre.schemastore.servlet.SchemaStore getSchemaStore(java.net.URL portAddress) throws javax.xml.rpc.ServiceException;
+    public org.mitre.schemastore.servlet.SchemaStoreObject getSchemaStore(java.net.URL portAddress) throws javax.xml.rpc.ServiceException;
 }

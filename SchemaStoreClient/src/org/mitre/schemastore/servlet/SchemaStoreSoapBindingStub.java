@@ -7,7 +7,7 @@
 
 package org.mitre.schemastore.servlet;
 
-public class SchemaStoreSoapBindingStub extends org.apache.axis.client.Stub implements org.mitre.schemastore.servlet.SchemaStore {
+public class SchemaStoreSoapBindingStub extends org.apache.axis.client.Stub implements org.mitre.schemastore.servlet.SchemaStoreObject {
     private java.util.Vector cachedSerClasses = new java.util.Vector();
     private java.util.Vector cachedSerQNames = new java.util.Vector();
     private java.util.Vector cachedSerFactories = new java.util.Vector();
