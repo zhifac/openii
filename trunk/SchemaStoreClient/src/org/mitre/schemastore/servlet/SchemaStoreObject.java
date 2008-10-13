@@ -7,7 +7,7 @@
 
 package org.mitre.schemastore.servlet;
 
-public interface SchemaStore extends java.rmi.Remote {
+public interface SchemaStoreObject extends java.rmi.Remote {
     public int addAttribute(org.mitre.schemastore.model.Attribute attribute) throws java.rmi.RemoteException;
     public org.mitre.schemastore.model.Attribute getAttribute(int attributeID) throws java.rmi.RemoteException;
     public int addAlias(org.mitre.schemastore.model.Alias alias) throws java.rmi.RemoteException;

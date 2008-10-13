@@ -1,8 +1,8 @@
 package org.mitre.schemastore.servlet;
 
-public class SchemaStoreProxy implements org.mitre.schemastore.servlet.SchemaStore {
+public class SchemaStoreProxy implements org.mitre.schemastore.servlet.SchemaStoreObject {
   private String _endpoint = null;
-  private org.mitre.schemastore.servlet.SchemaStore schemaStore = null;
+  private org.mitre.schemastore.servlet.SchemaStoreObject schemaStore = null;
  
   public SchemaStoreProxy(String serviceAddress) {
 	  _endpoint = serviceAddress;
@@ -36,7 +36,7 @@ public class SchemaStoreProxy implements org.mitre.schemastore.servlet.SchemaSto
     
   }
   
-  public org.mitre.schemastore.servlet.SchemaStore getSchemaStore() {
+  public org.mitre.schemastore.servlet.SchemaStoreObject getSchemaStore() {
     if (schemaStore == null)
       _initSchemaStoreProxy();
     return schemaStore;
