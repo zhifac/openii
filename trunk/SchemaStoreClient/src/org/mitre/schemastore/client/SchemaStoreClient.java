@@ -2,6 +2,7 @@
 
 package org.mitre.schemastore.client;
 
+import java.lang.reflect.Method;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,6 +23,7 @@ import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.SchemaElementList;
 import org.mitre.schemastore.model.Subtype;
 import org.mitre.schemastore.model.graph.Graph;
+import org.mitre.schemastore.servlet.SchemaStore;
 import org.mitre.schemastore.servlet.SchemaStoreProxy;
 
 /**
@@ -33,9 +35,39 @@ public class SchemaStoreClient
 	/** Stores the location of the web service */
 	private SchemaStoreProxy proxy;
 
+	/** Stores the object for calling SchemaStore */
+	private Object schemaStore = null;
+	
+	/** Manages calls to the SchemaStore method */
+	private Object callMethod(String name, Object args[]) throws RemoteException
+	{
+		// Create an array of types
+		Class<?> types[] = new Class[args.length];
+		for(int i=0; i<args.length; i++)
+		{
+			Class<?> type = args[i].getClass();
+			if(type==Integer.class) type = Integer.TYPE;
+			if(type==Boolean.class) type = Boolean.TYPE;
+			types[i] = type;
+		}
+		
+		// Calls the SchemaStore method
+		try {
+			Method method = schemaStore.getClass().getDeclaredMethod(name, types);
+			return method.invoke(schemaStore, args);
+		} catch(Exception e) { return new RemoteException("Unable to call method " + name); }
+	}
+	
 	/** Constructor for the Schema Store Client */
 	public SchemaStoreClient(String serviceAddress)
-		{ proxy  = new SchemaStoreProxy(serviceAddress); }
+	{
+		if(serviceAddress!=null)
+		{
+			proxy = new SchemaStoreProxy(serviceAddress);
+			schemaStore = proxy;
+		}
+		else schemaStore = new SchemaStore();
+	}
 	
 	//------------------
 	// Schema Functions
@@ -44,18 +76,18 @@ public class SchemaStoreClient
 	/** Gets the list of schemas from the web service */
 	public ArrayList<Schema> getSchemas() throws RemoteException
 	{
-		Schema[] schemas = proxy.getSchemas();
+		Schema[] schemas = (Schema[])callMethod("getSchemas",new Object[0]);
 		return schemas==null ? new ArrayList<Schema>() : new ArrayList<Schema>(Arrays.asList(schemas));
 	}
 	
 	/** Gets the specified schema from the web service */
 	public Schema getSchema(Integer schemaID) throws RemoteException
-		{ return proxy.getSchema(schemaID); }
+		{ return (Schema)callMethod("getSchema",new Object[] {schemaID}); }
 	
 	/** Adds the specified schema to the web service */
 	public Integer addSchema(Schema schema) throws RemoteException
 	{
-		Integer schemaID = proxy.addSchema(schema);
+		Integer schemaID = (Integer)callMethod("addSchema",new Object[] {schema});
 		return schemaID==0 ? null : schemaID;
 	}
 
@@ -294,6 +326,13 @@ public class SchemaStoreClient
 		else if(type.equals("Subtype")) return proxy.getSubtype(schemaElementID);
 		else if(type.equals("Alias")) return proxy.getAlias(schemaElementID);
 		return null;
+	}
+
+	/** Retrieves the base schema elements for the specified schema from the web service */
+	public ArrayList<SchemaElement> getBaseSchemaElements(Integer schemaID) throws RemoteException
+	{
+		SchemaElement[] schemaElements = proxy.getBaseSchemaElements(schemaID).getSchemaElements();
+		return schemaElements==null ? new ArrayList<SchemaElement>() : new ArrayList<SchemaElement>(Arrays.asList(schemaElements));
 	}
 
 	/** Retrieves the number of schema elements for the specified schema from the web service */
