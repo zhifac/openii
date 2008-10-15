@@ -15,12 +15,11 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
 import model.Groups;
-import model.listeners.GroupsListener;
 
 import org.mitre.schemastore.model.Group;
 
 /** Constructs the group selection tree */
-public class GroupSelectionTree extends JTree implements MouseListener, GroupsListener
+public class GroupSelectionTree extends JTree implements MouseListener
 {
 	/** Stores the selected groups */
 	private SelectedGroups selectedGroups;
@@ -96,58 +95,10 @@ public class GroupSelectionTree extends JTree implements MouseListener, GroupsLi
 			repaint();
 		}
 	}
-
-	/** Handles the addition of a group */
-	public void groupAdded(Integer groupID)
-	{
-		// Get parent tree node
-		Group group = Groups.getGroup(groupID);
-		Integer parentID = group.getParentId();
-		DefaultMutableTreeNode parentNode = parentID==null ? (DefaultMutableTreeNode)getModel().getRoot() : groupHash.get(parentID);
-		
-		// Find the location for placing the group
-		int loc = 0;
-		for(loc=0; loc<parentNode.getChildCount(); loc++)
-		{
-			Integer currGroupID = (Integer)((DefaultMutableTreeNode)parentNode.getChildAt(loc)).getUserObject();
-			if(Groups.getGroup(currGroupID).getName().compareTo(group.getName())>0) break;
-		}
-
-		// Insert the group in the identified tree location
-		DefaultMutableTreeNode groupNode = new DefaultMutableTreeNode(groupID);
-		parentNode.insert(groupNode,loc);
-		int[] insertedIndices = {loc};
-		((DefaultTreeModel)getModel()).nodesWereInserted(parentNode, insertedIndices);			
-		groupHash.put(group.getId(), groupNode);
-		
-		// Refreshes the selected/inferred groups
-		selectedGroups.refresh(); repaint();
-	}
-	
-	/** Handles the updating of a group */
-	public void groupUpdated(Integer groupID)
-		{ repaint(); }
-	
-	/** Handles the removal of a group */
-	public void groupRemoved(Integer groupID)
-	{
-		// Modify the tree to no longer contain the group
-		DefaultMutableTreeNode groupNode = groupHash.get(groupID);
-		DefaultMutableTreeNode parentNode = (DefaultMutableTreeNode)groupNode.getParent();
-		int[] removedIndices = {parentNode.getIndex(groupNode)};
-		parentNode.remove(groupNode);
-		((DefaultTreeModel)getModel()).nodesWereRemoved(parentNode, removedIndices, null);
-		groupHash.remove(groupID);
-		
-		// Remove the group from being selected
-		if(selectedGroups.isSelected(groupID)) selectedGroups.remove(groupID);
-	}
 	
     // Unused listener events
 	public void mouseClicked(MouseEvent e) {}
 	public void mouseEntered(MouseEvent e) {}
 	public void mouseExited(MouseEvent e) {}
 	public void mouseReleased(MouseEvent e) {}
-	public void schemaGroupAdded(Integer schemaID, Integer groupID) {}
-	public void schemaGroupRemoved(Integer schemaID, Integer groupID) {}
 }

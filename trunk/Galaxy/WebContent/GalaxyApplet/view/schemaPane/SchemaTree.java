@@ -51,7 +51,7 @@ public class SchemaTree extends Tree
 			
 			// Build lower layer of branches
 			HashSet<SchemaElement> childElements = new HashSet<SchemaElement>(sGraph.getChildElements(element.getId()));
-			if(sGraph!=null) childElements.addAll(sGraph.getChildElements(element.getId()));
+			if(cGraph!=null) childElements.addAll(cGraph.getChildElements(element.getId()));
 			buildBranches(childNode, childElements, sGraph, cGraph);
 		}		
 	}

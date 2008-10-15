@@ -9,26 +9,25 @@ import java.util.ArrayList;
 import javax.swing.JTree;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.TreeExpansionEvent;
-import javax.swing.event.TreeExpansionListener;
+import javax.swing.event.TreeWillExpandListener;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.ExpandVetoException;
 import javax.swing.tree.TreePath;
 
-import org.mitre.schemastore.model.Attribute;
 import org.mitre.schemastore.model.Domain;
+import org.mitre.schemastore.model.DomainValue;
 import org.mitre.schemastore.model.Entity;
 import org.mitre.schemastore.model.Relationship;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.graph.HierarchicalGraph;
 
-import model.AliasedSchemaElement;
 import model.Schemas;
 import model.SelectedObjects;
-import model.UniversalObjects;
 
 /** Class for displaying the schema tree for the specified schema */
-class SchemaTree extends JTree implements MouseMotionListener, TreeExpansionListener
-{
+class SchemaTree extends JTree implements MouseMotionListener, TreeWillExpandListener
+{	
 	/** Stores the parent of this schema tree */
 	private ExplorerPane parent;
 	
@@ -38,7 +37,7 @@ class SchemaTree extends JTree implements MouseMotionListener, TreeExpansionList
 	/** Generates a schema tree node */
 	private SchemaTreeNode getSchemaTreeNode(Object object)
 	{
-		if(object instanceof Integer && UniversalObjects.isSchemaElement((Integer)object))
+		if(object instanceof Integer && Schemas.getSchemaElement((Integer)object)!=null)
 			object = new AliasedSchemaElement(schemaID, (Integer)object);
 		return new SchemaTreeNode(object);
 	}
@@ -48,13 +47,15 @@ class SchemaTree extends JTree implements MouseMotionListener, TreeExpansionList
 	{
 		// Retrieve the root schema
 		Integer schemaID = (Integer)root.getUserObject();
-		HierarchicalGraph graph = Schemas.getGraph(schemaID);
 		
 		// Only display entities and attributes for the selected node
 		if(root==getModel().getRoot())
 		{
+			// Retrieve the schema graph
+			HierarchicalGraph graph = Schemas.getGraph(schemaID);
+			
 			// Display the schema entities
-			ArrayList<SchemaElement> entities = graph.getElements(Entity.class);
+			ArrayList<SchemaElement> entities = graph.getRootElements();
 			if(entities==null)
 				graph.getElements(Entity.class);
 			if(entities.size()>0)
@@ -62,13 +63,9 @@ class SchemaTree extends JTree implements MouseMotionListener, TreeExpansionList
 				SchemaTreeNode entitiesNode = getSchemaTreeNode("Entities");
 				for(SchemaElement entity : entities)
 				{
-					// Display the entity attributes
 					SchemaTreeNode entityNode = getSchemaTreeNode(entity.getId());
-					ArrayList<Attribute> attributes = graph.getAttributes(entity.getId());
-					if(attributes.size()>0)
-						for(Attribute attribute : attributes)
-							entityNode.add(getSchemaTreeNode(attribute.getId()));
-					else entityNode.add(getSchemaTreeNode("<No Attributes>"));
+					for(SchemaElement childEntity : graph.getChildElements(entity.getId()))
+						entityNode.add(getSchemaTreeNode(childEntity.getId()));
 					entitiesNode.add(entityNode);
 				}
 				root.add(entitiesNode);
@@ -92,7 +89,12 @@ class SchemaTree extends JTree implements MouseMotionListener, TreeExpansionList
 			{
 				SchemaTreeNode domainsNode = getSchemaTreeNode("Domains");
 				for(SchemaElement domain : domains)
-					if(domain.getId()>=0) domainsNode.add(getSchemaTreeNode(domain.getId()));
+				{
+					SchemaTreeNode domainNode = getSchemaTreeNode(domain.getId());
+					for(DomainValue domainValue : graph.getDomainValuesForDomain(domain.getId()))
+						domainNode.add(getSchemaTreeNode(domainValue));					
+					domainsNode.add(domainNode);
+				}
 				root.add(domainsNode);
 			}
 		}
@@ -140,7 +142,7 @@ class SchemaTree extends JTree implements MouseMotionListener, TreeExpansionList
 
 		// Listens for tree actions
 		addMouseMotionListener(this);
-		addTreeExpansionListener(this);
+		addTreeWillExpandListener(this);
 		
 		// Expand out the first level of the schema tree
 		expandSchema(root);
@@ -183,9 +185,9 @@ class SchemaTree extends JTree implements MouseMotionListener, TreeExpansionList
 		}
 		repaint();
 	}
-	
+
 	/** Generate schema nodes as tree is expanded outward */
-	public void treeExpanded(TreeExpansionEvent e)
+	public void treeWillExpand(TreeExpansionEvent e) throws ExpandVetoException
 	{
 		// Only examine expanded nodes containing child or parent schemas
 		SchemaTreeNode node = (SchemaTreeNode)e.getPath().getLastPathComponent();
@@ -201,7 +203,7 @@ class SchemaTree extends JTree implements MouseMotionListener, TreeExpansionList
 		}
 	}
 	
-	/**Displays info on whatever schema object the mouse is over */
+	/** Displays info on whatever schema object the mouse is over */
 	public void mouseMoved(MouseEvent e)
 	{
 		// Identify the path over which the mouse is hovering
@@ -224,6 +226,6 @@ class SchemaTree extends JTree implements MouseMotionListener, TreeExpansionList
 		{ parent.clearInfo(); }
 
 	// Unused listener event
-	public void treeCollapsed(TreeExpansionEvent e) {}
+	public void treeWillCollapse(TreeExpansionEvent e) throws ExpandVetoException {}
 	public void mouseDragged(MouseEvent e) {}
 }

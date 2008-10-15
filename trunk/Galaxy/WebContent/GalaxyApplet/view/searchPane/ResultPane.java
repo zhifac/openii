@@ -33,6 +33,7 @@ import model.SelectedObjects;
 import model.listeners.SelectedObjectsListener;
 import model.search.Keyword;
 import model.search.PrimaryMatches;
+import model.search.SearchManager;
 import model.search.SearchResult;
 import model.server.ImageManager;
 
@@ -209,7 +210,7 @@ class ResultPane extends JPanel implements MouseListener, SelectedObjectsListene
 	private String markupText(String text)
 	{
 		text = text.replaceAll(" ","&nbsp;");
-		for(Keyword keyword : searchResult.getKeywords())
+		for(Keyword keyword : SearchManager.getKeywords())
 		{
 			int offset = 0;
 			Matcher matcher = keyword.getPattern().matcher(text.toLowerCase());

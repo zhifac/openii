@@ -4,7 +4,6 @@ package view.schemaPane;
 
 import java.awt.Color;
 
-import model.Schemas;
 import model.SelectedObjects;
 import model.search.SearchManager;
 
@@ -89,7 +88,7 @@ public class SchemaColors
 			{
 				SchemaTreeObject sObject = (SchemaTreeObject)object;
 				for(Integer id : sObject.getIDs())
-					if(SearchManager.containsObject(Schemas.getSchemaElement(id))) return selectedColor;
+					if(SearchManager.containsObject(id)) return selectedColor;
 				if(sObject.getType()==SchemaTreeObject.ENTITY) return entityColor;
 				if(sObject.getType()==SchemaTreeObject.ATTRIBUTE) return attributeColor;
 			}

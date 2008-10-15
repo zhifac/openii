@@ -11,6 +11,7 @@ import org.mitre.schemastore.model.Domain;
 import org.mitre.schemastore.model.DomainValue;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
+import org.mitre.schemastore.model.graph.HierarchicalGraph;
 
 import model.Schemas;
 import model.SelectedObjects;
@@ -19,11 +20,20 @@ import model.listeners.SearchListener;
 /** Class for managing schema searches */
 public class SearchManager
 {	
+	/** Enumeration for storing element types */
+	static public Integer SCHEMA = 0;
+	static public Integer ENTITY = 1;
+	static public Integer DOMAIN = 2;
+	static public Integer DOMAIN_VALUE = 3;
+	
+	/** List of keywords */
+	static private ArrayList<Keyword> keywords = new ArrayList<Keyword>();
+	
 	/** List of search results */
 	static private ArrayList<SearchResult> searchResults = new ArrayList<SearchResult>();
 
 	/** List of all matched objects */
-	static private HashSet<Object> matchedObjects = new HashSet<Object>();
+	static private HashSet<Integer> matchedObjects = new HashSet<Integer>();
 	
 	/** List of listeners monitoring schema searches */
 	static private ArrayList<SearchListener> searchListeners = new ArrayList<SearchListener>();
@@ -31,14 +41,14 @@ public class SearchManager
 	/** Searches for the specified keywords */
 	static public void searchFor(String keywordString)
 	{
-		// Initialize the search results
+		// Initialize the keywords and search results
+		keywords = new ArrayList<Keyword>();
 		searchResults = new ArrayList<SearchResult>();
 		
 		// Only do a keyword search if a keyword was given
 		if(keywordString.length()>0)
 		{		
 			// First, generate the list of keywords
-			ArrayList<Keyword> keywords = new ArrayList<Keyword>();
 			for(String keyword : keywordString.split("\\s+"))
 				keywords.add(new Keyword(keyword));
 			
@@ -47,44 +57,66 @@ public class SearchManager
 			{
 				// Don't search through schemas not in the selected groups
 				if(!SelectedObjects.inSelectedGroups(schema.getId())) continue;
+				HierarchicalGraph graph = Schemas.getTempGraph(schema.getId());
 				
 				// Generate a search result for the schema
-				SearchResult searchResult = new SearchResult(schema);
+				ArrayList<Match> matches = new ArrayList<Match>();
 				for(Keyword keyword : keywords)
 				{
-					// For schemas, check the name and description
-					if(keyword.getType() == null || keyword.getType() == Schema.class)
+					Integer type = keyword.getType();
+					boolean matchesFound = false;
+					
+					// Handle schemas which match keyword
+					if(type==null || type==SCHEMA)
 						if(keyword.isContainedIn(schema.getName()) || keyword.isContainedIn(schema.getDescription()))
-							searchResult.addMatch(keyword,schema);
+							{ matches.add(new Match(schema,SCHEMA)); matchesFound=true; }
 					
-					// For schema elements, check the name and description
-					for(SchemaElement schemaElement : Schemas.getGraph(schema.getId()).getElements(keyword.getType()))
-						if(keyword.isContainedIn(schemaElement.getName()) || keyword.isContainedIn(schemaElement.getDescription()))
-							searchResult.addMatch(keyword,schemaElement);
-					
-					// For domain values, also check domain name and description
-					if(keyword.getType() == null || keyword.getType() == DomainValue.class)
-						for(SchemaElement schemaElement : Schemas.getGraph(schema.getId()).getElements(Domain.class))
-							if(keyword.isContainedIn(schemaElement.getName()) || keyword.isContainedIn(schemaElement.getDescription()))
-								searchResult.addMatch(keyword,schemaElement);
+					// Handle schema elements which match keyword
+					if(type==null || type==ENTITY || type==DOMAIN)
+					{
+						// First, gather up all elements to be compared against keyword
+						ArrayList<Match> possMatches = new ArrayList<Match>();
+						for(SchemaElement element : graph.getGraphElements())
+						{
+							// Store element to match
+							if(type==null || type==ENTITY)
+								possMatches.add(new Match(element,ENTITY));
+								
+							// Find all domain/domain values to match
+							if(type==null || type==DOMAIN)
+							{
+								Domain domain = graph.getDomainForElement(element.getId());
+								if(domain!=null)
+								{
+									possMatches.add(new Match(domain,DOMAIN));
+									for(DomainValue domainValue : graph.getDomainValuesForDomain(domain.getId()))
+										possMatches.add(new Match(domainValue,DOMAIN_VALUE));
+								}
+							}
+						}
+						
+						// Check to see if elements match keyword
+						for(Match possMatch : possMatches)
+						{
+							SchemaElement element = (SchemaElement)possMatch.getElement();
+							if(keyword.isContainedIn(element.getName()) || keyword.isContainedIn(element.getDescription()))
+								{ matches.add(possMatch); matchesFound=true; }
+						}
+					}
 					
 					// If no matches found for keyword, proceed to next schema
-					if(searchResult.getMatches(keyword).isEmpty()) continue SchemaLoop;
+					if(!matchesFound) continue SchemaLoop;
 				}
 	
 				// If search results are unique to this schema, store search results
-				ParentSchemaLoop: for(Integer parentSchemaID : Schemas.getParentSchemas(schema.getId()))
+				boolean unique = false;
+				for(Match match : matches)
 				{
-					for(Object match : searchResult.getMatches())
-					{
-						if(match instanceof SchemaElement)
-							if(!Schemas.getGraph(parentSchemaID).containsElement(((SchemaElement)match).getId()))
-								continue ParentSchemaLoop;
-						if(match instanceof Schema) break ParentSchemaLoop;
-					}
-					continue SchemaLoop;
+					if(match.getElement() instanceof Schema) unique=true;
+					else if(((SchemaElement)match.getElement()).getBase().equals(schema.getId())) unique=true;
+					if(unique==true) break;
 				}
-				searchResults.add(searchResult);
+				if(unique) searchResults.add(new SearchResult(schema,matches,graph));
 			}
 			
 			// Sort search results
@@ -99,16 +131,20 @@ public class SearchManager
 		// Updates the list of matched objects
 		matchedObjects.clear();
 		for(SearchResult searchResult : searchResults)
-			for(Object object : searchResult.getMatches())
-				matchedObjects.add(object);
+			for(Match match : searchResult.getMatches())
+				matchedObjects.add(match.getElementID());
 		
 		// Indicate that the search results have changed
 		fireSearchResultsChangedEvent();
 	}
 	
 	/** Indicates if the search results contains the specified object */
-	static public boolean containsObject(Object object)
-		{ return matchedObjects.contains(object); }
+	static public boolean containsObject(Integer elementID)
+		{ return matchedObjects.contains(elementID); }
+	
+	/** Returns the list of keywords */
+	static public ArrayList<Keyword> getKeywords()
+		{ return keywords; }
 	
 	/** Return the list of search results */
 	static public ArrayList<SearchResult> getSearchResults()
