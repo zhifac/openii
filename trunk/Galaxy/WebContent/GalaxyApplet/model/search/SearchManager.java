@@ -112,9 +112,13 @@ public class SearchManager
 				boolean unique = false;
 				for(Match match : matches)
 				{
-					if(match.getElement() instanceof Schema) unique=true;
-					else if(((SchemaElement)match.getElement()).getBase().equals(schema.getId())) unique=true;
-					if(unique==true) break;
+					if(match.getElement() instanceof Schema) { unique=true; break; }
+					else
+					{
+						SchemaElement element = (SchemaElement)match.getElement();
+						if(element.getBase()!=null && element.getBase().equals(schema.getId()))
+							{ unique=true; break; }
+					}
 				}
 				if(unique) searchResults.add(new SearchResult(schema,matches,graph));
 			}
