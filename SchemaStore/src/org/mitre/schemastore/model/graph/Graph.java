@@ -26,7 +26,7 @@ import org.mitre.schemastore.model.Subtype;
 public class Graph implements Serializable
 {
 	/** Private class for caching graph data */
-	private class GraphCache
+	private class GraphCache implements Serializable
 	{
 		/** Stores the lists of elements of each type */
 		private HashMap<Class,ArrayList<SchemaElement>> typeLists = null;
