@@ -5,7 +5,6 @@ package model;
 import java.util.ArrayList;
 import java.util.HashSet;
 
-import model.listeners.GroupsListener;
 import model.listeners.SelectedObjectsListener;
 
 /**
@@ -13,49 +12,7 @@ import model.listeners.SelectedObjectsListener;
  * @author CWOLF
  */
 public class SelectedObjects
-{
-	/** Monitors group events to adjust selected objects accordingly */
-	static private class Monitor implements GroupsListener
-	{
-		/** Constructs the monitor */
-		private Monitor() { Groups.addGroupsListener(this); }
-
-		/** Handles the removal of a group */
-		public void groupRemoved(Integer groupID)
-		{
-			if(selectedGroups.contains(groupID))
-			{
-				ArrayList<Integer> modifiedGroups = new ArrayList<Integer>(selectedGroups);
-				modifiedGroups.remove(groupID);
-				setSelectedGroups(modifiedGroups);
-			}
-		}
-
-		/** Handles the addition of a schema group */
-		public void schemaGroupAdded(Integer schemaID, Integer groupID)
-		{
-			if(selectedGroups.contains(groupID))
-				selectedGroupSchemas.add(schemaID);
-			fireSelectedGroupsChangedEvent();
-		}
-
-		/** Handles the removal of a schema group */
-		public void schemaGroupRemoved(Integer schemaID, Integer groupID)
-		{
-			selectedGroupSchemas.remove(schemaID);
-			for(Integer currGroupID : Groups.getSchemaGroups(schemaID))
-				if(selectedGroups.contains(currGroupID))
-					{ selectedGroupSchemas.add(schemaID); break; }
-			fireSelectedGroupsChangedEvent();
-		}
-
-		// Unused listener events
-		public void groupAdded(Integer groupID) {}
-		public void groupUpdated(Integer groupID) {}
-	}
-	static private Monitor monitor;
-	static { if(monitor==null) monitor = new Monitor(); }
-	
+{	
 	/** Stores the selected schema */
 	static private Integer selectedSchema = null;
 	

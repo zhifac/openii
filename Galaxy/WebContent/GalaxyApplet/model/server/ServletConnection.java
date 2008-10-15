@@ -15,7 +15,7 @@ import org.mitre.schemastore.model.DataSource;
 import org.mitre.schemastore.model.Group;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
-import org.mitre.schemastore.model.graph.HierarchicalGraph;
+import org.mitre.schemastore.model.graph.Graph;
 
 /**
  * Handles all commuications to the database (via servlets)
@@ -51,6 +51,7 @@ public class ServletConnection
 	static private Object callFunction(String functionName,Object[] inputs)
 	{
 		Object object = null;
+		System.out.println(functionName + inputs.toString());
 		try {
 			URLConnection connection = getServletConnection();
 			ObjectOutputStream out = new ObjectOutputStream(connection.getOutputStream());
@@ -62,7 +63,8 @@ public class ServletConnection
 			object = in.readObject();
 		    in.close();
 		} catch(Exception e) { System.out.println(e.getMessage()); }
-	    return object;
+		System.out.println("Done");
+		return object;
 	}
 	
 	//------------------
@@ -77,22 +79,6 @@ public class ServletConnection
 	static public Schema getSchema(Integer schemaID)
 		{ return (Schema)callFunction("getSchema",new Object[] {schemaID}); }
 	
-	/** Extends the specified schema in the web service */
-	static public Schema extendSchema(Integer schemaID)
-		{ return (Schema)callFunction("extendSchema",new Object[] {schemaID}); }
-	
-	/** Updates the specified schema in the web service */
-	static public boolean updateSchema(Schema schema)
-		{ return (Boolean)callFunction("updateSchema",new Object[] {schema}); }
-
-	/** Locks the specified schema in the web service */
-	static public boolean lockSchema(Integer schemaID)
-		{ return (Boolean)callFunction("lockSchema",new Object[] {schemaID}); }
-	
-	/** Delete the specified schema from the web service */
-	static public boolean deleteSchema(Integer schemaID)
-		{ return (Boolean)callFunction("deleteSchema",new Object[] {schemaID}); }
-	
 	//------------------------
 	// Schema Group Functions
 	//------------------------
@@ -100,18 +86,6 @@ public class ServletConnection
 	/** Get the list of schema groups from the web service */ @SuppressWarnings("unchecked")
 	static public ArrayList<Group> getGroups()
 		{ return (ArrayList<Group>)callFunction("getGroups",new Object[] {}); }
-
-	/** Add a group to the web service */
-	static public Integer addGroup(Group group)
-		{ return (Integer)callFunction("addGroup",new Object[] {group}); }
-	
-	/** Update a group on the web service */
-	static public Boolean updateGroup(Group group)
-		{ return (Boolean)callFunction("updateGroup",new Object[] {group}); }
-	
-	/** Delete a group from the web service */
-	static public Boolean deleteGroup(Integer groupID)
-		{ return (Boolean)callFunction("deleteGroup",new Object[] {groupID}); }
 	
 	/** Get list of schemas unassigned with a group in the web service */ @SuppressWarnings("unchecked")
 	static public ArrayList<Integer> getUnassignedSchemas()
@@ -124,14 +98,6 @@ public class ServletConnection
 	/** Get list of groups associated with schema in the web service */ @SuppressWarnings("unchecked")
 	static public ArrayList<Integer> getSchemaGroups(Integer schemaID)
 		{ return (ArrayList<Integer>)callFunction("getSchemaGroups",new Object[] {schemaID}); }
-		
-	/** Add a group to a schema in the web service */
-	static public Boolean addGroupToSchema(Integer schemaID, Integer groupID)
-		{ return (Boolean)callFunction("addGroupToSchema",new Object[] {schemaID, groupID}); }
-	
-	/** Remove a group from a schema in the web service */
-	static public Boolean removeGroupFromSchema(Integer schemaID, Integer groupID)
-		{ return (Boolean)callFunction("removeGroupFromSchema",new Object[] {schemaID, groupID}); }
 	
 	//-------------------------------
 	// Schema Relationship Functions
@@ -164,10 +130,6 @@ public class ServletConnection
 	/** Gets the schema path between the specified root and schema from the web service */ @SuppressWarnings("unchecked")
 	static public ArrayList<Integer> getSchemaPath(Integer rootID, Integer schemaID)
 		{ return (ArrayList<Integer>)callFunction("getSchemaPath",new Object[] {rootID,schemaID}); }
-	
-	/** Sets the parent schemas for the specified schema from the web service */
-	static public boolean setParentSchemas(Integer schemaID, ArrayList<Integer> parentIDs)
-		{ return (Boolean)callFunction("setParentSchemas",new Object[] {schemaID, parentIDs}); }
 
 	//--------------------------
 	// Schema Element Functions
@@ -178,24 +140,12 @@ public class ServletConnection
 		{ return (Integer)callFunction("getSchemaElementCount",new Object[] {schemaID}); }
 	
 	/** Retrieves the schema element graph for the specified schema from the web service */
-	static public HierarchicalGraph getSchemaElementGraph(Integer schemaID)
-		{ return (HierarchicalGraph)callFunction("getSchemaElementGraph",new Object[] {schemaID}); }	
+	static public Graph getGraph(Integer schemaID)
+		{ return (Graph)callFunction("getGraph",new Object[] {schemaID}); }	
 
 	/** Retrieves the specified schema element from the web service */
 	static public SchemaElement getSchemaElement(Integer schemaElementID)
 		{ return (SchemaElement)callFunction("getSchemaElement",new Object[] {schemaElementID}); }	
-	
-	/** Adds the specified schema element to the web service */
-	static public Integer addSchemaElement(SchemaElement schemaElement)
-		{ return (Integer)callFunction("addSchemaElement",new Object[] {schemaElement}); }	
-	
-	/** Updates the specified schema element on the web service */
-	static public boolean updateSchemaElement(SchemaElement schemaElement)
-		{ return (Boolean)callFunction("updateSchemaElement",new Object[] {schemaElement}); }	
-	
-	/** Deletes the specified schema element from the web service */
-	static public boolean deleteSchemaElement(Integer schemaElementID)
-		{ return (Boolean)callFunction("deleteSchemaElement",new Object[] {schemaElementID}); }	
 
 	//-----------------------
 	// Data Source Functions
@@ -208,16 +158,4 @@ public class ServletConnection
 	/** Gets the specified data source */ 
 	static public DataSource getDataSource(Integer dataSourceID)
 		{ return (DataSource)callFunction("getDataSource",new Object[] {dataSourceID}); }
-	
-	/** Adds the specified data source to the web service */
-	static public Integer addDataSource(DataSource dataSource)
-		{ return (Integer)callFunction("addDataSource",new Object[] {dataSource}); }
-	
-	/** Updates the specified data source in the web service */
-	static public boolean updateDataSource(DataSource dataSource)
-		{ return (Boolean)callFunction("updateDataSource",new Object[] {dataSource}); }
-	
-	/** Deletes the specified data source from the web service */
-	static public boolean deleteDataSource(Integer dataSourceID)
-		{ return (Boolean)callFunction("deleteDataSource",new Object[] {dataSourceID}); }
 }

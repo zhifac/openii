@@ -8,10 +8,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 
-import model.Schemas;
-
-import org.mitre.schemastore.model.Alias;
-import org.mitre.schemastore.model.Attribute;
 import org.mitre.schemastore.model.DomainValue;
 import org.mitre.schemastore.model.Entity;
 import org.mitre.schemastore.model.Relationship;
@@ -27,7 +23,6 @@ public class PrimaryMatches
 		{
 			if(so1.getClass()==so2.getClass()) return so1.getName().compareTo(so2.getName());
 			if(so1.getClass()==Entity.class) return -1; if(so2.getClass()==Entity.class) return 1;
-			if(so1.getClass()==Attribute.class) return -1; if(so2.getClass()==Attribute.class) return 1;
 			if(so1.getClass()==DomainValue.class) return -1; if(so2.getClass()==DomainValue.class) return 1;
 			if(so1.getClass()==Relationship.class) return -1; if(so2.getClass()==Relationship.class) return 1;
 			return 1;
@@ -54,7 +49,8 @@ public class PrimaryMatches
 		boolean isSubsumed = false;
 		
 		// Check attributes for an existing entity
-		if(match instanceof Attribute)
+// TODO: Fix primary matches
+		/*		if(match instanceof Attribute)
 		{
 			Integer entityID = ((Attribute)match).getEntityID();
 			SchemaElement entity = Schemas.getSchemaElement(entityID);
@@ -79,19 +75,19 @@ public class PrimaryMatches
 		{
 			SchemaElement element = Schemas.getSchemaElement(((Alias)match).getElementID());
 			if(matches.contains(element)) addPrimaryMatch(element,match);
-		}
+		} */
 		
 		// Otherwise, the element is not subsumed
 		if(!isSubsumed) addPrimaryMatch(match,match);
 	}
 	
 	/** PrimaryMatches constructor */
-	PrimaryMatches(Integer schemaID, Collection<Object> matchesIn)
+	PrimaryMatches(Integer schemaID, Collection<Match> matchesIn)
 	{
 		// Identify all schema object matches in the full list of matches
-		for(Object match : matchesIn)
-			if(match instanceof SchemaElement)
-				matches.add((SchemaElement)match);
+		for(Match match : matchesIn)
+			if(match.getElement() instanceof SchemaElement)
+				matches.add((SchemaElement)match.getElement());
 		
 		// Mark all primary matches
 		for(SchemaElement match : matches)

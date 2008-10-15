@@ -22,7 +22,6 @@ import org.mitre.schemastore.model.Entity;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.graph.HierarchicalGraph;
 
-import model.AliasedSchemaElement;
 import model.Schemas;
 import model.SelectedObjects;
 import model.server.ImageManager;

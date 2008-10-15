@@ -4,7 +4,6 @@ package view.explorerPane;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
-import model.AliasedSchemaElement;
 
 /** Class for representing schema tree nodes */
 public class SchemaTreeNode extends DefaultMutableTreeNode

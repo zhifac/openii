@@ -6,56 +6,61 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Set;
 
 import org.mitre.schemastore.model.Schema;
+import org.mitre.schemastore.model.graph.HierarchicalGraph;
 
 /** Class for storing a schema's search results */
 public class SearchResult
 {
 	/** Stores the search result schema */
 	private Schema schema;
+
+	/** Stores the matches for this search result */
+	private ArrayList<Match> matches;
 	
-	/** Stores the search result matches */
-	private HashMap<Keyword,ArrayList<Object>> matches = new HashMap<Keyword,ArrayList<Object>>();
+	/** Stores hierarchy information about matches */
+	private HashMap<Integer,ArrayList<Integer>> hierarchy = new HashMap<Integer,ArrayList<Integer>>();
 	
 	/** Constructs the search result */
-	SearchResult(Schema schema)
-		{ this.schema = schema; }
-	
-	/** Adds a match to the search result */
-	void addMatch(Keyword keyword, Object match)
+	SearchResult(Schema schema, ArrayList<Match> matches, HierarchicalGraph graph)
 	{
-		ArrayList<Object> keywordMatches = matches.get(keyword);
-		if(keywordMatches==null)
-			matches.put(keyword,keywordMatches = new ArrayList<Object>());
-		keywordMatches.add(match);
+		this.schema = schema;
+		this.matches = matches;
+		
+		// Constructs a match reference table
+// TODO: Fix search results
+		/* HashSet<Integer> matchRef = new HashSet<Integer>();
+		for(Match match : matches)
+			matchRef.add(match.getElementID());
+		
+		// Place each match in the correct spot in the hierarchy table
+		for(Match match : matches)
+		{
+			ArrayList<Integer> parentIDs = new ArrayList<Integer>();
+
+			// Find the parent associated with the matched domain
+			if(match.getType()==SearchManager.DOMAIN)
+			{
+				Integer parentID = graph.getElementsForDomain(match.getElementID()).getId();
+				if(matchRef.contains(parentID)) parentIDs.add(parentID);
+				else parentIDs.add(getMatchParents(parentID,matchRef,graph));
+			}
+				
+			// Find the parent associated with the matched schema element
+			if(match.getType()!=SearchManager.SCHEMA)
+				parentIDs.add(getMatchParents(match.getElementID(),matchRef,graph));
+		}
+*/
 	}
 	
 	/** Returns the search result schema */
 	public Schema getSchema()
 		{ return schema; }
 	
-	/** Returns the search result keywords */
-	public Set<Keyword> getKeywords()
-		{ return matches.keySet(); }
-	
-	/** Returns the search result matches for the specified keyword */
-	public ArrayList<Object> getMatches(Keyword keyword)
-	{
-		ArrayList<Object> keywordMatches = matches.get(keyword);
-		if(keywordMatches==null) keywordMatches = new ArrayList<Object>();
-		return keywordMatches;
-	}
-	
 	/** Returns the search result matches */
-	public Collection<Object> getMatches()
-	{
-		HashSet<Object> allMatches = new HashSet<Object>();
-		for(ArrayList<Object> keywordMatches : matches.values())
-			allMatches.addAll(keywordMatches);
-		return allMatches;
-	}
+	public Collection<Match> getMatches()
+		{ return new ArrayList<Match>(matches); }
 	
 	/** Returns the primary match object */
 	public PrimaryMatches getPrimaryMatches()

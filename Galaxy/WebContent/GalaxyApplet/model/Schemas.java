@@ -40,8 +40,7 @@ public class Schemas
 	{
 		schemas = new HashMap<Integer,Schema>();
 		for(Schema schema : ServletConnection.getSchemas())
-			if(ServletConnection.getSchemaElementCount(schema.getId())<5000)
-				schemas.put(schema.getId(),schema);
+			schemas.put(schema.getId(),schema);
 	}
 	
 	/** Returns a list of all schemas */
@@ -154,15 +153,15 @@ public class Schemas
 		// Retrieve graph if needed
 		if(!schemaGraphs.containsKey(schemaID))
 		{
-			HierarchicalGraph graph = ServletConnection.getSchemaElementGraph(schemaID);
+			HierarchicalGraph graph = new HierarchicalGraph(ServletConnection.getGraph(schemaID));
 			schemaGraphs.put(schemaID,graph);
 			for(SchemaElement element : graph.getElements(null))
 				schemaElements.put(element.getId(), element);
 		}
 		return schemaGraphs.get(schemaID);
 	}
-	
+
 	/** Retrieves a temporary copy of the schema element graph */
 	static public HierarchicalGraph getTempGraph(Integer schemaID)
-		{ return ServletConnection.getSchemaElementGraph(schemaID); }
+		{ return new HierarchicalGraph(ServletConnection.getGraph(schemaID)); }
 }

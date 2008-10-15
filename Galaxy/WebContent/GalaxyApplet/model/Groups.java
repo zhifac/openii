@@ -9,7 +9,6 @@ import java.util.HashMap;
 
 import org.mitre.schemastore.model.Group;
 
-import model.listeners.GroupsListener;
 import model.server.ServletConnection;
 
 /**
@@ -26,9 +25,6 @@ public class Groups
 	
 	/** Caches schema groups */
 	static private HashMap<Integer,ArrayList<Integer>> schemaGroupHash = new HashMap<Integer,ArrayList<Integer>>();
-	
-	/** List of listeners monitoring group events */
-	static private ArrayList<GroupsListener> listeners = new ArrayList<GroupsListener>();
 		
 	//---------------
 	// Group Actions
@@ -40,53 +36,6 @@ public class Groups
 		groups = new HashMap<Integer,Group>();
 		for(Group group : ServletConnection.getGroups())
 			groups.put(group.getId(),group);	
-	}
-
-	/** Adds the specified group to the database */
-	static public boolean addGroup(Group group)
-	{
-		Integer groupID = ServletConnection.addGroup(group);
-		if(groupID!=null)
-		{
-			group.setId(groupID);
-			groups.put(group.getId(),group);
-			for(GroupsListener listener : listeners)
-				listener.groupAdded(groupID);
-			return true;
-		}
-		return false;
-	}
-	
-	/** Updates the specified group in the database */
-	static public boolean updateGroup(Group group)
-	{
-		// Don't update group in database if no changes made
-		Group oldGroup = getGroup(group.getId());
-		if(oldGroup.getName().equals(group.getName()))
-			return true;
-		
-		// Update group in database
-		if(ServletConnection.updateGroup(group))
-		{
-			groups.put(group.getId(),group);
-			for(GroupsListener listener : listeners)
-				listener.groupUpdated(group.getId());
-			return true;
-		}
-		return false;
-	}
-	
-	/** Deletes the specified group from the database */
-	static public boolean deleteGroup(Group group)
-	{
-		if(ServletConnection.deleteGroup(group.getId()))
-		{
-			groups.remove(group.getId());
-			for(GroupsListener listener : listeners)
-				listener.groupRemoved(group.getId());
-			return true;
-		}
-		return false;
 	}
 	
 	/** Returns a list of base groups */
@@ -149,60 +98,6 @@ public class Groups
 		return count;
 	}
 	
-	/** Adds a group to a schema */
-	static private void addGroupToSchema(Integer groupID, Integer schemaID)
-	{
-		if(ServletConnection.addGroupToSchema(schemaID, groupID))
-		{
-			groupSchemaHash.remove(groupID);
-			schemaGroupHash.remove(schemaID);
-			for(GroupsListener listener : listeners)
-				listener.schemaGroupAdded(schemaID,groupID);
-		}		
-	}
-	
-	/** Removes a group from a schema */
-	static private void removeGroupFromSchema(Integer groupID, Integer schemaID)
-	{
-		if(ServletConnection.removeGroupFromSchema(schemaID, groupID))
-		{
-			groupSchemaHash.remove(groupID);
-			schemaGroupHash.remove(schemaID);
-			for(GroupsListener listener : listeners)
-				listener.schemaGroupRemoved(schemaID,groupID);
-		}		
-	}
-	
-	/** Set the list of schemas associated with the specified group */
-	static public void setGroupSchemas (Integer groupID, ArrayList<Integer> schemas)
-	{ 
-		// Remove schemas from the group as needed
-		ArrayList<Integer> currSchemas = getGroupSchemas(groupID);
-		for(Integer currSchema : currSchemas)
-			if(!schemas.contains(currSchema))
-				removeGroupFromSchema(groupID,currSchema);
-				
-		// Add schemas to the group as needed
-		for(Integer schema : schemas)
-			if(!currSchemas.contains(schema))
-				addGroupToSchema(groupID,schema);
-	}
-	
-	/** Set the list of groups associated with the specified schema */
-	static public void setSchemaGroups(Integer schemaID, ArrayList<Integer> groups)
-	{ 
-		// Remove groups from the schema as needed
-		ArrayList<Integer> currGroups = getSchemaGroups(schemaID);
-		for(Integer currGroup : currGroups)
-			if(!groups.contains(currGroup))
-				removeGroupFromSchema(currGroup,schemaID);
-					
-		// Add groups to the schema as needed
-		for(Integer group : groups)
-			if(!currGroups.contains(group))
-				addGroupToSchema(group,schemaID);
-	}
-	
 	/** Sorts the list of group */
 	static public ArrayList<Group> sort(ArrayList<Group> groups)
 	{
@@ -226,20 +121,4 @@ public class Groups
 		Collections.sort(groups,new GroupComparator());
 		return groups;
 	}
-	
-	//-----------------
-	// Group Listeners
-	//-----------------
-	
-	/** Adds a listener monitoring group events */
-	static public void addGroupsListener(GroupsListener listener)
-		{ listeners.add(listener); }
-	
-	/** Removes a listener monitoring group events */
-	static public void removeGroupsListener(GroupsListener listener)
-		{ listeners.remove(listener); }
-	
-	/** Gets the current group listeners */
-	static public ArrayList<GroupsListener> getGroupsListeners()
-		{ return new ArrayList<GroupsListener>(listeners); }
 }

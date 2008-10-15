@@ -31,7 +31,6 @@ class AdvancedSearchPane extends JPanel implements ActionListener, MouseListener
 	/** Text field used for entering keywords */
 	private JTextField schemaField = new JTextField();
 	private JTextField entityField = new JTextField();
-	private JTextField attributeField = new JTextField();
 	private JTextField domainField = new JTextField();
 	private JTextField relationshipField = new JTextField();
 	
@@ -73,7 +72,6 @@ class AdvancedSearchPane extends JPanel implements ActionListener, MouseListener
 		labelsPane.setOpaque(false);
 		labelsPane.add(getLabel("Schema:"));
 		labelsPane.add(getLabel("Entity:"));
-		labelsPane.add(getLabel("Attribute:"));
 		labelsPane.add(getLabel("Domain:"));
 		labelsPane.add(getLabel("Relationship:"));
 		
@@ -83,7 +81,6 @@ class AdvancedSearchPane extends JPanel implements ActionListener, MouseListener
 		fieldsPane.setOpaque(false);
 		fieldsPane.add(schemaField);
 		fieldsPane.add(entityField);
-		fieldsPane.add(attributeField);
 		fieldsPane.add(domainField);
 		fieldsPane.add(relationshipField);
 		
@@ -133,7 +130,6 @@ class AdvancedSearchPane extends JPanel implements ActionListener, MouseListener
 		StringBuffer searchString = new StringBuffer();
 		searchString.append(getKeywords(schemaField,"schema"));
 		searchString.append(getKeywords(entityField,"entity"));
-		searchString.append(getKeywords(attributeField,"attribute"));
 		searchString.append(getKeywords(domainField,"domain"));
 		searchString.append(getKeywords(relationshipField,"relationship"));
 		SearchManager.searchFor(searchString.toString());

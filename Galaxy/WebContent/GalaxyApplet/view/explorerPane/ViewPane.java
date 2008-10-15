@@ -104,7 +104,8 @@ class ViewPane extends JPanel
 		text.append("  <div style='font-family:ialog; font-size:10px'>");
 		
 		// Display the schema name
-		text.append("    <b>Originating Schema: </b>"+Schemas.getSchema(schemaElement.getBase()).getName());
+		if(schemaElement.getBase()!=null)
+			text.append("    <b>Originating Schema: </b>"+Schemas.getSchema(schemaElement.getBase()).getName());
 
 		// Display the schema description
 		if(!schemaElement.getDescription().equals(""))

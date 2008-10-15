@@ -1,6 +1,8 @@
 // Copyright 2008 The MITRE Corporation. ALL RIGHTS RESERVED.
 
-package model;
+package view.explorerPane;
+
+import model.Schemas;
 
 import org.mitre.schemastore.model.Alias;
 import org.mitre.schemastore.model.SchemaElement;

@@ -12,7 +12,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.border.EmptyBorder;
 
-import model.Groups;
 import model.SelectedObjects;
 
 /** Class for displaying the Group Pane of Galaxy */
@@ -62,8 +61,5 @@ public class GroupPane extends JPanel
 		setPreferredSize(new Dimension(0,125));
 		add(new JLabel("Selected Groups"),BorderLayout.NORTH);
 		add(groupSelectionPane,BorderLayout.CENTER);
-
-		// Listen for group events
-		Groups.addGroupsListener(selectionTree);
 	}
 }

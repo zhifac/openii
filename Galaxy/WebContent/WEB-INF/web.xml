@@ -3,7 +3,7 @@
 	<display-name>Galaxy</display-name>
 	<context-param>
 		<param-name>webServiceHost</param-name>
-		<param-value>http://localhost:8080/SchemaStore/services/SchemaStore</param-value>
+		<param-value>http://brainsrv2:8090/SchemaStore/services/SchemaStore</param-value>
 	</context-param>
 	<servlet>
 		<description></description>
