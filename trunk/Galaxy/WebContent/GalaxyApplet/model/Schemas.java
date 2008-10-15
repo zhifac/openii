@@ -22,6 +22,12 @@ public class Schemas
 	/** Caches schema information */
 	static private HashMap<Integer,Schema> schemas = null;
 	
+	/** Caches schema parent info */
+	static private HashMap<Integer,ArrayList<Integer>> parentSchemas = new HashMap<Integer,ArrayList<Integer>>();
+	
+	/** Caches schema children info */
+	static private HashMap<Integer,ArrayList<Integer>> childSchemas = new HashMap<Integer,ArrayList<Integer>>();
+	
 	/** Caches schema element count information */
 	static private HashMap<Integer,Integer> schemaElementCounts = new HashMap<Integer,Integer>();
 	
@@ -57,15 +63,6 @@ public class Schemas
 		return schemas.get(schemaID);
 	}
 	
-	/** Filter the list of schemas to only include schemas existent in Galaxy (<5000) */
-	static public ArrayList<Integer> filter(ArrayList<Integer> schemas)
-	{
-		ArrayList<Integer> filteredSchemas = new ArrayList<Integer>();
-		for(Integer schemaID : schemas)
-			if(getSchema(schemaID)!=null) filteredSchemas.add(schemaID);
-		return filteredSchemas;
-	}
-	
 	/** Sorts the list of schemas */
 	static public ArrayList<Schema> sort(ArrayList<Schema> schemas)
 	{
@@ -96,11 +93,21 @@ public class Schemas
 	
 	/** Returns the parent schemas */
 	static public ArrayList<Integer> getParentSchemas(Integer schemaID)
-		{ return ServletConnection.getParentSchemas(schemaID); }
+	{
+		ArrayList<Integer> schemas = parentSchemas.get(schemaID);
+		if(schemas==null)
+			parentSchemas.put(schemaID, schemas = ServletConnection.getParentSchemas(schemaID));
+		return schemas;
+	}
 
 	/** Returns the child schemas */
 	static public ArrayList<Integer> getChildSchemas(Integer schemaID)
-		{ return ServletConnection.getChildSchemas(schemaID); }
+	{
+		ArrayList<Integer> schemas = childSchemas.get(schemaID);
+		if(schemas==null)
+			childSchemas.put(schemaID, schemas = ServletConnection.getChildSchemas(schemaID));
+		return schemas;
+	}
 
 	/** Returns the descendant schemas of the specified schema */
 	static public ArrayList<Integer> getDescendantSchemas(Integer schemaID)
@@ -122,14 +129,13 @@ public class Schemas
 	// Schema Element Actions
 	//------------------------
 
+	/** Gets the list of base elements for the specified schema */
+	static public ArrayList<SchemaElement> getBaseElements(Integer schemaID)
+		{ return ServletConnection.getBaseSchemaElements(schemaID); }
+
 	/** Returns the schema element count */
 	static public int getSchemaElementCount(Integer schemaID)
 	{
-		// First, check schema element array to calculate size
-		HierarchicalGraph graph = schemaGraphs.get(schemaID);
-		if(graph!=null) return graph.size();
-		
-		// If no schema elements exist, get schema element size from database
 		Integer schemaElementCount = schemaElementCounts.get(schemaID);
 		if(schemaElementCount==null)
 		{
@@ -160,8 +166,4 @@ public class Schemas
 		}
 		return schemaGraphs.get(schemaID);
 	}
-
-	/** Retrieves a temporary copy of the schema element graph */
-	static public HierarchicalGraph getTempGraph(Integer schemaID)
-		{ return new HierarchicalGraph(ServletConnection.getGraph(schemaID)); }
 }

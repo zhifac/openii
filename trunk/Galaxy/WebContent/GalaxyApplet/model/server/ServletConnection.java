@@ -147,6 +147,10 @@ public class ServletConnection
 	static public SchemaElement getSchemaElement(Integer schemaElementID)
 		{ return (SchemaElement)callFunction("getSchemaElement",new Object[] {schemaElementID}); }	
 
+	/** Retrieves the base schema elements for the specified schema from the web service */ @SuppressWarnings("unchecked")
+	static public ArrayList<SchemaElement> getBaseSchemaElements(Integer schemaID)
+		{ return (ArrayList<SchemaElement>)callFunction("getBaseSchemaElements",new Object[] {schemaID}); }
+
 	//-----------------------
 	// Data Source Functions
 	//-----------------------

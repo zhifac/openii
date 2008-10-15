@@ -7,11 +7,12 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 
+import org.mitre.schemastore.model.Attribute;
 import org.mitre.schemastore.model.Domain;
 import org.mitre.schemastore.model.DomainValue;
+import org.mitre.schemastore.model.Entity;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
-import org.mitre.schemastore.model.graph.HierarchicalGraph;
 
 import model.Schemas;
 import model.SelectedObjects;
@@ -24,7 +25,6 @@ public class SearchManager
 	static public Integer SCHEMA = 0;
 	static public Integer ENTITY = 1;
 	static public Integer DOMAIN = 2;
-	static public Integer DOMAIN_VALUE = 3;
 	
 	/** List of keywords */
 	static private ArrayList<Keyword> keywords = new ArrayList<Keyword>();
@@ -57,7 +57,7 @@ public class SearchManager
 			{
 				// Don't search through schemas not in the selected groups
 				if(!SelectedObjects.inSelectedGroups(schema.getId())) continue;
-				HierarchicalGraph graph = Schemas.getTempGraph(schema.getId());
+				ArrayList<SchemaElement> baseElements = Schemas.getBaseElements(schema.getId());
 				
 				// Generate a search result for the schema
 				ArrayList<Match> matches = new ArrayList<Match>();
@@ -76,23 +76,17 @@ public class SearchManager
 					{
 						// First, gather up all elements to be compared against keyword
 						ArrayList<Match> possMatches = new ArrayList<Match>();
-						for(SchemaElement element : graph.getGraphElements())
+						for(SchemaElement element : baseElements)
 						{
 							// Store element to match
-							if(type==null || type==ENTITY)
-								possMatches.add(new Match(element,ENTITY));
+							if(element instanceof Entity || element instanceof Attribute)
+								if(type==null || type==ENTITY)
+									possMatches.add(new Match(element,ENTITY));
 								
 							// Find all domain/domain values to match
-							if(type==null || type==DOMAIN)
-							{
-								Domain domain = graph.getDomainForElement(element.getId());
-								if(domain!=null)
-								{
-									possMatches.add(new Match(domain,DOMAIN));
-									for(DomainValue domainValue : graph.getDomainValuesForDomain(domain.getId()))
-										possMatches.add(new Match(domainValue,DOMAIN_VALUE));
-								}
-							}
+							if(element instanceof Domain || element instanceof DomainValue)
+								if(type==null || type==DOMAIN)
+									possMatches.add(new Match(element,DOMAIN));
 						}
 						
 						// Check to see if elements match keyword
@@ -109,18 +103,8 @@ public class SearchManager
 				}
 	
 				// If search results are unique to this schema, store search results
-				boolean unique = false;
-				for(Match match : matches)
-				{
-					if(match.getElement() instanceof Schema) { unique=true; break; }
-					else
-					{
-						SchemaElement element = (SchemaElement)match.getElement();
-						if(element.getBase()!=null && element.getBase().equals(schema.getId()))
-							{ unique=true; break; }
-					}
-				}
-				if(unique) searchResults.add(new SearchResult(schema,matches,graph));
+				if(matches.size()>0)
+					searchResults.add(new SearchResult(schema,matches,Schemas.getGraph(schema.getId())));
 			}
 			
 			// Sort search results

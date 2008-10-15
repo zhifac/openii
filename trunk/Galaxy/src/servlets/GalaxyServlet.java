@@ -141,7 +141,7 @@ public class GalaxyServlet extends HttpServlet
 			//---------------------------------
 			// Handles schema element requests
 			//---------------------------------
-
+			
 			// Retrieves the schema element count for the specified schema
 			if(action.equals("getSchemaElementCount"))
 			{
@@ -161,6 +161,13 @@ public class GalaxyServlet extends HttpServlet
 			{
 				Integer schemaElementID = (Integer)in.readObject();
 				output = client.getSchemaElement(schemaElementID);
+			}
+			
+			// Retrieves the base schema elements for the specified schema
+			if(action.equals("getBaseSchemaElements"))
+			{
+				Integer schemaID = (Integer)in.readObject();
+				output = client.getBaseSchemaElements(schemaID);
 			}
 
 			//------------------------------
