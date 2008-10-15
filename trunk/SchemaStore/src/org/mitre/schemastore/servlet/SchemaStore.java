@@ -34,7 +34,25 @@ import org.mitre.schemastore.model.graph.Graph;
  * @author CWOLF
  */
 public class SchemaStore
-{	
+{
+	/** Converts Integer array into int array */
+	private int[] convertArray(ArrayList<Integer> oldArray)
+	{
+		int[] array = new int[oldArray.size()];
+		for(int i=0; i<oldArray.size(); i++)
+			array[i] = oldArray.get(i);
+		return array;
+	}
+	
+	/** Converts int array into Integer array */
+	private ArrayList<Integer> convertArray(int oldArray[])
+	{
+		ArrayList<Integer> array = new ArrayList<Integer>();
+		for(int i=0; i<oldArray.length; i++)
+			array.add(oldArray[i]);
+		return array;
+	}
+	
 	//---------------------------
 	// Handles schema operations 
 	//---------------------------
@@ -44,39 +62,39 @@ public class SchemaStore
 		{ return Schemas.getSchemaList().toArray(new Schema[0]); }
 
 	/** Web service to retrieve the specified schema */
-	public Schema getSchema(Integer schemaID)
+	public Schema getSchema(int schemaID)
 		{ return Schemas.getSchema(schemaID); }
 	
 	/** Web service to add the specified schema */
-	public Integer addSchema(Schema schema)
+	public int addSchema(Schema schema)
 		{ return Schemas.addSchema(schema); }
 	
 	/** Web service to extend the specified schema */
-	public Schema extendSchema(Integer schemaID)
+	public Schema extendSchema(int schemaID)
 		{ return Schemas.extendSchema(schemaID); }
 
 	/** Web service to update the specified schema */
-	public Boolean updateSchema(Schema schema)
+	public boolean updateSchema(Schema schema)
 		{ return Schemas.updateSchema(schema); }
 
 	/** Web service to unlock the specified schema */
-	public Boolean unlockSchema(Integer schemaID)
+	public boolean unlockSchema(int schemaID)
 		{ return Schemas.unlockSchema(schemaID); }
 	
 	/** Web service to lock the specified schema */
-	public Boolean lockSchema(Integer schemaID)
+	public boolean lockSchema(int schemaID)
 		{ return Schemas.lockSchema(schemaID); }
 
 	/** Indicates that the schema is able to be deleted */
-	public Boolean isDeletable(Integer schemaID)
+	public boolean isDeletable(int schemaID)
 		{ return Schemas.isDeletable(schemaID); }
 	
 	/** Web service to delete the specified schema */
-	public Boolean deleteSchema(Integer schemaID)
+	public boolean deleteSchema(int schemaID)
 		{ return Schemas.deleteSchema(schemaID); }
 
 	/** Web service to retrieve the synonym list for the specified schema */
-	public String[] getSynonyms(Integer schemaID)
+	public String[] getSynonyms(int schemaID)
 		{ return Schemas.getSynonyms(schemaID).toArray(new String[0]); }
 	
 	//---------------------------------
@@ -88,35 +106,35 @@ public class SchemaStore
 		{ return Groups.getGroups().toArray(new Group[0]); }
 
 	/** Web service to add a group */
-	public Integer addGroup(Group group)
+	public int addGroup(Group group)
 		{ return Groups.addGroup(group); }
 
 	/** Web service to update a group */
-	public Boolean updateGroup(Group group)
+	public boolean updateGroup(Group group)
 		{ return Groups.updateGroup(group); }
 	
 	/** Web service to delete a group */
-	public Boolean deleteGroup(Integer groupID)
+	public boolean deleteGroup(int groupID)
 		{ return Groups.deleteGroup(groupID); }
 	
 	/** Web service to get list of schemas unassigned to any group */
-	public Integer[] getUnassignedSchemas()
-		{ return Groups.getUnassignedSchemas().toArray(new Integer[0]); }
+	public int[] getUnassignedSchemas()
+		{ return convertArray(Groups.getUnassignedSchemas()); }
 	
 	/** Web service to get list of schemas associated with group */
-	public Integer[] getGroupSchemas(Integer groupID)
-		{ return Groups.getGroupSchemas(groupID).toArray(new Integer[0]); }	
+	public int[] getGroupSchemas(int groupID)
+		{ return convertArray(Groups.getGroupSchemas(groupID)); }	
 	
 	/** Web service to get list of groups associated with schema */
-	public Integer[] getSchemaGroups(Integer schemaID)
-		{ return Groups.getSchemaGroups(schemaID).toArray(new Integer[0]); }
+	public int[] getSchemaGroups(int schemaID)
+		{ return convertArray(Groups.getSchemaGroups(schemaID)); }
 		
 	/** Web service to add a group to a schema */
-	public Boolean addGroupToSchema(Integer schemaID, Integer groupID)
+	public boolean addGroupToSchema(int schemaID, int groupID)
 		{ return Groups.addGroupToSchema(schemaID, groupID); }
 	
 	/** Web service to remove a group from a schema */
-	public Boolean removeGroupFromSchema(Integer schemaID, Integer groupID)
+	public boolean removeGroupFromSchema(int schemaID, int groupID)
 		{ return Groups.removeGroupFromSchema(schemaID, groupID); }
 	
 	//----------------------------------------
@@ -124,38 +142,38 @@ public class SchemaStore
 	//----------------------------------------
 	
 	/** Web service to get the parent schemas for the specified schema */
-	public Integer[] getParentSchemas(Integer schemaID)
-		{ return SchemaRelationships.getParents(schemaID).toArray(new Integer[0]); }
+	public int[] getParentSchemas(int schemaID)
+		{ return convertArray(SchemaRelationships.getParents(schemaID)); }
 	
 	/** Web service to get the child schemas for the specified schema */
-	public Integer[] getChildSchemas(Integer schemaID)
-		{ return SchemaRelationships.getChildren(schemaID).toArray(new Integer[0]); }
+	public int[] getChildSchemas(int schemaID)
+		{ return convertArray(SchemaRelationships.getChildren(schemaID)); }
 
 	/** Web service to get the ancestor schemas for the specified schema */
-	public Integer[] getAncestorSchemas(Integer schemaID)
-		{ return SchemaRelationships.getAncestors(schemaID).toArray(new Integer[0]); }
+	public int[] getAncestorSchemas(int schemaID)
+		{ return convertArray(SchemaRelationships.getAncestors(schemaID)); }
 
 	/** Web service to get the descendant schemas for the specified schema */
-	public Integer[] getDescendantSchemas(Integer schemaID)
-		{ return SchemaRelationships.getDescendants(schemaID).toArray(new Integer[0]); }
+	public int[] getDescendantSchemas(int schemaID)
+		{ return convertArray(SchemaRelationships.getDescendants(schemaID)); }
 
 	/** Web service to get the associated schemas of the specified schema */
-	public Integer[] getAssociatedSchemas(Integer schemaID)
-		{ return SchemaRelationships.getAssociatedSchemas(schemaID).toArray(new Integer[0]); }
+	public int[] getAssociatedSchemas(int schemaID)
+		{ return convertArray(SchemaRelationships.getAssociatedSchemas(schemaID)); }
 
 	/** Web service to get the root schema of the two specified schemas */
-	public Integer getRootSchema(Integer schema1ID, Integer schema2ID)
+	public int getRootSchema(int schema1ID, int schema2ID)
 		{ return SchemaRelationships.getRootSchema(schema1ID, schema2ID); }	
 	
 	/** Web service to get the schema path between the specified root and schema */
-	public Integer[] getSchemaPath(Integer rootID, Integer schemaID)
-		{ return SchemaRelationships.getSchemaPath(rootID, schemaID).toArray(new Integer[0]); }	
+	public int[] getSchemaPath(int rootID, int schemaID)
+		{ return convertArray(SchemaRelationships.getSchemaPath(rootID, schemaID)); }	
 	
 	/** Web service to set the parent schemas for the specified schema */
-	public Boolean setParentSchemas(Integer schemaID, Integer[] parentIDs)
+	public boolean setParentSchemas(int schemaID, int[] parentIDs)
 	{
 		ArrayList<Integer> parentIDArray = new ArrayList<Integer>();
-		if(parentIDs!=null) parentIDArray = new ArrayList<Integer>(Arrays.asList(parentIDs));		
+		if(parentIDs!=null) parentIDArray = convertArray(parentIDs);
 		return SchemaRelationships.setParents(schemaID,parentIDArray);
 	}
 	
@@ -164,143 +182,147 @@ public class SchemaStore
 	//-----------------------------------
 
 	/** Web service to add the specified entity */
-	public Integer addEntity(Entity entity)
+	public int addEntity(Entity entity)
 		{ return SchemaElements.addSchemaElement(entity); }
 
 	/** Web service to add the specified attribute */
-	public Integer addAttribute(Attribute attribute)
+	public int addAttribute(Attribute attribute)
 		{ return SchemaElements.addSchemaElement(attribute); }
 
 	/** Web service to add the specified domain */
-	public Integer addDomain(Domain domain)
+	public int addDomain(Domain domain)
 		{ return SchemaElements.addSchemaElement(domain); }
 
 	/** Web service to add the specified domain value */
-	public Integer addDomainValue(DomainValue domainValue)
+	public int addDomainValue(DomainValue domainValue)
 		{ return SchemaElements.addSchemaElement(domainValue); }
 
 	/** Web service to add the specified relationship */
-	public Integer addRelationship(Relationship relationship)
+	public int addRelationship(Relationship relationship)
 		{ return SchemaElements.addSchemaElement(relationship); }
 
 	/** Web service to add the specified containment */
-	public Integer addContainment(Containment containment)
+	public int addContainment(Containment containment)
 		{ return SchemaElements.addSchemaElement(containment); }
 
 	/** Web service to add the specified subtype */
-	public Integer addSubtype(Subtype subtype)
+	public int addSubtype(Subtype subtype)
 		{ return SchemaElements.addSchemaElement(subtype); }
 
 	/** Web service to add the specified alias */
-	public Integer addAlias(Alias alias)
+	public int addAlias(Alias alias)
 		{ return SchemaElements.addSchemaElement(alias); }
 	
 	/** Web service to update the specified entity */
-	public Boolean updateEntity(Entity entity)
+	public boolean updateEntity(Entity entity)
 		{ return SchemaElements.updateSchemaElement(entity); }
 
 	/** Web service to update the specified attribute */
-	public Boolean updateAttribute(Attribute attribute)
+	public boolean updateAttribute(Attribute attribute)
 		{ return SchemaElements.updateSchemaElement(attribute); }
 
 	/** Web service to update the specified domain */
-	public Boolean updateDomain(Domain domain)
+	public boolean updateDomain(Domain domain)
 		{ return SchemaElements.updateSchemaElement(domain); }
 
 	/** Web service to update the specified domain value */
-	public Boolean updateDomainValue(DomainValue domainValue)
+	public boolean updateDomainValue(DomainValue domainValue)
 		{ return SchemaElements.updateSchemaElement(domainValue); }
 
 	/** Web service to update the specified relationship */
-	public Boolean updateRelationship(Relationship relationship)
+	public boolean updateRelationship(Relationship relationship)
 		{ return SchemaElements.updateSchemaElement(relationship); }
 
 	/** Web service to update the specified containment */
-	public Boolean updateContainment(Containment containment)
+	public boolean updateContainment(Containment containment)
 		{ return SchemaElements.updateSchemaElement(containment); }
 
 	/** Web service to update the specified subtype */
-	public Boolean updateSubtype(Subtype subtype)
+	public boolean updateSubtype(Subtype subtype)
 		{ return SchemaElements.updateSchemaElement(subtype); }
 
 	/** Web service to update the specified alias */
-	public Boolean updateAlias(Alias alias)
+	public boolean updateAlias(Alias alias)
 		{ return SchemaElements.updateSchemaElement(alias); }
 	
 	/** Web service to delete the specified entity */
-	public Boolean deleteEntity(Integer entityID)
+	public boolean deleteEntity(int entityID)
 		{ return SchemaElements.deleteSchemaElement(entityID); }
 
 	/** Web service to delete the specified attribute */
-	public Boolean deleteAttribute(Integer attributeID)
+	public boolean deleteAttribute(int attributeID)
 		{ return SchemaElements.deleteSchemaElement(attributeID); }
 
 	/** Web service to delete the specified domain */
-	public Boolean deleteDomain(Integer domainID)
+	public boolean deleteDomain(int domainID)
 		{ return SchemaElements.deleteSchemaElement(domainID); }
 
 	/** Web service to delete the specified domain value */
-	public Boolean deleteDomainValue(Integer domainValueID)
+	public boolean deleteDomainValue(int domainValueID)
 		{ return SchemaElements.deleteSchemaElement(domainValueID); }
 
 	/** Web service to delete the specified relationship */
-	public Boolean deleteRelationship(Integer relationshipID)
+	public boolean deleteRelationship(int relationshipID)
 		{ return SchemaElements.deleteSchemaElement(relationshipID); }
 
 	/** Web service to delete the specified containment */
-	public Boolean deleteContainment(Integer containmentID)
+	public boolean deleteContainment(int containmentID)
 		{ return SchemaElements.deleteSchemaElement(containmentID); }
 
 	/** Web service to delete the specified subtype */
-	public Boolean deleteSubtype(Integer subtypeID)
+	public boolean deleteSubtype(int subtypeID)
 		{ return SchemaElements.deleteSchemaElement(subtypeID); }
 
 	/** Web service to delete the specified alias */
-	public Boolean deleteAlias(Integer aliasID)
+	public boolean deleteAlias(int aliasID)
 		{ return SchemaElements.deleteSchemaElement(aliasID); }
 	
 	/** Web service to get the specified entity */
-	public Entity getEntity(Integer entityID)
+	public Entity getEntity(int entityID)
 		{ return (Entity)SchemaElements.getSchemaElement(entityID); }
 
 	/** Web service to get the specified attribute */
-	public Attribute getAttribute(Integer attributeID)
+	public Attribute getAttribute(int attributeID)
 		{ return (Attribute)SchemaElements.getSchemaElement(attributeID); }
 
 	/** Web service to get the specified domain */
-	public Domain getDomain(Integer domainID)
+	public Domain getDomain(int domainID)
 		{ return (Domain)SchemaElements.getSchemaElement(domainID); }
 
 	/** Web service to get the specified domain value */
-	public DomainValue getDomainValue(Integer domainValueID)
+	public DomainValue getDomainValue(int domainValueID)
 		{ return (DomainValue)SchemaElements.getSchemaElement(domainValueID); }
 	
 	/** Web service to get the specified relationship */
-	public Relationship getRelationship(Integer relationshipID)
+	public Relationship getRelationship(int relationshipID)
 		{ return (Relationship)SchemaElements.getSchemaElement(relationshipID); }
 	
 	/** Web service to get the specified containment */
-	public Containment getContainment(Integer containmentID)
+	public Containment getContainment(int containmentID)
 		{ return (Containment)SchemaElements.getSchemaElement(containmentID); }
 	
 	/** Web service to get the specified subtype */
-	public Subtype getSubtype(Integer subtypeID)
+	public Subtype getSubtype(int subtypeID)
 		{ return (Subtype)SchemaElements.getSchemaElement(subtypeID); }
 
 	/** Web service to get the specified alias */
-	public Alias getAlias(Integer aliasID)
+	public Alias getAlias(int aliasID)
 		{ return (Alias)SchemaElements.getSchemaElement(aliasID); }
 	
 	/** Web service to get the number of schema elements associated with the specified schema */
-	public Integer getSchemaElementCount(Integer schemaID)
+	public int getSchemaElementCount(int schemaID)
 		{ return SchemaElements.getSchemaElementCount(schemaID); }
 	
+	/** Web service to get the base schema elements for the specified schema */
+	public SchemaElementList getBaseSchemaElements(int schemaID)
+		{ return new SchemaElementList(SchemaElements.getBaseSchemaElements(schemaID).toArray(new SchemaElement[0])); }
+	
 	/** Web service to get the schema elements for the specified schema */
-	public SchemaElementList getSchemaElements(Integer schemaID)
+	public SchemaElementList getSchemaElements(int schemaID)
 		{ return new SchemaElementList(SchemaElements.getSchemaElements(schemaID).toArray(new SchemaElement[0])); }
 
 	/** Web service to get the schema element type */
-	public String getSchemaElementType(Integer schemaElementID)
+	public String getSchemaElementType(int schemaElementID)
 		{ return SchemaElements.getSchemaElementType(schemaElementID); }
 
 	//--------------------------------
@@ -312,11 +334,11 @@ public class SchemaStore
 		{ return DataSources.getDataSources(null).toArray(new DataSource[0]); }
 			
 	/** Web service to get a list of data sources for the specified schema */
-	public DataSource[] getDataSources(Integer schemaID)
+	public DataSource[] getDataSources(int schemaID)
 		{ return DataSources.getDataSources(schemaID).toArray(new DataSource[0]); }
 
 	/** Web service to get the specified data source */
-	public DataSource getDataSource(Integer dataSourceID)
+	public DataSource getDataSource(int dataSourceID)
 		{ return DataSources.getDataSource(dataSourceID); }
 
 	/** Web service to get the data source specified by its URL */
@@ -324,15 +346,15 @@ public class SchemaStore
 		{ return DataSources.getDataSourceByURL(url); }
 
 	/** Web service to add the specified data source */
-	public Integer addDataSource(DataSource dataSource)
+	public int addDataSource(DataSource dataSource)
 		{ return DataSources.addDataSource(dataSource); }
 
 	/** Web service to update the specified data source */
-	public Boolean updateDataSource(DataSource dataSource)
+	public boolean updateDataSource(DataSource dataSource)
 		{ return DataSources.updateDataSource(dataSource); }
 
 	/** Web service to delete the specified data source */
-	public Boolean deleteDataSource(Integer dataSourceID)
+	public boolean deleteDataSource(int dataSourceID)
 		{ return DataSources.deleteDataSource(dataSourceID); }
 
 	//----------------------------
@@ -344,35 +366,35 @@ public class SchemaStore
 		{ return Mappings.getMappings().toArray(new Mapping[0]); }
 		
 	/** Web service to retrieve the specified mapping */
-	public Mapping getMapping(Integer mappingID)
+	public Mapping getMapping(int mappingID)
 		{ return Mappings.getMapping(mappingID); }
 	
 	/** Web service to add the specified mapping */
-	public Integer addMapping(Mapping mapping)
+	public int addMapping(Mapping mapping)
 		{ return Mappings.addMapping(mapping); }
 
 	/** Web service to update the specified mapping */
-	public Boolean updateMapping(Mapping mapping)
+	public boolean updateMapping(Mapping mapping)
 		{ return Mappings.updateMapping(mapping); }
 
 	/** Web service to delete the specified mapping */
-	public Boolean deleteMapping(Integer mappingID)
+	public boolean deleteMapping(int mappingID)
 		{ return Mappings.deleteMapping(mappingID); }
 	
 	/** Web service to get the mapping cells for the specified schema */
-	public MappingCell[] getMappingCells(Integer mappingID)
+	public MappingCell[] getMappingCells(int mappingID)
 		{ return Mappings.getMappingCells(mappingID).toArray(new MappingCell[0]); }
 
 	/** Web service to add the specified mapping cell */
-	public Integer addMappingCell(MappingCell mappingCell)
+	public int addMappingCell(MappingCell mappingCell)
 		{ return Mappings.addMappingCell(mappingCell); }
 
 	/** Web service to update the specified mapping cell */
-	public Boolean updateMappingCell(MappingCell mappingCell)
+	public boolean updateMappingCell(MappingCell mappingCell)
 		{ return Mappings.updateMappingCell(mappingCell); }
 	
 	/** Web service to delete the specified mapping cell */
-	public Boolean deleteMappingCell(Integer mappingCellID)
+	public boolean deleteMappingCell(int mappingCellID)
 		{ return Mappings.deleteMappingCell(mappingCellID); }
 
 	//--------------------
@@ -380,7 +402,7 @@ public class SchemaStore
 	//--------------------
 	
 	/** Web service to import schemas */
-	public Integer importSchema(Schema schema, SchemaElementList schemaElementList) throws RemoteException
+	public int importSchema(Schema schema, SchemaElementList schemaElementList) throws RemoteException
 	{
 		ArrayList<SchemaElement> schemaElements = new ArrayList<SchemaElement>(Arrays.asList(schemaElementList.getSchemaElements()));
 		Graph graph = new Graph(schema,schemaElements);
@@ -388,7 +410,7 @@ public class SchemaStore
 	}
 	
 	/** Web service to save the mapping and mapping cells */
-	public Integer saveMapping(Mapping mapping, MappingCell[] mappingCells) throws RemoteException
+	public int saveMapping(Mapping mapping, MappingCell[] mappingCells) throws RemoteException
 	{
 		ArrayList<MappingCell> mappingCellArray = new ArrayList<MappingCell>();
 		if(mappingCells!=null) mappingCellArray = new ArrayList<MappingCell>(Arrays.asList(mappingCells));

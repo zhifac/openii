@@ -103,6 +103,10 @@ public class SchemaElements
 	static public SchemaElement getSchemaElement(Integer schemaElementID)
 		{ return Database.getSchemaElement(schemaElementID); }
 
+	/** Retrieves the base elements for the specified schema */
+	static public ArrayList<SchemaElement> getBaseSchemaElements(Integer schemaID)
+		{ return Database.getBaseElements(schemaID); }
+	
 	/** Retrieves the schema element count for the specified schema */
 	static public Integer getSchemaElementCount(Integer schemaID)
 	{
