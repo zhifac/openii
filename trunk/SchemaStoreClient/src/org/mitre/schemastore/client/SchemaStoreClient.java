@@ -86,7 +86,7 @@ public class SchemaStoreClient
 	/** Gets the list of schemas from the web service */
 	public ArrayList<Schema> getSchemas() throws RemoteException
 	{
-		Schema[] schemas = (Schema[])callMethod("getSchemas",new Object[0]);
+		Schema[] schemas = (Schema[])callMethod("getSchemas",new Object[] {});
 		return schemas==null ? new ArrayList<Schema>() : new ArrayList<Schema>(Arrays.asList(schemas));
 	}
 	
