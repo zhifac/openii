@@ -2,7 +2,10 @@
 
 package org.mitre.schemastore.client;
 
+import java.io.File;
 import java.lang.reflect.Method;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,7 +26,6 @@ import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.SchemaElementList;
 import org.mitre.schemastore.model.Subtype;
 import org.mitre.schemastore.model.graph.Graph;
-import org.mitre.schemastore.servlet.SchemaStore;
 import org.mitre.schemastore.servlet.SchemaStoreProxy;
 
 /**
@@ -32,9 +34,6 @@ import org.mitre.schemastore.servlet.SchemaStoreProxy;
  */
 public class SchemaStoreClient
 {
-	/** Stores the location of the web service */
-	private SchemaStoreProxy proxy;
-
 	/** Stores the object for calling SchemaStore */
 	private Object schemaStore = null;
 	
@@ -59,14 +58,25 @@ public class SchemaStoreClient
 	}
 	
 	/** Constructor for the Schema Store Client */
-	public SchemaStoreClient(String serviceAddress)
+	public SchemaStoreClient(String serviceAddress) throws RemoteException
 	{
-		if(serviceAddress!=null)
-		{
-			proxy = new SchemaStoreProxy(serviceAddress);
-			schemaStore = proxy;
-		}
-		else schemaStore = new SchemaStore();
+		try {
+			// Connect to a local SchemaStore jar file
+			File file = new File(serviceAddress);
+			if(file.exists())
+			{
+				URLClassLoader loader = new URLClassLoader(new URL[] {file.toURI().toURL()});
+				Class<?> schemaStoreClass = loader.loadClass("org.mitre.schemastore.servlet.SchemaStore");
+				schemaStore = schemaStoreClass.newInstance();
+			}
+
+			// Connect to a SchemaStore server
+			else
+			{
+				schemaStore = new SchemaStoreProxy(serviceAddress);
+				getSchemas();
+			}
+		} catch(Exception e) { throw new RemoteException("(E) Failed to connect to SchemaStore at " + serviceAddress); }
 	}
 	
 	//------------------
@@ -93,27 +103,27 @@ public class SchemaStoreClient
 
 	/** Extends the specified schema in the web service */
 	public Schema extendSchema(Integer schemaID) throws RemoteException
-		{ return proxy.extendSchema(schemaID); }
+		{ return (Schema)callMethod("extendSchema",new Object[] {schemaID}); }
 	
 	/** Updates the specified schema in the web service */
 	public boolean updateSchema(Schema schema) throws RemoteException
-		{ return proxy.updateSchema(schema); }
+		{ return (Boolean)callMethod("updateSchema",new Object[] {schema}); }
 	
 	/** Unlocks the specified schema in the web service */
 	public boolean unlockSchema(Integer schemaID) throws RemoteException
-		{ return proxy.unlockSchema(schemaID); }
+		{ return (Boolean)callMethod("unlockSchema",new Object[] {schemaID}); }
 	
 	/** Locks the specified schema in the web service */
 	public boolean lockSchema(Integer schemaID) throws RemoteException
-		{ return proxy.lockSchema(schemaID); }
+		{ return (Boolean)callMethod("lockSchema",new Object[] {schemaID}); }
 	
 	/** Indicates that the schema is able to be deleted from the web service */
-	public Boolean isDeletable(Integer schemaID) throws RemoteException
-		{ return proxy.isDeletable(schemaID); }
+	public boolean isDeletable(Integer schemaID) throws RemoteException
+		{ return (Boolean)callMethod("isDeletable",new Object[] {schemaID}); }
 	
 	/** Delete the specified schema from the web service */
 	public boolean deleteSchema(Integer schemaID) throws RemoteException
-		{ return proxy.deleteSchema(schemaID); }
+		{ return (Boolean)callMethod("deleteSchema",new Object[] {schemaID}); }
 	
 	//------------------------
 	// Schema Group Functions
@@ -122,30 +132,30 @@ public class SchemaStoreClient
 	/** Get the list of schema groups from the web service */
 	public ArrayList<Group> getGroups() throws RemoteException
 	{
-		Group[] groups = proxy.getGroups();
+		Group[] groups = (Group[])callMethod("getGroups",new Object[] {});
 		return groups==null ? new ArrayList<Group>() : new ArrayList<Group>(Arrays.asList(groups));
 	}
 
 	/** Add a group to the web service */
 	public Integer addGroup(Group group) throws RemoteException
 	{
-		Integer groupID = proxy.addGroup(group);
+		Integer groupID = (Integer)callMethod("addGroup",new Object[] {group});
 		return groupID==0 ? null : groupID;
 	}
 	
 	/** Update a group in the web service */
-	public Boolean updateGroup(Group group) throws RemoteException
-		{ return proxy.updateGroup(group); }
+	public boolean updateGroup(Group group) throws RemoteException
+		{ return (Boolean)callMethod("updateGroup",new Object[] {group}); }
 	
 	/** Delete a group from the web service */
-	public Boolean deleteGroup(Integer groupID) throws RemoteException
-		{ return proxy.deleteGroup(groupID); }
+	public boolean deleteGroup(Integer groupID) throws RemoteException
+		{ return (Boolean)callMethod("deleteGroup",new Object[] {groupID}); }
 	
 	/** Get list of schemas unassigned with a group in web service */
 	public ArrayList<Integer> getUnassignedSchemas() throws RemoteException
 	{
 		ArrayList<Integer> unassignedGroupSchemas = new ArrayList<Integer>();
-		int[] unassignedSchemaArray = proxy.getUnassignedSchemas();
+		int[] unassignedSchemaArray = (int[])callMethod("getUnassignedSchemas",new Object[] {});
 		if(unassignedSchemaArray!=null)
 			for(Integer unassignedGroupSchema : unassignedSchemaArray)
 				unassignedGroupSchemas.add(unassignedGroupSchema);
@@ -156,7 +166,7 @@ public class SchemaStoreClient
 	public ArrayList<Integer> getGroupSchemas(Integer groupID) throws RemoteException
 	{
 		ArrayList<Integer> groupSchemas = new ArrayList<Integer>();
-		int[] groupSchemaArray = proxy.getGroupSchemas(groupID);
+		int[] groupSchemaArray = (int[])callMethod("getGroupSchemas",new Object[] {groupID});
 		if(groupSchemaArray!=null)
 			for(Integer groupSchema : groupSchemaArray)
 				groupSchemas.add(groupSchema);
@@ -167,7 +177,7 @@ public class SchemaStoreClient
 	public ArrayList<Integer> getSchemaGroups(Integer schemaID) throws RemoteException
 	{
 		ArrayList<Integer> schemaGroups = new ArrayList<Integer>();
-		int[] schemaGroupArray = proxy.getSchemaGroups(schemaID);
+		int[] schemaGroupArray = (int[])callMethod("getSchemaGroups",new Object[] {schemaID});
 		if(schemaGroupArray!=null)
 			for(Integer schemaGroup : schemaGroupArray)
 				schemaGroups.add(schemaGroup);
@@ -175,12 +185,12 @@ public class SchemaStoreClient
 	}
 		
 	/** Add a group to a schema in the web service */
-	public Boolean addGroupToSchema(Integer schemaID, Integer groupID) throws RemoteException
-		{ return proxy.addGroupToSchema(schemaID, groupID); }
+	public boolean addGroupToSchema(Integer schemaID, Integer groupID) throws RemoteException
+		{ return (Boolean)callMethod("addGroupToSchema",new Object[] {schemaID,groupID}); }
 	
 	/** Remove a group from a schema in the web service */
-	public Boolean removeGroupFromSchema(Integer schemaID, Integer groupID) throws RemoteException
-		{ return proxy.removeGroupFromSchema(schemaID, groupID); }
+	public boolean removeGroupFromSchema(Integer schemaID, Integer groupID) throws RemoteException
+		{ return (Boolean)callMethod("removeGroupFromSchema",new Object[] {schemaID,groupID}); }
 	
 	//-------------------------------
 	// Schema Relationship Functions
@@ -190,7 +200,7 @@ public class SchemaStoreClient
 	public ArrayList<Integer> getParentSchemas(Integer schemaID) throws RemoteException
 	{
 		ArrayList<Integer> parentSchemas = new ArrayList<Integer>();
-		int[] parentSchemaArray = proxy.getParentSchemas(schemaID);
+		int[] parentSchemaArray = (int[])callMethod("getParentSchemas",new Object[] {schemaID});
 		if(parentSchemaArray!=null)
 			for(Integer parentSchema : parentSchemaArray)
 				parentSchemas.add(parentSchema);
@@ -201,7 +211,7 @@ public class SchemaStoreClient
 	public ArrayList<Integer> getChildSchemas(Integer schemaID) throws RemoteException
 	{
 		ArrayList<Integer> childSchemas = new ArrayList<Integer>();
-		int[] childSchemaArray = proxy.getChildSchemas(schemaID);
+		int[] childSchemaArray = (int[])callMethod("getChildSchemas",new Object[] {schemaID});
 		if(childSchemaArray!=null)
 			for(Integer childSchema : childSchemaArray)
 				childSchemas.add(childSchema);
@@ -212,7 +222,7 @@ public class SchemaStoreClient
 	public ArrayList<Integer> getAncestorSchemas(Integer schemaID) throws RemoteException
 	{
 		ArrayList<Integer> ancestorSchemas = new ArrayList<Integer>();
-		int[] ancestorSchemaArray = proxy.getAncestorSchemas(schemaID);
+		int[] ancestorSchemaArray = (int[])callMethod("getAncestorSchemas",new Object[] {schemaID});
 		if(ancestorSchemaArray!=null)
 			for(Integer ancestorSchema : ancestorSchemaArray)
 				ancestorSchemas.add(ancestorSchema);
@@ -223,7 +233,7 @@ public class SchemaStoreClient
 	public ArrayList<Integer> getDescendantSchemas(Integer schemaID) throws RemoteException
 	{
 		ArrayList<Integer> decendantSchemas = new ArrayList<Integer>();
-		int[] decendantSchemaArray = proxy.getDescendantSchemas(schemaID);
+		int[] decendantSchemaArray = (int[])callMethod("getDescendantSchemas",new Object[] {schemaID});
 		if(decendantSchemaArray!=null)
 			for(Integer decendantSchema : decendantSchemaArray)
 				decendantSchemas.add(decendantSchema);
@@ -234,7 +244,7 @@ public class SchemaStoreClient
 	public ArrayList<Integer> getAssociatedSchemas(Integer schemaID) throws RemoteException
 	{
 		ArrayList<Integer> associatedSchemas = new ArrayList<Integer>();
-		int[] associatedSchemaArray = proxy.getAssociatedSchemas(schemaID);
+		int[] associatedSchemaArray = (int[])callMethod("getAssociatedSchemas",new Object[] {schemaID});
 		if(associatedSchemaArray!=null)
 			for(Integer associatedSchema : associatedSchemaArray)
 				associatedSchemas.add(associatedSchema);
@@ -243,13 +253,13 @@ public class SchemaStoreClient
 	
 	/** Gets the root schema for the two specified schemas from the web service */
 	public Integer getRootSchema(Integer schema1ID, Integer schema2ID) throws RemoteException
-		{ return proxy.getRootSchema(schema1ID, schema2ID); }
+		{ return (Integer)callMethod("getRootSchema",new Object[] {schema1ID, schema2ID}); }
 	
 	/** Gets the schema path between the specified root and schema from the web service */
 	public ArrayList<Integer> getSchemaPath(Integer rootID, Integer schemaID) throws RemoteException
 	{
 		ArrayList<Integer> schemaPath = new ArrayList<Integer>();
-		int[] schemaPathArray = proxy.getSchemaPath(rootID, schemaID);
+		int[] schemaPathArray = (int[])callMethod("getSchemaPath",new Object[] {rootID,schemaID});
 		if(schemaPathArray!=null)
 			for(Integer schemaPathItem : schemaPathArray)
 				schemaPath.add(schemaPathItem);
@@ -262,7 +272,7 @@ public class SchemaStoreClient
 		int[] parentIDArray = new int[parentIDs.size()];
 		for(int i=0; i<parentIDs.size(); i++)
 			parentIDArray[i] = parentIDs.get(i);
-		return proxy.setParentSchemas(schemaID, parentIDArray);
+		return (Boolean)callMethod("setParentSchemas",new Object[] {schemaID,parentIDArray});
 	}
 	
 	//--------------------------
@@ -273,76 +283,76 @@ public class SchemaStoreClient
 	public Integer addSchemaElement(SchemaElement schemaElement) throws RemoteException
 	{
 		Integer schemaElementID = 0;
-		if(schemaElement instanceof Entity) schemaElementID = proxy.addEntity((Entity)schemaElement);
-		else if(schemaElement instanceof Attribute) schemaElementID = proxy.addAttribute((Attribute)schemaElement);
-		else if(schemaElement instanceof Domain) schemaElementID = proxy.addDomain((Domain)schemaElement);
-		else if(schemaElement instanceof DomainValue) schemaElementID = proxy.addDomainValue((DomainValue)schemaElement);
-		else if(schemaElement instanceof Relationship) schemaElementID = proxy.addRelationship((Relationship)schemaElement);
-		else if(schemaElement instanceof Containment) schemaElementID = proxy.addContainment((Containment)schemaElement);
-		else if(schemaElement instanceof Subtype) schemaElementID = proxy.addSubtype((Subtype)schemaElement);
-		else if(schemaElement instanceof Alias) schemaElementID = proxy.addAlias((Alias)schemaElement);
+		if(schemaElement instanceof Entity) schemaElementID = (Integer)callMethod("addEntity",new Object[] {(Entity)schemaElement});
+		else if(schemaElement instanceof Attribute) schemaElementID = (Integer)callMethod("addAttribute",new Object[] {(Attribute)schemaElement});
+		else if(schemaElement instanceof Domain) schemaElementID = (Integer)callMethod("addDomain",new Object[] {(Domain)schemaElement});
+		else if(schemaElement instanceof DomainValue) schemaElementID = (Integer)callMethod("addDomainValue",new Object[] {(DomainValue)schemaElement});
+		else if(schemaElement instanceof Relationship) schemaElementID = (Integer)callMethod("addRelationship",new Object[] {(Relationship)schemaElement});
+		else if(schemaElement instanceof Containment) schemaElementID = (Integer)callMethod("addContainment",new Object[] {(Containment)schemaElement});
+		else if(schemaElement instanceof Subtype) schemaElementID = (Integer)callMethod("addSubtype",new Object[] {(Subtype)schemaElement});
+		else if(schemaElement instanceof Alias) schemaElementID = (Integer)callMethod("addAlias",new Object[] {(Alias)schemaElement});
 		return schemaElementID==0 ? null : schemaElementID;
 	}
 	
 	/** Updates the specified schema element on the web service */
 	public Boolean updateSchemaElement(SchemaElement schemaElement) throws RemoteException
 	{
-		if(schemaElement instanceof Entity) return proxy.updateEntity((Entity)schemaElement);
-		else if(schemaElement instanceof Attribute) return proxy.updateAttribute((Attribute)schemaElement);
-		else if(schemaElement instanceof Domain) return proxy.updateDomain((Domain)schemaElement);
-		else if(schemaElement instanceof DomainValue) return proxy.updateDomainValue((DomainValue)schemaElement);
-		else if(schemaElement instanceof Relationship) return proxy.updateRelationship((Relationship)schemaElement);
-		else if(schemaElement instanceof Containment) return proxy.updateContainment((Containment)schemaElement);
-		else if(schemaElement instanceof Subtype) return proxy.updateSubtype((Subtype)schemaElement);
-		else if(schemaElement instanceof Alias) return proxy.updateAlias((Alias)schemaElement);
+		if(schemaElement instanceof Entity) return (Boolean)callMethod("updateEntity",new Object[] {(Entity)schemaElement});
+		else if(schemaElement instanceof Attribute) return (Boolean)callMethod("updateAttribute",new Object[] {(Attribute)schemaElement});
+		else if(schemaElement instanceof Domain) return (Boolean)callMethod("updateDomain",new Object[] {(Domain)schemaElement});
+		else if(schemaElement instanceof DomainValue) return (Boolean)callMethod("updateDomainValue",new Object[] {(DomainValue)schemaElement});
+		else if(schemaElement instanceof Relationship) return (Boolean)callMethod("updateRelationship",new Object[] {(Relationship)schemaElement});
+		else if(schemaElement instanceof Containment) return (Boolean)callMethod("updateContainment",new Object[] {(Containment)schemaElement});
+		else if(schemaElement instanceof Subtype) return (Boolean)callMethod("updateSubtype",new Object[] {(Subtype)schemaElement});
+		else if(schemaElement instanceof Alias) return (Boolean)callMethod("updateAlias",new Object[] {(Alias)schemaElement});
 		return null;
 	}
 
 	/** Deletes the specified schema element from the web service */
 	public Boolean deleteSchemaElement(Integer schemaElementID) throws RemoteException
 	{
-		String type = proxy.getSchemaElementType(schemaElementID);
-		if(type.equals("Entity")) return proxy.deleteEntity(schemaElementID);
-		else if(type.equals("Attribute")) return proxy.deleteAttribute(schemaElementID);
-		else if(type.equals("Domain")) return proxy.deleteDomain(schemaElementID);
-		else if(type.equals("DomainValue")) return proxy.deleteDomainValue(schemaElementID);
-		else if(type.equals("Relationship")) return proxy.deleteRelationship(schemaElementID);
-		else if(type.equals("Containment")) return proxy.deleteContainment(schemaElementID);
-		else if(type.equals("Subtype")) return proxy.deleteSubtype(schemaElementID);
-		else if(type.equals("Alias")) return proxy.deleteAlias(schemaElementID);
+		String type = (String)callMethod("getSchemaElementType",new Object[] {schemaElementID});
+		if(type.equals("Entity")) return (Boolean)callMethod("deleteEntity",new Object[] {schemaElementID});
+		else if(type.equals("Attribute")) return (Boolean)callMethod("deleteAttribute",new Object[] {schemaElementID});
+		else if(type.equals("Domain")) return (Boolean)callMethod("deleteDomain",new Object[] {schemaElementID});
+		else if(type.equals("DomainValue")) return (Boolean)callMethod("deleteDomainValue",new Object[] {schemaElementID});
+		else if(type.equals("Relationship")) return (Boolean)callMethod("deleteRelationship",new Object[] {schemaElementID});
+		else if(type.equals("Containment")) return (Boolean)callMethod("deleteContainment",new Object[] {schemaElementID});
+		else if(type.equals("Subtype")) return (Boolean)callMethod("deleteSubtype",new Object[] {schemaElementID});
+		else if(type.equals("Alias")) return (Boolean)callMethod("deleteAlias",new Object[] {schemaElementID});
 		return null;
 	}
 
 	/** Retrieves the specified schema element from the web service */
 	public SchemaElement getSchemaElement(Integer schemaElementID) throws RemoteException
 	{
-		String type = proxy.getSchemaElementType(schemaElementID);
-		if(type.equals("Entity")) return proxy.getEntity(schemaElementID);
-		else if(type.equals("Attribute")) return proxy.getAttribute(schemaElementID);
-		else if(type.equals("Domain")) return proxy.getDomain(schemaElementID);
-		else if(type.equals("DomainValue")) return proxy.getDomainValue(schemaElementID);
-		else if(type.equals("Relationship")) return proxy.getRelationship(schemaElementID);
-		else if(type.equals("Containment")) return proxy.getContainment(schemaElementID);
-		else if(type.equals("Subtype")) return proxy.getSubtype(schemaElementID);
-		else if(type.equals("Alias")) return proxy.getAlias(schemaElementID);
+		String type = (String)callMethod("getSchemaElementType",new Object[] {schemaElementID});
+		if(type.equals("Entity")) return (SchemaElement)callMethod("getEntity",new Object[] {schemaElementID});
+		else if(type.equals("Attribute")) return (SchemaElement)callMethod("getAttribute",new Object[] {schemaElementID});
+		else if(type.equals("Domain")) return (SchemaElement)callMethod("getDomain",new Object[] {schemaElementID});
+		else if(type.equals("DomainValue")) return (SchemaElement)callMethod("getDomainValue",new Object[] {schemaElementID});
+		else if(type.equals("Relationship")) return (SchemaElement)callMethod("getRelationship",new Object[] {schemaElementID});
+		else if(type.equals("Containment")) return (SchemaElement)callMethod("getContainment",new Object[] {schemaElementID});
+		else if(type.equals("Subtype")) return (SchemaElement)callMethod("getSubtype",new Object[] {schemaElementID});
+		else if(type.equals("Alias")) return (SchemaElement)callMethod("getAlias",new Object[] {schemaElementID});
 		return null;
 	}
 
 	/** Retrieves the base schema elements for the specified schema from the web service */
 	public ArrayList<SchemaElement> getBaseSchemaElements(Integer schemaID) throws RemoteException
 	{
-		SchemaElement[] schemaElements = proxy.getBaseSchemaElements(schemaID).getSchemaElements();
+		SchemaElement[] schemaElements = ((SchemaElementList)callMethod("getBaseSchemaElements",new Object[] {schemaID})).getSchemaElements();
 		return schemaElements==null ? new ArrayList<SchemaElement>() : new ArrayList<SchemaElement>(Arrays.asList(schemaElements));
 	}
 
 	/** Retrieves the number of schema elements for the specified schema from the web service */
 	public Integer getSchemaElementCount(Integer schemaID) throws RemoteException
-		{ return proxy.getSchemaElementCount(schemaID); }
+		{ return (Integer)callMethod("getSchemaElementCount",new Object[] {schemaID}); }
 	
 	/** Retrieves the schema element graph for the specified schema from the web service */
 	public Graph getGraph(Integer schemaID) throws RemoteException
 	{
-		SchemaElement[] schemaElements = proxy.getSchemaElements(schemaID).getSchemaElements();
+		SchemaElement[] schemaElements = ((SchemaElementList)callMethod("getSchemaElements",new Object[] {schemaID})).getSchemaElements();
 		ArrayList<SchemaElement> elements = schemaElements==null ? new ArrayList<SchemaElement>() : new ArrayList<SchemaElement>(Arrays.asList(schemaElements));
 		return new Graph(getSchema(schemaID),elements);
 	}
@@ -350,7 +360,7 @@ public class SchemaStoreClient
 	/** Retrieves the synonyms for all words in the specified schema from the web service */
 	public ArrayList<String> getSynonyms(Integer schemaID) throws RemoteException
 	{
-		String[] synonymList = proxy.getSynonyms(schemaID);
+		String[] synonymList = (String[])callMethod("getSynonyms",new Object[] {schemaID});
 		ArrayList<String> synonyms = synonymList==null ? new ArrayList<String>() : new ArrayList<String>(Arrays.asList(synonymList));
 		return synonyms;
 	}
@@ -362,32 +372,32 @@ public class SchemaStoreClient
 	/** Gets the list of data sources from the web service */
 	public ArrayList<DataSource> getDataSources(Integer schemaID) throws RemoteException
 	{
-		DataSource[] dataSources = (schemaID==null ? proxy.getAllDataSources() : proxy.getDataSources(schemaID));
+		DataSource[] dataSources = (schemaID==null ? (DataSource[])callMethod("getAllDataSources",new Object[] {}) : (DataSource[])callMethod("getDataSources",new Object[] {schemaID}));
 		return dataSources==null ? new ArrayList<DataSource>() : new ArrayList<DataSource>(Arrays.asList(dataSources));
 	}
 	
 	/** Gets the specified data source from the web service */ 
 	public DataSource getDataSource(Integer dataSourceID) throws RemoteException
-		{ return proxy.getDataSource(dataSourceID); }
+		{ return (DataSource)callMethod("getDataSource",new Object[] {dataSourceID}); }
 	
 	/** Gets the specified data source based on the specified url from the web service */
 	public DataSource getDataSourceByURL(String url) throws RemoteException
-		{ return proxy.getDataSourceByURL(url); }
+		{ return (DataSource)callMethod("getDataSourceByURL",new Object[] {url}); }
 	
 	/** Adds the specified data source to the web service */
 	public Integer addDataSource(DataSource dataSource) throws RemoteException
 	{
-		Integer dataSourceID = proxy.addDataSource(dataSource);
+		Integer dataSourceID = (Integer)callMethod("addDataSource",new Object[] {dataSource});
 		return dataSourceID==0 ? null : dataSourceID;
 	}
 		
 	/** Updates the specified data source in the web service */
 	public boolean updateDataSource(DataSource dataSource) throws RemoteException
-		{ return proxy.updateDataSource(dataSource); }
+		{ return (Boolean)callMethod("updateDataSource",new Object[] {dataSource}); }
 	
 	/** Deletes the specified data source from the web service */
 	public boolean deleteDataSource(Integer dataSourceID) throws RemoteException
-		{ return proxy.deleteDataSource(dataSourceID); }
+		{ return (Boolean)callMethod("deleteDataSource",new Object[] {dataSourceID}); }
 	
 	//-------------------
 	// Mapping Functions
@@ -396,50 +406,50 @@ public class SchemaStoreClient
 	/** Gets the list of mappings from the web service */
 	public ArrayList<Mapping> getMappings() throws RemoteException
 	{
-		Mapping[] mappings = proxy.getMappings();
+		Mapping[] mappings = (Mapping[])callMethod("getMappings",new Object[] {});
 		return mappings==null ? new ArrayList<Mapping>() : new ArrayList<Mapping>(Arrays.asList(mappings));
 	}
 	
 	/** Gets the specified mapping from the web service */
 	public Mapping getMapping(Integer mappingID) throws RemoteException
-		{ return proxy.getMapping(mappingID); }
+		{ return (Mapping)callMethod("getMapping",new Object[] {mappingID}); }
 	
 	/** Adds the specified mapping to the web service */
 	public Integer addMapping(Mapping mapping) throws RemoteException
 	{
-		Integer mappingID = proxy.addMapping(mapping);
+		Integer mappingID = (Integer)callMethod("addMapping",new Object[] {mapping});
 		return mappingID==0 ? null : mappingID;
 	}
 		
 	/** Updates the specified mapping in the web service */
 	public boolean updateMapping(Mapping mapping) throws RemoteException
-		{ return proxy.updateMapping(mapping); }
+		{ return (Boolean)callMethod("updateMapping",new Object[] {mapping}); }
 	
 	/** Deletes the specified mapping from the web service */
 	public boolean deleteMapping(Integer mappingID) throws RemoteException
-		{ return proxy.deleteMapping(mappingID); }
+		{ return (Boolean)callMethod("deleteMapping",new Object[] {mappingID}); }
 
 	/** Gets the list of mapping cells for the specified mapping from the web service */
 	public ArrayList<MappingCell> getMappingCells(Integer mappingID) throws RemoteException
 	{
-		MappingCell[] mappingCells = proxy.getMappingCells(mappingID);
+		MappingCell[] mappingCells = (MappingCell[])callMethod("getMappingCells",new Object[] {mappingID});
 		return mappingCells==null ? new ArrayList<MappingCell>() : new ArrayList<MappingCell>(Arrays.asList(mappingCells));
 	}
 	
 	/** Adds the specified mapping cell to the web service */
 	public Integer addMappingCell(MappingCell mappingCell) throws RemoteException
 	{
-		Integer mappingCellID = proxy.addMappingCell(mappingCell);
+		Integer mappingCellID = (Integer)callMethod("addMappingCell",new Object[] {mappingCell});
 		return mappingCellID==0 ? null : mappingCellID;
 	}
 		
 	/** Updates the specified mapping cell in the web service */
 	public boolean updateMappingCell(MappingCell mappingCell) throws RemoteException
-		{ return proxy.updateMappingCell(mappingCell); }
+		{ return (Boolean)callMethod("updateMappingCell",new Object[] {mappingCell}); }
 	
 	/** Deletes the specified mapping from the web service */
 	public boolean deleteMappingCell(Integer mappingCellID) throws RemoteException
-		{ return proxy.deleteMappingCell(mappingCellID); }
+		{ return (Boolean)callMethod("deleteMappingCell",new Object[] {mappingCellID}); }
 
 	//-------------------
 	// Derived Functions
@@ -447,12 +457,12 @@ public class SchemaStoreClient
 	
 	/** Imports the specified schema into the web services */
 	public Integer importSchema(Schema schema, ArrayList<SchemaElement> schemaElements) throws RemoteException
-		{ return proxy.importSchema(schema, new SchemaElementList(schemaElements.toArray(new SchemaElement[0]))); }
+		{ return (Integer)callMethod("importSchema",new Object[] {schema, new SchemaElementList(schemaElements.toArray(new SchemaElement[0]))}); }
 		
 	/** Saves the mapping and mapping cells to the web service */
 	public Integer saveMapping(Mapping mapping, ArrayList<MappingCell> mappingCells) throws RemoteException
 	{
-		Integer mappingID = proxy.saveMapping(mapping,mappingCells.toArray(new MappingCell[0]));
+		Integer mappingID = (Integer)callMethod("saveMapping",new Object[] {mapping,mappingCells.toArray(new MappingCell[0])});
 		return mappingID==0 ? null : mappingID;
 	}
 }
