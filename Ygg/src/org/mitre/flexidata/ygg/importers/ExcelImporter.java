@@ -10,6 +10,7 @@ import java.util.HashMap;
 
 
 
+import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -39,8 +40,25 @@ public class ExcelImporter extends Importer {
 	
 	// get rid of characters
 	protected String cleanup(String s) {
-		s = s.trim().replaceAll("'", "\'").replaceAll("\"", "\\\"");  //.replaceAll(" ", "_");
+		s = s.trim().replaceAll("'", "\'").replaceAll("\"", "\\\"");  
 		return s;
+	}
+	
+	protected String getCellValStr( HSSFCell cell ){
+		if ( cell.getCellType() == HSSFCell.CELL_TYPE_BOOLEAN )
+			return Boolean.toString(cell.getBooleanCellValue());
+		else if ( cell.getCellType() == HSSFCell.CELL_TYPE_NUMERIC ) 
+			return Double.toString(cell.getNumericCellValue());
+		else if ( cell.getCellType() == HSSFCell.CELL_TYPE_STRING ) 
+			return cleanup(cell.getRichStringCellValue().toString());
+		else if ( cell.getCellType() == HSSFCell.CELL_TYPE_BLANK )
+			return "";
+		else if ( cell.getCellType() == HSSFCell.CELL_TYPE_FORMULA )
+			return cell.getCellFormula();
+		else if ( cell.getCellType() == HSSFCell.CELL_TYPE_ERROR )
+			return String.valueOf(cell.getErrorCellValue());
+		else
+			return "";
 	}
 
 	protected void generate() {
@@ -59,9 +77,9 @@ public class ExcelImporter extends Importer {
 
 	protected void readRow(HSSFRow row) {
 		
-		String tblName = cleanup(row.getCell(0).getRichStringCellValue().toString());
-		String attName = cleanup(row.getCell(1).getRichStringCellValue().toString());
-		String documentation = cleanup(row.getCell(2).getRichStringCellValue().toString());
+		String tblName = getCellValStr(row.getCell(0)); 
+		String attName = getCellValStr(row.getCell(0));
+		String documentation = getCellValStr(row.getCell(0));
 		Entity tblEntity;
 		Attribute attribute;
 
