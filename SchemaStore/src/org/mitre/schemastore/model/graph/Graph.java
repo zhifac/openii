@@ -253,6 +253,10 @@ public class Graph implements Serializable
 	public ArrayList<Containment> getContainments(Integer elementID)
 		{ return cache.getContainments(elementID); }
 	
+	/** Returns the containments associated with the specified schema element */
+	public ArrayList<Relationship> getRelationships(Integer elementID)
+		{ return cache.getRelationships(elementID); }
+	
 	/** Returns the sub-type relationships for a given entity */
 	public ArrayList<Subtype> getSubTypes(Integer elementID)
 		{ return cache.getSubtypes(elementID); }
