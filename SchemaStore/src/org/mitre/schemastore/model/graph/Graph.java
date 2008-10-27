@@ -101,6 +101,22 @@ public class Graph implements Serializable
 			ArrayList<Containment> containmentList = containmentLists.get(elementID);
 			return containmentList==null ? new ArrayList<Containment>() : containmentList;
 		}
+		
+		/** Returns relationships associated with a specified entity */
+		public ArrayList<Relationship> getRelationships(Integer elementID)
+		{
+			ArrayList<Relationship> relationships  = new ArrayList<Relationship>();
+			
+			// Identify all attributes associated with the specified schema element
+			for(SchemaElement element: getElements(Relationship.class))
+			{
+				Relationship relationship = (Relationship)element;
+				if(relationship.getLeftID().equals(elementID) || relationship.getRightID().equals(elementID))
+					relationships.add(relationship);
+			}
+			
+			return relationships;
+		}
 
 		/** Retrieves the subtypes for the specified schema element */
 		private ArrayList<Subtype> getSubtypes(Integer elementID)
