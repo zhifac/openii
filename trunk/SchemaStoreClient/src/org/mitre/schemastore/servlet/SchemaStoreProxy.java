@@ -3,12 +3,12 @@ package org.mitre.schemastore.servlet;
 public class SchemaStoreProxy implements org.mitre.schemastore.servlet.SchemaStoreObject {
   private String _endpoint = null;
   private org.mitre.schemastore.servlet.SchemaStoreObject schemaStore = null;
-  
+
   public SchemaStoreProxy(String endpoint) {
     _endpoint = endpoint;
     _initSchemaStoreProxy();
   }
-  
+	  
   private void _initSchemaStoreProxy() {
     try {
       schemaStore = (new org.mitre.schemastore.servlet.SchemaStoreServiceLocator()).getSchemaStore();
@@ -17,8 +17,7 @@ public class SchemaStoreProxy implements org.mitre.schemastore.servlet.SchemaSto
           ((javax.xml.rpc.Stub)schemaStore)._setProperty("javax.xml.rpc.service.endpoint.address", _endpoint);
         else
           _endpoint = (String)((javax.xml.rpc.Stub)schemaStore)._getProperty("javax.xml.rpc.service.endpoint.address");
-      }
-      
+      }      
     }
     catch (javax.xml.rpc.ServiceException serviceException) {}
   }
@@ -118,6 +117,12 @@ public class SchemaStoreProxy implements org.mitre.schemastore.servlet.SchemaSto
     return schemaStore.updateAttribute(attribute);
   }
   
+  public int addSubtype(org.mitre.schemastore.model.Subtype subtype) throws java.rmi.RemoteException{
+    if (schemaStore == null)
+      _initSchemaStoreProxy();
+    return schemaStore.addSubtype(subtype);
+  }
+  
   public int addSchema(org.mitre.schemastore.model.Schema schema) throws java.rmi.RemoteException{
     if (schemaStore == null)
       _initSchemaStoreProxy();
@@ -130,22 +135,10 @@ public class SchemaStoreProxy implements org.mitre.schemastore.servlet.SchemaSto
     return schemaStore.getSchemas();
   }
   
-  public int addSubtype(org.mitre.schemastore.model.Subtype subtype) throws java.rmi.RemoteException{
-    if (schemaStore == null)
-      _initSchemaStoreProxy();
-    return schemaStore.addSubtype(subtype);
-  }
-  
   public int importSchema(org.mitre.schemastore.model.Schema schema, org.mitre.schemastore.model.SchemaElementList schemaElementList) throws java.rmi.RemoteException{
     if (schemaStore == null)
       _initSchemaStoreProxy();
     return schemaStore.importSchema(schema, schemaElementList);
-  }
-  
-  public org.mitre.schemastore.model.Alias getAlias(int aliasID) throws java.rmi.RemoteException{
-    if (schemaStore == null)
-      _initSchemaStoreProxy();
-    return schemaStore.getAlias(aliasID);
   }
   
   public org.mitre.schemastore.model.DataSource getDataSource(int dataSourceID) throws java.rmi.RemoteException{
@@ -424,6 +417,12 @@ public class SchemaStoreProxy implements org.mitre.schemastore.servlet.SchemaSto
     return schemaStore.getSubtype(subtypeID);
   }
   
+  public org.mitre.schemastore.model.Alias getAlias(int aliasID) throws java.rmi.RemoteException{
+    if (schemaStore == null)
+      _initSchemaStoreProxy();
+    return schemaStore.getAlias(aliasID);
+  }
+  
   public int getSchemaElementCount(int schemaID) throws java.rmi.RemoteException{
     if (schemaStore == null)
       _initSchemaStoreProxy();
@@ -434,6 +433,12 @@ public class SchemaStoreProxy implements org.mitre.schemastore.servlet.SchemaSto
     if (schemaStore == null)
       _initSchemaStoreProxy();
     return schemaStore.getSchemaElements(schemaID);
+  }
+  
+  public org.mitre.schemastore.model.SchemaElementList getSchemaElementsForKeyword(java.lang.String keyword, int[] groupIDs) throws java.rmi.RemoteException{
+    if (schemaStore == null)
+      _initSchemaStoreProxy();
+    return schemaStore.getSchemaElementsForKeyword(keyword, groupIDs);
   }
   
   public java.lang.String getSchemaElementType(int schemaElementID) throws java.rmi.RemoteException{
@@ -518,12 +523,6 @@ public class SchemaStoreProxy implements org.mitre.schemastore.servlet.SchemaSto
     if (schemaStore == null)
       _initSchemaStoreProxy();
     return schemaStore.saveMapping(mapping, mappingCells);
-  }
-  
-  public org.mitre.schemastore.model.SchemaElementList getBaseSchemaElements(int schemaID) throws java.rmi.RemoteException{
-    if (schemaStore == null)
-      _initSchemaStoreProxy();
-    return schemaStore.getBaseSchemaElements(schemaID);
   }
   
   

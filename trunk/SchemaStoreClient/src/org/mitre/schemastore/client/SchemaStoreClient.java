@@ -338,13 +338,13 @@ public class SchemaStoreClient
 		return null;
 	}
 
-	/** Retrieves the base schema elements for the specified schema from the web service */
-	public ArrayList<SchemaElement> getBaseSchemaElements(Integer schemaID) throws RemoteException
+	/** Retrieves the schemas elements referencing the specified keyword */
+	public ArrayList<SchemaElement> getSchemaElementsWithKeyword(String keyword) throws RemoteException
 	{
-		SchemaElement[] schemaElements = ((SchemaElementList)callMethod("getBaseSchemaElements",new Object[] {schemaID})).getSchemaElements();
+		SchemaElement[] schemaElements = ((SchemaElementList)callMethod("getSchemaElementsWithKeyword",new Object[] {keyword})).getSchemaElements();
 		return schemaElements==null ? new ArrayList<SchemaElement>() : new ArrayList<SchemaElement>(Arrays.asList(schemaElements));
 	}
-
+	
 	/** Retrieves the number of schema elements for the specified schema from the web service */
 	public Integer getSchemaElementCount(Integer schemaID) throws RemoteException
 		{ return (Integer)callMethod("getSchemaElementCount",new Object[] {schemaID}); }
