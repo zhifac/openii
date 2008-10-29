@@ -164,10 +164,10 @@ public class GalaxyServlet extends HttpServlet
 			}
 			
 			// Retrieves the base schema elements for the specified schema
-			if(action.equals("getBaseSchemaElements"))
+			if(action.equals("getSchemaElementsWithKeyword"))
 			{
-				Integer schemaID = (Integer)in.readObject();
-				output = client.getBaseSchemaElements(schemaID);
+				String keyword = (String)in.readObject();
+				output = client.getSchemaElementsWithKeyword(keyword);
 			}
 
 			//------------------------------

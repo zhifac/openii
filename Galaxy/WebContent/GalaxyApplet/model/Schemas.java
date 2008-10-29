@@ -129,9 +129,9 @@ public class Schemas
 	// Schema Element Actions
 	//------------------------
 
-	/** Gets the list of base elements for the specified schema */
-	static public ArrayList<SchemaElement> getBaseElements(Integer schemaID)
-		{ return ServletConnection.getBaseSchemaElements(schemaID); }
+	/** Gets the list of elements with the specified keyword */
+	static public ArrayList<SchemaElement> getElementsWithKeyword(String keyword)
+		{ return ServletConnection.getSchemaElementsWithKeyword(keyword); }
 
 	/** Returns the schema element count */
 	static public int getSchemaElementCount(Integer schemaID)
