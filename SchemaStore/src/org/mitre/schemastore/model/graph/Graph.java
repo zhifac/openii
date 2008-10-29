@@ -32,6 +32,7 @@ public class Graph implements Serializable
 		private HashMap<Class,ArrayList<SchemaElement>> typeLists = null;
 		private HashMap<Integer,ArrayList<Attribute>> attributeLists = null;
 		private HashMap<Integer,ArrayList<Containment>> containmentLists = null;
+		private HashMap<Integer,ArrayList<Relationship>> relationshipLists = null;
 		private HashMap<Integer,ArrayList<Subtype>> subtypeLists = null;
 		private HashMap<Integer,ArrayList<DomainValue>> domainValueLists = null;
 		private HashMap<Integer,Alias> aliasList = null;
@@ -42,6 +43,7 @@ public class Graph implements Serializable
 			typeLists = null;
 			attributeLists = null;
 			containmentLists = null;
+			relationshipLists = null;
 			subtypeLists = null;
 			domainValueLists = null;
 			aliasList = null;
@@ -105,17 +107,18 @@ public class Graph implements Serializable
 		/** Returns relationships associated with a specified entity */
 		public ArrayList<Relationship> getRelationships(Integer elementID)
 		{
-			ArrayList<Relationship> relationships  = new ArrayList<Relationship>();
-			
-			// Identify all attributes associated with the specified schema element
-			for(SchemaElement element: getElements(Relationship.class))
+			if(relationshipLists==null)
 			{
-				Relationship relationship = (Relationship)element;
-				if(relationship.getLeftID().equals(elementID) || relationship.getRightID().equals(elementID))
-					relationships.add(relationship);
+				relationshipLists = new HashMap<Integer,ArrayList<Relationship>>();
+				for(SchemaElement element : getElements(Relationship.class))
+				{
+					Relationship relationship = (Relationship)element;
+					addElement(relationship.getLeftID(),relationship,relationshipLists);
+					addElement(relationship.getRightID(),relationship,relationshipLists);
+				}
 			}
-			
-			return relationships;
+			ArrayList<Relationship> relationshipList = relationshipLists.get(elementID);
+			return relationshipList==null ? new ArrayList<Relationship>() : relationshipList;
 		}
 
 		/** Retrieves the subtypes for the specified schema element */
