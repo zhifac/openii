@@ -102,10 +102,6 @@ public class SchemaElements
 	/** Retrieves the specified schema element */
 	static public SchemaElement getSchemaElement(Integer schemaElementID)
 		{ return Database.getSchemaElement(schemaElementID); }
-
-	/** Retrieves the base elements for the specified schema */
-	static public ArrayList<SchemaElement> getBaseSchemaElements(Integer schemaID)
-		{ return Database.getBaseElements(schemaID); }
 	
 	/** Retrieves the schema element count for the specified schema */
 	static public Integer getSchemaElementCount(Integer schemaID)
@@ -117,7 +113,7 @@ public class SchemaElements
 		return elementCount;
 	}
 	
-	/** Retrieves the specified schema elements */
+	/** Retrieves the schema elements for the specified schema */
 	static public ArrayList<SchemaElement> getSchemaElements(Integer schemaID)
 	{
 		// Collect all schema elements
@@ -140,6 +136,10 @@ public class SchemaElements
 		// Return the schema elements
 		return elements;
 	}
+
+	/** Retrieves the schema elements for the specified schema containing the specified keyword */
+	static public ArrayList<SchemaElement> getSchemaElementsForKeyword(String keyword, ArrayList<Integer> groupIDs)
+		{ return Database.getSchemaElementsForKeyword(keyword, groupIDs); }
 	
 	/** Retrieves the specified schema element type */
 	static public String getSchemaElementType(Integer schemaElementID)

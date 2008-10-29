@@ -6,7 +6,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashSet;
 
+import org.mitre.schemastore.data.Groups;
 import org.mitre.schemastore.data.SchemaRelationships;
 import org.mitre.schemastore.model.Alias;
 import org.mitre.schemastore.model.Attribute;
@@ -130,7 +132,7 @@ public class Database
 			int schemaID = getUniversalID();
 			Statement stmt = connection.getStatement();
 			stmt.executeUpdate("INSERT INTO \"schema\"(id,name,author,source,\"type\",description,locked) VALUES("+schemaID+",'"+scrub(schema.getName())+" Extension','"+scrub(schema.getAuthor())+"','"+scrub(schema.getSource())+"','"+scrub(schema.getType())+"','Extension of "+scrub(schema.getName())+"','f')");
-			stmt.executeUpdate("INSERT INTO extensions(schema_id,\"action\",element_id,\"type\") VALUES("+schemaID+",'Base Schema',"+schema.getId()+",'Schema')");
+			stmt.executeUpdate("INSERT INTO extensions(schema_id,element_id) VALUES("+schemaID+","+schema.getId()+")");
 			stmt.close();
 			connection.commit();
 			extendedSchema = new Schema(schemaID,schema.getName()+" Extension",schema.getAuthor(),schema.getSource(),schema.getType(),"Extension of "+schema.getName(),false);
@@ -191,14 +193,14 @@ public class Database
 			Statement stmt = connection.getStatement();
 			
 			// Delete the schema elements
-			stmt.executeUpdate("DELETE FROM alias WHERE id IN (SELECT element_id FROM extensions WHERE schema_id="+schemaID+")");
-			stmt.executeUpdate("DELETE FROM subtype WHERE id IN (SELECT element_id FROM extensions WHERE schema_id="+schemaID+")");
-			stmt.executeUpdate("DELETE FROM containment WHERE id IN (SELECT element_id FROM extensions WHERE schema_id="+schemaID+")");
-			stmt.executeUpdate("DELETE FROM relationship WHERE id IN (SELECT element_id FROM extensions WHERE schema_id="+schemaID+")");
-			stmt.executeUpdate("DELETE FROM attribute WHERE id IN (SELECT element_id FROM extensions WHERE schema_id="+schemaID+")");
-			stmt.executeUpdate("DELETE FROM domainvalue WHERE id IN (SELECT element_id FROM extensions WHERE schema_id="+schemaID+")");
-			stmt.executeUpdate("DELETE FROM \"domain\" WHERE id IN (SELECT element_id FROM extensions WHERE schema_id="+schemaID+")");
-			stmt.executeUpdate("DELETE FROM entity WHERE id IN (SELECT element_id FROM extensions WHERE schema_id="+schemaID+")");
+			stmt.executeUpdate("DELETE FROM alias WHERE schema_id="+schemaID+")");
+			stmt.executeUpdate("DELETE FROM subtype WHERE schema_id="+schemaID+")");
+			stmt.executeUpdate("DELETE FROM containment WHERE schema_id="+schemaID+")");
+			stmt.executeUpdate("DELETE FROM relationship WHERE schema_id="+schemaID+")");
+			stmt.executeUpdate("DELETE FROM attribute WHERE schema_id="+schemaID+")");
+			stmt.executeUpdate("DELETE FROM domainvalue WHERE schema_id="+schemaID+")");
+			stmt.executeUpdate("DELETE FROM \"domain\" WHERE schema_id="+schemaID+")");
+			stmt.executeUpdate("DELETE FROM entity WHERE schema_id="+schemaID+")");
 				
 			// Delete the schema from the database
 			stmt.executeUpdate("DELETE FROM schema_group WHERE schema_id="+schemaID);
@@ -229,8 +231,8 @@ public class Database
 			try {
 				Statement stmt = connection.getStatement();
 				ResultSet rs = stmt.executeQuery("SELECT words.element_id, words.word, syn_id " +
-						"FROM extensions join (words LEFT OUTER JOIN syns ON words.word = syns.word) " +
-						"on extensions.element_id = words.element_id where schema_id=" + currSchemaID);	
+						"FROM schema_elements join (words LEFT OUTER JOIN syns ON words.word = syns.word) " +
+						"on schema_elements.id = words.element_id where schema_id=" + currSchemaID);	
 				while(rs.next())
 					synonyms.add(rs.getInt("element_id") + "," + rs.getString("word") + "," + rs.getInt("syn_id"));
 				stmt.close();	
@@ -416,7 +418,7 @@ public class Database
 		Integer validationNumber = 0;
 		try {
 			Statement stmt = connection.getStatement();
-			ResultSet rs = stmt.executeQuery("SELECT mod(sum((schema_id+1)*(element_id+1)),10000000) AS validation_number FROM extensions WHERE \"action\"='Base Schema'");
+			ResultSet rs = stmt.executeQuery("SELECT mod(sum((schema_id+1)*(base_id+1)),10000000) AS validation_number FROM extensions");
 			if(rs.next())
 				validationNumber = rs.getInt("validation_number");
 			stmt.close();
@@ -430,9 +432,9 @@ public class Database
 		ArrayList<Extension> extensions = new ArrayList<Extension>();
 		try {
 			Statement stmt = connection.getStatement();
-			ResultSet rs = stmt.executeQuery("SELECT schema_id,element_id FROM extensions WHERE \"action\"='Base Schema'");
+			ResultSet rs = stmt.executeQuery("SELECT schema_id,base_id FROM extensions");
 			while(rs.next())
-				extensions.add(new Extension(rs.getInt("element_id"),rs.getInt("schema_id")));
+				extensions.add(new Extension(rs.getInt("base_id"),rs.getInt("schema_id")));
 			stmt.close();
 		} catch(SQLException e) { System.out.println("(E) Database:getSchemaExtensions: "+e.getMessage()); }
 		return extensions;
@@ -444,9 +446,9 @@ public class Database
 		boolean success = false;
 		try {
 			Statement stmt = connection.getStatement();
-			stmt.executeUpdate("DELETE FROM extensions WHERE schema_id="+schemaID+" AND \"action\"='Base Schema'");
+			stmt.executeUpdate("DELETE FROM extensions WHERE schema_id="+schemaID);
 			for(Integer parentSchemaID : parentIDs)
-				stmt.executeUpdate("INSERT INTO extensions(schema_id,\"action\",element_id) VALUES("+schemaID+",'Base Schema',"+parentSchemaID+")");			
+				stmt.executeUpdate("INSERT INTO extensions(schema_id,base_id) VALUES("+schemaID+","+parentSchemaID+")");			
 			stmt.close();
 			connection.commit();
 			success = true;
@@ -498,12 +500,12 @@ public class Database
 			Statement stmt = connection.getStatement();
 			
 			// Gets the schema entities
-			ResultSet rs = stmt.executeQuery("SELECT id,name,description FROM extensions,entity WHERE schema_id="+schemaID+" AND element_id=id");
+			ResultSet rs = stmt.executeQuery("SELECT id,name,description FROM entity WHERE schema_id="+schemaID);
 			while(rs.next())
 				baseElements.add(new Entity(rs.getInt("id"),rs.getString("name"),rs.getString("description"),schemaID));
 					
 			// Gets the schema attributes
-			rs = stmt.executeQuery("SELECT id,name,description,entity_id,domain_id,\"min\",\"max\" FROM extensions,attribute WHERE schema_id="+schemaID+" AND element_id=id");
+			rs = stmt.executeQuery("SELECT id,name,description,entity_id,domain_id,\"min\",\"max\",\"key\" FROM attribute WHERE schema_id="+schemaID);
 			while(rs.next())
 			{
 				Integer id = rs.getInt("id");
@@ -513,21 +515,23 @@ public class Database
 				Integer domainID = rs.getInt("domain_id");
 				Integer min = rs.getString("min")==null?null:rs.getInt("min");
 				Integer max = rs.getString("max")==null?null:rs.getInt("max");
-				baseElements.add(new Attribute(id,name,description,entityID,domainID,min,max,schemaID));
+				boolean key = rs.getString("key").equals("t");
+				
+				baseElements.add(new Attribute(id,name,description,entityID,domainID,min,max,key,schemaID));
 			}
 			
 			// Gets the schema domains
-			rs = stmt.executeQuery("SELECT id,name,description FROM extensions,\"domain\" WHERE schema_id="+schemaID+" AND element_id=id");
+			rs = stmt.executeQuery("SELECT id,name,description FROM \"domain\" WHERE schema_id="+schemaID);
 			while(rs.next())
 				baseElements.add(new Domain(rs.getInt("id"),rs.getString("name"),rs.getString("description"),schemaID));
 
 			// Gets the schema domain values
-			rs = stmt.executeQuery("SELECT id,value,description,domain_id FROM extensions,domainvalue WHERE schema_id="+schemaID+" AND element_id=id");
+			rs = stmt.executeQuery("SELECT id,value,description,domain_id FROM domainvalue WHERE schema_id="+schemaID);
 			while(rs.next())
 				baseElements.add(new DomainValue(rs.getInt("id"),rs.getString("value"),rs.getString("description"),rs.getInt("domain_id"),schemaID));
 				
 			// Gets the schema relationships			
-			rs = stmt.executeQuery("SELECT id,name,left_id,left_min,left_max,right_id,right_min,right_max FROM extensions,relationship WHERE schema_id="+schemaID+" AND element_id=id");
+			rs = stmt.executeQuery("SELECT id,name,left_id,left_min,left_max,right_id,right_min,right_max FROM relationship WHERE schema_id="+schemaID);
 			while(rs.next())
 			{
 				Integer id = rs.getInt("id");
@@ -542,7 +546,7 @@ public class Database
 			}
 				
 			// Gets the schema containment relationships
-			rs = stmt.executeQuery("SELECT id,name,description,parent_id,child_id,\"min\",\"max\" FROM extensions,containment WHERE schema_id="+schemaID+" AND element_id=id");
+			rs = stmt.executeQuery("SELECT id,name,description,parent_id,child_id,\"min\",\"max\" FROM containment WHERE schema_id="+schemaID);
 			while(rs.next())
 			{
 				Integer id = rs.getInt("id");
@@ -556,7 +560,7 @@ public class Database
 			}
 				
 			// Gets the schema subset relationships
-			rs = stmt.executeQuery("SELECT id,parent_id,child_id FROM extensions,subtype WHERE schema_id="+schemaID+" AND element_id=id");
+			rs = stmt.executeQuery("SELECT id,parent_id,child_id FROM subtype WHERE schema_id="+schemaID);
 			while(rs.next())
 			{
 				Integer id = rs.getInt("id");
@@ -566,7 +570,7 @@ public class Database
 			}
 			
 			// Gets the schema aliases
-			rs = stmt.executeQuery("SELECT id,name,alias.element_id FROM extensions,alias WHERE schema_id="+schemaID+" AND extensions.element_id=alias.id");
+			rs = stmt.executeQuery("SELECT id,name,alias.element_id FROM alias WHERE schema_id="+schemaID);
 			while(rs.next())
 				baseElements.add(new Alias(rs.getInt("id"),rs.getString("name"),rs.getInt("element_id"),schemaID));
 				
@@ -581,7 +585,7 @@ public class Database
 		Integer elementCount = 0;
 		try {
 			Statement stmt = connection.getStatement();
-			ResultSet rs = stmt.executeQuery("SELECT count(*) AS count FROM extensions WHERE schema_id="+schemaID+" AND \"action\"='Add'");
+			ResultSet rs = stmt.executeQuery("SELECT count(*) AS count FROM schema_elements WHERE schema_id="+schemaID);
 			if(rs.next()) elementCount = rs.getInt("count");
 			stmt.close();
 		} catch(SQLException e) { System.out.println("(E) Database:getBaseElementCount: "+e.getMessage()); }
@@ -598,12 +602,12 @@ public class Database
 			// Determine the base and type
 			Integer base = null;
 			String type = null;
-			ResultSet rs = stmt.executeQuery("SELECT schema_id, \"type\" FROM extensions WHERE element_id="+schemaElementID+" AND \"action\"='Add'");
+			ResultSet rs = stmt.executeQuery("SELECT schema_id, \"type\" FROM schema_elements WHERE id="+schemaElementID);
 			if(rs.next())
 				{ base = rs.getInt("schema_id"); type = rs.getString("type"); }
 
 			// Gets the specified entity
-			if(type.equals("Entity"))
+			if(type.equals("entity"))
 			{
 				rs = stmt.executeQuery("SELECT id,name,description FROM entity WHERE id="+schemaElementID);
 				rs.next();
@@ -611,9 +615,9 @@ public class Database
 			}
 					
 			// Gets the specified attribute
-			else if(type.equals("Attribute"))
+			else if(type.equals("attribute"))
 			{
-				rs = stmt.executeQuery("SELECT id,name,description,entity_id,domain_id,\"min\",\"max\" FROM attribute WHERE id="+schemaElementID);
+				rs = stmt.executeQuery("SELECT id,name,description,entity_id,domain_id,\"min\",\"max\",\"key\" FROM attribute WHERE id="+schemaElementID);
 				rs.next();
 				Integer id = rs.getInt("id");
 				String name = rs.getString("name");
@@ -622,11 +626,12 @@ public class Database
 				Integer domainID = rs.getInt("domain_id");
 				Integer min = rs.getString("min")==null?null:rs.getInt("min");
 				Integer max = rs.getString("max")==null?null:rs.getInt("max");
-				schemaElement = new Attribute(id,name,description,entityID,domainID,min,max,base);
+				boolean key = rs.getString("key").equals("t");
+				schemaElement = new Attribute(id,name,description,entityID,domainID,min,max,key,base);
 			}
 				
 			// Gets the specified domain			
-			else if(type.equals("Domain"))
+			else if(type.equals("domain"))
 			{
 				rs = stmt.executeQuery("SELECT id,name,description FROM \"domain\" WHERE id="+schemaElementID);
 				rs.next();
@@ -634,7 +639,7 @@ public class Database
 			}
 
 			// Gets the specified domain value
-			else if(type.equals("DomainValue"))
+			else if(type.equals("domainvalue"))
 			{
 				rs = stmt.executeQuery("SELECT id,value,description,domain_id FROM domainvalue WHERE id="+schemaElementID);
 				rs.next();
@@ -642,7 +647,7 @@ public class Database
 			}
 				
 			// Gets the specified relationship			
-			else if(type.equals("Relationship"))
+			else if(type.equals("relationship"))
 			{
 				rs = stmt.executeQuery("SELECT id,name,left_id,left_min,left_max,right_id,right_min,right_max FROM relationship WHERE id="+schemaElementID);
 				rs.next();
@@ -658,7 +663,7 @@ public class Database
 			}
 				
 			// Gets the specified containment relationship
-			else if(type.equals("Containment"))
+			else if(type.equals("containment"))
 			{
 				rs = stmt.executeQuery("SELECT id,name,description,parent_id,child_id,\"min\",\"max\" FROM containment WHERE id="+schemaElementID);
 				rs.next();
@@ -673,7 +678,7 @@ public class Database
 			}
 				
 			// Gets the specified subset relationship
-			else if(type.equals("Subtype"))
+			else if(type.equals("subtype"))
 			{
 				rs = stmt.executeQuery("SELECT id,parent_id,child_id FROM subtype WHERE id="+schemaElementID);
 				rs.next();
@@ -684,7 +689,7 @@ public class Database
 			}
 			
 			// Gets the specified alias			
-			else if(type.equals("Alias"))
+			else if(type.equals("alias"))
 			{
 				rs = stmt.executeQuery("SELECT id,name,element_id FROM alias WHERE id="+schemaElementID);
 				rs.next();
@@ -760,7 +765,6 @@ public class Database
 				stmt.executeUpdate("INSERT INTO alias(id,name,element_id) VALUES("+schemaElementID+",'"+scrub(name)+"',"+alias.getElementID()+")");
 			}
 
-			stmt.executeUpdate("INSERT INTO extensions(schema_id,\"action\",element_id,\"type\") VALUES("+schemaElement.getBase()+",'Add',"+schemaElementID+",'"+schemaElement.getClass()+"')");
 			stmt.close();
 			connection.commit();
 		}
@@ -798,7 +802,7 @@ public class Database
 			if(schemaElement instanceof Domain)
 			{
 				Domain domain = (Domain)schemaElement;
-				stmt.executeUpdate("UPDATE domain SET name='"+scrub(domain.getName())+"', description='"+scrub(domain.getDescription())+"' WHERE id="+domain.getId());
+				stmt.executeUpdate("UPDATE \"domain\" SET name='"+scrub(domain.getName())+"', description='"+scrub(domain.getDescription())+"' WHERE id="+domain.getId());
 			}
 
 			// Updates an domain value
@@ -854,7 +858,15 @@ public class Database
 		boolean success = false;
 		try {
 			Statement stmt = connection.getStatement();
-			stmt.executeUpdate("DELETE FROM extensions WHERE \"action\"='Add' AND element_id="+schemaElementID);
+
+			// Determine the element type
+			String type = null;
+			ResultSet rs = stmt.executeQuery("SELECT \"type\" FROM schema_elements WHERE id="+schemaElementID);
+			if(rs.next()) type = rs.getString("type");
+			if(type.equals("domain")) type = "\"domain\"";
+			
+			// Delete the element
+			stmt.executeUpdate("DELETE FROM "+type+" WHERE element_id="+schemaElementID);
 			stmt.close();
 			connection.commit();
 			success = true;
@@ -866,6 +878,96 @@ public class Database
 			return false;
 		}
 		return success;
+	}
+
+	/** Retrieves the list of elements using the specified keyword in the repository */
+	static public ArrayList<SchemaElement> getSchemaElementsForKeyword(String keyword, ArrayList<Integer> groupIDs)
+	{		
+		ArrayList<SchemaElement> elements = new ArrayList<SchemaElement>();
+		try {
+			Statement stmt = connection.getStatement();
+			String nameFilter = "lower(name) LIKE '%"+keyword.toLowerCase()+"%'";
+			String descFilter = "lower(description) LIKE '%"+keyword.toLowerCase()+"%'";
+
+			// Generate the base filter
+			String baseFilter = "schema_id IN {";
+			HashSet<Integer> schemaIDs = new HashSet<Integer>();
+			for(Integer groupID : groupIDs)
+				schemaIDs.addAll(Groups.getGroupSchemas(groupID));		
+			for(Integer schemaID : schemaIDs)
+				baseFilter += schemaID + ",";
+			baseFilter = baseFilter.substring(0, baseFilter.length()-1) + "}";
+			
+			// Gets the schema entities
+			ResultSet rs = stmt.executeQuery("SELECT id,name,description,schema_id FROM entity WHERE "+baseFilter+" AND " + nameFilter + " AND " + descFilter);
+			while(rs.next())
+				elements.add(new Entity(rs.getInt("id"),rs.getString("name"),rs.getString("description"),rs.getInt("schema_id")));
+					
+			// Gets the schema attributes
+			rs = stmt.executeQuery("SELECT id,name,description,entity_id,domain_id,\"min\",\"max\",\"key\",schema_id FROM attribute WHERE "+baseFilter+" AND " + nameFilter + " AND " + descFilter);
+			while(rs.next())
+			{
+				Integer id = rs.getInt("id");
+				String name = rs.getString("name");
+				String description = rs.getString("description");
+				Integer entityID = rs.getInt("entity_id");
+				Integer domainID = rs.getInt("domain_id");
+				Integer min = rs.getString("min")==null?null:rs.getInt("min");
+				Integer max = rs.getString("max")==null?null:rs.getInt("max");
+				Integer schemaID = rs.getInt("schema_id");
+				boolean key = rs.getString("key").equals("t");
+				elements.add(new Attribute(id,name,description,entityID,domainID,min,max,key,schemaID));
+			}
+			
+			// Gets the schema domains
+			rs = stmt.executeQuery("SELECT id,name,description,schema_id FROM \"domain\" WHERE "+baseFilter+" AND " + nameFilter + " AND " + descFilter);
+			while(rs.next())
+				elements.add(new Domain(rs.getInt("id"),rs.getString("name"),rs.getString("description"),rs.getInt("schema_id")));
+
+			// Gets the schema domain values
+			rs = stmt.executeQuery("SELECT id,value,description,domain_id,schema_id FROM domainvalue WHERE "+baseFilter+" AND " + descFilter);
+			while(rs.next())
+				elements.add(new DomainValue(rs.getInt("id"),rs.getString("value"),rs.getString("description"),rs.getInt("domain_id"),rs.getInt("schema_id")));
+				
+			// Gets the schema relationships			
+			rs = stmt.executeQuery("SELECT id,name,left_id,left_min,left_max,right_id,right_min,right_max,schema_id FROM relationship WHERE "+baseFilter+" AND " + nameFilter);
+			while(rs.next())
+			{
+				Integer id = rs.getInt("id");
+				String name = rs.getString("name");
+				Integer leftID = rs.getInt("left_id");
+				Integer leftMin = rs.getString("left_min")==null?null:rs.getInt("left_min");
+				Integer leftMax = rs.getString("left_max")==null?null:rs.getInt("left_max");
+				Integer rightID = rs.getInt("right_id");
+				Integer rightMin = rs.getString("right_min")==null?null:rs.getInt("right_min");
+				Integer rightMax = rs.getString("right_max")==null?null:rs.getInt("right_max");
+				Integer schemaID = rs.getInt("schema_id");
+				elements.add(new Relationship(id,name,leftID,leftMin,leftMax,rightID,rightMin,rightMax,schemaID));
+			}
+				
+			// Gets the schema containment relationships
+			rs = stmt.executeQuery("SELECT id,name,description,parent_id,child_id,\"min\",\"max\",schema_id FROM containment WHERE "+baseFilter+" AND " + nameFilter + " AND " + descFilter);
+			while(rs.next())
+			{
+				Integer id = rs.getInt("id");
+				String name = rs.getString("name");
+				String description = rs.getString("description");
+				Integer parentID = rs.getInt("parent_id");
+				Integer childID = rs.getInt("child_id");
+				Integer min = rs.getString("min")==null?null:rs.getInt("min");
+				Integer max = rs.getString("max")==null?null:rs.getInt("max");
+				Integer schemaID = rs.getInt("schema_id");
+				elements.add(new Containment(id,name,description,parentID,childID,min,max,schemaID));
+			}
+			
+			// Gets the schema aliases
+			rs = stmt.executeQuery("SELECT id,name,alias.element_id,schema_id FROM alias WHERE "+baseFilter+" AND " + nameFilter);
+			while(rs.next())
+				elements.add(new Alias(rs.getInt("id"),rs.getString("name"),rs.getInt("element_id"),rs.getInt("schema_id")));
+				
+			stmt.close();
+		} catch(SQLException e) { System.out.println("(E) Database:getSchemaElementsForKeyword: "+e.getMessage()); }
+		return elements;
 	}
 	
 	//--------------------------------------

@@ -313,18 +313,21 @@ public class SchemaStore
 	public int getSchemaElementCount(int schemaID)
 		{ return SchemaElements.getSchemaElementCount(schemaID); }
 	
-	/** Web service to get the base schema elements for the specified schema */
-	public SchemaElementList getBaseSchemaElements(int schemaID)
-		{ return new SchemaElementList(SchemaElements.getBaseSchemaElements(schemaID).toArray(new SchemaElement[0])); }
-	
 	/** Web service to get the schema elements for the specified schema */
 	public SchemaElementList getSchemaElements(int schemaID)
 		{ return new SchemaElementList(SchemaElements.getSchemaElements(schemaID).toArray(new SchemaElement[0])); }
 
+	/** Web service to get the schemas elements referencing the specified keyword */
+	public SchemaElementList getSchemaElementsForKeyword(String keyword, Integer[] groupIDs)
+	{
+		ArrayList<Integer> groupList = new ArrayList<Integer>(Arrays.asList(groupIDs));
+		return new SchemaElementList(SchemaElements.getSchemaElementsForKeyword(keyword,groupList).toArray(new SchemaElement[0]));
+	}
+	
 	/** Web service to get the schema element type */
 	public String getSchemaElementType(int schemaElementID)
 		{ return SchemaElements.getSchemaElementType(schemaElementID); }
-
+	
 	//--------------------------------
 	// Handles Data Source Operations
 	//--------------------------------
