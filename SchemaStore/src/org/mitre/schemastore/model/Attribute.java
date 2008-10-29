@@ -20,22 +20,27 @@ public class Attribute extends SchemaElement
 	/** Stores the attribute's max cardinality */
 	private Integer max;
 	
+	/** Stores if the attribute serves as a key for the entity */
+	private boolean key;
+	
 	/** Constructs a default attribute */
 	public Attribute() {}
 	
 	/** Constructs the attribute */
-	public Attribute(Integer id, String name, String description, Integer entityID, Integer domainID, Integer min, Integer max, Integer base)
-		{ super(id,name,description,base); this.entityID=entityID; this.domainID=domainID; this.min=min; this.max=max; }
+	public Attribute(Integer id, String name, String description, Integer entityID, Integer domainID, Integer min, Integer max, boolean key, Integer base)
+		{ super(id,name,description,base); this.entityID=entityID; this.domainID=domainID; this.min=min; this.max=max; this.key=key; }
 	
 	// Handles all attribute getters
 	public Integer getEntityID() { return entityID; }
 	public Integer getDomainID() { return domainID; }
 	public Integer getMin() { return min; }
 	public Integer getMax() { return max; }
+	public boolean isKey() { return key; }
 	
 	// Handles all attribute setters
 	public void setEntityID(Integer entityID) { this.entityID = entityID; }
 	public void setDomainID(Integer domainID) { this.domainID = domainID; }
 	public void setMin(Integer min) { this.min = min; }
 	public void setMax(Integer max) { this.max = max; }
+	public void setKey(boolean key) { this.key = key; }
 }

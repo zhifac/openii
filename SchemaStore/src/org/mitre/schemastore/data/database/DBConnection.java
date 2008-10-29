@@ -12,9 +12,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Properties;
 
-import javax.naming.Context;
-import javax.naming.InitialContext;
-
 /**
  * Handles the connection to the database
  * @author CWOLF
