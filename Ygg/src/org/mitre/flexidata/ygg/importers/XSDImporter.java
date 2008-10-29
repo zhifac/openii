@@ -176,7 +176,7 @@ public class XSDImporter extends Importer
 					}
 				} // if (domain == null) {
 
-				Attribute attribute = new Attribute(nextId(), attr.getName(), getDocumentation(attr), currentTypeEntity.getId(),domain.getId(), 1,1,0);
+				Attribute attribute = new Attribute(nextId(), attr.getName(), getDocumentation(attr), currentTypeEntity.getId(),domain.getId(), 1,1,false,0);
 				if (schemaElementsHS.containsKey(this.compString(attribute)) == false) {
 					schemaElementsHS.put(this.compString(attribute),attribute);
 				}
@@ -345,7 +345,7 @@ public class XSDImporter extends Importer
 			} // if (domain == null) {
 			
 			Attribute attribute = new Attribute(nextId(), attr.getName(), 
-				this.getDocumentation(attr), complexTypeEntity.getId(),domain.getId(),1,1, 0);
+				this.getDocumentation(attr), complexTypeEntity.getId(),domain.getId(),1,1,false, 0);
 			if (schemaElementsHS.containsKey(this.compString(attribute)) == false) {
 				schemaElementsHS.put(this.compString(attribute),attribute);
 			}

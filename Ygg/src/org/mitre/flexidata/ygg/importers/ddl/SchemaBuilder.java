@@ -52,7 +52,7 @@ public class SchemaBuilder
     public void addAttributeToLastEntity( String name )
     {
         System.out.println( "Adding " + name );
-        Attribute newAttribute = new Attribute( Importer.nextId(), name, "", currentEntityId, domainList.get("String").getId(), 1, 1, schema.getId() );
+        Attribute newAttribute = new Attribute( Importer.nextId(), name, "", currentEntityId, domainList.get("String").getId(), 1, 1, false, schema.getId() );
         currentAttributeId = newAttribute.getId();
         schemaObjects.add( newAttribute );
     }
