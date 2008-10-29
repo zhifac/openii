@@ -4,7 +4,7 @@
     <target name="buildSchemaStoreModelJar">
         <fatjar.build output="SchemaStoreModel.jar">
             <fatjar.manifest/>
-            <fatjar.filesource path="WebContent/classes">
+            <fatjar.filesource path="build/classes">
                 <fatjar.exclude relpath="org/mitre/schemastore/data/"/>
                 <fatjar.exclude relpath="org/mitre/schemastore/servlet/"/>
             </fatjar.filesource>
@@ -15,7 +15,7 @@
     <target name="buildSchemaStoreJar">
         <fatjar.build output="SchemaStore.jar">
             <fatjar.manifest/>
-            <fatjar.filesource path="WebContent/WEB-INF/classes"/>
+            <fatjar.filesource path="build/classes"/>
             <fatjar.jarsource file="WebContent/WEB-INF/db-derby-10.4.1.3-bin/lib/derby.jar" relpath=""/>
             <fatjar.jarsource file="WebContent/WEB-INF/db-derby-10.4.1.3-bin/lib/derbytools.jar" relpath=""/>
             <fatjar.jarsource file="WebContent/WEB-INF/lib/postgresql-8.2-504.jdbc3.jar" relpath=""/>
@@ -25,10 +25,15 @@
 	<!-- Builds the SchemaStore war file -->
     <target name="buildSchemaStoreWar">
         <fatjar.build output="SchemaStore.war">
-            <fatjar.filesource path="WebContent"/>
-            <fatjar.filesource path="build/classes" relpath="classes"/>
-        </fatjar.build>
-    </target>	
+            <fatjar.manifest/>
+            <fatjar.filesource path="WebContent">
+            	<fatjar.exclude regexp=".*\.svn.*"/>
+            </fatjar.filesource>
+            <fatjar.filesource path="build/classes" relpath="WEB-INF/classes"/>
+            <fatjar.filesource path="WebContent/WEB-INF/db-derby-10.4.1.3-bin/lib/derby.jar" relpath="WEB-INF/lib"/>
+            <fatjar.filesource path="WebContent/WEB-INF/db-derby-10.4.1.3-bin/lib/derbytools.jar" relpath="WEB-INF/lib"/>
+       </fatjar.build>
+    </target>
 	
 	<!-- Builds the SchemaStore files -->
     <target name="build">

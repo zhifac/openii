@@ -19,7 +19,7 @@ CREATE TABLE attribute (
 	id integer NOT NULL,
 	name character varying(50) NOT NULL,
 	description character varying(200),
-	entity_id integer NOT NUULL,
+	entity_id integer NOT NULL,
 	domain_id integer NOT NULL,
 	"min" integer,
 	"max" integer,
@@ -80,9 +80,9 @@ CREATE TABLE groups (
 
 CREATE TABLE mapping (
     id integer NOT NULL,
-    name character varying(50)
+    name character varying(50),
     author character varying(50),
-    description character varying(200),
+    description character varying(200)
 );
 
 CREATE TABLE mapping_cell (
