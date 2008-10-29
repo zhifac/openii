@@ -188,7 +188,7 @@ public class OWLImporter extends Importer implements RDFErrorHandler
 				
 				if (entity != null) {
 					Attribute attribute = new Attribute(nextId(), dataProp.getLocalName(),
-							comment, entity.getId(), domain.getId(), null,null,0);
+							comment, entity.getId(), domain.getId(), null,null,false,0);
 					_schemaElements.add(attribute);
 				}
 			}

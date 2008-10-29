@@ -96,7 +96,7 @@ public class ExcelImporter extends Importer {
 		// create an attribute
 		if (attName.length() > 0) {
 			attribute = new Attribute(nextId(), attName, documentation, tblEntity.getId(), D_ANY
-					.getId(), null, null, 0);
+					.getId(), null, null, false, 0);
 			_attributes.put(attribute.getName(), attribute);
 		}
 	}

@@ -90,11 +90,11 @@ public class CopySchemaImporter extends Importer
 	/** Initialize the importer if needed */
 	protected void initialize() throws ImporterException
 	{	
-		// Define repository to be copied from
-		if(repository==null) repository = new SchemaStoreClient(uri.toString().replaceAll("#.*",""));
-		Integer repositorySchemaID = Integer.parseInt(uri.toString().replaceAll(".*#",""));
-		
 		try {
+			// Define repository to be copied from
+			if(repository==null) repository = new SchemaStoreClient(uri.toString().replaceAll("#.*",""));
+			Integer repositorySchemaID = Integer.parseInt(uri.toString().replaceAll(".*#",""));
+			
 			// Retrieve the repository graph
 			Graph repositoryGraph = repository.getGraph(repositorySchemaID);
 			
