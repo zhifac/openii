@@ -31,9 +31,9 @@ public class SchemaManager
 			Integer schemaID = SchemaStore.getClient().importSchema(schema, schemaElements);
 			schema.setId(schemaID);
 			success = SchemaStore.getClient().setParentSchemas(schema.getId(), extendedSchemaIDs);
-			for(SchemaListener listener : listeners) listener.schemaAdded(schema);
+			if(success) for(SchemaListener listener : listeners) listener.schemaAdded(schema);
 		}
-		catch(Exception e) { e.printStackTrace(); }
+		catch(Exception e) {}
 		if(!success) deleteSchema(schema);
 		return success;
 	}
