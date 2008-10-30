@@ -454,10 +454,13 @@ public class SchemaStoreClient
 	//-------------------
 	// Derived Functions
 	//-------------------
-	
+
 	/** Imports the specified schema into the web services */
 	public Integer importSchema(Schema schema, ArrayList<SchemaElement> schemaElements) throws RemoteException
-		{ return (Integer)callMethod("importSchema",new Object[] {schema, new SchemaElementList(schemaElements.toArray(new SchemaElement[0]))}); }
+	{
+		Integer schemaID = (Integer)callMethod("importSchema",new Object[] {schema, new SchemaElementList(schemaElements.toArray(new SchemaElement[0]))});
+		return schemaID==0 ? null : schemaID;
+	}
 		
 	/** Saves the mapping and mapping cells to the web service */
 	public Integer saveMapping(Mapping mapping, ArrayList<MappingCell> mappingCells) throws RemoteException
