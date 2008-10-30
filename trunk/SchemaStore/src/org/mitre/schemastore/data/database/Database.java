@@ -193,14 +193,14 @@ public class Database
 			Statement stmt = connection.getStatement();
 			
 			// Delete the schema elements
-			stmt.executeUpdate("DELETE FROM alias WHERE schema_id="+schemaID+")");
-			stmt.executeUpdate("DELETE FROM subtype WHERE schema_id="+schemaID+")");
-			stmt.executeUpdate("DELETE FROM containment WHERE schema_id="+schemaID+")");
-			stmt.executeUpdate("DELETE FROM relationship WHERE schema_id="+schemaID+")");
-			stmt.executeUpdate("DELETE FROM attribute WHERE schema_id="+schemaID+")");
-			stmt.executeUpdate("DELETE FROM domainvalue WHERE schema_id="+schemaID+")");
-			stmt.executeUpdate("DELETE FROM \"domain\" WHERE schema_id="+schemaID+")");
-			stmt.executeUpdate("DELETE FROM entity WHERE schema_id="+schemaID+")");
+			stmt.executeUpdate("DELETE FROM alias WHERE schema_id="+schemaID);
+			stmt.executeUpdate("DELETE FROM subtype WHERE schema_id="+schemaID);
+			stmt.executeUpdate("DELETE FROM containment WHERE schema_id="+schemaID);
+			stmt.executeUpdate("DELETE FROM relationship WHERE schema_id="+schemaID);
+			stmt.executeUpdate("DELETE FROM attribute WHERE schema_id="+schemaID);
+			stmt.executeUpdate("DELETE FROM domainvalue WHERE schema_id="+schemaID);
+			stmt.executeUpdate("DELETE FROM \"domain\" WHERE schema_id="+schemaID);
+			stmt.executeUpdate("DELETE FROM entity WHERE schema_id="+schemaID);
 				
 			// Delete the schema from the database
 			stmt.executeUpdate("DELETE FROM schema_group WHERE schema_id="+schemaID);
