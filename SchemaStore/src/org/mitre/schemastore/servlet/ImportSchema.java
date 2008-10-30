@@ -87,15 +87,11 @@ public class ImportSchema
 			{
 				element.setBase(schemaID);
 				Integer schemaElementID = SchemaElements.addSchemaElement(element);
-				if(schemaElementID==null) throw new RemoteException("Failed to import schema element "+element.getName());
+				if(schemaElementID.equals(0)) throw new RemoteException("Failed to import schema element "+element.getName());
 				graph.updateElementID(element.getId(),schemaElementID);
 			}
 		}
-		catch(RemoteException e)
-		{
-			if(schemaID!=null) client.deleteSchema(schemaID);
-			throw e;
-		}
+		catch(RemoteException e) { if(schemaID>0) client.deleteSchema(schemaID); schemaID=0; }
 		return schemaID;
 	}
 }

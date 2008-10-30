@@ -709,60 +709,61 @@ public class Database
 			Statement stmt = connection.getStatement();
 			schemaElementID = getUniversalID();
 
-			// Retrieve the schema element name and description
+			// Retrieve the schema element name, description, and base ID
 			String name = schemaElement.getName().replaceAll("'","''");
 			String description = schemaElement.getDescription().replaceAll("'","''");
 			if(name.length()>50) name=name.substring(0,50);
 			if(description.length()>200) description=description.substring(0,200);
-			
+			Integer baseID = schemaElement.getBase();
+
 			// Inserts an entity
 			if(schemaElement instanceof Entity)
-				stmt.executeUpdate("INSERT INTO entity(id,name,description) VALUES("+schemaElementID+",'"+scrub(name)+"','"+scrub(description)+"')");
+				stmt.executeUpdate("INSERT INTO entity(id,name,description,schema_id) VALUES("+schemaElementID+",'"+scrub(name)+"','"+scrub(description)+"',"+baseID+")");
 
 			// Inserts an attribute
 			if(schemaElement instanceof Attribute)
 			{
 				Attribute attribute = (Attribute)schemaElement;
-				stmt.executeUpdate("INSERT INTO attribute(id,name,description,entity_id,domain_id,\"min\",\"max\") VALUES("+schemaElementID+",'"+scrub(name)+"','"+scrub(description)+"',"+attribute.getEntityID()+","+attribute.getDomainID()+","+attribute.getMin()+","+attribute.getMax()+")");
+				stmt.executeUpdate("INSERT INTO attribute(id,name,description,entity_id,domain_id,\"min\",\"max\",\"key\",schema_id) VALUES("+schemaElementID+",'"+scrub(name)+"','"+scrub(description)+"',"+attribute.getEntityID()+","+attribute.getDomainID()+","+attribute.getMin()+","+attribute.getMax()+",'"+(attribute.isKey()?"t":"f")+"',"+baseID+")");
 			}
 
 			// Inserts a domain
 			if(schemaElement instanceof Domain)
-				stmt.executeUpdate("INSERT INTO \"domain\"(id,name,description) VALUES("+schemaElementID+",'"+scrub(name)+"','"+scrub(description)+"')");
+				stmt.executeUpdate("INSERT INTO \"domain\"(id,name,description,schema_id) VALUES("+schemaElementID+",'"+scrub(name)+"','"+scrub(description)+"',"+baseID+")");
 
 			// Inserts a domain value
 			if(schemaElement instanceof DomainValue)
 			{
 				DomainValue domainValue = (DomainValue)schemaElement;
-				stmt.executeUpdate("INSERT INTO domainvalue(id,value,description,domain_id) VALUES("+schemaElementID+",'"+scrub(name)+"','"+scrub(description)+"',"+domainValue.getDomainID()+")");
+				stmt.executeUpdate("INSERT INTO domainvalue(id,value,description,domain_id,schema_id) VALUES("+schemaElementID+",'"+scrub(name)+"','"+scrub(description)+"',"+domainValue.getDomainID()+","+baseID+")");
 			}
 			
 			// Inserts a relationship
 			if(schemaElement instanceof Relationship)
 			{
 				Relationship relationship = (Relationship)schemaElement;
-				stmt.executeUpdate("INSERT INTO relationship(id,name,left_id,left_min,left_max,right_id,right_min,right_max) VALUES("+schemaElementID+",'"+scrub(name)+"',"+relationship.getLeftID()+","+relationship.getLeftMin()+","+relationship.getLeftMax()+","+relationship.getRightID()+","+relationship.getRightMin()+","+relationship.getRightMax()+")");
+				stmt.executeUpdate("INSERT INTO relationship(id,name,left_id,left_min,left_max,right_id,right_min,right_max,schema_id) VALUES("+schemaElementID+",'"+scrub(name)+"',"+relationship.getLeftID()+","+relationship.getLeftMin()+","+relationship.getLeftMax()+","+relationship.getRightID()+","+relationship.getRightMin()+","+relationship.getRightMax()+","+baseID+")");
 			}
 			
 			// Inserts a containment relationship
 			if(schemaElement instanceof Containment)
 			{
 				Containment containment = (Containment)schemaElement;
-				stmt.executeUpdate("INSERT INTO containment(id,name,description,parent_id,child_id,\"min\",\"max\") VALUES("+schemaElementID+",'"+scrub(name)+"','"+scrub(description)+"',"+containment.getParentID()+","+containment.getChildID()+","+containment.getMin()+","+containment.getMax()+")");
+				stmt.executeUpdate("INSERT INTO containment(id,name,description,parent_id,child_id,\"min\",\"max\",schema_id) VALUES("+schemaElementID+",'"+scrub(name)+"','"+scrub(description)+"',"+containment.getParentID()+","+containment.getChildID()+","+containment.getMin()+","+containment.getMax()+","+baseID+")");
 			}
 			
 			// Inserts a subset relationship
 			if(schemaElement instanceof Subtype)
 			{
 				Subtype subtype = (Subtype)schemaElement;
-				stmt.executeUpdate("INSERT INTO subtype(id,parent_id,child_id) VALUES("+schemaElementID+","+subtype.getParentID()+","+subtype.getChildID()+")");
+				stmt.executeUpdate("INSERT INTO subtype(id,parent_id,child_id,schema_id) VALUES("+schemaElementID+","+subtype.getParentID()+","+subtype.getChildID()+","+baseID+")");
 			}
 			
 			// Inserts an alias
 			if(schemaElement instanceof Alias)
 			{
 				Alias alias = (Alias)schemaElement;
-				stmt.executeUpdate("INSERT INTO alias(id,name,element_id) VALUES("+schemaElementID+",'"+scrub(name)+"',"+alias.getElementID()+")");
+				stmt.executeUpdate("INSERT INTO alias(id,name,element_id,schema_id) VALUES("+schemaElementID+",'"+scrub(name)+"',"+alias.getElementID()+","+baseID+")");
 			}
 
 			stmt.close();
