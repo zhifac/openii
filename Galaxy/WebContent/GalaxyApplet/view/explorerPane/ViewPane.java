@@ -133,10 +133,7 @@ class ViewPane extends JPanel
 			{
 				text.append(" (");
 				for(DomainValue domainValue : domainValues)
-				{
-					boolean newValue = schemaID.equals(domainValue.getBase());
-					text.append((newValue?"<b>":"")+graph.getElement(domainValue.getId()).getName()+(newValue?"</b>":"")+", ");
-				}
+					text.append(getElementName(schemaID, domainValue)+", ");
 				text.delete(text.length()-2,text.length());
 				text.append(")");
 			}
@@ -145,29 +142,10 @@ class ViewPane extends JPanel
 			text.append("    </table>");				
 		}
 		
-		// Display domain values and users
+		// Display domain users
 		if(schemaElement instanceof Domain)
 		{
-			// Display domain values
 			Domain domain = (Domain)schemaElement;
-			ArrayList<DomainValue> domainValues = graph.getDomainValuesForDomain(domain.getId());
-			text.append("    <table cellPadding=0 cellSpacing=0>");
-			text.append("      <tr>");
-			text.append("        <td nowrap valign=top><b>Domain Values: </b></td>");
-			if(!domainValues.isEmpty())
-			{
-				for(DomainValue domainValue : domainValues)
-				{
-					boolean newValue = schemaID.equals(domainValue.getBase());
-					text.append((newValue?"<b>":"")+graph.getElement(domainValue.getId()).getName()+(newValue?"</b>":"")+", ");
-				}
-				text.delete(text.length()-2,text.length());
-			}
-			text.append("        </td>");
-			text.append("      </tr>");
-			text.append("    </table>");
-			
-			// Display domain users
 			ArrayList<Attribute> attributes = graph.getAttributes(domain.getId());
 			if(attributes.size()>0)
 			{
@@ -177,7 +155,7 @@ class ViewPane extends JPanel
 				if(!attributes.isEmpty())
 				{
 					for(Attribute attribute : attributes)
-						text.append(graph.getElement(attribute.getId()).getName()+", ");
+						text.append(getElementName(schemaID, attribute)+", ");
 					text.delete(text.length()-2,text.length());
 				}
 				text.append("        </td>");
@@ -213,10 +191,18 @@ class ViewPane extends JPanel
 		validate(); repaint();
 	}
 
+	/** Display the specified element name (highlights new elements) */
+	private String getElementName(Integer schemaID, SchemaElement element)
+	{
+		boolean newValue = schemaID.equals(element.getBase());
+		return (newValue?"<b>":"")+element.getName()+(newValue?"</b>":"");
+	}
+	
 	/** Display relationship entity info */
 	private String getRelationshipEntityInfo(Integer schemaID, int entityID, Integer min, Integer max)
 	{
-		String info = Schemas.getGraph(schemaID).getElement(entityID).getName();
+		SchemaElement element = Schemas.getGraph(schemaID).getElement(entityID);
+		String info = getElementName(schemaID,element);
 		if(min!=null || max!=null)
 			info += " ("+(min!=null?"Min="+min:"")+(min!=null&&max!=null?", ":"")+(max!=null?"Max="+max:"")+")";
 		return info;

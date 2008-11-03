@@ -85,8 +85,9 @@ class SchemaTreeCellRenderer extends DefaultTreeCellRenderer
 		String iconName = "Schema";
 		if(userObject instanceof AliasedSchemaElement)
 		{
-			if(((AliasedSchemaElement)userObject).getElement() instanceof Attribute)
-				iconName = "Attribute";
+			SchemaElement element = ((AliasedSchemaElement)userObject).getElement();
+			if(element instanceof Attribute || element instanceof DomainValue)
+				iconName = "DependantElement";
 			else iconName = "SchemaElement";
 		}
 		else if(userObject instanceof String)
