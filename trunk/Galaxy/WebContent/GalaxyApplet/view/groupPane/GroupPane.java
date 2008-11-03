@@ -18,7 +18,7 @@ import model.SelectedObjects;
 public class GroupPane extends JPanel
 {
 	/** Private class for storing selected groups (informs model of changes to selected groups) */
-	private class SelectGroupSelectedGroups extends SelectedGroupsWithInferredChildren
+	private class SelectGroupSelectedGroups extends SelectedGroups
 	{
 		/** Updates the selected groups */
 		private void updateSelectedGroups()
