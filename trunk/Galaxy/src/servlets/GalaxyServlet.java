@@ -37,7 +37,7 @@ public class GalaxyServlet extends HttpServlet
 			// Determine the specified action
 			ObjectInputStream in = new ObjectInputStream(req.getInputStream());
 			String action = (String)in.readObject();
-			
+
 			//-------------------------
 			// Handles schema requests 
 			//-------------------------
@@ -189,7 +189,7 @@ public class GalaxyServlet extends HttpServlet
 			}
 			
 			in.close();
-		} catch(Exception e) { System.out.println(e.getMessage()); }
+		} catch(Exception e) { System.out.println("(E) GalaxyServlet.doPost - " + e.getMessage()); }
 		
 		// Returns the output
 		try {

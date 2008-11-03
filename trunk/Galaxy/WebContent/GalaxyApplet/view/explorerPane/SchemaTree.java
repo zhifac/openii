@@ -92,7 +92,7 @@ class SchemaTree extends JTree implements MouseMotionListener, TreeWillExpandLis
 				{
 					SchemaTreeNode domainNode = getSchemaTreeNode(domain.getId());
 					for(DomainValue domainValue : graph.getDomainValuesForDomain(domain.getId()))
-						domainNode.add(getSchemaTreeNode(domainValue));					
+						domainNode.add(getSchemaTreeNode(domainValue.getId()));					
 					domainsNode.add(domainNode);
 				}
 				root.add(domainsNode);

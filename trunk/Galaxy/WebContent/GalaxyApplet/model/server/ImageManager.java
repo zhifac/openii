@@ -45,7 +45,7 @@ public class ImageManager
  	 		addImage(5,"SchemaSelected.jpg",applet,codeBase);
  	 		addImage(6,"SchemaComparison.jpg",applet,codeBase);
  	 		addImage(7,"SchemaElements.jpg",applet,codeBase);
- 	 		addImage(8,"Attribute.jpg",applet,codeBase);
+ 	 		addImage(8,"DependantElement.jpg",applet,codeBase);
  	 		addImage(9,"Children.jpg",applet,codeBase);
  	 		addImage(10,"SchemaElement.jpg",applet,codeBase);
  	 		addImage(11,"Parents.jpg",applet,codeBase);

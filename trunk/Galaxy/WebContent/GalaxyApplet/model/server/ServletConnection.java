@@ -51,7 +51,6 @@ public class ServletConnection
 	static private Object callFunction(String functionName,Object[] inputs)
 	{
 		Object object = null;
-		System.out.println(functionName + inputs.toString());
 		try {
 			URLConnection connection = getServletConnection();
 			ObjectOutputStream out = new ObjectOutputStream(connection.getOutputStream());
@@ -63,7 +62,6 @@ public class ServletConnection
 			object = in.readObject();
 		    in.close();
 		} catch(Exception e) { System.out.println(e.getMessage()); }
-		System.out.println("Done");
 		return object;
 	}
 	
