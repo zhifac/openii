@@ -339,9 +339,15 @@ public class SchemaStoreClient
 	}
 
 	/** Retrieves the schemas elements referencing the specified keyword */
-	public ArrayList<SchemaElement> getSchemaElementsWithKeyword(String keyword) throws RemoteException
+	public ArrayList<SchemaElement> getSchemaElementsForKeyword(String keyword, ArrayList<Integer> groups) throws RemoteException
 	{
-		SchemaElement[] schemaElements = ((SchemaElementList)callMethod("getSchemaElementsWithKeyword",new Object[] {keyword})).getSchemaElements();
+		int groupList[] = new int[0];
+		if(groups!=null)
+		{
+			groupList = new int[groups.size()];
+			for(int i=0; i<groups.size(); i++) groupList[i] = groups.get(i);
+		}
+		SchemaElement[] schemaElements = ((SchemaElementList)callMethod("getSchemaElementsForKeyword",new Object[] {keyword, groupList})).getSchemaElements();
 		return schemaElements==null ? new ArrayList<SchemaElement>() : new ArrayList<SchemaElement>(Arrays.asList(schemaElements));
 	}
 	
