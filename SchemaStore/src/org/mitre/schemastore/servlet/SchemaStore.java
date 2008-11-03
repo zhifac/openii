@@ -48,8 +48,9 @@ public class SchemaStore
 	private ArrayList<Integer> convertArray(int oldArray[])
 	{
 		ArrayList<Integer> array = new ArrayList<Integer>();
-		for(int i=0; i<oldArray.length; i++)
-			array.add(oldArray[i]);
+		if(oldArray!=null)
+			for(int i=0; i<oldArray.length; i++)
+				array.add(oldArray[i]);
 		return array;
 	}
 	
@@ -318,9 +319,9 @@ public class SchemaStore
 		{ return new SchemaElementList(SchemaElements.getSchemaElements(schemaID).toArray(new SchemaElement[0])); }
 
 	/** Web service to get the schemas elements referencing the specified keyword */
-	public SchemaElementList getSchemaElementsForKeyword(String keyword, Integer[] groupIDs)
+	public SchemaElementList getSchemaElementsForKeyword(String keyword, int[] groupIDs)
 	{
-		ArrayList<Integer> groupList = new ArrayList<Integer>(Arrays.asList(groupIDs));
+		ArrayList<Integer> groupList = convertArray(groupIDs);
 		return new SchemaElementList(SchemaElements.getSchemaElementsForKeyword(keyword,groupList).toArray(new SchemaElement[0]));
 	}
 	

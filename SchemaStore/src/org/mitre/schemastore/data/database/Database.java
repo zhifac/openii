@@ -891,14 +891,19 @@ public class Database
 			String descFilter = "lower(description) LIKE '%"+keyword.toLowerCase()+"%'";
 
 			// Generate the base filter
-			String baseFilter = "schema_id IN {";
-			HashSet<Integer> schemaIDs = new HashSet<Integer>();
-			for(Integer groupID : groupIDs)
-				schemaIDs.addAll(Groups.getGroupSchemas(groupID));		
-			for(Integer schemaID : schemaIDs)
-				baseFilter += schemaID + ",";
-			baseFilter = baseFilter.substring(0, baseFilter.length()-1) + "}";
-			
+			String baseFilter;
+			if(groupIDs.size()>0)
+			{
+				baseFilter = "schema_id IN (";
+				HashSet<Integer> schemaIDs = new HashSet<Integer>();
+				for(Integer groupID : groupIDs)
+					schemaIDs.addAll(Groups.getGroupSchemas(groupID));		
+				for(Integer schemaID : schemaIDs)
+					baseFilter += schemaID + ",";
+				baseFilter = baseFilter.substring(0, baseFilter.length()-1) + ")";
+			}
+			else baseFilter = "true";
+				
 			// Gets the schema entities
 			ResultSet rs = stmt.executeQuery("SELECT id,name,description,schema_id FROM entity WHERE "+baseFilter+" AND " + nameFilter + " AND " + descFilter);
 			while(rs.next())
