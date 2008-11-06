@@ -53,7 +53,7 @@ public class Keyword
 	public Pattern getPattern()
 	{
 		if(pattern==null)
-			pattern = Pattern.compile(keyword);
+			pattern = Pattern.compile(keyword.replaceAll("\\*",""));
 		return pattern;
 	}
 	
