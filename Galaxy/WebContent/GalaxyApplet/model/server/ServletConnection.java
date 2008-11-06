@@ -146,8 +146,8 @@ public class ServletConnection
 		{ return (SchemaElement)callFunction("getSchemaElement",new Object[] {schemaElementID}); }	
 
 	/** Retrieves the schema elements which contain the specified keyword from the web service */ @SuppressWarnings("unchecked")
-	static public ArrayList<SchemaElement> getSchemaElementsWithKeyword(String keyword)
-		{ return (ArrayList<SchemaElement>)callFunction("getSchemaElementsWithKeyword",new Object[] {keyword}); }
+	static public ArrayList<SchemaElement> getSchemaElementsForKeyword(String keyword, ArrayList<Integer> groups)
+		{ return (ArrayList<SchemaElement>)callFunction("getSchemaElementsForKeyword",new Object[] {keyword, groups}); }
 
 	//-----------------------
 	// Data Source Functions

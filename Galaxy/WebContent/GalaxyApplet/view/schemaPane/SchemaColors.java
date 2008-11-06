@@ -88,7 +88,7 @@ public class SchemaColors
 			{
 				SchemaTreeObject sObject = (SchemaTreeObject)object;
 				for(Integer id : sObject.getIDs())
-					if(SearchManager.containsObject(id)) return selectedColor;
+					if(SearchManager.containsElement(id)) return selectedColor;
 				if(sObject.getType()==SchemaTreeObject.ENTITY) return entityColor;
 				if(sObject.getType()==SchemaTreeObject.ATTRIBUTE) return attributeColor;
 			}

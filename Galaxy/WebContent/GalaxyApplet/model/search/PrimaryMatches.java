@@ -7,11 +7,19 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 
+import model.Schemas;
+
+import org.mitre.schemastore.model.Alias;
+import org.mitre.schemastore.model.Attribute;
+import org.mitre.schemastore.model.Domain;
 import org.mitre.schemastore.model.DomainValue;
 import org.mitre.schemastore.model.Entity;
 import org.mitre.schemastore.model.Relationship;
 import org.mitre.schemastore.model.SchemaElement;
+import org.mitre.schemastore.model.Subtype;
+import org.mitre.schemastore.model.graph.HierarchicalGraph;
 
 /** Class for tracking primary matches */
 public class PrimaryMatches
@@ -23,8 +31,10 @@ public class PrimaryMatches
 		{
 			if(so1.getClass()==so2.getClass()) return so1.getName().compareTo(so2.getName());
 			if(so1.getClass()==Entity.class) return -1; if(so2.getClass()==Entity.class) return 1;
+			if(so1.getClass()==Domain.class) return -1; if(so2.getClass()==Domain.class) return 1;
 			if(so1.getClass()==DomainValue.class) return -1; if(so2.getClass()==DomainValue.class) return 1;
 			if(so1.getClass()==Relationship.class) return -1; if(so2.getClass()==Relationship.class) return 1;
+			if(so1.getClass()==Subtype.class) return -1; if(so2.getClass()==Subtype.class) return 1;
 			return 1;
 		}
 	}
@@ -35,6 +45,49 @@ public class PrimaryMatches
 	/** Object storing primary match information */
 	private HashMap<SchemaElement,ArrayList<SchemaElement>> primaryMatches = new HashMap<SchemaElement,ArrayList<SchemaElement>>();
 
+	/** Indicates if subsumed matches are even possible */
+	static private boolean subsumedMatchesPossible(ArrayList<SchemaElement> matches)
+	{
+		HashSet<Class> types = new HashSet<Class>();
+		for(SchemaElement match : matches)
+			types.add(match.getClass());
+		return types.size()>1;		
+	}
+	
+	/** Gets the primary matches for the specified element */
+	private ArrayList<SchemaElement> getPrimaryMatches(SchemaElement match, HierarchicalGraph graph)
+	{
+		// Identify the list of primary matches
+		ArrayList<SchemaElement> primaryMatches = new ArrayList<SchemaElement>();
+		if(match instanceof Attribute)
+		{
+			Entity entity = graph.getEntity(match.getId());
+			primaryMatches.addAll(getPrimaryMatches(entity,graph));
+		}
+		else if(match instanceof Domain)
+		{
+			for(Attribute attribute : graph.getAttributes(match.getId()))
+				primaryMatches.addAll(getPrimaryMatches(attribute,graph));
+		}
+		else if(match instanceof DomainValue)
+		{
+			Domain domain = (Domain)graph.getElement(((DomainValue)match).getDomainID());
+			primaryMatches.addAll(getPrimaryMatches(domain,graph));
+		}
+		else if(match instanceof Alias)
+		{
+			SchemaElement element = graph.getElement(((Alias)match).getElementID());
+			primaryMatches.addAll(getPrimaryMatches(element,graph));
+		}
+		
+		// If no primary matches found and a match, mark self as primary match
+		if(primaryMatches.size()==0 && matches.contains(match))
+			primaryMatches.add(match);
+
+		// Returns the list of found primary matches
+		return primaryMatches;
+	}
+	
 	/** Adds a primary match to the primary match mapping */
 	private void addPrimaryMatch(SchemaElement primaryMatch, SchemaElement match)
 	{
@@ -42,45 +95,7 @@ public class PrimaryMatches
 		if(matches==null) primaryMatches.put(primaryMatch,matches = new ArrayList<SchemaElement>());
 		if(!primaryMatch.equals(match)) matches.add(match);
 	}
-	
-	/** Marks all primary matches for the specified match */
-	private void markPrimaryMatches(SchemaElement match, Integer schemaID)
-	{
-		boolean isSubsumed = false;
-		
-		// Check attributes for an existing entity
-// TODO: Fix primary matches
-		/*		if(match instanceof Attribute)
-		{
-			Integer entityID = ((Attribute)match).getEntityID();
-			SchemaElement entity = Schemas.getSchemaElement(entityID);
-			if(matches.contains(entity)) { addPrimaryMatch(entity,match); isSubsumed=true; }
-		}
-		
-		// Check domain values for an existing attribute
-		if(match instanceof DomainValue)
-		{
-			Integer domainID = ((DomainValue)match).getDomainID();
-			for(Attribute attribute : Schemas.getGraph(schemaID).getAttributes(domainID))
-			{
-				Integer entityID = attribute.getEntityID();
-				SchemaElement entity = Schemas.getSchemaElement(entityID);
-				if(matches.contains(entity)) { addPrimaryMatch(entity,match); isSubsumed=true; }
-				else if(matches.contains(attribute)) { addPrimaryMatch(attribute,match); isSubsumed=true; }
-			}
-		}
 
-		// Check aliases for an existing element
-		if(match instanceof Alias)
-		{
-			SchemaElement element = Schemas.getSchemaElement(((Alias)match).getElementID());
-			if(matches.contains(element)) addPrimaryMatch(element,match);
-		} */
-		
-		// Otherwise, the element is not subsumed
-		if(!isSubsumed) addPrimaryMatch(match,match);
-	}
-	
 	/** PrimaryMatches constructor */
 	PrimaryMatches(Integer schemaID, Collection<Match> matchesIn)
 	{
@@ -88,10 +103,19 @@ public class PrimaryMatches
 		for(Match match : matchesIn)
 			if(match.getElement() instanceof SchemaElement)
 				matches.add((SchemaElement)match.getElement());
-		
-		// Mark all primary matches
-		for(SchemaElement match : matches)
-			markPrimaryMatches(match,schemaID);
+
+		// If subsumed matches are possible, identify them
+		if(subsumedMatchesPossible(matches))
+		{
+			HierarchicalGraph graph = Schemas.getGraph(schemaID);
+			for(SchemaElement match : matches)
+				for(SchemaElement primaryMatch : getPrimaryMatches(match,graph))
+					addPrimaryMatch(primaryMatch, match);
+		}
+
+		// Otherwise, mark all matches as primary matches
+		else for(SchemaElement match : matches)
+			addPrimaryMatch(match, match);
 	}
 	
 	/** Returns the primary matches */
