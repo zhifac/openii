@@ -883,12 +883,13 @@ public class Database
 
 	/** Retrieves the list of elements using the specified keyword in the repository */
 	static public ArrayList<SchemaElement> getSchemaElementsForKeyword(String keyword, ArrayList<Integer> groupIDs)
-	{		
+	{
 		ArrayList<SchemaElement> elements = new ArrayList<SchemaElement>();
 		try {
 			Statement stmt = connection.getStatement();
-			String nameFilter = "lower(name) LIKE '%"+keyword.toLowerCase()+"%'";
-			String descFilter = "lower(description) LIKE '%"+keyword.toLowerCase()+"%'";
+			keyword = new String(' ' + keyword + ' ').replaceAll("^ \\*","").replaceAll("\\* $","").replaceAll("\\*","%");
+			String nameFilter = "lower(' '||name||' ') LIKE '%"+keyword.toLowerCase()+"%'";
+			String descFilter = "lower(' '||description||' ') LIKE '%"+keyword.toLowerCase()+"%'";
 
 			// Generate the base filter
 			String baseFilter;
