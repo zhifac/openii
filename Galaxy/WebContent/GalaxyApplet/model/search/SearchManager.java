@@ -18,6 +18,7 @@ import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.Subtype;
 
+import model.Groups;
 import model.Schemas;
 import model.SelectedObjects;
 import model.listeners.SearchListener;
@@ -74,8 +75,9 @@ public class SearchManager
 				// Retrieve all matching schemas
 				if(type==null || type==Keyword.SCHEMA)
 					for(Schema schema : Schemas.getSchemas())
-						if(keyword.isContainedIn(schema.getName()) || keyword.isContainedIn(schema.getDescription()))
-							matches.add(new Match(schema));
+						if(SelectedObjects.inSelectedGroups(schema.getId()))
+							if(keyword.isContainedIn(schema.getName()) || keyword.isContainedIn(schema.getDescription()))
+								matches.add(new Match(schema));
 				
 				// Retrieve all matching schema elements
 				ArrayList<SchemaElement> elementList = new ArrayList<SchemaElement>();
