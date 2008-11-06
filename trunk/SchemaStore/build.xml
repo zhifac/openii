@@ -47,9 +47,9 @@
 	
 	<!-- Cleans up the constructed jar files -->
 	<target name="clean">
-	    <delete file="SchemaStoreModelJar.jar"/>
-	    <delete file="SchemaStoreJar.jar"/>
-	    <delete file="SchemaStoreWar.jar"/>
+	    <delete file="SchemaStoreModel.jar"/>
+	    <delete file="SchemaStore.jar"/>
+	    <delete file="SchemaStore.war"/>
     </target>
 	
 </project>
