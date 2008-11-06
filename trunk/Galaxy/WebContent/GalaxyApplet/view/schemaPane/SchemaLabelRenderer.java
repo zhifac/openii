@@ -44,7 +44,7 @@ public class SchemaLabelRenderer extends LabelRenderer
 		if(object instanceof SchemaTreeObject)
 		{
 			for(Integer id : ((SchemaTreeObject)object).getIDs())
-				if(SearchManager.containsObject(id))
+				if(SearchManager.containsElement(id))
 					selectedItem = true;
 		}
 		return new BasicStroke(selectedItem ? 3 : 1);

@@ -5,6 +5,7 @@ package servlets;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -20,7 +21,7 @@ public class GalaxyServlet extends HttpServlet
 {
 	static private SchemaStoreClient client = null;
 	
-	/** Returns the schemas existent in the database */
+	/** Returns the schemas existent in the database */ @SuppressWarnings("unchecked")
 	protected void doPost(HttpServletRequest req, HttpServletResponse res)
 	{
 		Object output = null;
@@ -164,10 +165,11 @@ public class GalaxyServlet extends HttpServlet
 			}
 			
 			// Retrieves the base schema elements for the specified schema
-			if(action.equals("getSchemaElementsWithKeyword"))
+			if(action.equals("getSchemaElementsForKeyword"))
 			{
 				String keyword = (String)in.readObject();
-				output = client.getSchemaElementsWithKeyword(keyword);
+				ArrayList<Integer> groups = (ArrayList<Integer>)in.readObject();
+				output = client.getSchemaElementsForKeyword(keyword, groups);
 			}
 
 			//------------------------------

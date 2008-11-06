@@ -130,8 +130,8 @@ public class Schemas
 	//------------------------
 
 	/** Gets the list of elements with the specified keyword */
-	static public ArrayList<SchemaElement> getElementsWithKeyword(String keyword)
-		{ return ServletConnection.getSchemaElementsWithKeyword(keyword); }
+	static public ArrayList<SchemaElement> getElementsForKeyword(String keyword, ArrayList<Integer> groups)
+		{ return ServletConnection.getSchemaElementsForKeyword(keyword, groups); }
 
 	/** Returns the schema element count */
 	static public int getSchemaElementCount(Integer schemaID)
