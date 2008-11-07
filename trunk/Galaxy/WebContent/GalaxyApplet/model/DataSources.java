@@ -22,7 +22,10 @@ public class DataSources
 
 	/** Returns a list of all data sources */
 	static public ArrayList<DataSource> getDataSources()
-		{ return ServletConnection.getDataSourceList(null); }
+	{
+		ArrayList<DataSource> dataSources = ServletConnection.getDataSourceList(null);
+		return dataSources==null ? new ArrayList<DataSource>() : ServletConnection.getDataSourceList(null);
+	}
 	
 	/** Returns the list of data sources for the specified schema */
 	static public ArrayList<DataSource> getDataSources(Integer schemaID)

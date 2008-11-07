@@ -45,8 +45,10 @@ public class Schemas
 	static private void initSchemas()
 	{
 		schemas = new HashMap<Integer,Schema>();
-		for(Schema schema : ServletConnection.getSchemas())
-			schemas.put(schema.getId(),schema);
+		ArrayList<Schema> serverSchemas = ServletConnection.getSchemas();
+		if(serverSchemas!=null)
+			for(Schema schema : serverSchemas)
+				schemas.put(schema.getId(),schema);
 	}
 	
 	/** Returns a list of all schemas */
