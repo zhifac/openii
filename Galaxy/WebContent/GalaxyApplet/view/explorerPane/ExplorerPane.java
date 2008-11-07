@@ -26,7 +26,11 @@ public class ExplorerPane extends JPanel implements SelectedObjectsListener
 	
 	/** Resets the view */
 	private void resetView()
-		{ schemaPane.setViewportView(schemaTree = new SchemaTree(SelectedObjects.getSelectedSchema(),this)); }	
+	{
+		Integer selectedObject = SelectedObjects.getSelectedSchema();
+		schemaTree = selectedObject==null ? null : new SchemaTree(selectedObject,this);
+		schemaPane.setViewportView(schemaTree);
+	}	
 	
 	/** Constructs the Explorer Pane */
 	public ExplorerPane()

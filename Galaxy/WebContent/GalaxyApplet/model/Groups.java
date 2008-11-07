@@ -34,8 +34,10 @@ public class Groups
 	static private void initGroups()
 	{
 		groups = new HashMap<Integer,Group>();
-		for(Group group : ServletConnection.getGroups())
-			groups.put(group.getId(),group);	
+		ArrayList<Group> serverGroups = ServletConnection.getGroups();
+		if(serverGroups!=null)
+			for(Group group : serverGroups)
+				groups.put(group.getId(),group);	
 	}
 	
 	/** Returns a list of base groups */

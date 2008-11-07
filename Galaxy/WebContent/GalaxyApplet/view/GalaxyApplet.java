@@ -23,6 +23,7 @@ import view.groupPane.GroupPane;
 import view.schemaPane.SchemaPane;
 import view.searchPane.SearchPane;
 
+import model.SelectedObjects;
 import model.server.ImageManager;
 import model.server.ServletConnection;
 
@@ -38,8 +39,10 @@ public class GalaxyApplet extends Applet implements MouseListener, MouseMotionLi
 	/** Stores a constant for the maximum width for the left pane */
 	static private int MAX_WIDTH=525;
 	
-	/** Stores the left pane displayed in the Galaxy Applet */
+	// Stores the panes displayed in the Galaxy Applet
 	private JPanel leftPane = new JPanel();
+	private JTabbedPane explorerPane = new JTabbedPane();
+	private JTabbedPane viewPane = new JTabbedPane();
 
 	/** Indicates if the left pane is currently being resized */
 	private boolean resizeCursor;
@@ -90,7 +93,6 @@ public class GalaxyApplet extends Applet implements MouseListener, MouseMotionLi
 		ImageManager.init(this);
 		
 		// Construct the explorer pane
-		JTabbedPane explorerPane = new JTabbedPane();
 		explorerPane.setBorder(new EmptyBorder(5,0,0,0));
 		explorerPane.addTab("Explore",new ExplorerPane());
 		explorerPane.addTab("Groups",new GroupPane());
@@ -105,7 +107,6 @@ public class GalaxyApplet extends Applet implements MouseListener, MouseMotionLi
 		leftPane.add(explorerPane,BorderLayout.CENTER);
 		
 		// Constructs the view pane
-		JTabbedPane viewPane = new JTabbedPane();
 		viewPane.setBorder(new EmptyBorder(10,0,10,10));
 		viewPane.addTab("Extensions",new ExtensionsPane());
 		viewPane.addTab("Schemas",new SchemaPane());
@@ -119,6 +120,10 @@ public class GalaxyApplet extends Applet implements MouseListener, MouseMotionLi
 		// Lays out Galaxy
 		setLayout(new BorderLayout());
 		add(galaxyPane,BorderLayout.CENTER);
+		
+		// Disable tabs if no schemas found to display
+		if(SelectedObjects.getSelectedSchema()==null)
+			{ explorerPane.setEnabled(false); viewPane.setEnabled(false); }
 		
 		// Add mouse listeners used to resize the left pane
 		addMouseListener(this);
@@ -177,8 +182,10 @@ public class GalaxyApplet extends Applet implements MouseListener, MouseMotionLi
 			resizeCursor=false;
 		}
 	}
-    
+	
 	// Unused mouse listener events
 	public void mouseClicked(MouseEvent e) {}
 	public void mouseEntered(MouseEvent e) {}
+	public void selectedComparisonSchemaChanged() {}
+	public void selectedGroupsChanged() {}
 }
