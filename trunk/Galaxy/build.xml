@@ -1,0 +1,24 @@
+<project name="galaxy" default="build" basedir=".">
+	
+	<!-- Builds the Galaxy war file -->
+    <target name="buildGalaxyWar">
+        <fatjar.build output="Galaxy.war">
+            <fatjar.manifest/>
+            <fatjar.filesource path="WebContent">
+            	<fatjar.exclude regexp=".*\.svn.*"/>
+            </fatjar.filesource>
+            <fatjar.filesource path="WebContent/WEB-INF/SchemaStoreClient.jar" relpath="WEB-INF/lib"/>
+       </fatjar.build>
+    </target>
+	
+	<!-- Builds the Galaxy war file -->
+    <target name="build">
+    	<antcall target="buildGalaxyWar"/>
+   </target>	
+	
+	<!-- Cleans up the constructed jar files -->
+	<target name="clean">
+	    <delete file="GalaxyWar.war"/>
+    </target>
+	
+</project>
