@@ -3,6 +3,7 @@
 package org.mitre.schemastore.data.database;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -99,10 +100,10 @@ public class DBConnection
 		// Attempt to connect to database
 		try {
 			if(connection==null)
-			{				
+			{
 				// Retrieve the configuration properties
 				Properties properties = new Properties();
-				properties.load(getClass().getClassLoader().getResourceAsStream("config.properties"));
+				properties.load(getClass().getResourceAsStream("/config.properties"));
 				
 				// Get environment variables
 	    		String server = properties.getProperty("dbServer");
