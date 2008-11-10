@@ -3,11 +3,14 @@
 package org.mitre.flexidata.ygg.importers;
 
 import java.util.*;
+import java.io.*;
 
 import org.exolab.castor.xml.schema.*;
 import org.exolab.castor.xml.schema.Group;
+import org.exolab.castor.xml.schema.Schema;
 import org.exolab.castor.xml.schema.reader.SchemaReader;
 import org.mitre.schemastore.model.*;
+import org.xml.sax.InputSource;
 
 /**
  * Class for converting XSD files into an Entity-Relationship format
@@ -60,12 +63,27 @@ public class XSDImporter extends Importer
 		return fileTypes;
 	}
 	
+	
+	
+	
 	/** Initializes the importer for the specified URI */
 	protected void initialize() throws ImporterException
 	{
 		try {
 			// Parse the schema
-			xmlSchema = new SchemaReader(uri.toString()).read();
+			
+			//System.out.println("URI: "  + uri.getPath());
+			InputSource in = new InputSource(uri.toString());
+			
+			in.setCharacterStream(new BOMFreeBufferedReader(new FileReader(uri.getPath() )));
+			
+			//InputSource in = new InputSource(new BOMFreeBufferedReader(new FileReader(uri.getPath() )));
+			in.setCharacterStream(new BOMFreeBufferedReader(new FileReader(uri.getPath())));
+			SchemaReader reader = new SchemaReader(in);
+			xmlSchema = reader.read();
+			
+			//xmlSchema = new SchemaReader(new BOMFreeBufferedReader(new FileReader(uri.getPath())),new String("error.txt")).read();
+			//xmlSchema = new SchemaReader(uri.toString()).read();
 			
 			// reset the Importer
 			schemaElementsHS = new HashMap<String, SchemaElement>();
@@ -76,8 +94,12 @@ public class XSDImporter extends Importer
 			// Preset domains and then identify entities, attributes, and relationships in this schema
 			loadDomains();
 			getRootElements();
+			System.out.println(" Done with XSDImporter:initialize()");
 		}
-		catch(Exception e) { throw new ImporterException(ImporterException.PARSE_FAILURE,e.getMessage()); }
+		
+		catch(Exception e) { 
+			e.printStackTrace();
+			throw new ImporterException(ImporterException.PARSE_FAILURE,e.getMessage()); }
 	}
 	
 	/** Returns the list of schemas which this schema extends */
@@ -172,7 +194,7 @@ public class XSDImporter extends Importer
 					if (schemaElementsHS.containsKey(this.compString(domain)) == false) {
 						schemaElementsHS.put(this.compString(domain),domain);
 						domainList.put(type, domain);
-						System.out.println("adding " + domain.getName() + ", " + domain.getId());
+					//	System.out.println("adding " + domain.getName() + ", " + domain.getId());
 					}
 				} // if (domain == null) {
 
@@ -193,7 +215,10 @@ public class XSDImporter extends Importer
 					//// handle special cases (WildCard)
 					if (obj instanceof Wildcard){
 						//// add containment to ANY domain
-						Domain anyDomain = domainList.get("any");
+						Domain anyDomain = domainList.get("Any");
+						if (anyDomain == null) {
+							System.out.println("[E] anyDomain is NULL");
+						}
 						Containment containment = new Containment(nextId(),"", "",
 								currentTypeEntity.getId(), anyDomain.getId(), 0, 1, 0);
 						if (schemaElementsHS.containsKey(this.compString(containment)) == false) {
@@ -202,7 +227,7 @@ public class XSDImporter extends Importer
 						}
 						
 					} else if (obj instanceof Group){
-						System.out.println("currentComplexType has a Group " + ((Group)obj).getName() + " , " +  ((Group)obj).getParticleCount());
+						//System.out.println("currentComplexType has a Group " + ((Group)obj).getName() + " , " +  ((Group)obj).getParticleCount());
 						processGroup((Group)obj, currentTypeEntity);
 						
 					} else  {
@@ -276,9 +301,10 @@ public class XSDImporter extends Importer
 			} else {
 		
 				// process element with Simple Type OR No Type
-				if ((element.getType() == null) || (element.getType() instanceof SimpleType)) {
+				if ((element.getType() == null) || (element.getType() instanceof AnyType) || (element.getType() instanceof SimpleType)) {
 					 processSimpleType(element,null);
 				} 
+
 				// process element with a Complex Type
 				else { 
 					Entity complexTypeEntity = this.processedComplexTypeList.get(((ComplexType)element.getType()).getName());
@@ -340,7 +366,7 @@ public class XSDImporter extends Importer
 				if (schemaElementsHS.containsKey(this.compString(domain)) == false) {
 					schemaElementsHS.put(this.compString(domain),domain);
 					domainList.put(type, domain);
-					System.out.println("adding " + domain.getName() + ", " + domain.getId());
+				//	System.out.println("adding " + domain.getName() + ", " + domain.getId());
 				}
 			} // if (domain == null) {
 			
@@ -366,7 +392,7 @@ public class XSDImporter extends Importer
 				//// handle special cases (WildCard / Any)
 				if (obj instanceof Wildcard){
 					//// add containment to ANY domain
-					Domain anyDomain = domainList.get("any");
+					Domain anyDomain = domainList.get("Any");
 					Containment containment = new Containment(nextId(),"", "",
 							null, anyDomain.getId(), 0, 1, 0);
 					if (schemaElementsHS.containsKey(this.compString(containment)) == false) {
@@ -374,7 +400,7 @@ public class XSDImporter extends Importer
 						processContainment(containment,false);
 					}		
 				} else if (obj instanceof Group){
-					System.out.println("currentComplexType has a Group " + ((Group)obj).getName() + " , " +  ((Group)obj).getParticleCount());
+					//System.out.println("currentComplexType has a Group " + ((Group)obj).getName() + " , " +  ((Group)obj).getParticleCount());
 					processGroup((Group)obj, complexTypeEntity);
 						
 				} else {
@@ -472,7 +498,7 @@ public class XSDImporter extends Importer
 				}
 			}
 			domainList.put(type, domain);
-			System.out.println("adding " + domain.getName() + ", " + domain.getId());
+			//System.out.println("adding " + domain.getName() + ", " + domain.getId());
 			
 		}
 	
@@ -498,40 +524,60 @@ public class XSDImporter extends Importer
 
 		// assign the default type of String
 		String type = "String";
-		SimpleType simpleType = (SimpleType)simpleTypeElement.getType();
-		if ((simpleType != null) && (simpleType.getName() != null) && (simpleType.getName().length() > 0)) 
-			type = simpleType.getName();
 		
-		Domain domain = domainList.get(type);	
-		if (domain == null) {
-			// turn simpleType into domain
+		if (simpleTypeElement.getType() instanceof AnyType){
+		
+			Domain anyDomain = domainList.get("Any");
 			
-			domain = new Domain(nextId(), type, "The " + type + " domain", 0);
-			if (schemaElementsHS.containsKey(this.compString(domain)) == false) {
-				schemaElementsHS.put(this.compString(domain), domain);
+			//// add containment to schema
+			Containment containment = new Containment(nextId(), simpleTypeElement.getName(), "",
+					containingID, anyDomain.getId(), 0, 1, 0);
+			if (schemaElementsHS.containsKey(this.compString(containment)) == false) {
+				schemaElementsHS.put(this.compString(containment),containment);
+				processContainment(containment, false);
+			}
 			
-				// create a DomainValue for each value in the enumeration
-				Enumeration<?> facets = simpleType.getFacets();
-				while (facets.hasMoreElements()) {
-					Facet facet = (Facet) facets.nextElement();
-					DomainValue domainValue = new DomainValue(nextId(), facet.getValue(), facet.getValue(), domain.getId(), 0);
+		}
+		
+		
+		
+		else {
+		
+			SimpleType simpleType = (SimpleType)simpleTypeElement.getType();
+			if ((simpleType != null) && (simpleType.getName() != null) && (simpleType.getName().length() > 0)) 
+				type = simpleType.getName();
+			
+			Domain domain = domainList.get(type);	
+			if (domain == null) {
+				// turn simpleType into domain
 				
-					if (schemaElementsHS.containsKey(this.compString(domainValue)) == false) {
-						schemaElementsHS.put(this.compString(domainValue), domainValue);
+				domain = new Domain(nextId(), type, "The " + type + " domain", 0);
+				if (schemaElementsHS.containsKey(this.compString(domain)) == false) {
+					schemaElementsHS.put(this.compString(domain), domain);
+				
+					// create a DomainValue for each value in the enumeration
+					Enumeration<?> facets = simpleType.getFacets();
+					while (facets.hasMoreElements()) {
+						Facet facet = (Facet) facets.nextElement();
+						DomainValue domainValue = new DomainValue(nextId(), facet.getValue(), facet.getValue(), domain.getId(), 0);
+					
+						if (schemaElementsHS.containsKey(this.compString(domainValue)) == false) {
+							schemaElementsHS.put(this.compString(domainValue), domainValue);
+						}
 					}
 				}
+			
+				domainList.put(type, domain);
+				//System.out.println("adding " + domain.getName() + ", " + domain.getId());
 			}
-		
-			domainList.put(type, domain);
-			System.out.println("adding " + domain.getName() + ", " + domain.getId());
-		}
 	
-		//// add containment to schema
-		Containment containment = new Containment(nextId(), simpleTypeElement.getName(), "",
+			//// add containment to schema
+			Containment containment = new Containment(nextId(), simpleTypeElement.getName(), "",
 				containingID, domain.getId(), 0, 1, 0);
-		if (schemaElementsHS.containsKey(this.compString(containment)) == false) {
-			schemaElementsHS.put(this.compString(containment),containment);
-			processContainment(containment, false);
+			if (schemaElementsHS.containsKey(this.compString(containment)) == false) {
+				schemaElementsHS.put(this.compString(containment),containment);
+				processContainment(containment, false);
+			}
 		}
     } // end method processSimpleType
 	
@@ -710,7 +756,7 @@ public class XSDImporter extends Importer
 								schemaElementsHS.put(this.compString(cont),cont);
 							}	
 						} else {
-							System.out.println("THERE ARE 2 CONTAINMENTS WITH THE SAME NAME: " + cont.getName());
+							//System.out.println("THERE ARE 2 CONTAINMENTS WITH THE SAME NAME: " + cont.getName());
 						}
 					}
 					contList = null;
