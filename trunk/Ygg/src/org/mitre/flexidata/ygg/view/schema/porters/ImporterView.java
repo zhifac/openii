@@ -13,8 +13,7 @@ import java.util.ArrayList;
 import javax.swing.JButton;
 import javax.swing.border.EmptyBorder;
 
-import org.mitre.flexidata.ygg.importers.Importer;
-import org.mitre.flexidata.ygg.model.ConfigManager;
+import org.mitre.flexidata.ygg.model.SchemaManager;
 import org.mitre.flexidata.ygg.view.Consts;
 import org.mitre.flexidata.ygg.view.GenericView;
 import org.mitre.flexidata.ygg.view.shared.ColoredButton;
@@ -28,6 +27,7 @@ import org.mitre.flexidata.ygg.view.shared.parameters.FileParameter;
 import org.mitre.flexidata.ygg.view.shared.parameters.ParameterPane;
 import org.mitre.flexidata.ygg.view.shared.parameters.RepositoryParameter;
 import org.mitre.flexidata.ygg.view.shared.parameters.SchemaParameter;
+import org.mitre.schemastore.importers.Importer;
 import org.mitre.schemastore.model.Schema;
 
 /** Class for displaying the importer view */
@@ -47,7 +47,7 @@ public class ImporterView extends GenericView implements ActionListener
 		/** Constructs the importer selection pane */
 		private ImporterSelectionPane()
 		{
-			super("Method",ConfigManager.getImporters());
+			super("Method",SchemaManager.getImporters());
 			addActionListener(this);
 		}
 			
@@ -172,8 +172,11 @@ public class ImporterView extends GenericView implements ActionListener
 		{
 			// Run the importer
 			try {
+				String name = nameParm.getValue();
+				String author = authorParm.getValue();
+				String description = descriptionParm.getValue();
 				URI uri = uriParm==null ? null : new URI(uriParm.getValue());
-				importer.importSchema(nameParm.getValue(), authorParm.getValue(), descriptionParm.getValue(), uri);
+				SchemaManager.importSchema(importer, name, author, description, uri);
 			}
 			catch(Exception e2) { descriptionPane.setText(e2.getMessage(), true); }
 		}
