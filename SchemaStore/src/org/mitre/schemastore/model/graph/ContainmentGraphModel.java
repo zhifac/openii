@@ -22,9 +22,9 @@ public class ContainmentGraphModel extends GraphModel
 	{
 		ArrayList<SchemaElement> rootElements = new ArrayList<SchemaElement>();
 
-		// Find all containments whose root is null
+		// Find all containments whose roots are null
 		for(SchemaElement element : graph.getElements(Containment.class))
-			if(graph.getElement(((Containment)element).getParentID())==null)
+			if(((Containment)element).getParentID()==null)
 				rootElements.add(element);
 			
 		return rootElements;

@@ -28,7 +28,7 @@ public class Containment extends SchemaElement
 		{ super(id,name,description,base); this.parentID=parentID; this.childID=childID; this.min=min; this.max=max; }
 	
 	// Handles all containment getters
-	public Integer getParentID() { return parentID; }
+	public Integer getParentID() { return parentID==null || parentID.equals(0) ? null : parentID; }
 	public Integer getChildID() { return childID; }
 	public Integer getMin() { return min; }
 	public Integer getMax() { return max; }
