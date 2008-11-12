@@ -18,8 +18,7 @@ import javax.swing.JTextArea;
 import javax.swing.border.EmptyBorder;
 
 import org.mitre.flexidata.ygg.Ygg;
-import org.mitre.flexidata.ygg.exporters.Exporter;
-import org.mitre.flexidata.ygg.model.ConfigManager;
+import org.mitre.flexidata.ygg.model.SchemaManager;
 import org.mitre.flexidata.ygg.view.Consts;
 import org.mitre.flexidata.ygg.view.GenericView;
 import org.mitre.flexidata.ygg.view.schema.view.SchemaView;
@@ -29,6 +28,7 @@ import org.mitre.flexidata.ygg.view.shared.RoundedPane;
 import org.mitre.flexidata.ygg.view.shared.SelectionPane;
 import org.mitre.flexidata.ygg.view.shared.parameters.FileParameter;
 import org.mitre.flexidata.ygg.view.shared.parameters.ParameterPane;
+import org.mitre.schemastore.exporters.Exporter;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
 
@@ -60,7 +60,7 @@ public class ExporterView extends GenericView implements ActionListener
 		/** Constructs the exporter selection pane */
 		private ExporterSelectionPane()
 		{
-			super("Method",ConfigManager.getExporters());
+			super("Method",SchemaManager.getExporters());
 			addActionListener(this);
 		}
 

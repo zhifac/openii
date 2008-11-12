@@ -2,11 +2,15 @@
 
 package org.mitre.flexidata.ygg.model;
 
+import java.net.URI;
 import java.util.ArrayList;
 
+import org.mitre.schemastore.exporters.Exporter;
+import org.mitre.schemastore.exporters.Exporters;
+import org.mitre.schemastore.importers.Importer;
+import org.mitre.schemastore.importers.Importers;
 import org.mitre.schemastore.model.DataSource;
 import org.mitre.schemastore.model.Schema;
-import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.graph.Graph;
 
 /** Manages schema information */
@@ -23,21 +27,36 @@ public class SchemaManager
 	static public ArrayList<Schema> getSchemas()
 		{ try { return SchemaStore.getClient().getSchemas(); } catch(Exception e) { return new ArrayList<Schema>(); } }
 	
-	/** Imports the specified schema into the repository */
-	static public boolean importSchema(Schema schema, ArrayList<Integer> extendedSchemaIDs, ArrayList<SchemaElement> schemaElements)
+	/** Returns the list of schema importers */
+	static public ArrayList<Importer> getImporters()
 	{
-		boolean success = false;
+		ArrayList<Importer> importers = new ArrayList<Importer>();
+		try { importers = new Importers(SchemaStore.getClient()).getImporters(null); } catch(Exception e) {}
+		return importers;
+	}
+	
+	/** Returns the list of schema exporters */
+	static public ArrayList<Exporter> getExporters()
+	{
+		ArrayList<Exporter> exporters = new ArrayList<Exporter>();
+		try { exporters = new Exporters().getExporters(null); } catch(Exception e) {}
+		return exporters;
+	}
+	
+	/** Imports the specified schema into the repository */
+	static public void importSchema(Importer importer, String name, String author, String description, URI uri) throws Exception
+	{
 		try {
-			Integer schemaID = SchemaStore.getClient().importSchema(schema, schemaElements);
-			schema.setId(schemaID);
-			success = SchemaStore.getClient().setParentSchemas(schema.getId(), extendedSchemaIDs);
-			if(success) for(SchemaListener listener : listeners) listener.schemaAdded(schema);
+			Integer schemaID = importer.importSchema(name, author, description, uri);
+			if(schemaID!=null)
+			{
+				Schema schema = SchemaStore.getClient().getSchema(schemaID);
+				for(SchemaListener listener : listeners) listener.schemaAdded(schema);
+			}
 		}
 		catch(Exception e) {}
-		if(!success) deleteSchema(schema);
-		return success;
 	}
-
+	
 	/** Locks the specified schema in the repository */
 	static public void lockSchema(Integer schemaID)
 		{ try { SchemaStore.getClient().lockSchema(schemaID); } catch(Exception e) {} }

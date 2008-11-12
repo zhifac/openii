@@ -2,10 +2,7 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="lib/castor-0.9.9.1-xml.jar"/>
 	<classpathentry kind="lib" path="lib/SchemaStoreClient.jar" sourcepath="/SchemaStore/src"/>
-	<classpathentry kind="lib" path="lib/jena.jar"/>
-	<classpathentry kind="lib" path="lib/antlr.jar"/>
 	<classpathentry kind="lib" path="lib/xercesImpl.jar"/>
 	<classpathentry kind="lib" path="lib/arq.jar"/>
 	<classpathentry kind="lib" path="lib/commons-logging.jar"/>
@@ -13,6 +10,6 @@
 	<classpathentry kind="lib" path="lib/jcommon-1.0.5.jar"/>
 	<classpathentry kind="lib" path="lib/log4j-1.2.11.jar"/>
 	<classpathentry kind="lib" path="lib/jxl.jar"/>
-	<classpathentry kind="lib" path="lib/poi-3.1-FINAL-20080629.jar"/>
+	<classpathentry kind="lib" path="lib/SchemaStorePorters.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
