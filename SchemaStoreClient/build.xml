@@ -5,29 +5,51 @@
     <target name="buildSchemaStoreClient">
         <fatjar.build output="SchemaStoreClient.jar">
             <fatjar.manifest/>
-            <fatjar.filesource path="build\classes"/>
+            <fatjar.filesource path="build\classes">
+				<fatjar.exclude relpath="org/mitre/schemastore/exporters/"/>
+				<fatjar.exclude relpath="org/mitre/schemastore/importers/"/>
+            </fatjar.filesource>
             <fatjar.filesource path="..\SchemaStore\build\classes">
                 <fatjar.exclude relpath="org/mitre/schemastore/data/"/>
                 <fatjar.exclude relpath="org/mitre/schemastore/servlet/"/>
             </fatjar.filesource>
-            <fatjar.jarsource file="activation-1.1.jar" relpath=""/>
-            <fatjar.jarsource file="axis.jar" relpath=""/>
-            <fatjar.jarsource file="commons-discovery-0.2.jar" relpath=""/>
-            <fatjar.jarsource file="jaxrpc.jar" relpath=""/>
-            <fatjar.jarsource file="mail-1.4.jar" relpath=""/>
-            <fatjar.jarsource file="saaj.jar" relpath=""/>
-            <fatjar.jarsource file="wsdl4j-1.5.1.jar" relpath=""/>
-            <fatjar.jarsource file="org.apache.commons.logging_1.0.4.v200706111724.jar" relpath=""/>        
+            <fatjar.jarsource file="lib/activation-1.1.jar" relpath=""/>
+            <fatjar.jarsource file="lib/axis.jar" relpath=""/>
+            <fatjar.jarsource file="lib/commons-discovery-0.2.jar" relpath=""/>
+            <fatjar.jarsource file="lib/jaxrpc.jar" relpath=""/>
+            <fatjar.jarsource file="lib/mail-1.4.jar" relpath=""/>
+            <fatjar.jarsource file="lib/saaj.jar" relpath=""/>
+            <fatjar.jarsource file="lib/wsdl4j-1.5.1.jar" relpath=""/>
+            <fatjar.jarsource file="lib/org.apache.commons.logging_1.0.4.v200706111724.jar" relpath=""/>        
+        </fatjar.build>
+    </target>
+
+	<!-- Builds the SchemaStorePorters jar -->
+    <target name="buildSchemaStorePorters">
+        <fatjar.build output="SchemaStorePorters.jar">
+            <fatjar.manifest/>
+            <fatjar.filesource path="build\classes">
+				<fatjar.exclude relpath="org/mitre/schemastore/client/"/>
+				<fatjar.exclude relpath="org/mitre/schemastore/servlet/"/>
+            </fatjar.filesource>
+            <fatjar.jarsource file="lib/antlr.jar" relpath=""/>
+            <fatjar.jarsource file="lib/castor-1.2-xml.jar" relpath=""/>
+            <fatjar.jarsource file="lib/castor-1.2-xml-schema.jar" relpath=""/>
+            <fatjar.jarsource file="lib/jena.jar" relpath=""/>
+            <fatjar.jarsource file="lib/poi-3.1-FINAL-20080629.jar" relpath=""/>
         </fatjar.build>
     </target>
 	
 	<!-- Builds the SchemaStore jars -->
-    <target name="build" depends="buildSchemaStoreClient">
-    </target>	
+    <target name="build">
+    	<antcall target="buildSchemaStoreClient"/>
+    	<antcall target="buildSchemaStorePorters"/>
+   </target>	
 	
 	<!-- Cleans up the constructed jar files -->
 	<target name="clean">
 	    <delete file="SchemaStoreClient.jar"/>
+		<delete file="SchemaStorePorters.jar"/>
     </target>
 	
 </project>
