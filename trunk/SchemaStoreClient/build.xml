@@ -12,6 +12,7 @@
             <fatjar.filesource path="..\SchemaStore\build\classes">
                 <fatjar.exclude relpath="org/mitre/schemastore/data/"/>
                 <fatjar.exclude relpath="org/mitre/schemastore/servlet/"/>
+                <fatjar.exclude relpath="config.properties"/>
             </fatjar.filesource>
             <fatjar.jarsource file="lib/activation-1.1.jar" relpath=""/>
             <fatjar.jarsource file="lib/axis.jar" relpath=""/>
