@@ -39,6 +39,10 @@ public class HierarchicalGraph extends Graph
 		else model = new RelationalGraphModel(this);
 	}
 
+	/** Sets the graph model */
+	public void setModel(GraphModel model)
+		{ this.model = model; }
+	
 	/** Returns the root elements in this graph */
 	public ArrayList<SchemaElement> getRootElements()
 		{ return model.getRootElements(); }
