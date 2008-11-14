@@ -1,7 +1,14 @@
 <project name="schemastore" default="build" basedir=".">
+
+    <!-- Compiles the code -->
+	<target name="compile">
+	    <mkdir dir="build/classes"/>
+	    <javac srcdir="src" destdir="build/classes" deprecation="on" debug="on" source="1.6" target="1.6"/>
+		<copy file="src/config.properties" todir="build/classes"/>
+	</target>
 	
 	<!-- Builds the SchemaStoreModel file jar -->
-    <target name="buildSchemaStoreModelJar">
+    <target name="buildSchemaStoreModelJar" depends="compile">
         <fatjar.build output="SchemaStoreModel.jar">
             <fatjar.manifest/>
             <fatjar.filesource path="build/classes">
@@ -12,7 +19,7 @@
     </target>
 
 	<!-- Builds the SchemaStore jar file -->
-    <target name="buildSchemaStoreJar">
+    <target name="buildSchemaStoreJar" depends="compile">
         <fatjar.build output="SchemaStore.jar">
             <fatjar.manifest/>
             <fatjar.filesource path="build/classes"/>
@@ -23,7 +30,7 @@
     </target>
 
 	<!-- Builds the SchemaStore war file -->
-    <target name="buildSchemaStoreWar">
+    <target name="buildSchemaStoreWar" depends="compile">
         <fatjar.build output="SchemaStore.war">
             <fatjar.manifest/>
             <fatjar.filesource path="WebContent">
@@ -44,7 +51,8 @@
 	
 	<!-- Cleans up the constructed jar files -->
 	<target name="clean">
-	    <delete file="SchemaStoreModel.jar"/>
+	    <delete dir="build/classes"/>
+		<delete file="SchemaStoreModel.jar"/>
 	    <delete file="SchemaStore.jar"/>
 	    <delete file="SchemaStore.war"/>
     </target>

@@ -5,6 +5,7 @@ package org.mitre.schemastore.model.graph;
 import java.util.ArrayList;
 
 import org.mitre.schemastore.model.Attribute;
+import org.mitre.schemastore.model.Containment;
 import org.mitre.schemastore.model.Domain;
 import org.mitre.schemastore.model.Entity;
 import org.mitre.schemastore.model.SchemaElement;
@@ -20,16 +21,15 @@ public class RelationalGraphModel extends GraphModel
 		{ super(graph); }
 
 	/** Returns the root elements in this graph */
-	// PMORK: Do not include any entities that have a parent entity.
 	public ArrayList<SchemaElement> getRootElements()
 	{
 		ArrayList<SchemaElement> result = graph.getElements(Entity.class);
-		for (SchemaElement schemaElement : graph.getElements(Subtype.class)) {
+		for (SchemaElement schemaElement : graph.getElements(Subtype.class))
+		{
 			Subtype subtype = (Subtype)schemaElement;
 			result.remove(graph.getElement(subtype.getChildID()));
 		}
 		return result;
-//		return graph.getElements(Entity.class);
 	}
 	
 	/** Returns the parent elements of the specified element in this graph */
@@ -43,7 +43,7 @@ public class RelationalGraphModel extends GraphModel
 		if(element instanceof Attribute)
 			parentElements.add(graph.getEntity(elementID));
 		
-		// If an entity, return its sub-types as children.
+		// If an entity, return its super-types as parents.
 		if(element instanceof Entity) {
 			for (Subtype subtype : graph.getSubTypes(element.getId())) {
 				Integer parentID = subtype.getParentID();
@@ -51,6 +51,14 @@ public class RelationalGraphModel extends GraphModel
 					parentElements.add(graph.getElement(parentID));
 				}
 			}
+		}
+		
+		// If a containment, return the containing element as a parent.
+		if(element instanceof Containment)
+		{
+			Containment containment = (Containment)element;
+			Integer parentID = containment.getParentID();
+			parentElements.add(graph.getElement(parentID));
 		}
 
 		return parentElements;
@@ -62,19 +70,28 @@ public class RelationalGraphModel extends GraphModel
 	{
 		ArrayList<SchemaElement> childElements = new ArrayList<SchemaElement>();
 		
-		// If entity, return attributes as children
+		// Produce the list of children elements (only entities have children elements)
 		SchemaElement element = graph.getElement(elementID);
 		if(element instanceof Entity)
+		{
+			// Retrieve entity attributes		
 			for(Attribute value : graph.getAttributes(elementID))
 				childElements.add(value);
 
-		// If an entity, return its super-types as parents.
-		if(element instanceof Entity) {
-			for (Subtype subtype : graph.getSubTypes(element.getId())) {
+			// Retrieve subtypes as children
+			for (Subtype subtype : graph.getSubTypes(element.getId()))
+			{
 				Integer childID = subtype.getChildID();
-				if (!elementID.equals(childID)) {
+				if (!elementID.equals(childID))
 					childElements.add(graph.getElement(childID));
-				}
+			}
+
+			// Retrieve containments as children.
+			for (Containment containment : graph.getContainments(element.getId()))
+			{
+				Integer childID = containment.getChildID();
+				if (!elementID.equals(childID))
+					childElements.add(containment);
 			}
 		}
 
