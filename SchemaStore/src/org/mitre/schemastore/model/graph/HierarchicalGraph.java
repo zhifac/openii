@@ -55,6 +55,44 @@ public class HierarchicalGraph extends Graph
 	public ArrayList<SchemaElement> getChildElements(Integer elementID)
 		{ return model.getChildElements(elementID); }
 	
+	/** Returns the ancestors of the specified element in this graph */
+	private void getAncestorElements(Integer elementID, HashSet<SchemaElement> ancestors)
+	{
+		for(SchemaElement parentElement : getParentElements(elementID))
+			if(!ancestors.contains(parentElement))
+			{
+				ancestors.add(parentElement);
+				getAncestorElements(parentElement.getId(),ancestors);
+			}
+	}
+	
+	/** Returns the ancestors of the specified element in this graph */
+	public ArrayList<SchemaElement> getAncestorElements(Integer elementID)
+	{
+		HashSet<SchemaElement> ancestors = new HashSet<SchemaElement>();
+		getAncestorElements(elementID,ancestors);
+		return new ArrayList<SchemaElement>(ancestors);
+	}
+
+	/** Returns the descendants of the specified element in this graph */
+	private void getDescendantElements(Integer elementID, HashSet<SchemaElement> descendants)
+	{
+		for(SchemaElement childElement : getChildElements(elementID))
+			if(!descendants.contains(childElement))
+			{
+				descendants.add(childElement);
+				getDescendantElements(childElement.getId(),descendants);
+			}
+	}
+	
+	/** Returns the descendants of the specified element in this graph */
+	public ArrayList<SchemaElement> getDescendantElements(Integer elementID)
+	{
+		HashSet<SchemaElement> descendants = new HashSet<SchemaElement>();
+		getDescendantElements(elementID,descendants);
+		return new ArrayList<SchemaElement>(descendants);		
+	}
+	
 	/** Returns the domain of the specified element in this graph */
 	public Domain getDomainForElement(Integer elementID)
 		{ return model.getDomainForElement(elementID); }
