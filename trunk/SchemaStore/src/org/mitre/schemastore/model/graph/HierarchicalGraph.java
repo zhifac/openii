@@ -133,37 +133,41 @@ public class HierarchicalGraph extends Graph
 		return elements;
 	}
 
-	/** Returns the shortest path from the root element to the partially built path */
-	private ArrayList<SchemaElement> getPath(ArrayList<SchemaElement> partialPath)
+	/** Returns the paths from the root element to the partially built path */
+	private ArrayList<ArrayList<SchemaElement>> getPaths(ArrayList<SchemaElement> partialPath)
 	{
-		ArrayList<SchemaElement> path = null;
+		ArrayList<ArrayList<SchemaElement>> paths = new ArrayList<ArrayList<SchemaElement>>();
 		ArrayList<SchemaElement> parentElements = getParentElements(partialPath.get(0).getId());
 		
 		// Handles case where root element has been reached
 		if(parentElements.size()==0)
-			path = partialPath;
+			paths.add(new ArrayList<SchemaElement>(partialPath));
 		
 		// Handles case where root element is still deeper
 		for(SchemaElement element : parentElements)
 			if(!partialPath.contains(element))
 			{
 				partialPath.add(0,element);
-				ArrayList<SchemaElement> possPath = getPath(partialPath);
-				if(path==null || (possPath!=null && possPath.size()<path.size()))
-					path = possPath;
+				paths.addAll(getPaths(partialPath));
+				partialPath.remove(0);
 			}
-		return path;
+		return paths;
 	}
 	
-	/** Returns the shortest path from the root element to the specified element */
-	public ArrayList<SchemaElement> getPath(Integer elementID)
+	/** Returns the various paths from the root element to the specified element */
+	public ArrayList<ArrayList<SchemaElement>> getPaths(Integer elementID)
 	{
 		ArrayList<SchemaElement> partialPath = new ArrayList<SchemaElement>();
 		partialPath.add(getElement(elementID));
-		return getPath(partialPath);
+		return getPaths(partialPath);
 	}
 	
-	/** Returns the depth of the specified element in the graph */
-	public Integer getDepth(Integer element)
-		{ return getPath(element).size(); }
+	/** Returns the various depths of the specified element in the graph */
+	public ArrayList<Integer> getDepths(Integer elementID)
+	{
+		HashSet<Integer> depths = new HashSet<Integer>();
+		for(ArrayList<SchemaElement> paths : getPaths(elementID))
+			depths.add(paths.size());
+		return new ArrayList<Integer>(depths);
+	}
 }
