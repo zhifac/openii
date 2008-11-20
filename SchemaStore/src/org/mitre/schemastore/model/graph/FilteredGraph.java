@@ -23,19 +23,27 @@ public class FilteredGraph extends HierarchicalGraph implements GraphListener
 	private HashSet<Integer> filteredElements = null;
 	
 	/** Fills in the depth hash for use in identifying the filtered elements */
-	private void findFilteredElements(Integer elementID, Integer depth)
+	private void findFilteredElements(Integer elementID, ArrayList<Integer> depths)
 	{
-		// Stop filling depth hash if already above max depth
-		if(maxDepth!=null && depth>maxDepth) return;
+		// Don't proceed if not visible
+		boolean descendantsVisible = false;
+		for(Integer depth : depths)
+		{
+			if(maxDepth!=null && depth>maxDepth) continue;
+			if(minDepth==null || depth>=minDepth) filteredElements.add(elementID);
+			descendantsVisible=true;
+		}
+		if(!descendantsVisible) return;
 		
-		// Only fill in depth hash if above min depth
-		if(minDepth==null || depth>=minDepth)
-			filteredElements.add(elementID);
+		// Calculate child depths
+		ArrayList<Integer> childDepths = new ArrayList<Integer>();
+		for(Integer depth : depths)
+			childDepths.add(depth+1);
 		
 		// Proceed to fill in depth hash with child elements
 		for(SchemaElement element : getChildElements(elementID))
 			if(!filteredElements.contains(element.getId()))
-				findFilteredElements(element.getId(),depth+1);
+				findFilteredElements(element.getId(),childDepths);
 	}
 	
 	/** Generates the filtered elements */
@@ -53,8 +61,8 @@ public class FilteredGraph extends HierarchicalGraph implements GraphListener
 		filteredElements = new HashSet<Integer>();
 		for(Integer elementID : filteredRootIDs)
 		{
-			Integer depth = getDepth(elementID);
-			findFilteredElements(elementID,depth);
+			ArrayList<Integer> depths = getDepths(elementID);
+			findFilteredElements(elementID,depths);
 		}	
 	}
 	
