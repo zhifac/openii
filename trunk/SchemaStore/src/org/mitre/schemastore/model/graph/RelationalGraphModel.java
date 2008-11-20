@@ -90,7 +90,7 @@ public class RelationalGraphModel extends GraphModel
 			for (Containment containment : graph.getContainments(element.getId()))
 			{
 				Integer childID = containment.getChildID();
-				if (!elementID.equals(childID))
+				if(!elementID.equals(childID) && !containment.getName().equals(""))
 					childElements.add(containment);
 			}
 		}
