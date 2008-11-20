@@ -134,7 +134,7 @@ public class XSDImporter extends Importer
 			}
 			
 			// add containment to schema
-			Containment containment = new Containment(nextId(), "", "",
+			Containment containment = new Containment(nextId(), "", this.getDocumentation(ct),
 					null, entity.getId(), 0, 1, 0);
 			if (schemaElementsHS.containsKey(this.compString(containment)) == false) {
 				schemaElementsHS.put(this.compString(containment),containment);
@@ -203,7 +203,7 @@ public class XSDImporter extends Importer
 						if (anyDomain == null) {
 							System.out.println("[E] anyDomain is NULL");
 						}
-						Containment containment = new Containment(nextId(),"", "",
+						Containment containment = new Containment(nextId(),"", this.getDocumentation((Annotated)obj),
 								currentTypeEntity.getId(), anyDomain.getId(), 0, 1, 0);
 						if (schemaElementsHS.containsKey(this.compString(containment)) == false) {
 							schemaElementsHS.put(this.compString(containment),containment);
@@ -220,7 +220,7 @@ public class XSDImporter extends Importer
 						
 						if (childElement.isReference()){
 							// create NEW containment 
-							Containment containment = new Containment(nextId(), childElement.getName(), "",
+							Containment containment = new Containment(nextId(), childElement.getName(), this.getDocumentation(childElement),
 									currentTypeEntity.getId(), UNASSIGNED_CHILD_ID, childElement.getMinOccurs(), childElement.getMaxOccurs(), 0);
 							processContainment(containment,true);
 						
@@ -235,7 +235,7 @@ public class XSDImporter extends Importer
 								if (childElementComplexTypeEntity != null){
 									//// add containment (currentTypeEntity, childElementComplexTypeEntity)
 									Containment containment = new Containment(nextId(), childElement.getName(),
-											"", currentTypeEntity.getId(), childElementComplexTypeEntity.getId(), childElement.getMinOccurs(), childElement.getMaxOccurs(), 0);
+											this.getDocumentation(childElement), currentTypeEntity.getId(), childElementComplexTypeEntity.getId(), childElement.getMinOccurs(), childElement.getMaxOccurs(), 0);
 									if (schemaElementsHS.containsKey(this.compString(containment)) == false) {
 										schemaElementsHS.put(this.compString(containment),containment);
 										processContainment(containment,false);
@@ -253,7 +253,7 @@ public class XSDImporter extends Importer
 										this.processedComplexTypeList.put(childElementComplexTypeEntity.getName(), childElementComplexTypeEntity);
 									}
 									Containment containment = new Containment(nextId(), childElement.getName(),
-											"", currentTypeEntity.getId(), childElementComplexTypeEntity.getId(), childElement.getMinOccurs(), childElement.getMaxOccurs(), 0);
+										this.getDocumentation(childElement), currentTypeEntity.getId(), childElementComplexTypeEntity.getId(), childElement.getMinOccurs(), childElement.getMaxOccurs(), 0);
 									if (schemaElementsHS.containsKey(this.compString(containment)) == false) {
 										schemaElementsHS.put(this.compString(containment),containment);
 										processContainment(containment,false);
@@ -278,7 +278,7 @@ public class XSDImporter extends Importer
 			
 			if (element.isReference()){
 				// create NEW containment for schema to referenced element 
-				Containment containment = new Containment(nextId(), element.getName(), "",
+				Containment containment = new Containment(nextId(), element.getName(), this.getDocumentation(element),
 						null, UNASSIGNED_CHILD_ID, element.getMinOccurs(), element.getMaxOccurs(), 0);
 				processContainment(containment,true);
 			
@@ -295,7 +295,7 @@ public class XSDImporter extends Importer
 					if (complexTypeEntity != null){
 						//// add containment (schema, complexTypeEntity)
 						Containment containment = new Containment(nextId(), element.getName(), 
-								"", null, complexTypeEntity.getId(), 0, 1, 0);
+								this.getDocumentation(element), null, complexTypeEntity.getId(), 0, 1, 0);
 						if (schemaElementsHS.containsKey(this.compString(containment)) == false) {
 							schemaElementsHS.put(this.compString(containment),containment);
 							processContainment(containment,false);
@@ -313,7 +313,7 @@ public class XSDImporter extends Importer
 						}
 						//// add containment (schema, complexTypeEntity)
 						Containment containment = new Containment(nextId(), element.getName(), 
-							"", null, complexTypeEntity.getId(), 0, 1, 0);
+							this.getDocumentation(element), null, complexTypeEntity.getId(), 0, 1, 0);
 						if (schemaElementsHS.containsKey(this.compString(containment)) == false) {
 							schemaElementsHS.put(this.compString(containment),containment);
 							processContainment(containment,false);
@@ -377,7 +377,7 @@ public class XSDImporter extends Importer
 				if (obj instanceof Wildcard){
 					//// add containment to ANY domain
 					Domain anyDomain = domainList.get("Any");
-					Containment containment = new Containment(nextId(),"", "",
+					Containment containment = new Containment(nextId(),"", this.getDocumentation((Annotated)obj),
 							null, anyDomain.getId(), 0, 1, 0);
 					if (schemaElementsHS.containsKey(this.compString(containment)) == false) {
 						schemaElementsHS.put(this.compString(containment),containment);
@@ -393,7 +393,7 @@ public class XSDImporter extends Importer
 					
 					if (childElement.isReference()){
 						// create NEW containment 
-						Containment containment = new Containment(nextId(), childElement.getName(), "",
+						Containment containment = new Containment(nextId(), childElement.getName(), this.getDocumentation(childElement),
 								complexTypeEntity.getId(), UNASSIGNED_CHILD_ID, childElement.getMinOccurs(), childElement.getMaxOccurs(), 0);
 						processContainment(containment,true);
 					} else {
@@ -405,7 +405,7 @@ public class XSDImporter extends Importer
 							Entity childElementComplexTypeEntity = this.processedComplexTypeList.get(((ComplexType)childElement.getType()).getName());
 							if (childElementComplexTypeEntity != null){
 								//// add containment (if not processed before) for child of parent
-								Containment containment = new Containment(nextId(), childElement.getName(), "",
+								Containment containment = new Containment(nextId(), childElement.getName(), this.getDocumentation(childElement),
 										complexTypeEntity.getId(), childElementComplexTypeEntity.getId(), childElement.getMinOccurs(), childElement.getMaxOccurs(), 0);
 								if (schemaElementsHS.containsKey(this.compString(containment)) == false) {
 									schemaElementsHS.put(this.compString(containment),containment);
@@ -425,7 +425,7 @@ public class XSDImporter extends Importer
 									this.processedComplexTypeList.put(childElementComplexTypeEntity.getName(), childElementComplexTypeEntity);
 								}					
 								//// add containment 
-								Containment containment = new Containment(nextId(), childElement.getName(), "",
+								Containment containment = new Containment(nextId(), childElement.getName(), this.getDocumentation(childElement),
 										complexTypeEntity.getId(), childElementComplexTypeEntity.getId(), childElement.getMinOccurs(), childElement.getMaxOccurs(), 0);
 								if (schemaElementsHS.containsKey(this.compString(containment)) == false) {
 									schemaElementsHS.put(this.compString(containment),containment);
@@ -487,7 +487,7 @@ public class XSDImporter extends Importer
 		}
 	
 		//// add containment to schema
-		Containment containment = new Containment(nextId(), "", "",
+		Containment containment = new Containment(nextId(), "", this.getDocumentation(simpleType),
 				containingID, domain.getId(), 0, 1, 0);
 		if (schemaElementsHS.containsKey(this.compString(containment)) == false) {
 			schemaElementsHS.put(this.compString(containment),containment);
@@ -514,7 +514,7 @@ public class XSDImporter extends Importer
 			Domain anyDomain = domainList.get("Any");
 			
 			//// add containment to schema
-			Containment containment = new Containment(nextId(), simpleTypeElement.getName(), "",
+			Containment containment = new Containment(nextId(), simpleTypeElement.getName(), this.getDocumentation(simpleTypeElement),
 					containingID, anyDomain.getId(), 0, 1, 0);
 			if (schemaElementsHS.containsKey(this.compString(containment)) == false) {
 				schemaElementsHS.put(this.compString(containment),containment);
@@ -556,7 +556,7 @@ public class XSDImporter extends Importer
 			}
 	
 			//// add containment to schema
-			Containment containment = new Containment(nextId(), simpleTypeElement.getName(), "",
+			Containment containment = new Containment(nextId(), simpleTypeElement.getName(), this.getDocumentation(simpleTypeElement),
 				containingID, domain.getId(), 0, 1, 0);
 			if (schemaElementsHS.containsKey(this.compString(containment)) == false) {
 				schemaElementsHS.put(this.compString(containment),containment);
@@ -798,7 +798,7 @@ public class XSDImporter extends Importer
 			if (obj2 instanceof Wildcard){
 				// add containment to ANY domain
 				Domain anyDomain = domainList.get("Any");
-				Containment containment = new Containment(nextId(),"", "",
+				Containment containment = new Containment(nextId(),"", this.getDocumentation((Annotated)obj2),
 						parent.getId(), anyDomain.getId(), 0, 1, 0);
 				if (schemaElementsHS.containsKey(this.compString(containment)) == false) {
 					schemaElementsHS.put(this.compString(containment),containment);
@@ -814,7 +814,7 @@ public class XSDImporter extends Importer
 				
 				if (childElement.isReference()){
 					// create NEW containment 
-					Containment containment = new Containment(nextId(), childElement.getName(), "",
+					Containment containment = new Containment(nextId(), childElement.getName(), this.getDocumentation(childElement),
 							parent.getId(), UNASSIGNED_CHILD_ID, childElement.getMinOccurs(), childElement.getMaxOccurs(), 0);
 					processContainment(containment,true);
 				
@@ -829,7 +829,7 @@ public class XSDImporter extends Importer
 						if (childElementComplexTypeEntity != null){
 							// add containment (currentTypeEntity, childElementComplexTypeEntity)
 							Containment containment = new Containment(nextId(), childElement.getName(),
-									"", parent.getId(), childElementComplexTypeEntity.getId(), childElement.getMinOccurs(), childElement.getMaxOccurs(), 0);
+									this.getDocumentation(childElement), parent.getId(), childElementComplexTypeEntity.getId(), childElement.getMinOccurs(), childElement.getMaxOccurs(), 0);
 							if (schemaElementsHS.containsKey(this.compString(containment)) == false) {
 								schemaElementsHS.put(this.compString(containment),containment);
 								processContainment(containment,false);
@@ -847,7 +847,7 @@ public class XSDImporter extends Importer
 								this.processedComplexTypeList.put(childElementComplexTypeEntity.getName(), childElementComplexTypeEntity);
 							}
 							Containment containment = new Containment(nextId(), childElement.getName(),
-									"", parent.getId(), childElementComplexTypeEntity.getId(), childElement.getMinOccurs(), childElement.getMaxOccurs(), 0);
+									this.getDocumentation(childElement), parent.getId(), childElementComplexTypeEntity.getId(), childElement.getMinOccurs(), childElement.getMaxOccurs(), 0);
 							if (schemaElementsHS.containsKey(this.compString(containment)) == false) {
 								schemaElementsHS.put(this.compString(containment),containment);
 								processContainment(containment,false);
