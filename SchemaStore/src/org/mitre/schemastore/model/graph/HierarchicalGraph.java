@@ -157,6 +157,11 @@ public class HierarchicalGraph extends Graph
 	/** Returns the various paths from the root element to the specified element */
 	public ArrayList<ArrayList<SchemaElement>> getPaths(Integer elementID)
 	{
+		// Don't proceed if element doesn't exist in the graph
+		if(getElement(elementID)==null)
+			return new ArrayList<ArrayList<SchemaElement>>();
+		
+		// Retrieve all of the paths associated with the specified schema element
 		ArrayList<SchemaElement> partialPath = new ArrayList<SchemaElement>();
 		partialPath.add(getElement(elementID));
 		return getPaths(partialPath);
