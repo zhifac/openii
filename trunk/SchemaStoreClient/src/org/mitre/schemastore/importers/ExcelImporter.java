@@ -117,9 +117,9 @@ public class ExcelImporter extends Importer {
 	public ArrayList<String> getFileTypes()
 	{
 		ArrayList<String> filetypes = new ArrayList<String>(3);
-		filetypes.add("xls");
-		filetypes.add("csv");
-		filetypes.add("xlsx");
+		filetypes.add(".xls");
+		filetypes.add(".csv");
+		filetypes.add(".xlsx");
 		return filetypes;
 	}
 
