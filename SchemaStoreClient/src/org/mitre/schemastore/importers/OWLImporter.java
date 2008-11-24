@@ -123,7 +123,7 @@ public class OWLImporter extends Importer implements RDFErrorHandler
 		String language = "";
 		if(uri.toString().endsWith(".owl")) language = "http://www.w3.org/2002/07/owl#";
 		else if(uri.toString().endsWith(".rdf")) language = "http://www.w3.org/2000/01/rdf-schema#";
-		else if(uri.toString().endsWith("rdfs")) language = "http://www.w3.org/2000/01/rdf-schema#";
+		else if(uri.toString().endsWith(".rdfs")) language = "http://www.w3.org/2000/01/rdf-schema#";
 		
 		// Create a stream to read from and a model to read into.
 		InputStream ontologyStream = uri.toURL().openStream();
