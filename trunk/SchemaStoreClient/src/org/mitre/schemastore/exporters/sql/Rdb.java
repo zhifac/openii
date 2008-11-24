@@ -16,7 +16,7 @@ public class Rdb {
 	protected Vector<ViewReference> _viewKeys = new Vector<ViewReference>();
 	protected Vector<ReferenceValue> _refValues = new Vector<ReferenceValue> ();
 
-	private Vector<ReferenceTable> _referenceTables = new Vector<ReferenceTable>();
+	private Vector<DomainTable> _referenceTables = new Vector<DomainTable>();
 
 	public Rdb(String rdbName) {
 		_rdbName = rdbName;
@@ -199,13 +199,13 @@ public class Rdb {
 		return null;
 	}
 
-	public void addTable(ReferenceTable domainTable) {
+	public void addTable(DomainTable domainTable) {
 		if (!_relations.contains(domainTable))
 			_relations.add(domainTable);
 	}
 
-	public ReferenceTable createDomainTable(String name, boolean setDefaultPK) {
-		ReferenceTable refTbl = new ReferenceTable(this, name);
+	public DomainTable createDomainTable(String name, boolean setDefaultPK) {
+		DomainTable refTbl = new DomainTable(this, name);
 		addDomainTable(refTbl);
 		if (setDefaultPK)
 			createDefaultPK(refTbl);
@@ -218,13 +218,13 @@ public class Rdb {
 		return refTbl;
 	}
 
-	private void addDomainTable(ReferenceTable refTbl) {
+	private void addDomainTable(DomainTable refTbl) {
 		if ( !_referenceTables.contains(refTbl))
 				_referenceTables.add(refTbl);
 		addTable(refTbl);
 	}
 	
-	public Vector<ReferenceTable> getReferenceTables(){
+	public Vector<DomainTable> getReferenceTables(){
 		return _referenceTables;
 	}
 

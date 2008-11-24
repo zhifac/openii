@@ -60,7 +60,7 @@ public class SQLWriter {
 		Vector<ForeignKey> foriegnKeys = _rdb.getForeignKeys();
 		Vector<View> views = _rdb.getViews();
 		Vector<ViewReference> viewReferences = _rdb.getViewKeys();
-		Vector<ReferenceTable> refTables = _rdb.getReferenceTables();
+		Vector<DomainTable> refTables = _rdb.getReferenceTables();
 
 		_sql.append(createDB(_rdb));
 
@@ -74,9 +74,9 @@ public class SQLWriter {
 		}
 
 		// serialize domain tables and their values
-		Iterator<ReferenceTable> refItr = refTables.iterator();
+		Iterator<DomainTable> refItr = refTables.iterator();
 		while (refItr.hasNext()) {
-			ReferenceTable ref = refItr.next();
+			DomainTable ref = refItr.next();
 			ArrayList<ReferenceValue> vals = ref.getReferenceValues();
 			for (ReferenceValue val : vals)
 				_sql.append(insertReferenceValue(val));
