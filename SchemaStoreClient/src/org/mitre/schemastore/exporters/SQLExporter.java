@@ -117,9 +117,6 @@ public class SQLExporter extends Exporter {
 	}
 
 	private void mapEntityDomainContainment(Containment c, Entity parent, Domain domain) {
-		// System.err.println("E->->D " + c.getName() + " => " +
-		// parent.getName() + " -> "
-		// + domain.getName());
 		String attributeName = c.getName();
 		RdbValueType dbType;
 		try {
@@ -179,7 +176,7 @@ public class SQLExporter extends Exporter {
 
 	}
 
-	// handles special, non-simple domains.
+	// create reference tables for nonsimple domains. 
 	private void mapDomains() {
 		for (Domain domain : _domains.values()) {
 			String dName = domain.getName();
@@ -187,20 +184,19 @@ public class SQLExporter extends Exporter {
 					|| dName.equalsIgnoreCase("float") || dName.equalsIgnoreCase("Double")
 					|| dName.equalsIgnoreCase("decimal") || dName.equalsIgnoreCase("Datetime")
 					|| dName.equalsIgnoreCase("String") || dName.equalsIgnoreCase("Timestamp")
-					|| dName.equalsIgnoreCase("Boolean") || dName.equalsIgnoreCase("any"))) {
+					|| dName.equalsIgnoreCase("Boolean") )) { // TODO HANDLE ANY TYPE|| dName.equalsIgnoreCase("any"))) {
 
-				ReferenceTable domainTable = _rdb.createDomainTable(domain.getName(), true);
-
+				DomainTable domainTable = _rdb.createDomainTable(domain.getName(), true);
 				for (DomainValue dv : _domainValues.values()) {
 					if (dv.getDomainID().equals(domain.getId())) {
-						domainTable.addValue(dv.getName());
+						domainTable.addDomainValue(dv.getName());
 					}
 				}
 			}
 		}
 	}
 
-	// map a domain to a known DDL type.
+	// map simple domain to a known DDL type.
 	private RdbValueType toRdbValueType(Domain domain) {
 		if (domain.getName().equalsIgnoreCase("Integer")
 				|| domain.getName().equalsIgnoreCase("int"))
@@ -217,12 +213,17 @@ public class SQLExporter extends Exporter {
 			return RdbValueType.TIMESTAMP;
 		else if (domain.getName().equalsIgnoreCase("Boolean"))
 			return RdbValueType.BOOLEAN;
+		else if (domain.getName().equalsIgnoreCase("ID")){
+			// TODO NEED TO BE KEYED 
+			return RdbValueType.ANY;
+		}
 		else {
 			// handle complex domains type by creating a new table. Its domain
 			// values are rows
 			System.err.println(" &#($()# " + "Unhandled domain type " + domain.toString());
 			return RdbValueType.ANY;
 		}
+		
 
 	}
 
