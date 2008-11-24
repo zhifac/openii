@@ -106,14 +106,14 @@ public class OWLImporter extends Importer implements RDFErrorHandler
 	/** Handles the loading of all default domains */
 	private void loadDomains()
 	{
-		loadDomain(ANY, "The Any wildcard domain");
-		loadDomain(INTEGER, "The Integer domain");
-		loadDomain(FLOAT, "The Float domain" );
-		loadDomain(STRING, "The String domain");
-		loadDomain(BOOLEAN, "The Boolean domain");
-		loadDomain(DATETIME, "The DateTime domain");
-		loadDomain(DATE, "The Date domain");
-		loadDomain(TIME, "The Time domain");
+		loadDomain(ANY.toLowerCase(), "The Any wildcard domain");
+		loadDomain(INTEGER.toLowerCase(), "The Integer domain");
+		loadDomain(FLOAT.toLowerCase(), "The Float domain" );
+		loadDomain(STRING.toLowerCase(), "The String domain");
+		loadDomain(BOOLEAN.toLowerCase(), "The Boolean domain");
+		loadDomain(DATETIME.toLowerCase(), "The DateTime domain");
+		loadDomain(DATE.toLowerCase(), "The Date domain");
+		loadDomain(TIME.toLowerCase(), "The Time domain");
 	}
 
 	/** Initializes the ontology model */
