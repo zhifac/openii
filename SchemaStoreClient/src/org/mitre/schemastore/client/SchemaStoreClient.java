@@ -120,6 +120,13 @@ public class SchemaStoreClient
 	/** Indicates that the schema is able to be deleted from the web service */
 	public boolean isDeletable(Integer schemaID) throws RemoteException
 		{ return (Boolean)callMethod("isDeletable",new Object[] {schemaID}); }
+
+	/** Returns the list of deletable schemas from the web service */
+	public ArrayList<Integer> getDeletableSchemas() throws RemoteException
+	{
+		Integer[] schemaIDs = (Integer[])callMethod("getDeletableSchemas",new Object[] {});
+		return schemaIDs==null ? new ArrayList<Integer>() : new ArrayList<Integer>(Arrays.asList(schemaIDs));
+	}
 	
 	/** Delete the specified schema from the web service */
 	public boolean deleteSchema(Integer schemaID) throws RemoteException
