@@ -55,10 +55,13 @@
 				<fatjar.exclude relpath="org/mitre/schemastore/servlet/"/>
             </fatjar.filesource>
             <fatjar.jarsource file="lib/antlr.jar" relpath=""/>
+            <fatjar.jarsource file="lib/arq.jar" relpath=""/>
             <fatjar.jarsource file="lib/castor-1.2-xml.jar" relpath=""/>
             <fatjar.jarsource file="lib/castor-1.2-xml-schema.jar" relpath=""/>
+            <fatjar.jarsource file="lib/icu4j_3_4.jar" relpath=""/>
             <fatjar.jarsource file="lib/jena.jar" relpath=""/>
             <fatjar.jarsource file="lib/poi-3.1-FINAL-20080629.jar" relpath=""/>
+            <fatjar.jarsource file="lib/xercesImpl.jar" relpath=""/>
         </fatjar.build>
     </target>
 	
