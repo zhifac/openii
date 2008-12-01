@@ -184,6 +184,24 @@ public class Database
 		return success;
 	}
 	
+	/** Returns the list of deletable schemas */
+	static public ArrayList<Integer> getDeletableSchemas()
+	{
+		ArrayList<Integer> schemas = new ArrayList<Integer>();
+		try {
+			Statement stmt = connection.getStatement();
+			ResultSet rs = stmt.executeQuery("SELECT id FROM \"schema\" " +
+											 "EXCEPT SELECT schema_id AS id FROM data_source " +
+											 "EXCEPT SELECT schema_id AS id FROM mapping_schema " +
+											 "EXCEPT SELECT base_id AS id FROM extensions");
+			while(rs.next())
+				schemas.add(rs.getInt("id"));
+			stmt.close();
+		}
+		catch(SQLException e) { System.out.println("(E) Database:getDeletableSchemas: "+e.getMessage()); }
+		return schemas;
+	}
+	
 	/** Deletes the specified schema */
 	static public boolean deleteSchema(int schemaID)
 	{		

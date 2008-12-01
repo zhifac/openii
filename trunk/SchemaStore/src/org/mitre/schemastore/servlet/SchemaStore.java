@@ -60,7 +60,7 @@ public class SchemaStore
 	
 	/** Web service to retrieve the list of schemas */
 	public Schema[] getSchemas()
-		{ return Schemas.getSchemaList().toArray(new Schema[0]); }
+		{ return Schemas.getSchemas().toArray(new Schema[0]); }
 
 	/** Web service to retrieve the specified schema */
 	public Schema getSchema(int schemaID)
@@ -89,6 +89,10 @@ public class SchemaStore
 	/** Indicates that the schema is able to be deleted */
 	public boolean isDeletable(int schemaID)
 		{ return Schemas.isDeletable(schemaID); }
+
+	/** Get deletable schemas */
+	public Integer[] getDeletableSchemas()
+		{ return Schemas.getDeletableSchemas().toArray(new Integer[0]); }
 	
 	/** Web service to delete the specified schema */
 	public boolean deleteSchema(int schemaID)

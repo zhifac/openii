@@ -72,7 +72,7 @@ public class Groups
 	{
 		recacheAsNeeded();
 		ArrayList<Integer> unassignedSchemas = new ArrayList<Integer>();
-		for(Schema schema : Schemas.getSchemaList())
+		for(Schema schema : Schemas.getSchemas())
 			if(!schemaGroups.containsKey(schema.getId()))
 				unassignedSchemas.add(schema.getId());
 		return unassignedSchemas;

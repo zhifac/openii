@@ -11,7 +11,7 @@ import org.mitre.schemastore.model.Schema;
 public class Schemas
 {
 	/** Returns a listing of all schemas */
-	static public ArrayList<Schema> getSchemaList()
+	static public ArrayList<Schema> getSchemas()
 		{ return Database.getSchemas(); }
 	
 	/** Returns the specified schema */
@@ -62,6 +62,10 @@ public class Schemas
 		Integer mappings = Database.getSchemaMappingIDs(schemaID).size();
 		return children==0 && dataSources==0 && mappings==0;
 	}
+	
+	/** Returns the list of deletable schemas */
+	static public ArrayList<Integer> getDeletableSchemas()
+		{ return Database.getDeletableSchemas(); }
 	
 	/** Removes the specified schema */
 	static public boolean deleteSchema(Integer schemaID)
