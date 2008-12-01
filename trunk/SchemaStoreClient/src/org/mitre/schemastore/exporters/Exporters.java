@@ -60,4 +60,13 @@ public class Exporters
 				fileExporters.add(exporter);
 		return fileExporters;
 	}
+	
+	/** Returns the specified exporter */
+	public Exporter getExporter(Class<?> type)
+	{
+		for(Exporter exporter : exporters)
+			if(exporter.getClass().equals(type))
+				return exporter;
+		return null;
+	}
 }

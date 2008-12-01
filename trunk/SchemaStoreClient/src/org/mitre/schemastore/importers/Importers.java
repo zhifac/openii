@@ -64,4 +64,13 @@ public class Importers
 				fileImporters.add(importer);
 		return fileImporters;
 	}
+	
+	/** Returns the specified importer */
+	public Importer getImporter(Class<?> type)
+	{
+		for(Importer importer : importers)
+			if(importer.getClass().equals(type))
+				return importer;
+		return null;
+	}
 }
