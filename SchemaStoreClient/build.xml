@@ -19,7 +19,7 @@
        	    	<path path="lib/poi-3.1-FINAL-20080629.jar"/>
 	        </classpath>
 	    </javac>
-		<copy file="src/porters.xml" todir="build/classes"/>
+		<copy file="src/schemastore.xml" todir="build/classes"/>
 	</target>
 	
 	<!-- Builds the SchemaStoreClient jar -->
