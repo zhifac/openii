@@ -11,7 +11,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /** API for dealing with exporters */
-public class Exporters
+public class ExporterManager
 {
 	// Patterns used to extract exporter information
 	static private Pattern exportersPattern = Pattern.compile("<exporters>(.*?)</exporters>");
@@ -26,7 +26,7 @@ public class Exporters
 		// Load exporters from file
 		try {			
 			// Pull the entire file into a string
-			InputStream configStream = Exporters.class.getResourceAsStream("/porters.xml");
+			InputStream configStream = ExporterManager.class.getResourceAsStream("/schemastore.xml");
 			BufferedReader in = new BufferedReader(new InputStreamReader(configStream));
 			StringBuffer buffer = new StringBuffer("");
 			String line; while((line=in.readLine())!=null) buffer.append(line);
@@ -48,7 +48,7 @@ public class Exporters
 	}
 	
 	/** Constructs the exporters */
-	public Exporters()
+	public ExporterManager()
 		{ initializeExporters(); }
 	
 	/** Returns the list of exporters */

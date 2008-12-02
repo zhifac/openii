@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
 import org.mitre.schemastore.client.SchemaStoreClient;
 
 /** API for dealing with importers */
-public class Importers
+public class ImporterManager
 {
 	// Patterns used to extract importer information
 	static private Pattern importersPattern = Pattern.compile("<importers>(.*?)</importers>");
@@ -28,7 +28,7 @@ public class Importers
 		// Load importers from file
 		try {			
 			// Pull the entire file into a string
-			InputStream configStream = Importers.class.getResourceAsStream("/porters.xml");
+			InputStream configStream = ImporterManager.class.getResourceAsStream("/schemastore.xml");
 			BufferedReader in = new BufferedReader(new InputStreamReader(configStream));
 			StringBuffer buffer = new StringBuffer("");
 			String line; while((line=in.readLine())!=null) buffer.append(line);
@@ -52,7 +52,7 @@ public class Importers
 	}
 	
 	/** Constructs the importers */
-	public Importers(SchemaStoreClient client)
+	public ImporterManager(SchemaStoreClient client)
 		{ initializeImporters(client); }
 	
 	/** Returns the list of importers */
