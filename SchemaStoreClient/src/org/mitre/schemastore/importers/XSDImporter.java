@@ -78,7 +78,6 @@ public class XSDImporter extends Importer
 			// Preset domains and then identify entities, attributes, and relationships in this schema
 			loadDomains();
 			getRootElements();
-			System.out.println(" Done with XSDImporter:initialize()");
 		}
 		
 		catch(Exception e) { 
