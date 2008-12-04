@@ -470,7 +470,7 @@ public class XSDImporter extends Importer
 				schemaElementsHS.put(this.compString(domain), domain);
 			
 				// create a DomainValue for each value in the enumeration
-				Enumeration<?> facets = simpleType.getFacets();
+				Enumeration<?> facets = simpleType.getFacets("enumeration");
 				while (facets.hasMoreElements()) {
 					Facet facet = (Facet) facets.nextElement();
 					DomainValue domainValue = new DomainValue(nextId(), facet.getValue(), facet.getValue(), domain.getId(), 0);
@@ -539,7 +539,7 @@ public class XSDImporter extends Importer
 					schemaElementsHS.put(this.compString(domain), domain);
 				
 					// create a DomainValue for each value in the enumeration
-					Enumeration<?> facets = simpleType.getFacets();
+					Enumeration<?> facets = simpleType.getFacets("enumeration");
 					while (facets.hasMoreElements()) {
 						Facet facet = (Facet) facets.nextElement();
 						DomainValue domainValue = new DomainValue(nextId(), facet.getValue(), facet.getValue(), domain.getId(), 0);
