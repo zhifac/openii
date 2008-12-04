@@ -91,8 +91,8 @@ public class SchemaStore
 		{ return Schemas.isDeletable(schemaID); }
 
 	/** Get deletable schemas */
-	public Integer[] getDeletableSchemas()
-		{ return Schemas.getDeletableSchemas().toArray(new Integer[0]); }
+	public int[] getDeletableSchemas()
+		{ return convertArray(Schemas.getDeletableSchemas()); }
 	
 	/** Web service to delete the specified schema */
 	public boolean deleteSchema(int schemaID)
