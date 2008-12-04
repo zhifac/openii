@@ -124,8 +124,12 @@ public class SchemaStoreClient
 	/** Returns the list of deletable schemas from the web service */
 	public ArrayList<Integer> getDeletableSchemas() throws RemoteException
 	{
-		Integer[] schemaIDs = (Integer[])callMethod("getDeletableSchemas",new Object[] {});
-		return schemaIDs==null ? new ArrayList<Integer>() : new ArrayList<Integer>(Arrays.asList(schemaIDs));
+		ArrayList<Integer> deletableSchemas = new ArrayList<Integer>();
+		int[] deletableSchemaArray = (int[])callMethod("getDeletableSchemas",new Object[] {});
+		if(deletableSchemaArray!=null)
+			for(Integer deletableSchema : deletableSchemaArray)
+				deletableSchemas.add(deletableSchema);
+		return deletableSchemas;
 	}
 	
 	/** Delete the specified schema from the web service */
