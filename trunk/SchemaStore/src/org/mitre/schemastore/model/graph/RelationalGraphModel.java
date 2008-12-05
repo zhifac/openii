@@ -58,7 +58,7 @@ public class RelationalGraphModel extends GraphModel
 		{
 			Containment containment = (Containment)element;
 			Integer parentID = containment.getParentID();
-			parentElements.add(graph.getElement(parentID));
+			if(parentID!=null) parentElements.add(graph.getElement(parentID));
 		}
 
 		return parentElements;
