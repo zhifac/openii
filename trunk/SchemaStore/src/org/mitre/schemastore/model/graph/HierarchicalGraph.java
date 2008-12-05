@@ -16,9 +16,9 @@ import org.mitre.schemastore.model.SchemaElement;
 public class HierarchicalGraph extends Graph
 {
 	/** Stores the current model being used to interpret the graph */
-	private GraphModel model;
+	protected GraphModel model;
 	
-	/** Constructs the abstract graph */
+	/** Constructs the hierarchical graph */
 	public HierarchicalGraph(Graph graph)
 	{
 		super(graph);
@@ -39,6 +39,10 @@ public class HierarchicalGraph extends Graph
 		else model = new RelationalGraphModel(this);
 	}
 
+	/** Constructs the hierarchical graph with the specified model */
+	public HierarchicalGraph(Graph graph, GraphModel model)
+		{ super(graph); this.model = model; }
+	
 	/** Sets the graph model */
 	public void setModel(GraphModel model)
 		{ this.model = model; }
