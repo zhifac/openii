@@ -33,7 +33,6 @@ public class RelationalGraphModel extends GraphModel
 	}
 	
 	/** Returns the parent elements of the specified element in this graph */
-	// PMORK: Allow an entity to return a list of its parents.
 	public ArrayList<SchemaElement> getParentElements(Integer elementID)
 	{
 		ArrayList<SchemaElement> parentElements = new ArrayList<SchemaElement>();
@@ -58,14 +57,13 @@ public class RelationalGraphModel extends GraphModel
 		{
 			Containment containment = (Containment)element;
 			Integer parentID = containment.getParentID();
-			if(parentID!=null) parentElements.add(graph.getElement(parentID));
+			parentElements.add(graph.getElement(parentID));
 		}
 
 		return parentElements;
 	}
 	
 	/** Returns the children elements of the specified element in this graph */
-	// PMORK: Allow an entity to return a list of its children.
 	public ArrayList<SchemaElement> getChildElements(Integer elementID)
 	{
 		ArrayList<SchemaElement> childElements = new ArrayList<SchemaElement>();
@@ -88,11 +86,8 @@ public class RelationalGraphModel extends GraphModel
 
 			// Retrieve containments as children.
 			for (Containment containment : graph.getContainments(element.getId()))
-			{
-				Integer childID = containment.getChildID();
-				if(!elementID.equals(childID) && !containment.getName().equals(""))
+				if(elementID.equals(containment.getParentID()) && !containment.getName().equals(""))
 					childElements.add(containment);
-			}
 		}
 
 		return childElements;
@@ -102,8 +97,12 @@ public class RelationalGraphModel extends GraphModel
 	public Domain getDomainForElement(Integer elementID)
 	{
 		SchemaElement element = graph.getElement(elementID);
+		
+		// Find attribute domain values
 		if(element instanceof Attribute)
 			return (Domain)graph.getElement(((Attribute)element).getDomainID());
+
+		// Find containment domain values
 		if(element instanceof Containment)
 		{
 			Integer containmentID = ((Containment)element).getChildID();
@@ -111,6 +110,7 @@ public class RelationalGraphModel extends GraphModel
 			if(childElement instanceof Domain)
 				return (Domain)childElement;
 		}
+		
 		return null;
 	}
 
