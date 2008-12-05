@@ -90,7 +90,7 @@ CREATE TABLE mapping_cell (
     mapping_id integer,
     element1_id integer,
     element2_id integer,
-    score numeric,
+    score numeric(6,3),
     scorer character varying(50),
     validated character
 );
