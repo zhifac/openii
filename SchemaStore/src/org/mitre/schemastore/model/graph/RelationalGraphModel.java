@@ -104,6 +104,13 @@ public class RelationalGraphModel extends GraphModel
 		SchemaElement element = graph.getElement(elementID);
 		if(element instanceof Attribute)
 			return (Domain)graph.getElement(((Attribute)element).getDomainID());
+		if(element instanceof Containment)
+		{
+			Integer containmentID = ((Containment)element).getChildID();
+			SchemaElement childElement = graph.getElement(containmentID);
+			if(childElement instanceof Domain)
+				return (Domain)childElement;
+		}
 		return null;
 	}
 
@@ -111,8 +118,16 @@ public class RelationalGraphModel extends GraphModel
 	public ArrayList<SchemaElement> getElementsForDomain(Integer domainID)
 	{
 		ArrayList<SchemaElement> domainElements = new ArrayList<SchemaElement>();
+
+		// Find all attributes associated with the domain
 		for(Attribute attribute : graph.getAttributes(domainID))
 			domainElements.add(attribute);
+
+		// Find all containments associated with the domain
+		for(Containment containment : graph.getContainments(domainID))
+			if(containment.getChildID().equals(domainID))
+				domainElements.add(containment);
+		
 		return domainElements;
 	}
 }
