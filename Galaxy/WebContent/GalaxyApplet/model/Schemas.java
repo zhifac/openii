@@ -161,7 +161,7 @@ public class Schemas
 		// Retrieve graph if needed
 		if(!schemaGraphs.containsKey(schemaID))
 		{
-			HierarchicalGraph graph = new HierarchicalGraph(ServletConnection.getGraph(schemaID));
+			HierarchicalGraph graph = new HierarchicalGraph(ServletConnection.getGraph(schemaID),null);
 			schemaGraphs.put(schemaID,graph);
 			for(SchemaElement element : graph.getElements(null))
 				schemaElements.put(element.getId(), element);
