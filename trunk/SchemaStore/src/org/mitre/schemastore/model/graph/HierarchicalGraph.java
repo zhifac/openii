@@ -55,31 +55,10 @@ public class HierarchicalGraph extends Graph
 		catch(IOException e)
 			{ System.out.println("(E)HierarchicalGraph - schemastore.xml has failed to load!\n"+e.getMessage()); }
 	}
-	
-	/** Constructs the hierarchical graph */
-	public HierarchicalGraph(Graph graph)
-	{
-		super(graph);
-		
-		// Determine the makeup of the schema
-		Integer totalCount=0, domainCount=0, containmentCount=0;
-		for(SchemaElement element : getElements(null))
-		{
-			if(element instanceof Domain || element instanceof DomainValue) domainCount++;
-			if(element instanceof Containment && ((Containment)element).getName().length()>0)
-				containmentCount++;
-			totalCount++;
-		}
-		
-		// Identify which model to use
-		if(domainCount.equals(totalCount)) model = new DomainGraphModel();
-		else if(containmentCount>0) model = new ContainmentGraphModel();
-		else model = new RelationalGraphModel();
-	}
 
 	/** Constructs the hierarchical graph with the specified model */
 	public HierarchicalGraph(Graph graph, GraphModel model)
-		{ super(graph); this.model = model; }
+		{ super(graph); setModel(model); }
 	
 	/** Get the available list of graph models */
 	static public ArrayList<GraphModel> getGraphModels()
@@ -94,7 +73,27 @@ public class HierarchicalGraph extends Graph
 	
 	/** Sets the graph model */
 	public void setModel(GraphModel model)
-		{ this.model = model; }
+	{
+		// If no model given, automatically determine the default graph model
+		if(model==null)
+		{
+			// Determine the makeup of the schema
+			Integer totalCount=0, domainCount=0, containmentCount=0;
+			for(SchemaElement element : getElements(null))
+			{
+				if(element instanceof Domain || element instanceof DomainValue) domainCount++;
+				if(element instanceof Containment && ((Containment)element).getName().length()>0)
+					containmentCount++;
+				totalCount++;
+			}
+			
+			// Identify which model to use
+			if(domainCount.equals(totalCount)) model = new DomainGraphModel();
+			else if(containmentCount>0) model = new ContainmentGraphModel();
+			else model = new RelationalGraphModel();
+		}
+		this.model = model;
+	}
 	
 	/** Returns the root elements in this graph */
 	public ArrayList<SchemaElement> getRootElements()
