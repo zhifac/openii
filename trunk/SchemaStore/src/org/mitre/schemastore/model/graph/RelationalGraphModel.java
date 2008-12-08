@@ -18,7 +18,7 @@ public class RelationalGraphModel extends GraphModel
 {
 	/** Returns the graph model name */
 	public String getName()
-		{ return "Relational Model"; }
+		{ return "Relational"; }
 	
 	/** Returns the root elements in this graph */
 	public ArrayList<SchemaElement> getRootElements(HierarchicalGraph graph)
