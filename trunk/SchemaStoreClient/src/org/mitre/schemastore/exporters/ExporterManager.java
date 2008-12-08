@@ -26,7 +26,7 @@ public class ExporterManager
 		// Load exporters from file
 		try {			
 			// Pull the entire file into a string
-			InputStream configStream = ExporterManager.class.getResourceAsStream("/schemastore.xml");
+			InputStream configStream = ExporterManager.class.getResourceAsStream("/schemastoreclient.xml");
 			BufferedReader in = new BufferedReader(new InputStreamReader(configStream));
 			StringBuffer buffer = new StringBuffer("");
 			String line; while((line=in.readLine())!=null) buffer.append(line);
