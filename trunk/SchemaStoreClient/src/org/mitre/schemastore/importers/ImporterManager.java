@@ -48,7 +48,7 @@ public class ImporterManager
 			}
 		}
 		catch(IOException e)
-			{ System.out.println("(E)Importers - config.xml has failed to load!\n"+e.getMessage()); }
+			{ System.out.println("(E)Importers - schemastoreclient.xml has failed to load!\n"+e.getMessage()); }
 	}
 	
 	/** Constructs the importers */

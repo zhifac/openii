@@ -44,7 +44,7 @@ public class ExporterManager
 			}
 		}
 		catch(IOException e)
-			{ System.out.println("(E)Exporters - config.xml has failed to load!\n"+e.getMessage()); }
+			{ System.out.println("(E)Exporters - schemastoreclient.xml has failed to load!\n"+e.getMessage()); }
 	}
 	
 	/** Constructs the exporters */
