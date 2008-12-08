@@ -4,7 +4,7 @@
 	<target name="compile">
 	    <mkdir dir="build/classes"/>
 	    <javac srcdir="src" destdir="build/classes" deprecation="on" debug="on" source="1.6" target="1.6"/>
-		<copy file="src/config.properties" todir="build/classes"/>
+		<copy file="src/schemastore.xml" todir="build/classes"/>
 		<copy file="src/org/mitre/schemastore/data/database/SchemaStoreData.txt" todir="build/classes/org/mitre/schemastore/data/database"/>
 		<copy file="src/org/mitre/schemastore/data/database/SchemaStoreStructure.txt" todir="build/classes/org/mitre/schemastore/data/database"/>
 	</target>
