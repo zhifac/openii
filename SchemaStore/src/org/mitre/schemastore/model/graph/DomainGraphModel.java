@@ -15,7 +15,7 @@ public class DomainGraphModel extends GraphModel
 {
 	/** Returns the graph model name */
 	public String getName()
-		{ return "Domain Model"; }
+		{ return "Domain"; }
 	
 	/** Returns the root elements in this graph */
 	public ArrayList<SchemaElement> getRootElements(HierarchicalGraph graph)
