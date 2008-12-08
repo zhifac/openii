@@ -11,7 +11,7 @@ import org.mitre.schemastore.model.SchemaElement;
 /**
  *  Class for displaying containment hierarchy
  */
-public class ContainmentGraphModel implements GraphModel
+public class ContainmentGraphModel extends GraphModel
 {
 	/** Returns the graph model name */
 	public String getName()

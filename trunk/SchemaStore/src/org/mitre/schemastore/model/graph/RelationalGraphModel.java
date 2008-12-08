@@ -14,7 +14,7 @@ import org.mitre.schemastore.model.Subtype;
 /**
  *  Class for displaying relationship hierarchy
  */
-public class RelationalGraphModel implements GraphModel
+public class RelationalGraphModel extends GraphModel
 {
 	/** Returns the graph model name */
 	public String getName()

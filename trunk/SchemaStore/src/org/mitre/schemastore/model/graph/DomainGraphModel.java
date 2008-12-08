@@ -11,7 +11,7 @@ import org.mitre.schemastore.model.SchemaElement;
 /**
  *  Class for displaying domain hierarchy
  */
-public class DomainGraphModel implements GraphModel
+public class DomainGraphModel extends GraphModel
 {
 	/** Returns the graph model name */
 	public String getName()
