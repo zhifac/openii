@@ -14,14 +14,14 @@ import org.mitre.schemastore.model.Subtype;
 /**
  *  Class for displaying relationship hierarchy
  */
-public class RelationalGraphModel extends GraphModel
+public class RelationalGraphModel implements GraphModel
 {
-	/** Constructs the relational graph */
-	public RelationalGraphModel(HierarchicalGraph graph)
-		{ super(graph); }
-
+	/** Returns the graph model name */
+	public String getName()
+		{ return "Relational Model"; }
+	
 	/** Returns the root elements in this graph */
-	public ArrayList<SchemaElement> getRootElements()
+	public ArrayList<SchemaElement> getRootElements(HierarchicalGraph graph)
 	{
 		ArrayList<SchemaElement> result = graph.getElements(Entity.class);
 		for (SchemaElement schemaElement : graph.getElements(Subtype.class))
@@ -33,7 +33,7 @@ public class RelationalGraphModel extends GraphModel
 	}
 	
 	/** Returns the parent elements of the specified element in this graph */
-	public ArrayList<SchemaElement> getParentElements(Integer elementID)
+	public ArrayList<SchemaElement> getParentElements(HierarchicalGraph graph, Integer elementID)
 	{
 		ArrayList<SchemaElement> parentElements = new ArrayList<SchemaElement>();
 		
@@ -64,7 +64,7 @@ public class RelationalGraphModel extends GraphModel
 	}
 	
 	/** Returns the children elements of the specified element in this graph */
-	public ArrayList<SchemaElement> getChildElements(Integer elementID)
+	public ArrayList<SchemaElement> getChildElements(HierarchicalGraph graph, Integer elementID)
 	{
 		ArrayList<SchemaElement> childElements = new ArrayList<SchemaElement>();
 		
@@ -94,7 +94,7 @@ public class RelationalGraphModel extends GraphModel
 	}
 	
 	/** Returns the domains of the specified element in this graph */
-	public Domain getDomainForElement(Integer elementID)
+	public Domain getDomainForElement(HierarchicalGraph graph, Integer elementID)
 	{
 		SchemaElement element = graph.getElement(elementID);
 		
@@ -115,7 +115,7 @@ public class RelationalGraphModel extends GraphModel
 	}
 
 	/** Returns the elements referenced by the specified domain */
-	public ArrayList<SchemaElement> getElementsForDomain(Integer domainID)
+	public ArrayList<SchemaElement> getElementsForDomain(HierarchicalGraph graph, Integer domainID)
 	{
 		ArrayList<SchemaElement> domainElements = new ArrayList<SchemaElement>();
 

@@ -68,7 +68,7 @@ public class FilteredGraph extends HierarchicalGraph implements GraphListener
 	
 	/** Constructs the filtered graph */
 	public FilteredGraph(HierarchicalGraph graph)
-		{ super(graph,graph.model); }
+		{ super(graph,graph.getModel()); }
 	
 	/** Sets the filtered root */
 	public void setFilteredRoot(Integer filteredRoot)
