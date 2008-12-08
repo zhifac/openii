@@ -1,0 +1,13 @@
+<tools>
+  <graphModels>
+    <graphModel>org.mitre.schemastore.model.graph.ContainmentGraphModel</graphModel>
+    <graphModel>org.mitre.schemastore.model.graph.RelationalGraphModel</graphModel>
+    <graphModel>org.mitre.schemastore.model.graph.DomainGraphModel</graphModel>
+  </graphModels>
+</tools>
+<config>
+  <databaseServer>brainsrv2</databaseServer>
+  <databaseName>schemastore</databaseName>
+  <databaseUser>postgres</databaseUser>
+  <databasePassword>postgres</databasePassword>
+</config>

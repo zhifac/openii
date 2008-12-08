@@ -10,7 +10,6 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Properties;
 
 /**
  * Handles the connection to the database
@@ -100,20 +99,16 @@ public class DBConnection
 		try {
 			if(connection==null)
 			{
-				// Retrieve the configuration properties
-				Properties properties = new Properties();
-				properties.load(getClass().getResourceAsStream("/config.properties"));
-				
-				// Get environment variables
-	    		String server = properties.getProperty("dbServer");
-	    		String database = properties.getProperty("dbDatabase");
-	    		String username = properties.getProperty("dbUsername");
-	    		String password = properties.getProperty("dbPassword");
+				// Get database properties
+	    		String server = DatabaseProperties.getServer();
+	    		String name = DatabaseProperties.getName();
+	    		String username = DatabaseProperties.getUser();
+	    		String password = DatabaseProperties.getPassword();
 				
 				// Connect to the database
 	    		boolean useDerby = server.equals("");
     			Class.forName(useDerby ? "org.apache.derby.jdbc.EmbeddedDriver" : "org.postgresql.Driver");
-	    		String dbURL = useDerby ? "jdbc:derby:"+database+";create=true" : "jdbc:postgresql://"+server+":5432/"+database;
+	    		String dbURL = useDerby ? "jdbc:derby:"+name+";create=true" : "jdbc:postgresql://"+server+":5432/"+name;
     			connection = DriverManager.getConnection(dbURL,username,password);
 	    		connection.setAutoCommit(false);
 

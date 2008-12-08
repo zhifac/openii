@@ -11,18 +11,18 @@ import org.mitre.schemastore.model.SchemaElement;
 /**
  *  Class for displaying domain hierarchy
  */
-public class DomainGraphModel extends GraphModel
+public class DomainGraphModel implements GraphModel
 {
-	/** Constructs the domain graph */
-	public DomainGraphModel(HierarchicalGraph graph)
-		{ super(graph); }
-
+	/** Returns the graph model name */
+	public String getName()
+		{ return "Domain Model"; }
+	
 	/** Returns the root elements in this graph */
-	public ArrayList<SchemaElement> getRootElements()
+	public ArrayList<SchemaElement> getRootElements(HierarchicalGraph graph)
 		{ return graph.getElements(Domain.class); }
 	
 	/** Returns the parent elements of the specified element in this graph */
-	public ArrayList<SchemaElement> getParentElements(Integer elementID)
+	public ArrayList<SchemaElement> getParentElements(HierarchicalGraph graph, Integer elementID)
 	{
 		ArrayList<SchemaElement> parentElements = new ArrayList<SchemaElement>();
 		
@@ -35,7 +35,7 @@ public class DomainGraphModel extends GraphModel
 	}
 	
 	/** Returns the children elements of the specified element in this graph */
-	public ArrayList<SchemaElement> getChildElements(Integer elementID)
+	public ArrayList<SchemaElement> getChildElements(HierarchicalGraph graph, Integer elementID)
 	{
 		ArrayList<SchemaElement> childElements = new ArrayList<SchemaElement>();
 		
@@ -49,10 +49,10 @@ public class DomainGraphModel extends GraphModel
 	}
 	
 	/** Returns the domains of the specified element in this graph */
-	public Domain getDomainForElement(Integer elementID)
+	public Domain getDomainForElement(HierarchicalGraph graph, Integer elementID)
 		{ return null; }
 	
 	/** Returns the elements referenced by the specified domain */
-	public ArrayList<SchemaElement> getElementsForDomain(Integer domainID)
+	public ArrayList<SchemaElement> getElementsForDomain(HierarchicalGraph graph, Integer domainID)
 		{ return new ArrayList<SchemaElement>(); }
 }

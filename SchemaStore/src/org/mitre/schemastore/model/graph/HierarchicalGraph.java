@@ -2,8 +2,14 @@
 
 package org.mitre.schemastore.model.graph;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.mitre.schemastore.model.Containment;
 import org.mitre.schemastore.model.Domain;
@@ -15,8 +21,40 @@ import org.mitre.schemastore.model.SchemaElement;
  */
 public class HierarchicalGraph extends Graph
 {
+	// Pattern used to extract graph models
+	static private Pattern graphModelPattern = Pattern.compile("<graphModel>(.*?)</graphModel>");
+	
+	/** Stores the list of available graph models */
+	static private ArrayList<GraphModel> graphModels = null;
+	
 	/** Stores the current model being used to interpret the graph */
-	protected GraphModel model;
+	private GraphModel model;
+	
+	/** Initializes the graph models */
+	static private void initGraphModels()
+	{
+		graphModels = new ArrayList<GraphModel>();
+		
+		// Retrieve graph models from file
+		try {			
+			// Pull the entire file into a string
+			InputStream configStream = HierarchicalGraph.class.getResourceAsStream("/schemastore.xml");
+			BufferedReader in = new BufferedReader(new InputStreamReader(configStream));
+			StringBuffer buffer = new StringBuffer("");
+			String line; while((line=in.readLine())!=null) buffer.append(line);
+			in.close();
+			
+			// Parse out the graph models
+			Matcher graphModelMatcher = graphModelPattern.matcher(buffer);
+			while(graphModelMatcher.find())
+				try {
+					GraphModel graphModel = (GraphModel)Class.forName(graphModelMatcher.group(1)).newInstance();
+					graphModels.add(graphModel);
+				} catch(Exception e) { System.out.println(e.getMessage()); }
+		}
+		catch(IOException e)
+			{ System.out.println("(E)HierarchicalGraph - schemastore.xml has failed to load!\n"+e.getMessage()); }
+	}
 	
 	/** Constructs the hierarchical graph */
 	public HierarchicalGraph(Graph graph)
@@ -34,14 +72,25 @@ public class HierarchicalGraph extends Graph
 		}
 		
 		// Identify which model to use
-		if(domainCount.equals(totalCount)) model = new DomainGraphModel(this);
-		else if(containmentCount>0) model = new ContainmentGraphModel(this);
-		else model = new RelationalGraphModel(this);
+		if(domainCount.equals(totalCount)) model = new DomainGraphModel();
+		else if(containmentCount>0) model = new ContainmentGraphModel();
+		else model = new RelationalGraphModel();
 	}
 
 	/** Constructs the hierarchical graph with the specified model */
 	public HierarchicalGraph(Graph graph, GraphModel model)
 		{ super(graph); this.model = model; }
+	
+	/** Get the available list of graph models */
+	static public ArrayList<GraphModel> getGraphModels()
+	{
+		if(graphModels==null) initGraphModels();
+		return graphModels;
+	}
+	
+	/** Get the current graph model */
+	public GraphModel getModel()
+		{ return model; }
 	
 	/** Sets the graph model */
 	public void setModel(GraphModel model)
@@ -49,15 +98,15 @@ public class HierarchicalGraph extends Graph
 	
 	/** Returns the root elements in this graph */
 	public ArrayList<SchemaElement> getRootElements()
-		{ return model.getRootElements(); }
+		{ return model.getRootElements(this); }
 	
 	/** Returns the parent elements of the specified element in this graph */
 	public ArrayList<SchemaElement> getParentElements(Integer elementID)
-		{ return model.getParentElements(elementID); }
+		{ return model.getParentElements(this,elementID); }
 	
 	/** Returns the children elements of the specified element in this graph */
 	public ArrayList<SchemaElement> getChildElements(Integer elementID)
-		{ return model.getChildElements(elementID); }
+		{ return model.getChildElements(this,elementID); }
 	
 	/** Returns the ancestors of the specified element in this graph */
 	private void getAncestorElements(Integer elementID, HashSet<SchemaElement> ancestors)
@@ -99,11 +148,11 @@ public class HierarchicalGraph extends Graph
 	
 	/** Returns the domain of the specified element in this graph */
 	public Domain getDomainForElement(Integer elementID)
-		{ return model.getDomainForElement(elementID); }
+		{ return model.getDomainForElement(this,elementID); }
 
 	/** Returns the elements referenced by the specified domain */
 	public ArrayList<SchemaElement> getElementsForDomain(Integer domainID)
-		{ return model.getElementsForDomain(domainID); }
+		{ return model.getElementsForDomain(this,domainID); }
 	
 	/** Returns the domain values associated with the specified element in this graph */
 	public ArrayList<DomainValue> getDomainValuesForElement(Integer elementID)

@@ -8,29 +8,25 @@ import org.mitre.schemastore.model.Domain;
 import org.mitre.schemastore.model.SchemaElement;
 
 /**
- * Abstract class for representing the graph model
+ * Interface for representing the graph model
  */
-abstract public class GraphModel
+public interface GraphModel
 {
-	/** Stores a reference to the graph being modeled */
-	protected HierarchicalGraph graph;
-	
-	/** Constructs the graph model */
-	public GraphModel(HierarchicalGraph graph)
-		{ this.graph = graph; }
+	/** Returns the name of the graph model */
+	public String getName();
 	
 	/** Returns the root elements in this graph */
-	abstract public ArrayList<SchemaElement> getRootElements();
+	public ArrayList<SchemaElement> getRootElements(HierarchicalGraph graph);
 	
 	/** Returns the parent elements of the specified element in this graph */
-	abstract public ArrayList<SchemaElement> getParentElements(Integer elementID);
+	public ArrayList<SchemaElement> getParentElements(HierarchicalGraph graph, Integer elementID);
 	
 	/** Returns the children elements of the specified element in this graph */
-	abstract public ArrayList<SchemaElement> getChildElements(Integer elementID);
+	public ArrayList<SchemaElement> getChildElements(HierarchicalGraph graph, Integer elementID);
 	
 	/** Returns the domain of the specified element in this graph */
-	abstract public Domain getDomainForElement(Integer elementID);
+	public Domain getDomainForElement(HierarchicalGraph graph, Integer elementID);
 
 	/** Returns the elements referenced by the specified domain */
-	abstract public ArrayList<SchemaElement> getElementsForDomain(Integer domainID);
+	public ArrayList<SchemaElement> getElementsForDomain(HierarchicalGraph graph, Integer domainID);
 }
