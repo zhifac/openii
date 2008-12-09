@@ -43,7 +43,7 @@ public class SchemaElement implements Serializable
 	// Handles all schema element setters
 	public void setId(Integer id) { this.id = id; }
 	public void setName(String name) { this.name = name==null ? "" : name; }
-	public void setDescription(String description) { this.description = description; }
+	public void setDescription(String description) { this.description = description==null ? "" : description; }
 	public void setBase(Integer base) { this.base = base; }
 	
 	/** Generates a hash code for the match */
