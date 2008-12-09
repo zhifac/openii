@@ -18,7 +18,7 @@ CREATE TABLE annotation (
 CREATE TABLE attribute (
 	id integer NOT NULL,
 	name character varying(50) NOT NULL,
-	description character varying(200),
+	description character varying(500),
 	entity_id integer NOT NULL,
 	domain_id integer NOT NULL,
 	"min" integer,
@@ -30,7 +30,7 @@ CREATE TABLE attribute (
 CREATE TABLE containment (
 	id integer NOT NULL,
     name character varying(50),
-    description character varying(200),
+    description character varying(500),
 	parent_id integer,
 	child_id integer NOT NULL,
     "min" integer,
@@ -48,14 +48,14 @@ CREATE TABLE data_source (
 CREATE TABLE "domain" (
     id integer NOT NULL,
     name character varying(50) NOT NULL,
-    description character varying(200),
+    description character varying(500),
 	schema_id integer
 );
 
 CREATE TABLE domainvalue (
     id integer NOT NULL,
     value character varying(50) NOT NULL,
-    description character varying(200),
+    description character varying(500),
     domain_id integer NOT NULL,
     schema_id integer NOT NULL
 );
@@ -63,7 +63,7 @@ CREATE TABLE domainvalue (
 CREATE TABLE entity (
     id integer NOT NULL,
     name character varying(50) NOT NULL,
-    description character varying(200),
+    description character varying(500),
     schema_id integer NOT NULL
 );
 
@@ -82,7 +82,7 @@ CREATE TABLE mapping (
     id integer NOT NULL,
     name character varying(50),
     author character varying(50),
-    description character varying(200)
+    description character varying(500)
 );
 
 CREATE TABLE mapping_cell (
@@ -118,7 +118,7 @@ CREATE TABLE "schema" (
     author character varying(50),
     source character varying(200),
     "type" character varying(50),
-    description character varying(200),
+    description character varying(500),
     locked character NOT NULL
 );
 
