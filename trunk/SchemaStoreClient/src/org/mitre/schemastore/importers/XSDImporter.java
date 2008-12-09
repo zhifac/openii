@@ -109,7 +109,7 @@ public class XSDImporter extends Importer
 		while (simpleTypes.hasMoreElements()) {
 			
 			// Translate each Simple Type to a domain
-			processSimpleType((SimpleType) simpleTypes.nextElement(),null);
+			processSimpleType((SimpleType) simpleTypes.nextElement());
 			
 		} // while (simpleTypes.hasMoreElements()){
 		
@@ -119,12 +119,12 @@ public class XSDImporter extends Importer
 		////////////////////////////////////////////////////////
 
 		// Each complexType should be translated to an Entity
-		Enumeration complexTypeNames = xmlSchema.getComplexTypes();
+		Enumeration complexTypes = xmlSchema.getComplexTypes();
 		Entity currentTypeEntity = null;
 		
 		// create list with all top-level complex types
-		while (complexTypeNames.hasMoreElements()) {
-			ComplexType ct = (ComplexType) complexTypeNames.nextElement();
+		while (complexTypes.hasMoreElements()) {
+			ComplexType ct = (ComplexType) complexTypes.nextElement();
 			Entity entity = new Entity(nextId(), ct.getName().toString(), 
 					this.getDocumentation(ct), 0);
 			if (schemaElementsHS.containsKey(this.compString(entity)) == false) {
@@ -132,8 +132,8 @@ public class XSDImporter extends Importer
 				processedComplexTypeList.put(entity.getName(), entity);
 			}
 			
-			// add containment to schema
-			Containment containment = new Containment(nextId(), "", this.getDocumentation(ct),
+			// add containment to schema -- NO DOCUMENTATION for generated containments
+			Containment containment = new Containment(nextId(), "", "",
 					null, entity.getId(), 0, 1, 0);
 			if (schemaElementsHS.containsKey(this.compString(containment)) == false) {
 				schemaElementsHS.put(this.compString(containment),containment);
@@ -142,11 +142,11 @@ public class XSDImporter extends Importer
 		}
 
 		// process complex types
-		complexTypeNames = xmlSchema.getComplexTypes();
-		while (complexTypeNames.hasMoreElements()){ 
+		complexTypes = xmlSchema.getComplexTypes();
+		while (complexTypes.hasMoreElements()){ 
 			
 			// get entity for current complexType
-			ComplexType currComplexType = (ComplexType)complexTypeNames.nextElement();
+			ComplexType currComplexType = (ComplexType)complexTypes.nextElement();
 			currentTypeEntity = processedComplexTypeList.get(currComplexType.getName().toString());
 			
 			// find parent type (if it exists)
@@ -173,13 +173,12 @@ public class XSDImporter extends Importer
 				// obtain the proper domain from the preset list
 				Domain domain = domainList.get(type);
 				if (domain == null) {
-					domain = new Domain(nextId(), type, "The " + type + " domain", 0);
+					domain = new Domain(nextId(), type, this.getDocumentation(simpleType), 0);
 					if (schemaElementsHS.containsKey(this.compString(domain)) == false) {
 						schemaElementsHS.put(this.compString(domain),domain);
 						domainList.put(type, domain);
-					//	System.out.println("adding " + domain.getName() + ", " + domain.getId());
 					}
-				} // if (domain == null) {
+				} 
 
 				Attribute attribute = new Attribute(nextId(), attr.getName(), getDocumentation(attr), currentTypeEntity.getId(),domain.getId(), 1,1,false,0);
 				if (schemaElementsHS.containsKey(this.compString(attribute)) == false) {
@@ -244,10 +243,10 @@ public class XSDImporter extends Importer
 									// add entity for complex type
 									String childElementComplexTypeName = childElementType.getName();
 									if ((childElementComplexTypeName == null) ||(childElementComplexTypeName.length() == 0)){
-										childElementComplexTypeEntity = new Entity(nextId(), "", this.getDocumentation(childElement), 0);	
+										childElementComplexTypeEntity = new Entity(nextId(), "", this.getDocumentation(childElementType), 0);	
 										schemaElementsHS.put(this.compString(childElementComplexTypeEntity), childElementComplexTypeEntity);
 									} else {
-										childElementComplexTypeEntity = new Entity(nextId(), childElementComplexTypeName, this.getDocumentation(childElement), 0);
+										childElementComplexTypeEntity = new Entity(nextId(), childElementComplexTypeName, this.getDocumentation(childElementType), 0);
 										schemaElementsHS.put(this.compString(childElementComplexTypeEntity), childElementComplexTypeEntity);
 										this.processedComplexTypeList.put(childElementComplexTypeEntity.getName(), childElementComplexTypeEntity);
 									}
@@ -303,10 +302,10 @@ public class XSDImporter extends Importer
 					else { 
 						String name = ((ComplexType)element.getType()).getName();
 						if ((name == null) || (name.length() == 0)){
-							complexTypeEntity = new Entity(nextId(), "", this.getDocumentation(element), 0);
+							complexTypeEntity = new Entity(nextId(), "", this.getDocumentation(element.getType()), 0);
 							this.schemaElementsHS.put(this.compString(complexTypeEntity), complexTypeEntity);
 						} else {
-							complexTypeEntity = new Entity(nextId(), name, this.getDocumentation(element), 0);
+							complexTypeEntity = new Entity(nextId(), name, this.getDocumentation(element.getType()), 0);
 							this.schemaElementsHS.put(this.compString(complexTypeEntity), complexTypeEntity);
 							this.processedComplexTypeList.put(complexTypeEntity.getName(), complexTypeEntity);
 						}
@@ -345,7 +344,7 @@ public class XSDImporter extends Importer
 			// obtain the proper domain from the preset list
 			Domain domain = domainList.get(type);
 			if (domain == null) {
-				domain = new Domain(nextId(), type, "The " + type + " domain", 0);
+				domain = new Domain(nextId(), type, this.getDocumentation(simpleType), 0);
 				if (schemaElementsHS.containsKey(this.compString(domain)) == false) {
 					schemaElementsHS.put(this.compString(domain),domain);
 					domainList.put(type, domain);
@@ -416,10 +415,10 @@ public class XSDImporter extends Importer
 								// add entity for complex type
 								String childElementComplexTypeName = childElementType.getName();
 								if ((childElementComplexTypeName == null) ||(childElementComplexTypeName.length() == 0)){
-									childElementComplexTypeEntity = new Entity(nextId(), "", this.getDocumentation(childElement), 0);
+									childElementComplexTypeEntity = new Entity(nextId(), "", this.getDocumentation(childElementType), 0);
 									schemaElementsHS.put(this.compString(childElementComplexTypeEntity), childElementComplexTypeEntity);
 								} else {
-									childElementComplexTypeEntity = new Entity(nextId(), childElementComplexTypeName, this.getDocumentation(childElement), 0);
+									childElementComplexTypeEntity = new Entity(nextId(), childElementComplexTypeName, this.getDocumentation(childElementType), 0);
 									schemaElementsHS.put(this.compString(childElementComplexTypeEntity), childElementComplexTypeEntity);
 									this.processedComplexTypeList.put(childElementComplexTypeEntity.getName(), childElementComplexTypeEntity);
 								}					
@@ -453,7 +452,7 @@ public class XSDImporter extends Importer
 	 * @param simpleType SimpleType to be processed
 	 *  
 	 *************************************************************************/
-	void processSimpleType (SimpleType simpleType, Integer containingID){
+	void processSimpleType (SimpleType simpleType){
 
 		// assign the default type of String
 		String type = "String";
@@ -465,7 +464,7 @@ public class XSDImporter extends Importer
 		if (domain == null) {
 			
 			// turn simpleType into domain
-			domain = new Domain(nextId(), type, "The " + type + " domain", 0);
+			domain = new Domain(nextId(), type, this.getDocumentation(simpleType), 0);
 			if (schemaElementsHS.containsKey(this.compString(domain)) == false) {
 				schemaElementsHS.put(this.compString(domain), domain);
 			
@@ -486,8 +485,8 @@ public class XSDImporter extends Importer
 		}
 	
 		//// add containment to schema
-		Containment containment = new Containment(nextId(), "", this.getDocumentation(simpleType),
-				containingID, domain.getId(), 0, 1, 0);
+		Containment containment = new Containment(nextId(), "", "",
+				null, domain.getId(), 0, 1, 0);
 		if (schemaElementsHS.containsKey(this.compString(containment)) == false) {
 			schemaElementsHS.put(this.compString(containment),containment);
 			processContainment(containment, false);
@@ -534,7 +533,7 @@ public class XSDImporter extends Importer
 			if (domain == null) {
 				// turn simpleType into domain
 				
-				domain = new Domain(nextId(), type, "The " + type + " domain", 0);
+				domain = new Domain(nextId(), type, this.getDocumentation(simpleType), 0);
 				if (schemaElementsHS.containsKey(this.compString(domain)) == false) {
 					schemaElementsHS.put(this.compString(domain), domain);
 				
@@ -573,15 +572,21 @@ public class XSDImporter extends Importer
 	/**
 	 * @return The documentation associated with the specified element
 	 */
+	
 	private String getDocumentation(Annotated element) {
+		
 		StringBuffer documentation = new StringBuffer("");
+	
 		documentation.append(appendDocumentation(element));
-		if (element instanceof ElementDecl)
-			documentation.append(appendDocumentation(((ElementDecl) element)
-					.getType()));
-		if (element instanceof AttributeDecl)
-			documentation.append(appendDocumentation(((AttributeDecl) element)
-					.getSimpleType()));
+		
+	//	if (element instanceof ElementDecl)
+	//		documentation.append(" " + appendDocumentation(((ElementDecl) element)
+	//				.getType()));
+	//	if (element instanceof AttributeDecl)
+	//		documentation.append(" " + appendDocumentation(((AttributeDecl) element)
+	//				.getSimpleType()));
+		
+		
 		return documentation.toString();
 	}
 
@@ -838,10 +843,10 @@ public class XSDImporter extends Importer
 							// add entity for complex type
 							String childElementComplexTypeName = childElementType.getName();
 							if ((childElementComplexTypeName == null) ||(childElementComplexTypeName.length() == 0)){
-								childElementComplexTypeEntity = new Entity(nextId(), "", this.getDocumentation(childElement), 0);	
+								childElementComplexTypeEntity = new Entity(nextId(), "", this.getDocumentation(childElementType), 0);	
 								schemaElementsHS.put(this.compString(childElementComplexTypeEntity), childElementComplexTypeEntity);
 							} else {
-								childElementComplexTypeEntity = new Entity(nextId(), childElementComplexTypeName, this.getDocumentation(childElement), 0);
+								childElementComplexTypeEntity = new Entity(nextId(), childElementComplexTypeName, this.getDocumentation(childElementType), 0);
 								schemaElementsHS.put(this.compString(childElementComplexTypeEntity), childElementComplexTypeEntity);
 								this.processedComplexTypeList.put(childElementComplexTypeEntity.getName(), childElementComplexTypeEntity);
 							}
@@ -858,5 +863,4 @@ public class XSDImporter extends Importer
 			} // end else if 
 		}
 	} // end method processGroup
-
 } // end class
