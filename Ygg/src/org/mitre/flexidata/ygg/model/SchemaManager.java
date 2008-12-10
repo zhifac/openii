@@ -6,9 +6,9 @@ import java.net.URI;
 import java.util.ArrayList;
 
 import org.mitre.schemastore.exporters.Exporter;
-import org.mitre.schemastore.exporters.Exporters;
+import org.mitre.schemastore.exporters.ExporterManager;
 import org.mitre.schemastore.importers.Importer;
-import org.mitre.schemastore.importers.Importers;
+import org.mitre.schemastore.importers.ImporterManager;
 import org.mitre.schemastore.model.DataSource;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.graph.Graph;
@@ -31,7 +31,7 @@ public class SchemaManager
 	static public ArrayList<Importer> getImporters()
 	{
 		ArrayList<Importer> importers = new ArrayList<Importer>();
-		try { importers = new Importers(SchemaStore.getClient()).getImporters(null); } catch(Exception e) {}
+		try { importers = new ImporterManager(SchemaStore.getClient()).getImporters(null); } catch(Exception e) {}
 		return importers;
 	}
 	
@@ -39,7 +39,7 @@ public class SchemaManager
 	static public ArrayList<Exporter> getExporters()
 	{
 		ArrayList<Exporter> exporters = new ArrayList<Exporter>();
-		try { exporters = new Exporters().getExporters(null); } catch(Exception e) {}
+		try { exporters = new ExporterManager().getExporters(null); } catch(Exception e) {}
 		return exporters;
 	}
 	
