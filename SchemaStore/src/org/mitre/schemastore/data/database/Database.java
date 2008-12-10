@@ -89,8 +89,15 @@ public class Database
 	}
 	
 	/** Scrub strings to avoid database errors */
-	static private String scrub(String word)
-		{ return word==null ? null : word.replace("'","''"); }
+	static private String scrub(String word, int length)
+	{
+		if(word!=null)
+		{
+			word = word.replace("'","''");
+			if(word.length()>length) word = word.substring(0,length);
+		}
+		return word;
+	}
 	
 	//---------------------------------
 	// Handles Schemas in the Database 
@@ -131,7 +138,7 @@ public class Database
 		try {
 			int schemaID = getUniversalID();
 			Statement stmt = connection.getStatement();
-			stmt.executeUpdate("INSERT INTO \"schema\"(id,name,author,source,\"type\",description,locked) VALUES("+schemaID+",'"+scrub(schema.getName())+" Extension','"+scrub(schema.getAuthor())+"','"+scrub(schema.getSource())+"','"+scrub(schema.getType())+"','Extension of "+scrub(schema.getName())+"','f')");
+			stmt.executeUpdate("INSERT INTO \"schema\"(id,name,author,source,\"type\",description,locked) VALUES("+schemaID+",'"+scrub(schema.getName(),50)+" Extension','"+scrub(schema.getAuthor(),50)+"','"+scrub(schema.getSource(),200)+"','"+scrub(schema.getType(),50)+"','Extension of "+scrub(schema.getName(),487)+"','f')");
 			stmt.executeUpdate("INSERT INTO extensions(schema_id,element_id) VALUES("+schemaID+","+schema.getId()+")");
 			stmt.close();
 			connection.commit();
@@ -152,7 +159,7 @@ public class Database
 		try {
 			schemaID = getUniversalID();
 			Statement stmt = connection.getStatement();
-			stmt.executeUpdate("INSERT INTO \"schema\"(id,name,author,source,\"type\",description,locked) VALUES("+schemaID+",'"+scrub(schema.getName())+"','"+scrub(schema.getAuthor())+"','"+scrub(schema.getSource())+"','"+scrub(schema.getType())+"','"+scrub(schema.getDescription())+"','"+(schema.getLocked()?"t":"f")+"')");
+			stmt.executeUpdate("INSERT INTO \"schema\"(id,name,author,source,\"type\",description,locked) VALUES("+schemaID+",'"+scrub(schema.getName(),50)+"','"+scrub(schema.getAuthor(),50)+"','"+scrub(schema.getSource(),200)+"','"+scrub(schema.getType(),50)+"','"+scrub(schema.getDescription(),500)+"','"+(schema.getLocked()?"t":"f")+"')");
 			stmt.close();
 			connection.commit();
 		}
@@ -171,7 +178,7 @@ public class Database
 		boolean success = false;
 		try {
 			Statement stmt = connection.getStatement();
-			stmt.executeUpdate("UPDATE \"schema\" SET name='"+scrub(schema.getName())+"', author='"+scrub(schema.getAuthor())+"', source='"+scrub(schema.getSource())+"', \"type\"='"+scrub(schema.getType())+"', description='"+scrub(schema.getDescription())+"' WHERE id="+schema.getId());
+			stmt.executeUpdate("UPDATE \"schema\" SET name='"+scrub(schema.getName(),50)+"', author='"+scrub(schema.getAuthor(),50)+"', source='"+scrub(schema.getSource(),200)+"', \"type\"='"+scrub(schema.getType(),50)+"', description='"+scrub(schema.getDescription(),500)+"' WHERE id="+schema.getId());
 			stmt.close();
 			connection.commit();
 			success = true;
@@ -319,7 +326,7 @@ public class Database
 		try {
 			groupID = getUniversalID();
 			Statement stmt = connection.getStatement();
-			stmt.executeUpdate("INSERT INTO groups(id,name,parent_id) VALUES("+groupID+",'"+scrub(group.getName())+"',"+group.getParentId()+")");
+			stmt.executeUpdate("INSERT INTO groups(id,name,parent_id) VALUES("+groupID+",'"+scrub(group.getName(),50)+"',"+group.getParentId()+")");
 			stmt.close();
 			connection.commit();
 		}
@@ -338,7 +345,7 @@ public class Database
 		boolean success = false;
 		try {
 			Statement stmt = connection.getStatement();
-			stmt.executeUpdate("UPDATE groups SET name='"+scrub(group.getName())+"' WHERE id="+group.getId());
+			stmt.executeUpdate("UPDATE groups SET name='"+scrub(group.getName(),50)+"' WHERE id="+group.getId());
 			stmt.close();
 			connection.commit();
 			success = true;
@@ -728,46 +735,44 @@ public class Database
 			schemaElementID = getUniversalID();
 
 			// Retrieve the schema element name, description, and base ID
-			String name = schemaElement.getName().replaceAll("'","''");
-			String description = schemaElement.getDescription().replaceAll("'","''");
-			if(name.length()>50) name=name.substring(0,50);
-			if(description.length()>200) description=description.substring(0,200);
+			String name = scrub(schemaElement.getName(),50);
+			String description = scrub(schemaElement.getDescription(),500);
 			Integer baseID = schemaElement.getBase();
 
 			// Inserts an entity
 			if(schemaElement instanceof Entity)
-				stmt.executeUpdate("INSERT INTO entity(id,name,description,schema_id) VALUES("+schemaElementID+",'"+scrub(name)+"','"+scrub(description)+"',"+baseID+")");
+				stmt.executeUpdate("INSERT INTO entity(id,name,description,schema_id) VALUES("+schemaElementID+",'"+name+"','"+description+"',"+baseID+")");
 
 			// Inserts an attribute
 			if(schemaElement instanceof Attribute)
 			{
 				Attribute attribute = (Attribute)schemaElement;
-				stmt.executeUpdate("INSERT INTO attribute(id,name,description,entity_id,domain_id,\"min\",\"max\",\"key\",schema_id) VALUES("+schemaElementID+",'"+scrub(name)+"','"+scrub(description)+"',"+attribute.getEntityID()+","+attribute.getDomainID()+","+attribute.getMin()+","+attribute.getMax()+",'"+(attribute.isKey()?"t":"f")+"',"+baseID+")");
+				stmt.executeUpdate("INSERT INTO attribute(id,name,description,entity_id,domain_id,\"min\",\"max\",\"key\",schema_id) VALUES("+schemaElementID+",'"+name+"','"+description+"',"+attribute.getEntityID()+","+attribute.getDomainID()+","+attribute.getMin()+","+attribute.getMax()+",'"+(attribute.isKey()?"t":"f")+"',"+baseID+")");
 			}
 
 			// Inserts a domain
 			if(schemaElement instanceof Domain)
-				stmt.executeUpdate("INSERT INTO \"domain\"(id,name,description,schema_id) VALUES("+schemaElementID+",'"+scrub(name)+"','"+scrub(description)+"',"+baseID+")");
+				stmt.executeUpdate("INSERT INTO \"domain\"(id,name,description,schema_id) VALUES("+schemaElementID+",'"+name+"','"+description+"',"+baseID+")");
 
 			// Inserts a domain value
 			if(schemaElement instanceof DomainValue)
 			{
 				DomainValue domainValue = (DomainValue)schemaElement;
-				stmt.executeUpdate("INSERT INTO domainvalue(id,value,description,domain_id,schema_id) VALUES("+schemaElementID+",'"+scrub(name)+"','"+scrub(description)+"',"+domainValue.getDomainID()+","+baseID+")");
+				stmt.executeUpdate("INSERT INTO domainvalue(id,value,description,domain_id,schema_id) VALUES("+schemaElementID+",'"+name+"','"+description+"',"+domainValue.getDomainID()+","+baseID+")");
 			}
 			
 			// Inserts a relationship
 			if(schemaElement instanceof Relationship)
 			{
 				Relationship relationship = (Relationship)schemaElement;
-				stmt.executeUpdate("INSERT INTO relationship(id,name,left_id,left_min,left_max,right_id,right_min,right_max,schema_id) VALUES("+schemaElementID+",'"+scrub(name)+"',"+relationship.getLeftID()+","+relationship.getLeftMin()+","+relationship.getLeftMax()+","+relationship.getRightID()+","+relationship.getRightMin()+","+relationship.getRightMax()+","+baseID+")");
+				stmt.executeUpdate("INSERT INTO relationship(id,name,left_id,left_min,left_max,right_id,right_min,right_max,schema_id) VALUES("+schemaElementID+",'"+name+"',"+relationship.getLeftID()+","+relationship.getLeftMin()+","+relationship.getLeftMax()+","+relationship.getRightID()+","+relationship.getRightMin()+","+relationship.getRightMax()+","+baseID+")");
 			}
 			
 			// Inserts a containment relationship
 			if(schemaElement instanceof Containment)
 			{
 				Containment containment = (Containment)schemaElement;
-				stmt.executeUpdate("INSERT INTO containment(id,name,description,parent_id,child_id,\"min\",\"max\",schema_id) VALUES("+schemaElementID+",'"+scrub(name)+"','"+scrub(description)+"',"+containment.getParentID()+","+containment.getChildID()+","+containment.getMin()+","+containment.getMax()+","+baseID+")");
+				stmt.executeUpdate("INSERT INTO containment(id,name,description,parent_id,child_id,\"min\",\"max\",schema_id) VALUES("+schemaElementID+",'"+name+"','"+description+"',"+containment.getParentID()+","+containment.getChildID()+","+containment.getMin()+","+containment.getMax()+","+baseID+")");
 			}
 			
 			// Inserts a subset relationship
@@ -781,7 +786,7 @@ public class Database
 			if(schemaElement instanceof Alias)
 			{
 				Alias alias = (Alias)schemaElement;
-				stmt.executeUpdate("INSERT INTO alias(id,name,element_id,schema_id) VALUES("+schemaElementID+",'"+scrub(name)+"',"+alias.getElementID()+","+baseID+")");
+				stmt.executeUpdate("INSERT INTO alias(id,name,element_id,schema_id) VALUES("+schemaElementID+",'"+name+"',"+alias.getElementID()+","+baseID+")");
 			}
 
 			stmt.close();
@@ -803,60 +808,64 @@ public class Database
 		try {
 			Statement stmt = connection.getStatement();
 
+			// Retrieve the schema element name, description, and base ID
+			String name = scrub(schemaElement.getName(),50);
+			String description = scrub(schemaElement.getDescription(),500);
+			
 			// Updates an entity
 			if(schemaElement instanceof Entity)
 			{
 				Entity entity = (Entity)schemaElement;
-				stmt.executeUpdate("UPDATE entity SET name='"+scrub(entity.getName())+"', description='"+scrub(entity.getDescription())+"' WHERE id="+entity.getId());
+				stmt.executeUpdate("UPDATE entity SET name='"+name+"', description='"+description+"' WHERE id="+entity.getId());
 			}
 
 			// Updates an attribute
 			if(schemaElement instanceof Attribute)
 			{
 				Attribute attribute = (Attribute)schemaElement;
-				stmt.executeUpdate("UPDATE attribute SET name='"+scrub(attribute.getName())+"', description='"+scrub(attribute.getDescription())+"', entity_id="+attribute.getEntityID()+", domain_id="+attribute.getDomainID()+", min="+attribute.getMin()+", max="+attribute.getMax()+" WHERE id="+attribute.getId());
+				stmt.executeUpdate("UPDATE attribute SET name='"+name+"', description='"+description+"', entity_id="+attribute.getEntityID()+", domain_id="+attribute.getDomainID()+", min="+attribute.getMin()+", max="+attribute.getMax()+" WHERE id="+attribute.getId());
 			}
 
 			// Updates a domain
 			if(schemaElement instanceof Domain)
 			{
 				Domain domain = (Domain)schemaElement;
-				stmt.executeUpdate("UPDATE \"domain\" SET name='"+scrub(domain.getName())+"', description='"+scrub(domain.getDescription())+"' WHERE id="+domain.getId());
+				stmt.executeUpdate("UPDATE \"domain\" SET name='"+name+"', description='"+description+"' WHERE id="+domain.getId());
 			}
 
 			// Updates an domain value
 			if(schemaElement instanceof DomainValue)
 			{
 				DomainValue domainValue = (DomainValue)schemaElement;
-				stmt.executeUpdate("UPDATE domainvalue SET value='"+scrub(domainValue.getName())+"', description='"+scrub(domainValue.getDescription())+"', domain_id="+domainValue.getDomainID()+" WHERE id="+domainValue.getId());
+				stmt.executeUpdate("UPDATE domainvalue SET value='"+name+"', description='"+description+"', domain_id="+domainValue.getDomainID()+" WHERE id="+domainValue.getId());
 			}
 			
 			// Updates a relationship
 			if(schemaElement instanceof Relationship)
 			{
 				Relationship relationship = (Relationship)schemaElement;
-				stmt.executeUpdate("UPDATE relationship SET name='"+scrub(relationship.getName())+"', left_id="+relationship.getLeftID()+", left_min="+relationship.getLeftMin()+", left_max="+relationship.getLeftMax()+", right_id="+relationship.getRightID()+", right_min="+relationship.getRightMin()+", right_max="+relationship.getRightMax()+" WHERE id="+relationship.getId());
+				stmt.executeUpdate("UPDATE relationship SET name='"+name+"', left_id="+relationship.getLeftID()+", left_min="+relationship.getLeftMin()+", left_max="+relationship.getLeftMax()+", right_id="+relationship.getRightID()+", right_min="+relationship.getRightMin()+", right_max="+relationship.getRightMax()+" WHERE id="+relationship.getId());
 			}
 			
 			// Updates a containment relationship
 			if(schemaElement instanceof Containment)
 			{
 				Containment containment = (Containment)schemaElement;
-				stmt.executeUpdate("UPDATE containment SET name='"+scrub(containment.getName())+"', description='"+containment.getDescription()+"' parent_id="+containment.getParentID()+", child_id="+containment.getChildID()+", \"min\"="+containment.getMin()+", \"max\"="+containment.getMax()+" WHERE id="+containment.getId());
+				stmt.executeUpdate("UPDATE containment SET name='"+name+"', description='"+description+"' parent_id="+containment.getParentID()+", child_id="+containment.getChildID()+", \"min\"="+containment.getMin()+", \"max\"="+containment.getMax()+" WHERE id="+containment.getId());
 			}
 			
 			// Updates a subset relationship
 			if(schemaElement instanceof Subtype)
 			{
 				Subtype subtype = (Subtype)schemaElement;
-				stmt.executeUpdate("UPDATE subtype SET parent_id="+subtype.getParentID()+", child_id="+subtype.getChildID()+" WHERE id="+subtype.getId());
+				stmt.executeUpdate("UPDATE subtype SET parent_id="+name+", child_id="+subtype.getChildID()+" WHERE id="+subtype.getId());
 			}
 
 			// Updates an alias
 			if(schemaElement instanceof Alias)
 			{
 				Alias alias = (Alias)schemaElement;
-				stmt.executeUpdate("UPDATE alias SET name='"+scrub(alias.getName())+"', element_id='"+alias.getElementID()+"' WHERE id="+alias.getId());
+				stmt.executeUpdate("UPDATE alias SET name='"+name+"', element_id='"+alias.getElementID()+"' WHERE id="+alias.getId());
 			}
 			
 			stmt.close();
@@ -1048,7 +1057,7 @@ public class Database
 		try {
 			dataSourceID = getUniversalID();
 			Statement stmt = connection.getStatement();
-			stmt.executeUpdate("INSERT INTO data_source(id,name,url,schema_id) VALUES("+dataSourceID+",'"+scrub(dataSource.getName())+"','"+scrub(dataSource.getUrl())+"',"+dataSource.getSchemaID()+")");
+			stmt.executeUpdate("INSERT INTO data_source(id,name,url,schema_id) VALUES("+dataSourceID+",'"+scrub(dataSource.getName(),50)+"','"+scrub(dataSource.getUrl(),200)+"',"+dataSource.getSchemaID()+")");
 			stmt.close();
 			connection.commit();
 		}
@@ -1067,7 +1076,7 @@ public class Database
 		boolean success = false;
 		try {
 			Statement stmt = connection.getStatement();
-			stmt.executeUpdate("UPDATE data_source SET name='"+scrub(dataSource.getName())+"', url='"+scrub(dataSource.getUrl())+"' WHERE id="+dataSource.getId());
+			stmt.executeUpdate("UPDATE data_source SET name='"+scrub(dataSource.getName(),50)+"', url='"+scrub(dataSource.getUrl(),200)+"' WHERE id="+dataSource.getId());
 			stmt.close();
 			connection.commit();
 			success = true;
@@ -1160,7 +1169,7 @@ public class Database
 		try {
 			mappingID = getUniversalID();
 			Statement stmt = connection.getStatement();
-			stmt.executeUpdate("INSERT INTO mapping(id,name,description,author) VALUES("+mappingID+",'"+scrub(mapping.getName())+"','"+scrub(mapping.getDescription())+"','"+scrub(mapping.getAuthor())+"')");
+			stmt.executeUpdate("INSERT INTO mapping(id,name,description,author) VALUES("+mappingID+",'"+scrub(mapping.getName(),50)+"','"+scrub(mapping.getDescription(),500)+"','"+scrub(mapping.getAuthor(),50)+"')");
 			for(Integer schema : mapping.getSchemas())
 				stmt.executeUpdate("INSERT INTO mapping_schema(mapping_id,schema_id) VALUES("+mappingID+","+schema+")");
 			stmt.close();
@@ -1181,7 +1190,7 @@ public class Database
 		boolean success = false;
 		try {
 			Statement stmt = connection.getStatement();
-			stmt.executeUpdate("UPDATE mapping SET name='"+scrub(mapping.getName())+"', description='"+scrub(mapping.getDescription())+"', author='"+scrub(mapping.getAuthor())+"' WHERE id="+mapping.getId());
+			stmt.executeUpdate("UPDATE mapping SET name='"+scrub(mapping.getName(),50)+"', description='"+scrub(mapping.getDescription(),500)+"', author='"+scrub(mapping.getAuthor(),50)+"' WHERE id="+mapping.getId());
 			stmt.executeUpdate("DELETE FROM mapping_schema WHERE mapping_id="+mapping.getId());
 			for(Integer schema : mapping.getSchemas())
 				stmt.executeUpdate("INSERT INTO mapping_schema(mapping_id,schema_id) VALUES("+mapping.getId()+","+schema+")");			
