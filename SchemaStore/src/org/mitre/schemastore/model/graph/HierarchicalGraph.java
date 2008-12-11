@@ -38,7 +38,7 @@ public class HierarchicalGraph extends Graph
 		// Retrieve graph models from file
 		try {			
 			// Pull the entire file into a string
-			InputStream configStream = HierarchicalGraph.class.getResourceAsStream("/schemastore.xml");
+			InputStream configStream = HierarchicalGraph.class.getResourceAsStream("/graphmodels.xml");
 			BufferedReader in = new BufferedReader(new InputStreamReader(configStream));
 			StringBuffer buffer = new StringBuffer("");
 			String line; while((line=in.readLine())!=null) buffer.append(line);
