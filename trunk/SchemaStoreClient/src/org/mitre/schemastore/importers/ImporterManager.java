@@ -28,7 +28,7 @@ public class ImporterManager
 		// Load importers from file
 		try {			
 			// Pull the entire file into a string
-			InputStream configStream = ImporterManager.class.getResourceAsStream("/schemastoreclient.xml");
+			InputStream configStream = ImporterManager.class.getResourceAsStream("/importers.xml");
 			BufferedReader in = new BufferedReader(new InputStreamReader(configStream));
 			StringBuffer buffer = new StringBuffer("");
 			String line; while((line=in.readLine())!=null) buffer.append(line);
