@@ -87,11 +87,19 @@ public abstract class Importer
 		this.uri = uri;
 		initialize();
 
+		// Get the schema elements (filter out invalid characters)
+		ArrayList<SchemaElement> schemaElements = getSchemaElements();
+		for(SchemaElement element : schemaElements)
+		{
+			element.setName(element.getName().replaceAll("[^\\p{ASCII}]","#"));
+			element.setDescription(element.getDescription().replaceAll("[^\\p{ASCII}]","#"));
+		}
+		
 		// Imports the schema
 		boolean success = false;
 		try {
 			// Import the schema
-			Integer schemaID = client.importSchema(schema, getSchemaElements());
+			Integer schemaID = client.importSchema(schema, schemaElements);
 			schema.setId(schemaID);
 			success = client.setParentSchemas(schema.getId(), getExtendedSchemaIDs());
 
