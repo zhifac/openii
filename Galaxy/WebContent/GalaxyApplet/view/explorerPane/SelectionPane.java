@@ -10,7 +10,6 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Vector;
 
-import javax.swing.BoxLayout;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JComboBox;
@@ -37,26 +36,9 @@ class SelectionPane extends JPanel implements ActionListener, SelectedObjectsLis
 		/** Defines how items in the selection list should be rendered */
 		public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus)
 		{
-			// Find the selection name
 			Schema schema = Schemas.getSchema((Integer)value);
 			if(schema==null) return new JPanel();
-			
-			// Generate a selection list item component
-			JPanel pane = new JPanel();
-			pane.setBackground(isSelected ? list.getSelectionBackground() : list.getBackground());
-			pane.setLayout(new BoxLayout(pane,BoxLayout.X_AXIS));
-			pane.add(new JLabel(schema.getName()));
-			
-			// Display "editable" for all listed schemas that are not yet locked
-			if(!schema.getLocked())
-			{
-				JLabel editableLabel = new JLabel(" (Editable)");
-				editableLabel.setForeground(new Color(150,0,0));
-				pane.add(editableLabel);
-			}
-			
-			// Return the list item component
-			return pane;
+			else return new JLabel(schema.getName());
 		}
 	}
 	
