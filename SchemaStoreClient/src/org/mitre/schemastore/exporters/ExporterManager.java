@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.mitre.schemastore.client.SchemaStoreClient;
+
 /** API for dealing with exporters */
 public class ExporterManager
 {
@@ -21,7 +23,7 @@ public class ExporterManager
 	private ArrayList<Exporter> exporters = new ArrayList<Exporter>();
 
 	/** Initializes the available exporters */
-	private void initializeExporters()
+	private void initializeExporters(SchemaStoreClient client)
 	{		
 		// Load exporters from file
 		try {			
@@ -39,7 +41,9 @@ public class ExporterManager
 				Matcher exporterMatcher = exporterPattern.matcher(exportersMatcher.group(1));
 				while(exporterMatcher.find())
 					try {
-						exporters.add((Exporter)Class.forName(exporterMatcher.group(1)).newInstance());
+						Exporter ep = (Exporter)Class.forName(exporterMatcher.group(1)).newInstance();
+						ep.setClient(client);
+						exporters.add(ep);
 					} catch(Exception e) {}
 			}
 		}
@@ -48,8 +52,8 @@ public class ExporterManager
 	}
 	
 	/** Constructs the exporters */
-	public ExporterManager()
-		{ initializeExporters(); }
+	public ExporterManager(SchemaStoreClient client)
+		{ initializeExporters(client); }
 	
 	/** Returns the list of exporters */
 	public ArrayList<Exporter> getExporters(String fileType)
