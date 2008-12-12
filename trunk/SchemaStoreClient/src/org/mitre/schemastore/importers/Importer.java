@@ -17,7 +17,6 @@ public abstract class Importer
 	public static final Integer SCHEMA = 1;
 	public static final Integer REPOSITORY = 2;
 	public static final Integer FILE = 3;
-	public static final Integer SCHEMASTOREARCHIVER = 3;
 	
 	// Defines the various base domain types
 	public static final String ANY = "Any";
