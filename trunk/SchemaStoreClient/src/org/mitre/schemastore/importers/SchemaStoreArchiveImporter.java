@@ -3,10 +3,12 @@
 package org.mitre.schemastore.importers;
 
 import org.mitre.schemastore.client.SchemaStoreClient;
+import org.mitre.schemastore.exporters.SchemaStoreArchiveExporter;
 import org.mitre.schemastore.model.*;
 import org.mitre.schemastore.model.graph.Graph;
 
 import java.io.IOException;
+import java.net.URI;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -14,10 +16,12 @@ import java.util.Comparator;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+
 
 /** Importer for copying schemas from other repositories */
 public class SchemaStoreArchiveImporter extends Importer
@@ -59,7 +63,7 @@ public class SchemaStoreArchiveImporter extends Importer
 		
 	/** Returns the importer URI type */
 	public Integer getURIType()
-		{ return FILE; }
+		{ return SCHEMASTOREARCHIVER; }
 	
 	/** Returns the ID of parent schemas */
 	public ArrayList<Integer> getParents()
@@ -129,17 +133,6 @@ public class SchemaStoreArchiveImporter extends Importer
 			//get the schemas contained in the ssa
 			ArrayList<Graph> mySchemaGraphs = parseDocument(dom);
 			Collections.sort(mySchemaGraphs, new GraphComparator());
-			//ArrayList<Schema> mySchemas = new ArrayList<Schema>();
-			//for(Graph lGraph : mySchemaGraphs){
-			//	mySchemas.add(lGraph.getSchema());
-			//}
-			//Collections.sort(mySchemas, new SchemaObjectComparator());
-			
-			// get top level schema id, the biggest in the list.
-			//Integer repositorySchemaID = mySchemas.get(mySchemas.size()-1).getId();
-			
-			// Retrieve the repository graph
-			//Graph repositoryGraph = repository.getGraph(repositorySchemaID);
 			
 			// Transfer all schemas from which this schema is extended
 			ArrayList<Schema> availableSchemas = client.getSchemas();
@@ -175,6 +168,15 @@ public class SchemaStoreArchiveImporter extends Importer
 
 	}
 	
+	/**
+	 * internal procedure to update the list of graphs with the new schema id (for a particular
+	 * schema) from the old
+	 * @param nSchemaID - new schema id
+	 * @param oldSchemaID - old schema id
+	 * @param myGraphs - the other graphs that need to be updated
+	 * @param repositoryGraph - the new graph
+	 * @param num
+	 */
 	private void updateGraphs(Integer nSchemaID, Integer oldSchemaID, ArrayList<Graph> myGraphs, Graph repositoryGraph, int num){
 		try{
 			Graph myGraph=null;
@@ -182,6 +184,7 @@ public class SchemaStoreArchiveImporter extends Importer
 			Collections.sort(oldElements,new SchemaComparator());
 			ArrayList<SchemaElement> newElements = client.getGraph(nSchemaID).getElements(null);
 			Collections.sort(oldElements,new SchemaComparator());
+			//iterate through the graphs and update each with the new id.
 			for(int j=num; myGraphs.size() > j; j++)
 			{
 				myGraph = myGraphs.get(j);
@@ -207,6 +210,11 @@ public class SchemaStoreArchiveImporter extends Importer
 		}
 	}
 	
+	/**
+	 * A method to add a schema to the repository, if it doesn't exist there.
+	 * @param nGraph - the graph to add.
+	 * @return the id of the graph from the repository
+	 */
 	private Integer addNewSchema(Graph nGraph){
 		//this means the schema isn't in the repository.  Hence, add it.
 		Schema schema = nGraph.getSchema();
@@ -233,6 +241,11 @@ public class SchemaStoreArchiveImporter extends Importer
 		return schemaID;
 	}
 	
+	/**
+	 * Parse the .xml document for the schema format.  Construct the new Graph
+	 * @param dom - the xml document.
+	 * @return a list of the graphs.
+	 */
 	private static ArrayList<Graph> parseDocument(Document dom){
 		//get the root elememt
 		Element docEle = dom.getDocumentElement();
