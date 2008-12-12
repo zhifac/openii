@@ -98,13 +98,19 @@ public class SchemaStoreArchiveExporter extends Exporter
 				pce.printStackTrace();
 			}
 
+			//generate the root element
 			Element RootE = getNewChildElement("SchemaStoreArchiveExport", "Schemas:", dom);
+			//add each schema under the root.
 			for(Integer schemaid: schemaIDs){
 				try{
+					//get the elements of the schema.
 					ArrayList<SchemaElement> returnedList = ssc.getGraph(schemaid).getBaseElements(null);
 					Schema mySchema = ssc.getGraph(schemaid).getSchema();
+					//set the parent schemas
 					mySchema.setParentSchemaIDs(ssc.getParentSchemas(schemaid));
+					//convert to the xml format
 					Element SchemaRootE = mySchema.toXML(null, dom);
+					//add the child elements
 					for(SchemaElement schElm: returnedList){
 						Element Emt = schElm.toXML(null, dom);
 						SchemaRootE.appendChild(Emt);
@@ -121,6 +127,10 @@ public class SchemaStoreArchiveExporter extends Exporter
 		}
 	}
 	
+	/**
+	 * This method uses writes the xml to a string buffer.
+	 * It uses Xerces specific classes.
+     */
 	private void printToBuffer(Element RootE, Document dom){
 		try
 		{
@@ -142,8 +152,7 @@ public class SchemaStoreArchiveExporter extends Exporter
 	}
 	
 	/**
-	 * This method uses Xerces specific classes
-	 * prints the XML document to file.
+	 * This method prints the XML to a file
      */
 	public void printToFile(String fileName){
 		try{
@@ -154,29 +163,6 @@ public class SchemaStoreArchiveExporter extends Exporter
 		}
 	}
 
-	/*	try
-		{
-			//print
-			OutputFormat format = new OutputFormat(dom);
-			format.setIndenting(true);
-
-			//to generate output to console use this serializer
-			//XMLSerializer serializer = new XMLSerializer(System.out, format);
-
-
-			//to generate a file output use fileoutputstream instead of system.out
-			XMLSerializer serializer = new XMLSerializer(
-			new FileOutputStream(new File(fileName)), format);
-			dom.appendChild(RootE);
-
-			serializer.serialize(dom);
-
-		} catch(IOException ie) {
-		    ie.printStackTrace();
-		}
-	}*/
-
-	
 	public static void main(String[] args) throws RemoteException, IOException {
 		Integer schemaId = 195179; // Human Patient
 		SchemaStoreClient ss = new SchemaStoreClient(
