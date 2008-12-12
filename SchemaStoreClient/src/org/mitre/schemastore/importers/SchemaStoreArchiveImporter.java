@@ -3,12 +3,10 @@
 package org.mitre.schemastore.importers;
 
 import org.mitre.schemastore.client.SchemaStoreClient;
-import org.mitre.schemastore.exporters.SchemaStoreArchiveExporter;
 import org.mitre.schemastore.model.*;
 import org.mitre.schemastore.model.graph.Graph;
 
 import java.io.IOException;
-import java.net.URI;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -16,12 +14,10 @@ import java.util.Comparator;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
-
 
 /** Importer for copying schemas from other repositories */
 public class SchemaStoreArchiveImporter extends Importer
@@ -63,7 +59,7 @@ public class SchemaStoreArchiveImporter extends Importer
 		
 	/** Returns the importer URI type */
 	public Integer getURIType()
-		{ return SCHEMASTOREARCHIVER; }
+		{ return FILE; }
 	
 	/** Returns the ID of parent schemas */
 	public ArrayList<Integer> getParents()
