@@ -2,6 +2,9 @@
 
 package org.mitre.schemastore.model;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
 /**
  * Class for storing a relationship
  * @author CWOLF
@@ -48,4 +51,65 @@ public class Relationship extends SchemaElement
 	public void setRightID(Integer rightID) { this.rightID = rightID; }
 	public void setRightMax(Integer rightMax) { this.rightMax = rightMax; }
 	public void setRightMin(Integer rightMin) { this.rightMin = rightMin; }
+	
+	/**
+	 * Produce an xml element representation of this schemaElement.  Suitable for
+	 * sending over the wire or for SchemaStoreArchiveExporter.
+	 * @param String nameType - the top level name of the schemaElement (e.g. Alias, Entity) 
+	 * @param XML Document (a Factory)
+	 * @return XML Element
+	 */
+	public Element toXML(String nameType, Document dom){
+		/* the xml should look like:
+		 * <RelationshipElement>
+		 * 		<IdElement>1</IdElement>
+		 * 		<NameElement>MyName</NameElement>
+		 * 		<DescriptionElement>MyDescription</DescriptionElement>
+		 * 		<BaseElement>MyBase</BaseElement>
+		 * 		<RelationshipLeftIdElement>2</RelationshipLeftIdElement>
+		 * 		<RelationshipLeftMinElement>3</RelationshipLeftMinElement>
+		 * 		<RelationshipLeftMaxElement>4</RelationshipLeftMaxElement>
+		 * 		<RelationshipRightIdElement>5</RelationshipRightIdElement>
+		 * 		<RelationshipRightMinElement>6</RelationshipRightMinElement>
+		 * 		<RelationshipRightMaxElement>7</RelationshipRightMaxElement>
+		 * </RelationshipElement>
+		 */
+		//create top level schema node. Everything but ElementId is created here.
+		Element schemaE = super.toXML("RelationshipElement",dom);
+		
+		//create left id node under that
+		Element leftIdE = getNewChildElement("RelationshipLeftIdElement", leftID.toString(), dom);
+		Element leftMinE = getNewChildElement("RelationshipLeftMinElement", leftMin.toString(), dom);
+		Element leftMaxE = getNewChildElement("RelationshipLeftMaxElement", leftMax.toString(), dom);
+		
+		//create right id node under that
+		Element rightIdE = getNewChildElement("RelationshipRightIdElement", rightID.toString(), dom);
+		Element rightMinE = getNewChildElement("RelationshipRightMinElement", rightMin.toString(), dom);
+		Element rightMaxE = getNewChildElement("RelationshipRightMaxElement", rightMax.toString(), dom);
+		
+		schemaE.appendChild(leftIdE);
+		schemaE.appendChild(leftMinE);
+		schemaE.appendChild(leftMaxE);
+		schemaE.appendChild(rightIdE);
+		schemaE.appendChild(rightMinE);
+		schemaE.appendChild(rightMaxE);
+		
+		return schemaE;
+	}
+	
+	/**
+	 * Produce a schemaElement from this XML element.  Suitable for
+	 * sending over the wire or for SchemaStoreArchiveExporter.
+	 * @param XML Element
+	 */
+	public void fromXML(Element schemaE){
+		//See toXML() for description of what XML should look like.
+		super.fromXML(schemaE);
+		leftID = new Integer(getIntValue(schemaE,"RelationshipLeftIdElement"));
+		leftMin = new Integer(getIntValue(schemaE,"RelationshipLeftMinElement"));
+		leftMax = new Integer(getIntValue(schemaE,"RelationshipLeftMaxElement"));
+		rightID = new Integer(getIntValue(schemaE,"RelationshipRightIdElement"));
+		rightMin = new Integer(getIntValue(schemaE,"RelationshipRightMinElement"));
+		rightMax = new Integer(getIntValue(schemaE,"RelationshipRightMaxElement"));
+	}
 }
