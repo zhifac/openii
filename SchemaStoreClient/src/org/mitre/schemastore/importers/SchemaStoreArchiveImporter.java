@@ -32,43 +32,43 @@ public class SchemaStoreArchiveImporter extends Importer
 		public int compare(SchemaElement element1, SchemaElement element2)
 			{ return element1.getId().compareTo(element2.getId()); }
 	}
-	
+
 	/** Private class for sorting schema elements */
 	class SchemaObjectComparator implements Comparator<Schema>
 	{
 		public int compare(Schema element1, Schema element2)
 			{ return element1.getId().compareTo(element2.getId()); }
 	}
-	
+
 	/** Private class for sorting schema elements */
 	class GraphComparator implements Comparator<Graph>
 	{
 		public int compare(Graph element1, Graph element2)
 			{ return element1.getSchema().getId().compareTo(element2.getSchema().getId()); }
 	}
-	
+
 	/** Stores the list of schemas */
 	private ArrayList<Integer> extendedSchemaIDs = new ArrayList<Integer>();
 
 	/** Stores the list of schema elements */
 	private ArrayList<SchemaElement> schemaElements = null;
-	
+
 	/** Returns the importer name */
 	public String getName()
 		{ return "Schema Store Archive Importer"; }
-	
+
 	/** Returns the importer description */
 	public String getDescription()
 		{ return "This class allows the copying of a schema from a schema store archive (file) to a schem store repository"; }
-		
+
 	/** Returns the importer URI type */
 	public Integer getURIType()
-		{ return SCHEMASTOREARCHIVER; }
-	
+		{ return FILE; }
+
 	/** Returns the ID of parent schemas */
 	public ArrayList<Integer> getParents()
 		{ return new ArrayList<Integer>(); }
-	
+
 	/** Identifies the matching schema in the repository if one exists */
 	private Integer getMatchedSchema(ArrayList<Schema> availableSchemas, Graph graph) throws Exception
 	{
@@ -79,7 +79,7 @@ public class SchemaStoreArchiveImporter extends Importer
 			{
 				// Generate graphs for both schemas
 				Graph possGraph = client.getGraph(possSchema.getId());
-				
+
 				// Check to see if number of elements matches
 				ArrayList<SchemaElement> graphElements = graph.getElements(null);
 				ArrayList<SchemaElement> possGraphElements = possGraph.getElements(null);
@@ -98,7 +98,7 @@ public class SchemaStoreArchiveImporter extends Importer
 						if((s1.getClass().equals(s2.getClass()) && s1.getName().equals(s2.getName()))==false)
 							{ match = false; break; }
 					}
-					if(match) return possSchema.getId();					
+					if(match) return possSchema.getId();
 				}
 		}
 
@@ -108,20 +108,20 @@ public class SchemaStoreArchiveImporter extends Importer
 
 	/** Initialize the importer if needed */
 	protected void initialize() throws ImporterException
-	{	
+	{
 		try {
 			//suck in the schema from the ssa file.
 			//get the factory
 			Document dom = null;
 			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-			
+
 			String fileName = "C:\\tempfile.ssa";
-			
+
 			try {
-				
+
 				//Using factory get an instance of document builder
 				DocumentBuilder db = dbf.newDocumentBuilder();
-				
+
 				//parse using builder to get DOM representation of the XML file
 				dom = db.parse(fileName);
 
@@ -129,11 +129,11 @@ public class SchemaStoreArchiveImporter extends Importer
 				System.out.println(e);
 				e.printStackTrace();
 			}
-			
+
 			//get the schemas contained in the ssa
 			ArrayList<Graph> mySchemaGraphs = parseDocument(dom);
 			Collections.sort(mySchemaGraphs, new GraphComparator());
-			
+
 			// Transfer all schemas from which this schema is extended
 			ArrayList<Schema> availableSchemas = client.getSchemas();
 			int i=0;
@@ -155,7 +155,7 @@ public class SchemaStoreArchiveImporter extends Importer
 				sElementsV = repositoryGraph.getElements(null);
 				extendedSchemaIDs = repositorySchema.getParentSchemaIDs();
 			}
-			
+
 			// Retrieve the base elements to be displayed
 			schemaElements = new ArrayList<SchemaElement>();
 			for(SchemaElement element : sElementsV)
@@ -167,7 +167,7 @@ public class SchemaStoreArchiveImporter extends Importer
 			{ System.out.println(e); e.printStackTrace(); }
 
 	}
-	
+
 	/**
 	 * internal procedure to update the list of graphs with the new schema id (for a particular
 	 * schema) from the old
@@ -189,14 +189,14 @@ public class SchemaStoreArchiveImporter extends Importer
 			{
 				myGraph = myGraphs.get(j);
 				Schema tSchema = myGraph.getSchema();
-				
+
 				//check if this schema is a child of changed schema
 				ArrayList<Integer> myParents = tSchema.getParentSchemaIDs();
 				if(myParents.contains(oldSchemaID)){
 					int place = myParents.indexOf(oldSchemaID);
 					myParents.set(place, nSchemaID);
 				}
-				
+
 				//Update the graph to reflect altered element IDs
 				for(int i=0; i<oldElements.size(); i++)
 				{
@@ -209,7 +209,7 @@ public class SchemaStoreArchiveImporter extends Importer
 			System.out.println(e); e.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * A method to add a schema to the repository, if it doesn't exist there.
 	 * @param nGraph - the graph to add.
@@ -240,7 +240,7 @@ public class SchemaStoreArchiveImporter extends Importer
 		}
 		return schemaID;
 	}
-	
+
 	/**
 	 * Parse the .xml document for the schema format.  Construct the new Graph
 	 * @param dom - the xml document.
@@ -249,22 +249,22 @@ public class SchemaStoreArchiveImporter extends Importer
 	private static ArrayList<Graph> parseDocument(Document dom){
 		//get the root elememt
 		Element docEle = dom.getDocumentElement();
-		
+
 		//we're going to build out the tree here.  get all of the schemas
 		ArrayList<Graph> mySchemas = new ArrayList<Graph>();
-		
+
 		//get a nodelist of <SchemaRoot> elements
 		NodeList nl = docEle.getElementsByTagName("SchemaRoot");
 		if(nl != null && nl.getLength() > 0) {
 			for(int i = 0 ; i < nl.getLength();i++) {
-				
+
 				//get the schema element
 				Element schemaElement = (Element)nl.item(i);
-				
+
 				//get the Schema object
 				Schema s1 = new Schema();
 				s1.fromXML(schemaElement);
-				
+
 				//the schema elements themselves.
 				ArrayList<SchemaElement> tSchemaElements = new ArrayList<SchemaElement>();
 				tSchemaElements.addAll(getSchemaElementsByName("AliasElement",schemaElement,new Alias()));
@@ -276,7 +276,7 @@ public class SchemaStoreArchiveImporter extends Importer
 				tSchemaElements.addAll(getSchemaElementsByName("RelationshipElement",schemaElement,new Relationship()));
 				tSchemaElements.addAll(getSchemaElementsByName("SchemaElement",schemaElement,new SchemaElement()));
 				tSchemaElements.addAll(getSchemaElementsByName("SubTypeElement",schemaElement,new Subtype()));
-				
+
 				Graph myGraph = new Graph(s1, tSchemaElements);
 				//add it to list
 				mySchemas.add(myGraph);
@@ -284,14 +284,14 @@ public class SchemaStoreArchiveImporter extends Importer
 		}
 		return mySchemas;
 	}
-	
+
 	private static ArrayList<SchemaElement> getSchemaElementsByName(String nameType, Element docElement, SchemaElement sE){
 		//get a nodelist of <nameType> elements
 		ArrayList<SchemaElement> mySchemaElements = new ArrayList<SchemaElement>();
 		NodeList nl = docElement.getElementsByTagName(nameType);
 		if(nl != null && nl.getLength() > 0) {
 			for(int i = 0 ; i < nl.getLength();i++) {
-				
+
 				//get the schema element
 				Element newSchemaElement = (Element)nl.item(i);
 				SchemaElement sNew = null;
@@ -302,13 +302,13 @@ public class SchemaStoreArchiveImporter extends Importer
 					e.printStackTrace();
 				}
 				sNew.fromXML(newSchemaElement);
-				
+
 				mySchemaElements.add(sNew);
 			}
 		}
 		return mySchemaElements;
 	}
-	
+
 	public static void main(String[] args) throws RemoteException, IOException {
 		SchemaStoreClient ss = new SchemaStoreClient(
 				"C:\\mike\\CVS_ROOT\\COMMONGROUND\\SchemaStore\\SchemaStore.jar");
@@ -316,17 +316,17 @@ public class SchemaStoreArchiveImporter extends Importer
 			SchemaStoreArchiveImporter importer = new SchemaStoreArchiveImporter();
 			importer.setClient(ss);
 			try {
-				importer.initialize();	
+				importer.initialize();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 	}
-	
+
 	/** Returns the list of schemas which this schema extends */
 	protected ArrayList<Integer> getExtendedSchemaIDs() throws ImporterException
 		{ return extendedSchemaIDs; }
-	
+
 	/** Returns the schema elements from the specified URI */
-	public ArrayList<SchemaElement> getSchemaElements() throws ImporterException 
+	public ArrayList<SchemaElement> getSchemaElements() throws ImporterException
 		{ return schemaElements; }
 }
