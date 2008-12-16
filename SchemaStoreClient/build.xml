@@ -1,6 +1,16 @@
 <?xml version="1.0"?>
 <project name="schemastoreclient" default="build" basedir=".">
 
+    <!-- DO NOT DELETE - these are required when running ant outside Eclipse.  -->
+    <!-- If you need to delete these, contact Jeff Hoyt and he'll figure out a way to work around it. -->
+    <!-- This requires fatjar.jar to be in your ant's lib directory -->
+    <property name="fjepPath" value="fatjar.jar"/>
+    <taskdef name="fatjar.build" classname="net.sf.fjep.anttask.FJBuildTask" classpath="${fjepPath}"/>
+    <typedef name="fatjar.manifest" classname="net.sf.fjep.anttask.FJManifestType" classpath="${fjepPath}"/>
+    <typedef name="fatjar.exclude" classname="net.sf.fjep.anttask.FJExcludeType" classpath="${fjepPath}"/>
+    <typedef name="fatjar.jarsource" classname="net.sf.fjep.anttask.FJJarSourceType" classpath="${fjepPath}"/>
+    <typedef name="fatjar.filesource" classname="net.sf.fjep.anttask.FJFileSourceType" classpath="${fjepPath}"/>
+	
 	<!-- Defines the location of SchemaStore -->
 	<property name="SchemaStore" value="../SchemaStore"/>
 	
