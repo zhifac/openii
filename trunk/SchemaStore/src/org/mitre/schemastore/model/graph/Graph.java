@@ -179,34 +179,11 @@ public class Graph implements Serializable
 	
 	/** Constructs the base graph */
 	public Graph(Schema schema, ArrayList<SchemaElement> elements)
-	{
-		/** Class for defining the proper order for inserting elements */
-		class ElementComparator implements Comparator<SchemaElement>
-		{
-			public int compare(SchemaElement e1, SchemaElement e2)
-			{
-				if(e1 instanceof Domain) return -1; if(e2 instanceof Domain) return 1;
-				if(e1 instanceof DomainValue) return -1; if(e2 instanceof DomainValue) return 1;
-				if(e1 instanceof Entity) return -1; if(e2 instanceof Entity) return 1;
-				if(e1 instanceof Attribute) return -1; if(e2 instanceof Attribute) return 1;
-				if(!(e1 instanceof Alias)) return -1; if(!(e2 instanceof Alias)) return 1;
-				return 0;
-			}		
-		}
-		
-		// Populates the graph with elements
-		this.schema = schema;
-		Collections.sort(elements, new ElementComparator());
-		for(SchemaElement element : elements)
-			addElement(element);
-	}
+		{ this.schema = schema; addElements(elements); }
 
 	/** Copy the base graph */
 	public Graph(Graph graph)
-	{
-		this.schema = graph.schema;
-		this.graphHash = graph.graphHash;
-	}
+		{ this.schema = graph.schema; this.graphHash = graph.graphHash; }
 
 	/** Returns the schema referenced by this graph */
 	public Schema getSchema()
@@ -271,6 +248,31 @@ public class Graph implements Serializable
 	/** Returns the alias associated with the specified element */
 	public Alias getAlias(Integer elementID)
 		{ return cache.getAlias(elementID); }
+	
+	/** Adds a list of elements to the graph */
+	public boolean addElements(ArrayList<SchemaElement> elements)
+	{
+		/** Class for defining the proper order for inserting elements */
+		class ElementComparator implements Comparator<SchemaElement>
+		{
+			public int compare(SchemaElement e1, SchemaElement e2)
+			{
+				if(e1 instanceof Domain) return -1; if(e2 instanceof Domain) return 1;
+				if(e1 instanceof DomainValue) return -1; if(e2 instanceof DomainValue) return 1;
+				if(e1 instanceof Entity) return -1; if(e2 instanceof Entity) return 1;
+				if(e1 instanceof Attribute) return -1; if(e2 instanceof Attribute) return 1;
+				if(!(e1 instanceof Alias)) return -1; if(!(e2 instanceof Alias)) return 1;
+				return 0;
+			}		
+		}
+		
+		// Populates the graph with elements
+		boolean success = true;
+		Collections.sort(elements, new ElementComparator());
+		for(SchemaElement element : elements)
+			success &= addElement(element);
+		return success;
+	}
 	
 	/** Adds a list of elements to the graph */
 	public boolean addElement(SchemaElement element)
