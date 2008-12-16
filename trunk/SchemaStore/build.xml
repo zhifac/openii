@@ -1,4 +1,5 @@
 <project name="schemastore" default="build" basedir=".">
+	
     <!-- DO NOT DELETE - these are required when running ant outside Eclipse.  -->
     <!-- If you need to delete these, contact Jeff Hoyt and he'll figure out a way to work around it. -->
     <!-- This requires fatjar.jar to be in your ant's lib directory -->
