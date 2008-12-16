@@ -112,7 +112,7 @@ public class ExporterView extends GenericView implements ActionListener
 			parameterPane.setBorder(new EmptyBorder(5,5,5,5));
 			ArrayList<String> fileTypes = new ArrayList<String>();
 			fileTypes.add(exporter.getFileType());
-			parameterPane.addParameter(new FileParameter("Export File",fileTypes));
+			parameterPane.addParameter(new FileParameter("File",fileTypes));
 			
 			// Generate the information pane
 			JPanel infoPane = new JPanel();
@@ -187,7 +187,7 @@ public class ExporterView extends GenericView implements ActionListener
 		{
 			try {
 				// Export the schema to file
-				File file = new File(new URI(parameterPane.getParameter("Export File").getValue()));
+				File file = new File(new URI(parameterPane.getParameter("File").getValue()));
 				BufferedWriter out = new BufferedWriter(new FileWriter(file));
 				out.write(getOutput().toString());
 				out.close();
