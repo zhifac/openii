@@ -168,7 +168,7 @@ public class XSDImporter extends Importer
 				if ((simpleType != null) && (simpleType.getName() != null) && (simpleType.getName().length() > 0)) 
 					typeName = simpleType.getName();
 				
-				if (typeName.equals("IDREF")){
+				if (typeName.equals("IDREF") || typeName.equals("IDREFS") ){
 					
 					/*   
 					 * Finally, the IDREF element/attribute will become a named 
@@ -364,7 +364,7 @@ public class XSDImporter extends Importer
 				typeName = simpleType.getName();
 			
 			
-			if (typeName.equals("IDREF")){
+			if (typeName.equals("IDREF") || typeName.equals("IDREFS")){
 				
 				/*   
 				 *  the IDREF element/attribute will become a named 
