@@ -18,7 +18,8 @@ import org.mitre.schemastore.model.*;
  * 
  *  2) The containments created from Schema --> Entity have EMPTY STRING assigned as name
  *  
- 
+ *  3) We assume that when ":IDREF" and ":ID" are used (e.g., xs:ID), they refer to the ID 
+ *     	and IDREF, which are handled   
  * 
  * @author DBURDICK
  */
@@ -40,6 +41,8 @@ public class XSDImporter extends Importer
 
 	private HashMap<String, ArrayList<Containment>> containmentList = new HashMap<String, ArrayList<Containment>>();
 
+	private Entity anyEntity;
+	
 	/** Returns the importer name */
 	public String getName()
 		{ return "XSD Importer"; }
@@ -59,7 +62,6 @@ public class XSDImporter extends Importer
 		fileTypes.add(".xsd");
 		return fileTypes;
 	}
-	
 	
 	
 	
@@ -125,23 +127,20 @@ public class XSDImporter extends Importer
 		// create list with all top-level complex types
 		while (complexTypes.hasMoreElements()) {
 			ComplexType ct = (ComplexType) complexTypes.nextElement();
-			Entity entity = new Entity(nextId(), ct.getName().toString(), 
-					this.getDocumentation(ct), 0);
+			Entity entity = new Entity(nextId(), ct.getName().toString(), this.getDocumentation(ct), 0);
 			if (schemaElementsHS.containsKey(this.compString(entity)) == false) {
 				schemaElementsHS.put(this.compString(entity), entity);
 				processedComplexTypeList.put(entity.getName(), entity);
 			}
 			
 			// add containment to schema -- NO DOCUMENTATION for generated containments
-			Containment containment = new Containment(nextId(), "", "",
-					null, entity.getId(), 0, 1, 0);
+			Containment containment = new Containment(nextId(), "", "", null, entity.getId(), 0, 1, 0);
 			if (schemaElementsHS.containsKey(this.compString(containment)) == false) {
 				schemaElementsHS.put(this.compString(containment),containment);
 				processContainment(containment,false);
 			}	
 		}
 
-		// process complex types
 		complexTypes = xmlSchema.getComplexTypes();
 		while (complexTypes.hasMoreElements()){ 
 			
@@ -163,31 +162,51 @@ public class XSDImporter extends Importer
 			// get attrs for current complexType
 			Enumeration currComplexTypeAttrs = currComplexType.getAttributeDecls();
 			while (currComplexTypeAttrs.hasMoreElements()) {
-				AttributeDecl attr = (AttributeDecl) currComplexTypeAttrs.nextElement();		
-				
-				String type = "String";
+				AttributeDecl attr = (AttributeDecl) currComplexTypeAttrs.nextElement();			
+				String typeName = "String";
 				SimpleType simpleType = attr.getSimpleType();
 				if ((simpleType != null) && (simpleType.getName() != null) && (simpleType.getName().length() > 0)) 
-					type = simpleType.getName();
+					typeName = simpleType.getName();
 				
-				// obtain the proper domain from the preset list
-				Domain domain = domainList.get(type);
-				if (domain == null) {
-					domain = new Domain(nextId(), type, this.getDocumentation(simpleType), 0);
-					if (schemaElementsHS.containsKey(this.compString(domain)) == false) {
-						schemaElementsHS.put(this.compString(domain),domain);
-						domainList.put(type, domain);
+				if (typeName.equals("IDREF")){
+					
+					/*   
+					 * Finally, the IDREF element/attribute will become a named 
+					 * relationship that links the parent entity to ANY entity
+					 */
+					if (this.anyEntity == null){
+						this.anyEntity = new Entity(nextId(),"ANY","ANY ENTITY",0);
+						schemaElementsHS.put(this.compString(this.anyEntity),this.anyEntity);
+					}	
+					
+					Relationship rel = new Relationship(nextId(),attr.getName(),currentTypeEntity.getId(),0,1,this.anyEntity.getId(),0,1000,0);
+					
+					if (schemaElementsHS.containsKey(this.compString(rel)) == false) {
+						schemaElementsHS.put(this.compString(rel),rel);
 					}
-				} 
-
-				Attribute attribute = new Attribute(nextId(), attr.getName(), getDocumentation(attr), currentTypeEntity.getId(),domain.getId(), 1,1,false,0);
-				if (schemaElementsHS.containsKey(this.compString(attribute)) == false) {
-					schemaElementsHS.put(this.compString(attribute),attribute);
+					
+				} else {
+					
+					// obtain the proper domain from the preset list
+					Domain domain = domainList.get(typeName);
+					if (domain == null) {
+						domain = new Domain(nextId(), typeName, this.getDocumentation(simpleType), 0);
+						if (schemaElementsHS.containsKey(this.compString(domain)) == false) {
+							schemaElementsHS.put(this.compString(domain),domain);
+							domainList.put(typeName, domain);
+						}
+					} 
+					boolean containsID = typeName.equals("ID");
+					Attribute attribute = new Attribute(nextId(), attr.getName(), getDocumentation(attr), currentTypeEntity.getId(),domain.getId(), 1,1,containsID,0);
+					if (schemaElementsHS.containsKey(this.compString(attribute)) == false) {
+						schemaElementsHS.put(this.compString(attribute),attribute);
+					}
 				}
 			} // while (currComplexTypeAttrs.hasMoreElements()) {
 
 			//// get elements for current complexType (whose entity is currentTypeEntity)
 			Enumeration currComplexTypeElements = currComplexType.enumerate();
+			
 			while (currComplexTypeElements.hasMoreElements()) {
 				Group group = (Group)currComplexTypeElements.nextElement();
 				Enumeration e = group.enumerate();
@@ -334,33 +353,56 @@ public class XSDImporter extends Importer
 		// get the attributes for the complex type
 		Enumeration<?> currElementAttrList = ((ComplexType)complexTypeElement.getType()).getAttributeDecls();		
 		while (currElementAttrList.hasMoreElements()) {
+			
 			AttributeDecl attr = (AttributeDecl) currElementAttrList.nextElement();
 						
-			String type = "String";
+		
+			
+			String typeName = "String";
 			SimpleType simpleType = attr.getSimpleType();
 			if ((simpleType != null) && (simpleType.getName() != null) && (simpleType.getName().length() > 0)) 
-				type = simpleType.getName();
+				typeName = simpleType.getName();
 			
-			// obtain the proper domain from the preset list
-			Domain domain = domainList.get(type);
-			if (domain == null) {
-				domain = new Domain(nextId(), type, this.getDocumentation(simpleType), 0);
-				if (schemaElementsHS.containsKey(this.compString(domain)) == false) {
-					schemaElementsHS.put(this.compString(domain),domain);
-					domainList.put(type, domain);
-				//	System.out.println("adding " + domain.getName() + ", " + domain.getId());
+			
+			if (typeName.equals("IDREF")){
+				
+				/*   
+				 *  the IDREF element/attribute will become a named 
+				 * relationship that links the parent entity to ANY entity
+				 */
+				
+				if (this.anyEntity == null){
+					this.anyEntity = new Entity(nextId(),"ANY","ANY ENTITY",0);
+					schemaElementsHS.put(this.compString(this.anyEntity),this.anyEntity);
+				}	
+				
+				Relationship rel = new Relationship(nextId(),attr.getName(),complexTypeEntity.getId(),0,1,this.anyEntity.getId(),0,1000,0);
+				if (schemaElementsHS.containsKey(this.compString(rel)) == false) {
+					schemaElementsHS.put(this.compString(rel),rel);
 				}
-			} // if (domain == null) {
-			
-			Attribute attribute = new Attribute(nextId(), attr.getName(), 
-				this.getDocumentation(attr), complexTypeEntity.getId(),domain.getId(),1,1,false, 0);
-			if (schemaElementsHS.containsKey(this.compString(attribute)) == false) {
-				schemaElementsHS.put(this.compString(attribute),attribute);
+				
+				
+			} else {
+				
+				// obtain the proper domain from the preset list
+				Domain domain = domainList.get(typeName);
+				if (domain == null) {
+					domain = new Domain(nextId(), typeName, this.getDocumentation(simpleType), 0);
+					if (schemaElementsHS.containsKey(this.compString(domain)) == false) {
+						schemaElementsHS.put(this.compString(domain),domain);
+						domainList.put(typeName, domain);
+				
+					}
+				} 
+				boolean containsID = typeName.equals("ID");
+				Attribute attribute = new Attribute(nextId(), attr.getName(), this.getDocumentation(attr), complexTypeEntity.getId(),domain.getId(),1,1,containsID, 0);
+				if (schemaElementsHS.containsKey(this.compString(attribute)) == false) {
+					schemaElementsHS.put(this.compString(attribute),attribute);
+				}
 			}
 		} // while (attrList.hasMoreElements()){
 		
 		
-		//// get elements for current compl
 		
 		Enumeration<?> currComplexTypeElements = ((ComplexType)complexTypeElement.getType()).enumerate();
 		while (currComplexTypeElements.hasMoreElements()) {
@@ -619,6 +661,8 @@ public class XSDImporter extends Importer
 	 * for use during Attribute creation
 	 */
 	private void loadDomains() {
+		
+
 		Domain domain = new Domain(nextId(), ANY,
 				"The Any wildcard domain", 0);
 		// // schemaElements.add(domain);
@@ -692,7 +736,13 @@ public class XSDImporter extends Importer
 					+ ((Containment) o).getBase() + " , "
 					+ ((Containment) o).getParentID() + " , "
 					+ ((Containment) o).getChildID() + ", CONTAINMENT");
-			/** Attribute: NAME, DESC, BASE, DOMAIN_ID, ENTITY_ID */
+		/** Relationship: NAME, DESC, BASE, LEFT_ID, RIGHT_ID */ 	
+		} else if (o instanceof Relationship){
+			retVal = new String(((Relationship) o).getName() + " , "
+					+ ((Relationship) o).getBase() + " , "
+					+ ((Relationship) o).getLeftID() + " , "
+					+ ((Relationship) o).getRightID() + ", RELATIONSHIP");
+		/** Attribute: NAME, DESC, BASE, DOMAIN_ID, ENTITY_ID */
 		} else if (o instanceof Attribute) {
 			retVal = new String(((Attribute) o).getName() + " , "
 					+ ((Attribute) o).getBase() + " , "
