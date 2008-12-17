@@ -6,4 +6,5 @@
   <importer>org.mitre.schemastore.importers.OWLImporter</importer>
   <importer>org.mitre.schemastore.importers.XSDImporter</importer>
   <importer>org.mitre.schemastore.importers.DomainValueImporter</importer>
+  <importer>org.mitre.schemastore.importers.SpreadsheetImporter</importer>
 </importers>
