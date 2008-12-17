@@ -3,12 +3,11 @@
 package org.mitre.schemastore.importers;
 
 import org.mitre.schemastore.client.SchemaStoreClient;
-import org.mitre.schemastore.exporters.SchemaStoreArchiveExporter;
 import org.mitre.schemastore.model.*;
 import org.mitre.schemastore.model.graph.Graph;
+import org.mitre.schemastore.model.xml.ConvertFromXML;
 
 import java.io.IOException;
-import java.net.URI;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -16,7 +15,6 @@ import java.util.Comparator;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -47,6 +45,20 @@ public class SchemaStoreArchiveImporter extends Importer
 			{ return element1.getSchema().getId().compareTo(element2.getSchema().getId()); }
 	}
 
+	/** Private class for defining an extended graph */
+	static class ExtendedGraph extends Graph
+	{
+		/** Stores the parentIDs associated with the extended graph */
+		private ArrayList<Integer> parentIDs;
+		
+		/** Constructs the extended graph */
+		ExtendedGraph(Schema schema, ArrayList<Integer> parentIDs, ArrayList<SchemaElement> elements)
+		{
+			super(schema,elements);
+			this.parentIDs = parentIDs;
+		}
+	}
+	
 	/** Stores the list of schemas */
 	private ArrayList<Integer> extendedSchemaIDs = new ArrayList<Integer>();
 
@@ -131,7 +143,7 @@ public class SchemaStoreArchiveImporter extends Importer
 			}
 
 			//get the schemas contained in the ssa
-			ArrayList<Graph> mySchemaGraphs = parseDocument(dom);
+			ArrayList<ExtendedGraph> mySchemaGraphs = parseDocument(dom);
 			Collections.sort(mySchemaGraphs, new GraphComparator());
 
 			// Transfer all schemas from which this schema is extended
@@ -139,7 +151,7 @@ public class SchemaStoreArchiveImporter extends Importer
 			int i=0;
 			ArrayList<SchemaElement> sElementsV = null;
 			Integer oldSchemaID = null;
-			for(Graph repositoryGraph : mySchemaGraphs)
+			for(ExtendedGraph repositoryGraph : mySchemaGraphs)
 			{
 				Schema repositorySchema = repositoryGraph.getSchema();
 				oldSchemaID = repositorySchema.getId();
@@ -153,7 +165,7 @@ public class SchemaStoreArchiveImporter extends Importer
 				//update the remaining graphs to reflect the new id.
 				updateGraphs(schemaID, oldSchemaID, mySchemaGraphs, repositoryGraph, ++i);
 				sElementsV = repositoryGraph.getElements(null);
-				extendedSchemaIDs = repositorySchema.getParentSchemaIDs();
+				extendedSchemaIDs = repositoryGraph.parentIDs;
 			}
 
 			// Retrieve the base elements to be displayed
@@ -177,9 +189,9 @@ public class SchemaStoreArchiveImporter extends Importer
 	 * @param repositoryGraph - the new graph
 	 * @param num
 	 */
-	private void updateGraphs(Integer nSchemaID, Integer oldSchemaID, ArrayList<Graph> myGraphs, Graph repositoryGraph, int num){
+	private void updateGraphs(Integer nSchemaID, Integer oldSchemaID, ArrayList<ExtendedGraph> myGraphs, Graph repositoryGraph, int num){
 		try{
-			Graph myGraph=null;
+			ExtendedGraph myGraph=null;
 			ArrayList<SchemaElement> oldElements = repositoryGraph.getElements(null);
 			Collections.sort(oldElements,new SchemaComparator());
 			ArrayList<SchemaElement> newElements = client.getGraph(nSchemaID).getElements(null);
@@ -188,10 +200,9 @@ public class SchemaStoreArchiveImporter extends Importer
 			for(int j=num; myGraphs.size() > j; j++)
 			{
 				myGraph = myGraphs.get(j);
-				Schema tSchema = myGraph.getSchema();
 
 				//check if this schema is a child of changed schema
-				ArrayList<Integer> myParents = tSchema.getParentSchemaIDs();
+				ArrayList<Integer> myParents = myGraph.parentIDs;
 				if(myParents.contains(oldSchemaID)){
 					int place = myParents.indexOf(oldSchemaID);
 					myParents.set(place, nSchemaID);
@@ -215,7 +226,7 @@ public class SchemaStoreArchiveImporter extends Importer
 	 * @param nGraph - the graph to add.
 	 * @return the id of the graph from the repository
 	 */
-	private Integer addNewSchema(Graph nGraph){
+	private Integer addNewSchema(ExtendedGraph nGraph){
 		//this means the schema isn't in the repository.  Hence, add it.
 		Schema schema = nGraph.getSchema();
 		boolean success = false;
@@ -225,7 +236,7 @@ public class SchemaStoreArchiveImporter extends Importer
 			ArrayList<SchemaElement> myElements = nGraph.getElements(null);
 			schemaID = client.importSchema(schema, myElements);
 			schema.setId(schemaID);
-			success = client.setParentSchemas(schema.getId(), schema.getParentSchemaIDs());
+			success = client.setParentSchemas(schema.getId(), nGraph.parentIDs);
 		}
 		catch(Exception e) {
 			System.out.println(e); e.printStackTrace();
@@ -246,12 +257,12 @@ public class SchemaStoreArchiveImporter extends Importer
 	 * @param dom - the xml document.
 	 * @return a list of the graphs.
 	 */
-	private static ArrayList<Graph> parseDocument(Document dom){
+	private static ArrayList<ExtendedGraph> parseDocument(Document dom){
 		//get the root elememt
 		Element docEle = dom.getDocumentElement();
 
 		//we're going to build out the tree here.  get all of the schemas
-		ArrayList<Graph> mySchemas = new ArrayList<Graph>();
+		ArrayList<ExtendedGraph> mySchemas = new ArrayList<ExtendedGraph>();
 
 		//get a nodelist of <SchemaRoot> elements
 		NodeList nl = docEle.getElementsByTagName("SchemaRoot");
@@ -262,9 +273,9 @@ public class SchemaStoreArchiveImporter extends Importer
 				Element schemaElement = (Element)nl.item(i);
 
 				//get the Schema object
-				Schema s1 = new Schema();
-				s1.fromXML(schemaElement);
-
+				Schema s1 = ConvertFromXML.getSchema(schemaElement);
+				ArrayList<Integer> parentIDs = ConvertFromXML.getParentSchemaIDs(schemaElement);
+				
 				//the schema elements themselves.
 				ArrayList<SchemaElement> tSchemaElements = new ArrayList<SchemaElement>();
 				tSchemaElements.addAll(getSchemaElementsByName("AliasElement",schemaElement,new Alias()));
@@ -277,7 +288,7 @@ public class SchemaStoreArchiveImporter extends Importer
 				tSchemaElements.addAll(getSchemaElementsByName("SchemaElement",schemaElement,new SchemaElement()));
 				tSchemaElements.addAll(getSchemaElementsByName("SubTypeElement",schemaElement,new Subtype()));
 
-				Graph myGraph = new Graph(s1, tSchemaElements);
+				ExtendedGraph myGraph = new ExtendedGraph(s1, parentIDs, tSchemaElements);
 				//add it to list
 				mySchemas.add(myGraph);
 			}
@@ -294,15 +305,7 @@ public class SchemaStoreArchiveImporter extends Importer
 
 				//get the schema element
 				Element newSchemaElement = (Element)nl.item(i);
-				SchemaElement sNew = null;
-				try{
-					sNew = sE.getClass().newInstance();
-				} catch(Exception e){
-					System.out.println(e);
-					e.printStackTrace();
-				}
-				sNew.fromXML(newSchemaElement);
-
+				SchemaElement sNew = ConvertFromXML.getSchemaElement(newSchemaElement);
 				mySchemaElements.add(sNew);
 			}
 		}
