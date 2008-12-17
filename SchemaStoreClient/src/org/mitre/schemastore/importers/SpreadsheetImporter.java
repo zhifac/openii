@@ -11,6 +11,7 @@ import org.mitre.schemastore.model.Attribute;
 import org.mitre.schemastore.model.Domain;
 import org.mitre.schemastore.model.Entity;
 import org.mitre.schemastore.model.SchemaElement;
+import org.mitre.schemastore.model.Schema;
 
 import java.io.File;
 import java.io.IOException;
@@ -108,7 +109,7 @@ public class SpreadsheetImporter extends Importer {
             HSSFRow topRow = sheet.getRow(0); //first logical row
 
             if (topRow == null|| topRow.getCell(0)==null) {
-                System.out.println("Sheet " + s + " is blank.");
+                // System.out.println("Sheet " + s + " is blank.");
                 continue;
             }
 
@@ -138,6 +139,7 @@ public class SpreadsheetImporter extends Importer {
                     attribute = new Attribute(nextId(), attributeNames[i], documentation,
                             tblEntity.getId(), domain.getId(), null, null, false, 0);
                     _attributes.put(attribute.getName(), attribute);
+                    // System.out.println( "Put in entity: " + tblEntity.getId() + " attribute: " + attribute.getId()  + ": " + domain.getId() );
                 }
             }
         }
@@ -175,33 +177,6 @@ public class SpreadsheetImporter extends Importer {
             }
         }
     }
-
-    /* protected void readRow(HSSFRow row) {
-        String tblName = getCellValStr(row.getCell(0));
-        String attName = getCellValStr(row.getCell(0));
-        String documentation = getCellValStr(row.getCell(0));
-        Entity tblEntity;
-        Attribute attribute;
-
-        if ((tblName.length() == 0) && (attName.length() == 0)) {
-            return;
-        }
-
-        // create an entity for a table
-        if (!_entities.containsKey(tblName)) {
-            tblEntity = new Entity(nextId(), tblName, "", 0);
-            _entities.put(tblName, tblEntity);
-        } else {
-            tblEntity = _entities.get(tblName);
-        }
-
-        // create an attribute
-        if (attName.length() > 0) {
-            attribute = new Attribute(nextId(), attName, documentation,
-                    tblEntity.getId(), D_ANY.getId(), null, null, false, 0);
-            _attributes.put(attribute.getName(), attribute);
-        }
-    } */
 
 
     public String translateType(int hssfType)
@@ -268,11 +243,10 @@ public class SpreadsheetImporter extends Importer {
         File excel = new File(args[0]);
         SpreadsheetImporter tester = new SpreadsheetImporter();
         tester.setClient( new org.mitre.schemastore.client.SchemaStoreClient("../SchemaStore/SchemaStore.jar" ) );
-        tester.importSchema(excel.getName(), "", "", excel.toURI());
+        tester.importSchema(excel.getName(), System.getProperty("user.name"), "Good description of the spreadsheet goes here", excel.toURI());
     }
 
     protected ArrayList<SchemaElement> generateSchemaElementList() {
-        ArrayList<SchemaElement> schemaElements = new ArrayList<SchemaElement>();
 
         for (Entity e : _entities.values())
             schemaElements.add(e);
@@ -293,8 +267,14 @@ public class SpreadsheetImporter extends Importer {
     public ArrayList<SchemaElement> getSchemaElements()
         throws ImporterException {
         generate();
-
-        return generateSchemaElementList();
+        ArrayList<SchemaElement> elements = generateSchemaElementList();
+        // Schema schema = new Schema(nextId(),"thisschema","me","","","description",false);
+        // org.mitre.schemastore.model.graph.Graph g = new org.mitre.schemastore.model.graph.Graph(schema, elements);
+        // for(SchemaElement e : g.getElements(null))
+        // {
+        //     System.out.println( e.getId() + ": " + e.getName());
+        // }
+        return elements;
     }
 
 
