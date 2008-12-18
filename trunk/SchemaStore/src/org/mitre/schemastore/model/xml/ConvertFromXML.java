@@ -30,7 +30,7 @@ public class ConvertFromXML
 				return value.equals("NULL") ? "" : value;
 			}
 		} catch(java.lang.NullPointerException e) {}
-		return "";
+		return null;
 	}
 	
 	/** Retrieves an integer value from the element */
@@ -78,14 +78,14 @@ public class ConvertFromXML
 		// Identify the schema element to be constructed
 		SchemaElement schemaElement = null;
 		String type = element.getTagName();
-		if(type.equals("Alias")) schemaElement = new Alias();
-		if(type.equals("Attribute")) schemaElement = new Attribute();
-		if(type.equals("Containment")) schemaElement = new Containment();
-		if(type.equals("Domain")) schemaElement = new Domain();
-		if(type.equals("DomainValue")) schemaElement = new DomainValue();
-		if(type.equals("Entity")) schemaElement = new Entity();
-		if(type.equals("Relationship")) schemaElement = new Relationship();
-		if(type.equals("Subtype")) schemaElement = new Subtype();
+		if(type.equals(Alias.class.getName())) schemaElement = new Alias();
+		if(type.equals(Attribute.class.getName())) schemaElement = new Attribute();
+		if(type.equals(Containment.class.getName())) schemaElement = new Containment();
+		if(type.equals(Domain.class.getName())) schemaElement = new Domain();
+		if(type.equals(DomainValue.class.getName())) schemaElement = new DomainValue();
+		if(type.equals(Entity.class.getName())) schemaElement = new Entity();
+		if(type.equals(Relationship.class.getName())) schemaElement = new Relationship();
+		if(type.equals(Subtype.class.getName())) schemaElement = new Subtype();
 		if(schemaElement==null) return null;
 		
 		// Populate the general schema element information
