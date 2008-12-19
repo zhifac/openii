@@ -18,6 +18,10 @@ public class Alias extends SchemaElement
 	public Alias(Integer id, String name, Integer elementID, Integer base)
 		{ super(id,name,"",base); this.elementID = elementID; }
 	
+	/** Copies the alias */
+	public Alias copy()
+		{ return new Alias(getId(),getName(),getElementID(),getBase()); }
+	
 	/** Retrieves the alias' element id */
 	public Integer getElementID()
 		{ return elementID; }
