@@ -14,4 +14,8 @@ public class Entity extends SchemaElement
 	/** Constructs the entity */
 	public Entity(Integer id, String name, String description, Integer base)
 		{ super(id,name,description,base); }
+	
+	/** Copies the entity */
+	public Entity copy()
+		{ return new Entity(getId(),getName(),getDescription(),getBase()); }
 }

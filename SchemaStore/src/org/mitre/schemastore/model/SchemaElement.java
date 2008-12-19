@@ -14,7 +14,7 @@ public class SchemaElement implements Serializable
 	private Integer id;
 	
 	/** Stores the schema element name */
-	protected String name;
+	private String name;
 	
 	/** Stores the schema element description */
 	private String description;
@@ -34,9 +34,13 @@ public class SchemaElement implements Serializable
 		this.base = base;
 	}
 	
+	/** Copies the schema element */
+	public SchemaElement copy()
+		{ return new SchemaElement(getId(),getName(),getDescription(),getBase()); }
+	
 	// Handles all schema element getters
 	public Integer getId() { return id; }
-	public String getName() { return name; }
+	public String getName() { return name==null ? "" : name; }
 	public String getDescription() { return description==null ? "" : description; }
 	public Integer getBase() { return base; }
 	

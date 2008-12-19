@@ -30,6 +30,10 @@ public class Attribute extends SchemaElement
 	public Attribute(Integer id, String name, String description, Integer entityID, Integer domainID, Integer min, Integer max, boolean key, Integer base)
 		{ super(id,name,description,base); this.entityID=entityID; this.domainID=domainID; this.min=min; this.max=max; this.key=key; }
 	
+	/** Copies the attribute */
+	public Attribute copy()
+		{ return new Attribute(getId(),getName(),getDescription(),getEntityID(),getDomainID(),getMin(),getMax(),isKey(),getBase()); }
+	
 	// Handles all attribute getters
 	public Integer getEntityID() { return entityID; }
 	public Integer getDomainID() { return domainID; }

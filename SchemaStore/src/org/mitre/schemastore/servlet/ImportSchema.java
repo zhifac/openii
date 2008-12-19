@@ -79,7 +79,7 @@ public class ImportSchema
 			}
 						
 			// Sort the schema elements to prevent dependency issues
-			ArrayList<SchemaElement> elements = graph.getElements(null);
+			ArrayList<SchemaElement> elements = graph.getBaseElements(null);
 			Collections.sort(elements,new SchemaElementComparator());
 				
 			// Add schema elements to the web service

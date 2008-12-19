@@ -26,6 +26,10 @@ public class Containment extends SchemaElement
 	/** Constructs the containment relationship */
 	public Containment(Integer id, String name, String description, Integer parentID, Integer childID, Integer min, Integer max, Integer base)
 		{ super(id,name,description,base); this.parentID=parentID; this.childID=childID; this.min=min; this.max=max; }
+
+	/** Copies the containment relationship */
+	public Containment copy()
+		{ return new Containment(getId(),getName(),getDescription(),getParentID(),getChildID(),getMin(),getMax(),getBase()); }
 	
 	// Handles all containment getters
 	public Integer getParentID() { return parentID==null || parentID.equals(0) ? null : parentID; }

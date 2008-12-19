@@ -14,4 +14,8 @@ public class Domain extends SchemaElement
 	/** Constructs the domain */
 	public Domain(Integer id, String name, String description, Integer base)
 		{ super(id,name,description,base); }
+	
+	/** Copies the domain */
+	public Domain copy()
+		{ return new Domain(getId(),getName(),getDescription(),getBase()); }
 }

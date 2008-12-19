@@ -18,6 +18,10 @@ public class DomainValue extends SchemaElement
 	public DomainValue(Integer id, String name, String description, Integer domainID, Integer base)
 		{ super(id,name,description,base); this.domainID=domainID; }
 	
+	/** Copies the domain value */
+	public DomainValue copy()
+		{ return new DomainValue(getId(),getName(),getDescription(),getDomainID(),getBase()); }
+	
 	/** Retrieves the domain value's domain id */
 	public Integer getDomainID()
 		{ return domainID; }

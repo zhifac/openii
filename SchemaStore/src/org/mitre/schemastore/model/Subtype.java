@@ -20,6 +20,10 @@ public class Subtype extends SchemaElement
 	/** Constructs the subtype relationship */
 	public Subtype(Integer id, Integer parentID, Integer childID, Integer base)
 		{ super(id,"","",base); this.parentID=parentID; this.childID=childID; }
+
+	/** Copies the subtype relationship */
+	public Subtype copy()
+		{ return new Subtype(getId(),getParentID(),getChildID(),getBase()); }
 	
 	// Handles all containment getters
 	public Integer getParentID() { return parentID; }
