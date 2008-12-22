@@ -1,0 +1,14 @@
+#Fat Jar Configuration File
+#Tue Nov 11 09:50:21 EST 2008
+onejar.license.required=true
+manifest.classpath=
+manifest.removesigners=true
+onejar.checkbox=false
+jarname=OpenII.Ygg_fat.jar
+manifest.mergeall=true
+manifest.mainclass=
+manifest.file=<createnew>
+jarname.isextern=false
+onejar.expand=
+excludes=<jar|org.eclipse.ui_3.4.1.M20080910-0800.jar>;<jar|org.eclipse.swt_3.4.1.v3449c.jar>;<jar|org.eclipse.swt.gtk.linux.x86_3.4.1.v3449c.jar>;<jar|org.eclipse.jface_3.4.1.M20080827-2000.jar>;<jar|org.eclipse.core.commands_3.4.0.I20080509-2000.jar>;<jar|org.eclipse.ui.workbench_3.4.1.M20080827-0800a.jar>;<jar|org.eclipse.core.runtime_3.4.0.v20080512.jar>;<jar|org.eclipse.osgi_3.4.2.R34x_v20080826-1230.jar>;<jar|org.eclipse.equinox.common_3.4.0.v20080421-2006.jar>;<jar|org.eclipse.core.jobs_3.4.0.v20080512.jar>;<jar|runtime_registry_compatibility.jar>;<jar|org.eclipse.equinox.registry_3.4.0.v20080516-0950.jar>;<jar|org.eclipse.equinox.preferences_3.2.201.R34x_v20080709.jar>;<jar|org.eclipse.core.contenttype_3.3.0.v20080604-1400.jar>;<jar|org.eclipse.equinox.app_1.1.0.v20080421-2006.jar>;<jar|org.eclipse.swt.gtk.linux.x86.source_3.4.1.v3449c.jar>
+includes=

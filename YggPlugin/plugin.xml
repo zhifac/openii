@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+
+
+   <extension
+         point="org.eclipse.ui.views">
+      <category
+            name="OpenII"
+            id="YggPlugin">
+      </category>
+      <view
+            name="YggPlugin"
+            icon="icons/sample.gif"
+            category="OpenII"
+            class="openii.ygg.views.SampleView"
+            id="openii.ygg.views.SampleView">
+      </view>
+   </extension>
+   <extension
+         point="org.eclipse.help.contexts">
+      <contexts
+            file="contexts.xml">
+      </contexts>
+   </extension>
+
+</plugin>
