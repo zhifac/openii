@@ -178,8 +178,8 @@ public class XSDImporter extends Importer
 						this.anyEntity = new Entity(nextId(),"ANY","ANY ENTITY",0);
 						schemaElementsHS.put(this.compString(this.anyEntity),this.anyEntity);
 					}	
-					
-					Relationship rel = new Relationship(nextId(),attr.getName(),currentTypeEntity.getId(),0,1,this.anyEntity.getId(),0,1000,0);
+					// Create a relationship
+					Relationship rel = new Relationship(nextId(),attr.getName(),currentTypeEntity.getId(),0,1,this.anyEntity.getId(),0,null,0);
 					
 					if (schemaElementsHS.containsKey(this.compString(rel)) == false) {
 						schemaElementsHS.put(this.compString(rel),rel);
@@ -376,7 +376,8 @@ public class XSDImporter extends Importer
 					schemaElementsHS.put(this.compString(this.anyEntity),this.anyEntity);
 				}	
 				
-				Relationship rel = new Relationship(nextId(),attr.getName(),complexTypeEntity.getId(),0,1,this.anyEntity.getId(),0,1000,0);
+				// Create a relationship for the ID-REF
+				Relationship rel = new Relationship(nextId(),attr.getName(),complexTypeEntity.getId(),0,1,this.anyEntity.getId(),0,null,0);
 				if (schemaElementsHS.containsKey(this.compString(rel)) == false) {
 					schemaElementsHS.put(this.compString(rel),rel);
 				}
