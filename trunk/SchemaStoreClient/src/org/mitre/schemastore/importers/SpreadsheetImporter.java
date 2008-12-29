@@ -1,4 +1,4 @@
-/*
+/**
  *  Copyright 2008 The MITRE Corporation (http://www.mitre.org/). All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -33,18 +33,26 @@ import org.mitre.schemastore.model.Attribute;
 import org.mitre.schemastore.model.Domain;
 import org.mitre.schemastore.model.Entity;
 import org.mitre.schemastore.model.SchemaElement;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+
+import java.net.URI;
+import java.net.URISyntaxException;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+
 
 /**
  * 
  * SpreadsheetImporter is a poor man's importer. It imports the schema of a spreadsheet. This is
  * very simplistic - the following are the assumptions:
  * <ul>
- * <li>Multiple worksheets are imported as separate tables - no effort is made to link them through
- * analysis of the formulas</li>
- * <li>No blank lines above or to the left of the data</li>
- * <li>The schema attribute names are in the first row</li>
- * <li></li>
- * <li></li>
+ *     <li>Multiple worksheets are imported as separate tables - no effort is made to link them through analysis of the formulas</li>
+ *     <li>No blank lines above or to the left of the data</li>
+ *     <li>The schema attribute names are in the first row</li>
+ *     <li>No breaks in the data listing (i.e., no blank rows until after all the data is listed)</li>
  * </ul>
  * 
  * @author Jeffrey Hoyt
