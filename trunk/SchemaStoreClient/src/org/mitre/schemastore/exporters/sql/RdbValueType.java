@@ -17,8 +17,9 @@ public class RdbValueType implements Comparable<Object>
 	public final static RdbValueType VARCHAR255 = new RdbValueType( "VARCHAR(255)", String.class );
 	public final static RdbValueType AUTO_INCREMENT = new RdbValueType( "SERIAL", Integer.class);
 	public final static RdbValueType ANY = new RdbValueType( "ANY", Object.class);
+	public final static RdbValueType ID = new RdbValueType( "ID", Integer.class);
+	public static final RdbValueType FOREIGN_KEY = new RdbValueType( "INTEGER", Integer.class);
 	
-//	public final static RdbValueType FOREIGN_KEY = new RdbValueType( SeedpodModel.RdbCls.DB_FOREIGN_KEY, Integer.class );
 //	public final static RdbValueType DATE = new RdbValueType( SeedpodModel.RdbCls.DB_DATE, Object.class );
 //	public final static RdbValueType TIME = new RdbValueType( SeedpodModel.RdbCls.DB_TIME, Object.class );
 //			Object.class );
