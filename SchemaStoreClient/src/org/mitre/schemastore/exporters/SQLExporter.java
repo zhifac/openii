@@ -1,14 +1,38 @@
 package org.mitre.schemastore.exporters;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import org.mitre.schemastore.exporters.sql.*;
 import org.mitre.schemastore.client.SchemaStoreClient;
-import org.mitre.schemastore.model.*;
+import org.mitre.schemastore.exporters.sql.DomainTable;
+import org.mitre.schemastore.exporters.sql.ForeignKey;
+import org.mitre.schemastore.exporters.sql.NoRelationFoundException;
+import org.mitre.schemastore.exporters.sql.Rdb;
+import org.mitre.schemastore.exporters.sql.RdbAttribute;
+import org.mitre.schemastore.exporters.sql.RdbValueType;
+import org.mitre.schemastore.exporters.sql.SQLWriter;
+import org.mitre.schemastore.exporters.sql.Table;
+import org.mitre.schemastore.exporters.sql.View;
+import org.mitre.schemastore.importers.Importer;
+import org.mitre.schemastore.importers.ImporterException;
+import org.mitre.schemastore.importers.ImporterManager;
+import org.mitre.schemastore.importers.XSDImporter;
+import org.mitre.schemastore.model.Attribute;
+import org.mitre.schemastore.model.Containment;
+import org.mitre.schemastore.model.Domain;
+import org.mitre.schemastore.model.DomainValue;
+import org.mitre.schemastore.model.Entity;
+import org.mitre.schemastore.model.Relationship;
+import org.mitre.schemastore.model.Schema;
+import org.mitre.schemastore.model.SchemaElement;
+import org.mitre.schemastore.model.Subtype;
 
 /**
  * Caveats: 1. all string fields are mapped to TEXT in the database
@@ -28,10 +52,10 @@ public class SQLExporter extends Exporter {
 	private HashMap<Integer, DomainValue> _domainValues = new HashMap<Integer, DomainValue>();
 	private Rdb _rdb;
 
-	public SQLExporter () {
-		_rdb = new Rdb("");
-	}
-	
+	/**
+	 * maps relationships . create foreign key for 1-to-many relationships. create bridge tables for
+	 * many-to-many relationships
+	 */
 	private void mapRelationships() {
 		for (Relationship rel : _relationships.values()) {
 
@@ -52,8 +76,8 @@ public class SQLExporter extends Exporter {
 				Integer rmin = rel.getRightMin();
 				Integer rmax = rel.getRightMax();
 
-				System.err.println(rel.getLeftMin() + ": " + rel.getLeftMax() + ": " + " || "
-						+ rel.getRightMin() + " : " + rel.getRightMax());
+//				System.err.println(rel.getLeftMin() + ": " + rel.getLeftMax() + ": " + " || "
+//						+ rel.getRightMin() + " : " + rel.getRightMax());
 
 				if (lmax == null || lmax.equals(-1)) { // L*
 					if (rmax == null || rmax.equals(-1)) {
@@ -94,6 +118,10 @@ public class SQLExporter extends Exporter {
 		}
 	}
 
+	/**
+	 * maps containments which include entity to entity containment, entity to domain containments,
+	 * and schema to entity containments
+	 */
 	private void mapContainments() {
 		for (Containment c : _containments.values()) {
 			Entity parent = _entities.get(c.getParentID());
@@ -116,6 +144,15 @@ public class SQLExporter extends Exporter {
 		}
 	}
 
+	/**
+	 * Maps containments relationship between an entity and a domain
+	 * 
+	 * @param c
+	 *            containment
+	 * @param parent
+	 *            containment parent entity
+	 * @param domain
+	 */
 	private void mapEntityDomainContainment(Containment c, Entity parent, Domain domain) {
 		String attributeName = c.getName();
 		RdbValueType dbType;
@@ -130,8 +167,8 @@ public class SQLExporter extends Exporter {
 				String bridgeName = c.getName() + "." + parent.getName();
 				Table pTable = _rdb.getRelation(parent.getName());
 				Table bridge = _rdb.createTable(bridgeName, false);
-				ForeignKey pId = new ForeignKey(_rdb, bridge, "pID", pTable, pTable.getPrimaryKey()
-						.getName(), RdbValueType.INTEGER);
+				ForeignKey pId = new ForeignKey(_rdb, bridge, "pID", pTable,
+						pTable.getPrimaryKey().getName(), RdbValueType.INTEGER);
 				RdbAttribute att = _rdb.addAttribute(bridge, attributeName, dbType, false);
 				att.setComment(c.getDescription());
 
@@ -151,22 +188,18 @@ public class SQLExporter extends Exporter {
 
 	}
 
-	// Map all E->E containment to foreign keys in children entities referencing
-	// parents regardless of 1-to-many or 0-to-many or 1-to-1. The foreign key
-	// is named
-	// after the containment
+	/**
+	 * Map all E->E containment to foreign keys in children entities referencing parents regardless
+	 * of 1-to-many or 0-to-many or 1-to-1. The foreign key is named after the containment
+	 * 
+	 */
 	private void mapEntityEntityContainment(Containment c, Entity parent, Entity child) {
-		// System.err.println("E->E " + c.getName() + " => " + parent.getName()
-		// + " -> "
-		// + child.getName() + " " + c.getMin() + " : " + c.getMax());
-
 		Table childTable, parentTable;
 		try {
 			childTable = _rdb.getRelation(child.getName());
 			parentTable = _rdb.getRelation(parent.getName());
 			String fkName = c.getName() + "." + parentTable.getName();
-			ForeignKey fk = _rdb.addForeignKey(childTable, fkName, parentTable,
-					RdbValueType.INTEGER);
+			ForeignKey fk = _rdb.addForeignKey(childTable, fkName, parentTable, RdbValueType.INTEGER);
 			fk.setIsRequired(false);
 			fk.setComment(c.getDescription());
 
@@ -176,15 +209,16 @@ public class SQLExporter extends Exporter {
 
 	}
 
-	// create reference tables for nonsimple domains. 
+	/**
+	 * create tables for non-simple types/domains. Domain values are entries to the table
+	 */
 	private void mapDomains() {
 		for (Domain domain : _domains.values()) {
 			String dName = domain.getName();
 			if (!(dName.equalsIgnoreCase("Integer") || dName.equalsIgnoreCase("int")
 					|| dName.equalsIgnoreCase("float") || dName.equalsIgnoreCase("Double")
 					|| dName.equalsIgnoreCase("decimal") || dName.equalsIgnoreCase("Datetime")
-					|| dName.equalsIgnoreCase("String") || dName.equalsIgnoreCase("Timestamp")
-					|| dName.equalsIgnoreCase("Boolean") )) { // TODO HANDLE ANY TYPE|| dName.equalsIgnoreCase("any"))) {
+					|| dName.equalsIgnoreCase("String") || dName.equalsIgnoreCase("Timestamp") || dName.equalsIgnoreCase("Boolean"))) { // TODO HANDLE ANY TYPE|| dName.equalsIgnoreCase("any"))) {
 
 				DomainTable domainTable = _rdb.createDomainTable(domain.getName(), true);
 				for (DomainValue dv : _domainValues.values()) {
@@ -196,44 +230,36 @@ public class SQLExporter extends Exporter {
 		}
 	}
 
-	// map simple domain to a known DDL type.
+	/**
+	 * map simple domain to a known DDL type.
+	 */
 	private RdbValueType toRdbValueType(Domain domain) {
 		if (domain.getName().equalsIgnoreCase("Integer")
-				|| domain.getName().equalsIgnoreCase("int"))
-			return RdbValueType.INTEGER;
+				|| domain.getName().equalsIgnoreCase("int")) return RdbValueType.INTEGER;
 		else if (domain.getName().equalsIgnoreCase("Double")
 				|| domain.getName().equalsIgnoreCase("float")
-				|| domain.getName().equalsIgnoreCase("decimal"))
-			return RdbValueType.NUMERIC;
-		else if (domain.getName().equalsIgnoreCase("DateTime"))
-			return RdbValueType.DATETIME;
-		else if (domain.getName().equalsIgnoreCase("String"))
-			return RdbValueType.VARCHAR255;
-		else if (domain.getName().equalsIgnoreCase("TimeStamp"))
-			return RdbValueType.TIMESTAMP;
-		else if (domain.getName().equalsIgnoreCase("Boolean"))
-			return RdbValueType.BOOLEAN;
-		else if (domain.getName().equalsIgnoreCase("ID")){
-			// TODO NEED TO BE KEYED 
-			return RdbValueType.ANY;
-		}
+				|| domain.getName().equalsIgnoreCase("decimal")) return RdbValueType.NUMERIC;
+		else if (domain.getName().equalsIgnoreCase("DateTime")) return RdbValueType.DATETIME;
+		else if (domain.getName().equalsIgnoreCase("String")) return RdbValueType.VARCHAR255;
+		else if (domain.getName().equalsIgnoreCase("TimeStamp")) return RdbValueType.TIMESTAMP;
+		else if (domain.getName().equalsIgnoreCase("Boolean")) return RdbValueType.BOOLEAN;
+		else if (domain.getName().equalsIgnoreCase("ID")) return RdbValueType.ID; 
+		else if ( domain.getName().equalsIgnoreCase("IDREF")) return RdbValueType.FOREIGN_KEY;
 		else {
 			// handle complex domains type by creating a new table. Its domain
 			// values are rows
 			System.err.println(" &#($()# " + "Unhandled domain type " + domain.toString());
 			return RdbValueType.ANY;
 		}
-		
 
 	}
 
 	/**
-	 * Access uses [] to delimit table names or attribute names with spaces or
-	 * formats. Postgres uses double quotes. According to Chris, Oracle uses
-	 * single quotes.
+	 * Access uses [] to delimit table names or attribute names with spaces or formats. Postgres
+	 * uses double quotes. According to Chris, Oracle uses single quotes.
 	 * 
-	 * Override this function to desensitize the name, wrap it in the correct
-	 * name delimiters, and correct length.
+	 * Override this function to desensitize the name, wrap it in the correct name delimiters, and
+	 * correct length.
 	 */
 
 	protected String toDbDelimitedName(String name) {
@@ -257,13 +283,14 @@ public class SQLExporter extends Exporter {
 		}
 	}
 
-	// recursively get all children classes of an entity
+	/**
+	 * recursively get all children classes of an entity
+	 */
 	private ArrayList<Entity> getChildren(Entity e) {
 		ArrayList<Entity> children = new ArrayList<Entity>();
 
 		ArrayList<Entity> firstChild = getFirstChildren(e);
-		if (firstChild.size() == 0)
-			return children;
+		if (firstChild.size() == 0) return children;
 
 		children.addAll(firstChild);
 		for (Entity t : firstChild) {
@@ -272,7 +299,9 @@ public class SQLExporter extends Exporter {
 		return children;
 	}
 
-	// returns first level children of an entity
+	/**
+	 * returns first level children of an entity
+	 */
 	private ArrayList<Entity> getFirstChildren(Entity entity) {
 		ArrayList<Entity> children = new ArrayList<Entity>();
 		for (Subtype s : _subtypes.values()) {
@@ -316,13 +345,11 @@ public class SQLExporter extends Exporter {
 			RdbAttribute rdbAttribute = new RdbAttribute(_rdb, table, attribute.getName(),
 					toRdbValueType(domain));
 			_rdb.addAttribute(table, rdbAttribute);
-			if (attribute.getMin() >= 1)
-				rdbAttribute.setIsRequired(true);
+			if (attribute.getMin() >= 1) rdbAttribute.setIsRequired(true);
 			rdbAttribute.setComment(attribute.getDescription());
 		} else {
 			Table assocTable = _rdb.createTable(table.getName() + "." + attribute.getName(), false);
-			ForeignKey attFk = _rdb.addForeignKey(assocTable, table.getName().substring(0) + "ID",
-					table, RdbValueType.INTEGER);
+			ForeignKey attFk = _rdb.addForeignKey(assocTable, table.getName().substring(0) + "ID", table, RdbValueType.INTEGER);
 			RdbAttribute rdbAttribute = new RdbAttribute(_rdb, assocTable, attribute.getName(),
 					toRdbValueType(domain));
 			_rdb.addAttribute(assocTable, rdbAttribute);
@@ -350,54 +377,58 @@ public class SQLExporter extends Exporter {
 	// cache all schema elements and bucket them into hash maps by their types
 	private void initialize(Integer schemaID, ArrayList<SchemaElement> elements)
 			throws RemoteException {
-		// _rdb = new Rdb( schemaID.toString() ) ; // schema.getName());
-		
+		_rdb = new Rdb("");
+
 		for (SchemaElement e : elements) {
-			if (e instanceof Entity)
-				_entities.put(new Integer(e.getId()), (Entity) e);
-			else if (e instanceof Attribute)
-				_attributes.put(new Integer(e.getId()), (Attribute) e);
-			else if (e instanceof Containment)
-				_containments.put(new Integer(e.getId()), (Containment) e);
-			else if (e instanceof Subtype)
-				_subtypes.put(new Integer(e.getId()), (Subtype) e);
-			else if (e instanceof Relationship)
-				_relationships.put(new Integer(e.getId()), (Relationship) e);
-			else if (e instanceof Domain)
-				_domains.put(new Integer(e.getId()), (Domain) e);
-			else if (e instanceof DomainValue)
-				_domainValues.put(new Integer(e.getId()), (DomainValue) e);
+			if (e instanceof Entity) _entities.put(new Integer(e.getId()), (Entity) e);
+			else if (e instanceof Attribute) _attributes.put(new Integer(e.getId()), (Attribute) e);
+			else if (e instanceof Containment) _containments.put(new Integer(e.getId()), (Containment) e);
+			else if (e instanceof Subtype) _subtypes.put(new Integer(e.getId()), (Subtype) e);
+			else if (e instanceof Relationship) _relationships.put(new Integer(e.getId()), (Relationship) e);
+			else if (e instanceof Domain) _domains.put(new Integer(e.getId()), (Domain) e);
+			else if (e instanceof DomainValue) _domainValues.put(new Integer(e.getId()), (DomainValue) e);
 		}
 	}
 
 	public static void main(String[] args) throws RemoteException, IOException {
-		Integer schemaId = 86231; // Lydon's; 17 for afro neuro
-		SchemaStoreClient ss = new SchemaStoreClient(
-				"http://brainsrv2:8090/SchemaStore/services/SchemaStore");
+		// connect to schema store
+		SchemaStoreClient schemaStore = new SchemaStoreClient("lib/SchemaStore.jar");
+		for ( Schema s : schemaStore.getSchemas() ){
+			System.out.println( s.getId() + " " + s.getName() );
+		}
+		
+		Integer schemaId;
 
-		if (args != null && args.length > 0)
-			schemaId = Integer.parseInt(args[0]);
+		// import XSD
+		File xsd = new File("many-many.xsd");
+		ImporterManager importerManager = new ImporterManager(schemaStore);
+		Importer importer = importerManager.getImporter(XSDImporter.class);
+		try {
+			schemaId = importer.importSchema("many-many", "Lyndon Brown", "many-many xsd example", xsd.toURI());
+			System.out.println("Imported schema : " + schemaId);
+			System.out.println(schemaStore.getGraph(schemaId).getElements(null).size() + " elements imported ");
+			//		schemaId = 210089;
 
-		if (schemaId == null) {
-			System.err.println("Enter a valid schema id from the list below : ");
-			// fetch and print all schema with id
-			ArrayList<Schema> schemas;
-			schemas = ss.getSchemas();
-			for (Schema s : schemas) {
-				System.out.println(s.getId() + " " + s.getName());
-			}
-		} else {
-			SQLExporter exporter = new SQLExporter();
-			try {
-				System.out.println( exporter.exportSchema(new Integer(schemaId), ss.getGraph(schemaId).getElements(null)) );
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+			// run the exporter
+			System.out.println("export schema ... ");
+			ExporterManager exporterManager = new ExporterManager(schemaStore);
+			Exporter exporter = exporterManager.getExporter(SQLExporter.class);
+			ArrayList<SchemaElement> elements = schemaStore.getGraph(schemaId).getElements(null);
+
+			File outfile = new File(schemaStore.getSchema(schemaId).getName() + ".sql");
+			PrintStream writer = new PrintStream(outfile);
+			StringBuffer sql = exporter.exportSchema(schemaId, elements);
+			writer.print(sql.toString());
+
+			System.out.println(elements.size() + " elements exported ");
+			System.out.print("done.");
+		} catch (ImporterException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 
 	}
 
-	@Override
 	public StringBuffer exportSchema(Integer schemaID, ArrayList<SchemaElement> schemaElements) {
 		try {
 			// load schema and schema elements into memory
