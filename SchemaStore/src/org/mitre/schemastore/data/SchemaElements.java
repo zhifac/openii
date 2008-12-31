@@ -36,7 +36,7 @@ public class SchemaElements
 		for(Integer parentSchemaID : parentSchemaIDs)
 		{
 			Alias parentAlias = getAlias(parentSchemaID, aliases);
-			if(parentAlias==null) return null;
+			if(parentAlias==null) continue;
 			if(pickedAlias==null || parentAlias.getId()<pickedAlias.getId())
 				pickedAlias = parentAlias;
 		}
