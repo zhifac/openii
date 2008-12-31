@@ -45,7 +45,7 @@ public class ArchiveExporter extends Exporter
 			// Generate the list of all schemas that must be exported to completely define the specified schema
 			ArrayList<Integer> schemaIDs = new ArrayList<Integer>(); 
 			schemaIDs.add(schemaID);
-			schemaIDs = client.getAncestorSchemas(schemaID);
+			schemaIDs.addAll(client.getAncestorSchemas(schemaID));
 		
 			// Initialize the XML document
 			Document dom = null;
