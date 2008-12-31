@@ -69,13 +69,10 @@ public class ImportSchema
 				if(domainName.equals("boolean")) newID = -5;
 				if(domainName.equals("any")) newID = -6;
 	
-				// Remove the default domain element
+				// Identify all default domain elements
 				if(newID!=null)
-				{
 					if(!newID.equals(domain.getId()))
 						graph.updateElementID(domain.getId(), newID);
-					graph.deleteElement(schemaElement.getId());
-				}
 			}
 						
 			// Sort the schema elements to prevent dependency issues
@@ -84,12 +81,13 @@ public class ImportSchema
 				
 			// Add schema elements to the web service
 			for(SchemaElement element : elements)
-			{
-				element.setBase(schemaID);
-				Integer schemaElementID = SchemaElements.addSchemaElement(element);
-				if(schemaElementID.equals(0)) throw new RemoteException("Failed to import schema element "+element.getName());
-				graph.updateElementID(element.getId(),schemaElementID);
-			}
+				if(element.getId()>=0)
+				{
+					element.setBase(schemaID);
+					Integer schemaElementID = SchemaElements.addSchemaElement(element);
+					if(schemaElementID.equals(0)) throw new RemoteException("Failed to import schema element "+element.getName());
+					graph.updateElementID(element.getId(),schemaElementID);
+				}
 		}
 		catch(RemoteException e) { if(schemaID>0) client.deleteSchema(schemaID); schemaID=0; }
 		return schemaID;

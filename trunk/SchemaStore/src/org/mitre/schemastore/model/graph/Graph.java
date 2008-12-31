@@ -213,11 +213,27 @@ public class Graph implements Serializable
 	{
 		ArrayList<SchemaElement> baseElements = new ArrayList<SchemaElement>();
 		
-		// Filter out base schema elements of the specified type
+		// Identify base schema elements of the specified type
 		for(SchemaElement element : getElements(type))
 			if(schema.getId().equals(element.getBase()))
 				baseElements.add(element);
 		
+		// Identify default domains first used by this schema
+		if(type==null || type.equals(Domain.class))
+		{
+			// Cycle through all default domain elements
+			for(SchemaElement domainElement : getElements(Domain.class))
+				if(domainElement.getId()<0)
+				{
+					// Add default domain element if only referenced by base elements
+					boolean baseReferencesOnly = true;
+					for(SchemaElement referencingElement : getReferencingElements(domainElement.getId()))
+						if(!schema.getId().equals(referencingElement.getBase()))
+							{ baseReferencesOnly = false; break; }
+					if(baseReferencesOnly) baseElements.add(domainElement);
+				}
+		}
+			
 		return baseElements;
 	}
 	
@@ -274,6 +290,54 @@ public class Graph implements Serializable
 		return success;
 	}
 	
+	/** Returns the list of schema elements referencing the specified element within the graph */
+	public ArrayList<SchemaElement> getReferencingElements(Integer elementID)
+	{
+		// Checks to ensure that element is not referenced elsewhere
+		ArrayList<SchemaElement> referencingElements = new ArrayList<SchemaElement>();
+		for(SchemaElement element : getElements(null))
+		{
+			if(element instanceof Attribute)
+			{
+				Attribute attribute = (Attribute)element;
+				if(attribute.getDomainID().equals(elementID) || attribute.getEntityID().equals(elementID))
+					referencingElements.add(attribute);
+			}
+			if(element instanceof DomainValue)
+			{
+				DomainValue domainValue = (DomainValue)element;
+				if(domainValue.getDomainID().equals(elementID))
+					referencingElements.add(domainValue);
+			}
+			if(element instanceof Relationship)
+			{
+				Relationship relationship = (Relationship)element;
+				if(relationship.getLeftID().equals(elementID) || relationship.getRightID().equals(elementID))
+					referencingElements.add(relationship);
+			}
+			if(element instanceof Containment)
+			{
+				Containment containment = (Containment)element;
+				Integer parentID = containment.getParentID();
+				if((parentID!=null && parentID.equals(elementID)) || containment.getChildID().equals(elementID))
+					referencingElements.add(containment);
+			}
+			if(element instanceof Subtype)
+			{
+				Subtype subtype = (Subtype)element;
+				if(subtype.getParentID().equals(elementID) || subtype.getChildID().equals(elementID))
+					referencingElements.add(subtype);
+			}
+			if(element instanceof Alias)
+			{
+				Alias alias = (Alias)element;
+				if(alias.getElementID().equals(elementID))
+					referencingElements.add(alias);
+			}
+		}
+		return referencingElements;
+	}
+	
 	/** Adds a list of elements to the graph */
 	public boolean addElement(SchemaElement element)
 	{
@@ -318,7 +382,7 @@ public class Graph implements Serializable
 		}
 		
 		// Add element to the graph
-		graphHash.put(element.getId(),element);
+		graphHash.put(element.getId(),element.copy());
 
 		// Inform listeners of the added element
 		for(GraphListener listener : listeners)
@@ -331,48 +395,8 @@ public class Graph implements Serializable
 	/** Removes an element from the graph */
 	public boolean deleteElement(Integer elementID)
 	{
-		// Checks to ensure that element is not referenced elsewhere
-		boolean referenced = false;
-		if(elementID>=0)
-			for(SchemaElement element : getElements(null))
-			{
-				if(element instanceof Attribute)
-				{
-					Attribute attribute = (Attribute)element;
-					referenced |= attribute.getDomainID().equals(elementID);
-					referenced |= attribute.getEntityID().equals(elementID);
-				}
-				if(element instanceof DomainValue)
-				{
-					DomainValue domainValue = (DomainValue)element;
-					referenced |= domainValue.getDomainID().equals(elementID);
-				}
-				if(element instanceof Relationship)
-				{
-					Relationship relationship = (Relationship)element;
-					referenced |= relationship.getLeftID().equals(elementID);
-					referenced |= relationship.getRightID().equals(elementID);
-				}
-				if(element instanceof Containment)
-				{
-					Containment containment = (Containment)element;
-					Integer parentID = containment.getParentID();
-					referenced |= parentID!=null && parentID.equals(elementID);
-					referenced |= containment.getChildID().equals(elementID);				
-				}
-				if(element instanceof Subtype)
-				{
-					Subtype subtype = (Subtype)element;
-					referenced |= subtype.getParentID().equals(elementID);
-					referenced |= subtype.getChildID().equals(elementID);				
-				}
-				if(element instanceof Alias)
-				{
-					Alias alias = (Alias)element;
-					referenced |= alias.getElementID().equals(elementID);
-				}
-				if(referenced) return false;
-			}
+		// Don't proceed with deleting element, if referenced by other elements
+		if(getReferencingElements(elementID).size()>0) return false;
 		
 		// Remove element from graph
 		SchemaElement element = graphHash.get(elementID);
@@ -389,6 +413,9 @@ public class Graph implements Serializable
 	/** Updates the id of an element in the graph */
 	public void updateElementID(Integer oldID, Integer newID)
 	{
+		// Only update element if ID changed
+		if(oldID.equals(newID)) return;
+		
 		// Shift the ID of any elements that conflict with this updated ID
 		if(getElement(newID)!=null)
 			{ updateElementID(newID,newID+10000); }
