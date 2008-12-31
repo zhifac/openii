@@ -2,6 +2,7 @@
   <importer>org.mitre.schemastore.importers.NewSchemaImporter</importer>
   <importer>org.mitre.schemastore.importers.ExtendSchemaImporter</importer>
   <importer>org.mitre.schemastore.importers.CopySchemaImporter</importer>
+  <importer>org.mitre.schemastore.importers.ArchiveImporter</importer>
   <importer>org.mitre.schemastore.importers.DDLImporter</importer>
   <importer>org.mitre.schemastore.importers.OWLImporter</importer>
   <importer>org.mitre.schemastore.importers.XSDImporter</importer>
