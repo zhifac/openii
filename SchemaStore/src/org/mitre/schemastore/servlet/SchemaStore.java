@@ -412,13 +412,7 @@ public class SchemaStore
 	/** Web service to import schemas */
 	public int importSchema(Schema schema, SchemaElementList schemaElementList) throws RemoteException
 	{
-		// Generate copied schema element list
-		ArrayList<SchemaElement> schemaElements = new ArrayList<SchemaElement>();
-		for(SchemaElement element : schemaElementList.getSchemaElements())
-			schemaElements.add(element.copy());
-
-		// Import the schema
-		Graph graph = new Graph(schema,schemaElements);
+		Graph graph = new Graph(schema,new ArrayList<SchemaElement>(Arrays.asList(schemaElementList.getSchemaElements())));
 		return ImportSchema.importSchema(this, schema, graph);
 	}
 	
