@@ -1,6 +1,7 @@
 package org.mitre.flexidata.ygg.view.shared.parameters;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -11,6 +12,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
 import javax.swing.filechooser.FileFilter;
 
 import org.mitre.flexidata.ygg.Ygg;
@@ -41,8 +43,28 @@ public class FileParameter extends AbstractParameter implements ActionListener
 		}
 	}
 	
+	/** Implements the file field */
+	private class FileField extends JTextField
+	{
+		/** Constructs the file field */
+		private FileField()
+		{
+			setBackground(Color.white);
+			setBorder(new LineBorder(Color.gray));
+			setFont(Consts.PARAMETER_EDIT_FONT);
+			setEditable(false);			
+		}
+		
+		/** Sets the text for the file field */
+		public void setText(String t)
+		{
+			super.setText(t);
+			fireActionPerformed();
+		}		
+	}
+	
 	/** Stores the file field */
-	private JTextField fileField = new JTextField();
+	private FileField fileField = new FileField();
 	
 	/** Stores the specified file types */
 	private ArrayList<String> fileTypes = null;
@@ -53,9 +75,6 @@ public class FileParameter extends AbstractParameter implements ActionListener
 		super(name);
 		this.fileTypes = fileTypes;
 		setBorder(new EmptyBorder(2,0,2,0));
-
-		// Constructs the file field
-		fileField.setFont(Consts.PARAMETER_EDIT_FONT);
 		
 		// Constructs the file button
 		JButton fileButton = new JButton("Browse...");
@@ -106,4 +125,12 @@ public class FileParameter extends AbstractParameter implements ActionListener
 			fileField.setText(path);
 		}
 	}
+	
+	/** Adds an action listener */
+	public void addActionListener(ActionListener listener)
+		{ fileField.addActionListener(listener); }
+
+	/** Removes an action listener */
+	public void removeActionListener(ActionListener listener)
+		{ fileField.removeActionListener(listener); }
 }

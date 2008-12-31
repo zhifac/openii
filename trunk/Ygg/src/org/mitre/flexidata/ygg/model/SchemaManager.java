@@ -39,22 +39,19 @@ public class SchemaManager
 	static public ArrayList<Exporter> getExporters()
 	{
 		ArrayList<Exporter> exporters = new ArrayList<Exporter>();
-		try { exporters = new ExporterManager().getExporters(null); } catch(Exception e) {}
+		try { exporters = new ExporterManager(SchemaStore.getClient()).getExporters(null); } catch(Exception e) {}
 		return exporters;
 	}
 	
 	/** Imports the specified schema into the repository */
 	static public void importSchema(Importer importer, String name, String author, String description, URI uri) throws Exception
 	{
-		try {
-			Integer schemaID = importer.importSchema(name, author, description, uri);
-			if(schemaID!=null)
-			{
-				Schema schema = SchemaStore.getClient().getSchema(schemaID);
-				for(SchemaListener listener : listeners) listener.schemaAdded(schema);
-			}
+		Integer schemaID = importer.importSchema(name, author, description, uri);
+		if(schemaID!=null)
+		{
+			Schema schema = SchemaStore.getClient().getSchema(schemaID);
+			for(SchemaListener listener : listeners) listener.schemaAdded(schema);
 		}
-		catch(Exception e) {}
 	}
 	
 	/** Locks the specified schema in the repository */
