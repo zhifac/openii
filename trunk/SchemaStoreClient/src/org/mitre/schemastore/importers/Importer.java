@@ -31,6 +31,7 @@ public abstract class Importer
 	public static final Integer SCHEMA = 1;
 	public static final Integer REPOSITORY = 2;
 	public static final Integer FILE = 3;
+	public static final Integer ARCHIVE = 4;
 	
 	// Defines the various base domain types
 	public static final String ANY = "Any";
@@ -78,7 +79,19 @@ public abstract class Importer
 	/** Returns the schema elements from the specified URI */
 	abstract protected ArrayList<SchemaElement> getSchemaElements() throws ImporterException;
 	
-	/** Generate the schema elements */
+	/** Generate the schema */
+	final public Schema generateSchema(URI uri) throws ImporterException
+	{
+		// Schema elements can generated separately only for archive importers
+		if(getURIType()!=ARCHIVE)
+			throw new ImporterException(ImporterException.PARSE_FAILURE,"Schemas can only be retrieved for archive importers");
+
+		// Generate the schema
+		this.uri = uri;
+		return ((ArchiveImporter)this).getSchema();
+	}
+	
+	/** Return the schema elements */
 	final public ArrayList<SchemaElement> generateSchemaElements(URI uri) throws ImporterException
 	{
 		// Schema elements can generated separately only for file importers
@@ -94,13 +107,15 @@ public abstract class Importer
 	/** Imports the specified URI */
 	final public Integer importSchema(String name, String author, String description, URI uri) throws ImporterException
 	{
-		// Generate the schema
-		Schema schema = new Schema(nextId(),name,author,uri==null?"":uri.toString(),"",description,false);
-
 		// Initialize the importer
 		this.uri = uri;
 		initialize();
 
+		// Generate the schema
+		Schema schema = new Schema(nextId(),name,author,uri==null?"":uri.toString(),"",description,false);
+		if(getClass().equals(ArchiveImporter.class))
+			schema = generateSchema(uri);
+		
 		// Get the schema elements (filter out invalid characters)
 		ArrayList<SchemaElement> schemaElements = getSchemaElements();
 		for(SchemaElement element : schemaElements)

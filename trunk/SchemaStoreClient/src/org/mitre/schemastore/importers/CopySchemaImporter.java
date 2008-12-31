@@ -16,7 +16,7 @@ import java.util.Comparator;
 public class CopySchemaImporter extends Importer
 {
 	/** Private class for sorting schema elements */
-	class SchemaComparator implements Comparator<SchemaElement>
+	class SchemaElementComparator implements Comparator<SchemaElement>
 	{
 		public int compare(SchemaElement element1, SchemaElement element2)
 			{ return element1.getId().compareTo(element2.getId()); }
@@ -66,8 +66,8 @@ public class CopySchemaImporter extends Importer
 				if(graphElements.size()==possGraphElements.size())
 				{
 					// Sort the elements in each list
-					Collections.sort(graphElements,new SchemaComparator());
-					Collections.sort(possGraphElements,new SchemaComparator());
+					Collections.sort(graphElements,new SchemaElementComparator());
+					Collections.sort(possGraphElements,new SchemaElementComparator());
 
 					// Validate that all of the elements are indeed the same
 					boolean match = true;
@@ -119,8 +119,8 @@ public class CopySchemaImporter extends Importer
 				// Collect and sort the elements from the two repositories
 				ArrayList<SchemaElement> origElements = repository.getGraph(parentSchemaID).getElements(null);
 				ArrayList<SchemaElement> newElements = client.getGraph(schemaID).getElements(null);				
-				Collections.sort(origElements,new SchemaComparator());
-				Collections.sort(newElements,new SchemaComparator());
+				Collections.sort(origElements,new SchemaElementComparator());
+				Collections.sort(newElements,new SchemaElementComparator());
 				
 				// Update the graph to reflect altered element IDs
 				for(int i=0; i<origElements.size(); i++)
@@ -131,12 +131,13 @@ public class CopySchemaImporter extends Importer
 				}
 			}
 			
-			// Retrieve the base elements to be displayed
-			schemaElements = new ArrayList<SchemaElement>();
-			for(SchemaElement element : repositoryGraph.getElements(null))
-				if(element.getId()<0 || element.getBase().equals(repositorySchemaID))
-					schemaElements.add(element);
-			Collections.sort(schemaElements,new SchemaComparator());
+
+			// Throw an exception if schema already exists in repository
+			if(getMatchedSchema(availableSchemas, repositoryGraph.getSchema())!=null)
+				throw new Exception("Schema already exists in repository");
+			
+			// Retrieve the schema elements
+			schemaElements = repositoryGraph.getElements(null);
 		}
 		catch(Exception e)
 			{ repository=null; throw new ImporterException(ImporterException.PARSE_FAILURE,e.getMessage()); }
