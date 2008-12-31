@@ -43,7 +43,6 @@ public class ImporterManager
 		try {			
 			// Pull the entire file into a string
 			InputStream configStream = ImporterManager.class.getResourceAsStream("/importers.xml");
-			System.out.println("configStream " + String.valueOf(configStream));
 			BufferedReader in = new BufferedReader(new InputStreamReader(configStream));
 			StringBuffer buffer = new StringBuffer("");
 			String line; while((line=in.readLine())!=null) buffer.append(line);
