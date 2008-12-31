@@ -61,7 +61,7 @@ public class ImporterView extends GenericView implements ActionListener
 	}
 	
 	/** Class for displaying the information pane */
-	private class InformationPane extends RoundedPane implements ActionListener
+	private class InformationPane extends RoundedPane
 	{
 		/** Stores the parameter pane */
 		private ParameterPane parameterPane = null;
@@ -79,7 +79,7 @@ public class ImporterView extends GenericView implements ActionListener
 		{
 			// Determines if the name, author, and description should be editable
 			Integer uriType = importer.getURIType();
-			boolean editable = uriType!=Importer.REPOSITORY;
+			boolean editable = uriType!=Importer.REPOSITORY && uriType!=Importer.ARCHIVE;
 			
 			// Generate the parameter pane
 			parameterPane = new ParameterPane();
@@ -88,15 +88,23 @@ public class ImporterView extends GenericView implements ActionListener
 			parameterPane.addParameter(new EditFieldParameter("Author",editable?System.getProperty("user.name"):"",editable));
 			parameterPane.addParameter(new EditAreaParameter("Description","",editable));
 			
-			// Determine what type of URI needs to be retrieved
-			if(uriType==Importer.FILE)
-				parameterPane.addParameter(new FileParameter("File",importer.getFileTypes()));
+			// Display a parameter for selecting a file
+			if(uriType==Importer.FILE || uriType==Importer.ARCHIVE)
+			{
+				FileParameter fileParameter = new FileParameter("File",importer.getFileTypes());
+				if(uriType==Importer.ARCHIVE) fileParameter.addActionListener(new ArchiveListener());
+				parameterPane.addParameter(fileParameter);
+			}
+			
+			// Display a parameter for selecting schemas from the current repository
 			else if(uriType==Importer.SCHEMA)
 				parameterPane.addParameter(new SchemaParameter("Schema"));
+			
+			// Display a parameter for selecting schemas from a remote repository
 			else if(uriType==Importer.REPOSITORY)
 			{
 				RepositoryParameter repositoryParameter = new RepositoryParameter("Repository");
-				repositoryParameter.addActionListener(this);
+				repositoryParameter.addActionListener(new RepositoryListener());
 				parameterPane.addParameter(repositoryParameter);
 			}
 			
@@ -104,13 +112,36 @@ public class ImporterView extends GenericView implements ActionListener
 			setView(parameterPane);
 		}
 
-		/** Handles the changing of the selected schema */
-		public void actionPerformed(ActionEvent e)
+		/** Updates the schema information */
+		private void updateSchemaInfo(Schema schema)
 		{
-			Schema schema = ((RepositoryParameter)parameterPane.getParameter("Repository")).getSchema();
 			parameterPane.getParameter("Name").setValue(schema.getName());
 			parameterPane.getParameter("Author").setValue(schema.getAuthor());
-			parameterPane.getParameter("Description").setValue(schema.getDescription());
+			parameterPane.getParameter("Description").setValue(schema.getDescription());			
+		}
+		
+		/** Class for handling changes to the archive file */
+		private class ArchiveListener implements ActionListener
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				Importer importer = selectionPane.getSelection();
+				FileParameter fileParm = (FileParameter)parameterPane.getParameter("File");
+				try {
+					Schema schema = importer.generateSchema(new URI(fileParm.getValue()));
+					updateSchemaInfo(schema);
+				} catch(Exception e2) {}
+			}
+		}
+		
+		/** Class for handling changes to the repository */
+		private class RepositoryListener implements ActionListener
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				RepositoryParameter repositoryParm = (RepositoryParameter)parameterPane.getParameter("Repository");
+				updateSchemaInfo(repositoryParm.getSchema());
+			}
 		}
 	}
 	
@@ -154,16 +185,17 @@ public class ImporterView extends GenericView implements ActionListener
 	{
 		// Get the current importer being used
 		Importer importer = selectionPane.getSelection();
+		Integer uriType = importer.getURIType();
 		
 		// Retrieve the name, author, and description parameters
 		ParameterPane parameterPane = informationPane.parameterPane;
 		AbstractParameter nameParm = parameterPane.getParameter("Name");
 		AbstractParameter authorParm = parameterPane.getParameter("Author");
 		AbstractParameter descriptionParm = parameterPane.getParameter("Description");
-		AbstractParameter uriParm = parameterPane.getParameter(importer.getURIType()==Importer.FILE ? "File" : importer.getURIType()==Importer.SCHEMA ? "Schema" : "Repository");
+		AbstractParameter uriParm = parameterPane.getParameter(uriType==Importer.FILE||uriType==Importer.ARCHIVE ? "File" : uriType==Importer.SCHEMA ? "Schema" : "Repository");
 
 		boolean completed = true;
-		if(importer.getURIType()==Importer.REPOSITORY)
+		if(uriType==Importer.REPOSITORY || uriType==Importer.ARCHIVE)
 			completed = isCompleted(uriParm);
 		else completed = isCompleted(nameParm) && isCompleted(authorParm) && isCompleted(descriptionParm) && isCompleted(uriParm);
 
