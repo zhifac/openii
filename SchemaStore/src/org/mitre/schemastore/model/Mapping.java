@@ -32,6 +32,10 @@ public class Mapping implements Serializable
 	public Mapping(Integer id, String name, String description, String author, Integer[] schemas)
 		{ this.id = id; this.name = name; this.description = description; this.author = author; this.schemas = schemas; }
 	
+	/** Copies the mapping */
+	public Mapping copy()
+		{ return new Mapping(getId(),getName(),getDescription(),getAuthor(),getSchemas()); }
+	
 	// Handles all mapping getters
 	public Integer getId() { return id; }
 	public String getName() { return name; }
