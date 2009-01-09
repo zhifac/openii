@@ -1,5 +1,5 @@
 <config>
-  <databaseServer>brainsrv2</databaseServer>
+  <databaseServer></databaseServer>
   <databaseName>schemastore</databaseName>
   <databaseUser>postgres</databaseUser>
   <databasePassword>postgres</databasePassword>
