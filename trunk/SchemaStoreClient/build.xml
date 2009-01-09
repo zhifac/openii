@@ -85,7 +85,7 @@
 
 	<!-- Cleans up the constructed jar files -->
 	<target name="clean">
-		<ant antfile="${SchemaStore}/build.xml" dir="${SchemaStore}" target="clean"/>
+		<delete dir="${SchemaStore}/build/classes"/>
 		<delete dir="build/classes"/>
 	    <delete file="SchemaStoreClient.jar"/>
 		<delete file="SchemaStorePorters.jar"/>
