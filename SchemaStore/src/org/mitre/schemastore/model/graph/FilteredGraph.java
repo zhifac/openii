@@ -19,6 +19,9 @@ public class FilteredGraph extends HierarchicalGraph implements GraphListener
 	/** Stores the maximum depth */
 	private Integer maxDepth = null;
 	
+	/** Stores the list of specified hidden graph elements */
+	private ArrayList<Integer> hiddenElements = null;
+	
 	/** Stores a listing of all filtered graph elements */
 	private HashSet<Integer> filteredElements = null;
 	
@@ -30,7 +33,8 @@ public class FilteredGraph extends HierarchicalGraph implements GraphListener
 		for(Integer depth : depths)
 		{
 			if(maxDepth!=null && depth>maxDepth) continue;
-			if(minDepth==null || depth>=minDepth) filteredElements.add(elementID);
+			if(minDepth==null || depth>=minDepth)
+				{ if(!hiddenElements.contains(elementID)) filteredElements.add(elementID); }
 			descendantsVisible=true;
 		}
 		if(!descendantsVisible) return;
@@ -82,6 +86,10 @@ public class FilteredGraph extends HierarchicalGraph implements GraphListener
 	public void setMaxDepth(Integer maxDepth)
 		{ this.maxDepth = maxDepth; }	
 
+	/** Sets the filter hidden elements */
+	public void setHiddenElements(ArrayList<Integer> hiddenElements)
+		{ this.hiddenElements = hiddenElements; }
+	
 	/** Returns if the specified element is visible */
 	public boolean isVisible(Integer elementID)
 	{
