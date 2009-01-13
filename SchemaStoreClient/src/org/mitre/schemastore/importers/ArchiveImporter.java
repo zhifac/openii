@@ -35,7 +35,7 @@ public class ArchiveImporter extends Importer
 		}
 	}
 	
-	/** Private class for storing a graph that contains parent schema information */
+	/** Private class for storing a graph that contains parent schema information */ @SuppressWarnings("serial")
 	private class ExtendedGraph extends Graph implements Comparable<ExtendedGraph>
 	{
 		/** Stores the parent schemas */
@@ -164,7 +164,7 @@ public class ArchiveImporter extends Importer
 			for(Integer key : translationTable.keySet())
 				graph.updateElementID(key, translationTable.get(key));
 			extendedSchemaIDs = graph.getParentSchemaIDs();
-			schemaElements = graph.getElements(null);
+			schemaElements = graph.getBaseElements(null);
 		}
 		catch(Exception e) { throw new ImporterException(ImporterException.PARSE_FAILURE,e.getMessage()); }
 	}
@@ -290,7 +290,7 @@ public class ArchiveImporter extends Importer
 		// Import the graph
 		Integer schemaID = null;
 		try {
-			schemaID = client.importSchema(graph.getSchema(), graph.getElements(null));
+			schemaID = client.importSchema(graph.getSchema(), graph.getBaseElements(null));
 			success = client.setParentSchemas(schemaID, graph.getParentSchemaIDs());
 		} catch(Exception e) {}
 

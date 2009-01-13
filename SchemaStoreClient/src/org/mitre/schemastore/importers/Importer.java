@@ -113,10 +113,9 @@ public abstract class Importer
 
 		// Generate the schema
 		Schema schema = new Schema(nextId(),name,author,uri==null?"":uri.toString(),"",description,false);
-		if(getClass().equals(ArchiveImporter.class))
-			schema = generateSchema(uri);
+		if(getURIType()==ARCHIVE) schema = generateSchema(uri);
 		
-		// Get the schema elements (filter out invalid characters)
+		// Adjust the schema elements to avoid non-ASCII characters and reference the proper base elements
 		ArrayList<SchemaElement> schemaElements = getSchemaElements();
 		for(SchemaElement element : schemaElements)
 		{
