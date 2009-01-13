@@ -27,7 +27,6 @@ import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.SchemaElementList;
 import org.mitre.schemastore.model.Subtype;
-import org.mitre.schemastore.model.graph.Graph;
 
 /**
  * Web service for retrieving schema information from SchemaStore
@@ -412,8 +411,10 @@ public class SchemaStore
 	/** Web service to import schemas */
 	public int importSchema(Schema schema, SchemaElementList schemaElementList) throws RemoteException
 	{
-		Graph graph = new Graph(schema,new ArrayList<SchemaElement>(Arrays.asList(schemaElementList.getSchemaElements())));
-		return ImportSchema.importSchema(this, schema, graph);
+		ArrayList<SchemaElement> elements = new ArrayList<SchemaElement>();
+		for(SchemaElement element : Arrays.asList(schemaElementList.getSchemaElements()))
+			elements.add(element.copy());
+		return ImportSchema.importSchema(this, schema, elements);
 	}
 	
 	/** Web service to save the mapping and mapping cells */
