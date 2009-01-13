@@ -137,7 +137,7 @@ public class CopySchemaImporter extends Importer
 				throw new Exception("Schema already exists in repository");
 			
 			// Retrieve the schema elements
-			schemaElements = repositoryGraph.getElements(null);
+			schemaElements = repositoryGraph.getBaseElements(null);
 		}
 		catch(Exception e)
 			{ repository=null; throw new ImporterException(ImporterException.PARSE_FAILURE,e.getMessage()); }
