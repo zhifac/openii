@@ -18,7 +18,6 @@ import org.mitre.schemastore.model.Relationship;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.Subtype;
-import org.mitre.schemastore.model.graph.Graph;
 
 /**
  * Handles the importation of a schema to the schema store web service
@@ -44,8 +43,61 @@ public class ImportSchema
 		}
 	}
 	
+	/** Updates the id of an element in the element list */
+	static private void updateElementID(ArrayList<SchemaElement> elements, Integer oldID, Integer newID)
+	{
+		// Only update element if ID changed
+		if(oldID.equals(newID)) return;
+		
+		// Shift the ID of any elements that conflict with this updated ID
+		for(SchemaElement element : elements)
+			if(element.getId().equals(newID))
+				{ updateElementID(elements,newID,newID+10000); }
+		
+		// Replace all references to old ID with new ID
+		for(SchemaElement schemaElement : elements)
+		{
+			if(schemaElement.getId().equals(oldID)) schemaElement.setId(newID);
+			if(schemaElement instanceof Attribute)
+			{
+				Attribute attribute = (Attribute)schemaElement;
+				if(attribute.getDomainID().equals(oldID)) attribute.setDomainID(newID);
+				if(attribute.getEntityID().equals(oldID)) attribute.setEntityID(newID);
+			}
+			if(schemaElement instanceof DomainValue)
+			{
+				DomainValue domainValue = (DomainValue)schemaElement;
+				if(domainValue.getDomainID().equals(oldID)) domainValue.setDomainID(newID);
+			}
+			if(schemaElement instanceof Relationship)
+			{
+				Relationship relationship = (Relationship)schemaElement;
+				if(relationship.getLeftID().equals(oldID)) relationship.setLeftID(newID);
+				if(relationship.getRightID().equals(oldID)) relationship.setRightID(newID);
+			}
+			if(schemaElement instanceof Containment)
+			{
+				Containment containment = (Containment)schemaElement;
+				Integer parentID = containment.getParentID();
+				if(parentID!=null && parentID.equals(oldID)) containment.setParentID(newID);
+				if(containment.getChildID().equals(oldID)) containment.setChildID(newID);				
+			}
+			if(schemaElement instanceof Subtype)
+			{
+				Subtype subtype = (Subtype)schemaElement;
+				if(subtype.getParentID().equals(oldID)) subtype.setParentID(newID);
+				if(subtype.getChildID().equals(oldID)) subtype.setChildID(newID);				
+			}
+			if(schemaElement instanceof Alias)
+			{
+				Alias alias = (Alias)schemaElement;
+				if(alias.getElementID().equals(oldID)) alias.setElementID(newID);
+			}
+		}
+	}
+	
 	/** Imports the specified schema into the web services */
-	static Integer importSchema(SchemaStore client, Schema schema, Graph graph) throws RemoteException
+	static Integer importSchema(SchemaStore client, Schema schema, ArrayList<SchemaElement> elements) throws RemoteException
 	{		
 		Integer schemaID = 0;
 		try
@@ -56,27 +108,27 @@ public class ImportSchema
 			if(schemaID==null) throw new RemoteException("Failed to import schema "+schema.getName());
 	
 			// Replace all default domain schema elements
-			for(SchemaElement schemaElement : graph.getElements(Domain.class))
-			{
-				// Identify if the domain is default
-				Domain domain = (Domain)schemaElement;
-				String domainName = domain.getName().toLowerCase();
-				Integer newID = null;
-				if(domainName.equals("integer")) newID = -1;
-				if(domainName.equals("double")) newID = -2;
-				if(domainName.equals("string")) newID = -3;
-				if(domainName.equals("timestamp")) newID = -4;
-				if(domainName.equals("boolean")) newID = -5;
-				if(domainName.equals("any")) newID = -6;
-	
-				// Identify all default domain elements
-				if(newID!=null)
-					if(!newID.equals(domain.getId()))
-						graph.updateElementID(domain.getId(), newID);
-			}
+			for(SchemaElement element : elements)
+				if(element.getClass()==Domain.class)
+				{
+					// Identify if the domain is default
+					Domain domain = (Domain)element;
+					String domainName = domain.getName().toLowerCase();
+					Integer newID = null;
+					if(domainName.equals("integer")) newID = -1;
+					if(domainName.equals("double")) newID = -2;
+					if(domainName.equals("string")) newID = -3;
+					if(domainName.equals("timestamp")) newID = -4;
+					if(domainName.equals("boolean")) newID = -5;
+					if(domainName.equals("any")) newID = -6;
+		
+					// Identify all default domain elements
+					if(newID!=null)
+						if(!newID.equals(domain.getId()))
+							updateElementID(elements,domain.getId(), newID);
+				}
 						
 			// Sort the schema elements to prevent dependency issues
-			ArrayList<SchemaElement> elements = graph.getBaseElements(null);
 			Collections.sort(elements,new SchemaElementComparator());
 				
 			// Add schema elements to the web service
@@ -86,7 +138,7 @@ public class ImportSchema
 					element.setBase(schemaID);
 					Integer schemaElementID = SchemaElements.addSchemaElement(element);
 					if(schemaElementID.equals(0)) throw new RemoteException("Failed to import schema element "+element.getName());
-					graph.updateElementID(element.getId(),schemaElementID);
+					updateElementID(elements,element.getId(),schemaElementID);
 				}
 		}
 		catch(RemoteException e) { if(schemaID>0) client.deleteSchema(schemaID); schemaID=0; }
