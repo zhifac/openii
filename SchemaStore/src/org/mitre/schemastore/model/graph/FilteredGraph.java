@@ -20,7 +20,7 @@ public class FilteredGraph extends HierarchicalGraph implements GraphListener
 	private Integer maxDepth = null;
 	
 	/** Stores the list of specified hidden graph elements */
-	private ArrayList<Integer> hiddenElements = null;
+	private ArrayList<Integer> hiddenElements = new ArrayList<Integer>();
 	
 	/** Stores a listing of all filtered graph elements */
 	private HashSet<Integer> filteredElements = null;
