@@ -264,6 +264,31 @@ public class Graph implements Serializable
 	/** Returns the alias associated with the specified element */
 	public Alias getAlias(Integer elementID)
 		{ return cache.getAlias(elementID); }
+
+	/** Returns the display name for the specified element in this graph */
+	public String getDisplayName(Integer elementID)
+	{
+		// Returns the element name
+		SchemaElement element = getElement(elementID);
+		Alias alias = getAlias(elementID);
+		String name = alias!=null ? alias.getName() : element.getName();
+		if(name.length()>0) return name;
+
+		// Otherwise, returns the name of the parent containment element
+		if(element instanceof Containment)
+		{
+			Integer childID = ((Containment)element).getChildID();
+			return "[" + getDisplayName(childID) + "]";
+		}
+
+		// Otherwise, find name of containment associated with element
+		for(Containment containment : getContainments(elementID))
+			if(containment.getChildID().equals(elementID) && containment.getName().length()>0)
+				return "[" + getDisplayName(containment.getId()) + "]";
+
+		// Otherwise, return nothing
+		return "";
+	}
 	
 	/** Adds a list of elements to the graph */
 	public boolean addElements(ArrayList<SchemaElement> elements)
