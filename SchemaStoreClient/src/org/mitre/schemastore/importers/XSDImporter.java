@@ -134,7 +134,9 @@ public class XSDImporter extends Importer
 			}
 			
 			// add containment to schema -- NO DOCUMENTATION for generated containments
-			Containment containment = new Containment(nextId(), "", "", null, entity.getId(), 0, 1, 0);
+//			Containment containment = new Containment(nextId(), "", "", null, entity.getId(), 0, 1, 0);
+			Containment containment = new Containment(nextId(),"", "", null, entity.getId(), 0, 1, 0);
+			System.err.println( " (Warning) add new containment with no name for entity " + entity.getId() + " " + entity.getName() );
 			if (schemaElementsHS.containsKey(this.compString(containment)) == false) {
 				schemaElementsHS.put(this.compString(containment),containment);
 				processContainment(containment,false);
@@ -178,8 +180,10 @@ public class XSDImporter extends Importer
 						this.anyEntity = new Entity(nextId(),"ANY","ANY ENTITY",0);
 						schemaElementsHS.put(this.compString(this.anyEntity),this.anyEntity);
 					}	
+					Integer rightMax = ( typeName.equals("IDREFS") ) ? null : 1;   
+
 					// Create a relationship
-					Relationship rel = new Relationship(nextId(),attr.getName(),currentTypeEntity.getId(),0,1,this.anyEntity.getId(),0,null,0);
+					Relationship rel = new Relationship(nextId(),attr.getName(),currentTypeEntity.getId(),0,1,this.anyEntity.getId(),0,rightMax,0);
 					
 					if (schemaElementsHS.containsKey(this.compString(rel)) == false) {
 						schemaElementsHS.put(this.compString(rel),rel);
@@ -355,8 +359,6 @@ public class XSDImporter extends Importer
 		while (currElementAttrList.hasMoreElements()) {
 			
 			AttributeDecl attr = (AttributeDecl) currElementAttrList.nextElement();
-						
-		
 			
 			String typeName = "String";
 			SimpleType simpleType = attr.getSimpleType();
@@ -376,8 +378,9 @@ public class XSDImporter extends Importer
 					schemaElementsHS.put(this.compString(this.anyEntity),this.anyEntity);
 				}	
 				
+				Integer rightMax = ( typeName.equals("IDREFS") ) ? null : 1;   
 				// Create a relationship for the ID-REF
-				Relationship rel = new Relationship(nextId(),attr.getName(),complexTypeEntity.getId(),0,1,this.anyEntity.getId(),0,null,0);
+				Relationship rel = new Relationship(nextId(),attr.getName(),complexTypeEntity.getId(),0,1,this.anyEntity.getId(),0,rightMax,0);
 				if (schemaElementsHS.containsKey(this.compString(rel)) == false) {
 					schemaElementsHS.put(this.compString(rel),rel);
 				}
