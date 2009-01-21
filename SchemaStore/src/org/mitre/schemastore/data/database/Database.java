@@ -629,7 +629,7 @@ public class Database
 			String type = "";
 			ResultSet rs = stmt.executeQuery("SELECT schema_id, \"type\" FROM schema_elements WHERE id="+schemaElementID);
 			if(rs.next())
-				{ base = rs.getInt("schema_id"); type = rs.getString("type"); }
+				{ base = rs.getInt("schema_id"); type = rs.getString("type").trim(); }
 
 			// Gets the specified entity
 			if(type.equals("entity"))
