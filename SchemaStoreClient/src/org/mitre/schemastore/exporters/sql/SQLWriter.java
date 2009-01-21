@@ -247,7 +247,7 @@ public class SQLWriter {
 			_comments.append(createComment(a));
 		}
 
-		// foreign key
+		// primary key
 		StringBuffer pk = definePrimaryKeys(rel);
 		if (pk != null)
 			s_table.append(pk);

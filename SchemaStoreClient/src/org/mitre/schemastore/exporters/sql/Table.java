@@ -28,6 +28,8 @@ public class Table
     }
 
     public RdbAttribute getPrimaryKey() {
+    	if ( _primaryKey == null )
+    		generateDefaultPK();
         return _primaryKey;
     }
     
@@ -132,5 +134,17 @@ public class Table
     public String getComment(){
     	return _comment;
     }
+
+
+	public void generateDefaultPK() {
+		createFK(DEFAULT_PRIMARY_KEY); 
+	}
+
+
+	public RdbAttribute createFK(String attributeName) {
+		RdbAttribute pk = new RdbAttribute(_rdb, this, attributeName, RdbValueType.AUTO_INCREMENT);
+		setPrimaryKey(pk);
+		return pk;
+	}
 
 }

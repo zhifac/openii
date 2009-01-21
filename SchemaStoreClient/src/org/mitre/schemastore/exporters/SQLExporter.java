@@ -1,10 +1,8 @@
 package org.mitre.schemastore.exporters;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.io.PrintWriter;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -67,8 +65,6 @@ public class SQLExporter extends Exporter {
 				Table rightTable = _rdb.getRelation(rightEntity.getName());
 				String leftName = leftTable.getName();
 				String rightName = rightTable.getName();
-				String leftPk = leftTable.getPrimaryKey().getName();
-				String rightPk = rightTable.getPrimaryKey().getName();
 
 				String relName = rel.getName();
 				Integer lmin = rel.getLeftMin();
@@ -76,8 +72,8 @@ public class SQLExporter extends Exporter {
 				Integer rmin = rel.getRightMin();
 				Integer rmax = rel.getRightMax();
 
-//				System.err.println(rel.getLeftMin() + ": " + rel.getLeftMax() + ": " + " || "
-//						+ rel.getRightMin() + " : " + rel.getRightMax());
+				System.err.println(rel.getName() + " " + rel.getLeftMin() + ": " + rel.getLeftMax()
+						+ " || " + rel.getRightMin() + " : " + rel.getRightMax());
 
 				if (lmax == null || lmax.equals(-1)) { // L*
 					if (rmax == null || rmax.equals(-1)) {
@@ -85,18 +81,17 @@ public class SQLExporter extends Exporter {
 						String bridgeTblName = leftName + "_" + relName + "_" + rightName;
 
 						Table bridge = _rdb.createTable(bridgeTblName, false);
-						ForeignKey leftKey = new ForeignKey(_rdb, bridge, "FROM_" + leftName,
-								leftTable, leftPk, RdbValueType.INTEGER);
-						ForeignKey rightKey = new ForeignKey(_rdb, bridge, "TO_" + rightName,
-								rightTable, rightPk, RdbValueType.INTEGER);
-
+						ForeignKey leftKey = _rdb.addForeignKey(bridge, "FROM_" + leftName, leftTable, RdbValueType.FOREIGN_KEY); 
+						
+						ForeignKey rightKey = _rdb.addForeignKey(bridge, "TO" + leftName, rightTable, RdbValueType.FOREIGN_KEY);
+						
 						_rdb.addAttribute(bridge, leftKey);
 						_rdb.addAttribute(bridge, rightKey);
 						bridge.setComment(rel.getDescription());
+						
 					} else {
 						// L*->R1 create Fk in L table ref R.
-						ForeignKey fk = new ForeignKey(_rdb, leftTable, relName, rightTable,
-								rightPk, RdbValueType.INTEGER);
+						ForeignKey fk = _rdb.addForeignKey(leftTable, relName, rightTable, RdbValueType.FOREIGN_KEY);
 						leftTable.addAttribute(fk);
 						fk.setComment(rel.getDescription());
 						fk.setIsRequired(rmin.equals(1));
@@ -104,16 +99,23 @@ public class SQLExporter extends Exporter {
 				} else { // L1
 					if (rmax == null || rmax.equals(-1)) {
 						// L1->R* create rFk in Rtable ref Lpk
-						ForeignKey fk = new ForeignKey(_rdb, rightTable, relName, leftTable,
-								leftPk, RdbValueType.INTEGER);
+						ForeignKey fk = _rdb.addForeignKey(rightTable, relName, leftTable, RdbValueType.FOREIGN_KEY); 
 						rightTable.addAttribute(fk);
 						fk.setComment(rel.getDescription());
 						fk.setIsRequired(lmin.equals(1));
+					} else { // L1->R1 
+						System.out.println("Create L1->R1 relationship");
+						ForeignKey fk = _rdb.addForeignKey(leftTable, relName, rightTable, RdbValueType.FOREIGN_KEY);
+						leftTable.addAttribute(fk);
+						fk.setComment(rel.getDescription());
+						fk.setIsRequired(rmin.equals(1));
 					}
 				}
 			} catch (NoRelationFoundException e) {
-				System.err.println("Can't find table for entity " + leftEntity.getName() + " : "
-						+ rightEntity.getName());
+				System.err.println("(E) while mapping relationship " + rel.getName()
+						+ ": Can't find table for entity (" + leftEntity.getName() + " : "
+						+ rightEntity.getName() + " ) ");
+				e.printStackTrace();
 			}
 		}
 	}
@@ -124,23 +126,33 @@ public class SQLExporter extends Exporter {
 	 */
 	private void mapContainments() {
 		for (Containment c : _containments.values()) {
-			Entity parent = _entities.get(c.getParentID());
-			Entity child = _entities.get(c.getChildID());
+			Entity parentEntity = _entities.get(c.getParentID());
+			Entity childEntity = _entities.get(c.getChildID());
 			Domain domain = _domains.get(c.getChildID());
 
-			if (parent != null && child != null) {// Entity->Entity
-				mapEntityEntityContainment(c, parent, child);
-			} else if (parent != null && domain != null) { // Entity->Domain
-				mapEntityDomainContainment(c, parent, domain);
-			} else if (parent == null && child != null) { // schema->E
-				// do nothing unless a table of the same name is not created
-				try {
-					_rdb.getRelation(child.getName());
-				} catch (NoRelationFoundException e) {
-					_rdb.createTable(child.getName(), true);
-					// what should the table attributes be?
-				}
+			if (parentEntity != null && childEntity != null && !parentEntity.getName().equals("")
+					&& !childEntity.getName().equals("")) {// Entity->Entity
+				mapEntityEntityContainment(c, parentEntity, childEntity);
+			} else if (parentEntity != null && domain != null && !parentEntity.getName().equals("")) { // Entity->Domain
+				mapEntityDomainContainment(c, parentEntity, domain);
+			} else if ((parentEntity == null || parentEntity.getName().equals(""))
+					&& childEntity != null) { // schema->E
+
+				System.err.println(" null -> E: (containment) " + c.getName() + " " + c.getId()
+						+ " -> (child)" + childEntity.getId() + " " + childEntity.getName());
+
+				mapSchemaEntityContainment(c);
 			}
+		}
+	}
+
+	private void mapSchemaEntityContainment(Containment containment) {
+		String containmentName = containment.getName();
+		
+		
+		if (containmentName != null && containmentName.length() > 0) {
+//			Table table = _rdb.createTable(containment.getName(), false);
+//			table.setComment(containment.getDescription());
 		}
 	}
 
@@ -194,18 +206,29 @@ public class SQLExporter extends Exporter {
 	 * 
 	 */
 	private void mapEntityEntityContainment(Containment c, Entity parent, Entity child) {
-		Table childTable, parentTable;
-		try {
-			childTable = _rdb.getRelation(child.getName());
-			parentTable = _rdb.getRelation(parent.getName());
-			String fkName = c.getName() + "." + parentTable.getName();
-			ForeignKey fk = _rdb.addForeignKey(childTable, fkName, parentTable, RdbValueType.INTEGER);
-			fk.setIsRequired(false);
-			fk.setComment(c.getDescription());
 
+		Table childTable = null, parentTable = null;
+		try {
+			if (child.getName().length() > 0) childTable = _rdb.getRelation(child.getName());
+			else childTable = _rdb.getRelation("ANY");
 		} catch (NoRelationFoundException e) {
-			e.printStackTrace();
+			System.err.println("(E) while mapping containment " + c.getName()
+					+ ", relation for child " + child.getId() + " cannot be found: ");
+			return;
 		}
+
+		try {
+			parentTable = _rdb.getRelation(parent.getName());
+		} catch (NoRelationFoundException e) {
+			System.err.println("(E) while mapping containment " + c.getName()
+					+ ", relation for parent " + parent.getId() + " cannot be found: ");
+			return;
+		}
+
+		String fkName = c.getName() + "." + parentTable.getName();
+		ForeignKey fk = _rdb.addForeignKey(childTable, fkName, parentTable, RdbValueType.INTEGER);
+		fk.setIsRequired(false);
+		fk.setComment(c.getDescription());
 
 	}
 
@@ -218,9 +241,14 @@ public class SQLExporter extends Exporter {
 			if (!(dName.equalsIgnoreCase("Integer") || dName.equalsIgnoreCase("int")
 					|| dName.equalsIgnoreCase("float") || dName.equalsIgnoreCase("Double")
 					|| dName.equalsIgnoreCase("decimal") || dName.equalsIgnoreCase("Datetime")
-					|| dName.equalsIgnoreCase("String") || dName.equalsIgnoreCase("Timestamp") || dName.equalsIgnoreCase("Boolean"))) { // TODO HANDLE ANY TYPE|| dName.equalsIgnoreCase("any"))) {
+					|| dName.equalsIgnoreCase("String") || dName.equalsIgnoreCase("Timestamp")
+					|| dName.equalsIgnoreCase("Boolean") || dName.equalsIgnoreCase("ID") || dName.equalsIgnoreCase("IDREF"))) {
 
-				DomainTable domainTable = _rdb.createDomainTable(domain.getName(), true);
+				// importer imports both Any and ANY
+				if (dName.equalsIgnoreCase("Any")) dName = "ANY";
+
+				// create a new table for complex domain. Add domain values to table as tuples.
+				DomainTable domainTable = _rdb.createDomainTable(dName, true);
 				for (DomainValue dv : _domainValues.values()) {
 					if (dv.getDomainID().equals(domain.getId())) {
 						domainTable.addDomainValue(dv.getName());
@@ -243,11 +271,9 @@ public class SQLExporter extends Exporter {
 		else if (domain.getName().equalsIgnoreCase("String")) return RdbValueType.VARCHAR255;
 		else if (domain.getName().equalsIgnoreCase("TimeStamp")) return RdbValueType.TIMESTAMP;
 		else if (domain.getName().equalsIgnoreCase("Boolean")) return RdbValueType.BOOLEAN;
-		else if (domain.getName().equalsIgnoreCase("ID")) return RdbValueType.ID; 
-		else if ( domain.getName().equalsIgnoreCase("IDREF")) return RdbValueType.FOREIGN_KEY;
+		else if (domain.getName().equalsIgnoreCase("ID")) return RdbValueType.ID;
+		else if (domain.getName().equalsIgnoreCase("IDREF")) return RdbValueType.FOREIGN_KEY;
 		else {
-			// handle complex domains type by creating a new table. Its domain
-			// values are rows
 			System.err.println(" &#($()# " + "Unhandled domain type " + domain.toString());
 			return RdbValueType.ANY;
 		}
@@ -369,8 +395,15 @@ public class SQLExporter extends Exporter {
 		Iterator<Entity> eItr = _entities.values().iterator();
 		while (eItr.hasNext()) {
 			Entity entity = eItr.next();
-			Table table = _rdb.createTable(entity.getName(), true);
-			table.setComment(entity.getDescription());
+			String tableName = entity.getName();
+
+			if (tableName.length() == 0) {
+				System.err.println("(E) entity has no name " + entity.getId() + " "
+						+ entity.getDescription());
+			} else {
+				Table table = _rdb.createTable(tableName, false);
+				table.setComment(entity.getDescription());
+			}
 		}
 	}
 
@@ -388,26 +421,32 @@ public class SQLExporter extends Exporter {
 			else if (e instanceof Domain) _domains.put(new Integer(e.getId()), (Domain) e);
 			else if (e instanceof DomainValue) _domainValues.put(new Integer(e.getId()), (DomainValue) e);
 		}
+
+		// create ANY table
+		//		_rdb.createD?omainTable("ANY", true);
 	}
 
 	public static void main(String[] args) throws RemoteException, IOException {
 		// connect to schema store
 		SchemaStoreClient schemaStore = new SchemaStoreClient("lib/SchemaStore.jar");
-		for ( Schema s : schemaStore.getSchemas() ){
-			System.out.println( s.getId() + " " + s.getName() );
+		for (Schema s : schemaStore.getSchemas()) {
+			System.out.println(s.getId() + " " + s.getName());
 		}
-		
-		Integer schemaId;
+
+		// assign schemaId if you don't want to keep importing new schemas
+		Integer schemaId = null;
 
 		// import XSD
-		File xsd = new File("many-many.xsd");
+		File xsd = new File("roster3.xsd");
 		ImporterManager importerManager = new ImporterManager(schemaStore);
 		Importer importer = importerManager.getImporter(XSDImporter.class);
 		try {
-			schemaId = importer.importSchema("many-many", "Lyndon Brown", "many-many xsd example", xsd.toURI());
-			System.out.println("Imported schema : " + schemaId);
-			System.out.println(schemaStore.getGraph(schemaId).getElements(null).size() + " elements imported ");
-			//		schemaId = 210089;
+			if (schemaId == null) {
+				schemaId = importer.importSchema("roster3", "Lyndon Brown", "many-many xsd example", xsd.toURI());
+				System.out.println("Imported schema : " + schemaId);
+				System.out.println(schemaStore.getGraph(schemaId).getElements(null).size()
+						+ " elements imported ");
+			}
 
 			// run the exporter
 			System.out.println("export schema ... ");

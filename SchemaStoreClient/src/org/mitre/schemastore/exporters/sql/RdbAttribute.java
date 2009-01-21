@@ -31,12 +31,17 @@ public class RdbAttribute {
 	protected Float _viewSequence;
 
 	public RdbAttribute(Rdb schema, Table rel, String attributeName, RdbValueType type) {
-		_name = attributeName;
 		_type = type;
+		_name = attributeName;
 		_rdb = schema;
 		_relation = rel;
 		_relName = rel.getName();
 		_rdb.addAttribute(rel, this);
+
+		if (_type.equals(RdbValueType.ID))  {
+			_type = RdbValueType.AUTO_INCREMENT;
+			rel.setPrimaryKey(this); 
+		} 
 	}
 
 	public RdbAttribute(Rdb schema, Table containerRelation, String attributeName,
@@ -81,10 +86,8 @@ public class RdbAttribute {
 	}
 
 	public Collection<String> getAllowedValues() {
-		if (_allowedValues.size() > 0)
-			return _allowedValues;
-		else
-			return null;
+		if (_allowedValues.size() > 0) return _allowedValues;
+		else return null;
 	}
 
 	public String getComment() {
@@ -107,23 +110,16 @@ public class RdbAttribute {
 		Integer length = null;
 		if (_type.equals("" /* RdbValueType.VARCHAR */)) { // @TODO
 			String dbParam = getDatabaseParameter();
-			if (dbParam != null && dbParam.length() > 0)
-				length = Integer.decode(dbParam);
+			if (dbParam != null && dbParam.length() > 0) length = Integer.decode(dbParam);
 		}
 		return length;
 	}
 
 	public String getDatabaseTypeString() {
 		String s = _type.toString();
-		// TODO
-		// if ( _type.equals( RdbValueType.FOREIGN_KEY ) )
-		// s += RdbValueType.INTEGER.toString();
-		// else if ( _type.equals( RdbValueType.VARCHAR ) ) {
-		// s += _type.toString();
-		// if ( getDatabaseParameter().length() > 0 )
-		// s += "("+getDatabaseParameter() + ")";
-		// } else
-		// s += _type.toString();
+		if (_type.equals(RdbValueType.FOREIGN_KEY)) s = RdbValueType.INTEGER.toString();
+		else if (_type.equals(RdbValueType.ID)) s = RdbValueType.AUTO_INCREMENT.toString() + " "
+				+ "PRIMARY KEY ";
 
 		return s;
 	}
@@ -198,8 +194,8 @@ public class RdbAttribute {
 	}
 
 	/**
-	 * sets the allowed values for symbol or varchar type only. (Instance or
-	 * Class types are done with other methods)
+	 * sets the allowed values for symbol or varchar type only. (Instance or Class types are done
+	 * with other methods)
 	 * 
 	 * @param allowedValues
 	 */
