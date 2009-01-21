@@ -274,7 +274,7 @@ CREATE INDEX subtype_schema_idx ON subtype (schema_id);
 // Create Views
 //--------------
 
-CREATE VIEW schema_elements (id,name,description,type,schema_id) AS
+CREATE VIEW schema_elements (id,name,description,"type",schema_id) AS
   SELECT id,name,'','alias',schema_id FROM alias
     UNION
   SELECT id,name,description,'attribute',schema_id FROM attribute
