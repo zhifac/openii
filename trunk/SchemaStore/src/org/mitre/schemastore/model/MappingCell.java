@@ -38,6 +38,10 @@ public class MappingCell implements Serializable
 	public MappingCell(Integer id, Integer mappingId, Integer element1, Integer element2, Double score, String scorer, Boolean validated)
 		{ this.id = id; this.mappingId = mappingId; this.element1 = element1; this.element2 = element2; this.score = score; this.scorer = scorer; this.validated = validated; }
 	
+	/** Copies the mapping cell */
+	public MappingCell copy()
+		{ return new MappingCell(getId(),getMappingId(),getElement1(),getElement2(),getScore(),getScorer(),getValidated()); }
+	
 	// Handles all mapping cell getters
 	public Integer getId() { return id; }
 	public Integer getMappingId() { return mappingId; }
