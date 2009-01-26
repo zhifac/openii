@@ -52,7 +52,7 @@ public class Mapping implements Serializable
 	
 	/** Indicates that two mappings are equals */
 	public boolean equals(Object mapping)
-		{ return mapping instanceof Mapping && ((Mapping)mapping).id.equals(id); }
+		{ return mapping instanceof Mapping && id!=null && id.equals(((Mapping)mapping).id); }
 	
 	/** String representation of the mapping */
 	public String toString()
