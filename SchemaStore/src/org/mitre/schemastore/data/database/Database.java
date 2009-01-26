@@ -1267,7 +1267,7 @@ public class Database
 		boolean success = false;
 		try {
 			Statement stmt = connection.getStatement();
-			stmt.executeUpdate("UPDATE mapping_cell SET score="+mappingCell.getScore()+", scorer='"+mappingCell.getScorer()+"' WHERE id="+mappingCell.getId());
+			stmt.executeUpdate("UPDATE mapping_cell SET score="+mappingCell.getScore()+", scorer='"+mappingCell.getScorer()+"', validated='"+(mappingCell.getValidated()?"t":"f")+"' WHERE id="+mappingCell.getId());
 			stmt.close();
 			connection.commit();
 			success = true;
