@@ -421,7 +421,9 @@ public class SchemaStore
 	public int saveMapping(Mapping mapping, MappingCell[] mappingCells) throws RemoteException
 	{
 		ArrayList<MappingCell> mappingCellArray = new ArrayList<MappingCell>();
-		if(mappingCells!=null) mappingCellArray = new ArrayList<MappingCell>(Arrays.asList(mappingCells));
+		if(mappingCells!=null)
+			for(MappingCell mappingCell : Arrays.asList(mappingCells))
+				mappingCellArray.add(mappingCell.copy());
 		return SaveMapping.saveMapping(mapping,mappingCellArray);
 	}
 }
