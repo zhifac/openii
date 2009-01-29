@@ -134,7 +134,6 @@ public class XSDImporter extends Importer
 			}
 			
 			// add containment to schema -- NO DOCUMENTATION for generated containments
-//			Containment containment = new Containment(nextId(), "", "", null, entity.getId(), 0, 1, 0);
 			Containment containment = new Containment(nextId(),"", "", null, entity.getId(), 0, 1, 0);
 			System.err.println( " (Warning) add new containment with no name for entity " + entity.getId() + " " + entity.getName() );
 			if (schemaElementsHS.containsKey(this.compString(containment)) == false) {
