@@ -65,7 +65,7 @@ public class SchemaStoreClient
 			File file = new File(serviceAddress);
 			if(file.exists())
 			{
-				URLClassLoader loader = new URLClassLoader(new URL[] {file.toURI().toURL()});
+				URLClassLoader loader = new URLClassLoader(new URL[] {file.toURI().toURL()},this.getClass().getClassLoader());
 				Class<?> schemaStoreClass = loader.loadClass("org.mitre.schemastore.servlet.SchemaStore");
 				schemaStore = schemaStoreClass.newInstance();
 			}
