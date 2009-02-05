@@ -191,7 +191,8 @@ public class Rdb {
 	}
 
 	public DomainTable createDomainTable(String name, boolean setDefaultPK) {
-		DomainTable refTbl = new DomainTable(this, name);
+		// DBURDICK: Added "TABLE_" prefix to Table created to store Domain Values
+		DomainTable refTbl = new DomainTable(this, "TABLE_" + name);
 		addDomainTable(refTbl);
 		if (setDefaultPK) createDefaultPK(refTbl);
 		try {
