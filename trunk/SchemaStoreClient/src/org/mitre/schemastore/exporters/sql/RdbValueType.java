@@ -35,7 +35,9 @@ public class RdbValueType implements Comparable<Object>
 	private int _intValue;
 	private Class<?> _javaType;
 
-	private RdbValueType(String type, Class<?> javaType) {
+	// DBURDICK: Changed this to a public constructor -- need to dynamically create RdbValueType 
+	//   for each Domain in Schema in SQLExporter:toRdbValueType()
+	public RdbValueType(String type, Class<?> javaType) {
 		_type = type;
 		_javaType = javaType;
 		_intValue = _nValues++;
