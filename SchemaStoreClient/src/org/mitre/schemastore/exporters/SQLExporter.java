@@ -75,8 +75,8 @@ public class SQLExporter extends Exporter {
 				System.err.println(rel.getName() + " " + rel.getLeftMin() + ": " + rel.getLeftMax()
 						+ " || " + rel.getRightMin() + " : " + rel.getRightMax());
 
-				if (lmax == null || lmax.equals(-1)) { // L*
-					if (rmax == null || rmax.equals(-1)) {
+				if (lmax == null || lmax.equals(-1) || lmax > 1) { // L*
+					if (rmax == null || rmax.equals(-1) || rmax > 1) {
 						// L*->R* create bridge table
 						String bridgeTblName = leftName + "_" + relName + "_" + rightName;
 
@@ -97,7 +97,7 @@ public class SQLExporter extends Exporter {
 						fk.setIsRequired(rmin.equals(1));
 					}
 				} else { // L1
-					if (rmax == null || rmax.equals(-1)) {
+					if (rmax == null || rmax.equals(-1) || rmax > 1) {
 						// L1->R* create rFk in Rtable ref Lpk
 						ForeignKey fk = _rdb.addForeignKey(rightTable, relName, leftTable, RdbValueType.FOREIGN_KEY); 
 						rightTable.addAttribute(fk);
@@ -274,8 +274,12 @@ public class SQLExporter extends Exporter {
 		else if (domain.getName().equalsIgnoreCase("ID")) return RdbValueType.ID;
 		else if (domain.getName().equalsIgnoreCase("IDREF")) return RdbValueType.FOREIGN_KEY;
 		else {
-			System.err.println(" &#($()# " + "Unhandled domain type " + domain.toString());
-			return RdbValueType.ANY;
+		// DBURIDCK: For mentioned types that translate to non-base Domains in M3, we have already used
+		//		Create Domain to create a domain, so use that type
+			return new RdbValueType("\"" + domain.getName() + "\"", String.class);
+			
+		//	System.err.println(" &#($()# " + "Unhandled domain type " + domain.toString());
+		//	return RdbValueType.ANY;
 		}
 
 	}
@@ -423,7 +427,7 @@ public class SQLExporter extends Exporter {
 		}
 
 		// create ANY table
-		//		_rdb.createD?omainTable("ANY", true);
+		//		_rdb.createDomainTable("ANY", true);
 	}
 
 	public static void main(String[] args) throws RemoteException, IOException {
