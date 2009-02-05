@@ -117,7 +117,6 @@ public class DomainValueImporter extends ExcelImporter {
 		if (descrCell != null)
 			documentation = getCellValStr(descrCell); 
 
-		String hashKey = domainName + "/" + domainValueStr;
 
 		Domain domain = getDomain(domainName);
 		DomainValue domainValue;
@@ -128,6 +127,7 @@ public class DomainValueImporter extends ExcelImporter {
 			// create a domain value
 			domainValue = new DomainValue(nextId(), domainValueStr, documentation, domain.getId(),
 					0);
+			String hashKey = domainName + "/" + domainValueStr + "/"+domainValue.getId() ;
 			_domainValues.put(hashKey, domainValue);
 		}
 	}
