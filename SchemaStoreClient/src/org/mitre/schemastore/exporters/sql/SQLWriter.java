@@ -64,6 +64,16 @@ public class SQLWriter {
 
 		_sql.append(createDB(_rdb));
 
+		// DBURDICK: Added CREATE DOMAIN stmts for each Domain
+		Iterator<DomainTable> refItr2 = refTables.iterator();
+		while (refItr2.hasNext()) {
+			DomainTable ref = refItr2.next();
+			String domainName = ref.getName().replaceFirst("TABLE_", "");
+			String createDomainStmt = new String (" CREATE DOMAIN " + "\"" + domainName +"\"" + " AS varChar(255); \n ");
+			_sql.append( createDomainStmt );
+			
+		}
+		
 		// serialize tables
 		Iterator<Table> relItr = relations.iterator();
 		Table rel;
@@ -121,7 +131,8 @@ public class SQLWriter {
 
 	private String insertReferenceValue(ReferenceValue val) {
 		String tbl = val.getDomain().getName();
-		return "INSERT INTO " + tbl + " VALUES ( DEFAULT, '" + val.getValue() + "');\n";
+		// DBURDICK: added double-quotes around domain table names (for consistency)
+		return "INSERT INTO " + "\"" + tbl + "\"" + " VALUES ( DEFAULT, '" + val.getValue() + "');\n";
 	}
 
 	private String createComment(Table rel) {
@@ -225,7 +236,8 @@ public class SQLWriter {
 		str.append("ALTER TABLE ");
 		str.append(dbSpecName(fk.getContainerRelationName()));
 		str.append(" ADD CONSTRAINT ");
-		str.append(dbSpecName("fk_" + fk.getName()));
+		// DBURDICK: removed "fk_ prefix" before FK so that FK name == FK referring attribute name
+		str.append(dbSpecName(fk.getName()));
 		str.append(" FOREIGN KEY (" + dbSpecName(fk.getName()) + ") ");
 		str.append(" REFERENCES "
 				+ dbSpecName(fk.getReferencedAttribute().getContainerRelationName()));
