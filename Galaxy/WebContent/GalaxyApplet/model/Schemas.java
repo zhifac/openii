@@ -11,7 +11,7 @@ import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.graph.HierarchicalGraph;
 
-import model.server.ServletConnection;
+import model.server.SchemaStoreManager;
 
 /**
  * Class for managing the schemas in the schema repository
@@ -45,7 +45,7 @@ public class Schemas
 	static private void initSchemas()
 	{
 		schemas = new HashMap<Integer,Schema>();
-		ArrayList<Schema> serverSchemas = ServletConnection.getSchemas();
+		ArrayList<Schema> serverSchemas = SchemaStoreManager.getSchemas();
 		if(serverSchemas!=null)
 			for(Schema schema : serverSchemas)
 				schemas.put(schema.getId(),schema);
@@ -98,7 +98,7 @@ public class Schemas
 	{
 		ArrayList<Integer> schemas = parentSchemas.get(schemaID);
 		if(schemas==null)
-			parentSchemas.put(schemaID, schemas = ServletConnection.getParentSchemas(schemaID));
+			parentSchemas.put(schemaID, schemas = SchemaStoreManager.getParentSchemas(schemaID));
 		return schemas;
 	}
 
@@ -107,25 +107,25 @@ public class Schemas
 	{
 		ArrayList<Integer> schemas = childSchemas.get(schemaID);
 		if(schemas==null)
-			childSchemas.put(schemaID, schemas = ServletConnection.getChildSchemas(schemaID));
+			childSchemas.put(schemaID, schemas = SchemaStoreManager.getChildSchemas(schemaID));
 		return schemas;
 	}
 
 	/** Returns the descendant schemas of the specified schema */
 	static public ArrayList<Integer> getDescendantSchemas(Integer schemaID)
-		{ return ServletConnection.getDescendantSchemas(schemaID); }
+		{ return SchemaStoreManager.getDescendantSchemas(schemaID); }
 
 	/** Returns the schemas associated with the specified schema */
 	static public ArrayList<Integer> getAssociatedSchemas(Integer schemaID)
-		{ return ServletConnection.getAssociatedSchemas(schemaID); }
+		{ return SchemaStoreManager.getAssociatedSchemas(schemaID); }
 
 	/** Returns the root for the two specified schemas */
 	static public Integer getRootSchema(Integer schema1ID, Integer schema2ID)
-		{ return ServletConnection.getRootSchema(schema1ID, schema2ID); }
+		{ return SchemaStoreManager.getRootSchema(schema1ID, schema2ID); }
 
 	/** Returns the schema path between the specified root and schema */
 	static public ArrayList<Integer> getSchemaPath(Integer rootID, Integer schemaID)
-		{ return ServletConnection.getSchemaPath(rootID, schemaID); }
+		{ return SchemaStoreManager.getSchemaPath(rootID, schemaID); }
 	
 	//------------------------
 	// Schema Element Actions
@@ -133,7 +133,7 @@ public class Schemas
 
 	/** Gets the list of elements with the specified keyword */
 	static public ArrayList<SchemaElement> getElementsForKeyword(String keyword, ArrayList<Integer> groups)
-		{ return ServletConnection.getSchemaElementsForKeyword(keyword, groups); }
+		{ return SchemaStoreManager.getSchemaElementsForKeyword(keyword, groups); }
 
 	/** Returns the schema element count */
 	static public int getSchemaElementCount(Integer schemaID)
@@ -141,7 +141,7 @@ public class Schemas
 		Integer schemaElementCount = schemaElementCounts.get(schemaID);
 		if(schemaElementCount==null)
 		{
-			schemaElementCount=ServletConnection.getSchemaElementCount(schemaID);
+			schemaElementCount=SchemaStoreManager.getSchemaElementCount(schemaID);
 			schemaElementCounts.put(schemaID, schemaElementCount);
 		}
 		return schemaElementCount;
@@ -151,7 +151,7 @@ public class Schemas
 	static public SchemaElement getSchemaElement(Integer elementID)
 	{
 		if(!schemaElements.containsKey(elementID))
-			schemaElements.put(elementID, ServletConnection.getSchemaElement(elementID));
+			schemaElements.put(elementID, SchemaStoreManager.getSchemaElement(elementID));
 		return schemaElements.get(elementID);
 	}
 	
@@ -161,7 +161,7 @@ public class Schemas
 		// Retrieve graph if needed
 		if(!schemaGraphs.containsKey(schemaID))
 		{
-			HierarchicalGraph graph = new HierarchicalGraph(ServletConnection.getGraph(schemaID),null);
+			HierarchicalGraph graph = new HierarchicalGraph(SchemaStoreManager.getGraph(schemaID),null);
 			schemaGraphs.put(schemaID,graph);
 			for(SchemaElement element : graph.getElements(null))
 				schemaElements.put(element.getId(), element);

@@ -6,11 +6,14 @@ import java.applet.Applet;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 
+import org.mitre.schemastore.client.SchemaStoreClient;
 import org.mitre.schemastore.model.DataSource;
 import org.mitre.schemastore.model.Group;
 import org.mitre.schemastore.model.Schema;
@@ -18,13 +21,16 @@ import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.graph.Graph;
 
 /**
- * Handles all commuications to the database (via servlets)
+ * Handles all communications to the database (via servlets)
  * @author CWOLF
  */
-public class ServletConnection
+public class SchemaStoreManager
 {
-	/** Stores the codebase used for accessing the database */
+	/** Stores the code base used for accessing the database */
 	private static URL codeBase;
+
+	/** Stores the schema store client */
+	private static SchemaStoreClient client;
 	
 	/** Initializes the database for use */
 	public static void init(Applet applet)
@@ -35,6 +41,10 @@ public class ServletConnection
 		} catch(MalformedURLException e) {}
 	}
 
+	/** Sets the SchemaStore client for use by this manager */
+	public static void setClient(SchemaStoreClient clientIn)
+		{ client = clientIn; }
+	
 	/** Connects to the specified servlet */
 	private static URLConnection getServletConnection() throws MalformedURLException, IOException
 	{
@@ -48,21 +58,50 @@ public class ServletConnection
 	}
 
 	/** Handles the call to the servlet */
-	static private Object callFunction(String functionName,Object[] inputs)
+	static private Object callServlet(String functionName,Object[] inputs) throws Exception
 	{
 		Object object = null;
-		try {
-			URLConnection connection = getServletConnection();
-			ObjectOutputStream out = new ObjectOutputStream(connection.getOutputStream());
-			out.writeObject(functionName);
-			for(Object input : inputs) out.writeObject(input);
-			out.flush();
-			out.close();
-			ObjectInputStream in = new ObjectInputStream(connection.getInputStream());
-			object = in.readObject();
-		    in.close();
-		} catch(Exception e) { System.out.println(e.getMessage()); }
+		URLConnection connection = getServletConnection();
+		ObjectOutputStream out = new ObjectOutputStream(connection.getOutputStream());
+		out.writeObject(functionName);
+		for(Object input : inputs) out.writeObject(input);
+		out.flush();
+		out.close();
+		ObjectInputStream in = new ObjectInputStream(connection.getInputStream());
+		object = in.readObject();
+	    in.close();
 		return object;
+	}
+	
+	/** Manages calls to the SchemaStore client method */
+	static private Object callClient(String name, Object args[]) throws RemoteException
+	{
+		// Create an array of types
+		Class<?> types[] = new Class[args.length];
+		for(int i=0; i<args.length; i++)
+			types[i] = args[i].getClass();
+		
+		// Calls the SchemaStore method
+		try {
+			Method method = client.getClass().getDeclaredMethod(name, types);
+			return method.invoke(client, args);
+		} catch(Exception e) { return new RemoteException("Unable to call method " + name); }
+	}
+
+
+	/** Handles the call to the database (either through servlet or SchemaStore client) */
+	static private Object callFunction(String functionName, Object[] inputs) 
+	{
+		try {
+			if(codeBase!=null) return callServlet(functionName,inputs);
+			if(client!=null) return callClient(functionName,inputs);
+		}
+		catch(Exception e)
+		{
+			System.out.println("(E)SchemaStoreManager.callFunction: Unable to call method " + functionName);
+			System.out.println("    " + e.getMessage());
+		}
+		return null;
 	}
 	
 	//------------------

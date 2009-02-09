@@ -9,7 +9,7 @@ import java.util.HashMap;
 
 import org.mitre.schemastore.model.Group;
 
-import model.server.ServletConnection;
+import model.server.SchemaStoreManager;
 
 /**
  * Class for managing the groups in the schema repository
@@ -34,7 +34,7 @@ public class Groups
 	static private void initGroups()
 	{
 		groups = new HashMap<Integer,Group>();
-		ArrayList<Group> serverGroups = ServletConnection.getGroups();
+		ArrayList<Group> serverGroups = SchemaStoreManager.getGroups();
 		if(serverGroups!=null)
 			for(Group group : serverGroups)
 				groups.put(group.getId(),group);	
@@ -71,14 +71,14 @@ public class Groups
 	
 	/** Returns a list of unassigned schemas */
 	static public ArrayList<Integer> getUnassignedSchemas()
-		{ return ServletConnection.getUnassignedSchemas(); }	
+		{ return SchemaStoreManager.getUnassignedSchemas(); }	
 
 	/** Returns a list of schemas associated with the specified group */
 	static public ArrayList<Integer> getGroupSchemas(Integer groupID)
 	{
 		ArrayList<Integer> groupSchemas = groupSchemaHash.get(groupID);
 		if(groupSchemas==null)
-			groupSchemaHash.put(groupID, groupSchemas=ServletConnection.getGroupSchemas(groupID));
+			groupSchemaHash.put(groupID, groupSchemas=SchemaStoreManager.getGroupSchemas(groupID));
 		return groupSchemas;
 	}
 	
@@ -87,7 +87,7 @@ public class Groups
 	{
 		ArrayList<Integer> schemaGroups = schemaGroupHash.get(schemaID);
 		if(schemaGroups==null)
-			schemaGroupHash.put(schemaID, schemaGroups=ServletConnection.getSchemaGroups(schemaID));
+			schemaGroupHash.put(schemaID, schemaGroups=SchemaStoreManager.getSchemaGroups(schemaID));
 		return schemaGroups;
 	}
 
