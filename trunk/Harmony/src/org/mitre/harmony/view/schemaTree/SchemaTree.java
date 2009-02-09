@@ -1,0 +1,625 @@
+// � The MITRE Corporation 2006
+// ALL RIGHTS RESERVED
+package org.mitre.harmony.view.schemaTree;
+
+import java.awt.BasicStroke;
+import java.awt.Cursor;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
+import java.awt.Stroke;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.Vector;
+
+import javax.swing.JLabel;
+import javax.swing.JTree;
+import javax.swing.plaf.metal.MetalTreeUI;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.DefaultTreeSelectionModel;
+import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreePath;
+
+import org.mitre.harmony.Harmony;
+import org.mitre.harmony.model.MappingCellManager;
+import org.mitre.harmony.model.filters.Filters;
+import org.mitre.harmony.model.filters.Focus;
+import org.mitre.harmony.model.preferences.Preferences;
+import org.mitre.harmony.model.preferences.PreferencesListener;
+import org.mitre.harmony.model.selectedInfo.SelectedInfo;
+import org.mitre.harmony.model.selectedInfo.SelectedInfoListener;
+import org.mitre.harmony.view.dialogs.schemas.SchemaDialog;
+import org.mitre.schemastore.model.MappingCell;
+import org.mitre.schemastore.model.Schema;
+
+/**
+ * Creates the source or target schema tree 
+ * @author CWOLF
+ */
+public class SchemaTree extends JTree implements PreferencesListener, SelectedInfoListener, MouseListener, MouseMotionListener
+{
+	/**
+	 * Blocks user from selecting tree nodes
+	 * @author CWOLF
+	 */
+	class SchemaTreeSelectionModel extends DefaultTreeSelectionModel
+	{	
+		/**
+		 * Selects the specified schema tree paths
+		 * @param paths Paths of the schema tree being selected
+		 */
+		void selectSchemaTreeNodes(TreePath[] paths) { super.setSelectionPaths(paths); }
+		
+		// Override these options to prevent user selection of tree nodes
+		public void addSelectionPaths(TreePath[] paths) {}
+		public void setSelectionPaths(TreePath[] paths) {}
+		public void addSelectionPath(TreePath path) {}
+		public void removeSelectionPath(TreePath path) {}
+		public void removeSelectionPaths(TreePath[] paths) {}
+		public void setSelectionPath(TreePath path) {}
+	}
+	
+	/**
+	 * Prevents the root node from being expanded or collapsed
+	 */
+	class SchemaTreeUI extends MetalTreeUI
+	{
+		protected void toggleExpandState(TreePath path)
+			{ if(!new TreePath(root.getPath()).equals(path)) super.toggleExpandState(path); }
+	}
+	
+	/**
+	 * Cache row bounds for quick referencing
+	 * @author CWOLF
+	 */
+	private class RowBounds implements SchemaTreeListener
+	{
+		private boolean needUpdating = true;	// Indicates if the row bounds currently need updating
+		private Rectangle row[];				// Array of all row bounds associated with schema tree
+
+		/**
+		 * Update the row bounds associated with the schema tree
+		 */
+		private void update()
+		{
+			row = new Rectangle[getRowCount()];
+			for(int i=0; i<getRowCount(); i++)
+				row[i]=getRowBounds(i);
+			needUpdating = false;
+		}
+		
+		/**
+		 * Initialize the caching of row bounds
+		 */
+		private RowBounds()
+			{ needUpdating=true; addSchemaTreeListener(this); }
+
+		/**
+		 * @return Row bound of specified row
+		 */
+		Rectangle getRow(int i)
+			{ if(needUpdating) update(); return row[i]; } 
+		
+		//--------------------------------------------------------------------------------
+		// Purpose: Listeners for changes in the schema tree in order to update row bounds
+		//--------------------------------------------------------------------------------
+		public void schemaStructureModified(SchemaTree tree) { needUpdating = true; }
+		public void schemaDisplayModified(SchemaTree tree){ needUpdating = true; }
+	}
+
+	/**
+	 * Cache visible nodes for quick referencing
+	 * @author CWOLF
+	 */
+	private class VisibleNodes implements SchemaTreeListener
+	{
+		private boolean needUpdating;						// Indicates if the visible nodes need updating
+		private HashSet<DefaultMutableTreeNode> visible;	// Hash used to store visible nodes
+
+		/**
+		 * Update the visible nodes associated with the schema tree
+		 */
+		private void update()
+		{
+			visible = new HashSet<DefaultMutableTreeNode>();
+			for(int i=0; i<getRowCount(); i++)
+				visible.add((DefaultMutableTreeNode) getPathForRow(i).getLastPathComponent());
+			needUpdating = false;
+		}
+		
+		/**
+		 * Initialize the caching of visible nodes
+		 */
+		private VisibleNodes()
+			{ needUpdating=true; addSchemaTreeListener(this); }
+
+		/**
+		 * @return Indication if node is currently visible
+		 */
+		private boolean isVisible(DefaultMutableTreeNode node)
+			{ if(needUpdating) update(); return visible.contains(node); }
+		
+		//-----------------------------------------------------------------------------------
+		// Purpose: Listeners for changes in the schema tree in order to update visible nodes
+		//-----------------------------------------------------------------------------------
+		public void schemaStructureModified(SchemaTree tree) { needUpdating = true; }
+		public void schemaDisplayModified(SchemaTree tree){ needUpdating = true; }
+	}
+	
+	/**
+	 * Cache node rows for quick referencing
+	 * @author CWOLF
+	 */
+	private class NodeRows implements SchemaTreeListener
+	{
+		private boolean needUpdating;									// Indicates if the node rows need updating
+		private Hashtable<DefaultMutableTreeNode, Integer> nodeRows;	// Hash used to store node rows
+		
+		/**
+		 * Update the node rows associated with the schema tree
+		 */
+		private void update()
+		{
+			nodeRows = new Hashtable<DefaultMutableTreeNode, Integer>();
+			Enumeration nodes = ((DefaultMutableTreeNode)getModel().getRoot()).depthFirstEnumeration();
+			while(nodes.hasMoreElements())
+			{
+				DefaultMutableTreeNode node = (DefaultMutableTreeNode)nodes.nextElement();
+				TreePath path = new TreePath(node.getPath());
+				while(!isVisible(path)) path = path.getParentPath();
+				nodeRows.put(node,new Integer(getRowForPath(path)));
+			}
+			needUpdating = false;
+		}
+		
+		/**
+		 * Initialize the caching of node rows
+		 */
+		private NodeRows()
+			{ needUpdating=true; addSchemaTreeListener(this); }
+
+		/**
+		 * @return Row where node is located
+		 */
+		private Integer getRow(DefaultMutableTreeNode node)
+			{ if(needUpdating) update(); return nodeRows.get(node); }
+		
+		//-----------------------------------------------------------------------------------
+		// Purpose: Listeners for changes in the schema tree in order to update visible nodes
+		//-----------------------------------------------------------------------------------
+		public void schemaStructureModified(SchemaTree tree) { needUpdating = true; }
+		public void schemaDisplayModified(SchemaTree tree){ needUpdating = true; }
+	}
+	
+	private Integer role;				// Indicates if this is the left or right tree
+	SchemaTreeHash schemaTreeHash;		// Holds hash table to access all schema nodes
+	private RowBounds rowBounds;		// Holds a cache of schema tree row bounds
+	private VisibleNodes visibleNodes;	// Holds a cache of visible nodes
+	private NodeRows nodeRows;			// Holds a cache of node rows
+	public DefaultMutableTreeNode root;	// Root node to which all schema nodes are attached
+
+	/** Initializes the schema tree */
+	public SchemaTree(Integer roleIn)
+	{
+		role = roleIn;
+		
+		// Initializes tree variables
+		root = new DefaultMutableTreeNode(role==Harmony.LEFT ? " Mapping Schemas" : " Selected Schema");
+		schemaTreeHash = new SchemaTreeHash(this);
+		rowBounds = new RowBounds();
+		visibleNodes = new VisibleNodes();
+		nodeRows = new NodeRows();
+		setRowHeight(20);
+		
+		// Set up various schema tree models
+		setCellRenderer(new SchemaTreeRenderer());
+		setModel(new DefaultTreeModel(root));
+		setUI(new SchemaTreeUI());
+		setSelectionModel(new SchemaTreeSelectionModel());
+
+		// Set up the schema tree schemas
+		SchemaTreeGenerator.initialize(this);
+		for(Integer schemaID : SelectedInfo.getSchemas(role))
+			SchemaTreeGenerator.addSchema(this,schemaID);
+			
+		// Add mouse and schema listeners to schema tree
+		addMouseListener(this);
+		addMouseMotionListener(this);
+		Preferences.addListener(this);
+		SelectedInfo.addListener(this);
+	}
+
+	/** Returns the role associated with this schema tree */
+	public Integer getRole()
+		{ return role; }
+
+	/** Returns the schemas associated with this schema tree */
+	public ArrayList<Integer> getSchemas()
+	{
+		ArrayList<Integer> schemas = new ArrayList<Integer>();
+		for(int i=0; i<root.getChildCount(); i++)
+		{
+			DefaultMutableTreeNode node = (DefaultMutableTreeNode)root.getChildAt(i);
+			if(node.getUserObject() instanceof Schema)
+				schemas.add(((Schema)node.getUserObject()).getId());
+		}
+		return schemas;
+	}
+	
+	/** Returns the schema associated with the specified node */
+	static public Integer getSchema(DefaultMutableTreeNode node)
+	{
+		while(node.getUserObject() instanceof Integer)
+			node = (DefaultMutableTreeNode)node.getParent();
+		return ((Schema)node.getUserObject()).getId();
+	}
+	
+	/** Returns the node associated with the specified schema */
+	public DefaultMutableTreeNode getSchemaNode(Integer schemaID)
+	{
+		for(int i=0; i<root.getChildCount(); i++)
+		{
+			DefaultMutableTreeNode node = (DefaultMutableTreeNode)root.getChildAt(i);
+			Object object = node.getUserObject();
+			if(object instanceof Schema && schemaID.equals(((Schema)object).getId()))return node;
+		}
+		return null;
+	}
+	
+	/** Returns the schema element associated with the tree node */
+	Integer getElement(DefaultMutableTreeNode node)
+		{ return (node.getUserObject() instanceof Integer) ? (Integer)(node.getUserObject()) : null; }
+	
+	/** Returns the schema node associated with the provided path */
+	public Integer getNode(TreePath path)
+		{ return (Integer)((DefaultMutableTreeNode)path.getLastPathComponent()).getUserObject(); }
+	
+	/** Expands the specified tree path */
+	public void expandPath(TreePath path)
+	{
+		super.expandPath(path);
+		for(SchemaTreeListener treeListener : treeListeners)
+			treeListener.schemaDisplayModified(this);
+	}
+
+	/** Expands the specified tree path (expand any hidden parents) */
+	public void expandFullPath(TreePath path)
+	{
+		DefaultMutableTreeNode node = (DefaultMutableTreeNode)path.getLastPathComponent();
+		while(node!=null)
+		{
+			super.expandPath(new TreePath(node.getPath()));
+			node = (DefaultMutableTreeNode)node.getParent();
+		}
+	}
+	
+	/** Expands the specified tree node */
+	void expandNode(DefaultMutableTreeNode node)
+	{
+		// Expand node and all children under it
+		super.expandPath(new TreePath(node.getPath()));
+		Enumeration childNodes = node.depthFirstEnumeration();
+		while(childNodes.hasMoreElements())
+		{
+			DefaultMutableTreeNode childNode = (DefaultMutableTreeNode)childNodes.nextElement();
+			super.expandPath(new TreePath(childNode.getPath()));
+		}
+		
+		// Inform listeners of change to schema tree
+		for(SchemaTreeListener treeListener : treeListeners)
+			treeListener.schemaDisplayModified(this);
+	}
+	
+	/** Collapses the specified tree path */
+	public void collapsePath(TreePath path)
+	{
+		if(path.getParentPath()!=null)
+		{
+			super.collapsePath(path);
+			for(SchemaTreeListener treeListener : treeListeners)
+				treeListener.schemaDisplayModified(this);
+		}
+	}
+	
+	/** Collapses the specified tree node */
+	void collapseNode(DefaultMutableTreeNode node)
+	{
+		// Collapse node and all children under it
+		super.collapsePath(new TreePath(node.getPath()));
+		Enumeration childNodes = node.depthFirstEnumeration();
+		while(childNodes.hasMoreElements())
+		{
+			DefaultMutableTreeNode childNode = (DefaultMutableTreeNode)childNodes.nextElement();
+			TreePath path = new TreePath(childNode.getPath());
+			if(path.getParentPath()!=null)
+				super.collapsePath(new TreePath(childNode.getPath()));
+		}
+		
+		// Inform listeners of change to schema tree
+		for(SchemaTreeListener treeListener : treeListeners)
+			treeListener.schemaDisplayModified(this);
+	}
+	
+	/** This method marks the specified tree node as finished (or not), including its descendants */
+	void markNodeAsFinished(DefaultMutableTreeNode node, boolean isFinished)
+	{
+		// Only allow schema elements to be marked as finished
+		Object obj = node.getUserObject();
+		if(obj instanceof Integer)
+		{
+			HashSet<Integer> elementIDs = new HashSet<Integer>();
+			
+			// Determine the finished state of the specified node
+			Integer schemaID = getSchema(node);
+			
+			// Set finished state of specified node and its descendants
+			Enumeration descendants = node.depthFirstEnumeration();
+			while(descendants.hasMoreElements())
+				elementIDs.add(getElement((DefaultMutableTreeNode)descendants.nextElement()));
+
+			// If node set to unfinished, unmark the path back to the root as well
+			if(!isFinished)
+			{
+				TreeNode[] path = node.getPath();
+				for(int i=0; i<path.length; i++)
+					elementIDs.add(getElement((DefaultMutableTreeNode)path[i]));					
+			}
+			
+			// Update the preferences
+			Preferences.setFinished(schemaID,elementIDs,isFinished);			
+		}
+	}
+	
+	/** Switches focus to specified node */
+	void focusNode(DefaultMutableTreeNode node)
+	{
+		Focus focus = null;
+		if(node!=null)
+			focus = new Focus(getSchema(node),(Integer)node.getUserObject());
+		Filters.setFocus(role,focus);
+	}	
+	
+	/**
+	 * This method deletes all system-generated links for the indicated node; a
+	 * user-specified copy of each visible link is made.
+	 * @param node A schema node that has just been marked as completed.
+	 */
+	private void updateLinks(Integer elementID)
+	{
+		// Mark all visible links as user selected and all others as rejected
+		for(Integer mappingCellID : MappingCellManager.getMappingCellsByElement(elementID))
+		{
+			MappingCell mappingCell = MappingCellManager.getMappingCell(mappingCellID);
+			if(!mappingCell.getValidated())
+				MappingCellManager.modifyMappingCell(mappingCellID,Filters.visibleMappingCell(mappingCellID)?MappingCellManager.MAX_CONFIDENCE:MappingCellManager.MIN_CONFIDENCE,System.getProperty("user.name"),true);
+		}
+	}
+
+	/** Returns the specified row's bounds */
+	public Rectangle getBufferedRowBounds(int row)
+		{ return rowBounds.getRow(row); }
+
+	/** Returns the specified node's bounds */
+	public Rectangle getBufferedRowBounds(DefaultMutableTreeNode node)
+		{ return rowBounds.getRow(getNodeRow(node)); }
+
+	/** Returns if specified node is visible */
+	public boolean isVisible(DefaultMutableTreeNode node)
+		{ return visibleNodes.isVisible(node); }
+
+	/** Returns the specified node's row */
+	public Integer getNodeRow(DefaultMutableTreeNode node)
+		{ return nodeRows.getRow(node); }
+	
+	/** Returns vector of all schema node tree locations */
+	public ArrayList<DefaultMutableTreeNode> getComponentNodes(Integer node)
+		{ return schemaTreeHash.get(node); }
+
+	/** Handles the selection of schema tree nodes */
+	public void selectSchemaTreeNodes(TreePath[] paths)
+	{
+		((SchemaTreeSelectionModel)getSelectionModel()).selectSchemaTreeNodes(paths);
+		for(SchemaTreeListener treeListener : treeListeners)
+			treeListener.schemaDisplayModified(this);
+	}
+	
+	/** Handles changes to the displayed schemas */
+	public void selectedSchemasModified()
+	{
+		// Get the current and new list of schemas
+		ArrayList<Integer> currSchemaIDs = getSchemas();
+		ArrayList<Integer> newSchemaIDs = SelectedInfo.getSchemas(role);
+
+		// Remove any schemas that have been removed from view
+		for(Integer currSchemaID : currSchemaIDs)
+			if(!newSchemaIDs.contains(currSchemaID))
+				SchemaTreeGenerator.removeSchema(this, currSchemaID);
+		
+		// Add any schemas that have been added to the view
+		for(Integer newSchemaID : newSchemaIDs)
+			if(!currSchemaIDs.contains(newSchemaID))
+				SchemaTreeGenerator.addSchema(this, newSchemaID);
+	}
+	
+	/** Handles changes to the specified schema's graph model */
+	public void schemaGraphModelChanged(Integer schemaID)
+	{
+		if(getSchemas().contains(schemaID))
+		{
+			SchemaTreeGenerator.removeSchema(this, schemaID);
+			SchemaTreeGenerator.addSchema(this, schemaID);
+		}
+	}
+	
+	/** Handles mouse clicks on the schema tree */
+	public void mouseClicked(MouseEvent e)
+	{
+		// Get clicked-on node
+		TreePath path = getPathForLocation(e.getX(),e.getY());
+		if(path==null) return;
+		DefaultMutableTreeNode node = (DefaultMutableTreeNode)path.getLastPathComponent();
+
+		// Handle mouse clicks on the root node
+		if(node.isRoot())
+		{
+			// If "Add Schemas" selected with left button, allow schema to be added
+			if(e.getX()>getFontMetrics(new JLabel().getFont()).stringWidth("Schemas_"))
+			{
+				if(e.getButton()==MouseEvent.BUTTON1)
+					new SchemaDialog();
+			}
+			
+			// If right mouse button (or meta key) pressed, display the drop-down menu 
+			else if(e.getButton()==MouseEvent.BUTTON3 || e.isMetaDown())
+			{
+				SchemaTreeNodeMenu menu = new SchemaTreeNodeMenu(this,node);
+				menu.show(e.getComponent(), e.getX(), e.getY());
+			}
+		}
+		
+		// Handles mouse clicks on all other nodes
+		else if(!(node.getUserObject() instanceof String))
+		{
+			// Allows the selection of the clicked on node
+			if(node.getUserObject() instanceof Integer && e.getButton()==MouseEvent.BUTTON1)
+			{
+				Integer elementID = (Integer)node.getUserObject();
+				if(Filters.visibleNode(role,node))
+					SelectedInfo.setElement(elementID,role,e.isControlDown());
+			}
+			
+			// Otherwise, if right mouse button pressed, display the drop-down menu
+			else if(e.getButton()==MouseEvent.BUTTON3)
+			{
+				SchemaTreeNodeMenu menu = new SchemaTreeNodeMenu(this,node);
+				menu.show(e.getComponent(), e.getX(), e.getY());
+			}
+		}
+	}
+
+	/** Handles mouse movements on the schema tree */
+	public void mouseMoved(MouseEvent e)
+	{
+		// Determine which tree path has been selected
+		TreePath path = getPathForLocation(e.getX(),e.getY());
+		if(path!=null)
+			if(((DefaultMutableTreeNode)path.getLastPathComponent()).isRoot())
+				if(e.getX()>getFontMetrics(new JLabel().getFont()).stringWidth("Schemas_"))
+					if(e.getX()<rowBounds.getRow(getRowForPath(path)).getMaxX())
+					{
+						if(getCursor()!=Cursor.getPredefinedCursor(Cursor.HAND_CURSOR))
+							setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+						return;
+					}
+		
+		// If not over the "Add Schemas" link, switch cursor back to default
+		if(getCursor()!=Cursor.getDefaultCursor())
+			setCursor(Cursor.getDefaultCursor());
+	}
+	
+	/** Handles preference changes */
+	public void showSchemaTypesChanged()
+	{
+		// Update all nodes which might be affected by showing node type
+		DefaultMutableTreeNode leaf = root.getFirstLeaf();
+		while(leaf!=null) {
+			((DefaultTreeModel)getModel()).nodeChanged(leaf);
+			leaf = leaf.getNextLeaf();
+		}
+		
+		// Inform listeners that schema tree nodes have changed
+		for(SchemaTreeListener treeListener : treeListeners) {
+			treeListener.schemaDisplayModified(this);
+		}
+	}
+	
+	/** Handles the marking of a element as finished */
+	public void elementsMarkedAsFinished(Integer schemaID, HashSet<Integer> elementIDs)
+	{
+		for(Integer elementID : elementIDs) updateLinks(elementID);
+		DefaultMutableTreeNode node = getSchemaNode(schemaID);
+		if(node!=null) repaint(getBufferedRowBounds(node));
+	}
+
+	/** Handles the marking of a element as unfinished */
+	public void elementsMarkedAsUnfinished(Integer schemaID, HashSet<Integer> elementIDs)
+	{
+		DefaultMutableTreeNode node = getSchemaNode(schemaID);
+		if(node!=null) repaint(getBufferedRowBounds(node));
+	}
+	
+	// Unused listener events
+	public void selectedElementsModified(Integer role) {}
+	public void selectedMappingCellsModified() {}
+	public void mouseExited(MouseEvent e) {}
+	public void mouseEntered(MouseEvent e) {}
+	public void mouseReleased(MouseEvent e) {}
+	public void mousePressed(MouseEvent e) {}
+	public void mouseDragged(MouseEvent e) {}
+	
+	// Allows classes to listen for schema tree changes
+	Vector<SchemaTreeListener> treeListeners = new Vector<SchemaTreeListener>();
+	public void addSchemaTreeListener(SchemaTreeListener obj) { treeListeners.add(obj); }	
+	public void removeSchemaTreeListener(SchemaTreeListener obj) { treeListeners.remove(obj); }
+	
+	// This stroke uses the default values for everything except the dash pattern
+	private static final float SPACE = 4.0f;
+	private static final float DASH = 2*SPACE;
+	private static final BasicStroke DASHED_LINE = new BasicStroke(1.0f, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER,
+			  10.0f, new float[] {DASH, SPACE}, 0.0f);
+	
+	/** Paints a dashed line around the nodes in focus (if any) */
+	public void paint(Graphics g)
+	{
+		super.paint(g);
+		Focus focus = Filters.getFocus(role);
+		
+		// Paint a dashed line only if the focus has been defined.
+		if(focus != null && g instanceof Graphics2D)
+		{
+			Graphics2D g2d = (Graphics2D) g;
+			
+			// Temporarily use a dashed line.
+			Stroke s = g2d.getStroke();
+			g2d.setStroke(DASHED_LINE);
+			
+			// Draw a box around each node in focus.
+			for(DefaultMutableTreeNode node : getComponentNodes(focus.getElementID()))
+				if(getSchema(node).equals(focus.getSchemaID()))
+				{
+					Rectangle r = computeFocusRectangle(node);
+					g2d.drawRect(r.x, r.y, r.width, r.height);
+				}
+			g2d.setStroke(s);
+		}
+	}
+	
+	/** Calculates the drawing of a rectangle around focused items */
+	public Rectangle computeFocusRectangle(DefaultMutableTreeNode node)
+	{
+		Rectangle result = (Rectangle) getBufferedRowBounds(node).clone();
+		Enumeration childNodes = node.depthFirstEnumeration();
+		// Visit each child...
+		while(childNodes.hasMoreElements()) {
+			DefaultMutableTreeNode childNode = (DefaultMutableTreeNode)childNodes.nextElement();
+			Rectangle childRect = getBufferedRowBounds(childNode);
+			// And expand the rectangle as needed.
+			if (childRect.x + childRect.width > result.x + result.width) {
+				result.width = childRect.x + childRect.width - result.x;
+			}
+			if (childRect.y + childRect.height > result.y + result.height) {
+				result.height = childRect.y + childRect.height - result.y;
+			}
+		}
+		// Nudge the horizontal distance for a less cluttered appearance.
+		result.x -= SPACE;
+		result.width += 2*SPACE;
+		return result;
+	}
+}

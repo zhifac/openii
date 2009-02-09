@@ -1,0 +1,24 @@
+// © The MITRE Corporation 2006
+// ALL RIGHTS RESERVED
+package org.mitre.harmony.model.preferences;
+
+import java.util.HashSet;
+
+/**
+ * Interface used by all Harmony preference listeners
+ * @author CWOLF
+ */
+public interface PreferencesListener
+{
+	/** Indicates change to schema type display setting */
+	public void showSchemaTypesChanged();
+	
+	/** Indicates change to the specified schema's graph model */
+	public void schemaGraphModelChanged(Integer schemaID);
+	
+	/** Indicates the marking of an element as finished */
+	public void elementsMarkedAsFinished(Integer schemaID, HashSet<Integer> elementIDs);
+	
+	/** Indicates the marking of an element as unfinished */
+	public void elementsMarkedAsUnfinished(Integer schemaID, HashSet<Integer> elementIDs);
+}
