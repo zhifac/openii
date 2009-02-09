@@ -1,0 +1,79 @@
+<?xml version="1.0"?>
+<project name="harmony" default="build" basedir=".">
+
+    <!-- DO NOT DELETE - these are required when running ant outside Eclipse.  -->
+    <!-- If you need to delete these, contact Jeff Hoyt and he'll figure out a way to work around it. -->
+    <!-- This requires fatjar.jar to be in your ant's lib directory -->
+    <property name="fjepPath" value="fatjar.jar"/>
+    <taskdef name="fatjar.build" classname="net.sf.fjep.anttask.FJBuildTask" classpath="${fjepPath}"/>
+    <typedef name="fatjar.manifest" classname="net.sf.fjep.anttask.FJManifestType" classpath="${fjepPath}"/>
+    <typedef name="fatjar.exclude" classname="net.sf.fjep.anttask.FJExcludeType" classpath="${fjepPath}"/>
+    <typedef name="fatjar.jarsource" classname="net.sf.fjep.anttask.FJJarSourceType" classpath="${fjepPath}"/>
+    <typedef name="fatjar.filesource" classname="net.sf.fjep.anttask.FJFileSourceType" classpath="${fjepPath}"/>
+	
+    <!-- Compiles the code -->
+	<target name="compile">
+	    <mkdir dir="build/classes"/>
+	    <javac srcdir="src" destdir="build/classes" deprecation="on" debug="on" source="1.6" target="1.6">
+	    	<classpath>
+    	    	<path path="lib/SchemaStoreClient.jar"/>
+    	    	<path path="lib/SchemaStorePorters.jar"/>
+       	    	<path path="lib/jfreechart-1.0.2.jar"/>
+       	    	<path path="lib/jcommon-1.0.5.jar"/>
+            </classpath>
+        </javac>
+		<copy todir="build/classes/org/mitre/harmony/view/graphics">
+			<fileset dir="src/org/mitre/harmony/view/graphics"/>
+		</copy>
+		<copy file="src/harmony.xml" todir="build/classes"/>
+    </target>
+
+	<!-- Builds the HarmonyMatchers jar -->
+    <target name="buildHarmonyMatchers" depends="compile">
+        <fatjar.build output="HarmonyMatchers.jar">
+            <fatjar.filesource path="build/classes/org/mitre/harmony/matchers" relpath="org/mitre/harmony/matchers"/>
+            <fatjar.filesource path="build/classes/org/mitre/harmony/model/ToolManager.class" relpath="org/mitre/harmony/model"/>
+            <fatjar.filesource path="build/classes/org/mitre/harmony/model/ToolManager$Tools.class" relpath="org/mitre/harmony/model"/>
+            <fatjar.filesource path="build/classes/harmony.xml" relpath=""/>
+        </fatjar.build>
+    </target>
+
+	<!-- Builds Harmony -->
+    <target name="buildHarmony" depends="compile">
+ 
+ 		<!-- Builds the Harmony jar file -->
+        <fatjar.build output="Harmony.jar">
+            <fatjar.manifest mainclass="org.mitre.harmony.Harmony" classpath="SchemaStoreClient.jar SchemaStorePorters.jar"/>
+            <fatjar.filesource path="build/classes"/>
+            <fatjar.jarsource file="lib/jfreechart-1.0.2.jar" relpath=""/>
+            <fatjar.jarsource file="lib/jcommon-1.0.5.jar" relpath=""/>
+        </fatjar.build>
+
+		<!-- Package Harmony into a zip file -->
+        <fatjar.build output="Harmony.zip">
+            <fatjar.filesource path="Harmony.jar" relpath="Harmony"/>
+            <fatjar.filesource path="lib/SchemaStoreClient.jar" relpath="Harmony"/>
+            <fatjar.filesource path="lib/SchemaStorePorters.jar" relpath="Harmony"/>
+           <fatjar.filesource path="SchemaStore.jar" relpath="Harmony"/>
+			<fatjar.filesource path="config.xml" relpath="Harmony"/>
+            <fatjar.filesource path="Harmony User Guide.doc" relpath="Harmony"/>
+            <fatjar.filesource path="License.doc" relpath="Harmony"/>
+            <fatjar.filesource path="Harmony.bat" relpath="Harmony"/>
+       </fatjar.build>
+
+    </target>
+
+	<!-- Builds the Harmony jars -->
+    <target name="build">
+    	<antcall target="buildHarmonyMatchers"/>
+    	<antcall target="buildHarmony"/>
+    </target>
+
+	<!-- Cleans up the constructed jar files -->
+	<target name="clean">
+		<delete dir="build/classes"/>
+		<delete file="HarmonyMatchers.jar"/>
+	    <delete file="Harmony.jar"/>
+    </target>
+
+</project>
