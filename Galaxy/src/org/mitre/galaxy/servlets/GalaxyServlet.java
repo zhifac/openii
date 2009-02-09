@@ -1,6 +1,6 @@
 // Copyright 2008 The MITRE Corporation. ALL RIGHTS RESERVED.
 
-package servlets;
+package org.mitre.galaxy.servlets;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
