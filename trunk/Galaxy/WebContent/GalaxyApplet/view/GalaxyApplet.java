@@ -25,7 +25,7 @@ import view.searchPane.SearchPane;
 
 import model.SelectedObjects;
 import model.server.ImageManager;
-import model.server.ServletConnection;
+import model.server.SchemaStoreManager;
 
 /** Class for displaying the Galaxy Applet */
 public class GalaxyApplet extends Applet implements MouseListener, MouseMotionListener
@@ -89,7 +89,7 @@ public class GalaxyApplet extends Applet implements MouseListener, MouseMotionLi
 		galaxyApplet = this;
 		
 		// Initializes the database
-		ServletConnection.init(this);
+		SchemaStoreManager.init(this);
 		ImageManager.init(this);
 		
 		// Construct the explorer pane

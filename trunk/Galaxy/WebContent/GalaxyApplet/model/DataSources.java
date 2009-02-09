@@ -9,7 +9,7 @@ import java.util.HashMap;
 
 import org.mitre.schemastore.model.DataSource;
 
-import model.server.ServletConnection;
+import model.server.SchemaStoreManager;
 
 /**
  * Class for managing the data sources in the schema repository
@@ -23,19 +23,19 @@ public class DataSources
 	/** Returns a list of all data sources */
 	static public ArrayList<DataSource> getDataSources()
 	{
-		ArrayList<DataSource> dataSources = ServletConnection.getDataSourceList(null);
-		return dataSources==null ? new ArrayList<DataSource>() : ServletConnection.getDataSourceList(null);
+		ArrayList<DataSource> dataSources = SchemaStoreManager.getDataSourceList(null);
+		return dataSources==null ? new ArrayList<DataSource>() : SchemaStoreManager.getDataSourceList(null);
 	}
 	
 	/** Returns the list of data sources for the specified schema */
 	static public ArrayList<DataSource> getDataSources(Integer schemaID)
-		{ return ServletConnection.getDataSourceList(schemaID); }
+		{ return SchemaStoreManager.getDataSourceList(schemaID); }
 	
 	/** Returns the specified data source */
 	static public DataSource getDataSource(Integer dataSourceID)
 	{
 		if(dataSources.get(dataSourceID)==null) 
-			dataSources.put(dataSourceID, ServletConnection.getDataSource(dataSourceID));
+			dataSources.put(dataSourceID, SchemaStoreManager.getDataSource(dataSourceID));
 		return dataSources.get(dataSourceID);
 	}
 	
