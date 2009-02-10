@@ -930,7 +930,7 @@ public class Database
 					baseFilter += schemaID + ",";
 				baseFilter = baseFilter.substring(0, baseFilter.length()-1) + ")";
 			}
-			else baseFilter = "true";
+			else baseFilter = "1=1";
 				
 			// Gets the schema entities
 			ResultSet rs = stmt.executeQuery("SELECT id,name,description,schema_id FROM entity WHERE "+baseFilter+" AND " + nameFilter + " AND " + descFilter);
