@@ -1,0 +1,17 @@
+<config>
+  <exporters>
+    <topmatch>
+      <count>100</count>
+    </topmatch>
+  </exporters>
+  <preferences>
+    <importDir>C:\mike\harmony\Jaccard\cluster\testschemas</importDir>
+    <infoPaneSize>104</infoPaneSize>
+  </preferences>
+  <schemastore>C:\mike\CVS_ROOT\COMMONGROUND\SchemaStore\SchemaStore.jar</schemastore>
+  <schematore>http://brainsrv2:8090/SchemaStore/services/SchemaStore</schematore>
+  <selectedInfo>
+    <leftSchemas>[52525]</leftSchemas>
+    <rightSchemas>[52406]</rightSchemas>
+  </selectedInfo>
+</config>

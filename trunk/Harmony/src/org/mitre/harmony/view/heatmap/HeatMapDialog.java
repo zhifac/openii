@@ -39,45 +39,6 @@ public class HeatMapDialog extends JDialog implements MouseListener, MouseMotion
 		//Assume only 2 schemas being matched.
 		Schema schema1 = SchemaManager.getSchema(schemas.get(0));
 		Schema schema2 = SchemaManager.getSchema(schemas.get(1));
-		/*HierarchicalGraph graph1 = SchemaManager.getGraph(schema1.getId());
-		HierarchicalGraph graph2 = SchemaManager.getGraph(schema2.getId());
-		
-		ArrayList<SchemaElement> elements1 = graph1.getGraphElements();
-		ArrayList<SchemaElement> elements2 = graph2.getGraphElements();
-		
-		int x1 = elements1.size();
-		int x2 = elements2.size();
-		
-		//create grid with matcher scores in it.
-		double[][] data = new double[x1][x2];
-		
-		int SpotX = 0;
-		int SpotY = 0;
-		for(SchemaElement se1: elements1){
-			for(SchemaElement se2: elements2){
-				Integer id = MappingCellManager.getMappingCellID(se1.getId(), se2.getId());
-				if(id == null){
-					SpotY++;
-					continue;
-				}
-				MappingCell mc = MappingCellManager.getMappingCell(id);
-				data[SpotX][SpotY++] = mc.getScore();
-			}
-			SpotX++;
-			SpotY=0;
-		}
-		
-		//get labels.
-		String[] LabelsX = new String[x1];
-		String[] LabelsY = new String[x2];
-		SpotX=0;
-		for(SchemaElement se:elements1){
-			LabelsX[SpotX++] = se.getName();
-		}
-		SpotX=0;
-		for(SchemaElement se:elements2){
-			LabelsY[SpotX++] = se.getName();
-		}*/
 		
 		//HeatMap hm = new HeatMap(data,HeatMap.GRADIENT_RED_TO_GREEN);
 		HeatMap hm = new HeatMap();

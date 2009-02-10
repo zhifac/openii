@@ -4,7 +4,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/jfreechart-1.0.2.jar"/>
 	<classpathentry kind="lib" path="lib/jcommon-1.0.5.jar"/>
-	<classpathentry kind="lib" path="lib/SchemaStoreClient.jar"/>
-	<classpathentry kind="lib" path="lib/SchemaStorePorters.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/SchemaStoreClient"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

@@ -27,6 +27,7 @@ import org.mitre.harmony.view.dialogs.matcher.MatcherMenu;
 import org.mitre.harmony.view.dialogs.schemas.SchemaDialog;
 import org.mitre.harmony.view.mappingPane.MappingLines;
 import org.mitre.harmony.view.heatmap.HeatMapDialog;
+import org.mitre.harmony.view.affinity.AffinityDialog;
 
 /**
  * Displays all menu bar choices in Harmony
@@ -187,21 +188,26 @@ public class HarmonyMenuBar extends JMenuBar
 	private class ViewMenu extends JMenu implements ActionListener
 	{
 		private JMenuItem viewHeatmap;		// Option to view heat map
+		private JMenuItem viewAffinity;		// Option to view Affinity
 		
 		/** Initializes the view drop-down menu */
 		private ViewMenu()
 		{
 			super("Views");
 			setMnemonic(KeyEvent.VK_V);
+			setMnemonic(KeyEvent.VK_A);
 
 			// Initialize view drop-down items
 		    viewHeatmap = new JMenuItem("View Heatmap",KeyEvent.VK_V);
+		    viewAffinity = new JMenuItem("View Affinity",KeyEvent.VK_A);
 
 			// Attach action listeners to view drop-down items
 		    viewHeatmap.addActionListener(this);
+		    viewAffinity.addActionListener(this);
 
 			// Add view drop-down items to view drop-down menu
 		    add(viewHeatmap);
+		    add(viewAffinity);
 		}
 		
 		/** Handles the view mapping heat map selected by the user */
@@ -210,6 +216,9 @@ public class HarmonyMenuBar extends JMenuBar
 	    	Object source = e.getSource();
 	    	if(source==viewHeatmap)
 	    		{ new HeatMapDialog(); }
+	    	else if(source == viewAffinity){
+	    		new AffinityDialog();
+	    	}
 	    }
 	}
 	
@@ -246,7 +255,7 @@ public class HarmonyMenuBar extends JMenuBar
 	    add(new ProjectMenu());	
 	    add(new EditMenu());
 	    add(new MatcherMenu());
-//	    add(new ViewMenu());
+	    add(new ViewMenu());
 	    add(new HelpMenu());
 	}
 }

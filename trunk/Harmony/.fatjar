@@ -1,0 +1,14 @@
+#Fat Jar Configuration File
+#Wed Aug 27 16:57:58 EDT 2008
+onejar.license.required=true
+manifest.classpath=
+manifest.removesigners=true
+onejar.checkbox=false
+jarname=Matchers.jar
+manifest.mergeall=true
+manifest.mainclass=
+manifest.file=<createnew>
+jarname.isextern=false
+onejar.expand=
+excludes=<po|Harmony>~.settings/;<po|Harmony>~CVS/;<po|Harmony>~org/~mitre/~wc3/~w909/~workbench/~model/;<po|Harmony>~org/~mitre/~wc3/~w909/~workbench/~tools/;<po|Harmony>~org/~mitre/~wc3/~w909/~workbench/~Workbench.class;<po|Harmony>~.classpath;<po|Harmony>~.cvsignore;<po|Harmony>~.fatjar;<po|Harmony>~.project;<po|Harmony>~axisclient.properties;<po|Harmony>~axisservice.properties;<po|Harmony>~build.xml;<po|Harmony>~buildMatchers.xml;<po|Harmony>~Documentation + Synonyms.txt;<po|Harmony>~Documentation Similarity.txt;<po|Harmony>~Harmony User Guide.doc;<po|Harmony>~harmony.bat;<po|Harmony>~harmony.jar;<po|Harmony>~harmony.manifest;<po|Harmony>~harmony.tools.xml;<po|Harmony>~harmony.zip;<po|Harmony>~hs_err_pid240.log;<po|Harmony>~Installation.doc;<po|Harmony>~License.doc;<po|Harmony>~Matchers.jar;<po|Harmony>~Name Similarity 2.txt;<po|Harmony>~Name Similarity.txt;<po|Harmony>~project.dat;<po|Harmony>~SchemaStoreClient.jar;<po|Harmony>~temp.txt;<jar|antlr-2.7.5.jar>;<jar|arq.jar>;<jar|commons-logging.jar>;<jar|concurrent.jar>;<jar|icu4j_3_4.jar>;<jar|jakarta-oro-2.0.8.jar>;<jar|jena.jar>;<jar|jenatest.jar>;<jar|junit.jar>;<jar|stax-1.1.1-dev.jar>;<jar|stax-api-1.0.jar>;<jar|xercesImpl.jar>;<jar|xml-apis.jar>;<jar|castor-0.9.9.1-xml.jar>;<jar|jfreechart-1.0.2.jar>;<jar|jcommon-1.0.5.jar>;<jar|SchemaStoreClient.jar>
+includes=
