@@ -1,0 +1,14 @@
+*.xsd
+*.xq
+*.harmony
+ATOPLN.xml
+harmony.dat
+*.zip
+harmony.jar
+Data\*
+*.txt
+project.dat
+schemastore
+Harmony.jar
+HarmonyMatchers.jar
+harmony.project.dat

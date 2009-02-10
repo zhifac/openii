@@ -1,0 +1,31 @@
+<global-parms>
+      <schemastore>http://brainsrv2:8090/SchemaStore/services/SchemaStore</schemastore>
+</global-parms>
+<tools>
+  <tool>
+    <loc>org.mitre.wc3.w909.workbench.tools.porters.DataDictionaryExporter</loc>
+    <parms>
+    </parms>
+  </tool>
+  <tool>
+    <loc>org.mitre.wc3.w909.workbench.tools.porters.MatchedExporter</loc>
+    <parms>
+    </parms>
+  </tool>
+  <tool>
+    <loc>org.mitre.wc3.w909.workbench.tools.visualizers.harmony.Harmony</loc>
+    <parms>
+      <preferences>
+        <infoPaneSize>104</infoPaneSize>
+        <leftSchemas>52525</leftSchemas>
+        <rightSchemas>52406</rightSchemas>
+        <schemaDir>C:\chris\projects\Harmony\Schemas</schemaDir>
+        <showSchemaTypes>false</showSchemaTypes>
+      </preferences>
+      <schemas>
+        <sources>5, 4</sources>
+        <targets>3</targets>
+      </schemas>
+    </parms>
+  </tool>
+</tools>

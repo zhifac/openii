@@ -1,3 +1,10 @@
 <config>
-  <schemastore>SchemaStore.jar</schemastore>
+  <preferences>
+    <graphModels>{}</graphModels>
+  </preferences>
+  <schemastore>../SchemaStore/SchemaStore.jar</schemastore>
+  <selectedInfo>
+    <leftSchemas>[72122]</leftSchemas>
+    <rightSchemas>[3192]</rightSchemas>
+  </selectedInfo>
 </config>

@@ -40,7 +40,7 @@ public class EditDistanceMatcher implements MatchVoter
 				if(scores.getScore(sourceElement.getId(), targetElement.getId())==null)
 				{
 					VoterScore score = matchElements(sourceElement, targetElement);
-					scores.setScore(sourceElement.getId(), targetElement.getId(), score);
+					if(score != null) scores.setScore(sourceElement.getId(), targetElement.getId(), score);
 				}
 		return scores;
 	}
@@ -58,6 +58,8 @@ public class EditDistanceMatcher implements MatchVoter
 		
 		// Identify the edit distance score
 		double editDistanceScore = distance[source.length][target.length];
+		
+		if(editDistanceScore <= 0) return null;
 
 		// Scale the result into the range (-1,+1)
 		double positive = (Math.min(source.length, target.length) + 1) * MATCH_BONUS;

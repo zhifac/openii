@@ -14,7 +14,7 @@ import org.mitre.schemastore.model.graph.FilteredGraph;
 public class BagMatcher implements MatchVoter
 {
 	/** Constant defining the score ceiling */
-	final static double SCORE_CEILING=10;
+	public final static double SCORE_CEILING=10;
 	
 	/** Returns the name of the match voter */
 	public String getName()
@@ -44,7 +44,8 @@ public class BagMatcher implements MatchVoter
 					WordBag sourceBag = wordBags.get(sourceElement.getId());
 					WordBag targetBag = wordBags.get(targetElement.getId());
 					VoterScore score = computeScore(sourceBag, targetBag);
-					scores.setScore(sourceElement.getId(), targetElement.getId(), score);
+					if(score != null)
+						scores.setScore(sourceElement.getId(), targetElement.getId(), score);
 				}
 		return scores;
 	}
@@ -54,6 +55,7 @@ public class BagMatcher implements MatchVoter
 	{
 		double directPositiveEvidence = computeIntersectionScore(sourceBag, targetBag);
 		double directTotalEvidence = Math.min(sourceBag.getBagWeight(), targetBag.getBagWeight());
+		if(directPositiveEvidence ==0) return null;
 		return new VoterScore(directPositiveEvidence, directTotalEvidence);
 	}
 
