@@ -25,6 +25,7 @@ import org.mitre.harmony.view.dialogs.mappings.LoadMappingDialog;
 import org.mitre.harmony.view.dialogs.mappings.SaveMappingDialog;
 import org.mitre.harmony.view.dialogs.matcher.MatcherMenu;
 import org.mitre.harmony.view.dialogs.schemas.SchemaDialog;
+import org.mitre.harmony.view.heatmap.HeatMapDialog;
 import org.mitre.harmony.view.mappingPane.MappingLines;
 import org.mitre.harmony.view.affinity.AffinityDialog;
 
