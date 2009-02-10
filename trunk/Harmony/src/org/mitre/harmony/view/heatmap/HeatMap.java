@@ -5,17 +5,6 @@ import java.awt.image.BufferedImage;
 
 import javax.swing.*;
 import java.awt.event.*;
-import java.util.ArrayList;
-import java.util.Stack;
-
-import org.mitre.harmony.model.MappingCellManager;
-import org.mitre.harmony.model.SchemaManager;
-import org.mitre.harmony.model.MappingManager;
-import org.mitre.schemastore.model.MappingCell;
-import org.mitre.harmony.view.harmonyPane.HarmonyFrame;
-import org.mitre.schemastore.model.Schema;
-import org.mitre.schemastore.model.SchemaElement;
-import org.mitre.schemastore.model.graph.HierarchicalGraph;
 
 /**
  *
@@ -26,22 +15,15 @@ public class HeatMap extends JPanel implements MouseListener,KeyListener, MouseM
     private double[][] data;
     private String[] labelsX;
     private String[] labelsY;
-    private int[] levelsX;
-    private int[] levelsY;
     private int numLabelsX;
     private int numLabelsY;
     private Color[][] dataColors;
-    
-    private double[][] orig_data;
-    private String[] orig_labelsX;
-    private String[] orig_labelsY;
-    private int orig_numLabelsX;
-    private int orig_numLabelsY;
-    private int currentLevelX;
-    private int currentLevelY;
-    
-    private Schema schema1;
-    private Schema schema2;
+
+    // these four variables are used to print the axis labels
+    private double xMin;
+    private double xMax;
+    private double yMin;
+    private double yMax;
 
     private boolean drawLabels = false;
     private int lowerX;
@@ -56,7 +38,11 @@ public class HeatMap extends JPanel implements MouseListener,KeyListener, MouseM
     private int currentX;
     private int currentY;
     private boolean maxInfo = false;
-    
+
+    private String title;
+    private String xAxis;
+    private String yAxis;
+
     private int height;
     private int width;
 
@@ -64,6 +50,13 @@ public class HeatMap extends JPanel implements MouseListener,KeyListener, MouseM
     private int xLabelEnd;
     private int yLabelStart;
     private int yLabelEnd;
+
+    private boolean drawTitle = false;
+    private boolean drawXTitle = false;
+    private boolean drawYTitle = false;
+    private boolean drawLegend = false;
+    private boolean drawXTicks = false;
+    private boolean drawYTicks = false;
 
     private Color[] colors;
     private Color bg = Color.white;
@@ -137,228 +130,6 @@ public class HeatMap extends JPanel implements MouseListener,KeyListener, MouseM
         // needed, saving us a lot of time in the end.
         drawData();
     }
-    
-    /**
-     */
-    public HeatMap()
-    {
-        super();
-        
-        double[][] data = new double[4][4];
-        data[0][0] = 0.2; data[1][0] = 0.7;
-        data[0][1] = 0.7; data[1][1] = 0.5;
-        data[0][2] = 0.5; data[1][2] = 0.1;
-        data[0][3] = 0.3; data[1][3] = 0.9;
-        
-        data[2][0] = 0.5; data[3][0] = 0.3;
-        data[2][1] = 0.1; data[3][1] = 0.9;
-        data[2][2] = 0.5; data[3][2] = 0.3;
-        data[2][3] = 0.3; data[3][3] = 0.5;
-
-        this.data = data;
-        updateGradient(GRADIENT_HOT);
-        //updateGradient(GRADIENT_RAINBOW);
-        updateData(data);
-
-        this.setPreferredSize(new Dimension(60+data.length, 60+data[0].length));
-        this.setDoubleBuffered(true);
-
-        this.bg = Color.white;
-        this.fg = Color.black;
-        
-        String[] xLabels = new String[4]; String[] yLabels = new String[4];
-        xLabels[0]="x0 Label"; yLabels[0] = "y0 Label";
-        xLabels[1]="x1 Label"; yLabels[1] = "y1 Label";
-        xLabels[2]="x2 Label"; yLabels[2] = "y2 Label";
-        xLabels[3]="x3 Label"; yLabels[3] = "y3 Label";
-        setLabels(xLabels,yLabels,4,4);
-        
-        // this is the expensive function that draws the data plot into a 
-        // BufferedImage. The data plot is then cheaply drawn to the screen when
-        // needed, saving us a lot of time in the end.
-        drawData();
-    }
-    
-    public void setUp(Schema schema1, Schema schema2){
-    	this.schema1 = schema1;
-    	this.schema2 = schema2;
-		HierarchicalGraph graph1 = SchemaManager.getGraph(schema1.getId());
-		HierarchicalGraph graph2 = SchemaManager.getGraph(schema2.getId());
-		
-		ArrayList<SchemaElement> elements1 = graph1.getGraphElements();
-		ArrayList<SchemaElement> elements2 = graph2.getGraphElements();
-		
-		ArrayList<SchemaElement> roots1 = graph1.getRootElements();
-		ArrayList<SchemaElement> roots2 = graph2.getRootElements();
-		
-		int x1 = elements1.size();
-		int x2 = elements2.size();
-		
-		//create grid with matcher scores in it.
-		this.data = new double[x1][x2];
-		
-		int SpotX = 0;
-		int SpotY = 0;
-		
-		//basic idea, use a stack to dfs the graph to generate a list of elements
-		//that are in an order based on structure.
-		Stack<SchemaElement> stack = new Stack<SchemaElement>();
-		Stack<Integer> level = new Stack<Integer>(); // tell me which level of graph I'm at.
-		String forwardDelimitor = "  ";
-		String[] LabelsX = new String[x1];
-		String[] LabelsY = new String[x2];
-		levelsX = new int[x1];
-		levelsY = new int[x2];
-		
-		//handle graph1.
-		for(SchemaElement seA: roots1){
-			stack.push(seA); //push each root
-			level.push(0);
-		}
-		elements1 = new ArrayList<SchemaElement>();
-		while(!stack.empty()){
-			//pop top element
-			SchemaElement current = stack.pop();
-			elements1.add(current);
-			StringBuffer prefixBit = new StringBuffer();
-			int levelAt = level.pop();
-			for(int j=0; j < levelAt;j++) prefixBit.append(forwardDelimitor);
-			prefixBit.append(current.getName());
-			levelsX[SpotX] = levelAt;
-			LabelsX[SpotX++] = prefixBit.toString();
-			ArrayList<SchemaElement> children = graph1.getChildElements(current.getId());
-			for(SchemaElement mychild: children){
-				stack.push(mychild);
-				level.push(levelAt+1);
-			}
-		}
-		
-		//handle graph2.  yuckie, cookie-cuttering code.
-		for(SchemaElement seA: roots2){
-			stack.push(seA); //push each root
-			level.push(0);
-		}
-		elements2 = new ArrayList<SchemaElement>();
-		while(!stack.empty()){
-			//pop top element
-			SchemaElement current = stack.pop();
-			elements2.add(current);
-			StringBuffer prefixBit = new StringBuffer();
-			int levelAt = level.pop();
-			for(int j=0; j < levelAt;j++) prefixBit.append(forwardDelimitor);
-			prefixBit.append(current.getName());
-			levelsY[SpotY] = levelAt;
-			LabelsY[SpotY++] = prefixBit.toString();
-			ArrayList<SchemaElement> children = graph2.getChildElements(current.getId());
-			for(SchemaElement mychild: children){
-				stack.push(mychild);
-				level.push(levelAt+1);
-			}
-		}
-		
-		SpotX = 0;
-		SpotY = 0;
-		for(SchemaElement se1: elements1){
-			for(SchemaElement se2: elements2){
-				Integer id = MappingCellManager.getMappingCellID(se1.getId(), se2.getId());
-				if(id == null){
-					SpotY++;
-					continue;
-				}
-				MappingCell mc = MappingCellManager.getMappingCell(id);
-				data[SpotX][SpotY++] = mc.getScore();
-			}
-			SpotX++;
-			SpotY=0;
-		}
-		
-		//get labels.
-		setLabels(LabelsX, LabelsY, x1, x2);
-		
-		updateData(data);
-		this.setPreferredSize(new Dimension(60+data.length, 60+data[0].length));
-        this.setDoubleBuffered(true);
-        drawData();
-        checkpointData();
-        currentLevelX=0;
-        currentLevelY=0;
-    }
-    
-    //ok, to make this work, we need some notion of what level we are at in each dimension
-    //int levelX, levelY;
-    //also need some notion of max level in each direction
-    //int maxlevelX, maxlevelY;
-    //these need to get set in setUp when constructing indentation scheme.
-    void visualSummary(int newLevelX, int newLevelY){
-    	//reserrect original data.
-    	uncheckData();
-    	
-    	//compute size of new in each dimension;
-    	int newXSize = computeNewSize(levelsX, numLabelsX, newLevelX);
-    	int newYSize = computeNewSize(levelsY, numLabelsY, newLevelY);
-    	
-    	//create new data array.
-    	double[][] newData = new double[newXSize][newYSize];
-    	String[] aLabelsX = new String[newXSize];
-    	String[] aLabelsY = new String[newYSize];
-    	
-    	int SpotX=0;
-    	int SpotY=0;
-    	//go double nested loops through big data grid.
-    	//storing in new data array.
-    	for(int m=0;m<numLabelsX; SpotX++){
-    		int running_m = m+1;
-    		SpotY=0;
-    		while(running_m < numLabelsX && levelsX[running_m]>newLevelX) running_m++; //[m,running_m)
-    		for(int n=0; n<numLabelsY;SpotY++){
-    			int running_n = n+1;
-        		while(running_n < numLabelsY && levelsY[running_n]>newLevelY) running_n++; //[n,running_n)
-        		//now, the square region [m,n,running_m,running_n) has been defined and is to be placed
-        		//in SpotX,SpotY
-        		newData[SpotX][SpotY]=scoreCombine(m,n,running_m,running_n);
-        		aLabelsY[SpotY] = labelsY[n];
-        		n=running_n;
-    		}
-    		aLabelsX[SpotX] = labelsX[m];
-    		m=running_m;
-    	}
-    	
-    	//cleanup
-    	setLabels(aLabelsX, aLabelsY, newXSize, newYSize);
-		
-		updateData(newData);
-		this.setPreferredSize(new Dimension(60+data.length, 60+data[0].length));
-        this.setDoubleBuffered(true);
-        drawData();
-    }
-    
-    double scoreCombine(int smallM, int smallN, int bigM, int bigN){
-    	//take average of max in each row or column, whichever is smallest.
-    	double average=0;
-    	if(bigM-smallM > bigN-smallN){
-    		//rows dominate
-    		for(int j=smallN; j < bigN; j++){
-    			double biggestVal=0;
-    			for(int k=smallM; k < bigM; k++){
-    				if(biggestVal<data[k][j]) biggestVal = data[k][j];
-    			}
-    			average+=biggestVal;
-    		}
-    		average=average/new Double(bigN-smallN);
-    	}
-    	else{
-    		//columns dominate
-    		for(int k=smallM; k < bigM; k++){
-    			double biggestVal=0;
-        		for(int j=smallN; j < bigN; j++){
-    				if(biggestVal<data[k][j]) biggestVal = data[k][j];
-    			}
-    			average+=biggestVal;
-    		}
-    		average=average/new Double(bigM-smallM);
-    	}
-    	return average;
-    }
 
     public void setLabels(String[] xLabels, String[] yLabels, int numX, int numY){
        labelsX = xLabels;
@@ -370,35 +141,147 @@ public class HeatMap extends JPanel implements MouseListener,KeyListener, MouseM
        yLabelStart =0;
        yLabelEnd =numY;
     }
-    
-    //save original data matrix and other info for possible aggregation of data points at
-    //higher levels of granularity.  I.e. visual summarization.
-    public void checkpointData(){
-    	orig_data= data;
-    	orig_labelsX = labelsX;
-    	orig_labelsY = labelsY;
-    	orig_numLabelsX = numLabelsX;
-    	orig_numLabelsY = numLabelsY;
+
+    /**
+     * Specify the coordinate bounds for the map. Only used for the axis labels, which must be enabled seperately. Calls repaint() when finished.
+     * @param xMin The lower bound of x-values, used for axis labels
+     * @param xMax The upper bound of x-values, used for axis labels
+     */
+    public void setCoordinateBounds(double xMin, double xMax, double yMin, double yMax)
+    {
+        this.xMin = xMin;
+        this.xMax = xMax;
+        this.yMin = yMin;
+        this.yMax = yMax;
+        
+        repaint();
     }
-    
-    //resurrect original data matrix and other info from possible aggregation of data points at
-    //higher levels of granularity.  I.e. visual summarization.
-    public void uncheckData(){
-    	data= orig_data;
-    	labelsX = orig_labelsX;
-    	labelsY = orig_labelsY;
-    	numLabelsX = orig_numLabelsX;
-    	numLabelsY = orig_numLabelsY;
+
+
+    /**
+     * Specify the coordinate bounds for the X-range. Only used for the axis labels, which must be enabled seperately. Calls repaint() when finished.
+     * @param xMin The lower bound of x-values, used for axis labels
+     * @param xMax The upper bound of x-values, used for axis labels
+     */
+    public void setXCoordinateBounds(double xMin, double xMax)
+    {
+        this.xMin = xMin;
+        this.xMax = xMax;
+        
+        repaint();
     }
-    
-    int computeNewSize(int[] levels, int numLevels, int newLevelNum){
-    	int answer=0;
-    	for(int j=0; j<numLevels; j++){
-    		if(levels[j] <=newLevelNum){
-    			answer++;
-    		}
-    	}
-    	return answer;
+
+    /**
+     * Specify the coordinate bounds for the Y-range. Only used for the axis labels, which must be enabled seperately. Calls repaint() when finished.
+     * @param yMin The lower bound of y-values, used for axis labels
+     * @param yMax The upper bound of y-values, used for axis labels
+     */
+    public void setYCoordinateBounds(double yMin, double yMax)
+    {
+        this.yMin = yMin;
+        this.yMax = yMax;
+        
+        repaint();
+    }
+
+    /**
+     * Updates the title. Calls repaint() when finished.
+     * @param title The new title
+     */
+    public void setTitle(String title)
+    {
+        this.title = title;
+        
+        repaint();
+    }
+
+    /**
+     * Updates the state of the title. Calls repaint() when finished.
+     * @param drawTitle Specifies if the title should be drawn
+     */
+    public void setDrawTitle(boolean drawTitle)
+    {
+        this.drawTitle = drawTitle;
+        
+        repaint();
+    }
+
+    /**
+     * Updates the X-Axis title. Calls repaint() when finished.
+     * @param xAxisTitle The new X-Axis title
+     */
+    public void setXAxisTitle(String xAxisTitle)
+    {
+        this.xAxis = xAxisTitle;
+        
+        repaint();
+    }
+
+    /**
+     * Updates the state of the X-Axis Title. Calls repaint() when finished.
+     * @param drawXAxisTitle Specifies if the X-Axis title should be drawn
+     */
+    public void setDrawXAxisTitle(boolean drawXAxisTitle)
+    {
+        this.drawXTitle = drawXAxisTitle;
+        
+        repaint();
+    }
+
+    /**
+     * Updates the Y-Axis title. Calls repaint() when finished.
+     * @param yAxisTitle The new Y-Axis title
+     */
+    public void setYAxisTitle(String yAxisTitle)
+    {
+        this.yAxis = yAxisTitle;
+        
+        repaint();
+    }
+
+    /**
+     * Updates the state of the Y-Axis Title. Calls repaint() when finished.
+     * @param drawYAxisTitle Specifies if the Y-Axis title should be drawn
+     */
+    public void setDrawYAxisTitle(boolean drawYAxisTitle)
+    {
+        this.drawYTitle = drawYAxisTitle;
+        
+        repaint();
+    }
+
+
+    /**
+     * Updates the state of the legend. Calls repaint() when finished.
+     * @param drawLegend Specifies if the legend should be drawn
+     */
+    public void setDrawLegend(boolean drawLegend)
+    {
+        this.drawLegend = drawLegend;
+        
+        repaint();
+    }
+
+    /**
+     * Updates the state of the X-Axis ticks. Calls repaint() when finished.
+     * @param drawXTicks Specifies if the X-Axis ticks should be drawn
+     */
+    public void setDrawXTicks(boolean drawXTicks)
+    {
+        this.drawXTicks = drawXTicks;
+        
+        repaint();
+    }
+
+    /**
+     * Updates the state of the Y-Axis ticks. Calls repaint() when finished.
+     * @param drawYTicks Specifies if the Y-Axis ticks should be drawn
+     */
+    public void setDrawYTicks(boolean drawYTicks)
+    {
+        this.drawYTicks = drawYTicks;
+        
+        repaint();
     }
 
     /**
@@ -438,7 +321,7 @@ public class HeatMap extends JPanel implements MouseListener,KeyListener, MouseM
         
         repaint();
     }
-    
+
     /**
      * This uses the current array of colors that make up the gradient, and 
      * assigns a color to each data point, stored in the dataColors array, which
@@ -667,6 +550,7 @@ public class HeatMap extends JPanel implements MouseListener,KeyListener, MouseM
            g2d.drawRect(10, 10, width - 160, height - 160);
         
            //added mdmorse /////////////////
+           int xDist = (int) ((width-160)/(double) (xLabelEnd-xLabelStart));
            double xDDist = ((width-160)/(double) (xLabelEnd-xLabelStart));
             g2d.rotate(Math.PI / 2);
             for (int x = xLabelStart; x < xLabelEnd; x++){
@@ -679,6 +563,7 @@ public class HeatMap extends JPanel implements MouseListener,KeyListener, MouseM
             }
             g2d.rotate( -Math.PI / 2);
 
+           int yDist = (int) ((height-160)/(double) (yLabelEnd-yLabelStart));
            double yDDist = ((height-160)/(double) (yLabelEnd-yLabelStart));
             for (int y = yLabelStart; y < yLabelEnd; y++){
                 g2d.drawString(labelsY[y], width-150, height-150-((int)(yDDist*(y-yLabelStart))));
@@ -705,6 +590,7 @@ public class HeatMap extends JPanel implements MouseListener,KeyListener, MouseM
            g2d.drawRect(10, 10, width - 20, height - 20);
 
            //added mdmorse /////////////////
+           int xDist = (int) ((width-20)/(double) (xLabelEnd-xLabelStart));
            double xDDist = ((width-20)/(double) (xLabelEnd-xLabelStart));
             g2d.rotate(Math.PI / 2);
             for (int x = xLabelStart; x < xLabelEnd; x++){
@@ -716,6 +602,7 @@ public class HeatMap extends JPanel implements MouseListener,KeyListener, MouseM
             }
             g2d.rotate( -Math.PI / 2);
 
+           int yDist = (int) ((height-20)/(double) (yLabelEnd-yLabelStart));
            double yDDist = ((height-20)/(double) (yLabelEnd-yLabelStart));
             for (int y = yLabelStart; y < yLabelEnd; y++){
 		if(y != 0){
@@ -737,31 +624,13 @@ public class HeatMap extends JPanel implements MouseListener,KeyListener, MouseM
    
     public void drawMaxInfo(Graphics g){
         Graphics2D g2d = (Graphics2D) g;
-        
-        //find out where to place the text.
-        double localwidth;
-        double localheight;
-        if(drawLabels){ localwidth = width-160; localheight=height-160;
-        } else{ localwidth = width-20; localheight=height-20;
-        }
-        double xPos = ((double)(localwidth)/(double) (xLabelEnd-xLabelStart));
-        double yPos = ((double)(localheight)/(double) (yLabelEnd-yLabelStart));
+        //g2d.setColor(Color.gray);
+        //g2d.fillRect(currentX,currentY,currentX+50,currentY+50);
+        g2d.setColor(Color.white);
+        double xPos = ((double)(currentX-10)/(double) (xLabelEnd-xLabelStart));
+        double yPos = ((double)(currentY-10)/(double) (yLabelEnd-yLabelStart));
         int xVal = (int) ((currentX-10)/(double) (xPos));
-        int yVal = (int) ((currentY-10)/(double) (yPos));
-        
-        int length = labelsX[xVal].length();
-        length= length>=labelsY[yLabelEnd-yVal-1].length()?length:labelsY[yLabelEnd-yVal-1].length();
-        
-        //draw a box around the text.
-        g2d.setColor(Color.white);
-        g2d.drawRect(currentX+14, currentY+7, length*8+1, 28);
-        g2d.setColor(Color.DARK_GRAY);
-        g2d.fillRect(currentX+15, currentY+8, length*8, 27);
-        
-        //draw the text.
-        g2d.setColor(Color.white);
-        g2d.drawString(labelsX[xVal], currentX+20, currentY+20);
-        g2d.drawString(labelsY[yLabelEnd-yVal-1], currentX+20, currentY+30);
+        g2d.drawString(labelsX[xVal], currentX+10, currentY+10);
     }
 
     public void drawMovingRectangle(Graphics g){
@@ -770,29 +639,6 @@ public class HeatMap extends JPanel implements MouseListener,KeyListener, MouseM
         g2d.drawLine(lowerX,lowerY,movingX,lowerY);
         g2d.drawLine(movingX,lowerY,movingX,movingY);
         g2d.drawLine(lowerX,movingY,movingX,movingY);
-    }
-    
-    void setUpdate(){
-    	//get the location information.
-    	double localwidth;
-        double localheight;
-        if(drawLabels){ localwidth = width-160; localheight=height-160;
-        } else{ localwidth = width-20; localheight=height-20;
-        }
-        double xPos = ((double)(localwidth)/(double) (xLabelEnd-xLabelStart));
-        double yPos = ((double)(localheight)/(double) (yLabelEnd-yLabelStart));
-        int xVal = (int) ((currentX-10)/(double) (xPos));
-        int yVal = (int) ((currentY-10)/(double) (yPos));
-        
-        // 0 out appropriate places.
-        for(int j=0; j < xLabelEnd; j++){
-        	data[j][yLabelEnd-yVal-1] = 0;
-        }
-        for(int j=0; j < yLabelEnd; j++){
-        	data[xVal][yLabelEnd-j-1] = 0;
-        }
-        data[xVal][yLabelEnd-yVal-1] = 0.99;
-        updateData(data);
     }
 
     //return true if two strings differ at table level.
@@ -864,7 +710,6 @@ public class HeatMap extends JPanel implements MouseListener,KeyListener, MouseM
     public void keyPressed(KeyEvent e){
        switch(e.getKeyCode()){
         case KeyEvent.VK_T: 
-        	uncheckData(); currentLevelX=0;currentLevelY=0;
             drawLabels=false;
             setLowerXY(0,0);
             setBiggerXY(width,height); 
@@ -872,25 +717,13 @@ public class HeatMap extends JPanel implements MouseListener,KeyListener, MouseM
             repaint(); 
             break;
         case KeyEvent.VK_I: 
-        	if(maxInfo==false){
+            if(maxInfo==false){
                maxInfo = true;
             } else{
                maxInfo = false;
                repaint();
             }
             break;
-        case KeyEvent.VK_G:
-        	setUpdate();
-        	break;
-        case KeyEvent.VK_U:
-        	visualSummary(++currentLevelX, currentLevelY);
-        	break;
-        case KeyEvent.VK_Y:
-        	visualSummary(currentLevelX, ++currentLevelY);
-        	break;
-        case KeyEvent.VK_Q:
-        	visualSummary(currentLevelX, currentLevelY);
-        	break;
         default:
           if(drawLabels == true) drawLabels =false;
           else drawLabels = true;
@@ -925,6 +758,9 @@ public class HeatMap extends JPanel implements MouseListener,KeyListener, MouseM
          System.out.println("LowerX " + lowerX + " UpperX " + upperX);
          System.out.println("LowerY " + lowerY + " UpperY " + upperY);
          System.out.println("NumLabelsX " + numLabelsX + " NumLabelsY " + numLabelsY);
+         float lX = (float) lowerX-10;
+         float wX = (float) width-10-150;
+         float nX = (float) numLabelsX;
          xLabelStart = (int) ((double) ((double)(lowerX-10))/((double)(width-10-150))*((double)numLabelsX));
          xLabelEnd = (int) ((double) ((double)(upperX-10))/((double)(width-10-150))*((double)numLabelsX));
          yLabelStart = (int) ((double) ((double)(lowerY-10))/((double)(height-10-150))*((double)numLabelsY));
