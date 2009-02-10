@@ -79,15 +79,14 @@ public class SchemaStoreManager
 		// Create an array of types
 		Class<?> types[] = new Class[args.length];
 		for(int i=0; i<args.length; i++)
-			types[i] = args[i].getClass();
-		
+			types[i] = (args[i]==null) ? Integer.class : args[i].getClass();
+			
 		// Calls the SchemaStore method
 		try {
 			Method method = client.getClass().getDeclaredMethod(name, types);
 			return method.invoke(client, args);
 		} catch(Exception e) { return new RemoteException("Unable to call method " + name); }
 	}
-
 
 	/** Handles the call to the database (either through servlet or SchemaStore client) */
 	static private Object callFunction(String functionName, Object[] inputs) 

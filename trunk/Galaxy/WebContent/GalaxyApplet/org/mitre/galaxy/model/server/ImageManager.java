@@ -2,28 +2,28 @@
 
 package org.mitre.galaxy.model.server;
 
-import java.awt.*;
-import java.applet.*;
-// These classes are for Url's.
-import java.net.*;
+import java.applet.Applet;
+import java.awt.Image;
+import java.awt.MediaTracker;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.imageio.ImageIO;
+
 public class ImageManager
 {
+	/** Listing of the images being managed by this class */
+	private static final String[] imageNames = new String[] {"GalaxyTitle.jpg","GalaxyTile.jpg","Schema.jpg",
+		"SchemaUnavailable.jpg","SchemaSelected.jpg","SchemaComparison.jpg","SchemaElements.jpg","DependantElement.jpg",
+		"Children.jpg","SchemaElement.jpg","Parents.jpg","Document.jpg","Expand.jpg","Collapse.jpg","Group.gif",
+		"Groups.gif","Schemas.jpg","Unassigned.jpg"};
+	
 	/** Mapping of images available within the applet */
 	private static Map<String,Image> images = new HashMap<String,Image>();
 
 	/** This object will allow you to control loading */
     private static MediaTracker mt;
- 	
-    /** Adds a single image into the Media Tracker */
-    private static void addImage(int id, String name, Applet applet, URL codeBase)
-    {
-	 	Image image = applet.getImage(codeBase,"Images/"+name);
- 	 	images.put(name.replaceFirst("\\..*",""),image);
- 	    mt.addImage(image,id);
-    }
     
  	/** Initializes the database for use */
  	public static void init(Applet applet)
@@ -31,37 +31,33 @@ public class ImageManager
  		try {
  			// Set the applet code base
  			URL codeBase = null;
- 			if(applet.getCodeBase().toString().startsWith("file")) codeBase = new URL("http://localhost:8080/Galaxy/GalaxyApplet/");
- 			else codeBase = applet.getCodeBase();
-
+ 			if(applet!=null)
+ 			{
+ 				if(applet.getCodeBase().toString().startsWith("file")) codeBase = new URL("http://localhost:8080/Galaxy/GalaxyApplet/");
+ 				else codeBase = applet.getCodeBase();
+ 			}
+ 				
  	 		// Set up the media tracker
  	 		mt = new MediaTracker(applet);
 
  			// Load the images available for use
- 	 		addImage(1,"GalaxyTitle.jpg",applet,codeBase);
- 	 		addImage(2,"GalaxyTile.jpg",applet,codeBase);
- 	 		addImage(3,"Schema.jpg",applet,codeBase);
- 	 		addImage(4,"SchemaUnavailable.jpg",applet,codeBase);
- 	 		addImage(5,"SchemaSelected.jpg",applet,codeBase);
- 	 		addImage(6,"SchemaComparison.jpg",applet,codeBase);
- 	 		addImage(7,"SchemaElements.jpg",applet,codeBase);
- 	 		addImage(8,"DependantElement.jpg",applet,codeBase);
- 	 		addImage(9,"Children.jpg",applet,codeBase);
- 	 		addImage(10,"SchemaElement.jpg",applet,codeBase);
- 	 		addImage(11,"Parents.jpg",applet,codeBase);
- 	 		addImage(12,"Document.jpg",applet,codeBase);
- 	 		addImage(13,"Expand.jpg",applet,codeBase);
- 	 		addImage(14,"Collapse.jpg",applet,codeBase);
- 	 		addImage(15,"Group.gif",applet,codeBase);
- 	 		addImage(16,"Groups.gif",applet,codeBase);
- 	 		addImage(17,"Schemas.jpg",applet,codeBase);
- 	 		addImage(18,"Unassigned.jpg",applet,codeBase);
+ 	 		int counter=1;
+ 	 		for(String imageName : imageNames)
+ 	 			try {
+	 	 			// Get the image
+	 	 			Image image = null;
+	 	 		 	if(applet!=null) image = applet.getImage(codeBase,"org/mitre/galaxy/graphics/"+imageName);
+	 	 		 	else image = ImageIO.read(ImageManager.class.getResource("/org/mitre/galaxy/graphics/"+imageName));
+	 	 		 	
+	 	 		 	// Store the image
+	 	 		 	images.put(imageName.replaceFirst("\\..*",""),image);
+	 	 	 	    mt.addImage(image,counter++);
+	 	 		} catch(Exception e) {}
 	 		
  	        // Wait until the images load before proceeding
  	        mt.waitForAll();
 		}
- 		catch(MalformedURLException e) {} 
- 		catch(InterruptedException e) {}
+ 		catch(Exception e) { System.out.println("(E)ImageManager.init - Failed to load images - " + e.getMessage()); } 
 	}
 
  	/** Allows retrieval of images */

@@ -9,7 +9,7 @@
 		<description></description>
 		<display-name>GalaxyServlet</display-name>
 		<servlet-name>GalaxyServlet</servlet-name>
-		<servlet-class>servlets.GalaxyServlet</servlet-class>
+		<servlet-class>org.mitre.galaxy.servlets.GalaxyServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>GalaxyServlet</servlet-name>
