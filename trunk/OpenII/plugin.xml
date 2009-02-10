@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+
+   <!-- Declares the OpenII product -->
+   <extension id="product" point="org.eclipse.core.runtime.products">
+      <product application="org.mitre.openii.application" name="OpenII">
+         <property name="appName" value="OpenII"></property>
+      </product>
+   </extension>
+
+   <!-- Declares the OpenII application -->
+   <extension id="application" point="org.eclipse.core.runtime.applications">
+      <application>
+         <run class="org.mitre.openii.application.OpenIIApplication"></run>
+      </application>
+   </extension>
+
+   <!-- Declares the OpenII perspective -->
+   <extension point="org.eclipse.ui.perspectives">
+      <perspective class="org.mitre.openii.application.OpenIIPerspective" fixed="false" icon="icons/Harmony.jpg" id="org.mitre.openii.plugin.OpenIIPerspective" name="OpenII"></perspective>
+   </extension>
+ 
+   <!-- Declares the OpenII views -->
+   <extension id="application" point="org.eclipse.ui.views">
+      <category name="OpenII" id="Ygg"></category>
+      <view name="Ygg" icon="icons/Harmony.jpg" category="Ygg" class="org.mitre.openii.views.YggView" id="org.mitre.openii.plugin.YggView"></view>
+   </extension>
+   <extension id="application" point="org.eclipse.ui.views">
+      <category name="OpenII" id="Search"></category>
+      <view name="Search" icon="icons/Harmony.jpg" category="Search" class="org.mitre.openii.views.SearchView" id="org.mitre.openii.plugin.SearchView"></view>
+   </extension>
+   <extension id="application" point="org.eclipse.ui.views">
+      <category name="OpenII" id="Harmony"></category>
+      <view name="Harmony" icon="icons/Harmony.jpg" category="Harmony" class="org.mitre.openii.views.HarmonyView" id="org.mitre.openii.plugin.HarmonyView"></view>
+   </extension>
+   <extension id="application" point="org.eclipse.ui.views">
+      <category name="OpenII" id="Galaxy"></category>
+      <view name="Galaxy" icon="icons/Harmony.jpg" category="Galaxy" class="org.mitre.openii.views.GalaxyView" id="org.mitre.openii.plugin.GalaxyView"></view>
+   </extension>
+
+</plugin>
