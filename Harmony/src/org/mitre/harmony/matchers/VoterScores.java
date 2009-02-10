@@ -9,7 +9,7 @@ public class VoterScores
 	/** Stores the score ceiling being used for these voter scores */
 	private Double scoreCeiling = null;
 	
-	/** Hash map storing the voter scores */
+	/** Hash map for storing the voter scores */
 	private HashMap<ElementPair,VoterScore> scores = new HashMap<ElementPair,VoterScore>();
 	
 	/** Constructs the voter scores object */
@@ -18,11 +18,7 @@ public class VoterScores
 	
 	/** Sets the specified voter score */
 	public void setScore(Integer element1, Integer element2, VoterScore score)
-	{
-		ElementPair elementPair = new ElementPair(element1,element2);
-		if(scores.containsKey(elementPair)) scores.remove(elementPair);
-		scores.put(elementPair,score);
-	}
+		{ scores.put(new ElementPair(element1,element2),score); }
 
 	/** Returns the score ceiling provided for these voter scores */
 	public Double getScoreCeiling()
