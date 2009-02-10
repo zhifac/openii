@@ -23,7 +23,7 @@ public class ImageManager
 	private static Map<String,Image> images = new HashMap<String,Image>();
 
 	/** This object will allow you to control loading */
-    private static MediaTracker mt;
+    private static MediaTracker mt = null;
     
  	/** Initializes the database for use */
  	public static void init(Applet applet)
@@ -38,7 +38,7 @@ public class ImageManager
  			}
  				
  	 		// Set up the media tracker
- 	 		mt = new MediaTracker(applet);
+ 	 		if(applet!=null) mt = new MediaTracker(applet);
 
  			// Load the images available for use
  	 		int counter=1;
@@ -51,11 +51,11 @@ public class ImageManager
 	 	 		 	
 	 	 		 	// Store the image
 	 	 		 	images.put(imageName.replaceFirst("\\..*",""),image);
-	 	 	 	    mt.addImage(image,counter++);
+	 	 	 	    if(mt!=null) mt.addImage(image,counter++);
 	 	 		} catch(Exception e) {}
 	 		
  	        // Wait until the images load before proceeding
- 	        mt.waitForAll();
+	 	 	if(mt!=null) mt.waitForAll();
 		}
  		catch(Exception e) { System.out.println("(E)ImageManager.init - Failed to load images - " + e.getMessage()); } 
 	}
