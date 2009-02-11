@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 import org.mitre.harmony.model.ConfigManager;
+import org.mitre.harmony.model.HarmonyConsts;
 import org.mitre.harmony.model.MappingListener;
 import org.mitre.harmony.model.MappingManager;
 import org.mitre.harmony.model.SchemaManager;
@@ -77,6 +78,24 @@ public class Preferences implements MappingListener
 
 	/** Removes a preference listener */
 	static public void removeListener(PreferencesListener obj) { listeners.remove(obj); }
+	
+	// ------------- Preference for view to be displayed ------------
+
+	/** Returns the preference for view to be displayed */
+	static public Integer getViewToDisplay()
+		{ try { return Integer.parseInt(ConfigManager.getParm("preferences.displayedView")); } catch(Exception e) {} return HarmonyConsts.LINK_VIEW; }
+	
+	/** Set preference to view to be displayed */
+	static public void setViewToDisplay(Integer view)
+	{
+		// Only set preference if changed from original
+		if(view!=getViewToDisplay())
+		{
+			ConfigManager.setParm("preferences.displayedView",Integer.toString(view));
+			for(PreferencesListener listener : listeners)
+				listener.displayedViewChanged();
+		}
+	}
 	
 	// ------------- Preference for if schema types should be shown ------------
 

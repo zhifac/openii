@@ -8,7 +8,7 @@ import java.awt.geom.Line2D;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
-import org.mitre.harmony.Harmony;
+import org.mitre.harmony.model.HarmonyConsts;
 
 /**
  * Stores the info on a single line associated with a schema tree
@@ -23,8 +23,8 @@ class MappingCellLine extends Line2D.Double
 	MappingCellLine(DefaultMutableTreeNode sNode, DefaultMutableTreeNode tNode)
 	{		
 		// Retrieve the source and target schema trees
-		SchemaTreeImp source = MappingPane.mappingPane.getTree(Harmony.LEFT);
-		SchemaTreeImp target = MappingPane.mappingPane.getTree(Harmony.RIGHT);
+		SchemaTreeImp source = MappingPane.mappingPane.getTree(HarmonyConsts.LEFT);
+		SchemaTreeImp target = MappingPane.mappingPane.getTree(HarmonyConsts.RIGHT);
 		
 		// Initialize local parameters
 		visible = source.isVisible(sNode) && target.isVisible(tNode);

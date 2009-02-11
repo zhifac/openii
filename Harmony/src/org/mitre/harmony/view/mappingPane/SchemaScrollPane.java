@@ -15,7 +15,7 @@ import javax.swing.JComponent;
 import javax.swing.JScrollPane;
 import javax.swing.plaf.metal.MetalScrollBarUI;
 
-import org.mitre.harmony.Harmony;
+import org.mitre.harmony.model.HarmonyConsts;
 
 /**
  * Displays the scroll pane next to each schema tree pane (includes selection marks)
@@ -71,7 +71,7 @@ class SchemaScrollPane extends JScrollPane implements AdjustmentListener
 		getVerticalScrollBar().setUI(new SchemaScrollBarUI());
 		
 		// Shift scroll bars to mirror image for left schema tree
-		if(tree.getRole()==Harmony.LEFT) {
+		if(tree.getRole()==HarmonyConsts.LEFT) {
 			setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 			getHorizontalScrollBar().setValue(getHorizontalScrollBar().getMaximum());
 		}

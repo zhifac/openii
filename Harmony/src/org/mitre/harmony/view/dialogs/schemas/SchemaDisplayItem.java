@@ -16,7 +16,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import org.mitre.harmony.Harmony;
+import org.mitre.harmony.model.HarmonyConsts;
 import org.mitre.harmony.model.selectedInfo.SelectedInfo;
 import org.mitre.schemastore.model.Schema;
 
@@ -47,12 +47,12 @@ class SchemaDisplayItem extends JPanel implements ActionListener, MouseListener
 		
 		// Initialize the left check box
 		leftCheckBox.setOpaque(false);
-		leftCheckBox.setSelected(SelectedInfo.getSchemas(Harmony.LEFT).contains(schema.getId()));
+		leftCheckBox.setSelected(SelectedInfo.getSchemas(HarmonyConsts.LEFT).contains(schema.getId()));
 		leftCheckBox.addActionListener(this);
 
 		// Initialize the right check box
 		rightCheckBox.setOpaque(false);
-		rightCheckBox.setSelected(SelectedInfo.getSchemas(Harmony.RIGHT).contains(schema.getId()));
+		rightCheckBox.setSelected(SelectedInfo.getSchemas(HarmonyConsts.RIGHT).contains(schema.getId()));
 		rightCheckBox.addActionListener(this);
 		
 		// Constructs the schema item

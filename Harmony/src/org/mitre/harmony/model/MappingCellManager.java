@@ -168,6 +168,7 @@ public class MappingCellManager implements MappingListener, PreferencesListener
 	// Unused event listener
 	public void schemaAdded(Integer schemaID) {}
 	public void mappingModified() {}
+	public void displayedViewChanged() {}
 	public void showSchemaTypesChanged() {}
 	public void elementsMarkedAsFinished(Integer schemaID, HashSet<Integer> elementIDs) {}
 	public void elementsMarkedAsUnfinished(Integer schemaID, HashSet<Integer> elementIDs) {}

@@ -18,7 +18,7 @@ import javax.swing.JPanel;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 
-import org.mitre.harmony.Harmony;
+import org.mitre.harmony.model.HarmonyConsts;
 import org.mitre.harmony.model.MappingCellManager;
 import org.mitre.harmony.model.filters.Filters;
 import org.mitre.harmony.model.selectedInfo.SelectedInfo;
@@ -57,8 +57,8 @@ class MousePane extends JPanel implements MouseListener, MouseMotionListener
 	{
 		// Update selected left and right row
 		TreePath path;
-		if(isValidPath(Harmony.LEFT,path=leftTree.getPathForLoc(point.x,point.y))) leftPath=path;
-		if(isValidPath(Harmony.RIGHT,path=rightTree.getPathForLoc(point.x,point.y))) rightPath=path;
+		if(isValidPath(HarmonyConsts.LEFT,path=leftTree.getPathForLoc(point.x,point.y))) leftPath=path;
+		if(isValidPath(HarmonyConsts.RIGHT,path=rightTree.getPathForLoc(point.x,point.y))) rightPath=path;
 	}
 	
 	/** Determines if the indicated path can be the left or right of gestures. */
