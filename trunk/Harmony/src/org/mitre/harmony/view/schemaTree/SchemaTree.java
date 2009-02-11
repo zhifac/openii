@@ -26,7 +26,7 @@ import javax.swing.tree.DefaultTreeSelectionModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
-import org.mitre.harmony.Harmony;
+import org.mitre.harmony.model.HarmonyConsts;
 import org.mitre.harmony.model.MappingCellManager;
 import org.mitre.harmony.model.filters.Filters;
 import org.mitre.harmony.model.filters.Focus;
@@ -210,7 +210,7 @@ public class SchemaTree extends JTree implements PreferencesListener, SelectedIn
 		role = roleIn;
 		
 		// Initializes tree variables
-		root = new DefaultMutableTreeNode(role==Harmony.LEFT ? " Mapping Schemas" : " Selected Schema");
+		root = new DefaultMutableTreeNode(role==HarmonyConsts.LEFT ? " Mapping Schemas" : " Selected Schema");
 		schemaTreeHash = new SchemaTreeHash(this);
 		rowBounds = new RowBounds();
 		visibleNodes = new VisibleNodes();
@@ -555,6 +555,7 @@ public class SchemaTree extends JTree implements PreferencesListener, SelectedIn
 	}
 	
 	// Unused listener events
+	public void displayedViewChanged() {}
 	public void selectedElementsModified(Integer role) {}
 	public void selectedMappingCellsModified() {}
 	public void mouseExited(MouseEvent e) {}

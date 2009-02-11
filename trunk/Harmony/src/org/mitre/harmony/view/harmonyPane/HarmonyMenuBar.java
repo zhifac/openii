@@ -7,11 +7,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.HashSet;
 
+import javax.swing.ButtonGroup;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JRadioButtonMenuItem;
 import javax.swing.KeyStroke;
 
 import org.mitre.harmony.exporters.ExporterManager;
@@ -180,45 +182,52 @@ public class HarmonyMenuBar extends JMenuBar
 	    }
 	}
 
-	/**
-	 * View Menu added by MDMORSE
-	 * This menu can invoke the heatmap view.  Also possibly a future
-	 * place to add other views.
-	 */
+	/** Drop-down menu found under view menu bar heading */
 	private class ViewMenu extends JMenu implements ActionListener
 	{
-		private JMenuItem viewHeatmap;		// Option to view heat map
-		private JMenuItem viewAffinity;		// Option to view Affinity
+		private JRadioButtonMenuItem linkView;		// Option to view schema linkages
+		private JRadioButtonMenuItem tableView;		// Option to view schema table
+		private JRadioButtonMenuItem heatmapView;	// Option to view heat map
+		private JMenuItem affinityView;					// Option to view Affinity
 		
 		/** Initializes the view drop-down menu */
 		private ViewMenu()
 		{
 			super("Views");
 			setMnemonic(KeyEvent.VK_V);
-			setMnemonic(KeyEvent.VK_A);
 
 			// Initialize view drop-down items
-		    viewHeatmap = new JMenuItem("View Heatmap",KeyEvent.VK_V);
-		    viewAffinity = new JMenuItem("View Affinity",KeyEvent.VK_A);
-
+			linkView = new JRadioButtonMenuItem("Link View",true);
+			tableView = new JRadioButtonMenuItem("Table View");
+			heatmapView = new JRadioButtonMenuItem("Heatmap View");
+			affinityView = new JMenuItem("Affinity View",KeyEvent.VK_A);
+			
+			// Groups the radio buttons together
+			ButtonGroup group = new ButtonGroup();
+			group.add(linkView);
+			group.add(tableView);
+			group.add(heatmapView);
+			
 			// Attach action listeners to view drop-down items
-		    viewHeatmap.addActionListener(this);
-		    viewAffinity.addActionListener(this);
+			linkView.addActionListener(this);
+			tableView.addActionListener(this);
+			heatmapView.addActionListener(this);
+			affinityView.addActionListener(this);
 
 			// Add view drop-down items to view drop-down menu
-		    add(viewHeatmap);
-		    add(viewAffinity);
+		    add(linkView);
+		    add(tableView);
+		    add(heatmapView);
+		    addSeparator();
+		    add(affinityView);
 		}
 		
-		/** Handles the view mapping heat map selected by the user */
+		/** Handles the selection of a view */
 	    public void actionPerformed(ActionEvent e)
 	    {
 	    	Object source = e.getSource();
-	    	if(source==viewHeatmap)
-	    		{ new HeatMapDialog(); }
-	    	else if(source == viewAffinity){
-	    		new AffinityDialog();
-	    	}
+	    	if(source==heatmapView) new HeatMapDialog();
+	    	else if(source == affinityView) new AffinityDialog();
 	    }
 	}
 	

@@ -15,10 +15,6 @@ import org.mitre.harmony.view.harmonyPane.HarmonyFrame;
 /** Main Harmony class */
 public class Harmony extends JFrame implements MappingListener
 {
-	// Constants indicating the schema roles
-	static public final Integer LEFT = 0;
-	static public final Integer RIGHT = 1;
-
 	/** Constructs the Harmony frame */
     public Harmony()
     {

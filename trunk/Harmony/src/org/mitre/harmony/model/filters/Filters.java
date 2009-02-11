@@ -7,7 +7,7 @@ import java.util.Vector;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 
-import org.mitre.harmony.Harmony;
+import org.mitre.harmony.model.HarmonyConsts;
 import org.mitre.harmony.model.MappingCellManager;
 import org.mitre.harmony.model.selectedInfo.SelectedInfo;
 import org.mitre.harmony.model.selectedInfo.SelectedInfoListener;
@@ -86,7 +86,7 @@ public class Filters implements SelectedInfoListener
 	 */
 	static public void setFocus(Integer role, Focus newFocus)
 	{
-		if(role==Harmony.LEFT) leftFocus = newFocus;
+		if(role==HarmonyConsts.LEFT) leftFocus = newFocus;
 		else rightFocus = newFocus;
 		for(FiltersListener listener : listeners) listener.focusChanged();
 	}
@@ -97,7 +97,7 @@ public class Filters implements SelectedInfoListener
 	 */
 	static public void setDepth(Integer role, int newMinDepth, int newMaxDepth)
 	{
-		if(role==Harmony.LEFT) { minLeftDepth = newMinDepth; maxLeftDepth = newMaxDepth; }
+		if(role==HarmonyConsts.LEFT) { minLeftDepth = newMinDepth; maxLeftDepth = newMaxDepth; }
 		else { minRightDepth = newMinDepth; maxRightDepth = newMaxDepth; }
 		for(FiltersListener listener : listeners) listener.depthChanged();
 	}
@@ -113,15 +113,15 @@ public class Filters implements SelectedInfoListener
 
 	/** Return the node from this tree currently in focus */
 	static public Focus getFocus(Integer role)
-		{ return role==Harmony.LEFT ? leftFocus : rightFocus; }
+		{ return role==HarmonyConsts.LEFT ? leftFocus : rightFocus; }
 	
 	/** Returns the minimum depth */
 	static public int getMinDepth(Integer role)
-		{ return role==Harmony.LEFT ? minLeftDepth : minRightDepth; }
+		{ return role==HarmonyConsts.LEFT ? minLeftDepth : minRightDepth; }
 	
 	/** Returns the maximum depth */
 	static public int getMaxDepth(Integer role)
-		{ return role==Harmony.LEFT ? maxLeftDepth : maxRightDepth; }
+		{ return role==HarmonyConsts.LEFT ? maxLeftDepth : maxRightDepth; }
 
 	/** Determines if a path is visible or not */
 	static public boolean visiblePath(Integer role, TreePath path)
@@ -131,13 +131,13 @@ public class Filters implements SelectedInfoListener
 	static public boolean visibleNode(Integer role, DefaultMutableTreeNode node)
 	{
 		// Check that the element is within focus
-		Focus focus = role.equals(Harmony.LEFT) ? leftFocus : rightFocus;
+		Focus focus = role.equals(HarmonyConsts.LEFT) ? leftFocus : rightFocus;
 		if(focus!=null && !focus.contains(node)) return false;
 		
 		// Check that the element is within depth
 		int depth = node.getPath().length-2;
-		int minDepth = role.equals(Harmony.LEFT) ? minLeftDepth : minRightDepth;
-		int maxDepth = role.equals(Harmony.LEFT) ? maxLeftDepth : maxRightDepth;
+		int minDepth = role.equals(HarmonyConsts.LEFT) ? minLeftDepth : minRightDepth;
+		int maxDepth = role.equals(HarmonyConsts.LEFT) ? maxLeftDepth : maxRightDepth;
 		return depth >= minDepth && depth <= maxDepth;
 	}
 	
@@ -175,13 +175,13 @@ public class Filters implements SelectedInfoListener
 	{
 		// Adjust the left focus as needed
 		if(leftFocus!=null)
-			if(!SelectedInfo.getSchemas(Harmony.LEFT).contains(leftFocus.getSchemaID()))
-				setFocus(Harmony.LEFT,null);
+			if(!SelectedInfo.getSchemas(HarmonyConsts.LEFT).contains(leftFocus.getSchemaID()))
+				setFocus(HarmonyConsts.LEFT,null);
 
 		// Adjust the right focus as needed
 		if(rightFocus!=null)
-			if(!SelectedInfo.getSchemas(Harmony.RIGHT).contains(rightFocus.getSchemaID()))
-				setFocus(Harmony.RIGHT,null);
+			if(!SelectedInfo.getSchemas(HarmonyConsts.RIGHT).contains(rightFocus.getSchemaID()))
+				setFocus(HarmonyConsts.RIGHT,null);
 	}
 	
 	// Unused event listeners

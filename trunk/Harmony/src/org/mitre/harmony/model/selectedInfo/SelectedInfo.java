@@ -7,7 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Vector;
 
-import org.mitre.harmony.Harmony;
+import org.mitre.harmony.model.HarmonyConsts;
 import org.mitre.harmony.model.MappingCellListener;
 import org.mitre.harmony.model.MappingCellManager;
 import org.mitre.harmony.model.MappingListener;
@@ -40,7 +40,7 @@ public class SelectedInfo implements MappingListener, MappingCellListener, Filte
 
 	/** Returns the specified list of selected elements */
 	static private HashSet<Integer> getSelectedElements(Integer role)
-		{ return role==Harmony.LEFT ? selectedLeftElements : selectedRightElements; }
+		{ return role==HarmonyConsts.LEFT ? selectedLeftElements : selectedRightElements; }
 	
 	/** Returns the valid schemaIDs from the specified list of schemas */
 	private ArrayList<Integer> getValidSchemaIDs(ArrayList<Integer> schemaIDs)
@@ -56,8 +56,8 @@ public class SelectedInfo implements MappingListener, MappingCellListener, Filte
 	private SelectedInfo()
 	{
 		// Filter out selected schemas which don't exist in the repository
-		ArrayList<Integer> leftSchemas = getValidSchemaIDs(getSchemas(Harmony.LEFT));
-		ArrayList<Integer> rightSchemas = getValidSchemaIDs(getSchemas(Harmony.RIGHT));
+		ArrayList<Integer> leftSchemas = getValidSchemaIDs(getSchemas(HarmonyConsts.LEFT));
+		ArrayList<Integer> rightSchemas = getValidSchemaIDs(getSchemas(HarmonyConsts.RIGHT));
 		setSelectedSchemas(leftSchemas, rightSchemas);
 		
 		// Add listeners to trigger changes to the selected info
@@ -69,7 +69,7 @@ public class SelectedInfo implements MappingListener, MappingCellListener, Filte
 	
 	/** Returns the schemas displayed on the left side of Harmony */
 	static public ArrayList<Integer> getSchemas(Integer role)
-		{ return ConfigManager.getIntegerArray("selectedInfo." + (role.equals(Harmony.LEFT) ? "left" : "right") + "Schemas"); }
+		{ return ConfigManager.getIntegerArray("selectedInfo." + (role.equals(HarmonyConsts.LEFT) ? "left" : "right") + "Schemas"); }
 
 	/** Returns all elements displayed on the left side of Harmony */
 	static public HashSet<SchemaElement> getSchemaElements(Integer role)
@@ -100,7 +100,7 @@ public class SelectedInfo implements MappingListener, MappingCellListener, Filte
 	static public void setSelectedSchemas(ArrayList<Integer> leftSchemas, ArrayList<Integer> rightSchemas)
 	{
 		// Only update selected schemas if changed from original
-		if(!leftSchemas.equals(getSchemas(Harmony.LEFT)) || !rightSchemas.equals(getSchemas(Harmony.RIGHT)))
+		if(!leftSchemas.equals(getSchemas(HarmonyConsts.LEFT)) || !rightSchemas.equals(getSchemas(HarmonyConsts.RIGHT)))
 		{
 			ConfigManager.setParm("selectedInfo.leftSchemas",leftSchemas.toString());
 			ConfigManager.setParm("selectedInfo.rightSchemas",rightSchemas.toString());
@@ -143,13 +143,13 @@ public class SelectedInfo implements MappingListener, MappingCellListener, Filte
 		// Generate arrays for both the left and right nodes
 		List<Integer> elements = new ArrayList<Integer>();
 		elements.add(element);
-		List<Integer> altElements = getElements(role.equals(Harmony.LEFT)?Harmony.RIGHT:Harmony.LEFT);
+		List<Integer> altElements = getElements(role.equals(HarmonyConsts.LEFT)?HarmonyConsts.RIGHT:HarmonyConsts.LEFT);
 		
 		// Get all mapping cells associated with the selected node
 		List<Integer> mappingCells = new ArrayList<Integer>();
 		for(Integer altElement : altElements)
 		{
-			Integer mappingCell = role==Harmony.LEFT ? MappingCellManager.getMappingCellID(element,altElement) : MappingCellManager.getMappingCellID(altElement,element);
+			Integer mappingCell = role==HarmonyConsts.LEFT ? MappingCellManager.getMappingCellID(element,altElement) : MappingCellManager.getMappingCellID(altElement,element);
 			if(mappingCell!=null) mappingCells.add(mappingCell);
 		}
 		
@@ -199,8 +199,8 @@ public class SelectedInfo implements MappingListener, MappingCellListener, Filte
 		
 		// Get the list of all left and right elements
 		HashSet<Integer> leftElementIDs = new HashSet<Integer>(), rightElementIDs = new HashSet<Integer>();
-		for(SchemaElement element : getSchemaElements(Harmony.LEFT)) leftElementIDs.add(element.getId());
-		for(SchemaElement element : getSchemaElements(Harmony.RIGHT)) rightElementIDs.add(element.getId());
+		for(SchemaElement element : getSchemaElements(HarmonyConsts.LEFT)) leftElementIDs.add(element.getId());
+		for(SchemaElement element : getSchemaElements(HarmonyConsts.RIGHT)) rightElementIDs.add(element.getId());
 		
 		// Identify the newly selected elements
 		HashSet<Integer> selectedLeftElements = new HashSet<Integer>();
@@ -220,59 +220,59 @@ public class SelectedInfo implements MappingListener, MappingCellListener, Filte
 		}
 		
 		// Clear out elements that are no longer selected
-		unselectElements(getElements(Harmony.LEFT), Harmony.LEFT);
-		unselectElements(getElements(Harmony.RIGHT), Harmony.RIGHT);		
+		unselectElements(getElements(HarmonyConsts.LEFT), HarmonyConsts.LEFT);
+		unselectElements(getElements(HarmonyConsts.RIGHT), HarmonyConsts.RIGHT);		
 
 		// Add in elements that are now selected
-		selectElements(new ArrayList<Integer>(selectedLeftElements), Harmony.LEFT);
-		selectElements(new ArrayList<Integer>(selectedRightElements), Harmony.RIGHT);		
+		selectElements(new ArrayList<Integer>(selectedLeftElements), HarmonyConsts.LEFT);
+		selectElements(new ArrayList<Integer>(selectedRightElements), HarmonyConsts.RIGHT);		
 	}
 	
 	/** Eliminate the selection of a link if the node goes out of focus */
 	public void focusChanged()
 	{
 		// Clear out any selected left elements that are now out of focus
-		Focus leftFocus = Filters.getFocus(Harmony.LEFT);
+		Focus leftFocus = Filters.getFocus(HarmonyConsts.LEFT);
 		if(leftFocus!=null)
-			for(Integer elementID : getElements(Harmony.LEFT))
+			for(Integer elementID : getElements(HarmonyConsts.LEFT))
 				if(!leftFocus.contains(elementID))
-					setElement(elementID,Harmony.LEFT,true);
+					setElement(elementID,HarmonyConsts.LEFT,true);
 			
 		// Clear out any selected right elements that are now out of focus
-		Focus rightFocus = Filters.getFocus(Harmony.RIGHT);
+		Focus rightFocus = Filters.getFocus(HarmonyConsts.RIGHT);
 		if(rightFocus!=null)
-			for(Integer elementID : getElements(Harmony.RIGHT))
+			for(Integer elementID : getElements(HarmonyConsts.RIGHT))
 				if(!rightFocus.contains(elementID))
-					setElement(elementID,Harmony.RIGHT,true);
+					setElement(elementID,HarmonyConsts.RIGHT,true);
 	}
 	
 	/** Eliminate the selection of a link if the node goes out of depth */
 	public void depthChanged()
 	{
 		// Clear out any selected left elements that are now out of depth
-		int leftMinDepth = Filters.getMinDepth(Harmony.LEFT);
-		int leftMaxDepth = Filters.getMaxDepth(Harmony.LEFT);
-		for(Integer elementID : getElements(Harmony.LEFT))
+		int leftMinDepth = Filters.getMinDepth(HarmonyConsts.LEFT);
+		int leftMaxDepth = Filters.getMaxDepth(HarmonyConsts.LEFT);
+		for(Integer elementID : getElements(HarmonyConsts.LEFT))
 		{
 			boolean visible = false;
-			for(Integer schemaID : getSchemas(Harmony.LEFT))
+			for(Integer schemaID : getSchemas(HarmonyConsts.LEFT))
 				for(Integer depth : SchemaManager.getDepths(schemaID, elementID))
 					if(depth>=leftMinDepth && depth<=leftMaxDepth)
 						{ visible=true; break; }
-			if(!visible) setElement(elementID,Harmony.LEFT,true);
+			if(!visible) setElement(elementID,HarmonyConsts.LEFT,true);
 		}
 
 		// Clear out any selected right elements that are now out of depth
-		int rightMinDepth = Filters.getMinDepth(Harmony.RIGHT);
-		int rightMaxDepth = Filters.getMaxDepth(Harmony.RIGHT);
-		for(Integer elementID : getElements(Harmony.RIGHT))
+		int rightMinDepth = Filters.getMinDepth(HarmonyConsts.RIGHT);
+		int rightMaxDepth = Filters.getMaxDepth(HarmonyConsts.RIGHT);
+		for(Integer elementID : getElements(HarmonyConsts.RIGHT))
 		{
 			boolean visible = false;
-			for(Integer schemaID : getSchemas(Harmony.RIGHT))
+			for(Integer schemaID : getSchemas(HarmonyConsts.RIGHT))
 				for(Integer depth : SchemaManager.getDepths(schemaID, elementID))
 					if(depth>=rightMinDepth && depth<=rightMaxDepth)
 						{ visible=true; break; }
-			if(!visible) setElement(elementID,Harmony.RIGHT,true);
+			if(!visible) setElement(elementID,HarmonyConsts.RIGHT,true);
 		}
 	}
 	
@@ -280,13 +280,13 @@ public class SelectedInfo implements MappingListener, MappingCellListener, Filte
 	public void schemaRemoved(Integer schemaID)
 	{
 		// Eliminate selected schemas
-		ArrayList<Integer> leftSchemas = getSchemas(Harmony.LEFT);
-		ArrayList<Integer> rightSchemas = getSchemas(Harmony.RIGHT);
+		ArrayList<Integer> leftSchemas = getSchemas(HarmonyConsts.LEFT);
+		ArrayList<Integer> rightSchemas = getSchemas(HarmonyConsts.RIGHT);
 		leftSchemas.remove(schemaID); rightSchemas.remove(schemaID);
 		setSelectedSchemas(leftSchemas, rightSchemas);
 		
 		// Check for eliminated selected elements in both roles
-		Integer roles[] = { Harmony.LEFT, Harmony.RIGHT };
+		Integer roles[] = { HarmonyConsts.LEFT, HarmonyConsts.RIGHT };
 		for(Integer role : roles)
 		{
 			// Find all of the eliminated selected elements

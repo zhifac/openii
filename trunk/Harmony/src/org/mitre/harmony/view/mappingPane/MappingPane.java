@@ -14,7 +14,7 @@ import javax.swing.JPanel;
 import javax.swing.JViewport;
 import javax.swing.border.EmptyBorder;
 
-import org.mitre.harmony.Harmony;
+import org.mitre.harmony.model.HarmonyConsts;
 import org.mitre.harmony.model.selectedInfo.SelectedInfo;
 import org.mitre.harmony.model.selectedInfo.SelectedInfoListener;
 import org.mitre.harmony.view.controlPane.ControlPane;
@@ -54,8 +54,8 @@ public class MappingPane extends JDesktopPane implements ComponentListener, Line
 		mappingPane = this;
 		
 		// Initialize the left and right schema trees
-		leftTree = new SchemaTreeImp(Harmony.LEFT);
-		rightTree = new SchemaTreeImp(Harmony.RIGHT);
+		leftTree = new SchemaTreeImp(HarmonyConsts.LEFT);
+		rightTree = new SchemaTreeImp(HarmonyConsts.RIGHT);
 		
 		// Create the schema pane
 		schemaPane = new JPanel();
@@ -66,24 +66,24 @@ public class MappingPane extends JDesktopPane implements ComponentListener, Line
 		// Set up the various layers to be displayed
 		add(schemaPane,DEFAULT_LAYER);
 		add(linkPane = new LinkPane(leftTree,rightTree),PALETTE_LAYER);
-		add(leftInfoPane = new SelectedNodePane(Harmony.LEFT),MODAL_LAYER);
-		add(rightInfoPane = new SelectedNodePane(Harmony.RIGHT),MODAL_LAYER);
+		add(leftInfoPane = new SelectedNodePane(HarmonyConsts.LEFT),MODAL_LAYER);
+		add(rightInfoPane = new SelectedNodePane(HarmonyConsts.RIGHT),MODAL_LAYER);
 		add(mousePane = new MousePane(leftTree,rightTree),DRAG_LAYER);
 		
 		// Adds listeners to watch for events where the mapping pane need to be redrawn
 		addComponentListener(this);	
-		getTreeViewport(Harmony.LEFT).addComponentListener(this);		
+		getTreeViewport(HarmonyConsts.LEFT).addComponentListener(this);		
 		MappingLines.mappingLines.addLinesListener(this);
 		SelectedInfo.addListener(this);
 	}
 	
 	/** Returns the schema tree */
 	public SchemaTreeImp getTree(Integer role)
-		{ return role.equals(Harmony.LEFT) ? leftTree : rightTree; }
+		{ return role.equals(HarmonyConsts.LEFT) ? leftTree : rightTree; }
 	
 	/** Returns the schema tree viewer */
 	public JViewport getTreeViewport(Integer role)
-		{ return role.equals(Harmony.LEFT) ? (JViewport)leftTree.getParent() : (JViewport)rightTree.getParent(); }
+		{ return role.equals(HarmonyConsts.LEFT) ? (JViewport)leftTree.getParent() : (JViewport)rightTree.getParent(); }
 	
 	/** Get the bounds of the specified pane in association with the mapping pane */
 	public Rectangle getPaneBounds(Container container)
@@ -127,7 +127,7 @@ public class MappingPane extends JDesktopPane implements ComponentListener, Line
 	/** Handles changes to the selected nodes */
 	public void selectedElementsModified(Integer role)
 	{
-		SchemaTreeImp tree = role==Harmony.LEFT ? leftTree : rightTree;
+		SchemaTreeImp tree = role==HarmonyConsts.LEFT ? leftTree : rightTree;
 		Integer border = SelectedInfo.getElements(role).size()==1 ? 160 : 10;
 		tree.setBorder(new EmptyBorder(0,0,border,0));
 		tree.fireTreeExpanded(tree.getPathForRow(0));

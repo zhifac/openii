@@ -10,6 +10,9 @@ import java.util.HashSet;
  */
 public interface PreferencesListener
 {
+	/** Indicates change to displayed view */
+	public void displayedViewChanged();
+
 	/** Indicates change to schema type display setting */
 	public void showSchemaTypesChanged();
 	

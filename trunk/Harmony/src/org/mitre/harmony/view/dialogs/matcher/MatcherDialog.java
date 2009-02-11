@@ -15,12 +15,12 @@ import javax.swing.JDialog;
 import javax.swing.JProgressBar;
 import javax.swing.border.EmptyBorder;
 
-import org.mitre.harmony.Harmony;
 import org.mitre.harmony.matchers.MatchScore;
 import org.mitre.harmony.matchers.MatchScores;
 import org.mitre.harmony.matchers.MatcherManager;
 import org.mitre.harmony.matchers.mergers.MatchMerger;
 import org.mitre.harmony.matchers.voters.MatchVoter;
+import org.mitre.harmony.model.HarmonyConsts;
 import org.mitre.harmony.model.MappingCellManager;
 import org.mitre.harmony.model.SchemaManager;
 import org.mitre.harmony.model.filters.Filters;
@@ -108,41 +108,41 @@ class MatcherDialog extends JDialog implements ActionListener,Runnable
 		
 		// Determine what left roots to match on
 		ArrayList<FilteredGraph> leftGraphs = new ArrayList<FilteredGraph>();
-		if(Filters.getFocus(Harmony.LEFT)!=null)
+		if(Filters.getFocus(HarmonyConsts.LEFT)!=null)
 		{
-			Focus focus = Filters.getFocus(Harmony.LEFT);
+			Focus focus = Filters.getFocus(HarmonyConsts.LEFT);
 			FilteredGraph graph = new FilteredGraph(SchemaManager.getGraph(focus.getSchemaID()));
 			graph.setFilteredRoot(focus.getElementID());
 			leftGraphs.add(graph);
 		}
-		else for(Integer schemaID : SelectedInfo.getSchemas(Harmony.LEFT))
+		else for(Integer schemaID : SelectedInfo.getSchemas(HarmonyConsts.LEFT))
 			leftGraphs.add(new FilteredGraph(SchemaManager.getGraph(schemaID)));
 
 		// Set the min and max depths for each graph on the left
 		for(FilteredGraph graph : leftGraphs)
 		{
-			graph.setMinDepth(Filters.getMinDepth(Harmony.LEFT));
-			graph.setMaxDepth(Filters.getMaxDepth(Harmony.LEFT));
+			graph.setMinDepth(Filters.getMinDepth(HarmonyConsts.LEFT));
+			graph.setMaxDepth(Filters.getMaxDepth(HarmonyConsts.LEFT));
 			graph.setHiddenElements(Preferences.getFinishedElements(graph.getSchema().getId()));
 		}
 			
 		// Determine what right roots to match on
 		ArrayList<FilteredGraph> rightGraphs = new ArrayList<FilteredGraph>();
-		if(Filters.getFocus(Harmony.RIGHT)!=null)
+		if(Filters.getFocus(HarmonyConsts.RIGHT)!=null)
 		{
-			Focus focus = Filters.getFocus(Harmony.RIGHT);
+			Focus focus = Filters.getFocus(HarmonyConsts.RIGHT);
 			FilteredGraph graph = new FilteredGraph(SchemaManager.getGraph(focus.getSchemaID()));
 			graph.setFilteredRoot(focus.getElementID());
 			rightGraphs.add(graph);
 		}
-		else for(Integer schemaID : SelectedInfo.getSchemas(Harmony.RIGHT))
+		else for(Integer schemaID : SelectedInfo.getSchemas(HarmonyConsts.RIGHT))
 			rightGraphs.add(new FilteredGraph(SchemaManager.getGraph(schemaID)));
 
 		// Set the min and max depths for each graph on the right
 		for(FilteredGraph graph : rightGraphs)
 		{
-			graph.setMinDepth(Filters.getMinDepth(Harmony.RIGHT));
-			graph.setMaxDepth(Filters.getMaxDepth(Harmony.RIGHT));
+			graph.setMinDepth(Filters.getMinDepth(HarmonyConsts.RIGHT));
+			graph.setMaxDepth(Filters.getMaxDepth(HarmonyConsts.RIGHT));
 			graph.setHiddenElements(Preferences.getFinishedElements(graph.getSchema().getId()));
 		}
 		

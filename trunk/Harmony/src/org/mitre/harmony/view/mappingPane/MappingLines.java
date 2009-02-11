@@ -17,7 +17,7 @@ import java.util.Enumeration;
 
 import javax.swing.JViewport;
 
-import org.mitre.harmony.Harmony;
+import org.mitre.harmony.model.HarmonyConsts;
 import org.mitre.harmony.model.MappingCellListener;
 import org.mitre.harmony.model.MappingCellManager;
 import org.mitre.harmony.model.filters.Filters;
@@ -65,8 +65,8 @@ public class MappingLines implements MappingCellListener, FiltersListener, Schem
 			lines = new Hashtable<Integer, MappingCellLines>();
 
 			// Generate the list of lines associated with the source and target schemas
-			for(SchemaElement leftElement : SelectedInfo.getSchemaElements(Harmony.LEFT))
-				for(SchemaElement rightElement : SelectedInfo.getSchemaElements(Harmony.RIGHT))
+			for(SchemaElement leftElement : SelectedInfo.getSchemaElements(HarmonyConsts.LEFT))
+				for(SchemaElement rightElement : SelectedInfo.getSchemaElements(HarmonyConsts.RIGHT))
 				{
 					Integer mappingCellID = MappingCellManager.getMappingCellID(leftElement.getId(),rightElement.getId());
 					if(mappingCellID!=null) lines.put(mappingCellID,new MappingCellLines(mappingCellID));
@@ -233,7 +233,7 @@ public class MappingLines implements MappingCellListener, FiltersListener, Schem
 		HashSet<String> hiddenLines = new HashSet<String>();
 
 		// Modifies clip bounds to not include area covered by scroll bars
-		JViewport viewport = MappingPane.mappingPane.getTreeViewport(Harmony.LEFT);
+		JViewport viewport = MappingPane.mappingPane.getTreeViewport(HarmonyConsts.LEFT);
 		g.setClip(0,0,MappingPane.mappingPane.getWidth(),viewport.getHeight());
 		
 		// Cycle through all non-hidden mapping cells to draw all visible lines
