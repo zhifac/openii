@@ -81,7 +81,7 @@ public class Preferences implements MappingListener
 
 	/** Returns the preference for view to be displayed */
 	static public Integer getViewToDisplay()
-		{ try { return Integer.parseInt(ConfigManager.getParm("preferences.displayedView")); } catch(Exception e) {} return HarmonyConsts.LINK_VIEW; }
+		{ try { return Integer.parseInt(ConfigManager.getParm("preferences.displayedView")); } catch(Exception e) {} return HarmonyConsts.MAPPING_VIEW; }
 	
 	/** Set preference to view to be displayed */
 	static public void setViewToDisplay(Integer view)

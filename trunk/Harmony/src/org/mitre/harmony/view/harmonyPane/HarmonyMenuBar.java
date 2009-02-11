@@ -17,6 +17,7 @@ import javax.swing.JRadioButtonMenuItem;
 import javax.swing.KeyStroke;
 
 import org.mitre.harmony.exporters.ExporterManager;
+import org.mitre.harmony.model.HarmonyConsts;
 import org.mitre.harmony.model.MappingCellManager;
 import org.mitre.harmony.model.MappingManager;
 import org.mitre.harmony.model.ProjectManager;
@@ -27,7 +28,6 @@ import org.mitre.harmony.view.dialogs.mappings.LoadMappingDialog;
 import org.mitre.harmony.view.dialogs.mappings.SaveMappingDialog;
 import org.mitre.harmony.view.dialogs.matcher.MatcherMenu;
 import org.mitre.harmony.view.dialogs.schemas.SchemaDialog;
-import org.mitre.harmony.view.heatmap.HeatMapDialog;
 import org.mitre.harmony.view.mappingPane.MappingLines;
 import org.mitre.harmony.view.affinity.AffinityDialog;
 
@@ -185,10 +185,10 @@ public class HarmonyMenuBar extends JMenuBar
 	/** Drop-down menu found under view menu bar heading */
 	private class ViewMenu extends JMenu implements ActionListener
 	{
-		private JRadioButtonMenuItem linkView;		// Option to view schema linkages
+		private JRadioButtonMenuItem mappingView;	// Option to view schema mapping
 		private JRadioButtonMenuItem tableView;		// Option to view schema table
 		private JRadioButtonMenuItem heatmapView;	// Option to view heat map
-		private JMenuItem affinityView;					// Option to view Affinity
+		private JMenuItem affinityView;				// Option to view Affinity
 		
 		/** Initializes the view drop-down menu */
 		private ViewMenu()
@@ -197,25 +197,32 @@ public class HarmonyMenuBar extends JMenuBar
 			setMnemonic(KeyEvent.VK_V);
 
 			// Initialize view drop-down items
-			linkView = new JRadioButtonMenuItem("Link View",true);
+			mappingView = new JRadioButtonMenuItem("Mapping View",true);
 			tableView = new JRadioButtonMenuItem("Table View");
 			heatmapView = new JRadioButtonMenuItem("Heatmap View");
 			affinityView = new JMenuItem("Affinity View",KeyEvent.VK_A);
 			
 			// Groups the radio buttons together
 			ButtonGroup group = new ButtonGroup();
-			group.add(linkView);
+			group.add(mappingView);
 			group.add(tableView);
 			group.add(heatmapView);
 			
+			// Set the displayed view
+			switch(Preferences.getViewToDisplay())
+			{
+				case HarmonyConsts.TABLE_VIEW: tableView.setSelected(true);
+				case HarmonyConsts.HEATMAP_VIEW: heatmapView.setSelected(true);
+			}			
+			
 			// Attach action listeners to view drop-down items
-			linkView.addActionListener(this);
+			mappingView.addActionListener(this);
 			tableView.addActionListener(this);
 			heatmapView.addActionListener(this);
 			affinityView.addActionListener(this);
 
 			// Add view drop-down items to view drop-down menu
-		    add(linkView);
+		    add(mappingView);
 		    add(tableView);
 		    add(heatmapView);
 		    addSeparator();
@@ -226,8 +233,10 @@ public class HarmonyMenuBar extends JMenuBar
 	    public void actionPerformed(ActionEvent e)
 	    {
 	    	Object source = e.getSource();
-	    	if(source==heatmapView) new HeatMapDialog();
-	    	else if(source == affinityView) new AffinityDialog();
+	    	if(source==mappingView) Preferences.setViewToDisplay(HarmonyConsts.MAPPING_VIEW);
+	    	if(source==tableView) Preferences.setViewToDisplay(HarmonyConsts.TABLE_VIEW);
+	    	if(source==heatmapView) Preferences.setViewToDisplay(HarmonyConsts.HEATMAP_VIEW);
+	    	if(source == affinityView) new AffinityDialog();
 	    }
 	}
 	
