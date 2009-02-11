@@ -9,6 +9,7 @@ import java.util.HashSet;
 
 import org.mitre.harmony.model.ConfigManager;
 import org.mitre.harmony.model.HarmonyConsts;
+import org.mitre.harmony.model.ListenerGroup;
 import org.mitre.harmony.model.MappingListener;
 import org.mitre.harmony.model.MappingManager;
 import org.mitre.harmony.model.SchemaManager;
@@ -25,7 +26,7 @@ public class Preferences implements MappingListener
 	static private HashMap<Integer,HashSet<Integer>> finishedElementMap = new HashMap<Integer,HashSet<Integer>>();
 	
 	/** Stores preference listeners */
-	static private ArrayList<PreferencesListener> listeners = new ArrayList<PreferencesListener>();
+	static private ListenerGroup<PreferencesListener> listeners = new ListenerGroup<PreferencesListener>();
 
 	/** Constructor used to monitor changes that might affect the selected info */
 	private Preferences()
@@ -74,10 +75,7 @@ public class Preferences implements MappingListener
 	public void schemaAdded(Integer schemaID) {}
 	
 	/** Adds a preference listener */
-	static public void addListener(PreferencesListener obj) { listeners.add(obj); }
-
-	/** Removes a preference listener */
-	static public void removeListener(PreferencesListener obj) { listeners.remove(obj); }
+	static public void addListener(PreferencesListener listener) { listeners.add(listener); }
 	
 	// ------------- Preference for view to be displayed ------------
 
@@ -92,7 +90,7 @@ public class Preferences implements MappingListener
 		if(view!=getViewToDisplay())
 		{
 			ConfigManager.setParm("preferences.displayedView",Integer.toString(view));
-			for(PreferencesListener listener : listeners)
+			for(PreferencesListener listener : listeners.get())
 				listener.displayedViewChanged();
 		}
 	}
@@ -110,7 +108,7 @@ public class Preferences implements MappingListener
 		if(newShowSchemaTypes!=getShowSchemaTypes())
 		{
 			ConfigManager.setParm("preferences.showSchemaTypes",Boolean.toString(newShowSchemaTypes));
-			for(PreferencesListener listener : listeners)
+			for(PreferencesListener listener : listeners.get())
 				listener.showSchemaTypesChanged();
 		}
 	}
@@ -166,7 +164,7 @@ public class Preferences implements MappingListener
 			else hashMap.remove(schemaID);
 			ConfigManager.setParm("preferences.graphModels",hashMap.toString());
 			SchemaManager.getGraph(schemaID).setModel(model);
-			for(PreferencesListener listener : listeners)
+			for(PreferencesListener listener : listeners.get())
 				listener.schemaGraphModelChanged(schemaID);
 		}
 	}
@@ -205,7 +203,7 @@ public class Preferences implements MappingListener
 		ConfigManager.setParm("preferences.finished",finishedElementMap.toString());
 		
 		// Inform listeners to the changes made to preferences
-		for(PreferencesListener listener : listeners)
+		for(PreferencesListener listener : listeners.get())
 		{
 			if(finished) listener.elementsMarkedAsFinished(schemaID, elementIDs);
 			else listener.elementsMarkedAsUnfinished(schemaID, elementIDs);

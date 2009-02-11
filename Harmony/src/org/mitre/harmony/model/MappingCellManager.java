@@ -3,7 +3,6 @@ package org.mitre.harmony.model;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Vector;
 
 import org.mitre.harmony.model.preferences.Preferences;
 import org.mitre.harmony.model.preferences.PreferencesListener;
@@ -105,7 +104,7 @@ public class MappingCellManager implements MappingListener, PreferencesListener
 		mappingCellsByElement.get(node2ID).put(node1ID,mappingCellID);
 
 		// Inform listeners of added mapping cell
-		for(MappingCellListener listener : listeners) listener.mappingCellAdded(mappingCell);
+		for(MappingCellListener listener : listeners.get()) listener.mappingCellAdded(mappingCell);
 
 		// Returns the mapping cell ID
 		return mappingCellID;
@@ -117,7 +116,7 @@ public class MappingCellManager implements MappingListener, PreferencesListener
 		MappingCell oldMappingCell = mappingCells.get(mappingCellID);
 		MappingCell newMappingCell = new MappingCell(oldMappingCell.getId(),oldMappingCell.getMappingId(),oldMappingCell.getElement1(),oldMappingCell.getElement2(),score,scorer,validated);
 		mappingCells.put(mappingCellID,newMappingCell);
-		for(MappingCellListener listener : listeners) listener.mappingCellModified(oldMappingCell,newMappingCell);
+		for(MappingCellListener listener : listeners.get()) listener.mappingCellModified(oldMappingCell,newMappingCell);
 	}
 	
 	/** Handles the deletion of a mapping cell */
@@ -127,7 +126,7 @@ public class MappingCellManager implements MappingListener, PreferencesListener
 		mappingCellsByElement.get(mappingCell.getElement1()).remove(mappingCell.getElement2());
 		mappingCellsByElement.get(mappingCell.getElement2()).remove(mappingCell.getElement1());
 		mappingCells.remove(mappingCellID);
-		for(MappingCellListener listener : listeners) listener.mappingCellRemoved(mappingCell);		
+		for(MappingCellListener listener : listeners.get()) listener.mappingCellRemoved(mappingCell);		
 	}
 	
 	/** Handles the deletion of all mapping cells */
@@ -176,7 +175,6 @@ public class MappingCellManager implements MappingListener, PreferencesListener
 	//----------------------------------------------------------------
 	// Purpose: Allows classes to listen to the Harmony mapping cells
 	//----------------------------------------------------------------
-	static private Vector<MappingCellListener> listeners = new Vector<MappingCellListener>();
-	static public void addListener(MappingCellListener obj) { listeners.add(obj); }
-	static public void removeListener(MappingCellListener obj) { listeners.remove(obj); }
+	static private ListenerGroup<MappingCellListener> listeners = new ListenerGroup<MappingCellListener>();
+	static public void addListener(MappingCellListener listener) { listeners.add(listener); }
 }

@@ -5,7 +5,6 @@ package org.mitre.harmony.model;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Vector;
 
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
@@ -76,7 +75,7 @@ public class MappingManager
 			mapping.setDescription(description);
 			
 			// Indicates that the mapping has been modified
-			for(MappingListener listener : listeners)
+			for(MappingListener listener : listeners.get())
 				listener.mappingModified();
 		}
 	}
@@ -99,17 +98,17 @@ public class MappingManager
 			// Inform listeners of any schemas that were selected
 			for(Integer newSelSchemaID : newSchemaIDs)
 				if(!oldSchemaIDs.contains(newSelSchemaID))
-					for(MappingListener listener : listeners)
+					for(MappingListener listener : listeners.get())
 						listener.schemaAdded(newSelSchemaID);
 					
 			// Inform listeners of any schemas that were unselected
 			for(Integer selSchemaID : oldSchemaIDs)
 				if(!newSchemaIDs.contains(selSchemaID))
-					for(MappingListener listener : listeners)
+					for(MappingListener listener : listeners.get())
 						listener.schemaRemoved(selSchemaID);
 			
 			// Inform listeners that the mapping has been modified
-			for(MappingListener listener : listeners)
+			for(MappingListener listener : listeners.get())
 				listener.mappingModified();
 		}
 	}
@@ -149,7 +148,7 @@ public class MappingManager
 				Integer mappingCellID = MappingCellManager.createMappingCell(mappingCell.getElement1(), mappingCell.getElement2());
 				MappingCellManager.modifyMappingCell(mappingCellID, mappingCell.getScore(), mappingCell.getScorer(), mappingCell.getValidated());
 			}
-			for(MappingListener listener : listeners)
+			for(MappingListener listener : listeners.get())
 				listener.mappingModified();
 		}
 
@@ -177,7 +176,7 @@ public class MappingManager
 		// Indicates that the mapping has been modified
 		if(success)
 		{
-			for(MappingListener listener : listeners) listener.mappingModified();
+			for(MappingListener listener : listeners.get()) listener.mappingModified();
 			ProjectManager.setSavedToRepository(true);
 		}
 		return success;
@@ -198,7 +197,6 @@ public class MappingManager
 	//-----------------------------------------------------------
 	// Purpose: Allows classes to listen to the Harmony mappings
 	//-----------------------------------------------------------
-	static private Vector<MappingListener> listeners = new Vector<MappingListener>();
-	static public void addListener(MappingListener obj) { listeners.add(obj); }
-	static public void removeListener(MappingListener obj) { listeners.remove(obj); }
+	static private ListenerGroup<MappingListener> listeners = new ListenerGroup<MappingListener>();
+	static public void addListener(MappingListener listener) { listeners.add(listener); }
 }
