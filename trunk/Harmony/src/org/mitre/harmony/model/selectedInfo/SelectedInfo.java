@@ -5,9 +5,9 @@ package org.mitre.harmony.model.selectedInfo;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Vector;
 
 import org.mitre.harmony.model.HarmonyConsts;
+import org.mitre.harmony.model.ListenerGroup;
 import org.mitre.harmony.model.MappingCellListener;
 import org.mitre.harmony.model.MappingCellManager;
 import org.mitre.harmony.model.MappingListener;
@@ -36,7 +36,7 @@ public class SelectedInfo implements MappingListener, MappingCellListener, Filte
 	static private HashSet<Integer> selectedLinks = new HashSet<Integer>();
 	
 	/** Stores selected info listeners */
-	static private Vector<SelectedInfoListener> listeners = new Vector<SelectedInfoListener>();
+	static private ListenerGroup<SelectedInfoListener> listeners = new ListenerGroup<SelectedInfoListener>();
 
 	/** Returns the specified list of selected elements */
 	static private HashSet<Integer> getSelectedElements(Integer role)
@@ -104,7 +104,7 @@ public class SelectedInfo implements MappingListener, MappingCellListener, Filte
 		{
 			ConfigManager.setParm("selectedInfo.leftSchemas",leftSchemas.toString());
 			ConfigManager.setParm("selectedInfo.rightSchemas",rightSchemas.toString());
-			for(SelectedInfoListener listener : listeners)
+			for(SelectedInfoListener listener : listeners.get())
 				listener.selectedSchemasModified();
 		}
 	}
@@ -113,28 +113,28 @@ public class SelectedInfo implements MappingListener, MappingCellListener, Filte
 	static private void unselectElements(List<Integer> elements, Integer role)
 	{
 		for(Integer element : elements) getSelectedElements(role).remove(element);
-		for(SelectedInfoListener listener : listeners) listener.selectedElementsModified(role);
+		for(SelectedInfoListener listener : listeners.get()) listener.selectedElementsModified(role);
 	}
 	
 	/** Selects the specified elements */
 	static private void selectElements(List<Integer> elements, Integer role)
 	{
 		for(Integer element : elements) getSelectedElements(role).add(element);
-		for(SelectedInfoListener listener : listeners) listener.selectedElementsModified(role);
+		for(SelectedInfoListener listener : listeners.get()) listener.selectedElementsModified(role);
 	}
 	
 	/** Unselects the specified links */
 	static private void unselectLinks(List<Integer> links)
 	{
 		for(Integer link : links) selectedLinks.remove(link);
-		for(SelectedInfoListener listener : listeners) listener.selectedMappingCellsModified();
+		for(SelectedInfoListener listener : listeners.get()) listener.selectedMappingCellsModified();
 	}
 	
 	/** Selects the specified links */
 	static private void selectLinks(List<Integer> links)
 	{
 		for(Integer link : links) selectedLinks.add(link);
-		for(SelectedInfoListener listener : listeners) listener.selectedMappingCellsModified();
+		for(SelectedInfoListener listener : listeners.get()) listener.selectedMappingCellsModified();
 	}
 	
 	/** Toggles the selected element */
@@ -317,10 +317,6 @@ public class SelectedInfo implements MappingListener, MappingCellListener, Filte
 	public void maxConfidenceChanged(Integer schemaObjectID) {}
 	
 	/** Adds a selected info listener */
-	static public void addListener(SelectedInfoListener obj)
-		{ listeners.add(obj); }
-
-	/** Removes a selected info listener */
-	static public void removeListener(SelectedInfoListener obj)
-		{ listeners.remove(obj); }
+	static public void addListener(SelectedInfoListener listener)
+		{ listeners.add(listener); }
 }

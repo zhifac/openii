@@ -2,12 +2,11 @@
 // ALL RIGHTS RESERVED
 package org.mitre.harmony.model.filters;
 
-import java.util.Vector;
-
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 
 import org.mitre.harmony.model.HarmonyConsts;
+import org.mitre.harmony.model.ListenerGroup;
 import org.mitre.harmony.model.MappingCellManager;
 import org.mitre.harmony.model.selectedInfo.SelectedInfo;
 import org.mitre.harmony.model.selectedInfo.SelectedInfoListener;
@@ -45,7 +44,7 @@ public class Filters implements SelectedInfoListener
 	static private ElementConfHashTable elementConfidences = null;
 
 	/** Stores the filter listeners */
-	static private Vector<FiltersListener> listeners = new Vector<FiltersListener>();
+	static private ListenerGroup<FiltersListener> listeners = new ListenerGroup<FiltersListener>();
 	
 	/** Constructor used to initializes the filters */
 	private Filters()
@@ -69,7 +68,7 @@ public class Filters implements SelectedInfoListener
 		assertions = newAssertions;
 		if(assertions[BEST]) { if(elementConfidences==null) elementConfidences = new ElementConfHashTable(); }
 		else { if(elementConfidences!=null) elementConfidences=null; }			
-		for(FiltersListener listener : listeners) listener.assertionsChanged();
+		for(FiltersListener listener : listeners.get()) listener.assertionsChanged();
 	}
 
 	/** Sets the confidence threshold */
@@ -77,7 +76,7 @@ public class Filters implements SelectedInfoListener
 	{
 		minConfThreshold = minConfThresholdIn;
 		maxConfThreshold = maxConfThresholdIn;
-		for(FiltersListener listener : listeners) listener.confidenceChanged();
+		for(FiltersListener listener : listeners.get()) listener.confidenceChanged();
 	}
 	
 	/**
@@ -88,7 +87,7 @@ public class Filters implements SelectedInfoListener
 	{
 		if(role==HarmonyConsts.LEFT) leftFocus = newFocus;
 		else rightFocus = newFocus;
-		for(FiltersListener listener : listeners) listener.focusChanged();
+		for(FiltersListener listener : listeners.get()) listener.focusChanged();
 	}
 	
 	/**
@@ -99,7 +98,7 @@ public class Filters implements SelectedInfoListener
 	{
 		if(role==HarmonyConsts.LEFT) { minLeftDepth = newMinDepth; maxLeftDepth = newMaxDepth; }
 		else { minRightDepth = newMinDepth; maxRightDepth = newMaxDepth; }
-		for(FiltersListener listener : listeners) listener.depthChanged();
+		for(FiltersListener listener : listeners.get()) listener.depthChanged();
 	}
 	
 	/** Returns the current assertions */
@@ -191,8 +190,7 @@ public class Filters implements SelectedInfoListener
 	//-----------------------------------------------------
 	// Purpose: Allows classes to listen for filter changes
 	//-----------------------------------------------------
-	static public void addListener(FiltersListener obj) { listeners.add(obj); }
-	static public void removeListener(FiltersListener obj) { listeners.remove(obj); }
+	static public void addListener(FiltersListener listener) { listeners.add(listener); }
 	static void fireMaxConfidenceChanged(Integer schemaObjectID)
-		{ for(FiltersListener listener : listeners) listener.maxConfidenceChanged(schemaObjectID); }
+		{ for(FiltersListener listener : listeners.get()) listener.maxConfidenceChanged(schemaObjectID); }
 }
