@@ -9,34 +9,45 @@ import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import javax.swing.AbstractAction;
+import javax.swing.JComponent;
 import javax.swing.JInternalFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 import javax.swing.border.EmptyBorder;
 
+import org.mitre.harmony.model.HarmonyConsts;
 import org.mitre.harmony.model.MappingCellManager;
 import org.mitre.harmony.model.MappingManager;
 import org.mitre.harmony.model.ProjectManager;
+import org.mitre.harmony.model.preferences.Preferences;
+import org.mitre.harmony.model.preferences.PreferencesListener;
 import org.mitre.harmony.model.selectedInfo.SelectedInfo;
+import org.mitre.harmony.view.heatmap.HeatMapPane;
 import org.mitre.harmony.view.mappingPane.MappingPane;
 
 /**
  * Displays main Harmony window
  * @author CWOLF
  */
-public class HarmonyFrame extends JInternalFrame implements WindowListener
+public class HarmonyFrame extends JInternalFrame implements WindowListener, PreferencesListener
 {	
 	/** Stores the project manager */
 	private ProjectManager projectManager = null;
 
 	/** Stores the frame to which this internal frame is associated */
 	private Frame frame = null;
+
+	/** Stores a reference to the view pane */
+	private JPanel viewPane = new JPanel();
 	
 	/** Stores the main harmony frame for reference */
 	static public HarmonyFrame harmonyFrame;
 
+	
 	/** Subclass used to delete links */
 	private class DeleteLink extends AbstractAction
 	{
@@ -61,24 +72,40 @@ public class HarmonyFrame extends JInternalFrame implements WindowListener
 		}
 	};
 	
+	/** Returns the view pane */
+	private JPanel getViewPane()
+	{
+		JComponent view = null;
+		switch(Preferences.getViewToDisplay())
+		{
+			case HarmonyConsts.MAPPING_VIEW: view = new MappingPane(); break;
+			case HarmonyConsts.TABLE_VIEW: view = new JLabel("Test"); break;
+			case HarmonyConsts.HEATMAP_VIEW: view = new HeatMapPane(); break;
+		}
+		return new TitledPane(null,view);
+	}
+	
 	/** Generates the main pane */
 	private JPanel getMainPane()
 	{
     	// Initialize the various panes shown in the main Harmony pane
-    	TitledPane mappingPane = new TitledPane(null,new MappingPane());
     	TitledPane confidencePane = new TitledPane("Confidence",new ConfidencePane());
     	TitledPane assertionPane = new TitledPane("Show Links",new AssertionPane());
  
-    	// Layout side pane of Harmony
+    	// Layout the view pane of Harmony
+    	viewPane.setLayout(new BorderLayout());
+    	viewPane.add(getViewPane(),BorderLayout.CENTER);
+    	
+    	// Layout the side pane of Harmony
     	JPanel sidePane = new JPanel();
     	sidePane.setLayout(new BorderLayout());
     	sidePane.add(confidencePane,BorderLayout.CENTER);
     	sidePane.add(assertionPane,BorderLayout.SOUTH);
-   	
+   	    	
     	// Generate the main pane of Harmony
     	JPanel mainPane = new JPanel();
     	mainPane.setLayout(new BorderLayout());
-    	mainPane.add(mappingPane,BorderLayout.CENTER);
+    	mainPane.add(viewPane,BorderLayout.CENTER);
     	mainPane.add(sidePane,BorderLayout.EAST);
 
 		// Register keyboard actions for deleting links
@@ -119,12 +146,21 @@ public class HarmonyFrame extends JInternalFrame implements WindowListener
  	   	setVisible(true);
  	   	
  	   	// Add a listener to monitor for the closing of the parent frame
+ 	   	Preferences.addListener(this);
  	   	frame.addWindowListener(this);
     }
 
     /** Returns the frame in which this internal frame is placed */
     public Frame getFrame()
     	{ return frame; }
+    
+    /** Handles the changing of the displayed view */
+	public void displayedViewChanged()
+	{
+		viewPane.removeAll();
+		viewPane.add(getViewPane(),BorderLayout.CENTER);
+		viewPane.revalidate(); viewPane.repaint();
+	}
     
     /** Safely closes Harmony without losing user data */
 	public void exitApp()
@@ -144,4 +180,8 @@ public class HarmonyFrame extends JInternalFrame implements WindowListener
 	public void windowDeiconified(WindowEvent arg0) {}
 	public void windowIconified(WindowEvent arg0) {}
 	public void windowOpened(WindowEvent arg0) {}
+	public void elementsMarkedAsFinished(Integer schemaID, HashSet<Integer> elementIDs) {}
+	public void elementsMarkedAsUnfinished(Integer schemaID, HashSet<Integer> elementIDs) {}
+	public void schemaGraphModelChanged(Integer schemaID) {}
+	public void showSchemaTypesChanged() {}
 }
