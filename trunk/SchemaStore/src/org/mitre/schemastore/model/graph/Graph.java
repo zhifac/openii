@@ -25,6 +25,64 @@ import org.mitre.schemastore.model.Subtype;
  */
 public class Graph implements Serializable
 {
+	
+	public static void main(String args[]){
+		ArrayList<SchemaElement> se = new ArrayList<SchemaElement>();
+		se.add(new Entity(1,"entity1","",0));
+		se.add(new Entity(2,"entity2","",0));
+		
+		
+		Graph g1 = new Graph(new Schema(),se);
+		Graph g2 = g1.graphDeepCopy();
+		g2.deleteElement(2);
+		
+		for (SchemaElement se3 : g2.getElements(null)){
+			se3.setName("test");
+		}
+		
+		for (SchemaElement se1 : g1.getElements(null))
+			System.out.println(se1.getName() + " -- g1");
+		
+		for (SchemaElement se2 : g2.getElements(null))
+			System.out.println(se2.getName() + " -- g2");
+	}
+	
+	/** graphShallowCopy: Creates a SHALLOW copy of a graph (copy references ONLY) **/
+	@SuppressWarnings("unchecked")
+	public Graph graphShallowCopy(){
+		Graph retVal = new Graph(this.schema, null);
+		retVal.graphHash = (HashMap<Integer, SchemaElement>) this.graphHash.clone();
+		return retVal;
+	}
+	
+	/** graphDeepCopy: Creates a DEEP copy of a graph (copy actual elements) **/
+	@SuppressWarnings("unchecked")
+	public Graph graphDeepCopy(){
+		Graph retVal = new Graph(this.schema, new ArrayList<SchemaElement>());	
+		retVal.graphHash = (HashMap<Integer, SchemaElement>) this.graphHash.clone();
+		
+		for (Integer key: retVal.graphHash.keySet()){
+			SchemaElement se = retVal.graphHash.get(key);
+			if (se instanceof Alias){ se =((Alias)se).copy();}
+			else if (se instanceof Attribute){ se =((Attribute)se).copy();}
+			else if (se instanceof Containment){ se =((Containment)se).copy();}
+			else if (se instanceof Domain){ se =((Domain)se).copy();}
+			else if (se instanceof DomainValue){ se =((DomainValue)se).copy();}
+			else if (se instanceof Entity){ se =((Entity)se).copy();}
+			else if (se instanceof Relationship){ se =((Relationship)se).copy();}
+			else if (se instanceof Subtype){ se =((Subtype)se).copy();}
+			else {System.out.println("[E] Graph.graphDeepCopy did not make a copy of element " 
+					+ se.getName() + " of class " + se.getClass().toString());}
+
+			retVal.graphHash.put(key, se);
+		}
+		
+		
+		
+		return retVal;
+	}
+	
+	
 	/** Private class for caching graph data */
 	private class GraphCache implements Serializable
 	{
