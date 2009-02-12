@@ -4,6 +4,7 @@ package org.mitre.harmony.view.controlPane;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Container;
 import java.awt.Graphics;
 import java.awt.Shape;
 import java.awt.event.ComponentEvent;
@@ -24,7 +25,6 @@ import javax.swing.plaf.metal.MetalSliderUI;
 
 import org.mitre.harmony.model.filters.Filters;
 import org.mitre.harmony.model.filters.FiltersListener;
-import org.mitre.harmony.view.harmonyPane.HarmonyFrame;
 import org.mitre.harmony.view.schemaTree.SchemaTree;
 import org.mitre.harmony.view.schemaTree.SchemaTreeListener;
 
@@ -245,7 +245,12 @@ public class DepthPane extends JPanel
 
 		/** If the depth slider is resized, make sure that whole Harmony screen is refreshed */
 		public void componentResized(ComponentEvent arg0)
-			{ HarmonyFrame.harmonyFrame.repaint(); }
+		{
+			Container parent = getParent();
+			while(parent.getParent()!=null)
+				parent = parent.getParent();
+			parent.repaint();
+		}
 		
 		/** Unused event listeners */
 		public void schemaDisplayModified(SchemaTree tree) {}
