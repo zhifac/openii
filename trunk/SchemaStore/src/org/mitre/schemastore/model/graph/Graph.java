@@ -26,26 +26,6 @@ import org.mitre.schemastore.model.Subtype;
 public class Graph implements Serializable
 {
 	
-	public static void main(String args[]){
-		ArrayList<SchemaElement> se = new ArrayList<SchemaElement>();
-		se.add(new Entity(1,"entity1","",0));
-		se.add(new Entity(2,"entity2","",0));
-		
-		
-		Graph g1 = new Graph(new Schema(),se);
-		Graph g2 = g1.graphDeepCopy();
-		g2.deleteElement(2);
-		
-		for (SchemaElement se3 : g2.getElements(null)){
-			se3.setName("test");
-		}
-		
-		for (SchemaElement se1 : g1.getElements(null))
-			System.out.println(se1.getName() + " -- g1");
-		
-		for (SchemaElement se2 : g2.getElements(null))
-			System.out.println(se2.getName() + " -- g2");
-	}
 	
 	/** graphShallowCopy: Creates a SHALLOW copy of a graph (copy references ONLY) **/
 	@SuppressWarnings("unchecked")
@@ -58,7 +38,10 @@ public class Graph implements Serializable
 	/** graphDeepCopy: Creates a DEEP copy of a graph (copy actual elements) **/
 	@SuppressWarnings("unchecked")
 	public Graph graphDeepCopy(){
-		Graph retVal = new Graph(this.schema, new ArrayList<SchemaElement>());	
+		Graph retVal = new Graph( new Schema(this.schema.getId(), this.schema.getName(), 
+								this.schema.getAuthor(), this.schema.getSource(), this.schema.getType(), 
+								this.schema.getDescription(), this.schema.getLocked())
+							, new ArrayList<SchemaElement>());	
 		retVal.graphHash = (HashMap<Integer, SchemaElement>) this.graphHash.clone();
 		
 		for (Integer key: retVal.graphHash.keySet()){
