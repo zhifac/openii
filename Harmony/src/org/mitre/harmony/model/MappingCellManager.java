@@ -23,16 +23,16 @@ public class MappingCellManager implements MappingListener, PreferencesListener
 	public static final double MAX_CONFIDENCE = 1.0;
 	
 	/** Stores the mapping cells */
-	static private HashMap<Integer,MappingCell> mappingCells = new HashMap<Integer,MappingCell>();
+	protected static HashMap<Integer,MappingCell> mappingCells = new HashMap<Integer,MappingCell>();
 
 	/** Stores the mapping cells by element reference */
-	static private HashMap<Integer,HashMap<Integer,Integer>> mappingCellsByElement = new HashMap<Integer,HashMap<Integer,Integer>>();
+	protected static HashMap<Integer,HashMap<Integer,Integer>> mappingCellsByElement = new HashMap<Integer,HashMap<Integer,Integer>>();
 	
 	/** Stores the last mapping cell id handed out */
 	static private Integer maxID = 0;
 	
 	/** Constructor used to monitor changes that might affect the mapping cells */
-	private MappingCellManager()
+	protected MappingCellManager()
 	{
 		MappingManager.addListener(this);
 		Preferences.addListener(this);

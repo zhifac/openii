@@ -16,7 +16,7 @@ import org.mitre.schemastore.model.MappingCell;
 public class MappingManager
 {		
 	/** Stores the current mapping */
-	static private Mapping mapping = new Mapping();	
+	protected static Mapping mapping = new Mapping();	
 	
 	/** Returns the list of valid schemas */
 	static private ArrayList<Integer> validateSchemaIDs(ArrayList<Integer> schemaIDs)
