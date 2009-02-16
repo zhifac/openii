@@ -4,28 +4,21 @@ package org.mitre.harmony.view.harmonyPane;
 
 import java.awt.BorderLayout;
 import java.awt.Frame;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
-import java.util.ArrayList;
 import java.util.HashSet;
 
-import javax.swing.AbstractAction;
 import javax.swing.JComponent;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.KeyStroke;
 import javax.swing.border.EmptyBorder;
 
 import org.mitre.harmony.model.HarmonyConsts;
-import org.mitre.harmony.model.MappingCellManager;
 import org.mitre.harmony.model.MappingManager;
 import org.mitre.harmony.model.ProjectManager;
 import org.mitre.harmony.model.preferences.Preferences;
 import org.mitre.harmony.model.preferences.PreferencesListener;
-import org.mitre.harmony.model.selectedInfo.SelectedInfo;
 import org.mitre.harmony.view.heatmap.HeatMapPane;
 import org.mitre.harmony.view.mappingPane.MappingPane;
 
@@ -46,41 +39,20 @@ public class HarmonyFrame extends JInternalFrame implements WindowListener, Pref
 	
 	/** Stores the main harmony frame for reference */
 	static public HarmonyFrame harmonyFrame;
-
-	
-	/** Subclass used to delete links */
-	private class DeleteLink extends AbstractAction
-	{
-		/** Deletes selected link from mapping */
-		public void actionPerformed(ActionEvent e)
-		{
-			for(Integer link : SelectedInfo.getMappingCells())
-				MappingCellManager.modifyMappingCell(link,-1.0,System.getProperty("user.name"),true);
-			SelectedInfo.setMappingCells(new ArrayList<Integer>(),false);
-		}
-	};
-	
-	/** Subclass used to accept links */
-	private class AcceptLink extends AbstractAction
-	{
-		/** Accept selected link */
-		public void actionPerformed(ActionEvent arg0)
-		{
-			for(Integer link : SelectedInfo.getMappingCells())
-				MappingCellManager.modifyMappingCell(link,1.0,System.getProperty("user.name"),true);
-			SelectedInfo.setMappingCells(new ArrayList<Integer>(),false);
-		}
-	};
 	
 	/** Returns the view pane */
 	private JPanel getViewPane()
 	{
+		// Clear out the action map
+		getActionMap().clear();
+		
+		// Generate the new view
 		JComponent view = null;
 		switch(Preferences.getViewToDisplay())
 		{
-			case HarmonyConsts.MAPPING_VIEW: view = new MappingPane(); break;
+			case HarmonyConsts.MAPPING_VIEW: view = new MappingPane(this); break;
 			case HarmonyConsts.TABLE_VIEW: view = new JLabel("Test"); break;
-			case HarmonyConsts.HEATMAP_VIEW: view = new HeatMapPane(); break;
+			case HarmonyConsts.HEATMAP_VIEW: view = new HeatMapPane(this); break;
 		}
 		return new TitledPane(null,view);
 	}
@@ -106,20 +78,7 @@ public class HarmonyFrame extends JInternalFrame implements WindowListener, Pref
     	JPanel mainPane = new JPanel();
     	mainPane.setLayout(new BorderLayout());
     	mainPane.add(viewPane,BorderLayout.CENTER);
-    	mainPane.add(sidePane,BorderLayout.EAST);
-
-		// Register keyboard actions for deleting links
-		KeyStroke deleteKey = KeyStroke.getKeyStroke((char) KeyEvent.VK_DELETE);
-		mainPane.getInputMap(JPanel.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(deleteKey, "deleteLink");
-		KeyStroke backspaceKey = KeyStroke.getKeyStroke((char) KeyEvent.VK_BACK_SPACE);
-		mainPane.getInputMap(JPanel.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(backspaceKey, "deleteLink");
-		mainPane.getActionMap().put("deleteLink", new DeleteLink());
-		
-		// Register keyboard actions for accepting links
-		KeyStroke acceptKey = KeyStroke.getKeyStroke((char) KeyEvent.VK_SPACE);
-		mainPane.getInputMap(JPanel.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(acceptKey, "acceptLink");
-		mainPane.getActionMap().put("acceptLink", new AcceptLink());
-		
+    	mainPane.add(sidePane,BorderLayout.EAST);		
 		return mainPane;
 	}
 	

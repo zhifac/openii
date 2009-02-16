@@ -16,13 +16,20 @@ import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.graph.HierarchicalGraph;
 import org.mitre.harmony.model.selectedInfo.SelectedInfoListener;
 
-/**
- *
- */
-
-public class HeatMap extends JPanel implements MouseListener,KeyListener, MouseMotionListener, SelectedInfoListener
+/** Class used for displaying the heat map */
+public class HeatMap extends JPanel implements MouseListener, MouseMotionListener, SelectedInfoListener
 {
-    private double[][] data;
+    // Constants for defining the various gradients available
+    public final static Color[] GRADIENT_BLUE_TO_RED = createGradient(Color.BLUE, Color.RED, 500);
+    public final static Color[] GRADIENT_BLACK_TO_WHITE = createGradient(Color.BLACK, Color.WHITE, 500);
+    public final static Color[] GRADIENT_RED_TO_GREEN = createGradient(Color.RED, Color.GREEN, 500);
+    public final static Color[] GRADIENT_GREEN_YELLOW_ORANGE_RED = createMultiGradient(new Color[]{Color.green, Color.yellow, Color.orange, Color.red}, 500);
+    public final static Color[] GRADIENT_RAINBOW = createMultiGradient(new Color[]{new Color(181, 32, 255), Color.blue, Color.green, Color.yellow, Color.orange, Color.red}, 500);
+    public final static Color[] GRADIENT_HOT = createMultiGradient(new Color[]{Color.black, new Color(87, 0, 0), Color.red, Color.orange, Color.yellow, Color.white}, 500);
+    public final static Color[] GRADIENT_HEAT = createMultiGradient(new Color[]{Color.black, new Color(105, 0, 0), new Color(192, 23, 0), new Color(255, 150, 38), Color.white}, 500);
+    public final static Color[] GRADIENT_ROY = createMultiGradient(new Color[]{Color.red, Color.orange, Color.yellow}, 500);
+	
+	private double[][] data;
     private String[] labelsX;
     private String[] labelsY;
     private int[] levelsX;
@@ -36,8 +43,8 @@ public class HeatMap extends JPanel implements MouseListener,KeyListener, MouseM
     private String[] orig_labelsY;
     private int orig_numLabelsX;
     private int orig_numLabelsY;
-    private int currentLevelX;
-    private int currentLevelY;
+    int currentLevelX;
+    int currentLevelY;
 
     private boolean drawLabels = false;
     private int lowerX;
@@ -68,74 +75,7 @@ public class HeatMap extends JPanel implements MouseListener,KeyListener, MouseM
     private BufferedImage bufferedImage;
     private Graphics2D bufferedGraphics;
     
-    /**
-     * Produces a gradient from blue (low) to red (high)
-     */
-    public final static Color[] GRADIENT_BLUE_TO_RED = createGradient(Color.BLUE, Color.RED, 500);
-
-    /**
-     * Produces a gradient from black (low) to white (high)
-     */
-    public final static Color[] GRADIENT_BLACK_TO_WHITE = createGradient(Color.BLACK, Color.WHITE, 500);
-
-    /**
-     *Produces a gradient from red (low) to green (high)
-     */
-    public final static Color[] GRADIENT_RED_TO_GREEN = createGradient(Color.RED, Color.GREEN, 500);
-
-    /**
-     *Produces a gradient through green, yellow, orange, red
-     */
-    public final static Color[] GRADIENT_GREEN_YELLOW_ORANGE_RED = createMultiGradient(new Color[]{Color.green, Color.yellow, Color.orange, Color.red}, 500);
-
-    /**
-     *Produces a gradient through the rainbow: violet, blue, green, yellow, orange, red
-     */
-    public final static Color[] GRADIENT_RAINBOW = createMultiGradient(new Color[]{new Color(181, 32, 255), Color.blue, Color.green, Color.yellow, Color.orange, Color.red}, 500);
-
-    /**
-     *Produces a gradient for hot things (black, red, orange, yellow, white)
-     */
-    public final static Color[] GRADIENT_HOT = createMultiGradient(new Color[]{Color.black, new Color(87, 0, 0), Color.red, Color.orange, Color.yellow, Color.white}, 500);
-
-    /**
-     *Produces a different gradient for hot things (black, brown, orange, white)
-     */
-    public final static Color[] GRADIENT_HEAT = createMultiGradient(new Color[]{Color.black, new Color(105, 0, 0), new Color(192, 23, 0), new Color(255, 150, 38), Color.white}, 500);
-
-    /**
-     *Produces a gradient through red, orange, yellow
-     */
-    public final static Color[] GRADIENT_ROY = createMultiGradient(new Color[]{Color.red, Color.orange, Color.yellow}, 500);
-
-
-
-    /**
-     * @param data The data to display, must be a complete array (non-ragged)
-     * @param colors A variable of the type Color[]. See also {@link #createMultiGradient} and {@link #createGradient}.
-     */
-    public HeatMap(double[][] data, Color[] colors)
-    {
-        super();
-
-        this.data = data;
-        updateGradient(colors);
-        updateData(data);
-
-        this.setPreferredSize(new Dimension(60+data.length, 60+data[0].length));
-        this.setDoubleBuffered(true);
-
-        this.bg = Color.white;
-        this.fg = Color.black;
-        
-        // this is the expensive function that draws the data plot into a 
-        // BufferedImage. The data plot is then cheaply drawn to the screen when
-        // needed, saving us a lot of time in the end.
-        drawData();
-    }
-    
-    /**
-     */
+    /** Constructs the heat map */
     public HeatMap()
     {
         super();
@@ -277,6 +217,25 @@ public class HeatMap extends JPanel implements MouseListener,KeyListener, MouseM
         currentLevelX=0;
         currentLevelY=0;
     }
+    
+    /** Resets the heat map back to its default settings */
+    void reset()
+    {
+    	uncheckData(); currentLevelX=0;currentLevelY=0;
+        drawLabels=false;
+        setLowerXY(0,0);
+        setBiggerXY(width,height); 
+        rescale(); 
+        repaint(); 
+    }
+    
+    /** Toggles the info box */
+    void toggleInfoBox()
+    	{ maxInfo = !maxInfo; repaint(); }
+    
+    /** Toggles the heat map labels */
+    void toggleLabels()
+    	{ drawLabels = !drawLabels; repaint(); }
     
     //ok, to make this work, we need some notion of what level we are at in each dimension
     //int levelX, levelY;
@@ -857,52 +816,6 @@ public class HeatMap extends JPanel implements MouseListener,KeyListener, MouseM
        setCurrentXY(e.getX(),e.getY());
        if(maxInfo == true){
          repaint();
-       }
-    }
-
-    public void keyTyped(KeyEvent e){
-    }
-
-
-    public void keyReleased(KeyEvent e){
- 
-    }
-
-    public void keyPressed(KeyEvent e){
-       switch(e.getKeyCode()){
-        case KeyEvent.VK_T: 
-        	uncheckData(); currentLevelX=0;currentLevelY=0;
-            drawLabels=false;
-            setLowerXY(0,0);
-            setBiggerXY(width,height); 
-            rescale(); 
-            repaint(); 
-            break;
-        case KeyEvent.VK_I: 
-        	if(maxInfo==false){
-               maxInfo = true;
-            } else{
-               maxInfo = false;
-               repaint();
-            }
-            break;
-        case KeyEvent.VK_G:
-        	setUpdate();
-        	break;
-        case KeyEvent.VK_U:
-        	visualSummary(++currentLevelX, currentLevelY);
-        	break;
-        case KeyEvent.VK_Y:
-        	visualSummary(currentLevelX, ++currentLevelY);
-        	break;
-        case KeyEvent.VK_Q:
-        	visualSummary(currentLevelX, currentLevelY);
-        	break;
-        default:
-          if(drawLabels == true) drawLabels =false;
-          else drawLabels = true;
-          System.out.println("Clicked");
-          repaint();
        }
     }
     
