@@ -6,15 +6,22 @@ import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.GridLayout;
 import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
+import java.awt.event.KeyEvent;
+import java.util.ArrayList;
 
+import javax.swing.AbstractAction;
+import javax.swing.JComponent;
 import javax.swing.JDesktopPane;
 import javax.swing.JPanel;
 import javax.swing.JViewport;
+import javax.swing.KeyStroke;
 import javax.swing.border.EmptyBorder;
 
 import org.mitre.harmony.model.HarmonyConsts;
+import org.mitre.harmony.model.MappingCellManager;
 import org.mitre.harmony.model.selectedInfo.SelectedInfo;
 import org.mitre.harmony.model.selectedInfo.SelectedInfoListener;
 import org.mitre.harmony.view.controlPane.ControlPane;
@@ -38,6 +45,31 @@ public class MappingPane extends JDesktopPane implements ComponentListener, Line
 	private JPanel leftInfoPane = null;
 	private JPanel rightInfoPane = null;
 	
+	
+	/** Subclass used to delete links */
+	private class DeleteLink extends AbstractAction
+	{
+		/** Deletes selected link from mapping */
+		public void actionPerformed(ActionEvent e)
+		{
+			for(Integer link : SelectedInfo.getMappingCells())
+				MappingCellManager.modifyMappingCell(link,-1.0,System.getProperty("user.name"),true);
+			SelectedInfo.setMappingCells(new ArrayList<Integer>(),false);
+		}
+	};
+	
+	/** Subclass used to accept links */
+	private class AcceptLink extends AbstractAction
+	{
+		/** Accept selected link */
+		public void actionPerformed(ActionEvent arg0)
+		{
+			for(Integer link : SelectedInfo.getMappingCells())
+				MappingCellManager.modifyMappingCell(link,1.0,System.getProperty("user.name"),true);
+			SelectedInfo.setMappingCells(new ArrayList<Integer>(),false);
+		}
+	};
+	
 	/** Constructs a schema tree pane */
 	private JPanel getSchemaTreePane(SchemaTreeImp tree)
 	{
@@ -49,7 +81,7 @@ public class MappingPane extends JDesktopPane implements ComponentListener, Line
 	}
 	
 	/** Initializes the mapping pane */
-	public MappingPane()
+	public MappingPane(JComponent parent)
 	{
 		mappingPane = this;
 		
@@ -69,6 +101,18 @@ public class MappingPane extends JDesktopPane implements ComponentListener, Line
 		add(leftInfoPane = new SelectedNodePane(HarmonyConsts.LEFT),MODAL_LAYER);
 		add(rightInfoPane = new SelectedNodePane(HarmonyConsts.RIGHT),MODAL_LAYER);
 		add(mousePane = new MousePane(leftTree,rightTree),DRAG_LAYER);
+		
+		// Register keyboard actions for accepting links
+		KeyStroke acceptKey = KeyStroke.getKeyStroke((char) KeyEvent.VK_SPACE);
+		parent.getInputMap(JPanel.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(acceptKey, "acceptLink");
+		parent.getActionMap().put("acceptLink", new AcceptLink());
+		
+		// Register keyboard actions for deleting links
+		KeyStroke deleteKey = KeyStroke.getKeyStroke((char) KeyEvent.VK_DELETE);
+		parent.getInputMap(JPanel.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(deleteKey, "deleteLink");
+		KeyStroke backspaceKey = KeyStroke.getKeyStroke((char) KeyEvent.VK_BACK_SPACE);
+		parent.getInputMap(JPanel.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(backspaceKey, "deleteLink");
+		parent.getActionMap().put("deleteLink", new DeleteLink());
 		
 		// Adds listeners to watch for events where the mapping pane need to be redrawn
 		addComponentListener(this);	
