@@ -19,7 +19,7 @@ public class GalaxyManager
 	static
 	{
 		// Initialize the connection to SchemaStore
-		SchemaStoreManager.setClient(SchemaStoreConnection.getConnection());
+		SchemaStoreManager.setClient(OpenIIManager.getConnection());
 		ImageManager.init(null);
 
 		// Set the selected schema

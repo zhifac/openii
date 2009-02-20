@@ -6,12 +6,12 @@ import javax.swing.JApplet;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.ui.part.*;
 import org.eclipse.swt.awt.SWT_AWT;
+import org.eclipse.ui.part.ViewPart;
 import org.mitre.harmony.model.ProjectManager;
 import org.mitre.harmony.model.SchemaStoreManager;
 import org.mitre.harmony.view.harmonyPane.HarmonyFrame;
-import org.mitre.openii.model.SchemaStoreConnection;
+import org.mitre.openii.model.OpenIIManager;
 
 /** Constructs the Harmony View */
 public class HarmonyView extends ViewPart
@@ -20,7 +20,7 @@ public class HarmonyView extends ViewPart
 	public void createPartControl(Composite parent)
 	{
 		// Connects the SchemaStoreClient to Harmony's SchemaStoreManager
-		SchemaStoreManager.setConnection(SchemaStoreConnection.getConnection());
+		SchemaStoreManager.setConnection(OpenIIManager.getConnection());
 		
 		// Constructs the AWT frame
 		Composite swtAwtComponent = new Composite(parent, SWT.EMBEDDED);

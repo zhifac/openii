@@ -5,6 +5,7 @@ import java.io.IOException;
 
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
@@ -14,7 +15,7 @@ import org.osgi.framework.BundleContext;
 public class OpenIIActivator extends AbstractUIPlugin
 {
 	// The plug-in ID
-	public static final String PLUGIN_ID = "OpenII";
+	public static final String PLUGIN_ID = "org.mitre.openii";
 
 	// The shared instance
 	private static OpenIIActivator plugin;
@@ -38,4 +39,8 @@ public class OpenIIActivator extends AbstractUIPlugin
 	/** Returns an image descriptor for the image file at the given plug-in relative path */
 	public static ImageDescriptor getImageDescriptor(String path)
 		{ return imageDescriptorFromPlugin(PLUGIN_ID, path); }
+
+	/** Retrieves the specified image */
+	public static Image getImage(String imageName)
+		{ return getImageDescriptor("icons/"+imageName).createImage(); }
 }
