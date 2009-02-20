@@ -16,6 +16,7 @@ public class OpenIIPerspective implements IPerspectiveFactory
 		IFolderLayout mainPane = layout.createFolder("main", IPageLayout.RIGHT, 0.75f, layout.getEditorArea());
 		mainPane.addView("org.mitre.openii.views.HarmonyView");
 		mainPane.addView("org.mitre.openii.views.GalaxyView");
+		mainPane.addView("org.mitre.openii.views.UnityView");
 
 		// Creates the left pane
 		IFolderLayout leftPane = layout.createFolder("left", IPageLayout.LEFT, 0.25f, "main");
