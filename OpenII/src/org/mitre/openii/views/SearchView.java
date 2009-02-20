@@ -6,8 +6,8 @@ import javax.swing.JApplet;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.ui.part.*;
 import org.eclipse.swt.awt.SWT_AWT;
+import org.eclipse.ui.part.ViewPart;
 import org.mitre.openii.model.GalaxyManager;
 
 /** Constructs the Search View */
