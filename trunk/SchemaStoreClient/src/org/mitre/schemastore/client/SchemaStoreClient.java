@@ -140,10 +140,21 @@ public class SchemaStoreClient
 	// Schema Group Functions
 	//------------------------
 	
-	/** Get the list of schema groups from the web service */
+	/** Get the list of groups from the web service */
 	public ArrayList<Group> getGroups() throws RemoteException
 	{
 		Group[] groups = (Group[])callMethod("getGroups",new Object[] {});
+		return groups==null ? new ArrayList<Group>() : new ArrayList<Group>(Arrays.asList(groups));
+	}
+
+	/** Gets the specified group from the web service */
+	public Schema getGroup(Integer groupID) throws RemoteException
+		{ return (Schema)callMethod("getGroup",new Object[] {groupID}); }
+	
+	/** Get the list of subgroups for the specified group from the web service */
+	public ArrayList<Group> getSubgroups(Integer groupID) throws RemoteException
+	{
+		Group[] groups = (Group[])callMethod("getSubgroups",new Object[] {groupID});
 		return groups==null ? new ArrayList<Group>() : new ArrayList<Group>(Arrays.asList(groups));
 	}
 
@@ -161,17 +172,6 @@ public class SchemaStoreClient
 	/** Delete a group from the web service */
 	public boolean deleteGroup(Integer groupID) throws RemoteException
 		{ return (Boolean)callMethod("deleteGroup",new Object[] {groupID}); }
-	
-	/** Get list of schemas unassigned with a group in web service */
-	public ArrayList<Integer> getUnassignedSchemas() throws RemoteException
-	{
-		ArrayList<Integer> unassignedGroupSchemas = new ArrayList<Integer>();
-		int[] unassignedSchemaArray = (int[])callMethod("getUnassignedSchemas",new Object[] {});
-		if(unassignedSchemaArray!=null)
-			for(Integer unassignedGroupSchema : unassignedSchemaArray)
-				unassignedGroupSchemas.add(unassignedGroupSchema);
-		return unassignedGroupSchemas;
-	}
 	
 	/** Get list of schemas associated with group in web service */
 	public ArrayList<Integer> getGroupSchemas(Integer groupID) throws RemoteException
