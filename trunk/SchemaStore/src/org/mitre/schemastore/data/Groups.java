@@ -8,7 +8,6 @@ import java.util.HashMap;
 import org.mitre.schemastore.data.database.Database;
 import org.mitre.schemastore.data.database.Database.SchemaGroup;
 import org.mitre.schemastore.model.Group;
-import org.mitre.schemastore.model.Schema;
 
 /** Class for managing the groups in the schema repository */
 public class Groups
@@ -55,6 +54,14 @@ public class Groups
 	static public ArrayList<Group> getGroups()
 		{ return Database.getGroups(); }
 
+	/** Returns the specified group */
+	static public Group getGroup(Integer groupID)
+		{ return Database.getGroup(groupID); }
+	
+	/** Returns the listing of subgroups for the specified group */
+	static public ArrayList<Group> getSubgroups(Integer groupID)
+		{ return Database.getSubgroups(groupID); }
+	
 	/** Adds the specified group */
 	static public Integer addGroup(Group group)
 		{ return Database.addGroup(group); }
@@ -65,17 +72,9 @@ public class Groups
 	
 	/** Removes the specified group */
 	static public boolean deleteGroup(Integer groupID)
-		{ return Database.deleteGroup(groupID); }
-
-	/** Returns the list of unassigned schemas */
-	static public ArrayList<Integer> getUnassignedSchemas()
 	{
-		recacheAsNeeded();
-		ArrayList<Integer> unassignedSchemas = new ArrayList<Integer>();
-		for(Schema schema : Schemas.getSchemas())
-			if(!schemaGroups.containsKey(schema.getId()))
-				unassignedSchemas.add(schema.getId());
-		return unassignedSchemas;
+		
+		return Database.deleteGroup(groupID);
 	}
 	
 	/** Returns the list of group schemas */

@@ -318,6 +318,34 @@ public class Database
 		} catch(SQLException e) { System.out.println("(E) Database:getGroups: "+e.getMessage()); }
 		return groups;
 	}
+
+	/** Retrieves the specified group from the repository */
+	static public Group getGroup(Integer groupID)
+	{
+		Group group = null;
+		try {
+			Statement stmt = connection.getStatement();
+			ResultSet rs = stmt.executeQuery("SELECT id,name,parent_id FROM groups");
+			if(rs.next())
+				group = new Group(rs.getInt("id"),rs.getString("name"),rs.getInt("parent_id"));
+			stmt.close();
+		} catch(SQLException e) { System.out.println("(E) Database:getGroup: "+e.getMessage()); }
+		return group;
+	}
+	
+	/** Retrieves the list of subgroups for the specified group */
+	static public ArrayList<Group> getSubgroups(Integer groupID)
+	{
+		ArrayList<Group> groups = new ArrayList<Group>();
+		try {
+			Statement stmt = connection.getStatement();
+			ResultSet rs = stmt.executeQuery("SELECT id,name,parent_id FROM groups WHERE parent_id " + (groupID==null ? " IS NULL" : "= "+groupID));
+			while(rs.next())
+				groups.add(new Group(rs.getInt("id"),rs.getString("name"),rs.getInt("parent_id")));
+			stmt.close();
+		} catch(SQLException e) { System.out.println("(E) Database:getGroups: "+e.getMessage()); }
+		return groups;
+	}
 	
 	/** Adds the specified group */
 	static public Integer addGroup(Group group)
