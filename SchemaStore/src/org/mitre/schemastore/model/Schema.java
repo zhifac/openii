@@ -57,8 +57,12 @@ public class Schema implements Serializable
 	public void setLocked(boolean locked) { this.locked = locked; }
 	
 	/** Indicates that two schemas are equals */
-	public boolean equals(Object schema)
-		{ return schema instanceof Schema && ((Schema)schema).id.equals(id); }
+	public boolean equals(Object object)
+	{
+		if(object instanceof Integer) return ((Integer)object).equals(id);
+		if(object instanceof Schema) return ((Schema)object).id.equals(id);
+		return false;
+	}
 	
 	/** String representation of the schema */
 	public String toString()

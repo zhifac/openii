@@ -55,8 +55,12 @@ public class SchemaElement implements Serializable
 		{ return id; }
 	
 	/** Indicates that two schema elements are equals */
-	public final boolean equals(Object schemaElement)
-		{ return schemaElement instanceof SchemaElement && ((SchemaElement)schemaElement).id.equals(id); }
+	public boolean equals(Object object)
+	{
+		if(object instanceof Integer) return ((Integer)object).equals(id);
+		if(object instanceof SchemaElement) return ((SchemaElement)object).id.equals(id);
+		return false;
+	}
 	
 	/** String representation of the schema element */
 	public String toString()

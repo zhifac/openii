@@ -42,8 +42,12 @@ public class DataSource implements Serializable
 	public void setSchemaID(Integer schemaID) { this.schemaID = schemaID; }
 
 	/** Indicates that two data sources are equals */
-	public boolean equals(Object dataSource)
-		{ return id.equals(((DataSource)dataSource).id); }
+	public boolean equals(Object object)
+	{
+		if(object instanceof Integer) return ((Integer)object).equals(id);
+		if(object instanceof DataSource) return ((DataSource)object).id.equals(id);
+		return false;
+	}
 	
 	/** String representation of the data source */
 	public String toString()
