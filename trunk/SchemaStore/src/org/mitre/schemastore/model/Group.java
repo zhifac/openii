@@ -36,6 +36,14 @@ public class Group implements Serializable
 	public void setName(String name) { this.name = name; }
 	public void setParentId(Integer parentID) { this.parentID = (parentID==null || parentID==0) ? null : parentID; }
 	
+	/** Indicates that two groups are equals */
+	public boolean equals(Object object)
+	{
+		if(object instanceof Integer) return ((Integer)object).equals(id);
+		if(object instanceof Group) return ((Group)object).id.equals(id);
+		return false;
+	}
+	
 	/** String representation of the group */
 	public String toString()
 		{ return name; }

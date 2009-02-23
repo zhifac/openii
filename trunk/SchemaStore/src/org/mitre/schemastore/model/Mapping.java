@@ -51,8 +51,12 @@ public class Mapping implements Serializable
 	public void setSchemas(Integer[] schemas) { this.schemas = schemas; }
 	
 	/** Indicates that two mappings are equals */
-	public boolean equals(Object mapping)
-		{ return mapping instanceof Mapping && id!=null && id.equals(((Mapping)mapping).id); }
+	public boolean equals(Object object)
+	{
+		if(object instanceof Integer) return ((Integer)object).equals(id);
+		if(object instanceof Mapping) return ((Mapping)object).id.equals(id);
+		return false;
+	}
 	
 	/** String representation of the mapping */
 	public String toString()
