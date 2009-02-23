@@ -70,10 +70,11 @@ public class Groups
 	static public boolean updateGroup(Group group)
 		{ return Database.updateGroup(group); }
 	
-	/** Removes the specified group */
+	/** Removes the specified group (and all subgroups) */
 	static public boolean deleteGroup(Integer groupID)
 	{
-		
+		for(Group subgroup : getSubgroups(groupID))
+			if(!deleteGroup(subgroup.getId())) return false;
 		return Database.deleteGroup(groupID);
 	}
 	
