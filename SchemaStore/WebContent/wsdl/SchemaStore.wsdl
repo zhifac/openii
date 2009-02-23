@@ -5,48 +5,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
  <wsdl:types>
   <schema elementFormDefault="qualified" targetNamespace="http://servlet.schemastore.mitre.org" xmlns="http://www.w3.org/2001/XMLSchema">
    <import namespace="http://model.schemastore.mitre.org"/>
-   <element name="addAttribute">
-    <complexType>
-     <sequence>
-      <element name="attribute" type="tns1:Attribute"/>
-     </sequence>
-    </complexType>
-   </element>
-   <element name="addAttributeResponse">
-    <complexType>
-     <sequence>
-      <element name="addAttributeReturn" type="xsd:int"/>
-     </sequence>
-    </complexType>
-   </element>
-   <element name="getAttribute">
-    <complexType>
-     <sequence>
-      <element name="attributeID" type="xsd:int"/>
-     </sequence>
-    </complexType>
-   </element>
-   <element name="getAttributeResponse">
-    <complexType>
-     <sequence>
-      <element name="getAttributeReturn" type="tns1:Attribute"/>
-     </sequence>
-    </complexType>
-   </element>
-   <element name="addAlias">
-    <complexType>
-     <sequence>
-      <element name="alias" type="tns1:Alias"/>
-     </sequence>
-    </complexType>
-   </element>
-   <element name="addAliasResponse">
-    <complexType>
-     <sequence>
-      <element name="addAliasReturn" type="xsd:int"/>
-     </sequence>
-    </complexType>
-   </element>
    <element name="getDomain">
     <complexType>
      <sequence>
@@ -58,53 +16,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
     <complexType>
      <sequence>
       <element name="getDomainReturn" type="tns1:Domain"/>
-     </sequence>
-    </complexType>
-   </element>
-   <element name="getSchema">
-    <complexType>
-     <sequence>
-      <element name="schemaID" type="xsd:int"/>
-     </sequence>
-    </complexType>
-   </element>
-   <element name="getSchemaResponse">
-    <complexType>
-     <sequence>
-      <element name="getSchemaReturn" type="tns1:Schema"/>
-     </sequence>
-    </complexType>
-   </element>
-   <element name="getMapping">
-    <complexType>
-     <sequence>
-      <element name="mappingID" type="xsd:int"/>
-     </sequence>
-    </complexType>
-   </element>
-   <element name="getMappingResponse">
-    <complexType>
-     <sequence>
-      <element name="getMappingReturn" type="tns1:Mapping"/>
-     </sequence>
-    </complexType>
-   </element>
-   <complexType name="ArrayOf_xsd_int">
-    <sequence>
-     <element maxOccurs="unbounded" minOccurs="0" name="item" type="xsd:int"/>
-    </sequence>
-   </complexType>
-   <element name="addMapping">
-    <complexType>
-     <sequence>
-      <element name="mapping" type="tns1:Mapping"/>
-     </sequence>
-    </complexType>
-   </element>
-   <element name="addMappingResponse">
-    <complexType>
-     <sequence>
-      <element name="addMappingReturn" type="xsd:int"/>
      </sequence>
     </complexType>
    </element>
@@ -132,48 +43,11 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
      </sequence>
     </complexType>
    </element>
-   <element name="getAlias">
-    <complexType>
-     <sequence>
-      <element name="aliasID" type="xsd:int"/>
-     </sequence>
-    </complexType>
-   </element>
-   <element name="getAliasResponse">
-    <complexType>
-     <sequence>
-      <element name="getAliasReturn" type="tns1:Alias"/>
-     </sequence>
-    </complexType>
-   </element>
-   <element name="addEntity">
-    <complexType>
-     <sequence>
-      <element name="entity" type="tns1:Entity"/>
-     </sequence>
-    </complexType>
-   </element>
-   <element name="addEntityResponse">
-    <complexType>
-     <sequence>
-      <element name="addEntityReturn" type="xsd:int"/>
-     </sequence>
-    </complexType>
-   </element>
-   <element name="getEntity">
-    <complexType>
-     <sequence>
-      <element name="entityID" type="xsd:int"/>
-     </sequence>
-    </complexType>
-   </element>
-   <element name="getEntityResponse">
-    <complexType>
-     <sequence>
-      <element name="getEntityReturn" type="tns1:Entity"/>
-     </sequence>
-    </complexType>
-   </element>
+   <complexType name="ArrayOf_xsd_int">
+    <sequence>
+     <element maxOccurs="unbounded" minOccurs="0" name="item" type="xsd:int"/>
+    </sequence>
+   </complexType>
    <element name="getGroups">
     <complexType/>
    </element>
@@ -195,6 +69,44 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
     <complexType>
      <sequence>
       <element name="getRelationshipReturn" type="tns1:Relationship"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getEntity">
+    <complexType>
+     <sequence>
+      <element name="entityID" type="xsd:int"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getEntityResponse">
+    <complexType>
+     <sequence>
+      <element name="getEntityReturn" type="tns1:Entity"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="addSchema">
+    <complexType>
+     <sequence>
+      <element name="schema" type="tns1:Schema"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="addSchemaResponse">
+    <complexType>
+     <sequence>
+      <element name="addSchemaReturn" type="xsd:int"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getSchemas">
+    <complexType/>
+   </element>
+   <element name="getSchemasResponse">
+    <complexType>
+     <sequence>
+      <element maxOccurs="unbounded" name="getSchemasReturn" type="tns1:Schema"/>
      </sequence>
     </complexType>
    </element>
@@ -223,30 +135,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
     <complexType>
      <sequence>
       <element name="addSubtypeReturn" type="xsd:int"/>
-     </sequence>
-    </complexType>
-   </element>
-   <element name="addSchema">
-    <complexType>
-     <sequence>
-      <element name="schema" type="tns1:Schema"/>
-     </sequence>
-    </complexType>
-   </element>
-   <element name="addSchemaResponse">
-    <complexType>
-     <sequence>
-      <element name="addSchemaReturn" type="xsd:int"/>
-     </sequence>
-    </complexType>
-   </element>
-   <element name="getSchemas">
-    <complexType/>
-   </element>
-   <element name="getSchemasResponse">
-    <complexType>
-     <sequence>
-      <element maxOccurs="unbounded" name="getSchemasReturn" type="tns1:Schema"/>
      </sequence>
     </complexType>
    </element>
@@ -380,16 +268,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
      </sequence>
     </complexType>
    </element>
-   <element name="getDeletableSchemas">
-    <complexType/>
-   </element>
-   <element name="getDeletableSchemasResponse">
-    <complexType>
-     <sequence>
-      <element maxOccurs="unbounded" name="getDeletableSchemasReturn" type="xsd:int"/>
-     </sequence>
-    </complexType>
-   </element>
    <element name="isDeletable">
     <complexType>
      <sequence>
@@ -401,6 +279,16 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
     <complexType>
      <sequence>
       <element name="isDeletableReturn" type="xsd:boolean"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getDeletableSchemas">
+    <complexType/>
+   </element>
+   <element name="getDeletableSchemasResponse">
+    <complexType>
+     <sequence>
+      <element maxOccurs="unbounded" name="getDeletableSchemasReturn" type="xsd:int"/>
      </sequence>
     </complexType>
    </element>
@@ -432,6 +320,20 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
      </sequence>
     </complexType>
    </element>
+   <element name="getSubgroups">
+    <complexType>
+     <sequence>
+      <element name="groupID" type="xsd:int"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getSubgroupsResponse">
+    <complexType>
+     <sequence>
+      <element maxOccurs="unbounded" name="getSubgroupsReturn" type="tns1:Group"/>
+     </sequence>
+    </complexType>
+   </element>
    <element name="updateGroup">
     <complexType>
      <sequence>
@@ -457,16 +359,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
     <complexType>
      <sequence>
       <element name="deleteGroupReturn" type="xsd:boolean"/>
-     </sequence>
-    </complexType>
-   </element>
-   <element name="getUnassignedSchemas">
-    <complexType/>
-   </element>
-   <element name="getUnassignedSchemasResponse">
-    <complexType>
-     <sequence>
-      <element maxOccurs="unbounded" name="getUnassignedSchemasReturn" type="xsd:int"/>
      </sequence>
     </complexType>
    </element>
@@ -640,6 +532,20 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
     <complexType>
      <sequence>
       <element name="setParentSchemasReturn" type="xsd:boolean"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="addEntity">
+    <complexType>
+     <sequence>
+      <element name="entity" type="tns1:Entity"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="addEntityResponse">
+    <complexType>
+     <sequence>
+      <element name="addEntityReturn" type="xsd:int"/>
      </sequence>
     </complexType>
    </element>
@@ -951,6 +857,20 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
      </sequence>
     </complexType>
    </element>
+   <element name="getAlias">
+    <complexType>
+     <sequence>
+      <element name="aliasID" type="xsd:int"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getAliasResponse">
+    <complexType>
+     <sequence>
+      <element name="getAliasReturn" type="tns1:Alias"/>
+     </sequence>
+    </complexType>
+   </element>
    <element name="getSchemaElementCount">
     <complexType>
      <sequence>
@@ -1187,6 +1107,104 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
      </sequence>
     </complexType>
    </element>
+   <element name="addAttribute">
+    <complexType>
+     <sequence>
+      <element name="attribute" type="tns1:Attribute"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="addAttributeResponse">
+    <complexType>
+     <sequence>
+      <element name="addAttributeReturn" type="xsd:int"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getAttribute">
+    <complexType>
+     <sequence>
+      <element name="attributeID" type="xsd:int"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getAttributeResponse">
+    <complexType>
+     <sequence>
+      <element name="getAttributeReturn" type="tns1:Attribute"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getGroup">
+    <complexType>
+     <sequence>
+      <element name="groupID" type="xsd:int"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getGroupResponse">
+    <complexType>
+     <sequence>
+      <element name="getGroupReturn" type="tns1:Group"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getSchema">
+    <complexType>
+     <sequence>
+      <element name="schemaID" type="xsd:int"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getSchemaResponse">
+    <complexType>
+     <sequence>
+      <element name="getSchemaReturn" type="tns1:Schema"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="addMapping">
+    <complexType>
+     <sequence>
+      <element name="mapping" type="tns1:Mapping"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="addMappingResponse">
+    <complexType>
+     <sequence>
+      <element name="addMappingReturn" type="xsd:int"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getMapping">
+    <complexType>
+     <sequence>
+      <element name="mappingID" type="xsd:int"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getMappingResponse">
+    <complexType>
+     <sequence>
+      <element name="getMappingReturn" type="tns1:Mapping"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="addAlias">
+    <complexType>
+     <sequence>
+      <element name="alias" type="tns1:Alias"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="addAliasResponse">
+    <complexType>
+     <sequence>
+      <element name="addAliasReturn" type="xsd:int"/>
+     </sequence>
+    </complexType>
+   </element>
   </schema>
   <schema elementFormDefault="qualified" targetNamespace="http://model.schemastore.mitre.org" xmlns="http://www.w3.org/2001/XMLSchema">
    <import namespace="http://servlet.schemastore.mitre.org"/>
@@ -1198,29 +1216,44 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
      <element name="name" nillable="true" type="xsd:string"/>
     </sequence>
    </complexType>
-   <complexType name="Attribute">
-    <complexContent>
-     <extension base="tns1:SchemaElement">
-      <sequence>
-       <element name="domainID" nillable="true" type="xsd:int"/>
-       <element name="entityID" nillable="true" type="xsd:int"/>
-       <element name="key" type="xsd:boolean"/>
-       <element name="max" nillable="true" type="xsd:int"/>
-       <element name="min" nillable="true" type="xsd:int"/>
-      </sequence>
-     </extension>
-    </complexContent>
-   </complexType>
-   <complexType name="Alias">
-    <complexContent>
-     <extension base="tns1:SchemaElement">
-      <sequence>
-       <element name="elementID" nillable="true" type="xsd:int"/>
-      </sequence>
-     </extension>
-    </complexContent>
-   </complexType>
    <complexType name="Domain">
+    <complexContent>
+     <extension base="tns1:SchemaElement">
+      <sequence/>
+     </extension>
+    </complexContent>
+   </complexType>
+   <complexType name="Group">
+    <sequence>
+     <element name="id" nillable="true" type="xsd:int"/>
+     <element name="name" nillable="true" type="xsd:string"/>
+     <element name="parentId" nillable="true" type="xsd:int"/>
+    </sequence>
+   </complexType>
+   <complexType name="Mapping">
+    <sequence>
+     <element name="author" nillable="true" type="xsd:string"/>
+     <element name="description" nillable="true" type="xsd:string"/>
+     <element name="id" nillable="true" type="xsd:int"/>
+     <element name="name" nillable="true" type="xsd:string"/>
+     <element name="schemas" nillable="true" type="impl:ArrayOf_xsd_int"/>
+    </sequence>
+   </complexType>
+   <complexType name="Relationship">
+    <complexContent>
+     <extension base="tns1:SchemaElement">
+      <sequence>
+       <element name="leftID" nillable="true" type="xsd:int"/>
+       <element name="leftMax" nillable="true" type="xsd:int"/>
+       <element name="leftMin" nillable="true" type="xsd:int"/>
+       <element name="rightID" nillable="true" type="xsd:int"/>
+       <element name="rightMax" nillable="true" type="xsd:int"/>
+       <element name="rightMin" nillable="true" type="xsd:int"/>
+      </sequence>
+     </extension>
+    </complexContent>
+   </complexType>
+   <complexType name="Entity">
     <complexContent>
      <extension base="tns1:SchemaElement">
       <sequence/>
@@ -1238,39 +1271,15 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
      <element name="type" nillable="true" type="xsd:string"/>
     </sequence>
    </complexType>
-   <complexType name="Mapping">
-    <sequence>
-     <element name="author" nillable="true" type="xsd:string"/>
-     <element name="description" nillable="true" type="xsd:string"/>
-     <element name="id" nillable="true" type="xsd:int"/>
-     <element name="name" nillable="true" type="xsd:string"/>
-     <element name="schemas" nillable="true" type="impl:ArrayOf_xsd_int"/>
-    </sequence>
-   </complexType>
-   <complexType name="Group">
-    <sequence>
-     <element name="id" nillable="true" type="xsd:int"/>
-     <element name="name" nillable="true" type="xsd:string"/>
-     <element name="parentId" nillable="true" type="xsd:int"/>
-    </sequence>
-   </complexType>
-   <complexType name="Entity">
-    <complexContent>
-     <extension base="tns1:SchemaElement">
-      <sequence/>
-     </extension>
-    </complexContent>
-   </complexType>
-   <complexType name="Relationship">
+   <complexType name="Attribute">
     <complexContent>
      <extension base="tns1:SchemaElement">
       <sequence>
-       <element name="leftID" nillable="true" type="xsd:int"/>
-       <element name="leftMax" nillable="true" type="xsd:int"/>
-       <element name="leftMin" nillable="true" type="xsd:int"/>
-       <element name="rightID" nillable="true" type="xsd:int"/>
-       <element name="rightMax" nillable="true" type="xsd:int"/>
-       <element name="rightMin" nillable="true" type="xsd:int"/>
+       <element name="domainID" nillable="true" type="xsd:int"/>
+       <element name="entityID" nillable="true" type="xsd:int"/>
+       <element name="key" type="xsd:boolean"/>
+       <element name="max" nillable="true" type="xsd:int"/>
+       <element name="min" nillable="true" type="xsd:int"/>
       </sequence>
      </extension>
     </complexContent>
@@ -1281,6 +1290,15 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
       <sequence>
        <element name="childID" nillable="true" type="xsd:int"/>
        <element name="parentID" nillable="true" type="xsd:int"/>
+      </sequence>
+     </extension>
+    </complexContent>
+   </complexType>
+   <complexType name="Alias">
+    <complexContent>
+     <extension base="tns1:SchemaElement">
+      <sequence>
+       <element name="elementID" nillable="true" type="xsd:int"/>
       </sequence>
      </extension>
     </complexContent>
@@ -1341,525 +1359,9 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
   </schema>
  </wsdl:types>
 
-   <wsdl:message name="extendSchemaResponse">
+   <wsdl:message name="getRelationshipRequest">
 
-      <wsdl:part element="impl:extendSchemaResponse" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="addSubtypeRequest">
-
-      <wsdl:part element="impl:addSubtype" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="getDataSourcesRequest">
-
-      <wsdl:part element="impl:getDataSources" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="getSubtypeRequest">
-
-      <wsdl:part element="impl:getSubtype" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="updateDataSourceResponse">
-
-      <wsdl:part element="impl:updateDataSourceResponse" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="updateSubtypeResponse">
-
-      <wsdl:part element="impl:updateSubtypeResponse" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="lockSchemaRequest">
-
-      <wsdl:part element="impl:lockSchema" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="updateRelationshipResponse">
-
-      <wsdl:part element="impl:updateRelationshipResponse" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="addGroupResponse">
-
-      <wsdl:part element="impl:addGroupResponse" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="deleteDataSourceResponse">
-
-      <wsdl:part element="impl:deleteDataSourceResponse" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="addSchemaResponse">
-
-      <wsdl:part element="impl:addSchemaResponse" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="getGroupsResponse">
-
-      <wsdl:part element="impl:getGroupsResponse" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="getDescendantSchemasRequest">
-
-      <wsdl:part element="impl:getDescendantSchemas" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="getRootSchemaResponse">
-
-      <wsdl:part element="impl:getRootSchemaResponse" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="getGroupsRequest">
-
-      <wsdl:part element="impl:getGroups" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="lockSchemaResponse">
-
-      <wsdl:part element="impl:lockSchemaResponse" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="updateEntityRequest">
-
-      <wsdl:part element="impl:updateEntity" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="deleteMappingResponse">
-
-      <wsdl:part element="impl:deleteMappingResponse" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="addSubtypeResponse">
-
-      <wsdl:part element="impl:addSubtypeResponse" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="getSchemaResponse">
-
-      <wsdl:part element="impl:getSchemaResponse" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="getSynonymsRequest">
-
-      <wsdl:part element="impl:getSynonyms" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="getSchemaElementTypeResponse">
-
-      <wsdl:part element="impl:getSchemaElementTypeResponse" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="getUnassignedSchemasResponse">
-
-      <wsdl:part element="impl:getUnassignedSchemasResponse" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="extendSchemaRequest">
-
-      <wsdl:part element="impl:extendSchema" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="getMappingRequest">
-
-      <wsdl:part element="impl:getMapping" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="getDescendantSchemasResponse">
-
-      <wsdl:part element="impl:getDescendantSchemasResponse" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="updateAliasRequest">
-
-      <wsdl:part element="impl:updateAlias" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="updateGroupRequest">
-
-      <wsdl:part element="impl:updateGroup" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="deleteDataSourceRequest">
-
-      <wsdl:part element="impl:deleteDataSource" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="getDeletableSchemasResponse">
-
-      <wsdl:part element="impl:getDeletableSchemasResponse" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="getMappingsRequest">
-
-      <wsdl:part element="impl:getMappings" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="getDomainValueRequest">
-
-      <wsdl:part element="impl:getDomainValue" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="deleteGroupResponse">
-
-      <wsdl:part element="impl:deleteGroupResponse" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="addMappingRequest">
-
-      <wsdl:part element="impl:addMapping" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="updateSubtypeRequest">
-
-      <wsdl:part element="impl:updateSubtype" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="addDataSourceRequest">
-
-      <wsdl:part element="impl:addDataSource" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="getDomainValueResponse">
-
-      <wsdl:part element="impl:getDomainValueResponse" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="getGroupSchemasRequest">
-
-      <wsdl:part element="impl:getGroupSchemas" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="getAncestorSchemasResponse">
-
-      <wsdl:part element="impl:getAncestorSchemasResponse" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="addAliasRequest">
-
-      <wsdl:part element="impl:addAlias" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="updateSchemaResponse">
-
-      <wsdl:part element="impl:updateSchemaResponse" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="getAliasRequest">
-
-      <wsdl:part element="impl:getAlias" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="updateAliasResponse">
-
-      <wsdl:part element="impl:updateAliasResponse" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="getSchemaElementTypeRequest">
-
-      <wsdl:part element="impl:getSchemaElementType" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="getDomainRequest">
-
-      <wsdl:part element="impl:getDomain" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="getDataSourcesResponse">
-
-      <wsdl:part element="impl:getDataSourcesResponse" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="getDeletableSchemasRequest">
-
-      <wsdl:part element="impl:getDeletableSchemas" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="getDomainResponse">
-
-      <wsdl:part element="impl:getDomainResponse" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="getMappingResponse">
-
-      <wsdl:part element="impl:getMappingResponse" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="getSchemaRequest">
-
-      <wsdl:part element="impl:getSchema" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="addAttributeRequest">
-
-      <wsdl:part element="impl:addAttribute" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="addDomainValueResponse">
-
-      <wsdl:part element="impl:addDomainValueResponse" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="updateAttributeResponse">
-
-      <wsdl:part element="impl:updateAttributeResponse" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="setParentSchemasRequest">
-
-      <wsdl:part element="impl:setParentSchemas" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="getUnassignedSchemasRequest">
-
-      <wsdl:part element="impl:getUnassignedSchemas" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="addMappingCellResponse">
-
-      <wsdl:part element="impl:addMappingCellResponse" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="getDataSourceByURLResponse">
-
-      <wsdl:part element="impl:getDataSourceByURLResponse" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="updateRelationshipRequest">
-
-      <wsdl:part element="impl:updateRelationship" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="deleteGroupRequest">
-
-      <wsdl:part element="impl:deleteGroup" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="getMappingsResponse">
-
-      <wsdl:part element="impl:getMappingsResponse" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="removeGroupFromSchemaResponse">
-
-      <wsdl:part element="impl:removeGroupFromSchemaResponse" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="getSchemaElementsRequest">
-
-      <wsdl:part element="impl:getSchemaElements" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="getAttributeResponse">
-
-      <wsdl:part element="impl:getAttributeResponse" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="getSchemasRequest">
-
-      <wsdl:part element="impl:getSchemas" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="getEntityResponse">
-
-      <wsdl:part element="impl:getEntityResponse" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="addRelationshipRequest">
-
-      <wsdl:part element="impl:addRelationship" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="getAliasResponse">
-
-      <wsdl:part element="impl:getAliasResponse" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="updateAttributeRequest">
-
-      <wsdl:part element="impl:updateAttribute" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="updateDataSourceRequest">
-
-      <wsdl:part element="impl:updateDataSource" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="getRelationshipResponse">
-
-      <wsdl:part element="impl:getRelationshipResponse" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="getMappingCellsRequest">
-
-      <wsdl:part element="impl:getMappingCells" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="getGroupSchemasResponse">
-
-      <wsdl:part element="impl:getGroupSchemasResponse" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="deleteDomainResponse">
-
-      <wsdl:part element="impl:deleteDomainResponse" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="getEntityRequest">
-
-      <wsdl:part element="impl:getEntity" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="deleteDomainValueResponse">
-
-      <wsdl:part element="impl:deleteDomainValueResponse" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="deleteDomainValueRequest">
-
-      <wsdl:part element="impl:deleteDomainValue" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="deleteAliasResponse">
-
-      <wsdl:part element="impl:deleteAliasResponse" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="getSchemaElementsResponse">
-
-      <wsdl:part element="impl:getSchemaElementsResponse" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="deleteEntityRequest">
-
-      <wsdl:part element="impl:deleteEntity" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="updateDomainValueResponse">
-
-      <wsdl:part element="impl:updateDomainValueResponse" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="getAllDataSourcesResponse">
-
-      <wsdl:part element="impl:getAllDataSourcesResponse" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="getSchemaElementCountRequest">
-
-      <wsdl:part element="impl:getSchemaElementCount" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="getAttributeRequest">
-
-      <wsdl:part element="impl:getAttribute" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="deleteContainmentRequest">
-
-      <wsdl:part element="impl:deleteContainment" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="addMappingResponse">
-
-      <wsdl:part element="impl:addMappingResponse" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="addDomainRequest">
-
-      <wsdl:part element="impl:addDomain" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="deleteContainmentResponse">
-
-      <wsdl:part element="impl:deleteContainmentResponse" name="parameters"/>
+      <wsdl:part element="impl:getRelationship" name="parameters"/>
 
    </wsdl:message>
 
@@ -1869,15 +1371,15 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
    </wsdl:message>
 
-   <wsdl:message name="unlockSchemaResponse">
+   <wsdl:message name="setParentSchemasResponse">
 
-      <wsdl:part element="impl:unlockSchemaResponse" name="parameters"/>
+      <wsdl:part element="impl:setParentSchemasResponse" name="parameters"/>
 
    </wsdl:message>
 
-   <wsdl:message name="isDeletableResponse">
+   <wsdl:message name="addSubtypeRequest">
 
-      <wsdl:part element="impl:isDeletableResponse" name="parameters"/>
+      <wsdl:part element="impl:addSubtype" name="parameters"/>
 
    </wsdl:message>
 
@@ -1887,75 +1389,15 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
    </wsdl:message>
 
-   <wsdl:message name="addAliasResponse">
+   <wsdl:message name="addDomainRequest">
 
-      <wsdl:part element="impl:addAliasResponse" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="updateSchemaRequest">
-
-      <wsdl:part element="impl:updateSchema" name="parameters"/>
+      <wsdl:part element="impl:addDomain" name="parameters"/>
 
    </wsdl:message>
 
-   <wsdl:message name="getSchemaElementsForKeywordResponse">
+   <wsdl:message name="getEntityRequest">
 
-      <wsdl:part element="impl:getSchemaElementsForKeywordResponse" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="getSchemaPathResponse">
-
-      <wsdl:part element="impl:getSchemaPathResponse" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="deleteSchemaRequest">
-
-      <wsdl:part element="impl:deleteSchema" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="getSchemasResponse">
-
-      <wsdl:part element="impl:getSchemasResponse" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="deleteEntityResponse">
-
-      <wsdl:part element="impl:deleteEntityResponse" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="removeGroupFromSchemaRequest">
-
-      <wsdl:part element="impl:removeGroupFromSchema" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="getSchemaPathRequest">
-
-      <wsdl:part element="impl:getSchemaPath" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="setParentSchemasResponse">
-
-      <wsdl:part element="impl:setParentSchemasResponse" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="deleteAttributeRequest">
-
-      <wsdl:part element="impl:deleteAttribute" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="getDataSourceByURLRequest">
-
-      <wsdl:part element="impl:getDataSourceByURL" name="parameters"/>
+      <wsdl:part element="impl:getEntity" name="parameters"/>
 
    </wsdl:message>
 
@@ -1965,21 +1407,45 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
    </wsdl:message>
 
-   <wsdl:message name="getAssociatedSchemasResponse">
+   <wsdl:message name="getAliasResponse">
 
-      <wsdl:part element="impl:getAssociatedSchemasResponse" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="addDomainValueRequest">
-
-      <wsdl:part element="impl:addDomainValue" name="parameters"/>
+      <wsdl:part element="impl:getAliasResponse" name="parameters"/>
 
    </wsdl:message>
 
-   <wsdl:message name="updateContainmentRequest">
+   <wsdl:message name="getSchemaRequest">
 
-      <wsdl:part element="impl:updateContainment" name="parameters"/>
+      <wsdl:part element="impl:getSchema" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="deleteGroupRequest">
+
+      <wsdl:part element="impl:deleteGroup" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getMappingsRequest">
+
+      <wsdl:part element="impl:getMappings" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getAssociatedSchemasRequest">
+
+      <wsdl:part element="impl:getAssociatedSchemas" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="deleteEntityRequest">
+
+      <wsdl:part element="impl:deleteEntity" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="isDeletableRequest">
+
+      <wsdl:part element="impl:isDeletable" name="parameters"/>
 
    </wsdl:message>
 
@@ -1989,153 +1455,15 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
    </wsdl:message>
 
-   <wsdl:message name="getSchemaElementCountResponse">
+   <wsdl:message name="removeGroupFromSchemaRequest">
 
-      <wsdl:part element="impl:getSchemaElementCountResponse" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="importSchemaRequest">
-
-      <wsdl:part element="impl:importSchema" name="parameters"/>
+      <wsdl:part element="impl:removeGroupFromSchema" name="parameters"/>
 
    </wsdl:message>
 
-   <wsdl:message name="addSchemaRequest">
+   <wsdl:message name="getSchemaElementsForKeywordResponse">
 
-      <wsdl:part element="impl:addSchema" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="addDataSourceResponse">
-
-      <wsdl:part element="impl:addDataSourceResponse" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="getAllDataSourcesRequest">
-
-      <wsdl:part element="impl:getAllDataSources" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="getRootSchemaRequest">
-
-      <wsdl:part element="impl:getRootSchema" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="deleteAttributeResponse">
-
-      <wsdl:part element="impl:deleteAttributeResponse" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="saveMappingRequest">
-
-      <wsdl:part element="impl:saveMapping" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="addEntityRequest">
-
-      <wsdl:part element="impl:addEntity" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="updateDomainRequest">
-
-      <wsdl:part element="impl:updateDomain" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="updateDomainValueRequest">
-
-      <wsdl:part element="impl:updateDomainValue" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="deleteRelationshipRequest">
-
-      <wsdl:part element="impl:deleteRelationship" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="updateDomainResponse">
-
-      <wsdl:part element="impl:updateDomainResponse" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="updateMappingCellResponse">
-
-      <wsdl:part element="impl:updateMappingCellResponse" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="getRelationshipRequest">
-
-      <wsdl:part element="impl:getRelationship" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="addContainmentResponse">
-
-      <wsdl:part element="impl:addContainmentResponse" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="updateMappingCellRequest">
-
-      <wsdl:part element="impl:updateMappingCell" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="addDomainResponse">
-
-      <wsdl:part element="impl:addDomainResponse" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="getMappingCellsResponse">
-
-      <wsdl:part element="impl:getMappingCellsResponse" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="importSchemaResponse">
-
-      <wsdl:part element="impl:importSchemaResponse" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="addEntityResponse">
-
-      <wsdl:part element="impl:addEntityResponse" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="getChildSchemasRequest">
-
-      <wsdl:part element="impl:getChildSchemas" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="deleteMappingCellRequest">
-
-      <wsdl:part element="impl:deleteMappingCell" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="updateContainmentResponse">
-
-      <wsdl:part element="impl:updateContainmentResponse" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="deleteAliasRequest">
-
-      <wsdl:part element="impl:deleteAlias" name="parameters"/>
+      <wsdl:part element="impl:getSchemaElementsForKeywordResponse" name="parameters"/>
 
    </wsdl:message>
 
@@ -2145,51 +1473,93 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
    </wsdl:message>
 
-   <wsdl:message name="getParentSchemasResponse">
+   <wsdl:message name="updateContainmentResponse">
 
-      <wsdl:part element="impl:getParentSchemasResponse" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="deleteMappingRequest">
-
-      <wsdl:part element="impl:deleteMapping" name="parameters"/>
+      <wsdl:part element="impl:updateContainmentResponse" name="parameters"/>
 
    </wsdl:message>
 
-   <wsdl:message name="updateGroupResponse">
+   <wsdl:message name="getSchemaElementsResponse">
 
-      <wsdl:part element="impl:updateGroupResponse" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="getContainmentRequest">
-
-      <wsdl:part element="impl:getContainment" name="parameters"/>
+      <wsdl:part element="impl:getSchemaElementsResponse" name="parameters"/>
 
    </wsdl:message>
 
-   <wsdl:message name="addRelationshipResponse">
+   <wsdl:message name="getRootSchemaRequest">
 
-      <wsdl:part element="impl:addRelationshipResponse" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="updateEntityResponse">
-
-      <wsdl:part element="impl:updateEntityResponse" name="parameters"/>
+      <wsdl:part element="impl:getRootSchema" name="parameters"/>
 
    </wsdl:message>
 
-   <wsdl:message name="deleteRelationshipResponse">
+   <wsdl:message name="addEntityRequest">
 
-      <wsdl:part element="impl:deleteRelationshipResponse" name="parameters"/>
+      <wsdl:part element="impl:addEntity" name="parameters"/>
 
    </wsdl:message>
 
-   <wsdl:message name="addMappingCellRequest">
+   <wsdl:message name="addEntityResponse">
 
-      <wsdl:part element="impl:addMappingCell" name="parameters"/>
+      <wsdl:part element="impl:addEntityResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getAllDataSourcesResponse">
+
+      <wsdl:part element="impl:getAllDataSourcesResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="updateAttributeResponse">
+
+      <wsdl:part element="impl:updateAttributeResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getSchemaPathRequest">
+
+      <wsdl:part element="impl:getSchemaPath" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getAliasRequest">
+
+      <wsdl:part element="impl:getAlias" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getGroupRequest">
+
+      <wsdl:part element="impl:getGroup" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="updateSchemaResponse">
+
+      <wsdl:part element="impl:updateSchemaResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="deleteDomainValueRequest">
+
+      <wsdl:part element="impl:deleteDomainValue" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="importSchemaRequest">
+
+      <wsdl:part element="impl:importSchema" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="deleteDataSourceRequest">
+
+      <wsdl:part element="impl:deleteDataSource" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="updateAliasRequest">
+
+      <wsdl:part element="impl:updateAlias" name="parameters"/>
 
    </wsdl:message>
 
@@ -2199,9 +1569,759 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
    </wsdl:message>
 
+   <wsdl:message name="getAllDataSourcesRequest">
+
+      <wsdl:part element="impl:getAllDataSources" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getSubgroupsResponse">
+
+      <wsdl:part element="impl:getSubgroupsResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="removeGroupFromSchemaResponse">
+
+      <wsdl:part element="impl:removeGroupFromSchemaResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="updateSchemaRequest">
+
+      <wsdl:part element="impl:updateSchema" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getSchemaElementCountRequest">
+
+      <wsdl:part element="impl:getSchemaElementCount" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getAssociatedSchemasResponse">
+
+      <wsdl:part element="impl:getAssociatedSchemasResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getSubgroupsRequest">
+
+      <wsdl:part element="impl:getSubgroups" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="updateMappingCellRequest">
+
+      <wsdl:part element="impl:updateMappingCell" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="addDomainValueRequest">
+
+      <wsdl:part element="impl:addDomainValue" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getGroupResponse">
+
+      <wsdl:part element="impl:getGroupResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="isDeletableResponse">
+
+      <wsdl:part element="impl:isDeletableResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="addGroupToSchemaRequest">
+
+      <wsdl:part element="impl:addGroupToSchema" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="addDomainResponse">
+
+      <wsdl:part element="impl:addDomainResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="addContainmentResponse">
+
+      <wsdl:part element="impl:addContainmentResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="addGroupResponse">
+
+      <wsdl:part element="impl:addGroupResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="updateContainmentRequest">
+
+      <wsdl:part element="impl:updateContainment" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="addDomainValueResponse">
+
+      <wsdl:part element="impl:addDomainValueResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="updateGroupResponse">
+
+      <wsdl:part element="impl:updateGroupResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="deleteAttributeResponse">
+
+      <wsdl:part element="impl:deleteAttributeResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getMappingRequest">
+
+      <wsdl:part element="impl:getMapping" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="extendSchemaRequest">
+
+      <wsdl:part element="impl:extendSchema" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getAttributeResponse">
+
+      <wsdl:part element="impl:getAttributeResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="unlockSchemaResponse">
+
+      <wsdl:part element="impl:unlockSchemaResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getGroupSchemasResponse">
+
+      <wsdl:part element="impl:getGroupSchemasResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getDeletableSchemasResponse">
+
+      <wsdl:part element="impl:getDeletableSchemasResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="deleteRelationshipRequest">
+
+      <wsdl:part element="impl:deleteRelationship" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="lockSchemaResponse">
+
+      <wsdl:part element="impl:lockSchemaResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="updateSubtypeResponse">
+
+      <wsdl:part element="impl:updateSubtypeResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="deleteMappingCellRequest">
+
+      <wsdl:part element="impl:deleteMappingCell" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="addDataSourceRequest">
+
+      <wsdl:part element="impl:addDataSource" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getSubtypeRequest">
+
+      <wsdl:part element="impl:getSubtype" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="updateEntityResponse">
+
+      <wsdl:part element="impl:updateEntityResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="deleteSubtypeRequest">
+
+      <wsdl:part element="impl:deleteSubtype" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getSchemaElementTypeResponse">
+
+      <wsdl:part element="impl:getSchemaElementTypeResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="deleteDomainValueResponse">
+
+      <wsdl:part element="impl:deleteDomainValueResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="updateAliasResponse">
+
+      <wsdl:part element="impl:updateAliasResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getDeletableSchemasRequest">
+
+      <wsdl:part element="impl:getDeletableSchemas" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="updateEntityRequest">
+
+      <wsdl:part element="impl:updateEntity" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getDomainValueRequest">
+
+      <wsdl:part element="impl:getDomainValue" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="addAttributeResponse">
+
+      <wsdl:part element="impl:addAttributeResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="deleteAliasRequest">
+
+      <wsdl:part element="impl:deleteAlias" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="updateRelationshipResponse">
+
+      <wsdl:part element="impl:updateRelationshipResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getSchemaElementsRequest">
+
+      <wsdl:part element="impl:getSchemaElements" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getMappingResponse">
+
+      <wsdl:part element="impl:getMappingResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="deleteDataSourceResponse">
+
+      <wsdl:part element="impl:deleteDataSourceResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="extendSchemaResponse">
+
+      <wsdl:part element="impl:extendSchemaResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getDataSourcesResponse">
+
+      <wsdl:part element="impl:getDataSourcesResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="addRelationshipResponse">
+
+      <wsdl:part element="impl:addRelationshipResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="addSchemaResponse">
+
+      <wsdl:part element="impl:addSchemaResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getDataSourceByURLResponse">
+
+      <wsdl:part element="impl:getDataSourceByURLResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="deleteGroupResponse">
+
+      <wsdl:part element="impl:deleteGroupResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getGroupsRequest">
+
+      <wsdl:part element="impl:getGroups" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="updateMappingResponse">
+
+      <wsdl:part element="impl:updateMappingResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="unlockSchemaRequest">
+
+      <wsdl:part element="impl:unlockSchema" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getChildSchemasRequest">
+
+      <wsdl:part element="impl:getChildSchemas" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="lockSchemaRequest">
+
+      <wsdl:part element="impl:lockSchema" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getRelationshipResponse">
+
+      <wsdl:part element="impl:getRelationshipResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="updateDomainValueRequest">
+
+      <wsdl:part element="impl:updateDomainValue" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getDomainRequest">
+
+      <wsdl:part element="impl:getDomain" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getRootSchemaResponse">
+
+      <wsdl:part element="impl:getRootSchemaResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getDataSourcesRequest">
+
+      <wsdl:part element="impl:getDataSources" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="addAliasRequest">
+
+      <wsdl:part element="impl:addAlias" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getSchemasResponse">
+
+      <wsdl:part element="impl:getSchemasResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getMappingCellsResponse">
+
+      <wsdl:part element="impl:getMappingCellsResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="deleteDomainResponse">
+
+      <wsdl:part element="impl:deleteDomainResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getGroupsResponse">
+
+      <wsdl:part element="impl:getGroupsResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="addSchemaRequest">
+
+      <wsdl:part element="impl:addSchema" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="addMappingRequest">
+
+      <wsdl:part element="impl:addMapping" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="addAttributeRequest">
+
+      <wsdl:part element="impl:addAttribute" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="addGroupRequest">
+
+      <wsdl:part element="impl:addGroup" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="deleteContainmentRequest">
+
+      <wsdl:part element="impl:deleteContainment" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="addRelationshipRequest">
+
+      <wsdl:part element="impl:addRelationship" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="addMappingCellResponse">
+
+      <wsdl:part element="impl:addMappingCellResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="updateDomainResponse">
+
+      <wsdl:part element="impl:updateDomainResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getSynonymsRequest">
+
+      <wsdl:part element="impl:getSynonyms" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="addSubtypeResponse">
+
+      <wsdl:part element="impl:addSubtypeResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="deleteMappingResponse">
+
+      <wsdl:part element="impl:deleteMappingResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getDescendantSchemasResponse">
+
+      <wsdl:part element="impl:getDescendantSchemasResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getDataSourceByURLRequest">
+
+      <wsdl:part element="impl:getDataSourceByURL" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getAncestorSchemasResponse">
+
+      <wsdl:part element="impl:getAncestorSchemasResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="saveMappingRequest">
+
+      <wsdl:part element="impl:saveMapping" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getSchemasRequest">
+
+      <wsdl:part element="impl:getSchemas" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getParentSchemasResponse">
+
+      <wsdl:part element="impl:getParentSchemasResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="deleteSchemaRequest">
+
+      <wsdl:part element="impl:deleteSchema" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getEntityResponse">
+
+      <wsdl:part element="impl:getEntityResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="deleteEntityResponse">
+
+      <wsdl:part element="impl:deleteEntityResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="addMappingCellRequest">
+
+      <wsdl:part element="impl:addMappingCell" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="deleteSubtypeResponse">
+
+      <wsdl:part element="impl:deleteSubtypeResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="addMappingResponse">
+
+      <wsdl:part element="impl:addMappingResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="deleteSchemaResponse">
+
+      <wsdl:part element="impl:deleteSchemaResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getSchemaResponse">
+
+      <wsdl:part element="impl:getSchemaResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getDataSourceRequest">
+
+      <wsdl:part element="impl:getDataSource" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getAttributeRequest">
+
+      <wsdl:part element="impl:getAttribute" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getDomainResponse">
+
+      <wsdl:part element="impl:getDomainResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="deleteAttributeRequest">
+
+      <wsdl:part element="impl:deleteAttribute" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="addContainmentRequest">
+
+      <wsdl:part element="impl:addContainment" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getContainmentRequest">
+
+      <wsdl:part element="impl:getContainment" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="updateSubtypeRequest">
+
+      <wsdl:part element="impl:updateSubtype" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getParentSchemasRequest">
+
+      <wsdl:part element="impl:getParentSchemas" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="updateMappingCellResponse">
+
+      <wsdl:part element="impl:updateMappingCellResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="updateDataSourceRequest">
+
+      <wsdl:part element="impl:updateDataSource" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="deleteDomainRequest">
+
+      <wsdl:part element="impl:deleteDomain" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getSchemaPathResponse">
+
+      <wsdl:part element="impl:getSchemaPathResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="saveMappingResponse">
+
+      <wsdl:part element="impl:saveMappingResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="deleteAliasResponse">
+
+      <wsdl:part element="impl:deleteAliasResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="setParentSchemasRequest">
+
+      <wsdl:part element="impl:setParentSchemas" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="updateDomainRequest">
+
+      <wsdl:part element="impl:updateDomain" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getAncestorSchemasRequest">
+
+      <wsdl:part element="impl:getAncestorSchemas" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getDescendantSchemasRequest">
+
+      <wsdl:part element="impl:getDescendantSchemas" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getChildSchemasResponse">
+
+      <wsdl:part element="impl:getChildSchemasResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getMappingsResponse">
+
+      <wsdl:part element="impl:getMappingsResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="importSchemaResponse">
+
+      <wsdl:part element="impl:importSchemaResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getSchemaElementTypeRequest">
+
+      <wsdl:part element="impl:getSchemaElementType" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="deleteContainmentResponse">
+
+      <wsdl:part element="impl:deleteContainmentResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="addDataSourceResponse">
+
+      <wsdl:part element="impl:addDataSourceResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getSchemaElementCountResponse">
+
+      <wsdl:part element="impl:getSchemaElementCountResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getGroupSchemasRequest">
+
+      <wsdl:part element="impl:getGroupSchemas" name="parameters"/>
+
+   </wsdl:message>
+
    <wsdl:message name="deleteMappingCellResponse">
 
       <wsdl:part element="impl:deleteMappingCellResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="deleteRelationshipResponse">
+
+      <wsdl:part element="impl:deleteRelationshipResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="updateDataSourceResponse">
+
+      <wsdl:part element="impl:updateDataSourceResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="updateAttributeRequest">
+
+      <wsdl:part element="impl:updateAttribute" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="updateDomainValueResponse">
+
+      <wsdl:part element="impl:updateDomainValueResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="addAliasResponse">
+
+      <wsdl:part element="impl:addAliasResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getDomainValueResponse">
+
+      <wsdl:part element="impl:getDomainValueResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="deleteMappingRequest">
+
+      <wsdl:part element="impl:deleteMapping" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getMappingCellsRequest">
+
+      <wsdl:part element="impl:getMappingCells" name="parameters"/>
 
    </wsdl:message>
 
@@ -2217,15 +2337,15 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
    </wsdl:message>
 
-   <wsdl:message name="addGroupToSchemaRequest">
+   <wsdl:message name="updateGroupRequest">
 
-      <wsdl:part element="impl:addGroupToSchema" name="parameters"/>
+      <wsdl:part element="impl:updateGroup" name="parameters"/>
 
    </wsdl:message>
 
-   <wsdl:message name="deleteDomainRequest">
+   <wsdl:message name="updateRelationshipRequest">
 
-      <wsdl:part element="impl:deleteDomain" name="parameters"/>
+      <wsdl:part element="impl:updateRelationship" name="parameters"/>
 
    </wsdl:message>
 
@@ -2235,151 +2355,13 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
    </wsdl:message>
 
-   <wsdl:message name="getAncestorSchemasRequest">
-
-      <wsdl:part element="impl:getAncestorSchemas" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="addGroupRequest">
-
-      <wsdl:part element="impl:addGroup" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="updateMappingResponse">
-
-      <wsdl:part element="impl:updateMappingResponse" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="isDeletableRequest">
-
-      <wsdl:part element="impl:isDeletable" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="saveMappingResponse">
-
-      <wsdl:part element="impl:saveMappingResponse" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="getDataSourceRequest">
-
-      <wsdl:part element="impl:getDataSource" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="deleteSubtypeResponse">
-
-      <wsdl:part element="impl:deleteSubtypeResponse" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="addAttributeResponse">
-
-      <wsdl:part element="impl:addAttributeResponse" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="getParentSchemasRequest">
-
-      <wsdl:part element="impl:getParentSchemas" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="getAssociatedSchemasRequest">
-
-      <wsdl:part element="impl:getAssociatedSchemas" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="addContainmentRequest">
-
-      <wsdl:part element="impl:addContainment" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="deleteSubtypeRequest">
-
-      <wsdl:part element="impl:deleteSubtype" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="deleteSchemaResponse">
-
-      <wsdl:part element="impl:deleteSchemaResponse" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="unlockSchemaRequest">
-
-      <wsdl:part element="impl:unlockSchema" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="getChildSchemasResponse">
-
-      <wsdl:part element="impl:getChildSchemasResponse" name="parameters"/>
-
-   </wsdl:message>
-
    <wsdl:portType name="SchemaStore">
-
-      <wsdl:operation name="addAttribute">
-
-         <wsdl:input message="impl:addAttributeRequest" name="addAttributeRequest"/>
-
-         <wsdl:output message="impl:addAttributeResponse" name="addAttributeResponse"/>
-
-      </wsdl:operation>
-
-      <wsdl:operation name="getAttribute">
-
-         <wsdl:input message="impl:getAttributeRequest" name="getAttributeRequest"/>
-
-         <wsdl:output message="impl:getAttributeResponse" name="getAttributeResponse"/>
-
-      </wsdl:operation>
-
-      <wsdl:operation name="addAlias">
-
-         <wsdl:input message="impl:addAliasRequest" name="addAliasRequest"/>
-
-         <wsdl:output message="impl:addAliasResponse" name="addAliasResponse"/>
-
-      </wsdl:operation>
 
       <wsdl:operation name="getDomain">
 
          <wsdl:input message="impl:getDomainRequest" name="getDomainRequest"/>
 
          <wsdl:output message="impl:getDomainResponse" name="getDomainResponse"/>
-
-      </wsdl:operation>
-
-      <wsdl:operation name="getSchema">
-
-         <wsdl:input message="impl:getSchemaRequest" name="getSchemaRequest"/>
-
-         <wsdl:output message="impl:getSchemaResponse" name="getSchemaResponse"/>
-
-      </wsdl:operation>
-
-      <wsdl:operation name="getMapping">
-
-         <wsdl:input message="impl:getMappingRequest" name="getMappingRequest"/>
-
-         <wsdl:output message="impl:getMappingResponse" name="getMappingResponse"/>
-
-      </wsdl:operation>
-
-      <wsdl:operation name="addMapping">
-
-         <wsdl:input message="impl:addMappingRequest" name="addMappingRequest"/>
-
-         <wsdl:output message="impl:addMappingResponse" name="addMappingResponse"/>
 
       </wsdl:operation>
 
@@ -2399,30 +2381,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
       </wsdl:operation>
 
-      <wsdl:operation name="getAlias">
-
-         <wsdl:input message="impl:getAliasRequest" name="getAliasRequest"/>
-
-         <wsdl:output message="impl:getAliasResponse" name="getAliasResponse"/>
-
-      </wsdl:operation>
-
-      <wsdl:operation name="addEntity">
-
-         <wsdl:input message="impl:addEntityRequest" name="addEntityRequest"/>
-
-         <wsdl:output message="impl:addEntityResponse" name="addEntityResponse"/>
-
-      </wsdl:operation>
-
-      <wsdl:operation name="getEntity">
-
-         <wsdl:input message="impl:getEntityRequest" name="getEntityRequest"/>
-
-         <wsdl:output message="impl:getEntityResponse" name="getEntityResponse"/>
-
-      </wsdl:operation>
-
       <wsdl:operation name="getGroups">
 
          <wsdl:input message="impl:getGroupsRequest" name="getGroupsRequest"/>
@@ -2439,19 +2397,11 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
       </wsdl:operation>
 
-      <wsdl:operation name="updateAttribute">
+      <wsdl:operation name="getEntity">
 
-         <wsdl:input message="impl:updateAttributeRequest" name="updateAttributeRequest"/>
+         <wsdl:input message="impl:getEntityRequest" name="getEntityRequest"/>
 
-         <wsdl:output message="impl:updateAttributeResponse" name="updateAttributeResponse"/>
-
-      </wsdl:operation>
-
-      <wsdl:operation name="addSubtype">
-
-         <wsdl:input message="impl:addSubtypeRequest" name="addSubtypeRequest"/>
-
-         <wsdl:output message="impl:addSubtypeResponse" name="addSubtypeResponse"/>
+         <wsdl:output message="impl:getEntityResponse" name="getEntityResponse"/>
 
       </wsdl:operation>
 
@@ -2468,6 +2418,22 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
          <wsdl:input message="impl:getSchemasRequest" name="getSchemasRequest"/>
 
          <wsdl:output message="impl:getSchemasResponse" name="getSchemasResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="updateAttribute">
+
+         <wsdl:input message="impl:updateAttributeRequest" name="updateAttributeRequest"/>
+
+         <wsdl:output message="impl:updateAttributeResponse" name="updateAttributeResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="addSubtype">
+
+         <wsdl:input message="impl:addSubtypeRequest" name="addSubtypeRequest"/>
+
+         <wsdl:output message="impl:addSubtypeResponse" name="addSubtypeResponse"/>
 
       </wsdl:operation>
 
@@ -2519,19 +2485,19 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
       </wsdl:operation>
 
-      <wsdl:operation name="getDeletableSchemas">
-
-         <wsdl:input message="impl:getDeletableSchemasRequest" name="getDeletableSchemasRequest"/>
-
-         <wsdl:output message="impl:getDeletableSchemasResponse" name="getDeletableSchemasResponse"/>
-
-      </wsdl:operation>
-
       <wsdl:operation name="isDeletable">
 
          <wsdl:input message="impl:isDeletableRequest" name="isDeletableRequest"/>
 
          <wsdl:output message="impl:isDeletableResponse" name="isDeletableResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getDeletableSchemas">
+
+         <wsdl:input message="impl:getDeletableSchemasRequest" name="getDeletableSchemasRequest"/>
+
+         <wsdl:output message="impl:getDeletableSchemasResponse" name="getDeletableSchemasResponse"/>
 
       </wsdl:operation>
 
@@ -2551,6 +2517,14 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
       </wsdl:operation>
 
+      <wsdl:operation name="getSubgroups">
+
+         <wsdl:input message="impl:getSubgroupsRequest" name="getSubgroupsRequest"/>
+
+         <wsdl:output message="impl:getSubgroupsResponse" name="getSubgroupsResponse"/>
+
+      </wsdl:operation>
+
       <wsdl:operation name="updateGroup">
 
          <wsdl:input message="impl:updateGroupRequest" name="updateGroupRequest"/>
@@ -2564,14 +2538,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
          <wsdl:input message="impl:deleteGroupRequest" name="deleteGroupRequest"/>
 
          <wsdl:output message="impl:deleteGroupResponse" name="deleteGroupResponse"/>
-
-      </wsdl:operation>
-
-      <wsdl:operation name="getUnassignedSchemas">
-
-         <wsdl:input message="impl:getUnassignedSchemasRequest" name="getUnassignedSchemasRequest"/>
-
-         <wsdl:output message="impl:getUnassignedSchemasResponse" name="getUnassignedSchemasResponse"/>
 
       </wsdl:operation>
 
@@ -2668,6 +2634,14 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
          <wsdl:input message="impl:setParentSchemasRequest" name="setParentSchemasRequest"/>
 
          <wsdl:output message="impl:setParentSchemasResponse" name="setParentSchemasResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="addEntity">
+
+         <wsdl:input message="impl:addEntityRequest" name="addEntityRequest"/>
+
+         <wsdl:output message="impl:addEntityResponse" name="addEntityResponse"/>
 
       </wsdl:operation>
 
@@ -2847,6 +2821,14 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
       </wsdl:operation>
 
+      <wsdl:operation name="getAlias">
+
+         <wsdl:input message="impl:getAliasRequest" name="getAliasRequest"/>
+
+         <wsdl:output message="impl:getAliasResponse" name="getAliasResponse"/>
+
+      </wsdl:operation>
+
       <wsdl:operation name="getSchemaElementCount">
 
          <wsdl:input message="impl:getSchemaElementCountRequest" name="getSchemaElementCountRequest"/>
@@ -2983,65 +2965,67 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
       </wsdl:operation>
 
-   </wsdl:portType>
-
-   <wsdl:binding name="SchemaStoreSoapBinding" type="impl:SchemaStore">
-
-      <wsdlsoap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
-
       <wsdl:operation name="addAttribute">
 
-         <wsdlsoap:operation soapAction=""/>
+         <wsdl:input message="impl:addAttributeRequest" name="addAttributeRequest"/>
 
-         <wsdl:input name="addAttributeRequest">
-
-            <wsdlsoap:body use="literal"/>
-
-         </wsdl:input>
-
-         <wsdl:output name="addAttributeResponse">
-
-            <wsdlsoap:body use="literal"/>
-
-         </wsdl:output>
+         <wsdl:output message="impl:addAttributeResponse" name="addAttributeResponse"/>
 
       </wsdl:operation>
 
       <wsdl:operation name="getAttribute">
 
-         <wsdlsoap:operation soapAction=""/>
+         <wsdl:input message="impl:getAttributeRequest" name="getAttributeRequest"/>
 
-         <wsdl:input name="getAttributeRequest">
+         <wsdl:output message="impl:getAttributeResponse" name="getAttributeResponse"/>
 
-            <wsdlsoap:body use="literal"/>
+      </wsdl:operation>
 
-         </wsdl:input>
+      <wsdl:operation name="getGroup">
 
-         <wsdl:output name="getAttributeResponse">
+         <wsdl:input message="impl:getGroupRequest" name="getGroupRequest"/>
 
-            <wsdlsoap:body use="literal"/>
+         <wsdl:output message="impl:getGroupResponse" name="getGroupResponse"/>
 
-         </wsdl:output>
+      </wsdl:operation>
+
+      <wsdl:operation name="getSchema">
+
+         <wsdl:input message="impl:getSchemaRequest" name="getSchemaRequest"/>
+
+         <wsdl:output message="impl:getSchemaResponse" name="getSchemaResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="addMapping">
+
+         <wsdl:input message="impl:addMappingRequest" name="addMappingRequest"/>
+
+         <wsdl:output message="impl:addMappingResponse" name="addMappingResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getMapping">
+
+         <wsdl:input message="impl:getMappingRequest" name="getMappingRequest"/>
+
+         <wsdl:output message="impl:getMappingResponse" name="getMappingResponse"/>
 
       </wsdl:operation>
 
       <wsdl:operation name="addAlias">
 
-         <wsdlsoap:operation soapAction=""/>
+         <wsdl:input message="impl:addAliasRequest" name="addAliasRequest"/>
 
-         <wsdl:input name="addAliasRequest">
-
-            <wsdlsoap:body use="literal"/>
-
-         </wsdl:input>
-
-         <wsdl:output name="addAliasResponse">
-
-            <wsdlsoap:body use="literal"/>
-
-         </wsdl:output>
+         <wsdl:output message="impl:addAliasResponse" name="addAliasResponse"/>
 
       </wsdl:operation>
+
+   </wsdl:portType>
+
+   <wsdl:binding name="SchemaStoreSoapBinding" type="impl:SchemaStore">
+
+      <wsdlsoap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
 
       <wsdl:operation name="getDomain">
 
@@ -3054,60 +3038,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
          </wsdl:input>
 
          <wsdl:output name="getDomainResponse">
-
-            <wsdlsoap:body use="literal"/>
-
-         </wsdl:output>
-
-      </wsdl:operation>
-
-      <wsdl:operation name="getSchema">
-
-         <wsdlsoap:operation soapAction=""/>
-
-         <wsdl:input name="getSchemaRequest">
-
-            <wsdlsoap:body use="literal"/>
-
-         </wsdl:input>
-
-         <wsdl:output name="getSchemaResponse">
-
-            <wsdlsoap:body use="literal"/>
-
-         </wsdl:output>
-
-      </wsdl:operation>
-
-      <wsdl:operation name="getMapping">
-
-         <wsdlsoap:operation soapAction=""/>
-
-         <wsdl:input name="getMappingRequest">
-
-            <wsdlsoap:body use="literal"/>
-
-         </wsdl:input>
-
-         <wsdl:output name="getMappingResponse">
-
-            <wsdlsoap:body use="literal"/>
-
-         </wsdl:output>
-
-      </wsdl:operation>
-
-      <wsdl:operation name="addMapping">
-
-         <wsdlsoap:operation soapAction=""/>
-
-         <wsdl:input name="addMappingRequest">
-
-            <wsdlsoap:body use="literal"/>
-
-         </wsdl:input>
-
-         <wsdl:output name="addMappingResponse">
 
             <wsdlsoap:body use="literal"/>
 
@@ -3151,60 +3081,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
       </wsdl:operation>
 
-      <wsdl:operation name="getAlias">
-
-         <wsdlsoap:operation soapAction=""/>
-
-         <wsdl:input name="getAliasRequest">
-
-            <wsdlsoap:body use="literal"/>
-
-         </wsdl:input>
-
-         <wsdl:output name="getAliasResponse">
-
-            <wsdlsoap:body use="literal"/>
-
-         </wsdl:output>
-
-      </wsdl:operation>
-
-      <wsdl:operation name="addEntity">
-
-         <wsdlsoap:operation soapAction=""/>
-
-         <wsdl:input name="addEntityRequest">
-
-            <wsdlsoap:body use="literal"/>
-
-         </wsdl:input>
-
-         <wsdl:output name="addEntityResponse">
-
-            <wsdlsoap:body use="literal"/>
-
-         </wsdl:output>
-
-      </wsdl:operation>
-
-      <wsdl:operation name="getEntity">
-
-         <wsdlsoap:operation soapAction=""/>
-
-         <wsdl:input name="getEntityRequest">
-
-            <wsdlsoap:body use="literal"/>
-
-         </wsdl:input>
-
-         <wsdl:output name="getEntityResponse">
-
-            <wsdlsoap:body use="literal"/>
-
-         </wsdl:output>
-
-      </wsdl:operation>
-
       <wsdl:operation name="getGroups">
 
          <wsdlsoap:operation soapAction=""/>
@@ -3241,35 +3117,17 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
       </wsdl:operation>
 
-      <wsdl:operation name="updateAttribute">
+      <wsdl:operation name="getEntity">
 
          <wsdlsoap:operation soapAction=""/>
 
-         <wsdl:input name="updateAttributeRequest">
+         <wsdl:input name="getEntityRequest">
 
             <wsdlsoap:body use="literal"/>
 
          </wsdl:input>
 
-         <wsdl:output name="updateAttributeResponse">
-
-            <wsdlsoap:body use="literal"/>
-
-         </wsdl:output>
-
-      </wsdl:operation>
-
-      <wsdl:operation name="addSubtype">
-
-         <wsdlsoap:operation soapAction=""/>
-
-         <wsdl:input name="addSubtypeRequest">
-
-            <wsdlsoap:body use="literal"/>
-
-         </wsdl:input>
-
-         <wsdl:output name="addSubtypeResponse">
+         <wsdl:output name="getEntityResponse">
 
             <wsdlsoap:body use="literal"/>
 
@@ -3306,6 +3164,42 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
          </wsdl:input>
 
          <wsdl:output name="getSchemasResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="updateAttribute">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="updateAttributeRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="updateAttributeResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="addSubtype">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="addSubtypeRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="addSubtypeResponse">
 
             <wsdlsoap:body use="literal"/>
 
@@ -3421,24 +3315,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
       </wsdl:operation>
 
-      <wsdl:operation name="getDeletableSchemas">
-
-         <wsdlsoap:operation soapAction=""/>
-
-         <wsdl:input name="getDeletableSchemasRequest">
-
-            <wsdlsoap:body use="literal"/>
-
-         </wsdl:input>
-
-         <wsdl:output name="getDeletableSchemasResponse">
-
-            <wsdlsoap:body use="literal"/>
-
-         </wsdl:output>
-
-      </wsdl:operation>
-
       <wsdl:operation name="isDeletable">
 
          <wsdlsoap:operation soapAction=""/>
@@ -3450,6 +3326,24 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
          </wsdl:input>
 
          <wsdl:output name="isDeletableResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getDeletableSchemas">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="getDeletableSchemasRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="getDeletableSchemasResponse">
 
             <wsdlsoap:body use="literal"/>
 
@@ -3493,6 +3387,24 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
       </wsdl:operation>
 
+      <wsdl:operation name="getSubgroups">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="getSubgroupsRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="getSubgroupsResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
       <wsdl:operation name="updateGroup">
 
          <wsdlsoap:operation soapAction=""/>
@@ -3522,24 +3434,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
          </wsdl:input>
 
          <wsdl:output name="deleteGroupResponse">
-
-            <wsdlsoap:body use="literal"/>
-
-         </wsdl:output>
-
-      </wsdl:operation>
-
-      <wsdl:operation name="getUnassignedSchemas">
-
-         <wsdlsoap:operation soapAction=""/>
-
-         <wsdl:input name="getUnassignedSchemasRequest">
-
-            <wsdlsoap:body use="literal"/>
-
-         </wsdl:input>
-
-         <wsdl:output name="getUnassignedSchemasResponse">
 
             <wsdlsoap:body use="literal"/>
 
@@ -3756,6 +3650,24 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
          </wsdl:input>
 
          <wsdl:output name="setParentSchemasResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="addEntity">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="addEntityRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="addEntityResponse">
 
             <wsdlsoap:body use="literal"/>
 
@@ -4159,6 +4071,24 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
       </wsdl:operation>
 
+      <wsdl:operation name="getAlias">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="getAliasRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="getAliasResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
       <wsdl:operation name="getSchemaElementCount">
 
          <wsdlsoap:operation soapAction=""/>
@@ -4458,6 +4388,132 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
          </wsdl:input>
 
          <wsdl:output name="saveMappingResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="addAttribute">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="addAttributeRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="addAttributeResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getAttribute">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="getAttributeRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="getAttributeResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getGroup">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="getGroupRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="getGroupResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getSchema">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="getSchemaRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="getSchemaResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="addMapping">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="addMappingRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="addMappingResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getMapping">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="getMappingRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="getMappingResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="addAlias">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="addAliasRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="addAliasResponse">
 
             <wsdlsoap:body use="literal"/>
 

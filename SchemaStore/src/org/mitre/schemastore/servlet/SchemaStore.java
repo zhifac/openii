@@ -109,6 +109,14 @@ public class SchemaStore
 	public Group[] getGroups()
 		{ return Groups.getGroups().toArray(new Group[0]); }
 
+	/** Web service to get the specified group */
+	public Group getGroup(int groupID)
+		{ return Groups.getGroup(groupID); }
+
+	/** Web service to get the subgroups for the specified group */
+	public Group[] getSubgroups(int groupID)
+		{ return Groups.getSubgroups(groupID==0 ? null : groupID).toArray(new Group[0]); }
+	
 	/** Web service to add a group */
 	public int addGroup(Group group)
 		{ return Groups.addGroup(group); }
@@ -120,10 +128,6 @@ public class SchemaStore
 	/** Web service to delete a group */
 	public boolean deleteGroup(int groupID)
 		{ return Groups.deleteGroup(groupID); }
-	
-	/** Web service to get list of schemas unassigned to any group */
-	public int[] getUnassignedSchemas()
-		{ return convertArray(Groups.getUnassignedSchemas()); }
 	
 	/** Web service to get list of schemas associated with group */
 	public int[] getGroupSchemas(int groupID)
