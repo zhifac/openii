@@ -64,12 +64,6 @@ public class GalaxyServlet extends HttpServlet
 				output = client.getGroups();
 			}
 			
-			/** Get list of schemas unassigned to a group in web service */
-			if(action.equals("getUnassignedSchemas"))
-			{
-				output = client.getUnassignedSchemas();				
-			}
-			
 			/** Get list of schemas associated with group in web service */
 			if(action.equals("getGroupSchemas"))
 			{

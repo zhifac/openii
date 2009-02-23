@@ -68,10 +68,6 @@ public class Groups
 		if(groups==null) initGroups(); 
 		return groups.get(groupID);
 	}
-	
-	/** Returns a list of unassigned schemas */
-	static public ArrayList<Integer> getUnassignedSchemas()
-		{ return SchemaStoreManager.getUnassignedSchemas(); }	
 
 	/** Returns a list of schemas associated with the specified group */
 	static public ArrayList<Integer> getGroupSchemas(Integer groupID)

@@ -123,10 +123,6 @@ public class SchemaStoreManager
 	static public ArrayList<Group> getGroups()
 		{ return (ArrayList<Group>)callFunction("getGroups",new Object[] {}); }
 	
-	/** Get list of schemas unassigned with a group in the web service */ @SuppressWarnings("unchecked")
-	static public ArrayList<Integer> getUnassignedSchemas()
-		{ return (ArrayList<Integer>)callFunction("getUnassignedSchemas",new Object[] {}); }
-	
 	/** Get list of schemas associated with group in web service */ @SuppressWarnings("unchecked")
 	static public ArrayList<Integer> getGroupSchemas(Integer groupID)
 		{ return (ArrayList<Integer>)callFunction("getGroupSchemas",new Object[] {groupID}); }
