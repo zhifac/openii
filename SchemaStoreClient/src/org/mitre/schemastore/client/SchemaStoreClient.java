@@ -154,7 +154,7 @@ public class SchemaStoreClient
 	/** Get the list of subgroups for the specified group from the web service */
 	public ArrayList<Group> getSubgroups(Integer groupID) throws RemoteException
 	{
-		Group[] groups = (Group[])callMethod("getSubgroups",new Object[] {groupID});
+		Group[] groups = (Group[])callMethod("getSubgroups",new Object[] {groupID==null ? 0 : groupID});
 		return groups==null ? new ArrayList<Group>() : new ArrayList<Group>(Arrays.asList(groups));
 	}
 
