@@ -4,6 +4,7 @@ import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.swt.graphics.Image;
 import org.mitre.openii.application.OpenIIActivator;
+import org.mitre.schemastore.model.Group;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.Schema;
 
@@ -13,9 +14,11 @@ public class YggLabelProvider implements ILabelProvider
 	public Image getImage(Object element)
 	{
 		String imageName = "";
-		if(element instanceof Schema) imageName = "Schema.gif";
+		if(element instanceof Schema || element instanceof GroupSchema) imageName = "Schema.gif";
 		else if(element instanceof Mapping) imageName = "Mapping.gif";
+		else if(element instanceof Group) imageName = "Group.gif";
 		else if(element.equals("Schemas")) imageName = "Schemas.gif";
+		else if(element.equals("Groups")) imageName = "Groups.gif";
 		else if(element.equals("Mappings")) imageName = "Mappings.gif";
 		return OpenIIActivator.getImage(imageName);
 	}

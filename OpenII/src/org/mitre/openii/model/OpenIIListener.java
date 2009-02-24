@@ -7,20 +7,23 @@ public interface OpenIIListener
 	public void schemaAdded(Integer schemaID);
 	
 	/** Informs the listener that the specified schema has been removed */
-	public void schemaRemoved(Integer schemaID);
+	public void schemaDeleted(Integer schemaID);
 
-	/** Informs the listener that the specified schema has been modified */
-	public void schemaModified(Integer schemaID);
+	/** Informs the listener that the specified group has been added */
+	public void groupAdded(Integer groupID);
+	
+	/** Informs the listener that the specified group has been removed */
+	public void groupDeleted(Integer groupID);
 
+	/** Informs the listener that the specified group has been modified */
+	public void groupModified(Integer groupID);
+	
 	/** Informs the listener that the specified mapping has been added */
-	public void mappingAdded(Integer schemaID);
+	public void mappingAdded(Integer mappingID);
 	
 	/** Informs the listener that the specified mapping has been removed */
-	public void mappingRemoved(Integer schemaID);
+	public void mappingRemoved(Integer mappingID);
 
 	/** Informs the listener that the specified mapping has been modified */
-	public void mappingModified(Integer schemaID);
-
-	/** Informs the listener that the focus of OpenII has changed */
-	public void focusModified();
+	public void mappingModified(Integer mappingID);
 }

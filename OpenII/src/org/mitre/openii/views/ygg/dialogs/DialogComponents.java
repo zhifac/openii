@@ -31,7 +31,6 @@ public class DialogComponents
 		// Display the text
 		Text field = new Text(parent, SWT.BORDER);
 		GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
-		gridData.widthHint = 350;
 		field.setLayoutData(gridData);
 		return field;
 	}
@@ -48,7 +47,6 @@ public class DialogComponents
 		// Display the text
 		Text field = new Text(parent, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL | SWT.WRAP);
 		GridData fieldGridData = new GridData(GridData.FILL_HORIZONTAL);
-		fieldGridData.widthHint = 350;
 		fieldGridData.heightHint = new GC(field).getFontMetrics().getHeight()*rows;
 		field.setLayoutData(fieldGridData);
 		return field;
