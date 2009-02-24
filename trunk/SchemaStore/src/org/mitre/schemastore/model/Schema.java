@@ -55,6 +55,10 @@ public class Schema implements Serializable
 	public void setType(String type) { this.type = type; }
 	public void setDescription(String description) { this.description = description; }
 	public void setLocked(boolean locked) { this.locked = locked; }
+
+	/** Returns the hash code */
+	public int hashCode()
+		{ return id.hashCode(); }
 	
 	/** Indicates that two schemas are equals */
 	public boolean equals(Object object)

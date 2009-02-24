@@ -35,6 +35,10 @@ public class Group implements Serializable
 	public void setId(Integer id) { this.id = id; }
 	public void setName(String name) { this.name = name; }
 	public void setParentId(Integer parentID) { this.parentID = (parentID==null || parentID==0) ? null : parentID; }
+
+	/** Returns the hash code */
+	public int hashCode()
+		{ return id.hashCode(); }
 	
 	/** Indicates that two groups are equals */
 	public boolean equals(Object object)
