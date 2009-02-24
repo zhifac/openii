@@ -16,7 +16,6 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.FileDialog;
@@ -55,7 +54,7 @@ public class ImportSchemaDialog extends TitleAreaDialog implements ISelectionCha
 	}
 	
 	/** Creates the importer list */
-	private Control createImporterList(Composite parent)
+	private void createImporterList(Composite parent)
 	{
 		// Construct the composite pane
 		Composite pane = new Composite(parent, SWT.NONE);
@@ -70,20 +69,15 @@ public class ImportSchemaDialog extends TitleAreaDialog implements ISelectionCha
 			if(importer.getURIType().equals(Importer.FILE) || importer.getURIType().equals(Importer.ARCHIVE))
 				importerList.add(importer);
 		importerList.addSelectionChangedListener(this);
-		
-		// Return the generated pane
-		return pane;
 	}
 
 	/** Creates the importer info pane */
-	private Control createInfoPane(Composite parent)
+	private void createInfoPane(Composite parent)
 	{
 		// Construct the pane for showing the info for the selected importer
 		Group pane = new Group(parent, SWT.NONE);
 		pane.setText("Properties");
-		GridLayout layout = new GridLayout();
-		layout.numColumns = 2;
-		pane.setLayout(layout);
+		pane.setLayout(new GridLayout(2,false));
 		pane.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		
 		// Generate the properties to be displayed by the info pane
@@ -97,12 +91,9 @@ public class ImportSchemaDialog extends TitleAreaDialog implements ISelectionCha
 		authorField.addModifyListener(this);
 		descriptionField.addModifyListener(this);
 		fileField.addModifyListener(this);
-		
-		// Return the generated pane
-		return pane;
 	}
 	
-	/** Creates the contents for the Import Schema Dialog */
+	/** Creates the dialog area for the Import Schema Dialog */
 	protected Control createDialogArea(Composite parent)
 	{			
 		// Set the dialog title and message
@@ -111,23 +102,30 @@ public class ImportSchemaDialog extends TitleAreaDialog implements ISelectionCha
 		
 		// Construct the main pane
 		Composite pane = new Composite(parent, SWT.DIALOG_TRIM);
-		GridLayout layout = new GridLayout();
-		layout.numColumns = 1;
-		pane.setLayout(layout);
+		pane.setLayout(new GridLayout(1,false));
+		pane.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 	
 		// Generate the pane components
 		createImporterList(pane);
 		createInfoPane(pane);
-
-		// Make a default importer selection
-		importerList.getCombo().select(0);
-		updateFields();
-		fileField.setFocus();
 		
 		// Return the generated pane
 		return pane;
 	}
 
+	/** Creates the contents for the Import Schema Dialog */
+	protected Control createContents(Composite parent)
+	{
+		Control control = super.createContents(parent);
+
+		// Make the default importer selections
+		importerList.getCombo().select(0);
+		updateFields();
+		fileField.setFocus();
+		
+		return control;
+	}
+	
 	/** Handles the updating of the fields based on the selected importer */
 	public void updateFields()
 	{
@@ -202,8 +200,7 @@ public class ImportSchemaDialog extends TitleAreaDialog implements ISelectionCha
 		// Determine if the OK button should be activated
 		boolean activate = nameField.getText().length()>0 && authorField.getText().length()>0 &&
 						   descriptionField.getText().length()>0 && fileField.getText().length()>0;
-		Button button = getButton(IDialogConstants.OK_ID);
-		if(button!=null) button.setEnabled(activate && validFile);
+		getButton(IDialogConstants.OK_ID).setEnabled(activate && validFile);
 	}
 	
 	/** Handles the actual import of the specified file */
@@ -212,10 +209,14 @@ public class ImportSchemaDialog extends TitleAreaDialog implements ISelectionCha
 		try {
 			Importer importer = (Importer)((StructuredSelection)importerList.getSelection()).getFirstElement();
 			Integer schemaID = importer.importSchema(nameField.getText(), authorField.getText(), descriptionField.getText(), new File(fileField.getText()).toURI());
-			if(schemaID!=null) getShell().dispose();
+			if(schemaID!=null)
+			{
+				Schema schema = OpenIIManager.getConnection().getSchema(schemaID);
+				OpenIIManager.fireSchemaAdded(schema); getShell().dispose();
+			}
 		}
-		catch(Exception e2) { setErrorMessage("Failed to import schema"); }
-
+		catch(Exception e2) {}
+		setErrorMessage("Failed to import schema");
 	}
 	
 	// Unused listener event
