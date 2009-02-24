@@ -41,6 +41,10 @@ public class DataSource implements Serializable
 	public void setName(String name) { this.name = name; }
 	public void setSchemaID(Integer schemaID) { this.schemaID = schemaID; }
 
+	/** Returns the hash code */
+	public int hashCode()
+		{ return id.hashCode(); }
+	
 	/** Indicates that two data sources are equals */
 	public boolean equals(Object object)
 	{

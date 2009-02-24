@@ -49,6 +49,10 @@ public class Mapping implements Serializable
 	public void setDescription(String description) { this.description = description; }
 	public void setAuthor(String author) { this.author = author; }
 	public void setSchemas(Integer[] schemas) { this.schemas = schemas; }
+
+	/** Returns the hash code */
+	public int hashCode()
+		{ return id.hashCode(); }
 	
 	/** Indicates that two mappings are equals */
 	public boolean equals(Object object)

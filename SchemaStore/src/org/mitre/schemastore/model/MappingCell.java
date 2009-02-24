@@ -59,10 +59,18 @@ public class MappingCell implements Serializable
 	public void setScore(Double score) { this.score = score; }
 	public void setScorer(String scorer) { this.scorer = scorer; }
 	public void setValidated(Boolean validated) { this.validated = validated; }
+
+	/** Returns the hash code */
+	public int hashCode()
+		{ return id.hashCode(); }
 	
 	/** Indicates that two mapping cells are equals */
-	public boolean equals(Object mappingCell)
-		{ return mappingCell instanceof MappingCell && ((MappingCell)mappingCell).id.equals(id); }
+	public boolean equals(Object object)
+	{
+		if(object instanceof Integer) return ((Integer)object).equals(id);
+		if(object instanceof MappingCell) return ((MappingCell)object).id.equals(id);
+		return false;
+	}
 	
 	/** String representation of the mapping cell */
 	public String toString()
