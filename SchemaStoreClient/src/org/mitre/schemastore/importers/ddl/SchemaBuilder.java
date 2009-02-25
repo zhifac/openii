@@ -11,7 +11,7 @@ import org.mitre.schemastore.model.*;
 
 /**
  * This class helps with the packaging of SchemaElements for transport to Yggdrasil.  It is written to be used in
- * conjunction with a event-based parser such as the one created for the DDLLoader
+ * conjunction with a event-based parser such as the one created for the DDLImporter
  *
  * @author $author$
  * @version $Revision: 1.5 $
@@ -109,7 +109,7 @@ public class SchemaBuilder
 		domain = new Domain(Importer.nextId(), "Any", "The Any domain", 0);
 		schemaObjects.add(domain);
 		domainList.put("Any", domain);
-		
+
 	}
 
 

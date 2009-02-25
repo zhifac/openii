@@ -79,7 +79,7 @@
 //
 header {
 //  Global header starts here, at the top of all generated files
-package org.mitre.flexidata.importer.ddlloader;
+package org.mitre.schemastore.importers.ddlloader;
 // #include <iostream> // if you want to use some cout's in the actions
 ANTLR_USING_NAMESPACE(std)
 ANTLR_USING_NAMESPACE(antlr)
