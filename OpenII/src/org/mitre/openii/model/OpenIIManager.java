@@ -241,6 +241,10 @@ public class OpenIIManager
 	public static ArrayList<Mapping> getMappings()
 		{ try { return client.getMappings(); } catch(Exception e) { return new ArrayList<Mapping>(); } }
 
+	/** Returns the specified mapping */
+	public static Mapping getMapping(Integer mappingID)
+		{ try { return client.getMapping(mappingID); } catch(Exception e) { return null; } }
+	
 	/** Add mapping to the repository */
 	public static Integer addMapping(Mapping mapping)
 	{
