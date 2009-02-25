@@ -44,6 +44,16 @@ public class YggContentProvider implements ITreeContentProvider
 			return elements.toArray(new Object[0]);
 		}
 			
+		// Handles mapping elements
+		if(element instanceof Mapping)
+		{
+			Mapping mapping = (Mapping)element;
+			ArrayList<Object> elements = new ArrayList<Object>();
+			for(Integer schemaID : mapping.getSchemas())
+				elements.add(new MappingSchema(mapping.getId(),OpenIIManager.getSchema(schemaID)));
+			return elements.toArray(new Object[0]);
+		}
+		
 		return new String[] {};
 	}
 

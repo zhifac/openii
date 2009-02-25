@@ -1,6 +1,7 @@
 package org.mitre.openii.views.ygg;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
@@ -39,6 +40,7 @@ public class YggView extends ViewPart implements IMenuListener, OpenIIListener
 	private static final Integer NEW_MAPPING = 7;
 	private static final Integer EDIT_MAPPING = 8;
 	private static final Integer DELETE_MAPPING = 9;
+	private static final Integer DELETE_MAPPING_SCHEMA = 10;
 	
 	/** Stores a reference to the shell */
 	private Shell shell = null;
@@ -125,6 +127,10 @@ public class YggView extends ViewPart implements IMenuListener, OpenIIListener
 			menuManager.add(createActionItem("Edit Mapping","Edit.gif",null,EDIT_MAPPING));
 			menuManager.add(createActionItem("Delete Mapping","Delete.gif",null,DELETE_MAPPING));
 		}
+		
+		// Display the menu for a selection mapping schema
+		if(selection instanceof MappingSchema)
+			menuManager.add(createActionItem("Remove Schema from Mapping","Delete.gif",null,DELETE_MAPPING_SCHEMA));
 	}
 
 	/** Handles the various Ygg actions */
@@ -191,6 +197,17 @@ public class YggView extends ViewPart implements IMenuListener, OpenIIListener
 			/** Handles the deletion of a mapping */
 			if(actionType == DELETE_MAPPING)
 				DeleteDialog.delete(shell,(Mapping)selection);
+			
+			/** Handles the deletion of a mapping schema */
+			if(actionType == DELETE_MAPPING_SCHEMA)
+			{
+				MappingSchema mappingSchema = (MappingSchema)selection;
+				Mapping mapping = OpenIIManager.getMapping(mappingSchema.getMappingID());
+				ArrayList<Integer> schemaIDs = new ArrayList<Integer>(Arrays.asList(mapping.getSchemas()));
+				schemaIDs.remove(mappingSchema.getSchema().getId());
+				mapping.setSchemas(schemaIDs.toArray(new Integer[0]));
+				OpenIIManager.updateMapping(mapping);
+			}
 		}
 	}
 
@@ -201,11 +218,9 @@ public class YggView extends ViewPart implements IMenuListener, OpenIIListener
 	public void groupModified(Integer groupID) { viewer.refresh(); }
 	public void groupDeleted(Integer groupID) { viewer.refresh(); }
 	public void mappingAdded(Integer mappingID) { viewer.refresh(); }
+	public void mappingModified(Integer schemaID) { viewer.refresh(); }
 	public void mappingDeleted(Integer mappingID) { viewer.refresh(); }
 	
 	// Sets the focus in this view
 	public void setFocus() {}
-
-	// Unused listener events
-	public void mappingModified(Integer schemaID) {}
 }

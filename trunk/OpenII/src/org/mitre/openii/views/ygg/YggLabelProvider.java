@@ -14,7 +14,7 @@ public class YggLabelProvider implements ILabelProvider
 	public Image getImage(Object element)
 	{
 		String imageName = "";
-		if(element instanceof Schema || element instanceof GroupSchema) imageName = "Schema.gif";
+		if(element instanceof Schema || element instanceof GroupSchema || element instanceof MappingSchema) imageName = "Schema.gif";
 		else if(element instanceof Mapping) imageName = "Mapping.gif";
 		else if(element instanceof Group) imageName = "Group.gif";
 		else if(element.equals("Schemas")) imageName = "Schemas.gif";
