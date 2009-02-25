@@ -12,6 +12,8 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -27,7 +29,7 @@ import org.mitre.schemastore.model.Group;
 import org.mitre.schemastore.model.Schema;
 
 /** Constructs the Import Schema Dialog */
-public class EditGroupDialog extends ListSelectionDialog implements ModifyListener, ICheckStateListener
+public class EditGroupDialog extends ListSelectionDialog implements ModifyListener, ICheckStateListener, SelectionListener
 {
 	/** Private class for defining how labels should be displayed in schema tree */
 	static private class SchemaLabelProvider implements ILabelProvider
@@ -48,7 +50,6 @@ public class EditGroupDialog extends ListSelectionDialog implements ModifyListen
 		public void dispose() {}
 		public void removeListener(ILabelProviderListener listener) {}
 	}
-
 	
 	/** Private class for defining contents of schema tree */
 	static private class SchemaContentProvider implements IStructuredContentProvider
@@ -137,6 +138,7 @@ public class EditGroupDialog extends ListSelectionDialog implements ModifyListen
 				getViewer().setChecked(schemaID, true);
 		}
 		getViewer().addCheckStateListener(this);
+		getButton(IDialogConstants.DESELECT_ALL_ID).addSelectionListener(this);
 		
 		return control;
 	}
@@ -203,4 +205,11 @@ public class EditGroupDialog extends ListSelectionDialog implements ModifyListen
 		if(getViewer().getGrayed(e.getElement()))
 			getViewer().setChecked(e.getElement(), true);
 	}
+	
+	/** Handles the pressing of the "Deselect" button */
+	public void widgetSelected(SelectionEvent arg0)
+		{ getViewer().setCheckedElements(getViewer().getGrayedElements()); }
+	
+	// Unused listener event
+	public void widgetDefaultSelected(SelectionEvent arg0) {}
 }
