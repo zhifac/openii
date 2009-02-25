@@ -42,11 +42,11 @@ public class DDLImporter extends Importer
 
 	/** Initializes the importer for the specified URI */
 	protected void initialize() throws ImporterException {}
-	
+
 	/** Returns the list of schemas which this schema extends */
 	protected ArrayList<Integer> getExtendedSchemaIDs() throws ImporterException
 		{ return new ArrayList<Integer>(); }
-	
+
 	/** Returns the schema elements from the specified URI */
 	public ArrayList<SchemaElement> getSchemaElements() throws ImporterException
 	{
@@ -80,5 +80,13 @@ public class DDLImporter extends Importer
 		}
 		catch(Exception e) { System.out.print( e.getClass().getName() + ": " ); e.printStackTrace();
         throw new ImporterException(ImporterException.PARSE_FAILURE,e.getMessage()); }
+	}
+
+	public static void main(String[] args) throws IOException, ImporterException {
+		File ddl = new File(args[0]);
+		DDLImporter tester = new DDLImporter();
+		tester.setClient(new org.mitre.schemastore.client.SchemaStoreClient(
+				"../SchemaStore/SchemaStore.jar"));
+		tester.importSchema(ddl.getName(), System.getProperty("user.name"), "Good description of the spreadsheet goes here", ddl.toURI());
 	}
 }

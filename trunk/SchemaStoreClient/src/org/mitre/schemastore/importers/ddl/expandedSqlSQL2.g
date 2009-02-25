@@ -1,10 +1,10 @@
 header {
 //  Global header starts here, at the top of all generated files
-package org.mitre.flexidata.importer.ddlloader;
+package org.mitre.schemastore.importers.ddl;
 
 import java.util.*;
 import org.mitre.schemastore.model.*;
-import org.mitre.flexidata.importer.*;
+import org.mitre.schemastore.importers.*;
 
 //  Global header ends here
 }
@@ -222,7 +222,7 @@ sql_schema_def_stmt :schema_def
 	| collation_def
 	| translation_def
 	| assertion_def
-    | comment_def
+    // | comment_def
 
 ;
 
@@ -237,10 +237,6 @@ sql_schema_manipulat_stmt :drop_schema_stmt
 	| drop_collation_stmt
 	| drop_translation_stmt
 	| drop_assertion_stmt
-;
-
-comment_def {System.out.println( "matched comment_def" );}
-:"comment" "on" "table" table_name "is" ( ANY_CHAR )+
 ;
 
 sql_transaction_stmt :commit_stmt

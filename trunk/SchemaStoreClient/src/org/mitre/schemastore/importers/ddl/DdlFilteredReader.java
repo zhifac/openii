@@ -139,7 +139,7 @@ public class DdlFilteredReader extends BufferedReader
 
         if( buffer.toLowerCase().startsWith( "create table" )
             //|| buffer.toLowerCase().startsWith( "alter table" )
-            || buffer.toLowerCase().startsWith( "comment on" )
+            //|| buffer.toLowerCase().startsWith( "comment on" )
             )
         {
             System.out.println( "Processing: " + buffer );//.substring(0, 30));

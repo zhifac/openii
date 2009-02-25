@@ -3,6 +3,9 @@
 //  Global header starts here, at the top of all generated files
 package org.mitre.schemastore.importers.ddl;
 
+import java.util.*;
+import org.mitre.schemastore.model.*;
+import org.mitre.schemastore.importers.*;
 
 //  Global header ends here
 
