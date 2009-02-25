@@ -1,18 +1,58 @@
 package org.mitre.openii.views.ygg.dialogs;
 
+import org.eclipse.jface.viewers.ILabelProvider;
+import org.eclipse.jface.viewers.ILabelProviderListener;
+import org.eclipse.jface.viewers.IStructuredContentProvider;
+import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
+import org.mitre.openii.application.OpenIIActivator;
+import org.mitre.openii.model.OpenIIManager;
+import org.mitre.schemastore.model.Schema;
 
 /** Constructs the Import Schema Dialog */
-public class DialogComponents
+class DialogComponents
 {
+	/** Class for defining how labels should be displayed in schema list */
+	static class SchemaLabelProvider implements ILabelProvider
+	{
+		/** Returns the image associated with the specified element */
+		public Image getImage(Object element)
+			{ return OpenIIActivator.getImage("Schema.gif"); }
+
+		/** Returns the name associated with the specified element */
+		public String getText(Object element)
+			{ return element.toString(); }
+
+		/** Indicates that the label is not influenced by an element property */
+		public boolean isLabelProperty(Object element, String property) { return false; }
+		
+		// Unused functions
+		public void addListener(ILabelProviderListener listener) {}
+		public void dispose() {}
+		public void removeListener(ILabelProviderListener listener) {}
+	}
+	
+	/** Class for defining contents of schema list */
+	static class SchemaContentProvider implements IStructuredContentProvider
+	{
+		/** Defines the contents of the schema list */
+		public Object[] getElements(Object arg0)
+			{ return OpenIIManager.getSchemas().toArray(new Schema[0]); }
+
+		// Unused functions
+		public void dispose() {}
+		public void inputChanged(Viewer arg0, Object arg1, Object arg2) {}
+	}
+	
 	/** Creates the specified label */
 	static Label createLabel(Composite parent, String text)
 	{
