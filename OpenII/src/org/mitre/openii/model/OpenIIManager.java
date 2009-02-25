@@ -83,6 +83,20 @@ public class OpenIIManager
 		return false;
 	}
 
+	/** Inform listeners that schema was added */
+	public static void fireSchemaAdded(Schema schema)
+	{
+		schemas.put(schema.getId(),schema);
+		for(OpenIIListener listener : listeners.get()) listener.schemaAdded(schema.getId());
+	}
+
+	/** Inform listeners that schema was removed */
+	public static void fireSchemaDeleted(Integer schemaID)
+	{
+		schemas.remove(schemaID);
+		for(OpenIIListener listener : listeners.get()) listener.schemaDeleted(schemaID);
+	}
+	
 	//------------ Group Functionality -------------
 	
 	/** Refreshes the list of available groups as needed */
@@ -203,28 +217,6 @@ public class OpenIIManager
 		return true;
 	}
 	
-	//------------ Mapping Functionality -------------
-	
-	/** Returns the list of mappings */
-	public static ArrayList<Mapping> getMappings()
-		{ try { return client.getMappings(); } catch(Exception e) { return new ArrayList<Mapping>(); } }
-	
-	//------------ Handle Informing of Listeners -------------
-	
-	/** Inform listeners that schema was added */
-	public static void fireSchemaAdded(Schema schema)
-	{
-		schemas.put(schema.getId(),schema);
-		for(OpenIIListener listener : listeners.get()) listener.schemaAdded(schema.getId());
-	}
-
-	/** Inform listeners that schema was removed */
-	public static void fireSchemaDeleted(Integer schemaID)
-	{
-		schemas.remove(schemaID);
-		for(OpenIIListener listener : listeners.get()) listener.schemaDeleted(schemaID);
-	}
-
 	/** Inform listeners that group was added */
 	public static void fireGroupAdded(Group group)
 	{
@@ -242,4 +234,55 @@ public class OpenIIManager
 		groups.remove(groupID);
 		for(OpenIIListener listener : listeners.get()) listener.groupDeleted(groupID);
 	}
+	
+	//------------ Mapping Functionality -------------
+	
+	/** Returns the list of mappings */
+	public static ArrayList<Mapping> getMappings()
+		{ try { return client.getMappings(); } catch(Exception e) { return new ArrayList<Mapping>(); } }
+
+	/** Add mapping to the repository */
+	public static Integer addMapping(Mapping mapping)
+	{
+		try {
+			Integer mappingID = client.addMapping(mapping);
+			if(mappingID!=null)
+				{ mapping.setId(mappingID); fireMappingAdded(mapping); return mappingID; }
+		} catch(Exception e) { 
+			System.out.println(e.getMessage());
+		}
+		return null;
+	}
+
+	/** Modifies the mapping in the repository */
+	public static boolean updateMapping(Mapping mapping)
+	{
+		try {
+			if(client.updateMapping(mapping))
+				{ fireMappingModified(mapping.getId()); return true; }
+		} catch(Exception e) {}
+		return false;
+	}
+	
+	/** Deletes the specified mapping */
+	public static boolean deleteMapping(Integer mappingID)
+	{
+		try {
+			if(client.deleteMapping(mappingID))
+				{ fireMappingDeleted(mappingID); return true; }
+		} catch(Exception e) {}
+		return false;
+	}
+	
+	/** Inform listeners that mapping was added */
+	public static void fireMappingAdded(Mapping mapping)
+		{ for(OpenIIListener listener : listeners.get()) listener.mappingAdded(mapping.getId()); }
+
+	/** Inform listeners that mapping was modified */
+	public static void fireMappingModified(Integer mappingID)
+		{ for(OpenIIListener listener : listeners.get()) listener.mappingModified(mappingID); }
+	
+	/** Inform listeners that mapping was removed */
+	public static void fireMappingDeleted(Integer mappingID)
+		{ for(OpenIIListener listener : listeners.get()) listener.mappingDeleted(mappingID); }
 }

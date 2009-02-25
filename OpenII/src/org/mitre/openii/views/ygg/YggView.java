@@ -16,9 +16,9 @@ import org.eclipse.ui.part.ViewPart;
 import org.mitre.openii.application.OpenIIActivator;
 import org.mitre.openii.model.OpenIIListener;
 import org.mitre.openii.model.OpenIIManager;
-import org.mitre.openii.views.ygg.dialogs.DeleteGroupDialog;
-import org.mitre.openii.views.ygg.dialogs.DeleteSchemaDialog;
+import org.mitre.openii.views.ygg.dialogs.DeleteDialog;
 import org.mitre.openii.views.ygg.dialogs.EditGroupDialog;
+import org.mitre.openii.views.ygg.dialogs.EditMappingDialog;
 import org.mitre.openii.views.ygg.dialogs.ExportSchemaDialog;
 import org.mitre.openii.views.ygg.dialogs.ImportSchemaDialog;
 import org.mitre.schemastore.model.Group;
@@ -153,7 +153,7 @@ public class YggView extends ViewPart implements IMenuListener, OpenIIListener
 
 			/** Handles the deletion of a schema */
 			if(actionType == DELETE_SCHEMA)
-				DeleteSchemaDialog.delete(shell,(Schema)selection);
+				DeleteDialog.delete(shell,(Schema)selection);
 			
 			/** Handles the addition of a group */
 			if(actionType == NEW_GROUP)
@@ -169,7 +169,7 @@ public class YggView extends ViewPart implements IMenuListener, OpenIIListener
 			
 			/** Handles the deletion of a group */
 			if(actionType == DELETE_GROUP)
-				DeleteGroupDialog.delete(shell,(Group)selection);
+				DeleteDialog.delete(shell,(Group)selection);
 			
 			/** Handles the deletion of a group schema */
 			if(actionType == DELETE_GROUP_SCHEMA)
@@ -179,6 +179,18 @@ public class YggView extends ViewPart implements IMenuListener, OpenIIListener
 				schemaIDs.remove(groupSchema.getSchema().getId());
 				OpenIIManager.setGroupSchemas(groupSchema.getGroupID(), schemaIDs);
 			}
+			
+			/** Handles the addition of a mapping */
+			if(actionType == NEW_MAPPING)
+				new EditMappingDialog(shell,null).open();
+				
+			/** Handles the editing of a mapping */
+			if(actionType == EDIT_MAPPING)
+				new EditMappingDialog(shell,(Mapping)selection).open();
+			
+			/** Handles the deletion of a mapping */
+			if(actionType == DELETE_MAPPING)
+				DeleteDialog.delete(shell,(Mapping)selection);
 		}
 	}
 
@@ -189,7 +201,7 @@ public class YggView extends ViewPart implements IMenuListener, OpenIIListener
 	public void groupModified(Integer groupID) { viewer.refresh(); }
 	public void groupDeleted(Integer groupID) { viewer.refresh(); }
 	public void mappingAdded(Integer mappingID) { viewer.refresh(); }
-	public void mappingRemoved(Integer mappingID) { viewer.refresh(); }
+	public void mappingDeleted(Integer mappingID) { viewer.refresh(); }
 	
 	// Sets the focus in this view
 	public void setFocus() {}
