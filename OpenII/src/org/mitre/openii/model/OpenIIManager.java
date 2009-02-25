@@ -129,9 +129,7 @@ public class OpenIIManager
 			Integer groupID = client.addGroup(group);
 			if(groupID!=null)
 				{ group.setId(groupID); fireGroupAdded(group); return groupID; }
-		} catch(Exception e) { 
-			System.out.println(e.getMessage());
-		}
+		} catch(Exception e) {}
 		return null;
 	}
 	
@@ -252,9 +250,7 @@ public class OpenIIManager
 			Integer mappingID = client.addMapping(mapping);
 			if(mappingID!=null)
 				{ mapping.setId(mappingID); fireMappingAdded(mapping); return mappingID; }
-		} catch(Exception e) { 
-			System.out.println(e.getMessage());
-		}
+		} catch(Exception e) {}
 		return null;
 	}
 
