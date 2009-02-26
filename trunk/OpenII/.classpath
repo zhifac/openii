@@ -9,5 +9,6 @@
 	<classpathentry kind="lib" path="lib/Harmony.jar"/>
 	<classpathentry kind="lib" path="lib/mds-1.0.0.jar"/>
 	<classpathentry kind="lib" path="lib/unity_visualization.jar"/>
+	<classpathentry kind="lib" path="lib/unity.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
