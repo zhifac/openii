@@ -7,4 +7,10 @@ Bundle-Activator: org.mitre.openii.application.OpenIIActivator
 Require-Bundle: org.eclipse.ui, org.eclipse.core.runtime
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Bundle-ClassPath: ., lib/SchemaStoreClient.jar, lib/SchemaStorePorters.jar, lib/Harmony.jar, lib/Galaxy.jar
+Bundle-ClassPath: .,
+ lib/SchemaStoreClient.jar,
+ lib/SchemaStorePorters.jar,
+ lib/Harmony.jar,
+ lib/Galaxy.jar,
+ lib/unity.jar,
+ lib/mds-1.0.0.jar
