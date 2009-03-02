@@ -18,7 +18,6 @@ import javax.swing.JDesktopPane;
 import javax.swing.JPanel;
 import javax.swing.JViewport;
 import javax.swing.KeyStroke;
-import javax.swing.ToolTipManager;
 import javax.swing.border.EmptyBorder;
 
 import org.mitre.harmony.model.HarmonyConsts;
@@ -120,10 +119,6 @@ public class MappingPane extends JDesktopPane implements ComponentListener, Line
 		getTreeViewport(HarmonyConsts.LEFT).addComponentListener(this);		
 		MappingLines.mappingLines.addLinesListener(this);
 		SelectedInfo.addListener(this);
-		
-		// enable tool tip
-		ToolTipManager.sharedInstance().registerComponent(leftTree);
-		ToolTipManager.sharedInstance().registerComponent(rightTree);
 	}
 	
 	/** Returns the schema tree */
