@@ -51,7 +51,6 @@ class MousePane extends JPanel implements MouseListener, MouseMotionListener
 		leftTree.addMouseMotionListenr(this);
 		rightTree.addMouseListenr(this);
 		rightTree.addMouseMotionListenr(this);
-		
 	}
 	
 	/** Gets the schema tree path associated with the specified point */
