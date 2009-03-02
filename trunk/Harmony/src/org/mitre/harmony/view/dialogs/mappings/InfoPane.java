@@ -93,18 +93,17 @@ class InfoPane extends JPanel implements CaretListener
 		schemaPane.removeAll();
 		
 		// Place information into the various fields
-		nameField.setText(mapping==null ? "" : mapping.getName());
-		authorField.setText(mapping==null ? "" : mapping.getAuthor());
-		descriptionField.setText(mapping==null ? "" : mapping.getDescription());
+		nameField.setText(mapping.getName());
+		authorField.setText(mapping.getAuthor());
+		descriptionField.setText(mapping.getDescription());
 
 		// Display the selected schema information
-		if(mapping!=null)
-			for(Integer schemaID : mapping.getSchemas())
-			{
-				JLabel label = new JLabel(SchemaManager.getSchema(schemaID).getName());
-				label.setFont(defaultFont);
-				schemaPane.add(label);
-			}
+		for(Integer schemaID : mapping.getSchemas())
+		{
+			JLabel label = new JLabel(SchemaManager.getSchema(schemaID).getName());
+			label.setFont(defaultFont);
+			schemaPane.add(label);
+		}
 		
 		this.mapping = mapping;
 	}
@@ -126,7 +125,7 @@ class InfoPane extends JPanel implements CaretListener
 		return name.length()>0 && author.length()>0 && description.length()>0;
 	}
 
-	/** Update the mapping when when the data fields are modified */
+	/** Update the mapping when the data fields are modified */
 	public void caretUpdate(CaretEvent e)
 	{
 		if(mapping!=null)
