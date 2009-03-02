@@ -109,7 +109,6 @@ class MatcherDialog extends JDialog implements ActionListener,Runnable
 			}
 			matcherName = matcherName.substring(0,matcherName.length()-2)+ ")";
 		}
-		System.out.println(matcherName);
 		
 		// Determine what left roots to match on
 		ArrayList<FilteredGraph> leftGraphs = new ArrayList<FilteredGraph>();
