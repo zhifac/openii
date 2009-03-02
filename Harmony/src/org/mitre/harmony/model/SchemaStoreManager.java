@@ -87,11 +87,11 @@ public class SchemaStoreManager
 		{ return client.getMapping(mappingID); }
 	
 	/** Saves the specified mapping to the web service */
-	static Integer saveMapping(Mapping mapping, ArrayList<MappingCell> mappingCells) throws RemoteException
+	public static Integer saveMapping(Mapping mapping, ArrayList<MappingCell> mappingCells) throws RemoteException
 		{ return client.saveMapping(mapping, mappingCells); }
 	
 	/** Deletes the specified mapping from the web service */
-	static Boolean deleteMapping(Integer mappingID) throws RemoteException
+	public static Boolean deleteMapping(Integer mappingID) throws RemoteException
 		{ return client.deleteMapping(mappingID); }
 	
 	/** Retrieves the mapping cells for the specified mapping */
