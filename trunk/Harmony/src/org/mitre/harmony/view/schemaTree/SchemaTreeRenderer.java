@@ -86,6 +86,11 @@ class SchemaTreeRenderer extends DefaultTreeCellRenderer
 			HierarchicalGraph graph = SchemaManager.getGraph(schemaID);
 			Domain domain = graph.getDomainForElement(element.getId());
 
+			// set tool tip
+			String tooltip = element.getDescription()
+					+ ((domain != null) ? " (Domain: " + domain.getName() + ")" : "");
+			setToolTipText(tooltip);
+
 			// Determine the display state of the node
 			isFocused = Filters.visibleNode(schemaTree.getRole(),(DefaultMutableTreeNode)value);
 			isSelected = SelectedInfo.isElementSelected(elementID,schemaTree.getRole());
