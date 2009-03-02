@@ -86,9 +86,8 @@ class SchemaTreeRenderer extends DefaultTreeCellRenderer
 			HierarchicalGraph graph = SchemaManager.getGraph(schemaID);
 			Domain domain = graph.getDomainForElement(element.getId());
 
-			// set tool tip
-			String tooltip = element.getDescription()
-					+ ((domain != null) ? " (Domain: " + domain.getName() + ")" : "");
+			// Sets the tool tip
+			String tooltip = element.getDescription() + ((domain != null) ? " (Domain: " + domain.getName() + ")" : "");
 			setToolTipText(tooltip);
 
 			// Determine the display state of the node
