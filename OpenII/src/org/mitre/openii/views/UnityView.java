@@ -16,13 +16,13 @@ import org.mitre.openii.model.OpenIIManager;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.unity.clusters.DistanceGrid;
 import org.mitre.unity.clusters.distanceFunctions.RandomDistanceFunction;
-import org.mitre.cg.viz.gui.swt.ISchemaGUI;
-import org.mitre.cg.viz.gui.swt.OvalSchemaGUI;
-import org.mitre.cg.viz.gui.swt.Schema2DPlot;
-import org.mitre.cg.viz.mds.TalismanMDS;
-import org.mitre.cg.viz.model.Position;
-import org.mitre.cg.viz.model.PositionGrid;
-import org.mitre.cg.viz.model.SchemaDocument;
+import org.mitre.unity.view.swt.ISchemaGUI;
+import org.mitre.unity.view.swt.OvalSchemaGUI;
+import org.mitre.unity.view.swt.Schema2DPlot;
+import org.mitre.unity.dimensionality_reducers.TalismanMDS;
+import org.mitre.unity.model.Position;
+import org.mitre.unity.model.PositionGrid;
+import org.mitre.unity.model.SchemaDocument;
 
 public class UnityView extends ViewPart {
 
@@ -48,9 +48,11 @@ public class UnityView extends ViewPart {
 		RandomDistanceFunction distanceFunction = new RandomDistanceFunction();
 		DistanceGrid dg = distanceFunction.generateDistanceGrid((ArrayList<Integer>)schemaIDs);
 		PositionGrid pg =  TalismanMDS.scaleDimensions(dg, true, true, 2, true);
+		
 		//Rescale the minimum and maximum position values
-		Rectangle bounds = parent.getBounds();
-		pg.rescale(0, 500);		
+		//Rectangle bounds = schema2DPlot.getBounds();
+		//System.out.println("Bounds: " + bounds);
+		pg.rescale(0, 700, 0, 700);
 		
 		//Create the 2D layout
 		Composite unityComponent = new Composite(parent, SWT.EMBEDDED);
@@ -62,18 +64,21 @@ public class UnityView extends ViewPart {
 			Position pos = pg.getPosition(s.getId());
 			//System.out.println("Position for schema " + s.getName() + ": " + pos);
 			//LabelSchemaGUI schemaGUI = new LabelSchemaGUI(schema2DPlot, SWT.HORIZONTAL, s.getId());
-			OvalSchemaGUI schemaGUI = new OvalSchemaGUI(parent.getShell(), s.getId());
+			OvalSchemaGUI schemaGUI = new OvalSchemaGUI(parent.getShell(), s.getId(), 30, 30);
 			schemaGUI.setLocation((int)pos.getDimensionValue(0), (int)pos.getDimensionValue(1));
 			schemaGUI.setLabel(s.getName());
 			schemaGUI.setBackground(lightGray);
 			schemaGUI.setToolTipText(s.getName());
-			schemaGUI.pack(5,5, true);
+			//schemaGUI.pack(5,5, true);
 			schemaGUIs.add(schemaGUI);			
 		}
 		schema2DPlot.setSchemata(schemaGUIs);
 		schema2DPlot.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
-		System.out.println(parent.getSize());
-		schema2DPlot.setSize(500, 600);
+		//System.out.println(parent.getSize());
+		
+		schema2DPlot.setSize(800, 700);
+		
+		schema2DPlot.redraw();
 	}
 
 	@Override
