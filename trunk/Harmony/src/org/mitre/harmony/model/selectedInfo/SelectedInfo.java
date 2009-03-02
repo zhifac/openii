@@ -205,7 +205,7 @@ public class SelectedInfo implements MappingListener, MappingCellListener, Filte
 		// Identify the newly selected elements
 		HashSet<Integer> selectedLeftElements = new HashSet<Integer>();
 		HashSet<Integer> selectedRightElements = new HashSet<Integer>();		
-		for(Integer mappingCellID : mappingCellIDs)
+		for(Integer mappingCellID : getMappingCells())
 		{
 			// Identify the elements for the mapping cell
 			MappingCell mappingCell = MappingCellManager.getMappingCell(mappingCellID);

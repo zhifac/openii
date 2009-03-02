@@ -34,8 +34,8 @@ class SelectedNodePane extends JPanel implements SelectedInfoListener
 	/** Defines the color for the blue background */
 	static private final Color BLUE = new Color(100,100,255);
 	
-	/** Tracks the role associated with this pane */
-	private Integer role = null;
+	/** Tracks the side associated with this pane */
+	private Integer side = null;
 	
 	/** Stores the title component associated with this pane */
 	private JLabel titlePane = new JLabel();
@@ -44,9 +44,9 @@ class SelectedNodePane extends JPanel implements SelectedInfoListener
 	private JTextPane textPane = new JTextPane();
 	
 	/** Constructs the Selected Node pane */
-	SelectedNodePane(Integer role)
+	SelectedNodePane(Integer side)
 	{
-		this.role = role;
+		this.side = side;
 		
 		// Initialize the title pane
 		titlePane = new JLabel();
@@ -74,49 +74,8 @@ class SelectedNodePane extends JPanel implements SelectedInfoListener
 		SelectedInfo.addListener(this);
 	}
 
-	/** Activates visibility of this pane */
-	public void selectedElementsModified(Integer side)
-	{
-		// Only proceed if modified elements affect side associated with this pane
-		if(!side.equals(this.role)) return;
-
-		// Identify which element to display
-		Integer elementID = null;
-		List<Integer> elements = SelectedInfo.getElements(side);
-		if(elements.size()==1) elementID = elements.get(0);
-		else if(elements.size()==2 && SelectedInfo.getMappingCells().size()==1)
-		{
-			MappingCell cell = MappingCellManager.getMappingCell(SelectedInfo.getMappingCells().get(0));
-			if(elements.contains(cell.getElement1()) && elements.contains(cell.getElement2()))
-				elementID = side.equals(HarmonyConsts.LEFT) ? cell.getElement1() : cell.getElement2();
-		}
-			
-		// Make the pane visible as needed
-		if(elementID==null) { setVisible(false); return; }
-		SchemaElement element = SchemaManager.getSchemaElement(elementID);
-		setVisible(true);
-
-		// Gather up names to display
-		HashSet<String> names = new HashSet<String>();
-		for(Integer schemaID : SelectedInfo.getSchemas(role))
-		{
-			HierarchicalGraph graph = SchemaManager.getGraph(schemaID);
-			if(graph.containsElement(element.getId()))
-				names.add(graph.getDisplayName(element.getId()));
-		}
-		
-		// Generate the name to display
-		String displayName = "";
-		for(String name : names) displayName += name + ", ";
-		if(displayName.length()>2) displayName = displayName.substring(0, displayName.length()-2);
-		
-		// Set the title and text panes
-		titlePane.setText(displayName);
-		textPane.setText("<html>"+getText(element,displayName)+"</html>");
-	}
-
 	/** Generates the text to display in the text pane */
-	public String getText(SchemaElement element, String displayName)
+	private String getText(SchemaElement element, String displayName)
 	{
  		StringBuffer text = new StringBuffer();		
 		
@@ -126,7 +85,7 @@ class SelectedNodePane extends JPanel implements SelectedInfoListener
 		// Collect domain information
 		Domain domain = null;
 		HashSet<DomainValue> domainValues = new HashSet<DomainValue>();
-		for(Integer schemaID : SelectedInfo.getSchemas(role))
+		for(Integer schemaID : SelectedInfo.getSchemas(side))
 		{
 			HierarchicalGraph graph = SchemaManager.getGraph(schemaID);
 			if(domain==null) domain = graph.getDomainForElement(element.getId());
@@ -149,6 +108,45 @@ class SelectedNodePane extends JPanel implements SelectedInfoListener
 		}
 		
 		return text.toString();
+	}
+	
+	/** Activates visibility of this pane */
+	public void selectedElementsModified(Integer sideIn)
+	{
+		// Identify which element to display
+		Integer elementID = null;
+		List<Integer> elements = SelectedInfo.getElements(side);
+		if(elements.size()==1) elementID = elements.get(0);
+		else if(elements.size()==2 && SelectedInfo.getMappingCells().size()==1)
+		{
+			MappingCell cell = MappingCellManager.getMappingCell(SelectedInfo.getMappingCells().get(0));
+			if(elements.contains(cell.getElement1()) && elements.contains(cell.getElement2()))
+				if(SelectedInfo.getElements(side==HarmonyConsts.LEFT ? HarmonyConsts.RIGHT : HarmonyConsts.LEFT).size()==2)
+					elementID = side.equals(HarmonyConsts.LEFT) ? cell.getElement1() : cell.getElement2();
+		}
+			
+		// Make the pane visible as needed
+		if(elementID==null) { setVisible(false); return; }
+		SchemaElement element = SchemaManager.getSchemaElement(elementID);
+		setVisible(true);
+
+		// Gather up names to display
+		HashSet<String> names = new HashSet<String>();
+		for(Integer schemaID : SelectedInfo.getSchemas(side))
+		{
+			HierarchicalGraph graph = SchemaManager.getGraph(schemaID);
+			if(graph.containsElement(element.getId()))
+				names.add(graph.getDisplayName(element.getId()));
+		}
+		
+		// Generate the name to display
+		String displayName = "";
+		for(String name : names) displayName += name + ", ";
+		if(displayName.length()>2) displayName = displayName.substring(0, displayName.length()-2);
+		
+		// Set the title and text panes
+		titlePane.setText(displayName);
+		textPane.setText("<html>"+getText(element,displayName)+"</html>");
 	}
 	
 	// Unused event listeners
