@@ -119,6 +119,7 @@ public class MappingManager
 		MappingCellManager.deleteMappingCells();
 		setSchemas(new ArrayList<Integer>());
 		mapping = new Mapping();
+		mapping.setAuthor(System.getProperty("user.name"));
 		ProjectManager.setSavedToRepository(true);
 	}
 	
