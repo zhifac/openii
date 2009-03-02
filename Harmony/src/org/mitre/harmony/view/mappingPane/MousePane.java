@@ -52,8 +52,6 @@ class MousePane extends JPanel implements MouseListener, MouseMotionListener
 		rightTree.addMouseListenr(this);
 		rightTree.addMouseMotionListenr(this);
 		
-		// enable tool tip
-		ToolTipManager.sharedInstance().registerComponent(this);
 	}
 	
 	/** Gets the schema tree path associated with the specified point */
