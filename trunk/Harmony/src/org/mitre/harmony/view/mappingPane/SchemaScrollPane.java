@@ -21,7 +21,7 @@ import org.mitre.harmony.model.HarmonyConsts;
  * Displays the scroll pane next to each schema tree pane (includes selection marks)
  * @author CWOLF
  */
-class SchemaScrollPane extends JScrollPane implements AdjustmentListener
+public class SchemaScrollPane extends JScrollPane implements AdjustmentListener
 {
 	private SchemaTreeImp tree;	// Schema tree associated with this scroll bar
 
@@ -59,7 +59,7 @@ class SchemaScrollPane extends JScrollPane implements AdjustmentListener
 	 * Initializes the schema tree scroll bar
 	 * @param tree Schema tree associated with the scroll bar
 	 */
-	SchemaScrollPane(SchemaTreeImp tree)
+	public SchemaScrollPane(SchemaTreeImp tree)
 	{
 		this.tree=tree;
 		

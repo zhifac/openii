@@ -10,10 +10,10 @@ import javax.swing.JPanel;
  * Holds link pane which manages display of all links between schemas
  * @author CWOLF
  */
-class LinkPane extends JPanel
+public class LinkPane extends JPanel
 {
 	/** Initializes the link pane */
-	LinkPane(SchemaTreeImp leftTree, SchemaTreeImp rightTree)
+	public LinkPane(SchemaTreeImp leftTree, SchemaTreeImp rightTree)
 	{
 		new MappingLines(leftTree,rightTree);		
 		setOpaque(false);

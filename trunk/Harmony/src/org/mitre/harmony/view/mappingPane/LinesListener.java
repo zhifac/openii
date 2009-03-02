@@ -6,7 +6,7 @@ package org.mitre.harmony.view.mappingPane;
  * Interface used by all schema tree line listeners
  * @author CWOLF
  */
-interface LinesListener
+public interface LinesListener
 {
 	/** Indicates when the schema tree line change */
 	public void linesModified();

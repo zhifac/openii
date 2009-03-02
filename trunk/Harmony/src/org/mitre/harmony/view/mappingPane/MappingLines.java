@@ -279,7 +279,7 @@ public class MappingLines implements MappingCellListener, FiltersListener, Schem
 	}		
 	
 	/** Adds a line listener */
-	void addLinesListener(LinesListener obj)
+	public void addLinesListener(LinesListener obj)
 		{ listeners.add(obj); }
 	
 	/** Removes a line listener */

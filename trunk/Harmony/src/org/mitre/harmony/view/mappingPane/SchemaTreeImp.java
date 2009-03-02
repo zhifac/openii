@@ -19,14 +19,14 @@ import org.mitre.harmony.view.schemaTree.SchemaTree;
  * Displays either the source or target schema tree (with offsets)
  * @author CWOLF
  */
-class SchemaTreeImp extends SchemaTree
+public class SchemaTreeImp extends SchemaTree
 {
 	Point offset;			// Tracks the offset of the schema tree pane
 	int firstVisibleRow;	// Tracks the first visible schema tree row
 	int lastVisibleRow;		// Tracks the last visible schema tree row
 	
 	/** Initializes the schema tree implementation */
-	SchemaTreeImp(Integer role)
+	public SchemaTreeImp(Integer role)
 	{
 		super(role);
 		setBorder(new EmptyBorder(0,0,10,0));
