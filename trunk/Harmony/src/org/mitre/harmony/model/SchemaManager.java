@@ -17,13 +17,13 @@ import org.mitre.schemastore.model.graph.HierarchicalGraph;
 public class SchemaManager
 {
 	/** Caches schema information */
-	static private HashMap<Integer,Schema> schemas = null;
+	static protected HashMap<Integer,Schema> schemas = null;
 
 	/** Caches schema element information */
-	static private HashMap<Integer,SchemaElement> schemaElements = new HashMap<Integer,SchemaElement>();
+	static protected HashMap<Integer,SchemaElement> schemaElements = new HashMap<Integer,SchemaElement>();
 	
 	/** Caches graphs associated with schemas */
-	static private HashMap<Integer,HierarchicalGraph> schemaGraphs = new HashMap<Integer,HierarchicalGraph>();
+	static protected HashMap<Integer,HierarchicalGraph> schemaGraphs = new HashMap<Integer,HierarchicalGraph>();
 	
 	//------------------
 	// Schema Functions
