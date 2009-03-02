@@ -11,7 +11,7 @@ public class MatchScores
 	
 	/** Sets a match score */
 	public void setScore(Integer element1, Integer element2, Double score)
-		{ scores.put(new ElementPair(element1,element2),score); }
+		{ if(score!=null) scores.put(new ElementPair(element1,element2),score); }
 
 	/** Gets a match score */
 	public Double getScore(Integer element1ID, Integer element2ID)
