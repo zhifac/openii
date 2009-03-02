@@ -29,8 +29,8 @@ import org.mitre.schemastore.model.graph.HierarchicalGraph;
 class SelectedNodePane extends JPanel implements SelectedInfoListener
 {
 	/** Defines the color for the blue background */
-	static private final Color BLUE = new Color(50,90,255);
-	
+	static private final Color BLUE = new Color(100, 100, 255);
+
 	/** Tracks the role associated with this pane */
 	private Integer role = null;
 	
@@ -98,8 +98,9 @@ class SelectedNodePane extends JPanel implements SelectedInfoListener
 		if(displayName.length()>2) displayName = displayName.substring(0, displayName.length()-2);
 		
 		// Set the title and text panes
-		titlePane.setText("Information on '" + displayName + "'");
-		textPane.setText("<html>"+getText(element,displayName)+"</html>");
+		//		titlePane.setText("Information on '" + displayName + "'");
+		titlePane.setText(displayName);
+		textPane.setText("<html>" + getText(element, displayName) + "</html>");
 	}
 
 	/** Generates the text to display in the text pane */
@@ -108,7 +109,7 @@ class SelectedNodePane extends JPanel implements SelectedInfoListener
  		StringBuffer text = new StringBuffer();		
 		
 		// Display schema element name and description
-		text.append("<b>Name</b>: " + displayName + "<br>");
+		//		text.append("<b>Name</b>: " + displayName + "<br>");
 		text.append("<b>Description</b>: " + element.getDescription() + "<br>");
 
 		// Collect domain information
