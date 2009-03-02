@@ -15,6 +15,7 @@ import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
 
 import javax.swing.JPanel;
+import javax.swing.ToolTipManager;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 
@@ -50,6 +51,9 @@ class MousePane extends JPanel implements MouseListener, MouseMotionListener
 		leftTree.addMouseMotionListenr(this);
 		rightTree.addMouseListenr(this);
 		rightTree.addMouseMotionListenr(this);
+		
+		// enable tool tip
+		ToolTipManager.sharedInstance().registerComponent(this);
 	}
 	
 	/** Gets the schema tree path associated with the specified point */
