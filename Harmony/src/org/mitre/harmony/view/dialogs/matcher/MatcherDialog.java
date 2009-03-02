@@ -97,14 +97,19 @@ class MatcherDialog extends JDialog implements ActionListener,Runnable
 	{
 		// Generate the matcher name
 		String matcherName;
-		if(voters.size()>1)
+		if(voters.size()==MatcherManager.getVoters().size()) matcherName = merger.getName() + "(All Voters)";
+		else if(voters.size()==1) matcherName = voters.get(0).getName();
+		else
 		{
 			matcherName = merger.getName() + "(";
 			for(MatchVoter voter : voters)
-				matcherName += voter + ", ";
-			matcherName.replace(", $",")");
+			{
+				if(matcherName.length() + voter.getName().length()>45) { matcherName += "..., "; break; }
+				matcherName += voter.getName() + ", ";
+			}
+			matcherName = matcherName.substring(0,matcherName.length()-2)+ ")";
 		}
-		else matcherName = voters.get(0).getName();
+		System.out.println(matcherName);
 		
 		// Determine what left roots to match on
 		ArrayList<FilteredGraph> leftGraphs = new ArrayList<FilteredGraph>();
