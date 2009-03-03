@@ -40,7 +40,10 @@ class MousePane extends JPanel implements MouseListener, MouseMotionListener {
 	/** Stores the left and right schema trees for local reference */
 	private SchemaTreeImp leftTree = null, rightTree = null;
 
+	/** Mapping Line tool tips **/
 	private static LineToolTip toolTip = LineToolTip.instance();
+	/** Indicate if user has set focused on a link. MouseOver is disabled if true. **/ 
+	private boolean userSetFocus = false;
 
 	/** Initializes the link pane */
 	MousePane(SchemaTreeImp leftTree, SchemaTreeImp rightTree) {
@@ -131,6 +134,8 @@ class MousePane extends JPanel implements MouseListener, MouseMotionListener {
 	 * confidence values of the link.
 	 */
 	public void mouseMoved(MouseEvent e) {
+		if (userSetFocus) return;
+
 		// Determine what link was selected for showing the dialog box
 		Integer mappingCellID = MappingLines.mappingLines.getClosestMappingCellToPoint(e.getPoint());
 		if (mappingCellID != null) {
@@ -157,10 +162,8 @@ class MousePane extends JPanel implements MouseListener, MouseMotionListener {
 		} else {
 			// clears selection 
 			toolTip.setVisible(false);
-			if ( SelectedInfo.getMappingCells().size() > 0 )
-				SelectedInfo.setMappingCells(new ArrayList<Integer>(), false);
+			if (SelectedInfo.getMappingCells().size() > 0) SelectedInfo.setMappingCells(new ArrayList<Integer>(), false);
 		}
-
 	}
 
 	/** Handles the drawing of the new link as it is dragged around */
@@ -256,6 +259,18 @@ class MousePane extends JPanel implements MouseListener, MouseMotionListener {
 	}
 
 	public void mouseClicked(MouseEvent e) {
+		Integer mappingCellID = MappingLines.mappingLines.getClosestMappingCellToPoint(e.getPoint());
+		if (mappingCellID != null) {
+			if (!SelectedInfo.isMappingCellSelected(mappingCellID)) {
+				ArrayList<Integer> mappingCellIDs = new ArrayList<Integer>();
+				mappingCellIDs.add(mappingCellID);
+				SelectedInfo.setMappingCells(mappingCellIDs, true);
+				userSetFocus = true;
+			}
+		} else {
+			SelectedInfo.setMappingCells(new ArrayList<Integer>(), false);
+			userSetFocus = false;
+		}
 	}
 
 }
@@ -287,7 +302,8 @@ class LineToolTip extends JPanel {
 		// set new text for tool tip
 		String display = "<html>";
 		display += "Confidence: " + MappingCellManager.getMappingCell(link).getScore() + "<br>";
-		display += (notes.equalsIgnoreCase("notes")) ? "" : "Notes: " + notes;
+		display += (notes.equalsIgnoreCase("notes") || notes.length() == 0) ? "" : "Notes: "
+				+ notes;
 		display += "</html>";
 		label.setText(display);
 	}
