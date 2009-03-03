@@ -39,7 +39,7 @@ class MousePane extends JPanel implements MouseListener, MouseMotionListener {
 
 	/** Stores the left and right schema trees for local reference */
 	private SchemaTreeImp leftTree = null, rightTree = null;
-	
+
 	private static LineToolTip toolTip = LineToolTip.instance();
 
 	/** Initializes the link pane */
@@ -54,9 +54,9 @@ class MousePane extends JPanel implements MouseListener, MouseMotionListener {
 		leftTree.addMouseMotionListenr(this);
 		rightTree.addMouseListenr(this);
 		rightTree.addMouseMotionListenr(this);
-		
+
 		// add tool tips for links
-		add(toolTip); 
+		add(toolTip);
 	}
 
 	/** Gets the schema tree path associated with the specified point */
@@ -125,7 +125,11 @@ class MousePane extends JPanel implements MouseListener, MouseMotionListener {
 			}
 		}
 	}
-	
+
+	/**
+	 * When mouse moves over MappingCellLinks, display SelectedInfo for the mapped cells and
+	 * confidence values of the link.
+	 */
 	public void mouseMoved(MouseEvent e) {
 		// Determine what link was selected for showing the dialog box
 		Integer mappingCellID = MappingLines.mappingLines.getClosestMappingCellToPoint(e.getPoint());
@@ -135,7 +139,6 @@ class MousePane extends JPanel implements MouseListener, MouseMotionListener {
 				ArrayList<Integer> mappingCellIDs = new ArrayList<Integer>();
 				mappingCellIDs.add(mappingCellID);
 				SelectedInfo.setMappingCells(mappingCellIDs, false);
-				
 			}
 
 			// Determine the current mouse position
@@ -149,11 +152,15 @@ class MousePane extends JPanel implements MouseListener, MouseMotionListener {
 
 			// Display the link dialog box next to the selected link
 			toolTip.setMappingCell(mappingCellID);
-			toolTip.setLocation(e.getX()+20 ,e.getY() + 20);
+			toolTip.setLocation(e.getX() + 20, e.getY() + 20);
 			toolTip.setVisible(true);
-		}
-		else 
+		} else {
+			// clears selection 
 			toolTip.setVisible(false);
+			if ( SelectedInfo.getMappingCells().size() > 0 )
+				SelectedInfo.setMappingCells(new ArrayList<Integer>(), false);
+		}
+
 	}
 
 	/** Handles the drawing of the new link as it is dragged around */
@@ -237,7 +244,7 @@ class MousePane extends JPanel implements MouseListener, MouseMotionListener {
 			g.setColor(Color.darkGray);
 			g.drawRect(x1, y1, width, height);
 		}
-		
+
 		super.paint(g);
 	}
 
@@ -251,7 +258,6 @@ class MousePane extends JPanel implements MouseListener, MouseMotionListener {
 	public void mouseClicked(MouseEvent e) {
 	}
 
-
 }
 
 class LineToolTip extends JPanel {
@@ -261,11 +267,11 @@ class LineToolTip extends JPanel {
 	private static LineToolTip instance;
 
 	private LineToolTip() {
-		label = new JLabel(""); 
+		label = new JLabel("");
 		add(label);
-		
+
 		setOpaque(true);
-		setSize(new Dimension(200, getFontMetrics(getFont()).getHeight()*2));
+		setSize(new Dimension(200, getFontMetrics(getFont()).getHeight() * 2));
 	}
 
 	public static LineToolTip instance() {
@@ -275,27 +281,27 @@ class LineToolTip extends JPanel {
 
 	public void setMappingCell(Integer mappingCell) {
 		link = mappingCell;
-		
+
 		String notes = MappingCellManager.getMappingCellNotes(link);
-		
+
 		// set new text for tool tip
 		String display = "<html>";
 		display += "Confidence: " + MappingCellManager.getMappingCell(link).getScore() + "<br>";
-		display += (notes.equalsIgnoreCase("notes") ) ? "" : "Notes: " + notes; 
-		display+= "</html>";
-		label.setText(display); 
+		display += (notes.equalsIgnoreCase("notes")) ? "" : "Notes: " + notes;
+		display += "</html>";
+		label.setText(display);
 	}
 
 	public void paint(Graphics g) {
 		// I don't know why but sometimes mouseMove event sets the location to Y=5
-		if ( !isVisible() || getLocation().y == 5) return;
-		
+		if (!isVisible() || getLocation().y == 5) return;
+
 		super.paint(g);
 
 		// draw border
 		g.setColor(Color.darkGray);
-		g.drawRect(0,0, getSize().width-2, getSize().height-2 ); 
-		
+		g.drawRect(0, 0, getSize().width - 2, getSize().height - 2);
+
 		setBackground(UIManager.getColor("ToolTip.background"));
 	}
 
