@@ -276,17 +276,17 @@ CREATE INDEX subtype_schema_idx ON subtype (schema_id);
 
 CREATE VIEW schema_elements (id,name,description,"type",schema_id) AS
   SELECT id,name,'','alias',schema_id FROM alias
-    UNION
+    UNION ALL
   SELECT id,name,description,'attribute',schema_id FROM attribute
-    UNION
+    UNION ALL
   SELECT id,name,description,'containment',schema_id FROM containment
-    UNION
+    UNION ALL
   SELECT id,name,description,'domain',schema_id FROM "domain"
-    UNION
+    UNION ALL
   SELECT id,value,description,'domainvalue',schema_id FROM domainvalue
-    UNION
+    UNION ALL
   SELECT id,name,description,'entity',schema_id FROM entity
-    UNION
+    UNION ALL
   SELECT id,name,'','relationship',schema_id FROM relationship
-    UNION
+    UNION ALL
   SELECT id,'','','subtype',schema_id FROM subtype;
