@@ -11,9 +11,12 @@ public interface SelectedInfoListener
 	/** Indicates that the selected schemas have been modified */
 	public void selectedSchemasModified();
 
-	/** Indicates that the selected nodes have been modified */
+	/** Indicates that the selected elements have been modified */
 	public void selectedElementsModified(Integer role);
 	
 	/** Indicates that the selected links have been modified */
 	public void selectedMappingCellsModified();
+	
+	/** Indicates that the displayed element has been modified */
+	public void displayedElementModified(Integer role);
 }

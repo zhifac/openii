@@ -560,6 +560,7 @@ public class SchemaTree extends JTree implements PreferencesListener, SelectedIn
 	
 	// Unused listener events
 	public void displayedViewChanged() {}
+	public void displayedElementModified(Integer role) {}
 	public void selectedElementsModified(Integer role) {}
 	public void selectedMappingCellsModified() {}
 	public void mouseExited(MouseEvent e) {}

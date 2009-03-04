@@ -405,7 +405,7 @@ public class LinkDialog extends JDialog implements ActionListener, MouseListener
 				
 			// If links rejected, unselect links after modifying annotations
 			if(rejectCheckbox.isSelected() && !originallyRejected)
-				SelectedInfo.setMappingCells(SelectedInfo.getMappingCells(),true);
+				SelectedInfo.setMappingCells(SelectedInfo.getSelectedMappingCells(),true);
 			
 			// Close link dialog
 			dispose();

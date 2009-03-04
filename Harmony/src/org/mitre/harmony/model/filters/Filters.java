@@ -184,6 +184,7 @@ public class Filters implements SelectedInfoListener
 	}
 	
 	// Unused event listeners
+	public void displayedElementModified(Integer role) {}
 	public void selectedElementsModified(Integer role) {}
 	public void selectedMappingCellsModified() {}
 	
