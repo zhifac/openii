@@ -820,7 +820,6 @@ public class HeatMap extends JPanel implements MouseListener, MouseMotionListene
     }
     
     /* methods for interface SelectedInfoListener */
-    
     public void selectedSchemasModified(){
     	
     }
@@ -828,7 +827,11 @@ public class HeatMap extends JPanel implements MouseListener, MouseMotionListene
     public void selectedElementsModified(Integer role){
     	
     }
-	
+
+    public void displayedElementModified(Integer role){
+    	
+    }
+    
     public void selectedMappingCellsModified(){
     	
     }
