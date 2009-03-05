@@ -16,10 +16,10 @@ public class GroupSchema
 		{ this.groupID = groupID; this.schema = schema; }
 
 	/** Returns the group id to which this schema is associated */
-	Integer getGroupID() { return groupID; }
+	public Integer getGroupID() { return groupID; }
 	
 	/** Returns the schema */
-	Schema getSchema() { return schema; }
+	public Schema getSchema() { return schema; }
 	
 	/** Returns the string representation of this group schema */
 	public String toString() { return schema.toString(); }

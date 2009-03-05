@@ -16,10 +16,10 @@ public class MappingSchema
 		{ this.mappingID = mappingID; this.schema = schema; }
 
 	/** Returns the mapping id to which this schema is associated */
-	Integer getMappingID() { return mappingID; }
+	public Integer getMappingID() { return mappingID; }
 	
 	/** Returns the schema */
-	Schema getSchema() { return schema; }
+	public Schema getSchema() { return schema; }
 	
 	/** Returns the string representation of this mapping schema */
 	public String toString() { return schema.toString(); }

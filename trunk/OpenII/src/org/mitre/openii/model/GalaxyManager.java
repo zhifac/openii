@@ -9,6 +9,7 @@ import org.mitre.galaxy.model.SelectedObjects;
 import org.mitre.galaxy.model.server.ImageManager;
 import org.mitre.galaxy.model.server.SchemaStoreManager;
 import org.mitre.galaxy.view.extensionsPane.ExtensionsPane;
+import org.mitre.galaxy.view.schemaPane.SchemaPane;
 import org.mitre.galaxy.view.searchPane.SearchPane;
 import org.mitre.schemastore.model.Schema;
 
@@ -29,8 +30,12 @@ public class GalaxyManager
 	}
 
 	/** Returns the Galaxy Pane */
-	static public JPanel getGalaxyPane()
+	static public JPanel getExtensionPane()
 		{ return new ExtensionsPane(); }
+	
+	/** Returns the Galaxy Schema Pane */
+	static public JPanel getSchemaPane()
+		{ return new SchemaPane(); }
 	
 	/** Returns the Galaxy Search Pane */
 	static public JPanel getSearchPane()

@@ -1,13 +1,14 @@
-package org.mitre.openii.views.ygg;
+package org.mitre.openii.views.ygg.menu;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.eclipse.jface.action.Action;
-import org.eclipse.jface.viewers.StructuredSelection;
-import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.widgets.Shell;
+import org.mitre.openii.application.OpenIIActivator;
 import org.mitre.openii.model.OpenIIManager;
+import org.mitre.openii.views.ygg.GroupSchema;
+import org.mitre.openii.views.ygg.MappingSchema;
 import org.mitre.openii.views.ygg.dialogs.DeleteDialog;
 import org.mitre.openii.views.ygg.dialogs.EditGroupDialog;
 import org.mitre.openii.views.ygg.dialogs.EditMappingDialog;
@@ -20,34 +21,61 @@ import org.mitre.schemastore.model.Schema;
 public class YggAction extends Action
 {
 	// Constants defining the various Ygg action types available
-	static final Integer IMPORT_SCHEMA = 0;
-	static final Integer EXPORT_SCHEMA = 1;
-	static final Integer DELETE_SCHEMA = 2;
-	static final Integer NEW_GROUP = 3;
-	static final Integer EDIT_GROUP = 4;
-	static final Integer DELETE_GROUP = 5;
-	static final Integer DELETE_GROUP_SCHEMA = 6;
-	static final Integer NEW_MAPPING = 7;
-	static final Integer EDIT_MAPPING = 8;
-	static final Integer DELETE_MAPPING = 9;
-	static final Integer DELETE_MAPPING_SCHEMA = 10;
+	static final int IMPORT_SCHEMA = 0;
+	static final int EXPORT_SCHEMA = 1;
+	static final int DELETE_SCHEMA = 2;
+	static final int NEW_GROUP = 3;
+	static final int EDIT_GROUP = 4;
+	static final int DELETE_GROUP = 5;
+	static final int DELETE_GROUP_SCHEMA = 6;
+	static final int NEW_MAPPING = 7;
+	static final int EDIT_MAPPING = 8;
+	static final int DELETE_MAPPING = 9;
+	static final int DELETE_MAPPING_SCHEMA = 10;
 	
-	/** Stores the tree viewer to which this action is tied */
-	private TreeViewer treeViewer;
+	/** Stores the menu manager to which this action is tied */
+	private YggMenuManager menuManager;
 	
 	/** Stores the action type */
 	private Integer actionType;
 	
 	/** Constructs the Ygg action */
-	YggAction(TreeViewer treeViewer, Integer actionType)
-		{ this.treeViewer = treeViewer; this.actionType = actionType; }
+	YggAction(YggMenuManager menuManager, String title, Integer actionType)
+	{
+		// Set the title and action type
+		this.menuManager = menuManager;
+		this.actionType = actionType;
+		setText(title);
+
+		// Set the action icon
+		String icon = null;
+		switch(actionType)
+		{
+			case IMPORT_SCHEMA: icon = "Import.gif"; break;
+			case EXPORT_SCHEMA: icon = "Export.gif"; break;
+			case DELETE_SCHEMA: icon = "Delete.gif"; break;
+			case NEW_GROUP: icon = "Group.gif"; break;
+			case EDIT_GROUP: icon = "Edit.gif"; break;
+			case DELETE_GROUP: icon = "Delete.gif"; break;
+			case DELETE_GROUP_SCHEMA: icon = "Delete.gif"; break;
+			case NEW_MAPPING: icon = "Mapping.gif"; break;
+			case EDIT_MAPPING: icon = "Edit.gif"; break;
+			case DELETE_MAPPING: icon = "Delete.gif"; break;
+			case DELETE_MAPPING_SCHEMA: icon = "Delete.gif"; break;
+		}		
+		setImageDescriptor(OpenIIActivator.getImageDescriptor("icons/"+icon));
+	
+		// Set the disabled action icon
+		if(actionType.equals(YggAction.DELETE_SCHEMA))
+			setDisabledImageDescriptor(OpenIIActivator.getImageDescriptor("icons/DisableDelete.gif"));
+	}
 	
 	/** Runs the specified Ygg action */
 	public void run()
 	{
 		// Determine which tree element was selected
-		Object selection = ((StructuredSelection)treeViewer.getSelection()).getFirstElement();
-		Shell shell = treeViewer.getControl().getShell();
+		Object selection = menuManager.getElement();
+		Shell shell = menuManager.getViewer().getControl().getShell();
 		
 		// ----------------- Schema Actions ------------------
 		
