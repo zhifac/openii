@@ -122,7 +122,7 @@ class MousePane extends JPanel implements MouseListener, MouseMotionListener {
 				}
 
 				// Display the link dialog box next to the selected link
-				LinkDialog linkDialog = new LinkDialog(SelectedInfo.getMappingCells());
+				LinkDialog linkDialog = new LinkDialog(SelectedInfo.getSelectedMappingCells());
 				linkDialog.setLocation(x, y);
 				linkDialog.setVisible(true);
 			}

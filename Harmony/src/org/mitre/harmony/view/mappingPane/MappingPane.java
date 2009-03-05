@@ -52,7 +52,7 @@ public class MappingPane extends JDesktopPane implements ComponentListener, Line
 		/** Deletes selected link from mapping */
 		public void actionPerformed(ActionEvent e)
 		{
-			for(Integer link : SelectedInfo.getMappingCells())
+			for(Integer link : SelectedInfo.getSelectedMappingCells())
 				MappingCellManager.modifyMappingCell(link,-1.0,System.getProperty("user.name"),true);
 			SelectedInfo.setMappingCells(new ArrayList<Integer>(),false);
 		}
@@ -64,7 +64,7 @@ public class MappingPane extends JDesktopPane implements ComponentListener, Line
 		/** Accept selected link */
 		public void actionPerformed(ActionEvent arg0)
 		{
-			for(Integer link : SelectedInfo.getMappingCells())
+			for(Integer link : SelectedInfo.getSelectedMappingCells())
 				MappingCellManager.modifyMappingCell(link,1.0,System.getProperty("user.name"),true);
 			SelectedInfo.setMappingCells(new ArrayList<Integer>(),false);
 		}
@@ -169,10 +169,10 @@ public class MappingPane extends JDesktopPane implements ComponentListener, Line
 	public void linesModified() { repaint(); }
 	
 	/** Handles changes to the selected nodes */
-	public void selectedElementsModified(Integer role)
+	public void displayedElementModified(Integer role)
 	{
 		SchemaTreeImp tree = role==HarmonyConsts.LEFT ? leftTree : rightTree;
-		Integer border = SelectedInfo.getElements(role).size()==1 ? 160 : 10;
+		Integer border = SelectedInfo.getDisplayedElement(role)!=null ? 160 : 10;
 		tree.setBorder(new EmptyBorder(0,0,border,0));
 		tree.fireTreeExpanded(tree.getPathForRow(0));
 		repaint();
@@ -186,4 +186,5 @@ public class MappingPane extends JDesktopPane implements ComponentListener, Line
 	public void componentHidden(ComponentEvent e) {}
 	public void componentMoved(ComponentEvent e) {}
 	public void selectedSchemasModified() {}
+	public void selectedElementsModified(Integer role) {}
 }
