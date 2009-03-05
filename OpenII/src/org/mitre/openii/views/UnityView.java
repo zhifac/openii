@@ -38,8 +38,7 @@ import org.mitre.unity.model.SchemaDocument;
 public class UnityView extends ViewPart {
 
 	@Override
-	public void createPartControl(Composite parent) {
-		
+	public void createPartControl(final Composite parent) {		
 		// have the parent use a fill layout
 		parent.setLayout(new FillLayout());
 		
@@ -49,8 +48,7 @@ public class UnityView extends ViewPart {
 		
 		final Schema2DPlot schema2DPlot = new Schema2DPlot(decoration, SWT.NONE);
 		
-		// add menu
-		
+		// add menu		
 		Menu menuBar = new Menu(decoration, SWT.BAR);
 		decoration.setMenuBar(menuBar);		
 		
@@ -119,7 +117,7 @@ public class UnityView extends ViewPart {
 		Color lightGray = new Color(parent.getDisplay(), 150, 150, 150);
 		//Schema2DPlot schema2DPlot = new Schema2DPlot(unityComponent, SWT.NONE);
 		
-		List<ISchemaGUI> schemaGUIs = new ArrayList<ISchemaGUI>();		
+		final List<ISchemaGUI> schemaGUIs = new ArrayList<ISchemaGUI>();		
 		for(SchemaDocument s : schemaDocuments) {
 			Position pos = pg.getPosition(s.getId());
 			//System.out.println("Position for schema " + s.getName() + ": " + pos);
@@ -134,41 +132,41 @@ public class UnityView extends ViewPart {
 		}
 		schema2DPlot.setSchemata(schemaGUIs);
 		schema2DPlot.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
-		//System.out.println(parent.getSize());
+		//System.out.println(parent.getSize());		
 		
-		parent.addControlListener(new ControlListener(){
-
+		//Add listener to rescale the plot when the app is resized
+		parent.addControlListener(new ControlListener() {
 			@Override
-			public void controlMoved(ControlEvent event) {
-				// TODO Auto-generated method stub
-				
-			}
-
+			public void controlMoved(ControlEvent event) {}
+			
 			@Override
 			public void controlResized(ControlEvent event) {
-				// TODO Auto-generated method stub
-				Point size = ((Composite)event.getSource()).getSize();
-				pg.rescale(0, size.x, 0, size.y);
+				//System.out.println("Rescaling");
 				
-				//((Composite)event.getSource()).redraw();
+				Point size = parent.getSize();
+				//Point size = schema2DPlot.getSize();
+				//System.out.println("new size: " + size);
+				pg.rescale(0, size.x - 30, 0, size.y - 80);			
+				
+				for(ISchemaGUI s : schemaGUIs) {
+					Position pos = pg.getPosition(s.getSchemaID());
+					s.setLocation((int)pos.getDimensionValue(0), (int)pos.getDimensionValue(1));
+					//System.out.println("Position for schema " + s.getSchemaID() + ": " + pos);
+				}				
+				
+				schema2DPlot.redraw();
 			}
-			
 		});
-		//System.err.println(schema2DPlot.getParent().getBounds());
-		//schema2DPlot.setSize(800, 700);
-		//schema2DPlot.pack();
-		//System.err.println(parent.getSize());
-		//schema2DPlot.setSize(parent.getShell().getSize());
-		schema2DPlot.addMouseMoveListener(new MouseMoveListener(){
-
+		
+		//Add mouse listener to show schema name when the mouse is over a schema
+		schema2DPlot.addMouseMoveListener(new MouseMoveListener() {
 			@Override
-			public void mouseMove(MouseEvent event) {
-				// TODO Auto-generated method stub
+			public void mouseMove(MouseEvent event) {			
 				int mouseX = event.x;
 				int mouseY = event.y;
 				//System.err.println("x: " + event.x + ", y: " + event.y);
 				List<ISchemaGUI> schemata = schema2DPlot.getSchemata();
-				
+
 				// very cpu intensive..
 				for(ISchemaGUI schema : schemata){
 					// get the rectangular bounds of the schema
@@ -176,13 +174,12 @@ public class UnityView extends ViewPart {
 					Point size = schema.getSize();
 					int width = size.x;
 					int height = size.y;
-					
+
 					int x = midpoint.x - (width / 2); 
 					int y = midpoint.y - (height / 2);
-					
+
 					if((mouseX >= x && mouseX <= x + width) &&
-						(mouseY >= y && mouseY <= y + height)){
-						//System.err.println("Mouse Is Over schema: " + schema.getLabel());
+							(mouseY >= y && mouseY <= y + height)){						
 						schema.setMouseOver(true);
 					}
 					else {
@@ -191,36 +188,26 @@ public class UnityView extends ViewPart {
 				}
 			}			
 		});
-		
-		schema2DPlot.addMouseListener(new MouseListener(){
 
+		//Add mouse listener to notifiy when a schema is double clicked
+		schema2DPlot.addMouseListener(new MouseListener() {
 			@Override
-			public void mouseDoubleClick(MouseEvent arg0) {
-				// TODO Auto-generated method stub
+			public void mouseDoubleClick(MouseEvent arg0) {				
 				List<ISchemaGUI> schemata = schema2DPlot.getSchemata();
 				for(ISchemaGUI schema : schemata){					
 					if(schema.isMouseOver()){
-						System.err.println("Schema: " + schema.getLabel() + " was double clicked!");
+						schema.doubleClicked();
 						break;
 					}					
 				}				
 			}
-
-			@Override
-			public void mouseDown(MouseEvent arg0) {
-				// TODO Auto-generated method stub
-				
-			}
-
-			@Override
-			public void mouseUp(MouseEvent arg0) {
-				// TODO Auto-generated method stub
-				
-			}
 			
-		});
-		
-		schema2DPlot.redraw();
+			@Override
+			public void mouseDown(MouseEvent arg0) {}
+
+			@Override
+			public void mouseUp(MouseEvent arg0) {}
+		});	
 	}
 
 	@Override

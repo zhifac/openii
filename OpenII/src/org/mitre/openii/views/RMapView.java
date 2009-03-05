@@ -10,7 +10,7 @@ import org.eclipse.swt.awt.SWT_AWT;
 import org.mitre.harmony.model.ProjectManager;
 import org.mitre.harmony.model.SchemaStoreManager;
 import org.mitre.harmony.view.harmonyPane.HarmonyFrame;
-import org.mitre.openii.model.SchemaStoreConnection;
+//import org.mitre.openii.model.SchemaStoreConnection;
 
 
 import javax.swing.JLabel;
@@ -28,7 +28,7 @@ public class RMapView extends ViewPart
 	public void createPartControl(Composite parent)
 	{
 		// Connects the SchemaStoreClient to Harmony's SchemaStoreManager
-		SchemaStoreManager.setConnection(SchemaStoreConnection.getConnection());
+		//SchemaStoreManager.setConnection(SchemaStoreConnection.getConnection());
 		
 		// Constructs the AWT frame
 		Composite swtAwtComponent = new Composite(parent, SWT.EMBEDDED);
