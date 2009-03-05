@@ -162,7 +162,7 @@ class MousePane extends JPanel implements MouseListener, MouseMotionListener {
 		} else {
 			// clears selection 
 			toolTip.setVisible(false);
-			if (SelectedInfo.getMappingCells().size() > 0) SelectedInfo.setMappingCells(new ArrayList<Integer>(), false);
+			if (SelectedInfo.getSelectedMappingCells().size() > 0) SelectedInfo.setMappingCells(new ArrayList<Integer>(), false);
 		}
 	}
 
