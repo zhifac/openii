@@ -223,6 +223,7 @@ public class MappingLines implements MappingCellListener, FiltersListener, Schem
 	public void elementsMarkedAsUnfinished(Integer count) {}
 	public void selectedSchemasModified() {}
 	public void selectedElementsModified(Integer role) {}
+	public void displayedElementModified(Integer role) {}
 	
 	/** Draws all lines linking the source and target schema trees */
 	void paint(Graphics g)

@@ -6,7 +6,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.util.HashSet;
-import java.util.List;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -14,14 +13,11 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
 import javax.swing.border.EmptyBorder;
 
-import org.mitre.harmony.model.HarmonyConsts;
-import org.mitre.harmony.model.MappingCellManager;
 import org.mitre.harmony.model.SchemaManager;
 import org.mitre.harmony.model.selectedInfo.SelectedInfo;
 import org.mitre.harmony.model.selectedInfo.SelectedInfoListener;
 import org.mitre.schemastore.model.Domain;
 import org.mitre.schemastore.model.DomainValue;
-import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.graph.HierarchicalGraph;
 
@@ -111,21 +107,13 @@ class SelectedNodePane extends JPanel implements SelectedInfoListener
 	}
 	
 	/** Activates visibility of this pane */
-	public void selectedElementsModified(Integer sideIn)
+	public void displayedElementModified(Integer role)
 	{
-		// Identify which element to display
-		Integer elementID = null;
-		List<Integer> elements = SelectedInfo.getElements(side);
-		if(elements.size()==1) elementID = elements.get(0);
-		else if(elements.size()==2 && SelectedInfo.getMappingCells().size()==1)
-		{
-			MappingCell cell = MappingCellManager.getMappingCell(SelectedInfo.getMappingCells().get(0));
-			if(elements.contains(cell.getElement1()) && elements.contains(cell.getElement2()))
-				if(SelectedInfo.getElements(side==HarmonyConsts.LEFT ? HarmonyConsts.RIGHT : HarmonyConsts.LEFT).size()==2)
-					elementID = side.equals(HarmonyConsts.LEFT) ? cell.getElement1() : cell.getElement2();
-		}
-			
+		// Only proceed if referring modified displayed element is on same side as selected node pane
+		if(!role.equals(this.side)) return;
+		
 		// Make the pane visible as needed
+		Integer elementID = SelectedInfo.getDisplayedElement(role);
 		if(elementID==null) { setVisible(false); return; }
 		SchemaElement element = SchemaManager.getSchemaElement(elementID);
 		setVisible(true);
@@ -150,6 +138,7 @@ class SelectedNodePane extends JPanel implements SelectedInfoListener
 	}
 	
 	// Unused event listeners
+	public void selectedElementsModified(Integer role) {}
 	public void selectedMappingCellsModified() {}
 	public void selectedSchemasModified() {}
 	
