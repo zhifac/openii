@@ -26,12 +26,13 @@ import org.mitre.galaxy.model.server.ImageManager;
 import org.mitre.galaxy.model.server.SchemaStoreManager;
 import org.mitre.galaxy.view.explorerPane.ExplorerPane;
 import org.mitre.galaxy.view.extensionsPane.ExtensionsPane;
+import org.mitre.galaxy.view.extensionsPane.ExtensionsPaneListener;
 import org.mitre.galaxy.view.groupPane.GroupPane;
 import org.mitre.galaxy.view.schemaPane.SchemaPane;
 import org.mitre.galaxy.view.searchPane.SearchPane;
 
 /** Class for displaying the Galaxy Applet */
-public class GalaxyApplet extends Applet implements MouseListener, MouseMotionListener, SelectedObjectsListener, SearchListener
+public class GalaxyApplet extends Applet implements SelectedObjectsListener, SearchListener, ExtensionsPaneListener, MouseListener, MouseMotionListener
 {
 	/** Stores a reference to the applet */
 	static public Applet galaxyApplet = null;
@@ -131,6 +132,7 @@ public class GalaxyApplet extends Applet implements MouseListener, MouseMotionLi
 			{ explorerPane.setEnabled(false); viewPane.setEnabled(false); }
 		
 		// Add listeners used to update the various components
+		extensionsPane.addExtensionsPaneListener(this);
 		addMouseListener(this);
 		addMouseMotionListener(this);
 		
@@ -210,6 +212,15 @@ public class GalaxyApplet extends Applet implements MouseListener, MouseMotionLi
 	/** Update panes when the search results change */
 	public void searchResultsChanged()
 		{ schemaPane.updateSearchResults(SearchManager.getMatchedElements()); }
+	
+	/** Handles a schema being selected by the extensions pane */
+	public void schemaSelected(Integer schemaID, int mouseButton)
+	{
+		if(mouseButton==MouseEvent.BUTTON1)
+			SelectedObjects.setSelectedSchema(schemaID);
+		else if(schemaID!=SelectedObjects.getSelectedSchema())
+			SelectedObjects.setSelectedComparisonSchema(schemaID);
+	}
 	
 	// Unused mouse listener events
 	public void mouseClicked(MouseEvent e) {}
