@@ -6,10 +6,7 @@ import java.awt.BasicStroke;
 import java.awt.Image;
 
 import org.mitre.galaxy.model.Schemas;
-import org.mitre.galaxy.model.SelectedObjects;
-import org.mitre.galaxy.model.search.SearchManager;
 import org.mitre.galaxy.model.server.ImageManager;
-
 
 import prefuse.Constants;
 import prefuse.render.LabelRenderer;
@@ -19,6 +16,9 @@ import prefuse.visual.VisualItem;
 /** Class for implementing the schema label renderer */
 public class SchemaLabelRenderer extends LabelRenderer
 {
+	/** Stores reference to the schema pane */
+	private SchemaPane pane = null;
+	
 	/** Returns the text to display for the schema label */
 	protected String getText(VisualItem item)
 	{
@@ -27,7 +27,7 @@ public class SchemaLabelRenderer extends LabelRenderer
 		if(object instanceof Integer)
 		{
 			String text = Schemas.getSchema((Integer)object).getName();
-			Integer comparisonSchemaID = SelectedObjects.getSelectedComparisonSchema();
+			Integer comparisonSchemaID = pane.getComparisonSchemaID();
 			if(comparisonSchemaID != null)
 				text += " (vs "+Schemas.getSchema(comparisonSchemaID).getName()+")";
 			return text;
@@ -45,7 +45,7 @@ public class SchemaLabelRenderer extends LabelRenderer
 		if(object instanceof SchemaTreeObject)
 		{
 			for(Integer id : ((SchemaTreeObject)object).getIDs())
-				if(SearchManager.containsElement(id))
+				if(pane.containsSearchElement(id))
 					selectedItem = true;
 		}
 		return new BasicStroke(selectedItem ? 3 : 1);
@@ -60,9 +60,10 @@ public class SchemaLabelRenderer extends LabelRenderer
 	}
 
 	/** Constructs the schema label renderer */
-	SchemaLabelRenderer()
+	SchemaLabelRenderer(SchemaPane pane)
 	{
 		super("SchemaObject");
+		this.pane = pane;
 		setVerticalImageAlignment(Constants.CENTER);
 		setHorizontalPadding(4);
 		setVerticalPadding(4);

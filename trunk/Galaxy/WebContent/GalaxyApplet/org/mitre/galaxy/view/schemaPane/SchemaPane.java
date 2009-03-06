@@ -7,6 +7,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
+import java.util.HashSet;
 
 import javax.swing.JDesktopPane;
 import javax.swing.JPanel;
@@ -17,7 +18,6 @@ import org.mitre.galaxy.model.listeners.SearchListener;
 import org.mitre.galaxy.model.listeners.SelectedObjectsListener;
 import org.mitre.galaxy.model.search.SearchManager;
 import org.mitre.galaxy.view.schemaPane.navigatorPane.NavigatorPane;
-
 
 import prefuse.Constants;
 import prefuse.Visualization;
@@ -33,6 +33,15 @@ import prefuse.render.EdgeRenderer;
 /** Class for displaying the explorer pane of Galaxy */
 public class SchemaPane extends JPanel implements ComponentListener, SelectedObjectsListener, SearchListener
 {	
+	/** Stores the selected schema ID */
+	private Integer schemaID;
+	
+	/** Stores the comparison schema ID */
+	private Integer comparisonSchemaID;
+
+	/** Stores the list of matched elements to be shown in the schema pane */
+	private HashSet<Integer> matchedElements = new HashSet<Integer>();
+	
 	/** Keeps track of if the schema graph needs to be updated */
 	private boolean updated = false;
 	
@@ -51,14 +60,14 @@ public class SchemaPane extends JPanel implements ComponentListener, SelectedObj
 	/** Updates the visualization graph */
 	private void update()
 	{
-		// Temporarily avoid updating if the pane is not visible
+		// Don't update graph while not visible
 		updated=false;
 		if(!isVisible()) return;
 		
 		// Display the schema graph if a schema is currently selected
-		if(SelectedObjects.getSelectedSchema()!=null)
+		if(schemaID!=null)
 		{
-			schemaTree.buildTree(SelectedObjects.getSelectedSchema(), SelectedObjects.getSelectedComparisonSchema());
+			schemaTree.buildTree(schemaID, comparisonSchemaID);
 			vis.run("color");
 			vis.run("font");
 			vis.run("layout");
@@ -83,8 +92,12 @@ public class SchemaPane extends JPanel implements ComponentListener, SelectedObj
 	}
 	
 	/** Constructs the Editor Pane */
-	public SchemaPane()
+	public SchemaPane(Integer schemaID, Integer comparisonSchemaID)
 	{
+		// Stores the selected and comparison schema IDs
+		this.schemaID = schemaID;
+		this.comparisonSchemaID = comparisonSchemaID;
+		
 		// Initialize the graph display
 		display.setBackground(new Color((float)1.0,(float)1.0,(float)0.85));
 		display.addControlListener(new DragControl());
@@ -102,17 +115,27 @@ public class SchemaPane extends JPanel implements ComponentListener, SelectedObj
 		add(pane,BorderLayout.CENTER);
 		
 		// Initialize the graph visualization
-		vis.setRendererFactory(new DefaultRendererFactory(new SchemaLabelRenderer(),new EdgeRenderer(Constants.EDGE_TYPE_LINE,Constants.EDGE_ARROW_FORWARD)));
-		vis.putAction("color", SchemaColors.getColors());
+		vis.setRendererFactory(new DefaultRendererFactory(new SchemaLabelRenderer(this),new EdgeRenderer(Constants.EDGE_TYPE_LINE,Constants.EDGE_ARROW_FORWARD)));
+		vis.putAction("color", new SchemaColors(this).getColors());
 		vis.putAction("font", SchemaFonts.getFonts());
 		vis.putAction("layout", getLayouts());
 		vis.add("graph", schemaTree);
 		
 		// Add listeners for various actions which affect this pane
 		addComponentListener(this);
-		SelectedObjects.addSelectedObjectsListener(this);
-		SearchManager.addSearchListener(this);
 	}
+	
+	/** Gets the schema ID associated with this pane */
+	public Integer getSchemaID()
+		{ return schemaID; }
+	
+	/** Gets the comparison schema ID associated with this pane */
+	public Integer getComparisonSchemaID()
+		{ return comparisonSchemaID; }
+
+	/** Indicates if the search results contains the specified element */
+	public boolean containsSearchElement(Integer elementID)
+		{ return matchedElements.contains(elementID); }
 	
 	/** Draws a border around the pane */
 	public void paint(Graphics g)
@@ -129,13 +152,20 @@ public class SchemaPane extends JPanel implements ComponentListener, SelectedObj
 		g.drawLine(getWidth()-1,0,getWidth()-1,getHeight()-1);	
 	}
 	
-	// Handles various actions which require the schema pane to be reset
-	public void selectedSchemaChanged() { update(); }
-	public void selectedComparisonSchemaChanged() { update(); }
+	/** Handles changes to the selected schema */
+	public void selectedSchemaChanged()
+		{ schemaID=SelectedObjects.getSelectedSchema(); update(); }
+
+	/** Handles changes to the selected comparison schema */
+	public void selectedComparisonSchemaChanged()
+		{ comparisonSchemaID=SelectedObjects.getSelectedComparisonSchema(); update(); }
 
 	/** Handles the selection of schema objects */
 	public void searchResultsChanged()
-		{ vis.run("color"); repaint(); }
+	{
+		matchedElements = SearchManager.getMatchedElements();
+		vis.run("color"); repaint();
+	}
 	
 	/** Adjust the size of the various components when this pane is resized */
 	public void componentResized(ComponentEvent e)

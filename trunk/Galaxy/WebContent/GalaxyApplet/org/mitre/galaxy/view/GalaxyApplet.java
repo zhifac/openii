@@ -18,6 +18,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.border.EmptyBorder;
 
 import org.mitre.galaxy.model.SelectedObjects;
+import org.mitre.galaxy.model.search.SearchManager;
 import org.mitre.galaxy.model.server.ImageManager;
 import org.mitre.galaxy.model.server.SchemaStoreManager;
 import org.mitre.galaxy.view.explorerPane.ExplorerPane;
@@ -93,6 +94,11 @@ public class GalaxyApplet extends Applet implements MouseListener, MouseMotionLi
 		SchemaStoreManager.init(this);
 		ImageManager.init(this);
 		
+		// Initializes the schema pane
+		SchemaPane schemaPane = new SchemaPane(null,null);
+		SelectedObjects.addSelectedObjectsListener(schemaPane);
+		SearchManager.addSearchListener(schemaPane);
+		
 		// Construct the explorer pane
 		explorerPane.setBorder(new EmptyBorder(5,0,0,0));
 		explorerPane.addTab("Explore",new ExplorerPane());
@@ -110,7 +116,7 @@ public class GalaxyApplet extends Applet implements MouseListener, MouseMotionLi
 		// Constructs the view pane
 		viewPane.setBorder(new EmptyBorder(10,0,10,10));
 		viewPane.addTab("Extensions",new ExtensionsPane());
-		viewPane.addTab("Schemas",new SchemaPane());
+		viewPane.addTab("Schemas",schemaPane);
 		
 		// Constructs the Galaxy pane
 		GalaxyPane galaxyPane = new GalaxyPane();

@@ -131,8 +131,8 @@ public class SearchManager
 	}
 	
 	/** Indicates if the search results contains the specified element */
-	static public boolean containsElement(Integer elementID)
-		{ return matchedElements.contains(elementID); }
+	static public HashSet<Integer> getMatchedElements()
+		{ return matchedElements; }
 	
 	/** Returns the list of keywords */
 	static public ArrayList<Keyword> getKeywords()
