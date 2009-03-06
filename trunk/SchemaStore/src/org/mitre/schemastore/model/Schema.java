@@ -38,6 +38,10 @@ public class Schema implements Serializable
 	public Schema(Integer id, String name, String author, String source, String type, String description, boolean locked)
 		{ this.id = id; this.name = name; this.author = author;  this.source = source; this.type = type; this.description = description; this.locked = locked; }
 	
+	/** Copies the schema */
+	public Schema copy()
+		{ return new Schema(getId(),getName(),getAuthor(),getSource(),getType(),getDescription(),getLocked()); }
+	
 	// Handles all schema getters
 	public Integer getId() { return id; }
 	public String getName() { return name; }
