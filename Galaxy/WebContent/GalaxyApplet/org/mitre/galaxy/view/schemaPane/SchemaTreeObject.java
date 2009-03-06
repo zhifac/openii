@@ -4,8 +4,6 @@ package org.mitre.galaxy.view.schemaPane;
 
 import java.util.ArrayList;
 
-
-import org.mitre.galaxy.model.Schemas;
 import org.mitre.schemastore.model.Alias;
 import org.mitre.schemastore.model.DomainValue;
 import org.mitre.schemastore.model.SchemaElement;
@@ -25,6 +23,9 @@ public class SchemaTreeObject
 	/** Stores the compared schema element id */
 	private Integer comparedID, comparedAliasID;
 	
+	/** Stores the selected and compared names */
+	private String selectedName, comparedName;
+	
 	/** Stores the object type */
 	private Integer type;
 	
@@ -38,6 +39,7 @@ public class SchemaTreeObject
 		if(sElement!=null)
 		{
 			selectedID = elementID;
+			selectedName = sGraph.getDisplayName(elementID);
 			hasDomain |= sGraph.getDomainForElement(elementID)!=null;
 			Alias alias = sGraph.getAlias(elementID);
 			if(alias!=null) selectedAliasID = alias.getId();
@@ -48,7 +50,8 @@ public class SchemaTreeObject
 		if(cElement!=null)
 		{
 			comparedID = elementID;
-			hasDomain |= sGraph.getDomainForElement(elementID)!=null;
+			comparedName = cGraph.getDisplayName(elementID);
+			hasDomain |= cGraph.getDomainForElement(elementID)!=null;
 			Alias alias = cGraph.getAlias(elementID);
 			if(alias!=null) comparedAliasID = alias.getId();
 		}
@@ -82,22 +85,16 @@ public class SchemaTreeObject
 	/** Returns the node label */
 	public String getName()
 	{
-		// Identify which ID to use in naming
-		Integer sID = selectedAliasID!=null ? selectedAliasID : selectedID;
-		Integer cID = comparedAliasID!=null ? comparedAliasID : comparedID;
-		
 		// Handles a merged schema tree object
-		if(sID!=null && cID!=null)
+		if(selectedName!=null && comparedName!=null)
 		{
-			String selectedName = Schemas.getSchemaElement(sID).getName();
-			String comparedName = Schemas.getSchemaElement(cID).getName();
-			if(sID.equals(cID)) return selectedName;
+			if(selectedName.equals(comparedName)) return selectedName;
 			else return selectedName + " (" + comparedName + ")";
 		}
 		
 		// Handles an object associated only with the selected or compared schema
-		if(sID!=null) return Schemas.getSchemaElement(sID).getName();
-		if(cID!=null) return Schemas.getSchemaElement(cID).getName();
+		if(selectedName!=null) return selectedName;
+		if(comparedName!=null) return comparedName;
 
 		// Handles an unassociated object
 		return "";
