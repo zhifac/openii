@@ -1,17 +1,17 @@
-package org.mitre.openii.views.connection;
+package org.mitre.openii.views.repositories;
 
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.swt.graphics.Image;
 import org.mitre.openii.application.OpenIIActivator;
 
-public class ConnectionLabelProvider implements ILabelProvider
+public class RepositoryLabelProvider implements ILabelProvider
 {
 	/** Returns the image associated with the specified element */
 	public Image getImage(Object element)
 	{
-		if(element.equals("Connections")) return OpenIIActivator.getImage("Connections.gif");
-		else return OpenIIActivator.getImage("Connection.gif");
+		if(element.equals("Repositories")) return OpenIIActivator.getImage("Repositories.gif");
+		else return OpenIIActivator.getImage("Repository.gif");
 	}
 
 	/** Returns the name associated with the specified element */
