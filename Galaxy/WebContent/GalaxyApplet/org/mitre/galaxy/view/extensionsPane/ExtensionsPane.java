@@ -96,11 +96,8 @@ public class ExtensionsPane extends JPanel implements ComponentListener
 	}
 	
 	/** Constructs the Extensions Pane */
-	public ExtensionsPane(Integer schemaID)
+	public ExtensionsPane()
 	{
-		// Stores the selected and comparison schema IDs
-		this.schemaID = schemaID;
-		
 		// Construct the pane
 		setBorder(new EmptyBorder(1,1,1,1));
 		setLayout(new BorderLayout());
