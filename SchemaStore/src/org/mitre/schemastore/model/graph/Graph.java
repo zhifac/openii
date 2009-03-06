@@ -21,51 +21,9 @@ import org.mitre.schemastore.model.Subtype;
 
 /**
  * Class for storing the graph of schema elements 
- * @author MDMORSE, DBURDICK
  */
 public class Graph implements Serializable
-{
-	
-	
-	/** graphShallowCopy: Creates a SHALLOW copy of a graph (copy references ONLY) **/
-	@SuppressWarnings("unchecked")
-	public Graph graphShallowCopy(){
-		Graph retVal = new Graph(this.schema, null);
-		retVal.graphHash = (HashMap<Integer, SchemaElement>) this.graphHash.clone();
-		return retVal;
-	}
-	
-	/** graphDeepCopy: Creates a DEEP copy of a graph (copy actual elements) **/
-	@SuppressWarnings("unchecked")
-	public Graph graphDeepCopy(){
-		Graph retVal = new Graph( new Schema(this.schema.getId(), this.schema.getName(), 
-								this.schema.getAuthor(), this.schema.getSource(), this.schema.getType(), 
-								this.schema.getDescription(), this.schema.getLocked())
-							, new ArrayList<SchemaElement>());	
-		retVal.graphHash = (HashMap<Integer, SchemaElement>) this.graphHash.clone();
-		
-		for (Integer key: retVal.graphHash.keySet()){
-			SchemaElement se = retVal.graphHash.get(key);
-			if (se instanceof Alias){ se =((Alias)se).copy();}
-			else if (se instanceof Attribute){ se =((Attribute)se).copy();}
-			else if (se instanceof Containment){ se =((Containment)se).copy();}
-			else if (se instanceof Domain){ se =((Domain)se).copy();}
-			else if (se instanceof DomainValue){ se =((DomainValue)se).copy();}
-			else if (se instanceof Entity){ se =((Entity)se).copy();}
-			else if (se instanceof Relationship){ se =((Relationship)se).copy();}
-			else if (se instanceof Subtype){ se =((Subtype)se).copy();}
-			else {System.out.println("[E] Graph.graphDeepCopy did not make a copy of element " 
-					+ se.getName() + " of class " + se.getClass().toString());}
-
-			retVal.graphHash.put(key, se);
-		}
-		
-		
-		
-		return retVal;
-	}
-	
-	
+{		
 	/** Private class for caching graph data */
 	private class GraphCache implements Serializable
 	{
@@ -218,14 +176,23 @@ public class Graph implements Serializable
 	/** Stores graph listeners */
 	private ArrayList<GraphListener> listeners = new ArrayList<GraphListener>();
 	
-	/** Constructs the base graph */
+	/** Constructs the graph */
 	public Graph(Schema schema, ArrayList<SchemaElement> elements)
 		{ this.schema = schema; addElements(elements); }
 
-	/** Copy the base graph */
+	/** Copy the graph */
 	public Graph(Graph graph)
 		{ this.schema = graph.schema; this.graphHash = graph.graphHash; }
 
+	/** Copy the graph */
+	public Graph copy()
+	{
+		ArrayList<SchemaElement> elements = new ArrayList<SchemaElement>();
+		for(SchemaElement element : graphHash.values())
+			elements.add(element.copy());
+		return new Graph(schema.copy(),elements);
+	}
+	
 	/** Returns the schema referenced by this graph */
 	public Schema getSchema()
 		{ return schema; }
