@@ -39,6 +39,7 @@ public class OpenIIManager
 	/** Stores listeners to the OpenII Manager */
 	static private ListenerGroup<OpenIIListener> listeners = new ListenerGroup<OpenIIListener>();
 	static public void addListener(OpenIIListener listener) { listeners.add(listener); }
+	static public void removeListener(OpenIIListener listener) { listeners.remove(listener); }
 	
 	/** Returns the schema store connection */
 	public static SchemaStoreClient getConnection()
