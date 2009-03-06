@@ -34,8 +34,8 @@ public class GalaxyManager
 		{ return new ExtensionsPane(); }
 	
 	/** Returns the Galaxy Schema Pane */
-	static public JPanel getSchemaPane()
-		{ return new SchemaPane(); }
+	static public JPanel getSchemaPane(Integer schemaID)
+		{ return new SchemaPane(schemaID,null); }
 	
 	/** Returns the Galaxy Search Pane */
 	static public JPanel getSearchPane()

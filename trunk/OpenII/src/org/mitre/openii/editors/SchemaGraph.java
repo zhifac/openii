@@ -17,7 +17,7 @@ public class SchemaGraph extends OpenIIEditor
 	{
 		// Construct the applet pane to contain the Harmony frame
 		JApplet appletPane = new JApplet();
-		appletPane.add(GalaxyManager.getSchemaPane());
+		appletPane.add(GalaxyManager.getSchemaPane(elementID));
 		
 		// Embed the applet pane into the Eclipse view
 		Composite swtAwtComponent = new Composite(parent, SWT.EMBEDDED);
