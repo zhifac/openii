@@ -10,19 +10,13 @@ public class OpenIIPerspective implements IPerspectiveFactory
 	{
 		// Hides the editor pane
 		layout.setFixed(true);
-		
-		// Creates the main pane
-//		IFolderLayout mainPane = layout.createFolder("main", IPageLayout.RIGHT, 0.75f, layout.getEditorArea());
-//		mainPane.addView("org.mitre.openii.views.HarmonyView");
-//		mainPane.addView("org.mitre.openii.views.GalaxyView");
-//		mainPane.addView("org.mitre.openii.views.UnityView");
 
 		// Creates the left pane
 		IFolderLayout leftPane = layout.createFolder("left", IPageLayout.LEFT, 0.25f, layout.getEditorArea());
 		leftPane.addView("org.mitre.openii.views.ygg.YggView");
 		leftPane.addView("org.mitre.openii.views.SearchView");
 		
-		// Creates the connection pane
-		layout.addStandaloneView("org.mitre.openii.views.connection.ConnectionView", true, IPageLayout.TOP, 0.20f, "left");
+		// Creates the repositories pane
+		layout.addStandaloneView("org.mitre.openii.views.repositories.RepositoryView", true, IPageLayout.TOP, 0.20f, "left");
 	}
 }
