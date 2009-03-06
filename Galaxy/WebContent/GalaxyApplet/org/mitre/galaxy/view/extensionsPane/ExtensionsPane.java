@@ -12,17 +12,16 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import org.mitre.galaxy.model.Schemas;
 import org.mitre.galaxy.model.SelectedObjects;
-import org.mitre.galaxy.model.listeners.SelectedObjectsListener;
 import org.mitre.galaxy.view.GalaxyApplet;
 import org.mitre.schemastore.model.DataSource;
 import org.mitre.schemastore.model.Schema;
-
 
 import prefuse.Constants;
 import prefuse.Visualization;
@@ -37,8 +36,17 @@ import prefuse.visual.NodeItem;
 import prefuse.visual.VisualItem;
 
 /** Class for displaying the extensions pane of Galaxy */
-public class ExtensionsPane extends JPanel implements ComponentListener, SelectedObjectsListener
+public class ExtensionsPane extends JPanel implements ComponentListener
 {	
+	/** Stores the selected schema ID */
+	private Integer schemaID;
+	
+	/** Stores the comparison schema ID */
+	private Integer comparisonSchemaID;
+
+	/** Stores the currently selected group schemas */
+	private HashSet<Integer> selectedGroupSchemas = null;
+	
 	/** Stores the current display */
 	protected ExtensionPaneDisplay display = null;
 	
@@ -88,20 +96,34 @@ public class ExtensionsPane extends JPanel implements ComponentListener, Selecte
 	}
 	
 	/** Constructs the Extensions Pane */
-	public ExtensionsPane()
+	public ExtensionsPane(Integer schemaID)
 	{
+		// Stores the selected and comparison schema IDs
+		this.schemaID = schemaID;
+		
 		// Construct the pane
 		setBorder(new EmptyBorder(1,1,1,1));
 		setLayout(new BorderLayout());
 	
 		// Add listeners for various actions which affect this pane
-		SelectedObjects.addSelectedObjectsListener(this);
 		addComponentListener(this);
-		
-		// Display the selected schema
-		selectedSchemaChanged();
 	}
 
+	/** Gets the schema ID associated with this pane */
+	public Integer getSchemaID()
+		{ return schemaID; }
+	
+	/** Gets the comparison schema ID associated with this pane */
+	public Integer getComparisonSchemaID()
+		{ return comparisonSchemaID; }
+
+	/** Indicates if the specified schema is contained in selected group schemas */
+	public boolean inSelectedGroupSchemas(Integer schemaID)
+	{
+		if(selectedGroupSchemas==null) return true;
+		return selectedGroupSchemas.contains(schemaID);
+	}
+	
 	/** Refreshes the Extensions Pane */
 	public void refresh()
 	{
@@ -114,9 +136,9 @@ public class ExtensionsPane extends JPanel implements ComponentListener, Selecte
 	}
 	
 	/** Handles changes to the selected schema */
-	public void selectedSchemaChanged()
+	public void setSchema(Integer schemaID)
 	{
-		Integer schemaID = SelectedObjects.getSelectedSchema();
+		this.schemaID = schemaID;
 		if(schemaID!=null)
 		{
 			// If no cached display found, generate new display
@@ -128,8 +150,8 @@ public class ExtensionsPane extends JPanel implements ComponentListener, Selecte
 				
 				// Initialize the graph visualization
 				Visualization vis = new Visualization();
-				vis.setRendererFactory(new DefaultRendererFactory(new ExtensionLabelRenderer(),new ExtensionEdgeRenderer()));
-				vis.putAction("color", ExtensionColors.getColors());
+				vis.setRendererFactory(new DefaultRendererFactory(new ExtensionLabelRenderer(this),new ExtensionEdgeRenderer()));
+				vis.putAction("color", new ExtensionColors(this).getColors());
 				vis.putAction("font", ExtensionFonts.getFonts());
 				vis.putAction("layout", getLayouts());
 
@@ -159,12 +181,12 @@ public class ExtensionsPane extends JPanel implements ComponentListener, Selecte
 	}
 	
 	/** Refreshes the extensions pane when a new comparison schema is selected */
-	public void selectedComparisonSchemaChanged()
-		{ refresh(); }
+	public void setComparisonSchema(Integer comparisonSchemaID)
+		{ this.comparisonSchemaID=comparisonSchemaID; refresh(); }
 
 	/** Handles changes to the selected groups */
-	public void selectedGroupsChanged()
-		{ refresh(); }
+	public void setSelectedGroupSchemas(HashSet<Integer> selectedGroupSchemas)
+		{ this.selectedGroupSchemas = selectedGroupSchemas; refresh(); }
 	
 	/** Centers the display when the component is moved */
 	public void componentResized(ComponentEvent e)

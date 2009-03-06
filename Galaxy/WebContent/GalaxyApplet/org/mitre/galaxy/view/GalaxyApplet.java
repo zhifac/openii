@@ -12,12 +12,15 @@ import java.awt.Image;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.util.HashSet;
 
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.border.EmptyBorder;
 
 import org.mitre.galaxy.model.SelectedObjects;
+import org.mitre.galaxy.model.listeners.SearchListener;
+import org.mitre.galaxy.model.listeners.SelectedObjectsListener;
 import org.mitre.galaxy.model.search.SearchManager;
 import org.mitre.galaxy.model.server.ImageManager;
 import org.mitre.galaxy.model.server.SchemaStoreManager;
@@ -27,10 +30,8 @@ import org.mitre.galaxy.view.groupPane.GroupPane;
 import org.mitre.galaxy.view.schemaPane.SchemaPane;
 import org.mitre.galaxy.view.searchPane.SearchPane;
 
-
-
 /** Class for displaying the Galaxy Applet */
-public class GalaxyApplet extends Applet implements MouseListener, MouseMotionListener
+public class GalaxyApplet extends Applet implements MouseListener, MouseMotionListener, SelectedObjectsListener, SearchListener
 {
 	/** Stores a reference to the applet */
 	static public Applet galaxyApplet = null;
@@ -45,6 +46,8 @@ public class GalaxyApplet extends Applet implements MouseListener, MouseMotionLi
 	private JPanel leftPane = new JPanel();
 	private JTabbedPane explorerPane = new JTabbedPane();
 	private JTabbedPane viewPane = new JTabbedPane();
+	private SchemaPane schemaPane = new SchemaPane(null);
+	private ExtensionsPane extensionsPane = new ExtensionsPane(null);
 
 	/** Indicates if the left pane is currently being resized */
 	private boolean resizeCursor;
@@ -94,11 +97,6 @@ public class GalaxyApplet extends Applet implements MouseListener, MouseMotionLi
 		SchemaStoreManager.init(this);
 		ImageManager.init(this);
 		
-		// Initializes the schema pane
-		SchemaPane schemaPane = new SchemaPane(null,null);
-		SelectedObjects.addSelectedObjectsListener(schemaPane);
-		SearchManager.addSearchListener(schemaPane);
-		
 		// Construct the explorer pane
 		explorerPane.setBorder(new EmptyBorder(5,0,0,0));
 		explorerPane.addTab("Explore",new ExplorerPane());
@@ -115,7 +113,7 @@ public class GalaxyApplet extends Applet implements MouseListener, MouseMotionLi
 		
 		// Constructs the view pane
 		viewPane.setBorder(new EmptyBorder(10,0,10,10));
-		viewPane.addTab("Extensions",new ExtensionsPane());
+		viewPane.addTab("Extensions",extensionsPane);
 		viewPane.addTab("Schemas",schemaPane);
 		
 		// Constructs the Galaxy pane
@@ -132,9 +130,14 @@ public class GalaxyApplet extends Applet implements MouseListener, MouseMotionLi
 		if(SelectedObjects.getSelectedSchema()==null)
 			{ explorerPane.setEnabled(false); viewPane.setEnabled(false); }
 		
-		// Add mouse listeners used to resize the left pane
+		// Add listeners used to update the various components
 		addMouseListener(this);
 		addMouseMotionListener(this);
+		
+		// Add listeners and initialize the selected schema
+		SelectedObjects.addSelectedObjectsListener(this);
+		SearchManager.addSearchListener(this);
+		selectedSchemaChanged();
 	}
 
     /** Modifies the mouse cursor to allow resizing of left pane */
@@ -173,26 +176,42 @@ public class GalaxyApplet extends Applet implements MouseListener, MouseMotionLi
     
     /** Stop dragging left pane border when mouse is released */
     public void mouseReleased(MouseEvent e)
-    {
-    	if(mouseDragging)
-    	{
- 			mouseMoved(e);
-			mouseDragging=false;
-		}
-    }
+    	{ if(mouseDragging) { mouseMoved(e); mouseDragging=false; } }
      
     /** Change cursor to default once outside of left pane borders */
 	public void mouseExited(MouseEvent e)
+		{ if(!mouseDragging) { setCursor(new Cursor(Cursor.DEFAULT_CURSOR)); resizeCursor=false; } }
+	
+	/** Update panes when the selected schema changes */
+	public void selectedSchemaChanged()
 	{
-		if(!mouseDragging) {
-			setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-			resizeCursor=false;
-		}
+		Integer schemaID = SelectedObjects.getSelectedSchema();
+		schemaPane.setSchema(schemaID);
+		extensionsPane.setSchema(schemaID);
 	}
+
+	/** Update panes when the selected comparison schema changes */
+	public void selectedComparisonSchemaChanged()
+	{
+		Integer comparisonSchemaID = SelectedObjects.getSelectedComparisonSchema();
+		schemaPane.setComparisonSchema(comparisonSchemaID);
+		extensionsPane.setComparisonSchema(comparisonSchemaID);
+	}
+	
+	/** Update panes when the selected groups change */
+	public void selectedGroupsChanged()
+	{
+		HashSet<Integer> selectedSchemaGroups = null;
+		if(SelectedObjects.getSelectedGroups().size()>0)
+			selectedSchemaGroups = SelectedObjects.getSelectedGroupSchemas();
+		extensionsPane.setSelectedGroupSchemas(selectedSchemaGroups);
+	}
+
+	/** Update panes when the search results change */
+	public void searchResultsChanged()
+		{ schemaPane.updateSearchResults(SearchManager.getMatchedElements()); }
 	
 	// Unused mouse listener events
 	public void mouseClicked(MouseEvent e) {}
 	public void mouseEntered(MouseEvent e) {}
-	public void selectedComparisonSchemaChanged() {}
-	public void selectedGroupsChanged() {}
 }

@@ -13,10 +13,6 @@ import javax.swing.JDesktopPane;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
-import org.mitre.galaxy.model.SelectedObjects;
-import org.mitre.galaxy.model.listeners.SearchListener;
-import org.mitre.galaxy.model.listeners.SelectedObjectsListener;
-import org.mitre.galaxy.model.search.SearchManager;
 import org.mitre.galaxy.view.schemaPane.navigatorPane.NavigatorPane;
 
 import prefuse.Constants;
@@ -31,7 +27,7 @@ import prefuse.render.DefaultRendererFactory;
 import prefuse.render.EdgeRenderer;
 
 /** Class for displaying the explorer pane of Galaxy */
-public class SchemaPane extends JPanel implements ComponentListener, SelectedObjectsListener, SearchListener
+public class SchemaPane extends JPanel implements ComponentListener
 {	
 	/** Stores the selected schema ID */
 	private Integer schemaID;
@@ -92,11 +88,10 @@ public class SchemaPane extends JPanel implements ComponentListener, SelectedObj
 	}
 	
 	/** Constructs the Editor Pane */
-	public SchemaPane(Integer schemaID, Integer comparisonSchemaID)
+	public SchemaPane(Integer schemaID)
 	{
-		// Stores the selected and comparison schema IDs
+		// Stores the selected schema IDs
 		this.schemaID = schemaID;
-		this.comparisonSchemaID = comparisonSchemaID;
 		
 		// Initialize the graph display
 		display.setBackground(new Color((float)1.0,(float)1.0,(float)0.85));
@@ -153,19 +148,16 @@ public class SchemaPane extends JPanel implements ComponentListener, SelectedObj
 	}
 	
 	/** Handles changes to the selected schema */
-	public void selectedSchemaChanged()
-		{ schemaID=SelectedObjects.getSelectedSchema(); update(); }
+	public void setSchema(Integer schemaID)
+		{ this.schemaID=schemaID; update(); }
 
 	/** Handles changes to the selected comparison schema */
-	public void selectedComparisonSchemaChanged()
-		{ comparisonSchemaID=SelectedObjects.getSelectedComparisonSchema(); update(); }
+	public void setComparisonSchema(Integer comparisonSchemaID)
+		{ this.comparisonSchemaID=comparisonSchemaID; update(); }
 
 	/** Handles the selection of schema objects */
-	public void searchResultsChanged()
-	{
-		matchedElements = SearchManager.getMatchedElements();
-		vis.run("color"); repaint();
-	}
+	public void updateSearchResults(HashSet<Integer> matchedElements)
+		{ this.matchedElements = matchedElements; vis.run("color"); repaint(); }
 	
 	/** Adjust the size of the various components when this pane is resized */
 	public void componentResized(ComponentEvent e)

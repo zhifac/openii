@@ -4,7 +4,6 @@ package org.mitre.galaxy.view.extensionsPane;
 
 import java.awt.Color;
 
-import org.mitre.galaxy.model.SelectedObjects;
 import org.mitre.schemastore.model.Schema;
 
 import prefuse.action.ActionList;
@@ -16,8 +15,15 @@ import prefuse.visual.VisualItem;
 /** Class for displaying the colors associated with the extensions graph */
 public class ExtensionColors
 {
+	/** Stores reference to the extensions pane */
+	private ExtensionsPane pane = null;
+	
+	/** Constructs the SchemaColors object */
+	ExtensionColors(ExtensionsPane pane)
+		{ this.pane = pane; }
+	
 	/** Private class for handling node fill colors */
-	static private class NodeFillColorAction extends ColorAction
+	private class NodeFillColorAction extends ColorAction
 	{
 		/** Constructs the node fill color action */
 		private NodeFillColorAction() { super("graph.nodes",VisualItem.FILLCOLOR,0); }
@@ -37,9 +43,9 @@ public class ExtensionColors
 			if(object instanceof Schema)
 			{
 				Integer schemaID = ((Schema)object).getId();
-				if(!SelectedObjects.inSelectedGroups(schemaID)) return unavailableGroupColor;
-				else if(schemaID.equals(SelectedObjects.getSelectedSchema())) return selectedSchemaColor;
-				else if(schemaID.equals(SelectedObjects.getSelectedComparisonSchema())) return comparisonSchemaColor;
+				if(!pane.inSelectedGroupSchemas(schemaID)) return unavailableGroupColor;
+				else if(schemaID.equals(pane.getSchemaID())) return selectedSchemaColor;
+				else if(schemaID.equals(pane.getComparisonSchemaID())) return comparisonSchemaColor;
 				return schemaColor;
 			}
 			else return dataSourceColor;
@@ -47,7 +53,7 @@ public class ExtensionColors
 	}
 	
 	/** Private class for handling node text colors */
-	static private class NodeTextColorAction extends ColorAction
+	private class NodeTextColorAction extends ColorAction
 	{
 		/** Constructs the node text color action */
 		private NodeTextColorAction() { super("graph.nodes",VisualItem.TEXTCOLOR,0); }
@@ -66,7 +72,7 @@ public class ExtensionColors
 	}
 	
 	/** Returns the colors used with the extension graph */
-	static ActionList getColors()
+	ActionList getColors()
 	{
 		ActionList colorList = new ActionList();
 		colorList.add(new NodeFillColorAction());
