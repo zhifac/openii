@@ -1,18 +1,18 @@
-package org.mitre.openii.views.connection;
+package org.mitre.openii.views.repositories;
 
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.part.ViewPart;
 
-/** Constructs the Connection View */
-public class ConnectionView extends ViewPart
+/** Constructs the Repository View */
+public class RepositoryView extends ViewPart
 {
-	/** Displays the Connection View */
+	/** Displays the Repository View */
 	public void createPartControl(Composite parent)
 	{
 		TreeViewer viewer = new TreeViewer(parent);
-		viewer.setContentProvider(new ConnectionContentProvider());
-		viewer.setLabelProvider(new ConnectionLabelProvider());
+		viewer.setContentProvider(new RepositoryContentProvider());
+		viewer.setLabelProvider(new RepositoryLabelProvider());
 		viewer.setInput("");
 	//	viewer.getTree().addMouseListener(this);
 	}

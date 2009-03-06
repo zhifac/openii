@@ -1,25 +1,25 @@
-package org.mitre.openii.views.connection;
+package org.mitre.openii.views.repositories;
 
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 
-public class ConnectionContentProvider implements ITreeContentProvider
+public class RepositoryContentProvider implements ITreeContentProvider
 {
 	/** Returns the children elements for the specified element */
 	public Object[] getChildren(Object element)
 	{
 		if(element.equals(""))
-			return new String[] {"Connections"};
-	    if(element.equals("Connections"))
-	    	return new String[] {"Connection1","Connection2","Connection3"};
+			return new String[] {"Repositories"};
+	    if(element.equals("Repositories"))
+	    	return new String[] {"Repository1","Repository2","Repository3"};
 	    return new String[] {};
 	}
 
 	/** Return the parent element for the specified element */
 	public Object getParent(Object element)
 	{
-	    if(!element.equals("Connections"))
-	    	return "Connections";
+	    if(!element.equals("Repositories"))
+	    	return "Repositories";
 	    return null;
 	}
 
