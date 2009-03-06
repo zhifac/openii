@@ -47,7 +47,7 @@ public class GalaxyApplet extends Applet implements MouseListener, MouseMotionLi
 	private JTabbedPane explorerPane = new JTabbedPane();
 	private JTabbedPane viewPane = new JTabbedPane();
 	private SchemaPane schemaPane = new SchemaPane(null);
-	private ExtensionsPane extensionsPane = new ExtensionsPane(null);
+	private ExtensionsPane extensionsPane = new ExtensionsPane();
 
 	/** Indicates if the left pane is currently being resized */
 	private boolean resizeCursor;
