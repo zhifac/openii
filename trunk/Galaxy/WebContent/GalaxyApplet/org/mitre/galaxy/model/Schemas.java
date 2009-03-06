@@ -62,7 +62,9 @@ public class Schemas
 	static public Schema getSchema(Integer schemaID)
 	{
 		if(schemas==null) initSchemas(); 
-		return schemas.get(schemaID);
+		Schema schema = schemas.get(schemaID);
+		if(schema==null) schemas.put(schemaID, schema=SchemaStoreManager.getSchema(schemaID));
+		return schema;
 	}
 	
 	/** Sorts the list of schemas */
