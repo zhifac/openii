@@ -8,8 +8,8 @@ import java.awt.Color;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.MouseEvent;
-import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -18,7 +18,6 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import org.mitre.galaxy.model.Schemas;
-import org.mitre.galaxy.model.SelectedObjects;
 import org.mitre.galaxy.view.GalaxyApplet;
 import org.mitre.schemastore.model.DataSource;
 import org.mitre.schemastore.model.Schema;
@@ -47,6 +46,9 @@ public class ExtensionsPane extends JPanel implements ComponentListener
 	/** Stores the currently selected group schemas */
 	private HashSet<Integer> selectedGroupSchemas = null;
 	
+	/** List of listeners monitoring the extensions pane */
+	private ArrayList<ExtensionsPaneListener> listeners = new ArrayList<ExtensionsPaneListener>();
+	
 	/** Stores the current display */
 	protected ExtensionPaneDisplay display = null;
 	
@@ -65,13 +67,9 @@ public class ExtensionsPane extends JPanel implements ComponentListener
 				if(object instanceof Schema)
 				{
 					Integer schemaID = ((Schema)object).getId();
-					if(SelectedObjects.inSelectedGroups(schemaID))
-					{
-						if(e.getButton()==MouseEvent.BUTTON1 && !e.isMetaDown())
-							SelectedObjects.setSelectedSchema(schemaID);
-						else if(schemaID!=SelectedObjects.getSelectedSchema())
-							SelectedObjects.setSelectedComparisonSchema(schemaID);
-					}
+					if(inSelectedGroups(schemaID))
+						for(ExtensionsPaneListener listener : listeners)
+							listener.schemaSelected(schemaID, e.getButton());
 				}
 				else
 				{
@@ -81,7 +79,7 @@ public class ExtensionsPane extends JPanel implements ComponentListener
 				      URL url = new URL(((DataSource)object).getUrl());
 				      if(url!=null) a.showDocument(url,"_blank");
 				    }
-				    catch (MalformedURLException exp){}
+				    catch(Exception exp) {}
 				}
 			}
 		}
@@ -114,8 +112,8 @@ public class ExtensionsPane extends JPanel implements ComponentListener
 	public Integer getComparisonSchemaID()
 		{ return comparisonSchemaID; }
 
-	/** Indicates if the specified schema is contained in selected group schemas */
-	public boolean inSelectedGroupSchemas(Integer schemaID)
+	/** Indicates if the specified schema is contained in selected groups */
+	public boolean inSelectedGroups(Integer schemaID)
 	{
 		if(selectedGroupSchemas==null) return true;
 		return selectedGroupSchemas.contains(schemaID);
@@ -200,4 +198,12 @@ public class ExtensionsPane extends JPanel implements ComponentListener
 	public void componentHidden(ComponentEvent e) {}
 	public void componentShown(ComponentEvent e) {}
 	public void componentMoved(ComponentEvent e) {}
+	
+	/** Adds a listener monitoring the extensions pane */
+	public void addExtensionsPaneListener(ExtensionsPaneListener listener)
+		{ listeners.add(listener); }
+	
+	/** Removes a listener monitoring the extensions pane */
+	public void removeExtensionsPaneListener(ExtensionsPaneListener listener)
+		{ listeners.remove(listener); }
 }

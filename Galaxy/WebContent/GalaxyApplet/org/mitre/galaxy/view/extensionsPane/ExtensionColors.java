@@ -43,7 +43,7 @@ public class ExtensionColors
 			if(object instanceof Schema)
 			{
 				Integer schemaID = ((Schema)object).getId();
-				if(!pane.inSelectedGroupSchemas(schemaID)) return unavailableGroupColor;
+				if(!pane.inSelectedGroups(schemaID)) return unavailableGroupColor;
 				else if(schemaID.equals(pane.getSchemaID())) return selectedSchemaColor;
 				else if(schemaID.equals(pane.getComparisonSchemaID())) return comparisonSchemaColor;
 				return schemaColor;
