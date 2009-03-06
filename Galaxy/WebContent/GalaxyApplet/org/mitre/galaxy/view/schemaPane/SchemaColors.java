@@ -4,10 +4,6 @@ package org.mitre.galaxy.view.schemaPane;
 
 import java.awt.Color;
 
-import org.mitre.galaxy.model.SelectedObjects;
-import org.mitre.galaxy.model.search.SearchManager;
-
-
 import prefuse.action.ActionList;
 import prefuse.action.assignment.ColorAction;
 import prefuse.util.ColorLib;
@@ -17,8 +13,15 @@ import prefuse.visual.VisualItem;
 /** Class for displaying the colors associated with the extensions graph */
 public class SchemaColors
 {
+	/** Stores reference to the schema pane */
+	private SchemaPane pane = null;
+	
+	/** Constructs the SchemaColors object */
+	SchemaColors(SchemaPane pane)
+		{ this.pane = pane; }
+	
 	/** Private class for handling node fill colors */
-	static private class NodeFillColorAction extends ColorAction
+	private class NodeFillColorAction extends ColorAction
 	{
 		/** Constructs the node fill color action */
 		private NodeFillColorAction() { super("graph.nodes",VisualItem.FILLCOLOR,0); }
@@ -38,7 +41,7 @@ public class SchemaColors
 			if(object instanceof SchemaTreeObject)
 			{
 				SchemaTreeObject schemaObject = (SchemaTreeObject)object;
-				if(SelectedObjects.getSelectedComparisonSchema()!=null)
+				if(pane.getComparisonSchemaID()!=null)
 				{
 					// Highlights the items only existent in the selected schema
 					if(!schemaObject.inComparedGraph())
@@ -55,7 +58,7 @@ public class SchemaColors
 	}
 	
 	/** Private class for handling node text colors */
-	static private class NodeTextColorAction extends ColorAction
+	private class NodeTextColorAction extends ColorAction
 	{
 		/** Constructs the node text color action */
 		private NodeTextColorAction() { super("graph.nodes",VisualItem.TEXTCOLOR,0); }
@@ -69,7 +72,7 @@ public class SchemaColors
 	}
 	
 	/** Private class for handling node stroke colors */
-	static private class NodeStrokeColorAction extends ColorAction
+	private class NodeStrokeColorAction extends ColorAction
 	{
 		/** Constructs the node text color action */
 		private NodeStrokeColorAction() { super("graph.nodes",VisualItem.STROKECOLOR,0); }
@@ -89,7 +92,7 @@ public class SchemaColors
 			{
 				SchemaTreeObject sObject = (SchemaTreeObject)object;
 				for(Integer id : sObject.getIDs())
-					if(SearchManager.containsElement(id)) return selectedColor;
+					if(pane.containsSearchElement(id)) return selectedColor;
 				if(sObject.getType()==SchemaTreeObject.ENTITY) return entityColor;
 				if(sObject.getType()==SchemaTreeObject.ATTRIBUTE) return attributeColor;
 			}
@@ -98,7 +101,7 @@ public class SchemaColors
 	}
 	
 	/** Returns the colors used with the extension graph */
-	static ActionList getColors()
+	ActionList getColors()
 	{
 		ActionList colorList = new ActionList();
 		colorList.add(new NodeFillColorAction());
