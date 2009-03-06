@@ -7,11 +7,9 @@ import java.awt.Image;
 import java.awt.Shape;
 import java.awt.geom.Rectangle2D;
 
-import org.mitre.galaxy.model.SelectedObjects;
 import org.mitre.galaxy.model.server.ImageManager;
 import org.mitre.schemastore.model.DataSource;
 import org.mitre.schemastore.model.Schema;
-
 
 import prefuse.Constants;
 import prefuse.render.LabelRenderer;
@@ -21,6 +19,9 @@ import prefuse.visual.VisualItem;
 /** Class for implementing the extension label renderer */
 public class ExtensionLabelRenderer extends LabelRenderer
 {
+	/** Stores reference to the extensions pane */
+	private ExtensionsPane pane = null;
+	
 	/** Returns the shape used in the extension label */
 	public Shape getShape(VisualItem item)
 	{
@@ -47,9 +48,9 @@ public class ExtensionLabelRenderer extends LabelRenderer
 		{
 			Integer schemaID = ((Schema)object).getId();
 			String image = "Schema";
-			if(!SelectedObjects.inSelectedGroups(schemaID)) image += "Unavailable";
-			else if(schemaID.equals(SelectedObjects.getSelectedSchema())) image += "Selected";
-			else if(schemaID.equals(SelectedObjects.getSelectedComparisonSchema())) image += "Comparison";
+			if(!pane.inSelectedGroupSchemas(schemaID)) image += "Unavailable";
+			else if(schemaID.equals(pane.getSchemaID())) image += "Selected";
+			else if(schemaID.equals(pane.getComparisonSchemaID())) image += "Comparison";
 			return ImageManager.getImage(image);
 		}
 		return null;
@@ -65,9 +66,10 @@ public class ExtensionLabelRenderer extends LabelRenderer
 	}
 	
 	/** Constructs the extension label renderer */
-	ExtensionLabelRenderer()
+	ExtensionLabelRenderer(ExtensionsPane pane)
 	{
 		super("NodeObject");
+		this.pane = pane;
 		setVerticalImageAlignment(Constants.CENTER);
 		setHorizontalPadding(3);
 		setVerticalPadding(3);

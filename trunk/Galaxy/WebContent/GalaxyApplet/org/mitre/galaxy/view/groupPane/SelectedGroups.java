@@ -35,11 +35,8 @@ public class SelectedGroups
     }
 	
 	/** Constructs the selected groups class */
-	public SelectedGroups(ArrayList<Integer> selectedGroups)
-	{
-		this.selectedGroups = new HashSet<Integer>(selectedGroups);
-		refresh();
-	}
+	public SelectedGroups(HashSet<Integer> selectedGroups)
+		{ this.selectedGroups = selectedGroups; refresh(); }
 
 	/** Refresh the selected/inferred groups */
 	public void refresh()

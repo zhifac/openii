@@ -53,8 +53,8 @@ public class SelectedObjects
 	}
 	
 	/** Returns the selected groups */
-	static public ArrayList<Integer> getSelectedGroups()
-		{ return new ArrayList<Integer>(selectedGroups); }
+	static public HashSet<Integer> getSelectedGroups()
+		{ return new HashSet<Integer>(selectedGroups); }
 	
 	/** Sets the selected groups */
 	static public void setSelectedGroups(ArrayList<Integer> groups)
@@ -75,6 +75,10 @@ public class SelectedObjects
 		if(selectedGroups.size()==0) return true;
 		return selectedGroupSchemas.contains(schemaID);
 	}
+	
+	/** Returns the selected group schemas */
+	static public HashSet<Integer> getSelectedGroupSchemas()
+		{ return new HashSet<Integer>(selectedGroupSchemas); }
 	
 	/** Adds a listener monitoring selected schema events */
 	static public void addSelectedObjectsListener(SelectedObjectsListener listener)

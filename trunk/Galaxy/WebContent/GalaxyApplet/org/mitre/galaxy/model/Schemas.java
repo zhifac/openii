@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 
 import org.mitre.galaxy.model.server.SchemaStoreManager;
 import org.mitre.schemastore.model.Schema;
@@ -134,8 +135,8 @@ public class Schemas
 	//------------------------
 
 	/** Gets the list of elements with the specified keyword */
-	static public ArrayList<SchemaElement> getElementsForKeyword(String keyword, ArrayList<Integer> groups)
-		{ return SchemaStoreManager.getSchemaElementsForKeyword(keyword, groups); }
+	static public ArrayList<SchemaElement> getElementsForKeyword(String keyword, HashSet<Integer> groups)
+		{ return SchemaStoreManager.getSchemaElementsForKeyword(keyword, new ArrayList<Integer>(groups)); }
 
 	/** Returns the schema element count */
 	static public int getSchemaElementCount(Integer schemaID)
