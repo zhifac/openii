@@ -28,13 +28,13 @@
       <view name="Ygg" icon="icons/Ygg.gif" category="OpenII" class="org.mitre.openii.views.ygg.YggView" id="org.mitre.openii.views.ygg.YggView"></view>
       <view name="Search" icon="icons/Search.gif" category="OpenII" class="org.mitre.openii.views.SearchView" id="org.mitre.openii.views.SearchView"></view>
       <view name="Harmony" icon="icons/Harmony.gif" category="OpenII" class="org.mitre.openii.views.HarmonyView" id="org.mitre.openii.views.HarmonyView"></view>
+      <view name="Unity" icon="icons/Harmony.gif" category="OpenII" class="org.mitre.openii.views.UnityView" id="org.mitre.openii.views.UnityView"></view>
    </extension>
 
 	<!-- Declares the OpenII editors -->
    <extension point="org.eclipse.ui.editors">
-      <editor name="Schema Graph" extensions="schema" icon="icons/Schema.gif" class="org.mitre.openii.editors.SchemaGraph" id="org.mitre.openii.editors.SchemaGraph"></editor>
-      <editor name="Extension Graph" extensions="schema" icon="icons/Schema.gif" class="org.mitre.openii.editors.ExtensionGraph" id="org.mitre.openii.editors.ExtensionGraph"></editor>
-      <view name="Unity" icon="icons/Harmony.gif" category="OpenII" class="org.mitre.openii.views.UnityView" id="org.mitre.openii.views.UnityView"></view>
+      <editor name="Schema View" extensions="schema" icon="icons/Schema.gif" class="org.mitre.openii.editors.SchemaView" id="org.mitre.openii.editors.SchemaView"></editor>
+      <editor name="Extension View" extensions="schema" icon="icons/Extensions.gif" class="org.mitre.openii.editors.ExtensionView" id="org.mitre.openii.editors.ExtensionView"></editor>
    </extension>
 
 </plugin>
