@@ -44,7 +44,7 @@ public class ExtensionView extends OpenIIEditor implements ExtensionsPaneListene
 		{ extensionsPane.removeExtensionsPaneListener(this); super.dispose(); }
 	
 	/** Handles the selection of a schema within the extensions pane */
-	public void schemaSelected(Integer schemaID, int mouseButton)
+	public void schemaSelected(Integer schemaID)
 	{
 		final Schema schema = OpenIIManager.getSchema(schemaID); 
 		Display display = getSite().getWorkbenchWindow().getShell().getDisplay();
@@ -54,7 +54,7 @@ public class ExtensionView extends OpenIIEditor implements ExtensionsPaneListene
 			{
 				try {
 					ElementInput input = new ElementInput(schema);
-					String editorID = "org.mitre.openii.editors.SchemaGraph";
+					String editorID = "org.mitre.openii.editors.SchemaView";
 					getSite().getPage().openEditor(input,editorID);
 				} catch(Exception e) { System.out.println(e); }
 			}
@@ -76,4 +76,7 @@ public class ExtensionView extends OpenIIEditor implements ExtensionsPaneListene
 		extensionsPane.removeSchema(schemaID);
 		super.schemaDeleted(schemaID);
 	}
+	
+	// Unused listener event
+	public void comparisonSchemaSelected(Integer schemaID) {}
 }
