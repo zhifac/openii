@@ -4,6 +4,7 @@ package org.mitre.galaxy.view.searchPane;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -20,8 +21,6 @@ import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
 import org.mitre.galaxy.model.Schemas;
-import org.mitre.galaxy.model.SelectedObjects;
-import org.mitre.galaxy.model.listeners.SelectedObjectsListener;
 import org.mitre.galaxy.model.search.Keyword;
 import org.mitre.galaxy.model.search.PrimaryMatches;
 import org.mitre.galaxy.model.search.SearchManager;
@@ -38,11 +37,8 @@ import org.mitre.schemastore.model.SchemaElement;
 
 
 /** Class for displaying a schema's search results */
-class ResultPane extends JPanel implements MouseListener, SelectedObjectsListener
+class ResultPane extends JPanel implements MouseListener
 {
-	/** Stores the search result being displayed in this pane */
-	private SearchResult searchResult = null;
-	
 	/** Stores the schema being displayed in this pane */
 	private Schema schema = null;
 	
@@ -164,8 +160,8 @@ class ResultPane extends JPanel implements MouseListener, SelectedObjectsListene
 			setOpaque(false);
 			add(primaryPane,BorderLayout.NORTH);
 			add(subsumedPane,BorderLayout.CENTER);
-		}
-
+		}	
+		
 		/** Paints the primary match pane */
 		public void paint(Graphics g)
 		{
@@ -223,19 +219,10 @@ class ResultPane extends JPanel implements MouseListener, SelectedObjectsListene
 		return "<html><table cellpadding=0 cellspacing=0><tr><td>"+text+"</td></tr></table></html>";
 	}
 	
-	/** Updates the background color */
-	private void updateColor()
-	{
-		final Color normalColor = Color.white;
-		final Color highlightColor = new Color((float)1.0,(float)1.0,(float)0.85);
-		setBackground(SelectedObjects.getSelectedSchema().equals(searchResult.getSchema().getId()) ? highlightColor : normalColor);	
-	}
-	
 	/** Constructs the results pane */
 	ResultPane(SearchResult searchResult)
 	{
 		// Store the search result and primary matches
-		this.searchResult = searchResult;
 		this.schema = searchResult.getSchema();
 		primaryMatches = searchResult.getPrimaryMatches();
 		
@@ -265,12 +252,22 @@ class ResultPane extends JPanel implements MouseListener, SelectedObjectsListene
 		setBorder(new EmptyBorder(4,4,4,4));
 		setLayout(new BorderLayout());
 		add(pane,BorderLayout.NORTH);
-		updateColor();
 		
 		// Add listeners
 		addMouseListener(this);
-		SelectedObjects.addSelectedObjectsListener(this);
-		
+	}
+	
+	/** Returns the schema associated with this result pane */
+	public Schema getSchema()
+		{ return schema; }
+	
+	/** Highlights the result pane */
+	public void highlightResult(boolean highlight)
+	{
+		// Define the background colors
+		final Color normalColor = Color.white;
+		final Color highlightColor = new Color((float)1.0,(float)1.0,(float)0.85);		
+		setBackground(highlight ? highlightColor : normalColor);	
 	}
 	
 	/** Fills in the paint details for the results pane */
@@ -284,19 +281,14 @@ class ResultPane extends JPanel implements MouseListener, SelectedObjectsListene
 	/** Selects the schema associated with this search result */
 	public void mouseClicked(MouseEvent e)
 	{
-		if(SelectedObjects.inSelectedGroups(schema.getId()))
-			SelectedObjects.setSelectedSchema(schema.getId());
+		Container parent = getParent();
+		while(!(parent instanceof SearchPane)) parent = parent.getParent();
+		((SearchPane)parent).fireSchemaSelectedEvent(schema.getId());
 	}
-	
-	/** Handles the selection of a new schema */
-	public void selectedSchemaChanged()
-		{ updateColor(); }
 	
 	// Unused listener events
 	public void mouseEntered(MouseEvent e) {}
 	public void mouseExited(MouseEvent e) {}
 	public void mousePressed(MouseEvent e) {}
 	public void mouseReleased(MouseEvent e) {}
-	public void selectedComparisonSchemaChanged() {}
-	public void selectedGroupsChanged() {}
 }

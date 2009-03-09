@@ -2,6 +2,7 @@ package org.mitre.galaxy.view.searchPane;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
@@ -14,10 +15,13 @@ import org.mitre.galaxy.model.search.SearchResult;
 
 /** Class for displaying the search results */
 class ResultsPane extends JPanel implements SearchListener
-{	
+{
+	/** Stores the selected schema */
+	private Integer schemaID = null;
+	
 	// Stores objects used by the search results pane
-	JScrollPane scrollpane = new JScrollPane();
-	JPanel searchResults = new JPanel();
+	private JScrollPane scrollpane = new JScrollPane();
+	private JPanel searchResults = new JPanel();
 	
 	/** Constructs the search results pane */
 	ResultsPane()
@@ -45,13 +49,28 @@ class ResultsPane extends JPanel implements SearchListener
 		SearchManager.addSearchListener(this);
 	}
 	
+	/** Sets the selected schema */
+	public void setSchema(Integer schemaID)
+	{
+		this.schemaID = schemaID;
+		for(Component component : searchResults.getComponents())
+		{
+			ResultPane resultPane = (ResultPane)component;
+			resultPane.highlightResult(resultPane.getSchema().getId().equals(schemaID));	
+		}		
+	}	
+	
 	/** Handles changes to the selected schema */
 	public void searchResultsChanged()
 	{
 		// Clear out old search results
 		searchResults.removeAll();
 		for(SearchResult searchResult : SearchManager.getSearchResults())
-			searchResults.add(new ResultPane(searchResult));
+		{
+			ResultPane resultPane = new ResultPane(searchResult);
+			resultPane.highlightResult(resultPane.getSchema().getId().equals(schemaID));
+			searchResults.add(resultPane);
+		}
 		searchResults.revalidate();
 		searchResults.repaint();
 		scrollpane.revalidate();
