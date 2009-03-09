@@ -38,10 +38,24 @@ public class Schemas
 	/** Caches schema elements associated with schemas */
 	static private HashMap<Integer,HierarchicalGraph> schemaGraphs = new HashMap<Integer,HierarchicalGraph>();
 		
-	//----------------
-	// Schema Actions
-	//----------------
+	//---------------
+	// Reset Actions
+	//---------------
 	
+	/** Reset schema */
+	static public void resetSchema(Integer schemaID)
+	{
+		// Clear schema information from cache
+		schemas = null;
+		schemaElementCounts.remove(schemaID);
+		schemaElements.remove(schemaID);
+		schemaGraphs.remove(schemaID);
+
+		// Clear schema associations
+		for(Integer associatedSchemaID : SchemaStoreManager.getAssociatedSchemas(schemaID))
+			{ parentSchemas.remove(associatedSchemaID); childSchemas.remove(associatedSchemaID); }		
+	}
+
 	/** Initializes the schema list */
 	static private void initSchemas()
 	{
@@ -51,6 +65,10 @@ public class Schemas
 			for(Schema schema : serverSchemas)
 				schemas.put(schema.getId(),schema);
 	}
+	
+	//----------------
+	// Schema Actions
+	//----------------
 	
 	/** Returns a list of all schemas */
 	static public ArrayList<Schema> getSchemas()
@@ -63,9 +81,7 @@ public class Schemas
 	static public Schema getSchema(Integer schemaID)
 	{
 		if(schemas==null) initSchemas(); 
-		Schema schema = schemas.get(schemaID);
-		if(schema==null) schemas.put(schemaID, schema=SchemaStoreManager.getSchema(schemaID));
-		return schema;
+		return schemas.get(schemaID);
 	}
 	
 	/** Sorts the list of schemas */

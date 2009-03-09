@@ -52,4 +52,24 @@ public class ExtensionGraph extends Graph
 					addEdge(parent,node);
 				}
 	}
+
+	/** Adds the specified schema to the graph */
+	public void addSchema(Integer schemaID)
+	{
+		// Create node for specified schema
+		Node node = addNode();
+		node.set("NodeObject",Schemas.getSchema(schemaID));
+		nodes.put(schemaID, node);
+
+		// Connect to parent schemas
+		for(Integer parentSchemaID : Schemas.getParentSchemas(schemaID))
+			addEdge(nodes.get(parentSchemaID),node);
+	}
+
+	/** Removes the specified schema from the graph */
+	public void removeSchema(Integer schemaID)
+	{
+		removeNode(nodes.get(schemaID));
+		nodes.remove(schemaID);
+	}
 }

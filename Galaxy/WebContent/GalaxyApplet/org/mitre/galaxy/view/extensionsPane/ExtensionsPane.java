@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
@@ -30,6 +31,7 @@ import prefuse.controls.ControlAdapter;
 import prefuse.controls.DragControl;
 import prefuse.controls.PanControl;
 import prefuse.controls.ZoomControl;
+import prefuse.data.tuple.TableNode;
 import prefuse.render.DefaultRendererFactory;
 import prefuse.visual.NodeItem;
 import prefuse.visual.VisualItem;
@@ -173,6 +175,60 @@ public class ExtensionsPane extends JPanel implements ComponentListener
 			add(display,BorderLayout.CENTER);
 		}
 		refresh();
+	}
+	
+	/** Adds the specified schema to the graph */
+	public void addSchema(Integer schemaID)
+	{
+		Integer parentID = Schemas.getParentSchemas(schemaID).get(0);
+		ExtensionPaneDisplay display = cachedDisplays.get(parentID);
+		if(display!=null)
+		{				
+			// Modify the graph to add the new schema
+			ExtensionGraph graph = (ExtensionGraph)display.getVisualization().getSourceData("graph");
+			graph.addSchema(schemaID);
+				
+			// Adjust location of added schema
+			VisualItem parentItem=null, childItem=null;
+			Iterator items = display.getVisualization().items();
+			while(items.hasNext())
+			{
+				VisualItem item = (VisualItem)items.next();
+				if(item.getSourceTuple() instanceof TableNode)
+				{
+					Object object = ((NodeItem)item).get("NodeObject");
+					if(object instanceof Schema)
+					{
+						Integer itemSchemaID = ((Schema)object).getId();
+						if(itemSchemaID.equals(schemaID)) childItem=item;
+						if(itemSchemaID.equals(parentID)) parentItem=item;
+					}
+				}
+			}
+			childItem.setX(parentItem.getBounds().getMinX()+childItem.getBounds().getWidth()/2+20);
+			childItem.setY(parentItem.getBounds().getMinY()+childItem.getBounds().getHeight()/2-10);
+			childItem.setHover(true);
+			refresh();
+
+			// Cache the display for the added schema
+			cachedDisplays.put(schemaID,display);
+		}
+	}
+	
+	/** Removes the specified schema from the graph */
+	public void removeSchema(Integer schemaID)
+	{
+		ExtensionPaneDisplay display = cachedDisplays.get(schemaID);
+		if(display!=null)
+		{
+			// Modify the graph to remove the new schema
+			ExtensionGraph graph = (ExtensionGraph)display.getVisualization().getSourceData("graph");
+			graph.removeSchema(schemaID);
+			refresh();
+			
+			// Remove the display for the removed schema
+			cachedDisplays.remove(schemaID);
+		}		
 	}
 	
 	/** Refreshes the extensions pane when a new comparison schema is selected */
