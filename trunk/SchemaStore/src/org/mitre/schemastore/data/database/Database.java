@@ -139,7 +139,7 @@ public class Database
 			int schemaID = getUniversalID();
 			Statement stmt = connection.getStatement();
 			stmt.executeUpdate("INSERT INTO \"schema\"(id,name,author,source,\"type\",description,locked) VALUES("+schemaID+",'"+scrub(schema.getName(),50)+" Extension','"+scrub(schema.getAuthor(),50)+"','"+scrub(schema.getSource(),200)+"','"+scrub(schema.getType(),50)+"','Extension of "+scrub(schema.getName(),487)+"','f')");
-			stmt.executeUpdate("INSERT INTO extensions(schema_id,element_id) VALUES("+schemaID+","+schema.getId()+")");
+			stmt.executeUpdate("INSERT INTO extensions(schema_id,base_id) VALUES("+schemaID+","+schema.getId()+")");
 			stmt.close();
 			connection.commit();
 			extendedSchema = new Schema(schemaID,schema.getName()+" Extension",schema.getAuthor(),schema.getSource(),schema.getType(),"Extension of "+schema.getName(),false);
