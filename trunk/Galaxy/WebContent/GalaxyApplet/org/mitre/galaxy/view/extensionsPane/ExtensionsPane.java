@@ -19,6 +19,7 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import org.mitre.galaxy.model.Schemas;
+import org.mitre.galaxy.model.SelectedObjects;
 import org.mitre.galaxy.view.GalaxyApplet;
 import org.mitre.schemastore.model.DataSource;
 import org.mitre.schemastore.model.Schema;
@@ -70,8 +71,14 @@ public class ExtensionsPane extends JPanel implements ComponentListener
 				{
 					Integer schemaID = ((Schema)object).getId();
 					if(inSelectedGroups(schemaID))
-						for(ExtensionsPaneListener listener : listeners)
-							listener.schemaSelected(schemaID, e.getButton());
+					{
+						if(e.getButton()==MouseEvent.BUTTON1)
+							for(ExtensionsPaneListener listener : listeners)
+								listener.schemaSelected(schemaID);
+						else if(schemaID!=SelectedObjects.getSelectedSchema())
+							for(ExtensionsPaneListener listener : listeners)
+								listener.comparisonSchemaSelected(schemaID);
+					}		
 				}
 				else
 				{

@@ -4,6 +4,7 @@ package org.mitre.galaxy.view.searchPane;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.util.ArrayList;
 
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
@@ -11,44 +12,58 @@ import javax.swing.border.EmptyBorder;
 /** Class for displaying the Search Pane of Galaxy */
 public class SearchPane extends JPanel
 {	
-	// Stores a reference to the Search pane
-	static SearchPane searchPane;
+	// Stores components used by the search pane 
+	private JPanel searchPane = new JPanel();
+	private ResultsPane resultsPane = new ResultsPane();	
 	
-	// Stores components used by the search pane
-	JPanel searchPanel = new JPanel();
+	/** List of listeners monitoring the extensions pane */
+	private ArrayList<SearchPaneListener> listeners = new ArrayList<SearchPaneListener>();
 	
 	/** Constructs the Search Pane */
 	public SearchPane()
 	{		
-		// Stores the reference to this search pane
-		searchPane = this;
-
 		// Constructs the search panel
-		searchPanel.setLayout(new BorderLayout());
-		searchPanel.setOpaque(false);
-		searchPanel.add(new BasicSearchPane(),BorderLayout.CENTER);
+		searchPane.setLayout(new BorderLayout());
+		searchPane.setOpaque(false);
+		searchPane.add(new BasicSearchPane(),BorderLayout.CENTER);
 		
 		// Constructs the search pane
 		setBackground(Color.white);
 		setBorder(new EmptyBorder(5,5,5,5));
 		setLayout(new BorderLayout());
-		add(searchPanel,BorderLayout.NORTH);
-		add(new ResultsPane(),BorderLayout.CENTER);
+		add(searchPane,BorderLayout.NORTH);
+		add(resultsPane,BorderLayout.CENTER);
 	}
+	
+	/** Sets the schema associated with search pane */
+	public void setSchema(Integer schemaID)
+		{ resultsPane.setSchema(schemaID); }
 	
 	/** Change the search pane to basic mode */
 	void changeToBasicMode()
 	{
-		searchPanel.removeAll();
-		searchPanel.add(new BasicSearchPane(),BorderLayout.CENTER);
+		searchPane.removeAll();
+		searchPane.add(new BasicSearchPane(),BorderLayout.CENTER);
 		validate();
 	}
 
 	/** Change the search pane to advanced mode */
 	void changeToAdvancedMode()
 	{
-		searchPanel.removeAll();
-		searchPanel.add(new AdvancedSearchPane(),BorderLayout.CENTER);
+		searchPane.removeAll();
+		searchPane.add(new AdvancedSearchPane(),BorderLayout.CENTER);
 		validate();
 	}
+	
+	/** Adds a listener monitoring the search pane */
+	public void addSearchPaneListener(SearchPaneListener listener)
+		{ listeners.add(listener); }
+	
+	/** Removes a listener monitoring the search pane */
+	public void removeSearchPaneListener(SearchPaneListener listener)
+		{ listeners.remove(listener); }
+	
+	/** Fires the schema selected event */
+	public void fireSchemaSelectedEvent(Integer schemaID)
+		{ for(SearchPaneListener listener : listeners) listener.schemaSelected(schemaID); }
 }

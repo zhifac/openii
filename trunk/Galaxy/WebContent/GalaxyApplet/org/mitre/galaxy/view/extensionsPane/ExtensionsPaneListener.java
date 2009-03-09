@@ -6,5 +6,8 @@ package org.mitre.galaxy.view.extensionsPane;
 public interface ExtensionsPaneListener
 {
 	/** Indicates that a schema has been selected */
-	public void schemaSelected(Integer schemaID, int mouseButton);
+	public void schemaSelected(Integer schemaID);
+
+	/** Indicates that a comparison schema has been selected */
+	public void comparisonSchemaSelected(Integer schemaID);
 }

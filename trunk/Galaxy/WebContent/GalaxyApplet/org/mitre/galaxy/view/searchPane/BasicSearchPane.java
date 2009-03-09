@@ -4,6 +4,7 @@ package org.mitre.galaxy.view.searchPane;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Container;
 import java.awt.Cursor;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -82,7 +83,11 @@ class BasicSearchPane extends JPanel implements ActionListener, KeyListener, Mou
 	
 	/** Toggles the keyword pane between basic and advanced search */
 	public void mouseClicked(MouseEvent e)
-		{ SearchPane.searchPane.changeToAdvancedMode(); }
+	{
+		Container parent = getParent();
+		while(!(parent instanceof SearchPane)) parent = parent.getParent();
+		((SearchPane)parent).changeToAdvancedMode();
+	}
 
 	/** Switches mouse to hand icon */
 	public void mouseEntered(MouseEvent e)

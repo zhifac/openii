@@ -30,9 +30,10 @@ import org.mitre.galaxy.view.extensionsPane.ExtensionsPaneListener;
 import org.mitre.galaxy.view.groupPane.GroupPane;
 import org.mitre.galaxy.view.schemaPane.SchemaPane;
 import org.mitre.galaxy.view.searchPane.SearchPane;
+import org.mitre.galaxy.view.searchPane.SearchPaneListener;
 
 /** Class for displaying the Galaxy Applet */
-public class GalaxyApplet extends Applet implements SelectedObjectsListener, SearchListener, ExtensionsPaneListener, MouseListener, MouseMotionListener
+public class GalaxyApplet extends Applet implements SelectedObjectsListener, SearchListener, ExtensionsPaneListener, SearchPaneListener, MouseListener, MouseMotionListener
 {
 	/** Stores a reference to the applet */
 	static public Applet galaxyApplet = null;
@@ -49,6 +50,7 @@ public class GalaxyApplet extends Applet implements SelectedObjectsListener, Sea
 	private JTabbedPane viewPane = new JTabbedPane();
 	private SchemaPane schemaPane = new SchemaPane(null);
 	private ExtensionsPane extensionsPane = new ExtensionsPane();
+	private SearchPane searchPane = new SearchPane();
 
 	/** Indicates if the left pane is currently being resized */
 	private boolean resizeCursor;
@@ -102,7 +104,7 @@ public class GalaxyApplet extends Applet implements SelectedObjectsListener, Sea
 		explorerPane.setBorder(new EmptyBorder(5,0,0,0));
 		explorerPane.addTab("Explore",new ExplorerPane());
 		explorerPane.addTab("Groups",new GroupPane());
-		explorerPane.addTab("Search",new SearchPane());
+		explorerPane.addTab("Search",searchPane);
 		
 		// Constructs the left pane
 		leftPane.setBorder(new EmptyBorder(10,10,10,12));
@@ -133,6 +135,7 @@ public class GalaxyApplet extends Applet implements SelectedObjectsListener, Sea
 		
 		// Add listeners used to update the various components
 		extensionsPane.addExtensionsPaneListener(this);
+		searchPane.addSearchPaneListener(this);
 		addMouseListener(this);
 		addMouseMotionListener(this);
 		
@@ -190,6 +193,7 @@ public class GalaxyApplet extends Applet implements SelectedObjectsListener, Sea
 		Integer schemaID = SelectedObjects.getSelectedSchema();
 		schemaPane.setSchema(schemaID);
 		extensionsPane.setSchema(schemaID);
+		searchPane.setSchema(schemaID);
 	}
 
 	/** Update panes when the selected comparison schema changes */
@@ -213,14 +217,13 @@ public class GalaxyApplet extends Applet implements SelectedObjectsListener, Sea
 	public void searchResultsChanged()
 		{ schemaPane.updateSearchResults(SearchManager.getMatchedElements()); }
 	
-	/** Handles a schema being selected by the extensions pane */
-	public void schemaSelected(Integer schemaID, int mouseButton)
-	{
-		if(mouseButton==MouseEvent.BUTTON1)
-			SelectedObjects.setSelectedSchema(schemaID);
-		else if(schemaID!=SelectedObjects.getSelectedSchema())
-			SelectedObjects.setSelectedComparisonSchema(schemaID);
-	}
+	/** Handles a schema being selected by one of the panes */
+	public void schemaSelected(Integer schemaID)
+		{ SelectedObjects.setSelectedSchema(schemaID); }
+	
+	/** Handles a comparison schema being selected by one of the panes */
+	public void comparisonSchemaSelected(Integer schemaID)
+		{ SelectedObjects.setSelectedComparisonSchema(schemaID); }
 	
 	// Unused mouse listener events
 	public void mouseClicked(MouseEvent e) {}
