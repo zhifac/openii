@@ -2,8 +2,6 @@ package org.mitre.openii.model;
 
 import java.util.ArrayList;
 
-import javax.swing.JPanel;
-
 import org.mitre.galaxy.model.Schemas;
 import org.mitre.galaxy.model.SelectedObjects;
 import org.mitre.galaxy.model.server.ImageManager;
@@ -29,15 +27,19 @@ public class GalaxyManager
 			SelectedObjects.setSelectedSchema(schemas.get(0).getId());
 	}
 
-	/** Returns the Galaxy Pane */
-	static public JPanel getExtensionPane()
-		{ return new ExtensionsPane(); }
+	/** Returns the Galaxy Extension Pane */
+	static public ExtensionsPane getExtensionPane(Integer schemaID)
+	{
+		ExtensionsPane extensionsPane = new ExtensionsPane();
+		extensionsPane.setSchema(schemaID);
+		return extensionsPane;
+	}
 	
 	/** Returns the Galaxy Schema Pane */
-	static public JPanel getSchemaPane(Integer schemaID)
-		{ return new SchemaPane(schemaID,null); }
+	static public SchemaPane getSchemaPane(Integer schemaID)
+		{ return new SchemaPane(schemaID); }
 	
 	/** Returns the Galaxy Search Pane */
-	static public JPanel getSearchPane()
+	static public SearchPane getSearchPane()
 		{ return new SearchPane(); }
 }
