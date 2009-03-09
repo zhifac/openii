@@ -23,5 +23,7 @@ public class ElementInput implements IEditorInput
 	public String getName() { return ""; }
 	public IPersistableElement getPersistable() { return null; }
 	public String getToolTipText() { return ""; }
+
+	@SuppressWarnings("unchecked")
 	public Object getAdapter(Class arg0) { return null; }
 }

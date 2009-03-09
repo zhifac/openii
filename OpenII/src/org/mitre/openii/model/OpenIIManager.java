@@ -66,6 +66,19 @@ public class OpenIIManager
 	public static Schema getSchema(Integer schemaID)
 		{ updateSchemasAsNeeded(); return schemas.get(schemaID); }
 	
+	/** Extends the specified schema */
+	public static Integer extendSchema(Integer schemaID, String name, String author, String description)
+	{
+		try {
+			Schema schema = client.extendSchema(schemaID);
+			if(schema==null) return null;
+			schema.setName(name); schema.setAuthor(author); schema.setDescription(description);
+			if(client.updateSchema(schema)) { fireSchemaAdded(schema); return schema.getId(); }
+			else client.deleteSchema(schemaID);
+		} catch(Exception e) {}
+		return null;
+	}
+	
 	/** Returns the graph for the specified schema */
 	public static Graph getGraph(Integer schemaID)
 		{ try { return client.getGraph(schemaID); } catch(Exception e) { return null; } }
