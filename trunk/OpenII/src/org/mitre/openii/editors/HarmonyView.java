@@ -1,4 +1,4 @@
-package org.mitre.openii.views;
+package org.mitre.openii.editors;
 
 import java.awt.Frame;
 
@@ -7,14 +7,13 @@ import javax.swing.JApplet;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.awt.SWT_AWT;
-import org.eclipse.ui.part.ViewPart;
 import org.mitre.harmony.model.ProjectManager;
 import org.mitre.harmony.model.SchemaStoreManager;
 import org.mitre.harmony.view.harmonyPane.HarmonyFrame;
 import org.mitre.openii.model.OpenIIManager;
 
 /** Constructs the Harmony View */
-public class HarmonyView extends ViewPart
+public class HarmonyView extends OpenIIEditor
 {
 	/** Displays the Harmony View */
 	public void createPartControl(Composite parent)
@@ -31,9 +30,6 @@ public class HarmonyView extends ViewPart
 		appletPane.add(new HarmonyFrame(frame));		
 		frame.add(appletPane);
 	}
-	
-	/** Sets the focus in this view */
-	public void setFocus() {}
 
 	/** Shuts down the Harmony View */
 	public void dispose()
