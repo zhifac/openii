@@ -115,7 +115,7 @@ public class MappingLines implements MappingCellListener, FiltersListener, Schem
 					{
 						// If shortest dist between point/line, mark as current closest
 						double dist = line.ptSegDistSq(point.x,point.y);
-						if(dist<shortestDist && dist<100) {
+						if(dist<shortestDist && dist<101) {
 							bestMappingCell = mappingCellLines.getMappingCellID();
 							shortestDist = dist;
 						}

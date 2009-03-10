@@ -59,7 +59,7 @@ public class MappingCellManager implements MappingListener, PreferencesListener
 		{ return "Transform"; }
 	
 	static public String getMappingCellNotes(Integer linkID)
-		{ return "Notes"; }
+		{ return ""; }
 	
 	static public void setMappingCellName(Integer linkID, String name) {}
 	static public void setMappingCellCreationDate(Integer linkID, String name) {}
