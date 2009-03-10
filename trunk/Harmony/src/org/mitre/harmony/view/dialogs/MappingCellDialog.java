@@ -40,41 +40,41 @@ import org.mitre.harmony.view.harmonyPane.HarmonyFrame;
 import org.mitre.schemastore.model.MappingCell;
 
 /**
- * Displays the dialog which allows links to be accepted/rejected
+ * Displays the dialog which allows mapping cells to be accepted/rejected
  * @author CWOLF
  */
-public class LinkDialog extends JDialog implements ActionListener, MouseListener, MouseMotionListener
+public class MappingCellDialog extends JDialog implements ActionListener, MouseListener, MouseMotionListener
 {
 	static private final String MULTIPLE_VALUES = "<Multiple Values>";
 	
-	private List<Integer> links;	// Links which may be accepted/rejected
+	private List<Integer> mappingCellIDs;	// Mapping cells which may be accepted/rejected
 
 	/**
-	 * Displays the pane displaying current link information
+	 * Displays the pane displaying current mapping cell information
 	 * @author CWOLF
 	 */
-	private class LinkInfoPane extends JPanel
+	private class MappingCellInfoPane extends JPanel
 	{
 		/**
 		 * Initializes the height of the pane
 		 */
-		private LinkInfoPane()
+		private MappingCellInfoPane()
 		{
 			int height = getFontMetrics(getFont()).getHeight();
 			setPreferredSize(new Dimension(200,height*2+15));
 		}
 		
 		/**
-		 * Draws the pane displaying link information
+		 * Draws the pane displaying mapping cell information
 		 */
 		public void paint(Graphics g)
 		{
-			// Calculate the confidence range of the selected links
+			// Calculate the confidence range of the selected mapping cells
 			Double minConf = 1.0;
 			Double maxConf = -1.0;
-			for(Integer link : links)
+			for(Integer mappingCell : mappingCellIDs)
 			{
-				Double conf = MappingCellManager.getMappingCell(link).getScore();
+				Double conf = MappingCellManager.getMappingCell(mappingCell).getScore();
 				if(conf < minConf) minConf = conf;
 				if(conf > maxConf) maxConf = conf;
 			}
@@ -146,13 +146,13 @@ public class LinkDialog extends JDialog implements ActionListener, MouseListener
 	private JButton cancelButton; // Button used for cancelling changes to the link's settings
 	
 	/**
-	 * @return Indicates if all of the links are accepted
+	 * @return Indicates if all of the mapping cells are accepted
 	 */
-	private boolean linksAccepted()
+	private boolean mappingCellsAccepted()
 	{
-		for(Integer link : links)
+		for(Integer mappingCellID : mappingCellIDs)
 		{
-			MappingCell mappingCell = MappingCellManager.getMappingCell(link);
+			MappingCell mappingCell = MappingCellManager.getMappingCell(mappingCellID);
 			if(!mappingCell.getValidated()) return false;
 			if(mappingCell.getScore()!=1.0) return false;
 		}
@@ -160,13 +160,13 @@ public class LinkDialog extends JDialog implements ActionListener, MouseListener
 	}
 
 	/**
-	 * @return Indicates if all of the links are rejected
+	 * @return Indicates if all of the mapping cells are rejected
 	 */
 	private boolean linksRejected()
 	{
-		for(Integer link : links)
+		for(Integer mappingCellID : mappingCellIDs)
 		{
-			MappingCell mappingCell = MappingCellManager.getMappingCell(link);
+			MappingCell mappingCell = MappingCellManager.getMappingCell(mappingCellID);
 			if(!mappingCell.getValidated()) return false;
 			if(mappingCell.getScore()!=-1.0) return false;
 		}
@@ -191,20 +191,20 @@ public class LinkDialog extends JDialog implements ActionListener, MouseListener
 	private JPanel getAnnotationsPane()
 	{
 		// Initial annotations
-		String name = MappingCellManager.getMappingCellName(links.get(0));
-		String creationDate = MappingCellManager.getMappingCellCreationDate(links.get(0));
-		String author = MappingCellManager.getMappingCellAuthor(links.get(0));
-		String transform = MappingCellManager.getMappingCellTransform(links.get(0));
-		String notes = MappingCellManager.getMappingCellNotes(links.get(0));
+		String name = MappingCellManager.getMappingCellName(mappingCellIDs.get(0));
+		String creationDate = MappingCellManager.getMappingCellCreationDate(mappingCellIDs.get(0));
+		String author = MappingCellManager.getMappingCellAuthor(mappingCellIDs.get(0));
+		String transform = MappingCellManager.getMappingCellTransform(mappingCellIDs.get(0));
+		String notes = MappingCellManager.getMappingCellNotes(mappingCellIDs.get(0));
 		
-		// Check to see if the annotations for all links match
-		for(Integer link : links)
+		// Check to see if the annotations for all mapping cells match
+		for(Integer mappingCellID : mappingCellIDs)
 		{
-			if(!name.equals(MappingCellManager.getMappingCellName(link))) name = MULTIPLE_VALUES;
-			if(!creationDate.equals(MappingCellManager.getMappingCellCreationDate(link))) creationDate = MULTIPLE_VALUES;
-			if(!author.equals(MappingCellManager.getMappingCellAuthor(link))) author = MULTIPLE_VALUES;
-			if(!transform.equals(MappingCellManager.getMappingCellTransform(link))) transform = MULTIPLE_VALUES;
-			if(!notes.equals(MappingCellManager.getMappingCellNotes(link))) notes = MULTIPLE_VALUES;			
+			if(!name.equals(MappingCellManager.getMappingCellName(mappingCellID))) name = MULTIPLE_VALUES;
+			if(!creationDate.equals(MappingCellManager.getMappingCellCreationDate(mappingCellID))) creationDate = MULTIPLE_VALUES;
+			if(!author.equals(MappingCellManager.getMappingCellAuthor(mappingCellID))) author = MULTIPLE_VALUES;
+			if(!transform.equals(MappingCellManager.getMappingCellTransform(mappingCellID))) transform = MULTIPLE_VALUES;
+			if(!notes.equals(MappingCellManager.getMappingCellNotes(mappingCellID))) notes = MULTIPLE_VALUES;			
 		}
 		
 		// Initialize annotation fields
@@ -269,7 +269,7 @@ public class LinkDialog extends JDialog implements ActionListener, MouseListener
 		rejectCheckbox.addActionListener(this);
 		
 		// Mark checkboxes as needed
-		acceptCheckbox.setSelected(linksAccepted());
+		acceptCheckbox.setSelected(mappingCellsAccepted());
 		rejectCheckbox.setSelected(linksRejected());
 		
 		// Set up accept and reject panes
@@ -289,7 +289,7 @@ public class LinkDialog extends JDialog implements ActionListener, MouseListener
 		// Set up link info pane
 		JPanel linkInfoPane = new JPanel();
 		linkInfoPane.setLayout(new FlowLayout(FlowLayout.CENTER,0,0));
-		linkInfoPane.add(new LinkInfoPane());
+		linkInfoPane.add(new MappingCellInfoPane());
 		
 		// Set up confidence pane
 		JPanel pane = new JPanel();
@@ -322,16 +322,13 @@ public class LinkDialog extends JDialog implements ActionListener, MouseListener
 		return pane;
 	}
 	
-	/**
-	 * Initializes the link dialog
-	 * @param link Link associated with the link dialog
-	 */
-	public LinkDialog(List<Integer> links)
+	/** Initializes the mapping cell dialog */
+	public MappingCellDialog(List<Integer> mappingCellIDs)
 	{
 		super(HarmonyFrame.harmonyFrame.getFrame());
 		
 		// Initialize the selected links
-		this.links = links;
+		this.mappingCellIDs = mappingCellIDs;
 		
 		// Set up the main dialog pane
 		JPanel pane = new JPanel();
@@ -367,14 +364,14 @@ public class LinkDialog extends JDialog implements ActionListener, MouseListener
 		if(e.getSource()==acceptCheckbox)
 		{
 			if(acceptCheckbox.isSelected()) rejectCheckbox.setSelected(false);
-			else if(linksAccepted() || linksRejected()) acceptCheckbox.setSelected(true);
+			else if(mappingCellsAccepted() || linksRejected()) acceptCheckbox.setSelected(true);
 		}
 		
 		// If "Reject" checkbox chosen, unselect "Accept"
 		if(e.getSource()==rejectCheckbox)
 		{
 			if(rejectCheckbox.isSelected()) acceptCheckbox.setSelected(false);
-			else if(linksAccepted() || linksRejected()) rejectCheckbox.setSelected(true);
+			else if(mappingCellsAccepted() || linksRejected()) rejectCheckbox.setSelected(true);
 		}
 		
 		// If "Okay" button pressed, update link information in model
@@ -384,23 +381,23 @@ public class LinkDialog extends JDialog implements ActionListener, MouseListener
 			boolean originallyRejected = linksRejected();
 			
 			// Cycle through all links to update annotations
-			for(Integer link : links)
+			for(Integer mappingCellID : mappingCellIDs)
 			{
 				// Store all modifications to annotations
 				if(!nameField.getText().equals(MULTIPLE_VALUES))
-					MappingCellManager.setMappingCellName(link,nameField.getText());
+					MappingCellManager.setMappingCellName(mappingCellID,nameField.getText());
 				if(!dateField.getText().equals(MULTIPLE_VALUES))
-					MappingCellManager.setMappingCellCreationDate(link,dateField.getText());
+					MappingCellManager.setMappingCellCreationDate(mappingCellID,dateField.getText());
 				if(!authorField.getText().equals(MULTIPLE_VALUES))
-					MappingCellManager.setMappingCellAuthor(link,authorField.getText());
+					MappingCellManager.setMappingCellAuthor(mappingCellID,authorField.getText());
 				if(!transformField.getText().equals(MULTIPLE_VALUES))
-					MappingCellManager.setMappingCellTransform(link,transformField.getText());
+					MappingCellManager.setMappingCellTransform(mappingCellID,transformField.getText());
 				if(!notesField.getText().equals(MULTIPLE_VALUES))
-					MappingCellManager.setMappingCellNotes(link,notesField.getText());
+					MappingCellManager.setMappingCellNotes(mappingCellID,notesField.getText());
 
 				// Accept or reject links as needed
 				if(acceptCheckbox.isSelected() || rejectCheckbox.isSelected())
-					MappingCellManager.modifyMappingCell(link,acceptCheckbox.isSelected()?1.0:-1.0,System.getProperty("user.name"),true);
+					MappingCellManager.modifyMappingCell(mappingCellID,acceptCheckbox.isSelected()?1.0:-1.0,System.getProperty("user.name"),true);
 			}
 				
 			// If links rejected, unselect links after modifying annotations
