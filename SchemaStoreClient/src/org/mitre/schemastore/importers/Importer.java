@@ -32,6 +32,7 @@ public abstract class Importer
 	public static final Integer REPOSITORY = 2;
 	public static final Integer FILE = 3;
 	public static final Integer ARCHIVE = 4;
+	public static final Integer URI = 5;
 	
 	// Defines the various base domain types
 	public static final String ANY = "Any";
