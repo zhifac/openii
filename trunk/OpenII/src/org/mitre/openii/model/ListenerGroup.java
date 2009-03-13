@@ -18,11 +18,11 @@ public class ListenerGroup<Listener>
 	public ArrayList<Listener> get()
 	{
 		// Eliminates listeners which are no longer used
-		WeakReference wr = (WeakReference)queue.poll();
+		WeakReference<?> wr = (WeakReference<?>)queue.poll();
 	    while(wr != null)
 	    {
 	    	references.removeElement(wr);
-	    	wr = (WeakReference)queue.poll();
+	    	wr = (WeakReference<?>)queue.poll();
 	    }
 
 		// Return the listeners

@@ -8,18 +8,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.part.*;
 import org.eclipse.swt.awt.SWT_AWT;
 import org.mitre.harmony.model.ProjectManager;
-import org.mitre.harmony.model.SchemaStoreManager;
-import org.mitre.harmony.view.harmonyPane.HarmonyFrame;
-//import org.mitre.openii.model.SchemaStoreConnection;
-
-
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import org.mitre.schemastore.client.SchemaStoreClient;
-
-
-
-
 
 /** Constructs the Harmony View */
 public class RMapView extends ViewPart
