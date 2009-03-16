@@ -61,6 +61,40 @@ class DialogComponents
 		label.setText(text+": ");
 		return label;
 	}
+
+	/** Creates a text component */
+	static Text createText(Composite parent, Integer rows)
+	{
+		// Display the text
+		Text field = new Text(parent, SWT.BORDER | (rows==null ? SWT.NONE : SWT.MULTI | SWT.V_SCROLL | SWT.WRAP));
+		GridData fieldGridData = new GridData(GridData.FILL_HORIZONTAL);
+		if(rows!=null) fieldGridData.heightHint = new GC(field).getFontMetrics().getHeight()*rows;
+		field.setLayoutData(fieldGridData);
+		return field;
+	}
+	
+	/** Creates a file component */
+	static Text createFile(Composite parent, SelectionListener listener)
+	{
+		// Construct the composite pane
+		Composite pane = new Composite(parent, SWT.NONE);
+		GridLayout layout = new GridLayout();
+		layout.numColumns = 2;
+		layout.marginHeight = 0;
+		layout.marginWidth = 0;
+		pane.setLayout(layout);
+		pane.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		
+		// Generate the file field component
+		Text fileField = new Text(pane, SWT.BORDER);
+		fileField.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		
+		// Generate the file button component
+		Button button = new Button(pane, SWT.NONE);
+		button.setText("Get File...");
+		button.addSelectionListener(listener);
+		return fileField;
+	}
 	
 	/** Creates the specified text field */
 	static Text createTextField(Composite parent, String label)
@@ -85,36 +119,13 @@ class DialogComponents
 		label.setLayoutData(labelGridData);
 		
 		// Display the text
-		Text field = new Text(parent, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL | SWT.WRAP);
-		GridData fieldGridData = new GridData(GridData.FILL_HORIZONTAL);
-		fieldGridData.heightHint = new GC(field).getFontMetrics().getHeight()*rows;
-		field.setLayoutData(fieldGridData);
-		return field;
+		return createText(parent,rows);
 	}
 	
 	/** Creates the specified file field */
 	static Text createFileField(Composite parent, String label, SelectionListener listener)
 	{
-		// Create the label
 		createLabel(parent,label);
-		
-		// Construct the composite pane
-		Composite pane = new Composite(parent, SWT.NONE);
-		GridLayout layout = new GridLayout();
-		layout.numColumns = 2;
-		layout.marginHeight = 0;
-		layout.marginWidth = 0;
-		pane.setLayout(layout);
-		pane.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-		
-		// Generate the file field component
-		Text fileField = new Text(pane, SWT.BORDER);
-		fileField.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-		
-		// Generate the file button component
-		Button button = new Button(pane, SWT.NONE);
-		button.setText("Get File...");
-		button.addSelectionListener(listener);
-		return fileField;
+		return createFile(parent,listener);
 	}
 }
