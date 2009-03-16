@@ -2,18 +2,18 @@
 <?eclipse version="3.2"?>
 <plugin>
 
-   <!-- Declares the OpenII product -->
-   <extension id="product" point="org.eclipse.core.runtime.products">
-      <product application="org.mitre.openii.application" name="OpenII">
-         <property name="appName" value="OpenII"></property>
-      </product>
-   </extension>
-
    <!-- Declares the OpenII application -->
-   <extension id="application" point="org.eclipse.core.runtime.applications">
+   <extension id="org.mitre.openii.application" point="org.eclipse.core.runtime.applications">
       <application>
          <run class="org.mitre.openii.application.OpenIIApplication"></run>
       </application>
+   </extension>
+
+   <!-- Declares the OpenII product -->
+   <extension id="org.mitre.openii.product" point="org.eclipse.core.runtime.products">
+      <product application="org.mitre.openii.application" name="OpenII">
+         <property name="appName" value="OpenII"></property>
+      </product>
    </extension>
 
    <!-- Declares the OpenII perspective -->
@@ -22,7 +22,7 @@
    </extension>
  
    <!-- Declares the OpenII views -->
-   <extension id="application" point="org.eclipse.ui.views">
+   <extension id="org.mitre.openii.views" point="org.eclipse.ui.views">
       <category name="OpenII" id="Ygg"></category>
       <view name="Repositories" icon="icons/Repositories.gif" category="OpenII" class="org.mitre.openii.views.repositories.RepositoryView" id="org.mitre.openii.views.repositories.RepositoryView"></view>
       <view name="Ygg" icon="icons/Ygg.gif" category="OpenII" class="org.mitre.openii.views.ygg.YggView" id="org.mitre.openii.views.ygg.YggView"></view>
