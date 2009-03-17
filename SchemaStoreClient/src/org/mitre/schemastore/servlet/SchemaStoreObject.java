@@ -27,7 +27,6 @@ public interface SchemaStoreObject extends java.rmi.Remote {
     public boolean isDeletable(int schemaID) throws java.rmi.RemoteException;
     public int[] getDeletableSchemas() throws java.rmi.RemoteException;
     public boolean deleteSchema(int schemaID) throws java.rmi.RemoteException;
-    public java.lang.String[] getSynonyms(int schemaID) throws java.rmi.RemoteException;
     public org.mitre.schemastore.model.Group[] getSubgroups(int groupID) throws java.rmi.RemoteException;
     public boolean updateGroup(org.mitre.schemastore.model.Group group) throws java.rmi.RemoteException;
     public boolean deleteGroup(int groupID) throws java.rmi.RemoteException;
