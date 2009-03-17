@@ -8,6 +8,7 @@ import org.mitre.schemastore.model.Attribute;
 import org.mitre.schemastore.model.Containment;
 import org.mitre.schemastore.model.Domain;
 import org.mitre.schemastore.model.Entity;
+import org.mitre.schemastore.model.Relationship;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.Subtype;
 
@@ -28,8 +29,8 @@ public class RMapGraphModel extends GraphModel
 		for (SchemaElement se : graph.getElements(Entity.class)){
 			Entity entity = (Entity)se;
 			boolean isRoot = true;
-			for (Containment c : graph.getContainments(entity.getId())){
-				if (c.getChildID().equals(entity.getId())) {
+			for (Relationship rel : graph.getRelationships(entity.getId())){
+				if (rel.getRightID().equals(entity.getId())) {
 					isRoot = false;
 				}
 			}
@@ -46,27 +47,24 @@ public class RMapGraphModel extends GraphModel
 	{
 		ArrayList<SchemaElement> parentElements = new ArrayList<SchemaElement>();
 		
-		// If attribute, return entity as parent
 		SchemaElement element = graph.getElement(elementID);
+		
+		// If attribute, return entity as parent
 		if(element instanceof Attribute)
 			parentElements.add(graph.getEntity(elementID));
 		
 		// If an entity, return its super-types as parents.
 		if(element instanceof Entity) {
-			for ( Containment containment : graph.getContainments(element.getId())){
-				if (containment.getChildID().equals(element.getId()))
-					parentElements.add(containment);
+			for ( Relationship rel : graph.getRelationships(element.getId())){
+				if (rel.getRightID().equals(element.getId()))
+					parentElements.add(rel);
 			}
 		}
 		
-		// If a containment, return the containing element as a parent.
-		if(element instanceof Containment)
-		{
-			Containment containment = (Containment)element;
-			Integer parentID = containment.getParentID();
-			parentElements.add(graph.getElement(parentID));
+		if(element instanceof Relationship) {
+			parentElements.add(graph.getElement(((Relationship)element).getLeftID()));
 		}
-
+		
 		return parentElements;
 	}
 	
@@ -83,15 +81,15 @@ public class RMapGraphModel extends GraphModel
 			for(Attribute value : graph.getAttributes(elementID))
 				childElements.add(value);
 
-			// Retrieve containments as children.
-			for (Containment containment : graph.getContainments(element.getId()))
-				if(elementID.equals(containment.getParentID()) && !containment.getName().equals(""))
-					childElements.add(containment);
+			// Retrieve FK relationships as children.
+			for (Relationship rel : graph.getRelationships(element.getId()))
+				if(elementID.equals(rel.getLeftID()))
+					childElements.add(rel);
 				
 		}
 
-		if (element instanceof Containment){
-			childElements.add(graph.getElement(((Containment)element).getChildID()));
+		if (element instanceof Relationship){
+			childElements.add(graph.getElement(((Relationship)element).getRightID()));
 		}
 			
 		return childElements;
