@@ -96,10 +96,6 @@ public class SchemaStore
 	/** Web service to delete the specified schema */
 	public boolean deleteSchema(int schemaID)
 		{ return Schemas.deleteSchema(schemaID); }
-
-	/** Web service to retrieve the synonym list for the specified schema */
-	public String[] getSynonyms(int schemaID)
-		{ return Schemas.getSynonyms(schemaID).toArray(new String[0]); }
 	
 	//---------------------------------
 	// Handles schema group operations

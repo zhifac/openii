@@ -306,20 +306,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
      </sequence>
     </complexType>
    </element>
-   <element name="getSynonyms">
-    <complexType>
-     <sequence>
-      <element name="schemaID" type="xsd:int"/>
-     </sequence>
-    </complexType>
-   </element>
-   <element name="getSynonymsResponse">
-    <complexType>
-     <sequence>
-      <element maxOccurs="unbounded" name="getSynonymsReturn" type="xsd:string"/>
-     </sequence>
-    </complexType>
-   </element>
    <element name="getSubgroups">
     <complexType>
      <sequence>
@@ -1446,15 +1432,15 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
    </wsdl:message>
 
-   <wsdl:message name="isDeletableRequest">
-
-      <wsdl:part element="impl:isDeletable" name="parameters"/>
-
-   </wsdl:message>
-
    <wsdl:message name="getSchemaGroupsResponse">
 
       <wsdl:part element="impl:getSchemaGroupsResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="isDeletableRequest">
+
+      <wsdl:part element="impl:isDeletable" name="parameters"/>
 
    </wsdl:message>
 
@@ -1566,12 +1552,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
    </wsdl:message>
 
-   <wsdl:message name="getSynonymsResponse">
-
-      <wsdl:part element="impl:getSynonymsResponse" name="parameters"/>
-
-   </wsdl:message>
-
    <wsdl:message name="getAllDataSourcesRequest">
 
       <wsdl:part element="impl:getAllDataSources" name="parameters"/>
@@ -1632,15 +1612,15 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
    </wsdl:message>
 
-   <wsdl:message name="isDeletableResponse">
-
-      <wsdl:part element="impl:isDeletableResponse" name="parameters"/>
-
-   </wsdl:message>
-
    <wsdl:message name="addGroupToSchemaRequest">
 
       <wsdl:part element="impl:addGroupToSchema" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="isDeletableResponse">
+
+      <wsdl:part element="impl:isDeletableResponse" name="parameters"/>
 
    </wsdl:message>
 
@@ -2013,12 +1993,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
    <wsdl:message name="updateDomainResponse">
 
       <wsdl:part element="impl:updateDomainResponse" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="getSynonymsRequest">
-
-      <wsdl:part element="impl:getSynonyms" name="parameters"/>
 
    </wsdl:message>
 
@@ -2509,14 +2483,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
          <wsdl:input message="impl:deleteSchemaRequest" name="deleteSchemaRequest"/>
 
          <wsdl:output message="impl:deleteSchemaResponse" name="deleteSchemaResponse"/>
-
-      </wsdl:operation>
-
-      <wsdl:operation name="getSynonyms">
-
-         <wsdl:input message="impl:getSynonymsRequest" name="getSynonymsRequest"/>
-
-         <wsdl:output message="impl:getSynonymsResponse" name="getSynonymsResponse"/>
 
       </wsdl:operation>
 
@@ -3365,24 +3331,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
          </wsdl:input>
 
          <wsdl:output name="deleteSchemaResponse">
-
-            <wsdlsoap:body use="literal"/>
-
-         </wsdl:output>
-
-      </wsdl:operation>
-
-      <wsdl:operation name="getSynonyms">
-
-         <wsdlsoap:operation soapAction=""/>
-
-         <wsdl:input name="getSynonymsRequest">
-
-            <wsdlsoap:body use="literal"/>
-
-         </wsdl:input>
-
-         <wsdl:output name="getSynonymsResponse">
 
             <wsdlsoap:body use="literal"/>
 
