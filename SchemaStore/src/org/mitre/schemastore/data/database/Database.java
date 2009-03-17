@@ -2,6 +2,7 @@
 
 package org.mitre.schemastore.data.database;
 
+import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -1261,9 +1262,9 @@ public class Database
 		ArrayList<MappingCell> mappingCells = new ArrayList<MappingCell>();
 		try {
 			Statement stmt = connection.getStatement();
-			ResultSet rs = stmt.executeQuery("SELECT id,element1_id,element2_id,score,scorer,validated FROM mapping_cell WHERE mapping_id="+mappingID);
+			ResultSet rs = stmt.executeQuery("SELECT id,element1_id,element2_id,score,author,modification_date,transform,notes,validated FROM mapping_cell WHERE mapping_id="+mappingID);
 			while(rs.next())
-				mappingCells.add(new MappingCell(rs.getInt("id"),mappingID,rs.getInt("element1_id"),rs.getInt("element2_id"),rs.getDouble("score"),rs.getString("scorer"),rs.getString("validated").equals("t")));
+				mappingCells.add(new MappingCell(rs.getInt("id"),mappingID,rs.getInt("element1_id"),rs.getInt("element2_id"),rs.getDouble("score"),rs.getString("author"),rs.getDate("modification_date"),rs.getString("transform"),rs.getString("notes"),rs.getString("validated").equals("t")));
 			stmt.close();
 		} catch(SQLException e) { System.out.println("(E) Database:getMappingCells: "+e.getMessage()); }
 		return mappingCells;
@@ -1276,7 +1277,9 @@ public class Database
 		try {
 			mappingCellID = getUniversalID();
 			Statement stmt = connection.getStatement();
-			stmt.executeUpdate("INSERT INTO mapping_cell(id,mapping_id,element1_id,element2_id,score,scorer,validated) VALUES("+mappingCellID+","+mappingCell.getMappingId()+","+mappingCell.getElement1()+","+mappingCell.getElement2()+","+mappingCell.getScore()+",'"+mappingCell.getScorer()+"','"+(mappingCell.getValidated()?"t":"f")+"')");
+			Date date = new Date(mappingCell.getModificationDate().getTime());
+			stmt.executeUpdate("INSERT INTO mapping_cell(id,mapping_id,element1_id,element2_id,score,author,modification_date,transform,notes,validated) " +
+							   "VALUES("+mappingCellID+","+mappingCell.getMappingId()+","+mappingCell.getElement1()+","+mappingCell.getElement2()+","+mappingCell.getScore()+",'"+scrub(mappingCell.getAuthor(),50)+"','"+date.toString()+"','"+scrub(mappingCell.getTransform(),200)+"','"+scrub(mappingCell.getNotes(),500)+"','"+(mappingCell.getValidated()?"t":"f")+"')");
 			stmt.close();
 			connection.commit();
 		}
@@ -1295,7 +1298,8 @@ public class Database
 		boolean success = false;
 		try {
 			Statement stmt = connection.getStatement();
-			stmt.executeUpdate("UPDATE mapping_cell SET score="+mappingCell.getScore()+", scorer='"+mappingCell.getScorer()+"', validated='"+(mappingCell.getValidated()?"t":"f")+"' WHERE id="+mappingCell.getId());
+			Date date = new Date(mappingCell.getModificationDate().getTime());
+			stmt.executeUpdate("UPDATE mapping_cell SET score="+mappingCell.getScore()+", author='"+scrub(mappingCell.getAuthor(),50)+"', modification_date='"+date.toString()+"', transform="+scrub(mappingCell.getTransform(),200)+", notes="+scrub(mappingCell.getNotes(),500)+"', validated='"+(mappingCell.getValidated()?"t":"f")+"' WHERE id="+mappingCell.getId());
 			stmt.close();
 			connection.commit();
 			success = true;
