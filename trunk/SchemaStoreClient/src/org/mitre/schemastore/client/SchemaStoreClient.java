@@ -374,14 +374,6 @@ public class SchemaStoreClient
 		return new Graph(getSchema(schemaID),elements);
 	}
 	
-	/** Retrieves the synonyms for all words in the specified schema from the web service */
-	public ArrayList<String> getSynonyms(Integer schemaID) throws RemoteException
-	{
-		String[] synonymList = (String[])callMethod("getSynonyms",new Object[] {schemaID});
-		ArrayList<String> synonyms = synonymList==null ? new ArrayList<String>() : new ArrayList<String>(Arrays.asList(synonymList));
-		return synonyms;
-	}
-	
 	//-----------------------
 	// Data Source Functions
 	//-----------------------

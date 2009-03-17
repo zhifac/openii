@@ -25,7 +25,7 @@ public class SchemaStoreProxy implements org.mitre.schemastore.servlet.SchemaSto
   public String getEndpoint() {
     return _endpoint;
   }
-  
+ 
   public void setEndpoint(String endpoint) {
     _endpoint = endpoint;
     if (schemaStore != null)
@@ -151,12 +151,6 @@ public class SchemaStoreProxy implements org.mitre.schemastore.servlet.SchemaSto
     if (schemaStore == null)
       _initSchemaStoreProxy();
     return schemaStore.deleteSchema(schemaID);
-  }
-  
-  public java.lang.String[] getSynonyms(int schemaID) throws java.rmi.RemoteException{
-    if (schemaStore == null)
-      _initSchemaStoreProxy();
-    return schemaStore.getSynonyms(schemaID);
   }
   
   public org.mitre.schemastore.model.Group[] getSubgroups(int groupID) throws java.rmi.RemoteException{
