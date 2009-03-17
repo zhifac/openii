@@ -91,7 +91,10 @@ CREATE TABLE mapping_cell (
     element1_id integer,
     element2_id integer,
     score numeric(6,3),
-    scorer character varying(50),
+    author character varying(50),
+    modification_date date,
+    transform character varying(200),
+    notes character varying(500),
     validated character
 );
 
