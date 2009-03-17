@@ -74,8 +74,4 @@ public class Schemas
 			return Database.deleteSchema(schemaID);
 		return false;
 	}
-	
-	/** Removes the specified schema */
-	static public ArrayList<String> getSynonyms(Integer schemaID)
-		{ return Database.getSynonyms(schemaID); }
 }

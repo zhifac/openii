@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 
 import org.mitre.schemastore.data.Groups;
-import org.mitre.schemastore.data.SchemaRelationships;
 import org.mitre.schemastore.model.Alias;
 import org.mitre.schemastore.model.Attribute;
 import org.mitre.schemastore.model.Containment;
@@ -242,31 +241,6 @@ public class Database
 			System.out.println("(E) Database:deleteSchema: "+e.getMessage());
 		}
 		return success;
-	}
-
-	/** Returns list of all(element_id, word, syn_id) in the database for the specified schema and its ancestors. */
-	static public ArrayList<String> getSynonyms(Integer schemaID)
-	{
-		ArrayList<String> synonyms = new ArrayList<String>();
-
-		// Cycle through all schemas
-		ArrayList<Integer> schemaIDs = SchemaRelationships.getAncestors(schemaID); schemaIDs.add(schemaID);
-		for(Integer currSchemaID : schemaIDs)
-		{
-			// Retrieve all synonyms for the current schema 
-			try {
-				Statement stmt = connection.getStatement();
-				ResultSet rs = stmt.executeQuery("SELECT words.element_id, words.word, syn_id " +
-						"FROM schema_elements join (words LEFT OUTER JOIN syns ON words.word = syns.word) " +
-						"on schema_elements.id = words.element_id where schema_id=" + currSchemaID);	
-				while(rs.next())
-					synonyms.add(rs.getInt("element_id") + "," + rs.getString("word") + "," + rs.getInt("syn_id"));
-				stmt.close();	
-			}
-			catch (SQLException e) { System.out.println("(E) Database:getSynonyms: "+e.getMessage()); }
-		}
-			
-		return synonyms;
 	}
 
 	/** Locks the specified schema */
