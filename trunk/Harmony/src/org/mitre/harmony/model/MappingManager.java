@@ -147,7 +147,7 @@ public class MappingManager
 			for(MappingCell mappingCell : newMappingCells)
 			{
 				Integer mappingCellID = MappingCellManager.createMappingCell(mappingCell.getElement1(), mappingCell.getElement2());
-				MappingCellManager.modifyMappingCell(mappingCellID, mappingCell.getScore(), mappingCell.getScorer(), mappingCell.getValidated());
+				MappingCellManager.modifyMappingCell(mappingCellID, mappingCell.getScore(), mappingCell.getAuthor(), mappingCell.getValidated());
 			}
 			for(MappingListener listener : listeners.get())
 				listener.mappingModified();

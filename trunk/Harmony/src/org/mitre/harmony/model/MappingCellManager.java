@@ -1,6 +1,7 @@
 package org.mitre.harmony.model;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.HashSet;
 
@@ -84,17 +85,14 @@ public class MappingCellManager implements MappingListener, PreferencesListener
 	
 	/** Returns the requested mapping cell */
 	static public MappingCell getMappingCell(Integer mappingCellID)
-	{
-		MappingCell mappingCell = mappingCells.get(mappingCellID);
-		return new MappingCell(mappingCell.getId(),mappingCell.getMappingId(),mappingCell.getElement1(),mappingCell.getElement2(),mappingCell.getScore(),mappingCell.getScorer(),mappingCell.getValidated());
-	}
+		{ return mappingCells.get(mappingCellID).copy(); }
 	
 	/** Handles the creation of a mapping cell */
 	static public Integer createMappingCell(Integer node1ID, Integer node2ID)
 	{
 		// Create the mapping cell
 		Integer mappingCellID = ++maxID;
-		MappingCell mappingCell = new MappingCell(maxID,0,node1ID,node2ID,0.0,null,false);
+		MappingCell mappingCell = new MappingCell(maxID,0,node1ID,node2ID,0.0,null,Calendar.getInstance().getTime(),"","",false);
 		mappingCells.put(mappingCellID,mappingCell);
 			
 		// Add to the reference table
@@ -111,10 +109,10 @@ public class MappingCellManager implements MappingListener, PreferencesListener
 	}
 	
 	/** Handles the modifying of a mapping cell to the current mapping */
-	static public void modifyMappingCell(Integer mappingCellID, Double score, String scorer, boolean validated)
+	static public void modifyMappingCell(Integer mappingCellID, Double score, String author, boolean validated)
 	{
 		MappingCell oldMappingCell = mappingCells.get(mappingCellID);
-		MappingCell newMappingCell = new MappingCell(oldMappingCell.getId(),oldMappingCell.getMappingId(),oldMappingCell.getElement1(),oldMappingCell.getElement2(),score,scorer,validated);
+		MappingCell newMappingCell = new MappingCell(oldMappingCell.getId(),oldMappingCell.getMappingId(),oldMappingCell.getElement1(),oldMappingCell.getElement2(),score,author,Calendar.getInstance().getTime(),oldMappingCell.getTransform(),oldMappingCell.getNotes(),validated);
 		mappingCells.put(mappingCellID,newMappingCell);
 		for(MappingCellListener listener : listeners.get()) listener.mappingCellModified(oldMappingCell,newMappingCell);
 	}
