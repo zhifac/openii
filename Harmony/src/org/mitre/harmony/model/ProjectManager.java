@@ -70,7 +70,7 @@ public class ProjectManager implements MappingListener, MappingCellListener
 			for(MappingCell mappingCell : mappingCells)
 			{
 				Integer mappingCellID = MappingCellManager.createMappingCell(mappingCell.getElement1(), mappingCell.getElement2());
-				MappingCellManager.modifyMappingCell(mappingCellID, mappingCell.getScore(), mappingCell.getScorer(), mappingCell.getValidated());
+				MappingCellManager.modifyMappingCell(mappingCellID, mappingCell.getScore(), mappingCell.getAuthor(), mappingCell.getValidated());
 			}
 		}
 		if(mapping==null) MappingManager.setMapping(new Mapping());

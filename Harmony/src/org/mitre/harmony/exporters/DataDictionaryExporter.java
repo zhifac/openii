@@ -51,7 +51,7 @@ public class DataDictionaryExporter implements Exporter
 
     	// First, output all user selected node pairings
   		for(MappingCell mappingCell : MappingCellManager.getMappingCells())
-    		if(mappingCell.getScorer().equals("User") && mappingCell.getScore()>0)
+    		if(mappingCell.getAuthor().equals("User") && mappingCell.getScore()>0)
     		{
     			// Gets the elements associated with the mapping cell
     			SchemaElement element1 = SchemaManager.getSchemaElement(mappingCell.getElement1());
