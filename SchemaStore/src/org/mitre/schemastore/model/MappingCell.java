@@ -58,10 +58,10 @@ public class MappingCell implements Serializable
 	public Integer getElement1() { return element1; }
 	public Integer getElement2() { return element2; }
 	public Double getScore() { return score; }
-	public String getAuthor() { return author; }
+	public String getAuthor() { return author==null ? "" : author; }
 	public Date getModificationDate() { return modificationDate; }
-	public String getTransform() { return transform; }
-	public String getNotes() { return notes; }
+	public String getTransform() { return transform==null ? "" : transform; }
+	public String getNotes() { return notes==null ? "" : notes; }
 	public Boolean getValidated() { return validated; }
 
 	// Handles all mapping cell setters
@@ -70,10 +70,10 @@ public class MappingCell implements Serializable
 	public void setElement1(Integer element1) { this.element1 = element1; }
 	public void setElement2(Integer element2) { this.element2 = element2; }
 	public void setScore(Double score) { this.score = score; }
-	public void setAuthor(String author) { this.author = author; }
+	public void setAuthor(String author) { this.author = author==null ? "" : author; }
 	public void setModificationDate(Date modificationDate) { this.modificationDate = modificationDate; }
-	public void setTransform(String transform) { this.transform = transform; }
-	public void setNotes(String notes) { this.notes = notes; }
+	public void setTransform(String transform) { this.transform = transform==null ? "" : transform; }
+	public void setNotes(String notes) { this.notes = notes==null ? "" : notes; }
 	public void setValidated(Boolean validated) { this.validated = validated; }
 
 	/** Returns the hash code */
