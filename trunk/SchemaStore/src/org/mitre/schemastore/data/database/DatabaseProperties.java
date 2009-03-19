@@ -6,6 +6,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URL;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -26,6 +27,7 @@ public class DatabaseProperties
 	static private String databaseName = null;
 	static private String databaseUser = null;
 	static private String databasePassword = null;
+	static private String databaseDirectory = null;
 
 	/** Extracts database properties */
 	static
@@ -58,6 +60,10 @@ public class DatabaseProperties
 			Matcher passwordMatcher = passwordPattern.matcher(buffer);
 			if(passwordMatcher.find())
 				databasePassword = passwordMatcher.group(1);
+
+			// Set the database directory (only used for Derby)
+			URL databaseURL = DatabaseProperties.class.getProtectionDomain().getCodeSource().getLocation();
+			databaseDirectory = databaseURL.getPath().replaceAll(".*/C:","").replaceAll("/build/classes/","").replaceAll("/SchemaStore.jar","");
 		}
 		catch(IOException e)
 			{ System.out.println("(E)DatabaseProperties - schemastore.xml has failed to load!\n"+e.getMessage()); }
@@ -78,4 +84,8 @@ public class DatabaseProperties
 	/** Returns the database password */
 	static public String getPassword()
 		{ return databasePassword; }
+
+	/** Returns the database directory */
+	static public String getDirectory()
+		{ return databaseDirectory; }
 }
