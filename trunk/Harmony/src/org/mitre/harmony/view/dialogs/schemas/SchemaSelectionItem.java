@@ -10,7 +10,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-import org.mitre.harmony.model.SchemaManager;
+import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.view.dialogs.Link;
 import org.mitre.schemastore.model.Schema;
 
@@ -20,6 +20,9 @@ class SchemaSelectionItem extends JPanel implements ActionListener
 	/** Stores the schema associated with this check box */
 	private Schema schema;
 	
+	/** Stores the Harmony model */
+	private HarmonyModel harmonyModel;
+	
 	/** Stores the check box associated with the schema */
 	private JCheckBox checkbox;
 	
@@ -27,9 +30,10 @@ class SchemaSelectionItem extends JPanel implements ActionListener
 	private Link deleteLink = null;
 	
 	/** Constructs the schema check box */
-	SchemaSelectionItem(Schema schema, boolean deletable)
+	SchemaSelectionItem(Schema schema, boolean deletable, HarmonyModel harmonyModel)
 	{
 		this.schema = schema;
+		this.harmonyModel = harmonyModel;
 			
 		// Initialize the check box
 		checkbox = new JCheckBox(schema.getName());
@@ -93,7 +97,7 @@ class SchemaSelectionItem extends JPanel implements ActionListener
 				SchemaSelectionPane pane = (SchemaSelectionPane)component;
 				
 				// Delete the schema
-				if(SchemaManager.deleteSchema(schema.getId()))
+				if(harmonyModel.getSchemaManager().deleteSchema(schema.getId()))
 				{
 					pane.schemaList.remove(this);
 					pane.generateSchemaList();

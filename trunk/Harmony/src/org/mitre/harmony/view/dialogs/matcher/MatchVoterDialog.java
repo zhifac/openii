@@ -25,7 +25,7 @@ import javax.swing.border.EmptyBorder;
 
 import org.mitre.harmony.matchers.MatcherManager;
 import org.mitre.harmony.matchers.voters.MatchVoter;
-import org.mitre.harmony.view.harmonyPane.HarmonyFrame;
+import org.mitre.harmony.model.HarmonyModel;
 
 /**
  * Class used for allowing the selection of match voters
@@ -99,9 +99,9 @@ class MatchVoterDialog extends JDialog implements ActionListener, WindowListener
 	/**
 	 * Constructs the match voter dialog
 	 */
-	MatchVoterDialog()
+	MatchVoterDialog(HarmonyModel harmonyModel)
 	{
-		super(HarmonyFrame.harmonyFrame.getFrame());
+		super(harmonyModel.getBaseFrame());
 		
 		// Set up loader dialog layout and contents
 		setTitle("Which Match Voters Should Be Used?");
@@ -109,7 +109,7 @@ class MatchVoterDialog extends JDialog implements ActionListener, WindowListener
     	setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
 		setContentPane(mainPane());
 		pack();
-		setLocationRelativeTo(HarmonyFrame.harmonyFrame);
+		setLocationRelativeTo(harmonyModel.getBaseFrame());
 		
 		// Listen for window events so window can be gracefully closed
 		addWindowListener(this);

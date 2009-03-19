@@ -34,9 +34,8 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 
-import org.mitre.harmony.model.MappingCellManager;
-import org.mitre.harmony.model.selectedInfo.SelectedInfo;
-import org.mitre.harmony.view.harmonyPane.HarmonyFrame;
+import org.mitre.harmony.model.HarmonyModel;
+import org.mitre.harmony.model.mapping.MappingCellManager;
 import org.mitre.schemastore.model.MappingCell;
 
 /**
@@ -49,6 +48,9 @@ public class MappingCellDialog extends JDialog implements ActionListener, MouseL
 	
 	private List<Integer> mappingCellIDs;	// Mapping cells which may be accepted/rejected
 
+	/** Stores the Harmony model */
+	private HarmonyModel harmonyModel;
+	
 	/**
 	 * Displays the pane displaying current mapping cell information
 	 * @author CWOLF
@@ -74,7 +76,7 @@ public class MappingCellDialog extends JDialog implements ActionListener, MouseL
 			Double maxConf = -1.0;
 			for(Integer mappingCell : mappingCellIDs)
 			{
-				Double conf = MappingCellManager.getMappingCell(mappingCell).getScore();
+				Double conf = harmonyModel.getMappingCellManager().getMappingCell(mappingCell).getScore();
 				if(conf < minConf) minConf = conf;
 				if(conf > maxConf) maxConf = conf;
 			}
@@ -133,8 +135,6 @@ public class MappingCellDialog extends JDialog implements ActionListener, MouseL
 		}
 	}
 
-	private JTextField nameField; 			// Field for displaying the link's name
-	private JTextField dateField; 			// Field for displaying the link's creation date
 	private JTextField authorField; 		// Field for displaying the link's author
 	private JTextField transformField; // Field for displaying the link's transformation
 	private JTextArea notesField; 			// Field for displaying the link's notes
@@ -152,7 +152,7 @@ public class MappingCellDialog extends JDialog implements ActionListener, MouseL
 	{
 		for(Integer mappingCellID : mappingCellIDs)
 		{
-			MappingCell mappingCell = MappingCellManager.getMappingCell(mappingCellID);
+			MappingCell mappingCell = harmonyModel.getMappingCellManager().getMappingCell(mappingCellID);
 			if(!mappingCell.getValidated()) return false;
 			if(mappingCell.getScore()!=1.0) return false;
 		}
@@ -166,7 +166,7 @@ public class MappingCellDialog extends JDialog implements ActionListener, MouseL
 	{
 		for(Integer mappingCellID : mappingCellIDs)
 		{
-			MappingCell mappingCell = MappingCellManager.getMappingCell(mappingCellID);
+			MappingCell mappingCell = harmonyModel.getMappingCellManager().getMappingCell(mappingCellID);
 			if(!mappingCell.getValidated()) return false;
 			if(mappingCell.getScore()!=-1.0) return false;
 		}
@@ -190,45 +190,40 @@ public class MappingCellDialog extends JDialog implements ActionListener, MouseL
 	 */
 	private JPanel getAnnotationsPane()
 	{
+		// Gets the mapping cell manager
+		MappingCellManager manager = harmonyModel.getMappingCellManager();
+		
 		// Initial annotations
-		String name = MappingCellManager.getMappingCellName(mappingCellIDs.get(0));
-		String creationDate = MappingCellManager.getMappingCellCreationDate(mappingCellIDs.get(0));
-		String author = MappingCellManager.getMappingCellAuthor(mappingCellIDs.get(0));
-		String transform = MappingCellManager.getMappingCellTransform(mappingCellIDs.get(0));
-		String notes = MappingCellManager.getMappingCellNotes(mappingCellIDs.get(0));
+		MappingCell mappingCell = manager.getMappingCell(mappingCellIDs.get(0));
+		String author = mappingCell.getAuthor();
+		String transform = mappingCell.getTransform();
+		String notes = mappingCell.getNotes();
 		
 		// Check to see if the annotations for all mapping cells match
 		for(Integer mappingCellID : mappingCellIDs)
 		{
-			if(!name.equals(MappingCellManager.getMappingCellName(mappingCellID))) name = MULTIPLE_VALUES;
-			if(!creationDate.equals(MappingCellManager.getMappingCellCreationDate(mappingCellID))) creationDate = MULTIPLE_VALUES;
-			if(!author.equals(MappingCellManager.getMappingCellAuthor(mappingCellID))) author = MULTIPLE_VALUES;
-			if(!transform.equals(MappingCellManager.getMappingCellTransform(mappingCellID))) transform = MULTIPLE_VALUES;
-			if(!notes.equals(MappingCellManager.getMappingCellNotes(mappingCellID))) notes = MULTIPLE_VALUES;			
+			mappingCell = manager.getMappingCell(mappingCellID);
+			if(!author.equals(mappingCell.getAuthor())) author = MULTIPLE_VALUES;
+			if(!transform.equals(mappingCell.getTransform())) transform = MULTIPLE_VALUES;
+			if(!notes.equals(mappingCell.getNotes())) notes = MULTIPLE_VALUES;			
 		}
 		
 		// Initialize annotation fields
-		nameField = new JTextField(name); nameField.setMargin(new Insets(1,1,1,1));
-		dateField = new JTextField(creationDate); dateField.setMargin(new Insets(1,1,1,1));
 		authorField = new JTextField(author); authorField.setMargin(new Insets(1,1,1,1));
 		transformField = new JTextField(transform); transformField.setMargin(new Insets(1,1,1,1));
 		notesField = new JTextArea(notes); transformField.setMargin(new Insets(1,1,1,1));
 		notesField.setRows(3);
-		notesField.setBorder(nameField.getBorder());
+		notesField.setBorder(authorField.getBorder());
 		
 		// Build a pane with all of the annotation labels
 		JPanel labelPane = new JPanel();
 		labelPane.setLayout(new GridLayout(4,1));
-		labelPane.add(getLabelPane("Name: "));
-		labelPane.add(getLabelPane("Date: "));
 		labelPane.add(getLabelPane("Author: "));
 		labelPane.add(getLabelPane("Transform: "));
 		
 		// Build a pane with all of the annotation field boxes
 		JPanel fieldPane = new JPanel();
 		fieldPane.setLayout(new GridLayout(4,1));
-		fieldPane.add(nameField);
-		fieldPane.add(dateField);
 		fieldPane.add(authorField);
 		fieldPane.add(transformField);
 		
@@ -323,12 +318,13 @@ public class MappingCellDialog extends JDialog implements ActionListener, MouseL
 	}
 	
 	/** Initializes the mapping cell dialog */
-	public MappingCellDialog(List<Integer> mappingCellIDs)
+	public MappingCellDialog(List<Integer> mappingCellIDs, HarmonyModel harmonyModel)
 	{
-		super(HarmonyFrame.harmonyFrame.getFrame());
+		super(harmonyModel.getBaseFrame());
 		
 		// Initialize the selected links
 		this.mappingCellIDs = mappingCellIDs;
+		this.harmonyModel = harmonyModel;
 		
 		// Set up the main dialog pane
 		JPanel pane = new JPanel();
@@ -381,28 +377,33 @@ public class MappingCellDialog extends JDialog implements ActionListener, MouseL
 			boolean originallyRejected = linksRejected();
 			
 			// Cycle through all links to update annotations
+			MappingCellManager manager = harmonyModel.getMappingCellManager();
 			for(Integer mappingCellID : mappingCellIDs)
 			{
+				MappingCell mappingCell = manager.getMappingCell(mappingCellID);
+				
 				// Store all modifications to annotations
-				if(!nameField.getText().equals(MULTIPLE_VALUES))
-					MappingCellManager.setMappingCellName(mappingCellID,nameField.getText());
-				if(!dateField.getText().equals(MULTIPLE_VALUES))
-					MappingCellManager.setMappingCellCreationDate(mappingCellID,dateField.getText());
 				if(!authorField.getText().equals(MULTIPLE_VALUES))
-					MappingCellManager.setMappingCellAuthor(mappingCellID,authorField.getText());
+					mappingCell.setAuthor(authorField.getText());
 				if(!transformField.getText().equals(MULTIPLE_VALUES))
-					MappingCellManager.setMappingCellTransform(mappingCellID,transformField.getText());
+					mappingCell.setTransform(transformField.getText());
 				if(!notesField.getText().equals(MULTIPLE_VALUES))
-					MappingCellManager.setMappingCellNotes(mappingCellID,notesField.getText());
+					mappingCell.setNotes(notesField.getText());
 
 				// Accept or reject links as needed
 				if(acceptCheckbox.isSelected() || rejectCheckbox.isSelected())
-					MappingCellManager.modifyMappingCell(mappingCellID,acceptCheckbox.isSelected()?1.0:-1.0,System.getProperty("user.name"),true);
+				{
+					mappingCell.setScore(acceptCheckbox.isSelected()?1.0:-1.0);
+					mappingCell.setAuthor(System.getProperty("user.name"));
+					mappingCell.setValidated(true);
+				}
+
+				manager.setMappingCell(mappingCell);
 			}
 				
 			// If links rejected, unselect links after modifying annotations
 			if(rejectCheckbox.isSelected() && !originallyRejected)
-				SelectedInfo.setMappingCells(SelectedInfo.getSelectedMappingCells(),true);
+				harmonyModel.getSelectedInfo().setMappingCells(harmonyModel.getSelectedInfo().getSelectedMappingCells(),true);
 			
 			// Close link dialog
 			dispose();

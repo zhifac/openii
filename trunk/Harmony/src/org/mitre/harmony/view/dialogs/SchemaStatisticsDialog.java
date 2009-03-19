@@ -19,9 +19,7 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.labels.StandardPieSectionLabelGenerator;
 import org.jfree.chart.plot.PiePlot;
 import org.jfree.data.general.DefaultPieDataset;
-import org.mitre.harmony.model.MappingCellManager;
-import org.mitre.harmony.model.SchemaManager;
-import org.mitre.harmony.view.harmonyPane.HarmonyFrame;
+import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.schemastore.model.SchemaElement;
 
 /**
@@ -32,6 +30,9 @@ public class SchemaStatisticsDialog extends JDialog
 {
 	/** Schema for which the statistics are to be displayed */
 	private Integer schemaID;
+
+	/** Stores the Harmony model */
+	private HarmonyModel harmonyModel;
 	
 	/** Class for displaying the matched node statistics */
 	private class MatchedNodeStatistics extends JPanel
@@ -49,12 +50,12 @@ public class SchemaStatisticsDialog extends JDialog
 			int noCount = 0;
 		
 			// Cycles through all tree nodes to identify good, weak, and no links
-			for(SchemaElement schemaElement : SchemaManager.getSchemaElements(schemaID,null))
+			for(SchemaElement schemaElement : harmonyModel.getSchemaManager().getSchemaElements(schemaID,null))
 			{
 				double maxConf = Double.MIN_VALUE;
-				for(Integer mappingCellID : MappingCellManager.getMappingCellsByElement(schemaElement.getId()))
+				for(Integer mappingCellID : harmonyModel.getMappingCellManager().getMappingCellsByElement(schemaElement.getId()))
 				{
-					double conf = MappingCellManager.getMappingCell(mappingCellID).getScore();
+					double conf = harmonyModel.getMappingCellManager().getMappingCell(mappingCellID).getScore();
 					if(conf>maxConf) maxConf=conf;
 				}
 				if(maxConf>0.75) goodCount++;
@@ -72,7 +73,7 @@ public class SchemaStatisticsDialog extends JDialog
 			data.setValue("No Match",1.0*noCount/(goodCount+weakCount+noCount));
 			
 			// Generate a chart containing a pie plot for this data
-			String schemaName = SchemaManager.getSchema(schemaID).getName();
+			String schemaName = harmonyModel.getSchemaManager().getSchema(schemaID).getName();
 	        JFreeChart chart = ChartFactory.createPieChart("Matched Nodes for Schema "+schemaName,data,true,true,false);
 
 	        // Modify the pie plot settings
@@ -91,9 +92,10 @@ public class SchemaStatisticsDialog extends JDialog
 	}
 	
 	/** Initializes the link dialog */
-	public SchemaStatisticsDialog(Integer schemaID)
+	public SchemaStatisticsDialog(Integer schemaID, HarmonyModel harmonyModel)
 	{
-		super(HarmonyFrame.harmonyFrame.getFrame());
+		super(harmonyModel.getBaseFrame());
+		this.harmonyModel = harmonyModel;
 		
 		// Initialize the selected schema
 		this.schemaID = schemaID;
@@ -105,7 +107,7 @@ public class SchemaStatisticsDialog extends JDialog
 		pane.add(new MatchedNodeStatistics(),BorderLayout.CENTER);
 		
 		// Initialize the dialog parameters
-		setTitle("Statistics for Schema "+SchemaManager.getSchema(schemaID).getName());
+		setTitle("Statistics for Schema "+harmonyModel.getSchemaManager().getSchema(schemaID).getName());
 		setModal(true);
 		setResizable(false);
 		setContentPane(pane);

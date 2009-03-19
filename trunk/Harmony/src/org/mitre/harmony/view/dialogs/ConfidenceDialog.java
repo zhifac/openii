@@ -11,7 +11,8 @@ import javax.swing.JPanel;
 import javax.swing.UIManager;
 import javax.swing.border.LineBorder;
 
-import org.mitre.harmony.model.MappingCellManager;
+import org.mitre.harmony.model.HarmonyModel;
+import org.mitre.schemastore.model.MappingCell;
 
 /**
  * Displays the dialog showing mapping cell confidence
@@ -19,12 +20,17 @@ import org.mitre.harmony.model.MappingCellManager;
  */
 public class ConfidenceDialog extends JDialog
 {	
+	/** Stores the Harmony model */
+	private HarmonyModel harmonyModel;
+	
 	/** Stores the confidence dialog label */
 	private JLabel label = new JLabel();
 
 	/** Initializes the mapping cell dialog */
-	public ConfidenceDialog()
+	public ConfidenceDialog(HarmonyModel harmonyModel)
 	{		
+		this.harmonyModel = harmonyModel;
+		
 		// Generate the pane
 		JPanel pane = new JPanel();
 		pane.setBorder(new LineBorder(Color.darkGray));
@@ -43,14 +49,13 @@ public class ConfidenceDialog extends JDialog
 	/** Sets the confidence dialog mapping cell */
 	public void setMappingCell(Integer mappingCellID)
 	{
-		// Retrieve mapping cell information
-		Double score = MappingCellManager.getMappingCell(mappingCellID).getScore();
-		String notes = MappingCellManager.getMappingCellNotes(mappingCellID);
-
+		// Retrieve the specified mapping cell
+		MappingCell mappingCell = harmonyModel.getMappingCellManager().getMappingCell(mappingCellID);
+		
 		// Generate the text to display in the tool tip
 		StringBuffer display = new StringBuffer("<html>");
-		display.append("Confidence: " + score + "<br>");
-		display.append(notes.length()==0 ? "" : "Notes: " + notes);
+		display.append("Confidence: " + mappingCell.getScore() + "<br>");
+		display.append(mappingCell.getNotes()==null ? "" : "Notes: " + mappingCell.getNotes());
 		display.append("</html>");
 		label.setText(display.toString());
 		pack();

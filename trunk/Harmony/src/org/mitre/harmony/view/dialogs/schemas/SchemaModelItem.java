@@ -8,7 +8,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
-import org.mitre.harmony.model.preferences.Preferences;
+import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.graph.GraphModel;
 import org.mitre.schemastore.model.graph.HierarchicalGraph;
@@ -28,7 +28,7 @@ class SchemaModelItem extends JPanel
 	private JComboBox modelSelection = new JComboBox();
 	
 	/** Constructs the schema model item */
-	SchemaModelItem(Schema schema)
+	SchemaModelItem(Schema schema, HarmonyModel harmonyModel)
 	{
 		this.schema = schema;
 		
@@ -41,7 +41,7 @@ class SchemaModelItem extends JPanel
 			modelSelection.addItem(model);
 
 		// Set the selected model
-		GraphModel selectedModel = Preferences.getSchemaGraphModel(schema.getId());
+		GraphModel selectedModel = harmonyModel.getPreferences().getSchemaGraphModel(schema.getId());
 		if(selectedModel!=null)
 			modelSelection.setSelectedItem(selectedModel);
 		

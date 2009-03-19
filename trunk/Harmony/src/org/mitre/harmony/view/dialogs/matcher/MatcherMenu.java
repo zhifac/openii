@@ -14,12 +14,16 @@ import org.mitre.harmony.matchers.MatcherManager;
 import org.mitre.harmony.matchers.mergers.MatchMerger;
 import org.mitre.harmony.matchers.mergers.VoteMerger;
 import org.mitre.harmony.matchers.voters.MatchVoter;
+import org.mitre.harmony.model.HarmonyModel;
 
 /**
  * Menu to display all available matchers
  */
 public class MatcherMenu extends JMenu
 {
+	/** Stores the Harmony model */
+	private HarmonyModel harmonyModel;
+	
 	/**
 	 * Class for handling match voter menu items
 	 */
@@ -46,7 +50,7 @@ public class MatcherMenu extends JMenu
 		{
 			ArrayList<MatchVoter> voters = new ArrayList<MatchVoter>();
 			voters.add(voter);
-			new MatcherDialog(new VoteMerger(),voters);
+			new MatcherDialog(new VoteMerger(),voters,harmonyModel);
 		}
 	}
 	
@@ -85,11 +89,11 @@ public class MatcherMenu extends JMenu
 		 */
 		public void actionPerformed(ActionEvent e)
 		{
-			if(e.getSource()==fullMatch) new MatcherDialog(matcher,MatcherManager.getVoters());
+			if(e.getSource()==fullMatch) new MatcherDialog(matcher,MatcherManager.getVoters(),harmonyModel);
 			else if(e.getSource()==customMatch)
 			{
-				ArrayList<MatchVoter> voters = new MatchVoterDialog().getSelectedMatchVoters();
-				if(voters != null && voters.size()>0) new MatcherDialog(matcher,voters);
+				ArrayList<MatchVoter> voters = new MatchVoterDialog(harmonyModel).getSelectedMatchVoters();
+				if(voters != null && voters.size()>0) new MatcherDialog(matcher,voters,harmonyModel);
 			}
 		}
 	}
@@ -97,9 +101,10 @@ public class MatcherMenu extends JMenu
 	/**
 	 * Initializes the matcher menu to display all installed matchers
 	 */
-	public MatcherMenu()
+	public MatcherMenu(HarmonyModel harmonyModel)
 	{
 		super("Matchers");
+		this.harmonyModel = harmonyModel;
 		setMnemonic(KeyEvent.VK_M);
 
 		// Place all matchers into menu

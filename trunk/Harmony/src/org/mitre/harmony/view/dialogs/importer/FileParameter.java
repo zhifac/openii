@@ -20,12 +20,15 @@ import javax.swing.border.LineBorder;
 import javax.swing.event.CaretListener;
 import javax.swing.filechooser.FileFilter;
 
-import org.mitre.harmony.model.preferences.Preferences;
+import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.schemastore.importers.Importer;
 
 /** File parameter class */
 public class FileParameter extends JPanel implements ActionListener
 {
+	/** Stores the Harmony model */
+	private HarmonyModel harmonyModel;
+	
 	/** File filter class associated with this file parameter */
 	private class ParameterFileFilter extends FileFilter
 	{
@@ -55,8 +58,10 @@ public class FileParameter extends JPanel implements ActionListener
 	private Importer importer = null;
 	
 	/** Constructs the file parameter */
-	public FileParameter()
+	public FileParameter(HarmonyModel harmonyModel)
 	{
+		this.harmonyModel = harmonyModel;
+		
 		// Initialize the file field
 		fileField.setColumns(20);
 		
@@ -103,13 +108,13 @@ public class FileParameter extends JPanel implements ActionListener
 		ParameterFileFilter filter = new ParameterFileFilter();
 		
 		// Ask the user to specify a file
-		JFileChooser chooser = new JFileChooser(Preferences.getImportDir());
+		JFileChooser chooser = new JFileChooser(harmonyModel.getPreferences().getImportDir());
 		chooser.setDialogType(JFileChooser.OPEN_DIALOG);
 		chooser.setAcceptAllFileFilterUsed(false);
 		chooser.addChoosableFileFilter(filter);
 		if(chooser.showDialog(dialog,"Select")==JFileChooser.APPROVE_OPTION)
 		{
-			Preferences.setImportDir(chooser.getSelectedFile().getParentFile());
+			harmonyModel.getPreferences().setImportDir(chooser.getSelectedFile().getParentFile());
 			String path = chooser.getSelectedFile().getPath();
 			if(!filter.accept(new File(path))) path += importer.getFileTypes().get(0);
 			fileField.setText(path);

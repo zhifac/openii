@@ -12,20 +12,24 @@ import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
-import org.mitre.harmony.model.SchemaManager;
-import org.mitre.harmony.model.preferences.Preferences;
+import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.view.dialogs.UnderlinedLabel;
 import org.mitre.schemastore.model.Schema;
 
 /** Class for handling the setting of the schema model */
 public class SchemaModelPane extends JPanel
 {	
+	/** Stores the Harmony model */
+	private HarmonyModel harmonyModel;
+	
 	/** List of schemas with model settings */
 	private JPanel schemaList = null;
 	
 	/** Constructs the schema model pane */
-	public SchemaModelPane()
+	public SchemaModelPane(HarmonyModel harmonyModel)
 	{
+		this.harmonyModel = harmonyModel;
+		
 		// Create the header
 		JLabel col1Label = new UnderlinedLabel("Graph Model");
 		JLabel col2Label = new UnderlinedLabel("Schema");
@@ -52,7 +56,7 @@ public class SchemaModelPane extends JPanel
 	/** Adds a schema to the pane */
 	public void selectSchema(Integer schemaID)
 	{
-		Schema schema = SchemaManager.getSchema(schemaID);
+		Schema schema = harmonyModel.getSchemaManager().getSchema(schemaID);
 		int loc = 0;
 		for(loc=0; loc<schemaList.getComponentCount(); loc++)
 		{
@@ -60,7 +64,7 @@ public class SchemaModelPane extends JPanel
 			if(item.getSchema().getName().toLowerCase().compareTo(schema.getName().toLowerCase())>0)
 				break;
 		}
-		schemaList.add(new SchemaModelItem(schema),loc);
+		schemaList.add(new SchemaModelItem(schema, harmonyModel),loc);
 		revalidate(); repaint();
 	}
 
@@ -82,7 +86,7 @@ public class SchemaModelPane extends JPanel
 		for(int loc=0; loc<schemaList.getComponentCount(); loc++)
 		{
 			SchemaModelItem item = (SchemaModelItem)schemaList.getComponent(loc);
-			Preferences.setSchemaGraphModel(item.getSchema().getId(), item.getModel());
+			harmonyModel.getPreferences().setSchemaGraphModel(item.getSchema().getId(), item.getModel());
 		}
 	}
 }
