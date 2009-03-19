@@ -9,9 +9,8 @@ import java.util.ArrayList;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
+import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.ToolManager;
-import org.mitre.harmony.model.preferences.Preferences;
-import org.mitre.harmony.view.harmonyPane.HarmonyFrame;
 
 /**
  * Manages the Harmony Exporters
@@ -35,19 +34,19 @@ public class ExporterManager
 	}
 	
 	/** Allows user to export a project */
-	public static void exportMapping()
+	public static void exportMapping(HarmonyModel harmonyModel)
 	{
 		// Ask for location to export project
-		JFileChooser chooser = new JFileChooser(Preferences.getExportDir());
+		JFileChooser chooser = new JFileChooser(harmonyModel.getPreferences().getExportDir());
 		chooser.setDialogType(JFileChooser.SAVE_DIALOG);
 		chooser.setAcceptAllFileFilterUsed(false);
 		for(Exporter exporter : exporters)
 			chooser.addChoosableFileFilter(exporter.getFileFilter());
-		if(chooser.showDialog(HarmonyFrame.harmonyFrame,"Export")==JFileChooser.APPROVE_OPTION)
+		if(chooser.showDialog(harmonyModel.getBaseFrame(),"Export")==JFileChooser.APPROVE_OPTION)
 		{
 			// Retrieve the selected file from the file chooser
 			File file = chooser.getSelectedFile();
-			Preferences.setExportDir(file.getParentFile());
+			harmonyModel.getPreferences().setExportDir(file.getParentFile());
 
 			// Retrieves the selected converter from the file chooser
 			Exporter exporter = null;
@@ -62,7 +61,7 @@ public class ExporterManager
 			// Check to see if file already exists and checks to make sure it can be overwritten
 			if(file!=null && file.exists())
     		{
-	    		int option = JOptionPane.showConfirmDialog(HarmonyFrame.harmonyFrame,
+	    		int option = JOptionPane.showConfirmDialog(harmonyModel.getBaseFrame(),
 	        			file + " exists.  Overwrite?",
 						"Overwrite File", JOptionPane.YES_NO_OPTION,
 						JOptionPane.WARNING_MESSAGE);
@@ -73,7 +72,7 @@ public class ExporterManager
 			try { exporter.exportTo(file); }
 			catch(IOException e)
 			{
-				JOptionPane.showMessageDialog(HarmonyFrame.harmonyFrame,
+				JOptionPane.showMessageDialog(harmonyModel.getBaseFrame(),
 						"File " + file.toString() + " failed to be exported.\n"+e.getMessage(),
 						"Export Error",JOptionPane.ERROR_MESSAGE);
 			}

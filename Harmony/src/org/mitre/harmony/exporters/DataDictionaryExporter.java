@@ -9,18 +9,20 @@ import java.io.IOException;
 
 import javax.swing.filechooser.FileFilter;
 
-import org.mitre.harmony.model.MappingCellManager;
-import org.mitre.harmony.model.MappingManager;
-import org.mitre.harmony.model.SchemaManager;
+import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.SchemaElement;
 
 /**
- * Class for exporting a data dictionart from the project
+ * Class for exporting a data dictionary from the project
  * @author CWOLF
  */
-public class DataDictionaryExporter implements Exporter
+public class DataDictionaryExporter extends Exporter
 {
+	/** Constructs the DataDictionary exporter */
+	public DataDictionaryExporter(HarmonyModel harmonyModel)
+		{ super(harmonyModel); }
+	
 	/** Returns the file types associated with this converter */
 	public String getFileType()
 		{ return "csv"; }
@@ -50,12 +52,12 @@ public class DataDictionaryExporter implements Exporter
 		BufferedWriter out = new BufferedWriter(new FileWriter(file));
 
     	// First, output all user selected node pairings
-  		for(MappingCell mappingCell : MappingCellManager.getMappingCells())
+  		for(MappingCell mappingCell : getModel().getMappingCellManager().getMappingCells())
     		if(mappingCell.getAuthor().equals("User") && mappingCell.getScore()>0)
     		{
     			// Gets the elements associated with the mapping cell
-    			SchemaElement element1 = SchemaManager.getSchemaElement(mappingCell.getElement1());
-    			SchemaElement element2 = SchemaManager.getSchemaElement(mappingCell.getElement2());
+    			SchemaElement element1 = getModel().getSchemaManager().getSchemaElement(mappingCell.getElement1());
+    			SchemaElement element2 = getModel().getSchemaManager().getSchemaElement(mappingCell.getElement2());
     			
     			String sName = element1.getName();
     			String sDesc = element1.getDescription();
@@ -65,9 +67,9 @@ public class DataDictionaryExporter implements Exporter
     		}
 
     	// Next, output all source nodes with no links
-  		for(Integer schemaID : MappingManager.getSchemas())
-  			for(SchemaElement element : SchemaManager.getSchemaElements(schemaID, null))
-  				if(MappingCellManager.getMappingCellsByElement(element.getId()).size()==0)
+  		for(Integer schemaID : getModel().getMappingManager().getSchemas())
+  			for(SchemaElement element : getModel().getSchemaManager().getSchemaElements(schemaID, null))
+  				if(getModel().getMappingCellManager().getMappingCellsByElement(element.getId()).size()==0)
     				out.write(element.getName()+",\""+element.getDescription().replace('\n',' ').replaceAll("\"","\"\"")+"\",,\n");
  
     	out.close();
