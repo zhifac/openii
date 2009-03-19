@@ -138,7 +138,7 @@ public class Database
 		try {
 			int schemaID = getUniversalID();
 			Statement stmt = connection.getStatement();
-			stmt.executeUpdate("INSERT INTO \"schema\"(id,name,author,source,\"type\",description,locked) VALUES("+schemaID+",'"+scrub(schema.getName(),50)+" Extension','"+scrub(schema.getAuthor(),50)+"','"+scrub(schema.getSource(),200)+"','"+scrub(schema.getType(),50)+"','Extension of "+scrub(schema.getName(),487)+"','f')");
+			stmt.executeUpdate("INSERT INTO \"schema\"(id,name,author,source,\"type\",description,locked) VALUES("+schemaID+",'"+scrub(schema.getName(),50)+" Extension','"+scrub(schema.getAuthor(),50)+"','"+scrub(schema.getSource(),200)+"','"+scrub(schema.getType(),50)+"','Extension of "+scrub(schema.getName(),483)+"','f')");
 			stmt.executeUpdate("INSERT INTO extensions(schema_id,base_id) VALUES("+schemaID+","+schema.getId()+")");
 			stmt.close();
 			connection.commit();
@@ -178,7 +178,7 @@ public class Database
 		boolean success = false;
 		try {
 			Statement stmt = connection.getStatement();
-			stmt.executeUpdate("UPDATE \"schema\" SET name='"+scrub(schema.getName(),50)+"', author='"+scrub(schema.getAuthor(),50)+"', source='"+scrub(schema.getSource(),200)+"', \"type\"='"+scrub(schema.getType(),50)+"', description='"+scrub(schema.getDescription(),500)+"' WHERE id="+schema.getId());
+			stmt.executeUpdate("UPDATE \"schema\" SET name='"+scrub(schema.getName(),50)+"', author='"+scrub(schema.getAuthor(),50)+"', source='"+scrub(schema.getSource(),200)+"', \"type\"='"+scrub(schema.getType(),50)+"', description='"+scrub(schema.getDescription(),4096)+"' WHERE id="+schema.getId());
 			stmt.close();
 			connection.commit();
 			success = true;
@@ -739,7 +739,7 @@ public class Database
 
 			// Retrieve the schema element name, description, and base ID
 			String name = scrub(schemaElement.getName(),50);
-			String description = scrub(schemaElement.getDescription(),500);
+			String description = scrub(schemaElement.getDescription(),4096);
 			Integer baseID = schemaElement.getBase();
 
 			// Inserts an entity
@@ -813,7 +813,7 @@ public class Database
 
 			// Retrieve the schema element name, description, and base ID
 			String name = scrub(schemaElement.getName(),50);
-			String description = scrub(schemaElement.getDescription(),500);
+			String description = scrub(schemaElement.getDescription(),4096);
 			
 			// Updates an entity
 			if(schemaElement instanceof Entity)
@@ -1172,7 +1172,7 @@ public class Database
 		try {
 			mappingID = getUniversalID();
 			Statement stmt = connection.getStatement();
-			stmt.executeUpdate("INSERT INTO mapping(id,name,description,author) VALUES("+mappingID+",'"+scrub(mapping.getName(),50)+"','"+scrub(mapping.getDescription(),500)+"','"+scrub(mapping.getAuthor(),50)+"')");
+			stmt.executeUpdate("INSERT INTO mapping(id,name,description,author) VALUES("+mappingID+",'"+scrub(mapping.getName(),50)+"','"+scrub(mapping.getDescription(),4096)+"','"+scrub(mapping.getAuthor(),50)+"')");
 			for(Integer schema : mapping.getSchemas())
 				stmt.executeUpdate("INSERT INTO mapping_schema(mapping_id,schema_id) VALUES("+mappingID+","+schema+")");
 			stmt.close();
@@ -1193,7 +1193,7 @@ public class Database
 		boolean success = false;
 		try {
 			Statement stmt = connection.getStatement();
-			stmt.executeUpdate("UPDATE mapping SET name='"+scrub(mapping.getName(),50)+"', description='"+scrub(mapping.getDescription(),500)+"', author='"+scrub(mapping.getAuthor(),50)+"' WHERE id="+mapping.getId());
+			stmt.executeUpdate("UPDATE mapping SET name='"+scrub(mapping.getName(),50)+"', description='"+scrub(mapping.getDescription(),4096)+"', author='"+scrub(mapping.getAuthor(),50)+"' WHERE id="+mapping.getId());
 			stmt.executeUpdate("DELETE FROM mapping_schema WHERE mapping_id="+mapping.getId());
 			for(Integer schema : mapping.getSchemas())
 				stmt.executeUpdate("INSERT INTO mapping_schema(mapping_id,schema_id) VALUES("+mapping.getId()+","+schema+")");			
