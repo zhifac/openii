@@ -19,8 +19,8 @@ import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.plaf.metal.MetalSliderUI;
 
-import org.mitre.harmony.model.MappingCellManager;
-import org.mitre.harmony.model.filters.Filters;
+import org.mitre.harmony.model.HarmonyModel;
+import org.mitre.harmony.model.mapping.MappingCellManager;
 
 /**
  * Pane to display currently set confidence level
@@ -32,6 +32,9 @@ public class ConfidencePane extends JPanel
 	public static final int CONFIDENCE_SCALE = 100;
 	private static final int MIN_CONFIDENCE = new Double(MappingCellManager.MIN_CONFIDENCE*CONFIDENCE_SCALE).intValue();
 	private static final int MAX_CONFIDENCE = new Double(MappingCellManager.MAX_CONFIDENCE*CONFIDENCE_SCALE).intValue();
+	
+	/** Stores the Harmony model */
+	private HarmonyModel harmonyModel;
 	
 	/**
 	 * Class constructing the confidence slider
@@ -173,7 +176,7 @@ public class ConfidencePane extends JPanel
 				
 				// Adjust confidence filter settings if changes occurred
 				if(minValue!=origMinValue || maxValue!=origMaxValue)
-					{ Filters.setConfidence(1.0*minValue/CONFIDENCE_SCALE,1.0*maxValue/CONFIDENCE_SCALE); }
+					{ harmonyModel.getFilters().setConfidence(1.0*minValue/CONFIDENCE_SCALE,1.0*maxValue/CONFIDENCE_SCALE); }
 			}
 	
 			public void mouseClicked(MouseEvent e) {}
@@ -209,17 +212,17 @@ public class ConfidencePane extends JPanel
 			setUI(new ConfSliderUI(this));
 			
 			// Initialize the min and max confidence values
-			minValue = new Double(Filters.getMinConfThreshold()*CONFIDENCE_SCALE).intValue();
-			maxValue = new Double(Filters.getMaxConfThreshold()*CONFIDENCE_SCALE).intValue();
+			minValue = new Double(harmonyModel.getFilters().getMinConfThreshold()*CONFIDENCE_SCALE).intValue();
+			maxValue = new Double(harmonyModel.getFilters().getMaxConfThreshold()*CONFIDENCE_SCALE).intValue();
 		}
 	}
 	
 	/**
 	 * Initializes the confidence pane
 	 */
-	public ConfidencePane()
+	public ConfidencePane(HarmonyModel harmonyModel)
 	{
-		// Place confidence slider in confidence pane
+		this.harmonyModel = harmonyModel;
 		setLayout(new BorderLayout());
 		add(new ConfidenceSlider(),BorderLayout.CENTER);
 	}

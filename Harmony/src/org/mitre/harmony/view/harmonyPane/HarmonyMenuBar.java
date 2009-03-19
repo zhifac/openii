@@ -18,11 +18,7 @@ import javax.swing.KeyStroke;
 
 import org.mitre.harmony.exporters.ExporterManager;
 import org.mitre.harmony.model.HarmonyConsts;
-import org.mitre.harmony.model.MappingCellManager;
-import org.mitre.harmony.model.MappingManager;
-import org.mitre.harmony.model.ProjectManager;
-import org.mitre.harmony.model.preferences.Preferences;
-import org.mitre.harmony.model.selectedInfo.SelectedInfo;
+import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.view.dialogs.AboutDialog;
 import org.mitre.harmony.view.dialogs.mappings.LoadMappingDialog;
 import org.mitre.harmony.view.dialogs.mappings.SaveMappingDialog;
@@ -37,6 +33,9 @@ import org.mitre.harmony.view.affinity.AffinityDialog;
  */
 public class HarmonyMenuBar extends JMenuBar
 {	
+	/** Stores the Harmony model */
+	private HarmonyModel harmonyModel;
+	
 	/** Drop-down menu found under project menu bar heading */
 	private class ProjectMenu extends JMenu implements ActionListener
 	{
@@ -91,34 +90,34 @@ public class HarmonyMenuBar extends JMenuBar
 	    	if(source==newMapping || source==openMapping)
 	    	{
 	    		int option = 1;
-	    		if(!ProjectManager.isSavedToRepository())
-	        		option = JOptionPane.showConfirmDialog(HarmonyFrame.harmonyFrame,
+	    		if(harmonyModel.getMappingManager().isModified())
+	        		option = JOptionPane.showConfirmDialog(harmonyModel.getBaseFrame(),
 	        			"This project has been modified.  Do you want to save changes?",
 						"Save Mapping", JOptionPane.YES_NO_CANCEL_OPTION,
 						JOptionPane.WARNING_MESSAGE);
 	    		if(option==2) return;
-	    		if(option==0) MappingManager.saveMapping();
+	    		if(option==0) harmonyModel.getMappingManager().saveMapping();
 	    	}
 	    		
 	    	// Create a new project
 	    	if(source==newMapping)
-	    		{ MappingManager.newMapping(); new SchemaDialog(); }
+	    		{ harmonyModel.getMappingManager().newMapping(); new SchemaDialog(harmonyModel); }
 	    	
 	    	// Open a project
 	    	else if(source==openMapping)
-	    		{ new LoadMappingDialog(); }
+	    		{ new LoadMappingDialog(harmonyModel); }
 	    	
 	    	// Save a project
 	    	else if(source==saveMapping)
-	    		{ new SaveMappingDialog(); }
+	    		{ new SaveMappingDialog(harmonyModel); }
 	    	
 	    	// Export project
 	    	else if(source==exportMapping)
-	    		{ ExporterManager.exportMapping(); }
+	    		{ ExporterManager.exportMapping(harmonyModel); }
 	    	
 	    	// Exit Harmony
 	    	else if(source==exitApp)
-	    		{ HarmonyFrame.harmonyFrame.exitApp(); }
+	    		{ harmonyModel.getBaseFrame().dispose(); }
 	    }
 	}
 
@@ -155,7 +154,7 @@ public class HarmonyMenuBar extends JMenuBar
 		    add(showTypes);
 			
 			// Initialize preference menu options
-			showTypes.setSelected(Preferences.getShowSchemaTypes());
+			showTypes.setSelected(harmonyModel.getPreferences().getShowSchemaTypes());
 		}
 		
 		/** Handles the edit drop-down action selected by the user */
@@ -163,22 +162,22 @@ public class HarmonyMenuBar extends JMenuBar
 	    {	    	
 	    	// Selects all links currently displayed in Harmony
 	    	if(e.getSource() == selectLinks)
-	    		{ SelectedInfo.setMappingCells(MappingLines.mappingLines.getMappingCellsInRegion(null),true); }
+	    		{ harmonyModel.getSelectedInfo().setMappingCells(MappingLines.mappingLines.getMappingCellsInRegion(null),true); }
 	    	
 	    	// Removes all links currently loaded into Harmony
 	    	if(e.getSource() == removeLinks)
 	    	{
-	    		for(Integer schemaID : MappingManager.getSchemas())
+	    		for(Integer schemaID : harmonyModel.getMappingManager().getSchemas())
 	    		{
-	    			HashSet<Integer> finishedElements = new HashSet<Integer>(Preferences.getFinishedElements(schemaID));
-	    			Preferences.setFinished(schemaID, finishedElements, false);
+	    			HashSet<Integer> finishedElements = new HashSet<Integer>(harmonyModel.getPreferences().getFinishedElements(schemaID));
+	    			harmonyModel.getPreferences().setFinished(schemaID, finishedElements, false);
 	    		}
-	    		MappingCellManager.deleteMappingCells();
+	    		harmonyModel.getMappingCellManager().deleteMappingCells();
 	    	}
 	    	
 	    	// Handles the "show types" preference option
 	    	if(e.getSource() == showTypes)
-	    		{ Preferences.setShowSchemaTypes(showTypes.isSelected()); }
+	    		{ harmonyModel.getPreferences().setShowSchemaTypes(showTypes.isSelected()); }
 	    }
 	}
 
@@ -209,7 +208,7 @@ public class HarmonyMenuBar extends JMenuBar
 			group.add(heatmapView);
 			
 			// Set the displayed view
-			switch(Preferences.getViewToDisplay())
+			switch(harmonyModel.getPreferences().getViewToDisplay())
 			{
 				case HarmonyConsts.TABLE_VIEW: tableView.setSelected(true);
 				case HarmonyConsts.HEATMAP_VIEW: heatmapView.setSelected(true);
@@ -233,10 +232,10 @@ public class HarmonyMenuBar extends JMenuBar
 	    public void actionPerformed(ActionEvent e)
 	    {
 	    	Object source = e.getSource();
-	    	if(source==mappingView) Preferences.setViewToDisplay(HarmonyConsts.MAPPING_VIEW);
-	    	if(source==tableView) Preferences.setViewToDisplay(HarmonyConsts.TABLE_VIEW);
-	    	if(source==heatmapView) Preferences.setViewToDisplay(HarmonyConsts.HEATMAP_VIEW);
-	    	if(source == affinityView) new AffinityDialog();
+	    	if(source==mappingView) harmonyModel.getPreferences().setViewToDisplay(HarmonyConsts.MAPPING_VIEW);
+	    	if(source==tableView) harmonyModel.getPreferences().setViewToDisplay(HarmonyConsts.TABLE_VIEW);
+	    	if(source==heatmapView) harmonyModel.getPreferences().setViewToDisplay(HarmonyConsts.HEATMAP_VIEW);
+	    	if(source == affinityView) new AffinityDialog(harmonyModel);
 	    }
 	}
 	
@@ -264,15 +263,16 @@ public class HarmonyMenuBar extends JMenuBar
 		
 		/** Handles the help menu drop-down action selected by the user */
 	    public void actionPerformed(ActionEvent e)
-	    	{ new AboutDialog(); }
+	    	{ new AboutDialog(harmonyModel); }
 	}
 	
 	/** Initializes the Harmony menu bar */
-	public HarmonyMenuBar()
+	public HarmonyMenuBar(HarmonyModel harmonyModel)
 	{
+		this.harmonyModel = harmonyModel;
 	    add(new ProjectMenu());	
 	    add(new EditMenu());
-	    add(new MatcherMenu());
+	    add(new MatcherMenu(harmonyModel));
 	    add(new ViewMenu());
 	    add(new HelpMenu());
 	}
