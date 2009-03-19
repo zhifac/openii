@@ -7,15 +7,28 @@ import java.io.IOException;
 
 import javax.swing.filechooser.FileFilter;
 
-/** Export Interface - An exporter enables the exporting of projects */
-public interface Exporter
+import org.mitre.harmony.model.HarmonyModel;
+
+/** Export Class - An exporter enables the exporting of projects */
+public abstract class Exporter
 {
+	/** Stores the Harmony model */
+	private HarmonyModel harmonyModel;
+	
+	/** Constructs the exporter */
+	public Exporter(HarmonyModel harmonyModel)
+		{ this.harmonyModel = harmonyModel; }
+	
+	/** Returns the Harmony model */
+	protected HarmonyModel getModel()
+		{ return harmonyModel; }
+	
 	/** Return the file type available for use with this exporter */
-	public String getFileType();
+	abstract public String getFileType();
 	
 	/** Return a file filter for accessing files capable of running through this exporter */
-	public FileFilter getFileFilter();
+	abstract public FileFilter getFileFilter();
 
 	/** Exports the project to the specified file */
-	public void exportTo(File f) throws IOException;
+	abstract public void exportTo(File f) throws IOException;
 }
