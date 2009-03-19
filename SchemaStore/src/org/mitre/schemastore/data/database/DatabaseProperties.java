@@ -63,7 +63,7 @@ public class DatabaseProperties
 
 			// Set the database directory (only used for Derby)
 			URL databaseURL = DatabaseProperties.class.getProtectionDomain().getCodeSource().getLocation();
-			databaseDirectory = databaseURL.getPath().replaceAll(".*/C:","").replaceAll("/build/classes/","").replaceAll("/SchemaStore.jar","");
+			databaseDirectory = databaseURL.getPath().replaceAll(".*/C:","").replaceAll("/build/classes/.*","").replaceAll("/WEB-INF/.*","").replaceAll("/SchemaStore.jar","");
 		}
 		catch(IOException e)
 			{ System.out.println("(E)DatabaseProperties - schemastore.xml has failed to load!\n"+e.getMessage()); }
