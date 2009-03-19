@@ -11,6 +11,7 @@ import java.util.HashMap;
 import org.mitre.harmony.matchers.MatcherManager;
 import org.mitre.harmony.matchers.mergers.*;
 import org.mitre.harmony.matchers.voters.*;
+import org.mitre.harmony.model.HarmonyModel;
 
 import java.io.File;
 
@@ -38,6 +39,8 @@ public class PerformanceMetricsUser extends JFrame
 	//ArrayList storing values of precision and recall for each threshold value
 	//private ArrayList<HashMap<Double,Double>> precisionRecall = new ArrayList<HashMap<Double,Double>>();
 	
+	private HarmonyModel harmonyModel;
+	
 	//types of fonts used
 	private Font font1 = new Font(Font.DIALOG_INPUT ,Font.BOLD,25);
 	private Font font2 = new Font(Font.SANS_SERIF, Font.BOLD, 15);
@@ -50,6 +53,7 @@ public class PerformanceMetricsUser extends JFrame
 	{
 		//create the frame
 		super("Calculate Performance Metrics");
+		harmonyModel = new HarmonyModel(this);
 		
 		//get content pane for the JFrame container
 		Container c = getContentPane();
@@ -313,7 +317,7 @@ public class PerformanceMetricsUser extends JFrame
 					System.out.println("Selected Merger: " + selectedMerger.toString());
 					
 					AlgorithmMappings mappings = new AlgorithmMappings();
-					ArrayList<HashMap<Double,Double>> precisionRecall = mappings.getMetrics(groundTruthXMLFile, selectedVoters, selectedMerger);
+					ArrayList<HashMap<Double,Double>> precisionRecall = mappings.getMetrics(groundTruthXMLFile, selectedVoters, selectedMerger, harmonyModel);
 				
 					System.out.println("Threshold " + "Precision " + "Recall");
 					for(double threshold = 0.0; threshold <= 1.01; threshold += 0.01)
