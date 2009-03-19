@@ -10,10 +10,8 @@ import javax.swing.JPopupMenu;
 import javax.swing.JSeparator;
 import javax.swing.tree.DefaultMutableTreeNode;
 
-import org.mitre.harmony.model.SchemaManager;
-import org.mitre.harmony.model.filters.Filters;
+import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.filters.Focus;
-import org.mitre.harmony.model.preferences.Preferences;
 import org.mitre.harmony.view.dialogs.SchemaStatisticsDialog;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
@@ -28,6 +26,9 @@ class SchemaTreeNodeMenu extends JPopupMenu implements ActionListener
 	private SchemaTree tree;				// Tree associated with selected node
 	private DefaultMutableTreeNode node;	// Node which was right-clicked
 
+	/** Stores the Harmony model */
+	private HarmonyModel harmonyModel;
+	
 	// Menu items associated with the schema tree node menu
 	private JMenuItem expand;			// Menu option for expanding selected node
 	private JMenuItem collapse;			// Menu option to collapse selected node
@@ -38,10 +39,11 @@ class SchemaTreeNodeMenu extends JPopupMenu implements ActionListener
 	private JMenuItem statistics;		// Menu option for viewing schema statistics
 	
 	/** Initialize the popup menu when a tree node is selected */
-	SchemaTreeNodeMenu(SchemaTree tree, DefaultMutableTreeNode node)
+	SchemaTreeNodeMenu(SchemaTree tree, DefaultMutableTreeNode node, HarmonyModel harmonyModel)
 	{
 		this.tree = tree;
 		this.node = node;
+		this.harmonyModel = harmonyModel;
 		
 		// Show collapse and expand menu options only if not leaf node
 		if(!tree.getModel().isLeaf(node))
@@ -59,7 +61,7 @@ class SchemaTreeNodeMenu extends JPopupMenu implements ActionListener
 		if(obj instanceof Integer)
 		{
 			// Get focus element and current element to use in determine menu elements to show
-			Focus focus = Filters.getFocus(tree.getRole());
+			Focus focus = harmonyModel.getFilters().getFocus(tree.getRole());
 			Integer focusElementID = focus==null ? null : focus.getElementID();
 			Integer elementID = (Integer)obj;
 			
@@ -78,11 +80,11 @@ class SchemaTreeNodeMenu extends JPopupMenu implements ActionListener
 			{
 				// Determine if the node and descendants are finished
 				Integer schemaID = SchemaTree.getSchema(node);
-				boolean isUnfinished = !Preferences.isFinished(schemaID,elementID);
-				boolean isFinished = Preferences.isFinished(schemaID,elementID);
-				for(SchemaElement descendant : SchemaManager.getDescendantElements(schemaID, elementID))
+				boolean isUnfinished = !harmonyModel.getPreferences().isFinished(schemaID,elementID);
+				boolean isFinished = harmonyModel.getPreferences().isFinished(schemaID,elementID);
+				for(SchemaElement descendant : harmonyModel.getSchemaManager().getDescendantElements(schemaID, elementID))
 				{
-					boolean isElementFinished = Preferences.isFinished(schemaID,descendant.getId());
+					boolean isElementFinished = harmonyModel.getPreferences().isFinished(schemaID,descendant.getId());
 					isUnfinished &= !isElementFinished;
 					isFinished &= isElementFinished;
 				}
@@ -129,7 +131,7 @@ class SchemaTreeNodeMenu extends JPopupMenu implements ActionListener
 		if(e.getSource()==statistics)
 		{
 			Schema schema = (Schema)node.getUserObject();
-			new SchemaStatisticsDialog(schema.getId());
+			new SchemaStatisticsDialog(schema.getId(),harmonyModel);
 		}
 	}
 }

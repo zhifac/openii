@@ -8,7 +8,7 @@ import javax.swing.tree.TreePath;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.DefaultMutableTreeNode;
 
-import org.mitre.harmony.model.SchemaManager;
+import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.graph.HierarchicalGraph;
@@ -52,10 +52,10 @@ class SchemaTreeGenerator
 	}
 	
 	/** Adds a schema to the schema tree */
-	static void addSchema(SchemaTree tree, Integer schemaID)
+	static void addSchema(SchemaTree tree, Integer schemaID, HarmonyModel harmonyModel)
 	{
 		// Get the schema associated with the schema ID
-		Schema schema = SchemaManager.getSchema(schemaID);
+		Schema schema = harmonyModel.getSchemaManager().getSchema(schemaID);
 		
 		// If first schema, eliminate "no schema" placeholder
 		if(((DefaultMutableTreeNode)tree.root.getChildAt(0)).getUserObject() instanceof String)
@@ -76,7 +76,7 @@ class SchemaTreeGenerator
 		tree.expandPath(new TreePath(((DefaultMutableTreeNode)node.getParent()).getPath()));
 
 		// Add root elements to the schema
-		HierarchicalGraph graph = SchemaManager.getGraph(schemaID);
+		HierarchicalGraph graph = harmonyModel.getSchemaManager().getGraph(schemaID);
 		HashSet<Integer> parentElements = new HashSet<Integer>();
 		for(SchemaElement element : graph.getRootElements())
 		{
