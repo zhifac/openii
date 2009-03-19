@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
-import org.mitre.harmony.model.SchemaManager;
+import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.view.schemaTree.SchemaTree;
 import org.mitre.schemastore.model.SchemaElement;
 
@@ -21,12 +21,12 @@ public class Focus
 	private ArrayList<Integer> focusedElements = new ArrayList<Integer>();
 	
 	/** Constructs the focus object */
-	public Focus(Integer schemaID, Integer elementID)
+	public Focus(Integer schemaID, Integer elementID, HarmonyModel harmonyModel)
 	{
 		this.schemaID = schemaID;
 		this.elementID = elementID;
 		focusedElements.add(elementID);
-		for(SchemaElement element : SchemaManager.getDescendantElements(schemaID, elementID))
+		for(SchemaElement element : harmonyModel.getSchemaManager().getDescendantElements(schemaID, elementID))
 			focusedElements.add(element.getId());
 	}
 	

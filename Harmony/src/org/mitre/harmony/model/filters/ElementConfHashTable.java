@@ -4,8 +4,8 @@ package org.mitre.harmony.model.filters;
 
 import java.util.Hashtable;
 
-import org.mitre.harmony.model.MappingCellListener;
-import org.mitre.harmony.model.MappingCellManager;
+import org.mitre.harmony.model.HarmonyModel;
+import org.mitre.harmony.model.mapping.MappingCellListener;
 import org.mitre.schemastore.model.MappingCell;
 
 /**
@@ -14,9 +14,15 @@ import org.mitre.schemastore.model.MappingCell;
  */
 class ElementConfHashTable extends Hashtable<Integer,Double> implements MappingCellListener
 {
+	/** Stores the Harmony model */
+	private HarmonyModel harmonyModel;
+	
 	/** Constructor which initializes the hash table */
-	ElementConfHashTable()
-		{ MappingCellManager.addListener(this); }
+	ElementConfHashTable(HarmonyModel harmonyModel)
+	{
+		this.harmonyModel = harmonyModel;
+		harmonyModel.getMappingCellManager().addListener(this);
+	}
 	
 	/** Retrieves the specified element's confidence from the hash table */
 	public synchronized Double get(Integer elementID)
@@ -27,9 +33,9 @@ class ElementConfHashTable extends Hashtable<Integer,Double> implements MappingC
 		
 		// Calculates the node confidence
 		confidence = Double.MIN_VALUE;
-		for(Integer mappingCellID : MappingCellManager.getMappingCellsByElement(elementID))
+		for(Integer mappingCellID : harmonyModel.getMappingCellManager().getMappingCellsByElement(elementID))
 		{
-			Double mappingCellConf = MappingCellManager.getMappingCell(mappingCellID).getScore();
+			Double mappingCellConf = harmonyModel.getMappingCellManager().getMappingCell(mappingCellID).getScore();
 			if(mappingCellConf>confidence) confidence = mappingCellConf;
 		}
 		put(elementID,confidence);
@@ -47,12 +53,12 @@ class ElementConfHashTable extends Hashtable<Integer,Double> implements MappingC
 		// Updates the first node's confidence score if needed
 		Double element1Conf = super.get(element1);	
 		if(element1Conf!=null && conf>element1Conf)
-			{ put(element1,conf); Filters.fireMaxConfidenceChanged(element1); }
+			{ put(element1,conf); harmonyModel.getFilters().fireMaxConfidenceChanged(element1); }
 			
 		// Updates the second node's confidence score if needed
 		Double element2Conf = super.get(element2);
 		if(element2Conf!=null && conf>element2Conf)
-			{ put(element2,conf); Filters.fireMaxConfidenceChanged(element2); }
+			{ put(element2,conf); harmonyModel.getFilters().fireMaxConfidenceChanged(element2); }
 	}
 
 	/** Updates confidences when a mapping cell is modified in the model */
@@ -74,7 +80,7 @@ class ElementConfHashTable extends Hashtable<Integer,Double> implements MappingC
 				boolean changed = false;
 				if(newConf>element1Conf) { put(element1,newConf); changed = true; }
 				else if(oldConf.equals(element1Conf)) { remove(element1); changed = true; }
-				if(changed) Filters.fireMaxConfidenceChanged(element1);
+				if(changed) harmonyModel.getFilters().fireMaxConfidenceChanged(element1);
 			}
 			
 			// Modify the second node's confidence score as needed
@@ -84,7 +90,7 @@ class ElementConfHashTable extends Hashtable<Integer,Double> implements MappingC
 				boolean changed = false;
 				if(newConf>element2Conf) { put(element2,newConf); changed = true; }
 				else if(oldConf.equals(element2Conf))  { remove(element2); changed = true; }
-				if(changed) Filters.fireMaxConfidenceChanged(element2);
+				if(changed) harmonyModel.getFilters().fireMaxConfidenceChanged(element2);
 			}
 		}
 	}
@@ -100,11 +106,11 @@ class ElementConfHashTable extends Hashtable<Integer,Double> implements MappingC
 		// Modify the first node's confidence score as needed
 		Double element1Conf = super.get(element1);
 		if(element1Conf!=null && conf.equals(element1Conf))
-			{ remove(element1); Filters.fireMaxConfidenceChanged(element1); }
+			{ remove(element1); harmonyModel.getFilters().fireMaxConfidenceChanged(element1); }
 			
 		// Modify the second node's confidence score as needed
 		Double element2Conf = super.get(element2);
 		if(element2Conf!=null && conf.equals(element2Conf)) 
-			{ remove(element2); Filters.fireMaxConfidenceChanged(element2); }
+			{ remove(element2); harmonyModel.getFilters().fireMaxConfidenceChanged(element2); }
 	}
 }
