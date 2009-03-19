@@ -6,6 +6,8 @@ import java.awt.Graphics;
 
 import javax.swing.JPanel;
 
+import org.mitre.harmony.model.HarmonyModel;
+
 /**
  * Holds link pane which manages display of all links between schemas
  * @author CWOLF
@@ -13,9 +15,9 @@ import javax.swing.JPanel;
 public class LinkPane extends JPanel
 {
 	/** Initializes the link pane */
-	public LinkPane(SchemaTreeImp leftTree, SchemaTreeImp rightTree)
+	public LinkPane(SchemaTreeImp leftTree, SchemaTreeImp rightTree, HarmonyModel harmonyModel)
 	{
-		new MappingLines(leftTree,rightTree);		
+		new MappingLines(leftTree,rightTree, harmonyModel);		
 		setOpaque(false);
 	}
 

@@ -8,9 +8,7 @@ import java.util.ArrayList;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.mitre.harmony.model.HarmonyConsts;
-import org.mitre.harmony.model.MappingCellManager;
-import org.mitre.harmony.model.filters.Filters;
-import org.mitre.harmony.model.selectedInfo.SelectedInfo;
+import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.schemastore.model.MappingCell;
 
 /**
@@ -28,6 +26,9 @@ class MappingCellLines
 	
 	/** Stores the mapping cell ID */
 	private Integer mappingCellID;
+	
+	/** Stores the Harmony model */
+	private HarmonyModel harmonyModel;
 	
 	/** Indicates if the mapping cell is hidden from display */
 	private Boolean hidden;
@@ -47,8 +48,8 @@ class MappingCellLines
 			for(DefaultMutableTreeNode rightNode : right.getComponentNodes(rightID))
 			{
 				// Only create lines if they are within the specified depths
-				if(!Filters.visibleNode(HarmonyConsts.LEFT,leftNode)) continue;
-				if(!Filters.visibleNode(HarmonyConsts.RIGHT,rightNode)) continue;
+				if(!harmonyModel.getFilters().visibleNode(HarmonyConsts.LEFT,leftNode)) continue;
+				if(!harmonyModel.getFilters().visibleNode(HarmonyConsts.RIGHT,rightNode)) continue;
 				
 				// Only create lines if they are visible on the screen (saves processing time)
 				Integer leftRow = left.getNodeRow(leftNode);
@@ -62,8 +63,8 @@ class MappingCellLines
 	}
 	
 	/** Initializes the mapping cell lines */
-	MappingCellLines(Integer mappingCellID)
-		{ this.mappingCellID = mappingCellID; }
+	MappingCellLines(Integer mappingCellID, HarmonyModel harmonyModel)
+		{ this.mappingCellID = mappingCellID; this.harmonyModel = harmonyModel; }
 	
 	/** Returns the mapping cell ID */
 	Integer getMappingCellID()
@@ -75,7 +76,7 @@ class MappingCellLines
 		if(!getHidden() && lines==null)
 		{
 			lines = new ArrayList<MappingCellLine>();
-			MappingCell mappingCell = MappingCellManager.getMappingCell(mappingCellID);
+			MappingCell mappingCell = harmonyModel.getMappingCellManager().getMappingCell(mappingCellID);
 			getLines(mappingCell.getElement1(),mappingCell.getElement2());
 			getLines(mappingCell.getElement2(),mappingCell.getElement1());
 		}
@@ -87,7 +88,7 @@ class MappingCellLines
 	{
 		if(hidden==null)
 		{
-			hidden = !Filters.visibleMappingCell(mappingCellID) && !SelectedInfo.isMappingCellSelected(mappingCellID);
+			hidden = !harmonyModel.getFilters().visibleMappingCell(mappingCellID) && !harmonyModel.getSelectedInfo().isMappingCellSelected(mappingCellID);
 			if(hidden) lines = null;
 		}
 		return hidden;
@@ -96,11 +97,11 @@ class MappingCellLines
 	/** Returns the color associated with this mapping cell */
 	Color getColor()
 	{
-		MappingCell mappingCell = MappingCellManager.getMappingCell(mappingCellID);
+		MappingCell mappingCell = harmonyModel.getMappingCellManager().getMappingCell(mappingCellID);
 		double conf = mappingCell.getScore();
-    	if(SelectedInfo.isMappingCellSelected(mappingCellID)) return BLUE;
+    	if(harmonyModel.getSelectedInfo().isMappingCellSelected(mappingCellID)) return BLUE;
     	else if(mappingCell.getValidated())
-    		{ if(conf>0) return MappingCellManager.isMappingCellFinished(mappingCellID) ? GRAY : BLACK; return RED; }
+    		{ if(conf>0) return harmonyModel.getMappingCellManager().isMappingCellFinished(mappingCellID) ? GRAY : BLACK; return RED; }
     	else if(conf>1) return GREEN;
     	else if(conf<-0.333) return RED;
     	else if(conf<0.333) return new Color(0.8f,0.8f-1.2f*(0.333f-(float)conf),0.0f);

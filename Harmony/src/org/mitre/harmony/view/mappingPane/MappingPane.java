@@ -21,10 +21,10 @@ import javax.swing.KeyStroke;
 import javax.swing.border.EmptyBorder;
 
 import org.mitre.harmony.model.HarmonyConsts;
-import org.mitre.harmony.model.MappingCellManager;
-import org.mitre.harmony.model.selectedInfo.SelectedInfo;
+import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.selectedInfo.SelectedInfoListener;
 import org.mitre.harmony.view.controlPane.ControlPane;
+import org.mitre.schemastore.model.MappingCell;
 
 /**
  * Displays the entire mapping pane including schema tree and linkages
@@ -34,6 +34,9 @@ public class MappingPane extends JDesktopPane implements ComponentListener, Line
 {	
 	/** Reference to the mapping pane */
 	static MappingPane mappingPane = null;
+	
+	/** Stores the Harmony model */
+	private HarmonyModel harmonyModel;
 	
 	/** Stores the left and right schema tree associated with the mapping pane */
 	private SchemaTreeImp leftTree=null, rightTree=null;
@@ -45,28 +48,28 @@ public class MappingPane extends JDesktopPane implements ComponentListener, Line
 	private JPanel leftInfoPane = null;
 	private JPanel rightInfoPane = null;
 	
-	
-	/** Subclass used to delete links */
-	private class DeleteLink extends AbstractAction
-	{
-		/** Deletes selected link from mapping */
-		public void actionPerformed(ActionEvent e)
-		{
-			for(Integer link : SelectedInfo.getSelectedMappingCells())
-				MappingCellManager.modifyMappingCell(link,-1.0,System.getProperty("user.name"),true);
-			SelectedInfo.setMappingCells(new ArrayList<Integer>(),false);
-		}
-	};
-	
 	/** Subclass used to accept links */
 	private class AcceptLink extends AbstractAction
 	{
+		/** Stores the score to give to the accepted link */
+		private double score;
+		
+		/** Constructs the Accept Link action */
+		private AcceptLink(double score)
+			{ this.score = score; }
+		
 		/** Accept selected link */
 		public void actionPerformed(ActionEvent arg0)
 		{
-			for(Integer link : SelectedInfo.getSelectedMappingCells())
-				MappingCellManager.modifyMappingCell(link,1.0,System.getProperty("user.name"),true);
-			SelectedInfo.setMappingCells(new ArrayList<Integer>(),false);
+			for(Integer mappingCellID : harmonyModel.getSelectedInfo().getSelectedMappingCells())
+			{
+				MappingCell mappingCell = harmonyModel.getMappingCellManager().getMappingCell(mappingCellID);
+				mappingCell.setScore(score);
+				mappingCell.setAuthor(System.getProperty("user.name"));
+				mappingCell.setValidated(true);
+				harmonyModel.getMappingCellManager().setMappingCell(mappingCell);
+			}
+			harmonyModel.getSelectedInfo().setMappingCells(new ArrayList<Integer>(),false);
 		}
 	};
 	
@@ -76,18 +79,19 @@ public class MappingPane extends JDesktopPane implements ComponentListener, Line
 		JPanel pane = new JPanel();
 		pane.setLayout(new BorderLayout());
 		pane.add(new SchemaScrollPane(tree),BorderLayout.CENTER);
-		pane.add(new ControlPane(tree),BorderLayout.SOUTH);
+		pane.add(new ControlPane(tree,harmonyModel),BorderLayout.SOUTH);
 		return pane;
 	}
 	
 	/** Initializes the mapping pane */
-	public MappingPane(JComponent parent)
+	public MappingPane(JComponent parent, HarmonyModel harmonyModel)
 	{
 		mappingPane = this;
+		this.harmonyModel = harmonyModel;
 		
 		// Initialize the left and right schema trees
-		leftTree = new SchemaTreeImp(HarmonyConsts.LEFT);
-		rightTree = new SchemaTreeImp(HarmonyConsts.RIGHT);
+		leftTree = new SchemaTreeImp(HarmonyConsts.LEFT, harmonyModel);
+		rightTree = new SchemaTreeImp(HarmonyConsts.RIGHT, harmonyModel);
 		
 		// Create the schema pane
 		schemaPane = new JPanel();
@@ -97,28 +101,28 @@ public class MappingPane extends JDesktopPane implements ComponentListener, Line
 		
 		// Set up the various layers to be displayed
 		add(schemaPane,DEFAULT_LAYER);
-		add(linkPane = new LinkPane(leftTree,rightTree),PALETTE_LAYER);
-		add(leftInfoPane = new SelectedNodePane(HarmonyConsts.LEFT),MODAL_LAYER);
-		add(rightInfoPane = new SelectedNodePane(HarmonyConsts.RIGHT),MODAL_LAYER);
-		add(mousePane = new MousePane(leftTree,rightTree),DRAG_LAYER);
+		add(linkPane = new LinkPane(leftTree,rightTree,harmonyModel),PALETTE_LAYER);
+		add(leftInfoPane = new SelectedNodePane(HarmonyConsts.LEFT,harmonyModel),MODAL_LAYER);
+		add(rightInfoPane = new SelectedNodePane(HarmonyConsts.RIGHT,harmonyModel),MODAL_LAYER);
+		add(mousePane = new MousePane(leftTree,rightTree,harmonyModel),DRAG_LAYER);
 		
 		// Register keyboard actions for accepting links
 		KeyStroke acceptKey = KeyStroke.getKeyStroke((char) KeyEvent.VK_SPACE);
 		parent.getInputMap(JPanel.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(acceptKey, "acceptLink");
-		parent.getActionMap().put("acceptLink", new AcceptLink());
+		parent.getActionMap().put("acceptLink", new AcceptLink(1.0));
 		
 		// Register keyboard actions for deleting links
 		KeyStroke deleteKey = KeyStroke.getKeyStroke((char) KeyEvent.VK_DELETE);
 		parent.getInputMap(JPanel.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(deleteKey, "deleteLink");
 		KeyStroke backspaceKey = KeyStroke.getKeyStroke((char) KeyEvent.VK_BACK_SPACE);
 		parent.getInputMap(JPanel.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(backspaceKey, "deleteLink");
-		parent.getActionMap().put("deleteLink", new DeleteLink());
+		parent.getActionMap().put("deleteLink", new AcceptLink(-1.0));
 		
 		// Adds listeners to watch for events where the mapping pane need to be redrawn
 		addComponentListener(this);	
 		getTreeViewport(HarmonyConsts.LEFT).addComponentListener(this);		
 		MappingLines.mappingLines.addLinesListener(this);
-		SelectedInfo.addListener(this);
+		harmonyModel.getSelectedInfo().addListener(this);
 	}
 	
 	/** Returns the schema tree */
@@ -172,7 +176,7 @@ public class MappingPane extends JDesktopPane implements ComponentListener, Line
 	public void displayedElementModified(Integer role)
 	{
 		SchemaTreeImp tree = role==HarmonyConsts.LEFT ? leftTree : rightTree;
-		Integer border = SelectedInfo.getDisplayedElement(role)!=null ? 160 : 10;
+		Integer border = harmonyModel.getSelectedInfo().getDisplayedElement(role)!=null ? 160 : 10;
 		tree.setBorder(new EmptyBorder(0,0,border,0));
 		tree.fireTreeExpanded(tree.getPathForRow(0));
 		repaint();

@@ -13,8 +13,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
 import javax.swing.border.EmptyBorder;
 
-import org.mitre.harmony.model.SchemaManager;
-import org.mitre.harmony.model.selectedInfo.SelectedInfo;
+import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.selectedInfo.SelectedInfoListener;
 import org.mitre.schemastore.model.Domain;
 import org.mitre.schemastore.model.DomainValue;
@@ -33,6 +32,9 @@ class SelectedNodePane extends JPanel implements SelectedInfoListener
 	/** Tracks the side associated with this pane */
 	private Integer side = null;
 	
+	/** Stores the Harmony model */
+	private HarmonyModel harmonyModel;
+	
 	/** Stores the title component associated with this pane */
 	private JLabel titlePane = new JLabel();
 	
@@ -40,9 +42,10 @@ class SelectedNodePane extends JPanel implements SelectedInfoListener
 	private JTextPane textPane = new JTextPane();
 	
 	/** Constructs the Selected Node pane */
-	SelectedNodePane(Integer side)
+	SelectedNodePane(Integer side, HarmonyModel harmonyModel)
 	{
 		this.side = side;
+		this.harmonyModel = harmonyModel;
 		
 		// Initialize the title pane
 		titlePane = new JLabel();
@@ -67,7 +70,7 @@ class SelectedNodePane extends JPanel implements SelectedInfoListener
 		add(scrollPane,BorderLayout.CENTER);
 		
 		// Add listeners to monitor for changes to the selected elements
-		SelectedInfo.addListener(this);
+		harmonyModel.getSelectedInfo().addListener(this);
 	}
 
 	/** Generates the text to display in the text pane */
@@ -81,9 +84,9 @@ class SelectedNodePane extends JPanel implements SelectedInfoListener
 		// Collect domain information
 		Domain domain = null;
 		HashSet<DomainValue> domainValues = new HashSet<DomainValue>();
-		for(Integer schemaID : SelectedInfo.getSchemas(side))
+		for(Integer schemaID : harmonyModel.getSelectedInfo().getSchemas(side))
 		{
-			HierarchicalGraph graph = SchemaManager.getGraph(schemaID);
+			HierarchicalGraph graph = harmonyModel.getSchemaManager().getGraph(schemaID);
 			if(domain==null) domain = graph.getDomainForElement(element.getId());
 			domainValues.addAll(graph.getDomainValuesForElement(element.getId()));
 		}
@@ -113,16 +116,16 @@ class SelectedNodePane extends JPanel implements SelectedInfoListener
 		if(!role.equals(this.side)) return;
 		
 		// Make the pane visible as needed
-		Integer elementID = SelectedInfo.getDisplayedElement(role);
+		Integer elementID = harmonyModel.getSelectedInfo().getDisplayedElement(role);
 		if(elementID==null) { setVisible(false); return; }
-		SchemaElement element = SchemaManager.getSchemaElement(elementID);
+		SchemaElement element = harmonyModel.getSchemaManager().getSchemaElement(elementID);
 		setVisible(true);
 
 		// Gather up names to display
 		HashSet<String> names = new HashSet<String>();
-		for(Integer schemaID : SelectedInfo.getSchemas(side))
+		for(Integer schemaID : harmonyModel.getSelectedInfo().getSchemas(side))
 		{
-			HierarchicalGraph graph = SchemaManager.getGraph(schemaID);
+			HierarchicalGraph graph = harmonyModel.getSchemaManager().getGraph(schemaID);
 			if(graph.containsElement(element.getId()))
 				names.add(graph.getDisplayName(element.getId()));
 		}
