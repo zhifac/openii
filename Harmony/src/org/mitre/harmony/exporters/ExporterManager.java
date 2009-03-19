@@ -4,6 +4,7 @@ package org.mitre.harmony.exporters;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 
 import javax.swing.JFileChooser;
@@ -19,18 +20,24 @@ import org.mitre.harmony.model.ToolManager;
 public class ExporterManager
 {
 	/** Stores a listing of all mapping exporters */
-	static private ArrayList<Exporter> exporters = new ArrayList<Exporter>();
+	static private ArrayList<Exporter> exporters = null;
 	
 	/** Initializes the export manager with all defined exporters */
-	static
+	private static ArrayList<Exporter> getExporters(HarmonyModel harmonyModel)
 	{
 		// Retrieve the exporters
-		for(String exporterString : ToolManager.getTools("exporter"))
-			try {
-				Class exporterClass = Class.forName(exporterString);
-				exporters.add((Exporter)exporterClass.newInstance());
-			}
-		    catch(Exception e) { System.out.println("(E)ExporterManager - Failed to locate exporter class "+exporterString); }
+		if(exporters==null)
+		{
+			exporters = new ArrayList<Exporter>();
+			for(String exporterString : ToolManager.getTools("exporter"))
+				try {
+					Class<?> exporterClass = Class.forName(exporterString);
+					Constructor constructor = exporterClass.getConstructor(new Class[]{HarmonyModel.class});
+					exporters.add((Exporter)constructor.newInstance(new Object[]{harmonyModel}));
+				}
+			    catch(Exception e) { System.out.println("(E)ExporterManager - Failed to locate exporter class "+exporterString); }
+		}
+		return exporters;
 	}
 	
 	/** Allows user to export a project */
@@ -40,7 +47,7 @@ public class ExporterManager
 		JFileChooser chooser = new JFileChooser(harmonyModel.getPreferences().getExportDir());
 		chooser.setDialogType(JFileChooser.SAVE_DIALOG);
 		chooser.setAcceptAllFileFilterUsed(false);
-		for(Exporter exporter : exporters)
+		for(Exporter exporter : getExporters(harmonyModel))
 			chooser.addChoosableFileFilter(exporter.getFileFilter());
 		if(chooser.showDialog(harmonyModel.getBaseFrame(),"Export")==JFileChooser.APPROVE_OPTION)
 		{
