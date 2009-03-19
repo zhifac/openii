@@ -5,10 +5,10 @@ package org.mitre.harmony.model.filters;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 
+import org.mitre.harmony.model.AbstractManager;
 import org.mitre.harmony.model.HarmonyConsts;
-import org.mitre.harmony.model.ListenerGroup;
-import org.mitre.harmony.model.MappingCellManager;
-import org.mitre.harmony.model.selectedInfo.SelectedInfo;
+import org.mitre.harmony.model.HarmonyModel;
+import org.mitre.harmony.model.mapping.MappingCellManager;
 import org.mitre.harmony.model.selectedInfo.SelectedInfoListener;
 import org.mitre.schemastore.model.MappingCell;
 
@@ -16,7 +16,7 @@ import org.mitre.schemastore.model.MappingCell;
  * Tracks link filters used in Harmony
  * @author CWOLF
  */
-public class Filters implements SelectedInfoListener
+public class FilterManager extends AbstractManager<FiltersListener> implements SelectedInfoListener
 {	
 	// Constants for referencing the assertion array
 	static final public int USER = 0;		// Location of user assertion in array
@@ -24,31 +24,30 @@ public class Filters implements SelectedInfoListener
 	static final public int BEST = 2;		// Location of best assertion in array
 	
 	// Stores all assertion filter settings
-	static private boolean assertions[];	// Current assertion settings
+	private boolean assertions[];	// Current assertion settings
 	
 	// Stores all confidence filter settings
-	static private double minConfThreshold;	// Current min confidence setting
-	static private double maxConfThreshold;	// Current max confidence setting
+	private double minConfThreshold;	// Current min confidence setting
+	private double maxConfThreshold;	// Current max confidence setting
 	
 	// Stores all focus filter settings
-	static private Focus leftFocus;		// Currently selected left focus
-	static private Focus rightFocus;	// Currently selected right focus
+	private Focus leftFocus;		// Currently selected left focus
+	private Focus rightFocus;	// Currently selected right focus
 	
 	// Stores all depth filter settings
-	static private int minLeftDepth;		// Only links whose left element's depth is above this are shown
-	static private int maxLeftDepth;		// Only links whose left element's depth is below this are shown
-	static private int minRightDepth;		// Only links whose right element's depth is above this are shown
-	static private int maxRightDepth;		// Only links whose right element's depth is below this are shown
+	private int minLeftDepth;		// Only links whose left element's depth is above this are shown
+	private int maxLeftDepth;		// Only links whose left element's depth is below this are shown
+	private int minRightDepth;		// Only links whose right element's depth is above this are shown
+	private int maxRightDepth;		// Only links whose right element's depth is below this are shown
 
 	/** Tracks element confidences when BEST is set */
-	static private ElementConfHashTable elementConfidences = null;
-
-	/** Stores the filter listeners */
-	static private ListenerGroup<FiltersListener> listeners = new ListenerGroup<FiltersListener>();
+	private ElementConfHashTable elementConfidences = null;
 	
 	/** Constructor used to initializes the filters */
-	private Filters()
+	public FilterManager(HarmonyModel harmonyModel)
 	{
+		super(harmonyModel);
+		
 		// Initialize the various filter settings
 		assertions = new boolean[3]; assertions[USER]=true; assertions[SYSTEM]=true; assertions[BEST]=false;
 		minConfThreshold = MappingCellManager.MIN_CONFIDENCE;
@@ -56,78 +55,74 @@ public class Filters implements SelectedInfoListener
 		leftFocus = rightFocus = null;
 		minLeftDepth = minRightDepth = 1;
 		maxLeftDepth = maxRightDepth = Integer.MAX_VALUE;
-		
-		// Add listeners to trigger changes to the selected info
-		SelectedInfo.addListener(this);
 	}
-	static { new Filters(); }
-
+	
 	/** Sets the assertion values */
-	static public void setAssertions(boolean[] newAssertions)
+	public void setAssertions(boolean[] newAssertions)
 	{
 		assertions = newAssertions;
-		if(assertions[BEST]) { if(elementConfidences==null) elementConfidences = new ElementConfHashTable(); }
-		else { if(elementConfidences!=null) elementConfidences=null; }			
-		for(FiltersListener listener : listeners.get()) listener.assertionsChanged();
+		if(assertions[BEST]) { if(elementConfidences==null) elementConfidences = new ElementConfHashTable(getModel()); }
+		else { if(elementConfidences!=null) elementConfidences=null; }
+		for(FiltersListener listener : getListeners()) listener.assertionsChanged();
 	}
 
 	/** Sets the confidence threshold */
-	static public void setConfidence(double minConfThresholdIn, double maxConfThresholdIn)
+	public void setConfidence(double minConfThresholdIn, double maxConfThresholdIn)
 	{
 		minConfThreshold = minConfThresholdIn;
 		maxConfThreshold = maxConfThresholdIn;
-		for(FiltersListener listener : listeners.get()) listener.confidenceChanged();
+		for(FiltersListener listener : getListeners()) listener.confidenceChanged();
 	}
 	
 	/**
 	 * Sets the focus such that only links that originate from this node,
 	 * or its descendants, are to be displayed.
 	 */
-	static public void setFocus(Integer role, Focus newFocus)
+	public void setFocus(Integer role, Focus newFocus)
 	{
 		if(role==HarmonyConsts.LEFT) leftFocus = newFocus;
 		else rightFocus = newFocus;
-		for(FiltersListener listener : listeners.get()) listener.focusChanged();
+		for(FiltersListener listener : getListeners()) listener.focusChanged();
 	}
 	
 	/**
 	 * Sets the depth; only links that originate from a node above
 	 * this depth are to be displayed.
 	 */
-	static public void setDepth(Integer role, int newMinDepth, int newMaxDepth)
+	public void setDepth(Integer role, int newMinDepth, int newMaxDepth)
 	{
 		if(role==HarmonyConsts.LEFT) { minLeftDepth = newMinDepth; maxLeftDepth = newMaxDepth; }
 		else { minRightDepth = newMinDepth; maxRightDepth = newMaxDepth; }
-		for(FiltersListener listener : listeners.get()) listener.depthChanged();
+		for(FiltersListener listener : getListeners()) listener.depthChanged();
 	}
 	
 	/** Returns the current assertions */
-	static public boolean[] getAssertions() { return assertions; }
+	public boolean[] getAssertions() { return assertions; }
 
 	/** Returns minimum confidence threshold */
-	static public double getMinConfThreshold() { return minConfThreshold; }
+	public double getMinConfThreshold() { return minConfThreshold; }
 	
 	/** Returns maximum confidence threshold */
-	static public double getMaxConfThreshold() { return maxConfThreshold; }
+	public double getMaxConfThreshold() { return maxConfThreshold; }
 
 	/** Return the node from this tree currently in focus */
-	static public Focus getFocus(Integer role)
+	public Focus getFocus(Integer role)
 		{ return role==HarmonyConsts.LEFT ? leftFocus : rightFocus; }
 	
 	/** Returns the minimum depth */
-	static public int getMinDepth(Integer role)
+	public int getMinDepth(Integer role)
 		{ return role==HarmonyConsts.LEFT ? minLeftDepth : minRightDepth; }
 	
 	/** Returns the maximum depth */
-	static public int getMaxDepth(Integer role)
+	public int getMaxDepth(Integer role)
 		{ return role==HarmonyConsts.LEFT ? maxLeftDepth : maxRightDepth; }
 
 	/** Determines if a path is visible or not */
-	static public boolean visiblePath(Integer role, TreePath path)
+	public boolean visiblePath(Integer role, TreePath path)
 		{ return visibleNode(role, (DefaultMutableTreeNode) path.getLastPathComponent()); }
 
 	/** Determines if a node is visible or not */
-	static public boolean visibleNode(Integer role, DefaultMutableTreeNode node)
+	public boolean visibleNode(Integer role, DefaultMutableTreeNode node)
 	{
 		// Check that the element is within focus
 		Focus focus = role.equals(HarmonyConsts.LEFT) ? leftFocus : rightFocus;
@@ -141,10 +136,10 @@ public class Filters implements SelectedInfoListener
 	}
 	
 	/** Determines if a link should be displayed or not */
-	static public boolean visibleMappingCell(Integer mappingCellID)
+	public boolean visibleMappingCell(Integer mappingCellID)
 	{
 		// Retrieve the mapping cell info
-		MappingCell mappingCell = MappingCellManager.getMappingCell(mappingCellID);
+		MappingCell mappingCell = getModel().getMappingCellManager().getMappingCell(mappingCellID);
 		Integer element1 = mappingCell.getElement1();
 		Integer element2 = mappingCell.getElement2();
 		
@@ -174,12 +169,12 @@ public class Filters implements SelectedInfoListener
 	{
 		// Adjust the left focus as needed
 		if(leftFocus!=null)
-			if(!SelectedInfo.getSchemas(HarmonyConsts.LEFT).contains(leftFocus.getSchemaID()))
+			if(!getModel().getSelectedInfo().getSchemas(HarmonyConsts.LEFT).contains(leftFocus.getSchemaID()))
 				setFocus(HarmonyConsts.LEFT,null);
 
 		// Adjust the right focus as needed
 		if(rightFocus!=null)
-			if(!SelectedInfo.getSchemas(HarmonyConsts.RIGHT).contains(rightFocus.getSchemaID()))
+			if(!getModel().getSelectedInfo().getSchemas(HarmonyConsts.RIGHT).contains(rightFocus.getSchemaID()))
 				setFocus(HarmonyConsts.RIGHT,null);
 	}
 	
@@ -187,11 +182,8 @@ public class Filters implements SelectedInfoListener
 	public void displayedElementModified(Integer role) {}
 	public void selectedElementsModified(Integer role) {}
 	public void selectedMappingCellsModified() {}
-	
-	//-----------------------------------------------------
-	// Purpose: Allows classes to listen for filter changes
-	//-----------------------------------------------------
-	static public void addListener(FiltersListener listener) { listeners.add(listener); }
-	static void fireMaxConfidenceChanged(Integer schemaObjectID)
-		{ for(FiltersListener listener : listeners.get()) listener.maxConfidenceChanged(schemaObjectID); }
+
+	/** Inform listeners that the max confidence has changed */
+	void fireMaxConfidenceChanged(Integer schemaObjectID)
+		{ for(FiltersListener listener : getListeners()) listener.maxConfidenceChanged(schemaObjectID); }
 }

@@ -7,12 +7,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import org.mitre.harmony.model.AbstractManager;
 import org.mitre.harmony.model.ConfigManager;
 import org.mitre.harmony.model.HarmonyConsts;
-import org.mitre.harmony.model.ListenerGroup;
-import org.mitre.harmony.model.MappingListener;
-import org.mitre.harmony.model.MappingManager;
-import org.mitre.harmony.model.SchemaManager;
+import org.mitre.harmony.model.HarmonyModel;
+import org.mitre.harmony.model.mapping.MappingListener;
 import org.mitre.schemastore.model.graph.GraphModel;
 import org.mitre.schemastore.model.graph.HierarchicalGraph;
 
@@ -20,19 +19,18 @@ import org.mitre.schemastore.model.graph.HierarchicalGraph;
  * Tracks preferences used in Harmony
  * @author CWOLF
  */
-public class Preferences implements MappingListener
+public class PreferencesManager extends AbstractManager<PreferencesListener> implements MappingListener
 {	
 	/** Stores if the various schema elements have been marked as finished */
-	static private HashMap<Integer,HashSet<Integer>> finishedElementMap = new HashMap<Integer,HashSet<Integer>>();
+	private HashMap<Integer,HashSet<Integer>> finishedElementMap = new HashMap<Integer,HashSet<Integer>>();
 	
-	/** Stores preference listeners */
-	static private ListenerGroup<PreferencesListener> listeners = new ListenerGroup<PreferencesListener>();
-
 	/** Constructor used to monitor changes that might affect the selected info */
-	private Preferences()
+	public PreferencesManager(HarmonyModel harmonyModel)
 	{
+		super(harmonyModel);
+		
 		// Eliminate graph model preferences for schemas that are no longer in the mapping
-		ArrayList<Integer> schemaIDs = MappingManager.getSchemas();
+		ArrayList<Integer> schemaIDs = harmonyModel.getMappingManager().getSchemas();
 		for(Integer schemaID : ConfigManager.getHashMap("preferences.graphModels").keySet())
 			if(!schemaIDs.contains(schemaID))
 				setSchemaGraphModel(schemaID, null);
@@ -52,11 +50,7 @@ public class Preferences implements MappingListener
 					try { elementIDs.add(Integer.valueOf(element.trim())); } catch(Exception e) {}
 				setFinished(schemaID, elementIDs, true);
 			}
-		
-		// Add listeners to trigger changes to the preferences
-		MappingManager.addListener(this);
 	}
-	static { new Preferences(); }
 
 	/** Remove the specified graph model when a schema is removed */
 	public void schemaRemoved(Integer schemaID)
@@ -74,23 +68,20 @@ public class Preferences implements MappingListener
 	public void mappingModified() {}
 	public void schemaAdded(Integer schemaID) {}
 	
-	/** Adds a preference listener */
-	static public void addListener(PreferencesListener listener) { listeners.add(listener); }
-	
 	// ------------- Preference for view to be displayed ------------
 
 	/** Returns the preference for view to be displayed */
-	static public Integer getViewToDisplay()
+	public Integer getViewToDisplay()
 		{ try { return Integer.parseInt(ConfigManager.getParm("preferences.displayedView")); } catch(Exception e) {} return HarmonyConsts.MAPPING_VIEW; }
 	
 	/** Set preference to view to be displayed */
-	static public void setViewToDisplay(Integer view)
+	public void setViewToDisplay(Integer view)
 	{
 		// Only set preference if changed from original
 		if(view!=getViewToDisplay())
 		{
 			ConfigManager.setParm("preferences.displayedView",Integer.toString(view));
-			for(PreferencesListener listener : listeners.get())
+			for(PreferencesListener listener : getListeners())
 				listener.displayedViewChanged();
 		}
 	}
@@ -98,17 +89,17 @@ public class Preferences implements MappingListener
 	// ------------- Preference for if schema types should be shown ------------
 
 	/** Returns the preference for if schema types should be displayed */
-	static public boolean getShowSchemaTypes()
+	public boolean getShowSchemaTypes()
 		{ try { return Boolean.parseBoolean(ConfigManager.getParm("preferences.showSchemaTypes")); } catch(Exception e) {} return false; }
 	
 	/** Set preference to show schema types */
-	static public void setShowSchemaTypes(boolean newShowSchemaTypes)
+	public void setShowSchemaTypes(boolean newShowSchemaTypes)
 	{
 		// Only set preference if changed from original
 		if(newShowSchemaTypes!=getShowSchemaTypes())
 		{
 			ConfigManager.setParm("preferences.showSchemaTypes",Boolean.toString(newShowSchemaTypes));
-			for(PreferencesListener listener : listeners.get())
+			for(PreferencesListener listener : getListeners())
 				listener.showSchemaTypesChanged();
 		}
 	}
@@ -116,15 +107,15 @@ public class Preferences implements MappingListener
 	// ------------- Preferences for storing the import and export directories -------------
 	
 	/** Returns the import directory */
-	static public File getImportDir()
+	public File getImportDir()
 		{ try { return new File(ConfigManager.getParm("preferences.importDir")); } catch(Exception e) {} return new File("."); }
 
 	/** Returns the export directory */
-	static public File getExportDir()
+	public File getExportDir()
 		{ try { return new File(ConfigManager.getParm("preferences.exportDir")); } catch(Exception e) {} return new File("."); }
 
 	/** Set current directory used for importing projects */
-	static public void setImportDir(File importDir)
+	public void setImportDir(File importDir)
 	{
 		// Only set preference if changed from original
 		if(!importDir.equals(getImportDir()))
@@ -132,7 +123,7 @@ public class Preferences implements MappingListener
 	}
 	
 	/** Set current directory used for exporting projects */
-	static public void setExportDir(File exportDir)
+	public void setExportDir(File exportDir)
 	{
 		// Only set preference if changed from original
 		if(!exportDir.equals(getExportDir()))
@@ -142,7 +133,7 @@ public class Preferences implements MappingListener
 	// ------------- Preference for storing the schema graph models -------------
 	
 	/** Returns the graph model for the specified schema */
-	static public GraphModel getSchemaGraphModel(Integer schemaID)
+	public GraphModel getSchemaGraphModel(Integer schemaID)
 	{
 		HashMap<Integer,String> hashMap = ConfigManager.getHashMap("preferences.graphModels");
 		String model = hashMap.get(schemaID);
@@ -153,7 +144,7 @@ public class Preferences implements MappingListener
 	}
 	
 	/** Set the graph model for the specified schema */
-	static public void setSchemaGraphModel(Integer schemaID, GraphModel model)
+	public void setSchemaGraphModel(Integer schemaID, GraphModel model)
 	{
 		HashMap<Integer,String> hashMap = ConfigManager.getHashMap("preferences.graphModels");
 		String currModel = hashMap.get(schemaID);
@@ -163,8 +154,8 @@ public class Preferences implements MappingListener
 				hashMap.put(schemaID,model.getName());
 			else hashMap.remove(schemaID);
 			ConfigManager.setParm("preferences.graphModels",hashMap.toString());
-			SchemaManager.getGraph(schemaID).setModel(model);
-			for(PreferencesListener listener : listeners.get())
+			getModel().getSchemaManager().getGraph(schemaID).setModel(model);
+			for(PreferencesListener listener : getListeners())
 				listener.schemaGraphModelChanged(schemaID);
 		}
 	}
@@ -172,21 +163,21 @@ public class Preferences implements MappingListener
 	// ------------- Preference for tracking which schema elements are marked as finished -------------
 	
 	/** Returns if the specified schema element is marked as finished */
-	static public boolean isFinished(Integer schemaID, Integer elementID)
+	public boolean isFinished(Integer schemaID, Integer elementID)
 	{
 		HashSet<Integer> finishedElements = finishedElementMap.get(schemaID);
 		return finishedElements!=null && finishedElements.contains(elementID);
 	}
 	
 	/** Returns the finished elements for the specified schema */
-	static public ArrayList<Integer> getFinishedElements(Integer schemaID)
+	public ArrayList<Integer> getFinishedElements(Integer schemaID)
 	{
 		HashSet<Integer> finishedElements = finishedElementMap.get(schemaID);
 		return finishedElements==null ? new ArrayList<Integer>() : new ArrayList<Integer>(finishedElements);
 	}
 	
 	/** Sets the flag indicating if analysis of the schema element is finished */
-	static public void setFinished(Integer schemaID, HashSet<Integer> elementIDs, boolean finished)
+	public void setFinished(Integer schemaID, HashSet<Integer> elementIDs, boolean finished)
 	{
 		// Retrieve the list of finished elements from the map
 		HashSet<Integer> finishedElements = finishedElementMap.get(schemaID);
@@ -203,7 +194,7 @@ public class Preferences implements MappingListener
 		ConfigManager.setParm("preferences.finished",finishedElementMap.toString());
 		
 		// Inform listeners to the changes made to preferences
-		for(PreferencesListener listener : listeners.get())
+		for(PreferencesListener listener : getListeners())
 		{
 			if(finished) listener.elementsMarkedAsFinished(schemaID, elementIDs);
 			else listener.elementsMarkedAsUnfinished(schemaID, elementIDs);

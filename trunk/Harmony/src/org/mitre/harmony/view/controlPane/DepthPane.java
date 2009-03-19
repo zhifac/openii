@@ -23,7 +23,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.plaf.metal.MetalIconFactory;
 import javax.swing.plaf.metal.MetalSliderUI;
 
-import org.mitre.harmony.model.filters.Filters;
+import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.filters.FiltersListener;
 import org.mitre.harmony.view.schemaTree.SchemaTree;
 import org.mitre.harmony.view.schemaTree.SchemaTreeListener;
@@ -36,6 +36,9 @@ public class DepthPane extends JPanel
 	// Stores the slider's min and max labels
 	private JLabel minDepthLabel = new JLabel("Depth 1 ");
 	private JLabel maxDepthLabel = new JLabel(" Depth 1");
+	
+	/** Stores the Harmony model */
+	private HarmonyModel harmonyModel;
 	
 	/** Class used to draw and manager the depth slider */
 	private class DepthSlider extends JSlider implements SchemaTreeListener, FiltersListener, ComponentListener
@@ -182,7 +185,7 @@ public class DepthPane extends JPanel
 		{
 			minValue = minValueIn;
 			minDepthLabel.setText("Depth " + minValue + " ");
-			Filters.setDepth(role,minValue,maxValue);
+			harmonyModel.getFilters().setDepth(role,minValue,maxValue);
 		}
 		
 		/** Set max value and inform listeners */
@@ -190,7 +193,7 @@ public class DepthPane extends JPanel
 		{
 			maxValue = maxValueIn;
 			maxDepthLabel.setText(" Depth " + maxValue);
-			Filters.setDepth(role,minValue,maxValue);
+			harmonyModel.getFilters().setDepth(role,minValue,maxValue);
 		}		
 		
 		/** Depth slider constructor */
@@ -217,7 +220,7 @@ public class DepthPane extends JPanel
 			// Add listeners to monitor various events that affect depth range
 			addComponentListener(this);
 			tree.addSchemaTreeListener(this);
-			Filters.addListener(this);
+			harmonyModel.getFilters().addListener(this);
 		}
 
 		/** When the schema tree is modified, the slider's maximum value is updated and its value reset */
@@ -232,7 +235,7 @@ public class DepthPane extends JPanel
 		/** When the focus changes, make sure the focus' links are visible */
 		public void focusChanged()
 		{
-			if(Filters.getFocus(role) != null)
+			if(harmonyModel.getFilters().getFocus(role) != null)
 			{
 				setMinValue(1);
 				setMaxValue(getMaximum());
@@ -263,8 +266,10 @@ public class DepthPane extends JPanel
 	}
 
 	/** Creates a new depth pane linked to the indicated tree */
-	public DepthPane(SchemaTree tree)
+	public DepthPane(SchemaTree tree, HarmonyModel harmonyModel)
 	{	
+		this.harmonyModel = harmonyModel;
+		
 		// Place slider in pane
 		setBorder(new EmptyBorder(2,5,2,5));
 		setLayout(new BorderLayout());

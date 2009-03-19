@@ -22,7 +22,7 @@ import javax.swing.JTextArea;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
-import org.mitre.harmony.view.harmonyPane.HarmonyFrame;
+import org.mitre.harmony.model.HarmonyModel;
 
 /**
  * Displays the dialog for displaying general information about Harmony
@@ -107,16 +107,16 @@ public class AboutDialog extends JDialog implements MouseListener, MouseMotionLi
 	}
 	
 	/** Initializes About dialog */
-	public AboutDialog()
+	public AboutDialog(HarmonyModel harmonyModel)
 	{
-		super(HarmonyFrame.harmonyFrame.getFrame());
+		super(harmonyModel.getBaseFrame());
 		
 		// Initialize all settings for the project dialog
 		setTitle("About Harmony");
 		setSize(600,375);
     	setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		setContentPane(aboutPane());
-    	setLocationRelativeTo(HarmonyFrame.harmonyFrame.getFrame());
+    	setLocationRelativeTo(harmonyModel.getBaseFrame());
     	setVisible(true);
    	}
 	

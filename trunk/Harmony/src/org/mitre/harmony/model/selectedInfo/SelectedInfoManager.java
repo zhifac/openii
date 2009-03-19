@@ -7,17 +7,14 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
+import org.mitre.harmony.model.AbstractManager;
 import org.mitre.harmony.model.HarmonyConsts;
-import org.mitre.harmony.model.ListenerGroup;
-import org.mitre.harmony.model.MappingCellListener;
-import org.mitre.harmony.model.MappingCellManager;
-import org.mitre.harmony.model.MappingListener;
-import org.mitre.harmony.model.MappingManager;
-import org.mitre.harmony.model.SchemaManager;
+import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.ConfigManager;
-import org.mitre.harmony.model.filters.Filters;
 import org.mitre.harmony.model.filters.FiltersListener;
 import org.mitre.harmony.model.filters.Focus;
+import org.mitre.harmony.model.mapping.MappingCellListener;
+import org.mitre.harmony.model.mapping.MappingListener;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.SchemaElement;
 
@@ -25,7 +22,7 @@ import org.mitre.schemastore.model.SchemaElement;
  * Tracks selected info within Harmony
  * @author CWOLF
  */
-public class SelectedInfoManager implements MappingListener, MappingCellListener, FiltersListener
+public class SelectedInfoManager extends AbstractManager<SelectedInfoListener> implements MappingListener, MappingCellListener, FiltersListener
 {
 	// Constants for defining how to adjust the selected items
 	static private final int ADD = 0;
@@ -47,9 +44,6 @@ public class SelectedInfoManager implements MappingListener, MappingCellListener
 	/** Stores the selected mapping cells */
 	private HashSet<Integer> selectedMappingCells = new HashSet<Integer>();
 	
-	/** Stores selected info listeners */
-	private ListenerGroup<SelectedInfoListener> listeners = new ListenerGroup<SelectedInfoListener>();
-	
 	/** Returns the specified list of selected elements */
 	private HashSet<Integer> getSelectedElementSet(Integer role)
 		{ return role==HarmonyConsts.LEFT ? selectedLeftElements : selectedRightElements; }
@@ -57,7 +51,7 @@ public class SelectedInfoManager implements MappingListener, MappingCellListener
 	/** Returns the valid schemaIDs from the specified list of schemas */
 	private ArrayList<Integer> getValidSchemaIDs(ArrayList<Integer> schemaIDs)
 	{
-		ArrayList<Integer> validSchemaIDs = MappingManager.getSchemas();
+		ArrayList<Integer> validSchemaIDs = getModel().getMappingManager().getSchemas();
 		for(Integer schemaID : new ArrayList<Integer>(schemaIDs))
 			if(!validSchemaIDs.contains(schemaID))
 				schemaIDs.remove(schemaID);
@@ -65,17 +59,18 @@ public class SelectedInfoManager implements MappingListener, MappingCellListener
 	}
 	
 	/** Constructor used to initialize the selected info */
-	public SelectedInfoManager()
+	public SelectedInfoManager(HarmonyModel harmonyModel)
 	{
+		super(harmonyModel);
+		
 		// Filter out selected schemas which don't exist in the repository
 		ArrayList<Integer> leftSchemas = getValidSchemaIDs(getSchemas(HarmonyConsts.LEFT));
 		ArrayList<Integer> rightSchemas = getValidSchemaIDs(getSchemas(HarmonyConsts.RIGHT));
 		setSelectedSchemas(leftSchemas, rightSchemas);
 		
 		// Add listeners to trigger changes to the selected info
-		MappingManager.addListener(this);
-		MappingCellManager.addListener(this);
-		Filters.addListener(this);
+		harmonyModel.getMappingManager().addListener(this);
+		harmonyModel.getMappingCellManager().addListener(this);
 	}
 	
 	//--------------------- Returns the various selected pieces of info ---------------------
@@ -89,7 +84,7 @@ public class SelectedInfoManager implements MappingListener, MappingCellListener
 	{
 		HashSet<SchemaElement> elements = new HashSet<SchemaElement>();
 		for(Integer schemaID : getSchemas(side))
-			elements.addAll(SchemaManager.getGraph(schemaID).getGraphElements());
+			elements.addAll(getModel().getSchemaManager().getGraph(schemaID).getGraphElements());
 		return elements;
 	}
 
@@ -132,7 +127,7 @@ public class SelectedInfoManager implements MappingListener, MappingCellListener
 		{
 			ConfigManager.setParm("selectedInfo.leftSchemas",leftSchemas.toString());
 			ConfigManager.setParm("selectedInfo.rightSchemas",rightSchemas.toString());
-			for(SelectedInfoListener listener : listeners.get())
+			for(SelectedInfoListener listener : getListeners())
 				listener.selectedSchemasModified();
 		}
 	}
@@ -167,7 +162,7 @@ public class SelectedInfoManager implements MappingListener, MappingCellListener
 		// Set the selected elements
 		HashSet<Integer> selectedElements = getSelectedElementSet(side);
 		if(!updateSet(selectedElements,elements,mode)) return;
-		for(SelectedInfoListener listener : listeners.get()) listener.selectedElementsModified(side);
+		for(SelectedInfoListener listener : getListeners()) listener.selectedElementsModified(side);
 
 		// Identify changes to the mapping cells required by the newly selected elements
 		List<Integer> mappingCells = new ArrayList<Integer>();
@@ -176,13 +171,13 @@ public class SelectedInfoManager implements MappingListener, MappingCellListener
 		for(Integer leftElement : leftElements)
 			for(Integer rightElement : rightElements)
 			{
-				Integer mappingCell = MappingCellManager.getMappingCellID(leftElement,rightElement);
+				Integer mappingCell = getModel().getMappingCellManager().getMappingCellID(leftElement,rightElement);
 				if(mappingCell!=null) mappingCells.add(mappingCell);
 			}
 
 		// Update the mapping cells
 		if(updateSet(selectedMappingCells,mappingCells,REPLACE))
-			for(SelectedInfoListener listener : listeners.get()) listener.selectedMappingCellsModified();
+			for(SelectedInfoListener listener : getListeners()) listener.selectedMappingCellsModified();
 
 		// Update the displayed elements
 		updateDisplayedElements();
@@ -193,7 +188,7 @@ public class SelectedInfoManager implements MappingListener, MappingCellListener
 	{
 		// Set the selected mapping cells
 		if(!updateSet(selectedMappingCells,mappingCells,mode)) return;
-		for(SelectedInfoListener listener : listeners.get()) listener.selectedMappingCellsModified();
+		for(SelectedInfoListener listener : getListeners()) listener.selectedMappingCellsModified();
 
 		// Identify changes to the elements required by the newly selected mapping cells
 		ArrayList<Integer> selectedLeftElements = new ArrayList<Integer>();
@@ -203,7 +198,7 @@ public class SelectedInfoManager implements MappingListener, MappingCellListener
 		for(Integer mappingCellID : getSelectedMappingCells())
 		{
 			// Identify the elements for the mapping cell
-			MappingCell mappingCell = MappingCellManager.getMappingCell(mappingCellID);
+			MappingCell mappingCell = getModel().getMappingCellManager().getMappingCell(mappingCellID);
 			Integer element1 = mappingCell.getElement1();
 			Integer element2 = mappingCell.getElement2();
 			
@@ -220,7 +215,7 @@ public class SelectedInfoManager implements MappingListener, MappingCellListener
 		{
 			ArrayList<Integer> selectedElements = (side.equals(HarmonyConsts.LEFT)?selectedLeftElements:selectedRightElements);
 			if(updateSet(getSelectedElementSet(side),selectedElements,REPLACE))
-				for(SelectedInfoListener listener : listeners.get())
+				for(SelectedInfoListener listener : getListeners())
 					listener.selectedElementsModified(side);		
 		}
 			
@@ -248,13 +243,13 @@ public class SelectedInfoManager implements MappingListener, MappingCellListener
 		if(displayedLeftElement==null || !displayedLeftElement.equals(leftElement))
 		{
 			displayedLeftElement=leftElement; 
-			for(SelectedInfoListener listener : listeners.get())
+			for(SelectedInfoListener listener : getListeners())
 				listener.displayedElementModified(HarmonyConsts.LEFT);
 		}
 		if(displayedRightElement==null || !displayedRightElement.equals(rightElement))
 		{
 			displayedRightElement=rightElement; 
-			for(SelectedInfoListener listener : listeners.get())
+			for(SelectedInfoListener listener : getListeners())
 				listener.displayedElementModified(HarmonyConsts.RIGHT);
 		}
 	}
@@ -297,7 +292,7 @@ public class SelectedInfoManager implements MappingListener, MappingCellListener
 		for(Integer side : sides)
 		{
 			// Get the focus for the specified side
-			Focus focus = Filters.getFocus(side);
+			Focus focus = getModel().getFilters().getFocus(side);
 			
 			// Identify all of the elements that are no longer visible
 			ArrayList<Integer> removedElements = new ArrayList<Integer>();						
@@ -319,8 +314,8 @@ public class SelectedInfoManager implements MappingListener, MappingCellListener
 		for(Integer side : sides)
 		{
 			// Get the minimum and maximum depth for the specified side
-			int minDepth = Filters.getMinDepth(side);
-			int maxDepth = Filters.getMaxDepth(side);
+			int minDepth = getModel().getFilters().getMinDepth(side);
+			int maxDepth = getModel().getFilters().getMaxDepth(side);
 			
 			// Identify all of the elements that are no longer within the specified depths
 			ArrayList<Integer> removedElements = new ArrayList<Integer>();			
@@ -328,7 +323,7 @@ public class SelectedInfoManager implements MappingListener, MappingCellListener
 			{
 				boolean visible = false;
 				for(Integer schemaID : getSchemas(side))
-					for(Integer depth : SchemaManager.getDepths(schemaID, elementID))
+					for(Integer depth : getModel().getSchemaManager().getDepths(schemaID, elementID))
 						if(depth>=minDepth && depth<=maxDepth)
 							{ visible=true; break; }
 				if(!visible) removedElements.add(elementID);
@@ -383,8 +378,4 @@ public class SelectedInfoManager implements MappingListener, MappingCellListener
 	public void assertionsChanged() {}
 	public void confidenceChanged() {}
 	public void maxConfidenceChanged(Integer schemaObjectID) {}
-	
-	/** Adds a selected info listener */
-	public void addListener(SelectedInfoListener listener)
-		{ listeners.add(listener); }
 }
