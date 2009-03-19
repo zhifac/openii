@@ -16,10 +16,7 @@ import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 
-import org.mitre.harmony.model.SchemaManager;
-import org.mitre.harmony.model.filters.Filters;
-import org.mitre.harmony.model.preferences.Preferences;
-import org.mitre.harmony.model.selectedInfo.SelectedInfo;
+import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.view.dialogs.Link;
 import org.mitre.schemastore.model.Domain;
 import org.mitre.schemastore.model.SchemaElement;
@@ -45,12 +42,19 @@ class SchemaTreeRenderer extends DefaultTreeCellRenderer
 	/** Defines highlight color used in displaying highlighted schema tree nodes */
 	static private Color highlightColor = new Color(0xFFFF66);
 
+	/** Stores the Harmony model */
+	private HarmonyModel harmonyModel;
+	
 	/** Retrieve the specified icon */
 	static private Icon getIcon(String name)
 	{
 		URL url = SchemaTreeRenderer.class.getResource("/org/mitre/harmony/view/graphics/"+name+".jpg");
 		return new ImageIcon(Toolkit.getDefaultToolkit().getImage(url));
 	}
+	
+	/** Constructs the Schema Tree renderer */
+	public SchemaTreeRenderer(HarmonyModel harmonyModel)
+		{ this.harmonyModel = harmonyModel; }
 	
 	/** Returns the rendered schema tree nodes */
 	public Component getTreeCellRendererComponent(JTree tree, Object value, boolean highlighted, boolean expanded, boolean leaf, int row, boolean hasFocus)
@@ -78,12 +82,12 @@ class SchemaTreeRenderer extends DefaultTreeCellRenderer
 		{
 			// Gets schema node and associated schema tree
 			Integer elementID = (Integer)obj;
-			SchemaElement element = SchemaManager.getSchemaElement(elementID);
+			SchemaElement element = harmonyModel.getSchemaManager().getSchemaElement(elementID);
 			SchemaTree schemaTree = (SchemaTree)tree;
 			
 			// Get the schema element domain
 			Integer schemaID = SchemaTree.getSchema((DefaultMutableTreeNode)value);
-			HierarchicalGraph graph = SchemaManager.getGraph(schemaID);
+			HierarchicalGraph graph = harmonyModel.getSchemaManager().getGraph(schemaID);
 			Domain domain = graph.getDomainForElement(element.getId());
 
 			// Sets the tool tip
@@ -91,13 +95,13 @@ class SchemaTreeRenderer extends DefaultTreeCellRenderer
 			setToolTipText(tooltip);
 
 			// Determine the display state of the node
-			isFocused = Filters.visibleNode(schemaTree.getRole(),(DefaultMutableTreeNode)value);
-			isSelected = SelectedInfo.isElementSelected(elementID,schemaTree.getRole());
-			isFinished = Preferences.isFinished(schemaID,elementID);
+			isFocused = harmonyModel.getFilters().visibleNode(schemaTree.getRole(),(DefaultMutableTreeNode)value);
+			isSelected = harmonyModel.getSelectedInfo().isElementSelected(elementID,schemaTree.getRole());
+			isFinished = harmonyModel.getPreferences().isFinished(schemaID,elementID);
 
 			// Set the text and icon
 			String text = "<html>" + graph.getDisplayName(element.getId());
-			if(Preferences.getShowSchemaTypes() && domain!=null)
+			if(harmonyModel.getPreferences().getShowSchemaTypes() && domain!=null)
 				text += " <font color='#888888'>(" + domain.getName() + ")</font></html>";
 			setText(text);
 			if(domain!=null) setIcon(isFinished ? finishedAttributeIcon : attributeIcon);
@@ -109,7 +113,7 @@ class SchemaTreeRenderer extends DefaultTreeCellRenderer
 		{
 			// Determine if the node is in focus
 			SchemaTree schemaTree = (SchemaTree)tree;
-			isFocused = Filters.getFocus(schemaTree.getRole())==null;
+			isFocused = harmonyModel.getFilters().getFocus(schemaTree.getRole())==null;
 			
 			// Set the text and icon
 			setText("  "  + obj);

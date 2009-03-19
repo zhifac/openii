@@ -13,6 +13,7 @@ import java.util.Vector;
 import javax.swing.border.EmptyBorder;
 import javax.swing.tree.TreePath;
 
+import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.view.schemaTree.SchemaTree;
 
 /**
@@ -26,9 +27,9 @@ public class SchemaTreeImp extends SchemaTree
 	int lastVisibleRow;		// Tracks the last visible schema tree row
 	
 	/** Initializes the schema tree implementation */
-	public SchemaTreeImp(Integer role)
+	public SchemaTreeImp(Integer role, HarmonyModel harmonyModel)
 	{
-		super(role);
+		super(role, harmonyModel);
 		setBorder(new EmptyBorder(0,0,10,0));
 	}
 	

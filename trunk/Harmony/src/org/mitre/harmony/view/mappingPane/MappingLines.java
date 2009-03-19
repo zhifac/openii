@@ -18,11 +18,9 @@ import java.util.Enumeration;
 import javax.swing.JViewport;
 
 import org.mitre.harmony.model.HarmonyConsts;
-import org.mitre.harmony.model.MappingCellListener;
-import org.mitre.harmony.model.MappingCellManager;
-import org.mitre.harmony.model.filters.Filters;
+import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.filters.FiltersListener;
-import org.mitre.harmony.model.selectedInfo.SelectedInfo;
+import org.mitre.harmony.model.mapping.MappingCellListener;
 import org.mitre.harmony.model.selectedInfo.SelectedInfoListener;
 import org.mitre.harmony.view.schemaTree.SchemaTree;
 import org.mitre.harmony.view.schemaTree.SchemaTreeListener;
@@ -38,6 +36,9 @@ public class MappingLines implements MappingCellListener, FiltersListener, Schem
 	/** Static pointer to class */
 	public static MappingLines mappingLines;
 	
+	/** Stores the Harmony model */
+	private HarmonyModel harmonyModel;
+	
 	/** Stores a list of the mapping cell lines */
 	public static Hashtable<Integer, MappingCellLines> lines = null;
 	
@@ -45,16 +46,17 @@ public class MappingLines implements MappingCellListener, FiltersListener, Schem
 	private Vector<LinesListener> listeners = new Vector<LinesListener>();
 
 	/** Initializes the schema tree lines */
-	MappingLines(SchemaTreeImp source, SchemaTreeImp target)
+	MappingLines(SchemaTreeImp source, SchemaTreeImp target, HarmonyModel harmonyModel)
 	{	
 		mappingLines = this;
+		this.harmonyModel = harmonyModel;
 		
 		// Listen for changes which affect the schema tree links
 		source.addSchemaTreeListener(this);
 		target.addSchemaTreeListener(this);
-		Filters.addListener(this);
-		SelectedInfo.addListener(this);
-		MappingCellManager.addListener(this);
+		harmonyModel.getFilters().addListener(this);
+		harmonyModel.getSelectedInfo().addListener(this);
+		harmonyModel.getMappingCellManager().addListener(this);
 	}
 
 	/** Initialize the lines within the schema tree */
@@ -65,11 +67,11 @@ public class MappingLines implements MappingCellListener, FiltersListener, Schem
 			lines = new Hashtable<Integer, MappingCellLines>();
 
 			// Generate the list of lines associated with the source and target schemas
-			for(SchemaElement leftElement : SelectedInfo.getSchemaElements(HarmonyConsts.LEFT))
-				for(SchemaElement rightElement : SelectedInfo.getSchemaElements(HarmonyConsts.RIGHT))
+			for(SchemaElement leftElement : harmonyModel.getSelectedInfo().getSchemaElements(HarmonyConsts.LEFT))
+				for(SchemaElement rightElement : harmonyModel.getSelectedInfo().getSchemaElements(HarmonyConsts.RIGHT))
 				{
-					Integer mappingCellID = MappingCellManager.getMappingCellID(leftElement.getId(),rightElement.getId());
-					if(mappingCellID!=null) lines.put(mappingCellID,new MappingCellLines(mappingCellID));
+					Integer mappingCellID = harmonyModel.getMappingCellManager().getMappingCellID(leftElement.getId(),rightElement.getId());
+					if(mappingCellID!=null) lines.put(mappingCellID,new MappingCellLines(mappingCellID,harmonyModel));
 				}
 		}
 		return lines;
@@ -105,7 +107,7 @@ public class MappingLines implements MappingCellListener, FiltersListener, Schem
 		{
 			// Examine all non-hidden mapping cells
 			MappingCellLines mappingCellLines = (MappingCellLines)mappingCells.nextElement();
-			if(!mappingCellLines.getHidden() && !MappingCellManager.isMappingCellFinished(mappingCellLines.getMappingCellID()))
+			if(!mappingCellLines.getHidden() && !harmonyModel.getMappingCellManager().isMappingCellFinished(mappingCellLines.getMappingCellID()))
 			{
 				// Cycle through all mapping cell lines
 				for(MappingCellLine line : mappingCellLines.getLines())
@@ -125,7 +127,7 @@ public class MappingLines implements MappingCellListener, FiltersListener, Schem
 		}
 		
 		// Return the mapping cell which was determined to be closest to the point
-		if(bestMappingCell==null || MappingCellManager.isMappingCellFinished(bestMappingCell))
+		if(bestMappingCell==null || harmonyModel.getMappingCellManager().isMappingCellFinished(bestMappingCell))
 			return null;
 		return bestMappingCell;
 	}
@@ -153,7 +155,7 @@ public class MappingLines implements MappingCellListener, FiltersListener, Schem
 						// Add mapping cell to list if intersects region
 						if(region==null || line.intersects(region))
 						{
-							if(!MappingCellManager.isMappingCellFinished(mappingCell.getMappingCellID()))
+							if(!harmonyModel.getMappingCellManager().isMappingCellFinished(mappingCell.getMappingCellID()))
 								selMappingCells.add(mappingCell.getMappingCellID());
 							break;
 						}
@@ -168,7 +170,7 @@ public class MappingLines implements MappingCellListener, FiltersListener, Schem
 	
 	/** Handles the addition of a mapping cell */
 	public void mappingCellAdded(MappingCell mappingCell)
-		{ getLines().put(mappingCell.getId(),new MappingCellLines(mappingCell.getId())); }
+		{ getLines().put(mappingCell.getId(),new MappingCellLines(mappingCell.getId(),harmonyModel)); }
 
 	/** Handles the modification of a mapping cell */
 	public void mappingCellModified(MappingCell oldMappingCell, MappingCell newMappingCell)
@@ -205,7 +207,7 @@ public class MappingLines implements MappingCellListener, FiltersListener, Schem
 	/** Updates mapping cell lines when a node's max confidence changed */
 	public void maxConfidenceChanged(Integer schemaObjectID)
 	{
-		for(Integer mappingCellID : MappingCellManager.getMappingCellsByElement(schemaObjectID))
+		for(Integer mappingCellID : harmonyModel.getMappingCellManager().getMappingCellsByElement(schemaObjectID))
 			if(getLines().get(mappingCellID)!=null) getLines().get(mappingCellID).updateHidden();
 		fireLinesModified();
 	}

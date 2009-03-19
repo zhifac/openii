@@ -8,7 +8,8 @@ import java.awt.event.ActionListener;
 import javax.swing.JPanel;
 import javax.swing.JCheckBox;
 
-import org.mitre.harmony.model.filters.Filters;
+import org.mitre.harmony.model.HarmonyModel;
+import org.mitre.harmony.model.filters.FilterManager;
 
 /**
  * Pane to display currently set assertions
@@ -16,15 +17,18 @@ import org.mitre.harmony.model.filters.Filters;
  */
 public class AssertionPane extends JPanel implements ActionListener
 {
-	/**
-	 * Initializes the assertion pane
-	 */
-	public AssertionPane()
+	/** Stores the Harmony model */
+	private HarmonyModel harmonyModel;
+	
+	/** Initializes the assertion pane */
+	public AssertionPane(HarmonyModel harmonyModel)
 	{
+		this.harmonyModel = harmonyModel;
+		
 		// Create check boxes for each type of assertion
-		JCheckBox user = new JCheckBox("User",Filters.getAssertions()[Filters.USER]);
-		JCheckBox system = new JCheckBox("System",Filters.getAssertions()[Filters.SYSTEM]);
-		JCheckBox best = new JCheckBox("Best",Filters.getAssertions()[Filters.BEST]);
+		JCheckBox user = new JCheckBox("User",harmonyModel.getFilters().getAssertions()[FilterManager.USER]);
+		JCheckBox system = new JCheckBox("System",harmonyModel.getFilters().getAssertions()[FilterManager.SYSTEM]);
+		JCheckBox best = new JCheckBox("Best",harmonyModel.getFilters().getAssertions()[FilterManager.BEST]);
 	
 		// Add listeners to monitor the assertion check boxes
 		user.addActionListener(this);
@@ -36,9 +40,7 @@ public class AssertionPane extends JPanel implements ActionListener
 		add(user); add(system); add(best);
 	}
 	
-	/**
-	 * Monitors for assertion check boxes to be checked/unchecked
-	 */
+	/** Monitors for assertion check boxes to be checked/unchecked */
 	public void actionPerformed(ActionEvent e)
 	{
 		// Determine which assertions have been checked/unchecked
@@ -47,6 +49,6 @@ public class AssertionPane extends JPanel implements ActionListener
 			assertions[i]=((JCheckBox)getComponent(i)).isSelected();
 
 		// Store new assertion settings
-		Filters.setAssertions(assertions);
+		harmonyModel.getFilters().setAssertions(assertions);
 	}
 }
