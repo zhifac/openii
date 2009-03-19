@@ -6,7 +6,7 @@ import java.util.regex.Pattern;
 
 import org.mitre.harmony.matchers.MatchScore;
 import org.mitre.harmony.matchers.MatchScores;
-import org.mitre.harmony.model.SchemaManager;
+import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.Containment;
@@ -35,7 +35,7 @@ public class CalculatePerformance
 		for each pair of schemas matched in Ground Truths file
 	*/
 	public static ArrayList<Double> metricsCalculator(MatchScores schemaPairAlgorithmMatchScores, 
-			String mappingString, ArrayList<Schema> currentMatchedSchemas, Double threshold)
+			String mappingString, ArrayList<Schema> currentMatchedSchemas, Double threshold, HarmonyModel harmonyModel)
 				throws IllegalFileFormatException
 	{
 		/*	stores all parameters needed for calculating precision and recall
@@ -84,8 +84,8 @@ public class CalculatePerformance
 			// Find if the targetNode element exists in target schema and get its reference
 			try
 			{
-				elementOne = getElementInstance(currentMatchedSchemas.get(0), sourceNodeString);
-				elementTwo = getElementInstance(currentMatchedSchemas.get(1), targetNodeString);
+				elementOne = getElementInstance(currentMatchedSchemas.get(0), sourceNodeString, harmonyModel);
+				elementTwo = getElementInstance(currentMatchedSchemas.get(1), targetNodeString, harmonyModel);
 			}
 			catch(ElementDoesNotExistException e)
 			{System.out.println(e.toString());}
@@ -128,7 +128,7 @@ public class CalculatePerformance
 	}//end of metricsCalculator method
 	
 	/*	Obtains element instance - given an element name	*/    
-    private static SchemaElement getElementInstance(Schema s, String nodeName) throws ElementDoesNotExistException, IllegalArgumentException
+    private static SchemaElement getElementInstance(Schema s, String nodeName, HarmonyModel harmonyModel) throws ElementDoesNotExistException, IllegalArgumentException
     {
     	SchemaElement elementFound = null;
        	String names[] = nodeName.split("-");
@@ -140,7 +140,7 @@ public class CalculatePerformance
        		throw new IllegalArgumentException("Node name not found in schema " + s.toString());
        	
        	//Find all containments in this schema
-		for(SchemaElement c : SchemaManager.getSchemaElements(s.getId(),Containment.class))
+		for(SchemaElement c : harmonyModel.getSchemaManager().getSchemaElements(s.getId(),Containment.class))
 			allContainments.add((Containment)c);
 		
 		//Find all containments with Name = first part of nodeName

@@ -10,7 +10,7 @@ import org.mitre.harmony.matchers.MatchScores;
 import org.mitre.harmony.matchers.MatcherManager;
 import org.mitre.harmony.matchers.mergers.*;
 import org.mitre.harmony.matchers.voters.*;
-import org.mitre.harmony.model.SchemaManager;
+import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.graph.FilteredGraph;
 
@@ -54,7 +54,7 @@ public class AlgorithmMappings
 	private HashMap<Double,Double> sumAllRecall = new HashMap<Double,Double>();
 	
 	// Function that does the main calculations for this class 
-	private void metrics(File XMLFile, ArrayList<MatchVoter> selectedVoters, MatchMerger merger) 
+	private void metrics(File XMLFile, ArrayList<MatchVoter> selectedVoters, MatchMerger merger, HarmonyModel harmonyModel) 
 												throws IllegalFileFormatException
 	{
 		// Pull the entire file into a string
@@ -114,8 +114,8 @@ public class AlgorithmMappings
 			Schema schemaTwo = null;
 			try
 			{
-				schemaOne = getSchemaInstance(schemaOneString);
-				schemaTwo = getSchemaInstance(schemaTwoString);
+				schemaOne = getSchemaInstance(schemaOneString, harmonyModel);
+				schemaTwo = getSchemaInstance(schemaTwoString, harmonyModel);
 			}
 			catch(SchemaDoesNotExistException e)
 			{System.out.println(e.toString());}
@@ -129,8 +129,8 @@ public class AlgorithmMappings
 			currentMatchedSchemas.add(schemaTwo);
 		
 			//Setting up the schema for using the matcher
-			FilteredGraph schema1 = new FilteredGraph(SchemaManager.getGraph(schemaOne.getId()));
-			FilteredGraph schema2 = new FilteredGraph(SchemaManager.getGraph(schemaTwo.getId()));
+			FilteredGraph schema1 = new FilteredGraph(harmonyModel.getSchemaManager().getGraph(schemaOne.getId()));
+			FilteredGraph schema2 = new FilteredGraph(harmonyModel.getSchemaManager().getGraph(schemaTwo.getId()));
 			
 			//Obtain merged algorithm scores for this pair of schemas found in ground truths file
 			MatchScores schemaPairMergedScores = MatcherManager.getScores(schema1, schema2, selectedVoters, merger);
@@ -143,7 +143,7 @@ public class AlgorithmMappings
 				Double sumPrecision = null;
 				Double sumRecall = null;
 				
-				oneSchemaPairThresholdMetricsArray = CalculatePerformance.metricsCalculator(schemaPairMergedScores, mappingString, currentMatchedSchemas, threshold);
+				oneSchemaPairThresholdMetricsArray = CalculatePerformance.metricsCalculator(schemaPairMergedScores, mappingString, currentMatchedSchemas, threshold, harmonyModel);
 				
 				sumPrecision = sumAllPrecision.get(threshold) + oneSchemaPairThresholdMetricsArray.get(0);
 				sumAllPrecision.put(threshold, sumPrecision);
@@ -164,10 +164,10 @@ public class AlgorithmMappings
 	}//end of metrics method
 	
 	//obtains schema instance - given a schema name
-	private Schema getSchemaInstance(String schemaName) throws SchemaDoesNotExistException 
+	private Schema getSchemaInstance(String schemaName, HarmonyModel harmonyModel) throws SchemaDoesNotExistException 
 	{
 		Schema schemaFound = null;
-		for(Schema s : SchemaManager.getSchemas())
+		for(Schema s : harmonyModel.getSchemaManager().getSchemas())
 			if(schemaName.equals(s.getName()))
 			{
 				schemaFound = s;
@@ -190,9 +190,9 @@ public class AlgorithmMappings
         }
 	}
 	
-	public ArrayList<HashMap<Double,Double>> getMetrics(File XMLFile, ArrayList<MatchVoter> selectedVoters, MatchMerger merger) throws IllegalFileFormatException
+	public ArrayList<HashMap<Double,Double>> getMetrics(File XMLFile, ArrayList<MatchVoter> selectedVoters, MatchMerger merger, HarmonyModel harmonyModel) throws IllegalFileFormatException
 	{
-		metrics(XMLFile, selectedVoters, merger);
+		metrics(XMLFile, selectedVoters, merger, harmonyModel);
 		ArrayList<HashMap<Double,Double>> metricsArray = new ArrayList<HashMap<Double,Double>>();
 		metricsArray.add(precision);
 		metricsArray.add(recall);
