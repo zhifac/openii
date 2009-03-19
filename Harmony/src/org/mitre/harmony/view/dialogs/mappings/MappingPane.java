@@ -19,9 +19,8 @@ import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionListener;
 
-import org.mitre.harmony.model.MappingManager;
+import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.view.dialogs.TitledPane;
-import org.mitre.harmony.view.harmonyPane.HarmonyFrame;
 import org.mitre.schemastore.model.Mapping;
 
 /** Private class for managing the mapping list */
@@ -47,18 +46,23 @@ class MappingPane extends JPanel
 		}
 	 }
 	
+	/** Stores the Harmony model */
+	private HarmonyModel harmonyModel;
+	
 	/** Stores the mapping list */
 	private JList mappingList = null;
 	
 	/** Constructs the mapping pane */
-	MappingPane(Boolean saveMode)
+	MappingPane(Boolean saveMode, HarmonyModel harmonyModel)
 	{
+		this.harmonyModel = harmonyModel;
+		
 		// Retrieve the list of mappings
-		Vector<Mapping> mappings = new Vector<Mapping>(MappingManager.getAvailableMappings());
+		Vector<Mapping> mappings = new Vector<Mapping>(harmonyModel.getSchemaManager().getAvailableMappings());
 		Collections.sort(mappings, new MappingComparator());
 		if(saveMode)
 		{
-			Mapping newMapping = MappingManager.getMapping().copy();
+			Mapping newMapping = harmonyModel.getMappingManager().getMapping().copy();
 			newMapping.setId(null); newMapping.setName("");
 			mappings.add(0,newMapping);
 		}
@@ -67,7 +71,7 @@ class MappingPane extends JPanel
 		mappingList = new JList(mappings);
 		mappingList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		mappingList.setCellRenderer(new ListRenderer());
-		if(saveMode) mappingList.setSelectedValue(MappingManager.getMapping(), true);
+		if(saveMode) mappingList.setSelectedValue(harmonyModel.getMappingManager().getMapping(), true);
 		if(mappingList.getSelectedIndex()<0 && mappings.size()>0) mappingList.setSelectedIndex(0);
 		
 		// Create a scroll pane to hold the mapping list
@@ -104,14 +108,14 @@ class MappingPane extends JPanel
 			if(mapping.getId()!=null)
 			{
 				// Ask user before deleting mapping
-				int option = JOptionPane.showConfirmDialog(HarmonyFrame.harmonyFrame,
+				int option = JOptionPane.showConfirmDialog(harmonyModel.getBaseFrame(),
 		    		"Continue with deletion of mapping \"" + mapping.getName() + "\"?",
 					"Delete Mapping", JOptionPane.OK_CANCEL_OPTION,
 					JOptionPane.WARNING_MESSAGE);
 				if(option==2) return;
 	
 				// Delete the selected mapping
-				if(MappingManager.deleteMapping(mapping.getId()))
+				if(harmonyModel.getMappingManager().deleteMapping(mapping.getId()))
 				{
 					// Generate a list of mappings with the specified mapping removed
 					Vector<Mapping> mappings = new Vector<Mapping>();

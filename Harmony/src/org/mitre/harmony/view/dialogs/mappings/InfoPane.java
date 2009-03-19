@@ -17,7 +17,7 @@ import javax.swing.border.LineBorder;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
 
-import org.mitre.harmony.model.SchemaManager;
+import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.view.dialogs.TitledPane;
 import org.mitre.schemastore.model.Mapping;
 
@@ -26,6 +26,9 @@ class InfoPane extends JPanel implements CaretListener
 {	
 	/** Declares the default font */
 	static private Font defaultFont = new Font(null,Font.PLAIN,12);
+	
+	/** Stores the Harmony model */
+	private HarmonyModel harmonyModel;
 	
 	// Stores the various info fields
 	private JTextField nameField = new JTextField();
@@ -37,8 +40,10 @@ class InfoPane extends JPanel implements CaretListener
 	private Mapping mapping = null;
 	
 	/** Constructs the info pane */
-	InfoPane(boolean saveMode)
+	InfoPane(boolean saveMode, HarmonyModel harmonyModel)
 	{
+		this.harmonyModel = harmonyModel;
+		
 		// Initialize the name field
 		nameField.setBackground(Color.white);
 		nameField.setBorder(new LineBorder(Color.gray));
@@ -100,7 +105,7 @@ class InfoPane extends JPanel implements CaretListener
 		// Display the selected schema information
 		for(Integer schemaID : mapping.getSchemas())
 		{
-			JLabel label = new JLabel(SchemaManager.getSchema(schemaID).getName());
+			JLabel label = new JLabel(harmonyModel.getSchemaManager().getSchema(schemaID).getName());
 			label.setFont(defaultFont);
 			schemaPane.add(label);
 		}

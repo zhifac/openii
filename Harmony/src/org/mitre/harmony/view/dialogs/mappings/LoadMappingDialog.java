@@ -10,10 +10,9 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import org.mitre.harmony.model.MappingManager;
+import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.view.dialogs.AbstractButtonPane;
 import org.mitre.harmony.view.dialogs.schemas.SchemaDialog;
-import org.mitre.harmony.view.harmonyPane.HarmonyFrame;
 import org.mitre.schemastore.model.Mapping;
 
 /**
@@ -22,11 +21,14 @@ import org.mitre.schemastore.model.Mapping;
  */
 public class LoadMappingDialog extends JDialog implements ListSelectionListener
 {	
+	/** Stores the Harmony model */
+	private HarmonyModel harmonyModel;
+	
 	/** Stores the mapping pane */
-	private MappingPane mappingPane = new MappingPane(false);
+	private MappingPane mappingPane = null;
 	
 	/** Stores the info pane */
-	private InfoPane infoPane = new InfoPane(false);
+	private InfoPane infoPane = null;
 
 	/** Private class for defining the button pane */
 	private class ButtonPane extends AbstractButtonPane
@@ -39,9 +41,9 @@ public class LoadMappingDialog extends JDialog implements ListSelectionListener
 		protected void button1Action()
 		{
 			Mapping mapping = mappingPane.getMapping();
-			if(mapping!=null) MappingManager.loadMapping(mapping.getId());
+			if(mapping!=null) harmonyModel.getMappingManager().loadMapping(mapping.getId());
 			dispose();
-			new SchemaDialog();
+			new SchemaDialog(harmonyModel);
 		}
 
 		/** Handles selection of cancel button */
@@ -53,9 +55,11 @@ public class LoadMappingDialog extends JDialog implements ListSelectionListener
 	private JPanel getMainPane()
 	{
 		// Initialize the mapping pane
+		mappingPane = new MappingPane(false,harmonyModel);
 		mappingPane.addListSelectionListener(this);
 
 		//Initialize the info pane
+		infoPane = new InfoPane(false,harmonyModel);
 		infoPane.setInfo(mappingPane.getMapping());
 		
 		// Creates the main pane
@@ -75,15 +79,16 @@ public class LoadMappingDialog extends JDialog implements ListSelectionListener
 	}
 
 	/** Constructs the dialog for loading mappings */
-	public LoadMappingDialog()
+	public LoadMappingDialog(HarmonyModel harmonyModel)
 	{
-		super(HarmonyFrame.harmonyFrame.getFrame());
+		super(harmonyModel.getBaseFrame());
+		this.harmonyModel = harmonyModel;
 		setTitle("Select Mapping");
 		setModal(true);
     	setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		setContentPane(getMainPane());
 		pack();
-		setLocationRelativeTo(HarmonyFrame.harmonyFrame);
+		setLocationRelativeTo(harmonyModel.getBaseFrame());
 		setVisible(true);
 	}
 

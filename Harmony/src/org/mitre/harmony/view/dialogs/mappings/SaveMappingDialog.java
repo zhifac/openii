@@ -10,9 +10,8 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import org.mitre.harmony.model.MappingManager;
+import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.view.dialogs.AbstractButtonPane;
-import org.mitre.harmony.view.harmonyPane.HarmonyFrame;
 
 /**
  * Class used for the saving the current mapping
@@ -20,11 +19,14 @@ import org.mitre.harmony.view.harmonyPane.HarmonyFrame;
  */
 public class SaveMappingDialog extends JDialog implements ListSelectionListener
 {	
+	/** Stores the Harmony model */
+	private HarmonyModel harmonyModel;
+	
 	/** Stores the mapping pane */
-	private MappingPane mappingPane = new MappingPane(true);
+	private MappingPane mappingPane = null;
 	
 	/** Stores the info pane */
-	private InfoPane infoPane = new InfoPane(true);
+	private InfoPane infoPane = null;
 
 	/** Private class for defining the button pane */
 	private class ButtonPane extends AbstractButtonPane
@@ -38,7 +40,7 @@ public class SaveMappingDialog extends JDialog implements ListSelectionListener
 		{
 			if(infoPane.validateInfo())
 			{
-				MappingManager.saveMapping(mappingPane.getMapping());
+				harmonyModel.getMappingManager().saveMapping(mappingPane.getMapping());
 				dispose();
 			}
 		}
@@ -52,9 +54,11 @@ public class SaveMappingDialog extends JDialog implements ListSelectionListener
 	private JPanel getMainPane()
 	{
 		// Initialize the mapping pane
+		mappingPane = new MappingPane(true,harmonyModel);
 		mappingPane.addListSelectionListener(this);
 
 		//Initialize the info pane
+		infoPane = new InfoPane(true, harmonyModel);
 		infoPane.setInfo(mappingPane.getMapping());
 		
 		// Creates the main pane
@@ -74,15 +78,16 @@ public class SaveMappingDialog extends JDialog implements ListSelectionListener
 	}
 
 	/** Constructs the dialog for saving mappings */
-	public SaveMappingDialog()
+	public SaveMappingDialog(HarmonyModel harmonyModel)
 	{
-		super(HarmonyFrame.harmonyFrame.getFrame());
+		super(harmonyModel.getBaseFrame());
+		this.harmonyModel = harmonyModel;
 		setTitle("Save Mapping As");
 		setModal(true);
     	setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		setContentPane(getMainPane());
 		pack();
-		setLocationRelativeTo(HarmonyFrame.harmonyFrame);
+		setLocationRelativeTo(harmonyModel.getBaseFrame());
 		setVisible(true);
 	}
 

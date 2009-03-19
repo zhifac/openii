@@ -11,9 +11,8 @@ import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.border.EmptyBorder;
 
-import org.mitre.harmony.model.MappingManager;
+import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.view.dialogs.AbstractButtonPane;
-import org.mitre.harmony.view.harmonyPane.HarmonyFrame;
 
 /**
  * Displays the dialog containing all mapping information
@@ -21,6 +20,9 @@ import org.mitre.harmony.view.harmonyPane.HarmonyFrame;
  */
 public class SchemaDialog extends JDialog
 {	
+	/** Stores the Harmony model */
+	private HarmonyModel harmonyModel;
+	
 	// Stores the various panes used in this pane
 	private JTabbedPane tabbedPane = new JTabbedPane();
 	private SchemaSelectionPane selectionPane = null;
@@ -47,17 +49,18 @@ public class SchemaDialog extends JDialog
 	}
 	
 	/** Initializes the properties dialog */
-	public SchemaDialog()
+	public SchemaDialog(HarmonyModel harmonyModel)
 	{
-		super(HarmonyFrame.harmonyFrame.getFrame());
+		super(harmonyModel.getBaseFrame());
+		this.harmonyModel = harmonyModel;
 		
 		// Initializes the selection and display panes
-		selectionPane = new SchemaSelectionPane();
-		displayPane = new SchemaDisplayPane();
-		modelPane = new SchemaModelPane();
+		selectionPane = new SchemaSelectionPane(harmonyModel);
+		displayPane = new SchemaDisplayPane(harmonyModel);
+		modelPane = new SchemaModelPane(harmonyModel);
 		
 		// Populate panes with schema information
-		for(Integer schemaID : MappingManager.getSchemas())
+		for(Integer schemaID : harmonyModel.getMappingManager().getSchemas())
 			selectSchema(schemaID);
 
 		// Initializes the selection pane
@@ -90,7 +93,7 @@ public class SchemaDialog extends JDialog
 		setContentPane(pane);
 		pack();
 		setSize(550,getHeight());
-		setLocationRelativeTo(HarmonyFrame.harmonyFrame);
+		setLocationRelativeTo(harmonyModel.getBaseFrame());
 		setVisible(true);
    	}
 	
@@ -115,7 +118,7 @@ public class SchemaDialog extends JDialog
 	/** Saves the mapping schemas */
 	void save()
 	{
-		MappingManager.setSchemas(selectedSchemas);
+		harmonyModel.getMappingManager().setSchemas(selectedSchemas);
 		displayPane.save();
 		modelPane.save();
 	}

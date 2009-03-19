@@ -26,7 +26,7 @@ import javax.swing.border.LineBorder;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
 
-import org.mitre.harmony.model.SchemaManager;
+import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.view.dialogs.AbstractButtonPane;
 import org.mitre.schemastore.importers.Importer;
 import org.mitre.schemastore.model.Schema;
@@ -34,6 +34,9 @@ import org.mitre.schemastore.model.Schema;
 /** Class for displaying the importer view */
 public class ImporterDialog extends JDialog implements ActionListener,CaretListener
 {		
+	/** Stores the Harmony model */
+	private HarmonyModel harmonyModel;
+	
 	/** Stores the imported schema ID */
 	private Integer schemaID = null;
 	
@@ -42,7 +45,7 @@ public class ImporterDialog extends JDialog implements ActionListener,CaretListe
 	private JTextField nameField = new JTextField();
 	private JTextField authorField = new JTextField();
 	private JTextArea descriptionField = new JTextArea();
-	private FileParameter uriField = new FileParameter();	
+	private FileParameter uriField;	
 	
 	/** Private class for defining the button pane */
 	private class ButtonPane extends AbstractButtonPane
@@ -64,7 +67,7 @@ public class ImporterDialog extends JDialog implements ActionListener,CaretListe
 	private JPanel getSelectionPane()
 	{
 		// Generate the list of importers which are available
-		Vector<Importer> importers = new Vector<Importer>(SchemaManager.getImporters());
+		Vector<Importer> importers = new Vector<Importer>(harmonyModel.getSchemaManager().getImporters());
 		
 		// Initializes the label
 		JLabel selectionLabel = new JLabel("Importers: ");
@@ -110,6 +113,7 @@ public class ImporterDialog extends JDialog implements ActionListener,CaretListe
 		descriptionField.setWrapStyleWord(true);
 		
 		// Initialize the uri field
+		uriField = new FileParameter(harmonyModel);
 		uriField.addListener(this);
 		
 		// Generates the information pane
@@ -123,10 +127,11 @@ public class ImporterDialog extends JDialog implements ActionListener,CaretListe
 	}
 	
 	/** Constructs the importer dialog */
-	public ImporterDialog(JDialog parent)
+	public ImporterDialog(JDialog parent, HarmonyModel harmonyModel)
 	{
 		super(parent);
-
+		this.harmonyModel = harmonyModel;
+		
 		// Initialize the main pane
 		JPanel mainPane = new JPanel();
 		mainPane.setBorder(new EmptyBorder(5,10,5,10));

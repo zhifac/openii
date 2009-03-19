@@ -9,7 +9,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.tree.DefaultMutableTreeNode;
 
-import org.mitre.harmony.model.preferences.Preferences;
+import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.preferences.PreferencesListener;
 import org.mitre.harmony.view.schemaTree.SchemaTree;
 import org.mitre.harmony.view.schemaTree.SchemaTreeListener;
@@ -21,6 +21,9 @@ public class SchemaTreeFinished extends JPanel implements PreferencesListener, S
 {
 	/** Stores the tree to which this pane is associated */
 	private SchemaTree tree = null;
+	
+	/** Stores the Harmony Model */
+	private HarmonyModel harmonyModel;
 	
 	// Variables to keep track of finished versus total elements
 	private int finished = 0;
@@ -34,13 +37,14 @@ public class SchemaTreeFinished extends JPanel implements PreferencesListener, S
 		{ label.setText(finished + "/" + total); }
 
 	/** Creates a new progress widget tied to the indicated tree */
-	public SchemaTreeFinished(SchemaTree tree)
+	public SchemaTreeFinished(SchemaTree tree, HarmonyModel harmonyModel)
 	{
 		this.tree = tree;
+		this.harmonyModel = harmonyModel;
 		add(new JLabel("Finished:"));
 		add(label);
 		schemaStructureModified(tree);
-		Preferences.addListener(this);
+		harmonyModel.getPreferences().addListener(this);
 		tree.addSchemaTreeListener(this);
 		refresh();
 	}
@@ -68,7 +72,7 @@ public class SchemaTreeFinished extends JPanel implements PreferencesListener, S
 					{
 						Integer schemaID = SchemaTree.getSchema(descendantNode);
 						Integer elementID = (Integer)obj;
-						if(Preferences.isFinished(schemaID,elementID)) finished++;
+						if(harmonyModel.getPreferences().isFinished(schemaID,elementID)) finished++;
 						total++;
 					}
 				}

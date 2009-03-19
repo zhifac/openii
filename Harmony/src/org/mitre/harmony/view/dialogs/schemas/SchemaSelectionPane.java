@@ -15,8 +15,7 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
-import org.mitre.harmony.model.MappingManager;
-import org.mitre.harmony.model.SchemaManager;
+import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.view.dialogs.Link;
 import org.mitre.harmony.view.dialogs.TitledPane;
 import org.mitre.harmony.view.dialogs.importer.ImporterDialog;
@@ -25,6 +24,9 @@ import org.mitre.schemastore.model.Schema;
 /** Class for allowing the selection of schemas */
 public class SchemaSelectionPane extends JPanel
 {
+	/** Stores the Harmony model */
+	private HarmonyModel harmonyModel;
+	
 	/** Set of check boxes containing the schema selection */
 	JPanel schemaList = null;
 
@@ -39,26 +41,28 @@ public class SchemaSelectionPane extends JPanel
 	public void generateSchemaList()
 	{
 		// Get the list available schemas
-		ArrayList<Schema> schemas = SchemaManager.getSchemas();
+		ArrayList<Schema> schemas = harmonyModel.getSchemaManager().getSchemas();
 		Collections.sort(schemas, new SchemaComparator());
 
 		// Get the list of deletable schemas
-		ArrayList<Integer> deletableSchemas = SchemaManager.getDeletableSchemas();
-		deletableSchemas.removeAll(MappingManager.getSchemas());
+		ArrayList<Integer> deletableSchemas = harmonyModel.getSchemaManager().getDeletableSchemas();
+		deletableSchemas.removeAll(harmonyModel.getMappingManager().getSchemas());
 		
 		// Generate the list of schemas
 		schemaList.removeAll();
 		for(Schema schema : schemas)
 		{
 			boolean deletable = deletableSchemas.contains(schema.getId());
-			schemaList.add(new SchemaSelectionItem(schema,deletable));
+			schemaList.add(new SchemaSelectionItem(schema,deletable,harmonyModel));
 		}
 		revalidate(); repaint();
 	}
 	
 	/** Constructs the Schema List pane */
-	public SchemaSelectionPane()
+	public SchemaSelectionPane(HarmonyModel harmonyModel)
 	{			
+		this.harmonyModel = harmonyModel;
+		
 		// Create the schema list
 		schemaList = new JPanel();
 		schemaList.setBackground(Color.white);
@@ -97,14 +101,14 @@ public class SchemaSelectionPane extends JPanel
 				parent = parent.getParent();
 				
 			// Launch the importer dialog
-			ImporterDialog dialog = new ImporterDialog((JDialog)parent);
+			ImporterDialog dialog = new ImporterDialog((JDialog)parent, harmonyModel);
 			while(dialog.isDisplayable()) try { Thread.sleep(500); } catch(Exception e2) {}
 
 			// Update the list of schemas if a new schema was imported
 			Integer schemaID = dialog.getSchemaID();
 			if(schemaID!=null)
 			{
-				SchemaManager.initSchemas();
+				harmonyModel.getSchemaManager().initSchemas();
 				generateSchemaList();
 			}
 		}

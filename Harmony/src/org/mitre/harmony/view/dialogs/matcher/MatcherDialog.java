@@ -21,13 +21,9 @@ import org.mitre.harmony.matchers.MatcherManager;
 import org.mitre.harmony.matchers.mergers.MatchMerger;
 import org.mitre.harmony.matchers.voters.MatchVoter;
 import org.mitre.harmony.model.HarmonyConsts;
-import org.mitre.harmony.model.MappingCellManager;
-import org.mitre.harmony.model.SchemaManager;
-import org.mitre.harmony.model.filters.Filters;
+import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.filters.Focus;
-import org.mitre.harmony.model.preferences.Preferences;
-import org.mitre.harmony.model.selectedInfo.SelectedInfo;
-import org.mitre.harmony.view.harmonyPane.HarmonyFrame;
+import org.mitre.harmony.model.mapping.MappingCellManager;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.graph.FilteredGraph;
 
@@ -36,18 +32,20 @@ import org.mitre.schemastore.model.graph.FilteredGraph;
  * 
  * @author CWOLF
  */
-class MatcherDialog extends JDialog implements ActionListener, Runnable {
+class MatcherDialog extends JDialog implements ActionListener, Runnable
+{
 	private ArrayList<MatchVoter> voters; // List of match voters to use
 	private MatchMerger merger; // Match merger being used
-	private JLabel progressLabel = new JLabel("Generating Matches"); // Labels
-	// the
-	// progress
-	// bar
+	private JLabel progressLabel = new JLabel("Generating Matches"); // Labels the progress bar
 	private JButton cancelButton = new JButton("Cancel"); // Cancel button
 	private String matcherName;
 
+	/** Stores the Harmony model */
+	private HarmonyModel harmonyModel;
+	
 	/** Generates the main pane for the matcher dialog */
-	private JPanel mainPane() {
+	private JPanel mainPane()
+	{
 		// Creates progress bar to show that processing is occurring
 		JProgressBar progressBar = new JProgressBar();
 		progressBar.setIndeterminate(true);
@@ -74,17 +72,19 @@ class MatcherDialog extends JDialog implements ActionListener, Runnable {
 	}
 
 	/** Construct the matcher dialog */
-	MatcherDialog(MatchMerger merger, ArrayList<MatchVoter> voters) {
-		super(HarmonyFrame.harmonyFrame.getFrame());
+	MatcherDialog(MatchMerger merger, ArrayList<MatchVoter> voters, HarmonyModel harmonyModel)
+	{
+		super(harmonyModel.getBaseFrame());
 		this.merger = merger;
 		this.voters = voters;
+		this.harmonyModel = harmonyModel;
 
 		// Set up matcher dialog layout and contents
 		setTitle("Schema Matcher");
 		setModal(true);
 		setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
 		setContentPane(mainPane());
-		setLocationRelativeTo(HarmonyFrame.harmonyFrame);
+		setLocationRelativeTo(harmonyModel.getBaseFrame());
 		pack();
 
 		// Initialize the execution of the matcher
@@ -95,17 +95,18 @@ class MatcherDialog extends JDialog implements ActionListener, Runnable {
 	}
 
 	/** Runs the matcher dialog processing as a separate thread */
-	public void run() {
+	public void run()
+	{
 		// Generate the matcher name
 		if (voters.size() == MatcherManager.getVoters().size()) matcherName = merger.getName() + "(All Voters)";
 		else if (voters.size() == 1) matcherName = voters.get(0).getName();
-		else {
+		else
+		{
 			matcherName = merger.getName() + "(";
-			for (MatchVoter voter : voters) {
-				if (matcherName.length() + voter.getName().length() > 45) {
-					matcherName += "..., ";
-					break;
-				}
+			for (MatchVoter voter : voters) 
+			{
+				if (matcherName.length() + voter.getName().length() > 45)
+					{ matcherName += "..., "; break; }
 				matcherName += voter.getName() + ", ";
 			}
 			matcherName = matcherName.substring(0, matcherName.length() - 2) + ")";
@@ -113,36 +114,42 @@ class MatcherDialog extends JDialog implements ActionListener, Runnable {
 
 		// Determine what left roots to match on
 		ArrayList<FilteredGraph> leftGraphs = new ArrayList<FilteredGraph>();
-		if (Filters.getFocus(HarmonyConsts.LEFT) != null) {
-			Focus focus = Filters.getFocus(HarmonyConsts.LEFT);
-			FilteredGraph graph = new FilteredGraph(SchemaManager.getGraph(focus.getSchemaID()));
+		if (harmonyModel.getFilters().getFocus(HarmonyConsts.LEFT) != null)
+		{
+			Focus focus = harmonyModel.getFilters().getFocus(HarmonyConsts.LEFT);
+			FilteredGraph graph = new FilteredGraph(harmonyModel.getSchemaManager().getGraph(focus.getSchemaID()));
 			graph.setFilteredRoot(focus.getElementID());
 			leftGraphs.add(graph);
-		} else for (Integer schemaID : SelectedInfo.getSchemas(HarmonyConsts.LEFT))
-			leftGraphs.add(new FilteredGraph(SchemaManager.getGraph(schemaID)));
+		}
+		else for (Integer schemaID : harmonyModel.getSelectedInfo().getSchemas(HarmonyConsts.LEFT))
+			leftGraphs.add(new FilteredGraph(harmonyModel.getSchemaManager().getGraph(schemaID)));
 
 		// Set the min and max depths for each graph on the left
-		for (FilteredGraph graph : leftGraphs) {
-			graph.setMinDepth(Filters.getMinDepth(HarmonyConsts.LEFT));
-			graph.setMaxDepth(Filters.getMaxDepth(HarmonyConsts.LEFT));
-			graph.setHiddenElements(Preferences.getFinishedElements(graph.getSchema().getId()));
+		for (FilteredGraph graph : leftGraphs)
+		{
+			graph.setMinDepth(harmonyModel.getFilters().getMinDepth(HarmonyConsts.LEFT));
+			graph.setMaxDepth(harmonyModel.getFilters().getMaxDepth(HarmonyConsts.LEFT));
+			graph.setHiddenElements(harmonyModel.getPreferences().getFinishedElements(graph.getSchema().getId()));
 		}
 
 		// Determine what right roots to match on
 		ArrayList<FilteredGraph> rightGraphs = new ArrayList<FilteredGraph>();
-		if (Filters.getFocus(HarmonyConsts.RIGHT) != null) {
-			Focus focus = Filters.getFocus(HarmonyConsts.RIGHT);
-			FilteredGraph graph = new FilteredGraph(SchemaManager.getGraph(focus.getSchemaID()));
+		if (harmonyModel.getFilters().getFocus(HarmonyConsts.RIGHT) != null)
+		{
+			Focus focus = harmonyModel.getFilters().getFocus(HarmonyConsts.RIGHT);
+			FilteredGraph graph = new FilteredGraph(harmonyModel.getSchemaManager().getGraph(focus.getSchemaID()));
 			graph.setFilteredRoot(focus.getElementID());
 			rightGraphs.add(graph);
-		} else for (Integer schemaID : SelectedInfo.getSchemas(HarmonyConsts.RIGHT))
-			rightGraphs.add(new FilteredGraph(SchemaManager.getGraph(schemaID)));
+		}
+		else for (Integer schemaID : harmonyModel.getSelectedInfo().getSchemas(HarmonyConsts.RIGHT))
+			rightGraphs.add(new FilteredGraph(harmonyModel.getSchemaManager().getGraph(schemaID)));
 
 		// Set the min and max depths for each graph on the right
-		for (FilteredGraph graph : rightGraphs) {
-			graph.setMinDepth(Filters.getMinDepth(HarmonyConsts.RIGHT));
-			graph.setMaxDepth(Filters.getMaxDepth(HarmonyConsts.RIGHT));
-			graph.setHiddenElements(Preferences.getFinishedElements(graph.getSchema().getId()));
+		for (FilteredGraph graph : rightGraphs)
+		{
+			graph.setMinDepth(harmonyModel.getFilters().getMinDepth(HarmonyConsts.RIGHT));
+			graph.setMaxDepth(harmonyModel.getFilters().getMaxDepth(HarmonyConsts.RIGHT));
+			graph.setHiddenElements(harmonyModel.getPreferences().getFinishedElements(graph.getSchema().getId()));
 		}
 
 		// Perform N-way match on specific left and right element
@@ -175,19 +182,23 @@ class MatcherDialog extends JDialog implements ActionListener, Runnable {
 		dispose();
 	}
 
-	private void runMatch(FilteredGraph leftGraph, FilteredGraph rightGraph) {
+	private void runMatch(FilteredGraph leftGraph, FilteredGraph rightGraph)
+	{
 		// Generate the match scores for the left and right roots
 		MatchScores matchScores = MatcherManager.getScores(leftGraph, rightGraph, voters, merger);
 
 		// Store all generated match scores
-		for (MatchScore matchScore : matchScores.getScores()) {
-			// Get mapping cell ID
-			Integer mappingCellID = MappingCellManager.getMappingCellID(matchScore.getElement1(), matchScore.getElement2());
-			if (mappingCellID == null) mappingCellID = MappingCellManager.createMappingCell(matchScore.getElement1(), matchScore.getElement2());
-
-			// Modify mapping cell with new score
-			MappingCell mappingCell = MappingCellManager.getMappingCell(mappingCellID);
-			if (!mappingCell.getValidated()) MappingCellManager.modifyMappingCell(mappingCellID, matchScore.getScore(), matcherName, false);
+		MappingCellManager manager = harmonyModel.getMappingCellManager();
+		for (MatchScore matchScore : matchScores.getScores())
+		{
+			MappingCell mappingCell = new MappingCell();
+			mappingCell.setId(manager.getMappingCellID(matchScore.getElement1(), matchScore.getElement2()));
+			mappingCell.setElement1(matchScore.getElement1());
+			mappingCell.setElement2(matchScore.getElement2());
+			mappingCell.setScore(matchScore.getScore());
+			mappingCell.setAuthor(matcherName);
+			mappingCell.setValidated(false);
+			manager.setMappingCell(mappingCell);
 		}
 	}
 

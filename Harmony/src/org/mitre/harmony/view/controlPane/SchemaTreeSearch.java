@@ -14,7 +14,7 @@ import javax.swing.JTextField;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.DefaultMutableTreeNode;
 
-import org.mitre.harmony.model.SchemaManager;
+import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.view.schemaTree.SchemaTree;
 import org.mitre.harmony.view.schemaTree.SchemaTreeListener;
 
@@ -39,7 +39,7 @@ public class SchemaTreeSearch extends JPanel implements KeyListener, SchemaTreeL
 		 */
 		TreeItem(DefaultMutableTreeNode node)
 		{
-			name = SchemaManager.getSchemaElement((Integer)(node.getUserObject())).getName();
+			name = harmonyModel.getSchemaManager().getSchemaElement((Integer)(node.getUserObject())).getName();
 			path = new TreePath(node.getPath());
 		}
 		
@@ -69,6 +69,9 @@ public class SchemaTreeSearch extends JPanel implements KeyListener, SchemaTreeL
 	private SchemaTree tree;				// Tree on which searches should be performed
 	private Vector<TreeItem> schemaNodes;	// List of schema nodes found in tree
 	private JTextField searchField;			// Search field for user to enter searches
+	
+	/** Stores the Harmony model */
+	private HarmonyModel harmonyModel;
 	
 	/**
 	 * Gathers and sorts all nodes found in tree
@@ -134,9 +137,10 @@ public class SchemaTreeSearch extends JPanel implements KeyListener, SchemaTreeL
 	 * Constructs the schema tree search field
 	 * @param tree Tree for which seach field should reference
 	 */
-	public SchemaTreeSearch(SchemaTree tree)
+	public SchemaTreeSearch(SchemaTree tree, HarmonyModel harmonyModel)
 	{
 		this.tree = tree;
+		this.harmonyModel = harmonyModel;
 		schemaNodes = new Vector<TreeItem>();
 		searchField = new JTextField();
 		
