@@ -20,9 +20,7 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.labels.StandardPieSectionLabelGenerator;
 import org.jfree.chart.plot.PiePlot;
 import org.jfree.data.general.DefaultPieDataset;
-import org.mitre.harmony.model.MappingCellManager;
-import org.mitre.harmony.model.MappingManager;
-import org.mitre.harmony.model.SchemaManager;
+import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
 
@@ -30,11 +28,15 @@ import org.mitre.schemastore.model.SchemaElement;
  * Class for exporting projects to a pie chart showing schemas' matched percentage
  * @author CWOLF
  */
-public class MatchedExporter implements Exporter
+public class MatchedExporter extends Exporter
 {
 	// Stores constants used by the converter
 	public static final String FILETYPE = "zip";
 	
+	/** Constructs the DataDictionary exporter */
+	public MatchedExporter(HarmonyModel harmonyModel)
+		{ super(harmonyModel); }
+
 	/** Returns the file types associated with this converter */
 	public String getFileType()
 		{ return FILETYPE; }
@@ -79,10 +81,10 @@ public class MatchedExporter implements Exporter
 	    ZipOutputStream out = new ZipOutputStream(new FileOutputStream(file));
 
 		// Store the schema pie charts to the zip file
-	    ArrayList<Integer> schemaIDs = MappingManager.getSchemas();
+	    ArrayList<Integer> schemaIDs = getModel().getMappingManager().getSchemas();
 		for(int i=0; i<schemaIDs.size(); i++)
 		{
-			Schema schema = SchemaManager.getSchema(schemaIDs.get(i));
+			Schema schema = getModel().getSchemaManager().getSchema(schemaIDs.get(i));
 			copyFileToZip(generateFile(schema),"Schema"+i+"/"+schema.getName()+".jpg",out);
 		}
 		
@@ -99,12 +101,12 @@ public class MatchedExporter implements Exporter
 		int noCount = 0;
 		
 		// Cycles through all tree nodes to identify good, weak, and no links
-		for(SchemaElement element : SchemaManager.getSchemaElements(schema.getId(),null))
+		for(SchemaElement element : getModel().getSchemaManager().getSchemaElements(schema.getId(),null))
 		{
 			double maxScore = Double.MIN_VALUE;
-   			for(Integer mappingCellID : MappingCellManager.getMappingCellsByElement(element.getId()))
+   			for(Integer mappingCellID : getModel().getMappingCellManager().getMappingCellsByElement(element.getId()))
    			{
-   				double score = MappingCellManager.getMappingCell(mappingCellID).getScore();
+   				double score = getModel().getMappingCellManager().getMappingCell(mappingCellID).getScore();
    				if(score>maxScore) maxScore=score;
    			}
    			if(maxScore>0.75) goodCount++;

@@ -15,9 +15,7 @@ import java.util.List;
 import javax.swing.filechooser.FileFilter;
 
 import org.mitre.harmony.model.ConfigManager;
-import org.mitre.harmony.model.MappingCellManager;
-import org.mitre.harmony.model.MappingManager;
-import org.mitre.harmony.model.SchemaManager;
+import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.SchemaElement;
 
@@ -25,7 +23,7 @@ import org.mitre.schemastore.model.SchemaElement;
  * Class for exporting a list of the top 100 matches from the project
  * @author CWOLF
  */
-public class TopMatchExporter implements Exporter
+public class TopMatchExporter extends Exporter
 {
 	/** Class used to store the compressed match */
 	class CompressedMatch implements Comparable<CompressedMatch>
@@ -97,8 +95,8 @@ public class TopMatchExporter implements Exporter
 		private void addMappingCell(MappingCell mappingCell)
 		{
   			// Construct the compressed match
-   			SchemaElement element1 = SchemaManager.getSchemaElement(mappingCell.getElement1());
-   			SchemaElement element2 = SchemaManager.getSchemaElement(mappingCell.getElement2());
+   			SchemaElement element1 = getModel().getSchemaManager().getSchemaElement(mappingCell.getElement1());
+   			SchemaElement element2 = getModel().getSchemaManager().getSchemaElement(mappingCell.getElement2());
    			CompressedMatch newMatch = new CompressedMatch(element1,element2,mappingCell.getScore());
 
    			// Add match to list of compressed matches
@@ -113,6 +111,10 @@ public class TopMatchExporter implements Exporter
 			{ return new ArrayList<CompressedMatch>(matches.values()); }
 	}
 	
+	/** Constructs the DataDictionary exporter */
+	public TopMatchExporter(HarmonyModel harmonyModel)
+		{ super(harmonyModel); }
+
 	/** Returns the file types associated with this converter */
 	public String getFileType()
 		{ return "csv"; }
@@ -143,7 +145,7 @@ public class TopMatchExporter implements Exporter
 
 		// Get the list of mapping cells
 		CompressedList matchList = new CompressedList();
-		for(MappingCell mappingCell : MappingCellManager.getMappingCells())
+		for(MappingCell mappingCell : getModel().getMappingCellManager().getMappingCells())
 			matchList.addMappingCell(mappingCell);
 		
 		// Identify how many mapping cells should be outputted
@@ -160,11 +162,11 @@ public class TopMatchExporter implements Exporter
 	}
 
 	/** Gets paths for the specified element */
-	static private HashSet<String> getPaths(Integer elementID)
+	private HashSet<String> getPaths(Integer elementID)
 	{
 		HashSet<String> paths = new HashSet<String>();
-		for(Integer schemaID : MappingManager.getSchemas())
-			for(ArrayList<SchemaElement> pathElements : SchemaManager.getGraph(schemaID).getPaths(elementID))
+		for(Integer schemaID : getModel().getMappingManager().getSchemas())
+			for(ArrayList<SchemaElement> pathElements : getModel().getSchemaManager().getGraph(schemaID).getPaths(elementID))
 			{
 				StringBuffer path = new StringBuffer("");
 				for(SchemaElement element : pathElements)
