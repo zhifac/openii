@@ -13,8 +13,7 @@ import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 import javax.swing.border.EmptyBorder;
 
-import org.mitre.harmony.model.SchemaManager;
-import org.mitre.harmony.model.MappingManager;
+import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.schemastore.model.Schema;
 
 /**
@@ -24,17 +23,18 @@ import org.mitre.schemastore.model.Schema;
 public class HeatMapPane extends JPanel
 {
 	/** Stores a reference to the heat map */
-	static private HeatMap heatMap = new HeatMap();
+	static private HeatMap heatMap = null;
 	
 	/** Initializes About dialog */
-	public HeatMapPane(JComponent parent)
+	public HeatMapPane(JComponent parent, HarmonyModel harmonyModel)
 	{
 		// Retrieves the schemas to display in the heat map
-		ArrayList<Integer> schemas = MappingManager.getSchemas();
-		Schema schema1 = SchemaManager.getSchema(schemas.get(0));
-		Schema schema2 = SchemaManager.getSchema(schemas.get(1));
+		ArrayList<Integer> schemas = harmonyModel.getMappingManager().getSchemas();
+		Schema schema1 = harmonyModel.getSchemaManager().getSchema(schemas.get(0));
+		Schema schema2 = harmonyModel.getSchemaManager().getSchema(schemas.get(1));
 		
 		// Initialize the heat map
+		heatMap = new HeatMap(harmonyModel);
 		heatMap.setUp(schema1, schema2);
 		heatMap.setFocusable(true);
 		heatMap.addMouseListener(heatMap);
