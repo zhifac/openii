@@ -83,7 +83,7 @@ public class SchemaStoreManager
 		{ return client.getMappings(); }
 	
 	/** Retrieves the specified mapping from the web service */
-	static Mapping getMapping(Integer mappingID) throws RemoteException
+	public static Mapping getMapping(Integer mappingID) throws RemoteException
 		{ return client.getMapping(mappingID); }
 	
 	/** Saves the specified mapping to the web service */
@@ -95,7 +95,7 @@ public class SchemaStoreManager
 		{ return client.deleteMapping(mappingID); }
 	
 	/** Retrieves the mapping cells for the specified mapping */
-	static ArrayList<MappingCell> getMappingCells(Integer mappingID) throws RemoteException
+	public static ArrayList<MappingCell> getMappingCells(Integer mappingID) throws RemoteException
 		{ return client.getMappingCells(mappingID); }
 	
 	//--------------------

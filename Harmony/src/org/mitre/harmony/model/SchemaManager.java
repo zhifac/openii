@@ -4,8 +4,8 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.mitre.harmony.model.preferences.Preferences;
 import org.mitre.schemastore.importers.Importer;
+import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.graph.HierarchicalGraph;
@@ -16,21 +16,28 @@ import org.mitre.schemastore.model.graph.HierarchicalGraph;
  */
 public class SchemaManager
 {
+	/** Stores the Harmony model */
+	private HarmonyModel harmonyModel;
+	
 	/** Caches schema information */
-	static protected HashMap<Integer,Schema> schemas = null;
+	protected HashMap<Integer,Schema> schemas = null;
 
 	/** Caches schema element information */
-	static protected HashMap<Integer,SchemaElement> schemaElements = new HashMap<Integer,SchemaElement>();
+	protected HashMap<Integer,SchemaElement> schemaElements = new HashMap<Integer,SchemaElement>();
 	
 	/** Caches graphs associated with schemas */
-	static protected HashMap<Integer,HierarchicalGraph> schemaGraphs = new HashMap<Integer,HierarchicalGraph>();
+	protected HashMap<Integer,HierarchicalGraph> schemaGraphs = new HashMap<Integer,HierarchicalGraph>();
+	
+	//** Constructs the Schema Manager */
+	public SchemaManager(HarmonyModel harmonyModel)
+		{ this.harmonyModel = harmonyModel; }
 	
 	//------------------
 	// Schema Functions
 	//------------------
 	
 	/** Initializes the schema list */
-	static public void initSchemas()
+	public void initSchemas()
 	{
 		schemas = new HashMap<Integer,Schema>();
 		try {
@@ -42,14 +49,14 @@ public class SchemaManager
 	}
 	
 	/** Returns a list of all schemas */
-	static public ArrayList<Schema> getSchemas()
+	public ArrayList<Schema> getSchemas()
 	{
 		if(schemas==null) initSchemas();
 		return new ArrayList<Schema>(schemas.values());
 	}
 	
 	/** Returns the list of all schema IDs */
-	static public ArrayList<Integer> getSchemaIDs()
+	public ArrayList<Integer> getSchemaIDs()
 	{
 		ArrayList<Integer> schemaIDs = new ArrayList<Integer>();
 		for(Schema schema : getSchemas())
@@ -58,7 +65,7 @@ public class SchemaManager
 	}
 	
 	/** Returns the deletable schemas */
-	static public ArrayList<Integer> getDeletableSchemas()
+	public ArrayList<Integer> getDeletableSchemas()
 	{
 		try {
 			return SchemaStoreManager.getDeletableSchemas();
@@ -67,7 +74,7 @@ public class SchemaManager
 	}
 	
 	/** Returns the specified schema */
-	static public Schema getSchema(Integer schemaID)
+	public Schema getSchema(Integer schemaID)
 	{
 		if(schemas==null) initSchemas();
 		if(!schemas.containsKey(schemaID))
@@ -79,7 +86,7 @@ public class SchemaManager
 	}
 
 	/** Deletes the specified schema */
-	static public boolean deleteSchema(Integer schemaID)
+	public boolean deleteSchema(Integer schemaID)
 	{
 		try {
 			boolean success = SchemaStoreManager.deleteSchema(schemaID);
@@ -93,7 +100,7 @@ public class SchemaManager
 	//--------------------
 	
 	/** Returns the list of available importers */
-	static public ArrayList<Importer> getImporters()
+	public ArrayList<Importer> getImporters()
 	{
 		ArrayList<Importer> importerList = new ArrayList<Importer>();
 		for(Importer importer : SchemaStoreManager.getImporters())
@@ -107,14 +114,14 @@ public class SchemaManager
 	//--------------------------
 	
 	/** Returns the graph for the specified schema */
-	static public HierarchicalGraph getGraph(Integer schemaID)
+	public HierarchicalGraph getGraph(Integer schemaID)
 	{
 		// Fill cache if needed
 		if(!schemaGraphs.containsKey(schemaID))
 		{
 			try {
 				HierarchicalGraph graph = SchemaStoreManager.getGraph(schemaID);
-				graph.setModel(Preferences.getSchemaGraphModel(schemaID));
+				graph.setModel(harmonyModel.getPreferences().getSchemaGraphModel(schemaID));
 				for(SchemaElement schemaElement : graph.getElements(null))
 					schemaElements.put(schemaElement.getId(), schemaElement);
 				schemaGraphs.put(schemaID, graph);
@@ -125,11 +132,11 @@ public class SchemaManager
 	}
 	
 	/** Retrieves the schema elements for the specified schema and type from the web service */
-	static public ArrayList<SchemaElement> getSchemaElements(Integer schemaID, Class type)
+	public ArrayList<SchemaElement> getSchemaElements(Integer schemaID, Class type)
 		{ return getGraph(schemaID).getElements(type); }	
 	
 	/** Gets the specified schema element */
-	static public SchemaElement getSchemaElement(Integer schemaElementID)
+	public SchemaElement getSchemaElement(Integer schemaElementID)
 	{
 		if(!schemaElements.containsKey(schemaElementID))
 		{
@@ -140,10 +147,27 @@ public class SchemaManager
 	}
 
 	/** Returns the list of descendant elements for the specified schema and element */
-	static public ArrayList<SchemaElement> getDescendantElements(Integer schemaID, Integer elementID)
+	public ArrayList<SchemaElement> getDescendantElements(Integer schemaID, Integer elementID)
 		{ return getGraph(schemaID).getDescendantElements(elementID); }
 
 	/** Returns the various depths of the specified schema element */
-	static public ArrayList<Integer> getDepths(Integer schemaID, Integer elementID)
+	public ArrayList<Integer> getDepths(Integer schemaID, Integer elementID)
 		{ return getGraph(schemaID).getDepths(elementID); }
+	
+	//-------------------
+	// Mapping Functions
+	//-------------------
+	
+	/** Returns a list of all available mappings */
+	public ArrayList<Mapping> getAvailableMappings()
+	{
+		ArrayList<Mapping> mappingList = new ArrayList<Mapping>();
+		try {
+			mappingList = SchemaStoreManager.getMappingList();
+		} catch(Exception e) {
+			System.err.println("Error getting Mapping List from SchemaStoreConnection");
+			e.printStackTrace();
+		}
+		return mappingList;
+	}
 }
