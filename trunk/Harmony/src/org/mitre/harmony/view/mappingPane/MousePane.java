@@ -13,17 +13,18 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JPanel;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 
 import org.mitre.harmony.model.HarmonyConsts;
-import org.mitre.harmony.model.MappingCellManager;
-import org.mitre.harmony.model.filters.Filters;
-import org.mitre.harmony.model.selectedInfo.SelectedInfo;
+import org.mitre.harmony.model.HarmonyModel;
+import org.mitre.harmony.model.mapping.MappingCellManager;
 import org.mitre.harmony.view.dialogs.ConfidenceDialog;
 import org.mitre.harmony.view.dialogs.MappingCellDialog;
+import org.mitre.schemastore.model.MappingCell;
 
 /**
  * Holds mouse pane which manages all mouse actions
@@ -38,15 +39,19 @@ class MousePane extends JPanel implements MouseListener, MouseMotionListener
 	/** Stores the left and right schema trees for local reference */
 	private SchemaTreeImp leftTree = null, rightTree = null;
 
+	/** Stores the Harmony model */
+	private HarmonyModel harmonyModel;
+	
 	/** Stores the confidence dialog when visible */
 	private ConfidenceDialog confidenceDialog = null;
 	
 	/** Initializes the mouse pane */
-	MousePane(SchemaTreeImp leftTree, SchemaTreeImp rightTree)
+	MousePane(SchemaTreeImp leftTree, SchemaTreeImp rightTree, HarmonyModel harmonyModel)
 	{
 		// Initialize the mouse pane
 		this.leftTree = leftTree;
 		this.rightTree = rightTree;
+		this.harmonyModel = harmonyModel;
 		setOpaque(false);
 		
 		// Add mouse listeners
@@ -75,7 +80,7 @@ class MousePane extends JPanel implements MouseListener, MouseMotionListener
 		// Otherwise, the path is valid if the indicated node is visible
 		DefaultMutableTreeNode node = (DefaultMutableTreeNode) path.getLastPathComponent();
 		if(!(node.getUserObject() instanceof Integer)) return false;
-		return Filters.visibleNode(role, node);
+		return harmonyModel.getFilters().visibleNode(role, node);
 	}
 
 	/** Indicates if the specified point is over a node */
@@ -106,8 +111,8 @@ class MousePane extends JPanel implements MouseListener, MouseMotionListener
 		if(confidenceDialog!=null)
 		{
 			confidenceDialog.dispose(); confidenceDialog=null;
-			if(SelectedInfo.getSelectedMappingCells().size() > 0)
-				SelectedInfo.setMappingCells(new ArrayList<Integer>(), false);
+			if(harmonyModel.getSelectedInfo().getSelectedMappingCells().size() > 0)
+				harmonyModel.getSelectedInfo().setMappingCells(new ArrayList<Integer>(), false);
 		}
 		
 		// If left button pressed, find selected node or start bounding box
@@ -129,15 +134,16 @@ class MousePane extends JPanel implements MouseListener, MouseMotionListener
 			if (mappingCellID != null)
 			{
 				// Mark the mapping cell as selected (if not already done)
-				if (!SelectedInfo.isMappingCellSelected(mappingCellID))
+				if (!harmonyModel.getSelectedInfo().isMappingCellSelected(mappingCellID))
 				{
 					ArrayList<Integer> mappingCellIDs = new ArrayList<Integer>();
 					mappingCellIDs.add(mappingCellID);
-					SelectedInfo.setMappingCells(mappingCellIDs, false);
+					harmonyModel.getSelectedInfo().setMappingCells(mappingCellIDs, false);
 				}
 
 				// Display the dialog box next to the selected mapping cell
-				MappingCellDialog mappingCellDialog = new MappingCellDialog(SelectedInfo.getSelectedMappingCells());
+				List<Integer> mappingCellIDs = harmonyModel.getSelectedInfo().getSelectedMappingCells();
+				MappingCellDialog mappingCellDialog = new MappingCellDialog(mappingCellIDs,harmonyModel);
 				mappingCellDialog.setLocation(adjustMouseLocation(e.getPoint()));
 				mappingCellDialog.setVisible(true);
 			}
@@ -151,8 +157,8 @@ class MousePane extends JPanel implements MouseListener, MouseMotionListener
 		if(startPoint!=null) return;
 		
 		// Don't proceed if selection was not made by mouse movement
-		Integer leftCount = SelectedInfo.getSelectedElements(HarmonyConsts.LEFT).size();
-		Integer rightCount = SelectedInfo.getSelectedElements(HarmonyConsts.RIGHT).size();
+		Integer leftCount = harmonyModel.getSelectedInfo().getSelectedElements(HarmonyConsts.LEFT).size();
+		Integer rightCount = harmonyModel.getSelectedInfo().getSelectedElements(HarmonyConsts.RIGHT).size();
 		if(confidenceDialog==null && (leftCount>0 || rightCount>0)) return;
 
 		// Display information about the closest mapping cell
@@ -160,16 +166,16 @@ class MousePane extends JPanel implements MouseListener, MouseMotionListener
 		if(mappingCellID != null)
 		{
 			// Only mark as selected if not already done so
-			if(!SelectedInfo.isMappingCellSelected(mappingCellID))
+			if(!harmonyModel.getSelectedInfo().isMappingCellSelected(mappingCellID))
 			{
 				// Mark the mapping cell as selected
 				ArrayList<Integer> mappingCellIDs = new ArrayList<Integer>();
 				mappingCellIDs.add(mappingCellID);
-				SelectedInfo.setMappingCells(mappingCellIDs, false);
+				harmonyModel.getSelectedInfo().setMappingCells(mappingCellIDs, false);
 
 				// Display the dialog box next to the selected mapping cell
 				Point point = adjustMouseLocation(e.getPoint()); point.translate(20, 20);
-				if(confidenceDialog==null) confidenceDialog = new ConfidenceDialog();
+				if(confidenceDialog==null) confidenceDialog = new ConfidenceDialog(harmonyModel);
 				confidenceDialog.setMappingCell(mappingCellID);
 				confidenceDialog.setLocation(point);
 				confidenceDialog.setVisible(true);
@@ -180,8 +186,8 @@ class MousePane extends JPanel implements MouseListener, MouseMotionListener
 		else if(confidenceDialog!=null)
 		{
 			confidenceDialog.dispose(); confidenceDialog=null;
-			if(SelectedInfo.getSelectedMappingCells().size() > 0)
-				SelectedInfo.setMappingCells(new ArrayList<Integer>(), false);
+			if(harmonyModel.getSelectedInfo().getSelectedMappingCells().size() > 0)
+				harmonyModel.getSelectedInfo().setMappingCells(new ArrayList<Integer>(), false);
 		}
 	}
 
@@ -214,9 +220,17 @@ class MousePane extends JPanel implements MouseListener, MouseMotionListener
 				// Gather info on what left and right nodes are connected
 				Integer leftID = leftTree.getNode(leftPath);
 				Integer rightID = rightTree.getNode(rightPath);
-				Integer mappingCellID = MappingCellManager.getMappingCellID(leftID, rightID);
-				if (mappingCellID == null) mappingCellID = MappingCellManager.createMappingCell(leftID, rightID);
-				MappingCellManager.modifyMappingCell(mappingCellID, 1.0, System.getProperty("user.name"), true);
+		
+				// Set the mapping cell
+				MappingCellManager manager = harmonyModel.getMappingCellManager();
+				MappingCell mappingCell = new MappingCell();
+				mappingCell.setId(manager.getMappingCellID(leftID, rightID));
+				mappingCell.setElement1(leftID);
+				mappingCell.setElement2(rightID);
+				mappingCell.setScore(1.0);
+				mappingCell.setAuthor(System.getProperty("user.name"));
+				mappingCell.setValidated(true);
+				manager.setMappingCell(mappingCell);
 			}
 			repaint();
 
@@ -229,7 +243,7 @@ class MousePane extends JPanel implements MouseListener, MouseMotionListener
 					Integer mappingCell = MappingLines.mappingLines.getClosestMappingCellToPoint(startPoint);
 					ArrayList<Integer> mappingCells = new ArrayList<Integer>();
 					if(mappingCell!=null) mappingCells.add(mappingCell);
-					SelectedInfo.setMappingCells(mappingCells, e.isControlDown());
+					harmonyModel.getSelectedInfo().setMappingCells(mappingCells, e.isControlDown());
 				}
 				
 				// Handles the case where a bounding box was drawn around mapping cells to select
@@ -240,7 +254,7 @@ class MousePane extends JPanel implements MouseListener, MouseMotionListener
 					int width = Math.abs(startPoint.x - endPoint.x) + 1;
 					int height = Math.abs(startPoint.y - endPoint.y) + 1;
 					Rectangle rect = new Rectangle(x1, y1, width, height);
-					SelectedInfo.setMappingCells(MappingLines.mappingLines.getMappingCellsInRegion(rect), e.isControlDown());
+					harmonyModel.getSelectedInfo().setMappingCells(MappingLines.mappingLines.getMappingCellsInRegion(rect), e.isControlDown());
 				}
 			}
 
