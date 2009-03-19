@@ -8,8 +8,7 @@ import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.Stack;
 
-import org.mitre.harmony.model.MappingCellManager;
-import org.mitre.harmony.model.SchemaManager;
+import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
@@ -29,6 +28,9 @@ public class HeatMap extends JPanel implements MouseListener, MouseMotionListene
     public final static Color[] GRADIENT_HEAT = createMultiGradient(new Color[]{Color.black, new Color(105, 0, 0), new Color(192, 23, 0), new Color(255, 150, 38), Color.white}, 500);
     public final static Color[] GRADIENT_ROY = createMultiGradient(new Color[]{Color.red, Color.orange, Color.yellow}, 500);
 	
+    /** Stores the Harmony model */
+    private HarmonyModel harmonyModel;
+    
 	private double[][] data;
     private String[] labelsX;
     private String[] labelsY;
@@ -76,9 +78,10 @@ public class HeatMap extends JPanel implements MouseListener, MouseMotionListene
     private Graphics2D bufferedGraphics;
     
     /** Constructs the heat map */
-    public HeatMap()
+    public HeatMap(HarmonyModel harmonyModel)
     {
         super();
+        this.harmonyModel = harmonyModel;
         
         double[][] data = new double[4][4];
         data[0][0] = 0.2; data[1][0] = 0.7;
@@ -116,8 +119,8 @@ public class HeatMap extends JPanel implements MouseListener, MouseMotionListene
     }
     
     public void setUp(Schema schema1, Schema schema2){
-    	HierarchicalGraph graph1 = SchemaManager.getGraph(schema1.getId());
-		HierarchicalGraph graph2 = SchemaManager.getGraph(schema2.getId());
+    	HierarchicalGraph graph1 = harmonyModel.getSchemaManager().getGraph(schema1.getId());
+		HierarchicalGraph graph2 = harmonyModel.getSchemaManager().getGraph(schema2.getId());
 		
 		ArrayList<SchemaElement> elements1 = graph1.getGraphElements();
 		ArrayList<SchemaElement> elements2 = graph2.getGraphElements();
@@ -194,12 +197,12 @@ public class HeatMap extends JPanel implements MouseListener, MouseMotionListene
 		SpotY = 0;
 		for(SchemaElement se1: elements1){
 			for(SchemaElement se2: elements2){
-				Integer id = MappingCellManager.getMappingCellID(se1.getId(), se2.getId());
+				Integer id = harmonyModel.getMappingCellManager().getMappingCellID(se1.getId(), se2.getId());
 				if(id == null){
 					SpotY++;
 					continue;
 				}
-				MappingCell mc = MappingCellManager.getMappingCell(id);
+				MappingCell mc = harmonyModel.getMappingCellManager().getMappingCell(id);
 				data[SpotX][SpotY++] = mc.getScore();
 			}
 			SpotX++;
