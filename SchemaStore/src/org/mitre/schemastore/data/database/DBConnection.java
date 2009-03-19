@@ -104,11 +104,12 @@ public class DBConnection
 	    		String name = DatabaseProperties.getName();
 	    		String username = DatabaseProperties.getUser();
 	    		String password = DatabaseProperties.getPassword();
-				
+	    		String directory = DatabaseProperties.getDirectory();
+	    		
 				// Connect to the database
 	    		boolean useDerby = server.equals("");
     			Class.forName(useDerby ? "org.apache.derby.jdbc.EmbeddedDriver" : "org.postgresql.Driver");
-	    		String dbURL = useDerby ? "jdbc:derby:"+name+";create=true" : "jdbc:postgresql://"+server+":5432/"+name;
+	    		String dbURL = useDerby ? "jdbc:derby:"+directory+"/"+name+";create=true" : "jdbc:postgresql://"+server+":5432/"+name;
     			connection = DriverManager.getConnection(dbURL,username,password);
 	    		connection.setAutoCommit(false);
 
