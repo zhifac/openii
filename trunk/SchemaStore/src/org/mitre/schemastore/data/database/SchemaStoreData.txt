@@ -19,7 +19,7 @@ INSERT INTO entity (id, name, description, schema_id)
 
 INSERT INTO "domain" (id, name, description, schema_id)
 -1, 'Integer', 'Domain covering all integer values', NULL
--2, 'Double', 'Domain covering all double values', NULL
+-2, 'Real', 'Domain covering all real values', NULL
 -3, 'String', 'Domain covering all strings', NULL
 -4, 'Timestamp', 'Domain consisting of date and/or time values', NULL
 -5, 'Boolean', 'Domain covering all boolean values', NULL

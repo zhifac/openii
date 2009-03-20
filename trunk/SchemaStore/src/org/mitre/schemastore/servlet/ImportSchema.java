@@ -116,7 +116,7 @@ public class ImportSchema
 					String domainName = domain.getName().toLowerCase();
 					Integer newID = null;
 					if(domainName.equals("integer")) newID = -1;
-					if(domainName.equals("double")) newID = -2;
+					if(domainName.equals("real")) newID = -2;
 					if(domainName.equals("string")) newID = -3;
 					if(domainName.equals("timestamp")) newID = -4;
 					if(domainName.equals("boolean")) newID = -5;
