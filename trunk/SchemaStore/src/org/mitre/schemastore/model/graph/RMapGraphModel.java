@@ -5,12 +5,10 @@ package org.mitre.schemastore.model.graph;
 import java.util.ArrayList;
 
 import org.mitre.schemastore.model.Attribute;
-import org.mitre.schemastore.model.Containment;
 import org.mitre.schemastore.model.Domain;
 import org.mitre.schemastore.model.Entity;
 import org.mitre.schemastore.model.Relationship;
 import org.mitre.schemastore.model.SchemaElement;
-import org.mitre.schemastore.model.Subtype;
 
 /**
  *  Class for displaying containment hierarchy
