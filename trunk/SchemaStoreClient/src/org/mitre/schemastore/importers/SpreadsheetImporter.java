@@ -33,16 +33,6 @@ import org.mitre.schemastore.model.Attribute;
 import org.mitre.schemastore.model.Domain;
 import org.mitre.schemastore.model.Entity;
 import org.mitre.schemastore.model.SchemaElement;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-
-import java.net.URI;
-import java.net.URISyntaxException;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-
 
 /**
  * 
@@ -183,7 +173,7 @@ public class SpreadsheetImporter extends Importer {
 		case HSSFCell.CELL_TYPE_BOOLEAN:
 			return BOOLEAN;
 		case HSSFCell.CELL_TYPE_NUMERIC:
-			return DOUBLE;
+			return REAL;
 		case HSSFCell.CELL_TYPE_BLANK:
 		case HSSFCell.CELL_TYPE_STRING:
 			return STRING;
@@ -286,9 +276,9 @@ public class SpreadsheetImporter extends Importer {
 		Domain domain = new Domain(Importer.nextId(), INTEGER, "The Integer domain", 0);
 		schemaElements.add(domain);
 		domainList.put(INTEGER, domain);
-		domain = new Domain(Importer.nextId(), DOUBLE, "The Double domain", 0);
+		domain = new Domain(Importer.nextId(), REAL, "The Real domain", 0);
 		schemaElements.add(domain);
-		domainList.put(DOUBLE, domain);
+		domainList.put(REAL, domain);
 		domain = new Domain(Importer.nextId(), STRING, "The String domain", 0);
 		schemaElements.add(domain);
 		domainList.put(STRING, domain);

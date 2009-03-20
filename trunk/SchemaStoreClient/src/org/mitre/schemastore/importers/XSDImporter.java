@@ -683,11 +683,11 @@ public class XSDImporter extends Importer
 
 		domainList.put(INTEGER, domain);
 
-		domain = new Domain(nextId(), DOUBLE,
-				"The Double domain", 0);
+		domain = new Domain(nextId(), REAL,
+				"The Real domain", 0);
 		// schemaElements.add(domain);
 		schemaElementsHS.put(this.compString(domain), domain);
-		domainList.put(DOUBLE, domain);
+		domainList.put(REAL, domain);
 
 		domain = new Domain(nextId(), STRING,
 				"The String domain", 0);
