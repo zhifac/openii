@@ -15,7 +15,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
-import java.util.List;
 
 import javax.swing.JPanel;
 import javax.swing.Timer;
@@ -138,8 +137,10 @@ class MousePane extends JPanel implements MouseListener, MouseMotionListener {
 				}
 
 				// Display the dialog box next to the selected mapping cell
-				List<Integer> mappingCellIDs = harmonyModel.getSelectedInfo().getSelectedMappingCells();
-				MappingCellDialog mappingCellDialog = new MappingCellDialog(mappingCellIDs, harmonyModel);
+				ArrayList<MappingCell> mappingCells = new ArrayList<MappingCell>();
+				for(Integer selectedMappingCellID : harmonyModel.getSelectedInfo().getSelectedMappingCells())
+					mappingCells.add(harmonyModel.getMappingCellManager().getMappingCell(selectedMappingCellID));
+				MappingCellDialog mappingCellDialog = new MappingCellDialog(mappingCells, harmonyModel);
 				mappingCellDialog.setLocation(adjustMouseLocation(e.getPoint()));
 				mappingCellDialog.setVisible(true);
 			}

@@ -22,7 +22,6 @@ import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
-import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
@@ -44,39 +43,42 @@ import org.mitre.schemastore.model.MappingCell;
  */
 public class MappingCellDialog extends JDialog implements ActionListener, MouseListener, MouseMotionListener
 {
+	/** String for indicating that multiple values exist for the particular field */
 	static private final String MULTIPLE_VALUES = "<Multiple Values>";
 	
-	private List<Integer> mappingCellIDs;	// Mapping cells which may be accepted/rejected
-
 	/** Stores the Harmony model */
 	private HarmonyModel harmonyModel;
 	
-	/**
-	 * Displays the pane displaying current mapping cell information
-	 * @author CWOLF
-	 */
+	/** Stores the list of mapping cells to which this dialog pertains */
+	private List<MappingCell> mappingCells;
+	
+	// Components used within the Mapping Cell dialog
+	private JTextField dateField;
+	private JTextField authorField;
+	private JTextField transformField;
+	private JTextArea notesField;
+	private JCheckBox acceptCheckbox;
+	private JCheckBox rejectCheckbox;
+	
+	/** Displays the pane displaying current mapping cell information */
 	private class MappingCellInfoPane extends JPanel
 	{
-		/**
-		 * Initializes the height of the pane
-		 */
+		/** Initializes the height of the pane */
 		private MappingCellInfoPane()
 		{
 			int height = getFontMetrics(getFont()).getHeight();
 			setPreferredSize(new Dimension(200,height*2+15));
 		}
 		
-		/**
-		 * Draws the pane displaying mapping cell information
-		 */
+		/** Draws the pane displaying mapping cell information */
 		public void paint(Graphics g)
 		{
 			// Calculate the confidence range of the selected mapping cells
 			Double minConf = 1.0;
 			Double maxConf = -1.0;
-			for(Integer mappingCell : mappingCellIDs)
+			for(MappingCell mappingCell : mappingCells)
 			{
-				Double conf = harmonyModel.getMappingCellManager().getMappingCell(mappingCell).getScore();
+				Double conf = mappingCell.getScore();
 				if(conf < minConf) minConf = conf;
 				if(conf > maxConf) maxConf = conf;
 			}
@@ -135,41 +137,68 @@ public class MappingCellDialog extends JDialog implements ActionListener, MouseL
 		}
 	}
 
-	private JTextField authorField; 		// Field for displaying the link's author
-	private JTextField transformField; // Field for displaying the link's transformation
-	private JTextArea notesField; 			// Field for displaying the link's notes
+	/** Private class for defining the button pane */
+	private class ButtonPane extends AbstractButtonPane
+	{
+		/** Constructs the button pane */
+		public ButtonPane()
+			{ super("OK", "Cancel"); }
+
+		/** Handles selection of okay button */
+		protected void button1Action()
+		{
+			// Store if links are currently rejected
+			boolean originallyRejected = mappingCellsRejected();
+			
+			// Cycle through all links to update annotations
+			MappingCellManager manager = harmonyModel.getMappingCellManager();
+			for(MappingCell mappingCell : mappingCells)
+			{
+				// Store all modifications to annotations
+				if(!authorField.getText().equals(MULTIPLE_VALUES))
+					mappingCell.setAuthor(authorField.getText());
+				if(!transformField.getText().equals(MULTIPLE_VALUES))
+					mappingCell.setTransform(transformField.getText());
+				if(!notesField.getText().equals(MULTIPLE_VALUES))
+					mappingCell.setNotes(notesField.getText());
+
+				// Accept or reject links as needed
+				if(acceptCheckbox.isSelected() || rejectCheckbox.isSelected())
+				{
+					mappingCell.setScore(acceptCheckbox.isSelected()?1.0:-1.0);
+					mappingCell.setAuthor(System.getProperty("user.name"));
+					mappingCell.setValidated(true);
+				}
+
+				manager.setMappingCell(mappingCell);
+			}
+				
+			// If links rejected, unselect links after modifying annotations
+			if(rejectCheckbox.isSelected() && !originallyRejected)
+				harmonyModel.getSelectedInfo().setMappingCells(harmonyModel.getSelectedInfo().getSelectedMappingCells(),true);
+			
+			// Close link dialog
+			dispose();
+		}
+
+		/** Handles selection of cancel button */
+		protected void button2Action()
+			{ dispose(); }
+	}
 	
-	private JCheckBox acceptCheckbox;		// Checkbox indicating to accept the link
-	private JCheckBox rejectCheckbox;		// Checkbox indicating to reject the link
-	
-	private JButton okayButton; // Button used for approving changes to the link's settings
-	private JButton cancelButton; // Button used for cancelling changes to the link's settings
-	
-	/**
-	 * @return Indicates if all of the mapping cells are accepted
-	 */
+	/** Indicates if all of the mapping cells are accepted */
 	private boolean mappingCellsAccepted()
 	{
-		for(Integer mappingCellID : mappingCellIDs)
-		{
-			MappingCell mappingCell = harmonyModel.getMappingCellManager().getMappingCell(mappingCellID);
-			if(!mappingCell.getValidated()) return false;
-			if(mappingCell.getScore()!=1.0) return false;
-		}
+		for(MappingCell mappingCell : mappingCells)
+			if(!mappingCell.getValidated() || mappingCell.getScore()!=1.0) return false;
 		return true;
 	}
 
-	/**
-	 * @return Indicates if all of the mapping cells are rejected
-	 */
-	private boolean linksRejected()
+	/** Indicates if all of the mapping cells are rejected */
+	private boolean mappingCellsRejected()
 	{
-		for(Integer mappingCellID : mappingCellIDs)
-		{
-			MappingCell mappingCell = harmonyModel.getMappingCellManager().getMappingCell(mappingCellID);
-			if(!mappingCell.getValidated()) return false;
-			if(mappingCell.getScore()!=-1.0) return false;
-		}
+		for(MappingCell mappingCell : mappingCells)
+			if(!mappingCell.getValidated()|| mappingCell.getScore()!=-1.0) return false;
 		return true;
 	}
 	
@@ -190,25 +219,23 @@ public class MappingCellDialog extends JDialog implements ActionListener, MouseL
 	 */
 	private JPanel getAnnotationsPane()
 	{
-		// Gets the mapping cell manager
-		MappingCellManager manager = harmonyModel.getMappingCellManager();
-		
 		// Initial annotations
-		MappingCell mappingCell = manager.getMappingCell(mappingCellIDs.get(0));
-		String author = mappingCell.getAuthor();
-		String transform = mappingCell.getTransform();
-		String notes = mappingCell.getNotes();
+		String date = mappingCells.get(0).getModificationDate().toString();
+		String author = mappingCells.get(0).getAuthor();
+		String transform = mappingCells.get(0).getTransform();
+		String notes = mappingCells.get(0).getNotes();
 		
 		// Check to see if the annotations for all mapping cells match
-		for(Integer mappingCellID : mappingCellIDs)
+		for(MappingCell mappingCell : mappingCells)
 		{
-			mappingCell = manager.getMappingCell(mappingCellID);
+			if(!date.equals(mappingCell.getModificationDate().toString())) date = MULTIPLE_VALUES;
 			if(!author.equals(mappingCell.getAuthor())) author = MULTIPLE_VALUES;
 			if(!transform.equals(mappingCell.getTransform())) transform = MULTIPLE_VALUES;
 			if(!notes.equals(mappingCell.getNotes())) notes = MULTIPLE_VALUES;			
 		}
 		
 		// Initialize annotation fields
+		dateField = new JTextField(date); dateField.setMargin(new Insets(1,1,1,1));
 		authorField = new JTextField(author); authorField.setMargin(new Insets(1,1,1,1));
 		transformField = new JTextField(transform); transformField.setMargin(new Insets(1,1,1,1));
 		notesField = new JTextArea(notes); transformField.setMargin(new Insets(1,1,1,1));
@@ -217,13 +244,15 @@ public class MappingCellDialog extends JDialog implements ActionListener, MouseL
 		
 		// Build a pane with all of the annotation labels
 		JPanel labelPane = new JPanel();
-		labelPane.setLayout(new GridLayout(4,1));
+		labelPane.setLayout(new GridLayout(3,1));
+		labelPane.add(getLabelPane("Date: "));
 		labelPane.add(getLabelPane("Author: "));
 		labelPane.add(getLabelPane("Transform: "));
 		
 		// Build a pane with all of the annotation field boxes
 		JPanel fieldPane = new JPanel();
-		fieldPane.setLayout(new GridLayout(4,1));
+		fieldPane.setLayout(new GridLayout(3,1));
+		fieldPane.add(dateField);
 		fieldPane.add(authorField);
 		fieldPane.add(transformField);
 		
@@ -265,7 +294,7 @@ public class MappingCellDialog extends JDialog implements ActionListener, MouseL
 		
 		// Mark checkboxes as needed
 		acceptCheckbox.setSelected(mappingCellsAccepted());
-		rejectCheckbox.setSelected(linksRejected());
+		rejectCheckbox.setSelected(mappingCellsRejected());
 		
 		// Set up accept and reject panes
 		JPanel acceptPane = new JPanel();
@@ -295,35 +324,13 @@ public class MappingCellDialog extends JDialog implements ActionListener, MouseL
 		return pane;
 	}
 	
-	/**
-	 * @return The generated buttons pane
-	 */
-	private JPanel getButtonsPane()
-	{
-		// Initialize buttons
-		okayButton = new JButton("OK");
-		cancelButton = new JButton("Cancel");
-		
-		// Listen for actions on the buttons
-		okayButton.addActionListener(this);
-		cancelButton.addActionListener(this);
-
-		// Set up the pane displaying all button information
-		JPanel pane = new JPanel();
-		pane.setBorder(new EmptyBorder(4,4,4,4));
-		pane.setLayout(new GridLayout(1,2));
-		pane.add(okayButton);
-		pane.add(cancelButton);
-		return pane;
-	}
-	
 	/** Initializes the mapping cell dialog */
-	public MappingCellDialog(List<Integer> mappingCellIDs, HarmonyModel harmonyModel)
+	public MappingCellDialog(List<MappingCell> mappingCells, HarmonyModel harmonyModel)
 	{
 		super(harmonyModel.getBaseFrame());
 		
 		// Initialize the selected links
-		this.mappingCellIDs = mappingCellIDs;
+		this.mappingCells = mappingCells;
 		this.harmonyModel = harmonyModel;
 		
 		// Set up the main dialog pane
@@ -332,7 +339,7 @@ public class MappingCellDialog extends JDialog implements ActionListener, MouseL
 		pane.setLayout(new BorderLayout());
 		pane.add(getAnnotationsPane(),BorderLayout.NORTH);
 		pane.add(getConfidencePane(),BorderLayout.CENTER);
-		pane.add(getButtonsPane(),BorderLayout.SOUTH);
+		pane.add(new ButtonPane(),BorderLayout.SOUTH);
 		
 		// Set up ability to escape out of dialog
 		Action escape = new AbstractAction() { public void actionPerformed(ActionEvent arg0) { dispose(); } };
@@ -360,58 +367,15 @@ public class MappingCellDialog extends JDialog implements ActionListener, MouseL
 		if(e.getSource()==acceptCheckbox)
 		{
 			if(acceptCheckbox.isSelected()) rejectCheckbox.setSelected(false);
-			else if(mappingCellsAccepted() || linksRejected()) acceptCheckbox.setSelected(true);
+			else if(mappingCellsAccepted() || mappingCellsRejected()) acceptCheckbox.setSelected(true);
 		}
 		
 		// If "Reject" checkbox chosen, unselect "Accept"
 		if(e.getSource()==rejectCheckbox)
 		{
 			if(rejectCheckbox.isSelected()) acceptCheckbox.setSelected(false);
-			else if(mappingCellsAccepted() || linksRejected()) rejectCheckbox.setSelected(true);
+			else if(mappingCellsAccepted() || mappingCellsRejected()) rejectCheckbox.setSelected(true);
 		}
-		
-		// If "Okay" button pressed, update link information in model
-		if(e.getSource()==okayButton)
-		{
-			// Store if links are currently rejected
-			boolean originallyRejected = linksRejected();
-			
-			// Cycle through all links to update annotations
-			MappingCellManager manager = harmonyModel.getMappingCellManager();
-			for(Integer mappingCellID : mappingCellIDs)
-			{
-				MappingCell mappingCell = manager.getMappingCell(mappingCellID);
-				
-				// Store all modifications to annotations
-				if(!authorField.getText().equals(MULTIPLE_VALUES))
-					mappingCell.setAuthor(authorField.getText());
-				if(!transformField.getText().equals(MULTIPLE_VALUES))
-					mappingCell.setTransform(transformField.getText());
-				if(!notesField.getText().equals(MULTIPLE_VALUES))
-					mappingCell.setNotes(notesField.getText());
-
-				// Accept or reject links as needed
-				if(acceptCheckbox.isSelected() || rejectCheckbox.isSelected())
-				{
-					mappingCell.setScore(acceptCheckbox.isSelected()?1.0:-1.0);
-					mappingCell.setAuthor(System.getProperty("user.name"));
-					mappingCell.setValidated(true);
-				}
-
-				manager.setMappingCell(mappingCell);
-			}
-				
-			// If links rejected, unselect links after modifying annotations
-			if(rejectCheckbox.isSelected() && !originallyRejected)
-				harmonyModel.getSelectedInfo().setMappingCells(harmonyModel.getSelectedInfo().getSelectedMappingCells(),true);
-			
-			// Close link dialog
-			dispose();
-		}
-		
-		// If "Cancel" button pressed, just close dialog window
-		if(e.getSource()==cancelButton)
-			dispose();
 	}
 	
 	//-----------------------------------------------------------------
@@ -421,7 +385,8 @@ public class MappingCellDialog extends JDialog implements ActionListener, MouseL
 	public void mousePressed(MouseEvent e) { mousePosition=e.getPoint(); }
 	public void mouseDragged(MouseEvent e)
 	{
-		if(mousePosition!=null) {
+		if(mousePosition!=null)
+		{
 			int xShift=e.getPoint().x-mousePosition.x;
 			int yShift=e.getPoint().y-mousePosition.y;
 			setLocation(getLocation().x+xShift,getLocation().y+yShift);

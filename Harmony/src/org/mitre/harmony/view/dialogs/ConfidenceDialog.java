@@ -51,11 +51,13 @@ public class ConfidenceDialog extends JDialog
 	{
 		// Retrieve the specified mapping cell
 		MappingCell mappingCell = harmonyModel.getMappingCellManager().getMappingCell(mappingCellID);
+		String confidence = ((int)(mappingCell.getScore()*100))/100.0 + "";
+		String notes = mappingCell.getNotes()==null ? "" : mappingCell.getNotes();
 		
 		// Generate the text to display in the tool tip
 		StringBuffer display = new StringBuffer("<html>");
-		display.append("Confidence: " + mappingCell.getScore() + "<br>");
-		display.append(mappingCell.getNotes()==null ? "" : "Notes: " + mappingCell.getNotes());
+		display.append("Confidence: " + confidence + "<br>");
+		display.append(notes.length()>0 ? "Notes: " + mappingCell.getNotes() : "");
 		display.append("</html>");
 		label.setText(display.toString());
 		pack();
