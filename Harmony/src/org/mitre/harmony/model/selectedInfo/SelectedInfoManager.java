@@ -10,7 +10,6 @@ import java.util.List;
 import org.mitre.harmony.model.AbstractManager;
 import org.mitre.harmony.model.HarmonyConsts;
 import org.mitre.harmony.model.HarmonyModel;
-import org.mitre.harmony.model.ConfigManager;
 import org.mitre.harmony.model.filters.FiltersListener;
 import org.mitre.harmony.model.filters.Focus;
 import org.mitre.harmony.model.mapping.MappingCellListener;
@@ -28,6 +27,12 @@ public class SelectedInfoManager extends AbstractManager<SelectedInfoListener> i
 	static private final int ADD = 0;
 	static private final int REMOVE = 1;
 	static private final int REPLACE = 2;
+	
+	/** Stores the displayed left schemas */
+	private ArrayList<Integer> leftSchemaIDs = new ArrayList<Integer>();
+
+	/** Stores the displayed right schemas */
+	private ArrayList<Integer> rightSchemaIDs = new ArrayList<Integer>();
 	
 	/** Stores the displayed left element */
 	private Integer displayedLeftElement = null;
@@ -62,13 +67,6 @@ public class SelectedInfoManager extends AbstractManager<SelectedInfoListener> i
 	public SelectedInfoManager(HarmonyModel harmonyModel)
 	{
 		super(harmonyModel);
-		
-		// Filter out selected schemas which don't exist in the repository
-		ArrayList<Integer> leftSchemas = getValidSchemaIDs(getSchemas(HarmonyConsts.LEFT));
-		ArrayList<Integer> rightSchemas = getValidSchemaIDs(getSchemas(HarmonyConsts.RIGHT));
-		setSelectedSchemas(leftSchemas, rightSchemas);
-		
-		// Add listeners to trigger changes to the selected info
 		harmonyModel.getMappingManager().addListener(this);
 		harmonyModel.getMappingCellManager().addListener(this);
 	}
@@ -77,7 +75,7 @@ public class SelectedInfoManager extends AbstractManager<SelectedInfoListener> i
 	
 	/** Returns the schemas displayed on the left side of Harmony */
 	public ArrayList<Integer> getSchemas(Integer side)
-		{ return ConfigManager.getIntegerArray("selectedInfo." + (side.equals(HarmonyConsts.LEFT) ? "left" : "right") + "Schemas"); }
+		{ return side.equals(HarmonyConsts.LEFT) ? leftSchemaIDs : rightSchemaIDs; }
 
 	/** Returns all elements displayed on the specified side of Harmony */
 	public HashSet<SchemaElement> getSchemaElements(Integer side)
@@ -120,13 +118,13 @@ public class SelectedInfoManager extends AbstractManager<SelectedInfoListener> i
 	// ------------ Handles the selecting of the various pieces of information -------------
 	
 	/** Set the list of selected schemas */
-	public void setSelectedSchemas(ArrayList<Integer> leftSchemas, ArrayList<Integer> rightSchemas)
+	public void setSelectedSchemas(ArrayList<Integer> leftSchemaIDs, ArrayList<Integer> rightSchemaIDs)
 	{
 		// Only update selected schemas if changed from original
-		if(!leftSchemas.equals(getSchemas(HarmonyConsts.LEFT)) || !rightSchemas.equals(getSchemas(HarmonyConsts.RIGHT)))
+		if(!leftSchemaIDs.equals(getSchemas(HarmonyConsts.LEFT)) || !rightSchemaIDs.equals(getSchemas(HarmonyConsts.RIGHT)))
 		{
-			ConfigManager.setParm("selectedInfo.leftSchemas",leftSchemas.toString());
-			ConfigManager.setParm("selectedInfo.rightSchemas",rightSchemas.toString());
+			this.leftSchemaIDs = getValidSchemaIDs(leftSchemaIDs);
+			this.rightSchemaIDs = getValidSchemaIDs(rightSchemaIDs);
 			for(SelectedInfoListener listener : getListeners())
 				listener.selectedSchemasModified();
 		}
