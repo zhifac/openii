@@ -37,7 +37,7 @@ public abstract class Importer
 	// Defines the various base domain types
 	public static final String ANY = "Any";
 	public static final String INTEGER = "Integer";
-	public static final String DOUBLE = "Double";
+	public static final String REAL = "Real";
 	public static final String STRING = "String";
 	public static final String DATETIME = "DateTime";
 	public static final String BOOLEAN = "Boolean";
