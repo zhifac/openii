@@ -8,10 +8,12 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 
 import org.mitre.harmony.model.ConfigManager;
+import org.mitre.harmony.model.HarmonyConsts;
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.mapping.MappingCellManager;
 import org.mitre.harmony.model.mapping.MappingListener;
 import org.mitre.harmony.model.mapping.MappingManager;
+import org.mitre.harmony.model.selectedInfo.SelectedInfoManager;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
 
@@ -52,6 +54,8 @@ public class ProjectManager implements MappingListener
 		String repository = "";
 		Mapping mapping = null;
 		ArrayList<MappingCell> mappingCells = new ArrayList<MappingCell>();
+		ArrayList<Integer> leftSchemas = new ArrayList<Integer>();
+		ArrayList<Integer> rightSchemas = new ArrayList<Integer>();
 		
 		// Get current project information from file
 		ObjectInputStream in = null;
@@ -68,6 +72,12 @@ public class ProjectManager implements MappingListener
 			int mappingCellCount = in.readInt();
 			for(int i=0; i<mappingCellCount; i++)
 				mappingCells.add((MappingCell)in.readObject());
+
+			// Retrieves the displayed schemas
+			int leftSchemaCount = in.readInt();
+			for(int i=0; i<leftSchemaCount; i++) leftSchemas.add(in.readInt());
+			int rightSchemaCount = in.readInt();
+			for(int i=0; i<rightSchemaCount; i++) rightSchemas.add(in.readInt());
 		}
 		catch(Exception e) {}
 		if(in != null) try { in.close(); } catch(Exception e) {}
@@ -83,6 +93,9 @@ public class ProjectManager implements MappingListener
 				mappingCell.setId(null);
 				mappingCellManager.setMappingCell(mappingCell);
 			}
+			
+			// Set the displayed schemas
+			harmonyModel.getSelectedInfo().setSelectedSchemas(leftSchemas, rightSchemas);
 		}
 		if(mapping==null) mappingManager.setMapping(new Mapping());
 		
@@ -109,7 +122,17 @@ public class ProjectManager implements MappingListener
 			out.writeInt(mappingCells.size());
 			for(MappingCell mappingCell : mappingCells)
 				out.writeObject(mappingCell);
-			out.close();
+			
+			// Store the schemas displayed on the left
+			ArrayList<Integer> leftSchemas = harmonyModel.getSelectedInfo().getSchemas(HarmonyConsts.LEFT);
+			out.writeInt(leftSchemas.size());
+			for(Integer leftSchema : leftSchemas) out.writeInt(leftSchema);
+
+			// Stores the schemas displayed on the right
+			ArrayList<Integer> rightSchemas = harmonyModel.getSelectedInfo().getSchemas(HarmonyConsts.RIGHT);
+			out.writeInt(rightSchemas.size());
+			for(Integer rightSchema : rightSchemas) out.writeInt(rightSchema);
+			out.close();			
 			
 			// Replace the tool file with the new tool file
 			projectFile.delete();
