@@ -22,16 +22,15 @@ import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.BorderFactory;
 import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.LineBorder;
-import javax.swing.border.TitledBorder;
 
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.mapping.MappingCellManager;
@@ -202,10 +201,7 @@ public class MappingCellDialog extends JDialog implements ActionListener, MouseL
 		return true;
 	}
 	
-	/**
-	 * @param label - Label for label pane
-	 * @return A generated label pane
-	 */
+	/** Generates a label pane */
 	private JPanel getLabelPane(String label)
 	{
 		JPanel pane = new JPanel();
@@ -214,13 +210,11 @@ public class MappingCellDialog extends JDialog implements ActionListener, MouseL
 		return pane;
 	}
 	
-	/**
-	 * @return The generated annotations pane
-	 */
+	/** Returns the generated annotations pane */
 	private JPanel getAnnotationsPane()
 	{
 		// Initial annotations
-		String date = mappingCells.get(0).getModificationDate().toString();
+		String date = mappingCells.get(0).getDate();
 		String author = mappingCells.get(0).getAuthor();
 		String transform = mappingCells.get(0).getTransform();
 		String notes = mappingCells.get(0).getNotes();
@@ -228,7 +222,7 @@ public class MappingCellDialog extends JDialog implements ActionListener, MouseL
 		// Check to see if the annotations for all mapping cells match
 		for(MappingCell mappingCell : mappingCells)
 		{
-			if(!date.equals(mappingCell.getModificationDate().toString())) date = MULTIPLE_VALUES;
+			if(!date.equals(mappingCell.getDate())) date = MULTIPLE_VALUES;
 			if(!author.equals(mappingCell.getAuthor())) author = MULTIPLE_VALUES;
 			if(!transform.equals(mappingCell.getTransform())) transform = MULTIPLE_VALUES;
 			if(!notes.equals(mappingCell.getNotes())) notes = MULTIPLE_VALUES;			
@@ -239,8 +233,14 @@ public class MappingCellDialog extends JDialog implements ActionListener, MouseL
 		authorField = new JTextField(author); authorField.setMargin(new Insets(1,1,1,1));
 		transformField = new JTextField(transform); transformField.setMargin(new Insets(1,1,1,1));
 		notesField = new JTextArea(notes); transformField.setMargin(new Insets(1,1,1,1));
-		notesField.setRows(3);
-		notesField.setBorder(authorField.getBorder());
+
+		// Adjust the look of the annotation fields
+		dateField.setEnabled(false);
+		dateField.setBorder(BorderFactory.createEtchedBorder(Color.white,Color.gray));
+		dateField.setDisabledTextColor(Color.gray);
+		notesField.setRows(5);
+		notesField.setLineWrap(true);
+		notesField.setWrapStyleWord(true);
 		
 		// Build a pane with all of the annotation labels
 		JPanel labelPane = new JPanel();
@@ -258,21 +258,21 @@ public class MappingCellDialog extends JDialog implements ActionListener, MouseL
 		
 		// Build a pane for the annotations
 		JPanel annotationsPane = new JPanel();
-		annotationsPane.setBorder(new EmptyBorder(0,3,3,3));
+		annotationsPane.setBorder(BorderFactory.createEmptyBorder(0,3,3,3));
 		annotationsPane.setLayout(new BorderLayout());
 		annotationsPane.add(labelPane,BorderLayout.WEST);
 		annotationsPane.add(fieldPane,BorderLayout.CENTER);
-		
+
 		// Build a pane with the notes annotation
 		JPanel notesPane = new JPanel();
-		notesPane.setBorder(new EmptyBorder(3,3,3,3));
+		notesPane.setBorder(BorderFactory.createEmptyBorder(3,3,3,3));
 		notesPane.setLayout(new BorderLayout());
 		notesPane.add(new JLabel("Notes:"),BorderLayout.NORTH);
-		notesPane.add(notesField,BorderLayout.CENTER);
+		notesPane.add(new JScrollPane(notesField,JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,JScrollPane.HORIZONTAL_SCROLLBAR_NEVER),BorderLayout.CENTER);
 		
 		// Merge together all annotation
 		JPanel pane = new JPanel();
-		pane.setBorder(new TitledBorder("Annotations"));
+		pane.setBorder(BorderFactory.createTitledBorder("Annotations"));
 		pane.setLayout(new BorderLayout());
 		pane.add(annotationsPane,BorderLayout.NORTH);
 		pane.add(notesPane,BorderLayout.CENTER);
@@ -317,7 +317,7 @@ public class MappingCellDialog extends JDialog implements ActionListener, MouseL
 		
 		// Set up confidence pane
 		JPanel pane = new JPanel();
-		pane.setBorder(new TitledBorder("Confidence"));
+		pane.setBorder(BorderFactory.createTitledBorder("Confidence"));
 		pane.setLayout(new BorderLayout());
 		pane.add(linkInfoPane,BorderLayout.CENTER);
 		pane.add(checkboxPane,BorderLayout.SOUTH);
@@ -335,7 +335,7 @@ public class MappingCellDialog extends JDialog implements ActionListener, MouseL
 		
 		// Set up the main dialog pane
 		JPanel pane = new JPanel();
-		pane.setBorder(new LineBorder(Color.black));
+		pane.setBorder(BorderFactory.createLineBorder(Color.black));
 		pane.setLayout(new BorderLayout());
 		pane.add(getAnnotationsPane(),BorderLayout.NORTH);
 		pane.add(getConfidencePane(),BorderLayout.CENTER);
