@@ -65,9 +65,6 @@ public class MappingCellManager extends AbstractManager<MappingCellListener> imp
 	/** Sets the mapping cell */
 	public void setMappingCell(MappingCell mappingCell)
 	{
-		// Mark the current date as the modification date
-		mappingCell.setModificationDate(Calendar.getInstance().getTime());
-		
 		// Handles the addition of a new mapping cell
 		if(mappingCell.getId()==null)
 		{
@@ -76,6 +73,7 @@ public class MappingCellManager extends AbstractManager<MappingCellListener> imp
 			Integer element1 = mappingCell.getElement1();
 			Integer element2 = mappingCell.getElement2();
 			mappingCell.setId(mappingCellID);
+			mappingCell.setModificationDate(Calendar.getInstance().getTime());
 
 			// Store the mapping cell info
 			mappingCells.put(mappingCellID, mappingCell);
@@ -91,8 +89,15 @@ public class MappingCellManager extends AbstractManager<MappingCellListener> imp
 		// Updates an already stored mapping cell
 		else
 		{
+			// Update the mapping cell
 			MappingCell oldMappingCell = mappingCells.get(mappingCell.getId());
 			mappingCells.put(mappingCell.getId(), mappingCell);
+			
+			// Set the modification date if the score has been modified
+			if(mappingCell.getScore().equals(oldMappingCell.getScore()))
+				mappingCell.setModificationDate(Calendar.getInstance().getTime());
+			
+			// Inform listeners that a mapping cell has been modified
 			for(MappingCellListener listener : getListeners()) listener.mappingCellModified(oldMappingCell,mappingCell);
 		}
 	}
