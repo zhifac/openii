@@ -170,7 +170,7 @@ public class MappingLines implements MappingCellListener, FiltersListener, Schem
 	
 	/** Handles the addition of a mapping cell */
 	public void mappingCellAdded(MappingCell mappingCell)
-		{ getLines().put(mappingCell.getId(),new MappingCellLines(mappingCell.getId(),harmonyModel)); }
+		{ getLines().put(mappingCell.getId(),new MappingCellLines(mappingCell.getId(),harmonyModel)); fireLinesModified(); }
 
 	/** Handles the modification of a mapping cell */
 	public void mappingCellModified(MappingCell oldMappingCell, MappingCell newMappingCell)
