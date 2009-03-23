@@ -96,7 +96,7 @@ public class HarmonyMenuBar extends JMenuBar
 						"Save Mapping", JOptionPane.YES_NO_CANCEL_OPTION,
 						JOptionPane.WARNING_MESSAGE);
 	    		if(option==2) return;
-	    		if(option==0) harmonyModel.getMappingManager().saveMapping();
+	    		if(option==0) new SaveMappingDialog(harmonyModel);
 	    	}
 	    		
 	    	// Create a new project

@@ -77,9 +77,10 @@ class MappingPane extends JPanel
 		if(saveMode)
 		{
 			Mapping mapping = harmonyModel.getMappingManager().getMapping();
-			for(int i=0; i<mappingList.getModel().getSize(); i++)
-				if(mapping.getId().equals(((Mapping)mappingList.getModel().getElementAt(i)).getId()))
-					mappingList.setSelectedIndex(i);
+			if(mapping.getId()!=null)
+				for(int i=0; i<mappingList.getModel().getSize(); i++)
+					if(mapping.getId().equals(((Mapping)mappingList.getModel().getElementAt(i)).getId()))
+						mappingList.setSelectedIndex(i);
 		}
 		
 		// Create a scroll pane to hold the mapping list
