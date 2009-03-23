@@ -71,7 +71,8 @@ class MappingPane extends JPanel
 		mappingList = new JList(mappings);
 		mappingList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		mappingList.setCellRenderer(new ListRenderer());
-		if(saveMode) mappingList.setSelectedValue(harmonyModel.getMappingManager().getMapping(), true);
+		Mapping mapping = harmonyModel.getMappingManager().getMapping();
+		if(saveMode && mapping.getId()!=null) mappingList.setSelectedValue(mapping, true);
 		if(mappingList.getSelectedIndex()<0 && mappings.size()>0) mappingList.setSelectedIndex(0);
 		
 		// Create a scroll pane to hold the mapping list
