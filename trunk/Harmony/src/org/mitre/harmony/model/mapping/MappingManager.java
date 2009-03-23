@@ -116,9 +116,8 @@ public class MappingManager extends AbstractManager<MappingListener> implements 
 					for(MappingListener listener : getListeners())
 						listener.schemaRemoved(selSchemaID);
 			
-			// Inform listeners that the mapping has been modified
-			for(MappingListener listener : getListeners())
-				listener.mappingModified();
+			// Set the mapping as being modified
+			setModified(true);
 		}
 	}
 	
