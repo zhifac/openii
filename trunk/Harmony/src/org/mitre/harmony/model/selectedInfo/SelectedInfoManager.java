@@ -75,7 +75,7 @@ public class SelectedInfoManager extends AbstractManager<SelectedInfoListener> i
 	
 	/** Returns the schemas displayed on the left side of Harmony */
 	public ArrayList<Integer> getSchemas(Integer side)
-		{ return side.equals(HarmonyConsts.LEFT) ? leftSchemaIDs : rightSchemaIDs; }
+		{ return new ArrayList<Integer>(side.equals(HarmonyConsts.LEFT) ? leftSchemaIDs : rightSchemaIDs); }
 
 	/** Returns all elements displayed on the specified side of Harmony */
 	public HashSet<SchemaElement> getSchemaElements(Integer side)
