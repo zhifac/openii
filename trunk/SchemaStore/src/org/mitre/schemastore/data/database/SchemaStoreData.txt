@@ -117,12 +117,5 @@ INSERT INTO extensions (schema_id, base_id)
 16, 15
 17, 15
 
-INSERT INTO data_source (id, name, url, schema_id)
-424, 'Organism', 'http://localhost:8080/mrald?database=db_Organism.props', 8
-426, 'ProtocolSubject', 'http://localhost:8080/mrald?database=db_ProtocolSubject.props', 10
-430, 'ObesityStudy', 'http://localhost:8080/mrald?database=db_ObesityStudy.props', 14
-432, 'NeuroExtendedLanguage', 'http://localhost:8080/mrald?database=db_NeuroExtendedLanguage.props', 16
-433, 'AfricanNeuro', 'http://localhost:8080/mrald?database=db_AfricanNeuro.props', 17
-
 INSERT INTO universal_id (id)
 1000
