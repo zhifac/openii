@@ -3,6 +3,7 @@
 package org.mitre.schemastore.model;
 
 import java.io.Serializable;
+import java.text.DateFormat;
 import java.util.Date;
 
 /**
@@ -76,6 +77,10 @@ public class MappingCell implements Serializable
 	public void setNotes(String notes) { this.notes = notes==null ? "" : notes; }
 	public void setValidated(Boolean validated) { this.validated = validated; }
 
+	/** Returns the string representing the modification date */
+	public String getDate()
+		{ return DateFormat.getDateInstance(DateFormat.MEDIUM).format(modificationDate); }
+	
 	/** Returns the hash code */
 	public int hashCode()
 		{ return id.hashCode(); }
