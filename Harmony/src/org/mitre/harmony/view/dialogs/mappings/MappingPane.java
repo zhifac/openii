@@ -71,9 +71,16 @@ class MappingPane extends JPanel
 		mappingList = new JList(mappings);
 		mappingList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		mappingList.setCellRenderer(new ListRenderer());
-		Mapping mapping = harmonyModel.getMappingManager().getMapping();
-		if(saveMode && mapping.getId()!=null) mappingList.setSelectedValue(mapping, true);
-		if(mappingList.getSelectedIndex()<0 && mappings.size()>0) mappingList.setSelectedIndex(0);
+		mappingList.setSelectedIndex(0);
+
+		// If in save mode, select current mapping
+		if(saveMode)
+		{
+			Mapping mapping = harmonyModel.getMappingManager().getMapping();
+			for(int i=0; i<mappingList.getModel().getSize(); i++)
+				if(mapping.getId().equals(((Mapping)mappingList.getModel().getElementAt(i)).getId()))
+					mappingList.setSelectedIndex(i);
+		}
 		
 		// Create a scroll pane to hold the mapping list
 		JScrollPane mappingScrollPane = new JScrollPane(mappingList,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
