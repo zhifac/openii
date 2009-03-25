@@ -7,7 +7,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.part.*;
 import org.eclipse.swt.awt.SWT_AWT;
-import org.mitre.harmony.model.ProjectManager;
 
 /** Constructs the Harmony View */
 public class RMapView extends ViewPart
@@ -30,11 +29,4 @@ public class RMapView extends ViewPart
 	
 	/** Sets the focus in this view */
 	public void setFocus() {}
-
-	/** Shuts down the Harmony View */
-	public void dispose()
-	{
-		ProjectManager.save();
-		super.dispose();
-	}
 }

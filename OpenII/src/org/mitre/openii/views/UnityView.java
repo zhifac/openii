@@ -22,7 +22,6 @@ import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.ui.part.ViewPart;
 import org.mitre.galaxy.model.Schemas;
 import org.mitre.galaxy.model.server.SchemaStoreManager;
-import org.mitre.harmony.model.ProjectManager;
 import org.mitre.openii.model.OpenIIManager;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.unity.clusters.DistanceGrid;
@@ -212,12 +211,4 @@ public class UnityView extends ViewPart {
 
 	@Override
 	public void setFocus() {}
-	
-	/** Shuts down the Harmony View */
-	public void dispose()
-	{
-		ProjectManager.save();
-		super.dispose();
-	}
-
 }

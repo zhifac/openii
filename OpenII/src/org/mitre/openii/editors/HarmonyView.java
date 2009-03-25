@@ -7,7 +7,7 @@ import javax.swing.JApplet;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.awt.SWT_AWT;
-import org.mitre.harmony.model.ProjectManager;
+import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.SchemaStoreManager;
 import org.mitre.harmony.view.harmonyPane.HarmonyFrame;
 import org.mitre.openii.model.OpenIIManager;
@@ -27,14 +27,14 @@ public class HarmonyView extends OpenIIEditor
 
 		// Construct the applet pane containing the Harmony frame
 		JApplet appletPane = new JApplet();
-		appletPane.add(new HarmonyFrame(frame));		
+		appletPane.add(new HarmonyFrame(new HarmonyModel(frame)));		
 		frame.add(appletPane);
 	}
 
-	/** Shuts down the Harmony View */
+	/** Shuts down the Harmony View
 	public void dispose()
 	{
 		ProjectManager.save();
 		super.dispose();
-	}
+	}*/
 }
