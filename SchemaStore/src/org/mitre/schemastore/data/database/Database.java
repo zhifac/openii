@@ -138,7 +138,7 @@ public class Database
 		try {
 			int schemaID = getUniversalID();
 			Statement stmt = connection.getStatement();
-			stmt.executeUpdate("INSERT INTO \"schema\"(id,name,author,source,\"type\",description,locked) VALUES("+schemaID+",'"+scrub(schema.getName(),50)+" Extension','"+scrub(schema.getAuthor(),50)+"','"+scrub(schema.getSource(),200)+"','"+scrub(schema.getType(),50)+"','Extension of "+scrub(schema.getName(),483)+"','f')");
+			stmt.executeUpdate("INSERT INTO \"schema\"(id,name,author,source,\"type\",description,locked) VALUES("+schemaID+",'"+scrub(schema.getName(),100)+" Extension','"+scrub(schema.getAuthor(),100)+"','"+scrub(schema.getSource(),200)+"','"+scrub(schema.getType(),100)+"','Extension of "+scrub(schema.getName(),483)+"','f')");
 			stmt.executeUpdate("INSERT INTO extensions(schema_id,base_id) VALUES("+schemaID+","+schema.getId()+")");
 			stmt.close();
 			connection.commit();
@@ -159,7 +159,7 @@ public class Database
 		try {
 			schemaID = getUniversalID();
 			Statement stmt = connection.getStatement();
-			stmt.executeUpdate("INSERT INTO \"schema\"(id,name,author,source,\"type\",description,locked) VALUES("+schemaID+",'"+scrub(schema.getName(),50)+"','"+scrub(schema.getAuthor(),50)+"','"+scrub(schema.getSource(),200)+"','"+scrub(schema.getType(),50)+"','"+scrub(schema.getDescription(),500)+"','"+(schema.getLocked()?"t":"f")+"')");
+			stmt.executeUpdate("INSERT INTO \"schema\"(id,name,author,source,\"type\",description,locked) VALUES("+schemaID+",'"+scrub(schema.getName(),100)+"','"+scrub(schema.getAuthor(),100)+"','"+scrub(schema.getSource(),200)+"','"+scrub(schema.getType(),100)+"','"+scrub(schema.getDescription(),500)+"','"+(schema.getLocked()?"t":"f")+"')");
 			stmt.close();
 			connection.commit();
 		}
@@ -178,7 +178,7 @@ public class Database
 		boolean success = false;
 		try {
 			Statement stmt = connection.getStatement();
-			stmt.executeUpdate("UPDATE \"schema\" SET name='"+scrub(schema.getName(),50)+"', author='"+scrub(schema.getAuthor(),50)+"', source='"+scrub(schema.getSource(),200)+"', \"type\"='"+scrub(schema.getType(),50)+"', description='"+scrub(schema.getDescription(),4096)+"' WHERE id="+schema.getId());
+			stmt.executeUpdate("UPDATE \"schema\" SET name='"+scrub(schema.getName(),100)+"', author='"+scrub(schema.getAuthor(),100)+"', source='"+scrub(schema.getSource(),200)+"', \"type\"='"+scrub(schema.getType(),100)+"', description='"+scrub(schema.getDescription(),4096)+"' WHERE id="+schema.getId());
 			stmt.close();
 			connection.commit();
 			success = true;
@@ -329,7 +329,7 @@ public class Database
 		try {
 			groupID = getUniversalID();
 			Statement stmt = connection.getStatement();
-			stmt.executeUpdate("INSERT INTO groups(id,name,parent_id) VALUES("+groupID+",'"+scrub(group.getName(),50)+"',"+group.getParentId()+")");
+			stmt.executeUpdate("INSERT INTO groups(id,name,parent_id) VALUES("+groupID+",'"+scrub(group.getName(),100)+"',"+group.getParentId()+")");
 			stmt.close();
 			connection.commit();
 		}
@@ -348,7 +348,7 @@ public class Database
 		boolean success = false;
 		try {
 			Statement stmt = connection.getStatement();
-			stmt.executeUpdate("UPDATE groups SET name='"+scrub(group.getName(),50)+"' WHERE id="+group.getId());
+			stmt.executeUpdate("UPDATE groups SET name='"+scrub(group.getName(),100)+"' WHERE id="+group.getId());
 			stmt.close();
 			connection.commit();
 			success = true;
@@ -738,7 +738,7 @@ public class Database
 			schemaElementID = getUniversalID();
 
 			// Retrieve the schema element name, description, and base ID
-			String name = scrub(schemaElement.getName(),50);
+			String name = scrub(schemaElement.getName(),100);
 			String description = scrub(schemaElement.getDescription(),4096);
 			Integer baseID = schemaElement.getBase();
 
@@ -812,7 +812,7 @@ public class Database
 			Statement stmt = connection.getStatement();
 
 			// Retrieve the schema element name, description, and base ID
-			String name = scrub(schemaElement.getName(),50);
+			String name = scrub(schemaElement.getName(),100);
 			String description = scrub(schemaElement.getDescription(),4096);
 			
 			// Updates an entity
@@ -1060,7 +1060,7 @@ public class Database
 		try {
 			dataSourceID = getUniversalID();
 			Statement stmt = connection.getStatement();
-			stmt.executeUpdate("INSERT INTO data_source(id,name,url,schema_id) VALUES("+dataSourceID+",'"+scrub(dataSource.getName(),50)+"','"+scrub(dataSource.getUrl(),200)+"',"+dataSource.getSchemaID()+")");
+			stmt.executeUpdate("INSERT INTO data_source(id,name,url,schema_id) VALUES("+dataSourceID+",'"+scrub(dataSource.getName(),100)+"','"+scrub(dataSource.getUrl(),200)+"',"+dataSource.getSchemaID()+")");
 			stmt.close();
 			connection.commit();
 		}
@@ -1079,7 +1079,7 @@ public class Database
 		boolean success = false;
 		try {
 			Statement stmt = connection.getStatement();
-			stmt.executeUpdate("UPDATE data_source SET name='"+scrub(dataSource.getName(),50)+"', url='"+scrub(dataSource.getUrl(),200)+"' WHERE id="+dataSource.getId());
+			stmt.executeUpdate("UPDATE data_source SET name='"+scrub(dataSource.getName(),100)+"', url='"+scrub(dataSource.getUrl(),200)+"' WHERE id="+dataSource.getId());
 			stmt.close();
 			connection.commit();
 			success = true;
@@ -1172,7 +1172,7 @@ public class Database
 		try {
 			mappingID = getUniversalID();
 			Statement stmt = connection.getStatement();
-			stmt.executeUpdate("INSERT INTO mapping(id,name,description,author) VALUES("+mappingID+",'"+scrub(mapping.getName(),50)+"','"+scrub(mapping.getDescription(),4096)+"','"+scrub(mapping.getAuthor(),50)+"')");
+			stmt.executeUpdate("INSERT INTO mapping(id,name,description,author) VALUES("+mappingID+",'"+scrub(mapping.getName(),100)+"','"+scrub(mapping.getDescription(),4096)+"','"+scrub(mapping.getAuthor(),100)+"')");
 			for(Integer schema : mapping.getSchemas())
 				stmt.executeUpdate("INSERT INTO mapping_schema(mapping_id,schema_id) VALUES("+mappingID+","+schema+")");
 			stmt.close();
@@ -1193,7 +1193,7 @@ public class Database
 		boolean success = false;
 		try {
 			Statement stmt = connection.getStatement();
-			stmt.executeUpdate("UPDATE mapping SET name='"+scrub(mapping.getName(),50)+"', description='"+scrub(mapping.getDescription(),4096)+"', author='"+scrub(mapping.getAuthor(),50)+"' WHERE id="+mapping.getId());
+			stmt.executeUpdate("UPDATE mapping SET name='"+scrub(mapping.getName(),100)+"', description='"+scrub(mapping.getDescription(),4096)+"', author='"+scrub(mapping.getAuthor(),100)+"' WHERE id="+mapping.getId());
 			stmt.executeUpdate("DELETE FROM mapping_schema WHERE mapping_id="+mapping.getId());
 			for(Integer schema : mapping.getSchemas())
 				stmt.executeUpdate("INSERT INTO mapping_schema(mapping_id,schema_id) VALUES("+mapping.getId()+","+schema+")");			
@@ -1253,7 +1253,7 @@ public class Database
 			Statement stmt = connection.getStatement();
 			Date date = new Date(mappingCell.getModificationDate().getTime());
 			stmt.executeUpdate("INSERT INTO mapping_cell(id,mapping_id,element1_id,element2_id,score,author,modification_date,transform,notes,validated) " +
-							   "VALUES("+mappingCellID+","+mappingCell.getMappingId()+","+mappingCell.getElement1()+","+mappingCell.getElement2()+","+mappingCell.getScore()+",'"+scrub(mappingCell.getAuthor(),50)+"','"+date.toString()+"','"+scrub(mappingCell.getTransform(),200)+"','"+scrub(mappingCell.getNotes(),500)+"','"+(mappingCell.getValidated()?"t":"f")+"')");
+							   "VALUES("+mappingCellID+","+mappingCell.getMappingId()+","+mappingCell.getElement1()+","+mappingCell.getElement2()+","+mappingCell.getScore()+",'"+scrub(mappingCell.getAuthor(),100)+"','"+date.toString()+"','"+scrub(mappingCell.getTransform(),200)+"','"+scrub(mappingCell.getNotes(),500)+"','"+(mappingCell.getValidated()?"t":"f")+"')");
 			stmt.close();
 			connection.commit();
 		}
@@ -1273,7 +1273,7 @@ public class Database
 		try {
 			Statement stmt = connection.getStatement();
 			Date date = new Date(mappingCell.getModificationDate().getTime());
-			stmt.executeUpdate("UPDATE mapping_cell SET score="+mappingCell.getScore()+", author='"+scrub(mappingCell.getAuthor(),50)+"', modification_date='"+date.toString()+"', transform="+scrub(mappingCell.getTransform(),200)+", notes="+scrub(mappingCell.getNotes(),500)+"', validated='"+(mappingCell.getValidated()?"t":"f")+"' WHERE id="+mappingCell.getId());
+			stmt.executeUpdate("UPDATE mapping_cell SET score="+mappingCell.getScore()+", author='"+scrub(mappingCell.getAuthor(),100)+"', modification_date='"+date.toString()+"', transform="+scrub(mappingCell.getTransform(),200)+", notes="+scrub(mappingCell.getNotes(),500)+"', validated='"+(mappingCell.getValidated()?"t":"f")+"' WHERE id="+mappingCell.getId());
 			stmt.close();
 			connection.commit();
 			success = true;

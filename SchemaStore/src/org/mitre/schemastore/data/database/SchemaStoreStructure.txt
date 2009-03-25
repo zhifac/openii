@@ -4,7 +4,7 @@
 
 CREATE TABLE alias (
 	id integer NOT NULL,
-	name character varying(50),
+	name character varying(100),
 	element_id integer NOT NULL,
 	schema_id integer NOT NULL
 );
@@ -17,7 +17,7 @@ CREATE TABLE annotation (
 
 CREATE TABLE attribute (
 	id integer NOT NULL,
-	name character varying(50) NOT NULL,
+	name character varying(100) NOT NULL,
 	description character varying(4096),
 	entity_id integer NOT NULL,
 	domain_id integer NOT NULL,
@@ -29,7 +29,7 @@ CREATE TABLE attribute (
 
 CREATE TABLE containment (
 	id integer NOT NULL,
-    name character varying(50),
+    name character varying(100),
     description character varying(4096),
 	parent_id integer,
 	child_id integer NOT NULL,
@@ -40,21 +40,21 @@ CREATE TABLE containment (
 
 CREATE TABLE data_source (
     id integer NOT NULL,
-    name character varying(50) NOT NULL,
+    name character varying(100) NOT NULL,
     url character varying(200) NOT NULL,
     schema_id integer NOT NULL
 );
 
 CREATE TABLE "domain" (
     id integer NOT NULL,
-    name character varying(50) NOT NULL,
+    name character varying(100) NOT NULL,
     description character varying(4096),
 	schema_id integer
 );
 
 CREATE TABLE domainvalue (
     id integer NOT NULL,
-    value character varying(50) NOT NULL,
+    value character varying(100) NOT NULL,
     description character varying(4096),
     domain_id integer NOT NULL,
     schema_id integer NOT NULL
@@ -62,7 +62,7 @@ CREATE TABLE domainvalue (
 
 CREATE TABLE entity (
     id integer NOT NULL,
-    name character varying(50) NOT NULL,
+    name character varying(100) NOT NULL,
     description character varying(4096),
     schema_id integer NOT NULL
 );
@@ -74,14 +74,14 @@ CREATE TABLE extensions (
 
 CREATE TABLE groups (
     id integer NOT NULL,
-    name character varying(50) NOT NULL,
+    name character varying(100) NOT NULL,
     parent_id integer
 );
 
 CREATE TABLE mapping (
     id integer NOT NULL,
-    name character varying(50),
-    author character varying(50),
+    name character varying(100),
+    author character varying(100),
     description character varying(4096)
 );
 
@@ -91,7 +91,7 @@ CREATE TABLE mapping_cell (
     element1_id integer,
     element2_id integer,
     score numeric(6,3),
-    author character varying(50),
+    author character varying(100),
     modification_date date,
     transform character varying(200),
     notes character varying(500),
@@ -105,7 +105,7 @@ CREATE TABLE mapping_schema (
 
 CREATE TABLE relationship (
     id integer NOT NULL,
-    name character varying(50) NOT NULL,
+    name character varying(100) NOT NULL,
     left_id integer NOT NULL,
     left_min integer,
     left_max integer,
@@ -117,10 +117,10 @@ CREATE TABLE relationship (
 
 CREATE TABLE "schema" (
     id integer NOT NULL,
-    name character varying(50) NOT NULL,
-    author character varying(50),
+    name character varying(100) NOT NULL,
+    author character varying(100),
     source character varying(200),
-    "type" character varying(50),
+    "type" character varying(100),
     description character varying(4096),
     locked character NOT NULL
 );
