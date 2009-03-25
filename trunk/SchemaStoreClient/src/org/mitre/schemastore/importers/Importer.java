@@ -116,19 +116,11 @@ public abstract class Importer
 		Schema schema = new Schema(nextId(),name,author,uri==null?"":uri.toString(),"",description,false);
 		if(getURIType()==ARCHIVE) schema = generateSchema(uri);
 		
-		// Adjust the schema elements to avoid non-ASCII characters and reference the proper base elements
-		ArrayList<SchemaElement> schemaElements = getSchemaElements();
-		for(SchemaElement element : schemaElements)
-		{
-			element.setName(element.getName().replaceAll("[^\\p{ASCII}]","#"));
-			element.setDescription(element.getDescription().replaceAll("[^\\p{ASCII}]","#"));
-		}
-		
 		// Imports the schema
 		boolean success = false;
 		try {
 			// Import the schema
-			Integer schemaID = client.importSchema(schema, schemaElements);
+			Integer schemaID = client.importSchema(schema, getSchemaElements());
 			schema.setId(schemaID);
 			success = client.setParentSchemas(schema.getId(), getExtendedSchemaIDs());
 

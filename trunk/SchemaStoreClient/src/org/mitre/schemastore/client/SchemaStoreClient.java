@@ -467,6 +467,14 @@ public class SchemaStoreClient
 	/** Imports the specified schema into the web services */
 	public Integer importSchema(Schema schema, ArrayList<SchemaElement> schemaElements) throws RemoteException
 	{
+		// Adjust the schema elements to avoid non-ASCII characters and reference the proper base elements
+		for(SchemaElement element : schemaElements)
+		{
+			element.setName(element.getName().replaceAll("[^\\p{ASCII}]","#"));
+			element.setDescription(element.getDescription().replaceAll("[^\\p{ASCII}]","#"));
+		}
+
+		// Import the schema
 		Integer schemaID = (Integer)callMethod("importSchema",new Object[] {schema, new SchemaElementList(schemaElements.toArray(new SchemaElement[0]))});
 		return schemaID==0 ? null : schemaID;
 	}
