@@ -23,7 +23,8 @@ public class ConvertToXML
 	static private void addChildElement(Element element, String name, Object object)
 	{
 		Element childElement = document.createElement(name);
-		childElement.appendChild(document.createTextNode(object==null ? "" : object.toString()));
+		String text = object==null ? "" : object.toString().replaceAll("[^\\p{ASCII}]","#");
+		childElement.appendChild(document.createTextNode(text));
 		element.appendChild(childElement);
 	}
 	
