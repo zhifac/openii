@@ -210,16 +210,6 @@ public class ImportSchemaDialog extends TitleAreaDialog implements ISelectionCha
 	/** Handles modifications to the various text fields */
 	public void modifyText(ModifyEvent e)
 	{   
-		// Update name, author, and description info when archive file modified
-		Importer importer = (Importer)((StructuredSelection)importerList.getSelection()).getFirstElement();
-		if(e.getSource().equals(fileField) && importer.getURIType()==Importer.ARCHIVE)
-			try {
-				Schema schema = importer.generateSchema(new File(fileField.getText()).toURI());
-				nameField.setText(schema.getName());
-				authorField.setText(schema.getAuthor());
-				descriptionField.setText(schema.getDescription());
-			} catch(Exception e2) {}
-		
 		// Check the validity of the file field
 		if(e.getSource().equals(fileField))
 		{
@@ -230,7 +220,21 @@ public class ImportSchemaDialog extends TitleAreaDialog implements ISelectionCha
 				setErrorMessage(validFile ? null : "A valid file must be selected");
 			}
 		}
-	
+		
+		// Update name, author, and description info when archive file modified
+		Importer importer = (Importer)((StructuredSelection)importerList.getSelection()).getFirstElement();
+		if(e.getSource().equals(fileField) && importer.getURIType()==Importer.ARCHIVE)
+			try {
+				if(validFile)
+				{
+					Schema schema = importer.generateSchema(new File(fileField.getText()).toURI());
+					nameField.setText(schema.getName());
+					authorField.setText(schema.getAuthor());
+					descriptionField.setText(schema.getDescription());
+				}
+				else { nameField.setText(""); authorField.setText(""); descriptionField.setText(""); }
+			} catch(Exception e2) {}
+		
 		// Determine if the OK button should be activated
 		boolean activate = nameField.getText().length()>0 && authorField.getText().length()>0 && descriptionField.getText().length()>0;
 		activate &= importer.getURIType()==Importer.URI ? uriField.getText().length()>0 : fileField.getText().length()>0;
