@@ -103,8 +103,11 @@ public class YggMenuManager extends MenuManager implements IMenuListener
 	{
 		// Display the menu for the "Schemas" header
 		if(element instanceof String && element.equals("Schemas"))
-			menuManager.add(new YggAction(this,"Import Schema",YggAction.IMPORT_SCHEMA));
-		
+		{
+			String databasePath = Mapping.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+			menuManager.add(new YggAction(this,"Import Schema "+databasePath,YggAction.IMPORT_SCHEMA));
+		}
+			
 		// Display the menu for a selected schema
 		if(element instanceof Schema)
 		{
