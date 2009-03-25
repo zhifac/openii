@@ -38,7 +38,7 @@ public class Containment extends SchemaElement
 	public Integer getMax() { return max; }
 	
 	// Handles all containment setters
-	public void setParentID(Integer parentID) { this.parentID = parentID==0 ? null : parentID; }
+	public void setParentID(Integer parentID) { this.parentID = parentID==null || parentID==0 ? null : parentID; }
 	public void setChildID(Integer childID) { this.childID = childID; }	
 	public void setMin(Integer min) { this.min = min; }
 	public void setMax(Integer max) { this.max = max; }
