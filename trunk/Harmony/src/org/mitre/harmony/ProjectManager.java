@@ -15,6 +15,8 @@ import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.mapping.MappingListener;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
+import org.mitre.schemastore.model.graph.GraphModel;
+import org.mitre.schemastore.model.graph.HierarchicalGraph;
 
 /** Class for monitoring for changes in the project */
 public class ProjectManager implements MappingListener
@@ -60,11 +62,22 @@ public class ProjectManager implements MappingListener
 					harmonyModel.getMappingCellManager().setMappingCell(mappingCell);
 				}
 			}
-			
-			// Loads if the mapping has been modified since saving to the repository			
-			if(item.equals("MappingModified"))
-				harmonyModel.getMappingManager().setModified(in.readBoolean());
 
+			// Loads in the graph model
+			if(item.equals("GraphModels"))
+			{
+				int schemaCount = in.readInt();
+				for(int i=0; i<schemaCount; i++)
+				{
+					int schemaID = in.readInt();
+					String graphModelString = (String)in.readObject();
+					if(!graphModelString.equals(""))
+						for(GraphModel model : HierarchicalGraph.getGraphModels())
+							if(model.getClass().getName().equals(graphModelString))
+								{ harmonyModel.getPreferences().setGraphModel(schemaID, model); break; }
+				}
+			}
+			
 			// Loads the displayed schemas
 			if(item.equals("DisplayedSchemas"))
 			{
@@ -76,6 +89,10 @@ public class ProjectManager implements MappingListener
 				for(int i=0; i<rightSchemaCount; i++) rightSchemas.add(in.readInt());
 				harmonyModel.getSelectedInfo().setSelectedSchemas(leftSchemas, rightSchemas);
 			}
+			
+			// Loads if the mapping has been modified since saving to the repository			
+			if(item.equals("MappingModified"))
+				harmonyModel.getMappingManager().setModified(in.readBoolean());
 			
 		} catch(Exception e) {}
 	}
@@ -99,10 +116,19 @@ public class ProjectManager implements MappingListener
 				out.writeInt(mappingCells.size());
 				for(MappingCell mappingCell : mappingCells) out.writeObject(mappingCell);
 			}
-
-			// Saves if the mapping has been modified since saving to the repository
-			if(item.equals("MappingModified"))
-				out.writeBoolean(harmonyModel.getMappingManager().isModified());
+			
+			// Saves the graph models
+			if(item.equals("GraphModels"))
+			{
+				ArrayList<Integer> schemaIDs = harmonyModel.getMappingManager().getSchemas();
+				out.writeInt(schemaIDs.size());
+				for(Integer schemaID : schemaIDs)
+				{
+					out.writeInt(schemaID);
+					GraphModel graphModel = harmonyModel.getPreferences().getGraphModel(schemaID);
+					out.writeObject(graphModel==null ? "" : graphModel.getClass().getName());
+				}
+			}
 
 			// Saves the displayed schemas
 			if(item.equals("DisplayedSchemas"))
@@ -114,6 +140,10 @@ public class ProjectManager implements MappingListener
 				out.writeInt(rightSchemas.size());
 				for(Integer rightSchema : rightSchemas) out.writeInt(rightSchema);
 			}
+
+			// Saves if the mapping has been modified since saving to the repository
+			if(item.equals("MappingModified"))
+				out.writeBoolean(harmonyModel.getMappingManager().isModified());
 			
 		} catch(IOException e) {}
 	}
@@ -159,6 +189,7 @@ public class ProjectManager implements MappingListener
 			save(out,"MappingCells");
 			save(out,"MappingModified");
 			save(out,"DisplayedSchemas");
+			save(out,"GraphModels");
 			out.close();			
 			
 			// Replace the tool file with the new tool file

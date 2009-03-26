@@ -13,7 +13,6 @@ import org.mitre.harmony.model.HarmonyConsts;
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.mapping.MappingListener;
 import org.mitre.schemastore.model.graph.GraphModel;
-import org.mitre.schemastore.model.graph.HierarchicalGraph;
 
 /**
  * Tracks preferences used in Harmony
@@ -21,6 +20,9 @@ import org.mitre.schemastore.model.graph.HierarchicalGraph;
  */
 public class PreferencesManager extends AbstractManager<PreferencesListener> implements MappingListener
 {	
+	/** Stores the graph model preferences */
+	private HashMap<Integer,GraphModel> graphModels = new HashMap<Integer,GraphModel>();
+	
 	/** Stores if the various schema elements have been marked as finished */
 	private HashMap<Integer,HashSet<Integer>> finishedElementMap = new HashMap<Integer,HashSet<Integer>>();
 	
@@ -28,12 +30,7 @@ public class PreferencesManager extends AbstractManager<PreferencesListener> imp
 	public PreferencesManager(HarmonyModel harmonyModel)
 	{
 		super(harmonyModel);
-		
-		// Eliminate graph model preferences for schemas that are no longer in the mapping
 		ArrayList<Integer> schemaIDs = harmonyModel.getMappingManager().getSchemas();
-		for(Integer schemaID : ConfigManager.getHashMap("preferences.graphModels").keySet())
-			if(!schemaIDs.contains(schemaID))
-				setSchemaGraphModel(schemaID, null);
 		
 		// Only set finished element preferences for schemas that exist in the mapping
 		HashMap<Integer,String> map = ConfigManager.getHashMap("preferences.finished");
@@ -56,7 +53,7 @@ public class PreferencesManager extends AbstractManager<PreferencesListener> imp
 	public void schemaRemoved(Integer schemaID)
 	{
 		// Remove the graph model assigned to the removed schema
-		setSchemaGraphModel(schemaID,null);
+		setGraphModel(schemaID,null);
 		
 		// Remove all "finished element" preferences associated with the removed schema
 		HashSet<Integer> finishedElements = finishedElementMap.get(schemaID);
@@ -133,31 +130,23 @@ public class PreferencesManager extends AbstractManager<PreferencesListener> imp
 	// ------------- Preference for storing the schema graph models -------------
 	
 	/** Returns the graph model for the specified schema */
-	public GraphModel getSchemaGraphModel(Integer schemaID)
-	{
-		HashMap<Integer,String> hashMap = ConfigManager.getHashMap("preferences.graphModels");
-		String model = hashMap.get(schemaID);
-		for(GraphModel graphModel : HierarchicalGraph.getGraphModels())
-			if(graphModel.getName().equals(model))
-				return graphModel;
-		return null;
-	}
+	public GraphModel getGraphModel(Integer schemaID)
+		{ return graphModels.get(schemaID); }
 	
 	/** Set the graph model for the specified schema */
-	public void setSchemaGraphModel(Integer schemaID, GraphModel model)
+	public void setGraphModel(Integer schemaID, GraphModel model)
 	{
-		HashMap<Integer,String> hashMap = ConfigManager.getHashMap("preferences.graphModels");
-		String currModel = hashMap.get(schemaID);
-		if((model==null && currModel!=null) || (model!=null && !model.getName().equals(currModel)))
-		{
-			if(model!=null)
-				hashMap.put(schemaID,model.getName());
-			else hashMap.remove(schemaID);
-			ConfigManager.setParm("preferences.graphModels",hashMap.toString());
-			getModel().getSchemaManager().getGraph(schemaID).setModel(model);
-			for(PreferencesListener listener : getListeners())
-				listener.schemaGraphModelChanged(schemaID);
-		}
+		// Make sure that the graph model changed
+		GraphModel currentModel = getGraphModel(schemaID);
+		if(model==null && currentModel==null) return;
+		if(model!=null && model.equals(currentModel)) return;
+		
+		// Set the graph model
+		if(model!=null) graphModels.put(schemaID,model);
+		else graphModels.remove(schemaID);
+		getModel().getSchemaManager().getGraph(schemaID).setModel(model);
+		for(PreferencesListener listener : getListeners())
+			listener.schemaGraphModelChanged(schemaID);
 	}
 
 	// ------------- Preference for tracking which schema elements are marked as finished -------------

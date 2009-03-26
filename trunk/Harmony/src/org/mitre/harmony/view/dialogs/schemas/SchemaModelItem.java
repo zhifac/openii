@@ -41,7 +41,7 @@ class SchemaModelItem extends JPanel
 			modelSelection.addItem(model);
 
 		// Set the selected model
-		GraphModel selectedModel = harmonyModel.getPreferences().getSchemaGraphModel(schema.getId());
+		GraphModel selectedModel = harmonyModel.getPreferences().getGraphModel(schema.getId());
 		if(selectedModel!=null)
 			modelSelection.setSelectedItem(selectedModel);
 		
