@@ -1,3 +1,7 @@
+// © The MITRE Corporation 2006
+// ALL RIGHTS RESERVED
+package org.mitre.harmony.exporters;
+
 package org.mitre.harmony.exporters;
 
 import java.io.BufferedWriter;
