@@ -12,5 +12,6 @@
     <exporter>org.mitre.harmony.exporters.DataDictionaryExporter</exporter>
     <exporter>org.mitre.harmony.exporters.MatchedExporter</exporter>
     <exporter>org.mitre.harmony.exporters.TopMatchExporter</exporter>
+    <exporter>org.mitre.harmony.exporters.UserMatchAnotationExporter</exporter>
   </exporters>
 </tools>
