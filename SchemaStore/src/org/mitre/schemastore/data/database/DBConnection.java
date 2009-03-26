@@ -78,7 +78,7 @@ public class DBConnection
 				connection.commit();
 			}
 			catch (Exception e)
-				{ connection.rollback(); System.out.println("(E) Failed to initialize database"); }
+				{ connection.rollback(); System.out.println("(E) Failed to initialize database - " + e.getMessage()); }
 		}
 		
 		stmt.close();
@@ -121,7 +121,7 @@ public class DBConnection
 			}
 		}
 		catch (Exception e)
-			{ System.out.println("(E) Failed to connect to database"); }
+			{ System.out.println("(E) Failed to connect to database - " + e.getMessage()); }
 
 		// Indicates that a statement failed to be created
 		throw new SQLException();
