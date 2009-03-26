@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
-import org.mitre.schemastore.data.SchemaElements;
+import org.mitre.schemastore.data.database.Database;
 import org.mitre.schemastore.model.Alias;
 import org.mitre.schemastore.model.Attribute;
 import org.mitre.schemastore.model.Containment;
@@ -127,21 +127,28 @@ public class ImportSchema
 						if(!newID.equals(domain.getId()))
 							updateElementID(elements,domain.getId(), newID);
 				}
-						
+
+			// Filter elements before adding to database
+			ArrayList<SchemaElement> tempElements = new ArrayList<SchemaElement>();
+			for(SchemaElement element : elements)
+			{
+				element.setBase(schemaID);
+				if(element.getId()>0) tempElements.add(element);
+			}
+			elements = tempElements;
+			
 			// Sort the schema elements to prevent dependency issues
 			Collections.sort(elements,new SchemaElementComparator());
-				
-			// Add schema elements to the web service
+
+			// Assign universal IDs to all elements
+			Integer elementID = Database.getUniversalIDs(elements.size());
 			for(SchemaElement element : elements)
-				if(element.getId()>=0)
-				{
-					element.setBase(schemaID);
-					Integer schemaElementID = SchemaElements.addSchemaElement(element);
-					if(schemaElementID.equals(0)) throw new RemoteException("Failed to import schema element "+element.getName());
-					updateElementID(elements,element.getId(),schemaElementID);
-				}
+				updateElementID(elements,element.getId(),elementID++);
+			
+			// Add schema elements to the web service
+			if(!Database.addSchemaElements(elements)) throw new Exception();
 		}
-		catch(RemoteException e) { if(schemaID>0) client.deleteSchema(schemaID); schemaID=0; }
+		catch(Exception e) { if(schemaID>0) client.deleteSchema(schemaID); schemaID=0; }
 		return schemaID;
 	}
 }
