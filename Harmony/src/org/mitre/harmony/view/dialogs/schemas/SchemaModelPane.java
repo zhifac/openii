@@ -86,7 +86,7 @@ public class SchemaModelPane extends JPanel
 		for(int loc=0; loc<schemaList.getComponentCount(); loc++)
 		{
 			SchemaModelItem item = (SchemaModelItem)schemaList.getComponent(loc);
-			harmonyModel.getPreferences().setSchemaGraphModel(item.getSchema().getId(), item.getModel());
+			harmonyModel.getPreferences().setGraphModel(item.getSchema().getId(), item.getModel());
 		}
 	}
 }
