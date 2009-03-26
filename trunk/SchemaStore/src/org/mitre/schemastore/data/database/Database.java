@@ -744,52 +744,52 @@ public class Database
 	
 		// Inserts an entity
 		if(schemaElement instanceof Entity)
-			stmt.executeUpdate("INSERT INTO entity(id,name,description,schema_id) VALUES("+id+",'"+name+"','"+description+"',"+baseID+")");
+			stmt.addBatch("INSERT INTO entity(id,name,description,schema_id) VALUES("+id+",'"+name+"','"+description+"',"+baseID+")");
 	
 		// Inserts an attribute
 		if(schemaElement instanceof Attribute)
 		{
 			Attribute attribute = (Attribute)schemaElement;
-			stmt.executeUpdate("INSERT INTO attribute(id,name,description,entity_id,domain_id,\"min\",\"max\",\"key\",schema_id) VALUES("+id+",'"+name+"','"+description+"',"+attribute.getEntityID()+","+attribute.getDomainID()+","+attribute.getMin()+","+attribute.getMax()+",'"+(attribute.isKey()?"t":"f")+"',"+baseID+")");
+			stmt.addBatch("INSERT INTO attribute(id,name,description,entity_id,domain_id,\"min\",\"max\",\"key\",schema_id) VALUES("+id+",'"+name+"','"+description+"',"+attribute.getEntityID()+","+attribute.getDomainID()+","+attribute.getMin()+","+attribute.getMax()+",'"+(attribute.isKey()?"t":"f")+"',"+baseID+")");
 		}
 	
 		// Inserts a domain
 		if(schemaElement instanceof Domain)
-			stmt.executeUpdate("INSERT INTO \"domain\"(id,name,description,schema_id) VALUES("+id+",'"+name+"','"+description+"',"+baseID+")");
+			stmt.addBatch("INSERT INTO \"domain\"(id,name,description,schema_id) VALUES("+id+",'"+name+"','"+description+"',"+baseID+")");
 
 		// Inserts a domain value
 		if(schemaElement instanceof DomainValue)
 		{
 			DomainValue domainValue = (DomainValue)schemaElement;
-			stmt.executeUpdate("INSERT INTO domainvalue(id,value,description,domain_id,schema_id) VALUES("+id+",'"+name+"','"+description+"',"+domainValue.getDomainID()+","+baseID+")");
+			stmt.addBatch("INSERT INTO domainvalue(id,value,description,domain_id,schema_id) VALUES("+id+",'"+name+"','"+description+"',"+domainValue.getDomainID()+","+baseID+")");
 		}
 		
 		// Inserts a relationship
 		if(schemaElement instanceof Relationship)
 		{
 			Relationship relationship = (Relationship)schemaElement;
-			stmt.executeUpdate("INSERT INTO relationship(id,name,left_id,left_min,left_max,right_id,right_min,right_max,schema_id) VALUES("+id+",'"+name+"',"+relationship.getLeftID()+","+relationship.getLeftMin()+","+relationship.getLeftMax()+","+relationship.getRightID()+","+relationship.getRightMin()+","+relationship.getRightMax()+","+baseID+")");
+			stmt.addBatch("INSERT INTO relationship(id,name,left_id,left_min,left_max,right_id,right_min,right_max,schema_id) VALUES("+id+",'"+name+"',"+relationship.getLeftID()+","+relationship.getLeftMin()+","+relationship.getLeftMax()+","+relationship.getRightID()+","+relationship.getRightMin()+","+relationship.getRightMax()+","+baseID+")");
 		}
 				
 		// Inserts a containment relationship
 		if(schemaElement instanceof Containment)
 		{
 			Containment containment = (Containment)schemaElement;
-			stmt.executeUpdate("INSERT INTO containment(id,name,description,parent_id,child_id,\"min\",\"max\",schema_id) VALUES("+id+",'"+name+"','"+description+"',"+containment.getParentID()+","+containment.getChildID()+","+containment.getMin()+","+containment.getMax()+","+baseID+")");
+			stmt.addBatch("INSERT INTO containment(id,name,description,parent_id,child_id,\"min\",\"max\",schema_id) VALUES("+id+",'"+name+"','"+description+"',"+containment.getParentID()+","+containment.getChildID()+","+containment.getMin()+","+containment.getMax()+","+baseID+")");
 		}
 		
 		// Inserts a subset relationship
 		if(schemaElement instanceof Subtype)
 		{
 			Subtype subtype = (Subtype)schemaElement;
-			stmt.executeUpdate("INSERT INTO subtype(id,parent_id,child_id,schema_id) VALUES("+id+","+subtype.getParentID()+","+subtype.getChildID()+","+baseID+")");
+			stmt.addBatch("INSERT INTO subtype(id,parent_id,child_id,schema_id) VALUES("+id+","+subtype.getParentID()+","+subtype.getChildID()+","+baseID+")");
 		}
 		
 		// Inserts an alias
 		if(schemaElement instanceof Alias)
 		{
 			Alias alias = (Alias)schemaElement;
-			stmt.executeUpdate("INSERT INTO alias(id,name,element_id,schema_id) VALUES("+id+",'"+name+"',"+alias.getElementID()+","+baseID+")");
+			stmt.addBatch("INSERT INTO alias(id,name,element_id,schema_id) VALUES("+id+",'"+name+"',"+alias.getElementID()+","+baseID+")");
 		}
 	}
 	
@@ -802,6 +802,7 @@ public class Database
 			schemaElementID = getUniversalIDs(1);
 			schemaElement.setId(schemaElementID);
 			insertSchemaElement(stmt,schemaElement);
+			stmt.executeBatch();
 			stmt.close();
 			connection.commit();
 		}
@@ -821,6 +822,7 @@ public class Database
 			Statement stmt = connection.getStatement();
 			for(SchemaElement schemaElement : schemaElements)
 				insertSchemaElement(stmt,schemaElement);		
+			stmt.executeBatch();
 			stmt.close();
 			connection.commit();
 		}
