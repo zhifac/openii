@@ -2,7 +2,6 @@
 // ALL RIGHTS RESERVED
 package org.mitre.harmony.exporters;
 
-package org.mitre.harmony.exporters;
 
 import java.io.BufferedWriter;
 import java.io.File;
