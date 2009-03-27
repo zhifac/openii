@@ -2,6 +2,9 @@
 
 package org.mitre.schemastore.model;
 
+import java.util.List;
+import java.util.Arrays;
+
 /**
  * Class for storing an attribute
  * @author CWOLF
@@ -47,4 +50,8 @@ public class Attribute extends SchemaElement
 	public void setMin(Integer min) { this.min = min; }
 	public void setMax(Integer max) { this.max = max; }
 	public void setKey(boolean key) { this.key = key; }
+
+	/** Returns the list of referenced IDs */
+	public List<Integer> getReferencedIDs()
+		{ return Arrays.asList(new Integer[]{entityID,domainID}); }
 }

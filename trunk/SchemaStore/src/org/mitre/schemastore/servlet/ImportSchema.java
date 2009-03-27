@@ -6,6 +6,7 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 
 import org.mitre.schemastore.data.database.Database;
 import org.mitre.schemastore.model.Alias;
@@ -25,6 +26,9 @@ import org.mitre.schemastore.model.Subtype;
  */
 public class ImportSchema
 {
+	/** Stores hash map to all IDs */
+	static private HashMap<Integer,ArrayList<SchemaElement>> elementRefs = new HashMap<Integer,ArrayList<SchemaElement>>();
+	
 	/** Private class for sorting schema elements before importing */
 	static private class SchemaElementComparator implements Comparator<SchemaElement>
 	{
@@ -43,6 +47,30 @@ public class ImportSchema
 		}
 	}
 	
+	/** Generate element references */
+	static private void generateElementRefs(ArrayList<SchemaElement> elements)
+	{
+		// Clear out old element references
+		elementRefs.clear();
+		
+		// Search through all schema elements to retrieve references
+		for(SchemaElement element : elements)
+		{
+			// Get list of IDs to which this element is associated
+			ArrayList<Integer> elementIDs = new ArrayList<Integer>();
+			elementIDs.add(element.getId());
+			elementIDs.addAll(element.getReferencedIDs());
+
+			// Store element references
+			for(Integer elementID : elementIDs)
+			{
+				ArrayList<SchemaElement> elementList = elementRefs.get(elementID);
+				if(elementList==null) elementRefs.put(elementID,elementList = new ArrayList<SchemaElement>());
+				elementList.add(element);
+			}
+		}		
+	}
+	
 	/** Updates the id of an element in the element list */
 	static private void updateElementID(ArrayList<SchemaElement> elements, Integer oldID, Integer newID)
 	{
@@ -50,12 +78,11 @@ public class ImportSchema
 		if(oldID.equals(newID)) return;
 		
 		// Shift the ID of any elements that conflict with this updated ID
-		for(SchemaElement element : elements)
-			if(element.getId().equals(newID))
-				{ updateElementID(elements,newID,newID+10000); }
+		if(elementRefs.containsKey(newID))
+			updateElementID(elements,newID,newID+10000);
 		
 		// Replace all references to old ID with new ID
-		for(SchemaElement schemaElement : elements)
+		for(SchemaElement schemaElement : elementRefs.get(oldID))
 		{
 			if(schemaElement.getId().equals(oldID)) schemaElement.setId(newID);
 			if(schemaElement instanceof Attribute)
@@ -94,6 +121,10 @@ public class ImportSchema
 				if(alias.getElementID().equals(oldID)) alias.setElementID(newID);
 			}
 		}
+		
+		// Move element reference to new ID
+		elementRefs.put(newID, elementRefs.get(oldID));
+		elementRefs.remove(oldID);
 	}
 	
 	/** Imports the specified schema into the web services */
@@ -107,6 +138,9 @@ public class ImportSchema
 			schemaID = client.addSchema(schema);
 			if(schemaID==null) throw new RemoteException("Failed to import schema "+schema.getName());
 	
+			// Generate the element references
+			generateElementRefs(elements);
+			
 			// Replace all default domain schema elements
 			for(SchemaElement element : elements)
 				if(element.getClass()==Domain.class)

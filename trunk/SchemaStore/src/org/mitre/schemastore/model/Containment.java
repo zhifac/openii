@@ -2,6 +2,9 @@
 
 package org.mitre.schemastore.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Class for storing a containment relationship
  * @author CWOLF
@@ -42,4 +45,13 @@ public class Containment extends SchemaElement
 	public void setChildID(Integer childID) { this.childID = childID; }	
 	public void setMin(Integer min) { this.min = min; }
 	public void setMax(Integer max) { this.max = max; }
+
+	/** Returns the list of referenced IDs */
+	public List<Integer> getReferencedIDs()
+	{
+		ArrayList<Integer> referencedIDs = new ArrayList<Integer>();
+		if(parentID!=null) referencedIDs.add(parentID);
+		referencedIDs.add(childID);
+		return referencedIDs;
+	}
 }

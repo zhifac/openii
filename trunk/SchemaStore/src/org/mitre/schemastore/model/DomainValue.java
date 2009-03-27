@@ -2,6 +2,9 @@
 
 package org.mitre.schemastore.model;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * Class for storing a domain value
  * @author CWOLF
@@ -29,4 +32,8 @@ public class DomainValue extends SchemaElement
 	/** Sets the domain value's domain id */
 	public void setDomainID(Integer domainID)
 		{ this.domainID = domainID; }
+
+	/** Returns the list of referenced IDs */
+	public List<Integer> getReferencedIDs()
+		{ return Arrays.asList(new Integer[]{domainID}); }
 }

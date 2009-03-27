@@ -2,7 +2,9 @@
 
 package org.mitre.schemastore.model;
 
+import java.util.List;
 import java.io.Serializable;
+import java.util.ArrayList;
 
 /**
  * Class for storing a schema element
@@ -49,6 +51,10 @@ public class SchemaElement implements Serializable
 	public void setName(String name) { this.name = name==null ? "" : name; }
 	public void setDescription(String description) { this.description = description==null ? "" : description; }
 	public void setBase(Integer base) { this.base = base; }
+	
+	/** Returns the list of referenced IDs */
+	public List<Integer> getReferencedIDs()
+		{ return new ArrayList<Integer>(); }
 	
 	/** Generates a hash code for the match */
 	public int hashCode()

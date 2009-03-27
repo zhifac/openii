@@ -329,45 +329,8 @@ public class Graph implements Serializable
 		// Checks to ensure that element is not referenced elsewhere
 		ArrayList<SchemaElement> referencingElements = new ArrayList<SchemaElement>();
 		for(SchemaElement element : getElements(null))
-		{
-			if(element instanceof Attribute)
-			{
-				Attribute attribute = (Attribute)element;
-				if(attribute.getDomainID().equals(elementID) || attribute.getEntityID().equals(elementID))
-					referencingElements.add(attribute);
-			}
-			if(element instanceof DomainValue)
-			{
-				DomainValue domainValue = (DomainValue)element;
-				if(domainValue.getDomainID().equals(elementID))
-					referencingElements.add(domainValue);
-			}
-			if(element instanceof Relationship)
-			{
-				Relationship relationship = (Relationship)element;
-				if(relationship.getLeftID().equals(elementID) || relationship.getRightID().equals(elementID))
-					referencingElements.add(relationship);
-			}
-			if(element instanceof Containment)
-			{
-				Containment containment = (Containment)element;
-				Integer parentID = containment.getParentID();
-				if((parentID!=null && parentID.equals(elementID)) || containment.getChildID().equals(elementID))
-					referencingElements.add(containment);
-			}
-			if(element instanceof Subtype)
-			{
-				Subtype subtype = (Subtype)element;
-				if(subtype.getParentID().equals(elementID) || subtype.getChildID().equals(elementID))
-					referencingElements.add(subtype);
-			}
-			if(element instanceof Alias)
-			{
-				Alias alias = (Alias)element;
-				if(alias.getElementID().equals(elementID))
-					referencingElements.add(alias);
-			}
-		}
+			if(element.getReferencedIDs().contains(elementID))
+				referencingElements.add(element);
 		return referencingElements;
 	}
 	
