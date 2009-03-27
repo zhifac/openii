@@ -820,8 +820,11 @@ public class Database
 	{
 		try {
 			Statement stmt = connection.getStatement();
-			for(SchemaElement schemaElement : schemaElements)
-				insertSchemaElement(stmt,schemaElement);		
+			for(int i=0; i<schemaElements.size(); i++)
+			{
+				insertSchemaElement(stmt,schemaElements.get(i));
+				if(i%1000==999) stmt.executeBatch();
+			}
 			stmt.executeBatch();
 			stmt.close();
 			connection.commit();
