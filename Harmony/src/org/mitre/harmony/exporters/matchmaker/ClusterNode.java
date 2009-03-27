@@ -15,7 +15,7 @@ import java.util.Comparator;
  * @author MDMORSE, DMALLEN
  */
 public class ClusterNode {
-	ArrayList<groupE> groupEs;
+	public ArrayList<groupE> groupEs;
 
 	// I don't know how this really affects the groupE's . But any two groupE
 	// with distance (or confidence) less than this number
@@ -28,7 +28,7 @@ public class ClusterNode {
 			groupEs.add(new groupE(n));
 		}
 	}
-
+	
 	/**
 	 * @param j
 	 *            the index of the cluster
@@ -54,12 +54,9 @@ public class ClusterNode {
 	}
 
 	public void sortByScore() {
-		Collections.sort(groupEs, new groupEScoreComparator());
+		Collections.sort(groupEs, new  groupEScoreComparator());
 	}
 
-	public void sortByParticipation() {
-		Collections.sort(groupEs, new groupEParticipationComparator());
-	}
 
 	/**
 	 * Sort groupE alphabetically by specified particular schema ID.
@@ -206,7 +203,8 @@ public class ClusterNode {
 		}
 		return true;
 	}
-
+	
+	
 	/**
 	 * Compares groupEs by a groupE's average scores, rank from low to high.
 	 * 
@@ -234,26 +232,7 @@ public class ClusterNode {
 		}
 	}
 
-	/**
-	 * Compare two groups by the number of participating nodes. And then compare
-	 * alphabetically
-	 * 
-	 * @author HAOLI
-	 * 
-	 */
-	class groupEParticipationComparator implements Comparator<groupE> {
-		groupEParticipationComparator() {}
-
-		public int compare(groupE g1, groupE g2) {
-
-			int g1Size = g1.getGroup().size();
-			int g2Size = g2.getGroup().size();
-			int diff = g2Size - g1Size;
-
-			if (diff == 0) return g1.compareTo(g2);
-			else return diff;
-		}
-	}
+	
 
 	/**
 	 * sort by a selected schema node in two groupE
@@ -261,7 +240,7 @@ public class ClusterNode {
 	 * @author HAOLI
 	 * 
 	 */
-	class groupEComparator implements Comparator<groupE> {
+	public class groupEComparator implements Comparator<groupE> {
 		Integer baseSchema;
 
 		groupEComparator(Integer schemaId) {
@@ -281,4 +260,6 @@ public class ClusterNode {
 		}
 	}
 
+
+	
 }

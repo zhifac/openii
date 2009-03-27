@@ -85,7 +85,7 @@ public class groupE implements Comparable<groupE> {
 		updateLeastNode(two.leastNode);
 	}
 
-	ArrayList<SchemaElementNode> getGroup() {
+	public ArrayList<SchemaElementNode> getGroup() {
 
 		return nodes;
 	}
@@ -108,4 +108,5 @@ public class groupE implements Comparable<groupE> {
 
 		return null;
 	}
+
 }

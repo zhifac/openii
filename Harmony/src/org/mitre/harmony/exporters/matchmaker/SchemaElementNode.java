@@ -14,6 +14,11 @@ public class SchemaElementNode extends Node implements Comparable<SchemaElementN
 	}
 
 	public int compareTo(SchemaElementNode o) {
-		return this.elementName.compareToIgnoreCase(o.elementName);
+		return this.toString().compareToIgnoreCase(o.toString()); 
 	}
+	
+	public String toString(){
+		return elementName + elementId; 
+	}
+
 } // End SchemaElementNode
