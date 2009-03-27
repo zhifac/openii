@@ -2,6 +2,9 @@
 
 package org.mitre.schemastore.model;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * Class for storing an alias
  * @author CWOLF
@@ -29,4 +32,8 @@ public class Alias extends SchemaElement
 	/** Sets the alias' element id */
 	public void setElementID(Integer elementID)
 		{ this.elementID = elementID; }
+
+	/** Returns the list of referenced IDs */
+	public List<Integer> getReferencedIDs()
+		{ return Arrays.asList(new Integer[]{elementID}); }
 }
