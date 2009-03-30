@@ -112,10 +112,6 @@ public class ImporterDialog extends JDialog implements ActionListener,CaretListe
 		descriptionField.setLineWrap(true);
 		descriptionField.setWrapStyleWord(true);
 		
-		// Initialize the uri field
-		uriField = new FileParameter(harmonyModel);
-		uriField.addListener(this);
-		
 		// Generates the information pane
 		ParameterPane pane = new ParameterPane();
 		pane.setBorder(new CompoundBorder(new LineBorder(Color.gray),new EmptyBorder(6,6,6,6)));
@@ -131,6 +127,10 @@ public class ImporterDialog extends JDialog implements ActionListener,CaretListe
 	{
 		super(parent);
 		this.harmonyModel = harmonyModel;
+		
+		// Initialize the uri field
+		uriField = new FileParameter(harmonyModel);
+		uriField.addListener(this);
 		
 		// Initialize the main pane
 		JPanel mainPane = new JPanel();
@@ -195,8 +195,8 @@ public class ImporterDialog extends JDialog implements ActionListener,CaretListe
 		uriField.setImporter(importer);
 
 		// Lock down the name and description fields for archive importers
-		if(isArchiveImporter)
-			{ nameField.setText(""); descriptionField.setText(""); }
+//		if(isArchiveImporter)
+//			{ nameField.setText(""); descriptionField.setText(""); }
 		nameField.setEditable(!isArchiveImporter);
 		descriptionField.setEditable(!isArchiveImporter);
 		descriptionField.setBackground(isArchiveImporter ? new Color(0xeeeeee) : Color.white);
@@ -206,11 +206,11 @@ public class ImporterDialog extends JDialog implements ActionListener,CaretListe
 	public void caretUpdate(CaretEvent e)
 	{
 		Importer importer = (Importer)selectionList.getSelectedItem();
-		if(importer.getURIType()==Importer.ARCHIVE)
+		if(importer.getURIType()==Importer.ARCHIVE && uriField.getValue()!=null)
 			try {
 				Schema schema = importer.generateSchema(uriField.getValue());
 				nameField.setText(schema.getName());
 				descriptionField.setText(schema.getDescription());
-			} catch(Exception e2) {}
+			} catch(Exception e2) { System.out.println("(E) ImporterDialog.caretUpdate - " + e2.getMessage()); }
 	}
 }
