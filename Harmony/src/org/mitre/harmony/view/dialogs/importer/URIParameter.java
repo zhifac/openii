@@ -23,13 +23,20 @@ import javax.swing.filechooser.FileFilter;
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.schemastore.importers.Importer;
 
-/** File parameter class */
-public class FileParameter extends JPanel implements ActionListener
+/** URI parameter class */
+public class URIParameter extends JPanel implements ActionListener
 {
 	/** Stores the Harmony model */
 	private HarmonyModel harmonyModel;
 	
-	/** File filter class associated with this file parameter */
+	/** Stores the specified importer */
+	private Importer importer = null;
+
+	// Stores objects used in the panel
+	private JTextField fileField = new JTextField();
+	private JButton fileButton = new JButton("Browse...");
+
+	/** File filter associated with this URI parameter */
 	private class ParameterFileFilter extends FileFilter
 	{
 		/** Indicates if the file is acceptable */
@@ -51,22 +58,15 @@ public class FileParameter extends JPanel implements ActionListener
 		}
 	}
 	
-	/** Stores the file field */
-	private JTextField fileField = new JTextField();
-	
-	/** Stores the specified importer */
-	private Importer importer = null;
-	
 	/** Constructs the file parameter */
-	public FileParameter(HarmonyModel harmonyModel)
+	public URIParameter(HarmonyModel harmonyModel)
 	{
 		this.harmonyModel = harmonyModel;
 		
 		// Initialize the file field
 		fileField.setColumns(20);
 		
-		// Constructs the file button
-		JButton fileButton = new JButton("Browse...");
+		// Initializes the file button
 		fileButton.setBorder(new CompoundBorder(new LineBorder(Color.gray),new EmptyBorder(1,3,1,3)));
 		fileButton.setFont(new Font("Default",Font.BOLD,10));
 		fileButton.addActionListener(this);
@@ -87,13 +87,16 @@ public class FileParameter extends JPanel implements ActionListener
 	{
 		this.importer = importer;
 		fileField.setText("");
+		fileButton.setVisible(importer.getURIType()!=Importer.URI);
 	}
 	
 	/** Returns the parameter value */
 	public URI getValue()
 	{
 		String value = fileField.getText();
-		return value==null || value.length()==0 ? null : new File(value).toURI();
+		if(value==null || value.length()==0) return null;
+		if(importer.getURIType()==Importer.URI) try { return new URI(value); } catch(Exception e) { return null; }
+		else return new File(value).toURI();
 	}
 	
 	/** Handles the pressing of the file button */

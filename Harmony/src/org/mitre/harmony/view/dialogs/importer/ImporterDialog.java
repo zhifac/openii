@@ -45,7 +45,7 @@ public class ImporterDialog extends JDialog implements ActionListener,CaretListe
 	private JTextField nameField = new JTextField();
 	private JTextField authorField = new JTextField();
 	private JTextArea descriptionField = new JTextArea();
-	private FileParameter uriField;	
+	private URIParameter uriField;	
 	
 	/** Private class for defining the button pane */
 	private class ButtonPane extends AbstractButtonPane
@@ -118,7 +118,7 @@ public class ImporterDialog extends JDialog implements ActionListener,CaretListe
 		pane.addParameter("Name", nameField);
 		pane.addParameter("Author", authorField);
 		pane.addParameter("Description", descriptionField);
-		pane.addParameter("File", uriField);
+		pane.addParameter("File / URI", uriField);
 		return pane;
 	}
 	
@@ -129,7 +129,7 @@ public class ImporterDialog extends JDialog implements ActionListener,CaretListe
 		this.harmonyModel = harmonyModel;
 		
 		// Initialize the uri field
-		uriField = new FileParameter(harmonyModel);
+		uriField = new URIParameter(harmonyModel);
 		uriField.addListener(this);
 		
 		// Initialize the main pane
@@ -195,8 +195,6 @@ public class ImporterDialog extends JDialog implements ActionListener,CaretListe
 		uriField.setImporter(importer);
 
 		// Lock down the name and description fields for archive importers
-//		if(isArchiveImporter)
-//			{ nameField.setText(""); descriptionField.setText(""); }
 		nameField.setEditable(!isArchiveImporter);
 		descriptionField.setEditable(!isArchiveImporter);
 		descriptionField.setBackground(isArchiveImporter ? new Color(0xeeeeee) : Color.white);
