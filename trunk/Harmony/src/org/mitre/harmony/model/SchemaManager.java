@@ -104,8 +104,11 @@ public class SchemaManager
 	{
 		ArrayList<Importer> importerList = new ArrayList<Importer>();
 		for(Importer importer : SchemaStoreManager.getImporters())
-			if(importer.getURIType()==Importer.FILE || importer.getURIType()==Importer.ARCHIVE)
+		{
+			Integer uriType = importer.getURIType();
+			if(uriType==Importer.FILE || uriType==Importer.ARCHIVE || uriType==Importer.URI)
 				importerList.add(importer);
+		}
 		return importerList;
 	}
 	
