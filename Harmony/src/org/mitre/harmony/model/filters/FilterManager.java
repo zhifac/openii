@@ -2,6 +2,8 @@
 // ALL RIGHTS RESERVED
 package org.mitre.harmony.model.filters;
 
+import java.util.ArrayList;
+
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 
@@ -19,26 +21,26 @@ import org.mitre.schemastore.model.MappingCell;
 public class FilterManager extends AbstractManager<FiltersListener> implements SelectedInfoListener
 {	
 	// Constants for referencing the assertion array
-	static final public int USER = 0;		// Location of user assertion in array
-	static final public int SYSTEM = 1;		// Location of system assertion in array
-	static final public int BEST = 2;		// Location of best assertion in array
+	static final public int USER = 0;
+	static final public int SYSTEM = 1;
+	static final public int BEST = 2;
 	
 	// Stores all assertion filter settings
-	private boolean assertions[];	// Current assertion settings
+	private boolean assertions[];
 	
 	// Stores all confidence filter settings
-	private double minConfThreshold;	// Current min confidence setting
-	private double maxConfThreshold;	// Current max confidence setting
+	private double minConfThreshold;
+	private double maxConfThreshold;
 	
 	// Stores all focus filter settings
-	private Focus leftFocus;		// Currently selected left focus
-	private Focus rightFocus;	// Currently selected right focus
+	private ArrayList<Focus> leftFoci;
+	private ArrayList<Focus> rightFoci;
 	
 	// Stores all depth filter settings
-	private int minLeftDepth;		// Only links whose left element's depth is above this are shown
-	private int maxLeftDepth;		// Only links whose left element's depth is below this are shown
-	private int minRightDepth;		// Only links whose right element's depth is above this are shown
-	private int maxRightDepth;		// Only links whose right element's depth is below this are shown
+	private int minLeftDepth;
+	private int maxLeftDepth;
+	private int minRightDepth;
+	private int maxRightDepth;
 
 	/** Tracks element confidences when BEST is set */
 	private ElementConfHashTable elementConfidences = null;
@@ -52,7 +54,8 @@ public class FilterManager extends AbstractManager<FiltersListener> implements S
 		assertions = new boolean[3]; assertions[USER]=true; assertions[SYSTEM]=true; assertions[BEST]=false;
 		minConfThreshold = MappingCellManager.MIN_CONFIDENCE;
 		maxConfThreshold = MappingCellManager.MAX_CONFIDENCE;
-		leftFocus = rightFocus = null;
+		leftFoci = new ArrayList<Focus>();
+		rightFoci = new ArrayList<Focus>();
 		minLeftDepth = minRightDepth = 1;
 		maxLeftDepth = maxRightDepth = Integer.MAX_VALUE;
 	}
@@ -74,15 +77,20 @@ public class FilterManager extends AbstractManager<FiltersListener> implements S
 		for(FiltersListener listener : getListeners()) listener.confidenceChanged();
 	}
 	
-	/**
-	 * Sets the focus such that only links that originate from this node,
-	 * or its descendants, are to be displayed.
-	 */
-	public void setFocus(Integer role, Focus newFocus)
+	/** Adds a focused element to the specified side */
+	public void addFocus(Integer side, Focus focus)
 	{
-		if(role==HarmonyConsts.LEFT) leftFocus = newFocus;
-		else rightFocus = newFocus;
-		for(FiltersListener listener : getListeners()) listener.focusChanged();
+		ArrayList<Focus> foci = side==HarmonyConsts.LEFT ? leftFoci : rightFoci;
+		foci.add(focus);
+		for(FiltersListener listener : getListeners()) listener.focusAdded(side,focus);
+	}
+
+	/** Removes a focused element from the specified side */
+	public void removeFocus(Integer side, Focus focus)
+	{
+		ArrayList<Focus> foci = side==HarmonyConsts.LEFT ? leftFoci : rightFoci;
+		foci.remove(focus);
+		for(FiltersListener listener : getListeners()) listener.focusRemoved(side,focus);
 	}
 	
 	/**
@@ -106,8 +114,26 @@ public class FilterManager extends AbstractManager<FiltersListener> implements S
 	public double getMaxConfThreshold() { return maxConfThreshold; }
 
 	/** Return the node from this tree currently in focus */
-	public Focus getFocus(Integer role)
-		{ return role==HarmonyConsts.LEFT ? leftFocus : rightFocus; }
+	public ArrayList<Focus> getFoci(Integer role)
+		{ return role==HarmonyConsts.LEFT ? leftFoci : rightFoci; }
+	
+	/** Returns the focus associated with the specified element */
+	public Focus getFocus(Integer role, Integer elementID)
+	{
+		for(Focus focus : getFoci(role))
+			if(focus.getElementID().equals(elementID)) return focus;
+		return null;
+	}
+	
+	/** Indicates if the specified element is in focus */
+	public boolean inFocus(Integer role, Integer element)
+	{
+		ArrayList<Focus> foci = getFoci(role);
+		if(foci.size()==0) return true;
+		else for(Focus focus : foci)
+			if(focus.contains(element)) return true;
+		return false;
+	}
 	
 	/** Returns the minimum depth */
 	public int getMinDepth(Integer role)
@@ -125,8 +151,8 @@ public class FilterManager extends AbstractManager<FiltersListener> implements S
 	public boolean visibleNode(Integer role, DefaultMutableTreeNode node)
 	{
 		// Check that the element is within focus
-		Focus focus = role.equals(HarmonyConsts.LEFT) ? leftFocus : rightFocus;
-		if(focus!=null && !focus.contains(node)) return false;
+		Object elementID = node.getUserObject();
+		if(elementID instanceof Integer && !inFocus(role, (Integer)elementID)) return false;
 		
 		// Check that the element is within depth
 		int depth = node.getPath().length-2;
@@ -168,14 +194,16 @@ public class FilterManager extends AbstractManager<FiltersListener> implements S
 	public void selectedSchemasModified()
 	{
 		// Adjust the left focus as needed
-		if(leftFocus!=null)
-			if(!getModel().getSelectedInfo().getSchemas(HarmonyConsts.LEFT).contains(leftFocus.getSchemaID()))
-				setFocus(HarmonyConsts.LEFT,null);
+		ArrayList<Integer> leftSchemas = getModel().getSelectedInfo().getSchemas(HarmonyConsts.LEFT);
+		for(Focus focus : new ArrayList<Focus>(leftFoci))
+			if(!leftSchemas.contains(focus.getSchemaID()))
+				removeFocus(HarmonyConsts.LEFT, focus);
 
 		// Adjust the right focus as needed
-		if(rightFocus!=null)
-			if(!getModel().getSelectedInfo().getSchemas(HarmonyConsts.RIGHT).contains(rightFocus.getSchemaID()))
-				setFocus(HarmonyConsts.RIGHT,null);
+		ArrayList<Integer> rightSchemas = getModel().getSelectedInfo().getSchemas(HarmonyConsts.RIGHT);
+		for(Focus focus : new ArrayList<Focus>(rightFoci))
+			if(!rightSchemas.contains(focus.getSchemaID()))
+				removeFocus(HarmonyConsts.RIGHT, focus);
 	}
 	
 	// Unused event listeners

@@ -25,6 +25,7 @@ import javax.swing.plaf.metal.MetalSliderUI;
 
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.filters.FiltersListener;
+import org.mitre.harmony.model.filters.Focus;
 import org.mitre.harmony.view.schemaTree.SchemaTree;
 import org.mitre.harmony.view.schemaTree.SchemaTreeListener;
 
@@ -233,14 +234,8 @@ public class DepthPane extends JPanel
 		}
 
 		/** When the focus changes, make sure the focus' links are visible */
-		public void focusChanged()
-		{
-			if(harmonyModel.getFilters().getFocus(role) != null)
-			{
-				setMinValue(1);
-				setMaxValue(getMaximum());
-			}
-		}
+		public void focusAdded(Integer side, Focus focus)
+			{ setMinValue(1); setMaxValue(getMaximum()); }
 
 		/** When the depth changes, the depth sliders must be repainted */
 		public void depthChanged()
@@ -257,6 +252,7 @@ public class DepthPane extends JPanel
 		
 		/** Unused event listeners */
 		public void schemaDisplayModified(SchemaTree tree) {}
+		public void focusRemoved(Integer side, Focus focus) {}
 		public void assertionsChanged() {}
 		public void confidenceChanged() {}
 		public void maxConfidenceChanged(Integer schemaObjectID) {}
