@@ -20,6 +20,9 @@ import org.mitre.schemastore.model.graph.GraphModel;
  */
 public class PreferencesManager extends AbstractManager<PreferencesListener> implements MappingListener
 {	
+	/** Stores the currently displayed view */
+	private Integer displayedView = HarmonyConsts.MAPPING_VIEW;
+	
 	/** Stores the graph model preferences */
 	private HashMap<Integer,GraphModel> graphModels = new HashMap<Integer,GraphModel>();
 	
@@ -69,15 +72,15 @@ public class PreferencesManager extends AbstractManager<PreferencesListener> imp
 
 	/** Returns the preference for view to be displayed */
 	public Integer getViewToDisplay()
-		{ try { return Integer.parseInt(ConfigManager.getParm("preferences.displayedView")); } catch(Exception e) {} return HarmonyConsts.MAPPING_VIEW; }
+		{ return displayedView; }
 	
 	/** Set preference to view to be displayed */
-	public void setViewToDisplay(Integer view)
+	public void setViewToDisplay(Integer displayedView)
 	{
 		// Only set preference if changed from original
-		if(view!=getViewToDisplay())
+		if(displayedView!=this.displayedView)
 		{
-			ConfigManager.setParm("preferences.displayedView",Integer.toString(view));
+			this.displayedView = displayedView;
 			for(PreferencesListener listener : getListeners())
 				listener.displayedViewChanged();
 		}
