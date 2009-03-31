@@ -45,7 +45,7 @@ public class ImporterDialog extends JDialog implements ActionListener,CaretListe
 	private JTextField nameField = new JTextField();
 	private JTextField authorField = new JTextField();
 	private JTextArea descriptionField = new JTextArea();
-	private URIParameter uriField;	
+	private UriParameter uriField;	
 	
 	/** Private class for defining the button pane */
 	private class ButtonPane extends AbstractButtonPane
@@ -129,7 +129,7 @@ public class ImporterDialog extends JDialog implements ActionListener,CaretListe
 		this.harmonyModel = harmonyModel;
 		
 		// Initialize the uri field
-		uriField = new URIParameter(harmonyModel);
+		uriField = new UriParameter(harmonyModel);
 		uriField.addListener(this);
 		
 		// Initialize the main pane
