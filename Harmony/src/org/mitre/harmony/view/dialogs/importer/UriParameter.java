@@ -32,7 +32,7 @@ public class UriParameter extends JPanel implements ActionListener
 	/** Stores the specified importer */
 	private Importer importer = null;
 
-	// Stores objects used in the panel
+	// Stores components used in the panel
 	private JTextField fileField = new JTextField();
 	private JButton fileButton = new JButton("Browse...");
 
