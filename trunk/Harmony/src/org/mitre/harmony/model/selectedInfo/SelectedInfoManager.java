@@ -284,7 +284,7 @@ public class SelectedInfoManager extends AbstractManager<SelectedInfoListener> i
 	//------------ Updates the selected information based on the occurrence of events ------------
 	
 	/** Unselect elements that are out of focus */
-	public void focusRemoved(Integer side, Focus focus)
+	public void focusAdded(Integer side, Focus focus)
 	{
 		// Identify all of the elements that are no longer visible
 		ArrayList<Integer> removedElements = new ArrayList<Integer>();
@@ -296,6 +296,7 @@ public class SelectedInfoManager extends AbstractManager<SelectedInfoListener> i
 		if(removedElements.size()>0)
 			setSelectedElements(removedElements,side,REMOVE);
 	}
+	public void focusRemoved(Integer side, Focus focus) { focusRemoved(side,focus); }
 	
 	/** Unselect elements that are out of depth */
 	public void depthChanged()
@@ -365,7 +366,6 @@ public class SelectedInfoManager extends AbstractManager<SelectedInfoListener> i
 	public void schemaAdded(Integer schemaID) {}
 	public void mappingCellAdded(MappingCell mappingCell) {}
 	public void mappingCellModified(MappingCell oldMappingCell, MappingCell newMappingCell) {}
-	public void focusAdded(Integer side, Focus focus) {}
 	public void assertionsChanged() {}
 	public void confidenceChanged() {}
 	public void maxConfidenceChanged(Integer schemaObjectID) {}
