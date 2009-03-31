@@ -114,17 +114,17 @@ class MatcherDialog extends JDialog implements ActionListener, Runnable
 
 		// Determine what left roots to match on
 		ArrayList<FilteredGraph> leftGraphs = new ArrayList<FilteredGraph>();
-		if (harmonyModel.getFilters().getFocus(HarmonyConsts.LEFT) != null)
-		{
-			Focus focus = harmonyModel.getFilters().getFocus(HarmonyConsts.LEFT);
-			FilteredGraph graph = new FilteredGraph(harmonyModel.getSchemaManager().getGraph(focus.getSchemaID()));
-			graph.setFilteredRoot(focus.getElementID());
-			leftGraphs.add(graph);
-		}
+		if(harmonyModel.getFilters().getFoci(HarmonyConsts.LEFT).size()>0)
+			for(Focus focus : harmonyModel.getFilters().getFoci(HarmonyConsts.LEFT))
+			{
+				FilteredGraph graph = new FilteredGraph(harmonyModel.getSchemaManager().getGraph(focus.getSchemaID()));
+				graph.setFilteredRoot(focus.getElementID());
+				leftGraphs.add(graph);
+			}
 		else for (Integer schemaID : harmonyModel.getSelectedInfo().getSchemas(HarmonyConsts.LEFT))
 			leftGraphs.add(new FilteredGraph(harmonyModel.getSchemaManager().getGraph(schemaID)));
 
-		// Set the min and max depths for each graph on the left
+		// Set the minimum and maximum depths for each graph on the left
 		for (FilteredGraph graph : leftGraphs)
 		{
 			graph.setMinDepth(harmonyModel.getFilters().getMinDepth(HarmonyConsts.LEFT));
@@ -134,13 +134,13 @@ class MatcherDialog extends JDialog implements ActionListener, Runnable
 
 		// Determine what right roots to match on
 		ArrayList<FilteredGraph> rightGraphs = new ArrayList<FilteredGraph>();
-		if (harmonyModel.getFilters().getFocus(HarmonyConsts.RIGHT) != null)
-		{
-			Focus focus = harmonyModel.getFilters().getFocus(HarmonyConsts.RIGHT);
-			FilteredGraph graph = new FilteredGraph(harmonyModel.getSchemaManager().getGraph(focus.getSchemaID()));
-			graph.setFilteredRoot(focus.getElementID());
-			rightGraphs.add(graph);
-		}
+		if (harmonyModel.getFilters().getFoci(HarmonyConsts.RIGHT) != null)
+			for(Focus focus : harmonyModel.getFilters().getFoci(HarmonyConsts.RIGHT))
+			{
+				FilteredGraph graph = new FilteredGraph(harmonyModel.getSchemaManager().getGraph(focus.getSchemaID()));
+				graph.setFilteredRoot(focus.getElementID());
+				rightGraphs.add(graph);
+			}
 		else for (Integer schemaID : harmonyModel.getSelectedInfo().getSchemas(HarmonyConsts.RIGHT))
 			rightGraphs.add(new FilteredGraph(harmonyModel.getSchemaManager().getGraph(schemaID)));
 

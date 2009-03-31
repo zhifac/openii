@@ -20,6 +20,7 @@ import javax.swing.JViewport;
 import org.mitre.harmony.model.HarmonyConsts;
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.filters.FiltersListener;
+import org.mitre.harmony.model.filters.Focus;
 import org.mitre.harmony.model.mapping.MappingCellListener;
 import org.mitre.harmony.model.selectedInfo.SelectedInfoListener;
 import org.mitre.harmony.view.schemaTree.SchemaTree;
@@ -192,8 +193,12 @@ public class MappingLines implements MappingCellListener, FiltersListener, Schem
 	public void confidenceChanged()
 		{ updateHidden(); }
 	
-	/** Updates mapping cell lines when focus changed */
-	public void focusChanged()
+	/** Updates mapping cell lines when a focus is added */
+	public void focusAdded(Integer side, Focus focus)
+		{ updateLines(); }
+	
+	/** Updates mapping cell lines when a focus is removed */
+	public void focusRemoved(Integer side, Focus focus)
 		{ updateLines(); }
 	
 	/** Updates mapping cell lines when depth filters changed */

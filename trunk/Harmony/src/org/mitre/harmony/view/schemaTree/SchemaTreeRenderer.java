@@ -113,7 +113,7 @@ class SchemaTreeRenderer extends DefaultTreeCellRenderer
 		{
 			// Determine if the node is in focus
 			SchemaTree schemaTree = (SchemaTree)tree;
-			isFocused = harmonyModel.getFilters().getFocus(schemaTree.getRole())==null;
+			isFocused = harmonyModel.getFilters().getFoci(schemaTree.getRole()).size()==0;
 			
 			// Set the text and icon
 			setText("  "  + obj);

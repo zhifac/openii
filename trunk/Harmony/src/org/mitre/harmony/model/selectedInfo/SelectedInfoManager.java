@@ -284,25 +284,17 @@ public class SelectedInfoManager extends AbstractManager<SelectedInfoListener> i
 	//------------ Updates the selected information based on the occurrence of events ------------
 	
 	/** Unselect elements that are out of focus */
-	public void focusChanged()
+	public void focusRemoved(Integer side, Focus focus)
 	{
-		Integer sides[] = { HarmonyConsts.LEFT, HarmonyConsts.RIGHT };
-		for(Integer side : sides)
-		{
-			// Get the focus for the specified side
-			Focus focus = getModel().getFilters().getFocus(side);
-			
-			// Identify all of the elements that are no longer visible
-			ArrayList<Integer> removedElements = new ArrayList<Integer>();						
-			if(focus!=null)
-				for(Integer elementID : getSelectedElements(side))
-					if(!focus.contains(elementID))
-						removedElements.add(elementID);
-			
-			// Remove the eliminated selected elements
-			if(removedElements.size()>0)
-				setSelectedElements(removedElements,side,REMOVE);
-		}
+		// Identify all of the elements that are no longer visible
+		ArrayList<Integer> removedElements = new ArrayList<Integer>();
+		for(Integer elementID : getSelectedElements(side))
+			if(!getModel().getFilters().inFocus(side, elementID))
+				removedElements.add(elementID);
+		
+		// Remove the eliminated selected elements
+		if(removedElements.size()>0)
+			setSelectedElements(removedElements,side,REMOVE);
 	}
 	
 	/** Unselect elements that are out of depth */
@@ -373,6 +365,7 @@ public class SelectedInfoManager extends AbstractManager<SelectedInfoListener> i
 	public void schemaAdded(Integer schemaID) {}
 	public void mappingCellAdded(MappingCell mappingCell) {}
 	public void mappingCellModified(MappingCell oldMappingCell, MappingCell newMappingCell) {}
+	public void focusAdded(Integer side, Focus focus) {}
 	public void assertionsChanged() {}
 	public void confidenceChanged() {}
 	public void maxConfidenceChanged(Integer schemaObjectID) {}

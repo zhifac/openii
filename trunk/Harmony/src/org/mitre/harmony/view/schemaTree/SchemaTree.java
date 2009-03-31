@@ -388,7 +388,7 @@ public class SchemaTree extends JTree implements PreferencesListener, SelectedIn
 		Focus focus = null;
 		if(node!=null)
 			focus = new Focus(getSchema(node),(Integer)node.getUserObject(), harmonyModel);
-		harmonyModel.getFilters().setFocus(role,focus);
+		harmonyModel.getFilters().addFocus(role,focus);
 	}	
 	
 	/**
@@ -591,10 +591,9 @@ public class SchemaTree extends JTree implements PreferencesListener, SelectedIn
 	public void paint(Graphics g)
 	{
 		super.paint(g);
-		Focus focus = harmonyModel.getFilters().getFocus(role);
-		
+
 		// Paint a dashed line only if the focus has been defined.
-		if(focus != null && g instanceof Graphics2D)
+		for(Focus focus : harmonyModel.getFilters().getFoci(role))
 		{
 			Graphics2D g2d = (Graphics2D) g;
 			
