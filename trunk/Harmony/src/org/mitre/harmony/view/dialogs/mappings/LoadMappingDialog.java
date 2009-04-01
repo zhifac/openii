@@ -41,7 +41,8 @@ public class LoadMappingDialog extends JDialog implements ListSelectionListener
 		protected void button1Action()
 		{
 			Mapping mapping = mappingPane.getMapping();
-			if(mapping!=null) harmonyModel.getMappingManager().loadMapping(mapping.getId());
+			if(mapping==null) harmonyModel.getMappingManager().newMapping();
+			else harmonyModel.getMappingManager().loadMapping(mapping.getId());
 			dispose();
 			new SchemaDialog(harmonyModel);
 		}

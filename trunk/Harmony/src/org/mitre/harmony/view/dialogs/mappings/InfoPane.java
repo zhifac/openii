@@ -97,19 +97,23 @@ class InfoPane extends JPanel implements CaretListener
 		descriptionField.setBackground(Color.white);
 		schemaPane.removeAll();
 		
-		// Place information into the various fields
-		nameField.setText(mapping.getName());
-		authorField.setText(mapping.getAuthor());
-		descriptionField.setText(mapping.getDescription());
-
-		// Display the selected schema information
-		for(Integer schemaID : mapping.getSchemas())
+		// Make sure that a mapping is selected
+		if(mapping!=null)
 		{
-			JLabel label = new JLabel(harmonyModel.getSchemaManager().getSchema(schemaID).getName());
-			label.setFont(defaultFont);
-			schemaPane.add(label);
+			// Place information into the various fields
+			nameField.setText(mapping.getName());
+			authorField.setText(mapping.getAuthor());
+			descriptionField.setText(mapping.getDescription());
+	
+			// Display the selected schema information
+			for(Integer schemaID : mapping.getSchemas())
+			{
+				JLabel label = new JLabel(harmonyModel.getSchemaManager().getSchema(schemaID).getName());
+				label.setFont(defaultFont);
+				schemaPane.add(label);
+			}
 		}
-		
+			
 		this.mapping = mapping;
 	}
 
