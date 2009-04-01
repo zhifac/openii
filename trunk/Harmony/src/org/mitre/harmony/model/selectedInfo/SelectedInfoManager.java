@@ -296,7 +296,7 @@ public class SelectedInfoManager extends AbstractManager<SelectedInfoListener> i
 		if(removedElements.size()>0)
 			setSelectedElements(removedElements,side,REMOVE);
 	}
-	public void focusRemoved(Integer side, Focus focus) { focusRemoved(side,focus); }
+	public void focusRemoved(Integer side, Focus focus) { focusAdded(side,focus); }
 	
 	/** Unselect elements that are out of depth */
 	public void depthChanged()
