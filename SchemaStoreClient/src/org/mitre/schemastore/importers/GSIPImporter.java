@@ -25,9 +25,7 @@ public class GSIPImporter extends Importer {
 	private ArrayList<Domain> _domains;
 	private ArrayList<DomainValue> _enumerants;
 	Connection conn = null; 
-    
-    
-    
+            
 	/** Returns the importer name */
 	public String getName() { return "GSIP Importer"; }
 
@@ -86,8 +84,8 @@ public class GSIPImporter extends Importer {
         	String tblName = entities.getString("tableName").toLowerCase(); // note these match the columns in the  
         	tblName = firstLetterCapitalize(tblName);   //Make nicer looking with 1st-cap.        	
             String definition = entities.getString("definition");
-            definition = concatDescription(definition, entities.getString("description"));
-            definition = concatDescription(definition, entities.getString("entityNote"));
+            definition = concatNonNullFields(definition, entities.getString("description"), " [desc] ");
+            definition = concatNonNullFields(definition, entities.getString("entityNote"), " [note] ");
 
             int P = entities.getInt("t_P");  // Does feature have Point geometry?
             int S = entities.getInt("t_S");  // Does feature have Surface geometry?
@@ -106,8 +104,8 @@ public class GSIPImporter extends Importer {
             String attributeSQL = "SELECT f.name AS attName, fs.definition AS definition, "
             	+ " fs.description AS description, fs.datatypeNsgAlphaCode AS datatypeNsgAlphaCode, "
                 + " fs.note AS attNote, fs.structureSpecification AS structureSpecification, "
-                + " fs.rangeMinimum AS rMin, fs.rangeMaximum AS rMax, "
-                + " f.gdbField_PK as DTID, "
+                + " fs.rangeMinimum AS rMin, fs.rangeMaximum AS rMax, fs.generalDatatype as generalDatatype, "
+                + " f.gdbField_PK as DTID, f.infoAttID_FK as uniqueAttribute, "
                 + " fs.measure AS measure,  fs.length AS attLength, fs.lexical AS lexical, "
                 + " f.qualifiedPathName AS qualifiedPathName, fs.validRange AS validRange "
                 + " FROM T_Field f, T_FieldSpecification fs WHERE f.gdbTable_FK='"+ FTID + "'"
@@ -120,68 +118,103 @@ public class GSIPImporter extends Importer {
             while(attributes.next()) {              	
             	String attName= attributes.getString("attName");           	
             	String qualifiedPathName = attributes.getString("qualifiedPathName");
-            	if (!(qualifiedPathName==null || qualifiedPathName.equals("null") || qualifiedPathName.equals(""))) { 
-            		attName= qualifiedPathName + " : " + attName;
-                }
+            	attName= concatNonNullFields(attName, qualifiedPathName, " : ");
             	String attDefinition = attributes.getString("definition");
-            	attDefinition = concatDescription(attDefinition, attributes.getString("description"));
-            	attDefinition = concatDescription(attDefinition, attributes.getString("attNote"));
-            	attDefinition = concatDescription(attDefinition, attributes.getString("measure"));
-            	attDefinition = concatDescription(attDefinition, attributes.getString("validRange"));
-                attDefinition = concatDescription(attDefinition, attributes.getString("rMin"));
-                attDefinition = concatDescription(attDefinition, attributes.getString("rMax"));
-                attDefinition = concatDescription(attDefinition, attributes.getString("attLength"));
+            	attDefinition = concatNonNullFields(attDefinition, attributes.getString("description"), " [desc] ");
+            	attDefinition = concatNonNullFields(attDefinition, attributes.getString("attNote"), " [note] ");
+            	String measure = attributes.getString("measure");
+            	attDefinition = concatNonNullFields(attDefinition, measure, " ");
+            	String validRange = attributes.getString("validRange");
+            	attDefinition = concatNonNullFields(attDefinition, validRange, " ");
+            	String rMin = attributes.getString("rMin");
+                attDefinition = concatNonNullFields(attDefinition, rMin, " ");
+                String rMax = attributes.getString("rMax");
+                attDefinition = concatNonNullFields(attDefinition, rMax, " ");
+                String attLength = attributes.getString("attLength");
+                attDefinition = concatNonNullFields(attDefinition, attLength, " ");
                 String lexical = attributes.getString("lexical");
-                if (lexical.equals("1")) { lexical = "True"; }
-                else { lexical=null; }
-                attDefinition = concatDescription(attDefinition, lexical);
-                attDefinition = concatDescription(attDefinition, attributes.getString("structureSpecification"));
+                String dtLexical="";
+                if (lexical.equals("1")) { lexical = "True"; dtLexical="Lexical"; }
+                else { lexical=null; dtLexical="Non-lexical"; }
+                attDefinition = concatNonNullFields(attDefinition, lexical, " ");
+                attDefinition = concatNonNullFields(attDefinition, attributes.getString("structureSpecification"), " ");
                 
                 String dtID = attributes.getString("DTID"); // used to key on enumerants
                 String datatype = attributes.getString("datatypeNsgAlphaCode");
+                String uniqueAttribute = attributes.getString("uniqueAttribute");
+                String generalDatatype = attributes.getString("generalDatatype");
 
-                String domainType = ANY;
-                String booleanClause = "";  // This is an empty string, only to be non-null when datatype=Boolean
-            	if (datatype.equals("Real")) { domainType = "Double"; }
-            	else if (datatype.equals("Integer")) { domainType="Integer"; }
-            	else if (datatype.equals("Text")) { domainType="String"; }
-            	else if (datatype.equals("Boolean")) { domainType="Boolean"; booleanClause = " AND 1=2 "; }
+                String domainType = datatype;
+                String ignoreEnumerants="no";
                 
-                if (! datatypeIDs.containsKey(dtID)) {
+                if (generalDatatype.equals("Enumeration")) {
+                	if (datatype.equals("Boolean")) { 
+                		ignoreEnumerants="yes";
+                		uniqueAttribute=datatype;
+                	}
+                }
+                else if (generalDatatype.equals("Integer")||generalDatatype.equals("Real")) {
+                	domainType = concatNonNullFields(domainType, measure, " : ");
+                	domainType = concatNonNullFields(domainType, validRange, " : ");
+                	if (!((concatNonNullFields("",rMin,"")+concatNonNullFields("",rMax,"")).equals(""))) {
+                		domainType += "<";
+                		domainType = concatNonNullFields(domainType, rMin, "");
+                		if (!((concatNonNullFields("",rMin,"")).equals(""))) {
+                			domainType = concatNonNullFields(domainType, rMax, ", ");
+                		}
+                		else { domainType = concatNonNullFields(domainType, rMax, ""); }
+                		domainType += ">";
+                	}
+                }
+                else {
+                	domainType+= ": " +dtLexical;
+                	if (!(attLength==null || attLength.equals("null") || attLength.equals(""))) { 
+                		attLength="Unlimited";
+                	}
+                	domainType+= ": " +attLength;
+                	if (!((generalDatatype.equals("Text")||generalDatatype.equals("Complex")))){
+                		domainType += " : ERROR";
+                	}
+                }                        	
+            	
+                if (! datatypeIDs.containsKey(uniqueAttribute)) {
                 	Domain domain = new Domain(nextId(), domainType, null, 0);
         			_domains.add(domain);
-                	datatypeIDs.put(dtID, domain.getId());
-                }                 
+                	datatypeIDs.put(uniqueAttribute, domain.getId());
+                }         
+                else { ignoreEnumerants="yes"; }
             	
             	// create an attribute
         		if (attName.length() > 0 ) {   
       				a++;
        				attribute = new Attribute(nextId(), attName, attDefinition, tblEntity.getId(), 
-       					datatypeIDs.get(dtID), null, null, false, 0);
+       					datatypeIDs.get(uniqueAttribute), null, null, false, 0);
        				_attributes.add(attribute);
         		}
         		
-        		Statement selectEnumerants = null;
-        		selectEnumerants = conn.createStatement();
-                // Find any enumerants to this attribute (most will have none).
-                String enumerantSQL = "SELECT cs.name AS enumName, cs.definition AS definition, "
-                + " cs.description AS description, cs.note AS enumNote "
-                + " FROM T_CodedValue c, T_CodedValueSpecification cs " 
-                + " WHERE c.itemIdentifier_FK=cs.itemIdentifier_PK AND c.gdbField_FK='" + dtID + "'" + booleanClause
-                + " ORDER BY cs.name";
-                ResultSet enumerants=null; 
-                enumerants=selectEnumerants.executeQuery(enumerantSQL); 
-                while(enumerants.next()) {                	
-                	String enumName= enumerants.getString("enumName");
-                    String enumDefinition = enumerants.getString("definition");
-                    enumDefinition = concatDescription(enumDefinition, enumerants.getString("description"));
-                    enumDefinition = concatDescription(enumDefinition, enumerants.getString("enumNote"));                    
+        		if (ignoreEnumerants.equals("no")) { 
+        			Statement selectEnumerants = null;
+        			selectEnumerants = conn.createStatement();
+        			// Find any enumerants to this attribute (most will have none).
+        			String enumerantSQL = "SELECT cs.name AS enumName, cs.definition AS definition, "
+        				+ " cs.description AS description, cs.note AS enumNote "
+        				+ " FROM T_CodedValue c, T_CodedValueSpecification cs  WHERE " 
+        				+ " c.itemIdentifier_FK=cs.itemIdentifier_PK AND c.gdbField_FK='" + dtID + "'" 
+        				+ " ORDER BY cs.name";
+        			ResultSet enumerants=null; 
+        			enumerants=selectEnumerants.executeQuery(enumerantSQL); 
+        			while(enumerants.next()) {                	
+        				String enumName= enumerants.getString("enumName");
+        				String enumDefinition = enumerants.getString("definition");
+        				enumDefinition = concatNonNullFields(enumDefinition, enumerants.getString("description"), " [desc] ");
+        				enumDefinition = concatNonNullFields(enumDefinition, enumerants.getString("enumNote"), " [note] ");                    
                     
-                    DomainValue enumerant = new DomainValue(nextId(), enumName, enumDefinition,
-                    		datatypeIDs.get(dtID), 0);
-                    _enumerants.add(enumerant);
-                }
-                selectEnumerants.close();        		
+        				DomainValue enumerant = new DomainValue(nextId(), enumName, enumDefinition,
+                    		datatypeIDs.get(uniqueAttribute), 0);
+        				_enumerants.add(enumerant);
+        			}
+        			selectEnumerants.close();        		
+        		} 
             } // while attributes
             selectAttributes.close();
         } // while Entities
@@ -209,9 +242,9 @@ public class GSIPImporter extends Importer {
 		return new String(charArray);
 	} 
 	
-	public String concatDescription(String description, String field) {
+	public String concatNonNullFields(String description, String field, String joinText) {
 		if (!(field==null || field.equals("null") || field.equals(""))) { 
-			description += " " + field;
+			description += joinText + field;
         }
 		return description;
 	}
@@ -223,7 +256,7 @@ public class GSIPImporter extends Importer {
 		for (int j=0; j<_domains.size(); j++) { schemaElements.add(_domains.get(j)); i++; }
 		for (int j=0; j<_attributes.size(); j++) { schemaElements.add(_attributes.get(j)); i++; }
 		for (int j=0; j<_enumerants.size(); j++) { schemaElements.add(_enumerants.get(j)); i++;	}
-		//System.out.println(i+ " elements.");
+		System.out.println(i+ " elements.");
 		return schemaElements;
 	}
 }
