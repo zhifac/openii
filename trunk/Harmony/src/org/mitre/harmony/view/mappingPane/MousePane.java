@@ -49,6 +49,7 @@ class MousePane extends JPanel implements MouseListener, MouseMotionListener {
 
 	/** Confidence dialog timer */
 	private Timer cdTimer = null;
+	private int CONFIDENCE_DIALOG_POP_UP_TIMER = 500;
 
 	/** Initializes the mouse pane */
 	MousePane(SchemaTreeImp leftTree, SchemaTreeImp rightTree, HarmonyModel harmonyModel) {
@@ -138,7 +139,7 @@ class MousePane extends JPanel implements MouseListener, MouseMotionListener {
 
 				// Display the dialog box next to the selected mapping cell
 				ArrayList<MappingCell> mappingCells = new ArrayList<MappingCell>();
-				for(Integer selectedMappingCellID : harmonyModel.getSelectedInfo().getSelectedMappingCells())
+				for (Integer selectedMappingCellID : harmonyModel.getSelectedInfo().getSelectedMappingCells())
 					mappingCells.add(harmonyModel.getMappingCellManager().getMappingCell(selectedMappingCellID));
 				MappingCellDialog mappingCellDialog = new MappingCellDialog(mappingCells, harmonyModel);
 				mappingCellDialog.setLocation(adjustMouseLocation(e.getPoint()));
@@ -160,13 +161,18 @@ class MousePane extends JPanel implements MouseListener, MouseMotionListener {
 		Integer rightCount = harmonyModel.getSelectedInfo().getSelectedElements(HarmonyConsts.RIGHT).size();
 		if (confidenceDialog == null && (leftCount > 0 || rightCount > 0)) return;
 
+		// Run a pop up timer to display confidence dialog
 		pausePoint = e.getPoint();
 		if (cdTimer == null) {
-			cdTimer = new Timer(800, new ActionListener() {
-				public void actionPerformed(ActionEvent ae) {showConfidenceDialog();}});
+			cdTimer = new Timer(CONFIDENCE_DIALOG_POP_UP_TIMER, new ActionListener() {
+				public void actionPerformed(ActionEvent ae) {
+					showConfidenceDialog();
+				}
+			});
 			cdTimer.start();
 			cdTimer.setRepeats(false);
-		} else cdTimer.restart();
+		} else if (confidenceDialog != null) clearConfidenceDialog();
+		else cdTimer.restart();
 	}
 
 	private void showConfidenceDialog() {
@@ -190,12 +196,18 @@ class MousePane extends JPanel implements MouseListener, MouseMotionListener {
 			}
 		}
 
-		// Clear information about the displayed mapping cell
+		// Clear information about the displayed mapping cell if no mapping cell
+		// selected
 		else if (confidenceDialog != null) {
-			confidenceDialog.dispose();
-			confidenceDialog = null;
-			if (harmonyModel.getSelectedInfo().getSelectedMappingCells().size() > 0) harmonyModel.getSelectedInfo().setMappingCells(new ArrayList<Integer>(), false);
+			clearConfidenceDialog();
 		}
+	}
+
+	private void clearConfidenceDialog() {
+		cdTimer.stop();
+		confidenceDialog.dispose();
+		confidenceDialog = null;
+		if (harmonyModel.getSelectedInfo().getSelectedMappingCells().size() > 0) harmonyModel.getSelectedInfo().setMappingCells(new ArrayList<Integer>(), false);
 	}
 
 	/**
