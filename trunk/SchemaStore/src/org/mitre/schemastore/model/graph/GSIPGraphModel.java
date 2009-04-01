@@ -16,6 +16,7 @@ import org.mitre.schemastore.model.Subtype;
  */
 public class GSIPGraphModel extends GraphModel
 {
+	private HashMap<String, ArrayList<DomainValue>> cachedDomainValues = new HashMap<String, ArrayList<DomainValue>>();
 	/** Returns the graph model name */
 	public String getName()
 		{ return "GSIP"; }
@@ -91,17 +92,13 @@ public class GSIPGraphModel extends GraphModel
 		}
 		else if (element instanceof Attribute) {
 			// Retrieve entity attributes		
-
-			for(DomainValue domainValue : orderDomainValuesByName(graph.getDomainValuesForElement(elementID))) {
-				childElements.add(domainValue);
-			}
-			// Retrieve subtypes as children
-			for (Subtype subtype : graph.getSubTypes(element.getId()))
-			{
-				Integer childID = subtype.getChildID();
-				if (!elementID.equals(childID))
-					childElements.add(graph.getElement(childID));
+			Attribute att = (Attribute) graph.getElement(elementID);
+			if (cachedDomainValues.get(att.getDomainID().toString())==null) {
+				cachedDomainValues.put(att.getDomainID().toString(), orderDomainValuesByName(graph.getDomainValuesForElement(elementID)));
 			}			
+			for(DomainValue domainValue : cachedDomainValues.get(att.getDomainID().toString())) {
+				childElements.add(domainValue);
+			}		
 		}
 
 		return childElements;
