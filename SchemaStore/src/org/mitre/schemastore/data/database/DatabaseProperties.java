@@ -62,7 +62,7 @@ public class DatabaseProperties
 
 			// Set the database directory (only used for Derby)
 			String databasePath = DatabaseProperties.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-			databasePath = databasePath.replaceAll(".*/C:","").replaceAll("\\%20"," ");
+			databasePath = databasePath.replaceAll(".*:","").replaceAll("\\%20"," ");
 			if(databasePath.endsWith("SchemaStore.jar"))
 				databaseDirectory = databasePath.replace("/SchemaStore.jar","");
 			else if(databasePath.endsWith("/build/classes/"))
