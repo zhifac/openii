@@ -134,7 +134,7 @@ class MatcherDialog extends JDialog implements ActionListener, Runnable
 
 		// Determine what right roots to match on
 		ArrayList<FilteredGraph> rightGraphs = new ArrayList<FilteredGraph>();
-		if (harmonyModel.getFilters().getFoci(HarmonyConsts.RIGHT) != null)
+		if (harmonyModel.getFilters().getFoci(HarmonyConsts.RIGHT).size()>0)
 			for(Focus focus : harmonyModel.getFilters().getFoci(HarmonyConsts.RIGHT))
 			{
 				FilteredGraph graph = new FilteredGraph(harmonyModel.getSchemaManager().getGraph(focus.getSchemaID()));
