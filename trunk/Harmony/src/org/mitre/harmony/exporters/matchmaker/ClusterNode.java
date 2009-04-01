@@ -160,11 +160,13 @@ public class ClusterNode {
 						completedClusters.add(growing);
 						removeCluster(spot1);
 					}
-				} else System.err.println("found groupes in same schema: " + groupEs.get(spot1).leastNode.elementName + " \n\t " + groupEs.get(spot2).leastNode.elementName);
+				} else System.err.println("(E)Found groupes in same schema: " + groupEs.get(spot1).leastNode.elementName + " \n\t " + groupEs.get(spot2).leastNode.elementName);
 			} else {
 				for (int x = groupEs.size() - 1; x >= 0; x--)
 					completedClusters.add(groupEs.get(x));
 				groupEs = completedClusters;
+				
+				System.out.println("Clustering completed.");
 				return;
 			}
 		}
@@ -197,8 +199,13 @@ public class ClusterNode {
 			if (!(n1 instanceof SchemaElementNode)) continue;
 			for (Node n2 : groupE2.getGroup()) {
 				if (!(n2 instanceof SchemaElementNode)) continue;
-
-				if (((SchemaElementNode) n1).schemaId.equals(((SchemaElementNode) n2).schemaId)) return false;
+				
+				ArrayList<Integer> schemaList1 = ((SchemaElementNode)n1).schemaIds;
+				ArrayList<Integer> schemaList2 = ((SchemaElementNode)n2).schemaIds;
+				
+				for ( Integer s1 : schemaList1 )
+					for ( Integer s2 : schemaList2 )
+						if ( s1.equals(s2)) return false; 
 			}
 		}
 		return true;

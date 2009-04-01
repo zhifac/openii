@@ -18,19 +18,16 @@ public class groupE implements Comparable<groupE> {
 	public SchemaElementNode leastNode = null;
 
 	public groupE(SchemaElementNode n) {
-
 		nodes = new ArrayList<SchemaElementNode>();
 		add(n);
 	}
 
 	void add(SchemaElementNode n) {
-
 		nodes.add(n);
 		updateLeastNode(n);
 	}
 
 	private void updateLeastNode(SchemaElementNode n) {
-
 		if (leastNode == null || leastNode.compareTo(n) > 0) leastNode = n;
 	}
 
@@ -41,7 +38,6 @@ public class groupE implements Comparable<groupE> {
 	 * @return the largest distance between two groupE nodes
 	 */
 	float completeLinkage(groupE two) {
-
 		int i;
 		int j;
 		float maxDist = 0;
@@ -79,19 +75,16 @@ public class groupE implements Comparable<groupE> {
 	}
 
 	void groupEcombine(groupE two) {
-
 		nodes.ensureCapacity(nodes.size() + two.nodes.size());
 		nodes.addAll(two.nodes);
 		updateLeastNode(two.leastNode);
 	}
 
 	public ArrayList<SchemaElementNode> getGroup() {
-
 		return nodes;
 	}
 
 	public int compareTo(groupE other) {
-
 		return this.leastNode.compareTo(other.leastNode);
 	}
 
@@ -102,10 +95,8 @@ public class groupE implements Comparable<groupE> {
 	 * @return SchemaElementNode
 	 */
 	public SchemaElementNode getNode(Integer baseSchema) {
-
 		for (SchemaElementNode n : nodes)
-			if (n.schemaId.compareTo(baseSchema) == 0) return n;
-
+			if (n.schemaIds.contains(baseSchema)) return n;
 		return null;
 	}
 

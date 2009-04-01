@@ -24,26 +24,63 @@ public class MatchMakerExporter extends Exporter {
 	private Integer[] schemaIDs = null;
 	private ClusterNode cluster;
 	HashMap<String, SchemaElementNode> clusterElements;
+	HashMap<Integer, ArrayList<Integer>> elementSchemaLookUp;
 
 	public MatchMakerExporter(HarmonyModel harmonyModel) {
 		super(harmonyModel);
 		schemaIDs = getModel().getMappingManager().getMapping().getSchemas();
 		clusterElements = new HashMap<String, SchemaElementNode>();
+		elementSchemaLookUp = new HashMap<Integer, ArrayList<Integer>>();
 	}
 
 	public void exportTo(File f) throws IOException {
-		// Prepare to export source and target node information
+		// Create look up for elementIDs to SchemaIDs
+		initElementSchemaLookUp();
+
+		// Cluster results
 		clusterMatchResults();
+
+		// ensure all schema element
 		ensureCompleteness();
 		sortByParticipation();
 
-		ClusterRenderer clusterRenderer = new ClusterRenderer(cluster, getModel(), schemaIDs );
+		// Render clustered results
+		ClusterRenderer clusterRenderer = new ClusterRenderer(cluster, getModel(), schemaIDs);
 		try {
 			clusterRenderer.print(f);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} 
+		}
+	}
+
+	/**
+	 * Initialize elementSchemaLookUp, which is a hash of elementID to a list of
+	 * schemaIDs that it belongs to
+	 */
+	private void initElementSchemaLookUp() {
+		Integer elementID;
+
+		// Loop through each schemaID
+		for (Integer schemaID : getModel().getSchemaManager().getSchemaIDs()) {
+			// Loop through each element
+			for (SchemaElement element : getModel().getSchemaManager().getSchemaElements(schemaID, null)) {
+				elementID = element.getId();
+				
+				// hash current schemaID to the list by elementID
+				ArrayList<Integer> schemaIDRecord = lookupSchemaIDs(elementID); 
+				schemaIDRecord.add(schemaID);
+			}
+		}
+	}
+	
+	private ArrayList<Integer> lookupSchemaIDs ( Integer elementID ) {
+		ArrayList<Integer> sIDs = elementSchemaLookUp.get(elementID); 
+		 if ( sIDs == null ) { 
+			sIDs = new ArrayList<Integer> () ;
+			elementSchemaLookUp.put(elementID, sIDs); 
+		 }
+		 return sIDs;
 	}
 
 	public FileFilter getFileFilter() {
@@ -84,7 +121,7 @@ public class MatchMakerExporter extends Exporter {
 		SchemaElement element = getModel().getSchemaManager().getSchemaElement(elementID);
 		SchemaElementNode node = clusterElements.get(element.getName() + elementID);
 		if (node == null) {
-			node = new SchemaElementNode(null, elementID, element.getName());
+			node = new SchemaElementNode(lookupSchemaIDs(elementID), elementID, element.getName());
 			clusterElements.put(node.toString(), node);
 		}
 		return node;
@@ -153,7 +190,7 @@ public class MatchMakerExporter extends Exporter {
 
 				// create a new groupE for graphNode that doesn't exist
 				if (compareResult < 0) {
-					SchemaElementNode newNode = new SchemaElementNode(schemaID, refNode.getId(), refNode.getName());
+					SchemaElementNode newNode = new SchemaElementNode(lookupSchemaIDs(refNode.getId()), refNode.getId(), refNode.getName());
 					cluster.groupEs.add(groupEIDX, new groupE(newNode));
 					System.out.println("Insert node " + newNode.elementName + " (" + refNode.getId() + ")");
 				}

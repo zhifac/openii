@@ -54,7 +54,7 @@ public class ClusterRenderer {
 			matchCount[i] = 0;
 	}
 
-	public void print(File output) throws IOException  {
+	public void print(File output) throws IOException {
 		System.out.println("Writing output");
 		System.out.println("Printing collated matches to " + output);
 		int numSchema = schemaColumnPosHash.keySet().size();
@@ -104,7 +104,7 @@ public class ClusterRenderer {
 			// update match count
 			matchCount[nodes.size() - 1]++;
 
-			// print elements
+			// print elements of a groupE across a row
 			double score = 0;
 			int size = 0;
 			for (SchemaElementNode n : nodes) {
@@ -152,7 +152,7 @@ public class ClusterRenderer {
 	 * @param sheet
 	 * @throws RemoteException
 	 */
-	private void printPretty()   {
+	private void printPretty() {
 		System.out.println("Print pretty clustered match  results...");
 
 		int lastRow = sheet.getLastRowNum();
@@ -245,10 +245,15 @@ public class ClusterRenderer {
 	}
 
 	private void printSchemaElementNode(SchemaElementNode seNode, HSSFRow row) {
-		Integer colNum = getColumnIdx(seNode.schemaId);
-		if (colNum < 0) return;
+		for (Integer schemaID : seNode.schemaIds) {
+			Integer colNum = getColumnIdx(schemaID);
+			if (colNum < 0) return;
 
-		HSSFCell cell = row.createCell(colNum);
-		cell.setCellValue(new HSSFRichTextString(seNode.name));
+			HSSFCell cell = row.getCell(colNum);
+			if (cell == null) {
+				cell = row.createCell(colNum);
+				cell.setCellValue(new HSSFRichTextString(seNode.name));
+			}
+		}
 	}
 }
