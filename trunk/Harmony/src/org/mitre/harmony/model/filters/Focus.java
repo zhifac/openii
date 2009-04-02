@@ -1,7 +1,6 @@
 package org.mitre.harmony.model.filters;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
@@ -18,25 +17,9 @@ public class Focus
 	
 	/** Stores the focused schema element */
 	private Integer elementID;
-
-	/** Stores the list of hidden elements */
-	private HashSet<Integer> hiddenElements = new HashSet<Integer>();
 	
 	/** Stores the list of all elements in focus */
 	private ArrayList<Integer> focusedElements;
-	
-	/** Returns the list of descendant elements of the specified element */
-	private ArrayList<Integer> getDescendantElements(Integer elementID)
-	{
-		ArrayList<Integer> elementIDs = new ArrayList<Integer>();
-		for(SchemaElement childElement : graph.getChildElements(elementID))
-			if(!hiddenElements.contains(childElement))
-			{
-				elementIDs.add(childElement.getId());
-				elementIDs.addAll(getDescendantElements(childElement.getId()));
-			}
-		return elementIDs;
-	}
 	
 	/** Returns the list of elements in focus */
 	private ArrayList<Integer> getFocusedElements()
@@ -45,7 +28,8 @@ public class Focus
 		{
 			focusedElements = new ArrayList<Integer>();
 			focusedElements.add(elementID);
-			focusedElements.addAll(getDescendantElements(elementID));
+			for(SchemaElement element : graph.getDescendantElements(elementID))
+				focusedElements.add(element.getId());
 		}
 		return focusedElements;
 	}
@@ -57,23 +41,11 @@ public class Focus
 		this.elementID = elementID;
 	}
 	
-	/** Hide an element within focus */
-	public void hideElement(Integer elementID)
-		{ hiddenElements.add(elementID); focusedElements=null; }
-	
-	/** Unhide an element within focus */
-	public void unhideElement(Integer elementID)
-		{ hiddenElements.remove(elementID); focusedElements=null; }
-	
 	/** Returns the focused schema */
 	public Integer getSchemaID() { return graph.getSchema().getId(); }
 	
 	/** Returns the focused schema element */
 	public Integer getElementID() { return elementID; }
-	
-	/** Returns the list of hidden elements */
-	public HashSet<Integer> getHiddenElements()
-		{ return hiddenElements; }
 	
 	/** Indicates if the specified element is within focus */
 	public boolean contains(Integer elementID)
