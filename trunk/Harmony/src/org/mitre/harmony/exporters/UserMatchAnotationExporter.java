@@ -53,6 +53,10 @@ public class UserMatchAnotationExporter  extends Exporter {
 			this.paths2 = getPaths(element2.getId());
 		}
 		
+		public double getScore() {
+			return score;
+		}
+		
 		/** Merge together compressed matches */
 		private void merge(CompressedMatch match)
 			{ paths1.addAll(match.paths1); paths2.addAll(match.paths2); }
@@ -74,8 +78,8 @@ public class UserMatchAnotationExporter  extends Exporter {
 			String sDesc = element1.getDescription().replaceAll("\"", "'");
 			String tName = element2.getName();
 			String tDesc = element2.getDescription().replaceAll("\"", "'");
-			return sName+",\""+sDesc+"\",\""+toString(paths1)+"\","+tName+",\""+tDesc+"\",\""+toString(paths2)+"\","+score+","+
-			author+","+date+","+transform+","+notes;			
+			return "\""+sName+"\",\""+sDesc+"\",\""+toString(paths1)+"\","+"\""+tName+"\",\""+tDesc+"\",\""+toString(paths2)+"\","+score+",\""+
+			author+"\","+date+",\""+transform+"\",\""+notes+"\"";			
 		}
 		
 		/** Compares to another compressed match */
@@ -177,14 +181,18 @@ public class UserMatchAnotationExporter  extends Exporter {
 		// Identify how many mapping cells should be outputted
 		Integer count = ConfigManager.getIntegerParm("exporters.topmatch.count");
 		if(count==null) count = 100;
-
+		// get Minimum Confidence Threshold
+		double minConfThreshold = getModel().getFilters().getMinConfThreshold();
+		
 		out.write(header+"\n");
     	// Outputs the top mapping cells
 		List<CompressedMatch> matches = matchList.getMatches();
 		Collections.sort(matches);
 		if(matches.size()>count) matches = matches.subList(0, count);
-  		for(CompressedMatch match : matches)
-    		out.write(match.toString() + "\n");
+  		for(CompressedMatch match : matches) {
+  			if (match.getScore() >= minConfThreshold )
+  				out.write(match.toString() + "\n");
+  		}
     	out.close();
 	}
 
