@@ -98,7 +98,7 @@ class SelectedNodePane extends JPanel implements SelectedInfoListener
 		// Display domain if found
 		if(domain!=null)
 		{
-			text.append("<table cellpadding=0 cellspacing=0><tr><td valign=top nowrap><b>Domain</b>:&nbsp;</td><td>" + domain.getName());
+			text.append("<table cellpadding=0 cellspacing=0><tr><td valign=top nowrap><b>Domain</b>:&nbsp;</td><td>" + scrub(domain.getName()));
 			if(domainValues.size()>0)
 			{
 				text.append(" (");
