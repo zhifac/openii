@@ -74,9 +74,9 @@ public class FilteredGraph extends HierarchicalGraph implements GraphListener
 	public FilteredGraph(HierarchicalGraph graph)
 		{ super(graph,graph.getModel()); }
 	
-	/** Sets the filtered root */
-	public void setFilteredRoot(Integer filteredRoot)
-		{ filteredRootIDs = new ArrayList<Integer>(); filteredRootIDs.add(filteredRoot); }
+	/** Sets the filtered roots */
+	public void setFilteredRoots(ArrayList<Integer> filteredRootIDs)
+		{ this.filteredRootIDs = filteredRootIDs; }
 	
 	/** Sets the filter minimum depth */
 	public void setMinDepth(Integer minDepth)
