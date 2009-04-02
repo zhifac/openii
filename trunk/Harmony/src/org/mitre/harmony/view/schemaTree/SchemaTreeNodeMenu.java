@@ -60,13 +60,14 @@ class SchemaTreeNodeMenu extends JPopupMenu implements ActionListener
 		Object obj = node.getUserObject();
 		if(obj instanceof Integer)
 		{
-			// Get the element associated with this menu
+			// Get the schema and element associated with this menu
+			Integer schemaID = SchemaTree.getSchema(node);
 			Integer elementID = (Integer)obj;
 			
 			// Determine if the element is currently in focus
 			Focus focus = harmonyModel.getFilters().getFocus(tree.getRole(), elementID);
 			ArrayList<Focus> foci = harmonyModel.getFilters().getFoci(tree.getRole());
-			boolean inFocus = foci.size()>0 && harmonyModel.getFilters().inFocus(tree.getRole(),elementID);
+			boolean inFocus = foci.size()>0 && harmonyModel.getFilters().inFocus(tree.getRole(),schemaID,elementID);
 			
 			// Show menu option for allowing focus to be set and cleared
 			add(new JSeparator());

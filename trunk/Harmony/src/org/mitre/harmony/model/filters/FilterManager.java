@@ -12,6 +12,7 @@ import org.mitre.harmony.model.HarmonyConsts;
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.mapping.MappingCellManager;
 import org.mitre.harmony.model.selectedInfo.SelectedInfoListener;
+import org.mitre.harmony.view.schemaTree.SchemaTree;
 import org.mitre.schemastore.model.MappingCell;
 
 /**
@@ -83,7 +84,7 @@ public class FilterManager extends AbstractManager<FiltersListener> implements S
 		// Remove any foci which this focus would supersede
 		ArrayList<Focus> foci = side==HarmonyConsts.LEFT ? leftFoci : rightFoci;
 		for(Focus currFocus : new ArrayList<Focus>(foci))
-			if(focus.contains(currFocus.getElementID()))
+			if(focus.getSchemaID().equals(currFocus.getSchemaID()) && focus.contains(currFocus.getElementID()))
 				removeFocus(side, currFocus);
 		
 		// Add focus to side
@@ -132,12 +133,13 @@ public class FilterManager extends AbstractManager<FiltersListener> implements S
 	}
 	
 	/** Indicates if the specified element is in focus */
-	public boolean inFocus(Integer role, Integer element)
+	public boolean inFocus(Integer role, Integer schemaID, Integer element)
 	{
 		ArrayList<Focus> foci = getFoci(role);
 		if(foci.size()==0) return true;
 		else for(Focus focus : foci)
-			if(focus.contains(element)) return true;
+			if(schemaID==null || focus.getSchemaID().equals(schemaID))
+				if(focus.contains(element)) return true;
 		return false;
 	}
 	
@@ -157,8 +159,9 @@ public class FilterManager extends AbstractManager<FiltersListener> implements S
 	public boolean visibleNode(Integer role, DefaultMutableTreeNode node)
 	{
 		// Check that the element is within focus
+		Integer schemaID = SchemaTree.getSchema(node);
 		Object elementID = node.getUserObject();
-		if(elementID instanceof Integer && !inFocus(role, (Integer)elementID)) return false;
+		if(elementID instanceof Integer && !inFocus(role, schemaID, (Integer)elementID)) return false;
 		
 		// Check that the element is within depth
 		int depth = node.getPath().length-2;

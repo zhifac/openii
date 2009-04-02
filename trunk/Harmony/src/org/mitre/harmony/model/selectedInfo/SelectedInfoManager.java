@@ -289,7 +289,7 @@ public class SelectedInfoManager extends AbstractManager<SelectedInfoListener> i
 		// Identify all of the elements that are no longer visible
 		ArrayList<Integer> removedElements = new ArrayList<Integer>();
 		for(Integer elementID : getSelectedElements(side))
-			if(!getModel().getFilters().inFocus(side, elementID))
+			if(!getModel().getFilters().inFocus(side, null, elementID))
 				removedElements.add(elementID);
 		
 		// Remove the eliminated selected elements
