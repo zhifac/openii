@@ -152,31 +152,12 @@ class MatcherDialog extends JDialog implements ActionListener, Runnable
 			graph.setHiddenElements(harmonyModel.getPreferences().getFinishedElements(graph.getSchema().getId()));
 		}
 
-		// Perform N-way match on specific left and right element
-		ArrayList<FilteredGraph> matchSchemaGraphs = leftGraphs;
-		matchSchemaGraphs.addAll(rightGraphs); 
-		
-		try {
-			// permute all graphs into all possible pairs
-			Permuter permuter = new Permuter(matchSchemaGraphs);
-			permuter.reset();
-			
-			// match each permuted graph pairs
-			while (permuter.hasMoreElements()) {
-				Pair matchPair = permuter.nextElement();
-				runMatch((FilteredGraph) matchPair.a, (FilteredGraph) matchPair.b);
-			}
-		} catch (Exception e) {
-			// TODO Create an error pane here
-		}
-
-		// Perform matches on the specified left and right element
-		// for(FilteredGraph leftGraph : leftGraphs)
-		// for(FilteredGraph rightGraph : rightGraphs)
-		// if(!leftGraph.getSchema().getId().equals(rightGraph.getSchema().getId()))
-		// {
-		// runMatch(leftGraph, rightGraph);
-		// }
+		// Matches all left graphs to all right graphs
+		for(FilteredGraph leftGraph : leftGraphs)
+			for(FilteredGraph rightGraph : rightGraphs)
+				try {
+					runMatch(leftGraph,rightGraph);
+				} catch (Exception e) { System.out.println("(E) MatcherDialog.run - " + e.getMessage()); }
 
 		// Once matching is completed, shut down dialog box
 		dispose();
