@@ -80,7 +80,13 @@ public class FilterManager extends AbstractManager<FiltersListener> implements S
 	/** Adds a focused element to the specified side */
 	public void addFocus(Integer side, Focus focus)
 	{
+		// Remove any foci which this focus would supersede
 		ArrayList<Focus> foci = side==HarmonyConsts.LEFT ? leftFoci : rightFoci;
+		for(Focus currFocus : new ArrayList<Focus>(foci))
+			if(focus.contains(currFocus.getElementID()))
+				removeFocus(side, currFocus);
+		
+		// Add focus to side
 		foci.add(focus);
 		for(FiltersListener listener : getListeners()) listener.focusAdded(side,focus);
 	}
