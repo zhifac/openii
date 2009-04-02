@@ -112,44 +112,46 @@ class MatcherDialog extends JDialog implements ActionListener, Runnable
 			matcherName = matcherName.substring(0, matcherName.length() - 2) + ")";
 		}
 
-		// Determine what left roots to match on
+		// Store the left and right graphs
 		ArrayList<FilteredGraph> leftGraphs = new ArrayList<FilteredGraph>();
-		if(harmonyModel.getFilters().getFoci(HarmonyConsts.LEFT).size()>0)
-			for(Focus focus : harmonyModel.getFilters().getFoci(HarmonyConsts.LEFT))
-			{
-				FilteredGraph graph = new FilteredGraph(harmonyModel.getSchemaManager().getGraph(focus.getSchemaID()));
-				graph.setFilteredRoot(focus.getElementID());
-				leftGraphs.add(graph);
-			}
-		else for (Integer schemaID : harmonyModel.getSelectedInfo().getSchemas(HarmonyConsts.LEFT))
-			leftGraphs.add(new FilteredGraph(harmonyModel.getSchemaManager().getGraph(schemaID)));
-
-		// Set the minimum and maximum depths for each graph on the left
-		for (FilteredGraph graph : leftGraphs)
+		ArrayList<FilteredGraph> rightGraphs = new ArrayList<FilteredGraph>();		
+		
+		// Generate graphs for the left and right sides
+		Integer sides[] = { HarmonyConsts.LEFT, HarmonyConsts.RIGHT };
+		for(Integer side : sides)
 		{
-			graph.setMinDepth(harmonyModel.getFilters().getMinDepth(HarmonyConsts.LEFT));
-			graph.setMaxDepth(harmonyModel.getFilters().getMaxDepth(HarmonyConsts.LEFT));
-			graph.setHiddenElements(harmonyModel.getPreferences().getFinishedElements(graph.getSchema().getId()));
-		}
-
-		// Determine what right roots to match on
-		ArrayList<FilteredGraph> rightGraphs = new ArrayList<FilteredGraph>();
-		if (harmonyModel.getFilters().getFoci(HarmonyConsts.RIGHT).size()>0)
-			for(Focus focus : harmonyModel.getFilters().getFoci(HarmonyConsts.RIGHT))
+			ArrayList<FilteredGraph> graphs = side==HarmonyConsts.LEFT ? leftGraphs : rightGraphs;
+			
+			// Create filtered graphs for each schema in focus
+			ArrayList<Focus> foci = harmonyModel.getFilters().getFoci(side);
+			for(Integer schemaID : harmonyModel.getSelectedInfo().getSchemas(side))
 			{
-				FilteredGraph graph = new FilteredGraph(harmonyModel.getSchemaManager().getGraph(focus.getSchemaID()));
-				graph.setFilteredRoot(focus.getElementID());
-				rightGraphs.add(graph);
-			}
-		else for (Integer schemaID : harmonyModel.getSelectedInfo().getSchemas(HarmonyConsts.RIGHT))
-			rightGraphs.add(new FilteredGraph(harmonyModel.getSchemaManager().getGraph(schemaID)));
+				// Handles the case where no foci were set
+				if(foci.size()==0)
+					graphs.add(new FilteredGraph(harmonyModel.getSchemaManager().getGraph(schemaID)));
 
-		// Set the min and max depths for each graph on the right
-		for (FilteredGraph graph : rightGraphs)
-		{
-			graph.setMinDepth(harmonyModel.getFilters().getMinDepth(HarmonyConsts.RIGHT));
-			graph.setMaxDepth(harmonyModel.getFilters().getMaxDepth(HarmonyConsts.RIGHT));
-			graph.setHiddenElements(harmonyModel.getPreferences().getFinishedElements(graph.getSchema().getId()));
+				// Handles the case where foci were set
+				else
+				{
+					ArrayList<Integer> rootIDs = new ArrayList<Integer>();
+					for(Focus focus : foci)
+						if(focus.getSchemaID().equals(schemaID)) rootIDs.add(focus.getElementID());
+					if(rootIDs.size()>0)
+					{
+						FilteredGraph graph = new FilteredGraph(harmonyModel.getSchemaManager().getGraph(schemaID));
+						graph.setFilteredRoots(rootIDs);
+						graphs.add(graph);
+					}					
+				}
+			}
+			
+			// Set the minimum and maximum depths for each graph on the left
+			for (FilteredGraph graph : leftGraphs)
+			{
+				graph.setMinDepth(harmonyModel.getFilters().getMinDepth(side));
+				graph.setMaxDepth(harmonyModel.getFilters().getMaxDepth(side));
+				graph.setHiddenElements(harmonyModel.getPreferences().getFinishedElements(graph.getSchema().getId()));
+			}
 		}
 
 		// Matches all left graphs to all right graphs
