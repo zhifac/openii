@@ -41,6 +41,10 @@ class SelectedNodePane extends JPanel implements SelectedInfoListener
 	/** Stores the text component associated with this pane */
 	private JTextPane textPane = new JTextPane();
 	
+	/** Scrub the text to work within html */
+	private String scrub(String text)
+		{ return text.replace("<","&lt;").replace(">","&gt;"); }
+	
 	/** Constructs the Selected Node pane */
 	SelectedNodePane(Integer side, HarmonyModel harmonyModel)
 	{
@@ -79,7 +83,7 @@ class SelectedNodePane extends JPanel implements SelectedInfoListener
  		StringBuffer text = new StringBuffer();		
 		
 		// Display schema element name and description
-		text.append("<b>Description</b>: " + element.getDescription() + "<br>");
+		text.append("<b>Description</b>: " + scrub(element.getDescription()) + "<br>");
 
 		// Collect domain information
 		Domain domain = null;
@@ -99,7 +103,7 @@ class SelectedNodePane extends JPanel implements SelectedInfoListener
 			{
 				text.append(" (");
 				for(DomainValue domainValue : domainValues)
-					text.append(domainValue.getName() + ", ");
+					text.append(scrub(domainValue.getName()) + ", ");
 				text.delete(text.length()-2, text.length());
 				text.append(")");
 			}
@@ -136,7 +140,7 @@ class SelectedNodePane extends JPanel implements SelectedInfoListener
 		if(displayName.length()>2) displayName = displayName.substring(0, displayName.length()-2);
 		
 		// Set the title and text panes
-		titlePane.setText(displayName);
+		titlePane.setText(scrub(displayName));
 		textPane.setText("<html>"+getText(element,displayName)+"</html>");
 	}
 	
