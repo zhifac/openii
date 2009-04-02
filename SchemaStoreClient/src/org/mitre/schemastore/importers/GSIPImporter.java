@@ -40,7 +40,7 @@ public class GSIPImporter extends Importer {
 		try {
 			//  connect to MS Access database
 	        conn = DriverManager.getConnection("jdbc:odbc:"+uri,"Admin",null); 
-	        System.out.println ("Database connection established"); 
+	        System.out.println ("Database connection established."); 
 	        _entities = new ArrayList<Entity>();
 			_attributes = new ArrayList<Attribute>();
 			_domains = new ArrayList<Domain>();
@@ -127,9 +127,16 @@ public class GSIPImporter extends Importer {
             	String validRange = attributes.getString("validRange");
             	attDefinition = concatNonNullFields(attDefinition, validRange, " ");
             	String rMin = attributes.getString("rMin");
-                attDefinition = concatNonNullFields(attDefinition, rMin, " ");
                 String rMax = attributes.getString("rMax");
-                attDefinition = concatNonNullFields(attDefinition, rMax, " ");
+                if (!((concatNonNullFields("",rMin,"")+concatNonNullFields("",rMax,"")).equals(""))) {
+                	attDefinition += " <";
+                	attDefinition = concatNonNullFields(attDefinition, rMin, "");
+            		if (!((concatNonNullFields("",rMin,"")).equals(""))) {
+            			attDefinition = concatNonNullFields(attDefinition, rMax, ", ");
+            		}
+            		else { attDefinition = concatNonNullFields(attDefinition, rMax, ""); }
+            		attDefinition += ">";
+            	}                
                 String attLength = attributes.getString("attLength");
                 attDefinition = concatNonNullFields(attDefinition, attLength, " ");
                 String lexical = attributes.getString("lexical");
@@ -155,9 +162,9 @@ public class GSIPImporter extends Importer {
                 }
                 else if (generalDatatype.equals("Integer")||generalDatatype.equals("Real")) {
                 	domainType = concatNonNullFields(domainType, measure, " : ");
-                	domainType = concatNonNullFields(domainType, validRange, " : ");
+                	domainType = concatNonNullFields(domainType, validRange, " ");
                 	if (!((concatNonNullFields("",rMin,"")+concatNonNullFields("",rMax,"")).equals(""))) {
-                		domainType += "<";
+                		domainType += " <;";
                 		domainType = concatNonNullFields(domainType, rMin, "");
                 		if (!((concatNonNullFields("",rMin,"")).equals(""))) {
                 			domainType = concatNonNullFields(domainType, rMax, ", ");
@@ -167,11 +174,11 @@ public class GSIPImporter extends Importer {
                 	}
                 }
                 else {
-                	domainType+= ": " +dtLexical;
-                	if (!(attLength==null || attLength.equals("null") || attLength.equals(""))) { 
+                	domainType+= " : " +dtLexical;
+                	if ((attLength==null || attLength.equals("null") || attLength.equals(""))) { 
                 		attLength="Unlimited";
                 	}
-                	domainType+= ": " +attLength;
+                	domainType+= " : " +attLength;
                 	if (!((generalDatatype.equals("Text")||generalDatatype.equals("Complex")))){
                 		domainType += " : ERROR";
                 	}
@@ -222,7 +229,7 @@ public class GSIPImporter extends Importer {
     	if (conn != null) { 
 		    try { 
 		        conn.close (); 
-		        System.out.println ("Database connection terminated"); 
+		        System.out.println ("Schema Elements generated.  Database connection closed."); 
 		    } 
 		    catch (Exception e) { /* ignore close errors */ } 
 		}
@@ -256,7 +263,7 @@ public class GSIPImporter extends Importer {
 		for (int j=0; j<_domains.size(); j++) { schemaElements.add(_domains.get(j)); i++; }
 		for (int j=0; j<_attributes.size(); j++) { schemaElements.add(_attributes.get(j)); i++; }
 		for (int j=0; j<_enumerants.size(); j++) { schemaElements.add(_enumerants.get(j)); i++;	}
-		System.out.println(i+ " elements.");
+		//System.out.println(i+ " elements.");
 		return schemaElements;
 	}
 }
