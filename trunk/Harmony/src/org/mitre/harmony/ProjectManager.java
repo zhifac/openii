@@ -165,7 +165,7 @@ public class ProjectManager implements MappingListener
 					while(1==1) { load(in,item); item = (String)in.readObject(); }
 				} catch(EOFException e) {}
 		}
-		catch(Exception e) { System.out.println("(E) ProjectManager - " + e.getMessage()); }
+		catch(Exception e) {}
 		if(in != null) try { in.close(); } catch(Exception e) {}
 
 		// If no mapping was assigned, set a default mapping
