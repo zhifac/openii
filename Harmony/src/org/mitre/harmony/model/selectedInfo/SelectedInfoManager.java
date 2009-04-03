@@ -78,7 +78,7 @@ public class SelectedInfoManager extends AbstractManager<SelectedInfoListener> i
 		{ return new ArrayList<Integer>(side.equals(HarmonyConsts.LEFT) ? leftSchemaIDs : rightSchemaIDs); }
 
 	/** Returns all elements displayed on the specified side of Harmony */
-	public HashSet<SchemaElement> getSchemaElements(Integer side)
+	private HashSet<SchemaElement> getSchemaElements(Integer side)
 	{
 		HashSet<SchemaElement> elements = new HashSet<SchemaElement>();
 		for(Integer schemaID : getSchemas(side))
@@ -87,7 +87,7 @@ public class SelectedInfoManager extends AbstractManager<SelectedInfoListener> i
 	}
 
 	/** Returns all element IDs displayed on the specified side of Harmony */
-	public HashSet<Integer> getSchemaElementIDs(Integer side)
+	private HashSet<Integer> getSchemaElementIDs(Integer side)
 	{
 		HashSet<Integer> elementIDs = new HashSet<Integer>();
 		for(SchemaElement element : getSchemaElements(side))
