@@ -63,7 +63,7 @@ class MappingPane extends JPanel
 		if(saveMode)
 		{
 			Mapping newMapping = harmonyModel.getMappingManager().getMapping().copy();
-			newMapping.setId(null); newMapping.setName("");
+			newMapping.setId(null); newMapping.setName(""); newMapping.setAuthor(System.getProperty("user.name"));
 			mappings.add(0,newMapping);
 		}
 		
