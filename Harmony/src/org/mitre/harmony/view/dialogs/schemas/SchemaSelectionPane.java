@@ -65,12 +65,18 @@ public class SchemaSelectionPane extends JPanel
 		
 		// Create the schema list
 		schemaList = new JPanel();
-		schemaList.setBackground(Color.white);
+		schemaList.setOpaque(false);
 		schemaList.setLayout(new BoxLayout(schemaList,BoxLayout.Y_AXIS));
 		generateSchemaList();
-			
+
+		// Force schema list to not spread out
+		JPanel schemaListPane = new JPanel();
+		schemaListPane.setBackground(Color.white);
+		schemaListPane.setLayout(new BorderLayout());
+		schemaListPane.add(schemaList,BorderLayout.NORTH);
+		
 		// Create a scroll pane to hold the list of schemas
-		JScrollPane schemaScrollPane = new JScrollPane(schemaList,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		JScrollPane schemaScrollPane = new JScrollPane(schemaListPane,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		schemaScrollPane.setPreferredSize(new Dimension(250, 200));
 
 		// Creates the schema selection pane
