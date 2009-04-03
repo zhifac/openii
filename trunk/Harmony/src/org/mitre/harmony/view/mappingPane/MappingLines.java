@@ -26,7 +26,6 @@ import org.mitre.harmony.model.selectedInfo.SelectedInfoListener;
 import org.mitre.harmony.view.schemaTree.SchemaTree;
 import org.mitre.harmony.view.schemaTree.SchemaTreeListener;
 import org.mitre.schemastore.model.MappingCell;
-import org.mitre.schemastore.model.SchemaElement;
 
 /**
  * Stores all lines currently associated with the mapping
@@ -66,14 +65,9 @@ public class MappingLines implements MappingCellListener, FiltersListener, Schem
 		if(lines == null)
 		{
 			lines = new Hashtable<Integer, MappingCellLines>();
-
-			// Generate the list of lines associated with the source and target schemas
-			for(SchemaElement leftElement : harmonyModel.getSelectedInfo().getSchemaElements(HarmonyConsts.LEFT))
-				for(SchemaElement rightElement : harmonyModel.getSelectedInfo().getSchemaElements(HarmonyConsts.RIGHT))
-				{
-					Integer mappingCellID = harmonyModel.getMappingCellManager().getMappingCellID(leftElement.getId(),rightElement.getId());
-					if(mappingCellID!=null) lines.put(mappingCellID,new MappingCellLines(mappingCellID,harmonyModel));
-				}
+			for(MappingCell mappingCell : harmonyModel.getMappingCellManager().getMappingCells())
+				if(harmonyModel.getFilters().visibleMappingCell(mappingCell.getId()))
+					lines.put(mappingCell.getId(), new MappingCellLines(mappingCell.getId(),harmonyModel));
 		}
 		return lines;
 	}
