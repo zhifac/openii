@@ -190,7 +190,8 @@ public class UserMatchAnotationExporter  extends Exporter {
 		Collections.sort(matches);
 		if(matches.size()>count) matches = matches.subList(0, count);
   		for(CompressedMatch match : matches) {
-  			if (match.getScore() >= minConfThreshold )
+ 
+  			if ((match.getScore() >= minConfThreshold ) || (match.getScore() < 0.0) )
   				out.write(match.toString() + "\n");
   		}
     	out.close();
