@@ -79,18 +79,13 @@ public class GSIPImporter extends Importer {
             + " ORDER BY 1 ";
         ResultSet entities=selectEntities.executeQuery(entitySQL); 
 
-        Entity tblEntity; String lastTableName="";       
+        Entity tblEntity;      
         while(entities.next()) {
         	String tblName = entities.getString("tableName").toLowerCase(); // note these match the columns in the  
         	tblName = firstLetterCapitalize(tblName);   //Make nicer looking with 1st-cap.        	
             String definition = entities.getString("definition");
             definition = concatNonNullFields(definition, entities.getString("description"), " [desc] ");
             definition = concatNonNullFields(definition, entities.getString("entityNote"), " [note] ");
-
-            int P = entities.getInt("t_P");  // Does feature have Point geometry?
-            int S = entities.getInt("t_S");  // Does feature have Surface geometry?
-            int C = entities.getInt("t_C");  // Does feature have Curve geometry?
-            //if (tblName.equals(lastTableName)) { continue; }
             
             int itemID = entities.getInt("itemIdentifier_PK");
             String FTID = entities.getString("FTID");  // key to get attributes.
@@ -122,34 +117,33 @@ public class GSIPImporter extends Importer {
             	String attDefinition = attributes.getString("definition");
             	attDefinition = concatNonNullFields(attDefinition, attributes.getString("description"), " [desc] ");
             	attDefinition = concatNonNullFields(attDefinition, attributes.getString("attNote"), " [note] ");
-            	String measure = attributes.getString("measure");
-            	attDefinition = concatNonNullFields(attDefinition, measure, " ");
+            	String generalDatatype = attributes.getString("generalDatatype");
+            	attDefinition = concatNonNullFields(attDefinition, generalDatatype, " [type] ");
+            	String lexical = attributes.getString("lexical");
+                if (lexical.equals("1")) { lexical ="Lexical"; }
+                else { lexical="Non-lexical"; }
+                attDefinition = concatNonNullFields(attDefinition, lexical, " [lex] ");
+            	
+                               
+                String attLength = attributes.getString("attLength");
+                if ((attLength==null || attLength.equals("null") || attLength.equals(""))) { 
+                	attLength="Unlimited";
+                }
+                attDefinition = concatNonNullFields(attDefinition, attLength, " [len] ");
+                attDefinition = concatNonNullFields(attDefinition, attributes.getString("structureSpecification"), " [struc] ");
+                String measure = attributes.getString("measure");
+            	attDefinition = concatNonNullFields(attDefinition, measure, " [UoM] ");
             	String validRange = attributes.getString("validRange");
-            	attDefinition = concatNonNullFields(attDefinition, validRange, " ");
+            	attDefinition = concatNonNullFields(attDefinition, validRange, " [range] ");
             	String rMin = attributes.getString("rMin");
                 String rMax = attributes.getString("rMax");
-                if (!((concatNonNullFields("",rMin,"")+concatNonNullFields("",rMax,"")).equals(""))) {
-                	attDefinition += " <";
-                	attDefinition = concatNonNullFields(attDefinition, rMin, "");
-            		if (!((concatNonNullFields("",rMin,"")).equals(""))) {
-            			attDefinition = concatNonNullFields(attDefinition, rMax, ", ");
-            		}
-            		else { attDefinition = concatNonNullFields(attDefinition, rMax, ""); }
-            		attDefinition += ">";
-            	}                
-                String attLength = attributes.getString("attLength");
-                attDefinition = concatNonNullFields(attDefinition, attLength, " ");
-                String lexical = attributes.getString("lexical");
-                String dtLexical="";
-                if (lexical.equals("1")) { lexical = "True"; dtLexical="Lexical"; }
-                else { lexical=null; dtLexical="Non-lexical"; }
-                attDefinition = concatNonNullFields(attDefinition, lexical, " ");
-                attDefinition = concatNonNullFields(attDefinition, attributes.getString("structureSpecification"), " ");
+            	attDefinition = concatNonNullFields(attDefinition, rMin, " [min] ");
+            	attDefinition = concatNonNullFields(attDefinition, rMax, " [max] ");                
                 
                 String dtID = attributes.getString("DTID"); // used to key on enumerants
                 String datatype = attributes.getString("datatypeNsgAlphaCode");
                 String uniqueAttribute = attributes.getString("uniqueAttribute");
-                String generalDatatype = attributes.getString("generalDatatype");
+                
 
                 String domainType = datatype;
                 String ignoreEnumerants="no";
@@ -164,7 +158,7 @@ public class GSIPImporter extends Importer {
                 	domainType = concatNonNullFields(domainType, measure, " : ");
                 	domainType = concatNonNullFields(domainType, validRange, " ");
                 	if (!((concatNonNullFields("",rMin,"")+concatNonNullFields("",rMax,"")).equals(""))) {
-                		domainType += " <;";
+                		domainType += " <";
                 		domainType = concatNonNullFields(domainType, rMin, "");
                 		if (!((concatNonNullFields("",rMin,"")).equals(""))) {
                 			domainType = concatNonNullFields(domainType, rMax, ", ");
@@ -174,10 +168,8 @@ public class GSIPImporter extends Importer {
                 	}
                 }
                 else {
-                	domainType+= " : " +dtLexical;
-                	if ((attLength==null || attLength.equals("null") || attLength.equals(""))) { 
-                		attLength="Unlimited";
-                	}
+                	domainType+= " : " +lexical;
+                	
                 	domainType+= " : " +attLength;
                 	if (!((generalDatatype.equals("Text")||generalDatatype.equals("Complex")))){
                 		domainType += " : ERROR";
