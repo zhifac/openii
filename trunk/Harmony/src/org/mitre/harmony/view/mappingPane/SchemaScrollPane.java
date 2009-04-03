@@ -71,7 +71,7 @@ public class SchemaScrollPane extends JScrollPane implements AdjustmentListener
 		getVerticalScrollBar().setUI(new SchemaScrollBarUI());
 		
 		// Shift scroll bars to mirror image for left schema tree
-		if(tree.getRole()==HarmonyConsts.LEFT) {
+		if(tree.getSide()==HarmonyConsts.LEFT) {
 			setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 			getHorizontalScrollBar().setValue(getHorizontalScrollBar().getMaximum());
 		}

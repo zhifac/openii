@@ -12,9 +12,11 @@ import javax.swing.JSeparator;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.mitre.harmony.model.HarmonyModel;
+import org.mitre.harmony.model.filters.FilterManager;
 import org.mitre.harmony.model.filters.Focus;
 import org.mitre.harmony.view.dialogs.SchemaStatisticsDialog;
 import org.mitre.schemastore.model.Schema;
+import org.mitre.schemastore.model.SchemaElement;
 
 /**
  * Constructs a popup menu to appear when schema nodes are right clicked
@@ -34,6 +36,7 @@ class SchemaTreeNodeMenu extends JPopupMenu implements ActionListener
 	private JMenuItem collapse;			// Menu option to collapse selected node
 	private JMenuItem setFocus;			// Menu option to set the current focus
 	private JMenuItem clearFocus;		// Menu option to clear the current focus
+	private JMenuItem clearAllFoci;		// Menu option to clear all foci
 	private JMenuItem markUnfinished;	// Menu option to mark selected node (and children) as unfinished
 	private JMenuItem markFinished;		// Menu option to mark selected node (and children) as finished
 	private JMenuItem statistics;		// Menu option for viewing schema statistics
@@ -65,20 +68,20 @@ class SchemaTreeNodeMenu extends JPopupMenu implements ActionListener
 			Integer elementID = (Integer)obj;
 			
 			// Determine if the element is currently in focus
-			Focus focus = harmonyModel.getFilters().getFocus(tree.getRole(), elementID);
-			ArrayList<Focus> foci = harmonyModel.getFilters().getFoci(tree.getRole());
-			boolean inFocus = foci.size()>0 && harmonyModel.getFilters().inFocus(tree.getRole(),schemaID,elementID);
+			Focus focus = harmonyModel.getFilters().getFocus(tree.getSide(), elementID);
+			ArrayList<Focus> foci = harmonyModel.getFilters().getFoci(tree.getSide());
+			boolean inFocus = foci.size()>0 && harmonyModel.getFilters().inFocus(tree.getSide(),schemaID,elementID);
 			
 			// Show menu option for allowing focus to be set and cleared
-			add(new JSeparator());
+			if(getComponentCount()>0) add(new JSeparator());
 			if(!inFocus) { add(setFocus=new JMenuItem("Set Focus")); setFocus.addActionListener(this); }
 			if(focus!=null) { add(clearFocus=new JMenuItem("Clear Focus")); clearFocus.addActionListener(this); }
-
+			add(clearAllFoci=new JMenuItem("Clear All Foci")); clearAllFoci.addActionListener(this);
+			
 			// Show menu option to mark/unmark items as finished
-/*			if(focusElementID == null || (focus.getSchemaID().equals(SchemaTree.getSchema(node)) && focus.contains(elementID)))
+			if(foci.size()==0 || inFocus)
 			{
 				// Determine if the node and descendants are finished
-				Integer schemaID = SchemaTree.getSchema(node);
 				boolean isUnfinished = !harmonyModel.getPreferences().isFinished(schemaID,elementID);
 				boolean isFinished = harmonyModel.getPreferences().isFinished(schemaID,elementID);
 				for(SchemaElement descendant : harmonyModel.getSchemaManager().getDescendantElements(schemaID, elementID))
@@ -89,6 +92,7 @@ class SchemaTreeNodeMenu extends JPopupMenu implements ActionListener
 				}
 				
 				// Display options to mark the node and descendants as finished/unfinished
+				add(new JSeparator());
 				if(!isUnfinished)
 				{
 					add(markUnfinished=new JMenuItem("Mark as Unfinished"));
@@ -99,7 +103,7 @@ class SchemaTreeNodeMenu extends JPopupMenu implements ActionListener
 					add(markFinished=new JMenuItem("Mark as Finished"));
 					markFinished.addActionListener(this);
 				}
-			} */
+			}
 		}
 
 		// Allow "matched" statistics to be viewed if node is schema
@@ -118,6 +122,9 @@ class SchemaTreeNodeMenu extends JPopupMenu implements ActionListener
 	 */
 	public void actionPerformed(ActionEvent e)
 	{
+		// Generate easy reference to managers
+		FilterManager filters = harmonyModel.getFilters();
+		
 		// Handles manipulation of schema tree
 		if(e.getSource()==expand) tree.expandNode(node);
 		if(e.getSource()==collapse) tree.collapseNode(node);
@@ -127,15 +134,20 @@ class SchemaTreeNodeMenu extends JPopupMenu implements ActionListener
 		// Handles the clearing of focus on a node
 		if(e.getSource()==clearFocus)
 		{
-			Focus focus = harmonyModel.getFilters().getFocus(tree.getRole(), (Integer)node.getUserObject());
-			harmonyModel.getFilters().removeFocus(tree.getRole(),focus);
+			Focus focus = filters.getFocus(tree.getSide(), (Integer)node.getUserObject());
+			filters.removeFocus(tree.getSide(),focus);
 		}
+		
+		// Handles the clearing of all foci
+		if(e.getSource()==clearAllFoci)
+			for(Focus focus : new ArrayList<Focus>(filters.getFoci(tree.getSide())))
+				filters.removeFocus(tree.getSide(),focus);
 		
 		// Handles the setting of focus on a node
 		if(e.getSource()==setFocus)
 		{
 			Focus focus = new Focus(SchemaTree.getSchema(node),(Integer)node.getUserObject(), harmonyModel);
-			harmonyModel.getFilters().addFocus(tree.getRole(),focus);
+			filters.addFocus(tree.getSide(),focus);
 		}
 		
 		// Handles the viewing of schema statistics

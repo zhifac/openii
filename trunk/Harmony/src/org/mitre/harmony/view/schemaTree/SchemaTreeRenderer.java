@@ -95,8 +95,8 @@ class SchemaTreeRenderer extends DefaultTreeCellRenderer
 			setToolTipText(tooltip);
 
 			// Determine the display state of the node
-			isFocused = harmonyModel.getFilters().visibleNode(schemaTree.getRole(),(DefaultMutableTreeNode)value);
-			isSelected = harmonyModel.getSelectedInfo().isElementSelected(elementID,schemaTree.getRole());
+			isFocused = harmonyModel.getFilters().visibleNode(schemaTree.getSide(),(DefaultMutableTreeNode)value);
+			isSelected = harmonyModel.getSelectedInfo().isElementSelected(elementID,schemaTree.getSide());
 			isFinished = harmonyModel.getPreferences().isFinished(schemaID,elementID);
 
 			// Set the text and icon
@@ -115,7 +115,7 @@ class SchemaTreeRenderer extends DefaultTreeCellRenderer
 		{
 			// Determine if the node is in focus
 			SchemaTree schemaTree = (SchemaTree)tree;
-			isFocused = harmonyModel.getFilters().getFoci(schemaTree.getRole()).size()==0;
+			isFocused = harmonyModel.getFilters().getFoci(schemaTree.getSide()).size()==0;
 			
 			// Set the text and icon
 			setText("  "  + obj);

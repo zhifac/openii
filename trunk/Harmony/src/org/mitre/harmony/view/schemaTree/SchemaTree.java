@@ -196,7 +196,7 @@ public class SchemaTree extends JTree implements PreferencesListener, SelectedIn
 		public void schemaDisplayModified(SchemaTree tree){ needUpdating = true; }
 	}
 	
-	private Integer role;				// Indicates if this is the left or right tree
+	private Integer side;				// Indicates if this is the left or right tree
 	SchemaTreeHash schemaTreeHash;		// Holds hash table to access all schema nodes
 	private RowBounds rowBounds;		// Holds a cache of schema tree row bounds
 	private VisibleNodes visibleNodes;	// Holds a cache of visible nodes
@@ -207,13 +207,13 @@ public class SchemaTree extends JTree implements PreferencesListener, SelectedIn
 	private HarmonyModel harmonyModel;
 	
 	/** Initializes the schema tree */
-	public SchemaTree(Integer roleIn, HarmonyModel harmonyModel)
+	public SchemaTree(Integer sideIn, HarmonyModel harmonyModel)
 	{
-		role = roleIn;
+		side = sideIn;
 		this.harmonyModel = harmonyModel;
 		
 		// Initializes tree variables
-		root = new DefaultMutableTreeNode(role==HarmonyConsts.LEFT ? " Mapping Schemas" : " Selected Schema");
+		root = new DefaultMutableTreeNode(side==HarmonyConsts.LEFT ? " Mapping Schemas" : " Selected Schema");
 		schemaTreeHash = new SchemaTreeHash(this);
 		rowBounds = new RowBounds();
 		visibleNodes = new VisibleNodes();
@@ -228,7 +228,7 @@ public class SchemaTree extends JTree implements PreferencesListener, SelectedIn
 
 		// Set up the schema tree schemas
 		SchemaTreeGenerator.initialize(this);
-		for(Integer schemaID : harmonyModel.getSelectedInfo().getSchemas(role))
+		for(Integer schemaID : harmonyModel.getSelectedInfo().getSchemas(side))
 			SchemaTreeGenerator.addSchema(this,schemaID,harmonyModel);
 			
 		// Set up tool tips for the tree items
@@ -241,9 +241,9 @@ public class SchemaTree extends JTree implements PreferencesListener, SelectedIn
 		harmonyModel.getSelectedInfo().addListener(this);
 	}
 
-	/** Returns the role associated with this schema tree */
-	public Integer getRole()
-		{ return role; }
+	/** Returns the side associated with this schema tree */
+	public Integer getSide()
+		{ return side; }
 
 	/** Returns the schemas associated with this schema tree */
 	public ArrayList<Integer> getSchemas()
@@ -388,7 +388,7 @@ public class SchemaTree extends JTree implements PreferencesListener, SelectedIn
 		Focus focus = null;
 		if(node!=null)
 			focus = new Focus(getSchema(node),(Integer)node.getUserObject(), harmonyModel);
-		harmonyModel.getFilters().addFocus(role,focus);
+		harmonyModel.getFilters().addFocus(side,focus);
 	}	
 	
 	/**
@@ -445,7 +445,7 @@ public class SchemaTree extends JTree implements PreferencesListener, SelectedIn
 	{
 		// Get the current and new list of schemas
 		ArrayList<Integer> currSchemaIDs = getSchemas();
-		ArrayList<Integer> newSchemaIDs = harmonyModel.getSelectedInfo().getSchemas(role);
+		ArrayList<Integer> newSchemaIDs = harmonyModel.getSelectedInfo().getSchemas(side);
 
 		// Remove any schemas that have been removed from view
 		for(Integer currSchemaID : currSchemaIDs)
@@ -501,8 +501,8 @@ public class SchemaTree extends JTree implements PreferencesListener, SelectedIn
 			if(node.getUserObject() instanceof Integer && e.getButton()==MouseEvent.BUTTON1)
 			{
 				Integer elementID = (Integer)node.getUserObject();
-				if(harmonyModel.getFilters().visibleNode(role,node))
-					harmonyModel.getSelectedInfo().setElement(elementID,role,e.isControlDown());
+				if(harmonyModel.getFilters().visibleNode(side,node))
+					harmonyModel.getSelectedInfo().setElement(elementID,side,e.isControlDown());
 			}
 			
 			// Otherwise, if right mouse button pressed, display the drop-down menu
@@ -567,8 +567,8 @@ public class SchemaTree extends JTree implements PreferencesListener, SelectedIn
 	
 	// Unused listener events
 	public void displayedViewChanged() {}
-	public void displayedElementModified(Integer role) {}
-	public void selectedElementsModified(Integer role) {}
+	public void displayedElementModified(Integer side) {}
+	public void selectedElementsModified(Integer side) {}
 	public void selectedMappingCellsModified() {}
 	public void mouseExited(MouseEvent e) {}
 	public void mouseEntered(MouseEvent e) {}
@@ -593,7 +593,7 @@ public class SchemaTree extends JTree implements PreferencesListener, SelectedIn
 		super.paint(g);
 
 		// Paint a dashed line only if the focus has been defined.
-		for(Focus focus : harmonyModel.getFilters().getFoci(role))
+		for(Focus focus : harmonyModel.getFilters().getFoci(side))
 		{
 			Graphics2D g2d = (Graphics2D) g;
 			
