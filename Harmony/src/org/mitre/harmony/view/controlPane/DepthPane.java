@@ -201,7 +201,7 @@ public class DepthPane extends JPanel
 		private DepthSlider(SchemaTree tree)
 		{
 			// Initialize the role associated with this depth pane
-			role = tree.getRole();
+			role = tree.getSide();
 
 			// Initialize the min and max depth values
 			setMinimum(minValue = 1);
