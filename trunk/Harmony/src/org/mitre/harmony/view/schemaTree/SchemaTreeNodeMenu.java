@@ -68,18 +68,20 @@ class SchemaTreeNodeMenu extends JPopupMenu implements ActionListener
 			Integer elementID = (Integer)obj;
 			
 			// Determine if the element is currently in focus
-			Focus focus = harmonyModel.getFilters().getFocus(tree.getSide(), elementID);
+			Focus focus = harmonyModel.getFilters().getFocus(tree.getSide(), schemaID);
 			ArrayList<Focus> foci = harmonyModel.getFilters().getFoci(tree.getSide());
-			boolean inFocus = foci.size()>0 && harmonyModel.getFilters().inFocus(tree.getSide(),schemaID,elementID);
+			boolean inFocus = harmonyModel.getFilters().inFocus(tree.getSide(),schemaID,elementID);
 			
 			// Show menu option for allowing focus to be set and cleared
 			if(getComponentCount()>0) add(new JSeparator());
-			if(!inFocus) { add(setFocus=new JMenuItem("Set Focus")); setFocus.addActionListener(this); }
-			if(focus!=null) { add(clearFocus=new JMenuItem("Clear Focus")); clearFocus.addActionListener(this); }
+			if(!inFocus || foci.size()==0 || (focus!=null && focus.getFocusedIDs().size()==0))
+				{ add(setFocus=new JMenuItem("Set Focus")); setFocus.addActionListener(this); }
+			if(focus!=null && focus.getFocusedIDs().contains(elementID))
+				{ add(clearFocus=new JMenuItem("Clear Focus")); clearFocus.addActionListener(this); }
 			add(clearAllFoci=new JMenuItem("Clear All Foci")); clearAllFoci.addActionListener(this);
 			
 			// Show menu option to mark/unmark items as finished
-			if(foci.size()==0 || inFocus)
+			if(inFocus)
 			{
 				// Determine if the node and descendants are finished
 				boolean isUnfinished = !harmonyModel.getPreferences().isFinished(schemaID,elementID);
@@ -125,6 +127,11 @@ class SchemaTreeNodeMenu extends JPopupMenu implements ActionListener
 		// Generate easy reference to managers
 		FilterManager filters = harmonyModel.getFilters();
 		
+		// Retrieve various attributes associated with this node
+		Integer side = tree.getSide();
+		Integer schemaID = SchemaTree.getSchema(node);
+		Integer elementID = node.getUserObject() instanceof Integer ? (Integer)node.getUserObject() : null;
+		
 		// Handles manipulation of schema tree
 		if(e.getSource()==expand) tree.expandNode(node);
 		if(e.getSource()==collapse) tree.collapseNode(node);
@@ -133,22 +140,15 @@ class SchemaTreeNodeMenu extends JPopupMenu implements ActionListener
 
 		// Handles the clearing of focus on a node
 		if(e.getSource()==clearFocus)
-		{
-			Focus focus = filters.getFocus(tree.getSide(), (Integer)node.getUserObject());
-			filters.removeFocus(tree.getSide(),focus);
-		}
+			filters.removeFocus(side, schemaID, elementID);
 		
 		// Handles the clearing of all foci
 		if(e.getSource()==clearAllFoci)
-			for(Focus focus : new ArrayList<Focus>(filters.getFoci(tree.getSide())))
-				filters.removeFocus(tree.getSide(),focus);
+			filters.removeFoci(side);
 		
 		// Handles the setting of focus on a node
 		if(e.getSource()==setFocus)
-		{
-			Focus focus = new Focus(SchemaTree.getSchema(node),(Integer)node.getUserObject(), harmonyModel);
-			filters.addFocus(tree.getSide(),focus);
-		}
+			filters.addFocus(side,schemaID,elementID);
 		
 		// Handles the viewing of schema statistics
 		if(e.getSource()==statistics)

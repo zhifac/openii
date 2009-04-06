@@ -11,7 +11,6 @@ import org.mitre.harmony.model.AbstractManager;
 import org.mitre.harmony.model.HarmonyConsts;
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.filters.FiltersListener;
-import org.mitre.harmony.model.filters.Focus;
 import org.mitre.harmony.model.mapping.MappingCellListener;
 import org.mitre.harmony.model.mapping.MappingListener;
 import org.mitre.schemastore.model.MappingCell;
@@ -284,7 +283,7 @@ public class SelectedInfoManager extends AbstractManager<SelectedInfoListener> i
 	//------------ Updates the selected information based on the occurrence of events ------------
 	
 	/** Unselect elements that are out of focus */
-	public void focusAdded(Integer side, Focus focus)
+	public void focusModified(Integer side)
 	{
 		// Identify all of the elements that are no longer visible
 		ArrayList<Integer> removedElements = new ArrayList<Integer>();
@@ -296,7 +295,6 @@ public class SelectedInfoManager extends AbstractManager<SelectedInfoListener> i
 		if(removedElements.size()>0)
 			setSelectedElements(removedElements,side,REMOVE);
 	}
-	public void focusRemoved(Integer side, Focus focus) { focusAdded(side,focus); }
 	
 	/** Unselect elements that are out of depth */
 	public void depthChanged()
