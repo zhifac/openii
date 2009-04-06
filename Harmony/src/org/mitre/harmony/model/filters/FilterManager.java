@@ -154,6 +154,33 @@ public class FilterManager extends AbstractManager<FiltersListener> implements S
 		for(FiltersListener listener : getListeners()) listener.focusModified(side);		
 	}
 	
+	/** Hides an element on the specified side */
+	public void hideElement(Integer side, Integer schemaID, Integer elementID)
+	{
+		// Retrieve the focus associated with the specified schema
+		Focus focus = getFocus(side,schemaID);
+		if(focus==null)
+		{
+			ArrayList<Focus> foci = side==HarmonyConsts.LEFT ? leftFoci : rightFoci;
+			foci.add(focus = new Focus(schemaID, getModel()));
+		}
+
+		// Adds the specified element to the hidden elements
+		focus.hideElement(elementID);
+		for(FiltersListener listener : getListeners()) listener.focusModified(side);
+	}
+
+	/** Unhides an element on the specified side */
+	public void unhideElement(Integer side, Integer schemaID, Integer elementID)
+	{
+		Focus focus = getFocus(side,schemaID);
+		if(focus!=null)
+		{
+			focus.unhideElement(elementID);
+			for(FiltersListener listener : getListeners()) listener.focusModified(side);
+		}
+	}
+	
 	/** Return the node from this tree currently in focus */
 	public ArrayList<Focus> getFoci(Integer side)
 		{ return new ArrayList<Focus>(side==HarmonyConsts.LEFT ? leftFoci : rightFoci); }

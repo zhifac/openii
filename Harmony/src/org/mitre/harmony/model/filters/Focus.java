@@ -94,12 +94,12 @@ public class Focus
 	public void removeFocus(Integer elementID)
 		{ focusIDs.remove(elementID); elementsInFocus=null; }
 	
-	/** Adds a hidden element */
-	public void addHiddenElement(Integer elementID)
+	/** Hides the specified element */
+	public void hideElement(Integer elementID)
 		{ hiddenIDs.add(elementID); elementsInFocus=null; }
 	
-	/** Removes a hidden element */
-	public void removeHiddenElement(Integer elementID)
+	/** Unhides the specified element */
+	public void unhideElement(Integer elementID)
 		{ hiddenIDs.remove(elementID); elementsInFocus=null; }
 	
 	/** Indicates if the specified element is within focus */
