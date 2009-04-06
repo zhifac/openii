@@ -382,15 +382,6 @@ public class SchemaTree extends JTree implements PreferencesListener, SelectedIn
 		}
 	}
 	
-	/** Switches focus to specified node */
-	void focusNode(DefaultMutableTreeNode node)
-	{
-		Focus focus = null;
-		if(node!=null)
-			focus = new Focus(getSchema(node),(Integer)node.getUserObject(), harmonyModel);
-		harmonyModel.getFilters().addFocus(side,focus);
-	}	
-	
 	/**
 	 * This method deletes all system-generated links for the indicated node; a
 	 * user-specified copy of each visible link is made.
@@ -594,22 +585,23 @@ public class SchemaTree extends JTree implements PreferencesListener, SelectedIn
 
 		// Paint a dashed line only if the focus has been defined.
 		for(Focus focus : harmonyModel.getFilters().getFoci(side))
-		{
-			Graphics2D g2d = (Graphics2D) g;
-			
-			// Temporarily use a dashed line.
-			Stroke s = g2d.getStroke();
-			g2d.setStroke(DASHED_LINE);
-			
-			// Draw a box around each node in focus.
-			for(DefaultMutableTreeNode node : getComponentNodes(focus.getElementID()))
-				if(getSchema(node).equals(focus.getSchemaID()))
-				{
-					Rectangle r = computeFocusRectangle(node);
-					g2d.drawRect(r.x, r.y, r.width, r.height);
-				}
-			g2d.setStroke(s);
-		}
+			for(Integer focusID : focus.getFocusedIDs())
+			{
+				Graphics2D g2d = (Graphics2D) g;
+				
+				// Temporarily use a dashed line.
+				Stroke s = g2d.getStroke();
+				g2d.setStroke(DASHED_LINE);
+				
+				// Draw a box around each node in focus.
+				for(DefaultMutableTreeNode node : getComponentNodes(focusID))
+					if(getSchema(node).equals(focus.getSchemaID()))
+					{
+						Rectangle r = computeFocusRectangle(node);
+						g2d.drawRect(r.x, r.y, r.width, r.height);
+					}
+				g2d.setStroke(s);
+			}
 	}
 	
 	/** Calculates the drawing of a rectangle around focused items */

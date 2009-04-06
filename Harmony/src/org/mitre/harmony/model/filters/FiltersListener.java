@@ -15,10 +15,7 @@ public interface FiltersListener
 	public void confidenceChanged();
 	
 	/** Indicates the addition of a focus */
-	public void focusAdded(Integer side, Focus focus);
-
-	/** Indicates the removal of a focus */
-	public void focusRemoved(Integer side, Focus focus);	
+	public void focusModified(Integer side);
 	
 	/** Indicates change to depth filter */
 	public void depthChanged();

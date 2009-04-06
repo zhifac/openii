@@ -123,26 +123,23 @@ class MatcherDialog extends JDialog implements ActionListener, Runnable
 			ArrayList<FilteredGraph> graphs = side==HarmonyConsts.LEFT ? leftGraphs : rightGraphs;
 			
 			// Create filtered graphs for each schema in focus
-			ArrayList<Focus> foci = harmonyModel.getFilters().getFoci(side);
 			for(Integer schemaID : harmonyModel.getSelectedInfo().getSchemas(side))
 			{
+				// Gets the focus for the specified schema
+				Focus focus = harmonyModel.getFilters().getFocus(side,schemaID);
+				
 				// Handles the case where no foci were set
-				if(foci.size()==0)
+				if(focus==null || focus.getFocusedIDs().size()==0)
 					graphs.add(new FilteredGraph(harmonyModel.getSchemaManager().getGraph(schemaID)));
 
 				// Handles the case where foci were set
 				else
 				{
-					ArrayList<Integer> rootIDs = new ArrayList<Integer>();
-					for(Focus focus : foci)
-						if(focus.getSchemaID().equals(schemaID)) rootIDs.add(focus.getElementID());
-					if(rootIDs.size()>0)
-					{
-						FilteredGraph graph = new FilteredGraph(harmonyModel.getSchemaManager().getGraph(schemaID));
-						graph.setFilteredRoots(rootIDs);
-						graphs.add(graph);
-					}					
-				}
+					FilteredGraph graph = new FilteredGraph(harmonyModel.getSchemaManager().getGraph(schemaID));
+					graph.setFilteredRoots(focus.getFocusedIDs());
+					graph.setHiddenElements(focus.getHiddenIDs());
+					graphs.add(graph);
+				}					
 			}
 			
 			// Set the minimum and maximum depths for each graph on the left
