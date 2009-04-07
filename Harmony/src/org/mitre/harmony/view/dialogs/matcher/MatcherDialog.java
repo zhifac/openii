@@ -22,6 +22,7 @@ import org.mitre.harmony.matchers.mergers.MatchMerger;
 import org.mitre.harmony.matchers.voters.MatchVoter;
 import org.mitre.harmony.model.HarmonyConsts;
 import org.mitre.harmony.model.HarmonyModel;
+import org.mitre.harmony.model.filters.FilterManager;
 import org.mitre.harmony.model.filters.Focus;
 import org.mitre.harmony.model.mapping.MappingCellManager;
 import org.mitre.schemastore.model.MappingCell;
@@ -121,32 +122,34 @@ class MatcherDialog extends JDialog implements ActionListener, Runnable
 		Integer sides[] = { HarmonyConsts.LEFT, HarmonyConsts.RIGHT };
 		for(Integer side : sides)
 		{
+			FilterManager filters = harmonyModel.getFilters();
 			ArrayList<FilteredGraph> filteredGraphs = side==HarmonyConsts.LEFT ? leftGraphs : rightGraphs;
 			
 			// Create filtered graphs for each schema in focus
 			for(Integer schemaID : harmonyModel.getSelectedInfo().getSchemas(side))
-			{
-				HierarchicalGraph graph = harmonyModel.getSchemaManager().getGraph(schemaID);
-				FilteredGraph filteredGraph = new FilteredGraph(graph);
-
-				// Set the filter roots
-				Focus focus = harmonyModel.getFilters().getFocus(side,schemaID);
-				if(focus!=null && focus.getFocusedIDs().size()>0)
-					filteredGraph.setFilteredRoots(focus.getFocusedIDs());
-				
-				// Filter by minimum and maximum depth
-				filteredGraph.setMinDepth(harmonyModel.getFilters().getMinDepth(side));
-				filteredGraph.setMaxDepth(harmonyModel.getFilters().getMaxDepth(side));
-						
-				// Set the hidden elements
-				ArrayList<Integer> hiddenElements = new ArrayList<Integer>();
-				hiddenElements.addAll(harmonyModel.getPreferences().getFinishedElements(schemaID));
-				if(focus!=null) hiddenElements.addAll(focus.getHiddenElements());
-				filteredGraph.setHiddenElements(hiddenElements);
-
-				// Add the filtered graph
-				filteredGraphs.add(filteredGraph);
-			}
+				if(filters.inFocus(side, schemaID))
+				{
+					HierarchicalGraph graph = harmonyModel.getSchemaManager().getGraph(schemaID);
+					FilteredGraph filteredGraph = new FilteredGraph(graph);
+	
+					// Set the filter roots
+					Focus focus = filters.getFocus(side,schemaID);
+					if(focus!=null && focus.getFocusedIDs().size()>0)
+						filteredGraph.setFilteredRoots(focus.getFocusedIDs());
+					
+					// Filter by minimum and maximum depth
+					filteredGraph.setMinDepth(filters.getMinDepth(side));
+					filteredGraph.setMaxDepth(filters.getMaxDepth(side));
+							
+					// Set the hidden elements
+					ArrayList<Integer> hiddenElements = new ArrayList<Integer>();
+					hiddenElements.addAll(harmonyModel.getPreferences().getFinishedElements(schemaID));
+					if(focus!=null) hiddenElements.addAll(focus.getHiddenElements());
+					filteredGraph.setHiddenElements(hiddenElements);
+	
+					// Add the filtered graph
+					filteredGraphs.add(filteredGraph);
+				}
 		}
 
 		// Matches all left graphs to all right graphs

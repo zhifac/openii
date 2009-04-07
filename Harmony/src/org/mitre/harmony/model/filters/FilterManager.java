@@ -201,13 +201,20 @@ public class FilterManager extends AbstractManager<FiltersListener> implements S
 		return null;
 	}
 	
+	/** Indicates if the specified schema is in focus */
+	public boolean inFocus(Integer side, Integer schemaID)
+	{
+		Focus focus = getFocus(side, schemaID);
+		if(focus==null || focus.getFocusedIDs().size()==0) return getFocusCount(side)==0;
+		return true;
+	}
+	
 	/** Indicates if the specified element is in focus */
 	public boolean inFocus(Integer side, Integer schemaID, Integer elementID)
 	{
+		if(!inFocus(side,schemaID)) return false;
 		Focus focus = getFocus(side, schemaID);
-		if(focus==null || focus.getFocusedIDs().size()==0)
-			return (focus==null || !focus.getHiddenElements().contains(elementID)) && getFocusCount(side)==0;
-		return focus.contains(elementID);
+		return focus==null || focus.contains(elementID);
 	}
 
 	//--------------------
