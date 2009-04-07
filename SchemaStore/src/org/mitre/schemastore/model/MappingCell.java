@@ -79,7 +79,7 @@ public class MappingCell implements Serializable
 
 	/** Returns the string representing the modification date */
 	public String getDate()
-		{ return DateFormat.getDateInstance(DateFormat.MEDIUM).format(modificationDate); }
+		{ return modificationDate==null ? "" : DateFormat.getDateInstance(DateFormat.MEDIUM).format(modificationDate); }
 	
 	/** Returns the hash code */
 	public int hashCode()
