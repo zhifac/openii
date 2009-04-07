@@ -57,7 +57,7 @@ public class Focus
 	/** Adds a focus */
 	public void addFocus(Integer elementID)
 	{
-		// Get ancestors of the specified element
+		// Get descendants of the specified element
 		ArrayList<Integer> descendantIDs = new ArrayList<Integer>();
 		for(SchemaElement descendant : graph.getDescendantElements(elementID))
 			descendantIDs.add(descendant.getId());
@@ -79,7 +79,22 @@ public class Focus
 	
 	/** Hides the specified element */
 	public void hideElement(Integer elementID)
-		{ hiddenIDs.add(elementID); elementsInFocus=null; hiddenElements=null; }
+	{
+		// Get descendants of the specified element
+		ArrayList<Integer> descendantIDs = new ArrayList<Integer>();
+		for(SchemaElement descendant : graph.getDescendantElements(elementID))
+			descendantIDs.add(descendant.getId());
+		
+		// Remove focus elements which are superseded by the hidden element
+		for(Integer focusID : new ArrayList<Integer>(focusIDs))
+			if(descendantIDs.contains(focusID))
+				focusIDs.remove(focusID);		
+		
+		// Adds the hidden element
+		hiddenIDs.add(elementID);
+		elementsInFocus=null;
+		hiddenElements=null;
+	}
 	
 	/** Unhides the specified element */
 	public void unhideElement(Integer elementID)
