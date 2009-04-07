@@ -1307,7 +1307,7 @@ public class Database
 		try {
 			Statement stmt = connection.getStatement();
 			Date date = new Date(mappingCell.getModificationDate().getTime());
-			stmt.executeUpdate("UPDATE mapping_cell SET score="+mappingCell.getScore()+", author='"+scrub(mappingCell.getAuthor(),100)+"', modification_date='"+date.toString()+"', transform="+scrub(mappingCell.getTransform(),200)+", notes="+scrub(mappingCell.getNotes(),500)+"', validated='"+(mappingCell.getValidated()?"t":"f")+"' WHERE id="+mappingCell.getId());
+			stmt.executeUpdate("UPDATE mapping_cell SET score="+mappingCell.getScore()+", author='"+scrub(mappingCell.getAuthor(),100)+"', modification_date='"+date.toString()+"', transform='"+scrub(mappingCell.getTransform(),200)+"', notes='"+scrub(mappingCell.getNotes(),500)+"', validated='"+(mappingCell.getValidated()?"t":"f")+"' WHERE id="+mappingCell.getId());
 			stmt.close();
 			connection.commit();
 			success = true;
