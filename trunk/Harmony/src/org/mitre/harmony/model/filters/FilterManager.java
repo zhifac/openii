@@ -181,9 +181,17 @@ public class FilterManager extends AbstractManager<FiltersListener> implements S
 		}
 	}
 	
-	/** Return the node from this tree currently in focus */
+	/** Return the list of foci on the specified side */
 	public ArrayList<Focus> getFoci(Integer side)
 		{ return new ArrayList<Focus>(side==HarmonyConsts.LEFT ? leftFoci : rightFoci); }
+	
+	/** Returns the number of focused elements on the specified side */
+	public Integer getFocusCount(Integer side)
+	{
+		Integer count = 0;
+		for(Focus focus : getFoci(side)) count += focus.getFocusedIDs().size();
+		return count;
+	}
 	
 	/** Returns the focus associated with the specified schema */
 	public Focus getFocus(Integer side, Integer schemaID)
@@ -194,14 +202,12 @@ public class FilterManager extends AbstractManager<FiltersListener> implements S
 	}
 	
 	/** Indicates if the specified element is in focus */
-	public boolean inFocus(Integer side, Integer schemaID, Integer element)
+	public boolean inFocus(Integer side, Integer schemaID, Integer elementID)
 	{
-		ArrayList<Focus> foci = getFoci(side);
-		if(foci.size()==0) return true;
-		else for(Focus focus : foci)
-			if(schemaID==null || focus.getSchemaID().equals(schemaID))
-				if(focus.contains(element)) return true;
-		return false;
+		Focus focus = getFocus(side, schemaID);
+		if(focus==null || focus.getFocusedIDs().size()==0)
+			return (focus==null || !focus.getHiddenElements().contains(elementID)) && getFocusCount(side)==0;
+		return focus.contains(elementID);
 	}
 
 	//--------------------

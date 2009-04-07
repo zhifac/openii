@@ -25,7 +25,6 @@ import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.filters.Focus;
 import org.mitre.harmony.model.mapping.MappingCellManager;
 import org.mitre.schemastore.model.MappingCell;
-import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.graph.FilteredGraph;
 import org.mitre.schemastore.model.graph.HierarchicalGraph;
 
@@ -142,11 +141,7 @@ class MatcherDialog extends JDialog implements ActionListener, Runnable
 				// Set the hidden elements
 				ArrayList<Integer> hiddenElements = new ArrayList<Integer>();
 				hiddenElements.addAll(harmonyModel.getPreferences().getFinishedElements(schemaID));
-				if(focus!=null)
-					for(Integer hiddenID : focus.getHiddenIDs())
-						for(SchemaElement descendant : graph.getDescendantElements(hiddenID))
-							if(!focus.contains(descendant.getId()))
-								hiddenElements.add(descendant.getId());
+				if(focus!=null) hiddenElements.addAll(focus.getHiddenElements());
 				filteredGraph.setHiddenElements(hiddenElements);
 
 				// Add the filtered graph
