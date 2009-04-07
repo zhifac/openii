@@ -149,8 +149,9 @@ public class FilterManager extends AbstractManager<FiltersListener> implements S
 	/** Removes all foci from the specified side */
 	public void removeFoci(Integer side)
 	{
-		ArrayList<Focus> foci = side==HarmonyConsts.LEFT ? leftFoci : rightFoci;
-		foci.clear();
+		for(Focus focus : side==HarmonyConsts.LEFT ? leftFoci : rightFoci)
+			for(Integer elementID : new ArrayList<Integer>(focus.getFocusedIDs()))
+				focus.removeFocus(elementID);
 		for(FiltersListener listener : getListeners()) listener.focusModified(side);		
 	}
 	
