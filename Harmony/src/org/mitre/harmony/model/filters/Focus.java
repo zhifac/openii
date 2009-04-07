@@ -1,6 +1,7 @@
 package org.mitre.harmony.model.filters;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
@@ -22,7 +23,10 @@ public class Focus
 	private ArrayList<Integer> hiddenIDs = new ArrayList<Integer>();
 	
 	/** Stores the list of all elements in focus */
-	private ArrayList<Integer> elementsInFocus;
+	private HashSet<Integer> elementsInFocus;
+	
+	/** Stores the list of all hidden elements */
+	private HashSet<Integer> hiddenElements;
 	
 	/** Returns the list of ancestor IDs for the specified element */
 	private ArrayList<Integer> getAncestorIDs(Integer elementID)
@@ -35,28 +39,6 @@ public class Focus
 				ancestorIDs.addAll(getAncestorIDs(childElement.getId()));
 			}
 		return ancestorIDs;
-	}
-	
-	/** Returns the list of elements in focus */
-	private ArrayList<Integer> getFocusedElements()
-	{
-		if(elementsInFocus==null)
-		{
-			// Identify the root IDs
-			ArrayList<Integer> rootIDs = new ArrayList<Integer>(focusIDs);
-			if(rootIDs.size()==0)
-				for(SchemaElement element : graph.getRootElements())
-					rootIDs.add(element.getId());
-
-			// Generate the elements in focus
-			elementsInFocus = new ArrayList<Integer>();
-			for(Integer elementID : rootIDs)
-			{
-				elementsInFocus.add(elementID);
-				elementsInFocus.addAll(getAncestorIDs(elementID));
-			}
-		}
-		return elementsInFocus;
 	}
 	
 	/** Constructs the focus object */
@@ -88,19 +70,56 @@ public class Focus
 		// Adds the focus element
 		focusIDs.add(elementID);
 		elementsInFocus=null;
+		hiddenElements=null;
 	}
 	
 	/** Removes a focus */
 	public void removeFocus(Integer elementID)
-		{ focusIDs.remove(elementID); elementsInFocus=null; }
+		{ focusIDs.remove(elementID); elementsInFocus=null; hiddenElements=null; }
 	
 	/** Hides the specified element */
 	public void hideElement(Integer elementID)
-		{ hiddenIDs.add(elementID); elementsInFocus=null; }
+		{ hiddenIDs.add(elementID); elementsInFocus=null; hiddenElements=null; }
 	
 	/** Unhides the specified element */
 	public void unhideElement(Integer elementID)
-		{ hiddenIDs.remove(elementID); elementsInFocus=null; }
+		{ hiddenIDs.remove(elementID); elementsInFocus=null; hiddenElements=null; }
+
+	/** Returns the list of elements in focus */
+	public HashSet<Integer> getFocusedElements()
+	{
+		if(elementsInFocus==null)
+		{
+			// Identify the root IDs
+			ArrayList<Integer> rootIDs = new ArrayList<Integer>(focusIDs);
+			if(rootIDs.size()==0)
+				for(SchemaElement element : graph.getRootElements())
+					rootIDs.add(element.getId());
+
+			// Generate the elements in focus
+			elementsInFocus = new HashSet<Integer>();
+			for(Integer elementID : rootIDs)
+			{
+				elementsInFocus.add(elementID);
+				elementsInFocus.addAll(getAncestorIDs(elementID));
+			}
+		}
+		return elementsInFocus;
+	}
+	
+	/** Returns the list of hidden elements */
+	public HashSet<Integer> getHiddenElements()
+	{
+		if(hiddenElements==null)
+		{
+			hiddenElements = new HashSet<Integer>();
+			for(Integer hiddenID : hiddenIDs)
+				for(SchemaElement descendant : graph.getDescendantElements(hiddenID))
+					if(!contains(descendant.getId()))
+						hiddenElements.add(descendant.getId());
+		}
+		return hiddenElements;
+	}
 	
 	/** Indicates if the specified element is within focus */
 	public boolean contains(Integer elementID)

@@ -4,7 +4,6 @@ package org.mitre.harmony.view.schemaTree;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
 
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
@@ -68,12 +67,11 @@ class SchemaTreeNodeMenu extends JPopupMenu implements ActionListener
 			
 			// Retrieve focus information about the element associated with this menu
 			Focus focus = harmonyModel.getFilters().getFocus(tree.getSide(), schemaID);
-			ArrayList<Focus> foci = harmonyModel.getFilters().getFoci(tree.getSide());
 			boolean inFocus = harmonyModel.getFilters().inFocus(tree.getSide(),schemaID,elementID);
 			
 			// Show menu option for allowing focus to be set and cleared
 			if(getComponentCount()>0) add(new JSeparator());
-			if(!inFocus || foci.size()==0 || (focus!=null && focus.getFocusedIDs().size()==0)) add(setFocus);
+			if(!inFocus || focus==null || focus.getFocusedIDs().size()==0) add(setFocus);
 			if(focus!=null && focus.getFocusedIDs().contains(elementID)) add(clearFocus);
 			add(clearAllFoci);
 			

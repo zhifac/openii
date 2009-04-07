@@ -17,7 +17,6 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 
 import org.mitre.harmony.model.HarmonyModel;
-import org.mitre.harmony.model.filters.Focus;
 import org.mitre.harmony.view.dialogs.Link;
 import org.mitre.schemastore.model.Domain;
 import org.mitre.schemastore.model.SchemaElement;
@@ -116,9 +115,7 @@ class SchemaTreeRenderer extends DefaultTreeCellRenderer
 		{
 			// Determine if the node is in focus
 			SchemaTree schemaTree = (SchemaTree)tree;
-			isFocused = true;
-			for(Focus focus : harmonyModel.getFilters().getFoci(schemaTree.getSide()))
-				if(focus.getFocusedIDs().size()>0) isFocused=false;
+			isFocused = harmonyModel.getFilters().getFocusCount(schemaTree.getSide())==0;
 			
 			// Set the text and icon
 			setText("  "  + obj);
