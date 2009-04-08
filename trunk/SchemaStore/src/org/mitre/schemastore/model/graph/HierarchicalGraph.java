@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -217,6 +218,40 @@ public class HierarchicalGraph extends Graph
 		ArrayList<SchemaElement> partialPath = new ArrayList<SchemaElement>();
 		partialPath.add(getElement(elementID));
 		return getPaths(partialPath);
+	}
+	
+	/** Returns the various IDs associated with the specified partial path */
+	private ArrayList<Integer> getPathIDs(Integer elementID, List<String> path)
+	{
+		ArrayList<Integer> pathIDs = new ArrayList<Integer>();
+		
+		// Get name information
+		String elementName = getElement(elementID).getName();
+		String displayedName = getDisplayName(elementID);
+		String pathName = path.get(0);
+
+		// Check to see if element in partial path
+		if(elementName.equals(pathName) || displayedName.equals(pathName))
+		{
+			if(path.size()>1)
+			{
+				List<String> subPath = path.subList(1, path.size());
+				for(SchemaElement element : getChildElements(elementID))
+					pathIDs.addAll(getPathIDs(element.getId(), subPath));
+			}
+			else pathIDs.add(elementID);
+		}
+		
+		return pathIDs;
+	}
+	
+	/** Returns the various IDs associated with the specified path */
+	public ArrayList<Integer> getPathIDs(ArrayList<String> path)
+	{
+		ArrayList<Integer> pathIDs = new ArrayList<Integer>();
+		for(SchemaElement element : getRootElements())
+			pathIDs.addAll(getPathIDs(element.getId(),path));
+		return pathIDs;
 	}
 	
 	/** Returns the various depths of the specified element in the graph */
