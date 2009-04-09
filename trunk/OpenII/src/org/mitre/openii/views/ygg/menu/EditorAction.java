@@ -3,11 +3,8 @@ package org.mitre.openii.views.ygg.menu;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.ui.IEditorDescriptor;
-import org.eclipse.ui.IEditorRegistry;
-import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.IWorkbenchWindow;
-import org.eclipse.ui.PlatformUI;
 import org.mitre.openii.application.OpenIIActivator;
+import org.mitre.openii.model.EditorManager;
 
 /** Handles an action related to launching an editor */
 public class EditorAction extends Action
@@ -33,20 +30,7 @@ public class EditorAction extends Action
 	/** Launches the editor */
 	public void run()
 	{
-		// Only launch the editor if truly selected
 		if(getText().equals("Open") || isChecked())
-		{
-			// Set the editor as the default editor
-			IEditorRegistry registry = PlatformUI.getWorkbench().getEditorRegistry();
-			registry.setDefaultEditor(menuManager.getEditorType(), editor.getId());
-
-			// Display the editor
-			try {
-				IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-				IWorkbenchPage page = window.getActivePage();
-				page.openEditor(new ElementInput(menuManager.getElement()),editor.getId());
-			}
-			catch(Exception e) { System.out.println(e.getMessage()); }
-		}
+			EditorManager.launchEditor(editor.getId(), menuManager.getElement());
 	}
 }

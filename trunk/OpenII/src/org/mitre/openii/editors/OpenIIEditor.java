@@ -8,9 +8,9 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.EditorPart;
+import org.mitre.openii.model.EditorInput;
 import org.mitre.openii.model.OpenIIListener;
 import org.mitre.openii.model.OpenIIManager;
-import org.mitre.openii.views.ygg.menu.ElementInput;
 import org.mitre.schemastore.model.Group;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.Schema;
@@ -28,7 +28,7 @@ abstract class OpenIIEditor extends EditorPart implements OpenIIListener
 		setSite(site); setInput(input);
 		
 		// Extract element ID
-		Object element = ((ElementInput)input).getElement();
+		Object element = ((EditorInput)input).getElement();
 		if(element instanceof Schema) elementID = ((Schema)element).getId();
 		if(element instanceof Group) elementID = ((Group)element).getId();
 		if(element instanceof Mapping) elementID = ((Mapping)element).getId();

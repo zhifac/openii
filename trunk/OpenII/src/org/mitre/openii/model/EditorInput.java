@@ -1,17 +1,17 @@
-package org.mitre.openii.views.ygg.menu;
+package org.mitre.openii.model;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IPersistableElement;
 
 /** Class for providing input to the editor */
-public class ElementInput implements IEditorInput
+public class EditorInput implements IEditorInput
 {
 	/** Stores the element */
 	private Object element = null;
 	
 	/** Constructs the element id input */
-	public ElementInput(Object element)
+	public EditorInput(Object element)
 		{ this.element = element; }
 
 	/** Returns the element */

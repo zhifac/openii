@@ -10,6 +10,7 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.ui.IEditorDescriptor;
 import org.eclipse.ui.IEditorRegistry;
 import org.eclipse.ui.PlatformUI;
+import org.mitre.openii.model.EditorManager;
 import org.mitre.openii.model.OpenIIManager;
 import org.mitre.openii.views.ygg.GroupSchema;
 import org.mitre.openii.views.ygg.MappingSchema;
@@ -52,22 +53,6 @@ public class YggMenuManager extends MenuManager implements IMenuListener
 		if(element instanceof Mapping) return ((Mapping)element).getId();
 		return null;
 	}
-
-	/** Returns the type associated with the selected element */
-	public Class<?> getElementType()
-	{
-		if(element instanceof Schema || element instanceof GroupSchema || element instanceof MappingSchema) return Schema.class;
-		if(element instanceof Group) return Group.class;
-		if(element instanceof Mapping) return Mapping.class;
-		return null;
-	}
-	
-	/** Returns the editor type associated with the selected element */
-	public String getEditorType()
-	{
-		Class<?> elementType = getElementType();
-		return elementType==null ? "" : "." + getElementType().toString().toLowerCase();
-	}
 	
 	/** Generates the editor menu */
 	private void getEditorMenu(IMenuManager menuManager)
@@ -76,11 +61,11 @@ public class YggMenuManager extends MenuManager implements IMenuListener
 		IEditorRegistry registry = PlatformUI.getWorkbench().getEditorRegistry();
 		
 		// Retrieve the list of available editors
-		IEditorDescriptor editors[] = registry.getEditors(getEditorType());
+		IEditorDescriptor editors[] = registry.getEditors(EditorManager.getEditorType(element));
 		if(editors.length > 0)
 		{
 			// Display the menu for the default editor
-			IEditorDescriptor defaultEditor = registry.getDefaultEditor(getEditorType());			
+			IEditorDescriptor defaultEditor = registry.getDefaultEditor(EditorManager.getEditorType(element));			
 			menuManager.add(new EditorAction(this,"Open",defaultEditor));
 			
 			// Display the menu to select an editor

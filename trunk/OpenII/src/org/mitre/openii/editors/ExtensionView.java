@@ -11,9 +11,9 @@ import org.eclipse.swt.awt.SWT_AWT;
 import org.mitre.galaxy.model.Schemas;
 import org.mitre.galaxy.view.extensionsPane.ExtensionsPane;
 import org.mitre.galaxy.view.extensionsPane.ExtensionsPaneListener;
+import org.mitre.openii.model.EditorInput;
 import org.mitre.openii.model.GalaxyManager;
 import org.mitre.openii.model.OpenIIManager;
-import org.mitre.openii.views.ygg.menu.ElementInput;
 import org.mitre.schemastore.model.Schema;
 
 /** Constructs the Extension graph */
@@ -53,7 +53,7 @@ public class ExtensionView extends OpenIIEditor implements ExtensionsPaneListene
 			public void run()
 			{
 				try {
-					ElementInput input = new ElementInput(schema);
+					EditorInput input = new EditorInput(schema);
 					String editorID = "org.mitre.openii.editors.SchemaView";
 					getSite().getPage().openEditor(input,editorID);
 				} catch(Exception e) { System.out.println(e); }

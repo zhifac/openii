@@ -27,7 +27,9 @@ public class HarmonyView extends OpenIIEditor
 
 		// Construct the applet pane containing the Harmony frame
 		JApplet appletPane = new JApplet();
-		appletPane.add(new HarmonyFrame(new HarmonyModel(frame)));		
+		HarmonyModel harmonyModel = new HarmonyModel(frame);
+		harmonyModel.getMappingManager().loadMapping(elementID);
+		appletPane.add(new HarmonyFrame(harmonyModel));
 		frame.add(appletPane);
 	}
 
