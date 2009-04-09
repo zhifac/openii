@@ -17,7 +17,7 @@ public abstract class AbstractManager<Listener>
 	private HarmonyModel harmonyModel;
 	
 	/** Stores manager listeners */
-	private ListenerGroup<Listener> listeners = new ListenerGroup<Listener>();
+	protected ListenerGroup<Listener> listeners = new ListenerGroup<Listener>();
 
 	/** Constructor used to monitor changes that might affect the selected info */
 	public AbstractManager(HarmonyModel harmonyModel)
