@@ -48,7 +48,7 @@ public class YggView extends ViewPart implements OpenIIListener, IDoubleClickLis
 		Object element = ((TreeSelection)e.getSelection()).getFirstElement();
 		IEditorRegistry registry = PlatformUI.getWorkbench().getEditorRegistry();
 		IEditorDescriptor editor = registry.getDefaultEditor(EditorManager.getEditorType(element));
-		EditorManager.launchEditor(editor.getId(), element);
+		if(editor!=null) EditorManager.launchEditor(editor.getId(), element);
 	}
 	
 	// Handles modifications of objects in the Ygg tree
