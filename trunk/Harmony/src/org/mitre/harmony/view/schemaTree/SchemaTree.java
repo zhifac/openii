@@ -387,7 +387,7 @@ public class SchemaTree extends JTree implements PreferencesListener, SelectedIn
 	 * user-specified copy of each visible link is made.
 	 * @param node A schema node that has just been marked as completed.
 	 */
-	private void updateLinks(Integer elementID)
+	private void updateMappingCells(Integer elementID)
 	{
 		// Mark all visible links as user selected and all others as rejected
 		for(Integer mappingCellID : harmonyModel.getMappingCellManager().getMappingCellsByElement(elementID))
@@ -544,7 +544,7 @@ public class SchemaTree extends JTree implements PreferencesListener, SelectedIn
 	/** Handles the marking of a element as finished */
 	public void elementsMarkedAsFinished(Integer schemaID, HashSet<Integer> elementIDs)
 	{
-		for(Integer elementID : elementIDs) updateLinks(elementID);
+		for(Integer elementID : elementIDs) updateMappingCells(elementID);
 		DefaultMutableTreeNode node = getSchemaNode(schemaID);
 		if(node!=null) repaint(getBufferedRowBounds(node));
 	}

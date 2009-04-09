@@ -39,7 +39,7 @@ public class MappingLines implements MappingCellListener, FiltersListener, Schem
 	private HarmonyModel harmonyModel;
 	
 	/** Stores a list of the mapping cell lines */
-	public static Hashtable<Integer, MappingCellLines> lines = null;
+	private Hashtable<Integer, MappingCellLines> lines = null;
 	
 	/** Stores schema tree mapping cell listeners */
 	private Vector<LinesListener> listeners = new Vector<LinesListener>();
