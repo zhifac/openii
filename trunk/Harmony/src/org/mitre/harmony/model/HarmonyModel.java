@@ -12,17 +12,17 @@ import org.mitre.harmony.model.selectedInfo.SelectedInfoManager;
 public class HarmonyModel
 {
 	// Stores the base frame for the particular model
-	private Frame baseFrame = null;
+	protected Frame baseFrame = null;
 	
 	// Stores the managers associated with the currently displayed mapping
-	private SchemaManager schemaManager = new SchemaManager(this);
-	private MappingManager mappingManager = new MappingManager(this);
-	private MappingCellManager mappingCellManager = new MappingCellManager(this);
+	protected SchemaManager schemaManager = new SchemaManager(this);
+	protected MappingManager mappingManager = new MappingManager(this);
+	protected MappingCellManager mappingCellManager = new MappingCellManager(this);
 	
 	// Stores the various managers associated with the model
-	private FilterManager filterManager = new FilterManager(this);
-	private PreferencesManager preferencesManager = new PreferencesManager(this);
-	private SelectedInfoManager selectedInfoManager = new SelectedInfoManager(this);
+	protected FilterManager filterManager = new FilterManager(this);
+	protected PreferencesManager preferencesManager = new PreferencesManager(this);
+	protected SelectedInfoManager selectedInfoManager = new SelectedInfoManager(this);
 
 	/** Constructs the Harmony model */
 	public HarmonyModel(Frame baseFrame)
