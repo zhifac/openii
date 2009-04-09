@@ -11,9 +11,9 @@ import org.eclipse.swt.awt.SWT_AWT;
 import org.eclipse.ui.part.ViewPart;
 import org.mitre.galaxy.view.searchPane.SearchPane;
 import org.mitre.galaxy.view.searchPane.SearchPaneListener;
+import org.mitre.openii.model.EditorInput;
 import org.mitre.openii.model.GalaxyManager;
 import org.mitre.openii.model.OpenIIManager;
-import org.mitre.openii.views.ygg.menu.ElementInput;
 import org.mitre.schemastore.model.Schema;
 
 /** Constructs the Search View */
@@ -53,7 +53,7 @@ public class SearchView extends ViewPart implements SearchPaneListener
 			public void run()
 			{
 				try {
-					ElementInput input = new ElementInput(schema);
+					EditorInput input = new EditorInput(schema);
 					String editorID = "org.mitre.openii.editors.SchemaView";
 					getSite().getPage().openEditor(input,editorID);
 				} catch(Exception e) { System.out.println(e); }
