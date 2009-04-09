@@ -610,19 +610,6 @@ public class Database
 		} catch(SQLException e) { System.out.println("(E) Database:getBaseElements: "+e.getMessage()); }
 		return baseElements;
 	}
-
-	/** Retrieves the base element count from the repository */
-	static public Integer getBaseElementCount(Integer schemaID)
-	{
-		Integer elementCount = 0;
-		try {
-			Statement stmt = connection.getStatement();
-			ResultSet rs = stmt.executeQuery("SELECT count(*) AS count FROM schema_elements WHERE schema_id="+schemaID);
-			if(rs.next()) elementCount = rs.getInt("count");
-			stmt.close();
-		} catch(SQLException e) { System.out.println("(E) Database:getBaseElementCount: "+e.getMessage()); }
-		return elementCount;
-	}
 	
 	/** Retrieves the requested schema element from the repository */
 	static public SchemaElement getSchemaElement(Integer schemaElementID)

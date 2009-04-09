@@ -105,13 +105,7 @@ public class SchemaElements
 	
 	/** Retrieves the schema element count for the specified schema */
 	static public Integer getSchemaElementCount(Integer schemaID)
-	{
-		Integer elementCount = Database.getBaseElementCount(schemaID);
-		for(Integer ancestorID : SchemaRelationships.getAncestors(schemaID))
-			elementCount += Database.getBaseElementCount(ancestorID);
-		elementCount += Database.getDefaultDomainCount();
-		return elementCount;
-	}
+		{ return getSchemaElements(schemaID).size(); }
 	
 	/** Retrieves the schema elements for the specified schema */
 	static public ArrayList<SchemaElement> getSchemaElements(Integer schemaID)
