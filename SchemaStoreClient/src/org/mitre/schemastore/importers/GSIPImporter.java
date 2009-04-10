@@ -2,11 +2,14 @@
 
 package org.mitre.schemastore.importers;
 
-import java.util.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Hashtable;
 
-import antlr.*;
-import java.io.*;
-import java.sql.*;
 import org.mitre.schemastore.model.Attribute;
 import org.mitre.schemastore.model.Domain;
 import org.mitre.schemastore.model.DomainValue;
@@ -87,7 +90,6 @@ public class GSIPImporter extends Importer {
             definition = concatNonNullFields(definition, entities.getString("description"), " [desc] ");
             definition = concatNonNullFields(definition, entities.getString("entityNote"), " [note] ");
             
-            int itemID = entities.getInt("itemIdentifier_PK");
             String FTID = entities.getString("FTID");  // key to get attributes.
     		// create an entity for a table
             tblEntity = new Entity(nextId(), tblName, definition, 0);   			
@@ -109,7 +111,7 @@ public class GSIPImporter extends Importer {
             attributes=selectAttributes.executeQuery(attributeSQL); 
             Attribute attribute;            
             int a=0;
-            Hashtable <String, Integer> datatypeIDs = new Hashtable<String, Integer>();
+            Hashtable<String, Integer> datatypeIDs = new Hashtable<String, Integer>();
             while(attributes.next()) {              	
             	String attName= attributes.getString("attName");           	
             	String qualifiedPathName = attributes.getString("qualifiedPathName");
