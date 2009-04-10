@@ -20,14 +20,14 @@
       </operation>
       <operation xmlns:operNS="http://servlet.schemastore.mitre.org" xmlns:retNS="http://servlet.schemastore.mitre.org" xmlns:rtns="http://model.schemastore.mitre.org" name="getGroups" qname="operNS:getGroups" returnQName="retNS:getGroupsReturn" returnType="rtns:Group" soapAction="">
       </operation>
-      <operation xmlns:operNS="http://servlet.schemastore.mitre.org" xmlns:retNS="http://servlet.schemastore.mitre.org" xmlns:rtns="http://www.w3.org/2001/XMLSchema" name="updateAttribute" qname="operNS:updateAttribute" returnQName="retNS:updateAttributeReturn" returnType="rtns:boolean" soapAction="">
-        <parameter xmlns:pns="http://servlet.schemastore.mitre.org" xmlns:tns="http://model.schemastore.mitre.org" qname="pns:attribute" type="tns:Attribute"/>
-      </operation>
       <operation xmlns:operNS="http://servlet.schemastore.mitre.org" xmlns:retNS="http://servlet.schemastore.mitre.org" xmlns:rtns="http://model.schemastore.mitre.org" name="getRelationship" qname="operNS:getRelationship" returnQName="retNS:getRelationshipReturn" returnType="rtns:Relationship" soapAction="">
         <parameter xmlns:pns="http://servlet.schemastore.mitre.org" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:relationshipID" type="tns:int"/>
       </operation>
       <operation xmlns:operNS="http://servlet.schemastore.mitre.org" xmlns:retNS="http://servlet.schemastore.mitre.org" xmlns:rtns="http://model.schemastore.mitre.org" name="getEntity" qname="operNS:getEntity" returnQName="retNS:getEntityReturn" returnType="rtns:Entity" soapAction="">
         <parameter xmlns:pns="http://servlet.schemastore.mitre.org" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:entityID" type="tns:int"/>
+      </operation>
+      <operation xmlns:operNS="http://servlet.schemastore.mitre.org" xmlns:retNS="http://servlet.schemastore.mitre.org" xmlns:rtns="http://www.w3.org/2001/XMLSchema" name="updateAttribute" qname="operNS:updateAttribute" returnQName="retNS:updateAttributeReturn" returnType="rtns:boolean" soapAction="">
+        <parameter xmlns:pns="http://servlet.schemastore.mitre.org" xmlns:tns="http://model.schemastore.mitre.org" qname="pns:attribute" type="tns:Attribute"/>
       </operation>
       <operation xmlns:operNS="http://servlet.schemastore.mitre.org" xmlns:retNS="http://servlet.schemastore.mitre.org" xmlns:rtns="http://www.w3.org/2001/XMLSchema" name="addSubtype" qname="operNS:addSubtype" returnQName="retNS:addSubtypeReturn" returnType="rtns:int" soapAction="">
         <parameter xmlns:pns="http://servlet.schemastore.mitre.org" xmlns:tns="http://model.schemastore.mitre.org" qname="pns:subtype" type="tns:Subtype"/>
@@ -36,6 +36,12 @@
         <parameter xmlns:pns="http://servlet.schemastore.mitre.org" xmlns:tns="http://model.schemastore.mitre.org" qname="pns:schema" type="tns:Schema"/>
       </operation>
       <operation xmlns:operNS="http://servlet.schemastore.mitre.org" xmlns:retNS="http://servlet.schemastore.mitre.org" xmlns:rtns="http://model.schemastore.mitre.org" name="getSchemas" qname="operNS:getSchemas" returnQName="retNS:getSchemasReturn" returnType="rtns:Schema" soapAction="">
+      </operation>
+      <operation xmlns:operNS="http://servlet.schemastore.mitre.org" xmlns:retNS="http://servlet.schemastore.mitre.org" xmlns:rtns="http://model.schemastore.mitre.org" name="getAlias" qname="operNS:getAlias" returnQName="retNS:getAliasReturn" returnType="rtns:Alias" soapAction="">
+        <parameter xmlns:pns="http://servlet.schemastore.mitre.org" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:aliasID" type="tns:int"/>
+      </operation>
+      <operation xmlns:operNS="http://servlet.schemastore.mitre.org" xmlns:retNS="http://servlet.schemastore.mitre.org" xmlns:rtns="http://www.w3.org/2001/XMLSchema" name="addEntity" qname="operNS:addEntity" returnQName="retNS:addEntityReturn" returnType="rtns:int" soapAction="">
+        <parameter xmlns:pns="http://servlet.schemastore.mitre.org" xmlns:tns="http://model.schemastore.mitre.org" qname="pns:entity" type="tns:Entity"/>
       </operation>
       <operation xmlns:operNS="http://servlet.schemastore.mitre.org" xmlns:retNS="http://servlet.schemastore.mitre.org" xmlns:rtns="http://www.w3.org/2001/XMLSchema" name="importSchema" qname="operNS:importSchema" returnQName="retNS:importSchemaReturn" returnType="rtns:int" soapAction="">
         <parameter xmlns:pns="http://servlet.schemastore.mitre.org" xmlns:tns="http://model.schemastore.mitre.org" qname="pns:schema" type="tns:Schema"/>
@@ -114,9 +120,6 @@
         <parameter xmlns:pns="http://servlet.schemastore.mitre.org" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:schemaID" type="tns:int"/>
         <parameter xmlns:pns="http://servlet.schemastore.mitre.org" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:parentIDs" type="tns:int"/>
       </operation>
-      <operation xmlns:operNS="http://servlet.schemastore.mitre.org" xmlns:retNS="http://servlet.schemastore.mitre.org" xmlns:rtns="http://www.w3.org/2001/XMLSchema" name="addEntity" qname="operNS:addEntity" returnQName="retNS:addEntityReturn" returnType="rtns:int" soapAction="">
-        <parameter xmlns:pns="http://servlet.schemastore.mitre.org" xmlns:tns="http://model.schemastore.mitre.org" qname="pns:entity" type="tns:Entity"/>
-      </operation>
       <operation xmlns:operNS="http://servlet.schemastore.mitre.org" xmlns:retNS="http://servlet.schemastore.mitre.org" xmlns:rtns="http://www.w3.org/2001/XMLSchema" name="addDomain" qname="operNS:addDomain" returnQName="retNS:addDomainReturn" returnType="rtns:int" soapAction="">
         <parameter xmlns:pns="http://servlet.schemastore.mitre.org" xmlns:tns="http://model.schemastore.mitre.org" qname="pns:domain" type="tns:Domain"/>
       </operation>
@@ -182,9 +185,6 @@
       </operation>
       <operation xmlns:operNS="http://servlet.schemastore.mitre.org" xmlns:retNS="http://servlet.schemastore.mitre.org" xmlns:rtns="http://model.schemastore.mitre.org" name="getSubtype" qname="operNS:getSubtype" returnQName="retNS:getSubtypeReturn" returnType="rtns:Subtype" soapAction="">
         <parameter xmlns:pns="http://servlet.schemastore.mitre.org" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:subtypeID" type="tns:int"/>
-      </operation>
-      <operation xmlns:operNS="http://servlet.schemastore.mitre.org" xmlns:retNS="http://servlet.schemastore.mitre.org" xmlns:rtns="http://model.schemastore.mitre.org" name="getAlias" qname="operNS:getAlias" returnQName="retNS:getAliasReturn" returnType="rtns:Alias" soapAction="">
-        <parameter xmlns:pns="http://servlet.schemastore.mitre.org" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:aliasID" type="tns:int"/>
       </operation>
       <operation xmlns:operNS="http://servlet.schemastore.mitre.org" xmlns:retNS="http://servlet.schemastore.mitre.org" xmlns:rtns="http://www.w3.org/2001/XMLSchema" name="getSchemaElementCount" qname="operNS:getSchemaElementCount" returnQName="retNS:getSchemaElementCountReturn" returnType="rtns:int" soapAction="">
         <parameter xmlns:pns="http://servlet.schemastore.mitre.org" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:schemaID" type="tns:int"/>
@@ -259,7 +259,7 @@
       <operation xmlns:operNS="http://servlet.schemastore.mitre.org" xmlns:retNS="http://servlet.schemastore.mitre.org" xmlns:rtns="http://www.w3.org/2001/XMLSchema" name="addAlias" qname="operNS:addAlias" returnQName="retNS:addAliasReturn" returnType="rtns:int" soapAction="">
         <parameter xmlns:pns="http://servlet.schemastore.mitre.org" xmlns:tns="http://model.schemastore.mitre.org" qname="pns:alias" type="tns:Alias"/>
       </operation>
-      <parameter name="allowedMethods" value="addGroup getContainment addSubtype getSchemaElementType deleteDataSource getSchemaElements removeGroupFromSchema getAttribute getMappingCells updateMapping saveMapping updateSubtype getGroup extendSchema addRelationship deleteDomainValue updateDomainValue updateMappingCell getAssociatedSchemas setParentSchemas getGroups updateEntity addSchema getDescendantSchemas getParentSchemas deleteEntity getMappings deleteDomain deleteAttribute lockSchema getDeletableSchemas getAllDataSources getSchemaPath deleteContainment addDomain getMapping getSubgroups addEntity getDomain importSchema getAlias updateDomain deleteRelationship addMapping getEntity getSchemaElementsForKeyword getDataSources getSubtype getDataSourceByURL deleteAlias getSchema updateSchema addGroupToSchema addAlias getAncestorSchemas unlockSchema deleteSchema deleteGroup getSchemaElementCount updateGroup isDeletable updateDataSource updateContainment getDataSource deleteMapping deleteMappingCell deleteSubtype addContainment updateAlias addDataSource updateAttribute updateRelationship getRelationship getGroupSchemas addDomainValue getDomainValue addMappingCell getSchemas getRootSchema addAttribute getSchemaGroups getChildSchemas"/>
+      <parameter name="allowedMethods" value="addGroup getContainment addSubtype getSchemaElementType deleteDataSource getSchemaElements removeGroupFromSchema getAttribute getMappingCells updateMapping saveMapping updateSubtype getGroup extendSchema addRelationship deleteDomainValue updateDomainValue updateMappingCell getAssociatedSchemas setParentSchemas getGroups updateEntity addSchema getDescendantSchemas getParentSchemas deleteEntity deleteDomain getMappings deleteAttribute lockSchema getDeletableSchemas getAllDataSources getSchemaPath deleteContainment addDomain getMapping getSubgroups addEntity getDomain importSchema getAlias updateDomain deleteRelationship addMapping getEntity getSchemaElementsForKeyword getDataSources getSubtype getDataSourceByURL deleteAlias getSchema updateSchema addGroupToSchema addAlias getAncestorSchemas unlockSchema deleteSchema deleteGroup getSchemaElementCount updateGroup isDeletable updateDataSource updateContainment getDataSource deleteMapping deleteMappingCell deleteSubtype addContainment updateAlias addDataSource updateAttribute updateRelationship getRelationship getGroupSchemas addDomainValue getDomainValue addMappingCell getSchemas getRootSchema addAttribute getSchemaGroups getChildSchemas"/>
 
       <typeMapping xmlns:ns="http://model.schemastore.mitre.org" qname="ns:Schema" type="java:org.mitre.schemastore.model.Schema" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle=""/>
       <arrayMapping xmlns:ns="http://servlet.schemastore.mitre.org" xmlns:cmp-ns="http://model.schemastore.mitre.org" qname="ns:ArrayOf_tns1_Attribute" type="java:org.mitre.schemastore.model.Attribute[]" innerType="cmp-ns:Attribute" encodingStyle=""/>

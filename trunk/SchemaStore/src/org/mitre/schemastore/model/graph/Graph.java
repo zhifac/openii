@@ -329,8 +329,8 @@ public class Graph implements Serializable
 		// Checks to ensure that element is not referenced elsewhere
 		ArrayList<SchemaElement> referencingElements = new ArrayList<SchemaElement>();
 		for(SchemaElement element : getElements(null))
-			if(element.getReferencedIDs().contains(elementID))
-				referencingElements.add(element);
+			for(int referencedID : element.getReferencedIDs())
+				if(referencedID==elementID) { referencingElements.add(element); break; }
 		return referencingElements;
 	}
 	

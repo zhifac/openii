@@ -2,9 +2,6 @@
 
 package org.mitre.schemastore.model;
 
-import java.util.Arrays;
-import java.util.List;
-
 /**
  * Class for storing a subtype relationship
  * @author CWOLF
@@ -37,6 +34,6 @@ public class Subtype extends SchemaElement
 	public void setChildID(Integer childID) { this.childID = childID; }	
 
 	/** Returns the list of referenced IDs */
-	public List<Integer> getReferencedIDs()
-		{ return Arrays.asList(new Integer[]{parentID,childID}); }
+	public int[] getReferencedIDs()
+		{ return new int[]{parentID,childID}; }
 }
