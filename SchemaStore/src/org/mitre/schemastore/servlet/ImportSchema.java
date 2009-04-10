@@ -55,7 +55,8 @@ public class ImportSchema
 			// Get list of IDs to which this element is associated
 			ArrayList<Integer> elementIDs = new ArrayList<Integer>();
 			elementIDs.add(element.getId());
-			elementIDs.addAll(element.getReferencedIDs());
+			for(int referencedID : element.getReferencedIDs())
+				elementIDs.add(referencedID);
 
 			// Store element references
 			for(Integer elementID : elementIDs)

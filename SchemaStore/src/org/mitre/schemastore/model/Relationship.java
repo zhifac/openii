@@ -2,9 +2,6 @@
 
 package org.mitre.schemastore.model;
 
-import java.util.Arrays;
-import java.util.List;
-
 /**
  * Class for storing a relationship
  * @author CWOLF
@@ -57,6 +54,6 @@ public class Relationship extends SchemaElement
 	public void setRightMin(Integer rightMin) { this.rightMin = rightMin; }
 
 	/** Returns the list of referenced IDs */
-	public List<Integer> getReferencedIDs()
-		{ return Arrays.asList(new Integer[]{leftID,rightID}); }
+	public int[] getReferencedIDs()
+		{ return new int[]{leftID,rightID}; }
 }
