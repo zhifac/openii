@@ -17,6 +17,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 
 import org.mitre.harmony.model.HarmonyModel;
+import org.mitre.harmony.model.filters.Focus;
 import org.mitre.harmony.view.dialogs.Link;
 import org.mitre.schemastore.model.Domain;
 import org.mitre.schemastore.model.SchemaElement;
@@ -33,11 +34,13 @@ class SchemaTreeRenderer extends DefaultTreeCellRenderer
 	static private Font bold = new Font("Dialog", Font.BOLD, 12);
 	
     // Icons used in displaying schema tree nodes
-	static private Icon schemaIcon = getIcon("Schema");
-	static private Icon schemaElementIcon = getIcon("SchemaElement");
-	static private Icon finishedSchemaElementIcon = getIcon("FinishedSchemaElement");
-	static private Icon attributeIcon = getIcon("Attribute");
-	static private Icon finishedAttributeIcon = getIcon("FinishedAttribute");
+	static private Icon schemaIcon = getIcon("Schema.jpg");
+	static private Icon schemaElementIcon = getIcon("SchemaElement.jpg");
+	static private Icon finishedSchemaElementIcon = getIcon("FinishedSchemaElement.jpg");
+	static private Icon attributeIcon = getIcon("Attribute.jpg");
+	static private Icon finishedAttributeIcon = getIcon("FinishedAttribute.jpg");
+	static private Icon hiddenRootIcon = getIcon("HiddenRoot.gif");
+	static private Icon hiddenElementIcon = getIcon("HiddenElement.gif");
 	
 	/** Defines highlight color used in displaying highlighted schema tree nodes */
 	static private Color highlightColor = new Color(0xFFFF66);
@@ -48,7 +51,7 @@ class SchemaTreeRenderer extends DefaultTreeCellRenderer
 	/** Retrieve the specified icon */
 	static private Icon getIcon(String name)
 	{
-		URL url = SchemaTreeRenderer.class.getResource("/org/mitre/harmony/view/graphics/"+name+".jpg");
+		URL url = SchemaTreeRenderer.class.getResource("/org/mitre/harmony/view/graphics/"+name);
 		return new ImageIcon(Toolkit.getDefaultToolkit().getImage(url));
 	}
 	
@@ -98,15 +101,24 @@ class SchemaTreeRenderer extends DefaultTreeCellRenderer
 			isFocused = harmonyModel.getFilters().isVisibleNode(schemaTree.getSide(),(DefaultMutableTreeNode)value);
 			isSelected = harmonyModel.getSelectedInfo().isElementSelected(elementID,schemaTree.getSide());
 			isFinished = harmonyModel.getPreferences().isFinished(schemaID,elementID);
-
-			// Set the text and icon
+			
+			// Determine if the element is marked as hidden
+			Focus focus = harmonyModel.getFilters().getFocus(schemaTree.getSide(), schemaID);
+			boolean isHiddenRoot = focus!=null && focus.getHiddenIDs().contains(elementID);
+			boolean isHiddenElement = focus!=null && focus.getHiddenElements().contains(elementID);
+			
+			// Set the text
 			String name = graph.getDisplayName(element.getId());
 			String text = "<html>" + name.replace("<","&lt;").replace(">","&gt;");
 			if(harmonyModel.getPreferences().getShowSchemaTypes() && domain!=null)
 				text += " <font color='#888888'>(" + domain.getName() + ")</font>";
 			text += "</html>";
 			setText(text);
-			if(domain!=null) setIcon(isFinished ? finishedAttributeIcon : attributeIcon);
+			
+			// Set the icon
+			if(isHiddenRoot) setIcon(hiddenRootIcon);
+			else if(isHiddenElement) setIcon(hiddenElementIcon);
+			else if(domain!=null) setIcon(isFinished ? finishedAttributeIcon : attributeIcon);
 			else setIcon(isFinished ? finishedSchemaElementIcon : schemaElementIcon);
 		}
 		
