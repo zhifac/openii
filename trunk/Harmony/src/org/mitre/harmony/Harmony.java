@@ -75,10 +75,13 @@ public class Harmony extends JFrame implements MappingListener, WindowListener
 	/** Launches Harmony */
 	static public void main(String args[])
 	{
+		// Get the service address
 		String serviceAddress = ConfigManager.getParm("schemastore");
-		if(serviceAddress==null) serviceAddress = "../SchemaStore/SchemaStore.jar";
-		if(SchemaStoreManager.setConnection(serviceAddress))
-			new Harmony();
+		if(serviceAddress==null)
+			ConfigManager.setParm("schemastore", serviceAddress = "../SchemaStore/SchemaStore.jar");
+
+		// Launch Harmony
+		if(SchemaStoreManager.setConnection(serviceAddress)) new Harmony();
 		else System.out.println("(E) Failed to connect to SchemaStore");
 	}
 }
