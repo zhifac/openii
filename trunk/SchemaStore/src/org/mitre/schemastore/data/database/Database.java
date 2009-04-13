@@ -450,7 +450,7 @@ public class Database
 		Integer validationNumber = 0;
 		try {
 			Statement stmt = connection.getStatement();
-			ResultSet rs = stmt.executeQuery("SELECT mod(sum((schema_id+1)*(base_id+1)),10000000) AS validation_number FROM extensions");
+			ResultSet rs = stmt.executeQuery("SELECT sum((mod(schema_id,100)+1)*(mod(base_id,100)+1)) AS validation_number FROM extensions");
 			if(rs.next())
 				validationNumber = rs.getInt("validation_number");
 			stmt.close();
