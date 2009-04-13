@@ -546,14 +546,14 @@ public class SchemaTree extends JTree implements PreferencesListener, SelectedIn
 	{
 		for(Integer elementID : elementIDs) updateMappingCells(elementID);
 		DefaultMutableTreeNode node = getSchemaNode(schemaID);
-		if(node!=null) repaint(getBufferedRowBounds(node));
+		if(node!=null) repaint(computeFocusRectangle(node));
 	}
 
 	/** Handles the marking of a element as unfinished */
 	public void elementsMarkedAsUnfinished(Integer schemaID, HashSet<Integer> elementIDs)
 	{
 		DefaultMutableTreeNode node = getSchemaNode(schemaID);
-		if(node!=null) repaint(getBufferedRowBounds(node));
+		if(node!=null) repaint(computeFocusRectangle(node));
 	}
 	
 	// Unused listener events
