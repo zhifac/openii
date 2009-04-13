@@ -395,7 +395,7 @@ public class SchemaTree extends JTree implements PreferencesListener, SelectedIn
 			MappingCell mappingCell = harmonyModel.getMappingCellManager().getMappingCell(mappingCellID);
 			if(!mappingCell.getValidated())
 			{
-				mappingCell.setScore(harmonyModel.getFilters().visibleMappingCell(mappingCellID)?MappingCellManager.MAX_CONFIDENCE:MappingCellManager.MIN_CONFIDENCE);
+				mappingCell.setScore(harmonyModel.getFilters().isVisibleMappingCell(mappingCellID)?MappingCellManager.MAX_CONFIDENCE:MappingCellManager.MIN_CONFIDENCE);
 				mappingCell.setAuthor(System.getProperty("user.name"));
 				mappingCell.setValidated(true);
 				harmonyModel.getMappingCellManager().setMappingCell(mappingCell);
@@ -492,7 +492,7 @@ public class SchemaTree extends JTree implements PreferencesListener, SelectedIn
 			if(node.getUserObject() instanceof Integer && e.getButton()==MouseEvent.BUTTON1)
 			{
 				Integer elementID = (Integer)node.getUserObject();
-				if(harmonyModel.getFilters().visibleNode(side,node))
+				if(harmonyModel.getFilters().isVisibleNode(side,node))
 					harmonyModel.getSelectedInfo().setElement(elementID,side,e.isControlDown());
 			}
 			

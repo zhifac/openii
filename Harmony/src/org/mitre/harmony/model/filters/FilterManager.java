@@ -5,7 +5,6 @@ package org.mitre.harmony.model.filters;
 import java.util.ArrayList;
 
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.TreePath;
 
 import org.mitre.harmony.model.AbstractManager;
 import org.mitre.harmony.model.HarmonyConsts;
@@ -222,12 +221,8 @@ public class FilterManager extends AbstractManager<FiltersListener> implements S
 	// Handles visibility
 	//--------------------
 
-	/** Determines if a path is visible or not */
-	public boolean visiblePath(Integer side, TreePath path)
-		{ return visibleNode(side, (DefaultMutableTreeNode) path.getLastPathComponent()); }
-
-	/** Determines if a node is visible or not */
-	public boolean visibleNode(Integer side, DefaultMutableTreeNode node)
+	/** Determines if the specified node is visible or not */
+	public boolean isVisibleNode(Integer side, DefaultMutableTreeNode node)
 	{
 		// Check that the element is within focus
 		Integer schemaID = SchemaTree.getSchema(node);
@@ -236,13 +231,11 @@ public class FilterManager extends AbstractManager<FiltersListener> implements S
 		
 		// Check that the element is within depth
 		int depth = node.getPath().length-2;
-		int minDepth = side.equals(HarmonyConsts.LEFT) ? minLeftDepth : minRightDepth;
-		int maxDepth = side.equals(HarmonyConsts.LEFT) ? maxLeftDepth : maxRightDepth;
-		return depth >= minDepth && depth <= maxDepth;
+		return depth >= getMinDepth(side) && depth <= getMaxDepth(side);
 	}
 	
-	/** Determines if a link should be displayed or not */
-	public boolean visibleMappingCell(Integer mappingCellID)
+	/** Determines if the specified mapping cell is visible or not */
+	public boolean isVisibleMappingCell(Integer mappingCellID)
 	{
 		// Retrieve the mapping cell info
 		MappingCell mappingCell = getModel().getMappingCellManager().getMappingCell(mappingCellID);
@@ -269,7 +262,7 @@ public class FilterManager extends AbstractManager<FiltersListener> implements S
 		// Indicates that the mapping cell is visible
 		return true;
 	}
-
+	
 	/** Remove focus filters to schemas that are no longer being viewed */
 	public void selectedSchemasModified()
 	{

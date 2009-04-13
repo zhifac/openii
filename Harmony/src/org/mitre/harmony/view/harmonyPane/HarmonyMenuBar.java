@@ -5,6 +5,7 @@ package org.mitre.harmony.view.harmonyPane;
 import java.awt.event.KeyEvent;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.HashSet;
 
 import javax.swing.ButtonGroup;
@@ -24,8 +25,8 @@ import org.mitre.harmony.view.dialogs.mappings.LoadMappingDialog;
 import org.mitre.harmony.view.dialogs.mappings.SaveMappingDialog;
 import org.mitre.harmony.view.dialogs.matcher.MatcherMenu;
 import org.mitre.harmony.view.dialogs.schemas.SchemaDialog;
-import org.mitre.harmony.view.mappingPane.MappingLines;
 import org.mitre.harmony.view.affinity.AffinityDialog;
+import org.mitre.schemastore.model.MappingCell;
 
 /**
  * Displays all menu bar choices in Harmony
@@ -162,8 +163,13 @@ public class HarmonyMenuBar extends JMenuBar
 	    {	    	
 	    	// Selects all links currently displayed in Harmony
 	    	if(e.getSource() == selectLinks)
-	    		{ harmonyModel.getSelectedInfo().setMappingCells(MappingLines.mappingLines.getMappingCellsInRegion(null),true); }
-	    	
+	    	{
+	    		ArrayList<Integer> mappingCellIDs = new ArrayList<Integer>();
+	    		for(MappingCell mappingCell : harmonyModel.getMappingCellManager().getMappingCells())
+	    			mappingCellIDs.add(mappingCell.getId());
+	    		harmonyModel.getSelectedInfo().setMappingCells(mappingCellIDs, true);
+	    	}
+
 	    	// Removes all links currently loaded into Harmony
 	    	if(e.getSource() == removeLinks)
 	    	{

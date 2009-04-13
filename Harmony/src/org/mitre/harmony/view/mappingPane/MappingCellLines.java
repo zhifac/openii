@@ -24,6 +24,9 @@ class MappingCellLines
 	private static Color RED = new Color(0.8f,0.0f,0.0f);
 	private static Color GREEN = new Color(0.0f,0.8f,0.0f);
 	
+	/** Stores the mapping pane to which these lines are associated */
+	private MappingPane mappingPane;
+	
 	/** Stores the mapping cell ID */
 	private Integer mappingCellID;
 	
@@ -40,16 +43,16 @@ class MappingCellLines
 	private void getLines(Integer leftID, Integer rightID)
 	{
 		// Retrieve the left and right schema trees
-		SchemaTreeImp left = MappingPane.mappingPane.getTree(HarmonyConsts.LEFT);
-		SchemaTreeImp right = MappingPane.mappingPane.getTree(HarmonyConsts.RIGHT);
+		SchemaTreeImp left = mappingPane.getTree(HarmonyConsts.LEFT);
+		SchemaTreeImp right = mappingPane.getTree(HarmonyConsts.RIGHT);
 		
 		// Cycle through all combination of source and target nodes
 		for(DefaultMutableTreeNode leftNode : left.getComponentNodes(leftID))
 			for(DefaultMutableTreeNode rightNode : right.getComponentNodes(rightID))
 			{
 				// Only create lines if they are within the specified depths
-				if(!harmonyModel.getFilters().visibleNode(HarmonyConsts.LEFT,leftNode)) continue;
-				if(!harmonyModel.getFilters().visibleNode(HarmonyConsts.RIGHT,rightNode)) continue;
+				if(!harmonyModel.getFilters().isVisibleNode(HarmonyConsts.LEFT,leftNode)) continue;
+				if(!harmonyModel.getFilters().isVisibleNode(HarmonyConsts.RIGHT,rightNode)) continue;
 				
 				// Only create lines if they are visible on the screen (saves processing time)
 				Integer leftRow = left.getNodeRow(leftNode);
@@ -58,13 +61,17 @@ class MappingCellLines
 				if(leftRow>left.lastVisibleRow && rightRow>right.lastVisibleRow) continue;
 				
 				// Add line linking the left and right nodes
-				lines.add(new MappingCellLine(leftNode,rightNode));
+				lines.add(new MappingCellLine(mappingPane,leftNode,rightNode));
 			}
 	}
 	
 	/** Initializes the mapping cell lines */
-	MappingCellLines(Integer mappingCellID, HarmonyModel harmonyModel)
-		{ this.mappingCellID = mappingCellID; this.harmonyModel = harmonyModel; }
+	MappingCellLines(MappingPane mappingPane, Integer mappingCellID, HarmonyModel harmonyModel)
+	{
+		this.mappingPane = mappingPane;
+		this.mappingCellID = mappingCellID;
+		this.harmonyModel = harmonyModel;
+	}
 	
 	/** Returns the mapping cell ID */
 	Integer getMappingCellID()
@@ -88,7 +95,7 @@ class MappingCellLines
 	{
 		if(hidden==null)
 		{
-			hidden = !harmonyModel.getFilters().visibleMappingCell(mappingCellID) && !harmonyModel.getSelectedInfo().isMappingCellSelected(mappingCellID);
+			hidden = !harmonyModel.getFilters().isVisibleMappingCell(mappingCellID) && !harmonyModel.getSelectedInfo().isMappingCellSelected(mappingCellID);
 			if(hidden) lines = null;
 		}
 		return hidden;

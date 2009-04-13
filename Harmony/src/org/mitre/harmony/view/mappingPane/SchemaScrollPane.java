@@ -23,17 +23,16 @@ import org.mitre.harmony.model.HarmonyConsts;
  */
 public class SchemaScrollPane extends JScrollPane implements AdjustmentListener
 {
-	private SchemaTreeImp tree;	// Schema tree associated with this scroll bar
+	/** Stores the mapping pane to which this scroll pane is associated */
+	private MappingPane mappingPane;
+	
+	/** Stores the schema tree associated with this scroll bar */
+	private SchemaTreeImp tree;
 
-	/**
-	 * Class used to reimplement the scroll track display
-	 * @author CWOLF
-	 */
+	/** Class used to reimplement the scroll track display */
 	private class SchemaScrollBarUI extends MetalScrollBarUI
 	{	
-		/**
-		 * Redefines the drawing of the scroll track (to mark selections)
-		 */
+		/** Redefines the drawing of the scroll track (to mark selections) */
 		protected void paintTrack(Graphics g, JComponent c, Rectangle trackBounds)
 		{
 			super.paintTrack(g, c, trackBounds);
@@ -43,7 +42,8 @@ public class SchemaScrollPane extends JScrollPane implements AdjustmentListener
 			int totalRows = tree.getRowCount();
 			
 			// Mark all positions of selected rows on scroll bar
-			if(rows!=null) {
+			if(rows!=null)
+			{
 				g.setColor(Color.red);
 				int x1=trackBounds.x, x2=trackBounds.width;
 				for(int i=0; i<rows.length; i++)
@@ -55,12 +55,10 @@ public class SchemaScrollPane extends JScrollPane implements AdjustmentListener
 		}
 	}
 
-	/**
-	 * Initializes the schema tree scroll bar
-	 * @param tree Schema tree associated with the scroll bar
-	 */
-	public SchemaScrollPane(SchemaTreeImp tree)
+	/** Initializes the schema tree scroll bar */
+	public SchemaScrollPane(MappingPane mappingPane, SchemaTreeImp tree)
 	{
+		this.mappingPane = mappingPane;
 		this.tree=tree;
 		
 		// Set up scroll panes for the schema trees
@@ -71,7 +69,8 @@ public class SchemaScrollPane extends JScrollPane implements AdjustmentListener
 		getVerticalScrollBar().setUI(new SchemaScrollBarUI());
 		
 		// Shift scroll bars to mirror image for left schema tree
-		if(tree.getSide()==HarmonyConsts.LEFT) {
+		if(tree.getSide()==HarmonyConsts.LEFT)
+		{
 			setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 			getHorizontalScrollBar().setValue(getHorizontalScrollBar().getMaximum());
 		}
@@ -86,9 +85,7 @@ public class SchemaScrollPane extends JScrollPane implements AdjustmentListener
 		getVerticalScrollBar().addAdjustmentListener(this);
 	}
 	
-	/**
-	 * Updates the scroll pane offsets as needed
-	 */
+	/** Updates the scroll pane offsets as needed */
 	private Rectangle oldRect = null;
 	public void adjustmentValueChanged(AdjustmentEvent e)
 	{
@@ -110,7 +107,7 @@ public class SchemaScrollPane extends JScrollPane implements AdjustmentListener
 			
 			// Set the adjusted offsets
 			tree.offset = new Point(x,y);
-			if(MappingLines.mappingLines!=null) MappingLines.mappingLines.updateLines();
+			if(mappingPane.getLines()!=null) mappingPane.getLines().updateLines();
 			oldRect = getViewport().getViewRect();
 		}
 		
