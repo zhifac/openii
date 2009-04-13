@@ -29,6 +29,13 @@ public class ArchiveImporter extends Importer
 	{
 		public int compare(SchemaElement element1, SchemaElement element2)
 		{
+			// Retrieve the base schemas for the specified elements
+			Integer base1 = element1.getBase(); if(base1==null) base1=-1;
+			Integer base2 = element2.getBase(); if(base2==null) base2=-1;
+			
+			// Returns a comparator value for the compared elements
+			if(!base1.equals(base2))
+				return base1.compareTo(base2);
 			if(element1.getClass()!=element2.getClass())
 				return element1.getClass().toString().compareTo(element2.getClass().toString());
 			return element1.getId().compareTo(element2.getId());
