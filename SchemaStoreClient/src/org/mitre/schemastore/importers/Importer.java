@@ -125,7 +125,7 @@ public abstract class Importer
 			success = client.setParentSchemas(schema.getId(), getExtendedSchemaIDs());
 
 			// Lock the schema if needed
-			if(success && (getURIType()==REPOSITORY || getURIType()==FILE))
+			if(success && (getURIType()==ARCHIVE || getURIType()==REPOSITORY || getURIType()==FILE))
 				client.lockSchema(schema.getId());
 		}
 		catch(Exception e) {}

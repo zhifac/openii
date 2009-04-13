@@ -292,6 +292,7 @@ public class ArchiveImporter extends Importer
 		try {
 			schemaID = client.importSchema(graph.getSchema(), graph.getBaseElements(null));
 			success = client.setParentSchemas(schemaID, graph.getParentSchemaIDs());
+			if(success) client.lockSchema(schemaID);
 		} catch(Exception e) {}
 
 		// Delete the imported graph if failure occurred
