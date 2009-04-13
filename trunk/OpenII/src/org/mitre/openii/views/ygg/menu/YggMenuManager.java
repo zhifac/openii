@@ -71,7 +71,7 @@ public class YggMenuManager extends MenuManager implements IMenuListener
 			// Display the menu to select an editor
 			if(editors.length > 1)
 			{
-				MenuManager editorMenu = new MenuManager("Open As");
+				MenuManager editorMenu = new MenuManager("Open With");
 				for(IEditorDescriptor editor : editors)
 				{
 					EditorAction action = new EditorAction(this,editor.getLabel(),editor);
