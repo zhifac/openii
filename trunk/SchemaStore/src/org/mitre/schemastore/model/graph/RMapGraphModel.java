@@ -74,19 +74,21 @@ public class RMapGraphModel extends GraphModel
 		if(element instanceof Entity)
 		{
 			// Retrieve entity attributes		
-			for(Attribute value : orderAttributesByName(graph.getAttributes(elementID)))
+			for(Attribute value : orderAttributesByName(graph.getAttributes(elementID))){
 				childElements.add(value);
+			}
 
 			// Retrieve FK relationships as children.
-			for (Relationship rel : orderRelationshipsByName(graph.getRelationships(element.getId())))
+			for (Relationship rel : orderRelationshipsByName(graph.getRelationships(element.getId()))){
 				if(elementID.equals(rel.getLeftID()))
 					childElements.add(rel);
+			}
 				
 		}
 
 		if (element instanceof Relationship)
 			childElements.add(graph.getElement(((Relationship)element).getRightID()));
-		
+	
 		return childElements;
 
 	}
@@ -118,13 +120,7 @@ public class RMapGraphModel extends GraphModel
 		
 	}
 	
-	/** Returns the domain values associated with the specified element in this graph */
-	@SuppressWarnings("unchecked")
-	public ArrayList<DomainValue> orderDomainValuesByName(ArrayList<DomainValue> domainValues)
-	{
-		Collections.sort(domainValues, byNameComparator);
-		return domainValues;
-	}
+
 	
 	/** Retrieves the attributes for the specified schema element */
 	@SuppressWarnings("unchecked")
@@ -134,13 +130,7 @@ public class RMapGraphModel extends GraphModel
 		return attributes;
 	}
 	
-	/** Retrieves the attributes for the specified schema element */
-	@SuppressWarnings("unchecked")
-	private ArrayList<SchemaElement> orderEntitiesByName(ArrayList<SchemaElement> entities)
-	{
-		Collections.sort(entities, byNameComparator);
-		return entities;
-	}
+
 	
 	/** Retrieves the attributes for the specified schema element */
 	@SuppressWarnings("unchecked")
@@ -164,6 +154,7 @@ public class RMapGraphModel extends GraphModel
                 
                 if (name1 == null) { name1 = ""; }
                 if (name2 == null) { name2 = ""; }
+                if (name1 == null || name2 == null) System.out.println("name was null");
                 return name1.toUpperCase().compareTo(name2.toUpperCase());
     	}
     };
