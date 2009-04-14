@@ -65,6 +65,16 @@ public class OpenIIManager
 	/** Returns the specified schema */
 	public static Schema getSchema(Integer schemaID)
 		{ updateSchemasAsNeeded(); return schemas.get(schemaID); }
+
+	/** Modifies the schema in the repository */
+	public static boolean updateSchema(Schema schema)
+	{
+		try {
+			if(client.updateSchema(schema))
+				{ fireSchemaModified(schema); return true; }
+		} catch(Exception e) {}
+		return false;
+	}
 	
 	/** Extends the specified schema */
 	public static Integer extendSchema(Integer schemaID, String name, String author, String description)
@@ -102,6 +112,13 @@ public class OpenIIManager
 	{
 		schemas.put(schema.getId(),schema);
 		for(OpenIIListener listener : listeners.get()) listener.schemaAdded(schema.getId());
+	}
+
+	/** Inform listeners that schema was modified */
+	public static void fireSchemaModified(Schema schema)
+	{
+		schemas.put(schema.getId(),schema);
+		for(OpenIIListener listener : listeners.get()) listener.schemaModified(schema.getId());
 	}
 
 	/** Inform listeners that schema was removed */
@@ -152,7 +169,7 @@ public class OpenIIManager
 	{
 		try {
 			if(client.updateGroup(group))
-				{ fireGroupModified(group.getId()); return true; }
+				{ fireGroupModified(group); return true; }
 		} catch(Exception e) {}
 		return false;
 	}
@@ -225,20 +242,22 @@ public class OpenIIManager
 		} catch(Exception e) { return false; }
 		
 		// Inform listeners that the group has been modified
-		fireGroupModified(groupID);
+		fireGroupModified(getGroup(groupID));
 		return true;
 	}
 	
 	/** Inform listeners that group was added */
 	public static void fireGroupAdded(Group group)
 	{
-		groups.put(group.getId(),group);
+		groups.put(group.getId(), group);
 		for(OpenIIListener listener : listeners.get()) listener.groupAdded(group.getId());
 	}
 
 	/** Inform listeners that group was modified */
-	public static void fireGroupModified(Integer groupID)
-		{ for(OpenIIListener listener : listeners.get()) listener.groupModified(groupID); }
+	public static void fireGroupModified(Group group)
+	{
+		groups.put(group.getId(), group);
+		for(OpenIIListener listener : listeners.get()) listener.groupModified(group.getId()); }
 
 	/** Inform listeners that group was removed */
 	public static void fireGroupDeleted(Integer groupID)

@@ -53,6 +53,7 @@ public class YggView extends ViewPart implements OpenIIListener, IDoubleClickLis
 	
 	// Handles modifications of objects in the Ygg tree
 	public void schemaAdded(Integer schemaID) { viewer.refresh(); }
+	public void schemaModified(Integer schemaID) { viewer.refresh(); }
 	public void schemaDeleted(Integer schemaID) { viewer.refresh(); }
 	public void groupAdded(Integer groupID) { viewer.refresh(); }
 	public void groupModified(Integer groupID) { viewer.refresh(); }

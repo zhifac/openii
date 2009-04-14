@@ -48,7 +48,7 @@ public class EditGroupDialog extends ListSelectionDialog implements ModifyListen
 	{
 		super.configureShell(shell);
 		shell.setImage(OpenIIActivator.getImage("Group.gif"));
-		shell.setText((group==null ? "Add" : "Edit") + " Group");
+		shell.setText((group==null ? "Create" : "Edit") + " Group");
 	}
 	
 	/** Creates the name pane */

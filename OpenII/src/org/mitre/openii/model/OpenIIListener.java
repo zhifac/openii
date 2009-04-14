@@ -5,6 +5,9 @@ public interface OpenIIListener
 {
 	/** Informs the listener that the specified schema has been added */
 	public void schemaAdded(Integer schemaID);
+
+	/** Informs the listener that the specified schema has been modified */
+	public void schemaModified(Integer schemaID);
 	
 	/** Informs the listener that the specified schema has been deleted */
 	public void schemaDeleted(Integer schemaID);

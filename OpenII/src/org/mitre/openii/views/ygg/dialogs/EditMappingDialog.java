@@ -45,7 +45,7 @@ public class EditMappingDialog extends Dialog implements ModifyListener
 	{
 		super.configureShell(shell);
 		shell.setImage(OpenIIActivator.getImage("Mapping.gif"));
-		shell.setText((mapping==null ? "Add" : "Edit") + " Mapping");
+		shell.setText((mapping==null ? "Create" : "Edit") + " Mapping");
 	}
 	
 	/** Creates the mapping info pane */
@@ -111,7 +111,7 @@ public class EditMappingDialog extends Dialog implements ModifyListener
 		// Make default mapping dialog selections
 		if(mapping!=null)
 		{
-			// Set general information files
+			// Set general information fields
 			nameField.setText(mapping.getName());
 			authorField.setText(mapping.getAuthor());
 			descriptionField.setText(mapping.getDescription());
@@ -173,7 +173,7 @@ public class EditMappingDialog extends Dialog implements ModifyListener
 			String message = "Unable to ";
 			if(!creationSuccess) message += "generate";
 			if(!updateSuccess) message += "update";
-			message += " mapping'" + mapping.getName() + "'";
+			message += " mapping '" + mapping.getName() + "'";
 			
 			// Display the error message
 			MessageBox messageBox = new MessageBox(getShell(),SWT.ERROR);
