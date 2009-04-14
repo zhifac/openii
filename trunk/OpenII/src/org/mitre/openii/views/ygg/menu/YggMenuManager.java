@@ -93,6 +93,7 @@ public class YggMenuManager extends MenuManager implements IMenuListener
 		// Display the menu for a selected schema
 		if(element instanceof Schema)
 		{
+			menuManager.add(new YggAction(this,"Edit Schema",YggAction.EDIT_SCHEMA));
 			menuManager.add(new YggAction(this,"Extend Schema",YggAction.EXTEND_SCHEMA));
 			menuManager.add(new YggAction(this,"Export Schema",YggAction.EXPORT_SCHEMA));
 			Action deleteAction = new YggAction(this,"Delete Schema",YggAction.DELETE_SCHEMA);

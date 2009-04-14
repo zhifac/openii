@@ -70,6 +70,7 @@ abstract class OpenIIEditor extends EditorPart implements OpenIIListener
 		{ if(elementID.equals(mappingID)) closeEditor(); }	
 	
 	// Unused event listeners
+	public void schemaModified(Integer schemaID) {}
 	public void groupAdded(Integer groupID) {}
 	public void groupModified(Integer groupID) {}
 	public void mappingAdded(Integer mappingID) {}

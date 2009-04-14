@@ -12,6 +12,7 @@ import org.mitre.openii.views.ygg.MappingSchema;
 import org.mitre.openii.views.ygg.dialogs.DeleteDialog;
 import org.mitre.openii.views.ygg.dialogs.EditGroupDialog;
 import org.mitre.openii.views.ygg.dialogs.EditMappingDialog;
+import org.mitre.openii.views.ygg.dialogs.EditSchemaDialog;
 import org.mitre.openii.views.ygg.dialogs.ExportSchemaDialog;
 import org.mitre.openii.views.ygg.dialogs.ExtendSchemaDialog;
 import org.mitre.openii.views.ygg.dialogs.ImportSchemaDialog;
@@ -23,17 +24,18 @@ public class YggAction extends Action
 {
 	// Constants defining the various Ygg action types available
 	static final int IMPORT_SCHEMA = 0;
-	static final int EXTEND_SCHEMA = 1;
-	static final int EXPORT_SCHEMA = 2;
-	static final int DELETE_SCHEMA = 3;
-	static final int NEW_GROUP = 4;
-	static final int EDIT_GROUP = 5;
-	static final int DELETE_GROUP = 6;
-	static final int DELETE_GROUP_SCHEMA = 7;
-	static final int NEW_MAPPING = 8;
-	static final int EDIT_MAPPING = 9;
-	static final int DELETE_MAPPING = 10;
-	static final int DELETE_MAPPING_SCHEMA = 11;
+	static final int EDIT_SCHEMA = 1;
+	static final int EXTEND_SCHEMA = 2;
+	static final int EXPORT_SCHEMA = 3;
+	static final int DELETE_SCHEMA = 4;
+	static final int NEW_GROUP = 5;
+	static final int EDIT_GROUP = 6;
+	static final int DELETE_GROUP = 7;
+	static final int DELETE_GROUP_SCHEMA = 8;
+	static final int NEW_MAPPING = 9;
+	static final int EDIT_MAPPING = 10;
+	static final int DELETE_MAPPING = 11;
+	static final int DELETE_MAPPING_SCHEMA = 12;
 	
 	/** Stores the menu manager to which this action is tied */
 	private YggMenuManager menuManager;
@@ -54,6 +56,7 @@ public class YggAction extends Action
 		switch(actionType)
 		{
 			case IMPORT_SCHEMA: icon = "Import.gif"; break;
+			case EDIT_SCHEMA: icon = "Edit.gif"; break;
 			case EXTEND_SCHEMA: icon = "Schema.gif"; break;
 			case EXPORT_SCHEMA: icon = "Export.gif"; break;
 			case DELETE_SCHEMA: icon = "Delete.gif"; break;
@@ -85,6 +88,10 @@ public class YggAction extends Action
 		/** Handles the importing of a schema */
 		if(actionType == IMPORT_SCHEMA)
 			new ImportSchemaDialog(shell).open();
+		
+		/** Handles the extending of a schema */
+		if(actionType == EDIT_SCHEMA)
+			new EditSchemaDialog(shell,(Schema)selection).open();
 		
 		/** Handles the extending of a schema */
 		if(actionType == EXTEND_SCHEMA)
