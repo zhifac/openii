@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import org.mitre.harmony.model.ConfigManager;
 import org.mitre.harmony.model.HarmonyConsts;
@@ -55,11 +56,13 @@ public class ProjectManager implements MappingListener
 			if(item.equals("MappingCells"))
 			{
 				int mappingCellCount = in.readInt();
+				HashSet<Integer> elementIDs = harmonyModel.getMappingManager().getElementIDs();
 				for(int i=0; i<mappingCellCount; i++)
 				{
 					MappingCell mappingCell = (MappingCell)in.readObject();
 					mappingCell.setId(null);
-					harmonyModel.getMappingCellManager().setMappingCell(mappingCell);
+					if(elementIDs.contains(mappingCell.getElement1()) && elementIDs.contains(mappingCell.getElement2()))
+						harmonyModel.getMappingCellManager().setMappingCell(mappingCell);
 				}
 			}
 
@@ -186,10 +189,10 @@ public class ProjectManager implements MappingListener
 			ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(tempProjectFile));			
 			out.writeObject(ConfigManager.getParm("schemastore"));
 			save(out,"Mapping");
-			save(out,"MappingCells");
-			save(out,"MappingModified");
 			save(out,"DisplayedSchemas");
 			save(out,"GraphModels");
+			save(out,"MappingCells");
+			save(out,"MappingModified");
 			out.close();			
 			
 			// Replace the tool file with the new tool file
