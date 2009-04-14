@@ -179,8 +179,8 @@ public class UserMatchAnotationExporter  extends Exporter {
 			matchList.addMappingCell(mappingCell);
 		
 		// Identify how many mapping cells should be outputted
-		Integer count = ConfigManager.getIntegerParm("exporters.topmatch.count");
-		if(count==null) count = 100;
+//		Integer count = ConfigManager.getIntegerParm("exporters.UserMatchAnotationExporter.count");
+//		if(count==null) count = 100;
 		// get Minimum Confidence Threshold
 		double minConfThreshold = getModel().getFilters().getMinConfThreshold();
 		
@@ -188,7 +188,7 @@ public class UserMatchAnotationExporter  extends Exporter {
     	// Outputs the top mapping cells
 		List<CompressedMatch> matches = matchList.getMatches();
 		Collections.sort(matches);
-		if(matches.size()>count) matches = matches.subList(0, count);
+//		if(matches.size()>count) matches = matches.subList(0, count);
   		for(CompressedMatch match : matches) {
  
   			if ((match.getScore() >= minConfThreshold ) || (match.getScore() < 0.0) )
