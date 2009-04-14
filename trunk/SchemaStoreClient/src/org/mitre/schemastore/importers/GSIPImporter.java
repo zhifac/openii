@@ -124,23 +124,28 @@ public class GSIPImporter extends Importer {
             	String lexical = attributes.getString("lexical");
                 if (lexical.equals("1")) { lexical ="Lexical"; }
                 else { lexical="Non-lexical"; }
-                attDefinition = concatNonNullFields(attDefinition, lexical, " [lex] ");
-            	
-                               
+                                               
                 String attLength = attributes.getString("attLength");
                 if ((attLength==null || attLength.equals("null") || attLength.equals(""))) { 
                 	attLength="Unlimited";
+                }                
+                if (!(generalDatatype.equals("Integer") || generalDatatype.equals("Boolean") || generalDatatype.equals("Real"))) {
+                	attDefinition = concatNonNullFields(attDefinition, lexical, " [lex] ");
+                	attDefinition = concatNonNullFields(attDefinition, attLength, " [len] ");
                 }
-                attDefinition = concatNonNullFields(attDefinition, attLength, " [len] ");
                 attDefinition = concatNonNullFields(attDefinition, attributes.getString("structureSpecification"), " [struc] ");
                 String measure = attributes.getString("measure");
-            	attDefinition = concatNonNullFields(attDefinition, measure, " [UoM] ");
+            	
             	String validRange = attributes.getString("validRange");
-            	attDefinition = concatNonNullFields(attDefinition, validRange, " [range] ");
             	String rMin = attributes.getString("rMin");
                 String rMax = attributes.getString("rMax");
-            	attDefinition = concatNonNullFields(attDefinition, rMin, " [min] ");
-            	attDefinition = concatNonNullFields(attDefinition, rMax, " [max] ");                
+            	
+            	if (!generalDatatype.equals("Text")) {
+            		attDefinition = concatNonNullFields(attDefinition, measure, " [UoM] ");
+            		attDefinition = concatNonNullFields(attDefinition, validRange, " [range] ");
+            		attDefinition = concatNonNullFields(attDefinition, rMin, " [min] ");
+            		attDefinition = concatNonNullFields(attDefinition, rMax, " [max] ");    
+            	}
                 
                 String dtID = attributes.getString("DTID"); // used to key on enumerants
                 String datatype = attributes.getString("datatypeNsgAlphaCode");
