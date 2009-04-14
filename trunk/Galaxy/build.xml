@@ -36,7 +36,6 @@
             	<fatjar.exclude regexp=".*\.svn.*"/>
             </fatjar.filesource>
             <fatjar.jarsource file="WebContent/GalaxyApplet/prefuse.jar" relpath=""/>
-            <fatjar.jarsource file="WebContent/GalaxyApplet/SchemaStoreModel.jar" relpath=""/>
         </fatjar.build>
     </target>
 	
