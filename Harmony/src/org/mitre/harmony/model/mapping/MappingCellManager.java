@@ -9,7 +9,6 @@ import org.mitre.harmony.model.AbstractManager;
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.preferences.PreferencesListener;
 import org.mitre.schemastore.model.MappingCell;
-import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.graph.HierarchicalGraph;
 
 /**
@@ -122,12 +121,9 @@ public class MappingCellManager extends AbstractManager<MappingCellListener> imp
 	/** Handles the removal of a schema from the mapping */
 	public void schemaRemoved(Integer schemaID)
 	{
-		HashSet<Integer> validElements = new HashSet<Integer>();
-		for(Integer currSchemaID : getModel().getMappingManager().getSchemas())
-			for(SchemaElement element : getModel().getSchemaManager().getGraph(currSchemaID).getGraphElements())
-				validElements.add(element.getId());
+		HashSet<Integer> elementIDs = getModel().getMappingManager().getElementIDs();
 		for(MappingCell cell : getMappingCells())
-			if(!validElements.contains(cell.getElement1()) || !validElements.contains(cell.getElement2()))
+			if(!elementIDs.contains(cell.getElement1()) || !elementIDs.contains(cell.getElement2()))
 				deleteMappingCell(cell.getId());
 	}
 	

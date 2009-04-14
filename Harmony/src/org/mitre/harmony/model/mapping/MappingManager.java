@@ -5,12 +5,14 @@ package org.mitre.harmony.model.mapping;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 
 import org.mitre.harmony.model.AbstractManager;
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.SchemaStoreManager;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
+import org.mitre.schemastore.model.SchemaElement;
 
 /**
  * Class used to manage the current project
@@ -59,6 +61,16 @@ public class MappingManager extends AbstractManager<MappingListener> implements 
 	{
 		if(mapping.getSchemas()==null) return new ArrayList<Integer>();
 		return new ArrayList<Integer>(Arrays.asList(mapping.getSchemas()));
+	}
+	
+	/** Gets the mapping schema elements */
+	public HashSet<Integer> getElementIDs()
+	{
+		HashSet<Integer> elementIDs = new HashSet<Integer>();
+		for(Integer schemaID : getSchemas())
+			for(SchemaElement element : getModel().getSchemaManager().getGraph(schemaID).getElements(null))
+				elementIDs.add(element.getId());
+		return elementIDs;
 	}
 	
 	/** Sets the mapping */
