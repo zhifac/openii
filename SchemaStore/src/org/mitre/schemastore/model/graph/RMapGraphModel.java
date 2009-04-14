@@ -3,9 +3,12 @@
 package org.mitre.schemastore.model.graph;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 import org.mitre.schemastore.model.Attribute;
 import org.mitre.schemastore.model.Domain;
+import org.mitre.schemastore.model.DomainValue;
 import org.mitre.schemastore.model.Entity;
 import org.mitre.schemastore.model.Relationship;
 import org.mitre.schemastore.model.SchemaElement;
@@ -27,16 +30,13 @@ public class RMapGraphModel extends GraphModel
 		for (SchemaElement se : graph.getElements(Entity.class)){
 			Entity entity = (Entity)se;
 			boolean isRoot = true;
-			for (Relationship rel : graph.getRelationships(entity.getId())){
-				if (rel.getRightID().equals(entity.getId())) {
+			for (Relationship rel : orderRelationshipsByName(graph.getRelationships(entity.getId())))
+				if (rel.getRightID().equals(entity.getId())) 
 					isRoot = false;
-				}
-			}
+			
 			if (isRoot)
 				rootElements.add(entity);
 		}
-		
-			
 		return rootElements;
 	}
 	
@@ -44,7 +44,6 @@ public class RMapGraphModel extends GraphModel
 	public ArrayList<SchemaElement> getParentElements(HierarchicalGraph graph, Integer elementID)
 	{
 		ArrayList<SchemaElement> parentElements = new ArrayList<SchemaElement>();
-		
 		SchemaElement element = graph.getElement(elementID);
 		
 		// If attribute, return entity as parent
@@ -53,10 +52,9 @@ public class RMapGraphModel extends GraphModel
 		
 		// If an entity, return its super-types as parents.
 		if(element instanceof Entity) {
-			for ( Relationship rel : graph.getRelationships(element.getId())){
+			for ( Relationship rel : orderRelationshipsByName(graph.getRelationships(element.getId())))
 				if (rel.getRightID().equals(element.getId()))
 					parentElements.add(rel);
-			}
 		}
 		
 		if(element instanceof Relationship) {
@@ -76,30 +74,26 @@ public class RMapGraphModel extends GraphModel
 		if(element instanceof Entity)
 		{
 			// Retrieve entity attributes		
-			for(Attribute value : graph.getAttributes(elementID))
+			for(Attribute value : orderAttributesByName(graph.getAttributes(elementID)))
 				childElements.add(value);
 
 			// Retrieve FK relationships as children.
-			for (Relationship rel : graph.getRelationships(element.getId()))
+			for (Relationship rel : orderRelationshipsByName(graph.getRelationships(element.getId())))
 				if(elementID.equals(rel.getLeftID()))
 					childElements.add(rel);
 				
 		}
 
-		if (element instanceof Relationship){
+		if (element instanceof Relationship)
 			childElements.add(graph.getElement(((Relationship)element).getRightID()));
-		}
-			
+		
 		return childElements;
-		
-		
-		
+
 	}
 
 	/** Returns the domains of the specified element in this graph */
 	public Domain getDomainForElement(HierarchicalGraph graph, Integer elementID)
 	{
-		
 		SchemaElement element = graph.getElement(elementID);
 		
 		// Find attribute domain values
@@ -117,10 +111,62 @@ public class RMapGraphModel extends GraphModel
 		ArrayList<SchemaElement> domainElements = new ArrayList<SchemaElement>();
 
 		// Find all attributes associated with the domain
-		for(Attribute attribute : graph.getAttributes(domainID))
+		for(Attribute attribute : orderAttributesByName(graph.getAttributes(domainID)))
 			domainElements.add(attribute);
 		
 		return domainElements;	
 		
 	}
+	
+	/** Returns the domain values associated with the specified element in this graph */
+	@SuppressWarnings("unchecked")
+	public ArrayList<DomainValue> orderDomainValuesByName(ArrayList<DomainValue> domainValues)
+	{
+		Collections.sort(domainValues, byNameComparator);
+		return domainValues;
+	}
+	
+	/** Retrieves the attributes for the specified schema element */
+	@SuppressWarnings("unchecked")
+	private ArrayList<Attribute> orderAttributesByName(ArrayList<Attribute> attributes)
+	{
+		Collections.sort(attributes, byNameComparator);
+		return attributes;
+	}
+	
+	/** Retrieves the attributes for the specified schema element */
+	@SuppressWarnings("unchecked")
+	private ArrayList<SchemaElement> orderEntitiesByName(ArrayList<SchemaElement> entities)
+	{
+		Collections.sort(entities, byNameComparator);
+		return entities;
+	}
+	
+	/** Retrieves the attributes for the specified schema element */
+	@SuppressWarnings("unchecked")
+	private ArrayList<Relationship> orderRelationshipsByName(ArrayList<Relationship> relationships)
+	{
+		Collections.sort(relationships, byNameComparator);
+		return relationships;
+	}
+	
+    public Comparator byNameComparator = new Comparator() {
+    	public int compare(Object o1, Object o2) {
+                SchemaElement item1 = (SchemaElement) o1;
+                SchemaElement item2 = (SchemaElement) o2;
+                
+                if (item1 == null && item2 == null) { return 0; }
+                else if (item2 == null) { return 1; }
+                else if (item1 == null) { return -1; }
+                
+                String name1 = item1.getName();
+                String name2 = item2.getName();
+                
+                if (name1 == null) { name1 = ""; }
+                if (name2 == null) { name2 = ""; }
+                return name1.toUpperCase().compareTo(name2.toUpperCase());
+    	}
+    };
+	
+	
 }
