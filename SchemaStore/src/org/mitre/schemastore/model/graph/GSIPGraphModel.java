@@ -48,10 +48,10 @@ public class GSIPGraphModel extends GraphModel
 			Integer domainID = domainValue.getDomainID();
 			for (SchemaElement attribute : graph.getElements(Attribute.class)){
 				Integer attributeID = ((Attribute) attribute).getDomainID();
-				if (attributeID==domainID) {
+				if (attributeID.intValue() ==domainID.intValue()) {
 					parentElements.add(attribute);
 				}
-			}
+			} 
 		}
 		
 		
