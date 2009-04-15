@@ -35,9 +35,9 @@ public class Schemas
 	static public boolean updateSchema(Schema schema)
 	{
 		Schema oldSchema = getSchema(schema.getId());
-		if(oldSchema!=null && !oldSchema.getLocked())
-			return Database.updateSchema(schema);
-		return false;
+		if(oldSchema==null) return false;
+		if(oldSchema.getLocked() && !schema.getName().equals(oldSchema.getName())) return false;
+		return Database.updateSchema(schema);
 	}
 	
 	/** Unlocks the specified schema */
