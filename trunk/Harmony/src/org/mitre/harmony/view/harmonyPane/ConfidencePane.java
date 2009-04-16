@@ -17,6 +17,8 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
+import javax.swing.UIManager;
+import javax.swing.plaf.metal.MetalIconFactory;
 import javax.swing.plaf.metal.MetalSliderUI;
 
 import org.mitre.harmony.model.HarmonyModel;
@@ -47,7 +49,17 @@ public class ConfidencePane extends JPanel
 		 * @author CWOLF
 		 */
 		private class ConfSliderUI extends MetalSliderUI implements MouseListener, MouseMotionListener
-		{		
+		{	
+			@Override
+			public void installUI(JComponent c)
+			{
+				UIManager.put("Slider.trackWidth",new Integer(7));
+				UIManager.put("Slider.majorTickLength",new Integer(6));
+				UIManager.put("Slider.horizontalThumbIcon",MetalIconFactory.getHorizontalSliderThumbIcon());
+				UIManager.put("Slider.verticalThumbIcon",MetalIconFactory.getVerticalSliderThumbIcon());
+				super.installUI(c);
+			}
+
 			//--------------------------------------------------------------
 			// Purpose: Helps get and set positions on the confidence slider
 			//--------------------------------------------------------------
