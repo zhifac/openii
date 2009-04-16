@@ -3,7 +3,6 @@ package org.mitre.openii.editors;
 import java.awt.Frame;
 
 import javax.swing.JApplet;
-import javax.swing.JLabel;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
