@@ -96,7 +96,7 @@ public class groupE implements Comparable<groupE> {
 	 */
 	public SchemaElementNode getNode(Integer baseSchema) {
 		for (SchemaElementNode n : nodes)
-			if (n.schemaIds.contains(baseSchema)) return n;
+			if (n.schemaId == baseSchema) return n ;
 		return null;
 	}
 

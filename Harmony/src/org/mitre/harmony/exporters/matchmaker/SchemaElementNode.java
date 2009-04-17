@@ -1,34 +1,33 @@
 package org.mitre.harmony.exporters.matchmaker;
 
-import java.util.ArrayList;
 
 
 public class SchemaElementNode extends Node implements Comparable<SchemaElementNode> {
 //	public Integer schemaId; 
 	public Integer elementId;
 	public String elementName;
-	public ArrayList<Integer> schemaIds; 
+	public Integer schemaId;
 	
-	public SchemaElementNode(ArrayList<Integer> schemaIds, Integer elementId, String elementName) {
-		super(elementId.toString());
-		this.schemaIds = ( schemaIds == null )?  new ArrayList<Integer> () : schemaIds;
-		this.elementId = elementId;
-		this.elementName = elementName;
-	}
-
-//	public SchemaElementNode(Integer schemaId, Integer elementId, String elementName) {
+//	public SchemaElementNode(ArrayList<Integer> schemaIds, Integer elementId, String elementName) {
 //		super(elementId.toString());
-//		this.schemaId = schemaId;
+//		this.schemaIds = ( schemaIds == null )?  new ArrayList<Integer> () : schemaIds;
 //		this.elementId = elementId;
 //		this.elementName = elementName;
 //	}
+	
+	public SchemaElementNode(Integer schemaID, Integer elementId, String elementName) {
+		super(elementId.toString());
+		this.schemaId = schemaID;
+		this.elementId = elementId;
+		this.elementName = elementName;
+	}
 
 	public int compareTo(SchemaElementNode o) {
 		return this.toString().compareToIgnoreCase(o.toString()); 
 	}
 	
 	public String toString(){
-		return elementName + elementId; 
+		return schemaId + elementName + elementId; 
 	}
 
 } // End SchemaElementNode
