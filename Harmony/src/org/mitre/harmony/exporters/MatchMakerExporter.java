@@ -46,12 +46,7 @@ public class MatchMakerExporter extends Exporter {
 
 		// Render clustered results
 		ClusterRenderer clusterRenderer = new ClusterRenderer(cluster, getModel(), schemaIDs);
-		try {
-			clusterRenderer.print(f);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		clusterRenderer.print(f);
 	}
 
 	/**
@@ -66,21 +61,21 @@ public class MatchMakerExporter extends Exporter {
 			// Loop through each element
 			for (SchemaElement element : getModel().getSchemaManager().getSchemaElements(schemaID, null)) {
 				elementID = element.getId();
-				
+
 				// hash current schemaID to the list by elementID
-				ArrayList<Integer> schemaIDRecord = lookupSchemaIDs(elementID); 
+				ArrayList<Integer> schemaIDRecord = lookupSchemaIDs(elementID);
 				schemaIDRecord.add(schemaID);
 			}
 		}
 	}
-	
-	private ArrayList<Integer> lookupSchemaIDs ( Integer elementID ) {
-		ArrayList<Integer> sIDs = elementSchemaLookUp.get(elementID); 
-		 if ( sIDs == null ) { 
-			sIDs = new ArrayList<Integer> () ;
-			elementSchemaLookUp.put(elementID, sIDs); 
-		 }
-		 return sIDs;
+
+	private ArrayList<Integer> lookupSchemaIDs(Integer elementID) {
+		ArrayList<Integer> sIDs = elementSchemaLookUp.get(elementID);
+		if (sIDs == null) {
+			sIDs = new ArrayList<Integer>();
+			elementSchemaLookUp.put(elementID, sIDs);
+		}
+		return sIDs;
 	}
 
 	public FileFilter getFileFilter() {
@@ -105,29 +100,41 @@ public class MatchMakerExporter extends Exporter {
 	private void clusterMatchResults() {
 		// Create SchemaElementNode used by ClusterNode from MappingCells
 		for (MappingCell mappingCell : getModel().getMappingCellManager().getMappingCells()) {
-			SchemaElementNode node1 = getNode(mappingCell.getElement1());
-			SchemaElementNode node2 = getNode(mappingCell.getElement2());
-
-			// Add the nodes and score to each other's score list.
-			node1.add(node2, mappingCell.getScore());
-			node2.add(node1, mappingCell.getScore());
+			for (SchemaElementNode node1 : getNode(mappingCell.getElement1())) {
+				for (SchemaElementNode node2 : getNode(mappingCell.getElement2())) {
+					// Add the nodes and score to each other's score list.
+					node1.add(node2, mappingCell.getScore());
+					node2.add(node1, mappingCell.getScore());
+				}
+			}
 		}
 
+		// Run clustering algorithm
 		cluster = new ClusterNode(new ArrayList<SchemaElementNode>(clusterElements.values()));
 		cluster.cluster(schemaIDs.length, 0);
 	}
 
-	private SchemaElementNode getNode(Integer elementID) {
+	// Manages cluster nodes: since each element may be associated with multiple
+	// schemas, one Schema Element node is created for each schema that the
+	// element belongs to
+	private ArrayList<SchemaElementNode> getNode(Integer elementID) {
 		SchemaElement element = getModel().getSchemaManager().getSchemaElement(elementID);
 		SchemaElementNode node = clusterElements.get(element.getName() + elementID);
+		ArrayList<SchemaElementNode> results = new ArrayList<SchemaElementNode>();
 		if (node == null) {
-			node = new SchemaElementNode(lookupSchemaIDs(elementID), elementID, element.getName());
-			clusterElements.put(node.toString(), node);
+			ArrayList<Integer> schemaIdList = lookupSchemaIDs(elementID);
+			for (Integer sid : schemaIdList) {
+				node = new SchemaElementNode(sid, elementID, element.getName());
+				results.add(node);
+				clusterElements.put(node.toString(), node);
+			}
 		}
-		return node;
+		return results;
 	}
 
-	public void sortByParticipation() {
+	// Sort cluster's groupEs by number of elements in each and each groupE's
+	// representing lowest alpha element
+	private void sortByParticipation() {
 		Collections.sort(cluster.groupEs, new groupEParticipationComparator());
 	}
 
@@ -151,8 +158,6 @@ public class MatchMakerExporter extends Exporter {
 			SchemaElementNode groupENode;
 			SchemaElement refNode;
 			int compareResult;
-			int numGroupE;
-			int numElements;
 
 			// sort groupEs with respective to one schema
 			cluster.sort(schemaID);
@@ -161,9 +166,7 @@ public class MatchMakerExporter extends Exporter {
 			Collections.sort(refList, elementComparator);
 
 			// compare sorted groupEs with sorted complete schema elements
-			numGroupE = cluster.groupEs.size();
-			numElements = refList.size();
-			while (groupEIDX < numGroupE && allIDX < numElements) {
+			while (groupEIDX < cluster.groupEs.size() && allIDX < refList.size()) {
 				groupENode = cluster.groupEs.get(groupEIDX).getNode(schemaID);
 				refNode = refList.get(allIDX);
 
@@ -190,16 +193,29 @@ public class MatchMakerExporter extends Exporter {
 
 				// create a new groupE for graphNode that doesn't exist
 				if (compareResult < 0) {
-					SchemaElementNode newNode = new SchemaElementNode(lookupSchemaIDs(refNode.getId()), refNode.getId(), refNode.getName());
-					cluster.groupEs.add(groupEIDX, new groupE(newNode));
-					System.out.println("Insert node " + newNode.elementName + " (" + refNode.getId() + ")");
+					for (SchemaElementNode newNode : getNode(refNode.getId())) {
+						cluster.groupEs.add(groupEIDX, new groupE(newNode));
+						System.out.println("Insert node " + newNode.elementName + " (" + refNode.getId() + ")");
+					}
 				}
 
 				groupEIDX++;
 				allIDX++;
 			}
 
-			System.out.println("groupE size " + cluster.groupEs.size());
+			// In case we have not included all that's in the reference List
+			if (allIDX < refList.size()) {
+				System.err.println(schemaID + " has total of " + refList.size() + " but allIDX=" + allIDX);
+				while (allIDX < refList.size()) {
+					refNode = refList.get(allIDX);
+					for (SchemaElementNode newNode : getNode(refNode.getId())) {
+						cluster.groupEs.add(groupEIDX++, new groupE(newNode));
+						System.out.println("Insert node " + newNode.elementName + " (" + refNode.getId() + ")");
+					}
+					allIDX++;
+				}
+			}
+
 		}
 
 	}
