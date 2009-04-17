@@ -89,7 +89,7 @@ public class ExcelFormatting {
 				boolean valueSameVal = true;
 				boolean descrSameVal = true;
 
-				if (cell0 != null && !cell0.getRichStringCellValue().toString().isEmpty()) {
+				if (cell0 != null && cell0.getRichStringCellValue().toString().trim().length() > 0 ) {
 					cell1 = row.getCell(firstCellIDX[c] + 1);
 					cell2 = row.getCell(firstCellIDX[c] + 2);
 
@@ -125,7 +125,7 @@ public class ExcelFormatting {
 				int groupPos = firstCellIDX[c];
 				cell0 = row.getCell(groupPos);
 
-				if (cell0 == null || cell0.getRichStringCellValue().toString().isEmpty()) {
+				if (cell0 == null || cell0.getRichStringCellValue().toString().trim().length() == 0 ) {
 					// color me red b/c I'm empty
 					cell0 = row.createCell(groupPos);
 					cell1 = row.createCell(groupPos + 1); 

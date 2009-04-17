@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
+
 /**
  * The main clustering code, originally written by Michael Morse with lots of
  * modifications for MatchMaker.
@@ -187,6 +188,8 @@ public class ClusterNode {
 		groupEs.remove(lastIdx);
 	}
 
+	
+	
 	/**
 	 * Test if nodes in groupE1 are contained in the same schema as groupE2
 	 * 
@@ -196,16 +199,13 @@ public class ClusterNode {
 	 */
 	private boolean notInSameSchema(groupE groupE1, groupE groupE2) {
 		for (Node n1 : groupE1.getGroup()) {
-			if (!(n1 instanceof SchemaElementNode)) continue;
+			if (!(n1 instanceof SchemaElementNode))
+				continue;
 			for (Node n2 : groupE2.getGroup()) {
-				if (!(n2 instanceof SchemaElementNode)) continue;
-				
-				ArrayList<Integer> schemaList1 = ((SchemaElementNode)n1).schemaIds;
-				ArrayList<Integer> schemaList2 = ((SchemaElementNode)n2).schemaIds;
-				
-				for ( Integer s1 : schemaList1 )
-					for ( Integer s2 : schemaList2 )
-						if ( s1.equals(s2)) return false; 
+				if (!(n2 instanceof SchemaElementNode))
+					continue;
+				if (((SchemaElementNode) n1).schemaId.equals(((SchemaElementNode) n2).schemaId))
+					return false;
 			}
 		}
 		return true;

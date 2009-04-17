@@ -245,15 +245,13 @@ public class ClusterRenderer {
 	}
 
 	private void printSchemaElementNode(SchemaElementNode seNode, HSSFRow row) {
-		for (Integer schemaID : seNode.schemaIds) {
-			Integer colNum = getColumnIdx(schemaID);
-			if (colNum < 0) return;
+		Integer colNum = getColumnIdx(seNode.schemaId);
+		if (colNum < 0) return;
 
-			HSSFCell cell = row.getCell(colNum);
-			if (cell == null) {
-				cell = row.createCell(colNum);
-				cell.setCellValue(new HSSFRichTextString(seNode.name));
-			}
+		HSSFCell cell = row.getCell(colNum);
+		if (cell == null) {
+			cell = row.createCell(colNum);
+			cell.setCellValue(new HSSFRichTextString(seNode.name));
 		}
 	}
 }
