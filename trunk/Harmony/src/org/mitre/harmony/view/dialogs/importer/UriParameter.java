@@ -21,7 +21,7 @@ import javax.swing.event.CaretListener;
 import javax.swing.filechooser.FileFilter;
 
 import org.mitre.harmony.model.HarmonyModel;
-import org.mitre.schemastore.importers.Importer;
+import org.mitre.schemastore.porters.schemaImporters.SchemaImporter;
 
 /** URI parameter class */
 public class UriParameter extends JPanel implements ActionListener
@@ -30,7 +30,7 @@ public class UriParameter extends JPanel implements ActionListener
 	private HarmonyModel harmonyModel;
 	
 	/** Stores the specified importer */
-	private Importer importer = null;
+	private SchemaImporter importer = null;
 
 	// Stores components used in the panel
 	private JTextField fileField = new JTextField();
@@ -83,11 +83,11 @@ public class UriParameter extends JPanel implements ActionListener
 		{ if(fileField!=null) fileField.setBackground(color); }
 	
 	/** Set the selected importer */
-	public void setImporter(Importer importer)
+	public void setImporter(SchemaImporter importer)
 	{
 		this.importer = importer;
 		fileField.setText("");
-		fileButton.setVisible(importer.getURIType()!=Importer.URI);
+		fileButton.setVisible(importer.getURIType()!=SchemaImporter.URI);
 	}
 	
 	/** Returns the parameter value */
@@ -95,7 +95,7 @@ public class UriParameter extends JPanel implements ActionListener
 	{
 		String value = fileField.getText();
 		if(value==null || value.length()==0) return null;
-		if(importer.getURIType()==Importer.URI) try { return new URI(value); } catch(Exception e) { return null; }
+		if(importer.getURIType()==SchemaImporter.URI) try { return new URI(value); } catch(Exception e) { return null; }
 		else return new File(value).toURI();
 	}
 	

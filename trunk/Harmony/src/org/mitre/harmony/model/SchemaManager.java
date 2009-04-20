@@ -4,7 +4,7 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.mitre.schemastore.importers.Importer;
+import org.mitre.schemastore.porters.schemaImporters.SchemaImporter;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
@@ -100,13 +100,13 @@ public class SchemaManager
 	//--------------------
 	
 	/** Returns the list of available importers */
-	public ArrayList<Importer> getImporters()
+	public ArrayList<SchemaImporter> getImporters()
 	{
-		ArrayList<Importer> importerList = new ArrayList<Importer>();
-		for(Importer importer : SchemaStoreManager.getImporters())
+		ArrayList<SchemaImporter> importerList = new ArrayList<SchemaImporter>();
+		for(SchemaImporter importer : SchemaStoreManager.getSchemaImporters())
 		{
 			Integer uriType = importer.getURIType();
-			if(uriType==Importer.FILE || uriType==Importer.ARCHIVE || uriType==Importer.URI)
+			if(uriType==SchemaImporter.FILE || uriType==SchemaImporter.ARCHIVE || uriType==SchemaImporter.URI)
 				importerList.add(importer);
 		}
 		return importerList;
