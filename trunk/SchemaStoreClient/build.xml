@@ -30,8 +30,7 @@
 	    		<path path="lib/xercesImpl.jar"/>
             </classpath>
         </javac>
-		<copy file="src/importers.xml" todir="build/classes"/>
-		<copy file="src/exporters.xml" todir="build/classes"/>
+		<copy file="src/porters.xml" todir="build/classes"/>
     </target>
 
 	<!-- Builds the SchemaStoreClient jar -->
@@ -39,8 +38,8 @@
         <fatjar.build output="SchemaStoreClient.jar">
             <fatjar.manifest/>
             <fatjar.filesource path="build/classes">
-				<fatjar.exclude relpath="org/mitre/schemastore/exporters/"/>
-				<fatjar.exclude relpath="org/mitre/schemastore/importers/"/>
+				<fatjar.exclude relpath="org/mitre/schemastore/porters/"/>
+				<fatjar.exclude relpath="porters.xml"/>
             </fatjar.filesource>
             <fatjar.filesource path="${SchemaStore}/build/classes">
                 <fatjar.exclude relpath="org/mitre/schemastore/data/"/>

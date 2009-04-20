@@ -1,5 +1,0 @@
-<exporters>
-  <exporter>org.mitre.schemastore.exporters.ArchiveExporter</exporter>
-  <exporter>org.mitre.schemastore.exporters.XSDExporter</exporter>
-  <exporter>org.mitre.schemastore.exporters.SQLExporter</exporter>
-</exporters>
