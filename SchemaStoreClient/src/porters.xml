@@ -1,0 +1,25 @@
+<porters>
+  <importers>
+    <schemaImporters>
+      <schemaImporter>org.mitre.schemastore.porters.schemaImporters.NewSchemaImporter</schemaImporter>
+      <schemaImporter>org.mitre.schemastore.porters.schemaImporters.ArchiveImporter</schemaImporter>
+      <schemaImporter>org.mitre.schemastore.porters.schemaImporters.DDLImporter</schemaImporter>
+      <schemaImporter>org.mitre.schemastore.porters.schemaImporters.ExtendSchemaImporter</schemaImporter>
+      <schemaImporter>org.mitre.schemastore.porters.schemaImporters.CopySchemaImporter</schemaImporter>
+      <schemaImporter>org.mitre.schemastore.porters.schemaImporters.OWLImporter</schemaImporter>
+      <schemaImporter>org.mitre.schemastore.porters.schemaImporters.XSDImporter</schemaImporter>
+      <schemaImporter>org.mitre.schemastore.porters.schemaImporters.DomainValueImporter</schemaImporter>
+      <schemaImporter>org.mitre.schemastore.porters.schemaImporters.SpreadsheetImporter</schemaImporter>
+      <schemaImporter>org.mitre.schemastore.porters.schemaImporters.GSIPImporter</schemaImporter>
+    </schemaImporters>
+  </importers>
+  <exporters>
+    <schemaExporters>
+      <schemaExporter>org.mitre.schemastore.porters.schemaExporters.ArchiveExporter</schemaExporter>
+      <schemaExporter>org.mitre.schemastore.porters.schemaExporters.XSDExporter</schemaExporter>
+      <schemaExporter>org.mitre.schemastore.porters.schemaExporters.SQLExporter</schemaExporter>
+    </schemaExporters>
+    <mappingExporters>
+    </mappingExporters>
+  </exporters>
+</porters>
