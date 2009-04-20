@@ -10,10 +10,10 @@ import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.mitre.openii.model.OpenIIManager;
-import org.mitre.schemastore.exporters.Exporter;
-import org.mitre.schemastore.exporters.ExporterManager;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.graph.Graph;
+import org.mitre.schemastore.porters.PorterManager;
+import org.mitre.schemastore.porters.schemaExporters.SchemaExporter;
 
 /** Constructs the Export Schema Dialog class */
 public class ExportSchemaDialog
@@ -27,13 +27,13 @@ public class ExportSchemaDialog
 		dialog.setFilterPath("C:/");
 		
 		// Get the list of exporters available for use
-		ExporterManager manager = new ExporterManager(OpenIIManager.getConnection());
-		ArrayList<Exporter> exporters = manager.getExporters(null);
+		PorterManager manager = new PorterManager(OpenIIManager.getConnection());
+		ArrayList<SchemaExporter> exporters = manager.getSchemaExporters();
 		
 		// Set up the filter names and extensions
 		ArrayList<String> names = new ArrayList<String>();
 		ArrayList<String> extensions = new ArrayList<String>();
-		for(Exporter exporter : exporters)
+		for(SchemaExporter exporter : exporters)
 		{
 			names.add(exporter.getName() + " (" + exporter.getFileType() + ")");
 			extensions.add("*"+exporter.getFileType());
@@ -47,7 +47,7 @@ public class ExportSchemaDialog
         {        	
 			try {
 	        	// Generate the export text
-	        	Exporter exporter = exporters.get(dialog.getFilterIndex());
+	        	SchemaExporter exporter = exporters.get(dialog.getFilterIndex());
 	        	Graph graph = OpenIIManager.getGraph(schema.getId());
 	        	StringBuffer buffer = exporter.exportSchema(schema.getId(), graph.getElements(null));
 
