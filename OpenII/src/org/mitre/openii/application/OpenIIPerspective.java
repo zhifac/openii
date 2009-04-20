@@ -13,7 +13,7 @@ public class OpenIIPerspective implements IPerspectiveFactory
 
 		// Creates the left pane
 		IFolderLayout leftPane = layout.createFolder("left", IPageLayout.LEFT, 0.25f, layout.getEditorArea());
-		leftPane.addView("org.mitre.openii.views.ygg.YggView");
+		leftPane.addView("org.mitre.openii.views.manager.ManagerView");
 		leftPane.addView("org.mitre.openii.views.SearchView");
 		
 		// Creates the repositories pane
