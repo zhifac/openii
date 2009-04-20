@@ -28,8 +28,8 @@ import org.eclipse.swt.widgets.Text;
 import org.mitre.openii.application.OpenIIActivator;
 import org.mitre.openii.model.OpenIIManager;
 import org.mitre.openii.views.manager.dialogs.DialogComponents;
-import org.mitre.schemastore.importers.Importer;
-import org.mitre.schemastore.importers.ImporterManager;
+import org.mitre.schemastore.porters.PorterManager;
+import org.mitre.schemastore.porters.schemaImporters.SchemaImporter;
 import org.mitre.schemastore.model.Schema;
 
 /** Constructs the Import Schema Dialog */
@@ -73,10 +73,10 @@ public class ImportSchemaDialog extends TitleAreaDialog implements ISelectionCha
 		// Construct a list of all importers that can be selected
 		DialogComponents.createLabel(pane,"Importer");
 		importerList = new ComboViewer(pane, SWT.NONE);
-		for(Importer importer : new ImporterManager(OpenIIManager.getConnection()).getImporters(null))
+		for(SchemaImporter importer : new PorterManager(OpenIIManager.getConnection()).getSchemaImporters())
 		{
 			Integer uriType = importer.getURIType();
-			if(uriType==Importer.FILE || uriType==Importer.ARCHIVE || uriType==Importer.URI)
+			if(uriType==SchemaImporter.FILE || uriType==SchemaImporter.ARCHIVE || uriType==SchemaImporter.URI)
 				importerList.add(importer);
 		}
 		importerList.addSelectionChangedListener(this);
@@ -158,9 +158,9 @@ public class ImportSchemaDialog extends TitleAreaDialog implements ISelectionCha
 	public void updateFields()
 	{
 		// Retrieve the selected importer
-		Importer importer = (Importer)((StructuredSelection)importerList.getSelection()).getFirstElement();
-		boolean archiveImporter = importer.getURIType()==Importer.ARCHIVE;
-		boolean uriImporter = importer.getURIType()==Importer.URI;
+		SchemaImporter importer = (SchemaImporter)((StructuredSelection)importerList.getSelection()).getFirstElement();
+		boolean archiveImporter = importer.getURIType()==SchemaImporter.ARCHIVE;
+		boolean uriImporter = importer.getURIType()==SchemaImporter.URI;
 		
 		// Clear out the fields as needed
 		if(archiveImporter)
@@ -189,7 +189,7 @@ public class ImportSchemaDialog extends TitleAreaDialog implements ISelectionCha
 	public void widgetSelected(SelectionEvent e)
 	{
 		// Retrieve the selected importer
-		Importer importer = (Importer)((StructuredSelection)importerList.getSelection()).getFirstElement();
+		SchemaImporter importer = (SchemaImporter)((StructuredSelection)importerList.getSelection()).getFirstElement();
 		
 		// Generate the list of extensions that are available
 		ArrayList<String> extensions = new ArrayList<String>();
@@ -223,8 +223,8 @@ public class ImportSchemaDialog extends TitleAreaDialog implements ISelectionCha
 		}
 		
 		// Update name, author, and description info when archive file modified
-		Importer importer = (Importer)((StructuredSelection)importerList.getSelection()).getFirstElement();
-		if(e.getSource().equals(fileField) && importer.getURIType()==Importer.ARCHIVE)
+		SchemaImporter importer = (SchemaImporter)((StructuredSelection)importerList.getSelection()).getFirstElement();
+		if(e.getSource().equals(fileField) && importer.getURIType()==SchemaImporter.ARCHIVE)
 			try {
 				if(validFile)
 				{
@@ -238,7 +238,7 @@ public class ImportSchemaDialog extends TitleAreaDialog implements ISelectionCha
 		
 		// Determine if the OK button should be activated
 		boolean activate = nameField.getText().length()>0 && authorField.getText().length()>0 && descriptionField.getText().length()>0;
-		activate &= importer.getURIType()==Importer.URI ? uriField.getText().length()>0 : fileField.getText().length()>0;
+		activate &= importer.getURIType()==SchemaImporter.URI ? uriField.getText().length()>0 : fileField.getText().length()>0;
 		getButton(IDialogConstants.OK_ID).setEnabled(activate && validFile);
 	}
 	
@@ -246,8 +246,8 @@ public class ImportSchemaDialog extends TitleAreaDialog implements ISelectionCha
 	protected void okPressed()
 	{
 		try {
-			Importer importer = (Importer)((StructuredSelection)importerList.getSelection()).getFirstElement();
-			URI uri = importer.getURIType()==Importer.URI ? new URI(uriField.getText()) : new File(fileField.getText()).toURI();
+			SchemaImporter importer = (SchemaImporter)((StructuredSelection)importerList.getSelection()).getFirstElement();
+			URI uri = importer.getURIType()==SchemaImporter.URI ? new URI(uriField.getText()) : new File(fileField.getText()).toURI();
 			Integer schemaID = importer.importSchema(nameField.getText(), authorField.getText(), descriptionField.getText(), uri);
 			if(schemaID!=null)
 			{
