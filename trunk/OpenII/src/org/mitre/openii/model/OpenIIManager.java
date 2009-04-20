@@ -199,14 +199,14 @@ public class OpenIIManager
 	public static ArrayList<Integer> getGroupSchemas(Integer groupID)
 		{ try { return client.getGroupSchemas(groupID); } catch(Exception e) { return new ArrayList<Integer>(); } }
 
-	/** Returns the list of schemas associate with all descendant groups */
-	public static ArrayList<Integer> getDescendantSchemas(Integer groupID)
+	/** Returns the list of schemas associate with child groups */
+	public static ArrayList<Integer> getChildGroupSchemas(Integer groupID)
 	{
 		ArrayList<Integer> descendantSchemas = new ArrayList<Integer>();
 		for(Group subgroup : getSubgroups(groupID))
 		{
 			descendantSchemas.addAll(getGroupSchemas(subgroup.getId()));
-			descendantSchemas.addAll(getDescendantSchemas(subgroup.getId()));
+			descendantSchemas.addAll(getChildGroupSchemas(subgroup.getId()));
 		}
 		return descendantSchemas;
 	}
@@ -220,8 +220,8 @@ public class OpenIIManager
 		Collections.sort(schemaIDs);
 		if(oldSchemaIDs.equals(schemaIDs)) return true;
 		
-		// Remove schemas in descendant groups from list since prohibited from being selected
-		schemaIDs.removeAll(getDescendantSchemas(groupID));
+		// Remove schemas in child groups from list since prohibited from being selected
+		schemaIDs.removeAll(getChildGroupSchemas(groupID));
 		
 		// Remove selected schemas from ancestor groups
 		Group parentGroup = getGroup(groupID);
