@@ -4,13 +4,13 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 
 import org.mitre.schemastore.client.SchemaStoreClient;
-import org.mitre.schemastore.importers.Importer;
-import org.mitre.schemastore.importers.ImporterManager;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.graph.HierarchicalGraph;
+import org.mitre.schemastore.porters.PorterManager;
+import org.mitre.schemastore.porters.schemaImporters.SchemaImporter;
 
 /**
  * Handles all communications to the database (via servlets)
@@ -20,6 +20,9 @@ public class SchemaStoreManager
 {
 	/** Stores the client used for accessing the database */
 	static private SchemaStoreClient client = null;
+
+	/** Stores the porter manager */
+	static private PorterManager porterManager = null;
 	
 	/** Checks if the schema store connection was successful */
 	private static boolean isConnected()
@@ -102,7 +105,10 @@ public class SchemaStoreManager
 	// Importer Functions
 	//--------------------
 	
-	/** Gets the list of available importers */
-	static ArrayList<Importer> getImporters()
-		{ return new ImporterManager(client).getImporters(null); }
+	/** Gets the list of available schema importers */
+	static ArrayList<SchemaImporter> getSchemaImporters()
+	{
+		if(porterManager==null) porterManager = new PorterManager(client);
+		return porterManager.getSchemaImporters();
+	}
 }

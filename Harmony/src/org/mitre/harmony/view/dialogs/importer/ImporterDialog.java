@@ -28,8 +28,8 @@ import javax.swing.event.CaretListener;
 
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.view.dialogs.AbstractButtonPane;
-import org.mitre.schemastore.importers.Importer;
 import org.mitre.schemastore.model.Schema;
+import org.mitre.schemastore.porters.schemaImporters.SchemaImporter;
 
 /** Class for displaying the importer view */
 public class ImporterDialog extends JDialog implements ActionListener,CaretListener
@@ -67,7 +67,7 @@ public class ImporterDialog extends JDialog implements ActionListener,CaretListe
 	private JPanel getSelectionPane()
 	{
 		// Generate the list of importers which are available
-		Vector<Importer> importers = new Vector<Importer>(harmonyModel.getSchemaManager().getImporters());
+		Vector<SchemaImporter> importers = new Vector<SchemaImporter>(harmonyModel.getSchemaManager().getImporters());
 		
 		// Initializes the label
 		JLabel selectionLabel = new JLabel("Importers: ");
@@ -158,7 +158,7 @@ public class ImporterDialog extends JDialog implements ActionListener,CaretListe
 	private boolean importSchema()
 	{
 		// Get the current importer being used
-		Importer importer = (Importer)selectionList.getSelectedItem();
+		SchemaImporter importer = (SchemaImporter)selectionList.getSelectedItem();
 		
 		// Retrieve the information from the various fields
 		String name = nameField.getText();
@@ -190,8 +190,8 @@ public class ImporterDialog extends JDialog implements ActionListener,CaretListe
 	public void actionPerformed(ActionEvent e)
 	{
 		// Initialize the importer pane
-		Importer importer = (Importer)selectionList.getSelectedItem();
-		boolean isArchiveImporter = importer.getURIType()==Importer.ARCHIVE;
+		SchemaImporter importer = (SchemaImporter)selectionList.getSelectedItem();
+		boolean isArchiveImporter = importer.getURIType()==SchemaImporter.ARCHIVE;
 		uriField.setImporter(importer);
 
 		// Lock down the name and description fields for archive importers
@@ -203,8 +203,8 @@ public class ImporterDialog extends JDialog implements ActionListener,CaretListe
 	/** Handles changes to the uri */
 	public void caretUpdate(CaretEvent e)
 	{
-		Importer importer = (Importer)selectionList.getSelectedItem();
-		if(importer.getURIType()==Importer.ARCHIVE && uriField.getValue()!=null)
+		SchemaImporter importer = (SchemaImporter)selectionList.getSelectedItem();
+		if(importer.getURIType()==SchemaImporter.ARCHIVE && uriField.getValue()!=null)
 			try {
 				Schema schema = importer.generateSchema(uriField.getValue());
 				nameField.setText(schema.getName());
