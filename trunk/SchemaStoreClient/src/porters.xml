@@ -20,6 +20,10 @@
       <schemaExporter>org.mitre.schemastore.porters.schemaExporters.SQLExporter</schemaExporter>
     </schemaExporters>
     <mappingExporters>
+	  <mappingExporter>org.mitre.schemastore.porters.mappingExporters.DataDictionaryExporter</mappingExporter>
+      <mappingExporter>org.mitre.schemastore.porters.mappingExporters.PieChartExporter</mappingExporter>
+      <mappingExporter>org.mitre.schemastore.porters.mappingExporters.TopMatchExporter</mappingExporter>
+      <mappingExporter>org.mitre.schemastore.porters.mappingExporters.UserMatchAnotationExporter</mappingExporter>
     </mappingExporters>
   </exporters>
 </porters>
