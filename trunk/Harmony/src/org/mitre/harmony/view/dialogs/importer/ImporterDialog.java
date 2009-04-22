@@ -27,6 +27,7 @@ import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
 
 import org.mitre.harmony.model.HarmonyModel;
+import org.mitre.harmony.model.SchemaStoreManager;
 import org.mitre.harmony.view.dialogs.AbstractButtonPane;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.porters.schemaImporters.SchemaImporter;
@@ -34,9 +35,6 @@ import org.mitre.schemastore.porters.schemaImporters.SchemaImporter;
 /** Class for displaying the importer view */
 public class ImporterDialog extends JDialog implements ActionListener,CaretListener
 {		
-	/** Stores the Harmony model */
-	private HarmonyModel harmonyModel;
-	
 	/** Stores the imported schema ID */
 	private Integer schemaID = null;
 	
@@ -67,7 +65,7 @@ public class ImporterDialog extends JDialog implements ActionListener,CaretListe
 	private JPanel getSelectionPane()
 	{
 		// Generate the list of importers which are available
-		Vector<SchemaImporter> importers = new Vector<SchemaImporter>(harmonyModel.getSchemaManager().getImporters());
+		Vector<SchemaImporter> importers = new Vector<SchemaImporter>(SchemaStoreManager.getSchemaImporters());
 		
 		// Initializes the label
 		JLabel selectionLabel = new JLabel("Importers: ");
@@ -126,7 +124,6 @@ public class ImporterDialog extends JDialog implements ActionListener,CaretListe
 	public ImporterDialog(JDialog parent, HarmonyModel harmonyModel)
 	{
 		super(parent);
-		this.harmonyModel = harmonyModel;
 		
 		// Initialize the uri field
 		uriField = new UriParameter(harmonyModel);

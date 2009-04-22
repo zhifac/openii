@@ -4,7 +4,6 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.mitre.schemastore.porters.schemaImporters.SchemaImporter;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
@@ -93,23 +92,6 @@ public class SchemaManager
 			if(success) { schemas.remove(schemaID); return true; }
 		} catch(Exception e) { System.out.println("(E) SchemaManager.deleteSchema - " + e.getMessage()); }
 		return false;
-	}
-	
-	//--------------------
-	// Importer Functions
-	//--------------------
-	
-	/** Returns the list of available importers */
-	public ArrayList<SchemaImporter> getImporters()
-	{
-		ArrayList<SchemaImporter> importerList = new ArrayList<SchemaImporter>();
-		for(SchemaImporter importer : SchemaStoreManager.getSchemaImporters())
-		{
-			Integer uriType = importer.getURIType();
-			if(uriType==SchemaImporter.FILE || uriType==SchemaImporter.ARCHIVE || uriType==SchemaImporter.URI)
-				importerList.add(importer);
-		}
-		return importerList;
 	}
 	
 	//--------------------------

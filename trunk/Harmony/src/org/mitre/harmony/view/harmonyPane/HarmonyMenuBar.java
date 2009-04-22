@@ -17,10 +17,10 @@ import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.KeyStroke;
 
-import org.mitre.harmony.exporters.ExporterManager;
 import org.mitre.harmony.model.HarmonyConsts;
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.view.dialogs.AboutDialog;
+import org.mitre.harmony.view.dialogs.ExportMappingDialog;
 import org.mitre.harmony.view.dialogs.mappings.LoadMappingDialog;
 import org.mitre.harmony.view.dialogs.mappings.SaveMappingDialog;
 import org.mitre.harmony.view.dialogs.matcher.MatcherMenu;
@@ -114,7 +114,7 @@ public class HarmonyMenuBar extends JMenuBar
 	    	
 	    	// Export project
 	    	else if(source==exportMapping)
-	    		{ ExporterManager.exportMapping(harmonyModel); }
+	    		{ ExportMappingDialog.exportMapping(harmonyModel); }
 	    	
 	    	// Exit Harmony
 	    	else if(source==exitApp)
