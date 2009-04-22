@@ -18,6 +18,7 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.labels.StandardPieSectionLabelGenerator;
 import org.jfree.chart.plot.PiePlot;
 import org.jfree.data.general.DefaultPieDataset;
+import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
@@ -56,14 +57,13 @@ public class PieChartExporter extends MappingExporter
 	}
 	
 	/** Generates pie charts showing the matched ratio for all schemas in this project */
-	public void exportMapping(Integer mappingID, File file) throws IOException
+	public void exportMapping(Mapping mapping, ArrayList<MappingCell> mappingCells, File file) throws IOException
 	{
 		// Initialize the output stream for the zip file
 	    ZipOutputStream out = new ZipOutputStream(new FileOutputStream(file));
 
 		// Store the schema pie charts to the zip file
-	    ArrayList<MappingCell> mappingCells = client.getMappingCells(mappingID);
-	    Integer schemaIDs[] = client.getMapping(mappingID).getSchemas();
+	    Integer schemaIDs[] = mapping.getSchemas();
 		for(int i=0; i<schemaIDs.length; i++)
 		{
 			Schema schema = client.getSchema(schemaIDs[i]);

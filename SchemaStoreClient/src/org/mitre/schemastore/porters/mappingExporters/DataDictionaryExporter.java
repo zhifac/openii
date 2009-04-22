@@ -7,8 +7,10 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
+import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.SchemaElement;
 
@@ -31,14 +33,13 @@ public class DataDictionaryExporter extends MappingExporter
 		{ return ".csv"; }
 	
 	/** Generates a data dictionary for this project */
-	public void exportMapping(Integer mappingID, File file) throws IOException
+	public void exportMapping(Mapping mapping, ArrayList<MappingCell> mappingCells, File file) throws IOException
 	{
 		// Prepare to export source and target node information
 		BufferedWriter out = new BufferedWriter(new FileWriter(file));
 
 		// Generate a list of all schema elements and mapping cells
-		HashMap<Integer,SchemaElement> elements = getMappingElements(mappingID);
-		ArrayList<MappingCell> mappingCells = client.getMappingCells(mappingID);
+		HashMap<Integer,SchemaElement> elements = getSchemaElements(Arrays.asList(mapping.getSchemas()));
 		
     	// First, output all user selected node pairings
 		for(MappingCell mappingCell : mappingCells)
