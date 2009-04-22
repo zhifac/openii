@@ -28,7 +28,7 @@ public class DataDictionaryExporter extends MappingExporter
 	
 	/** Returns the file types associated with this converter */
 	public String getFileType()
-		{ return "csv"; }
+		{ return ".csv"; }
 	
 	/** Generates a data dictionary for this project */
 	public void exportMapping(Integer mappingID, File file) throws IOException

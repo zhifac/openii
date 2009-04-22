@@ -28,9 +28,6 @@ import org.mitre.schemastore.model.SchemaElement;
  */
 public class PieChartExporter extends MappingExporter
 {
-	// Stores constants used by the converter
-	public static final String FILETYPE = "zip";
-
 	/** Returns the exporter name */
 	public String getName()
 		{ return "Pie Chart Exporter"; }
@@ -41,7 +38,7 @@ public class PieChartExporter extends MappingExporter
 
 	/** Returns the file types associated with this converter */
 	public String getFileType()
-		{ return FILETYPE; }
+		{ return ".zip"; }
 
 	/** Copies the specified file with the specified name to the specified zip output stream */
 	private void copyFileToZip(File file, String name, ZipOutputStream out)

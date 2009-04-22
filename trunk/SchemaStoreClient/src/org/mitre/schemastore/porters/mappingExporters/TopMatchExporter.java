@@ -38,7 +38,7 @@ public class TopMatchExporter extends MappingExporter
 	
 	/** Returns the file types associated with this converter */
 	public String getFileType()
-		{ return "csv"; }
+		{ return ".csv"; }
 	
 	/** Generates a list of the top 100 matches for this project */
 	public void exportMapping(Integer mappingID, File file) throws IOException
