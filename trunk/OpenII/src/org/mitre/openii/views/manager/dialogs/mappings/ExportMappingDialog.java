@@ -44,7 +44,7 @@ public class ExportMappingDialog
         {        	
 			try {
 	        	MappingExporter exporter = exporters.get(dialog.getFilterIndex());
-	        	exporter.exportMapping(mapping.getId(), new File(filename));
+	        	exporter.exportMapping(mapping, OpenIIManager.getMappingCells(mapping.getId()), new File(filename));
 			}
 			catch(Exception e2)
 			{

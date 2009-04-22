@@ -25,7 +25,7 @@
    <extension id="org.mitre.openii.views" point="org.eclipse.ui.views">
       <category name="OpenII" id="Ygg"></category>
       <view name="Repositories" icon="icons/Repositories.gif" category="OpenII" class="org.mitre.openii.views.repositories.RepositoryView" id="org.mitre.openii.views.repositories.RepositoryView"></view>
-      <view name="Ygg" icon="icons/Ygg.gif" category="OpenII" class="org.mitre.openii.views.ygg.YggView" id="org.mitre.openii.views.ygg.YggView"></view>
+      <view name="Manager" icon="icons/Manager.gif" category="OpenII" class="org.mitre.openii.views.manager.ManagerView" id="org.mitre.openii.views.manager.ManagerView"></view>
       <view name="Search" icon="icons/Search.gif" category="OpenII" class="org.mitre.openii.views.SearchView" id="org.mitre.openii.views.SearchView"></view>
       <view name="Unity" icon="icons/Harmony.gif" category="OpenII" class="org.mitre.openii.views.UnityView" id="org.mitre.openii.views.UnityView"></view>
    </extension>
