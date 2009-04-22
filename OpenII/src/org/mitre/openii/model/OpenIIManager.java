@@ -9,6 +9,7 @@ import org.mitre.openii.application.OpenIIActivator;
 import org.mitre.schemastore.client.SchemaStoreClient;
 import org.mitre.schemastore.model.Group;
 import org.mitre.schemastore.model.Mapping;
+import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.graph.Graph;
 
@@ -275,6 +276,10 @@ public class OpenIIManager
 	/** Returns the specified mapping */
 	public static Mapping getMapping(Integer mappingID)
 		{ try { return client.getMapping(mappingID); } catch(Exception e) { return null; } }
+	
+	/** Returns the specified mapping cells */
+	public static ArrayList<MappingCell> getMappingCells(Integer mappingID)
+		{ try { return client.getMappingCells(mappingID); } catch(Exception e) { return new ArrayList<MappingCell>(); } }
 	
 	/** Add mapping to the repository */
 	public static Integer addMapping(Mapping mapping)
