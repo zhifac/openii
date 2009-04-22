@@ -119,7 +119,10 @@ public class ManagerMenuManager extends MenuManager implements IMenuListener
 			
 		// Display the menu for the "Mappings" header
 		if(element instanceof String && element.equals("Mappings"))
+		{
 			menuManager.add(new ManagerAction(this,"New Mapping",ManagerAction.NEW_MAPPING));
+			menuManager.add(new ManagerAction(this,"Merge Mappings",ManagerAction.MERGE_MAPPINGS));
+		}
 
 		// Display the menu for a selected mapping
 		if(element instanceof Mapping)

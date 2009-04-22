@@ -36,10 +36,11 @@ public class ManagerAction extends Action
 	static final int DELETE_GROUP = 7;
 	static final int DELETE_GROUP_SCHEMA = 8;
 	static final int NEW_MAPPING = 9;
-	static final int EDIT_MAPPING = 10;
-	static final int EXPORT_MAPPING = 11;
-	static final int DELETE_MAPPING = 12;
-	static final int DELETE_MAPPING_SCHEMA = 13;
+	static final int MERGE_MAPPINGS = 10;
+	static final int EDIT_MAPPING = 11;
+	static final int EXPORT_MAPPING = 12;
+	static final int DELETE_MAPPING = 13;
+	static final int DELETE_MAPPING_SCHEMA = 14;
 	
 	/** Stores the menu manager to which this action is tied */
 	private ManagerMenuManager menuManager;
@@ -69,6 +70,7 @@ public class ManagerAction extends Action
 			case DELETE_GROUP: icon = "Delete.gif"; break;
 			case DELETE_GROUP_SCHEMA: icon = "Delete.gif"; break;
 			case NEW_MAPPING: icon = "Mapping.gif"; break;
+			case MERGE_MAPPINGS: icon = "Merge.gif"; break;
 			case EDIT_MAPPING: icon = "Edit.gif"; break;
 			case EXPORT_MAPPING: icon = "Export.gif"; break;
 			case DELETE_MAPPING: icon = "Delete.gif"; break;
@@ -142,7 +144,11 @@ public class ManagerAction extends Action
 		/** Handles the addition of a mapping */
 		if(actionType == NEW_MAPPING)
 			new EditMappingDialog(shell,null).open();
-			
+
+		/** Handles the merging of mappings */
+		if(actionType == MERGE_MAPPINGS)
+			System.out.println("Merge Mappings");
+		
 		/** Handles the editing of a mapping */
 		if(actionType == EDIT_MAPPING)
 			new EditMappingDialog(shell,(Mapping)selection).open();
