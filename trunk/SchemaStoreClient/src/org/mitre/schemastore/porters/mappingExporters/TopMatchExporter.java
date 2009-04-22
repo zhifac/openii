@@ -7,11 +7,13 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
+import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.graph.HierarchicalGraph;
@@ -41,19 +43,19 @@ public class TopMatchExporter extends MappingExporter
 		{ return ".csv"; }
 	
 	/** Generates a list of the top 100 matches for this project */
-	public void exportMapping(Integer mappingID, File file) throws IOException
+	public void exportMapping(Mapping mapping, ArrayList<MappingCell> mappingCells, File file) throws IOException
 	{		
 		// Prepare to export source and target node information
 		BufferedWriter out = new BufferedWriter(new FileWriter(file));
 
 		// Initialize the graph and schema element lists
-		elements = getMappingElements(mappingID);
-		for(Integer schemaID : client.getMapping(mappingID).getSchemas())
+		elements = getSchemaElements(Arrays.asList(mapping.getSchemas()));
+		for(Integer schemaID : mapping.getSchemas())
 			graphs.add(new HierarchicalGraph(client.getGraph(schemaID),null));
 			
 		// Get the list of mapping cells
 		CompressedList matchList = new CompressedList();
-		for(MappingCell mappingCell : client.getMappingCells(mappingID))
+		for(MappingCell mappingCell : mappingCells)
 			matchList.addMappingCell(mappingCell);
 		
     	// Outputs the top mapping cells

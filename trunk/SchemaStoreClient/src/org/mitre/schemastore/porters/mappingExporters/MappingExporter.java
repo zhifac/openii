@@ -7,9 +7,10 @@ import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
+import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
-import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.porters.Porter;
 
@@ -20,14 +21,14 @@ public abstract class MappingExporter extends Porter
 	abstract public String getFileType();
 
 	/** Exports the project to the specified file */
-	abstract public void exportMapping(Integer mappingID, File file) throws IOException;
+	abstract public void exportMapping(Mapping mapping, ArrayList<MappingCell> mappingCells, File file) throws IOException;
 	
 	/** Generates a hash map of all schema elements contained within the mapping */
-	protected HashMap<Integer,SchemaElement> getMappingElements(Integer mappingID) throws RemoteException
+	protected HashMap<Integer,SchemaElement> getSchemaElements(List<Integer> schemaIDs) throws RemoteException
 	{
 		HashMap<Integer,SchemaElement> elements = new HashMap<Integer,SchemaElement>();
-		for(Schema schema : client.getSchemas())
-			for(SchemaElement element : client.getGraph(schema.getId()).getElements(null))
+		for(Integer schemaID : schemaIDs)
+			for(SchemaElement element : client.getGraph(schemaID).getElements(null))
 				elements.put(element.getId(),element);
 		return elements;
 	}
