@@ -13,6 +13,7 @@ import org.mitre.openii.views.manager.dialogs.groups.DeleteGroupDialog;
 import org.mitre.openii.views.manager.dialogs.groups.EditGroupDialog;
 import org.mitre.openii.views.manager.dialogs.mappings.DeleteMappingDialog;
 import org.mitre.openii.views.manager.dialogs.mappings.EditMappingDialog;
+import org.mitre.openii.views.manager.dialogs.mappings.ExportMappingDialog;
 import org.mitre.openii.views.manager.dialogs.schemas.DeleteSchemaDialog;
 import org.mitre.openii.views.manager.dialogs.schemas.EditSchemaDialog;
 import org.mitre.openii.views.manager.dialogs.schemas.ExportSchemaDialog;
@@ -36,8 +37,9 @@ public class ManagerAction extends Action
 	static final int DELETE_GROUP_SCHEMA = 8;
 	static final int NEW_MAPPING = 9;
 	static final int EDIT_MAPPING = 10;
-	static final int DELETE_MAPPING = 11;
-	static final int DELETE_MAPPING_SCHEMA = 12;
+	static final int EXPORT_MAPPING = 11;
+	static final int DELETE_MAPPING = 12;
+	static final int DELETE_MAPPING_SCHEMA = 13;
 	
 	/** Stores the menu manager to which this action is tied */
 	private ManagerMenuManager menuManager;
@@ -68,6 +70,7 @@ public class ManagerAction extends Action
 			case DELETE_GROUP_SCHEMA: icon = "Delete.gif"; break;
 			case NEW_MAPPING: icon = "Mapping.gif"; break;
 			case EDIT_MAPPING: icon = "Edit.gif"; break;
+			case EXPORT_MAPPING: icon = "Export.gif"; break;
 			case DELETE_MAPPING: icon = "Delete.gif"; break;
 			case DELETE_MAPPING_SCHEMA: icon = "Delete.gif"; break;
 		}		
@@ -143,6 +146,10 @@ public class ManagerAction extends Action
 		/** Handles the editing of a mapping */
 		if(actionType == EDIT_MAPPING)
 			new EditMappingDialog(shell,(Mapping)selection).open();
+		
+		/** Handles the exporting of a mapping */
+		if(actionType == EXPORT_MAPPING)
+			ExportMappingDialog.export(shell,(Mapping)selection);
 		
 		/** Handles the deletion of a mapping */
 		if(actionType == DELETE_MAPPING)

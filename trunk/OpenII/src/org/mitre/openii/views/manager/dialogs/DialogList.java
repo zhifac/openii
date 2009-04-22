@@ -62,7 +62,11 @@ public class DialogList extends Composite
 	
 	/** Adds a button to the dialog list */
 	public Button addButton(String label, SelectionListener listener)
-		{ return DialogComponents.createButton(buttonPane,label,listener); }
+	{
+		Button button = DialogComponents.createButton(buttonPane,label,listener);
+		button.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		return button;
+	}
 	
 	/** Returns the list */
 	public TableViewer getList()

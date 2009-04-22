@@ -1,8 +1,6 @@
-package org.mitre.openii.views.manager.dialogs.schemas;
+package org.mitre.openii.views.manager.dialogs.mappings;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.util.ArrayList;
 
 import org.eclipse.swt.SWT;
@@ -10,30 +8,29 @@ import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.mitre.openii.model.OpenIIManager;
-import org.mitre.schemastore.model.Schema;
-import org.mitre.schemastore.model.graph.Graph;
+import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.porters.PorterManager;
-import org.mitre.schemastore.porters.schemaExporters.SchemaExporter;
+import org.mitre.schemastore.porters.mappingExporters.MappingExporter;
 
-/** Constructs the Export Schema Dialog class */
-public class ExportSchemaDialog
+/** Constructs the Export Mapping Dialog class */
+public class ExportMappingDialog
 {
-	/** Function for exporting the specified schema */
-	static public void export(Shell shell, Schema schema)
+	/** Function for exporting the specified mapping */
+	static public void export(Shell shell, Mapping mapping)
 	{
 		// Create the dialog
 		FileDialog dialog = new FileDialog(shell, SWT.SAVE);
-		dialog.setText("Export Schema");
+		dialog.setText("Export Mapping");
 		dialog.setFilterPath("C:/");
 		
 		// Get the list of exporters available for use
 		PorterManager manager = new PorterManager(OpenIIManager.getConnection());
-		ArrayList<SchemaExporter> exporters = manager.getSchemaExporters();
+		ArrayList<MappingExporter> exporters = manager.getMappingExporters();
 		
 		// Set up the filter names and extensions
 		ArrayList<String> names = new ArrayList<String>();
 		ArrayList<String> extensions = new ArrayList<String>();
-		for(SchemaExporter exporter : exporters)
+		for(MappingExporter exporter : exporters)
 		{
 			names.add(exporter.getName() + " (" + exporter.getFileType() + ")");
 			extensions.add("*"+exporter.getFileType());
@@ -46,21 +43,14 @@ public class ExportSchemaDialog
         if(filename != null)
         {        	
 			try {
-	        	// Generate the export text
-	        	SchemaExporter exporter = exporters.get(dialog.getFilterIndex());
-	        	Graph graph = OpenIIManager.getGraph(schema.getId());
-	        	StringBuffer buffer = exporter.exportSchema(schema.getId(), graph.getElements(null));
-
-	        	// Export the schema to file
-				BufferedWriter out = new BufferedWriter(new FileWriter(new File(filename)));
-				out.write(buffer.toString());
-				out.close();
+	        	MappingExporter exporter = exporters.get(dialog.getFilterIndex());
+	        	exporter.exportMapping(mapping.getId(), new File(filename));
 			}
 			catch(Exception e2)
 			{
 				MessageBox message = new MessageBox(shell,SWT.ERROR);
-				message.setText("Schema Export Error");
-				message.setMessage("Unable to export schema to specified file!");
+				message.setText("Mapping Export Error");
+				message.setMessage("Unable to export mapping to specified file!");
 				message.open();
 			}
         }
