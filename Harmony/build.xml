@@ -18,8 +18,6 @@
 	    	<classpath>
     	    	<path path="lib/SchemaStoreClient.jar"/>
     	    	<path path="lib/SchemaStorePorters.jar"/>
-       	    	<path path="lib/jfreechart-1.0.2.jar"/>
-       	    	<path path="lib/jcommon-1.0.5.jar"/>
             </classpath>
         </javac>
 		<copy todir="build/classes/org/mitre/harmony/view/graphics">
@@ -45,8 +43,6 @@
         <fatjar.build output="Harmony.jar">
             <fatjar.manifest mainclass="org.mitre.harmony.Harmony" classpath="SchemaStoreClient.jar SchemaStorePorters.jar"/>
             <fatjar.filesource path="build/classes"/>
-            <fatjar.jarsource file="lib/jfreechart-1.0.2.jar" relpath=""/>
-            <fatjar.jarsource file="lib/jcommon-1.0.5.jar" relpath=""/>
         </fatjar.build>
 
 		<!-- Package Harmony into a zip file -->

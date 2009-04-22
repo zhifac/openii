@@ -10,6 +10,7 @@ import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.graph.HierarchicalGraph;
 import org.mitre.schemastore.porters.PorterManager;
+import org.mitre.schemastore.porters.mappingExporters.MappingExporter;
 import org.mitre.schemastore.porters.schemaImporters.SchemaImporter;
 
 /**
@@ -106,9 +107,16 @@ public class SchemaStoreManager
 	//--------------------
 	
 	/** Gets the list of available schema importers */
-	static ArrayList<SchemaImporter> getSchemaImporters()
+	public static ArrayList<SchemaImporter> getSchemaImporters()
 	{
 		if(porterManager==null) porterManager = new PorterManager(client);
 		return porterManager.getSchemaImporters();
+	}
+
+	/** Gets the list of available mapping exporters */
+	public static ArrayList<MappingExporter> getMappingExporters()
+	{
+		if(porterManager==null) porterManager = new PorterManager(client);
+		return porterManager.getMappingExporters();
 	}
 }
