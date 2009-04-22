@@ -79,7 +79,6 @@ public class DialogComponents
 		// Generate the file button component
 		Button button = new Button(parent, SWT.NONE);
 		button.setText(label);
-		button.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		button.addSelectionListener(listener);
 		return button;
 	}
@@ -101,7 +100,7 @@ public class DialogComponents
 		fileField.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		
 		// Generate the file button component
-		createButton(parent, "Get File...", listener);
+		createButton(pane, "Get File...", listener);
 
 		return fileField;
 	}
