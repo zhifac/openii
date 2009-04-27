@@ -14,6 +14,7 @@ import org.mitre.openii.views.manager.dialogs.groups.EditGroupDialog;
 import org.mitre.openii.views.manager.dialogs.mappings.DeleteMappingDialog;
 import org.mitre.openii.views.manager.dialogs.mappings.EditMappingDialog;
 import org.mitre.openii.views.manager.dialogs.mappings.ExportMappingDialog;
+import org.mitre.openii.views.manager.dialogs.mappings.MergeMappingDialog;
 import org.mitre.openii.views.manager.dialogs.schemas.DeleteSchemaDialog;
 import org.mitre.openii.views.manager.dialogs.schemas.EditSchemaDialog;
 import org.mitre.openii.views.manager.dialogs.schemas.ExportSchemaDialog;
@@ -147,7 +148,7 @@ public class ManagerAction extends Action
 
 		/** Handles the merging of mappings */
 		if(actionType == MERGE_MAPPINGS)
-			System.out.println("Merge Mappings");
+			new MergeMappingDialog(shell).open();
 		
 		/** Handles the editing of a mapping */
 		if(actionType == EDIT_MAPPING)
