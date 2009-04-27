@@ -16,17 +16,25 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.mitre.openii.application.OpenIIActivator;
 import org.mitre.openii.model.OpenIIManager;
+import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.Schema;
 
 /** Constructs the Import Schema Dialog */
 public class DialogComponents
 {
 	/** Class for defining how labels should be displayed in schema list */
-	static public class SchemaLabelProvider implements ILabelProvider
+	static public class DialogLabelProvider implements ILabelProvider
 	{
+		/** Stores the image to display with the label */
+		private Image image = null;
+		
+		/** Constructs the dialog label provider */
+		public DialogLabelProvider(String imageName)
+			{ image = OpenIIActivator.getImage(imageName); }
+		
 		/** Returns the image associated with the specified element */
 		public Image getImage(Object element)
-			{ return OpenIIActivator.getImage("Schema.gif"); }
+			{ return image; }
 
 		/** Returns the name associated with the specified element */
 		public String getText(Object element)
@@ -47,6 +55,18 @@ public class DialogComponents
 		/** Defines the contents of the schema list */
 		public Object[] getElements(Object arg0)
 			{ return OpenIIManager.getSchemas().toArray(new Schema[0]); }
+
+		// Unused functions
+		public void dispose() {}
+		public void inputChanged(Viewer arg0, Object arg1, Object arg2) {}
+	}
+	
+	/** Class for defining contents of mapping list */
+	static public class MappingContentProvider implements IStructuredContentProvider
+	{
+		/** Defines the contents of the mapping list */
+		public Object[] getElements(Object arg0)
+			{ return OpenIIManager.getMappings().toArray(new Mapping[0]); }
 
 		// Unused functions
 		public void dispose() {}
