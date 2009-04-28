@@ -9,8 +9,6 @@ import javax.swing.JComponent;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.border.EmptyBorder;
 
 import org.mitre.harmony.model.HarmonyConsts;
@@ -94,10 +92,6 @@ public class HarmonyFrame extends JInternalFrame implements PreferencesListener
 
 		// Add a listener to monitor for the closing of the parent frame
 		harmonyModel.getPreferences().addListener(this);
-
-		// use Harmony Look And Feel 
-		try { UIManager.setLookAndFeel(new HarmonyLookAndFeel()); }
-		catch (UnsupportedLookAndFeelException e) {}
 	}
 
 	/** Handles the changing of the displayed view */
