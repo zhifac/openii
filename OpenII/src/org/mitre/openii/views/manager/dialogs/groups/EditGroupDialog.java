@@ -84,7 +84,7 @@ public class EditGroupDialog extends Dialog implements ModifyListener, Selection
 		searchButton = dialogList.addButton("Search...",this);
 		removeButton = dialogList.addButton("Remove",this);
 		list = dialogList.getList();
-		list.setLabelProvider(new DialogComponents.DialogLabelProvider("Schema.gif"));
+		list.setLabelProvider(new DialogComponents.SchemaLabelProvider());
 	}
 	
 	/** Creates the contents for the Import Schema Dialog */
