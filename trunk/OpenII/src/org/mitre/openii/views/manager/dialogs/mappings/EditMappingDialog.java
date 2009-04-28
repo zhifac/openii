@@ -83,9 +83,11 @@ public class EditMappingDialog extends Dialog implements ModifyListener, ISelect
 		// Generate the properties to be displayed by the info pane
 		schemaList = CheckboxTableViewer.newCheckList(pane,SWT.BORDER | SWT.V_SCROLL);
 		schemaList.setContentProvider(new DialogComponents.SchemaContentProvider());
-		schemaList.setLabelProvider(new DialogComponents.DialogLabelProvider("Schema.gif"));
+		schemaList.setLabelProvider(new DialogComponents.SchemaLabelProvider());
 		schemaList.setInput("");
-		schemaList.getControl().setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
+		gridData.heightHint = 200;
+		schemaList.getControl().setLayoutData(gridData);
 		schemaList.addSelectionChangedListener(this);
 	}
 	

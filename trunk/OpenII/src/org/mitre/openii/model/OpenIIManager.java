@@ -302,6 +302,21 @@ public class OpenIIManager
 		return false;
 	}
 	
+	/** Saves the mapping to the repository */
+	public static Integer saveMapping(Mapping mapping, ArrayList<MappingCell> mappingCells)
+	{
+		try {
+			Integer mappingID = client.saveMapping(mapping,mappingCells);
+			if(mappingID!=null)
+			{
+				if(mapping.getId()==null || !mapping.getId().equals(mappingID))
+					{ mapping.setId(mappingID); fireMappingAdded(mapping); return mappingID; }
+				else { fireMappingModified(mappingID); return mappingID; }
+			}
+		} catch(Exception e) {}
+		return null;
+	}
+	
 	/** Deletes the specified mapping */
 	public static boolean deleteMapping(Integer mappingID)
 	{
