@@ -12,12 +12,14 @@ import java.util.Hashtable;
 import java.util.HashMap;
 import java.util.Vector;
 
+import org.mitre.harmony.model.HarmonyConsts;
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.graph.HierarchicalGraph;
 //import org.mitre.harmony.model.selectedInfo.SelectedInfo;
+import org.mitre.harmony.model.mapping.MappingCellManager;
 import org.mitre.harmony.model.selectedInfo.SelectedInfoListener;
 
 /** Class used for displaying the heat map */
@@ -435,14 +437,23 @@ public class HeatMap extends JPanel implements MouseListener, MouseMotionListene
     }
     
     /** Saves current modified mapping elements to schemastore */
-    void SaveMapping(){
-    	for(int j=0; j < elementsX.length; j++){
-    		for(int k=0; k < elementsY.length;k++){
+    void SaveMapping()
+    {
+    	MappingCellManager manager = harmonyModel.getMappingCellManager();
+    	for(int j=0; j < elementsX.length; j++)
+    	{
+    		for(int k=0; k < elementsY.length;k++)
+    		{
     			int xID = elementsX[j].getID();
     			int yID = elementsY[k].getID();
-    			if(bigGrid.isModified(xID, yID) == true){
-			    	Integer id = harmonyModel.getMappingCellManager().getMappingCellID(xID, yID);
-			    	MappingCellManager.modifyMappingCell(id, bigGrid.get(xID, yID), System.getProperty("user.name"), true);
+    			if(bigGrid.isModified(xID, yID) == true)
+    			{
+			    	Integer mappingCellID = manager.getMappingCellID(xID, yID);
+			    	MappingCell mappingCell = manager.getMappingCell(mappingCellID);
+			    	mappingCell.setScore(bigGrid.get(xID,yID));
+			    	mappingCell.setAuthor(System.getProperty("user.name"));
+			    	mappingCell.setValidated(true);
+			    	manager.setMappingCell(mappingCell);
     			}
 	    	}
     	}
@@ -1014,7 +1025,7 @@ public class HeatMap extends JPanel implements MouseListener, MouseMotionListene
     }
     
     private int getHighlightedXGridLoc(){
-    	List<Integer>lefts = harmonyModel.getSelectedInfo().getElements(HarmonyConsts.RIGHT);
+    	List<Integer>lefts = harmonyModel.getSelectedInfo().getSelectedElements(HarmonyConsts.RIGHT);
     	if(lefts != null && lefts.size() >0){
     		int highlighted = lefts.get(0);
     		for(int j=0; j < elementsX.length; j++){
@@ -1025,7 +1036,7 @@ public class HeatMap extends JPanel implements MouseListener, MouseMotionListene
     }
     
     private int getHighlightedYGridLoc(){
-    	List<Integer>lefts = harmonyModel.getSelectedInfo().getElements(HarmonyConsts.LEFT);
+    	List<Integer>lefts = harmonyModel.getSelectedInfo().getSelectedElements(HarmonyConsts.LEFT);
     	if(lefts != null && lefts.size() > 0){
     		int highlighted = lefts.get(0);
     		for(int j=0; j < elementsY.length; j++){
