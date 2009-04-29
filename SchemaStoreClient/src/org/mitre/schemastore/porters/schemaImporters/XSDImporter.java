@@ -238,7 +238,7 @@ public class XSDImporter extends SchemaImporter
 						ElementDecl childElement = (ElementDecl) obj;
 						XMLType childElementType = childElement.getType();
 						
-						if (childElement.isReference()){
+						if (false && childElement.isReference()){
 							// create NEW containment 
 							Containment containment = new Containment(nextId(), childElement.getName(), this.getDocumentation(childElement),
 									currentTypeEntity.getId(), UNASSIGNED_CHILD_ID, childElement.getMinOccurs(), childElement.getMaxOccurs(), 0);
@@ -296,7 +296,7 @@ public class XSDImporter extends SchemaImporter
 			
 			ElementDecl element = (ElementDecl) elements.nextElement();
 			
-			if (element.isReference()){
+			if (false && element.isReference()){
 				// create NEW containment for schema to referenced element 
 				Containment containment = new Containment(nextId(), element.getName(), this.getDocumentation(element),
 						null, UNASSIGNED_CHILD_ID, element.getMinOccurs(), element.getMaxOccurs(), 0);
@@ -434,7 +434,7 @@ public class XSDImporter extends SchemaImporter
 					ElementDecl childElement = (ElementDecl) obj;
 					XMLType childElementType = childElement.getType();
 					
-					if (childElement.isReference()){
+					if (false && childElement.isReference()){
 						// create NEW containment 
 						Containment containment = new Containment(nextId(), childElement.getName(), this.getDocumentation(childElement),
 								complexTypeEntity.getId(), UNASSIGNED_CHILD_ID, childElement.getMinOccurs(), childElement.getMaxOccurs(), 0);
