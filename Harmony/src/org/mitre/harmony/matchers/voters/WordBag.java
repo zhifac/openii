@@ -64,7 +64,9 @@ public class WordBag
 			 "until", "use", "used", "usefully", "usefulness",
 			 "using", "usually", "various", "very", "was",
 			 "were", "what", "while", "who", "whose", "why",
-			 "widely", "will", "would", "yet", "xsd","comment","string"
+			 "widely", "will", "would", "yet", "xsd","comment","string","",
+			 "0","1","2","3","4","5","6","7","8","9","10","11", "12", "13", "14", "15", "100", 
+			 "16", "17", "18", "19", "20","type"
 			};
 		stopwords = new HashSet<String>(Arrays.asList(stopwordArray));
 	}

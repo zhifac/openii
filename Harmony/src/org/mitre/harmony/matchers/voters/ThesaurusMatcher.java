@@ -56,7 +56,8 @@ public class ThesaurusMatcher extends BagMatcher
 					WordBag sourceBag = wordBags.get(sourceElement.getId());
 					WordBag targetBag = wordBags.get(targetElement.getId());
 					VoterScore score = computeScore(sourceBag, targetBag);
-					voterScores.setScore(sourceElement.getId(), targetElement.getId(), score);
+					if(score != null)
+						voterScores.setScore(sourceElement.getId(), targetElement.getId(), score);
 				}
 		return voterScores;
 	}

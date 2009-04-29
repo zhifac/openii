@@ -23,8 +23,7 @@ import org.mitre.schemastore.model.graph.FilteredGraph;
 public class WordNetMatcher extends BagMatcher
 {
 	/** Stores the word bag used for this matcher */
-	//private HashMap<Integer, WordBag> wordBags = new HashMap<Integer, WordBag>();
-	//private static HashMap<String, ArrayList<Integer>> thesaurus=null;
+	private HashMap<String, ArrayList<Integer>> SenSets;
 	
 	/** Returns the name of the match voter */
 	public String getName()
@@ -57,6 +56,9 @@ public class WordNetMatcher extends BagMatcher
 		URL thesaurusFile = getClass().getResource("wordnet.txt");
 		HashMap<String, ArrayList<Integer>> thesaurus = getDictionary(thesaurusFile);
 		//getThesaurus();
+		
+		//initialize senSets.
+		//initSenSets(sourceElements);
 
 		// Generate the match scores
 		VoterScores scores = new VoterScores(SCORE_CEILING);
@@ -91,12 +93,9 @@ public class WordNetMatcher extends BagMatcher
 
 				  numList.add(val);
 				}
+				Collections.sort(numList);
 				for(String text: wb.getWords()){
-					if(regIndex.containsKey(text)){
-						regIndex.get(text).addAll(numList);
-					}else{
-						regIndex.put(text,numList);
-					}
+					regIndex.put(text,numList);
 				}
 				
 	        } 
@@ -134,25 +133,23 @@ public class WordNetMatcher extends BagMatcher
 		
 		for(String sourceString: textS){
 			//Now, create lists of the sensets (word senses) for source.
-			ArrayList<Integer> sensetS = new ArrayList<Integer>();
+			ArrayList<Integer> sensetS;
 			
 			if(thesaurus.containsKey(sourceString))
-				sensetS.addAll(thesaurus.get(sourceString));
+				sensetS=thesaurus.get(sourceString);
 			else continue;
-			Collections.sort(sensetS);
 			double numIntersects = 0.0;
 			
 			for(String targetString: textT){
 				//Now, create lists of the sensets (word senses) for target
-				ArrayList<Integer> sensetT = new ArrayList<Integer>();
+				ArrayList<Integer> sensetT; 
 				
 				if(thesaurus.containsKey(targetString))
-					sensetT.addAll(thesaurus.get(targetString));
+					sensetT=thesaurus.get(targetString);
 				else continue;
 				
 				//Now, see if there is an intersection of each list.
 				// sensetS \insertsect sensetT
-				Collections.sort(sensetT);
 				
 				Iterator<Integer> iterS = sensetS.listIterator();
 				Iterator<Integer> iterT = sensetT.listIterator();
@@ -162,12 +159,7 @@ public class WordNetMatcher extends BagMatcher
 				while(true && numIntersects < 0.5){
 					if(senS == senT){
 						numIntersects+=1.0;
-						if(iterS.hasNext())
-							senS=iterS.next();
-						else break;
-						if(iterT.hasNext())
-							senT = iterT.next();
-						else break;
+						break;
 					} else if(senS < senT){
 						if(iterS.hasNext())
 							senS = iterS.next();
