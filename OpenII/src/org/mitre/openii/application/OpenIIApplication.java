@@ -4,6 +4,7 @@ import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferenceConstants;
 import org.eclipse.ui.PlatformUI;
@@ -20,6 +21,13 @@ public class OpenIIApplication implements IApplication
 	/** Class for defining the window layout for the workbench advisor */
 	public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor
 	{
+		@Override
+		public void createWindowContents(Shell shell)
+		{
+			super.createWindowContents(shell);
+			shell.setImage(OpenIIActivator.getImage("OpenII.gif"));
+		}
+
 		/** Constructs the workbench window advisor */
 	    public ApplicationWorkbenchWindowAdvisor(IWorkbenchWindowConfigurer configurer)
 	    	{ super(configurer); }
