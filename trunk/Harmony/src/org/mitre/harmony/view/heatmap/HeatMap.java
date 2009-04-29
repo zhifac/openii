@@ -7,12 +7,17 @@ import javax.swing.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.Stack;
+import java.util.List;
+import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Vector;
 
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.graph.HierarchicalGraph;
+//import org.mitre.harmony.model.selectedInfo.SelectedInfo;
 import org.mitre.harmony.model.selectedInfo.SelectedInfoListener;
 
 /** Class used for displaying the heat map */
@@ -21,6 +26,7 @@ public class HeatMap extends JPanel implements MouseListener, MouseMotionListene
     // Constants for defining the various gradients available
     public final static Color[] GRADIENT_BLUE_TO_RED = createGradient(Color.BLUE, Color.RED, 500);
     public final static Color[] GRADIENT_BLACK_TO_WHITE = createGradient(Color.BLACK, Color.WHITE, 500);
+    public final static Color[] GRADIENT_BLACK_TO_BLUE = createGradient(Color.BLACK, Color.BLUE, 500);
     public final static Color[] GRADIENT_RED_TO_GREEN = createGradient(Color.RED, Color.GREEN, 500);
     public final static Color[] GRADIENT_GREEN_YELLOW_ORANGE_RED = createMultiGradient(new Color[]{Color.green, Color.yellow, Color.orange, Color.red}, 500);
     public final static Color[] GRADIENT_RAINBOW = createMultiGradient(new Color[]{new Color(181, 32, 255), Color.blue, Color.green, Color.yellow, Color.orange, Color.red}, 500);
@@ -28,26 +34,21 @@ public class HeatMap extends JPanel implements MouseListener, MouseMotionListene
     public final static Color[] GRADIENT_HEAT = createMultiGradient(new Color[]{Color.black, new Color(105, 0, 0), new Color(192, 23, 0), new Color(255, 150, 38), Color.white}, 500);
     public final static Color[] GRADIENT_ROY = createMultiGradient(new Color[]{Color.red, Color.orange, Color.yellow}, 500);
 	
-    /** Stores the Harmony model */
+	/** Stores the Harmony model */
     private HarmonyModel harmonyModel;
-    
-	private double[][] data;
-    private String[] labelsX;
-    private String[] labelsY;
-    private int[] levelsX;
-    private int[] levelsY;
-    private int numLabelsX;
-    private int numLabelsY;
+	
+	private elementObject[] elementsX;
+	private elementObject[] elementsY;
+	private scoreGrid bigGrid;
     private Color[][] dataColors;
-    
-    private double[][] orig_data;
-    private String[] orig_labelsX;
-    private String[] orig_labelsY;
-    private int orig_numLabelsX;
-    private int orig_numLabelsY;
     int currentLevelX;
     int currentLevelY;
-
+    
+    //archiving
+    private scoreGrid origBigGrid;
+    private elementObject[] origElementsX;
+	private elementObject[] origElementsY;
+   
     private boolean drawLabels = false;
     private int lowerX;
     private int lowerY;
@@ -81,41 +82,31 @@ public class HeatMap extends JPanel implements MouseListener, MouseMotionListene
     public HeatMap(HarmonyModel harmonyModel)
     {
         super();
+        currentX=-1;
+        currentY=-1;
         this.harmonyModel = harmonyModel;
         
-        double[][] data = new double[4][4];
-        data[0][0] = 0.2; data[1][0] = 0.7;
-        data[0][1] = 0.7; data[1][1] = 0.5;
-        data[0][2] = 0.5; data[1][2] = 0.1;
-        data[0][3] = 0.3; data[1][3] = 0.9;
+        this.colors = (Color[]) GRADIENT_HOT.clone();
         
-        data[2][0] = 0.5; data[3][0] = 0.3;
-        data[2][1] = 0.1; data[3][1] = 0.9;
-        data[2][2] = 0.5; data[3][2] = 0.3;
-        data[2][3] = 0.3; data[3][3] = 0.5;
+        // just to get it off the ground.
+        ArrayList<Integer> schemas = harmonyModel.getMappingManager().getSchemas();        
+        Schema schema1 = harmonyModel.getSchemaManager().getSchema(schemas.get(0));
+		Schema schema2 = harmonyModel.getSchemaManager().getSchema(schemas.get(1));
+		this.setUp(schema1, schema2);		
 
-        this.data = data;
+        //updateGradient(GRADIENT_RED_TO_GREEN);
         updateGradient(GRADIENT_HOT);
-        //updateGradient(GRADIENT_RAINBOW);
-        updateData(data);
-
-        this.setPreferredSize(new Dimension(60+data.length, 60+data[0].length));
+        
+        this.setPreferredSize(new Dimension(60+elementsX.length, 60+elementsY.length));
         this.setDoubleBuffered(true);
 
         this.bg = Color.white;
         this.fg = Color.black;
         
-        String[] xLabels = new String[4]; String[] yLabels = new String[4];
-        xLabels[0]="x0 Label"; yLabels[0] = "y0 Label";
-        xLabels[1]="x1 Label"; yLabels[1] = "y1 Label";
-        xLabels[2]="x2 Label"; yLabels[2] = "y2 Label";
-        xLabels[3]="x3 Label"; yLabels[3] = "y3 Label";
-        setLabels(xLabels,yLabels,4,4);
-        
         // this is the expensive function that draws the data plot into a 
         // BufferedImage. The data plot is then cheaply drawn to the screen when
         // needed, saving us a lot of time in the end.
-        drawData();
+        //drawData();
     }
     
     public void setUp(Schema schema1, Schema schema2){
@@ -132,7 +123,6 @@ public class HeatMap extends JPanel implements MouseListener, MouseMotionListene
 		int x2 = elements2.size();
 		
 		//create grid with matcher scores in it.
-		this.data = new double[x1][x2];
 		
 		int SpotX = 0;
 		int SpotY = 0;
@@ -140,61 +130,112 @@ public class HeatMap extends JPanel implements MouseListener, MouseMotionListene
 		//basic idea, use a stack to dfs the graph to generate a list of elements
 		//that are in an order based on structure.
 		Stack<SchemaElement> stack = new Stack<SchemaElement>();
+		Stack<elementObject> eoStack = new Stack<elementObject>();
 		Stack<Integer> level = new Stack<Integer>(); // tell me which level of graph I'm at.
 		String forwardDelimitor = "  ";
-		String[] LabelsX = new String[x1];
-		String[] LabelsY = new String[x2];
-		levelsX = new int[x1];
-		levelsY = new int[x2];
+		
+		//no size is known ahead of time, due to graph/tree issues, hence stick into dynamic structure.
+		ArrayList<elementObject> eXes = new ArrayList<elementObject>();
+		ArrayList<elementObject> eYes = new ArrayList<elementObject>();
+		
+		//already seen it
+		HashMap<SchemaElement,Integer> hashX = new HashMap<SchemaElement,Integer>();
+		HashMap<SchemaElement,Integer> hashY = new HashMap<SchemaElement,Integer>();
+		
+		//elementsX = new elementObject[x1];
+		//elementsY = new elementObject[x2];
 		
 		//handle graph1.
 		for(SchemaElement seA: roots1){
+			hashX.put(seA, 1);
 			stack.push(seA); //push each root
 			level.push(0);
+			elementObject nEO = new elementObject(seA, graph1.getDisplayName(seA.getId()));
+			eoStack.push(nEO);
 		}
 		elements1 = new ArrayList<SchemaElement>();
+		int i=0;
 		while(!stack.empty()){
 			//pop top element
+			System.out.println("Value is "+i++);
 			SchemaElement current = stack.pop();
+			elementObject eoCurrent = eoStack.pop();
 			elements1.add(current);
 			StringBuffer prefixBit = new StringBuffer();
 			int levelAt = level.pop();
 			for(int j=0; j < levelAt;j++) prefixBit.append(forwardDelimitor);
-			prefixBit.append(current.getName());
-			levelsX[SpotX] = levelAt;
-			LabelsX[SpotX++] = prefixBit.toString();
+			prefixBit.append(graph1.getDisplayName(current.getId()));
+			eXes.add(eoCurrent);
+//			elementsX[SpotX] = eoCurrent;
+			eoCurrent.setLevel(levelAt);
+			eoCurrent.setLabel(prefixBit.toString());
+			SpotX++;
 			ArrayList<SchemaElement> children = graph1.getChildElements(current.getId());
 			for(SchemaElement mychild: children){
+				if(hashX.containsKey(mychild)) continue;
+				hashX.put(mychild,1);
 				stack.push(mychild);
 				level.push(levelAt+1);
+				elementObject nEO = new elementObject(mychild,graph1.getDisplayName(mychild.getId()));
+				nEO.setParent(eoCurrent);
+				eoCurrent.addChild(nEO);
+				eoStack.push(nEO);
 			}
+		}
+		x1=eXes.size();
+		elementsX = new elementObject[x1];
+		int placePointer=0;
+		for(elementObject v:eXes){
+			elementsX[placePointer++] = v;
 		}
 		
 		//handle graph2.  yuckie, cookie-cuttering code.
 		for(SchemaElement seA: roots2){
+			hashY.put(seA,1);
 			stack.push(seA); //push each root
 			level.push(0);
+			elementObject nEO = new elementObject(seA,graph2.getDisplayName(seA.getId()));
+			eoStack.push(nEO);
 		}
 		elements2 = new ArrayList<SchemaElement>();
+		i=0;
 		while(!stack.empty()){
 			//pop top element
+			System.out.println("Value2 is "+i++);
 			SchemaElement current = stack.pop();
+			elementObject eoCurrent = eoStack.pop();
 			elements2.add(current);
 			StringBuffer prefixBit = new StringBuffer();
 			int levelAt = level.pop();
 			for(int j=0; j < levelAt;j++) prefixBit.append(forwardDelimitor);
-			prefixBit.append(current.getName());
-			levelsY[SpotY] = levelAt;
-			LabelsY[SpotY++] = prefixBit.toString();
+			prefixBit.append(graph2.getDisplayName(current.getId()));
+			eYes.add(eoCurrent);
+			//elementsY[SpotY] = eoCurrent;
+			eoCurrent.setLevel(levelAt);
+			eoCurrent.setLabel(prefixBit.toString());
+			SpotY++;
 			ArrayList<SchemaElement> children = graph2.getChildElements(current.getId());
 			for(SchemaElement mychild: children){
+				if(hashY.containsKey(mychild)) continue;
+				hashY.put(mychild,1);
 				stack.push(mychild);
 				level.push(levelAt+1);
+				elementObject nEO = new elementObject(mychild,graph2.getDisplayName(mychild.getId()));
+				nEO.setParent(eoCurrent);
+				eoCurrent.addChild(nEO);
+				eoStack.push(nEO);
 			}
+		}
+		x2=eYes.size();
+		elementsY = new elementObject[x2];
+		placePointer=0;
+		for(elementObject v:eYes){
+			elementsY[placePointer++] = v;
 		}
 		
 		SpotX = 0;
 		SpotY = 0;
+		bigGrid = new scoreGrid();
 		for(SchemaElement se1: elements1){
 			for(SchemaElement se2: elements2){
 				Integer id = harmonyModel.getMappingCellManager().getMappingCellID(se1.getId(), se2.getId());
@@ -203,23 +244,183 @@ public class HeatMap extends JPanel implements MouseListener, MouseMotionListene
 					continue;
 				}
 				MappingCell mc = harmonyModel.getMappingCellManager().getMappingCell(id);
-				data[SpotX][SpotY++] = mc.getScore();
+				bigGrid.insert(se1.getId(), se2.getId(), mc.getScore());
 			}
 			SpotX++;
 			SpotY=0;
 		}
 		
 		//get labels.
-		setLabels(LabelsX, LabelsY, x1, x2);
+		//setLabels(LabelsX, LabelsY, x1, x2);
+		setLabels(x1, x2);
 		
-		updateData(data);
-		this.setPreferredSize(new Dimension(60+data.length, 60+data[0].length));
+		updateData();
+		this.setPreferredSize(new Dimension(60+elementsX.length, 60+elementsX.length));
         this.setDoubleBuffered(true);
         drawData();
         checkpointData();
         currentLevelX=0;
         currentLevelY=0;
     }
+    
+/*    void reOrderElements(scoreGrid bigGrid, elementObjectInterface xEOi, elementObjectInterface yEOi,
+    		int lowX, int highX, int lowY, int highY)
+    {
+    	scoreGrid sG = getScores(xEOi.getChildren(),yEOi.getChildren(),bigGrid);
+    	
+    }
+    
+    **
+     * We want to try to 'diagonalize' the score grid.  Do that here.
+     *
+    void ReorderElements(scoreGrid bigGrid){
+    	elementObjectRoot bestRootX=new elementObjectRoot();
+    	elementObjectRoot bestRootY=new elementObjectRoot();
+    	
+    	ArrayList<elementObject> xEOs = new ArrayList<elementObject>();
+    	ArrayList<elementObject> yEOs = new ArrayList<elementObject>();
+    	
+    	double bestScore;
+    	
+    	//ok, lets do root level only first, to get a feel for the algorithm and
+    	//take some baby steps first.
+    	
+    	//should work.
+    	for(int q=0; q < rootX.getNumChildren(); q++){
+    		xEOs.add(rootX.getChild(q));
+    		rootX.getChild(q).setLastSpot(rootX.getNumChildren());
+    	}
+    	for(int q=0; q < rootY.getNumChildren(); q++){
+    		yEOs.add(rootY.getChild(q));
+    		rootY.getChild(q).setLastSpot(rootY.getNumChildren());
+    	}
+    	
+    	while(true){
+    		//sizes in each dimension
+    		int xSize = xEOs.size();
+    		int ySize = yEOs.size();
+    		//size at this level
+    		double[][] compareToMe = new double[xSize][ySize];
+    		//which is bigger?
+    		if(xSize >= ySize){
+    			double[] tempVals = new double[xSize];
+    			//this goes 1, .8, .6, .4, .2 eg. for xsize = 5.
+    			for(int m=0; m < xSize; m++){
+    				tempVals[m] = 1.0/((double)(xSize-1))*((double)(m));
+    			}
+	    		for(int j=0; j < xSize; j++){
+	    			for(int k=0; k < ySize; k++){
+	    				compareToMe[j][k] = tempVals[Math.abs(((int)Math.round(((double)k)/((double)ySize-1)*((double)xSize-1))-j))];
+	    			}
+	    		}
+    		}
+    		else{ //ySize > xSize
+    			double[] tempVals = new double[ySize];
+    			//this goes 1, .8, .6, .4, .2 eg. for xsize = 5.
+    			for(int m=0; m < ySize; m++){
+    				tempVals[m] = 1.0/((double)(ySize-1))*((double)(m));
+    			}
+	    		for(int j=0; j < ySize; j++){
+	    			for(int k=0; k < xSize; k++){
+	    				compareToMe[k][j] = tempVals[Math.abs(((int)Math.round(((double)k)/((double)xSize-1)*((double)ySize-1))-j))];
+	    			}
+	    		}
+    		}
+    		
+    		scoreGrid sG = getScores(xEOs,yEOs,bigGrid);
+    		
+    		if(xSize >= ySize){
+    			//for(int i=0; ){
+    			//	for(int j=0;){
+    					
+    			//	}
+    			//}
+    		}
+    		
+    		
+    		
+    		//now, do ordering.
+    		for(int i=0,j=0; i< xEOs.size() && j < yEOs.size(); ){
+    			//just starting out
+    			if(i==0 && j==0){
+    				int maxX=xSize;
+    				int maxY=ySize;
+    				elementObject bestX=xEOs.get(0);
+    				elementObject bestY=yEOs.get(0);
+    				double bestVal=sG.get(bestX.getID(), bestY.getID());
+    				for(int p=0; p< maxX; p++){
+    					for(int q=0; q<maxY; q++){
+    						if(sG.get(xEOs.get(p).getID(),yEOs.get(q).getID()) > bestVal){
+    							bestX=xEOs.get(p); bestY = yEOs.get(q);
+    						}
+    						if(bestX.lastSpot < maxX) maxX = bestX.lastSpot;
+    						if(bestY.lastSpot < maxY) maxY = bestY.lastSpot;
+    					}
+    				}
+    				
+    			}
+    		}
+    		for(int i=0; i < xEOs.size(); i++){
+    			for(int j=0; j < yEOs.size(); j++){
+    				
+    			}
+    		}
+    	}
+    	
+    	//iterate over all possible combos that make sense.
+    	
+    }
+    
+    scoreGrid getScores(ArrayList<elementObject> xEOs, ArrayList<elementObject> yEOs, scoreGrid bigGrid){
+    	scoreGrid sG = new scoreGrid();
+    	
+    	int xSize = xEOs.size();
+		int ySize = yEOs.size();
+		
+		for(int i=0; i < xSize; i++){
+			for(int j=0; j < ySize; j++){
+				//get combined score
+				double newScore = newScoreCombine(xEOs.get(i),yEOs.get(j),bigGrid);
+				sG.insert(xEOs.get(i).getID(), yEOs.get(j).getID(), newScore);
+			}
+		}
+		return sG;
+    }
+    
+    double newScoreCombine(elementObject xEO, elementObject yEO, scoreGrid sG){
+    	//create big arrays of child objects, in essence mapping out [m,n,bigm,bign] area of score array.
+    	Vector<elementObject> xChildren = xEO.getDescendants();
+    	Vector<elementObject> yChildren = yEO.getDescendants();
+    		
+    	//take average of max in each row or column, whichever is smallest.
+    	double average=0;
+    	if(xChildren.size() > yChildren.size()){
+    		//rows dominate
+    		for(int j=0; j < yChildren.size(); j++){
+    			double biggestVal=0;
+    			for(int k=0; k < xChildren.size(); k++){
+    				if(biggestVal<sG.get(xChildren.get(k).getID(), yChildren.get(j).getID())) 
+    					biggestVal = sG.get(xChildren.get(k).getID(), yChildren.get(j).getID());
+    			}
+    			average+=biggestVal;
+    		}
+    		average=average/new Double(yChildren.size());
+    	}
+    	else{
+    		//columns dominate
+    		for(int k=0; k < xChildren.size(); k++){
+    			double biggestVal=0;
+        		for(int j=0; j < yChildren.size(); j++){
+    				if(biggestVal<sG.get(xChildren.get(k).getID(), yChildren.get(j).getID())) 
+    					biggestVal = sG.get(xChildren.get(k).getID(), yChildren.get(j).getID());
+    			}
+    			average+=biggestVal;
+    		}
+    		average=average/new Double(xChildren.size());
+    	}
+    	return average;
+    }
+    */
     
     /** Resets the heat map back to its default settings */
     void reset()
@@ -228,8 +429,23 @@ public class HeatMap extends JPanel implements MouseListener, MouseMotionListene
         drawLabels=false;
         setLowerXY(0,0);
         setBiggerXY(width,height); 
+        updateDataColors();
         rescale(); 
         repaint(); 
+    }
+    
+    /** Saves current modified mapping elements to schemastore */
+    void SaveMapping(){
+    	for(int j=0; j < elementsX.length; j++){
+    		for(int k=0; k < elementsY.length;k++){
+    			int xID = elementsX[j].getID();
+    			int yID = elementsY[k].getID();
+    			if(bigGrid.isModified(xID, yID) == true){
+			    	Integer id = harmonyModel.getMappingCellManager().getMappingCellID(xID, yID);
+			    	MappingCellManager.modifyMappingCell(id, bigGrid.get(xID, yID), System.getProperty("user.name"), true);
+    			}
+	    	}
+    	}
     }
     
     /** Toggles the info box */
@@ -240,50 +456,62 @@ public class HeatMap extends JPanel implements MouseListener, MouseMotionListene
     void toggleLabels()
     	{ drawLabels = !drawLabels; repaint(); }
     
+    int computeNewSize(elementObject[] tElements, int level){
+    	int answer = 0;
+    	for(int j=0; j < tElements.length; j++){
+    		if(tElements[j].getLevel() <= level) answer++;
+    	}
+    	return answer;
+    }
+    
     //ok, to make this work, we need some notion of what level we are at in each dimension
     //int levelX, levelY;
     //also need some notion of max level in each direction
     //int maxlevelX, maxlevelY;
     //these need to get set in setUp when constructing indentation scheme.
     void visualSummary(int newLevelX, int newLevelY){
-    	//reserrect original data.
+    	//resurrect original data.
     	uncheckData();
     	
     	//compute size of new in each dimension;
-    	int newXSize = computeNewSize(levelsX, numLabelsX, newLevelX);
-    	int newYSize = computeNewSize(levelsY, numLabelsY, newLevelY);
+    	int newXSize = computeNewSize(elementsX, newLevelX);
+    	int newYSize = computeNewSize(elementsY, newLevelY);
     	
     	//create new data array.
-    	double[][] newData = new double[newXSize][newYSize];
-    	String[] aLabelsX = new String[newXSize];
-    	String[] aLabelsY = new String[newYSize];
+    	scoreGrid newBigGrid = new scoreGrid();
+    	elementObject[] aElementsX = new elementObject[newXSize];
+    	elementObject[] aElementsY = new elementObject[newYSize];
     	
     	int SpotX=0;
     	int SpotY=0;
     	//go double nested loops through big data grid.
     	//storing in new data array.
-    	for(int m=0;m<numLabelsX; SpotX++){
+    	for(int m=0;m<elementsX.length; SpotX++){
     		int running_m = m+1;
     		SpotY=0;
-    		while(running_m < numLabelsX && levelsX[running_m]>newLevelX) running_m++; //[m,running_m)
-    		for(int n=0; n<numLabelsY;SpotY++){
+    		while(running_m < elementsX.length && elementsX[running_m].getLevel()>newLevelX) running_m++; //[m,running_m)
+    		for(int n=0; n<elementsY.length;SpotY++){
     			int running_n = n+1;
-        		while(running_n < numLabelsY && levelsY[running_n]>newLevelY) running_n++; //[n,running_n)
+        		while(running_n < elementsY.length && elementsY[running_n].getLevel()>newLevelY) running_n++; //[n,running_n)
         		//now, the square region [m,n,running_m,running_n) has been defined and is to be placed
         		//in SpotX,SpotY
-        		newData[SpotX][SpotY]=scoreCombine(m,n,running_m,running_n);
-        		aLabelsY[SpotY] = labelsY[n];
+        		newBigGrid.insert(elementsX[m].getID(), elementsY[n].getID(), scoreCombine(m,n,running_m,running_n));
+        		//aLabelsY[SpotY] = labelsY[n];
+        		aElementsY[SpotY] = elementsY[n];
         		n=running_n;
     		}
-    		aLabelsX[SpotX] = labelsX[m];
+    		aElementsX[SpotX] = elementsX[m];
     		m=running_m;
     	}
+    	setLabels(newXSize,newYSize);
+    	checkpointData();
     	
-    	//cleanup
-    	setLabels(aLabelsX, aLabelsY, newXSize, newYSize);
-		
-		updateData(newData);
-		this.setPreferredSize(new Dimension(60+data.length, 60+data[0].length));
+    	elementsX=aElementsX;
+    	elementsY=aElementsY;
+    	bigGrid=newBigGrid;
+    	
+    	updateData();
+		this.setPreferredSize(new Dimension(60+elementsX.length, 60+elementsY.length));
         this.setDoubleBuffered(true);
         drawData();
     }
@@ -296,7 +524,9 @@ public class HeatMap extends JPanel implements MouseListener, MouseMotionListene
     		for(int j=smallN; j < bigN; j++){
     			double biggestVal=0;
     			for(int k=smallM; k < bigM; k++){
-    				if(biggestVal<data[k][j]) biggestVal = data[k][j];
+    				if(bigGrid.contains(elementsX[k].getID(), elementsY[j].getID())){
+    					if(biggestVal<bigGrid.get(elementsX[k].getID(), elementsY[j].getID())) biggestVal = bigGrid.get(elementsX[k].getID(), elementsY[j].getID());
+    				}
     			}
     			average+=biggestVal;
     		}
@@ -307,7 +537,9 @@ public class HeatMap extends JPanel implements MouseListener, MouseMotionListene
     		for(int k=smallM; k < bigM; k++){
     			double biggestVal=0;
         		for(int j=smallN; j < bigN; j++){
-    				if(biggestVal<data[k][j]) biggestVal = data[k][j];
+        			if(bigGrid.contains(elementsX[k].getID(), elementsY[j].getID())){
+        				if(biggestVal<bigGrid.get(elementsX[k].getID(), elementsY[j].getID())) biggestVal = bigGrid.get(elementsX[k].getID(), elementsY[j].getID());
+        			}
     			}
     			average+=biggestVal;
     		}
@@ -316,35 +548,27 @@ public class HeatMap extends JPanel implements MouseListener, MouseMotionListene
     	return average;
     }
 
-    public void setLabels(String[] xLabels, String[] yLabels, int numX, int numY){
-       labelsX = xLabels;
-       labelsY = yLabels;
-       numLabelsX = numX;
-       numLabelsY = numY;
-       xLabelStart =0;
-       xLabelEnd =numX;
-       yLabelStart =0;
-       yLabelEnd =numY;
+    public void setLabels(int numX, int numY){
+    	xLabelStart =0;
+        xLabelEnd =numX;
+        yLabelStart =0;
+        yLabelEnd =numY;
     }
     
     //save original data matrix and other info for possible aggregation of data points at
     //higher levels of granularity.  I.e. visual summarization.
     public void checkpointData(){
-    	orig_data= data;
-    	orig_labelsX = labelsX;
-    	orig_labelsY = labelsY;
-    	orig_numLabelsX = numLabelsX;
-    	orig_numLabelsY = numLabelsY;
+    	origElementsX = elementsX;
+    	origElementsY = elementsY;
+    	origBigGrid = bigGrid;    	
     }
     
     //resurrect original data matrix and other info from possible aggregation of data points at
     //higher levels of granularity.  I.e. visual summarization.
     public void uncheckData(){
-    	data= orig_data;
-    	labelsX = orig_labelsX;
-    	labelsY = orig_labelsY;
-    	numLabelsX = orig_numLabelsX;
-    	numLabelsY = orig_numLabelsY;
+    	bigGrid = origBigGrid;
+    	elementsX = origElementsX;
+    	elementsY = origElementsY;
     }
     
     int computeNewSize(int[] levels, int numLevels, int newLevelNum){
@@ -364,7 +588,6 @@ public class HeatMap extends JPanel implements MouseListener, MouseMotionListene
     public void setColorForeground(Color fg)
     {
         this.fg = fg;
-
         repaint();
     }
 
@@ -375,7 +598,6 @@ public class HeatMap extends JPanel implements MouseListener, MouseMotionListene
     public void setColorBackground(Color bg)
     {
         this.bg = bg;
-
         repaint();
     }
 
@@ -386,12 +608,9 @@ public class HeatMap extends JPanel implements MouseListener, MouseMotionListene
      */
     public void updateGradient(Color[] colors)
     {
-        this.colors = (Color[]) colors.clone();
-        
+        this.colors = (Color[]) colors.clone();       
         updateDataColors();
-        
         drawData();
-        
         repaint();
     }
     
@@ -406,29 +625,64 @@ public class HeatMap extends JPanel implements MouseListener, MouseMotionListene
         // in order to assign proper colors.
         double largest = Double.MIN_VALUE;
         double smallest = Double.MAX_VALUE;
-        for (int x = 0; x < data.length; x++)
+        int currentXSize = elementsX.length;
+        int currentYSize = elementsY.length;
+        for (int x = 0; x < currentXSize; x++)
         {
-            for (int y = 0; y < data[0].length; y++)
+            for (int y = 0; y < currentYSize; y++)
             {
-                largest = Math.max(data[x][y], largest);
-                smallest = Math.min(data[x][y], smallest);
+            	if(bigGrid.contains(elementsX[x].getID(), elementsY[y].getID())){
+            		largest = Math.max(bigGrid.get(elementsX[x].getID(), elementsY[y].getID()), largest);
+            		smallest = Math.min(bigGrid.get(elementsX[x].getID(), elementsY[y].getID()), smallest);
+            	}
             }
         }
+        largest=1.0; //bump up largest to 1.0
         double range = largest - smallest;
 
         // dataColors is the same size as the data array
-        dataColors = new Color[data.length][data[0].length];    
+        dataColors = new Color[currentXSize][currentYSize];    
 
         //assign a Color to each data point
-        for (int x = 0; x < data.length; x++)
+        for (int x = 0; x < currentXSize; x++)
         {
-            for (int y = 0; y < data[0].length; y++)
+            for (int y = 0; y < currentYSize; y++)
             {
-                double norm = (data[x][y] - smallest) / range; // 0 < norm < 1
-                int color = (int) Math.floor(norm * (colors.length - 1));
-                dataColors[x][y] = colors[color];
+            	 if(bigGrid.contains(elementsX[x].getID(), elementsY[y].getID())){
+	            	double norm = (bigGrid.get(elementsX[x].getID(), elementsY[y].getID()) - smallest) / range; // 0 < norm < 1
+	                int color = (int) Math.floor(norm * (colors.length - 1));
+	                dataColors[x][y] = colors[color];
+            	}
+            	else dataColors[x][y]=colors[0];
             }
         }
+        
+        //also check to see if currently selected item is "" 
+        //assign "blue" color to currently moused over item
+        int currentLX = getCurrentXGridLoc();
+        int currentLY = getCurrentYGridLoc();
+        if((0<=currentLX && currentLX < currentXSize) && 0<=currentLY && currentLY <currentYSize){
+        	if(bigGrid.contains(elementsX[currentLX].getID(), elementsY[currentLY].getID())){	            
+		        double norm = (bigGrid.get(elementsX[currentLX].getID(), elementsY[currentLY].getID()) - smallest) / range; // 0 < norm < 1
+		        int color = (int) Math.floor(norm * (GRADIENT_BLACK_TO_BLUE.length - 1));
+		        dataColors[currentLX][currentLY] = GRADIENT_BLACK_TO_BLUE[color];
+        	}
+        	else dataColors[currentLX][currentLY] = GRADIENT_BLACK_TO_BLUE[0];
+        }
+        
+        //synch up with the line drawing view, and make the selected item
+        //"blue"
+        int xhighlight = getHighlightedXGridLoc();
+        int yhighlight = getHighlightedYGridLoc();
+        if(0<=xhighlight && xhighlight < currentXSize && 0<=yhighlight && yhighlight < currentYSize){
+        	if(bigGrid.contains(elementsX[xhighlight].getID(), elementsY[yhighlight].getID())){	
+	        	double norm = (bigGrid.get(elementsX[xhighlight].getID(), elementsY[yhighlight].getID()) - smallest) / range; // 0 < norm < 1
+		        int color = (int) Math.floor(norm * (GRADIENT_BLACK_TO_BLUE.length - 1));
+		        dataColors[xhighlight][yhighlight] = GRADIENT_BLACK_TO_BLUE[color];
+        	}
+        	else dataColors[xhighlight][yhighlight] = GRADIENT_BLACK_TO_BLUE[0];
+        }
+        
     }
 
     /**
@@ -515,14 +769,10 @@ public class HeatMap extends JPanel implements MouseListener, MouseMotionListene
      * of the data plot, and then calls repaint().
      * @param data The data to display, must be a complete array (non-ragged)
      */
-    public void updateData(double[][] data)
+    public void updateData()
     {
-        this.data = data;
-
         updateDataColors();
-        
         drawData();
-
         repaint();
     }
     
@@ -548,17 +798,21 @@ public class HeatMap extends JPanel implements MouseListener, MouseMotionListene
      */
     private void drawData()
     {
-        bufferedImage = new BufferedImage(data.length,data[0].length, BufferedImage.TYPE_INT_RGB);
+    	//compute size of new in each dimension;
+    	int newXSize = elementsX.length; // computeNewSize(elementsX, currentLevelX);
+    	int newYSize = elementsY.length; //computeNewSize(elementsY, currentLevelY);
+    	
+        bufferedImage = new BufferedImage(newXSize,newYSize, BufferedImage.TYPE_INT_RGB);
         bufferedGraphics = bufferedImage.createGraphics();
         
-        for (int x = 0; x < data.length; x++)
+        for (int x = 0; x < newXSize; x++)
         {
-            for (int y = data[0].length - 1; y >= 0; y--)
+            for (int y = newYSize - 1; y >= 0; y--)
             {
                 bufferedGraphics.setColor(dataColors[x][y]);
                 bufferedGraphics.fillRect( 
                         (int)Math.ceil(x), 
-                        (int)Math.ceil(data[0].length - y - 1),
+                        (int)Math.ceil(newYSize - y - 1),
                         1, 1);
             }
         }
@@ -626,10 +880,13 @@ public class HeatMap extends JPanel implements MouseListener, MouseMotionListene
            double xDDist = ((width-160)/(double) (xLabelEnd-xLabelStart));
             g2d.rotate(Math.PI / 2);
             for (int x = xLabelStart; x < xLabelEnd; x++){
-                g2d.drawString(labelsX[x], height-150, -10-((int)(xDDist*(x-xLabelStart))));
-		if(x != 0){
-                   if(check(labelsX[x], labelsX[x-1])){
+                g2d.drawString(elementsX[x].getLabel(), height-150, -10-((int)(xDDist*(x-xLabelStart))));
+                if(x != 0){
+                   if(elementsX[x].getLevel()<elementsX[x-1].getLevel()){// check(labelsX[x], labelsX[x-1])){
+                	   Color c = g2d.getColor();
+                	   g2d.setColor(Color.GREEN);
                      g2d.drawLine(10,-10-((int)(xDDist*(x-xLabelStart))),((int)(height - 150)), -10-((int)(xDDist*(x-xLabelStart))));
+                     g2d.setColor(c);
                    }
                 }
             }
@@ -637,10 +894,13 @@ public class HeatMap extends JPanel implements MouseListener, MouseMotionListene
 
            double yDDist = ((height-160)/(double) (yLabelEnd-yLabelStart));
             for (int y = yLabelStart; y < yLabelEnd; y++){
-                g2d.drawString(labelsY[y], width-150, height-150-((int)(yDDist*(y-yLabelStart))));
-		if(y != 0){
-                   if(check(labelsY[y], labelsY[y-1])){
+                g2d.drawString(elementsY[y].getLabel(), width-150, height-150-((int)(yDDist*(y-yLabelStart))));
+                if(y != 0){
+                   if(elementsY[y].getLevel() < elementsY[y-1].getLevel()){//check(labelsY[y], labelsY[y-1])){
+                	   Color c = g2d.getColor();
+                	   g2d.setColor(Color.GREEN);
                      g2d.drawLine(10,height-150-((int)(yDDist*(y-yLabelStart))),((int)(width - 150)), height-150-((int)(yDDist*(y-yLabelStart))));
+                     g2d.setColor(c);
                    }
                 }
             }
@@ -664,9 +924,12 @@ public class HeatMap extends JPanel implements MouseListener, MouseMotionListene
            double xDDist = ((width-20)/(double) (xLabelEnd-xLabelStart));
             g2d.rotate(Math.PI / 2);
             for (int x = xLabelStart; x < xLabelEnd; x++){
-		if(x != 0){
-                   if(check(labelsX[x], labelsX[x-1])){
+            	if(x != 0){
+                   if(elementsX[x].getLevel()<elementsX[x-1].getLevel()){// check(labelsX[x], labelsX[x-1])){
+                	   Color c = g2d.getColor();
+                	   g2d.setColor(Color.GREEN);
                      g2d.drawLine(10,-10-((int)(xDDist*(x-xLabelStart))),((int)(height - 10)), -10-((int)(xDDist*(x-xLabelStart))));
+                     g2d.setColor(c);
                    }
                 }
             }
@@ -674,9 +937,12 @@ public class HeatMap extends JPanel implements MouseListener, MouseMotionListene
 
            double yDDist = ((height-20)/(double) (yLabelEnd-yLabelStart));
             for (int y = yLabelStart; y < yLabelEnd; y++){
-		if(y != 0){
-                   if(check(labelsY[y], labelsY[y-1])){
+            	if(y != 0){
+                   if(elementsY[y].getLevel()< elementsY[y-1].getLevel()){//check(labelsY[y], labelsY[y-1])){
+                	   Color c = g2d.getColor();
+                	   g2d.setColor(Color.GREEN);
                      g2d.drawLine(10,height-10-((int)(yDDist*(y-yLabelStart))),((int)(width - 10)), height-10-((int)(yDDist*(y-yLabelStart))));
+                	   g2d.setColor(c);
                    }
                 }
             }
@@ -704,9 +970,15 @@ public class HeatMap extends JPanel implements MouseListener, MouseMotionListene
         double yPos = ((double)(localheight)/(double) (yLabelEnd-yLabelStart));
         int xVal = (int) ((currentX-10)/(double) (xPos));
         int yVal = (int) ((currentY-10)/(double) (yPos));
+
+        //make sure values are in right domain.
+        xVal = xVal < 0? 0: xVal;
+        xVal = xVal >= elementsX.length? elementsX.length-1:xVal;
+        yVal = yVal < 0? 0: yVal;
+        yVal = yVal >= elementsY.length? elementsY.length-1:yVal;
         
-        int length = labelsX[xVal].length();
-        length= length>=labelsY[yLabelEnd-yVal-1].length()?length:labelsY[yLabelEnd-yVal-1].length();
+        int length = elementsX[xVal].getLabel().length();
+        length= length>=elementsY[yLabelEnd-yVal-1].getLabel().length()?length:elementsY[yLabelEnd-yVal-1].getLabel().length();
         
         //draw a box around the text.
         g2d.setColor(Color.white);
@@ -716,23 +988,53 @@ public class HeatMap extends JPanel implements MouseListener, MouseMotionListene
         
         //draw the text.
         g2d.setColor(Color.white);
-        g2d.drawString(labelsX[xVal], currentX+20, currentY+20);
-        g2d.drawString(labelsY[yLabelEnd-yVal-1], currentX+20, currentY+30);
+        g2d.drawString(elementsX[xVal].getLabel(), currentX+20, currentY+20);
+        g2d.drawString(elementsY[yLabelEnd-yVal-1].getLabel(), currentX+20, currentY+30);
     }
     
-   /* int getCurrentYGridLoc(){
-    	double localwidth;
+    private int getCurrentYGridLoc(){
         double localheight;
-        if(drawLabels){ localwidth = width-160; localheight=height-160;
-        } else{ localwidth = width-20; localheight=height-20;
+        if(drawLabels){  localheight=height-160;
+        } else{  localheight=height-20;
+        }
+        double yPos = ((double)(localheight)/(double) (yLabelEnd-yLabelStart));
+        int yVal = (int) ((currentY-10)/(double) (yPos));
+        return yLabelEnd-yVal-1;
+        //return yVal;
+    }
+    
+    private int getCurrentXGridLoc(){
+    	double localwidth;
+        if(drawLabels){ localwidth = width-160; 
+        } else{ localwidth = width-20; 
         }
         double xPos = ((double)(localwidth)/(double) (xLabelEnd-xLabelStart));
-        double yPos = ((double)(localheight)/(double) (yLabelEnd-yLabelStart));
         int xVal = (int) ((currentX-10)/(double) (xPos));
-        int yVal = (int) ((currentY-10)/(double) (yPos));
-        
-    }*/
-
+        return xVal;
+    }
+    
+    private int getHighlightedXGridLoc(){
+    	List<Integer>lefts = harmonyModel.getSelectedInfo().getElements(HarmonyConsts.RIGHT);
+    	if(lefts != null && lefts.size() >0){
+    		int highlighted = lefts.get(0);
+    		for(int j=0; j < elementsX.length; j++){
+    			if(highlighted == elementsX[j].getID()) return j;
+    		}
+    		return -1;
+    	} else return -1;
+    }
+    
+    private int getHighlightedYGridLoc(){
+    	List<Integer>lefts = harmonyModel.getSelectedInfo().getElements(HarmonyConsts.LEFT);
+    	if(lefts != null && lefts.size() > 0){
+    		int highlighted = lefts.get(0);
+    		for(int j=0; j < elementsY.length; j++){
+    			if(highlighted == elementsY[j].getID()) return j;
+    		}
+    		return -1;
+    	} else return -1;
+    }
+    
     public void drawMovingRectangle(Graphics g){
         Graphics2D g2d = (Graphics2D) g;
         g2d.drawLine(lowerX,lowerY,lowerX,movingY);
@@ -754,14 +1056,16 @@ public class HeatMap extends JPanel implements MouseListener, MouseMotionListene
         int yVal = (int) ((currentY-10)/(double) (yPos));
         
         // 0 out appropriate places.
-        for(int j=0; j < xLabelEnd; j++){
+        /*for(int j=0; j < xLabelEnd; j++){
         	data[j][yLabelEnd-yVal-1] = 0;
         }
         for(int j=0; j < yLabelEnd; j++){
         	data[xVal][yLabelEnd-j-1] = 0;
-        }
-        data[xVal][yLabelEnd-yVal-1] = 0.99;
-        updateData(data);
+        }*/
+        bigGrid.set(elementsX[xVal].getID(), elementsY[yLabelEnd-yVal-1].getID(), 0.99);
+//        data[xVal][yLabelEnd-yVal-1] = 0.99;
+        
+        updateData();
     }
 
     //return true if two strings differ at table level.
@@ -793,8 +1097,17 @@ public class HeatMap extends JPanel implements MouseListener, MouseMotionListene
         setBiggerXY(e.getX(),e.getY());
         System.out.println("Released " + e.getX() + " " + e.getY());
         drawRectangle = false;
-        rescale();
-        repaint();
+        if(reallyZoom()){
+        	rescale();
+        	repaint();
+        } else{
+        	properZoom();
+        	//here, zoom in by hierarchy, ie if click in green section, zoom into that section.
+        }
+    }
+    
+    boolean reallyZoom(){
+    	return false;
     }
 
     public void mouseClicked(MouseEvent e){
@@ -817,12 +1130,13 @@ public class HeatMap extends JPanel implements MouseListener, MouseMotionListene
   
     public void mouseMoved(MouseEvent e){
        setCurrentXY(e.getX(),e.getY());
-       if(maxInfo == true){
-         repaint();
-       }
+       updateDataColors();
+       drawData();
+       repaint();
     }
     
     /* methods for interface SelectedInfoListener */
+    
     public void selectedSchemasModified(){
     	
     }
@@ -858,36 +1172,358 @@ public class HeatMap extends JPanel implements MouseListener, MouseMotionListene
        currentX = x;
        currentY = y;
     }
+    
+    public interface elementObjectInterface{
+    	public void swapChildren(int j, int k);
+    	public void addChild(elementObject eO);
+    	public int getNumChildren();
+    	public elementObject getChild(int j);
+    	public ArrayList<elementObject> getChildren();
+    	
+    }
+    
+    public class elementObjectRoot implements elementObjectInterface{
+    	ArrayList<elementObject> children;
+    	
+    	public elementObjectRoot(){
+    		children = new ArrayList<elementObject>();
+    	}
+    	
+    	public void addChild(elementObject eO){
+    		if(children == null){
+    			children = new ArrayList<elementObject>();
+    		}
+    		children.add(eO);
+    	}
+    	
+    	public int getNumChildren(){
+    		if(children == null){
+    			return 0;
+    		}
+    		else{
+    			int sum =0;
+    			for(elementObject eO: children){
+    				sum+=eO.getNumChildren();
+    			}
+    			return sum;
+    		}
+    	}
+    	
+    	public void swapChildren(int j, int k){
+    		elementObject t1 = children.get(j);
+    		elementObject t2 = children.get(k);
+    		children.set(k,t1);
+    		children.set(j,t2);
+    	}
+    	
+    	public elementObject getChild(int j){
+    		return children.get(j);
+    	}
+    	
+    	public ArrayList<elementObject> getChildren(){
+    		return children;
+    	}
+    }
+    
+    //tree like schema class
+    public class elementObject implements elementObjectInterface{
+    	ArrayList<elementObject> children;
+    	
+    	//all descendants.
+    	Vector<elementObject> descendants;
+    	
+    	//my node
+    	SchemaElement myElement;
+    	
+    	//my name
+    	String myName;
+    	
+    	//last position possible in automated queue.
+    	int lastSpot;
+    	
+    	//parent
+    	elementObject parent;
+    	
+    	//level in tree
+    	int levelAt;
+    	
+    	//label to show
+    	String label;
+    	
+    	public elementObject(){
+    		myElement = null; children = null; descendants =null; myName = null;
+    	}
+    	
+    	public elementObject(SchemaElement se, String s){
+    		myElement = se;
+    		children = null;
+    		descendants = null;
+    		myName = s;
+    	}
+    	
+    	public int getID(){
+    		return myElement.getId();
+    	}
+    	
+    	public void setParent(elementObject eoi){
+    		parent = eoi;
+    	}
+    	
+    	public elementObject getParent(){
+    		return parent;
+    	}
+    	
+    	public void addChild(elementObject eO){
+    		if(children == null){
+    			children = new ArrayList<elementObject>();
+    		}
+    		children.add(eO);
+    	}
+    	
+    	public int getNumChildren(){
+    		if(children == null){
+    			return 1;
+    		}
+    		else{
+    			int sum =0;
+    			for(elementObject eO: children){
+    				sum+=eO.getNumChildren();
+    			}
+    			return sum+1;
+    		}
+    	}
+    	
+    	public int getSize(){
+    		if(children == null) return 0;
+    		else return children.size();
+    	}
+    	
+    	public void swapChildren(int j, int k){
+    		elementObject t1 = children.get(j);
+    		elementObject t2 = children.get(k);
+    		children.set(k,t1);
+    		children.set(j,t2);
+    	}
+    	
+    	public String getName(){
+    		return myName;
+    	}
+    	
+    	public elementObject getChild(int j){
+    		return children.get(j);
+    	}
+    	
+    	public Vector<elementObject> getDescendants(){
+    		if(descendants != null) return descendants;
+    		descendants = new Vector<elementObject>();
+    		//This node has no descendants.
+    		if(getSize() == 0){ descendants.add(this); return descendants; }
+    		for(int j=0; j < children.size(); j++){
+    			descendants.addAll(getChild(j).getDescendants());
+    		}
+    		return descendants;
+    	}
+    	
+    	public void setLastSpot(int i){ lastSpot = i; }
+    	public int  getLastSpot(){ return lastSpot; }
+    	public void setLevel(int i){ levelAt = i; }
+    	public int getLevel(){ return levelAt; }
+    	public String getLabel(){ return label; }
+    	public void setLabel(String i){ label = i; }
+    	
+    	public ArrayList<elementObject> getChildren(){
+    		return children;
+    	}
+    }
+    
+    public class GridElement{
+    	public int ID1;
+    	public int ID2;
+    	
+    	public GridElement(int one, int two){
+    		ID1=one;
+    		ID2=two;
+    	}
+    	
+    	@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + getOuterType().hashCode();
+			result = prime * result + ID1;
+			result = prime * result + ID2;
+			return result;
+		}
+    	
+    	@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			GridElement other = (GridElement) obj;
+			if (!getOuterType().equals(other.getOuterType()))
+				return false;
+			if (ID1 != other.ID1)
+				return false;
+			if (ID2 != other.ID2)
+				return false;
+			return true;
+		}
+
+		private HeatMap getOuterType() {
+			return HeatMap.this;
+		}
+    }
+    
+    public class ScoreValue{
+    	double score;
+    	boolean modified;
+    	
+    	public ScoreValue(double s){
+			score = s; modified = false;
+		}
+    	public ScoreValue(double s, boolean b){
+    		score = s; modified = b;
+    	}
+		public void setScore(double s){ score = s; modified = true;}
+		public double getScore(){ return score; }
+		public void markAsModified(){modified = true; }
+		public boolean getModified(){ return modified; }
+    }
+    
+    public class scoreGrid{
+    	Hashtable<GridElement, ScoreValue> tGrid;
+    	
+    	public scoreGrid(){
+    		tGrid = new Hashtable<GridElement, ScoreValue>();
+    	}
+    	
+    	public void insert(int id1, int id2, double score){
+    		tGrid.put(new GridElement(id1,id2), new ScoreValue(score));
+    		tGrid.put(new GridElement(id2,id1), new ScoreValue(score));
+    	}
+    	
+    	public boolean contains(int id1, int id2){
+    		if(tGrid.containsKey(new GridElement(id1,id2))){
+    			return true;
+    		}
+    		else if(tGrid.containsKey(new GridElement(id2,id1))){
+    			return true;
+    		}
+    		else return false;
+    	}
+    	
+    	public double get(int id1, int id2){
+    		return tGrid.get(new GridElement(id1, id2)).getScore();
+    	}
+    	
+    	public boolean isModified(int id1, int id2){
+    		return tGrid.get(new GridElement(id1, id2)).getModified();
+    	}
+    	
+    	//change an existing value.
+    	public void set(int id1, int id2, double score){
+    		tGrid.put(new GridElement(id1,id2), new ScoreValue(score,true));
+    		tGrid.put(new GridElement(id2,id1), new ScoreValue(score,true));
+    	}
+    }
+    
+    void properZoom(){
+    	//get x, y locations in grid
+    	int xVal = getCurrentXGridLoc();
+    	int yVal = getCurrentYGridLoc();
+    	
+    	//now, figure out which table they point to.
+    	int XelementSpot = xVal;
+    	if(elementsX[xVal].getChildren() == null){
+    		elementObject parentX = elementsX[xVal].parent;
+    		int i;
+    		for(i=0; i < elementsX.length; i++){
+    			if(elementsX[i].equals(parentX))
+    				break;
+    		}
+    		XelementSpot = i;
+    	}
+    	
+    	int YelementSpot = yVal;
+    	if(elementsY[yVal].getChildren() == null){
+    		elementObject parentY = elementsY[yVal].parent;
+    		int i;
+    		for(i=0; i < elementsY.length; i++){
+    			if(elementsY[i].equals(parentY))
+    				break;
+    		}
+    		YelementSpot = i;
+    	}
+    	
+    	elementObject xElement = elementsX[XelementSpot];
+    	elementObject yElement = elementsY[YelementSpot];
+    	
+    	//want to both restore checkpointed data 
+    	reset();
+    	
+    	//compute size of new in each dimension;
+    	int newXSize = xElement.getDescendants().size(); 
+    	int newYSize = yElement.getDescendants().size();
+    	
+    	//create new data array.
+    	scoreGrid newBigGrid = new scoreGrid();
+    	elementObject[] aElementsX = new elementObject[newXSize];
+    	elementObject[] aElementsY = new elementObject[newYSize];
+    	
+    	Vector<elementObject> xValues = xElement.getDescendants();
+    	Vector<elementObject> yValues = yElement.getDescendants();
+    	
+    	int SpotX=0;
+    	int SpotY=0;
+    	//go double nested loops through big data grid.
+    	//storing in new data array.
+    	for(elementObject xOb: xValues){
+    		aElementsX[SpotX++] = xOb;
+    		for(elementObject yOb: yValues){
+    			if(bigGrid.contains(xOb.getID(), yOb.getID())){
+    				newBigGrid.insert(xOb.getID(), yOb.getID(), bigGrid.get(xOb.getID(), yOb.getID()));
+    			}
+    		}
+    	}
+    	for(elementObject yOb: yValues){
+    		aElementsY[SpotY++] = yOb;
+    	}
+    	
+    	setLabels(newXSize,newYSize);
+    	
+    	elementsX=aElementsX;
+    	elementsY=aElementsY;
+    	bigGrid=newBigGrid;
+    	
+    	updateData();
+		this.setPreferredSize(new Dimension(60+elementsX.length, 60+elementsY.length));
+        this.setDoubleBuffered(true);
+        drawData();
+    }
 
     void rescale(){
        if(drawLabels){
-         System.out.println("Height1 " + height + " width1 " + width);
-         System.out.println("LowerX " + lowerX + " UpperX " + upperX);
-         System.out.println("LowerY " + lowerY + " UpperY " + upperY);
-         System.out.println("NumLabelsX " + numLabelsX + " NumLabelsY " + numLabelsY);
-         xLabelStart = (int) ((double) ((double)(lowerX-10))/((double)(width-10-150))*((double)numLabelsX));
-         xLabelEnd = (int) ((double) ((double)(upperX-10))/((double)(width-10-150))*((double)numLabelsX));
-         yLabelStart = (int) ((double) ((double)(lowerY-10))/((double)(height-10-150))*((double)numLabelsY));
-         yLabelEnd = (int) ((double) ((double)(upperY-10))/((double)(height-10-150))*((double)numLabelsY));
+         xLabelStart = (int) ((double) ((double)(lowerX-10))/((double)(width-10-150))*((double)elementsX.length));
+         xLabelEnd = (int) ((double) ((double)(upperX-10))/((double)(width-10-150))*((double)elementsX.length));
+         yLabelStart = (int) ((double) ((double)(lowerY-10))/((double)(height-10-150))*((double)elementsY.length));
+         yLabelEnd = (int) ((double) ((double)(upperY-10))/((double)(height-10-150))*((double)elementsY.length));
        } else{
-         System.out.println("Height2 " + height + " width2 " + width);
-         System.out.println("LowerX " + lowerX + " UpperX " + upperX);
-         System.out.println("LowerY " + lowerY + " UpperY " + upperY);
-         System.out.println("NumLabelsX " + numLabelsX + " NumLabelsY " + numLabelsY);
-         xLabelStart = (int) ((double) ((double)(lowerX-10))/((double)(width-10-10))*((double)numLabelsX));
-         xLabelEnd = (int) ((double) ((double)(upperX-10))/((double)(width-10-10))*((double)numLabelsX));
-         yLabelStart = (int) ((double) ((double)(lowerY-10))/((double)(height-10-10))*((double)numLabelsY));
-         yLabelEnd = (int) ((double)((double)(upperY-10))/((double)(height-10-10))*((double)numLabelsY));
+         xLabelStart = (int) ((double) ((double)(lowerX-10))/((double)(width-10-10))*((double)elementsX.length));
+         xLabelEnd = (int) ((double) ((double)(upperX-10))/((double)(width-10-10))*((double)elementsX.length));
+         yLabelStart = (int) ((double) ((double)(lowerY-10))/((double)(height-10-10))*((double)elementsY.length));
+         yLabelEnd = (int) ((double)((double)(upperY-10))/((double)(height-10-10))*((double)elementsY.length));
        }
  
          int low, high;
          low = yLabelStart;
          high = yLabelEnd;
-         yLabelStart = numLabelsY - high;
-         yLabelEnd = numLabelsY - low;
+         yLabelStart = elementsY.length - high;
+         yLabelEnd = elementsY.length - low;
 
-       System.out.println("X Start, End " + xLabelStart + ", " + xLabelEnd);
-       System.out.println("Y Start, End " + yLabelStart + ", " + yLabelEnd);
        drawUpdatedData();
     }
 }

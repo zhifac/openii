@@ -26,7 +26,7 @@ public class HeatMapPane extends JPanel
 	static private HeatMap heatMap = null;
 	
 	/** Initializes About dialog */
-	public HeatMapPane(JComponent parent, HarmonyModel harmonyModel)
+	public HeatMapPane(JComponent parent,HarmonyModel harmonyModel)
 	{
 		// Retrieves the schemas to display in the heat map
 		ArrayList<Integer> schemas = harmonyModel.getMappingManager().getSchemas();
@@ -39,20 +39,21 @@ public class HeatMapPane extends JPanel
 		heatMap.setFocusable(true);
 		heatMap.addMouseListener(heatMap);
 		heatMap.addMouseMotionListener(heatMap);
-
+	
 		// Initialize the heat map pane
 		setBorder(new EmptyBorder(10,10,10,10));
 		setLayout(new BorderLayout());
 		add(heatMap);
-			
+				
 		// Register heat map keyboard actions
-		int keyCodes[] = new int[] {KeyEvent.VK_T, KeyEvent.VK_I, KeyEvent.VK_G, KeyEvent.VK_U, KeyEvent.VK_Y, KeyEvent.VK_Y, KeyEvent.VK_Q, KeyEvent.VK_SPACE};
+		int keyCodes[] = new int[] {KeyEvent.VK_T, KeyEvent.VK_I, KeyEvent.VK_G, KeyEvent.VK_U, KeyEvent.VK_Y, KeyEvent.VK_Y, KeyEvent.VK_SPACE, KeyEvent.VK_Q};
 		for(int keyCode : keyCodes)
 		{
 			KeyStroke keyStroke = KeyStroke.getKeyStroke((char)keyCode);
 			parent.getInputMap(JPanel.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(keyStroke, keyCode);
 			parent.getActionMap().put(keyCode, new HeatMapKeyAction(keyCode));				
 		}
+		
   	}
 
 	/** Class used for handling heat map key actions */
