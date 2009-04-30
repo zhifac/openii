@@ -21,21 +21,38 @@ public class OpenIIManager
 {
 	/** Stores the client used for accessing the database */
 	static private SchemaStoreClient client = null;
+
+	/** Caches the list of schemas currently available */
+	static private HashMap<Integer,Schema> schemas = null;
+	
+	/** Caches the list of groups currently available */
+	static private HashMap<Integer,Group> groups = null;
+
+	/** Initializes this class */
 	static
 	{
+		// Connect to the repository
 		try {
 			File file = new File(OpenIIActivator.getBundleFile(),"SchemaStore.jar");
 			if(!file.exists()) file = new File(OpenIIActivator.getBundleFile(),"lib/SchemaStore.jar");
 			client = new SchemaStoreClient(file.getAbsolutePath());
 		}
 		catch(Exception e) { System.out.println("(E) SchemaStoreConnection - " + e.getMessage()); }
-	}
-	
-	/** Caches the list of schemas currently available */
-	static private HashMap<Integer,Schema> schemas = null;
-	
-	/** Caches the list of groups currently available */
-	static private HashMap<Integer,Group> groups = null;
+
+		// Initialize the list of schemas
+		try {
+			schemas = new HashMap<Integer,Schema>();
+			for(Schema schema : client.getSchemas())
+				schemas.put(schema.getId(),schema);
+		} catch(Exception e) {}
+
+		// Initialize the list of groups
+		try {
+			groups = new HashMap<Integer,Group>();
+			for(Group group : client.getGroups())
+				groups.put(group.getId(),group);
+		} catch(Exception e) {}
+	}	
 	
 	/** Stores listeners to the OpenII Manager */
 	static private ListenerGroup<OpenIIListener> listeners = new ListenerGroup<OpenIIListener>();
@@ -48,24 +65,13 @@ public class OpenIIManager
 	
 	//------------ Schema Functionality -------------
 	
-	/** Refreshes the list of available schemas as needed */
-	private static void updateSchemasAsNeeded()
-	{
-		if(schemas==null)
-			try {
-				schemas = new HashMap<Integer,Schema>();
-				for(Schema schema : client.getSchemas())
-					schemas.put(schema.getId(),schema);
-			} catch(Exception e) {}
-	}
-	
 	/** Returns the list of schemas */
 	public static ArrayList<Schema> getSchemas()
-		{ updateSchemasAsNeeded(); return new ArrayList<Schema>(schemas.values()); }
+		{ return new ArrayList<Schema>(schemas.values()); }
 
 	/** Returns the specified schema */
 	public static Schema getSchema(Integer schemaID)
-		{ updateSchemasAsNeeded(); return schemas.get(schemaID); }
+		{ return schemas.get(schemaID); }
 
 	/** Modifies the schema in the repository */
 	public static boolean updateSchema(Schema schema)
@@ -131,28 +137,20 @@ public class OpenIIManager
 	
 	//------------ Group Functionality -------------
 	
-	/** Refreshes the list of available groups as needed */
-	private static void updateGroupsAsNeeded()
-	{
-		if(groups==null)
-			try {
-				groups = new HashMap<Integer,Group>();
-				for(Group group : client.getGroups())
-					groups.put(group.getId(),group);
-			} catch(Exception e) {}
-	}
-	
 	/** Returns the list of groups */
 	public static ArrayList<Group> getGroups()
-		{ updateGroupsAsNeeded(); return new ArrayList<Group>(groups.values()); }
+		{ return new ArrayList<Group>(groups.values()); }
 
 	/** Returns the specified group */
 	public static Group getGroup(Integer groupID)
-		{ updateGroupsAsNeeded(); return groups.get(groupID); }
+		{ return groups.get(groupID); }
 	
 	/** Returns the list of subgroups for the specified group */
 	public static ArrayList<Group> getSubgroups(Integer groupID)
-		{ try { return client.getSubgroups(groupID); } catch(Exception e) { return new ArrayList<Group>(); } } 
+	{
+		try { return client.getSubgroups(groupID); }
+		catch(Exception e) { return new ArrayList<Group>(); }
+	} 
 	
 	/** Add group to the repository */
 	public static Integer addGroup(Group group)
