@@ -24,6 +24,7 @@ public class ExportSchemaDialog
 		// Create the dialog
 		FileDialog dialog = new FileDialog(shell, SWT.SAVE);
 		dialog.setText("Export Schema");
+		dialog.setFileName(schema.getName());
 		dialog.setFilterPath("C:/");
 		
 		// Get the list of exporters available for use
