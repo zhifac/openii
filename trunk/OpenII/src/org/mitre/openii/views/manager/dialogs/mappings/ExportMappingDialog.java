@@ -21,6 +21,7 @@ public class ExportMappingDialog
 		// Create the dialog
 		FileDialog dialog = new FileDialog(shell, SWT.SAVE);
 		dialog.setText("Export Mapping");
+		dialog.setFileName(mapping.getName());
 		dialog.setFilterPath("C:/");
 		
 		// Get the list of exporters available for use
