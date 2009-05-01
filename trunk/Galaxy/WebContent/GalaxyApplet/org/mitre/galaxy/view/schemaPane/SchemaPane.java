@@ -7,6 +7,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
+import java.util.ArrayList;
 import java.util.HashSet;
 
 import javax.swing.JDesktopPane;
@@ -41,6 +42,9 @@ public class SchemaPane extends JPanel implements ComponentListener
 	/** Keeps track of if the schema graph needs to be updated */
 	private boolean updated = false;
 	
+	/** List of listeners monitoring the schema pane */
+	private ArrayList<SchemaPaneListener> listeners = new ArrayList<SchemaPaneListener>();
+	
 	/** Stores the visualization */
 	public Visualization vis = new Visualization();
 	
@@ -71,7 +75,7 @@ public class SchemaPane extends JPanel implements ComponentListener
 			display.isCentered = false;
 			
 			// Resets the navigator pane
-			navigatorPane.reset();
+			navigatorPane.update();
 		}
 		
 		// Mark that the schema graph is now updated
@@ -168,4 +172,20 @@ public class SchemaPane extends JPanel implements ComponentListener
 	public void componentHidden(ComponentEvent e) {}
 	public void componentMoved(ComponentEvent e) {}
 	public void selectedGroupsChanged() {}
+
+	/** Adds a listener monitoring the schema pane */
+	public void addSchemaPaneListener(SchemaPaneListener listener)
+		{ listeners.add(listener); }
+	
+	/** Removes a listener monitoring the schema pane */
+	public void removeSchemaPaneListener(SchemaPaneListener listener)
+		{ listeners.remove(listener); }
+
+	/** Fires an event indicating that the comparison schema has been changed */
+	public void fireComparisonSchemaChangedEvent(Integer comparisonSchemaID)
+	{
+		setComparisonSchema(comparisonSchemaID);
+		for(SchemaPaneListener listener : listeners)
+			listener.comparisonSchemaSelected(comparisonSchemaID);
+	}
 }
