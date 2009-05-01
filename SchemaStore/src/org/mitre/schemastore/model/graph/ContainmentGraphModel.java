@@ -4,6 +4,7 @@ package org.mitre.schemastore.model.graph;
 
 import java.util.ArrayList;
 
+import org.mitre.schemastore.model.Attribute;
 import org.mitre.schemastore.model.Containment;
 import org.mitre.schemastore.model.Domain;
 import org.mitre.schemastore.model.SchemaElement;
@@ -35,16 +36,17 @@ public class ContainmentGraphModel extends GraphModel
 	{
 		ArrayList<SchemaElement> parentElements = new ArrayList<SchemaElement>();
 		
-		// Find all containments one level higher up the graph
+		// Identify the parent ID for which containments need to be found
 		SchemaElement element = graph.getElement(elementID);
-		if(element instanceof Containment)
-		{
-			Integer containmentID = ((Containment)element).getParentID();
-			if(containmentID!=null)
-				for(Containment containment : graph.getContainments(containmentID))
-					if(containment.getChildID().equals(containmentID))
-						parentElements.add(containment);
-		}
+		Integer parentID = null;
+		if(element instanceof Containment) parentID = ((Containment)element).getParentID();
+		if(element instanceof Attribute) parentID = ((Attribute)element).getEntityID();
+		
+		// Find all containments one level higher up the graph
+		if(parentID!=null)
+			for(Containment containment : graph.getContainments(parentID))
+				if(containment.getChildID().equals(parentID))
+					parentElements.add(containment);
 			
 		return parentElements;
 	}
@@ -58,10 +60,16 @@ public class ContainmentGraphModel extends GraphModel
 		SchemaElement element = graph.getElement(elementID);
 		if(element instanceof Containment)
 		{
-			Integer containmentID = ((Containment)element).getChildID();
-			for(Containment containment : graph.getContainments(containmentID))
-				if(containmentID.equals(containment.getParentID()))
+			Integer childID = ((Containment)element).getChildID();
+
+			// Retrieves all containments whose parent is the child ID
+			for(Containment containment : graph.getContainments(childID))
+				if(childID.equals(containment.getParentID()))
 					childElements.add(containment);
+
+			// Retrieves all attributes whose element is the child ID
+			for(Attribute attribute : graph.getAttributes(childID))
+				childElements.add(attribute);
 		}
 			
 		return childElements;
