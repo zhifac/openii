@@ -5,10 +5,12 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry exported="true" kind="lib" path="lib/SchemaStoreClient.jar" sourcepath="/SchemaStoreClient/src"/>
 	<classpathentry kind="lib" path="lib/SchemaStorePorters.jar" sourcepath="/SchemaStoreClient/src"/>
+	<classpathentry kind="lib" path="lib/affinity/Prefuse.jar"/>
 	<classpathentry kind="lib" path="lib/Galaxy.jar" sourcepath="/Galaxy/WebContent"/>
 	<classpathentry kind="lib" path="lib/Harmony.jar" sourcepath="/Harmony/src"/>
-	<classpathentry kind="lib" path="lib/mds-1.0.0.jar"/>
-	<classpathentry kind="lib" path="lib/unity.jar"/>
 	<classpathentry kind="lib" path="lib/RMap.jar"/>
+	<classpathentry kind="lib" path="lib/affinity/Affinity.jar"/>
+	<classpathentry kind="lib" path="lib/affinity/edu.iu.iv.visualization.dendrogram.jar"/>
+	<classpathentry kind="lib" path="lib/affinity/ivccore.jar"/>	
 	<classpathentry kind="output" path="bin"/>
 </classpath>

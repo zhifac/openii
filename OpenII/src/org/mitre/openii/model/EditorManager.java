@@ -45,6 +45,6 @@ public class EditorManager
 			IWorkbenchPage page = window.getActivePage();
 			page.openEditor(new EditorInput(element),editorID);
 		}
-		catch(Exception e) { System.out.println(e.getMessage()); }
+		catch(Exception e) { System.err.println(e.getMessage()); e.printStackTrace();}
 	}
 }
