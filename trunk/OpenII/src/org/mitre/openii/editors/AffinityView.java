@@ -1,6 +1,8 @@
 package org.mitre.openii.editors;
 
 
+import java.util.ArrayList;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -33,7 +35,9 @@ public class AffinityView extends OpenIIEditor {
 		
 		//Construct the Affinity pane
 		parent.setLayout(new FillLayout());		
-		final AffinityPane affinity = new AffinityPane(parent);
+		ArrayList<Integer> schemaIDs = OpenIIManager.getGroupSchemas(elementID);		
+		//System.out.println(schemaIDs);		
+		final AffinityPane affinity = new AffinityPane(parent, schemaIDs);
 		
 		//Add a listener to show a cluster details when a cluster is clicked and a Galaxy view when a schema is clicked
 		affinity.addAffinityEventListener(new AffinityEventListener() {
