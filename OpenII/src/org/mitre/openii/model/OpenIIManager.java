@@ -3,6 +3,7 @@ package org.mitre.openii.model;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 
 import org.mitre.openii.application.OpenIIActivator;
@@ -27,7 +28,7 @@ public class OpenIIManager
 	
 	/** Caches the list of groups currently available */
 	static private HashMap<Integer,Group> groups = null;
-
+	
 	/** Initializes this class */
 	static
 	{
@@ -36,6 +37,7 @@ public class OpenIIManager
 			File file = new File(OpenIIActivator.getBundleFile(),"SchemaStore.jar");
 			if(!file.exists()) file = new File(OpenIIActivator.getBundleFile(),"lib/SchemaStore.jar");
 			client = new SchemaStoreClient(file.getAbsolutePath());
+//			client = new SchemaStoreClient("http://ygg:8080/SchemaStoreForDemo/services/SchemaStore");
 		}
 		catch(Exception e) { System.out.println("(E) SchemaStoreConnection - " + e.getMessage()); }
 
@@ -62,6 +64,23 @@ public class OpenIIManager
 	/** Returns the schema store connection */
 	public static SchemaStoreClient getConnection()
 		{ return client; }
+	
+	/** Sorts the provided array by name */
+	public static <T> ArrayList<T> sortList(ArrayList<T> list)
+	{
+		/** Handles the comparison of list items */
+		class ItemComparator implements Comparator<Object>
+		{
+			public int compare(Object item1, Object item2)
+			{
+				if(item1.getClass()!=item2.getClass()) return -1;
+				return item1.toString().compareTo(item2.toString());
+			}
+		}
+		
+		Collections.sort(list, new ItemComparator());
+		return list;
+	}
 	
 	//------------ Schema Functionality -------------
 	

@@ -215,7 +215,7 @@ public class MergeMappingDialog extends Dialog implements ModifyListener
 			label.setText("Schemas: " + key);
 			
 			// Generate the checkboxes for the list of mappings
-			for(Mapping mapping : mappingList)
+			for(Mapping mapping : OpenIIManager.sortList(mappingList))
 				checkboxes.add(new MappingCheckbox(mappingPane, mapping));
 		}
 	}
