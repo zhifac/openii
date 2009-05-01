@@ -29,11 +29,12 @@ import org.mitre.galaxy.view.extensionsPane.ExtensionsPane;
 import org.mitre.galaxy.view.extensionsPane.ExtensionsPaneListener;
 import org.mitre.galaxy.view.groupPane.GroupPane;
 import org.mitre.galaxy.view.schemaPane.SchemaPane;
+import org.mitre.galaxy.view.schemaPane.SchemaPaneListener;
 import org.mitre.galaxy.view.searchPane.SearchPane;
 import org.mitre.galaxy.view.searchPane.SearchPaneListener;
 
 /** Class for displaying the Galaxy Applet */
-public class GalaxyApplet extends Applet implements SelectedObjectsListener, SearchListener, ExtensionsPaneListener, SearchPaneListener, MouseListener, MouseMotionListener
+public class GalaxyApplet extends Applet implements SelectedObjectsListener, SearchListener, SchemaPaneListener, ExtensionsPaneListener, SearchPaneListener, MouseListener, MouseMotionListener
 {
 	/** Stores a reference to the applet */
 	static public Applet galaxyApplet = null;
@@ -134,6 +135,7 @@ public class GalaxyApplet extends Applet implements SelectedObjectsListener, Sea
 			{ explorerPane.setEnabled(false); viewPane.setEnabled(false); }
 		
 		// Add listeners used to update the various components
+		schemaPane.addSchemaPaneListener(this);
 		extensionsPane.addExtensionsPaneListener(this);
 		searchPane.addSearchPaneListener(this);
 		addMouseListener(this);
