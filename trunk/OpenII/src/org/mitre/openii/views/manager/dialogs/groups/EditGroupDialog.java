@@ -35,9 +35,6 @@ public class EditGroupDialog extends Dialog implements ModifyListener, Selection
 	/** Stores the parent ID */
 	private Integer parentID = null;
 	
-	/** Stores the list of child group schemas */
-	private ArrayList<Integer> childGroupSchemas = null;
-	
 	// Stores the various dialog fields
 	private Text nameField = null;
 	private TableViewer list = null;
@@ -114,13 +111,11 @@ public class EditGroupDialog extends Dialog implements ModifyListener, Selection
 		if(group!=null)
 		{
 			// Set all items selected as part of group
+			ArrayList<Schema> groupSchemas = new ArrayList<Schema>();
 			for(Integer schemaID : OpenIIManager.getGroupSchemas(group.getId()))
-				list.add(OpenIIManager.getSchema(schemaID));
-
-			// Lock all items selected as part of subgroups
-			childGroupSchemas = OpenIIManager.getChildGroupSchemas(group.getId());
-			for(Integer schemaID : childGroupSchemas)
-				list.add(OpenIIManager.getSchema(schemaID));
+				groupSchemas.add(OpenIIManager.getSchema(schemaID));
+			for(Schema schema : OpenIIManager.sortList(groupSchemas))
+				list.add(schema);
 		}
 		validateFields();
 		
@@ -131,6 +126,15 @@ public class EditGroupDialog extends Dialog implements ModifyListener, Selection
 	public void modifyText(ModifyEvent e)
 		{ validateFields(); }
 		
+	/** Returns the list of selected schemas */
+	private ArrayList<Integer> getSelectedSchemas()
+	{
+		ArrayList<Integer> schemaIDs = new ArrayList<Integer>();
+		for(int i=0; i<list.getTable().getItemCount(); i++)
+			schemaIDs.add(((Schema)list.getElementAt(i)).getId());
+		return schemaIDs;
+	}
+	
 	/** Validates the fields in order to activate the OK button */
 	private void validateFields()
 	{
@@ -145,14 +149,14 @@ public class EditGroupDialog extends Dialog implements ModifyListener, Selection
 		// Handles the addition of schemas
 		if(e.getSource().equals(addButton))
 		{
-			AddSchemasToGroupDialog dialog = new AddSchemasToGroupDialog(getShell());
+			AddSchemasToGroupDialog dialog = new AddSchemasToGroupDialog(getShell(),getSelectedSchemas());
 			if(dialog.open() == Window.OK)
 				list.add(dialog.getResult());
 		}
 			
 		// Handles the search for schemas
 		if(e.getSource().equals(searchButton))
-			System.out.println("Search");
+			new QuerySchemasForGroupDialog(getShell()).open();
 
 		// Handles the removal of schemas
 		if(e.getSource().equals(removeButton))
@@ -188,9 +192,7 @@ public class EditGroupDialog extends Dialog implements ModifyListener, Selection
 		// Handles the assignment of schemas
 		if(creationSuccess && updateSuccess)
 		{
-			ArrayList<Integer> schemaIDs = new ArrayList<Integer>();
-			for(int i=0; i<list.getTable().getItemCount(); i++)
-				schemaIDs.add(((Schema)list.getElementAt(i)).getId());
+			ArrayList<Integer> schemaIDs = getSelectedSchemas();
 			schemaAssignmentSuccess = OpenIIManager.setGroupSchemas(group.getId(),schemaIDs);
 		}
 

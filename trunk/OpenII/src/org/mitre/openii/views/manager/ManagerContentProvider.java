@@ -1,8 +1,6 @@
 package org.mitre.openii.views.manager;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
@@ -17,23 +15,6 @@ public class ManagerContentProvider implements ITreeContentProvider
 	private String groupHeader = "Groups";
 	private String mappingHeader = "Mappings";
 	
-	/** Sorts the provided array by name */
-	private <T> Object[] sortList(ArrayList<T> list)
-	{
-		/** Handles the comparison of list items */
-		class ItemComparator implements Comparator<Object>
-		{
-			public int compare(Object item1, Object item2)
-			{
-				if(item1.getClass()!=item2.getClass()) return -1;
-				return item1.toString().compareTo(item2.toString());
-			}
-		}
-		
-		Collections.sort(list, new ItemComparator());
-		return list.toArray();
-	}
-	
 	/** Returns the children elements for the specified element */
 	public Object[] getChildren(Object element)
 	{
@@ -41,21 +22,24 @@ public class ManagerContentProvider implements ITreeContentProvider
 		if(element instanceof String)
 		{
 			if(element.equals("")) return new String[] {schemaHeader,groupHeader,mappingHeader};
-			if(element.equals(schemaHeader)) return sortList(OpenIIManager.getSchemas());
-		    if(element.equals(groupHeader)) return sortList(OpenIIManager.getSubgroups(null));
-		    if(element.equals(mappingHeader)) return sortList(OpenIIManager.getMappings());
+			if(element.equals(schemaHeader)) return OpenIIManager.sortList(OpenIIManager.getSchemas()).toArray();
+		    if(element.equals(groupHeader)) return OpenIIManager.sortList(OpenIIManager.getSubgroups(null)).toArray();
+		    if(element.equals(mappingHeader)) return OpenIIManager.sortList(OpenIIManager.getMappings()).toArray();
 		}
 		    
 		// Handles group elements
 		if(element instanceof Group)
 		{
 			Group group = (Group)element;
-			ArrayList<Object> elements = new ArrayList<Object>();
+			ArrayList<GroupSchema> schemas = new ArrayList<GroupSchema>();
 			for(Integer schemaID : OpenIIManager.getGroupSchemas(group.getId()))
-				elements.add(new GroupSchema(group.getId(),OpenIIManager.getSchema(schemaID)));
-			for(Group subgroup : OpenIIManager.getSubgroups(group.getId()))
-				elements.add(subgroup);
-			return sortList(elements);
+				schemas.add(new GroupSchema(group.getId(),OpenIIManager.getSchema(schemaID)));
+
+			// Put together the list of elements listed under group
+			ArrayList<Object> elements = new ArrayList<Object>();
+			elements.addAll(OpenIIManager.sortList(schemas));
+			elements.addAll(OpenIIManager.sortList(OpenIIManager.getSubgroups(group.getId())));
+			return elements.toArray();
 		}
 			
 		// Handles mapping elements
@@ -65,7 +49,7 @@ public class ManagerContentProvider implements ITreeContentProvider
 			ArrayList<Object> elements = new ArrayList<Object>();
 			for(Integer schemaID : mapping.getSchemas())
 				elements.add(new MappingSchema(mapping.getId(),OpenIIManager.getSchema(schemaID)));
-			return sortList(elements);
+			return OpenIIManager.sortList(elements).toArray();
 		}
 		
 		return new String[] {};

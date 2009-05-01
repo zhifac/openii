@@ -16,7 +16,6 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.mitre.openii.application.OpenIIActivator;
 import org.mitre.openii.model.OpenIIManager;
-import org.mitre.schemastore.model.Schema;
 
 /** Constructs the Import Schema Dialog */
 public class DialogComponents
@@ -46,7 +45,7 @@ public class DialogComponents
 	{
 		/** Defines the contents of the schema list */
 		public Object[] getElements(Object arg0)
-			{ return OpenIIManager.getSchemas().toArray(new Schema[0]); }
+			{ return OpenIIManager.sortList(OpenIIManager.getSchemas()).toArray(); }
 
 		// Unused functions
 		public void dispose() {}
