@@ -18,11 +18,5 @@ public class OpenIIPerspective implements IPerspectiveFactory
 		
 		// Creates the repositories pane
 		layout.addStandaloneView("org.mitre.openii.views.repositories.RepositoryView", true, IPageLayout.TOP, 0.20f, "left");
-		
-		//Add the Affinity pane
-		//layout.addStandaloneView("org.mitre.openii.editors.AffinityView", true, IPageLayout.TOP, 0.20f, "left");	
-		
-		//Schema s = new Schema(); s.setId(1);
-		//EditorManager.launchEditor("org.mitre.openii.editors.HarmonyView", s);
 	}
 }
