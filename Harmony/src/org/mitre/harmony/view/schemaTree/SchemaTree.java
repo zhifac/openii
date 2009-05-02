@@ -306,7 +306,7 @@ public class SchemaTree extends JTree implements PreferencesListener, SelectedIn
 	}
 	
 	/** Expands the specified tree node */
-	void expandNode(DefaultMutableTreeNode node)
+	public void expandNode(DefaultMutableTreeNode node)
 	{
 		// Expand node and all children under it
 		super.expandPath(new TreePath(node.getPath()));
