@@ -30,9 +30,10 @@ public class NavigatorPane extends JPanel implements ActionListener
 	/** Stores the navigator display */
 	private NavigatorDisplay display = null;
 	
-	/** Stores the list of comparable schemas */
+	/** Stores components used within the navigator pane */
 	private JComboBox schemaList = new JComboBox();
-	
+	private JPanel comparisonPane = new JPanel();
+
 	/** Navigator pane renderer */
 	private class NavigatorPaneRenderer extends DefaultListCellRenderer
 	{
@@ -76,7 +77,6 @@ public class NavigatorPane extends JPanel implements ActionListener
 		schemaList.addActionListener(this);
 		
 		// Set up the comparison pane
-		JPanel comparisonPane = new JPanel();
 		comparisonPane.setOpaque(false);
 		comparisonPane.setLayout(new BorderLayout());
 		comparisonPane.add(labelPane,BorderLayout.NORTH);
@@ -88,7 +88,6 @@ public class NavigatorPane extends JPanel implements ActionListener
 	public NavigatorPane(SchemaPane schemaPane)
 	{
 		this.schemaPane = schemaPane;
-		setBounds(5,5,150,175);
 		setLayout(new BorderLayout());
 		setOpaque(false);
 		add(getDisplayPane(),BorderLayout.CENTER);
@@ -101,14 +100,21 @@ public class NavigatorPane extends JPanel implements ActionListener
 		// Reset the display
 		display.reset();
 		
-		// Reset the comparison pane
+		// Generate the list of schemas to display
 		Vector<Integer> schemas = new Vector<Integer>(Schemas.getAssociatedSchemas(schemaPane.getSchemaID()));
 		schemas.remove(schemaPane.getSchemaID());
 		schemas.add(0,null);
-		schemaList.removeActionListener(this);
-		schemaList.setModel(new DefaultComboBoxModel(schemas));
-		schemaList.setSelectedItem(schemaPane.getComparisonSchemaID());
-		schemaList.addActionListener(this);
+
+		// Update the schema list
+		comparisonPane.setVisible(schemas.size()>1);
+		setBounds(5,5,150,150+(schemas.size()>1?25:0));
+		if(schemas.size()>1)
+		{
+			schemaList.removeActionListener(this);
+			schemaList.setModel(new DefaultComboBoxModel(schemas));
+			schemaList.setSelectedItem(schemaPane.getComparisonSchemaID());
+			schemaList.addActionListener(this);
+		}
 	}
 
 	/** Handles the selection of a comparison schema */
