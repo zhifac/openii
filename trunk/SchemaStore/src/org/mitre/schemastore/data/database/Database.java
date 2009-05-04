@@ -918,7 +918,7 @@ public class Database
 			if(type.equals("domain")) type = "\"domain\"";
 			
 			// Delete the element
-			stmt.executeUpdate("DELETE FROM "+type+" WHERE element_id="+schemaElementID);
+			stmt.executeUpdate("DELETE FROM "+type+" WHERE id="+schemaElementID);
 			stmt.close();
 			connection.commit();
 			success = true;
