@@ -112,6 +112,7 @@ public class SchemaStatisticsDialog extends JDialog
 		setResizable(false);
 		setContentPane(pane);
 		pack();
+    	setLocationRelativeTo(harmonyModel.getBaseFrame());
 		setVisible(true);
 	}
 }
