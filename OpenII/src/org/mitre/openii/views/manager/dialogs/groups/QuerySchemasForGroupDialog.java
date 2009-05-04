@@ -79,10 +79,7 @@ public class QuerySchemasForGroupDialog extends Dialog implements SelectionListe
 	{	
 	}
 
-	@Override
-	public void widgetDefaultSelected(SelectionEvent arg0)
-	{ }
-
-	@Override
+	// Unused event listeners
+	public void widgetDefaultSelected(SelectionEvent arg0) {}
 	public void widgetSelected(SelectionEvent arg0) {}
 }
