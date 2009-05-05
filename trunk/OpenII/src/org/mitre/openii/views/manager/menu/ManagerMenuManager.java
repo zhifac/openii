@@ -93,7 +93,7 @@ public class ManagerMenuManager extends MenuManager implements IMenuListener
 		// Display the menu for a selected schema
 		if(element instanceof Schema)
 		{
-			menuManager.add(new ManagerAction(this,"Edit Schema",ManagerAction.EDIT_SCHEMA));
+			menuManager.add(new ManagerAction(this,"Edit Schema Properties",ManagerAction.EDIT_SCHEMA));
 			menuManager.add(new ManagerAction(this,"Extend Schema",ManagerAction.EXTEND_SCHEMA));
 			menuManager.add(new ManagerAction(this,"Export Schema",ManagerAction.EXPORT_SCHEMA));
 			Action deleteAction = new ManagerAction(this,"Delete Schema",ManagerAction.DELETE_SCHEMA);
