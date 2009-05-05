@@ -51,7 +51,7 @@ public class ExtensionView extends OpenIIEditor implements ExtensionsPaneListene
 		display.syncExec( new Runnable()
 		{
 			public void run()
-				{ EditorManager.launchEditor("org.mitre.openii.editors.SchemaView", schema); }
+				{ EditorManager.launchDefaultEditor(schema); }
 		});
 	}
 	
