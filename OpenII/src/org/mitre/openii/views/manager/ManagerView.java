@@ -7,9 +7,6 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
-import org.eclipse.ui.IEditorDescriptor;
-import org.eclipse.ui.IEditorRegistry;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 import org.mitre.openii.model.EditorManager;
 import org.mitre.openii.model.OpenIIListener;
@@ -45,15 +42,10 @@ public class ManagerView extends ViewPart implements OpenIIListener, IDoubleClic
 	/** Handles the double clicking of an element */
 	public void doubleClick(DoubleClickEvent e)
 	{
-		// Gets the element to display
 		Object element = ((TreeSelection)e.getSelection()).getFirstElement();
 		if(element instanceof GroupSchema) element = ((GroupSchema)element).getSchema();
 		if(element instanceof MappingSchema) element = ((MappingSchema)element).getSchema();
-		
-		// Launches the specific editor
-		IEditorRegistry registry = PlatformUI.getWorkbench().getEditorRegistry();
-		IEditorDescriptor editor = registry.getDefaultEditor(EditorManager.getEditorType(element));
-		if(editor!=null) EditorManager.launchEditor(editor.getId(), element);
+		EditorManager.launchDefaultEditor(element);
 	}
 	
 	// Handles modifications of objects in the Manager tree

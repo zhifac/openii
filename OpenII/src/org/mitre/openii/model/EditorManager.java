@@ -1,5 +1,6 @@
 package org.mitre.openii.model;
 
+import org.eclipse.ui.IEditorDescriptor;
 import org.eclipse.ui.IEditorRegistry;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
@@ -32,19 +33,22 @@ public class EditorManager
 		return elementType==null ? "" : "." + getElementType(element).toString().toLowerCase();
 	}
 
-	/** Launches the editor */
+	/** Launches the specified editor */
 	static public void launchEditor(String editorID, Object element)
 	{
-		// Set the editor as the default editor
-		IEditorRegistry registry = PlatformUI.getWorkbench().getEditorRegistry();
-		registry.setDefaultEditor(getEditorType(element), editorID);
-
-		// Display the editor
 		try {
 			IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
 			IWorkbenchPage page = window.getActivePage();
 			page.openEditor(new EditorInput(element),editorID);
 		}
 		catch(Exception e) { System.err.println(e.getMessage()); e.printStackTrace();}
+	}
+	
+	/** Launches the default editor */
+	static public void launchDefaultEditor(Object element)
+	{
+		IEditorRegistry registry = PlatformUI.getWorkbench().getEditorRegistry();
+		IEditorDescriptor editor = registry.getDefaultEditor(EditorManager.getEditorType(element));
+		launchEditor(editor.getId(), element);
 	}
 }
