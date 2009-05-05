@@ -36,7 +36,6 @@ public class Schemas
 	{
 		Schema oldSchema = getSchema(schema.getId());
 		if(oldSchema==null) return false;
-		if(oldSchema.getLocked() && !schema.getName().equals(oldSchema.getName())) return false;
 		return Database.updateSchema(schema);
 	}
 	
