@@ -265,165 +265,6 @@ public class HeatMap extends JPanel implements MouseListener, MouseMotionListene
         currentLevelY=0;
     }
     
-/*    void reOrderElements(scoreGrid bigGrid, elementObjectInterface xEOi, elementObjectInterface yEOi,
-    		int lowX, int highX, int lowY, int highY)
-    {
-    	scoreGrid sG = getScores(xEOi.getChildren(),yEOi.getChildren(),bigGrid);
-    	
-    }
-    
-    **
-     * We want to try to 'diagonalize' the score grid.  Do that here.
-     *
-    void ReorderElements(scoreGrid bigGrid){
-    	elementObjectRoot bestRootX=new elementObjectRoot();
-    	elementObjectRoot bestRootY=new elementObjectRoot();
-    	
-    	ArrayList<elementObject> xEOs = new ArrayList<elementObject>();
-    	ArrayList<elementObject> yEOs = new ArrayList<elementObject>();
-    	
-    	double bestScore;
-    	
-    	//ok, lets do root level only first, to get a feel for the algorithm and
-    	//take some baby steps first.
-    	
-    	//should work.
-    	for(int q=0; q < rootX.getNumChildren(); q++){
-    		xEOs.add(rootX.getChild(q));
-    		rootX.getChild(q).setLastSpot(rootX.getNumChildren());
-    	}
-    	for(int q=0; q < rootY.getNumChildren(); q++){
-    		yEOs.add(rootY.getChild(q));
-    		rootY.getChild(q).setLastSpot(rootY.getNumChildren());
-    	}
-    	
-    	while(true){
-    		//sizes in each dimension
-    		int xSize = xEOs.size();
-    		int ySize = yEOs.size();
-    		//size at this level
-    		double[][] compareToMe = new double[xSize][ySize];
-    		//which is bigger?
-    		if(xSize >= ySize){
-    			double[] tempVals = new double[xSize];
-    			//this goes 1, .8, .6, .4, .2 eg. for xsize = 5.
-    			for(int m=0; m < xSize; m++){
-    				tempVals[m] = 1.0/((double)(xSize-1))*((double)(m));
-    			}
-	    		for(int j=0; j < xSize; j++){
-	    			for(int k=0; k < ySize; k++){
-	    				compareToMe[j][k] = tempVals[Math.abs(((int)Math.round(((double)k)/((double)ySize-1)*((double)xSize-1))-j))];
-	    			}
-	    		}
-    		}
-    		else{ //ySize > xSize
-    			double[] tempVals = new double[ySize];
-    			//this goes 1, .8, .6, .4, .2 eg. for xsize = 5.
-    			for(int m=0; m < ySize; m++){
-    				tempVals[m] = 1.0/((double)(ySize-1))*((double)(m));
-    			}
-	    		for(int j=0; j < ySize; j++){
-	    			for(int k=0; k < xSize; k++){
-	    				compareToMe[k][j] = tempVals[Math.abs(((int)Math.round(((double)k)/((double)xSize-1)*((double)ySize-1))-j))];
-	    			}
-	    		}
-    		}
-    		
-    		scoreGrid sG = getScores(xEOs,yEOs,bigGrid);
-    		
-    		if(xSize >= ySize){
-    			//for(int i=0; ){
-    			//	for(int j=0;){
-    					
-    			//	}
-    			//}
-    		}
-    		
-    		
-    		
-    		//now, do ordering.
-    		for(int i=0,j=0; i< xEOs.size() && j < yEOs.size(); ){
-    			//just starting out
-    			if(i==0 && j==0){
-    				int maxX=xSize;
-    				int maxY=ySize;
-    				elementObject bestX=xEOs.get(0);
-    				elementObject bestY=yEOs.get(0);
-    				double bestVal=sG.get(bestX.getID(), bestY.getID());
-    				for(int p=0; p< maxX; p++){
-    					for(int q=0; q<maxY; q++){
-    						if(sG.get(xEOs.get(p).getID(),yEOs.get(q).getID()) > bestVal){
-    							bestX=xEOs.get(p); bestY = yEOs.get(q);
-    						}
-    						if(bestX.lastSpot < maxX) maxX = bestX.lastSpot;
-    						if(bestY.lastSpot < maxY) maxY = bestY.lastSpot;
-    					}
-    				}
-    				
-    			}
-    		}
-    		for(int i=0; i < xEOs.size(); i++){
-    			for(int j=0; j < yEOs.size(); j++){
-    				
-    			}
-    		}
-    	}
-    	
-    	//iterate over all possible combos that make sense.
-    	
-    }
-    
-    scoreGrid getScores(ArrayList<elementObject> xEOs, ArrayList<elementObject> yEOs, scoreGrid bigGrid){
-    	scoreGrid sG = new scoreGrid();
-    	
-    	int xSize = xEOs.size();
-		int ySize = yEOs.size();
-		
-		for(int i=0; i < xSize; i++){
-			for(int j=0; j < ySize; j++){
-				//get combined score
-				double newScore = newScoreCombine(xEOs.get(i),yEOs.get(j),bigGrid);
-				sG.insert(xEOs.get(i).getID(), yEOs.get(j).getID(), newScore);
-			}
-		}
-		return sG;
-    }
-    
-    double newScoreCombine(elementObject xEO, elementObject yEO, scoreGrid sG){
-    	//create big arrays of child objects, in essence mapping out [m,n,bigm,bign] area of score array.
-    	Vector<elementObject> xChildren = xEO.getDescendants();
-    	Vector<elementObject> yChildren = yEO.getDescendants();
-    		
-    	//take average of max in each row or column, whichever is smallest.
-    	double average=0;
-    	if(xChildren.size() > yChildren.size()){
-    		//rows dominate
-    		for(int j=0; j < yChildren.size(); j++){
-    			double biggestVal=0;
-    			for(int k=0; k < xChildren.size(); k++){
-    				if(biggestVal<sG.get(xChildren.get(k).getID(), yChildren.get(j).getID())) 
-    					biggestVal = sG.get(xChildren.get(k).getID(), yChildren.get(j).getID());
-    			}
-    			average+=biggestVal;
-    		}
-    		average=average/new Double(yChildren.size());
-    	}
-    	else{
-    		//columns dominate
-    		for(int k=0; k < xChildren.size(); k++){
-    			double biggestVal=0;
-        		for(int j=0; j < yChildren.size(); j++){
-    				if(biggestVal<sG.get(xChildren.get(k).getID(), yChildren.get(j).getID())) 
-    					biggestVal = sG.get(xChildren.get(k).getID(), yChildren.get(j).getID());
-    			}
-    			average+=biggestVal;
-    		}
-    		average=average/new Double(xChildren.size());
-    	}
-    	return average;
-    }
-    */
-    
     /** Resets the heat map back to its default settings */
     void reset()
     {
@@ -461,7 +302,9 @@ public class HeatMap extends JPanel implements MouseListener, MouseMotionListene
     
     /** Toggles the info box */
     void toggleInfoBox()
-    	{ maxInfo = !maxInfo; repaint(); }
+    	{ maxInfo = !maxInfo; 
+    	System.out.println("here");
+    	repaint(); }
     
     /** Toggles the heat map labels */
     void toggleLabels()
@@ -991,16 +834,36 @@ public class HeatMap extends JPanel implements MouseListener, MouseMotionListene
         int length = elementsX[xVal].getLabel().length();
         length= length>=elementsY[yLabelEnd-yVal-1].getLabel().length()?length:elementsY[yLabelEnd-yVal-1].getLabel().length();
         
+        //get score
+        Double mc_score=0.0;
+        Integer id = harmonyModel.getMappingCellManager().getMappingCellID(elementsX[xVal].getID(), elementsY[yLabelEnd-yVal-1].getID());
+		if(id == null){
+			mc_score = 0.0;
+		}else{
+			MappingCell mc = harmonyModel.getMappingCellManager().getMappingCell(id);
+			mc_score = mc.getScore();
+		}
+        
         //draw a box around the text.
         g2d.setColor(Color.white);
-        g2d.drawRect(currentX+14, currentY+7, length*8+1, 28);
+        g2d.drawRect(currentX+14, currentY+7, length*8+1, 39);
         g2d.setColor(Color.DARK_GRAY);
-        g2d.fillRect(currentX+15, currentY+8, length*8, 27);
+        g2d.fillRect(currentX+15, currentY+8, length*8, 38);
         
         //draw the text.
         g2d.setColor(Color.white);
         g2d.drawString(elementsX[xVal].getLabel(), currentX+20, currentY+20);
         g2d.drawString(elementsY[yLabelEnd-yVal-1].getLabel(), currentX+20, currentY+30);
+        g2d.drawString(new Double(truncate(mc_score)).toString(), currentX+20, currentY+41);
+    }
+    
+    private static double truncate(double x)
+    {
+        x*=100.0;
+        int q = new Double(x).intValue();
+        double z = new Double(q);
+        z/=100.0;
+        return z;
     }
     
     private int getCurrentYGridLoc(){
