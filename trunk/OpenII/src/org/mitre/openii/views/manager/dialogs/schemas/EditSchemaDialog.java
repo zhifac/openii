@@ -94,10 +94,6 @@ public class EditSchemaDialog extends Dialog implements ModifyListener
 		sourceField.setText(schema.getSource());
 		typeField.setText(schema.getType());
 		descriptionField.setText(schema.getDescription());
-
-		
-		// Lock the name field from being changed
-		if(schema.getLocked()) nameField.setEnabled(false);
 		
 		return control;
 	}
