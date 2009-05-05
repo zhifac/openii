@@ -60,16 +60,11 @@ public class ContainmentGraphModel extends GraphModel
 		SchemaElement element = graph.getElement(elementID);
 		if(element instanceof Containment)
 		{
-			Integer childID = ((Containment)element).getChildID();
-
 			// Retrieves all containments whose parent is the child ID
+			Integer childID = ((Containment)element).getChildID();
 			for(Containment containment : graph.getContainments(childID))
 				if(childID.equals(containment.getParentID()))
 					childElements.add(containment);
-
-			// Retrieves all attributes whose element is the child ID
-			for(Attribute attribute : graph.getAttributes(childID))
-				childElements.add(attribute);
 		}
 			
 		return childElements;
