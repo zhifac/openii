@@ -22,7 +22,7 @@ public class DDLImporter extends SchemaImporter
 {
 	/** Returns the importer name */
 	public String getName()
-		{ return "DDL Importer"; }
+		{ return "SQL/DDL Importer"; }
 
 	/** Returns the importer description */
 	public String getDescription()
