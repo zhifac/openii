@@ -45,7 +45,12 @@ public class ManagerView extends ViewPart implements OpenIIListener, IDoubleClic
 	/** Handles the double clicking of an element */
 	public void doubleClick(DoubleClickEvent e)
 	{
+		// Gets the element to display
 		Object element = ((TreeSelection)e.getSelection()).getFirstElement();
+		if(element instanceof GroupSchema) element = ((GroupSchema)element).getSchema();
+		if(element instanceof MappingSchema) element = ((MappingSchema)element).getSchema();
+		
+		// Launches the specific editor
 		IEditorRegistry registry = PlatformUI.getWorkbench().getEditorRegistry();
 		IEditorDescriptor editor = registry.getDefaultEditor(EditorManager.getEditorType(element));
 		if(editor!=null) EditorManager.launchEditor(editor.getId(), element);
