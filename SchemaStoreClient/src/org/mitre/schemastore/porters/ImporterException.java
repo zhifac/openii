@@ -1,9 +1,9 @@
 // Copyright 2008 The MITRE Corporation. ALL RIGHTS RESERVED.
 
-package org.mitre.schemastore.porters.schemaImporters;
+package org.mitre.schemastore.porters;
 
-/** Class for throwing Schema Importer exceptions */ @SuppressWarnings("serial")
-public class SchemaImporterException extends Exception
+/** Class for throwing Importer exceptions */ @SuppressWarnings("serial")
+public class ImporterException extends Exception
 {
 	// Stores various types of importer exceptions
 	public static final int INVALID_URI = 0;
@@ -14,7 +14,7 @@ public class SchemaImporterException extends Exception
 	private Integer exceptionType;
 	
 	/** Constructs an importer exception */
-	public SchemaImporterException(Integer exceptionType, String message)
+	public ImporterException(Integer exceptionType, String message)
 		{ super(message); this.exceptionType = exceptionType; }
 	
 	/** Returns the exception type */

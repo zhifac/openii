@@ -6,6 +6,7 @@ import org.mitre.schemastore.client.SchemaStoreClient;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.graph.Graph;
+import org.mitre.schemastore.porters.ImporterException;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -87,7 +88,7 @@ public class CopySchemaImporter extends SchemaImporter
 	}
 
 	/** Initialize the importer if needed */
-	protected void initialize() throws SchemaImporterException
+	protected void initialize() throws ImporterException
 	{	
 		try {
 			// Define repository to be copied from
@@ -140,16 +141,16 @@ public class CopySchemaImporter extends SchemaImporter
 			schemaElements = repositoryGraph.getBaseElements(null);
 		}
 		catch(Exception e)
-			{ repository=null; throw new SchemaImporterException(SchemaImporterException.PARSE_FAILURE,e.getMessage()); }
+			{ repository=null; throw new ImporterException(ImporterException.PARSE_FAILURE,e.getMessage()); }
 
 		repository = null;
 	}
 	
 	/** Returns the list of schemas which this schema extends */
-	protected ArrayList<Integer> getExtendedSchemaIDs() throws SchemaImporterException
+	protected ArrayList<Integer> getExtendedSchemaIDs() throws ImporterException
 		{ return extendedSchemaIDs; }
 	
 	/** Returns the schema elements from the specified URI */
-	public ArrayList<SchemaElement> getSchemaElements() throws SchemaImporterException 
+	public ArrayList<SchemaElement> getSchemaElements() throws ImporterException
 		{ return schemaElements; }
 }

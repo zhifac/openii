@@ -8,6 +8,7 @@ import antlr.*;
 import java.io.*;
 
 import org.mitre.schemastore.model.SchemaElement;
+import org.mitre.schemastore.porters.ImporterException;
 import org.mitre.schemastore.porters.schemaImporters.ddl.DdlFilteredReader;
 import org.mitre.schemastore.porters.schemaImporters.ddl.SqlSQL2Lexer;
 import org.mitre.schemastore.porters.schemaImporters.ddl.SqlSQL2Parser;
@@ -41,14 +42,14 @@ public class DDLImporter extends SchemaImporter
 	}
 
 	/** Initializes the importer for the specified URI */
-	protected void initialize() throws SchemaImporterException {}
+	protected void initialize() throws ImporterException {}
 
 	/** Returns the list of schemas which this schema extends */
-	protected ArrayList<Integer> getExtendedSchemaIDs() throws SchemaImporterException
+	protected ArrayList<Integer> getExtendedSchemaIDs() throws ImporterException
 		{ return new ArrayList<Integer>(); }
 
 	/** Returns the schema elements from the specified URI */
-	public ArrayList<SchemaElement> getSchemaElements() throws SchemaImporterException
+	public ArrayList<SchemaElement> getSchemaElements() throws ImporterException
 	{
 		try {
 	        SqlSQL2Lexer lexer = new SqlSQL2Lexer( new DdlFilteredReader( new FileReader( new File(uri) ) ) );
@@ -79,10 +80,10 @@ public class DDLImporter extends SchemaImporter
 	        return parser.getSchemaObjects();
 		}
 		catch(Exception e) { System.out.print( e.getClass().getName() + ": " ); e.printStackTrace();
-        throw new SchemaImporterException(SchemaImporterException.PARSE_FAILURE,e.getMessage()); }
+        throw new ImporterException(ImporterException.PARSE_FAILURE,e.getMessage()); }
 	}
 
-	public static void main(String[] args) throws IOException, SchemaImporterException {
+	public static void main(String[] args) throws IOException, ImporterException {
 		File ddl = new File(args[0]);
 		DDLImporter tester = new DDLImporter();
 		tester.setClient(new org.mitre.schemastore.client.SchemaStoreClient(

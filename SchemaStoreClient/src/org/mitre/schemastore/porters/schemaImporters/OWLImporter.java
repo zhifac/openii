@@ -15,6 +15,7 @@ import org.mitre.schemastore.model.Entity;
 import org.mitre.schemastore.model.Relationship;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.Subtype;
+import org.mitre.schemastore.porters.ImporterException;
 
 import com.hp.hpl.jena.ontology.DatatypeProperty;
 import com.hp.hpl.jena.ontology.ObjectProperty;
@@ -73,7 +74,7 @@ public class OWLImporter extends SchemaImporter implements RDFErrorHandler
 	}
 	
 	/** Initializes the importer for the specified URI */
-	protected void initialize() throws SchemaImporterException
+	protected void initialize() throws ImporterException
 	{
 		_schemaElements = new ArrayList<SchemaElement>();
 		_entityList = new HashMap<String, Entity>();
@@ -84,15 +85,15 @@ public class OWLImporter extends SchemaImporter implements RDFErrorHandler
 			initializeOntModel(uri);
 			linearGen();
 		}
-		catch(Exception e) { throw new SchemaImporterException(SchemaImporterException.PARSE_FAILURE,e.getMessage()); }
+		catch(Exception e) { throw new ImporterException(ImporterException.PARSE_FAILURE,e.getMessage()); }
 	}
 	
 	/** Returns the list of schemas which this schema extends */
-	protected ArrayList<Integer> getExtendedSchemaIDs() throws SchemaImporterException
+	protected ArrayList<Integer> getExtendedSchemaIDs() throws ImporterException
 		{ return new ArrayList<Integer>(); }
 	
 	/** Returns the schema elements from the specified URI */
-	public ArrayList<SchemaElement> getSchemaElements() throws SchemaImporterException
+	public ArrayList<SchemaElement> getSchemaElements() throws ImporterException
 		{ return _schemaElements; }
 
 	/** Handles the loading of the specified domain */

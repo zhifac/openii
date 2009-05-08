@@ -8,6 +8,7 @@ import org.exolab.castor.xml.schema.*;
 import org.exolab.castor.xml.schema.Group;
 import org.exolab.castor.xml.schema.reader.SchemaReader;
 import org.mitre.schemastore.model.*;
+import org.mitre.schemastore.porters.ImporterException;
 
 /**
  * Class for converting XSD files into an Entity-Relationship format
@@ -66,7 +67,7 @@ public class XSDImporter extends SchemaImporter
 	
 	
 	/** Initializes the importer for the specified URI */
-	protected void initialize() throws SchemaImporterException
+	protected void initialize() throws ImporterException
 	{
 		try {
 			xmlSchema = new SchemaReader(uri.toString()).read();
@@ -84,15 +85,15 @@ public class XSDImporter extends SchemaImporter
 		
 		catch(Exception e) { 
 			e.printStackTrace();
-			throw new SchemaImporterException(SchemaImporterException.PARSE_FAILURE,e.getMessage()); }
+			throw new ImporterException(ImporterException.PARSE_FAILURE,e.getMessage()); }
 	}
 	
 	/** Returns the list of schemas which this schema extends */
-	protected ArrayList<Integer> getExtendedSchemaIDs() throws SchemaImporterException
+	protected ArrayList<Integer> getExtendedSchemaIDs() throws ImporterException
 		{ return new ArrayList<Integer>(); }
 	
 	/** Returns the schema elements from the specified URI */
-	public ArrayList<SchemaElement> getSchemaElements() throws SchemaImporterException
+	public ArrayList<SchemaElement> getSchemaElements() throws ImporterException
 		{ return new ArrayList<SchemaElement>(schemaElementsHS.values()); }
 
 	/**

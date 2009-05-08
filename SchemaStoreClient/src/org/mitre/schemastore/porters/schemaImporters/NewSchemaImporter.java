@@ -3,6 +3,7 @@
 package org.mitre.schemastore.porters.schemaImporters;
 
 import org.mitre.schemastore.model.SchemaElement;
+import org.mitre.schemastore.porters.ImporterException;
 
 import java.util.ArrayList;
 
@@ -22,13 +23,13 @@ public class NewSchemaImporter extends SchemaImporter
 		{ return NONE; }
 	
 	/** Initializes the importer for the specified URI */
-	protected void initialize() throws SchemaImporterException {}
+	protected void initialize() throws ImporterException {}
 	
 	/** Returns the list of schemas which this schema extends */
-	protected ArrayList<Integer> getExtendedSchemaIDs() throws SchemaImporterException
+	protected ArrayList<Integer> getExtendedSchemaIDs() throws ImporterException
 		{ return new ArrayList<Integer>(); }
 	
 	/** Returns the schema elements from the specified URI */
-	public ArrayList<SchemaElement> getSchemaElements() throws SchemaImporterException
+	public ArrayList<SchemaElement> getSchemaElements() throws ImporterException
 		{ return new ArrayList<SchemaElement>(); }
 }
