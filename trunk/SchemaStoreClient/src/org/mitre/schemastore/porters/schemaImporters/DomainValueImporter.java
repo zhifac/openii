@@ -9,6 +9,7 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.mitre.schemastore.model.Domain;
 import org.mitre.schemastore.model.DomainValue;
 import org.mitre.schemastore.model.SchemaElement;
+import org.mitre.schemastore.porters.ImporterException;
 
 /**
  * Imports domain values from an Excel sheet. The excel sheet format is [domain
@@ -37,7 +38,7 @@ public class DomainValueImporter extends ExcelImporter {
 	protected void initialize() {
 		try {
 			super.initialize();
-		} catch (SchemaImporterException e) {
+		} catch (ImporterException e) {
 			throw new RuntimeException(e);
 		}
 		_domains = new HashMap<String, Domain>();

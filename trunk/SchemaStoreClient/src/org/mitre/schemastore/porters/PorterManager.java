@@ -20,6 +20,7 @@ import java.util.ArrayList;
 
 import org.mitre.schemastore.client.SchemaStoreClient;
 import org.mitre.schemastore.porters.mappingExporters.MappingExporter;
+import org.mitre.schemastore.porters.mappingImporters.MappingImporter;
 import org.mitre.schemastore.porters.schemaExporters.SchemaExporter;
 import org.mitre.schemastore.porters.schemaImporters.SchemaImporter;
 
@@ -29,11 +30,13 @@ public class PorterManager
 	// Constants for references the various porter lists
 	static public final Integer SCHEMA_IMPORTERS = 0;
 	static public final Integer SCHEMA_EXPORTERS = 1;
-	static public final Integer MAPPING_EXPORTERS = 2;
+	static public final Integer MAPPING_IMPORTERS = 2;
+	static public final Integer MAPPING_EXPORTERS = 3;
 	
 	/** Stores listings of the porters */
 	private ArrayList<SchemaImporter> schemaImporters;
 	private ArrayList<SchemaExporter> schemaExporters;
+	private ArrayList<MappingImporter> mappingImporters;
 	private ArrayList<MappingExporter> mappingExporters;
 	
 	/** Constructs the porter manager class */
@@ -41,6 +44,7 @@ public class PorterManager
 	{
 		schemaImporters = new PorterList<SchemaImporter>("schemaImporter",client);
 		schemaExporters = new PorterList<SchemaExporter>("schemaExporter",client);
+		mappingImporters = new PorterList<MappingImporter>("mappingImporter",client);
 		mappingExporters = new PorterList<MappingExporter>("mappingExporter",client);
 	}
 	
@@ -51,6 +55,10 @@ public class PorterManager
 	/** Returns the list of schema exporters */
 	public ArrayList<SchemaExporter> getSchemaExporters()
 		{ return new ArrayList<SchemaExporter>(schemaExporters); }
+	
+	/** Returns the list of mapping importers */
+	public ArrayList<MappingImporter> getMappingImporters()
+		{ return new ArrayList<MappingImporter>(mappingImporters); }
 	
 	/** Returns the list of mapping exporters */
 	public ArrayList<MappingExporter> getMappingExporters()

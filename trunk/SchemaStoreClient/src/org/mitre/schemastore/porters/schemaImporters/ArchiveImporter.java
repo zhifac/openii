@@ -5,6 +5,7 @@ package org.mitre.schemastore.porters.schemaImporters;
 import org.mitre.schemastore.model.*;
 import org.mitre.schemastore.model.graph.Graph;
 import org.mitre.schemastore.model.xml.ConvertFromXML;
+import org.mitre.schemastore.porters.ImporterException;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -91,24 +92,24 @@ public class ArchiveImporter extends SchemaImporter
 	}
 	
 	/** Returns the schema  from the specified URI */
-	public Schema getSchema() throws SchemaImporterException
+	public Schema getSchema() throws ImporterException
 	{
 		try {
 			ArrayList<ExtendedGraph> graphs = parseDocument();
 			return graphs.get(graphs.size()-1).getSchema();
-		} catch(Exception e) { throw new SchemaImporterException(SchemaImporterException.PARSE_FAILURE,e.getMessage()); }
+		} catch(Exception e) { throw new ImporterException(ImporterException.PARSE_FAILURE,e.getMessage()); }
 	}
 	
 	/** Returns the list of schemas which this schema extends */
-	protected ArrayList<Integer> getExtendedSchemaIDs() throws SchemaImporterException
+	protected ArrayList<Integer> getExtendedSchemaIDs() throws ImporterException
 		{ return extendedSchemaIDs; }
 	
 	/** Returns the schema elements from the specified URI */
-	public ArrayList<SchemaElement> getSchemaElements() throws SchemaImporterException 
+	public ArrayList<SchemaElement> getSchemaElements() throws ImporterException 
 		{ return schemaElements; }
 
 	/** Initialize the importer */
-	protected void initialize() throws SchemaImporterException
+	protected void initialize() throws ImporterException
 	{	
 		try {
 			// Extract out schema graphs from the XML document
@@ -173,7 +174,7 @@ public class ArchiveImporter extends SchemaImporter
 			extendedSchemaIDs = graph.getParentSchemaIDs();
 			schemaElements = graph.getBaseElements(null);
 		}
-		catch(Exception e) { throw new SchemaImporterException(SchemaImporterException.PARSE_FAILURE,e.getMessage()); }
+		catch(Exception e) { throw new ImporterException(ImporterException.PARSE_FAILURE,e.getMessage()); }
 	}
 	
 	/** Parse out schema graphs from XML document */

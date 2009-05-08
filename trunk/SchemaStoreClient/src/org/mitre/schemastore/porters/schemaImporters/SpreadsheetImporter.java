@@ -33,6 +33,7 @@ import org.mitre.schemastore.model.Attribute;
 import org.mitre.schemastore.model.Domain;
 import org.mitre.schemastore.model.Entity;
 import org.mitre.schemastore.model.SchemaElement;
+import org.mitre.schemastore.porters.ImporterException;
 
 /**
  * 
@@ -212,7 +213,7 @@ public class SpreadsheetImporter extends SchemaImporter {
 		return filetypes;
 	}
 
-	protected void initialize() throws SchemaImporterException {
+	protected void initialize() throws ImporterException {
 		try {
 			InputStream excelStream;
 			_entities = new HashMap<String, Entity>();
@@ -226,12 +227,12 @@ public class SpreadsheetImporter extends SchemaImporter {
 			_excelWorkbook = new HSSFWorkbook(excelStream);
 			excelStream.close();
 		} catch (IOException e) {
-			throw new SchemaImporterException(SchemaImporterException.PARSE_FAILURE, e.getMessage());
+			throw new ImporterException(ImporterException.PARSE_FAILURE, e.getMessage());
 		}
 	}
 
 	public static void main(String[] args) throws IOException, URISyntaxException,
-			SchemaImporterException {
+	ImporterException {
 		File excel = new File(args[0]);
 		SpreadsheetImporter tester = new SpreadsheetImporter();
 		tester.setClient(new org.mitre.schemastore.client.SchemaStoreClient(
@@ -251,12 +252,12 @@ public class SpreadsheetImporter extends SchemaImporter {
 	}
 
 	/** Returns the list of schemas which this schema extends */
-	protected ArrayList<Integer> getExtendedSchemaIDs() throws SchemaImporterException {
+	protected ArrayList<Integer> getExtendedSchemaIDs() throws ImporterException {
 		return new ArrayList<Integer>();
 	}
 
 	/** Generate the schema elements */
-	public ArrayList<SchemaElement> getSchemaElements() throws SchemaImporterException {
+	public ArrayList<SchemaElement> getSchemaElements() throws ImporterException {
 		generate();
 		ArrayList<SchemaElement> elements = generateSchemaElementList();
 		// Schema schema = new Schema(nextId(),"thisschema","me","","","description",false);

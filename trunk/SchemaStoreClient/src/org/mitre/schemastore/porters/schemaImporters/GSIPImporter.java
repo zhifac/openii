@@ -15,6 +15,7 @@ import org.mitre.schemastore.model.Domain;
 import org.mitre.schemastore.model.DomainValue;
 import org.mitre.schemastore.model.Entity;
 import org.mitre.schemastore.model.SchemaElement;
+import org.mitre.schemastore.porters.ImporterException;
 
 /**
  * DOCUMENT ME!
@@ -39,7 +40,7 @@ public class GSIPImporter extends SchemaImporter {
 	public Integer getURIType() { return URI; }
 
 	/** Initializes the importer for the specified URI */
-	protected void initialize() throws SchemaImporterException {
+	protected void initialize() throws ImporterException {
 		try {
 			//  connect to MS Access database
 	        conn = DriverManager.getConnection("jdbc:odbc:"+uri,"Admin",null); 
@@ -58,12 +59,12 @@ public class GSIPImporter extends SchemaImporter {
 	}
 
 	/** Returns the list of schemas which this schema extends */
-	protected ArrayList<Integer> getExtendedSchemaIDs() throws SchemaImporterException { 
+	protected ArrayList<Integer> getExtendedSchemaIDs() throws ImporterException { 
 		return new ArrayList<Integer>(); 
     }
 
 	/** Returns the schema elements from the specified URI */
-	public ArrayList<SchemaElement> getSchemaElements() throws SchemaImporterException {	
+	public ArrayList<SchemaElement> getSchemaElements() throws ImporterException {	
 		generate();
 		return generateSchemaElementList();
 	}

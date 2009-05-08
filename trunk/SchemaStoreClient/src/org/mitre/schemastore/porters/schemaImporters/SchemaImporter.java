@@ -18,6 +18,7 @@ package org.mitre.schemastore.porters.schemaImporters;
 
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
+import org.mitre.schemastore.porters.ImporterException;
 import org.mitre.schemastore.porters.Porter;
 
 import java.net.URI;
@@ -59,20 +60,20 @@ public abstract class SchemaImporter extends Porter
 	public ArrayList<String> getFileTypes() { return new ArrayList<String>(); }
 	
 	/** Initializes the importer */
-	abstract protected void initialize() throws SchemaImporterException;
+	abstract protected void initialize() throws ImporterException;
 	
 	/** Returns the list of schemas which this schema extends */
-	abstract protected ArrayList<Integer> getExtendedSchemaIDs() throws SchemaImporterException;
+	abstract protected ArrayList<Integer> getExtendedSchemaIDs() throws ImporterException;
 	
 	/** Returns the schema elements from the specified URI */
-	abstract protected ArrayList<SchemaElement> getSchemaElements() throws SchemaImporterException;
+	abstract protected ArrayList<SchemaElement> getSchemaElements() throws ImporterException;
 	
 	/** Generate the schema */
-	final public Schema generateSchema(URI uri) throws SchemaImporterException
+	final public Schema generateSchema(URI uri) throws ImporterException
 	{
 		// Schema elements can generated separately only for archive importers
 		if(getURIType()!=ARCHIVE)
-			throw new SchemaImporterException(SchemaImporterException.PARSE_FAILURE,"Schemas can only be retrieved for archive importers");
+			throw new ImporterException(ImporterException.PARSE_FAILURE,"Schemas can only be retrieved for archive importers");
 
 		// Generate the schema
 		this.uri = uri;
@@ -80,11 +81,11 @@ public abstract class SchemaImporter extends Porter
 	}
 	
 	/** Return the schema elements */
-	final public ArrayList<SchemaElement> generateSchemaElements(URI uri) throws SchemaImporterException
+	final public ArrayList<SchemaElement> generateSchemaElements(URI uri) throws ImporterException
 	{
 		// Schema elements can generated separately only for file importers
 		if(getURIType()!=FILE)
-			throw new SchemaImporterException(SchemaImporterException.PARSE_FAILURE,"Schema elements can only be retrieved for file importers");
+			throw new ImporterException(ImporterException.PARSE_FAILURE,"Schema elements can only be retrieved for file importers");
 
 		// Generate the schema elements
 		this.uri = uri;
@@ -93,7 +94,7 @@ public abstract class SchemaImporter extends Porter
 	}
 	
 	/** Imports the specified URI */
-	final public Integer importSchema(String name, String author, String description, URI uri) throws SchemaImporterException
+	final public Integer importSchema(String name, String author, String description, URI uri) throws ImporterException
 	{
 		// Initialize the importer
 		this.uri = uri;
@@ -121,7 +122,7 @@ public abstract class SchemaImporter extends Porter
 		if(!success)
 		{
 			try { client.deleteSchema(schema.getId()); } catch(Exception e) {}
-			throw new SchemaImporterException(SchemaImporterException.IMPORT_FAILURE,"A failure occured in transferring the schema to the repository");
+			throw new ImporterException(ImporterException.IMPORT_FAILURE,"A failure occured in transferring the schema to the repository");
 		}
 
 		// Returns the id of the imported schema

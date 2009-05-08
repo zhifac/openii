@@ -12,6 +12,8 @@
       <schemaImporter>org.mitre.schemastore.porters.schemaImporters.SpreadsheetImporter</schemaImporter>
       <schemaImporter>org.mitre.schemastore.porters.schemaImporters.GSIPImporter</schemaImporter>
     </schemaImporters>
+    <mappingImporters>
+    </mappingImporters>
   </importers>
   <exporters>
     <schemaExporters>
