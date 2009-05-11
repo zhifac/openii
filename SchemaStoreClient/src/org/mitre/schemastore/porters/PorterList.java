@@ -16,10 +16,6 @@
 
 package org.mitre.schemastore.porters;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -32,29 +28,16 @@ import org.mitre.schemastore.porters.schemaImporters.SchemaImporter;
 public class PorterList<T extends Porter> extends ArrayList<T>
 {
 	/** Constructs the porter list */ @SuppressWarnings("unchecked")
-	PorterList(String tag, SchemaStoreClient client)
+	PorterList(StringBuffer buffer, String tag, SchemaStoreClient client)
 	{
-		// Load importers from file
-		try {			
-			// Retrieve the porter configuration file
-			InputStream configStream = PorterList.class.getResourceAsStream("/porters.xml");
-			BufferedReader in = new BufferedReader(new InputStreamReader(configStream));
-			StringBuffer buffer = new StringBuffer("");
-			String line; while((line=in.readLine())!=null) buffer.append(line);
-			in.close();
-	
-			// Retrieve the porter classes
-			Pattern pattern = Pattern.compile("<"+tag+">(.*?)</"+tag+">");
-			Matcher matcher = pattern.matcher(buffer);
-			while(matcher.find())
-				try {
-					T porter = (T)Class.forName(matcher.group(1)).newInstance();
-					porter.setClient(client);
-					add(porter);
-				} catch(Exception e) {}
-		}
-		catch(IOException e)
-			{ System.out.println("(E)PorterManager - porters.xml has failed to load!\n"+e.getMessage()); }
+		Pattern pattern = Pattern.compile("<"+tag+">(.*?)</"+tag+">");
+		Matcher matcher = pattern.matcher(buffer);
+		while(matcher.find())
+			try {
+				T porter = (T)Class.forName(matcher.group(1)).newInstance();
+				porter.setClient(client);
+				add(porter);
+			} catch(Exception e) {}
 	}
 	
 	/** Returns the specified porter based on type */
