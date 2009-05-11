@@ -31,7 +31,7 @@ public abstract class MappingImporter extends Porter
 	/** Stores the URI being imported */
 	protected URI uri;
 	
-	/** Returns the importer URI file types (only needed when URI type is FILE) */
+	/** Returns the importer URI file types */
 	public ArrayList<String> getFileTypes() { return new ArrayList<String>(); }
 	
 	/** Initializes the importer */
