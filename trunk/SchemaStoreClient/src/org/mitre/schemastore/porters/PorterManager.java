@@ -16,6 +16,10 @@
 
 package org.mitre.schemastore.porters;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 import org.mitre.schemastore.client.SchemaStoreClient;
@@ -42,10 +46,22 @@ public class PorterManager
 	/** Constructs the porter manager class */
 	public PorterManager(SchemaStoreClient client)
 	{
-		schemaImporters = new PorterList<SchemaImporter>("schemaImporter",client);
-		schemaExporters = new PorterList<SchemaExporter>("schemaExporter",client);
-		mappingImporters = new PorterList<MappingImporter>("mappingImporter",client);
-		mappingExporters = new PorterList<MappingExporter>("mappingExporter",client);
+		// Retrieve porter configuration file
+		StringBuffer buffer = new StringBuffer("");
+		try {
+			InputStream configStream = PorterList.class.getResourceAsStream("/porters.xml");
+			BufferedReader in = new BufferedReader(new InputStreamReader(configStream));
+			String line; while((line=in.readLine())!=null) buffer.append(line);
+			in.close();
+		}
+		catch(IOException e)
+			{ System.out.println("(E)PorterManager - porters.xml has failed to load!\n"+e.getMessage()); }
+		
+		// Parse out the various importers and exporters
+		schemaImporters = new PorterList<SchemaImporter>(buffer,"schemaImporter",client);
+		schemaExporters = new PorterList<SchemaExporter>(buffer,"schemaExporter",client);
+		mappingImporters = new PorterList<MappingImporter>(buffer,"mappingImporter",client);
+		mappingExporters = new PorterList<MappingExporter>(buffer,"mappingExporter",client);
 	}
 	
 	/** Returns the list of schema importers */
