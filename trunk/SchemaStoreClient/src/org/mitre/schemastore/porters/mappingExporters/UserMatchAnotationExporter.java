@@ -2,25 +2,115 @@
 // ALL RIGHTS RESERVED
 package org.mitre.schemastore.porters.mappingExporters;
 
-
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
-import javax.swing.filechooser.FileFilter;
-import org.mitre.harmony.model.ConfigManager;
-import org.mitre.harmony.model.HarmonyModel;
+import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.SchemaElement;
-import java.util.Date;
+import org.mitre.schemastore.model.graph.HierarchicalGraph;
 
-public class UserMatchAnotationExporter  extends Exporter {
+
+/**
+ * Class for exporting all matches from the project
+ * @author FZHU
+ */
+public class UserMatchAnotationExporter extends MappingExporter
+{	
+	/** Stores a hash map of all schema elements which exist in mapping */
+	private HashMap<Integer,SchemaElement> elements = null;
+	
+	/** Stores an array of all schema graphs which exist in mapping */
+	ArrayList<HierarchicalGraph> graphs = new ArrayList<HierarchicalGraph>();
+
+	
+	private String header;
+	private final String leftSchemaTop = "Left Schema Top Layer";
+	private final String leftSchemaNodeDesc = "Left Schema Description";
+	private final String leftSchemaNode = "Left Schema Node";
+	private final String rightSchemaTop = "Right Schema Top Layer";
+	private final String rightSchemaNodeDesc = "Right Schema Description";
+	private final String rightSchemaNode = "Right Schema Node";	
+	private final String linkWeight = "Link Weight";
+	private final String author = "Link Author";
+	private final String editDate = "Edit Date";
+	private final String transform = "Link Transform";
+	private final String note = "Link Note";
+	
+	/** Constructs the DataDictionary exporter */
+	public UserMatchAnotationExporter()
+		{ 
+		super(); 
+		header = leftSchemaTop + ","+leftSchemaNodeDesc + "," + leftSchemaNode +
+		","+rightSchemaTop + ","+rightSchemaNodeDesc + "," + rightSchemaNode +
+		","+linkWeight + "," + author + "," + editDate + "," + transform + ","+note;
+		}
+	
+	/** Returns the exporter name */
+	public String getName()
+		{ return "User Annotation Match Exporter"; }
+	
+	/** Returns the exporter description */
+	public String getDescription()
+		{ return "This exporter can be used to export all pairings of terms within the mapping"; }
+	
+	/** Returns the file types associated with this converter */
+	public String getFileType()
+		{ return "csv"; }
+	
+	/** Generates a list of the top 100 matches for this project */
+	public void exportMapping(Mapping mapping, ArrayList<MappingCell> mappingCells, File file) throws IOException
+	{				
+		
+		// Prepare to export source and target node information
+		BufferedWriter out = new BufferedWriter(new FileWriter(file));
+
+		// Initialize the graph and schema element lists
+		elements = getSchemaElements(Arrays.asList(mapping.getSchemas()));
+		for(Integer schemaID : mapping.getSchemas())
+			graphs.add(new HierarchicalGraph(client.getGraph(schemaID),null));
+			
+		// Get the list of mapping cells
+		CompressedList matchList = new CompressedList();
+		for(MappingCell mappingCell : mappingCells)
+			matchList.addMappingCell(mappingCell);
+		
+    	// Outputs the top mapping cells
+		List<CompressedMatch> matches = matchList.getMatches();
+		Collections.sort(matches);
+//		if(matches.size()>100) matches = matches.subList(0, 100);
+  		for(CompressedMatch match : matches)
+    		out.write(match.toString() + "\n");
+    	out.close();
+    	
+    	// Clear out graph and schema element lists
+    	elements = null; graphs = null;
+	}
+
+	/** Gets paths for the specified element */
+	private HashSet<String> getPaths(Integer elementID)
+	{
+		HashSet<String> paths = new HashSet<String>();
+		for(HierarchicalGraph graph : graphs)
+			for(ArrayList<SchemaElement> pathElements : graph.getPaths(elementID))
+			{
+				StringBuffer path = new StringBuffer("");
+				for(SchemaElement element : pathElements)
+					path.append("#"+element.getName());
+				paths.add(path.toString());
+			}
+		return paths;			
+	}	
+
 	/** Class used to store the compressed match */
 	class CompressedMatch implements Comparable<CompressedMatch>
 	{
@@ -31,14 +121,16 @@ public class UserMatchAnotationExporter  extends Exporter {
 		private HashSet<String> paths1, paths2; 
 		
 		/** Stores the match score */
-		private Double score;
 		private String author;
 		private Date date;
 		private String transform;
-		private String notes;
+		private String notes;		
+		
+		/** Stores the match score */
+		private Double score;
 
 		/** Constructs the compressed match */
-		private CompressedMatch(SchemaElement element1, SchemaElement element2, Double score, String author,
+		private CompressedMatch(SchemaElement element1, SchemaElement element2, Double score,String author,
 				Date date, String transform,String notes)
 		{
 			// Initialize the compressed match
@@ -105,11 +197,11 @@ public class UserMatchAnotationExporter  extends Exporter {
 		private void addMappingCell(MappingCell mappingCell)
 		{
   			// Construct the compressed match
-   			SchemaElement element1 = getModel().getSchemaManager().getSchemaElement(mappingCell.getElement1());
-   			SchemaElement element2 = getModel().getSchemaManager().getSchemaElement(mappingCell.getElement2());
+   			SchemaElement element1 = elements.get(mappingCell.getElement1());
+   			SchemaElement element2 = elements.get(mappingCell.getElement2());
    			CompressedMatch newMatch = new CompressedMatch(element1,element2,mappingCell.getScore(),
    					mappingCell.getAuthor(),mappingCell.getModificationDate(),mappingCell.getTransform(),
-   					mappingCell.getNotes());
+   					mappingCell.getNotes());  	
 
    			// Add match to list of compressed matches
    			String key = getKey(newMatch);
@@ -122,94 +214,4 @@ public class UserMatchAnotationExporter  extends Exporter {
 		private ArrayList<CompressedMatch> getMatches()
 			{ return new ArrayList<CompressedMatch>(matches.values()); }
 	}
-	
-	private String header;
-	private final String leftSchemaTop = "Left Schema Top Layer";
-	private final String leftSchemaNodeDesc = "Left Schema Description";
-	private final String leftSchemaNode = "Left Schema Node";
-	private final String rightSchemaTop = "Right Schema Top Layer";
-	private final String rightSchemaNodeDesc = "Right Schema Description";
-	private final String rightSchemaNode = "Right Schema Node";	
-	private final String linkWeight = "Link Weight";
-	private final String author = "Link Author";
-	private final String editDate = "Edit Date";
-	private final String transform = "Link Transform";
-	private final String note = "Link Note";
-	
-	/** Constructs the DataDictionary exporter */
-	public UserMatchAnotationExporter(HarmonyModel harmonyModel)
-		{ 
-		super(harmonyModel); 
-		header = leftSchemaTop + ","+leftSchemaNodeDesc + "," + leftSchemaNode +
-		","+rightSchemaTop + ","+rightSchemaNodeDesc + "," + rightSchemaNode +
-		","+linkWeight + "," + author + "," + editDate + "," + transform + ","+note;
-		}
-	
-	/** Returns the file types associated with this converter */
-	public String getFileType()
-		{ return "csv"; }
-	
-	/** Returns a file filter for this converter */
-	public FileFilter getFileFilter()
-	{
-		class CsvFilter extends FileFilter
-		{
-			public boolean accept(File file)
-			{
-				if(file.isDirectory()) return true;
-				if(file.toString().endsWith(".csv")) return true;
-				return false;
-			}
-
-			public String getDescription()
-				{ return "User Anotation Matches (.csv)"; }
-		}
-		return new CsvFilter();
-	}
-	
-	/** Generates a list of the top 100 matches for this project */
-	public void exportTo(File file) throws IOException
-	{		
-		// Prepare to export source and target node information
-		BufferedWriter out = new BufferedWriter(new FileWriter(file));
-
-		// Get the list of mapping cells
-		CompressedList matchList = new CompressedList();
-		for(MappingCell mappingCell : getModel().getMappingCellManager().getMappingCells())
-			matchList.addMappingCell(mappingCell);
-		
-		// Identify how many mapping cells should be outputted
-//		Integer count = ConfigManager.getIntegerParm("exporters.UserMatchAnotationExporter.count");
-//		if(count==null) count = 100;
-		// get Minimum Confidence Threshold
-		double minConfThreshold = getModel().getFilters().getMinConfThreshold();
-		
-		out.write(header+"\n");
-    	// Outputs the top mapping cells
-		List<CompressedMatch> matches = matchList.getMatches();
-		Collections.sort(matches);
-//		if(matches.size()>count) matches = matches.subList(0, count);
-  		for(CompressedMatch match : matches) {
- 
-  			if ((match.getScore() >= minConfThreshold ) || (match.getScore() < 0.0) )
-  				out.write(match.toString() + "\n");
-  		}
-    	out.close();
-	}
-
-	/** Gets paths for the specified element */
-	private HashSet<String> getPaths(Integer elementID)
-	{
-		HashSet<String> paths = new HashSet<String>();
-		for(Integer schemaID : getModel().getMappingManager().getSchemas())
-			for(ArrayList<SchemaElement> pathElements : getModel().getSchemaManager().getGraph(schemaID).getPaths(elementID))
-			{
-				StringBuffer path = new StringBuffer("");
-				for(SchemaElement element : pathElements)
-					path.append("/"+element.getName());
-				paths.add(path.toString());
-			}
-		return paths;				
-	}		
-
 }
