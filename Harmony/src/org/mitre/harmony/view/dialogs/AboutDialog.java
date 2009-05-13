@@ -41,7 +41,7 @@ public class AboutDialog extends JDialog implements MouseListener, MouseMotionLi
 		imagePane.add(new JLabel(new ImageIcon(image.getScaledInstance(75,75,Image.SCALE_SMOOTH))));
 
 		// Set up link to MITRE website
-		JLabel linkLabel = new JLabel("<html>The MITRE Corporation, McLean, VA, USA, <a href=www.mitre.org>www.mitre.org</a></html>");
+		JLabel linkLabel = new JLabel("<html>Developed by The MITRE Corporation, McLean, VA, USA, <a href=www.mitre.org>www.mitre.org</a></html>");
 		linkLabel.addMouseListener(this);
 		linkLabel.addMouseMotionListener(this);
 		
@@ -49,10 +49,10 @@ public class AboutDialog extends JDialog implements MouseListener, MouseMotionLi
 		JPanel textPane = new JPanel();
 		textPane.setBorder(new EmptyBorder(10,10,0,0));
 		textPane.setLayout(new BoxLayout(textPane,BoxLayout.PAGE_AXIS));
-		textPane.add(new JLabel("The Harmony Integration Workbench and Schema Matcher was developed by"));
 		textPane.add(linkLabel);
-		textPane.add(new JLabel("\u00a9 The MITRE Corporation 2006"));
+		textPane.add(new JLabel("\u00a9 The MITRE Corporation 2009"));
 		textPane.add(new JLabel("ALL RIGHTS RESERVED"));
+		textPane.add(new JLabel("Harmony is available for distribution under the terms of the Apache 2.0 license."));
 		
 		// Sets up pane with all info
 		JPanel pane = new JPanel();
@@ -72,21 +72,19 @@ public class AboutDialog extends JDialog implements MouseListener, MouseMotionLi
 		descPane.setLineWrap(true);
 		descPane.setWrapStyleWord(true);
 		descPane.setEditable(false);
-		descPane.setText("The Harmony Integration Workbench is a framework for coordinating multiple " +
-						 "schema integration tools.  Each such tool helps an integration engineer to " +
-						 "develop an executable mapping (for example, an SQL query) for translating " +
-						 "instances of a source schema into instances of a target schema.  The framework " +
-						 "includes a knowledge-base shared by the integration tools and an event model " +
-						 "for communication.\n\n" +
-						 "The Harmony Schema Matcher includes two tools: The Harmony Engine automatically " +
-						 "proposes candidate correspondences between source and target schema elements.  " +
-						 "The Harmony GUI allows an integration engineer to view a set of correspondences " +
-						 "and manually edit the correspondences.\n\n" +
-						 "The Harmony Integration Workbench and Schema Matcher are described in Peter " +
-						 "Mork, Arnon Rosenthal, Len Seligman, Joel Korb, Ken Samuel, “Integration " +
-						 "Workbench: Integrating Schema Integration Tools,” Second International Workshop " +
-						 "on Database Interoperability (InterDB ‘06) at the IEEE International Conference " +
-						 "on Data Engineering, Atlanta, GA, April 2006.");
+		descPane.setText("The Harmony Schema Matcher automatically proposes candidate correspondences " +
+						 "between source and target schema elements.  The Harmony GUI allows an integration " +
+						 "engineer to view a set of correspondences and manually edit the correspondences.  " +
+						 "Harmony manages user schemata and mappings in a bundled repository.\n\n" +
+						 "An overview of Harmony appears in: Peter Mork, Len Seligman, Arnon Rosenthal, " +
+						 "Joel Korb, and Chris Wolf, “The Harmony Integration Workbench,” Journal on Data " +
+						 "Semantics, vol. 11, pp. 65–93, Dec 2008.  Harmony’s use in large scale schema " +
+						 "matching problems is described in:  Ken Smith, Peter Mork, Len Seligman, Arnon " +
+						 "Rosenthal, Michael Morse, David M. Allen, and Maya Li, “The Role of Schema Matching " +
+						 "in Large Enterprises”, Conference on Innovative Database Research (CIDR ‘09), Jan 2009.\n\n" +
+						 "Harmony is a component of the OpenII (Open Information Integration) framework; OpenII " +
+						 "is a collaborative effort to create a suite of open-source tools for information " +
+						 "integration.  For more information, see openintegration.org.");
 
 		// Place description into a pane
 		JPanel pane = new JPanel();
@@ -143,7 +141,7 @@ public class AboutDialog extends JDialog implements MouseListener, MouseMotionLi
 	{
 		// Calculate out the location of the web link
 		Graphics g = getGraphics();
-		double min = g.getFontMetrics().getStringBounds("The MITRE Corporation, McLean, VA, USA, ",g).getWidth();
+		double min = g.getFontMetrics().getStringBounds("Developed by The MITRE Corporation, McLean, VA, USA, ",g).getWidth();
 		double max = min + g.getFontMetrics().getStringBounds("www.mitre.org",g).getWidth();
 
 		// Change the mouse cursor dependent on if mouse is over web link or not
