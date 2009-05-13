@@ -67,6 +67,7 @@ public abstract class MappingImporter extends Porter
 			// Import the mapping
 			Integer mappingID = client.saveMapping(mapping, getMappingCells());
 			mapping.setId(mappingID);
+			success = true;
 		}
 		catch(Exception e) {}
 
