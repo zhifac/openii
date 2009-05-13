@@ -10,6 +10,7 @@ import java.util.HashSet;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionEvent;
@@ -188,12 +189,15 @@ public class MergeMappingDialog extends Dialog implements ModifyListener
 		gridData.heightHint = 200;
 		pane.setLayoutData(gridData);
 
-		// Construct the pane for showing the schemas available for merging
-		Composite mappingPane = new Composite(pane, SWT.BORDER | SWT.V_SCROLL);
+		// Construct the scrolling pane for showing the mappings available for merging
+		ScrolledComposite scrolledPane = new ScrolledComposite(pane, SWT.BORDER | SWT.V_SCROLL);
+		scrolledPane.setLayoutData(new GridData(GridData.FILL_BOTH));
+
+		// Creates a mapping pane
+		Composite mappingPane = new Composite(scrolledPane, SWT.NONE);
 		mappingPane.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 		mappingPane.setLayout(new GridLayout(1,false));
-		mappingPane.setLayoutData(new GridData(GridData.FILL_BOTH));
-
+		
 		// Display the mappings to choose from
 		HashMap<String,ArrayList<Mapping>> mappings = getMappings();
 		for(String key : mappings.keySet())
@@ -214,10 +218,16 @@ public class MergeMappingDialog extends Dialog implements ModifyListener
 			label.setFont(new Font(Display.getCurrent(),"Arial",8,SWT.BOLD));
 			label.setText("Schemas: " + key);
 			
-			// Generate the checkboxes for the list of mappings
+			// Generate the check boxes for the list of mappings
 			for(Mapping mapping : OpenIIManager.sortList(mappingList))
 				checkboxes.add(new MappingCheckbox(mappingPane, mapping));
 		}
+
+		// Adjust scroll panes to fit content
+		scrolledPane.setContent(mappingPane);
+		scrolledPane.setExpandVertical(true);
+		scrolledPane.setExpandHorizontal(true);
+		scrolledPane.setMinSize(mappingPane.computeSize(SWT.DEFAULT, SWT.DEFAULT));
 	}
 	
 	/** Creates the contents for the Import Schema Dialog */
