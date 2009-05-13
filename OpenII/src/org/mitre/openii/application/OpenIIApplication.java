@@ -2,6 +2,7 @@ package org.mitre.openii.application;
 
 import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
@@ -26,6 +27,7 @@ public class OpenIIApplication implements IApplication
 		{
 			super.createWindowContents(shell);
 			shell.setImage(OpenIIActivator.getImage("OpenII.gif"));
+			Window.setDefaultImage(OpenIIActivator.getImage("OpenII.gif"));
 		}
 
 		/** Constructs the workbench window advisor */
