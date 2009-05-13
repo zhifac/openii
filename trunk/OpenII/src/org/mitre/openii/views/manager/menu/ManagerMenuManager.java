@@ -121,6 +121,7 @@ public class ManagerMenuManager extends MenuManager implements IMenuListener
 		if(element instanceof String && element.equals("Mappings"))
 		{
 			menuManager.add(new ManagerAction(this,"New Mapping",ManagerAction.NEW_MAPPING));
+			menuManager.add(new ManagerAction(this,"Import Mapping",ManagerAction.IMPORT_MAPPING));
 			menuManager.add(new ManagerAction(this,"Merge Mappings",ManagerAction.MERGE_MAPPINGS));
 		}
 

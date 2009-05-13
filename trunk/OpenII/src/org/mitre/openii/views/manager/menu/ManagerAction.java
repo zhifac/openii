@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.mitre.openii.application.OpenIIActivator;
 import org.mitre.openii.model.OpenIIManager;
@@ -15,6 +16,7 @@ import org.mitre.openii.views.manager.dialogs.mappings.DeleteMappingDialog;
 import org.mitre.openii.views.manager.dialogs.mappings.EditMappingDialog;
 import org.mitre.openii.views.manager.dialogs.mappings.ExportMappingDialog;
 import org.mitre.openii.views.manager.dialogs.mappings.MergeMappingDialog;
+import org.mitre.openii.views.manager.dialogs.mappings.importer.ImportMappingWizard;
 import org.mitre.openii.views.manager.dialogs.schemas.DeleteSchemaDialog;
 import org.mitre.openii.views.manager.dialogs.schemas.EditSchemaDialog;
 import org.mitre.openii.views.manager.dialogs.schemas.ExportSchemaDialog;
@@ -37,11 +39,12 @@ public class ManagerAction extends Action
 	static final int DELETE_GROUP = 7;
 	static final int DELETE_GROUP_SCHEMA = 8;
 	static final int NEW_MAPPING = 9;
-	static final int MERGE_MAPPINGS = 10;
-	static final int EDIT_MAPPING = 11;
-	static final int EXPORT_MAPPING = 12;
-	static final int DELETE_MAPPING = 13;
-	static final int DELETE_MAPPING_SCHEMA = 14;
+	static final int IMPORT_MAPPING = 10;
+	static final int MERGE_MAPPINGS = 11;
+	static final int EDIT_MAPPING = 12;
+	static final int EXPORT_MAPPING = 13;
+	static final int DELETE_MAPPING = 14;
+	static final int DELETE_MAPPING_SCHEMA = 15;
 	
 	/** Stores the menu manager to which this action is tied */
 	private ManagerMenuManager menuManager;
@@ -71,6 +74,7 @@ public class ManagerAction extends Action
 			case DELETE_GROUP: icon = "Delete.gif"; break;
 			case DELETE_GROUP_SCHEMA: icon = "Delete.gif"; break;
 			case NEW_MAPPING: icon = "Mapping.gif"; break;
+			case IMPORT_MAPPING: icon = "Import.gif"; break;
 			case MERGE_MAPPINGS: icon = "Merge.gif"; break;
 			case EDIT_MAPPING: icon = "Edit.gif"; break;
 			case EXPORT_MAPPING: icon = "Export.gif"; break;
@@ -145,6 +149,10 @@ public class ManagerAction extends Action
 		/** Handles the addition of a mapping */
 		if(actionType == NEW_MAPPING)
 			new EditMappingDialog(shell,null).open();
+		
+		/** Handles the import of a mapping */
+		if(actionType == IMPORT_MAPPING)
+			new WizardDialog(shell,new ImportMappingWizard()).open();
 
 		/** Handles the merging of mappings */
 		if(actionType == MERGE_MAPPINGS)
