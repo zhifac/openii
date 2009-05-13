@@ -43,7 +43,7 @@ public class EditSchemaDialog extends Dialog implements ModifyListener
 	{
 		super.configureShell(shell);
 		shell.setImage(OpenIIActivator.getImage("Schema.gif"));
-		shell.setText("Edit Schema");
+		shell.setText("Edit Schema Properties");
 	}
 
 	/** Creates the schema info pane */
