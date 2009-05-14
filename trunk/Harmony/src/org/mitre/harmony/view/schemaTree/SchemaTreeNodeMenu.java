@@ -13,6 +13,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.filters.FilterManager;
 import org.mitre.harmony.model.filters.Focus;
+import org.mitre.harmony.view.dialogs.SchemaPropertiesDialog;
 import org.mitre.harmony.view.dialogs.SchemaStatisticsDialog;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
@@ -42,6 +43,7 @@ class SchemaTreeNodeMenu extends JPopupMenu implements ActionListener
 	private JMenuItem markUnfinished = new JMenuItem("Mark as Unfinished");
 	private JMenuItem markFinished = new JMenuItem("Mark as Finished");
 	private JMenuItem statistics = new JMenuItem("View Statistics");
+	private JMenuItem properties = new JMenuItem("Properties");
 	
 	/** Initialize the popup menu when a tree node is selected */
 	SchemaTreeNodeMenu(SchemaTree tree, DefaultMutableTreeNode node, HarmonyModel harmonyModel)
@@ -110,6 +112,7 @@ class SchemaTreeNodeMenu extends JPopupMenu implements ActionListener
 			// Place menu option for editing the schema
 			add(new JSeparator());
 			add(statistics);
+			add(properties);
 		}
 		
 		// Add listeners to all menu items
@@ -123,6 +126,7 @@ class SchemaTreeNodeMenu extends JPopupMenu implements ActionListener
 		markUnfinished.addActionListener(this);
 		markFinished.addActionListener(this);
 		statistics.addActionListener(this);		
+		properties.addActionListener(this);
 	}
 	
 	/**
@@ -155,9 +159,10 @@ class SchemaTreeNodeMenu extends JPopupMenu implements ActionListener
 		
 		// Handles the viewing of schema statistics
 		if(e.getSource()==statistics)
-		{
-			Schema schema = (Schema)node.getUserObject();
-			new SchemaStatisticsDialog(schema.getId(),harmonyModel);
-		}
+			new SchemaStatisticsDialog(((Schema)node.getUserObject()).getId(),harmonyModel);
+
+		// Handles the viewing of schema properties
+		if(e.getSource()==properties)
+			new SchemaPropertiesDialog(((Schema)node.getUserObject()).getId(),harmonyModel);
 	}
 }
