@@ -57,11 +57,11 @@ public class ExportSchemaDialog
 				out.write(buffer.toString());
 				out.close();
 			}
-			catch(Exception e2)
+			catch(Exception e)
 			{
 				MessageBox message = new MessageBox(shell,SWT.ERROR);
 				message.setText("Schema Export Error");
-				message.setMessage("Unable to export schema to specified file!");
+				message.setMessage("Failed to export schema. " + e.getMessage());
 				message.open();
 			}
         }
