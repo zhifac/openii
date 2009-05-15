@@ -255,8 +255,8 @@ public class ImportSchemaDialog extends TitleAreaDialog implements ISelectionCha
 				OpenIIManager.fireSchemaAdded(schema); getShell().dispose();
 			}
 		}
-		catch(Exception e2) {}
-		setErrorMessage("Failed to import schema");
+		catch(Exception e)
+			{ setErrorMessage("Failed to import schema. " + e.getMessage()); }
 	}
 	
 	// Unused listener event

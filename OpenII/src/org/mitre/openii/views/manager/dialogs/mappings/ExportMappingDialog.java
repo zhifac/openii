@@ -47,11 +47,11 @@ public class ExportMappingDialog
 	        	MappingExporter exporter = exporters.get(dialog.getFilterIndex());
 	        	exporter.exportMapping(mapping, OpenIIManager.getMappingCells(mapping.getId()), new File(filename));
 			}
-			catch(Exception e2)
+			catch(Exception e)
 			{
 				MessageBox message = new MessageBox(shell,SWT.ERROR);
 				message.setText("Mapping Export Error");
-				message.setMessage("Unable to export mapping to specified file!");
+				message.setMessage("Failed to export mapping. " + e.getMessage());
 				message.open();
 			}
         }
