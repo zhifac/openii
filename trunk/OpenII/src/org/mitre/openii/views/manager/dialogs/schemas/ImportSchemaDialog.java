@@ -11,7 +11,6 @@ import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.StackLayout;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionEvent;
@@ -22,12 +21,12 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Group;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.mitre.openii.application.OpenIIActivator;
 import org.mitre.openii.model.OpenIIManager;
 import org.mitre.openii.views.manager.dialogs.DialogComponents;
+import org.mitre.openii.views.manager.dialogs.URIField;
 import org.mitre.schemastore.porters.PorterManager;
 import org.mitre.schemastore.porters.schemaImporters.SchemaImporter;
 import org.mitre.schemastore.model.Schema;
@@ -40,14 +39,7 @@ public class ImportSchemaDialog extends TitleAreaDialog implements ISelectionCha
 	private Text nameField = null;
 	private Text authorField = null;
 	private Text descriptionField = null;
-	private Composite uriPane = null;
-	private StackLayout uriLayout = null;
-	private Label uriLabel = null;
-	private Text fileField = null;
-	private Text uriField = null;
-	
-	/** Keeps track of if the file is valid */
-	private boolean validFile = false;
+	private URIField uriField = null;
 	
 	/** Constructs the dialog */
 	public ImportSchemaDialog(Shell parentShell)
@@ -95,30 +87,13 @@ public class ImportSchemaDialog extends TitleAreaDialog implements ISelectionCha
 		nameField = DialogComponents.createTextField(group,"Name");
 		authorField = DialogComponents.createTextField(group,"Author");
 		descriptionField = DialogComponents.createTextField(group,"Description",4);
-
-		// Generate the uri pane
-		uriLabel = DialogComponents.createLabel(group, "File");
-		uriPane = new Composite(group, SWT.NONE);
-		uriPane.setLayout(uriLayout = new StackLayout());
-		uriPane.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-
-		// Create file field
-		fileField = DialogComponents.createFile(uriPane,this);
-
-		// Create uri field
-		Composite uriFieldPane = new Composite(uriPane, SWT.NONE);
-		GridLayout layout = new GridLayout(1, false);
-		layout.marginWidth = 0;
-		layout.marginHeight = 2;
-		uriFieldPane.setLayout(layout);
-		uriField = DialogComponents.createText(uriFieldPane,null);
+		uriField = new URIField(group, this);
 		
 		// Add listeners to the fields to monitor for changes
 		nameField.addModifyListener(this);
 		authorField.addModifyListener(this);
 		descriptionField.addModifyListener(this);
-		fileField.addModifyListener(this);
-		uriField.addModifyListener(this);
+		uriField.getTextField().addModifyListener(this);
 	}
 	
 	/** Creates the dialog area for the Import Schema Dialog */
@@ -149,7 +124,7 @@ public class ImportSchemaDialog extends TitleAreaDialog implements ISelectionCha
 		// Make the default importer selections
 		importerList.getCombo().select(0);
 		updateFields();
-		fileField.setFocus();
+		uriField.getTextField().setFocus();
 		
 		return control;
 	}
@@ -167,18 +142,15 @@ public class ImportSchemaDialog extends TitleAreaDialog implements ISelectionCha
 			{ nameField.setText(""); authorField.setText(""); descriptionField.setText(""); }
 		else if(authorField.getText().equals(""))
 			authorField.setText(System.getProperty("user.name"));
-		fileField.setText(""); uriField.setText("");
+		uriField.getTextField().setText("");
 		
 		// Disable fields as needed in case of archive exporter
 		nameField.setEnabled(!archiveImporter);
 		authorField.setEnabled(!archiveImporter);
 		descriptionField.setEnabled(!archiveImporter);
 		
-		// Display file field or uri depending on importer type
-		uriLabel.setText(uriImporter ? "URI: " : "File: ");
-		uriLayout.topControl = uriPane.getChildren()[uriImporter?1:0];
-		uriPane.layout();
-		validFile=uriImporter;
+		// Display file field or URI depending on importer type
+		uriField.setMode(uriImporter ? URIField.URI : URIField.FILE);
 	}	
 	
 	/** Handles changes to the selected importer */
@@ -205,30 +177,28 @@ public class ImportSchemaDialog extends TitleAreaDialog implements ISelectionCha
 		
 		// Launch the dialog to retrieve the specified file to load from
         String filename = dialog.open();
-        if(filename != null) fileField.setText(filename);
+        if(filename != null) uriField.getTextField().setText(filename);
 	}
 
 	/** Handles modifications to the various text fields */
 	public void modifyText(ModifyEvent e)
 	{   
 		// Check the validity of the file field
-		if(e.getSource().equals(fileField))
+		Text uriText = uriField.getTextField();
+		if(e.getSource().equals(uriText))
 		{
 			setErrorMessage(null);
-			if(fileField.getText().length()>0)
-			{
-				validFile = new File(fileField.getText()).exists();
-				setErrorMessage(validFile ? null : "A valid file must be selected");
-			}
+			if(uriField.getTextField().getText().length()>0)
+				setErrorMessage(uriField.isValid() ? null : "A valid file must be selected");
 		}
 		
 		// Update name, author, and description info when archive file modified
 		SchemaImporter importer = (SchemaImporter)((StructuredSelection)importerList.getSelection()).getFirstElement();
-		if(e.getSource().equals(fileField) && importer.getURIType()==SchemaImporter.ARCHIVE)
+		if(e.getSource().equals(uriText) && importer.getURIType()==SchemaImporter.ARCHIVE)
 			try {
-				if(validFile)
+				if(uriField.isValid())
 				{
-					Schema schema = importer.generateSchema(new File(fileField.getText()).toURI());
+					Schema schema = importer.generateSchema(new File(uriText.getText()).toURI());
 					nameField.setText(schema.getName());
 					authorField.setText(schema.getAuthor());
 					descriptionField.setText(schema.getDescription());
@@ -237,9 +207,11 @@ public class ImportSchemaDialog extends TitleAreaDialog implements ISelectionCha
 			} catch(Exception e2) {}
 		
 		// Determine if the OK button should be activated
-		boolean activate = nameField.getText().length()>0 && authorField.getText().length()>0 && descriptionField.getText().length()>0;
-		activate &= importer.getURIType()==SchemaImporter.URI ? uriField.getText().length()>0 : fileField.getText().length()>0;
-		getButton(IDialogConstants.OK_ID).setEnabled(activate && validFile);
+		boolean activate = nameField.getText().length()>0;
+		activate &= authorField.getText().length()>0;
+		activate &= descriptionField.getText().length()>0;
+		activate &= uriText.getText().length()>0;
+		getButton(IDialogConstants.OK_ID).setEnabled(activate && uriField.isValid());
 	}
 	
 	/** Handles the actual import of the specified file */
@@ -247,7 +219,7 @@ public class ImportSchemaDialog extends TitleAreaDialog implements ISelectionCha
 	{
 		try {
 			SchemaImporter importer = (SchemaImporter)((StructuredSelection)importerList.getSelection()).getFirstElement();
-			URI uri = importer.getURIType()==SchemaImporter.URI ? new URI(uriField.getText()) : new File(fileField.getText()).toURI();
+			URI uri = uriField.getURI();
 			Integer schemaID = importer.importSchema(nameField.getText(), authorField.getText(), descriptionField.getText(), uri);
 			if(schemaID!=null)
 			{
