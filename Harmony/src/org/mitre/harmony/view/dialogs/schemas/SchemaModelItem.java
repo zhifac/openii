@@ -33,7 +33,6 @@ class SchemaModelItem extends JPanel
 		this.schema = schema;
 		
 		// Initialize the model selection box
-		modelSelection.setFocusable(false);
 		modelSelection.setOpaque(false);
 		modelSelection.setPreferredSize(new Dimension(80,20));
 		modelSelection.addItem("<Default>");
