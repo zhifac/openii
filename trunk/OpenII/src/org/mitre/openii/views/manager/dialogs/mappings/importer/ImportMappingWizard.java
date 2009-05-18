@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.ArrayList;
 
 import org.eclipse.jface.wizard.Wizard;
+import org.eclipse.jface.wizard.WizardPage;
 import org.mitre.openii.application.OpenIIActivator;
 import org.mitre.openii.model.OpenIIManager;
 import org.mitre.schemastore.model.Mapping;
@@ -65,7 +66,12 @@ public class ImportMappingWizard extends Wizard
 				OpenIIManager.fireMappingAdded(mapping); getShell().dispose();
 				return true;
 			}
-		} catch(Exception e) { System.out.println(e.getMessage()); }
+		}
+		catch(Exception e)
+		{
+			WizardPage page = (WizardPage)getPage("SchemasPage");
+			page.setErrorMessage("Failed to import mapping. " + e.getMessage());
+		}
 		return false;
 	}
 }

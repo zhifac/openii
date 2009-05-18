@@ -71,8 +71,9 @@ public class URIField implements ModifyListener
 	/** Sets the URI field mode */
 	public void setMode(Integer mode)
 	{
-		// Update the mode
+		// Update the URI field mode
 		uriLabel.setText(mode==URI ? "URI: " : "File: ");
+		uriField.setText("");
 		checkURIValidity();
 
 		// Eliminate file button when changed to URI mode
@@ -85,6 +86,7 @@ public class URIField implements ModifyListener
 
 		// Layout the adjusted pane
 		((GridLayout)uriPane.getLayout()).numColumns = mode.equals(URI) ? 1 : 2;
+		((GridLayout)uriPane.getLayout()).marginHeight = mode.equals(URI) ? 2 : 0;
 		uriPane.layout(true);
 	}
 	
@@ -94,7 +96,7 @@ public class URIField implements ModifyListener
 	
 	/** Returns the URI */
 	public URI getURI() throws URISyntaxException
-		{ return uriButton.isVisible() ? new File(uriField.getText()).toURI() : new URI(uriField.getText()); }
+ 		{ return uriButton==null ? new URI(uriField.getText()) : new File(uriField.getText()).toURI(); }
 
 	/** Handles modifications to the various text fields */
 	public void modifyText(ModifyEvent e)
