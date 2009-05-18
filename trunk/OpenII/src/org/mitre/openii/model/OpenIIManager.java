@@ -35,7 +35,7 @@ public class OpenIIManager
 		// Connect to the repository
 		try {
 			File file = new File(OpenIIActivator.getBundleFile(),"SchemaStore.jar");
-			if(!file.exists()) file = new File(OpenIIActivator.getBundleFile(),"lib/SchemaStore.jar");
+			if(!file.exists()) file = new File(OpenIIActivator.getBundleFile(),"../../SchemaStore.jar");
 			client = new SchemaStoreClient(file.getAbsolutePath());
 //			client = new SchemaStoreClient("http://ygg:8080/SchemaStoreForDemo/services/SchemaStore");
 		}
