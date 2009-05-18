@@ -28,10 +28,17 @@ import java.util.ArrayList;
 /** Abstract Mapping Importer class */
 public abstract class MappingImporter extends Porter
 {
+	// Defines the various types of URIs that may be requested
+	public static final Integer FILE = 0;
+	public static final Integer URI = 1;
+	
 	/** Stores the URI being imported */
 	protected URI uri;
 	
-	/** Returns the importer URI file types */
+	/** Returns the importer URI type */
+	abstract public Integer getURIType();
+	
+	/** Returns the importer URI file types (only needed when URI type is FILE) */
 	public ArrayList<String> getFileTypes() { return new ArrayList<String>(); }
 	
 	/** Initializes the importer */
