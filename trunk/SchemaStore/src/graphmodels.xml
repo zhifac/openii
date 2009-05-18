@@ -1,5 +1,5 @@
 <graphModels>
-  <graphModel>org.mitre.schemastore.model.graph.ContainmentGraphModel</graphModel>
+  <graphModel>org.mitre.schemastore.model.graph.XMLGraphModel</graphModel>
   <graphModel>org.mitre.schemastore.model.graph.RelationalGraphModel</graphModel>
   <graphModel>org.mitre.schemastore.model.graph.DomainGraphModel</graphModel>
   <graphModel>org.mitre.schemastore.model.graph.RMapGraphModel</graphModel>

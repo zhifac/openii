@@ -90,7 +90,7 @@ public class HierarchicalGraph extends Graph
 			
 			// Identify which model to use
 			if(domainCount.equals(totalCount)) model = new DomainGraphModel();
-			else if(containmentCount>0) model = new ContainmentGraphModel();
+			else if(containmentCount>0) model = new XMLGraphModel();
 			else model = new RelationalGraphModel();
 		}
 		this.model = model;
