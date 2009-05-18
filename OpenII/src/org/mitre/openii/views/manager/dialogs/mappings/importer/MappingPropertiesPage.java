@@ -1,6 +1,5 @@
 package org.mitre.openii.views.manager.dialogs.mappings.importer;
 
-import java.io.File;
 import java.net.URI;
 import java.util.ArrayList;
 
@@ -22,6 +21,7 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Text;
 import org.mitre.openii.model.OpenIIManager;
 import org.mitre.openii.views.manager.dialogs.DialogComponents;
+import org.mitre.openii.views.manager.dialogs.URIField;
 import org.mitre.schemastore.porters.PorterManager;
 import org.mitre.schemastore.porters.mappingImporters.MappingImporter;
 
@@ -35,15 +35,12 @@ public class MappingPropertiesPage extends WizardPage implements ISelectionChang
 	private Text nameField = null;
 	private Text authorField = null;
 	private Text descriptionField = null;
-	private Text fileField = null;
-
-	/** Indicates if a valid file is currently given */
-	private boolean validFile = false;
+	private URIField uriField = null;
 	
 	/** Constructor for the Mapping Properties pane */
 	public MappingPropertiesPage()
 	{
-		super("ImportPage");
+		super("PropertiesPage");
 		setTitle("Import Mapping");
 		setDescription("Import a mapping from a file");
 	}
@@ -78,16 +75,13 @@ public class MappingPropertiesPage extends WizardPage implements ISelectionChang
 		nameField = DialogComponents.createTextField(group,"Name");
 		authorField = DialogComponents.createTextField(group,"Author");
 		descriptionField = DialogComponents.createTextField(group,"Description",4);
-
-		// Generate the uri pane
-		DialogComponents.createLabel(group, "File");
-		fileField = DialogComponents.createFile(group,this);
+		uriField = new URIField(group,this);
 		
 		// Add listeners to the fields to monitor for changes
 		nameField.addModifyListener(this);
 		authorField.addModifyListener(this);
 		descriptionField.addModifyListener(this);
-		fileField.addModifyListener(this);
+		uriField.getTextField().addModifyListener(this);
 	}
 	
 	/** Constructs the Mapping Properties page */
@@ -105,7 +99,7 @@ public class MappingPropertiesPage extends WizardPage implements ISelectionChang
 		// Make the default importer selections
 		importerList.getCombo().select(0);
 		updateFields();
-		fileField.setFocus();
+		uriField.getTextField().setFocus();
 		
 		// Displays the control
 		setControl(pane);
@@ -129,14 +123,18 @@ public class MappingPropertiesPage extends WizardPage implements ISelectionChang
 	
 	/** Returns the specified URI */
 	URI getURI()
-		{ return new File(fileField.getText()).toURI(); }
+		{ try { return uriField.getURI(); } catch(Exception e) { return null; } }
 	
 	/** Handles the updating of the fields based on the selected importer */
 	public void updateFields()
 	{
+		// Retrieve the selected importer
+		MappingImporter importer = (MappingImporter)((StructuredSelection)importerList.getSelection()).getFirstElement();
+		boolean uriImporter = importer.getURIType()==MappingImporter.URI;
+
+		// Update the fields as needed
 		if(authorField.getText().equals("")) authorField.setText(System.getProperty("user.name"));
-		fileField.setText("");
-	}	
+		uriField.setMode(uriImporter ? URIField.URI : URIField.FILE);	}	
 	
 	/** Handles changes to the selected importer */
 	public void selectionChanged(SelectionChangedEvent e)
@@ -162,28 +160,24 @@ public class MappingPropertiesPage extends WizardPage implements ISelectionChang
 		
 		// Launch the dialog to retrieve the specified file to load from
         String filename = dialog.open();
-        if(filename != null) fileField.setText(filename);
+        if(filename != null) uriField.getTextField().setText(filename);
 	}
 
 	/** Handles modifications to the various text fields */
 	public void modifyText(ModifyEvent e)
 	{   
 		// Check the validity of the file field
-		if(e.getSource().equals(fileField))
+		if(e.getSource().equals(uriField.getTextField()))
 		{
 			setErrorMessage(null);
-			if(fileField.getText().length()>0)
-			{
-				validFile = new File(fileField.getText()).exists();
-				setErrorMessage(validFile ? null : "A valid file must be selected");
-			}
+			if(uriField.getTextField().getText().length()>0)
+				setErrorMessage(uriField.isValid() ? null : "A valid file must be selected");
 			((ImportMappingWizard)getWizard()).getSchemasPage().setPageComplete(false);
 		}
 		
 		// Determine if the OK button should be activated
 		boolean completed = nameField.getText().length()>0 && authorField.getText().length()>0 && descriptionField.getText().length()>0;
-		completed &= fileField.getText().length()>0;
-		setPageComplete(completed && validFile);
+		setPageComplete(completed && uriField.isValid());
 	}
 	
 	// Unused listener event
