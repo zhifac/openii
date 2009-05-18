@@ -10,13 +10,13 @@ import org.mitre.schemastore.model.Domain;
 import org.mitre.schemastore.model.SchemaElement;
 
 /**
- *  Class for displaying containment hierarchy
+ *  Class for displaying XML hierarchy
  */
-public class ContainmentGraphModel extends GraphModel
+public class XMLGraphModel extends GraphModel
 {
 	/** Returns the graph model name */
 	public String getName()
-		{ return "Containment"; }
+		{ return "XML"; }
 	
 	/** Returns the root elements in this graph */
 	public ArrayList<SchemaElement> getRootElements(HierarchicalGraph graph)
