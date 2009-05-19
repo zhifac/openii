@@ -14,6 +14,7 @@ import javax.swing.JTextPane;
 import javax.swing.border.EmptyBorder;
 
 import org.mitre.harmony.model.HarmonyModel;
+import org.mitre.harmony.model.search.SearchListener;
 import org.mitre.harmony.model.selectedInfo.SelectedInfoListener;
 import org.mitre.schemastore.model.Domain;
 import org.mitre.schemastore.model.DomainValue;
@@ -24,7 +25,7 @@ import org.mitre.schemastore.model.graph.HierarchicalGraph;
  * Pane used to display source or target node info in the NodeInfoPane
  * @author CWOLF
  */
-class SelectedNodePane extends JPanel implements SelectedInfoListener
+class SelectedNodePane extends JPanel implements SelectedInfoListener, SearchListener
 {
 	/** Defines the color for the blue background */
 	static private final Color BLUE = new Color(100,100,255);
@@ -75,6 +76,7 @@ class SelectedNodePane extends JPanel implements SelectedInfoListener
 		
 		// Add listeners to monitor for changes to the selected elements
 		harmonyModel.getSelectedInfo().addListener(this);
+		harmonyModel.getSearchManager().addListener(this);
 	}
 
 	/** Generates the text to display in the text pane */
@@ -83,7 +85,11 @@ class SelectedNodePane extends JPanel implements SelectedInfoListener
  		StringBuffer text = new StringBuffer();		
 		
 		// Display schema element name and description
-		text.append("<b>Description</b>: " + scrub(element.getDescription()) + "<br>");
+ 		String description = scrub(element.getDescription());
+ 		String query = harmonyModel.getSearchManager().getQuery(side);
+ 		if(query.length()>0)
+ 			description = description.replaceAll(query, "<font style='BACKGROUND-COLOR: #ffffb3'>$0</font>");
+		text.append("<b>Description</b>: " + description + "<br>");
 
 		// Collect domain information
 		Domain domain = null;
@@ -114,13 +120,13 @@ class SelectedNodePane extends JPanel implements SelectedInfoListener
 	}
 	
 	/** Activates visibility of this pane */
-	public void displayedElementModified(Integer role)
+	public void displayedElementModified(Integer side)
 	{
 		// Only proceed if referring modified displayed element is on same side as selected node pane
-		if(!role.equals(this.side)) return;
+		if(!side.equals(this.side)) return;
 		
 		// Make the pane visible as needed
-		Integer elementID = harmonyModel.getSelectedInfo().getDisplayedElement(role);
+		Integer elementID = harmonyModel.getSelectedInfo().getDisplayedElement(side);
 		if(elementID==null) { setVisible(false); return; }
 		SchemaElement element = harmonyModel.getSchemaManager().getSchemaElement(elementID);
 		setVisible(true);
@@ -143,6 +149,10 @@ class SelectedNodePane extends JPanel implements SelectedInfoListener
 		titlePane.setText(scrub(displayName));
 		textPane.setText("<html>"+getText(element,displayName)+"</html>");
 	}
+	
+	/** Handles changes to the search results */
+	public void searchResultsModified(Integer side)
+		{ displayedElementModified(side); }
 	
 	// Unused event listeners
 	public void selectedElementsModified(Integer role) {}

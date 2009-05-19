@@ -31,7 +31,11 @@ public class SearchManager extends AbstractManager<SearchListener> implements Se
 	public SearchManager(HarmonyModel harmonyModel)
 		{ super(harmonyModel); }
 	
-	/** Returns the result for the specified element */
+	/** Returns the query for the specified side */
+	public String getQuery(Integer side)
+		{ return side.equals(HarmonyConsts.LEFT) ? leftQuery : rightQuery; }
+	
+	/** Returns the result for the specified element and side */
 	public SearchResult getResult(Integer elementID, Integer side)
 		{ return getMatches(side).get(elementID); }
 	
@@ -42,6 +46,9 @@ public class SearchManager extends AbstractManager<SearchListener> implements Se
 	/** Runs the specified query */
 	public void runQuery(Integer side, String query)
 	{
+		// Set the query
+		if(side.equals(HarmonyConsts.LEFT)) leftQuery = query; else rightQuery = query;
+		
 		// Retrieve the list of matches
 		HashMap<Integer,SearchResult> matches = side==HarmonyConsts.LEFT ? leftMatches : rightMatches;
 		matches.clear();
