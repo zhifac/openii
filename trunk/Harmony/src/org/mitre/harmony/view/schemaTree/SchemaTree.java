@@ -13,7 +13,6 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Vector;
@@ -24,7 +23,6 @@ import javax.swing.ToolTipManager;
 import javax.swing.plaf.metal.MetalTreeUI;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.DefaultTreeSelectionModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
@@ -33,8 +31,6 @@ import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.filters.Focus;
 import org.mitre.harmony.model.mapping.MappingCellManager;
 import org.mitre.harmony.model.preferences.PreferencesListener;
-import org.mitre.harmony.model.search.SearchListener;
-import org.mitre.harmony.model.search.SearchResult;
 import org.mitre.harmony.model.selectedInfo.SelectedInfoListener;
 import org.mitre.harmony.view.dialogs.schemas.SchemaDialog;
 import org.mitre.schemastore.model.MappingCell;
@@ -44,29 +40,8 @@ import org.mitre.schemastore.model.Schema;
  * Creates the source or target schema tree 
  * @author CWOLF
  */
-public class SchemaTree extends JTree implements PreferencesListener, SelectedInfoListener, SearchListener, MouseListener, MouseMotionListener
-{
-	/**
-	 * Blocks user from selecting tree nodes
-	 * @author CWOLF
-	 */
-	class SchemaTreeSelectionModel extends DefaultTreeSelectionModel
-	{	
-		/**
-		 * Selects the specified schema tree paths
-		 * @param paths Paths of the schema tree being selected
-		 */
-		void selectSchemaTreeNodes(TreePath[] paths) { super.setSelectionPaths(paths); }
-		
-		// Override these options to prevent user selection of tree nodes
-		public void addSelectionPaths(TreePath[] paths) {}
-		public void setSelectionPaths(TreePath[] paths) {}
-		public void addSelectionPath(TreePath path) {}
-		public void removeSelectionPath(TreePath path) {}
-		public void removeSelectionPaths(TreePath[] paths) {}
-		public void setSelectionPath(TreePath path) {}
-	}
-	
+public class SchemaTree extends JTree implements PreferencesListener, SelectedInfoListener, MouseListener, MouseMotionListener
+{	
 	/**
 	 * Prevents the root node from being expanded or collapsed
 	 */
@@ -227,7 +202,7 @@ public class SchemaTree extends JTree implements PreferencesListener, SelectedIn
 		setCellRenderer(new SchemaTreeRenderer(harmonyModel));
 		setModel(new DefaultTreeModel(root));
 		setUI(new SchemaTreeUI());
-		setSelectionModel(new SchemaTreeSelectionModel());
+		setSelectionModel(null);
 
 		// Set up the schema tree schemas
 		SchemaTreeGenerator.initialize(this);
@@ -242,7 +217,6 @@ public class SchemaTree extends JTree implements PreferencesListener, SelectedIn
 		addMouseMotionListener(this);
 		harmonyModel.getPreferences().addListener(this);
 		harmonyModel.getSelectedInfo().addListener(this);
-		harmonyModel.getSearchManager().addListener(this);
 	}
 
 	/** Returns the side associated with this schema tree */
@@ -287,7 +261,7 @@ public class SchemaTree extends JTree implements PreferencesListener, SelectedIn
 		{ return (node.getUserObject() instanceof Integer) ? (Integer)(node.getUserObject()) : null; }
 	
 	/** Returns the schema node associated with the provided path */
-	public Integer getNode(TreePath path)
+	public Integer getElement(TreePath path)
 		{ return (Integer)((DefaultMutableTreeNode)path.getLastPathComponent()).getUserObject(); }
 	
 	/** Expands the specified tree path */
@@ -426,14 +400,6 @@ public class SchemaTree extends JTree implements PreferencesListener, SelectedIn
 	/** Returns vector of all schema node tree locations */
 	public ArrayList<DefaultMutableTreeNode> getComponentNodes(Integer node)
 		{ return schemaTreeHash.get(node); }
-
-	/** Handles the selection of schema tree nodes */
-	public void selectSchemaTreeNodes(TreePath[] paths)
-	{
-		((SchemaTreeSelectionModel)getSelectionModel()).selectSchemaTreeNodes(paths);
-		for(SchemaTreeListener treeListener : treeListeners)
-			treeListener.schemaDisplayModified(this);
-	}
 	
 	/** Handles changes to the displayed schemas */
 	public void selectedSchemasModified()
@@ -451,37 +417,6 @@ public class SchemaTree extends JTree implements PreferencesListener, SelectedIn
 		for(Integer newSchemaID : newSchemaIDs)
 			if(!currSchemaIDs.contains(newSchemaID))
 				SchemaTreeGenerator.addSchema(this, newSchemaID, harmonyModel);
-	}
-
-	/** Handles updates to the search results */
-	public void searchResultsModified(Integer side)
-	{
-		// Only update search results if associated with the proper side
-		if(this.side.equals(side))
-		{
-			// Initializes the list of selected paths
-			Vector<TreePath> selPaths = new Vector<TreePath>();
-			
-			// Gets the matched elements
-			HashMap<Integer,SearchResult> matches = harmonyModel.getSearchManager().getMatches(side);
-			
-			// Select the match IDs
-			Enumeration subNodes = root.depthFirstEnumeration();
-			while(subNodes.hasMoreElements())
-			{
-				DefaultMutableTreeNode node = (DefaultMutableTreeNode)subNodes.nextElement();
-				if(!node.isRoot() && node.getUserObject() instanceof Integer)
-					if(matches.containsKey(node.getUserObject()))
-					{
-						TreePath path = new TreePath(node.getPath());
-						selPaths.add(path);
-						expandFullPath(path);
-					}
-			}
-			
-			// Select all tree nodes which match search criteria
-			selectSchemaTreeNodes(selPaths.toArray(new TreePath[0]));
-		}
 	}
 	
 	/** Handles changes to the specified schema's graph model */
