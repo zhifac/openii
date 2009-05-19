@@ -23,7 +23,7 @@ public class ControlPane extends JPanel
 		JPanel bottomPane = new JPanel();
 		bottomPane.setBorder(new EmptyBorder(1,1,1,1));
 		bottomPane.setLayout(new BorderLayout());
-		bottomPane.add(new SchemaTreeSearch(tree, harmonyModel),BorderLayout.CENTER);
+		bottomPane.add(new SchemaTreeSearch(tree.getSide(), harmonyModel),BorderLayout.CENTER);
 		bottomPane.add(new SchemaTreeFinished(tree, harmonyModel),BorderLayout.EAST);
 
 		// Place together depth pane and bottom pane

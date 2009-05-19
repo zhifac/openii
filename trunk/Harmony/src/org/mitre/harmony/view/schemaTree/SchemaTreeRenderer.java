@@ -18,6 +18,7 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.filters.Focus;
+import org.mitre.harmony.model.search.SearchResult;
 import org.mitre.harmony.view.dialogs.Link;
 import org.mitre.schemastore.model.Domain;
 import org.mitre.schemastore.model.SchemaElement;
@@ -43,7 +44,8 @@ class SchemaTreeRenderer extends DefaultTreeCellRenderer
 	static private Icon hiddenElementIcon = getIcon("HiddenElement.gif");
 	
 	/** Defines highlight color used in displaying highlighted schema tree nodes */
-	static private Color highlightColor = new Color(0xFFFF66);
+	static private Color nameHighlightColor = new Color(0xFFFF66);
+	static private Color descHighlightColor = new Color(0xFFFFb3);
 
 	/** Stores the Harmony model */
 	private HarmonyModel harmonyModel;
@@ -66,6 +68,9 @@ class SchemaTreeRenderer extends DefaultTreeCellRenderer
 		boolean isSelected = false;
 		boolean isFocused = true;
 		boolean isFinished = false;
+		
+		// Keeps track if match for search
+		SearchResult result = null;
 		
 		// Retrieves the object to be rendered
 		Object obj = ((DefaultMutableTreeNode)value).getUserObject();
@@ -120,6 +125,9 @@ class SchemaTreeRenderer extends DefaultTreeCellRenderer
 			else if(isHiddenElement) setIcon(hiddenElementIcon);
 			else if(domain!=null) setIcon(isFinished ? finishedAttributeIcon : attributeIcon);
 			else setIcon(isFinished ? finishedSchemaElementIcon : schemaElementIcon);
+
+			// Retrieves if element is match for current search
+			result = harmonyModel.getSearchManager().getResult(elementID, schemaTree.getSide());
 		}
 		
 		// Handles any other rows that need rendering
@@ -137,7 +145,7 @@ class SchemaTreeRenderer extends DefaultTreeCellRenderer
 		// Adjust the settings based on the state of the node
 		selected = isSelected;
 		setFont(isFocused ? bold : ital);
-		setBackgroundNonSelectionColor(highlighted ? highlightColor : Color.white);
+		setBackgroundNonSelectionColor(result==null ? Color.white : result.nameMatched() ? nameHighlightColor : descHighlightColor);
 		
 		// Returns the rendered node
 		return this;
