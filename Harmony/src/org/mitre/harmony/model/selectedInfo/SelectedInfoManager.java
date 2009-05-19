@@ -64,11 +64,7 @@ public class SelectedInfoManager extends AbstractManager<SelectedInfoListener> i
 	
 	/** Constructor used to initialize the selected info */
 	public SelectedInfoManager(HarmonyModel harmonyModel)
-	{
-		super(harmonyModel);
-		harmonyModel.getMappingManager().addListener(this);
-		harmonyModel.getMappingCellManager().addListener(this);
-	}
+		{ super(harmonyModel); }
 	
 	//--------------------- Returns the various selected pieces of info ---------------------
 	
@@ -77,7 +73,7 @@ public class SelectedInfoManager extends AbstractManager<SelectedInfoListener> i
 		{ return new ArrayList<Integer>(side.equals(HarmonyConsts.LEFT) ? leftSchemaIDs : rightSchemaIDs); }
 
 	/** Returns all elements displayed on the specified side of Harmony */
-	private HashSet<SchemaElement> getSchemaElements(Integer side)
+	public HashSet<SchemaElement> getSchemaElements(Integer side)
 	{
 		HashSet<SchemaElement> elements = new HashSet<SchemaElement>();
 		for(Integer schemaID : getSchemas(side))
@@ -86,7 +82,7 @@ public class SelectedInfoManager extends AbstractManager<SelectedInfoListener> i
 	}
 
 	/** Returns all element IDs displayed on the specified side of Harmony */
-	private HashSet<Integer> getSchemaElementIDs(Integer side)
+	public HashSet<Integer> getSchemaElementIDs(Integer side)
 	{
 		HashSet<Integer> elementIDs = new HashSet<Integer>();
 		for(SchemaElement element : getSchemaElements(side))
