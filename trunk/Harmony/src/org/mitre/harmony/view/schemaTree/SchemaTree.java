@@ -13,6 +13,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Vector;
@@ -32,6 +33,8 @@ import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.filters.Focus;
 import org.mitre.harmony.model.mapping.MappingCellManager;
 import org.mitre.harmony.model.preferences.PreferencesListener;
+import org.mitre.harmony.model.search.SearchListener;
+import org.mitre.harmony.model.search.SearchResult;
 import org.mitre.harmony.model.selectedInfo.SelectedInfoListener;
 import org.mitre.harmony.view.dialogs.schemas.SchemaDialog;
 import org.mitre.schemastore.model.MappingCell;
@@ -41,7 +44,7 @@ import org.mitre.schemastore.model.Schema;
  * Creates the source or target schema tree 
  * @author CWOLF
  */
-public class SchemaTree extends JTree implements PreferencesListener, SelectedInfoListener, MouseListener, MouseMotionListener
+public class SchemaTree extends JTree implements PreferencesListener, SelectedInfoListener, SearchListener, MouseListener, MouseMotionListener
 {
 	/**
 	 * Blocks user from selecting tree nodes
@@ -239,6 +242,7 @@ public class SchemaTree extends JTree implements PreferencesListener, SelectedIn
 		addMouseMotionListener(this);
 		harmonyModel.getPreferences().addListener(this);
 		harmonyModel.getSelectedInfo().addListener(this);
+		harmonyModel.getSearchManager().addListener(this);
 	}
 
 	/** Returns the side associated with this schema tree */
@@ -447,6 +451,37 @@ public class SchemaTree extends JTree implements PreferencesListener, SelectedIn
 		for(Integer newSchemaID : newSchemaIDs)
 			if(!currSchemaIDs.contains(newSchemaID))
 				SchemaTreeGenerator.addSchema(this, newSchemaID, harmonyModel);
+	}
+
+	/** Handles updates to the search results */
+	public void searchResultsModified(Integer side)
+	{
+		// Only update search results if associated with the proper side
+		if(this.side.equals(side))
+		{
+			// Initializes the list of selected paths
+			Vector<TreePath> selPaths = new Vector<TreePath>();
+			
+			// Gets the matched elements
+			HashMap<Integer,SearchResult> matches = harmonyModel.getSearchManager().getMatches(side);
+			
+			// Select the match IDs
+			Enumeration subNodes = root.depthFirstEnumeration();
+			while(subNodes.hasMoreElements())
+			{
+				DefaultMutableTreeNode node = (DefaultMutableTreeNode)subNodes.nextElement();
+				if(!node.isRoot() && node.getUserObject() instanceof Integer)
+					if(matches.containsKey(node.getUserObject()))
+					{
+						TreePath path = new TreePath(node.getPath());
+						selPaths.add(path);
+						expandFullPath(path);
+					}
+			}
+			
+			// Select all tree nodes which match search criteria
+			selectSchemaTreeNodes(selPaths.toArray(new TreePath[0]));
+		}
 	}
 	
 	/** Handles changes to the specified schema's graph model */
