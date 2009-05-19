@@ -71,18 +71,17 @@ public class SearchManager extends AbstractManager<SearchListener> implements Se
 				else if(Character.isUpperCase(searchTerm.charAt(i)))
 					caseSensitive = true;
 			}
+			if(!caseSensitive) searchTerm = "(?i)" + searchTerm;
 				
 			// Determine what elements match search criteria
 			for(SchemaElement element : getModel().getSelectedInfo().getSchemaElements(side))
 			{				
 				// Check to see if element name matches search criteria
 				String name = element.getName();
-				if(!caseSensitive) name = name.toLowerCase();
 				boolean nameMatched = name.matches(searchTerm);
 				
 				// Check to see if element description matches search criteria
 				String description = element.getDescription();
-				if(!caseSensitive) description = description.toLowerCase();
 				boolean descriptionMatched = description.matches(searchTerm);
 
 				// Stores a new search result if needed

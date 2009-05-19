@@ -86,7 +86,7 @@ class SelectedNodePane extends JPanel implements SelectedInfoListener, SearchLis
 		
 		// Display schema element name and description
  		String description = scrub(element.getDescription());
- 		String query = harmonyModel.getSearchManager().getQuery(side);
+ 		String query = "(?i)" + harmonyModel.getSearchManager().getQuery(side);
  		if(query.length()>0)
  			description = description.replaceAll(query, "<font style='BACKGROUND-COLOR: #ffffb3'>$0</font>");
 		text.append("<b>Description</b>: " + description + "<br>");
