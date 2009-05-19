@@ -78,7 +78,7 @@ public class MappingPane extends JDesktopPane implements ComponentListener, Line
 	{
 		JPanel pane = new JPanel();
 		pane.setLayout(new BorderLayout());
-		pane.add(new SchemaScrollPane(this,tree),BorderLayout.CENTER);
+		pane.add(new SchemaScrollPane(this,tree,harmonyModel),BorderLayout.CENTER);
 		pane.add(new ControlPane(tree,harmonyModel),BorderLayout.SOUTH);
 		return pane;
 	}

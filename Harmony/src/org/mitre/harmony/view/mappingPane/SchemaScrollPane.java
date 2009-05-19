@@ -10,24 +10,41 @@ import java.awt.Rectangle;
 import java.awt.ComponentOrientation;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.HashMap;
+
 import javax.swing.JViewport;
 import javax.swing.JComponent;
 import javax.swing.JScrollPane;
 import javax.swing.plaf.metal.MetalScrollBarUI;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreePath;
 
 import org.mitre.harmony.model.HarmonyConsts;
+import org.mitre.harmony.model.HarmonyModel;
+import org.mitre.harmony.model.search.SearchListener;
+import org.mitre.harmony.model.search.SearchResult;
+import org.mitre.harmony.view.schemaTree.SchemaTree;
+import org.mitre.harmony.view.schemaTree.SchemaTreeListener;
 
 /**
  * Displays the scroll pane next to each schema tree pane (includes selection marks)
  * @author CWOLF
  */
-public class SchemaScrollPane extends JScrollPane implements AdjustmentListener
+public class SchemaScrollPane extends JScrollPane implements AdjustmentListener, SearchListener, SchemaTreeListener
 {
 	/** Stores the mapping pane to which this scroll pane is associated */
 	private MappingPane mappingPane;
 	
 	/** Stores the schema tree associated with this scroll bar */
 	private SchemaTreeImp tree;
+
+	/** Stores the rows which have search results */
+	private ArrayList<Integer> searchResultRows = new ArrayList<Integer>();
+	
+	/** Stores the Harmony model */
+	private HarmonyModel harmonyModel;
 
 	/** Class used to reimplement the scroll track display */
 	private class SchemaScrollBarUI extends MetalScrollBarUI
@@ -37,29 +54,54 @@ public class SchemaScrollPane extends JScrollPane implements AdjustmentListener
 		{
 			super.paintTrack(g, c, trackBounds);
 			
-			// Find the selected rows of the associated schema tree
-			int rows[] = tree.getSelectionRows();
+			// Find the total number of rows in the associated schema tree
 			int totalRows = tree.getRowCount();
 			
 			// Mark all positions of selected rows on scroll bar
-			if(rows!=null)
+			if(searchResultRows.size()>0)
 			{
 				g.setColor(Color.red);
 				int x1=trackBounds.x, x2=trackBounds.width;
-				for(int i=0; i<rows.length; i++)
+				for(Integer row : searchResultRows)
 				{
-					int y=trackBounds.y+(int)(1.0*trackBounds.height*rows[i]/totalRows);
+					int y=trackBounds.y+(int)(1.0*trackBounds.height*row/totalRows);
 					g.fillRect(x1,y,x2,2);
 				}
 			}
 		}
 	}
 
+	/** Updates the search result rows */
+	private void updateSearchResultRows()
+	{
+		searchResultRows.clear();
+
+		// Gets the matched elements
+		HashMap<Integer,SearchResult> matches = harmonyModel.getSearchManager().getMatches(tree.getSide());
+		
+		// Select the match IDs
+		Enumeration subNodes = tree.root.depthFirstEnumeration();
+		while(subNodes.hasMoreElements())
+		{
+			DefaultMutableTreeNode node = (DefaultMutableTreeNode)subNodes.nextElement();
+			if(!node.isRoot() && node.getUserObject() instanceof Integer)
+				if(matches.containsKey(node.getUserObject()))
+				{
+					TreePath path = new TreePath(node.getPath());
+					searchResultRows.add(tree.getRowForPath(path));
+					tree.expandFullPath(path);
+				}
+		}
+
+		repaint();
+	}
+	
 	/** Initializes the schema tree scroll bar */
-	public SchemaScrollPane(MappingPane mappingPane, SchemaTreeImp tree)
+	public SchemaScrollPane(MappingPane mappingPane, SchemaTreeImp tree, HarmonyModel harmonyModel)
 	{
 		this.mappingPane = mappingPane;
-		this.tree=tree;
+		this.tree = tree;
+		this.harmonyModel = harmonyModel;
 		
 		// Set up scroll panes for the schema trees
 		setViewportView(tree);
@@ -83,6 +125,8 @@ public class SchemaScrollPane extends JScrollPane implements AdjustmentListener
 		// Listen for changes which might affect offsets
 		getHorizontalScrollBar().addAdjustmentListener(this);
 		getVerticalScrollBar().addAdjustmentListener(this);
+		harmonyModel.getSearchManager().addListener(this);
+		tree.addSchemaTreeListener(this);
 	}
 	
 	/** Updates the scroll pane offsets as needed */
@@ -116,4 +160,15 @@ public class SchemaScrollPane extends JScrollPane implements AdjustmentListener
 		tree.firstVisibleRow = (int)rect.getMinY()/tree.getRowHeight();
 		tree.lastVisibleRow = (int)rect.getMaxY()/tree.getRowHeight();
 	}
+	
+	/** Updates the search result rows when the search results change */
+	public void searchResultsModified(Integer side)
+		{ if(tree.getSide().equals(side)) updateSearchResultRows(); }
+	
+	/** Update the search result rows when the schema structure changes */
+	public void schemaStructureModified(SchemaTree tree)
+		{ updateSearchResultRows(); }
+
+	// Unused event listener
+	public void schemaDisplayModified(SchemaTree tree) {}
 }

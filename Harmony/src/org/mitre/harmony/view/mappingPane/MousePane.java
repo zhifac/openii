@@ -259,8 +259,8 @@ class MousePane extends JPanel implements MouseListener, MouseMotionListener
 			if(leftPath != null && rightPath != null)
 			{
 				// Gather info on what left and right nodes are connected
-				Integer leftID = mappingPane.getTree(HarmonyConsts.LEFT).getNode(leftPath);
-				Integer rightID = mappingPane.getTree(HarmonyConsts.RIGHT).getNode(rightPath);
+				Integer leftID = mappingPane.getTree(HarmonyConsts.LEFT).getElement(leftPath);
+				Integer rightID = mappingPane.getTree(HarmonyConsts.RIGHT).getElement(rightPath);
 
 				// Set the mapping cell
 				MappingCellManager manager = harmonyModel.getMappingCellManager();
