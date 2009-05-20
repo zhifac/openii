@@ -35,6 +35,8 @@ public abstract class MappingImporter extends Porter
 	/** Stores the URI being imported */
 	protected URI uri;
 	
+	protected ArrayList<Integer> schemaIDs;
+	
 	/** Returns the importer URI type */
 	abstract public Integer getURIType();
 	
@@ -63,6 +65,7 @@ public abstract class MappingImporter extends Porter
 	{
 		// Initialize the importer
 		this.uri = uri;
+		this.schemaIDs = schemaIDs;
 		initialize();
 
 		// Generate the mapping
@@ -81,7 +84,8 @@ public abstract class MappingImporter extends Porter
 		// Delete the mapping if import wasn't totally successful
 		if(!success)
 		{
-			try { client.deleteMapping(mapping.getId()); } catch(Exception e) {}
+			try { client.deleteMapping(mapping.getId()); } catch(Exception e) {e.printStackTrace();}
+			
 			throw new ImporterException(ImporterException.IMPORT_FAILURE,"A failure occured in transferring the mapping to the repository");
 		}
 
