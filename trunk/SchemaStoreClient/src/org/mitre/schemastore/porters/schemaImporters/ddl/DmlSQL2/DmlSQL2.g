@@ -79,7 +79,7 @@
 //
 header {
 //  Global header starts here, at the top of all generated files
-package org.mitre.schemastore.importers.ddlloader;
+package org.mitre.schemastore.porters.schemaImporters.ddl;
 // #include <iostream> // if you want to use some cout's in the actions
 ANTLR_USING_NAMESPACE(std)
 ANTLR_USING_NAMESPACE(antlr)
@@ -892,11 +892,11 @@ cast_target :
 
 //{ Rule #140 <data_type>
 data_type :
-	  char_string_type ("character" "set" char_set_name)? { builder.setDomainOfLastAttribute( ImporterUtils.STRING ); }
-	| national_char_string_type { builder.setDomainOfLastAttribute( ImporterUtils.STRING ); }
-	| bit_string_type { builder.setDomainOfLastAttribute( ImporterUtils.BOOLEAN ); }
+	  char_string_type ("character" "set" char_set_name)? { builder.setDomainOfLastAttribute( SchemaImporter.STRING ); }
+	| national_char_string_type { builder.setDomainOfLastAttribute( SchemaImporter.STRING ); }
+	| bit_string_type { builder.setDomainOfLastAttribute( SchemaImporter.BOOLEAN ); }
 	| num_type // this covers integer and double....
-	| datetime_type { builder.setDomainOfLastAttribute( ImporterUtils.DATETIME ); }
+	| datetime_type { builder.setDomainOfLastAttribute( SchemaImporter.DATETIME ); }
 	| interval_type
 ;
 //}
@@ -952,8 +952,8 @@ scale :
 
 //{ Rule #374 <num_type>
 num_type :
-	  exact_num_type { builder.setDomainOfLastAttribute( ImporterUtils.INTEGER ); }
-	| approximate_num_type { builder.setDomainOfLastAttribute( ImporterUtils.DOUBLE ); }
+	  exact_num_type { builder.setDomainOfLastAttribute( SchemaImporter.INTEGER ); }
+	| approximate_num_type { builder.setDomainOfLastAttribute( SchemaImporter.REAL ); }
 ;
 //}
 
