@@ -76,11 +76,11 @@
 //
 header {
 //  Global header starts here, at the top of all generated files
-package org.mitre.schemastore.importers.ddl;
+package org.mitre.schemastore.porters.schemaImporters.ddl;
 
 import java.util.*;
 import org.mitre.schemastore.model.*;
-import org.mitre.schemastore.importers.*;
+import org.mitre.schemastore.porters.schemaImporters.*;
 
 //  Global header ends here
 }

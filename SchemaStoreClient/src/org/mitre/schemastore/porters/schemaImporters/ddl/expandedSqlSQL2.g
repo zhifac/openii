@@ -1,10 +1,10 @@
 header {
 //  Global header starts here, at the top of all generated files
-package org.mitre.schemastore.importers.ddl;
+package org.mitre.schemastore.porters.schemaImporters.ddl;
 
 import java.util.*;
 import org.mitre.schemastore.model.*;
-import org.mitre.schemastore.importers.*;
+import org.mitre.schemastore.porters.schemaImporters.*;
 
 //  Global header ends here
 }
@@ -1136,11 +1136,11 @@ cast_target :domain_name
 ;
 
 // inherited from grammar DmlSQL2Parser
-data_type :char_string_type ("character" "set" char_set_name)? { builder.setDomainOfLastAttribute( ImporterUtils.STRING ); }
-	| national_char_string_type { builder.setDomainOfLastAttribute( ImporterUtils.STRING ); }
-	| bit_string_type { builder.setDomainOfLastAttribute( ImporterUtils.BOOLEAN ); }
+data_type :char_string_type ("character" "set" char_set_name)? { builder.setDomainOfLastAttribute( SchemaImporter.STRING ); }
+	| national_char_string_type { builder.setDomainOfLastAttribute( SchemaImporter.STRING ); }
+	| bit_string_type { builder.setDomainOfLastAttribute( SchemaImporter.BOOLEAN ); }
 	| num_type // this covers integer and double....
-	| datetime_type { builder.setDomainOfLastAttribute( ImporterUtils.DATETIME ); }
+	| datetime_type { builder.setDomainOfLastAttribute( SchemaImporter.DATETIME ); }
 	| interval_type
 ;
 
@@ -1182,8 +1182,8 @@ scale :UNSIGNED_INTEGER
 ;
 
 // inherited from grammar DmlSQL2Parser
-num_type :exact_num_type { builder.setDomainOfLastAttribute( ImporterUtils.INTEGER ); }
-	| approximate_num_type { builder.setDomainOfLastAttribute( ImporterUtils.DOUBLE ); }
+num_type :exact_num_type { builder.setDomainOfLastAttribute( SchemaImporter.INTEGER ); }
+	| approximate_num_type { builder.setDomainOfLastAttribute( SchemaImporter.REAL ); }
 ;
 
 // inherited from grammar DmlSQL2Parser
