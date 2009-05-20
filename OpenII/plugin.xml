@@ -31,8 +31,9 @@
 
 	<!-- Declares the OpenII editors -->
    <extension point="org.eclipse.ui.editors">
-      <editor name="Schema View" extensions="schema" icon="icons/Schema.gif" class="org.mitre.openii.editors.SchemaView" id="org.mitre.openii.editors.SchemaView"></editor>
-      <editor name="Extension View" extensions="schema" icon="icons/Extensions.gif" class="org.mitre.openii.editors.ExtensionView" id="org.mitre.openii.editors.ExtensionView"></editor>
+      <editor name="Schema" extensions="schema" icon="icons/Schema.gif" class="org.mitre.openii.editors.SchemaView" id="org.mitre.openii.editors.SchemaView"></editor>
+      <editor name="Schema Graph" extensions="schema" icon="icons/Schema.gif" class="org.mitre.openii.editors.SchemaGraphView" id="org.mitre.openii.editors.SchemaGraphView"></editor>
+      <editor name="Extension Graph" extensions="schema" icon="icons/Extensions.gif" class="org.mitre.openii.editors.ExtensionGraphView" id="org.mitre.openii.editors.ExtensionGraphView"></editor>
       <editor name="Harmony" extensions="mapping" icon="icons/Harmony.gif" class="org.mitre.openii.editors.HarmonyView" id="org.mitre.openii.editors.HarmonyView"></editor>
    	  <editor name="RMap" extensions="mapping" icon="icons/RMap.gif" class="org.mitre.openii.editors.RMapView" id="org.mitre.openii.editors.RMapView"></editor>
    	  <editor name="Affinity" extensions="group" icon="icons/Harmony.gif" class="org.mitre.openii.editors.AffinityView" id="org.mitre.openii.editors.AffinityView"></editor>-->
