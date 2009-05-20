@@ -145,10 +145,34 @@ public class UserMatchAnotationExporter extends MappingExporter
 			this.paths2 = getPaths(element2.getId());
 		}
 		
+
 		public double getScore() {
 			return score;
 		}
 		
+		public String getPaths1() {
+			return toString(paths1);
+		}
+		
+		public String getPaths2() {
+			return toString(paths2);
+		}
+		
+		public String getAuthor() {
+			return author;
+		}
+		
+		public String getDate() {
+			return date.toString();
+		}
+		
+		public String getNotes() {
+			return notes;
+		}
+		
+		public String getTransform() {
+			return transform;
+		}
 		/** Merge together compressed matches */
 		private void merge(CompressedMatch match)
 			{ paths1.addAll(match.paths1); paths2.addAll(match.paths2); }
@@ -194,7 +218,7 @@ public class UserMatchAnotationExporter extends MappingExporter
 		}
 		
 		/** Adds a mapping cell to the list */
-		private void addMappingCell(MappingCell mappingCell)
+		protected void addMappingCell(MappingCell mappingCell)
 		{
   			// Construct the compressed match
    			SchemaElement element1 = elements.get(mappingCell.getElement1());
@@ -211,7 +235,7 @@ public class UserMatchAnotationExporter extends MappingExporter
 		}
 		
 		/** Returns the list of compressed mapping cells */
-		private ArrayList<CompressedMatch> getMatches()
+		protected ArrayList<CompressedMatch> getMatches()
 			{ return new ArrayList<CompressedMatch>(matches.values()); }
 	}
 }
