@@ -1,4 +1,4 @@
-// © The MITRE Corporation 2006
+// (c) The MITRE Corporation 2006
 // ALL RIGHTS RESERVED
 package org.mitre.harmony.view.mappingPane;
 

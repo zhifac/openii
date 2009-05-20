@@ -1,4 +1,4 @@
-// © The MITRE Corporation 2006
+// (c) The MITRE Corporation 2006
 // ALL RIGHTS RESERVED
 package org.mitre.harmony.view.dialogs;
 
@@ -77,11 +77,11 @@ public class AboutDialog extends JDialog implements MouseListener, MouseMotionLi
 						 "engineer to view a set of correspondences and manually edit the correspondences.  " +
 						 "Harmony manages user schemata and mappings in a bundled repository.\n\n" +
 						 "An overview of Harmony appears in: Peter Mork, Len Seligman, Arnon Rosenthal, " +
-						 "Joel Korb, and Chris Wolf, “The Harmony Integration Workbench,” Journal on Data " +
-						 "Semantics, vol. 11, pp. 65–93, Dec 2008.  Harmony’s use in large scale schema " +
+						 "Joel Korb, and Chris Wolf, (c)The Harmony Integration Workbench,(c) Journal on Data " +
+						 "Semantics, vol. 11, pp. 65(c)93, Dec 2008.  Harmony(c)s use in large scale schema " +
 						 "matching problems is described in:  Ken Smith, Peter Mork, Len Seligman, Arnon " +
-						 "Rosenthal, Michael Morse, David M. Allen, and Maya Li, “The Role of Schema Matching " +
-						 "in Large Enterprises”, Conference on Innovative Database Research (CIDR ‘09), Jan 2009.\n\n" +
+						 "Rosenthal, Michael Morse, David M. Allen, and Maya Li, (c)The Role of Schema Matching " +
+						 "in Large Enterprises(c), Conference on Innovative Database Research (CIDR (c)09), Jan 2009.\n\n" +
 						 "Harmony is a component of the OpenII (Open Information Integration) framework; OpenII " +
 						 "is a collaborative effort to create a suite of open-source tools for information " +
 						 "integration.  For more information, see openintegration.org.");
