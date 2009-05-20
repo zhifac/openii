@@ -3,14 +3,15 @@
 package org.mitre.schemastore.porters.mappingImporters;
 
 import java.io.IOException;
-import java.net.URI;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Hashtable;
+import java.util.Calendar;
 
 import org.mitre.schemastore.model.Attribute;
 import org.mitre.schemastore.model.Domain;
@@ -19,15 +20,12 @@ import org.mitre.schemastore.model.Entity;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
+import org.mitre.schemastore.model.graph.HierarchicalGraph;
 import org.mitre.schemastore.porters.ImporterException;
 
 
 
 public class UserMatchAnnotationDBImporter extends MappingImporter {
-//	private ArrayList<Entity> _entities;
-//	private ArrayList<Attribute> _attributes;
-//	private ArrayList<Domain> _domains;
-//	private ArrayList<DomainValue> _enumerants;
 	Connection conn = null; 
 	Schema schema1;
 	Schema schema2;
@@ -43,8 +41,10 @@ public class UserMatchAnnotationDBImporter extends MappingImporter {
 	protected void initialize() throws ImporterException {
 		String dataSourceName = "mdbTEST";
 		try {
-			schema1 = client.getSchema(1);
-			schema2 = client.getSchema(2);
+			schema1 = new Schema(); //client.getSchema(1);
+			schema1.setName("HSIP");
+			schema2 = new Schema(); //client.getSchema(2);
+			schema2.setName("IPT");
 		}
 		catch(Exception e) { 
 		    System.err.println ("Error getting schemas" + dataSourceName); 
@@ -79,7 +79,7 @@ public class UserMatchAnnotationDBImporter extends MappingImporter {
 			
 			//Fixme: delete
 			for (Schema s: client.getSchemas()) {
-				System.out.println("s: " + s.getId());
+//				System.out.println("s: " + s.getId());
 			}
 			
 			schemas.add(schema1);
@@ -97,14 +97,73 @@ public class UserMatchAnnotationDBImporter extends MappingImporter {
 	
 	/** Returns the mapping cells from the specified URI */
 	protected ArrayList<MappingCell> getMappingCells() throws ImporterException {
+		ArrayList<MappingCell> mappingCells = new ArrayList<MappingCell>();
+		HierarchicalGraph hg1 = null;
+		HierarchicalGraph hg2 = null;
+		
+		try {
+			//schemaIDs contains schemaIDs of the correct schemas in the correct order
+			hg1 = new HierarchicalGraph(client.getGraph(schemaIDs.get(0)), null);
+			hg2 = new HierarchicalGraph(client.getGraph(schemaIDs.get(1)), null);
+		}
+		catch (Exception e) {
+		    System.err.println ("Error getting graph"); 
+		    e.printStackTrace(); 			
+		}
+		
 		//fixme: throw exception?
 		try {
 			Statement s = conn.createStatement();
-			s.execute("select * from T_MatchLink");
-			s.close();
+			s.execute("select * from HSIPMIPT");
 			
 			ResultSet rs = s.getResultSet();
-			//fixme: this is where the magic happens
+
+			
+			while(rs.next()) {
+				String notes = rs.getString("MPNotes");
+				String transform = rs.getString("Transform");
+				
+				
+				// Path is stored in DB as "#parent#child#child"
+				// Chop the first #
+				String nodePath1 = rs.getString("HSIP-Path").substring(1);
+				String nodePath2 = rs.getString("IPT-Path").substring(1);
+				
+				ArrayList<String> path1 = new ArrayList<String>(Arrays.asList(nodePath1.split("#")));
+				ArrayList<String> path2 = new ArrayList<String>(Arrays.asList(nodePath2.split("#")));
+
+				ArrayList<Integer> pathIds1 = hg1.getPathIDs(path1);
+				ArrayList<Integer> pathIds2 = hg2.getPathIDs(path2);
+				// path array lists have only one item since paths are unique in our schemas
+				int element1 = pathIds1.get(0);
+				int element2 = pathIds2.get(0);
+				
+				//fixme: delete
+				//notes = "TESTING JOEL";
+//System.out.println("Node1: " + node1);
+			
+				MappingCell cell = new MappingCell(null, 
+						null,
+						element1,
+						element2,
+						1.0,
+						"",
+						Calendar.getInstance().getTime(),
+						transform,
+						notes,
+						true);
+//fixme
+//				cell.setElement1(1);
+//				cell.setElement2(1);
+//				cell.setNotes(notes);
+//				cell.setTransform(transform);
+//				// We aren't importing the date but OpenII requires one
+//				cell.setModificationDate(Calendar.getInstance().getTime());
+				mappingCells.add(cell);
+			}
+
+			
+			s.close();
 			
 		}
 		catch (SQLException e) {
@@ -112,7 +171,7 @@ public class UserMatchAnnotationDBImporter extends MappingImporter {
 		    e.printStackTrace(); 			
 		}
 
-		return null;
+		return mappingCells;
 	}
 
 
