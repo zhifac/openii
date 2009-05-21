@@ -115,9 +115,11 @@ class SchemaTreeRenderer extends DefaultTreeCellRenderer
 			// Set the text
 			String name = graph.getDisplayName(element.getId());
 			String text = "<html>" + name.replace("<","&lt;").replace(">","&gt;");
-			if(harmonyModel.getPreferences().getShowSchemaTypes() && domain!=null)
-				text += " <font color='#888888'>(" + domain.getName() + ")</font>";
+			if(harmonyModel.getPreferences().getShowSchemaTypes() && graph.getModel().getType(graph,element.getId()) != null)
+				text += " <font color='#888888'>(" + graph.getModel().getType(graph,element.getId()) + ")</font>";
 			text += "</html>";
+
+			
 			setText(text);
 			
 			// Set the icon
