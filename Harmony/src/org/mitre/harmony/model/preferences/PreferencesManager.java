@@ -12,7 +12,7 @@ import org.mitre.harmony.model.ConfigManager;
 import org.mitre.harmony.model.HarmonyConsts;
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.mapping.MappingListener;
-import org.mitre.schemastore.model.graph.GraphModel;
+import org.mitre.schemastore.model.graph.model.GraphModel;
 
 /**
  * Tracks preferences used in Harmony

@@ -16,7 +16,7 @@ import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.mapping.MappingListener;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
-import org.mitre.schemastore.model.graph.GraphModel;
+import org.mitre.schemastore.model.graph.model.GraphModel;
 import org.mitre.schemastore.model.graph.HierarchicalGraph;
 
 /** Class for monitoring for changes in the project */
