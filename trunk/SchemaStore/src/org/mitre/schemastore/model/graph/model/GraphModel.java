@@ -1,11 +1,12 @@
 // Copyright 2008 The MITRE Corporation. ALL RIGHTS RESERVED.
 
-package org.mitre.schemastore.model.graph;
+package org.mitre.schemastore.model.graph.model;
 
 import java.util.ArrayList;
 
 import org.mitre.schemastore.model.Domain;
 import org.mitre.schemastore.model.SchemaElement;
+import org.mitre.schemastore.model.graph.HierarchicalGraph;
 
 /**
  * Interface for representing the graph model
@@ -26,12 +27,12 @@ abstract public class GraphModel
 	
 	/** Returns the domain of the specified element in this graph */
 	abstract public Domain getDomainForElement(HierarchicalGraph graph, Integer elementID);
-
-	/** Returns the type name associated with the specified element (or NULL if element has no name) */
-	abstract public String getType(HierarchicalGraph graph, Integer elementID);
 	
 	/** Returns the elements referenced by the specified domain */
 	abstract public ArrayList<SchemaElement> getElementsForDomain(HierarchicalGraph graph, Integer domainID);
+
+	/** Returns the type name associated with the specified element (or NULL if element has no name) */
+	abstract public String getType(HierarchicalGraph graph, Integer elementID);
 	
 	/** Returns the name of the graph model */
 	public String toString() { return getName(); }

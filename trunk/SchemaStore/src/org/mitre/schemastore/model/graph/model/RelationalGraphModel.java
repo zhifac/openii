@@ -1,6 +1,6 @@
 // Copyright 2008 The MITRE Corporation. ALL RIGHTS RESERVED.
 
-package org.mitre.schemastore.model.graph;
+package org.mitre.schemastore.model.graph.model;
 
 import java.util.ArrayList;
 
@@ -10,6 +10,7 @@ import org.mitre.schemastore.model.Domain;
 import org.mitre.schemastore.model.Entity;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.Subtype;
+import org.mitre.schemastore.model.graph.HierarchicalGraph;
 
 /**
  *  Class for displaying relationship hierarchy
@@ -112,6 +113,23 @@ public class RelationalGraphModel extends GraphModel
 		}
 		
 		return null;
+	}	
+	
+	/** Returns the elements referenced by the specified domain */
+	public ArrayList<SchemaElement> getElementsForDomain(HierarchicalGraph graph, Integer domainID)
+	{
+		ArrayList<SchemaElement> domainElements = new ArrayList<SchemaElement>();
+
+		// Find all attributes associated with the domain
+		for(Attribute attribute : graph.getAttributes(domainID))
+			domainElements.add(attribute);
+
+		// Find all containments associated with the domain
+		for(Containment containment : graph.getContainments(domainID))
+			if(containment.getChildID().equals(domainID))
+				domainElements.add(containment);
+		
+		return domainElements;
 	}
 
 	/** Returns the type name associated with the specified element (or NULL if element has no name) */
@@ -130,23 +148,5 @@ public class RelationalGraphModel extends GraphModel
 			return childElement.getName();
 
 		return null;	
-	}
-	
-	
-	/** Returns the elements referenced by the specified domain */
-	public ArrayList<SchemaElement> getElementsForDomain(HierarchicalGraph graph, Integer domainID)
-	{
-		ArrayList<SchemaElement> domainElements = new ArrayList<SchemaElement>();
-
-		// Find all attributes associated with the domain
-		for(Attribute attribute : graph.getAttributes(domainID))
-			domainElements.add(attribute);
-
-		// Find all containments associated with the domain
-		for(Containment containment : graph.getContainments(domainID))
-			if(containment.getChildID().equals(domainID))
-				domainElements.add(containment);
-		
-		return domainElements;
 	}
 }

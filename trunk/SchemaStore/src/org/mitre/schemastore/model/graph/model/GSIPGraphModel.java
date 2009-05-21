@@ -1,6 +1,6 @@
 // Copyright 2008 The MITRE Corporation. ALL RIGHTS RESERVED.
 
-package org.mitre.schemastore.model.graph;
+package org.mitre.schemastore.model.graph.model;
 
 import java.util.*;
 
@@ -11,6 +11,7 @@ import org.mitre.schemastore.model.DomainValue;
 import org.mitre.schemastore.model.Entity;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.Subtype;
+import org.mitre.schemastore.model.graph.HierarchicalGraph;
 
 /**
  *  Class for displaying relationship hierarchy

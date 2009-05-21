@@ -1,6 +1,6 @@
 // Copyright 2008 The MITRE Corporation. ALL RIGHTS RESERVED.
 
-package org.mitre.schemastore.model.graph;
+package org.mitre.schemastore.model.graph.model;
 
 import java.util.ArrayList;
 
@@ -8,6 +8,7 @@ import org.mitre.schemastore.model.Attribute;
 import org.mitre.schemastore.model.Containment;
 import org.mitre.schemastore.model.Domain;
 import org.mitre.schemastore.model.SchemaElement;
+import org.mitre.schemastore.model.graph.HierarchicalGraph;
 
 /**
  *  Class for displaying XML hierarchy
