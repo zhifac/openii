@@ -17,6 +17,7 @@ import org.mitre.schemastore.model.Domain;
 import org.mitre.schemastore.model.DomainValue;
 import org.mitre.schemastore.model.SchemaElement;
 
+import org.mitre.schemastore.model.graph.model.*;
 
 
 /**
