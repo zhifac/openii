@@ -16,6 +16,10 @@ import org.mitre.schemastore.model.Containment;
 import org.mitre.schemastore.model.Domain;
 import org.mitre.schemastore.model.DomainValue;
 import org.mitre.schemastore.model.SchemaElement;
+import org.mitre.schemastore.model.graph.model.DomainGraphModel;
+import org.mitre.schemastore.model.graph.model.GraphModel;
+import org.mitre.schemastore.model.graph.model.RelationalGraphModel;
+import org.mitre.schemastore.model.graph.model.XMLGraphModel;
 
 /**
  * Class for generating graph hierarchy 
@@ -262,5 +266,4 @@ public class HierarchicalGraph extends Graph
 			depths.add(paths.size());
 		return new ArrayList<Integer>(depths);
 	}
-	
 }

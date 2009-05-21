@@ -1,6 +1,6 @@
 // Copyright 2008 The MITRE Corporation. ALL RIGHTS RESERVED.
 
-package org.mitre.schemastore.model.graph;
+package org.mitre.schemastore.model.graph.model;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -8,10 +8,10 @@ import java.util.Comparator;
 
 import org.mitre.schemastore.model.Attribute;
 import org.mitre.schemastore.model.Domain;
-import org.mitre.schemastore.model.DomainValue;
 import org.mitre.schemastore.model.Entity;
 import org.mitre.schemastore.model.Relationship;
 import org.mitre.schemastore.model.SchemaElement;
+import org.mitre.schemastore.model.graph.HierarchicalGraph;
 
 /**
  *  Class for displaying containment hierarchy
@@ -21,11 +21,6 @@ public class RMapGraphModel extends GraphModel
 	/** Returns the graph model name */
 	public String getName()
 		{ return "RMap"; }
-	
-	/** Returns the type name associated with the specified element (or NULL if element has no name) */
-	public String getType(HierarchicalGraph graph, Integer elementID){
-		return null;
-	}
 	
 	/** Returns the root elements in this graph -- entities at top level*/
 	public ArrayList<SchemaElement> getRootElements(HierarchicalGraph graph)
@@ -125,7 +120,9 @@ public class RMapGraphModel extends GraphModel
 		
 	}
 	
-
+	/** Returns the type name associated with the specified element (or NULL if element has no name) */
+	public String getType(HierarchicalGraph graph, Integer elementID)
+		{ return null; }
 	
 	/** Retrieves the attributes for the specified schema element */
 	@SuppressWarnings("unchecked")
