@@ -10,7 +10,7 @@ import javax.swing.border.EmptyBorder;
 
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.schemastore.model.Schema;
-import org.mitre.schemastore.model.graph.GraphModel;
+import org.mitre.schemastore.model.graph.model.GraphModel;
 import org.mitre.schemastore.model.graph.HierarchicalGraph;
 
 /** Displays a schema item with the model setting */
