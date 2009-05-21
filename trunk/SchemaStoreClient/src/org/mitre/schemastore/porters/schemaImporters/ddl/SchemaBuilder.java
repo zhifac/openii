@@ -91,25 +91,33 @@ public class SchemaBuilder
 	 * list for use during Attribute creation
 	 */
 	private void loadDomains() {
-		Domain domain = new Domain(SchemaImporter.nextId(), "Integer", "The Integer domain", 0);
+		Domain domain = new Domain(SchemaImporter.nextId(), SchemaImporter.INTEGER, "The Integer domain", 0);
 		schemaObjects.add(domain);
-		domainList.put("Integer", domain);
-		domain = new Domain(SchemaImporter.nextId(), "Double", "The Double domain", 0);
+		domainList.put(SchemaImporter.INTEGER, domain);
+
+		domain = new Domain(SchemaImporter.nextId(), SchemaImporter.REAL, "The Double domain", 0);
+		schemaObjects.add(domain);
+		domainList.put(SchemaImporter.REAL, domain);
+
+		domain = new Domain(SchemaImporter.nextId(), SchemaImporter.STRING, "The String domain", 0);
+		schemaObjects.add(domain);
+		domainList.put(SchemaImporter.STRING, domain);
+
+		domain = new Domain(SchemaImporter.nextId(), SchemaImporter.DATETIME, "The DateTime domain", 0);
+		schemaObjects.add(domain);
+		domainList.put(SchemaImporter.DATETIME, domain);
+
+		domain = new Domain(SchemaImporter.nextId(), SchemaImporter.BOOLEAN, "The Boolean domain", 0);
+		schemaObjects.add(domain);
+		domainList.put(SchemaImporter.BOOLEAN, domain);
+
+		domain = new Domain(SchemaImporter.nextId(), "Float", "The Float domain", 0);
+		schemaObjects.add(domain);
+		domainList.put("Float", domain);
+
+		domain = new Domain(SchemaImporter.nextId(), "Double", "The Float domain", 0);
 		schemaObjects.add(domain);
 		domainList.put("Double", domain);
-		domain = new Domain(SchemaImporter.nextId(), "String", "The String domain", 0);
-		schemaObjects.add(domain);
-		domainList.put("String", domain);
-		domain = new Domain(SchemaImporter.nextId(), "DateTime", "The DateTime domain", 0);
-		schemaObjects.add(domain);
-		domainList.put("DateTime", domain);
-		domain = new Domain(SchemaImporter.nextId(), "Boolean", "The Boolean domain", 0);
-		schemaObjects.add(domain);
-		domainList.put("Boolean", domain);
-		domain = new Domain(SchemaImporter.nextId(), "Any", "The Any domain", 0);
-		schemaObjects.add(domain);
-		domainList.put("Any", domain);
-
 	}
 
 

@@ -88,6 +88,6 @@ public class DDLImporter extends SchemaImporter
 		DDLImporter tester = new DDLImporter();
 		tester.setClient(new org.mitre.schemastore.client.SchemaStoreClient(
 				"../SchemaStore/SchemaStore.jar"));
-		tester.importSchema(ddl.getName(), System.getProperty("user.name"), "Good description of the spreadsheet goes here", ddl.toURI());
+		tester.importSchema(ddl.getName(), System.getProperty("user.name"), "Good description of the database goes here", ddl.toURI());
 	}
 }
