@@ -22,6 +22,11 @@ public class RMapGraphModel extends GraphModel
 	public String getName()
 		{ return "RMap"; }
 	
+	/** Returns the type name associated with the specified element (or NULL if element has no name) */
+	public String getType(HierarchicalGraph graph, Integer elementID){
+		return null;
+	}
+	
 	/** Returns the root elements in this graph -- entities at top level*/
 	public ArrayList<SchemaElement> getRootElements(HierarchicalGraph graph)
 	{

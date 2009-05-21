@@ -262,4 +262,5 @@ public class HierarchicalGraph extends Graph
 			depths.add(paths.size());
 		return new ArrayList<Integer>(depths);
 	}
+	
 }

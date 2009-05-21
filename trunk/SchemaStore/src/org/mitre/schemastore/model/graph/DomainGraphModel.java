@@ -55,4 +55,8 @@ public class DomainGraphModel extends GraphModel
 	/** Returns the elements referenced by the specified domain */
 	public ArrayList<SchemaElement> getElementsForDomain(HierarchicalGraph graph, Integer domainID)
 		{ return new ArrayList<SchemaElement>(); }
+	
+	/** Returns the type name associated with the specified element (or NULL if element has no name) */
+	public String getType(HierarchicalGraph graph, Integer elementID)
+		{ return null; }
 }
