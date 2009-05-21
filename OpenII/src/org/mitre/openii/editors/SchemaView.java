@@ -6,14 +6,18 @@ import java.util.Comparator;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.ExpandBar;
 import org.eclipse.swt.widgets.ExpandItem;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.swt.widgets.Text;
 import org.mitre.openii.application.OpenIIActivator;
 import org.mitre.openii.model.OpenIIManager;
+import org.mitre.openii.views.manager.dialogs.DialogComponents;
 import org.mitre.schemastore.model.Alias;
 import org.mitre.schemastore.model.Attribute;
 import org.mitre.schemastore.model.Containment;
@@ -21,6 +25,7 @@ import org.mitre.schemastore.model.Domain;
 import org.mitre.schemastore.model.DomainValue;
 import org.mitre.schemastore.model.Entity;
 import org.mitre.schemastore.model.Relationship;
+import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.Subtype;
 import org.mitre.schemastore.model.graph.Graph;
@@ -42,6 +47,36 @@ public class SchemaView extends OpenIIEditor
 		ArrayList<SchemaElement> elements = graph.getElements(type);
 		Collections.sort(elements,new ElementComparator());
 		return elements;
+	}
+	
+	/** Creates a property field */
+	private void createField(Composite parent, String name, String value)
+	{
+		Text field = DialogComponents.createTextField(parent,name);		
+		field.setText(value);
+		field.setEditable(false);
+		field.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
+	}
+	
+	/** Generate the properties pane */
+	private void generatePropertiesPane(ExpandBar bar)
+	{
+		// Construct the pane for showing the info for the selected importer
+		Composite pane = new Composite(bar, SWT.NONE);
+		pane.setLayout(new GridLayout(2,false));
+		pane.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		pane.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
+		
+		// Generate the property fields to be displayed by the info pane
+		Schema schema = OpenIIManager.getSchema(elementID);
+		createField(pane,"Name",schema.getName());
+		createField(pane,"Author",schema.getAuthor());
+		createField(pane,"Source",schema.getSource());
+		createField(pane,"Type",schema.getType());
+		createField(pane,"Description",schema.getDescription());
+		
+		// Create the Expand Item containing the properties
+		createExpandItem(bar,"Schema Properties",pane);
 	}
 	
 	/** Generates a table */
@@ -86,15 +121,11 @@ public class SchemaView extends OpenIIEditor
 		expandItem.setExpanded(true);
 	}
 	
-	/** Displays the Schema Graph */
-	public void createPartControl(Composite parent)
+	/** Generate the schema element panes */
+	private void generateElementPanes(ExpandBar bar)
 	{
 		// Get the schema graph
 		Graph graph = OpenIIManager.getGraph(elementID);
-		
-		// Create the expand bar
-		ExpandBar bar = new ExpandBar(parent, SWT.V_SCROLL);
-		bar.setSpacing(8);
 
 		// Generate the entities table
 		Table table = createTable(bar,new String[]{"ID","Name","Description"});
@@ -216,6 +247,18 @@ public class SchemaView extends OpenIIEditor
 			createTableItem(table,new Object[]{id,name,aliasedElement});
 		}
 		for(int i=0; i<table.getColumnCount(); i++) table.getColumn(i).pack();
-		createExpandItem(bar,"Aliases",table);		
+		createExpandItem(bar,"Aliases",table);
+	}
+	
+	/** Displays the Schema Graph */
+	public void createPartControl(Composite parent)
+	{		
+		// Create the expand bar
+		ExpandBar bar = new ExpandBar(parent, SWT.V_SCROLL);
+		bar.setSpacing(8);
+
+		// Generate the various panes in the expand bar
+		generatePropertiesPane(bar);
+		generateElementPanes(bar);
 	}
 }
