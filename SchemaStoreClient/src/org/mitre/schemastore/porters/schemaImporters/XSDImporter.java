@@ -129,10 +129,20 @@ public class XSDImporter extends SchemaImporter
 		HashMap<Integer,String> ctHashcodeEntityName = new HashMap<Integer,String>();
 		// create list with all named complex types (including parent types) 
 		// TODO: This will create an entity for a SimpleType that is "extended" to become a ComplexType
+		
+		///////////////////////////////////////////////////////////////////////
+		// Identify all the named complexTypes
+		///////////////////////////////////////////////////////////////////////
 		Entity currentTypeEntity = null, parentTypeEntity = null;
 		while (complexTypes.hasMoreElements()) {
+			
+			
 			XMLType ct = (XMLType) complexTypes.nextElement();
-				
+			
+			if (ct.getName().equals("CargoListType")){
+				System.err.println("");
+			}
+			
 			if (namedTypes.get(ct.hashCode()) == null ){
 				namedTypes.put(ct.hashCode(),(ComplexType)ct);
 				currentTypeEntity = new Entity(nextId(), ct.getName(), this.getDocumentation(ct), 0);
@@ -160,15 +170,27 @@ public class XSDImporter extends SchemaImporter
 					parentTypeEntity = (Entity)schemaElementsHS.get(ctHashcodeEntityName.get(ct.hashCode()));
 				}
 				
-				
+				if (parentTypeEntity == null || currentTypeEntity == null) {
+					System.err.println("");
+				}
 				Subtype sub = new Subtype(nextId(), parentTypeEntity.getId(), currentTypeEntity.getId(), 0);
 				schemaElementsHS.put(this.compString(sub), sub);
 				currentTypeEntity = parentTypeEntity;
 			}
 		}
 
+		////////////////////////////////////////////////////////////////////////////
+		// Process all the named complexTypes
+		////////////////////////////////////////////////////////////////////////////
 		for (ComplexType currComplexType : namedTypes.values()){ 
 	
+			currentTypeEntity = (Entity)schemaElementsHS.get(ctHashcodeEntityName.get(currComplexType.hashCode()));
+			if (currComplexType.getName().equals("CargoListType")){
+				System.err.println("wtf");
+			}
+			
+			
+			
 			// get attrs for current complexType
 			Enumeration currComplexTypeAttrs = currComplexType.getAttributeDecls();
 			while (currComplexTypeAttrs.hasMoreElements()) {
