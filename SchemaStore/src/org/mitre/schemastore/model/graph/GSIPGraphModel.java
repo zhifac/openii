@@ -5,6 +5,7 @@ package org.mitre.schemastore.model.graph;
 import java.util.*;
 
 import org.mitre.schemastore.model.Attribute;
+import org.mitre.schemastore.model.Containment;
 import org.mitre.schemastore.model.Domain;
 import org.mitre.schemastore.model.DomainValue;
 import org.mitre.schemastore.model.Entity;
@@ -171,4 +172,21 @@ public class GSIPGraphModel extends GraphModel
     	}
     };
 	
+    /** Returns the type name associated with the specified element (or NULL if element has no name) */
+	public String getType(HierarchicalGraph graph, Integer elementID)
+	{
+		SchemaElement element = graph.getElement(elementID);
+		SchemaElement childElement = null;
+		
+		if(element instanceof Containment)
+			childElement = graph.getElement(((Containment)element).getChildID());
+				
+		else if (element instanceof Attribute)
+			childElement = graph.getElement(((Attribute)element).getDomainID());
+		
+		if (childElement != null && childElement.getName() != null && childElement.getName().length() > 0)
+			return childElement.getName();
+
+		return null;	
+	}
 }
