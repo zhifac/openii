@@ -212,7 +212,7 @@ public class SchemaView extends OpenIIEditor
 			Integer id = containment.getId();
 			String name = containment.getName();
 			String parentElement = containment.getParentID()==null ? "" : graph.getElement(containment.getParentID()).getName() + " (" + containment.getParentID() + ")";
-			String childElement = graph.getElement(containment.getChildID()).getName() + " (" + containment.getParentID() + ")";
+			String childElement = graph.getElement(containment.getChildID()).getName() + " (" + containment.getChildID() + ")";
 			Integer min = containment.getMin();
 			Integer max = containment.getMax();
 			String description = containment.getDescription();
@@ -229,7 +229,7 @@ public class SchemaView extends OpenIIEditor
 			Integer id = subtype.getId();
 			String name = subtype.getName();
 			String parentElement = graph.getElement(subtype.getParentID()).getName() + " (" + subtype.getParentID() + ")";
-			String childElement = graph.getElement(subtype.getChildID()).getName() + " (" + subtype.getParentID() + ")";
+			String childElement = graph.getElement(subtype.getChildID()).getName() + " (" + subtype.getChildID() + ")";
 			String description = subtype.getDescription();
 			createTableItem(table,new Object[]{id,name,parentElement,childElement,description});
 		}
