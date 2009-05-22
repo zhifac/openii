@@ -6,6 +6,7 @@ import java.util.ArrayList;
 
 import org.mitre.schemastore.model.Attribute;
 import org.mitre.schemastore.model.Containment;
+import org.mitre.schemastore.model.Relationship;
 import org.mitre.schemastore.model.Domain;
 import org.mitre.schemastore.model.Entity;
 import org.mitre.schemastore.model.SchemaElement;
@@ -61,6 +62,13 @@ public class RelationalGraphModel extends GraphModel
 			parentElements.add(graph.getElement(parentID));
 		}
 
+		// If element is relationship, return 
+		if (element instanceof Relationship)
+		{
+			parentElements.add(graph.getElement(((Relationship)element).getLeftID()));
+			parentElements.add(graph.getElement(((Relationship)element).getRightID()));
+		}
+		
 		return parentElements;
 	}
 	
@@ -76,7 +84,16 @@ public class RelationalGraphModel extends GraphModel
 			// Retrieve entity attributes		
 			for(Attribute value : graph.getAttributes(elementID))
 				childElements.add(value);
-
+	
+			// Retrieve containments as children.
+			for (Containment containment : graph.getContainments(element.getId()))
+				if(elementID.equals(containment.getParentID()) && !containment.getName().equals(""))
+					childElements.add(containment);
+			
+			// Retrieve relationships as children
+			for (Relationship rel : graph.getRelationships(elementID))
+				childElements.add(rel);
+			
 			// Retrieve subtypes as children
 			for (Subtype subtype : graph.getSubTypes(element.getId()))
 			{
@@ -84,11 +101,6 @@ public class RelationalGraphModel extends GraphModel
 				if (!elementID.equals(childID))
 					childElements.add(graph.getElement(childID));
 			}
-
-			// Retrieve containments as children.
-			for (Containment containment : graph.getContainments(element.getId()))
-				if(elementID.equals(containment.getParentID()) && !containment.getName().equals(""))
-					childElements.add(containment);
 		}
 
 		return childElements;
