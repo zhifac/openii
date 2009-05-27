@@ -185,7 +185,7 @@ public class SchemaView extends OpenIIEditor
 		attributes.putValue("Source", schema.getSource());
 		attributes.putValue("Type", schema.getType());
 		attributes.putValue("Description", schema.getDescription());
-		ExpandBarWidgets.createPropertiesPane(bar,attributes);
+		ExpandBarWidgets.createPropertiesPane(bar,"Schema Properties",attributes);
 		
 		// Generate the element panes in the schema view
 		generateElementPanes(bar);

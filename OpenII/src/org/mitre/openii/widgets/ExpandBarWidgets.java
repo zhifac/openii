@@ -35,7 +35,7 @@ public class ExpandBarWidgets
 	}
 	
 	/** Creates a properties pane */
-	static public void createPropertiesPane(ExpandBar bar, Attributes attributes)
+	static public void createPropertiesPane(ExpandBar bar, String title, Attributes attributes)
 	{
 		// Construct the pane for showing the info for the schema properties
 		Composite pane = new Composite(bar, SWT.NONE);
@@ -53,7 +53,7 @@ public class ExpandBarWidgets
 		}
 		
 		// Create the Expand Item containing the properties
-		createExpandItem(bar,"Schema Properties",pane);
+		createExpandItem(bar,title,pane);
 	}
 	
 	/** Creates a table pane */
