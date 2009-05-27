@@ -199,7 +199,7 @@ public class MappingView extends OpenIIEditor implements ISelectionChangedListen
 		attributes.putValue("Name",mapping.getName());
 		attributes.putValue("Author",mapping.getAuthor());
 		attributes.putValue("Description",mapping.getDescription());
-		ExpandBarWidgets.createPropertiesPane(bar, attributes);
+		ExpandBarWidgets.createPropertiesPane(bar, "Mapping Properties", attributes);
 		
 		// Generate a pane showing the mapping schemas
 		generateSchemasPane(bar);
