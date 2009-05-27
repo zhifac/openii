@@ -6,7 +6,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.jar.Attributes;
 
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -195,10 +194,10 @@ public class MappingView extends OpenIIEditor implements ISelectionChangedListen
 		bar.setSpacing(8);
 
 		// Creates the properties pane
-		Attributes attributes = new Attributes();
-		attributes.putValue("Name",mapping.getName());
-		attributes.putValue("Author",mapping.getAuthor());
-		attributes.putValue("Description",mapping.getDescription());
+		ArrayList<String> attributes = new ArrayList<String>();
+		attributes.add("Name:"+mapping.getName());
+		attributes.add("Author:"+mapping.getAuthor());
+		attributes.add("Description:"+mapping.getDescription());
 		ExpandBarWidgets.createPropertiesPane(bar, "Mapping Properties", attributes);
 		
 		// Generate a pane showing the mapping schemas
