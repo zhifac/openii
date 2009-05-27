@@ -5,9 +5,11 @@ package org.mitre.schemastore.model.graph.model;
 import java.util.ArrayList;
 
 import org.mitre.schemastore.model.Attribute;
+import org.mitre.schemastore.model.Entity;
 import org.mitre.schemastore.model.Containment;
 import org.mitre.schemastore.model.Domain;
 import org.mitre.schemastore.model.SchemaElement;
+import org.mitre.schemastore.model.Subtype;
 import org.mitre.schemastore.model.graph.HierarchicalGraph;
 
 /**
@@ -63,14 +65,41 @@ public class XMLGraphModel extends GraphModel
 		{
 			Integer childID = ((Containment)element).getChildID();
 
+			// Build list of all IDs for super-type entities
+			ArrayList<Integer> superTypeIDs = new ArrayList<Integer>();
+			ArrayList<Boolean> processedIDs= new ArrayList<Boolean>();
+			superTypeIDs.add(childID);
+			processedIDs.add(false);
+			
+			boolean workLeft = true;
+			while (workLeft){
+				for (int i = 0; i<superTypeIDs.size();i++){
+					if (processedIDs.get(i).equals(false)){
+						for (Subtype s : graph.getSubTypes(superTypeIDs.get(i))){
+							if (s.getChildID().equals(superTypeIDs.get(i))){
+								superTypeIDs.add(s.getParentID());
+								processedIDs.add(false);
+							}
+						}
+						processedIDs.set(i, true);
+					}
+				}
+				workLeft = false;
+				for (int i = 0; i<superTypeIDs.size();i++)
+					if (processedIDs.get(i).equals(false))
+						workLeft = true;
+			}
+				
 			// Retrieves all containments whose parent is the child ID
-			for(Containment containment : graph.getContainments(childID))
-				if(childID.equals(containment.getParentID()))
-					childElements.add(containment);
+			for (Integer id : superTypeIDs)
+				for(Containment containment : graph.getContainments(id))
+					if(id.equals(containment.getParentID()))
+						childElements.add(containment);
 
 			// Retrieves all attributes whose element is the child ID
-			for(Attribute attribute : graph.getAttributes(childID))
-				childElements.add(attribute);
+			for (Integer id : superTypeIDs)
+				for(Attribute attribute : graph.getAttributes(id))
+					childElements.add(attribute);
 		}
 			
 		return childElements;
