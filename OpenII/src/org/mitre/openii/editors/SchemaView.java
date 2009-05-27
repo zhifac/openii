@@ -3,7 +3,6 @@ package org.mitre.openii.editors;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.jar.Attributes;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
@@ -178,13 +177,13 @@ public class SchemaView extends OpenIIEditor
 		bar.setSpacing(8);
 
 		// Creates the properties pane
-		Attributes attributes = new Attributes();
+		ArrayList<String> attributes = new ArrayList<String>();
 		Schema schema = OpenIIManager.getSchema(elementID);
-		attributes.putValue("Name", schema.getName());
-		attributes.putValue("Author", schema.getAuthor());
-		attributes.putValue("Source", schema.getSource());
-		attributes.putValue("Type", schema.getType());
-		attributes.putValue("Description", schema.getDescription());
+		attributes.add("Name:"+schema.getName());
+		attributes.add("Author:"+schema.getAuthor());
+		attributes.add("Source:"+schema.getSource());
+		attributes.add("Type:"+schema.getType());
+		attributes.add("Description:"+schema.getDescription());
 		ExpandBarWidgets.createPropertiesPane(bar,"Schema Properties",attributes);
 		
 		// Generate the element panes in the schema view

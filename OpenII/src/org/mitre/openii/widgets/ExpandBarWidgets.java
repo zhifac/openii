@@ -1,7 +1,6 @@
 package org.mitre.openii.widgets;
 
 import java.util.ArrayList;
-import java.util.jar.Attributes;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -35,7 +34,7 @@ public class ExpandBarWidgets
 	}
 	
 	/** Creates a properties pane */
-	static public void createPropertiesPane(ExpandBar bar, String title, Attributes attributes)
+	static public void createPropertiesPane(ExpandBar bar, String title, ArrayList<String> attributes)
 	{
 		// Construct the pane for showing the info for the schema properties
 		Composite pane = new Composite(bar, SWT.NONE);
@@ -44,10 +43,15 @@ public class ExpandBarWidgets
 		pane.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
 		
 		// Generate the property fields to be displayed by the info pane
-		for(Object key : attributes.keySet())
+		for(String attribute : attributes)
 		{
-			Text field = BasicWidgets.createTextField(pane,key.toString());		
-			field.setText(attributes.get(key).toString());
+			// Retrieve the attribute name and value
+			String name = attribute.replaceAll(":.*","");
+			String value = attribute.replaceFirst("[^:]*:","");
+			
+			// Generate the property field
+			Text field = BasicWidgets.createTextField(pane,name);		
+			field.setText(value);
 			field.setEditable(false);
 			field.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));		
 		}
