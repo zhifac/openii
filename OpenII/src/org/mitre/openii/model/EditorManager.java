@@ -49,6 +49,6 @@ public class EditorManager
 	{
 		IEditorRegistry registry = PlatformUI.getWorkbench().getEditorRegistry();
 		IEditorDescriptor editor = registry.getDefaultEditor(EditorManager.getEditorType(element));
-		launchEditor(editor.getId(), element);
+		if(editor!=null) launchEditor(editor.getId(), element);
 	}
 }
