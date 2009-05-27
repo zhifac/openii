@@ -84,7 +84,7 @@ public class ManagerMenuManager extends MenuManager implements IMenuListener
 	}
 	
 	/** Generates the action menu */
-	private void getYggMenu(IMenuManager menuManager)
+	private void getManagerMenu(IMenuManager menuManager)
 	{
 		// Display the menu for the "Schemas" header
 		if(element instanceof String && element.equals("Schemas"))
@@ -144,6 +144,6 @@ public class ManagerMenuManager extends MenuManager implements IMenuListener
 		element = ((StructuredSelection)viewer.getSelection()).getFirstElement();
 		getEditorMenu(menuManager);
 		menuManager.add(new Separator());
-		getYggMenu(menuManager);		
+		getManagerMenu(menuManager);		
 	}
 }
