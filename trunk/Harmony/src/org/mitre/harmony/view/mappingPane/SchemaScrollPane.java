@@ -79,20 +79,28 @@ public class SchemaScrollPane extends JScrollPane implements AdjustmentListener,
 		// Gets the matched elements
 		HashMap<Integer,SearchResult> matches = harmonyModel.getSearchManager().getMatches(tree.getSide());
 		
-		// Select the match IDs
+		// Identify the matched paths
+		ArrayList<TreePath> paths = new ArrayList<TreePath>();
 		Enumeration subNodes = tree.root.depthFirstEnumeration();
 		while(subNodes.hasMoreElements())
 		{
 			DefaultMutableTreeNode node = (DefaultMutableTreeNode)subNodes.nextElement();
 			if(!node.isRoot() && node.getUserObject() instanceof Integer)
 				if(matches.containsKey(node.getUserObject()))
-				{
-					TreePath path = new TreePath(node.getPath());
-					searchResultRows.add(tree.getRowForPath(path));
-					tree.expandFullPath(path);
-				}
+					paths.add(new TreePath(node.getPath()));
 		}
+		
+		// Expand the paths and mark the rows
+		for(TreePath path : paths) tree.expandFullPath(path);
+		for(TreePath path : paths) searchResultRows.add(tree.getRowForPath(path));
 
+		// Inform tree listeners of the modified tree structure
+		tree.removeSchemaTreeListener(this);
+		for(SchemaTreeListener listener : tree.getSchemaTreeListeners())
+			listener.schemaStructureModified(tree);
+		tree.addSchemaTreeListener(this);	
+		
+		// Repaint the scroll bar
 		repaint();
 	}
 	

@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Hashtable;
-import java.util.Vector;
 
 import javax.swing.JLabel;
 import javax.swing.JTree;
@@ -268,8 +267,8 @@ public class SchemaTree extends JTree implements PreferencesListener, SelectedIn
 	public void expandPath(TreePath path)
 	{
 		super.expandPath(path);
-		for(SchemaTreeListener treeListener : treeListeners)
-			treeListener.schemaDisplayModified(this);
+		for(SchemaTreeListener listener : listeners)
+			listener.schemaDisplayModified(this);
 	}
 
 	/** Expands the specified tree path (expand any hidden parents) */
@@ -296,8 +295,8 @@ public class SchemaTree extends JTree implements PreferencesListener, SelectedIn
 		}
 		
 		// Inform listeners of change to schema tree
-		for(SchemaTreeListener treeListener : treeListeners)
-			treeListener.schemaDisplayModified(this);
+		for(SchemaTreeListener listener : listeners)
+			listener.schemaDisplayModified(this);
 	}
 	
 	/** Collapses the specified tree path */
@@ -306,8 +305,8 @@ public class SchemaTree extends JTree implements PreferencesListener, SelectedIn
 		if(path.getParentPath()!=null)
 		{
 			super.collapsePath(path);
-			for(SchemaTreeListener treeListener : treeListeners)
-				treeListener.schemaDisplayModified(this);
+			for(SchemaTreeListener listener : listeners)
+				listener.schemaDisplayModified(this);
 		}
 	}
 	
@@ -326,8 +325,8 @@ public class SchemaTree extends JTree implements PreferencesListener, SelectedIn
 		}
 		
 		// Inform listeners of change to schema tree
-		for(SchemaTreeListener treeListener : treeListeners)
-			treeListener.schemaDisplayModified(this);
+		for(SchemaTreeListener listener : listeners)
+			listener.schemaDisplayModified(this);
 	}
 	
 	/** This method marks the specified tree node as finished (or not), including its descendants */
@@ -506,8 +505,8 @@ public class SchemaTree extends JTree implements PreferencesListener, SelectedIn
 		}
 		
 		// Inform listeners that schema tree nodes have changed
-		for(SchemaTreeListener treeListener : treeListeners) {
-			treeListener.schemaDisplayModified(this);
+		for(SchemaTreeListener listener : listeners) {
+			listener.schemaDisplayModified(this);
 		}
 	}
 	
@@ -538,9 +537,11 @@ public class SchemaTree extends JTree implements PreferencesListener, SelectedIn
 	public void mouseDragged(MouseEvent e) {}
 	
 	// Allows classes to listen for schema tree changes
-	Vector<SchemaTreeListener> treeListeners = new Vector<SchemaTreeListener>();
-	public void addSchemaTreeListener(SchemaTreeListener obj) { treeListeners.add(obj); }	
-	public void removeSchemaTreeListener(SchemaTreeListener obj) { treeListeners.remove(obj); }
+	private ArrayList<SchemaTreeListener> listeners = new ArrayList<SchemaTreeListener>();
+	public void addSchemaTreeListener(SchemaTreeListener obj) { listeners.add(obj); }	
+	public void removeSchemaTreeListener(SchemaTreeListener obj) { listeners.remove(obj); }
+	public ArrayList<SchemaTreeListener> getSchemaTreeListeners()
+		{ return new ArrayList<SchemaTreeListener>(listeners); }
 	
 	// This stroke uses the default values for everything except the dash pattern
 	private static final float SPACE = 4.0f;
