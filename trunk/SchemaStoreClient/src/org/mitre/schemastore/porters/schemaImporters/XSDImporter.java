@@ -26,22 +26,17 @@ import org.mitre.schemastore.porters.ImporterException;
  */
 public class XSDImporter extends SchemaImporter
 {
-	// Statistics about XSD file
 	public static final int UNASSIGNED_CHILD_ID = -1; 
 
-	private org.exolab.castor.xml.schema.Schema xmlSchema; // XML Schema being parsed by the schema
+	// XML Schema being parsed
+	private org.exolab.castor.xml.schema.Schema xmlSchema;  
 
-	// Stores the schema objects (entities, attributes and relationships) 
+	// Stores the M3 schema elements (entities, attributes, domain, relationships, etc.) 
 	private HashMap<String, SchemaElement> schemaElementsHS = new HashMap<String, SchemaElement>();
 
-	// Keeps track of complex elements to prevent looping
-	private HashMap<String, Entity> processedComplexTypeList = new HashMap<String, Entity>();
-
-	// Stores the preset Domains for use during Attribute creation
-	private HashMap<String, Domain> domainList = new HashMap<String, Domain>();
-
-	private HashMap<String, ArrayList<Containment>> containmentList = new HashMap<String, ArrayList<Containment>>();
-
+	private HashMap<String,Domain> domainList = new HashMap<String,Domain>();
+	
+	// Stores the unique "Any" entity
 	private Entity anyEntity;
 	
 	/** Returns the importer name */
@@ -64,8 +59,6 @@ public class XSDImporter extends SchemaImporter
 		return fileTypes;
 	}
 	
-	
-	
 	/** Initializes the importer for the specified URI */
 	protected void initialize() throws ImporterException
 	{
@@ -74,9 +67,6 @@ public class XSDImporter extends SchemaImporter
 			
 			// reset the Importer
 			schemaElementsHS = new HashMap<String, SchemaElement>();
-			processedComplexTypeList = new HashMap<String, Entity>();
-			domainList = new HashMap<String, Domain>();
-			containmentList = new HashMap<String, ArrayList<Containment>>();
 			
 			// Preset domains and then identify entities, attributes, and relationships in this schema
 			loadDomains();
@@ -101,548 +91,213 @@ public class XSDImporter extends SchemaImporter
 	 *         may be 1) SimpleTypes, 2) ComplexTypes, or 3) Elements
 	 */
 	@SuppressWarnings("unchecked")
-	public ArrayList<ElementDecl> getRootElements()
+	public void getRootElements()
 	{	
-		//////////////////////////////////////////////
-		/////// Process all simple types
-		///////////////////////////////////////////////
-
-		//// Each SimpleType should be translated into a Domain
+		// Each root SimpleType should be translated into a Domain
 		Enumeration simpleTypes = xmlSchema.getSimpleTypes();
-		while (simpleTypes.hasMoreElements()) {
-			
-			// Translate each Simple Type to a domain
-			processSimpleType((SimpleType) simpleTypes.nextElement());
-			
-		}
+		while (simpleTypes.hasMoreElements())
+			processSimpleType((SimpleType) simpleTypes.nextElement(), null);
 		
-			
-		////////////////////////////////////////////////////////
-		/////// Process all named complex types
-		////////////////////////////////////////////////////////
-
-		// Each complexType should be translated to an Entity
+		// Each root ComplexType should be translated into an Entity
 		Enumeration complexTypes = xmlSchema.getComplexTypes();
+		while (complexTypes.hasMoreElements())
+			processComplexType((ComplexType) complexTypes.nextElement(), null);
 		
-		// build list of all named entities
-		HashMap<Integer,ComplexType> namedTypes = new HashMap<Integer,ComplexType>();
-		HashMap<Integer,String> ctHashcodeEntityName = new HashMap<Integer,String>();
-		// create list with all named complex types (including parent types) 
-		// TODO: This will create an entity for a SimpleType that is "extended" to become a ComplexType
-		
-		///////////////////////////////////////////////////////////////////////
-		// Identify all the named complexTypes
-		///////////////////////////////////////////////////////////////////////
-		Entity currentTypeEntity = null, parentTypeEntity = null;
-		while (complexTypes.hasMoreElements()) {
-			
-			
-			XMLType ct = (XMLType) complexTypes.nextElement();
-			
-			if (ct.getName().equals("CargoListType")){
-				System.err.println("");
-			}
-			
-			if (namedTypes.get(ct.hashCode()) == null ){
-				namedTypes.put(ct.hashCode(),(ComplexType)ct);
-				currentTypeEntity = new Entity(nextId(), ct.getName(), this.getDocumentation(ct), 0);
-				if (schemaElementsHS.containsKey(this.compString(currentTypeEntity)) == false) {
-					schemaElementsHS.put(this.compString(currentTypeEntity), currentTypeEntity);
-					processedComplexTypeList.put(currentTypeEntity.getName(), currentTypeEntity);
-					ctHashcodeEntityName.put(ct.hashCode(), this.compString(currentTypeEntity));
-				}
-			}
-		
-			while (ct.getBaseType() != null){
-				
-				ct = ct.getBaseType();
-								
-				if (ct instanceof ComplexType && namedTypes.get(ct.hashCode()) == null){
-				
-					// check if Entity for parent type created; IF NOT then create new Entity 
-					parentTypeEntity = new Entity(nextId(),ct.getName(), this.getDocumentation(ct), 0);
-					schemaElementsHS.put(this.compString(parentTypeEntity), parentTypeEntity);
-					processedComplexTypeList.put(parentTypeEntity.getName(), parentTypeEntity);
-					namedTypes.put(ct.hashCode(), (ComplexType)ct);
-					ctHashcodeEntityName.put(ct.hashCode(),this.compString(parentTypeEntity));
-				}
-				else if (namedTypes.get(ct.hashCode()) != null){
-					parentTypeEntity = (Entity)schemaElementsHS.get(ctHashcodeEntityName.get(ct.hashCode()));
-				}
-				
-				if (parentTypeEntity == null || currentTypeEntity == null) {
-					System.err.println("");
-				}
-				Subtype sub = new Subtype(nextId(), parentTypeEntity.getId(), currentTypeEntity.getId(), 0);
-				schemaElementsHS.put(this.compString(sub), sub);
-				currentTypeEntity = parentTypeEntity;
-			}
-		}
-
-		////////////////////////////////////////////////////////////////////////////
-		// Process all the named complexTypes
-		////////////////////////////////////////////////////////////////////////////
-		for (ComplexType currComplexType : namedTypes.values()){ 
-	
-			currentTypeEntity = (Entity)schemaElementsHS.get(ctHashcodeEntityName.get(currComplexType.hashCode()));
-			if (currComplexType.getName().equals("CargoListType")){
-				System.err.println("wtf");
-			}
-			
-			
-			
-			// get attrs for current complexType
-			Enumeration currComplexTypeAttrs = currComplexType.getAttributeDecls();
-			while (currComplexTypeAttrs.hasMoreElements()) {
-				AttributeDecl attr = (AttributeDecl) currComplexTypeAttrs.nextElement();			
-				String typeName = "String";
-				SimpleType simpleType = attr.getSimpleType();
-				if ((simpleType != null) && (simpleType.getName() != null) && (simpleType.getName().length() > 0)) 
-					typeName = simpleType.getName();
-				
-				if (typeName.equals("IDREF") || typeName.equals("IDREFS") ){
-					
-					/*   
-					 * Finally, the IDREF element/attribute will become a named 
-					 * relationship that links the parent entity to ANY entity
-					 */
-					if (this.anyEntity == null){
-						this.anyEntity = new Entity(nextId(),"ANY","ANY ENTITY",0);
-						schemaElementsHS.put(this.compString(this.anyEntity),this.anyEntity);
-					}	
-					Integer rightMax = ( typeName.equals("IDREFS") ) ? null : 1;   
-
-					// Create a relationship
-					Relationship rel = new Relationship(nextId(),attr.getName(),currentTypeEntity.getId(),0,1,this.anyEntity.getId(),0,rightMax,0);
-					
-					if (schemaElementsHS.containsKey(this.compString(rel)) == false) {
-						schemaElementsHS.put(this.compString(rel),rel);
-					}
-					
-				} else {
-					
-					// obtain the proper domain from the preset list
-					Domain domain = domainList.get(typeName);
-					if (domain == null) {
-						domain = new Domain(nextId(), typeName, this.getDocumentation(simpleType), 0);
-						if (schemaElementsHS.containsKey(this.compString(domain)) == false) {
-							schemaElementsHS.put(this.compString(domain),domain);
-							domainList.put(typeName, domain);
-						}
-					} 
-					boolean containsID = typeName.equals("ID");
-					Attribute attribute = new Attribute(nextId(), attr.getName(), getDocumentation(attr), currentTypeEntity.getId(),domain.getId(), 1,1,containsID,0);
-					if (schemaElementsHS.containsKey(this.compString(attribute)) == false) {
-						schemaElementsHS.put(this.compString(attribute),attribute);
-					}
-				}
-			} // while (currComplexTypeAttrs.hasMoreElements()) {
-
-			// get elements for current complexType (whose entity is currentTypeEntity)
-			Enumeration currComplexTypeElements = currComplexType.enumerate();
-			
-			while (currComplexTypeElements.hasMoreElements()) {
-				Group group = (Group)currComplexTypeElements.nextElement();
-				Enumeration e = group.enumerate();
-				while (e.hasMoreElements()) {
-					
-					Object obj = e.nextElement();
-					// handle special cases (WildCard)
-					if (obj instanceof Wildcard){
-						// add containment to ANY domain
-						Domain anyDomain = domainList.get("Any");
-						if (anyDomain == null) {
-							System.out.println("[E] anyDomain is NULL");
-						}
-						Containment containment = new Containment(nextId(),"", this.getDocumentation((Annotated)obj),
-								currentTypeEntity.getId(), anyDomain.getId(), 0, 1, 0);
-						if (schemaElementsHS.containsKey(this.compString(containment)) == false) {
-							schemaElementsHS.put(this.compString(containment),containment);
-							processContainment(containment,false);
-						}
-						
-					} else if (obj instanceof Group){
-						//System.out.println("currentComplexType has a Group " + ((Group)obj).getName() + " , " +  ((Group)obj).getParticleCount());
-						processGroup((Group)obj, currentTypeEntity);
-						
-					} else  {
-						ElementDecl childElement = (ElementDecl) obj;
-						XMLType childElementType = childElement.getType();
-						
-						if (false && childElement.isReference()){
-							// create NEW containment 
-							Containment containment = new Containment(nextId(), childElement.getName(), this.getDocumentation(childElement),
-									currentTypeEntity.getId(), UNASSIGNED_CHILD_ID, childElement.getMinOccurs(), childElement.getMaxOccurs(), 0);
-							processContainment(containment,true);
-						
-						} else {
-						
-							//// If the element type is 1) NULL or 2) SimpleType THEN we are at leaf
-							if ((childElementType == null) || (childElementType instanceof SimpleType)) {				
-								processSimpleType(childElement, currentTypeEntity.getId());
-								
-							} else {
-								Entity childElementComplexTypeEntity = this.processedComplexTypeList.get(childElementType.getName());
-								if (childElementComplexTypeEntity != null){
-									//// add containment (currentTypeEntity, childElementComplexTypeEntity)
-									Containment containment = new Containment(nextId(), childElement.getName(),
-											this.getDocumentation(childElement), currentTypeEntity.getId(), childElementComplexTypeEntity.getId(), childElement.getMinOccurs(), childElement.getMaxOccurs(), 0);
-									if (schemaElementsHS.containsKey(this.compString(containment)) == false) {
-										schemaElementsHS.put(this.compString(containment),containment);
-										processContainment(containment,false);
-									}		
-								}
-								else { 
-									// add entity for complex type
-									String childElementComplexTypeName = childElementType.getName();
-									if ((childElementComplexTypeName == null) ||(childElementComplexTypeName.length() == 0)){
-										childElementComplexTypeEntity = new Entity(nextId(), "", this.getDocumentation(childElementType), 0);	
-										schemaElementsHS.put(this.compString(childElementComplexTypeEntity), childElementComplexTypeEntity);
-									} else {
-										childElementComplexTypeEntity = new Entity(nextId(), childElementComplexTypeName, this.getDocumentation(childElementType), 0);
-										schemaElementsHS.put(this.compString(childElementComplexTypeEntity), childElementComplexTypeEntity);
-										this.processedComplexTypeList.put(childElementComplexTypeEntity.getName(), childElementComplexTypeEntity);
-									}
-									Containment containment = new Containment(nextId(), childElement.getName(),
-										this.getDocumentation(childElement), currentTypeEntity.getId(), childElementComplexTypeEntity.getId(), childElement.getMinOccurs(), childElement.getMaxOccurs(), 0);
-									if (schemaElementsHS.containsKey(this.compString(containment)) == false) {
-										schemaElementsHS.put(this.compString(containment),containment);
-										processContainment(containment,false);
-									}
-									if (childElement.getType() instanceof ComplexType)
-										processComplexTypeEntity(childElement, childElementComplexTypeEntity);
-								}
-							}
-						} // end else if (childElement.isReference()){
-					} // end else if (obj instanceof Wildcard)
-				} // end while (e.hasMoreElements()) {
-				 
-			} // while (currComplexTypeElements.hasMoreElements()) {
-		} // while (complexTypeNames.hasMoreElements()){ 
-
-		//////////////////////////////////////////////////////////////////
-		//  Process all top-level elements ///////////////////////////////
-		//////////////////////////////////////////////////////////////////
+		// Each root Element should be translated into a Containment (with schema as parent)
 		Enumeration elements = xmlSchema.getElementDecls();
-		while (elements.hasMoreElements()) {
-			
-			ElementDecl element = (ElementDecl) elements.nextElement();
-			
-			if (false && element.isReference()){
-				// create NEW containment for schema to referenced element 
-				Containment containment = new Containment(nextId(), element.getName(), this.getDocumentation(element),
-						null, UNASSIGNED_CHILD_ID, element.getMinOccurs(), element.getMaxOccurs(), 0);
-				processContainment(containment,true);
-			
-			} else {
+		while (elements.hasMoreElements()) 
+			processElement((ElementDecl) elements.nextElement(), null);
 		
-				// process element with Simple Type OR No Type
-				if ((element.getType() == null) || (element.getType() instanceof AnyType) || (element.getType() instanceof SimpleType)) {
-					 processSimpleType(element,null);
-				} 
-
-				// process element with a Complex Type
-				else { 
-					Entity complexTypeEntity = this.processedComplexTypeList.get(((ComplexType)element.getType()).getName());
-					if (complexTypeEntity != null){
-						//// add containment (schema, complexTypeEntity)
-						Containment containment = new Containment(nextId(), element.getName(), 
-								this.getDocumentation(element), null, complexTypeEntity.getId(), 0, 1, 0);
-						if (schemaElementsHS.containsKey(this.compString(containment)) == false) {
-							schemaElementsHS.put(this.compString(containment),containment);
-							processContainment(containment,false);
-						}	
-					}
-					else { 
-						String name = ((ComplexType)element.getType()).getName();
-						if ((name == null) || (name.length() == 0)){
-							complexTypeEntity = new Entity(nextId(), "", this.getDocumentation(element.getType()), 0);
-							this.schemaElementsHS.put(this.compString(complexTypeEntity), complexTypeEntity);
-						} else {
-							complexTypeEntity = new Entity(nextId(), name, this.getDocumentation(element.getType()), 0);
-							this.schemaElementsHS.put(this.compString(complexTypeEntity), complexTypeEntity);
-							this.processedComplexTypeList.put(complexTypeEntity.getName(), complexTypeEntity);
-						}
-						//// add containment (schema, complexTypeEntity)
-						Containment containment = new Containment(nextId(), element.getName(), 
-							this.getDocumentation(element), null, complexTypeEntity.getId(), 0, 1, 0);
-						if (schemaElementsHS.containsKey(this.compString(containment)) == false) {
-							schemaElementsHS.put(this.compString(containment),containment);
-							processContainment(containment,false);
-						}
-						if (element.getType() instanceof AnyType) System.err.println("AnyType -- 350");
-						processComplexTypeEntity(element, complexTypeEntity);
-						
-					} // else if (complexTypeEntity != null){
-				} // end else if ((element.getType() == null) || (element.getType() instanceof SimpleType)) {
-			} // if (element.isReference()){
-		}// while (elements.hasMoreElements()) {
-		
-		// Return the list of root elements
-		return new ArrayList<ElementDecl>();
 	}
-
 	
-
-	public void processComplexTypeEntity(ElementDecl complexTypeElement, Entity complexTypeEntity){
-		
-		// get the attributes for the complex type
-		Enumeration<?> currElementAttrList = ((ComplexType)complexTypeElement.getType()).getAttributeDecls();		
-		while (currElementAttrList.hasMoreElements()) {
-			
-			AttributeDecl attr = (AttributeDecl) currElementAttrList.nextElement();
-			
-			String typeName = "String";
-			SimpleType simpleType = attr.getSimpleType();
-			if ((simpleType != null) && (simpleType.getName() != null) && (simpleType.getName().length() > 0)) 
-				typeName = simpleType.getName();
-			
-			
-			if (typeName.equals("IDREF") || typeName.equals("IDREFS")){
-				
-				/*   
-				 *  the IDREF element/attribute will become a named 
-				 * relationship that links the parent entity to ANY entity
-				 */
-				
-				if (this.anyEntity == null){
-					this.anyEntity = new Entity(nextId(),"ANY","ANY ENTITY",0);
-					schemaElementsHS.put(this.compString(this.anyEntity),this.anyEntity);
-				}	
-				
-				Integer rightMax = ( typeName.equals("IDREFS") ) ? null : 1;   
-				// Create a relationship for the ID-REF
-				Relationship rel = new Relationship(nextId(),attr.getName(),complexTypeEntity.getId(),0,1,this.anyEntity.getId(),0,rightMax,0);
-				if (schemaElementsHS.containsKey(this.compString(rel)) == false) {
-					schemaElementsHS.put(this.compString(rel),rel);
-				}
-				
-				
-			} else {
-				
-				// obtain the proper domain from the preset list
-				Domain domain = domainList.get(typeName);
-				if (domain == null) {
-					domain = new Domain(nextId(), typeName, this.getDocumentation(simpleType), 0);
-					if (schemaElementsHS.containsKey(this.compString(domain)) == false) {
-						schemaElementsHS.put(this.compString(domain),domain);
-						domainList.put(typeName, domain);
-				
-					}
-				} 
-				boolean containsID = typeName.equals("ID");
-				Attribute attribute = new Attribute(nextId(), attr.getName(), this.getDocumentation(attr), complexTypeEntity.getId(),domain.getId(),1,1,containsID, 0);
-				if (schemaElementsHS.containsKey(this.compString(attribute)) == false) {
-					schemaElementsHS.put(this.compString(attribute),attribute);
-				}
-			}
-		} // while (attrList.hasMoreElements()){
-		
-		
-		
-		Enumeration<?> currComplexTypeElements = ((ComplexType)complexTypeElement.getType()).enumerate();
-		while (currComplexTypeElements.hasMoreElements()) {
-			
-			Group group = (Group)currComplexTypeElements.nextElement();
-			Enumeration<?> e = group.enumerate();
-			while (e.hasMoreElements()) {
-		
-				Object obj = e.nextElement();
-				
-				//// handle special cases (WildCard / Any)
-				if (obj instanceof Wildcard){
-					//// add containment to ANY domain
-					Domain anyDomain = domainList.get("Any");
-					Containment containment = new Containment(nextId(),"", this.getDocumentation((Annotated)obj),
-							null, anyDomain.getId(), 0, 1, 0);
-					if (schemaElementsHS.containsKey(this.compString(containment)) == false) {
-						schemaElementsHS.put(this.compString(containment),containment);
-						processContainment(containment,false);
-					}		
-				} else if (obj instanceof Group){
-					//System.out.println("currentComplexType has a Group " + ((Group)obj).getName() + " , " +  ((Group)obj).getParticleCount());
-					processGroup((Group)obj, complexTypeEntity);
-						
-				} else {
-					ElementDecl childElement = (ElementDecl) obj;
-					XMLType childElementType = childElement.getType();
-					
-					if (false && childElement.isReference()){
-						// create NEW containment 
-						Containment containment = new Containment(nextId(), childElement.getName(), this.getDocumentation(childElement),
-								complexTypeEntity.getId(), UNASSIGNED_CHILD_ID, childElement.getMinOccurs(), childElement.getMaxOccurs(), 0);
-						processContainment(containment,true);
-					} else {
-						//// If the element type is 1) NULL or 2) SimpleType THEN we are at leaf
-						if ((childElementType == null) || (childElementType instanceof SimpleType)) {
-							processSimpleType(childElement, complexTypeEntity.getId());
-							
-						} else {
-							Entity childElementComplexTypeEntity = this.processedComplexTypeList.get(((ComplexType)childElement.getType()).getName());
-							if (childElementComplexTypeEntity != null){
-								//// add containment (if not processed before) for child of parent
-								Containment containment = new Containment(nextId(), childElement.getName(), this.getDocumentation(childElement),
-										complexTypeEntity.getId(), childElementComplexTypeEntity.getId(), childElement.getMinOccurs(), childElement.getMaxOccurs(), 0);
-								if (schemaElementsHS.containsKey(this.compString(containment)) == false) {
-									schemaElementsHS.put(this.compString(containment),containment);
-									processContainment(containment,false);
-								}
-							}
-							else { 
-							
-								// add entity for complex type
-								String childElementComplexTypeName = childElementType.getName();
-								if ((childElementComplexTypeName == null) ||(childElementComplexTypeName.length() == 0)){
-									childElementComplexTypeEntity = new Entity(nextId(), "", this.getDocumentation(childElementType), 0);
-									schemaElementsHS.put(this.compString(childElementComplexTypeEntity), childElementComplexTypeEntity);
-								} else {
-									childElementComplexTypeEntity = new Entity(nextId(), childElementComplexTypeName, this.getDocumentation(childElementType), 0);
-									schemaElementsHS.put(this.compString(childElementComplexTypeEntity), childElementComplexTypeEntity);
-									this.processedComplexTypeList.put(childElementComplexTypeEntity.getName(), childElementComplexTypeEntity);
-								}					
-								//// add containment 
-								Containment containment = new Containment(nextId(), childElement.getName(), this.getDocumentation(childElement),
-										complexTypeEntity.getId(), childElementComplexTypeEntity.getId(), childElement.getMinOccurs(), childElement.getMaxOccurs(), 0);
-								if (schemaElementsHS.containsKey(this.compString(containment)) == false) {
-									schemaElementsHS.put(this.compString(containment),containment);
-									processContainment(containment,false);
-								}
-								if (childElement.getType() instanceof AnyType) System.err.println("AnyType -- 486");
-								processComplexTypeEntity(childElement, childElementComplexTypeEntity);
-							}
-						} // end else [[if ((childElementType == null) || (childElementType instanceof SimpleType)) {
-					} // end else if (childElement.isReference()){
-				} // end else(if (obj instanceof Wildcard){
-			} // end while (e.hasMoreElements()) {
-			 
-		} // while (currComplexTypeElements.hasMoreElements()) {
-			
-	} // end method processComplexTypeElement
-
-	
-	
-	/**************************************************************************
-	 * ProcessSimpleType: Process a given SimpleType ST by: 
-	 * 1) Creating a Domain for ST
-	 * 2) creating domain values for ST (if given, e.g., ST is an enumeration simple type)
-	 * 3) add containment of domain to schema
+	/**
+	 * processSimpleType: creates M3 Domain for the passed SimpleType 
+	 * (or finds references to existing Domain if type seen before)
+	 * and adds this domain as child of passed Containment or Attribute
 	 * 
-	 * @param simpleType SimpleType to be processed
-	 *  
-	 *************************************************************************/
-	void processSimpleType (SimpleType simpleType){
-
+	 * @param passedType XML SimpleType which needs to either be processed 
+	 * or referenced if already seen
+	 * @param parent M3 Containment or Attribute to which domain for passed 
+	 * simpleType should be added as child
+	 */
+	public void processSimpleType (XMLType passedType, SchemaElement parent)
+	{		
 		// assign the default type of String
-		String type = "String";
-		if ((simpleType != null) && (simpleType.getName() != null) && (simpleType.getName().length() > 0)) 
-			type = simpleType.getName();
+		String typeName = "String";
+		if ((passedType != null) && (passedType.getName() != null) && (passedType.getName().length() > 0)) 
+			typeName = passedType.getName();
 		
-		Domain domain = domainList.get(type);
+		if (passedType instanceof AnyType)
+			typeName = "Any";
+		
+		if (parent instanceof Attribute && (typeName.equals("IDREF") || typeName.equals("IDREFS"))){
 			
-		if (domain == null) {
-			
-			// turn simpleType into domain
-			domain = new Domain(nextId(), type, this.getDocumentation(simpleType), 0);
-			if (schemaElementsHS.containsKey(this.compString(domain)) == false) {
-				schemaElementsHS.put(this.compString(domain), domain);
-			
-				// create a DomainValue for each value in the enumeration
-				Enumeration<?> facets = simpleType.getFacets("enumeration");
-				while (facets.hasMoreElements()) {
-					Facet facet = (Facet) facets.nextElement();
-					DomainValue domainValue = new DomainValue(nextId(), facet.getValue(), facet.getValue(), domain.getId(), 0);
-				
-					if (schemaElementsHS.containsKey(this.compString(domainValue)) == false) {
-						schemaElementsHS.put(this.compString(domainValue), domainValue);
-					}
-				}
-			}
-			domainList.put(type, domain);
-			//System.out.println("adding " + domain.getName() + ", " + domain.getId());
-			
-		}
-	
-		//// add containment to schema
-//		Containment containment = new Containment(nextId(), "", "",
-//				null, domain.getId(), 0, 1, 0);
-//		if (schemaElementsHS.containsKey(this.compString(containment)) == false) {
-//			schemaElementsHS.put(this.compString(containment),containment);
-//			processContainment(containment, false);
-//		}	
-    } // end method processSimpleType
+			/*   
+			 * Finally, the IDREF element/attribute will become a named 
+			 * relationship that links the parent entity to ANY entity
+			 */
+			if (this.anyEntity == null){
+				this.anyEntity = new Entity(nextId(),"ANY","ANY ENTITY",0);
+				schemaElementsHS.put(this.compString(null,null,this.anyEntity),this.anyEntity);
+			}	
+			Integer rightMax = ( typeName.equals("IDREFS") ) ? null : 1;   
 
-	/**************************************************************************
-	 * ProcessSimpleType: Process a given SimpleType ST by: 
-	 * 1) Creating a Domain for ST
-	 * 2) creating domain values for ST (if given, e.g., ST is an enumeration simple type)
-	 * 3) add containment of domain to schema
-	 * 
-	 * @param simpleType SimpleType to be processed
-	 *  
-	 *************************************************************************/
-	void processSimpleType(ElementDecl simpleTypeElement, Integer containingID){
-
-		// assign the default type of String
-		String type = "String";
-		
-		if (simpleTypeElement.getType() instanceof AnyType){
-		
-			Domain anyDomain = domainList.get("Any");
-			
-			//// add containment to schema
-			Containment containment = new Containment(nextId(), simpleTypeElement.getName(), this.getDocumentation(simpleTypeElement),
-					containingID, anyDomain.getId(), 0, 1, 0);
-			if (schemaElementsHS.containsKey(this.compString(containment)) == false) {
-				schemaElementsHS.put(this.compString(containment),containment);
-				processContainment(containment, false);
-			}
-			
+			// Create a relationship
+			Relationship rel = new Relationship(nextId(),parent.getName(),((Attribute)parent).getEntityID(),0,1,this.anyEntity.getId(),0,rightMax,0);
+			schemaElementsHS.put(this.compString(null,null,rel),rel);
 		}
-		
-		
-		
 		else {
-		
-			SimpleType simpleType = (SimpleType)simpleTypeElement.getType();
-			if ((simpleType != null) && (simpleType.getName() != null) && (simpleType.getName().length() > 0)) 
-				type = simpleType.getName();
-			
-			Domain domain = domainList.get(type);	
-			if (domain == null) {
-				// turn simpleType into domain
+	
+			// turn simpleType into domain
+			Domain domain = new Domain(nextId(), typeName, this.getDocumentation(passedType), 0);
+			if (domainList.containsKey(domain.getName()) == false) {
+				domainList.put(domain.getName(),domain);
+				schemaElementsHS.put(this.compString(null, null, domain), domain);
 				
-				domain = new Domain(nextId(), type, this.getDocumentation(simpleType), 0);
-				if (schemaElementsHS.containsKey(this.compString(domain)) == false) {
-					schemaElementsHS.put(this.compString(domain), domain);
-				
+				if (passedType instanceof SimpleType){
 					// create a DomainValue for each value in the enumeration
-					Enumeration<?> facets = simpleType.getFacets("enumeration");
+					Enumeration<?> facets = ((SimpleType)passedType).getFacets("enumeration");
 					while (facets.hasMoreElements()) {
 						Facet facet = (Facet) facets.nextElement();
 						DomainValue domainValue = new DomainValue(nextId(), facet.getValue(), facet.getValue(), domain.getId(), 0);
-					
-						if (schemaElementsHS.containsKey(this.compString(domainValue)) == false) {
-							schemaElementsHS.put(this.compString(domainValue), domainValue);
-						}
+						schemaElementsHS.put(this.compString(passedType,facet,domainValue), domainValue);	
 					}
 				}
+			}
+			domain = (Domain)schemaElementsHS.get(this.compString(null,null,domain));
 			
-				domainList.put(type, domain);
-				//System.out.println("adding " + domain.getName() + ", " + domain.getId());
-			}
-	
-			//// add containment to schema
-			Containment containment = new Containment(nextId(), simpleTypeElement.getName(), this.getDocumentation(simpleTypeElement),
-				containingID, domain.getId(), 0, 1, 0);
-			if (schemaElementsHS.containsKey(this.compString(containment)) == false) {
-				schemaElementsHS.put(this.compString(containment),containment);
-				processContainment(containment, false);
-			}
+			if (parent instanceof Attribute)
+				((Attribute)parent).setDomainID(domain.getId());
+			
+			if (parent instanceof Containment)
+				((Containment)parent).setChildID(domain.getId());
 		}
-    } // end method processSimpleType
+	} // end method processSimpleType
+
+		
+	/**
+	 * processComplexType: creates M3 Entity for the passed ComplexType 
+	 * (or finds references to existing Entity if type seen before)
+	 * and adds this entity as child of passed Containment or Subtype
+	 * 
+	 * @param passedType XML ComplexType which needs to either be processed 
+	 * or referenced if already seen
+	 * @param parent M3 Containment or Subtype to which entity for passed 
+	 * complexType should be added as child
+	 */
+	public void processComplexType (ComplexType passedType, SchemaElement parent)
+	{
+		// check to see if entity has been created for passed complex type
+		// create new Entity if none has been created 
+		Entity entity = new Entity(nextId(), passedType.getName(), this.getDocumentation(passedType), 0);
+		
 	
+		if (schemaElementsHS.containsKey(this.compString(passedType,null, entity)) == false) {
+			schemaElementsHS.put(this.compString(passedType,null, entity), entity);
 	
-	
+			// get attrs for current complexType
+			Enumeration<?> attrDecls = passedType.getAttributeDecls();
+			while (attrDecls.hasMoreElements()) {
+				AttributeDecl attrDecl = (AttributeDecl) attrDecls.nextElement();
+				boolean containsID = attrDecl.getSimpleType() != null && attrDecl.getSimpleType().getName().equals("ID");
+				Attribute attr = new Attribute(nextId(),attrDecl.getName(),getDocumentation(attrDecl),entity.getId(),-1,(attrDecl.isRequired()? 1 : 0), 1, containsID, 0); 
+				schemaElementsHS.put(this.compString(passedType, null, attr), attr);
+				processSimpleType(attrDecl.getSimpleType(), attr);
+			}
+		
+			// get elements for current complexType
+			Enumeration<?> elementDecls = passedType.enumerate();
+			while (elementDecls.hasMoreElements()) {
+				Group group = (Group)elementDecls.nextElement();
+				processGroup(group, entity);
+			}
+		
+			// get superTypes for current complexType 
+			XMLType baseType = null;
+			if (passedType.getBaseType() != null){
+				baseType = passedType.getBaseType();
+				
+				// process simpleType supertype here -- create an Entity
+				if (baseType instanceof SimpleType){
+					Subtype subtype = new Subtype(nextId(),-1,entity.getId(),0);
+					schemaElementsHS.put(this.compString(passedType, baseType, subtype), subtype);
+					
+					Entity superTypeEntity = new Entity(nextId(), baseType.getName(), this.getDocumentation(baseType), 0);
+					if (schemaElementsHS.get(this.compString(baseType,null,superTypeEntity)) == null)
+						schemaElementsHS.put(this.compString(baseType,null,superTypeEntity), superTypeEntity);
+					superTypeEntity = (Entity)schemaElementsHS.get(this.compString(baseType,null,superTypeEntity));
+					subtype.setParentID(superTypeEntity.getId());
+				}
+				else if (baseType instanceof ComplexType){
+					Subtype subtype = new Subtype(nextId(),-1, entity.getId(),0);
+					schemaElementsHS.put(this.compString(passedType, baseType, subtype), subtype);
+					processComplexType((ComplexType)baseType, subtype);
+				}	
+			}	
+		}
+		else {
+			entity = (Entity)schemaElementsHS.get(this.compString(passedType,null, entity));
+		}
+		
+		// add Entity for complexType as child of passed containment or subtype 
+		entity = (Entity)schemaElementsHS.get(this.compString(passedType,null,entity));
+		if (parent instanceof Containment && parent != null)
+			((Containment)parent).setChildID(entity.getId());
+		else if (parent instanceof Subtype && parent != null)
+			((Subtype)parent).setParentID(entity.getId());
+			
+			
+	} // end method	
+			
+
+	public void processGroup (Group group, Entity parent){
+			
+		Enumeration e = group.enumerate();
+		while (e.hasMoreElements()) {
+				
+			Object obj = e.nextElement();
+			// handle special cases (WildCard)
+			if (obj instanceof Wildcard){
+				// add containment to ANY domain
+				Domain anyDomain = domainList.get("Any");
+				Containment containment = new Containment(nextId(),"", this.getDocumentation((Annotated)obj), parent.getId(), anyDomain.getId(), 0, 1, 0);
+				schemaElementsHS.put(this.compString(obj,anyDomain,containment),containment);		
+			}
+					
+			else if (obj instanceof Group)
+				processGroup((Group)obj, parent);	
+			
+			else if (obj instanceof ElementDecl)  
+				processElement((ElementDecl)obj, parent);
+			
+			else
+				System.err.println("(E) XSDImporter:processGroup -- Encountered object named " + obj.toString() + " with unknown type " + obj.getClass());
+							
+		}
+	} // end method
+
+	public void processElement(ElementDecl elementDecl, Entity parent)
+	{
+		while (elementDecl.isReference() && elementDecl.getReference() != null)
+			elementDecl = elementDecl.getReference();
+		
+		XMLType childElementType = elementDecl.getType();
+		
+		Containment containment = new Containment(nextId(),elementDecl.getName(),this.getDocumentation(elementDecl),((parent != null) ? parent.getId() : null),-1,elementDecl.getMinOccurs(),elementDecl.getMaxOccurs(),0);
+		schemaElementsHS.put(this.compString(parent, elementDecl, containment), containment);
+		
+		// If the element type is 1) NULL, 2) SimpleType, or 3) Any type THEN we are at leaf
+		if ((childElementType == null) || (childElementType instanceof SimpleType) || (childElementType instanceof AnyType)) 				
+			processSimpleType(childElementType, containment);
+		
+		else if (childElementType instanceof ComplexType)
+			processComplexType((ComplexType)childElementType,containment);
+		
+		else
+			System.err.println("(E) XSDImporter:processElement -- Encountered object named " + elementDecl + " with unknown type " + childElementType.getClass());
+	} // end method
+
+
 	///////////////////////////////////////////////////////////////////////////
 	/////////////////////// UTILITY FUNCTIONS /////////////////////////////////
 	///////////////////////////////////////////////////////////////////////////
@@ -654,17 +309,7 @@ public class XSDImporter extends SchemaImporter
 	private String getDocumentation(Annotated element) {
 		
 		StringBuffer documentation = new StringBuffer("");
-	
 		documentation.append(appendDocumentation(element));
-		
-	//	if (element instanceof ElementDecl)
-	//		documentation.append(" " + appendDocumentation(((ElementDecl) element)
-	//				.getType()));
-	//	if (element instanceof AttributeDecl)
-	//		documentation.append(" " + appendDocumentation(((AttributeDecl) element)
-	//				.getSimpleType()));
-		
-		
 		return documentation.toString();
 	}
 
@@ -697,53 +342,37 @@ public class XSDImporter extends SchemaImporter
 	 * for use during Attribute creation
 	 */
 	private void loadDomains() {
-		
 
-		Domain domain = new Domain(nextId(), ANY,
-				"The Any wildcard domain", 0);
-		// // schemaElements.add(domain);
-		if (schemaElementsHS.containsKey(this.compString(domain)) == false) {
-			schemaElementsHS.put(this.compString(domain), domain);
-		}
-
+		Domain domain = new Domain(nextId(), ANY, "The Any wildcard domain", 0);
+		schemaElementsHS.put(this.compString(null,null,domain), domain);
 		domainList.put(ANY, domain);
 
-		domain = new Domain(nextId(), INTEGER,
-				"The Integer domain", 0);
-		// schemaElements.add(domain);
-
-		schemaElementsHS.put(this.compString(domain), domain);
-
+		domain = new Domain(nextId(), INTEGER,"The Integer domain", 0);
+		schemaElementsHS.put(this.compString(null,null,domain), domain);
 		domainList.put(INTEGER, domain);
-
-		domain = new Domain(nextId(), REAL,
-				"The Real domain", 0);
-		// schemaElements.add(domain);
-		schemaElementsHS.put(this.compString(domain), domain);
+		
+		domain = new Domain(nextId(), REAL,"The Real domain", 0);
+		schemaElementsHS.put(this.compString(null,null,domain), domain);
 		domainList.put(REAL, domain);
-
-		domain = new Domain(nextId(), STRING,
-				"The String domain", 0);
-		schemaElementsHS.put(this.compString(domain), domain);
+		
+		domain = new Domain(nextId(), STRING,"The String domain", 0);
+		schemaElementsHS.put(this.compString(null,null,domain), domain);
 		domainList.put(STRING, domain);
-
-		domain = new Domain(nextId(), "string",
-				"The string domain", 0);
-		schemaElementsHS.put(this.compString(domain), domain);
+		
+		domain = new Domain(nextId(), "string","The string domain", 0);
+		schemaElementsHS.put(this.compString(null,null,domain), domain);
 		domainList.put("string", domain);
 		
-		domain = new Domain(nextId(), DATETIME,
-				"The DateTime domain", 0);
-		// schemaElements.add(domain);
-		schemaElementsHS.put(this.compString(domain), domain);
+		domain = new Domain(nextId(), DATETIME,"The DateTime domain", 0);
+		schemaElementsHS.put(this.compString(null,null,domain), domain);
 		domainList.put(DATETIME, domain);
-
-		domain = new Domain(nextId(), BOOLEAN,
-				"The Boolean domain", 0);
-		// schemaElements.add(domain);
-		schemaElementsHS.put(this.compString(domain), domain);
+		
+		domain = new Domain(nextId(), BOOLEAN,"The Boolean domain", 0);
+		schemaElementsHS.put(this.compString(null,null,domain), domain);
 		domainList.put(BOOLEAN, domain);
 	}
+	
+	
 	
 	/**
 	 * compString: Generates a unique identifier string for each SchemaType
@@ -754,200 +383,53 @@ public class XSDImporter extends SchemaImporter
 	 * @param o  SchemaElement for which compString (hashKey) being generated
 	 * @return compString generated comparison String
 	 */
-	public String compString(SchemaElement o) {
+	public String compString(Object parent, Object child, SchemaElement o) {
 		String retVal = null;
 
-		/** Entity: NAME, DESC, BASE */
+		/** Entity: NAME, DESC */
 		if (o instanceof Entity) {
-			if (((Entity)o).getName().equals("")){
-				retVal = new String(((Entity) o).getId() + " , "
-						+ ((Entity) o).getBase() + ", ENTITY");
-			} else {
-				retVal = new String(((Entity) o).getName() + " , "
-					+ ((Entity) o).getBase() + ", ENTITY");
-			}
-		/** Containment: NAME, DESC, BASE, PARENT_ID, CHILD_ID */
+			if (((Entity)o).getName().equals(""))
+				retVal = new String(((Entity) o).getId() + ", ENTITY ");
+			 else 
+				retVal = new String(((Entity) o).getName() + ", ENTITY ");
+		
+		/** Containment: NAME, DESC, PARENT_ID, CHILD_ID */
 		} else if (o instanceof Containment) {
 			retVal = new String(((Containment) o).getName() + " , "
-					+ ((Containment) o).getBase() + " , "
 					+ ((Containment) o).getParentID() + " , "
-					+ ((Containment) o).getChildID() + ", CONTAINMENT");
-		/** Relationship: NAME, DESC, BASE, LEFT_ID, RIGHT_ID */ 	
+					+ ((Containment) o).getChildID() + ", CONTAINMENT ");
+		/** Relationship: NAME, DESC, LEFT_ID, RIGHT_ID */ 	
 		} else if (o instanceof Relationship){
 			retVal = new String(((Relationship) o).getName() + " , "
-					+ ((Relationship) o).getBase() + " , "
 					+ ((Relationship) o).getLeftID() + " , "
-					+ ((Relationship) o).getRightID() + ", RELATIONSHIP");
-		/** Attribute: NAME, DESC, BASE, DOMAIN_ID, ENTITY_ID */
+					+ ((Relationship) o).getRightID() + ", RELATIONSHIP ");
+		/** Attribute: NAME, DESC, DOMAIN_ID, ENTITY_ID */
 		} else if (o instanceof Attribute) {
 			retVal = new String(((Attribute) o).getName() + " , "
-					+ ((Attribute) o).getBase() + " , "
 					+ ((Attribute) o).getDomainID() + " , "
-					+ ((Attribute) o).getEntityID() + ", ATTRIBUTE");
-			/** Domain: NAME, BASE */
+					+ ((Attribute) o).getEntityID() + ", ATTRIBUTE ");
+			/** Domain: NAME  **/
 		} else if (o instanceof Domain) {
-			retVal = new String(((Domain) o).getName() + " , "
-					+ ((Domain) o).getBase()) + " , DOMAIN";
-			/** DomainValue: NAME, DESC, BASE * */
+			retVal = new String(((Domain) o).getName() + " DOMAIN ");
+			/** DomainValue: NAME, DESC  **/
 		} else if (o instanceof DomainValue) {
 			retVal = new String(((DomainValue) o).getDomainID() + " , "
-					+ ((DomainValue) o).getName() + " , "
-					+ ((DomainValue) o).getBase() + ", DOMAIN VALUE");
-			/** Subtype: PARENT_ID, CHILD_ID, BASE * */
+					+ ((DomainValue) o).getName() + ", DOMAIN VALUE ");
+			/** Subtype: PARENT_ID, CHILD_ID  **/
 		} else if (o instanceof Subtype) {
 			retVal = new String(((Subtype) o).getParentID() + " , "
-					+ ((Subtype) o).getChildID() + " , "
-					+ ((Subtype) o).getBase() + "SUBTYPE ");
+					+ ((Subtype) o).getChildID() + " , " + " SUBTYPE ");
 		} else {
 			retVal = new String();
 		}
 
+		if (parent != null) retVal += " " + parent.hashCode();
+		else retVal += " null ";
+		
+		if (child != null) retVal += " " + child.hashCode();
+		else retVal += " null ";
+		
 		return retVal;
 	} // end method compString()
 	
-	public void processContainment(Containment containment, boolean isRef){
-	
-		ArrayList<Containment> contList = null;
-		// add containment to schemaElement list + containmentList 
-		if (isRef == false){
-			if (containment.getName().length() > 0){
-					
-				// check if containment in containmentList
-				// IF containment NOT in containment list THEN add containment
-				// ELSE process + change ALL childless containments to real containments + add current containment to list
-				contList = this.containmentList.get(containment.getName());
-				if (contList == null){
-					contList = new ArrayList<Containment>();
-					contList.add(containment);
-					this.containmentList.put(containment.getName(), contList);
-				} else{
-					for (Containment cont : contList){
-						// give cont the SAME child id as current containment
-						// add to schemaElement list
-						if (cont.getChildID() == UNASSIGNED_CHILD_ID){
-							cont.setChildID(containment.getChildID());
-							if (schemaElementsHS.containsKey(this.compString(cont)) == false) {
-								schemaElementsHS.put(this.compString(cont),cont);
-							}	
-						} else {
-							//System.out.println("THERE ARE 2 CONTAINMENTS WITH THE SAME NAME: " + cont.getName());
-						}
-					}
-					contList = null;
-					contList = new ArrayList<Containment>();
-					contList.add(containment);
-					this.containmentList.put(containment.getName(), contList);
-				}
-			}
-			
-		} else {
-			// HANDLE REFERENCE
-			//	 - IF not unseen element THEN create new list
-			//   - ELSE if seen THEN find list
-			//        - IF LIST contains complete containment 
-			//			  THEN use child id from existing containment
-			//                 and add ONLY to schemaElement list
-			//  	 
-			//        - ELSE add to existing containment list
-			
-			contList = this.containmentList.get(containment.getName());
-			
-			if (contList == null){
-				contList = new ArrayList<Containment>();
-				contList.add(containment);
-				this.containmentList.put(containment.getName(), contList);
-			} else {
-				boolean containmentProcessed = false;
-				for (Containment cont : contList){
-					if (cont.getChildID() != UNASSIGNED_CHILD_ID){
-						containment.setChildID(cont.getChildID());
-						containmentProcessed = true;
-						if (schemaElementsHS.containsKey(this.compString(containment)) == false) {
-							schemaElementsHS.put(this.compString(containment),containment);
-						}	
-						break;
-					}
-				} // for (Containment cont : contList){
-			
-				if (containmentProcessed != true){
-					contList.add(containment);
-					this.containmentList.put(containment.getName(), contList);
-				}
-			} // else if (contList == null){
-		} // else if (isRef == false){
-		
-	} // end method processContainment
-	
-	void processGroup (Group currentGroup, Entity parent){
-		
-		Enumeration<?> e2 = currentGroup.enumerate();
-		while (e2.hasMoreElements()) {
-			
-			Object obj2 = e2.nextElement();
-			// handle special cases (WildCard)
-			if (obj2 instanceof Wildcard){
-				// add containment to ANY domain
-				Domain anyDomain = domainList.get("Any");
-				Containment containment = new Containment(nextId(),"", this.getDocumentation((Annotated)obj2),
-						parent.getId(), anyDomain.getId(), 0, 1, 0);
-				if (schemaElementsHS.containsKey(this.compString(containment)) == false) {
-					schemaElementsHS.put(this.compString(containment),containment);
-					processContainment(containment,false);
-				}
-				
-			} else if (obj2 instanceof Group){
-				processGroup((Group)obj2, parent);
-				
-			} else  {
-				ElementDecl childElement = (ElementDecl) obj2;
-				XMLType childElementType = childElement.getType();
-				
-				if (childElement.isReference()){
-					// create NEW containment 
-					Containment containment = new Containment(nextId(), childElement.getName(), this.getDocumentation(childElement),
-							parent.getId(), UNASSIGNED_CHILD_ID, childElement.getMinOccurs(), childElement.getMaxOccurs(), 0);
-					processContainment(containment,true);
-				
-				} else {
-				
-					// IF the element type is 1) NULL or 2) SimpleType THEN we are at leaf
-					if ((childElementType == null) || (childElementType instanceof SimpleType)) {
-						processSimpleType(childElement, parent.getId());
-					// ELSE element is complexType
-					} else {
-						Entity childElementComplexTypeEntity = this.processedComplexTypeList.get(childElementType.getName());
-						if (childElementComplexTypeEntity != null){
-							// add containment (currentTypeEntity, childElementComplexTypeEntity)
-							Containment containment = new Containment(nextId(), childElement.getName(),
-									this.getDocumentation(childElement), parent.getId(), childElementComplexTypeEntity.getId(), childElement.getMinOccurs(), childElement.getMaxOccurs(), 0);
-							if (schemaElementsHS.containsKey(this.compString(containment)) == false) {
-								schemaElementsHS.put(this.compString(containment),containment);
-								processContainment(containment,false);
-							}		
-						}
-						else { 
-							// add entity for complex type
-							String childElementComplexTypeName = childElementType.getName();
-							if ((childElementComplexTypeName == null) ||(childElementComplexTypeName.length() == 0)){
-								childElementComplexTypeEntity = new Entity(nextId(), "", this.getDocumentation(childElementType), 0);	
-								schemaElementsHS.put(this.compString(childElementComplexTypeEntity), childElementComplexTypeEntity);
-							} else {
-								childElementComplexTypeEntity = new Entity(nextId(), childElementComplexTypeName, this.getDocumentation(childElementType), 0);
-								schemaElementsHS.put(this.compString(childElementComplexTypeEntity), childElementComplexTypeEntity);
-								this.processedComplexTypeList.put(childElementComplexTypeEntity.getName(), childElementComplexTypeEntity);
-							}
-							Containment containment = new Containment(nextId(), childElement.getName(),
-									this.getDocumentation(childElement), parent.getId(), childElementComplexTypeEntity.getId(), childElement.getMinOccurs(), childElement.getMaxOccurs(), 0);
-							if (schemaElementsHS.containsKey(this.compString(containment)) == false) {
-								schemaElementsHS.put(this.compString(containment),containment);
-								processContainment(containment,false);
-							}
-							if (childElement.getType() instanceof AnyType) System.err.println("AnyType -- 921");
-							processComplexTypeEntity(childElement, childElementComplexTypeEntity);
-						}
-					}
-				} // end else if (childElement.isReference()){
-			} // end else if 
-		}
-	} // end method processGroup
 } // end class
