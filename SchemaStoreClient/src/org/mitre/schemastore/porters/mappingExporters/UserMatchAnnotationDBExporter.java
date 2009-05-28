@@ -2,34 +2,18 @@
 // ALL RIGHTS RESERVED
 package org.mitre.schemastore.porters.mappingExporters;
 
-
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.net.URI;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 
 import javax.swing.filechooser.FileFilter;
-//import org.mitre.harmony.model.ConfigManager;
-//import org.mitre.harmony.model.HarmonyModel;
-//import org.mitre.schemastore.porters.ImporterException;
-import org.mitre.schemastore.model.Attribute;
-import org.mitre.schemastore.model.Domain;
-import org.mitre.schemastore.model.DomainValue;
-import org.mitre.schemastore.model.Entity;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
-import org.mitre.schemastore.model.SchemaElement;
-import org.mitre.schemastore.porters.mappingExporters.UserMatchAnotationExporter.CompressedMatch;
 
-import java.util.Date;
 import java.sql.*;
 
 public class UserMatchAnnotationDBExporter  extends UserMatchAnotationExporter {
