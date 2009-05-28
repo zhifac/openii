@@ -87,6 +87,7 @@ public class UserMatchAnotationExporter extends MappingExporter
     	// Outputs the top mapping cells
 		List<CompressedMatch> matches = matchList.getMatches();
 		Collections.sort(matches);
+		out.write(header+"\n");
 //		if(matches.size()>100) matches = matches.subList(0, 100);
   		for(CompressedMatch match : matches)
     		out.write(match.toString() + "\n");
