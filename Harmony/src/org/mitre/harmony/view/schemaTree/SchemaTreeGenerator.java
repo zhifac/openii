@@ -86,10 +86,10 @@ class SchemaTreeGenerator
 		}
 		
 		// Indicate the schema tree has changed
-		for(SchemaTreeListener treeListener : tree.treeListeners)
+		for(SchemaTreeListener listener : tree.getSchemaTreeListeners())
 		{
-			treeListener.schemaStructureModified(tree);
-			treeListener.schemaDisplayModified(tree);
+			listener.schemaStructureModified(tree);
+			listener.schemaDisplayModified(tree);
 		}	
 
 		// Ensure that the added nodes are properly displayed
@@ -108,10 +108,10 @@ class SchemaTreeGenerator
 			initialize(tree);
 		
 		// Indicate that schema tree has changed
-		for(SchemaTreeListener treeListener : tree.treeListeners)
+		for(SchemaTreeListener listener : tree.getSchemaTreeListeners())
 		{
-			treeListener.schemaStructureModified(tree);
-			treeListener.schemaDisplayModified(tree);
+			listener.schemaStructureModified(tree);
+			listener.schemaDisplayModified(tree);
 		}
 	}
 }
