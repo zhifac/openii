@@ -65,41 +65,45 @@ public class XMLGraphModel extends GraphModel
 		{
 			Integer childID = ((Containment)element).getChildID();
 
-			// Build list of all IDs for super-type entities
-			ArrayList<Integer> superTypeIDs = new ArrayList<Integer>();
-			ArrayList<Boolean> processedIDs= new ArrayList<Boolean>();
-			superTypeIDs.add(childID);
-			processedIDs.add(false);
+			if (!(graph.getElement(childID) instanceof Domain)){
 			
-			boolean workLeft = true;
-			while (workLeft){
-				for (int i = 0; i<superTypeIDs.size();i++){
-					if (processedIDs.get(i).equals(false)){
-						for (Subtype s : graph.getSubTypes(superTypeIDs.get(i))){
-							if (s.getChildID().equals(superTypeIDs.get(i))){
-								superTypeIDs.add(s.getParentID());
-								processedIDs.add(false);
-							}
-						}
-						processedIDs.set(i, true);
-					}
-				}
-				workLeft = false;
-				for (int i = 0; i<superTypeIDs.size();i++)
-					if (processedIDs.get(i).equals(false))
-						workLeft = true;
-			}
+			
+				// Build list of all IDs for super-type entities
+				ArrayList<Integer> superTypeIDs = new ArrayList<Integer>();
+				ArrayList<Boolean> processedIDs= new ArrayList<Boolean>();
+				superTypeIDs.add(childID);
+				processedIDs.add(false);
 				
-			// Retrieves all containments whose parent is the child ID
-			for (Integer id : superTypeIDs)
-				for(Containment containment : graph.getContainments(id))
-					if(id.equals(containment.getParentID()))
-						childElements.add(containment);
-
-			// Retrieves all attributes whose element is the child ID
-			for (Integer id : superTypeIDs)
-				for(Attribute attribute : graph.getAttributes(id))
-					childElements.add(attribute);
+				boolean workLeft = true;
+				while (workLeft){
+					for (int i = 0; i<superTypeIDs.size();i++){
+						if (processedIDs.get(i).equals(false)){
+							for (Subtype s : graph.getSubTypes(superTypeIDs.get(i))){
+								if (s.getChildID().equals(superTypeIDs.get(i))){
+									superTypeIDs.add(s.getParentID());
+									processedIDs.add(false);
+								}
+							}
+							processedIDs.set(i, true);
+						}
+					}
+					workLeft = false;
+					for (int i = 0; i<superTypeIDs.size();i++)
+						if (processedIDs.get(i).equals(false))
+							workLeft = true;
+				}
+					
+				// Retrieves all containments whose parent is the child ID
+				for (Integer id : superTypeIDs)
+					for(Containment containment : graph.getContainments(id))
+						if(id.equals(containment.getParentID()))
+							childElements.add(containment);
+	
+				// Retrieves all attributes whose element is the child ID
+				for (Integer id : superTypeIDs)
+					for(Attribute attribute : graph.getAttributes(id))
+						childElements.add(attribute);
+			}
 		}
 			
 		return childElements;
