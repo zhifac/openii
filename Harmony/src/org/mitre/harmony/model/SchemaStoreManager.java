@@ -72,7 +72,7 @@ public class SchemaStoreManager
 	//--------------------------
 
 	/** Retrieves the schema elements for the specified schema and type from the web service */
-	static HierarchicalGraph getGraph(Integer schemaID) throws RemoteException
+	public static HierarchicalGraph getGraph(Integer schemaID) throws RemoteException
 		{ return new HierarchicalGraph(client.getGraph(schemaID),null); }
 
 	/** Retrieves the specified schema element from the web service */
