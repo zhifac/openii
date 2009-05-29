@@ -199,8 +199,9 @@ public class XSDImporter extends SchemaImporter
 			Enumeration<?> attrDecls = passedType.getAttributeDecls();
 			while (attrDecls.hasMoreElements()) {
 				AttributeDecl attrDecl = (AttributeDecl) attrDecls.nextElement();
-				boolean containsID = attrDecl.getSimpleType() != null && attrDecl.getSimpleType().getName().equals("ID");
-				Attribute attr = new Attribute(nextId(),attrDecl.getName(),getDocumentation(attrDecl),entity.getId(),-1,(attrDecl.isRequired()? 1 : 0), 1, containsID, 0); 
+				
+				boolean containsID = attrDecl.getSimpleType() != null && attrDecl.getSimpleType().getName() != null && attrDecl.getSimpleType().getName().equals("ID");
+				Attribute attr = new Attribute(nextId(),(attrDecl.getName() == null ? "" : attrDecl.getName()),getDocumentation(attrDecl),entity.getId(),-1,(attrDecl.isRequired()? 1 : 0), 1, containsID, 0); 
 				schemaElementsHS.put(this.compString(passedType, null, attr), attr);
 				processSimpleType(attrDecl.getSimpleType(), attr);
 			}
@@ -222,7 +223,7 @@ public class XSDImporter extends SchemaImporter
 					Subtype subtype = new Subtype(nextId(),-1,entity.getId(),0);
 					schemaElementsHS.put(this.compString(passedType, baseType, subtype), subtype);
 					
-					Entity superTypeEntity = new Entity(nextId(), baseType.getName(), this.getDocumentation(baseType), 0);
+					Entity superTypeEntity = new Entity(nextId(), (baseType.getName() == null ? "" : baseType.getName()), this.getDocumentation(baseType), 0);
 					if (schemaElementsHS.get(this.compString(baseType,null,superTypeEntity)) == null)
 						schemaElementsHS.put(this.compString(baseType,null,superTypeEntity), superTypeEntity);
 					superTypeEntity = (Entity)schemaElementsHS.get(this.compString(baseType,null,superTypeEntity));
