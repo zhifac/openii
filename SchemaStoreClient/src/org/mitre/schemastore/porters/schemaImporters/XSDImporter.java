@@ -11,23 +11,12 @@ import org.mitre.schemastore.model.*;
 import org.mitre.schemastore.porters.ImporterException;
 
 /**
- * Class for converting XSD files into an Entity-Relationship format
- * 
- *  NOTES:
- *  
- *  1) The EMPTY STRING is assigned EMPTY STRING as NAME for entity created from annonymous complexType
- * 
- *  2) The containments created from Schema --> Entity have EMPTY STRING assigned as name
- *  
- *  3) We assume that when ":IDREF" and ":ID" are used (e.g., xs:ID), they refer to the ID 
- *     	and IDREF, which are handled   
+ * XSDImporter: Class for importing XSD files into the M3 Format
  * 
  * @author DBURDICK
  */
 public class XSDImporter extends SchemaImporter
 {
-	public static final int UNASSIGNED_CHILD_ID = -1; 
-
 	// XML Schema being parsed
 	private org.exolab.castor.xml.schema.Schema xmlSchema;  
 
@@ -63,12 +52,14 @@ public class XSDImporter extends SchemaImporter
 	protected void initialize() throws ImporterException
 	{
 		try {
+			
+			// build the DOM tree for this schema 
 			xmlSchema = new SchemaReader(uri.toString()).read();
 			
 			// reset the Importer
 			schemaElementsHS = new HashMap<String, SchemaElement>();
 			
-			// Preset domains and then identify entities, attributes, and relationships in this schema
+			// Preset domains and then identify process this schema
 			loadDomains();
 			getRootElements();
 		}
@@ -87,24 +78,23 @@ public class XSDImporter extends SchemaImporter
 		{ return new ArrayList<SchemaElement>(schemaElementsHS.values()); }
 
 	/**
-	 * @return Root elements associated with the specified schema. Root elements
-	 *         may be 1) SimpleTypes, 2) ComplexTypes, or 3) Elements
+	 * getRootElements:  Processes the SimpleTypes, ComplexTypes, and Elements defined at
+	 * the "root" (Schema) level.
 	 */
-	@SuppressWarnings("unchecked")
 	public void getRootElements()
 	{	
 		// Each root SimpleType should be translated into a Domain
-		Enumeration simpleTypes = xmlSchema.getSimpleTypes();
+		Enumeration<?> simpleTypes = xmlSchema.getSimpleTypes();
 		while (simpleTypes.hasMoreElements())
 			processSimpleType((SimpleType) simpleTypes.nextElement(), null);
 		
 		// Each root ComplexType should be translated into an Entity
-		Enumeration complexTypes = xmlSchema.getComplexTypes();
+		Enumeration<?> complexTypes = xmlSchema.getComplexTypes();
 		while (complexTypes.hasMoreElements())
 			processComplexType((ComplexType) complexTypes.nextElement(), null);
 		
 		// Each root Element should be translated into a Containment (with schema as parent)
-		Enumeration elements = xmlSchema.getElementDecls();
+		Enumeration<?> elements = xmlSchema.getElementDecls();
 		while (elements.hasMoreElements()) 
 			processElement((ElementDecl) elements.nextElement(), null);
 		
@@ -127,35 +117,31 @@ public class XSDImporter extends SchemaImporter
 		if ((passedType != null) && (passedType.getName() != null) && (passedType.getName().length() > 0)) 
 			typeName = passedType.getName();
 		
+		// handle "Any" type
 		if (passedType instanceof AnyType)
 			typeName = "Any";
 		
+		// handle IDREF / IDREFS -- generate relationship to "Any" entity
 		if (parent instanceof Attribute && (typeName.equals("IDREF") || typeName.equals("IDREFS"))){
-			
-			/*   
-			 * Finally, the IDREF element/attribute will become a named 
-			 * relationship that links the parent entity to ANY entity
-			 */
+		
 			if (this.anyEntity == null){
 				this.anyEntity = new Entity(nextId(),"ANY","ANY ENTITY",0);
 				schemaElementsHS.put(this.compString(null,null,this.anyEntity),this.anyEntity);
 			}	
 			Integer rightMax = ( typeName.equals("IDREFS") ) ? null : 1;   
-
-			// Create a relationship
 			Relationship rel = new Relationship(nextId(),parent.getName(),((Attribute)parent).getEntityID(),0,1,this.anyEntity.getId(),0,rightMax,0);
 			schemaElementsHS.put(this.compString(null,null,rel),rel);
 		}
 		else {
 	
-			// turn simpleType into domain
+			// find Domain for SimpleType (generated if required)
 			Domain domain = new Domain(nextId(), typeName, this.getDocumentation(passedType), 0);
 			if (domainList.containsKey(domain.getName()) == false) {
 				domainList.put(domain.getName(),domain);
 				schemaElementsHS.put(this.compString(null, null, domain), domain);
 				
 				if (passedType instanceof SimpleType){
-					// create a DomainValue for each value in the enumeration
+					// create DomainValues (if specified for SimpleType)
 					Enumeration<?> facets = ((SimpleType)passedType).getFacets("enumeration");
 					while (facets.hasMoreElements()) {
 						Facet facet = (Facet) facets.nextElement();
@@ -164,11 +150,10 @@ public class XSDImporter extends SchemaImporter
 					}
 				}
 			}
+			// attached Domain as child to passed Attribute / Containment
 			domain = (Domain)schemaElementsHS.get(this.compString(null,null,domain));
-			
 			if (parent instanceof Attribute)
 				((Attribute)parent).setDomainID(domain.getId());
-			
 			if (parent instanceof Containment)
 				((Containment)parent).setChildID(domain.getId());
 		}
@@ -190,30 +175,27 @@ public class XSDImporter extends SchemaImporter
 		// check to see if entity has been created for passed complex type
 		// create new Entity if none has been created 
 		Entity entity = new Entity(nextId(), passedType.getName(), this.getDocumentation(passedType), 0);
-		
-	
 		if (schemaElementsHS.containsKey(this.compString(passedType,null, entity)) == false) {
 			schemaElementsHS.put(this.compString(passedType,null, entity), entity);
 	
-			// get attrs for current complexType
+			// get Attributes for current complexType
 			Enumeration<?> attrDecls = passedType.getAttributeDecls();
 			while (attrDecls.hasMoreElements()) {
 				AttributeDecl attrDecl = (AttributeDecl) attrDecls.nextElement();
-				
 				boolean containsID = attrDecl.getSimpleType() != null && attrDecl.getSimpleType().getName() != null && attrDecl.getSimpleType().getName().equals("ID");
 				Attribute attr = new Attribute(nextId(),(attrDecl.getName() == null ? "" : attrDecl.getName()),getDocumentation(attrDecl),entity.getId(),-1,(attrDecl.isRequired()? 1 : 0), 1, containsID, 0); 
 				schemaElementsHS.put(this.compString(passedType, null, attr), attr);
 				processSimpleType(attrDecl.getSimpleType(), attr);
 			}
 		
-			// get elements for current complexType
+			// get Elements for current complexType
 			Enumeration<?> elementDecls = passedType.enumerate();
 			while (elementDecls.hasMoreElements()) {
 				Group group = (Group)elementDecls.nextElement();
 				processGroup(group, entity);
 			}
 		
-			// get superTypes for current complexType 
+			// get SuperTypes for current complexType 
 			XMLType baseType = null;
 			if (passedType.getBaseType() != null){
 				baseType = passedType.getBaseType();
@@ -250,24 +232,33 @@ public class XSDImporter extends SchemaImporter
 			
 	} // end method	
 			
-
+	/**
+	 * processGroup:  Processes a grouping of elements in a ComplexType. 
+	 * The Elements in a ComplexType are contained in 1 or more Groups, 
+	 * each of which is processed by this method.
+	 * 
+	 * @param group Element Group to be processed 
+	 * @param parent Entity corresponding to complexType
+	 */
 	public void processGroup (Group group, Entity parent){
-			
-		Enumeration e = group.enumerate();
+		
+		// step through item in a group
+		Enumeration<?> e = group.enumerate();
 		while (e.hasMoreElements()) {
 				
 			Object obj = e.nextElement();
-			// handle special cases (WildCard)
+			
+			// For WildCard, create containment child to "Any" domain
 			if (obj instanceof Wildcard){
-				// add containment to ANY domain
 				Domain anyDomain = domainList.get("Any");
 				Containment containment = new Containment(nextId(),"", this.getDocumentation((Annotated)obj), parent.getId(), anyDomain.getId(), 0, 1, 0);
 				schemaElementsHS.put(this.compString(obj,anyDomain,containment),containment);		
 			}
-					
+			// process Group item
 			else if (obj instanceof Group)
 				processGroup((Group)obj, parent);	
 			
+			// process Element item
 			else if (obj instanceof ElementDecl)  
 				processElement((ElementDecl)obj, parent);
 			
@@ -277,17 +268,27 @@ public class XSDImporter extends SchemaImporter
 		}
 	} // end method
 
+	/**
+	 * processElement:  Creates an M3 Containment corresponding to the Element declaration in
+	 * a ComplexType.  Parent of containment will be passed Entity, and the child will be either 
+	 * M3 Entity for specified complexType or M3 Domain for specified simpleType.
+	 * 
+	 * @param elementDecl Element declaration in XSD ComplexType
+	 * @param parent Entity corresponding to complexType containing elementDecl
+	 */
 	public void processElement(ElementDecl elementDecl, Entity parent)
 	{
+		// dereference xs:ref until we find actual element declarations
 		while (elementDecl.isReference() && elementDecl.getReference() != null)
 			elementDecl = elementDecl.getReference();
 		
-		XMLType childElementType = elementDecl.getType();
-		
+		// create Containment for Element  
 		Containment containment = new Containment(nextId(),elementDecl.getName(),this.getDocumentation(elementDecl),((parent != null) ? parent.getId() : null),-1,elementDecl.getMinOccurs(),elementDecl.getMaxOccurs(),0);
 		schemaElementsHS.put(this.compString(parent, elementDecl, containment), containment);
 		
-		// If the element type is 1) NULL, 2) SimpleType, or 3) Any type THEN we are at leaf
+		// If the element type is 1) NULL, 2) SimpleType, or 3) Any type THEN process as SimpleType
+		// Otherwise, process as ComplexType
+		XMLType childElementType = elementDecl.getType();
 		if ((childElementType == null) || (childElementType instanceof SimpleType) || (childElementType instanceof AnyType)) 				
 			processSimpleType(childElementType, containment);
 		
@@ -299,14 +300,12 @@ public class XSDImporter extends SchemaImporter
 	} // end method
 
 
-	///////////////////////////////////////////////////////////////////////////
-	/////////////////////// UTILITY FUNCTIONS /////////////////////////////////
-	///////////////////////////////////////////////////////////////////////////
 
 	/**
-	 * @return The documentation associated with the specified element
+	 * getDocumentation: Get the documentation associated with specified element
+	 * @param element element to get documentation about
+	 * @return The documentation associated with a specific element
 	 */
-	
 	private String getDocumentation(Annotated element) {
 		
 		StringBuffer documentation = new StringBuffer("");
@@ -315,7 +314,9 @@ public class XSDImporter extends SchemaImporter
 	}
 
 	/**
-	 * @return The documentation associated with the specified type
+	 * appendDocumentation: Get the documentation associated with specified type
+	 * @param type type to get documentation about
+	 * @return The documentation associated with a specific element
 	 */
 	@SuppressWarnings("unchecked")
 	private StringBuffer appendDocumentation(Annotated type) {
@@ -399,31 +400,37 @@ public class XSDImporter extends SchemaImporter
 			retVal = new String(((Containment) o).getName() + " , "
 					+ ((Containment) o).getParentID() + " , "
 					+ ((Containment) o).getChildID() + ", CONTAINMENT ");
+		
 		/** Relationship: NAME, DESC, LEFT_ID, RIGHT_ID */ 	
 		} else if (o instanceof Relationship){
 			retVal = new String(((Relationship) o).getName() + " , "
 					+ ((Relationship) o).getLeftID() + " , "
 					+ ((Relationship) o).getRightID() + ", RELATIONSHIP ");
+		
 		/** Attribute: NAME, DESC, DOMAIN_ID, ENTITY_ID */
 		} else if (o instanceof Attribute) {
 			retVal = new String(((Attribute) o).getName() + " , "
 					+ ((Attribute) o).getDomainID() + " , "
 					+ ((Attribute) o).getEntityID() + ", ATTRIBUTE ");
-			/** Domain: NAME  **/
+		
+		/** Domain: NAME  **/
 		} else if (o instanceof Domain) {
 			retVal = new String(((Domain) o).getName() + " DOMAIN ");
-			/** DomainValue: NAME, DESC  **/
+		
+		/** DomainValue: NAME, DESC  **/
 		} else if (o instanceof DomainValue) {
 			retVal = new String(((DomainValue) o).getDomainID() + " , "
 					+ ((DomainValue) o).getName() + ", DOMAIN VALUE ");
-			/** Subtype: PARENT_ID, CHILD_ID  **/
+		
+		/** Subtype: PARENT_ID, CHILD_ID  **/
 		} else if (o instanceof Subtype) {
 			retVal = new String(((Subtype) o).getParentID() + " , "
 					+ ((Subtype) o).getChildID() + " , " + " SUBTYPE ");
 		} else {
 			retVal = new String();
 		}
-
+		
+		// add the hashcodes associated with the parent / child objects to compString
 		if (parent != null) retVal += " " + parent.hashCode();
 		else retVal += " null ";
 		
