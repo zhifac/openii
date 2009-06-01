@@ -84,7 +84,7 @@ public class EditGroupDialog extends Dialog implements ModifyListener, Selection
 		list.setLabelProvider(new BasicWidgets.SchemaLabelProvider());
 	}
 	
-	/** Creates the contents for the Import Schema Dialog */
+	/** Creates the contents for the Edit Group Dialog */
 	protected Control createDialogArea(Composite parent)
 	{			
 		// Construct the main pane
@@ -101,7 +101,7 @@ public class EditGroupDialog extends Dialog implements ModifyListener, Selection
 		return pane;
 	}
 
-	/** Creates the contents for the Import Schema Dialog */
+	/** Creates the contents for the Edit Group Dialog */
 	protected Control createContents(Composite parent)
 	{
 		Control control = super.createContents(parent);
