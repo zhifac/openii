@@ -101,7 +101,7 @@ public abstract class SchemaImporter extends Porter
 		initialize();
 
 		// Generate the schema
-		Schema schema = new Schema(nextId(),name,author,uri==null?"":uri.toString(),"",description,false);
+		Schema schema = new Schema(nextId(),name,author,uri==null?"":uri.toString(),getName(),description,false);
 		if(getURIType()==ARCHIVE) schema = generateSchema(uri);
 		
 		// Imports the schema
