@@ -36,16 +36,18 @@ public class OpenIIManager
 		try {
 			File file = new File(OpenIIActivator.getBundleFile(),"SchemaStore.jar");
 			if(!file.exists()) file = new File(OpenIIActivator.getBundleFile(),"../../SchemaStore.jar");
-			client = new SchemaStoreClient(file.getAbsolutePath());
-//			client = new SchemaStoreClient("http://ygg:8080/SchemaStoreForDemo/services/SchemaStore");
+			//client = new SchemaStoreClient(file.getAbsolutePath());
+			client = new SchemaStoreClient("http://ygg:8080/SchemaStoreForDemo/services/SchemaStore");
 		}
 		catch(Exception e) { System.out.println("(E) SchemaStoreConnection - " + e.getMessage()); }
 
 		// Initialize the list of schemas
 		try {
 			schemas = new HashMap<Integer,Schema>();
-			for(Schema schema : client.getSchemas())
+			for(Schema schema : client.getSchemas()) {
+				//System.out.println("schemaIDs.add(" + + schema.getId() + "); //" + schema.getName());
 				schemas.put(schema.getId(),schema);
+			}
 		} catch(Exception e) {}
 
 		// Initialize the list of groups
