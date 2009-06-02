@@ -1,1304 +1,0 @@
-<database name="MichaelCollier">
-<createdby name="MichaelCollier"/>
-<Schema><table name="Book">
-<column name="ISBN" type="decimal_large" key="no" null="yes"/>
-<column name="Title" type="varchar_mid" key="no" null="yes"/>
-<column name="Price" type="money" key="no" null="yes"/>
-<column name="DiscountPrice" type="money" key="no" null="yes"/>
-<column name="Category" type="varchar_mid" key="no" null="yes"/>
-</table>
-<table name="CD">
-<column name="ProdCode" type="decimal_large" key="no" null="yes"/>
-<column name="Title" type="varchar_mid" key="no" null="yes"/>
-<column name="Price" type="money" key="no" null="yes"/>
-<column name="Category" type="varchar_mid" key="no" null="yes"/>
-<column name="Type" type="varchar_mid" key="no" null="yes"/>
-</table>
-<table name="Author">
-<column name="LastName" type="varchar_mid" key="no" null="yes"/>
-<column name="FirstName" type="varchar_mid" key="no" null="yes"/>
-<column name="MiddleName" type="varchar_mid" key="no" null="yes"/>
-<column name="ISBN" type="decimal_large" key="no" null="yes" ref="Book/ISBN"/>
-</table>
-<table name="Artist">
-<column name="Name" type="varchar_mid" key="no" null="yes"/>
-<column name="ProdCode" type="decimal_large" key="no" null="yes" ref="CD/ProdCode"/>
-</table>
-<table name="WareHouse">
-<column name="WH_ID" type="varchar_mid" key="no" null="yes"/>
-<column name="Manager" type="varchar_mid" key="no" null="yes"/>
-<column name="StreetAddr" type="varchar_mid" key="no" null="yes"/>
-<column name="City" type="varchar_mid" key="no" null="yes"/>
-<column name="State" type="varchar_small" key="no" null="yes"/>
-<column name="ZipCode" type="varchar_small" key="no" null="yes"/>
-<column name="Telephone" type="varchar_mid" key="no" null="yes"/>
-<column name="FAX" type="varchar_mid" key="no" null="yes"/>
-<column name="CAPACITY" type="int" key="no" null="yes"/>
-</table>
-<table name="WareHouse2CD">
-<column name="WH_ID" type="varchar_mid" key="no" null="yes" ref="WareHouse/WH_ID"/>
-<column name="ProdCode" type="decimal_large" key="no" null="yes" ref="CD/ProdCode"/>
-<column name="Quantity" type="int" key="no" null="yes"/>
-</table>
-<table name="WareHouse2Book">
-<column name="WH_ID" type="varchar_mid" key="no" null="yes" ref="WareHouse/WH_ID"/>
-<column name="ISBN" type="decimal_large" key="no" null="yes" ref="Book/ISBN"/>
-<column name="Quantity" type="int" key="no" null="yes"/>
-</table>
-</Schema>
-<Data>
-<Book>
-<tuple><ISBN>1230001</ISBN>
-<Title>Don't Ask Us</Title>
-<Price>12.95</Price>
-<DiscountPrice>11.89</DiscountPrice>
-<Category>SELF HELP</Category>
-</tuple><tuple><ISBN>1230002</ISBN>
-<Title>Lost about the Misdemeanors</Title>
-<Price>14.95</Price>
-<DiscountPrice>10.89</DiscountPrice>
-<Category>FICTION</Category>
-</tuple><tuple><ISBN>1230003</ISBN>
-<Title>African and the Lies</Title>
-<Price>12.95</Price>
-<DiscountPrice>11.89</DiscountPrice>
-<Category>FICTION</Category>
-</tuple><tuple><ISBN>1230004</ISBN>
-<Title>Kids to the Wolves</Title>
-<Price>22.95</Price>
-<DiscountPrice>14.00</DiscountPrice>
-<Category>SELF HELP</Category>
-</tuple><tuple><ISBN>1230005</ISBN>
-<Title>Learning to Smile</Title>
-<Price>12.95</Price>
-<DiscountPrice>11.89</DiscountPrice>
-<Category>MYSTERY</Category>
-</tuple><tuple><ISBN>1230006</ISBN>
-<Title>Man Who Shot Affair</Title>
-<Price>17.95</Price>
-<DiscountPrice>11.99</DiscountPrice>
-<Category>SELF HELP</Category>
-</tuple><tuple><ISBN>1230007</ISBN>
-<Title>Aphrodite to the Friends</Title>
-<Price>18.95</Price>
-<DiscountPrice>16.89</DiscountPrice>
-<Category>FICTION</Category>
-</tuple><tuple><ISBN>1230008</ISBN>
-<Title>Miller's Odyssey</Title>
-<Price>12.95</Price>
-<DiscountPrice>9.89</DiscountPrice>
-<Category>SCI-FI</Category>
-</tuple><tuple><ISBN>1230009</ISBN>
-<Title>Secrets and Plan</Title>
-<Price>21.95</Price>
-<DiscountPrice>18.89</DiscountPrice>
-<Category>FICTION</Category>
-</tuple><tuple><ISBN>1230010</ISBN>
-<Title>Gemini Doubt</Title>
-<Price>12.95</Price>
-<DiscountPrice>11.89</DiscountPrice>
-<Category>SCI-FI</Category>
-</tuple><tuple><ISBN>1230011</ISBN>
-<Title>Divorce Done Right</Title>
-<Price>12.95</Price>
-<DiscountPrice>11.89</DiscountPrice>
-<Category>ROMANCE</Category>
-</tuple><tuple><ISBN>1230012</ISBN>
-<Title>Conversation over the Clyde</Title>
-<Price>23.95</Price>
-<DiscountPrice>22.89</DiscountPrice>
-<Category>ROMANCE</Category>
-</tuple><tuple><ISBN>1230013</ISBN>
-<Title>Five Star Command</Title>
-<Price>24.95</Price>
-<DiscountPrice>22.89</DiscountPrice>
-<Category>NON-FICTION</Category>
-</tuple><tuple><ISBN>1230014</ISBN>
-<Title>Forrest Northwest</Title>
-<Price>19.95</Price>
-<DiscountPrice>16.89</DiscountPrice>
-<Category>FICTION</Category>
-</tuple><tuple><ISBN>1230015</ISBN>
-<Title>Pulp Hulk</Title>
-<Price>16.95</Price>
-<DiscountPrice>14.00</DiscountPrice>
-<Category>NON-FICTION</Category>
-</tuple><tuple><ISBN>1230016</ISBN>
-<Title>My Laugh Comes Coming</Title>
-<Price>14.95</Price>
-<DiscountPrice>12.89</DiscountPrice>
-<Category>FICTION</Category>
-</tuple><tuple><ISBN>1230017</ISBN>
-<Title>Tell It to the Shadow</Title>
-<Price>12.95</Price>
-<DiscountPrice>11.89</DiscountPrice>
-<Category>MYSTERY</Category>
-</tuple><tuple><ISBN>1230018</ISBN>
-<Title>Highway</Title>
-<Price>12.95</Price>
-<DiscountPrice>11.89</DiscountPrice>
-<Category>REFERENCE</Category>
-</tuple><tuple><ISBN>1230019</ISBN>
-<Title>Not Safe to Be Go Easy</Title>
-<Price>34.95</Price>
-<DiscountPrice>27.89</DiscountPrice>
-<Category>FICTION</Category>
-</tuple><tuple><ISBN>1230020</ISBN>
-<Title>My Laugh Comes Centre</Title>
-<Price>23.95</Price>
-<DiscountPrice>20.11</DiscountPrice>
-<Category>SELF HELP</Category>
-</tuple><tuple><ISBN>1230021</ISBN>
-<Title>You Have Yourself</Title>
-<Price>16.95</Price>
-<DiscountPrice>12.89</DiscountPrice>
-<Category>FICTION</Category>
-</tuple><tuple><ISBN>1230022</ISBN>
-<Title>We'll Share the Money</Title>
-<Price>32.95</Price>
-<DiscountPrice>27.89</DiscountPrice>
-<Category>FICTION</Category>
-</tuple><tuple><ISBN>1230023</ISBN>
-<Title>Have a Change of Anything</Title>
-<Price>28.95</Price>
-<DiscountPrice>28.89</DiscountPrice>
-<Category>SELF HELP</Category>
-</tuple></Book>
-<CD>
-<tuple><ProdCode>10001230001</ProdCode>
-<Title>Social Distortion</Title>
-<Price>14.95</Price>
-<Category>ROCK</Category>
-<Type>LP</Type>
-</tuple><tuple><ProdCode>10001230002</ProdCode>
-<Title>All Grown Up</Title>
-<Price>8.95</Price>
-<Category>POP</Category>
-<Type>LP</Type>
-</tuple><tuple><ProdCode>10001230003</ProdCode>
-<Title>The CD</Title>
-<Price>14.95</Price>
-<Category>PUNK</Category>
-<Type>LP</Type>
-</tuple><tuple><ProdCode>10001230004</ProdCode>
-<Title>Sounds of Nature and Mediation</Title>
-<Price>12.95</Price>
-<Category>ROCK</Category>
-<Type>LP</Type>
-</tuple><tuple><ProdCode>10001230005</ProdCode>
-<Title>Material Girl</Title>
-<Price>2.95</Price>
-<Category>POP</Category>
-<Type>SINGLE</Type>
-</tuple><tuple><ProdCode>10001230006</ProdCode>
-<Title>Sultans of Swing</Title>
-<Price>2.95</Price>
-<Category>POP</Category>
-<Type>SINGLE</Type>
-</tuple><tuple><ProdCode>10001230007</ProdCode>
-<Title>The Man in Black</Title>
-<Price>14.95</Price>
-<Category>COUNTRY</Category>
-<Type>LP</Type>
-</tuple><tuple><ProdCode>10001230008</ProdCode>
-<Title>Live in Las Vegas</Title>
-<Price>16.95</Price>
-<Category>POP</Category>
-<Type>DOUBLE CD</Type>
-</tuple><tuple><ProdCode>10001230009</ProdCode>
-<Title>Surfin' USA</Title>
-<Price>12.95</Price>
-<Category>OLDIES</Category>
-<Type>LP</Type>
-</tuple><tuple><ProdCode>10001230010</ProdCode>
-<Title>Greatest Hits</Title>
-<Price>14.95</Price>
-<Category>REGGAE</Category>
-<Type>LP</Type>
-</tuple><tuple><ProdCode>10001230011</ProdCode>
-<Title>Greatest Hits</Title>
-<Price>14.95</Price>
-<Category>ROCK</Category>
-<Type>LP</Type>
-</tuple><tuple><ProdCode>10001230012</ProdCode>
-<Title>September and Everything After</Title>
-<Price>12.95</Price>
-<Category>POP</Category>
-<Type>LP</Type>
-</tuple><tuple><ProdCode>10001230013</ProdCode>
-<Title>Reliant K</Title>
-<Price>14.95</Price>
-<Category>ROCK</Category>
-<Type>LP</Type>
-</tuple><tuple><ProdCode>10001230014</ProdCode>
-<Title>Attack</Title>
-<Price>14.95</Price>
-<Category>ROCK</Category>
-<Type>LP</Type>
-</tuple><tuple><ProdCode>10001230015</ProdCode>
-<Title>An Ordinary CD</Title>
-<Price>16.95</Price>
-<Category>PUNK</Category>
-<Type>LP</Type>
-</tuple><tuple><ProdCode>10001230016</ProdCode>
-<Title>Veronnica Hates Me</Title>
-<Price>14.95</Price>
-<Category>PUNK</Category>
-<Type>LP</Type>
-</tuple><tuple><ProdCode>10001230017</ProdCode>
-<Title>Jump Jive and Wail</Title>
-<Price>12.95</Price>
-<Category>ROCK</Category>
-<Type>LP</Type>
-</tuple><tuple><ProdCode>10001230018</ProdCode>
-<Title>Peggy Sue</Title>
-<Price>2.95</Price>
-<Category>OLDIES</Category>
-<Type>SINGLE</Type>
-</tuple><tuple><ProdCode>10001230019</ProdCode>
-<Title>Live in Hawaii</Title>
-<Price>16.95</Price>
-<Category>OLDIES</Category>
-<Type>DOUBLE CD</Type>
-</tuple><tuple><ProdCode>10001230020</ProdCode>
-<Title>The Golden Years</Title>
-<Price>14.95</Price>
-<Category>OLDIES</Category>
-<Type>LP</Type>
-</tuple><tuple><ProdCode>10001230021</ProdCode>
-<Title>The Nightshift</Title>
-<Price>14.95</Price>
-<Category>OLDIES</Category>
-<Type>LP</Type>
-</tuple><tuple><ProdCode>10001230022</ProdCode>
-<Title>Ride the Lightning</Title>
-<Price>14.95</Price>
-<Category>ROCK</Category>
-<Type>LP</Type>
-</tuple><tuple><ProdCode>10001230023</ProdCode>
-<Title>The Chain</Title>
-<Price>12.95</Price>
-<Category>ROCK</Category>
-<Type>LP</Type>
-</tuple><tuple><ProdCode>10001230024</ProdCode>
-<Title>Everyone Else is doing it</Title>
-<Price>14.95</Price>
-<Category>ROCK</Category>
-<Type>LP</Type>
-</tuple><tuple><ProdCode>10001230025</ProdCode>
-<Title>He's a Little Bit Country</Title>
-<Price>12.95</Price>
-<Category>COUNTRY</Category>
-<Type>LP</Type>
-</tuple></CD>
-<Artist>
-<tuple><Name>Social Distortion</Name>
-<ProdCode>10001230001</ProdCode>
-</tuple><tuple><Name>The New Kids On The Block</Name>
-<ProdCode>10001230002</ProdCode>
-</tuple><tuple><Name>The Chodes</Name>
-<ProdCode>10001230003</ProdCode>
-</tuple><tuple><Name>Emile V Doyle</Name>
-<ProdCode>10001230004</ProdCode>
-</tuple><tuple><Name>Madonna</Name>
-<ProdCode>10001230005</ProdCode>
-</tuple><tuple><Name>Dire Straights</Name>
-<ProdCode>10001230006</ProdCode>
-</tuple><tuple><Name>Jonny Cash</Name>
-<ProdCode>10001230007</ProdCode>
-</tuple><tuple><Name>Neil Diamond</Name>
-<ProdCode>10001230008</ProdCode>
-</tuple><tuple><Name>The Beach Boys</Name>
-<ProdCode>10001230009</ProdCode>
-</tuple><tuple><Name>Bob Marley</Name>
-<ProdCode>10001230010</ProdCode>
-</tuple><tuple><Name>Jimmy Buffet</Name>
-<ProdCode>10001230011</ProdCode>
-</tuple><tuple><Name>The Counting Crows</Name>
-<ProdCode>10001230012</ProdCode>
-</tuple><tuple><Name>Reliant K</Name>
-<ProdCode>10001230013</ProdCode>
-</tuple><tuple><Name>Shellac</Name>
-<ProdCode>10001230014</ProdCode>
-</tuple><tuple><Name>Nobody Special</Name>
-<ProdCode>10001230015</ProdCode>
-</tuple><tuple><Name>Screeching Weasel</Name>
-<ProdCode>10001230016</ProdCode>
-</tuple><tuple><Name>Brian Setzer</Name>
-<ProdCode>10001230017</ProdCode>
-</tuple><tuple><Name>Buddy Holley</Name>
-<ProdCode>10001230018</ProdCode>
-</tuple><tuple><Name>Elvis Presley</Name>
-<ProdCode>10001230019</ProdCode>
-</tuple><tuple><Name>Dianna Ross</Name>
-<ProdCode>10001230020</ProdCode>
-</tuple><tuple><Name>The Commodores</Name>
-<ProdCode>10001230021</ProdCode>
-</tuple><tuple><Name>Metallica</Name>
-<ProdCode>10001230022</ProdCode>
-</tuple><tuple><Name>Fleetwood Mac</Name>
-<ProdCode>10001230023</ProdCode>
-</tuple><tuple><Name>The Cranberries</Name>
-<ProdCode>10001230024</ProdCode>
-</tuple><tuple><Name>Waylan Jennings</Name>
-<ProdCode>10001230025</ProdCode>
-</tuple></Artist>
-<Author>
-<tuple><LastName>Beer</LastName>
-<FirstName>Rosalie</FirstName>
-<MiddleName>D</MiddleName>
-<ISBN>1230001</ISBN>
-</tuple><tuple><LastName>Burany</LastName>
-<FirstName>Evan</FirstName>
-<MiddleName>Y</MiddleName>
-<ISBN>1230002</ISBN>
-</tuple><tuple><LastName>Bauch</LastName>
-<FirstName>Jasen</FirstName>
-<MiddleName>M</MiddleName>
-<ISBN>1230003</ISBN>
-</tuple><tuple><LastName>Doyle</LastName>
-<FirstName>Emile</FirstName>
-<MiddleName>V</MiddleName>
-<ISBN>1230001</ISBN>
-</tuple><tuple><LastName>Okuneva</LastName>
-<FirstName>Nathalie</FirstName>
-<MiddleName>N</MiddleName>
-<ISBN>1230004</ISBN>
-</tuple><tuple><LastName>Turner</LastName>
-<FirstName>Jazmyne</FirstName>
-<MiddleName>J</MiddleName>
-<ISBN>1230005</ISBN>
-</tuple><tuple><LastName>Shields</LastName>
-<FirstName>Hilton</FirstName>
-<MiddleName>U</MiddleName>
-<ISBN>1230006</ISBN>
-</tuple><tuple><LastName>Pfannerstill</LastName>
-<FirstName>Cedrick</FirstName>
-<MiddleName>Y</MiddleName>
-<ISBN>1230007</ISBN>
-</tuple><tuple><LastName>Grant</LastName>
-<FirstName>Drucilla</FirstName>
-<MiddleName>O</MiddleName>
-<ISBN>1230008</ISBN>
-</tuple><tuple><LastName>Marquardt</LastName>
-<FirstName>Jefferson</FirstName>
-<MiddleName>S</MiddleName>
-<ISBN>1230009</ISBN>
-</tuple><tuple><LastName>Cronin</LastName>
-<FirstName>Guadalupe</FirstName>
-<MiddleName>P</MiddleName>
-<ISBN>1230010</ISBN>
-</tuple><tuple><LastName>Bauch</LastName>
-<FirstName>Jasen</FirstName>
-<MiddleName>M</MiddleName>
-<ISBN>1230011</ISBN>
-</tuple><tuple><LastName>Bauch</LastName>
-<FirstName>Haylee</FirstName>
-<MiddleName>O</MiddleName>
-<ISBN>1230011</ISBN>
-</tuple><tuple><LastName>Lueilwitz</LastName>
-<FirstName>Isabella</FirstName>
-<MiddleName>D</MiddleName>
-<ISBN>1230012</ISBN>
-</tuple><tuple><LastName>Fisher</LastName>
-<FirstName>Adolfo</FirstName>
-<MiddleName>Y</MiddleName>
-<ISBN>1230013</ISBN>
-</tuple><tuple><LastName>Rau</LastName>
-<FirstName>Tevin</FirstName>
-<MiddleName>M</MiddleName>
-<ISBN>1230014</ISBN>
-</tuple><tuple><LastName>Friesen</LastName>
-<FirstName>Merrill</FirstName>
-<MiddleName>E</MiddleName>
-<ISBN>1230015</ISBN>
-</tuple><tuple><LastName>Kris</LastName>
-<FirstName>Bettye</FirstName>
-<MiddleName>U</MiddleName>
-<ISBN>1230016</ISBN>
-</tuple><tuple><LastName>Kutch</LastName>
-<FirstName>Clem</FirstName>
-<MiddleName>S</MiddleName>
-<ISBN>1230017</ISBN>
-</tuple><tuple><LastName>Mitchell</LastName>
-<FirstName>Carole</FirstName>
-<MiddleName>O</MiddleName>
-<ISBN>1230018</ISBN>
-</tuple><tuple><LastName>Kub</LastName>
-<FirstName>Heidi</FirstName>
-<MiddleName>R</MiddleName>
-<ISBN>1230019</ISBN>
-</tuple><tuple><LastName>Shields</LastName>
-<FirstName>Hilton</FirstName>
-<MiddleName>U</MiddleName>
-<ISBN>1230020</ISBN>
-</tuple><tuple><LastName>Kemmer</LastName>
-<FirstName>Faustino</FirstName>
-<MiddleName>M</MiddleName>
-<ISBN>1230021</ISBN>
-</tuple><tuple><LastName>Champlin</LastName>
-<FirstName>Michaela</FirstName>
-<MiddleName>B</MiddleName>
-<ISBN>1230022</ISBN>
-</tuple><tuple><LastName>Shields</LastName>
-<FirstName>Hilton</FirstName>
-<MiddleName>U</MiddleName>
-<ISBN>1230023</ISBN>
-</tuple></Author>
-<WareHouse>
-<tuple><WH_ID>000123456</WH_ID>
-<Manager>Gilbert H Thompson</Manager>
-<StreetAddr>624 Harvey Avenue</StreetAddr>
-<City>OklaClaire</City>
-<State>SC</State>
-<ZipCode>70989</ZipCode>
-<Telephone>706-2460</Telephone>
-<FAX>706-3564</FAX>
-<CAPACITY>20200</CAPACITY>
-</tuple><tuple><WH_ID>000234567</WH_ID>
-<Manager>Mckenzie F McDermmot</Manager>
-<StreetAddr>833 Apollo Pier View</StreetAddr>
-<City>Napavanston</City>
-<State>VT</State>
-<ZipCode>44628</ZipCode>
-<Telephone>776-7509</Telephone>
-<FAX>776-3535</FAX>
-<CAPACITY>22300</CAPACITY>
-</tuple><tuple><WH_ID>000345678</WH_ID>
-<Manager>Newell Y Spinka</Manager>
-<StreetAddr>897 Drayton Circle</StreetAddr>
-<City>Roswebridge</City>
-<State>WV</State>
-<ZipCode>62139</ZipCode>
-<Telephone>191-0095</Telephone>
-<FAX>191-9197</FAX>
-<CAPACITY>21100</CAPACITY>
-</tuple><tuple><WH_ID>000456789</WH_ID>
-<Manager>Jacey W Bashirian</Manager>
-<StreetAddr>646 Carmel Lane</StreetAddr>
-<City>Skokirwater</City>
-<State>CA</State>
-<ZipCode>35321</ZipCode>
-<Telephone>616-6887</Telephone>
-<FAX>616-2672</FAX>
-<CAPACITY>45200</CAPACITY>
-</tuple><tuple><WH_ID>000567890</WH_ID>
-<Manager>Kenton N Welch</Manager>
-<StreetAddr>914 Tardis Hill</StreetAddr>
-<City>Fairfings</City>
-<State>SC</State>
-<ZipCode>62203</ZipCode>
-<Telephone>966-8768</Telephone>
-<FAX>966-4991</FAX>
-<CAPACITY>36400</CAPACITY>
-</tuple><tuple><WH_ID>001234567</WH_ID>
-<Manager>Emile L Sporer</Manager>
-<StreetAddr>441 Clark Avenue</StreetAddr>
-<City>Colutown Plains</City>
-<State>GA</State>
-<ZipCode>13821</ZipCode>
-<Telephone>337-6973</Telephone>
-<FAX>337-1765</FAX>
-<CAPACITY>55500</CAPACITY>
-</tuple><tuple><WH_ID>002345678</WH_ID>
-<Manager>Torrey A Reichel</Manager>
-<StreetAddr>174 Elphinstone End</StreetAddr>
-<City>Torrarving</City>
-<State>TX</State>
-<ZipCode>50021</ZipCode>
-<Telephone>961-2330</Telephone>
-<FAX>961-1673</FAX>
-<CAPACITY>71100</CAPACITY>
-</tuple><tuple><WH_ID>003456789</WH_ID>
-<Manager>Michael M Collier</Manager>
-<StreetAddr>200 Redmond Hill</StreetAddr>
-<City>Pontiasno</City>
-<State>NM</State>
-<ZipCode>01242</ZipCode>
-<Telephone>244-7717</Telephone>
-<FAX>244-7718</FAX>
-<CAPACITY>41300</CAPACITY>
-</tuple><tuple><WH_ID>004567890</WH_ID>
-<Manager>Dianna I Olson</Manager>
-<StreetAddr>757 Apollo Pier Lane</StreetAddr>
-<City>Hamptorritos Hills</City>
-<State>NJ</State>
-<ZipCode>84201</ZipCode>
-<Telephone>039-8913</Telephone>
-<FAX>039-8914</FAX>
-<CAPACITY>62500</CAPACITY>
-</tuple><tuple><WH_ID>005678900</WH_ID>
-<Manager>Francis H Daly</Manager>
-<StreetAddr>923 Graham End</StreetAddr>
-<City>Las Fulledwest</City>
-<State>ID</State>
-<ZipCode>65667</ZipCode>
-<Telephone>531-7381</Telephone>
-<FAX>039-8914</FAX>
-<CAPACITY>41400</CAPACITY>
-</tuple><tuple><WH_ID>006789000</WH_ID>
-<Manager>George W Bush</Manager>
-<StreetAddr>174 Sandhurst View</StreetAddr>
-<City>Santa Springs</City>
-<State>UT</State>
-<ZipCode>40179</ZipCode>
-<Telephone>363-0340</Telephone>
-<FAX>363-0344</FAX>
-<CAPACITY>42300</CAPACITY>
-</tuple><tuple><WH_ID>007890000</WH_ID>
-<Manager>Albert I Einstein</Manager>
-<StreetAddr>929 Mountain View Dr</StreetAddr>
-<City>Fayelathe</City>
-<State>IL</State>
-<ZipCode>10284</ZipCode>
-<Telephone>066-1656</Telephone>
-<FAX>066-1655</FAX>
-<CAPACITY>12300</CAPACITY>
-</tuple><tuple><WH_ID>008900000</WH_ID>
-<Manager>Harry S Truman</Manager>
-<StreetAddr>377 Redmond Way</StreetAddr>
-<City>Dubumden</City>
-<State>MA</State>
-<ZipCode>09811</ZipCode>
-<Telephone>747-0760</Telephone>
-<FAX>747-0761</FAX>
-<CAPACITY>15500</CAPACITY>
-</tuple><tuple><WH_ID>009000000</WH_ID>
-<Manager>Nick T Magellan</Manager>
-<StreetAddr>772 Elphinstone End</StreetAddr>
-<City>Escochburg</City>
-<State>MD</State>
-<ZipCode>32714</ZipCode>
-<Telephone>951-9233</Telephone>
-<FAX>951-9232</FAX>
-<CAPACITY>32500</CAPACITY>
-</tuple><tuple><WH_ID>012345678</WH_ID>
-<Manager>F F Dijkstra</Manager>
-<StreetAddr>756 Delisle Gardens</StreetAddr>
-<City>Sacrawie</City>
-<State>AK</State>
-<ZipCode>72988</ZipCode>
-<Telephone>927-9457</Telephone>
-<FAX>927-9458</FAX>
-<CAPACITY>12000</CAPACITY>
-</tuple><tuple><WH_ID>023456789</WH_ID>
-<Manager>Gianni H Botsford</Manager>
-<StreetAddr>888 Apollo Street</StreetAddr>
-<City>Lawtornardino</City>
-<State>CA</State>
-<ZipCode>72171</ZipCode>
-<Telephone>655-8958</Telephone>
-<FAX>655-8955</FAX>
-<CAPACITY>97000</CAPACITY>
-</tuple><tuple><WH_ID>034567890</WH_ID>
-<Manager>Michael S Ness</Manager>
-<StreetAddr>850 Linking Circle</StreetAddr>
-<City>North Diamorving</City>
-<State>NV</State>
-<ZipCode>52548</ZipCode>
-<Telephone>887-2467</Telephone>
-<FAX>887-5378</FAX>
-<CAPACITY>54000</CAPACITY>
-</tuple><tuple><WH_ID>045678900</WH_ID>
-<Manager>Andy T Ducheine</Manager>
-<StreetAddr>76 Sandhurst Close</StreetAddr>
-<City>Browrleston</City>
-<State>OK</State>
-<ZipCode>78247</ZipCode>
-<Telephone>825-7470</Telephone>
-<FAX>825-7432</FAX>
-<CAPACITY>17200</CAPACITY>
-</tuple><tuple><WH_ID>056789000</WH_ID>
-<Manager>Nehemiah L Weimann</Manager>
-<StreetAddr>299 Grantham Road</StreetAddr>
-<City>Alaglewood</City>
-<State>WY</State>
-<ZipCode>32327</ZipCode>
-<Telephone>603-4785</Telephone>
-<FAX>603-4734</FAX>
-<CAPACITY>193400</CAPACITY>
-</tuple><tuple><WH_ID>067890000</WH_ID>
-<Manager>Bette E Davis</Manager>
-<StreetAddr>652 West Oak Street</StreetAddr>
-<City>Danbuxville</City>
-<State>VT</State>
-<ZipCode>10083</ZipCode>
-<Telephone>782-0457</Telephone>
-<FAX>782-1451</FAX>
-<CAPACITY>67500</CAPACITY>
-</tuple><tuple><WH_ID>078900000</WH_ID>
-<Manager>Cool H Luke</Manager>
-<StreetAddr>79 Linking Way</StreetAddr>
-<City>Pawtuguna</City>
-<State>WA</State>
-<ZipCode>62472</ZipCode>
-<Telephone>102-1900</Telephone>
-<FAX>102-1912</FAX>
-<CAPACITY>20500</CAPACITY>
-</tuple><tuple><WH_ID>089000000</WH_ID>
-<Manager>Christy F Spencer</Manager>
-<StreetAddr>231 Hornby End</StreetAddr>
-<City>Norwasfield</City>
-<State>WA</State>
-<ZipCode>54614</ZipCode>
-<Telephone>244-7470</Telephone>
-<FAX>244-4567</FAX>
-<CAPACITY>145000</CAPACITY>
-</tuple><tuple><WH_ID>090000000</WH_ID>
-<Manager>Amy K Mann</Manager>
-<StreetAddr>287 Grantham End</StreetAddr>
-<City>Hialeral</City>
-<State>NY</State>
-<ZipCode>93402</ZipCode>
-<Telephone>177-2564</Telephone>
-<FAX>177-2500</FAX>
-<CAPACITY>210000</CAPACITY>
-</tuple><tuple><WH_ID>123456789</WH_ID>
-<Manager>Tobin G Stracke</Manager>
-<StreetAddr>696 Carmel Close</StreetAddr>
-<City>Deerfiloud Springs</City>
-<State>ME</State>
-<ZipCode>50399</ZipCode>
-<Telephone>825-8771</Telephone>
-<FAX>825-8770</FAX>
-<CAPACITY>23000</CAPACITY>
-</tuple><tuple><WH_ID>234567890</WH_ID>
-<Manager>Marika V Parker</Manager>
-<StreetAddr>334 Gloucester Park</StreetAddr>
-<City>Thorntolinas</City>
-<State>MA</State>
-<ZipCode>70019</ZipCode>
-<Telephone>203-4505</Telephone>
-<FAX>203-4501</FAX>
-<CAPACITY>79500</CAPACITY>
-</tuple></WareHouse>
-<WareHouse2Book>
-<tuple><WH_ID>000123456</WH_ID>
-<ISBN>1230001</ISBN>
-<Quantity>43</Quantity>
-</tuple><tuple><WH_ID>000123456</WH_ID>
-<ISBN>1230002</ISBN>
-<Quantity>153</Quantity>
-</tuple><tuple><WH_ID>000123456</WH_ID>
-<ISBN>1230004</ISBN>
-<Quantity>323</Quantity>
-</tuple><tuple><WH_ID>000123456</WH_ID>
-<ISBN>1230005</ISBN>
-<Quantity>118</Quantity>
-</tuple><tuple><WH_ID>000123456</WH_ID>
-<ISBN>1230006</ISBN>
-<Quantity>1457</Quantity>
-</tuple><tuple><WH_ID>000123456</WH_ID>
-<ISBN>1230007</ISBN>
-<Quantity>534</Quantity>
-</tuple><tuple><WH_ID>000123456</WH_ID>
-<ISBN>1230008</ISBN>
-<Quantity>33</Quantity>
-</tuple><tuple><WH_ID>000123456</WH_ID>
-<ISBN>1230009</ISBN>
-<Quantity>2</Quantity>
-</tuple><tuple><WH_ID>000123456</WH_ID>
-<ISBN>1230010</ISBN>
-<Quantity>5</Quantity>
-</tuple><tuple><WH_ID>000123456</WH_ID>
-<ISBN>1230011</ISBN>
-<Quantity>43</Quantity>
-</tuple><tuple><WH_ID>000123456</WH_ID>
-<ISBN>1230012</ISBN>
-<Quantity>22</Quantity>
-</tuple><tuple><WH_ID>000123456</WH_ID>
-<ISBN>1230013</ISBN>
-<Quantity>12</Quantity>
-</tuple><tuple><WH_ID>000123456</WH_ID>
-<ISBN>1230014</ISBN>
-<Quantity>1</Quantity>
-</tuple><tuple><WH_ID>000123456</WH_ID>
-<ISBN>1230015</ISBN>
-<Quantity>77</Quantity>
-</tuple><tuple><WH_ID>000123456</WH_ID>
-<ISBN>1230016</ISBN>
-<Quantity>18</Quantity>
-</tuple><tuple><WH_ID>000123456</WH_ID>
-<ISBN>1230017</ISBN>
-<Quantity>55</Quantity>
-</tuple><tuple><WH_ID>000123456</WH_ID>
-<ISBN>1230018</ISBN>
-<Quantity>23</Quantity>
-</tuple><tuple><WH_ID>000123456</WH_ID>
-<ISBN>1230019</ISBN>
-<Quantity>1</Quantity>
-</tuple><tuple><WH_ID>000123456</WH_ID>
-<ISBN>1230020</ISBN>
-<Quantity>2</Quantity>
-</tuple><tuple><WH_ID>000123456</WH_ID>
-<ISBN>1230021</ISBN>
-<Quantity>87</Quantity>
-</tuple><tuple><WH_ID>000123456</WH_ID>
-<ISBN>1230022</ISBN>
-<Quantity>14</Quantity>
-</tuple><tuple><WH_ID>000123456</WH_ID>
-<ISBN>1230023</ISBN>
-<Quantity>76</Quantity>
-</tuple><tuple><WH_ID>000234567</WH_ID>
-<ISBN>1230001</ISBN>
-<Quantity>376</Quantity>
-</tuple><tuple><WH_ID>000234567</WH_ID>
-<ISBN>1230002</ISBN>
-<Quantity>21</Quantity>
-</tuple><tuple><WH_ID>000234567</WH_ID>
-<ISBN>1230003</ISBN>
-<Quantity>223</Quantity>
-</tuple><tuple><WH_ID>000234567</WH_ID>
-<ISBN>1230002</ISBN>
-<Quantity>234</Quantity>
-</tuple><tuple><WH_ID>000234567</WH_ID>
-<ISBN>1230006</ISBN>
-<Quantity>53</Quantity>
-</tuple><tuple><WH_ID>000234567</WH_ID>
-<ISBN>1230007</ISBN>
-<Quantity>123</Quantity>
-</tuple><tuple><WH_ID>000234567</WH_ID>
-<ISBN>1230008</ISBN>
-<Quantity>64</Quantity>
-</tuple><tuple><WH_ID>000234567</WH_ID>
-<ISBN>1230009</ISBN>
-<Quantity>42</Quantity>
-</tuple><tuple><WH_ID>000234567</WH_ID>
-<ISBN>1230010</ISBN>
-<Quantity>143</Quantity>
-</tuple><tuple><WH_ID>000234567</WH_ID>
-<ISBN>1230011</ISBN>
-<Quantity>101</Quantity>
-</tuple><tuple><WH_ID>000234567</WH_ID>
-<ISBN>1230014</ISBN>
-<Quantity>133</Quantity>
-</tuple><tuple><WH_ID>000234567</WH_ID>
-<ISBN>1230015</ISBN>
-<Quantity>86</Quantity>
-</tuple><tuple><WH_ID>000234567</WH_ID>
-<ISBN>1230016</ISBN>
-<Quantity>41</Quantity>
-</tuple><tuple><WH_ID>000234567</WH_ID>
-<ISBN>1230017</ISBN>
-<Quantity>1</Quantity>
-</tuple><tuple><WH_ID>000234567</WH_ID>
-<ISBN>1230018</ISBN>
-<Quantity>14</Quantity>
-</tuple><tuple><WH_ID>000234567</WH_ID>
-<ISBN>1230020</ISBN>
-<Quantity>52</Quantity>
-</tuple><tuple><WH_ID>000234567</WH_ID>
-<ISBN>1230021</ISBN>
-<Quantity>14</Quantity>
-</tuple><tuple><WH_ID>000234567</WH_ID>
-<ISBN>1230022</ISBN>
-<Quantity>23</Quantity>
-</tuple><tuple><WH_ID>000234567</WH_ID>
-<ISBN>1230023</ISBN>
-<Quantity>1154</Quantity>
-</tuple><tuple><WH_ID>000345678</WH_ID>
-<ISBN>1230003</ISBN>
-<Quantity>312</Quantity>
-</tuple><tuple><WH_ID>000345678</WH_ID>
-<ISBN>1230004</ISBN>
-<Quantity>55</Quantity>
-</tuple><tuple><WH_ID>000345678</WH_ID>
-<ISBN>1230005</ISBN>
-<Quantity>22</Quantity>
-</tuple><tuple><WH_ID>000345678</WH_ID>
-<ISBN>1230006</ISBN>
-<Quantity>24</Quantity>
-</tuple><tuple><WH_ID>000345678</WH_ID>
-<ISBN>1230007</ISBN>
-<Quantity>52</Quantity>
-</tuple><tuple><WH_ID>000345678</WH_ID>
-<ISBN>1230008</ISBN>
-<Quantity>87</Quantity>
-</tuple><tuple><WH_ID>000345678</WH_ID>
-<ISBN>1230009</ISBN>
-<Quantity>165</Quantity>
-</tuple><tuple><WH_ID>000345678</WH_ID>
-<ISBN>1230010</ISBN>
-<Quantity>364</Quantity>
-</tuple><tuple><WH_ID>000345678</WH_ID>
-<ISBN>1230011</ISBN>
-<Quantity>123</Quantity>
-</tuple><tuple><WH_ID>000345678</WH_ID>
-<ISBN>1230012</ISBN>
-<Quantity>13</Quantity>
-</tuple><tuple><WH_ID>000456789</WH_ID>
-<ISBN>1230006</ISBN>
-<Quantity>54</Quantity>
-</tuple><tuple><WH_ID>000456789</WH_ID>
-<ISBN>1230007</ISBN>
-<Quantity>111</Quantity>
-</tuple><tuple><WH_ID>000456789</WH_ID>
-<ISBN>1230008</ISBN>
-<Quantity>12</Quantity>
-</tuple><tuple><WH_ID>000456789</WH_ID>
-<ISBN>1230009</ISBN>
-<Quantity>66</Quantity>
-</tuple><tuple><WH_ID>000456789</WH_ID>
-<ISBN>1230010</ISBN>
-<Quantity>21</Quantity>
-</tuple><tuple><WH_ID>000456789</WH_ID>
-<ISBN>1230011</ISBN>
-<Quantity>118</Quantity>
-</tuple><tuple><WH_ID>000456789</WH_ID>
-<ISBN>1230012</ISBN>
-<Quantity>44</Quantity>
-</tuple><tuple><WH_ID>000456789</WH_ID>
-<ISBN>1230013</ISBN>
-<Quantity>213</Quantity>
-</tuple><tuple><WH_ID>000456789</WH_ID>
-<ISBN>1230014</ISBN>
-<Quantity>110</Quantity>
-</tuple><tuple><WH_ID>000456789</WH_ID>
-<ISBN>1230015</ISBN>
-<Quantity>92</Quantity>
-</tuple><tuple><WH_ID>000456789</WH_ID>
-<ISBN>1230016</ISBN>
-<Quantity>1</Quantity>
-</tuple><tuple><WH_ID>000567890</WH_ID>
-<ISBN>1230006</ISBN>
-<Quantity>142</Quantity>
-</tuple><tuple><WH_ID>000567890</WH_ID>
-<ISBN>1230007</ISBN>
-<Quantity>112</Quantity>
-</tuple><tuple><WH_ID>000567890</WH_ID>
-<ISBN>1230008</ISBN>
-<Quantity>33</Quantity>
-</tuple><tuple><WH_ID>000567890</WH_ID>
-<ISBN>1230009</ISBN>
-<Quantity>2</Quantity>
-</tuple><tuple><WH_ID>000567890</WH_ID>
-<ISBN>1230010</ISBN>
-<Quantity>5</Quantity>
-</tuple><tuple><WH_ID>000567890</WH_ID>
-<ISBN>1230011</ISBN>
-<Quantity>12</Quantity>
-</tuple><tuple><WH_ID>000567890</WH_ID>
-<ISBN>1230012</ISBN>
-<Quantity>22</Quantity>
-</tuple><tuple><WH_ID>000567890</WH_ID>
-<ISBN>1230013</ISBN>
-<Quantity>12</Quantity>
-</tuple><tuple><WH_ID>000567890</WH_ID>
-<ISBN>1230014</ISBN>
-<Quantity>1</Quantity>
-</tuple><tuple><WH_ID>000567890</WH_ID>
-<ISBN>1230015</ISBN>
-<Quantity>77</Quantity>
-</tuple><tuple><WH_ID>000567890</WH_ID>
-<ISBN>1230016</ISBN>
-<Quantity>11</Quantity>
-</tuple><tuple><WH_ID>000567890</WH_ID>
-<ISBN>1230017</ISBN>
-<Quantity>88</Quantity>
-</tuple><tuple><WH_ID>000567890</WH_ID>
-<ISBN>1230018</ISBN>
-<Quantity>15</Quantity>
-</tuple><tuple><WH_ID>000567890</WH_ID>
-<ISBN>1230019</ISBN>
-<Quantity>14</Quantity>
-</tuple><tuple><WH_ID>001234567</WH_ID>
-<ISBN>1230001</ISBN>
-<Quantity>55</Quantity>
-</tuple><tuple><WH_ID>001234567</WH_ID>
-<ISBN>1230002</ISBN>
-<Quantity>76</Quantity>
-</tuple><tuple><WH_ID>001234567</WH_ID>
-<ISBN>1230003</ISBN>
-<Quantity>12</Quantity>
-</tuple><tuple><WH_ID>001234567</WH_ID>
-<ISBN>1230004</ISBN>
-<Quantity>34</Quantity>
-</tuple><tuple><WH_ID>001234567</WH_ID>
-<ISBN>1230018</ISBN>
-<Quantity>11</Quantity>
-</tuple><tuple><WH_ID>001234567</WH_ID>
-<ISBN>1230019</ISBN>
-<Quantity>43</Quantity>
-</tuple><tuple><WH_ID>001234567</WH_ID>
-<ISBN>1230020</ISBN>
-<Quantity>6</Quantity>
-</tuple><tuple><WH_ID>001234567</WH_ID>
-<ISBN>1230021</ISBN>
-<Quantity>23</Quantity>
-</tuple><tuple><WH_ID>001234567</WH_ID>
-<ISBN>1230022</ISBN>
-<Quantity>87</Quantity>
-</tuple><tuple><WH_ID>001234567</WH_ID>
-<ISBN>1230023</ISBN>
-<Quantity>143</Quantity>
-</tuple><tuple><WH_ID>002345678</WH_ID>
-<ISBN>1230002</ISBN>
-<Quantity>111</Quantity>
-</tuple><tuple><WH_ID>002345678</WH_ID>
-<ISBN>1230003</ISBN>
-<Quantity>55</Quantity>
-</tuple><tuple><WH_ID>002345678</WH_ID>
-<ISBN>1230004</ISBN>
-<Quantity>153</Quantity>
-</tuple><tuple><WH_ID>002345678</WH_ID>
-<ISBN>1230005</ISBN>
-<Quantity>132</Quantity>
-</tuple><tuple><WH_ID>003456789</WH_ID>
-<ISBN>1230002</ISBN>
-<Quantity>12</Quantity>
-</tuple><tuple><WH_ID>003456789</WH_ID>
-<ISBN>1230003</ISBN>
-<Quantity>1</Quantity>
-</tuple><tuple><WH_ID>003456789</WH_ID>
-<ISBN>1230004</ISBN>
-<Quantity>54</Quantity>
-</tuple><tuple><WH_ID>003456789</WH_ID>
-<ISBN>1230005</ISBN>
-<Quantity>23</Quantity>
-</tuple><tuple><WH_ID>234567890</WH_ID>
-<ISBN>1230003</ISBN>
-<Quantity>11</Quantity>
-</tuple><tuple><WH_ID>090000000</WH_ID>
-<ISBN>1230021</ISBN>
-<Quantity>123</Quantity>
-</tuple><tuple><WH_ID>090000000</WH_ID>
-<ISBN>1230022</ISBN>
-<Quantity>47</Quantity>
-</tuple><tuple><WH_ID>090000000</WH_ID>
-<ISBN>1230023</ISBN>
-<Quantity>111</Quantity>
-</tuple></WareHouse2Book>
-<WareHouse2CD>
-<tuple><WH_ID>000123456</WH_ID>
-<ProdCode>10001230001</ProdCode>
-<Quantity>43</Quantity>
-</tuple><tuple><WH_ID>000123456</WH_ID>
-<ProdCode>10001230002</ProdCode>
-<Quantity>153</Quantity>
-</tuple><tuple><WH_ID>000123456</WH_ID>
-<ProdCode>10001230003</ProdCode>
-<Quantity>55</Quantity>
-</tuple><tuple><WH_ID>000123456</WH_ID>
-<ProdCode>10001230024</ProdCode>
-<Quantity>76</Quantity>
-</tuple><tuple><WH_ID>000123456</WH_ID>
-<ProdCode>10001230004</ProdCode>
-<Quantity>153</Quantity>
-</tuple><tuple><WH_ID>000123456</WH_ID>
-<ProdCode>10001230005</ProdCode>
-<Quantity>132</Quantity>
-</tuple><tuple><WH_ID>000123456</WH_ID>
-<ProdCode>10001230006</ProdCode>
-<Quantity>1127</Quantity>
-</tuple><tuple><WH_ID>000123456</WH_ID>
-<ProdCode>10001230007</ProdCode>
-<Quantity>534</Quantity>
-</tuple><tuple><WH_ID>000123456</WH_ID>
-<ProdCode>10001230008</ProdCode>
-<Quantity>33</Quantity>
-</tuple><tuple><WH_ID>000123456</WH_ID>
-<ProdCode>10001230009</ProdCode>
-<Quantity>2</Quantity>
-</tuple><tuple><WH_ID>000123456</WH_ID>
-<ProdCode>10001230010</ProdCode>
-<Quantity>5</Quantity>
-</tuple><tuple><WH_ID>000123456</WH_ID>
-<ProdCode>10001230011</ProdCode>
-<Quantity>667</Quantity>
-</tuple><tuple><WH_ID>000123456</WH_ID>
-<ProdCode>10001230025</ProdCode>
-<Quantity>865</Quantity>
-</tuple><tuple><WH_ID>000123456</WH_ID>
-<ProdCode>10001230012</ProdCode>
-<Quantity>22</Quantity>
-</tuple><tuple><WH_ID>000123456</WH_ID>
-<ProdCode>10001230013</ProdCode>
-<Quantity>12</Quantity>
-</tuple><tuple><WH_ID>000123456</WH_ID>
-<ProdCode>10001230014</ProdCode>
-<Quantity>1</Quantity>
-</tuple><tuple><WH_ID>000123456</WH_ID>
-<ProdCode>10001230015</ProdCode>
-<Quantity>77</Quantity>
-</tuple><tuple><WH_ID>000123456</WH_ID>
-<ProdCode>10001230016</ProdCode>
-<Quantity>18</Quantity>
-</tuple><tuple><WH_ID>000123456</WH_ID>
-<ProdCode>10001230017</ProdCode>
-<Quantity>55</Quantity>
-</tuple><tuple><WH_ID>000123456</WH_ID>
-<ProdCode>10001230018</ProdCode>
-<Quantity>76</Quantity>
-</tuple><tuple><WH_ID>000123456</WH_ID>
-<ProdCode>10001230019</ProdCode>
-<Quantity>14</Quantity>
-</tuple><tuple><WH_ID>000123456</WH_ID>
-<ProdCode>10001230020</ProdCode>
-<Quantity>2</Quantity>
-</tuple><tuple><WH_ID>000123456</WH_ID>
-<ProdCode>10001230021</ProdCode>
-<Quantity>87</Quantity>
-</tuple><tuple><WH_ID>000123456</WH_ID>
-<ProdCode>10001230022</ProdCode>
-<Quantity>114</Quantity>
-</tuple><tuple><WH_ID>000123456</WH_ID>
-<ProdCode>10001230023</ProdCode>
-<Quantity>176</Quantity>
-</tuple><tuple><WH_ID>000234567</WH_ID>
-<ProdCode>10001230001</ProdCode>
-<Quantity>312</Quantity>
-</tuple><tuple><WH_ID>000234567</WH_ID>
-<ProdCode>10001230002</ProdCode>
-<Quantity>21</Quantity>
-</tuple><tuple><WH_ID>000234567</WH_ID>
-<ProdCode>10001230003</ProdCode>
-<Quantity>223</Quantity>
-</tuple><tuple><WH_ID>000234567</WH_ID>
-<ProdCode>10001230002</ProdCode>
-<Quantity>234</Quantity>
-</tuple><tuple><WH_ID>000234567</WH_ID>
-<ProdCode>10001230006</ProdCode>
-<Quantity>53</Quantity>
-</tuple><tuple><WH_ID>000234567</WH_ID>
-<ProdCode>10001230007</ProdCode>
-<Quantity>123</Quantity>
-</tuple><tuple><WH_ID>000234567</WH_ID>
-<ProdCode>10001230008</ProdCode>
-<Quantity>64</Quantity>
-</tuple><tuple><WH_ID>000234567</WH_ID>
-<ProdCode>10001230009</ProdCode>
-<Quantity>42</Quantity>
-</tuple><tuple><WH_ID>000234567</WH_ID>
-<ProdCode>10001230010</ProdCode>
-<Quantity>143</Quantity>
-</tuple><tuple><WH_ID>000234567</WH_ID>
-<ProdCode>10001230011</ProdCode>
-<Quantity>111</Quantity>
-</tuple><tuple><WH_ID>000234567</WH_ID>
-<ProdCode>10001230025</ProdCode>
-<Quantity>143</Quantity>
-</tuple><tuple><WH_ID>000234567</WH_ID>
-<ProdCode>10001230014</ProdCode>
-<Quantity>133</Quantity>
-</tuple><tuple><WH_ID>000234567</WH_ID>
-<ProdCode>10001230015</ProdCode>
-<Quantity>86</Quantity>
-</tuple><tuple><WH_ID>000234567</WH_ID>
-<ProdCode>10001230016</ProdCode>
-<Quantity>41</Quantity>
-</tuple><tuple><WH_ID>000234567</WH_ID>
-<ProdCode>10001230017</ProdCode>
-<Quantity>1</Quantity>
-</tuple><tuple><WH_ID>000234567</WH_ID>
-<ProdCode>10001230018</ProdCode>
-<Quantity>14</Quantity>
-</tuple><tuple><WH_ID>000234567</WH_ID>
-<ProdCode>10001230020</ProdCode>
-<Quantity>52</Quantity>
-</tuple><tuple><WH_ID>000234567</WH_ID>
-<ProdCode>10001230021</ProdCode>
-<Quantity>14</Quantity>
-</tuple><tuple><WH_ID>000234567</WH_ID>
-<ProdCode>10001230022</ProdCode>
-<Quantity>63</Quantity>
-</tuple><tuple><WH_ID>000234567</WH_ID>
-<ProdCode>10001230023</ProdCode>
-<Quantity>1154</Quantity>
-</tuple><tuple><WH_ID>000345678</WH_ID>
-<ProdCode>10001230003</ProdCode>
-<Quantity>312</Quantity>
-</tuple><tuple><WH_ID>000345678</WH_ID>
-<ProdCode>10001230024</ProdCode>
-<Quantity>73</Quantity>
-</tuple><tuple><WH_ID>000345678</WH_ID>
-<ProdCode>10001230004</ProdCode>
-<Quantity>55</Quantity>
-</tuple><tuple><WH_ID>000345678</WH_ID>
-<ProdCode>10001230005</ProdCode>
-<Quantity>22</Quantity>
-</tuple><tuple><WH_ID>000345678</WH_ID>
-<ProdCode>10001230006</ProdCode>
-<Quantity>1265</Quantity>
-</tuple><tuple><WH_ID>000345678</WH_ID>
-<ProdCode>10001230007</ProdCode>
-<Quantity>52</Quantity>
-</tuple><tuple><WH_ID>000345678</WH_ID>
-<ProdCode>10001230008</ProdCode>
-<Quantity>87</Quantity>
-</tuple><tuple><WH_ID>000345678</WH_ID>
-<ProdCode>10001230009</ProdCode>
-<Quantity>165</Quantity>
-</tuple><tuple><WH_ID>000345678</WH_ID>
-<ProdCode>10001230010</ProdCode>
-<Quantity>364</Quantity>
-</tuple><tuple><WH_ID>000345678</WH_ID>
-<ProdCode>10001230011</ProdCode>
-<Quantity>732</Quantity>
-</tuple><tuple><WH_ID>000345678</WH_ID>
-<ProdCode>10001230025</ProdCode>
-<Quantity>32</Quantity>
-</tuple><tuple><WH_ID>000345678</WH_ID>
-<ProdCode>10001230012</ProdCode>
-<Quantity>13</Quantity>
-</tuple><tuple><WH_ID>000456789</WH_ID>
-<ProdCode>10001230006</ProdCode>
-<Quantity>54</Quantity>
-</tuple><tuple><WH_ID>000456789</WH_ID>
-<ProdCode>10001230007</ProdCode>
-<Quantity>712</Quantity>
-</tuple><tuple><WH_ID>000456789</WH_ID>
-<ProdCode>10001230008</ProdCode>
-<Quantity>12</Quantity>
-</tuple><tuple><WH_ID>000456789</WH_ID>
-<ProdCode>10001230009</ProdCode>
-<Quantity>66</Quantity>
-</tuple><tuple><WH_ID>000456789</WH_ID>
-<ProdCode>10001230010</ProdCode>
-<Quantity>31</Quantity>
-</tuple><tuple><WH_ID>000456789</WH_ID>
-<ProdCode>10001230011</ProdCode>
-<Quantity>18</Quantity>
-</tuple><tuple><WH_ID>000456789</WH_ID>
-<ProdCode>10001230025</ProdCode>
-<Quantity>4</Quantity>
-</tuple><tuple><WH_ID>000456789</WH_ID>
-<ProdCode>10001230012</ProdCode>
-<Quantity>12</Quantity>
-</tuple><tuple><WH_ID>000456789</WH_ID>
-<ProdCode>10001230013</ProdCode>
-<Quantity>776</Quantity>
-</tuple><tuple><WH_ID>000456789</WH_ID>
-<ProdCode>10001230014</ProdCode>
-<Quantity>111</Quantity>
-</tuple><tuple><WH_ID>000456789</WH_ID>
-<ProdCode>10001230015</ProdCode>
-<Quantity>92</Quantity>
-</tuple><tuple><WH_ID>000456789</WH_ID>
-<ProdCode>10001230016</ProdCode>
-<Quantity>12</Quantity>
-</tuple><tuple><WH_ID>000567890</WH_ID>
-<ProdCode>10001230006</ProdCode>
-<Quantity>422</Quantity>
-</tuple><tuple><WH_ID>000567890</WH_ID>
-<ProdCode>10001230007</ProdCode>
-<Quantity>154</Quantity>
-</tuple><tuple><WH_ID>000567890</WH_ID>
-<ProdCode>10001230008</ProdCode>
-<Quantity>33</Quantity>
-</tuple><tuple><WH_ID>000567890</WH_ID>
-<ProdCode>10001230009</ProdCode>
-<Quantity>2</Quantity>
-</tuple><tuple><WH_ID>000567890</WH_ID>
-<ProdCode>10001230010</ProdCode>
-<Quantity>5</Quantity>
-</tuple><tuple><WH_ID>000567890</WH_ID>
-<ProdCode>10001230011</ProdCode>
-<Quantity>12</Quantity>
-</tuple><tuple><WH_ID>000567890</WH_ID>
-<ProdCode>10001230025</ProdCode>
-<Quantity>2</Quantity>
-</tuple><tuple><WH_ID>000567890</WH_ID>
-<ProdCode>10001230012</ProdCode>
-<Quantity>22</Quantity>
-</tuple><tuple><WH_ID>000567890</WH_ID>
-<ProdCode>10001230013</ProdCode>
-<Quantity>12</Quantity>
-</tuple><tuple><WH_ID>000567890</WH_ID>
-<ProdCode>10001230014</ProdCode>
-<Quantity>1</Quantity>
-</tuple><tuple><WH_ID>000567890</WH_ID>
-<ProdCode>10001230015</ProdCode>
-<Quantity>77</Quantity>
-</tuple><tuple><WH_ID>000567890</WH_ID>
-<ProdCode>10001230016</ProdCode>
-<Quantity>23</Quantity>
-</tuple><tuple><WH_ID>000567890</WH_ID>
-<ProdCode>10001230017</ProdCode>
-<Quantity>88</Quantity>
-</tuple><tuple><WH_ID>000567890</WH_ID>
-<ProdCode>10001230018</ProdCode>
-<Quantity>15</Quantity>
-</tuple><tuple><WH_ID>000567890</WH_ID>
-<ProdCode>10001230019</ProdCode>
-<Quantity>14</Quantity>
-</tuple><tuple><WH_ID>001234567</WH_ID>
-<ProdCode>10001230001</ProdCode>
-<Quantity>55</Quantity>
-</tuple><tuple><WH_ID>001234567</WH_ID>
-<ProdCode>10001230002</ProdCode>
-<Quantity>76</Quantity>
-</tuple><tuple><WH_ID>001234567</WH_ID>
-<ProdCode>10001230003</ProdCode>
-<Quantity>12</Quantity>
-</tuple><tuple><WH_ID>001234567</WH_ID>
-<ProdCode>10001230024</ProdCode>
-<Quantity>2</Quantity>
-</tuple><tuple><WH_ID>001234567</WH_ID>
-<ProdCode>10001230004</ProdCode>
-<Quantity>34</Quantity>
-</tuple><tuple><WH_ID>001234567</WH_ID>
-<ProdCode>10001230018</ProdCode>
-<Quantity>111</Quantity>
-</tuple><tuple><WH_ID>001234567</WH_ID>
-<ProdCode>10001230019</ProdCode>
-<Quantity>43</Quantity>
-</tuple><tuple><WH_ID>001234567</WH_ID>
-<ProdCode>10001230020</ProdCode>
-<Quantity>6</Quantity>
-</tuple><tuple><WH_ID>001234567</WH_ID>
-<ProdCode>10001230021</ProdCode>
-<Quantity>23</Quantity>
-</tuple><tuple><WH_ID>001234567</WH_ID>
-<ProdCode>10001230022</ProdCode>
-<Quantity>87</Quantity>
-</tuple><tuple><WH_ID>001234567</WH_ID>
-<ProdCode>10001230023</ProdCode>
-<Quantity>143</Quantity>
-</tuple><tuple><WH_ID>002345678</WH_ID>
-<ProdCode>10001230002</ProdCode>
-<Quantity>153</Quantity>
-</tuple><tuple><WH_ID>002345678</WH_ID>
-<ProdCode>10001230003</ProdCode>
-<Quantity>55</Quantity>
-</tuple><tuple><WH_ID>002345678</WH_ID>
-<ProdCode>10001230024</ProdCode>
-<Quantity>76</Quantity>
-</tuple><tuple><WH_ID>002345678</WH_ID>
-<ProdCode>10001230004</ProdCode>
-<Quantity>153</Quantity>
-</tuple><tuple><WH_ID>002345678</WH_ID>
-<ProdCode>10001230005</ProdCode>
-<Quantity>132</Quantity>
-</tuple><tuple><WH_ID>003456789</WH_ID>
-<ProdCode>10001230002</ProdCode>
-<Quantity>12</Quantity>
-</tuple><tuple><WH_ID>003456789</WH_ID>
-<ProdCode>10001230003</ProdCode>
-<Quantity>1</Quantity>
-</tuple><tuple><WH_ID>003456789</WH_ID>
-<ProdCode>10001230024</ProdCode>
-<Quantity>14</Quantity>
-</tuple><tuple><WH_ID>003456789</WH_ID>
-<ProdCode>10001230004</ProdCode>
-<Quantity>54</Quantity>
-</tuple><tuple><WH_ID>003456789</WH_ID>
-<ProdCode>10001230005</ProdCode>
-<Quantity>23</Quantity>
-</tuple><tuple><WH_ID>234567890</WH_ID>
-<ProdCode>10001230003</ProdCode>
-<Quantity>11</Quantity>
-</tuple><tuple><WH_ID>234567890</WH_ID>
-<ProdCode>10001230024</ProdCode>
-<Quantity>124</Quantity>
-</tuple><tuple><WH_ID>090000000</WH_ID>
-<ProdCode>10001230021</ProdCode>
-<Quantity>123</Quantity>
-</tuple><tuple><WH_ID>090000000</WH_ID>
-<ProdCode>10001230022</ProdCode>
-<Quantity>47</Quantity>
-</tuple><tuple><WH_ID>090000000</WH_ID>
-<ProdCode>10001230023</ProdCode>
-<Quantity>111</Quantity>
-</tuple></WareHouse2CD>
-</Data>
-</database>
