@@ -43,8 +43,9 @@ public class AffinityView extends OpenIIEditor implements AffinityListener
 		
 		//Construct the Affinity pane
 		parent.setLayout(new FillLayout());		
-		ArrayList<Integer> schemaIDs = OpenIIManager.getGroupSchemas(elementID);		
-		affinity = new AffinityPane(parent, new AffinityModel(schemaManager, clusterManager), schemaIDs);
+		ArrayList<Integer> schemaIDs = OpenIIManager.getGroupSchemas(elementID);
+		this.affinityModel =  new AffinityModel(schemaManager, clusterManager);
+		affinity = new AffinityPane(parent, affinityModel, schemaIDs);
 		affinity.addAffinityEventListener(this);
 	}	
 	
