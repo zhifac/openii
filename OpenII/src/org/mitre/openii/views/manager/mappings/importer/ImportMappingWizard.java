@@ -7,6 +7,7 @@ import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardPage;
 import org.mitre.openii.application.OpenIIActivator;
 import org.mitre.openii.model.OpenIIManager;
+import org.mitre.openii.model.RepositoryManager;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.porters.mappingImporters.MappingImporter;
 
@@ -62,7 +63,7 @@ public class ImportMappingWizard extends Wizard
 			Integer mappingID = importer.importMapping(name, author, description, schemaIDs, uri);
 			if(mappingID!=null)
 			{
-				Mapping mapping = OpenIIManager.getConnection().getMapping(mappingID);
+				Mapping mapping = RepositoryManager.getClient().getMapping(mappingID);
 				OpenIIManager.fireMappingAdded(mapping); getShell().dispose();
 				return true;
 			}

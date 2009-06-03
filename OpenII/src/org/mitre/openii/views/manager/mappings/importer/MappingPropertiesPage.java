@@ -11,15 +11,12 @@ import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Text;
-import org.mitre.openii.model.OpenIIManager;
+import org.mitre.openii.model.RepositoryManager;
 import org.mitre.openii.widgets.BasicWidgets;
 import org.mitre.openii.widgets.URIField;
 import org.mitre.schemastore.porters.PorterManager;
@@ -28,7 +25,7 @@ import org.mitre.schemastore.porters.mappingImporters.MappingImporter;
 /**
  * Class for displaying the Mapping Properties page
  */
-public class MappingPropertiesPage extends WizardPage implements ISelectionChangedListener, SelectionListener, ModifyListener
+public class MappingPropertiesPage extends WizardPage implements ISelectionChangedListener, ModifyListener
 {
 	// Stores the various dialog fields
 	private ComboViewer importerList = null;
@@ -57,7 +54,7 @@ public class MappingPropertiesPage extends WizardPage implements ISelectionChang
 		// Construct a list of all importers that can be selected
 		BasicWidgets.createLabel(pane,"Importer");
 		importerList = new ComboViewer(pane, SWT.NONE);
-		for(MappingImporter importer : new PorterManager(OpenIIManager.getConnection()).getMappingImporters())
+		for(MappingImporter importer : new PorterManager(RepositoryManager.getClient()).getMappingImporters())
 			importerList.add(importer);
 		importerList.addSelectionChangedListener(this);
 	}
@@ -75,7 +72,7 @@ public class MappingPropertiesPage extends WizardPage implements ISelectionChang
 		nameField = BasicWidgets.createTextField(group,"Name");
 		authorField = BasicWidgets.createTextField(group,"Author");
 		descriptionField = BasicWidgets.createTextField(group,"Description",4);
-		uriField = new URIField(group,this);
+		uriField = new URIField(group);
 		
 		// Add listeners to the fields to monitor for changes
 		nameField.addModifyListener(this);
@@ -132,36 +129,20 @@ public class MappingPropertiesPage extends WizardPage implements ISelectionChang
 		MappingImporter importer = (MappingImporter)((StructuredSelection)importerList.getSelection()).getFirstElement();
 		boolean uriImporter = importer.getURIType()==MappingImporter.URI;
 
-		// Update the fields as needed
-		if(authorField.getText().equals("")) authorField.setText(System.getProperty("user.name"));
-		uriField.setMode(uriImporter ? URIField.URI : URIField.FILE);	}	
-	
-	/** Handles changes to the selected importer */
-	public void selectionChanged(SelectionChangedEvent e)
-		{ updateFields(); }
-
-	/** Handles the selection of a file to import from */
-	public void widgetSelected(SelectionEvent e)
-	{
-		// Retrieve the selected importer
-		MappingImporter importer = getImporter();
-		
 		// Generate the list of extensions that are available
 		ArrayList<String> extensions = new ArrayList<String>();
 		for(String extension : importer.getFileTypes())
 			extensions.add("*"+extension);
 		
-		// Create the dialog
-		FileDialog dialog = new FileDialog(getShell(), SWT.OPEN);
-		dialog.setText("Import Mapping");
-		dialog.setFilterPath("C:/");
-		dialog.setFilterNames(new String[] {importer.getName() + " " + importer.getFileTypes()});
-		dialog.setFilterExtensions(extensions.toArray(new String[0]));
-		
-		// Launch the dialog to retrieve the specified file to load from
-        String filename = dialog.open();
-        if(filename != null) uriField.getTextField().setText(filename);
-	}
+		// Update the fields as needed
+		if(authorField.getText().equals("")) authorField.setText(System.getProperty("user.name"));
+		uriField.setMode(uriImporter ? URIField.URI : URIField.FILE);
+		uriField.setDialogInfo("Import Mapping", importer.getName()+" "+importer.getFileTypes(), extensions);
+	}	
+	
+	/** Handles changes to the selected importer */
+	public void selectionChanged(SelectionChangedEvent e)
+		{ updateFields(); }
 
 	/** Handles modifications to the various text fields */
 	public void modifyText(ModifyEvent e)
@@ -179,7 +160,4 @@ public class MappingPropertiesPage extends WizardPage implements ISelectionChang
 		boolean completed = nameField.getText().length()>0 && authorField.getText().length()>0 && descriptionField.getText().length()>0;
 		setPageComplete(completed && uriField.isValid());
 	}
-	
-	// Unused listener event
-	public void widgetDefaultSelected(SelectionEvent e) {}
 }

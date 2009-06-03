@@ -35,10 +35,6 @@ public class ManagerMenuManager extends MenuManager implements IMenuListener
 		addMenuListener(this);
 	}
 	
-	/** Returns the viewer associated with this menu manager */
-	public TreeViewer getViewer()
-		{ return viewer; }
-	
 	/** Returns the selected element */
 	public Object getElement()
 		{ return element; }
