@@ -62,7 +62,7 @@ public class SchemaStoreClient
 	{
 		try {
 			// Connect to a local SchemaStore jar file
-			File file = new File(serviceAddress);
+			File file = new File(serviceAddress.replaceFirst("^file:/",""));
 			if(file.exists())
 			{
 				URLClassLoader loader = new URLClassLoader(new URL[] {file.toURI().toURL()},this.getClass().getClassLoader());
