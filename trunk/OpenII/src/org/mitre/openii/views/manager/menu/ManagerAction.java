@@ -82,10 +82,6 @@ public class ManagerAction extends Action
 			case DELETE_MAPPING_SCHEMA: icon = "Delete.gif"; break;
 		}		
 		setImageDescriptor(OpenIIActivator.getImageDescriptor("icons/"+icon));
-	
-		// Set the disabled action icon
-		if(actionType.equals(ManagerAction.DELETE_SCHEMA))
-			setDisabledImageDescriptor(OpenIIActivator.getImageDescriptor("icons/DisableDelete.gif"));
 	}
 	
 	/** Runs the specified Manager action */
