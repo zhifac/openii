@@ -1,13 +1,10 @@
 package org.mitre.openii.model;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 
-import org.mitre.openii.application.OpenIIActivator;
-import org.mitre.schemastore.client.SchemaStoreClient;
 import org.mitre.schemastore.model.Group;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
@@ -20,9 +17,6 @@ import org.mitre.schemastore.model.graph.Graph;
  */
 public class OpenIIManager
 {
-	/** Stores the client used for accessing the database */
-	static private SchemaStoreClient client = null;
-
 	/** Caches the list of schemas currently available */
 	static private HashMap<Integer,Schema> schemas = null;
 	
@@ -32,28 +26,17 @@ public class OpenIIManager
 	/** Initializes this class */
 	static
 	{
-		// Connect to the repository
-		try {
-			File file = new File(OpenIIActivator.getBundleFile(),"SchemaStore.jar");
-			if(!file.exists()) file = new File(OpenIIActivator.getBundleFile(),"../../SchemaStore.jar");
-			//client = new SchemaStoreClient(file.getAbsolutePath());
-			client = new SchemaStoreClient("http://ygg:8080/SchemaStoreForDemo/services/SchemaStore");
-		}
-		catch(Exception e) { System.out.println("(E) SchemaStoreConnection - " + e.getMessage()); }
-
 		// Initialize the list of schemas
 		try {
 			schemas = new HashMap<Integer,Schema>();
-			for(Schema schema : client.getSchemas()) {
-				//System.out.println("schemaIDs.add(" + + schema.getId() + "); //" + schema.getName());
+			for(Schema schema : RepositoryManager.getClient().getSchemas())
 				schemas.put(schema.getId(),schema);
-			}
 		} catch(Exception e) {}
 
 		// Initialize the list of groups
 		try {
 			groups = new HashMap<Integer,Group>();
-			for(Group group : client.getGroups())
+			for(Group group : RepositoryManager.getClient().getGroups())
 				groups.put(group.getId(),group);
 		} catch(Exception e) {}
 	}	
@@ -62,11 +45,7 @@ public class OpenIIManager
 	static private ListenerGroup<OpenIIListener> listeners = new ListenerGroup<OpenIIListener>();
 	static public void addListener(OpenIIListener listener) { listeners.add(listener); }
 	static public void removeListener(OpenIIListener listener) { listeners.remove(listener); }
-	
-	/** Returns the schema store connection */
-	public static SchemaStoreClient getConnection()
-		{ return client; }
-	
+
 	/** Sorts the provided array by name */
 	public static <T> ArrayList<T> sortList(ArrayList<T> list)
 	{
@@ -98,7 +77,7 @@ public class OpenIIManager
 	public static boolean updateSchema(Schema schema)
 	{
 		try {
-			if(client.updateSchema(schema))
+			if(RepositoryManager.getClient().updateSchema(schema))
 				{ fireSchemaModified(schema); return true; }
 		} catch(Exception e) {}
 		return false;
@@ -108,28 +87,28 @@ public class OpenIIManager
 	public static Integer extendSchema(Integer schemaID, String name, String author, String description)
 	{
 		try {
-			Schema schema = client.extendSchema(schemaID);
+			Schema schema = RepositoryManager.getClient().extendSchema(schemaID);
 			if(schema==null) return null;
 			schema.setName(name); schema.setAuthor(author); schema.setDescription(description);
-			if(client.updateSchema(schema)) { fireSchemaAdded(schema); return schema.getId(); }
-			else client.deleteSchema(schemaID);
+			if(RepositoryManager.getClient().updateSchema(schema)) { fireSchemaAdded(schema); return schema.getId(); }
+			else RepositoryManager.getClient().deleteSchema(schemaID);
 		} catch(Exception e) {}
 		return null;
 	}
 	
 	/** Returns the graph for the specified schema */
 	public static Graph getGraph(Integer schemaID)
-		{ try { return client.getGraph(schemaID); } catch(Exception e) { return null; } }
+		{ try { return RepositoryManager.getClient().getGraph(schemaID); } catch(Exception e) { return null; } }
 	
 	/** Returns if the schema is deletable */
 	public static boolean isDeletable(Integer schemaID)
-		{ try { return client.isDeletable(schemaID); } catch(Exception e) { return false; } }
+		{ try { return RepositoryManager.getClient().isDeletable(schemaID); } catch(Exception e) { return false; } }
 	
 	/** Deletes the specified schema */
 	public static boolean deleteSchema(Integer schemaID)
 	{
 		try {
-			if(client.deleteSchema(schemaID))
+			if(RepositoryManager.getClient().deleteSchema(schemaID))
 				{ fireSchemaDeleted(schemaID); return true; }
 		} catch(Exception e) {}
 		return false;
@@ -169,7 +148,7 @@ public class OpenIIManager
 	/** Returns the list of subgroups for the specified group */
 	public static ArrayList<Group> getSubgroups(Integer groupID)
 	{
-		try { return client.getSubgroups(groupID); }
+		try { return RepositoryManager.getClient().getSubgroups(groupID); }
 		catch(Exception e) { return new ArrayList<Group>(); }
 	} 
 	
@@ -177,7 +156,7 @@ public class OpenIIManager
 	public static Integer addGroup(Group group)
 	{
 		try {
-			Integer groupID = client.addGroup(group);
+			Integer groupID = RepositoryManager.getClient().addGroup(group);
 			if(groupID!=null)
 				{ group.setId(groupID); fireGroupAdded(group); return groupID; }
 		} catch(Exception e) {}
@@ -188,7 +167,7 @@ public class OpenIIManager
 	public static boolean updateGroup(Group group)
 	{
 		try {
-			if(client.updateGroup(group))
+			if(RepositoryManager.getClient().updateGroup(group))
 				{ fireGroupModified(group); return true; }
 		} catch(Exception e) {}
 		return false;
@@ -209,7 +188,7 @@ public class OpenIIManager
 		
 		// Delete the group
 		try {
-			if(client.deleteGroup(groupID))
+			if(RepositoryManager.getClient().deleteGroup(groupID))
 				{ fireGroupDeleted(groupID); return true; }
 		} catch(Exception e) {}
 		return false;
@@ -217,7 +196,7 @@ public class OpenIIManager
 
 	/** Returns the list of schemas associated with the specified group */
 	public static ArrayList<Integer> getGroupSchemas(Integer groupID)
-		{ try { return client.getGroupSchemas(groupID); } catch(Exception e) { return new ArrayList<Integer>(); } }
+		{ try { return RepositoryManager.getClient().getGroupSchemas(groupID); } catch(Exception e) { return new ArrayList<Integer>(); } }
 
 	/** Returns the list of schemas associate with child groups */
 	public static ArrayList<Integer> getChildGroupSchemas(Integer groupID)
@@ -256,9 +235,9 @@ public class OpenIIManager
 		// Add and remove schemas from the group as needed
 		try {
 			for(Integer oldSchemaID : oldSchemaIDs)
-				if(!schemaIDs.contains(oldSchemaID)) client.removeGroupFromSchema(oldSchemaID, groupID);
+				if(!schemaIDs.contains(oldSchemaID)) RepositoryManager.getClient().removeGroupFromSchema(oldSchemaID, groupID);
 			for(Integer schemaID : schemaIDs)
-				if(!oldSchemaIDs.contains(schemaID)) client.addGroupToSchema(schemaID, groupID);
+				if(!oldSchemaIDs.contains(schemaID)) RepositoryManager.getClient().addGroupToSchema(schemaID, groupID);
 		} catch(Exception e) { return false; }
 		
 		// Inform listeners that the group has been modified
@@ -290,21 +269,21 @@ public class OpenIIManager
 	
 	/** Returns the list of mappings */
 	public static ArrayList<Mapping> getMappings()
-		{ try { return client.getMappings(); } catch(Exception e) { return new ArrayList<Mapping>(); } }
+		{ try { return RepositoryManager.getClient().getMappings(); } catch(Exception e) { return new ArrayList<Mapping>(); } }
 
 	/** Returns the specified mapping */
 	public static Mapping getMapping(Integer mappingID)
-		{ try { return client.getMapping(mappingID); } catch(Exception e) { return null; } }
+		{ try { return RepositoryManager.getClient().getMapping(mappingID); } catch(Exception e) { return null; } }
 	
 	/** Returns the specified mapping cells */
 	public static ArrayList<MappingCell> getMappingCells(Integer mappingID)
-		{ try { return client.getMappingCells(mappingID); } catch(Exception e) { return new ArrayList<MappingCell>(); } }
+		{ try { return RepositoryManager.getClient().getMappingCells(mappingID); } catch(Exception e) { return new ArrayList<MappingCell>(); } }
 	
 	/** Add mapping to the repository */
 	public static Integer addMapping(Mapping mapping)
 	{
 		try {
-			Integer mappingID = client.addMapping(mapping);
+			Integer mappingID = RepositoryManager.getClient().addMapping(mapping);
 			if(mappingID!=null)
 				{ mapping.setId(mappingID); fireMappingAdded(mapping); return mappingID; }
 		} catch(Exception e) {}
@@ -315,7 +294,7 @@ public class OpenIIManager
 	public static boolean updateMapping(Mapping mapping)
 	{
 		try {
-			if(client.updateMapping(mapping))
+			if(RepositoryManager.getClient().updateMapping(mapping))
 				{ fireMappingModified(mapping.getId()); return true; }
 		} catch(Exception e) {}
 		return false;
@@ -325,7 +304,7 @@ public class OpenIIManager
 	public static Integer saveMapping(Mapping mapping, ArrayList<MappingCell> mappingCells)
 	{
 		try {
-			Integer mappingID = client.saveMapping(mapping,mappingCells);
+			Integer mappingID = RepositoryManager.getClient().saveMapping(mapping,mappingCells);
 			if(mappingID!=null)
 			{
 				if(mapping.getId()==null || !mapping.getId().equals(mappingID))
@@ -340,7 +319,7 @@ public class OpenIIManager
 	public static boolean deleteMapping(Integer mappingID)
 	{
 		try {
-			if(client.deleteMapping(mappingID))
+			if(RepositoryManager.getClient().deleteMapping(mappingID))
 				{ fireMappingDeleted(mappingID); return true; }
 		} catch(Exception e) {}
 		return false;
