@@ -10,6 +10,7 @@ import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.mitre.openii.model.OpenIIManager;
+import org.mitre.openii.model.RepositoryManager;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.graph.Graph;
 import org.mitre.schemastore.porters.PorterManager;
@@ -28,7 +29,7 @@ public class ExportSchemaDialog
 		dialog.setFilterPath("C:/");
 		
 		// Get the list of exporters available for use
-		PorterManager manager = new PorterManager(OpenIIManager.getConnection());
+		PorterManager manager = new PorterManager(RepositoryManager.getClient());
 		ArrayList<SchemaExporter> exporters = manager.getSchemaExporters();
 		
 		// Set up the filter names and extensions

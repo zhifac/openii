@@ -7,9 +7,9 @@ import javax.swing.JApplet;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.awt.SWT_AWT;
-import org.mitre.openii.model.OpenIIManager;
-import GUI.SQLGeneratorGUI;
+import org.mitre.openii.model.RepositoryManager;
 
+import GUI.SQLGeneratorGUI;
 
 /** Constructs the Schema Graph */
 public class RMapView extends OpenIIEditor
@@ -20,7 +20,7 @@ public class RMapView extends OpenIIEditor
 		// Construct the applet pane to contain the Harmony frame
 		JApplet appletPane = new JApplet();
 		try {
-		appletPane.add(new SQLGeneratorGUI(OpenIIManager.getConnection(), elementID));
+		appletPane.add(new SQLGeneratorGUI(RepositoryManager.getClient(), elementID));
 		} catch (Exception e){
 			e.printStackTrace();
 		}

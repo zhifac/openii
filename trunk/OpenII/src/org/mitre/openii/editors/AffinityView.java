@@ -19,6 +19,7 @@ import org.mitre.affinity.model.ISchemaManager;
 
 import org.mitre.openii.model.EditorManager;
 import org.mitre.openii.model.OpenIIManager;
+import org.mitre.openii.model.RepositoryManager;
 
 /**
  * Constructs the Affinity View
@@ -39,7 +40,7 @@ public class AffinityView extends OpenIIEditor implements AffinityListener
 	public void createPartControl(final Composite parent)
 	{
 		// Connects the SchemaStoreClient to Affinity's SchemaStoreManager
-		AffinitySchemaStoreManager.setConnection(OpenIIManager.getConnection());	
+		AffinitySchemaStoreManager.setConnection(RepositoryManager.getClient());
 		
 		//Construct the Affinity pane
 		parent.setLayout(new FillLayout());		
@@ -50,7 +51,6 @@ public class AffinityView extends OpenIIEditor implements AffinityListener
 	}	
 	
 	/** Handles a double-click on a cluster within Affinity */
-	@Override
 	public void clusterDoubleClicked(ClusterGroup cluster, Object source) {
 		//Display the TF-IDF dialog for the cluster
 		Shell shell = getSite().getWorkbenchWindow().getShell();
@@ -59,20 +59,12 @@ public class AffinityView extends OpenIIEditor implements AffinityListener
 	}	
 
 	/** Handles a double-click on a schema within Affinity */
-	@Override
 	public void schemaDoubleClicked(Integer schemaID, Object source) {
 		EditorManager.launchDefaultEditor(affinity.getSchema(schemaID)); 
 	}
 
-	@Override
 	public void clusterSelected(ClusterGroup arg0, Object arg1) {}
-
-	@Override
 	public void clusterUnselected(ClusterGroup arg0, Object arg1) {}
-
-	@Override
 	public void schemaSelected(Integer arg0, Object arg1) {}
-
-	@Override
 	public void schemaUnselected(Integer arg0, Object arg1) {}
 }

@@ -11,7 +11,7 @@ import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.SchemaStoreManager;
 import org.mitre.harmony.view.dialogs.schemas.SchemaDialog;
 import org.mitre.harmony.view.harmonyPane.HarmonyFrame;
-import org.mitre.openii.model.OpenIIManager;
+import org.mitre.openii.model.RepositoryManager;
 
 /** Constructs the Harmony View */
 public class HarmonyView extends OpenIIEditor
@@ -50,7 +50,7 @@ public class HarmonyView extends OpenIIEditor
 	public void createPartControl(Composite parent)
 	{
 		// Connects the SchemaStoreClient to Harmony's SchemaStoreManager
-		SchemaStoreManager.setConnection(OpenIIManager.getConnection());
+		SchemaStoreManager.setConnection(RepositoryManager.getClient());
 		
 		// Constructs the AWT frame
 		Composite swtAwtComponent = new Composite(parent, SWT.EMBEDDED);

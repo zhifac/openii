@@ -141,6 +141,13 @@ public class BasicWidgets
 		createLabel(parent,label);
 		return createFile(parent,listener);
 	}
+
+	/** Creates a radio field */
+	static public OptionPane createRadioField(Composite parent, String label, String options[], SelectionListener listener)
+	{
+		createLabel(parent,label);
+		return new OptionPane(parent, options, listener);
+	}
 	
 	/** Creates a table */
 	static public Table createTable(Composite parent, String fields[], ArrayList<Object[]> rows)

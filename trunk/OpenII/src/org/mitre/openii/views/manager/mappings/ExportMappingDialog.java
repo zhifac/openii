@@ -8,6 +8,7 @@ import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.mitre.openii.model.OpenIIManager;
+import org.mitre.openii.model.RepositoryManager;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.porters.PorterManager;
 import org.mitre.schemastore.porters.mappingExporters.MappingExporter;
@@ -25,7 +26,7 @@ public class ExportMappingDialog
 		dialog.setFilterPath("C:/");
 		
 		// Get the list of exporters available for use
-		PorterManager manager = new PorterManager(OpenIIManager.getConnection());
+		PorterManager manager = new PorterManager(RepositoryManager.getClient());
 		ArrayList<MappingExporter> exporters = manager.getMappingExporters();
 		
 		// Set up the filter names and extensions

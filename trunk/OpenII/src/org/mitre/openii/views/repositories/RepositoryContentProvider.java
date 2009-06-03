@@ -2,6 +2,8 @@ package org.mitre.openii.views.repositories;
 
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
+import org.mitre.openii.model.Repository;
+import org.mitre.openii.model.RepositoryManager;
 
 public class RepositoryContentProvider implements ITreeContentProvider
 {
@@ -11,7 +13,7 @@ public class RepositoryContentProvider implements ITreeContentProvider
 		if(element.equals(""))
 			return new String[] {"Repositories"};
 	    if(element.equals("Repositories"))
-	    	return new String[] {"Repository1","Repository2","Repository3"};
+	    	return RepositoryManager.getRepositories().toArray(new Repository[0]);
 	    return new String[] {};
 	}
 

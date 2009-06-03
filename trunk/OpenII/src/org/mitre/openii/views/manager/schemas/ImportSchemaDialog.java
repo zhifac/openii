@@ -13,18 +13,16 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.mitre.openii.application.OpenIIActivator;
 import org.mitre.openii.model.OpenIIManager;
+import org.mitre.openii.model.RepositoryManager;
 import org.mitre.openii.widgets.BasicWidgets;
 import org.mitre.openii.widgets.URIField;
 import org.mitre.schemastore.porters.PorterManager;
@@ -32,7 +30,7 @@ import org.mitre.schemastore.porters.schemaImporters.SchemaImporter;
 import org.mitre.schemastore.model.Schema;
 
 /** Constructs the Import Schema Dialog */
-public class ImportSchemaDialog extends TitleAreaDialog implements ISelectionChangedListener, SelectionListener, ModifyListener
+public class ImportSchemaDialog extends TitleAreaDialog implements ISelectionChangedListener, ModifyListener
 {
 	// Stores the various dialog fields
 	private ComboViewer importerList = null;
@@ -65,7 +63,7 @@ public class ImportSchemaDialog extends TitleAreaDialog implements ISelectionCha
 		// Construct a list of all importers that can be selected
 		BasicWidgets.createLabel(pane,"Importer");
 		importerList = new ComboViewer(pane, SWT.NONE);
-		for(SchemaImporter importer : new PorterManager(OpenIIManager.getConnection()).getSchemaImporters())
+		for(SchemaImporter importer : new PorterManager(RepositoryManager.getClient()).getSchemaImporters())
 		{
 			Integer uriType = importer.getURIType();
 			if(uriType==SchemaImporter.FILE || uriType==SchemaImporter.ARCHIVE || uriType==SchemaImporter.URI)
@@ -87,7 +85,7 @@ public class ImportSchemaDialog extends TitleAreaDialog implements ISelectionCha
 		nameField = BasicWidgets.createTextField(group,"Name");
 		authorField = BasicWidgets.createTextField(group,"Author");
 		descriptionField = BasicWidgets.createTextField(group,"Description",4);
-		uriField = new URIField(group, this);
+		uriField = new URIField(group);
 		
 		// Add listeners to the fields to monitor for changes
 		nameField.addModifyListener(this);
@@ -149,36 +147,19 @@ public class ImportSchemaDialog extends TitleAreaDialog implements ISelectionCha
 		authorField.setEnabled(!archiveImporter);
 		descriptionField.setEnabled(!archiveImporter);
 		
+		// Generate the list of extensions that are available
+		ArrayList<String> extensions = new ArrayList<String>();
+		for(String extension : importer.getFileTypes())
+			extensions.add("*"+extension);
+
 		// Display file field or URI depending on importer type
 		uriField.setMode(uriImporter ? URIField.URI : URIField.FILE);
+		uriField.setDialogInfo("Import Schema", importer.getName()+" "+importer.getFileTypes(), extensions);
 	}	
 	
 	/** Handles changes to the selected importer */
 	public void selectionChanged(SelectionChangedEvent e)
 		{ updateFields(); }
-
-	/** Handles the selection of a file to import from */
-	public void widgetSelected(SelectionEvent e)
-	{
-		// Retrieve the selected importer
-		SchemaImporter importer = (SchemaImporter)((StructuredSelection)importerList.getSelection()).getFirstElement();
-		
-		// Generate the list of extensions that are available
-		ArrayList<String> extensions = new ArrayList<String>();
-		for(String extension : importer.getFileTypes())
-			extensions.add("*"+extension);
-		
-		// Create the dialog
-		FileDialog dialog = new FileDialog(getShell(), SWT.OPEN);
-		dialog.setText("Import Schema");
-		dialog.setFilterPath("C:/");
-		dialog.setFilterNames(new String[] {importer.getName() + " " + importer.getFileTypes()});
-		dialog.setFilterExtensions(extensions.toArray(new String[0]));
-		
-		// Launch the dialog to retrieve the specified file to load from
-        String filename = dialog.open();
-        if(filename != null) uriField.getTextField().setText(filename);
-	}
 
 	/** Handles modifications to the various text fields */
 	public void modifyText(ModifyEvent e)
@@ -223,14 +204,11 @@ public class ImportSchemaDialog extends TitleAreaDialog implements ISelectionCha
 			Integer schemaID = importer.importSchema(nameField.getText(), authorField.getText(), descriptionField.getText(), uri);
 			if(schemaID!=null)
 			{
-				Schema schema = OpenIIManager.getConnection().getSchema(schemaID);
+				Schema schema = RepositoryManager.getClient().getSchema(schemaID);
 				OpenIIManager.fireSchemaAdded(schema); getShell().dispose();
 			}
 		}
 		catch(Exception e)
 			{ setErrorMessage("Failed to import schema. " + e.getMessage()); }
 	}
-	
-	// Unused listener event
-	public void widgetDefaultSelected(SelectionEvent e) {}
 }

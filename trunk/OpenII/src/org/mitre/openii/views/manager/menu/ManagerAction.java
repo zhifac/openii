@@ -93,7 +93,7 @@ public class ManagerAction extends Action
 	{
 		// Determine which tree element was selected
 		Object selection = menuManager.getElement();
-		Shell shell = menuManager.getViewer().getControl().getShell();
+		Shell shell = menuManager.getMenu().getShell();
 		
 		// ----------------- Schema Actions ------------------
 		
