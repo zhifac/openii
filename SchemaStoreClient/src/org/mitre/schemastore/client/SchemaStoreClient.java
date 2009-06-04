@@ -459,7 +459,19 @@ public class SchemaStoreClient
 	/** Deletes the specified mapping from the web service */
 	public boolean deleteMappingCell(Integer mappingCellID) throws RemoteException
 		{ return (Boolean)callMethod("deleteMappingCell",new Object[] {mappingCellID}); }
-
+	
+	//----------------------
+	// Annotation Functions
+	//----------------------
+		
+	/** Sets the annotation for the specified element and attribute */
+	public boolean setAnnotation(Integer elementID, String attribute, String value) throws RemoteException
+		{ return (Boolean)callMethod("setAnnotation",new Object[] {elementID,attribute,value}); }	
+	
+	/** Gets the annotation for the specified element and attribute */
+	public String getAnnotation(Integer elementID, String attribute) throws RemoteException
+		{ return (String)callMethod("getAnnotation",new Object[] {elementID,attribute}); }
+	
 	//-------------------
 	// Derived Functions
 	//-------------------
