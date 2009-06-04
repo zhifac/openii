@@ -1338,12 +1338,8 @@ public class Database
 		boolean success = false;
 		try {
 			Statement stmt = connection.getStatement();
-			String oldValue = getAnnotation(elementID, attribute);
 			stmt.executeUpdate("DELETE FROM annotation WHERE object_id="+elementID+" AND attribute='"+attribute+"'");
-			if(value!=null && oldValue==null)
-				stmt.executeUpdate("INSERT INTO annotation(object_id,attribute,value) VALUES("+elementID+",'"+attribute+"','"+value+"')");
-			else if(value!=null && !value.equals(oldValue))
-				stmt.executeUpdate("UPDATE annotation SET value='"+value+"' WHERE object_id="+elementID+" AND attribute='"+attribute+"'");
+			stmt.executeUpdate("INSERT INTO annotation(object_id,attribute,value) VALUES("+elementID+",'"+attribute+"','"+value+"')");
 			stmt.close();
 			connection.commit();
 			success = true;
