@@ -1236,6 +1236,7 @@ public class Database
 		boolean success = false;
 		try {
 			Statement stmt = connection.getStatement();
+			stmt.executeUpdate("DELETE FROM annotation WHERE element_id="+mappingID);
 			stmt.executeUpdate("DELETE FROM mapping_cell WHERE mapping_id="+mappingID);
 			stmt.executeUpdate("DELETE FROM mapping_schema WHERE mapping_id="+mappingID);
 			stmt.executeUpdate("DELETE FROM mapping WHERE id="+mappingID);
@@ -1324,5 +1325,47 @@ public class Database
 			System.out.println("(E) Database:deleteMappingCell: "+e.getMessage());
 		}
 		return success;
+	}
+	
+	
+	//-------------------------------------
+	// Handles Annotations in the Database 
+	//-------------------------------------
+
+	/** Sets the specified annotation in the database */
+	static public boolean setAnnotation(int elementID, String attribute, String value)
+	{
+		boolean success = false;
+		try {
+			Statement stmt = connection.getStatement();
+			String oldValue = getAnnotation(elementID, attribute);
+			stmt.executeUpdate("DELETE FROM annotation WHERE object_id="+elementID+" AND attribute='"+attribute+"'");
+			if(value!=null && oldValue==null)
+				stmt.executeUpdate("INSERT INTO annotation(object_id,attribute,value) VALUES("+elementID+",'"+attribute+"','"+value+"')");
+			else if(value!=null && !value.equals(oldValue))
+				stmt.executeUpdate("UPDATE annotation SET value='"+value+"' WHERE object_id="+elementID+" AND attribute='"+attribute+"'");
+			stmt.close();
+			connection.commit();
+			success = true;
+		}
+		catch(SQLException e)
+		{
+			try { connection.rollback(); } catch(SQLException e2) {}
+			System.out.println("(E) Database:setAnnotation: "+e.getMessage());
+		}
+		return success;
+	}
+	
+	/** Gets the specified annotation in the database */
+	static public String getAnnotation(int elementID, String attribute)
+	{
+		String value = null;
+		try {
+			Statement stmt = connection.getStatement();
+			ResultSet rs = stmt.executeQuery("SELECT value FROM annotation WHERE object_id="+elementID+" AND attribute='"+attribute+"'");
+			if(rs.next()) value = rs.getString("value");
+			stmt.close();
+		} catch(SQLException e) { System.out.println("(E) Database:getAnnotation: "+e.getMessage()); }
+		return value;
 	}
 }

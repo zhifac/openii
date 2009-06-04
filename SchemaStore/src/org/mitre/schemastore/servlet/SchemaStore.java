@@ -12,6 +12,7 @@ import org.mitre.schemastore.data.Mappings;
 import org.mitre.schemastore.data.SchemaElements;
 import org.mitre.schemastore.data.SchemaRelationships;
 import org.mitre.schemastore.data.Schemas;
+import org.mitre.schemastore.data.database.Database;
 import org.mitre.schemastore.model.Alias;
 import org.mitre.schemastore.model.Attribute;
 import org.mitre.schemastore.model.Containment;
@@ -404,6 +405,18 @@ public class SchemaStore
 	public boolean deleteMappingCell(int mappingCellID)
 		{ return Mappings.deleteMappingCell(mappingCellID); }
 
+	//-------------------------------
+	// Handles Annotation Operations
+	//-------------------------------
+
+	/** Web service to set an annotation */
+	public boolean setAnnotation(int elementID, String attribute, String value)
+		{ return Database.setAnnotation(elementID, attribute, value.equals("")?null:value); }
+	
+	/** Web service to get an annotation */
+	public String getAnnotation(int elementID, String attribute)
+		{ return Database.getAnnotation(elementID, attribute); }
+	
 	//--------------------
 	// Derived Operations
 	//--------------------
