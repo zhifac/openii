@@ -21,8 +21,10 @@ import org.mitre.harmony.model.filters.Focus;
 import org.mitre.harmony.model.search.SearchResult;
 import org.mitre.harmony.view.dialogs.Link;
 import org.mitre.schemastore.model.Domain;
+import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.graph.HierarchicalGraph;
+import org.mitre.schemastore.model.graph.model.GraphModel;
 
 /**
  * Renders schema tree node
@@ -85,7 +87,7 @@ class SchemaTreeRenderer extends DefaultTreeCellRenderer
 			return schemaLabelPane;
 		}
 		
-		// Handles rendering of schema nodes
+		// Handles rendering of schema element nodes
 		else if (obj instanceof Integer) 
 		{
 			// Gets schema node and associated schema tree
@@ -118,8 +120,6 @@ class SchemaTreeRenderer extends DefaultTreeCellRenderer
 			if(harmonyModel.getPreferences().getShowSchemaTypes() && graph.getModel().getType(graph,element.getId()) != null)
 				text += " <font color='#888888'>(" + graph.getModel().getType(graph,element.getId()) + ")</font>";
 			text += "</html>";
-
-			
 			setText(text);
 			
 			// Set the icon
@@ -140,7 +140,17 @@ class SchemaTreeRenderer extends DefaultTreeCellRenderer
 			isFocused = harmonyModel.getFilters().getFocusCount(schemaTree.getSide())==0;
 			
 			// Set the text and icon
-			setText("  "  + obj);
+			String text = " " + obj;
+			System.out.println(text);
+			if(obj instanceof Schema)
+			{
+				Schema schema = (Schema)obj;
+				GraphModel graphModel = harmonyModel.getSchemaManager().getGraph(schema.getId()).getModel();
+				text = "<html>" + schema.getName().replace("<","&lt;").replace(">","&gt;");
+				text += " <font color='#888888'>(" + graphModel.getName() + " Model)</font>";
+				text += "</html>";
+			}
+			setText(text);
 			setIcon(schemaIcon);
 		}
 
