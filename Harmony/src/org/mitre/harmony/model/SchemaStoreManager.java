@@ -102,6 +102,18 @@ public class SchemaStoreManager
 	public static ArrayList<MappingCell> getMappingCells(Integer mappingID) throws RemoteException
 		{ return client.getMappingCells(mappingID); }
 	
+	//----------------------
+	// Annotation Functions
+	//----------------------
+	
+	/** Sets the annotation for the specified element attribute */
+	public static boolean setAnnotation(Integer elementID, String attribute, String value) throws RemoteException
+		{ return client.setAnnotation(elementID, attribute, value); }
+	
+	/** Gets the annotation for the specified element attribute */
+	public static String getAnnotation(Integer elementID, String attribute) throws RemoteException
+		{ return client.getAnnotation(elementID, attribute); }
+	
 	//--------------------
 	// Importer Functions
 	//--------------------
