@@ -12,7 +12,7 @@ CREATE TABLE alias (
 CREATE TABLE annotation (
 	object_id integer NOT NULL,
 	attribute character varying(50) NOT NULL,
-	value character varying(200)
+	value character varying(4096)
 );
 
 CREATE TABLE attribute (
