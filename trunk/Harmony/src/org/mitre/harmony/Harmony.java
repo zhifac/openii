@@ -7,11 +7,13 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 
 import org.mitre.harmony.model.ConfigManager;
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.SchemaStoreManager;
 import org.mitre.harmony.model.mapping.MappingListener;
+import org.mitre.harmony.view.dialogs.mappings.SaveMappingDialog;
 import org.mitre.harmony.view.harmonyPane.HarmonyFrame;
 
 /** Main Harmony class */
@@ -20,15 +22,11 @@ public class Harmony extends JFrame implements MappingListener, WindowListener
 	/** Stores the Harmony model */
 	private HarmonyModel harmonyModel;
 	
-	/** Stores the project manager */
-	private ProjectManager projectManager = null;
-	
 	/** Constructs the Harmony frame */
     public Harmony()
     {
     	super();
     	harmonyModel = new HarmonyModel(this);
-		if (projectManager == null) projectManager = new ProjectManager(harmonyModel);
     	
     	// Place title on application
 		String mappingName = harmonyModel.getMappingManager().getMapping().getName();
@@ -57,7 +55,17 @@ public class Harmony extends JFrame implements MappingListener, WindowListener
 
 	/** Disposes of the Harmony frame */
 	public void dispose()
-		{ projectManager.save(); super.dispose(); }
+	{
+		int option = 1;
+		if(harmonyModel.getMappingManager().isModified())
+    		option = JOptionPane.showConfirmDialog(harmonyModel.getBaseFrame(),
+    			"This mapping has been modified.  Do you want to save changes?",
+				"Save Mapping", JOptionPane.YES_NO_CANCEL_OPTION,
+				JOptionPane.WARNING_MESSAGE);
+		if(option==2) return;
+		if(option==0) new SaveMappingDialog(harmonyModel);
+		super.dispose();
+	}
 	
 	/** Forces graceful closing of Harmony */
 	public void windowClosing(WindowEvent event) { dispose(); }

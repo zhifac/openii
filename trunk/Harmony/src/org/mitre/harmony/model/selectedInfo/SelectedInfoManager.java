@@ -52,16 +52,6 @@ public class SelectedInfoManager extends AbstractManager<SelectedInfoListener> i
 	private HashSet<Integer> getSelectedElementSet(Integer role)
 		{ return role==HarmonyConsts.LEFT ? selectedLeftElements : selectedRightElements; }
 	
-	/** Returns the valid schemaIDs from the specified list of schemas */
-	private ArrayList<Integer> getValidSchemaIDs(ArrayList<Integer> schemaIDs)
-	{
-		ArrayList<Integer> validSchemaIDs = getModel().getMappingManager().getSchemas();
-		for(Integer schemaID : new ArrayList<Integer>(schemaIDs))
-			if(!validSchemaIDs.contains(schemaID))
-				schemaIDs.remove(schemaID);
-		return schemaIDs;
-	}
-	
 	/** Constructor used to initialize the selected info */
 	public SelectedInfoManager(HarmonyModel harmonyModel)
 		{ super(harmonyModel); }
@@ -118,8 +108,7 @@ public class SelectedInfoManager extends AbstractManager<SelectedInfoListener> i
 		// Only update selected schemas if changed from original
 		if(!leftSchemaIDs.equals(getSchemas(HarmonyConsts.LEFT)) || !rightSchemaIDs.equals(getSchemas(HarmonyConsts.RIGHT)))
 		{
-			this.leftSchemaIDs = getValidSchemaIDs(leftSchemaIDs);
-			this.rightSchemaIDs = getValidSchemaIDs(rightSchemaIDs);
+			this.leftSchemaIDs = leftSchemaIDs; this.rightSchemaIDs = rightSchemaIDs;
 			for(SelectedInfoListener listener : getListeners())
 				listener.selectedSchemasModified();
 		}
