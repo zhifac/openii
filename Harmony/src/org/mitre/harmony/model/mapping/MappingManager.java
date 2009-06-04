@@ -8,11 +8,14 @@ import java.util.Collections;
 import java.util.HashSet;
 
 import org.mitre.harmony.model.AbstractManager;
+import org.mitre.harmony.model.HarmonyConsts;
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.SchemaStoreManager;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.SchemaElement;
+import org.mitre.schemastore.model.graph.HierarchicalGraph;
+import org.mitre.schemastore.model.graph.model.GraphModel;
 
 /**
  * Class used to manage the current project
@@ -146,21 +149,12 @@ public class MappingManager extends AbstractManager<MappingListener> implements 
 	/** Loads the specified mapping */
 	public boolean loadMapping(Integer mappingID)
 	{
-		boolean success = false;
-		
-		// Gets new mapping information
-		Mapping newMapping = null;
-		ArrayList<MappingCell> newMappingCells = null;
 		try {
-			newMapping = SchemaStoreManager.getMapping(mappingID);
-			newMappingCells = SchemaStoreManager.getMappingCells(mappingID);
-			success = true;
-		}
-		catch(Exception e) { System.out.println("(E) MappingManager:loadMapping - " + e.getMessage()); }
-	
-		// Load new mapping if collection of information was successful
-		if(success)
-		{
+			// Retrieve the mapping information
+			Mapping newMapping = SchemaStoreManager.getMapping(mappingID);
+			ArrayList<MappingCell> newMappingCells = SchemaStoreManager.getMappingCells(mappingID);
+
+			// Sets the new mapping information
 			getModel().getMappingCellManager().deleteMappingCells();
 			mapping = newMapping;
 			setSchemas(new ArrayList<Integer>(Arrays.asList(mapping.getSchemas())));
@@ -168,14 +162,41 @@ public class MappingManager extends AbstractManager<MappingListener> implements 
 			{
 				mappingCell.setId(null);
 				getModel().getMappingCellManager().setMappingCell(mappingCell);
+			}	
+				
+			// Sets the schema models
+			String schemaModels = SchemaStoreManager.getAnnotation(mappingID, "SchemaModelsForMapping");
+			if(schemaModels!=null)
+				for(String schemaModel : schemaModels.split(","))
+					try {
+						Integer schemaID = Integer.parseInt(schemaModel.replaceAll(":.*",""));
+						String modelName = schemaModel.replaceAll(".*:","");
+						for(GraphModel graphModel : HierarchicalGraph.getGraphModels())
+							if(graphModel.getClass().toString().equals(modelName))
+								{ getModel().getPreferences().setGraphModel(schemaID, graphModel); break; }
+					} catch(Exception e) {}
+			
+			// Sets the schema sides
+			String schemaSides = SchemaStoreManager.getAnnotation(mappingID, "SchemaSidesForMapping");
+			if(schemaSides!=null)
+			{
+				ArrayList<Integer> leftIDs = new ArrayList<Integer>();
+				ArrayList<Integer> rightIDs = new ArrayList<Integer>();
+				for(String schemaSide : schemaSides.split(","))
+					try {
+						Integer schemaID = Integer.parseInt(schemaSide.replaceAll(":.*",""));
+						Integer side = Integer.parseInt(schemaSide.replaceAll(".*:",""));
+						if(side.equals(HarmonyConsts.LEFT)) leftIDs.add(schemaID); else rightIDs.add(schemaID);
+					} catch(Exception e) {}
+				getModel().getSelectedInfo().setSelectedSchemas(leftIDs, rightIDs);
 			}
-			for(MappingListener listener : getListeners())
-				listener.mappingModified();
+			
+			// Inform listeners of modified mapping
+			setModified(false);
+			for(MappingListener listener : getListeners()) listener.mappingModified();
+			return true;
 		}
-
-		// Returns if successful
-		if(success) setModified(false);
-		return success;
+		catch(Exception e) { System.out.println("(E) MappingManager:loadMapping - " + e.getMessage()); return false; }
 	}
 	
 	/** Saves the current mapping */
@@ -185,22 +206,37 @@ public class MappingManager extends AbstractManager<MappingListener> implements 
 	/** Saves the specified mapping */
 	public boolean saveMapping(Mapping mapping)
 	{
-		boolean success = false;
-	
-		// Attempts to save the mapping
 		try {
+			// Save the mapping
 			Integer mappingID = SchemaStoreManager.saveMapping(mapping, getModel().getMappingCellManager().getMappingCells());
-			if(mappingID!=null) { mapping.setId(mappingID); setMapping(mapping); success = true; }
-		}
-		catch(Exception e) { System.out.println("(E) MappingManager.saveMapping - " + e.getMessage()); }
+			if(mappingID==null) throw new Exception("Failed to save mapping");
+			mapping.setId(mappingID);
+			setMapping(mapping);
 
-		// Indicates that the mapping has been modified
-		if(success)
-		{
+			// Stores the schema models
+			String schemaModels = "";
+			for(Integer schemaID : mapping.getSchemas())
+				schemaModels += schemaID + ":" + getModel().getPreferences().getGraphModel(schemaID).getClass() + ",";
+			if(schemaModels.length()>0) schemaModels = schemaModels.substring(0,schemaModels.length()-1);
+			if(!SchemaStoreManager.setAnnotation(mappingID, "SchemaModelsForMapping", schemaModels))
+				throw new Exception("Failed to store annotations for schema models");
+
+			// Stores the schema sides
+			String schemaSides = "";
+			for(Integer schemaID : getModel().getSelectedInfo().getSchemas(HarmonyConsts.LEFT))
+				schemaSides += schemaID + ":" + HarmonyConsts.LEFT + ",";
+			for(Integer schemaID : getModel().getSelectedInfo().getSchemas(HarmonyConsts.RIGHT))
+				schemaSides += schemaID + ":" + HarmonyConsts.RIGHT + ",";
+			if(schemaSides.length()>0) schemaSides = schemaSides.substring(0,schemaSides.length()-1);
+			if (!SchemaStoreManager.setAnnotation(mappingID, "SchemaSidesForMapping", schemaSides))
+				throw new Exception("Failed to store annotations for schema sides");
+
+			// Indicates that the mapping has been modified
 			for(MappingListener listener : getListeners()) listener.mappingModified();
 			setModified(false);
+			return true;
 		}
-		return success;
+		catch(Exception e) { System.out.println("(E) MappingManager.saveMapping - " + e.getMessage()); return false; }
 	}
 	
 	/** Deletes the specified mapping */

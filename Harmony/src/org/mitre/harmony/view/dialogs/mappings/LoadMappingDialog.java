@@ -3,6 +3,7 @@
 package org.mitre.harmony.view.dialogs.mappings;
 
 import java.awt.BorderLayout;
+import java.util.ArrayList;
 
 import javax.swing.JDialog;
 import javax.swing.JPanel;
@@ -10,6 +11,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import org.mitre.harmony.model.HarmonyConsts;
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.view.dialogs.AbstractButtonPane;
 import org.mitre.harmony.view.dialogs.schemas.SchemaDialog;
@@ -40,11 +42,16 @@ public class LoadMappingDialog extends JDialog implements ListSelectionListener
 		/** Handles selection of okay button */
 		protected void button1Action()
 		{
+			// Loads in the selected mapping
 			Mapping mapping = mappingPane.getMapping();
 			if(mapping==null) harmonyModel.getMappingManager().newMapping();
 			else harmonyModel.getMappingManager().loadMapping(mapping.getId());
 			dispose();
-			new SchemaDialog(harmonyModel);
+			
+			// Launches the schema dialog window if no schemas displayed
+			ArrayList<Integer> leftSchemas = harmonyModel.getSelectedInfo().getSchemas(HarmonyConsts.LEFT);
+			ArrayList<Integer> rightSchemas = harmonyModel.getSelectedInfo().getSchemas(HarmonyConsts.RIGHT);
+			if(leftSchemas.size()==0 && rightSchemas.size()==0) new SchemaDialog(harmonyModel);
 		}
 
 		/** Handles selection of cancel button */

@@ -93,7 +93,7 @@ public class HarmonyMenuBar extends JMenuBar
 	    		int option = 1;
 	    		if(harmonyModel.getMappingManager().isModified())
 	        		option = JOptionPane.showConfirmDialog(harmonyModel.getBaseFrame(),
-	        			"This project has been modified.  Do you want to save changes?",
+	        			"This mapping has been modified.  Do you want to save changes?",
 						"Save Mapping", JOptionPane.YES_NO_CANCEL_OPTION,
 						JOptionPane.WARNING_MESSAGE);
 	    		if(option==2) return;
