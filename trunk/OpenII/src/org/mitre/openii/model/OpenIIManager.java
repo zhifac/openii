@@ -55,7 +55,7 @@ public class OpenIIManager
 			public int compare(Object item1, Object item2)
 			{
 				if(item1.getClass()!=item2.getClass()) return -1;
-				return item1.toString().compareTo(item2.toString());
+				return item1.toString().toLowerCase().compareTo(item2.toString().toLowerCase());
 			}
 		}
 		
