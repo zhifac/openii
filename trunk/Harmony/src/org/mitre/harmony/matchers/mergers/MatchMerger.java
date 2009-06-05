@@ -4,6 +4,7 @@ package org.mitre.harmony.matchers.mergers;
 
 import org.mitre.harmony.matchers.MatchScores;
 import org.mitre.harmony.matchers.VoterScores;
+import org.mitre.schemastore.model.graph.FilteredGraph;
 
 /** Matcher Interface - A match merger merged together the results of multiple match voters */
 public interface MatchMerger
@@ -12,7 +13,7 @@ public interface MatchMerger
 	public String getName();
 
 	/** Initializes the match merger to run */
-	public void initialize();
+	public void initialize(FilteredGraph schema1, FilteredGraph schema2);
 	
 	/** Feeds voter scores into the merger */
 	public void addVoterScores(VoterScores scores);
