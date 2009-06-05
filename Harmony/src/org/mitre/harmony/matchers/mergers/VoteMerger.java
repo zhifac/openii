@@ -8,6 +8,7 @@ import org.mitre.harmony.matchers.ElementPair;
 import org.mitre.harmony.matchers.MatchScores;
 import org.mitre.harmony.matchers.VoterScore;
 import org.mitre.harmony.matchers.VoterScores;
+import org.mitre.schemastore.model.graph.FilteredGraph;
 
 /**
  * Class defining the vote merger
@@ -15,6 +16,9 @@ import org.mitre.harmony.matchers.VoterScores;
  */
 public class VoteMerger implements MatchMerger
 {
+	FilteredGraph schema1 = null;
+	FilteredGraph schema2 = null;
+	
 	/** Constant used in calculating the merged score */
 	static final double J = 2;
 	
@@ -26,8 +30,12 @@ public class VoteMerger implements MatchMerger
 		{ return "Vote Merger"; }
 
 	/** Initializes the vote merger */
-	public void initialize()
-		{ summedScores.clear(); }
+	public void initialize(FilteredGraph schema1, FilteredGraph schema2)
+		{ 
+			summedScores.clear(); 
+			this.schema1 = schema1;
+			this.schema2 = schema2;
+		}
 	
 	/** Adds a new set of voter scores to the vote merger */
 	public void addVoterScores(VoterScores voterScores)
