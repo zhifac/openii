@@ -62,6 +62,24 @@ public class XSDImporter extends SchemaImporter
 			// Preset domains and then identify process this schema
 			loadDomains();
 			getRootElements();
+			
+			for (SchemaElement se : schemaElementsHS.values()){
+			//	if (se instanceof Relationship)
+			//		System.err.println("***************"  + se.getId() + " " + se.getName() + " " + se.getClass() + " " + ((Relationship)se).getLeftID() + " " + ((Relationship)se).getRightID());
+			
+			//	else if (se instanceof Entity)
+			//		System.err.println(se.getId() + " " + se.getName() + " " + se.getClass());
+				
+				if (se instanceof Domain)
+					System.err.println(se.getId() + " " + se.getName() + " " + se.getClass());
+				
+				else if (se instanceof Attribute && se.getName().equals("ref")){
+					System.err.println("****"  + se.getId() + " " + se.getName() + " " + ((Attribute)se).getEntityID() + " " + ((Attribute)se).getDomainID() + " " + se.getClass());
+			
+				}
+			}
+		
+			System.err.println("");
 		}
 		
 		catch(Exception e) { 
@@ -131,6 +149,11 @@ public class XSDImporter extends SchemaImporter
 			Integer rightMax = ( typeName.equals("IDREFS") ) ? null : 1;   
 			Relationship rel = new Relationship(nextId(),parent.getName(),((Attribute)parent).getEntityID(),0,1,this.anyEntity.getId(),0,rightMax,0);
 			schemaElementsHS.put(this.compString(null,null,rel),rel);
+			
+			// TODO: set the domain of the parent attribute to 
+			// TODO: should we remove the attribute with type Any?
+			((Attribute)parent).setDomainID(domainList.get("Any").getId());
+			
 		}
 		else {
 	
@@ -140,7 +163,7 @@ public class XSDImporter extends SchemaImporter
 				domainList.put(domain.getName(),domain);
 				schemaElementsHS.put(this.compString(null, null, domain), domain);
 				
-				if (passedType instanceof SimpleType){
+				if (passedType instanceof SimpleType && !(passedType instanceof Union)){
 					// create DomainValues (if specified for SimpleType)
 					Enumeration<?> facets = ((SimpleType)passedType).getFacets("enumeration");
 					while (facets.hasMoreElements()) {
@@ -149,13 +172,29 @@ public class XSDImporter extends SchemaImporter
 						schemaElementsHS.put(this.compString(passedType,facet,domainValue), domainValue);	
 					}
 				}
+				
+				// TODO: process Union Types
+//				else if (passedType instanceof Union){
+//					Union passedUnion = (Union)passedType;
+//					Enumeration<?> memberTypes = passedUnion.getMemberTypes();
+//					while (memberTypes.hasMoreElements()){
+//						SimpleType childType = (SimpleType)memberTypes.nextElement();
+//						// TODO: create a subtype to capture union
+//						Subtype subtype = new Subtype(nextId(),domain.getId(),-1,0);
+//						//	schemaElementsHS.put(this.compString(passedType, childType, subtype), subtype);
+//						processSimpleType(childType,subtype);
+//					}
+//				}
+				
 			}
-			// attached Domain as child to passed Attribute / Containment
+			// attached Domain as child to passed Attribute / Containment / Subtype
 			domain = (Domain)schemaElementsHS.get(this.compString(null,null,domain));
 			if (parent instanceof Attribute)
 				((Attribute)parent).setDomainID(domain.getId());
-			if (parent instanceof Containment)
+			else if (parent instanceof Containment)
 				((Containment)parent).setChildID(domain.getId());
+			else if (parent instanceof Subtype)
+				((Subtype)parent).setChildID(domain.getId());
 		}
 	} // end method processSimpleType
 
@@ -183,6 +222,7 @@ public class XSDImporter extends SchemaImporter
 			while (attrDecls.hasMoreElements()) {
 				AttributeDecl attrDecl = (AttributeDecl) attrDecls.nextElement();
 				boolean containsID = attrDecl.getSimpleType() != null && attrDecl.getSimpleType().getName() != null && attrDecl.getSimpleType().getName().equals("ID");
+				
 				Attribute attr = new Attribute(nextId(),(attrDecl.getName() == null ? "" : attrDecl.getName()),getDocumentation(attrDecl),entity.getId(),-1,(attrDecl.isRequired()? 1 : 0), 1, containsID, 0); 
 				schemaElementsHS.put(this.compString(passedType, null, attr), attr);
 				processSimpleType(attrDecl.getSimpleType(), attr);
@@ -286,17 +326,29 @@ public class XSDImporter extends SchemaImporter
 		Containment containment = new Containment(nextId(),elementDecl.getName(),this.getDocumentation(elementDecl),((parent != null) ? parent.getId() : null),-1,elementDecl.getMinOccurs(),elementDecl.getMaxOccurs(),0);
 		schemaElementsHS.put(this.compString(parent, elementDecl, containment), containment);
 		
+		// TODO: process substitution group
+//		Enumeration<?> substitutionGroup = elementDecl.getSubstitutionGroupMembers();
+//		while (substitutionGroup.hasMoreElements()){
+//			ElementDecl subElement = (ElementDecl)substitutionGroup.nextElement();
+//			// TODO: process substitution group
+//			System.err.println(elementDecl.getName() + "  has substitution element " + subElement.getName());
+//		}
+
 		// If the element type is 1) NULL, 2) SimpleType, or 3) Any type THEN process as SimpleType
 		// Otherwise, process as ComplexType
 		XMLType childElementType = elementDecl.getType();
 		if ((childElementType == null) || (childElementType instanceof SimpleType) || (childElementType instanceof AnyType)) 				
 			processSimpleType(childElementType, containment);
-		
+	
 		else if (childElementType instanceof ComplexType)
 			processComplexType((ComplexType)childElementType,containment);
+
+		else 
+			System.err.println("(E) XSDImporter:processElement -- Encountered object named " 
+					+ elementDecl.getName() + " with unknown type " 
+					+  ((childElementType == null)? null : childElementType.getClass()));
 		
-		else
-			System.err.println("(E) XSDImporter:processElement -- Encountered object named " + elementDecl + " with unknown type " + childElementType.getClass());
+		
 	} // end method
 
 
