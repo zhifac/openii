@@ -4,7 +4,6 @@ package org.mitre.schemastore.model.graph;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import org.mitre.schemastore.model.graph.model.*;
 
 import org.mitre.schemastore.model.SchemaElement;
 
