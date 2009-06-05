@@ -141,7 +141,6 @@ class SchemaTreeRenderer extends DefaultTreeCellRenderer
 			
 			// Set the text and icon
 			String text = " " + obj;
-			System.out.println(text);
 			if(obj instanceof Schema)
 			{
 				Schema schema = (Schema)obj;
