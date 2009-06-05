@@ -1,0 +1,125 @@
+// Copyright 2008 The MITRE Corporation. ALL RIGHTS RESERVED.
+
+package org.mitre.schemastore.data.database;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+/**
+ * Handles the connection to the database
+ * @author CWOLF
+ */
+public class DatabaseConnection
+{
+	// Constants for indicating if the database connection is to Postgres or Derby
+	static private final Integer POSTGRES = 0;
+	static private final Integer DERBY = 1;
+	
+	// Stores the database connection info
+	private Integer databaseType = null;
+	private String databaseLoc = null;
+	private String databaseName = null;
+	private String databaseUser = null;
+	private String databasePassword = null;
+	
+	/** Stores the database connection */
+	private Connection connection = null;
+
+	/** Retrieve the value for the the specified tag */
+	private String getValue(StringBuffer buffer, String tag)
+	{
+		String value = "";
+		Pattern serverPattern = Pattern.compile("<"+tag+">(.*?)</"+tag+">");
+		Matcher serverMatcher = serverPattern.matcher(buffer);
+		if(serverMatcher.find()) value = serverMatcher.group(1);
+		return value;
+	}
+	
+	/** Constructs the connection from the configuration file */
+	DatabaseConnection()
+	{
+		// Load database properties from file
+		try {
+			// Pull the entire file into a string
+			InputStream configStream = getClass().getResourceAsStream("/schemastore.xml");
+			BufferedReader in = new BufferedReader(new InputStreamReader(configStream));
+			StringBuffer buffer = new StringBuffer("");
+			String line; while((line=in.readLine())!=null) buffer.append(line);
+			in.close();
+
+			// Retrieve the database values from the configuration file
+			databaseLoc = getValue(buffer,"databaseServer");
+			databaseName = getValue(buffer,"databaseName");
+			databaseUser = getValue(buffer,"databaseUser");
+			databasePassword = getValue(buffer,"databasePassword");
+
+			// If no server was given, use Derby as the database
+			databaseType = databaseLoc.equals("") ? DERBY : POSTGRES;
+			if(databaseType.equals(DERBY))
+			{
+				String databasePath = getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
+				databasePath = databasePath.replaceAll(".*:","").replaceAll("\\%20"," ");
+				if(databasePath.endsWith("SchemaStore.jar"))
+					databaseLoc = databasePath.replace("/SchemaStore.jar","");
+				else if(databasePath.endsWith("/build/classes/"))
+					databaseLoc = databasePath.replaceAll("/build/classes/","");
+				else databaseLoc = databasePath.replaceAll("/WEB-INF/.*","");
+			}
+		}
+		catch(IOException e)
+			{ System.out.println("(E)DatabaseConnection - schemastore.xml has failed to load!\n"+e.getMessage()); }
+	}
+	
+	/** Creates a sql statement */
+	Statement getStatement() throws SQLException
+	{
+		// Check to make sure database connection still works
+		if(connection!=null)
+			try {
+				Statement stmt = connection.createStatement();
+				stmt.executeQuery("SELECT id FROM universal_id");
+				return stmt;
+			} catch(Exception e) { connection=null; }
+		
+		// Attempt to connect to database
+		try {
+			if(connection==null)
+			{
+				// Connect to the database
+	    		boolean useDerby = databaseType.equals(DERBY);
+    			Class.forName(useDerby ? "org.apache.derby.jdbc.EmbeddedDriver" : "org.postgresql.Driver");
+	    		String dbURL = useDerby ? "jdbc:derby:"+databaseLoc+"/"+databaseName+";create=true" : "jdbc:postgresql://"+databaseLoc+":5432/"+databaseName;
+    			connection = DriverManager.getConnection(dbURL,databaseUser,databasePassword);
+	    		connection.setAutoCommit(false);
+
+	    		// Initialize and update the database as needed
+	    		DatabaseUpdates.initializeDatabase(connection);
+	    		DatabaseUpdates.updateDatabase(connection);
+				
+				// Return a sql statement
+				return connection.createStatement();
+			}
+		}
+		catch (Exception e)
+			{ connection=null; System.out.println("(E) Failed to connect to database - " + e.getMessage()); }
+
+		// Indicates that a statement failed to be created
+		throw new SQLException();
+	}
+
+	/** Commits changes to the database */
+	void commit() throws SQLException
+		{ connection.commit(); }
+	
+	/** Rolls back changes to the database */
+	void rollback() throws SQLException
+		{ connection.rollback(); }
+}

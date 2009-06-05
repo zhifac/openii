@@ -10,7 +10,7 @@ CREATE TABLE alias (
 );
 
 CREATE TABLE annotation (
-	object_id integer NOT NULL,
+	element_id integer NOT NULL,
 	attribute character varying(50) NOT NULL,
 	value character varying(4096)
 );
@@ -138,6 +138,10 @@ CREATE TABLE subtype (
 );
 
 CREATE TABLE universal_id (
+	id integer NOT NULL
+);
+
+CREATE TABLE version (
 	id integer NOT NULL
 );
 
