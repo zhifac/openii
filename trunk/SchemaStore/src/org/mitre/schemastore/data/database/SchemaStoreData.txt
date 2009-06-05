@@ -119,3 +119,6 @@ INSERT INTO extensions (schema_id, base_id)
 
 INSERT INTO universal_id (id)
 1000
+
+INSERT INTO version (id)
+1

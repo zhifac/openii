@@ -32,7 +32,7 @@ import org.mitre.schemastore.model.Subtype;
 public class Database
 {
 	/** Sets up a database connection */
-	static private DBConnection connection = new DBConnection();
+	static private DatabaseConnection connection = new DatabaseConnection();
 	
 	/** Class for returning extensions */
 	static public class Extension
@@ -1338,8 +1338,8 @@ public class Database
 		boolean success = false;
 		try {
 			Statement stmt = connection.getStatement();
-			stmt.executeUpdate("DELETE FROM annotation WHERE object_id="+elementID+" AND attribute='"+attribute+"'");
-			stmt.executeUpdate("INSERT INTO annotation(object_id,attribute,value) VALUES("+elementID+",'"+attribute+"','"+value+"')");
+			stmt.executeUpdate("DELETE FROM annotation WHERE element_id="+elementID+" AND attribute='"+attribute+"'");
+			stmt.executeUpdate("INSERT INTO annotation(element_id,attribute,value) VALUES("+elementID+",'"+attribute+"','"+value+"')");
 			stmt.close();
 			connection.commit();
 			success = true;
@@ -1358,7 +1358,7 @@ public class Database
 		String value = null;
 		try {
 			Statement stmt = connection.getStatement();
-			ResultSet rs = stmt.executeQuery("SELECT value FROM annotation WHERE object_id="+elementID+" AND attribute='"+attribute+"'");
+			ResultSet rs = stmt.executeQuery("SELECT value FROM annotation WHERE element_id="+elementID+" AND attribute='"+attribute+"'");
 			if(rs.next()) value = rs.getString("value");
 			stmt.close();
 		} catch(SQLException e) { System.out.println("(E) Database:getAnnotation: "+e.getMessage()); }
