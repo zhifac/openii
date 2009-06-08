@@ -35,7 +35,7 @@ public class RepositoryManager
 		} catch(Exception e) {}
 			
 		// Make a connection to schema store
-		try { client = new SchemaStoreClient(repositories.get(0).getURI().toString()); }
+		try { client = new SchemaStoreClient(repositories.get(0).getURI().toString().replaceAll("%20", " ")); }
 		catch(Exception e) { System.out.println("(E) RepositoryManager - " + e.getMessage()); }
 	}	
 	
