@@ -63,23 +63,6 @@ public class XSDImporter extends SchemaImporter
 			loadDomains();
 			getRootElements();
 			
-			for (SchemaElement se : schemaElementsHS.values()){
-			//	if (se instanceof Relationship)
-			//		System.err.println("***************"  + se.getId() + " " + se.getName() + " " + se.getClass() + " " + ((Relationship)se).getLeftID() + " " + ((Relationship)se).getRightID());
-			
-			//	else if (se instanceof Entity)
-			//		System.err.println(se.getId() + " " + se.getName() + " " + se.getClass());
-				
-				if (se instanceof Domain)
-					System.err.println(se.getId() + " " + se.getName() + " " + se.getClass());
-				
-				else if (se instanceof Attribute && se.getName().equals("ref")){
-					System.err.println("****"  + se.getId() + " " + se.getName() + " " + ((Attribute)se).getEntityID() + " " + ((Attribute)se).getDomainID() + " " + se.getClass());
-			
-				}
-			}
-		
-			System.err.println("");
 		}
 		
 		catch(Exception e) { 
@@ -211,23 +194,31 @@ public class XSDImporter extends SchemaImporter
 	 */
 	public void processComplexType (ComplexType passedType, SchemaElement parent)
 	{
+		
 		// check to see if entity has been created for passed complex type
 		// create new Entity if none has been created 
 		Entity entity = new Entity(nextId(), passedType.getName(), this.getDocumentation(passedType), 0);
 		if (schemaElementsHS.containsKey(this.compString(passedType,null, entity)) == false) {
 			schemaElementsHS.put(this.compString(passedType,null, entity), entity);
 	
-			// get Attributes for current complexType
-			Enumeration<?> attrDecls = passedType.getAttributeDecls();
-			while (attrDecls.hasMoreElements()) {
-				AttributeDecl attrDecl = (AttributeDecl) attrDecls.nextElement();
-				boolean containsID = attrDecl.getSimpleType() != null && attrDecl.getSimpleType().getName() != null && attrDecl.getSimpleType().getName().equals("ID");
 				
-				Attribute attr = new Attribute(nextId(),(attrDecl.getName() == null ? "" : attrDecl.getName()),getDocumentation(attrDecl),entity.getId(),-1,(attrDecl.isRequired()? 1 : 0), 1, containsID, 0); 
-				schemaElementsHS.put(this.compString(passedType, null, attr), attr);
-				processSimpleType(attrDecl.getSimpleType(), attr);
+			try {
+				// get Attributes for current complexType
+				Enumeration<?> attrDecls = passedType.getAttributeDecls();
+				while (attrDecls.hasMoreElements()){
+				
+					AttributeDecl attrDecl = (AttributeDecl)attrDecls.nextElement();
+					while (attrDecl.isReference() == true && attrDecl.getReference() != null)
+							attrDecl = attrDecl.getReference();
+						
+					boolean containsID = attrDecl.getSimpleType() != null && attrDecl.getSimpleType().getName() != null && attrDecl.getSimpleType().getName().equals("ID");
+					Attribute attr = new Attribute(nextId(),(attrDecl.getName() == null ? "" : attrDecl.getName()),getDocumentation(attrDecl),entity.getId(),-1,(attrDecl.isRequired()? 1 : 0), 1, containsID, 0); 
+					schemaElementsHS.put(this.compString(passedType, null, attr), attr);
+					processSimpleType(attrDecl.getSimpleType(), attr);
+				}
+			} catch (IllegalStateException e){
+				System.err.println("(E) XSDImporter:processComplexType -- failed reading attributes for " + parent.getName() + " of type " + passedType.getName() + " in schema location " + passedType.getSchema().getSchemaLocation() + " schema namespace " + passedType.getSchema().getTargetNamespace());
 			}
-		
 			// get Elements for current complexType
 			Enumeration<?> elementDecls = passedType.enumerate();
 			while (elementDecls.hasMoreElements()) {
@@ -337,6 +328,7 @@ public class XSDImporter extends SchemaImporter
 		// If the element type is 1) NULL, 2) SimpleType, or 3) Any type THEN process as SimpleType
 		// Otherwise, process as ComplexType
 		XMLType childElementType = elementDecl.getType();
+				
 		if ((childElementType == null) || (childElementType instanceof SimpleType) || (childElementType instanceof AnyType)) 				
 			processSimpleType(childElementType, containment);
 	
