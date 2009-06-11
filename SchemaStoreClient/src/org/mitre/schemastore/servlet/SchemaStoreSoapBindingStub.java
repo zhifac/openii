@@ -43,21 +43,21 @@ public class SchemaStoreSoapBindingStub extends org.apache.axis.client.Stub impl
         _operations[0] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
-        oper.setName("getMappings");
-        oper.setReturnType(new javax.xml.namespace.QName("http://model.schemastore.mitre.org", "Mapping"));
-        oper.setReturnClass(org.mitre.schemastore.model.Mapping[].class);
-        oper.setReturnQName(new javax.xml.namespace.QName("http://servlet.schemastore.mitre.org", "getMappingsReturn"));
-        oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
-        oper.setUse(org.apache.axis.constants.Use.LITERAL);
-        _operations[1] = oper;
-
-        oper = new org.apache.axis.description.OperationDesc();
         oper.setName("addGroup");
         param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://servlet.schemastore.mitre.org", "group"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://model.schemastore.mitre.org", "Group"), org.mitre.schemastore.model.Group.class, false, false);
         oper.addParameter(param);
         oper.setReturnType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "int"));
         oper.setReturnClass(int.class);
         oper.setReturnQName(new javax.xml.namespace.QName("http://servlet.schemastore.mitre.org", "addGroupReturn"));
+        oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
+        oper.setUse(org.apache.axis.constants.Use.LITERAL);
+        _operations[1] = oper;
+
+        oper = new org.apache.axis.description.OperationDesc();
+        oper.setName("getMappings");
+        oper.setReturnType(new javax.xml.namespace.QName("http://model.schemastore.mitre.org", "Mapping"));
+        oper.setReturnClass(org.mitre.schemastore.model.Mapping[].class);
+        oper.setReturnQName(new javax.xml.namespace.QName("http://servlet.schemastore.mitre.org", "getMappingsReturn"));
         oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
         oper.setUse(org.apache.axis.constants.Use.LITERAL);
         _operations[2] = oper;
@@ -109,24 +109,15 @@ public class SchemaStoreSoapBindingStub extends org.apache.axis.client.Stub impl
         _operations[6] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
-        oper.setName("addSchema");
-        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://servlet.schemastore.mitre.org", "schema"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://model.schemastore.mitre.org", "Schema"), org.mitre.schemastore.model.Schema.class, false, false);
+        oper.setName("updateAttribute");
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://servlet.schemastore.mitre.org", "attribute"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://model.schemastore.mitre.org", "Attribute"), org.mitre.schemastore.model.Attribute.class, false, false);
         oper.addParameter(param);
-        oper.setReturnType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "int"));
-        oper.setReturnClass(int.class);
-        oper.setReturnQName(new javax.xml.namespace.QName("http://servlet.schemastore.mitre.org", "addSchemaReturn"));
+        oper.setReturnType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "boolean"));
+        oper.setReturnClass(boolean.class);
+        oper.setReturnQName(new javax.xml.namespace.QName("http://servlet.schemastore.mitre.org", "updateAttributeReturn"));
         oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
         oper.setUse(org.apache.axis.constants.Use.LITERAL);
         _operations[7] = oper;
-
-        oper = new org.apache.axis.description.OperationDesc();
-        oper.setName("getSchemas");
-        oper.setReturnType(new javax.xml.namespace.QName("http://model.schemastore.mitre.org", "Schema"));
-        oper.setReturnClass(org.mitre.schemastore.model.Schema[].class);
-        oper.setReturnQName(new javax.xml.namespace.QName("http://servlet.schemastore.mitre.org", "getSchemasReturn"));
-        oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
-        oper.setUse(org.apache.axis.constants.Use.LITERAL);
-        _operations[8] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
         oper.setName("addSubtype");
@@ -137,6 +128,17 @@ public class SchemaStoreSoapBindingStub extends org.apache.axis.client.Stub impl
         oper.setReturnQName(new javax.xml.namespace.QName("http://servlet.schemastore.mitre.org", "addSubtypeReturn"));
         oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
         oper.setUse(org.apache.axis.constants.Use.LITERAL);
+        _operations[8] = oper;
+
+        oper = new org.apache.axis.description.OperationDesc();
+        oper.setName("addSchema");
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://servlet.schemastore.mitre.org", "schema"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://model.schemastore.mitre.org", "Schema"), org.mitre.schemastore.model.Schema.class, false, false);
+        oper.addParameter(param);
+        oper.setReturnType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "int"));
+        oper.setReturnClass(int.class);
+        oper.setReturnQName(new javax.xml.namespace.QName("http://servlet.schemastore.mitre.org", "addSchemaReturn"));
+        oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
+        oper.setUse(org.apache.axis.constants.Use.LITERAL);
         _operations[9] = oper;
 
     }
@@ -145,12 +147,10 @@ public class SchemaStoreSoapBindingStub extends org.apache.axis.client.Stub impl
         org.apache.axis.description.OperationDesc oper;
         org.apache.axis.description.ParameterDesc param;
         oper = new org.apache.axis.description.OperationDesc();
-        oper.setName("updateAttribute");
-        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://servlet.schemastore.mitre.org", "attribute"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://model.schemastore.mitre.org", "Attribute"), org.mitre.schemastore.model.Attribute.class, false, false);
-        oper.addParameter(param);
-        oper.setReturnType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "boolean"));
-        oper.setReturnClass(boolean.class);
-        oper.setReturnQName(new javax.xml.namespace.QName("http://servlet.schemastore.mitre.org", "updateAttributeReturn"));
+        oper.setName("getSchemas");
+        oper.setReturnType(new javax.xml.namespace.QName("http://model.schemastore.mitre.org", "Schema"));
+        oper.setReturnClass(org.mitre.schemastore.model.Schema[].class);
+        oper.setReturnQName(new javax.xml.namespace.QName("http://servlet.schemastore.mitre.org", "getSchemasReturn"));
         oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
         oper.setUse(org.apache.axis.constants.Use.LITERAL);
         _operations[10] = oper;
@@ -1108,6 +1108,13 @@ public class SchemaStoreSoapBindingStub extends org.apache.axis.client.Stub impl
             cachedSerFactories.add(beansf);
             cachedDeserFactories.add(beandf);
 
+            qName = new javax.xml.namespace.QName("http://model.schemastore.mitre.org", "MappingSchema");
+            cachedSerQNames.add(qName);
+            cls = org.mitre.schemastore.model.MappingSchema.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
             qName = new javax.xml.namespace.QName("http://model.schemastore.mitre.org", "Relationship");
             cachedSerQNames.add(qName);
             cls = org.mitre.schemastore.model.Relationship.class;
@@ -1193,6 +1200,15 @@ public class SchemaStoreSoapBindingStub extends org.apache.axis.client.Stub impl
             cls = org.mitre.schemastore.model.Entity[].class;
             cachedSerClasses.add(cls);
             qName = new javax.xml.namespace.QName("http://model.schemastore.mitre.org", "Entity");
+            qName2 = new javax.xml.namespace.QName("http://servlet.schemastore.mitre.org", "item");
+            cachedSerFactories.add(new org.apache.axis.encoding.ser.ArraySerializerFactory(qName, qName2));
+            cachedDeserFactories.add(new org.apache.axis.encoding.ser.ArrayDeserializerFactory());
+
+            qName = new javax.xml.namespace.QName("http://servlet.schemastore.mitre.org", "ArrayOf_tns1_MappingSchema");
+            cachedSerQNames.add(qName);
+            cls = org.mitre.schemastore.model.MappingSchema[].class;
+            cachedSerClasses.add(cls);
+            qName = new javax.xml.namespace.QName("http://model.schemastore.mitre.org", "MappingSchema");
             qName2 = new javax.xml.namespace.QName("http://servlet.schemastore.mitre.org", "item");
             cachedSerFactories.add(new org.apache.axis.encoding.ser.ArraySerializerFactory(qName, qName2));
             cachedDeserFactories.add(new org.apache.axis.encoding.ser.ArrayDeserializerFactory());
@@ -1333,46 +1349,12 @@ public class SchemaStoreSoapBindingStub extends org.apache.axis.client.Stub impl
 }
     }
 
-    public org.mitre.schemastore.model.Mapping[] getMappings() throws java.rmi.RemoteException {
-        if (super.cachedEndpoint == null) {
-            throw new org.apache.axis.NoEndPointException();
-        }
-        org.apache.axis.client.Call _call = createCall();
-        _call.setOperation(_operations[1]);
-        _call.setUseSOAPAction(true);
-        _call.setSOAPActionURI("");
-        _call.setEncodingStyle(null);
-        _call.setProperty(org.apache.axis.client.Call.SEND_TYPE_ATTR, Boolean.FALSE);
-        _call.setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS, Boolean.FALSE);
-        _call.setSOAPVersion(org.apache.axis.soap.SOAPConstants.SOAP11_CONSTANTS);
-        _call.setOperationName(new javax.xml.namespace.QName("http://servlet.schemastore.mitre.org", "getMappings"));
-
-        setRequestHeaders(_call);
-        setAttachments(_call);
- try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {});
-
-        if (_resp instanceof java.rmi.RemoteException) {
-            throw (java.rmi.RemoteException)_resp;
-        }
-        else {
-            extractAttachments(_call);
-            try {
-                return (org.mitre.schemastore.model.Mapping[]) _resp;
-            } catch (java.lang.Exception _exception) {
-                return (org.mitre.schemastore.model.Mapping[]) org.apache.axis.utils.JavaUtils.convert(_resp, org.mitre.schemastore.model.Mapping[].class);
-            }
-        }
-  } catch (org.apache.axis.AxisFault axisFaultException) {
-  throw axisFaultException;
-}
-    }
-
     public int addGroup(org.mitre.schemastore.model.Group group) throws java.rmi.RemoteException {
         if (super.cachedEndpoint == null) {
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
-        _call.setOperation(_operations[2]);
+        _call.setOperation(_operations[1]);
         _call.setUseSOAPAction(true);
         _call.setSOAPActionURI("");
         _call.setEncodingStyle(null);
@@ -1394,6 +1376,40 @@ public class SchemaStoreSoapBindingStub extends org.apache.axis.client.Stub impl
                 return ((java.lang.Integer) _resp).intValue();
             } catch (java.lang.Exception _exception) {
                 return ((java.lang.Integer) org.apache.axis.utils.JavaUtils.convert(_resp, int.class)).intValue();
+            }
+        }
+  } catch (org.apache.axis.AxisFault axisFaultException) {
+  throw axisFaultException;
+}
+    }
+
+    public org.mitre.schemastore.model.Mapping[] getMappings() throws java.rmi.RemoteException {
+        if (super.cachedEndpoint == null) {
+            throw new org.apache.axis.NoEndPointException();
+        }
+        org.apache.axis.client.Call _call = createCall();
+        _call.setOperation(_operations[2]);
+        _call.setUseSOAPAction(true);
+        _call.setSOAPActionURI("");
+        _call.setEncodingStyle(null);
+        _call.setProperty(org.apache.axis.client.Call.SEND_TYPE_ATTR, Boolean.FALSE);
+        _call.setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS, Boolean.FALSE);
+        _call.setSOAPVersion(org.apache.axis.soap.SOAPConstants.SOAP11_CONSTANTS);
+        _call.setOperationName(new javax.xml.namespace.QName("http://servlet.schemastore.mitre.org", "getMappings"));
+
+        setRequestHeaders(_call);
+        setAttachments(_call);
+ try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {});
+
+        if (_resp instanceof java.rmi.RemoteException) {
+            throw (java.rmi.RemoteException)_resp;
+        }
+        else {
+            extractAttachments(_call);
+            try {
+                return (org.mitre.schemastore.model.Mapping[]) _resp;
+            } catch (java.lang.Exception _exception) {
+                return (org.mitre.schemastore.model.Mapping[]) org.apache.axis.utils.JavaUtils.convert(_resp, org.mitre.schemastore.model.Mapping[].class);
             }
         }
   } catch (org.apache.axis.AxisFault axisFaultException) {
@@ -1537,12 +1553,80 @@ public class SchemaStoreSoapBindingStub extends org.apache.axis.client.Stub impl
 }
     }
 
-    public int addSchema(org.mitre.schemastore.model.Schema schema) throws java.rmi.RemoteException {
+    public boolean updateAttribute(org.mitre.schemastore.model.Attribute attribute) throws java.rmi.RemoteException {
         if (super.cachedEndpoint == null) {
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
         _call.setOperation(_operations[7]);
+        _call.setUseSOAPAction(true);
+        _call.setSOAPActionURI("");
+        _call.setEncodingStyle(null);
+        _call.setProperty(org.apache.axis.client.Call.SEND_TYPE_ATTR, Boolean.FALSE);
+        _call.setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS, Boolean.FALSE);
+        _call.setSOAPVersion(org.apache.axis.soap.SOAPConstants.SOAP11_CONSTANTS);
+        _call.setOperationName(new javax.xml.namespace.QName("http://servlet.schemastore.mitre.org", "updateAttribute"));
+
+        setRequestHeaders(_call);
+        setAttachments(_call);
+ try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {attribute});
+
+        if (_resp instanceof java.rmi.RemoteException) {
+            throw (java.rmi.RemoteException)_resp;
+        }
+        else {
+            extractAttachments(_call);
+            try {
+                return ((java.lang.Boolean) _resp).booleanValue();
+            } catch (java.lang.Exception _exception) {
+                return ((java.lang.Boolean) org.apache.axis.utils.JavaUtils.convert(_resp, boolean.class)).booleanValue();
+            }
+        }
+  } catch (org.apache.axis.AxisFault axisFaultException) {
+  throw axisFaultException;
+}
+    }
+
+    public int addSubtype(org.mitre.schemastore.model.Subtype subtype) throws java.rmi.RemoteException {
+        if (super.cachedEndpoint == null) {
+            throw new org.apache.axis.NoEndPointException();
+        }
+        org.apache.axis.client.Call _call = createCall();
+        _call.setOperation(_operations[8]);
+        _call.setUseSOAPAction(true);
+        _call.setSOAPActionURI("");
+        _call.setEncodingStyle(null);
+        _call.setProperty(org.apache.axis.client.Call.SEND_TYPE_ATTR, Boolean.FALSE);
+        _call.setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS, Boolean.FALSE);
+        _call.setSOAPVersion(org.apache.axis.soap.SOAPConstants.SOAP11_CONSTANTS);
+        _call.setOperationName(new javax.xml.namespace.QName("http://servlet.schemastore.mitre.org", "addSubtype"));
+
+        setRequestHeaders(_call);
+        setAttachments(_call);
+ try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {subtype});
+
+        if (_resp instanceof java.rmi.RemoteException) {
+            throw (java.rmi.RemoteException)_resp;
+        }
+        else {
+            extractAttachments(_call);
+            try {
+                return ((java.lang.Integer) _resp).intValue();
+            } catch (java.lang.Exception _exception) {
+                return ((java.lang.Integer) org.apache.axis.utils.JavaUtils.convert(_resp, int.class)).intValue();
+            }
+        }
+  } catch (org.apache.axis.AxisFault axisFaultException) {
+  throw axisFaultException;
+}
+    }
+
+    public int addSchema(org.mitre.schemastore.model.Schema schema) throws java.rmi.RemoteException {
+        if (super.cachedEndpoint == null) {
+            throw new org.apache.axis.NoEndPointException();
+        }
+        org.apache.axis.client.Call _call = createCall();
+        _call.setOperation(_operations[9]);
         _call.setUseSOAPAction(true);
         _call.setSOAPActionURI("");
         _call.setEncodingStyle(null);
@@ -1576,7 +1660,7 @@ public class SchemaStoreSoapBindingStub extends org.apache.axis.client.Stub impl
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
-        _call.setOperation(_operations[8]);
+        _call.setOperation(_operations[10]);
         _call.setUseSOAPAction(true);
         _call.setSOAPActionURI("");
         _call.setEncodingStyle(null);
@@ -1598,74 +1682,6 @@ public class SchemaStoreSoapBindingStub extends org.apache.axis.client.Stub impl
                 return (org.mitre.schemastore.model.Schema[]) _resp;
             } catch (java.lang.Exception _exception) {
                 return (org.mitre.schemastore.model.Schema[]) org.apache.axis.utils.JavaUtils.convert(_resp, org.mitre.schemastore.model.Schema[].class);
-            }
-        }
-  } catch (org.apache.axis.AxisFault axisFaultException) {
-  throw axisFaultException;
-}
-    }
-
-    public int addSubtype(org.mitre.schemastore.model.Subtype subtype) throws java.rmi.RemoteException {
-        if (super.cachedEndpoint == null) {
-            throw new org.apache.axis.NoEndPointException();
-        }
-        org.apache.axis.client.Call _call = createCall();
-        _call.setOperation(_operations[9]);
-        _call.setUseSOAPAction(true);
-        _call.setSOAPActionURI("");
-        _call.setEncodingStyle(null);
-        _call.setProperty(org.apache.axis.client.Call.SEND_TYPE_ATTR, Boolean.FALSE);
-        _call.setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS, Boolean.FALSE);
-        _call.setSOAPVersion(org.apache.axis.soap.SOAPConstants.SOAP11_CONSTANTS);
-        _call.setOperationName(new javax.xml.namespace.QName("http://servlet.schemastore.mitre.org", "addSubtype"));
-
-        setRequestHeaders(_call);
-        setAttachments(_call);
- try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {subtype});
-
-        if (_resp instanceof java.rmi.RemoteException) {
-            throw (java.rmi.RemoteException)_resp;
-        }
-        else {
-            extractAttachments(_call);
-            try {
-                return ((java.lang.Integer) _resp).intValue();
-            } catch (java.lang.Exception _exception) {
-                return ((java.lang.Integer) org.apache.axis.utils.JavaUtils.convert(_resp, int.class)).intValue();
-            }
-        }
-  } catch (org.apache.axis.AxisFault axisFaultException) {
-  throw axisFaultException;
-}
-    }
-
-    public boolean updateAttribute(org.mitre.schemastore.model.Attribute attribute) throws java.rmi.RemoteException {
-        if (super.cachedEndpoint == null) {
-            throw new org.apache.axis.NoEndPointException();
-        }
-        org.apache.axis.client.Call _call = createCall();
-        _call.setOperation(_operations[10]);
-        _call.setUseSOAPAction(true);
-        _call.setSOAPActionURI("");
-        _call.setEncodingStyle(null);
-        _call.setProperty(org.apache.axis.client.Call.SEND_TYPE_ATTR, Boolean.FALSE);
-        _call.setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS, Boolean.FALSE);
-        _call.setSOAPVersion(org.apache.axis.soap.SOAPConstants.SOAP11_CONSTANTS);
-        _call.setOperationName(new javax.xml.namespace.QName("http://servlet.schemastore.mitre.org", "updateAttribute"));
-
-        setRequestHeaders(_call);
-        setAttachments(_call);
- try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {attribute});
-
-        if (_resp instanceof java.rmi.RemoteException) {
-            throw (java.rmi.RemoteException)_resp;
-        }
-        else {
-            extractAttachments(_call);
-            try {
-                return ((java.lang.Boolean) _resp).booleanValue();
-            } catch (java.lang.Exception _exception) {
-                return ((java.lang.Boolean) org.apache.axis.utils.JavaUtils.convert(_resp, boolean.class)).booleanValue();
             }
         }
   } catch (org.apache.axis.AxisFault axisFaultException) {

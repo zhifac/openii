@@ -15,6 +15,7 @@ import java.util.List;
 
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
+import org.mitre.schemastore.model.MappingSchema;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.graph.HierarchicalGraph;
 
@@ -49,9 +50,9 @@ public class TopMatchExporter extends MappingExporter
 		BufferedWriter out = new BufferedWriter(new FileWriter(file));
 
 		// Initialize the graph and schema element lists
-		elements = getSchemaElements(Arrays.asList(mapping.getSchemas()));
-		for(Integer schemaID : mapping.getSchemas())
-			graphs.add(new HierarchicalGraph(client.getGraph(schemaID),null));
+		elements = getSchemaElements(Arrays.asList(mapping.getSchemaIDs()));
+		for(MappingSchema schema : mapping.getSchemas())
+			graphs.add(new HierarchicalGraph(client.getGraph(schema.getId()),null));
 			
 		// Get the list of mapping cells
 		CompressedList matchList = new CompressedList();
