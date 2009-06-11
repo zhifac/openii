@@ -16,9 +16,6 @@ public interface PreferencesListener
 	/** Indicates change to schema type display setting */
 	public void showSchemaTypesChanged();
 	
-	/** Indicates change to the specified schema's graph model */
-	public void schemaGraphModelChanged(Integer schemaID);
-	
 	/** Indicates the marking of an element as finished */
 	public void elementsMarkedAsFinished(Integer schemaID, HashSet<Integer> elementIDs);
 	

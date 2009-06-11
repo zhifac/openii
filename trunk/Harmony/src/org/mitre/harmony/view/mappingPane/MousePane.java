@@ -21,12 +21,12 @@ import javax.swing.Timer;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 
-import org.mitre.harmony.model.HarmonyConsts;
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.mapping.MappingCellManager;
 import org.mitre.harmony.view.dialogs.ConfidenceDialog;
 import org.mitre.harmony.view.dialogs.MappingCellDialog;
 import org.mitre.schemastore.model.MappingCell;
+import org.mitre.schemastore.model.MappingSchema;
 
 /**
  * Holds mouse pane which manages all mouse actions
@@ -61,18 +61,18 @@ class MousePane extends JPanel implements MouseListener, MouseMotionListener
 		setOpaque(false);
 
 		// Add mouse listeners
-		mappingPane.getTree(HarmonyConsts.LEFT).addMouseListenr(this);
-		mappingPane.getTree(HarmonyConsts.LEFT).addMouseMotionListenr(this);
-		mappingPane.getTree(HarmonyConsts.RIGHT).addMouseListenr(this);
-		mappingPane.getTree(HarmonyConsts.RIGHT).addMouseMotionListenr(this);
+		mappingPane.getTree(MappingSchema.LEFT).addMouseListenr(this);
+		mappingPane.getTree(MappingSchema.LEFT).addMouseMotionListenr(this);
+		mappingPane.getTree(MappingSchema.RIGHT).addMouseListenr(this);
+		mappingPane.getTree(MappingSchema.RIGHT).addMouseMotionListenr(this);
 	}
 
 	/** Gets the schema tree path associated with the specified point */
 	private void getSelectedRow(Point point)
 	{
 		TreePath path;
-		if(isValidPath(HarmonyConsts.LEFT, path = mappingPane.getTree(HarmonyConsts.LEFT).getPathForLoc(point.x, point.y))) leftPath = path;
-		if(isValidPath(HarmonyConsts.RIGHT, path = mappingPane.getTree(HarmonyConsts.RIGHT).getPathForLoc(point.x, point.y))) rightPath = path;
+		if(isValidPath(MappingSchema.LEFT, path = mappingPane.getTree(MappingSchema.LEFT).getPathForLoc(point.x, point.y))) leftPath = path;
+		if(isValidPath(MappingSchema.RIGHT, path = mappingPane.getTree(MappingSchema.RIGHT).getPathForLoc(point.x, point.y))) rightPath = path;
 	}
 
 	/** Determines if the indicated path can be the left or right of gestures. */
@@ -91,8 +91,8 @@ class MousePane extends JPanel implements MouseListener, MouseMotionListener
 	/** Indicates if the specified point is over a node */
 	private boolean overlapsNode(Point point)
 	{
-		if(mappingPane.getTree(HarmonyConsts.LEFT).getPathForLoc(point.x + 18, point.y) != null) return true;
-		if(mappingPane.getTree(HarmonyConsts.RIGHT).getPathForLoc(point.x + 18, point.y) != null) return true;
+		if(mappingPane.getTree(MappingSchema.LEFT).getPathForLoc(point.x + 18, point.y) != null) return true;
+		if(mappingPane.getTree(MappingSchema.RIGHT).getPathForLoc(point.x + 18, point.y) != null) return true;
 		return false;
 	}
 
@@ -169,8 +169,8 @@ class MousePane extends JPanel implements MouseListener, MouseMotionListener
 		if(startPoint != null) return;
 
 		// Don't proceed if selection was not made by mouse movement
-		Integer leftCount = harmonyModel.getSelectedInfo().getSelectedElements(HarmonyConsts.LEFT).size();
-		Integer rightCount = harmonyModel.getSelectedInfo().getSelectedElements(HarmonyConsts.RIGHT).size();
+		Integer leftCount = harmonyModel.getSelectedInfo().getSelectedElements(MappingSchema.LEFT).size();
+		Integer rightCount = harmonyModel.getSelectedInfo().getSelectedElements(MappingSchema.RIGHT).size();
 		if(confidenceDialog == null && (leftCount > 0 || rightCount > 0)) return;
 
 		// Run a pop up timer to display confidence dialog
@@ -236,8 +236,8 @@ class MousePane extends JPanel implements MouseListener, MouseMotionListener
 
 		// Calculate selected row point
 		Rectangle rect = null;
-		if(leftPath != null) rect = mappingPane.getTree(HarmonyConsts.LEFT).getPthBounds(leftPath);
-		if(rightPath != null) rect = mappingPane.getTree(HarmonyConsts.RIGHT).getPthBounds(rightPath);
+		if(leftPath != null) rect = mappingPane.getTree(MappingSchema.LEFT).getPthBounds(leftPath);
+		if(rightPath != null) rect = mappingPane.getTree(MappingSchema.RIGHT).getPthBounds(rightPath);
 
 		// Draw line between selected row and mouse
 		if(rect != null || startPoint != null) repaint();
@@ -259,8 +259,8 @@ class MousePane extends JPanel implements MouseListener, MouseMotionListener
 			if(leftPath != null && rightPath != null)
 			{
 				// Gather info on what left and right nodes are connected
-				Integer leftID = mappingPane.getTree(HarmonyConsts.LEFT).getElement(leftPath);
-				Integer rightID = mappingPane.getTree(HarmonyConsts.RIGHT).getElement(rightPath);
+				Integer leftID = mappingPane.getTree(MappingSchema.LEFT).getElement(leftPath);
+				Integer rightID = mappingPane.getTree(MappingSchema.RIGHT).getElement(rightPath);
 
 				// Set the mapping cell
 				MappingCellManager manager = harmonyModel.getMappingCellManager();
@@ -316,8 +316,8 @@ class MousePane extends JPanel implements MouseListener, MouseMotionListener
 		if((leftPath != null || rightPath != null) && endPoint != null)
 		{
 			Rectangle rect = null;
-			if(leftPath != null) rect = mappingPane.getTree(HarmonyConsts.LEFT).getPthBounds(leftPath);
-			if(rightPath != null) rect = mappingPane.getTree(HarmonyConsts.RIGHT).getPthBounds(rightPath);
+			if(leftPath != null) rect = mappingPane.getTree(MappingSchema.LEFT).getPthBounds(leftPath);
+			if(rightPath != null) rect = mappingPane.getTree(MappingSchema.RIGHT).getPthBounds(rightPath);
 			if(rect != null)
 			{
 				g.setColor(Color.red);

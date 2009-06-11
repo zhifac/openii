@@ -7,9 +7,9 @@ import java.util.ArrayList;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
-import org.mitre.harmony.model.HarmonyConsts;
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.schemastore.model.MappingCell;
+import org.mitre.schemastore.model.MappingSchema;
 
 /**
  * Stores the info on mapping cell's lines
@@ -43,16 +43,16 @@ class MappingCellLines
 	private void getLines(Integer leftID, Integer rightID)
 	{
 		// Retrieve the left and right schema trees
-		SchemaTreeImp left = mappingPane.getTree(HarmonyConsts.LEFT);
-		SchemaTreeImp right = mappingPane.getTree(HarmonyConsts.RIGHT);
+		SchemaTreeImp left = mappingPane.getTree(MappingSchema.LEFT);
+		SchemaTreeImp right = mappingPane.getTree(MappingSchema.RIGHT);
 		
 		// Cycle through all combination of source and target nodes
 		for(DefaultMutableTreeNode leftNode : left.getComponentNodes(leftID))
 			for(DefaultMutableTreeNode rightNode : right.getComponentNodes(rightID))
 			{
 				// Only create lines if they are within the specified depths
-				if(!harmonyModel.getFilters().isVisibleNode(HarmonyConsts.LEFT,leftNode)) continue;
-				if(!harmonyModel.getFilters().isVisibleNode(HarmonyConsts.RIGHT,rightNode)) continue;
+				if(!harmonyModel.getFilters().isVisibleNode(MappingSchema.LEFT,leftNode)) continue;
+				if(!harmonyModel.getFilters().isVisibleNode(MappingSchema.RIGHT,rightNode)) continue;
 				
 				// Only create lines if they are visible on the screen (saves processing time)
 				Integer leftRow = left.getNodeRow(leftNode);

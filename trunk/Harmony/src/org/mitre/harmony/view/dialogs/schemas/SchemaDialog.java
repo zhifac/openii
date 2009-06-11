@@ -13,6 +13,8 @@ import javax.swing.border.EmptyBorder;
 
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.view.dialogs.AbstractButtonPane;
+import org.mitre.schemastore.model.MappingSchema;
+import org.mitre.schemastore.model.graph.model.GraphModel;
 
 /**
  * Displays the dialog containing all mapping information
@@ -60,7 +62,7 @@ public class SchemaDialog extends JDialog
 		modelPane = new SchemaModelPane(harmonyModel);
 		
 		// Populate panes with schema information
-		for(Integer schemaID : harmonyModel.getMappingManager().getSchemas())
+		for(Integer schemaID : harmonyModel.getMappingManager().getSchemaIDs())
 			selectSchema(schemaID);
 
 		// Initializes the selection pane
@@ -118,8 +120,13 @@ public class SchemaDialog extends JDialog
 	/** Saves the mapping schemas */
 	void save()
 	{
-		harmonyModel.getMappingManager().setSchemas(selectedSchemas);
-		displayPane.save();
-		modelPane.save();
+		ArrayList<MappingSchema> schemas = new ArrayList<MappingSchema>();
+		for(Integer schemaID : selectedSchemas)
+		{
+			GraphModel graphModel = modelPane.getModel(schemaID);
+			Integer side = displayPane.getSide(schemaID);
+			schemas.add(new MappingSchema(schemaID,graphModel==null?null:graphModel.getClass().getName(),side));
+		}
+		harmonyModel.getMappingManager().setSchemas(schemas);
 	}
 }

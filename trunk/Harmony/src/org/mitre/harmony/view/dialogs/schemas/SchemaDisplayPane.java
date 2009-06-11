@@ -3,7 +3,6 @@ package org.mitre.harmony.view.dialogs.schemas;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.util.ArrayList;
 
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
@@ -82,22 +81,15 @@ public class SchemaDisplayPane extends JPanel
 		revalidate(); repaint();
 	}
 	
-	/** Saves the schema display settings */
-	void save()
+	/** Returns the selected side for the specified schema */
+	public Integer getSide(Integer schemaID)
 	{
-		// Gather up the left and right schemas
-		ArrayList<Integer> leftSchemas = new ArrayList<Integer>();
-		ArrayList<Integer> rightSchemas = new ArrayList<Integer>();
-		for(int loc=0; loc<schemaList.getComponentCount(); loc++)
+		for(int i=0; i<schemaList.getComponentCount(); i++)
 		{
-			SchemaDisplayItem item = (SchemaDisplayItem)schemaList.getComponent(loc);
-			if(item.getSide()==SchemaDisplayItem.LEFT)
-				leftSchemas.add(item.getSchema().getId());
-			if(item.getSide()==SchemaDisplayItem.RIGHT)
-				rightSchemas.add(item.getSchema().getId());
+			SchemaDisplayItem item = (SchemaDisplayItem)schemaList.getComponent(i);
+			if(item.getSchema().getId().equals(schemaID))
+				return item.getSide();
 		}
-
-		// Update the selected schemas
-		harmonyModel.getSelectedInfo().setSelectedSchemas(leftSchemas, rightSchemas);
+		return null;
 	}
 }

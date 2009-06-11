@@ -8,12 +8,12 @@ import java.util.HashSet;
 import java.util.List;
 
 import org.mitre.harmony.model.AbstractManager;
-import org.mitre.harmony.model.HarmonyConsts;
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.filters.FiltersListener;
 import org.mitre.harmony.model.mapping.MappingCellListener;
 import org.mitre.harmony.model.mapping.MappingListener;
 import org.mitre.schemastore.model.MappingCell;
+import org.mitre.schemastore.model.MappingSchema;
 import org.mitre.schemastore.model.SchemaElement;
 
 /**
@@ -26,12 +26,6 @@ public class SelectedInfoManager extends AbstractManager<SelectedInfoListener> i
 	static private final int ADD = 0;
 	static private final int REMOVE = 1;
 	static private final int REPLACE = 2;
-	
-	/** Stores the displayed left schemas */
-	private ArrayList<Integer> leftSchemaIDs = new ArrayList<Integer>();
-
-	/** Stores the displayed right schemas */
-	private ArrayList<Integer> rightSchemaIDs = new ArrayList<Integer>();
 	
 	/** Stores the displayed left element */
 	private Integer displayedLeftElement = null;
@@ -50,7 +44,7 @@ public class SelectedInfoManager extends AbstractManager<SelectedInfoListener> i
 	
 	/** Returns the specified list of selected elements */
 	private HashSet<Integer> getSelectedElementSet(Integer role)
-		{ return role==HarmonyConsts.LEFT ? selectedLeftElements : selectedRightElements; }
+		{ return role==MappingSchema.LEFT ? selectedLeftElements : selectedRightElements; }
 	
 	/** Constructor used to initialize the selected info */
 	public SelectedInfoManager(HarmonyModel harmonyModel)
@@ -58,31 +52,9 @@ public class SelectedInfoManager extends AbstractManager<SelectedInfoListener> i
 	
 	//--------------------- Returns the various selected pieces of info ---------------------
 	
-	/** Returns the schemas displayed on the left side of Harmony */
-	public ArrayList<Integer> getSchemas(Integer side)
-		{ return new ArrayList<Integer>(side.equals(HarmonyConsts.LEFT) ? leftSchemaIDs : rightSchemaIDs); }
-
-	/** Returns all elements displayed on the specified side of Harmony */
-	public HashSet<SchemaElement> getSchemaElements(Integer side)
-	{
-		HashSet<SchemaElement> elements = new HashSet<SchemaElement>();
-		for(Integer schemaID : getSchemas(side))
-			elements.addAll(getModel().getSchemaManager().getGraph(schemaID).getGraphElements());
-		return elements;
-	}
-
-	/** Returns all element IDs displayed on the specified side of Harmony */
-	public HashSet<Integer> getSchemaElementIDs(Integer side)
-	{
-		HashSet<Integer> elementIDs = new HashSet<Integer>();
-		for(SchemaElement element : getSchemaElements(side))
-			elementIDs.add(element.getId());
-		return elementIDs;
-	}
-	
 	/** Get the displayed element */
 	public Integer getDisplayedElement(Integer side)
-		{ return side==HarmonyConsts.LEFT ? displayedLeftElement : displayedRightElement; }
+		{ return side==MappingSchema.LEFT ? displayedLeftElement : displayedRightElement; }
 	
 	/** Get the selected elements */
 	public List<Integer> getSelectedElements(Integer side)
@@ -101,18 +73,6 @@ public class SelectedInfoManager extends AbstractManager<SelectedInfoListener> i
 		{ return selectedMappingCells.contains(mappingCellID); }
 	
 	// ------------ Handles the selecting of the various pieces of information -------------
-	
-	/** Set the list of selected schemas */
-	public void setSelectedSchemas(ArrayList<Integer> leftSchemaIDs, ArrayList<Integer> rightSchemaIDs)
-	{
-		// Only update selected schemas if changed from original
-		if(!leftSchemaIDs.equals(getSchemas(HarmonyConsts.LEFT)) || !rightSchemaIDs.equals(getSchemas(HarmonyConsts.RIGHT)))
-		{
-			this.leftSchemaIDs = leftSchemaIDs; this.rightSchemaIDs = rightSchemaIDs;
-			for(SelectedInfoListener listener : getListeners())
-				listener.selectedSchemasModified();
-		}
-	}
 
 	/** Updates the set as specified */
 	private boolean updateSet(HashSet<Integer> set, List<Integer> items, Integer mode)
@@ -148,8 +108,8 @@ public class SelectedInfoManager extends AbstractManager<SelectedInfoListener> i
 
 		// Identify changes to the mapping cells required by the newly selected elements
 		List<Integer> mappingCells = new ArrayList<Integer>();
-		List<Integer> leftElements = getSelectedElements(HarmonyConsts.LEFT);
-		List<Integer> rightElements = getSelectedElements(HarmonyConsts.RIGHT);
+		List<Integer> leftElements = getSelectedElements(MappingSchema.LEFT);
+		List<Integer> rightElements = getSelectedElements(MappingSchema.RIGHT);
 		for(Integer leftElement : leftElements)
 			for(Integer rightElement : rightElements)
 			{
@@ -175,8 +135,8 @@ public class SelectedInfoManager extends AbstractManager<SelectedInfoListener> i
 		// Identify changes to the elements required by the newly selected mapping cells
 		ArrayList<Integer> selectedLeftElements = new ArrayList<Integer>();
 		ArrayList<Integer> selectedRightElements = new ArrayList<Integer>();		
-		HashSet<Integer> leftElements = getSchemaElementIDs(HarmonyConsts.LEFT);
-		HashSet<Integer> rightElements = getSchemaElementIDs(HarmonyConsts.RIGHT);
+		HashSet<Integer> leftElements = getModel().getMappingManager().getSchemaElementIDs(MappingSchema.LEFT);
+		HashSet<Integer> rightElements = getModel().getMappingManager().getSchemaElementIDs(MappingSchema.RIGHT);
 		for(Integer mappingCellID : getSelectedMappingCells())
 		{
 			// Identify the elements for the mapping cell
@@ -192,10 +152,10 @@ public class SelectedInfoManager extends AbstractManager<SelectedInfoListener> i
 		}
 
 		// Update the elements
-		Integer sides[] = { HarmonyConsts.LEFT, HarmonyConsts.RIGHT };
+		Integer sides[] = { MappingSchema.LEFT, MappingSchema.RIGHT };
 		for(Integer side : sides)
 		{
-			ArrayList<Integer> selectedElements = (side.equals(HarmonyConsts.LEFT)?selectedLeftElements:selectedRightElements);
+			ArrayList<Integer> selectedElements = (side.equals(MappingSchema.LEFT)?selectedLeftElements:selectedRightElements);
 			if(updateSet(getSelectedElementSet(side),selectedElements,REPLACE))
 				for(SelectedInfoListener listener : getListeners())
 					listener.selectedElementsModified(side);		
@@ -211,8 +171,8 @@ public class SelectedInfoManager extends AbstractManager<SelectedInfoListener> i
 		Integer leftElement = null, rightElement = null;
 
 		// Check for easy case of only one item selected on a given side
-		List<Integer> leftElements = getSelectedElements(HarmonyConsts.LEFT);
-		List<Integer> rightElements = getSelectedElements(HarmonyConsts.RIGHT);
+		List<Integer> leftElements = getSelectedElements(MappingSchema.LEFT);
+		List<Integer> rightElements = getSelectedElements(MappingSchema.RIGHT);
 		if(leftElements.size()==1) leftElement = leftElements.get(0);
 		if(rightElements.size()==1) rightElement = rightElements.get(0);
 
@@ -226,13 +186,13 @@ public class SelectedInfoManager extends AbstractManager<SelectedInfoListener> i
 		{
 			displayedLeftElement=leftElement; 
 			for(SelectedInfoListener listener : getListeners())
-				listener.displayedElementModified(HarmonyConsts.LEFT);
+				listener.displayedElementModified(MappingSchema.LEFT);
 		}
 		if(displayedRightElement==null || !displayedRightElement.equals(rightElement))
 		{
 			displayedRightElement=rightElement; 
 			for(SelectedInfoListener listener : getListeners())
-				listener.displayedElementModified(HarmonyConsts.RIGHT);
+				listener.displayedElementModified(MappingSchema.RIGHT);
 		}
 	}
 	
@@ -284,7 +244,7 @@ public class SelectedInfoManager extends AbstractManager<SelectedInfoListener> i
 	/** Unselect elements that are out of depth */
 	public void depthChanged()
 	{
-		Integer sides[] = { HarmonyConsts.LEFT, HarmonyConsts.RIGHT };
+		Integer sides[] = { MappingSchema.LEFT, MappingSchema.RIGHT };
 		for(Integer side : sides)
 		{
 			// Get the minimum and maximum depth for the specified side
@@ -296,7 +256,7 @@ public class SelectedInfoManager extends AbstractManager<SelectedInfoListener> i
 			for(Integer elementID : getSelectedElements(side))
 			{
 				boolean visible = false;
-				for(Integer schemaID : getSchemas(side))
+				for(Integer schemaID : getModel().getMappingManager().getSchemaIDs(side))
 					for(Integer depth : getModel().getSchemaManager().getDepths(schemaID, elementID))
 						if(depth>=minDepth && depth<=maxDepth)
 							{ visible=true; break; }
@@ -312,18 +272,12 @@ public class SelectedInfoManager extends AbstractManager<SelectedInfoListener> i
 	/** Unselect schemas and elements associated with the deleted schema */
 	public void schemaRemoved(Integer schemaID)
 	{
-		// Eliminate selected schemas
-		ArrayList<Integer> leftSchemas = getSchemas(HarmonyConsts.LEFT);
-		ArrayList<Integer> rightSchemas = getSchemas(HarmonyConsts.RIGHT);
-		leftSchemas.remove(schemaID); rightSchemas.remove(schemaID);
-		setSelectedSchemas(leftSchemas, rightSchemas);
-		
 		// Check for eliminated selected elements in both sides
-		Integer sides[] = { HarmonyConsts.LEFT, HarmonyConsts.RIGHT };
+		Integer sides[] = { MappingSchema.LEFT, MappingSchema.RIGHT };
 		for(Integer side : sides)
 		{
 			// Gets the list of all schema elements which still exist
-			HashSet<SchemaElement> schemaElements = getSchemaElements(side);
+			HashSet<SchemaElement> schemaElements = getModel().getMappingManager().getSchemaElements(side);
 			
 			// Find all of the eliminated selected elements
 			ArrayList<Integer> removedElements = new ArrayList<Integer>();
@@ -347,6 +301,7 @@ public class SelectedInfoManager extends AbstractManager<SelectedInfoListener> i
 	// Unused action events
 	public void mappingModified() {}
 	public void schemaAdded(Integer schemaID) {}
+	public void schemaModified(Integer schemaID) {}
 	public void mappingCellAdded(MappingCell mappingCell) {}
 	public void mappingCellModified(MappingCell oldMappingCell, MappingCell newMappingCell) {}
 	public void assertionsChanged() {}

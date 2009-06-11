@@ -46,7 +46,7 @@ public class SchemaSelectionPane extends JPanel
 
 		// Get the list of deletable schemas
 		ArrayList<Integer> deletableSchemas = harmonyModel.getSchemaManager().getDeletableSchemas();
-		deletableSchemas.removeAll(harmonyModel.getMappingManager().getSchemas());
+		deletableSchemas.removeAll(harmonyModel.getMappingManager().getSchemaIDs());
 		
 		// Generate the list of schemas
 		schemaList.removeAll();
