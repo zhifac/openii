@@ -12,8 +12,8 @@ import org.eclipse.ui.IEditorRegistry;
 import org.eclipse.ui.PlatformUI;
 import org.mitre.openii.model.EditorManager;
 import org.mitre.openii.model.OpenIIManager;
-import org.mitre.openii.views.manager.GroupSchema;
-import org.mitre.openii.views.manager.MappingSchema;
+import org.mitre.openii.views.manager.SchemaInGroup;
+import org.mitre.openii.views.manager.SchemaInMapping;
 import org.mitre.schemastore.model.Group;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.Schema;
@@ -43,8 +43,8 @@ public class ManagerMenuManager extends MenuManager implements IMenuListener
 	public Integer getElementID()
 	{
 		if(element instanceof Schema) return ((Schema)element).getId();
-		if(element instanceof GroupSchema) return ((GroupSchema)element).getSchema().getId();
-		if(element instanceof MappingSchema) return ((MappingSchema)element).getSchema().getId();
+		if(element instanceof SchemaInGroup) return ((SchemaInGroup)element).getSchema().getId();
+		if(element instanceof SchemaInMapping) return ((SchemaInMapping)element).getSchema().getId();
 		if(element instanceof Group) return ((Group)element).getId();
 		if(element instanceof Mapping) return ((Mapping)element).getId();
 		return null;
@@ -110,7 +110,7 @@ public class ManagerMenuManager extends MenuManager implements IMenuListener
 		}
 		
 		// Display the menu for a selection group schema
-		if(element instanceof GroupSchema)
+		if(element instanceof SchemaInGroup)
 			menuManager.add(new ManagerAction(this,"Remove Schema from Group",ManagerAction.DELETE_GROUP_SCHEMA));
 			
 		// Display the menu for the "Mappings" header
@@ -130,7 +130,7 @@ public class ManagerMenuManager extends MenuManager implements IMenuListener
 		}
 		
 		// Display the menu for a selection mapping schema
-		if(element instanceof MappingSchema)
+		if(element instanceof SchemaInMapping)
 			menuManager.add(new ManagerAction(this,"Remove Schema from Mapping",ManagerAction.DELETE_MAPPING_SCHEMA));
 	}
 	
