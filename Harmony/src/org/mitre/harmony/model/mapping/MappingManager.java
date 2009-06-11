@@ -4,15 +4,15 @@ package org.mitre.harmony.model.mapping;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 
 import org.mitre.harmony.model.AbstractManager;
-import org.mitre.harmony.model.HarmonyConsts;
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.SchemaStoreManager;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
+import org.mitre.schemastore.model.MappingSchema;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.graph.HierarchicalGraph;
 import org.mitre.schemastore.model.graph.model.GraphModel;
@@ -28,16 +28,6 @@ public class MappingManager extends AbstractManager<MappingListener> implements 
 	
 	/** Indicates if the mapping has been modified */
 	private boolean modified = false;
-	
-	/** Returns the list of valid schemas */
-	private ArrayList<Integer> validateSchemaIDs(ArrayList<Integer> schemaIDs)
-	{
-		ArrayList<Integer> availSchemaIDs = getModel().getSchemaManager().getSchemaIDs();
-		for(Integer schemaID : new ArrayList<Integer>(schemaIDs))
-			if(!availSchemaIDs.contains(schemaID))
-				schemaIDs.remove(schemaID);
-		return schemaIDs;
-	}
 	
 	/** Constructs the mapping manager */
 	public MappingManager(HarmonyModel harmonyModel)
@@ -60,31 +50,57 @@ public class MappingManager extends AbstractManager<MappingListener> implements 
 		{ return mapping.copy(); }
 
 	/** Gets the mapping schemas */
-	public ArrayList<Integer> getSchemas()
+	public ArrayList<MappingSchema> getSchemas()
 	{
-		if(mapping.getSchemas()==null) return new ArrayList<Integer>();
-		return new ArrayList<Integer>(Arrays.asList(mapping.getSchemas()));
+		if(mapping.getSchemas()==null) return new ArrayList<MappingSchema>();
+		return new ArrayList<MappingSchema>(Arrays.asList(mapping.getSchemas()));
+	}
+
+	/** Gets the mapping schema IDs */
+	public ArrayList<Integer> getSchemaIDs()
+		{ return new ArrayList<Integer>(Arrays.asList(mapping.getSchemaIDs())); }
+
+	/** Returns the schemas displayed on the specified side of the mapping */
+	public ArrayList<Integer> getSchemaIDs(Integer side)
+	{
+		ArrayList<Integer> schemaIDs = new ArrayList<Integer>();
+		for(MappingSchema schema : getSchemas())
+			if(schema.getSide().equals(side)) schemaIDs.add(schema.getId());
+		return schemaIDs;
 	}
 	
-	/** Gets the mapping schema elements */
-	public HashSet<Integer> getElementIDs()
+	/** Returns all elements displayed on the specified side of the mapping */
+	public HashSet<SchemaElement> getSchemaElements(Integer side)
+	{
+		HashSet<SchemaElement> elements = new HashSet<SchemaElement>();
+		for(Integer schemaID : getSchemaIDs(side))
+			elements.addAll(getModel().getSchemaManager().getGraph(schemaID).getGraphElements());
+		return elements;
+	}
+
+	/** Returns all element IDs displayed on the specified side of the mapping */
+	public HashSet<Integer> getSchemaElementIDs(Integer side)
 	{
 		HashSet<Integer> elementIDs = new HashSet<Integer>();
-		for(Integer schemaID : getSchemas())
-			for(SchemaElement element : getModel().getSchemaManager().getGraph(schemaID).getElements(null))
-				elementIDs.add(element.getId());
+		for(SchemaElement element : getSchemaElements(side))
+			elementIDs.add(element.getId());
 		return elementIDs;
 	}
-	
-	/** Sets the mapping */
-	public void setMapping(Mapping mappingIn)
+
+	/** Returns the graph model for the specified schema */
+	public GraphModel getGraphModel(Integer schemaID)
 	{
-		if(mappingIn.getSchemas()!=null)
-		{
-			ArrayList<Integer> validSchemas = validateSchemaIDs(new ArrayList<Integer>(Arrays.asList(mappingIn.getSchemas())));
-			mappingIn.setSchemas(validSchemas.toArray(new Integer[0]));
-		}
-		mapping = mappingIn;
+		// Get the graph model string
+		String graphModelString = null;
+		for(MappingSchema schema : getSchemas())
+			if(schema.getId().equals(schemaID))
+				graphModelString = schema.getModel();
+
+		// Return the graph model
+		for(GraphModel graphModel : HierarchicalGraph.getGraphModels())
+			if(graphModel.getClass().getName().equals(graphModelString))
+				return graphModel;
+		return null;
 	}
 	
 	/** Sets the mapping info */
@@ -105,42 +121,78 @@ public class MappingManager extends AbstractManager<MappingListener> implements 
 	}
 
 	/** Sets the mapping schemas */
-	public void setSchemas(ArrayList<Integer> schemaIDs)
-	{
-		// Get the list of old and new schemas
-		ArrayList<Integer> oldSchemaIDs = getSchemas();
-		ArrayList<Integer> newSchemaIDs = validateSchemaIDs(schemaIDs);
-		Collections.sort(oldSchemaIDs);
-		Collections.sort(newSchemaIDs);
+	public void setSchemas(ArrayList<MappingSchema> schemas)
+	{		
+		boolean changesOccured = false;
+		
+		// Create hash table for the old schema
+		HashMap<Integer, MappingSchema> oldSchemas = new HashMap<Integer, MappingSchema>();
+		for(MappingSchema schema : getSchemas())
+			oldSchemas.put(schema.getId(), schema);
 
-		// Only proceed if schemas have been modified
-		if(!oldSchemaIDs.equals(newSchemaIDs))
-		{
-			// Set the mapping schemas
-			mapping.setSchemas(newSchemaIDs.toArray(new Integer[0]));
-			
-			// Inform listeners of any schemas that were selected
-			for(Integer newSelSchemaID : newSchemaIDs)
-				if(!oldSchemaIDs.contains(newSelSchemaID))
+		// Create hash table for the new schema
+		HashMap<Integer, MappingSchema> newSchemas = new HashMap<Integer, MappingSchema>();
+		for(MappingSchema schema : schemas)
+			newSchemas.put(schema.getId(), schema);
+		
+		// Set the mapping schemas
+		mapping.setSchemas(schemas.toArray(new MappingSchema[0]));
+		
+		// Inform listeners of any schemas that were added
+		for(Integer newSchemaID : newSchemas.keySet())
+			if(!oldSchemas.containsKey(newSchemaID))
+			{
+				for(MappingListener listener : getListeners())
+					listener.schemaAdded(newSchemaID);
+				changesOccured = true;
+			}
+				
+		// Inform listeners of any schemas that were removed
+		for(Integer oldSchemaID : oldSchemas.keySet())
+			if(!newSchemas.containsKey(oldSchemaID))
+			{
+				for(MappingListener listener : getListeners())
+					listener.schemaRemoved(oldSchemaID);
+				changesOccured = true;
+			}
+				
+		// Inform listeners of any schemas that were modified
+		for(Integer newSchemaID : newSchemas.keySet())
+			if(oldSchemas.containsKey(newSchemaID))
+			{
+				MappingSchema oldSchema = oldSchemas.get(newSchemaID);
+				MappingSchema newSchema = newSchemas.get(newSchemaID);
+	
+				// Determines if the schema side was modified
+				boolean sideModified = !oldSchema.getSide().equals(newSchema.getSide());
+
+				// Determines if the graph model was modified
+				boolean graphModelModified = oldSchema.getModel()==null && newSchema.getModel()!=null;
+				graphModelModified |= oldSchema.getModel()!=null && !oldSchema.getModel().equals(newSchema.getModel());
+				if(graphModelModified)
+				{
+					GraphModel graphModel = getGraphModel(newSchemaID);
+					getModel().getSchemaManager().getGraph(newSchemaID).setModel(graphModel);
+				}
+
+				// Informs listeners of modifications to the schema
+				if(sideModified || graphModelModified)
+				{
 					for(MappingListener listener : getListeners())
-						listener.schemaAdded(newSelSchemaID);
-					
-			// Inform listeners of any schemas that were unselected
-			for(Integer selSchemaID : oldSchemaIDs)
-				if(!newSchemaIDs.contains(selSchemaID))
-					for(MappingListener listener : getListeners())
-						listener.schemaRemoved(selSchemaID);
-			
-			// Set the mapping as being modified
-			setModified(true);
-		}
+						listener.schemaModified(newSchemaID);
+					changesOccured = true;
+				}
+			}
+		
+		// Set the mapping as being modified
+		if(changesOccured) setModified(true);
 	}
 	
 	/** Creates a new mapping */
 	public void newMapping()
 	{
 		getModel().getMappingCellManager().deleteMappingCells();
-		setSchemas(new ArrayList<Integer>());
+		setSchemas(new ArrayList<MappingSchema>());
 		mapping = new Mapping();
 		mapping.setAuthor(System.getProperty("user.name"));
 		setModified(false);
@@ -156,40 +208,13 @@ public class MappingManager extends AbstractManager<MappingListener> implements 
 
 			// Sets the new mapping information
 			getModel().getMappingCellManager().deleteMappingCells();
+			setSchemas(new ArrayList<MappingSchema>(Arrays.asList(newMapping.getSchemas())));
 			mapping = newMapping;
-			setSchemas(new ArrayList<Integer>(Arrays.asList(mapping.getSchemas())));
 			for(MappingCell mappingCell : newMappingCells)
 			{
 				mappingCell.setId(null);
 				getModel().getMappingCellManager().setMappingCell(mappingCell);
 			}	
-				
-			// Sets the schema models
-			String schemaModels = SchemaStoreManager.getAnnotation(mappingID, "SchemaModelsForMapping");
-			if(schemaModels!=null)
-				for(String schemaModel : schemaModels.split(","))
-					try {
-						Integer schemaID = Integer.parseInt(schemaModel.replaceAll(":.*",""));
-						String modelName = schemaModel.replaceAll(".*:","");
-						for(GraphModel graphModel : HierarchicalGraph.getGraphModels())
-							if(graphModel.getClass().toString().equals(modelName))
-								{ getModel().getPreferences().setGraphModel(schemaID, graphModel); break; }
-					} catch(Exception e) {}
-			
-			// Sets the schema sides
-			String schemaSides = SchemaStoreManager.getAnnotation(mappingID, "SchemaSidesForMapping");
-			if(schemaSides!=null)
-			{
-				ArrayList<Integer> leftIDs = new ArrayList<Integer>();
-				ArrayList<Integer> rightIDs = new ArrayList<Integer>();
-				for(String schemaSide : schemaSides.split(","))
-					try {
-						Integer schemaID = Integer.parseInt(schemaSide.replaceAll(":.*",""));
-						Integer side = Integer.parseInt(schemaSide.replaceAll(".*:",""));
-						if(side.equals(HarmonyConsts.LEFT)) leftIDs.add(schemaID); else rightIDs.add(schemaID);
-					} catch(Exception e) {}
-				getModel().getSelectedInfo().setSelectedSchemas(leftIDs, rightIDs);
-			}
 			
 			// Inform listeners of modified mapping
 			setModified(false);
@@ -199,38 +224,18 @@ public class MappingManager extends AbstractManager<MappingListener> implements 
 		catch(Exception e) { System.out.println("(E) MappingManager:loadMapping - " + e.getMessage()); return false; }
 	}
 	
-	/** Saves the current mapping */
-	public boolean saveMapping()
-		{ return saveMapping(mapping); }
-	
 	/** Saves the specified mapping */
 	public boolean saveMapping(Mapping mapping)
 	{
 		try {
+			// Update the mapping schema settings
+			mapping.setSchemas(this.mapping.getSchemas());
+			
 			// Save the mapping
 			Integer mappingID = SchemaStoreManager.saveMapping(mapping, getModel().getMappingCellManager().getMappingCells());
 			if(mappingID==null) throw new Exception("Failed to save mapping");
 			mapping.setId(mappingID);
-			setMapping(mapping);
-
-			// Stores the schema models
-			String schemaModels = "";
-			for(Integer schemaID : mapping.getSchemas())
-				schemaModels += schemaID + ":" + getModel().getPreferences().getGraphModel(schemaID).getClass() + ",";
-			if(schemaModels.length()>0) schemaModels = schemaModels.substring(0,schemaModels.length()-1);
-			if(!SchemaStoreManager.setAnnotation(mappingID, "SchemaModelsForMapping", schemaModels))
-				throw new Exception("Failed to store annotations for schema models");
-
-			// Stores the schema sides
-			String schemaSides = "";
-			for(Integer schemaID : getModel().getSelectedInfo().getSchemas(HarmonyConsts.LEFT))
-				schemaSides += schemaID + ":" + HarmonyConsts.LEFT + ",";
-			for(Integer schemaID : getModel().getSelectedInfo().getSchemas(HarmonyConsts.RIGHT))
-				schemaSides += schemaID + ":" + HarmonyConsts.RIGHT + ",";
-			if(schemaSides.length()>0) schemaSides = schemaSides.substring(0,schemaSides.length()-1);
-			if (!SchemaStoreManager.setAnnotation(mappingID, "SchemaSidesForMapping", schemaSides))
-				throw new Exception("Failed to store annotations for schema sides");
-
+			
 			// Indicates that the mapping has been modified
 			for(MappingListener listener : getListeners()) listener.mappingModified();
 			setModified(false);
