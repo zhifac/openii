@@ -43,8 +43,8 @@ public class ManagerView extends ViewPart implements OpenIIListener, IDoubleClic
 	public void doubleClick(DoubleClickEvent e)
 	{
 		Object element = ((TreeSelection)e.getSelection()).getFirstElement();
-		if(element instanceof GroupSchema) element = ((GroupSchema)element).getSchema();
-		if(element instanceof MappingSchema) element = ((MappingSchema)element).getSchema();
+		if(element instanceof SchemaInGroup) element = ((SchemaInGroup)element).getSchema();
+		if(element instanceof SchemaInMapping) element = ((SchemaInMapping)element).getSchema();
 		EditorManager.launchDefaultEditor(element);
 	}
 	

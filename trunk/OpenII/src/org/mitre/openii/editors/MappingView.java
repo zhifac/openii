@@ -23,15 +23,13 @@ import org.mitre.openii.widgets.BasicWidgets;
 import org.mitre.openii.widgets.ExpandBarWidgets;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
+import org.mitre.schemastore.model.MappingSchema;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
 
 /** Constructs the Schema Graph */
 public class MappingView extends OpenIIEditor implements ISelectionChangedListener
 {	
-	/** Stores the schemas associated with the mapping */
-	private ArrayList<Schema> schemas = new ArrayList<Schema>();
-	
 	// Stores the various view fields
 	ComboViewer schema1Selector = null;
 	ComboViewer schema2Selector = null;
@@ -42,18 +40,16 @@ public class MappingView extends OpenIIEditor implements ISelectionChangedListen
 	private void generateSchemasPane(ExpandBar bar)
 	{		
 		// Generate the schemas table
-		String[] fields = new String[]{"ID","Name","Author","Source","Type","Locked","Description"};
+		String[] fields = new String[]{"ID","Name","Model","Side"};
 		ArrayList<Object[]> rows = new ArrayList<Object[]>();
-		for(Schema schema : schemas)
+		for(MappingSchema schema : OpenIIManager.getMapping(elementID).getSchemas())
 		{
 			Integer id = schema.getId();
-			String name = schema.getName();
-			String author = schema.getAuthor();
-			String source = schema.getSource();
-			String type = schema.getType();
-			Boolean locked = schema.getLocked();
-			String description = schema.getDescription();
-			rows.add(new Object[]{id,name,author,source,type,locked,description});
+			String name = OpenIIManager.getSchema(id).getName();
+			String model = schema.getModel();
+			Integer side = schema.getSide();
+			String sideString = side==null?"None":side.equals(MappingSchema.LEFT)?"Left":side.equals(MappingSchema.RIGHT)?"Right":"None";
+			rows.add(new Object[]{id,name,model,sideString});
 		}
 		ExpandBarWidgets.createTablePane(bar, "Schemas", fields, rows);
 	}
@@ -72,8 +68,8 @@ public class MappingView extends OpenIIEditor implements ISelectionChangedListen
 		
 		// Create the combo box
 		ComboViewer schemaCombo = new ComboViewer(pane, SWT.NONE);
-		for(Schema schema : schemas)
-			schemaCombo.add(schema);
+		for(Integer schemaID : OpenIIManager.getMapping(elementID).getSchemaIDs())
+			schemaCombo.add(OpenIIManager.getSchema(schemaID));
 		schemaCombo.addSelectionChangedListener(this);
 		return schemaCombo;
 	}
@@ -185,9 +181,8 @@ public class MappingView extends OpenIIEditor implements ISelectionChangedListen
 	{
 		// Retrieve the mapping and mapping schemas
 		Mapping mapping = OpenIIManager.getMapping(elementID);
-		ArrayList<Integer> schemaIDs = new ArrayList<Integer>(Arrays.asList(mapping.getSchemas()));
+		ArrayList<Integer> schemaIDs = new ArrayList<Integer>(Arrays.asList(mapping.getSchemaIDs()));
 		Collections.sort(schemaIDs);
-		for(Integer schemaID : schemaIDs) schemas.add(OpenIIManager.getSchema(schemaID));
 			
 		// Create the expand bar
 		ExpandBar bar = new ExpandBar(parent, SWT.V_SCROLL);

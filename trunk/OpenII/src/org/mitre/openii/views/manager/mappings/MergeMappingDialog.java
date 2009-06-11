@@ -33,6 +33,7 @@ import org.mitre.openii.model.OpenIIManager;
 import org.mitre.openii.widgets.BasicWidgets;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
+import org.mitre.schemastore.model.MappingSchema;
 
 /** Constructs the Edit Mapping Dialog */
 public class MergeMappingDialog extends Dialog implements ModifyListener
@@ -101,7 +102,7 @@ public class MergeMappingDialog extends Dialog implements ModifyListener
 		{
 			// Get the list of schema names
 			ArrayList<String> schemaNames = new ArrayList<String>();
-			for(Integer schemaID : mapping.getSchemas())
+			for(Integer schemaID : mapping.getSchemaIDs())
 				schemaNames.add(OpenIIManager.getSchema(schemaID).getName());
 			Collections.sort(schemaNames);
 
@@ -285,18 +286,18 @@ public class MergeMappingDialog extends Dialog implements ModifyListener
 		String description = descriptionField.getText();	
 		
 		// Generate the list of schemas and mapping cells which have been selected
-		HashSet<Integer> schemaIDs = new HashSet<Integer>();
+		HashSet<MappingSchema> schemas = new HashSet<MappingSchema>();
 		ArrayList<MappingCell> mappingCells = new ArrayList<MappingCell>();
 		for(MappingCheckbox checkbox : checkboxes)
 			if(checkbox.isSelected())
 			{
 				Mapping mapping = checkbox.getMapping();
-				schemaIDs.addAll(Arrays.asList(mapping.getSchemas()));
+				schemas.addAll(Arrays.asList(mapping.getSchemas()));
 				mappingCells.addAll(OpenIIManager.getMappingCells(mapping.getId()));
 			}
 
 		// Handles the creation of the mapping
-		Mapping mapping = new Mapping(null,name,description,author,schemaIDs.toArray(new Integer[0]));
+		Mapping mapping = new Mapping(null,name,description,author,schemas.toArray(new MappingSchema[0]));
 		ArrayList<MappingCell> mergedMappingCells = mergeMappingCells(mappingCells);
 		creationSuccess = OpenIIManager.saveMapping(mapping,mergedMappingCells)!=null;
 

@@ -12,6 +12,7 @@ import org.mitre.harmony.model.SchemaStoreManager;
 import org.mitre.harmony.view.dialogs.schemas.SchemaDialog;
 import org.mitre.harmony.view.harmonyPane.HarmonyFrame;
 import org.mitre.openii.model.RepositoryManager;
+import org.mitre.schemastore.model.MappingSchema;
 
 /** Constructs the Harmony View */
 public class HarmonyView extends OpenIIEditor
@@ -40,7 +41,10 @@ public class HarmonyView extends OpenIIEditor
 			super.repaint(time, x, y, width, height);
 			if(!initializationCompleted)
 			{
-				new SchemaDialog(harmonyModel);
+				int displayedSchemas = 0;
+				for(MappingSchema schema : harmonyModel.getMappingManager().getSchemas())
+					if(!schema.getSide().equals(MappingSchema.NONE)) displayedSchemas++;
+				if(displayedSchemas==0) new SchemaDialog(harmonyModel);
 				initializationCompleted = true;
 			}
 		}
