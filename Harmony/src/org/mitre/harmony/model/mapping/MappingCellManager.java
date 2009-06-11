@@ -9,7 +9,7 @@ import org.mitre.harmony.model.AbstractManager;
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.preferences.PreferencesListener;
 import org.mitre.schemastore.model.MappingCell;
-import org.mitre.schemastore.model.graph.HierarchicalGraph;
+import org.mitre.schemastore.model.MappingSchema;
 
 /**
  * Class for managing the current Harmony mapping cells
@@ -121,30 +121,16 @@ public class MappingCellManager extends AbstractManager<MappingCellListener> imp
 	/** Handles the removal of a schema from the mapping */
 	public void schemaRemoved(Integer schemaID)
 	{
-		HashSet<Integer> elementIDs = getModel().getMappingManager().getElementIDs();
+		HashSet<Integer> elementIDs = getModel().getMappingManager().getSchemaElementIDs(MappingSchema.LEFT);
+		elementIDs.addAll(getModel().getMappingManager().getSchemaElementIDs(MappingSchema.RIGHT));
 		for(MappingCell cell : getMappingCells())
 			if(!elementIDs.contains(cell.getElement1()) || !elementIDs.contains(cell.getElement2()))
 				deleteMappingCell(cell.getId());
 	}
 	
-	/** Remove all non-user defined mapping cells when the model is changed */
-	public void schemaGraphModelChanged(Integer schemaID)
-	{
-		// Get the list of schema elements for the modified schema
-		HierarchicalGraph graph = getModel().getSchemaManager().getGraph(schemaID);
-		
-		// Delete all non-validated mapping cells associated with the modified schema
-		for(Integer mappingCellID : new ArrayList<Integer>(mappingCells.keySet()))
-		{
-			MappingCell mappingCell = mappingCells.get(mappingCellID);
-			if(graph.containsElement(mappingCell.getElement1()) || graph.containsElement(mappingCell.getElement2()))
-				if(!mappingCell.getValidated())
-					deleteMappingCell(mappingCellID);
-		}
-	}
-	
 	// Unused event listener
 	public void schemaAdded(Integer schemaID) {}
+	public void schemaModified(Integer schemaID) {}
 	public void mappingModified() {}
 	public void displayedViewChanged() {}
 	public void showSchemaTypesChanged() {}

@@ -53,7 +53,7 @@ public class AffinityDialog extends JDialog
 		
 		//init match variables.
 		//ArrayList<MappingCell> cells = MappingCellManager.getMappingCells();
-		ArrayList<Integer> schemas = harmonyModel.getMappingManager().getSchemas();
+		ArrayList<Integer> schemas = harmonyModel.getMappingManager().getSchemaIDs();
 		//Assume only 2 schemas being matched.
 		Schema schema1 = harmonyModel.getSchemaManager().getSchema(schemas.get(0));
 		Schema schema2 = harmonyModel.getSchemaManager().getSchema(schemas.get(1));

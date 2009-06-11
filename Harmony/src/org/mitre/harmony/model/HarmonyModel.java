@@ -33,11 +33,11 @@ public class HarmonyModel
 
 		// Add listeners to the various model objects
 		filterManager.addListener(selectedInfoManager);
-		selectedInfoManager.addListener(filterManager);
-		selectedInfoManager.addListener(searchManager);
 		preferencesManager.addListener(mappingCellManager);
+		mappingManager.addListener(filterManager);
 		mappingManager.addListener(mappingCellManager);
 		mappingManager.addListener(preferencesManager);
+		mappingManager.addListener(searchManager);
 		mappingManager.addListener(selectedInfoManager);
 		mappingCellManager.addListener(mappingManager);
 		mappingCellManager.addListener(selectedInfoManager);

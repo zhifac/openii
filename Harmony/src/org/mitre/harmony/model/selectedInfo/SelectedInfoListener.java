@@ -8,9 +8,6 @@ package org.mitre.harmony.model.selectedInfo;
  */
 public interface SelectedInfoListener
 {
-	/** Indicates that the selected schemas have been modified */
-	public void selectedSchemasModified();
-
 	/** Indicates that the selected elements have been modified */
 	public void selectedElementsModified(Integer role);
 	

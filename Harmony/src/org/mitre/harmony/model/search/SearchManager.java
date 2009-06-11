@@ -5,15 +5,15 @@ package org.mitre.harmony.model.search;
 import java.util.HashMap;
 
 import org.mitre.harmony.model.AbstractManager;
-import org.mitre.harmony.model.HarmonyConsts;
 import org.mitre.harmony.model.HarmonyModel;
-import org.mitre.harmony.model.selectedInfo.SelectedInfoListener;
+import org.mitre.harmony.model.mapping.MappingListener;
+import org.mitre.schemastore.model.MappingSchema;
 import org.mitre.schemastore.model.SchemaElement;
 
 /**
  * Manages searches run within Harmony
  */
-public class SearchManager extends AbstractManager<SearchListener> implements SelectedInfoListener
+public class SearchManager extends AbstractManager<SearchListener> implements MappingListener
 {
 	/** Stores the left query */
 	private String leftQuery = "";
@@ -33,7 +33,7 @@ public class SearchManager extends AbstractManager<SearchListener> implements Se
 	
 	/** Returns the query for the specified side */
 	public String getQuery(Integer side)
-		{ return side.equals(HarmonyConsts.LEFT) ? leftQuery : rightQuery; }
+		{ return side.equals(MappingSchema.LEFT) ? leftQuery : rightQuery; }
 	
 	/** Returns the result for the specified element and side */
 	public SearchResult getResult(Integer elementID, Integer side)
@@ -41,16 +41,16 @@ public class SearchManager extends AbstractManager<SearchListener> implements Se
 	
 	/** Returns the matches for the specified side */
 	public HashMap<Integer,SearchResult> getMatches(Integer side)
-		{ return side.equals(HarmonyConsts.LEFT) ? leftMatches : rightMatches; }
+		{ return side.equals(MappingSchema.LEFT) ? leftMatches : rightMatches; }
 	
 	/** Runs the specified query */
 	public void runQuery(Integer side, String query)
 	{
 		// Set the query
-		if(side.equals(HarmonyConsts.LEFT)) leftQuery = query; else rightQuery = query;
+		if(side.equals(MappingSchema.LEFT)) leftQuery = query; else rightQuery = query;
 		
 		// Retrieve the list of matches
-		HashMap<Integer,SearchResult> matches = side==HarmonyConsts.LEFT ? leftMatches : rightMatches;
+		HashMap<Integer,SearchResult> matches = side==MappingSchema.LEFT ? leftMatches : rightMatches;
 		matches.clear();
 		
 		// Only proceed with finding matches if keyword given
@@ -74,7 +74,7 @@ public class SearchManager extends AbstractManager<SearchListener> implements Se
 			if(!caseSensitive) searchTerm = "(?i)" + searchTerm;
 				
 			// Determine what elements match search criteria
-			for(SchemaElement element : getModel().getSelectedInfo().getSchemaElements(side))
+			for(SchemaElement element : getModel().getMappingManager().getSchemaElements(side))
 			{				
 				// Check to see if element name matches search criteria
 				String name = element.getName();
@@ -98,11 +98,11 @@ public class SearchManager extends AbstractManager<SearchListener> implements Se
 	//------------ Updates the selected information based on the occurrence of events ------------
 
 	/** Reruns the queries if the selected schemas have been modified */
-	public void selectedSchemasModified()
-		{ runQuery(HarmonyConsts.LEFT, leftQuery); runQuery(HarmonyConsts.RIGHT, rightQuery); }
+	public void mappingModified() {}
+		{ runQuery(MappingSchema.LEFT, leftQuery); runQuery(MappingSchema.RIGHT, rightQuery); }
 
 	// Unused action events
-	public void displayedElementModified(Integer role) {}
-	public void selectedElementsModified(Integer role) {}
-	public void selectedMappingCellsModified() {}
+	public void schemaAdded(Integer schemaID) {}
+	public void schemaModified(Integer schemaID) {}
+	public void schemaRemoved(Integer schemaID) {}
 }
