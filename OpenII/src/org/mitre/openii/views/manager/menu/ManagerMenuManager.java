@@ -134,12 +134,27 @@ public class ManagerMenuManager extends MenuManager implements IMenuListener
 			menuManager.add(new ManagerAction(this,"Remove Schema from Mapping",ManagerAction.DELETE_MAPPING_SCHEMA));
 	}
 	
+	/** Generates the create action menu */
+	private void getCreateMenu(IMenuManager menuManager)
+	{
+		// Display the menu for a selected schema
+		if(element instanceof Schema)
+		{
+			//menuManager.add(new ManagerAction(this,"Create Instance Db",ManagerAction.CREATE_INSTANCE_DATABASE));
+			Action createInstanceAction = new ManagerAction(this,"Create Instance Database",ManagerAction.CREATE_INSTANCE_DATABASE);
+			if(!((((Schema)element).getType()).equals("Spreadsheet Importer"))) createInstanceAction.setEnabled(false);
+			menuManager.add(createInstanceAction);
+		}
+	}
+	
 	/** Generate the context menu before being displayed */
 	public void menuAboutToShow(IMenuManager menuManager)
 	{		
 		element = ((StructuredSelection)viewer.getSelection()).getFirstElement();
 		getEditorMenu(menuManager);
 		menuManager.add(new Separator());
-		getManagerMenu(menuManager);		
+		getManagerMenu(menuManager);
+		menuManager.add(new Separator());
+		getCreateMenu(menuManager);
 	}
 }
