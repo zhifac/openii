@@ -1,0 +1,1 @@
+CREATE TABLE "schema141" ( "local_government_area" VARCHAR(30), "offences_in_2004" VARCHAR(30), "population" VARCHAR(30), "rank" VARCHAR(30), "rate_per_100" VARCHAR(30), "000_population" VARCHAR(30));

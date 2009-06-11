@@ -1,0 +1,1 @@
+CREATE TABLE "schema177" ( "consideration_us" VARCHAR(30), "date_of_sale_or_issuance" VARCHAR(30), "number_of_securities" VARCHAR(30), "purchaser" VARCHAR(30), "underwriting_discount_and_commission" VARCHAR(30));

@@ -1,0 +1,1 @@
+CREATE TABLE "schema61" ( "car" VARCHAR(30), "driver__nationality" VARCHAR(30), "entrant" VARCHAR(30), "group" VARCHAR(30), "laps" VARCHAR(30), "no" VARCHAR(30), "pos" VARCHAR(30), "practice" VARCHAR(30), "timeretired" VARCHAR(30));

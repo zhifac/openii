@@ -1,0 +1,1 @@
+CREATE TABLE "schema157" ( "e_mail_address" VARCHAR(30), "full_name" VARCHAR(30), "last_logged_in" VARCHAR(30), "registered" VARCHAR(30), "status" VARCHAR(30), "total_posts" VARCHAR(30), "username" VARCHAR(30));

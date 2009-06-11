@@ -1,0 +1,1 @@
+CREATE TABLE "schema193" ( "instructional_coordinators" VARCHAR(30), "secondary_school_teachers" VARCHAR(30), "except_special_and_voca" VARCHAR(30), "secondary_school_teachers" VARCHAR(30), "except_special_and_voca" VARCHAR(30));

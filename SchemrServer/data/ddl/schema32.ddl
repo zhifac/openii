@@ -1,0 +1,1 @@
+CREATE TABLE "schema32" ( "chemical_name" VARCHAR(30), "half_life" VARCHAR(30), "off_label_uses" VARCHAR(30), "on_label_uses" VARCHAR(30), "principal_brand_name" VARCHAR(30), "structural_type" VARCHAR(30), "washout_time" VARCHAR(30));

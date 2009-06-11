@@ -1,0 +1,1 @@
+These DDL files are the first 200 interesting schemas, parsed from the schemas.csv file using makeDDL.py

@@ -1,0 +1,1 @@
+CREATE TABLE "schema146" ( "ansi" VARCHAR(30), "cont" VARCHAR(30), "hd" VARCHAR(30), "lamp" VARCHAR(30), "model" VARCHAR(30), "pixels" VARCHAR(30), "price" VARCHAR(30), "tech" VARCHAR(30), "warranty" VARCHAR(30), "weight" VARCHAR(30));

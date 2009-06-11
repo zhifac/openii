@@ -1,0 +1,1 @@
+CREATE TABLE "schema138" ( "cyls" VARCHAR(30), "description" VARCHAR(30), "mfgr" VARCHAR(30), "part_no" VARCHAR(30), "price" VARCHAR(30), "size" VARCHAR(30), "stroke" VARCHAR(30), "year" VARCHAR(30));

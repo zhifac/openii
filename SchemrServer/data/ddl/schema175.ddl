@@ -1,0 +1,1 @@
+CREATE TABLE "schema175" ( "category" VARCHAR(30), "max_capacity" VARCHAR(30), "name" VARCHAR(30), "city" VARCHAR(30), "number_of_rooms_number_of_apartments" VARCHAR(30), "pets" VARCHAR(30), "price" VARCHAR(30));
