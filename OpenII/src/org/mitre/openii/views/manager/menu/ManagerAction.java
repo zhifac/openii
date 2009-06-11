@@ -8,8 +8,8 @@ import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.mitre.openii.application.OpenIIActivator;
 import org.mitre.openii.model.OpenIIManager;
-import org.mitre.openii.views.manager.GroupSchema;
-import org.mitre.openii.views.manager.MappingSchema;
+import org.mitre.openii.views.manager.SchemaInGroup;
+import org.mitre.openii.views.manager.SchemaInMapping;
 import org.mitre.openii.views.manager.groups.DeleteGroupDialog;
 import org.mitre.openii.views.manager.groups.EditGroupDialog;
 import org.mitre.openii.views.manager.mappings.DeleteMappingDialog;
@@ -25,6 +25,7 @@ import org.mitre.openii.views.manager.schemas.ImportSchemaDialog;
 import org.mitre.openii.views.manager.schemas.CreateInstanceDatabaseDialog;
 import org.mitre.schemastore.model.Group;
 import org.mitre.schemastore.model.Mapping;
+import org.mitre.schemastore.model.MappingSchema;
 import org.mitre.schemastore.model.Schema;
 
 public class ManagerAction extends Action
@@ -141,7 +142,7 @@ public class ManagerAction extends Action
 		/** Handles the deletion of a group schema */
 		if(actionType == DELETE_GROUP_SCHEMA)
 		{
-			GroupSchema groupSchema = (GroupSchema)selection;
+			SchemaInGroup groupSchema = (SchemaInGroup)selection;
 			ArrayList<Integer> schemaIDs = OpenIIManager.getGroupSchemas(groupSchema.getGroupID());
 			schemaIDs.remove(groupSchema.getSchema().getId());
 			OpenIIManager.setGroupSchemas(groupSchema.getGroupID(), schemaIDs);
@@ -176,11 +177,13 @@ public class ManagerAction extends Action
 		/** Handles the deletion of a mapping schema */
 		if(actionType == DELETE_MAPPING_SCHEMA)
 		{
-			MappingSchema mappingSchema = (MappingSchema)selection;
+			SchemaInMapping mappingSchema = (SchemaInMapping)selection;
 			Mapping mapping = OpenIIManager.getMapping(mappingSchema.getMappingID());
-			ArrayList<Integer> schemaIDs = new ArrayList<Integer>(Arrays.asList(mapping.getSchemas()));
-			schemaIDs.remove(mappingSchema.getSchema().getId());
-			mapping.setSchemas(schemaIDs.toArray(new Integer[0]));
+			ArrayList<MappingSchema> schemas = new ArrayList<MappingSchema>(Arrays.asList(mapping.getSchemas()));
+			for(MappingSchema schema : schemas)
+				if(schema.getId().equals(mappingSchema.getSchema().getId()))
+					schemas.remove(schema);
+			mapping.setSchemas(schemas.toArray(new MappingSchema[0]));
 			OpenIIManager.updateMapping(mapping);
 		}
 	}
