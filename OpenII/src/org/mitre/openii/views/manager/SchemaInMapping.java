@@ -3,7 +3,7 @@ package org.mitre.openii.views.manager;
 import org.mitre.schemastore.model.Schema;
 
 /** Class for storing a mapping schema */
-public class MappingSchema
+public class SchemaInMapping
 {
 	/** Stores the mapping id to which this schema is associated */
 	private Integer mappingID = null;
@@ -12,7 +12,7 @@ public class MappingSchema
 	private Schema schema = null;
 
 	/** Constructs the mapping schema */
-	MappingSchema(Integer mappingID, Schema schema)
+	SchemaInMapping(Integer mappingID, Schema schema)
 		{ this.mappingID = mappingID; this.schema = schema; }
 
 	/** Returns the mapping id to which this schema is associated */

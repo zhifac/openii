@@ -31,9 +31,9 @@ public class ManagerContentProvider implements ITreeContentProvider
 		if(element instanceof Group)
 		{
 			Group group = (Group)element;
-			ArrayList<GroupSchema> schemas = new ArrayList<GroupSchema>();
+			ArrayList<SchemaInGroup> schemas = new ArrayList<SchemaInGroup>();
 			for(Integer schemaID : OpenIIManager.getGroupSchemas(group.getId()))
-				schemas.add(new GroupSchema(group.getId(),OpenIIManager.getSchema(schemaID)));
+				schemas.add(new SchemaInGroup(group.getId(),OpenIIManager.getSchema(schemaID)));
 
 			// Put together the list of elements listed under group
 			ArrayList<Object> elements = new ArrayList<Object>();
@@ -47,8 +47,8 @@ public class ManagerContentProvider implements ITreeContentProvider
 		{
 			Mapping mapping = (Mapping)element;
 			ArrayList<Object> elements = new ArrayList<Object>();
-			for(Integer schemaID : mapping.getSchemas())
-				elements.add(new MappingSchema(mapping.getId(),OpenIIManager.getSchema(schemaID)));
+			for(Integer schemaID : mapping.getSchemaIDs())
+				elements.add(new SchemaInMapping(mapping.getId(),OpenIIManager.getSchema(schemaID)));
 			return OpenIIManager.sortList(elements).toArray();
 		}
 		

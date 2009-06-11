@@ -3,7 +3,7 @@ package org.mitre.openii.views.manager;
 import org.mitre.schemastore.model.Schema;
 
 /** Class for storing a group schema */
-public class GroupSchema
+public class SchemaInGroup
 {
 	/** Stores the group id to which this schema is associated */
 	private Integer groupID = null;
@@ -12,7 +12,7 @@ public class GroupSchema
 	private Schema schema = null;
 
 	/** Constructs the group schema */
-	GroupSchema(Integer groupID, Schema schema)
+	SchemaInGroup(Integer groupID, Schema schema)
 		{ this.groupID = groupID; this.schema = schema; }
 
 	/** Returns the group id to which this schema is associated */

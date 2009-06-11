@@ -5,8 +5,8 @@ import org.eclipse.jface.action.IAction;
 import org.eclipse.ui.IEditorDescriptor;
 import org.mitre.openii.application.OpenIIActivator;
 import org.mitre.openii.model.EditorManager;
-import org.mitre.openii.views.manager.GroupSchema;
-import org.mitre.openii.views.manager.MappingSchema;
+import org.mitre.openii.views.manager.SchemaInGroup;
+import org.mitre.openii.views.manager.SchemaInMapping;
 
 /** Handles an action related to launching an editor */
 public class EditorAction extends Action
@@ -35,8 +35,8 @@ public class EditorAction extends Action
 		if(getText().equals("Open") || isChecked())
 		{
 			Object element = menuManager.getElement();
-			if(element instanceof GroupSchema) element = ((GroupSchema)element).getSchema();
-			if(element instanceof MappingSchema) element = ((MappingSchema)element).getSchema();
+			if(element instanceof SchemaInGroup) element = ((SchemaInGroup)element).getSchema();
+			if(element instanceof SchemaInMapping) element = ((SchemaInMapping)element).getSchema();
 			EditorManager.launchEditor(editor.getId(), element);
 		}
 	}

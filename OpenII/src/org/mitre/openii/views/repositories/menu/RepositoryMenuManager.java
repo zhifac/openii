@@ -5,8 +5,8 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
-import org.mitre.openii.views.manager.GroupSchema;
-import org.mitre.openii.views.manager.MappingSchema;
+import org.mitre.openii.views.manager.SchemaInGroup;
+import org.mitre.openii.views.manager.SchemaInMapping;
 import org.mitre.schemastore.model.Group;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.Schema;
@@ -36,8 +36,8 @@ public class RepositoryMenuManager extends MenuManager implements IMenuListener
 	public Integer getElementID()
 	{
 		if(element instanceof Schema) return ((Schema)element).getId();
-		if(element instanceof GroupSchema) return ((GroupSchema)element).getSchema().getId();
-		if(element instanceof MappingSchema) return ((MappingSchema)element).getSchema().getId();
+		if(element instanceof SchemaInGroup) return ((SchemaInGroup)element).getSchema().getId();
+		if(element instanceof SchemaInMapping) return ((SchemaInMapping)element).getSchema().getId();
 		if(element instanceof Group) return ((Group)element).getId();
 		if(element instanceof Mapping) return ((Mapping)element).getId();
 		return null;

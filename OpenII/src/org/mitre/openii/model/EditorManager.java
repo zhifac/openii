@@ -5,8 +5,8 @@ import org.eclipse.ui.IEditorRegistry;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
-import org.mitre.openii.views.manager.GroupSchema;
-import org.mitre.openii.views.manager.MappingSchema;
+import org.mitre.openii.views.manager.SchemaInGroup;
+import org.mitre.openii.views.manager.SchemaInMapping;
 import org.mitre.schemastore.model.Group;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.Schema;
@@ -20,7 +20,7 @@ public class EditorManager
 	/** Returns the type associated with the selected element */
 	static public Class<?> getElementType(Object element)
 	{
-		if(element instanceof Schema || element instanceof GroupSchema || element instanceof MappingSchema) return Schema.class;
+		if(element instanceof Schema || element instanceof SchemaInGroup || element instanceof SchemaInMapping) return Schema.class;
 		if(element instanceof Group) return Group.class;
 		if(element instanceof Mapping) return Mapping.class;
 		return null;

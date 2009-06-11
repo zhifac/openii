@@ -22,6 +22,7 @@ import org.mitre.openii.application.OpenIIActivator;
 import org.mitre.openii.model.OpenIIManager;
 import org.mitre.openii.widgets.BasicWidgets;
 import org.mitre.schemastore.model.Mapping;
+import org.mitre.schemastore.model.MappingSchema;
 import org.mitre.schemastore.model.Schema;
 
 /** Constructs the Edit Mapping Dialog */
@@ -123,7 +124,7 @@ public class EditMappingDialog extends Dialog implements ModifyListener, ISelect
 			descriptionField.setText(mapping.getDescription());
 			
 			// Set all items selected as part of mapping
-			for(Integer schemaID : mapping.getSchemas())
+			for(Integer schemaID : mapping.getSchemaIDs())
 				schemaList.setChecked(schemaID, true);
 		}
 		else authorField.setText(System.getProperty("user.name"));
@@ -161,14 +162,14 @@ public class EditMappingDialog extends Dialog implements ModifyListener, ISelect
 		String description = descriptionField.getText();	
 		
 		// Generate the list of schemas which have been selected
-		ArrayList<Integer> schemaIDs = new ArrayList<Integer>();
+		ArrayList<MappingSchema> schemas = new ArrayList<MappingSchema>();
 		for(Object element : schemaList.getCheckedElements())
-			schemaIDs.add(((Schema)element).getId());
+			schemas.add(new MappingSchema(((Schema)element).getId(),null,MappingSchema.NONE));
 		
 		// Handles the creation of the mapping
 		if(mapping==null)
 		{
-			mapping = new Mapping(0,name,description,author,schemaIDs.toArray(new Integer[0]));
+			mapping = new Mapping(0,name,description,author,schemas.toArray(new MappingSchema[0]));
 			Integer mappingID = OpenIIManager.addMapping(mapping);
 			if(mappingID==null) creationSuccess = false;
 			else mapping.setId(mappingID);
@@ -178,7 +179,7 @@ public class EditMappingDialog extends Dialog implements ModifyListener, ISelect
 		else
 		{
 			mapping.setName(name); mapping.setAuthor(author); mapping.setDescription(description);
-			mapping.setSchemas(schemaIDs.toArray(new Integer[0]));
+			mapping.setSchemas(schemas.toArray(new MappingSchema[0]));
 			updateSuccess = OpenIIManager.updateMapping(mapping);
 		}
 
