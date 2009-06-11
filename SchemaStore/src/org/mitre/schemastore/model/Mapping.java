@@ -3,6 +3,7 @@
 package org.mitre.schemastore.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 /**
  * Class for storing a mapping
@@ -23,13 +24,13 @@ public class Mapping implements Serializable
 	private String author;
 	
 	/** Stores the mapping schemas */
-	private Integer[] schemas;
+	private MappingSchema[] schemas;
 	
 	/** Constructs a default mapping */
 	public Mapping() {}
 	
 	/** Constructs a mapping */
-	public Mapping(Integer id, String name, String description, String author, Integer[] schemas)
+	public Mapping(Integer id, String name, String description, String author, MappingSchema[] schemas)
 		{ this.id = id; this.name = name; this.description = description; this.author = author; this.schemas = schemas; }
 	
 	/** Copies the mapping */
@@ -41,15 +42,25 @@ public class Mapping implements Serializable
 	public String getName() { return name; }
 	public String getDescription() { return description; }
 	public String getAuthor() { return author; }
-	public Integer[] getSchemas() { return schemas; }
+	public MappingSchema[] getSchemas() { return schemas; }
 	
 	// Handles all mapping setters
 	public void setId(Integer id) { this.id = id; }
 	public void setName(String name) { this.name = name; }
 	public void setDescription(String description) { this.description = description; }
 	public void setAuthor(String author) { this.author = author; }
-	public void setSchemas(Integer[] schemas) { this.schemas = schemas; }
+	public void setSchemas(MappingSchema[] schemas) { this.schemas = schemas; }
 
+	/** Returns the list of mapping schema IDs */
+	public Integer[] getSchemaIDs()
+	{
+		ArrayList<Integer> schemaIDs = new ArrayList<Integer>();
+		if(schemas!=null)
+			for(MappingSchema schema : schemas)
+				schemaIDs.add(schema.getId());
+		return schemaIDs.toArray(new Integer[0]);
+	}
+	
 	/** Returns the hash code */
 	public int hashCode()
 		{ return id.hashCode(); }
