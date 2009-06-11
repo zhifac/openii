@@ -52,7 +52,7 @@ public class MatcherManager
 	/** Run the matchers to calculate match scores */
 	static public MatchScores getScores(FilteredGraph schema1, FilteredGraph schema2, ArrayList<MatchVoter> voters, MatchMerger merger)
 	{
-		merger.initialize();
+		merger.initialize(schema1, schema2);
 		for(MatchVoter voter : voters)
 			merger.addVoterScores(voter.match(schema1, schema2));
 		return merger.getMatchScores();

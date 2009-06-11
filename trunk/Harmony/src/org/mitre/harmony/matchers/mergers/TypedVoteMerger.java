@@ -1,69 +1,53 @@
 package org.mitre.harmony.matchers.mergers;
 
-import java.util.Iterator;
-import java.util.Set;
+import java.util.HashMap;
 
 import org.mitre.harmony.matchers.ElementPair;
 import org.mitre.harmony.matchers.VoterScores;
-import org.mitre.schemastore.model.Alias;
-import org.mitre.schemastore.model.Attribute;
-import org.mitre.schemastore.model.Containment;
-import org.mitre.schemastore.model.Domain;
-import org.mitre.schemastore.model.DomainValue;
-import org.mitre.schemastore.model.Entity;
-import org.mitre.schemastore.model.Relationship;
 import org.mitre.schemastore.model.SchemaElement;
-import org.mitre.schemastore.model.Subtype;
-import org.mitre.schemastore.model.graph.HierarchicalGraph;
+import org.mitre.schemastore.model.graph.FilteredGraph;
 
-public class TypedVoteMerger extends VoteMerger {
+/**
+ * Vote merger which only merges together elements of the same type
+ * @author CWOLF
+ */
+public class TypedVoteMerger extends VoteMerger
+{
+	/** Stores a cache of all schema element types */
+	private HashMap<Integer,Class> classMap = new HashMap<Integer,Class>();
 	
 	/** Returns the name associated with this match merger */
 	public String getName()
 		{ return "Typed Vote Merger"; }
 
-	/** Create a new VoterScores object with only same-type (e.g. attribute to attribute) matches */
-	public void addVoterScores(VoterScores voterScores) {
+	/** Initializes the typed vote merger */
+	public void initialize(FilteredGraph schema1, FilteredGraph schema2)
+	{
+		super.initialize(schema1,schema2);
 
-		VoterScores newVoterScores = new VoterScores(voterScores.getScoreCeiling());
-	
-		Set<ElementPair> elementPairs = voterScores.getElementPairs();	
-		Iterator i = elementPairs.iterator();
-		while (i.hasNext()) {
-			ElementPair pair = (ElementPair) i.next();
-			Integer element1 = pair.getElement1();
-			Integer element2 = pair.getElement2();
-			
-			SchemaElement e1 = schema1.getElement(element1);
-			SchemaElement e2 = schema2.getElement(element2);
-System.out.println("comparing " + e1 + " to " + e2);
-			if (getType(e1) == getType(e2)) {
-				newVoterScores.setScore(element1, element2, voterScores.getScore(element1, element2));
-			}
-		}
-		
-		super.addVoterScores(newVoterScores);
+		// Generate the class map
+		for(SchemaElement element : schema1.getFilteredElements())
+			classMap.put(element.getId(), element.getClass());
+		for(SchemaElement element : schema2.getFilteredElements())
+			classMap.put(element.getId(), element.getClass());
 	}
 	
-	private String getType(SchemaElement schemaElement) {
-		String type = null;
-//		if(schemaElement instanceof Entity) type = "Entity";
-//		else if(schemaElement instanceof Attribute) type = "Attribute";
-//		else if(schemaElement instanceof Domain) type = "Domain";
-//		else if(schemaElement instanceof DomainValue) type = "DomainValue";
-//		else if(schemaElement instanceof Relationship) type = "Relationship";
-//		else if(schemaElement instanceof Containment) type = "Containment";
-//		else if(schemaElement instanceof Subtype) type = "Subtype";
-//		else if(schemaElement instanceof Alias) type = "Alias";
-//		else System.out.println("can't type " + schemaElement.getName());
-//		
-//		return type;
-		try {
-			System.out.println("element " + schemaElement.getName() + " : " + schemaElement.getClass().getName());
+	/** Adds voter scores to the vote merger with only same-type (e.g. attribute to attribute) matches */
+	public void addVoterScores(VoterScores voterScores)
+	{
+		// Filter out voter scores between elements of different types
+		VoterScores filteredVoterScores = new VoterScores(voterScores.getScoreCeiling());
+		for(ElementPair elementPair : voterScores.getElementPairs())
+		{
+			Integer element1 = elementPair.getElement1();
+			Integer element2 = elementPair.getElement2();
+			Class class1 = classMap.get(element1);
+			Class class2 = classMap.get(element2);
+			if(class1!=null && class1.equals(class2))
+				filteredVoterScores.setScore(element1, element2, voterScores.getScore(elementPair));
 		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
-			return schemaElement.getClass().getName();
+
+		// Adds voter scores to the vote merger
+		super.addVoterScores(filteredVoterScores);
 	}
 }

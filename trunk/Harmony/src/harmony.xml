@@ -7,5 +7,6 @@
   </voters>
   <mergers>
     <merger>org.mitre.harmony.matchers.mergers.VoteMerger</merger>
+    <merger>org.mitre.harmony.matchers.mergers.TypedVoteMerger</merger>
   </mergers>
 </tools>
