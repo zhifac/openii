@@ -106,7 +106,7 @@ public class SchemaManager
 		{
 			try {
 				HierarchicalGraph graph = SchemaStoreManager.getGraph(schemaID);
-				graph.setModel(harmonyModel.getPreferences().getGraphModel(schemaID));
+				graph.setModel(harmonyModel.getMappingManager().getGraphModel(schemaID));
 				for(SchemaElement schemaElement : graph.getElements(null))
 					schemaElements.put(schemaElement.getId(), schemaElement);
 				schemaGraphs.put(schemaID, graph);

@@ -16,18 +16,13 @@ import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import org.mitre.harmony.model.HarmonyConsts;
 import org.mitre.harmony.model.HarmonyModel;
+import org.mitre.schemastore.model.MappingSchema;
 import org.mitre.schemastore.model.Schema;
 
 /** Displays a schema item with display options */
 class SchemaDisplayItem extends JPanel implements ActionListener, MouseListener
 {
-	// Constants to define which side the schema should be displayed on
-	static final int NONE = 0;
-	static final int LEFT = 1;
-	static final int RIGHT = 2;
-	
 	/** Stores the schema for this schema item */
 	private Schema schema;
 
@@ -47,12 +42,12 @@ class SchemaDisplayItem extends JPanel implements ActionListener, MouseListener
 		
 		// Initialize the left check box
 		leftCheckBox.setOpaque(false);
-		leftCheckBox.setSelected(harmonyModel.getSelectedInfo().getSchemas(HarmonyConsts.LEFT).contains(schema.getId()));
+		leftCheckBox.setSelected(harmonyModel.getMappingManager().getSchemaIDs(MappingSchema.LEFT).contains(schema.getId()));
 		leftCheckBox.addActionListener(this);
 
 		// Initialize the right check box
 		rightCheckBox.setOpaque(false);
-		rightCheckBox.setSelected(harmonyModel.getSelectedInfo().getSchemas(HarmonyConsts.RIGHT).contains(schema.getId()));
+		rightCheckBox.setSelected(harmonyModel.getMappingManager().getSchemaIDs(MappingSchema.RIGHT).contains(schema.getId()));
 		rightCheckBox.addActionListener(this);
 		
 		// Constructs the schema item
@@ -67,7 +62,7 @@ class SchemaDisplayItem extends JPanel implements ActionListener, MouseListener
 	Schema getSchema() { return schema; }
 
 	/** Returns the side on which to display the schema */
-	int getSide() { return leftCheckBox.isSelected() ? LEFT : rightCheckBox.isSelected() ? RIGHT : NONE; }
+	int getSide() { return leftCheckBox.isSelected() ? MappingSchema.LEFT : rightCheckBox.isSelected() ? MappingSchema.RIGHT : MappingSchema.NONE; }
 	
 	/** Handles the selection of the check boxes */
 	public void actionPerformed(ActionEvent e)

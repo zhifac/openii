@@ -29,7 +29,7 @@ public class HeatMapPane extends JPanel
 	public HeatMapPane(JComponent parent,HarmonyModel harmonyModel)
 	{
 		// Retrieves the schemas to display in the heat map
-		ArrayList<Integer> schemas = harmonyModel.getMappingManager().getSchemas();
+		ArrayList<Integer> schemas = harmonyModel.getMappingManager().getSchemaIDs();
 		Schema schema1 = harmonyModel.getSchemaManager().getSchema(schemas.get(0));
 		Schema schema2 = harmonyModel.getSchemaManager().getSchema(schemas.get(1));
 		

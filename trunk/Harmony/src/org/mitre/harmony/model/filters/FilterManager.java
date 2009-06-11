@@ -7,18 +7,18 @@ import java.util.ArrayList;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.mitre.harmony.model.AbstractManager;
-import org.mitre.harmony.model.HarmonyConsts;
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.mapping.MappingCellManager;
-import org.mitre.harmony.model.selectedInfo.SelectedInfoListener;
+import org.mitre.harmony.model.mapping.MappingListener;
 import org.mitre.harmony.view.schemaTree.SchemaTree;
 import org.mitre.schemastore.model.MappingCell;
+import org.mitre.schemastore.model.MappingSchema;
 
 /**
  * Tracks link filters used in Harmony
  * @author CWOLF
  */
-public class FilterManager extends AbstractManager<FiltersListener> implements SelectedInfoListener
+public class FilterManager extends AbstractManager<FiltersListener> implements MappingListener
 {	
 	// Constants for referencing the assertion array
 	static final public int USER = 0;
@@ -101,18 +101,18 @@ public class FilterManager extends AbstractManager<FiltersListener> implements S
 	/** Sets the depth; only links that originate from a node above this depth are to be displayed */
 	public void setDepth(Integer side, int newMinDepth, int newMaxDepth)
 	{
-		if(side==HarmonyConsts.LEFT) { minLeftDepth = newMinDepth; maxLeftDepth = newMaxDepth; }
+		if(side==MappingSchema.LEFT) { minLeftDepth = newMinDepth; maxLeftDepth = newMaxDepth; }
 		else { minRightDepth = newMinDepth; maxRightDepth = newMaxDepth; }
 		for(FiltersListener listener : getListeners()) listener.depthChanged();
 	}
 	
 	/** Returns the minimum depth */
 	public int getMinDepth(Integer side)
-		{ return side==HarmonyConsts.LEFT ? minLeftDepth : minRightDepth; }
+		{ return side==MappingSchema.LEFT ? minLeftDepth : minRightDepth; }
 	
 	/** Returns the maximum depth */
 	public int getMaxDepth(Integer side)
-		{ return side==HarmonyConsts.LEFT ? maxLeftDepth : maxRightDepth; }
+		{ return side==MappingSchema.LEFT ? maxLeftDepth : maxRightDepth; }
 	
 	//---------------
 	// Handles focus
@@ -125,7 +125,7 @@ public class FilterManager extends AbstractManager<FiltersListener> implements S
 		Focus focus = getFocus(side,schemaID);
 		if(focus==null)
 		{
-			ArrayList<Focus> foci = side==HarmonyConsts.LEFT ? leftFoci : rightFoci;
+			ArrayList<Focus> foci = side==MappingSchema.LEFT ? leftFoci : rightFoci;
 			foci.add(focus = new Focus(schemaID, getModel()));
 		}
 
@@ -148,7 +148,7 @@ public class FilterManager extends AbstractManager<FiltersListener> implements S
 	/** Removes all foci from the specified side */
 	public void removeFoci(Integer side)
 	{
-		for(Focus focus : side==HarmonyConsts.LEFT ? leftFoci : rightFoci)
+		for(Focus focus : side==MappingSchema.LEFT ? leftFoci : rightFoci)
 			for(Integer elementID : new ArrayList<Integer>(focus.getFocusedIDs()))
 				focus.removeFocus(elementID);
 		for(FiltersListener listener : getListeners()) listener.focusModified(side);		
@@ -161,7 +161,7 @@ public class FilterManager extends AbstractManager<FiltersListener> implements S
 		Focus focus = getFocus(side,schemaID);
 		if(focus==null)
 		{
-			ArrayList<Focus> foci = side==HarmonyConsts.LEFT ? leftFoci : rightFoci;
+			ArrayList<Focus> foci = side==MappingSchema.LEFT ? leftFoci : rightFoci;
 			foci.add(focus = new Focus(schemaID, getModel()));
 		}
 
@@ -183,7 +183,7 @@ public class FilterManager extends AbstractManager<FiltersListener> implements S
 	
 	/** Return the list of foci on the specified side */
 	public ArrayList<Focus> getFoci(Integer side)
-		{ return new ArrayList<Focus>(side==HarmonyConsts.LEFT ? leftFoci : rightFoci); }
+		{ return new ArrayList<Focus>(side==MappingSchema.LEFT ? leftFoci : rightFoci); }
 	
 	/** Returns the number of focused elements on the specified side */
 	public Integer getFocusCount(Integer side)
@@ -264,14 +264,14 @@ public class FilterManager extends AbstractManager<FiltersListener> implements S
 	}
 	
 	/** Remove focus filters to schemas that are no longer being viewed */
-	public void selectedSchemasModified()
+	public void mappingModified()
 	{
 		// Remove foci from left and right side based on modification to selected schema
-		Integer sides[] = { HarmonyConsts.LEFT, HarmonyConsts.RIGHT };
+		Integer sides[] = { MappingSchema.LEFT, MappingSchema.RIGHT };
 		for(Integer side : sides)
 		{
-			ArrayList<Integer> schemas = getModel().getSelectedInfo().getSchemas(side);
-			ArrayList<Focus> foci = side==HarmonyConsts.LEFT ? leftFoci : rightFoci;
+			ArrayList<Integer> schemas = getModel().getMappingManager().getSchemaIDs(side);
+			ArrayList<Focus> foci = side==MappingSchema.LEFT ? leftFoci : rightFoci;
 			for(Focus focus : new ArrayList<Focus>(foci))
 				if(!schemas.contains(focus.getSchemaID()))
 				{
@@ -282,9 +282,9 @@ public class FilterManager extends AbstractManager<FiltersListener> implements S
 	}
 	
 	// Unused event listeners
-	public void displayedElementModified(Integer role) {}
-	public void selectedElementsModified(Integer role) {}
-	public void selectedMappingCellsModified() {}
+	public void schemaAdded(Integer schemaID) {}
+	public void schemaModified(Integer schemaID) {}
+	public void schemaRemoved(Integer schemaID) {}
 
 	/** Inform listeners that the max confidence has changed */
 	void fireMaxConfidenceChanged(Integer schemaObjectID)

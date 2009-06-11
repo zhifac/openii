@@ -17,7 +17,6 @@ import java.util.Enumeration;
 
 import javax.swing.JViewport;
 
-import org.mitre.harmony.model.HarmonyConsts;
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.filters.FiltersListener;
 import org.mitre.harmony.model.mapping.MappingCellListener;
@@ -25,6 +24,7 @@ import org.mitre.harmony.model.selectedInfo.SelectedInfoListener;
 import org.mitre.harmony.view.schemaTree.SchemaTree;
 import org.mitre.harmony.view.schemaTree.SchemaTreeListener;
 import org.mitre.schemastore.model.MappingCell;
+import org.mitre.schemastore.model.MappingSchema;
 
 /**
  * Stores all lines currently associated with the mapping
@@ -51,8 +51,8 @@ public class MappingLines implements MappingCellListener, FiltersListener, Schem
 		this.harmonyModel = harmonyModel;
 		
 		// Listen for changes which affect the schema tree links
-		mappingPane.getTree(HarmonyConsts.LEFT).addSchemaTreeListener(this);
-		mappingPane.getTree(HarmonyConsts.RIGHT).addSchemaTreeListener(this);
+		mappingPane.getTree(MappingSchema.LEFT).addSchemaTreeListener(this);
+		mappingPane.getTree(MappingSchema.RIGHT).addSchemaTreeListener(this);
 		harmonyModel.getFilters().addListener(this);
 		harmonyModel.getSelectedInfo().addListener(this);
 		harmonyModel.getMappingCellManager().addListener(this);
@@ -217,7 +217,6 @@ public class MappingLines implements MappingCellListener, FiltersListener, Schem
 	// Unused listener events
 	public void elementsMarkedAsFinished(Integer count) {}
 	public void elementsMarkedAsUnfinished(Integer count) {}
-	public void selectedSchemasModified() {}
 	public void selectedElementsModified(Integer role) {}
 	public void displayedElementModified(Integer role) {}
 	
@@ -230,7 +229,7 @@ public class MappingLines implements MappingCellListener, FiltersListener, Schem
 		HashSet<String> hiddenLines = new HashSet<String>();
 
 		// Modifies clip bounds to not include area covered by scroll bars
-		JViewport viewport = mappingPane.getTreeViewport(HarmonyConsts.LEFT);
+		JViewport viewport = mappingPane.getTreeViewport(MappingSchema.LEFT);
 		g.setClip(0,0,mappingPane.getWidth(),viewport.getHeight());
 		
 		// Cycle through all non-hidden mapping cells to draw all visible lines
