@@ -25,21 +25,21 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
-import org.mitre.harmony.model.HarmonyConsts;
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.filters.Focus;
 import org.mitre.harmony.model.mapping.MappingCellManager;
+import org.mitre.harmony.model.mapping.MappingListener;
 import org.mitre.harmony.model.preferences.PreferencesListener;
-import org.mitre.harmony.model.selectedInfo.SelectedInfoListener;
 import org.mitre.harmony.view.dialogs.schemas.SchemaDialog;
 import org.mitre.schemastore.model.MappingCell;
+import org.mitre.schemastore.model.MappingSchema;
 import org.mitre.schemastore.model.Schema;
 
 /**
  * Creates the source or target schema tree 
  * @author CWOLF
  */
-public class SchemaTree extends JTree implements PreferencesListener, SelectedInfoListener, MouseListener, MouseMotionListener
+public class SchemaTree extends JTree implements MappingListener, PreferencesListener, MouseListener, MouseMotionListener
 {	
 	/**
 	 * Prevents the root node from being expanded or collapsed
@@ -190,7 +190,7 @@ public class SchemaTree extends JTree implements PreferencesListener, SelectedIn
 		this.harmonyModel = harmonyModel;
 		
 		// Initializes tree variables
-		root = new DefaultMutableTreeNode(side==HarmonyConsts.LEFT ? " Mapping Schemas" : " Selected Schema");
+		root = new DefaultMutableTreeNode(side==MappingSchema.LEFT ? " Mapping Schemas" : " Selected Schema");
 		schemaTreeHash = new SchemaTreeHash(this);
 		rowBounds = new RowBounds();
 		visibleNodes = new VisibleNodes();
@@ -205,7 +205,7 @@ public class SchemaTree extends JTree implements PreferencesListener, SelectedIn
 
 		// Set up the schema tree schemas
 		SchemaTreeGenerator.initialize(this);
-		for(Integer schemaID : harmonyModel.getSelectedInfo().getSchemas(side))
+		for(Integer schemaID : harmonyModel.getMappingManager().getSchemaIDs(side))
 			SchemaTreeGenerator.addSchema(this,schemaID,harmonyModel);
 			
 		// Set up tool tips for the tree items
@@ -215,7 +215,7 @@ public class SchemaTree extends JTree implements PreferencesListener, SelectedIn
 		addMouseListener(this);
 		addMouseMotionListener(this);
 		harmonyModel.getPreferences().addListener(this);
-		harmonyModel.getSelectedInfo().addListener(this);
+		harmonyModel.getMappingManager().addListener(this);
 	}
 
 	/** Returns the side associated with this schema tree */
@@ -400,32 +400,23 @@ public class SchemaTree extends JTree implements PreferencesListener, SelectedIn
 	public ArrayList<DefaultMutableTreeNode> getComponentNodes(Integer node)
 		{ return schemaTreeHash.get(node); }
 	
-	/** Handles changes to the displayed schemas */
-	public void selectedSchemasModified()
+	/** Handles the addition to the specified schema */
+	public void schemaAdded(Integer schemaID)
 	{
-		// Get the current and new list of schemas
-		ArrayList<Integer> currSchemaIDs = getSchemas();
-		ArrayList<Integer> newSchemaIDs = harmonyModel.getSelectedInfo().getSchemas(side);
-
-		// Remove any schemas that have been removed from view
-		for(Integer currSchemaID : currSchemaIDs)
-			if(!newSchemaIDs.contains(currSchemaID))
-				SchemaTreeGenerator.removeSchema(this, currSchemaID);
-		
-		// Add any schemas that have been added to the view
-		for(Integer newSchemaID : newSchemaIDs)
-			if(!currSchemaIDs.contains(newSchemaID))
-				SchemaTreeGenerator.addSchema(this, newSchemaID, harmonyModel);
+		if(harmonyModel.getMappingManager().getSchemaIDs(side).contains(schemaID))
+			SchemaTreeGenerator.addSchema(this, schemaID, harmonyModel);			
 	}
+
+	/** Handles the removal of the specified schema */
+	public void schemaRemoved(Integer schemaID)
+		{ SchemaTreeGenerator.removeSchema(this, schemaID); }
 	
-	/** Handles changes to the specified schema's graph model */
-	public void schemaGraphModelChanged(Integer schemaID)
+	/** Handles changes to the specified schema */
+	public void schemaModified(Integer schemaID)
 	{
-		if(getSchemas().contains(schemaID))
-		{
-			SchemaTreeGenerator.removeSchema(this, schemaID);
+		SchemaTreeGenerator.removeSchema(this, schemaID);
+		if(harmonyModel.getMappingManager().getSchemaIDs(side).contains(schemaID))
 			SchemaTreeGenerator.addSchema(this, schemaID, harmonyModel);
-		}
 	}
 	
 	/** Handles mouse clicks on the schema tree */
@@ -526,10 +517,8 @@ public class SchemaTree extends JTree implements PreferencesListener, SelectedIn
 	}
 	
 	// Unused listener events
+	public void mappingModified() {}
 	public void displayedViewChanged() {}
-	public void displayedElementModified(Integer side) {}
-	public void selectedElementsModified(Integer side) {}
-	public void selectedMappingCellsModified() {}
 	public void mouseExited(MouseEvent e) {}
 	public void mouseEntered(MouseEvent e) {}
 	public void mouseReleased(MouseEvent e) {}

@@ -3,7 +3,6 @@
 package org.mitre.harmony.view.dialogs.mappings;
 
 import java.awt.BorderLayout;
-import java.util.ArrayList;
 
 import javax.swing.JDialog;
 import javax.swing.JPanel;
@@ -11,11 +10,11 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import org.mitre.harmony.model.HarmonyConsts;
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.view.dialogs.AbstractButtonPane;
 import org.mitre.harmony.view.dialogs.schemas.SchemaDialog;
 import org.mitre.schemastore.model.Mapping;
+import org.mitre.schemastore.model.MappingSchema;
 
 /**
  * Class used for the loading of a mapping
@@ -49,9 +48,10 @@ public class LoadMappingDialog extends JDialog implements ListSelectionListener
 			dispose();
 			
 			// Launches the schema dialog window if no schemas displayed
-			ArrayList<Integer> leftSchemas = harmonyModel.getSelectedInfo().getSchemas(HarmonyConsts.LEFT);
-			ArrayList<Integer> rightSchemas = harmonyModel.getSelectedInfo().getSchemas(HarmonyConsts.RIGHT);
-			if(leftSchemas.size()==0 && rightSchemas.size()==0) new SchemaDialog(harmonyModel);
+			int displayedSchemas = 0;
+			for(MappingSchema schema : harmonyModel.getMappingManager().getSchemas())
+				if(!schema.getSide().equals(MappingSchema.NONE)) displayedSchemas++;
+			if(displayedSchemas==0) new SchemaDialog(harmonyModel);
 		}
 
 		/** Handles selection of cancel button */

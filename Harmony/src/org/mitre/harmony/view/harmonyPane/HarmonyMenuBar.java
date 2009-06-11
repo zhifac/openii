@@ -173,7 +173,7 @@ public class HarmonyMenuBar extends JMenuBar
 	    	// Removes all links currently loaded into Harmony
 	    	if(e.getSource() == removeLinks)
 	    	{
-	    		for(Integer schemaID : harmonyModel.getMappingManager().getSchemas())
+	    		for(Integer schemaID : harmonyModel.getMappingManager().getSchemaIDs())
 	    		{
 	    			HashSet<Integer> finishedElements = new HashSet<Integer>(harmonyModel.getPreferences().getFinishedElements(schemaID));
 	    			harmonyModel.getPreferences().setFinished(schemaID, finishedElements, false);
