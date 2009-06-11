@@ -1,0 +1,12 @@
+SchemrServer
+
+The files in this project are comprised mainly of code from Schemr and SchemrClient.
+SchemrServer functions independantly of those projects. It requires SchemaStore and SchemaStoreClient
+
+importer.LoadThalia loads the Thalia XSD's. Currently, some of those fail- this needs to be investigated.
+
+
+indexer.BuildIndex builds a Lucene index of all Schemas
+
+
+ 
