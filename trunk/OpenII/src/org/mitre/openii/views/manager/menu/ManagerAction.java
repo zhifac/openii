@@ -22,6 +22,7 @@ import org.mitre.openii.views.manager.schemas.EditSchemaDialog;
 import org.mitre.openii.views.manager.schemas.ExportSchemaDialog;
 import org.mitre.openii.views.manager.schemas.ExtendSchemaDialog;
 import org.mitre.openii.views.manager.schemas.ImportSchemaDialog;
+import org.mitre.openii.views.manager.schemas.CreateInstanceDatabaseDialog;
 import org.mitre.schemastore.model.Group;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.Schema;
@@ -45,6 +46,7 @@ public class ManagerAction extends Action
 	static final int EXPORT_MAPPING = 13;
 	static final int DELETE_MAPPING = 14;
 	static final int DELETE_MAPPING_SCHEMA = 15;
+	static final int CREATE_INSTANCE_DATABASE = 16;
 	
 	/** Stores the menu manager to which this action is tied */
 	private ManagerMenuManager menuManager;
@@ -80,6 +82,7 @@ public class ManagerAction extends Action
 			case EXPORT_MAPPING: icon = "Export.gif"; break;
 			case DELETE_MAPPING: icon = "Delete.gif"; break;
 			case DELETE_MAPPING_SCHEMA: icon = "Delete.gif"; break;
+			case CREATE_INSTANCE_DATABASE: icon = "CreateInstanceDb.gif"; break;
 		}		
 		setImageDescriptor(OpenIIActivator.getImageDescriptor("icons/"+icon));
 	}
@@ -113,6 +116,10 @@ public class ManagerAction extends Action
 		if(actionType == DELETE_SCHEMA)
 			DeleteSchemaDialog.delete(shell,(Schema)selection);
 		
+		/** Handles the creation of instance database */
+		if(actionType == CREATE_INSTANCE_DATABASE)
+			new CreateInstanceDatabaseDialog(shell,(Schema)selection).open();
+				
 		// ----------------- Group Actions ------------------
 		
 		/** Handles the addition of a group */
@@ -139,7 +146,7 @@ public class ManagerAction extends Action
 			schemaIDs.remove(groupSchema.getSchema().getId());
 			OpenIIManager.setGroupSchemas(groupSchema.getGroupID(), schemaIDs);
 		}
-
+		
 		// ----------------- Mapping Actions ------------------
 		
 		/** Handles the addition of a mapping */
