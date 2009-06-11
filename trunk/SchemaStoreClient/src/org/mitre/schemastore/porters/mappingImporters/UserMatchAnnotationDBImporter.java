@@ -10,16 +10,10 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Hashtable;
 import java.util.Calendar;
 
-import org.mitre.schemastore.model.Attribute;
-import org.mitre.schemastore.model.Domain;
-import org.mitre.schemastore.model.DomainValue;
-import org.mitre.schemastore.model.Entity;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.Schema;
-import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.graph.HierarchicalGraph;
 import org.mitre.schemastore.porters.ImporterException;
 
@@ -103,8 +97,8 @@ public class UserMatchAnnotationDBImporter extends MappingImporter {
 		
 		try {
 			//schemaIDs contains schemaIDs of the correct schemas in the correct order
-			hg1 = new HierarchicalGraph(client.getGraph(schemaIDs.get(0)), null);
-			hg2 = new HierarchicalGraph(client.getGraph(schemaIDs.get(1)), null);
+			hg1 = new HierarchicalGraph(client.getGraph(schemas.get(0).getId()), null);
+			hg2 = new HierarchicalGraph(client.getGraph(schemas.get(1).getId()), null);
 		}
 		catch (Exception e) {
 		    System.err.println ("Error getting graph"); 

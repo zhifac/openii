@@ -41,15 +41,15 @@ public class MatchMakerExporter extends MappingExporter {
 		Integer elementID;
 		
 		// Loop through each schemaID
-		for (Integer schema : this.mapping.getSchemas() ) {
+		for (Integer schemaID : this.mapping.getSchemaIDs() ) {
 			// Loop through each element
 			
-			for (SchemaElement element : client.getGraph(schema).getElements(null) ) {
+			for (SchemaElement element : client.getGraph(schemaID).getElements(null) ) {
 				elementID = element.getId();
 
 				// hash current schemaID to the list by elementID
 				ArrayList<Integer> schemaIDList = lookupSchemaIDs(elementID);
-				schemaIDList.add(schema);
+				schemaIDList.add(schemaID);
 			}
 		}
 	}

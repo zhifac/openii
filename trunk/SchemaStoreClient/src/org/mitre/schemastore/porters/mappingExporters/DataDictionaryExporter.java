@@ -39,7 +39,7 @@ public class DataDictionaryExporter extends MappingExporter
 		BufferedWriter out = new BufferedWriter(new FileWriter(file));
 
 		// Generate a list of all schema elements and mapping cells
-		HashMap<Integer,SchemaElement> elements = getSchemaElements(Arrays.asList(mapping.getSchemas()));
+		HashMap<Integer,SchemaElement> elements = getSchemaElements(Arrays.asList(mapping.getSchemaIDs()));
 		
     	// First, output all user selected node pairings
 		for(MappingCell mappingCell : mappingCells)

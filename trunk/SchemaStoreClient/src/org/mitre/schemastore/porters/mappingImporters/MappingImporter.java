@@ -18,6 +18,7 @@ package org.mitre.schemastore.porters.mappingImporters;
 
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
+import org.mitre.schemastore.model.MappingSchema;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.porters.ImporterException;
 import org.mitre.schemastore.porters.Porter;
@@ -35,7 +36,7 @@ public abstract class MappingImporter extends Porter
 	/** Stores the URI being imported */
 	protected URI uri;
 	
-	protected ArrayList<Integer> schemaIDs;
+	protected ArrayList<MappingSchema> schemas;
 	
 	/** Returns the importer URI type */
 	abstract public Integer getURIType();
@@ -61,15 +62,15 @@ public abstract class MappingImporter extends Porter
 		{ this.uri = uri; initialize(); return getMappingCells(); }
 	
 	/** Imports the specified URI */
-	final public Integer importMapping(String name, String author, String description, ArrayList<Integer> schemaIDs, URI uri) throws ImporterException
+	final public Integer importMapping(String name, String author, String description, ArrayList<MappingSchema> schemas, URI uri) throws ImporterException
 	{
 		// Initialize the importer
 		this.uri = uri;
-		this.schemaIDs = schemaIDs;
+		this.schemas = schemas;
 		initialize();
 
 		// Generate the mapping
-		Mapping mapping = new Mapping(null,name,description,author,schemaIDs.toArray(new Integer[0]));
+		Mapping mapping = new Mapping(null,name,description,author,schemas.toArray(new MappingSchema[0]));
 		
 		// Imports the mapping
 		boolean success = false;

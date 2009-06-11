@@ -20,6 +20,7 @@ import org.jfree.chart.plot.PiePlot;
 import org.jfree.data.general.DefaultPieDataset;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
+import org.mitre.schemastore.model.MappingSchema;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
 
@@ -63,10 +64,10 @@ public class PieChartExporter extends MappingExporter
 	    ZipOutputStream out = new ZipOutputStream(new FileOutputStream(file));
 
 		// Store the schema pie charts to the zip file
-	    Integer schemaIDs[] = mapping.getSchemas();
-		for(int i=0; i<schemaIDs.length; i++)
+	    MappingSchema schemas[] = mapping.getSchemas();
+		for(int i=0; i<schemas.length; i++)
 		{
-			Schema schema = client.getSchema(schemaIDs[i]);
+			Schema schema = client.getSchema(schemas[i].getId());
 			copyFileToZip(generateFile(schema,mappingCells),"Schema"+i+"/"+schema.getName()+".jpg",out);
 		}
 		
