@@ -1,0 +1,1 @@
+CREATE TABLE "schema29" ( "p1" VARCHAR(30), "p2" VARCHAR(30), "p3" VARCHAR(30), "p4" VARCHAR(30), "p5" VARCHAR(30));

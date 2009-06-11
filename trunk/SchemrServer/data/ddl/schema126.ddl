@@ -1,0 +1,1 @@
+CREATE TABLE "schema126" ( "capital_transfers" VARCHAR(30), "current_payments" VARCHAR(30), "errors_and_omissions" VARCHAR(30), "financial_payments" VARCHAR(30), "increase_in_the_foreign__exchange_reserve" VARCHAR(30));

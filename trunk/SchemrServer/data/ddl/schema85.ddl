@@ -1,0 +1,1 @@
+CREATE TABLE "schema85" ( "blk" VARCHAR(30), "gi" VARCHAR(30), "name" VARCHAR(30), "position" VARCHAR(30), "rank" VARCHAR(30), "rating" VARCHAR(30), "signed_with" VARCHAR(30), "spd" VARCHAR(30), "st" VARCHAR(30), "str" VARCHAR(30), "tkl" VARCHAR(30), "we" VARCHAR(30));

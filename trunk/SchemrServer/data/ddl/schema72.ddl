@@ -1,0 +1,1 @@
+CREATE TABLE "schema72" ( "course" VARCHAR(30), "cred" VARCHAR(30), "crn" VARCHAR(30), "days" VARCHAR(30), "instr" VARCHAR(30), "name" VARCHAR(30), "pot" VARCHAR(30), "room" VARCHAR(30), "sec" VARCHAR(30), "time" VARCHAR(30));

@@ -1,0 +1,1 @@
+CREATE TABLE "schema40" ( "effective_gross_income" VARCHAR(30), "insurance" VARCHAR(30), "maintenance" VARCHAR(30), "net_operating_income" VARCHAR(30), "other_expenses" VARCHAR(30), "scheduled_gross_income" VARCHAR(30), "taxes" VARCHAR(30), "total_expenses" VARCHAR(30), "vacancy" VARCHAR(30));

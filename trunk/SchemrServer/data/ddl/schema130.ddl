@@ -1,0 +1,1 @@
+CREATE TABLE "schema130" ( "building_size" VARCHAR(30), "cap_rate" VARCHAR(30), "date_last_verified" VARCHAR(30), "lot_size" VARCHAR(30), "no_units" VARCHAR(30), "occupancy" VARCHAR(30), "priceunit" VARCHAR(30), "price" VARCHAR(30), "primary_type" VARCHAR(30), "property_id" VARCHAR(30), "year_built" VARCHAR(30));

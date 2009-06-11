@@ -1,0 +1,1 @@
+CREATE TABLE "schema9" ( "arena" VARCHAR(30), "date" VARCHAR(30), "ga" VARCHAR(30), "game" VARCHAR(30), "gf" VARCHAR(30), "opponent" VARCHAR(30), "result" VARCHAR(30), "time" VARCHAR(30), "type" VARCHAR(30));

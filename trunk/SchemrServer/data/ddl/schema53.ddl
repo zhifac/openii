@@ -1,0 +1,1 @@
+CREATE TABLE "schema53" ( "s_1" VARCHAR(30), "s_2" VARCHAR(30), "s_3" VARCHAR(30), "s_4" VARCHAR(30), "s_5" VARCHAR(30), "s_6" VARCHAR(30));

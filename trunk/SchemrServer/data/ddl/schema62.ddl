@@ -1,0 +1,1 @@
+CREATE TABLE "schema62" ( "countywide_total" VARCHAR(30), "district_1" VARCHAR(30), "district_2" VARCHAR(30), "district_3" VARCHAR(30), "district_4" VARCHAR(30), "district_5" VARCHAR(30), "household_type" VARCHAR(30));

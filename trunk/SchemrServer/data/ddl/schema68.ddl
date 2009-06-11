@@ -1,0 +1,1 @@
+CREATE TABLE "schema68" ( "highest_bid_to_buy" VARCHAR(30), "home_game" VARCHAR(30), "initial_price" VARCHAR(30), "last_trans" VARCHAR(30), "location" VARCHAR(30), "lowest_offer_to_sell" VARCHAR(30), "markets" VARCHAR(30));

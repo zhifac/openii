@@ -1,0 +1,1 @@
+CREATE TABLE "schema142" ( "att" VARCHAR(30), "cmp" VARCHAR(30), "cmp" VARCHAR(30), "int" VARCHAR(30), "int" VARCHAR(30), "long" VARCHAR(30), "passing" VARCHAR(30), "rating" VARCHAR(30), "sacklost" VARCHAR(30), "td" VARCHAR(30), "td" VARCHAR(30), "yds" VARCHAR(30), "ydsatt" VARCHAR(30));

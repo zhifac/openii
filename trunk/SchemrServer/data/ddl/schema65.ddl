@@ -1,0 +1,1 @@
+CREATE TABLE "schema65" ( "2b" VARCHAR(30), "3b" VARCHAR(30), "ab" VARCHAR(30), "ba" VARCHAR(30), "bb" VARCHAR(30), "cs" VARCHAR(30), "hr" VARCHAR(30), "lg" VARCHAR(30), "rbi" VARCHAR(30), "sb" VARCHAR(30), "so" VARCHAR(30), "team" VARCHAR(30), "year" VARCHAR(30));

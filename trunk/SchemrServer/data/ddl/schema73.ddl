@@ -1,0 +1,1 @@
+CREATE TABLE "schema73" ( "v1" VARCHAR(30), "v2" VARCHAR(30), "v3" VARCHAR(30), "v4" VARCHAR(30));

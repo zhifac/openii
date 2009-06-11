@@ -1,0 +1,1 @@
+CREATE TABLE "schema71" ( "email" VARCHAR(30), "postal_address" VARCHAR(30), "postal_town" VARCHAR(30), "postcode" VARCHAR(30), "state" VARCHAR(30), "street_address" VARCHAR(30), "telephone" VARCHAR(30), "town" VARCHAR(30), "website" VARCHAR(30));

@@ -1,0 +1,1 @@
+CREATE TABLE "schema121" ( "bids" VARCHAR(30), "closing" VARCHAR(30), "condition" VARCHAR(30), "location" VARCHAR(30), "lot_price" VARCHAR(30), "qty" VARCHAR(30), "seller" VARCHAR(30), "title_description" VARCHAR(30));

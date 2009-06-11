@@ -1,0 +1,1 @@
+CREATE TABLE "schema151" ( "ast" VARCHAR(30), "chicago" VARCHAR(30), "com" VARCHAR(30), "ff" VARCHAR(30), "fr" VARCHAR(30), "in" VARCHAR(30), "pd" VARCHAR(30), "sac" VARCHAR(30), "tkl" VARCHAR(30), "yds" VARCHAR(30));

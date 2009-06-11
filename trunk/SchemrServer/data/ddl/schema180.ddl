@@ -1,0 +1,1 @@
+CREATE TABLE "schema180" ( "cds_snp_density" VARCHAR(30), "non_coding" VARCHAR(30), "non_synonymous" VARCHAR(30), "nonsense" VARCHAR(30), "strains" VARCHAR(30), "synonymous" VARCHAR(30), "total" VARCHAR(30));

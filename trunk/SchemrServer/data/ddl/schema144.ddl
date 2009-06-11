@@ -1,0 +1,1 @@
+CREATE TABLE "schema144" ( "allopurinol_100_or_300_mg" VARCHAR(30), "_n" VARCHAR(30), "febuxostat_120_mg" VARCHAR(30), "_n" VARCHAR(30), "febuxostat_240_mg" VARCHAR(30), "_n" VARCHAR(30), "febuxostat_80_mg" VARCHAR(30), "_n" VARCHAR(30), "placebo" VARCHAR(30), "_n" VARCHAR(30), "serum_urate_levels_of_60_mgdl" VARCHAR(30));

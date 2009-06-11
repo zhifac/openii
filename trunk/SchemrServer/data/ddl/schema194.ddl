@@ -1,0 +1,1 @@
+CREATE TABLE "schema194" ( "cert" VARCHAR(30), "material" VARCHAR(30), "min_freq" VARCHAR(30), "min_quant" VARCHAR(30), "purp" VARCHAR(30), "reference" VARCHAR(30), "remarks" VARCHAR(30), "sampled_by" VARCHAR(30), "small_quantity" VARCHAR(30), "typical_handling_time" VARCHAR(30));

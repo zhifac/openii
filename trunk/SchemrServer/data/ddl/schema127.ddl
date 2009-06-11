@@ -1,0 +1,1 @@
+CREATE TABLE "schema127" ( "about" VARCHAR(30), "account_type" VARCHAR(30), "interests" VARCHAR(30), "location" VARCHAR(30), "maintainers" VARCHAR(30), "members" VARCHAR(30), "name" VARCHAR(30), "schools" VARCHAR(30), "user" VARCHAR(30), "watched_by" VARCHAR(30), "website" VARCHAR(30));
