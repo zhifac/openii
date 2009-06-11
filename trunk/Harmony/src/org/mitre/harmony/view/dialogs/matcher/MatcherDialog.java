@@ -20,12 +20,12 @@ import org.mitre.harmony.matchers.MatchScores;
 import org.mitre.harmony.matchers.MatcherManager;
 import org.mitre.harmony.matchers.mergers.MatchMerger;
 import org.mitre.harmony.matchers.voters.MatchVoter;
-import org.mitre.harmony.model.HarmonyConsts;
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.filters.FilterManager;
 import org.mitre.harmony.model.filters.Focus;
 import org.mitre.harmony.model.mapping.MappingCellManager;
 import org.mitre.schemastore.model.MappingCell;
+import org.mitre.schemastore.model.MappingSchema;
 import org.mitre.schemastore.model.graph.FilteredGraph;
 import org.mitre.schemastore.model.graph.HierarchicalGraph;
 
@@ -119,14 +119,14 @@ class MatcherDialog extends JDialog implements ActionListener, Runnable
 		ArrayList<FilteredGraph> rightGraphs = new ArrayList<FilteredGraph>();		
 		
 		// Generate graphs for the left and right sides
-		Integer sides[] = { HarmonyConsts.LEFT, HarmonyConsts.RIGHT };
+		Integer sides[] = { MappingSchema.LEFT, MappingSchema.RIGHT };
 		for(Integer side : sides)
 		{
 			FilterManager filters = harmonyModel.getFilters();
-			ArrayList<FilteredGraph> filteredGraphs = side==HarmonyConsts.LEFT ? leftGraphs : rightGraphs;
+			ArrayList<FilteredGraph> filteredGraphs = side==MappingSchema.LEFT ? leftGraphs : rightGraphs;
 			
 			// Create filtered graphs for each schema in focus
-			for(Integer schemaID : harmonyModel.getSelectedInfo().getSchemas(side))
+			for(Integer schemaID : harmonyModel.getMappingManager().getSchemaIDs(side))
 				if(filters.inFocus(side, schemaID))
 				{
 					HierarchicalGraph graph = harmonyModel.getSchemaManager().getGraph(schemaID);

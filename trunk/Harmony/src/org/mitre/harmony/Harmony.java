@@ -78,6 +78,7 @@ public class Harmony extends JFrame implements MappingListener, WindowListener
 	public void windowIconified(WindowEvent arg0) {}
 	public void windowOpened(WindowEvent arg0) {}
 	public void schemaAdded(Integer schemaID) {}
+	public void schemaModified(Integer schemaID) {}
 	public void schemaRemoved(Integer schemaID) {}
 
 	/** Launches Harmony */

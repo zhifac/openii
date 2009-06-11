@@ -20,6 +20,7 @@ import javax.swing.event.CaretListener;
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.view.dialogs.TitledPane;
 import org.mitre.schemastore.model.Mapping;
+import org.mitre.schemastore.model.MappingSchema;
 
 /** Private class for managing the info pane */
 class InfoPane extends JPanel implements CaretListener
@@ -106,9 +107,9 @@ class InfoPane extends JPanel implements CaretListener
 			descriptionField.setText(mapping.getDescription());
 	
 			// Display the selected schema information
-			for(Integer schemaID : mapping.getSchemas())
+			for(MappingSchema schema : mapping.getSchemas())
 			{
-				JLabel label = new JLabel(harmonyModel.getSchemaManager().getSchema(schemaID).getName());
+				JLabel label = new JLabel(harmonyModel.getSchemaManager().getSchema(schema.getId()).getName());
 				label.setFont(defaultFont);
 				schemaPane.add(label);
 			}

@@ -105,6 +105,5 @@ public class HarmonyFrame extends JInternalFrame implements PreferencesListener
 
 	public void elementsMarkedAsFinished(Integer schemaID, HashSet<Integer> elementIDs) {}
 	public void elementsMarkedAsUnfinished(Integer schemaID, HashSet<Integer> elementIDs) {}
-	public void schemaGraphModelChanged(Integer schemaID) {}
 	public void showSchemaTypesChanged() {}
 }
