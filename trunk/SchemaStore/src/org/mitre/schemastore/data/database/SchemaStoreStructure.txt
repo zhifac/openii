@@ -100,7 +100,9 @@ CREATE TABLE mapping_cell (
 
 CREATE TABLE mapping_schema (
     mapping_id integer NOT NULL,
-    schema_id integer NOT NULL
+    schema_id integer NOT NULL,
+    model character varying(256),
+    side character
 );
 
 CREATE TABLE relationship (

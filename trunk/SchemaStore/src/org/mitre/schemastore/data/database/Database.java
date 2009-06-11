@@ -20,6 +20,7 @@ import org.mitre.schemastore.model.Entity;
 import org.mitre.schemastore.model.Group;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
+import org.mitre.schemastore.model.MappingSchema;
 import org.mitre.schemastore.model.Relationship;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
@@ -1144,14 +1145,19 @@ public class Database
 			Statement stmt = connection.getStatement();
 
 			// Get the schemas associated with mapping
-			ArrayList<Integer> schemas = new ArrayList<Integer>();
-			ResultSet rs = stmt.executeQuery("SELECT schema_id FROM mapping_schema WHERE mapping_id="+mappingID);
-			while(rs.next()) schemas.add(rs.getInt("schema_id"));
+			ArrayList<MappingSchema> schemas = new ArrayList<MappingSchema>();
+			ResultSet rs = stmt.executeQuery("SELECT schema_id,model,side FROM mapping_schema WHERE mapping_id="+mappingID);
+			while(rs.next())
+			{
+				String sideChar = rs.getString("side"); if(sideChar==null) sideChar="";
+				Integer side = sideChar.equals("l")?MappingSchema.LEFT:sideChar.equals("r")?MappingSchema.RIGHT:MappingSchema.NONE;
+				schemas.add(new MappingSchema(rs.getInt("schema_id"),rs.getString("model"),side));
+			}
 
 			// Get the mapping information
 			ResultSet rs2 = stmt.executeQuery("SELECT name,description,author FROM mapping WHERE id="+mappingID);
 			if(rs2.next())
-				mapping = new Mapping(mappingID,rs2.getString("name"),rs2.getString("description"),rs2.getString("author"),schemas.toArray(new Integer[0]));
+				mapping = new Mapping(mappingID,rs2.getString("name"),rs2.getString("description"),rs2.getString("author"),schemas.toArray(new MappingSchema[0]));
 
 			stmt.close();
 		} catch(SQLException e) { System.out.println("(E) Database:getMapping: "+e.getMessage()); }
@@ -1194,8 +1200,13 @@ public class Database
 			mappingID = getUniversalIDs(1);
 			Statement stmt = connection.getStatement();
 			stmt.executeUpdate("INSERT INTO mapping(id,name,description,author) VALUES("+mappingID+",'"+scrub(mapping.getName(),100)+"','"+scrub(mapping.getDescription(),4096)+"','"+scrub(mapping.getAuthor(),100)+"')");
-			for(Integer schema : mapping.getSchemas())
-				stmt.executeUpdate("INSERT INTO mapping_schema(mapping_id,schema_id) VALUES("+mappingID+","+schema+")");
+			for(MappingSchema schema : mapping.getSchemas())
+			{
+				String sideChar = "null";
+				if(schema.getSide().equals(MappingSchema.LEFT)) sideChar = "'l'";
+				else if(schema.getSide().equals(MappingSchema.RIGHT)) sideChar = "'r'";
+				stmt.executeUpdate("INSERT INTO mapping_schema(mapping_id,schema_id,model,side) VALUES("+mappingID+","+schema.getId()+",'"+schema.getModel()+"',"+sideChar+")");
+			}
 			stmt.close();
 			connection.commit();
 		}
@@ -1216,8 +1227,13 @@ public class Database
 			Statement stmt = connection.getStatement();
 			stmt.executeUpdate("UPDATE mapping SET name='"+scrub(mapping.getName(),100)+"', description='"+scrub(mapping.getDescription(),4096)+"', author='"+scrub(mapping.getAuthor(),100)+"' WHERE id="+mapping.getId());
 			stmt.executeUpdate("DELETE FROM mapping_schema WHERE mapping_id="+mapping.getId());
-			for(Integer schema : mapping.getSchemas())
-				stmt.executeUpdate("INSERT INTO mapping_schema(mapping_id,schema_id) VALUES("+mapping.getId()+","+schema+")");			
+			for(MappingSchema schema : mapping.getSchemas())
+			{
+				String sideChar = "null";
+				if(schema.getSide().equals(MappingSchema.LEFT)) sideChar = "'l'";
+				else if(schema.getSide().equals(MappingSchema.RIGHT)) sideChar = "'r'";
+				stmt.executeUpdate("INSERT INTO mapping_schema(mapping_id,schema_id,model,side) VALUES("+mapping.getId()+","+schema.getId()+",'"+schema.getModel()+"',"+sideChar+")");
+			}
 			stmt.close();
 			connection.commit();
 			success = true;
@@ -1326,7 +1342,6 @@ public class Database
 		}
 		return success;
 	}
-	
 	
 	//-------------------------------------
 	// Handles Annotations in the Database 

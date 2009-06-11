@@ -17,6 +17,9 @@ import java.sql.Statement;
  */
 public class DatabaseUpdates
 {
+	/** Stores the current version */
+	static private Integer currVersion = 2;
+	
 	/** Retrieve the contents of a file as a buffered string */
 	static private StringBuffer getFileContents(String file) throws IOException
 	{
@@ -69,13 +72,14 @@ public class DatabaseUpdates
 					for(int i=1; i<rows.length; i++)
 						stmt.addBatch(header + " VALUES (" + rows[i] + ")");
 				}
+				stmt.addBatch("INSERT INTO version(id) VALUES("+currVersion+")");
 				stmt.executeBatch();
 				
 				// Commit all changes
 				connection.commit();
 			}
 			catch (Exception e)
-				{ connection.rollback(); System.out.println("(E) Failed to initialize database - " + e.getMessage()); }
+				{ connection.rollback(); new SQLException("Failed to initialize database\n" + e.getMessage()); }
 		}
 		
 		stmt.close();
@@ -131,15 +135,32 @@ public class DatabaseUpdates
 		stmt.executeUpdate("UPDATE version SET id=1");
 		stmt.close(); connection.commit();
 	}
+
+	/** Installs version 2 updates */
+	static private void version2Updates(Connection connection) throws SQLException
+	{
+		// Add model and side fields to mapping schema table
+		Statement stmt = connection.createStatement();
+		stmt.executeUpdate("ALTER TABLE mapping_schema ADD COLUMN model CHARACTER VARYING(256)");
+		stmt.executeUpdate("ALTER TABLE mapping_schema ADD COLUMN side CHARACTER");
+		stmt.executeUpdate("DELETE FROM annotation WHERE attribute='SchemaModelsForMapping'");
+		stmt.executeUpdate("DELETE FROM annotation WHERE attribute='SchemaSidesForMapping'");
+		
+		// Increase the version id
+		stmt.executeUpdate("UPDATE version SET id=2");
+		stmt.close(); connection.commit();
+	}
 	
 	/** Updates the database as needed */
 	static void updateDatabase(Connection connection) throws SQLException
 	{
 		try {
 			Integer version = getVersion(connection);
-			if(version<1) { version1Updates(connection); version++; }
+			if(version<1) { version1Updates(connection); version=1; }
+			if(version<2) { version2Updates(connection); version=2; }
+			if(version>currVersion) throw new Exception("(E) Software must be updated to handle database version " + version);
 		}
 		catch (Exception e)
-			{ connection.rollback(); System.out.println("(E) Failed to fully update database - " + e.getMessage()); }		
+			{ connection.rollback(); throw new SQLException("Failed to fully update database\n" + e.getMessage()); }		
 	}
 }
