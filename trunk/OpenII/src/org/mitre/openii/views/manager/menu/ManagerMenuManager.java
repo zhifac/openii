@@ -89,12 +89,20 @@ public class ManagerMenuManager extends MenuManager implements IMenuListener
 		// Display the menu for a selected schema
 		if(element instanceof Schema)
 		{
+			// Display schema options
 			menuManager.add(new ManagerAction(this,"Edit Schema Properties",ManagerAction.EDIT_SCHEMA));
 			menuManager.add(new ManagerAction(this,"Extend Schema",ManagerAction.EXTEND_SCHEMA));
 			menuManager.add(new ManagerAction(this,"Export Schema",ManagerAction.EXPORT_SCHEMA));
 			Action deleteAction = new ManagerAction(this,"Delete Schema",ManagerAction.DELETE_SCHEMA);
 			if(!OpenIIManager.isDeletable(((Schema)element).getId())) deleteAction.setEnabled(false);
 			menuManager.add(deleteAction);
+
+			menuManager.add(new Separator());
+			
+			// Display option to create instance database
+			Action createInstanceAction = new ManagerAction(this,"Create Instance Database",ManagerAction.CREATE_INSTANCE_DATABASE);
+			if(!((((Schema)element).getType()).equals("Spreadsheet Importer"))) createInstanceAction.setEnabled(false);
+			menuManager.add(createInstanceAction);
 		}
 		
 		// Display the menu for the "Groups" header
@@ -134,19 +142,6 @@ public class ManagerMenuManager extends MenuManager implements IMenuListener
 			menuManager.add(new ManagerAction(this,"Remove Schema from Mapping",ManagerAction.DELETE_MAPPING_SCHEMA));
 	}
 	
-	/** Generates the create action menu */
-	private void getCreateMenu(IMenuManager menuManager)
-	{
-		// Display the menu for a selected schema
-		if(element instanceof Schema)
-		{
-			//menuManager.add(new ManagerAction(this,"Create Instance Db",ManagerAction.CREATE_INSTANCE_DATABASE));
-			Action createInstanceAction = new ManagerAction(this,"Create Instance Database",ManagerAction.CREATE_INSTANCE_DATABASE);
-			if(!((((Schema)element).getType()).equals("Spreadsheet Importer"))) createInstanceAction.setEnabled(false);
-			menuManager.add(createInstanceAction);
-		}
-	}
-	
 	/** Generate the context menu before being displayed */
 	public void menuAboutToShow(IMenuManager menuManager)
 	{		
@@ -154,7 +149,5 @@ public class ManagerMenuManager extends MenuManager implements IMenuListener
 		getEditorMenu(menuManager);
 		menuManager.add(new Separator());
 		getManagerMenu(menuManager);
-		menuManager.add(new Separator());
-		getCreateMenu(menuManager);
 	}
 }
