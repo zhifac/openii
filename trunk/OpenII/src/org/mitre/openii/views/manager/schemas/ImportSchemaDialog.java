@@ -63,7 +63,8 @@ public class ImportSchemaDialog extends TitleAreaDialog implements ISelectionCha
 		// Construct a list of all importers that can be selected
 		BasicWidgets.createLabel(pane,"Importer");
 		importerList = new ComboViewer(pane, SWT.NONE);
-		for(SchemaImporter importer : new PorterManager(RepositoryManager.getClient()).getSchemaImporters())
+		ArrayList<SchemaImporter> importers = new PorterManager(RepositoryManager.getClient()).getSchemaImporters();
+		for(SchemaImporter importer : OpenIIManager.sortList(importers))
 		{
 			Integer uriType = importer.getURIType();
 			if(uriType==SchemaImporter.FILE || uriType==SchemaImporter.ARCHIVE || uriType==SchemaImporter.URI)
