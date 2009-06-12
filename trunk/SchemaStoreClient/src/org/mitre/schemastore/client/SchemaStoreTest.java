@@ -12,7 +12,7 @@ public class SchemaStoreTest
 	{
 		// Display the schemas found within the repository
 		try {
-			SchemaStoreClient client = new SchemaStoreClient("C:\\chris\\projects\\Flexidata\\SchemaStore\\SchemaStore.jar");
+			SchemaStoreClient client = new SchemaStoreClient("/home/jchoyt/devel/openii/SchemaStore/SchemaStore.jar");
 			for(Schema schema : client.getSchemas())
 				System.out.println(schema.getId() + ": " + schema.getName());
 		}
