@@ -14,8 +14,53 @@
     <!-- Defines the location of SchemaStore -->
     <property name="SchemaStore" value="../SchemaStore"/>
 
+    <!-- global properties  -->
+    <property name="src" value="src" description="location of source code" />
+    <property name="build" value="build/classes" description="location to build the files to " />
+    <property name="jars" value="lib" description="location of necessary jar files" />
+    <path id="jarspath">
+        <fileset dir="${jars}">
+            <include name="**/*.jar" />
+        </fileset>
+    </path>
+    
+    <!-- echos the date and time and sets the property to ensure junit is available -->
+    <target name="init">
+        <tstamp />
+        <echo message="Build file: ${DSTAMP}, ${TSTAMP}" />
+        <available property="junit.present" classname="junit.framework.Test"/>
+    </target>
+    
+    <!-- If JUnit is not present, gives instructions on how to install it-->
+    <target name="junit-present" unless="junit.present" depends="init">
+      <echo>To run the unit tests, you must have JUnit in your classpath.  From the JUnit task description:</echo>
+      <echo>Note: You must have junit.jar and the class files for the &lt;junit&gt; task in the same classpath. You can do one of:</echo>
+      <echo>    Put both junit.jar and the optional tasks jar file in ANT_HOME/lib.</echo>
+      <echo>    Do not put either in ANT_HOME/lib, and instead include their locations in your CLASSPATH environment variable.</echo>
+      <echo>    Do neither of the above, and instead, specify their locations using a &lt;classpath&gt; element in the build file.</echo>
+    </target>
+    
+    <!-- Runs the unit tests -->
+    <target name="test" depends="build">
+        <junit haltonfailure="yes">
+            <formatter type="plain" usefile="false" />
+            <classpath>
+                <pathelement path="${build}" />
+                <path refid="jarspath" />
+            </classpath>
+            <!-- Pass in the location of the ant file.  This will be used to set up the schemastore db -->
+            <sysproperty key="antfile.dir" value="${antfile.dir}"/>
+            <batchtest fork="yes" todir="${build}">
+                <fileset dir="${src}">
+                    <include name="test/**/*Test.java" />
+                </fileset>
+            </batchtest>
+        </junit>
+    </target>
+
+    
     <!-- Compiles the code -->
-	<target name="compile">
+	<target name="compile" depends="junit-present">
 		<ant antfile="${SchemaStore}/build.xml" dir="${SchemaStore}" target="compile"/>
 	    <mkdir dir="build/classes"/>
 	    <javac srcdir="src" destdir="build/classes" deprecation="on" debug="on" source="1.6" target="1.6">
