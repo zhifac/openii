@@ -252,12 +252,12 @@ public class SpreadsheetImporter extends SchemaImporter {
 	}
 
 	/** Returns the list of schemas which this schema extends */
-	protected ArrayList<Integer> getExtendedSchemaIDs() throws ImporterException {
+	protected ArrayList<Integer> generateExtendedSchemaIDs() throws ImporterException {
 		return new ArrayList<Integer>();
 	}
 
 	/** Generate the schema elements */
-	public ArrayList<SchemaElement> getSchemaElements() throws ImporterException {
+	public ArrayList<SchemaElement> generateSchemaElements() throws ImporterException {
 		generate();
 		ArrayList<SchemaElement> elements = generateSchemaElementList();
 		// Schema schema = new Schema(nextId(),"thisschema","me","","","description",false);
