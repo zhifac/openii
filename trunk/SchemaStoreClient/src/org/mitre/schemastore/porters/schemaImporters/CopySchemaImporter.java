@@ -147,10 +147,10 @@ public class CopySchemaImporter extends SchemaImporter
 	}
 	
 	/** Returns the list of schemas which this schema extends */
-	protected ArrayList<Integer> getExtendedSchemaIDs() throws ImporterException
+	protected ArrayList<Integer> generateExtendedSchemaIDs() throws ImporterException
 		{ return extendedSchemaIDs; }
 	
 	/** Returns the schema elements from the specified URI */
-	public ArrayList<SchemaElement> getSchemaElements() throws ImporterException
+	public ArrayList<SchemaElement> generateSchemaElements() throws ImporterException
 		{ return schemaElements; }
 }

@@ -60,23 +60,23 @@ public abstract class SchemaImporter extends Porter
 	public ArrayList<String> getFileTypes() { return new ArrayList<String>(); }
 	
 	/** Returns the schema information for the specified URI */
-	protected Schema getSchema() throws ImporterException { return null; }
+	protected SchemaProperties generateSchemaProperties() throws ImporterException { return null; }
 	
 	/** Initializes the schema structures */
 	abstract protected void initializeSchemaStructures() throws ImporterException;
 	
 	/** Returns the list of schemas which this schema extends */
-	abstract protected ArrayList<Integer> getExtendedSchemaIDs() throws ImporterException;
+	abstract protected ArrayList<Integer> generateExtendedSchemaIDs() throws ImporterException;
 	
 	/** Returns the schema elements for the specified URI */
-	abstract protected ArrayList<SchemaElement> getSchemaElements() throws ImporterException;
+	abstract protected ArrayList<SchemaElement> generateSchemaElements() throws ImporterException;
 	
 	/** Generate the schema */
-	final public Schema generateSchema(URI uri) throws ImporterException
-		{ this.uri = uri; return getSchema(); }
+	final public SchemaProperties getSchemaProperties(URI uri) throws ImporterException
+		{ this.uri = uri; return generateSchemaProperties(); }
 	
 	/** Return the schema elements */
-	final public ArrayList<SchemaElement> generateSchemaElements(URI uri) throws ImporterException
+	final public ArrayList<SchemaElement> getSchemaElements(URI uri) throws ImporterException
 	{
 		// Schema elements can generated separately only for file importers
 		if(getURIType()!=FILE)
@@ -85,7 +85,7 @@ public abstract class SchemaImporter extends Porter
 		// Generate the schema elements
 		this.uri = uri;
 		initializeSchemaStructures();
-		return getSchemaElements();
+		return generateSchemaElements();
 	}
 	
 	/** Imports the specified URI */
@@ -97,15 +97,21 @@ public abstract class SchemaImporter extends Porter
 
 		// Generate the schema
 		Schema schema = new Schema(nextId(),name,author,uri==null?"":uri.toString(),getName(),description,false);
-		if(getURIType()==ARCHIVE) schema = generateSchema(uri);
+		SchemaProperties schemaProperties = generateSchemaProperties();
+		if(schemaProperties!=null)
+		{
+			schema.setName(schemaProperties.getName());
+			schema.setAuthor(schemaProperties.getAuthor());
+			schema.setDescription(schemaProperties.getDescription());
+		}
 		
 		// Imports the schema
 		boolean success = false;
 		try {
 			// Import the schema
-			Integer schemaID = client.importSchema(schema, getSchemaElements());
+			Integer schemaID = client.importSchema(schema, generateSchemaElements());
 			schema.setId(schemaID);
-			success = client.setParentSchemas(schema.getId(), getExtendedSchemaIDs());
+			success = client.setParentSchemas(schema.getId(), generateExtendedSchemaIDs());
 
 			// Lock the schema if needed
 			if(success && (getURIType()==ARCHIVE || getURIType()==REPOSITORY || getURIType()==FILE))

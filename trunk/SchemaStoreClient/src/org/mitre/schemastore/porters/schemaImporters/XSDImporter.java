@@ -47,7 +47,7 @@ public class XSDImporter extends SchemaImporter
 		fileTypes.add(".xsd");
 		return fileTypes;
 	}
-	
+
 	/** Initializes the importer for the specified URI */
 	protected void initializeSchemaStructures() throws ImporterException
 	{
@@ -71,11 +71,11 @@ public class XSDImporter extends SchemaImporter
 	}
 	
 	/** Returns the list of schemas which this schema extends */
-	protected ArrayList<Integer> getExtendedSchemaIDs() throws ImporterException
+	protected ArrayList<Integer> generateExtendedSchemaIDs() throws ImporterException
 		{ return new ArrayList<Integer>(); }
 	
 	/** Returns the schema elements from the specified URI */
-	public ArrayList<SchemaElement> getSchemaElements() throws ImporterException
+	public ArrayList<SchemaElement> generateSchemaElements() throws ImporterException
 		{ return new ArrayList<SchemaElement>(schemaElementsHS.values()); }
 
 	/**

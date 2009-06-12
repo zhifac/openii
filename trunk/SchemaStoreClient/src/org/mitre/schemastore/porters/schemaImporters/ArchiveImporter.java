@@ -92,20 +92,20 @@ public class ArchiveImporter extends SchemaImporter
 	}
 	
 	/** Returns the schema  from the specified URI */
-	public Schema getSchema() throws ImporterException
+	public SchemaProperties generateSchemaProperties() throws ImporterException
 	{
 		try {
 			ArrayList<ExtendedGraph> graphs = parseDocument();
-			return graphs.get(graphs.size()-1).getSchema();
+			return new SchemaProperties(graphs.get(graphs.size()-1).getSchema());
 		} catch(Exception e) { throw new ImporterException(ImporterException.PARSE_FAILURE,e.getMessage()); }
 	}
 	
 	/** Returns the list of schemas which this schema extends */
-	protected ArrayList<Integer> getExtendedSchemaIDs() throws ImporterException
+	protected ArrayList<Integer> generateExtendedSchemaIDs() throws ImporterException
 		{ return extendedSchemaIDs; }
 	
 	/** Returns the schema elements from the specified URI */
-	public ArrayList<SchemaElement> getSchemaElements() throws ImporterException 
+	public ArrayList<SchemaElement> generateSchemaElements() throws ImporterException 
 		{ return schemaElements; }
 
 	/** Initialize the importer */

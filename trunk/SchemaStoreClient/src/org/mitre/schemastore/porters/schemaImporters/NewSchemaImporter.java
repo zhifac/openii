@@ -26,10 +26,10 @@ public class NewSchemaImporter extends SchemaImporter
 	protected void initializeSchemaStructures() throws ImporterException {}
 	
 	/** Returns the list of schemas which this schema extends */
-	protected ArrayList<Integer> getExtendedSchemaIDs() throws ImporterException
+	protected ArrayList<Integer> generateExtendedSchemaIDs() throws ImporterException
 		{ return new ArrayList<Integer>(); }
 	
 	/** Returns the schema elements from the specified URI */
-	public ArrayList<SchemaElement> getSchemaElements() throws ImporterException
+	public ArrayList<SchemaElement> generateSchemaElements() throws ImporterException
 		{ return new ArrayList<SchemaElement>(); }
 }
