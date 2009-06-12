@@ -18,6 +18,9 @@
 package org.mitre.schemastore.mapfunctions;
 
 import java.rmi.RemoteException;
+import org.mitre.schemastore.mapfunctions.*;
+import org.mitre.schemastore.model.*;
+import org.mitre.schemastore.client.*;
 
 import org.mitre.schemastore.model.SchemaElement;
 
@@ -30,7 +33,7 @@ import org.mitre.schemastore.model.SchemaElement;
 public class NumericAdd extends AbstractMappingFunction
 {
 
-    public NumericAdd()
+    public NumericAdd( SchemaStoreClient client )
     {
         KEY = String.valueOf( getClass().getName() );
         minArgs = 2;
@@ -41,6 +44,7 @@ public class NumericAdd extends AbstractMappingFunction
         displayName = "Numeric Add";
         description = "Takes in two REALs and outputs a REAL.  Casts will be necessary to get int values, however some databases will do the cast for you.";
         version = "1.0";
+        this.client = client;
     }
     
     public String getRelationalString() throws IllegalArgumentException
@@ -52,8 +56,8 @@ public class NumericAdd extends AbstractMappingFunction
         SchemaElement one, two;
         try
         {
-            one = getSchemaElement( inputs.get(1) );
-            two = getSchemaElement( inputs.get(2) );
+            one = getSchemaElement( inputs.get(0) );
+            two = getSchemaElement( inputs.get(1) );
         }
         catch (RemoteException e)
         {
@@ -62,21 +66,6 @@ public class NumericAdd extends AbstractMappingFunction
         //TODO -check the types
         
         return one.getName() + " + " + two.getName();
-    }
-    
-    public static void main(String[] args)
-    {
-        NumericAdd add = new NumericAdd();
-        add.addInput( 59 ); //Ht attribute 
-        add.addInput( 60 ); //Wt attribute
-        try
-        { 
-            add.getRelationalString();
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
     }
 }
 
