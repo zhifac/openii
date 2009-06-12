@@ -1,4 +1,4 @@
-package org.mitre.schemastore.mapfunctions;
+package test.org.mitre.schemastore.mapfunctions;
 
 import org.junit.*;
 import static org.junit.Assert.*;
