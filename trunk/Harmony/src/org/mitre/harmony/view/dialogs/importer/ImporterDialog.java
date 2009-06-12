@@ -29,8 +29,8 @@ import javax.swing.event.CaretListener;
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.SchemaStoreManager;
 import org.mitre.harmony.view.dialogs.AbstractButtonPane;
-import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.porters.schemaImporters.SchemaImporter;
+import org.mitre.schemastore.porters.schemaImporters.SchemaProperties;
 
 /** Class for displaying the importer view */
 public class ImporterDialog extends JDialog implements ActionListener,CaretListener
@@ -201,11 +201,15 @@ public class ImporterDialog extends JDialog implements ActionListener,CaretListe
 	public void caretUpdate(CaretEvent e)
 	{
 		SchemaImporter importer = (SchemaImporter)selectionList.getSelectedItem();
-		if(importer.getURIType()==SchemaImporter.ARCHIVE && uriField.getValue()!=null)
+		if(uriField.getValue()!=null)
 			try {
-				Schema schema = importer.generateSchema(uriField.getValue());
-				nameField.setText(schema.getName());
-				descriptionField.setText(schema.getDescription());
+				SchemaProperties schemaProperties = importer.getSchemaProperties(uriField.getValue());
+				if(schemaProperties!=null)
+				{
+					nameField.setText(schemaProperties.getName());
+					authorField.setText(schemaProperties.getAuthor());
+					descriptionField.setText(schemaProperties.getDescription());
+				}
 			} catch(Exception e2) { System.out.println("(E) ImporterDialog.caretUpdate - " + e2.getMessage()); }
 	}
 }
