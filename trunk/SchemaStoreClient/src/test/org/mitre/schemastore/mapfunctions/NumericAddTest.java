@@ -24,10 +24,9 @@ import java.rmi.RemoteException;
 import org.junit.*;
 import static org.junit.Assert.*;
 
+public class NumericAddTest {
 
-public class AbstractMappingFunctionTest {
-
-    private AbstractMappingFunction testee = null;
+    private NumericAdd add = null;
     
     /**
      * Sets up the test fixture. 
@@ -38,14 +37,9 @@ public class AbstractMappingFunctionTest {
         try
         {
             SchemaStoreClient client = new SchemaStoreClient( "/home/jchoyt/devel/openii/SchemaStore/SchemaStore.jar" );
-            testee = new AbstractMappingFunction( )
-            {
-                public String getRelationalString() throws IllegalArgumentException, NotImplementedException 
-                {
-                    return null;
-                }
-            };  //empty implementation
-            testee.setClient( client );
+            add = new NumericAdd(client);
+            add.addInput( 59 ); //Ht attribute 
+            add.addInput( 60 ); //Wt attribute
         }
         catch (RemoteException e)
         {
@@ -59,17 +53,19 @@ public class AbstractMappingFunctionTest {
      */
     @After
     public void tearDown() {
-        testee = null;
+        add = null;
     }
     
     @Test
-    public void testGetSchemaElement() throws java.rmi.RemoteException 
-    {
-        SchemaElement ele = testee.getSchemaElement( 59 );
-        assertEquals( "Ht", ele.getName() );
+    public void testGetRelationalString() {
+        try
+        { 
+            assertEquals("Ht + Wt", add.getRelationalString());
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
     }
-
 }
 
-// Please do not remove the line below - jch
-// :wrap=soft:noTabs=true:collapseFolds=1:maxLineLen=120:mode=java:tabSize=4:indentSize=4:noWordSep=_:folding=indent:

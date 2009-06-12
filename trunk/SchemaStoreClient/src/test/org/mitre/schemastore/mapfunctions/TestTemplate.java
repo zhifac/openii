@@ -1,5 +1,9 @@
 package test.org.mitre.schemastore.mapfunctions;
 
+import org.mitre.schemastore.mapfunctions.*;
+import org.mitre.schemastore.model.*;
+import org.mitre.schemastore.client.*;
+import java.rmi.RemoteException;
 import org.junit.*;
 import static org.junit.Assert.*;
 
