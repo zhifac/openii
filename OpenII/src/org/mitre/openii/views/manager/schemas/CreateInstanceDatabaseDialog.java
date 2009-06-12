@@ -5,8 +5,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
@@ -23,16 +21,7 @@ import org.eclipse.swt.widgets.Text;
 
 import org.mitre.openii.widgets.BasicWidgets;
 import org.mitre.openii.widgets.URIField;
-import org.mitre.schemastore.client.SchemaStoreClient;
 import org.mitre.schemastore.model.Schema;
-import org.mitre.schemastore.warehouse.InstanceSchemaGenerator;
-
-import org.mitre.openii.model.OpenIIManager;
-import org.mitre.schemastore.model.SchemaElement;
-import org.mitre.schemastore.model.graph.Graph;
-import org.mitre.schemastore.model.Entity;
-import org.mitre.schemastore.model.Attribute;
-import org.mitre.schemastore.model.Containment;
 
 /** Constructs the Import Schema Dialog */
 public class CreateInstanceDatabaseDialog extends TitleAreaDialog implements ModifyListener
