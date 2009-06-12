@@ -53,14 +53,11 @@ public class OpenIIManager
 		class ItemComparator implements Comparator<Object>
 		{
 			public int compare(Object item1, Object item2)
-			{
-				if(item1.getClass()!=item2.getClass()) return -1;
-				return item1.toString().toLowerCase().compareTo(item2.toString().toLowerCase());
-			}
+				{ return item1.toString().toLowerCase().compareTo(item2.toString().toLowerCase()); }
 		}
 		
 		Collections.sort(list, new ItemComparator());
-		return list;
+		return list;		
 	}
 	
 	//------------ Schema Functionality -------------
