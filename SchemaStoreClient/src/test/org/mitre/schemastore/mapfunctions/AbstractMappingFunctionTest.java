@@ -17,6 +17,10 @@
 
 package test.org.mitre.schemastore.mapfunctions;
 
+import org.mitre.schemastore.mapfunctions.*;
+import org.mitre.schemastore.model.*;
+import org.mitre.schemastore.client.*;
+import java.rmi.RemoteException;
 import org.junit.*;
 import static org.junit.Assert.*;
 
@@ -24,13 +28,30 @@ public class AbstractMappingFunctionTest {
 
     private java.util.List emptyList;
 
+    private AbstractMappingFunction testee = null;
+    
     /**
      * Sets up the test fixture. 
      * (Called before every test case method.)
      */
     @Before
     public void setUp() {
-        emptyList = new java.util.ArrayList();
+        try
+        {
+            SchemaStoreClient client = new SchemaStoreClient( "/home/jchoyt/devel/openii/SchemaStore/SchemaStore.jar" );
+            testee = new AbstractMappingFunction( )
+            {
+                public String getRelationalString() throws IllegalArgumentException, NotImplementedException 
+                {
+                    return null;
+                }
+            };  //empty implementation
+            testee.setClient( client );
+        }
+        catch (RemoteException e)
+        {
+            System.out.println( "Failed to set up the test SchemaStoreClient" );
+        }
     }
 
     /**
@@ -39,17 +60,17 @@ public class AbstractMappingFunctionTest {
      */
     @After
     public void tearDown() {
-        emptyList = null;
+        testee = null;
     }
     
     @Test
-    public void testSomeBehavior() {
-        assertEquals("Empty list should have 0 elements", 0, emptyList.size());
+    public void testGetSchemaElement() throws java.rmi.RemoteException 
+    {
+        SchemaElement ele = testee.getSchemaElement( 59 );
+        assertEquals( "Ht", ele.getName() );
     }
 
-    @Test(expected=IndexOutOfBoundsException.class)
-    public void testForException() {
-        Object o = emptyList.get(0);
-    }
 }
 
+// Please do not remove the line below - jch
+// :wrap=soft:noTabs=true:collapseFolds=1:maxLineLen=120:mode=java:tabSize=4:indentSize=4:noWordSep=_:folding=indent:
