@@ -16,6 +16,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Text;
+import org.mitre.openii.model.OpenIIManager;
 import org.mitre.openii.model.RepositoryManager;
 import org.mitre.openii.widgets.BasicWidgets;
 import org.mitre.openii.widgets.URIField;
@@ -54,7 +55,8 @@ public class MappingPropertiesPage extends WizardPage implements ISelectionChang
 		// Construct a list of all importers that can be selected
 		BasicWidgets.createLabel(pane,"Importer");
 		importerList = new ComboViewer(pane, SWT.NONE);
-		for(MappingImporter importer : new PorterManager(RepositoryManager.getClient()).getMappingImporters())
+		ArrayList<MappingImporter> importers = new PorterManager(RepositoryManager.getClient()).getMappingImporters();
+		for(MappingImporter importer : OpenIIManager.sortList(importers))
 			importerList.add(importer);
 		importerList.addSelectionChangedListener(this);
 	}
