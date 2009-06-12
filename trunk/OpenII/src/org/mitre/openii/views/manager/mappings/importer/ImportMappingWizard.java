@@ -9,6 +9,7 @@ import org.mitre.openii.application.OpenIIActivator;
 import org.mitre.openii.model.OpenIIManager;
 import org.mitre.openii.model.RepositoryManager;
 import org.mitre.schemastore.model.Mapping;
+import org.mitre.schemastore.model.MappingSchema;
 import org.mitre.schemastore.porters.mappingImporters.MappingImporter;
 
 /**
@@ -51,16 +52,20 @@ public class ImportMappingWizard extends Wizard
 	public boolean performFinish()
 	{
 		try {
-			// Gather up mapping information
+			// Gather up mapping properties
 			String name = propertiesPage.getMappingName();
 			String author = propertiesPage.getMappingAuthor();
 			String description = propertiesPage.getMappingDescription();
-			ArrayList<Integer> schemaIDs = schemasPage.getSchemaIDs();
 			URI uri = propertiesPage.getURI();
+
+			// Gather up mapping schemas
+			ArrayList<MappingSchema> schemas = new ArrayList<MappingSchema>();
+			for(Integer schemaID : schemasPage.getSchemaIDs())
+				schemas.add(new MappingSchema(schemaID,null,MappingSchema.NONE));
 			
 			// Import mapping
 			MappingImporter importer = propertiesPage.getImporter();
-			Integer mappingID = importer.importMapping(name, author, description, schemaIDs, uri);
+			Integer mappingID = importer.importMapping(name, author, description, schemas, uri);
 			if(mappingID!=null)
 			{
 				Mapping mapping = RepositoryManager.getClient().getMapping(mappingID);

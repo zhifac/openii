@@ -27,6 +27,7 @@ import org.mitre.openii.widgets.BasicWidgets;
 import org.mitre.openii.widgets.URIField;
 import org.mitre.schemastore.porters.PorterManager;
 import org.mitre.schemastore.porters.schemaImporters.SchemaImporter;
+import org.mitre.schemastore.porters.schemaImporters.SchemaProperties;
 import org.mitre.schemastore.model.Schema;
 
 /** Constructs the Import Schema Dialog */
@@ -174,18 +175,22 @@ public class ImportSchemaDialog extends TitleAreaDialog implements ISelectionCha
 				setErrorMessage(uriField.isValid() ? null : "A valid file must be selected");
 		}
 		
-		// Update name, author, and description info when archive file modified
+		// Update name, author, and description info when file modified
 		SchemaImporter importer = (SchemaImporter)((StructuredSelection)importerList.getSelection()).getFirstElement();
-		if(e.getSource().equals(uriText) && importer.getURIType()==SchemaImporter.ARCHIVE)
+		if(e.getSource().equals(uriText))
 			try {
+				// Retrieve the schema properties
+				SchemaProperties properties = null;
 				if(uriField.isValid())
+					properties = importer.getSchemaProperties(new File(uriText.getText()).toURI());
+				
+				// Set the fields based on the given schema properties
+				if(properties!=null)
 				{
-					Schema schema = importer.generateSchema(new File(uriText.getText()).toURI());
-					nameField.setText(schema.getName());
-					authorField.setText(schema.getAuthor());
-					descriptionField.setText(schema.getDescription());
+					nameField.setText(properties.getName());
+					authorField.setText(properties.getAuthor());
+					descriptionField.setText(properties.getDescription());
 				}
-				else { nameField.setText(""); authorField.setText(""); descriptionField.setText(""); }
 			} catch(Exception e2) {}
 		
 		// Determine if the OK button should be activated
