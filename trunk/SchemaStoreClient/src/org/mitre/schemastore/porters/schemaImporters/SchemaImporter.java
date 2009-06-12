@@ -59,26 +59,21 @@ public abstract class SchemaImporter extends Porter
 	/** Returns the importer URI file types (only needed when URI type is FILE) */
 	public ArrayList<String> getFileTypes() { return new ArrayList<String>(); }
 	
-	/** Initializes the importer */
-	abstract protected void initialize() throws ImporterException;
+	/** Returns the schema information for the specified URI */
+	protected Schema getSchema() throws ImporterException { return null; }
+	
+	/** Initializes the schema structures */
+	abstract protected void initializeSchemaStructures() throws ImporterException;
 	
 	/** Returns the list of schemas which this schema extends */
 	abstract protected ArrayList<Integer> getExtendedSchemaIDs() throws ImporterException;
 	
-	/** Returns the schema elements from the specified URI */
+	/** Returns the schema elements for the specified URI */
 	abstract protected ArrayList<SchemaElement> getSchemaElements() throws ImporterException;
 	
 	/** Generate the schema */
 	final public Schema generateSchema(URI uri) throws ImporterException
-	{
-		// Schema elements can generated separately only for archive importers
-		if(getURIType()!=ARCHIVE)
-			throw new ImporterException(ImporterException.PARSE_FAILURE,"Schemas can only be retrieved for archive importers");
-
-		// Generate the schema
-		this.uri = uri;
-		return ((ArchiveImporter)this).getSchema();
-	}
+		{ this.uri = uri; return getSchema(); }
 	
 	/** Return the schema elements */
 	final public ArrayList<SchemaElement> generateSchemaElements(URI uri) throws ImporterException
@@ -89,7 +84,7 @@ public abstract class SchemaImporter extends Porter
 
 		// Generate the schema elements
 		this.uri = uri;
-		initialize();
+		initializeSchemaStructures();
 		return getSchemaElements();
 	}
 	
@@ -98,7 +93,7 @@ public abstract class SchemaImporter extends Porter
 	{
 		// Initialize the importer
 		this.uri = uri;
-		initialize();
+		initializeSchemaStructures();
 
 		// Generate the schema
 		Schema schema = new Schema(nextId(),name,author,uri==null?"":uri.toString(),getName(),description,false);

@@ -74,7 +74,7 @@ public class OWLImporter extends SchemaImporter implements RDFErrorHandler
 	}
 	
 	/** Initializes the importer for the specified URI */
-	protected void initialize() throws ImporterException
+	protected void initializeSchemaStructures() throws ImporterException
 	{
 		_schemaElements = new ArrayList<SchemaElement>();
 		_entityList = new HashMap<String, Entity>();

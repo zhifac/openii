@@ -109,7 +109,7 @@ public class ArchiveImporter extends SchemaImporter
 		{ return schemaElements; }
 
 	/** Initialize the importer */
-	protected void initialize() throws ImporterException
+	protected void initializeSchemaStructures() throws ImporterException
 	{	
 		try {
 			// Extract out schema graphs from the XML document

@@ -88,7 +88,7 @@ public class CopySchemaImporter extends SchemaImporter
 	}
 
 	/** Initialize the importer if needed */
-	protected void initialize() throws ImporterException
+	protected void initializeSchemaStructures() throws ImporterException
 	{	
 		try {
 			// Define repository to be copied from

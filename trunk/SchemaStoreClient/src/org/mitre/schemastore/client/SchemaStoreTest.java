@@ -1,7 +1,6 @@
 package org.mitre.schemastore.client;
 
 import org.mitre.schemastore.model.Schema;
-import org.mitre.schemastore.model.SchemaElement;
 
 public class SchemaStoreTest
 {
@@ -12,7 +11,8 @@ public class SchemaStoreTest
 	{
 		// Display the schemas found within the repository
 		try {
-			SchemaStoreClient client = new SchemaStoreClient("/home/jchoyt/devel/openii/SchemaStore/SchemaStore.jar");
+			SchemaStoreClient client = new SchemaStoreClient("../SchemaStore/SchemaStore.jar");
+//			SchemaStoreClient client = new SchemaStoreClient("http://ygg:8080/SchemaStore/services/SchemaStore");
 			for(Schema schema : client.getSchemas())
 				System.out.println(schema.getId() + ": " + schema.getName());
 		}
