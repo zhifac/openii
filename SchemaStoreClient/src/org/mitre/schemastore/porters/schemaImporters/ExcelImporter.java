@@ -124,7 +124,7 @@ public class ExcelImporter extends SchemaImporter {
 		return filetypes;
 	}
 
-	protected void initialize() throws ImporterException
+	protected void initializeSchemaStructures() throws ImporterException
 	{
 		try {
 			InputStream excelStream;

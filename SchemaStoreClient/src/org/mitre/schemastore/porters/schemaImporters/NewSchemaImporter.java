@@ -23,7 +23,7 @@ public class NewSchemaImporter extends SchemaImporter
 		{ return NONE; }
 	
 	/** Initializes the importer for the specified URI */
-	protected void initialize() throws ImporterException {}
+	protected void initializeSchemaStructures() throws ImporterException {}
 	
 	/** Returns the list of schemas which this schema extends */
 	protected ArrayList<Integer> getExtendedSchemaIDs() throws ImporterException

@@ -35,9 +35,9 @@ public class DomainValueImporter extends ExcelImporter {
 	}
 
 	@Override
-	protected void initialize() {
+	protected void initializeSchemaStructures() {
 		try {
-			super.initialize();
+			super.initializeSchemaStructures();
 		} catch (ImporterException e) {
 			throw new RuntimeException(e);
 		}

@@ -40,7 +40,7 @@ public class GSIPImporter extends SchemaImporter {
 	public Integer getURIType() { return URI; }
 
 	/** Initializes the importer for the specified URI */
-	protected void initialize() throws ImporterException {
+	protected void initializeSchemaStructures() throws ImporterException {
 		try {
 			//  connect to MS Access database
 	        conn = DriverManager.getConnection("jdbc:odbc:"+uri,"Admin",null); 

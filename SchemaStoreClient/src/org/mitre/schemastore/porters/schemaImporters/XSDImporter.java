@@ -49,7 +49,7 @@ public class XSDImporter extends SchemaImporter
 	}
 	
 	/** Initializes the importer for the specified URI */
-	protected void initialize() throws ImporterException
+	protected void initializeSchemaStructures() throws ImporterException
 	{
 		try {
 			
