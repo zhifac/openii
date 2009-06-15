@@ -25,7 +25,6 @@ import org.mitre.harmony.view.dialogs.mappings.LoadMappingDialog;
 import org.mitre.harmony.view.dialogs.mappings.SaveMappingDialog;
 import org.mitre.harmony.view.dialogs.matcher.MatcherMenu;
 import org.mitre.harmony.view.dialogs.schemas.SchemaDialog;
-import org.mitre.harmony.view.affinity.AffinityDialog;
 import org.mitre.schemastore.model.MappingCell;
 
 /**
@@ -125,9 +124,9 @@ public class HarmonyMenuBar extends JMenuBar
 	/** Drop-down menu found under edit menu bar heading */
 	private class EditMenu extends JMenu implements ActionListener
 	{
-		private JMenuItem selectLinks;	// Option to select all links
-		private JMenuItem removeLinks;	// Option to remove all current links
-		private JMenuItem showTypes;	// Option to show schema data types
+		private JMenuItem editSchemas;	// Option to manage the schemas
+		private JMenuItem selectLinks;		// Option to select all links
+		private JMenuItem removeLinks;		// Option to remove all current links
 		
 		/**
 		 * Initializes the edit drop-down menu
@@ -139,28 +138,28 @@ public class HarmonyMenuBar extends JMenuBar
 		    setMnemonic(KeyEvent.VK_E);
 		    
 			// Initialize project drop-down items
-			selectLinks = new JMenuItem("Select All Links");
+		    editSchemas = new JMenuItem("Edit Schemas");
+		    selectLinks = new JMenuItem("Select All Links");
 			removeLinks = new JMenuItem("Remove All Links");
-			showTypes = new JCheckBoxMenuItem("Show Types");
 			
 			// Attach action listeners to edit drop-down items
+			editSchemas.addActionListener(this);
 			selectLinks.addActionListener(this);
 			removeLinks.addActionListener(this);
-			showTypes.addActionListener(this);
 			
 			// Add edit drop-down items to edit drop-down menu
-		    add(selectLinks);
+			add(editSchemas);
+			add(selectLinks);
 		    add(removeLinks);
-		    addSeparator();
-		    add(showTypes);
-			
-			// Initialize preference menu options
-			showTypes.setSelected(harmonyModel.getPreferences().getShowSchemaTypes());
 		}
 		
 		/** Handles the edit drop-down action selected by the user */
 	    public void actionPerformed(ActionEvent e)
 	    {	    	
+	    	// Handles the editing of mapping schemas
+	    	if(e.getSource() == editSchemas)
+	    		new SchemaDialog(harmonyModel);
+	    	
 	    	// Selects all links currently displayed in Harmony
 	    	if(e.getSource() == selectLinks)
 	    	{
@@ -180,10 +179,6 @@ public class HarmonyMenuBar extends JMenuBar
 	    		}
 	    		harmonyModel.getMappingCellManager().deleteMappingCells();
 	    	}
-	    	
-	    	// Handles the "show types" preference option
-	    	if(e.getSource() == showTypes)
-	    		{ harmonyModel.getPreferences().setShowSchemaTypes(showTypes.isSelected()); }
 	    }
 	}
 
@@ -193,19 +188,19 @@ public class HarmonyMenuBar extends JMenuBar
 		private JRadioButtonMenuItem mappingView;	// Option to view schema mapping
 		private JRadioButtonMenuItem tableView;		// Option to view schema table
 		private JRadioButtonMenuItem heatmapView;	// Option to view heat map
-		private JMenuItem affinityView;				// Option to view Affinity
+		private JMenuItem showTypes;				// Option to show schema data types
 		
 		/** Initializes the view drop-down menu */
 		private ViewMenu()
 		{
-			super("Views");
+			super("View");
 			setMnemonic(KeyEvent.VK_V);
 
 			// Initialize view drop-down items
 			mappingView = new JRadioButtonMenuItem("Mapping View",true);
 			tableView = new JRadioButtonMenuItem("Table View");
 			heatmapView = new JRadioButtonMenuItem("Heatmap View");
-			affinityView = new JMenuItem("Affinity View",KeyEvent.VK_A);
+			showTypes = new JCheckBoxMenuItem("Show Types");
 			
 			// Groups the radio buttons together
 			ButtonGroup group = new ButtonGroup();
@@ -224,24 +219,31 @@ public class HarmonyMenuBar extends JMenuBar
 			mappingView.addActionListener(this);
 			tableView.addActionListener(this);
 			heatmapView.addActionListener(this);
-			affinityView.addActionListener(this);
+			showTypes.addActionListener(this);
 
 			// Add view drop-down items to view drop-down menu
 		    add(mappingView);
 		    add(tableView);
 		    add(heatmapView);
 		    addSeparator();
-		    add(affinityView);
+		    add(showTypes);
+			
+			// Initialize preference menu options
+			showTypes.setSelected(harmonyModel.getPreferences().getShowSchemaTypes());
 		}
 		
 		/** Handles the selection of a view */
 	    public void actionPerformed(ActionEvent e)
 	    {
+	    	// Switch to the selected view
 	    	Object source = e.getSource();
 	    	if(source==mappingView) harmonyModel.getPreferences().setViewToDisplay(HarmonyConsts.MAPPING_VIEW);
 	    	if(source==tableView) harmonyModel.getPreferences().setViewToDisplay(HarmonyConsts.TABLE_VIEW);
 	    	if(source==heatmapView) harmonyModel.getPreferences().setViewToDisplay(HarmonyConsts.HEATMAP_VIEW);
-	    	if(source == affinityView) new AffinityDialog(harmonyModel);
+	    	
+	    	// Handles the "show types" preference option
+	    	if(source == showTypes)
+	    		{ harmonyModel.getPreferences().setShowSchemaTypes(showTypes.isSelected()); }
 	    }
 	}
 	

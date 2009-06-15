@@ -30,7 +30,6 @@ import org.mitre.harmony.model.filters.Focus;
 import org.mitre.harmony.model.mapping.MappingCellManager;
 import org.mitre.harmony.model.mapping.MappingListener;
 import org.mitre.harmony.model.preferences.PreferencesListener;
-import org.mitre.harmony.view.dialogs.schemas.SchemaDialog;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.MappingSchema;
 import org.mitre.schemastore.model.Schema;
@@ -428,21 +427,10 @@ public class SchemaTree extends JTree implements MappingListener, PreferencesLis
 		DefaultMutableTreeNode node = (DefaultMutableTreeNode)path.getLastPathComponent();
 
 		// Handle mouse clicks on the root node
-		if(node.isRoot())
+		if(node.isRoot() && (e.getButton()==MouseEvent.BUTTON3 || e.isMetaDown()))
 		{
-			// If "Add Schemas" selected with left button, allow schema to be added
-			if(e.getX()>getFontMetrics(new JLabel().getFont()).stringWidth("Schemas_"))
-			{
-				if(e.getButton()==MouseEvent.BUTTON1)
-					new SchemaDialog(harmonyModel);
-			}
-			
-			// If right mouse button (or meta key) pressed, display the drop-down menu 
-			else if(e.getButton()==MouseEvent.BUTTON3 || e.isMetaDown())
-			{
-				SchemaTreeNodeMenu menu = new SchemaTreeNodeMenu(this,node,harmonyModel);
-				menu.show(e.getComponent(), e.getX(), e.getY());
-			}
+			SchemaTreeNodeMenu menu = new SchemaTreeNodeMenu(this,node,harmonyModel);
+			menu.show(e.getComponent(), e.getX(), e.getY());
 		}
 		
 		// Handles mouse clicks on all other nodes

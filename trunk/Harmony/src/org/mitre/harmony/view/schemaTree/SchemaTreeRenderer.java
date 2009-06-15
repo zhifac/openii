@@ -19,7 +19,6 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.filters.Focus;
 import org.mitre.harmony.model.search.SearchResult;
-import org.mitre.harmony.view.dialogs.Link;
 import org.mitre.schemastore.model.Domain;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
@@ -83,7 +82,6 @@ class SchemaTreeRenderer extends DefaultTreeCellRenderer
 			JPanel schemaLabelPane = new JPanel();
 			schemaLabelPane.setBackground(Color.white);
 			schemaLabelPane.add(new JLabel("Schemas"));
-			schemaLabelPane.add(new Link("Edit Schemas",null));
 			return schemaLabelPane;
 		}
 		
