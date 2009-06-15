@@ -47,6 +47,7 @@ public class AffinityView extends OpenIIEditor implements AffinityListener
 		ArrayList<Integer> schemaIDs = OpenIIManager.getGroupSchemas(elementID);
 		this.affinityModel =  new AffinityModel(schemaManager, clusterManager);
 		affinity = new AffinityPane(parent, affinityModel, schemaIDs);
+		affinity.getCraigrogram().debug = false;
 		affinity.addAffinityEventListener(this);
 	}	
 	
