@@ -172,6 +172,11 @@ class MatcherDialog extends JDialog implements ActionListener, Runnable
 		MappingCellManager manager = harmonyModel.getMappingCellManager();
 		for (MatchScore matchScore : matchScores.getScores())
 		{
+			// Don't store mapping cells which were already validated
+			Integer mappingCellID = manager.getMappingCellID(matchScore.getElement1(), matchScore.getElement2());
+			if(mappingCellID!=null && manager.getMappingCell(mappingCellID).getValidated()) continue;
+			
+			// Set the mapping cell with the generated match score
 			MappingCell mappingCell = new MappingCell();
 			mappingCell.setId(manager.getMappingCellID(matchScore.getElement1(), matchScore.getElement2()));
 			mappingCell.setElement1(matchScore.getElement1());
