@@ -17,7 +17,7 @@ public class Focus
 	private HierarchicalGraph graph;
 	
 	/** Stores the list of focused IDs */
-	private ArrayList<Integer> focusIDs = new ArrayList<Integer>();
+	private ArrayList<ElementPath> focusPaths = new ArrayList<ElementPath>();
 	
 	/** Stores the list of hidden IDs */
 	private ArrayList<Integer> hiddenIDs = new ArrayList<Integer>();
@@ -28,15 +28,15 @@ public class Focus
 	/** Stores the list of all hidden elements */
 	private HashSet<Integer> hiddenElements;
 	
-	/** Returns the list of ancestor IDs for the specified element */
-	private ArrayList<Integer> getAncestorIDs(Integer elementID)
+	/** Returns the list of descendant IDs for the specified element */
+	private ArrayList<Integer> getDescendantIDs(Integer elementID)
 	{
 		ArrayList<Integer> ancestorIDs = new ArrayList<Integer>();
 		if(!hiddenIDs.contains(elementID))
 			for(SchemaElement childElement : graph.getChildElements(elementID))
 			{
 				ancestorIDs.add(childElement.getId());
-				ancestorIDs.addAll(getAncestorIDs(childElement.getId()));
+				ancestorIDs.addAll(getDescendantIDs(childElement.getId()));
 			}
 		return ancestorIDs;
 	}
@@ -48,34 +48,47 @@ public class Focus
 	/** Returns the schema associated with this focus */
 	public Integer getSchemaID() { return graph.getSchema().getId(); }
 	
-	/** Returns the focus IDs */
-	public ArrayList<Integer> getFocusedIDs() { return focusIDs; }
+	/** Returns the focus paths */
+	public ArrayList<ElementPath> getFocusedPaths() { return focusPaths; }
 
+	/** Returns the focus IDs */
+	public ArrayList<Integer> getFocusedIDs()
+	{
+		ArrayList<Integer> focusIDs = new ArrayList<Integer>();
+		for(ElementPath focusPath : getFocusedPaths())
+			focusIDs.add(focusPath.getElementID());
+		return focusIDs;
+	}
+	
 	/** Returns the hidden IDs */
 	public ArrayList<Integer> getHiddenIDs() { return hiddenIDs; }
 	
 	/** Adds a focus */
-	public void addFocus(Integer elementID)
+	public void addFocus(ElementPath elementPath)
 	{
 		// Get descendants of the specified element
 		ArrayList<Integer> descendantIDs = new ArrayList<Integer>();
-		for(SchemaElement descendant : graph.getDescendantElements(elementID))
+		for(SchemaElement descendant : graph.getDescendantElements(elementPath.getElementID()))
 			descendantIDs.add(descendant.getId());
 		
-		// Remove focus elements which are superseded by the new focus
-		for(Integer focusID : new ArrayList<Integer>(focusIDs))
-			if(descendantIDs.contains(focusID))
-				focusIDs.remove(focusID);
-		
+		// Remove focus elements which are superseded of is a sub-item of the new focus
+		for(ElementPath focusPath : new ArrayList<ElementPath>(focusPaths))
+			if(elementPath.contains(focusPath) || descendantIDs.contains(focusPath.getElementID()))
+				focusPaths.remove(focusPath);
+			
 		// Adds the focus element
-		focusIDs.add(elementID);
+		focusPaths.add(elementPath);
 		elementsInFocus=null;
 		hiddenElements=null;
 	}
 	
 	/** Removes a focus */
-	public void removeFocus(Integer elementID)
-		{ focusIDs.remove(elementID); elementsInFocus=null; hiddenElements=null; }
+	public void removeFocus(ElementPath elementPath)
+		{ focusPaths.remove(elementPath); elementsInFocus=null; hiddenElements=null; }
+	
+	/** Removes all foci */
+	public void removeAllFoci()
+		{ focusPaths.clear(); elementsInFocus=null; hiddenElements=null; }
 	
 	/** Hides the specified element */
 	public void hideElement(Integer elementID)
@@ -86,9 +99,9 @@ public class Focus
 			descendantIDs.add(descendant.getId());
 		
 		// Remove focus elements which are superseded by the hidden element
-		for(Integer focusID : new ArrayList<Integer>(focusIDs))
-			if(descendantIDs.contains(focusID))
-				focusIDs.remove(focusID);		
+		for(ElementPath focusPath : new ArrayList<ElementPath>(focusPaths))
+			if(descendantIDs.contains(focusPath.getElementID()))
+				focusPaths.remove(focusPath);		
 		
 		// Adds the hidden element
 		hiddenIDs.add(elementID);
@@ -101,12 +114,14 @@ public class Focus
 		{ hiddenIDs.remove(elementID); elementsInFocus=null; hiddenElements=null; }
 
 	/** Returns the list of elements in focus */
-	public HashSet<Integer> getFocusedElements()
+	private HashSet<Integer> getFocusedElements()
 	{
 		if(elementsInFocus==null)
 		{
 			// Identify the root IDs
-			ArrayList<Integer> rootIDs = new ArrayList<Integer>(focusIDs);
+			ArrayList<Integer> rootIDs = new ArrayList<Integer>();
+			for(ElementPath focusPath : focusPaths)
+				rootIDs.add(focusPath.getElementID());
 			if(rootIDs.size()==0)
 				for(SchemaElement element : graph.getRootElements())
 					rootIDs.add(element.getId());
@@ -116,7 +131,7 @@ public class Focus
 			for(Integer elementID : rootIDs)
 			{
 				elementsInFocus.add(elementID);
-				elementsInFocus.addAll(getAncestorIDs(elementID));
+				elementsInFocus.addAll(getDescendantIDs(elementID));
 			}
 		}
 		return elementsInFocus;
@@ -147,14 +162,16 @@ public class Focus
 		Integer schemaID = SchemaTree.getSchema(node);
 		if(!getSchemaID().equals(schemaID)) return false;
 		
-		// Check to make sure node exists on path that is focused on
+		// Check to make sure the node is focused on
 		Object elementID = node.getUserObject();
-		while(elementID instanceof Integer && contains((Integer)elementID))
-		{
-			if(focusIDs.contains(elementID)) return true;
-			node = (DefaultMutableTreeNode)node.getParent();
-			elementID = node.getUserObject();
-		}
+		if(!(elementID instanceof Integer)) return false;
+		if(!contains((Integer)elementID)) return false;
+		
+		// Make sure that the node is on the selected path
+		if(focusPaths.size()==0) return true;
+		ElementPath elementPath = SchemaTree.getElementPath(node);
+		for(ElementPath focusPath : focusPaths)
+			if(elementPath.contains(focusPath)) return true;
 		return false;
 	}
 }

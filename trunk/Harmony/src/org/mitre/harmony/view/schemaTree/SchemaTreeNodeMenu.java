@@ -69,13 +69,13 @@ class SchemaTreeNodeMenu extends JPopupMenu implements ActionListener
 			
 			// Retrieve focus information about the element associated with this menu
 			Focus focus = harmonyModel.getFilters().getFocus(tree.getSide(), schemaID);
-			boolean inFocus = harmonyModel.getFilters().inFocus(tree.getSide(),schemaID,elementID);
+			boolean isFocus = focus!=null && focus.getFocusedPaths().contains(SchemaTree.getElementPath(node));
 			boolean isHidden = focus!=null && focus.getHiddenElements().contains(elementID);
 			
 			// Show menu option for allowing focus to be set and cleared
 			if(getComponentCount()>0) add(new JSeparator());
-			if((!inFocus || focus==null || focus.getFocusedIDs().size()==0) && !isHidden) add(setFocus);
-			if(focus!=null && focus.getFocusedIDs().contains(elementID)) add(clearFocus);
+			if(!isFocus && !isHidden) add(setFocus);
+			if(isFocus) add(clearFocus);
 			add(clearAllFoci);
 			
 			// Show menu options for allowing elements to be hidden
@@ -87,7 +87,7 @@ class SchemaTreeNodeMenu extends JPopupMenu implements ActionListener
 			if(focus!=null && focus.getHiddenIDs().contains(elementID)) add(unhideChildElement);			
 			
 			// Show menu option to mark/unmark items as finished
-			if(inFocus)
+			if(harmonyModel.getFilters().inFocus(tree.getSide(),schemaID,elementID))
 			{
 				// Determine if the node and descendants are finished
 				boolean isUnfinished = !harmonyModel.getPreferences().isFinished(schemaID,elementID);
@@ -149,13 +149,13 @@ class SchemaTreeNodeMenu extends JPopupMenu implements ActionListener
 		if(e.getSource()==markFinished) tree.markNodeAsFinished(node,true);
 
 		// Handles focus settings
-		if(e.getSource()==setFocus) filters.addFocus(side,schemaID,elementID);
-		if(e.getSource()==clearFocus) filters.removeFocus(side, schemaID, elementID);
+		if(e.getSource()==setFocus) filters.addFocus(side, schemaID, SchemaTree.getElementPath(node));
+		if(e.getSource()==clearFocus) filters.removeFocus(side, schemaID, SchemaTree.getElementPath(node));
 		if(e.getSource()==clearAllFoci) filters.removeFoci(side);
 
 		// Handles hidden element settings
 		if(e.getSource()==hideChildElement) filters.hideElement(side, schemaID, elementID);
-		if(e.getSource()==unhideChildElement) filters.unhideElement(side,schemaID,elementID);
+		if(e.getSource()==unhideChildElement) filters.unhideElement(side, schemaID, elementID);
 		
 		// Handles the viewing of schema statistics
 		if(e.getSource()==statistics)
