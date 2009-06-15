@@ -8,12 +8,14 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Hashtable;
 
 import org.mitre.schemastore.model.Attribute;
 import org.mitre.schemastore.model.Domain;
 import org.mitre.schemastore.model.DomainValue;
 import org.mitre.schemastore.model.Entity;
+import org.mitre.schemastore.model.Containment;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.porters.ImporterException;
 
@@ -28,6 +30,7 @@ public class GSIPImporter extends SchemaImporter {
 	private ArrayList<Attribute> _attributes;
 	private ArrayList<Domain> _domains;
 	private ArrayList<DomainValue> _enumerants;
+	private ArrayList<Containment> _containments;
 	Connection conn = null; 
             
 	/** Returns the importer name */
@@ -49,6 +52,7 @@ public class GSIPImporter extends SchemaImporter {
 			_attributes = new ArrayList<Attribute>();
 			_domains = new ArrayList<Domain>();
 			_enumerants = new ArrayList<DomainValue>();
+			_containments = new ArrayList<Containment>();
 		}
 		catch(Exception e) { 
 			// If anything goes wrong, alert on the command line.
@@ -70,32 +74,41 @@ public class GSIPImporter extends SchemaImporter {
 	}
 	
 	protected void generate() {
+		// Mapping of gdbTable_PK to SchemaElement id
+		HashMap<String, Integer> EntityKey = new HashMap<String, Integer>();
       try {
+    	Entity tblEntity = null;;      
+    	ResultSet entities = null;  
     	Statement selectEntities = null;
-		selectEntities = conn.createStatement();
-        // Set of Features, with Package associations (2 levels deep).
-        String entitySQL = "SELECT t.tableName AS tableName, g.point as t_P, "
+		
+    	selectEntities = conn.createStatement();
+		
+		// Create nodes for abstract classes in T_AbstractTable -- added by Joel
+		String entitySQL = "SELECT name AS tableName, definition, description, "
+			+ " note AS entityNote, gdbTable_PK AS [key] FROM T_AbstractTable;";
+		entities=selectEntities.executeQuery(entitySQL); 
+
+		while(entities.next()) {
+        	tblEntity = createEntity(entities, EntityKey);  			
+			_entities.add(tblEntity);
+		}
+		
+		
+        // Set of Features, with Package associations (2 levels deep). -- original, by Sarah, Joel added "key"
+        entitySQL = "SELECT t.tableName AS tableName, g.point as t_P, "
         	+ " g.curve as t_C, t.gdbTable_PK AS FTID, g.surface as t_S, ts.note AS entityNote, "
             + " ts.definition AS definition, ts.description AS description, "
-            + " ts.itemIdentifier_PK AS itemIdentifier_PK "
+            + " ts.itemIdentifier_PK AS itemIdentifier_PK, t.gdbTable_PK AS key "
             + " FROM T_Table t, T_TableSpecification ts, T_FeatureGeometry g "
             + " WHERE t.itemIdentifier_FK=ts.itemIdentifier_PK AND g.itemIdentifier_FK=ts.itemIdentifier_PK "
             + " ORDER BY 1 ";
-        ResultSet entities=selectEntities.executeQuery(entitySQL); 
+        entities=selectEntities.executeQuery(entitySQL); 
 
-        Entity tblEntity;      
         while(entities.next()) {
-        	String tblName = entities.getString("tableName").toLowerCase(); // note these match the columns in the  
-        	tblName = firstLetterCapitalize(tblName);   //Make nicer looking with 1st-cap.        	
-            String definition = entities.getString("definition");
-            definition = concatNonNullFields(definition, entities.getString("description"), " [desc] ");
-            definition = concatNonNullFields(definition, entities.getString("entityNote"), " [note] ");
-            
-            String FTID = entities.getString("FTID");  // key to get attributes.
-    		// create an entity for a table
-            tblEntity = new Entity(nextId(), tblName, definition, 0);   			
+        	tblEntity = createEntity(entities, EntityKey);  			
   			_entities.add(tblEntity);
-
+        	String FTID = entities.getString("FTID");  // key to get attributes.
+    		
     		Statement selectAttributes = null;
             selectAttributes = conn.createStatement();
             // Find all attributes belonging to the feature type
@@ -226,6 +239,9 @@ public class GSIPImporter extends SchemaImporter {
             selectAttributes.close();
         } // while Entities
 		selectEntities.close();
+		
+		addContainments(EntityKey);
+		
     	if (conn != null) { 
 		    try { 
 		        conn.close (); 
@@ -263,7 +279,53 @@ public class GSIPImporter extends SchemaImporter {
 		for (int j=0; j<_domains.size(); j++) { schemaElements.add(_domains.get(j)); i++; }
 		for (int j=0; j<_attributes.size(); j++) { schemaElements.add(_attributes.get(j)); i++; }
 		for (int j=0; j<_enumerants.size(); j++) { schemaElements.add(_enumerants.get(j)); i++;	}
+		for (int j=0; j<_containments.size(); j++) { schemaElements.add(_containments.get(j)); i++;	}
 		//System.out.println(i+ " elements.");
 		return schemaElements;
+	}
+	
+	//given a ResultSet (iterated elsewhere) with fields "tableName, definition, description, entityNote", return new Entity
+	private Entity createEntity(ResultSet entities, HashMap<String, Integer> EntityKey){
+		String tblName = null;
+		String definition = null;
+		String key = null;
+		
+		try {
+			tblName = entities.getString("tableName").toLowerCase(); // note these match the columns in the  
+			tblName = firstLetterCapitalize(tblName);   //Make nicer looking with 1st-cap.        	
+			definition = entities.getString("definition");
+			definition = concatNonNullFields(definition, entities.getString("description"), " [desc] ");
+			definition = concatNonNullFields(definition, entities.getString("entityNote"), " [note] ");
+			key = entities.getString("key");
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		int id = nextId();
+		EntityKey.put(key, id);
+
+		return new Entity(id, tblName, definition, 0);
+	}
+	
+	private void addContainments(HashMap<String, Integer> EntityKey) {
+		try {
+			Statement s = conn.createStatement();
+			
+			// Create nodes for abstract classes in T_AbstractTable -- added by Joel
+			String sql = "SELECT gdbTable_FK, parentGdbTable_FK FROM T_Containment;";
+			ResultSet rs = s.executeQuery(sql); 
+	
+			while(rs.next()) {
+				Integer childID = EntityKey.get(rs.getString("gdbTable_FK"));
+				Integer parentID = EntityKey.get(rs.getString("parentGdbTable_FK"));
+				Containment c = new Containment(nextId(), "Containment", null, parentID, childID, 0, 0, 0);
+System.out.println("Adding " + c.getName());
+				_containments.add(c);
+			}
+		}
+		catch (Exception e) {
+			System.out.println("Error adding containments.");
+			e.printStackTrace();
+		}
 	}
 }
