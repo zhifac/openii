@@ -26,11 +26,17 @@ public class GSIPGraphModel extends GraphModel
 	/** Returns the root elements in this graph */
 	public ArrayList<SchemaElement> getRootElements(HierarchicalGraph graph)
 	{
+
 		ArrayList<SchemaElement> result = orderEntitiesByName(graph.getElements(Entity.class));
 		for (SchemaElement schemaElement : graph.getElements(Subtype.class))
 		{
 			Subtype subtype = (Subtype)schemaElement;
 			result.remove(graph.getElement(subtype.getChildID()));
+		}
+		for (SchemaElement schemaElement : graph.getElements(Containment.class))
+		{
+			Containment containment = (Containment)schemaElement;
+			result.remove(graph.getElement(containment.getChildID()));
 		}
 		return result;
 	}
@@ -65,6 +71,13 @@ public class GSIPGraphModel extends GraphModel
 					parentElements.add(graph.getElement(parentID));
 				}
 			}
+			
+			// Retrieve parents via containments.
+			for (Containment containment : graph.getContainments(element.getId()))
+				// might not need second predicate, copied from RelationalGraphModel
+				if(elementID.equals(containment.getChildID()) && !containment.getName().equals(""))
+					parentElements.add(graph.getElement(containment.getParentID()));
+
 		}
 
 		return parentElements;
@@ -90,7 +103,13 @@ public class GSIPGraphModel extends GraphModel
 				if (!elementID.equals(childID))
 					childElements.add(graph.getElement(childID));
 			}
-
+			
+			// Retrieve children via containments.
+			for (Containment containment : graph.getContainments(element.getId()))
+				// might not need second predicate, copied from RelationalGraphModel
+				if(elementID.equals(containment.getParentID()) && !containment.getName().equals(""))
+					childElements.add(graph.getElement(containment.getChildID()));
+							
 		}
 		else if (element instanceof Attribute) {
 			// Retrieve entity attributes		
