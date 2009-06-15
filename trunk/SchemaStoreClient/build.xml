@@ -54,6 +54,7 @@
             </classpath>
             <!-- Pass in the location of the ant file.  This will be used to set up the schemastore db -->
             <sysproperty key="antfile.dir" value="${antfile.dir}"/>
+            <sysproperty key="SchemaStoreJar" value="${SchemaStore}/SchemaStore.jar"/>
             <batchtest fork="yes" todir="${build}">
                 <fileset dir="${src}">
                     <include name="test/**/*Test.java" />

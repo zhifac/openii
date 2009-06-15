@@ -9,7 +9,8 @@ import static org.junit.Assert.*;
 
 public class TestTemplate {
 
-    private java.util.List emptyList;
+    //replace AbstractMappingFunction with the new fixture
+    private AbstractMappingFunction fixture = null;
 
     /**
      * Sets up the test fixture. 
@@ -17,7 +18,15 @@ public class TestTemplate {
      */
     @Before
     public void setUp() {
-        emptyList = new java.util.ArrayList();
+        try
+        {
+            SchemaStoreClient client = new SchemaStoreClient( System.getProperty("SchemaStoreJar" ) );
+            //add test fixtures for the mapping function here
+        }
+        catch (RemoteException e)
+        {
+            System.out.println( "Failed to set up the test SchemaStoreClient" );
+        }
     }
 
     /**
@@ -26,17 +35,13 @@ public class TestTemplate {
      */
     @After
     public void tearDown() {
-        emptyList = null;
+        fixture = null;
     }
     
     @Test
     public void testSomeBehavior() {
-        assertEquals("Empty list should have 0 elements", 0, emptyList.size());
+        //assertEquals("Empty list should have 0 elements", 0, emptyList.size());
     }
 
-    @Test(expected=IndexOutOfBoundsException.class)
-    public void testForException() {
-        Object o = emptyList.get(0);
-    }
 }
 
