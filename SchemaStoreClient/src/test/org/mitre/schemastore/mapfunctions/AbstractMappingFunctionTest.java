@@ -37,7 +37,7 @@ public class AbstractMappingFunctionTest {
     public void setUp() {
         try
         {
-            SchemaStoreClient client = new SchemaStoreClient( "/home/jchoyt/devel/openii/SchemaStore/SchemaStore.jar" );
+            SchemaStoreClient client = new SchemaStoreClient( System.getProperty("SchemaStoreJar" ) );
             testee = new AbstractMappingFunction( )
             {
                 public String getRelationalString() throws IllegalArgumentException, NotImplementedException 

@@ -36,7 +36,7 @@ public class NumericAddTest {
     public void setUp() {
         try
         {
-            SchemaStoreClient client = new SchemaStoreClient( "/home/jchoyt/devel/openii/SchemaStore/SchemaStore.jar" );
+            SchemaStoreClient client = new SchemaStoreClient( System.getProperty("SchemaStoreJar" ) );
             add = new NumericAdd(client);
             add.addInput( 59 ); //Ht attribute 
             add.addInput( 60 ); //Wt attribute
