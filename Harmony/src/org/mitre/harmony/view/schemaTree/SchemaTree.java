@@ -26,6 +26,7 @@ import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
 import org.mitre.harmony.model.HarmonyModel;
+import org.mitre.harmony.model.filters.ElementPath;
 import org.mitre.harmony.model.filters.Focus;
 import org.mitre.harmony.model.mapping.MappingCellManager;
 import org.mitre.harmony.model.mapping.MappingListener;
@@ -255,12 +256,24 @@ public class SchemaTree extends JTree implements MappingListener, PreferencesLis
 	}
 	
 	/** Returns the schema element associated with the tree node */
-	Integer getElement(DefaultMutableTreeNode node)
+	static Integer getElement(DefaultMutableTreeNode node)
 		{ return (node.getUserObject() instanceof Integer) ? (Integer)(node.getUserObject()) : null; }
 	
 	/** Returns the schema node associated with the provided path */
 	public Integer getElement(TreePath path)
 		{ return (Integer)((DefaultMutableTreeNode)path.getLastPathComponent()).getUserObject(); }
+	
+	/** Returns the element path associated with the tree node */
+	static public ElementPath getElementPath(DefaultMutableTreeNode node)
+	{
+		ArrayList<Integer> elementPath = new ArrayList<Integer>();
+		for(TreeNode pathNode : node.getPath())
+		{
+			Integer elementID = getElement((DefaultMutableTreeNode)pathNode);
+			if(elementID!=null) elementPath.add(elementID);
+		}
+		return new ElementPath(elementPath);
+	}
 	
 	/** Expands the specified tree path */
 	public void expandPath(TreePath path)
@@ -533,7 +546,7 @@ public class SchemaTree extends JTree implements MappingListener, PreferencesLis
 
 		// Paint a dashed line only if the focus has been defined.
 		for(Focus focus : harmonyModel.getFilters().getFoci(side))
-			for(Integer focusID : focus.getFocusedIDs())
+			for(ElementPath focusPath : focus.getFocusedPaths())
 			{
 				Graphics2D g2d = (Graphics2D) g;
 				
@@ -542,12 +555,13 @@ public class SchemaTree extends JTree implements MappingListener, PreferencesLis
 				g2d.setStroke(DASHED_LINE);
 				
 				// Draw a box around each node in focus.
-				for(DefaultMutableTreeNode node : getComponentNodes(focusID))
+				for(DefaultMutableTreeNode node : getComponentNodes(focusPath.getElementID()))
 					if(getSchema(node).equals(focus.getSchemaID()))
-					{
-						Rectangle r = computeFocusRectangle(node);
-						g2d.drawRect(r.x, r.y, r.width, r.height);
-					}
+						if(focusPath.equals(SchemaTree.getElementPath(node)))
+						{
+							Rectangle r = computeFocusRectangle(node);
+							g2d.drawRect(r.x, r.y, r.width, r.height);
+						}
 				g2d.setStroke(s);
 			}
 	}

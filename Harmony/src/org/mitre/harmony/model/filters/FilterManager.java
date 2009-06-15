@@ -119,7 +119,7 @@ public class FilterManager extends AbstractManager<FiltersListener> implements M
 	//---------------	
 	
 	/** Adds a focused element to the specified side */
-	public void addFocus(Integer side, Integer schemaID, Integer elementID)
+	public void addFocus(Integer side, Integer schemaID, ElementPath elementPath)
 	{
 		// Retrieve the focus associated with the specified schema
 		Focus focus = getFocus(side,schemaID);
@@ -130,17 +130,17 @@ public class FilterManager extends AbstractManager<FiltersListener> implements M
 		}
 
 		// Adds the specified element to the focus
-		focus.addFocus(elementID);
+		focus.addFocus(elementPath);
 		for(FiltersListener listener : getListeners()) listener.focusModified(side);
 	}
 
 	/** Removes a focused element from the specified side */
-	public void removeFocus(Integer side, Integer schemaID, Integer elementID)
+	public void removeFocus(Integer side, Integer schemaID, ElementPath elementPath)
 	{
 		Focus focus = getFocus(side,schemaID);
 		if(focus!=null)
 		{
-			focus.removeFocus(elementID);
+			focus.removeFocus(elementPath);
 			for(FiltersListener listener : getListeners()) listener.focusModified(side);
 		}
 	}
@@ -149,8 +149,7 @@ public class FilterManager extends AbstractManager<FiltersListener> implements M
 	public void removeFoci(Integer side)
 	{
 		for(Focus focus : side==MappingSchema.LEFT ? leftFoci : rightFoci)
-			for(Integer elementID : new ArrayList<Integer>(focus.getFocusedIDs()))
-				focus.removeFocus(elementID);
+			focus.removeAllFoci();
 		for(FiltersListener listener : getListeners()) listener.focusModified(side);		
 	}
 	
@@ -189,7 +188,7 @@ public class FilterManager extends AbstractManager<FiltersListener> implements M
 	public Integer getFocusCount(Integer side)
 	{
 		Integer count = 0;
-		for(Focus focus : getFoci(side)) count += focus.getFocusedIDs().size();
+		for(Focus focus : getFoci(side)) count += focus.getFocusedPaths().size();
 		return count;
 	}
 	
@@ -205,7 +204,7 @@ public class FilterManager extends AbstractManager<FiltersListener> implements M
 	public boolean inFocus(Integer side, Integer schemaID)
 	{
 		Focus focus = getFocus(side, schemaID);
-		if(focus==null || focus.getFocusedIDs().size()==0) return getFocusCount(side)==0;
+		if(focus==null || focus.getFocusedPaths().size()==0) return getFocusCount(side)==0;
 		return true;
 	}
 	
@@ -217,6 +216,14 @@ public class FilterManager extends AbstractManager<FiltersListener> implements M
 		return focus==null || focus.contains(elementID);
 	}
 
+	/** Indicates if the specified node is in focus */
+	public boolean inFocus(Integer side, Integer schemaID, DefaultMutableTreeNode node)
+	{
+		if(!inFocus(side,schemaID)) return false;
+		Focus focus = getFocus(side, schemaID);
+		return focus==null || focus.contains(node);
+	}
+	
 	//--------------------
 	// Handles visibility
 	//--------------------
@@ -227,7 +234,7 @@ public class FilterManager extends AbstractManager<FiltersListener> implements M
 		// Check that the element is within focus
 		Integer schemaID = SchemaTree.getSchema(node);
 		Object elementID = node.getUserObject();
-		if(elementID instanceof Integer && !inFocus(side, schemaID, (Integer)elementID)) return false;
+		if(elementID instanceof Integer && !inFocus(side, schemaID, node)) return false;
 		
 		// Check that the element is within depth
 		int depth = node.getPath().length-2;

@@ -134,9 +134,9 @@ class MatcherDialog extends JDialog implements ActionListener, Runnable
 	
 					// Set the filter roots
 					Focus focus = filters.getFocus(side,schemaID);
-					if(focus!=null && focus.getFocusedIDs().size()>0)
+					if(focus!=null && focus.getFocusedPaths().size()>0)
 						filteredGraph.setFilteredRoots(focus.getFocusedIDs());
-					
+						
 					// Filter by minimum and maximum depth
 					filteredGraph.setMinDepth(filters.getMinDepth(side));
 					filteredGraph.setMaxDepth(filters.getMaxDepth(side));
