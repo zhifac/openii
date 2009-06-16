@@ -261,7 +261,7 @@ public class SchemaTree extends JTree implements MappingListener, PreferencesLis
 	
 	/** Returns the schema node associated with the provided path */
 	public Integer getElement(TreePath path)
-		{ return (Integer)((DefaultMutableTreeNode)path.getLastPathComponent()).getUserObject(); }
+		{ return getElement((DefaultMutableTreeNode)path.getLastPathComponent()); }
 	
 	/** Returns the element path associated with the tree node */
 	static public ElementPath getElementPath(DefaultMutableTreeNode node)
