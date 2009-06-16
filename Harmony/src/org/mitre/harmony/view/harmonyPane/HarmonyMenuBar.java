@@ -17,6 +17,7 @@ import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.KeyStroke;
 
+import org.mitre.harmony.Harmony;
 import org.mitre.harmony.model.HarmonyConsts;
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.view.dialogs.AboutDialog;
@@ -52,33 +53,46 @@ public class HarmonyMenuBar extends JMenuBar
 			super("Mapping");
 			setMnemonic(KeyEvent.VK_P);
 
-			// Initialize project drop-down items
-		    newMapping = new JMenuItem("New",KeyEvent.VK_N);
-			openMapping = new JMenuItem("Open...",KeyEvent.VK_O);
-			saveMapping = new JMenuItem("Save...",KeyEvent.VK_S);
-			exportMapping = new JMenuItem("Export...",KeyEvent.VK_E);
-			exitApp = new JMenuItem("Exit",KeyEvent.VK_X);
+			// Set up menu for stand-alone mode
+			if(harmonyModel.getBaseFrame() instanceof Harmony)
+			{
+				// Initialize project drop-down items
+			    newMapping = new JMenuItem("New",KeyEvent.VK_N);
+				openMapping = new JMenuItem("Open...",KeyEvent.VK_O);
+				saveMapping = new JMenuItem("Save...",KeyEvent.VK_S);
+				exportMapping = new JMenuItem("Export...",KeyEvent.VK_E);
+				exitApp = new JMenuItem("Exit",KeyEvent.VK_X);
+	
+				// Set accelerator keys for the menu items
+				newMapping.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, ActionEvent.CTRL_MASK));
+				openMapping.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK));
+				saveMapping.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK));
+				
+				// Attach action listeners to project drop-down items
+				newMapping.addActionListener(this);
+				openMapping.addActionListener(this);
+				saveMapping.addActionListener(this);
+				exportMapping.addActionListener(this);
+				exitApp.addActionListener(this);
+				
+				// Add project drop-down items to project drop-down menu
+				add(newMapping);
+				add(openMapping);
+				add(saveMapping);
+				addSeparator();
+				add(exportMapping);
+				addSeparator();
+			    add(exitApp);
+			}
 
-			// Set accelerator keys for the menu items
-			newMapping.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, ActionEvent.CTRL_MASK));
-			openMapping.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK));
-			saveMapping.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK));
-			
-			// Attach action listeners to project drop-down items
-			newMapping.addActionListener(this);
-			openMapping.addActionListener(this);
-			saveMapping.addActionListener(this);
-			exportMapping.addActionListener(this);
-			exitApp.addActionListener(this);
-			
-			// Add project drop-down items to project drop-down menu
-			add(newMapping);
-			add(openMapping);
-			add(saveMapping);
-			addSeparator();
-			add(exportMapping);
-			addSeparator();
-		    add(exitApp);
+			// Otherwise, set up menu to be embedded in OpenII
+			else
+			{
+				saveMapping = new JMenuItem("Save",KeyEvent.VK_S);
+				saveMapping.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK));
+				saveMapping.addActionListener(this);
+				add(saveMapping);
+			}
 		}
 		
 		/** Handles the project drop-down action selected by the user */
@@ -109,8 +123,12 @@ public class HarmonyMenuBar extends JMenuBar
 	    	
 	    	// Save a project
 	    	else if(source==saveMapping)
-	    		{ new SaveMappingDialog(harmonyModel); }
-	    	
+	    	{
+	    		if(harmonyModel.getBaseFrame() instanceof Harmony)
+	    			new SaveMappingDialog(harmonyModel);
+	    		else harmonyModel.getMappingManager().saveMapping(harmonyModel.getMappingManager().getMapping());
+	    	}
+	    
 	    	// Export project
 	    	else if(source==exportMapping)
 	    		{ ExportMappingDialog.exportMapping(harmonyModel); }
