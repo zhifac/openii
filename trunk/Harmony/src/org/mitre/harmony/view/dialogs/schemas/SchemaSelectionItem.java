@@ -10,6 +10,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+import org.mitre.harmony.Harmony;
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.view.dialogs.Link;
 import org.mitre.schemastore.model.Schema;
@@ -42,7 +43,7 @@ class SchemaSelectionItem extends JPanel implements ActionListener
 		checkbox.addActionListener(this);
 		
 		// Initialize the delete link
-		if(deletable) deleteLink = new Link("Delete",this);
+		if(deletable && harmonyModel.getBaseFrame() instanceof Harmony) deleteLink = new Link("Delete",this);
 		
 		// Constructs the check box pane
 		JPanel checkboxPane = new JPanel();

@@ -15,6 +15,7 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
+import org.mitre.harmony.Harmony;
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.view.dialogs.Link;
 import org.mitre.harmony.view.dialogs.TitledPane;
@@ -82,7 +83,9 @@ public class SchemaSelectionPane extends JPanel
 		// Creates the schema selection pane
 		Link link = new Link("Import",new ImportSchema());
 		setLayout(new BorderLayout());
-		add(new TitledPane("Schemas ",link,schemaScrollPane),BorderLayout.CENTER);
+		if(harmonyModel.getBaseFrame() instanceof Harmony) 
+			add(new TitledPane("Schemas ",link,schemaScrollPane),BorderLayout.CENTER);
+		else add(new TitledPane("Schemas",schemaScrollPane),BorderLayout.CENTER);
 	}
 	
 	/** Set the specified schema selection */
