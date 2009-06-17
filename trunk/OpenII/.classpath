@@ -8,9 +8,9 @@
 	<classpathentry kind="lib" path="lib/affinity/Prefuse.jar"/>
 	<classpathentry kind="lib" path="lib/Galaxy.jar" sourcepath="/Galaxy/WebContent"/>
 	<classpathentry kind="lib" path="lib/RMap.jar"/>
-	<classpathentry kind="lib" path="lib/affinity/Affinity.jar"/>
 	<classpathentry kind="lib" path="lib/affinity/edu.iu.iv.visualization.dendrogram.jar"/>
 	<classpathentry kind="lib" path="lib/affinity/ivccore.jar"/>
 	<classpathentry kind="lib" path="lib/Harmony.jar"/>
+	<classpathentry kind="lib" path="lib/affinity/Affinity.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
