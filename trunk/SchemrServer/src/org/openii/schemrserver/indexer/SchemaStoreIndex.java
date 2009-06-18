@@ -42,10 +42,10 @@ public class SchemaStoreIndex {
 			return;
 		}
 
-		String ssUrl = args[0];
+		
 		SchemaStoreClient ssclient;
 		try {
-			ssclient = new SchemaStoreClient(ssUrl);
+			ssclient = new SchemaStoreClient();
 			String testIndexDir = args[1];
 			buildIndex(ssclient, testIndexDir);
 		} catch (RemoteException e) {

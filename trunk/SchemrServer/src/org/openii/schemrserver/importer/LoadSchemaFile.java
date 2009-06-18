@@ -11,6 +11,7 @@ import org.mitre.schemastore.porters.schemaImporters.SchemaImporter;
 import org.mitre.schemastore.porters.schemaImporters.XSDImporter;
 
 
+import org.mitre.schemastore.client.Repository;
 import org.mitre.schemastore.client.SchemaStoreClient;
 
 public class LoadSchemaFile{
@@ -19,7 +20,7 @@ public class LoadSchemaFile{
 	public  static  SchemaStoreClient setClient(){
 		try {
 			System.out.println("Getting new Client");
-			if (client ==null) client = new SchemaStoreClient("http://localhost:8080/SchemaStore/services/SchemaStore");
+			if (client ==null) client = new SchemaStoreClient();
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

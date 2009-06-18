@@ -5,7 +5,7 @@ import org.mitre.schemastore.porters.ImporterException;
 
 public class LoadCSVDirectly extends LoadSchemaFile {
 
-	static String csvFile = "data/schema-mod.csv";
+	static String csvFile = "data/schemas-subset.csv";
 	
 	public static void main(String[] args) {
 		//setClient();

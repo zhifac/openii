@@ -33,7 +33,7 @@ public class SchemaSearch {
 	private static FileWriter f = null; //GraphML Files
 	private static int schemaIndex = 1;
 	private static FileWriter schemas; //Schemas XML File
-	private static double trueScore;
+	private static double trueScore; 
 	private static void newFile(){
 		schemaIndex++;
 		try {
@@ -49,7 +49,6 @@ public class SchemaSearch {
 			f.write("\n\n");
 			
 		} catch (IOException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 			return;
 		}
