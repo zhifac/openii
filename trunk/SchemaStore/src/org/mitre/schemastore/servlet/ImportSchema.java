@@ -8,7 +8,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 
-import org.mitre.schemastore.data.database.Database;
+import org.mitre.schemastore.data.DataManager;
 import org.mitre.schemastore.model.Alias;
 import org.mitre.schemastore.model.Attribute;
 import org.mitre.schemastore.model.Containment;
@@ -127,7 +127,7 @@ public class ImportSchema
 	}
 	
 	/** Imports the specified schema into the web services */
-	static Integer importSchema(SchemaStore client, Schema schema, ArrayList<SchemaElement> elements) throws RemoteException
+	static Integer importSchema(SchemaStore client, DataManager manager, Schema schema, ArrayList<SchemaElement> elements) throws RemoteException
 	{		
 		Integer schemaID = 0;
 		try
@@ -174,12 +174,12 @@ public class ImportSchema
 			Collections.sort(elements,new SchemaElementComparator());
 
 			// Assign universal IDs to all elements
-			Integer elementID = Database.getUniversalIDs(elements.size());
+			Integer elementID = manager.getDatabase().getUniversalIDs(elements.size());
 			for(SchemaElement element : elements)
 				updateElementID(elementRefs,element.getId(),elementID++);
 			
 			// Add schema elements to the web service
-			if(!Database.addSchemaElements(elements)) throw new Exception();
+			if(!manager.getDatabase().addSchemaElements(elements)) throw new Exception();
 		}
 		catch(Exception e) { if(schemaID>0) client.deleteSchema(schemaID); schemaID=0; }
 		return schemaID;

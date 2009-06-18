@@ -7,9 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.HashSet;
 
-import org.mitre.schemastore.data.Groups;
 import org.mitre.schemastore.model.Alias;
 import org.mitre.schemastore.model.Attribute;
 import org.mitre.schemastore.model.Containment;
@@ -33,10 +31,10 @@ import org.mitre.schemastore.model.Subtype;
 public class Database
 {
 	/** Sets up a database connection */
-	static private DatabaseConnection connection = new DatabaseConnection();
+	private DatabaseConnection connection = null;
 	
 	/** Class for returning extensions */
-	static public class Extension
+	public class Extension
 	{
 		/** Stores the schema ID */
 		private Integer schemaID;
@@ -56,7 +54,7 @@ public class Database
 	}
 
 	/** Class for returning a schema group */
-	static public class SchemaGroup
+	public class SchemaGroup
 	{
 		/** Stores the schema ID */
 		private Integer schemaID;
@@ -76,7 +74,7 @@ public class Database
 	}
 	
 	/** Scrub strings to avoid database errors */
-	static private String scrub(String word, int length)
+	private String scrub(String word, int length)
 	{
 		if(word!=null)
 		{
@@ -86,12 +84,16 @@ public class Database
 		return word;
 	}
 	
+	/** Constructs the database class */
+	public Database(DatabaseConnection connection)
+		{ this.connection = connection; }
+	
 	//---------------------------------------
 	// Handles Universal IDs in the Database 
 	//---------------------------------------
 
 	/** Retrieves a universal id */
-	static public Integer getUniversalIDs(int count) throws SQLException
+	public Integer getUniversalIDs(int count) throws SQLException
 	{
 		Statement stmt = connection.getStatement();
 		stmt.executeUpdate("LOCK TABLE universal_id IN exclusive MODE");
@@ -109,7 +111,7 @@ public class Database
 	//---------------------------------
 	
 	/** Retrieves the list of schemas in the repository */
-	static public ArrayList<Schema> getSchemas()
+	public ArrayList<Schema> getSchemas()
 	{
 		ArrayList<Schema> schemas = new ArrayList<Schema>();
 		try {
@@ -123,7 +125,7 @@ public class Database
 	}
 
 	/** Retrieves the specified schema from the repository */
-	static public Schema getSchema(Integer schemaID)
+	public Schema getSchema(Integer schemaID)
 	{
 		Schema schema = null;
 		try {
@@ -137,7 +139,7 @@ public class Database
 	}
 	
 	/** Extends the specified schema */
-	static public Schema extendSchema(Schema schema)
+	public Schema extendSchema(Schema schema)
 	{
 		Schema extendedSchema = null;
 		try {
@@ -158,7 +160,7 @@ public class Database
 	}
 	
 	/** Adds the specified schema */
-	static public Integer addSchema(Schema schema)
+	public Integer addSchema(Schema schema)
 	{
 		Integer schemaID = 0;
 		try {
@@ -178,7 +180,7 @@ public class Database
 	}
 
 	/** Updates the specified schema */
-	static public boolean updateSchema(Schema schema)
+	public boolean updateSchema(Schema schema)
 	{
 		boolean success = false;
 		try {
@@ -197,7 +199,7 @@ public class Database
 	}
 	
 	/** Returns the list of deletable schemas */
-	static public ArrayList<Integer> getDeletableSchemas()
+	public ArrayList<Integer> getDeletableSchemas()
 	{
 		ArrayList<Integer> schemas = new ArrayList<Integer>();
 		try {
@@ -215,7 +217,7 @@ public class Database
 	}
 	
 	/** Deletes the specified schema */
-	static public boolean deleteSchema(int schemaID)
+	public boolean deleteSchema(int schemaID)
 	{		
 		boolean success = false;
 		try {
@@ -249,7 +251,7 @@ public class Database
 	}
 
 	/** Locks the specified schema */
-	static public boolean lockSchema(int schemaID, boolean locked)
+	public boolean lockSchema(int schemaID, boolean locked)
 	{
 		boolean success = false;
 		try {
@@ -272,7 +274,7 @@ public class Database
 	//---------------------------------------
 
 	/** Retrieves the schema groups validation number */
-	static public Integer getSchemaGroupValidationNumber()
+	public Integer getSchemaGroupValidationNumber()
 	{
 		Integer validationNumber = 0;
 		try {
@@ -286,7 +288,7 @@ public class Database
 	}
 	
 	/** Retrieves the list of groups */
-	static public ArrayList<Group> getGroups()
+	public ArrayList<Group> getGroups()
 	{
 		ArrayList<Group> groups = new ArrayList<Group>();
 		try {
@@ -300,7 +302,7 @@ public class Database
 	}
 
 	/** Retrieves the specified group from the repository */
-	static public Group getGroup(Integer groupID)
+	public Group getGroup(Integer groupID)
 	{
 		Group group = null;
 		try {
@@ -314,7 +316,7 @@ public class Database
 	}
 	
 	/** Retrieves the list of subgroups for the specified group */
-	static public ArrayList<Group> getSubgroups(Integer groupID)
+	public ArrayList<Group> getSubgroups(Integer groupID)
 	{
 		ArrayList<Group> groups = new ArrayList<Group>();
 		try {
@@ -328,7 +330,7 @@ public class Database
 	}
 	
 	/** Adds the specified group */
-	static public Integer addGroup(Group group)
+	public Integer addGroup(Group group)
 	{
 		Integer groupID = 0;
 		try {
@@ -348,7 +350,7 @@ public class Database
 	}
 	
 	/** Updates the specified group */
-	static public Boolean updateGroup(Group group)
+	public Boolean updateGroup(Group group)
 	{
 		boolean success = false;
 		try {
@@ -367,7 +369,7 @@ public class Database
 	}
 	
 	/** Deletes the specified group */
-	static public boolean deleteGroup(int groupID)
+	public boolean deleteGroup(int groupID)
 	{	
 		boolean success = false;
 		try {
@@ -387,7 +389,7 @@ public class Database
 	}
 	
 	/** Retrieve the list of schema groups */
-	static public ArrayList<SchemaGroup> getSchemaGroups()
+	public ArrayList<SchemaGroup> getSchemaGroups()
 	{
 		ArrayList<SchemaGroup> schemaGroups = new ArrayList<SchemaGroup>();
 		try {
@@ -401,7 +403,7 @@ public class Database
 	}
 	
 	/** Add the group to the specified schema */
-	static public Boolean addGroupToSchema(Integer schemaID, Integer groupID)
+	public Boolean addGroupToSchema(Integer schemaID, Integer groupID)
 	{
 		Boolean success = false;
 		try {
@@ -423,7 +425,7 @@ public class Database
 	}
 	
 	/** Remove the group to the specified schema */
-	static public Boolean removeGroupFromSchema(Integer schemaID, Integer groupID)
+	public Boolean removeGroupFromSchema(Integer schemaID, Integer groupID)
 	{
 		Boolean success = false;
 		try {
@@ -446,7 +448,7 @@ public class Database
 	//----------------------------------------------
 
 	/** Retrieves the schema extensions validation number */
-	static public Integer getSchemaExtensionsValidationNumber()
+	public Integer getSchemaExtensionsValidationNumber()
 	{
 		Integer validationNumber = 0;
 		try {
@@ -460,7 +462,7 @@ public class Database
 	}
 	
 	/** Retrieves the list of schema extensions */
-	static public ArrayList<Extension> getSchemaExtensions()
+	public ArrayList<Extension> getSchemaExtensions()
 	{
 		ArrayList<Extension> extensions = new ArrayList<Extension>();
 		try {
@@ -474,7 +476,7 @@ public class Database
 	}
 	
 	/** Updates the specified schema parents */
-	static public boolean setSchemaParents(Integer schemaID, ArrayList<Integer> parentIDs)
+	public boolean setSchemaParents(Integer schemaID, ArrayList<Integer> parentIDs)
 	{
 		boolean success = false;
 		try {
@@ -499,7 +501,7 @@ public class Database
 	//-----------------------------------------
 	
 	/** Retrieves the default domain values from the repository */
-	static public ArrayList<Domain> getDefaultDomains()
+	public ArrayList<Domain> getDefaultDomains()
 	{
 		ArrayList<Domain> defaultDomains = new ArrayList<Domain>();
 		try {
@@ -513,7 +515,7 @@ public class Database
 	}
 	
 	/** Retrieves the default domain value count from the repository */
-	static public Integer getDefaultDomainCount()
+	public Integer getDefaultDomainCount()
 	{
 		Integer defaultDomainCount = 0;
 		try {
@@ -526,7 +528,7 @@ public class Database
 	}
 	
 	/** Retrieves the list of base elements for the specified schema in the repository */
-	static public ArrayList<SchemaElement> getBaseElements(Integer schemaID)
+	public ArrayList<SchemaElement> getBaseElements(Integer schemaID)
 	{
 		ArrayList<SchemaElement> baseElements = new ArrayList<SchemaElement>();
 		try {
@@ -613,7 +615,7 @@ public class Database
 	}
 	
 	/** Retrieves the requested schema element from the repository */
-	static public SchemaElement getSchemaElement(Integer schemaElementID)
+	public SchemaElement getSchemaElement(Integer schemaElementID)
 	{
 		SchemaElement schemaElement = null;
 		try {
@@ -722,7 +724,7 @@ public class Database
 	}
 	
 	/** Adds a schema element to the specified schema */
-	static private void insertSchemaElement(Statement stmt, SchemaElement schemaElement) throws SQLException
+	private void insertSchemaElement(Statement stmt, SchemaElement schemaElement) throws SQLException
 	{
 		// Retrieve the schema element name, description, and base ID
 		Integer id = schemaElement.getId();
@@ -782,7 +784,7 @@ public class Database
 	}
 	
 	/** Adds a schema element to the specified schema */
-	static public Integer addSchemaElement(SchemaElement schemaElement)
+	public Integer addSchemaElement(SchemaElement schemaElement)
 	{
 		Integer schemaElementID = 0;
 		try {
@@ -804,7 +806,7 @@ public class Database
 	}
 	
 	/** Adds the schema elements to the specified schema */
-	static public boolean addSchemaElements(ArrayList<SchemaElement> schemaElements)
+	public boolean addSchemaElements(ArrayList<SchemaElement> schemaElements)
 	{
 		try {
 			Statement stmt = connection.getStatement();
@@ -827,7 +829,7 @@ public class Database
 	}
 	
 	/** Updates the specified schema element */
-	static public boolean updateSchemaElement(SchemaElement schemaElement)
+	public boolean updateSchemaElement(SchemaElement schemaElement)
 	{
 		boolean success = false;
 		try {
@@ -906,7 +908,7 @@ public class Database
 	}
 	
 	/** Deletes the specified schema element */
-	static public boolean deleteSchemaElement(int schemaElementID)
+	public boolean deleteSchemaElement(int schemaElementID)
 	{
 		boolean success = false;
 		try {
@@ -934,7 +936,7 @@ public class Database
 	}
 
 	/** Retrieves the list of elements using the specified keyword in the repository */
-	static public ArrayList<SchemaElement> getSchemaElementsForKeyword(String keyword, ArrayList<Integer> groupIDs)
+	public ArrayList<SchemaElement> getSchemaElementsForKeyword(String keyword, ArrayList<Integer> schemaIDs)
 	{
 		ArrayList<SchemaElement> elements = new ArrayList<SchemaElement>();
 		try {
@@ -945,12 +947,9 @@ public class Database
 
 			// Generate the base filter
 			String baseFilter;
-			if(groupIDs.size()>0)
+			if(schemaIDs.size()>0)
 			{
 				baseFilter = "schema_id IN (";
-				HashSet<Integer> schemaIDs = new HashSet<Integer>();
-				for(Integer groupID : groupIDs)
-					schemaIDs.addAll(Groups.getGroupSchemas(groupID));		
 				for(Integer schemaID : schemaIDs)
 					baseFilter += schemaID + ",";
 				baseFilter = baseFilter.substring(0, baseFilter.length()-1) + ")";
@@ -1034,7 +1033,7 @@ public class Database
 	//--------------------------------------
 	
 	/** Retrieve a list of data sources for the specified schema (or all if no schemaID given) */
-	static public ArrayList<DataSource> getDataSources(Integer schemaID)
+	public ArrayList<DataSource> getDataSources(Integer schemaID)
 	{
 		ArrayList<DataSource> dataSources = new ArrayList<DataSource>();
 		try {
@@ -1048,7 +1047,7 @@ public class Database
 	}
 	
 	/** Retrieve the specified data source */
-	static public DataSource getDataSource(Integer dataSourceID)
+	public DataSource getDataSource(Integer dataSourceID)
 	{
 		DataSource dataSource = null;
 		try {
@@ -1062,7 +1061,7 @@ public class Database
 	}
 	
 	/** Retrieve the specified data source based on the specified URL */
-	static public DataSource getDataSourceByURL(String url)
+	public DataSource getDataSourceByURL(String url)
 	{
 		DataSource dataSource = null;
 		try {
@@ -1076,7 +1075,7 @@ public class Database
 	}
 	
 	/** Adds a data source to the specified schema */
-	static public Integer addDataSource(DataSource dataSource)
+	public Integer addDataSource(DataSource dataSource)
 	{
 		Integer dataSourceID = 0;
 		try {
@@ -1096,7 +1095,7 @@ public class Database
 	}
 	
 	/** Updates the specified dataSource */
-	static public boolean updateDataSource(DataSource dataSource)
+	public boolean updateDataSource(DataSource dataSource)
 	{
 		boolean success = false;
 		try {
@@ -1115,7 +1114,7 @@ public class Database
 	}
 	
 	/** Deletes the specified dataSource */
-	static public boolean deleteDataSource(int dataSourceID)
+	public boolean deleteDataSource(int dataSourceID)
 	{
 		boolean success = false;
 		try {
@@ -1138,7 +1137,7 @@ public class Database
 	//----------------------------------
 	
 	/** Retrieves the specified mapping from the repository */
-	static public Mapping getMapping(Integer mappingID)
+	public Mapping getMapping(Integer mappingID)
 	{
 		Mapping mapping = null;
 		try {
@@ -1165,7 +1164,7 @@ public class Database
 	}
 	
 	/** Retrieves the list of mappings in the repository */
-	static public ArrayList<Mapping> getMappings()
+	public ArrayList<Mapping> getMappings()
 	{
 		ArrayList<Mapping> mappings = new ArrayList<Mapping>();
 		try {
@@ -1179,7 +1178,7 @@ public class Database
 	}
 	
 	/** Retrieves the list of mappings associated with the specified schema in the repository */
-	static public ArrayList<Integer> getSchemaMappingIDs(Integer schemaID)
+	public ArrayList<Integer> getSchemaMappingIDs(Integer schemaID)
 	{
 		ArrayList<Integer> mappingIDs = new ArrayList<Integer>();
 		try {
@@ -1193,7 +1192,7 @@ public class Database
 	}
 	
 	/** Adds the specified mapping */
-	static public Integer addMapping(Mapping mapping)
+	public Integer addMapping(Mapping mapping)
 	{
 		Integer mappingID = 0;
 		try {
@@ -1220,7 +1219,7 @@ public class Database
 	}
 
 	/** Updates the specified mapping */
-	static public boolean updateMapping(Mapping mapping)
+	public boolean updateMapping(Mapping mapping)
 	{
 		boolean success = false;
 		try {
@@ -1247,7 +1246,7 @@ public class Database
 	}
 	
 	/** Deletes the specified mapping */
-	static public boolean deleteMapping(int mappingID)
+	public boolean deleteMapping(int mappingID)
 	{	
 		boolean success = false;
 		try {
@@ -1269,7 +1268,7 @@ public class Database
 	}
 	
 	/** Retrieves the list of mapping cells in the repository for the specified mapping */
-	static public ArrayList<MappingCell> getMappingCells(Integer mappingID)
+	public ArrayList<MappingCell> getMappingCells(Integer mappingID)
 	{
 		ArrayList<MappingCell> mappingCells = new ArrayList<MappingCell>();
 		try {
@@ -1283,7 +1282,7 @@ public class Database
 	}
 
 	/** Adds the specified mapping cell */
-	static public Integer addMappingCell(MappingCell mappingCell)
+	public Integer addMappingCell(MappingCell mappingCell)
 	{
 		Integer mappingCellID = 0;
 		try {
@@ -1305,7 +1304,7 @@ public class Database
 	}
 
 	/** Updates the specified mapping cell */
-	static public boolean updateMappingCell(MappingCell mappingCell)
+	public boolean updateMappingCell(MappingCell mappingCell)
 	{
 		boolean success = false;
 		try {
@@ -1325,7 +1324,7 @@ public class Database
 	}
 	
 	/** Deletes the specified mapping cell */
-	static public boolean deleteMappingCell(int mappingCellID)
+	public boolean deleteMappingCell(int mappingCellID)
 	{	
 		boolean success = false;
 		try {
@@ -1348,7 +1347,7 @@ public class Database
 	//-------------------------------------
 
 	/** Sets the specified annotation in the database */
-	static public boolean setAnnotation(int elementID, String attribute, String value)
+	public boolean setAnnotation(int elementID, String attribute, String value)
 	{
 		boolean success = false;
 		try {
@@ -1368,7 +1367,7 @@ public class Database
 	}
 	
 	/** Gets the specified annotation in the database */
-	static public String getAnnotation(int elementID, String attribute)
+	public String getAnnotation(int elementID, String attribute)
 	{
 		String value = null;
 		try {

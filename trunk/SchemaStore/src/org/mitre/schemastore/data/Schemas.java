@@ -4,73 +4,76 @@ package org.mitre.schemastore.data;
 
 import java.util.ArrayList;
 
-import org.mitre.schemastore.data.database.Database;
 import org.mitre.schemastore.model.Schema;
 
 /** Class for managing the current list of schemas in the schema repository */
-public class Schemas
+public class Schemas extends DataCache
 {
+	/** Constructs the schema elements cache */
+	Schemas(DataManager manager)
+		{ super(manager); }
+	
 	/** Returns a listing of all schemas */
-	static public ArrayList<Schema> getSchemas()
-		{ return Database.getSchemas(); }
+	public ArrayList<Schema> getSchemas()
+		{ return getDatabase().getSchemas(); }
 	
 	/** Returns the specified schema */
-	static public Schema getSchema(Integer schemaID)
-		{ return Database.getSchema(schemaID); }
+	public Schema getSchema(Integer schemaID)
+		{ return getDatabase().getSchema(schemaID); }
 
 	/** Adds the specified schema */
-	static public Integer addSchema(Schema schema)
-		{ return Database.addSchema(schema); }
+	public Integer addSchema(Schema schema)
+		{ return getDatabase().addSchema(schema); }
 	
 	/** Extends the specified schema */
-	static public Schema extendSchema(Integer schemaID)
+	public Schema extendSchema(Integer schemaID)
 	{
 		Schema oldSchema = getSchema(schemaID);		
 		if(oldSchema!=null)
-			return Database.extendSchema(getSchema(schemaID));
+			return getDatabase().extendSchema(getSchema(schemaID));
 		return null;
 	}
 	
 	/** Updates the specified schema */
-	static public boolean updateSchema(Schema schema)
+	public boolean updateSchema(Schema schema)
 	{
 		Schema oldSchema = getSchema(schema.getId());
 		if(oldSchema==null) return false;
-		return Database.updateSchema(schema);
+		return getDatabase().updateSchema(schema);
 	}
 	
 	/** Unlocks the specified schema */
-	static public boolean unlockSchema(Integer schemaID)
+	public boolean unlockSchema(Integer schemaID)
 	{
-		if(Database.getSchemaMappingIDs(schemaID).size()>0) return false;
+		if(getDatabase().getSchemaMappingIDs(schemaID).size()>0) return false;
 		if(!getSchema(schemaID).getType().equals("Manual")) return false;
-		for(Integer childSchemaID : SchemaRelationships.getChildren(schemaID))
+		for(Integer childSchemaID : getManager().getSchemaRelationships().getChildren(schemaID))
 			if(getSchema(childSchemaID).getLocked()) return false;
-		return Database.lockSchema(schemaID,false);
+		return getDatabase().lockSchema(schemaID,false);
 	}
 	
 	/** Locks the specified schema */
-	static public boolean lockSchema(Integer schemaID)
-		{ return Database.lockSchema(schemaID,true); }
+	public boolean lockSchema(Integer schemaID)
+		{ return getDatabase().lockSchema(schemaID,true); }
 	
 	/** Indicates that the schema is able to be deleted */
-	static public boolean isDeletable(Integer schemaID)
+	public boolean isDeletable(Integer schemaID)
 	{
-		Integer children = SchemaRelationships.getChildren(schemaID).size();
-		Integer dataSources = DataSources.getDataSources(schemaID).size();
-		Integer mappings = Database.getSchemaMappingIDs(schemaID).size();
+		Integer children = getManager().getSchemaRelationships().getChildren(schemaID).size();
+		Integer dataSources = getManager().getDataSources().getDataSources(schemaID).size();
+		Integer mappings = getDatabase().getSchemaMappingIDs(schemaID).size();
 		return children==0 && dataSources==0 && mappings==0;
 	}
 	
 	/** Returns the list of deletable schemas */
-	static public ArrayList<Integer> getDeletableSchemas()
-		{ return Database.getDeletableSchemas(); }
+	public ArrayList<Integer> getDeletableSchemas()
+		{ return getDatabase().getDeletableSchemas(); }
 	
 	/** Removes the specified schema */
-	static public boolean deleteSchema(Integer schemaID)
+	public boolean deleteSchema(Integer schemaID)
 	{
 		if(isDeletable(schemaID))
-			return Database.deleteSchema(schemaID);
+			return getDatabase().deleteSchema(schemaID);
 		return false;
 	}
 }

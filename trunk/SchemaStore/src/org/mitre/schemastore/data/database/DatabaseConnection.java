@@ -3,6 +3,7 @@
 package org.mitre.schemastore.data.database;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -20,8 +21,8 @@ import java.util.regex.Pattern;
 public class DatabaseConnection
 {
 	// Constants for indicating if the database connection is to Postgres or Derby
-	static private final Integer POSTGRES = 0;
-	static private final Integer DERBY = 1;
+	static public final Integer POSTGRES = 0;
+	static public final Integer DERBY = 1;
 	
 	// Stores the database connection info
 	private Integer databaseType = null;
@@ -44,7 +45,7 @@ public class DatabaseConnection
 	}
 	
 	/** Constructs the connection from the configuration file */
-	DatabaseConnection()
+	public DatabaseConnection()
 	{
 		// Load database properties from file
 		try {
@@ -60,22 +61,32 @@ public class DatabaseConnection
 			databaseName = getValue(buffer,"databaseName");
 			databaseUser = getValue(buffer,"databaseUser");
 			databasePassword = getValue(buffer,"databasePassword");
-
-			// If no server was given, use Derby as the database
-			databaseType = databaseLoc.equals("") ? DERBY : POSTGRES;
-			if(databaseType.equals(DERBY))
+			
+			// Assign generic location if none given
+			if(databaseLoc.equals(""))
 			{
 				String databasePath = getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
 				databasePath = databasePath.replaceAll(".*:","").replaceAll("\\%20"," ");
-				if(databasePath.endsWith("SchemaStore.jar"))
-					databaseLoc = databasePath.replace("/SchemaStore.jar","");
+				if(databasePath.endsWith("SchemaStoreClient.jar"))
+					databaseLoc = databasePath.replace("/SchemaStoreClient.jar","");
 				else if(databasePath.endsWith("/build/classes/"))
 					databaseLoc = databasePath.replaceAll("/build/classes/","");
 				else databaseLoc = databasePath.replaceAll("/WEB-INF/.*","");
 			}
+			
+			// If no server was given, use Derby as the database
+			databaseType = POSTGRES;
+			try { new File(databaseLoc).mkdirs(); databaseType = DERBY; } catch(Exception e) {}
 		}
 		catch(IOException e)
 			{ System.out.println("(E)DatabaseConnection - schemastore.xml has failed to load!\n"+e.getMessage()); }
+	}
+	
+	/** Constructs the connection from the specified settings */
+	public DatabaseConnection(Integer type, String server, String database, String user, String password)
+	{
+		databaseType = type; databaseLoc = server; databaseName = database;
+		databaseUser = user; databasePassword = password;
 	}
 	
 	/** Creates a sql statement */
