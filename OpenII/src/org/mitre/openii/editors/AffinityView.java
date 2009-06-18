@@ -51,6 +51,9 @@ public class AffinityView extends OpenIIEditor implements AffinityListener
 		affinity.addAffinityEventListener(this);
 	}	
 	
+	
+	//AffinityListener methods:
+	
 	/** Handles a double-click on a cluster within Affinity */
 	public void clusterDoubleClicked(ClusterGroup cluster, Object source) {
 		//Display the TF-IDF dialog for the cluster
@@ -61,6 +64,7 @@ public class AffinityView extends OpenIIEditor implements AffinityListener
 
 	/** Handles a double-click on a schema within Affinity */
 	public void schemaDoubleClicked(Integer schemaID, Object source) {
+		//Display the default editor for schemas in a new tab
 		EditorManager.launchDefaultEditor(affinity.getSchema(schemaID)); 
 	}
 
