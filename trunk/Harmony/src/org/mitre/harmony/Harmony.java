@@ -5,6 +5,7 @@ package org.mitre.harmony;
 import java.awt.Toolkit;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.net.URI;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -15,6 +16,7 @@ import org.mitre.harmony.model.SchemaStoreManager;
 import org.mitre.harmony.model.mapping.MappingListener;
 import org.mitre.harmony.view.dialogs.mappings.SaveMappingDialog;
 import org.mitre.harmony.view.harmonyPane.HarmonyFrame;
+import org.mitre.schemastore.client.Repository;
 
 /** Main Harmony class */
 public class Harmony extends JFrame implements MappingListener, WindowListener
@@ -84,13 +86,20 @@ public class Harmony extends JFrame implements MappingListener, WindowListener
 	/** Launches Harmony */
 	static public void main(String args[])
 	{
-		// Get the service address
-		String serviceAddress = ConfigManager.getParm("schemastore");
-		if(serviceAddress==null)
-			ConfigManager.setParm("schemastore", serviceAddress = "../SchemaStore/SchemaStore.jar");
+		// Retrieve the repository information
+		String typeParm = ConfigManager.getParm("repository.type");
+		String locationParm = ConfigManager.getParm("repository.location");
+		String databaseParm = ConfigManager.getParm("repository.database");
+		String usernameParm = ConfigManager.getParm("repository.username");
+		String passwordParm = ConfigManager.getParm("repository.password");
+		
+		// Create a repository connection
+		Integer type = typeParm.equals("service")?Repository.SERVICE:typeParm.equals("postgres")?Repository.POSTGRES:Repository.DERBY;
+		URI uri = null;	try { uri = new URI(locationParm); } catch(Exception e) {}
+		Repository repository = new Repository(type,uri,databaseParm,usernameParm,passwordParm);
 
 		// Launch Harmony
-		if(SchemaStoreManager.setConnection(serviceAddress)) new Harmony();
+		if(SchemaStoreManager.setConnection(repository)) new Harmony();
 		else System.out.println("(E) Failed to connect to SchemaStore");
 	}
 }

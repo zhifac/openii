@@ -3,6 +3,7 @@ package org.mitre.harmony.model;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 
+import org.mitre.schemastore.client.Repository;
 import org.mitre.schemastore.client.SchemaStoreClient;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
@@ -33,9 +34,9 @@ public class SchemaStoreManager
 	}
 	
 	/** Sets the connection using the provided service address */
-	public static boolean setConnection(String serviceAddress)
+	public static boolean setConnection(Repository repository)
 	{
-		try { client = new SchemaStoreClient(serviceAddress); }
+		try { client = new SchemaStoreClient(repository); }
 		catch(Exception e) { System.out.println("(E)SchemaStoreManager.setConnection - " + e.getMessage()); }
 		return isConnected();
 	}
