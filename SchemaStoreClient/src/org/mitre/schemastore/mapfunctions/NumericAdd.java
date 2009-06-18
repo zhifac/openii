@@ -35,6 +35,17 @@ public class NumericAdd extends AbstractMappingFunction
 
     public NumericAdd( SchemaStoreClient client )
     {
+        this.client = client;
+        setMetaData();
+    }
+
+    public NumericAdd()
+    {
+        setMetaData();
+    }
+
+    private void setMetaData()
+    {
         KEY = String.valueOf( getClass().getName() );
         minArgs = 2;
         maxArgs = 2;
@@ -44,9 +55,8 @@ public class NumericAdd extends AbstractMappingFunction
         displayName = "Numeric Add";
         description = "Takes in two REALs and outputs a REAL.  Casts will be necessary to get int values, however some databases will do the cast for you.";
         version = "1.0";
-        this.client = client;
     }
-    
+
     public String getRelationalString() throws IllegalArgumentException
     {
         if( inputs.size() != 2 )
