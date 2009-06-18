@@ -23,9 +23,9 @@ import org.mitre.schemastore.model.SchemaElement;
 public class SelectedInfoManager extends AbstractManager<SelectedInfoListener> implements MappingListener, MappingCellListener, FiltersListener
 {
 	// Constants for defining how to adjust the selected items
-	static private final int ADD = 0;
-	static private final int REMOVE = 1;
-	static private final int REPLACE = 2;
+	protected static final int ADD = 0;
+	protected static final int REMOVE = 1;
+	protected static final int REPLACE = 2;
 	
 	/** Stores the displayed left element */
 	private Integer displayedLeftElement = null;
@@ -40,10 +40,10 @@ public class SelectedInfoManager extends AbstractManager<SelectedInfoListener> i
 	private HashSet<Integer> selectedRightElements = new HashSet<Integer>();
 
 	/** Stores the selected mapping cells */
-	private HashSet<Integer> selectedMappingCells = new HashSet<Integer>();
+	protected HashSet<Integer> selectedMappingCells = new HashSet<Integer>();
 	
 	/** Returns the specified list of selected elements */
-	private HashSet<Integer> getSelectedElementSet(Integer role)
+	protected HashSet<Integer> getSelectedElementSet(Integer role)
 		{ return role==MappingSchema.LEFT ? selectedLeftElements : selectedRightElements; }
 	
 	/** Constructor used to initialize the selected info */
@@ -75,7 +75,7 @@ public class SelectedInfoManager extends AbstractManager<SelectedInfoListener> i
 	// ------------ Handles the selecting of the various pieces of information -------------
 
 	/** Updates the set as specified */
-	private boolean updateSet(HashSet<Integer> set, List<Integer> items, Integer mode)
+	protected boolean updateSet(HashSet<Integer> set, List<Integer> items, Integer mode)
 	{
 		// Check to make sure updates are possible
 		boolean containsOne=false, containsAll=true;
@@ -166,7 +166,7 @@ public class SelectedInfoManager extends AbstractManager<SelectedInfoListener> i
 	}
 
 	/** Updates the displayed elements */
-	private void updateDisplayedElements()
+	protected void updateDisplayedElements()
 	{
 		Integer leftElement = null, rightElement = null;
 
