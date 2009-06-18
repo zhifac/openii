@@ -1,3 +1,9 @@
 <config>
-  <schemastore>../SchemaStore/SchemaStore.jar</schemastore>
+  <repository>
+    <type>derby</type>
+    <location></location>
+	<database>schemastore</database>
+    <username>postgres</username>
+    <password>postgres</password>
+  </repository>
 </config>
