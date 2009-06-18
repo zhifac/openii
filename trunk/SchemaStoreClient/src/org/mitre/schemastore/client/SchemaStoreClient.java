@@ -82,7 +82,7 @@ public class SchemaStoreClient
 			{
 				Integer type = repository.getType().equals(Repository.POSTGRES) ? DatabaseConnection.POSTGRES : DatabaseConnection.DERBY;
 				Class<?> types[] = new Class[] {Integer.class,String.class,String.class,String.class,String.class};
-				Object args[] = new Object[] {type,repository.getURI().toString(),repository.getDatabaseName(),repository.getDatabaseName(),repository.getDatabasePassword()};
+				Object args[] = new Object[] {type,repository.getURI().toString(),repository.getDatabaseName(),repository.getDatabaseUser(),repository.getDatabasePassword()};
 				Constructor<?> constructor = SchemaStore.class.getConstructor(types);
 				schemaStore = constructor.newInstance(args);
 			}
