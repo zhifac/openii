@@ -83,7 +83,8 @@
             </classpath>
         </javac>
 		<copy file="src/porters.xml" todir="build/classes"/>
-    </target>
+        <copy file="src/mappingfunctions.xml" todir="build/classes"/>
+</target>
 
 	<!-- Builds the SchemaStoreClient jar -->
     <target name="buildSchemaStoreClient" depends="compile">
