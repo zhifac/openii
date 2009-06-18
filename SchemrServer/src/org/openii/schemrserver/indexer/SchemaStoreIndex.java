@@ -52,7 +52,6 @@ public class SchemaStoreIndex {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
 	}
 
 	public static void buildIndex(SchemaStoreClient ssclient, String testIndexDir) {
@@ -146,6 +145,7 @@ public class SchemaStoreIndex {
 			IndexSearcher isearcher = new IndexSearcher(reader);
 			
 			org.apache.lucene.search.Query luceneQuery = translateQuery(schemrQuery);
+
 			
 			Hits hits = isearcher.search(luceneQuery);
 			
@@ -173,9 +173,11 @@ public class SchemaStoreIndex {
 	}
 
 	private static org.apache.lucene.search.Query translateQuery(Query schemrQuery) throws ParseException {
+		
 		Analyzer analyzer = new StandardAnalyzer();
         QueryParser qp = new MultiFieldQueryParser(SchemaStoreIndex.TYPES, analyzer);
         String queryString = schemrQuery.toKeywordSearchString();
+        
         System.out.println(queryString);
         return qp.parse(queryString);
 	}

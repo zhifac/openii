@@ -18,7 +18,7 @@ public class LoadCSV extends LoadSchemaFile{
 		Runtime rt= Runtime.getRuntime();
 		try {
 			rt.exec("python " + ROOT + script + " " + ROOT + " " + limit);
-			Thread.sleep(5000); // do nothing for 1000 miliseconds (1 second- needed for script to execute)
+			Thread.sleep(1000); // do nothing for 1000 miliseconds (1 second- needed for script to execute)
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -31,13 +31,15 @@ public class LoadCSV extends LoadSchemaFile{
 		      }    
 		    };
 		ROOT += "ddl/";
+		
 	    File schemasDir = new File(ROOT);
 		File [] schemaList = schemasDir.listFiles(filter);
+		
 		for (File f : schemaList) {
 			System.out.println(f.getName().substring(0, f.getName().length()-4));
 	        
 	         try {
-				loadSchema(f, f.getName().substring(0, f.getName().length()-4), "akannan", "CSV-import");
+				loadSchema(f, f.getName().substring(0, f.getName().length()-4), "akannan", "CSVimport");
 			} catch (ImporterException e) {
 				System.err.println("WARNING: " + e.getMessage());
 			} catch (URISyntaxException e) {

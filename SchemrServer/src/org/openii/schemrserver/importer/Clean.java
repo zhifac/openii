@@ -20,7 +20,6 @@ public class Clean extends LoadSchemaFile{
 				return;
 			}
 			for (Integer i : deletableSchemas){
-				
 				try {
 					client.deleteSchema(i);
 					System.out.println("Delete Schema ID: " + i);

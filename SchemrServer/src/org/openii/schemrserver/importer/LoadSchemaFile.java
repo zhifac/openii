@@ -5,6 +5,7 @@ import java.net.URISyntaxException;
 import java.rmi.RemoteException;
 
 import org.mitre.schemastore.porters.ImporterException;
+import org.mitre.schemastore.porters.schemaImporters.CSVImporter;
 import org.mitre.schemastore.porters.schemaImporters.DDLImporter;
 import org.mitre.schemastore.porters.schemaImporters.SchemaImporter;
 import org.mitre.schemastore.porters.schemaImporters.XSDImporter;
@@ -14,10 +15,11 @@ import org.mitre.schemastore.client.SchemaStoreClient;
 
 public class LoadSchemaFile{
 	
-	protected static SchemaStoreClient client;
+	protected static SchemaStoreClient client = null;
 	public  static  SchemaStoreClient setClient(){
 		try {
-			client = new SchemaStoreClient("http://localhost:8080/SchemaStore/services/SchemaStore");
+			System.out.println("Getting new Client");
+			if (client ==null) client = new SchemaStoreClient("http://localhost:8080/SchemaStore/services/SchemaStore");
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -31,7 +33,10 @@ public class LoadSchemaFile{
 		// pick a loader
 		if (file.getName().endsWith("xsd")) {
 			importer = new XSDImporter();
-		} else if (file.getName().endsWith("sql") || file.getName().endsWith("ddl")) {
+		} else if(file.getName().endsWith("csv")){
+			importer = new CSVImporter();
+		}
+		else if (file.getName().endsWith("sql") || file.getName().endsWith("ddl")) {
 			importer = new DDLImporter();
 		}
 		importer.importSchema(name, author, description, new URI(url));
