@@ -2,8 +2,8 @@ package org.mitre.openii.views.repositories;
 
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
-import org.mitre.openii.model.Repository;
 import org.mitre.openii.model.RepositoryManager;
+import org.mitre.schemastore.client.Repository;
 
 public class RepositoryContentProvider implements ITreeContentProvider
 {

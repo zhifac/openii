@@ -3,7 +3,7 @@ package org.mitre.openii.views.repositories.menu;
 import org.eclipse.jface.action.Action;
 import org.eclipse.swt.widgets.Shell;
 import org.mitre.openii.application.OpenIIActivator;
-import org.mitre.openii.model.Repository;
+import org.mitre.schemastore.client.Repository;
 
 public class RepositoryAction extends Action
 {

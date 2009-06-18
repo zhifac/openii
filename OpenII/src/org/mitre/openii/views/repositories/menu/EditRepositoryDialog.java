@@ -18,11 +18,11 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.mitre.openii.application.OpenIIActivator;
-import org.mitre.openii.model.Repository;
 import org.mitre.openii.widgets.BasicWidgets;
 import org.mitre.openii.widgets.OptionsPanel;
 import org.mitre.openii.widgets.OptionPane;
 import org.mitre.openii.widgets.URIField;
+import org.mitre.schemastore.client.Repository;
 
 /** Constructs the Edit Repository Dialog */
 public class EditRepositoryDialog extends TitleAreaDialog implements ActionListener, ModifyListener, SelectionListener

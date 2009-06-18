@@ -1,10 +1,9 @@
 package org.mitre.openii.model;
 
-import java.io.File;
 import java.net.URI;
 import java.util.ArrayList;
 
-import org.mitre.openii.application.OpenIIActivator;
+import org.mitre.schemastore.client.Repository;
 import org.mitre.schemastore.client.SchemaStoreClient;
 
 /**
@@ -22,21 +21,12 @@ public class RepositoryManager
 	/** Initializes the schema store repositories */
 	static
 	{
-		// Create a connection to the local schema store jar
-		try {
-			File file = new File(OpenIIActivator.getBundleFile(),"SchemaStore.jar");
-			if(!file.exists()) file = new File(OpenIIActivator.getBundleFile(),"../../SchemaStore.jar");
-			repositories.add(new Repository("Local Repository",Repository.DERBY,file.toURI(),"schemastore","",""));
-		} catch(Exception e) {}
-			
-		// Creates a connection to the demo server
-		try {
-			repositories.add(new Repository("SchemaStore",Repository.SERVICE,new URI("http://ygg:8080/SchemaStoreForDemo/services/SchemaStore"),"","",""));
-		} catch(Exception e) {}
-			
 		// Make a connection to schema store
-		try { client = new SchemaStoreClient(repositories.get(0).getURI().toString().replaceAll("%20", " ")); }
-		catch(Exception e) { System.out.println("(E) RepositoryManager - " + e.getMessage()); }
+		try {
+			repositories.add(new Repository("Local Repository",Repository.DERBY,new URI("."),"schemastore","",""));
+			repositories.add(new Repository("SchemaStore",Repository.SERVICE,new URI("http://ygg:8080/SchemaStoreForDemo/services/SchemaStore"),"","",""));
+			client = new SchemaStoreClient(repositories.get(1));
+		} catch(Exception e) { System.out.println("(E) RepositoryManager - " + e.getMessage()); }
 	}	
 	
 	/** Returns the list of available repositories */
