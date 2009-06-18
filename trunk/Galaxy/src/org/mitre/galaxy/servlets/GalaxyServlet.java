@@ -5,12 +5,14 @@ package org.mitre.galaxy.servlets;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.URI;
 import java.util.ArrayList;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.mitre.schemastore.client.Repository;
 import org.mitre.schemastore.client.SchemaStoreClient;
 
 /**
@@ -31,8 +33,20 @@ public class GalaxyServlet extends HttpServlet
 			// Initialize the schema store client
 			if(client==null)
 			{
-				String webService = req.getSession().getServletContext().getInitParameter("webServiceHost");
-				client = new SchemaStoreClient(webService);
+				// Retrieve the repository information
+				String typeParm = req.getSession().getServletContext().getInitParameter("connectionType");
+				String locationParm = req.getSession().getServletContext().getInitParameter("connectionLocation");
+				String databaseParm = req.getSession().getServletContext().getInitParameter("connectionDatabase");
+				String usernameParm = req.getSession().getServletContext().getInitParameter("connectionUsername");
+				String passwordParm = req.getSession().getServletContext().getInitParameter("connectionPassword");
+				
+				// Create a repository connection
+				Integer type = typeParm.equals("service")?Repository.SERVICE:typeParm.equals("postgres")?Repository.POSTGRES:Repository.DERBY;
+				URI uri = null;	try { uri = new URI(locationParm); } catch(Exception e) {}
+				Repository repository = new Repository(type,uri,databaseParm,usernameParm,passwordParm);
+				
+				// Connects to the client
+				client = new SchemaStoreClient(repository);
 			}
 
 			// Determine the specified action
