@@ -1,56 +1,21 @@
 package org.openii.schemrserver.importer;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
 import java.net.URISyntaxException;
 import org.mitre.schemastore.porters.ImporterException;
 
 public class LoadCSV extends LoadSchemaFile{
-	private static String ROOT = "data/";
-	private static String script = "makeDDL.py";
-	
-	private static int limit = 100;
+	private static String csvFile = "data/schemas-subset.csv";
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
 		setClient();
-		Runtime rt= Runtime.getRuntime();
-		try {
-			rt.exec("python " + ROOT + script + " " + ROOT + " " + limit);
-			Thread.sleep(1000); // do nothing for 1000 miliseconds (1 second- needed for script to execute)
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return;
-		}
-		
-		FileFilter filter = new FileFilter () {
-		      public boolean accept(File pathname) {
-		        return pathname.getName().endsWith("ddl");
-		      }    
-		    };
-		ROOT += "ddl/";
-		
-	    File schemasDir = new File(ROOT);
-		File [] schemaList = schemasDir.listFiles(filter);
-		
-		for (File f : schemaList) {
-			System.out.println(f.getName().substring(0, f.getName().length()-4));
-	        
-	         try {
-				loadSchema(f, f.getName().substring(0, f.getName().length()-4), "akannan", "CSVimport");
-			} catch (ImporterException e) {
-				System.err.println("WARNING: " + e.getMessage());
-			} catch (URISyntaxException e) {
-				System.err.println("ERROR: " + e.getMessage());
-				System.exit(-1);
-			}
-			
-	    }
-		
-		
-		/*
 		File file = new File(csvFile);
 		FileInputStream fis = null;
 	    BufferedInputStream bis = null;
@@ -67,10 +32,13 @@ public class LoadCSV extends LoadSchemaFile{
 	    	  if(occurrences > 2 && occurrences < 12 && line.length > 5){ //Filter interesting schemas
 	    		  for (int i=1; i< line.length -1; i++){
 	    			  int end = line[i].length()-1; 
-	    			  System.out.println(line[i].substring((i==1)?1:0, end));
+	    			  line[i] = line[i].substring((i==1)?1:0, end);
+	    			  if (line[i].endsWith("*") || line[i].startsWith("\"\"")) continue;
+	    			  if (line[i].endsWith(":")) line[i]=line[i].substring(0, line[i].length()-1);
+	    			  System.out.println(line[i]);
 					};
+		    		  System.out.println("--");
 	    		  }
-	    		  System.out.println("--");
 	      }
 	      fis.close();
 	      bis.close();
@@ -78,7 +46,7 @@ public class LoadCSV extends LoadSchemaFile{
 	    	System.err.println("CSV could not be read");
 	    	e.printStackTrace();
 	    }
-	    */
+	    
 	}
 
 }

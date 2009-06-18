@@ -6,9 +6,11 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URI;
 import java.rmi.RemoteException;
 import java.util.Properties;
 
+import org.mitre.schemastore.client.Repository;
 import org.mitre.schemastore.client.SchemaStoreClient;
 import org.mitre.schemastore.model.Alias;
 import org.mitre.schemastore.model.Attribute;
@@ -33,9 +35,8 @@ public class SchemaUtility {
 	public static SchemaStoreClient getCLIENT() {
 		if (CLIENT == null) {
 			try {
-				CLIENT = new SchemaStoreClient("http://localhost:8080/SchemaStore/services/SchemaStore");
-			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
+				CLIENT = new SchemaStoreClient(new Repository(Repository.SERVICE, new URI("http://localhost:8080/SchemaStore/services/SchemaStore"), "", "", ""));
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
