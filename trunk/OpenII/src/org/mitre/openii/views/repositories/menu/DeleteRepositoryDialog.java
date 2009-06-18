@@ -2,8 +2,8 @@ package org.mitre.openii.views.repositories.menu;
 
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Shell;
-import org.mitre.openii.model.Repository;
 import org.mitre.openii.model.RepositoryManager;
+import org.mitre.schemastore.client.Repository;
 
 /** Constructs the Delete Repository Dialog class */
 public class DeleteRepositoryDialog
