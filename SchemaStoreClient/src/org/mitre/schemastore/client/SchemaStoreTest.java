@@ -1,5 +1,7 @@
 package org.mitre.schemastore.client;
 
+import java.net.URI;
+
 import org.mitre.schemastore.model.Schema;
 
 public class SchemaStoreTest
@@ -11,8 +13,9 @@ public class SchemaStoreTest
 	{
 		// Display the schemas found within the repository
 		try {
-			SchemaStoreClient client = new SchemaStoreClient("../SchemaStore/SchemaStore.jar");
-//			SchemaStoreClient client = new SchemaStoreClient("http://ygg:8080/SchemaStore/services/SchemaStore");
+			Repository repository = new Repository(Repository.DERBY,new URI("."),"schemastore","postgres","postgres");
+//			Repository repository = new Repository(Repository.SERVER,new URI("http://ygg:8080/SchemaStore/services/SchemaStore"),"","","");
+			SchemaStoreClient client = new SchemaStoreClient(repository);
 			for(Schema schema : client.getSchemas())
 				System.out.println(schema.getId() + ": " + schema.getName());
 		}

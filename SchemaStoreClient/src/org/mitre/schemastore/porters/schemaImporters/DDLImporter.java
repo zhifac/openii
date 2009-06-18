@@ -82,12 +82,4 @@ public class DDLImporter extends SchemaImporter
 		catch(Exception e) { System.out.print( e.getClass().getName() + ": " ); e.printStackTrace();
         throw new ImporterException(ImporterException.PARSE_FAILURE,e.getMessage()); }
 	}
-
-	public static void main(String[] args) throws IOException, ImporterException {
-		File ddl = new File(args[0]);
-		DDLImporter tester = new DDLImporter();
-		tester.setClient(new org.mitre.schemastore.client.SchemaStoreClient(
-				"../SchemaStore/SchemaStore.jar"));
-		tester.importSchema(ddl.getName(), System.getProperty("user.name"), "Good description of the database goes here", ddl.toURI());
-	}
 }

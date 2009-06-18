@@ -5,7 +5,6 @@
       <schemaImporter>org.mitre.schemastore.porters.schemaImporters.ArchiveImporter</schemaImporter>
       <schemaImporter>org.mitre.schemastore.porters.schemaImporters.DDLImporter</schemaImporter>
       <schemaImporter>org.mitre.schemastore.porters.schemaImporters.ExtendSchemaImporter</schemaImporter>
-      <schemaImporter>org.mitre.schemastore.porters.schemaImporters.CopySchemaImporter</schemaImporter>
       <schemaImporter>org.mitre.schemastore.porters.schemaImporters.OWLImporter</schemaImporter>
       <schemaImporter>org.mitre.schemastore.porters.schemaImporters.XSDImporter</schemaImporter>
       <schemaImporter>org.mitre.schemastore.porters.schemaImporters.DomainValueImporter</schemaImporter>

@@ -5,9 +5,6 @@ import java.util.*;
 import org.xml.sax.*;
 import org.xml.sax.helpers.*;
 import org.mitre.schemastore.mapfunctions.*;
-import org.mitre.schemastore.model.*;
-import org.mitre.schemastore.client.*;
-import java.rmi.RemoteException;
 import org.junit.*;
 import static org.junit.Assert.*;
 

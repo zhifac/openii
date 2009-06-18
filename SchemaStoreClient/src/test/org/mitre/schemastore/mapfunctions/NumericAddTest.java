@@ -18,7 +18,6 @@
 package test.org.mitre.schemastore.mapfunctions;
 
 import org.mitre.schemastore.mapfunctions.*;
-import org.mitre.schemastore.model.*;
 import org.mitre.schemastore.client.*;
 import java.rmi.RemoteException;
 import org.junit.*;
@@ -36,7 +35,7 @@ public class NumericAddTest {
     public void setUp() {
         try
         {
-            SchemaStoreClient client = new SchemaStoreClient( System.getProperty("SchemaStoreJar" ) );
+            SchemaStoreClient client = new SchemaStoreClient();
             add = new NumericAdd(client);
             add.addInput( 59 ); //Ht attribute 
             add.addInput( 60 ); //Wt attribute
