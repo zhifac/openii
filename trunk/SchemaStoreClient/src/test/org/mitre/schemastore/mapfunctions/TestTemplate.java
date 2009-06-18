@@ -1,11 +1,9 @@
 package test.org.mitre.schemastore.mapfunctions;
 
 import org.mitre.schemastore.mapfunctions.*;
-import org.mitre.schemastore.model.*;
 import org.mitre.schemastore.client.*;
 import java.rmi.RemoteException;
 import org.junit.*;
-import static org.junit.Assert.*;
 
 public class TestTemplate {
 
@@ -20,7 +18,7 @@ public class TestTemplate {
     public void setUp() {
         try
         {
-            SchemaStoreClient client = new SchemaStoreClient( System.getProperty("SchemaStoreJar" ) );
+            SchemaStoreClient client = new SchemaStoreClient();
             //add test fixtures for the mapping function here
         }
         catch (RemoteException e)

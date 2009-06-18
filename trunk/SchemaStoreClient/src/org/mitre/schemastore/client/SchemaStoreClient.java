@@ -2,14 +2,13 @@
 
 package org.mitre.schemastore.client;
 
-import java.io.File;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import org.mitre.schemastore.data.database.DatabaseConnection;
 import org.mitre.schemastore.model.Alias;
 import org.mitre.schemastore.model.Attribute;
 import org.mitre.schemastore.model.Containment;
@@ -26,6 +25,7 @@ import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.SchemaElementList;
 import org.mitre.schemastore.model.Subtype;
 import org.mitre.schemastore.model.graph.Graph;
+import org.mitre.schemastore.servlet.SchemaStore;
 import org.mitre.schemastore.servlet.SchemaStoreProxy;
 
 /**
@@ -58,25 +58,35 @@ public class SchemaStoreClient
 	}
 	
 	/** Constructor for the Schema Store Client */
-	public SchemaStoreClient(String serviceAddress) throws RemoteException
+	public SchemaStoreClient() throws RemoteException
 	{
 		try {
-			// Connect to a local SchemaStore jar file
-			File file = new File(serviceAddress.replaceFirst("^file:/",""));
-			if(file.exists())
+			Constructor<?> constructor = SchemaStore.class.getConstructor(new Class<?>[]{});
+			schemaStore = constructor.newInstance(new Object[]{});		
+		} catch(Exception e) { throw new RemoteException("(E) Failed to connect to SchemaStore: " + e.getMessage()); }
+	}
+	
+	/** Constructor for the Schema Store Client */
+	public SchemaStoreClient(Repository repository) throws RemoteException
+	{
+		try {
+			// Connect to a SchemaStore web server
+			if(repository.getType().equals(Repository.SERVICE))
 			{
-				URLClassLoader loader = new URLClassLoader(new URL[] {file.toURI().toURL()},this.getClass().getClassLoader());
-				Class<?> schemaStoreClass = loader.loadClass("org.mitre.schemastore.servlet.SchemaStore");
-				schemaStore = schemaStoreClass.newInstance();
+				schemaStore = new SchemaStoreProxy(repository.getURI().toString());
+				getSchemas();				
 			}
-
-			// Connect to a SchemaStore server
+			
+			// Connects to a database
 			else
 			{
-				schemaStore = new SchemaStoreProxy(serviceAddress);
-				getSchemas();
+				Integer type = repository.getType().equals(Repository.POSTGRES) ? DatabaseConnection.POSTGRES : DatabaseConnection.DERBY;
+				Class<?> types[] = new Class[] {Integer.class,String.class,String.class,String.class,String.class};
+				Object args[] = new Object[] {type,repository.getURI().toString(),repository.getDatabaseName(),repository.getDatabaseName(),repository.getDatabasePassword()};
+				Constructor<?> constructor = SchemaStore.class.getConstructor(types);
+				schemaStore = constructor.newInstance(args);
 			}
-		} catch(Exception e) { throw new RemoteException("(E) Failed to connect to SchemaStore at " + serviceAddress); }
+		} catch(Exception e) { throw new RemoteException("(E) Failed to connect to SchemaStore: " + e.getMessage()); }
 	}
 	
 	//------------------
