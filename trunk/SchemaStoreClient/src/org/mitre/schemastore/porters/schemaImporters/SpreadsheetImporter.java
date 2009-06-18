@@ -16,11 +16,9 @@
 
 package org.mitre.schemastore.porters.schemaImporters;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -229,15 +227,6 @@ public class SpreadsheetImporter extends SchemaImporter {
 		} catch (IOException e) {
 			throw new ImporterException(ImporterException.PARSE_FAILURE, e.getMessage());
 		}
-	}
-
-	public static void main(String[] args) throws IOException, URISyntaxException,
-	ImporterException {
-		File excel = new File(args[0]);
-		SpreadsheetImporter tester = new SpreadsheetImporter();
-		tester.setClient(new org.mitre.schemastore.client.SchemaStoreClient(
-				"../SchemaStore/SchemaStore.jar"));
-		tester.importSchema(excel.getName(), System.getProperty("user.name"), "Good description of the spreadsheet goes here", excel.toURI());
 	}
 
 	protected ArrayList<SchemaElement> generateSchemaElementList() {
