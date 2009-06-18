@@ -8,14 +8,13 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 
-import org.mitre.schemastore.data.database.Database;
 import org.mitre.schemastore.data.database.Database.Extension;
 
 /** Class for managing the current list of schema relationships */
-public class SchemaRelationships
-{
+public class SchemaRelationships extends DataCache
+{	
 	/** Private class for managing schema linkages */
-	static private class SchemaLinks
+	private class SchemaLinks
 	{
 		// Stores the linkages
 		private HashMap<Integer,ArrayList<Integer>> links = new HashMap<Integer,ArrayList<Integer>>();
@@ -38,19 +37,19 @@ public class SchemaRelationships
 	}
 
 	/** Stores the validation number */
-	static private Integer validationNumber = 0;
+	private Integer validationNumber = 0;
 	
 	/** Stores a mapping of schema parents */
-	static private SchemaLinks parents = new SchemaLinks();
+	private SchemaLinks parents = new SchemaLinks();
 	
 	/** Stores a mapping of schema children */
-	static private SchemaLinks children = new SchemaLinks();
+	private SchemaLinks children = new SchemaLinks();
 	
 	/** Refreshes the schema relationships */
-	static void recacheAsNeeded()
+	void recacheAsNeeded()
 	{
 		// Check to see if the schema relationships have changed any
-		Integer newValidationNumber = Database.getSchemaExtensionsValidationNumber();
+		Integer newValidationNumber = getDatabase().getSchemaExtensionsValidationNumber();
 		if(!newValidationNumber.equals(validationNumber))
 		{
 			validationNumber = newValidationNumber;
@@ -60,7 +59,7 @@ public class SchemaRelationships
 			children.links.clear();
 			
 			// Caches the schema relationships
-			for(Extension extension : Database.getSchemaExtensions())
+			for(Extension extension : getDatabase().getSchemaExtensions())
 			{
 				parents.addLink(extension.getExtensionID(),extension.getSchemaID());
 				children.addLink(extension.getSchemaID(),extension.getExtensionID());
@@ -68,56 +67,60 @@ public class SchemaRelationships
 		}
 	}
 	
+	/** Constructs the schema elements cache */
+	SchemaRelationships(DataManager manager)
+		{ super(manager); }
+	
 	//------------------
 	// Public Functions
 	//------------------
 	
 	/** Returns the parents for the specified schema */
-	static public ArrayList<Integer> getParents(Integer schemaID)
+	public ArrayList<Integer> getParents(Integer schemaID)
 		{ recacheAsNeeded(); return getParentsInternal(schemaID); }
 	
 	/** Returns the children for the specified schema */
-	static public ArrayList<Integer> getChildren(Integer schemaID)
+	public ArrayList<Integer> getChildren(Integer schemaID)
 		{ recacheAsNeeded(); return getChildrenInternal(schemaID); }
 	
 	/** Returns the ancestors for the specified schema */
-	static public ArrayList<Integer> getAncestors(Integer schemaID)
+	public ArrayList<Integer> getAncestors(Integer schemaID)
 		{ recacheAsNeeded(); return getAncestorsInternal(schemaID); }
 	
 	/** Returns the descendants of the specified schema */
-	static public ArrayList<Integer> getDescendants(Integer schemaID)
+	public ArrayList<Integer> getDescendants(Integer schemaID)
 		{ recacheAsNeeded(); return getDescendantsInternal(schemaID); }
 	
 	/** Returns the schemas associated with the specified schema */
-	static public ArrayList<Integer> getAssociatedSchemas(Integer schemaID)
+	public ArrayList<Integer> getAssociatedSchemas(Integer schemaID)
 		{ recacheAsNeeded(); return getAssociatedSchemasInternal(schemaID); }		
 
 	/** Returns the root of the specified schemas */
-	static public Integer getRootSchema(Integer schema1ID, Integer schema2ID)
+	public Integer getRootSchema(Integer schema1ID, Integer schema2ID)
 		{ recacheAsNeeded(); return getRootSchemaInternal(schema1ID, schema2ID); }
 	
 	/** Returns the path from the specified root schema and this schema */
-	static public ArrayList<Integer> getSchemaPath(Integer rootID, Integer schemaID)
+	public ArrayList<Integer> getSchemaPath(Integer rootID, Integer schemaID)
 		{ recacheAsNeeded(); return getSchemaPathInternal(rootID, schemaID); }
 	
 	/** Sets the parent schemas for the specified schema */
-	static public boolean setParents(Integer schemaID, ArrayList<Integer> parentIDs)
-		{ return Database.setSchemaParents(schemaID,parentIDs); }
+	public boolean setParents(Integer schemaID, ArrayList<Integer> parentIDs)
+		{ return getDatabase().setSchemaParents(schemaID,parentIDs); }
 
 	//-------------------------------------------------
 	// Internal instantiations of the public functions
 	//-------------------------------------------------
 	
 	/** Returns the parents for the specified schema */
-	static ArrayList<Integer> getParentsInternal(Integer schemaID)
+	ArrayList<Integer> getParentsInternal(Integer schemaID)
 		{ return parents.getLinks(schemaID); }
 	
 	/** Returns the children for the specified schema */
-	static ArrayList<Integer> getChildrenInternal(Integer schemaID)
+	ArrayList<Integer> getChildrenInternal(Integer schemaID)
 		{ return children.getLinks(schemaID); }
 	
 	/** Returns the ancestors for the specified schema */
-	static ArrayList<Integer> getAncestorsInternal(Integer schemaID)
+	ArrayList<Integer> getAncestorsInternal(Integer schemaID)
 	{
 		HashSet<Integer> ancestors = new HashSet<Integer>();
 		for(Integer parentSchemaID : parents.getLinks(schemaID))
@@ -130,7 +133,7 @@ public class SchemaRelationships
 	}
 	
 	/** Returns the descendants of the specified schema */
-	static ArrayList<Integer> getDescendantsInternal(Integer schemaID)
+	ArrayList<Integer> getDescendantsInternal(Integer schemaID)
 	{
 		HashSet<Integer> descendants = new HashSet<Integer>();
 		for(Integer childSchemaID : children.getLinks(schemaID))
@@ -143,7 +146,7 @@ public class SchemaRelationships
 	}
 	
 	/** Returns the schemas associated with the specified schema */
-	static ArrayList<Integer> getAssociatedSchemasInternal(Integer schemaID)
+	ArrayList<Integer> getAssociatedSchemasInternal(Integer schemaID)
 	{		
 		// Initialize a list to track all schemas that need to be examined
 		LinkedList<Integer> list = new LinkedList<Integer>();
@@ -167,7 +170,7 @@ public class SchemaRelationships
 	}
 
 	/** Returns the root of the specified schemas */
-	static Integer getRootSchemaInternal(Integer schema1ID, Integer schema2ID)
+	Integer getRootSchemaInternal(Integer schema1ID, Integer schema2ID)
 	{
 		// Create a list of all ancestors (including self) of the specified schema
 		Collection<Integer> ancestors = getAncestorsInternal(schema1ID);
@@ -187,7 +190,7 @@ public class SchemaRelationships
 	}
 	
 	/** Returns the path from the specified root schema and this schema */
-	static ArrayList<Integer> getSchemaPathInternal(Integer rootID, Integer schemaID)
+	ArrayList<Integer> getSchemaPathInternal(Integer rootID, Integer schemaID)
 	{
 		ArrayList<Integer> path = new ArrayList<Integer>();
 		if(!rootID.equals(schemaID))

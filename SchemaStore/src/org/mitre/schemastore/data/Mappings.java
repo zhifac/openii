@@ -4,46 +4,49 @@ package org.mitre.schemastore.data;
 
 import java.util.ArrayList;
 
-import org.mitre.schemastore.data.database.Database;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
 
 /** Class for managing the mappings in the schema repository */
-public class Mappings
+public class Mappings extends DataCache
 {
+	/** Constructs the mappings cache */
+	Mappings(DataManager manager)
+		{ super(manager); }
+	
 	/** Returns a listing of all mappings */
-	static public ArrayList<Mapping> getMappings()
-		{ return Database.getMappings(); }
+	public ArrayList<Mapping> getMappings()
+		{ return getDatabase().getMappings(); }
 	
 	/** Retrieve the specified mapping */
-	static public Mapping getMapping(Integer mappingID)
-		{ return Database.getMapping(mappingID); }
+	public Mapping getMapping(Integer mappingID)
+		{ return getDatabase().getMapping(mappingID); }
 	
 	/** Add the specified mapping */
-	static public Integer addMapping(Mapping mapping)
-		{ return Database.addMapping(mapping); }
+	public Integer addMapping(Mapping mapping)
+		{ return getDatabase().addMapping(mapping); }
 	
 	/** Update the specified mapping */
-	static public Boolean updateMapping(Mapping mapping)
-		{ return Database.updateMapping(mapping); }
+	public Boolean updateMapping(Mapping mapping)
+		{ return getDatabase().updateMapping(mapping); }
 
 	/** Delete the specified mapping */
-	static public Boolean deleteMapping(Integer mappingID)
-		{ return Database.deleteMapping(mappingID); }
+	public Boolean deleteMapping(Integer mappingID)
+		{ return getDatabase().deleteMapping(mappingID); }
 	
 	/** Get the mapping cells for the specified schema */
-	static public ArrayList<MappingCell> getMappingCells(Integer mappingID)
-		{ return Database.getMappingCells(mappingID); }
+	public ArrayList<MappingCell> getMappingCells(Integer mappingID)
+		{ return getDatabase().getMappingCells(mappingID); }
 
 	/** Add the specified mapping cell */
-	static public Integer addMappingCell(MappingCell mappingCell)
-		{ return Database.addMappingCell(mappingCell); }
+	public Integer addMappingCell(MappingCell mappingCell)
+		{ return getDatabase().addMappingCell(mappingCell); }
 
 	/** Update the specified mapping cell */
-	static public Boolean updateMappingCell(MappingCell mappingCell)
-		{ return Database.updateMappingCell(mappingCell); }
+	public Boolean updateMappingCell(MappingCell mappingCell)
+		{ return getDatabase().updateMappingCell(mappingCell); }
 	
 	/** Delete the specified mapping cell */
-	static public Boolean deleteMappingCell(Integer mappingCellID)
-		{ return Database.deleteMappingCell(mappingCellID); }
+	public Boolean deleteMappingCell(Integer mappingCellID)
+		{ return getDatabase().deleteMappingCell(mappingCellID); }
 }

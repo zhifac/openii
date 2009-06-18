@@ -4,37 +4,40 @@ package org.mitre.schemastore.data;
 
 import java.util.ArrayList;
 
-import org.mitre.schemastore.data.database.Database;
 import org.mitre.schemastore.model.DataSource;
 
 /** Class for managing the data sources in the schema repository */
-public class DataSources
+public class DataSources extends DataCache
 {	
+	/** Constructs the data sources cache */
+	DataSources(DataManager manager)
+		{ super(manager); }
+	
 	/** Get a list of all data sources */
-	static public ArrayList<DataSource> getAllDataSources()
-		{ return Database.getDataSources(null); }
+	public ArrayList<DataSource> getAllDataSources()
+		{ return getDatabase().getDataSources(null); }
 			
 	/** Get a list of data sources for the specified schema */
-	static public ArrayList<DataSource> getDataSources(Integer schemaID)
-		{ return Database.getDataSources(schemaID); }
+	public ArrayList<DataSource> getDataSources(Integer schemaID)
+		{ return getDatabase().getDataSources(schemaID); }
 
 	/** Get the specified data source */
-	static public DataSource getDataSource(Integer dataSourceID)
-		{ return Database.getDataSource(dataSourceID); }
+	public DataSource getDataSource(Integer dataSourceID)
+		{ return getDatabase().getDataSource(dataSourceID); }
 
 	/** Get the data source specified by its URL */
-	static public DataSource getDataSourceByURL(String url)
-		{ return Database.getDataSourceByURL(url); }
+	public DataSource getDataSourceByURL(String url)
+		{ return getDatabase().getDataSourceByURL(url); }
 
 	/** Add the specified data source */
-	static public Integer addDataSource(DataSource dataSource)
-		{ return Database.addDataSource(dataSource); }
+	public Integer addDataSource(DataSource dataSource)
+		{ return getDatabase().addDataSource(dataSource); }
 
 	/** Update the specified data source */
-	static public Boolean updateDataSource(DataSource dataSource)
-		{ return Database.updateDataSource(dataSource); }
+	public Boolean updateDataSource(DataSource dataSource)
+		{ return getDatabase().updateDataSource(dataSource); }
 
 	/** Delete the specified data source */
-	static public Boolean deleteDataSource(Integer dataSourceID)
-		{ return Database.deleteDataSource(dataSourceID); }
+	public Boolean deleteDataSource(Integer dataSourceID)
+		{ return getDatabase().deleteDataSource(dataSourceID); }
 }

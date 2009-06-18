@@ -5,27 +5,30 @@ package org.mitre.schemastore.data;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.mitre.schemastore.data.database.Database;
 import org.mitre.schemastore.data.database.Database.SchemaGroup;
 import org.mitre.schemastore.model.Group;
 
 /** Class for managing the groups in the schema repository */
-public class Groups
+public class Groups extends DataCache
 {
 	/** Stores the validation number */
-	static private Integer validationNumber = 0;
+	private Integer validationNumber = 0;
 	
 	/** Stores a mapping of schema groups */
-	static private HashMap<Integer,ArrayList<Integer>> schemaGroups = new HashMap<Integer,ArrayList<Integer>>();
+	private HashMap<Integer,ArrayList<Integer>> schemaGroups = new HashMap<Integer,ArrayList<Integer>>();
 	
 	/** Stores a mapping of group schemas */
-	static private HashMap<Integer,ArrayList<Integer>> groupSchemas = new HashMap<Integer,ArrayList<Integer>>();
+	private HashMap<Integer,ArrayList<Integer>> groupSchemas = new HashMap<Integer,ArrayList<Integer>>();
+	
+	/** Constructs the groups cache */
+	Groups(DataManager manager)
+		{ super(manager); }
 	
 	/** Refreshes the schema groups */
-	static private void recacheAsNeeded()
+	private void recacheAsNeeded()
 	{
 		// Check to see if the schema groups have changed any
-		Integer newValidationNumber = Database.getSchemaGroupValidationNumber();
+		Integer newValidationNumber = getDatabase().getSchemaGroupValidationNumber();
 		if(!newValidationNumber.equals(validationNumber))
 		{
 			validationNumber = newValidationNumber;
@@ -35,7 +38,7 @@ public class Groups
 			groupSchemas.clear();
 			
 			// Caches the schema groups
-			for(SchemaGroup schemaGroup : Database.getSchemaGroups())
+			for(SchemaGroup schemaGroup : getDatabase().getSchemaGroups())
 			{
 				// Place in schema group hash
 				ArrayList<Integer> schemaGroupArray = schemaGroups.get(schemaGroup.getSchemaID());
@@ -51,35 +54,35 @@ public class Groups
 	}
 	
 	/** Returns a listing of all groups */
-	static public ArrayList<Group> getGroups()
-		{ return Database.getGroups(); }
+	public ArrayList<Group> getGroups()
+		{ return getDatabase().getGroups(); }
 
 	/** Returns the specified group */
-	static public Group getGroup(Integer groupID)
-		{ return Database.getGroup(groupID); }
+	public Group getGroup(Integer groupID)
+		{ return getDatabase().getGroup(groupID); }
 	
 	/** Returns the listing of subgroups for the specified group */
-	static public ArrayList<Group> getSubgroups(Integer groupID)
-		{ return Database.getSubgroups(groupID); }
+	public ArrayList<Group> getSubgroups(Integer groupID)
+		{ return getDatabase().getSubgroups(groupID); }
 	
 	/** Adds the specified group */
-	static public Integer addGroup(Group group)
-		{ return Database.addGroup(group); }
+	public Integer addGroup(Group group)
+		{ return getDatabase().addGroup(group); }
 	
 	/** Updates the specified group */
-	static public boolean updateGroup(Group group)
-		{ return Database.updateGroup(group); }
+	public boolean updateGroup(Group group)
+		{ return getDatabase().updateGroup(group); }
 	
 	/** Removes the specified group (and all subgroups) */
-	static public boolean deleteGroup(Integer groupID)
+	public boolean deleteGroup(Integer groupID)
 	{
 		for(Group subgroup : getSubgroups(groupID))
 			if(!deleteGroup(subgroup.getId())) return false;
-		return Database.deleteGroup(groupID);
+		return getDatabase().deleteGroup(groupID);
 	}
 	
 	/** Returns the list of group schemas */
-	static public ArrayList<Integer> getGroupSchemas(Integer groupID)
+	public ArrayList<Integer> getGroupSchemas(Integer groupID)
 	{
 		recacheAsNeeded();
 		if(groupSchemas.get(groupID)!=null)
@@ -88,7 +91,7 @@ public class Groups
 	}
 	
 	/** Returns the list of schema groups */
-	static public ArrayList<Integer> getSchemaGroups(Integer schemaID)
+	public ArrayList<Integer> getSchemaGroups(Integer schemaID)
 	{
 		recacheAsNeeded();
 		if(schemaGroups.get(schemaID)!=null)
@@ -97,10 +100,10 @@ public class Groups
 	}
 	
 	/** Adds a group to the specified schema */
-	static public Boolean addGroupToSchema(Integer schemaID, Integer groupID)
-		{ return Database.addGroupToSchema(schemaID, groupID); }
+	public Boolean addGroupToSchema(Integer schemaID, Integer groupID)
+		{ return getDatabase().addGroupToSchema(schemaID, groupID); }
 
 	/** Removes a group from the specified schema */
-	static public Boolean removeGroupFromSchema(Integer schemaID, Integer groupID)
-		{ return Database.removeGroupFromSchema(schemaID, groupID); }
+	public Boolean removeGroupFromSchema(Integer schemaID, Integer groupID)
+		{ return getDatabase().removeGroupFromSchema(schemaID, groupID); }
 }

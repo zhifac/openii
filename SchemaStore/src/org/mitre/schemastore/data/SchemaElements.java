@@ -4,8 +4,8 @@ package org.mitre.schemastore.data;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 
-import org.mitre.schemastore.data.database.Database;
 import org.mitre.schemastore.model.Alias;
 import org.mitre.schemastore.model.Attribute;
 import org.mitre.schemastore.model.Containment;
@@ -18,10 +18,14 @@ import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.Subtype;
 
 /** Class for managing the current list of schema elements in the schema repository */
-public class SchemaElements
+public class SchemaElements extends DataCache
 {
+	/** Constructs the schema elements cache */
+	SchemaElements(DataManager manager)
+		{ super(manager); }
+	
 	/** Returns the alias to use for the specified schema */
-	static private Alias getAlias(Integer schemaID, ArrayList<Alias> aliases)
+	private Alias getAlias(Integer schemaID, ArrayList<Alias> aliases)
 	{
 		// First, check to see if alias at this level
 		Alias pickedAlias = null;
@@ -31,7 +35,7 @@ public class SchemaElements
 		if(pickedAlias!=null) return pickedAlias;
 				
 		// Next, determine alias based on parents
-		ArrayList<Integer> parentSchemaIDs = SchemaRelationships.getParentsInternal(schemaID);
+		ArrayList<Integer> parentSchemaIDs = getManager().getSchemaRelationships().getParentsInternal(schemaID);
 		if(parentSchemaIDs.size()==0) return null;
 		for(Integer parentSchemaID : parentSchemaIDs)
 		{
@@ -44,7 +48,7 @@ public class SchemaElements
 	}
 	
 	/** Filter out conflicting aliases from the element list */
-	static private ArrayList<SchemaElement> filterOutConflictingAliases(Integer schemaID, ArrayList<SchemaElement> elements)
+	private ArrayList<SchemaElement> filterOutConflictingAliases(Integer schemaID, ArrayList<SchemaElement> elements)
 	{
 		// Generate a hash map to store all aliases
 		HashMap<Integer,ArrayList<Alias>> aliasMap = new HashMap<Integer,ArrayList<Alias>>();
@@ -72,59 +76,59 @@ public class SchemaElements
 	}
 	
 	/** Adds a schema element */
-	static public Integer addSchemaElement(SchemaElement schemaElement)
+	public Integer addSchemaElement(SchemaElement schemaElement)
 	{
-		Schema schema = Schemas.getSchema(schemaElement.getBase());
+		Schema schema = getManager().getSchemas().getSchema(schemaElement.getBase());
 		if(schema!=null && !schema.getLocked())
-			return Database.addSchemaElement(schemaElement);
+			return getDatabase().addSchemaElement(schemaElement);
 		return 0;
 	}
 	
 	/** Updates a schema element */
-	static public boolean updateSchemaElement(SchemaElement schemaElement)
+	public boolean updateSchemaElement(SchemaElement schemaElement)
 	{
-		Schema schema = Schemas.getSchema(schemaElement.getBase());
+		Schema schema = getManager().getSchemas().getSchema(schemaElement.getBase());
 		if(schema!=null && !schema.getLocked())
-			return Database.updateSchemaElement(schemaElement);
+			return getDatabase().updateSchemaElement(schemaElement);
 		return false;
 	}
 	
 	/** Removes a schema element */
-	static public boolean deleteSchemaElement(Integer schemaElementID)
+	public boolean deleteSchemaElement(Integer schemaElementID)
 	{
 		SchemaElement schemaElement = getSchemaElement(schemaElementID);
-		Schema schema = Schemas.getSchema(schemaElement.getBase());
+		Schema schema = getManager().getSchemas().getSchema(schemaElement.getBase());
 		if(schema!=null && !schema.getLocked())
-			return Database.deleteSchemaElement(schemaElementID);
+			return getDatabase().deleteSchemaElement(schemaElementID);
 		return false;
 	}
 
 	/** Retrieves the specified schema element */
-	static public SchemaElement getSchemaElement(Integer schemaElementID)
-		{ return Database.getSchemaElement(schemaElementID); }
+	public SchemaElement getSchemaElement(Integer schemaElementID)
+		{ return getDatabase().getSchemaElement(schemaElementID); }
 	
 	/** Retrieves the schema element count for the specified schema */
-	static public Integer getSchemaElementCount(Integer schemaID)
+	public Integer getSchemaElementCount(Integer schemaID)
 		{ return getSchemaElements(schemaID).size(); }
 	
 	/** Retrieves the schema elements for the specified schema */
-	static public ArrayList<SchemaElement> getSchemaElements(Integer schemaID)
+	public ArrayList<SchemaElement> getSchemaElements(Integer schemaID)
 	{
 		// Collect all schema elements
 		ArrayList<SchemaElement> elements = new ArrayList<SchemaElement>();
-		elements.addAll(Database.getBaseElements(schemaID));
-		for(Integer ancestorID : SchemaRelationships.getAncestors(schemaID))
-			elements.addAll(Database.getBaseElements(ancestorID));
+		elements.addAll(getDatabase().getBaseElements(schemaID));
+		for(Integer ancestorID : getManager().getSchemaRelationships().getAncestors(schemaID))
+			elements.addAll(getDatabase().getBaseElements(ancestorID));
 		
 		// Add in all used default domains
-		for(Domain domain : Database.getDefaultDomains())
+		for(Domain domain : getDatabase().getDefaultDomains())
 			for(SchemaElement element : elements)
 				if((element instanceof Containment && ((Containment)element).getChildID().equals(domain.getId())) ||
 				   (element instanceof Attribute && ((Attribute)element).getDomainID().equals(domain.getId())))
 					{ elements.add(domain); break; }
 
 		// Filter out conflicting aliases as needed
-		SchemaRelationships.recacheAsNeeded();
+		getManager().getSchemaRelationships().recacheAsNeeded();
 		elements = filterOutConflictingAliases(schemaID, elements);
 		
 		// Return the schema elements
@@ -132,11 +136,16 @@ public class SchemaElements
 	}
 
 	/** Retrieves the schema elements for the specified schema containing the specified keyword */
-	static public ArrayList<SchemaElement> getSchemaElementsForKeyword(String keyword, ArrayList<Integer> groupIDs)
-		{ return Database.getSchemaElementsForKeyword(keyword, groupIDs); }
+	public ArrayList<SchemaElement> getSchemaElementsForKeyword(String keyword, ArrayList<Integer> groupIDs)
+	{
+		HashSet<Integer> schemaIDs = new HashSet<Integer>();
+		for(Integer groupID : groupIDs)
+			schemaIDs.addAll(getManager().getGroups().getGroupSchemas(groupID));
+		return getDatabase().getSchemaElementsForKeyword(keyword, new ArrayList<Integer>(schemaIDs));
+	}
 	
 	/** Retrieves the specified schema element type */
-	static public String getSchemaElementType(Integer schemaElementID)
+	public String getSchemaElementType(Integer schemaElementID)
 	{
 		SchemaElement schemaElement = getSchemaElement(schemaElementID);
 		if(schemaElement instanceof Entity) return "Entity";
