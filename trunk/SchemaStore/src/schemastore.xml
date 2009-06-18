@@ -1,4 +1,5 @@
 <config>
+  <databaseType>derby</databaseType>
   <databaseServer></databaseServer>
   <databaseName>schemastore</databaseName>
   <databaseUser>postgres</databaseUser>

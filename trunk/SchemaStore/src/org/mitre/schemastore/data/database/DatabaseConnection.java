@@ -57,6 +57,7 @@ public class DatabaseConnection
 			in.close();
 
 			// Retrieve the database values from the configuration file
+			databaseType = getValue(buffer,"databaseType").equals("postgres") ? POSTGRES : DERBY;
 			databaseLoc = getValue(buffer,"databaseServer");
 			databaseName = getValue(buffer,"databaseName");
 			databaseUser = getValue(buffer,"databaseUser");
@@ -73,10 +74,6 @@ public class DatabaseConnection
 					databaseLoc = databasePath.replaceAll("/build/classes/","");
 				else databaseLoc = databasePath.replaceAll("/WEB-INF/.*","");
 			}
-			
-			// If no server was given, use Derby as the database
-			databaseType = POSTGRES;
-			try { new File(databaseLoc).mkdirs(); databaseType = DERBY; } catch(Exception e) {}
 		}
 		catch(IOException e)
 			{ System.out.println("(E)DatabaseConnection - schemastore.xml has failed to load!\n"+e.getMessage()); }
