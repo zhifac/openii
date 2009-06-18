@@ -28,24 +28,6 @@ public class SchemaUtility {
 	
 	public static String DEFAULT_ROOT = null;
 	
-	static {
-		File localPropsFile = new File("local.properties");
-		if (localPropsFile.exists()) {
-			Properties p = new Properties();
-			try {
-				p.load(new FileInputStream(localPropsFile));
-				SchemaUtility.DEFAULT_ROOT = p.getProperty("local_working_dir");
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			} finally {
-				System.out.println("DEFAULT_ROOT = "+DEFAULT_ROOT);
-			}
-		}
-	}
-
-
 	private static SchemaStoreClient CLIENT;		
 
 	public static SchemaStoreClient getCLIENT() {
