@@ -84,7 +84,7 @@ abstract public class AbstractMappingFunction
     /**
      *  SchemaStoreClient to be used to access the data types and other metadata
      */
-    SchemaStoreClient client = null;
+    protected SchemaStoreClient client = null;
     
     /**
      *  This List stores, in order, the inputs to the function defined.  What is stored is the ElementID (or a 

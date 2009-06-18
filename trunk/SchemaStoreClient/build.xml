@@ -83,6 +83,7 @@
             </classpath>
         </javac>
 		<copy file="src/porters.xml" todir="build/classes"/>
+		<copy file="src/mappingfunctions.xml" todir="build/classes"/>
     </target>
 
 	<!-- Builds the SchemaStoreClient jar -->
@@ -92,6 +93,7 @@
             <fatjar.filesource path="build/classes">
 				<fatjar.exclude relpath="org/mitre/schemastore/porters/"/>
 				<fatjar.exclude relpath="porters.xml"/>
+				<fatjar.exclude relpath="mappingfunctions.xml"/>
             </fatjar.filesource>
             <fatjar.filesource path="${SchemaStore}/build/classes">
                 <fatjar.exclude relpath="org/mitre/schemastore/data/"/>
