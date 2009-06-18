@@ -85,8 +85,16 @@ public class DatabaseConnection
 	/** Constructs the connection from the specified settings */
 	public DatabaseConnection(Integer type, String server, String database, String user, String password)
 	{
-		databaseType = type; databaseLoc = server; databaseName = database;
-		databaseUser = user; databasePassword = password;
+		// Set the connection information
+		databaseType = type;
+		databaseLoc = server;
+		databaseName = database;
+		databaseUser = user;
+		databasePassword = password;
+
+		// Adjust the database location for derby files
+		if(databaseType.equals(DERBY))
+			databaseLoc = new File(databaseLoc).getAbsolutePath().replaceAll(".*:","");
 	}
 	
 	/** Creates a sql statement */
