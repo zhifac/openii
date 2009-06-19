@@ -25,7 +25,7 @@ import org.mitre.harmony.view.dialogs.ExportMappingDialog;
 import org.mitre.harmony.view.dialogs.mappings.LoadMappingDialog;
 import org.mitre.harmony.view.dialogs.mappings.SaveMappingDialog;
 import org.mitre.harmony.view.dialogs.matcher.MatcherMenu;
-import org.mitre.harmony.view.dialogs.schemas.SchemaDialog;
+import org.mitre.harmony.view.dialogs.properties.PropertiesDialog;
 import org.mitre.schemastore.model.MappingCell;
 
 /**
@@ -44,6 +44,7 @@ public class HarmonyMenuBar extends JMenuBar
 		private JMenuItem openMapping;		// Option to open a created mapping
 		private JMenuItem saveMapping;		// Option to save a created mapping
 		private JMenuItem exportMapping;	// Option for exporting a mapping
+		private JMenuItem properties;		// Option for showing the mapping properties
 		private JMenuItem exitApp;			// Option to exit the Harmony application
 		
 		/** Initializes the project drop-down menu */
@@ -61,6 +62,7 @@ public class HarmonyMenuBar extends JMenuBar
 				openMapping = new JMenuItem("Open...",KeyEvent.VK_O);
 				saveMapping = new JMenuItem("Save...",KeyEvent.VK_S);
 				exportMapping = new JMenuItem("Export...",KeyEvent.VK_E);
+				properties = new JMenuItem("Properties",KeyEvent.VK_P);
 				exitApp = new JMenuItem("Exit",KeyEvent.VK_X);
 	
 				// Set accelerator keys for the menu items
@@ -73,6 +75,7 @@ public class HarmonyMenuBar extends JMenuBar
 				openMapping.addActionListener(this);
 				saveMapping.addActionListener(this);
 				exportMapping.addActionListener(this);
+				properties.addActionListener(this);
 				exitApp.addActionListener(this);
 				
 				// Add project drop-down items to project drop-down menu
@@ -81,6 +84,8 @@ public class HarmonyMenuBar extends JMenuBar
 				add(saveMapping);
 				addSeparator();
 				add(exportMapping);
+				addSeparator();
+				add(properties);
 				addSeparator();
 			    add(exitApp);
 			}
@@ -115,7 +120,7 @@ public class HarmonyMenuBar extends JMenuBar
 	    		
 	    	// Create a new project
 	    	if(source==newMapping)
-	    		{ harmonyModel.getMappingManager().newMapping(); new SchemaDialog(harmonyModel); }
+	    		{ harmonyModel.getMappingManager().newMapping(); new PropertiesDialog(harmonyModel); }
 	    	
 	    	// Open a project
 	    	else if(source==openMapping)
@@ -133,6 +138,10 @@ public class HarmonyMenuBar extends JMenuBar
 	    	else if(source==exportMapping)
 	    		{ ExportMappingDialog.exportMapping(harmonyModel); }
 	    	
+	    	// Display the mapping properties
+	    	else if(source==properties)
+	    		new PropertiesDialog(harmonyModel);
+	    	
 	    	// Exit Harmony
 	    	else if(source==exitApp)
 	    		{ harmonyModel.getBaseFrame().dispose(); }
@@ -142,7 +151,6 @@ public class HarmonyMenuBar extends JMenuBar
 	/** Drop-down menu found under edit menu bar heading */
 	private class EditMenu extends JMenu implements ActionListener
 	{
-		private JMenuItem editSchemas;	// Option to manage the schemas
 		private JMenuItem selectLinks;		// Option to select all links
 		private JMenuItem removeLinks;		// Option to remove all current links
 		
@@ -156,17 +164,14 @@ public class HarmonyMenuBar extends JMenuBar
 		    setMnemonic(KeyEvent.VK_E);
 		    
 			// Initialize project drop-down items
-		    editSchemas = new JMenuItem("Edit Schemas");
 		    selectLinks = new JMenuItem("Select All Links");
 			removeLinks = new JMenuItem("Remove All Links");
 			
 			// Attach action listeners to edit drop-down items
-			editSchemas.addActionListener(this);
 			selectLinks.addActionListener(this);
 			removeLinks.addActionListener(this);
 			
 			// Add edit drop-down items to edit drop-down menu
-			add(editSchemas);
 			add(selectLinks);
 		    add(removeLinks);
 		}
@@ -174,10 +179,6 @@ public class HarmonyMenuBar extends JMenuBar
 		/** Handles the edit drop-down action selected by the user */
 	    public void actionPerformed(ActionEvent e)
 	    {	    	
-	    	// Handles the editing of mapping schemas
-	    	if(e.getSource() == editSchemas)
-	    		new SchemaDialog(harmonyModel);
-	    	
 	    	// Selects all links currently displayed in Harmony
 	    	if(e.getSource() == selectLinks)
 	    	{
