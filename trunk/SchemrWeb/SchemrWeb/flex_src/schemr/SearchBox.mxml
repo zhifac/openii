@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="400" height="100">
+
+<mx:Script>
+	<![CDATA[
+		
+		[Bindable]
+		private var _searchTerms:String
+		private var _searchResults:XML
+		
+		public function cacheSearch(terms:String, results:XML):void {
+			_searchTerms = terms;
+			_searchResults = results;
+		}
+		
+		public function clearSearchTerms():void {
+			_searchTerms = null;
+			_searchResults = null;
+			this.searchText.text = "";
+			this.searchStatus.text = "";
+		}
+		
+		public function performSearch():void {
+   			var params:Object = {};
+
+			// TODO do validation in search keywords   			
+   			params["keywords"] = searchText.text;
+   			// TODO enable file upload of schema file
+//   			params["schema"] = ... file text;
+   			searchRequest.send(params);
+		}
+	]]>
+</mx:Script>
+			
+	<mx:HTTPService id="searchRequest"
+					url="/SchemrWeb/SearchServlet"
+					method="POST"
+					resultFormat="e4x">
+		<mx:result>
+			<![CDATA[
+				if (event.result != null) {
+					cacheSearch(searchText.text, event.result.toString());
+					this.searchStatus.text = "Some results found ..."+event.result.toString();
+				} else {
+					this.searchStatus.text = "No results found.";
+				}
+			]]>
+		</mx:result>
+	</mx:HTTPService>
+	
+	<mx:VBox>
+    	<mx:Label color="0x881212" text="Please enter search terms." />
+		<mx:HBox>
+			<mx:TextInput id="searchText" text="" width="300" color="0x323232" enter="performSearch();"/>
+			<mx:Button label="searchButton" color="0x323232" click="performSearch();"/>
+    	</mx:HBox>
+    	<mx:Label id='searchStatus' color="0x881212" text="" />
+    </mx:VBox>
+	
+</mx:Canvas>
