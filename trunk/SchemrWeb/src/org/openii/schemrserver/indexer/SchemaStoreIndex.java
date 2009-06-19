@@ -93,6 +93,7 @@ public class SchemaStoreIndex {
 
 	public static void createIndex(IndexWriter iwriter, SchemaStoreClient client)
 			throws RemoteException, CorruptIndexException, IOException {
+		System.out.println(client.getSchemas().size() + " elements will be indexed");
 		for (Schema schema : client.getSchemas()) {
 
 			// For schemas, check the name and description
@@ -112,10 +113,6 @@ public class SchemaStoreIndex {
 				schemaDoc.add(new Field(schemaType, schemaElement.getDescription(), Field.Store.YES, Field.Index.TOKENIZED));
 			}
 
-//			List<Field> fields = schemaDoc.getFields();
-//			for (Field f : fields) {
-//				System.out.println("\t" + f.name() + " | " + f.stringValue());
-//			}
 			System.out.println(schema.getName() + ": " + schemaDoc.getFields().size() + " fields added to index.");
 			iwriter.addDocument(schemaDoc);
 		}

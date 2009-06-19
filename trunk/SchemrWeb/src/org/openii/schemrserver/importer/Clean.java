@@ -15,7 +15,6 @@ public class Clean extends LoadSchemaFile{
 			try {
 				deletableSchemas = client.getDeletableSchemas();
 			} catch (RemoteException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 				return;
 			}
@@ -24,7 +23,6 @@ public class Clean extends LoadSchemaFile{
 					client.deleteSchema(i);
 					System.out.println("Delete Schema ID: " + i);
 				} catch (RemoteException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}

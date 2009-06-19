@@ -10,22 +10,22 @@ import org.mitre.schemastore.porters.schemaImporters.DDLImporter;
 import org.mitre.schemastore.porters.schemaImporters.SchemaImporter;
 import org.mitre.schemastore.porters.schemaImporters.XSDImporter;
 
-
 import org.mitre.schemastore.client.Repository;
 import org.mitre.schemastore.client.SchemaStoreClient;
+import org.openii.schemrserver.indexer.SchemaUtility;
 
 public class LoadSchemaFile{
 	
 	protected static SchemaStoreClient client = null;
-	public  static  SchemaStoreClient setClient(){
+	public  static  void setClient(){
 		try {
 			System.out.println("Getting new Client");
-			if (client ==null) client = new SchemaStoreClient();
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
+			if (client ==null) client = SchemaUtility.getCLIENT();
+		} catch (Exception e) {
 			e.printStackTrace();
+			System.exit(0);
 		}
-		return client;
+		return;
 	}
 
 	public static void loadSchema(File file, String name, String author, String description) throws URISyntaxException, ImporterException {
