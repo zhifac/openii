@@ -11,7 +11,7 @@ public class SchemaSearchTest extends TestCase {
 		try {
 			search = SchemaSearch.performSearch(searchTerm, null);
 		} catch (RemoteException e) {
-			assertFalse(true);
+			assertFalse(true); //should not be triggered
 			e.printStackTrace();
 			return;
 		}
