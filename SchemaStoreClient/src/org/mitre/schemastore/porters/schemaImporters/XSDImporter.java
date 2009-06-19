@@ -51,6 +51,31 @@ public class XSDImporter extends SchemaImporter
 	/** Initializes the importer for the specified URI */
 	protected void initializeSchemaStructures() throws ImporterException
 	{
+		
+		 try
+	     {
+	        String proxyHost = new String("gatekeeper.mitre.org");
+	        String proxyPort = new String("80");
+            System.getProperties().put( "http.proxyHost",
+            		proxyHost );
+            System.getProperties().put( "http.proxyPort",
+            		proxyHost );
+           
+	     }catch (Exception e) {
+	     
+	           
+	          	System.err.println("[E] XSDImporter -- " + 
+	          			"Likely a security exception - you " +
+	                		"must allow modification to system properties if " +
+	                		"you want to use the proxy");
+	          	e.printStackTrace();
+	          	throw new ImporterException(ImporterException.PARSE_FAILURE,e.getMessage()); 
+	     }
+		
+		
+		
+		
+		
 		try {
 			
 			// build the DOM tree for this schema 
