@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:LinkButton xmlns:mx="http://www.adobe.com/2006/mxml"
+	           label="View Schema"
+	           click="handleClickViewSource(data.name, data.content)">
+	<mx:Script xmlns:mx="http://www.adobe.com/2006/mxml">
+        <![CDATA[
+            import mx.managers.PopUpManager;
+
+            private function handleClickViewSource(name:String, content:String):void {
+            	var viewSource:ViewSourceWindow = new ViewSourceWindow();
+            	viewSource.formName = name;
+            	viewSource.formContent = content;
+            	PopUpManager.addPopUp(viewSource, DisplayObject(this.parentApplication), true);
+            	PopUpManager.centerPopUp(viewSource);
+            }
+        ]]>
+    </mx:Script>
+</mx:LinkButton>
