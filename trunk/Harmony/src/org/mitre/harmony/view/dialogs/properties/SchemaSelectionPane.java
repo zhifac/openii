@@ -11,19 +11,20 @@ import java.util.Collections;
 import java.util.Comparator;
 
 import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.border.EmptyBorder;
 
 import org.mitre.harmony.Harmony;
 import org.mitre.harmony.model.HarmonyModel;
-import org.mitre.harmony.view.dialogs.Link;
 import org.mitre.harmony.view.dialogs.TitledPane;
 import org.mitre.harmony.view.dialogs.importer.ImporterDialog;
 import org.mitre.schemastore.model.Schema;
 
 /** Class for allowing the selection of schemas */
-public class SchemaSelectionPane extends JPanel
+public class SchemaSelectionPane extends JPanel implements ActionListener
 {
 	/** Stores the Harmony model */
 	private HarmonyModel harmonyModel;
@@ -81,11 +82,22 @@ public class SchemaSelectionPane extends JPanel
 		schemaScrollPane.setPreferredSize(new Dimension(250, 200));
 
 		// Creates the schema selection pane
-		Link link = new Link("Import",new ImportSchema());
 		setLayout(new BorderLayout());
+		add(new TitledPane("Available Schemas",schemaScrollPane),BorderLayout.CENTER);
 		if(harmonyModel.getBaseFrame() instanceof Harmony) 
-			add(new TitledPane("Available Schemas ",link,schemaScrollPane),BorderLayout.CENTER);
-		else add(new TitledPane("Available Schemas",schemaScrollPane),BorderLayout.CENTER);
+		{
+			// Create the import schema button
+			JButton button = new JButton("Import Schema");
+			button.setFocusable(false);
+			button.addActionListener(this);
+
+			// Create a button pane
+			JPanel pane = new JPanel();
+			pane.setLayout(new BorderLayout());
+			pane.setBorder(new EmptyBorder(5,0,0,0));
+			pane.add(button,BorderLayout.CENTER);
+			add(pane,BorderLayout.SOUTH);
+		}
 	}
 	
 	/** Set the specified schema selection */
@@ -99,27 +111,24 @@ public class SchemaSelectionPane extends JPanel
 		}
 	}
 	
-	/** Class for handling the import of a schema */
-	private class ImportSchema implements ActionListener
+	/** Handles the import of a schema */
+	public void actionPerformed(ActionEvent e)
 	{
-		public void actionPerformed(ActionEvent e)
-		{
-			// Identify the dialog of which this pane is part of
-			Component parent = getParent();
-			while(!(parent instanceof JDialog))
-				parent = parent.getParent();
-				
-			// Launch the importer dialog
-			ImporterDialog dialog = new ImporterDialog((JDialog)parent, harmonyModel);
-			while(dialog.isDisplayable()) try { Thread.sleep(500); } catch(Exception e2) {}
+		// Identify the dialog of which this pane is part of
+		Component parent = getParent();
+		while(!(parent instanceof JDialog))
+			parent = parent.getParent();
+			
+		// Launch the importer dialog
+		ImporterDialog dialog = new ImporterDialog((JDialog)parent, harmonyModel);
+		while(dialog.isDisplayable()) try { Thread.sleep(500); } catch(Exception e2) {}
 
-			// Update the list of schemas if a new schema was imported
-			Integer schemaID = dialog.getSchemaID();
-			if(schemaID!=null)
-			{
-				harmonyModel.getSchemaManager().initSchemas();
-				generateSchemaList();
-			}
+		// Update the list of schemas if a new schema was imported
+		Integer schemaID = dialog.getSchemaID();
+		if(schemaID!=null)
+		{
+			harmonyModel.getSchemaManager().initSchemas();
+			generateSchemaList();
 		}
 	}
 }
