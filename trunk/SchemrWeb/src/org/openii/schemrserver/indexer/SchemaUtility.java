@@ -35,7 +35,7 @@ public class SchemaUtility {
 	public static SchemaStoreClient getCLIENT() {
 		if (CLIENT == null) {
 			try {
-				CLIENT = new SchemaStoreClient(new Repository(Repository.SERVICE, new URI("http://localhost:8080/SchemaStore/services/SchemaStore"), "", "", ""));
+				CLIENT = new SchemaStoreClient(new Repository(Repository.DERBY, new URI("http://localhost:8080/SchemaStore/services/SchemaStore"), "", "", ""));
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

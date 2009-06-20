@@ -1,17 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="400" height="100">
 
+<mx:Metadata>
+    [Event(name="newSearchResults", type="flash.events.Event")]
+</mx:Metadata>
+
 <mx:Script>
 	<![CDATA[
-		
+		import flash.net.navigateToURL;
+		import mx.controls.Alert;
+		import mx.rpc.events.FaultEvent;
+		import mx.rpc.events.ResultEvent;
+
 		[Bindable]
-		private var _searchTerms:String
-		private var _searchResults:XML
-		
-		public function cacheSearch(terms:String, results:XML):void {
-			_searchTerms = terms;
-			_searchResults = results;
-		}
+		public var _searchTerms:String
+		public var _searchResults:XML
 		
 		public function clearSearchTerms():void {
 			_searchTerms = null;
@@ -22,12 +25,24 @@
 		
 		public function performSearch():void {
    			var params:Object = {};
-
-			// TODO do validation in search keywords   			
-   			params["keywords"] = searchText.text;
+			// TODO do validation in search keywords
+			_searchTerms = searchText.text;
+   			params["keywords"] = _searchTerms
    			// TODO enable file upload of schema file
 //   			params["schema"] = ... file text;
+//			var myLoader:URLLoader = new URLLoader();
+//			myLoader.load(new URLRequest("schemas.xml"));
+			
    			searchRequest.send(params);
+		}
+		private function searchResultHandler(event:ResultEvent):void {
+			var xmlResults:XML = event.result as XML;
+			trace(xmlResults.toString());
+			_searchResults = xmlResults;
+			dispatchEvent(new Event("newSearchResults"));
+		}
+		private function searchFaultHandler(event:FaultEvent):void {
+			Alert.show(event.fault.message, "Search failed");
 		}
 	]]>
 </mx:Script>
@@ -35,26 +50,18 @@
 	<mx:HTTPService id="searchRequest"
 					url="/SchemrWeb/SearchServlet"
 					method="POST"
-					resultFormat="e4x">
-		<mx:result>
-			<![CDATA[
-				if (event.result != null) {
-					cacheSearch(searchText.text, event.result.toString());
-					this.searchStatus.text = "Some results found ..."+event.result.toString();
-				} else {
-					this.searchStatus.text = "No results found.";
-				}
-			]]>
-		</mx:result>
+					resultFormat="e4x"
+					result="searchResultHandler(event);"
+					fault="searchFaultHandler(event);">
 	</mx:HTTPService>
 	
 	<mx:VBox>
-    	<mx:Label color="0x881212" text="Please enter search terms." />
+		<mx:Label color="0x881212" text="Please enter search terms." />
 		<mx:HBox>
 			<mx:TextInput id="searchText" text="" width="300" color="0x323232" enter="performSearch();"/>
 			<mx:Button label="searchButton" color="0x323232" click="performSearch();"/>
-    	</mx:HBox>
-    	<mx:Label id='searchStatus' color="0x881212" text="" />
-    </mx:VBox>
+		</mx:HBox>
+		<mx:Label id='searchStatus' color="0x881212" text="" />
+	</mx:VBox>
 	
 </mx:Canvas>

@@ -95,7 +95,7 @@ public class SearchServlet extends HttpServlet {
 		HashMap<Integer, QueryFragment> idQueryFragmentMap = new HashMap<Integer, QueryFragment>();
 		
 		for (QueryFragment q : queryFragmentScoreEvidenceMap.keySet()) {
-			ScoreEvidence se = idScoreEvidenceMap.get(q);
+			ScoreEvidence se = queryFragmentScoreEvidenceMap.get(q);
 			SchemaElement e = (SchemaElement) se.getObj();
 			idScoreEvidenceMap.put(e.getId(), se);
 			idQueryFragmentMap.put(e.getId(), q);
