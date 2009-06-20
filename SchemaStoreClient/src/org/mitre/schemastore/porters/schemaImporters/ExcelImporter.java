@@ -104,7 +104,7 @@ public class ExcelImporter extends SchemaImporter {
 
 	/** Returns the importer name */
 	public String getName()
-		{ return "Excel Importer (xls)"; }
+		{ return "Excel Importer"; }
 	
 	/** Returns the importer description */
 	public String getDescription()
