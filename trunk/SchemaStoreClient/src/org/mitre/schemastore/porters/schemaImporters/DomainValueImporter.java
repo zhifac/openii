@@ -31,7 +31,7 @@ public class DomainValueImporter extends ExcelImporter {
 
 	@Override
 	public String getName() {
-		return "Domain Importer (.xls)";
+		return "Domain Importer";
 	}
 
 	@Override
