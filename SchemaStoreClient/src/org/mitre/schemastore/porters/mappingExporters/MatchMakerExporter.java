@@ -25,8 +25,8 @@ public class MatchMakerExporter extends MappingExporter {
 	private Integer[] schemaIDs = null;
 	private ClusterNode cluster;
 
-	HashMap<String, SchemaElementNode> clusterElements;
-	HashMap<Integer, ArrayList<Integer>> elementSchemaLookUp;
+	HashMap<String, SchemaElementNode> clusterElements; // cluster name to schemaElementNode
+	HashMap<Integer, ArrayList<Integer>> elementSchemaLookUp; // schema element ID to a list of schema IDs
 	
 	private Mapping mapping;
 	private ArrayList<MappingCell> mappingCells;
@@ -41,7 +41,7 @@ public class MatchMakerExporter extends MappingExporter {
 		Integer elementID;
 		
 		// Loop through each schemaID
-		for (Integer schemaID : this.mapping.getSchemaIDs() ) {
+		for (Integer schemaID : this.mapping.getSchemas() ) {
 			// Loop through each element
 			
 			for (SchemaElement element : client.getGraph(schemaID).getElements(null) ) {
@@ -259,6 +259,9 @@ public class MatchMakerExporter extends MappingExporter {
 	public void exportMapping(Mapping mapping, ArrayList<MappingCell> mappingCells, File file) throws IOException {
 		this.mapping = mapping; 
 		this.mappingCells = mappingCells; 
+		this.elementSchemaLookUp = new HashMap<Integer, ArrayList<Integer>>(); 
+		this.clusterElements = new HashMap<String, SchemaElementNode>(); 
+		this.schemaIDs = mapping.getSchemas();
 		
 		// Create look up for elementIDs to SchemaIDs
 		initElementSchemaLookUp();
@@ -277,14 +280,12 @@ public class MatchMakerExporter extends MappingExporter {
 
 	@Override
 	public String getDescription() {
-		// TODO Auto-generated method stub
-		return null;
+		return "Export N-way match results to an xls spreadsheet.";
 	}
 
 	@Override
 	public String getName() {
-		// TODO Auto-generated method stub
-		return null;
+		return "Match Maker";
 	}
 
 
