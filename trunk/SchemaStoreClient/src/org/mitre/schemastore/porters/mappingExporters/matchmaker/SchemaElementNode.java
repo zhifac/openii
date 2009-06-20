@@ -3,17 +3,9 @@ package org.mitre.schemastore.porters.mappingExporters.matchmaker;
 
 
 public class SchemaElementNode extends Node implements Comparable<SchemaElementNode> {
-//      public Integer schemaId; 
         public Integer elementId;
         public String elementName;
         public Integer schemaId;
-        
-//      public SchemaElementNode(ArrayList<Integer> schemaIds, Integer elementId, String elementName) {
-//              super(elementId.toString());
-//              this.schemaIds = ( schemaIds == null )?  new ArrayList<Integer> () : schemaIds;
-//              this.elementId = elementId;
-//              this.elementName = elementName;
-//      }
         
         public SchemaElementNode(Integer schemaID, Integer elementId, String elementName) {
                 super(elementId.toString());
