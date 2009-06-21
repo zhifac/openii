@@ -9,227 +9,232 @@
 	
 	<mx:Script>
 		<![CDATA[
-			import flash.utils.setInterval;
-		import graphml.GraphMLReader;
-		import flare.animate.Transitioner;
-		import flare.data.DataSet;
-		import flare.display.RectSprite;
-		import flare.display.TextSprite;
-		import flare.vis.Visualization;
-		import flare.vis.data.Data;
-		import flare.vis.data.NodeSprite;
-		import flare.vis.operator.filter.GraphDistanceFilter;
-		import flare.vis.operator.layout.RadialTreeLayout;
-		
-		import flash.display.Sprite;
-		import flash.events.MouseEvent;
-		import flash.geom.Rectangle;
-		import flash.text.TextFormat;
-		
-				
-		
-		private var vis:Visualization;
-		private var lab:TextSprite; 		
-		private var maxLabelWidth:Number;
-		private var maxLabelHeight:Number;
-		private var prev:NodeSprite;
-		private var _gdf:GraphDistanceFilter;
-		private var changeCenter:Boolean;
-		private var _maxDistance:int = 2;
-		
-		private var _transitionDuration:Number = 2;
-		
-		public function init():void{ 
-			//GraphMLFile('out.xml');
-		}
-		
-		public function GraphMLFile(fileName:String):void {
-			var gmr:GraphMLReader = new GraphMLReader(onLoaded);
-			onLoaded(gmr.read(fileName));
-		}
-		
-		
-		private function onLoaded(data:Data):void {
+//			import flash.utils.setInterval;
+//		import graphml.GraphMLReader;
+//		import flare.animate.Transitioner;
+//		import flare.data.DataSet;
+//		import flare.display.RectSprite;
+//		import flare.display.TextSprite;
+//		import flare.vis.Visualization;
+//		import flare.vis.data.Data;
+//		import flare.vis.data.NodeSprite;
+//		import flare.vis.operator.filter.GraphDistanceFilter;
+//		import flare.vis.operator.layout.RadialTreeLayout;
+//		
+//		import flash.display.Sprite;
+//		import flash.events.MouseEvent;
+//		import flash.geom.Rectangle;
+//		import flash.text.TextFormat;
+//		
+//				
+//		
+//		private var vis:Visualization;
+//		private var lab:TextSprite; 		
+//		private var maxLabelWidth:Number;
+//		private var maxLabelHeight:Number;
+//		private var prev:NodeSprite;
+//		private var _gdf:GraphDistanceFilter;
+//		private var changeCenter:Boolean;
+//		private var _maxDistance:int = 2;
+//		
+//		private var _transitionDuration:Number = 2;
+//		
+//		public function init():void{ 
+//			//GraphMLFile('out.xml');
+//		}
+//		
+//		public function GraphMLFile(fileName:String):void {
+//			var gmr:GraphMLReader = new GraphMLReader(onLoaded);
+//			onLoaded(gmr.read(fileName));
+//		}
+//		
+//		
+//		private function onLoaded(data:Data):void {
+//			
+//			vis = new Visualization(data);
+//			
+//			var w:Number = 600;
+//			var h:Number = 600;
+//			
+//			vis.bounds = new Rectangle(0, 0, w, h);
+//			
+//			
+//			var textFormat:TextFormat = new TextFormat();
+//			textFormat.color = 0xffffffff;
+//			textFormat.font= "_sans";
+//			var i:int = 0;
+//			vis.data.nodes.visit(function(ns:NodeSprite):void { 
+//				var ts:TextSprite = new TextSprite(ns.data.name,textFormat);	
+//				ns.addChild(ts);	
+//			});
+//			
+//			vis.data.nodes.setProperty("x",w/2);
+//			vis.data.nodes.setProperty("y",h/2);
+//			
+//			maxLabelWidth = getMaxTextLabelWidth();
+//			maxLabelHeight = getMaxTextLabelHeight();
+//			
+//			
+//			
+//			vis.data.nodes.visit(function(ns:NodeSprite):void { 
+//				var rs:RectSprite = new RectSprite( -maxLabelWidth/2-1,-maxLabelHeight/2 - 1, maxLabelWidth + 2, maxLabelHeight + 2);
+//					if (ns.data.type == "Schema") rs.fillColor = 0xdd660000;
+//					else rs.fillColor = 0xaa000000; 
+//					rs.lineColor = 0xff000044; 
+//				rs.lineWidth = 2;
+//				
+//				ns.addChildAt(rs, 0); // at postion 0 so that the text label is drawn above the rectangular box
+//				
+//				ns.size = 0;
+//				adjustLabel(ns,maxLabelWidth,maxLabelHeight);
+//				
+//				ns.mouseChildren = false; 
+//				ns.doubleClickEnabled = true;
+//				ns.addEventListener(MouseEvent.DOUBLE_CLICK, update);
+//				ns.addEventListener(MouseEvent.MOUSE_OVER, drawInfo);
+//				ns.addEventListener(MouseEvent.MOUSE_DOWN, drag);
+//				
+//				panel1.addEventListener(MouseEvent.MOUSE_UP, stop);
+//				ns.buttonMode = true;
+//			});
+//			
+//			
+//			
+//			var lay:RadialTreeLayout =  new RadialTreeLayout();
+//			lay.useNodeSize = false;
+//			
+//			var root:NodeSprite = vis.data.nodes[0] as NodeSprite;
+//			trace(data.length);
+//			_gdf = new GraphDistanceFilter([root], _maxDistance,NodeSprite.GRAPH_LINKS); 
+//			
+//			vis.operators.add(_gdf); //distance filter has to be added before the layout
+//			vis.operators.add(lay);
+//			
+//			panel1.rawChildren.addChild(vis);
+////			searchBox.searchStatus.text = vis.data.nodes.length + '';
+//			try{
+//				updateRoot(vis.data.nodes[0]); //WHY IS THIS NULL, EVEN WHEN THE LENGTH IS > 1 ???
+//			} catch(error){
+////				searchBox.searchStatus.text = searchBox.searchStatus.text + " error ";
+//			}
+//			
+//		}
+//		private function drag(event:MouseEvent):void{
+//			vis.startDrag(false, new Rectangle(-200, -300, 900, 700));
+//			changeCenter=false;
+//		}
+//		private function stop(event:MouseEvent):void{
+//			vis.stopDrag();
+//				changeCenter=true;
+//		}
+//		private function drawInfo(event:MouseEvent):void{
+//			var n:NodeSprite = event.target as NodeSprite;
+//			if (n == null) return;	
+//			var s2:TextSprite = n.getChildAt(n.numChildren-1) as TextSprite; // get the text sprite belonging to this node sprite
+//			if (s2 == null) return;
+//			trace("Mouse Over: " + s2.text);
+////			properties.text = "Mouse Over: " + s2.text + 
+//			"\nDescription: " + n.data.desc +
+//			"\nType: " + n.data.type +
+//			"\nId: " + n.data.id +
+//			"\nMatched: " + n.data.matched +
+//			"\nScore: " + n.data.score;
+//			var r:RectSprite = n.getChildAt(0) as RectSprite; 
+//			
+//			if (prev!=null) (prev.getChildAt(0) as RectSprite).lineColor = 0xff000044;
+//			prev = n;
+//			r.lineColor = 0xFFFF0000;
+//		}
+//		
+//		private function update(event:MouseEvent):void {
+//			if (!changeCenter) return;
+//			var n:NodeSprite = event.target as NodeSprite;
+//			if (n == null) return; 
+//			updateRoot(n);
+//		}
+//		
+//		private function updateRoot(n:NodeSprite):void {
+//			vis.data.root = n; 
+//			_gdf.focusNodes = [n];
+//			var t1:Transitioner = new Transitioner(_transitionDuration);
+//			vis.update(t1).play();
+//			
+//		}
+//		
+//		
+//				
+//		private function getMaxTextLabelWidth() : Number {
+//			var maxLabelWidth:Number = 0;
+//			vis.data.nodes.visit(function(n:NodeSprite):void {
+//				var w:Number = getTextLabelWidth(n);
+//				if (w > maxLabelWidth) {
+//					maxLabelWidth = w;
+//				}
+//				
+//			});
+//			return maxLabelWidth;
+//		}
+//		
+//		private function getMaxTextLabelHeight() : Number {
+//			var maxLabelHeight:Number = 0;
+//			vis.data.nodes.visit(function(n:NodeSprite):void {
+//				var h:Number = getTextLabelHeight(n);
+//				if (h > maxLabelHeight) {
+//					maxLabelHeight = h;
+//				}
+//				
+//			});
+//			return maxLabelHeight;
+//		}
+//			
+//		private function getTextLabelWidth(s:NodeSprite) : Number {
+//			var s2:TextSprite = s.getChildAt(s.numChildren-1) as TextSprite; // get the text sprite belonging to this node sprite
+//			var b:Rectangle = s2.getBounds(s);
+//			return s2.width;
+//		}
+//
+////		public function processSearchResults():void {
+//		public function handleNewSearchResults():void {
+////			properties.text="Place your mouse over an element to get more information on the match. Double-click to re-center.";
+//			var results:Array = new Array(); 
+//
+//			for (var i=0; i< searchBox._searchResults.length(); i++) {
+//				results.push({
+//						Name: searchBox._searchResults.node[i].@name, 
+//						Description: searchBox._searchResults.node[i].@desc, 
+//						Score: searchBox._searchResults.node[i].@score, 
+//						ID: searchBox._searchResults.node[i]
+//					});
+//				grid.dataProvider = results;	
+//			}
+//			
+//		}
+//		public function updateGraph(event:Event):void{
+//			var id:String = event.target.selectedItem.ID;
+//			if (panel1.rawChildren.numChildren > 0)
+//				panel1.rawChildren.removeChildAt(panel1.rawChildren.numChildren - 1);
+//			GraphMLFile('results/out' + id + '.xml');	
+//			
+//		}
+//		private function getTextLabelHeight(s:NodeSprite) : Number {
+//			var s2:TextSprite = s.getChildAt(s.numChildren-1) as TextSprite; // get the text sprite belonging to this node sprite
+//			var b:Rectangle = s2.getBounds(s);
+//			return s2.height;
+//		}
+//		
+//		private function adjustLabel(s:NodeSprite, w:Number, h:Number) : void {
+//			
+//			var s2:TextSprite = s.getChildAt(s.numChildren-1) as TextSprite; // get the text sprite belonging to this node sprite
+//			
+//			s2.horizontalAnchor = TextSprite.CENTER;
+//			s2.verticalAnchor = TextSprite.CENTER;
+//						
+//		}	
+
+		private function handleNewSearchResults():void {
 			
-			vis = new Visualization(data);
-			
-			var w:Number = 600;
-			var h:Number = 600;
-			
-			vis.bounds = new Rectangle(0, 0, w, h);
-			
-			
-			var textFormat:TextFormat = new TextFormat();
-			textFormat.color = 0xffffffff;
-			textFormat.font= "_sans";
-			var i:int = 0;
-			vis.data.nodes.visit(function(ns:NodeSprite):void { 
-				var ts:TextSprite = new TextSprite(ns.data.name,textFormat);	
-				ns.addChild(ts);	
-			});
-			
-			vis.data.nodes.setProperty("x",w/2);
-			vis.data.nodes.setProperty("y",h/2);
-			
-			maxLabelWidth = getMaxTextLabelWidth();
-			maxLabelHeight = getMaxTextLabelHeight();
-			
-			
-			
-			vis.data.nodes.visit(function(ns:NodeSprite):void { 
-				var rs:RectSprite = new RectSprite( -maxLabelWidth/2-1,-maxLabelHeight/2 - 1, maxLabelWidth + 2, maxLabelHeight + 2);
-					if (ns.data.type == "Schema") rs.fillColor = 0xdd660000;
-					else rs.fillColor = 0xaa000000; 
-					rs.lineColor = 0xff000044; 
-				rs.lineWidth = 2;
-				
-				ns.addChildAt(rs, 0); // at postion 0 so that the text label is drawn above the rectangular box
-				
-				ns.size = 0;
-				adjustLabel(ns,maxLabelWidth,maxLabelHeight);
-				
-				ns.mouseChildren = false; 
-				ns.doubleClickEnabled = true;
-				ns.addEventListener(MouseEvent.DOUBLE_CLICK, update);
-				ns.addEventListener(MouseEvent.MOUSE_OVER, drawInfo);
-				ns.addEventListener(MouseEvent.MOUSE_DOWN, drag);
-				
-				panel1.addEventListener(MouseEvent.MOUSE_UP, stop);
-				ns.buttonMode = true;
-			});
-			
-			
-			
-			var lay:RadialTreeLayout =  new RadialTreeLayout();
-			lay.useNodeSize = false;
-			
-			var root:NodeSprite = vis.data.nodes[0] as NodeSprite;
-			trace(data.length);
-			_gdf = new GraphDistanceFilter([root], _maxDistance,NodeSprite.GRAPH_LINKS); 
-			
-			vis.operators.add(_gdf); //distance filter has to be added before the layout
-			vis.operators.add(lay);
-			
-			panel1.rawChildren.addChild(vis);
-//			searchBox.searchStatus.text = vis.data.nodes.length + '';
-			try{
-				updateRoot(vis.data.nodes[0]); //WHY IS THIS NULL, EVEN WHEN THE LENGTH IS > 1 ???
-			} catch(error){
-//				searchBox.searchStatus.text = searchBox.searchStatus.text + " error ";
-			}
-			
-		}
-		private function drag(event:MouseEvent):void{
-			vis.startDrag(false, new Rectangle(-200, -300, 900, 700));
-			changeCenter=false;
-		}
-		private function stop(event:MouseEvent):void{
-			vis.stopDrag();
-				changeCenter=true;
-		}
-		private function drawInfo(event:MouseEvent):void{
-			var n:NodeSprite = event.target as NodeSprite;
-			if (n == null) return;	
-			var s2:TextSprite = n.getChildAt(n.numChildren-1) as TextSprite; // get the text sprite belonging to this node sprite
-			if (s2 == null) return;
-			trace("Mouse Over: " + s2.text);
-//			properties.text = "Mouse Over: " + s2.text + 
-			"\nDescription: " + n.data.desc +
-			"\nType: " + n.data.type +
-			"\nId: " + n.data.id +
-			"\nMatched: " + n.data.matched +
-			"\nScore: " + n.data.score;
-			var r:RectSprite = n.getChildAt(0) as RectSprite; 
-			
-			if (prev!=null) (prev.getChildAt(0) as RectSprite).lineColor = 0xff000044;
-			prev = n;
-			r.lineColor = 0xFFFF0000;
-		}
-		
-		private function update(event:MouseEvent):void {
-			if (!changeCenter) return;
-			var n:NodeSprite = event.target as NodeSprite;
-			if (n == null) return; 
-			updateRoot(n);
-		}
-		
-		private function updateRoot(n:NodeSprite):void {
-			vis.data.root = n; 
-			_gdf.focusNodes = [n];
-			var t1:Transitioner = new Transitioner(_transitionDuration);
-			vis.update(t1).play();
-			
-		}
-		
-		
-				
-		private function getMaxTextLabelWidth() : Number {
-			var maxLabelWidth:Number = 0;
-			vis.data.nodes.visit(function(n:NodeSprite):void {
-				var w:Number = getTextLabelWidth(n);
-				if (w > maxLabelWidth) {
-					maxLabelWidth = w;
-				}
-				
-			});
-			return maxLabelWidth;
-		}
-		
-		private function getMaxTextLabelHeight() : Number {
-			var maxLabelHeight:Number = 0;
-			vis.data.nodes.visit(function(n:NodeSprite):void {
-				var h:Number = getTextLabelHeight(n);
-				if (h > maxLabelHeight) {
-					maxLabelHeight = h;
-				}
-				
-			});
-			return maxLabelHeight;
-		}
-			
-		private function getTextLabelWidth(s:NodeSprite) : Number {
-			var s2:TextSprite = s.getChildAt(s.numChildren-1) as TextSprite; // get the text sprite belonging to this node sprite
-			var b:Rectangle = s2.getBounds(s);
-			return s2.width;
 		}
 
-//		public function processSearchResults():void {
-		public function handleNewSearchResults():void {
-//			properties.text="Place your mouse over an element to get more information on the match. Double-click to re-center.";
-			var results:Array = new Array(); 
-
-			for (var i=0; i< searchBox._searchResults.length(); i++) {
-				results.push({
-						Name: searchBox._searchResults.node[i].@name, 
-						Description: searchBox._searchResults.node[i].@desc, 
-						Score: searchBox._searchResults.node[i].@score, 
-						ID: searchBox._searchResults.node[i]
-					});
-				grid.dataProvider = results;	
-			}
-			
-		}
-		public function updateGraph(event:Event):void{
-			var id:String = event.target.selectedItem.ID;
-			if (panel1.rawChildren.numChildren > 0)
-				panel1.rawChildren.removeChildAt(panel1.rawChildren.numChildren - 1);
-			GraphMLFile('results/out' + id + '.xml');	
-			
-		}
-		private function getTextLabelHeight(s:NodeSprite) : Number {
-			var s2:TextSprite = s.getChildAt(s.numChildren-1) as TextSprite; // get the text sprite belonging to this node sprite
-			var b:Rectangle = s2.getBounds(s);
-			return s2.height;
-		}
-		
-		private function adjustLabel(s:NodeSprite, w:Number, h:Number) : void {
-			
-			var s2:TextSprite = s.getChildAt(s.numChildren-1) as TextSprite; // get the text sprite belonging to this node sprite
-			
-			s2.horizontalAnchor = TextSprite.CENTER;
-			s2.verticalAnchor = TextSprite.CENTER;
-						
-		}	
 		]]>
 	</mx:Script>
 	
@@ -240,7 +245,7 @@
 
 			<schemr:SearchBox id="searchBox" newSearchResults="handleNewSearchResults();"/>
 
-			<mx:DataGrid id="grid" width="100%" color="0x0050AA" height="100%" change="updateGraph(event)">
+			<mx:DataGrid id="grid" width="100%" color="0x0050AA" height="100%" change="graphVis.updateGraph(event)">
 			 <mx:columns>
 			 	<mx:DataGridColumn dataField="Name"/>
 			 	<mx:DataGridColumn dataField="Description"/>
@@ -248,9 +253,9 @@
 			 </mx:columns>
 			</mx:DataGrid>
 		</mx:VBox>
-		<mx:VBox id="panel1" width="60%" height="100%">
 
-		</mx:VBox>
+		<schemr:GraphVisualization id="graphVis" width="60%" height="100%" />
+
 	</mx:HDividedBox>
 
 <!--	

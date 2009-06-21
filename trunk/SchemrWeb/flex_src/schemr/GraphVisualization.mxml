@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Panel xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="100%" height="100%"
+	creationComplete="init()"
+	xmlns:schemr="*">
+	
+	<mx:Script>
+		<![CDATA[
+
+		// put your code here from index.mxml ...
+
+		public function init():void {
+		}
+			
+		public function updateGraph(event:Event):void {
+		}
+		
+		]]>
+	</mx:Script>
+</mx:Panel>
