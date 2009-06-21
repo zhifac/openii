@@ -22,8 +22,17 @@ import org.openii.schemrserver.search.MatchSummary;
 import org.openii.schemrserver.search.QueryFragment;
 import org.openii.schemrserver.search.SchemaSearch;
 
+
+import org.jdom.Document;
+import org.jdom.Element;
+import org.jdom.output.XMLOutputter;
+
 public class SearchServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+	private static final String ID = "id";
+	private static final String NAME = "name";
+	private static final String DESC = "desc";
+	private static final String SCORE = "score";
 
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -44,15 +53,31 @@ public class SearchServlet extends HttpServlet {
 			session.setAttribute("sessionState", userState);
 		}
 
-		MatchSummary [] ms = SchemaSearch.performSearch(searchTerms, null);
-		userState.matchSummaries = ms;
-		
-		String xml = generateSearchResultsListing(ms, userState);
-        response.getWriter().print(xml);
-        response.setStatus(200);
-	}
+		MatchSummary [] msa = SchemaSearch.performSearch(searchTerms, null);
 
-	private String generateSearchResultsListing(MatchSummary[] msa, SessionState state) {
+		Element root = new Element("schemas");		
+		for (MatchSummary matchSummary : msa) {
+			Schema schema = matchSummary.getSchema();			
+			if (schema == null) throw new IllegalArgumentException("Schema must not be null");		
+			Element resultElement = new Element("result");
+			resultElement.setAttribute(ID, schema.getId().toString());
+			resultElement.setAttribute(NAME, schema.getName().trim());
+			resultElement.setAttribute(DESC, schema.getDescription().trim());
+			resultElement.setAttribute(SCORE, Double.toString(matchSummary.getScore()));			
+			root.addContent(resultElement);
+			
+			userState.idToMatchSummary.put(schema.getId(), matchSummary);
+		}
+		
+		Document doc = new Document(root);
+		XMLOutputter serializer = new XMLOutputter();
+		serializer.output(doc, response.getWriter());
+	}
+	
+	
+	/** EVERYTHING BELOW IS KINDA INSANE **/
+	
+	private String generateSearchResultsListing_old(MatchSummary[] msa, SessionState state) {
 		StringWriter listingXML = new StringWriter();
 		listingXML.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?><schemas>");
 
@@ -62,29 +87,29 @@ public class SearchServlet extends HttpServlet {
 		return listingXML.toString();
 	}
 	
-	private void constructGraphs(MatchSummary[] msa, StringWriter listingXML, SessionState state) {
+	private void constructGraphs(MatchSummary[] msa, StringWriter listingXMLWriter, SessionState state) {
 		
 		state.results = new String [msa.length];
 		for (int i = 0; i < msa.length; i++) {
-			StringWriter schemaXML = new StringWriter();
-			generateSearchResultXML(schemaXML);
-			constructGraph(i, msa[i], listingXML, schemaXML);
-			schemaXML.write("</graph>\n</graphml>");
-			state.results[i] = schemaXML.toString();
+			StringWriter schemaXMLWriter = new StringWriter();
+			generateSearchResultXML(schemaXMLWriter);
+			constructGraph(i, msa[i], listingXMLWriter, schemaXMLWriter);
+			schemaXMLWriter.write("</graph>\n</graphml>");
+			state.results[i] = schemaXMLWriter.toString();
 		}
 		
 	}
 	
-	private static void generateSearchResultXML(StringWriter f){
-		f.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-		f.write("\n<graphml>\n<graph edgedefault=\"undirected\">\n\n");
+	private static void generateSearchResultXML(StringWriter schemaXMLWriter){
+		schemaXMLWriter.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+		schemaXMLWriter.write("\n<graphml>\n<graph edgedefault=\"undirected\">\n\n");
 		for (String[] kv : keys) 
-			f.write("<key id=\"" + kv[0] + "\" for=\"node\" attr.name=\"" + kv[0] + "\" attr.type=\"" + kv[1] + "\"/>\n");
-		f.write("\n\n");
+			schemaXMLWriter.write("<key id=\"" + kv[0] + "\" for=\"node\" attr.name=\"" + kv[0] + "\" attr.type=\"" + kv[1] + "\"/>\n");
+		schemaXMLWriter.write("\n\n");
 	}
 	
 	private void constructGraph(int schemaIndex, MatchSummary matchSummary,
-			StringWriter listingXML, StringWriter schemaXML) {
+			StringWriter listingXMLWriter, StringWriter schemaXMLWriter) {
 
 		Schema schema = matchSummary.getSchema();
 		ArrayList<SchemaElement> schemaElements = matchSummary.getSchemaElements();
@@ -113,7 +138,7 @@ public class SearchServlet extends HttpServlet {
 		}
 		addNode(schema.getName().trim(), schema.getDescription().trim(),
 				"Schema", schema.getId(), matched, score, matchedObj,
-				listingXML, schemaXML, schemaIndex);
+				listingXMLWriter, schemaXMLWriter, schemaIndex);
 
 		for (SchemaElement schemaElement : schemaElements) {
 			if (schemaElement instanceof Entity) {
@@ -132,10 +157,10 @@ public class SearchServlet extends HttpServlet {
 					matchedObj = idQueryFragmentMap.get(e.getId()).getName().trim();
 				}
 				addNode(name, e.getDescription().trim(), "Entity", e.getId(),
-						matched, score, matchedObj, listingXML, schemaXML, schemaIndex);
+						matched, score, matchedObj, listingXMLWriter, schemaXMLWriter, schemaIndex);
 
 				// TODO: assume all entities connect with schema
-				addEdge("Relationship", schema.getId(), e.getId(), schemaXML);
+				addEdge("Relationship", schema.getId(), e.getId(), schemaXMLWriter);
 				
 				// FIXME: add child attributes
 				for (Integer i : e.getReferencedIDs()){
@@ -149,8 +174,8 @@ public class SearchServlet extends HttpServlet {
 					}
 					addNode(se.getName().trim(), se.getDescription().trim(),
 							"Attribute", se.getId(), matched, score,
-							matchedObj, listingXML, schemaXML, schemaIndex);
-					addEdge("Relationship", e.getId(), se.getId(), schemaXML);
+							matchedObj, listingXMLWriter, schemaXMLWriter, schemaIndex);
+					addEdge("Relationship", e.getId(), se.getId(), schemaXMLWriter);
 				}
 
 			} else if (schemaElement instanceof Containment) {
@@ -167,10 +192,10 @@ public class SearchServlet extends HttpServlet {
 					score += idScoreEvidenceMap.get(c.getId()).getScore() * 3 + 1;
 					matchedObj = idQueryFragmentMap.get(c.getId()).getName().trim();
 				}
-				addNode(c.getName().trim(), c.getDescription().trim(), "Containment", c.getId(), matched, score, matchedObj, listingXML, schemaXML, schemaIndex);
+				addNode(c.getName().trim(), c.getDescription().trim(), "Containment", c.getId(), matched, score, matchedObj, listingXMLWriter, schemaXMLWriter, schemaIndex);
 				System.out.println("Containment"+": "+c.getName().trim()+" "+c.getId());			
 				int pid = c.getParentID();
-				addEdge("Relationship", pid , c.getId(), schemaXML);
+				addEdge("Relationship", pid , c.getId(), schemaXMLWriter);
 				System.out.println("\tedge: "+pid+" <-> "+c.getId());
 			}
 		}
@@ -185,13 +210,14 @@ public class SearchServlet extends HttpServlet {
 		try {
 			f.write("<node id=\"" + id + "\">\n");
 			if (type.equals("Schema")) {
-				schemas.write("<node " + "index=\""
-						+ String.format("%03d", Integer.valueOf(schemaIndex))
+				schemas.write("<node "
+//						+ "index=\"" + String.format("%03d", Integer.valueOf(schemaIndex))
 						+ "\" name=\"" + name + "\" desc=\"" + desc
 						+ "\" score=\"" + score + "\" id=\"" + id + "\""
-						+ ">"
-						+ String.format("%03d", Integer.valueOf(schemaIndex))
-						+ "</node>\n");
+						+ "/>\n");
+//						+ ">"
+//						+ String.format("%03d", Integer.valueOf(schemaIndex))
+//						+ "</node>\n");
 			}
 				//schemas.write("<node>" + String.format("%03d", Integer.valueOf(schemaIndex))  + "</node>\n");
 			data("name", name, f);
