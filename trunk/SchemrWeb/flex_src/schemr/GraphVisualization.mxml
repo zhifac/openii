@@ -71,41 +71,28 @@
 			
 			vis.data.nodes.setProperty("x",w/2);
 			vis.data.nodes.setProperty("y",h/2);
-			
 			maxLabelWidth = getMaxTextLabelWidth();
 			maxLabelHeight = getMaxTextLabelHeight();
-			
-			
-			
 			vis.data.nodes.visit(function(ns:NodeSprite):void { 
 				var rs:RectSprite = new RectSprite( -maxLabelWidth/2-1,-maxLabelHeight/2 - 1, maxLabelWidth + 2, maxLabelHeight + 2);
 					if (ns.data.type == "Schema") rs.fillColor = 0xdd660000;
 					else rs.fillColor = 0xaa000000; 
 					rs.lineColor = 0xff000044; 
 				rs.lineWidth = 2;
-				
+				ns.size = 0;
 				ns.addChildAt(rs, 0); // at postion 0 so that the text label is drawn above the rectangular box
 				rs.dirty();
-				ns.size = 0;
-				
 				adjustLabel(ns,maxLabelWidth,maxLabelHeight);
-				
 				ns.mouseChildren = false; 
 				ns.doubleClickEnabled = true;
 				ns.addEventListener(MouseEvent.DOUBLE_CLICK, update);
 				ns.addEventListener(MouseEvent.MOUSE_OVER, drawInfo);
-				//ns.addEventListener(MouseEvent.MOUSE_DOWN, drag);
-				//panel1.addEventListener(MouseEvent.MOUSE_UP, stopDrag);
+				ns.addEventListener(MouseEvent.MOUSE_DOWN, drag);
+				ns.addEventListener(MouseEvent.MOUSE_UP, stop);
 				
 				ns.buttonMode = true;
 			});
-			
-			
-			
-			
 			lay =  new NodeLinkTreeLayout();
-			//lay.useNodeSize = false;
-			
 			var root:NodeSprite = vis.data.nodes[0] as NodeSprite;
 			trace(data.length);
 			_gdf = new GraphDistanceFilter([root], _maxDistance,NodeSprite.GRAPH_LINKS); 
@@ -114,12 +101,9 @@
 			vis.operators.add(lay);
 			
 			panel1.rawChildren.addChild(vis);
-			
-//			searchBox.searchStatus.text = vis.data.nodes.length + '';
 			try{
 				updateRoot(vis.data.nodes[0]);
-			} catch(error){
-//				searchBox.searchStatus.text = searchBox.searchStatus.text + " error ";
+			} catch(error:Error){
 			}
 			
 		}
