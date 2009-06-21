@@ -2,8 +2,8 @@
 <mx:Application 
 	xmlns:mx="http://www.adobe.com/2006/mxml" 
 	layout="absolute" 
-	width="1024"
-	height="768"
+	width="100%"
+	height="100%"
 	creationComplete="init()"
 	xmlns:schemr="schemr.*">
 	
@@ -231,7 +231,20 @@
 //						
 //		}	
 
-		private function handleNewSearchResults():void {
+		//		public function processSearchResults():void {
+		public function handleNewSearchResults():void {
+//			properties.text="Place your mouse over an element to get more information on the match. Double-click to re-center.";
+			var results:Array = new Array(); 
+
+			for (var i=0; i< searchBox._searchResults.length(); i++) {
+				results.push({
+						Name: searchBox._searchResults.node[i].@name, 
+						Description: searchBox._searchResults.node[i].@desc, 
+						Score: searchBox._searchResults.node[i].@score, 
+						ID: searchBox._searchResults.node[i]
+					});
+				grid.dataProvider = results;	
+			}
 			
 		}
 
@@ -239,7 +252,7 @@
 	</mx:Script>
 	
 	<mx:HDividedBox width="1000" height="700">
-		<mx:VBox id="searchSide" width="40%" height="100%">
+		<mx:VBox id="searchSide" width="40%" height="100%" verticalAlign="top">
 
 			<mx:Image source="schemr/assets/splash.png"/>
 

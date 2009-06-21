@@ -36,8 +36,9 @@
 //   			params["schema"] = ... file text;
 //			var myLoader:URLLoader = new URLLoader();
 //			myLoader.load(new URLRequest("schemas.xml"));
-			
-   			searchRequest.send(params);
+	
+   				searchRequest.send(params);
+   	
 		}
 		
 		private function searchResultHandler(event:ResultEvent):void {
@@ -65,13 +66,20 @@
 		<mx:FormItem label="Keyword(s):">
 			<mx:TextInput id="searchText" enter="performSearch();"/>
 		</mx:FormItem>
+		<mx:HBox>
+			
+		
 		<mx:FormItem label="Schema File:">
 			<schemr:FileUploadBox />
 		</mx:FormItem>
+		
+			
 		<mx:FormItem>
-			<mx:Button id="searchButton" label="submit" click="performSearch();"/>
+			<mx:Button id="searchButton" y="0" label="submit" click="performSearch();"/>
 		</mx:FormItem>
+		</mx:HBox>
 	</mx:Form>
+	<mx:Label id="message" color="0xAA1111" text="message" />
 <!--
 	<mx:VBox>
 		<mx:Label color="0x881212" text="Please enter search terms." />
