@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<schemas>
-<node index="002" name="Neuro-Imaging Study" desc="Additional measurements necessary to interpret brain scans" score="0.0" id="15">002</node>
-<node index="003" name="African Neuro" desc="Adds languages common in Africa" score="0.0" id="17">003</node>
-<node index="004" name="Neuro w/ Extended Language" desc="Adds additional language codes needed in many locations" score="0.0" id="16">004</node>
-
-</schemas>
