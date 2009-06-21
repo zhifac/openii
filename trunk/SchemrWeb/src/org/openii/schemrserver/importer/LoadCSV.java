@@ -75,16 +75,7 @@ public class LoadCSV extends LoadSchemaFile{
 	    	System.err.println("An error occured importing the CSV file");
 	    	e.printStackTrace();
 	    }
-	    try {
-			BuildIndex.main(new String[0]);
-		} catch (CorruptIndexException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	    
+	   	    
 	}
 
 }

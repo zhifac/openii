@@ -5,7 +5,7 @@ import java.rmi.RemoteException;
 import junit.framework.TestCase;
 
 public class SchemaSearchTest extends TestCase {
-	private static String searchTerm = "Score"; 
+	private static String searchTerm = "sport size"; 
 	public void testSearch(){
 		MatchSummary[] search;
 		try {
