@@ -43,9 +43,11 @@ public class SchemaUtility {
 //						new Repository(Repository.POSTGRES,
 //								new URI("localhost"),
 //								"schemastore", "postgres", "postgres"));
+				URI db = new URI("../derby_data");
+				System.out.println("Database path: " + System.getProperty("user.dir"));
+				db = db.resolve("file:///C:/Users/kuangc/workspace/eclipse_workspaces/data_entry/derby_data/");
 				CLIENT = new SchemaStoreClient(
-					new Repository(Repository.DERBY,
-							new URI("../derby_data"),
+					new Repository(Repository.DERBY, db,
 							"schemastore", "", ""));
 			} catch (Exception e) {
 				e.printStackTrace();
