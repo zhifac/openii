@@ -41,7 +41,7 @@ public class MatchMakerExporter extends MappingExporter {
 		Integer elementID;
 		
 		// Loop through each schemaID
-		for (Integer schemaID : this.mapping.getSchemas() ) {
+		for (Integer schemaID : this.mapping.getSchemaIDs()) {
 			// Loop through each element
 			
 			for (SchemaElement element : client.getGraph(schemaID).getElements(null) ) {
@@ -261,7 +261,7 @@ public class MatchMakerExporter extends MappingExporter {
 		this.mappingCells = mappingCells; 
 		this.elementSchemaLookUp = new HashMap<Integer, ArrayList<Integer>>(); 
 		this.clusterElements = new HashMap<String, SchemaElementNode>(); 
-		this.schemaIDs = mapping.getSchemas();
+		this.schemaIDs = mapping.getSchemaIDs();
 		
 		// Create look up for elementIDs to SchemaIDs
 		initElementSchemaLookUp();
