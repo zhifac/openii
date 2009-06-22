@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" creationComplete="init();">
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" 
+	width="100%" 
+	creationComplete="init();">
 
 <mx:Metadata>
     [Event(name="newSchemaFile", type="flash.events.Event")]
@@ -7,15 +9,25 @@
 
 <mx:Script>
     <![CDATA[
+        
+  		public const FILE_UPLOAD_URL:String = "http:/localhost:8080/SchemrWeb/UploadSchemaServlet";
+  		public const CROSS_DOMAIN_POLICY_URL:String = "http://localhost:8080/SchemrWeb/landing/crossdomainpolicy.xml";
+
         private var fileRef:FileReference;
 
-        private const FILE_UPLOAD_URL:String = "http:/localhost:8080/SchemrWeb/UploadSchema";
-
         private function init():void {
-            fileRef = new FileReference();
-            fileRef.addEventListener(Event.SELECT, fileRef_select);
-            fileRef.addEventListener(ProgressEvent.PROGRESS, fileRef_progress);
-            fileRef.addEventListener(Event.COMPLETE, fileRef_complete);
+        	
+        	Security.loadPolicyFile(CROSS_DOMAIN_POLICY_URL);
+        	
+        	try {
+	            fileRef = new FileReference();
+	            fileRef.addEventListener(Event.SELECT, handleFileSelection);
+	            fileRef.addEventListener(ProgressEvent.PROGRESS, handleFileUploadProgress);
+	            fileRef.addEventListener(Event.COMPLETE, handleFileUploadComplete);
+	            fileRef.addEventListener(IOErrorEvent.IO_ERROR, handleIOError)
+	        } catch (event:Event) {
+					        	
+	        }
         }
 
         private function browseAndUpload():void {
@@ -23,22 +35,26 @@
             message.text = "";
         }
 
-        private function fileRef_select(evt:Event):void {
+        private function handleFileSelection(evt:Event):void {
             try {
-                message.text = "size (bytes): " + numberFormatter.format(fileRef.size);
+                message.text = fileRef.name+" - size (bytes): " + numberFormatter.format(fileRef.size);
                 fileRef.upload(new URLRequest(FILE_UPLOAD_URL));
             } catch (err:Error) {
                 message.text = "ERROR: zero-byte file";
             }
         }
 
-        private function fileRef_progress(evt:ProgressEvent):void {
+        private function handleFileUploadProgress(evt:ProgressEvent):void {
             progressBar.visible = true;
         }
 
-        private function fileRef_complete(evt:Event):void {
+        private function handleFileUploadComplete(evt:Event):void {
             message.text += " (complete)";
             progressBar.visible = false;
+        }
+        
+        private function handleIOError(evt:ErrorEvent):void {
+        	trace(evt.text);
         }
     ]]>
 </mx:Script>

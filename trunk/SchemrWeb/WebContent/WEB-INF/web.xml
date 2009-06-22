@@ -144,6 +144,15 @@ xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j
 		<servlet-class>
 		org.openii.schemrserver.servlet.GraphVisualizationServlet</servlet-class>
 	</servlet>
+	<servlet>
+		<description>
+		Handles an upload of an DDL or XSD schema via an existing HTTP session</description>
+		<display-name>
+		UploadSchemaServlet</display-name>
+		<servlet-name>UploadSchemaServlet</servlet-name>
+		<servlet-class>
+		org.openii.schemrserver.servlet.UploadSchemaServlet</servlet-class>
+	</servlet>
 
 	<servlet-mapping>
 		<servlet-name>MessageBrokerServlet</servlet-name>
@@ -188,6 +197,10 @@ xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j
 	<servlet-mapping>
 		<servlet-name>GraphVisualizationServlet</servlet-name>
 		<url-pattern>/GraphVisualizationServlet</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>UploadSchemaServlet</servlet-name>
+		<url-pattern>/UploadSchemaServlet</url-pattern>
 	</servlet-mapping>
 
 <display-name>schemrweb</display-name>
