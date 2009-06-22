@@ -16,6 +16,11 @@
 			resultGrid.dataProvider = searchBox._searchResults;	
 			trace(resultGrid.dataProvider);
 		}
+		
+		private function handleSchemaSelection(event:Event):void {
+			var ix:XML = resultGrid.dataProvider[event.currentTarget.selectedIndex];
+			graphVis.updateGraph(ix.@id);
+		}
 		]]>
 	</mx:Script>
 	
@@ -26,7 +31,8 @@
 			<schemr:SearchBox id="searchBox" newSearchResults="handleNewSearchResults(event);" width="100%" height="200"/>
 
 			<mx:DataGrid id="resultGrid" width="100%" height="100%" 
-					change="graphVis.updateGraph(resultGrid.selectedItem.id)" editable="false" enabled="true" selectedIndex="0">
+					itemClick="handleSchemaSelection(event)"
+					editable="false" enabled="true" selectedIndex="0">
 				<mx:columns>
 					<mx:DataGridColumn headerText="ID" dataField="@id"/>
 					<mx:DataGridColumn headerText="Name" dataField="@name"/>

@@ -15,7 +15,7 @@ public class BuildIndex {
 	public static String TEST_INDEX_DIR = SchemaUtility.LOCAL_INDEX_DIR;
 	
 	public static void main(String[] args) throws CorruptIndexException, IOException{
-		System.out.println("Building index in "+SchemaUtility.LOCAL_INDEX_DIR+" for "+SchemaUtility.SCHEMA_STORE_URL);
+		System.out.println("Building index in "+SchemaUtility.LOCAL_INDEX_DIR);
 		Analyzer analyzer = new StandardAnalyzer();
 		IndexWriter iwriter;
 		try {

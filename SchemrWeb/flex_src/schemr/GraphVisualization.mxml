@@ -7,6 +7,7 @@
 	
 	<mx:Script>
 		<![CDATA[
+			import flare.vis.events.SelectionEvent;
 		import flare.vis.operator.layout.Layout;
 		import mx.events.ItemClickEvent;
 		import flash.utils.setInterval;
@@ -27,8 +28,11 @@
 		import flash.geom.Rectangle;
 		import flash.text.TextFormat;
 		
-				
-		
+		import mx.rpc.events.ResultEvent;
+		import mx.rpc.events.FaultEvent;
+		import flare.data.converters.GraphMLConverter;
+		import mx.controls.Alert;
+					
 		private var vis:Visualization;
 		private var lab:TextSprite; 		
 		private var maxLabelWidth:Number;
@@ -44,10 +48,12 @@
 			GraphMLFile('schemr/assets/out005.xml');
 		}
 		
-		public function GraphMLFile(fileName:String):void {
+		private function GraphMLFile(fileName:String):void {
 			var gmr:GraphMLReader = new GraphMLReader(onLoaded);
 			onLoaded(gmr.read(fileName));
 		}
+		
+		
 		
 		private var lay:Layout;
 		private function onLoaded(data:Data):void {
@@ -181,14 +187,6 @@
 			return s2.width;
 		}
 
-
-		public function updateGraph(event:Event):void{
-			var id:String = event.target.selectedItem.ID;
-			if (panel1.rawChildren.numChildren > 0)
-				panel1.rawChildren.removeChildAt(panel1.rawChildren.numChildren - 1);
-			GraphMLFile('results/out' + id + '.xml');	
-			
-		}
 		private function changeLayout(event:ItemClickEvent):void{
 			switch(event.index){
 				case 0:
@@ -212,8 +210,39 @@
 			s2.horizontalAnchor = TextSprite.CENTER;
 			s2.verticalAnchor = TextSprite.CENTER;
 						
-		}	
+		}
+		
+		
+		public function updateGraph(id:String):void {
+			var params:Object = {};
+   			params["resultId"] = id;
+			graphVisRequest.send(params);
+		}
+		
+		private function graphVisResultHandler(event:ResultEvent):void {
+			trace(event.result.toString());
+
+			var dataSet:DataSet = new GraphMLConverter().parse(event.result as XML);
+
+			onLoaded(Data.fromDataSet(dataSet));
+
+//			if (panel1.rawChildren.numChildren > 0)
+//				panel1.rawChildren.removeChildAt(panel1.rawChildren.numChildren - 1);
+		}
+
+		private function graphVisFaultHandler(event:FaultEvent):void {
+			Alert.show(event.fault.message, "Schema result retrieval failed");
+		}
+		
 		]]>
 	</mx:Script>
 </mx:HBox>	
+
+	<mx:HTTPService id="graphVisRequest"
+					url="/SchemrWeb/GraphVisualizationServlet"
+					method="GET"
+					resultFormat="e4x"
+					result="graphVisResultHandler(event);"
+					fault="graphVisFaultHandler(event);">
+	</mx:HTTPService>
 </mx:HBox>
