@@ -3,24 +3,20 @@
 <mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%"
 	creationComplete="init()"
 	xmlns:schemr="*">
-	<mx:Panel width="250" height="300" alpha="0.6">
+	
+	<mx:Panel width="200" height="200" alpha="0.6">
 		<mx:TextArea id="properties" backgroundAlpha="0.5" color="#DD2222" width="100%" height="100%" text="Information will appear in this box as you mouseover schema elements." />
 	</mx:Panel>
 	
+	<!--<mx:Image source="schemr/assets/close.png" id="close"/>-->
 		
 	<mx:HBox width="100%" height="100%" id="panel1">
 	
-	<mx:ToggleButtonBar itemClick="changeLayout(event);">
-			<mx:dataProvider>
-				<mx:Array>
-					<mx:String>Tree View</mx:String>
-					<mx:String>Graph View</mx:String>
-				</mx:Array>
-			</mx:dataProvider>
-		</mx:ToggleButtonBar>
+	
 	
 	<mx:Script>
 		<![CDATA[
+			import mx.controls.Image;
 		import flare.vis.events.SelectionEvent;
 		import flare.vis.operator.layout.Layout;
 		import mx.events.ItemClickEvent;
@@ -59,13 +55,18 @@
 		private var _transitionDuration:Number = 2;
 		
 		public function init():void{ 
-			GraphMLFile('schemr/assets/out005.xml');
+			//GraphMLFile('schemr/assets/out005.xml');
+			//this.addEventListener(KeyboardEvent.KEY_DOWN, shuffle);
+		}
+		public function test():void{
+			
 		}
 		
 		public function GraphMLFile(fileName:String):void {
 			var gmr:GraphMLReader = new GraphMLReader(onLoaded);
 			onLoaded(gmr.read(fileName));
 		}
+		
 		
 		private var lay:Layout;
 		private function onLoaded(data:Data):void {
@@ -107,7 +108,7 @@
 				ns.addEventListener(MouseEvent.MOUSE_OVER, drawInfo);
 				ns.addEventListener(MouseEvent.MOUSE_DOWN, drag);
 				ns.addEventListener(MouseEvent.MOUSE_UP, stop);
-				
+				ns.addEventListener(MouseEvent.MOUSE_WHEEL, die);
 				ns.buttonMode = true;
 			});
 			lay =  new NodeLinkTreeLayout();
@@ -118,6 +119,7 @@
 			vis.operators.add(_gdf); //distance filter has to be added before the layout
 			vis.operators.add(lay);
 			
+			
 			panel1.rawChildren.addChild(vis);
 			try{
 				updateRoot(vis.data.nodes[0]);
@@ -125,13 +127,21 @@
 			}
 			
 		}
+		private function die(event:MouseEvent):void{
+			panel1.rawChildren.removeChild((event.currentTarget as NodeSprite).parent);
+		}
+		private function shuffle():void{
+			//event.charCode
+			panel1.rawChildren.addChild(panel1.rawChildren.getChildAt(0));
+			panel1.rawChildren.removeChildAt(0);
+		}
 		private function drag(event:MouseEvent):void{
-			vis.startDrag(false, new Rectangle(-200, -300, 900, 700));
+			((event.target as NodeSprite).parent as Sprite).startDrag(false, new Rectangle(-400, -300, 900, 700));
 			changeCenter=false;
 		}
 		private function stop(event:MouseEvent):void{
-			vis.stopDrag();
-				changeCenter=true;
+			((event.target as NodeSprite).parent as Sprite).stopDrag();
+			changeCenter=true;
 		}
 		private function drawInfo(event:MouseEvent):void{
 			var n:NodeSprite = event.target as NodeSprite;
@@ -253,4 +263,5 @@
 					result="graphVisResultHandler(event);"
 					fault="graphVisFaultHandler(event);">
 	</mx:HTTPService>
+	<mx:Button label="x" click="shuffle()" />
 </mx:HBox>
