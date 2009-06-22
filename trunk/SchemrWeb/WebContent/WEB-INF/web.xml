@@ -135,6 +135,15 @@ xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j
 		<servlet-class>
 		org.openii.schemrserver.servlet.SearchServlet</servlet-class>
 	</servlet>
+	<servlet>
+		<description>
+		Get a graph to visualize according to schema id; assume graph is cached with httpsession by id in existing search result</description>
+		<display-name>
+		GraphVisualizationServlet</display-name>
+		<servlet-name>GraphVisualizationServlet</servlet-name>
+		<servlet-class>
+		org.openii.schemrserver.servlet.GraphVisualizationServlet</servlet-class>
+	</servlet>
 
 	<servlet-mapping>
 		<servlet-name>MessageBrokerServlet</servlet-name>
@@ -175,6 +184,10 @@ xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j
 	<servlet-mapping>
 		<servlet-name>SearchServlet</servlet-name>
 		<url-pattern>/SearchServlet</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>GraphVisualizationServlet</servlet-name>
+		<url-pattern>/GraphVisualizationServlet</url-pattern>
 	</servlet-mapping>
 
 <display-name>schemrweb</display-name>

@@ -28,7 +28,11 @@ import com.thoughtworks.xstream.XStream;
 
 public class SchemaUtility {
 	
-	public static String DEFAULT_ROOT = null;
+//	public static String DEFAULT_ROOT = null;
+
+	public static final String LOCAL_DATA_DIR = "C:/eclipse_workspaces/openii/schemr_data";
+	public static final String LOCAL_INDEX_DIR = LOCAL_DATA_DIR + "/lucene_index";
+	public static final String DERBY_DIR = LOCAL_DATA_DIR + "/derby_data";
 	
 	private static SchemaStoreClient CLIENT;		
 
@@ -43,9 +47,9 @@ public class SchemaUtility {
 //						new Repository(Repository.POSTGRES,
 //								new URI("localhost"),
 //								"schemastore", "postgres", "postgres"));
-				URI db = new URI("../derby_data");
-				System.out.println("Database path: " + System.getProperty("user.dir"));
-				db = db.resolve("file:///C:/Users/kuangc/workspace/eclipse_workspaces/data_entry/derby_data/");
+				URI db = new URI(DERBY_DIR);
+//				System.out.println("Database path: " + System.getProperty("user.dir"));
+//				db = db.resolve("file:///C:/eclipse_workspaces/openii/derby_data/");
 				CLIENT = new SchemaStoreClient(
 					new Repository(Repository.DERBY, db,
 							"schemastore", "", ""));
@@ -76,9 +80,7 @@ public class SchemaUtility {
 	public static final String ALIAS = "alias";
 	public static final String SCHEMA = "schema";
 
-	public static final String LOCAL_INDEX_DIR = "C:\\Users\\kuangc\\workspace\\eclipse_workspaces\\data_entry\\SchemrServer\\index";
-
-	public static final String SCHEMA_STORE_URL = "http://localhost:8080/SchemaStore/services/SchemaStore";
+//	public static final String SCHEMA_STORE_URL = "http://localhost:8080/SchemaStore/services/SchemaStore";
 	
 	public static String getType(SchemaElement schemaElement) {
 		if (schemaElement instanceof Entity) return ENTITY;
