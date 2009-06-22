@@ -5,6 +5,7 @@ package org.mitre.harmony;
 import java.awt.Toolkit;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.io.File;
 import java.net.URI;
 
 import javax.swing.JFrame;
@@ -86,18 +87,22 @@ public class Harmony extends JFrame implements MappingListener, WindowListener
 	/** Launches Harmony */
 	static public void main(String args[])
 	{
-		// Retrieve the repository information
-		String typeParm = ConfigManager.getParm("repository.type");
-		String locationParm = ConfigManager.getParm("repository.location");
-		String databaseParm = ConfigManager.getParm("repository.database");
-		String usernameParm = ConfigManager.getParm("repository.username");
-		String passwordParm = ConfigManager.getParm("repository.password");
-		
-		// Create a repository connection
-		Integer type = typeParm.equals("service")?Repository.SERVICE:typeParm.equals("postgres")?Repository.POSTGRES:Repository.DERBY;
-		URI uri = null;	try { uri = new URI(locationParm); } catch(Exception e) {}
-		Repository repository = new Repository(type,uri,databaseParm,usernameParm,passwordParm);
-
+		Repository repository = null;
+		try {
+			// Retrieve the repository information
+			String typeParm = ConfigManager.getParm("repository.type");
+			String locationParm = ConfigManager.getParm("repository.location");
+			String databaseParm = ConfigManager.getParm("repository.database");
+			String usernameParm = ConfigManager.getParm("repository.username");
+			String passwordParm = ConfigManager.getParm("repository.password");
+			
+			// Create a repository connection
+			Integer type = typeParm.equals("service")?Repository.SERVICE:typeParm.equals("postgres")?Repository.POSTGRES:Repository.DERBY;
+			URI uri = null;	try { uri = new URI(locationParm); } catch(Exception e) {}
+			repository = new Repository(type,uri,databaseParm,usernameParm,passwordParm);
+		}
+		catch(Exception e) { repository = new Repository(Repository.DERBY,new File("").toURI(),"schemastore","postgres","postgres"); }			
+			
 		// Launch Harmony
 		if(SchemaStoreManager.setConnection(repository)) new Harmony();
 		else System.out.println("(E) Failed to connect to SchemaStore");
