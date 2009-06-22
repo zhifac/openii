@@ -30,9 +30,13 @@ public class SchemaUtility {
 	
 //	public static String DEFAULT_ROOT = null;
 
-	public static final String LOCAL_DATA_DIR = "C:/eclipse_workspaces/openii/schemr_data";
-	public static final String LOCAL_INDEX_DIR = LOCAL_DATA_DIR + "/lucene_index";
-	public static final String DERBY_DIR = LOCAL_DATA_DIR + "/derby_data";
+	public static final String LOCAL_DATA_DIR = "C:" + File.pathSeparator 
+			+ "eclipse_workspaces" + File.pathSeparator 
+			+ "openii" + File.pathSeparator 
+			+ "schemr_data";
+	public static final String LOCAL_INDEX_DIR = LOCAL_DATA_DIR + File.pathSeparator + "lucene_index";
+		
+	public static final String DERBY_DIR = "file:///C:/eclipse_workspaces/openii/schemr_data/derby_data";
 	
 	private static SchemaStoreClient CLIENT;		
 
