@@ -1,15 +1,10 @@
 package org.openii.schemrserver.indexer;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
-import java.rmi.RemoteException;
-import java.util.Properties;
 
+import org.mitre.schemastore.client.Consts;
 import org.mitre.schemastore.client.Repository;
 import org.mitre.schemastore.client.SchemaStoreClient;
 import org.mitre.schemastore.model.Alias;
@@ -28,16 +23,6 @@ import com.thoughtworks.xstream.XStream;
 
 public class SchemaUtility {
 	
-//	public static String DEFAULT_ROOT = null;
-
-	public static final String LOCAL_DATA_DIR = "C:" + File.pathSeparator 
-			+ "eclipse_workspaces" + File.pathSeparator 
-			+ "openii" + File.pathSeparator 
-			+ "schemr_data";
-	public static final String LOCAL_INDEX_DIR = LOCAL_DATA_DIR + File.pathSeparator + "lucene_index";
-		
-	public static final String DERBY_DIR = "file:///C:/eclipse_workspaces/openii/schemr_data/derby_data";
-	
 	private static SchemaStoreClient CLIENT;		
 
 	public static SchemaStoreClient getCLIENT() {
@@ -51,12 +36,9 @@ public class SchemaUtility {
 //						new Repository(Repository.POSTGRES,
 //								new URI("localhost"),
 //								"schemastore", "postgres", "postgres"));
-				URI db = new URI(DERBY_DIR);
-//				System.out.println("Database path: " + System.getProperty("user.dir"));
-//				db = db.resolve("file:///C:/eclipse_workspaces/openii/derby_data/");
-				CLIENT = new SchemaStoreClient(
-					new Repository(Repository.DERBY, db,
-							"schemastore", "", ""));
+				URI db = new URI(Consts.SCHEMR_WEB_DERBY_DIR);
+				CLIENT = new SchemaStoreClient(new Repository(Repository.DERBY,
+						db, "schemastore", "", ""));
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

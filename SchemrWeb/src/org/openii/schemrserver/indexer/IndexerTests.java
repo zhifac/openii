@@ -22,6 +22,7 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.LockObtainFailedException;
 import org.apache.lucene.store.RAMDirectory;
+import org.mitre.schemastore.client.Consts;
 import org.mitre.schemastore.client.SchemaStoreClient;
 
 public class IndexerTests extends TestCase {
@@ -74,9 +75,7 @@ public class IndexerTests extends TestCase {
 	} // end testSanity
 
 	public static SchemaStoreClient TEST_CLIENT = SchemaUtility.getCLIENT();
-//		new SchemaStoreClient("http://localhost:8080/SchemaStore/services/SchemaStore");
-
-	public static String TEST_INDEX_DIR = SchemaUtility.LOCAL_INDEX_DIR + "test";
+	public static String TEST_INDEX_DIR = Consts.LOCAL_INDEX_DIR + "test";
 	
 	public void testBuildIndex() {
 

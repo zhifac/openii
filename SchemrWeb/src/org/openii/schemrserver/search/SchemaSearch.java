@@ -8,6 +8,7 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.mitre.schemastore.client.Consts;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.porters.ImporterException;
 import org.mitre.schemastore.porters.schemaImporters.DDLImporter;
@@ -101,7 +102,7 @@ public class SchemaSearch {
 		return queryKeywords;
 	}
 	private static CandidateSchema [] getCandidateSchemas(Query query) {		
-		CandidateSchema [] candidateSchemas = SchemaStoreIndex.searchIndex(SchemaUtility.LOCAL_INDEX_DIR, query);
+		CandidateSchema [] candidateSchemas = SchemaStoreIndex.searchIndex(Consts.LOCAL_INDEX_DIR, query);
 		
 		System.out.println("Found " + candidateSchemas.length + " candidate schemas");
 		return candidateSchemas;
