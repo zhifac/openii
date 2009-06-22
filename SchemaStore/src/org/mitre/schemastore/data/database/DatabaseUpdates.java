@@ -45,7 +45,7 @@ public class DatabaseUpdates
 		boolean exists = true;
 		Statement stmt = connection.createStatement();
 		try { stmt.executeQuery("SELECT * FROM extensions"); }
-		catch(Exception e) { exists=false; }
+		catch(Exception e) { connection.rollback(); exists=false; }
 		
 		// Initializes the database if it doesn't exist
 		if(!exists)
@@ -79,9 +79,9 @@ public class DatabaseUpdates
 				connection.commit();
 			}
 			catch (Exception e)
-				{ connection.rollback(); new SQLException("Failed to initialize database\n" + e.getMessage()); }
+				{ connection.rollback(); throw new SQLException("Failed to initialize database\n" + e.getMessage()); }
 		}
-		
+
 		stmt.close();
 	}
 	
