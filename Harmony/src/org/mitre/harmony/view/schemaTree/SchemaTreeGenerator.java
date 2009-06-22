@@ -46,7 +46,7 @@ class SchemaTreeGenerator
 	static void initialize(SchemaTree tree)
 	{
 		// Initialize tree by only indicating the no schemas are available
-		DefaultMutableTreeNode node = new DefaultMutableTreeNode("<No Schemas Available>");
+		DefaultMutableTreeNode node = new DefaultMutableTreeNode("<No Schemas>");
 		((DefaultTreeModel)tree.getModel()).insertNodeInto(node,tree.root,0);
         tree.scrollPathToVisible(new TreePath(node.getPath()));
 	}
