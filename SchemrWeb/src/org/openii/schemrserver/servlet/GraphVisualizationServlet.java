@@ -1,7 +1,6 @@
 package org.openii.schemrserver.servlet;
 
 import java.io.IOException;
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -14,10 +13,13 @@ import javax.servlet.http.HttpSession;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.output.XMLOutputter;
+import org.mitre.schemastore.model.Attribute;
 import org.mitre.schemastore.model.Containment;
 import org.mitre.schemastore.model.Entity;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
+import org.mitre.schemastore.model.graph.Graph;
+import org.mitre.schemastore.model.graph.HierarchicalGraph;
 import org.openii.schemrserver.indexer.SchemaUtility;
 import org.openii.schemrserver.matcher.SimilarityMatrix.ScoreEvidence;
 import org.openii.schemrserver.search.MatchSummary;
@@ -106,113 +108,76 @@ public class GraphVisualizationServlet extends HttpServlet {
 				"Schema", schema.getId(), matched, score, matchedObj,
 				graph);
 		
+		Graph g = SchemaUtility.getCLIENT().getGraph(schema.getId());
+		HierarchicalGraph hg = new HierarchicalGraph(g, null);
+		
 		for (SchemaElement schemaElement : schemaElements) {
-			if (schemaElement instanceof Entity) {
-				Entity e = (Entity) schemaElement;
-				
-				String name = e.getName().trim();
-				if ("".equals(name)) {
-					name = "-";
-				}
-				
-				matched = idScoreEvidenceMap.keySet().contains(e.getId());
-				score = 1;
-				matchedObj = "";
-				if (matched) { 
-					score += idScoreEvidenceMap.get(e.getId()).getScore() * 3 + 1;
-					matchedObj = idQueryFragmentMap.get(e.getId()).getName().trim();
-				}
-				addNode(name, e.getDescription().trim(), "Entity", e.getId(),
-						matched, score, matchedObj, graph);
-
-				// TODO: assume all entities connect with schema
-				addEdge("Relationship", schema.getId(), e.getId(), graph);
-				
-				// FIXME: add child attributes
-				for (Integer i : e.getReferencedIDs()){
-					System.out.println(i);
-					SchemaElement se;
-					try {
-						se = SchemaUtility.getCLIENT().getSchemaElement(i);
-					} catch (RemoteException e1) {
-						e1.printStackTrace();
-						return;
-					}
-					addNode(se.getName().trim(), se.getDescription().trim(),
-							"Attribute", se.getId(), matched, score,
-							matchedObj, graph);
-					addEdge("Relationship", e.getId(), se.getId(), graph);
-				}
-
-			} else if (schemaElement instanceof Containment) {
-				Containment c = (Containment) schemaElement;
-				String name = c.getName().trim();
-				if ("".equals(name)) {
-					name = "-";
-				}
-				
-				matched = idScoreEvidenceMap.keySet().contains(c.getId());
-				score = 1;
-				matchedObj = "";
-				if (matched) { 
-					score += idScoreEvidenceMap.get(c.getId()).getScore() * 3 + 1;
-					matchedObj = idQueryFragmentMap.get(c.getId()).getName().trim();
-				}
-				addNode(c.getName().trim(), c.getDescription().trim(), "Containment", c.getId(), matched, score, matchedObj, graph);
-				System.out.println("Containment"+": "+c.getName().trim()+" "+c.getId());			
-				int pid = c.getParentID();
-				addEdge("Relationship", pid , c.getId(), graph);
-				System.out.println("\tedge: "+pid+" <-> "+c.getId());
+			if (schemaElement instanceof Entity || schemaElement instanceof Attribute || schemaElement instanceof Containment) {
+				processElement(schemaElement, hg, idScoreEvidenceMap, idQueryFragmentMap, graph);				
 			}
 		}
-		
-//		schemaXMLWriter.write("</graph>\n</graphml>");
+	
 		Document doc = new Document(root);
 		XMLOutputter serializer = new XMLOutputter();
 		serializer.output(doc, response.getWriter());
+// debug
+		serializer.output(doc, System.out);	
+	}
+	
+	private void processElement(
+			SchemaElement schemaElement, 
+			HierarchicalGraph hg,
+			HashMap<Integer, ScoreEvidence> idScoreEvidenceMap, 
+			HashMap<Integer, QueryFragment> idQueryFragmentMap,
+			Element parentXMLElement) {
+		
+		String name = schemaElement.getName().trim();
+		if ("".equals(name)) {
+			name = "-";
+		}
+		
+		int id = schemaElement.getId();
+		boolean matched = idScoreEvidenceMap.keySet().contains(id);
 
-		serializer.output(doc, System.out);
+		double score = 0;
+		String matchedObj = "";
+		if (matched) { 
+			score = idScoreEvidenceMap.get(id).getScore();
+			matchedObj = idQueryFragmentMap.get(id).getName().trim();
+		}
+		
+		String type = schemaElement.getClass().getSimpleName();
+
+		addNode(name, schemaElement.getDescription().trim(), type, id,
+						matched, score, matchedObj, parentXMLElement);
+
+		ArrayList<SchemaElement> parents = hg.getParentElements(id);
+		if (parents.size() > 0) {
+			for (SchemaElement sep : parents) {
+				addEdge("Relationship", sep.getId(), id, parentXMLElement);			
+			}
+		} else {
+			addEdge("Relationship", hg.getSchema().getId(), id, parentXMLElement);
+		}
 	}
 
-	
 	private static void addNode(String name, String desc, String type, int id,
-			boolean matched, double score, String matchedObj, Element graph) {
-//		try {
-//			f.write("<node id=\"" + id + "\">\n");
-//			data("name", name, f);
-//			data("desc", desc, f);
-//			data("type", type, f);
-//			data("id", "" + id, f);
-//			data("matched", matched?"true":"false", f);
-//			data("score", "" + score, f);
-//			data("matched_obj", matchedObj, f);
-//			f.write("</node>\n");
-			
-			Element node = new Element("node");
-			node.setAttribute("name",name);
-			node.setAttribute("desc",desc);
-			node.setAttribute("type",type);
-			node.setAttribute("id",Integer.toString(id));
-			node.setAttribute("matched",Boolean.toString(matched));
-			node.setAttribute("score",Double.toString(score));
-			node.setAttribute("matched_obj",matchedObj);
-			graph.addContent(node);
-			
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//			return;
-//		}
-	System.out.println("Adding node\t"+name+"\t"+type+"\t"+id+"\t"+matched+"\t"+score);
+			boolean matched, double score, String matchedObj, Element parent) {
+		Element node = new Element("node");
+		node.setAttribute("name",name);
+		node.setAttribute("desc",desc);
+		node.setAttribute("type",type);
+		node.setAttribute("id",Integer.toString(id));
+		node.setAttribute("matched",Boolean.toString(matched));
+		node.setAttribute("score",Double.toString(score));
+		node.setAttribute("matched_obj",matchedObj);
+		parent.addContent(node);
 	}
-//	private static void data(String key, String value, StringWriter schemaXML) throws IOException{
-//		schemaXML.write("\t<data key=\"" + key + "\">" + value + "</data>\n");
-//	}
 	
-	private static void addEdge(String type, int sid, int did, Element graph) {
-//		f.write("\n<edge source=\"" + sid + "\" target=\"" + did + "\"></edge>\n");
+	private static void addEdge(String type, int sid, int did, Element parent) {
 		Element edge = new Element("edge");
 		edge.setAttribute("source",Integer.toString(sid));
 		edge.setAttribute("target",Integer.toString(did));
-		graph.addContent(edge);
+		parent.addContent(edge);
 	}
 }
