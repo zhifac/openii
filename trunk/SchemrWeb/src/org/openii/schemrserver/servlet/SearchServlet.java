@@ -1,5 +1,7 @@
 package org.openii.schemrserver.servlet;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.rmi.RemoteException;
@@ -45,6 +47,8 @@ public class SearchServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) 
 			throws ServletException, IOException {
 	    String searchTerms = request.getParameter("keywords");
+	    String schemaFragmentType = request.getParameter("schemaFragmentType");
+	    String schemaFragmentContent = request.getParameter("schemaFragmentContent");
     
 		HttpSession session = request.getSession();
 		SessionState userState = (SessionState) session.getAttribute("sessionState");
@@ -53,7 +57,20 @@ public class SearchServlet extends HttpServlet {
 			session.setAttribute("sessionState", userState);
 		}
 
-		MatchSummary [] msa = SchemaSearch.performSearch(searchTerms, null);
+		File schemaFile = null;
+		if (schemaFragmentType != null && !schemaFragmentType.trim().equals("") && schemaFragmentContent != null && !schemaFragmentContent.trim().equals("")) {
+			schemaFile = File.createTempFile("schemafragment", "."+schemaFragmentType);
+		    FileWriter fw = new FileWriter( schemaFile );
+		    try {
+		      fw.write( schemaFragmentContent );
+		    }
+		    finally {
+		      fw.close();
+		    }
+		    System.out.println( "temp file: " + schemaFile.getAbsolutePath() );
+		}
+		
+		MatchSummary [] msa = SchemaSearch.performSearch(searchTerms, schemaFile);
 
 		Element root = new Element("schemas");		
 		for (MatchSummary matchSummary : msa) {
