@@ -102,7 +102,10 @@ public class GraphVisualizationServlet extends HttpServlet {
 			score += idScoreEvidenceMap.get(schema.getId()).getScore() * 3;
 			matchedObj = idQueryFragmentMap.get(schema.getId()).getName().trim();
 		}
-
+		addNode(schema.getName().trim(), schema.getDescription().trim(),
+				"Schema", schema.getId(), matched, score, matchedObj,
+				graph);
+		
 		for (SchemaElement schemaElement : schemaElements) {
 			if (schemaElement instanceof Entity) {
 				Entity e = (Entity) schemaElement;
