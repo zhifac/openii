@@ -14,12 +14,16 @@
 		import mx.collections.ArrayCollection;
 		import mx.rpc.events.FaultEvent;
 		import mx.rpc.events.ResultEvent;
-
+		import mx.managers.PopUpManager;
+		
 		[Bindable]
 		public var _searchTerms:String;
 		public var _searchResults:XMLList;
-  
+
+  		private var _schemaFragBox:SchemaFragmentBox;
+  		
         private function init():void {
+			_schemaFragBox = new SchemaFragmentBox();
         }
  		
 		public function clearSearchTerms():void {
@@ -32,14 +36,13 @@
    			var params:Object = {};
 			// TODO do validation in search keywords
 			_searchTerms = searchText.text;
-   			params["keywords"] = _searchTerms
-   			// TODO enable file upload of schema file
-//   			params["schema"] = ... file text;
-//			var myLoader:URLLoader = new URLLoader();
-//			myLoader.load(new URLRequest("schemas.xml"));
-	
-			searchRequest.send(params);
-   	
+			if (_searchTerms != null) params["keywords"] = _searchTerms
+			if (_schemaFragBox._schemaFragType != null) {
+				params["schemaFragmentType"] = _schemaFragBox._schemaFragType;
+				params["schemaFragmentContent"] = _schemaFragBox._schemaFragContent;
+			} 
+			trace("params: " + params.toString());
+			searchRequest.send(params);   	
 		}
 		
 		private function searchResultHandler(event:ResultEvent):void {
@@ -49,6 +52,11 @@
 		}
 		private function searchFaultHandler(event:FaultEvent):void {
 			Alert.show(event.fault.message, "Search failed");
+		}
+		
+		private function handleSchemaFunction():void {
+			PopUpManager.addPopUp(_schemaFragBox, DisplayObject(this.parentApplication), true);
+			PopUpManager.centerPopUp(_schemaFragBox);
 		}
 	]]>
 </mx:Script>
@@ -66,8 +74,8 @@
 		<mx:FormItem label="Keyword(s):">
 			<mx:TextInput id="searchText" enter="performSearch();"/>
 		</mx:FormItem>
-		<mx:FormItem label="Schema File:">
-			<schemr:FileUploadBox />
+		<mx:FormItem label="Schema Fragment:">
+			<mx:Button label="load" click="handleSchemaFunction()"/>
 		</mx:FormItem>
 		<mx:FormItem>
 			<mx:Button id="searchButton" y="0" label="submit" click="performSearch();"/>
