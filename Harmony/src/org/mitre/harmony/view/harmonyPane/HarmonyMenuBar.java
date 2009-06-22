@@ -22,6 +22,7 @@ import org.mitre.harmony.model.HarmonyConsts;
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.view.dialogs.AboutDialog;
 import org.mitre.harmony.view.dialogs.ExportMappingDialog;
+import org.mitre.harmony.view.dialogs.GettingStartedDialog;
 import org.mitre.harmony.view.dialogs.mappings.LoadMappingDialog;
 import org.mitre.harmony.view.dialogs.mappings.SaveMappingDialog;
 import org.mitre.harmony.view.dialogs.matcher.MatcherMenu;
@@ -269,7 +270,8 @@ public class HarmonyMenuBar extends JMenuBar
 	/** Drop-down menu found under help menu bar heading */
 	private class HelpMenu extends JMenu implements ActionListener
 	{
-		private JMenuItem about;	// Option to view info on Harmony
+		private JMenuItem about;			// Option to view info on Harmony
+		private JMenuItem gettingStarted;	// Option to view info on getting started
 
 		/** Initializes the help drop-down menu */
 		private HelpMenu()
@@ -280,18 +282,28 @@ public class HarmonyMenuBar extends JMenuBar
 
 			// Initialize project drop-down items
 			about = new JMenuItem("About Harmony",KeyEvent.VK_A);
+			gettingStarted = new JMenuItem("Getting Started",KeyEvent.VK_G);
 			
 			// Attach action listeners to help drop-down items
 			about.addActionListener(this);
+			gettingStarted.addActionListener(this);
 			
 			// Add help drop-down items to help drop-down menu
 		    add(about);
+		    add(gettingStarted);
 		}
 		
 		/** Handles the help menu drop-down action selected by the user */
 	    public void actionPerformed(ActionEvent e)
-	    	{ new AboutDialog(harmonyModel); }
-	}
+	    {
+	    	// Shows the "About" dialog
+	    	if(e.getSource().equals(about))
+	    		new AboutDialog(harmonyModel);
+
+	    	// Shows the "Getting Started" dialog
+	    	if(e.getSource().equals(gettingStarted))
+	    		new GettingStartedDialog(harmonyModel); }
+		}
 	
 	/** Initializes the Harmony menu bar */
 	public HarmonyMenuBar(HarmonyModel harmonyModel)

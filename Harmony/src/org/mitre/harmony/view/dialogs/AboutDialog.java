@@ -111,7 +111,7 @@ public class AboutDialog extends JDialog implements MouseListener, MouseMotionLi
 		
 		// Initialize all settings for the project dialog
 		setTitle("About Harmony");
-		setSize(600,375);
+		setSize(600,390);
     	setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		setContentPane(aboutPane());
     	setLocationRelativeTo(harmonyModel.getBaseFrame());
