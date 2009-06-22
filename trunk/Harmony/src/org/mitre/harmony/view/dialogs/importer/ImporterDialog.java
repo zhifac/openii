@@ -9,6 +9,8 @@ import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.URI;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Vector;
 
 import javax.swing.BoxLayout;
@@ -45,6 +47,13 @@ public class ImporterDialog extends JDialog implements ActionListener,CaretListe
 	private JTextArea descriptionField = new JTextArea();
 	private UriParameter uriField;	
 	
+	/** Private class for sorting importers */
+	private class ImporterComparator implements Comparator<SchemaImporter>
+	{
+		public int compare(SchemaImporter importer1, SchemaImporter importer2)
+			{ return importer1.getName().compareTo(importer2.getName()); }
+	}
+	
 	/** Private class for defining the button pane */
 	private class ButtonPane extends AbstractButtonPane
 	{
@@ -65,8 +74,15 @@ public class ImporterDialog extends JDialog implements ActionListener,CaretListe
 	private JPanel getSelectionPane()
 	{
 		// Generate the list of importers which are available
-		Vector<SchemaImporter> importers = new Vector<SchemaImporter>(SchemaStoreManager.getSchemaImporters());
-		
+		Vector<SchemaImporter> importers = new Vector<SchemaImporter>();
+		for(SchemaImporter importer : SchemaStoreManager.getSchemaImporters())
+		{
+			Integer uriType = importer.getURIType();
+			if(uriType.equals(SchemaImporter.FILE) || uriType.equals(SchemaImporter.ARCHIVE) || uriType.equals(SchemaImporter.URI))
+				importers.add(importer);
+		}
+		Collections.sort(importers, new ImporterComparator());
+				
 		// Initializes the label
 		JLabel selectionLabel = new JLabel("Importers: ");
 		selectionLabel.setVerticalAlignment(SwingConstants.CENTER);
