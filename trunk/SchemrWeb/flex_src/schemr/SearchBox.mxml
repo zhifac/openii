@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="400" height="100%"
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml"
 	xmlns:schemr="schemr.*" 
 	creationComplete="init();">
 
@@ -23,7 +23,16 @@
   		private var _schemaFragBox:SchemaFragmentBox;
   		
         private function init():void {
-			_schemaFragBox = new SchemaFragmentBox();
+			_schemaFragBox = new SchemaFragmentBox();			
+			_schemaFragBox.addEventListener("schemaFragmentChange", schemaFragmentChangeHandler);
+        }
+        
+        private function schemaFragmentChangeHandler(event:Event):void {
+        	if (_schemaFragBox._schemaFragType != null) {
+	        	schemaFragLabel.text = _schemaFragBox._schemaFragType+" specified";
+        	} else {
+    	    	schemaFragLabel.text = "";        		
+        	}
         }
  		
 		public function clearSearchTerms():void {
@@ -74,11 +83,14 @@
 		<mx:FormItem label="Keyword(s):">
 			<mx:TextInput id="searchText" enter="performSearch();"/>
 		</mx:FormItem>
-		<mx:FormItem label="Schema Fragment:">
-			<mx:Button label="load" click="handleSchemaFunction()"/>
+		<mx:FormItem label="Schema:">
+			<mx:HBox horizontalAlign="left" verticalAlign="middle">
+				<mx:Button id="schemaFragButton" label="open" click="handleSchemaFunction()"/>
+				<mx:Label id="schemaFragLabel" text="..." color="0x121212"/>
+			</mx:HBox>
 		</mx:FormItem>
-		<mx:FormItem>
-			<mx:Button id="searchButton" y="0" label="submit" click="performSearch();"/>
+		<mx:FormItem label="Search:">
+			<mx:Button id="searchButton" y="0" label="submit" click="performSearch();" icon="@Embed(source='assets/xmag16.png')"/>
 		</mx:FormItem>
 	</mx:Form>
 	<mx:Label id="message" color="0xAA1111" text="message" />
