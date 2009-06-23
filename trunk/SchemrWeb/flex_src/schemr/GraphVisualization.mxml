@@ -68,7 +68,7 @@
 		}
 		
 		
-		private var lay:Layout;
+		private var lay:Layout = null;
 		private function onLoaded(data:Data):void {
 			
 			vis = new Visualization(data);
@@ -111,7 +111,7 @@
 				ns.addEventListener(MouseEvent.MOUSE_WHEEL, die);
 				ns.buttonMode = true;
 			});
-			lay =  new NodeLinkTreeLayout();
+			if (lay==null) lay =  new NodeLinkTreeLayout();
 			var root:NodeSprite = vis.data.nodes[0] as NodeSprite;
 			trace(data.length);
 			_gdf = new GraphDistanceFilter([root], _maxDistance,NodeSprite.GRAPH_LINKS); 
@@ -210,6 +210,7 @@
 		}
 
 	private function changeLayout(event:ItemClickEvent):void{
+			properties.text= "" + event.index;
 			switch(event.index){
 				case 0:
 					lay = new NodeLinkTreeLayout();
@@ -263,5 +264,14 @@
 					result="graphVisResultHandler(event);"
 					fault="graphVisFaultHandler(event);">
 	</mx:HTTPService>
+	
 	<mx:Button label="x" click="shuffle()" />
+	<mx:ToggleButtonBar id="myBar" itemClick="changeLayout(event);">
+		<mx:dataProvider>
+			<mx:Array id="dp">  
+				<mx:String>Tree View</mx:String>
+				<mx:String>Graph View</mx:String>
+			</mx:Array>  
+	 	</mx:dataProvider>
+	 	</mx:ToggleButtonBar>
 </mx:HBox>
