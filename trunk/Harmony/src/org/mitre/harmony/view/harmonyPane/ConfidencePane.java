@@ -12,6 +12,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.util.Hashtable;
+import java.util.List;
 
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -23,12 +24,14 @@ import javax.swing.plaf.metal.MetalSliderUI;
 
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.mapping.MappingCellManager;
+import org.mitre.harmony.model.selectedInfo.SelectedInfoListener;
+import org.mitre.schemastore.model.MappingCell;
 
 /**
  * Pane to display currently set confidence level
  * @author CWOLF
  */
-public class ConfidencePane extends JPanel
+public class ConfidencePane extends JPanel implements SelectedInfoListener
 {
 	// Manages confidence range constants within Harmony
 	public static final int CONFIDENCE_SCALE = 100;
@@ -38,16 +41,10 @@ public class ConfidencePane extends JPanel
 	/** Stores the Harmony model */
 	private HarmonyModel harmonyModel;
 	
-	/**
-	 * Class constructing the confidence slider
-	 * @author CWOLF
-	 */
+	/** Class constructing the confidence slider */
 	private class ConfidenceSlider extends JSlider
 	{
-		/**
-		 * Class to handle display and action of the confidence slider
-		 * @author CWOLF
-		 */
+		/** Class to handle display and action of the confidence slider */
 		private class ConfSliderUI extends MetalSliderUI implements MouseListener, MouseMotionListener
 		{	
 			@Override
@@ -68,18 +65,14 @@ public class ConfidencePane extends JPanel
 			private void setMinPos(int pos) { minValue = valueForYPosition(pos); }
 			private void setMaxPos(int pos) { maxValue = valueForYPosition(pos); }
 		
-			/**
-			 * Initializes confidence level slider
-			 */
+			/** Initializes confidence level slider */
 			ConfSliderUI(JSlider slider)
 			{
 				slider.addMouseListener(this);
 				slider.addMouseMotionListener(this);
 			}
 	
-			/**
-			 * Paints the min and max thumbs for the confidence slider
-			 */
+			/** Paints the min and max thumbs for the confidence slider */
 			public void paintThumb(Graphics g)
 			{
 				// Store original clip shape
@@ -102,9 +95,7 @@ public class ConfidencePane extends JPanel
 				g.setClip(origShape);
 			}
 			
-			/**
-			 * Paints the track for the confidence slider
-			 */
+			/** Paints the track for the confidence slider */
 			public void paintTrack(Graphics g)
 			{
 				// First, draw entire track as empty
@@ -131,13 +122,24 @@ public class ConfidencePane extends JPanel
 				g.setClip(origShape);
 			}
 			
-			/**
-			 * Handles painting of the confidence slider
-			 * @param g Graphics object used for drawing the slider
-			 */
+			/** Handles painting of the confidence slider */
 			public void paint(Graphics g, JComponent component)
 			{
+				// Draw the confidence slider track
 				paintTrack(g);
+				
+				// Marks the currently selected mapping cell confidence
+				List<Integer> selectedMappingCells = harmonyModel.getSelectedInfo().getSelectedMappingCells();
+				if(selectedMappingCells.size()==1)
+				{
+					MappingCell mappingCell = harmonyModel.getMappingCellManager().getMappingCell(selectedMappingCells.get(0));
+					int yLoc = yPositionForValue((int)(100*mappingCell.getScore()));
+					g.setColor(Color.blue);
+					g.fillPolygon(new int[]{14,20,20},new int[]{yLoc,yLoc-5,yLoc+5},3);
+					g.fillPolygon(new int[]{10,5,5},new int[]{yLoc,yLoc-5,yLoc+5},3);
+				}			
+
+				// Draws various parts of the confidence slider
 				paintThumb(g);
 				paintTicks(g);
 				paintLabels(g);
@@ -147,9 +149,7 @@ public class ConfidencePane extends JPanel
 			private boolean minThumbSelected = false;
 			private boolean maxThumbSelected = false;
 
-			/**
-			 * Determines what slider thumb to make active
-			 */
+			/** Determines what slider thumb to make active */
 			public void mousePressed(MouseEvent e)
 			{
 				if(e.getX()>=thumbRect.x && e.getX()<=thumbRect.x+thumbRect.width)
@@ -159,15 +159,11 @@ public class ConfidencePane extends JPanel
 				}
 			}
 
-			/**
-			 * Make both slider thumbs inactive
-			 */
+			/** Make both slider thumbs inactive */
 			public void mouseReleased(MouseEvent e)
 				{ minThumbSelected = false; maxThumbSelected = false; }
 			
-			/**
-			 * Moves the active slider thumb based on mouse movement
-			 */
+			/** Moves the active slider thumb based on mouse movement */
 			public void mouseDragged(MouseEvent e)
 			{
 				// First, store old values to make sure update is only done if needed
@@ -201,9 +197,7 @@ public class ConfidencePane extends JPanel
 		private int minValue = 0;
 		private int maxValue = 0;
 		
-		/**
-		 * Initializes the confidence slider
-		 */
+		/** Initializes the confidence slider */
 		private ConfidenceSlider()
 		{
 			// Initialize super class of confidence slider
@@ -229,14 +223,20 @@ public class ConfidencePane extends JPanel
 		}
 	}
 	
-	/**
-	 * Initializes the confidence pane
-	 */
+	/** Initializes the confidence pane */
 	public ConfidencePane(HarmonyModel harmonyModel)
 	{
 		this.harmonyModel = harmonyModel;
 		setLayout(new BorderLayout());
 		add(new ConfidenceSlider(),BorderLayout.CENTER);
+		harmonyModel.getSelectedInfo().addListener(this);
 	}
-}
 
+	/** Repaints the confidence pane if the selected mapping cells were modified */
+	public void selectedMappingCellsModified()
+		{ repaint(); }
+	
+	// Unused listener events
+	public void displayedElementModified(Integer role) {}
+	public void selectedElementsModified(Integer role) {}
+}

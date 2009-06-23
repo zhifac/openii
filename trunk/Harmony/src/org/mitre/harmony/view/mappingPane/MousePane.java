@@ -9,21 +9,17 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
 
 import javax.swing.JPanel;
-import javax.swing.Timer;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.mapping.MappingCellManager;
-import org.mitre.harmony.view.dialogs.ConfidenceDialog;
 import org.mitre.harmony.view.dialogs.MappingCellDialog;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.MappingSchema;
@@ -36,7 +32,7 @@ import org.mitre.schemastore.model.MappingSchema;
 class MousePane extends JPanel implements MouseListener, MouseMotionListener
 {
 	/** Variables used to keep track of mouse actions */
-	private Point startPoint = null, endPoint = null, pausePoint = null;
+	private Point startPoint = null, endPoint = null;
 	private TreePath leftPath = null, rightPath = null;
 
 	/** Stores the mappingPane to which the mouse pane is associated */
@@ -44,13 +40,6 @@ class MousePane extends JPanel implements MouseListener, MouseMotionListener
 
 	/** Stores the Harmony model */
 	private HarmonyModel harmonyModel;
-
-	/** Stores the confidence dialog when visible */
-	private ConfidenceDialog confidenceDialog = null;
-
-	/** Confidence dialog timer */
-	private Timer cdTimer = null;
-	private int CONFIDENCE_DIALOG_POP_UP_TIMER = 500;
 
 	/** Initializes the mouse pane */
 	MousePane(MappingPane mappingPane, HarmonyModel harmonyModel)
@@ -113,30 +102,20 @@ class MousePane extends JPanel implements MouseListener, MouseMotionListener
 	/** Handles drawing of new mapping cells and selection of old mapping cells */
 	public void mousePressed(MouseEvent e)
 	{
-		// Release any temporarily selected mapping cell
-		if(confidenceDialog != null)
-		{
-			confidenceDialog.dispose();
-			confidenceDialog = null;
-			if(harmonyModel.getSelectedInfo().getSelectedMappingCells().size() > 0) harmonyModel.getSelectedInfo().setMappingCells(new ArrayList<Integer>(), false);
-		}
-
 		// If left button pressed, find selected node or start bounding box
 		if(e.getButton() == MouseEvent.BUTTON1)
 		{
 			// Determine if a node was selected
 			getSelectedRow(e.getPoint());
 
-			// If no node selected, start bounding box for selecting existent
-			// mapping cells
+			// If no node selected, start bounding box for selecting existent mapping cells
 			if(leftPath == null && rightPath == null && !overlapsNode(e.getPoint())) startPoint = e.getPoint();
 		}
 
 		// If right button pressed, display mapping cell dialog box
 		else if(e.getButton() == MouseEvent.BUTTON3)
 		{
-			// Determine what mapping cell was selected for showing the dialog
-			// box
+			// Determine what mapping cell was selected for showing the dialog box
 			Integer mappingCellID = mappingPane.getLines().getClosestMappingCellToPoint(e.getPoint());
 			if(mappingCellID != null)
 			{
@@ -159,77 +138,7 @@ class MousePane extends JPanel implements MouseListener, MouseMotionListener
 		}
 	}
 
-	/**
-	 * Display SelectedInfo pane and confidence value for mapping cells when
-	 * mouse hovering over node
-	 */
-	public void mouseMoved(MouseEvent e)
-	{
-		// Don't proceed if mouse is currently being dragged
-		if(startPoint != null) return;
-
-		// Don't proceed if selection was not made by mouse movement
-		Integer leftCount = harmonyModel.getSelectedInfo().getSelectedElements(MappingSchema.LEFT).size();
-		Integer rightCount = harmonyModel.getSelectedInfo().getSelectedElements(MappingSchema.RIGHT).size();
-		if(confidenceDialog == null && (leftCount > 0 || rightCount > 0)) return;
-
-		// Run a pop up timer to display confidence dialog
-		pausePoint = e.getPoint();
-		if(cdTimer == null)
-		{
-			cdTimer = new Timer(CONFIDENCE_DIALOG_POP_UP_TIMER, new ActionListener()
-			{
-				public void actionPerformed(ActionEvent ae)
-					{ showConfidenceDialog(); }
-			});
-			cdTimer.start();
-			cdTimer.setRepeats(false);
-		} 
-		else if(confidenceDialog != null) clearConfidenceDialog();
-		else cdTimer.restart();
-	}
-
-	private void showConfidenceDialog()
-	{
-		// Display information about the closest mapping cell
-		Integer mappingCellID = mappingPane.getLines().getClosestMappingCellToPoint(pausePoint);
-		if(mappingCellID != null)
-		{
-			// Only mark as selected if not already done so
-			if(!harmonyModel.getSelectedInfo().isMappingCellSelected(mappingCellID))
-			{
-				// Mark the mapping cell as selected
-				ArrayList<Integer> mappingCellIDs = new ArrayList<Integer>();
-				mappingCellIDs.add(mappingCellID);
-				harmonyModel.getSelectedInfo().setMappingCells(mappingCellIDs, false);
-
-				// Display the dialog box next to the selected mapping cell
-				Point point = adjustMouseLocation(pausePoint);
-				point.translate(20, 20);
-				if(confidenceDialog == null) confidenceDialog = new ConfidenceDialog(harmonyModel);
-				confidenceDialog.setMappingCell(mappingCellID);
-				confidenceDialog.setLocation(point);
-				confidenceDialog.setVisible(true);
-			}
-		}
-
-		// Clear information about the displayed mapping cell if no mapping cell selected
-		else if (confidenceDialog != null)
-			clearConfidenceDialog();
-	}
-
-	private void clearConfidenceDialog()
-	{
-		cdTimer.stop();
-		confidenceDialog.dispose();
-		confidenceDialog = null;
-		if(harmonyModel.getSelectedInfo().getSelectedMappingCells().size() > 0) harmonyModel.getSelectedInfo().setMappingCells(new ArrayList<Integer>(), false);
-	}
-
-	/**
-	 * Handles the drawing of the new mapping cell or bounding box as the mouse
-	 * is dragged around
-	 */
+	/** Handles the drawing of the new mapping cell or bounding box as the mouse is dragged around */
 	public void mouseDragged(MouseEvent e)
 	{
 		endPoint = e.getPoint();
@@ -243,10 +152,7 @@ class MousePane extends JPanel implements MouseListener, MouseMotionListener
 		if(rect != null || startPoint != null) repaint();
 	}
 
-	/**
-	 * Handles the creation of a new link or selects mapping cells in bounding
-	 * box when mouse is released
-	 */
+	/** Handles the creation of a new link or selects mapping cells in bounding box when mouse is released */
 	public void mouseReleased(MouseEvent e)
 	{
 		// Only take action if left button is released
@@ -275,8 +181,7 @@ class MousePane extends JPanel implements MouseListener, MouseMotionListener
 			}
 			repaint();
 
-			// Select all mapping cells next to the clicked location or within
-			// the bounding box
+			// Select all mapping cells next to the clicked location or within the bounding box
 			if (startPoint != null)
 			{
 				// Handles the case where a single mapping cell is selected
@@ -288,8 +193,7 @@ class MousePane extends JPanel implements MouseListener, MouseMotionListener
 					harmonyModel.getSelectedInfo().setMappingCells(mappingCells, e.isControlDown());
 				}
 
-				// Handles the case where a bounding box was drawn around
-				// mapping cells to select
+				// Handles the case where a bounding box was drawn around mapping cells to select
 				else
 				{
 					int x1 = startPoint.x < endPoint.x ? startPoint.x : endPoint.x;
@@ -345,6 +249,7 @@ class MousePane extends JPanel implements MouseListener, MouseMotionListener
 
 	// Unused listener events
 	public void mouseClicked(MouseEvent e) {}
+	public void mouseMoved(MouseEvent e) {}
 	public void mouseEntered(MouseEvent e) {}
 	public void mouseExited(MouseEvent e) {}
 }
