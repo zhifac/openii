@@ -30,9 +30,9 @@ public class QueryFragment {
 		this.type = type;
 	}
 
-	public QueryFragment(String s, ArrayList<SchemaElement> se) {
-		if (s == null || se == null) throw new IllegalArgumentException("Schema and SchemaElements must be specified");
-		this.name = s;
+	public QueryFragment(String schemaName, ArrayList<SchemaElement> se) {
+		if (schemaName == null || se == null) throw new IllegalArgumentException("Schema and SchemaElements must be specified");
+		this.name = schemaName;
 		this.type = SchemaUtility.SCHEMA;
 		
 		this.queryFragments = new ArrayList<QueryFragment>();

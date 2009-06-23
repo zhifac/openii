@@ -27,8 +27,12 @@
 	<mx:HDividedBox width="1000" height="700">
 	
 		<mx:VBox id="searchSide" width="40%" height="100%" horizontalScrollPolicy="off" verticalScrollPolicy="off">
+			<mx:HBox horizontalAlign="center" width="100%" height="100" horizontalGap="0" verticalAlign="middle">
+				<mx:Image source="schemr/assets/splash.PNG" width="300" scaleContent="true" height="82"/>
+			</mx:HBox>
+				
 
-			<schemr:SearchBox id="searchBox" newSearchResults="handleNewSearchResults(event);" width="100%" height="200"/>
+			<schemr:SearchBox id="searchBox" newSearchResults="handleNewSearchResults(event);" width="100%"/>
 
 			<mx:DataGrid id="resultGrid" width="100%" height="100%" 
 					itemClick="handleSchemaSelection(event)"
