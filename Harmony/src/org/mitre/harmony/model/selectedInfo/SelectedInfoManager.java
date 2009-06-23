@@ -129,8 +129,8 @@ public class SelectedInfoManager extends AbstractManager<SelectedInfoListener> i
 	private void setSelectedMappingCells(List<Integer> mappingCells, Integer mode)
 	{
 		// Set the selected mapping cells
-		if(!updateSet(selectedMappingCells,mappingCells,mode)) return;
-		for(SelectedInfoListener listener : getListeners()) listener.selectedMappingCellsModified();
+		if(updateSet(selectedMappingCells,mappingCells,mode))
+			for(SelectedInfoListener listener : getListeners()) listener.selectedMappingCellsModified();
 
 		// Identify changes to the elements required by the newly selected mapping cells
 		ArrayList<Integer> selectedLeftElements = new ArrayList<Integer>();
