@@ -93,7 +93,4 @@
 			<mx:Button id="searchButton" y="0" label="submit" click="performSearch();" icon="@Embed(source='assets/xmag16.png')"/>
 		</mx:FormItem>
 	</mx:Form>
-	<mx:Label id="message" color="0xAA1111" text="message" />
-
-	
 </mx:Canvas>

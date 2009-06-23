@@ -2,7 +2,9 @@
 
 <mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%"
 	creationComplete="init()"
-	xmlns:schemr="*" verticalAlign="middle">
+	xmlns:schemr="*">
+	
+	
 	
 	<mx:Panel width="200" height="200" alpha="0.6">
 		<mx:TextArea id="properties" backgroundAlpha="0.5" color="#DD2222" width="100%" height="100%" text="Information will appear in this box as you mouseover schema elements." />
@@ -51,12 +53,14 @@
 		private var _gdf:GraphDistanceFilter;
 		private var changeCenter:Boolean;
 		private var _maxDistance:int = 2;
+		private var xpos:Number = 0;
+		private var ypos:Number = 0;
 		
 		private var _transitionDuration:Number = 2;
 		
 		public function init():void{ 
 			//GraphMLFile('schemr/assets/out005.xml');
-			//this.addEventListener(KeyboardEvent.KEY_DOWN, shuffle);
+			
 		}
 		public function test():void{
 			
@@ -106,6 +110,8 @@
 				ns.doubleClickEnabled = true;
 				ns.addEventListener(MouseEvent.DOUBLE_CLICK, update);
 				ns.addEventListener(MouseEvent.MOUSE_OVER, drawInfo);
+				panel1.addEventListener(MouseEvent.MOUSE_OUT, hideBox);
+				
 				ns.addEventListener(MouseEvent.MOUSE_DOWN, drag);
 				ns.addEventListener(MouseEvent.MOUSE_UP, stop);
 				ns.addEventListener(MouseEvent.MOUSE_WHEEL, die);
@@ -116,24 +122,42 @@
 			trace(data.length);
 			_gdf = new GraphDistanceFilter([root], _maxDistance,NodeSprite.GRAPH_LINKS); 
 			
+			actionbox.setVisible(true);
 			vis.operators.add(_gdf); //distance filter has to be added before the layout
 			vis.operators.add(lay);
 			
-			
-			panel1.rawChildren.addChild(vis);
+			panel1.rawChildren.addChildAt(vis, panel1.rawChildren.numChildren);
 			try{
 				updateRoot(vis.data.nodes[0]);
+				
 			} catch(error:Error){
-			}
+				}
+			actionbox.setVisible(false);
 			
 		}
+		private function hideBox(event:MouseEvent):void{
+			if ((panel1.mouseX - xpos) > 50 || (panel1.mouseX - ypos) > 50){  
+				actionbox.visible=false;
+			}
+		}
 		private function die(event:MouseEvent):void{
-			panel1.rawChildren.removeChild((event.currentTarget as NodeSprite).parent);
+			
 		}
 		private function shuffle():void{
-			//event.charCode
-			panel1.rawChildren.addChild(panel1.rawChildren.getChildAt(0));
-			panel1.rawChildren.removeChildAt(0);
+			try{
+				if (panel1.rawChildren.numChildren > 0){
+					panel1.rawChildren.removeChildAt(panel1.rawChildren.numChildren - 1);
+					actionbox.visible = false;
+					if (panel1.rawChildren.numChildren > 0){
+					 	vis = panel1.rawChildren.getChildAt(panel1.rawChildren.numChildren - 1) as Visualization;	
+					}
+				}
+			} catch(e:Error){}
+		}
+		private function solo():void{
+			for (var i:int =0; i< panel1.rawChildren.numChildren - 1; i++){
+				panel1.rawChildren.removeChildAt(i);
+			} 
 		}
 		private function drag(event:MouseEvent):void{
 			((event.target as NodeSprite).parent as Sprite).startDrag(false, new Rectangle(-400, -300, 900, 700));
@@ -142,10 +166,16 @@
 		private function stop(event:MouseEvent):void{
 			((event.target as NodeSprite).parent as Sprite).stopDrag();
 			changeCenter=true;
+			
 		}
 		private function drawInfo(event:MouseEvent):void{
+			
 			var n:NodeSprite = event.target as NodeSprite;
 			if (n == null) return;	
+			if (n.data.type=="Schema" || n.data.type == "Entity" ){
+				actionbox.visible = true;
+			} 
+			
 			var s2:TextSprite = n.getChildAt(n.numChildren-1) as TextSprite; // get the text sprite belonging to this node sprite
 			if (s2 == null) return;
 			trace("Mouse Over: " + s2.text);
@@ -156,7 +186,10 @@
 			"\nMatched: " + n.data.matched +
 			"\nScore: " + n.data.score;
 			var r:RectSprite = n.getChildAt(0) as RectSprite; 
-			
+			xpos = panel1.mouseX;
+			ypos = panel1.mouseY;
+			actionbox.x = xpos + 10;
+			actionbox.y = ypos - 50;
 			if (prev!=null) (prev.getChildAt(0) as RectSprite).lineColor = 0xff000044;
 			prev = n;
 			r.lineColor = 0xFFFF0000;
@@ -174,7 +207,8 @@
 			_gdf.focusNodes = [n];
 			var t1:Transitioner = new Transitioner(_transitionDuration);
 			vis.update(t1).play();
-			
+			//actionbox.x = n.x;
+			//actionbox.y = n.y;
 		}
 		
 		
@@ -217,8 +251,14 @@
 					break;
 				case 1:
 					lay = new RadialTreeLayout();
+					(lay as RadialTreeLayout).useNodeSize = false;
+					(lay as RadialTreeLayout).radiusIncrement = -1;
 					break;
 			}
+			vis.operators.removeOperatorAt(vis.operators.length - 1);
+			vis.operators.add(lay);
+			
+			updateRoot(vis.data.root);
 		}
 		private function getTextLabelHeight(s:NodeSprite) : Number {
 			var s2:TextSprite = s.getChildAt(s.numChildren-1) as TextSprite; // get the text sprite belonging to this node sprite
@@ -264,14 +304,18 @@
 					result="graphVisResultHandler(event);"
 					fault="graphVisFaultHandler(event);">
 	</mx:HTTPService>
-	
-	<mx:Button label="x" click="shuffle()" />
-	<mx:ToggleButtonBar id="myBar" itemClick="changeLayout(event);">
-		<mx:dataProvider>
-			<mx:Array id="dp">  
-				<mx:String>Tree View</mx:String>
-				<mx:String>Graph View</mx:String>
-			</mx:Array>  
-	 	</mx:dataProvider>
-	 	</mx:ToggleButtonBar>
+	<mx:Panel layout="horizontal" scaleX="0.8" scaleY="0.8" id="actionbox"  visible="false" alpha="0.7" x="100" y="100" borderThickness="0" headerHeight="0">
+		<mx:Button  paddingBottom="0" paddingLeft="0" paddingRight="0"  paddingTop="0" label="x" click="shuffle()" />
+		
+		<mx:ToggleButtonBar id="myBar" itemClick="changeLayout(event);">
+			<mx:dataProvider>
+				<mx:Array id="dp">  
+					<mx:String>Tree</mx:String>
+					<mx:String>Graph</mx:String>
+				</mx:Array>  
+		 	</mx:dataProvider>
+		 </mx:ToggleButtonBar>
+		 <mx:Button visible="true" label="!" id="sol" click="solo();" />
+	</mx:Panel>
+	 	
 </mx:HBox>
