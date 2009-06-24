@@ -30,6 +30,9 @@ import org.mitre.schemastore.model.Subtype;
  */
 public class SchemaStore
 {
+	/** Stores a static reference to the database connection for schema store run as a web service */
+	static private DatabaseConnection connection = null;
+	
 	/** Stores the data manager */
 	private DataManager manager;
 	
@@ -54,7 +57,10 @@ public class SchemaStore
 	
 	/** Constructs SchemaStore */
 	public SchemaStore()
-		{ manager = new DataManager(new DatabaseConnection()); }
+	{
+		if(connection==null) connection = new DatabaseConnection();
+		manager = new DataManager(connection);
+	}
 	
 	/** Constructs SchemaStore to specified database */
 	public SchemaStore(Integer type, String server, String database, String user, String password)
