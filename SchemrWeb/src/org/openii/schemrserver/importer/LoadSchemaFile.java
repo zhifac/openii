@@ -5,7 +5,6 @@ import java.net.URISyntaxException;
 import java.rmi.RemoteException;
 
 import org.mitre.schemastore.porters.ImporterException;
-import org.mitre.schemastore.porters.schemaImporters.CSVImporter;
 import org.mitre.schemastore.porters.schemaImporters.DDLImporter;
 import org.mitre.schemastore.porters.schemaImporters.SchemaImporter;
 import org.mitre.schemastore.porters.schemaImporters.XSDImporter;
@@ -40,6 +39,7 @@ public class LoadSchemaFile{
 		else if (file.getName().endsWith("sql") || file.getName().endsWith("ddl")) {
 			importer = new DDLImporter();
 		}
+		importer.setClient(SchemaUtility.getCLIENT());
 		importer.importSchema(name, author, description, new URI(url));
 		
 	}

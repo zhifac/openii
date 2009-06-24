@@ -29,31 +29,6 @@ import org.openii.schemrserver.search.Query;
 
 public class SchemaStoreIndex {
 
-	public static void main(String[] args) {
-
-		System.out.println(args.length + " args:");
-		for (String s : args) {
-			System.out.println("\t" + s);
-		}
-
-		if (args.length < 2) {
-			System.out
-					.println("Usage: java SchemStoreIndex <SchemaStore client URL> <index directory>");
-			return;
-		}
-
-		
-		SchemaStoreClient ssclient;
-		try {
-			ssclient = new SchemaStoreClient();
-			String testIndexDir = args[1];
-			buildIndex(ssclient, testIndexDir);
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
 	public static void buildIndex(SchemaStoreClient ssclient, String testIndexDir) {
 		Date start = new Date();
 

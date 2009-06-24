@@ -2,7 +2,8 @@
 <mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="600" height="400" 
 	title="Schema Fragment" horizontalAlign="center" verticalAlign="middle"
 	showCloseButton="true" 
-    close="PopUpManager.removePopUp(this);">
+    close="PopUpManager.removePopUp(this);"
+    creationComplete="init()">
 
 <mx:Metadata>
     [Event(name="schemaFragmentChange", type="mx.events.Event")]
@@ -15,6 +16,9 @@
 		[Bindable]
 		public var _schemaFragType:String;
 		public var _schemaFragContent:String;
+
+		private function init():void{
+		}
 
 		private function handleSave(event:Event):void {
 			if (xsdSelected.selected) {

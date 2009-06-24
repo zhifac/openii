@@ -1,6 +1,5 @@
 package org.openii.schemrserver.search;
 
-
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -8,13 +7,12 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.apache.catalina.connector.ClientAbortException;
-import org.mitre.schemastore.client.Consts;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.porters.ImporterException;
 import org.mitre.schemastore.porters.schemaImporters.DDLImporter;
 import org.mitre.schemastore.porters.schemaImporters.SchemaImporter;
 import org.mitre.schemastore.porters.schemaImporters.XSDImporter;
+import org.openii.schemrserver.Consts;
 import org.openii.schemrserver.indexer.SchemaStoreIndex;
 import org.openii.schemrserver.indexer.SchemaUtility;
 import org.openii.schemrserver.indexer.SchemaStoreIndex.CandidateSchema;

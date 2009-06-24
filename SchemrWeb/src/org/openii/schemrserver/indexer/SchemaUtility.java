@@ -4,7 +4,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 
-import org.mitre.schemastore.client.Consts;
 import org.mitre.schemastore.client.Repository;
 import org.mitre.schemastore.client.SchemaStoreClient;
 import org.mitre.schemastore.model.Alias;
@@ -18,6 +17,7 @@ import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.SchemaElementList;
 import org.mitre.schemastore.model.Subtype;
+import org.openii.schemrserver.Consts;
 
 import com.thoughtworks.xstream.XStream;
 
@@ -37,8 +37,8 @@ public class SchemaUtility {
 //								new URI("localhost"),
 //								"schemastore", "postgres", "postgres"));
 				URI db = new URI(Consts.SCHEMR_WEB_DERBY_DIR);
-				CLIENT = new SchemaStoreClient(new Repository(Repository.DERBY,
-						db, "schemastore", "", ""));
+				CLIENT = new SchemaStoreClient(
+						new Repository(Repository.DERBY, db, "schemastore", "", ""));
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
