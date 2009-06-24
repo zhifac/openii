@@ -86,7 +86,10 @@ public class SchemaStoreClient
 				Constructor<?> constructor = SchemaStore.class.getConstructor(types);
 				schemaStore = constructor.newInstance(args);
 			}
-		} catch(Exception e) { throw new RemoteException("(E) Failed to connect to SchemaStore: " + e.getMessage()); }
+		} catch(Exception e) {
+			e.printStackTrace();
+			throw new RemoteException("(E) Failed to connect to SchemaStore: " + e.getMessage());
+		}
 	}
 	
 	//------------------
@@ -96,8 +99,8 @@ public class SchemaStoreClient
 	/** Gets the list of schemas from the web service */
 	public ArrayList<Schema> getSchemas() throws RemoteException
 	{
-		Schema[] schemas = (Schema[])callMethod("getSchemas",new Object[] {});
-		return schemas==null ? new ArrayList<Schema>() : new ArrayList<Schema>(Arrays.asList(schemas));
+		Object o = callMethod("getSchemas",new Object[] {});
+		return o == null ? new ArrayList<Schema>() : new ArrayList<Schema>(Arrays.asList((Schema[]) o));
 	}
 	
 	/** Gets the specified schema from the web service */
