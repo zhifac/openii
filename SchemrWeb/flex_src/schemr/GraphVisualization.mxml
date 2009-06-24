@@ -34,6 +34,7 @@
 		import flare.vis.operator.filter.GraphDistanceFilter;
 		import flare.vis.operator.layout.RadialTreeLayout;
 		import flare.vis.operator.layout.NodeLinkTreeLayout;
+		import flare.util.Displays;
 		
 		import flash.display.Sprite;
 		import flash.events.MouseEvent;
@@ -74,7 +75,7 @@
 		
 		private var lay:Layout = null;
 		private function onLoaded(data:Data):void {
-			
+			if (vis != null) vis.alpha = 0.7;
 			vis = new Visualization(data);
 			
 			var w:Number = 600;
@@ -85,10 +86,12 @@
 			
 			var textFormat:TextFormat = new TextFormat();
 			textFormat.color = 0xffffffff;
+			textFormat.kerning=true;
 			textFormat.font= "_sans";
 			var i:int = 0;
 			vis.data.nodes.visit(function(ns:NodeSprite):void { 
-				var ts:TextSprite = new TextSprite(ns.data.name,textFormat);	
+				var ts:TextSprite = new TextSprite(ns.data.name,textFormat);
+				
 				ns.addChild(ts);	
 			});
 			
@@ -111,10 +114,9 @@
 				ns.addEventListener(MouseEvent.DOUBLE_CLICK, update);
 				ns.addEventListener(MouseEvent.MOUSE_OVER, drawInfo);
 				panel1.addEventListener(MouseEvent.MOUSE_OUT, hideBox);
-				
+				panel1.addEventListener(MouseEvent.MOUSE_WHEEL, zoom);
 				ns.addEventListener(MouseEvent.MOUSE_DOWN, drag);
 				ns.addEventListener(MouseEvent.MOUSE_UP, stop);
-				ns.addEventListener(MouseEvent.MOUSE_WHEEL, die);
 				ns.buttonMode = true;
 			});
 			if (lay==null) lay =  new NodeLinkTreeLayout();
@@ -125,8 +127,8 @@
 			actionbox.setVisible(true);
 			vis.operators.add(_gdf); //distance filter has to be added before the layout
 			vis.operators.add(lay);
-			
 			panel1.rawChildren.addChildAt(vis, panel1.rawChildren.numChildren);
+			
 			try{
 				updateRoot(vis.data.nodes[0]);
 				
@@ -149,7 +151,8 @@
 					panel1.rawChildren.removeChildAt(panel1.rawChildren.numChildren - 1);
 					actionbox.visible = false;
 					if (panel1.rawChildren.numChildren > 0){
-					 	vis = panel1.rawChildren.getChildAt(panel1.rawChildren.numChildren - 1) as Visualization;	
+					 	vis = panel1.rawChildren.getChildAt(panel1.rawChildren.numChildren - 1) as Visualization;
+					 	vis.alpha = 1;	
 					}
 				}
 			} catch(e:Error){}
@@ -160,6 +163,7 @@
 			} 
 		}
 		private function drag(event:MouseEvent):void{
+			actionbox.visible=false;
 			((event.target as NodeSprite).parent as Sprite).startDrag(false, new Rectangle(-400, -300, 900, 700));
 			changeCenter=false;
 		}
@@ -170,7 +174,7 @@
 		}
 		private function drawInfo(event:MouseEvent):void{
 			
-			var n:NodeSprite = event.target as NodeSprite;
+			var n:NodeSprite = event.currentTarget as NodeSprite;
 			if (n == null) return;	
 			if (n.data.type=="Schema" || n.data.type == "Entity" ){
 				actionbox.visible = true;
@@ -201,14 +205,20 @@
 			if (n == null) return; 
 			updateRoot(n);
 		}
-		
+		private function zoom(event:MouseEvent):void {
+			actionbox.visible=false;
+			if (event.delta < 0){
+				Displays.zoomBy(vis, 0.99);
+			} else{
+				Displays.zoomBy(vis, 1.01);
+			}
+		}
 		private function updateRoot(n:NodeSprite):void {
 			vis.data.root = n; 
 			_gdf.focusNodes = [n];
 			var t1:Transitioner = new Transitioner(_transitionDuration);
 			vis.update(t1).play();
-			//actionbox.x = n.x;
-			//actionbox.y = n.y;
+			actionbox.visible = false;
 		}
 		
 		
@@ -244,7 +254,6 @@
 		}
 
 	private function changeLayout(event:ItemClickEvent):void{
-			properties.text= "" + event.index;
 			switch(event.index){
 				case 0:
 					lay = new NodeLinkTreeLayout();
@@ -252,7 +261,7 @@
 				case 1:
 					lay = new RadialTreeLayout();
 					(lay as RadialTreeLayout).useNodeSize = false;
-					(lay as RadialTreeLayout).radiusIncrement = -1;
+					//(lay as RadialTreeLayout).radiusIncrement = -1;
 					break;
 			}
 			vis.operators.removeOperatorAt(vis.operators.length - 1);
@@ -311,7 +320,7 @@
 			<mx:dataProvider>
 				<mx:Array id="dp">  
 					<mx:String>Tree</mx:String>
-					<mx:String>Graph</mx:String>
+					<mx:String>Radial</mx:String>
 				</mx:Array>  
 		 	</mx:dataProvider>
 		 </mx:ToggleButtonBar>

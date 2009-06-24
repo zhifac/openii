@@ -62,6 +62,7 @@ public class GraphVisualizationServlet extends HttpServlet {
 
 		MatchSummary matchSummary = userState.idToMatchSummary.get(id);
 		
+		
 //		schemaXMLWriter.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
 //		schemaXMLWriter.write("\n<graphml>\n<graph edgedefault=\"undirected\">\n\n");
 		Element root = new Element("graphml");

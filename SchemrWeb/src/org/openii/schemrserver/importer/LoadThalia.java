@@ -9,10 +9,8 @@ public class LoadThalia extends LoadSchemaFile {
 	static String ROOT = "data/thalia/";
 	
 	public static void main(String[] args) {
-		//Database.connection.getStatement().e
 		setClient();
 		
-		//*/
 	    FileFilter filter = new FileFilter () {
 	      public boolean accept(File pathname) {
 	        return pathname.getName().endsWith("xsd");

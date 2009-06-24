@@ -155,9 +155,11 @@ public class SchemaStoreIndex {
 				Document hitDoc = hits.doc(i);								
 				String title = hitDoc.get(TITLE);
 				String summary = hitDoc.get(SUMMARY);
+				
 				String schemaIDstr = hitDoc.get(UID);
 				Integer schemaID = Integer.parseInt(schemaIDstr);
-				candidateSchemas[i] = new CandidateSchema(title, summary, schemaID);				
+				candidateSchemas[i] = new CandidateSchema(title, summary, schemaID);
+				candidateSchemas[i].score = hits.score(i);
 				System.out.println(candidateSchemas[i]);
 			}
 	
@@ -186,6 +188,7 @@ public class SchemaStoreIndex {
 		public String name;
 		public String summary;
 		public Integer uid;		
+		public float score = 0; //used for storing Lucene match scores.
 		public CandidateSchema(String name, String summary, Integer uid) {
 			super();
 			this.name = name;
