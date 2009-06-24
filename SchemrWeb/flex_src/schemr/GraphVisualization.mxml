@@ -75,7 +75,7 @@
 		
 		private var lay:Layout = null;
 		private function onLoaded(data:Data):void {
-			if (vis != null) vis.alpha = 0.7;
+			if (vis != null) vis.alpha = 0.50;
 			vis = new Visualization(data);
 			
 			var w:Number = 600;
@@ -142,9 +142,6 @@
 				actionbox.visible=false;
 			}
 		}
-		private function die(event:MouseEvent):void{
-			
-		}
 		private function shuffle():void{
 			try{
 				if (panel1.rawChildren.numChildren > 0){
@@ -159,7 +156,7 @@
 		}
 		private function solo():void{
 			for (var i:int =0; i< panel1.rawChildren.numChildren - 1; i++){
-				panel1.rawChildren.removeChildAt(i);
+				panel1.rawChildren.removeChildAt(0);
 			} 
 		}
 		private function drag(event:MouseEvent):void{
@@ -173,7 +170,6 @@
 			
 		}
 		private function drawInfo(event:MouseEvent):void{
-			
 			var n:NodeSprite = event.currentTarget as NodeSprite;
 			if (n == null) return;	
 			if (n.data.type=="Schema" || n.data.type == "Entity" ){
@@ -183,8 +179,7 @@
 			var s2:TextSprite = n.getChildAt(n.numChildren-1) as TextSprite; // get the text sprite belonging to this node sprite
 			if (s2 == null) return;
 			trace("Mouse Over: " + s2.text);
-			properties.text = "Mouse Over: " + s2.text + 
-			"\nDescription: " + n.data.desc +
+			properties.text = "Description: " + n.data.desc +
 			"\nType: " + n.data.type +
 			"\nId: " + n.data.id +
 			"\nMatched: " + n.data.matched +
@@ -276,12 +271,10 @@
 		}
 		
 		private function adjustLabel(s:NodeSprite, w:Number, h:Number) : void {
-			
 			var s2:TextSprite = s.getChildAt(s.numChildren-1) as TextSprite; // get the text sprite belonging to this node sprite
 			
 			s2.horizontalAnchor = TextSprite.CENTER;
 			s2.verticalAnchor = TextSprite.CENTER;
-						
 		}	
 
 		public function updateGraph(id:String):void {
@@ -292,9 +285,7 @@
 		
 		private function graphVisResultHandler(event:ResultEvent):void {
 			trace(event.result.toString());
-
 			var dataSet:DataSet = new GraphMLConverter().parse(event.result as XML);
-
 			onLoaded(Data.fromDataSet(dataSet));
 		}
 

@@ -27,8 +27,8 @@
 	<mx:HDividedBox width="1000" height="700">
 	
 		<mx:VBox id="searchSide" width="50%" height="100%" horizontalScrollPolicy="off" verticalScrollPolicy="off">
-			<mx:HBox horizontalAlign="center" width="100%" height="100" horizontalGap="0" verticalAlign="middle">
-				<mx:Image source="schemr/assets/splash.PNG" width="300" scaleContent="true" height="82"/>
+			<mx:HBox horizontalAlign="center" width="100%" height="88" horizontalGap="0" verticalScrollPolicy="off" verticalAlign="middle">
+				<mx:Image source="schemr/assets/splash.PNG"/>
 			</mx:HBox>
 				
 
