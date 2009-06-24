@@ -137,7 +137,7 @@ public class Query {
 		editDist.calculateSimilarityMatrix();
 		MatchSummary out = nGram.getMatchSummary(); 
 		
-		out.score = out.score * 0.5 + ((editDist.getMatchSummary().score + 8.0) / 16) + 0.5;
+		out.score = out.score * 0.5 + ((editDist.getMatchSummary().score + 8.0) / 16);
 		return out;
 	}
 

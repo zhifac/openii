@@ -156,7 +156,7 @@
 		}
 		private function solo():void{
 			for (var i:int =0; i< panel1.rawChildren.numChildren - 1; i++){
-				panel1.rawChildren.removeChildAt(0);
+				panel1.rawChildren.removeChildAt(panel1.rawChildren.numChildren-2);
 			} 
 		}
 		private function drag(event:MouseEvent):void{
