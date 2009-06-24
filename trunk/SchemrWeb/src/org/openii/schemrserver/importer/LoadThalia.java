@@ -3,6 +3,7 @@ import java.io.File;
 import java.io.FileFilter;
 import java.net.URISyntaxException;
 import org.mitre.schemastore.porters.ImporterException;
+import org.openii.schemrserver.indexer.SchemaUtility;
 
 public class LoadThalia extends LoadSchemaFile {
 

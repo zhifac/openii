@@ -7,14 +7,10 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexWriter;
-
-import org.mitre.schemastore.client.Consts;
-import org.openii.schemrserver.indexer.SchemaStoreIndex;
-import org.openii.schemrserver.indexer.SchemaUtility;
+import org.openii.schemrserver.Consts;
 
 public class BuildIndex {
-	public static String TEST_INDEX_DIR = Consts.LOCAL_INDEX_DIR;
-	
+
 	public static void main(String[] args) throws CorruptIndexException, IOException{
 		System.out.println("Building index in "+Consts.LOCAL_INDEX_DIR);
 		Analyzer analyzer = new StandardAnalyzer();
