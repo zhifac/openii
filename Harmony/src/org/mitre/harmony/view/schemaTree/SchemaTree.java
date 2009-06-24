@@ -3,6 +3,7 @@
 package org.mitre.harmony.view.schemaTree;
 
 import java.awt.BasicStroke;
+import java.awt.Container;
 import java.awt.Cursor;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -31,6 +32,7 @@ import org.mitre.harmony.model.filters.Focus;
 import org.mitre.harmony.model.mapping.MappingCellManager;
 import org.mitre.harmony.model.mapping.MappingListener;
 import org.mitre.harmony.model.preferences.PreferencesListener;
+import org.mitre.harmony.view.mappingPane.MappingPane;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.MappingSchema;
 import org.mitre.schemastore.model.Schema;
@@ -465,25 +467,32 @@ public class SchemaTree extends JTree implements MappingListener, PreferencesLis
 			}
 		}
 	}
-
+	
 	/** Handles mouse movements on the schema tree */
 	public void mouseMoved(MouseEvent e)
-	{
+	{		
+		// Gets the mapping pane to which this schema pane is associated
+		Container mappingPane = getParent();
+		while(!(mappingPane instanceof MappingPane))
+			mappingPane = mappingPane.getParent();
+		
 		// Determine which tree path has been selected
 		TreePath path = getPathForLocation(e.getX(),e.getY());
-		if(path!=null)
-			if(((DefaultMutableTreeNode)path.getLastPathComponent()).isRoot())
-				if(e.getX()>getFontMetrics(new JLabel().getFont()).stringWidth("Schemas_"))
-					if(e.getX()<rowBounds.getRow(getRowForPath(path)).getMaxX())
-					{
-						if(getCursor()!=Cursor.getPredefinedCursor(Cursor.HAND_CURSOR))
-							setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-						return;
-					}
-		
+		if(path!=null && path.getPathCount()==2)
+		{
+			String schemaName = path.getLastPathComponent().toString();
+			if(e.getX()>getFontMetrics(new JLabel().getFont()).stringWidth(schemaName)+45)
+				if(e.getX()<rowBounds.getRow(getRowForPath(path)).getMaxX())
+				{
+					if(mappingPane.getCursor()!=Cursor.getPredefinedCursor(Cursor.HAND_CURSOR))
+						mappingPane.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+					return;
+				}
+		}
+			
 		// If not over the "Add Schemas" link, switch cursor back to default
-		if(getCursor()!=Cursor.getDefaultCursor())
-			setCursor(Cursor.getDefaultCursor());
+		if(mappingPane.getCursor()!=Cursor.getDefaultCursor())
+			mappingPane.setCursor(Cursor.getDefaultCursor());
 	}
 	
 	/** Handles preference changes */

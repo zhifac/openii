@@ -144,7 +144,7 @@ class SchemaTreeRenderer extends DefaultTreeCellRenderer
 				Schema schema = (Schema)obj;
 				GraphModel graphModel = harmonyModel.getSchemaManager().getGraph(schema.getId()).getModel();
 				text = "<html>" + schema.getName().replace("<","&lt;").replace(">","&gt;");
-				text += " <font color='#888888'>(" + graphModel.getName() + " Model)</font>";
+				text += " <font color='#0000ff'>(" + graphModel.getName() + " Model)</font>";
 				text += "</html>";
 			}
 			setText(text);
