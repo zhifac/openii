@@ -46,6 +46,7 @@
 			// TODO do validation in search keywords
 			_searchTerms = searchText.text;
 			if (_searchTerms != null) params["keywords"] = _searchTerms
+			params["matchers"] = matchersOn.selected ? "true" : "false";
 			if (_schemaFragBox._schemaFragType != null) {
 				params["schemaFragmentType"] = _schemaFragBox._schemaFragType;
 				params["schemaFragmentContent"] = _schemaFragBox._schemaFragContent;
@@ -89,8 +90,16 @@
 				<mx:Label id="schemaFragLabel" text="..." color="0x121212"/>
 			</mx:HBox>
 		</mx:FormItem>
-		<mx:FormItem label="Search:">
-			<mx:Button id="searchButton" y="0" label="submit" click="performSearch();" icon="@Embed(source='assets/xmag16.png')"/>
-		</mx:FormItem>
+		
+			<mx:FormItem label="Search:">
+			<mx:HBox>
+				<mx:Button id="searchButton" y="0" label="submit" click="performSearch();" icon="@Embed(source='assets/xmag16.png')"/>
+			</mx:HBox>
+			</mx:FormItem>
+			<mx:FormItem>
+				<mx:CheckBox selected="true" id="matchersOn" label="Enable Matchers" />
+			</mx:FormItem>
+				
+		
 	</mx:Form>
 </mx:Canvas>

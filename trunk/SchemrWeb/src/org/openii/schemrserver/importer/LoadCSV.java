@@ -60,10 +60,6 @@ public class LoadCSV extends LoadSchemaFile{
 	    			  schemaElements.add(a);
 					
 	    		  };
-	    		  //Test code to make sure imports are correct:
-	    		  //Graph g = new Graph(schema, new ArrayList<SchemaElement>());
-	    		  //System.out.println("domainID: " + D_STRING.getId() + "\tsuccess: " + g.addElements(schemaElements));
-	    		  
 	    		  client.importSchema(schema, schemaElements);
 	    		  schemaElements = new ArrayList<SchemaElement>();
 	    		  System.out.println("--");

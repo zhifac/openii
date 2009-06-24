@@ -49,7 +49,9 @@ public class SearchServlet extends HttpServlet {
 	    String searchTerms = request.getParameter("keywords");
 	    String schemaFragmentType = request.getParameter("schemaFragmentType");
 	    String schemaFragmentContent = request.getParameter("schemaFragmentContent");
-    
+	    String matchers = request.getParameter("matchers");
+	    if (matchers==null) matchers = "true";
+	    
 		HttpSession session = request.getSession();
 		SessionState userState = (SessionState) session.getAttribute("sessionState");
 		if (userState == null) {
@@ -70,7 +72,7 @@ public class SearchServlet extends HttpServlet {
 		    System.out.println( "temp file: " + schemaFile.getAbsolutePath() );
 		}
 		
-		MatchSummary [] msa = SchemaSearch.performSearch(searchTerms, schemaFile);
+		MatchSummary [] msa = SchemaSearch.performSearch(searchTerms, schemaFile, Boolean.parseBoolean(matchers));
 
 		Element root = new Element("schemas");		
 		for (MatchSummary matchSummary : msa) {
@@ -82,12 +84,16 @@ public class SearchServlet extends HttpServlet {
 			resultElement.setAttribute(DESC, schema.getDescription().trim());
 			resultElement.setAttribute(SCORE, Double.toString(matchSummary.getScore()));			
 			root.addContent(resultElement);
-			
-			userState.idToMatchSummary.put(schema.getId(), matchSummary);
 		}
 		
 		Document doc = new Document(root);
 		XMLOutputter serializer = new XMLOutputter();
 		serializer.output(doc, response.getWriter());
+		if (!Boolean.parseBoolean(matchers)){
+			msa = SchemaSearch.performSearch(searchTerms, schemaFile);
+		}
+		for (MatchSummary matchSummary : msa) {
+			userState.idToMatchSummary.put(matchSummary.getSchema().getId(), matchSummary);
+		}
 	}
 }

@@ -8,6 +8,7 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.apache.catalina.connector.ClientAbortException;
 import org.mitre.schemastore.client.Consts;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.porters.ImporterException;
@@ -21,8 +22,11 @@ import org.openii.schemrserver.indexer.SchemaStoreIndex.CandidateSchema;
 public class SchemaSearch {
 
 	public static int  RESULT_PAGE_SIZE = 30;
-	
 	public static MatchSummary [] performSearch(String keywordString, File schemaFile) throws RemoteException {
+		return performSearch(keywordString, schemaFile, true);
+	}
+	
+	public static MatchSummary [] performSearch(String keywordString, File schemaFile, boolean matchersOn) throws RemoteException {
 		Query q = null;
 		HashMap<String,String> queryKeywords = getKeywordMap(keywordString);
 		
@@ -62,19 +66,24 @@ public class SchemaSearch {
 
 		// filter for candidate schemas
 		CandidateSchema [] candidateSchemas = getCandidateSchemas(q);
-
+		
 		int page = Math.min(RESULT_PAGE_SIZE, candidateSchemas.length);
 		
 		CandidateSchema [] filteredSchemas = new CandidateSchema [page];
+		MatchSummary [] topResultsArray = new MatchSummary [page];
 		for (int i = 0; i < page; i++) {
 			filteredSchemas[i] = candidateSchemas[i];
+			if (!matchersOn){
+				topResultsArray[i] = new MatchSummary(SchemaUtility.getCLIENT().getSchema(candidateSchemas[i].uid), null, null, candidateSchemas[i].score, null);
+			}
 		}
+		if (!matchersOn) return topResultsArray;
 		
 		// process query against candidate schemas
 		MatchSummary [] msarray = q.processQuery(filteredSchemas);
 		
 		System.out.println("Ranked results");
-		MatchSummary [] topResultsArray = new MatchSummary [page];
+		
 		for (int i = 0; i < page; i++) {
 			topResultsArray[i] = msarray[i];
 			double trueScore = topResultsArray[i].getScore();
