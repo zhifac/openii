@@ -116,9 +116,7 @@ public class Query {
 		
 		for (int i = 0; i < candidateSchemas.length; i++) {
 			CandidateSchema candidateSchema = candidateSchemas[i];
-			
 			Schema s = SchemaUtility.getCLIENT().getSchema(candidateSchema.uid);
-			
 			ArrayList<QueryFragment> queryFragments = qp.getQueryFragments();
 			MatchSummary ms = match(s, queryFragments);
 			if (ms != null) matchSummaries.add(ms);	
@@ -132,21 +130,16 @@ public class Query {
 	}
 
 	public MatchSummary match(Schema candidateSchema, ArrayList<QueryFragment> queryFragments) {
+		Matcher nGram, editDist = null;
+		nGram = new NGramMatcher(candidateSchema, queryFragments);
+		editDist = new EditDistanceMatcher(candidateSchema, queryFragments);
+		nGram.calculateSimilarityMatrix();
+		editDist.calculateSimilarityMatrix();
+		MatchSummary out = nGram.getMatchSummary(); 
 		
-		Matcher m = null;
-		if (Matcher.MATCHER == Matcher.NGRAM) {
-			m = new NGramMatcher(candidateSchema, queryFragments);			
-		} else if (Matcher.MATCHER == Matcher.EDIT_DISTANCE) {
-			m = new EditDistanceMatcher(candidateSchema, queryFragments);			
-		}
-
-		m.calculateSimilarityMatrix();
-		//	System.out.println(sm.toString());
-		// match summary contains schema, queryfragments, score, and evidence
-		return m.getMatchSummary();
+		out.score = out.score * 0.5 + ((editDist.getMatchSummary().score + 8.0) / 16) + 0.5;
+		return out;
 	}
-
-	
 
 	/**
 	 * QueryParser converts a query into format(s) needed by matchers

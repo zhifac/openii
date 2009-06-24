@@ -14,7 +14,7 @@ public class MatchSummary implements Comparable<MatchSummary> {
 	ArrayList<SchemaElement> schemaElements; 
 	ArrayList<QueryFragment> queryFragments;
 	SimilarityMatrix similarityMatrix;
-	double score;
+	public double score;
 	HashMap<QueryFragment, ScoreEvidence> queryFragmentToScoreEvidencePairMap;
 	
 	public MatchSummary(
