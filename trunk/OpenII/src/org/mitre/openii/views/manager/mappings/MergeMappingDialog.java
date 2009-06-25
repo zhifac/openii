@@ -31,6 +31,7 @@ import org.eclipse.swt.widgets.Text;
 import org.mitre.openii.application.OpenIIActivator;
 import org.mitre.openii.model.OpenIIManager;
 import org.mitre.openii.widgets.BasicWidgets;
+import org.mitre.openii.widgets.WidgetUtilities;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.MappingSchema;
@@ -220,7 +221,7 @@ public class MergeMappingDialog extends Dialog implements ModifyListener
 			label.setText("Schemas: " + key);
 			
 			// Generate the check boxes for the list of mappings
-			for(Mapping mapping : OpenIIManager.sortList(mappingList))
+			for(Mapping mapping : WidgetUtilities.sortList(mappingList))
 				checkboxes.add(new MappingCheckbox(mappingPane, mapping));
 		}
 

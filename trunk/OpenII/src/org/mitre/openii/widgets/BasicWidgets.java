@@ -50,7 +50,7 @@ public class BasicWidgets
 	{
 		/** Defines the contents of the schema list */
 		public Object[] getElements(Object arg0)
-			{ return OpenIIManager.sortList(OpenIIManager.getSchemas()).toArray(); }
+			{ return WidgetUtilities.sortList(OpenIIManager.getSchemas()).toArray(); }
 
 		// Unused functions
 		public void dispose() {}

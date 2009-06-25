@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.mitre.openii.model.OpenIIManager;
+import org.mitre.openii.widgets.WidgetUtilities;
 import org.mitre.schemastore.model.Group;
 import org.mitre.schemastore.model.Mapping;
 
@@ -22,9 +23,9 @@ public class ManagerContentProvider implements ITreeContentProvider
 		if(element instanceof String)
 		{
 			if(element.equals("")) return new String[] {schemaHeader,groupHeader,mappingHeader};
-			if(element.equals(schemaHeader)) return OpenIIManager.sortList(OpenIIManager.getSchemas()).toArray();
-		    if(element.equals(groupHeader)) return OpenIIManager.sortList(OpenIIManager.getSubgroups(null)).toArray();
-		    if(element.equals(mappingHeader)) return OpenIIManager.sortList(OpenIIManager.getMappings()).toArray();
+			if(element.equals(schemaHeader)) return WidgetUtilities.sortList(OpenIIManager.getSchemas()).toArray();
+		    if(element.equals(groupHeader)) return WidgetUtilities.sortList(OpenIIManager.getSubgroups(null)).toArray();
+		    if(element.equals(mappingHeader)) return WidgetUtilities.sortList(OpenIIManager.getMappings()).toArray();
 		}
 		    
 		// Handles group elements
@@ -37,8 +38,8 @@ public class ManagerContentProvider implements ITreeContentProvider
 
 			// Put together the list of elements listed under group
 			ArrayList<Object> elements = new ArrayList<Object>();
-			elements.addAll(OpenIIManager.sortList(schemas));
-			elements.addAll(OpenIIManager.sortList(OpenIIManager.getSubgroups(group.getId())));
+			elements.addAll(WidgetUtilities.sortList(schemas));
+			elements.addAll(WidgetUtilities.sortList(OpenIIManager.getSubgroups(group.getId())));
 			return elements.toArray();
 		}
 			
@@ -49,7 +50,7 @@ public class ManagerContentProvider implements ITreeContentProvider
 			ArrayList<Object> elements = new ArrayList<Object>();
 			for(Integer schemaID : mapping.getSchemaIDs())
 				elements.add(new SchemaInMapping(mapping.getId(),OpenIIManager.getSchema(schemaID)));
-			return OpenIIManager.sortList(elements).toArray();
+			return WidgetUtilities.sortList(elements).toArray();
 		}
 		
 		return new String[] {};
