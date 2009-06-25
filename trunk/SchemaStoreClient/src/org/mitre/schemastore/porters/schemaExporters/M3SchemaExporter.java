@@ -22,7 +22,7 @@ import org.apache.xml.serialize.OutputFormat;
  *  
  * @author MDMORSE
  */
-public class M3Exporter extends SchemaExporter
+public class M3SchemaExporter extends SchemaExporter
 {	
 	/** Returns the exporter name */
 	public String getName()

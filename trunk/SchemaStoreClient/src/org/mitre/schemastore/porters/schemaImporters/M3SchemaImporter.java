@@ -23,7 +23,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 /** Importer for copying schemas from other repositories */
-public class M3Importer extends SchemaImporter
+public class M3SchemaImporter extends SchemaImporter
 {
 	/** Private class for sorting schema elements */
 	class SchemaElementComparator implements Comparator<SchemaElement>
