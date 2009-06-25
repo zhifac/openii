@@ -54,7 +54,7 @@ public class M3Exporter extends SchemaExporter
 			dom = db.newDocument();
 
 			// Create the XML document
-			Element rootXMLElement = dom.createElement("SchemaStoreArchiveExport");
+			Element rootXMLElement = dom.createElement("SchemaStoreM3Export");
 			rootXMLElement.appendChild(dom.createTextNode("Schemas:"));
 			for(Integer schemaid: schemaIDs)
 			{
