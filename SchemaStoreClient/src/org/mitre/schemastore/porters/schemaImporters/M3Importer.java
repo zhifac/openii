@@ -23,7 +23,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 /** Importer for copying schemas from other repositories */
-public class ArchiveImporter extends SchemaImporter
+public class M3Importer extends SchemaImporter
 {
 	/** Private class for sorting schema elements */
 	class SchemaElementComparator implements Comparator<SchemaElement>
@@ -73,21 +73,21 @@ public class ArchiveImporter extends SchemaImporter
 	
 	/** Returns the importer name */
 	public String getName()
-		{ return "Archive Importer"; }
+		{ return "M3 Importer"; }
 	
 	/** Returns the importer description */
 	public String getDescription()
-		{ return "This importer can be used to download SchemaStore archive files"; }
+		{ return "This importer can be used to download a schema in the M3 format"; }
 		
 	/** Returns the importer URI type */
 	public Integer getURIType()
-		{ return ARCHIVE; }
+		{ return M3MODEL; }
 
 	/** Returns the importer URI file types */
 	public ArrayList<String> getFileTypes()
 	{
 		ArrayList<String> fileTypes = new ArrayList<String>();
-		fileTypes.add(".ssa");
+		fileTypes.add(".m3s");
 		return fileTypes;
 	}
 	
