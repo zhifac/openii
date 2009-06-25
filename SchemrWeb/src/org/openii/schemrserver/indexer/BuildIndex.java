@@ -8,6 +8,7 @@ import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexWriter;
 import org.openii.schemrserver.Consts;
+import org.openii.schemrserver.SchemaUtility;
 
 public class BuildIndex {
 

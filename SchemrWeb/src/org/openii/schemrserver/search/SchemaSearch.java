@@ -13,8 +13,8 @@ import org.mitre.schemastore.porters.schemaImporters.DDLImporter;
 import org.mitre.schemastore.porters.schemaImporters.SchemaImporter;
 import org.mitre.schemastore.porters.schemaImporters.XSDImporter;
 import org.openii.schemrserver.Consts;
+import org.openii.schemrserver.SchemaUtility;
 import org.openii.schemrserver.indexer.SchemaStoreIndex;
-import org.openii.schemrserver.indexer.SchemaUtility;
 import org.openii.schemrserver.indexer.SchemaStoreIndex.CandidateSchema;
 
 public class SchemaSearch {

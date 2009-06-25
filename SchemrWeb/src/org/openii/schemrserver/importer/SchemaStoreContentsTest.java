@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 import org.mitre.schemastore.client.SchemaStoreClient;
 import org.mitre.schemastore.model.Schema;
-import org.openii.schemrserver.indexer.SchemaUtility;
+import org.openii.schemrserver.SchemaUtility;
 
 public class SchemaStoreContentsTest {
 
