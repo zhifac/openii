@@ -8,6 +8,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
 
 import org.mitre.affinity.view.application.AffinityPane;
+import org.mitre.affinity.view.application.LoadProgressDialog;
+import org.mitre.affinity.view.application.StackTraceDialog;
 import org.mitre.affinity.view.cluster_details.ClusterDetailsDlg;
 import org.mitre.affinity.view.event.AffinityListener;
 import org.mitre.affinity.clusters.ClusterGroup;
@@ -42,17 +44,30 @@ public class AffinityView extends OpenIIEditor implements AffinityListener
 		// Connects the SchemaStoreClient to Affinity's SchemaStoreManager
 		AffinitySchemaStoreManager.setConnection(RepositoryManager.getClient());
 		
+		//Create a dialog to show progress as Affinity loads
+		final LoadProgressDialog progressDlg = new LoadProgressDialog(parent.getShell());
+		progressDlg.setText("Opening Affinity");		
+		progressDlg.open();		
+		
 		//Construct the Affinity pane
 		parent.setLayout(new FillLayout());		
 		ArrayList<Integer> schemaIDs = OpenIIManager.getGroupSchemas(elementID);
 		this.affinityModel =  new AffinityModel(schemaManager, clusterManager);
-		affinity = new AffinityPane(parent, affinityModel, schemaIDs);
-		affinity.getCraigrogram().debug = false;
-		affinity.addAffinityEventListener(this);
+		affinity = new AffinityPane(parent, affinityModel, schemaIDs, progressDlg);
+		progressDlg.close();
+		if(affinity.isAffinityPaneCreated()) {
+			affinity.getCraigrogram().debug = false;
+			affinity.addAffinityEventListener(this);
+		}
+		else {
+			//There was an error creating the Affinity pane, show the error dialog
+			StackTraceDialog stackTraceDlg = new StackTraceDialog(parent.getShell(), affinity.getException());			
+			stackTraceDlg.setMessage("Unable to launch Affinity due to:");
+			stackTraceDlg.open();
+		}
 	}	
 	
-	
-	//AffinityListener methods:
+	//AffinityListener methods
 	
 	/** Handles a double-click on a cluster within Affinity */
 	public void clusterDoubleClicked(ClusterGroup cluster, Object source) {
