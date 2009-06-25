@@ -23,6 +23,7 @@ import org.mitre.openii.application.OpenIIActivator;
 import org.mitre.openii.model.OpenIIManager;
 import org.mitre.openii.widgets.BasicWidgets;
 import org.mitre.openii.widgets.ListWithButtonBar;
+import org.mitre.openii.widgets.WidgetUtilities;
 import org.mitre.schemastore.model.Group;
 import org.mitre.schemastore.model.Schema;
 
@@ -114,7 +115,7 @@ public class EditGroupDialog extends Dialog implements ModifyListener, Selection
 			ArrayList<Schema> groupSchemas = new ArrayList<Schema>();
 			for(Integer schemaID : OpenIIManager.getGroupSchemas(group.getId()))
 				groupSchemas.add(OpenIIManager.getSchema(schemaID));
-			for(Schema schema : OpenIIManager.sortList(groupSchemas))
+			for(Schema schema : WidgetUtilities.sortList(groupSchemas))
 				list.add(schema);
 		}
 		validateFields();

@@ -5,6 +5,7 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.swt.widgets.Tree;
 import org.mitre.openii.views.manager.SchemaInGroup;
 import org.mitre.openii.views.manager.SchemaInMapping;
 import org.mitre.schemastore.model.Group;
@@ -15,15 +16,15 @@ import org.mitre.schemastore.model.Schema;
 public class RepositoryMenuManager extends MenuManager implements IMenuListener
 {
 	/** Stores reference to the tree */
-	private TreeViewer viewer = null;
+	private Tree tree = null;
 
 	/** Stores reference to the currently selected element */
 	private Object element = null;
 	
 	/** Constructs the Repository Menu Manager */
-	public RepositoryMenuManager(TreeViewer viewer)
+	public RepositoryMenuManager(Tree tree)
 	{
-		this.viewer = viewer;
+		this.tree = tree;
 		setRemoveAllWhenShown(true);
 		addMenuListener(this);
 	}
@@ -61,7 +62,7 @@ public class RepositoryMenuManager extends MenuManager implements IMenuListener
 	/** Generate the context menu before being displayed */
 	public void menuAboutToShow(IMenuManager menuManager)
 	{		
-		element = ((StructuredSelection)viewer.getSelection()).getFirstElement();
+	//	element = ((StructuredSelection)tree.getSelection()).getFirstElement();
 		getManagerMenu(menuManager);		
 	}
 }

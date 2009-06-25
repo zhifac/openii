@@ -2,6 +2,8 @@ package org.mitre.openii.views.repositories.menu;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.net.URI;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
@@ -18,6 +20,7 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.mitre.openii.application.OpenIIActivator;
+import org.mitre.openii.model.RepositoryManager;
 import org.mitre.openii.widgets.BasicWidgets;
 import org.mitre.openii.widgets.OptionsPanel;
 import org.mitre.openii.widgets.OptionPane;
@@ -27,6 +30,12 @@ import org.mitre.schemastore.client.Repository;
 /** Constructs the Edit Repository Dialog */
 public class EditRepositoryDialog extends TitleAreaDialog implements ActionListener, ModifyListener, SelectionListener
 {
+	// Static constants defining the option panel options
+	private static String SERVICE = "Web Service";
+	private static String DATABASE = "Database";
+	private static String LOCAL = "Local";
+	private static String REMOTE = "Remote";
+	
 	/** Stores the repository being edited */
 	private Repository repository = null;
 	
@@ -84,12 +93,12 @@ public class EditRepositoryDialog extends TitleAreaDialog implements ActionListe
 		optionsPanel = new OptionsPanel(pane);
 		
 		// Create the web services option
-		Composite webServicePane = optionsPanel.addOption("Web Service");
+		Composite webServicePane = optionsPanel.addOption(SERVICE);
 		webURL = BasicWidgets.createTextField(webServicePane, "URL");
 		
 		// Create the database option
-		Composite databasePane = optionsPanel.addOption("Database");
-		databaseType = BasicWidgets.createRadioField(databasePane, "Type", new String[]{"Local","Remote"}, this);
+		Composite databasePane = optionsPanel.addOption(DATABASE);
+		databaseType = BasicWidgets.createRadioField(databasePane, "Type", new String[]{LOCAL,REMOTE}, this);
 		databaseURI = new URIField(databasePane); databaseURI.setMode(URIField.DIRECTORY);
 		databaseName = BasicWidgets.createTextField(databasePane, "Database");
 		databaseUser = BasicWidgets.createTextField(databasePane, "Username");
@@ -140,27 +149,30 @@ public class EditRepositoryDialog extends TitleAreaDialog implements ActionListe
 			nameField.setText(repository.getName());
 			if(repository.getType().equals(Repository.SERVICE))
 			{
-				optionsPanel.setOption("Web Service");
+				optionsPanel.setOption(SERVICE);
 				webURL.setText(repository.getURI().toString());
 			}
 			else
 			{
-				optionsPanel.setOption("Database");
-				databaseType.setOption(repository.getType().equals(Repository.DERBY)?"Local":"Remote");
+				// Display the database options
+				optionsPanel.setOption(DATABASE);
+				
+				// Generate the repository uri
+				String uri = repository.getURI().toString();
+				if(repository.getType().equals(Repository.DERBY))
+					uri = new File(uri).getAbsolutePath();
+				
+				// Populate the dialog with the repository information
+				optionsPanel.setOption(DATABASE);
+				databaseType.setOption(repository.getType().equals(Repository.DERBY)?LOCAL:REMOTE);
 				databaseURI.getTextField().setText(repository.getURI().toString());
 				databaseName.setText(repository.getDatabaseName());
 				databaseUser.setText(repository.getDatabaseUser());
 				databasePassword.setText(repository.getDatabasePassword());
 			}
-			optionsPanel.setOption(repository.getType().equals(Repository.SERVICE)?"Web Service":"Database");
-			//			// Set all items selected as part of group
-//			ArrayList<Schema> groupSchemas = new ArrayList<Schema>();
-//			for(Integer schemaID : OpenIIManager.getGroupSchemas(group.getId()))
-//				groupSchemas.add(OpenIIManager.getSchema(schemaID));
-//			for(Schema schema : OpenIIManager.sortList(groupSchemas))
-//				list.add(schema);
+			optionsPanel.setOption(repository.getType().equals(Repository.SERVICE)?SERVICE:DATABASE);
 		}
-		optionsPanel.setOption("Web Service");
+		else optionsPanel.setOption(SERVICE);
 		validateFields();
 		
 		return control;
@@ -176,7 +188,7 @@ public class EditRepositoryDialog extends TitleAreaDialog implements ActionListe
 	
 	/** Monitors changes to the radio field to know when to change the connection fields */
 	public void widgetSelected(SelectionEvent e)
-		{ databaseURI.setMode(databaseType.getOption().equals("Local") ? URIField.DIRECTORY : URIField.URI); }
+		{ databaseURI.setMode(databaseType.getOption().equals(LOCAL) ? URIField.DIRECTORY : URIField.URI); }
 
 	/** Validates the fields in order to activate the OK button */
 	private void validateFields()
@@ -188,7 +200,7 @@ public class EditRepositoryDialog extends TitleAreaDialog implements ActionListe
 		
 		// Determine if the OK button should be activated
 		boolean activate = nameField.getText().length()>0;
-		if(optionsPanel.getOption().equals("Web Service"))
+		if(optionsPanel.getOption().equals(SERVICE))
 			activate &= webURL.getText().length()>0;
 		else activate &= databaseURI.isValid() && databaseName.getText().length()>0 &&
 						 databaseUser.getText().length()>0 && databasePassword.getText().length()>0;
@@ -197,7 +209,24 @@ public class EditRepositoryDialog extends TitleAreaDialog implements ActionListe
 	
 	/** Handles the creating/updating of the repository */
 	protected void okPressed()
-		{ System.out.println("Create or update repository info"); }
+	{
+		try {
+			// Gets the various repository parameters
+			String name = nameField.getText();
+			Integer type = optionsPanel.getOption().equals(SERVICE) ? Repository.SERVICE : databaseType.getOption().equals(LOCAL) ? Repository.DERBY : Repository.POSTGRES;
+			URI uri = type.equals(Repository.SERVICE) ? new URI(webURL.getText()) : databaseURI.getURI();
+			String database = databaseName.getText();
+			String username = databaseUser.getText();
+			String password = databasePassword.getText();
+			
+			// Adds the repository to the manager
+			Repository newRepository = new Repository(name, type, uri, database, username, password);
+			RepositoryManager.addRepository(newRepository);
+			if(repository!=null) RepositoryManager.deleteRepository(repository);
+			getShell().dispose();
+		}
+		catch(Exception e) { setErrorMessage("Failed to create repository"); }
+	}
 	
 	// Unused event listeners
 	public void widgetDefaultSelected(SelectionEvent arg0) {}

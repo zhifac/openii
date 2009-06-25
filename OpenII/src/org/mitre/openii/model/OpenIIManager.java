@@ -2,7 +2,6 @@ package org.mitre.openii.model;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 
 import org.mitre.schemastore.model.Group;
@@ -45,20 +44,6 @@ public class OpenIIManager
 	static private ListenerGroup<OpenIIListener> listeners = new ListenerGroup<OpenIIListener>();
 	static public void addListener(OpenIIListener listener) { listeners.add(listener); }
 	static public void removeListener(OpenIIListener listener) { listeners.remove(listener); }
-
-	/** Sorts the provided array by name */
-	public static <T> ArrayList<T> sortList(ArrayList<T> list)
-	{
-		/** Handles the comparison of list items */
-		class ItemComparator implements Comparator<Object>
-		{
-			public int compare(Object item1, Object item2)
-				{ return item1.toString().toLowerCase().compareTo(item2.toString().toLowerCase()); }
-		}
-		
-		Collections.sort(list, new ItemComparator());
-		return list;		
-	}
 	
 	//------------ Schema Functionality -------------
 	

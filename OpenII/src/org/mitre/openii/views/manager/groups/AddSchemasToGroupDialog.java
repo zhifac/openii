@@ -7,6 +7,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.dialogs.ElementListSelectionDialog;
 import org.mitre.openii.application.OpenIIActivator;
 import org.mitre.openii.model.OpenIIManager;
+import org.mitre.openii.widgets.WidgetUtilities;
 import org.mitre.schemastore.model.Schema;
 
 /** Constructs the Edit Group Dialog */
@@ -20,7 +21,7 @@ class AddSchemasToGroupDialog extends ElementListSelectionDialog
 		setMultipleSelection(true);
 		ArrayList<Schema> schemas = OpenIIManager.getSchemas();
 		schemas.removeAll(selectedSchemaIDs);
-		setElements(OpenIIManager.sortList(schemas).toArray());
+		setElements(WidgetUtilities.sortList(schemas).toArray());
 	}	
 
 	/** Configures the dialog shell */

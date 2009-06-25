@@ -25,6 +25,7 @@ import org.mitre.openii.model.OpenIIManager;
 import org.mitre.openii.model.RepositoryManager;
 import org.mitre.openii.widgets.BasicWidgets;
 import org.mitre.openii.widgets.URIField;
+import org.mitre.openii.widgets.WidgetUtilities;
 import org.mitre.schemastore.porters.PorterManager;
 import org.mitre.schemastore.porters.schemaImporters.SchemaImporter;
 import org.mitre.schemastore.porters.schemaImporters.SchemaProperties;
@@ -65,10 +66,10 @@ public class ImportSchemaDialog extends TitleAreaDialog implements ISelectionCha
 		BasicWidgets.createLabel(pane,"Importer");
 		importerList = new ComboViewer(pane, SWT.NONE);
 		ArrayList<SchemaImporter> importers = new PorterManager(RepositoryManager.getClient()).getSchemaImporters();
-		for(SchemaImporter importer : OpenIIManager.sortList(importers))
+		for(SchemaImporter importer : WidgetUtilities.sortList(importers))
 		{
 			Integer uriType = importer.getURIType();
-			if(uriType==SchemaImporter.FILE || uriType==SchemaImporter.ARCHIVE || uriType==SchemaImporter.URI)
+			if(uriType==SchemaImporter.FILE || uriType==SchemaImporter.M3MODEL || uriType==SchemaImporter.URI)
 				importerList.add(importer);
 		}
 		importerList.addSelectionChangedListener(this);
@@ -134,20 +135,20 @@ public class ImportSchemaDialog extends TitleAreaDialog implements ISelectionCha
 	{
 		// Retrieve the selected importer
 		SchemaImporter importer = (SchemaImporter)((StructuredSelection)importerList.getSelection()).getFirstElement();
-		boolean archiveImporter = importer.getURIType()==SchemaImporter.ARCHIVE;
+		boolean m3Importer = importer.getURIType()==SchemaImporter.M3MODEL;
 		boolean uriImporter = importer.getURIType()==SchemaImporter.URI;
 		
 		// Clear out the fields as needed
-		if(archiveImporter)
+		if(m3Importer)
 			{ nameField.setText(""); authorField.setText(""); descriptionField.setText(""); }
 		else if(authorField.getText().equals(""))
 			authorField.setText(System.getProperty("user.name"));
 		uriField.getTextField().setText("");
 		
-		// Disable fields as needed in case of archive exporter
-		nameField.setEnabled(!archiveImporter);
-		authorField.setEnabled(!archiveImporter);
-		descriptionField.setEnabled(!archiveImporter);
+		// Disable fields as needed in case of m3 exporter
+		nameField.setEnabled(!m3Importer);
+		authorField.setEnabled(!m3Importer);
+		descriptionField.setEnabled(!m3Importer);
 		
 		// Generate the list of extensions that are available
 		ArrayList<String> extensions = new ArrayList<String>();
