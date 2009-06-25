@@ -32,7 +32,7 @@ public abstract class SchemaImporter extends Porter
 	public static final Integer SCHEMA = 1;
 	public static final Integer REPOSITORY = 2;
 	public static final Integer FILE = 3;
-	public static final Integer ARCHIVE = 4;
+	public static final Integer M3MODEL = 4;
 	public static final Integer URI = 5;
 	
 	// Defines the various base domain types
@@ -102,6 +102,7 @@ public abstract class SchemaImporter extends Porter
 		{
 			schema.setName(schemaProperties.getName());
 			schema.setAuthor(schemaProperties.getAuthor());
+			schema.setType(schemaProperties.getType());
 			schema.setDescription(schemaProperties.getDescription());
 		}
 		
@@ -114,7 +115,7 @@ public abstract class SchemaImporter extends Porter
 			success = client.setParentSchemas(schema.getId(), generateExtendedSchemaIDs());
 
 			// Lock the schema if needed
-			if(success && (getURIType()==ARCHIVE || getURIType()==REPOSITORY || getURIType()==FILE))
+			if(success && (getURIType()==M3MODEL || getURIType()==REPOSITORY || getURIType()==FILE))
 				client.lockSchema(schema.getId());
 		}
 		catch(Exception e) {}

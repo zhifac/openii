@@ -22,19 +22,19 @@ import org.apache.xml.serialize.OutputFormat;
  *  
  * @author MDMORSE
  */
-public class ArchiveExporter extends SchemaExporter
+public class M3Exporter extends SchemaExporter
 {	
 	/** Returns the exporter name */
 	public String getName()
-		{ return "Archive Exporter"; }
+		{ return "M3 Exporter"; }
 	
 	/** Returns the exporter description */
 	public String getDescription()
-		{ return "This exporter can be used to export a SchemaStore archive file"; }
+		{ return "This exporter can be used to export the M3 format of a schema"; }
 	
 	/** Returns the exporter file type */
 	public String getFileType()
-		{ return ".ssa"; }
+		{ return ".m3s"; }
 	
 	/** Exports the schema and schema elements to an SchemaStore archive file */
 	public StringBuffer exportSchema(Integer schemaID, ArrayList<SchemaElement> schemaElements)
@@ -81,7 +81,7 @@ public class ArchiveExporter extends SchemaExporter
 			serializer.serialize(dom);
 			out = sw.getBuffer();
 		}
-		catch(Exception e) { System.out.println("(E)ArchiveExporter.exportSchema - " + e.getMessage()); }
+		catch(Exception e) { System.out.println("(E)M3Exporter.exportSchema - " + e.getMessage()); }
 
 		return out;
 	}
