@@ -12,7 +12,7 @@ import org.mitre.schemastore.model.Containment;
 import org.mitre.schemastore.model.Entity;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
-import org.openii.schemrserver.indexer.SchemaUtility;
+import org.openii.schemrserver.SchemaUtility;
 import org.openii.schemrserver.search.MatchSummary;
 import org.openii.schemrserver.search.QueryFragment;
 import org.openii.schemrserver.matcher.SimilarityMatrix.ScoreEvidence;

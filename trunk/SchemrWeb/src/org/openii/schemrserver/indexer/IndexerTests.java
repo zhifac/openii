@@ -24,6 +24,7 @@ import org.apache.lucene.store.LockObtainFailedException;
 import org.apache.lucene.store.RAMDirectory;
 import org.mitre.schemastore.client.SchemaStoreClient;
 import org.openii.schemrserver.Consts;
+import org.openii.schemrserver.SchemaUtility;
 
 public class IndexerTests extends TestCase {
 

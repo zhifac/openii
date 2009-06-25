@@ -1,4 +1,4 @@
-package org.openii.schemrserver.indexer;
+package org.openii.schemrserver;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -17,7 +17,7 @@ import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.SchemaElementList;
 import org.mitre.schemastore.model.Subtype;
-import org.openii.schemrserver.Consts;
+import org.openii.schemrserver.indexer.SchemrSchema;
 
 import com.thoughtworks.xstream.XStream;
 

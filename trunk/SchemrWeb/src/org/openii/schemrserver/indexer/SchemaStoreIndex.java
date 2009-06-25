@@ -25,6 +25,7 @@ import org.mitre.schemastore.client.SchemaStoreClient;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.graph.Graph;
+import org.openii.schemrserver.SchemaUtility;
 import org.openii.schemrserver.search.Query;
 
 public class SchemaStoreIndex {

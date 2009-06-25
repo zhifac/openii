@@ -2,16 +2,13 @@ package org.openii.schemrserver.importer;
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.rmi.RemoteException;
 
+import org.mitre.schemastore.client.SchemaStoreClient;
 import org.mitre.schemastore.porters.ImporterException;
 import org.mitre.schemastore.porters.schemaImporters.DDLImporter;
 import org.mitre.schemastore.porters.schemaImporters.SchemaImporter;
 import org.mitre.schemastore.porters.schemaImporters.XSDImporter;
-
-import org.mitre.schemastore.client.Repository;
-import org.mitre.schemastore.client.SchemaStoreClient;
-import org.openii.schemrserver.indexer.SchemaUtility;
+import org.openii.schemrserver.SchemaUtility;
 
 public class LoadSchemaFile{
 	
@@ -33,10 +30,7 @@ public class LoadSchemaFile{
 		// pick a loader
 		if (file.getName().endsWith("xsd")) {
 			importer = new XSDImporter();
-		} else if(file.getName().endsWith("csv")){
-			importer = new CSVImporter();
-		}
-		else if (file.getName().endsWith("sql") || file.getName().endsWith("ddl")) {
+		} else if (file.getName().endsWith("sql") || file.getName().endsWith("ddl")) {
 			importer = new DDLImporter();
 		}
 		importer.setClient(SchemaUtility.getCLIENT());

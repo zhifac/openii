@@ -20,7 +20,7 @@ import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.graph.Graph;
 import org.mitre.schemastore.model.graph.HierarchicalGraph;
-import org.openii.schemrserver.indexer.SchemaUtility;
+import org.openii.schemrserver.SchemaUtility;
 import org.openii.schemrserver.matcher.SimilarityMatrix.ScoreEvidence;
 import org.openii.schemrserver.search.MatchSummary;
 import org.openii.schemrserver.search.QueryFragment;

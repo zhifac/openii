@@ -10,7 +10,7 @@ import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.graph.Graph;
 import org.mitre.schemastore.model.graph.HierarchicalGraph;
-import org.openii.schemrserver.indexer.SchemaUtility;
+import org.openii.schemrserver.SchemaUtility;
 
 /**
  * Query Fragment is a single tree
