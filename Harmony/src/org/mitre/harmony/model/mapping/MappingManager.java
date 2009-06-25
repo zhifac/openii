@@ -55,7 +55,7 @@ public class MappingManager extends AbstractManager<MappingListener> implements 
 		if(mapping.getSchemas()==null) return new ArrayList<MappingSchema>();
 		return new ArrayList<MappingSchema>(Arrays.asList(mapping.getSchemas()));
 	}
-
+	
 	/** Gets the mapping schema IDs */
 	public ArrayList<Integer> getSchemaIDs()
 		{ return new ArrayList<Integer>(Arrays.asList(mapping.getSchemaIDs())); }
@@ -186,6 +186,20 @@ public class MappingManager extends AbstractManager<MappingListener> implements 
 		
 		// Set the mapping as being modified
 		if(changesOccured) setModified(true);
+	}
+	
+	/** Sets the specified schema's graph model */
+	public void setGraphModel(Integer schemaID, GraphModel graphModel)
+	{
+		for(MappingSchema schema : getSchemas())
+			if(schema.getId().equals(schemaID))
+			{
+				schema.setModel(graphModel.getClass().getName());
+				getModel().getSchemaManager().getGraph(schemaID).setModel(graphModel);
+				for(MappingListener listener : getListeners())
+					listener.schemaModified(schemaID);		
+				return;
+			}
 	}
 	
 	/** Creates a new mapping */

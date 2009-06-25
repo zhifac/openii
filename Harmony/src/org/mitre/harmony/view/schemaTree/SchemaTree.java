@@ -32,6 +32,7 @@ import org.mitre.harmony.model.filters.Focus;
 import org.mitre.harmony.model.mapping.MappingCellManager;
 import org.mitre.harmony.model.mapping.MappingListener;
 import org.mitre.harmony.model.preferences.PreferencesListener;
+import org.mitre.harmony.view.dialogs.SchemaModelDialog;
 import org.mitre.harmony.view.mappingPane.MappingPane;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.MappingSchema;
@@ -451,15 +452,30 @@ public class SchemaTree extends JTree implements MappingListener, PreferencesLis
 		// Handles mouse clicks on all other nodes
 		else if(!(node.getUserObject() instanceof String))
 		{
-			// Allows the selection of the clicked on node
-			if(node.getUserObject() instanceof Integer && e.getButton()==MouseEvent.BUTTON1)
+			if(e.getButton()==MouseEvent.BUTTON1)
 			{
-				Integer elementID = (Integer)node.getUserObject();
-				if(harmonyModel.getFilters().isVisibleNode(side,node))
-					harmonyModel.getSelectedInfo().setElement(elementID,side,e.isControlDown());
+				Object object = node.getUserObject();
+				
+				// Launches the dialog to change the schema model
+				if(object instanceof Schema)
+				{
+					Container mappingPane = getParent();
+					while(!(mappingPane instanceof MappingPane))
+						mappingPane = mappingPane.getParent();
+					if(mappingPane.getCursor()==Cursor.getPredefinedCursor(Cursor.HAND_CURSOR))
+						new SchemaModelDialog(((Schema)object).getId(),harmonyModel);
+				}
+					
+				// Allows the selection of the clicked on node
+				else if(object instanceof Integer)
+				{
+					Integer elementID = (Integer)node.getUserObject();
+					if(harmonyModel.getFilters().isVisibleNode(side,node))
+						harmonyModel.getSelectedInfo().setElement(elementID,side,e.isControlDown());
+				}
 			}
-			
-			// Otherwise, if right mouse button pressed, display the drop-down menu
+				
+			// If the right mouse button pressed, display the drop-down menu
 			else if(e.getButton()==MouseEvent.BUTTON3)
 			{
 				SchemaTreeNodeMenu menu = new SchemaTreeNodeMenu(this,node,harmonyModel);
