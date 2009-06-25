@@ -2,7 +2,7 @@
   <importers>
     <schemaImporters>
       <schemaImporter>org.mitre.schemastore.porters.schemaImporters.NewSchemaImporter</schemaImporter>
-      <schemaImporter>org.mitre.schemastore.porters.schemaImporters.M3Importer</schemaImporter>
+      <schemaImporter>org.mitre.schemastore.porters.schemaImporters.M3SchemaImporter</schemaImporter>
       <schemaImporter>org.mitre.schemastore.porters.schemaImporters.DDLImporter</schemaImporter>
       <schemaImporter>org.mitre.schemastore.porters.schemaImporters.ExtendSchemaImporter</schemaImporter>
       <schemaImporter>org.mitre.schemastore.porters.schemaImporters.OWLImporter</schemaImporter>
@@ -17,7 +17,7 @@
   </importers>
   <exporters>
     <schemaExporters>
-      <schemaExporter>org.mitre.schemastore.porters.schemaExporters.M3Exporter</schemaExporter>
+      <schemaExporter>org.mitre.schemastore.porters.schemaExporters.M3SchemaExporter</schemaExporter>
       <schemaExporter>org.mitre.schemastore.porters.schemaExporters.XSDExporter</schemaExporter>
       <schemaExporter>org.mitre.schemastore.porters.schemaExporters.SQLExporter</schemaExporter>
     </schemaExporters>
