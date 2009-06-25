@@ -3,25 +3,15 @@ package org.openii.schemrserver.servlet;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.StringWriter;
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.HashMap;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.mitre.schemastore.model.Containment;
-import org.mitre.schemastore.model.Entity;
+
 import org.mitre.schemastore.model.Schema;
-import org.mitre.schemastore.model.SchemaElement;
-import org.openii.schemrserver.SchemaUtility;
-import org.openii.schemrserver.matcher.SimilarityMatrix.ScoreEvidence;
 import org.openii.schemrserver.search.MatchSummary;
-import org.openii.schemrserver.search.QueryFragment;
 import org.openii.schemrserver.search.SchemaSearch;
 
 
