@@ -53,6 +53,7 @@ public class AffinityView extends OpenIIEditor implements AffinityListener
 		parent.setLayout(new FillLayout());		
 		ArrayList<Integer> schemaIDs = OpenIIManager.getGroupSchemas(elementID);
 		this.affinityModel =  new AffinityModel(schemaManager, clusterManager);
+		
 		affinity = new AffinityPane(parent, affinityModel, schemaIDs, progressDlg);
 		progressDlg.close();
 		if(affinity.isAffinityPaneCreated()) {
