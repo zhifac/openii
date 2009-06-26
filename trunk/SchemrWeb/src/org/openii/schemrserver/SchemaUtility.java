@@ -28,14 +28,6 @@ public class SchemaUtility {
 	public static SchemaStoreClient getCLIENT() {
 		if (CLIENT == null) {
 			try {
-//				CLIENT = new SchemaStoreClient(
-//						new Repository(Repository.SERVICE,
-//								new URI("http://localhost:8080/SchemaStore/services/SchemaStore"),
-//								"", "", ""));
-//				CLIENT = new SchemaStoreClient(
-//						new Repository(Repository.POSTGRES,
-//								new URI("localhost"),
-//								"schemastore", "postgres", "postgres"));
 				URI db = new URI(Consts.SCHEMR_WEB_DERBY_DIR);
 				CLIENT = new SchemaStoreClient(
 						new Repository(Repository.DERBY, db, "schemastore", "", ""));

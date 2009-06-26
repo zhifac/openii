@@ -4,20 +4,15 @@ import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-
-import org.apache.lucene.index.CorruptIndexException;
 import org.mitre.schemastore.model.Attribute;
 import org.mitre.schemastore.model.Domain;
 import org.mitre.schemastore.model.Entity;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
-import org.mitre.schemastore.model.graph.Graph;
 import org.mitre.schemastore.porters.schemaImporters.SchemaImporter;
 import org.openii.schemrserver.importer.LoadSchemaFile;
-import org.openii.schemrserver.indexer.BuildIndex;
 
 public class LoadCSV extends LoadSchemaFile{
 	private static String csvFile = "data/nocheckin/schemas-subset.csv";
