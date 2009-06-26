@@ -67,11 +67,15 @@
 		
 		
 		private var lay:Layout = null;
+		private function callBack():void{
+			properties.text = "hello";
+		}
 		private function onLoaded(data:Data):void {
 			if (vis != null) vis.alpha = 0.50;
 			vis = new Visualization(data);
 			var t1:Transitioner = new Transitioner(_transitionDuration);
 			var ex:ExpandControl = new ExpandControl(NodeSprite);
+			ex.attach(vis);
 			vis.controls.add(ex);
 			graphs.push(vis);
 			var w:Number = 600;
@@ -94,6 +98,7 @@
 				var ts:TextSprite = new TextSprite(ns.data.name,textFormat);
 				
 				ns.addChild(ts);	
+				if (ns.data.type=="Entity") currentNode = ns; 
 			});
 			
 			vis.data.nodes.setProperty("x",w/2);
@@ -131,7 +136,9 @@
 			panel1.rawChildren.addChildAt(vis, panel1.rawChildren.numChildren);
 			
 			try{
-				updateRoot(vis.data.nodes[0]);
+				//if (vis.data.nodes.length < 20) 
+					updateRoot(vis.data.nodes[0]);
+				//else updateRoot(currentNode);
 				
 			} catch(error:Error){
 				}
