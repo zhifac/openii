@@ -41,9 +41,9 @@ public class LoadCSV extends LoadSchemaFile{
 	    	  if(occurrences > 2 && occurrences < 12 && line.length > 5){ //Filter interesting schemas
 	    		  schemaElements.add(D_STRING);
 	    		  Integer schemaID = SchemaImporter.nextId();
-	    		  schema = new Schema(schemaID, "Schema" + index, "akannan", "CSV File", "", "CSV Import", false);
+	    		  schema = new Schema(schemaID, "Schema" + index, "Tables", "CSV File", "", "WebTables", false);
 	    		  Integer entityID = SchemaImporter.nextId();
-	    		  schemaElements.add(new Entity(entityID, "Schema" + index, "akannan", schemaID));
+	    		  schemaElements.add(new Entity(entityID, "Table", "Imported from the WebTables collection", schemaID));
 	    		  index++;	    		 
 	    		  for (int i=1; i< line.length -1; i++){
 	    			  int end = line[i].length()-1; 
