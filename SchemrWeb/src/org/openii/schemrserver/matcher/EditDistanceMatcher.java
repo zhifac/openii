@@ -32,6 +32,7 @@ public class EditDistanceMatcher extends BaseMatcher implements Matcher {
 				String c = colTokens.getTokens().get(0).getToken();
 				String r = rowTokens.getTokens().get(0).getToken();
 				double distanceScore = -1*getLevenshteinDistance(c, r);
+				if (!qf.getName().equals(se.getName())) distanceScore*=.8;
 //			System.out.println("Edit distance between "+c+", "+r+" :"+distanceScore);
 				similarityMatrix.setScore(se, qf, distanceScore);
 			}

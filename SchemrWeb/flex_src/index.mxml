@@ -11,9 +11,20 @@
 		<![CDATA[
 
 		import mx.rpc.events.ResultEvent;
-
+		import mx.events.DataGridEvent;
+		private var firstSearch:Boolean = true;
+		
 		public function handleNewSearchResults(event:ResultEvent):void {
-			resultGrid.dataProvider = searchBox._searchResults;	
+			
+			resultGrid.dataProvider = searchBox._searchResults;
+			var sort:DataGridEvent = new DataGridEvent(DataGridEvent.HEADER_RELEASE, false,	true,
+			3,	// The zero-based index of the column to sort in the DataGrid object's columns array.
+			null,0,null,null,0);
+			if (firstSearch){
+				resultGrid.dispatchEvent(sort);
+				firstSearch = false;
+			}  
+			resultGrid.dispatchEvent(sort);
 			trace(resultGrid.dataProvider);
 		}
 		public function ignore():void{}
@@ -24,9 +35,9 @@
 		]]>
 	</mx:Script>
 	
-	<mx:HDividedBox width="1000" height="700">
+	<mx:HDividedBox width="100%" height="100%">
 	
-		<mx:VBox id="searchSide" width="50%" height="100%" horizontalScrollPolicy="off" verticalScrollPolicy="off">
+		<mx:VBox id="searchSide" width="400" height="100%" horizontalScrollPolicy="off" verticalScrollPolicy="off">
 			<mx:HBox horizontalAlign="center" width="100%" height="88" horizontalGap="0" verticalScrollPolicy="off" verticalAlign="middle">
 				<mx:Image source="schemr/assets/splash.PNG"/>
 			</mx:HBox>

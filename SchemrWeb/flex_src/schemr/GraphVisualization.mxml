@@ -1,20 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%"
-	creationComplete="init()"
+	creationComplete="init()" 
 	xmlns:schemr="*">
-	
-	
-	
 	<mx:Panel width="200" height="200" alpha="0.6">
 		<mx:TextArea id="properties" backgroundAlpha="0.5" color="#DD2222" width="100%" height="100%" text="Information will appear in this box as you mouseover schema elements." />
 	</mx:Panel>
-	
-	<!--<mx:Image source="schemr/assets/close.png" id="close"/>-->
-		
-	<mx:HBox width="100%" height="100%" id="panel1">
-	
-	
+	<mx:HBox width="100%" height="100%" id="panel1" verticalScrollPolicy="on" verticalScrollPosition="200">
 	
 	<mx:Script>
 		<![CDATA[
@@ -57,13 +49,13 @@
 		private var xpos:Number = 0;
 		private var ypos:Number = 0;
 		
+		private var graphs:Array = new Array();
+		private var currentNode:NodeSprite = null;
+		
 		private var _transitionDuration:Number = 2;
 		
 		public function init():void{ 
 			//GraphMLFile('schemr/assets/out005.xml');
-			
-		}
-		public function test():void{
 			
 		}
 		
@@ -77,17 +69,22 @@
 		private function onLoaded(data:Data):void {
 			if (vis != null) vis.alpha = 0.50;
 			vis = new Visualization(data);
-			
+			graphs.push(vis);
 			var w:Number = 600;
 			var h:Number = 600;
 			
-			vis.bounds = new Rectangle(0, 0, w, h);
-			
-			
+			vis.bounds = new Rectangle(-200, 0, w, h);
+			for each (var v:Visualization in graphs){ 
+				if (v == vis) continue;
+				while (vis.getBounds(panel1).intersects(v.getBounds(panel1))){
+					//v.y -= 10;
+				} 
+			}
 			var textFormat:TextFormat = new TextFormat();
 			textFormat.color = 0xffffffff;
 			textFormat.kerning=true;
 			textFormat.font= "_sans";
+			textFormat.size=11;
 			var i:int = 0;
 			vis.data.nodes.visit(function(ns:NodeSprite):void { 
 				var ts:TextSprite = new TextSprite(ns.data.name,textFormat);
@@ -111,7 +108,7 @@
 				adjustLabel(ns,maxLabelWidth,maxLabelHeight);
 				ns.mouseChildren = false; 
 				ns.doubleClickEnabled = true;
-				ns.addEventListener(MouseEvent.DOUBLE_CLICK, update);
+				ns.addEventListener(MouseEvent.DOUBLE_CLICK, toggle);
 				ns.addEventListener(MouseEvent.MOUSE_OVER, drawInfo);
 				panel1.addEventListener(MouseEvent.MOUSE_OUT, hideBox);
 				panel1.addEventListener(MouseEvent.MOUSE_WHEEL, zoom);
@@ -135,6 +132,8 @@
 			} catch(error:Error){
 				}
 			actionbox.setVisible(false);
+			var t1:Transitioner = new Transitioner(_transitionDuration);
+			vis.update(t1).play();
 			
 		}
 		private function hideBox(event:MouseEvent):void{
@@ -161,7 +160,7 @@
 		}
 		private function drag(event:MouseEvent):void{
 			actionbox.visible=false;
-			((event.target as NodeSprite).parent as Sprite).startDrag(false, new Rectangle(-400, -300, 900, 700));
+			((event.target as NodeSprite).parent as Sprite).startDrag(false, new Rectangle(-800, -800, 1600, 1600));
 			changeCenter=false;
 		}
 		private function stop(event:MouseEvent):void{
@@ -170,25 +169,32 @@
 			
 		}
 		private function drawInfo(event:MouseEvent):void{
+			
 			var n:NodeSprite = event.currentTarget as NodeSprite;
+			currentNode = n;
 			if (n == null) return;	
 			if (n.data.type=="Schema" || n.data.type == "Entity" ){
 				actionbox.visible = true;
 			} 
 			
 			var s2:TextSprite = n.getChildAt(n.numChildren-1) as TextSprite; // get the text sprite belonging to this node sprite
+			if (!vis.contains(n)) return;
 			if (s2 == null) return;
 			trace("Mouse Over: " + s2.text);
+			var matched:String = (n.data.score=="0")?"false":"true";
+			trace(parseInt(n.data.score));
+			trace(parseInt(n.data.score)==0);
 			properties.text = "Description: " + n.data.desc +
 			"\nType: " + n.data.type +
 			"\nId: " + n.data.id +
-			"\nMatched: " + n.data.matched +
+			"\nMatched: " + matched +
 			"\nScore: " + n.data.score;
+			
 			var r:RectSprite = n.getChildAt(0) as RectSprite; 
 			xpos = panel1.mouseX;
 			ypos = panel1.mouseY;
-			actionbox.x = xpos + 10;
-			actionbox.y = ypos - 50;
+			actionbox.x = xpos - n.mouseX;
+			actionbox.y = ypos - 32 - n.mouseY;
 			if (prev!=null) (prev.getChildAt(0) as RectSprite).lineColor = 0xff000044;
 			prev = n;
 			r.lineColor = 0xFFFF0000;
@@ -197,17 +203,31 @@
 		private function update(event:MouseEvent):void {
 			if (!changeCenter) return;
 			var n:NodeSprite = event.target as NodeSprite;
-			if (n == null) return; 
+			if (n == null || n.data.type=="Attribute" ) return; 
 			updateRoot(n);
 		}
+		private function toggle(event:MouseEvent):void{
+			(event.target as NodeSprite).expanded = false;
+			var t1:Transitioner = new Transitioner(_transitionDuration);
+			vis.update(t1).play();
+			actionbox.visible = false;
+		}
+		
+		
 		private function zoom(event:MouseEvent):void {
 			actionbox.visible=false;
 			if (event.delta < 0){
-				Displays.zoomBy(vis, 0.99);
+				zoomTo(vis.scaleX * 0.98);
 			} else{
-				Displays.zoomBy(vis, 1.01);
+				zoomTo(vis.scaleX * 1.02040816);
 			}
 		}
+		private function zoomTo(amount:Number):void{
+			vis.scaleX = amount / 100;
+			vis.scaleY = amount / 100;
+			zn.value=amount;
+		}
+		
 		private function updateRoot(n:NodeSprite):void {
 			vis.data.root = n; 
 			_gdf.focusNodes = [n];
@@ -267,7 +287,7 @@
 		private function getTextLabelHeight(s:NodeSprite) : Number {
 			var s2:TextSprite = s.getChildAt(s.numChildren-1) as TextSprite; // get the text sprite belonging to this node sprite
 			var b:Rectangle = s2.getBounds(s);
-			return s2.height;
+			return 12;
 		}
 		
 		private function adjustLabel(s:NodeSprite, w:Number, h:Number) : void {
@@ -304,9 +324,8 @@
 					result="graphVisResultHandler(event);"
 					fault="graphVisFaultHandler(event);">
 	</mx:HTTPService>
-	<mx:Panel layout="horizontal" scaleX="0.8" scaleY="0.8" id="actionbox"  visible="false" alpha="0.7" x="100" y="100" borderThickness="0" headerHeight="0">
-		<mx:Button  paddingBottom="0" paddingLeft="0" paddingRight="0"  paddingTop="0" label="x" click="shuffle()" />
-		
+	<mx:Panel layout="horizontal" dropShadowEnabled="false" borderAlpha="0.0" paddingLeft="0" paddingRight="0" scaleX="0.7" scaleY="0.7" id="actionbox"  visible="false" alpha="0.7" x="100" y="100" borderThickness="0" headerHeight="0">
+		<mx:Button  toolTip="Close Schema" paddingBottom="0" paddingLeft="0" paddingRight="0"  paddingTop="0" label="x" click="shuffle()" />
 		<mx:ToggleButtonBar id="myBar" itemClick="changeLayout(event);">
 			<mx:dataProvider>
 				<mx:Array id="dp">  
@@ -315,7 +334,9 @@
 				</mx:Array>  
 		 	</mx:dataProvider>
 		 </mx:ToggleButtonBar>
-		 <mx:Button visible="true" label="!" id="sol" click="solo();" />
+		 <mx:Button label="@" toolTip="Center graph at current node" click="updateRoot(currentNode);" />
+		 <mx:Button visible="true" label="!" toolTip="Close all other schemas" id="sol" click="solo();" />
+		 <mx:NumericStepper id="zn" value="100" toolTip="zoom" maximum="500" minimum="20" stepSize="5" change="zoomTo(zn.value)" />
 	</mx:Panel>
 	 	
 </mx:HBox>
