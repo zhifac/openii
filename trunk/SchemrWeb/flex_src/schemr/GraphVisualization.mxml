@@ -6,10 +6,11 @@
 	<mx:Panel width="200" height="200" alpha="0.6">
 		<mx:TextArea id="properties" backgroundAlpha="0.5" color="#DD2222" width="100%" height="100%" text="Information will appear in this box as you mouseover schema elements." />
 	</mx:Panel>
-	<mx:HBox width="100%" height="100%" id="panel1" verticalScrollPolicy="on" verticalScrollPosition="200">
+	<mx:HBox width="100%" height="100%" id="panel1">
 	
 	<mx:Script>
 		<![CDATA[
+			import flare.vis.controls.ExpandControl;
 			import mx.controls.Image;
 		import flare.vis.events.SelectionEvent;
 		import flare.vis.operator.layout.Layout;
@@ -69,6 +70,9 @@
 		private function onLoaded(data:Data):void {
 			if (vis != null) vis.alpha = 0.50;
 			vis = new Visualization(data);
+			var t1:Transitioner = new Transitioner(_transitionDuration);
+			var ex:ExpandControl = new ExpandControl(NodeSprite);
+			vis.controls.add(ex);
 			graphs.push(vis);
 			var w:Number = 600;
 			var h:Number = 600;
@@ -132,8 +136,8 @@
 			} catch(error:Error){
 				}
 			actionbox.setVisible(false);
-			var t1:Transitioner = new Transitioner(_transitionDuration);
 			vis.update(t1).play();
+			vis.update();
 			
 		}
 		private function hideBox(event:MouseEvent):void{
@@ -207,10 +211,18 @@
 			updateRoot(n);
 		}
 		private function toggle(event:MouseEvent):void{
+			updateRoot(currentNode);
+			return;
 			(event.target as NodeSprite).expanded = false;
+			
+			//ex.update
+			/*
 			var t1:Transitioner = new Transitioner(_transitionDuration);
+			actionbox.visible = false;			
+			vis.operators.removeOperatorAt(vis.operators.length - 1);
+			vis.operators.add(new NodeLinkTreeLayout());
 			vis.update(t1).play();
-			actionbox.visible = false;
+			*/
 		}
 		
 		
