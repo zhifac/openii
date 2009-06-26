@@ -23,7 +23,7 @@ public class LoadThalia extends LoadSchemaFile {
 		for (File f : schemaList) {
 			System.out.println(f.getAbsolutePath());
 	        try {
-				loadSchema(f, f.getName().substring(0, f.getName().length()-4), "kuangc", "Thalia");
+				loadSchema(f, f.getName().substring(0, f.getName().length()-4), "Thalia", "Schemas imported from the Thalia dataset");
 			} catch (ImporterException e) {
 				System.err.println("WARNING: " + e.getMessage());
 			} catch (URISyntaxException e) {
