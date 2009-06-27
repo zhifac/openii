@@ -88,11 +88,13 @@
 			textFormat.font= "_sans";
 			textFormat.size=11;
 			var i:int = 0;
+			currentNode = null;
 			vis.data.nodes.visit(function(ns:NodeSprite):void { 
 				var ts:TextSprite = new TextSprite(ns.data.name,textFormat);
 				
 				ns.addChild(ts);	
-				if (ns.data.type=="Entity") currentNode = ns; 
+				if (currentNode == null && ns.data.type=="Containment" && 
+				ns.outDegree > 0 && ns.degree==2) currentNode = ns;
 			});
 			
 			vis.data.nodes.setProperty("x",w/2);
@@ -129,9 +131,9 @@
 			vis.operators.add(lay);
 			panel1.rawChildren.addChildAt(vis, panel1.rawChildren.numChildren);
 			try{
-				//if (vis.data.nodes.length < 20) 
+				if (currentNode == null) 
 					updateRoot(vis.data.nodes[0]);
-				//else updateRoot(currentNode);
+				else updateRoot(currentNode);
 			} catch(error:Error){
 				}
 			actionbox.setVisible(false);
@@ -171,6 +173,7 @@
 		}
 		private function drawInfo(event:MouseEvent):void{
 			var n:NodeSprite = event.currentTarget as NodeSprite;
+			actionbox.visible=true;
 			currentNode = n;
 			if (n == null) return;				
 			var s2:TextSprite = n.getChildAt(n.numChildren-1) as TextSprite; // get the text sprite belonging to this node sprite
@@ -185,7 +188,6 @@
 			"\nId: " + n.data.id +
 			"\nMatched: " + matched +
 			"\nScore: " + n.data.score;
-			
 			var r:RectSprite = n.getChildAt(0) as RectSprite; 
 			xpos = panel1.mouseX;
 			ypos = panel1.mouseY;

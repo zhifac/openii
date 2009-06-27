@@ -53,12 +53,17 @@
 			} 
 			trace("params: " + params.toString());
 			searchRequest.send(params);   	
+			searchRequest.showBusyCursor=true;
 		}
 		
 		private function searchResultHandler(event:ResultEvent):void {
 			trace(event.result.toString());
+			if ((event.result as XML).children().length()==0){
+				 message.label = "No results found. Please try another query.";	
+			} 
 			_searchResults = (event.result as XML).children();
 			dispatchEvent(new ResultEvent("newSearchResults"));
+			
 		}
 		private function searchFaultHandler(event:FaultEvent):void {
 			Alert.show(event.fault.message, "Search failed");
@@ -80,7 +85,7 @@
 	</mx:HTTPService>
 	
 	<mx:Form verticalGap="15" width="100%" x="0">
-		<mx:FormHeading label="Specify search keywords or schema:"  textAlign="left" fontWeight="normal" width="100%"/>
+		<mx:FormHeading label="Specify search keywords or schema:"  id="message" textAlign="left" fontWeight="normal" width="100%"/>
 		<mx:FormItem label="Keyword(s):">
 			<mx:TextInput id="searchText" enter="performSearch();"/>
 		</mx:FormItem>
