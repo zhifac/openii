@@ -23,12 +23,10 @@ public class LoadDBAnswers extends LoadSchemaFile {
 			System.out.println(f.getAbsolutePath());
 	        try {
 				loadSchema(f, f.getName().substring(0, f.getName().length()-4), "B. Williams", "DB Answers Co.");
-			} catch (ImporterException e) {
-				System.err.println("WARNING: " + e.getMessage());
 			} catch (URISyntaxException e) {
 				System.err.println("ERROR: " + e.getMessage());
 				System.exit(-1);
-			}
+			} catch (Exception e){}
 	    }
 	}	
 	}

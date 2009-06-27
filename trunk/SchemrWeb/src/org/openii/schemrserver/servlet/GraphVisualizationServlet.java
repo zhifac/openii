@@ -15,9 +15,11 @@ import org.jdom.Element;
 import org.jdom.output.XMLOutputter;
 import org.mitre.schemastore.model.Attribute;
 import org.mitre.schemastore.model.Containment;
+import org.mitre.schemastore.model.Domain;
 import org.mitre.schemastore.model.Entity;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
+import org.mitre.schemastore.model.Subtype;
 import org.mitre.schemastore.model.graph.Graph;
 import org.mitre.schemastore.model.graph.HierarchicalGraph;
 import org.openii.schemrserver.SchemaUtility;
@@ -30,7 +32,7 @@ import org.openii.schemrserver.search.QueryFragment;
  */
 public class GraphVisualizationServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-       
+    
 	
 	private static final String[][] keys = { 
 		{ "name", "string" },
@@ -114,8 +116,9 @@ public class GraphVisualizationServlet extends HttpServlet {
 		
 		for (SchemaElement schemaElement : schemaElements) {
 			if (schemaElement instanceof Entity || schemaElement instanceof Attribute || schemaElement instanceof Containment) {
+				if (schemaElement instanceof Containment) System.out.println(schemaElement.getName());
 				processElement(schemaElement, hg, idScoreEvidenceMap, idQueryFragmentMap, graph);				
-			}
+			} 
 		}
 	
 		Document doc = new Document(root);
