@@ -11,6 +11,7 @@ import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.porters.ImporterException;
 import org.mitre.schemastore.porters.schemaImporters.DDLImporter;
 import org.mitre.schemastore.porters.schemaImporters.SchemaImporter;
+import org.mitre.schemastore.porters.schemaImporters.SchemaProperties;
 import org.mitre.schemastore.porters.schemaImporters.XSDImporter;
 import org.openii.schemrserver.Consts;
 import org.openii.schemrserver.SchemaUtility;
@@ -20,30 +21,31 @@ import org.openii.schemrserver.indexer.SchemaStoreIndex.CandidateSchema;
 public class SchemaSearch {
 
 	public static int  RESULT_PAGE_SIZE = 30;
-	public static MatchSummary [] performSearch(String keywordString, File schemaFile) throws RemoteException {
-		return performSearch(keywordString, schemaFile, true);
-	}
+//	public static MatchSummary [] performSearch(String keywordString, File schemaFile) throws RemoteException {
+//		return performSearch(keywordString, schemaFile, true);
+//	}
 	
-	public static MatchSummary [] performSearch(String keywordString, File schemaFile, boolean matchersOn) throws RemoteException {
+	public static MatchSummary [] performSearch(String keywordString, File schemaFile, String type, boolean matchersOn) throws RemoteException {
 		Query q = null;
 		HashMap<String,String> queryKeywords = getKeywordMap(keywordString);
 		
-		String schemaName = "";
+		SchemaProperties schemaProps = null;
 		ArrayList<SchemaElement> schemaElements = null;
 		if (schemaFile != null) {
 			SchemaImporter importer = null;
 			String s = "file:///" + schemaFile.getAbsolutePath().replace("\\", "/").replace(" ", "%20");
 			// pick a loader
-			if (schemaFile.getName().endsWith("xsd")) {
+			if (type.equals("xsd")) {
 				importer = new XSDImporter();
-			} else if (schemaFile.getName().endsWith("sql")) {
+			} else if (type.equals("ddl")) {
 				importer = new DDLImporter();
 			} else {
-				System.err.println("Not a schema file: "+schemaFile.getName());
+				System.err.println("File not a valid type : "+schemaFile.getName());
 			}
-			schemaName = importer.getName();
 			try {
-				schemaElements = importer.getSchemaElements(new URI(s));
+				URI searchSchemaURI = new URI(s);
+				schemaElements = importer.getSchemaElements(searchSchemaURI);
+				schemaProps = importer.getSchemaProperties(searchSchemaURI);
 			} catch (ImporterException e) {
 				e.printStackTrace();
 			} catch (URISyntaxException e) {
@@ -56,8 +58,8 @@ public class SchemaSearch {
 			return new MatchSummary [0];
 		}
 
-		if (schemaName != null && schemaElements != null) {
-			q = new Query(schemaName, schemaElements, queryKeywords);			
+		if (schemaElements != null) {
+			q = new Query(schemaProps, schemaElements, queryKeywords);			
 		} else {
 			q = new Query(queryKeywords);			
 		}
@@ -65,27 +67,37 @@ public class SchemaSearch {
 		// filter for candidate schemas
 		CandidateSchema [] candidateSchemas = getCandidateSchemas(q);
 		
-		int page = Math.min(RESULT_PAGE_SIZE, candidateSchemas.length);
+		MatchSummary [] topResultsArray = null;
 		
-		CandidateSchema [] filteredSchemas = new CandidateSchema [page];
-		MatchSummary [] topResultsArray = new MatchSummary [page];
-		for (int i = 0; i < page; i++) {
-			filteredSchemas[i] = candidateSchemas[i];
-			if (!matchersOn){
-				topResultsArray[i] = new MatchSummary(SchemaUtility.getCLIENT().getSchema(candidateSchemas[i].uid), null, null, candidateSchemas[i].score, null);
+		if (candidateSchemas != null && candidateSchemas.length > 0) {
+			int page = Math.min(RESULT_PAGE_SIZE, candidateSchemas.length);
+			CandidateSchema [] firstPageSchemas = new CandidateSchema [page];
+			for (int i = 0; i < page; i++) {
+				firstPageSchemas[i] = candidateSchemas[i];
 			}
-		}
-		if (!matchersOn) return topResultsArray;
-		
-		// process query against candidate schemas
-		MatchSummary [] msarray = q.processQuery(filteredSchemas);
-		
-		System.out.println("Ranked results");
-		
-		for (int i = 0; i < page; i++) {
-			topResultsArray[i] = msarray[i];
-			double trueScore = topResultsArray[i].getScore();
-			System.out.println(i+"\tschema: "+topResultsArray[i].getSchema().getName() + "\t\t\tscore: "+trueScore);
+
+			topResultsArray = new MatchSummary [page];
+			if (matchersOn) { // by default, they are on
+				// process query against candidate schemas, result is sorted by score
+				MatchSummary [] msarray = q.processQuery(candidateSchemas);
+				for (int i = 0; i < page; i++) {
+					topResultsArray[i] = msarray[i];
+				}
+			} else {
+				for (int i = 0; i < page; i++) {
+					// just take lucene results from candidateSchemas, no matchers
+					// TODO: are candidate schemas ranked?
+					topResultsArray[i] = new MatchSummary(
+							SchemaUtility.getCLIENT().getSchema(candidateSchemas[i].uid),
+							null, null, candidateSchemas[i].score, null);
+				}				
+			}
+			
+			System.out.println("Ranked results");				
+			for (int i = 0; i < page; i++) {
+				double trueScore = topResultsArray[i].getScore();
+				System.out.println(i+"\tschema: "+topResultsArray[i].getSchema().getName() + "\t\t\tscore: "+trueScore);
+			}
 		}
 		return topResultsArray;
 	}
@@ -111,7 +123,7 @@ public class SchemaSearch {
 	private static CandidateSchema [] getCandidateSchemas(Query query) {		
 		CandidateSchema [] candidateSchemas = SchemaStoreIndex.searchIndex(Consts.LOCAL_INDEX_DIR, query);
 		
-		System.out.println("Found " + candidateSchemas.length + " candidate schemas");
+		System.out.println("Found " + (candidateSchemas == null ? 0 : candidateSchemas.length) + " candidate schemas");
 		return candidateSchemas;
 	}
 }

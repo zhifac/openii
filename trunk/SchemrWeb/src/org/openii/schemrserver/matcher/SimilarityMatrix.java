@@ -134,7 +134,7 @@ public class SimilarityMatrix {
 		} else if (colMap.keySet().contains(o)) {
 			return getMaxScoreForColumn(o);
 		} else {
-			logger.warning("Unknow object requested");
+			logger.warning("Unknow object requested "+ o.toString());
 			return 0;
 		}
 	}
@@ -153,7 +153,7 @@ public class SimilarityMatrix {
 		} else if (colMap.keySet().contains(o)) {
 			return getMaxCorrespondentObjectForColumn(o);
 		} else {
-			logger.warning("Unknow object requested");
+			logger.warning("Unknow object requested "+ o.toString());
 			return null;
 		}
 	}

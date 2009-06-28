@@ -10,6 +10,9 @@ import java.util.Map.Entry;
 import org.mitre.schemastore.model.Attribute;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
+import org.mitre.schemastore.model.graph.Graph;
+import org.mitre.schemastore.model.graph.HierarchicalGraph;
+import org.mitre.schemastore.porters.schemaImporters.SchemaProperties;
 import org.openii.schemrserver.SchemaUtility;
 import org.openii.schemrserver.indexer.SchemaStoreIndex;
 import org.openii.schemrserver.indexer.SchemaStoreIndex.CandidateSchema;
@@ -24,7 +27,7 @@ public class Query {
 
 //	private static final Logger logger = Logger.getLogger(Query.class.getName());
 
-	private String querySchema = null;
+	private SchemaProperties querySchema = null;
 	private ArrayList<SchemaElement> querySchemaElements = null;
 	private HashMap<String,String> queryKeywords = null;
 	
@@ -36,17 +39,10 @@ public class Query {
 		
 	}
 	
-	public Query(String querySchema, ArrayList<SchemaElement> querySchemaElements, HashMap<String,String> queryKeywords) {
-		this.querySchema = querySchema;
+	public Query(SchemaProperties schemaProps, ArrayList<SchemaElement> querySchemaElements, HashMap<String,String> queryKeywords) {
+		this.querySchema = schemaProps;
 		this.querySchemaElements = querySchemaElements;
 		this.queryKeywords = queryKeywords;
-//		try {
-//			this.querySchemaElements = SchemaUtility.getCLIENT().getGraph(querySchema.getId()).getElements(null);
-//		} catch (RemoteException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-		
 	}
 
 	@Override
@@ -91,11 +87,19 @@ public class Query {
 			}
 		}
 		
-		if (querySchema != null) {
-			String schemaName = this.querySchema;
-			if (schemaName != null && !schemaName.equals("")) {
-				sb.append("title:" + schemaName);				
+		if (this.querySchemaElements != null) {
+			// the query schema could be null
+			if (this.querySchema != null) {
+				String schemaName = this.querySchema.getName();
+				if (schemaName != null && !schemaName.equals("")) {
+					sb.append("title:" + schemaName);
+				}
+				String schemaDesc = this.querySchema.getDescription();
+				if (schemaDesc != null && !schemaDesc.equals("")) {
+					sb.append(" " + schemaDesc);
+				}
 			}
+
 			for (SchemaElement s : this.querySchemaElements) {
 				String type = SchemaUtility.getType(s);
 				String name = s.getName();
@@ -136,7 +140,12 @@ public class Query {
 		nGram.calculateSimilarityMatrix();
 		editDist.calculateSimilarityMatrix();
 		MatchSummary out = nGram.getMatchSummary(); 
+		
+		// FIXME what is 8!?
+		
 		out.score = out.score * 0.5 + ((editDist.getMatchSummary().score + 8.0) / 16);
+		
+		
 		return out;
 	}
 
@@ -158,17 +167,30 @@ public class Query {
 			if (query == null) {
 				throw new IllegalArgumentException("ERROR: query must not be null");
 			}
-			String s = query.getQuerySchemaName();
+			// Generate the schema
+			String schemaName = ""; String author = ""; String description = "";
+			SchemaProperties schemaProps = query.getQuerySchemaProps();
+			if (schemaProps != null) {
+				schemaName = schemaProps.getName(); author = schemaProps.getAuthor(); description = schemaProps.getDescription();
+			}
+			String uri = ""; String type = "";			
+			Schema schema = new Schema(Integer.MIN_VALUE, schemaName, author, uri, type, description, false);			
+
+			// generate a hierarchical model 
 			ArrayList<SchemaElement> se = query.getQuerySchemaElements();
-			if (s != null && se != null) {
-				this.queryFragments.add(new QueryFragment(s, se));				
+			if (se != null) {
+				Graph g = new Graph(schema,se);
+				HierarchicalGraph hg = new HierarchicalGraph(g, null);
+
+				QueryFragment root = new QueryFragment(schemaName, se, hg);
+				this.queryFragments.add(root);
 			}
 			
 			HashMap<String,String> k = query.getQueryKeywords();
 			for (Iterator<String> iter = k.keySet().iterator(); iter.hasNext(); ) {
 				String name = iter.next();
-				String type = k.get(name);
-				this.queryFragments.add(new QueryFragment(name, type));				
+				String kind = k.get(name);
+				this.queryFragments.add(new QueryFragment(name, kind));				
 			}			
 		}
 
@@ -181,7 +203,7 @@ public class Query {
 	/**
 	 * @return the querySchema
 	 */
-	public String getQuerySchemaName() {
+	public SchemaProperties getQuerySchemaProps() {
 		return this.querySchema;
 	}
 
