@@ -123,6 +123,8 @@
 				ns.addEventListener(MouseEvent.MOUSE_OVER, drawInfo);
 				panel1.addEventListener(MouseEvent.MOUSE_OUT, hideBox);
 				panel1.addEventListener(MouseEvent.MOUSE_WHEEL, pan);
+				stage.addEventListener(KeyboardEvent.KEY_DOWN, panKey);
+				
 				ns.addEventListener(MouseEvent.MOUSE_DOWN, drag);
 				panel1.addEventListener(MouseEvent.MOUSE_UP, stop);
 				ns.buttonMode = true;
@@ -220,7 +222,18 @@
 		
 		private function pan(event:MouseEvent):void {
 			actionbox.visible=false;
-				Displays.panBy(vis, 0, event.delta * 10); 
+				Displays.panBy(vis, 0, event.delta * 20); 
+		}
+		private function panKey(event:KeyboardEvent):void{
+			properties.text = "" + event.keyCode;
+			switch(event.keyCode){
+				case 40:
+					Displays.panBy(vis, 0, 200);
+					break;
+				case 38:
+					Displays.panBy(vis, 0, -200);
+					break;	
+			}
 		}
 		private function zoomTo(amount:Number):void{
 			vis.scaleX = amount / 100;

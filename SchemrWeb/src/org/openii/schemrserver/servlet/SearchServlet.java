@@ -74,12 +74,17 @@ public class SearchServlet extends HttpServlet {
 		MatchSummary [] msa = SchemaSearch.performSearch(searchTerms, schemaFile, schemaFragmentType, matchersOn);
 
 		Element root = new Element("schemas");
+		boolean first = true;
 		if (msa!=null)
 			for (MatchSummary matchSummary : msa) {
-				
 				Schema schema = matchSummary.getSchema();			
 				if (schema == null) throw new IllegalArgumentException("Schema must not be null");		
 				Element resultElement = new Element("result");
+				if (first){
+					first = false;
+					resultElement.setAttribute("results", Integer.toString(SchemaSearch.numResults));
+				} else resultElement.setAttribute("results", "0");
+				
 				resultElement.setAttribute(ID, schema.getId().toString());
 				resultElement.setAttribute(NAME, schema.getName().trim());
 				resultElement.setAttribute(DESC, schema.getDescription().trim());
