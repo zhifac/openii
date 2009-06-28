@@ -127,7 +127,7 @@
 				ns.addEventListener(MouseEvent.MOUSE_UP, stop);
 				ns.buttonMode = true;
 			});
-			if (lay==null) lay =  new NodeLinkTreeLayout();
+			lay =  new NodeLinkTreeLayout();
 			var root:NodeSprite = vis.data.nodes[0] as NodeSprite;
 			trace(data.length);
 			_gdf = new GraphDistanceFilter([root], _maxDistance,NodeSprite.GRAPH_LINKS); 
@@ -270,8 +270,8 @@
 			return s2.width;
 		}
 
-	private function changeLayout(event:ItemClickEvent):void{
-			switch(event.index){
+	private function changeLayout(n:Number):void{
+			switch(n){
 				case 0:
 					lay = new NodeLinkTreeLayout();
 					break;
@@ -328,14 +328,9 @@
 	</mx:HTTPService>
 	<mx:Panel layout="horizontal" dropShadowEnabled="false" borderAlpha="0.0" paddingLeft="0" paddingRight="0" scaleX="0.7" scaleY="0.7" id="actionbox"  visible="false" alpha="0.7" x="100" y="100" borderThickness="0" headerHeight="0">
 		<mx:Button  toolTip="Close Schema" paddingBottom="0" paddingLeft="0" paddingRight="0"  paddingTop="0" label="x" click="shuffle()" />
-		<mx:ToggleButtonBar id="myBar" itemClick="changeLayout(event);">
-			<mx:dataProvider>
-				<mx:Array id="dp">  
-					<mx:String>Tree</mx:String>
-					<mx:String>Radial</mx:String>
-				</mx:Array>  
-		 	</mx:dataProvider>
-		 </mx:ToggleButtonBar>
+		<mx:Button label="Tree" toolTip="Display nodes in a hierarchical tree structure" click="changeLayout(0)" />
+		<mx:Button label="Radial" toolTip="Display nodes in a radial graph structure" click="changeLayout(1)" />
+		
 		 <mx:Button label="@" toolTip="Center graph at current node" click="updateRoot(currentNode);" />
 		 <mx:Button visible="true" label="!" toolTip="Close all other schemas" id="sol" click="solo();" />
 		 <mx:NumericStepper id="zn" value="100" toolTip="zoom" maximum="500" minimum="20" stepSize="5" change="zoomTo(zn.value)" />
