@@ -67,33 +67,37 @@ public class SearchServlet extends HttpServlet {
 		    System.out.println( "temp file: " + schemaFile.getAbsolutePath() );
 		}
 		
-		MatchSummary [] msa = SchemaSearch.performSearch(searchTerms, schemaFile, schemaFragmentType, matchersOn);
-		for (MatchSummary matchSummary : msa) {
-			userState.idToMatchSummary.put(matchSummary.getSchema().getId(), matchSummary);
-		}
+		MatchSummary [] matchSummaryArray = SchemaSearch.performSearch(searchTerms, schemaFile, schemaFragmentType, matchersOn);
 
-		Element root = new Element("schemas");		
-		for (MatchSummary matchSummary : msa) {
-			Schema schema = matchSummary.getSchema();			
-			if (schema == null) throw new IllegalArgumentException("Schema must not be null");		
-			Element resultElement = new Element("result");
-			resultElement.setAttribute(ID, schema.getId().toString());
-			resultElement.setAttribute(NAME, schema.getName().trim());
-			resultElement.setAttribute(DESC, schema.getDescription().trim());
-			Double s = matchSummary.getScore();
-			if (matchersOn && !searchTerms.contains(":")){ //adjust scores
-				for (String q : searchTerms.split("\\s")){
-					if (schema.getName().toLowerCase().contains(q)) s *= 2.0; //reward for schema name
-					ArrayList<SchemaElement> se = SchemaUtility.getCLIENT().getGraph(schema.getId()).getElements(Entity.class);
-					for (SchemaElement e : se){
-						if (e.getName().toLowerCase().contains(q)) s *= 1+ 3.0/(3.75 + se.size()/4.0);  //reward for entity name
+		Element root = new Element("schemas");
+		if (matchSummaryArray != null && matchSummaryArray.length > 0) {	
+			for (MatchSummary matchSummary : matchSummaryArray) {
+				Schema schema = matchSummary.getSchema();			
+				if (schema == null) throw new IllegalArgumentException("Schema must not be null");		
+				Element resultElement = new Element("result");
+				resultElement.setAttribute(ID, schema.getId().toString());
+				resultElement.setAttribute(NAME, schema.getName().trim());
+				resultElement.setAttribute(DESC, schema.getDescription().trim());
+				Double s = matchSummary.getScore();
+				if (matchersOn && !searchTerms.contains(":")){ //adjust scores
+					for (String q : searchTerms.split("\\s")){
+						if (schema.getName().toLowerCase().contains(q)) s *= 2.0; //reward for schema name
+						ArrayList<SchemaElement> se = SchemaUtility.getCLIENT().getGraph(schema.getId()).getElements(Entity.class);
+						for (SchemaElement e : se){
+							if (e.getName().toLowerCase().contains(q)) s *= 1+ 3.0/(3.75 + se.size()/4.0);  //reward for entity name
+						}
 					}
 				}
+				String score = s > 1.0 ? "1.0" : Double.toString(s);
+				resultElement.setAttribute(SCORE, score.length() < 5 ? score : score.substring(0,5));			
+				root.addContent(resultElement);
 			}
-			String score = s > 1.0 ? "1.0" : Double.toString(s);
-			resultElement.setAttribute(SCORE, score.length() < 5 ? score : score.substring(0,5));			
-			root.addContent(resultElement);
+			
+			for (MatchSummary matchSummary : matchSummaryArray) {
+				userState.idToMatchSummary.put(matchSummary.getSchema().getId(), matchSummary);
+			}
 		}
+
 		Document doc = new Document(root);
 		XMLOutputter serializer = new XMLOutputter();
 		serializer.output(doc, response.getWriter());
