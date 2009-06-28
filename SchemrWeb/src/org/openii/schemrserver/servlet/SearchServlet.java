@@ -67,7 +67,10 @@ public class SearchServlet extends HttpServlet {
 		    System.out.println( "temp file: " + schemaFile.getAbsolutePath() );
 		}
 		
-		MatchSummary [] msa = SchemaSearch.performSearch(searchTerms, schemaFile, matchersOn);
+		MatchSummary [] msa = SchemaSearch.performSearch(searchTerms, schemaFile, schemaFragmentType, matchersOn);
+		for (MatchSummary matchSummary : msa) {
+			userState.idToMatchSummary.put(matchSummary.getSchema().getId(), matchSummary);
+		}
 
 		Element root = new Element("schemas");		
 		for (MatchSummary matchSummary : msa) {
@@ -91,15 +94,14 @@ public class SearchServlet extends HttpServlet {
 			resultElement.setAttribute(SCORE, score.length() < 5 ? score : score.substring(0,5));			
 			root.addContent(resultElement);
 		}
-		
 		Document doc = new Document(root);
 		XMLOutputter serializer = new XMLOutputter();
 		serializer.output(doc, response.getWriter());
-		if (!Boolean.parseBoolean(matchers)){
-			msa = SchemaSearch.performSearch(searchTerms, schemaFile);
-		}
-		for (MatchSummary matchSummary : msa) {
-			userState.idToMatchSummary.put(matchSummary.getSchema().getId(), matchSummary);
-		}
+
+		// WTF IS THIS?! comment your code.
+//		if (!Boolean.parseBoolean(matchers)){
+//			msa = SchemaSearch.performSearch(searchTerms, schemaFile);
+//		}
+		
 	}
 }

@@ -58,21 +58,16 @@ public class GraphVisualizationServlet extends HttpServlet {
 		HttpSession session = request.getSession();
 		SessionState userState = (SessionState) session.getAttribute("sessionState");
 		if (userState == null || id == null) {
-//			throw new IllegalStateException();
 	    	response.sendError(406);
 		}
 
 		MatchSummary matchSummary = userState.idToMatchSummary.get(id);
 		
-		
-//		schemaXMLWriter.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-//		schemaXMLWriter.write("\n<graphml>\n<graph edgedefault=\"undirected\">\n\n");
 		Element root = new Element("graphml");
 		Element graph = new Element("graph");
 		graph.setAttribute("edgedefault", "undirected");
 		root.addContent(graph);
 		
-//		schemaXMLWriter.write("<key id=\"" + kv[0] + "\" for=\"node\" attr.name=\"" + kv[0] + "\" attr.type=\"" + kv[1] + "\"/>\n");
 		for (String[] kv : keys) {
 			Element key = new Element("key");
 			key.setAttribute("id", kv[0]);
@@ -125,7 +120,7 @@ public class GraphVisualizationServlet extends HttpServlet {
 		XMLOutputter serializer = new XMLOutputter();
 		serializer.output(doc, response.getWriter());
 // debug
-		serializer.output(doc, System.out);	
+//		serializer.output(doc, System.out);	
 	}
 	
 	private void processElement(

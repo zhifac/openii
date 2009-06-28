@@ -127,8 +127,10 @@ public abstract class BaseMatcher implements Matcher {
 			ArrayList<QueryFragment> list = new ArrayList<QueryFragment>();
 			QueryFragment.flatten(qf, list);
 			for (QueryFragment q : list) {
-				ScoreEvidence maxScoreEvidence = this.similarityMatrix.getMaxScoreEvidence((Object) q);
-				result.put(q, maxScoreEvidence);
+				if (!q.getName().equals("")) {
+					ScoreEvidence maxScoreEvidence = this.similarityMatrix.getMaxScoreEvidence((Object) q);
+					result.put(q, maxScoreEvidence);
+				}
 			}
 		}
 		return result;
