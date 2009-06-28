@@ -12,13 +12,14 @@
 
 		import mx.rpc.events.ResultEvent;
 		import mx.events.DataGridEvent;
+		
 		private var firstSearch:Boolean = true;
 		
 		public function handleNewSearchResults(event:ResultEvent):void {
 			
 			resultGrid.dataProvider = searchBox._searchResults;
 			var sort:DataGridEvent = new DataGridEvent(DataGridEvent.HEADER_RELEASE, false,	true,
-			3,	// The zero-based index of the column to sort in the DataGrid object's columns array.
+			1,	// The zero-based index of the column to sort in the DataGrid object's columns array.
 			null,0,null,null,0);
 			if (firstSearch){
 				resultGrid.dispatchEvent(sort);
@@ -37,7 +38,7 @@
 	
 	<mx:HDividedBox width="100%" height="100%">
 	
-		<mx:VBox id="searchSide" width="400" height="100%" horizontalScrollPolicy="off" verticalScrollPolicy="off">
+		<mx:VBox id="searchSide" width="450" height="100%" horizontalScrollPolicy="off" verticalScrollPolicy="off">
 			<mx:HBox horizontalAlign="center" width="100%" height="88" horizontalGap="0" verticalScrollPolicy="off" verticalAlign="middle">
 				<mx:Image source="schemr/assets/splash.PNG"/>
 			</mx:HBox>
@@ -50,10 +51,12 @@
 					itemDoubleClick="ignore()"
 					editable="false" enabled="true" selectedIndex="0">
 				<mx:columns>
-					<mx:DataGridColumn headerText="ID" dataField="@id"/>
-					<mx:DataGridColumn headerText="Name" dataField="@name"/>
-					<mx:DataGridColumn headerText="Description" dataField="@desc" wordWrap="true"/>
-					<mx:DataGridColumn headerText="Score" dataField="@score"/>
+					<mx:DataGridColumn headerText="Name" dataField="@name" width="100" headerRenderer="columnTooltip"/>
+					<mx:DataGridColumn headerText="Score" dataField="@score" width="60" headerRenderer="columnTooltip"/>
+					<mx:DataGridColumn headerText="Matches" dataField="@matches" width="60" headerRenderer="columnTooltip"/>
+					<mx:DataGridColumn headerText="E/A" dataField="@ea" width="40" headerRenderer="columnTooltip"/>
+					<mx:DataGridColumn headerText="Description" dataField="@desc" wordWrap="true" headerRenderer="columnTooltip"/>
+					
 				</mx:columns>
 			</mx:DataGrid>
 

@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 
+import org.mitre.schemastore.model.Attribute;
 import org.mitre.schemastore.model.Entity;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
@@ -20,6 +21,7 @@ import org.openii.schemrserver.search.MatchSummary;
 import org.openii.schemrserver.search.SchemaSearch;
 
 
+import org.apache.catalina.connector.ClientAbortException;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.output.XMLOutputter;
@@ -30,6 +32,8 @@ public class SearchServlet extends HttpServlet {
 	private static final String NAME = "name";
 	private static final String DESC = "desc";
 	private static final String SCORE = "score";
+	private static final String MATCHES = "matches";
+	private static final String ENTITIES_ATTRIBUTES = "ea";
 
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -67,45 +71,42 @@ public class SearchServlet extends HttpServlet {
 		    System.out.println( "temp file: " + schemaFile.getAbsolutePath() );
 		}
 		
-		MatchSummary [] matchSummaryArray = SchemaSearch.performSearch(searchTerms, schemaFile, schemaFragmentType, matchersOn);
+		MatchSummary [] msa = SchemaSearch.performSearch(searchTerms, schemaFile, schemaFragmentType, matchersOn);
 
-		Element root = new Element("schemas");
-		if (matchSummaryArray != null && matchSummaryArray.length > 0) {	
-			for (MatchSummary matchSummary : matchSummaryArray) {
-				Schema schema = matchSummary.getSchema();			
-				if (schema == null) throw new IllegalArgumentException("Schema must not be null");		
-				Element resultElement = new Element("result");
-				resultElement.setAttribute(ID, schema.getId().toString());
-				resultElement.setAttribute(NAME, schema.getName().trim());
-				resultElement.setAttribute(DESC, schema.getDescription().trim());
-				Double s = matchSummary.getScore();
-				if (matchersOn && !searchTerms.contains(":")){ //adjust scores
-					for (String q : searchTerms.split("\\s")){
-						if (schema.getName().toLowerCase().contains(q)) s *= 2.0; //reward for schema name
-						ArrayList<SchemaElement> se = SchemaUtility.getCLIENT().getGraph(schema.getId()).getElements(Entity.class);
-						for (SchemaElement e : se){
-							if (e.getName().toLowerCase().contains(q)) s *= 1+ 3.0/(3.75 + se.size()/4.0);  //reward for entity name
-						}
+		Element root = new Element("schemas");		
+		for (MatchSummary matchSummary : msa) {
+			Schema schema = matchSummary.getSchema();			
+			if (schema == null) throw new IllegalArgumentException("Schema must not be null");		
+			Element resultElement = new Element("result");
+			resultElement.setAttribute(ID, schema.getId().toString());
+			resultElement.setAttribute(NAME, schema.getName().trim());
+			resultElement.setAttribute(DESC, schema.getDescription().trim());
+			int matches = 0, entities = 0, attributes=0;
+			Double s = matchSummary.getScore();
+				for (String q : searchTerms.split("\\s")){
+					if (schema.getName().toLowerCase().contains(q)) s *= 2.0; //reward for schema name
+					for (SchemaElement se : SchemaUtility.getCLIENT().getGraph(schema.getId()).getElements(null)) {
+						if (se.getName().toLowerCase().contains(q.toLowerCase()) || se.getDescription().toLowerCase().contains(q.toLowerCase())) matches++;
+						if (se instanceof Entity) entities++;
+						if (se instanceof Attribute) attributes++;
 					}
+							
 				}
-				String score = s > 1.0 ? "1.0" : Double.toString(s);
-				resultElement.setAttribute(SCORE, score.length() < 5 ? score : score.substring(0,5));			
-				root.addContent(resultElement);
-			}
-			
-			for (MatchSummary matchSummary : matchSummaryArray) {
-				userState.idToMatchSummary.put(matchSummary.getSchema().getId(), matchSummary);
-			}
+			resultElement.setAttribute(ENTITIES_ATTRIBUTES, "" + entities + "/" + attributes);
+			resultElement.setAttribute(MATCHES, Integer.toString(matches));
+			String score = s > 1.0 ? "1.0" : Double.toString(s);
+			resultElement.setAttribute(SCORE, score.length() < 5 ? score : score.substring(0,5));			
+			root.addContent(resultElement);
 		}
-
 		Document doc = new Document(root);
 		XMLOutputter serializer = new XMLOutputter();
 		serializer.output(doc, response.getWriter());
-
-		// WTF IS THIS?! comment your code.
-//		if (!Boolean.parseBoolean(matchers)){
-//			msa = SchemaSearch.performSearch(searchTerms, schemaFile);
-//		}
-		
+		if (!Boolean.parseBoolean(matchers)){
+			//Perform a second pass search if matchers are turned off to fully populate msa 
+			msa = SchemaSearch.performSearch(searchTerms, schemaFile, schemaFragmentType, true);
+		}
+		for (MatchSummary matchSummary : msa) {
+			userState.idToMatchSummary.put(matchSummary.getSchema().getId(), matchSummary);
+		}
 	}
 }
