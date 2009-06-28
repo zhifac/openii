@@ -103,9 +103,15 @@
 			maxLabelHeight = getMaxTextLabelHeight();
 			vis.data.nodes.visit(function(ns:NodeSprite):void { 
 				var rs:RectSprite = new RectSprite( -maxLabelWidth/2-1,-maxLabelHeight/2 - 1, maxLabelWidth + 2, maxLabelHeight + 2);
-					if (ns.data.type == "Schema") rs.fillColor = 0xdd660000;
+					if (ns.data.type == "Schema"){
+						 if (currentNode == null) rs.fillColor = 0xdd660000; //Root node
+						 else{
+						 	 vis.data.nodes.remove(ns);
+						 }
+					}
 					else rs.fillColor = 0xaa000000; 
 					rs.lineColor = 0xff000044; 
+					if (ns == currentNode) rs.fillColor = 0xdd660000; //Root node
 				rs.lineWidth = 2;
 				ns.size = 0;
 				ns.addChildAt(rs, 0); // at postion 0 so that the text label is drawn above the rectangular box
