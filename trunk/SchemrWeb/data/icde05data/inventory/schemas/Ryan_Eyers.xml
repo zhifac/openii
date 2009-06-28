@@ -1,0 +1,582 @@
+<database name="Ryan_Eyers">
+  <createdby name="Ryan Eyers"/>
+  <Schema>
+    <table name="Books">
+      <column name="Title" type="string" key="no">
+        <comment>The title of a book</comment>
+      </column>
+      <column name="Author" type="string" key="no">
+        <comment>The author of a book</comment>
+      </column>
+      <column name="ISBN" type="string" key="yes">
+        <comment>The ISBN of a book</comment>
+      </column>
+      <column name="Price" type="double" key="no">
+        <comment>The price of a book</comment>
+      </column>
+      <column name="Category" type="string" key="no">
+        <comment>The category of a book</comment>
+      </column>
+      <column name="Keyword" type="string" key="no">
+        <comment>The keywords of a book</comment>
+      </column>
+      <column name="Publisher" type="string" key="no">
+        <comment>The publisher of a book</comment>
+        <comment>This is one of the four I added</comment>
+      </column>
+    </table>
+    <table name="Music">
+      <column name="Title" type="string" key="no">    
+        <comment>The title of an album</comment>
+      </column>
+      <column name="Artist" type="string" key="no">    
+        <comment>The artist of an album</comment>
+      </column>
+      <column name="Record_Label" type="string" key="yes">    
+        <comment>The record label of an album</comment>
+      </column>
+      <column name="Catalog_Number" type="string" key="yes">    
+        <comment>The catalog number of an album</comment>
+      </column>
+      <column name="Price" type="double" key="no">    
+        <comment>The price of an album</comment>
+      </column>
+      <column name="Genre" type="string" key="no">    
+        <comment>The genre of an album</comment>
+      </column>
+      <column name="Type" type="string" key="no">    
+        <comment>The type of an album</comment>
+      </column>
+      <column name="Running_Time" type="string" key="no">    
+        <comment>The running time of an album</comment>
+        <comment>This is one of the four I added</comment>
+      </column>
+      <column name="Number_Of_Discs" type="int" key="no">    
+        <comment>The number of discs of an album</comment>
+        <comment>This is one of the four I added</comment>
+      </column>
+      <column name="Year_Released" type="int" key="no">    
+        <comment>The year of release of an album</comment>
+        <comment>This is one of the four I added</comment>
+      </column>
+    </table>
+
+    <table name="Warehouses">
+      <column name="Address" type="string" key="no">
+        <comment>The address of a warehouse</comment>
+      </column>
+      <column name="City" type="string" key="no">
+        <comment>The city in which a warehouse is located</comment>
+      </column>
+      <column name="State" type="string" key="no">
+        <comment>The state in which a warehouse is located</comment>
+      </column>
+      <column name="Zip_Code" type="int" key="yes">
+        <comment>The zip code of a warehouse</comment>
+      </column>
+      <column name="Telephone_Number" type="string" key="no">
+        <comment>The telephone number of a warehouse</comment>
+      </column>
+      <column name="Fax_Number" type="string" key="no">
+        <comment>The fax number of a warehouse</comment>
+      </column>
+      <column name="Manager" type="string" key="no">
+        <comment>The manager of a warehouse</comment>
+      </column>
+      <column name="Number_Of_Employees" type="string" key="no">
+        <comment>The number of employees at a warehouse</comment>
+      </column>
+      <column name="Volume_Of_Business" type="string" key="no">
+        <comment>The amount of products a warehouse carries</comment>
+      </column>
+    </table>
+
+    <table name="Availability">
+      <column name="ID" type="string" key="yes" ref="Books/ISBN Music/Catalog_Number">
+        <comment>The ID of the item. This is ISBN for books, catalog # for music</comment>
+      </column>
+      <column name="Status" type="string" key="no">
+        <comment>The availability status of the item</comment>
+      </column>
+      <column name="Amount_In_Stock" type="int" key="no">
+        <comment>The amount of stock of the item</comment>
+      </column>
+      <column name="Zip_Code" type="string" key="no" ref="Warehouses/Zip_Code">
+        <comment>The location of warehouse that have the item</comment>
+      </column>
+    </table>
+
+
+  </Schema>
+  <Data>
+    <Books>
+      <tuple>
+        <Title>Just Like Jesus</Title>
+        <Author> Max Lucado</Author>
+        <ISBN> 0849917859</ISBN>
+        <Price> $21.99</Price>
+        <Category> Christian Living</Category>
+        <Keyword></Keyword>
+        <Publisher> Thomas Nelson</Publisher>
+      </tuple>
+
+      <tuple>
+        <Title>The Kingdom Assignment 2: What Treasure Stands between you and a significatn relationship with God</Title>
+        <Author> Denny and Leesa Bellesi</Author>
+        <ISBN> 0310243246</ISBN>
+        <Price> $9.99</Price>
+        <Category> Christian Living</Category>
+        <Keyword></Keyword>
+        <Publisher> Zondervan Corp.</Publisher>
+      </tuple>
+
+      <tuple>
+        <Title>A Celebration of Praise: Stand Amazed at Who God is</Title>
+        <Author> Dick Eastman</Author>
+        <ISBN> 0800793277</ISBN>
+        <Price> $12.99</Price>
+        <Category> Christian Living</Category>
+        <Keyword></Keyword>
+        <Publisher> Bakerand Revell</Publisher>
+      </tuple>
+
+      <tuple>
+        <Title>Choosing God's Best</Title>
+        <Author> Dr. Don Raunikar</Author>
+        <ISBN> 1565638824</ISBN>
+        <Price> $19.99</Price>
+        <Category> Christian Living</Category>
+        <Keyword></Keyword>
+        <Publisher> Prince Press</Publisher>
+      </tuple>
+
+      <tuple>
+        <Title>In His Steps, Mass Market Edition</Title>
+        <Author> Charles Sheldon</Author>
+        <ISBN> 1557483469</ISBN>
+        <Price> $5.95</Price>
+        <Category> Christian Living</Category>
+        <Keyword></Keyword>
+        <Publisher> Barbour Publishing</Publisher>
+      </tuple>
+
+      <tuple>
+        <Title>Experiencing God, Paperbook</Title>
+        <Author> Henry T. Blackaby and Claude V. King</Author>
+        <ISBN> 0805401970</ISBN>
+        <Price> $.12.99</Price>
+        <Category> Christian Living</Category>
+        <Keyword></Keyword>
+        <Publisher> Broadman/ Holman</Publisher>
+      </tuple>
+
+      <tuple>
+        <Title>Why I believe</Title>
+        <Author> D. James Kennedy</Author>
+        <ISBN>0849937396</ISBN>
+        <Price> $12.99</Price>
+        <Category> Christian Living</Category>
+        <Keyword></Keyword>
+        <Publisher> Thomas Nelson</Publisher>
+      </tuple>
+
+      <tuple>
+        <Title>The Purpose-Driven Church</Title>
+        <Author> Rick Warren</Author>
+        <ISBN> 0310201063</ISBN>
+        <Price> $11.99</Price>
+        <Category> Christian Living</Category>
+        <Keyword></Keyword>
+        <Publisher> Zondervan Corp.</Publisher>
+      </tuple>
+
+      <tuple>
+        <Title>The Great House of God</Title>
+        <Author> Max Lucado</Author>
+        <ISBN> 0849912954</ISBN>
+        <Price> $14.99</Price>
+        <Category> Christian Living</Category>
+        <Keyword></Keyword>
+        <Publisher> Thomas Nelson</Publisher>
+      </tuple>
+
+      <tuple>
+        <Title>The Little Sparrows</Title>
+        <Author> Aland Joanna Lacy</Author>
+        <ISBN> 1590530637</ISBN>
+        <Price> $11.99</Price>
+        <Category> Christian Fiction</Category>
+        <Keyword></Keyword>
+        <Publisher> Multnomah Publisher</Publisher>
+      </tuple>
+
+      <tuple>
+        <Title>Across the Years, Desert Roses</Title>
+        <Author> Tracie Peterson</Author>
+        <ISBN> 0764225189</ISBN>
+        <Price> $10.99</Price>
+        <Category> Christian Fiction</Category>
+        <Keyword></Keyword>
+        <Publisher> Bethany House</Publisher>
+      </tuple>
+
+      <tuple>
+        <Title>The Visitor, English Garden Series #3</Title>
+        <Author> Lori Wick</Author>
+        <ISBN> 0736909133</ISBN>
+        <Price> $10.99</Price>
+        <Category> Christian Fiction</Category>
+        <Keyword></Keyword>
+        <Publisher> Harvest House</Publisher>
+      </tuple>
+
+    </Books>
+
+    <Music>
+      <tuple>
+        <Title>Home In God's Love</Title>
+        <Artist> Various</Artist>
+        <Record_Label> Seoul</Record_Label>
+        <Catalog_Number> C384123125</Catalog_Number>
+        <Price> $12.20</Price>
+        <Genre> CCM</Genre>
+        <Type></Type>
+        <Running_Time></Running_Time>
+        <Number_Of_Discs> 3</Number_Of_Discs>
+        <Year_Released> 2003</Year_Released>
+      </tuple>
+
+      <tuple>
+        <Title>Soul Survivor-Undignified</Title>
+        <Artist>Matt Redman and Time Hughes</Artist>
+        <Record_Label> Fisher</Record_Label>
+        <Catalog_Number> C234234235</Catalog_Number>
+        <Price> $10.8</Price>
+        <Genre>CCM</Genre>
+        <Type></Type>
+        <Running_Time></Running_Time>
+        <Number_Of_Discs> 1</Number_Of_Discs>
+        <Year_Released> 2003</Year_Released>
+      </tuple>
+
+      <tuple>
+        <Title>Vineyard Music-Refiner's fire</Title>
+        <Artist> Vineyard</Artist>
+        <Record_Label> Fisher</Record_Label>
+        <Catalog_Number> C3225234243</Catalog_Number>
+        <Price>  $12.80</Price>
+        <Genre> CCM</Genre>
+        <Type></Type>
+        <Running_Time></Running_Time>
+        <Number_Of_Discs>1</Number_Of_Discs>
+        <Year_Released>2003</Year_Released>
+      </tuple>
+
+      <tuple>
+        <Title>I love piano-Thanksgiving</Title>
+        <Artist> Phil Dave</Artist>
+        <Record_Label> Artel Music</Record_Label>
+        <Catalog_Number> C123009832</Catalog_Number>
+        <Price>$8.90</Price>
+        <Genre>CCM</Genre>
+        <Type></Type>
+        <Running_Time></Running_Time>
+        <Number_Of_Discs> 1</Number_Of_Discs>
+        <Year_Released> 2002</Year_Released>
+      </tuple>
+
+      <tuple>
+        <Title>The Call</Title>
+        <Artist>Vineyard</Artist>
+        <Record_Label> Fisher</Record_Label>
+        <Catalog_Number> C109734820</Catalog_Number>
+        <Price> $10.80</Price>
+        <Genre> CCM</Genre>
+        <Type></Type>
+        <Running_Time></Running_Time>
+        <Number_Of_Discs> 1</Number_Of_Discs>
+        <Year_Released> 2002</Year_Released>
+      </tuple>
+
+      <tuple>
+        <Title>CCM Power</Title>
+        <Artist> Anders Wihk</Artist>
+        <Record_Label> Together</Record_Label>
+        <Catalog_Number> C139324809</Catalog_Number>
+        <Price> $9.20</Price>
+        <Genre> CCM</Genre>
+        <Type></Type>
+        <Running_Time></Running_Time>
+        <Number_Of_Discs> 1</Number_Of_Discs>
+        <Year_Released> 2002</Year_Released>
+      </tuple>
+
+      <tuple>
+        <Title>Revival</Title>
+        <Artist> Petra</Artist>
+        <Record_Label> JandJ Music</Record_Label>
+        <Catalog_Number> C927495032</Catalog_Number>
+        <Price>$11.60</Price>
+        <Genre> CCM</Genre>
+        <Type></Type>
+        <Running_Time></Running_Time>
+        <Number_Of_Discs> 1</Number_Of_Discs>
+        <Year_Released>2002</Year_Released>
+      </tuple>
+
+      <tuple>
+        <Title>When the music fades</Title>
+        <Artist> Various</Artist>
+        <Record_Label> Fisher</Record_Label>
+        <Catalog_Number> C234847889</Catalog_Number>
+        <Price> $10.50</Price>
+        <Genre> CCM</Genre>
+        <Type></Type>
+        <Running_Time></Running_Time>
+        <Number_Of_Discs> 1</Number_Of_Discs>
+        <Year_Released> 2002</Year_Released>
+      </tuple>
+
+      <tuple>
+        <Title>25 of Today's best wedding and love songs</Title>
+        <Artist> Various</Artist>
+        <Record_Label> Infinite</Record_Label>
+        <Catalog_Number> C128327524</Catalog_Number>
+        <Price> $15.50</Price>
+        <Genre> CCM</Genre>
+        <Type></Type>
+        <Running_Time></Running_Time>
+        <Number_Of_Discs> 2</Number_Of_Discs>
+        <Year_Released> 2002</Year_Released>
+      </tuple>
+
+      <tuple>
+        <Title>Beutiful</Title>
+        <Artist> Vineyard UK</Artist>
+        <Record_Label> Fisher</Record_Label>
+        <Catalog_Number> C238417848</Catalog_Number>
+        <Price> $11.00</Price>
+        <Genre> CCM</Genre>
+        <Type></Type>
+        <Running_Time></Running_Time>
+        <Number_Of_Discs> 1</Number_Of_Discs>
+        <Year_Released> 2002</Year_Released>
+      </tuple>
+
+      <tuple>
+        <Title>Where Angels Fear to Tread</Title>
+        <Artist> Matt Redman</Artist>
+        <Record_Label> Fisher</Record_Label>
+        <Catalog_Number> C294883528</Catalog_Number>
+        <Price> $11.00</Price>
+        <Genre>CCM</Genre>
+        <Type></Type>
+        <Running_Time></Running_Time>
+        <Number_Of_Discs> 1</Number_Of_Discs>
+        <Year_Released> 2002</Year_Released>
+      </tuple>
+
+      <tuple>
+        <Title>Worship Praises</Title>
+        <Artist>Various</Artist>
+        <Record_Label> Hansori Record</Record_Label>
+        <Catalog_Number> C289450923</Catalog_Number>
+        <Price> $8.30</Price>
+        <Genre> CCM</Genre>
+        <Type></Type>
+        <Running_Time></Running_Time>
+        <Number_Of_Discs>1</Number_Of_Discs>
+        <Year_Released>2002</Year_Released>
+      </tuple>
+
+      <tuple>
+        <Title>Modern Worship Best with Kids -I could sing of your love forever kids</Title>
+        <Artist> Various</Artist>
+        <Record_Label> Infinite</Record_Label>
+        <Catalog_Number> C248894859</Catalog_Number>
+        <Price>$11.90</Price>
+        <Genre> CCM</Genre>
+        <Type></Type>
+        <Running_Time></Running_Time>
+        <Number_Of_Discs> 1</Number_Of_Discs>
+        <Year_Released> 2002</Year_Released>
+      </tuple>
+
+    </Music>
+
+    <Availability>
+      <tuple>
+        <ID>1565638824</ID>
+        <Status> Available</Status>
+        <Amount_In_Stock> 3</Amount_In_Stock>
+        <Zip_Code> 02139</Zip_Code>
+      </tuple>
+
+      <tuple>
+        <ID>1557483469</ID>
+        <Status> Available</Status>
+        <Amount_In_Stock> 2</Amount_In_Stock>
+        <Zip_Code> 94301</Zip_Code>
+      </tuple>
+
+      <tuple>
+        <ID>1590530637</ID>
+        <Status> Available</Status>
+        <Amount_In_Stock> 5</Amount_In_Stock>
+        <Zip_Code> 98195</Zip_Code>
+      </tuple>
+
+      <tuple>
+        <ID>0736909133</ID>
+        <Status> Available</Status>
+        <Amount_In_Stock>4</Amount_In_Stock>
+        <Zip_Code> 94618</Zip_Code>
+      </tuple>
+
+      <tuple>
+        <ID>0310201063</ID>
+        <Status> Available</Status>
+        <Amount_In_Stock> 1</Amount_In_Stock>
+        <Zip_Code> 20015</Zip_Code>
+      </tuple>
+
+      <tuple>
+        <ID>C384123125</ID>
+        <Status> Available</Status>
+        <Amount_In_Stock> 3</Amount_In_Stock>
+        <Zip_Code> 98195</Zip_Code>
+      </tuple>
+
+      <tuple>
+        <ID>C123009832</ID>
+        <Status> NotAvailable</Status>
+        <Amount_In_Stock></Amount_In_Stock>
+        <Zip_Code></Zip_Code>
+      </tuple>
+
+      <tuple>
+        <ID>C927495032</ID>
+        <Status> Available</Status>
+        <Amount_In_Stock> 1</Amount_In_Stock>
+        <Zip_Code> 98195</Zip_Code>
+      </tuple>
+
+      <tuple>
+        <ID>C234847889</ID>
+        <Status> Available</Status>
+        <Amount_In_Stock> 3</Amount_In_Stock>
+        <Zip_Code> 94618</Zip_Code>
+      </tuple>
+
+      <tuple>
+        <ID>C238417848</ID>
+        <Status> Available</Status>
+        <Amount_In_Stock> 4</Amount_In_Stock>
+        <Zip_Code> 02139</Zip_Code>
+      </tuple>
+
+      <tuple>
+        <ID>C294883528</ID>
+        <Status> Available</Status>
+        <Amount_In_Stock>5</Amount_In_Stock>
+        <Zip_Code> 95616</Zip_Code>
+      </tuple>
+
+      <tuple>
+        <ID>C289450923</ID>
+        <Status> Available</Status>
+        <Amount_In_Stock> 10</Amount_In_Stock>
+        <Zip_Code> 90501</Zip_Code>
+      </tuple>
+
+    </Availability>
+
+    <Warehouses>
+      <tuple>
+        <Address>114 Sieg Hall</Address>
+        <City> Seattle</City>
+        <State> WA</State>
+        <Zip_Code>98195</Zip_Code>
+        <Telephone_Number> 206-543-7798</Telephone_Number>
+        <Fax_Number> 206-543-8988</Fax_Number>
+        <Manager> David Notkin</Manager>
+        <Number_Of_Employees> 12</Number_Of_Employees>
+        <Volume_Of_Business> 34908</Volume_Of_Business>
+      </tuple>
+
+      <tuple>
+        <Address>332 Alcatraz Ave</Address>
+        <City> Oakland</City>
+        <State> CA</State>
+        <Zip_Code> 94618</Zip_Code>
+        <Telephone_Number> 510-652-0240</Telephone_Number>
+        <Fax_Number> 510-652-0630</Fax_Number>
+        <Manager> Ed. Kang</Manager>
+        <Number_Of_Employees> 400</Number_Of_Employees>
+        <Volume_Of_Business> 298492</Volume_Of_Business>
+      </tuple>
+
+      <tuple>
+        <Address>459 Putnam Ave</Address>
+        <City> Cambridge</City>
+        <State> MA</State>
+        <Zip_Code> 02139</Zip_Code>
+        <Telephone_Number> 617-877-1166</Telephone_Number>
+        <Fax_Number> 617-877-1167</Fax_Number>
+        <Manager> David Um</Manager>
+        <Number_Of_Employees> 22</Number_Of_Employees>
+        <Volume_Of_Business> 33874</Volume_Of_Business>
+      </tuple>
+
+      <tuple>
+        <Address>1801 Oak Ave</Address>
+        <City> Davis</City>
+        <State>CA</State>
+        <Zip_Code> 95616</Zip_Code>
+        <Telephone_Number> 530-750-3256</Telephone_Number>
+        <Fax_Number> 530-750-3257</Fax_Number>
+        <Manager> Jonathan Lee</Manager>
+        <Number_Of_Employees> 34</Number_Of_Employees>
+        <Volume_Of_Business> 2343</Volume_Of_Business>
+      </tuple>
+
+      <tuple>
+        <Address>22301 Western Ave</Address>
+        <City> Torrance</City>
+        <State> CA</State>
+        <Zip_Code> 90501</Zip_Code>
+        <Telephone_Number> 310-212-0950</Telephone_Number>
+        <Fax_Number>310-212-0951</Fax_Number>
+        <Manager> Daniel Im</Manager>
+        <Number_Of_Employees>10</Number_Of_Employees>
+        <Volume_Of_Business> 3435</Volume_Of_Business>
+      </tuple>
+
+      <tuple>
+        <Address>2490 Middlefield Rd</Address>
+        <City> Palo Alto</City>
+        <State>CA</State>
+        <Zip_Code> 94301</Zip_Code>
+        <Telephone_Number> Not Available</Telephone_Number>
+        <Fax_Number> Not Available</Fax_Number>
+        <Manager> Chris Pak</Manager>
+        <Number_Of_Employees> 5</Number_Of_Employees>
+        <Volume_Of_Business> 234</Volume_Of_Business>
+      </tuple>
+
+      <tuple>
+        <Address>5671 Western Ave. NW</Address>
+        <City> Washington D.C</City>
+        <State> DC</State>
+        <Zip_Code> 20015</Zip_Code>
+        <Telephone_Number> 301-792-8518</Telephone_Number>
+        <Fax_Number> 301-792-8519</Fax_Number>
+        <Manager> Peter Lee</Manager>
+        <Number_Of_Employees> 2</Number_Of_Employees>
+        <Volume_Of_Business> 50</Volume_Of_Business>
+      </tuple>
+
+    </Warehouses>
+
+  </Data>
+</database>

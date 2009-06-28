@@ -1,0 +1,859 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<database name="Melissa_Garcia">
+          <createdby name="Melissa Garcia" />
+          <Schema>
+                  <table name="Items">
+                         <column name="Type" type="string" key="no">
+                                 <comment> The type of item (either "CD" or "book"). </comment>
+                         </column>
+                         <column name="ItemID" type="string" key="yes">
+                                 <comment> The unique ID of the item (either an ISBN number or a CD ID). </comment>
+                         </column>
+                  </table>
+                  <table name="Books">
+                         <column name="Title" type="string" key="no">
+                                 <comment> Title of the book. </comment>
+                         </column>
+                         <column name="Author" type="string" key="no">
+                                 <comment> Name of the author(s) of the book. </comment>
+                         </column>
+                         <column name="ISBN" type="string" key="no" ref="Items/ItemID">
+                                 <comment> The unique number that every book has.  I debated using an Integer but... I set this as a string instead of because ISBN numbers are seperated by hyphens (to seperate into: group identifier, publisher prefix, and title identifier).</comment>
+                         </column>
+                         <column name="BookListPrice" type="decimal" key="no">
+                                 <comment> The suggested retail price of the book. </comment>
+                         </column>
+                         <column name="BookSellPrice" type="decimal" key="no">
+                                 <comment> The current selling price (with any discount, promotion, etc) of the book. </comment>
+                         </column>
+                         <column name="Publisher" type="string" key="no">
+                                 <comment> The name of book's publisher </comment>
+                         </column>
+                         <column name="PubYear" type="int" key="no">
+                                 <comment> The year this edition of the book was published. </comment>
+                         </column>
+                         <column name="CustomerRating" type="decimal" key="no">
+                                 <comment> The current average customer rating of the book (ranges from 1-10). </comment>
+                         </column>
+                         <column name="Category" type="string" key="no">
+                                 <comment> The category of the book (ficton, drama, fantasy, romance, etc) </comment>
+                         </column>
+                         <column name="Keyword" type="string" key="no">
+                                 <comment> Keyword(s) that descibes the contents of this book and can be used to query for books similar to this one. </comment>
+                         </column>
+                  </table>
+                  <table name="Music">
+                         <column name="Album" type="string" key="no">
+                                 <comment> The album name of the CD. </comment>
+                         </column>
+                         <column name="Artist" type="string" key="no">
+                                 <comment> The artist(s) (or Group) on the CD. </comment>
+                         </column>
+                         <column name="Label" type="string" key="no">
+                                 <comment> The label name or name of the recording company this CD came from. </comment>
+                         </column>
+                         <column name="ASIN" type="string" key="no" ref="Items/ItemID">
+                                 <comment> Unique ID used to identify each CD. </comment>
+                         </column>
+                         <column name="CDListPrice" type="decimal" key="no">
+                                 <comment> The suggested retail price of the CD. </comment>
+                         </column>
+                         <column name="CDSellPrice" type="decimal" key="no">
+                                 <comment> The current selling price (with any discount, promotion, etc) of the CD. </comment>
+                         </column>
+                          <column name="ChartNumber" type="int" key="no">
+                                 <comment> The current slot on the Billboard chart that this CD is on. </comment>
+                         </column>
+                         <column name="Genre" type="string" key="no">
+                                 <comment> The genre of the CD (rap, jazz, country, classical, etc). </comment>
+                         </column>
+                         <column name="CDType" type="string" key="no">
+                                 <comment> The type of the CD (single, album, collection, etc) </comment>
+                         </column>
+                  </table>
+
+                  <table name="Warehouses">
+                         <column name="StreetAddress" type="string" key="no">
+                                 <comment> The street portion of the warehouse address. </comment>
+                         </column>
+                         <column name="City" type="string" key="no">
+                                 <comment> The city portion of the warehouse address. </comment>
+                         </column>
+                         <column name="State" type="string" key="no">
+                                 <comment> The state portion of the warehouse address. </comment>
+                         </column>
+                         <column name="Zip" type="int" key="yes">
+                                 <comment> The zip code portion of the warehouse address. </comment>
+                         </column>
+                         <column name="Telephone" type="string" key="no">
+                                 <comment> The telephone number of the warehouse. </comment>
+                         </column>
+                         <column name="Fax" type="string" key="no">
+                                 <comment> The fax number of the warehouse. </comment>
+                         </column>
+                         <column name="Manager" type="string" key="no">
+                                 <comment> The manager's name of the warehouse. </comment>
+                         </column>
+                         <column name="EmployeeCount" type="int" key="no">
+                                 <comment> The number of employees at this warehouse. </comment>
+                         </column>
+                  </table>
+
+<!-- set key to ItemID -->
+                  <table name="Availability">
+                         <column name="ItemID" type="int"
+						 key="yes" ref="Items/ItemID">
+                                 <comment> The UNIQUE ID of the CD or book. </comment>
+                         </column>
+                         <column name="InStock" type="boolean" key="no">
+                                 <comment> "True" if the item is in stock. </comment>
+                                 <comment> I decided to leave the value "Quantity" out because all we have to do to get this value is count the number of a particular item in each warehouse. </comment>
+                         </column>
+                         <column name="ShipTime" type="int" key="no">
+                                 <comment> When the item is likely to be shipped (1 day, 2-3 days, etc). </comment>
+                         </column>
+                         <column name="LocsAvailable" type="int"
+						 key="no" ref="Warehouses/Zip">
+                                 <comment> The locations where the item is available (use the warehouse zip code for this field. </comment>
+                         </column>
+                  </table>
+
+
+                  <foreignkeyconstraint>
+                                        <source table="Availability">
+                                                <column name="ItemID" />
+                                        </source>
+                                        <target table="Items">
+                                                <column name="ID" />
+                                        </target>
+                                        <comment> The item must be in the main database. </comment>
+                  </foreignkeyconstraint>
+                  <foreignkeyconstraint>
+                                        <source table="Music">
+                                                <column name="ASIN" />
+                                        </source>
+                                        <target table="Items">
+                                                <column name="ID" />
+                                        </target>
+                  </foreignkeyconstraint>
+                  <foreignkeyconstraint>
+                                        <source table="Books">
+                                                <column name="ISBN" />
+                                        </source>
+                                        <target table="Items">
+                                                <column name="ID" />
+                                        </target>
+                  </foreignkeyconstraint>
+                  <foreignkeyconstraint>
+                                        <source table="Availability">
+                                                <column name="LocsAvailable" />
+                                        </source>
+                                        <target table="Warehouses">
+                                                <column name="Zip" />
+                                        </target>
+                                        <comment> In order to see where an item is available, the location must be in the Warehouse database. </comment>
+                  </foreignkeyconstraint>
+          </Schema>
+  <Data>
+    <Items>
+      <tuple>
+        <Type>book</Type>
+        <ItemID> 1-56592-149-6 </ItemID>
+      </tuple>
+
+      <tuple>
+        <Type>book</Type>
+        <ItemID> 0-471-49278-7</ItemID>
+      </tuple>
+
+      <tuple>
+        <Type>book</Type>
+        <ItemID> 0-201-50889-3 </ItemID>
+      </tuple>
+
+      <tuple>
+        <Type>book</Type>
+        <ItemID> 0-07-232206-3 </ItemID>
+      </tuple>
+
+      <tuple>
+        <Type>book</Type>
+        <ItemID> 1-59059-003-1 </ItemID>
+      </tuple>
+
+      <tuple>
+        <Type>book</Type>
+        <ItemID> 1-55860-415-4 </ItemID>
+      </tuple>
+
+      <tuple>
+        <Type>book</Type>
+        <ItemID> 0-471-30968-0 </ItemID>
+      </tuple>
+
+      <tuple>
+        <Type>book</Type>
+        <ItemID> 0-385-26774-6 </ItemID>
+      </tuple>
+
+      <tuple>
+        <Type>book</Type>
+        <ItemID> 0-596-00039-1 </ItemID>
+      </tuple>
+
+      <tuple>
+        <Type>book</Type>
+        <ItemID> 0-201-82376-4 </ItemID>
+      </tuple>
+
+      <tuple>
+        <Type>book</Type>
+        <ItemID> 1-861003-66-8 </ItemID>
+      </tuple>
+
+      <tuple>
+        <Type>book</Type>
+        <ItemID> 0-309-06557-7 </ItemID>
+      </tuple>
+
+      <tuple>
+        <Type>book</Type>
+        <ItemID> 1-456890-77-9 </ItemID>
+      </tuple>
+
+      <tuple>
+        <Type>book</Type>
+        <ItemID> 1-567890-99-9 </ItemID>
+      </tuple>
+
+      <tuple>
+        <Type>book</Type>
+        <ItemID> 1-445578-77-8 </ItemID>
+      </tuple>
+
+      <tuple>
+        <Type>CD</Type>
+        <ItemID> CD431</ItemID>
+      </tuple>
+
+      <tuple>
+        <Type>CD</Type>
+        <ItemID> CMN45</ItemID>
+      </tuple>
+
+      <tuple>
+        <Type>CD</Type>
+        <ItemID> CMJ56</ItemID>
+      </tuple>
+
+      <tuple>
+        <Type>CD</Type>
+        <ItemID> CDF67</ItemID>
+      </tuple>
+
+      <tuple>
+        <Type>CD</Type>
+        <ItemID> BGH56</ItemID>
+      </tuple>
+
+      <tuple>
+        <Type>CD</Type>
+        <ItemID> FJK89</ItemID>
+      </tuple>
+
+      <tuple>
+        <Type>CD</Type>
+        <ItemID> RTY67</ItemID>
+      </tuple>
+
+      <tuple>
+        <Type>CD</Type>
+        <ItemID> BGH00</ItemID>
+      </tuple>
+
+      <tuple>
+        <Type>CD</Type>
+        <ItemID> XYC58</ItemID>
+      </tuple>
+
+      <tuple>
+        <Type>CD</Type>
+        <ItemID> JKL50</ItemID>
+      </tuple>
+
+      <tuple>
+        <Type>CD</Type>
+        <ItemID> CFN79</ItemID>
+      </tuple>
+
+      <tuple>
+        <Type>CD</Type>
+        <ItemID> MJK79</ItemID>
+      </tuple>
+
+      <tuple>
+        <Type>CD</Type>
+        <ItemID> KLP90</ItemID>
+      </tuple>
+
+      <tuple>
+        <Type>CD</Type>
+        <ItemID> FTY66</ItemID>
+      </tuple>
+
+      <tuple>
+        <Type>CD</Type>
+        <ItemID> RST90</ItemID>
+      </tuple>
+
+    </Items>
+
+    <Books>
+      <tuple>
+        <Title>Programming Perl</Title>
+        <Author> Larry Wall, Tom Christiansen</Author>
+        <ISBN> 1-56592-149-6</ISBN>
+        <BookListPrice> $51.00</BookListPrice>
+        <BookSellPrice> $41.95</BookSellPrice>
+        <Publisher> O'Reilly</Publisher>
+        <PubYear> 1996</PubYear>
+        <CustomerRating> 8.2</CustomerRating>
+        <Category> computer programming</Category>
+        <Keyword> perl</Keyword>
+      </tuple>
+
+      <tuple>
+        <Title>Interaction Design: Beyond Human-Computer Interaction</Title>
+        <Author> Yvonne Rogers, Helen Sharp, Jenny Preece</Author>
+        <ISBN> 0-471-49278-7</ISBN>
+        <BookListPrice> $56.00</BookListPrice>
+        <BookSellPrice> $40.00</BookSellPrice>
+        <Publisher> John Wiley</Publisher>
+        <PubYear> 2002</PubYear>
+        <CustomerRating> 9.6</CustomerRating>
+        <Category> human computer interaction</Category>
+        <Keyword> interface design</Keyword>
+      </tuple>
+
+      <tuple>
+        <Title>Classic Data Sructures in C++</Title>
+        <Author> Timothy A.Budd</Author>
+        <ISBN> 0-201-50889-3</ISBN>
+        <BookListPrice> $40.00</BookListPrice>
+        <BookSellPrice> $36.00</BookSellPrice>
+        <Publisher> Addison-Wesley</Publisher>
+        <PubYear> 1994</PubYear>
+        <CustomerRating> 6.5</CustomerRating>
+        <Category> computer programming</Category>
+        <Keyword> data structures</Keyword>
+      </tuple>
+
+      <tuple>
+        <Title>Database Management Systems</Title>
+        <Author> Raghu Ramakrishnana, Johannes Gehrke</Author>
+        <ISBN> 0-07-232206-3</ISBN>
+        <BookListPrice> $70.00</BookListPrice>
+        <BookSellPrice> $56.00</BookSellPrice>
+        <Publisher> McGraw-Hill</Publisher>
+        <PubYear> 2000</PubYear>
+        <CustomerRating> 8.5</CustomerRating>
+        <Category> computer science</Category>
+        <Keyword> databases</Keyword>
+      </tuple>
+
+      <tuple>
+        <Title>XML Programming: Web Applications</Title>
+        <Author> Alex Nakhimovsky, Tom Myers</Author>
+        <ISBN> 1-59059-003-1</ISBN>
+        <BookListPrice> $45.00</BookListPrice>
+        <BookSellPrice> $26.00</BookSellPrice>
+        <Publisher> Apress</Publisher>
+        <PubYear> 2002</PubYear>
+        <CustomerRating> 8.5</CustomerRating>
+        <Category> computer programming</Category>
+        <Keyword> xml</Keyword>
+      </tuple>
+
+      <tuple>
+        <Title>Principles of Transaction Processing</Title>
+        <Author> Philip Bernstien</Author>
+        <ISBN> 1-55860-415-4</ISBN>
+        <BookListPrice> $50.00</BookListPrice>
+        <BookSellPrice> $40.00</BookSellPrice>
+        <Publisher> Morgan Kauffmann</Publisher>
+        <PubYear> 1999</PubYear>
+        <CustomerRating> 5.5</CustomerRating>
+        <Category> system design</Category>
+        <Keyword> transaction processing</Keyword>
+      </tuple>
+
+      <tuple>
+        <Title>Construction Contracting</Title>
+        <Author> Richard Clough, Glenn Sears</Author>
+        <ISBN> 0-471-30968-0</ISBN>
+        <BookListPrice> $76.00</BookListPrice>
+        <BookSellPrice> $76.00</BookSellPrice>
+        <Publisher> John Wiley</Publisher>
+        <PubYear> 1994</PubYear>
+        <CustomerRating> 8.5</CustomerRating>
+        <Category> construction engineering</Category>
+        <Keyword> project control</Keyword>
+      </tuple>
+
+      <tuple>
+        <Title>The Design of Everyday Things</Title>
+        <Author> Donald A. Norman</Author>
+        <ISBN> 0-385-26774-6</ISBN>
+        <BookListPrice> $15.95</BookListPrice>
+        <BookSellPrice> $21.95</BookSellPrice>
+        <Publisher> Bantam Doubleday</Publisher>
+        <PubYear> 1988</PubYear>
+        <CustomerRating> 9.9</CustomerRating>
+        <Category> design enginnering</Category>
+        <Keyword> design,engineering, psychology</Keyword>
+      </tuple>
+
+      <tuple>
+        <Title>Java Examples in a Nutshell</Title>
+        <Author> David Flanagan</Author>
+        <ISBN> 0-596-00039-1</ISBN>
+        <BookListPrice> $43.95</BookListPrice>
+        <BookSellPrice> $29.95</BookSellPrice>
+        <Publisher> O'Reilly</Publisher>
+        <PubYear> 2000</PubYear>
+        <CustomerRating> 8.9</CustomerRating>
+        <Category> computer programming</Category>
+        <Keyword> java</Keyword>
+      </tuple>
+
+      <tuple>
+        <Title>Unix for the Impatient</Title>
+        <Author> Tom Abrahams, John Larson</Author>
+        <ISBN> 0-201-82376-4</ISBN>
+        <BookListPrice> $25.95</BookListPrice>
+        <BookSellPrice> $19.95</BookSellPrice>
+        <Publisher> Addison-Wesley</Publisher>
+        <PubYear> 1995</PubYear>
+        <CustomerRating> 9.9</CustomerRating>
+        <Category> operating system</Category>
+        <Keyword> unix</Keyword>
+      </tuple>
+
+      <tuple>
+        <Title>Beginning Java 2: jdk1.4.1</Title>
+        <Author> Ivor Horton</Author>
+        <ISBN> 1-861003-66-8</ISBN>
+        <BookListPrice> $55.95</BookListPrice>
+        <BookSellPrice> $41.95</BookSellPrice>
+        <Publisher> Wrox</Publisher>
+        <PubYear> 1996</PubYear>
+        <CustomerRating> 9.9</CustomerRating>
+        <Category> computer programming</Category>
+        <Keyword> java</Keyword>
+      </tuple>
+
+      <tuple>
+        <Title>How People Learn</Title>
+        <Author> John Bransford, Ann Brown, R.Cocking</Author>
+        <ISBN> 0-309-06557-7</ISBN>
+        <BookListPrice> $65.95</BookListPrice>
+        <BookSellPrice> $59.95</BookSellPrice>
+        <Publisher> National Academy Press</Publisher>
+        <PubYear> 1999</PubYear>
+        <CustomerRating> 8.9</CustomerRating>
+        <Category> education</Category>
+        <Keyword> education, psychology</Keyword>
+      </tuple>
+
+      <tuple>
+        <Title>A Treatise on Sustainable Systems</Title>
+        <Author> I. M. Agod</Author>
+        <ISBN> 1-456890-77-9</ISBN>
+        <BookListPrice> $47.98</BookListPrice>
+        <BookSellPrice> $37.99</BookSellPrice>
+        <Publisher> Bantam Doubleday</Publisher>
+        <PubYear> 1999</PubYear>
+        <CustomerRating> 10.0</CustomerRating>
+        <Category> environmental science</Category>
+        <Keyword> environment, earth</Keyword>
+      </tuple>
+
+      <tuple>
+        <Title>Martial Arts</Title>
+        <Author> Whu R.Yeu</Author>
+        <ISBN> 1-567890-99-9</ISBN>
+        <BookListPrice> $37.98</BookListPrice>
+        <BookSellPrice> $27.99</BookSellPrice>
+        <Publisher> Addison-Wesley</Publisher>
+        <PubYear> 1999</PubYear>
+        <CustomerRating> 10.0</CustomerRating>
+        <Category> martial arts</Category>
+        <Keyword> karate, martial arts, kung fu</Keyword>
+      </tuple>
+
+      <tuple>
+        <Title>To Be or Not to Be</Title>
+        <Author> B.Good</Author>
+        <ISBN> 1-445578-77-8</ISBN>
+        <BookListPrice> $27.98</BookListPrice>
+        <BookSellPrice> $17.99</BookSellPrice>
+        <Publisher> National Academy Press</Publisher>
+        <PubYear> 1995</PubYear>
+        <CustomerRating> 5.5</CustomerRating>
+        <Category> philosophy</Category>
+        <Keyword> art of living, philosophy, self-help</Keyword>
+      </tuple>
+
+    </Books>
+
+    <Music>
+      <tuple>
+        <Album>Michael Learns to Rock</Album>
+        <Artist> Michael Jones</Artist>
+        <Label> MLTR</Label>
+        <ASIN> CD431</ASIN>
+        <CDListPrice> $17.99</CDListPrice>
+        <CDSellPrice> $15.55</CDSellPrice>
+        <ChartNumber> 5</ChartNumber>
+        <Genre> pop</Genre>
+        <CDType> album</CDType>
+      </tuple>
+
+      <tuple>
+        <Album>Deep Blue</Album>
+        <Artist> Frank Sinatra</Artist>
+        <Label> DB</Label>
+        <ASIN> CMN45</ASIN>
+        <CDListPrice> $15.99</CDListPrice>
+        <CDSellPrice> $10.55</CDSellPrice>
+        <ChartNumber> 5</ChartNumber>
+        <Genre> rock</Genre>
+        <CDType> single</CDType>
+      </tuple>
+
+      <tuple>
+        <Album>Amazing Skies</Album>
+        <Artist> John Grisham</Artist>
+        <Label> ASD</Label>
+        <ASIN> CMJ56</ASIN>
+        <CDListPrice> $14.99</CDListPrice>
+        <CDSellPrice> $16.55</CDSellPrice>
+        <ChartNumber> 8</ChartNumber>
+        <Genre> jazz</Genre>
+        <CDType> collection</CDType>
+      </tuple>
+
+      <tuple>
+        <Album>Deep Green</Album>
+        <Artist> Marla Perkins</Artist>
+        <Label> DF</Label>
+        <ASIN> CDF67</ASIN>
+        <CDListPrice> $16.99</CDListPrice>
+        <CDSellPrice> $10.55</CDSellPrice>
+        <ChartNumber> 4</ChartNumber>
+        <Genre> classical</Genre>
+        <CDType> single</CDType>
+      </tuple>
+
+      <tuple>
+        <Album>Mad</Album>
+        <Artist> Ravioli Pasta</Artist>
+        <Label> FGG</Label>
+        <ASIN> BGH56</ASIN>
+        <CDListPrice> $14.99</CDListPrice>
+        <CDSellPrice> $14.56</CDSellPrice>
+        <ChartNumber> 7</ChartNumber>
+        <Genre> jazz</Genre>
+        <CDType> collection</CDType>
+      </tuple>
+
+      <tuple>
+        <Album>Royal Music</Album>
+        <Artist> Steve Benjamin</Artist>
+        <Label> XLS</Label>
+        <ASIN> FJK89</ASIN>
+        <CDListPrice> $18.99</CDListPrice>
+        <CDSellPrice> $10.00</CDSellPrice>
+        <ChartNumber> 9</ChartNumber>
+        <Genre> rock</Genre>
+        <CDType> single</CDType>
+      </tuple>
+
+      <tuple>
+        <Album>Listen</Album>
+        <Artist> Tom Jones</Artist>
+        <Label> DOC</Label>
+        <ASIN> RTY67</ASIN>
+        <CDListPrice> $19.99</CDListPrice>
+        <CDSellPrice> $12.99</CDSellPrice>
+        <ChartNumber> 5</ChartNumber>
+        <Genre> classical</Genre>
+        <CDType> single</CDType>
+      </tuple>
+
+      <tuple>
+        <Album>Shout a lot</Album>
+        <Artist> Frank Laeve</Artist>
+        <Label> LSP</Label>
+        <ASIN> BGH00</ASIN>
+        <CDListPrice> $25.99</CDListPrice>
+        <CDSellPrice> $14.55</CDSellPrice>
+        <ChartNumber> 6</ChartNumber>
+        <Genre> pop</Genre>
+        <CDType> album</CDType>
+      </tuple>
+
+      <tuple>
+        <Album>Smoke</Album>
+        <Artist> John Smith</Artist>
+        <Label> CPP</Label>
+        <ASIN> XYC58</ASIN>
+        <CDListPrice> $14.99</CDListPrice>
+        <CDSellPrice> $17.55</CDSellPrice>
+        <ChartNumber> 5</ChartNumber>
+        <Genre> rock</Genre>
+        <CDType> album</CDType>
+      </tuple>
+
+      <tuple>
+        <Album>Deep Purple</Album>
+        <Artist> Carla Simpson</Artist>
+        <Label> DWG</Label>
+        <ASIN> JKL50</ASIN>
+        <CDListPrice> $17.99</CDListPrice>
+        <CDSellPrice> $18.55</CDSellPrice>
+        <ChartNumber> 4</ChartNumber>
+        <Genre> jazz</Genre>
+        <CDType> single</CDType>
+      </tuple>
+
+      <tuple>
+        <Album>Led Zep</Album>
+        <Artist> Tamara Brown</Artist>
+        <Label> JAV</Label>
+        <ASIN> CFN79</ASIN>
+        <CDListPrice> $19.99</CDListPrice>
+        <CDSellPrice> $12.55</CDSellPrice>
+        <ChartNumber> 5</ChartNumber>
+        <Genre> pop</Genre>
+        <CDType> collection</CDType>
+      </tuple>
+
+      <tuple>
+        <Album>Pink Floyd</Album>
+        <Artist> Holly Talbert</Artist>
+        <Label> CPP</Label>
+        <ASIN> MJK79</ASIN>
+        <CDListPrice> $15.99</CDListPrice>
+        <CDSellPrice> $15.55</CDSellPrice>
+        <ChartNumber> 2</ChartNumber>
+        <Genre> classical</Genre>
+        <CDType> single</CDType>
+      </tuple>
+
+      <tuple>
+        <Album>U2</Album>
+        <Artist> Rick Doyle</Artist>
+        <Label> DOC</Label>
+        <ASIN> KLP90</ASIN>
+        <CDListPrice> $18.99</CDListPrice>
+        <CDSellPrice> $16.55</CDSellPrice>
+        <ChartNumber> 3</ChartNumber>
+        <Genre> jazz</Genre>
+        <CDType> collection</CDType>
+      </tuple>
+
+      <tuple>
+        <Album>The Dark Side</Album>
+        <Artist> Jayant Madhavan</Artist>
+        <Label> LSP</Label>
+        <ASIN> FTY66</ASIN>
+        <CDListPrice> $14.99</CDListPrice>
+        <CDSellPrice> $10.55</CDSellPrice>
+        <ChartNumber> 5</ChartNumber>
+        <Genre> rock</Genre>
+        <CDType> single</CDType>
+      </tuple>
+
+      <tuple>
+        <Album>Serenade</Album>
+        <Artist> Purdy Shenoy</Artist>
+        <Label> XLS</Label>
+        <ASIN> RST90</ASIN>
+        <CDListPrice> $16.99</CDListPrice>
+        <CDSellPrice> $11.55</CDSellPrice>
+        <ChartNumber> 1</ChartNumber>
+        <Genre> jazz</Genre>
+        <CDType> album</CDType>
+      </tuple>
+
+    </Music>
+
+    <Availability>
+      <tuple>
+        <ItemID>1</ItemID>
+        <InStock> true</InStock>
+        <ShipTime> 3</ShipTime>
+        <Zip> 98105</Zip>
+      </tuple>
+
+      <tuple>
+        <ItemID>2</ItemID>
+        <InStock> false</InStock>
+        <ShipTime> 3</ShipTime>
+        <Zip> 98195</Zip>
+      </tuple>
+
+      <tuple>
+        <ItemID>34</ItemID>
+        <InStock> true</InStock>
+        <ShipTime> 3</ShipTime>
+        <Zip> 14223</Zip>
+      </tuple>
+
+      <tuple>
+        <ItemID>55</ItemID>
+        <InStock> true</InStock>
+        <ShipTime> 3</ShipTime>
+        <Zip> 14260</Zip>
+      </tuple>
+
+      <tuple>
+        <ItemID>67</ItemID>
+        <InStock> false</InStock>
+        <ShipTime> 3</ShipTime>
+        <Zip> 14223</Zip>
+      </tuple>
+
+      <tuple>
+        <ItemID>78</ItemID>
+        <InStock> true</InStock>
+        <ShipTime> 3</ShipTime>
+        <Zip> 98195</Zip>
+      </tuple>
+
+      <tuple>
+        <ItemID>89</ItemID>
+        <InStock> true</InStock>
+        <ShipTime> 3</ShipTime>
+        <Zip> 14260</Zip>
+      </tuple>
+
+      <tuple>
+        <ItemID>90</ItemID>
+        <InStock> false</InStock>
+        <ShipTime> 3</ShipTime>
+        <Zip> 90210</Zip>
+      </tuple>
+
+      <tuple>
+        <ItemID>15</ItemID>
+        <InStock> false</InStock>
+        <ShipTime> 3</ShipTime>
+        <Zip> 14223</Zip>
+      </tuple>
+
+      <tuple>
+        <ItemID>156</ItemID>
+        <InStock> true</InStock>
+        <ShipTime> 3</ShipTime>
+        <Zip> 98195</Zip>
+      </tuple>
+
+      <tuple>
+        <ItemID>56</ItemID>
+        <InStock> true</InStock>
+        <ShipTime> 3</ShipTime>
+        <Zip> 14223</Zip>
+      </tuple>
+
+      <tuple>
+        <ItemID>47</ItemID>
+        <InStock> false</InStock>
+        <ShipTime> 3</ShipTime>
+        <Zip> 14223</Zip>
+      </tuple>
+
+      <tuple>
+        <ItemID>99</ItemID>
+        <InStock> true</InStock>
+        <ShipTime> 3</ShipTime>
+        <Zip> 98195</Zip>
+      </tuple>
+
+      <tuple>
+        <ItemID>80</ItemID>
+        <InStock> false</InStock>
+        <ShipTime> 3</ShipTime>
+        <Zip> 14260</Zip>
+      </tuple>
+
+      <tuple>
+        <ItemID>111</ItemID>
+        <InStock> false</InStock>
+        <ShipTime> 3</ShipTime>
+        <Zip> 90210</Zip>
+      </tuple>
+
+    </Availability>
+
+    <Warehouses>
+      <tuple>
+        <StreetAddress>250 Montrose Avenue</StreetAddress>
+        <City> Buffalo</City>
+        <State> New York</State>
+        <Zip> 14223</Zip>
+        <Telephone> (716)-983-5568</Telephone>
+        <Fax> (716)-564-3456</Fax>
+        <Manager> Steve Manning</Manager>
+        <EmployeeCount> 90</EmployeeCount>
+      </tuple>
+
+      <tuple>
+        <StreetAddress>4233 9th Avenue NE</StreetAddress>
+        <City> Seattle</City>
+        <State> Washington</State>
+        <Zip> 98105</Zip>
+        <Telephone> (206)-432-8970</Telephone>
+        <Fax> (206)-789-9867</Fax>
+        <Manager> David Myers</Manager>
+        <EmployeeCount> 78</EmployeeCount>
+      </tuple>
+
+      <tuple>
+        <StreetAddress>3245 Main Street NW</StreetAddress>
+        <City> Seattle</City>
+        <State> Washington</State>
+        <Zip> 98195</Zip>
+        <Telephone> (206)-985-1422</Telephone>
+        <Fax> (206)-256-8976</Fax>
+        <Manager> Jamie Simpson</Manager>
+        <EmployeeCount> 120</EmployeeCount>
+      </tuple>
+
+      <tuple>
+        <StreetAddress>146 Englewood Avenue</StreetAddress>
+        <City> Syracuse</City>
+        <State> New York</State>
+        <Zip> 14260</Zip>
+        <Telephone> (718)-987-8765</Telephone>
+        <Fax> (718)-345-9808</Fax>
+        <Manager> Donald Rumsfeld</Manager>
+        <EmployeeCount> 58</EmployeeCount>
+      </tuple>
+
+      <tuple>
+        <StreetAddress>139 West Hollywood Boulevard</StreetAddress>
+        <City> HollyWood</City>
+        <State> California</State>
+        <Zip> 901210</Zip>
+        <Telephone> (626)-350-4345</Telephone>
+        <Fax> (626)-876-5698</Fax>
+        <Manager> Roger Waters</Manager>
+        <EmployeeCount> 100</EmployeeCount>
+      </tuple>
+
+    </Warehouses>
+
+  </Data>
+</database>

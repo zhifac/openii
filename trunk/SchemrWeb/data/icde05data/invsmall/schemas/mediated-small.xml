@@ -1,0 +1,46 @@
+<database name="mediated-small">
+
+<createdby name="mediated-small"/>
+
+<Schema>
+<table name="Books">
+  <column name="Title" type="varchar"/>
+<!--  <column name="Author" type="varchar"/> -->
+  <column name="ISBN" type="varchar"/>
+  <column name="Category" type="varchar"/>
+  <column name="Publisher" type="varchar"/>
+  <column name="Edition" type="varchar"/>
+  <column name="Year" type="varchar"/>
+  <column name="Price" type="varchar"/>
+  <column name="DiscountPrice" type="varchar"/>
+  <column name="Keywords" type="varchar"/>
+  <column name="CustomerRating" type="varchar"/>
+  <column name="NumPages" type="varchar"/>
+  <column name="Binding" type="varchar"/>
+</table>
+<table name="Author">
+  <column name="AuthorID"/>
+  <column name="FirstName"/>
+  <column name="LastName"/>
+  <column name="MiddleInitial"/>
+</table>
+<table name="BookToAuthor">
+  <column name="ISBN" ref="Books/ISBN"/>
+  <column name="AuthorID" ref="Author/AuthorID"/>
+</table>
+<table name="Availability">
+  <column name="ISBN" type="varchar" ref="Books/ISBN"/>
+  <column name="WarehouseID" type="varchar"/>
+  <column name="Quantity" type="varchar"/>
+  <column name="inStock" type="varchar"/> 
+ <column name="ExpectedInStock" type="varchar"/>
+ <column name="ShipTime" type="varchar"/>
+</table>
+</Schema>
+<Data>
+  <Books/>
+  <Author/>
+  <BookToAuthor/>
+  <Availability/>
+</Data>
+</database>

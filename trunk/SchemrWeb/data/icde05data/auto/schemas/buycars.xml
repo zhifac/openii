@@ -1,0 +1,342 @@
+<domain name="Automobile">
+	<search>
+		<source name="buycars" url="http://www.2buycars.net/search2.asp?state=WA"></source>                
+		<element>
+			<element vname="State" text = "Select Your State ">
+				<selectbox>
+				    <item value="ALL">ALL</item>
+				    <item value="AL">ALABAMA</item>
+				    <item value="AK">ALASKA</item>
+				    <item value="AS">AMERICAN SAMOA</item>
+				    <item value="AZ">ARIZONA</item>
+				    <item value="AR">ARKANSAS</item>
+				    <item value="CA">CALIFORNIA</item>
+				    <item value="CO">COLORADO</item>
+				    <item value="CT">CONNECTICUT</item>
+				    <item value="DE">DELAWARE</item>
+				    <item value="DC">DISTRICT OF COLUMBIA</item>
+				    <item value="FL">FLORIDA</item>
+				    <item value="GA">GEORGIA</item>
+				    <item value="GU">GUAM</item>
+				    <item value="HI">HAWAII</item>
+				    <item value="ID">IDAHO</item>
+				    <item value="IL">ILLINOIS</item>
+				    <item value="IN">INDIANA</item>
+				    <item value="IA">IOWA</item>
+				    <item value="KS">KANSAS</item>
+				    <item value="KY">KENTUCKY</item>
+				    <item value="LA">LOUISIANA</item>
+				    <item value="ME">MAINE</item>
+				    <item value="MH">MARSHALL ISLANDS</item>
+				    <item value="MD">MARYLAND</item>
+				    <item value="MA">MASSACHUSETTS</item>
+				    <item value="MI">MICHIGAN</item>
+				    <item value="MN">MINNESOTA</item>
+				    <item value="MS">MISSISSIPPI</item>
+				    <item value="MO">MISSOURI</item>
+				    <item value="MT">MONTANA</item>
+				    <item value="NE">NEBRASKA</item>
+				    <item value="NV">NEVADA</item>
+				    <item value="NH">NEW HAMPSHIRE</item>
+				    <item value="NJ">NEW JERSEY</item>
+				    <item value="NM">NEW MEXICO</item>
+				    <item value="NY">NEW YORK</item>
+				    <item value="NC">NORTH CAROLINA</item>
+				    <item value="ND">NORTH DAKOTA</item>
+				    <item value="OH">OHIO</item>
+				    <item value="OK">OKLAHOMA</item>
+				    <item value="OR">OREGON</item>
+				    <item value="PW">PALAU</item>
+				    <item value="PA">PENNSYLVANIA</item>
+				    <item value="PR">PUERTO RICO</item>
+				    <item value="RI">RHODE ISLAND</item>
+				    <item value="SC">SOUTH CAROLINA</item>
+				    <item value="SD">SOUTH DAKOTA</item>
+				    <item value="TN">TENNESSEE</item>
+				    <item value="TX">TEXAS</item>
+				    <item value="UT">UTAH</item>
+				    <item value="VT">VERMONT</item>
+				    <item value="VI">VIRGIN ISLANDS</item>
+				    <item value="VA">VIRGINIA</item>
+				    <item value="WA" >WASHINGTON</item>
+				    <item value="WV">WEST VIRGINIA</item>
+				    <item value="WI">WISCONSIN</item>
+				    <item value="WY">WYOMING</item>
+				</selectbox>
+			</element>
+			<element vname="MaxPrice" text = "MAXimum Price">
+				<textbox/>
+			</element>
+			<element vname="MinPrice" text = "MINimum Price">
+				<textbox/>
+			</element>
+			<element vname="ListingType" text = "Listing Type">
+				<selectbox>
+				    <item value="For Sale" >For Sale</item>
+				</selectbox>
+			</element>
+			<element vname="County" text = "County(s)">
+				<selectbox>
+				    <item value="ALL">ALL</item>
+				    <item value="Adams">Adams</item>
+				    <item value="Asotin">Asotin</item>
+				    <item value="Benton">Benton</item>
+				    <item value="Chelan">Chelan</item>
+				    <item value="Clallam">Clallam</item>
+				    <item value="Clark">Clark</item>
+				    <item value="Columbia">Columbia</item>
+				    <item value="Cowlitz">Cowlitz</item>
+				    <item value="Douglas">Douglas</item>
+				    <item value="Ferry">Ferry</item>
+				    <item value="Franklin">Franklin</item>
+				    <item value="Garfield">Garfield</item>
+				    <item value="Grant">Grant</item>
+				    <item value="Grays Harbor">Grays Harbor</item>
+				    <item value="Island">Island</item>
+				    <item value="Jefferson">Jefferson</item>
+				    <item value="King" >King</item>
+				    <item value="Kitsap">Kitsap</item>
+				    <item value="Kittitas">Kittitas</item>
+				    <item value="Klickitat">Klickitat</item>
+				    <item value="Lewis">Lewis</item>
+				    <item value="Lincoln">Lincoln</item>
+				    <item value="Mason">Mason</item>
+				    <item value="Okanogan">Okanogan</item>
+				    <item value="Pacific">Pacific</item>
+				    <item value="Pend Oreille">Pend Oreille</item>
+				    <item value="Pierce">Pierce</item>
+				    <item value="San Juan">San Juan</item>
+				    <item value="Skagit">Skagit</item>
+				    <item value="Skamania">Skamania</item>
+				    <item value="Snohomish">Snohomish</item>
+				    <item value="Spokane">Spokane</item>
+				    <item value="Stevens">Stevens</item>
+				    <item value="Thurston">Thurston</item>
+				    <item value="Wahkiakum">Wahkiakum</item>
+				    <item value="Walla Walla">Walla Walla</item>
+				    <item value="Whatcom">Whatcom</item>
+				    <item value="Whitman">Whitman</item>
+				    <item value="Yakima">Yakima</item>
+				</selectbox>
+			</element>
+			<element vname="ZipCode" text = "Zip Code">
+				<textbox/>
+			</element>
+			<element vname="OfferedBy" text = "Sale Type">
+				<selectbox>
+				    <item value="ALL" >ALL</item>
+				    <item value="private party">private party</item>
+				    <item value="used by dealer">used by dealer</item>
+				    <item value="new by dealer">new by dealer</item>
+				</selectbox>				
+			</element>
+			<element vname="PropertyType" text = "Category">
+				<selectbox>    
+					<item value="ALL">ALL</item>                        	
+   					<item value="Two-Door Coupe">Two-Door Coupe</item>  
+   					<item value="Four-Door Sedan">Four-Door Sedan</item>
+   					<item value="Hatchback">Hatchback</item>            
+   					<item value="Wagon" >Wagon</item>           
+   					<item value="Sport/Utility">Sport/Utility</item>    
+                    <item value="Truck">Truck</item>                    
+                    <item value="Convertible">Convertible</item>        
+                    <item value="Minivan/Van">Minivan/Van</item>        
+                </selectbox>
+             </element>
+             <element vname="Parking" text = "Make">
+             	<selectbox>
+				    <item value="Acura">Acura</item>
+				    <item value="Alfa Romeo">Alfa Romeo</item>
+				    <item value="American Motors">American Motors</item>
+				    <item value="AM General">AM General</item>
+				    <item value="Aston Martin">Aston Martin</item>
+				    <item value="Audi">Audi</item>
+				    <item value="Austin Healey">Austin Healey</item>
+				    <item value="Bantam">Bantam</item>
+				    <item value="Bentley">Bentley</item>
+				    <item value="BMW">BMW</item>
+				    <item value="Bricklin">Bricklin</item>
+				    <item value="Buell">Buell</item>
+				    <item value="Bugatti">Bugatti</item>
+				    <item value="Buick">Buick</item>
+				    <item value="Cadillac">Cadillac</item>
+				    <item value="Checker">Checker</item>
+				    <item value="Chevrolet">Chevrolet</item>
+				    <item value="Chrysler">Chrysler</item>
+				    <item value="Citroen">Citroen</item>
+				    <item value="Daihatsu">Daihatsu</item>
+				    <item value="Datsun">Datsun</item>
+				    <item value="DeLorean">DeLorean</item>
+				    <item value="DeSoto">DeSoto</item>
+				    <item value="Dodge">Dodge</item>
+				    <item value="Eagle">Eagle</item>
+				    <item value="Ferrari">Ferrari</item>
+				    <item value="Fiat">Fiat</item>
+				    <item value="Ford">Ford</item>
+				    <item value="Geo">Geo</item>
+				    <item value="GMC">GMC</item>
+				    <item value="Hillman">Hillman</item>
+				    <item value="Honda">Honda</item>
+				    <item value="Hyundai">Hyundai</item>
+				    <item value="International">International</item>
+				    <item value="Infiniti">Infiniti</item>
+				    <item value="Isuzu">Isuzu</item>
+				    <item value="Jensen">Jensen</item>
+				    <item value="Jaguar">Jaguar</item>
+				    <item value="Jeep">Jeep</item>
+				    <item value="Kia">Kia</item>
+				    <item value="Lamborghini">Lamborghini</item>
+				    <item value="Lancia">Lancia</item>
+				    <item value="Lexus">Lexus</item>
+				    <item value="Lincoln">Lincoln</item>
+				    <item value="Lotus">Lotus</item>
+				    <item value="Maserati">Maserati</item>
+				    <item value="Morris">Morris</item>
+				    <item value="Mazda">Mazda</item>
+				    <item value="Mercedes-Benz">Mercedes-Benz</item>
+				    <item value="Mercury">Mercury</item>
+				    <item value="Merkur">Merkur</item>
+				    <item value="MG">MG</item>
+				    <item value="Mitsubishi">Mitsubishi</item>
+				    <item value="Nissan" >Nissan</item>
+				    <item value="Oldsmobile">Oldsmobile</item>
+				    <item value="Opel">Opel</item>
+				    <item value="Packard">Packard</item>
+				    <item value="Peugeot">Peugeot</item>
+				    <item value="Plymouth">Plymouth</item>
+				    <item value="Pontiac">Pontiac</item>
+				    <item value="Porsche">Porsche</item>
+				    <item value="Renault">Renault</item>
+				    <item value="Rolls Royce">Rolls Royce</item>
+				    <item value="Saab">Saab</item>
+				    <item value="Saturn">Saturn</item>
+				    <item value="Sterling">Sterling</item>
+				    <item value="Studebaker">Studebaker</item>
+				    <item value="Subaru">Subaru</item>
+				    <item value="Sunbeam">Sunbeam</item>
+				    <item value="Suzuki">Suzuki</item>
+				    <item value="Toyota">Toyota</item>
+				    <item value="TVR">TVR</item>
+				    <item value="Triumph">Triumph</item>
+				    <item value="Volkswagen">Volkswagen</item>
+				    <item value="Volvo">Volvo</item>
+				    <item value="Yugo">Yugo</item>
+				</selectbox>   
+			</element> 
+			<element vname="Bedrooms" text = "Model">
+				<textbox/>
+			</element>
+			<element vname="MaxMiles" text = "MAXimum Desired Mileage">
+				<textbox/>
+			</element>
+			<element vname="Stories" text = "Exterior Color">
+				<textbox/>
+			</element>
+			<element vname="YearBuilt" text = "Oldest Year Desired">
+				<selectbox>
+				    <item value="ALL">ALL</item>
+				    <item value="1900">1900</item>
+				    <item value="1925">1925</item>
+				    <item value="1930">1930</item>
+				    <item value="1935">1935</item>
+				    <item value="1940">1940</item>
+				    <item value="1945">1945</item>
+				    <item value="1950">1950</item>
+				    <item value="1955">1955</item>
+				    <item value="1956">1956</item>
+				    <item value="1957">1957</item>
+				    <item value="1958">1958</item>
+				    <item value="1959">1959</item>
+				    <item value="1960">1960</item>
+				    <item value="1961">1961</item>
+				    <item value="1962">1962</item>
+				    <item value="1963">1963</item>
+				    <item value="1964">1964</item>
+				    <item value="1965">1965</item>
+				    <item value="1966">1966</item>
+				    <item value="1967">1967</item>
+				    <item value="1968">1968</item>
+				    <item value="1969">1969</item>
+				    <item value="1970">1970</item>
+				    <item value="1971">1971</item>
+				    <item value="1972">1972</item>
+				    <item value="1973">1973</item>
+				    <item value="1974">1974</item>
+				    <item value="1975">1975</item>
+				    <item value="1976">1976</item>
+				    <item value="1977">1977</item>
+				    <item value="1978">1978</item>
+				    <item value="1979">1979</item>
+				    <item value="1980">1980</item>
+				    <item value="1981">1981</item>
+				    <item value="1982">1982</item>
+				    <item value="1983">1983</item>
+				    <item value="1984">1984</item>
+				    <item value="1985">1985</item>
+				    <item value="1986">1986</item>
+				    <item value="1987">1987</item>
+				    <item value="1988">1988</item>
+				    <item value="1989">1989</item>
+				    <item value="1990">1990</item>
+				    <item value="1991">1991</item>
+				    <item value="1992">1992</item>
+				    <item value="1993">1993</item>
+				    <item value="1994">1994</item>
+				    <item value="1995">1995</item>
+				    <item value="1996">1996</item>
+				    <item value="1997">1997</item>
+				    <item value="1998">1998</item>
+				    <item value="1999">1999</item>
+				    <item value="2000">2000</item>
+				    <item value="2001">2001</item>
+				    <item value="2002">2002</item>
+				    <item value="2003">2003</item>
+				</selectbox>
+			</element>
+			<element vname="SqFootage" text = "Engine">
+				<selectbox>
+				    <item value="ALL" >ALL</item>
+				    <item value="8 Cylinder">8 Cylinder</item>
+				    <item value="6 Cylinder">6 Cylinder</item>
+				    <item value="4 Cylinder">4 Cylinder</item>
+				    <item value="Other">Other</item>
+			    </selectbox>
+			</element>    
+			<element vname="EntryLevel" text = "Transmission">
+				<selectbox>
+			    	<item value="ALL" >ALL</item>
+			    	<item value="Automatic">Automatic</item>
+			    	<item value="Standard">Standard</item>
+			 	</selectbox>
+			 </element>
+			 <element vname="PrivatePool">
+			 	<checkbox>
+			 		<item>One Owner</item>
+			 	</checkbox>
+			 </element>
+			 <element vname="CommPool">
+			 	<checkbox>
+			 		<item>Power Accessories</item>
+			 	</checkbox>
+			 </element>
+			 <element vname="FirePlace">
+			 	<checkbox>
+			 		<item>Sun Roof</item>
+			 	</checkbox>
+			 </element>
+			 <element vname="GatedEntry">
+			 	<checkbox>
+			 		<item>4 Wheel Drive</item>
+			 	</checkbox>
+			 </element>
+			 <element vname="Basement">
+			 	<checkbox>
+			 		<item>Air Conditioning</item>
+			 	</checkbox>
+			 </element>
+		</element>			 
+	</search>         
+</domain>             
+                      
+                                           
+                      

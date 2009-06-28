@@ -1,0 +1,27 @@
+<domain name="rewf">
+<search>
+<source name="mediated"/>
+<element>
+  <element vname="pCategory" type="text"/>
+  <element vname="pCharacteristic" type="text"/>
+  <element vname="state" type="text"/>
+  <element vname="county" type="text"/>
+  <element vname="city" type="text"/>
+  <element vname="zip" type="text"/>
+  <element vname="country" type="text"/>
+  <element vname="numBeds" type="text"/>
+  <element vname="numBaths" type="text"/>
+  <element vname="minPrice" type="text"/>
+  <element vname="maxPrice" type="text"/>
+  <element vname="squareFootage" type="text"/>
+  <element vname="minAcerage" type="text"/>
+  <element vname="maxAcerage" type="text"/>
+  <element vname="minYear" type="text"/>
+  <element vname="maxYear" type="text"/>
+  <element vname="minLeaseRate" type="text"/>
+  <element vname="maxLeaseRate" type="text"/>
+  <element vname="agentName" type="text"/>
+  <element vname="agencyName" type="text"/>
+</element>
+</search>
+</domain>

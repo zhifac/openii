@@ -1,0 +1,154 @@
+<domain name="Automobile">
+  	<search>
+		<source name="1stopauto_used" url="http://www.1stopauto.com/used.htm"></source>
+		<element>
+	  		<element vname="YearMin" text = "Year">
+				<selectbox>
+			        <item>2003</item>
+			        <item>2002</item>
+			        <item>2001</item>
+			        <item>2000</item>
+			        <item>1999</item>
+			        <item>1998</item>
+			        <item>1997</item>
+			        <item>1996</item>
+			        <item>1995</item>
+			        <item>1994</item>
+			        <item>1993</item>
+			        <item>1992</item>
+			        <item>1991</item>
+			        <item>1990</item>
+			        <item>1989</item>
+			        <item>1988</item>
+			        <item>1987</item>
+			        <item>1986</item>
+			        <item>1985</item>
+			        <item>1984</item>
+			        <item>1983</item>
+				</selectbox>
+			</element>
+			<element vname="YearMax" >
+				<selectbox>
+		    	     <item>2003</item>
+		    	     <item>2002</item>
+		    	     <item>2001</item>
+		    	     <item>2000</item>
+		    	     <item>1999</item>
+		    	     <item>1998</item>
+		    	     <item>1997</item>
+		    	     <item>1996</item>
+		    	     <item>1995</item>
+		    	     <item>1994</item>
+		    	     <item>1993</item>
+		    	     <item>1992</item>
+		    	     <item>1991</item>
+		    	     <item>1990</item>
+		    	     <item>1989</item>
+		    	     <item>1988</item>
+		    	     <item>1987</item>
+		    	     <item>1986</item>
+		    	     <item>1985</item>
+		    	     <item>1984</item>
+		    	     <item>1983</item>
+        		</selectbox>
+			</element>
+			<element vname="Make" text = "Make">
+        		<selectbox>
+        			<item>All</item>
+        			<item>Acura</item>
+        			<item>Aston Martin</item>
+        			<item>Audi</item>
+        			<item>Bentley</item>
+        			<item>BMW</item>
+					<item>Buick</item>
+					<item>Cadillac</item>
+					<item>Chevrolet</item>
+					<item>Chrysler</item>
+					<item>Dodge</item>
+					<item>Ferrari</item>
+					<item>Ford</item>
+					<item>GMC</item>
+					<item>Honda</item>
+					<item>Hummer</item>
+					<item>Hyundai</item>
+					<item>Infiniti</item>
+					<item>Isuzu</item>
+					<item>Jaguar</item>
+					<item>Jeep</item>
+					<item>Kia</item>
+					<item>Lamborghini</item>
+					<item>Land Rover</item>
+					<item>Lexus</item>
+					<item>Lincoln</item>
+					<item>Lotus</item>
+					<item>Maserati</item>
+					<item>Maybach</item>
+					<item>Mazda</item>
+					<item>Mercedes Benz</item>
+					<item>Mercury</item>
+					<item>MINI</item>
+					<item>Mitsubishi</item>
+					<item>Morgan</item>
+					<item>Nissan</item>
+					<item>Oldsmobile</item>
+					<item>Panoz</item>
+					<item>Pontiac</item>
+					<item>Porsche</item>
+					<item>Rolls Royce</item>
+					<item>Saab</item>
+					<item>Saturn</item>
+					<item>Scion</item>
+					<item>Subaru</item>
+					<item>Suzuki</item>
+					<item>Toyota</item>
+					<item>Volkswagen</item>
+					<item>Volvo</item>
+				</selectbox>	
+			</element>
+			<element vname = "Model" text = "Model">
+				<selectbox>
+					<item>All</item>
+					<item>Accord</item>
+					<item>Civic</item>
+					<item>CR-V</item>
+					<item>Element</item>
+					<item>Insight</item>
+					<item>Odyssey</item>
+					<item>Pilot</item>
+					<item>S2000</item>
+				</selectbox>
+        	</element>
+        	
+			<element vname = "PriceRangeFrom" text = "Price Range" >
+				<textbox/>
+	  		</element>
+	  		<element vname = "PriceRangeTo" text = "to">
+				<textbox/>
+			</element>
+			<element vname = "Mileage" text = "Mileage">
+				<selectbox>
+	    	    	<item>All</item>
+	    	    	<item>10,0000 miles</item>
+	    	    	<item>20,000 miles</item>
+	    	    	<item>30,000 miles</item>
+	    	    	<item>40,000 miles</item>
+	    	    	<item>50,000 miles</item>
+	    	    	<item>60,000 miles</item>
+	    	    	<item>70,000 miles</item>
+	    	    	<item>80,000 miles</item>
+	    	    	<item>90,000 miles</item>
+	    	    	<item>100,000 miles</item>
+	    	    </selectbox>	  
+        	</element>
+			<element vname = "Color" text = "Color">
+				<textbox/>
+			</element>
+			<element vname = "ZipCode" text = "ZipCode">
+				<textbox/>
+	  		</element>
+	  		<element vname = "Email" text = "Email">
+				<textbox/>
+	  		</element>
+	  	</element>
+	</search>
+</domain>

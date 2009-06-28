@@ -1,0 +1,672 @@
+<search>
+
+<form ctr='2'>
+
+
+<source name = "nada" action='find-inventory.cgi' method='get' url='http://www2.nada.org/find-inventory.cgi'/>
+
+
+<element>
+
+
+<element ctr='0' type='hidden' value='search' vname='int'/>
+
+
+<element ctr='1' type='hidden' value='results' vname='newint'/>
+
+
+<element ctr='2' type='hidden' value='1' vname='page'/>
+
+
+<element ctr='3' text='Inventory Type: ' type='radio' vname='new_used'>
+
+
+<value>
+
+
+<item ctr='0' nicevalue='new_used'/>
+
+
+<item ctr='1' nicevalue='new'/>
+
+
+<item ctr='2' nicevalue='used'/>
+
+
+</value>
+
+
+</element>
+
+
+<element ctr='4' text='' type='select' vname='make'>
+
+
+<values>
+
+
+<item ctr='8' nicevalue='am general' value='am general'/>
+
+
+<item ctr='12' nicevalue='acura' value='acura'/>
+
+
+<item ctr='16' nicevalue='alfa romeo' value='alfa romeo'/>
+
+
+<item ctr='20' nicevalue='american motors' value='american motors'/>
+
+
+<item ctr='24' nicevalue='aston martin' value='aston martin'/>
+
+
+<item ctr='28' nicevalue='audi' value='audi'/>
+
+
+<item ctr='32' nicevalue='bmw' value='bmw'/>
+
+
+<item ctr='36' nicevalue='bentley' value='bentley'/>
+
+
+<item ctr='40' nicevalue='buick' value='buick'/>
+
+
+<item ctr='44' nicevalue='cadillac' value='cadillac'/>
+
+
+<item ctr='48' nicevalue='chevrolet' value='chevrolet'/>
+
+
+<item ctr='52' nicevalue='chrysler' value='chrysler'/>
+
+
+<item ctr='56' nicevalue='daewoo' value='daewoo'/>
+
+
+<item ctr='60' nicevalue='daihatsu' value='daihatsu'/>
+
+
+<item ctr='64' nicevalue='datsun' value='datsun'/>
+
+
+<item ctr='68' nicevalue='dodge' value='dodge'/>
+
+
+<item ctr='72' nicevalue='eagle' value='eagle'/>
+
+
+<item ctr='76' nicevalue='ferrari' value='ferrari'/>
+
+
+<item ctr='80' nicevalue='ford' value='ford'/>
+
+
+<item ctr='84' nicevalue='gmc' value='gmc'/>
+
+
+<item ctr='88' nicevalue='geo' value='geo'/>
+
+
+<item ctr='92' nicevalue='hummer' value='hummer'/>
+
+
+<item ctr='96' nicevalue='honda' value='honda'/>
+
+
+<item ctr='100' nicevalue='hyundai' value='hyundai'/>
+
+
+<item ctr='104' nicevalue='infiniti' value='infiniti'/>
+
+
+<item ctr='108' nicevalue='international' value='international'/>
+
+
+<item ctr='112' nicevalue='isuzu' value='isuzu'/>
+
+
+<item ctr='116' nicevalue='jaguar' value='jaguar'/>
+
+
+<item ctr='120' nicevalue='jeep' value='jeep'/>
+
+
+<item ctr='124' nicevalue='kia' value='kia'/>
+
+
+<item ctr='128' nicevalue='lamborghini' value='lamborghini'/>
+
+
+<item ctr='132' nicevalue='land rover' value='land rover'/>
+
+
+<item ctr='136' nicevalue='lexus' value='lexus'/>
+
+
+<item ctr='140' nicevalue='lincoln' value='lincoln'/>
+
+
+<item ctr='144' nicevalue='lotus' value='lotus'/>
+
+
+<item ctr='148' nicevalue='mg' value='mg'/>
+
+
+<item ctr='152' nicevalue='mini' value='mini'/>
+
+
+<item ctr='156' nicevalue='maserati' value='maserati'/>
+
+
+<item ctr='160' nicevalue='mazda' value='mazda'/>
+
+
+<item ctr='164' nicevalue='mercedes-benz' value='mercedes-benz'/>
+
+
+<item ctr='168' nicevalue='mercury' value='mercury'/>
+
+
+<item ctr='172' nicevalue='mitsubishi' value='mitsubishi'/>
+
+
+<item ctr='176' nicevalue='nissan' value='nissan'/>
+
+
+<item ctr='180' nicevalue='oldsmobile' value='oldsmobile'/>
+
+
+<item ctr='184' nicevalue='panoz' value='panoz'/>
+
+
+<item ctr='188' nicevalue='peugeot' value='peugeot'/>
+
+
+<item ctr='192' nicevalue='plymouth' value='plymouth'/>
+
+
+<item ctr='196' nicevalue='pontiac' value='pontiac'/>
+
+
+<item ctr='200' nicevalue='porsche' value='porsche'/>
+
+
+<item ctr='204' nicevalue='rolls royce' value='rolls royce'/>
+
+
+<item ctr='208' nicevalue='saab' value='saab'/>
+
+
+<item ctr='212' nicevalue='saturn' value='saturn'/>
+
+
+<item ctr='216' nicevalue='scion' value='scion'/>
+
+
+<item ctr='220' nicevalue='subaru' value='subaru'/>
+
+
+<item ctr='224' nicevalue='suzuki' value='suzuki'/>
+
+
+<item ctr='228' nicevalue='toyota' value='toyota'/>
+
+
+<item ctr='232' nicevalue='triumph' value='triumph'/>
+
+
+<item ctr='236' nicevalue='volkswagen' value='volkswagen'/>
+
+
+<item ctr='240' nicevalue='volvo' value='volvo'/>
+
+
+</values>
+
+
+</element>
+
+
+<element ctr='5' text='      ' type='select' vname='model'>
+
+
+<values>
+<item nicevalue="1000"/>
+<item nicevalue="6000"/>
+<item nicevalue="Aztek"/>
+<item nicevalue="Bonneville"/>
+<item nicevalue="Catalina"/>
+<item nicevalue="Fiero"/>
+<item nicevalue="Firebird" />
+<item nicevalue="Grand Am" />
+<item nicevalue="Grand Prix"/>
+<item nicevalue="Grandville" />
+<item nicevalue="Le Mans"/>
+<item nicevalue="Montana" />
+<item nicevalue="Parisienne" />
+<item nicevalue="Sunbird"/>
+<item nicevalue="Sunfire"/>
+<item nicevalue="Trans Am"/>
+<item nicevalue="Trans Sport"/>
+<item nicevalue="Vibe"/>
+ 
+</values>
+
+
+</element>
+
+
+<element ctr='7' text='Narrow Your Search Year:  ' type='select' vname='oldyear'>
+
+
+<values>
+
+
+<item ctr='4' nicevalue='any year' value='0>'/>
+
+
+<item ctr='8' nicevalue='2003' value='2003'/>
+
+
+<item ctr='11' nicevalue='2002' value='2002'/>
+
+
+<item ctr='14' nicevalue='2001' value='2001'/>
+
+
+<item ctr='17' nicevalue='2000' value='2000'/>
+
+
+<item ctr='20' nicevalue='1999' value='1999'/>
+
+
+<item ctr='23' nicevalue='1998' value='1998'/>
+
+
+<item ctr='26' nicevalue='1997' value='1997'/>
+
+
+<item ctr='29' nicevalue='1996' value='1996'/>
+
+
+<item ctr='32' nicevalue='1995' value='1995'/>
+
+
+<item ctr='35' nicevalue='1994' value='1994'/>
+
+
+<item ctr='38' nicevalue='1993' value='1993'/>
+
+
+<item ctr='41' nicevalue='1992' value='1992'/>
+
+
+<item ctr='44' nicevalue='1991' value='1991'/>
+
+
+<item ctr='47' nicevalue='1990' value='1990'/>
+
+
+<item ctr='50' nicevalue='1989' value='1989'/>
+
+
+<item ctr='53' nicevalue='1988' value='1988'/>
+
+
+<item ctr='56' nicevalue='1987' value='1987'/>
+
+
+<item ctr='59' nicevalue='1986' value='1986'/>
+
+
+<item ctr='62' nicevalue='1985' value='1985'/>
+
+
+<item ctr='65' nicevalue='1984' value='1984'/>
+
+
+<item ctr='68' nicevalue='1983' value='1983'/>
+
+
+<item ctr='71' nicevalue='1982' value='1982'/>
+
+
+</values>
+
+
+</element>
+
+
+<element ctr='8' text='to:' type='select' vname='newyear'>
+
+
+<values>
+
+
+<item ctr='4' nicevalue='any year' value='2010'/>
+
+
+<item ctr='8' nicevalue='2003' value='2003'/>
+
+
+<item ctr='11' nicevalue='2002' value='2002'/>
+
+
+<item ctr='14' nicevalue='2001' value='2001'/>
+
+
+<item ctr='17' nicevalue='2000' value='2000'/>
+
+
+<item ctr='20' nicevalue='1999' value='1999'/>
+
+
+<item ctr='23' nicevalue='1998' value='1998'/>
+
+
+<item ctr='26' nicevalue='1997' value='1997'/>
+
+
+<item ctr='29' nicevalue='1996' value='1996'/>
+
+
+<item ctr='32' nicevalue='1995' value='1995'/>
+
+
+<item ctr='35' nicevalue='1994' value='1994'/>
+
+
+<item ctr='38' nicevalue='1993' value='1993'/>
+
+
+<item ctr='41' nicevalue='1992' value='1992'/>
+
+
+<item ctr='44' nicevalue='1991' value='1991'/>
+
+
+<item ctr='47' nicevalue='1990' value='1990'/>
+
+
+<item ctr='50' nicevalue='1989' value='1989'/>
+
+
+<item ctr='53' nicevalue='1988' value='1988'/>
+
+
+<item ctr='56' nicevalue='1987' value='1987'/>
+
+
+<item ctr='59' nicevalue='1986' value='1986'/>
+
+
+<item ctr='62' nicevalue='1985' value='1985'/>
+
+
+<item ctr='65' nicevalue='1984' value='1984'/>
+
+
+<item ctr='68' nicevalue='1983' value='1983'/>
+
+
+<item ctr='71' nicevalue='1982' value='1982'/>
+
+
+
+
+</values>
+
+
+</element>
+
+
+<element ctr='9' text='Price' type='select' vname='minprice'>
+
+
+<values>
+
+
+<item ctr='4' nicevalue='$0' value='0'/>
+
+
+<item ctr='8' nicevalue='$5,000' value='5000'/>
+
+
+<item ctr='11' nicevalue='$10,000' value='10000'/>
+
+
+<item ctr='14' nicevalue='$15,000' value='15000'/>
+
+
+<item ctr='17' nicevalue='$20,000' value='20000'/>
+
+
+<item ctr='20' nicevalue='$25,000' value='25000'/>
+
+
+<item ctr='23' nicevalue='$30,000' value='30000'/>
+
+
+<item ctr='26' nicevalue='$40,000' value='40000'/>
+
+
+<item ctr='29' nicevalue='$50,000' value='50000'/>
+
+
+
+</values>
+
+
+</element>
+
+
+<element ctr='10' text='to ' type='select' vname='maxprice'>
+
+
+<values>
+
+
+<item ctr='4' nicevalue='any price' value='500000'/>
+
+
+<item ctr='8' nicevalue='$5,000' value='5000'/>
+
+
+<item ctr='11' nicevalue='$10,000' value='10000'/>
+
+
+<item ctr='14' nicevalue='$15,000' value='15000'/>
+
+
+<item ctr='17' nicevalue='$20,000' value='20000'/>
+
+
+<item ctr='20' nicevalue='$25,000' value='25000'/>
+
+
+<item ctr='23' nicevalue='$30,000' value='30000'/>
+
+
+<item ctr='26' nicevalue='$40,000' value='40000'/>
+
+
+<item ctr='29' nicevalue='$50,000' value='50000'/>
+
+
+</values>
+
+
+</element>
+
+
+<element ctr='11' text='Milage' type='select' vname='minmiles'>
+
+
+<values>
+
+
+<item ctr='4' nicevalue='0' value='0'/>
+
+
+<item ctr='8' nicevalue='15,000' value='15000'/>
+
+
+<item ctr='11' nicevalue='30,000' value='30000'/>
+
+
+<item ctr='14' nicevalue='50,000' value='50000'/>
+
+
+<item ctr='17' nicevalue='75,000' value='75000'/>
+
+
+</values>
+
+
+</element>
+
+
+<element ctr='12' text='to' type='select' vname='maxmiles'>
+
+
+<values>
+
+
+<item ctr='4' nicevalue='any mileage' value='500000'/>
+
+
+<item ctr='8' nicevalue='15,000' value='15000'/>
+
+
+<item ctr='11' nicevalue='30,000' value='30000'/>
+
+
+<item ctr='14' nicevalue='50,000' value='50000'/>
+
+
+<item ctr='17' nicevalue='75,000' value='75000'/>
+
+
+
+</values>
+
+
+</element>
+
+
+<element ctr='13' text='Organize Your Results      Results per page:  ' type='select' vname='numresults'>
+
+
+<values>
+
+
+<item ctr='3' nicevalue='5' value='5'/>
+
+
+<item ctr='6' nicevalue='10' value='10'/>
+
+
+<item ctr='9' nicevalue='25' value='25'/>
+
+
+<item ctr='12' nicevalue='50' value='50'/>
+
+
+<item ctr='15' nicevalue='100' value='100'/>
+
+
+</values>
+
+
+</element>
+
+
+<element ctr='14' text='Sort by: ' type='select' vname='sort'>
+
+
+<values>
+
+
+<item ctr='3' nicevalue='year' value='year_a'/>
+
+
+<item ctr='6' nicevalue='vehicle' value='vehicle_a'/>
+
+
+<item ctr='9' nicevalue='price' value='price_a'/>
+
+
+<item ctr='12' nicevalue='miles' value='miles_a'/>
+
+
+<item ctr='15' nicevalue='distance' value='distance_a'/>
+
+
+</values>
+
+
+</element>
+
+
+<element ctr='15' text='Zip Code:' type='text' vname='zip'/>
+
+
+<element ctr='16' text='Distance:' type='select' vname='distance'>
+
+
+<values>
+
+
+<item ctr='3' nicevalue='10 miles' value='10'/>
+
+
+<item ctr='6' nicevalue='25 miles' value='25'/>
+
+
+<item ctr='9' nicevalue='50 miles' value='50'/>
+
+
+<item ctr='12' nicevalue='75 miles' value='75'/>
+
+
+<item ctr='15' nicevalue='100 miles' value='100'/>
+
+
+<item ctr='18' nicevalue='150 miles' value='150'/>
+
+
+<item ctr='21' nicevalue='200 miles' value='200'/>
+
+
+</values>
+
+
+</element>
+
+
+<element ctr='17' text=' This State Only: ' type='radio' vname='instate'>
+
+
+<values>
+
+
+<item ctr='0' nicevalue='yes'/>
+
+
+<item ctr='1' nicevalue='no'/>
+
+
+</values>
+
+
+</element>
+
+
+</element>
+
+
+</form>
+
+
+</search>

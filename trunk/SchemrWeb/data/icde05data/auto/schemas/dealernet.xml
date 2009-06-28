@@ -1,0 +1,2428 @@
+<search>
+
+
+<form ctr='1'>
+
+
+<source name = "dealernet" action='/auto_search/inventory.cgi' method='get' url='http://dealernet.com/auto_search/inventory.cgi'/>
+
+
+<element>
+<element type = "text" vname = "zip"/>
+
+<element ctr='0' type='hidden' value='200331340423034' vname='session_id'/>
+
+
+<element ctr='1' type='hidden' value='search' vname='int'/>
+
+
+<element ctr='2' type='hidden' value='results' vname='newint'/>
+
+
+<element ctr='4' text='Distance:' type='select' vname='distance'>
+
+
+<values>
+
+
+<item ctr='4' nicevalue='10 miles' value='10'/>
+
+
+<item ctr='6' nicevalue='25 miles' value='25'/>
+
+
+<item ctr='8' nicevalue='50 miles' value='50'/>
+
+
+<item ctr='10' nicevalue='75 miles' value='75'/>
+
+
+<item ctr='12' nicevalue='100 miles' value='100'/>
+
+
+<item ctr='14' nicevalue='150 miles' value='150'/>
+
+
+<item ctr='16' nicevalue='200 miles' value='200'/>
+
+
+</values>
+
+
+</element>
+
+
+<element ctr='5' text='This State Only: ' type='radio' vname='instate'>
+
+
+<values>
+
+
+<item ctr='0' nicevalue='yes'/>
+
+
+<item ctr='1' nicevalue='no'/>
+
+
+</values>
+
+
+</element>
+
+
+<element ctr='6' text='Choose Inventory Criteria       Inventory Type:     New and Used     New     Used' type='radio' vname='new_used'>
+
+
+<values>
+
+
+<item ctr='0' value='new_used' nicevalue='new_used'/>
+
+
+<item ctr='1' value='new' nicevalue='new'/>
+
+
+<item ctr='2' value='used' nicevalue='used'/>
+
+
+</values>
+
+
+</element>
+
+
+<element ctr='7' text='Select Vehicle Make and Model. Use your Control key to select up to 4 vehicles.' type='select' vname='vehicle'>
+
+
+<values>
+
+
+<item ctr='3' nicevalue='--- acura ---' value='3,0'/>
+
+
+<item ctr='7' nicevalue='acura cl' value='3,162'/>
+
+
+<item ctr='11' nicevalue='acura integra' value='3,309'/>
+
+
+<item ctr='15' nicevalue='acura legend' value='3,332'/>
+
+
+<item ctr='19' nicevalue='acura mdx' value='3,1002424'/>
+
+
+<item ctr='23' nicevalue='acura nsx' value='3,388'/>
+
+
+<item ctr='27' nicevalue='acura rl' value='3,444'/>
+
+
+<item ctr='31' nicevalue='acura rsx' value='3,1004004'/>
+
+
+<item ctr='35' nicevalue='acura slx' value='3,515'/>
+
+
+<item ctr='39' nicevalue='acura tl' value='3,563'/>
+
+
+<item ctr='43' nicevalue='acura tsx' value='3,1007213'/>
+
+
+<item ctr='47' nicevalue='acura vigor' value='3,589'/>
+
+
+<item ctr='51' nicevalue='--- alfa romeo ---' value='4,0'/>
+
+
+<item ctr='55' nicevalue='alfa romeo spider' value='4,522'/>
+
+
+<item ctr='59' nicevalue='--- audi ---' value='5,0'/>
+
+
+<item ctr='63' nicevalue='audi 100' value='5,1'/>
+
+
+<item ctr='67' nicevalue='audi 200' value='5,4'/>
+
+
+<item ctr='71' nicevalue='audi 80' value='5,41'/>
+
+
+<item ctr='75' nicevalue='audi 90' value='5,46'/>
+
+
+<item ctr='79' nicevalue='audi a4' value='5,68'/>
+
+
+<item ctr='83' nicevalue='audi a4 series' value='5,69'/>
+
+
+<item ctr='87' nicevalue='audi a6' value='5,70'/>
+
+
+<item ctr='91' nicevalue='audi a6 series' value='5,71'/>
+
+
+<item ctr='95' nicevalue='audi a8' value='5,72'/>
+
+
+<item ctr='99' nicevalue='audi a8 l' value='5,1007403'/>
+
+
+<item ctr='103' nicevalue='audi a8 series' value='5,73'/>
+
+
+<item ctr='107' nicevalue='audi cabrio' value='5,135'/>
+
+
+<item ctr='111' nicevalue='audi cabriolet' value='5,136'/>
+
+
+<item ctr='115' nicevalue='audi coupe' value='5,182'/>
+
+
+<item ctr='119' nicevalue='audi rs6' value='5,1007203'/>
+
+
+<item ctr='123' nicevalue='audi s4' value='5,461'/>
+
+
+<item ctr='127' nicevalue='audi s4 series' value='5,781'/>
+
+
+<item ctr='131' nicevalue='audi s6' value='5,462'/>
+
+
+<item ctr='135' nicevalue='audi s8' value='5,1002634'/>
+
+
+<item ctr='139' nicevalue='audi tt' value='5,1002094'/>
+
+
+<item ctr='143' nicevalue='audi tt coupe' value='5,750'/>
+
+
+<item ctr='147' nicevalue='audi v8' value='5,579'/>
+
+
+<item ctr='151' nicevalue='audi allroad' value='5,1005443'/>
+
+
+<item ctr='155' nicevalue='--- bmw ---' value='6,0'/>
+
+
+<item ctr='159' nicevalue='bmw 3-series' value='6,12'/>
+
+
+<item ctr='163' nicevalue='bmw 323i' value='6,691'/>
+
+
+<item ctr='167' nicevalue='bmw 323ic' value='6,693'/>
+
+
+<item ctr='171' nicevalue='bmw 328i' value='6,695'/>
+
+
+<item ctr='175' nicevalue='bmw 5-series' value='6,28'/>
+
+
+<item ctr='179' nicevalue='bmw 528i' value='6,696'/>
+
+
+<item ctr='183' nicevalue='bmw 540i' value='6,692'/>
+
+
+<item ctr='187' nicevalue='bmw 7-series' value='6,36'/>
+
+
+<item ctr='191' nicevalue='bmw 740il' value='6,699'/>
+
+
+<item ctr='195' nicevalue='bmw cooper' value='6,1004823'/>
+
+
+<item ctr='199' nicevalue='bmw coupe' value='6,182'/>
+
+
+<item ctr='203' nicevalue='bmw m3' value='6,690'/>
+
+
+<item ctr='207' nicevalue='bmw sedan' value='6,483'/>
+
+
+<item ctr='211' nicevalue='bmw x5-series' value='6,815'/>
+
+
+<item ctr='215' nicevalue='bmw z3' value='6,622'/>
+
+
+<item ctr='219' nicevalue='bmw z3-series' value='6,630'/>
+
+
+<item ctr='223' nicevalue='bmw z4-series' value='6,1005433'/>
+
+
+<item ctr='227' nicevalue='bmw z8' value='6,1002804'/>
+
+
+<item ctr='231' nicevalue='bmw z8-series' value='6,823'/>
+
+
+<item ctr='235' nicevalue='--- buick ---' value='7,0'/>
+
+
+<item ctr='239' nicevalue='buick century' value='7,151'/>
+
+
+<item ctr='243' nicevalue='buick electra' value='7,229'/>
+
+
+<item ctr='247' nicevalue='buick lesabre' value='7,334'/>
+
+
+<item ctr='251' nicevalue='buick park avenue' value='7,397'/>
+
+
+<item ctr='255' nicevalue='buick rainier' value='7,1007823'/>
+
+
+<item ctr='259' nicevalue='buick reatta' value='7,439'/>
+
+
+<item ctr='263' nicevalue='buick regal' value='7,440'/>
+
+
+<item ctr='267' nicevalue='buick rendezvous' value='7,1002203'/>
+
+
+<item ctr='271' nicevalue='buick riviera' value='7,443'/>
+
+
+<item ctr='275' nicevalue='buick roadmaster' value='7,445'/>
+
+
+<item ctr='279' nicevalue='buick skyhawk' value='7,510'/>
+
+
+<item ctr='283' nicevalue='buick skylark' value='7,511'/>
+
+
+<item ctr='287' nicevalue='--- cadillac ---' value='8,0'/>
+
+
+<item ctr='291' nicevalue='cadillac brougham' value='8,121'/>
+
+
+<item ctr='295' nicevalue='cadillac cts' value='8,1004203'/>
+
+
+<item ctr='299' nicevalue='cadillac catera' value='8,147'/>
+
+
+<item ctr='303' nicevalue='cadillac concours' value='8,172'/>
+
+
+<item ctr='307' nicevalue='cadillac deville dhs' value='8,758'/>
+
+
+<item ctr='311' nicevalue='cadillac deville dts' value='8,759'/>
+
+
+<item ctr='315' nicevalue='cadillac deville' value='8,207'/>
+
+
+<item ctr='319' nicevalue='cadillac eldorado' value='8,228'/>
+
+
+<item ctr='323' nicevalue='cadillac escalade' value='8,631'/>
+
+
+<item ctr='327' nicevalue='cadillac escalade esv' value='8,1005803'/>
+
+
+<item ctr='331' nicevalue='cadillac escalade ext' value='8,1003203'/>
+
+
+<item ctr='335' nicevalue='cadillac fleetwood' value='8,266'/>
+
+
+<item ctr='339' nicevalue='cadillac srx' value='8,1007833'/>
+
+
+<item ctr='343' nicevalue='cadillac sedan' value='8,483'/>
+
+
+<item ctr='347' nicevalue='cadillac seville' value='8,487'/>
+
+
+<item ctr='351' nicevalue='cadillac sixty special' value='8,509'/>
+
+
+<item ctr='355' nicevalue='cadillac xlr' value='8,1007443'/>
+
+
+<item ctr='359' nicevalue='cadillac dapos;elegance' value='8,193'/>
+
+
+<item ctr='363' nicevalue='--- chevrolet ---' value='9,0'/>
+
+
+<item ctr='367' nicevalue='chevrolet astro cargo' value='9,88'/>
+
+
+<item ctr='371' nicevalue='chevrolet astro cargo van' value='9,89'/>
+
+
+<item ctr='375' nicevalue='chevrolet astro passenger' value='9,90'/>
+
+
+<item ctr='379' nicevalue='chevrolet astro van' value='9,688'/>
+
+
+<item ctr='383' nicevalue='chevrolet avalanche' value='9,1002003'/>
+
+
+<item ctr='387' nicevalue='chevrolet beretta' value='9,104'/>
+
+
+<item ctr='391' nicevalue='chevrolet blazer' value='9,105'/>
+
+
+<item ctr='395' nicevalue='chevrolet c/k 1500' value='9,125'/>
+
+
+<item ctr='399' nicevalue='chevrolet c/k 2500 crew cab' value='9,128'/>
+
+
+<item ctr='403' nicevalue='chevrolet c/k 3500' value='9,129'/>
+
+
+<item ctr='407' nicevalue='chevrolet c/k 3500 crew cab' value='9,130'/>
+
+
+<item ctr='411' nicevalue='chevrolet c1500' value='9,666'/>
+
+
+<item ctr='415' nicevalue='chevrolet c2500 pickup 2wd' value='9,132'/>
+
+
+<item ctr='419' nicevalue='chevrolet c3500 pickup 2wd' value='9,133'/>
+
+
+<item ctr='423' nicevalue='chevrolet camaro' value='9,137'/>
+
+
+<item ctr='427' nicevalue='chevrolet caprice' value='9,141'/>
+
+
+<item ctr='431' nicevalue='chevrolet cavalier' value='9,148'/>
+
+
+<item ctr='435' nicevalue='chevrolet celebrity' value='9,149'/>
+
+
+<item ctr='439' nicevalue='chevrolet corsica' value='9,178'/>
+
+
+<item ctr='443' nicevalue='chevrolet corvette' value='9,179'/>
+
+
+<item ctr='447' nicevalue='chevrolet express' value='9,1003614'/>
+
+
+<item ctr='451' nicevalue='chevrolet express cargo' value='9,10830'/>
+
+
+<item ctr='455' nicevalue='chevrolet express cargo van' value='9,246'/>
+
+
+<item ctr='459' nicevalue='chevrolet express commrcl cutaway' value='9,762'/>
+
+
+<item ctr='463' nicevalue='chevrolet express passenger' value='9,1005003'/>
+
+
+<item ctr='467' nicevalue='chevrolet express van' value='9,247'/>
+
+
+<item ctr='471' nicevalue='chevrolet g20' value='9,278'/>
+
+
+<item ctr='475' nicevalue='chevrolet impala' value='9,746'/>
+
+
+<item ctr='479' nicevalue='chevrolet impala ss' value='9,302'/>
+
+
+<item ctr='483' nicevalue='chevrolet k1500' value='9,658'/>
+
+
+<item ctr='487' nicevalue='chevrolet k2500' value='9,756'/>
+
+
+<item ctr='491' nicevalue='chevrolet k3500 pickup 4wd' value='9,321'/>
+
+
+<item ctr='495' nicevalue='chevrolet lumina' value='9,341'/>
+
+
+<item ctr='499' nicevalue='chevrolet lumina apv' value='9,342'/>
+
+
+<item ctr='503' nicevalue='chevrolet malibu' value='9,349'/>
+
+
+<item ctr='507' nicevalue='chevrolet metro' value='9,354'/>
+
+
+<item ctr='511' nicevalue='chevrolet monte carlo' value='9,363'/>
+
+
+<item ctr='515' nicevalue='chevrolet new tahoe' value='9,807'/>
+
+
+<item ctr='519' nicevalue='chevrolet prizm' value='9,408'/>
+
+
+<item ctr='523' nicevalue='chevrolet r20 4d pickup 2wd' value='9,417'/>
+
+
+<item ctr='527' nicevalue='chevrolet r30 4d pickup 2wd' value='9,419'/>
+
+
+<item ctr='531' nicevalue='chevrolet r3500 4d pickup 2wd' value='9,420'/>
+
+
+<item ctr='535' nicevalue='chevrolet s-10' value='9,453'/>
+
+
+<item ctr='539' nicevalue='chevrolet s10' value='9,660'/>
+
+
+<item ctr='543' nicevalue='chevrolet s10 pickup' value='9,456'/>
+
+
+<item ctr='547' nicevalue='chevrolet ssr' value='9,1006823'/>
+
+
+<item ctr='551' nicevalue='chevrolet silverado 1500' value='9,507'/>
+
+
+<item ctr='555' nicevalue='chevrolet silverado 1500hd' value='9,1001263'/>
+
+
+<item ctr='559' nicevalue='chevrolet silverado 2500' value='9,508'/>
+
+
+<item ctr='563' nicevalue='chevrolet silverado 2500hd' value='9,10848'/>
+
+
+<item ctr='567' nicevalue='chevrolet silverado 3500' value='9,10851'/>
+
+
+<item ctr='571' nicevalue='chevrolet silverado ss' value='9,1005413'/>
+
+
+<item ctr='575' nicevalue='chevrolet spectrum' value='9,521'/>
+
+
+<item ctr='579' nicevalue='chevrolet sportvan' value='9,525'/>
+
+
+<item ctr='583' nicevalue='chevrolet suburban' value='9,533'/>
+
+
+<item ctr='587' nicevalue='chevrolet tahoe' value='9,553'/>
+
+
+<item ctr='591' nicevalue='chevrolet tracker' value='9,569'/>
+
+
+<item ctr='595' nicevalue='chevrolet trailblazer' value='9,1001613'/>
+
+
+<item ctr='599' nicevalue='chevrolet v10 blazer 4wd' value='9,574'/>
+
+
+<item ctr='603' nicevalue='chevrolet v30 4d pickup 4wd' value='9,576'/>
+
+
+<item ctr='607' nicevalue='chevrolet v3500 4d pickup 4wd' value='9,577'/>
+
+
+<item ctr='611' nicevalue='chevrolet venture' value='9,586'/>
+
+
+<item ctr='615' nicevalue='--- chrysler ---' value='10,0'/>
+
+
+<item ctr='619' nicevalue='chrysler 300 series' value='10,13'/>
+
+
+<item ctr='623' nicevalue='chrysler 300m' value='10,15'/>
+
+
+<item ctr='627' nicevalue='chrysler cirrus' value='10,159'/>
+
+
+<item ctr='631' nicevalue='chrysler concorde' value='10,171'/>
+
+
+<item ctr='635' nicevalue='chrysler crossfire' value='10,1007413'/>
+
+
+<item ctr='639' nicevalue='chrysler daytona' value='10,203'/>
+
+
+<item ctr='643' nicevalue='chrysler dynasty' value='10,215'/>
+
+
+<item ctr='647' nicevalue='chrysler fifth avenue' value='10,264'/>
+
+
+<item ctr='651' nicevalue='chrysler grand voyager' value='10,1003434'/>
+
+
+<item ctr='655' nicevalue='chrysler imperial' value='10,303'/>
+
+
+<item ctr='659' nicevalue='chrysler intrepid' value='10,310'/>
+
+
+<item ctr='663' nicevalue='chrysler lhs' value='10,335'/>
+
+
+<item ctr='667' nicevalue='chrysler laser' value='10,325'/>
+
+
+<item ctr='671' nicevalue='chrysler lebaron' value='10,326'/>
+
+
+<item ctr='675' nicevalue='chrysler lebaron convertible' value='10,327'/>
+
+
+<item ctr='679' nicevalue='chrysler neon' value='10,380'/>
+
+
+<item ctr='683' nicevalue='chrysler new yorker' value='10,382'/>
+
+
+<item ctr='687' nicevalue='chrysler new yorker fifth avenue' value='10,383'/>
+
+
+<item ctr='691' nicevalue='chrysler new yorker landau' value='10,384'/>
+
+
+<item ctr='695' nicevalue='chrysler new yorker salon' value='10,385'/>
+
+
+<item ctr='699' nicevalue='chrysler pt cruiser' value='10,820'/>
+
+
+<item ctr='703' nicevalue='chrysler pacifica' value='10,1006603'/>
+
+
+<item ctr='707' nicevalue='chrysler prowler' value='10,412'/>
+
+
+<item ctr='711' nicevalue='chrysler sebring' value='10,482'/>
+
+
+<item ctr='715' nicevalue='chrysler tc' value='10,558'/>
+
+
+<item ctr='719' nicevalue='chrysler town country' value='10,566'/>
+
+
+<item ctr='723' nicevalue='chrysler voyager' value='10,594'/>
+
+
+<item ctr='727' nicevalue='--- daewoo ---' value='48,0'/>
+
+
+<item ctr='731' nicevalue='daewoo lanos' value='48,817'/>
+
+
+<item ctr='735' nicevalue='daewoo leganza' value='48,818'/>
+
+
+<item ctr='739' nicevalue='daewoo nubira' value='48,819'/>
+
+
+<item ctr='743' nicevalue='--- daihatsu ---' value='11,0'/>
+
+
+<item ctr='747' nicevalue='daihatsu charade' value='11,152'/>
+
+
+<item ctr='751' nicevalue='daihatsu rocky 4wd' value='11,446'/>
+
+
+<item ctr='755' nicevalue='--- dodge ---' value='12,0'/>
+
+
+<item ctr='759' nicevalue='dodge 600 series' value='12,33'/>
+
+
+<item ctr='763' nicevalue='dodge aries america' value='12,86'/>
+
+
+<item ctr='767' nicevalue='dodge avenger' value='12,94'/>
+
+
+<item ctr='771' nicevalue='dodge b series cargo van' value='12,96'/>
+
+
+<item ctr='775' nicevalue='dodge b series wagon' value='12,97'/>
+
+
+<item ctr='779' nicevalue='dodge caravan' value='12,143'/>
+
+
+<item ctr='783' nicevalue='dodge caravan c/v' value='12,1006803'/>
+
+
+<item ctr='787' nicevalue='dodge caravan fwd' value='12,146'/>
+
+
+<item ctr='791' nicevalue='dodge colt' value='12,167'/>
+
+
+<item ctr='795' nicevalue='dodge d100 pickup 2wd' value='12,194'/>
+
+
+<item ctr='799' nicevalue='dodge d150 pickup 2wd' value='12,195'/>
+
+
+<item ctr='803' nicevalue='dodge d250 pickup 2wd' value='12,197'/>
+
+
+<item ctr='807' nicevalue='dodge d350 pickup 2wd' value='12,199'/>
+
+
+<item ctr='811' nicevalue='dodge dakota' value='12,201'/>
+
+
+<item ctr='815' nicevalue='dodge dakota pickup' value='12,202'/>
+
+
+<item ctr='819' nicevalue='dodge daytona' value='12,203'/>
+
+
+<item ctr='823' nicevalue='dodge diplomat' value='12,210'/>
+
+
+<item ctr='827' nicevalue='dodge durango' value='12,214'/>
+
+
+<item ctr='831' nicevalue='dodge dynasty' value='12,215'/>
+
+
+<item ctr='835' nicevalue='dodge grand caravan' value='12,1003424'/>
+
+
+<item ctr='839' nicevalue='dodge intrepid' value='12,310'/>
+
+
+<item ctr='843' nicevalue='dodge lancer' value='12,322'/>
+
+
+<item ctr='847' nicevalue='dodge monaco' value='12,362'/>
+
+
+<item ctr='851' nicevalue='dodge neon' value='12,380'/>
+
+
+<item ctr='855' nicevalue='dodge omni' value='12,392'/>
+
+
+<item ctr='859' nicevalue='dodge raider 4wd' value='12,421'/>
+
+
+<item ctr='863' nicevalue='dodge ram' value='12,757'/>
+
+
+<item ctr='867' nicevalue='dodge ram 1500' value='12,662'/>
+
+
+<item ctr='871' nicevalue='dodge ram 2500' value='12,664'/>
+
+
+<item ctr='875' nicevalue='dodge ram 3500' value='12,729'/>
+
+
+<item ctr='879' nicevalue='dodge ram br1500' value='12,426'/>
+
+
+<item ctr='883' nicevalue='dodge ram br2500' value='12,427'/>
+
+
+<item ctr='887' nicevalue='dodge ram br2500 chassis cab' value='12,428'/>
+
+
+<item ctr='891' nicevalue='dodge ram br3500' value='12,429'/>
+
+
+<item ctr='895' nicevalue='dodge ram br3500 chassis cab' value='12,430'/>
+
+
+<item ctr='899' nicevalue='dodge ram van' value='12,431'/>
+
+
+<item ctr='903' nicevalue='dodge ram wagon' value='12,432'/>
+
+
+<item ctr='907' nicevalue='dodge shadow' value='12,488'/>
+
+
+<item ctr='911' nicevalue='dodge spirit' value='12,523'/>
+
+
+<item ctr='915' nicevalue='dodge sprinter' value='12,1006613'/>
+
+
+<item ctr='919' nicevalue='dodge sprinter wagon' value='12,1006623'/>
+
+
+<item ctr='923' nicevalue='dodge stealth' value='12,528'/>
+
+
+<item ctr='927' nicevalue='dodge stratus' value='12,531'/>
+
+
+<item ctr='931' nicevalue='dodge viper' value='12,592'/>
+
+
+<item ctr='935' nicevalue='dodge w100 pickup 4wd' value='12,597'/>
+
+
+<item ctr='939' nicevalue='dodge w150 pickup 4wd' value='12,598'/>
+
+
+<item ctr='943' nicevalue='dodge w250 pickup 4wd' value='12,600'/>
+
+
+<item ctr='947' nicevalue='dodge w350 pickup 4wd' value='12,602'/>
+
+
+<item ctr='951' nicevalue='--- eagle ---' value='13,0'/>
+
+
+<item ctr='955' nicevalue='eagle medallion' value='13,353'/>
+
+
+<item ctr='959' nicevalue='eagle premier' value='13,406'/>
+
+
+<item ctr='963' nicevalue='eagle summit' value='13,534'/>
+
+
+<item ctr='967' nicevalue='eagle talon' value='13,556'/>
+
+
+<item ctr='971' nicevalue='eagle vision' value='13,593'/>
+
+
+<item ctr='975' nicevalue='--- ferrari ---' value='46,0'/>
+
+
+<item ctr='979' nicevalue='ferrari f355' value='46,714'/>
+
+
+<item ctr='983' nicevalue='--- ford ---' value='14,0'/>
+
+
+<item ctr='987' nicevalue='ford aerostar' value='14,1003014'/>
+
+
+<item ctr='991' nicevalue='ford aerostar wagon' value='14,81'/>
+
+
+<item ctr='995' nicevalue='ford aspire' value='14,87'/>
+
+
+<item ctr='999' nicevalue='ford bronco' value='14,1003004'/>
+
+
+<item ctr='1003' nicevalue='ford club wagon' value='14,166'/>
+
+
+<item ctr='1007' nicevalue='ford contour' value='14,175'/>
+
+
+<item ctr='1011' nicevalue='ford crown victoria' value='14,185'/>
+
+
+<item ctr='1015' nicevalue='ford econoline' value='14,219'/>
+
+
+<item ctr='1019' nicevalue='ford econoline commrcl chassis' value='14,220'/>
+
+
+<item ctr='1023' nicevalue='ford econoline commrcl cutaway' value='14,221'/>
+
+
+<item ctr='1027' nicevalue='ford econoline cutaway' value='14,745'/>
+
+
+<item ctr='1031' nicevalue='ford econoline wagon' value='14,223'/>
+
+
+<item ctr='1035' nicevalue='ford escape' value='14,821'/>
+
+
+<item ctr='1039' nicevalue='ford escort' value='14,234'/>
+
+
+<item ctr='1043' nicevalue='ford escort zx2' value='14,760'/>
+
+
+<item ctr='1047' nicevalue='ford excursion' value='14,761'/>
+
+
+<item ctr='1051' nicevalue='ford expedition' value='14,239'/>
+
+
+<item ctr='1055' nicevalue='ford explorer' value='14,240'/>
+
+
+<item ctr='1059' nicevalue='ford explorer sport' value='14,10827'/>
+
+
+<item ctr='1063' nicevalue='ford explorer sport trac' value='14,812'/>
+
+
+<item ctr='1067' nicevalue='ford f-150' value='14,10833'/>
+
+
+<item ctr='1071' nicevalue='ford f-150 heritage' value='14,1007433'/>
+
+
+<item ctr='1075' nicevalue='ford f-150 series' value='14,248'/>
+
+
+<item ctr='1079' nicevalue='ford f-150 supercrew' value='14,813'/>
+
+
+<item ctr='1083' nicevalue='ford f-250 series' value='14,251'/>
+
+
+<item ctr='1087' nicevalue='ford f150' value='14,669'/>
+
+
+<item ctr='1091' nicevalue='ford f250' value='14,670'/>
+
+
+<item ctr='1095' nicevalue='ford f350' value='14,676'/>
+
+
+<item ctr='1099' nicevalue='ford f450' value='14,689'/>
+
+
+<item ctr='1103' nicevalue='ford f550' value='14,678'/>
+
+
+<item ctr='1107' nicevalue='ford festiva' value='14,263'/>
+
+
+<item ctr='1111' nicevalue='ford focus' value='14,764'/>
+
+
+<item ctr='1115' nicevalue='ford freestar' value='14,1008253'/>
+
+
+<item ctr='1119' nicevalue='ford ltd crown victoria' value='14,340'/>
+
+
+<item ctr='1123' nicevalue='ford mustang' value='14,372'/>
+
+
+<item ctr='1127' nicevalue='ford probe' value='14,409'/>
+
+
+<item ctr='1131' nicevalue='ford ranger' value='14,436'/>
+
+
+<item ctr='1135' nicevalue='ford ranger pickup' value='14,437'/>
+
+
+<item ctr='1139' nicevalue='ford super duty f-250' value='14,538'/>
+
+
+<item ctr='1143' nicevalue='ford super duty f-350 drw' value='14,539'/>
+
+
+<item ctr='1147' nicevalue='ford super duty f-350 srw' value='14,540'/>
+
+
+<item ctr='1151' nicevalue='ford taurus' value='14,557'/>
+
+
+<item ctr='1155' nicevalue='ford tempo' value='14,559'/>
+
+
+<item ctr='1159' nicevalue='ford thunderbird' value='14,561'/>
+
+
+<item ctr='1163' nicevalue='ford windstar' value='14,606'/>
+
+
+<item ctr='1167' nicevalue='--- gmc ---' value='15,0'/>
+
+
+<item ctr='1171' nicevalue='gmc c1500' value='15,666'/>
+
+
+<item ctr='1175' nicevalue='gmc c2500 pickup 2wd' value='15,132'/>
+
+
+<item ctr='1179' nicevalue='gmc c3500 pickup 2wd' value='15,133'/>
+
+
+<item ctr='1183' nicevalue='gmc denali' value='15,206'/>
+
+
+<item ctr='1187' nicevalue='gmc envoy' value='15,230'/>
+
+
+<item ctr='1191' nicevalue='gmc envoy xl' value='15,1004003'/>
+
+
+<item ctr='1195' nicevalue='gmc jimmy' value='15,315'/>
+
+
+<item ctr='1199' nicevalue='gmc k1500' value='15,658'/>
+
+
+<item ctr='1203' nicevalue='gmc k2500' value='15,756'/>
+
+
+<item ctr='1207' nicevalue='gmc k3500 pickup 4wd' value='15,321'/>
+
+
+<item ctr='1211' nicevalue='gmc r3500 4d pickup 2wd' value='15,420'/>
+
+
+<item ctr='1215' nicevalue='gmc rally' value='15,422'/>
+
+
+<item ctr='1219' nicevalue='gmc s15 jimmy' value='15,459'/>
+
+
+<item ctr='1223' nicevalue='gmc safari' value='15,467'/>
+
+
+<item ctr='1227' nicevalue='gmc safari passenger' value='15,470'/>
+
+
+<item ctr='1231' nicevalue='gmc savana' value='15,683'/>
+
+
+<item ctr='1235' nicevalue='gmc savana cargo' value='15,474'/>
+
+
+<item ctr='1239' nicevalue='gmc savana cargo van' value='15,1001243'/>
+
+
+<item ctr='1243' nicevalue='gmc savana cutaway' value='15,1002803'/>
+
+
+<item ctr='1247' nicevalue='gmc savana passenger' value='15,475'/>
+
+
+<item ctr='1251' nicevalue='gmc sierra ;classic 1500;' value='15,491'/>
+
+
+<item ctr='1255' nicevalue='gmc sierra 1500' value='15,492'/>
+
+
+<item ctr='1259' nicevalue='gmc sierra 1500hd' value='15,1001253'/>
+
+
+<item ctr='1263' nicevalue='gmc sierra 2500' value='15,494'/>
+
+
+<item ctr='1267' nicevalue='gmc sierra 2500 crew cab' value='15,495'/>
+
+
+<item ctr='1271' nicevalue='gmc sierra 2500hd' value='15,10845'/>
+
+
+<item ctr='1275' nicevalue='gmc sierra 3500' value='15,496'/>
+
+
+<item ctr='1279' nicevalue='gmc sierra denali' value='15,1005013'/>
+
+
+<item ctr='1283' nicevalue='gmc sonoma' value='15,517'/>
+
+
+<item ctr='1287' nicevalue='gmc suburban' value='15,533'/>
+
+
+<item ctr='1291' nicevalue='gmc tracker' value='15,569'/>
+
+
+<item ctr='1295' nicevalue='gmc v1500 jimmy 4wd' value='15,575'/>
+
+
+<item ctr='1299' nicevalue='gmc vandura' value='15,585'/>
+
+
+<item ctr='1303' nicevalue='gmc yukon' value='15,621'/>
+
+
+<item ctr='1307' nicevalue='gmc yukon denali' value='15,754'/>
+
+
+<item ctr='1311' nicevalue='gmc yukon xl' value='15,811'/>
+
+
+<item ctr='1315' nicevalue='gmc yukon xl denali' value='15,1002454'/>
+
+
+<item ctr='1319' nicevalue='--- geo ---' value='16,0'/>
+
+
+<item ctr='1323' nicevalue='geo metro' value='16,354'/>
+
+
+<item ctr='1327' nicevalue='geo prizm' value='16,408'/>
+
+
+<item ctr='1331' nicevalue='geo spectrum' value='16,521'/>
+
+
+<item ctr='1335' nicevalue='geo storm' value='16,530'/>
+
+
+<item ctr='1339' nicevalue='geo tracker' value='16,569'/>
+
+
+<item ctr='1343' nicevalue='--- honda ---' value='17,0'/>
+
+
+<item ctr='1347' nicevalue='honda accord' value='17,76'/>
+
+
+<item ctr='1351' nicevalue='honda accord coupe' value='17,1002604'/>
+
+
+<item ctr='1355' nicevalue='honda accord cpe' value='17,77'/>
+
+
+<item ctr='1359' nicevalue='honda accord sdn' value='17,78'/>
+
+
+<item ctr='1363' nicevalue='honda accord sedan' value='17,1002004'/>
+
+
+<item ctr='1367' nicevalue='honda cr-v' value='17,183'/>
+
+
+<item ctr='1371' nicevalue='honda crx' value='17,186'/>
+
+
+<item ctr='1375' nicevalue='honda civic' value='17,160'/>
+
+
+<item ctr='1379' nicevalue='honda civic del sol' value='17,161'/>
+
+
+<item ctr='1383' nicevalue='honda element' value='17,1006403'/>
+
+
+<item ctr='1387' nicevalue='honda insight' value='17,816'/>
+
+
+<item ctr='1391' nicevalue='honda lx 450' value='17,686'/>
+
+
+<item ctr='1395' nicevalue='honda odyssey' value='17,391'/>
+
+
+<item ctr='1399' nicevalue='honda passport' value='17,400'/>
+
+
+<item ctr='1403' nicevalue='honda pilot' value='17,1004843'/>
+
+
+<item ctr='1407' nicevalue='honda prelude' value='17,405'/>
+
+
+<item ctr='1411' nicevalue='honda s2000' value='17,780'/>
+
+
+<item ctr='1415' nicevalue='--- hummer ---' value='1012214,0'/>
+
+
+<item ctr='1419' nicevalue='hummer h1' value='1012214,1003813'/>
+
+
+<item ctr='1423' nicevalue='hummer h2' value='1012214,1004833'/>
+
+
+<item ctr='1427' nicevalue='hummer hummer' value='1012214,299'/>
+
+
+<item ctr='1431' nicevalue='--- hyundai ---' value='18,0'/>
+
+
+<item ctr='1435' nicevalue='hyundai accent' value='18,74'/>
+
+
+<item ctr='1439' nicevalue='hyundai elantra' value='18,227'/>
+
+
+<item ctr='1443' nicevalue='hyundai excel' value='18,238'/>
+
+
+<item ctr='1447' nicevalue='hyundai santa fe' value='18,1002084'/>
+
+
+<item ctr='1451' nicevalue='hyundai scoupe' value='18,481'/>
+
+
+<item ctr='1455' nicevalue='hyundai sonata' value='18,516'/>
+
+
+<item ctr='1459' nicevalue='hyundai tiburon' value='18,562'/>
+
+
+<item ctr='1463' nicevalue='hyundai xg300' value='18,1002114'/>
+
+
+<item ctr='1467' nicevalue='hyundai xg350' value='18,1003843'/>
+
+
+<item ctr='1471' nicevalue='--- infiniti ---' value='19,0'/>
+
+
+<item ctr='1475' nicevalue='infiniti fx35' value='19,1007013'/>
+
+
+<item ctr='1479' nicevalue='infiniti fx45' value='19,1007023'/>
+
+
+<item ctr='1483' nicevalue='infiniti g20' value='19,278'/>
+
+
+<item ctr='1487' nicevalue='infiniti g35' value='19,1004403'/>
+
+
+<item ctr='1491' nicevalue='infiniti g35 sedan' value='19,1005813'/>
+
+
+<item ctr='1495' nicevalue='infiniti g35 sport coupe' value='19,1006413'/>
+
+
+<item ctr='1499' nicevalue='infiniti i30' value='19,301'/>
+
+
+<item ctr='1503' nicevalue='infiniti i30t' value='19,672'/>
+
+
+<item ctr='1507' nicevalue='infiniti i35' value='19,1003423'/>
+
+
+<item ctr='1511' nicevalue='infiniti j30' value='19,312'/>
+
+
+<item ctr='1515' nicevalue='infiniti m30' value='19,348'/>
+
+
+<item ctr='1519' nicevalue='infiniti m45' value='19,1005823'/>
+
+
+<item ctr='1523' nicevalue='infiniti q45' value='19,414'/>
+
+
+<item ctr='1527' nicevalue='infiniti qx4' value='19,416'/>
+
+
+<item ctr='1531' nicevalue='--- isuzu ---' value='20,0'/>
+
+
+<item ctr='1535' nicevalue='isuzu amigo' value='20,85'/>
+
+
+<item ctr='1539' nicevalue='isuzu ascender' value='20,1006203'/>
+
+
+<item ctr='1543' nicevalue='isuzu axiom' value='20,1002403'/>
+
+
+<item ctr='1547' nicevalue='isuzu hombre pickup' value='20,297'/>
+
+
+<item ctr='1551' nicevalue='isuzu i-mark' value='20,300'/>
+
+
+<item ctr='1555' nicevalue='isuzu impulse' value='20,308'/>
+
+
+<item ctr='1559' nicevalue='isuzu oasis' value='20,390'/>
+
+
+<item ctr='1563' nicevalue='isuzu pickup 2wd' value='20,402'/>
+
+
+<item ctr='1567' nicevalue='isuzu rodeo' value='20,447'/>
+
+
+<item ctr='1571' nicevalue='isuzu rodeo sport' value='20,1002624'/>
+
+
+<item ctr='1575' nicevalue='isuzu trooper' value='20,571'/>
+
+
+<item ctr='1579' nicevalue='isuzu vehicross' value='20,804'/>
+
+
+<item ctr='1583' nicevalue='--- jaguar ---' value='21,0'/>
+
+
+<item ctr='1587' nicevalue='jaguar s-type' value='21,1002284'/>
+
+
+<item ctr='1591' nicevalue='jaguar super duty e-350 drw' value='21,1004853'/>
+
+
+<item ctr='1595' nicevalue='jaguar vanden plas' value='21,755'/>
+
+
+<item ctr='1599' nicevalue='jaguar x-type' value='21,1002823'/>
+
+
+<item ctr='1603' nicevalue='jaguar xj series' value='21,1002124'/>
+
+
+<item ctr='1607' nicevalue='jaguar xj12' value='21,611'/>
+
+
+<item ctr='1611' nicevalue='jaguar xj6' value='21,612'/>
+
+
+<item ctr='1615' nicevalue='jaguar xj8' value='21,640'/>
+
+
+<item ctr='1619' nicevalue='jaguar xjr' value='21,613'/>
+
+
+<item ctr='1623' nicevalue='jaguar xjs' value='21,616'/>
+
+
+<item ctr='1627' nicevalue='jaguar xk series' value='21,1002134'/>
+
+
+<item ctr='1631' nicevalue='jaguar xk8' value='21,617'/>
+
+
+<item ctr='1635' nicevalue='jaguar xkr' value='21,1002324'/>
+
+
+<item ctr='1639' nicevalue='--- jeep ---' value='22,0'/>
+
+
+<item ctr='1643' nicevalue='jeep cherokee' value='22,153'/>
+
+
+<item ctr='1647' nicevalue='jeep comanche pickup' value='22,168'/>
+
+
+<item ctr='1651' nicevalue='jeep grand cherokee' value='22,289'/>
+
+
+<item ctr='1655' nicevalue='jeep liberty' value='22,1002413'/>
+
+
+<item ctr='1659' nicevalue='jeep wagoneer 4wd' value='22,605'/>
+
+
+<item ctr='1663' nicevalue='jeep wrangler' value='22,607'/>
+
+
+<item ctr='1667' nicevalue='--- kia ---' value='23,0'/>
+
+
+<item ctr='1671' nicevalue='kia optima' value='23,1001233'/>
+
+
+<item ctr='1675' nicevalue='kia rio' value='23,10842'/>
+
+
+<item ctr='1679' nicevalue='kia sedona' value='23,1003453'/>
+
+
+<item ctr='1683' nicevalue='kia sephia' value='23,486'/>
+
+
+<item ctr='1687' nicevalue='kia sorento' value='23,1005833'/>
+
+
+<item ctr='1691' nicevalue='kia spectra' value='23,10854'/>
+
+
+<item ctr='1695' nicevalue='kia sportage' value='23,524'/>
+
+
+<item ctr='1699' nicevalue='--- lamborghini ---' value='47,0'/>
+
+
+<item ctr='1703' nicevalue='lamborghini diablo' value='47,722'/>
+
+
+<item ctr='1707' nicevalue='lamborghini jalpa' value='47,718'/>
+
+
+<item ctr='1711' nicevalue='--- land rover ---' value='24,0'/>
+
+
+<item ctr='1715' nicevalue='land rover defender 110 4wd' value='24,204'/>
+
+
+<item ctr='1719' nicevalue='land rover discovery' value='24,211'/>
+
+
+<item ctr='1723' nicevalue='land rover discovery series ii' value='24,713'/>
+
+
+<item ctr='1727' nicevalue='land rover freelander' value='24,1003603'/>
+
+
+<item ctr='1731' nicevalue='land rover range rover' value='24,434'/>
+
+
+<item ctr='1735' nicevalue='--- lexus ---' value='25,0'/>
+
+
+<item ctr='1739' nicevalue='lexus es 250' value='25,1003204'/>
+
+
+<item ctr='1743' nicevalue='lexus es 300' value='25,684'/>
+
+
+<item ctr='1747' nicevalue='lexus es 300 luxury sport sdn' value='25,231'/>
+
+
+<item ctr='1751' nicevalue='lexus es 330' value='25,1008003'/>
+
+
+<item ctr='1755' nicevalue='lexus es250' value='25,232'/>
+
+
+<item ctr='1759' nicevalue='lexus es300' value='25,233'/>
+
+
+<item ctr='1763' nicevalue='lexus gs 300' value='25,685'/>
+
+
+<item ctr='1767' nicevalue='lexus gs 300 luxury perform sdn' value='25,292'/>
+
+
+<item ctr='1771' nicevalue='lexus gs 400' value='25,1002034'/>
+
+
+<item ctr='1775' nicevalue='lexus gs 430' value='25,1002404'/>
+
+
+<item ctr='1779' nicevalue='lexus gs300' value='25,294'/>
+
+
+<item ctr='1783' nicevalue='lexus gs400' value='25,687'/>
+
+
+<item ctr='1787' nicevalue='lexus gx 470' value='25,1006213'/>
+
+
+<item ctr='1791' nicevalue='lexus is 300' value='25,1002044'/>
+
+
+<item ctr='1795' nicevalue='lexus ls 400' value='25,679'/>
+
+
+<item ctr='1799' nicevalue='lexus ls 400 luxury sdn' value='25,337'/>
+
+
+<item ctr='1803' nicevalue='lexus ls 430' value='25,1002414'/>
+
+
+<item ctr='1807' nicevalue='lexus ls400' value='25,338'/>
+
+
+<item ctr='1811' nicevalue='lexus lx 450' value='25,686'/>
+
+
+<item ctr='1815' nicevalue='lexus lx 470' value='25,1002054'/>
+
+
+<item ctr='1819' nicevalue='lexus lx 470 luxury wagon' value='25,345'/>
+
+
+<item ctr='1823' nicevalue='lexus lx450' value='25,346'/>
+
+
+<item ctr='1827' nicevalue='lexus lx470' value='25,641'/>
+
+
+<item ctr='1831' nicevalue='lexus rx' value='25,448'/>
+
+
+<item ctr='1835' nicevalue='lexus rx 300' value='25,1002064'/>
+
+
+<item ctr='1839' nicevalue='lexus rx 300 luxury suv' value='25,449'/>
+
+
+<item ctr='1843' nicevalue='lexus rx 330' value='25,1007033'/>
+
+
+<item ctr='1847' nicevalue='lexus rx300' value='25,734'/>
+
+
+<item ctr='1851' nicevalue='lexus rx300 2wd' value='25,795'/>
+
+
+<item ctr='1855' nicevalue='lexus rx300 4wd' value='25,796'/>
+
+
+<item ctr='1859' nicevalue='lexus sc 300' value='25,681'/>
+
+
+<item ctr='1863' nicevalue='lexus sc 300 luxury sport cpe' value='25,476'/>
+
+
+<item ctr='1867' nicevalue='lexus sc 400' value='25,682'/>
+
+
+<item ctr='1871' nicevalue='lexus sc 430' value='25,1001603'/>
+
+
+<item ctr='1875' nicevalue='lexus sc300' value='25,478'/>
+
+
+<item ctr='1879' nicevalue='lexus sc400' value='25,479'/>
+
+
+<item ctr='1883' nicevalue='--- lincoln ---' value='26,0'/>
+
+
+<item ctr='1887' nicevalue='lincoln aviator' value='26,1005203'/>
+
+
+<item ctr='1891' nicevalue='lincoln blackwood' value='26,1001003'/>
+
+
+<item ctr='1895' nicevalue='lincoln continental' value='26,174'/>
+
+
+<item ctr='1899' nicevalue='lincoln ls' value='26,738'/>
+
+
+<item ctr='1903' nicevalue='lincoln mark vii' value='26,350'/>
+
+
+<item ctr='1907' nicevalue='lincoln mark viii' value='26,351'/>
+
+
+<item ctr='1911' nicevalue='lincoln navigator' value='26,379'/>
+
+
+<item ctr='1915' nicevalue='lincoln town car' value='26,567'/>
+
+
+<item ctr='1919' nicevalue='--- mini ---' value='1011413,0'/>
+
+
+<item ctr='1923' nicevalue='mini cooper' value='1011413,1004823'/>
+
+
+<item ctr='1927' nicevalue='--- mazda ---' value='27,0'/>
+
+
+<item ctr='1931' nicevalue='mazda 2wd truck' value='27,1003403'/>
+
+
+<item ctr='1935' nicevalue='mazda 323' value='27,18'/>
+
+
+<item ctr='1939' nicevalue='mazda 4wd truck' value='27,1003413'/>
+
+
+<item ctr='1943' nicevalue='mazda 626' value='27,35'/>
+
+
+<item ctr='1947' nicevalue='mazda 929' value='27,62'/>
+
+
+<item ctr='1951' nicevalue='mazda b2200 pickup' value='27,98'/>
+
+
+<item ctr='1955' nicevalue='mazda b2300 pickup' value='27,99'/>
+
+
+<item ctr='1959' nicevalue='mazda b2500 pickup' value='27,642'/>
+
+
+<item ctr='1963' nicevalue='mazda b3000 pickup' value='27,102'/>
+
+
+<item ctr='1967' nicevalue='mazda b4000 pickup' value='27,103'/>
+
+
+<item ctr='1971' nicevalue='mazda mazda6' value='27,1006003'/>
+
+
+<item ctr='1975' nicevalue='mazda mpv' value='27,1004603'/>
+
+
+<item ctr='1979' nicevalue='mazda mpv wagon' value='27,369'/>
+
+
+<item ctr='1983' nicevalue='mazda mx3' value='27,373'/>
+
+
+<item ctr='1987' nicevalue='mazda mx5 miata' value='27,374'/>
+
+
+<item ctr='1991' nicevalue='mazda mx6' value='27,375'/>
+
+
+<item ctr='1995' nicevalue='mazda miata' value='27,355'/>
+
+
+<item ctr='1999' nicevalue='mazda millenia' value='27,360'/>
+
+
+<item ctr='2003' nicevalue='mazda navajo' value='27,377'/>
+
+
+<item ctr='2007' nicevalue='mazda protege' value='27,410'/>
+
+
+<item ctr='2011' nicevalue='mazda protege5' value='27,1003443'/>
+
+
+<item ctr='2015' nicevalue='mazda rx-8' value='27,1007043'/>
+
+
+<item ctr='2019' nicevalue='mazda rx7' value='27,450'/>
+
+
+<item ctr='2023' nicevalue='mazda tribute' value='27,1003804'/>
+
+
+<item ctr='2027' nicevalue='mazda tribute suv' value='27,10860'/>
+
+
+<item ctr='2031' nicevalue='--- mercedes-benz ---' value='28,0'/>
+
+
+<item ctr='2035' nicevalue='mercedes-benz 190 series' value='28,3'/>
+
+
+<item ctr='2039' nicevalue='mercedes-benz 300 series' value='28,13'/>
+
+
+<item ctr='2043' nicevalue='mercedes-benz 400' value='28,715'/>
+
+
+<item ctr='2047' nicevalue='mercedes-benz 560 series' value='28,31'/>
+
+
+<item ctr='2051' nicevalue='mercedes-benz c class' value='28,123'/>
+
+
+<item ctr='2055' nicevalue='mercedes-benz c230' value='28,702'/>
+
+
+<item ctr='2059' nicevalue='mercedes-benz c280' value='28,708'/>
+
+
+<item ctr='2063' nicevalue='mercedes-benz cl class' value='28,163'/>
+
+
+<item ctr='2067' nicevalue='mercedes-benz clk class' value='28,165'/>
+
+
+<item ctr='2071' nicevalue='mercedes-benz e class' value='28,216'/>
+
+
+<item ctr='2075' nicevalue='mercedes-benz e-class' value='28,217'/>
+
+
+<item ctr='2079' nicevalue='mercedes-benz e320' value='28,704'/>
+
+
+<item ctr='2083' nicevalue='mercedes-benz e430' value='28,706'/>
+
+
+<item ctr='2087' nicevalue='mercedes-benz g class' value='28,1003803'/>
+
+
+<item ctr='2091' nicevalue='mercedes-benz m class' value='28,347'/>
+
+
+<item ctr='2095' nicevalue='mercedes-benz ml-class' value='28,707'/>
+
+
+<item ctr='2099' nicevalue='mercedes-benz s class' value='28,452'/>
+
+
+<item ctr='2103' nicevalue='mercedes-benz sl class' value='28,512'/>
+
+
+<item ctr='2107' nicevalue='mercedes-benz sl500' value='28,701'/>
+
+
+<item ctr='2111' nicevalue='mercedes-benz slk 230' value='28,709'/>
+
+
+<item ctr='2115' nicevalue='mercedes-benz slk class' value='28,514'/>
+
+
+<item ctr='2119' nicevalue='--- mercury ---' value='29,0'/>
+
+
+<item ctr='2123' nicevalue='mercury capri' value='29,140'/>
+
+
+<item ctr='2127' nicevalue='mercury cougar' value='29,180'/>
+
+
+<item ctr='2131' nicevalue='mercury cougar xr7' value='29,181'/>
+
+
+<item ctr='2135' nicevalue='mercury grand marquis' value='29,290'/>
+
+
+<item ctr='2139' nicevalue='mercury marauder' value='29,1004613'/>
+
+
+<item ctr='2143' nicevalue='mercury mountaineer' value='29,367'/>
+
+
+<item ctr='2147' nicevalue='mercury mystique' value='29,376'/>
+
+
+<item ctr='2151' nicevalue='mercury sable' value='29,466'/>
+
+
+<item ctr='2155' nicevalue='mercury topaz' value='29,564'/>
+
+
+<item ctr='2159' nicevalue='mercury tracer' value='29,568'/>
+
+
+<item ctr='2163' nicevalue='mercury villager' value='29,590'/>
+
+
+<item ctr='2167' nicevalue='mercury villager wgn' value='29,591'/>
+
+
+<item ctr='2171' nicevalue='--- mitsubishi ---' value='31,0'/>
+
+
+<item ctr='2175' nicevalue='mitsubishi 3000gt' value='31,14'/>
+
+
+<item ctr='2179' nicevalue='mitsubishi diamante' value='31,209'/>
+
+
+<item ctr='2183' nicevalue='mitsubishi eclipse' value='31,218'/>
+
+
+<item ctr='2187' nicevalue='mitsubishi endeavor' value='31,1007003'/>
+
+
+<item ctr='2191' nicevalue='mitsubishi expo' value='31,244'/>
+
+
+<item ctr='2195' nicevalue='mitsubishi expo lrv' value='31,245'/>
+
+
+<item ctr='2199' nicevalue='mitsubishi galant' value='31,280'/>
+
+
+<item ctr='2203' nicevalue='mitsubishi lancer' value='31,322'/>
+
+
+<item ctr='2207' nicevalue='mitsubishi mirage' value='31,361'/>
+
+
+<item ctr='2211' nicevalue='mitsubishi montero' value='31,364'/>
+
+
+<item ctr='2215' nicevalue='mitsubishi montero sport' value='31,366'/>
+
+
+<item ctr='2219' nicevalue='mitsubishi outlander' value='31,1005603'/>
+
+
+<item ctr='2223' nicevalue='mitsubishi precis' value='31,404'/>
+
+
+<item ctr='2227' nicevalue='mitsubishi sigma' value='31,505'/>
+
+
+<item ctr='2231' nicevalue='--- nissan ---' value='32,0'/>
+
+
+<item ctr='2235' nicevalue='nissan 200sx' value='32,6'/>
+
+
+<item ctr='2239' nicevalue='nissan 240sx' value='32,8'/>
+
+
+<item ctr='2243' nicevalue='nissan 300zx' value='32,16'/>
+
+
+<item ctr='2247' nicevalue='nissan 350z' value='32,1004803'/>
+
+
+<item ctr='2251' nicevalue='nissan altima' value='32,84'/>
+
+
+<item ctr='2255' nicevalue='nissan axxess van' value='32,95'/>
+
+
+<item ctr='2259' nicevalue='nissan frontier' value='32,665'/>
+
+
+<item ctr='2263' nicevalue='nissan frontier 2wd' value='32,270'/>
+
+
+<item ctr='2267' nicevalue='nissan frontier 4wd' value='32,271'/>
+
+
+<item ctr='2271' nicevalue='nissan maxima' value='32,352'/>
+
+
+<item ctr='2275' nicevalue='nissan murano' value='32,1006013'/>
+
+
+<item ctr='2279' nicevalue='nissan nx' value='32,389'/>
+
+
+<item ctr='2283' nicevalue='nissan pathfinder' value='32,401'/>
+
+
+<item ctr='2287' nicevalue='nissan pathfinder armada' value='32,1008273'/>
+
+
+<item ctr='2291' nicevalue='nissan pulsar nx' value='32,413'/>
+
+
+<item ctr='2295' nicevalue='nissan quest' value='32,415'/>
+
+
+<item ctr='2299' nicevalue='nissan sentra' value='32,484'/>
+
+
+<item ctr='2303' nicevalue='nissan stanza' value='32,526'/>
+
+
+<item ctr='2307' nicevalue='nissan van' value='32,582'/>
+
+
+<item ctr='2311' nicevalue='nissan xterra' value='32,753'/>
+
+
+<item ctr='2315' nicevalue='--- oldsmobile ---' value='33,0'/>
+
+
+<item ctr='2319' nicevalue='oldsmobile achieva' value='33,79'/>
+
+
+<item ctr='2323' nicevalue='oldsmobile alero' value='33,82'/>
+
+
+<item ctr='2327' nicevalue='oldsmobile aurora' value='33,92'/>
+
+
+<item ctr='2331' nicevalue='oldsmobile bravada' value='33,115'/>
+
+
+<item ctr='2335' nicevalue='oldsmobile bravada awd' value='33,116'/>
+
+
+<item ctr='2339' nicevalue='oldsmobile custom cruiser' value='33,187'/>
+
+
+<item ctr='2343' nicevalue='oldsmobile cutlass' value='33,188'/>
+
+
+<item ctr='2347' nicevalue='oldsmobile cutlass calais' value='33,189'/>
+
+
+<item ctr='2351' nicevalue='oldsmobile cutlass ciera' value='33,190'/>
+
+
+<item ctr='2355' nicevalue='oldsmobile cutlass cruiser' value='33,191'/>
+
+
+<item ctr='2359' nicevalue='oldsmobile cutlass supreme' value='33,192'/>
+
+
+<item ctr='2363' nicevalue='oldsmobile eighty-eight' value='33,225'/>
+
+
+<item ctr='2367' nicevalue='oldsmobile eighty-eight royale' value='33,226'/>
+
+
+<item ctr='2371' nicevalue='oldsmobile intrigue' value='33,311'/>
+
+
+<item ctr='2375' nicevalue='oldsmobile lss' value='33,339'/>
+
+
+<item ctr='2379' nicevalue='oldsmobile ninety-eight regency' value='33,387'/>
+
+
+<item ctr='2383' nicevalue='oldsmobile regency' value='33,441'/>
+
+
+<item ctr='2387' nicevalue='oldsmobile silhouette' value='33,506'/>
+
+
+<item ctr='2391' nicevalue='oldsmobile toronado' value='33,565'/>
+
+
+<item ctr='2395' nicevalue='--- plymouth ---' value='35,0'/>
+
+
+<item ctr='2399' nicevalue='plymouth acclaim' value='35,75'/>
+
+
+<item ctr='2403' nicevalue='plymouth breeze' value='35,117'/>
+
+
+<item ctr='2407' nicevalue='plymouth colt' value='35,167'/>
+
+
+<item ctr='2411' nicevalue='plymouth gran fury' value='35,286'/>
+
+
+<item ctr='2415' nicevalue='plymouth grand voyager' value='35,1003434'/>
+
+
+<item ctr='2419' nicevalue='plymouth horizon' value='35,298'/>
+
+
+<item ctr='2423' nicevalue='plymouth laser' value='35,325'/>
+
+
+<item ctr='2427' nicevalue='plymouth neon' value='35,380'/>
+
+
+<item ctr='2431' nicevalue='plymouth prowler' value='35,412'/>
+
+
+<item ctr='2435' nicevalue='plymouth reliant america' value='35,442'/>
+
+
+<item ctr='2439' nicevalue='plymouth sundance' value='35,536'/>
+
+
+<item ctr='2443' nicevalue='plymouth voyager' value='35,594'/>
+
+
+<item ctr='2447' nicevalue='--- pontiac ---' value='36,0'/>
+
+
+<item ctr='2451' nicevalue='pontiac 6000' value='36,34'/>
+
+
+<item ctr='2455' nicevalue='pontiac aztek' value='36,10824'/>
+
+
+<item ctr='2459' nicevalue='pontiac bonneville' value='36,106'/>
+
+
+<item ctr='2463' nicevalue='pontiac fiero' value='36,1002144'/>
+
+
+<item ctr='2467' nicevalue='pontiac firebird' value='36,265'/>
+
+
+<item ctr='2471' nicevalue='pontiac grand am' value='36,288'/>
+
+
+<item ctr='2475' nicevalue='pontiac grand prix' value='36,291'/>
+
+
+<item ctr='2479' nicevalue='pontiac lemans' value='36,333'/>
+
+
+<item ctr='2483' nicevalue='pontiac montana' value='36,626'/>
+
+
+<item ctr='2487' nicevalue='pontiac safari' value='36,467'/>
+
+
+<item ctr='2491' nicevalue='pontiac sunbird' value='36,535'/>
+
+
+<item ctr='2495' nicevalue='pontiac sunfire' value='36,537'/>
+
+
+<item ctr='2499' nicevalue='pontiac trans sport' value='36,570'/>
+
+
+<item ctr='2503' nicevalue='pontiac vibe' value='36,1004223'/>
+
+
+<item ctr='2507' nicevalue='--- porsche ---' value='37,0'/>
+
+
+<item ctr='2511' nicevalue='porsche 911 america' value='37,49'/>
+
+
+<item ctr='2515' nicevalue='porsche 911 carrera' value='37,50'/>
+
+
+<item ctr='2519' nicevalue='porsche 911 carrera 4' value='37,52'/>
+
+
+<item ctr='2523' nicevalue='porsche 911 turbo' value='37,56'/>
+
+
+<item ctr='2527' nicevalue='porsche 928' value='37,58'/>
+
+
+<item ctr='2531' nicevalue='porsche 944' value='37,655'/>
+
+
+<item ctr='2535' nicevalue='porsche 968' value='37,67'/>
+
+
+<item ctr='2539' nicevalue='porsche boxster' value='37,107'/>
+
+
+<item ctr='2543' nicevalue='porsche cayenne' value='37,1006813'/>
+
+
+<item ctr='2547' nicevalue='--- saab ---' value='38,0'/>
+
+
+<item ctr='2551' nicevalue='saab 9-3' value='38,44'/>
+
+
+<item ctr='2555' nicevalue='saab 9-5' value='38,45'/>
+
+
+<item ctr='2559' nicevalue='saab 900' value='38,47'/>
+
+
+<item ctr='2563' nicevalue='saab 9000' value='38,48'/>
+
+
+<item ctr='2567' nicevalue='--- saturn ---' value='39,0'/>
+
+
+<item ctr='2571' nicevalue='saturn 2dr coupe' value='39,10'/>
+
+
+<item ctr='2575' nicevalue='saturn 4dr sedan' value='39,22'/>
+
+
+<item ctr='2579' nicevalue='saturn 4dr wagon' value='39,23'/>
+
+
+<item ctr='2583' nicevalue='saturn coupe' value='39,182'/>
+
+
+<item ctr='2587' nicevalue='saturn ion' value='39,1005403'/>
+
+
+<item ctr='2591' nicevalue='saturn ls' value='39,738'/>
+
+
+<item ctr='2595' nicevalue='saturn ls 4dr sedan' value='39,767'/>
+
+
+<item ctr='2599' nicevalue='saturn ls sedan' value='39,1002244'/>
+
+
+<item ctr='2603' nicevalue='saturn lw 4dr wagon' value='39,768'/>
+
+
+<item ctr='2607' nicevalue='saturn sc 300' value='39,681'/>
+
+
+<item ctr='2611' nicevalue='saturn sl 4dr sedan' value='39,772'/>
+
+
+<item ctr='2615' nicevalue='saturn sw 4dr wagon' value='39,774'/>
+
+
+<item ctr='2619' nicevalue='saturn sedan' value='39,483'/>
+
+
+<item ctr='2623' nicevalue='saturn vue' value='39,1008043'/>
+
+
+<item ctr='2627' nicevalue='saturn vue 4dr suv' value='39,1004023'/>
+
+
+<item ctr='2631' nicevalue='saturn wagon' value='39,604'/>
+
+
+<item ctr='2635' nicevalue='--- scion ---' value='1011613,0'/>
+
+
+<item ctr='2639' nicevalue='scion xa' value='1011613,1007453'/>
+
+
+<item ctr='2643' nicevalue='scion xb' value='1011613,1007463'/>
+
+
+<item ctr='2647' nicevalue='--- subaru ---' value='41,0'/>
+
+
+<item ctr='2651' nicevalue='subaru baja' value='41,1005213'/>
+
+
+<item ctr='2655' nicevalue='subaru dl' value='41,213'/>
+
+
+<item ctr='2659' nicevalue='subaru forester' value='41,268'/>
+
+
+<item ctr='2663' nicevalue='subaru gl' value='41,281'/>
+
+
+<item ctr='2667' nicevalue='subaru gl10' value='41,282'/>
+
+
+<item ctr='2671' nicevalue='subaru impreza' value='41,304'/>
+
+
+<item ctr='2675' nicevalue='subaru impreza coupe' value='41,305'/>
+
+
+<item ctr='2679' nicevalue='subaru impreza sedan' value='41,306'/>
+
+
+<item ctr='2683' nicevalue='subaru impreza wagon' value='41,307'/>
+
+
+<item ctr='2687' nicevalue='subaru justy' value='41,316'/>
+
+
+<item ctr='2691' nicevalue='subaru legacy' value='41,661'/>
+
+
+<item ctr='2695' nicevalue='subaru legacy sedan' value='41,330'/>
+
+
+<item ctr='2699' nicevalue='subaru legacy wagon' value='41,331'/>
+
+
+<item ctr='2703' nicevalue='subaru loyale' value='41,336'/>
+
+
+<item ctr='2707' nicevalue='subaru outback awd' value='41,393'/>
+
+
+<item ctr='2711' nicevalue='subaru svx' value='41,545'/>
+
+
+<item ctr='2715' nicevalue='--- suzuki ---' value='42,0'/>
+
+
+<item ctr='2719' nicevalue='suzuki aerio' value='42,1004813'/>
+
+
+<item ctr='2723' nicevalue='suzuki esteem' value='42,236'/>
+
+
+<item ctr='2727' nicevalue='suzuki grand vitara' value='42,632'/>
+
+
+<item ctr='2731' nicevalue='suzuki samurai' value='42,472'/>
+
+
+<item ctr='2735' nicevalue='suzuki sidekick' value='42,489'/>
+
+
+<item ctr='2739' nicevalue='suzuki swift' value='42,546'/>
+
+
+<item ctr='2743' nicevalue='suzuki verona' value='42,1008293'/>
+
+
+<item ctr='2747' nicevalue='suzuki vitara' value='42,712'/>
+
+
+<item ctr='2751' nicevalue='suzuki x-90' value='42,609'/>
+
+
+<item ctr='2755' nicevalue='suzuki xl-7' value='42,1001373'/>
+
+
+<item ctr='2759' nicevalue='--- toyota ---' value='43,0'/>
+
+
+<item ctr='2763' nicevalue='toyota 4runner' value='43,24'/>
+
+
+<item ctr='2767' nicevalue='toyota 4runner sr5' value='43,26'/>
+
+
+<item ctr='2771' nicevalue='toyota avalon' value='43,93'/>
+
+
+<item ctr='2775' nicevalue='toyota camry' value='43,139'/>
+
+
+<item ctr='2779' nicevalue='toyota camry solara' value='43,627'/>
+
+
+<item ctr='2783' nicevalue='toyota celica' value='43,150'/>
+
+
+<item ctr='2787' nicevalue='toyota corolla' value='43,176'/>
+
+
+<item ctr='2791' nicevalue='toyota cressida' value='43,184'/>
+
+
+<item ctr='2795' nicevalue='toyota echo' value='43,779'/>
+
+
+<item ctr='2799' nicevalue='toyota highlander' value='43,1001403'/>
+
+
+<item ctr='2803' nicevalue='toyota land cruiser' value='43,323'/>
+
+
+<item ctr='2807' nicevalue='toyota landcruiser 4wd' value='43,324'/>
+
+
+<item ctr='2811' nicevalue='toyota mr2' value='43,371'/>
+
+
+<item ctr='2815' nicevalue='toyota mr2 spyder' value='43,822'/>
+
+
+<item ctr='2819' nicevalue='toyota matrix' value='43,1004213'/>
+
+
+<item ctr='2823' nicevalue='toyota paseo' value='43,398'/>
+
+
+<item ctr='2827' nicevalue='toyota pickup 2wd' value='43,402'/>
+
+
+<item ctr='2831' nicevalue='toyota previa' value='43,407'/>
+
+
+<item ctr='2835' nicevalue='toyota prius' value='43,10839'/>
+
+
+<item ctr='2839' nicevalue='toyota rav4' value='43,438'/>
+
+
+<item ctr='2843' nicevalue='toyota sequoia' value='43,1002444'/>
+
+
+<item ctr='2847' nicevalue='toyota sienna' value='43,490'/>
+
+
+<item ctr='2851' nicevalue='toyota solara' value='43,736'/>
+
+
+<item ctr='2855' nicevalue='toyota supra' value='43,544'/>
+
+
+<item ctr='2859' nicevalue='toyota t100' value='43,547'/>
+
+
+<item ctr='2863' nicevalue='toyota tacoma' value='43,550'/>
+
+
+<item ctr='2867' nicevalue='toyota tacoma pickup 4wd' value='43,552'/>
+
+
+<item ctr='2871' nicevalue='toyota tercel' value='43,560'/>
+
+
+<item ctr='2875' nicevalue='toyota tundra' value='43,752'/>
+
+
+<item ctr='2879' nicevalue='toyota van' value='43,582'/>
+
+
+<item ctr='2883' nicevalue='toyota xb' value='43,1007463'/>
+
+
+<item ctr='2887' nicevalue='--- volkswagen ---' value='44,0'/>
+
+
+<item ctr='2891' nicevalue='volkswagen beetle' value='44,659'/>
+
+
+<item ctr='2895' nicevalue='volkswagen cabrio' value='44,135'/>
+
+
+<item ctr='2899' nicevalue='volkswagen cabriolet' value='44,136'/>
+
+
+<item ctr='2903' nicevalue='volkswagen corrado' value='44,177'/>
+
+
+<item ctr='2907' nicevalue='volkswagen eurovan' value='44,237'/>
+
+
+<item ctr='2911' nicevalue='volkswagen fox' value='44,269'/>
+
+
+<item ctr='2915' nicevalue='volkswagen gti' value='44,295'/>
+
+
+<item ctr='2919' nicevalue='volkswagen golf' value='44,283'/>
+
+
+<item ctr='2923' nicevalue='volkswagen golf gl' value='44,284'/>
+
+
+<item ctr='2927' nicevalue='volkswagen golf iii' value='44,285'/>
+
+
+<item ctr='2931' nicevalue='volkswagen jetta' value='44,313'/>
+
+
+<item ctr='2935' nicevalue='volkswagen jetta iii' value='44,314'/>
+
+
+<item ctr='2939' nicevalue='volkswagen jetta sedan' value='44,1003823'/>
+
+
+<item ctr='2943' nicevalue='volkswagen jetta wagon' value='44,1003833'/>
+
+
+<item ctr='2947' nicevalue='volkswagen new beetle' value='44,381'/>
+
+
+<item ctr='2951' nicevalue='volkswagen new beetle convertible' value='44,1006423'/>
+
+
+<item ctr='2955' nicevalue='volkswagen new beetle coupe' value='44,1006433'/>
+
+
+<item ctr='2959' nicevalue='volkswagen new gti' value='44,731'/>
+
+
+<item ctr='2963' nicevalue='volkswagen new golf' value='44,730'/>
+
+
+<item ctr='2967' nicevalue='volkswagen new jetta' value='44,656'/>
+
+
+<item ctr='2971' nicevalue='volkswagen new passat' value='44,1001803'/>
+
+
+<item ctr='2975' nicevalue='volkswagen passat' value='44,399'/>
+
+
+<item ctr='2979' nicevalue='volkswagen passat sedan' value='44,1008023'/>
+
+
+<item ctr='2983' nicevalue='volkswagen passat wagon' value='44,1008033'/>
+
+
+<item ctr='2987' nicevalue='volkswagen touareg' value='44,1007613'/>
+
+
+<item ctr='2991' nicevalue='volkswagen vanagon' value='44,584'/>
+
+
+<item ctr='2995' nicevalue='--- volvo ---' value='45,0'/>
+
+
+<item ctr='2999' nicevalue='volvo 240' value='45,7'/>
+
+
+<item ctr='3003' nicevalue='volvo 740' value='45,37'/>
+
+
+<item ctr='3007' nicevalue='volvo 760' value='45,38'/>
+
+
+<item ctr='3011' nicevalue='volvo 780' value='45,39'/>
+
+
+<item ctr='3015' nicevalue='volvo 850' value='45,43'/>
+
+
+<item ctr='3019' nicevalue='volvo 940' value='45,63'/>
+
+
+<item ctr='3023' nicevalue='volvo 960' value='45,66'/>
+
+
+<item ctr='3027' nicevalue='volvo c70' value='45,1002014'/>
+
+
+<item ctr='3031' nicevalue='volvo s40' value='45,1002074'/>
+
+
+<item ctr='3035' nicevalue='volvo s60' value='45,1002434'/>
+
+
+<item ctr='3039' nicevalue='volvo s70' value='45,667'/>
+
+
+<item ctr='3043' nicevalue='volvo s70 series' value='45,649'/>
+
+
+<item ctr='3047' nicevalue='volvo s80' value='45,668'/>
+
+
+<item ctr='3051' nicevalue='volvo s80 series' value='45,797'/>
+
+
+<item ctr='3055' nicevalue='volvo s90' value='45,464'/>
+
+
+<item ctr='3059' nicevalue='volvo v40' value='45,1002104'/>
+
+
+<item ctr='3063' nicevalue='volvo v70' value='45,671'/>
+
+
+<item ctr='3067' nicevalue='volvo v90' value='45,580'/>
+
+
+<item ctr='3071' nicevalue='volvo xc90' value='45,1005423'/>
+
+
+</values>
+
+
+</element>
+
+
+<element ctr='8' text='Earliest Year:      Min Price:' type='text' vname='oldyear'/>
+
+
+<element ctr='9' text='' type='text' vname='minprice'/>
+
+
+<element ctr='10' text='Latest Year:      Max Price:' type='text' vname='newyear'/>
+
+
+<element ctr='11' text='' type='text' vname='maxprice'/>
+
+
+</element>
+
+
+</form>
+
+
+</search>
