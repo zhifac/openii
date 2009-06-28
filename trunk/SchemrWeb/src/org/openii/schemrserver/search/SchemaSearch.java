@@ -21,6 +21,7 @@ import org.openii.schemrserver.indexer.SchemaStoreIndex.CandidateSchema;
 public class SchemaSearch {
 
 	public static int  RESULT_PAGE_SIZE = 30;
+	public static int numResults;
 //	public static MatchSummary [] performSearch(String keywordString, File schemaFile) throws RemoteException {
 //		return performSearch(keywordString, schemaFile, true);
 //	}
@@ -122,7 +123,7 @@ public class SchemaSearch {
 	}
 	private static CandidateSchema [] getCandidateSchemas(Query query) {		
 		CandidateSchema [] candidateSchemas = SchemaStoreIndex.searchIndex(Consts.LOCAL_INDEX_DIR, query);
-		
+		numResults = candidateSchemas.length;
 		System.out.println("Found " + (candidateSchemas == null ? 0 : candidateSchemas.length) + " candidate schemas");
 		return candidateSchemas;
 	}

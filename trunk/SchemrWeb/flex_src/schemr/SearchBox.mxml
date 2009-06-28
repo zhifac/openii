@@ -61,7 +61,7 @@
 			if ((event.result as XML).children().length()==0){
 				 message.label = "No results found. Please try another query.";	
 			} else{
-				message.label = "" + (event.result as XML).children().length() + 
+				message.label = "" + (event.result as XML).result[0]["@results"] + 
 				" results found.";
 			}
 			_searchResults = (event.result as XML).children();
