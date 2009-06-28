@@ -73,31 +73,33 @@ public class SearchServlet extends HttpServlet {
 		
 		MatchSummary [] msa = SchemaSearch.performSearch(searchTerms, schemaFile, schemaFragmentType, matchersOn);
 
-		Element root = new Element("schemas");		
-		for (MatchSummary matchSummary : msa) {
-			Schema schema = matchSummary.getSchema();			
-			if (schema == null) throw new IllegalArgumentException("Schema must not be null");		
-			Element resultElement = new Element("result");
-			resultElement.setAttribute(ID, schema.getId().toString());
-			resultElement.setAttribute(NAME, schema.getName().trim());
-			resultElement.setAttribute(DESC, schema.getDescription().trim());
-			int matches = 0, entities = 0, attributes=0;
-			Double s = matchSummary.getScore();
-				for (String q : searchTerms.split("\\s")){
-					if (schema.getName().toLowerCase().contains(q)) s *= 2.0; //reward for schema name
-					for (SchemaElement se : SchemaUtility.getCLIENT().getGraph(schema.getId()).getElements(null)) {
-						if (se.getName().toLowerCase().contains(q.toLowerCase()) || se.getDescription().toLowerCase().contains(q.toLowerCase())) matches++;
-						if (se instanceof Entity) entities++;
-						if (se instanceof Attribute) attributes++;
+		Element root = new Element("schemas");
+		if (msa!=null)
+			for (MatchSummary matchSummary : msa) {
+				
+				Schema schema = matchSummary.getSchema();			
+				if (schema == null) throw new IllegalArgumentException("Schema must not be null");		
+				Element resultElement = new Element("result");
+				resultElement.setAttribute(ID, schema.getId().toString());
+				resultElement.setAttribute(NAME, schema.getName().trim());
+				resultElement.setAttribute(DESC, schema.getDescription().trim());
+				int matches = 0, entities = 0, attributes=0;
+				Double s = matchSummary.getScore();
+					for (String q : searchTerms.split("\\s")){
+						if (schema.getName().toLowerCase().contains(q)) s *= 2.0; //reward for schema name
+						for (SchemaElement se : SchemaUtility.getCLIENT().getGraph(schema.getId()).getElements(null)) {
+							if (se.getName().toLowerCase().contains(q.toLowerCase()) || se.getDescription().toLowerCase().contains(q.toLowerCase())) matches++;
+							if (se instanceof Entity) entities++;
+							if (se instanceof Attribute) attributes++;
+						}
+								
 					}
-							
-				}
-			resultElement.setAttribute(ENTITIES_ATTRIBUTES, "" + entities + "/" + attributes);
-			resultElement.setAttribute(MATCHES, Integer.toString(matches));
-			String score = s > 1.0 ? "1.0" : Double.toString(s);
-			resultElement.setAttribute(SCORE, score.length() < 5 ? score : score.substring(0,5));			
-			root.addContent(resultElement);
-		}
+				resultElement.setAttribute(ENTITIES_ATTRIBUTES, "" + entities + "/" + attributes);
+				resultElement.setAttribute(MATCHES, Integer.toString(matches));
+				String score = s > 1.0 ? "1.0" : Double.toString(s);
+				resultElement.setAttribute(SCORE, score.length() < 5 ? score : score.substring(0,5));			
+				root.addContent(resultElement);
+			}
 		Document doc = new Document(root);
 		XMLOutputter serializer = new XMLOutputter();
 		serializer.output(doc, response.getWriter());

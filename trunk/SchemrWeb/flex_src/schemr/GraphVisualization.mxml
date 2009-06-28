@@ -122,9 +122,9 @@
 				ns.addEventListener(MouseEvent.DOUBLE_CLICK, toggle);
 				ns.addEventListener(MouseEvent.MOUSE_OVER, drawInfo);
 				panel1.addEventListener(MouseEvent.MOUSE_OUT, hideBox);
-				panel1.addEventListener(MouseEvent.MOUSE_WHEEL, zoom);
+				panel1.addEventListener(MouseEvent.MOUSE_WHEEL, pan);
 				ns.addEventListener(MouseEvent.MOUSE_DOWN, drag);
-				ns.addEventListener(MouseEvent.MOUSE_UP, stop);
+				panel1.addEventListener(MouseEvent.MOUSE_UP, stop);
 				ns.buttonMode = true;
 			});
 			lay =  new NodeLinkTreeLayout();
@@ -145,6 +145,7 @@
 			actionbox.setVisible(false);
 			vis.update(t1).play();
 			vis.update();
+			Displays.panBy(vis, graphs.length * 70 - 120, - 30 * graphs.length + 150);
 		}
 		private function hideBox(event:MouseEvent):void{
 			if ((panel1.mouseX - xpos) > 50 || (panel1.mouseX - ypos) > 50){  
@@ -154,6 +155,7 @@
 		private function shuffle():void{
 			try{
 				if (panel1.rawChildren.numChildren > 0){
+					graphs.pop();
 					panel1.rawChildren.removeChildAt(panel1.rawChildren.numChildren - 1);
 					actionbox.visible = false;
 					if (panel1.rawChildren.numChildren > 0){
@@ -216,13 +218,9 @@
 		}
 		
 		
-		private function zoom(event:MouseEvent):void {
+		private function pan(event:MouseEvent):void {
 			actionbox.visible=false;
-			if (event.delta < 0){
-				zoomTo(vis.scaleX * 0.98);
-			} else{
-				zoomTo(vis.scaleX * 1.02040816);
-			}
+				Displays.panBy(vis, 0, event.delta * 10); 
 		}
 		private function zoomTo(amount:Number):void{
 			vis.scaleX = amount / 100;
