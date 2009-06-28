@@ -1,0 +1,174 @@
+<database name="nilesh-small">
+  <createdby name="nilesh-small"> Created from nilesh in nilesh.xml by filering tables. </createdby>
+  <Schema>
+    <table name="Product">
+      <column name="ItemID" type="int"/>
+      <column name="Type" type="varchar_mid">
+<comment>Book or Music</comment>
+</column>
+      <column name="Cost" type="int"/>
+      <column name="Review" type="int">
+<comment>average customer review score</comment>
+</column>
+      <column name="SaleRank" type="int"/>
+</table>
+    <table name="Book">
+      <column name="BookID" ref="Product/ItemID" type="int"/>
+      <column name="Name" type="varchar_mid"/>
+      <column name="Binding" type="varchar_small">
+<comment>Hardcover or Paperback</comment>
+</column>
+      <column name="Pages" type="int"/>
+      <column name="Publisher" type="varchar_mid"/>
+      <column name="ISBN" type="int"/>
+      <column name="AgeLevel" type="varchar_mid"/>
+</table>
+    <table name="Creater">
+      <column name="CreaterID" type="int"/>
+      <column name="Name" type="varchar_mid"/>
+</table>
+    <table name="CreaterShip">
+      <column name="ItemID" ref="Product/ItemID" type="int"/>
+      <column name="CreaterID" ref="Creater/CreaterID" type="int"/>
+      <column name="Type" type="varchar_mid">
+<comment>Type of creater</comment>
+</column>
+</table>
+    <table name="Availability">
+      <column name="ItemID" type="int" ref="Product/ItemID"/>
+      <column name="WareID" type="int"></column>
+      <column name="Status" type="boolean">
+<comment>In Stock or not</comment>
+</column>
+</table>
+    <table name="Genre">
+      <column name="ItemID" ref="Product/ItemID" type="int"/>
+      <column name="Genre" type="varchar_mid">
+<comment>book or music categorg</comment>
+</column>
+</table>
+  </Schema>
+  <Data>
+    <Creater>
+<tuple>
+<CreaterID>001</CreaterID>
+<Name>Pink Floyd</Name>
+</tuple>
+<tuple>
+<CreaterID>003</CreaterID>
+<Name>Led Zepplin</Name>
+</tuple>
+<tuple>
+<CreaterID>012</CreaterID>
+<Name>Douglas Hofstrader</Name>
+</tuple>
+<tuple>
+<CreaterID>015</CreaterID>
+<Name>J. K. Rowling</Name>
+</tuple>
+</Creater>
+    <Book>
+<tuple>
+<BookID>0001</BookID>
+<Name>Godel, Escher, Bach: An Eternal Golden Braid</Name>
+<Binding>paperback</Binding>
+<Pages>250</Pages>
+<Publisher>HarperCollins</Publisher>
+<ISBN>027430237</ISBN>
+<AgeLevel>15-35</AgeLevel>
+</tuple>
+<tuple>
+<BookID>0024</BookID>
+<Name>Harry Potter and the Order of the Phoenix</Name>
+<Binding>hardcover</Binding>
+<Pages>750</Pages>
+<Publisher>Scholastic</Publisher>
+<ISBN>091847128</ISBN>
+<AgeLevel>9-15</AgeLevel>
+</tuple>
+</Book>
+    <Genre>
+<tuple>
+<ItemID>0015</ItemID>
+<Genre>Rock</Genre>
+</tuple>
+<tuple>
+<ItemID>0015</ItemID>
+<Genre>Psychedelic");</Genre>
+</tuple>
+<tuple>
+<ItemID>0001</ItemID>
+<Genre>Philosophy</Genre>
+</tuple>
+</Genre>
+    <Availability>
+<tuple>
+<ItemID>01</ItemID>
+<WareID>0001</WareID>
+<Status>yes</Status>
+</tuple>
+<tuple>
+<ItemID>01</ItemID>
+<WareID>0015</WareID>
+<Status>no</Status>
+</tuple>
+<tuple>
+<ItemID>02</ItemID>
+<WareID>0024</WareID>
+<Status>yes</Status>
+</tuple>
+</Availability>
+    <Product>
+<tuple>
+<ItemID>0001</ItemID>
+<Type>book</Type>
+<Cost>24.99</Cost>
+<Review>9.5</Review>
+<SaleRank>245</SaleRank>
+</tuple>
+<tuple>
+<ItemID>0015</ItemID>
+<Type>music</Type>
+<Cost>13.99</Cost>
+<Review>8.4</Review>
+<SaleRank>590</SaleRank>
+</tuple>
+<tuple>
+<ItemID>0017</ItemID>
+<Type>music</Type>
+<Cost>12.00</Cost>
+<Review>7.6</Review>
+<SaleRank>1923</SaleRank>
+</tuple>
+<tuple>
+<ItemID>0024</ItemID>
+<Type>book</Type>
+<Cost>1999</Cost>
+<Review>9.7</Review>
+<SaleRank>12</SaleRank>
+</tuple>
+</Product>
+    <CreaterShip>
+<tuple>
+<ItemID>001</ItemID>
+<CreaterID>0015</CreaterID>
+<Type>Band</Type>
+</tuple>
+<tuple>
+<ItemID>003</ItemID>
+<CreaterID>0017</CreaterID>
+<Type>Band</Type>
+</tuple>
+<tuple>
+<ItemID>012</ItemID>
+<CreaterID>0001</CreaterID>
+<Type>Author</Type>
+</tuple>
+<tuple>
+<ItemID>015</ItemID>
+<CreaterID>0024</CreaterID>
+<Type>Author</Type>
+</tuple>
+</CreaterShip>
+  </Data>
+</database>

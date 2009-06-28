@@ -1,0 +1,168 @@
+<domain name="Automobile">
+	<search>
+		<source name = "AutoMob" url = "http://www.automob.com/"/>
+		<element>
+			<element vname="make" text = " Make"> 
+				<selectbox>
+		            <item>Acura</item>
+		            <item>Audi</item>
+		            <item>Bentley</item>
+		            <item>BMW</item>
+		            <item>Buick</item>
+		            <item>Cadillac</item>
+		            <item>Chevrolet</item>
+		            <item>Chrysler</item>
+		            <item>Dodge</item>
+		            <item>Ferrari</item>
+		            <item>Ford</item>
+		            <item>GMC</item>
+		            <item>Honda</item>
+		            <item>Hummer</item>
+		            <item>Hyundai</item>
+		            <item>Infiniti</item>
+		            <item>Isuzu</item>
+		            <item>Jaguar</item>
+		            <item>Jeep</item>
+		            <item>Kia</item>
+		            <item>Land Rover</item>
+		            <item>Lexus</item>
+		            <item>Lincoln</item>
+		            <item>Maserati</item>
+		            <item>Mazda</item>
+		            <item>Mercedes Benz</item>
+		            <item>Mercury</item>
+		            <item>MINI</item>
+		            <item>Mitsubishi</item>
+		            <item>Nissan</item>
+		            <item>Oldsmobile</item>
+		            <item>Pontiac</item>
+		            <item>Porsche</item>
+		            <item>Rolls Royce</item>
+		            <item>Saab</item>
+		            <item>Saturn</item>
+		            <item>Subaru</item>
+		            <item>Suzuki</item>
+		            <item>Toyota</item>
+		            <item>Volkswagen</item>
+		            <item>Volvo</item>
+				</selectbox>
+			</element>
+			<element vname="year" text = "Year">
+				<selectbox>
+            		<item>2003</item>
+				</selectbox>
+			</element>
+            <element vname="modelname" text = "Model" depends = "make">
+            	<selectbox>
+		            <item>3.2CL</item>
+		            <item>3.2TL</item>
+		            <item>3.5RL</item>
+		            <item>MDX</item>
+		            <item>NSX</item>
+		            <item>RSX</item>
+		        </selectbox>
+		   	</element>
+		   	<element vname = "Zip" text = "Your Zip">
+		   		<textbox/>
+		   	</element>
+			<element vname = "Name_First" text = "First Name">
+				<textbox/>
+			</element>
+			<element vname = "Name_Last" text = "Last Name">
+				<textbox/>
+			</element>
+			<element vname = "Address" text = "Street Address (No city or state required)">
+				<textbox/>
+			</element>
+			<element vname = "Zipcode" text = "Zip">
+				<textbox/>
+			</element>
+			<element vname = "E-mail" text = "Email">
+				<textbox/>
+			</element>
+			<element vname = "DayPhone_1" text = "Day Phone">
+				<textbox/>
+			</element>
+			<element vname = "DayPhone_2" >
+				<textbox/>
+			</element>
+			<element vname = "DayPhone_3" >
+				<textbox/>
+			</element>
+			<element vname = "DayPhone_Ext" text = "Ext">
+				<textbox/>
+			</element>
+			<element vname = "EvePhone_1" text = "Evening Phone">
+				<textbox/>
+			</element>
+			<element vname = "EvePhone_2" >
+				<textbox/>
+			</element>
+			<element vname = "EvePhone_3" >
+				<textbox/>
+			</element>
+			<element vname = "EvePhone_Ext" text = "Ext">
+				<textbox/>
+			</element>
+			<element vname="package" text = "Select Package">
+				<selectbox>
+		            <item>Type S Coupe</item>
+		            <item>Coupe</item>
+				<item>Red Label Sedan</item>
+		            <item>T Sedan</item>
+
+		        </selectbox>
+			</element>
+			<element vname="Exterior" text = "Select Color (Exterior)">
+				<selectbox >
+					<item>Aegean Blue</item>
+					<item>Anthracite</item>
+					<item>Eternal Blue</item>
+					<item>Naples Gold</item>
+					<item>Nighthawk Black</item>
+					<item>Noble Green</item>
+					<item>San Marino Red</item>
+					<item>Satin Silver</item>
+					<item>Taffeta White</item>
+				</selectbox>
+			</element>
+			<element vname="Interior" text = "Select Color (Interior)">
+				<selectbox>
+		            <item>Ebony</item>
+		            <item>Parchment</item>
+		        </selectbox>
+	        </element>
+			<element vname="Best_Time_To_Contact" text = "Best Time To Contact">
+				<selectbox>
+		            <item>Anytime</item>
+		            <item>Mornings</item>
+		            <item>Afternoons</item>
+		            <item>Evenings</item>
+		            <item>Business Hours</item>
+		            <item>Weekends</item>
+	            </selectbox>
+	        </element>
+	        <element vname="time_frame" text = "Your timeframe">
+	        	<selectbox>
+		            <item>Within 48 hours</item>
+		            <item>Within a week</item>
+		            <item>Within two weeks</item>
+		            <item>Within a month</item>
+		        </selectbox>
+		    </element>
+			<element vname="finance" text = "Payment Method">
+		        <selectbox>
+		            <item>Lease</item>
+		            <item>Loan</item>
+		            <item>Cash</item>
+		            <item>Credit Union</item>
+		        </selectbox>
+	        </element>
+	        <element vname = "Notes_to_dealer" text = "Additional Comments (optional)">
+	        	<textbox/>
+	        </element>		    
+		</element>   
+	</search>        
+</domain>            
+                     
+                     

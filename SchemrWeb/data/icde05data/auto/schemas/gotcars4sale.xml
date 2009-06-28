@@ -1,0 +1,120 @@
+<domain name="Automobile">
+	<search>
+		<source name="GotCars4sale" url="http://www.gotcars4sale.com/listing/search_listings.asp?mode=advanced"></source>
+		<element>
+			<element vname="Make" text = "Make">
+		  		<selectbox>
+					<item>Select Make</item>
+					<item>All</item>
+					<item>Abarth</item>
+					<item>Abbott Detroit</item>
+					<item>AC</item>
+					<item>Acura</item>
+					<item>Adler</item>
+					<item>Ajax</item>
+					<item>Alco</item>
+					<item>Aldo Auto Caps</item>
+		  		</selectbox>
+			</element>
+			<element vname="Model" text = "Model">
+		  		<textbox></textbox>
+			</element>
+			<element vname="minYear" text = "Year">
+		  		<selectbox>
+			  		<item>Before 1900</item>
+			  		<item>1900</item>
+			  		<item>1901</item>
+			  		<item>1902</item>
+			  		<item>1903</item>
+			  		<item>1904</item>
+			  		<item>1905</item>
+			  		<item>1906</item>
+			  		<item>1907</item>
+			  		<item>1908</item>
+				</selectbox>
+		  	</element>
+		  	<element vname="maxYear" text="to">
+				<selectbox>
+			  		<item>2002</item>
+			  		<item>2001</item>
+			  		<item>2000</item>
+			  		<item>1999</item>
+			  		<item>1998</item>
+			  		<item>1997</item>
+			  		<item>1996</item>
+			  		<item>1995</item>
+			  		<item>1994</item>
+			  		<item>1993</item>
+				</selectbox>
+		  	</element>
+			<element vname="minPrice" text="Price(US$)">
+		  		<selectbox>
+			  		<item>$0</item>
+			  		<item>$5,000</item>
+			  		<item>$10,000</item>
+			  		<item>$15,000</item>
+			  		<item>$20,000</item>
+			  		<item>$25,000</item>
+			  		<item>$30,000</item>
+			  		<item>$40,000</item>
+			  		<item>$50,000</item>
+			  		<item>$75,000</item>
+				</selectbox>
+		  	</element>
+		  	<element vname="maxPrice" text ="to">
+				<selectbox>
+			  		<item>No Maximum</item>
+			  		<item>$5,000</item>
+			  		<item>$10,000</item>
+			  		<item>$15,000</item>
+			  		<item>$20,000</item>
+			  		<item>$25,000</item>
+			  		<item>$30,000</item>
+			  		<item>$40,000</item>
+			  		<item>$50,000</item>
+			  		<item>$75,000</item>
+				</selectbox>
+		  	</element>
+			<element vname="City" text = "City">
+		  		<textbox></textbox>
+			</element>
+			<element vname="StateOrProvince" text ="State/Province">
+		  		<selectbox>
+			  		<item>Select Your State/Province</item>
+			  		<item>Alabama</item>
+			  		<item>Alaska</item>
+			  		<item>Arizona</item>
+			  		<item>Arkansaa</item>
+			  		<item>California</item>
+			  		<item>Colorado</item>
+			  		<item>Connecticut</item>
+			  		<item>Delaware</item>
+			  		<item>District of Columbia</item>
+				</selectbox>
+		  	</element>
+		  	<element vname ="oStateOrProvince">
+				<textbox></textbox>
+		  	</element>
+			<element vname="Country" text ="Country">
+		  		<selectbox>
+			  		<item>UNITED STATES</item>
+			  		<item>CANADA</item>
+			  		<item>AFGANISTAN</item>
+			  		<item>ALBANIA</item>
+			  		<item>ALGERIA</item>
+			  		<item>AMERICAN SAMOA</item>
+			  		<item>ANDORRA</item>
+			  		<item>ANGUILLA</item>
+			  		<item>ANGOLA</item>
+			  		<item>ANTARTICA</item>
+				</selectbox>
+		  	</element>
+		  	<element vname="oCountry">
+				<textbox></textbox>
+		  	</element>
+			<element vname="PostalCode" text ="Postal Code">
+		  		<textbox></textbox>
+			</element>
+		</element>
+  	</search>
+</domain>

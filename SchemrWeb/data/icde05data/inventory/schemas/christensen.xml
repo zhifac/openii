@@ -1,0 +1,590 @@
+<database name="JacobChristensen">
+<createdby name="JacobChristensen"/>
+<Schema><table name="Products">
+<column name="itemNum" type="int" key="yes" null="yes"/>
+<column name="name" type="varchar_mid" key="no" null="no"/>
+<column name="price" type="money" key="no" null="no"/>
+<column name="review" type="int" key="no" null="yes"/>
+<column name="suggestion" type="int" key="no" null="yes"/>
+</table>
+<table name="Warehouses">
+<column name="warehouseNum" type="int" key="yes" null="yes"/>
+<column name="address" type="varchar_mid" key="no" null="no"/>
+<column name="manager" type="varchar_mid" key="no" null="no"/>
+<column name="phone" type="char_mid" key="no" null="no"/>
+<column name="fax" type="char_mid" key="no" null="yes"/>
+<column name="employeeCap" type="int" key="no" null="yes"/>
+<column name="productCap" type="int" key="no" null="yes"/>
+</table>
+<table name="Stock">
+<column name="itemNum" type="int" key="no" null="no" ref="Products/itemNum"/>
+<column name="warehouseNum" type="int" key="no" null="no" ref="Warehouses/warehouseNum"/>
+<column name="quantity" type="int" key="no" null="no"/>
+</table>
+<table name="CDs">
+<column name="itemNum" type="int" key="no" null="no" ref="Products/itemNum"/>
+<column name="label" type="varchar_mid" key="no" null="yes"/>
+<column name="genre" type="varchar_mid" key="no" null="yes"/>
+<column name="type" type="varchar_mid" key="no" null="yes"/>
+<column name="NunOfDiscs" type="int" key="no" null="yes"/>
+</table>
+<table name="Books">
+<column name="itemNum" type="int" key="no" null="no" ref="Products/itemNum"/>
+<column name="salePrice" type="money" key="no" null="no"/>
+<column name="publisher" type="varchar_mid" key="no" null="yes"/>
+<column name="cover" type="char_small" key="no" null="no"/>
+<column name="category" type="varchar_mid" key="no" null="yes"/>
+</table>
+<table name="Keywords">
+<column name="itemNum" type="int" key="no" null="no" ref="Products/itemNum"/>
+<column name="keyword" type="varchar_mid" key="no" null="no"/>
+</table>
+<table name="AuthorsArtists">
+<column name="itemNum" type="int" key="no" null="no" ref="Products/itemNum"/>
+<column name="authorArtist" type="varchar_mid" key="no" null="no"/>
+</table>
+</Schema>
+<Data>
+<Products>
+<tuple><itemNum>10138958</itemNum>
+<name>My Garage is My Best Friend</name>
+<price>27.85</price>
+<review>5</review>
+<suggestion>NULL</suggestion>
+</tuple><tuple><itemNum>15614462</itemNum>
+<name>Database Systems</name>
+<price>36.87</price>
+<review>5</review>
+<suggestion>NULL</suggestion>
+</tuple><tuple><itemNum>20411334</itemNum>
+<name>Timeless Classics</name>
+<price>33.45</price>
+<review>1</review>
+<suggestion>NULL</suggestion>
+</tuple><tuple><itemNum>21680957</itemNum>
+<name>For Whom the Bell Tolls</name>
+<price>24.21</price>
+<review>4</review>
+<suggestion>77017631</suggestion>
+</tuple><tuple><itemNum>24549662</itemNum>
+<name>Feel the Beat</name>
+<price>10.69</price>
+<review>5</review>
+<suggestion>NULL</suggestion>
+</tuple><tuple><itemNum>26607505</itemNum>
+<name>The Little Train That Could</name>
+<price>11.22</price>
+<review>3</review>
+<suggestion>NULL</suggestion>
+</tuple><tuple><itemNum>28654364</itemNum>
+<name>Come on Baby</name>
+<price>16.13</price>
+<review>4</review>
+<suggestion>NULL</suggestion>
+</tuple><tuple><itemNum>30243745</itemNum>
+<name>Yo Yo</name>
+<price>11.35</price>
+<review>2</review>
+<suggestion>66549503</suggestion>
+</tuple><tuple><itemNum>32074465</itemNum>
+<name>Party Time</name>
+<price>14.22</price>
+<review>5</review>
+<suggestion>41942409</suggestion>
+</tuple><tuple><itemNum>41942409</itemNum>
+<name>Bring the Noise</name>
+<price>11.71</price>
+<review>1</review>
+<suggestion>32074465</suggestion>
+</tuple><tuple><itemNum>51362305</itemNum>
+<name>Pride and Prejudice</name>
+<price>20.72</price>
+<review>3</review>
+<suggestion>67172978</suggestion>
+</tuple><tuple><itemNum>60695388</itemNum>
+<name>Green Eggs and Ham</name>
+<price>68.72</price>
+<review>5</review>
+<suggestion>89883205</suggestion>
+</tuple><tuple><itemNum>66549503</itemNum>
+<name>Preach It Brother</name>
+<price>42.78</price>
+<review>2</review>
+<suggestion>30243745</suggestion>
+</tuple><tuple><itemNum>67172978</itemNum>
+<name>The Meadows of El Paso</name>
+<price>22.47</price>
+<review>3</review>
+<suggestion>NULL</suggestion>
+</tuple><tuple><itemNum>77017631</itemNum>
+<name>Mystic River</name>
+<price>30.37</price>
+<review>1</review>
+<suggestion>87621388</suggestion>
+</tuple><tuple><itemNum>80173621</itemNum>
+<name>Seabiscuit: An American Legend</name>
+<price>15.54</price>
+<review>2</review>
+<suggestion>95428750</suggestion>
+</tuple><tuple><itemNum>87621388</itemNum>
+<name>The Secret Life of Bees</name>
+<price>14.85</price>
+<review>4</review>
+<suggestion>80173621</suggestion>
+</tuple><tuple><itemNum>88918999</itemNum>
+<name>The 50's</name>
+<price>45.00</price>
+<review>4</review>
+<suggestion>NULL</suggestion>
+</tuple><tuple><itemNum>89883205</itemNum>
+<name>A Tale of Two Cities</name>
+<price>18.76</price>
+<review>2</review>
+<suggestion>80173621</suggestion>
+</tuple><tuple><itemNum>95428750</itemNum>
+<name>The Life of Pi</name>
+<price>7.15</price>
+<review>5</review>
+<suggestion>77017631</suggestion>
+</tuple></Products>
+<Books>
+<tuple><itemNum>77017631</itemNum>
+<salePrice>25.37</salePrice>
+<publisher>Heller Developments</publisher>
+<cover>hard</cover>
+<category>mystery</category>
+</tuple><tuple><itemNum>80173621</itemNum>
+<salePrice>9.99</salePrice>
+<publisher>Howe Micro</publisher>
+<cover>hard</cover>
+<category>history</category>
+</tuple><tuple><itemNum>87621388</itemNum>
+<salePrice>NULL</salePrice>
+<publisher>Will Creations</publisher>
+<cover>soft</cover>
+<category>horror</category>
+</tuple><tuple><itemNum>26607505</itemNum>
+<salePrice>5.46</salePrice>
+<publisher>Pfeffer Media</publisher>
+<cover>hard</cover>
+<category>educational</category>
+</tuple><tuple><itemNum>15614462</itemNum>
+<salePrice>NULL</salePrice>
+<publisher>Murray Lab</publisher>
+<cover>soft</cover>
+<category>fiction</category>
+</tuple><tuple><itemNum>60695388</itemNum>
+<salePrice>34.56</salePrice>
+<publisher>Blanda Arts</publisher>
+<cover>soft</cover>
+<category>drama</category>
+</tuple><tuple><itemNum>89883205</itemNum>
+<salePrice>NULL</salePrice>
+<publisher>Jacobsonmasters</publisher>
+<cover>soft</cover>
+<category>fantasy</category>
+</tuple><tuple><itemNum>21680957</itemNum>
+<salePrice>19.99</salePrice>
+<publisher>Marks Interactive</publisher>
+<cover>hard</cover>
+<category>childrens</category>
+</tuple><tuple><itemNum>51362305</itemNum>
+<salePrice>20.72</salePrice>
+<publisher>Bechtelarmix</publisher>
+<cover>hard</cover>
+<category>reference</category>
+</tuple><tuple><itemNum>95428750</itemNum>
+<salePrice>NULL</salePrice>
+<publisher>Feil Arts</publisher>
+<cover>soft</cover>
+<category>fiction</category>
+</tuple></Books>
+<CDs>
+<tuple><itemNum>30243745</itemNum>
+<label>Beckervark</label>
+<genre>rap</genre>
+<type>single</type>
+<NunOfDiscs>1</NunOfDiscs>
+</tuple><tuple><itemNum>32074465</itemNum>
+<label>Stiedemann Inc</label>
+<genre>rock</genre>
+<type>album</type>
+<NunOfDiscs>1</NunOfDiscs>
+</tuple><tuple><itemNum>28654364</itemNum>
+<label>Dooleyvark</label>
+<genre>pop</genre>
+<type>album</type>
+<NunOfDiscs>2</NunOfDiscs>
+</tuple><tuple><itemNum>67172978</itemNum>
+<label>Ebertdeal</label>
+<genre>country</genre>
+<type>album</type>
+<NunOfDiscs>1</NunOfDiscs>
+</tuple><tuple><itemNum>20411334</itemNum>
+<label>Wardvark</label>
+<genre>classical</genre>
+<type>commemorative edition</type>
+<NunOfDiscs>3</NunOfDiscs>
+</tuple><tuple><itemNum>41942409</itemNum>
+<label>Cremin Creations</label>
+<genre>rock</genre>
+<type>album</type>
+<NunOfDiscs>1</NunOfDiscs>
+</tuple><tuple><itemNum>66549503</itemNum>
+<label>Hyattmix</label>
+<genre>rap</genre>
+<type>album</type>
+<NunOfDiscs>1</NunOfDiscs>
+</tuple><tuple><itemNum>10138958</itemNum>
+<label>Cabelladata</label>
+<genre>punk</genre>
+<type>album</type>
+<NunOfDiscs>1</NunOfDiscs>
+</tuple><tuple><itemNum>24549662</itemNum>
+<label>Dooleyvark</label>
+<genre>echno</genre>
+<type>single</type>
+<NunOfDiscs>1</NunOfDiscs>
+</tuple><tuple><itemNum>88918999</itemNum>
+<label>Cremin Creations</label>
+<genre>jazz</genre>
+<type>album</type>
+<NunOfDiscs>2</NunOfDiscs>
+</tuple></CDs>
+<Warehouses>
+<tuple><warehouseNum>61249</warehouseNum>
+<address>550 Joshua Close Missirwalk NV 28662</address>
+<manager>Patience</manager>
+<phone>539-3951</phone>
+<fax>853-2274      </fax>
+<employeeCap>86            </employeeCap>
+<productCap>2817</productCap>
+</tuple><tuple><warehouseNum>63382</warehouseNum>
+<address>597 Flora Fountain Circle Nashuma NY 31893</address>
+<manager>Kayli</manager>
+<phone>187-5378</phone>
+<fax>419-5606      </fax>
+<employeeCap>19            </employeeCap>
+<productCap>823</productCap>
+</tuple><tuple><warehouseNum>199437</warehouseNum>
+<address>819 Harvey Fountain Oshkontebello OH 37094</address>
+<manager>Jovanny</manager>
+<phone>565-1468</phone>
+<fax>864-1595      </fax>
+<employeeCap>101           </employeeCap>
+<productCap>4308</productCap>
+</tuple><tuple><warehouseNum>231759</warehouseNum>
+<address>741 Hanes Drive Cerrichelle NH 87310</address>
+<manager>Henry</manager>
+<phone>109-3685</phone>
+<fax>958-4604      </fax>
+<employeeCap>53            </employeeCap>
+<productCap>463</productCap>
+</tuple><tuple><warehouseNum>254852</warehouseNum>
+<address>733 King's Drive Trentorange AK 28457</address>
+<manager>Gabriel</manager>
+<phone>277-9182</phone>
+<fax>915-3991      </fax>
+<employeeCap>78            </employeeCap>
+<productCap>3368</productCap>
+</tuple><tuple><warehouseNum>297220</warehouseNum>
+<address>793 Woodby Avenue Rialtoters NC 96896</address>
+<manager>Jaida</manager>
+<phone>866-6736</phone>
+<fax>884-5453      </fax>
+<employeeCap>126           </employeeCap>
+<productCap>2624</productCap>
+</tuple><tuple><warehouseNum>322734</warehouseNum>
+<address>763 Governor Lane Turlowensboro Beach IA 45266</address>
+<manager>Laurence</manager>
+<phone>650-0245</phone>
+<fax>938-2282      </fax>
+<employeeCap>8            </employeeCap>
+<productCap>685</productCap>
+</tuple><tuple><warehouseNum>390279</warehouseNum>
+<address>17 Harvey Avenue Counciverett NE 53915</address>
+<manager>Louisa</manager>
+<phone>254-3296</phone>
+<fax>275-3556      </fax>
+<employeeCap>127           </employeeCap>
+<productCap>539</productCap>
+</tuple><tuple><warehouseNum>478227</warehouseNum>
+<address>548 Tulip Fountain Gainewer IL 97500</address>
+<manager>Melany</manager>
+<phone>464-6926</phone>
+<fax>356-5350      </fax>
+<employeeCap>154           </employeeCap>
+<productCap>3620</productCap>
+</tuple><tuple><warehouseNum>638988</warehouseNum>
+<address>765 Huges Drive Cupertihoma ID 35583</address>
+<manager>Laisha</manager>
+<phone>012-7351</phone>
+<fax>664-8914      </fax>
+<employeeCap>15            </employeeCap>
+<productCap>3625</productCap>
+</tuple><tuple><warehouseNum>743424</warehouseNum>
+<address>872 Fort Crescent Glendalnut WY 62438</address>
+<manager>Ladarius</manager>
+<phone>484-3102</phone>
+<fax>971-5799      </fax>
+<employeeCap>112           </employeeCap>
+<productCap>3578</productCap>
+</tuple><tuple><warehouseNum>754438</warehouseNum>
+<address>46 Frayor Avenue Annttanooga CA 62023</address>
+<manager>Derrell</manager>
+<phone>622-8566</phone>
+<fax>087-2371      </fax>
+<employeeCap>54            </employeeCap>
+<productCap>1657</productCap>
+</tuple><tuple><warehouseNum>850240</warehouseNum>
+<address>783 Foray Fountain High Orlalbert NC 71405</address>
+<manager>Rudolf</manager>
+<phone>842-5158</phone>
+<fax>293-7398      </fax>
+<employeeCap>1             </employeeCap>
+<productCap>2790</productCap>
+</tuple><tuple><warehouseNum>852931</warehouseNum>
+<address>649 Mountain View Park High Dearboddletown AL 6544</address>
+<manager>Gerry</manager>
+<phone>704-1330</phone>
+<fax>198-4226      </fax>
+<employeeCap>29            </employeeCap>
+<productCap>4311</productCap>
+</tuple><tuple><warehouseNum>855505</warehouseNum>
+<address>915 Home End Eagalden SC 98318</address>
+<manager>Omari</manager>
+<phone>753-3734</phone>
+<fax>245-1065      </fax>
+<employeeCap>115           </employeeCap>
+<productCap>4975</productCap>
+</tuple><tuple><warehouseNum>867874</warehouseNum>
+<address>318 Harkness View El Chiconosha IN 73538</address>
+<manager>Kimberly</manager>
+<phone>276-0930</phone>
+<fax>687-5602      </fax>
+<employeeCap>91            </employeeCap>
+<productCap>3771</productCap>
+</tuple><tuple><warehouseNum>894433</warehouseNum>
+<address>467 Dougal Gardens Bolinne WV 35800</address>
+<manager>Erika</manager>
+<phone>652-9980</phone>
+<fax>169-7846      </fax>
+<employeeCap>192           </employeeCap>
+<productCap>3853</productCap>
+</tuple><tuple><warehouseNum>913958</warehouseNum>
+<address>364 Forbes Way Suganston CO 59030</address>
+<manager>Teodoro</manager>
+<phone>673-8721</phone>
+<fax>001-2200      </fax>
+<employeeCap>186           </employeeCap>
+<productCap>2395</productCap>
+</tuple><tuple><warehouseNum>942221</warehouseNum>
+<address>859 Foreshore Drive Clearwavannah WV 61410</address>
+<manager>Kim</manager>
+<phone>958-7776</phone>
+<fax>829-7030      </fax>
+<employeeCap>80            </employeeCap>
+<productCap>92</productCap>
+</tuple><tuple><warehouseNum>982298</warehouseNum>
+<address>297 Harkness Street Buenartland TN 21450</address>
+<manager>John</manager>
+<phone>890-7856</phone>
+<fax>807-4727      </fax>
+<employeeCap>119          </employeeCap>
+<productCap>4876</productCap>
+</tuple></Warehouses>
+<Stock>
+<tuple><itemNum>77017631</itemNum>
+<warehouseNum>61249</warehouseNum>
+<quantity>96</quantity>
+</tuple><tuple><itemNum>80173621</itemNum>
+<warehouseNum>231759</warehouseNum>
+<quantity>54</quantity>
+</tuple><tuple><itemNum>87621388</itemNum>
+<warehouseNum>254852</warehouseNum>
+<quantity>33</quantity>
+</tuple><tuple><itemNum>26607505</itemNum>
+<warehouseNum>478227</warehouseNum>
+<quantity>24</quantity>
+</tuple><tuple><itemNum>15614462</itemNum>
+<warehouseNum>913958</warehouseNum>
+<quantity>66</quantity>
+</tuple><tuple><itemNum>60695388</itemNum>
+<warehouseNum>322734</warehouseNum>
+<quantity>71</quantity>
+</tuple><tuple><itemNum>89883205</itemNum>
+<warehouseNum>850240</warehouseNum>
+<quantity>16</quantity>
+</tuple><tuple><itemNum>21680957</itemNum>
+<warehouseNum>855505</warehouseNum>
+<quantity>38</quantity>
+</tuple><tuple><itemNum>51362305</itemNum>
+<warehouseNum>982298</warehouseNum>
+<quantity>81</quantity>
+</tuple><tuple><itemNum>95428750</itemNum>
+<warehouseNum>942221</warehouseNum>
+<quantity>73</quantity>
+</tuple><tuple><itemNum>30243745</itemNum>
+<warehouseNum>63382</warehouseNum>
+<quantity>79</quantity>
+</tuple><tuple><itemNum>28654364</itemNum>
+<warehouseNum>754438</warehouseNum>
+<quantity>56</quantity>
+</tuple><tuple><itemNum>67172978</itemNum>
+<warehouseNum>322734</warehouseNum>
+<quantity>83</quantity>
+</tuple><tuple><itemNum>20411334</itemNum>
+<warehouseNum>894433</warehouseNum>
+<quantity>49</quantity>
+</tuple><tuple><itemNum>66549503</itemNum>
+<warehouseNum>297220</warehouseNum>
+<quantity>19</quantity>
+</tuple><tuple><itemNum>10138958</itemNum>
+<warehouseNum>982298</warehouseNum>
+<quantity>90</quantity>
+</tuple><tuple><itemNum>24549662</itemNum>
+<warehouseNum>867874</warehouseNum>
+<quantity>23</quantity>
+</tuple><tuple><itemNum>88918999</itemNum>
+<warehouseNum>743424</warehouseNum>
+<quantity>91</quantity>
+</tuple><tuple><itemNum>95428750</itemNum>
+<warehouseNum>390279</warehouseNum>
+<quantity>36</quantity>
+</tuple><tuple><itemNum>30243745</itemNum>
+<warehouseNum>390279</warehouseNum>
+<quantity>4</quantity>
+</tuple><tuple><itemNum>28654364</itemNum>
+<warehouseNum>199437</warehouseNum>
+<quantity>11</quantity>
+</tuple><tuple><itemNum>67172978</itemNum>
+<warehouseNum>390279</warehouseNum>
+<quantity>34</quantity>
+</tuple><tuple><itemNum>20411334</itemNum>
+<warehouseNum>982298</warehouseNum>
+<quantity>22</quantity>
+</tuple><tuple><itemNum>66549503</itemNum>
+<warehouseNum>390279</warehouseNum>
+<quantity>37</quantity>
+</tuple><tuple><itemNum>10138958</itemNum>
+<warehouseNum>322734</warehouseNum>
+<quantity>30</quantity>
+</tuple><tuple><itemNum>24549662</itemNum>
+<warehouseNum>61249</warehouseNum>
+<quantity>32</quantity>
+</tuple><tuple><itemNum>88918999</itemNum>
+<warehouseNum>867874</warehouseNum>
+<quantity>43</quantity>
+</tuple><tuple><itemNum>77017631</itemNum>
+<warehouseNum>894433</warehouseNum>
+<quantity>2</quantity>
+</tuple><tuple><itemNum>80173621</itemNum>
+<warehouseNum>982298</warehouseNum>
+<quantity>1</quantity>
+</tuple><tuple><itemNum>87621388</itemNum>
+<warehouseNum>199437</warehouseNum>
+<quantity>41</quantity>
+</tuple><tuple><itemNum>26607505</itemNum>
+<warehouseNum>231759</warehouseNum>
+<quantity>47</quantity>
+</tuple></Stock>
+<AuthorsArtists>
+<tuple><itemNum>77017631</itemNum>
+<authorArtist>Raul R</authorArtist>
+</tuple><tuple><itemNum>80173621</itemNum>
+<authorArtist>Bryan V</authorArtist>
+</tuple><tuple><itemNum>87621388</itemNum>
+<authorArtist>Cyril G</authorArtist>
+</tuple><tuple><itemNum>26607505</itemNum>
+<authorArtist>Raquel D</authorArtist>
+</tuple><tuple><itemNum>15614462</itemNum>
+<authorArtist>Meredith N</authorArtist>
+</tuple><tuple><itemNum>60695388</itemNum>
+<authorArtist>Remington O</authorArtist>
+</tuple><tuple><itemNum>89883205</itemNum>
+<authorArtist>Lonny S</authorArtist>
+</tuple><tuple><itemNum>21680957</itemNum>
+<authorArtist>Chadrick P</authorArtist>
+</tuple><tuple><itemNum>51362305</itemNum>
+<authorArtist>Sally H</authorArtist>
+</tuple><tuple><itemNum>95428750</itemNum>
+<authorArtist>Lorine W</authorArtist>
+</tuple><tuple><itemNum>30243745</itemNum>
+<authorArtist>Lera R</authorArtist>
+</tuple><tuple><itemNum>32074465</itemNum>
+<authorArtist>Laron S</authorArtist>
+</tuple><tuple><itemNum>28654364</itemNum>
+<authorArtist>Leonor P</authorArtist>
+</tuple><tuple><itemNum>67172978</itemNum>
+<authorArtist>Ardell V</authorArtist>
+</tuple><tuple><itemNum>20411334</itemNum>
+<authorArtist>Jayden O</authorArtist>
+</tuple><tuple><itemNum>41942409</itemNum>
+<authorArtist>Zena K</authorArtist>
+</tuple><tuple><itemNum>66549503</itemNum>
+<authorArtist>Vernie U</authorArtist>
+</tuple><tuple><itemNum>10138958</itemNum>
+<authorArtist>Laury P</authorArtist>
+</tuple><tuple><itemNum>24549662</itemNum>
+<authorArtist>Chasity Y</authorArtist>
+</tuple><tuple><itemNum>88918999</itemNum>
+<authorArtist>Landon B</authorArtist>
+</tuple><tuple><itemNum>88918999</itemNum>
+<authorArtist>Deloris E</authorArtist>
+</tuple></AuthorsArtists>
+<Keywords>
+<tuple><itemNum>51362305</itemNum>
+<keyword>quote</keyword>
+</tuple><tuple><itemNum>26607505</itemNum>
+<keyword>collectively</keyword>
+</tuple><tuple><itemNum>15614462</itemNum>
+<keyword>because</keyword>
+</tuple><tuple><itemNum>60695388</itemNum>
+<keyword>snowing</keyword>
+</tuple><tuple><itemNum>80173621</itemNum>
+<keyword>programmers</keyword>
+</tuple><tuple><itemNum>80173621</itemNum>
+<keyword>emit</keyword>
+</tuple><tuple><itemNum>95428750</itemNum>
+<keyword>bathroom</keyword>
+</tuple><tuple><itemNum>95428750</itemNum>
+<keyword>potatoes</keyword>
+</tuple><tuple><itemNum>60695388</itemNum>
+<keyword>horse</keyword>
+</tuple><tuple><itemNum>21680957</itemNum>
+<keyword>chocolate</keyword>
+</tuple><tuple><itemNum>21680957</itemNum>
+<keyword>contemplate</keyword>
+</tuple><tuple><itemNum>15614462</itemNum>
+<keyword>mongers</keyword>
+</tuple><tuple><itemNum>60695388</itemNum>
+<keyword>suffocate</keyword>
+</tuple><tuple><itemNum>95428750</itemNum>
+<keyword>chaotically</keyword>
+</tuple><tuple><itemNum>60695388</itemNum>
+<keyword>supporters</keyword>
+</tuple><tuple><itemNum>60695388</itemNum>
+<keyword>microwave</keyword>
+</tuple><tuple><itemNum>51362305</itemNum>
+<keyword>march</keyword>
+</tuple><tuple><itemNum>21680957</itemNum>
+<keyword>chocolate</keyword>
+</tuple><tuple><itemNum>15614462</itemNum>
+<keyword>Copenhagen</keyword>
+</tuple><tuple><itemNum>60695388</itemNum>
+<keyword>contemplate</keyword>
+</tuple><tuple><itemNum>95428750</itemNum>
+<keyword>painters</keyword>
+</tuple><tuple><itemNum>60695388</itemNum>
+<keyword>dinner</keyword>
+</tuple><tuple><itemNum>80173621</itemNum>
+<keyword>slice</keyword>
+</tuple><tuple><itemNum>26607505</itemNum>
+<keyword>mongers</keyword>
+</tuple><tuple><itemNum>15614462</itemNum>
+<keyword>slice</keyword>
+</tuple><tuple><itemNum>51362305</itemNum>
+<keyword>horse</keyword>
+</tuple></Keywords>
+</Data>
+</database>

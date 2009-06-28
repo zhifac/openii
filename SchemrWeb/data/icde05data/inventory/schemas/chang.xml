@@ -1,0 +1,1035 @@
+<database name="BrianChang">
+<createdby name="BrianChang"/>
+<Schema><table name="Products">
+<column name="productID" type="int" key="yes" null="yes"/>
+<column name="title" type="char_mid" key="no" null="yes"/>
+<column name="price" type="decimal_point" key="no" null="yes"/>
+<column name="discountPrice" type="decimal_point" key="no" null="yes"/>
+<column name="type" type="char_mid" key="no" null="yes"/>
+</table>
+<table name="Books">
+<column name="ISBN" type="char_mid" key="yes" null="yes"/>
+<column name="productID" type="int" key="no" null="yes" ref="Products/productID"/>
+</table>
+<table name="Books2Authors">
+<column name="ISBN" type="char_mid" key="no" null="yes" ref="Books/ISBN"/>
+<column name="author" type="char_mid" key="no" null="yes"/>
+</table>
+<table name="Books2Keywords">
+<column name="ISBN" type="char_mid" key="no" null="yes" ref="Books/ISBN"/>
+<column name="word" type="char_mid" key="no" null="yes"/>
+</table>
+<table name="Music">
+<column name="ASIN" type="char_mid" key="yes" null="yes"/>
+<column name="productID" type="int" key="no" null="yes" ref="Products/productID"/>
+</table>
+<table name="Music2Artists">
+<column name="ASIN" type="char_mid" key="no" null="yes" ref="Music/ASIN"/>
+<column name="artist" type="char_mid" key="no" null="yes"/>
+</table>
+<table name="Warehouses">
+<column name="warehouseID" type="char_mid" key="yes" null="yes"/>
+<column name="name" type="char_mid" key="no" null="yes"/>
+</table>
+<table name="Warehouses2Locations">
+<column name="warehouseID" type="char_mid" key="no" null="yes" ref="Warehouses/warehouseID"/>
+<column name="streetAddress" type="char_mid" key="no" null="yes"/>
+<column name="city" type="char_mid" key="no" null="yes"/>
+<column name="state" type="char_mid" key="no" null="yes"/>
+<column name="zipcode" type="int" key="no" null="yes"/>
+</table>
+<table name="Warehouses2Contacts">
+<column name="warehouseID" type="char_mid" key="no" null="yes" ref="Warehouses/warehouseID"/>
+<column name="phone" type="char_mid" key="no" null="yes"/>
+<column name="fax" type="char_mid" key="no" null="yes"/>
+<column name="manager" type="char_mid" key="no" null="yes"/>
+</table>
+<table name="Availability">
+<column name="productID" type="int" key="no" null="yes" ref="Products/productID"/>
+<column name="quantity" type="int" key="no" null="yes"/>
+<column name="warehouseID" type="char_mid" key="no" null="yes" ref="Warehouses/warehouseID"/>
+</table>
+</Schema>
+<Data>
+<Products>
+<tuple><productID>0</productID>
+<title>Monday is Cool</title>
+<price>100</price>
+<discountPrice>99</discountPrice>
+<type>Book                </type>
+</tuple><tuple><productID>1</productID>
+<title>Tuesday is Cool                                  </title>
+<price>101</price>
+<discountPrice>100</discountPrice>
+<type>Book                </type>
+</tuple><tuple><productID>2</productID>
+<title>Wednesday is Cool                                </title>
+<price>102</price>
+<discountPrice>101</discountPrice>
+<type>Book                </type>
+</tuple><tuple><productID>3</productID>
+<title>Thursday is Cool                                 </title>
+<price>103</price>
+<discountPrice>102</discountPrice>
+<type>Book                </type>
+</tuple><tuple><productID>4</productID>
+<title>Friday is Cool                                   </title>
+<price>104</price>
+<discountPrice>103</discountPrice>
+<type>Book                </type>
+</tuple><tuple><productID>5</productID>
+<title>Saturday is Cool                                 </title>
+<price>105</price>
+<discountPrice>104</discountPrice>
+<type>Book                </type>
+</tuple><tuple><productID>6</productID>
+<title>Sunday is Cool                                   </title>
+<price>106</price>
+<discountPrice>105</discountPrice>
+<type>Book                </type>
+</tuple><tuple><productID>7</productID>
+<title>ASDF is Cool                                     </title>
+<price>107</price>
+<discountPrice>106</discountPrice>
+<type>Book                </type>
+</tuple><tuple><productID>8</productID>
+<title>XCB is Cool                                      </title>
+<price>108</price>
+<discountPrice>107</discountPrice>
+<type>Book                </type>
+</tuple><tuple><productID>9</productID>
+<title>WER is Cool                                      </title>
+<price>109</price>
+<discountPrice>108</discountPrice>
+<type>Book                </type>
+</tuple><tuple><productID>10</productID>
+<title>IUE is Cool                                      </title>
+<price>110</price>
+<discountPrice>109</discountPrice>
+<type>Book                </type>
+</tuple><tuple><productID>11</productID>
+<title>BKRE is Cool                                     </title>
+<price>111</price>
+<discountPrice>110</discountPrice>
+<type>Book                </type>
+</tuple><tuple><productID>12</productID>
+<title>RDS is Cool                                      </title>
+<price>112</price>
+<discountPrice>111</discountPrice>
+<type>Book                </type>
+</tuple><tuple><productID>13</productID>
+<title>TEICK is Cool                                    </title>
+<price>113</price>
+<discountPrice>112</discountPrice>
+<type>Book                </type>
+</tuple><tuple><productID>14</productID>
+<title>OEKCK is Cool                                    </title>
+<price>114</price>
+<discountPrice>113</discountPrice>
+<type>Book                </type>
+</tuple><tuple><productID>15</productID>
+<title>EOIDCN is Cool                                   </title>
+<price>115</price>
+<discountPrice>114</discountPrice>
+<type>Book                </type>
+</tuple><tuple><productID>16</productID>
+<title>EICKJFH is Cool                                  </title>
+<price>116</price>
+<discountPrice>115</discountPrice>
+<type>Book                </type>
+</tuple><tuple><productID>17</productID>
+<title>VJEUV is Cool                                    </title>
+<price>117</price>
+<discountPrice>116</discountPrice>
+<type>Book                </type>
+</tuple><tuple><productID>18</productID>
+<title>SLUIF is Cool                                    </title>
+<price>118</price>
+<discountPrice>117</discountPrice>
+<type>Book                </type>
+</tuple><tuple><productID>19</productID>
+<title>ARE is Cool                                      </title>
+<price>119</price>
+<discountPrice>118</discountPrice>
+<type>Book                </type>
+</tuple><tuple><productID>20</productID>
+<title>SOME is Cool                                     </title>
+<price>120</price>
+<discountPrice>119</discountPrice>
+<type>Book                </type>
+</tuple><tuple><productID>21</productID>
+<title>THINGS is Cool                                   </title>
+<price>121</price>
+<discountPrice>120</discountPrice>
+<type>Book                </type>
+</tuple><tuple><productID>22</productID>
+<title>THAT is Cool                                     </title>
+<price>122</price>
+<discountPrice>121</discountPrice>
+<type>Book                </type>
+</tuple><tuple><productID>23</productID>
+<title>JUST is Cool                                     </title>
+<price>123</price>
+<discountPrice>122</discountPrice>
+<type>Book                </type>
+</tuple><tuple><productID>24</productID>
+<title>KATHY is Cool                                     </title>
+<price>124</price>
+<discountPrice>123</discountPrice>
+<type>Book                </type>
+</tuple><tuple><productID>25</productID>
+<title>LOOK is Nice                                     </title>
+<price>125</price>
+<discountPrice>124</discountPrice>
+<type>Music               </type>
+</tuple><tuple><productID>26</productID>
+<title>ENTITY is Nice                                   </title>
+<price>126</price>
+<discountPrice>125</discountPrice>
+<type>Music               </type>
+</tuple><tuple><productID>27</productID>
+<title>VERY is Nice                                     </title>
+<price>127</price>
+<discountPrice>126</discountPrice>
+<type>Music               </type>
+</tuple><tuple><productID>28</productID>
+<title>WIDELY is Nice                                   </title>
+<price>128</price>
+<discountPrice>127</discountPrice>
+<type>Music               </type>
+</tuple><tuple><productID>29</productID>
+<title>USED is Nice                                     </title>
+<price>129</price>
+<discountPrice>128</discountPrice>
+<type>Music               </type>
+</tuple><tuple><productID>30</productID>
+<title>OBJECT is Nice                                   </title>
+<price>130</price>
+<discountPrice>129</discountPrice>
+<type>Music               </type>
+</tuple><tuple><productID>31</productID>
+<title>DEFINITION is Nice                               </title>
+<price>131</price>
+<discountPrice>130</discountPrice>
+<type>Music               </type>
+</tuple><tuple><productID>32</productID>
+<title>DATABASE is Nice                                 </title>
+<price>132</price>
+<discountPrice>131</discountPrice>
+<type>Music               </type>
+</tuple><tuple><productID>33</productID>
+<title>GRAPHICS is Nice                                 </title>
+<price>133</price>
+<discountPrice>132</discountPrice>
+<type>Music               </type>
+</tuple><tuple><productID>34</productID>
+<title>HOW is Nice                                      </title>
+<price>134</price>
+<discountPrice>133</discountPrice>
+<type>Music               </type>
+</tuple><tuple><productID>35</productID>
+<title>TALENT is Nice                                   </title>
+<price>135</price>
+<discountPrice>134</discountPrice>
+<type>Music               </type>
+</tuple><tuple><productID>36</productID>
+<title>MUSIC is Nice                                    </title>
+<price>136</price>
+<discountPrice>135</discountPrice>
+<type>Music               </type>
+</tuple><tuple><productID>37</productID>
+<title>PLANE is Nice                                    </title>
+<price>137</price>
+<discountPrice>136</discountPrice>
+<type>Music               </type>
+</tuple><tuple><productID>38</productID>
+<title>TREE is Nice                                     </title>
+<price>138</price>
+<discountPrice>137</discountPrice>
+<type>Music               </type>
+</tuple><tuple><productID>39</productID>
+<title>ENVELOPE is Nice                                 </title>
+<price>139</price>
+<discountPrice>138</discountPrice>
+<type>Music               </type>
+</tuple><tuple><productID>40</productID>
+<title>RING is Nice                                     </title>
+<price>140</price>
+<discountPrice>139</discountPrice>
+<type>Music               </type>
+</tuple><tuple><productID>41</productID>
+<title>BUCKET is Nice                                   </title>
+<price>141</price>
+<discountPrice>140</discountPrice>
+<type>Music               </type>
+</tuple><tuple><productID>42</productID>
+<title>SING is Nice                                     </title>
+<price>142</price>
+<discountPrice>141</discountPrice>
+<type>Music               </type>
+</tuple><tuple><productID>43</productID>
+<title>BASKETBALL is Nice                               </title>
+<price>143</price>
+<discountPrice>142</discountPrice>
+<type>Music               </type>
+</tuple><tuple><productID>44</productID>
+<title>SAUSAGE is Nice                                  </title>
+<price>144</price>
+<discountPrice>143</discountPrice>
+<type>Music               </type>
+</tuple><tuple><productID>45</productID>
+<title>STAR is Nice                                     </title>
+<price>145</price>
+<discountPrice>144</discountPrice>
+<type>Music               </type>
+</tuple><tuple><productID>46</productID>
+<title>NOSE is Nice                                     </title>
+<price>146</price>
+<discountPrice>145</discountPrice>
+<type>Music               </type>
+</tuple><tuple><productID>47</productID>
+<title>BACON is Nice                                    </title>
+<price>147</price>
+<discountPrice>146</discountPrice>
+<type>Music               </type>
+</tuple><tuple><productID>48</productID>
+<title>FISH is Nice                                     </title>
+<price>148</price>
+<discountPrice>147</discountPrice>
+<type>Music               </type>
+</tuple><tuple><productID>49</productID>
+<title>POT is Nice                                      </title>
+<price>149</price>
+<discountPrice>148</discountPrice>
+<type>Music               </type>
+</tuple></Products>
+<Books>
+<tuple><ISBN>0-13-031971-3                 </ISBN>
+<productID>24</productID>
+</tuple><tuple><ISBN>0-13-031972-3                 </ISBN>
+<productID>23</productID>
+</tuple><tuple><ISBN>0-13-031973-3                 </ISBN>
+<productID>22</productID>
+</tuple><tuple><ISBN>0-13-031974-3                 </ISBN>
+<productID>21</productID>
+</tuple><tuple><ISBN>0-13-031975-3                 </ISBN>
+<productID>20</productID>
+</tuple><tuple><ISBN>0-13-031976-3                 </ISBN>
+<productID>19</productID>
+</tuple><tuple><ISBN>0-13-031977-3                 </ISBN>
+<productID>18</productID>
+</tuple><tuple><ISBN>0-13-031978-3                 </ISBN>
+<productID>17</productID>
+</tuple><tuple><ISBN>0-13-031979-3                 </ISBN>
+<productID>16</productID>
+</tuple><tuple><ISBN>0-13-031980-3                 </ISBN>
+<productID>15</productID>
+</tuple><tuple><ISBN>0-13-031981-3                 </ISBN>
+<productID>14</productID>
+</tuple><tuple><ISBN>0-13-031982-3                 </ISBN>
+<productID>13</productID>
+</tuple><tuple><ISBN>0-13-031983-3                 </ISBN>
+<productID>12</productID>
+</tuple><tuple><ISBN>0-13-031984-3                 </ISBN>
+<productID>11</productID>
+</tuple><tuple><ISBN>0-13-031985-3                 </ISBN>
+<productID>10</productID>
+</tuple><tuple><ISBN>0-13-031986-3                 </ISBN>
+<productID>9</productID>
+</tuple><tuple><ISBN>0-13-031987-3                 </ISBN>
+<productID>8</productID>
+</tuple><tuple><ISBN>0-13-031988-3                 </ISBN>
+<productID>7</productID>
+</tuple><tuple><ISBN>0-13-031989-3                 </ISBN>
+<productID>6</productID>
+</tuple><tuple><ISBN>0-13-031990-3                 </ISBN>
+<productID>5</productID>
+</tuple><tuple><ISBN>0-13-031991-3                 </ISBN>
+<productID>4</productID>
+</tuple><tuple><ISBN>0-13-031992-3                 </ISBN>
+<productID>3</productID>
+</tuple><tuple><ISBN>0-13-031993-3                 </ISBN>
+<productID>2</productID>
+</tuple><tuple><ISBN>0-13-031994-3                 </ISBN>
+<productID>1</productID>
+</tuple><tuple><ISBN>0-13-031995-3                 </ISBN>
+<productID>0</productID>
+</tuple></Books>
+<Books2Authors>
+<tuple><ISBN>0-13-031995-3                 </ISBN>
+<author>Linn Bannon                  </author>
+</tuple><tuple><ISBN>0-13-031994-3                 </ISBN>
+<author>David Chang                  </author>
+</tuple><tuple><ISBN>0-13-031993-3                 </ISBN>
+<author>Margaux Fu                   </author>
+</tuple><tuple><ISBN>0-13-031992-3                 </ISBN>
+<author>Ben Krick                    </author>
+</tuple><tuple><ISBN>0-13-031991-3                 </ISBN>
+<author>Eileen Lee                   </author>
+</tuple><tuple><ISBN>0-13-031990-3                 </ISBN>
+<author>Kiera Louie                  </author>
+</tuple><tuple><ISBN>0-13-031989-3                 </ISBN>
+<author>John Smick                   </author>
+</tuple><tuple><ISBN>0-13-031988-3                 </ISBN>
+<author>Jordan Stark                 </author>
+</tuple><tuple><ISBN>0-13-031987-3                 </ISBN>
+<author>Jian Bigelow                 </author>
+</tuple><tuple><ISBN>0-13-031986-3                 </ISBN>
+<author>Rachel Broadsky              </author>
+</tuple><tuple><ISBN>0-13-031985-3                 </ISBN>
+<author>Sam Checkoway                </author>
+</tuple><tuple><ISBN>0-13-031984-3                 </ISBN>
+<author>Benjamin Chung               </author>
+</tuple><tuple><ISBN>0-13-031983-3                 </ISBN>
+<author>Joshua Cogger                </author>
+</tuple><tuple><ISBN>0-13-031982-3                 </ISBN>
+<author>Jina Van                     </author>
+</tuple><tuple><ISBN>0-13-031981-3                 </ISBN>
+<author>Ian Yip                      </author>
+</tuple><tuple><ISBN>0-13-031980-3                 </ISBN>
+<author>Minhui Tea                   </author>
+</tuple><tuple><ISBN>0-13-031979-3                 </ISBN>
+<author>Marcel Silverman             </author>
+</tuple><tuple><ISBN>0-13-031978-3                 </ISBN>
+<author>Aliseya Shih                 </author>
+</tuple><tuple><ISBN>0-13-031977-3                 </ISBN>
+<author>Hung Jain                    </author>
+</tuple><tuple><ISBN>0-13-031976-3                 </ISBN>
+<author>Andrew Jaya                  </author>
+</tuple><tuple><ISBN>0-13-031975-3                 </ISBN>
+<author>Andy Lin                     </author>
+</tuple><tuple><ISBN>0-13-031974-3                 </ISBN>
+<author>Charles Hu                   </author>
+</tuple><tuple><ISBN>0-13-031973-3                 </ISBN>
+<author>Alvin Evens                  </author>
+</tuple><tuple><ISBN>0-13-031972-3                 </ISBN>
+<author>Steve Fujita                 </author>
+</tuple><tuple><ISBN>0-13-031971-3                 </ISBN>
+<author>Greg Khan                    </author>
+</tuple></Books2Authors>
+<Books2Keywords>
+<tuple><ISBN>0-13-031995-3                 </ISBN>
+<word>The                </word>
+</tuple><tuple><ISBN>0-13-031994-3                 </ISBN>
+<word>The                </word>
+</tuple><tuple><ISBN>0-13-031993-3                 </ISBN>
+<word>The                </word>
+</tuple><tuple><ISBN>0-13-031992-3                 </ISBN>
+<word>The                </word>
+</tuple><tuple><ISBN>0-13-031991-3                 </ISBN>
+<word>The                </word>
+</tuple><tuple><ISBN>0-13-031990-3                 </ISBN>
+<word>The                </word>
+</tuple><tuple><ISBN>0-13-031989-3                 </ISBN>
+<word>The                </word>
+</tuple><tuple><ISBN>0-13-031988-3                 </ISBN>
+<word>The                </word>
+</tuple><tuple><ISBN>0-13-031987-3                 </ISBN>
+<word>The                </word>
+</tuple><tuple><ISBN>0-13-031986-3                 </ISBN>
+<word>The                </word>
+</tuple><tuple><ISBN>0-13-031985-3                 </ISBN>
+<word>The                </word>
+</tuple><tuple><ISBN>0-13-031984-3                 </ISBN>
+<word>The                </word>
+</tuple><tuple><ISBN>0-13-031983-3                 </ISBN>
+<word>The                </word>
+</tuple><tuple><ISBN>0-13-031982-3                 </ISBN>
+<word>The                </word>
+</tuple><tuple><ISBN>0-13-031981-3                 </ISBN>
+<word>The                </word>
+</tuple><tuple><ISBN>0-13-031980-3                 </ISBN>
+<word>The                </word>
+</tuple><tuple><ISBN>0-13-031979-3                 </ISBN>
+<word>The                </word>
+</tuple><tuple><ISBN>0-13-031978-3                 </ISBN>
+<word>The                </word>
+</tuple><tuple><ISBN>0-13-031977-3                 </ISBN>
+<word>The                </word>
+</tuple><tuple><ISBN>0-13-031976-3                 </ISBN>
+<word>The                </word>
+</tuple><tuple><ISBN>0-13-031975-3                 </ISBN>
+<word>The                </word>
+</tuple><tuple><ISBN>0-13-031974-3                 </ISBN>
+<word>The                </word>
+</tuple><tuple><ISBN>0-13-031973-3                 </ISBN>
+<word>The                </word>
+</tuple><tuple><ISBN>0-13-031972-3                 </ISBN>
+<word>The                </word>
+</tuple><tuple><ISBN>0-13-031995-3                 </ISBN>
+<word>Love               </word>
+</tuple><tuple><ISBN>0-13-031994-3                 </ISBN>
+<word>Love               </word>
+</tuple><tuple><ISBN>0-13-031993-3                 </ISBN>
+<word>Love               </word>
+</tuple><tuple><ISBN>0-13-031992-3                 </ISBN>
+<word>Love               </word>
+</tuple><tuple><ISBN>0-13-031991-3                 </ISBN>
+<word>Love               </word>
+</tuple><tuple><ISBN>0-13-031990-3                 </ISBN>
+<word>Love               </word>
+</tuple><tuple><ISBN>0-13-031989-3                 </ISBN>
+<word>Love               </word>
+</tuple><tuple><ISBN>0-13-031988-3                 </ISBN>
+<word>Love               </word>
+</tuple><tuple><ISBN>0-13-031987-3                 </ISBN>
+<word>Love               </word>
+</tuple><tuple><ISBN>0-13-031986-3                 </ISBN>
+<word>Love               </word>
+</tuple><tuple><ISBN>0-13-031985-3                 </ISBN>
+<word>Love               </word>
+</tuple><tuple><ISBN>0-13-031984-3                 </ISBN>
+<word>Love               </word>
+</tuple><tuple><ISBN>0-13-031983-3                 </ISBN>
+<word>Love               </word>
+</tuple><tuple><ISBN>0-13-031982-3                 </ISBN>
+<word>Love               </word>
+</tuple><tuple><ISBN>0-13-031981-3                 </ISBN>
+<word>Love               </word>
+</tuple><tuple><ISBN>0-13-031980-3                 </ISBN>
+<word>Love               </word>
+</tuple><tuple><ISBN>0-13-031979-3                 </ISBN>
+<word>Love               </word>
+</tuple><tuple><ISBN>0-13-031978-3                 </ISBN>
+<word>Love               </word>
+</tuple><tuple><ISBN>0-13-031977-3                 </ISBN>
+<word>Love               </word>
+</tuple><tuple><ISBN>0-13-031976-3                 </ISBN>
+<word>Love               </word>
+</tuple><tuple><ISBN>0-13-031975-3                 </ISBN>
+<word>Love               </word>
+</tuple><tuple><ISBN>0-13-031974-3                 </ISBN>
+<word>Love               </word>
+</tuple><tuple><ISBN>0-13-031973-3                 </ISBN>
+<word>Love               </word>
+</tuple><tuple><ISBN>0-13-031995-3                 </ISBN>
+<word>Hate               </word>
+</tuple><tuple><ISBN>0-13-031994-3                 </ISBN>
+<word>Hate               </word>
+</tuple><tuple><ISBN>0-13-031993-3                 </ISBN>
+<word>Hate               </word>
+</tuple><tuple><ISBN>0-13-031992-3                 </ISBN>
+<word>Hate               </word>
+</tuple><tuple><ISBN>0-13-031991-3                 </ISBN>
+<word>Hate               </word>
+</tuple><tuple><ISBN>0-13-031990-3                 </ISBN>
+<word>Hate               </word>
+</tuple><tuple><ISBN>0-13-031989-3                 </ISBN>
+<word>Hate               </word>
+</tuple><tuple><ISBN>0-13-031988-3                 </ISBN>
+<word>Hate               </word>
+</tuple><tuple><ISBN>0-13-031987-3                 </ISBN>
+<word>Hate               </word>
+</tuple><tuple><ISBN>0-13-031986-3                 </ISBN>
+<word>Hate               </word>
+</tuple><tuple><ISBN>0-13-031985-3                 </ISBN>
+<word>Hate               </word>
+</tuple><tuple><ISBN>0-13-031984-3                 </ISBN>
+<word>Hate               </word>
+</tuple><tuple><ISBN>0-13-031983-3                 </ISBN>
+<word>Hate               </word>
+</tuple><tuple><ISBN>0-13-031982-3                 </ISBN>
+<word>Hate               </word>
+</tuple><tuple><ISBN>0-13-031981-3                 </ISBN>
+<word>Hate               </word>
+</tuple><tuple><ISBN>0-13-031980-3                 </ISBN>
+<word>Hate               </word>
+</tuple><tuple><ISBN>0-13-031979-3                 </ISBN>
+<word>Hate               </word>
+</tuple><tuple><ISBN>0-13-031978-3                 </ISBN>
+<word>Hate               </word>
+</tuple><tuple><ISBN>0-13-031977-3                 </ISBN>
+<word>Hate               </word>
+</tuple><tuple><ISBN>0-13-031976-3                 </ISBN>
+<word>Hate               </word>
+</tuple><tuple><ISBN>0-13-031975-3                 </ISBN>
+<word>Hate               </word>
+</tuple><tuple><ISBN>0-13-031974-3                 </ISBN>
+<word>Hate               </word>
+</tuple></Books2Keywords>
+<Music>
+<tuple><ASIN>B000002QWD                    </ASIN>
+<productID>25</productID>
+</tuple><tuple><ASIN>B000012QWD                    </ASIN>
+<productID>26</productID>
+</tuple><tuple><ASIN>B000022QWD                    </ASIN>
+<productID>27</productID>
+</tuple><tuple><ASIN>B000032QWD                    </ASIN>
+<productID>28</productID>
+</tuple><tuple><ASIN>B000042QWD                    </ASIN>
+<productID>29</productID>
+</tuple><tuple><ASIN>B000052QWD                    </ASIN>
+<productID>30</productID>
+</tuple><tuple><ASIN>B000062QWD                    </ASIN>
+<productID>31</productID>
+</tuple><tuple><ASIN>B000072QWD                    </ASIN>
+<productID>32</productID>
+</tuple><tuple><ASIN>B000082QWD                    </ASIN>
+<productID>33</productID>
+</tuple><tuple><ASIN>B000092QWD                    </ASIN>
+<productID>34</productID>
+</tuple><tuple><ASIN>B000102QWD                    </ASIN>
+<productID>35</productID>
+</tuple><tuple><ASIN>B000112QWD                    </ASIN>
+<productID>36</productID>
+</tuple><tuple><ASIN>B000122QWD                    </ASIN>
+<productID>37</productID>
+</tuple><tuple><ASIN>B000132QWD                    </ASIN>
+<productID>38</productID>
+</tuple><tuple><ASIN>B000142QWD                    </ASIN>
+<productID>39</productID>
+</tuple><tuple><ASIN>B000152QWD                    </ASIN>
+<productID>40</productID>
+</tuple><tuple><ASIN>B000162QWD                    </ASIN>
+<productID>41</productID>
+</tuple><tuple><ASIN>B000172QWD                    </ASIN>
+<productID>42</productID>
+</tuple><tuple><ASIN>B000182QWD                    </ASIN>
+<productID>43</productID>
+</tuple><tuple><ASIN>B000192QWD                    </ASIN>
+<productID>44</productID>
+</tuple><tuple><ASIN>B000202QWD                    </ASIN>
+<productID>45</productID>
+</tuple><tuple><ASIN>B000212QWD                    </ASIN>
+<productID>46</productID>
+</tuple><tuple><ASIN>B000222QWD                    </ASIN>
+<productID>47</productID>
+</tuple><tuple><ASIN>B000232QWD                    </ASIN>
+<productID>48</productID>
+</tuple><tuple><ASIN>B000242QWD                    </ASIN>
+<productID>49</productID>
+</tuple></Music>
+<Music2Artists>
+<tuple><ASIN>B000002QWD                    </ASIN>
+<artist>Kathy Wen                    </artist>
+</tuple><tuple><ASIN>B000002QWD                    </ASIN>
+<artist>Brian Chang                  </artist>
+</tuple><tuple><ASIN>B000012QWD                    </ASIN>
+<artist>Amal Al                      </artist>
+</tuple><tuple><ASIN>B000022QWD                    </ASIN>
+<artist>Geoff Amos                   </artist>
+</tuple><tuple><ASIN>B000032QWD                    </ASIN>
+<artist>Thomas Anderl                </artist>
+</tuple><tuple><ASIN>B000042QWD                    </ASIN>
+<artist>Scott Yerkes                 </artist>
+</tuple><tuple><ASIN>B000052QWD                    </ASIN>
+<artist>James Maurer                 </artist>
+</tuple><tuple><ASIN>B000062QWD                    </ASIN>
+<artist>Tam Tan                      </artist>
+</tuple><tuple><ASIN>B000072QWD                    </ASIN>
+<artist>Barret Anderson              </artist>
+</tuple><tuple><ASIN>B000082QWD                    </ASIN>
+<artist>Michael Meyers               </artist>
+</tuple><tuple><ASIN>B000092QWD                    </ASIN>
+<artist>Amanda Murphy                </artist>
+</tuple><tuple><ASIN>B000102QWD                    </ASIN>
+<artist>Chad Sakamoto                </artist>
+</tuple><tuple><ASIN>B000112QWD                    </ASIN>
+<artist>Nicholas Sherman             </artist>
+</tuple><tuple><ASIN>B000122QWD                    </ASIN>
+<artist>Craig Weeks                  </artist>
+</tuple><tuple><ASIN>B000132QWD                    </ASIN>
+<artist>Chris Wong                   </artist>
+</tuple><tuple><ASIN>B000142QWD                    </ASIN>
+<artist>Nathan Cole                  </artist>
+</tuple><tuple><ASIN>B000152QWD                    </ASIN>
+<artist>Brandon Lahiri               </artist>
+</tuple><tuple><ASIN>B000162QWD                    </ASIN>
+<artist>Richard Li                   </artist>
+</tuple><tuple><ASIN>B000172QWD                    </ASIN>
+<artist>Jay Lo                       </artist>
+</tuple><tuple><ASIN>B000182QWD                    </ASIN>
+<artist>Dustin Carman                </artist>
+</tuple><tuple><ASIN>B000192QWD                    </ASIN>
+<artist>Kristina Chiu                </artist>
+</tuple><tuple><ASIN>B000202QWD                    </ASIN>
+<artist>Dane Dewey                   </artist>
+</tuple><tuple><ASIN>B000212QWD                    </ASIN>
+<artist>Orion Eng                    </artist>
+</tuple><tuple><ASIN>B000222QWD                    </ASIN>
+<artist>Daniel Hash                  </artist>
+</tuple><tuple><ASIN>B000232QWD                    </ASIN>
+<artist>Morgan Hendrickson           </artist>
+</tuple><tuple><ASIN>B000242QWD                    </ASIN>
+<artist>Christian Hua                </artist>
+</tuple></Music2Artists>
+<Warehouses>
+<tuple><warehouseID>122071              </warehouseID>
+<name>Kulas                         </name>
+</tuple><tuple><warehouseID>145003              </warehouseID>
+<name>Nienow                        </name>
+</tuple><tuple><warehouseID>176445              </warehouseID>
+<name>Armstrong                     </name>
+</tuple><tuple><warehouseID>236627              </warehouseID>
+<name>Lynch                         </name>
+</tuple><tuple><warehouseID>249570              </warehouseID>
+<name>Schiller                      </name>
+</tuple><tuple><warehouseID>321654              </warehouseID>
+<name>Harris                        </name>
+</tuple><tuple><warehouseID>505221              </warehouseID>
+<name>Wehner                        </name>
+</tuple><tuple><warehouseID>511540              </warehouseID>
+<name>Kirlin                        </name>
+</tuple><tuple><warehouseID>563574              </warehouseID>
+<name>Cremin                        </name>
+</tuple><tuple><warehouseID>564231              </warehouseID>
+<name>Halvorson                     </name>
+</tuple><tuple><warehouseID>577548              </warehouseID>
+<name>Jakubowski                    </name>
+</tuple><tuple><warehouseID>589967              </warehouseID>
+<name>Rohan                         </name>
+</tuple><tuple><warehouseID>594215              </warehouseID>
+<name>Hoppe                         </name>
+</tuple><tuple><warehouseID>709567              </warehouseID>
+<name>Rogahn                        </name>
+</tuple><tuple><warehouseID>736546              </warehouseID>
+<name>Kertzmann                     </name>
+</tuple><tuple><warehouseID>771077              </warehouseID>
+<name>Hauck                         </name>
+</tuple><tuple><warehouseID>802006              </warehouseID>
+<name>Hamill                        </name>
+</tuple><tuple><warehouseID>809162              </warehouseID>
+<name>Osinski                       </name>
+</tuple><tuple><warehouseID>847348              </warehouseID>
+<name>Bailey                        </name>
+</tuple><tuple><warehouseID>939116              </warehouseID>
+<name>Hayes                         </name>
+</tuple></Warehouses>
+<Warehouses2Locations>
+<tuple><warehouseID>505221              </warehouseID>
+<streetAddress>158 Chichester Lane           </streetAddress>
+<city>Pompawisville Hills </city>
+<state>WV                  </state>
+<zipcode>24459</zipcode>
+</tuple><tuple><warehouseID>176445              </warehouseID>
+<streetAddress>163 Old Stage Crescent        </streetAddress>
+<city>Mentorbara          </city>
+<state>WY                  </state>
+<zipcode>4293</zipcode>
+</tuple><tuple><warehouseID>809162              </warehouseID>
+<streetAddress>166 Meadow Road               </streetAddress>
+<city>Oaklamond           </city>
+<state>FL                  </state>
+<zipcode>86465</zipcode>
+</tuple><tuple><warehouseID>594215              </warehouseID>
+<streetAddress>215 Flora Fountain Gardens    </streetAddress>
+<city>McOranesboro Hills  </city>
+<state>PA                  </state>
+<zipcode>94097</zipcode>
+</tuple><tuple><warehouseID>847348              </warehouseID>
+<streetAddress>25 Woodhouse End              </streetAddress>
+<city>Great Collentsville </city>
+<state>MO                  </state>
+<zipcode>47589</zipcode>
+</tuple><tuple><warehouseID>563574              </warehouseID>
+<streetAddress>390 Harkness Gardens          </streetAddress>
+<city>Apple rona          </city>
+<state>NM                  </state>
+<zipcode>34567</zipcode>
+</tuple><tuple><warehouseID>771077              </warehouseID>
+<streetAddress>419 Fergusson Avenue          </streetAddress>
+<city>Fresnoncie          </city>
+<state>VT                  </state>
+<zipcode>15054</zipcode>
+</tuple><tuple><warehouseID>321654              </warehouseID>
+<streetAddress>513 Fergusson Crescent        </streetAddress>
+<city>Camderlock          </city>
+<state>AK                  </state>
+<zipcode>12017</zipcode>
+</tuple><tuple><warehouseID>736546              </warehouseID>
+<streetAddress>523 Foreshore Fountain        </streetAddress>
+<city>Indelleen           </city>
+<state>UT                  </state>
+<zipcode>65097</zipcode>
+</tuple><tuple><warehouseID>236627              </warehouseID>
+<streetAddress>585 Queens Street             </streetAddress>
+<city>Savannacuse         </city>
+<state>NJ                  </state>
+<zipcode>7421</zipcode>
+</tuple><tuple><warehouseID>511540              </warehouseID>
+<streetAddress>591 Parsec Close              </streetAddress>
+<city>Mialorado           </city>
+<state>AZ                  </state>
+<zipcode>13107</zipcode>
+</tuple><tuple><warehouseID>939116              </warehouseID>
+<streetAddress>722 Marine Circle             </streetAddress>
+<city>WashiClaire         </city>
+<state>PA                  </state>
+<zipcode>54727</zipcode>
+</tuple><tuple><warehouseID>709567              </warehouseID>
+<streetAddress>735 HappinessView             </streetAddress>
+<city>Mount Cambrilumbia  </city>
+<state>WY                  </state>
+<zipcode>72970</zipcode>
+</tuple><tuple><warehouseID>145003              </warehouseID>
+<streetAddress>791 Carnegy Park              </streetAddress>
+<city>Alledford           </city>
+<state>NC                  </state>
+<zipcode>53649</zipcode>
+</tuple><tuple><warehouseID>249570              </warehouseID>
+<streetAddress>824 Apollo Pier Road          </streetAddress>
+<city>Mount Cliftorleston </city>
+<state>NH                  </state>
+<zipcode>15142</zipcode>
+</tuple><tuple><warehouseID>577548              </warehouseID>
+<streetAddress>856 Old Stage Circle          </streetAddress>
+<city>South Yonkepids     </city>
+<state>AZ                  </state>
+<zipcode>58410</zipcode>
+</tuple><tuple><warehouseID>589967              </warehouseID>
+<streetAddress>907 Essex Drive               </streetAddress>
+<city>Alarlotte           </city>
+<state>OR                  </state>
+<zipcode>14135</zipcode>
+</tuple><tuple><warehouseID>122071              </warehouseID>
+<streetAddress>914 Lamington Hill            </streetAddress>
+<city>Pawtudwood          </city>
+<state>ND                  </state>
+<zipcode>51715</zipcode>
+</tuple><tuple><warehouseID>564231              </warehouseID>
+<streetAddress>936 Victory Circle            </streetAddress>
+<city>Des Plarnton        </city>
+<state>MD                  </state>
+<zipcode>46713</zipcode>
+</tuple><tuple><warehouseID>802006              </warehouseID>
+<streetAddress>988 West Butternut End        </streetAddress>
+<city>Richamore           </city>
+<state>AK                  </state>
+<zipcode>90270</zipcode>
+</tuple></Warehouses2Locations>
+<Warehouses2Contacts>
+<tuple><warehouseID>809162              </warehouseID>
+<phone>087-5402            </phone>
+<fax>565-8497            </fax>
+<manager>Hessel Myrtie                 </manager>
+</tuple><tuple><warehouseID>122071              </warehouseID>
+<phone>091-6552            </phone>
+<fax>293-4197            </fax>
+<manager>Hayes Richard                 </manager>
+</tuple><tuple><warehouseID>249570              </warehouseID>
+<phone>104-2795            </phone>
+<fax>402-4110            </fax>
+<manager>Collier Dennis                </manager>
+</tuple><tuple><warehouseID>321654              </warehouseID>
+<phone>125-4973            </phone>
+<fax>206-1158            </fax>
+<manager>Keebler Lacey                 </manager>
+</tuple><tuple><warehouseID>236627              </warehouseID>
+<phone>192-5928            </phone>
+<fax>913-1074            </fax>
+<manager>Wuckert Tia                   </manager>
+</tuple><tuple><warehouseID>802006              </warehouseID>
+<phone>212-8917            </phone>
+<fax>320-9310            </fax>
+<manager>Jones Thomas                  </manager>
+</tuple><tuple><warehouseID>563574              </warehouseID>
+<phone>248-4684            </phone>
+<fax>008-0117            </fax>
+<manager>Schuster Khalid               </manager>
+</tuple><tuple><warehouseID>594215              </warehouseID>
+<phone>300-1356            </phone>
+<fax>063-9686            </fax>
+<manager>Feil Carlee                   </manager>
+</tuple><tuple><warehouseID>564231              </warehouseID>
+<phone>368-7950            </phone>
+<fax>263-6801            </fax>
+<manager>Casper Mckinley               </manager>
+</tuple><tuple><warehouseID>736546              </warehouseID>
+<phone>384-7724            </phone>
+<fax>303-2860            </fax>
+<manager>Yost Nina                     </manager>
+</tuple><tuple><warehouseID>145003              </warehouseID>
+<phone>447-3933            </phone>
+<fax>341-2161            </fax>
+<manager>Von Kim                       </manager>
+</tuple><tuple><warehouseID>771077              </warehouseID>
+<phone>528-8486            </phone>
+<fax>066-5796            </fax>
+<manager>Cole Daniella                 </manager>
+</tuple><tuple><warehouseID>505221              </warehouseID>
+<phone>580-5002            </phone>
+<fax>087-9592            </fax>
+<manager>Olson Flavio                  </manager>
+</tuple><tuple><warehouseID>709567              </warehouseID>
+<phone>608-9821            </phone>
+<fax>454-6094            </fax>
+<manager>Padberg Peggy                 </manager>
+</tuple><tuple><warehouseID>589967              </warehouseID>
+<phone>712-6199            </phone>
+<fax>862-1742            </fax>
+<manager>Mohr Salvatore                </manager>
+</tuple><tuple><warehouseID>847348              </warehouseID>
+<phone>712-7452            </phone>
+<fax>186-3645            </fax>
+<manager>Keeling Moises                </manager>
+</tuple><tuple><warehouseID>176445              </warehouseID>
+<phone>784-2971            </phone>
+<fax>604-2872            </fax>
+<manager>Friesen Maida                 </manager>
+</tuple><tuple><warehouseID>511540              </warehouseID>
+<phone>925-2004            </phone>
+<fax>749-8177            </fax>
+<manager>Jast Heath                    </manager>
+</tuple><tuple><warehouseID>939116              </warehouseID>
+<phone>932-5520            </phone>
+<fax>210-9585            </fax>
+<manager>Satterfield Jensen            </manager>
+</tuple><tuple><warehouseID>577548              </warehouseID>
+<phone>942-0166            </phone>
+<fax>659-0218            </fax>
+<manager>Harvey Willie                 </manager>
+</tuple></Warehouses2Contacts>
+<Availability>
+<tuple><productID>0</productID>
+<quantity>100</quantity>
+<warehouseID>145003              </warehouseID>
+</tuple><tuple><productID>1</productID>
+<quantity>100</quantity>
+<warehouseID>145003              </warehouseID>
+</tuple><tuple><productID>2</productID>
+<quantity>100</quantity>
+<warehouseID>145003              </warehouseID>
+</tuple><tuple><productID>3</productID>
+<quantity>100</quantity>
+<warehouseID>145003              </warehouseID>
+</tuple><tuple><productID>4</productID>
+<quantity>100</quantity>
+<warehouseID>145003              </warehouseID>
+</tuple><tuple><productID>5</productID>
+<quantity>100</quantity>
+<warehouseID>145003              </warehouseID>
+</tuple><tuple><productID>6</productID>
+<quantity>100</quantity>
+<warehouseID>145003              </warehouseID>
+</tuple><tuple><productID>7</productID>
+<quantity>100</quantity>
+<warehouseID>145003              </warehouseID>
+</tuple><tuple><productID>8</productID>
+<quantity>100</quantity>
+<warehouseID>145003              </warehouseID>
+</tuple><tuple><productID>9</productID>
+<quantity>100</quantity>
+<warehouseID>145003              </warehouseID>
+</tuple><tuple><productID>10</productID>
+<quantity>100</quantity>
+<warehouseID>145003              </warehouseID>
+</tuple><tuple><productID>11</productID>
+<quantity>100</quantity>
+<warehouseID>145003              </warehouseID>
+</tuple><tuple><productID>12</productID>
+<quantity>100</quantity>
+<warehouseID>145003              </warehouseID>
+</tuple><tuple><productID>13</productID>
+<quantity>100</quantity>
+<warehouseID>145003              </warehouseID>
+</tuple><tuple><productID>14</productID>
+<quantity>100</quantity>
+<warehouseID>145003              </warehouseID>
+</tuple><tuple><productID>15</productID>
+<quantity>100</quantity>
+<warehouseID>145003              </warehouseID>
+</tuple><tuple><productID>16</productID>
+<quantity>100</quantity>
+<warehouseID>145003              </warehouseID>
+</tuple><tuple><productID>17</productID>
+<quantity>100</quantity>
+<warehouseID>145003              </warehouseID>
+</tuple><tuple><productID>18</productID>
+<quantity>100</quantity>
+<warehouseID>145003              </warehouseID>
+</tuple><tuple><productID>19</productID>
+<quantity>100</quantity>
+<warehouseID>145003              </warehouseID>
+</tuple><tuple><productID>20</productID>
+<quantity>100</quantity>
+<warehouseID>145003              </warehouseID>
+</tuple><tuple><productID>21</productID>
+<quantity>100</quantity>
+<warehouseID>145003              </warehouseID>
+</tuple><tuple><productID>22</productID>
+<quantity>100</quantity>
+<warehouseID>145003              </warehouseID>
+</tuple><tuple><productID>23</productID>
+<quantity>100</quantity>
+<warehouseID>145003              </warehouseID>
+</tuple><tuple><productID>31</productID>
+<quantity>100</quantity>
+<warehouseID>145003              </warehouseID>
+</tuple><tuple><productID>32</productID>
+<quantity>100</quantity>
+<warehouseID>145003              </warehouseID>
+</tuple><tuple><productID>33</productID>
+<quantity>100</quantity>
+<warehouseID>145003              </warehouseID>
+</tuple><tuple><productID>34</productID>
+<quantity>100</quantity>
+<warehouseID>145003              </warehouseID>
+</tuple><tuple><productID>35</productID>
+<quantity>100</quantity>
+<warehouseID>145003              </warehouseID>
+</tuple><tuple><productID>36</productID>
+<quantity>100</quantity>
+<warehouseID>145003              </warehouseID>
+</tuple><tuple><productID>37</productID>
+<quantity>100</quantity>
+<warehouseID>145003              </warehouseID>
+</tuple><tuple><productID>38</productID>
+<quantity>100</quantity>
+<warehouseID>145003              </warehouseID>
+</tuple><tuple><productID>39</productID>
+<quantity>100</quantity>
+<warehouseID>145003              </warehouseID>
+</tuple><tuple><productID>40</productID>
+<quantity>100</quantity>
+<warehouseID>145003              </warehouseID>
+</tuple><tuple><productID>41</productID>
+<quantity>100</quantity>
+<warehouseID>145003              </warehouseID>
+</tuple><tuple><productID>42</productID>
+<quantity>100</quantity>
+<warehouseID>145003              </warehouseID>
+</tuple><tuple><productID>43</productID>
+<quantity>100</quantity>
+<warehouseID>145003              </warehouseID>
+</tuple><tuple><productID>44</productID>
+<quantity>100</quantity>
+<warehouseID>145003              </warehouseID>
+</tuple><tuple><productID>45</productID>
+<quantity>100</quantity>
+<warehouseID>145003              </warehouseID>
+</tuple><tuple><productID>46</productID>
+<quantity>100</quantity>
+<warehouseID>145003              </warehouseID>
+</tuple><tuple><productID>47</productID>
+<quantity>100</quantity>
+<warehouseID>145003              </warehouseID>
+</tuple><tuple><productID>48</productID>
+<quantity>100</quantity>
+<warehouseID>145003              </warehouseID>
+</tuple><tuple><productID>49</productID>
+<quantity>100</quantity>
+<warehouseID>145003              </warehouseID>
+</tuple><tuple><productID>24</productID>
+<quantity>100</quantity>
+<warehouseID>145003              </warehouseID>
+</tuple><tuple><productID>25</productID>
+<quantity>100</quantity>
+<warehouseID>145003              </warehouseID>
+</tuple><tuple><productID>26</productID>
+<quantity>100</quantity>
+<warehouseID>145003              </warehouseID>
+</tuple><tuple><productID>27</productID>
+<quantity>100</quantity>
+<warehouseID>145003              </warehouseID>
+</tuple><tuple><productID>28</productID>
+<quantity>100</quantity>
+<warehouseID>145003              </warehouseID>
+</tuple><tuple><productID>29</productID>
+<quantity>100</quantity>
+<warehouseID>145003              </warehouseID>
+</tuple><tuple><productID>30</productID>
+<quantity>100</quantity>
+<warehouseID>145003     </warehouseID>
+</tuple></Availability>
+</Data>
+</database>

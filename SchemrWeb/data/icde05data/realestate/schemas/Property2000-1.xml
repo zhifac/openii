@@ -1,0 +1,180 @@
+<search>
+<form>
+<source name="Property2000-1"/>
+<element>
+<element vname="PropertyState" text=" State" type="select">
+<values>
+<item nicevalue="Alabama"/>
+<item nicevalue="Alaska"/>
+<item nicevalue="Arizona"/>
+<item nicevalue="Arkansas"/>
+<item nicevalue="California"/>
+<item nicevalue="Colorado"/>
+<item nicevalue="Connecticut"/>
+<item nicevalue="Delaware"/>
+<item nicevalue="District of Columbia"/>
+<item nicevalue="Florida"/>
+<item nicevalue="Georgia"/>
+<item nicevalue="Hawaii"/>
+<item nicevalue="Idaho"/>
+<item nicevalue="Illinois"/>
+<item nicevalue="Indiana"/>
+<item nicevalue="Iowa"/>
+<item nicevalue="Kansas"/>
+<item nicevalue="Kentucky"/>
+<item nicevalue="Louisiana"/>
+<item nicevalue="Maine"/>
+<item nicevalue="Maryland"/>
+<item nicevalue="Massachusetts"/>
+<item nicevalue="Michigan"/>
+<item nicevalue="Minnesota"/>
+<item nicevalue="Mississippi"/>
+<item nicevalue="Missouri"/>
+<item nicevalue="Montana"/>
+<item nicevalue="Nebraska"/>
+<item nicevalue="Nevada"/>
+<item nicevalue="New Hampshire"/>
+<item nicevalue="New Jersey"/>
+<item nicevalue="New Mexico"/>
+<item nicevalue="New York"/>
+<item nicevalue="North Carolina"/>
+<item nicevalue="North Dakota"/>
+<item nicevalue="Ohio"/>
+<item nicevalue="Oklahoma"/>
+<item nicevalue="Oregon"/>
+<item nicevalue="Pennsylvania"/>
+<item nicevalue="Rhode Island"/>
+<item nicevalue="South Carolina"/>
+<item nicevalue="South Dakota"/>
+<item nicevalue="Tennessee"/>
+<item nicevalue="Texas"/>
+<item nicevalue="Utah"/>
+<item nicevalue="Vermont"/>
+<item nicevalue="Virginia"/>
+<item nicevalue="Washington"/>
+<item nicevalue="West Virginia"/>
+<item nicevalue="Wisconsin"/>
+<item nicevalue="Wyoming"/>
+</values>
+</element>
+<element vname="PriceMin" text=" Price Minimum" type="select">
+<values>
+<item nicevalue="$0"/>
+<item nicevalue="$20k"/>
+<item nicevalue="$40k"/>
+<item nicevalue="$60k"/>
+<item nicevalue="$80k"/>
+<item nicevalue="$100k"/>
+<item nicevalue="$125k"/>
+<item nicevalue="$150k"/>
+<item nicevalue="$175k"/>
+<item nicevalue="$200k"/>
+<item nicevalue="$250k"/>
+<item nicevalue="$300k"/>
+<item nicevalue="$400k"/>
+<item nicevalue="$500k"/>
+<item nicevalue="$1M"/>
+<item nicevalue="$10M"/>
+<item nicevalue="$100M"/>
+</values>
+</element>
+<element vname="PriceMax" text=" Price Maximum" type="select">
+<values>
+<item nicevalue="$20k"/>
+<item nicevalue="$40k"/>
+<item nicevalue="$60k"/>
+<item nicevalue="$80k"/>
+<item nicevalue="$100k"/>
+<item nicevalue="$125k"/>
+<item nicevalue="$150k"/>
+<item nicevalue="$175k"/>
+<item nicevalue="$200k"/>
+<item nicevalue="$250k"/>
+<item nicevalue="$300k"/>
+<item nicevalue="$400k"/>
+<item nicevalue="$500k"/>
+<item nicevalue="$1M"/>
+<item nicevalue="$10M"/>
+<item nicevalue="$100M"/>
+</values>
+</element>
+<element vname="PropertyType" text=" Features Property Type" type="select">
+<values>
+<item nicevalue="Single Family Home"/>
+<item nicevalue="Condo"/>
+<item nicevalue="Townhome"/>
+<item nicevalue="Villa"/>
+<item nicevalue="Co-op"/>
+<item nicevalue="Duplex/Triplex"/>
+<item nicevalue="Timeshare"/>
+<item nicevalue="Apartment Complex"/>
+<item nicevalue="Bungalow"/>
+<item nicevalue="Cottage"/>
+<item nicevalue="Loft"/>
+<item nicevalue="Manufactured Home"/>
+<item nicevalue="Mobile Home"/>
+<item nicevalue="Farm/Ranch"/>
+<item nicevalue="Hotel"/>
+<item nicevalue="Motel"/>
+<item nicevalue="Inn/Lodge"/>
+<item nicevalue="Bed &amp; Breakfast"/>
+<item nicevalue="Resort"/>
+<item nicevalue="Restaurant"/>
+<item nicevalue="Vacant Land"/>
+<item nicevalue="Recreational"/>
+<item nicevalue="Commercial property"/>
+<item nicevalue="Other"/>
+</values>
+</element>
+<element vname="Bedrooms" text=" Features Bedrooms" type="select">
+<values>
+<item nicevalue="0+"/>
+<item nicevalue="1+"/>
+<item nicevalue="2+"/>
+<item nicevalue="3+"/>
+<item nicevalue="4+"/>
+<item nicevalue="5+"/>
+<item nicevalue="6+"/>
+<item nicevalue="7+"/>
+<item nicevalue="8+"/>
+<item nicevalue="9+"/>
+<item nicevalue="10+"/>
+</values>
+</element>
+<element vname="Baths" text=" Features Baths" type="select">
+<values>
+<item nicevalue="0+"/>
+<item nicevalue="1+"/>
+<item nicevalue="2+"/>
+<item nicevalue="3+"/>
+<item nicevalue="4+"/>
+<item nicevalue="5+"/>
+<item nicevalue="6+"/>
+<item nicevalue="7+"/>
+<item nicevalue="8+"/>
+<item nicevalue="9+"/>
+<item nicevalue="10+"/>
+</values>
+</element>
+<element vname="Garage" text=" Features Garage" type="select">
+<values>
+<item nicevalue="0+"/>
+<item nicevalue="1+"/>
+<item nicevalue="2+"/>
+<item nicevalue="3+"/>
+<item nicevalue="4+"/>
+<item nicevalue="5+"/>
+<item nicevalue="6+"/>
+<item nicevalue="7+"/>
+<item nicevalue="8+"/>
+<item nicevalue="9+"/>
+<item nicevalue="10+"/>
+</values>
+</element>
+<element vname="PropertyCity" text=" City" type="text">
+</element>
+<element vname="PropertyCountry" text=" Country" type="text">
+</element>
+</element>
+</form>
+</search>
