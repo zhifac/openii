@@ -61,10 +61,9 @@ public class NGramMatcher extends BaseMatcher implements Matcher {
 				TokenSet colTokens = colTSMap.get(se);
 				TokenSet rowTokens = this.rowTSMap.get(qf);
 				double overlap = countOverlap(colTokens, rowTokens);
-				// TODO: alternative approach: use row+col size for symmetric score
-				double totalQueryTokens = rowTokens.size();
-				double score = overlap / totalQueryTokens;
-				if (!qf.getName().equals(se.getName())) score*=.8;
+				// use row+col size for symmetric score
+				double totalQueryTokens = rowTokens.size() + colTokens.size();
+				double score = overlap / totalQueryTokens;				
 				similarityMatrix.setScore(se, qf, score);
 			}
 		}
