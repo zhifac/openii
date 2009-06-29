@@ -90,7 +90,11 @@ public class SchemaSearch {
 					// TODO: are candidate schemas ranked?
 					topResultsArray[i] = new MatchSummary(
 							SchemaUtility.getCLIENT().getSchema(candidateSchemas[i].uid),
-							null, null, candidateSchemas[i].score, null);
+							null, 
+							null, 
+							candidateSchemas[i].score, 
+							-1,
+							null);
 				}				
 			}
 			

@@ -1,7 +1,16 @@
 package org.openii.schemrserver.matcher;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.logging.Logger;
+
+import org.mitre.schemastore.model.SchemaElement;
+import org.mitre.schemastore.model.graph.HierarchicalGraph;
+import org.openii.schemrserver.search.QueryFragment;
 
 
 public class SimilarityMatrix {
@@ -128,6 +137,51 @@ public class SimilarityMatrix {
 		return new ScoreEvidence(this.getMaxCorrespondentObject(o), this.getMaxScore(o));
 	}
 	
+	public int getNumMatches(double threshold) {
+		int count = 0;
+		for(Object rowObj: rowObjs) {
+			if (this.getMaxScoreForRow(rowObj) > threshold) {
+				count++;
+			}
+		}
+		return count;
+	}	
+
+	private ArrayList<Object> getAllMatchingObjects(Object o, double threshold) {
+		if (rowMap.keySet().contains(o)) {
+			return getAllMatchingObjectsForRow(o, threshold);
+		} else if (colMap.keySet().contains(o)) {
+			return getAllMatchingObjectsForColumn(o, threshold);
+		} else {
+			logger.warning("Unknow object requested "+ o.toString());
+			return null;
+		}		
+	}
+	
+	private ArrayList<Object> getAllMatchingObjectsForColumn(Object o,
+			double threshold) {
+		ArrayList<Object> result = new ArrayList<Object>();
+		for(Object rowObj: rowObjs) {
+			double currScore = this.getScore(o, rowObj);
+			if (currScore > threshold) {
+				result.add(rowObj);
+			}
+		}
+		return result;	
+	}
+
+	private ArrayList<Object> getAllMatchingObjectsForRow(Object o,
+			double threshold) {
+		ArrayList<Object> result = new ArrayList<Object>();
+		for(Object colObj: colObjs) {
+			double currScore = this.getScore(colObj, o);
+			if (currScore > threshold) {
+				result.add(colObj);
+			}
+		}
+		return result;	
+	}
+
 	private double getMaxScore(Object o) {
 		if (rowMap.keySet().contains(o)) {
 			return getMaxScoreForRow(o);
@@ -184,22 +238,122 @@ public class SimilarityMatrix {
 		return result;
 	}
 
-
+	public class QFSE {
+		public QueryFragment qf;
+		public SchemaElement se;
+		public double score;
+		public QFSE(QueryFragment qf, SchemaElement se, double score) {
+			this.qf = qf;
+			this.se = se;
+			this.score = score;
+		}
+	}
+	
+	public class BinFragScore implements Comparable<BinFragScore>{
+		public SchemaElement se;
+		public double score;
+		public Map<QueryFragment, QFSE> details;
+		public BinFragScore(SchemaElement se, double score, Map<QueryFragment, QFSE> details) {
+			this.se = se;
+			this.score = score;
+			this.details = details;
+		}
+		public int compareTo(BinFragScore o) {
+			if (o.score == this.score) {
+				return 0;
+			} else if (o.score > this.score) {
+				return 1;
+			} else {
+				return -1;
+			}
+		}
+	}
 	/**
-	 * scorer averages best values together
-	 * TODO: alternative approach: non-greedy approach w/ stable pairings would potentially yield better scores
+	 * "tightness of fit" 
+	 * @param queryFragments 
+	 * @param hg 
 	 * @return the total score
 	 */
-	public double getTotalScore() {		
-		double score = 0;
+	public double getTotalScore(HierarchicalGraph hg, ArrayList<QueryFragment> queryFragments, double threshold) {		
+		// get qfrags with matches
+		Map<QueryFragment, ArrayList<Object>> goodOnes 
+			= new HashMap<QueryFragment, ArrayList<Object>>();
+		Set<SchemaElement> bins = new HashSet<SchemaElement>();
+		
 		for (Object rowObj : rowObjs) {
-			double maxScore = this.getMaxScoreForRow(rowObj);
-			score += maxScore;
+			ArrayList<Object> currGoodSet = getAllMatchingObjectsForRow(rowObj, threshold);
+			goodOnes.put((QueryFragment) rowObj, currGoodSet);
+			for (Object co : currGoodSet) {
+				SchemaElement matchSE = (SchemaElement)co;
+				
+				ArrayList<SchemaElement> parents = hg.getParentElements(matchSE.getId());
+				if (parents != null && parents.size() > 0) {
+					bins.addAll(parents);					
+				} else {
+					bins.add(matchSE);
+				}
+			}
 		}
-		score = score / (double) rowObjs.length;
+		System.out.println("#rows "+this.rowObjs.length+"\t#good objs "+ goodOnes.size() + "\tt# bins "+ bins.size());
+
+		Map<SchemaElement, ArrayList<QFSE>> binToKids 
+			= new HashMap<SchemaElement, ArrayList<QFSE>>();
+		// assign matches to all bins
+		for (QueryFragment qf : goodOnes.keySet()) {
+			for (SchemaElement b : bins) {
+				for (Object seo : goodOnes.get(qf)) {
+					SchemaElement matchSE = (SchemaElement) seo;
+					// if this bin contains the good qf...
+					if (hg.getChildElements(b.getId()).contains(matchSE) 
+							|| b == matchSE) {
+						ArrayList<QFSE> kids = binToKids.get(b);
+						if (kids == null) {
+							kids = new ArrayList<QFSE>();
+							binToKids.put(b, kids);
+						}
+						kids.add(new QFSE(qf,matchSE, this.getScore(matchSE, qf)));
+					}
+				}
+			}
+		}
+		
+		// may be duplicate hits per qf within bin, and between bins
+		
+		// calculate greedy total for each bin
+		ArrayList<BinFragScore> binScorePairs = new ArrayList<BinFragScore>();
+		for (SchemaElement bin : binToKids.keySet()) {
+			double total = 0;
+			
+			// track qfs within a bin that may match multiple
+			Map<QueryFragment, QFSE> track = new HashMap<QueryFragment, QFSE>();
+			for (QFSE qfse : binToKids.get(bin)) {
+				if (track.get(qfse.qf) == null) {
+					total += qfse.score;
+					track.put(qfse.qf, qfse);
+				}
+			}
+			binScorePairs.add(new BinFragScore(bin, total, track));
+		}
+		// take greedy path through bins, penalizing each farther bin by .1	
+		// we can't use the total scores as they could double count some query frags
+		BinFragScore [] sortedBins = binScorePairs.toArray(new BinFragScore[0]);
+		Arrays.sort(sortedBins);
+		
+		Set<QueryFragment> accounted = new HashSet<QueryFragment>();
+		double score = 0;
+		double penalty = 1.0;
+		for (BinFragScore bfs : sortedBins) {
+			Map<QueryFragment, QFSE> currDetail = bfs.details;
+			for (QueryFragment q : currDetail.keySet()) {
+				if (!accounted.contains(q)) {
+					score += currDetail.get(q).score * penalty;					
+					accounted.add(q);
+				}
+			}
+			penalty = penalty * .9;
+		}
 		return score;
 	}
-
 }
 
 

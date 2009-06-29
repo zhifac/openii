@@ -14,7 +14,8 @@ public class MatchSummary implements Comparable<MatchSummary> {
 	ArrayList<SchemaElement> schemaElements; 
 	ArrayList<QueryFragment> queryFragments;
 	SimilarityMatrix similarityMatrix;
-	public double score;
+	private double score;
+	private int numMatches;
 	HashMap<QueryFragment, ScoreEvidence> queryFragmentToScoreEvidencePairMap;
 	
 	public MatchSummary(
@@ -22,12 +23,14 @@ public class MatchSummary implements Comparable<MatchSummary> {
 			ArrayList<SchemaElement> schemaElements, 
 			ArrayList<QueryFragment> queryFragments,
 			double score,
+			int numMatches,
 			HashMap<QueryFragment, ScoreEvidence> queryFragmentToScoreEvidencePairMap) {
 		super();
 		this.schema = schema;
 		this.schemaElements = schemaElements;
 		this.queryFragments = queryFragments;
 		this.score = score;
+		this.numMatches = numMatches;
 		this.queryFragmentToScoreEvidencePairMap = queryFragmentToScoreEvidencePairMap;
 	}
 
@@ -58,6 +61,10 @@ public class MatchSummary implements Comparable<MatchSummary> {
 	public double getScore() {
 		return score;
 	}
+	
+	public int getNumMatches() {
+		return numMatches;
+	}
 
 	/**
 	 * @return the queryFragmentToScoreEvidencePairMap
@@ -75,5 +82,4 @@ public class MatchSummary implements Comparable<MatchSummary> {
 			return -1;
 		}
 	}
-
 }

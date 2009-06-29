@@ -12,6 +12,7 @@ import org.mitre.schemastore.model.Containment;
 import org.mitre.schemastore.model.Entity;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
+import org.mitre.schemastore.model.graph.HierarchicalGraph;
 import org.openii.schemrserver.SchemaUtility;
 import org.openii.schemrserver.search.MatchSummary;
 import org.openii.schemrserver.search.QueryFragment;
@@ -49,8 +50,13 @@ public abstract class BaseMatcher implements Matcher {
 		try {
 			int id = this.candidateSchema.getId();
 			schemaElements = SchemaUtility.getCLIENT().getGraph(id).getElements(null);
-			//Can this be commented out?
-			//schemaElements = new GraphBuilder(schemaElements, id).getSchemaElements();
+			String schemaName = candidateSchema.getName();
+//			if (schemaName != null 
+//					&& !"".equals(schemaName.getName().trim())) { 
+//				TokenSet ts = new TokenSet(schemaName.trim());
+//				ts.add(new Token(ts.getName()));
+//				this.colTSMap.put(candidateSchema, ts);
+//			}
 			for (SchemaElement e : schemaElements) {
 				if (e instanceof Entity || e instanceof Containment || e instanceof Attribute) {
 					if (e != null && !"".equals(e.getName().trim())) {
@@ -107,16 +113,23 @@ public abstract class BaseMatcher implements Matcher {
 		return this.similarityMatrix;
 	}
 	
-	public MatchSummary getMatchSummary() {
+	public MatchSummary getMatchSummary(HierarchicalGraph hg, ArrayList<QueryFragment> queryFragments) {
 		if (this.colTSMap == null || this.colTSMap.isEmpty() ||
 				this.rowTSMap == null || this.rowTSMap.isEmpty() ||
 				this.similarityMatrix == null) {
 			logger.warning("This schema has no matchable elements: "+ this.candidateSchema.getName());
 			return null;
 		}
-		
-		double score = this.similarityMatrix.getTotalScore();
-		return new MatchSummary(this.candidateSchema, this.schemaElements, this.queryFragments, score, buildEvidenceMap());
+		double threshold = 0.1;
+		double score = this.similarityMatrix.getTotalScore(hg, queryFragments, threshold);
+		int numMatches = this.similarityMatrix.getNumMatches(threshold);
+		return new MatchSummary(
+				this.candidateSchema, 
+				this.schemaElements, 
+				this.queryFragments, 
+				score, 
+				numMatches,
+				buildEvidenceMap());
 	}
 
 	private HashMap<QueryFragment, ScoreEvidence> buildEvidenceMap() {

@@ -19,6 +19,7 @@ import org.openii.schemrserver.indexer.SchemaStoreIndex.CandidateSchema;
 import org.openii.schemrserver.matcher.EditDistanceMatcher;
 import org.openii.schemrserver.matcher.Matcher;
 import org.openii.schemrserver.matcher.NGramMatcher;
+import org.openii.schemrserver.matcher.SimilarityMatrix;
 
 /**
  * 
@@ -121,8 +122,11 @@ public class Query {
 		for (int i = 0; i < candidateSchemas.length; i++) {
 			CandidateSchema candidateSchema = candidateSchemas[i];
 			Schema s = SchemaUtility.getCLIENT().getSchema(candidateSchema.uid);
+
+			Graph g = SchemaUtility.getCLIENT().getGraph(s.getId());
+			HierarchicalGraph hg = new HierarchicalGraph(g, null);
 			ArrayList<QueryFragment> queryFragments = qp.getQueryFragments();
-			MatchSummary ms = match(s, queryFragments);
+			MatchSummary ms = match(s, hg, queryFragments);
 			if (ms != null) matchSummaries.add(ms);	
 		}
 		
@@ -133,20 +137,24 @@ public class Query {
 		return msarray;
 	}
 
-	public MatchSummary match(Schema candidateSchema, ArrayList<QueryFragment> queryFragments) {
+	public MatchSummary match(Schema candidateSchema, HierarchicalGraph hg, ArrayList<QueryFragment> queryFragments) {
 		Matcher nGram, editDist = null;
+		
 		nGram = new NGramMatcher(candidateSchema, queryFragments);
-		editDist = new EditDistanceMatcher(candidateSchema, queryFragments);
-		nGram.calculateSimilarityMatrix();
-		editDist.calculateSimilarityMatrix();
-		MatchSummary out = nGram.getMatchSummary(); 
+//		editDist = new EditDistanceMatcher(candidateSchema, queryFragments);
+
+		SimilarityMatrix smNG = nGram.calculateSimilarityMatrix();
+		System.out.println(smNG.toString());
+
+		// combine similarity matrices
+//		SimilarityMatrix smED = editDist.calculateSimilarityMatrix();
+
+		MatchSummary msNG = nGram.getMatchSummary(hg, queryFragments); 
 		
-		// FIXME what is 8!?
+		// FIXME what is 8!?		
+//		out.score = out.score * 0.5 + ((editDist.getMatchSummary().score + 8.0) / 16);
 		
-		out.score = out.score * 0.5 + ((editDist.getMatchSummary().score + 8.0) / 16);
-		
-		
-		return out;
+		return msNG;
 	}
 
 	/**
