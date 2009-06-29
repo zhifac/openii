@@ -126,7 +126,7 @@
 				stage.addEventListener(KeyboardEvent.KEY_DOWN, panKey);
 				
 				ns.addEventListener(MouseEvent.MOUSE_DOWN, drag);
-				panel1.addEventListener(MouseEvent.MOUSE_UP, stop);
+				ns.addEventListener(MouseEvent.MOUSE_UP, stop);
 				ns.buttonMode = true;
 			});
 			lay =  new NodeLinkTreeLayout();
@@ -178,17 +178,18 @@
 			changeCenter=false;
 		}
 		private function stop(event:MouseEvent):void{
-			((event.target as NodeSprite).parent as Sprite).stopDrag();
+			if (event.target as NodeSprite == null) return;
+			((event.target as NodeSprite) as Sprite).stopDrag();
 			changeCenter=true;
 		}
 		private function drawInfo(event:MouseEvent):void{
 			var n:NodeSprite = event.currentTarget as NodeSprite;
-			actionbox.visible=true;
 			currentNode = n;
 			if (n == null) return;				
 			var s2:TextSprite = n.getChildAt(n.numChildren-1) as TextSprite; // get the text sprite belonging to this node sprite
 			if (!vis.contains(n)) return;
 			if (s2 == null) return;
+			actionbox.visible=true;
 			trace("Mouse Over: " + s2.text);
 			var matched:String = (n.data.score=="0")?"false":"true";
 			trace(parseInt(n.data.score));
