@@ -27,7 +27,6 @@ import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.graph.Graph;
 import org.openii.schemrserver.SchemaUtility;
 import org.openii.schemrserver.search.Query;
-import org.openii.schemrserver.search.SchemaSearch;
 
 public class SchemaStoreIndex {
 
@@ -122,24 +121,22 @@ public class SchemaStoreIndex {
 			IndexSearcher isearcher = new IndexSearcher(reader);
 			
 			org.apache.lucene.search.Query luceneQuery = translateQuery(schemrQuery);
-
 			
 			Hits hits = isearcher.search(luceneQuery);
-			SchemaSearch.numResults = hits.length();
-			candidateSchemas = new CandidateSchema [SchemaSearch.RESULT_PAGE_SIZE];
-			System.out.println(SchemaSearch.numResults + " hits");
-			for (int i = 0; i < SchemaSearch.RESULT_PAGE_SIZE; i++) {
-				Document hitDoc = hits.doc(i);								
+//			SchemaSearch.numResults = hits.length();
+//			candidateSchemas = new CandidateSchema [SchemaSearch.RESULT_PAGE_SIZE];
+//			System.out.println(SchemaSearch.numResults + " hits");
+			candidateSchemas = new CandidateSchema [hits.length()];
+			for (int i = 0; i < hits.length(); i++) {
+				Document hitDoc = hits.doc(i);
 				String title = hitDoc.get(TITLE);
 				String summary = hitDoc.get(SUMMARY);
-				
 				String schemaIDstr = hitDoc.get(UID);
 				Integer schemaID = Integer.parseInt(schemaIDstr);
 				candidateSchemas[i] = new CandidateSchema(title, summary, schemaID);
 				candidateSchemas[i].score = hits.score(i);
 				System.out.println(candidateSchemas[i]);
-			}
-	
+			}	
 			isearcher.close();
 		} catch (CorruptIndexException e) {
 			e.printStackTrace();

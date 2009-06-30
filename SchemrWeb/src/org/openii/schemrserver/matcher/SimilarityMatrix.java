@@ -294,7 +294,6 @@ public class SimilarityMatrix {
 				}
 			}
 		}
-		System.out.println("#rows "+this.rowObjs.length+"\t#good objs "+ goodOnes.size() + "\tt# bins "+ bins.size());
 
 		Map<SchemaElement, ArrayList<QFSE>> binToKids 
 			= new HashMap<SchemaElement, ArrayList<QFSE>>();
