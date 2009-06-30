@@ -108,8 +108,11 @@ public class SearchServlet extends HttpServlet {
 				//Perform a second pass search if matchers are turned off to fully populate msa 
 				msa = SchemaSearch.performSearch(searchTerms, schemaFile, schemaFragmentType, true);
 			}
+			int count =0;
 			for (MatchSummary matchSummary : msa) {
 				userState.idToMatchSummary.put(matchSummary.getSchema().getId(), matchSummary);
+				count++;
+				if (count > SchemaSearch.RESULT_PAGE_SIZE) break;
 			}
 		}
 	}

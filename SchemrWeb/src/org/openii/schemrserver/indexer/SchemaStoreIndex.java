@@ -27,6 +27,7 @@ import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.graph.Graph;
 import org.openii.schemrserver.SchemaUtility;
 import org.openii.schemrserver.search.Query;
+import org.openii.schemrserver.search.SchemaSearch;
 
 public class SchemaStoreIndex {
 
@@ -124,10 +125,10 @@ public class SchemaStoreIndex {
 
 			
 			Hits hits = isearcher.search(luceneQuery);
-			
-			candidateSchemas = new CandidateSchema [hits.length()];
-			System.out.println(hits.length() + " hits");
-			for (int i = 0; i < hits.length(); i++) {
+			SchemaSearch.numResults = hits.length();
+			candidateSchemas = new CandidateSchema [SchemaSearch.RESULT_PAGE_SIZE];
+			System.out.println(SchemaSearch.numResults + " hits");
+			for (int i = 0; i < SchemaSearch.RESULT_PAGE_SIZE; i++) {
 				Document hitDoc = hits.doc(i);								
 				String title = hitDoc.get(TITLE);
 				String summary = hitDoc.get(SUMMARY);

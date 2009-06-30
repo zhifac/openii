@@ -104,18 +104,20 @@
 			vis.data.nodes.visit(function(ns:NodeSprite):void { 
 				var rs:RectSprite = new RectSprite( -maxLabelWidth/2-1,-maxLabelHeight/2 - 1, maxLabelWidth + 2, maxLabelHeight + 2);
 					if (ns.data.type == "Schema"){
-						 if (currentNode == null) rs.fillColor = 0xdd660000; //Root node
+						 if (currentNode == null) rs.fillColor = 0xcc1b9e77; //Root node- Schema
 						 else{
 						 	 vis.data.nodes.remove(ns);
 						 }
-					}
-					else rs.fillColor = 0xaa000000; 
-					rs.lineColor = 0xff000044; 
-					if (ns == currentNode) rs.fillColor = 0xdd660000; //Root node
+					} else if (ns.data.type == "Entity") rs.fillColor = 0xccd95f02;
+					else if (ns.data.type == "Attribute") rs.fillColor = 0xcc7570b3;
+					else if (ns.data.type == "Containment") rs.fillColor = 0xdde7298a; //Containment 
+					if (ns.data.score != "0") rs.lineColor = 0xff000088;
+					else rs.lineColor = 0x00000000; 
 				rs.lineWidth = 2;
 				ns.size = 0;
 				ns.addChildAt(rs, 0); // at postion 0 so that the text label is drawn above the rectangular box
-				rs.dirty();
+				//rs.dirty();
+				
 				adjustLabel(ns,maxLabelWidth,maxLabelHeight);
 				ns.mouseChildren = false; 
 				ns.doubleClickEnabled = true;
@@ -182,6 +184,7 @@
 			((event.target as NodeSprite) as Sprite).stopDrag();
 			changeCenter=true;
 		}
+
 		private function drawInfo(event:MouseEvent):void{
 			var n:NodeSprite = event.currentTarget as NodeSprite;
 			currentNode = n;
@@ -190,6 +193,7 @@
 			if (!vis.contains(n)) return;
 			if (s2 == null) return;
 			actionbox.visible=true;
+			
 			trace("Mouse Over: " + s2.text);
 			var matched:String = (n.data.score=="0")?"false":"true";
 			trace(parseInt(n.data.score));
@@ -204,7 +208,7 @@
 			ypos = panel1.mouseY;
 			actionbox.x = xpos - n.mouseX;
 			actionbox.y = ypos - 32 - n.mouseY;
-			if (prev!=null) (prev.getChildAt(0) as RectSprite).lineColor = 0xff000044;
+			if (prev!=null) (prev.getChildAt(0) as RectSprite).lineColor = (prev.data.score=="0")?0x00000000:0xff000088;
 			prev = n;
 			r.lineColor = 0xFFFF0000;
 		}
@@ -223,16 +227,16 @@
 		
 		private function pan(event:MouseEvent):void {
 			actionbox.visible=false;
-				Displays.panBy(vis, 0, event.delta * 20); 
+				Displays.panBy(vis, 0, event.delta * 14); 
 		}
 		private function panKey(event:KeyboardEvent):void{
-			properties.text = "" + event.keyCode;
+			//properties.text = "" + event.keyCode;
 			switch(event.keyCode){
 				case 40:
-					Displays.panBy(vis, 0, 200);
+					Displays.panBy(vis, 0, 50);
 					break;
 				case 38:
-					Displays.panBy(vis, 0, -200);
+					Displays.panBy(vis, 0, -50);
 					break;	
 			}
 		}
