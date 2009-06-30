@@ -67,7 +67,7 @@ public class SchemaSearch {
 
 		// filter for candidate schemas
 		CandidateSchema [] candidateSchemas = getCandidateSchemas(q);
-		
+		numResults = candidateSchemas.length;
 		MatchSummary [] topResultsArray = null;
 		
 		if (candidateSchemas != null && candidateSchemas.length > 0) {
