@@ -101,19 +101,16 @@ public class SearchServlet extends HttpServlet {
 
 				root.addContent(resultElement);
 			}
-			Document doc = new Document(root);
-			XMLOutputter serializer = new XMLOutputter();
-			serializer.output(doc, response.getWriter());
-			if (!Boolean.parseBoolean(matchers)){
-				//Perform a second pass search if matchers are turned off to fully populate msa 
-				msa = SchemaSearch.performSearch(searchTerms, schemaFile, schemaFragmentType, true);
-			}
-			int count =0;
-			for (MatchSummary matchSummary : msa) {
-				userState.idToMatchSummary.put(matchSummary.getSchema().getId(), matchSummary);
-				count++;
-				if (count > SchemaSearch.RESULT_PAGE_SIZE) break;
-			}
+		}
+		Document doc = new Document(root);
+		XMLOutputter serializer = new XMLOutputter();
+		serializer.output(doc, response.getWriter());
+		if (!Boolean.parseBoolean(matchers)){
+			//Perform a second pass search if matchers are turned off to fully populate msa 
+			msa = SchemaSearch.performSearch(searchTerms, schemaFile, schemaFragmentType, true);
+		}
+		for (MatchSummary matchSummary : msa) {
+			userState.idToMatchSummary.put(matchSummary.getSchema().getId(), matchSummary);
 		}
 	}
 }
