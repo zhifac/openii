@@ -65,9 +65,7 @@
 		
 		
 		private var lay:Layout = null;
-		private function callBack():void{
-			properties.text = "hello";
-		}
+		
 		private function onLoaded(data:Data):void {
 			if (vis != null) vis.alpha = 0.50;
 			vis = new Visualization(data);
@@ -203,6 +201,7 @@
 			"\nId: " + n.data.id +
 			"\nMatched: " + matched +
 			"\nScore: " + n.data.score;
+			if (n.data.matched_obj!=null) properties.text += "\nMatched Object: " + n.data.matched_obj;
 			var r:RectSprite = n.getChildAt(0) as RectSprite; 
 			xpos = panel1.mouseX;
 			ypos = panel1.mouseY;
