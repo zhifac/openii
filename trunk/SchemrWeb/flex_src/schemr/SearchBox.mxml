@@ -58,7 +58,9 @@
 		
 		private function searchResultHandler(event:ResultEvent):void {
 			trace(event.result.toString());
-			if (event.result !=null && (event.result as XML).children().length()==0){
+			if (event.result == null || event.result == ""
+					|| (event.result as XML).children() == null 
+					|| (event.result as XML).children().length()==0) {
 				 message.label = "No results found. Please try another query.";	
 			} else{
 				message.label = "" + (event.result as XML).result[0]["@results"] + 
