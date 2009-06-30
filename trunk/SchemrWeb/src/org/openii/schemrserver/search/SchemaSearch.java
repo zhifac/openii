@@ -20,7 +20,7 @@ import org.openii.schemrserver.indexer.SchemaStoreIndex.CandidateSchema;
 
 public class SchemaSearch {
 
-	public static int  RESULT_PAGE_SIZE = 30;
+	public static int  RESULT_PAGE_SIZE = 20;
 	public static int numResults;
 //	public static MatchSummary [] performSearch(String keywordString, File schemaFile) throws RemoteException {
 //		return performSearch(keywordString, schemaFile, true);
@@ -80,7 +80,8 @@ public class SchemaSearch {
 			topResultsArray = new MatchSummary [page];
 			if (matchersOn) { // by default, they are on
 				// process query against candidate schemas, result is sorted by score
-				MatchSummary [] msarray = q.processQuery(candidateSchemas);
+//				MatchSummary [] msarray = q.processQuery(candidateSchemas);
+				MatchSummary [] msarray = q.processQuery(firstPageSchemas);
 				for (int i = 0; i < page; i++) {
 					topResultsArray[i] = msarray[i];
 				}
