@@ -127,7 +127,6 @@ public class SchemaSearch {
 	}
 	private static CandidateSchema [] getCandidateSchemas(Query query) {		
 		CandidateSchema [] candidateSchemas = SchemaStoreIndex.searchIndex(Consts.LOCAL_INDEX_DIR, query);
-		numResults = candidateSchemas.length;
 		System.out.println("Found " + (candidateSchemas == null ? 0 : candidateSchemas.length) + " candidate schemas");
 		return candidateSchemas;
 	}

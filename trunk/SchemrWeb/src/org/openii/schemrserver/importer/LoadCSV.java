@@ -15,7 +15,7 @@ import org.mitre.schemastore.porters.schemaImporters.SchemaImporter;
 import org.openii.schemrserver.importer.LoadSchemaFile;
 
 public class LoadCSV extends LoadSchemaFile{
-	private static String csvFile = "data/nocheckin/schemas-subset.csv";
+	private static String csvFile = "data/nocheckin/schemas.csv";
 	/**
 	 * @param args
 	 */
