@@ -95,7 +95,7 @@ public class UserMatchAnotationExporter extends MappingExporter
     	out.close();
     	
     	// Clear out graph and schema element lists
-    	elements = null; graphs = null;
+    	elements = null; graphs.clear();
 	}
 
 	/** Gets paths for the specified element */
