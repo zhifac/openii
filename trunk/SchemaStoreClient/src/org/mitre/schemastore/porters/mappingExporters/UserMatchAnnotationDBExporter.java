@@ -44,7 +44,7 @@ public class UserMatchAnnotationDBExporter  extends UserMatchAnotationExporter {
 			}
 
 			public String getDescription()
-				{ return "User Annotation Match Databse (.mdb)"; }
+				{ return "User Annotation Match Database (.mdb)"; }
 		}
 		return new MdbFilter();
 	}
