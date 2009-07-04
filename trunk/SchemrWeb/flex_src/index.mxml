@@ -5,7 +5,8 @@
 	width="100%"
 	height="100%"
 	creationComplete="init()"
-	xmlns:schemr="schemr.*">
+	xmlns:schemr="schemr.*"
+	frameRate="60">
 	
 	<mx:Script>
 		<![CDATA[
