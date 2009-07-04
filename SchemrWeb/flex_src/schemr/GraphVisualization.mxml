@@ -10,8 +10,8 @@
 	
 	<mx:Script>
 		<![CDATA[
-			import flare.vis.controls.ExpandControl;
-			import mx.controls.Image;
+		import flare.vis.controls.ExpandControl;
+		import mx.controls.Image;
 		import flare.vis.events.SelectionEvent;
 		import flare.vis.operator.layout.Layout;
 		import mx.events.ItemClickEvent;
@@ -121,12 +121,12 @@
 				ns.doubleClickEnabled = true;
 				ns.addEventListener(MouseEvent.DOUBLE_CLICK, toggle);
 				ns.addEventListener(MouseEvent.MOUSE_OVER, drawInfo);
-				panel1.addEventListener(MouseEvent.MOUSE_OUT, hideBox);
+				panel1.addEventListener(MouseEvent.MOUSE_DOWN, hideBox);
 				panel1.addEventListener(MouseEvent.MOUSE_WHEEL, pan);
 				stage.addEventListener(KeyboardEvent.KEY_DOWN, panKey);
 				
 				ns.addEventListener(MouseEvent.MOUSE_DOWN, drag);
-				ns.addEventListener(MouseEvent.MOUSE_UP, stop);
+				panel1.addEventListener(MouseEvent.MOUSE_UP, stop);
 				ns.buttonMode = true;
 			});
 			lay =  new NodeLinkTreeLayout();
@@ -150,9 +150,9 @@
 			Displays.panBy(vis, graphs.length * 70 - 120, - 30 * graphs.length + 150);
 		}
 		private function hideBox(event:MouseEvent):void{
-			if ((panel1.mouseX - xpos) > 50 || (panel1.mouseX - ypos) > 50){  
+			//if ((panel1.mouseX - xpos) > 50 || (panel1.mouseX - ypos) > 50){  
 				actionbox.visible=false;
-			}
+			//}
 		}
 		private function shuffle():void{
 			try{
@@ -178,8 +178,8 @@
 			changeCenter=false;
 		}
 		private function stop(event:MouseEvent):void{
-			if (event.target as NodeSprite == null) return;
-			((event.target as NodeSprite) as Sprite).stopDrag();
+			if (event.target == null || vis == null) return;
+			vis.stopDrag();
 			changeCenter=true;
 		}
 
@@ -199,14 +199,15 @@
 			properties.text = "Description: " + n.data.desc +
 			"\nType: " + n.data.type +
 			"\nId: " + n.data.id +
-			"\nMatched: " + matched +
-			"\nScore: " + n.data.score;
-			if (n.data.matched_obj!=null) properties.text += "\nMatched Object: " + n.data.matched_obj;
+			"\nMatched: " + matched;
+			if (n.data.matched_obj!=null && n.data.matched_obj !="") properties.text += 
+				"\nScore: " + n.data.score +
+				"\nMatched Object: " + n.data.matched_obj;
 			var r:RectSprite = n.getChildAt(0) as RectSprite; 
 			xpos = panel1.mouseX;
 			ypos = panel1.mouseY;
-			actionbox.x = xpos - n.mouseX;
-			actionbox.y = ypos - 32 - n.mouseY;
+			actionbox.x = xpos + 25 - n.mouseX;
+			actionbox.y = ypos - 25 - n.mouseY;
 			if (prev!=null) (prev.getChildAt(0) as RectSprite).lineColor = (prev.data.score=="0")?0x00000000:0xff000088;
 			prev = n;
 			r.lineColor = 0xFFFF0000;
@@ -341,14 +342,14 @@
 					result="graphVisResultHandler(event);"
 					fault="graphVisFaultHandler(event);">
 	</mx:HTTPService>
-	<mx:Panel layout="horizontal" dropShadowEnabled="false" borderAlpha="0.0" paddingLeft="0" paddingRight="0" scaleX="0.7" scaleY="0.7" id="actionbox"  visible="false" alpha="0.7" x="100" y="100" borderThickness="0" headerHeight="0">
-		<mx:Button  toolTip="Close Schema" paddingBottom="0" paddingLeft="0" paddingRight="0"  paddingTop="0" label="x" click="shuffle()" />
-		<mx:Button label="Tree" toolTip="Display nodes in a hierarchical tree structure" click="changeLayout(0)" />
-		<mx:Button label="Radial" toolTip="Display nodes in a radial graph structure" click="changeLayout(1)" />
+	<mx:Panel layout="horizontal" dropShadowEnabled="false" borderAlpha="0.0" paddingLeft="0" paddingRight="0"  horizontalGap="0" scaleX="0.7" scaleY="0.7" id="actionbox"  visible="false" alpha="0.7" x="100" y="100" borderThickness="0" headerHeight="0">
+		<mx:Button  toolTip="Close Schema" paddingBottom="0" paddingLeft="0" paddingRight="0"  paddingTop="0"  horizontalGap="0" label="x" click="shuffle()" />
+		<mx:Button label="Tree" toolTip="Display nodes in a hierarchical tree structure" click="changeLayout(0)" paddingBottom="0" paddingLeft="0" paddingRight="0"  paddingTop="0"  horizontalGap="0" />
+		<mx:Button label="Radial" toolTip="Display nodes in a radial graph structure" click="changeLayout(1)" paddingBottom="0" paddingLeft="0" paddingRight="0"  paddingTop="0"  horizontalGap="0" />
 		
-		 <mx:Button label="@" toolTip="Center graph at current node" click="updateRoot(currentNode);" />
-		 <mx:Button visible="true" label="!" toolTip="Close all other schemas" id="sol" click="solo();" />
-		 <mx:NumericStepper id="zn" value="100" toolTip="zoom" maximum="500" minimum="20" stepSize="5" change="zoomTo(zn.value)" />
+		 <mx:Button label="@" toolTip="Center graph at current node" click="updateRoot(currentNode);" paddingBottom="0" paddingLeft="0" paddingRight="0"  paddingTop="0"  horizontalGap="0" />
+		 <mx:Button visible="true" label="!" toolTip="Close all other schemas" id="sol" click="solo();" paddingBottom="0" paddingLeft="0" paddingRight="0"  paddingTop="0"  horizontalGap="0" />
+		 <mx:NumericStepper id="zn" value="100" toolTip="zoom" maximum="500" minimum="20" stepSize="5" change="zoomTo(zn.value)"  paddingLeft="0" paddingRight="0" />
 	</mx:Panel>
 	 	
 </mx:HBox>
