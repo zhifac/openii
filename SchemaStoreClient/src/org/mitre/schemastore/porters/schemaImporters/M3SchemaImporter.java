@@ -191,7 +191,7 @@ public class M3SchemaImporter extends SchemaImporter
 		
 		// Gather up all schema information from the XML document in the form of extended graphs
 		ArrayList<ExtendedGraph> graphs = new ArrayList<ExtendedGraph>();
-		NodeList schemaList = element.getElementsByTagName("SchemaRoot");
+		NodeList schemaList = element.getElementsByTagName("Schema");
 		if(schemaList!=null)
 			for(int i=0 ; i<schemaList.getLength(); i++)
 			{	

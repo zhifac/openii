@@ -54,8 +54,7 @@ public class M3SchemaExporter extends SchemaExporter
 			dom = db.newDocument();
 
 			// Create the XML document
-			Element rootXMLElement = dom.createElement("SchemaStoreM3Export");
-			rootXMLElement.appendChild(dom.createTextNode("Schemas:"));
+			Element rootXMLElement = dom.createElement("Schemas");
 			for(Integer schemaid: schemaIDs)
 			{
 				// Generate XML for the schema
@@ -81,7 +80,7 @@ public class M3SchemaExporter extends SchemaExporter
 			serializer.serialize(dom);
 			out = sw.getBuffer();
 		}
-		catch(Exception e) { System.out.println("(E)M3Exporter.exportSchema - " + e.getMessage()); }
+		catch(Exception e) { System.out.println("(E)M3SchemaExporter.exportSchema - " + e.getMessage()); }
 
 		return out;
 	}
