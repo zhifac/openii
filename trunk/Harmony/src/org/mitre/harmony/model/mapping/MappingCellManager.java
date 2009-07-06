@@ -95,6 +95,7 @@ public class MappingCellManager extends AbstractManager<MappingCellListener> imp
 			// Set the modification date if the score has been modified
 			if(mappingCell.getScore().equals(oldMappingCell.getScore()))
 				mappingCell.setModificationDate(Calendar.getInstance().getTime());
+			else mappingCell.setModificationDate(oldMappingCell.getModificationDate());
 			
 			// Inform listeners that a mapping cell has been modified
 			for(MappingCellListener listener : getListeners()) listener.mappingCellModified(oldMappingCell,mappingCell);
