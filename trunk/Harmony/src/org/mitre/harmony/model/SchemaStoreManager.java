@@ -22,9 +22,6 @@ public class SchemaStoreManager
 {
 	/** Stores the client used for accessing the database */
 	static private SchemaStoreClient client = null;
-
-	/** Stores the porter manager */
-	static private PorterManager porterManager = null;
 	
 	/** Checks if the schema store connection was successful */
 	private static boolean isConnected()
@@ -109,15 +106,9 @@ public class SchemaStoreManager
 	
 	/** Gets the list of available schema importers */
 	public static ArrayList<SchemaImporter> getSchemaImporters()
-	{
-		if(porterManager==null) porterManager = new PorterManager(client);
-		return porterManager.getSchemaImporters();
-	}
+		{ return new PorterManager(client).getSchemaImporters(); }
 
 	/** Gets the list of available mapping exporters */
 	public static ArrayList<MappingExporter> getMappingExporters()
-	{
-		if(porterManager==null) porterManager = new PorterManager(client);
-		return porterManager.getMappingExporters();
-	}
+		{ return new PorterManager(client).getMappingExporters(); }
 }
