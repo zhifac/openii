@@ -61,6 +61,8 @@ class InfoPane extends JPanel implements CaretListener
 		descriptionField.setBackground(Color.white);
 		descriptionField.setBorder(new LineBorder(Color.gray));
 		descriptionField.setEditable(saveMode);
+		descriptionField.setLineWrap(true);
+		descriptionField.setWrapStyleWord(true);
 		descriptionField.addCaretListener(this);
 		
 		// Initializes the schema pane
