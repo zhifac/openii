@@ -2,27 +2,42 @@
 
 package org.mitre.schemastore.porters.schemaImporters;
 
+import java.io.IOException;
+import java.net.URI;
 import java.util.*;
 
 import org.exolab.castor.xml.schema.*;
 import org.exolab.castor.xml.schema.Group;
+import org.exolab.castor.xml.schema.Schema;
 import org.exolab.castor.xml.schema.reader.SchemaReader;
+import org.mitre.schemastore.client.Repository;
 import org.mitre.schemastore.model.*;
 import org.mitre.schemastore.porters.ImporterException;
+
 
 /**
  * XSDImporter: Class for importing XSD files into the M3 Format
  * 
  * @author DBURDICK
  */
+
+
+
 public class XSDImporter extends SchemaImporter
 {
-	// XML Schema being parsed
-	private org.exolab.castor.xml.schema.Schema xmlSchema;  
-
+	
+	static public void main(String args[])
+	{
+		try {
+			XSDImporter xsdImporter = new XSDImporter();
+			URI uri = new URI("C:/testSchemas/schema1.xsd");
+			xsdImporter.getSchemaElements(uri);
+		}
+		catch(Exception e) { e.printStackTrace(); }
+	}
+	
 	// Stores the M3 schema elements (entities, attributes, domain, relationships, etc.) 
 	private HashMap<String, SchemaElement> schemaElementsHS = new HashMap<String, SchemaElement>();
-
 	private HashMap<String,Domain> domainList = new HashMap<String,Domain>();
 	
 	// Stores the unique "Any" entity
@@ -50,50 +65,63 @@ public class XSDImporter extends SchemaImporter
 
 	/** Initializes the importer for the specified URI */
 	protected void initializeSchemaStructures() throws ImporterException
-	{
-		
-		 try
-	     {
+	{	
+		 try {
 	        String proxyHost = new String("gatekeeper.mitre.org");
 	        String proxyPort = new String("80");
-            System.getProperties().put( "http.proxyHost",
-            		proxyHost );
-            System.getProperties().put( "http.proxyPort",
-            		proxyHost );
+            System.getProperties().put( "http.proxyHost",proxyHost );
+            System.getProperties().put( "http.proxyPort",proxyPort );
            
 	     }catch (Exception e) {
 	     
-	           
-	          	System.err.println("[E] XSDImporter -- " + 
+	          	String message = new String("[E] XSDImporter -- " + 
 	          			"Likely a security exception - you " +
 	                		"must allow modification to system properties if " +
 	                		"you want to use the proxy");
 	          	e.printStackTrace();
-	          	throw new ImporterException(ImporterException.PARSE_FAILURE,e.getMessage()); 
+	          	throw new ImporterException(ImporterException.PARSE_FAILURE,message); 
 	     }
-		
-		
-		
-		
-		
+
 		try {
-			
-			// build the DOM tree for this schema 
-			xmlSchema = new SchemaReader(uri.toString()).read();
-			
-			// reset the Importer
-			schemaElementsHS = new HashMap<String, SchemaElement>();
-			
-			// Preset domains and then identify process this schema
-			loadDomains();
-			getRootElements();
-			
-		}
 		
-		catch(Exception e) { 
+			// create DOM tree for main schema 
+			SchemaReader xmlSchemaReader = new SchemaReader(uri.toString());
+			Schema mainSchema = xmlSchemaReader.read();
+			getRootElements(mainSchema);
+			
+			// get all imported schemas (recursively)
+//			ArrayList<Schema> importedSchemas = new ArrayList<Schema>();		
+//			findReferredSchemas(importedSchemas, mainSchema);			
+//			for (Schema refSchema : importedSchemas){
+//				getRootElements(refSchema);
+//			}	
+		}
+		catch(Exception e) { 			
 			e.printStackTrace();
-			throw new ImporterException(ImporterException.PARSE_FAILURE,e.getMessage()); }
+			throw new ImporterException(ImporterException.PARSE_FAILURE,e.getMessage()); 
+		}
 	}
+	
+	void findReferredSchemas (ArrayList<Schema> refSchemas, Schema mainSchema) throws IOException {
+			
+		Enumeration<?> enumeratedSchemas = mainSchema.getImportedSchema();
+		while (enumeratedSchemas.hasMoreElements()){
+			Schema importedSchema = (Schema)enumeratedSchemas.nextElement();
+			
+			// check if we added this schema already
+			boolean alreadySeen = false;
+			for (Schema refSchema : refSchemas)
+				if (importedSchema.getTargetNamespace() != null && importedSchema.getTargetNamespace().equals(refSchema.getTargetNamespace()) && importedSchema.getSchemaLocation() != null && importedSchema.getSchemaLocation().equals(refSchema.getSchemaLocation()))
+					alreadySeen = true;
+			
+			if (alreadySeen == false){
+				refSchemas.add(importedSchema);
+				findReferredSchemas(refSchemas,importedSchema);
+			}
+	
+		}
+	} // end method
+		
 	
 	/** Returns the list of schemas which this schema extends */
 	protected ArrayList<Integer> generateExtendedSchemaIDs() throws ImporterException
@@ -103,12 +131,22 @@ public class XSDImporter extends SchemaImporter
 	public ArrayList<SchemaElement> generateSchemaElements() throws ImporterException
 		{ return new ArrayList<SchemaElement>(schemaElementsHS.values()); }
 
+
 	/**
-	 * getRootElements:  Processes the SimpleTypes, ComplexTypes, and Elements defined at
-	 * the "root" (Schema) level.
+	 * getRootElements:  Processes the SimpleTypes, ComplexTypes, and Elements 
+	 * defined at the "root" (Schema) level.
+	 * 
+	 * @param xmlSchema schema to be processed
 	 */
-	public void getRootElements()
-	{	
+	public void getRootElements(Schema xmlSchema) {
+		
+		// reset the Importer
+		schemaElementsHS = new HashMap<String, SchemaElement>();
+		domainList = new HashMap<String, Domain>();
+		
+		// Preset domains and then process this schema
+		loadDomains();
+		
 		// Each root SimpleType should be translated into a Domain
 		Enumeration<?> simpleTypes = xmlSchema.getSimpleTypes();
 		while (simpleTypes.hasMoreElements())
@@ -123,7 +161,6 @@ public class XSDImporter extends SchemaImporter
 		Enumeration<?> elements = xmlSchema.getElementDecls();
 		while (elements.hasMoreElements()) 
 			processElement((ElementDecl) elements.nextElement(), null);
-		
 	}
 	
 	/**
@@ -152,6 +189,7 @@ public class XSDImporter extends SchemaImporter
 		
 			if (this.anyEntity == null){
 				this.anyEntity = new Entity(nextId(),"ANY","ANY ENTITY",0);
+				//this.anyEntity = new Entity(nextId(),"ANY","ANY ENTITY","",0);
 				schemaElementsHS.put(this.compString(null,null,this.anyEntity),this.anyEntity);
 			}	
 			Integer rightMax = ( typeName.equals("IDREFS") ) ? null : 1;   
@@ -166,7 +204,9 @@ public class XSDImporter extends SchemaImporter
 		else {
 	
 			// find Domain for SimpleType (generated if required)
+			// Domain domain = new Domain(nextId(), typeName, this.getDocumentation(passedType), passedType.getSchema().getTargetNamespace(), 0);
 			Domain domain = new Domain(nextId(), typeName, this.getDocumentation(passedType), 0);
+			
 			if (domainList.containsKey(domain.getName()) == false) {
 				domainList.put(domain.getName(),domain);
 				schemaElementsHS.put(this.compString(null, null, domain), domain);
@@ -182,17 +222,17 @@ public class XSDImporter extends SchemaImporter
 				}
 				
 				// TODO: process Union Types
-//				else if (passedType instanceof Union){
-//					Union passedUnion = (Union)passedType;
-//					Enumeration<?> memberTypes = passedUnion.getMemberTypes();
-//					while (memberTypes.hasMoreElements()){
-//						SimpleType childType = (SimpleType)memberTypes.nextElement();
-//						// TODO: create a subtype to capture union
-//						Subtype subtype = new Subtype(nextId(),domain.getId(),-1,0);
-//						//	schemaElementsHS.put(this.compString(passedType, childType, subtype), subtype);
-//						processSimpleType(childType,subtype);
-//					}
-//				}
+				else if (passedType instanceof Union){
+					Union passedUnion = (Union)passedType;
+					Enumeration<?> memberTypes = passedUnion.getMemberTypes();
+					while (memberTypes.hasMoreElements()){
+						SimpleType childType = (SimpleType)memberTypes.nextElement();
+						// create a subtype to capture union
+						Subtype subtype = new Subtype(nextId(),domain.getId(),-1,0);
+						//	schemaElementsHS.put(this.compString(passedType, childType, subtype), subtype);
+						processSimpleType(childType,subtype);
+					}
+				}
 				
 			}
 			// attached Domain as child to passed Attribute / Containment / Subtype
@@ -223,6 +263,9 @@ public class XSDImporter extends SchemaImporter
 		// check to see if entity has been created for passed complex type
 		// create new Entity if none has been created 
 		Entity entity = new Entity(nextId(), passedType.getName(), this.getDocumentation(passedType), 0);
+	//	Entity entity = new Entity(nextId(), passedType.getName(), this.getDocumentation(passedType), passedType.getSchema().getTargetNamespace(),0);
+		
+		
 		if (schemaElementsHS.containsKey(this.compString(passedType,null, entity)) == false) {
 			schemaElementsHS.put(this.compString(passedType,null, entity), entity);
 	
@@ -238,6 +281,8 @@ public class XSDImporter extends SchemaImporter
 						
 					boolean containsID = attrDecl.getSimpleType() != null && attrDecl.getSimpleType().getName() != null && attrDecl.getSimpleType().getName().equals("ID");
 					Attribute attr = new Attribute(nextId(),(attrDecl.getName() == null ? "" : attrDecl.getName()),getDocumentation(attrDecl),entity.getId(),-1,(attrDecl.isRequired()? 1 : 0), 1, containsID, 0); 
+					//Attribute attr = new Attribute(nextId(),(attrDecl.getName() == null ? "" : attrDecl.getName()),getDocumentation(attrDecl),entity.getId(),-1,(attrDecl.isRequired()? 1 : 0), 1, containsID, attrDecl.getSchema().getTargetNamespace(), 0); 
+					
 					schemaElementsHS.put(this.compString(passedType, null, attr), attr);
 					processSimpleType(attrDecl.getSimpleType(), attr);
 				}
@@ -256,12 +301,15 @@ public class XSDImporter extends SchemaImporter
 			if (passedType.getBaseType() != null){
 				baseType = passedType.getBaseType();
 				
-				// process simpleType supertype here -- create an Entity
+				// process simpleType supertype here -- create a "special" Entity
 				if (baseType instanceof SimpleType){
 					Subtype subtype = new Subtype(nextId(),-1,entity.getId(),0);
+					//Subtype subtype = new Subtype(nextId(),-1,entity.getId(),0);
 					schemaElementsHS.put(this.compString(passedType, baseType, subtype), subtype);
 					
 					Entity superTypeEntity = new Entity(nextId(), (baseType.getName() == null ? "" : baseType.getName()), this.getDocumentation(baseType), 0);
+					//Entity superTypeEntity = new Entity(nextId(), (baseType.getName() == null ? "" : baseType.getName()), this.getDocumentation(baseType), baseType.getSchema().getTargetNamespace(),0);
+					
 					if (schemaElementsHS.get(this.compString(baseType,null,superTypeEntity)) == null)
 						schemaElementsHS.put(this.compString(baseType,null,superTypeEntity), superTypeEntity);
 					superTypeEntity = (Entity)schemaElementsHS.get(this.compString(baseType,null,superTypeEntity));
@@ -269,6 +317,7 @@ public class XSDImporter extends SchemaImporter
 				}
 				else if (baseType instanceof ComplexType){
 					Subtype subtype = new Subtype(nextId(),-1, entity.getId(),0);
+					//Subtype subtype = new Subtype(nextId(),-1, entity.getId(),baseType.getSchema().getTargetNamespace(),0);
 					schemaElementsHS.put(this.compString(passedType, baseType, subtype), subtype);
 					processComplexType((ComplexType)baseType, subtype);
 				}	
@@ -308,7 +357,8 @@ public class XSDImporter extends SchemaImporter
 			if (obj instanceof Wildcard){
 				Domain anyDomain = domainList.get("Any");
 				Containment containment = new Containment(nextId(),"", this.getDocumentation((Annotated)obj), parent.getId(), anyDomain.getId(), 0, 1, 0);
-				schemaElementsHS.put(this.compString(obj,anyDomain,containment),containment);		
+				//Containment containment = new Containment(nextId(),"", this.getDocumentation((Annotated)obj), parent.getId(), anyDomain.getId(), 0, 1, ((Wildcard) obj).getSchema().getTargetNamespace(),0);
+						
 			}
 			// process Group item
 			else if (obj instanceof Group)
@@ -340,6 +390,8 @@ public class XSDImporter extends SchemaImporter
 		
 		// create Containment for Element  
 		Containment containment = new Containment(nextId(),elementDecl.getName(),this.getDocumentation(elementDecl),((parent != null) ? parent.getId() : null),-1,elementDecl.getMinOccurs(),elementDecl.getMaxOccurs(),0);
+		//Containment containment = new Containment(nextId(),elementDecl.getName(),this.getDocumentation(elementDecl),((parent != null) ? parent.getId() : null),-1,elementDecl.getMinOccurs(),elementDecl.getMaxOccurs(),elementDecl.getSchema().getTargetNamespace(),0);
+		
 		schemaElementsHS.put(this.compString(parent, elementDecl, containment), containment);
 		
 		// TODO: process substitution group
@@ -415,34 +467,40 @@ public class XSDImporter extends SchemaImporter
 	private void loadDomains() {
 
 		Domain domain = new Domain(nextId(), ANY, "The Any wildcard domain", 0);
+		//Domain domain = new Domain(nextId(), ANY, "The Any wildcard domain","", 0);
 		schemaElementsHS.put(this.compString(null,null,domain), domain);
 		domainList.put(ANY, domain);
 
 		domain = new Domain(nextId(), INTEGER,"The Integer domain", 0);
+		//domain = new Domain(nextId(), INTEGER,"The Integer domain","", 0);
 		schemaElementsHS.put(this.compString(null,null,domain), domain);
 		domainList.put(INTEGER, domain);
 		
 		domain = new Domain(nextId(), REAL,"The Real domain", 0);
+		//domain = new Domain(nextId(), REAL,"The Real domain","", 0);
 		schemaElementsHS.put(this.compString(null,null,domain), domain);
 		domainList.put(REAL, domain);
 		
 		domain = new Domain(nextId(), STRING,"The String domain", 0);
+		//domain = new Domain(nextId(), STRING,"The String domain","", 0);
 		schemaElementsHS.put(this.compString(null,null,domain), domain);
 		domainList.put(STRING, domain);
 		
 		domain = new Domain(nextId(), "string","The string domain", 0);
+		//domain = new Domain(nextId(), "string","The string domain","", 0);
 		schemaElementsHS.put(this.compString(null,null,domain), domain);
 		domainList.put("string", domain);
 		
 		domain = new Domain(nextId(), DATETIME,"The DateTime domain", 0);
+		//domain = new Domain(nextId(), DATETIME,"The DateTime domain","", 0);
 		schemaElementsHS.put(this.compString(null,null,domain), domain);
 		domainList.put(DATETIME, domain);
 		
 		domain = new Domain(nextId(), BOOLEAN,"The Boolean domain", 0);
+		//domain = new Domain(nextId(), BOOLEAN,"The Boolean domain","", 0);
 		schemaElementsHS.put(this.compString(null,null,domain), domain);
 		domainList.put(BOOLEAN, domain);
 	}
-	
 	
 	
 	/**
