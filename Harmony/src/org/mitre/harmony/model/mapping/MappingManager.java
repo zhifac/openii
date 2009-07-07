@@ -14,7 +14,6 @@ import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.MappingSchema;
 import org.mitre.schemastore.model.SchemaElement;
-import org.mitre.schemastore.model.graph.HierarchicalGraph;
 import org.mitre.schemastore.model.graph.model.GraphModel;
 
 /**
@@ -90,16 +89,8 @@ public class MappingManager extends AbstractManager<MappingListener> implements 
 	/** Returns the graph model for the specified schema */
 	public GraphModel getGraphModel(Integer schemaID)
 	{
-		// Get the graph model string
-		String graphModelString = null;
 		for(MappingSchema schema : getSchemas())
-			if(schema.getId().equals(schemaID))
-				graphModelString = schema.getModel();
-
-		// Return the graph model
-		for(GraphModel graphModel : HierarchicalGraph.getGraphModels())
-			if(graphModel.getClass().getName().equals(graphModelString))
-				return graphModel;
+			if(schema.getId().equals(schemaID)) return schema.retrieveGraphModel();
 		return null;
 	}
 	
@@ -194,7 +185,7 @@ public class MappingManager extends AbstractManager<MappingListener> implements 
 		for(MappingSchema schema : getSchemas())
 			if(schema.getId().equals(schemaID))
 			{
-				schema.setModel(graphModel.getClass().getName());
+				schema.storeGraphModel(graphModel);
 				getModel().getSchemaManager().getGraph(schemaID).setModel(graphModel);
 				for(MappingListener listener : getListeners())
 					listener.schemaModified(schemaID);		

@@ -78,7 +78,7 @@ public class ImporterDialog extends JDialog implements ActionListener,CaretListe
 		for(SchemaImporter importer : SchemaStoreManager.getSchemaImporters())
 		{
 			Integer uriType = importer.getURIType();
-			if(uriType.equals(SchemaImporter.FILE) || uriType.equals(SchemaImporter.ARCHIVE) || uriType.equals(SchemaImporter.URI))
+			if(uriType.equals(SchemaImporter.FILE) || uriType.equals(SchemaImporter.M3MODEL) || uriType.equals(SchemaImporter.URI))
 				importers.add(importer);
 		}
 		Collections.sort(importers, new ImporterComparator());
@@ -204,7 +204,7 @@ public class ImporterDialog extends JDialog implements ActionListener,CaretListe
 	{
 		// Initialize the importer pane
 		SchemaImporter importer = (SchemaImporter)selectionList.getSelectedItem();
-		boolean isArchiveImporter = importer.getURIType()==SchemaImporter.ARCHIVE;
+		boolean isArchiveImporter = importer.getURIType()==SchemaImporter.M3MODEL;
 		uriField.setImporter(importer);
 
 		// Lock down the name and description fields for archive importers
