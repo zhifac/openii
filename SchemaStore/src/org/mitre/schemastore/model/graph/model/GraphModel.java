@@ -32,7 +32,7 @@ abstract public class GraphModel
 	abstract public ArrayList<SchemaElement> getElementsForDomain(HierarchicalGraph graph, Integer domainID);
 
 	/** Returns the type name associated with the specified element (or NULL if element has no name) */
-	abstract public String getType(HierarchicalGraph graph, Integer elementID);
+	abstract public SchemaElement getType(HierarchicalGraph graph, Integer elementID);
 	
 	/** Returns the name of the graph model */
 	public String toString() { return getName(); }

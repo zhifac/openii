@@ -58,6 +58,6 @@ public class DomainGraphModel extends GraphModel
 		{ return new ArrayList<SchemaElement>(); }
 	
 	/** Returns the type name associated with the specified element (or NULL if element has no name) */
-	public String getType(HierarchicalGraph graph, Integer elementID)
+	public SchemaElement getType(HierarchicalGraph graph, Integer elementID)
 		{ return null; }
 }
