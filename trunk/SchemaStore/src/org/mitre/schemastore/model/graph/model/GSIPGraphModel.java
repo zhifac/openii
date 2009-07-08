@@ -193,7 +193,7 @@ public class GSIPGraphModel extends GraphModel
     };
 	
     /** Returns the type name associated with the specified element (or NULL if element has no name) */
-	public String getType(HierarchicalGraph graph, Integer elementID)
+	public SchemaElement getType(HierarchicalGraph graph, Integer elementID)
 	{
 		SchemaElement element = graph.getElement(elementID);
 		SchemaElement childElement = null;
@@ -205,7 +205,7 @@ public class GSIPGraphModel extends GraphModel
 			childElement = graph.getElement(((Attribute)element).getDomainID());
 		
 		if (childElement != null && childElement.getName() != null && childElement.getName().length() > 0)
-			return childElement.getName();
+			return childElement;
 
 		return null;	
 	}

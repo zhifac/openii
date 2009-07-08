@@ -121,7 +121,7 @@ public class RMapGraphModel extends GraphModel
 	}
 	
 	/** Returns the type name associated with the specified element (or NULL if element has no name) */
-	public String getType(HierarchicalGraph graph, Integer elementID)
+	public SchemaElement getType(HierarchicalGraph graph, Integer elementID)
 		{ return null; }
 	
 	/** Retrieves the attributes for the specified schema element */
