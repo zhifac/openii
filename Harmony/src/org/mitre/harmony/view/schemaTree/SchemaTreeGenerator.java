@@ -17,28 +17,17 @@ import org.mitre.schemastore.model.graph.HierarchicalGraph;
 class SchemaTreeGenerator
 {	
 	/** Adds a schema element */
-	static private DefaultMutableTreeNode addNode(HierarchicalGraph graph, Integer elementID, HashSet<Integer> parentElements)
+	static private DefaultMutableTreeNode addNode(HierarchicalGraph graph, Integer elementID, HashSet<Integer> pathIDs)
 	{
-		DefaultMutableTreeNode node = null;
-
-		// Don't add element if already in path		
-		if(!parentElements.contains(elementID))
+		// Create element node
+		DefaultMutableTreeNode node = new DefaultMutableTreeNode(elementID);
+		pathIDs.add(elementID);
+		for(SchemaElement childElement : graph.getChildElements(elementID,pathIDs))
 		{
-			// Add element to list of parent nodes
-			parentElements.add(elementID);
-
-			// Create element node
-			node = new DefaultMutableTreeNode(elementID);
-			for(SchemaElement childElement : graph.getChildElements(elementID))
-			{
-				DefaultMutableTreeNode childNode = addNode(graph, childElement.getId(), parentElements);
-				if(childNode!=null) node.add(childNode);				
-			}
-
-			// Remove element from list of parent nodes
-			parentElements.remove(elementID);
+			DefaultMutableTreeNode childNode = addNode(graph, childElement.getId(), pathIDs);
+			if(childNode!=null) node.add(childNode);				
 		}
-		
+		pathIDs.remove(elementID);
 		return node;
 	}
 	
@@ -77,10 +66,9 @@ class SchemaTreeGenerator
 
 		// Add root elements to the schema
 		HierarchicalGraph graph = harmonyModel.getSchemaManager().getGraph(schemaID);
-		HashSet<Integer> parentElements = new HashSet<Integer>();
 		for(SchemaElement element : graph.getRootElements())
 		{
-			DefaultMutableTreeNode entityNode = addNode(graph, element.getId(), parentElements);
+			DefaultMutableTreeNode entityNode = addNode(graph, element.getId(), new HashSet<Integer>());
 			node.add(entityNode);
 			tree.expandPath(new TreePath(((DefaultMutableTreeNode)entityNode.getParent()).getPath()));
 		}
