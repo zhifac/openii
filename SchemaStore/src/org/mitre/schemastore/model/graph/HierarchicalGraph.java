@@ -19,7 +19,6 @@ import org.mitre.schemastore.model.SchemaElement;
 
 import org.mitre.schemastore.model.graph.model.*;
 
-
 /**
  * Class for generating graph hierarchy 
  */
@@ -189,6 +188,51 @@ public class HierarchicalGraph extends Graph
 		return elements;
 	}
 
+	/** Adds children to the graph tree */
+	private void addChildren(GraphTree tree, Integer elementID, HashSet<Integer> parentElementIDs)
+	{
+		// Don't add children if element already in branch
+		if(parentElementIDs.contains(elementID)) return;
+		
+		// Don't add children if type already in branch
+		SchemaElement type = getModel().getType(this, elementID);
+		if(type!=null)
+			for(Integer parentElementID : parentElementIDs)
+				if(type.equals(getModel().getType(this, parentElementID))) return;
+		
+		// Retrieve child elements from the hierarchical graph
+		ArrayList<Integer> childElements = new ArrayList<Integer>();
+		for(SchemaElement element : getChildElements(elementID))
+			childElements.add(new Integer(element.getId()));
+		if(childElements.size()==0) return;
+
+		// Add the element and children elements to the tree
+		tree.addChildElements(elementID, childElements);
+		parentElementIDs.add(elementID);
+		for(Integer childElement : childElements)
+			addChildren(tree, childElement, parentElementIDs);
+		parentElementIDs.remove(elementID);
+	}
+	
+	/** Returns the graph tree */
+	public GraphTree getGraphTree()
+	{
+		GraphTree tree = new GraphTree();
+
+		// Retrieve root elements from the hierarchical graph
+		ArrayList<Integer> rootElements = new ArrayList<Integer>();
+		for(SchemaElement element : getRootElements())
+			rootElements.add(new Integer(element.getId()));
+		
+		// Add the root and children elements to the tree
+		tree.addChildElements(null, rootElements);
+		HashSet<Integer> parentElementIDs = new HashSet<Integer>();
+		for(Integer rootElement : rootElements)
+			addChildren(tree, rootElement, parentElementIDs);
+
+		return tree;
+	}
+	
 	/** Returns the paths from the root element to the partially built path */
 	private ArrayList<ArrayList<SchemaElement>> getPaths(ArrayList<SchemaElement> partialPath)
 	{
@@ -234,7 +278,7 @@ public class HierarchicalGraph extends Graph
 		String pathName = path.get(0);
 
 		// Check to see if element in partial path
-		if(elementName.equals(pathName) || displayedName.equals(pathName))
+		if(elementName.equalsIgnoreCase(pathName) || displayedName.equalsIgnoreCase(pathName))
 		{
 			if(path.size()>1)
 			{
