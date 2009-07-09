@@ -943,6 +943,7 @@ public class Database
 			Statement stmt = connection.getStatement();
 			keyword = new String(' ' + keyword + ' ').replaceAll("^ \\*","").replaceAll("\\* $","").replaceAll("\\*","%");
 			String nameFilter = "lower(' '||name||' ') LIKE '%"+keyword.toLowerCase()+"%'";
+			String valueFilter = "lower(' '||value||' ') LIKE '%"+keyword.toLowerCase()+"%'";
 			String descFilter = "lower(' '||description||' ') LIKE '%"+keyword.toLowerCase()+"%'";
 
 			// Generate the base filter
@@ -957,12 +958,12 @@ public class Database
 			else baseFilter = "1=1";
 				
 			// Gets the schema entities
-			ResultSet rs = stmt.executeQuery("SELECT id,name,description,schema_id FROM entity WHERE "+baseFilter+" AND " + nameFilter + " AND " + descFilter);
+			ResultSet rs = stmt.executeQuery("SELECT id,name,description,schema_id FROM entity WHERE "+baseFilter+" AND (" + nameFilter + " OR " + descFilter + ")");
 			while(rs.next())
 				elements.add(new Entity(rs.getInt("id"),rs.getString("name"),rs.getString("description"),rs.getInt("schema_id")));
 					
 			// Gets the schema attributes
-			rs = stmt.executeQuery("SELECT id,name,description,entity_id,domain_id,\"min\",\"max\",\"key\",schema_id FROM attribute WHERE "+baseFilter+" AND " + nameFilter + " AND " + descFilter);
+			rs = stmt.executeQuery("SELECT id,name,description,entity_id,domain_id,\"min\",\"max\",\"key\",schema_id FROM attribute WHERE "+baseFilter+" AND (" + nameFilter + " OR " + descFilter + ")");
 			while(rs.next())
 			{
 				Integer id = rs.getInt("id");
@@ -978,12 +979,12 @@ public class Database
 			}
 			
 			// Gets the schema domains
-			rs = stmt.executeQuery("SELECT id,name,description,schema_id FROM \"domain\" WHERE "+baseFilter+" AND " + nameFilter + " AND " + descFilter);
+			rs = stmt.executeQuery("SELECT id,name,description,schema_id FROM \"domain\" WHERE "+baseFilter+" AND (" + nameFilter + " OR " + descFilter + ")");
 			while(rs.next())
 				elements.add(new Domain(rs.getInt("id"),rs.getString("name"),rs.getString("description"),rs.getInt("schema_id")));
 
 			// Gets the schema domain values
-			rs = stmt.executeQuery("SELECT id,value,description,domain_id,schema_id FROM domainvalue WHERE "+baseFilter+" AND " + descFilter);
+			rs = stmt.executeQuery("SELECT id,value,description,domain_id,schema_id FROM domainvalue WHERE "+baseFilter+" AND (" + valueFilter + " OR " + descFilter + ")");
 			while(rs.next())
 				elements.add(new DomainValue(rs.getInt("id"),rs.getString("value"),rs.getString("description"),rs.getInt("domain_id"),rs.getInt("schema_id")));
 				
@@ -1004,7 +1005,7 @@ public class Database
 			}
 				
 			// Gets the schema containment relationships
-			rs = stmt.executeQuery("SELECT id,name,description,parent_id,child_id,\"min\",\"max\",schema_id FROM containment WHERE "+baseFilter+" AND " + nameFilter + " AND " + descFilter);
+			rs = stmt.executeQuery("SELECT id,name,description,parent_id,child_id,\"min\",\"max\",schema_id FROM containment WHERE "+baseFilter+" AND (" + nameFilter + " OR " + descFilter + ")");
 			while(rs.next())
 			{
 				Integer id = rs.getInt("id");
