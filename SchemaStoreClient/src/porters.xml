@@ -12,6 +12,7 @@
       <schemaImporter>org.mitre.schemastore.porters.schemaImporters.GSIPImporter</schemaImporter>
     </schemaImporters>
     <mappingImporters>
+    	<mappingImporter>org.mitre.schemastore.porters.mappingImporters.M3MappingImporter</mappingImporter>
     	<mappingImporter>org.mitre.schemastore.porters.mappingImporters.UserMatchAnnotationDBImporter</mappingImporter>
     </mappingImporters>
   </importers>
@@ -22,6 +23,7 @@
       <schemaExporter>org.mitre.schemastore.porters.schemaExporters.SQLExporter</schemaExporter>
     </schemaExporters>
     <mappingExporters>
+	  <mappingExporter>org.mitre.schemastore.porters.mappingExporters.M3MappingExporter</mappingExporter>
 	  <mappingExporter>org.mitre.schemastore.porters.mappingExporters.DataDictionaryExporter</mappingExporter>
       <mappingExporter>org.mitre.schemastore.porters.mappingExporters.PieChartExporter</mappingExporter>
       <mappingExporter>org.mitre.schemastore.porters.mappingExporters.TopMatchExporter</mappingExporter>

@@ -19,7 +19,6 @@ package org.mitre.schemastore.porters.mappingImporters;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.MappingSchema;
-import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.porters.ImporterException;
 import org.mitre.schemastore.porters.Porter;
 
@@ -32,6 +31,7 @@ public abstract class MappingImporter extends Porter
 	// Defines the various types of URIs that may be requested
 	public static final Integer FILE = 0;
 	public static final Integer URI = 1;
+	public static final Integer M3MODEL = 2;
 	
 	/** Stores the URI being imported */
 	protected URI uri;
@@ -48,18 +48,14 @@ public abstract class MappingImporter extends Porter
 	abstract protected void initialize() throws ImporterException;
 	
 	/** Returns the schemas from the specified URI */
-	abstract protected ArrayList<Schema> getSchemas() throws ImporterException;
+	abstract protected ArrayList<MappingSchema> getSchemas() throws ImporterException;
 	
 	/** Returns the mapping cells from the specified URI */
 	abstract protected ArrayList<MappingCell> getMappingCells() throws ImporterException;
 
 	/** Return the schemas */
-	final public ArrayList<Schema> getSchemas(URI uri) throws ImporterException
+	final public ArrayList<MappingSchema> getSchemas(URI uri) throws ImporterException
 		{ this.uri = uri; initialize(); return getSchemas(); }
-
-	/** Return the mapping cells */
-	final public ArrayList<MappingCell> generateMappingCells(URI uri) throws ImporterException
-		{ this.uri = uri; initialize(); return getMappingCells(); }
 	
 	/** Imports the specified URI */
 	final public Integer importMapping(String name, String author, String description, ArrayList<MappingSchema> schemas, URI uri) throws ImporterException
@@ -86,7 +82,6 @@ public abstract class MappingImporter extends Porter
 		if(!success)
 		{
 			try { client.deleteMapping(mapping.getId()); } catch(Exception e) {e.printStackTrace();}
-			
 			throw new ImporterException(ImporterException.IMPORT_FAILURE,"A failure occured in transferring the mapping to the repository");
 		}
 

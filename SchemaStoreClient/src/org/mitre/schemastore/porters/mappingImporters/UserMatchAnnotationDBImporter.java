@@ -2,7 +2,6 @@
 
 package org.mitre.schemastore.porters.mappingImporters;
 
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -13,11 +12,10 @@ import java.util.Arrays;
 import java.util.Calendar;
 
 import org.mitre.schemastore.model.MappingCell;
+import org.mitre.schemastore.model.MappingSchema;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.graph.HierarchicalGraph;
 import org.mitre.schemastore.porters.ImporterException;
-
-
 
 public class UserMatchAnnotationDBImporter extends MappingImporter {
 	Connection conn = null; 
@@ -66,26 +64,11 @@ public class UserMatchAnnotationDBImporter extends MappingImporter {
 	}
 	
 	/** Returns the schemas from the specified URI */
-	protected ArrayList<Schema> getSchemas() throws ImporterException {
-		ArrayList<Schema> schemas = new ArrayList<Schema>();
-		//Fixme: hardcoded
-		try {
-			
-			//Fixme: delete
-			for (Schema s: client.getSchemas()) {
-//				System.out.println("s: " + s.getId());
-			}
-			
-			schemas.add(schema1);
-			schemas.add(schema2);
-		}
-		
-		//fixme: Should I be throwing this exception instead?  Ask Chris.
-		catch (IOException e) {
-		    System.err.println ("Error adding schema"); 
-		    e.printStackTrace(); 
-			
-		}
+	protected ArrayList<MappingSchema> getSchemas() throws ImporterException
+	{
+		ArrayList<MappingSchema> schemas = new ArrayList<MappingSchema>();
+		schemas.add(new MappingSchema(schema1.getId(),schema1.getName(),null,MappingSchema.NONE));
+		schemas.add(new MappingSchema(schema2.getId(),schema2.getName(),null,MappingSchema.NONE));
 		return schemas;
 	}
 	
