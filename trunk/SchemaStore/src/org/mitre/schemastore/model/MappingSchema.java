@@ -21,6 +21,9 @@ public class MappingSchema implements Serializable
 	/** Stores the schema id */
 	private Integer id;
 	
+	/** Stores the schema name */
+	private String name;
+	
 	/** Stores the schema model */
 	private String model;
 	
@@ -31,25 +34,27 @@ public class MappingSchema implements Serializable
 	public MappingSchema() {}
 	
 	/** Constructs a mapping schema */
-	public MappingSchema(Integer id, String model, Integer side)
-		{ this.id = id; this.model = model; this.side = side; }
+	public MappingSchema(Integer id, String name, String model, Integer side)
+		{ this.id = id; this.name = name; this.model = model; this.side = side; }
 	
 	/** Copies the mapping schema */
 	public MappingSchema copy()
-		{ return new MappingSchema(getId(),getModel(),getSide()); }
+		{ return new MappingSchema(getId(),getName(),getModel(),getSide()); }
 	
 	// Handles all mapping schema getters
 	public Integer getId() { return id; }
+	public String getName() { return name; }
 	public String getModel() { return model; }
 	public Integer getSide() { return side; }
 	
 	// Handles all mapping schema setters
 	public void setId(Integer id) { this.id = id; }
+	public void setName(String name) { this.name = name; }
 	public void setModel(String model) { this.model = model; }
 	public void setSide(Integer side) { this.side = side; }
 	
 	/** Retrieves the graph model */
-	public GraphModel retrieveGraphModel()
+	public GraphModel getGraphModel()
 	{
 		for(GraphModel graphModel : HierarchicalGraph.getGraphModels())
 			if(graphModel.getClass().getName().equals(model)) return graphModel;
@@ -57,6 +62,6 @@ public class MappingSchema implements Serializable
 	}
 	
 	/** Stores the graph model */
-	public void storeGraphModel(GraphModel graphModel)
+	public void setGraphModel(GraphModel graphModel)
 		{ model = graphModel.getClass().getName(); }
 }

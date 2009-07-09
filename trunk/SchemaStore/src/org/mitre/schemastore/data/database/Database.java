@@ -1146,12 +1146,12 @@ public class Database
 
 			// Get the schemas associated with mapping
 			ArrayList<MappingSchema> schemas = new ArrayList<MappingSchema>();
-			ResultSet rs = stmt.executeQuery("SELECT schema_id,model,side FROM mapping_schema WHERE mapping_id="+mappingID);
+			ResultSet rs = stmt.executeQuery("SELECT schema_id,name,model,side FROM mapping_schema,\"schema\" WHERE mapping_id="+mappingID+" AND schema_id=id");
 			while(rs.next())
 			{
 				String sideChar = rs.getString("side"); if(sideChar==null) sideChar="";
 				Integer side = sideChar.equals("l")?MappingSchema.LEFT:sideChar.equals("r")?MappingSchema.RIGHT:MappingSchema.NONE;
-				schemas.add(new MappingSchema(rs.getInt("schema_id"),rs.getString("model"),side));
+				schemas.add(new MappingSchema(rs.getInt("schema_id"),rs.getString("name"),rs.getString("model"),side));
 			}
 
 			// Get the mapping information

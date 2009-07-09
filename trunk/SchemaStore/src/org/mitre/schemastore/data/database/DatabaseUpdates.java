@@ -18,7 +18,7 @@ import java.sql.Statement;
 public class DatabaseUpdates
 {
 	/** Stores the current version */
-	static private Integer currVersion = 2;
+	static private Integer currVersion = 3;
 	
 	/** Retrieve the contents of a file as a buffered string */
 	static private StringBuffer getFileContents(String file) throws IOException
@@ -151,6 +151,18 @@ public class DatabaseUpdates
 		stmt.close(); connection.commit();
 	}
 	
+	/** Installs version 3 updates */
+	static private void version3Updates(Connection connection) throws SQLException
+	{
+		// Increase the size of the notes field in the mapping_cell table
+		Statement stmt = connection.createStatement();
+		stmt.executeUpdate("ALTER TABLE mapping_cell ADD COLUMN temp_notes CHARACTER VARYING(4096)");
+		stmt.executeUpdate("UPDATE mapping_cell SET temp_notes=notes");
+		stmt.executeUpdate("ALTER TABLE mapping_cell DROP COLUMN notes");
+		renameColumn(stmt,"mapping_cell","temp_notes","notes");
+		stmt.close(); connection.commit();
+	}
+	
 	/** Updates the database as needed */
 	static void updateDatabase(Connection connection) throws SQLException
 	{
@@ -158,6 +170,7 @@ public class DatabaseUpdates
 			Integer version = getVersion(connection);
 			if(version<1) { version1Updates(connection); version=1; }
 			if(version<2) { version2Updates(connection); version=2; }
+			if(version<3) { version3Updates(connection); version=3; }
 			if(version>currVersion) throw new Exception("(E) Software must be updated to handle database version " + version);
 		}
 		catch (Exception e)

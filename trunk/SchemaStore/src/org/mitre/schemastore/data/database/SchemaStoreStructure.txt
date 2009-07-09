@@ -94,7 +94,7 @@ CREATE TABLE mapping_cell (
     author character varying(100),
     modification_date date,
     transform character varying(200),
-    notes character varying(500),
+    notes character varying(4096),
     validated character
 );
 

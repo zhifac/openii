@@ -188,7 +188,6 @@ public class ConvertFromXML
 		return mapping;
 	}
 
-
 	/** Retrieve the elementID for the given element path */
 	static private Integer getElementId(String pathString, ArrayList<HierarchicalGraph> graphs)
 	{
