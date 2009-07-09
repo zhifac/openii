@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<wsdl:definitions targetNamespace="http://servlet.schemastore.mitre.org" xmlns:apachesoap="http://xml.apache.org/xml-soap" xmlns:impl="http://servlet.schemastore.mitre.org" xmlns:intf="http://servlet.schemastore.mitre.org" xmlns:tns1="http://model.schemastore.mitre.org" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<wsdl:definitions targetNamespace="http://servlet.schemastore.mitre.org" xmlns:apachesoap="http://xml.apache.org/xml-soap" xmlns:impl="http://servlet.schemastore.mitre.org" xmlns:intf="http://servlet.schemastore.mitre.org" xmlns:tns1="http://model.schemastore.mitre.org" xmlns:tns2="http://model.graph.model.schemastore.mitre.org" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
 <!--WSDL created by Apache Axis version: 1.4
 Built on Apr 22, 2006 (06:55:48 PDT)-->
  <wsdl:types>
   <schema elementFormDefault="qualified" targetNamespace="http://servlet.schemastore.mitre.org" xmlns="http://www.w3.org/2001/XMLSchema">
+   <import namespace="http://model.graph.model.schemastore.mitre.org"/>
    <import namespace="http://model.schemastore.mitre.org"/>
    <element name="getDomain">
     <complexType>
@@ -121,6 +122,20 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
      </sequence>
     </complexType>
    </element>
+   <element name="addEntity">
+    <complexType>
+     <sequence>
+      <element name="entity" type="tns1:Entity"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="addEntityResponse">
+    <complexType>
+     <sequence>
+      <element name="addEntityReturn" type="xsd:int"/>
+     </sequence>
+    </complexType>
+   </element>
    <element name="addSubtype">
     <complexType>
      <sequence>
@@ -156,20 +171,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
     <complexType>
      <sequence>
       <element maxOccurs="unbounded" name="getSchemasReturn" type="tns1:Schema"/>
-     </sequence>
-    </complexType>
-   </element>
-   <element name="addEntity">
-    <complexType>
-     <sequence>
-      <element name="entity" type="tns1:Entity"/>
-     </sequence>
-    </complexType>
-   </element>
-   <element name="addEntityResponse">
-    <complexType>
-     <sequence>
-      <element name="addEntityReturn" type="xsd:int"/>
      </sequence>
     </complexType>
    </element>
@@ -556,6 +557,20 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
      </sequence>
     </complexType>
    </element>
+   <element name="getSchemaElements">
+    <complexType>
+     <sequence>
+      <element name="schemaID" type="xsd:int"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getSchemaElementsResponse">
+    <complexType>
+     <sequence>
+      <element name="getSchemaElementsReturn" type="tns1:SchemaElementList"/>
+     </sequence>
+    </complexType>
+   </element>
    <element name="addDomain">
     <complexType>
      <sequence>
@@ -892,20 +907,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
      </sequence>
     </complexType>
    </element>
-   <element name="getSchemaElements">
-    <complexType>
-     <sequence>
-      <element name="schemaID" type="xsd:int"/>
-     </sequence>
-    </complexType>
-   </element>
-   <element name="getSchemaElementsResponse">
-    <complexType>
-     <sequence>
-      <element name="getSchemaElementsReturn" type="tns1:SchemaElementList"/>
-     </sequence>
-    </complexType>
-   </element>
    <element name="getSchemaElementsForKeyword">
     <complexType>
      <sequence>
@@ -1229,6 +1230,7 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
    </element>
   </schema>
   <schema elementFormDefault="qualified" targetNamespace="http://model.schemastore.mitre.org" xmlns="http://www.w3.org/2001/XMLSchema">
+   <import namespace="http://model.graph.model.schemastore.mitre.org"/>
    <import namespace="http://servlet.schemastore.mitre.org"/>
    <complexType name="SchemaElement">
     <sequence>
@@ -1255,8 +1257,10 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
    </complexType>
    <complexType name="MappingSchema">
     <sequence>
+     <element name="graphModel" nillable="true" type="tns2:GraphModel"/>
      <element name="id" nillable="true" type="xsd:int"/>
      <element name="model" nillable="true" type="xsd:string"/>
+     <element name="name" nillable="true" type="xsd:string"/>
      <element name="side" nillable="true" type="xsd:int"/>
     </sequence>
    </complexType>
@@ -1266,6 +1270,7 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
      <element name="description" nillable="true" type="xsd:string"/>
      <element name="id" nillable="true" type="xsd:int"/>
      <element name="name" nillable="true" type="xsd:string"/>
+     <element name="schemaIDs" nillable="true" type="impl:ArrayOf_xsd_int"/>
      <element name="schemas" nillable="true" type="impl:ArrayOf_tns1_MappingSchema"/>
     </sequence>
    </complexType>
@@ -1391,6 +1396,15 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
     </sequence>
    </complexType>
   </schema>
+  <schema elementFormDefault="qualified" targetNamespace="http://model.graph.model.schemastore.mitre.org" xmlns="http://www.w3.org/2001/XMLSchema">
+   <import namespace="http://model.schemastore.mitre.org"/>
+   <import namespace="http://servlet.schemastore.mitre.org"/>
+   <complexType abstract="true" name="GraphModel">
+    <sequence>
+     <element name="name" nillable="true" type="xsd:string"/>
+    </sequence>
+   </complexType>
+  </schema>
  </wsdl:types>
 
    <wsdl:message name="getRelationshipRequest">
@@ -1513,12 +1527,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
    </wsdl:message>
 
-   <wsdl:message name="getSchemaElementsResponse">
-
-      <wsdl:part element="impl:getSchemaElementsResponse" name="parameters"/>
-
-   </wsdl:message>
-
    <wsdl:message name="addEntityRequest">
 
       <wsdl:part element="impl:addEntity" name="parameters"/>
@@ -1534,6 +1542,12 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
    <wsdl:message name="getRootSchemaRequest">
 
       <wsdl:part element="impl:getRootSchema" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getSchemaElementsResponse">
+
+      <wsdl:part element="impl:getSchemaElementsResponse" name="parameters"/>
 
    </wsdl:message>
 
@@ -2467,6 +2481,14 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
       </wsdl:operation>
 
+      <wsdl:operation name="addEntity">
+
+         <wsdl:input message="impl:addEntityRequest" name="addEntityRequest"/>
+
+         <wsdl:output message="impl:addEntityResponse" name="addEntityResponse"/>
+
+      </wsdl:operation>
+
       <wsdl:operation name="addSubtype">
 
          <wsdl:input message="impl:addSubtypeRequest" name="addSubtypeRequest"/>
@@ -2488,14 +2510,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
          <wsdl:input message="impl:getSchemasRequest" name="getSchemasRequest"/>
 
          <wsdl:output message="impl:getSchemasResponse" name="getSchemasResponse"/>
-
-      </wsdl:operation>
-
-      <wsdl:operation name="addEntity">
-
-         <wsdl:input message="impl:addEntityRequest" name="addEntityRequest"/>
-
-         <wsdl:output message="impl:addEntityResponse" name="addEntityResponse"/>
 
       </wsdl:operation>
 
@@ -2691,6 +2705,14 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
       </wsdl:operation>
 
+      <wsdl:operation name="getSchemaElements">
+
+         <wsdl:input message="impl:getSchemaElementsRequest" name="getSchemaElementsRequest"/>
+
+         <wsdl:output message="impl:getSchemaElementsResponse" name="getSchemaElementsResponse"/>
+
+      </wsdl:operation>
+
       <wsdl:operation name="addDomain">
 
          <wsdl:input message="impl:addDomainRequest" name="addDomainRequest"/>
@@ -2880,14 +2902,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
          <wsdl:input message="impl:getSchemaElementCountRequest" name="getSchemaElementCountRequest"/>
 
          <wsdl:output message="impl:getSchemaElementCountResponse" name="getSchemaElementCountResponse"/>
-
-      </wsdl:operation>
-
-      <wsdl:operation name="getSchemaElements">
-
-         <wsdl:input message="impl:getSchemaElementsRequest" name="getSchemaElementsRequest"/>
-
-         <wsdl:output message="impl:getSchemaElementsResponse" name="getSchemaElementsResponse"/>
 
       </wsdl:operation>
 
@@ -3225,6 +3239,24 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
       </wsdl:operation>
 
+      <wsdl:operation name="addEntity">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="addEntityRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="addEntityResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
       <wsdl:operation name="addSubtype">
 
          <wsdlsoap:operation soapAction=""/>
@@ -3272,24 +3304,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
          </wsdl:input>
 
          <wsdl:output name="getSchemasResponse">
-
-            <wsdlsoap:body use="literal"/>
-
-         </wsdl:output>
-
-      </wsdl:operation>
-
-      <wsdl:operation name="addEntity">
-
-         <wsdlsoap:operation soapAction=""/>
-
-         <wsdl:input name="addEntityRequest">
-
-            <wsdlsoap:body use="literal"/>
-
-         </wsdl:input>
-
-         <wsdl:output name="addEntityResponse">
 
             <wsdlsoap:body use="literal"/>
 
@@ -3729,6 +3743,24 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
       </wsdl:operation>
 
+      <wsdl:operation name="getSchemaElements">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="getSchemaElementsRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="getSchemaElementsResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
       <wsdl:operation name="addDomain">
 
          <wsdlsoap:operation soapAction=""/>
@@ -4154,24 +4186,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
          </wsdl:input>
 
          <wsdl:output name="getSchemaElementCountResponse">
-
-            <wsdlsoap:body use="literal"/>
-
-         </wsdl:output>
-
-      </wsdl:operation>
-
-      <wsdl:operation name="getSchemaElements">
-
-         <wsdlsoap:operation soapAction=""/>
-
-         <wsdl:input name="getSchemaElementsRequest">
-
-            <wsdlsoap:body use="literal"/>
-
-         </wsdl:input>
-
-         <wsdl:output name="getSchemaElementsResponse">
 
             <wsdlsoap:body use="literal"/>
 
