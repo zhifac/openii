@@ -10,7 +10,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.mitre.schemastore.model.*;
-import org.mitre.schemastore.model.xml.ConvertToXML;
+import org.mitre.schemastore.porters.xml.ConvertToXML;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.apache.xml.serialize.XMLSerializer;

@@ -4,8 +4,8 @@ package org.mitre.schemastore.porters.mappingImporters;
 
 import org.mitre.schemastore.model.*;
 import org.mitre.schemastore.model.graph.HierarchicalGraph;
-import org.mitre.schemastore.model.xml.ConvertFromXML;
 import org.mitre.schemastore.porters.ImporterException;
+import org.mitre.schemastore.porters.xml.ConvertFromXML;
 
 import java.io.File;
 import java.util.ArrayList;
