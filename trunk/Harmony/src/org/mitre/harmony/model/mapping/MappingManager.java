@@ -90,7 +90,7 @@ public class MappingManager extends AbstractManager<MappingListener> implements 
 	public GraphModel getGraphModel(Integer schemaID)
 	{
 		for(MappingSchema schema : getSchemas())
-			if(schema.getId().equals(schemaID)) return schema.retrieveGraphModel();
+			if(schema.getId().equals(schemaID)) return schema.getGraphModel();
 		return null;
 	}
 	
@@ -185,7 +185,7 @@ public class MappingManager extends AbstractManager<MappingListener> implements 
 		for(MappingSchema schema : getSchemas())
 			if(schema.getId().equals(schemaID))
 			{
-				schema.storeGraphModel(graphModel);
+				schema.setGraphModel(graphModel);
 				getModel().getSchemaManager().getGraph(schemaID).setModel(graphModel);
 				for(MappingListener listener : getListeners())
 					listener.schemaModified(schemaID);		
