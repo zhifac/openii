@@ -14,6 +14,7 @@ import javax.swing.border.EmptyBorder;
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.view.dialogs.AbstractButtonPane;
 import org.mitre.schemastore.model.MappingSchema;
+import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.graph.model.GraphModel;
 
 /**
@@ -125,7 +126,8 @@ public class PropertiesDialog extends JDialog
 		{
 			GraphModel graphModel = modelPane.getModel(schemaID);
 			Integer side = displayPane.getSide(schemaID);
-			schemas.add(new MappingSchema(schemaID,graphModel==null?null:graphModel.getClass().getName(),side));
+			Schema schema = harmonyModel.getSchemaManager().getSchema(schemaID);
+			schemas.add(new MappingSchema(schemaID,schema.getName(),graphModel==null?null:graphModel.getClass().getName(),side));
 		}
 		harmonyModel.getMappingManager().setSchemas(schemas);
 	}
