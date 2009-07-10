@@ -14,7 +14,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.mitre.schemastore.model.*;
 import org.mitre.schemastore.model.graph.HierarchicalGraph;
-import org.mitre.schemastore.model.xml.ConvertToXML;
+import org.mitre.schemastore.porters.xml.ConvertToXML;
 import org.w3c.dom.Document;
 import org.apache.xml.serialize.XMLSerializer;
 import org.apache.xml.serialize.OutputFormat;
