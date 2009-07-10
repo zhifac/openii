@@ -7,6 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 import org.mitre.schemastore.model.Alias;
 import org.mitre.schemastore.model.Attribute;
@@ -1289,7 +1290,10 @@ public class Database
 		try {
 			mappingCellID = getUniversalIDs(1);
 			Statement stmt = connection.getStatement();
-			Date date = new Date(mappingCell.getModificationDate().getTime());
+			Date date = null;
+			if(mappingCell.getModificationDate()!=null)
+				date = new Date(mappingCell.getModificationDate().getTime());
+			else date = new Date(Calendar.getInstance().getTime().getTime());
 			stmt.executeUpdate("INSERT INTO mapping_cell(id,mapping_id,element1_id,element2_id,score,author,modification_date,transform,notes,validated) " +
 							   "VALUES("+mappingCellID+","+mappingCell.getMappingId()+","+mappingCell.getElement1()+","+mappingCell.getElement2()+","+mappingCell.getScore()+",'"+scrub(mappingCell.getAuthor(),100)+"','"+date.toString()+"','"+scrub(mappingCell.getTransform(),200)+"','"+scrub(mappingCell.getNotes(),500)+"','"+(mappingCell.getValidated()?"t":"f")+"')");
 			stmt.close();
