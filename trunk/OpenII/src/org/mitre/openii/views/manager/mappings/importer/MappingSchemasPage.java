@@ -17,6 +17,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.mitre.openii.model.OpenIIManager;
 import org.mitre.openii.widgets.BasicWidgets;
+import org.mitre.schemastore.model.MappingSchema;
 import org.mitre.schemastore.model.Schema;
 
 /**
@@ -30,9 +31,14 @@ public class MappingSchemasPage extends WizardPage
 		/** Stores the schema list */
 		private ComboViewer schemaList = null;
 		
+		/** Stores the mapping schema */
+		private MappingSchema mappingSchema = null;
+		
 		/** Constructs the selection pane */
-		private SelectionPane(Composite parent, Schema mappingSchema)
+		private SelectionPane(Composite parent, MappingSchema mappingSchema)
 		{
+			this.mappingSchema = mappingSchema;
+			
 			// Display the mapping schema name
 			BasicWidgets.createLabel(parent, mappingSchema.getName());
 			
@@ -52,11 +58,15 @@ public class MappingSchemasPage extends WizardPage
 			}
 		}
 
-		/** Returns the selected schema ID */
-		private Integer getSchemaID()
+		/** Returns the mapping schema */
+		private MappingSchema getMappingSchema()
 		{
 			Integer index = schemaList.getCombo().getSelectionIndex();
-			if(index>0) return ((Schema)schemaList.getElementAt(index)).getId();
+			if(index>=0)
+			{
+				mappingSchema.setId(((Schema)schemaList.getElementAt(index)).getId());
+				return mappingSchema;
+			}
 			return null;
 		}
 		
@@ -123,7 +133,7 @@ public class MappingSchemasPage extends WizardPage
 			Composite schemaPane = new Composite(scrolledPane, SWT.NONE);
 			schemaPane.setLayout(new GridLayout(2,false));
 			try {
-				for(Schema schema : propertiesPage.getImporter().getSchemas(currentURI))
+				for(MappingSchema schema : propertiesPage.getImporter().getSchemas(currentURI))
 					selectionPanes.add(new SelectionPane(schemaPane,schema));
 			} catch(Exception e) {}
 			
@@ -141,13 +151,13 @@ public class MappingSchemasPage extends WizardPage
 		super.setVisible(visible);
 	}
 	
-	/** Returns the selected list of schema IDs */
-	ArrayList<Integer> getSchemaIDs()
+	/** Returns the generated list of mapping schemas */
+	ArrayList<MappingSchema> getMappingSchemas()
 	{
-		ArrayList<Integer> schemaIDs = new ArrayList<Integer>();
+		ArrayList<MappingSchema> mappingSchemas = new ArrayList<MappingSchema>();
 		for(SelectionPane selectionPane : selectionPanes)
-			schemaIDs.add(selectionPane.getSchemaID());
-		return schemaIDs;
+			mappingSchemas.add(selectionPane.getMappingSchema());
+		return mappingSchemas;
 	}
 	
 	/** Checks completion of page */
@@ -155,7 +165,7 @@ public class MappingSchemasPage extends WizardPage
 	{
 		boolean completed = true;
 		for(SelectionPane selectionPane : selectionPanes)
-			if(selectionPane.getSchemaID()==null) completed = false;
+			if(selectionPane.getMappingSchema()==null) completed = false;
 		setPageComplete(completed);	
 	}
 }

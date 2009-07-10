@@ -1,7 +1,6 @@
 package org.mitre.openii.views.manager.mappings.importer;
 
 import java.net.URI;
-import java.util.ArrayList;
 
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardPage;
@@ -9,7 +8,6 @@ import org.mitre.openii.application.OpenIIActivator;
 import org.mitre.openii.model.OpenIIManager;
 import org.mitre.openii.model.RepositoryManager;
 import org.mitre.schemastore.model.Mapping;
-import org.mitre.schemastore.model.MappingSchema;
 import org.mitre.schemastore.porters.mappingImporters.MappingImporter;
 
 /**
@@ -58,14 +56,9 @@ public class ImportMappingWizard extends Wizard
 			String description = propertiesPage.getMappingDescription();
 			URI uri = propertiesPage.getURI();
 
-			// Gather up mapping schemas
-			ArrayList<MappingSchema> schemas = new ArrayList<MappingSchema>();
-			for(Integer schemaID : schemasPage.getSchemaIDs())
-				schemas.add(new MappingSchema(schemaID,null,MappingSchema.NONE));
-			
 			// Import mapping
 			MappingImporter importer = propertiesPage.getImporter();
-			Integer mappingID = importer.importMapping(name, author, description, schemas, uri);
+			Integer mappingID = importer.importMapping(name, author, description, schemasPage.getMappingSchemas(), uri);
 			if(mappingID!=null)
 			{
 				Mapping mapping = RepositoryManager.getClient().getMapping(mappingID);
