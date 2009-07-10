@@ -164,7 +164,7 @@ public class EditMappingDialog extends Dialog implements ModifyListener, ISelect
 		// Generate the list of schemas which have been selected
 		ArrayList<MappingSchema> schemas = new ArrayList<MappingSchema>();
 		for(Object element : schemaList.getCheckedElements())
-			schemas.add(new MappingSchema(((Schema)element).getId(),null,MappingSchema.NONE));
+			schemas.add(new MappingSchema(((Schema)element).getId(),((Schema)element).getName(),null,MappingSchema.NONE));
 		
 		// Handles the creation of the mapping
 		if(mapping==null)
