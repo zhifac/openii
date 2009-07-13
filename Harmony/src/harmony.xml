@@ -3,6 +3,7 @@
     <voter>org.mitre.harmony.matchers.voters.EditDistanceMatcher</voter>
     <voter>org.mitre.harmony.matchers.voters.BagMatcher</voter>
     <voter>org.mitre.harmony.matchers.voters.ThesaurusMatcher</voter>
+    <voter>org.mitre.harmony.matchers.voters.ExactStructureMatcher</voter>
   </voters>
   <mergers>
     <merger>org.mitre.harmony.matchers.mergers.VoteMerger</merger>
