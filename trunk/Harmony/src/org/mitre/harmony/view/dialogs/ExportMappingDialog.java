@@ -66,8 +66,8 @@ public class ExportMappingDialog
 			MappingExporter exporter = ((MappingFileFilter)chooser.getFileFilter()).exporter;
 
 			// Ensure that file has the proper ending
-			if(!file.getName().endsWith("."+exporter.getFileType()))
-				file = new File(file.getPath()+"."+exporter.getFileType());
+			if(!file.getName().endsWith(exporter.getFileType()))
+				file = new File(file.getPath()+exporter.getFileType());
 			
 			// Check to see if file already exists and checks to make sure it can be overwritten
 			if(file!=null && file.exists())
