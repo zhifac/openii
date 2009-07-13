@@ -39,8 +39,6 @@ public class ExactStructureMatcher implements MatchVoter
 			for(Integer targetID : targetIDs)
 				scores.setScore(sourceElement.getId(), targetID, new VoterScore(100.0,100.0));								
 		}
-
-		System.out.println(scores.getElementPairs().size());
 		return scores;
 	}
 }
