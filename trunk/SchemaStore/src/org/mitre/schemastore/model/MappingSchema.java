@@ -54,7 +54,7 @@ public class MappingSchema implements Serializable
 	public void setSide(Integer side) { this.side = side; }
 	
 	/** Retrieves the graph model */
-	public GraphModel getGraphModel()
+	public GraphModel geetGraphModel()
 	{
 		for(GraphModel graphModel : HierarchicalGraph.getGraphModels())
 			if(graphModel.getClass().getName().equals(model)) return graphModel;
@@ -62,6 +62,6 @@ public class MappingSchema implements Serializable
 	}
 	
 	/** Stores the graph model */
-	public void setGraphModel(GraphModel graphModel)
+	public void seetGraphModel(GraphModel graphModel)
 		{ model = graphModel.getClass().getName(); }
 }
