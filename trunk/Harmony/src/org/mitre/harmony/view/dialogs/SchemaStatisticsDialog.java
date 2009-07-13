@@ -50,7 +50,7 @@ public class SchemaStatisticsDialog extends JDialog
 			int noCount = 0;
 		
 			// Cycles through all tree nodes to identify good, weak, and no links
-			for(SchemaElement schemaElement : harmonyModel.getSchemaManager().getSchemaElements(schemaID,null))
+			for(SchemaElement schemaElement : harmonyModel.getSchemaManager().getGraph(schemaID).getGraphElements())
 			{
 				double maxConf = Double.MIN_VALUE;
 				for(Integer mappingCellID : harmonyModel.getMappingCellManager().getMappingCellsByElement(schemaElement.getId()))
