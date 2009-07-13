@@ -55,7 +55,7 @@ public class M3MappingExporter extends MappingExporter
 			// Create the XML document
 			ArrayList<HierarchicalGraph> graphs = new ArrayList<HierarchicalGraph>();
 			for(MappingSchema mappingSchema : mapping.getSchemas())
-				graphs.add(new HierarchicalGraph(client.getGraph(mappingSchema.getId()),mappingSchema.getGraphModel()));
+				graphs.add(new HierarchicalGraph(client.getGraph(mappingSchema.getId()),mappingSchema.geetGraphModel()));
 			dom.appendChild(ConvertToXML.generate(mapping, mappingCells, graphs, dom));
 
 			// Output the XML document to a string buffer

@@ -63,7 +63,7 @@ public class M3MappingImporter extends MappingImporter
 			mappingSchemas = new ArrayList<MappingSchema>(Arrays.asList(mapping.getSchemas()));
 			ArrayList<HierarchicalGraph> graphs = new ArrayList<HierarchicalGraph>();
 			for(MappingSchema schema : mappingSchemas)
-				graphs.add(new HierarchicalGraph(client.getGraph(schema.getId()),schema.getGraphModel()));
+				graphs.add(new HierarchicalGraph(client.getGraph(schema.getId()),schema.geetGraphModel()));
 			
 			// Extract mapping cells from the element
 			mappingCells.clear();

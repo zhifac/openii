@@ -21,8 +21,8 @@ import org.jfree.data.general.DefaultPieDataset;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.MappingSchema;
-import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
+import org.mitre.schemastore.model.graph.HierarchicalGraph;
 
 /**
  * Class for exporting projects to a pie chart showing schemas' matched percentage
@@ -64,11 +64,10 @@ public class PieChartExporter extends MappingExporter
 	    ZipOutputStream out = new ZipOutputStream(new FileOutputStream(file));
 
 		// Store the schema pie charts to the zip file
-	    MappingSchema schemas[] = mapping.getSchemas();
-		for(int i=0; i<schemas.length; i++)
-		{
-			Schema schema = client.getSchema(schemas[i].getId());
-			copyFileToZip(generateFile(schema,mappingCells),"Schema"+i+"/"+schema.getName()+".jpg",out);
+	    for(MappingSchema schema : mapping.getSchemas())
+	    {
+	    	String fileName = schema.getName() + "(" + schema.getId() + ").jpg";
+	    	copyFileToZip(generateFile(schema,mappingCells),fileName,out);
 		}
 		
 		// Close the zip file
@@ -76,7 +75,7 @@ public class PieChartExporter extends MappingExporter
 	}
 	
 	/** Return a file containing a pie chart showing the matched ratio for the specified schema */
-	public File generateFile(Schema schema, ArrayList<MappingCell> mappingCells) throws IOException
+	private File generateFile(MappingSchema schema, ArrayList<MappingCell> mappingCells) throws IOException
 	{
 		// Counts for good, weak, and no link nodes
 		int goodCount = 0;
@@ -84,7 +83,8 @@ public class PieChartExporter extends MappingExporter
 		int noCount = 0;
 		
 		// Cycles through all tree nodes to identify good, weak, and no links
-		for(SchemaElement element : client.getGraph(schema.getId()).getElements(null))
+		HierarchicalGraph graph = new HierarchicalGraph(client.getGraph(schema.getId()),schema.geetGraphModel());
+		for(SchemaElement element : graph.getGraphElements())
 		{
 			double maxScore = Double.MIN_VALUE;
    			for(MappingCell mappingCell : getMappingCellsByElement(element.getId(), mappingCells))
