@@ -160,6 +160,9 @@ public class DatabaseUpdates
 		stmt.executeUpdate("UPDATE mapping_cell SET temp_notes=notes");
 		stmt.executeUpdate("ALTER TABLE mapping_cell DROP COLUMN notes");
 		renameColumn(stmt,"mapping_cell","temp_notes","notes");
+		
+		// Increase the version id
+		stmt.executeUpdate("UPDATE version SET id=3");
 		stmt.close(); connection.commit();
 	}
 	
