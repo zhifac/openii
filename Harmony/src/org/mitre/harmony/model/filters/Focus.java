@@ -29,15 +29,14 @@ public class Focus
 	private HashSet<Integer> hiddenElements;
 	
 	/** Returns the list of descendant IDs for the specified element */
-	private HashSet<Integer> getDescendantIDs(Integer elementID)
+	private HashSet<Integer> getDescendantIDs(Integer elementID, HashSet<Integer> descendantIDs)
 	{
-		HashSet<Integer> descendantIDs = new HashSet<Integer>();
 		if(!hiddenIDs.contains(elementID))
 			for(SchemaElement childElement : graph.getChildElements(elementID))
 				if(!descendantIDs.contains(childElement.getId()))
 				{
 					descendantIDs.add(childElement.getId());
-					descendantIDs.addAll(getDescendantIDs(childElement.getId()));
+					descendantIDs.addAll(getDescendantIDs(childElement.getId(),descendantIDs));
 				}
 		return descendantIDs;
 	}
@@ -132,7 +131,7 @@ public class Focus
 			for(Integer elementID : rootIDs)
 			{
 				elementsInFocus.add(elementID);
-				elementsInFocus.addAll(getDescendantIDs(elementID));
+				elementsInFocus.addAll(getDescendantIDs(elementID, new HashSet<Integer>()));
 			}
 		}
 		return elementsInFocus;
