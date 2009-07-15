@@ -79,4 +79,20 @@ public class PorterManager
 	/** Returns the list of mapping exporters */
 	public ArrayList<MappingExporter> getMappingExporters()
 		{ return new ArrayList<MappingExporter>(mappingExporters); }
+	
+	/** Returns the specified porter */
+	public Porter getPorter(Class porterClass)
+	{
+		// Generate a list of all porters
+		ArrayList<Porter> porters = new ArrayList<Porter>();
+		porters.addAll(schemaImporters);
+		porters.addAll(schemaExporters);
+		porters.addAll(mappingImporters);
+		porters.addAll(mappingExporters);
+		
+		// Returns the specified porter
+		for(Porter porter : porters)
+			if(porter.getClass().equals(porterClass)) return porter;
+		return null;
+	}
 }
