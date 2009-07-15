@@ -476,7 +476,7 @@ public class SchemaTree extends JTree implements MappingListener, PreferencesLis
 			}
 				
 			// If the right mouse button pressed, display the drop-down menu
-			else if(e.getButton()==MouseEvent.BUTTON3)
+			else if(e.getButton()==MouseEvent.BUTTON3 || e.isMetaDown())
 			{
 				SchemaTreeNodeMenu menu = new SchemaTreeNodeMenu(this,node,harmonyModel);
 				menu.show(e.getComponent(), e.getX(), e.getY());

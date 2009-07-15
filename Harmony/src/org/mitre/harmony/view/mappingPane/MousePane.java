@@ -113,7 +113,7 @@ class MousePane extends JPanel implements MouseListener, MouseMotionListener
 		}
 
 		// If right button pressed, display mapping cell dialog box
-		else if(e.getButton() == MouseEvent.BUTTON3)
+		else if(e.getButton()==MouseEvent.BUTTON3 || e.isMetaDown())
 		{
 			// Determine what mapping cell was selected for showing the dialog box
 			Integer mappingCellID = mappingPane.getLines().getClosestMappingCellToPoint(e.getPoint());
