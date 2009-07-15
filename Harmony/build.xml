@@ -50,9 +50,8 @@
             <fatjar.filesource path="Harmony.jar" relpath="Harmony"/>
             <fatjar.filesource path="lib/SchemaStoreClient.jar" relpath="Harmony"/>
             <fatjar.filesource path="lib/SchemaStorePorters.jar" relpath="Harmony"/>
-            <fatjar.filesource path="../SchemaStore/SchemaStore.jar" relpath="SchemaStore"/>
 			<fatjar.filesource path="harmony.config.xml" relpath="Harmony"/>
-            <fatjar.filesource path="Harmony User Guide.doc" relpath="Harmony"/>
+            <fatjar.filesource path="readme.txt" relpath="Harmony"/>
             <fatjar.filesource path="License.doc" relpath="Harmony"/>
             <fatjar.filesource path="Harmony.bat" relpath="Harmony"/>
        </fatjar.build>
