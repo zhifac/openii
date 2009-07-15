@@ -81,7 +81,7 @@ public class PorterManager
 		{ return new ArrayList<MappingExporter>(mappingExporters); }
 	
 	/** Returns the specified porter */
-	public Porter getPorter(Class porterClass)
+	public Porter getPorter(Class<?> porterClass)
 	{
 		// Generate a list of all porters
 		ArrayList<Porter> porters = new ArrayList<Porter>();
