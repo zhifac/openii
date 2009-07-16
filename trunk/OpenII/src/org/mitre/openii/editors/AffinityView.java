@@ -35,7 +35,6 @@ import org.mitre.openii.model.EditorManager;
 import org.mitre.openii.model.OpenIIManager;
 import org.mitre.openii.model.RepositoryManager;
 import org.mitre.openii.views.manager.groups.EditGroupDialog;
-import org.mitre.schemastore.model.Group;
 
 /**
  * Constructs the Affinity View
@@ -94,10 +93,17 @@ public class AffinityView extends OpenIIEditor implements SelectionClickedListen
 			if(element != null && element instanceof Collection) {
 				schemaIDs = new ArrayList<Integer>((Collection)element);
 				setPartName("*New Group");
+				/*this.addListenerObject(new Listener() {
+					public void handleEvent(Event event) {
+						System.out.println("listener triggered");
+					}					
+				});*/
 			}
 		}
-		if(schemaIDs == null)
-			schemaIDs = OpenIIManager.getGroupSchemas(elementID);
+		if(schemaIDs == null) {
+			schemaIDs = OpenIIManager.getGroupSchemas(elementID);			
+			schemaIDs.addAll(OpenIIManager.getChildGroupSchemas(elementID));
+		}
 		this.affinityModel =  new AffinityModel(schemaManager, clusterManager);
 		
 		//System.out.println("Element id: " + elementID);
