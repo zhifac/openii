@@ -36,6 +36,9 @@ public class EditGroupDialog extends Dialog implements ModifyListener, Selection
 	/** Stores the parent ID */
 	private Integer parentID = null;
 	
+	/** A list of initial schemas to populate the schema list with */
+	private ArrayList<Integer> initialSchemas;
+	
 	// Stores the various dialog fields
 	private Text nameField = null;
 	private TableViewer list = null;
@@ -46,9 +49,16 @@ public class EditGroupDialog extends Dialog implements ModifyListener, Selection
 	/** Constructs the dialog */
 	public EditGroupDialog(Shell shell, Group group, Integer parentID)
 	{
+		this(shell, group, parentID, null);
+	}	
+	
+	/** Constructs the dialog */
+	public EditGroupDialog(Shell shell, Group group, Integer parentID, ArrayList<Integer> initialSchemas)
+	{
 		super(shell);
 		this.group = group;
 		this.parentID = parentID;
+		this.initialSchemas = initialSchemas;
 	}	
 
 	/** Configures the dialog shell */
@@ -108,12 +118,21 @@ public class EditGroupDialog extends Dialog implements ModifyListener, Selection
 		Control control = super.createContents(parent);
 
 		// Make default group dialog selections
-		nameField.setText(group!=null ? group.getName() : "");
+		nameField.setText(group!=null ? group.getName() : "");		
 		if(group!=null)
 		{
 			// Set all items selected as part of group
 			ArrayList<Schema> groupSchemas = new ArrayList<Schema>();
 			for(Integer schemaID : OpenIIManager.getGroupSchemas(group.getId()))
+				groupSchemas.add(OpenIIManager.getSchema(schemaID));
+			for(Schema schema : WidgetUtilities.sortList(groupSchemas))
+				list.add(schema);
+		}
+		else if(initialSchemas != null) 
+		{
+			//Populates the schema table with a passed in list of initial schemas
+			ArrayList<Schema> groupSchemas = new ArrayList<Schema>();
+			for(Integer schemaID : initialSchemas)
 				groupSchemas.add(OpenIIManager.getSchema(schemaID));
 			for(Schema schema : WidgetUtilities.sortList(groupSchemas))
 				list.add(schema);
