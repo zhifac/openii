@@ -2,10 +2,13 @@ package org.mitre.openii.views.repositories;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.TreeEditor;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.part.ViewPart;
@@ -17,11 +20,11 @@ import org.mitre.openii.widgets.WidgetUtilities;
 import org.mitre.schemastore.client.Repository;
 
 /** Constructs the Repository View */
-public class RepositoryView extends ViewPart implements RepositoryListener
+public class RepositoryView extends ViewPart implements RepositoryListener, SelectionListener
 {	
 	/** Stores the tree displayed in the repository view */
 	private Tree tree;
-
+	
 	/** Refreshes the displayed repositories */
 	private void updateRepositoryItems()
 	{
@@ -33,21 +36,23 @@ public class RepositoryView extends ViewPart implements RepositoryListener
 		// Generate the nodes for the available repositories
 		for(Repository repository : WidgetUtilities.sortList(RepositoryManager.getRepositories()))
 		{
-			// Adds a checkbox to the repository tree item
-			Button checkbox = new Button(tree, SWT.CHECK);
-			checkbox.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
-			checkbox.setImage(OpenIIActivator.getImage("Repository.gif"));
-			checkbox.setText(repository.getName());
-			checkbox.setData(repository);
-			checkbox.setSelection(true);
-			checkbox.setMenu(new RepositoryMenuManager(repository).createContextMenu(tree));
+			// Generate a repository selector checkbox
+			Button repositorySelector = new Button(tree, SWT.CHECK);
+			repositorySelector.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
+			repositorySelector.setImage(OpenIIActivator.getImage("Repository.gif"));
+			repositorySelector.setText(repository.getName());
+			repositorySelector.setData(repository);
+			repositorySelector.setMenu(new RepositoryMenuManager(repository).createContextMenu(tree));
+			repositorySelector.addSelectionListener(this);
 			
-			// Places the checkbox next to the tree item
-			TreeItem repositoryItem = new TreeItem(tree.getItem(0), SWT.CHECK);
-			repositoryItem.setData(checkbox);
+			// Generate a tree item for displaying the repository selector
+			TreeItem repositoryItem = new TreeItem(tree.getItem(0), SWT.NONE);
+			repositoryItem.setData(repositorySelector);
+			
+			// Display the repository selector
 			TreeEditor editor = new TreeEditor(tree);
 			editor.grabHorizontal = true;
-			editor.setEditor(checkbox, repositoryItem);			
+			editor.setEditor(repositorySelector, repositoryItem);			
 		}
 	}
 	
@@ -60,15 +65,30 @@ public class RepositoryView extends ViewPart implements RepositoryListener
 	{
 		// Generate the tree for displaying available repositories
 		tree = new Tree(parent, SWT.BORDER);
-		RepositoryMenuManager menuManager = new RepositoryMenuManager(null);
-		Menu menu = menuManager.createContextMenu(tree);
-		tree.setMenu(menu);
-		
+
+		// Generate a repository label
+		Composite repositoriesLabel = new Composite(tree, SWT.NONE);
+		repositoriesLabel.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
+		GridLayout layout = new GridLayout();
+		layout.numColumns = 2; layout.marginHeight = 0; layout.marginWidth = 0;
+		repositoriesLabel.setLayout(layout);
+
+		// Add the image to the repository label
+		Label image = new Label(repositoriesLabel, SWT.NONE);
+		image.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
+		image.setImage(OpenIIActivator.getImage("Repositories.gif"));
+		image.setMenu(new RepositoryMenuManager(null).createContextMenu(tree));
+
+		// Add the label to the repository label
+		Label label = new Label(repositoriesLabel, SWT.NONE);
+		label.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
+		label.setText("Repositories");
+		label.setMenu(new RepositoryMenuManager(null).createContextMenu(tree));
+
 		// Create the header node for the repository tree
-		TreeItem item = new TreeItem(tree, SWT.NONE);
-		item.setImage(OpenIIActivator.getImage("Repositories.gif"));
-		item.setText("Repositories");
-		item.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
+		TreeEditor editor = new TreeEditor(tree);
+		editor.grabHorizontal = true;
+		editor.setEditor(repositoriesLabel, new TreeItem(tree, SWT.NONE));			
 
 		// Updates the repository items
 		updateRepositoryItems();
@@ -81,7 +101,21 @@ public class RepositoryView extends ViewPart implements RepositoryListener
 	/** Removes a repository from the repository list */
 	public void repositoryDeleted(Repository repository)
 		{ updateRepositoryItems(); }
+
+	/** Handles the selection of a repository */
+	public void widgetSelected(SelectionEvent e)
+	{
+		for(TreeItem item : tree.getItem(0).getItems())
+		{
+			Button checkbox = (Button)item.getData();
+			if(!e.getSource().equals(checkbox))
+				checkbox.setSelection(false);
+		}
+	}
 	
 	// Sets the focus in this view
 	public void setFocus() {}
+
+	// Unused event listeners
+	public void widgetDefaultSelected(SelectionEvent e) {}
 }
