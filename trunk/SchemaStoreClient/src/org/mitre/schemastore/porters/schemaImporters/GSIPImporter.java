@@ -2,6 +2,7 @@
 
 package org.mitre.schemastore.porters.schemaImporters;
 
+import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -10,6 +11,9 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
+
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileFilter;
 
 import org.mitre.schemastore.model.Attribute;
 import org.mitre.schemastore.model.Domain;
@@ -33,6 +37,26 @@ public class GSIPImporter extends SchemaImporter {
 	private ArrayList<Containment> _containments;
 	Connection conn = null; 
             
+//	/** Private class for creating a GSIP file filter */
+//	private static class GSIPFileFilter extends FileFilter
+//	{
+//
+//		/** Indicates if the file should be accepted */
+//		public boolean accept(File file)
+//		{
+//			if(file.isDirectory()) return true;
+//			if(file.toString().endsWith(".mdb")) return true;
+//			return false;
+//		}
+//
+//		/** Provides the exporter file description */
+//		public String getDescription()
+//			{ return "Microsoft Access Database (mdb)"; }
+//	};
+//
+//	
+//	
+	
 	/** Returns the importer name */
 	public String getName() { return "GSIP Importer"; }
 
@@ -40,14 +64,50 @@ public class GSIPImporter extends SchemaImporter {
     public String getDescription()  { return "This imports schemas from the NAS-specific Access MDB"; }
 
 	/** Returns the importer URI type */
-	public Integer getURIType() { return URI; }
-
+	public Integer getURIType() { return FILE; }
+	
+	/** Returns the importer URI file types */
+	public ArrayList<String> getFileTypes()
+	{
+		ArrayList<String> fileTypes = new ArrayList<String>();
+		fileTypes.add(".mdb");
+		return fileTypes;
+	}
+	
 	/** Initializes the importer for the specified URI */
 	protected void initializeSchemaStructures() throws ImporterException {
 		try {
 			//  connect to MS Access database
-	        conn = DriverManager.getConnection("jdbc:odbc:"+uri,"Admin",null); 
-	        System.out.println ("Database connection established."); 
+//	        conn = DriverManager.getConnection("jdbc:odbc:"+uri,"Admin",null); 
+
+			//file method
+			// Initialize the file chooser
+//			JFileChooser chooser = new JFileChooser();
+//			chooser.setDialogType(JFileChooser.OPEN_DIALOG);
+//			chooser.setAcceptAllFileFilterUsed(false);
+//			chooser.addChoosableFileFilter(new GSIPFileFilter());
+//			
+//			File file = chooser.getSelectedFile();
+			
+			
+			
+			Class.forName("sun.jdbc.odbc.JdbcOdbcDriver");
+            // set this to a MS Access DB you have on your machine
+//            String filename = file.getPath();//"c:/hsip/test.mdb";
+
+			//uri comes in as file:/foo, needs to be foo
+			String filename = uri.toString().substring(6);
+			
+System.out.println(filename);
+			String database = "jdbc:odbc:Driver={Microsoft Access Driver (*.mdb)};DBQ=";
+            database+= filename + ";DriverID=22;READONLY=true}"; // add on to the end 
+            // now we can get the connection from the DriverManager
+            conn = DriverManager.getConnection( database ,"",""); 
+            //end file method
+		
+			
+			
+			System.out.println ("Database connection established."); 
 	        _entities = new ArrayList<Entity>();
 			_attributes = new ArrayList<Attribute>();
 			_domains = new ArrayList<Domain>();
@@ -129,7 +189,9 @@ public class GSIPImporter extends SchemaImporter {
             while(attributes.next()) {              	
             	String attName= attributes.getString("attName");           	
             	String qualifiedPathName = attributes.getString("qualifiedPathName");
-            	attName= concatNonNullFields(attName, qualifiedPathName, " : ");
+            	if (!qualifiedPathName.isEmpty()) {
+            		attName= concatNonNullFields(qualifiedPathName, attName, " : ");
+            	}
             	String attDefinition = attributes.getString("definition");
             	attDefinition = concatNonNullFields(attDefinition, attributes.getString("description"), " [desc] ");
             	attDefinition = concatNonNullFields(attDefinition, attributes.getString("attNote"), " [note] ");
