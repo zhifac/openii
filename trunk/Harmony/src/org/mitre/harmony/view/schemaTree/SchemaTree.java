@@ -443,7 +443,7 @@ public class SchemaTree extends JTree implements MappingListener, PreferencesLis
 		DefaultMutableTreeNode node = (DefaultMutableTreeNode)path.getLastPathComponent();
 
 		// Handle mouse clicks on the root node
-		if(node.isRoot() && (e.getButton()==MouseEvent.BUTTON3 || e.isMetaDown()))
+		if(node.isRoot() && (e.getButton()==MouseEvent.BUTTON3 || e.isControlDown()))
 		{
 			SchemaTreeNodeMenu menu = new SchemaTreeNodeMenu(this,node,harmonyModel);
 			menu.show(e.getComponent(), e.getX(), e.getY());
@@ -452,7 +452,7 @@ public class SchemaTree extends JTree implements MappingListener, PreferencesLis
 		// Handles mouse clicks on all other nodes
 		else if(!(node.getUserObject() instanceof String))
 		{
-			if(e.getButton()==MouseEvent.BUTTON1)
+			if(e.getButton()==MouseEvent.BUTTON1 && !e.isControlDown())
 			{
 				Object object = node.getUserObject();
 				
@@ -476,7 +476,7 @@ public class SchemaTree extends JTree implements MappingListener, PreferencesLis
 			}
 				
 			// If the right mouse button pressed, display the drop-down menu
-			else if(e.getButton()==MouseEvent.BUTTON3 || e.isMetaDown())
+			else if(e.getButton()==MouseEvent.BUTTON3 || e.isControlDown())
 			{
 				SchemaTreeNodeMenu menu = new SchemaTreeNodeMenu(this,node,harmonyModel);
 				menu.show(e.getComponent(), e.getX(), e.getY());
