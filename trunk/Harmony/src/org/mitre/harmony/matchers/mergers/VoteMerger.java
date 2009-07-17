@@ -27,7 +27,7 @@ public class VoteMerger implements MatchMerger
 		{ return "Vote Merger"; }
 
 	/** Initializes the vote merger */
-	public void initialize(FilteredGraph schema1, FilteredGraph schema2)
+	public void initialize(FilteredGraph schema1, FilteredGraph schema2,  HashMap<String, Integer> typeMap)
 		{ summedScores.clear(); }
 	
 	/** Adds a new set of voter scores to the vote merger */
