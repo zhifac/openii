@@ -6,6 +6,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
@@ -50,7 +51,7 @@ public class MatcherMenu extends JMenu
 		{
 			ArrayList<MatchVoter> voters = new ArrayList<MatchVoter>();
 			voters.add(voter);
-			new MatcherDialog(new VoteMerger(),voters,harmonyModel);
+			new MatcherDialog(new VoteMerger(),voters, null, harmonyModel);
 		}
 	}
 	
@@ -89,11 +90,19 @@ public class MatcherMenu extends JMenu
 		 */
 		public void actionPerformed(ActionEvent e)
 		{
-			if(e.getSource()==fullMatch) new MatcherDialog(matcher,MatcherManager.getVoters(),harmonyModel);
+			HashMap<String, Integer> typeMap = null;
+			
+			// If we are using the typed vote merger, open the dialog that lets
+			// the user select which types to match to which types
+			if (matcher.getName().equals("Typed Vote Merger")) {
+				typeMap = new TypeDialog(harmonyModel).getTypeMap();				
+			}
+			
+			if(e.getSource()==fullMatch) new MatcherDialog(matcher,MatcherManager.getVoters(), typeMap, harmonyModel);
 			else if(e.getSource()==customMatch)
 			{
 				ArrayList<MatchVoter> voters = new MatchVoterDialog(harmonyModel).getSelectedMatchVoters();
-				if(voters != null && voters.size()>0) new MatcherDialog(matcher,voters,harmonyModel);
+				if(voters != null && voters.size()>0) new MatcherDialog(matcher,voters, typeMap, harmonyModel);
 			}
 		}
 	}
