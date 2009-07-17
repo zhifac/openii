@@ -45,7 +45,7 @@ public class OptionPane extends Composite
 		for(int i=0; i<controls.length; i++)
 		{
 			Button button = (Button)controls[i];
-			if(button.getText().equals(option)) button.setSelection(true);
+			button.setSelection(button.getText().equals(option));
 		}
 	}
 }
