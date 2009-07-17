@@ -3,6 +3,7 @@
 package org.mitre.harmony.matchers;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.mitre.harmony.matchers.mergers.MatchMerger;
 import org.mitre.harmony.matchers.voters.MatchVoter;
@@ -50,9 +51,9 @@ public class MatcherManager
 		{ return mergers; }
 	
 	/** Run the matchers to calculate match scores */
-	static public MatchScores getScores(FilteredGraph schema1, FilteredGraph schema2, ArrayList<MatchVoter> voters, MatchMerger merger)
+	static public MatchScores getScores(FilteredGraph schema1, FilteredGraph schema2, ArrayList<MatchVoter> voters, HashMap<String, Integer> typeMap, MatchMerger merger)
 	{
-		merger.initialize(schema1, schema2);
+		merger.initialize(schema1, schema2, typeMap);
 		for(MatchVoter voter : voters)
 			merger.addVoterScores(voter.match(schema1, schema2));
 		return merger.getMatchScores();
