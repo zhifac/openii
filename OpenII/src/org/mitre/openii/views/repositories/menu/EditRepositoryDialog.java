@@ -221,8 +221,8 @@ public class EditRepositoryDialog extends TitleAreaDialog implements ActionListe
 			
 			// Adds the repository to the manager
 			Repository newRepository = new Repository(name, type, uri, database, username, password);
-			RepositoryManager.addRepository(newRepository);
 			if(repository!=null) RepositoryManager.deleteRepository(repository);
+			RepositoryManager.addRepository(newRepository);
 			getShell().dispose();
 		}
 		catch(Exception e) { setErrorMessage("Failed to create repository"); }

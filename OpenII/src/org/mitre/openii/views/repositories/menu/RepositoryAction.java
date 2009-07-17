@@ -3,8 +3,6 @@ package org.mitre.openii.views.repositories.menu;
 import org.eclipse.jface.action.Action;
 import org.eclipse.swt.widgets.Shell;
 import org.mitre.openii.application.OpenIIActivator;
-import org.mitre.schemastore.client.Repository;
-
 public class RepositoryAction extends Action
 {
 	// Constants defining the various Manager action types available
@@ -41,7 +39,6 @@ public class RepositoryAction extends Action
 	public void run()
 	{
 		// Determine which tree element was selected
-		Object selection = menuManager.getElement();
 		Shell shell = menuManager.getMenu().getShell();
 		
 		/** Handles the importing of a schema */
@@ -50,11 +47,10 @@ public class RepositoryAction extends Action
 		
 		/** Handles the extending of a schema */
 		if(actionType == EDIT_REPOSITORY)
-			new EditRepositoryDialog(shell,(Repository)selection).open();
+			new EditRepositoryDialog(shell,menuManager.getRepository()).open();
 		
 		/** Handles the extending of a schema */
 		if(actionType == DELETE_REPOSITORY)
-			System.out.println("Deletes a repository");
-//		DeleteSchemaDialog.delete(shell,(Repository)selection);
+			DeleteRepositoryDialog.delete(shell,menuManager.getRepository());
 	}
 }
