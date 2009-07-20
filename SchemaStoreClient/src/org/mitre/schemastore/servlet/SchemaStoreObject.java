@@ -16,10 +16,9 @@ public interface SchemaStoreObject extends java.rmi.Remote {
     public org.mitre.schemastore.model.Relationship getRelationship(int relationshipID) throws java.rmi.RemoteException;
     public org.mitre.schemastore.model.Entity getEntity(int entityID) throws java.rmi.RemoteException;
     public boolean updateAttribute(org.mitre.schemastore.model.Attribute attribute) throws java.rmi.RemoteException;
-    public int addEntity(org.mitre.schemastore.model.Entity entity) throws java.rmi.RemoteException;
-    public int addSubtype(org.mitre.schemastore.model.Subtype subtype) throws java.rmi.RemoteException;
     public int addSchema(org.mitre.schemastore.model.Schema schema) throws java.rmi.RemoteException;
     public org.mitre.schemastore.model.Schema[] getSchemas() throws java.rmi.RemoteException;
+    public int addSubtype(org.mitre.schemastore.model.Subtype subtype) throws java.rmi.RemoteException;
     public int importSchema(org.mitre.schemastore.model.Schema schema, org.mitre.schemastore.model.SchemaElementList schemaElementList) throws java.rmi.RemoteException;
     public org.mitre.schemastore.model.DataSource getDataSource(int dataSourceID) throws java.rmi.RemoteException;
     public org.mitre.schemastore.model.Schema extendSchema(int schemaID) throws java.rmi.RemoteException;
@@ -44,6 +43,7 @@ public interface SchemaStoreObject extends java.rmi.Remote {
     public int getRootSchema(int schema1ID, int schema2ID) throws java.rmi.RemoteException;
     public int[] getSchemaPath(int rootID, int schemaID) throws java.rmi.RemoteException;
     public boolean setParentSchemas(int schemaID, int[] parentIDs) throws java.rmi.RemoteException;
+    public int addEntity(org.mitre.schemastore.model.Entity entity) throws java.rmi.RemoteException;
     public org.mitre.schemastore.model.SchemaElementList getSchemaElements(int schemaID) throws java.rmi.RemoteException;
     public int addDomain(org.mitre.schemastore.model.Domain domain) throws java.rmi.RemoteException;
     public int addDomainValue(org.mitre.schemastore.model.DomainValue domainValue) throws java.rmi.RemoteException;
@@ -88,6 +88,7 @@ public interface SchemaStoreObject extends java.rmi.Remote {
     public int addAttribute(org.mitre.schemastore.model.Attribute attribute) throws java.rmi.RemoteException;
     public org.mitre.schemastore.model.Attribute getAttribute(int attributeID) throws java.rmi.RemoteException;
     public org.mitre.schemastore.model.Group getGroup(int groupID) throws java.rmi.RemoteException;
+    public boolean isConnected() throws java.rmi.RemoteException;
     public org.mitre.schemastore.model.Schema getSchema(int schemaID) throws java.rmi.RemoteException;
     public int addMapping(org.mitre.schemastore.model.Mapping mapping) throws java.rmi.RemoteException;
     public org.mitre.schemastore.model.Mapping getMapping(int mappingID) throws java.rmi.RemoteException;
