@@ -89,6 +89,10 @@ public class Database
 	public Database(DatabaseConnection connection)
 		{ this.connection = connection; }
 	
+	/** Indicates if the database is properly connected */
+	public boolean isConnected()
+		{ try { connection.getStatement(); return true; } catch(SQLException e) { return false; } }
+	
 	//---------------------------------------
 	// Handles Universal IDs in the Database 
 	//---------------------------------------
