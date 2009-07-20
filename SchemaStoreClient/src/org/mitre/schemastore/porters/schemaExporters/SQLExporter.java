@@ -64,8 +64,8 @@ public class SQLExporter extends SchemaExporter {
 				Integer rmin = rel.getRightMin();
 				Integer rmax = rel.getRightMax();
 
-				System.err.println(rel.getName() + " " + rel.getLeftMin() + ": " + rel.getLeftMax()
-						+ " || " + rel.getRightMin() + " : " + rel.getRightMax());
+//				System.err.println(rel.getName() + " " + rel.getLeftMin() + ": " + rel.getLeftMax()
+//						+ " || " + rel.getRightMin() + " : " + rel.getRightMax());
 
 				if (lmax == null || lmax.equals(-1) || lmax > 1) { // L*
 					if (rmax == null || rmax.equals(-1) || rmax > 1) {
@@ -130,8 +130,8 @@ public class SQLExporter extends SchemaExporter {
 			} else if ((parentEntity == null || parentEntity.getName().equals(""))
 					&& childEntity != null) { // schema->E
 
-				System.err.println(" null -> E: (containment) " + c.getName() + " " + c.getId()
-						+ " -> (child)" + childEntity.getId() + " " + childEntity.getName());
+//				System.err.println(" null -> E: (containment) " + c.getName() + " " + c.getId()
+//						+ " -> (child)" + childEntity.getId() + " " + childEntity.getName());
 
 				mapSchemaEntityContainment(c);
 			}
@@ -397,7 +397,7 @@ public class SQLExporter extends SchemaExporter {
 				System.err.println("(E) entity has no name " + entity.getId() + " "
 						+ entity.getDescription());
 			} else {
-				Table table = _rdb.createTable(tableName, false);
+				Table table = _rdb.createTable(tableName, true);
 				table.setComment(entity.getDescription());
 			}
 		}
@@ -424,6 +424,7 @@ public class SQLExporter extends SchemaExporter {
 
 	public StringBuffer exportSchema(Integer schemaID, ArrayList<SchemaElement> schemaElements) {
 		try {
+					
 			// load schema and schema elements into memory
 			initialize(schemaID, schemaElements);
 
