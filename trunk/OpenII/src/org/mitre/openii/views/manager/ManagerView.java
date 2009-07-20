@@ -49,6 +49,7 @@ public class ManagerView extends ViewPart implements OpenIIListener, IDoubleClic
 	}
 	
 	// Handles modifications of objects in the Manager tree
+	public void repositoryReset() { viewer.refresh(); }
 	public void schemaAdded(Integer schemaID) { viewer.refresh(); }
 	public void schemaModified(Integer schemaID) { viewer.refresh(); }
 	public void schemaDeleted(Integer schemaID) { viewer.refresh(); }

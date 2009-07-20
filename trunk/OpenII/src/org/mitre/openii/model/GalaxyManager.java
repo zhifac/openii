@@ -17,6 +17,13 @@ public class GalaxyManager
 	/** Private class for managing changes to OpenII */
 	static private class OpenIIMonitor implements OpenIIListener
 	{
+		// Reset all schema information
+		public void repositoryReset()
+		{ 
+			for(Schema schema : Schemas.getSchemas()) Schemas.resetSchema(schema.getId()); 
+			SchemaStoreManager.setClient(RepositoryManager.getClient());
+		}
+		
 		// Reset schema information as needed
 		public void schemaAdded(Integer schemaID) { Schemas.resetSchema(schemaID); }
 		public void schemaDeleted(Integer schemaID) { Schemas.resetSchema(schemaID); }

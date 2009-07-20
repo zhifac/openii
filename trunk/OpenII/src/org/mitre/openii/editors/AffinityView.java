@@ -3,7 +3,6 @@ package org.mitre.openii.editors;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -15,7 +14,6 @@ import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorInput;
 
-import org.mitre.affinity.AffinityConstants;
 import org.mitre.affinity.view.application.AffinityPane;
 import org.mitre.affinity.view.application.LoadProgressDialog;
 import org.mitre.affinity.view.application.StackTraceDialog;
@@ -29,7 +27,6 @@ import org.mitre.affinity.model.ClusterManager;
 import org.mitre.affinity.model.AffinitySchemaManager;
 import org.mitre.affinity.model.ISchemaManager;
 
-import org.mitre.openii.application.OpenIIActivator;
 import org.mitre.openii.model.EditorInput;
 import org.mitre.openii.model.EditorManager;
 import org.mitre.openii.model.OpenIIManager;

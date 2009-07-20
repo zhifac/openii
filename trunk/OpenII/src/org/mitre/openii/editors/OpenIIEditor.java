@@ -36,7 +36,7 @@ abstract class OpenIIEditor extends EditorPart implements OpenIIListener
 		// Set the title
 		setPartName(element.toString());
 		
-		// Listen for modifications to the OpenII model
+		// Listen for modifications to the repository and OpenII model
 		OpenIIManager.addListener(this);
 	}
 
@@ -57,6 +57,9 @@ abstract class OpenIIEditor extends EditorPart implements OpenIIListener
 	/** Abstract function used to display OpenII Editor */
 	abstract public void createPartControl(Composite parent);
 
+	/** Dispose of the editor pane if the repository has been changed */
+	public void repositoryReset() { closeEditor(); }
+	
 	/** Dispose of the editor pane if referencing the deleted schema */
 	public void schemaDeleted(Integer schemaID)
 		{ if(elementID.equals(schemaID)) closeEditor(); }	

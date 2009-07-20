@@ -15,7 +15,6 @@ import org.eclipse.ui.part.ViewPart;
 import org.mitre.openii.application.OpenIIActivator;
 import org.mitre.openii.model.RepositoryListener;
 import org.mitre.openii.model.RepositoryManager;
-import org.mitre.openii.views.repositories.menu.RepositoryMenuManager;
 import org.mitre.openii.widgets.WidgetUtilities;
 import org.mitre.schemastore.client.Repository;
 
@@ -36,12 +35,16 @@ public class RepositoryView extends ViewPart implements RepositoryListener, Sele
 		// Generate the nodes for the available repositories
 		for(Repository repository : WidgetUtilities.sortList(RepositoryManager.getRepositories()))
 		{
+			boolean validRepository = RepositoryManager.isValidRepository(repository);
+			boolean currentRepository = repository.equals(RepositoryManager.getSelectedRepository());
+			
 			// Generate a repository selector checkbox
 			Button repositorySelector = new Button(tree, SWT.CHECK);
 			repositorySelector.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
-			repositorySelector.setImage(OpenIIActivator.getImage("Repository.gif"));
+			repositorySelector.setImage(OpenIIActivator.getImage(validRepository ? "Repository.gif" : "RepositoryError.gif"));
 			repositorySelector.setText(repository.getName());
 			repositorySelector.setData(repository);
+			if(currentRepository) repositorySelector.setSelection(true);
 			repositorySelector.setMenu(new RepositoryMenuManager(repository).createContextMenu(tree));
 			repositorySelector.addSelectionListener(this);
 			
@@ -92,6 +95,7 @@ public class RepositoryView extends ViewPart implements RepositoryListener, Sele
 
 		// Updates the repository items
 		updateRepositoryItems();
+		tree.getItem(0).setExpanded(true);
 	}
 
 	/** Adds a repository to the repository list */
@@ -105,11 +109,20 @@ public class RepositoryView extends ViewPart implements RepositoryListener, Sele
 	/** Handles the selection of a repository */
 	public void widgetSelected(SelectionEvent e)
 	{
+		// Determine which repository should be selected
+		Repository repository = RepositoryManager.getSelectedRepository();
+		Repository newRepository = (Repository)((Button)e.getSource()).getData();
+		if(RepositoryManager.isValidRepository(newRepository))
+		{
+			repository = newRepository;
+			RepositoryManager.setSelectedRepository(newRepository);
+		}
+			
+		// Mark the specific repository as selected
 		for(TreeItem item : tree.getItem(0).getItems())
 		{
 			Button checkbox = (Button)item.getData();
-			if(!e.getSource().equals(checkbox))
-				checkbox.setSelection(false);
+			checkbox.setSelection(checkbox.getData().equals(repository));
 		}
 	}
 	
@@ -117,5 +130,6 @@ public class RepositoryView extends ViewPart implements RepositoryListener, Sele
 	public void setFocus() {}
 
 	// Unused event listeners
+	public void selectedRepositoryChanged() {}
 	public void widgetDefaultSelected(SelectionEvent e) {}
 }
