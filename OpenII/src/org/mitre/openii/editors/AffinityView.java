@@ -63,13 +63,13 @@ public class AffinityView extends OpenIIEditor implements SelectionClickedListen
 	/** Currently selected schemas */
 	private Collection<Integer> selectedSchemas;
 	
-	static {
+	/*static {
 		//Initialize Icons
 		AffinityConstants.imageRegistry = new ImageRegistry();
 		for(String iconName : AffinityConstants.ICON_NAMES) {
 			AffinityConstants.imageRegistry.put(iconName, OpenIIActivator.getImage(iconName));
 		}
-	}
+	}*/
 	
 	/** Displays the Affinity View */
 	@SuppressWarnings("unchecked")
