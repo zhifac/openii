@@ -4,8 +4,8 @@
 package org.mitre.schemastore.porters.schemaExporters;
 
 import java.util.*;
-
 import org.mitre.schemastore.model.*;
+
 
 /**
  * Class for converting SchemaStore format to XSD files
@@ -19,7 +19,7 @@ public class XSDExporter extends SchemaExporter
 	HashMap<Integer, Entity> entitySet = new HashMap<Integer, Entity>();
 	
 	// store attributes by entityID
-	HashMap<Integer, ArrayList<Attribute>> attrSet   = new HashMap<Integer, ArrayList<Attribute>>();
+	HashMap<Integer, ArrayList<Attribute>> attrSet = new HashMap<Integer, ArrayList<Attribute>>();
 	
 	// stores domains by domain ID
 	HashMap<Integer, Domain> domainSet = new HashMap<Integer, Domain>();
@@ -29,6 +29,9 @@ public class XSDExporter extends SchemaExporter
 	
 	// stores containments by parentID
 	HashMap<Integer, ArrayList<Containment>> containmentSet = new HashMap<Integer, ArrayList<Containment>>();
+	
+	// stores top-level containments 
+	ArrayList<Containment> topLevelContainments = new ArrayList<Containment>();
 	
 	// stores 1-to-m relationships by ID for entity with 1 
 	// assumes left-right m-to-n relationships converted to 1-to-n relationships
@@ -49,11 +52,11 @@ public class XSDExporter extends SchemaExporter
 	 *
 	 */
 	public XSDExporter(){	
-		domainSet.put(-1, new Domain(-1,"xs:integer","The Integer Domain",0));
-		domainSet.put(-2, new Domain(-2,"xs:double","The Double Domain",0));
-		domainSet.put(-3, new Domain(-3,"xs:string","The String Domain",0));
+		domainSet.put(-1, new Domain(-1,"integer","The Integer Domain",0));
+		domainSet.put(-2, new Domain(-2,"double","The Double Domain",0));
+		domainSet.put(-3, new Domain(-3,"string","The String Domain",0));
 		domainSet.put(-4, new Domain(-4,"Timestamp","The Timestamp Domain",0));
-		domainSet.put(-5, new Domain(-5,"xs:boolean","The Boolean Domain",0));
+		domainSet.put(-5, new Domain(-5,"boolean","The Boolean Domain",0));
 		domainSet.put(-6, new Domain(-6,"Any","The Any Domain",0));
 	}
 
@@ -78,19 +81,14 @@ public class XSDExporter extends SchemaExporter
 	 */
 	public StringBuffer exportSchema(Integer schemaID, ArrayList<SchemaElement> elementList) 
 	{		
-		// Scan schemaElements to initialize the above Hashtables
+		// Scan schemaElements to initialize hashtables
 		for (SchemaElement elem : elementList){
 			
-			//TODO: Replaces schemaStore generated names with empty string
-			if (elem instanceof Entity && elem.getName().contains("/")){
-				elem.setName("");
-			}
-			
-			if (elem instanceof Entity){
+			if (elem instanceof Entity)
 				entitySet.put(elem.getId(), (Entity)elem);
 				
-			} else if (elem instanceof Domain){
-				 //TODO: translate the Domain name to upper-case 
+			else if (elem instanceof Domain){
+				//TODO: translate the Domain name to upper-case 
 				elem.setName(toUpper(elem.getName()));
 				domainSet.put(elem.getId(), (Domain)elem);
 				
@@ -109,25 +107,28 @@ public class XSDExporter extends SchemaExporter
 				domainValueSet.put(((DomainValue)elem).getDomainID(), domVals);
 				
 			} else if (elem instanceof Containment){
-				ArrayList<Containment> containVals = containmentSet.get(((Containment)elem).getParentID()); 
-				if (containVals == null)
-					containVals = new ArrayList<Containment>();
-				containVals.add((Containment)elem);
-				containmentSet.put(((Containment)elem).getParentID(), containVals);
-				
+				if (((Containment)elem).getParentID() == null)
+					topLevelContainments.add((Containment)elem);
+				else {
+					ArrayList<Containment> containVals = containmentSet.get(((Containment)elem).getParentID()); 
+					if (containVals == null)
+						containVals = new ArrayList<Containment>();
+					containVals.add((Containment)elem);
+					containmentSet.put(((Containment)elem).getParentID(), containVals);
+				}
 			} else if (elem instanceof Relationship){
 				
-				// store 1-to-m, m-to-1 relationships by left ot right ID respectively
+				// store 1-to-m, m-to-1 relationships by left or right ID respectively
 				// store m-to-n relationships by leftID (as 1-to-n)
 				Relationship rel = (Relationship)elem;
 				Integer leftCard = rel.getLeftMax();
 				Integer rightCard = rel.getRightMax(); 
 				Integer keyID = null; 
-				if (leftCard == 1){
+				if (leftCard == 1)
 					keyID = rel.getLeftID();
-				} else if (rightCard == 1){
+				else if (rightCard == 1)
 					keyID = rel.getRightID();
-				} else {
+				else {
 					rel.setLeftMax(1);
 					keyID = rel.getLeftID();
 				}
@@ -146,19 +147,19 @@ public class XSDExporter extends SchemaExporter
 		// add header for XML file
 		StringBuffer output = new StringBuffer();
 		output.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+		output.append("<!-- Created with OpenII XSDExporter -->\n");
 		output.append("<xs:schema xmlns:xs=\"http://www.w3.org/2001/XMLSchema\">\n");
-			
-		// Generate XML for each top-level entity (represented as containment with parentID == schemaID)
-		ArrayList<Containment> topLevelElements = containmentSet.get(schemaID);
-		if (topLevelElements == null) topLevelElements = new ArrayList<Containment>();
-		output.append(outputContainments(topLevelElements));
 		
 		// Generate XML for each remaining NON-ANNONYMOUS entity
 		Collection<Entity> entities = entitySet.values();
 		for (Entity entity : entities)
 			if (entity.getName().equals("") == false)
 				output.append(outputEntity(entity, new String("")) + "\n");
-
+		
+		// Generate XML for each top-level entity (represented as containment with parentID == null)
+		output.append(outputContainments(topLevelContainments,true));
+		
+		
 	   // Generate XML for simple types
 	   Collection<Domain> domains = domainSet.values();
 	   HashSet<String> outputNames = new HashSet<String>();
@@ -168,8 +169,8 @@ public class XSDExporter extends SchemaExporter
 	   for (Domain d : domains)
 	   {
 		  // Make sure that each output domain is unique
-		  if(!outputNames.contains(d.getName()))
-		  {
+		 // if(!outputNames.contains(d.getName()))
+		  //{
 			  outputNames.add(d.getName());
 		  
 			  output.append("<xs:simpleType name=\"" + d.getName() + "\">\n");
@@ -185,7 +186,7 @@ public class XSDExporter extends SchemaExporter
 					  output.append(INDENT4 + "<xs:enumeration value=\""+ dv.getName() +"\"/>\n");  
 			  output.append(INDENT2 + "</xs:restriction>\n");
 			  output.append("</xs:simpleType>\n");
-		  }
+		 // }
 	   }
 	   
 	   // add closing schema tag
@@ -265,7 +266,7 @@ public class XSDExporter extends SchemaExporter
 			} // end if (relationship != null) {
 		
 			if (containments != null)
-				output.append(outputContainments(containments));
+				output.append(outputContainments(containments,false));
 			
 		    output.append(indentBase + INDENT4 + "</xs:sequence>\n");
 		}
@@ -293,7 +294,7 @@ public class XSDExporter extends SchemaExporter
 	} // end method outputComplexTypeEntity
 	
 	/** Outputs the list of containments */
-	private StringBuffer outputContainments(ArrayList<Containment> containments)
+	private StringBuffer outputContainments(ArrayList<Containment> containments, boolean topLevel)
 	{
 		// Cycle through the list of containments
 		StringBuffer output = new StringBuffer();
@@ -312,7 +313,16 @@ public class XSDExporter extends SchemaExporter
 					schemaElement = domainSet.get(containment.getChildID());
 
 				// Output the containment element
-				output.append(INDENT6 + "<xs:element name=\"" + containment.getName() + "\" " + " minOccurs=\"" + minOccurString + "\"" + " maxOccurs=\"" + maxOccurString +  "\">\n");
+				output.append(INDENT6 + "<xs:element name=\"" 
+						+ containment.getName() + "\" ");
+				if (topLevel == false){
+					output.append("minOccurs=\"" + minOccurString + "\"" 
+							+ " maxOccurs=\"" + maxOccurString + "\" ");    
+				}
+				if (schemaElement.getName().length() > 0)
+					output.append("type=\"" + schemaElement.getName() + "\"");
+				output.append(">\n");	
+				
 				if (schemaElement.getDescription().length() > 0)
 					output.append(INDENT8 + "<xs:annotation><xs:documentation>" + schemaElement.getDescription() + "</xs:documentation></xs:annotation>\n");		
 				if (schemaElement instanceof Entity && schemaElement.getName().equals(""))
