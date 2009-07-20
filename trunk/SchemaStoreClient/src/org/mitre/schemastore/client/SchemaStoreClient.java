@@ -69,16 +69,9 @@ public class SchemaStoreClient
 	/** Constructor for the Schema Store Client */
 	public SchemaStoreClient(Repository repository) throws RemoteException
 	{
-		try {
-			// Connect to a SchemaStore web server
-			if(repository.getType().equals(Repository.SERVICE))
-			{
-				schemaStore = new SchemaStoreProxy(repository.getURI().toString());
-				getSchemas();				
-			}
-			
-			// Connects to a database
-			else
+		try {			
+			// Connects to a database or web service
+			if(!repository.getType().equals(Repository.SERVICE))
 			{
 				Integer type = repository.getType().equals(Repository.POSTGRES) ? DatabaseConnection.POSTGRES : DatabaseConnection.DERBY;
 				Class<?> types[] = new Class[] {Integer.class,String.class,String.class,String.class,String.class};
@@ -86,7 +79,13 @@ public class SchemaStoreClient
 				Constructor<?> constructor = SchemaStore.class.getConstructor(types);
 				schemaStore = constructor.newInstance(args);
 			}
-		} catch(Exception e) { throw new RemoteException("(E) Failed to connect to SchemaStore: " + e.getMessage()); }
+			else schemaStore = new SchemaStoreProxy(repository.getURI().toString());
+
+			// Verify connection
+			boolean connected = (Boolean)callMethod("isConnected",new Object[] {});
+			if(!connected) throw new Exception("Invalid database connection");
+		}
+		catch(Exception e) { throw new RemoteException("(E) Failed to connect to SchemaStore: " + e.getMessage()); }
 	}
 	
 	//------------------
