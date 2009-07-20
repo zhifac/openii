@@ -22,8 +22,14 @@ public class OpenIIManager
 	/** Caches the list of groups currently available */
 	static private HashMap<Integer,Group> groups = null;
 	
+	/** Stores listeners to the OpenII Manager */
+	static private ListenerGroup<OpenIIListener> listeners = new ListenerGroup<OpenIIListener>();
+	
 	/** Initializes this class */
-	static
+	static { reset(); }	
+
+	/** Resets the OpenII caches */
+	static public void reset()
 	{
 		// Initialize the list of schemas
 		try {
@@ -38,10 +44,12 @@ public class OpenIIManager
 			for(Group group : RepositoryManager.getClient().getGroups())
 				groups.put(group.getId(),group);
 		} catch(Exception e) {}
-	}	
+		
+		// Informs listeners that the OpenII repository has been reset
+		for(OpenIIListener listener : listeners.get()) listener.repositoryReset();
+	}
 	
-	/** Stores listeners to the OpenII Manager */
-	static private ListenerGroup<OpenIIListener> listeners = new ListenerGroup<OpenIIListener>();
+	/** Handles the adding and removal of listeners */
 	static public void addListener(OpenIIListener listener) { listeners.add(listener); }
 	static public void removeListener(OpenIIListener listener) { listeners.remove(listener); }
 	

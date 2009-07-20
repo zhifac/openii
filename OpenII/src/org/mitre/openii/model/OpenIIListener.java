@@ -3,6 +3,9 @@ package org.mitre.openii.model;
 /** Interface used by objects listening to the OpenII model */
 public interface OpenIIListener
 {
+	/** Informs the listener that the repository has been reset */
+	public void repositoryReset();
+
 	/** Informs the listener that the specified schema has been added */
 	public void schemaAdded(Integer schemaID);
 
