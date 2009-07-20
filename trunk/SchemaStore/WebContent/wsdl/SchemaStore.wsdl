@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<wsdl:definitions targetNamespace="http://servlet.schemastore.mitre.org" xmlns:apachesoap="http://xml.apache.org/xml-soap" xmlns:impl="http://servlet.schemastore.mitre.org" xmlns:intf="http://servlet.schemastore.mitre.org" xmlns:tns1="http://model.schemastore.mitre.org" xmlns:tns2="http://model.graph.model.schemastore.mitre.org" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<wsdl:definitions targetNamespace="http://servlet.schemastore.mitre.org" xmlns:apachesoap="http://xml.apache.org/xml-soap" xmlns:impl="http://servlet.schemastore.mitre.org" xmlns:intf="http://servlet.schemastore.mitre.org" xmlns:tns1="http://model.schemastore.mitre.org" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
 <!--WSDL created by Apache Axis version: 1.4
 Built on Apr 22, 2006 (06:55:48 PDT)-->
  <wsdl:types>
   <schema elementFormDefault="qualified" targetNamespace="http://servlet.schemastore.mitre.org" xmlns="http://www.w3.org/2001/XMLSchema">
-   <import namespace="http://model.graph.model.schemastore.mitre.org"/>
    <import namespace="http://model.schemastore.mitre.org"/>
    <element name="getDomain">
     <complexType>
@@ -122,34 +121,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
      </sequence>
     </complexType>
    </element>
-   <element name="addEntity">
-    <complexType>
-     <sequence>
-      <element name="entity" type="tns1:Entity"/>
-     </sequence>
-    </complexType>
-   </element>
-   <element name="addEntityResponse">
-    <complexType>
-     <sequence>
-      <element name="addEntityReturn" type="xsd:int"/>
-     </sequence>
-    </complexType>
-   </element>
-   <element name="addSubtype">
-    <complexType>
-     <sequence>
-      <element name="subtype" type="tns1:Subtype"/>
-     </sequence>
-    </complexType>
-   </element>
-   <element name="addSubtypeResponse">
-    <complexType>
-     <sequence>
-      <element name="addSubtypeReturn" type="xsd:int"/>
-     </sequence>
-    </complexType>
-   </element>
    <element name="addSchema">
     <complexType>
      <sequence>
@@ -171,6 +142,20 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
     <complexType>
      <sequence>
       <element maxOccurs="unbounded" name="getSchemasReturn" type="tns1:Schema"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="addSubtype">
+    <complexType>
+     <sequence>
+      <element name="subtype" type="tns1:Subtype"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="addSubtypeResponse">
+    <complexType>
+     <sequence>
+      <element name="addSubtypeReturn" type="xsd:int"/>
      </sequence>
     </complexType>
    </element>
@@ -554,6 +539,20 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
     <complexType>
      <sequence>
       <element name="setParentSchemasReturn" type="xsd:boolean"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="addEntity">
+    <complexType>
+     <sequence>
+      <element name="entity" type="tns1:Entity"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="addEntityResponse">
+    <complexType>
+     <sequence>
+      <element name="addEntityReturn" type="xsd:int"/>
      </sequence>
     </complexType>
    </element>
@@ -1172,6 +1171,16 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
      </sequence>
     </complexType>
    </element>
+   <element name="isConnected">
+    <complexType/>
+   </element>
+   <element name="isConnectedResponse">
+    <complexType>
+     <sequence>
+      <element name="isConnectedReturn" type="xsd:boolean"/>
+     </sequence>
+    </complexType>
+   </element>
    <element name="getSchema">
     <complexType>
      <sequence>
@@ -1230,7 +1239,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
    </element>
   </schema>
   <schema elementFormDefault="qualified" targetNamespace="http://model.schemastore.mitre.org" xmlns="http://www.w3.org/2001/XMLSchema">
-   <import namespace="http://model.graph.model.schemastore.mitre.org"/>
    <import namespace="http://servlet.schemastore.mitre.org"/>
    <complexType name="SchemaElement">
     <sequence>
@@ -1257,7 +1265,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
    </complexType>
    <complexType name="MappingSchema">
     <sequence>
-     <element name="graphModel" nillable="true" type="tns2:GraphModel"/>
      <element name="id" nillable="true" type="xsd:int"/>
      <element name="model" nillable="true" type="xsd:string"/>
      <element name="name" nillable="true" type="xsd:string"/>
@@ -1308,16 +1315,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
      </extension>
     </complexContent>
    </complexType>
-   <complexType name="Subtype">
-    <complexContent>
-     <extension base="tns1:SchemaElement">
-      <sequence>
-       <element name="childID" nillable="true" type="xsd:int"/>
-       <element name="parentID" nillable="true" type="xsd:int"/>
-      </sequence>
-     </extension>
-    </complexContent>
-   </complexType>
    <complexType name="Schema">
     <sequence>
      <element name="author" nillable="true" type="xsd:string"/>
@@ -1328,6 +1325,16 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
      <element name="source" nillable="true" type="xsd:string"/>
      <element name="type" nillable="true" type="xsd:string"/>
     </sequence>
+   </complexType>
+   <complexType name="Subtype">
+    <complexContent>
+     <extension base="tns1:SchemaElement">
+      <sequence>
+       <element name="childID" nillable="true" type="xsd:int"/>
+       <element name="parentID" nillable="true" type="xsd:int"/>
+      </sequence>
+     </extension>
+    </complexContent>
    </complexType>
    <complexType name="Alias">
     <complexContent>
@@ -1393,15 +1400,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
      <element name="score" nillable="true" type="xsd:double"/>
      <element name="transform" nillable="true" type="xsd:string"/>
      <element name="validated" nillable="true" type="xsd:boolean"/>
-    </sequence>
-   </complexType>
-  </schema>
-  <schema elementFormDefault="qualified" targetNamespace="http://model.graph.model.schemastore.mitre.org" xmlns="http://www.w3.org/2001/XMLSchema">
-   <import namespace="http://model.schemastore.mitre.org"/>
-   <import namespace="http://servlet.schemastore.mitre.org"/>
-   <complexType abstract="true" name="GraphModel">
-    <sequence>
-     <element name="name" nillable="true" type="xsd:string"/>
     </sequence>
    </complexType>
   </schema>
@@ -1527,6 +1525,12 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
    </wsdl:message>
 
+   <wsdl:message name="getRootSchemaRequest">
+
+      <wsdl:part element="impl:getRootSchema" name="parameters"/>
+
+   </wsdl:message>
+
    <wsdl:message name="addEntityRequest">
 
       <wsdl:part element="impl:addEntity" name="parameters"/>
@@ -1536,12 +1540,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
    <wsdl:message name="addEntityResponse">
 
       <wsdl:part element="impl:addEntityResponse" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="getRootSchemaRequest">
-
-      <wsdl:part element="impl:getRootSchema" name="parameters"/>
 
    </wsdl:message>
 
@@ -1683,6 +1681,12 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
    </wsdl:message>
 
+   <wsdl:message name="isConnectedRequest">
+
+      <wsdl:part element="impl:isConnected" name="parameters"/>
+
+   </wsdl:message>
+
    <wsdl:message name="setAnnotationResponse">
 
       <wsdl:part element="impl:setAnnotationResponse" name="parameters"/>
@@ -1755,15 +1759,15 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
    </wsdl:message>
 
-   <wsdl:message name="getDeletableSchemasResponse">
-
-      <wsdl:part element="impl:getDeletableSchemasResponse" name="parameters"/>
-
-   </wsdl:message>
-
    <wsdl:message name="getGroupSchemasResponse">
 
       <wsdl:part element="impl:getGroupSchemasResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getDeletableSchemasResponse">
+
+      <wsdl:part element="impl:getDeletableSchemasResponse" name="parameters"/>
 
    </wsdl:message>
 
@@ -2157,6 +2161,12 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
    </wsdl:message>
 
+   <wsdl:message name="isConnectedResponse">
+
+      <wsdl:part element="impl:isConnectedResponse" name="parameters"/>
+
+   </wsdl:message>
+
    <wsdl:message name="deleteSchemaResponse">
 
       <wsdl:part element="impl:deleteSchemaResponse" name="parameters"/>
@@ -2289,15 +2299,15 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
    </wsdl:message>
 
-   <wsdl:message name="importSchemaResponse">
-
-      <wsdl:part element="impl:importSchemaResponse" name="parameters"/>
-
-   </wsdl:message>
-
    <wsdl:message name="getMappingsResponse">
 
       <wsdl:part element="impl:getMappingsResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="importSchemaResponse">
+
+      <wsdl:part element="impl:importSchemaResponse" name="parameters"/>
 
    </wsdl:message>
 
@@ -2481,22 +2491,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
       </wsdl:operation>
 
-      <wsdl:operation name="addEntity">
-
-         <wsdl:input message="impl:addEntityRequest" name="addEntityRequest"/>
-
-         <wsdl:output message="impl:addEntityResponse" name="addEntityResponse"/>
-
-      </wsdl:operation>
-
-      <wsdl:operation name="addSubtype">
-
-         <wsdl:input message="impl:addSubtypeRequest" name="addSubtypeRequest"/>
-
-         <wsdl:output message="impl:addSubtypeResponse" name="addSubtypeResponse"/>
-
-      </wsdl:operation>
-
       <wsdl:operation name="addSchema">
 
          <wsdl:input message="impl:addSchemaRequest" name="addSchemaRequest"/>
@@ -2510,6 +2504,14 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
          <wsdl:input message="impl:getSchemasRequest" name="getSchemasRequest"/>
 
          <wsdl:output message="impl:getSchemasResponse" name="getSchemasResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="addSubtype">
+
+         <wsdl:input message="impl:addSubtypeRequest" name="addSubtypeRequest"/>
+
+         <wsdl:output message="impl:addSubtypeResponse" name="addSubtypeResponse"/>
 
       </wsdl:operation>
 
@@ -2702,6 +2704,14 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
          <wsdl:input message="impl:setParentSchemasRequest" name="setParentSchemasRequest"/>
 
          <wsdl:output message="impl:setParentSchemasResponse" name="setParentSchemasResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="addEntity">
+
+         <wsdl:input message="impl:addEntityRequest" name="addEntityRequest"/>
+
+         <wsdl:output message="impl:addEntityResponse" name="addEntityResponse"/>
 
       </wsdl:operation>
 
@@ -3057,6 +3067,14 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
       </wsdl:operation>
 
+      <wsdl:operation name="isConnected">
+
+         <wsdl:input message="impl:isConnectedRequest" name="isConnectedRequest"/>
+
+         <wsdl:output message="impl:isConnectedResponse" name="isConnectedResponse"/>
+
+      </wsdl:operation>
+
       <wsdl:operation name="getSchema">
 
          <wsdl:input message="impl:getSchemaRequest" name="getSchemaRequest"/>
@@ -3239,42 +3257,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
       </wsdl:operation>
 
-      <wsdl:operation name="addEntity">
-
-         <wsdlsoap:operation soapAction=""/>
-
-         <wsdl:input name="addEntityRequest">
-
-            <wsdlsoap:body use="literal"/>
-
-         </wsdl:input>
-
-         <wsdl:output name="addEntityResponse">
-
-            <wsdlsoap:body use="literal"/>
-
-         </wsdl:output>
-
-      </wsdl:operation>
-
-      <wsdl:operation name="addSubtype">
-
-         <wsdlsoap:operation soapAction=""/>
-
-         <wsdl:input name="addSubtypeRequest">
-
-            <wsdlsoap:body use="literal"/>
-
-         </wsdl:input>
-
-         <wsdl:output name="addSubtypeResponse">
-
-            <wsdlsoap:body use="literal"/>
-
-         </wsdl:output>
-
-      </wsdl:operation>
-
       <wsdl:operation name="addSchema">
 
          <wsdlsoap:operation soapAction=""/>
@@ -3304,6 +3286,24 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
          </wsdl:input>
 
          <wsdl:output name="getSchemasResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="addSubtype">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="addSubtypeRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="addSubtypeResponse">
 
             <wsdlsoap:body use="literal"/>
 
@@ -3736,6 +3736,24 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
          </wsdl:input>
 
          <wsdl:output name="setParentSchemasResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="addEntity">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="addEntityRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="addEntityResponse">
 
             <wsdlsoap:body use="literal"/>
 
@@ -4528,6 +4546,24 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
          </wsdl:input>
 
          <wsdl:output name="getGroupResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="isConnected">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="isConnectedRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="isConnectedResponse">
 
             <wsdlsoap:body use="literal"/>
 
