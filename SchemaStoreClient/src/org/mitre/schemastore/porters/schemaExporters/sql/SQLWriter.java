@@ -12,7 +12,6 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.Vector;
 
 public class SQLWriter {
 
@@ -56,11 +55,11 @@ public class SQLWriter {
 	 * @throws KBtoDB.XMLWriter.XMLException
 	 */
 	public StringBuffer serialize() throws IOException {
-		Vector<Table> relations = _rdb.getRelations();
-		Vector<ForeignKey> foriegnKeys = _rdb.getForeignKeys();
-		Vector<View> views = _rdb.getViews();
-		Vector<ViewReference> viewReferences = _rdb.getViewKeys();
-		Vector<DomainTable> refTables = _rdb.getReferenceTables();
+		ArrayList<Table> relations = _rdb.getRelations();
+		ArrayList<ForeignKey> foriegnKeys = _rdb.getForeignKeys();
+		ArrayList<View> views = _rdb.getViews();
+		ArrayList<ViewReference> viewReferences = _rdb.getViewKeys();
+		ArrayList<DomainTable> refTables = _rdb.getReferenceTables();
 
 		_sql.append(createDB(_rdb));
 
@@ -194,8 +193,8 @@ public class SQLWriter {
 	}
 
 	public void cleanupRDB() throws IOException {
-		Vector<Table> relations = _rdb.getRelations();
-		Vector<View> views = _rdb.getViews();
+		ArrayList<Table> relations = _rdb.getRelations();
+		ArrayList<View> views = _rdb.getViews();
 
 		// drop table statements
 		Iterator<Table> relItr = relations.iterator();
@@ -246,14 +245,14 @@ public class SQLWriter {
 	}
 
 	public StringBuffer createTable(Table rel) {
-		Vector<RdbAttribute> attributes = rel.getAttributes();
+		ArrayList<RdbAttribute> attributes = rel.getAttributes();
 		StringBuffer s_table = new StringBuffer().append("Create table "
 				+ dbSpecName(rel.getName()) + "\n");
 		s_table.append("(");
 
 		// iterate through attribute definitions
 		for (int i = 0; i < attributes.size(); i++) {
-			RdbAttribute a = (RdbAttribute) attributes.elementAt(i);
+			RdbAttribute a = (RdbAttribute) attributes.get(i);
 			if (a.isAssociated())
 				s_table.append(defineAttribute(a));
 			_comments.append(createComment(a));
@@ -282,7 +281,7 @@ public class SQLWriter {
 	}
 
 	protected StringBuffer definePrimaryKeys(Table rel) {
-		Vector<RdbAttribute> keys = rel.getPrimaryKeySet();
+		ArrayList<RdbAttribute> keys = rel.getPrimaryKeySet();
 		StringBuffer s = new StringBuffer().append(" PRIMARY KEY ");
 		StringBuffer s_key = new StringBuffer();
 
@@ -290,7 +289,7 @@ public class SQLWriter {
 			return new StringBuffer();
 
 		for (int i = 0; i < keys.size(); i++) {
-			s_key.append(dbSpecName(((RdbAttribute) keys.elementAt(i)).getName()));
+			s_key.append(dbSpecName(((RdbAttribute) keys.get(i)).getName()));
 			if (i < keys.size() - 1)
 				s_key.append(",");
 		}
@@ -303,10 +302,10 @@ public class SQLWriter {
 		StringBuffer str = new StringBuffer();
 		str.append("CREATE VIEW " + view.getName() + " AS ");
 
-		Vector<RdbAttribute> attributes = view.getAttributes();
+		ArrayList<RdbAttribute> attributes = view.getAttributes();
 		StringBuffer select = new StringBuffer().append(" SELECT ");
 		for (int i = 0; i < attributes.size(); i++) {
-			RdbAttribute a = (RdbAttribute) attributes.elementAt(i);
+			RdbAttribute a = (RdbAttribute) attributes.get(i);
 			if (!a.isAssociated())
 				continue;
 
@@ -314,10 +313,10 @@ public class SQLWriter {
 		}
 		select.deleteCharAt(select.lastIndexOf(","));
 
-		Vector<Table> unionTables = view.getUnionRelations();
+		ArrayList<Table> unionTables = view.getUnionRelations();
 		String viewName;
 		for (int i = 0; i < unionTables.size(); i++) {
-			Table table = (Table) unionTables.elementAt(i);
+			Table table = (Table) unionTables.get(i);
 			if (table == null) {
 				System.err.println(view.getName() + " union found null table");
 				continue;

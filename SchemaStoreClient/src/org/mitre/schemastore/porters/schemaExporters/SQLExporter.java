@@ -157,11 +157,11 @@ public class SQLExporter extends SchemaExporter {
 	 *            containment parent entity
 	 * @param domain
 	 */
-	private void mapEntityDomainContainment(Containment c, Entity parent, Domain domain) {
+	private void mapEntityDomainContainment(Containment c, Entity parent, Domain child) {
 		String attributeName = c.getName();
 		RdbValueType dbType;
 		try {
-			dbType = toRdbValueType(domain);
+			dbType = toRdbValueType(child);
 			if (c.getMax() == 1) { // 1-1 attribute
 				Table relation;
 				relation = _rdb.getRelation(parent.getName());
@@ -407,7 +407,10 @@ public class SQLExporter extends SchemaExporter {
 	private void initialize(Integer schemaID, ArrayList<SchemaElement> elements)
 			throws RemoteException {
 		_rdb = new Rdb("");
-
+		_entities.clear(); _attributes.clear(); _containments.clear();
+		_subtypes.clear(); _relationships.clear(); _domains.clear();
+		_domainValues.clear();
+		
 		for (SchemaElement e : elements) {
 			if (e instanceof Entity) _entities.put(new Integer(e.getId()), (Entity) e);
 			else if (e instanceof Attribute) _attributes.put(new Integer(e.getId()), (Attribute) e);
