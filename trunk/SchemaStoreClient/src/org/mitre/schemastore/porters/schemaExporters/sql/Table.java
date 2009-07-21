@@ -1,15 +1,15 @@
 package org.mitre.schemastore.porters.schemaExporters.sql;
 
-import java.util.*;
+import java.util.ArrayList;
 
 public class Table
 {
     public static String DEFAULT_PRIMARY_KEY = "ID";
     protected Rdb _rdb;
     protected String _name;
-    protected Vector<RdbAttribute> _attributes = new Vector<RdbAttribute>();
+    protected ArrayList<RdbAttribute> _attributes = new ArrayList<RdbAttribute>();
     protected RdbAttribute _primaryKey = null ; // TODO expand to composite Primary Key
-    protected Vector<RdbAttribute> _primaryKeySet = new Vector<RdbAttribute>();    
+    protected ArrayList<RdbAttribute> _primaryKeySet = new ArrayList<RdbAttribute>();    
     protected boolean _hasAttributes = false;
     protected String _comment = "";
 
@@ -18,6 +18,9 @@ public class Table
         _name = name;
     }
 
+    public String toString(){
+    	return _name;
+    }
 
     public void setPrimaryKey( RdbAttribute att ) {
         _primaryKey = att;
@@ -33,7 +36,7 @@ public class Table
         return _primaryKey;
     }
     
-    public Vector<RdbAttribute> getPrimaryKeySet() {
+    public ArrayList<RdbAttribute> getPrimaryKeySet() {
     	return _primaryKeySet;
     }
 
@@ -64,7 +67,7 @@ public class Table
         	a.setContainerRelation(this);
     }
 
-    public Vector<RdbAttribute> getAttributes() {
+    public ArrayList<RdbAttribute> getAttributes() {
         return _attributes;
     }
 
@@ -92,7 +95,7 @@ public class Table
         RdbAttribute att;
         for ( int i = 0; i < _attributes.size(); i++ ) {
 
-            att = (RdbAttribute)_attributes.elementAt( i );
+            att = (RdbAttribute)_attributes.get( i );
             if ( att.getName().compareTo( attName ) == 0 )
                 return att;
         }

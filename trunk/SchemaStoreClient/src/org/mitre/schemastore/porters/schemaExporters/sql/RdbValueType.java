@@ -6,6 +6,7 @@ import java.util.HashMap;
 
 public class RdbValueType implements Comparable<Object>
 {
+	private static int _nValues = 0;
 	public final static RdbValueType VARCHAR = new RdbValueType( "VARCHAR", String.class );
 	public final static RdbValueType INTEGER = new RdbValueType( "INTEGER", Integer.class );
 	public final static RdbValueType NUMERIC = new RdbValueType( "NUMERIC", Float.class );
@@ -30,7 +31,7 @@ public class RdbValueType implements Comparable<Object>
 //	public static final RdbValueType RELATION = new RdbValueType(SeedpodModel.RdbCls.DB_RELATION, Relation.class );
 
 	private String _type;
-	private static int _nValues = 0;
+	
 	private static HashMap<String, RdbValueType> _values;
 	private int _intValue;
 	private Class<?> _javaType;
@@ -41,11 +42,11 @@ public class RdbValueType implements Comparable<Object>
 		_type = type;
 		_javaType = javaType;
 		_intValue = _nValues++;
-
+		
 		if ( _values == null )
 			_values = new HashMap<String, RdbValueType>();
-
 		_values.put( _type, this );
+		
 	}
 
 	public int compareTo( Object o ) {

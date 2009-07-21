@@ -1,12 +1,12 @@
 package org.mitre.schemastore.porters.schemaExporters.sql;
 
 
-import java.util.Vector;
+import java.util.ArrayList;
 
 
 public class View extends Table
 {
-    private Vector<Table> _unionTables = new Vector<Table>(); // <Relation>:aggregate of
+    private ArrayList<Table> _unionTables = new ArrayList<Table>(); // <Relation>:aggregate of
     // relations
     private Table _concreteTable = null; // view's concrete class table,
     // default is abstract class
@@ -44,7 +44,7 @@ public class View extends Table
             _unionTables.add( table );
     }
 
-    public Vector<Table> getUnionRelations() {
+    public ArrayList<Table> getUnionRelations() {
         return _unionTables;
     }
     

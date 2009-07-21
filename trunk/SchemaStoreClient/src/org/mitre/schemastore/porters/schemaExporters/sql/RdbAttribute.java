@@ -77,6 +77,10 @@ public class RdbAttribute {
 		_defaultValue = defaultValue;
 	}
 
+	public String toString(){
+		return _name;
+	}
+	
 	public int compareTo(Object anotherAtt) {
 		return getName().compareTo(((RdbAttribute) anotherAtt).getName());
 	}
