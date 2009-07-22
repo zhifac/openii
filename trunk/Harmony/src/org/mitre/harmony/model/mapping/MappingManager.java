@@ -239,7 +239,7 @@ public class MappingManager extends AbstractManager<MappingListener> implements 
 			// Save the mapping
 			Integer mappingID = SchemaStoreManager.saveMapping(mapping, getModel().getMappingCellManager().getMappingCells());
 			if(mappingID==null) throw new Exception("Failed to save mapping");
-			mapping.setId(mappingID);
+			this.mapping.setId(mappingID);
 			
 			// Indicates that the mapping has been modified
 			for(MappingListener listener : getListeners()) listener.mappingModified();
