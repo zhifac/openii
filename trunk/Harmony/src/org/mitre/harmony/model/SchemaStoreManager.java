@@ -23,27 +23,17 @@ public class SchemaStoreManager
 	/** Stores the client used for accessing the database */
 	static private SchemaStoreClient client = null;
 	
-	/** Checks if the schema store connection was successful */
-	private static boolean isConnected()
-	{
-		try { return client.getSchemaElement(-1)!=null; } catch(Exception e) {}
-		return false;
-	}
-	
 	/** Sets the connection using the provided service address */
 	public static boolean setConnection(Repository repository)
 	{
 		try { client = new SchemaStoreClient(repository); }
-		catch(Exception e) { System.out.println("(E)SchemaStoreManager.setConnection - " + e.getMessage()); }
-		return isConnected();
+		catch(Exception e) { System.out.println("(E)SchemaStoreManager.setConnection - " + e.getMessage()); return false; }
+		return true;
 	}
 	
 	/** Sets the connection using the provided SchemaStoreClient object */
-	public static boolean setConnection(SchemaStoreClient clientID)
-	{
-		client = clientID;
-		return isConnected();
-	}
+	public static void setConnection(SchemaStoreClient newClient)
+		{ client = newClient; }
 		
 	//------------------
 	// Schema Functions

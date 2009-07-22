@@ -20,7 +20,7 @@ import javax.swing.tree.TreePath;
 
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.mapping.MappingCellManager;
-import org.mitre.harmony.view.dialogs.MappingCellDialog;
+import org.mitre.harmony.view.dialogs.mappingCell.MappingCellDialog;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.MappingSchema;
 
