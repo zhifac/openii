@@ -6,4 +6,5 @@
     <username>postgres</username>
     <password>postgres</password>
   </repository>
+  <extraMappingCellFields>[transform]</extraMappingCellFields>
 </config>
