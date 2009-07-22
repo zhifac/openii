@@ -229,7 +229,7 @@ public class M3SchemaImporter extends SchemaImporter
 			for(Integer extendedSchemaID : getExtendedSchemas(schemaID,graphs))
 				elements.addAll(elementMap.get(extendedSchemaID));
 			boolean success = graph.addElements(new ArrayList<SchemaElement>(elements));
-			if(!success) throw new Exception("Failure to generate a schema graph from the archive file");
+			if(!success) throw new Exception("Failure to generate a schema graph from the M3 schema file");
 		}
 		
 		// Sort graphs by schema ID and then return
