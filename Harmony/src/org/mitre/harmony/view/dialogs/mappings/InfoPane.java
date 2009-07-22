@@ -115,6 +115,7 @@ class InfoPane extends JPanel implements CaretListener
 				label.setFont(defaultFont);
 				schemaPane.add(label);
 			}
+			schemaPane.revalidate();
 		}
 			
 		this.mapping = mapping;
