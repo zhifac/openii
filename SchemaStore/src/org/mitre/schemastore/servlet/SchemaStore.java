@@ -66,7 +66,7 @@ public class SchemaStore
 	public SchemaStore(Integer type, String server, String database, String user, String password)
 	{
 		DatabaseConnection connection = new DatabaseConnection(type,server,database,user,password);
-		manager = new DataManager(connection);;
+		manager = new DataManager(connection);
 	}
 	
 	/** Indicates if SchemaStore is connected to a database */
