@@ -132,6 +132,7 @@ public class ManagerMenuManager extends MenuManager implements IMenuListener
 		// Display the menu for a selected mapping
 		if(element instanceof Mapping)
 		{
+			menuManager.add(new ManagerAction(this,"Map All...",ManagerAction.MAP_ALL));
 			menuManager.add(new ManagerAction(this,"Edit Mapping",ManagerAction.EDIT_MAPPING));
 			menuManager.add(new ManagerAction(this,"Export Mapping",ManagerAction.EXPORT_MAPPING));
 			menuManager.add(new ManagerAction(this,"Delete Mapping",ManagerAction.DELETE_MAPPING));
