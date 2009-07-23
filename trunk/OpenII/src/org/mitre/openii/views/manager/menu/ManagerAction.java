@@ -49,7 +49,7 @@ public class ManagerAction extends Action
 	static final int DELETE_MAPPING = 14;
 	static final int DELETE_MAPPING_SCHEMA = 15;
 	static final int CREATE_INSTANCE_DATABASE = 16;
-	static final int MAP_ALL = 17;
+	static final int AUTO_GENERATE_MATCHES = 17;
 	
 	/** Stores the menu manager to which this action is tied */
 	private ManagerMenuManager menuManager;
@@ -86,7 +86,7 @@ public class ManagerAction extends Action
 			case DELETE_MAPPING: icon = "Delete.gif"; break;
 			case DELETE_MAPPING_SCHEMA: icon = "Delete.gif"; break;
 			case CREATE_INSTANCE_DATABASE: icon = "CreateInstanceDb.gif"; break;
-			case MAP_ALL : icon = "Mapping.gif"; break;
+			case AUTO_GENERATE_MATCHES : icon = "Mapping.gif"; break;
 		}		
 		setImageDescriptor(OpenIIActivator.getImageDescriptor("icons/"+icon));
 	}
@@ -190,11 +190,8 @@ public class ManagerAction extends Action
 			OpenIIManager.updateMapping(mapping);
 		}
 		
-		if ( actionType == MAP_ALL) 
-		{
-//			SchemaInMapping mappingSchema = (SchemaInMapping)selection;
-			Mapping mapping = (Mapping) selection; // OpenIIManager.getMapping(mappingSchema.getMappingID());
-			MapAllDialog.match( shell, mapping);
-		}
+		/** Handles the auto-generation of a mapping's matches */
+		if(actionType == AUTO_GENERATE_MATCHES) 
+			MapAllDialog.match( shell, (Mapping)selection);
 	}
 }
