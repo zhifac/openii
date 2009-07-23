@@ -12,7 +12,7 @@ import javax.swing.event.ListSelectionListener;
 
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.view.dialogs.AbstractButtonPane;
-import org.mitre.harmony.view.dialogs.properties.PropertiesDialog;
+import org.mitre.harmony.view.dialogs.properties.SchemaSettingsDialog;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingSchema;
 
@@ -51,7 +51,7 @@ public class LoadMappingDialog extends JDialog implements ListSelectionListener
 			int displayedSchemas = 0;
 			for(MappingSchema schema : harmonyModel.getMappingManager().getSchemas())
 				if(!schema.getSide().equals(MappingSchema.NONE)) displayedSchemas++;
-			if(displayedSchemas==0) new PropertiesDialog(harmonyModel);
+			if(displayedSchemas==0) new SchemaSettingsDialog(harmonyModel);
 		}
 
 		/** Handles selection of cancel button */

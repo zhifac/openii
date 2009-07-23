@@ -28,29 +28,31 @@ class SchemaSelectionItem extends JPanel implements ActionListener
 	private JCheckBox checkbox;
 	
 	/** Stores the delete link associated with the schema */
-	private Link deleteLink = null;
+	private Link deleteSchema = null;
 	
 	/** Constructs the schema check box */
 	SchemaSelectionItem(Schema schema, boolean deletable, HarmonyModel harmonyModel)
 	{
 		this.schema = schema;
 		this.harmonyModel = harmonyModel;
-			
+		boolean standaloneMode = harmonyModel.getBaseFrame() instanceof Harmony;	
+		
 		// Initialize the check box
 		checkbox = new JCheckBox(schema.getName());
 		checkbox.setOpaque(false);
 		checkbox.setFocusable(false);
+		checkbox.setEnabled(standaloneMode);
 		checkbox.addActionListener(this);
 		
 		// Initialize the delete link
-		if(deletable && harmonyModel.getBaseFrame() instanceof Harmony) deleteLink = new Link("Delete",this);
+		if(deletable && standaloneMode) deleteSchema = new Link("Delete",this);
 		
 		// Constructs the check box pane
 		JPanel checkboxPane = new JPanel();
 		checkboxPane.setOpaque(false);
 		checkboxPane.setLayout(new BoxLayout(checkboxPane,BoxLayout.X_AXIS));
 		checkboxPane.add(checkbox);
-		if(deleteLink!=null) checkboxPane.add(deleteLink);
+		if(deleteSchema!=null) checkboxPane.add(deleteSchema);
 		
 		// Constructs the schema check box
 		setOpaque(false);
@@ -74,9 +76,9 @@ class SchemaSelectionItem extends JPanel implements ActionListener
 		{
 			// Retrieve the schema dialog
 			Component component = getParent();
-			while(!(component instanceof PropertiesDialog))
+			while(!(component instanceof SchemaSettingsDialog))
 				component = component.getParent();
-			PropertiesDialog dialog = (PropertiesDialog)component;
+			SchemaSettingsDialog dialog = (SchemaSettingsDialog)component;
 			
 			// Inform the schema dialog that a schema has been selected/unselected
 			if(checkbox.isSelected())
@@ -84,8 +86,8 @@ class SchemaSelectionItem extends JPanel implements ActionListener
 			else dialog.unselectSchema(schema.getId());
 		}
 		
-		// Handles selection of the delete link
-		else if(e.getSource()==deleteLink)
+		// Handles selection of the delete schema
+		else if(e.getSource()==deleteSchema)
 		{
 			// Verify that the schema should be deleted
 			int reply = JOptionPane.showConfirmDialog(null,"This action cannot be reversed!  Are you certain that you would like to delete \"" + schema.getName() + "\"","Delete Schema",JOptionPane.YES_NO_OPTION,JOptionPane.WARNING_MESSAGE);

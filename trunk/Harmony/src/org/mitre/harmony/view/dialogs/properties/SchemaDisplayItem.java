@@ -76,9 +76,9 @@ class SchemaDisplayItem extends JPanel implements ActionListener, MouseListener
 	public void mouseClicked(MouseEvent e)
 	{
 		Component component = getParent();
-		while(!(component instanceof PropertiesDialog))
+		while(!(component instanceof SchemaSettingsDialog))
 			component = component.getParent();
-		((PropertiesDialog)component).unselectSchema(schema.getId());
+		((SchemaSettingsDialog)component).unselectSchema(schema.getId());
 	}
 
 	// Handles the changing of the mouse icon

@@ -26,7 +26,7 @@ import org.mitre.harmony.view.dialogs.GettingStartedDialog;
 import org.mitre.harmony.view.dialogs.mappings.LoadMappingDialog;
 import org.mitre.harmony.view.dialogs.mappings.SaveMappingDialog;
 import org.mitre.harmony.view.dialogs.matcher.MatcherMenu;
-import org.mitre.harmony.view.dialogs.properties.PropertiesDialog;
+import org.mitre.harmony.view.dialogs.properties.SchemaSettingsDialog;
 import org.mitre.schemastore.model.MappingCell;
 
 /**
@@ -45,7 +45,7 @@ public class HarmonyMenuBar extends JMenuBar
 		private JMenuItem openMapping;		// Option to open a created mapping
 		private JMenuItem saveMapping;		// Option to save a created mapping
 		private JMenuItem exportMapping;	// Option for exporting a mapping
-		private JMenuItem properties;		// Option for showing the mapping properties
+		private JMenuItem schemaSettings;	// Option for showing the schema settings
 		private JMenuItem exitApp;			// Option to exit the Harmony application
 		
 		/** Initializes the project drop-down menu */
@@ -63,7 +63,7 @@ public class HarmonyMenuBar extends JMenuBar
 				openMapping = new JMenuItem("Open...",KeyEvent.VK_O);
 				saveMapping = new JMenuItem("Save...",KeyEvent.VK_S);
 				exportMapping = new JMenuItem("Export...",KeyEvent.VK_E);
-				properties = new JMenuItem("Properties",KeyEvent.VK_P);
+				schemaSettings = new JMenuItem("Schema Settings...",KeyEvent.VK_P);
 				exitApp = new JMenuItem("Exit",KeyEvent.VK_X);
 	
 				// Set accelerator keys for the menu items
@@ -76,7 +76,7 @@ public class HarmonyMenuBar extends JMenuBar
 				openMapping.addActionListener(this);
 				saveMapping.addActionListener(this);
 				exportMapping.addActionListener(this);
-				properties.addActionListener(this);
+				schemaSettings.addActionListener(this);
 				exitApp.addActionListener(this);
 				
 				// Add project drop-down items to project drop-down menu
@@ -86,7 +86,7 @@ public class HarmonyMenuBar extends JMenuBar
 				addSeparator();
 				add(exportMapping);
 				addSeparator();
-				add(properties);
+				add(schemaSettings);
 				addSeparator();
 			    add(exitApp);
 			}
@@ -94,10 +94,19 @@ public class HarmonyMenuBar extends JMenuBar
 			// Otherwise, set up menu to be embedded in OpenII
 			else
 			{
+				// Create the save mapping menu option
 				saveMapping = new JMenuItem("Save",KeyEvent.VK_S);
 				saveMapping.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK));
 				saveMapping.addActionListener(this);
+
+				// Create the schema settings menu option
+				schemaSettings = new JMenuItem("Schema Settings...",KeyEvent.VK_P);
+				schemaSettings.addActionListener(this);
+				
+				// Add project drop-down items to project drop-down menu
 				add(saveMapping);
+				addSeparator();
+				add(schemaSettings);
 			}
 		}
 		
@@ -121,7 +130,7 @@ public class HarmonyMenuBar extends JMenuBar
 	    		
 	    	// Create a new project
 	    	if(source==newMapping)
-	    		{ harmonyModel.getMappingManager().newMapping(); new PropertiesDialog(harmonyModel); }
+	    		{ harmonyModel.getMappingManager().newMapping(); new SchemaSettingsDialog(harmonyModel); }
 	    	
 	    	// Open a project
 	    	else if(source==openMapping)
@@ -140,8 +149,8 @@ public class HarmonyMenuBar extends JMenuBar
 	    		{ ExportMappingDialog.exportMapping(harmonyModel); }
 	    	
 	    	// Display the mapping properties
-	    	else if(source==properties)
-	    		new PropertiesDialog(harmonyModel);
+	    	else if(source==schemaSettings)
+	    		new SchemaSettingsDialog(harmonyModel);
 	    	
 	    	// Exit Harmony
 	    	else if(source==exitApp)
