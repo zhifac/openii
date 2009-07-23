@@ -21,7 +21,7 @@ import org.mitre.schemastore.model.graph.model.GraphModel;
  * Displays the dialog containing all mapping information
  * @author CWOLF
  */
-public class PropertiesDialog extends JDialog
+public class SchemaSettingsDialog extends JDialog
 {	
 	/** Stores the Harmony model */
 	private HarmonyModel harmonyModel;
@@ -52,7 +52,7 @@ public class PropertiesDialog extends JDialog
 	}
 	
 	/** Initializes the properties dialog */
-	public PropertiesDialog(HarmonyModel harmonyModel)
+	public SchemaSettingsDialog(HarmonyModel harmonyModel)
 	{
 		super(harmonyModel.getBaseFrame());
 		this.harmonyModel = harmonyModel;
