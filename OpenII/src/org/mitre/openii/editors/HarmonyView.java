@@ -9,7 +9,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.awt.SWT_AWT;
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.SchemaStoreManager;
-import org.mitre.harmony.view.dialogs.properties.PropertiesDialog;
+import org.mitre.harmony.view.dialogs.properties.SchemaSettingsDialog;
 import org.mitre.harmony.view.harmonyPane.HarmonyFrame;
 import org.mitre.openii.model.RepositoryManager;
 import org.mitre.schemastore.model.MappingSchema;
@@ -44,7 +44,7 @@ public class HarmonyView extends OpenIIEditor
 				int displayedSchemas = 0;
 				for(MappingSchema schema : harmonyModel.getMappingManager().getSchemas())
 					if(!schema.getSide().equals(MappingSchema.NONE)) displayedSchemas++;
-				if(displayedSchemas==0) new PropertiesDialog(harmonyModel);
+				if(displayedSchemas==0) new SchemaSettingsDialog(harmonyModel);
 				initializationCompleted = true;
 			}
 		}
