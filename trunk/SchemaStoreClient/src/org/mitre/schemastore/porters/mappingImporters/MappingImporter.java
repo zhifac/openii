@@ -36,6 +36,7 @@ public abstract class MappingImporter extends Porter
 	/** Stores the URI being imported */
 	protected URI uri;
 	
+	/** Stores the schemas to which the mapping is associated */
 	protected ArrayList<MappingSchema> schemas;
 	
 	/** Returns the importer URI type */
@@ -64,24 +65,21 @@ public abstract class MappingImporter extends Porter
 		this.uri = uri;
 		this.schemas = schemas;
 		initialize();
-
-		// Generate the mapping
-		Mapping mapping = new Mapping(null,name,description,author,schemas.toArray(new MappingSchema[0]));
 		
+		// Generate the mapping and mapping cells
+		Mapping mapping = new Mapping(null,name,description,author,schemas.toArray(new MappingSchema[0]));
+		ArrayList<MappingCell> mappingCells = getMappingCells();
+			
 		// Imports the mapping
-		boolean success = false;
 		try {
-			// Import the mapping
-			Integer mappingID = client.saveMapping(mapping, getMappingCells());
+			Integer mappingID = client.saveMapping(mapping, mappingCells);
 			mapping.setId(mappingID);
-			success = true;
 		}
-		catch(Exception e) {}
 
 		// Delete the mapping if import wasn't totally successful
-		if(!success)
+		catch(Exception e) 
 		{
-			try { client.deleteMapping(mapping.getId()); } catch(Exception e) {e.printStackTrace();}
+			try { client.deleteMapping(mapping.getId()); } catch(Exception e2) {}
 			throw new ImporterException(ImporterException.IMPORT_FAILURE,"A failure occured in transferring the mapping to the repository");
 		}
 
