@@ -65,7 +65,7 @@ public class APIMatch {
 		VoteMerger merger = new VoteMerger();
 
 		Informant.status("Calling Harmony matching algorithms...");
-		matchScores = MatcherManager.getScores(graphA, graphB, voters, merger);
+		matchScores = MatcherManager.getScores(graphA, graphB, voters, null, merger);
 	}
 
 	/**
