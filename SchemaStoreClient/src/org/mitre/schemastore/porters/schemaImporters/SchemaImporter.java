@@ -106,13 +106,17 @@ public abstract class SchemaImporter extends Porter
 			schema.setDescription(schemaProperties.getDescription());
 		}
 		
+		// Generate the schema elements and extensions
+		ArrayList<SchemaElement> schemaElements = generateSchemaElements();
+		ArrayList<Integer> extendedSchemaIDs = generateExtendedSchemaIDs();
+		
 		// Imports the schema
 		boolean success = false;
 		try {
 			// Import the schema
-			Integer schemaID = client.importSchema(schema, generateSchemaElements());
+			Integer schemaID = client.importSchema(schema, schemaElements);
 			schema.setId(schemaID);
-			success = client.setParentSchemas(schema.getId(), generateExtendedSchemaIDs());
+			success = client.setParentSchemas(schema.getId(), extendedSchemaIDs);
 
 			// Lock the schema if needed
 			if(success && (getURIType()==M3MODEL || getURIType()==REPOSITORY || getURIType()==FILE))

@@ -10,7 +10,6 @@ import org.exolab.castor.xml.schema.*;
 import org.exolab.castor.xml.schema.Group;
 import org.exolab.castor.xml.schema.Schema;
 import org.exolab.castor.xml.schema.reader.SchemaReader;
-import org.mitre.schemastore.client.Repository;
 import org.mitre.schemastore.model.*;
 import org.mitre.schemastore.porters.ImporterException;
 
