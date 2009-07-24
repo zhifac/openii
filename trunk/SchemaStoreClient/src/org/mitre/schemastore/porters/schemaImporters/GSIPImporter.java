@@ -2,7 +2,6 @@
 
 package org.mitre.schemastore.porters.schemaImporters;
 
-import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -11,9 +10,6 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
-
-import javax.swing.JFileChooser;
-import javax.swing.filechooser.FileFilter;
 
 import org.mitre.schemastore.model.Attribute;
 import org.mitre.schemastore.model.Domain;
