@@ -109,7 +109,7 @@ class MappingCellLines
     	if(harmonyModel.getSelectedInfo().isMappingCellSelected(mappingCellID)) return BLUE;
     	else if(mappingCell.getValidated())
     		{ if(conf>0) return harmonyModel.getMappingCellManager().isMappingCellFinished(mappingCellID) ? GRAY : BLACK; return RED; }
-    	else if(conf>1) return GREEN;
+    	else if(conf>=1) return GREEN;
     	else if(conf<-0.333) return RED;
     	else if(conf<0.333) return new Color(0.8f,0.8f-1.2f*(0.333f-(float)conf),0.0f);
 	    else return new Color(0.8f-1.2f*((float)conf-0.333f),0.8f,0.0f);
