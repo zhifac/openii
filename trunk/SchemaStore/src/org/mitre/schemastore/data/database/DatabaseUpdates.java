@@ -18,8 +18,8 @@ import java.sql.Statement;
 public class DatabaseUpdates
 {
 	/** Stores the current version */
-	static private Integer currVersion = 3;
-	
+	static private Integer currVersion = 4;
+
 	/** Retrieve the contents of a file as a buffered string */
 	static private StringBuffer getFileContents(String file) throws IOException
 	{
@@ -33,11 +33,11 @@ public class DatabaseUpdates
 		while((line=in.readLine())!=null)
 			if(!line.startsWith("//")) buffer.append(line+"\n");
 		in.close();
-		
+
 		// Return the string buffer
 		return buffer;
 	}
-	
+
 	/** Initializes the database if needed */
 	static void initializeDatabase(Connection connection) throws SQLException
 	{
@@ -46,7 +46,7 @@ public class DatabaseUpdates
 		Statement stmt = connection.createStatement();
 		try { stmt.executeQuery("SELECT * FROM extensions"); }
 		catch(Exception e) { connection.rollback(); exists=false; }
-		
+
 		// Initializes the database if it doesn't exist
 		if(!exists)
 		{
@@ -60,7 +60,7 @@ public class DatabaseUpdates
 					if(text.length()>0) stmt.addBatch(text);
 				}
 				stmt.executeBatch();
-				
+
 				// Generate the database data
 				buffer = getFileContents("SchemaStoreData.txt");
 				commands = buffer.toString().split("\\n\\s*\\n");
@@ -74,7 +74,7 @@ public class DatabaseUpdates
 				}
 				stmt.addBatch("INSERT INTO version(id) VALUES("+currVersion+")");
 				stmt.executeBatch();
-				
+
 				// Commit all changes
 				connection.commit();
 			}
@@ -84,7 +84,7 @@ public class DatabaseUpdates
 
 		stmt.close();
 	}
-	
+
 	/** Retrieves the current version */
 	static private Integer getVersion(Connection connection) throws SQLException
 	{
@@ -105,32 +105,32 @@ public class DatabaseUpdates
 			stmt.executeUpdate("INSERT INTO version(id) VALUES(0)");
 			connection.commit();
 		}
-		
+
 		// Return the current version
 		stmt.close();
 		return version;
 	}
-	
+
 	/** Renames the specified column (different versions for Derby and Postgres) */
 	static private void renameColumn(Statement stmt, String table, String oldColumnName, String newColumnName) throws SQLException
 	{
 		try { stmt.executeUpdate("ALTER TABLE " + table + " RENAME COLUMN " + oldColumnName + " TO " + newColumnName); }
 		catch(Exception e) { stmt.executeUpdate("RENAME COLUMN " + table + "." + oldColumnName + " TO " + newColumnName); }
 	}
-	
+
 	/** Installs version 1 updates */
 	static private void version1Updates(Connection connection) throws SQLException
 	{
 		// Rename object_id to element_id in the annotations table
 		Statement stmt = connection.createStatement();
 		renameColumn(stmt,"annotation","object_id","element_id");
-		
+
 		// Increase the size of the value field in the annotations table
 		stmt.executeUpdate("ALTER TABLE annotation ADD COLUMN temp_value CHARACTER VARYING(4096)");
 		stmt.executeUpdate("UPDATE annotation SET temp_value=value");
 		stmt.executeUpdate("ALTER TABLE annotation DROP COLUMN value");
 		renameColumn(stmt,"annotation","temp_value","value");
-		
+
 		// Increase the version id
 		stmt.executeUpdate("UPDATE version SET id=1");
 		stmt.close(); connection.commit();
@@ -145,12 +145,47 @@ public class DatabaseUpdates
 		stmt.executeUpdate("ALTER TABLE mapping_schema ADD COLUMN side CHARACTER");
 		stmt.executeUpdate("DELETE FROM annotation WHERE attribute='SchemaModelsForMapping'");
 		stmt.executeUpdate("DELETE FROM annotation WHERE attribute='SchemaSidesForMapping'");
-		
+
 		// Increase the version id
 		stmt.executeUpdate("UPDATE version SET id=2");
 		stmt.close(); connection.commit();
 	}
-	
+
+	/** Installs version 4 updates.  These changes relate to adding functions to the mappings..as a result, the mapping_cell table is split into 3.
+     *  One for proposed mappings and two for validated mappings.  The second is needed to support multiple inputs that functions can take in.
+     */
+	static private void version4Updates(Connection connection) throws SQLException
+	{
+		// Add model and side fields to mapping schema table
+		Statement stmt = connection.createStatement();
+        stmt.executeUpdate("CREATE TABLE proposed_mapping_cell ( " +
+            "    id integer NOT NULL, mapping_id integer, " +
+            "    input_id integer, output_id integer, " +
+            "    score numeric(6,3), author character varying(100), " +
+            "    modification_date date, notes character varying(500) ) ");
+        stmt.executeUpdate("CREATE TABLE validated_mapping_cell ( " +
+            "    id integer NOT NULL, mapping_id integer, " +
+            "    function_class character varying(100),"+
+            "    output_id integer, author character varying(100), " +
+            "    modification_date date, notes character varying(500) ) ");
+        stmt.executeUpdate("CREATE TABLE mapping_input ( " +
+            "    cell_id integer, input_id integer, " +
+            "    input_order integer ) ");
+        stmt.executeUpdate("ALTER TABLE proposed_mapping_cell ADD CONSTRAINT pmappingcell_pkey PRIMARY KEY (id)");
+        stmt.executeUpdate("ALTER TABLE validated_mapping_cell ADD CONSTRAINT vmappingcell_pkey PRIMARY KEY (id)");
+        stmt.executeUpdate("ALTER TABLE proposed_mapping_cell ADD CONSTRAINT pmappingcell_mapping_id_fkey FOREIGN KEY (mapping_id) REFERENCES mapping(id)");
+        stmt.executeUpdate("ALTER TABLE validated_mapping_cell ADD CONSTRAINT vmappingcell_mapping_id_fkey FOREIGN KEY (mapping_id) REFERENCES mapping(id)");
+        //split current mapping table to proposed and validated
+        stmt.executeUpdate("INSERT INTO proposed_mapping_cell (id, mapping_id, input_id, output_id, score, author, modification_date, notes) select id, mapping_id, element1_id, element2_id, score, author, modification_date, notes from mapping_cell where validated = 'f'");
+        stmt.executeUpdate("INSERT INTO validated_mapping_cell (id, mapping_id, function_class, output_id, author, modification_date, notes) select id, mapping_id, 'org.mitre.schemastore.mapfunctions.NullFunction', element2_id, author, modification_date, notes from mapping_cell where validated = 't'");
+        stmt.executeUpdate("INSERT INTO mapping_input (cell_id, input_id, input_order) select id, element1_id, 1 from mapping_cell where validated = 't'");
+        //delete the mapping_cell table
+        stmt.executeUpdate("DROP TABLE mapping_cell");
+		// Increase the version id
+		stmt.executeUpdate("UPDATE version SET id=4");
+		stmt.close(); connection.commit();
+	}
+
 	/** Installs version 3 updates */
 	static private void version3Updates(Connection connection) throws SQLException
 	{
@@ -160,12 +195,12 @@ public class DatabaseUpdates
 		stmt.executeUpdate("UPDATE mapping_cell SET temp_notes=notes");
 		stmt.executeUpdate("ALTER TABLE mapping_cell DROP COLUMN notes");
 		renameColumn(stmt,"mapping_cell","temp_notes","notes");
-		
+
 		// Increase the version id
 		stmt.executeUpdate("UPDATE version SET id=3");
 		stmt.close(); connection.commit();
 	}
-	
+
 	/** Updates the database as needed */
 	static void updateDatabase(Connection connection) throws SQLException
 	{
@@ -174,9 +209,10 @@ public class DatabaseUpdates
 			if(version<1) { version1Updates(connection); version=1; }
 			if(version<2) { version2Updates(connection); version=2; }
 			if(version<3) { version3Updates(connection); version=3; }
+			if(version<4) { version4Updates(connection); version=4; }
 			if(version>currVersion) throw new Exception("(E) Software must be updated to handle database version " + version);
 		}
 		catch (Exception e)
-			{ connection.rollback(); throw new SQLException("Failed to fully update database\n" + e.getMessage()); }		
+			{ connection.rollback(); throw new SQLException("Failed to fully update database\n" + e.getMessage()); }
 	}
 }

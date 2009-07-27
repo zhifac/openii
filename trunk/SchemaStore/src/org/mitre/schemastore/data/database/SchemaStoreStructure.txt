@@ -85,17 +85,31 @@ CREATE TABLE mapping (
     description character varying(4096)
 );
 
-CREATE TABLE mapping_cell (
+CREATE TABLE mapping_input (
+    cell_id integer,
+    input_id integer,
+    input_order integer
+);
+
+CREATE TABLE proposed_mapping_cell (
     id integer NOT NULL,
     mapping_id integer,
-    element1_id integer,
-    element2_id integer,
+    input_id integer,
+    output_id integer,
     score numeric(6,3),
     author character varying(100),
     modification_date date,
-    transform character varying(200),
-    notes character varying(4096),
-    validated character
+    notes character varying(500)
+);
+
+CREATE TABLE validated_mapping_cell (
+    id integer NOT NULL,
+    mapping_id integer,
+    function_class character varying(100),
+    output_id integer,
+    author character varying(100),
+    modification_date date,
+    notes character varying(500)
 );
 
 CREATE TABLE mapping_schema (
@@ -175,8 +189,11 @@ ALTER TABLE groups
 ALTER TABLE data_source
     ADD CONSTRAINT instance_pkey PRIMARY KEY (id);
 
-ALTER TABLE mapping_cell
-    ADD CONSTRAINT mapping_cell_pkey PRIMARY KEY (id);
+ALTER TABLE proposed_mapping_cell
+    ADD CONSTRAINT pmappingcell_pkey PRIMARY KEY (id);
+
+ALTER TABLE validated_mapping_cell
+    ADD CONSTRAINT vmappingcell_pkey PRIMARY KEY (id);
 
 ALTER TABLE mapping
     ADD CONSTRAINT mapping_pkey PRIMARY KEY (id);
@@ -224,8 +241,14 @@ ALTER TABLE schema_group
 ALTER TABLE schema_group
     ADD CONSTRAINT schemagroup_schema_fkey FOREIGN KEY (schema_id) REFERENCES "schema"(id);
 
-ALTER TABLE mapping_cell
-    ADD CONSTRAINT mappingcell_mapping_id_fkey FOREIGN KEY (mapping_id) REFERENCES mapping(id);
+ALTER TABLE mapping_input
+    ADD CONSTRAINT mapping_input_fkey FOREIGN KEY (cell_id) REFERENCES validated_mapping_cell(id);
+
+ALTER TABLE proposed_mapping_cell
+    ADD CONSTRAINT pmappingcell_mapping_id_fkey FOREIGN KEY (mapping_id) REFERENCES mapping(id);
+
+ALTER TABLE validated_mapping_cell
+    ADD CONSTRAINT vmappingcell_mapping_id_fkey FOREIGN KEY (mapping_id) REFERENCES mapping(id);
 
 ALTER TABLE mapping_schema
     ADD CONSTRAINT mappingschema_mapping_fkey FOREIGN KEY (mapping_id) REFERENCES mapping(id);
