@@ -198,7 +198,6 @@ public class AffinityView extends OpenIIEditor implements SelectionClickedListen
 	/* (non-Javadoc)
 	 * @see org.mitre.affinity.view.event.SelectionClickedListener#selectionClicked(org.mitre.affinity.view.event.SelectionClickedEvent)
 	 */
-	@Override
 	public void selectionClicked(SelectionClickedEvent event) {
 		if(event.selectedSchemas != null) {
 			if(event.selectedSchemas.size() == 1) {
