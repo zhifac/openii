@@ -49,23 +49,23 @@ public class SchemaStoreClient
 			if(type==Boolean.class) type = Boolean.TYPE;
 			types[i] = type;
 		}
-		
+
 		// Calls the SchemaStore method
 		try {
 			Method method = schemaStore.getClass().getDeclaredMethod(name, types);
 			return method.invoke(schemaStore, args);
 		} catch(Exception e) { return new RemoteException("Unable to call method " + name); }
 	}
-	
+
 	/** Constructor for the Schema Store Client */
 	public SchemaStoreClient() throws RemoteException
 	{
 		try {
 			Constructor<?> constructor = SchemaStore.class.getConstructor(new Class<?>[]{});
-			schemaStore = constructor.newInstance(new Object[]{});		
+			schemaStore = constructor.newInstance(new Object[]{});
 		} catch(Exception e) { throw new RemoteException("(E) Failed to connect to SchemaStore: " + e.getMessage()); }
 	}
-	
+
 	/** Constructor for the Schema Store Client */
 	public SchemaStoreClient(Repository repository) throws RemoteException
 	{
@@ -87,22 +87,22 @@ public class SchemaStoreClient
 		}
 		catch(Exception e) { throw new RemoteException("(E) Failed to connect to SchemaStore: " + e.getMessage()); }
 	}
-	
+
 	//------------------
 	// Schema Functions
 	//------------------
-	
+
 	/** Gets the list of schemas from the web service */
 	public ArrayList<Schema> getSchemas() throws RemoteException
 	{
 		Schema[] schemas = (Schema[])callMethod("getSchemas",new Object[] {});
 		return schemas==null ? new ArrayList<Schema>() : new ArrayList<Schema>(Arrays.asList(schemas));
 	}
-	
+
 	/** Gets the specified schema from the web service */
 	public Schema getSchema(Integer schemaID) throws RemoteException
 		{ return (Schema)callMethod("getSchema",new Object[] {schemaID}); }
-	
+
 	/** Adds the specified schema to the web service */
 	public Integer addSchema(Schema schema) throws RemoteException
 	{
@@ -113,19 +113,19 @@ public class SchemaStoreClient
 	/** Extends the specified schema in the web service */
 	public Schema extendSchema(Integer schemaID) throws RemoteException
 		{ return (Schema)callMethod("extendSchema",new Object[] {schemaID}); }
-	
+
 	/** Updates the specified schema in the web service */
 	public boolean updateSchema(Schema schema) throws RemoteException
 		{ return (Boolean)callMethod("updateSchema",new Object[] {schema}); }
-	
+
 	/** Unlocks the specified schema in the web service */
 	public boolean unlockSchema(Integer schemaID) throws RemoteException
 		{ return (Boolean)callMethod("unlockSchema",new Object[] {schemaID}); }
-	
+
 	/** Locks the specified schema in the web service */
 	public boolean lockSchema(Integer schemaID) throws RemoteException
 		{ return (Boolean)callMethod("lockSchema",new Object[] {schemaID}); }
-	
+
 	/** Indicates that the schema is able to be deleted from the web service */
 	public boolean isDeletable(Integer schemaID) throws RemoteException
 		{ return (Boolean)callMethod("isDeletable",new Object[] {schemaID}); }
@@ -140,15 +140,15 @@ public class SchemaStoreClient
 				deletableSchemas.add(deletableSchema);
 		return deletableSchemas;
 	}
-	
+
 	/** Delete the specified schema from the web service */
 	public boolean deleteSchema(Integer schemaID) throws RemoteException
 		{ return (Boolean)callMethod("deleteSchema",new Object[] {schemaID}); }
-	
+
 	//------------------------
 	// Schema Group Functions
 	//------------------------
-	
+
 	/** Get the list of groups from the web service */
 	public ArrayList<Group> getGroups() throws RemoteException
 	{
@@ -159,7 +159,7 @@ public class SchemaStoreClient
 	/** Gets the specified group from the web service */
 	public Schema getGroup(Integer groupID) throws RemoteException
 		{ return (Schema)callMethod("getGroup",new Object[] {groupID}); }
-	
+
 	/** Get the list of subgroups for the specified group from the web service */
 	public ArrayList<Group> getSubgroups(Integer groupID) throws RemoteException
 	{
@@ -173,15 +173,15 @@ public class SchemaStoreClient
 		Integer groupID = (Integer)callMethod("addGroup",new Object[] {group});
 		return groupID==0 ? null : groupID;
 	}
-	
+
 	/** Update a group in the web service */
 	public boolean updateGroup(Group group) throws RemoteException
 		{ return (Boolean)callMethod("updateGroup",new Object[] {group}); }
-	
+
 	/** Delete a group from the web service */
 	public boolean deleteGroup(Integer groupID) throws RemoteException
 		{ return (Boolean)callMethod("deleteGroup",new Object[] {groupID}); }
-	
+
 	/** Get list of schemas associated with group in web service */
 	public ArrayList<Integer> getGroupSchemas(Integer groupID) throws RemoteException
 	{
@@ -192,7 +192,7 @@ public class SchemaStoreClient
 				groupSchemas.add(groupSchema);
 		return groupSchemas;
 	}
-	
+
 	/** Get list of groups associated with schema in the web service */
 	public ArrayList<Integer> getSchemaGroups(Integer schemaID) throws RemoteException
 	{
@@ -203,19 +203,19 @@ public class SchemaStoreClient
 				schemaGroups.add(schemaGroup);
 		return schemaGroups;
 	}
-		
+
 	/** Add a group to a schema in the web service */
 	public boolean addGroupToSchema(Integer schemaID, Integer groupID) throws RemoteException
 		{ return (Boolean)callMethod("addGroupToSchema",new Object[] {schemaID,groupID}); }
-	
+
 	/** Remove a group from a schema in the web service */
 	public boolean removeGroupFromSchema(Integer schemaID, Integer groupID) throws RemoteException
 		{ return (Boolean)callMethod("removeGroupFromSchema",new Object[] {schemaID,groupID}); }
-	
+
 	//-------------------------------
 	// Schema Relationship Functions
 	//-------------------------------
-	
+
 	/** Gets the list of parent schemas for the specified schema from the web service */
 	public ArrayList<Integer> getParentSchemas(Integer schemaID) throws RemoteException
 	{
@@ -226,7 +226,7 @@ public class SchemaStoreClient
 				parentSchemas.add(parentSchema);
 		return parentSchemas;
 	}
-		
+
 	/** Gets the list of child schemas for the specified schema from the web service */
 	public ArrayList<Integer> getChildSchemas(Integer schemaID) throws RemoteException
 	{
@@ -237,7 +237,7 @@ public class SchemaStoreClient
 				childSchemas.add(childSchema);
 		return childSchemas;
 	}
-	
+
 	/** Gets the list of ancestor schemas for the specified schema from the web service */
 	public ArrayList<Integer> getAncestorSchemas(Integer schemaID) throws RemoteException
 	{
@@ -248,7 +248,7 @@ public class SchemaStoreClient
 				ancestorSchemas.add(ancestorSchema);
 		return ancestorSchemas;
 	}
-	
+
 	/** Gets the list of descendant schemas for the specified schema from the web service */
 	public ArrayList<Integer> getDescendantSchemas(Integer schemaID) throws RemoteException
 	{
@@ -259,7 +259,7 @@ public class SchemaStoreClient
 				decendantSchemas.add(decendantSchema);
 		return decendantSchemas;
 	}
-	
+
 	/** Gets the list of schemas associated with the specified schema from the web service */
 	public ArrayList<Integer> getAssociatedSchemas(Integer schemaID) throws RemoteException
 	{
@@ -270,11 +270,11 @@ public class SchemaStoreClient
 				associatedSchemas.add(associatedSchema);
 		return associatedSchemas;
 	}
-	
+
 	/** Gets the root schema for the two specified schemas from the web service */
 	public Integer getRootSchema(Integer schema1ID, Integer schema2ID) throws RemoteException
 		{ return (Integer)callMethod("getRootSchema",new Object[] {schema1ID, schema2ID}); }
-	
+
 	/** Gets the schema path between the specified root and schema from the web service */
 	public ArrayList<Integer> getSchemaPath(Integer rootID, Integer schemaID) throws RemoteException
 	{
@@ -285,7 +285,7 @@ public class SchemaStoreClient
 				schemaPath.add(schemaPathItem);
 		return schemaPath;
 	}
-	
+
 	/** Sets the parent schemas for the specified schema from the web service */
 	public boolean setParentSchemas(Integer schemaID, ArrayList<Integer> parentIDs) throws RemoteException
 	{
@@ -294,7 +294,7 @@ public class SchemaStoreClient
 			parentIDArray[i] = parentIDs.get(i);
 		return (Boolean)callMethod("setParentSchemas",new Object[] {schemaID,parentIDArray});
 	}
-	
+
 	//--------------------------
 	// Schema Element Functions
 	//--------------------------
@@ -313,7 +313,7 @@ public class SchemaStoreClient
 		else if(schemaElement instanceof Alias) schemaElementID = (Integer)callMethod("addAlias",new Object[] {(Alias)schemaElement});
 		return schemaElementID==0 ? null : schemaElementID;
 	}
-	
+
 	/** Updates the specified schema element on the web service */
 	public Boolean updateSchemaElement(SchemaElement schemaElement) throws RemoteException
 	{
@@ -370,11 +370,11 @@ public class SchemaStoreClient
 		SchemaElement[] schemaElements = ((SchemaElementList)callMethod("getSchemaElementsForKeyword",new Object[] {keyword, groupList})).getSchemaElements();
 		return schemaElements==null ? new ArrayList<SchemaElement>() : new ArrayList<SchemaElement>(Arrays.asList(schemaElements));
 	}
-	
+
 	/** Retrieves the number of schema elements for the specified schema from the web service */
 	public Integer getSchemaElementCount(Integer schemaID) throws RemoteException
 		{ return (Integer)callMethod("getSchemaElementCount",new Object[] {schemaID}); }
-	
+
 	/** Retrieves the schema element graph for the specified schema from the web service */
 	public Graph getGraph(Integer schemaID) throws RemoteException
 	{
@@ -382,7 +382,7 @@ public class SchemaStoreClient
 		ArrayList<SchemaElement> elements = schemaElements==null ? new ArrayList<SchemaElement>() : new ArrayList<SchemaElement>(Arrays.asList(schemaElements));
 		return new Graph(getSchema(schemaID),elements);
 	}
-	
+
 	//-----------------------
 	// Data Source Functions
 	//-----------------------
@@ -393,30 +393,30 @@ public class SchemaStoreClient
 		DataSource[] dataSources = (schemaID==null ? (DataSource[])callMethod("getAllDataSources",new Object[] {}) : (DataSource[])callMethod("getDataSources",new Object[] {schemaID}));
 		return dataSources==null ? new ArrayList<DataSource>() : new ArrayList<DataSource>(Arrays.asList(dataSources));
 	}
-	
-	/** Gets the specified data source from the web service */ 
+
+	/** Gets the specified data source from the web service */
 	public DataSource getDataSource(Integer dataSourceID) throws RemoteException
 		{ return (DataSource)callMethod("getDataSource",new Object[] {dataSourceID}); }
-	
+
 	/** Gets the specified data source based on the specified url from the web service */
 	public DataSource getDataSourceByURL(String url) throws RemoteException
 		{ return (DataSource)callMethod("getDataSourceByURL",new Object[] {url}); }
-	
+
 	/** Adds the specified data source to the web service */
 	public Integer addDataSource(DataSource dataSource) throws RemoteException
 	{
 		Integer dataSourceID = (Integer)callMethod("addDataSource",new Object[] {dataSource});
 		return dataSourceID==0 ? null : dataSourceID;
 	}
-		
+
 	/** Updates the specified data source in the web service */
 	public boolean updateDataSource(DataSource dataSource) throws RemoteException
 		{ return (Boolean)callMethod("updateDataSource",new Object[] {dataSource}); }
-	
+
 	/** Deletes the specified data source from the web service */
 	public boolean deleteDataSource(Integer dataSourceID) throws RemoteException
 		{ return (Boolean)callMethod("deleteDataSource",new Object[] {dataSourceID}); }
-	
+
 	//-------------------
 	// Mapping Functions
 	//-------------------
@@ -427,22 +427,22 @@ public class SchemaStoreClient
 		Mapping[] mappings = (Mapping[])callMethod("getMappings",new Object[] {});
 		return mappings==null ? new ArrayList<Mapping>() : new ArrayList<Mapping>(Arrays.asList(mappings));
 	}
-	
+
 	/** Gets the specified mapping from the web service */
 	public Mapping getMapping(Integer mappingID) throws RemoteException
 		{ return (Mapping)callMethod("getMapping",new Object[] {mappingID}); }
-	
+
 	/** Adds the specified mapping to the web service */
 	public Integer addMapping(Mapping mapping) throws RemoteException
 	{
 		Integer mappingID = (Integer)callMethod("addMapping",new Object[] {mapping});
 		return mappingID==0 ? null : mappingID;
 	}
-		
+
 	/** Updates the specified mapping in the web service */
 	public boolean updateMapping(Mapping mapping) throws RemoteException
 		{ return (Boolean)callMethod("updateMapping",new Object[] {mapping}); }
-	
+
 	/** Deletes the specified mapping from the web service */
 	public boolean deleteMapping(Integer mappingID) throws RemoteException
 		{ return (Boolean)callMethod("deleteMapping",new Object[] {mappingID}); }
@@ -453,34 +453,34 @@ public class SchemaStoreClient
 		MappingCell[] mappingCells = (MappingCell[])callMethod("getMappingCells",new Object[] {mappingID});
 		return mappingCells==null ? new ArrayList<MappingCell>() : new ArrayList<MappingCell>(Arrays.asList(mappingCells));
 	}
-	
+
 	/** Adds the specified mapping cell to the web service */
 	public Integer addMappingCell(MappingCell mappingCell) throws RemoteException
 	{
 		Integer mappingCellID = (Integer)callMethod("addMappingCell",new Object[] {mappingCell});
 		return mappingCellID==0 ? null : mappingCellID;
 	}
-		
+
 	/** Updates the specified mapping cell in the web service */
 	public boolean updateMappingCell(MappingCell mappingCell) throws RemoteException
 		{ return (Boolean)callMethod("updateMappingCell",new Object[] {mappingCell}); }
-	
+
 	/** Deletes the specified mapping from the web service */
 	public boolean deleteMappingCell(Integer mappingCellID) throws RemoteException
 		{ return (Boolean)callMethod("deleteMappingCell",new Object[] {mappingCellID}); }
-	
+
 	//----------------------
 	// Annotation Functions
 	//----------------------
-		
+
 	/** Sets the annotation for the specified element and attribute */
 	public boolean setAnnotation(Integer elementID, String attribute, String value) throws RemoteException
-		{ return (Boolean)callMethod("setAnnotation",new Object[] {elementID,attribute,value}); }	
-	
+		{ return (Boolean)callMethod("setAnnotation",new Object[] {elementID,attribute,value}); }
+
 	/** Gets the annotation for the specified element and attribute */
 	public String getAnnotation(Integer elementID, String attribute) throws RemoteException
 		{ return (String)callMethod("getAnnotation",new Object[] {elementID,attribute}); }
-	
+
 	//-------------------
 	// Derived Functions
 	//-------------------
@@ -499,7 +499,7 @@ public class SchemaStoreClient
 		Integer schemaID = (Integer)callMethod("importSchema",new Object[] {schema, new SchemaElementList(schemaElements.toArray(new SchemaElement[0]))});
 		return schemaID==0 ? null : schemaID;
 	}
-		
+
 	/** Saves the mapping and mapping cells to the web service */
 	public Integer saveMapping(Mapping mapping, ArrayList<MappingCell> mappingCells) throws RemoteException
 	{

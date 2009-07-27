@@ -20,26 +20,21 @@ package org.mitre.schemastore.mapfunctions;
 import java.rmi.RemoteException;
 import org.mitre.schemastore.mapfunctions.*;
 import org.mitre.schemastore.model.*;
+import org.mitre.schemastore.model.graph.*;
 import org.mitre.schemastore.client.*;
 
 import org.mitre.schemastore.model.SchemaElement;
 
 
 /**
- *  This class provides the for the addition of two fields. 
+ *  This class provides the for the addition of two fields.
  *  @author     Jeffrey Hoyt
  *  @version    1.0
  */
 public class NumericAdd extends AbstractMappingFunction
 {
 
-    public NumericAdd( SchemaStoreClient client )
-    {
-        this.client = client;
-        setMetaData();
-    }
-
-    public NumericAdd()
+    public NumericAdd( )
     {
         setMetaData();
     }
@@ -57,7 +52,7 @@ public class NumericAdd extends AbstractMappingFunction
         version = "1.0";
     }
 
-    public String getRelationalString() throws IllegalArgumentException
+    public String getRelationalString( String colPrefix, Graph graph ) throws IllegalArgumentException
     {
         if( inputs.size() != 2 )
         {
@@ -66,16 +61,16 @@ public class NumericAdd extends AbstractMappingFunction
         SchemaElement one, two;
         try
         {
-            one = getSchemaElement( inputs.get(0) );
-            two = getSchemaElement( inputs.get(1) );
+            one = getSchemaElement( inputs.get(0), graph );
+            two = getSchemaElement( inputs.get(1), graph);
         }
         catch (RemoteException e)
         {
             throw new IllegalArgumentException( "SchemaStoreClient could not be reached.", e );
         }
         //TODO -check the types
-        
-        return one.getName() + " + " + two.getName();
+
+        return colPrefix + scrubAttributeName(one.getName()) + " + " + colPrefix + scrubAttributeName(two.getName());
     }
 }
 
