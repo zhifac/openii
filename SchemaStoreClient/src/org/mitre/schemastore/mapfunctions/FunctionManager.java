@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
- 
+
 package org.mitre.schemastore.mapfunctions;
 
 import java.io.InputStream;
 import java.util.*;
 import org.xml.sax.*;
 import org.xml.sax.helpers.*;
-import org.mitre.schemastore.client.SchemaStoreClient;
 
 
 /** Class for managing the various map functions */
@@ -29,21 +28,18 @@ public class FunctionManager
 {
 	/** Stores listings of the map function display names */
 	private List<String> displayNames = null;
-    
+
     /** stores the mapping between displayName and class name  */
     private Properties functionLookup = null;
-    
-    private SchemaStoreClient client = null;
-	
-	/** 
+
+	/**
      * Constructs the porter manager class
      */
-	public FunctionManager(SchemaStoreClient client)
+	public FunctionManager()
 	{
-        this.client = client;
         reloadFunctions( );
 	}
-	
+
     /**
      *  takes a list of fully qualified class names and populates the displayNames List as
      *  well as the functionLookup Map
@@ -86,16 +82,16 @@ public class FunctionManager
             functionLookup.setProperty( displayName, name );
         }
     }
-    
-	/** 
+
+	/**
      * Returns a list of names of map functions.  To get an instance of the function, use {@link #getFunction() getFunction}.
      */
 	public List<String> getAvailableFunctions()
-	{ 
+	{
         return Collections.unmodifiableList( displayNames );
     }
-    
-    
+
+
     /**
      *  returns the AbstractMappingFunction corresponding to the display name passed in
      */
@@ -111,10 +107,9 @@ public class FunctionManager
         {
             throw new FunctionNotFoundException( displayName + " was not found as an available function" );
         }
-        ret.setClient(client);
         return ret;
     }
-    
+
 
     /**
      *  Based on the passed in class name, uses Reflection to create the new
@@ -143,5 +138,5 @@ public class FunctionManager
             e.printStackTrace();
             return null;
         }
-    }	
+    }
 }

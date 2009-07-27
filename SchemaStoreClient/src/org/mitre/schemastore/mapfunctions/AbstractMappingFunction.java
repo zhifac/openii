@@ -14,28 +14,54 @@
  * limitations under the License.
  */
 
- 
+
 package org.mitre.schemastore.mapfunctions;
 
 import org.mitre.schemastore.model.SchemaElement;
-import org.mitre.schemastore.client.SchemaStoreClient;
+import org.mitre.schemastore.model.MappingCell;
+import org.mitre.schemastore.model.graph.*;
 import java.util.*;
 
 /**
  *  This class provides the base functionality necessary to put a mapping function in all parts of OpenII.  It provides
- *  information to the Harmony GUI, SchemaStore/M3, and RMap.  All mapping functions must inherit from this class.   
+ *  information to the Harmony GUI, SchemaStore/M3, and RMap.  All mapping functions must inherit from this class.
  *  @author     Jeffrey Hoyt
  *  @version    1.0
  */
 abstract public class AbstractMappingFunction
 {
+
+    /*  TDOO: casting
+    <cast specification> ::=
+        CAST ( <cast operand> AS
+            <cast target> )
+
+
+
+    <cast target> ::=
+          CHAR [ ( <length> ) ]
+        | VARCHAR ( <length> )
+        | NUMERIC
+        | INTEGER
+        | FLOAT
+        | DATE
+        | TIME [ ( <unsigned integer> ) ]
+              [ WITH TIME ZONE ]
+        | TIMESTAMP [ ( <timestamp precision> ) ]
+              [ WITH TIME ZONE ]
+
+
+    */
+
+
+
     /**
      *  An enumeration of output types
      */
-    public static enum Type { STRING, REAL, INTEGER, DATETIME, BOOLEAN };
+    public static enum Type { STRING, REAL, INTEGER, DATETIME, BOOLEAN, ANY_NUMERIC, ANY };
 
     //configuration variables.  These should be set by subclasses in constructors.  Where possible, NotImplementedException will be thrown where these variables are not overridden.
-    
+
     /**
      *  The classname - it is recommended that all constructors of implementing classes add a <pre>KEY = getClass().getName()</pre> to their constructor to set this
      */
@@ -45,15 +71,15 @@ abstract public class AbstractMappingFunction
      *  The minimum number of arguments necessary for this function
      */
     protected int minArgs = -1;
-    
+
     /**
-     *  The maximum number of arguments necessary for this function. Set to the same number as min_args to 
+     *  The maximum number of arguments necessary for this function. Set to the same number as min_args to
      *  specify an exact number of inputs
      */
     protected int maxArgs = -1;
-    
+
     /**
-     *  The function common name -  this is to be used in GUIs and for display purposes.  Examples are Add, Standard 
+     *  The function common name -  this is to be used in GUIs and for display purposes.  Examples are Add, Standard
      *  Deviatioon, and Modulus
      */
     protected String displayName = null;
@@ -62,65 +88,53 @@ abstract public class AbstractMappingFunction
      *  A user-friendly description of what this mapping function does.
      */
     protected String description = null;
-    
+
     /**
-     *  The version number.  All subclasses should start with 1.0 and add major and minor revisions as necessary.  
+     *  The version number.  All subclasses should start with 1.0 and add major and minor revisions as necessary.
      *  Subclasses should stick to just two digits, though.  Do not add a third number.
      */
     protected String version = null;
-    
+
     /**
      *  The function output type.  Example usage -> <pre>outputType = OutputType.STRING</pre>
      */
     protected Type outputType = null;
-    
+
     /**
      *  This List stores, in order, the input typess to the function defined.  If necessary, casts will have to
      *  be employed to convert the actual type into something the fuction can use.
      */
     protected List<Type> inputTypes = new ArrayList<Type>();
-    
+
     //variables for internal use.  These are available to all functions and typcially represent information used by the OpenII tools.
     /**
-     *  SchemaStoreClient to be used to access the data types and other metadata
+     *  This List stores, in order, the inputs to the function defined.  What is stored is the ElementID (or a
+     *  MappingID)  from the SchemaStore/M3 repository.  Lookups will have to be performed to get metadata about
+     *  the attributes.
      */
-    protected SchemaStoreClient client = null;
-    
-    /**
-     *  This List stores, in order, the inputs to the function defined.  What is stored is the ElementID (or a 
-     *  MappingID)  from the SchemaStore/M3 repository.  Lookups will have to be performed to get metadata about 
-     *  the attributes.  
-     */           
     protected List<Integer> inputs = new ArrayList<Integer>();
-    
+
     /**
      *  The ID of the output (this could be the input to another mapping or an element ID
      */
     protected int output = -1;
-    
+
     //methods
     /**
-     *  Sets the SchemaStoreClient to use
-     */
-    public void setClient( SchemaStoreClient client)
-    {
-        this.client = client;
-    }
-    
-    
-    /**
      *  Returns the string to be inserted into SQL to perform this mapping
+     *  @param colPrefix table alias (possibly with schema) to be prepended to every column name.  No decimal is\
+     *                    added..if that's the intent, this parameter should end with a "."
      */
-    abstract public String getRelationalString() throws IllegalArgumentException, NotImplementedException ;
-    
+    abstract public String getRelationalString( String colPrefix, Graph graph ) throws IllegalArgumentException, NotImplementedException ;
+
     /**
-     *  Returns the string to be used for an XQuery statement to perform this mapping.  Throws a 
+     *  Returns the string to be used for an XQuery statement to perform this mapping.  Throws a
      *  NotImplementedException exception if not overwritten by subclasses.
      */
     public String getXQueryString() throws NotImplementedException,IllegalArgumentException
     {
         throw new NotImplementedException( "getXQueryString() has not been implemented yet for " + KEY );
-    }    
+    }
     /**
      *  The display name to be used to be used in GUIs and for display purposes
      */
@@ -132,7 +146,7 @@ abstract public class AbstractMappingFunction
         }
         return displayName;
     }
-    
+
     /**
      *  The description detailing what the function does
      */
@@ -144,7 +158,7 @@ abstract public class AbstractMappingFunction
         }
         return description;
     }
-    
+
     /**
      *  The minimum number of arguements required
      */
@@ -156,7 +170,7 @@ abstract public class AbstractMappingFunction
         }
         return minArgs;
     }
-    
+
     /**
      *  The maximum number of arguements required
      */
@@ -177,9 +191,10 @@ abstract public class AbstractMappingFunction
         }
         return version;
     }
-    
+
     /**
-     *  Returns the output type.  Unless it's extended, this will be one of STRING, REAL, INTEGER, DATETIME, or BOOLEAN
+     *  Returns the output type.  Unless it's extended, this will be one of ANY, STRING, REAL, INTEGER, DATETIME,
+     *  or BOOLEAN
      */
     public String getOutputType() throws NotImplementedException
     {
@@ -189,7 +204,7 @@ abstract public class AbstractMappingFunction
         }
         return String.valueOf( outputType );
     }
-    
+
     /**
      *  Returns, in order, the types of the expected inputs
      */
@@ -201,7 +216,7 @@ abstract public class AbstractMappingFunction
         }
         return (String[]) inputTypes.toArray();
     }
-    
+
     /**
      *  Adds a new SchemaElement ID to the list of inputs
      *  TODO: type checking and casting here?
@@ -210,13 +225,44 @@ abstract public class AbstractMappingFunction
     {
         inputs.add(i);
     }
-    
+
+    /**
+     *  Adds a new SchemaElement ID to the list of inputs
+     *  TODO: type checking and casting here?
+     */
+     public void addInputs(Integer[] newInputs)
+    {
+        for( Integer i : newInputs )
+        {
+            inputs.add(i);
+        }
+    }
+
     /**
      *  Returns the SchemaElement with the ID provided
      */
-    public SchemaElement getSchemaElement(Integer i) throws java.rmi.RemoteException
+    public SchemaElement getSchemaElement(Integer i, Graph graph) throws java.rmi.RemoteException
     {
-        return client.getSchemaElement( i );
+        return graph.getElement( i );
+    }
+
+    /**
+     *  does basic clean up on the attribute name
+     */
+    protected String scrubAttributeName(String name)
+    {
+        if (name.contains(" ")) name = "\"" + name +"\"";
+        return name;
+    }
+
+    /**
+     *  Uses Reflection to create a new MappingFunction from a MappingCell
+     */
+    public static AbstractMappingFunction castMappingFunction(MappingCell cell, Graph graph)
+    {
+        AbstractMappingFunction object = FunctionManager.castFunction( cell. getFunctionClass());
+        object.addInputs( cell.getInput() );
+        return object;
     }
 }
 // Please do not remove the line below - jch
