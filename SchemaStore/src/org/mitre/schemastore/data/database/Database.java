@@ -2,10 +2,13 @@
 
 package org.mitre.schemastore.data.database;
 
+import java.util.List;
+
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.Calendar;
 
@@ -33,23 +36,23 @@ public class Database
 {
 	/** Sets up a database connection */
 	private DatabaseConnection connection = null;
-	
+
 	/** Class for returning extensions */
 	public class Extension
 	{
 		/** Stores the schema ID */
 		private Integer schemaID;
-		
+
 		/** Stores the extension ID */
 		private Integer extensionID;
-		
+
 		/** Constructs the extension */
 		private Extension(Integer schemaID, Integer extensionID)
 			{ this.schemaID = schemaID;  this.extensionID = extensionID; }
 
 		/** Returns the schema ID */
 		public Integer getSchemaID() { return schemaID; }
-		
+
 		/** Returns the extension ID */
 		public Integer getExtensionID() { return extensionID; }
 	}
@@ -59,21 +62,21 @@ public class Database
 	{
 		/** Stores the schema ID */
 		private Integer schemaID;
-		
+
 		/** Stores the group ID */
 		private Integer groupID;
-		
+
 		/** Constructs the schema group */
 		private SchemaGroup(Integer schemaID, Integer groupID)
 			{ this.schemaID = schemaID;  this.groupID = groupID; }
 
 		/** Returns the schema ID */
 		public Integer getSchemaID() { return schemaID; }
-		
+
 		/** Returns the group ID */
 		public Integer getGroupID() { return groupID; }
 	}
-	
+
 	/** Scrub strings to avoid database errors */
 	private String scrub(String word, int length)
 	{
@@ -84,17 +87,17 @@ public class Database
 		}
 		return word;
 	}
-	
+
 	/** Constructs the database class */
 	public Database(DatabaseConnection connection)
 		{ this.connection = connection; }
-	
-	/** Indicates if the database is properly connected */
-	public boolean isConnected()
-		{ try { connection.getStatement(); return true; } catch(SQLException e) { return false; } }
-	
+
+    /** Indicates if the database is properly connected */
+ 	public boolean isConnected()
+ 		{ try { connection.getStatement(); return true; } catch(SQLException e) { return false; } }
+
 	//---------------------------------------
-	// Handles Universal IDs in the Database 
+	// Handles Universal IDs in the Database
 	//---------------------------------------
 
 	/** Retrieves a universal id */
@@ -110,11 +113,11 @@ public class Database
 		connection.commit();
 		return universalID;
 	}
-	
+
 	//---------------------------------
-	// Handles Schemas in the Database 
+	// Handles Schemas in the Database
 	//---------------------------------
-	
+
 	/** Retrieves the list of schemas in the repository */
 	public ArrayList<Schema> getSchemas()
 	{
@@ -142,7 +145,7 @@ public class Database
 		} catch(SQLException e) { System.out.println("(E) Database:getSchema: "+e.getMessage()); }
 		return schema;
 	}
-	
+
 	/** Extends the specified schema */
 	public Schema extendSchema(Schema schema)
 	{
@@ -163,7 +166,7 @@ public class Database
 		}
 		return extendedSchema;
 	}
-	
+
 	/** Adds the specified schema */
 	public Integer addSchema(Schema schema)
 	{
@@ -202,7 +205,7 @@ public class Database
 		}
 		return success;
 	}
-	
+
 	/** Returns the list of deletable schemas */
 	public ArrayList<Integer> getDeletableSchemas()
 	{
@@ -220,15 +223,15 @@ public class Database
 		catch(SQLException e) { System.out.println("(E) Database:getDeletableSchemas: "+e.getMessage()); }
 		return schemas;
 	}
-	
+
 	/** Deletes the specified schema */
 	public boolean deleteSchema(int schemaID)
-	{		
+	{
 		boolean success = false;
 		try {
 			// Identify which schema elements should be deleted
 			Statement stmt = connection.getStatement();
-			
+
 			// Delete the schema elements
 			stmt.executeUpdate("DELETE FROM alias WHERE schema_id="+schemaID);
 			stmt.executeUpdate("DELETE FROM subtype WHERE schema_id="+schemaID);
@@ -238,7 +241,7 @@ public class Database
 			stmt.executeUpdate("DELETE FROM domainvalue WHERE schema_id="+schemaID);
 			stmt.executeUpdate("DELETE FROM \"domain\" WHERE schema_id="+schemaID);
 			stmt.executeUpdate("DELETE FROM entity WHERE schema_id="+schemaID);
-				
+
 			// Delete the schema from the database
 			stmt.executeUpdate("DELETE FROM schema_group WHERE schema_id="+schemaID);
 			stmt.executeUpdate("DELETE FROM extensions WHERE schema_id="+schemaID);
@@ -273,9 +276,9 @@ public class Database
 		}
 		return success;
 	}
-	
+
 	//---------------------------------------
-	// Handles Schema Groups in the Database 
+	// Handles Schema Groups in the Database
 	//---------------------------------------
 
 	/** Retrieves the schema groups validation number */
@@ -291,7 +294,7 @@ public class Database
 		} catch(SQLException e) { System.out.println("(E) Database:getSchemaGroupValidationNumber: "+e.getMessage()); }
 		return validationNumber;
 	}
-	
+
 	/** Retrieves the list of groups */
 	public ArrayList<Group> getGroups()
 	{
@@ -319,7 +322,7 @@ public class Database
 		} catch(SQLException e) { System.out.println("(E) Database:getGroup: "+e.getMessage()); }
 		return group;
 	}
-	
+
 	/** Retrieves the list of subgroups for the specified group */
 	public ArrayList<Group> getSubgroups(Integer groupID)
 	{
@@ -333,7 +336,7 @@ public class Database
 		} catch(SQLException e) { System.out.println("(E) Database:getGroups: "+e.getMessage()); }
 		return groups;
 	}
-	
+
 	/** Adds the specified group */
 	public Integer addGroup(Group group)
 	{
@@ -353,7 +356,7 @@ public class Database
 		}
 		return groupID;
 	}
-	
+
 	/** Updates the specified group */
 	public Boolean updateGroup(Group group)
 	{
@@ -372,10 +375,10 @@ public class Database
 		}
 		return success;
 	}
-	
+
 	/** Deletes the specified group */
 	public boolean deleteGroup(int groupID)
-	{	
+	{
 		boolean success = false;
 		try {
 			Statement stmt = connection.getStatement();
@@ -383,7 +386,7 @@ public class Database
 			stmt.executeUpdate("DELETE FROM groups WHERE id="+groupID);
 			stmt.close();
 			connection.commit();
-			success = true;			
+			success = true;
 		}
 		catch(SQLException e)
 		{
@@ -392,7 +395,7 @@ public class Database
 		}
 		return success;
 	}
-	
+
 	/** Retrieve the list of schema groups */
 	public ArrayList<SchemaGroup> getSchemaGroups()
 	{
@@ -403,10 +406,10 @@ public class Database
 			while(rs.next())
 				schemaGroups.add(new SchemaGroup(rs.getInt("schema_id"),rs.getInt("group_id")));
 			stmt.close();
-		} catch(SQLException e) { System.out.println("(E) Database:getSchemaGroups: "+e.getMessage()); }		
+		} catch(SQLException e) { System.out.println("(E) Database:getSchemaGroups: "+e.getMessage()); }
 		return schemaGroups;
 	}
-	
+
 	/** Add the group to the specified schema */
 	public Boolean addGroupToSchema(Integer schemaID, Integer groupID)
 	{
@@ -419,7 +422,7 @@ public class Database
 				stmt.executeUpdate("INSERT INTO schema_group(schema_id,group_id) VALUES ("+schemaID+","+groupID+")");
 			stmt.close();
 			connection.commit();
-			success = true;			
+			success = true;
 		}
 		catch(SQLException e)
 		{
@@ -428,7 +431,7 @@ public class Database
 		}
 		return success;
 	}
-	
+
 	/** Remove the group to the specified schema */
 	public Boolean removeGroupFromSchema(Integer schemaID, Integer groupID)
 	{
@@ -438,7 +441,7 @@ public class Database
 			stmt.executeUpdate("DELETE FROM schema_group WHERE schema_id="+schemaID+" AND group_id="+groupID);
 			stmt.close();
 			connection.commit();
-			success = true;			
+			success = true;
 		}
 		catch(SQLException e)
 		{
@@ -449,7 +452,7 @@ public class Database
 	}
 
 	//----------------------------------------------
-	// Handles Schema Relationships in the Database 
+	// Handles Schema Relationships in the Database
 	//----------------------------------------------
 
 	/** Retrieves the schema extensions validation number */
@@ -465,7 +468,7 @@ public class Database
 		} catch(SQLException e) { System.out.println("(E) Database:getSchemaExtensionsValidationNumber: "+e.getMessage()); }
 		return validationNumber;
 	}
-	
+
 	/** Retrieves the list of schema extensions */
 	public ArrayList<Extension> getSchemaExtensions()
 	{
@@ -479,7 +482,7 @@ public class Database
 		} catch(SQLException e) { System.out.println("(E) Database:getSchemaExtensions: "+e.getMessage()); }
 		return extensions;
 	}
-	
+
 	/** Updates the specified schema parents */
 	public boolean setSchemaParents(Integer schemaID, ArrayList<Integer> parentIDs)
 	{
@@ -488,7 +491,7 @@ public class Database
 			Statement stmt = connection.getStatement();
 			stmt.executeUpdate("DELETE FROM extensions WHERE schema_id="+schemaID);
 			for(Integer parentSchemaID : parentIDs)
-				stmt.executeUpdate("INSERT INTO extensions(schema_id,base_id) VALUES("+schemaID+","+parentSchemaID+")");			
+				stmt.executeUpdate("INSERT INTO extensions(schema_id,base_id) VALUES("+schemaID+","+parentSchemaID+")");
 			stmt.close();
 			connection.commit();
 			success = true;
@@ -500,11 +503,11 @@ public class Database
 		}
 		return success;
 	}
-	
+
 	//-----------------------------------------
-	// Handles Schema Elements in the Database 
+	// Handles Schema Elements in the Database
 	//-----------------------------------------
-	
+
 	/** Retrieves the default domain values from the repository */
 	public ArrayList<Domain> getDefaultDomains()
 	{
@@ -518,7 +521,7 @@ public class Database
 		} catch(SQLException e) { System.out.println("(E) Database:getDefaultDomains: "+e.getMessage()); }
 		return defaultDomains;
 	}
-	
+
 	/** Retrieves the default domain value count from the repository */
 	public Integer getDefaultDomainCount()
 	{
@@ -531,19 +534,19 @@ public class Database
 		} catch(SQLException e) { System.out.println("(E) Database:getDefaultDomainCount: "+e.getMessage()); }
 		return defaultDomainCount;
 	}
-	
+
 	/** Retrieves the list of base elements for the specified schema in the repository */
 	public ArrayList<SchemaElement> getBaseElements(Integer schemaID)
 	{
 		ArrayList<SchemaElement> baseElements = new ArrayList<SchemaElement>();
 		try {
 			Statement stmt = connection.getStatement();
-			
+
 			// Gets the schema entities
 			ResultSet rs = stmt.executeQuery("SELECT id,name,description FROM entity WHERE schema_id="+schemaID);
 			while(rs.next())
 				baseElements.add(new Entity(rs.getInt("id"),rs.getString("name"),rs.getString("description"),schemaID));
-					
+
 			// Gets the schema attributes
 			rs = stmt.executeQuery("SELECT id,name,description,entity_id,domain_id,\"min\",\"max\",\"key\" FROM attribute WHERE schema_id="+schemaID);
 			while(rs.next())
@@ -556,10 +559,10 @@ public class Database
 				Integer min = rs.getString("min")==null?null:rs.getInt("min");
 				Integer max = rs.getString("max")==null?null:rs.getInt("max");
 				boolean key = rs.getString("key").equals("t");
-				
+
 				baseElements.add(new Attribute(id,name,description,entityID,domainID,min,max,key,schemaID));
 			}
-			
+
 			// Gets the schema domains
 			rs = stmt.executeQuery("SELECT id,name,description FROM \"domain\" WHERE schema_id="+schemaID);
 			while(rs.next())
@@ -569,8 +572,8 @@ public class Database
 			rs = stmt.executeQuery("SELECT id,value,description,domain_id FROM domainvalue WHERE schema_id="+schemaID);
 			while(rs.next())
 				baseElements.add(new DomainValue(rs.getInt("id"),rs.getString("value"),rs.getString("description"),rs.getInt("domain_id"),schemaID));
-				
-			// Gets the schema relationships			
+
+			// Gets the schema relationships
 			rs = stmt.executeQuery("SELECT id,name,left_id,left_min,left_max,right_id,right_min,right_max FROM relationship WHERE schema_id="+schemaID);
 			while(rs.next())
 			{
@@ -584,7 +587,7 @@ public class Database
 				Integer rightMax = rs.getString("right_max")==null?null:rs.getInt("right_max");
 				baseElements.add(new Relationship(id,name,leftID,leftMin,leftMax,rightID,rightMin,rightMax,schemaID));
 			}
-				
+
 			// Gets the schema containment relationships
 			rs = stmt.executeQuery("SELECT id,name,description,parent_id,child_id,\"min\",\"max\" FROM containment WHERE schema_id="+schemaID);
 			while(rs.next())
@@ -598,7 +601,7 @@ public class Database
 				Integer max = rs.getString("max")==null?null:rs.getInt("max");
 				baseElements.add(new Containment(id,name,description,parentID,childID,min,max,schemaID));
 			}
-				
+
 			// Gets the schema subset relationships
 			rs = stmt.executeQuery("SELECT id,parent_id,child_id FROM subtype WHERE schema_id="+schemaID);
 			while(rs.next())
@@ -608,24 +611,24 @@ public class Database
 				Integer childID = rs.getInt("child_id");
 				baseElements.add(new Subtype(id,parentID,childID,schemaID));
 			}
-			
+
 			// Gets the schema aliases
 			rs = stmt.executeQuery("SELECT id,name,alias.element_id FROM alias WHERE schema_id="+schemaID);
 			while(rs.next())
 				baseElements.add(new Alias(rs.getInt("id"),rs.getString("name"),rs.getInt("element_id"),schemaID));
-				
+
 			stmt.close();
 		} catch(SQLException e) { System.out.println("(E) Database:getBaseElements: "+e.getMessage()); }
 		return baseElements;
 	}
-	
+
 	/** Retrieves the requested schema element from the repository */
 	public SchemaElement getSchemaElement(Integer schemaElementID)
 	{
 		SchemaElement schemaElement = null;
 		try {
 			Statement stmt = connection.getStatement();
-			
+
 			// Determine the base and type
 			Integer base = null;
 			String type = "";
@@ -640,7 +643,7 @@ public class Database
 				rs.next();
 				schemaElement = new Entity(rs.getInt("id"),rs.getString("name"),rs.getString("description"),base);
 			}
-					
+
 			// Gets the specified attribute
 			else if(type.equals("attribute"))
 			{
@@ -656,8 +659,8 @@ public class Database
 				boolean key = rs.getString("key").equals("t");
 				schemaElement = new Attribute(id,name,description,entityID,domainID,min,max,key,base);
 			}
-				
-			// Gets the specified domain			
+
+			// Gets the specified domain
 			else if(type.equals("domain"))
 			{
 				rs = stmt.executeQuery("SELECT id,name,description FROM \"domain\" WHERE id="+schemaElementID);
@@ -672,8 +675,8 @@ public class Database
 				rs.next();
 				schemaElement = new DomainValue(rs.getInt("id"),rs.getString("value"),rs.getString("description"),rs.getInt("domain_id"),base);
 			}
-				
-			// Gets the specified relationship			
+
+			// Gets the specified relationship
 			else if(type.equals("relationship"))
 			{
 				rs = stmt.executeQuery("SELECT id,name,left_id,left_min,left_max,right_id,right_min,right_max FROM relationship WHERE id="+schemaElementID);
@@ -688,7 +691,7 @@ public class Database
 				Integer rightMax = rs.getString("right_max")==null?null:rs.getInt("right_max");
 				schemaElement = new Relationship(id,name,leftID,leftMin,leftMax,rightID,rightMin,rightMax,base);
 			}
-				
+
 			// Gets the specified containment relationship
 			else if(type.equals("containment"))
 			{
@@ -703,7 +706,7 @@ public class Database
 				Integer max = rs.getString("max")==null?null:rs.getInt("max");
 				schemaElement = new Containment(id,name,description,parentID,childID,min,max,base);
 			}
-				
+
 			// Gets the specified subset relationship
 			else if(type.equals("subtype"))
 			{
@@ -714,20 +717,20 @@ public class Database
 				Integer childID = rs.getInt("child_id");
 				schemaElement = new Subtype(id,parentID,childID,base);
 			}
-			
-			// Gets the specified alias			
+
+			// Gets the specified alias
 			else if(type.equals("alias"))
 			{
 				rs = stmt.executeQuery("SELECT id,name,element_id FROM alias WHERE id="+schemaElementID);
 				rs.next();
 				schemaElement = new Alias(rs.getInt("id"),rs.getString("name"),rs.getInt("element_id"),base);
 			}
-				
+
 			stmt.close();
 		} catch(SQLException e) { System.out.println("(E) Database:getSchemaElement: "+e.getMessage()); }
 		return schemaElement;
 	}
-	
+
 	/** Adds a schema element to the specified schema */
 	private void insertSchemaElement(Statement stmt, SchemaElement schemaElement) throws SQLException
 	{
@@ -736,18 +739,18 @@ public class Database
 		String name = scrub(schemaElement.getName(),100);
 		String description = scrub(schemaElement.getDescription(),4096);
 		Integer baseID = schemaElement.getBase();
-	
+
 		// Inserts an entity
 		if(schemaElement instanceof Entity)
 			stmt.addBatch("INSERT INTO entity(id,name,description,schema_id) VALUES("+id+",'"+name+"','"+description+"',"+baseID+")");
-	
+
 		// Inserts an attribute
 		if(schemaElement instanceof Attribute)
 		{
 			Attribute attribute = (Attribute)schemaElement;
 			stmt.addBatch("INSERT INTO attribute(id,name,description,entity_id,domain_id,\"min\",\"max\",\"key\",schema_id) VALUES("+id+",'"+name+"','"+description+"',"+attribute.getEntityID()+","+attribute.getDomainID()+","+attribute.getMin()+","+attribute.getMax()+",'"+(attribute.isKey()?"t":"f")+"',"+baseID+")");
 		}
-	
+
 		// Inserts a domain
 		if(schemaElement instanceof Domain)
 			stmt.addBatch("INSERT INTO \"domain\"(id,name,description,schema_id) VALUES("+id+",'"+name+"','"+description+"',"+baseID+")");
@@ -758,28 +761,28 @@ public class Database
 			DomainValue domainValue = (DomainValue)schemaElement;
 			stmt.addBatch("INSERT INTO domainvalue(id,value,description,domain_id,schema_id) VALUES("+id+",'"+name+"','"+description+"',"+domainValue.getDomainID()+","+baseID+")");
 		}
-		
+
 		// Inserts a relationship
 		if(schemaElement instanceof Relationship)
 		{
 			Relationship relationship = (Relationship)schemaElement;
 			stmt.addBatch("INSERT INTO relationship(id,name,left_id,left_min,left_max,right_id,right_min,right_max,schema_id) VALUES("+id+",'"+name+"',"+relationship.getLeftID()+","+relationship.getLeftMin()+","+relationship.getLeftMax()+","+relationship.getRightID()+","+relationship.getRightMin()+","+relationship.getRightMax()+","+baseID+")");
 		}
-				
+
 		// Inserts a containment relationship
 		if(schemaElement instanceof Containment)
 		{
 			Containment containment = (Containment)schemaElement;
 			stmt.addBatch("INSERT INTO containment(id,name,description,parent_id,child_id,\"min\",\"max\",schema_id) VALUES("+id+",'"+name+"','"+description+"',"+containment.getParentID()+","+containment.getChildID()+","+containment.getMin()+","+containment.getMax()+","+baseID+")");
 		}
-		
+
 		// Inserts a subset relationship
 		if(schemaElement instanceof Subtype)
 		{
 			Subtype subtype = (Subtype)schemaElement;
 			stmt.addBatch("INSERT INTO subtype(id,parent_id,child_id,schema_id) VALUES("+id+","+subtype.getParentID()+","+subtype.getChildID()+","+baseID+")");
 		}
-		
+
 		// Inserts an alias
 		if(schemaElement instanceof Alias)
 		{
@@ -787,7 +790,7 @@ public class Database
 			stmt.addBatch("INSERT INTO alias(id,name,element_id,schema_id) VALUES("+id+",'"+name+"',"+alias.getElementID()+","+baseID+")");
 		}
 	}
-	
+
 	/** Adds a schema element to the specified schema */
 	public Integer addSchemaElement(SchemaElement schemaElement)
 	{
@@ -809,7 +812,7 @@ public class Database
 		}
 		return schemaElementID;
 	}
-	
+
 	/** Adds the schema elements to the specified schema */
 	public boolean addSchemaElements(ArrayList<SchemaElement> schemaElements)
 	{
@@ -828,11 +831,11 @@ public class Database
 		{
 			try { connection.rollback(); } catch(SQLException e2) {}
 			System.out.println("(E) Database:addSchemaElements: "+e.getMessage());
-			return false;			
+			return false;
 		}
 		return true;
 	}
-	
+
 	/** Updates the specified schema element */
 	public boolean updateSchemaElement(SchemaElement schemaElement)
 	{
@@ -843,7 +846,7 @@ public class Database
 			// Retrieve the schema element name, description, and base ID
 			String name = scrub(schemaElement.getName(),100);
 			String description = scrub(schemaElement.getDescription(),4096);
-			
+
 			// Updates an entity
 			if(schemaElement instanceof Entity)
 			{
@@ -871,21 +874,21 @@ public class Database
 				DomainValue domainValue = (DomainValue)schemaElement;
 				stmt.executeUpdate("UPDATE domainvalue SET value='"+name+"', description='"+description+"', domain_id="+domainValue.getDomainID()+" WHERE id="+domainValue.getId());
 			}
-			
+
 			// Updates a relationship
 			if(schemaElement instanceof Relationship)
 			{
 				Relationship relationship = (Relationship)schemaElement;
 				stmt.executeUpdate("UPDATE relationship SET name='"+name+"', left_id="+relationship.getLeftID()+", left_min="+relationship.getLeftMin()+", left_max="+relationship.getLeftMax()+", right_id="+relationship.getRightID()+", right_min="+relationship.getRightMin()+", right_max="+relationship.getRightMax()+" WHERE id="+relationship.getId());
 			}
-			
+
 			// Updates a containment relationship
 			if(schemaElement instanceof Containment)
 			{
 				Containment containment = (Containment)schemaElement;
 				stmt.executeUpdate("UPDATE containment SET name='"+name+"', description='"+description+"' parent_id="+containment.getParentID()+", child_id="+containment.getChildID()+", \"min\"="+containment.getMin()+", \"max\"="+containment.getMax()+" WHERE id="+containment.getId());
 			}
-			
+
 			// Updates a subset relationship
 			if(schemaElement instanceof Subtype)
 			{
@@ -899,7 +902,7 @@ public class Database
 				Alias alias = (Alias)schemaElement;
 				stmt.executeUpdate("UPDATE alias SET name='"+name+"', element_id='"+alias.getElementID()+"' WHERE id="+alias.getId());
 			}
-			
+
 			stmt.close();
 			connection.commit();
 			success = true;
@@ -911,7 +914,7 @@ public class Database
 		}
 		return success;
 	}
-	
+
 	/** Deletes the specified schema element */
 	public boolean deleteSchemaElement(int schemaElementID)
 	{
@@ -924,7 +927,7 @@ public class Database
 			ResultSet rs = stmt.executeQuery("SELECT \"type\" FROM schema_elements WHERE id="+schemaElementID);
 			if(rs.next()) type = rs.getString("type");
 			if(type.equals("domain")) type = "\"domain\"";
-			
+
 			// Delete the element
 			stmt.executeUpdate("DELETE FROM "+type+" WHERE id="+schemaElementID);
 			stmt.close();
@@ -961,12 +964,12 @@ public class Database
 				baseFilter = baseFilter.substring(0, baseFilter.length()-1) + ")";
 			}
 			else baseFilter = "1=1";
-				
+
 			// Gets the schema entities
 			ResultSet rs = stmt.executeQuery("SELECT id,name,description,schema_id FROM entity WHERE "+baseFilter+" AND (" + nameFilter + " OR " + descFilter + ")");
 			while(rs.next())
 				elements.add(new Entity(rs.getInt("id"),rs.getString("name"),rs.getString("description"),rs.getInt("schema_id")));
-					
+
 			// Gets the schema attributes
 			rs = stmt.executeQuery("SELECT id,name,description,entity_id,domain_id,\"min\",\"max\",\"key\",schema_id FROM attribute WHERE "+baseFilter+" AND (" + nameFilter + " OR " + descFilter + ")");
 			while(rs.next())
@@ -982,7 +985,7 @@ public class Database
 				boolean key = rs.getString("key").equals("t");
 				elements.add(new Attribute(id,name,description,entityID,domainID,min,max,key,schemaID));
 			}
-			
+
 			// Gets the schema domains
 			rs = stmt.executeQuery("SELECT id,name,description,schema_id FROM \"domain\" WHERE "+baseFilter+" AND (" + nameFilter + " OR " + descFilter + ")");
 			while(rs.next())
@@ -992,8 +995,8 @@ public class Database
 			rs = stmt.executeQuery("SELECT id,value,description,domain_id,schema_id FROM domainvalue WHERE "+baseFilter+" AND (" + valueFilter + " OR " + descFilter + ")");
 			while(rs.next())
 				elements.add(new DomainValue(rs.getInt("id"),rs.getString("value"),rs.getString("description"),rs.getInt("domain_id"),rs.getInt("schema_id")));
-				
-			// Gets the schema relationships			
+
+			// Gets the schema relationships
 			rs = stmt.executeQuery("SELECT id,name,left_id,left_min,left_max,right_id,right_min,right_max,schema_id FROM relationship WHERE "+baseFilter+" AND " + nameFilter);
 			while(rs.next())
 			{
@@ -1008,7 +1011,7 @@ public class Database
 				Integer schemaID = rs.getInt("schema_id");
 				elements.add(new Relationship(id,name,leftID,leftMin,leftMax,rightID,rightMin,rightMax,schemaID));
 			}
-				
+
 			// Gets the schema containment relationships
 			rs = stmt.executeQuery("SELECT id,name,description,parent_id,child_id,\"min\",\"max\",schema_id FROM containment WHERE "+baseFilter+" AND (" + nameFilter + " OR " + descFilter + ")");
 			while(rs.next())
@@ -1023,21 +1026,21 @@ public class Database
 				Integer schemaID = rs.getInt("schema_id");
 				elements.add(new Containment(id,name,description,parentID,childID,min,max,schemaID));
 			}
-			
+
 			// Gets the schema aliases
 			rs = stmt.executeQuery("SELECT id,name,alias.element_id,schema_id FROM alias WHERE "+baseFilter+" AND " + nameFilter);
 			while(rs.next())
 				elements.add(new Alias(rs.getInt("id"),rs.getString("name"),rs.getInt("element_id"),rs.getInt("schema_id")));
-				
+
 			stmt.close();
 		} catch(SQLException e) { System.out.println("(E) Database:getSchemaElementsForKeyword: "+e.getMessage()); }
 		return elements;
 	}
-	
+
 	//--------------------------------------
-	// Handles Data Sources in the Database 
+	// Handles Data Sources in the Database
 	//--------------------------------------
-	
+
 	/** Retrieve a list of data sources for the specified schema (or all if no schemaID given) */
 	public ArrayList<DataSource> getDataSources(Integer schemaID)
 	{
@@ -1051,7 +1054,7 @@ public class Database
 		} catch(SQLException e) { System.out.println("(E) Database:getDataSources - "+e.getMessage()); }
 		return dataSources;
 	}
-	
+
 	/** Retrieve the specified data source */
 	public DataSource getDataSource(Integer dataSourceID)
 	{
@@ -1065,7 +1068,7 @@ public class Database
 		} catch(SQLException e) { System.out.println("(E) Database:getDataSource - "+e.getMessage()); }
 		return dataSource;
 	}
-	
+
 	/** Retrieve the specified data source based on the specified URL */
 	public DataSource getDataSourceByURL(String url)
 	{
@@ -1079,7 +1082,7 @@ public class Database
 		} catch(SQLException e) { System.out.println("(E) Database:getDataSourceByURL - "+e.getMessage()); }
 		return dataSource;
 	}
-	
+
 	/** Adds a data source to the specified schema */
 	public Integer addDataSource(DataSource dataSource)
 	{
@@ -1099,7 +1102,7 @@ public class Database
 		}
 		return dataSourceID;
 	}
-	
+
 	/** Updates the specified dataSource */
 	public boolean updateDataSource(DataSource dataSource)
 	{
@@ -1118,7 +1121,7 @@ public class Database
 		}
 		return success;
 	}
-	
+
 	/** Deletes the specified dataSource */
 	public boolean deleteDataSource(int dataSourceID)
 	{
@@ -1136,12 +1139,12 @@ public class Database
 			System.out.println("(E) Database:deleteDataSource - "+e.getMessage());
 		}
 		return success;
-	}	
-	
+	}
+
 	//----------------------------------
-	// Handles Mappings in the Database 
+	// Handles Mappings in the Database
 	//----------------------------------
-	
+
 	/** Retrieves the specified mapping from the repository */
 	public Mapping getMapping(Integer mappingID)
 	{
@@ -1168,7 +1171,7 @@ public class Database
 		} catch(SQLException e) { System.out.println("(E) Database:getMapping: "+e.getMessage()); }
 		return mapping;
 	}
-	
+
 	/** Retrieves the list of mappings in the repository */
 	public ArrayList<Mapping> getMappings()
 	{
@@ -1182,7 +1185,7 @@ public class Database
 		} catch(SQLException e) { System.out.println("(E) Database:getMappings: "+e.getMessage()); }
 		return mappings;
 	}
-	
+
 	/** Retrieves the list of mappings associated with the specified schema in the repository */
 	public ArrayList<Integer> getSchemaMappingIDs(Integer schemaID)
 	{
@@ -1196,7 +1199,7 @@ public class Database
 		} catch(SQLException e) { System.out.println("(E) Database:getSchemaMappings: "+e.getMessage()); }
 		return mappingIDs;
 	}
-	
+
 	/** Adds the specified mapping */
 	public Integer addMapping(Mapping mapping)
 	{
@@ -1250,10 +1253,10 @@ public class Database
 		}
 		return success;
 	}
-	
+
 	/** Deletes the specified mapping */
 	public boolean deleteMapping(int mappingID)
-	{	
+	{
 		boolean success = false;
 		try {
 			Statement stmt = connection.getStatement();
@@ -1263,7 +1266,7 @@ public class Database
 			stmt.executeUpdate("DELETE FROM mapping WHERE id="+mappingID);
 			stmt.close();
 			connection.commit();
-			success = true;			
+			success = true;
 		}
 		catch(SQLException e)
 		{
@@ -1272,76 +1275,153 @@ public class Database
 		}
 		return success;
 	}
-	
+
 	/** Retrieves the list of mapping cells in the repository for the specified mapping */
 	public ArrayList<MappingCell> getMappingCells(Integer mappingID)
 	{
 		ArrayList<MappingCell> mappingCells = new ArrayList<MappingCell>();
 		try {
 			Statement stmt = connection.getStatement();
-			ResultSet rs = stmt.executeQuery("SELECT id,element1_id,element2_id,score,author,modification_date,transform,notes,validated FROM mapping_cell WHERE mapping_id="+mappingID);
+            //get the proposed cells
+			ResultSet rs = stmt.executeQuery("SELECT id,input_id,output_id,score,author,modification_date,notes FROM proposed_mapping_cell WHERE mapping_id="+mappingID);
 			while(rs.next())
-				mappingCells.add(new MappingCell(rs.getInt("id"),mappingID,rs.getInt("element1_id"),rs.getInt("element2_id"),rs.getDouble("score"),rs.getString("author"),rs.getDate("modification_date"),rs.getString("transform"),rs.getString("notes"),rs.getString("validated").equals("t")));
+				mappingCells.add( MappingCell.createProposedMappingCell(rs.getInt("id"),mappingID,rs.getInt("input_id"),rs.getInt("output_id"),rs.getDouble("score"),rs.getString("author"),rs.getDate("modification_date"),rs.getString("notes")));
+            rs.close();
+            //get the validated cells
+            rs = stmt.executeQuery("SELECT id,output_id,author,modification_date,function_class,notes FROM validated_mapping_cell WHERE mapping_id="+mappingID);
+            List<Integer> inputs;
+            Statement s2 = connection.getStatement();
+            ResultSet rs2;
+            int cellID;
+            while(rs.next())
+            {
+                cellID = rs.getInt("id");
+                //build the array of inputs
+                inputs = new ArrayList<Integer>();
+                rs2 = s2.executeQuery("SELECT input_id FROM mapping_input WHERE cell_id="+cellID + " order by input_order" );
+                while(rs2.next())
+                {
+                    inputs.add( rs.getInt("id") );
+                }
+                rs2.close();
+				mappingCells.add(MappingCell.createValidatedMappingCell(cellID,mappingID,inputs.toArray(new Integer[0]),rs.getInt("output_id"),rs.getString("author"),rs.getDate("modification_date"),rs.getString("function_class"),rs.getString("notes")));
+            }
+            s2.close();
+            rs.close();
 			stmt.close();
-		} catch(SQLException e) { System.out.println("(E) Database:getMappingCells: "+e.getMessage()); }
+		} catch(SQLException e) { System.out.println("(E) Database:getMappingCells: "+e.getMessage());}
 		return mappingCells;
 	}
 
 	/** Adds the specified mapping cell */
 	public Integer addMappingCell(MappingCell mappingCell)
 	{
+        return addMappingCell(mappingCell, true);
+    }
+
+
+	/** Adds the specified mapping cell */
+	public Integer addMappingCell(MappingCell mappingCell, boolean commit)
+	{
+        String validatedInsert = "INSERT INTO validated_mapping_cell (id, mapping_id, function_class ,output_id, author, modification_date, notes ) values (?,?,?,?,?,?,?)";
+        String validatedInputInsert = "INSERT INTO mapping_input ( cell_id, input_id, input_order ) values (?,?,?)";
+        String proposedInsert = "INSERT INTO proposed_mapping_cell (id, mapping_id, input_id, output_id, score, author, modification_date, notes ) values (?,?,?,?,?,?,?,?)";
 		Integer mappingCellID = 0;
-		try {
-			mappingCellID = getUniversalIDs(1);
-			Statement stmt = connection.getStatement();
-			Date date = null;
-			if(mappingCell.getModificationDate()!=null)
-				date = new Date(mappingCell.getModificationDate().getTime());
-			else date = new Date(Calendar.getInstance().getTime().getTime());
-			stmt.executeUpdate("INSERT INTO mapping_cell(id,mapping_id,element1_id,element2_id,score,author,modification_date,transform,notes,validated) " +
-							   "VALUES("+mappingCellID+","+mappingCell.getMappingId()+","+mappingCell.getElement1()+","+mappingCell.getElement2()+","+mappingCell.getScore()+",'"+scrub(mappingCell.getAuthor(),100)+"','"+date.toString()+"','"+scrub(mappingCell.getTransform(),200)+"','"+scrub(mappingCell.getNotes(),4096)+"','"+(mappingCell.getValidated()?"t":"f")+"')");
-			stmt.close();
-			connection.commit();
-		}
-		catch(SQLException e)
-		{
-			try { connection.rollback(); } catch(SQLException e2) {}
-			mappingCellID = 0;
-			System.out.println("(E) Database:addMappingCell: "+e.getMessage());
-		}
+        try {
+            mappingCellID = getUniversalIDs(1);
+            Date date = new Date(mappingCell.getModificationDate().getTime());
+            if( mappingCell.getType().equals(MappingCell.MappingType.VALIDATED) )
+            {
+                PreparedStatement stmt = connection.prepareStatement(validatedInsert);
+                int i = 1;
+                stmt.setInt(i++, mappingCellID);
+                stmt.setInt(i++, mappingCell.getMappingId());
+                stmt.setString(i++, mappingCell.getFunctionClass());
+                stmt.setInt(i++, mappingCell.getOutput());
+                stmt.setString(i++, scrub(mappingCell.getAuthor(),100));
+                stmt.setDate(i++, date);
+                stmt.setString(i++, scrub(mappingCell.getNotes(),4096));
+                stmt.executeUpdate();
+                stmt.close();
+                stmt = connection.prepareStatement(validatedInputInsert);
+                Integer[] inputs = mappingCell.getInput();
+                i = 1;
+                for(Integer input_id : inputs) {
+                    stmt.setInt(1, mappingCellID);
+                    stmt.setInt(2, input_id);
+                    stmt.setInt(3, i++);
+                    stmt.executeUpdate();
+                }
+                stmt.close();
+            }
+            else
+            {
+                PreparedStatement stmt = connection.prepareStatement(proposedInsert);
+                int i = 1;
+                stmt.setInt(i++, mappingCellID);
+                stmt.setInt(i++, mappingCell.getMappingId());
+                stmt.setInt(i++, mappingCell.getInput()[0]);
+                stmt.setInt(i++, mappingCell.getOutput());
+                stmt.setDouble(i++, mappingCell.getScore());
+                stmt.setString(i++, scrub(mappingCell.getAuthor(),100));
+                stmt.setDate(i++, date);
+                stmt.setString(i++, scrub(mappingCell.getNotes(),4096));
+                stmt.executeUpdate();
+                stmt.close();
+            }
+            if(commit) connection.commit();
+        }
+        catch(SQLException e)
+        {
+            try { connection.rollback(); } catch(SQLException e2) {}
+            mappingCellID = 0;
+            System.out.println("(E) Database:addMappingCell: "+e.getMessage());
+        }
+
 		return mappingCellID;
 	}
 
 	/** Updates the specified mapping cell */
 	public boolean updateMappingCell(MappingCell mappingCell)
 	{
-		boolean success = false;
+		boolean success = true;
 		try {
-			Statement stmt = connection.getStatement();
-			Date date = new Date(mappingCell.getModificationDate().getTime());
-			stmt.executeUpdate("UPDATE mapping_cell SET score="+mappingCell.getScore()+", author='"+scrub(mappingCell.getAuthor(),100)+"', modification_date='"+date.toString()+"', transform='"+scrub(mappingCell.getTransform(),200)+"', notes='"+scrub(mappingCell.getNotes(),4096)+"', validated='"+(mappingCell.getValidated()?"t":"f")+"' WHERE id="+mappingCell.getId());
-			stmt.close();
-			connection.commit();
-			success = true;
-		}
+            success = success && deleteMappingCell( mappingCell.getId(), false );
+            success = success && ( !addMappingCell( mappingCell, false ).equals(Integer.valueOf(0)));
+			if (success) connection.commit();
+            else {
+                connection.rollback();
+                return false;
+            }
+        }
 		catch(SQLException e)
 		{
 			try { connection.rollback(); } catch(SQLException e2) {}
 			System.out.println("(E) Database:updateMappingCell: "+e.getMessage());
+            return false;
 		}
-		return success;
+        return true;
 	}
-	
+
 	/** Deletes the specified mapping cell */
 	public boolean deleteMappingCell(int mappingCellID)
-	{	
+	{
+        return deleteMappingCell(mappingCellID, true);
+    }
+
+    /** Deletes the specified mapping cell */
+	public boolean deleteMappingCell(int mappingCellID, boolean commit)
+	{
 		boolean success = false;
 		try {
 			Statement stmt = connection.getStatement();
-			stmt.executeUpdate("DELETE FROM mapping_cell WHERE id="+mappingCellID);
+            //delete it wherever it may be
+            stmt.executeUpdate("DELETE FROM proposed_mapping_cell WHERE id="+mappingCellID);
+            stmt.executeUpdate("DELETE FROM mapping_input WHERE cell_id="+mappingCellID);
+			stmt.executeUpdate("DELETE FROM validated_mapping_cell WHERE id="+mappingCellID);
 			stmt.close();
-			connection.commit();
-			success = true;			
+            if(commit) connection.commit();
+			success = true;
 		}
 		catch(SQLException e)
 		{
@@ -1350,9 +1430,9 @@ public class Database
 		}
 		return success;
 	}
-	
+
 	//-------------------------------------
-	// Handles Annotations in the Database 
+	// Handles Annotations in the Database
 	//-------------------------------------
 
 	/** Sets the specified annotation in the database */
@@ -1374,7 +1454,7 @@ public class Database
 		}
 		return success;
 	}
-	
+
 	/** Gets the specified annotation in the database */
 	public String getAnnotation(int elementID, String attribute)
 	{

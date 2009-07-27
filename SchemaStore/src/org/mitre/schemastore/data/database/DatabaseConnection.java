@@ -11,6 +11,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.PreparedStatement;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -23,14 +24,14 @@ public class DatabaseConnection
 	// Constants for indicating if the database connection is to Postgres or Derby
 	static public final Integer POSTGRES = 0;
 	static public final Integer DERBY = 1;
-	
+
 	// Stores the database connection info
 	private Integer databaseType = null;
 	private String databaseLoc = null;
 	private String databaseName = null;
 	private String databaseUser = null;
 	private String databasePassword = null;
-	
+
 	/** Stores the database connection */
 	private Connection connection = null;
 
@@ -43,7 +44,7 @@ public class DatabaseConnection
 		if(serverMatcher.find()) value = serverMatcher.group(1);
 		return value;
 	}
-	
+
 	/** Constructs the connection from the configuration file */
 	public DatabaseConnection()
 	{
@@ -62,7 +63,7 @@ public class DatabaseConnection
 			databaseName = getValue(buffer,"databaseName");
 			databaseUser = getValue(buffer,"databaseUser");
 			databasePassword = getValue(buffer,"databasePassword");
-			
+
 			// Assign generic location if none given
 			if(databaseLoc.equals(""))
 			{
@@ -78,7 +79,7 @@ public class DatabaseConnection
 		catch(IOException e)
 			{ System.out.println("(E)DatabaseConnection - schemastore.xml has failed to load!\n"+e.getMessage()); }
 	}
-	
+
 	/** Constructs the connection from the specified settings */
 	public DatabaseConnection(Integer type, String server, String database, String user, String password)
 	{
@@ -93,18 +94,19 @@ public class DatabaseConnection
 		if(databaseType.equals(DERBY))
 			databaseLoc = new File(databaseLoc).getAbsolutePath().replaceAll(".*:","");
 	}
-	
-	/** Creates a sql statement */
-	Statement getStatement() throws SQLException
-	{
+
+
+    private boolean checkConnection() throws SQLException
+    {
 		// Check to make sure database connection still works
 		if(connection!=null)
 			try {
 				Statement stmt = connection.createStatement();
 				stmt.executeQuery("SELECT id FROM universal_id");
-				return stmt;
+                stmt.close();
+				return true;
 			} catch(Exception e) { connection=null; }
-		
+
 		// Attempt to connect to database
 		try {
 			if(connection==null)
@@ -119,9 +121,7 @@ public class DatabaseConnection
 	    		// Initialize and update the database as needed
 	    		DatabaseUpdates.initializeDatabase(connection);
 	    		DatabaseUpdates.updateDatabase(connection);
-				
-				// Return a sql statement
-				return connection.createStatement();
+                return true;
 			}
 		}
 		catch (Exception e)
@@ -129,12 +129,26 @@ public class DatabaseConnection
 
 		// Indicates that a statement failed to be created
 		throw new SQLException();
+    }
+
+	/** Creates a sql statement */
+	Statement getStatement() throws SQLException
+	{
+        checkConnection();
+        return connection.createStatement();
+	}
+
+	/** Creates a prepared statement */
+	PreparedStatement prepareStatement(String statement) throws SQLException
+	{
+        checkConnection();
+        return connection.prepareStatement(statement);
 	}
 
 	/** Commits changes to the database */
 	void commit() throws SQLException
 		{ connection.commit(); }
-	
+
 	/** Rolls back changes to the database */
 	void rollback() throws SQLException
 		{ connection.rollback(); }
