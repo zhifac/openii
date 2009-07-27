@@ -151,7 +151,23 @@ public class DatabaseUpdates
 		stmt.close(); connection.commit();
 	}
 
-	/** Installs version 4 updates.  These changes relate to adding functions to the mappings..as a result, the mapping_cell table is split into 3.
+	/** Installs version 3 updates */
+	static private void version3Updates(Connection connection) throws SQLException
+	{
+		// Increase the size of the notes field in the mapping_cell table
+		Statement stmt = connection.createStatement();
+		stmt.executeUpdate("ALTER TABLE mapping_cell ADD COLUMN temp_notes CHARACTER VARYING(4096)");
+		stmt.executeUpdate("UPDATE mapping_cell SET temp_notes=notes");
+		stmt.executeUpdate("ALTER TABLE mapping_cell DROP COLUMN notes");
+		renameColumn(stmt,"mapping_cell","temp_notes","notes");
+
+		// Increase the version id
+		stmt.executeUpdate("UPDATE version SET id=3");
+		stmt.close(); connection.commit();
+	}
+
+	/**
+	 *  Installs version 4 updates.  These changes relate to adding functions to the mappings..as a result, the mapping_cell table is split into 3.
      *  One for proposed mappings and two for validated mappings.  The second is needed to support multiple inputs that functions can take in.
      */
 	static private void version4Updates(Connection connection) throws SQLException
@@ -183,21 +199,6 @@ public class DatabaseUpdates
         stmt.executeUpdate("DROP TABLE mapping_cell");
 		// Increase the version id
 		stmt.executeUpdate("UPDATE version SET id=4");
-		stmt.close(); connection.commit();
-	}
-
-	/** Installs version 3 updates */
-	static private void version3Updates(Connection connection) throws SQLException
-	{
-		// Increase the size of the notes field in the mapping_cell table
-		Statement stmt = connection.createStatement();
-		stmt.executeUpdate("ALTER TABLE mapping_cell ADD COLUMN temp_notes CHARACTER VARYING(4096)");
-		stmt.executeUpdate("UPDATE mapping_cell SET temp_notes=notes");
-		stmt.executeUpdate("ALTER TABLE mapping_cell DROP COLUMN notes");
-		renameColumn(stmt,"mapping_cell","temp_notes","notes");
-
-		// Increase the version id
-		stmt.executeUpdate("UPDATE version SET id=3");
 		stmt.close(); connection.commit();
 	}
 
