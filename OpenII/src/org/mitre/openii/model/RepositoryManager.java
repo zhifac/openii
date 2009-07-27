@@ -89,8 +89,7 @@ public class RepositoryManager
 		// If no repositories were loaded, load in default repository
 		if(repositories.size()==0)
 			try {
-				repositories.add(new Repository("Local Repository",Repository.DERBY,new URI("."),"schemastore","postgres","postgres"));
-				saveRepositories();
+				addRepository(new Repository("Local Repository",Repository.DERBY,new URI("."),"schemastore","postgres","postgres"));
 			} catch(Exception e) {}
 
 		// If no repository was selected, pick first repository
