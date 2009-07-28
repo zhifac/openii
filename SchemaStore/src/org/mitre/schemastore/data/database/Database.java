@@ -2,15 +2,12 @@
 
 package org.mitre.schemastore.data.database;
 
-import java.util.List;
-
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.PreparedStatement;
 import java.util.ArrayList;
-import java.util.Calendar;
 
 import org.mitre.schemastore.model.Alias;
 import org.mitre.schemastore.model.Attribute;
@@ -1282,57 +1279,62 @@ public class Database
 		ArrayList<MappingCell> mappingCells = new ArrayList<MappingCell>();
 		try {
 			Statement stmt = connection.getStatement();
-            //get the proposed cells
+            Statement stmt2 = connection.getStatement();
+
+			// Retrieve proposed cells
 			ResultSet rs = stmt.executeQuery("SELECT id,input_id,output_id,score,author,modification_date,notes FROM proposed_mapping_cell WHERE mapping_id="+mappingID);
 			while(rs.next())
 				mappingCells.add( MappingCell.createProposedMappingCell(rs.getInt("id"),mappingID,rs.getInt("input_id"),rs.getInt("output_id"),rs.getDouble("score"),rs.getString("author"),rs.getDate("modification_date"),rs.getString("notes")));
             rs.close();
-            //get the validated cells
+
+            // Retrieve validated cells
             rs = stmt.executeQuery("SELECT id,output_id,author,modification_date,function_class,notes FROM validated_mapping_cell WHERE mapping_id="+mappingID);
-            List<Integer> inputs;
-            Statement s2 = connection.getStatement();
-            ResultSet rs2;
-            int cellID;
             while(rs.next())
             {
-                cellID = rs.getInt("id");
-                //build the array of inputs
-                inputs = new ArrayList<Integer>();
-                rs2 = s2.executeQuery("SELECT input_id FROM mapping_input WHERE cell_id="+cellID + " order by input_order" );
-                while(rs2.next())
-                {
-                    inputs.add( rs.getInt("id") );
-                }
+                int cellID = rs.getInt("id");
+
+                // Get the list of mapping inputs
+                ArrayList<Integer> inputs = new ArrayList<Integer>();
+                ResultSet rs2 = stmt2.executeQuery("SELECT input_id FROM mapping_input WHERE cell_id=" + cellID + " ORDER BY input_order" );
+                while(rs2.next()) inputs.add(rs2.getInt("input_id"));
                 rs2.close();
-				mappingCells.add(MappingCell.createValidatedMappingCell(cellID,mappingID,inputs.toArray(new Integer[0]),rs.getInt("output_id"),rs.getString("author"),rs.getDate("modification_date"),rs.getString("function_class"),rs.getString("notes")));
+
+                // Store the mapping cell
+                mappingCells.add(MappingCell.createValidatedMappingCell(cellID,mappingID,inputs.toArray(new Integer[0]),rs.getInt("output_id"),rs.getString("author"),rs.getDate("modification_date"),rs.getString("function_class"),rs.getString("notes")));
             }
-            s2.close();
             rs.close();
-			stmt.close();
-		} catch(SQLException e) { System.out.println("(E) Database:getMappingCells: "+e.getMessage());}
+
+            // Close the statements
+            stmt.close();
+            stmt2.close();
+		}
+		catch(SQLException e) { System.out.println("(E) Database:getMappingCells: "+e.getMessage());}
 		return mappingCells;
 	}
 
 	/** Adds the specified mapping cell */
 	public Integer addMappingCell(MappingCell mappingCell)
-	{
-        return addMappingCell(mappingCell, true);
-    }
-
+		{ return addMappingCell(mappingCell, true); }
 
 	/** Adds the specified mapping cell */
-	public Integer addMappingCell(MappingCell mappingCell, boolean commit)
+	private Integer addMappingCell(MappingCell mappingCell, boolean commit)
 	{
+		// Define various insert statements
         String validatedInsert = "INSERT INTO validated_mapping_cell (id, mapping_id, function_class ,output_id, author, modification_date, notes ) values (?,?,?,?,?,?,?)";
         String validatedInputInsert = "INSERT INTO mapping_input ( cell_id, input_id, input_order ) values (?,?,?)";
         String proposedInsert = "INSERT INTO proposed_mapping_cell (id, mapping_id, input_id, output_id, score, author, modification_date, notes ) values (?,?,?,?,?,?,?,?)";
-		Integer mappingCellID = 0;
+
+        // Insert the mapping cell
+        Integer mappingCellID = 0;
         try {
             mappingCellID = getUniversalIDs(1);
             Date date = new Date(mappingCell.getModificationDate().getTime());
+
+            // Store validated mapping cells
             if( mappingCell.getType().equals(MappingCell.MappingType.VALIDATED) )
             {
-                PreparedStatement stmt = connection.prepareStatement(validatedInsert);
+            	// Stores the validated mapping cell
+            	PreparedStatement stmt = connection.prepareStatement(validatedInsert);
                 int i = 1;
                 stmt.setInt(i++, mappingCellID);
                 stmt.setInt(i++, mappingCell.getMappingId());
@@ -1343,10 +1345,13 @@ public class Database
                 stmt.setString(i++, scrub(mappingCell.getNotes(),4096));
                 stmt.executeUpdate();
                 stmt.close();
+
+                // Stores the validated mapping cell inputs
                 stmt = connection.prepareStatement(validatedInputInsert);
                 Integer[] inputs = mappingCell.getInput();
                 i = 1;
-                for(Integer input_id : inputs) {
+                for(Integer input_id : inputs)
+                {
                     stmt.setInt(1, mappingCellID);
                     stmt.setInt(2, input_id);
                     stmt.setInt(3, i++);
@@ -1354,6 +1359,8 @@ public class Database
                 }
                 stmt.close();
             }
+            
+            // Store proposed mapping cells
             else
             {
                 PreparedStatement stmt = connection.prepareStatement(proposedInsert);
@@ -1369,6 +1376,8 @@ public class Database
                 stmt.executeUpdate();
                 stmt.close();
             }
+
+            // Commit the mapping cell to the database
             if(commit) connection.commit();
         }
         catch(SQLException e)
@@ -1387,12 +1396,9 @@ public class Database
 		boolean success = true;
 		try {
             success = success && deleteMappingCell( mappingCell.getId(), false );
-            success = success && ( !addMappingCell( mappingCell, false ).equals(Integer.valueOf(0)));
+            success = success && (!addMappingCell( mappingCell, false ).equals(Integer.valueOf(0)));
 			if (success) connection.commit();
-            else {
-                connection.rollback();
-                return false;
-            }
+            else { connection.rollback(); return false; }
         }
 		catch(SQLException e)
 		{
@@ -1405,12 +1411,10 @@ public class Database
 
 	/** Deletes the specified mapping cell */
 	public boolean deleteMappingCell(int mappingCellID)
-	{
-        return deleteMappingCell(mappingCellID, true);
-    }
+		{ return deleteMappingCell(mappingCellID, true); }
 
     /** Deletes the specified mapping cell */
-	public boolean deleteMappingCell(int mappingCellID, boolean commit)
+	private boolean deleteMappingCell(int mappingCellID, boolean commit)
 	{
 		boolean success = false;
 		try {
