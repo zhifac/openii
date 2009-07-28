@@ -15,7 +15,7 @@ import org.mitre.openii.views.manager.groups.EditGroupDialog;
 import org.mitre.openii.views.manager.mappings.DeleteMappingDialog;
 import org.mitre.openii.views.manager.mappings.EditMappingDialog;
 import org.mitre.openii.views.manager.mappings.ExportMappingDialog;
-import org.mitre.openii.views.manager.mappings.MapAllDialog;
+import org.mitre.openii.views.manager.mappings.AutoMappingDialog;
 import org.mitre.openii.views.manager.mappings.MergeMappingDialog;
 import org.mitre.openii.views.manager.mappings.importer.ImportMappingWizard;
 import org.mitre.openii.views.manager.schemas.DeleteSchemaDialog;
@@ -192,6 +192,6 @@ public class ManagerAction extends Action
 		
 		/** Handles the auto-generation of a mapping's matches */
 		if(actionType == AUTO_GENERATE_MATCHES) 
-			MapAllDialog.match( shell, (Mapping)selection);
+			AutoMappingDialog.match( shell, (Mapping)selection);
 	}
 }
