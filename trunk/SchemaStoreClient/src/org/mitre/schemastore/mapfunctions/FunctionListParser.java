@@ -16,7 +16,6 @@
  
 package org.mitre.schemastore.mapfunctions;
 
-import java.net.MalformedURLException;
 import org.xml.sax.Attributes;
 import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.SAXException;
