@@ -59,15 +59,8 @@ public class NumericSubtract extends AbstractMappingFunction
             throw new IllegalArgumentException( KEY + " requires exactly 2 inputs." );
         }
         SchemaElement one, two;
-        try
-        {
-            one = getSchemaElement( inputs.get(0), graph );
-            two = getSchemaElement( inputs.get(1), graph);
-        }
-        catch (RemoteException e)
-        {
-            throw new IllegalArgumentException( "SchemaStoreClient could not be reached.", e );
-        }
+        one = getSchemaElement( inputs.get(0), graph );
+        two = getSchemaElement( inputs.get(1), graph);
         //TODO -check the types
 
         return colPrefix + scrubAttributeName(one.getName()) + " - " + colPrefix + scrubAttributeName(two.getName());
