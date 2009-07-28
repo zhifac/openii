@@ -18,7 +18,6 @@ import org.mitre.schemastore.model.MappingSchema;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.graph.HierarchicalGraph;
-//import org.mitre.harmony.model.selectedInfo.SelectedInfo;
 import org.mitre.harmony.model.mapping.MappingCellManager;
 
 /** Class used for displaying the heat map */
@@ -287,14 +286,7 @@ public class HeatMap extends JPanel implements MouseListener, MouseMotionListene
     			int xID = elementsX[j].getID();
     			int yID = elementsY[k].getID();
     			if(bigGrid.isModified(xID, yID) == true)
-    			{
-			    	Integer mappingCellID = manager.getMappingCellID(xID, yID);
-			    	MappingCell mappingCell = manager.getMappingCell(mappingCellID);
-			    	mappingCell.setScore(bigGrid.get(xID,yID));
-			    	mappingCell.setAuthor(System.getProperty("user.name"));
-			    	mappingCell.setValidated(true);
-			    	manager.setMappingCell(mappingCell);
-    			}
+    				manager.validateMappingCell(manager.getMappingCellID(xID, yID));
 	    	}
     	}
     }

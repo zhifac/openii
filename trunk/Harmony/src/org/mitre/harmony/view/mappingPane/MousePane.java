@@ -13,6 +13,8 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 
 import javax.swing.JPanel;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -168,15 +170,13 @@ class MousePane extends JPanel implements MouseListener, MouseMotionListener
 				Integer leftID = mappingPane.getTree(MappingSchema.LEFT).getElement(leftPath);
 				Integer rightID = mappingPane.getTree(MappingSchema.RIGHT).getElement(rightPath);
 
-				// Set the mapping cell
+				// Generate the mapping cell
 				MappingCellManager manager = harmonyModel.getMappingCellManager();
-				MappingCell mappingCell = new MappingCell();
-				mappingCell.setId(manager.getMappingCellID(leftID, rightID));
-				mappingCell.setElement1(leftID);
-				mappingCell.setElement2(rightID);
-				mappingCell.setScore(1.0);
-				mappingCell.setAuthor(System.getProperty("user.name"));
-				mappingCell.setValidated(true);
+				Integer id = manager.getMappingCellID(leftID, rightID);
+				Integer mappingID = harmonyModel.getMappingManager().getMapping().getId();
+				String author = System.getProperty("user.name");
+				Date date = Calendar.getInstance().getTime();
+				MappingCell mappingCell = MappingCell.createValidatedMappingCell(id, mappingID, new Integer[]{leftID}, rightID, author, date, null, null);
 				manager.setMappingCell(mappingCell);
 			}
 			repaint();

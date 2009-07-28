@@ -3,6 +3,8 @@
 package org.mitre.harmony.view.dialogs.matcher;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
@@ -27,6 +29,7 @@ import org.mitre.harmony.model.filters.Focus;
 import org.mitre.harmony.model.mapping.MappingCellManager;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.MappingSchema;
+import org.mitre.schemastore.model.MappingCell.MappingType;
 import org.mitre.schemastore.model.graph.FilteredGraph;
 import org.mitre.schemastore.model.graph.HierarchicalGraph;
 
@@ -177,16 +180,18 @@ class MatcherDialog extends JDialog implements ActionListener, Runnable
 		{
 			// Don't store mapping cells which were already validated
 			Integer mappingCellID = manager.getMappingCellID(matchScore.getElement1(), matchScore.getElement2());
-			if(mappingCellID!=null && manager.getMappingCell(mappingCellID).getValidated()) continue;
+			if(mappingCellID!=null && manager.getMappingCell(mappingCellID).getType().equals(MappingType.VALIDATED)) continue;
 			
-			// Set the mapping cell with the generated match score
-			MappingCell mappingCell = new MappingCell();
-			mappingCell.setId(manager.getMappingCellID(matchScore.getElement1(), matchScore.getElement2()));
-			mappingCell.setElement1(matchScore.getElement1());
-			mappingCell.setElement2(matchScore.getElement2());
-			mappingCell.setScore(matchScore.getScore());
-			mappingCell.setAuthor(matcherName);
-			mappingCell.setValidated(false);
+			// Get the mapping cell properties
+			Integer id = manager.getMappingCellID(matchScore.getElement1(), matchScore.getElement2());
+			Integer mappingID = harmonyModel.getMappingManager().getMapping().getId();
+			Integer input = matchScore.getElement1();
+			Integer output = matchScore.getElement2();
+			Double score = matchScore.getScore();
+			Date date = Calendar.getInstance().getTime();
+			
+			// Set the mapping cell
+			MappingCell mappingCell = MappingCell.createProposedMappingCell(id, mappingID, input, output, score, matcherName, date, null);
 			manager.setMappingCell(mappingCell);
 		}
 	}

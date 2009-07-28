@@ -10,6 +10,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import javax.swing.AbstractAction;
@@ -68,13 +70,16 @@ public class MappingCellDialog extends JDialog implements MouseListener, MouseMo
 					// Mark mapping cells as accepted as needed
 					if(confidencePane.isAccepted())
 					{
-						mappingCell.setScore(1.0);
-						mappingCell.setAuthor(System.getProperty("user.name"));
-						mappingCell.setValidated(true);
+						Integer id = mappingCell.getId();
+						Integer mappingID = mappingCell.getMappingId();
+						String author = System.getProperty("user.name");
+						Date date = Calendar.getInstance().getTime();
+						MappingCell newMappingCell = MappingCell.createValidatedMappingCell(id, mappingID, mappingCell.getInput(), mappingCell.getOutput(), author, date, null, mappingCell.getNotes());
+						manager.setMappingCell(newMappingCell);
 					}
 
 					// Save the modified mapping cell
-					manager.setMappingCell(mappingCell);
+					else manager.setMappingCell(mappingCell);
 				}
 			}
 			

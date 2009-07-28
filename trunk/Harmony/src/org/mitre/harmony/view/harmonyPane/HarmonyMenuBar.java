@@ -26,7 +26,7 @@ import org.mitre.harmony.view.dialogs.GettingStartedDialog;
 import org.mitre.harmony.view.dialogs.mappings.LoadMappingDialog;
 import org.mitre.harmony.view.dialogs.mappings.SaveMappingDialog;
 import org.mitre.harmony.view.dialogs.matcher.MatcherMenu;
-import org.mitre.harmony.view.dialogs.properties.SchemaSettingsDialog;
+import org.mitre.harmony.view.dialogs.schemaSettings.SchemaSettingsDialog;
 import org.mitre.schemastore.model.MappingCell;
 
 /**
