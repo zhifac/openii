@@ -24,6 +24,7 @@ import javax.swing.KeyStroke;
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.mapping.MappingCellManager;
 import org.mitre.harmony.view.dialogs.AbstractButtonPane;
+import org.mitre.schemastore.mapfunctions.NullFunction;
 import org.mitre.schemastore.model.MappingCell;
 
 /**
@@ -74,7 +75,8 @@ public class MappingCellDialog extends JDialog implements MouseListener, MouseMo
 						Integer mappingID = mappingCell.getMappingId();
 						String author = System.getProperty("user.name");
 						Date date = Calendar.getInstance().getTime();
-						MappingCell newMappingCell = MappingCell.createValidatedMappingCell(id, mappingID, mappingCell.getInput(), mappingCell.getOutput(), author, date, null, mappingCell.getNotes());
+						String function = NullFunction.class.toString();
+						MappingCell newMappingCell = MappingCell.createValidatedMappingCell(id, mappingID, mappingCell.getInput(), mappingCell.getOutput(), author, date, function, mappingCell.getNotes());
 						manager.setMappingCell(newMappingCell);
 					}
 

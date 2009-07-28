@@ -9,6 +9,7 @@ import java.util.HashSet;
 import org.mitre.harmony.model.AbstractManager;
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.preferences.PreferencesListener;
+import org.mitre.schemastore.mapfunctions.NullFunction;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.MappingSchema;
 
@@ -115,10 +116,11 @@ public class MappingCellManager extends AbstractManager<MappingCellListener> imp
 		Integer outputID = mappingCell.getOutput();
 		String author = System.getProperty("user.name");
 		Date date = Calendar.getInstance().getTime();
+		String function = NullFunction.class.toString();
 		String notes = mappingCell.getNotes();
 
 		// Generate the validated mapping cell
-		MappingCell newMappingCell = MappingCell.createValidatedMappingCell(id, mappingID, inputIDs, outputID, author, date, null, notes);
+		MappingCell newMappingCell = MappingCell.createValidatedMappingCell(id, mappingID, inputIDs, outputID, author, date, function, notes);
 		mappingCells.put(mappingCell.getId(), newMappingCell);
 			
 		// Inform listeners that a mapping cell has been modified
