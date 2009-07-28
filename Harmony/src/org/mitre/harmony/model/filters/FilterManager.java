@@ -13,7 +13,6 @@ import org.mitre.harmony.model.mapping.MappingListener;
 import org.mitre.harmony.view.schemaTree.SchemaTree;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.MappingSchema;
-import org.mitre.schemastore.model.MappingCell.MappingType;
 
 /**
  * Tracks link filters used in Harmony
@@ -263,7 +262,7 @@ public class FilterManager extends AbstractManager<FiltersListener> implements M
 		}
 
 		// Check that link matches current filters for USER and SYSTEM links		
-		boolean validated = mappingCell.getType().equals(MappingType.VALIDATED);
+		boolean validated = mappingCell.getValidated();
 		if(validated && !getAssertions()[USER]) return false;
 		if(!validated && !getAssertions()[SYSTEM]) return false;
 

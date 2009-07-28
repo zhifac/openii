@@ -10,7 +10,6 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.MappingSchema;
-import org.mitre.schemastore.model.MappingCell.MappingType;
 
 /**
  * Stores the info on mapping cell's lines
@@ -108,7 +107,7 @@ class MappingCellLines
 		MappingCell mappingCell = harmonyModel.getMappingCellManager().getMappingCell(mappingCellID);
 		double conf = mappingCell.getScore();
     	if(harmonyModel.getSelectedInfo().isMappingCellSelected(mappingCellID)) return BLUE;
-    	else if(mappingCell.getType().equals(MappingType.VALIDATED))
+    	else if(mappingCell.getValidated())
     		{ if(conf>0) return harmonyModel.getMappingCellManager().isMappingCellFinished(mappingCellID) ? GRAY : BLACK; return RED; }
     	else if(conf>=1) return GREEN;
     	else if(conf<-0.333) return RED;
