@@ -16,29 +16,30 @@ import org.mitre.schemastore.model.MappingCell;
  */
 public class SaveMapping
 {	
-	/** Private class for storing a mapping cell reference table */
-	static private class MappingCellRefTable
+	/** Private class for referencing mapping cell IDs */
+	static private class MappingCellHashMap extends HashMap<String,MappingCell>
 	{
-		/** Stores a hash map of all mapping cells */
-		private HashMap<String,MappingCell> refTable = new HashMap<String,MappingCell>();
-		
 		/** Generates a reference table key */
-		private String getKey(Integer element1, Integer element2)
+		private String getKey(MappingCell mappingCell)
 		{
-			if(element1 < element2) return element1 + " " + element2;
-			return element2 + " " + element1;
+			StringBuffer key = new StringBuffer("");
+			for(Integer input : mappingCell.getInput())
+				key.append(input + " ");
+			key.append(mappingCell.getOutput());
+			return key.toString();
 		}
 			
 		/** Constructs the mapping cell reference table */
-		private MappingCellRefTable(ArrayList<MappingCell> mappingCells)
-		{
-			for(MappingCell mappingCell : mappingCells)
-				refTable.put(getKey(mappingCell.getElement1(),mappingCell.getElement2()),mappingCell);
-		}
+		private MappingCellHashMap(ArrayList<MappingCell> mappingCells)
+			{ for(MappingCell mappingCell : mappingCells) put(getKey(mappingCell),mappingCell); }
 
-		/** Retrieves the mapping cell for the specified elements */
-		private MappingCell getMappingCell(Integer element1, Integer element2)
-			{ return refTable.get(getKey(element1,element2)); }
+		/** Retrieves the ID for the specified mapping cell */
+		private MappingCell getMappingCell(MappingCell mappingCell)
+			{ return get(getKey(mappingCell)); }
+
+		/** Indicates if the hash map contains the specified mapping cell */
+		private boolean contains(MappingCell mappingCell)
+			{ return containsKey(getKey(mappingCell)); }
 	}
 	
 	/** Saves the specified mapping into the web services */
@@ -59,18 +60,16 @@ public class SaveMapping
 		}
 		
 		// Build reference tables for the old and new mapping cells
-		MappingCellRefTable oldMappingCellRefs = new MappingCellRefTable(oldMappingCells);
-		MappingCellRefTable mappingCellRefs = new MappingCellRefTable(mappingCells);
+		MappingCellHashMap oldMappingCellRefs = new MappingCellHashMap(oldMappingCells);
+		MappingCellHashMap mappingCellRefs = new MappingCellHashMap(mappingCells);
 
 		// Align mapping cell IDs with old mapping cell IDs
 		for(MappingCell mappingCell : mappingCells)
 		{
-			MappingCell oldMappingCell = oldMappingCellRefs.getMappingCell(mappingCell.getElement1(), mappingCell.getElement2());
-			if(oldMappingCell!=null)
-				mappingCell.setId(oldMappingCell.getId());
-			else mappingCell.setId(null);
+			MappingCell oldMappingCell = oldMappingCellRefs.getMappingCell(mappingCell);
+			mappingCell.setId(oldMappingCell==null ? null : oldMappingCell.getId());
 		}
-
+			
 		// Keeps track of success
 		boolean success = true;
 		
@@ -87,7 +86,7 @@ public class SaveMapping
 			
 			// Removes all mapping cells that are no longer used
 			for(MappingCell oldMappingCell : oldMappingCells)
-				if(mappingCellRefs.getMappingCell(oldMappingCell.getElement1(), oldMappingCell.getElement2())==null)
+				if(mappingCellRefs.contains(oldMappingCell))
 					if(!manager.getMappings().deleteMappingCell(oldMappingCell.getId())) success = false;
 					
 			// Adds or updates all new mapping cells
@@ -110,7 +109,7 @@ public class SaveMapping
 			if(success==false) throw new Exception();
 		}
 		
-		// Reverts back to the old mapping if a failure occured
+		// Reverts back to the old mapping if a failure occurred
 		catch(Exception e)
 		{
 			mappingID = null;
@@ -128,7 +127,7 @@ public class SaveMapping
 				manager.getMappings().updateMapping(oldMapping);
 				for(MappingCell mappingCell : manager.getMappings().getMappingCells(oldMapping.getId()))
 				{
-					MappingCell oldMappingCell = oldMappingCellRefs.getMappingCell(mappingCell.getElement1(), mappingCell.getElement2());
+					MappingCell oldMappingCell = oldMappingCellRefs.getMappingCell(mappingCell);
 					if(oldMappingCell!=null) manager.getMappings().deleteMappingCell(mappingCell.getId());
 					else manager.getMappings().updateMappingCell(oldMappingCell);
 				}
