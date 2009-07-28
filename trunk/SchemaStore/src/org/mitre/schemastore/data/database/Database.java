@@ -1329,9 +1329,7 @@ public class Database
         try {
             mappingCellID = getUniversalIDs(1);
             Date date = new Date(mappingCell.getModificationDate().getTime());
-
-            // Store validated mapping cells
-            if( mappingCell.getType().equals(MappingCell.MappingType.VALIDATED) )
+            if( mappingCell.getValidated() )
             {
             	// Stores the validated mapping cell
             	PreparedStatement stmt = connection.prepareStatement(validatedInsert);

@@ -51,12 +51,6 @@ public class MappingCell implements Serializable
 	/** Stores if the mapping cell has been validated */
 	private Boolean validated;
 
-	/** Enumeration for type of mapping */
-	public enum MappingType { PROPOSED, VALIDATED };
-
-	/** Stores if the mapping cell has been validated */
-	private MappingType type = MappingType.PROPOSED;
-
 	/** Constructs a default mapping cell */
 	public MappingCell() {}
 
@@ -69,11 +63,11 @@ public class MappingCell implements Serializable
 
     /** Constructs a proposed mapping cell */
 	private MappingCell(Integer id, Integer mappingId, Integer input, Integer output, Double score, String author, Date modificationDate, String notes)
-    { this.id=id; this.mappingId=mappingId; this.input=new Integer[1]; this.input[0]=input; this.output=output; this.score=score; this.author=author; this.modificationDate=modificationDate; this.notes=notes; this.validated=false; type=MappingType.PROPOSED; }
+    { this.id=id; this.mappingId=mappingId; this.input=new Integer[1]; this.input[0]=input; this.output=output; this.score=score; this.author=author; this.modificationDate=modificationDate; this.notes=notes; this.validated=false; }
 
     /** Constructs a validated mapping cell */
     private MappingCell(Integer id, Integer mappingId, Integer[] input, Integer output, String author, Date modificationDate, String functionClass, String notes)
-		{ this.id=id; this.mappingId=mappingId; this.input=input; this.output=output; this.author=author; this.modificationDate=modificationDate; this.functionClass=functionClass; this.notes=notes; this.validated=true; type=MappingType.VALIDATED; this.score=1.0;}
+		{ this.id=id; this.mappingId=mappingId; this.input=input; this.output=output; this.author=author; this.modificationDate=modificationDate; this.functionClass=functionClass; this.notes=notes; this.validated=true; this.score=1.0;}
 
     /**  Factory method to create a proposed mapping cell  */
     public static MappingCell createProposedMappingCell(Integer id, Integer mappingId, Integer input, Integer output, Double score, String author, Date modificationDate, String notes)
@@ -90,15 +84,10 @@ public class MappingCell implements Serializable
 	/** Copies the mapping cell */
 	public MappingCell copy()
 		{
-            switch (type)
-            {
-                case PROPOSED:
-                    return new MappingCell(getId(),getMappingId(),getInput()[0],getOutput(),getScore(),getAuthor(),getModificationDate(),getNotes());
-                case VALIDATED:
-                    return new MappingCell(getId(),getMappingId(),getInput(),getOutput(),getAuthor(),getModificationDate(),getFunctionClass(),getNotes());
-                default:
-                    return null;
-            }
+            if(validated)
+                return new MappingCell(getId(),getMappingId(),getInput(),getOutput(),getAuthor(),getModificationDate(),getFunctionClass(),getNotes());
+            else
+                return new MappingCell(getId(),getMappingId(),getInput()[0],getOutput(),getScore(),getAuthor(),getModificationDate(),getNotes());
         }
 
 	// Handles all mapping cell getterssaife
@@ -123,11 +112,7 @@ public class MappingCell implements Serializable
 	public String getTransform() { return transform==null ? "" : transform; }
     public String getFunctionClass() { return functionClass; }
 	public String getNotes() { return notes==null ? "" : notes; }
-    /**
-     *   @deprecated Use getType() instead.
-     */
 	public Boolean getValidated() { return validated; }
-    public MappingType getType() { return type; }
 
 	// Handles all mapping cell setters
 	public void setId(Integer id) { this.id = id; }
