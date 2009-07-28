@@ -86,7 +86,7 @@ public class SaveMapping
 			
 			// Removes all mapping cells that are no longer used
 			for(MappingCell oldMappingCell : oldMappingCells)
-				if(mappingCellRefs.contains(oldMappingCell))
+				if(!mappingCellRefs.contains(oldMappingCell))
 					if(!manager.getMappings().deleteMappingCell(oldMappingCell.getId())) success = false;
 					
 			// Adds or updates all new mapping cells
@@ -128,7 +128,7 @@ public class SaveMapping
 				for(MappingCell mappingCell : manager.getMappings().getMappingCells(oldMapping.getId()))
 				{
 					MappingCell oldMappingCell = oldMappingCellRefs.getMappingCell(mappingCell);
-					if(oldMappingCell!=null) manager.getMappings().deleteMappingCell(mappingCell.getId());
+					if(oldMappingCell==null) manager.getMappings().deleteMappingCell(mappingCell.getId());
 					else manager.getMappings().updateMappingCell(oldMappingCell);
 				}
 			}
