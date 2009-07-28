@@ -178,22 +178,32 @@ public class ConvertToXML
 		// Generate the mapping cell XML elements
 		for(MappingCell mappingCell : mappingCells)
 		{
-			// Retrieve the element paths
-			String element1Path = getElementPath(mappingCell.getElement1(),graphs);
-			String element2Path = getElementPath(mappingCell.getElement2(),graphs);
-			if(element1Path==null || element2Path==null) continue;
+			// Retrieve the input and output paths
+			ArrayList<String> inputPaths = new ArrayList<String>();
+			for(Integer input : mappingCell.getInput())
+			{
+				String inputPath = getElementPath(input,graphs);
+				if(inputPath==null) continue;
+				inputPaths.add(inputPath);
+			}
+			String outputPath = getElementPath(mappingCell.getOutput(),graphs);
+			if(outputPath==null) continue;
 			
 			// Stores the mapping cell information
 			Element mappingCellElement = addChildElement(element,"MappingCell",null);
 			addChildElement(mappingCellElement,"MappingCellId",mappingCell.getId());
 			addChildElement(mappingCellElement,"MappingCellAuthor",mappingCell.getAuthor());
 			addChildElement(mappingCellElement,"MappingCellDate",DateFormat.getDateInstance(DateFormat.MEDIUM).format(mappingCell.getModificationDate()));
-			addChildElement(mappingCellElement,"MappingCellElement1Id",mappingCell.getElement1());			
-			addChildElement(mappingCellElement,"MappingCellElement1Path",element1Path);
-			addChildElement(mappingCellElement,"MappingCellElement2Id",mappingCell.getElement2());
-			addChildElement(mappingCellElement,"MappingCellElement2Path",element2Path);
+			addChildElement(mappingCellElement,"MappingCellInputCount",mappingCell.getInput().length);
+			for(int i=0; i<mappingCell.getInput().length; i++)
+			{
+				addChildElement(mappingCellElement,"MappingCellInput"+i+"Id",mappingCell.getInput()[i]);			
+				addChildElement(mappingCellElement,"MappingCellInput"+i+"Path",inputPaths.get(i));
+			}
+			addChildElement(mappingCellElement,"MappingCellOutputId",mappingCell.getOutput());
+			addChildElement(mappingCellElement,"MappingCellOutputPath",outputPath);
 			addChildElement(mappingCellElement,"MappingCellScore",mappingCell.getScore());
-			addChildElement(mappingCellElement,"MappingCellTransform",mappingCell.getTransform());
+			addChildElement(mappingCellElement,"MappingCellFunction",mappingCell.getFunctionClass());
 			addChildElement(mappingCellElement,"MappingCellNotes",mappingCell.getNotes());
 			addChildElement(mappingCellElement,"MappingCellValidated",mappingCell.getValidated());
 		}
