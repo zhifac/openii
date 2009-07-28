@@ -57,20 +57,8 @@ public class NullFunction extends AbstractMappingFunction
             throw new IllegalArgumentException( KEY + " requires exactly 1 input." );
         }
         SchemaElement one;
-        try
-        {
-            one = getSchemaElement( inputs.get(0), graph );
-        }
-        catch (RemoteException e)
-        {
-            throw new IllegalArgumentException( "SchemaStoreClient could not be reached.", e );
-        }
+        one = getSchemaElement( inputs.get(0), graph );
         //TODO -check the types
-        if( one == null )
-        {
-            System.out.println("one is NULL!!!! ABORT ABORT ABORT!!");
-
-        }
         return colPrefix + scrubAttributeName( one.getName());
     }
 }

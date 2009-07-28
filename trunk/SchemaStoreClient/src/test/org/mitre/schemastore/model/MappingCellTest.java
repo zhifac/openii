@@ -56,7 +56,6 @@ public class MappingCellTest {
         assertEquals("notes", proposed.getNotes());
         assertEquals("org.mitre.schemastore.mapfunctions.NullFunction", proposed.getFunctionClass());
         assertFalse( proposed.getValidated() );
-        assertEquals( MappingCell.MappingType.PROPOSED, proposed.getType());
     }
 
     @Test
@@ -82,7 +81,6 @@ public class MappingCellTest {
         assertEquals("notes", validated.getNotes());
         assertEquals("function class", validated.getFunctionClass());
         assertTrue( validated.getValidated() );
-        assertEquals( MappingCell.MappingType.VALIDATED, validated.getType());
     }
 }
 
