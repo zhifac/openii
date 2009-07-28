@@ -11,8 +11,6 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 
 import javax.swing.AbstractAction;
 import javax.swing.JComponent;
@@ -25,7 +23,6 @@ import javax.swing.border.EmptyBorder;
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.selectedInfo.SelectedInfoListener;
 import org.mitre.harmony.view.controlPane.ControlPane;
-import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.MappingSchema;
 
 /**
