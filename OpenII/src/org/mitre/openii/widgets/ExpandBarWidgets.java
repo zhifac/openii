@@ -17,7 +17,7 @@ import org.mitre.openii.application.OpenIIActivator;
 public class ExpandBarWidgets
 {
 	/** Generates an expand item */
-	static public ExpandItem createExpandItem(ExpandBar bar, String label, Composite item)
+	static private ExpandItem createExpandItem(ExpandBar bar, String label, Composite item)
 	{
 		// Determine which height to use for sizing the expand item
 		Integer height = item.computeSize(SWT.DEFAULT, SWT.DEFAULT).y;
