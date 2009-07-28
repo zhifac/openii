@@ -37,6 +37,7 @@ import org.mitre.harmony.view.mappingPane.MappingPane;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.MappingSchema;
 import org.mitre.schemastore.model.Schema;
+import org.mitre.schemastore.model.MappingCell.MappingType;
 
 /**
  * Creates the source or target schema tree 
@@ -382,15 +383,15 @@ public class SchemaTree extends JTree implements MappingListener, PreferencesLis
 	private void updateMappingCells(Integer elementID)
 	{
 		// Mark all visible links as user selected and all others as rejected
-		for(Integer mappingCellID : harmonyModel.getMappingCellManager().getMappingCellsByElement(elementID))
+		MappingCellManager manager = harmonyModel.getMappingCellManager();
+		for(Integer mappingCellID : manager.getMappingCellsByElement(elementID))
 		{
-			MappingCell mappingCell = harmonyModel.getMappingCellManager().getMappingCell(mappingCellID);
-			if(!mappingCell.getValidated())
+			MappingCell mappingCell = manager.getMappingCell(mappingCellID);
+			if(!mappingCell.getType().equals(MappingType.VALIDATED))
 			{
-				mappingCell.setScore(harmonyModel.getFilters().isVisibleMappingCell(mappingCellID)?MappingCellManager.MAX_CONFIDENCE:MappingCellManager.MIN_CONFIDENCE);
-				mappingCell.setAuthor(System.getProperty("user.name"));
-				mappingCell.setValidated(true);
-				harmonyModel.getMappingCellManager().setMappingCell(mappingCell);
+				if(harmonyModel.getFilters().isVisibleMappingCell(mappingCellID))
+					manager.validateMappingCell(mappingCell.getId());
+				else manager.deleteMappingCell(mappingCell.getId());
 			}
 		}
 	}

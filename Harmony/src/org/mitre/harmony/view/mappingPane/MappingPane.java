@@ -11,6 +11,8 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 
 import javax.swing.AbstractAction;
 import javax.swing.JComponent;
@@ -51,24 +53,23 @@ public class MappingPane extends JDesktopPane implements ComponentListener, Line
 	/** Subclass used to accept links */
 	private class AcceptLink extends AbstractAction
 	{
-		/** Stores the score to give to the accepted link */
-		private double score;
-		
-		/** Constructs the Accept Link action */
-		private AcceptLink(double score)
-			{ this.score = score; }
-		
 		/** Accept selected link */
 		public void actionPerformed(ActionEvent arg0)
 		{
 			for(Integer mappingCellID : harmonyModel.getSelectedInfo().getSelectedMappingCells())
-			{
-				MappingCell mappingCell = harmonyModel.getMappingCellManager().getMappingCell(mappingCellID);
-				mappingCell.setScore(score);
-				mappingCell.setAuthor(System.getProperty("user.name"));
-				mappingCell.setValidated(true);
-				harmonyModel.getMappingCellManager().setMappingCell(mappingCell);
-			}
+				harmonyModel.getMappingCellManager().validateMappingCell(mappingCellID);
+			harmonyModel.getSelectedInfo().setMappingCells(new ArrayList<Integer>(),false);
+		}
+	};
+	
+	/** Subclass used to reject links */
+	private class RejectLink extends AbstractAction
+	{
+		/** Reject selected link */
+		public void actionPerformed(ActionEvent arg0)
+		{
+			for(Integer mappingCellID : harmonyModel.getSelectedInfo().getSelectedMappingCells())
+				harmonyModel.getMappingCellManager().deleteMappingCell(mappingCellID);
 			harmonyModel.getSelectedInfo().setMappingCells(new ArrayList<Integer>(),false);
 		}
 	};
@@ -109,14 +110,14 @@ public class MappingPane extends JDesktopPane implements ComponentListener, Line
 		// Register keyboard actions for accepting links
 		KeyStroke acceptKey = KeyStroke.getKeyStroke((char) KeyEvent.VK_SPACE);
 		parent.getInputMap(JPanel.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(acceptKey, "acceptLink");
-		parent.getActionMap().put("acceptLink", new AcceptLink(1.0));
+		parent.getActionMap().put("acceptLink", new AcceptLink());
 		
 		// Register keyboard actions for deleting links
 		KeyStroke deleteKey = KeyStroke.getKeyStroke((char) KeyEvent.VK_DELETE);
 		parent.getInputMap(JPanel.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(deleteKey, "deleteLink");
 		KeyStroke backspaceKey = KeyStroke.getKeyStroke((char) KeyEvent.VK_BACK_SPACE);
 		parent.getInputMap(JPanel.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(backspaceKey, "deleteLink");
-		parent.getActionMap().put("deleteLink", new AcceptLink(-1.0));
+		parent.getActionMap().put("deleteLink", new RejectLink());
 		
 		// Adds listeners to watch for events where the mapping pane need to be redrawn
 		addComponentListener(this);	

@@ -2,6 +2,7 @@ package org.mitre.harmony.model.mapping;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 
@@ -100,6 +101,28 @@ public class MappingCellManager extends AbstractManager<MappingCellListener> imp
 			// Inform listeners that a mapping cell has been modified
 			for(MappingCellListener listener : getListeners()) listener.mappingCellModified(oldMappingCell,mappingCell);
 		}
+	}
+	
+	/** Validates the mapping cell */
+	public void validateMappingCell(Integer mappingCellID)
+	{
+		MappingCell mappingCell = getMappingCell(mappingCellID);
+		
+		// Retrieve the various mapping cell fields
+		Integer id = mappingCell.getId();
+		Integer mappingID = mappingCell.getId();
+		Integer inputIDs[] = mappingCell.getInput();
+		Integer outputID = mappingCell.getOutput();
+		String author = System.getProperty("user.name");
+		Date date = Calendar.getInstance().getTime();
+		String notes = mappingCell.getNotes();
+
+		// Generate the validated mapping cell
+		MappingCell newMappingCell = MappingCell.createValidatedMappingCell(id, mappingID, inputIDs, outputID, author, date, null, notes);
+		mappingCells.put(mappingCell.getId(), newMappingCell);
+			
+		// Inform listeners that a mapping cell has been modified
+		for(MappingCellListener listener : getListeners()) listener.mappingCellModified(mappingCell,newMappingCell);
 	}
 	
 	/** Handles the deletion of a mapping cell */

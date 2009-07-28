@@ -12,7 +12,7 @@ import javax.swing.event.ListSelectionListener;
 
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.view.dialogs.AbstractButtonPane;
-import org.mitre.harmony.view.dialogs.properties.SchemaSettingsDialog;
+import org.mitre.harmony.view.dialogs.schemaSettings.SchemaSettingsDialog;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingSchema;
 
