@@ -17,7 +17,7 @@
 package org.mitre.schemastore.mapfunctions;
 
 @SuppressWarnings("serial")
-public class NotImplementedException extends Exception
+public class NotImplementedException extends RuntimeException
 {
     public NotImplementedException(String message)
     {

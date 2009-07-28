@@ -241,7 +241,7 @@ abstract public class AbstractMappingFunction
     /**
      *  Returns the SchemaElement with the ID provided
      */
-    public SchemaElement getSchemaElement(Integer i, Graph graph) throws java.rmi.RemoteException
+    public SchemaElement getSchemaElement(Integer i, Graph graph)
     {
         return graph.getElement( i );
     }
