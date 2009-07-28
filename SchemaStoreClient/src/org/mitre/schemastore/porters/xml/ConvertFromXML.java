@@ -209,22 +209,29 @@ public class ConvertFromXML
 	/** Retrieve the mapping cell from the specified XML */
 	static public MappingCell getMappingCell(Element element, ArrayList<HierarchicalGraph> graphs)
 	{
-		// Retrieve the mapping cell element IDs
-		Integer element1ID = getElementId(getValue(element,"MappingCellElement1Path"),graphs);
-		Integer element2ID = getElementId(getValue(element,"MappingCellElement2Path"),graphs);
-			if(element1ID==null || element2ID==null) return null;
+		// Retrieve the mapping cell input and output IDs
+		Integer inputCount = getIntegerValue(element,"MappingCellInputCount");
+		Integer inputIDs[] = new Integer[inputCount];
+		for(int i=0; i<inputCount; i++)
+		{
+			Integer inputID = getElementId(getValue(element,"MappingCellInput"+i+"Path"),graphs);
+			if(inputID==null) return null;
+			inputIDs[i] = inputID;
+		}
+		Integer outputID = getElementId(getValue(element,"MappingCellOutputPath"),graphs);
+		if(outputID==null) return null;
 		
-		// Populate the mapping cell
-		MappingCell mappingCell = new MappingCell();
-		mappingCell.setId(getIntegerValue(element,"MappingCellId"));
-		mappingCell.setAuthor(getValue(element,"MappingCellAuthor"));
-		mappingCell.setModificationDate(getDateValue(element,"MappingCellDate"));
-		mappingCell.setElement1(element1ID);
-		mappingCell.setElement2(element2ID);
-		mappingCell.setScore(getDoubleValue(element,"MappingCellScore"));
-		mappingCell.setTransform(getValue(element,"MappingCellTransform"));
-		mappingCell.setNotes(getValue(element,"MappingCellNotes"));
-		mappingCell.setValidated(getBooleanValue(element,"MappingCellValidated"));
-		return mappingCell;
+		// Retrieve the mapping cell elements
+		Integer id = getIntegerValue(element,"MappingCellId");
+		String author = getValue(element,"MappingCellAuthor");
+		Date date = getDateValue(element,"MappingCellDate");
+		Double score = getDoubleValue(element,"MappingCellScore");
+		String function = getValue(element,"MappingCellFunction");
+		String notes = getValue(element,"MappingCellNotes");
+		Boolean validated = getBooleanValue(element,"MappingCellValidated");
+		
+		// Return the generated mapping cell
+		if(validated) return MappingCell.createValidatedMappingCell(id, null, inputIDs, outputID, author, date, function, notes);
+		else return MappingCell.createProposedMappingCell(id, null, inputIDs[0], outputID, score, author, date, notes);
 	}
 }
