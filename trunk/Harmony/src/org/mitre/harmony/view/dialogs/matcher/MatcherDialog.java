@@ -29,7 +29,6 @@ import org.mitre.harmony.model.filters.Focus;
 import org.mitre.harmony.model.mapping.MappingCellManager;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.MappingSchema;
-import org.mitre.schemastore.model.MappingCell.MappingType;
 import org.mitre.schemastore.model.graph.FilteredGraph;
 import org.mitre.schemastore.model.graph.HierarchicalGraph;
 
@@ -180,7 +179,7 @@ class MatcherDialog extends JDialog implements ActionListener, Runnable
 		{
 			// Don't store mapping cells which were already validated
 			Integer mappingCellID = manager.getMappingCellID(matchScore.getElement1(), matchScore.getElement2());
-			if(mappingCellID!=null && manager.getMappingCell(mappingCellID).getType().equals(MappingType.VALIDATED)) continue;
+			if(mappingCellID!=null && manager.getMappingCell(mappingCellID).getValidated()) continue;
 			
 			// Get the mapping cell properties
 			Integer id = manager.getMappingCellID(matchScore.getElement1(), matchScore.getElement2());

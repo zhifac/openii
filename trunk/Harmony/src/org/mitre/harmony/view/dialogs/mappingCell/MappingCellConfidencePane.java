@@ -14,7 +14,6 @@ import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 
 import org.mitre.schemastore.model.MappingCell;
-import org.mitre.schemastore.model.MappingCell.MappingType;
 
 /**
  * Displays the confidence information about the mapping cell
@@ -33,7 +32,7 @@ public class MappingCellConfidencePane extends JPanel implements ActionListener
 	private boolean mappingCellsAccepted()
 	{
 		for(MappingCell mappingCell : mappingCells)
-			if(!mappingCell.getType().equals(MappingType.VALIDATED) || mappingCell.getScore()!=1.0) return false;
+			if(!mappingCell.getValidated() || mappingCell.getScore()!=1.0) return false;
 		return true;
 	}
 
@@ -41,7 +40,7 @@ public class MappingCellConfidencePane extends JPanel implements ActionListener
 	private boolean mappingCellsRejected()
 	{
 		for(MappingCell mappingCell : mappingCells)
-			if(!mappingCell.getType().equals(MappingType.VALIDATED) || mappingCell.getScore()!=-1.0) return false;
+			if(!mappingCell.getValidated() || mappingCell.getScore()!=-1.0) return false;
 		return true;
 	}
 	

@@ -37,7 +37,6 @@ import org.mitre.harmony.view.mappingPane.MappingPane;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.MappingSchema;
 import org.mitre.schemastore.model.Schema;
-import org.mitre.schemastore.model.MappingCell.MappingType;
 
 /**
  * Creates the source or target schema tree 
@@ -387,7 +386,7 @@ public class SchemaTree extends JTree implements MappingListener, PreferencesLis
 		for(Integer mappingCellID : manager.getMappingCellsByElement(elementID))
 		{
 			MappingCell mappingCell = manager.getMappingCell(mappingCellID);
-			if(!mappingCell.getType().equals(MappingType.VALIDATED))
+			if(!mappingCell.getValidated())
 			{
 				if(harmonyModel.getFilters().isVisibleMappingCell(mappingCellID))
 					manager.validateMappingCell(mappingCell.getId());
