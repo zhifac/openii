@@ -9,7 +9,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.awt.SWT_AWT;
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.SchemaStoreManager;
-import org.mitre.harmony.view.dialogs.properties.SchemaSettingsDialog;
+import org.mitre.harmony.view.dialogs.schemaSettings.SchemaSettingsDialog;
 import org.mitre.harmony.view.harmonyPane.HarmonyFrame;
 import org.mitre.openii.model.RepositoryManager;
 import org.mitre.schemastore.model.MappingSchema;
