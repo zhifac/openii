@@ -9,7 +9,7 @@ import org.mitre.schemastore.model.Mapping;
  * @author HAOLI
  *
  */
-public class MapAllDialog {
+public class AutoMappingDialog {
 	
 	public static void match( Shell shell, Mapping mapping ) { 
 		
