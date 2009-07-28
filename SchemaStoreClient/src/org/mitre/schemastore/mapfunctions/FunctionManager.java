@@ -129,7 +129,7 @@ public class FunctionManager
             {
                 return null;
             }
-            Class classDefinition = Class.forName( className );
+            Class<?> classDefinition = Class.forName( className );
             AbstractMappingFunction function = ( AbstractMappingFunction ) classDefinition.newInstance();
             return function;
         }
