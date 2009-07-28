@@ -10,6 +10,7 @@ import org.mitre.harmony.matchers.MatcherManager;
 import org.mitre.harmony.matchers.mergers.VoteMerger;
 import org.mitre.harmony.matchers.voters.BagMatcher;
 import org.mitre.harmony.matchers.voters.EditDistanceMatcher;
+import org.mitre.harmony.matchers.voters.ExactStructureMatcher;
 import org.mitre.harmony.matchers.voters.MatchVoter;
 import org.mitre.harmony.matchers.voters.ThesaurusMatcher;
 import org.mitre.openii.model.OpenIIManager;
@@ -62,6 +63,8 @@ public class APIMatch {
 		voters.add(new BagMatcher());
 		voters.add(new ThesaurusMatcher());
 		voters.add(new EditDistanceMatcher());
+		voters.add(new ExactStructureMatcher());
+//		voters.add(new TrivialMatcher)
 		VoteMerger merger = new VoteMerger();
 
 		Informant.status("Calling Harmony matching algorithms...");
