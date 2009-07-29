@@ -1,7 +1,5 @@
 package org.mitre.openii.widgets;
 
-import java.util.ArrayList;
-
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
@@ -15,9 +13,6 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.TableColumn;
-import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.mitre.openii.application.OpenIIActivator;
 import org.mitre.openii.model.OpenIIManager;
@@ -147,29 +142,5 @@ public class BasicWidgets
 	{
 		createLabel(parent,label);
 		return new OptionPane(parent, options, listener);
-	}
-	
-	/** Creates a table */
-	static public Table createTable(Composite parent, String fields[], ArrayList<Object[]> rows)
-	{
-		// Create the table
-		Table table = new Table(parent, SWT.SINGLE | SWT.BORDER | SWT.FULL_SELECTION);
-		table.setLinesVisible (true);
-		table.setHeaderVisible (true);
-		GridData data = new GridData(SWT.FILL, SWT.FILL, true, true);
-		table.setLayoutData(data);
-		for(String field : fields) new TableColumn(table, SWT.NONE).setText(field);
-		
-		// Populate the table
-		for(Object[] row : rows)
-		{
-			TableItem item = new TableItem(table, SWT.NONE);
-			for(int i=0; i<row.length; i++)
-				item.setText(i,row[i]==null ? "" : row[i].toString());
-		}
-		for(int i=0; i<table.getColumnCount(); i++) table.getColumn(i).pack();
-		
-		// Returns the create table
-		return table;
 	}
 }
