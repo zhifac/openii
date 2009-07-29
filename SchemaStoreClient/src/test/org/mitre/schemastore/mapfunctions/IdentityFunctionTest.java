@@ -21,9 +21,9 @@ import org.mitre.schemastore.mapfunctions.*;
 import org.junit.*;
 import static org.junit.Assert.*;
 
-public class NullFunctionTest {
+public class IdentityFunctionTest {
 
-    private NullFunction add = null;
+    private IdentityFunction add = null;
 
     /**
      * Sets up the test fixture.
@@ -31,7 +31,7 @@ public class NullFunctionTest {
      */
     @Before
     public void setUp() {
-        add = new NullFunction();
+        add = new IdentityFunction();
         add.addInput( 9 ); //Ht attribute
     }
 

@@ -37,11 +37,11 @@ public class TestFixtures
     //     ArrayList<LogicalRelation> targetLogRels = LogicalRelation.createLogicalRelations(targetGraph);
     //     ArrayList<MappingCell> coveredCorrs = new ArrayList<MappingCell>();
 
-    //     coveredCorrs.add( MappingCell.createValidatedMappingCell(1,new Integer(-1),Arrays.asList(s1.getId()).toArray(new Integer[0]),t1.getId(),"Author Q. Tester",new Date(),"org.mitre.schemastore.mapfunctions.NullFunction","notes"));
-    //     coveredCorrs.add( MappingCell.createValidatedMappingCell(2,new Integer(-1),Arrays.asList(s3.getId()).toArray(new Integer[0]),t2.getId(),"Author Q. Tester",new Date(),"org.mitre.schemastore.mapfunctions.NullFunction","notes"));
+    //     coveredCorrs.add( MappingCell.createValidatedMappingCell(1,new Integer(-1),Arrays.asList(s1.getId()).toArray(new Integer[0]),t1.getId(),"Author Q. Tester",new Date(),"org.mitre.schemastore.mapfunctions.IdentityFunction","notes"));
+    //     coveredCorrs.add( MappingCell.createValidatedMappingCell(2,new Integer(-1),Arrays.asList(s3.getId()).toArray(new Integer[0]),t2.getId(),"Author Q. Tester",new Date(),"org.mitre.schemastore.mapfunctions.IdentityFunction","notes"));
     //     // coveredCorrs.add( MappingCell.createValidatedMappingCell(3,new Integer(-1),Arrays.asList(s4.getId(), s5.getId()).toArray(new Integer[0]),t3.getId(),"Author Q. Tester",new Date(),"org.mitre.schemastore.mapfunctions.NumericAdd","notes"));
-    //     coveredCorrs.add( MappingCell.createValidatedMappingCell(4,new Integer(-1),Arrays.asList(s4.getId()).toArray(new Integer[0]),t3.getId(),"Author Q. Tester",new Date(),"org.mitre.schemastore.mapfunctions.NullFunction","notes"));
-    //     coveredCorrs.add( MappingCell.createValidatedMappingCell(5,new Integer(-1),Arrays.asList(s5.getId()).toArray(new Integer[0]),t4.getId(),"Author Q. Tester",new Date(),"org.mitre.schemastore.mapfunctions.NullFunction","notes"));
+    //     coveredCorrs.add( MappingCell.createValidatedMappingCell(4,new Integer(-1),Arrays.asList(s4.getId()).toArray(new Integer[0]),t3.getId(),"Author Q. Tester",new Date(),"org.mitre.schemastore.mapfunctions.IdentityFunction","notes"));
+    //     coveredCorrs.add( MappingCell.createValidatedMappingCell(5,new Integer(-1),Arrays.asList(s5.getId()).toArray(new Integer[0]),t4.getId(),"Author Q. Tester",new Date(),"org.mitre.schemastore.mapfunctions.IdentityFunction","notes"));
     //     ArrayList<Dependency> dependsArrayList = Dependency.generateDependencies(sourceLogRels, targetLogRels, coveredCorrs);
 
     //     Dependency depend = dependsArrayList.get(0);
