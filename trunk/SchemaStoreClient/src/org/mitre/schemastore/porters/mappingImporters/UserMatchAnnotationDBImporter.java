@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 
-import org.mitre.schemastore.mapfunctions.NullFunction;
+import org.mitre.schemastore.mapfunctions.IdentityFunction;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.MappingSchema;
 import org.mitre.schemastore.model.graph.HierarchicalGraph;
@@ -20,16 +20,16 @@ import org.mitre.schemastore.porters.ImporterException;
 public class UserMatchAnnotationDBImporter extends MappingImporter
 {
 	/** Stores the connection to the DB from which the mapping is being transferred */
-	Connection conn = null; 
-    
+	Connection conn = null;
+
 	/** Returns the importer name */
 	public String getName()
 		{ return "User Match Annotation DB Importer"; }
 
 	/** Returns the importer description */
 	public String getDescription()
-		{ return "Custom mapping importer from DB for HSIP project"; }	
-	
+		{ return "Custom mapping importer from DB for HSIP project"; }
+
 	/** Returns the importer URI file types */
 	public ArrayList<String> getFileTypes()
 		{ return new ArrayList<String>(Arrays.asList(new String[]{".mdb"})); }
@@ -37,7 +37,7 @@ public class UserMatchAnnotationDBImporter extends MappingImporter
 	/** Returns the importer URI type */
 	public Integer getURIType()
 		{ return URI; }
-	
+
 	/** Initializes the importer */
 	protected void initialize() throws ImporterException
 	{
@@ -47,15 +47,15 @@ public class UserMatchAnnotationDBImporter extends MappingImporter
 			Class.forName("sun.jdbc.odbc.JdbcOdbcDriver");
 			String dbURL = "jdbc:odbc:" + dataSourceName;
 	        conn = DriverManager.getConnection(dbURL, "","");
-	        System.out.println ("Database connection established."); 
+	        System.out.println ("Database connection established.");
 		}
 		catch(Exception e)
-		{ 
-		    System.err.println ("Error with database" + dataSourceName); 
-		    e.printStackTrace(); 
+		{
+		    System.err.println ("Error with database" + dataSourceName);
+		    e.printStackTrace();
 		}
 	}
-	
+
 	/** Returns the schemas from the specified URI */
 	protected ArrayList<MappingSchema> getSchemas() throws ImporterException
 	{
@@ -64,7 +64,7 @@ public class UserMatchAnnotationDBImporter extends MappingImporter
 		schemas.add(new MappingSchema(null,"IPT",null,MappingSchema.NONE));
 		return schemas;
 	}
-	
+
 	/** Returns the mapping cells from the specified URI */
 	protected ArrayList<MappingCell> getMappingCells() throws ImporterException
 	{
@@ -78,23 +78,23 @@ public class UserMatchAnnotationDBImporter extends MappingImporter
 		}
 		catch (Exception e)
 		{
-		    System.err.println ("Error getting graph"); 
-		    e.printStackTrace(); 			
+		    System.err.println ("Error getting graph");
+		    e.printStackTrace();
 		}
-		
+
 		// Retrieve mapping cells from database
 		try {
 			Statement stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery("select * from HSIPMIPT");
 			while(rs.next())
 			{
-				String notes = rs.getString("MPNotes");				
-				
+				String notes = rs.getString("MPNotes");
+
 				// Path is stored in DB as "#parent#child#child"
 				// Chop the first #
 				String nodePath1 = rs.getString("HSIP-Path").substring(1);
 				String nodePath2 = rs.getString("IPT-Path").substring(1);
-				
+
 				ArrayList<String> path1 = new ArrayList<String>(Arrays.asList(nodePath1.split("#")));
 				ArrayList<String> path2 = new ArrayList<String>(Arrays.asList(nodePath2.split("#")));
 
@@ -103,17 +103,17 @@ public class UserMatchAnnotationDBImporter extends MappingImporter
 				// path array lists have only one item since paths are unique in our schemas
 				int element1 = pathIds1.get(0);
 				int element2 = pathIds2.get(0);
-				
-				MappingCell cell = MappingCell.createValidatedMappingCell(null, null, new Integer[]{element1}, element2, "", Calendar.getInstance().getTime(), NullFunction.class.toString(), notes);
+
+				MappingCell cell = MappingCell.createValidatedMappingCell(null, null, new Integer[]{element1}, element2, "", Calendar.getInstance().getTime(), IdentityFunction.class.toString(), notes);
 				mappingCells.add(cell);
-			}			
+			}
 			stmt.close();
-			
+
 		}
 		catch (SQLException e)
 		{
-		    System.err.println ("Error reading DB"); 
-		    e.printStackTrace(); 			
+		    System.err.println ("Error reading DB");
+		    e.printStackTrace();
 		}
 
 		return mappingCells;

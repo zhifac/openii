@@ -54,7 +54,7 @@ public class MappingCellTest {
         assertEquals(new Double(0.5), proposed.getScore());
         assertEquals("Author", proposed.getAuthor());
         assertEquals("notes", proposed.getNotes());
-        assertEquals("org.mitre.schemastore.mapfunctions.NullFunction", proposed.getFunctionClass());
+        assertEquals("org.mitre.schemastore.mapfunctions.IdentityFunction", proposed.getFunctionClass());
         assertFalse( proposed.getValidated() );
     }
 

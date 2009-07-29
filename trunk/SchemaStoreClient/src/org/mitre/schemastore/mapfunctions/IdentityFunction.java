@@ -27,10 +27,10 @@ import org.mitre.schemastore.model.SchemaElement;
  *  @author     Jeffrey Hoyt
  *  @version    1.0
  */
-public class NullFunction extends AbstractMappingFunction
+public class IdentityFunction extends AbstractMappingFunction
 {
 
-    public NullFunction( )
+    public IdentityFunction( )
     {
         setMetaData();
     }
