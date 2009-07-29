@@ -18,21 +18,21 @@ public class ExactStructureMatcher implements MatchVoter
 		{ return "Exact Structure"; }
 	
 	/** Generates scores for the specified elements */
-	public VoterScores match(FilteredGraph schema1, FilteredGraph schema2)
+	public VoterScores match(FilteredGraph sourceSchema, FilteredGraph targetSchema)
 	{
 		// Go through all source elements
 		VoterScores scores = new VoterScores(100.0);
-		ArrayList<SchemaElement> sourceElements = schema1.getFilteredElements();
+		ArrayList<SchemaElement> sourceElements = sourceSchema.getFilteredElements();
 		for(SchemaElement sourceElement : sourceElements)
 		{
 			// Retrieve all matching target elements
 			HashSet<Integer> targetIDs = new HashSet<Integer>();
-			for(ArrayList<SchemaElement> sourcePath : schema1.getPaths(sourceElement.getId()))
+			for(ArrayList<SchemaElement> sourcePath : sourceSchema.getPaths(sourceElement.getId()))
 			{
 				ArrayList<String> path = new ArrayList<String>();
 				for(SchemaElement element : sourcePath)
-					path.add(schema1.getDisplayName(element.getId()));
-				targetIDs.addAll(schema2.getPathIDs(path));
+					path.add(sourceSchema.getDisplayName(element.getId()));
+				targetIDs.addAll(targetSchema.getPathIDs(path));
 			}
 	
 			// Set scores for the matching target elements

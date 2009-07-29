@@ -12,5 +12,5 @@ public interface MatchVoter
 	public String getName();
 	
 	/** Generates scores for the specified graphs */
-	public VoterScores match(FilteredGraph schema1, FilteredGraph schema2);
+	public VoterScores match(FilteredGraph sourceSchema, FilteredGraph targetSchema);
 }
