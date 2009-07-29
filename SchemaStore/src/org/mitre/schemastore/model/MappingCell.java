@@ -43,7 +43,7 @@ public class MappingCell implements Serializable
      * Stores the fully qualified class name of the Java class that represents
      * the transformation that should occur for this mapping
      */
-    private String functionClass = "org.mitre.schemastore.mapfunctions.NullFunction";
+    private String functionClass = "org.mitre.schemastore.mapfunctions.IdentityFunction";
 
 	/** Stores notes about the mapping cell */
 	private String notes;
