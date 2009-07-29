@@ -14,18 +14,6 @@
     <!-- Defines the location of SchemaStore -->
     <property name="SchemaStore" value="../SchemaStore"/>
 
-    <!-- global properties  -->
-    <property name="src" value="src" description="location of source code" />
-    <property name="build" value="build/classes" description="location to build the files to " />
-    <property name="jars" value="lib" description="location of necessary jar files" />
-    <path id="jarspath">
-        <fileset dir="${jars}">
-            <include name="**/*.jar" />
-            <include name="${SchemaStore}/SchemaStore.jar" />
-        </fileset>
-    </path>
-
-
     <!-- Compiles the code -->
 	<target name="compile">
 		<ant antfile="${SchemaStore}/build.xml" dir="${SchemaStore}" target="compile"/>
@@ -45,7 +33,7 @@
             </classpath>
         </javac>
 		<copy file="src/porters.xml" todir="build/classes"/>
-</target>
+    </target>
 
 	<!-- Builds the SchemaStoreClient jar -->
     <target name="buildSchemaStoreClient" depends="compile">
@@ -54,7 +42,6 @@
             <fatjar.filesource path="build/classes">
 				<fatjar.exclude relpath="org/mitre/schemastore/porters/"/>
 				<fatjar.exclude relpath="porters.xml"/>
-				<fatjar.exclude relpath="mappingfunctions.xml"/>
             </fatjar.filesource>
             <fatjar.filesource path="${SchemaStore}/build/classes"/>
             <fatjar.jarsource file="lib/activation-1.1.jar" relpath=""/>
