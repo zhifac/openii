@@ -27,6 +27,7 @@ import static org.junit.Assert.*;
 public class AbstractMappingFunctionTest {
 
     private AbstractMappingFunction testee = null;
+    private AbstractMappingFunction testee2 = null;
 
     /**
      * Sets up the test fixture.
@@ -36,11 +37,54 @@ public class AbstractMappingFunctionTest {
     public void setUp() {
         testee = new AbstractMappingFunction( )
         {
+            public String getDescription()
+            {
+                //hijacking this method to set the properties
+                KEY = "testee";
+                minArgs = 2;
+                maxArgs = 2;
+                inputTypes.add( Type.REAL );
+                inputTypes.add( Type.STRING );
+                outputType = Type.REAL;
+                displayName = "testee";
+                description = "Nonesense implementation to test with";
+                version = "1.0";
+                return description;
+            }
+
+
             public String getRelationalString(String prefix, Graph graph) throws IllegalArgumentException, NotImplementedException
             {
-                return null;
+                return "";
             }
-        };  //empty implementation
+        };
+        testee.getDescription();
+
+        testee2 = new AbstractMappingFunction( )
+        {
+            public String getDescription()
+            {
+                //hijacking this method to set the properties
+                KEY = "testee2";
+                minArgs = 1;
+                maxArgs = -1;
+                inputTypes.add( Type.STRING );
+                outputType = Type.REAL;
+                displayName = "testee";
+                description = "Nonesense implementation to test with";
+                version = "1.0";
+                return description;
+            }
+
+
+            public String getRelationalString(String prefix, Graph graph) throws IllegalArgumentException, NotImplementedException
+            {
+                return "";
+            }
+        };
+        testee2.getDescription();
+
+
     }
 
     /**
@@ -58,6 +102,33 @@ public class AbstractMappingFunctionTest {
         SchemaElement ele = testee.getSchemaElement( 9, TestFixtures.getSourceGraph() );
         assertEquals( "personID", ele.getName() );
     }
+
+    @Test (expected=IllegalArgumentException.class)
+    public void testAddWrongDataType() throws Exception
+    {
+        Graph graph = TestFixtures.getSourceGraph();
+
+    }
+
+
+    @Test (expected=IllegalArgumentException.class)
+    public void testTooFewInputs() throws Exception
+    {
+        testee.addInput(1);
+        testee.checkInputCount();
+    }
+
+
+    @Test (expected=IllegalArgumentException.class)
+    public void testTooManyInputs() throws Exception
+    {
+        testee.addInput(1);
+        testee.addInput(1);
+        testee.addInput(1);
+        testee.checkInputCount();
+    }
+
+
 
 }
 

@@ -223,6 +223,7 @@ abstract public class AbstractMappingFunction
      */
      public void addInput(Integer i)
     {
+        //add checking code here
         inputs.add(i);
     }
 
@@ -258,11 +259,36 @@ abstract public class AbstractMappingFunction
     /**
      *  Uses Reflection to create a new MappingFunction from a MappingCell
      */
-    public static AbstractMappingFunction castMappingFunction(MappingCell cell, Graph graph)
+    public static AbstractMappingFunction castMappingFunction( MappingCell cell )
     {
-        AbstractMappingFunction object = FunctionManager.castFunction( cell. getFunctionClass());
+        AbstractMappingFunction object = FunctionManager.castFunction( cell.getFunctionClass());
         object.addInputs( cell.getInput() );
         return object;
+    }
+
+    /**
+     *  Checks the number of inputs against the required number.  Throws an exception if the number is incorrect.
+     */
+    public void checkInputCount() throws IllegalArgumentException
+    {
+        if( maxArgs==-1 && inputs.size() > 0 )
+        {
+            return;
+        }
+        if( minArgs == maxArgs )
+        {
+            if( inputs.size() != minArgs )
+            {
+                throw new IllegalArgumentException( KEY + " requires exactly " + minArgs + " inputs.  " +
+                    inputs.size() + " were provided." );
+            }
+        }
+        if( inputs.size() <= maxArgs && inputs.size() >= minArgs )
+        {
+            return;
+        }
+        else throw new IllegalArgumentException( KEY + " requires between " + minArgs + " and " + maxArgs +
+            "inputs.  " + inputs.size() + " were provided." );
     }
 }
 // Please do not remove the line below - jch
