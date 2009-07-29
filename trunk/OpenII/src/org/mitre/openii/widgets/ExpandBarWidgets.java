@@ -63,7 +63,7 @@ public class ExpandBarWidgets
 	/** Creates a table pane */
 	static public void createTablePane(ExpandBar bar, String title, String[] fields, ArrayList<Object[]> rows)
 	{
-		Table table = BasicWidgets.createTable(bar, fields, rows);
+		Table table = TableWidget.createTable(bar, fields, rows);
 		ExpandBarWidgets.createExpandItem(bar,title,table);
 	}
 }
