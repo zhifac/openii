@@ -99,7 +99,7 @@ CREATE TABLE proposed_mapping_cell (
     score numeric(6,3),
     author character varying(100),
     modification_date date,
-    notes character varying(500)
+    notes character varying(4096)
 );
 
 CREATE TABLE validated_mapping_cell (
@@ -109,7 +109,7 @@ CREATE TABLE validated_mapping_cell (
     output_id integer,
     author character varying(100),
     modification_date date,
-    notes character varying(500)
+    notes character varying(4096)
 );
 
 CREATE TABLE mapping_schema (
