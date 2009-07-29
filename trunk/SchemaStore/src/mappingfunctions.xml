@@ -1,0 +1,3 @@
+<mappingfunctions>
+    <class>org.mitre.schemastore.mapfunctions.NumericAdd</class>
+</mappingfunctions>

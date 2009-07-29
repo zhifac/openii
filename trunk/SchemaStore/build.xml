@@ -1,5 +1,5 @@
 <project name="schemastore" default="build" basedir=".">
-	
+
     <!-- DO NOT DELETE - these are required when running ant outside Eclipse.  -->
     <!-- If you need to delete these, contact Jeff Hoyt and he'll figure out a way to work around it. -->
     <!-- This requires fatjar.jar to be in your ant's lib directory -->
@@ -10,12 +10,51 @@
     <typedef name="fatjar.jarsource" classname="net.sf.fjep.anttask.FJJarSourceType" classpath="${fjepPath}"/>
     <typedef name="fatjar.filesource" classname="net.sf.fjep.anttask.FJFileSourceType" classpath="${fjepPath}"/>
 
+        <!-- global properties  -->
+    <property name="src" value="src" description="location of source code" />
+    <property name="build" value="build/classes" description="location to build the files to " />
+
+    <!-- echos the date and time and sets the property to ensure junit is available -->
+    <target name="init">
+        <tstamp />
+        <echo message="Build file: ${DSTAMP}, ${TSTAMP}" />
+        <available property="junit.present" classname="junit.framework.Test"/>
+    </target>
+
+    <!-- If JUnit is not present, gives instructions on how to install it-->
+    <target name="junit-present" unless="junit.present" depends="init">
+      <echo>To run the unit tests, you must have JUnit in your classpath.  From the JUnit task description:</echo>
+      <echo>Note: You must have junit.jar and the class files for the &lt;junit&gt; task in the same classpath. You can do one of:</echo>
+      <echo>    Put both junit.jar and the optional tasks jar file in ANT_HOME/lib.</echo>
+      <echo>    Do not put either in ANT_HOME/lib, and instead include their locations in your CLASSPATH environment variable.</echo>
+      <echo>    Do neither of the above, and instead, specify their locations using a &lt;classpath&gt; element in the build file.</echo>
+    </target>
+
+    <!-- Runs the unit tests -->
+    <target name="test" depends="compile">
+        <junit haltonfailure="yes">
+            <formatter type="plain" usefile="false" />
+            <classpath>
+                <pathelement path="${build}" />
+            </classpath>
+            <!-- Pass in the location of the ant file.  This will be used to set up the schemastore db -->
+            <sysproperty key="antfile.dir" value="${antfile.dir}"/>
+            <sysproperty key="SchemaStoreJar" value="${SchemaStore}/SchemaStore.jar"/>
+            <batchtest fork="yes" todir="${build}">
+                <fileset dir="${src}">
+                    <include name="test/**/*Test.java" />
+                </fileset>
+            </batchtest>
+        </junit>
+    </target>
+
     <!-- Compiles the code -->
 	<target name="compile">
 	    <mkdir dir="build/classes"/>
 	    <javac srcdir="src" destdir="build/classes" deprecation="on" debug="on" source="1.6" target="1.6"/>
 		<copy file="src/schemastore.xml" todir="build/classes"/>
 		<copy file="src/graphmodels.xml" todir="build/classes"/>
+        <copy file="src/mappingfunctions.xml" todir="build/classes"/>
 		<copy file="src/org/mitre/schemastore/data/database/SchemaStoreData.txt" todir="build/classes/org/mitre/schemastore/data/database"/>
 		<copy file="src/org/mitre/schemastore/data/database/SchemaStoreStructure.txt" todir="build/classes/org/mitre/schemastore/data/database"/>
 	</target>
