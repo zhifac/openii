@@ -24,15 +24,15 @@ public class ThesaurusMatcher extends BagMatcher
 		{ return "Documentation + Synonyms"; }
 
 	/** Generates match scores for the specified elements */
-	public VoterScores match(FilteredGraph schema1, FilteredGraph schema2)
+	public VoterScores match(FilteredGraph sourceSchema, FilteredGraph targetSchema)
 	{		
 		// Create word bags for the source elements
-		ArrayList<SchemaElement> sourceElements = schema1.getFilteredElements();
+		ArrayList<SchemaElement> sourceElements = sourceSchema.getFilteredElements();
 		for(SchemaElement sourceElement : sourceElements)
 			wordBags.put(sourceElement.getId(), new WordBag(sourceElement.getName(), sourceElement.getDescription()));
 		
 		// Create word bags for the target elements
-		ArrayList<SchemaElement> targetElements = schema2.getFilteredElements();
+		ArrayList<SchemaElement> targetElements = targetSchema.getFilteredElements();
 		for(SchemaElement targetElement : targetElements)
 			wordBags.put(targetElement.getId(), new WordBag(targetElement.getName(), targetElement.getDescription()));
 

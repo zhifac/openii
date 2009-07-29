@@ -30,11 +30,11 @@ public class EditDistanceMatcher implements MatchVoter
 		{ return "Name Similarity"; }
 	
 	/** Generates scores for the specified elements */
-	public VoterScores match(FilteredGraph schema1, FilteredGraph schema2)
+	public VoterScores match(FilteredGraph sourceSchema, FilteredGraph targetSchema)
 	{
 		VoterScores scores = new VoterScores(SCORE_CEILING);
-		ArrayList<SchemaElement> sourceElements = schema1.getFilteredElements();
-		ArrayList<SchemaElement> targetElements = schema2.getFilteredElements();
+		ArrayList<SchemaElement> sourceElements = sourceSchema.getFilteredElements();
+		ArrayList<SchemaElement> targetElements = targetSchema.getFilteredElements();
 		for(SchemaElement sourceElement : sourceElements)
 			for(SchemaElement targetElement : targetElements)
 				if(scores.getScore(sourceElement.getId(), targetElement.getId())==null)

@@ -27,11 +27,11 @@ public class WordNetMatcher extends BagMatcher
 		{ return "WordNet Thesaurus"; }
 	
 	/** Generates scores for the specified elements */
-	public VoterScores match(FilteredGraph schema1, FilteredGraph schema2)
+	public VoterScores match(FilteredGraph sourceSchema, FilteredGraph targetSchema)
 	{		
 		// Create word bags for the source and target elements
-		ArrayList<SchemaElement> sourceElements = schema1.getFilteredElements();
-		ArrayList<SchemaElement> targetElements = schema2.getFilteredElements();
+		ArrayList<SchemaElement> sourceElements = sourceSchema.getFilteredElements();
+		ArrayList<SchemaElement> targetElements = targetSchema.getFilteredElements();
 
 		// Get the thesaurus and acronym dictionaries
 		URL thesaurusFile = getClass().getResource("wordnet.txt");
