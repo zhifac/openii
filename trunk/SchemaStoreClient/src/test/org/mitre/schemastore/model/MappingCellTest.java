@@ -1,10 +1,10 @@
 package test.org.mitre.schemastore.model;
 
-import org.mitre.schemastore.model.*;
-import org.mitre.schemastore.client.*;
-import java.rmi.RemoteException;
+import java.util.Arrays;
+import java.util.Date;
 import org.junit.*;
-import java.util.*;
+import org.mitre.schemastore.client.*;
+import org.mitre.schemastore.model.*;
 import static org.junit.Assert.*;
 
 public class MappingCellTest {
