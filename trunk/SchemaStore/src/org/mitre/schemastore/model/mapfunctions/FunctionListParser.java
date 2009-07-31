@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
-package org.mitre.schemastore.mapfunctions;
+
+package org.mitre.schemastore.model.mapfunctions;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.helpers.DefaultHandler;
@@ -23,8 +23,8 @@ import java.util.*;
 
 
 /**
- * This class uses the SAX parser to parse a simple XML file representing the list of available 
- * mapping functions.  
+ * This class uses the SAX parser to parse a simple XML file representing the list of available
+ * mapping functions.
  *
  * @author jchoyt
  */
@@ -33,9 +33,9 @@ public class FunctionListParser extends DefaultHandler
     /** A List of functions that have been processed so far */
     private List<String> targets = new ArrayList<String>(  );
 
-    boolean expectingClass = false; 
-    
-    
+    boolean expectingClass = false;
+
+
     /** Buffer for collecting data from the "characters" SAX event. */
 //    private CharArrayWriter contents = new CharArrayWriter(  );
 
@@ -61,7 +61,7 @@ public class FunctionListParser extends DefaultHandler
         }
     }
 
-    
+
     /**
      *  adds a new class to the list if it encounters character data at the correct time
      */
@@ -77,8 +77,8 @@ public class FunctionListParser extends DefaultHandler
             expectingClass = false;
         }
     }
-    
-    
+
+
     /**
      * Description of the Method
      *

@@ -1,4 +1,4 @@
-package org.mitre.schemastore.mapfunctions;
+package org.mitre.schemastore.model.mapfunctions;
 
 import java.io.File;
 import java.io.FilenameFilter;

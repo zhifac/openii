@@ -15,7 +15,7 @@
  */
 
 
-package org.mitre.schemastore.mapfunctions;
+package org.mitre.schemastore.model.mapfunctions;
 
 import org.mitre.schemastore.model.graph.*;
 

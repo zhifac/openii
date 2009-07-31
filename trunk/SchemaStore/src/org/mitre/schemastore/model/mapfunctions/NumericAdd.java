@@ -15,10 +15,9 @@
  */
 
 
-package org.mitre.schemastore.mapfunctions;
+package org.mitre.schemastore.model.mapfunctions;
 
 import java.rmi.RemoteException;
-import org.mitre.schemastore.mapfunctions.*;
 import org.mitre.schemastore.model.*;
 import org.mitre.schemastore.model.graph.*;
 

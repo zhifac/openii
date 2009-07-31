@@ -17,7 +17,7 @@
 
 package test.org.mitre.schemastore.mapfunctions;
 
-import org.mitre.schemastore.mapfunctions.*;
+import org.mitre.schemastore.model.mapfunctions.*;
 import org.mitre.schemastore.model.*;
 import org.mitre.schemastore.model.graph.*;
 import org.junit.*;
