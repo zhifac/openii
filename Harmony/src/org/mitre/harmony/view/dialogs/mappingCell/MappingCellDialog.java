@@ -75,7 +75,7 @@ public class MappingCellDialog extends JDialog implements MouseListener, MouseMo
 						Integer mappingID = mappingCell.getMappingId();
 						String author = System.getProperty("user.name");
 						Date date = Calendar.getInstance().getTime();
-						String function = IdentityFunction.class.toString();
+						String function = IdentityFunction.class.getCanonicalName();
 						MappingCell newMappingCell = MappingCell.createValidatedMappingCell(id, mappingID, mappingCell.getInput(), mappingCell.getOutput(), author, date, function, mappingCell.getNotes());
 						manager.setMappingCell(newMappingCell);
 					}
