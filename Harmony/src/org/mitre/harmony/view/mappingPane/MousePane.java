@@ -177,7 +177,7 @@ class MousePane extends JPanel implements MouseListener, MouseMotionListener
 				Integer mappingID = harmonyModel.getMappingManager().getMapping().getId();
 				String author = System.getProperty("user.name");
 				Date date = Calendar.getInstance().getTime();
-				String function = IdentityFunction.class.toString();
+				String function = IdentityFunction.class.getCanonicalName();
 				MappingCell mappingCell = MappingCell.createValidatedMappingCell(id, mappingID, new Integer[]{leftID}, rightID, author, date, function, null);
 				manager.setMappingCell(mappingCell);
 			}
