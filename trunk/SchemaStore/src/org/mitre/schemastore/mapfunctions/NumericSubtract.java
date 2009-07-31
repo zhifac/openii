@@ -40,9 +40,9 @@ public class NumericSubtract extends AbstractMappingFunction
         KEY = String.valueOf( getClass().getName() );
         minArgs = 2;
         maxArgs = 2;
-        inputTypes.add( Type.REAL );
-        inputTypes.add( Type.REAL );
-        outputType = Type.REAL;
+        inputDomains.add( DOUBLE );
+        inputDomains.add( DOUBLE );
+        outputDomain = DOUBLE;
         displayName = "Numeric Subtract";
         description = "Takes in two REALs and outputs a REAL.  Casts will be necessary to get int values, however some databases will do the cast for you.";
         version = "1.0";

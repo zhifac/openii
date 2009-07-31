@@ -43,9 +43,9 @@ public class AbstractMappingFunctionTest {
                 KEY = "testee";
                 minArgs = 2;
                 maxArgs = 2;
-                inputTypes.add( Type.REAL );
-                inputTypes.add( Type.STRING );
-                outputType = Type.REAL;
+                inputDomains.add( DOUBLE );
+                inputDomains.add( STRING );
+                outputDomain = DOUBLE;
                 displayName = "testee";
                 description = "Nonesense implementation to test with";
                 version = "1.0";
@@ -68,8 +68,8 @@ public class AbstractMappingFunctionTest {
                 KEY = "testee2";
                 minArgs = 1;
                 maxArgs = -1;
-                inputTypes.add( Type.STRING );
-                outputType = Type.REAL;
+                inputDomains.add( STRING );
+                outputDomain = DOUBLE;
                 displayName = "testee";
                 description = "Nonesense implementation to test with";
                 version = "1.0";

@@ -36,8 +36,6 @@ abstract public class AbstractMappingFunction
         CAST ( <cast operand> AS
             <cast target> )
 
-
-
     <cast target> ::=
           CHAR [ ( <length> ) ]
         | VARCHAR ( <length> )
@@ -53,12 +51,12 @@ abstract public class AbstractMappingFunction
 
     */
 
-
-
-    /**
-     *  An enumeration of output types
-     */
-    public static enum Type { STRING, REAL, INTEGER, DATETIME, BOOLEAN, ANY_NUMERIC, ANY };
+    public static final String ANY = "Any";
+    public static final String BOOLEAN = "Boolean";
+    public static final String TIMESTAMP = "Timestamp";
+    public static final String STRING = "String";
+    public static final String DOUBLE = "Double";
+    public static final String INTEGER = "Integer";
 
     //configuration variables.  These should be set by subclasses in constructors.  Where possible, NotImplementedException will be thrown where these variables are not overridden.
 
@@ -96,15 +94,14 @@ abstract public class AbstractMappingFunction
     protected String version = null;
 
     /**
-     *  The function output type.  Example usage -> <pre>outputType = OutputType.STRING</pre>
+     *  The function output type.  Example usage -> <pre>outputDomain = OutputType.STRING</pre>
      */
-    protected Type outputType = null;
+    protected String outputDomain = null;
 
     /**
-     *  This List stores, in order, the input typess to the function defined.  If necessary, casts will have to
-     *  be employed to convert the actual type into something the fuction can use.
+     *  This List stores the input typess to the function defined.  The types apply to all inputs.  If necessary, casts *  will have to be employed to convert the actual type into something the fuction can use.
      */
-    protected List<Type> inputTypes = new ArrayList<Type>();
+    protected List<String> inputDomains = new ArrayList<String>();
 
     //variables for internal use.  These are available to all functions and typcially represent information used by the OpenII tools.
     /**
@@ -198,30 +195,30 @@ abstract public class AbstractMappingFunction
      */
     public String getOutputType() throws NotImplementedException
     {
-        if( outputType == null )
+        if( outputDomain == null )
         {
             throw new NotImplementedException("The output type of " + KEY + " has not been set");
         }
-        return String.valueOf( outputType );
+        return String.valueOf( outputDomain );
     }
 
     /**
      *  Returns, in order, the types of the expected inputs
      */
-    public String[] getInputTypes() throws NotImplementedException
+    public String[] getInputStrings() throws NotImplementedException
     {
-        if( inputTypes.size() == 0 )
+        if( inputDomains.size() == 0 )
         {
             throw new NotImplementedException("The input type(s) of " + KEY + " has not been set");
         }
-        return (String[]) inputTypes.toArray();
+        return (String[]) inputDomains.toArray();
     }
 
     /**
      *  Adds a new SchemaElement ID to the list of inputs
      *  TODO: type checking and casting here?
      */
-     public void addInput(Integer i)
+    public void addInput(Integer i)
     {
         //add checking code here
         inputs.add(i);
@@ -231,7 +228,7 @@ abstract public class AbstractMappingFunction
      *  Adds a new SchemaElement ID to the list of inputs
      *  TODO: type checking and casting here?
      */
-     public void addInputs(Integer[] newInputs)
+    public void addInputs(Integer[] newInputs)
     {
         for( Integer i : newInputs )
         {
