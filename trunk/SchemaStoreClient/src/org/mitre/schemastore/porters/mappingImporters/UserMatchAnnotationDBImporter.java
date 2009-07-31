@@ -104,7 +104,7 @@ public class UserMatchAnnotationDBImporter extends MappingImporter
 				int element1 = pathIds1.get(0);
 				int element2 = pathIds2.get(0);
 
-				MappingCell cell = MappingCell.createValidatedMappingCell(null, null, new Integer[]{element1}, element2, "", Calendar.getInstance().getTime(), IdentityFunction.class.toString(), notes);
+				MappingCell cell = MappingCell.createValidatedMappingCell(null, null, new Integer[]{element1}, element2, "", Calendar.getInstance().getTime(), IdentityFunction.class.getCanonicalName(), notes);
 				mappingCells.add(cell);
 			}
 			stmt.close();
