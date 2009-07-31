@@ -40,8 +40,8 @@ public class IdentityFunction extends AbstractMappingFunction
         KEY = String.valueOf( getClass().getName() );
         minArgs = 1;
         maxArgs = 1;
-        inputTypes.add( Type.ANY );
-        outputType = Type.ANY;
+        inputDomains.add( ANY );
+        outputDomain = ANY;
         displayName = "Identity Function";
         description = "Passes the value through un-changed";
         version = "1.0";
