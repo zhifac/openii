@@ -116,7 +116,8 @@ public class MappingCellManager extends AbstractManager<MappingCellListener> imp
 		Integer outputID = mappingCell.getOutput();
 		String author = System.getProperty("user.name");
 		Date date = Calendar.getInstance().getTime();
-		String function = IdentityFunction.class.toString();
+		String function = IdentityFunction.class.getCanonicalName();
+		
 		String notes = mappingCell.getNotes();
 
 		// Generate the validated mapping cell
