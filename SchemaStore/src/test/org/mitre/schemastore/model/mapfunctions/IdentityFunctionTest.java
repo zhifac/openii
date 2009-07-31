@@ -17,7 +17,7 @@
 
 package test.org.mitre.schemastore.mapfunctions;
 
-import org.mitre.schemastore.mapfunctions.*;
+import org.mitre.schemastore.model.mapfunctions.*;
 import org.junit.*;
 import static org.junit.Assert.*;
 

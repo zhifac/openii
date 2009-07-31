@@ -36,7 +36,7 @@ public class Mappings extends DataCache
 
 	/** Get the mapping cells for the specified schema */
 	public ArrayList<MappingCell> getMappingCells(Integer mappingID)
-		{ getModel(); return getDatabase().getMappingCells(mappingID); }
+		{ return getDatabase().getMappingCells(mappingID); }
 
 	/** Add the specified mapping cell */
 	public Integer addMappingCell(MappingCell mappingCell)

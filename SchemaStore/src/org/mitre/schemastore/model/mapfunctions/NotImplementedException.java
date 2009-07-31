@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.mitre.schemastore.mapfunctions;
+package org.mitre.schemastore.model.mapfunctions;
 
 @SuppressWarnings("serial")
 public class NotImplementedException extends RuntimeException
