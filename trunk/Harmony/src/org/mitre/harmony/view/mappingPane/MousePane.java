@@ -23,7 +23,7 @@ import javax.swing.tree.TreePath;
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.mapping.MappingCellManager;
 import org.mitre.harmony.view.dialogs.mappingCell.MappingCellDialog;
-import org.mitre.schemastore.mapfunctions.NullFunction;
+import org.mitre.schemastore.mapfunctions.IdentityFunction;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.MappingSchema;
 
@@ -177,7 +177,7 @@ class MousePane extends JPanel implements MouseListener, MouseMotionListener
 				Integer mappingID = harmonyModel.getMappingManager().getMapping().getId();
 				String author = System.getProperty("user.name");
 				Date date = Calendar.getInstance().getTime();
-				String function = NullFunction.class.toString();
+				String function = IdentityFunction.class.toString();
 				MappingCell mappingCell = MappingCell.createValidatedMappingCell(id, mappingID, new Integer[]{leftID}, rightID, author, date, function, null);
 				manager.setMappingCell(mappingCell);
 			}
