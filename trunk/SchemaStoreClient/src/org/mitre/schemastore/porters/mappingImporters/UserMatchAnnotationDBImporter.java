@@ -11,10 +11,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 
-import org.mitre.schemastore.mapfunctions.IdentityFunction;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.MappingSchema;
 import org.mitre.schemastore.model.graph.HierarchicalGraph;
+import org.mitre.schemastore.model.mapfunctions.IdentityFunction;
 import org.mitre.schemastore.porters.ImporterException;
 
 public class UserMatchAnnotationDBImporter extends MappingImporter
