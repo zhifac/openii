@@ -3,10 +3,10 @@
 package org.mitre.schemastore.data.database;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URI;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -27,7 +27,7 @@ public class DatabaseConnection
 
 	// Stores the database connection info
 	private Integer databaseType = null;
-	private String databaseLoc = null;
+	private String databaseURI = null;
 	private String databaseName = null;
 	private String databaseUser = null;
 	private String databasePassword = null;
@@ -59,21 +59,21 @@ public class DatabaseConnection
 
 			// Retrieve the database values from the configuration file
 			databaseType = getValue(buffer,"databaseType").equals("postgres") ? POSTGRES : DERBY;
-			databaseLoc = getValue(buffer,"databaseServer");
+			databaseURI = getValue(buffer,"databaseURI");
 			databaseName = getValue(buffer,"databaseName");
 			databaseUser = getValue(buffer,"databaseUser");
 			databasePassword = getValue(buffer,"databasePassword");
 
 			// Assign generic location if none given
-			if(databaseLoc.equals(""))
+			if(databaseURI.equals(""))
 			{
 				String databasePath = getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
 				databasePath = databasePath.replaceAll(".*:","").replaceAll("\\%20"," ");
 				if(databasePath.endsWith("SchemaStoreClient.jar"))
-					databaseLoc = databasePath.replace("/SchemaStoreClient.jar","");
+					databaseURI = databasePath.replace("/SchemaStoreClient.jar","");
 				else if(databasePath.endsWith("/build/classes/"))
-					databaseLoc = databasePath.replaceAll("/build/classes/","");
-				else databaseLoc = databasePath.replaceAll("/WEB-INF/.*","");
+					databaseURI = databasePath.replaceAll("/build/classes/","");
+				else databaseURI = databasePath.replaceAll("/WEB-INF/.*","");
 			}
 		}
 		catch(IOException e)
@@ -81,21 +81,21 @@ public class DatabaseConnection
 	}
 
 	/** Constructs the connection from the specified settings */
-	public DatabaseConnection(Integer type, String server, String database, String user, String password)
+	public DatabaseConnection(Integer type, String uri, String database, String user, String password)
 	{
 		// Set the connection information
 		databaseType = type;
-		databaseLoc = server;
+		databaseURI = uri;
 		databaseName = database;
 		databaseUser = user;
 		databasePassword = password;
 
 		// Adjust the database location for derby files
 		if(databaseType.equals(DERBY))
-			databaseLoc = new File(databaseLoc).getAbsolutePath().replaceAll(".*:","");
+			try { databaseURI = new URI(databaseURI).getPath().replaceAll(".*:",""); } catch(Exception e) {}
 	}
 
-
+	/** Checks to see if a connection can be make */
     private boolean checkConnection() throws SQLException
     {
 		// Check to make sure database connection still works
@@ -114,7 +114,7 @@ public class DatabaseConnection
 				// Connect to the database
 	    		boolean useDerby = databaseType.equals(DERBY);
     			Class.forName(useDerby ? "org.apache.derby.jdbc.EmbeddedDriver" : "org.postgresql.Driver");
-	    		String dbURL = useDerby ? "jdbc:derby:"+databaseLoc+"/"+databaseName+";create=true" : "jdbc:postgresql://"+databaseLoc+":5432/"+databaseName;
+	    		String dbURL = useDerby ? "jdbc:derby:"+databaseURI+"/"+databaseName+";create=true" : "jdbc:postgresql://"+databaseURI+":5432/"+databaseName;
     			connection = DriverManager.getConnection(dbURL,databaseUser,databasePassword);
 	    		connection.setAutoCommit(false);
 
@@ -139,7 +139,7 @@ public class DatabaseConnection
 	}
 
 	/** Creates a prepared statement */
-	PreparedStatement prepareStatement(String statement) throws SQLException
+	PreparedStatement getPreparedStatement(String statement) throws SQLException
 	{
         checkConnection();
         return connection.prepareStatement(statement);

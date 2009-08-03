@@ -1,6 +1,6 @@
 <config>
   <databaseType>derby</databaseType>
-  <databaseServer></databaseServer>
+  <databaseURI></databaseURI>
   <databaseName>schemastore</databaseName>
   <databaseUser>postgres</databaseUser>
   <databasePassword>postgres</databasePassword>

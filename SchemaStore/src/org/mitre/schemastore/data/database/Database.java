@@ -1333,7 +1333,7 @@ public class Database
             if( mappingCell.getValidated() )
             {
             	// Stores the validated mapping cell
-            	PreparedStatement stmt = connection.prepareStatement(validatedInsert);
+            	PreparedStatement stmt = connection.getPreparedStatement(validatedInsert);
                 int i = 1;
                 stmt.setInt(i++, mappingCellID);
                 stmt.setInt(i++, mappingCell.getMappingId());
@@ -1346,7 +1346,7 @@ public class Database
                 stmt.close();
 
                 // Stores the validated mapping cell inputs
-                stmt = connection.prepareStatement(validatedInputInsert);
+                stmt = connection.getPreparedStatement(validatedInputInsert);
                 Integer[] inputs = mappingCell.getInput();
                 i = 1;
                 for(Integer input_id : inputs)
@@ -1362,7 +1362,7 @@ public class Database
             // Store proposed mapping cells
             else
             {
-                PreparedStatement stmt = connection.prepareStatement(proposedInsert);
+                PreparedStatement stmt = connection.getPreparedStatement(proposedInsert);
                 int i = 1;
                 stmt.setInt(i++, mappingCellID);
                 stmt.setInt(i++, mappingCell.getMappingId());
