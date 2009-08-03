@@ -63,9 +63,9 @@ public class SchemaStore
 	}
 	
 	/** Constructs SchemaStore to specified database */
-	public SchemaStore(Integer type, String server, String database, String user, String password)
+	public SchemaStore(Integer type, String uri, String database, String user, String password)
 	{
-		DatabaseConnection connection = new DatabaseConnection(type,server,database,user,password);
+		DatabaseConnection connection = new DatabaseConnection(type,uri,database,user,password);
 		manager = new DataManager(connection);
 	}
 	
