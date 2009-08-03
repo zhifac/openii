@@ -49,7 +49,7 @@ public class URIField implements ModifyListener, SelectionListener
 	{
 		if(uriField.getText().length()==0) isValid = false;
 		else if(uriButton==null) isValid = true;
-		else isValid = new File(uriField.getText().replaceAll("^file:/","")).exists();
+		else isValid = new File(uriField.getText()).exists();
 	}
 	
 	/** Constructs the URI composite */

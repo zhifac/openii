@@ -1,5 +1,6 @@
 package org.mitre.openii.model;
 
+import java.io.File;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -89,7 +90,7 @@ public class RepositoryManager
 		// If no repositories were loaded, load in default repository
 		if(repositories.size()==0)
 			try {
-				addRepository(new Repository("Local Repository",Repository.DERBY,new URI("."),"schemastore","postgres","postgres"));
+				addRepository(new Repository("Local Repository",Repository.DERBY,new File(".").toURI(),"schemastore","postgres","postgres"));
 			} catch(Exception e) {}
 
 		// If no repository was selected, pick first repository
