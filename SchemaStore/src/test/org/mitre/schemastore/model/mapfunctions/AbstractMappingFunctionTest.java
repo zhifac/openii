@@ -14,14 +14,17 @@
  * limitations under the License.
  */
 
+package test.org.mitre.schemastore.model.mapfunctions;
 
-package test.org.mitre.schemastore.mapfunctions;
+import static org.junit.Assert.assertEquals;
 
-import org.mitre.schemastore.model.mapfunctions.*;
-import org.mitre.schemastore.model.*;
-import org.mitre.schemastore.model.graph.*;
-import org.junit.*;
-import static org.junit.Assert.*;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.mitre.schemastore.model.SchemaElement;
+import org.mitre.schemastore.model.graph.Graph;
+import org.mitre.schemastore.model.mapfunctions.AbstractMappingFunction;
+import org.mitre.schemastore.model.mapfunctions.NotImplementedException;
 
 
 public class AbstractMappingFunctionTest {

@@ -1,9 +1,8 @@
-package test.org.mitre.schemastore.mapfunctions;
+package test.org.mitre.schemastore.model.mapfunctions;
 
 import java.util.*;
 
 import org.mitre.schemastore.model.mapfunctions.*;
-import java.rmi.RemoteException;
 import org.junit.*;
 import static org.junit.Assert.*;
 
