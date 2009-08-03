@@ -2,8 +2,6 @@
 // ALL RIGHTS RESERVED
 package org.mitre.harmony.matchers.mergers;
 
-import java.util.HashMap;
-
 import org.mitre.harmony.matchers.MatchScores;
 import org.mitre.harmony.matchers.VoterScores;
 import org.mitre.schemastore.model.graph.FilteredGraph;
@@ -15,7 +13,7 @@ public interface MatchMerger
 	public String getName();
 
 	/** Initializes the match merger to run */
-	public void initialize(FilteredGraph schema1, FilteredGraph schema2,  HashMap<String, Integer> typeMap);
+	public void initialize(FilteredGraph sourceSchema, FilteredGraph targetSchema);
 	
 	/** Feeds voter scores into the merger */
 	public void addVoterScores(VoterScores scores);

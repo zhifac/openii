@@ -27,7 +27,7 @@ public class VoteMerger implements MatchMerger
 		{ return "Vote Merger"; }
 
 	/** Initializes the vote merger */
-	public void initialize(FilteredGraph schema1, FilteredGraph schema2,  HashMap<String, Integer> typeMap)
+	public void initialize(FilteredGraph sourceSchema, FilteredGraph targetSchema)
 		{ summedScores.clear(); }
 	
 	/** Adds a new set of voter scores to the vote merger */
@@ -81,7 +81,7 @@ public class VoteMerger implements MatchMerger
 			double matchScore = Math.log(weightedEvidenceRatio / evidenceFactor);
 			
 			// Stores the match score if positive
-			if(matchScore>0) matchScores.setScore(pair.getElement1(), pair.getElement2(), matchScore);
+			if(matchScore>0) matchScores.setScore(pair.getSourceElement(), pair.getTargetElement(), matchScore);
 		}
 		return matchScores;
 	}

@@ -133,7 +133,7 @@ public class AlgorithmMappings
 			FilteredGraph schema2 = new FilteredGraph(harmonyModel.getSchemaManager().getGraph(schemaTwo.getId()));
 			
 			//Obtain merged algorithm scores for this pair of schemas found in ground truths file
-			MatchScores schemaPairMergedScores = MatcherManager.getScores(schema1, schema2, selectedVoters, null, merger);
+			MatchScores schemaPairMergedScores = MatcherManager.getScores(schema1, schema2, selectedVoters, merger);
 			
 			//Calculate precision and recall for this pair of schema for all threshold values
 			//Add these to the database storing the sum of all values of precision and recall

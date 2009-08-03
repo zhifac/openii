@@ -3,36 +3,33 @@ package org.mitre.harmony.matchers;
 /** Class for storing a pair of elements */
 public class ElementPair
 {
-	/** Stores element1 */
-	private Integer element1;
+	/** Stores source element */
+	private Integer sourceElement;
 	
-	/** Stores element2 */
-	private Integer element2;
+	/** Stores target element */
+	private Integer targetElement;
 	
 	/** Constructs the element pair */
-	public ElementPair(Integer element1, Integer element2)
-	{
-		this.element1 = element1<element2 ? element1 : element2;
-		this.element2 = element1<element2 ? element2 : element1;
-	}
+	public ElementPair(Integer sourceElement, Integer targetElement)
+		{ this.sourceElement = sourceElement; this.targetElement = targetElement; }
 	
-	/** Returns element1 */
-	public Integer getElement1()
-		{ return element1; }
+	/** Returns source element */
+	public Integer getSourceElement()
+		{ return sourceElement; }
 	
-	/** Returns element2 */
-	public Integer getElement2()
-		{ return element2; }
+	/** Returns target element */
+	public Integer getTargetElement()
+		{ return targetElement; }
 
 	/** Provides a hash code for the element pair */
 	public int hashCode()
-		{ return element1*element1 + element2; }
+		{ return sourceElement*sourceElement + targetElement; }
 	
 	/** Indicates if two voter scores are equivalent */
 	public boolean equals(Object object)
 	{
 		if(!(object instanceof ElementPair)) return false;
 		ElementPair pair = (ElementPair)object;
-		return element1.equals(pair.element1) && element2.equals(pair.element2);
+		return sourceElement.equals(pair.sourceElement) && targetElement.equals(pair.targetElement);
 	}
 }
