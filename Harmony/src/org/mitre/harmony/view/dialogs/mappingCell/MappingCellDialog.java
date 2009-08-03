@@ -24,7 +24,7 @@ import javax.swing.KeyStroke;
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.mapping.MappingCellManager;
 import org.mitre.harmony.view.dialogs.AbstractButtonPane;
-import org.mitre.schemastore.mapfunctions.IdentityFunction;
+import org.mitre.schemastore.model.mapfunctions.IdentityFunction;
 import org.mitre.schemastore.model.MappingCell;
 
 /**

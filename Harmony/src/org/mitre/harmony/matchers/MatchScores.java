@@ -22,7 +22,7 @@ public class MatchScores
 	{
 		ArrayList<MatchScore> matchScores = new ArrayList<MatchScore>();
 		for(ElementPair pair : scores.keySet())
-			matchScores.add(new MatchScore(pair.getElement1(),pair.getElement2(),scores.get(pair)));
+			matchScores.add(new MatchScore(pair.getSourceElement(),pair.getTargetElement(),scores.get(pair)));
 		return matchScores;
 	}
 }

@@ -5,7 +5,6 @@ package org.mitre.harmony.view.dialogs.matcher;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -44,7 +43,6 @@ class MatcherDialog extends JDialog implements ActionListener, Runnable
 	private JLabel progressLabel = new JLabel("Generating Matches"); // Labels the progress bar
 	private JButton cancelButton = new JButton("Cancel"); // Cancel button
 	private String matcherName;
-	private HashMap<String, Integer> typeMap;
 
 	/** Stores the Harmony model */
 	private HarmonyModel harmonyModel;
@@ -78,13 +76,12 @@ class MatcherDialog extends JDialog implements ActionListener, Runnable
 	}
 
 	/** Construct the matcher dialog */
-	MatcherDialog(MatchMerger merger, ArrayList<MatchVoter> voters, HashMap<String, Integer> typeMap, HarmonyModel harmonyModel)
+	MatcherDialog(MatchMerger merger, ArrayList<MatchVoter> voters, HarmonyModel harmonyModel)
 	{
 		super(harmonyModel.getBaseFrame());
 		this.merger = merger;
 		this.voters = voters;
 		this.harmonyModel = harmonyModel;
-		this.typeMap = typeMap;
 		
 		// Set up matcher dialog layout and contents
 		setTitle("Schema Matcher");
@@ -171,7 +168,7 @@ class MatcherDialog extends JDialog implements ActionListener, Runnable
 	private void runMatch(FilteredGraph leftGraph, FilteredGraph rightGraph)
 	{
 		// Generate the match scores for the left and right roots
-		MatchScores matchScores = MatcherManager.getScores(leftGraph, rightGraph, voters, typeMap, merger);
+		MatchScores matchScores = MatcherManager.getScores(leftGraph, rightGraph, voters, merger);
 
 		// Store all generated match scores
 		MappingCellManager manager = harmonyModel.getMappingCellManager();

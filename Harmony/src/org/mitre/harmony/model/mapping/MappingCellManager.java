@@ -9,7 +9,7 @@ import java.util.HashSet;
 import org.mitre.harmony.model.AbstractManager;
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.preferences.PreferencesListener;
-import org.mitre.schemastore.mapfunctions.IdentityFunction;
+import org.mitre.schemastore.model.mapfunctions.IdentityFunction;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.MappingSchema;
 
