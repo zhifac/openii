@@ -33,22 +33,27 @@ import org.mitre.schemastore.model.graph.HierarchicalGraph;
 
 /**
  * Displays the dialog which displays the matcher processing
- * 
  * @author CWOLF
  */
 class MatcherDialog extends JDialog implements ActionListener, Runnable
 {
-	private ArrayList<MatchVoter> voters; // List of match voters to use
-	private MatchMerger merger; // Match merger being used
-	private JLabel progressLabel = new JLabel("Generating Matches"); // Labels the progress bar
-	private JButton cancelButton = new JButton("Cancel"); // Cancel button
-	private String matcherName;
+	/** Stores the match voters being used */
+	private ArrayList<MatchVoter> voters;
+
+	/** Stores the match mergers being used */
+	private MatchMerger merger;
 
 	/** Stores the Harmony model */
 	private HarmonyModel harmonyModel;
 	
+	/** Stores the matcher thread */
+	private Thread thread = null;
+	
+	/** Used to halt the running of the matchers */
+	private boolean stop = false;
+	
 	/** Generates the main pane for the matcher dialog */
-	private JPanel mainPane()
+	private JPanel getMainPane()
 	{
 		// Creates progress bar to show that processing is occurring
 		JProgressBar progressBar = new JProgressBar();
@@ -58,11 +63,12 @@ class MatcherDialog extends JDialog implements ActionListener, Runnable
 		JPanel progressPane = new JPanel();
 		progressPane.setBorder(new EmptyBorder(0, 0, 5, 0));
 		progressPane.setLayout(new BorderLayout());
-		progressPane.add(progressLabel, BorderLayout.NORTH);
+		progressPane.add(new JLabel("Generating Matches"), BorderLayout.NORTH);
 		progressPane.add(progressBar, BorderLayout.CENTER);
 
 		// Create button pane
 		JPanel buttonPane = new JPanel();
+		JButton cancelButton = new JButton("Cancel");
 		cancelButton.addActionListener(this);
 		buttonPane.add(cancelButton);
 
@@ -87,85 +93,77 @@ class MatcherDialog extends JDialog implements ActionListener, Runnable
 		setTitle("Schema Matcher");
 		setModal(true);
 		setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
-		setContentPane(mainPane());
+		setContentPane(getMainPane());
 		setLocationRelativeTo(harmonyModel.getBaseFrame());
 		pack();
 
 		// Initialize the execution of the matcher
-		new Thread(this).start();
+		thread = new Thread(this);
+		thread.start();
 
 		// Display the window
 		setVisible(true);
 	}
 
-	/** Runs the matcher dialog processing as a separate thread */
-	public void run()
+	/** Returns the generated matcher name */
+	private String getMatcherName()
 	{
-		// Generate the matcher name
-		if (voters.size() == MatcherManager.getVoters().size()) matcherName = merger.getName() + "(All Voters)";
-		else if (voters.size() == 1) matcherName = voters.get(0).getName();
-		else
-		{
-			matcherName = merger.getName() + "(";
-			for (MatchVoter voter : voters) 
-			{
-				if (matcherName.length() + voter.getName().length() > 45)
-					{ matcherName += "..., "; break; }
-				matcherName += voter.getName() + ", ";
-			}
-			matcherName = matcherName.substring(0, matcherName.length() - 2) + ")";
-		}
-
-		// Store the left and right graphs
-		ArrayList<FilteredGraph> leftGraphs = new ArrayList<FilteredGraph>();
-		ArrayList<FilteredGraph> rightGraphs = new ArrayList<FilteredGraph>();		
+		// Handles the case where all voters were used
+		if(voters.size() == MatcherManager.getVoters().size())
+			return merger.getName() + "(All Voters)";
 		
-		// Generate graphs for the left and right sides
-		Integer sides[] = { MappingSchema.LEFT, MappingSchema.RIGHT };
-		for(Integer side : sides)
+		// Handles the case where a single voter was used
+		if(voters.size() == 1) return voters.get(0).getName();
+
+		// Handles the case where a subset of voters was used
+		String matcherName = merger.getName() + "(";
+		for (MatchVoter voter : voters) 
 		{
-			FilterManager filters = harmonyModel.getFilters();
-			ArrayList<FilteredGraph> filteredGraphs = side==MappingSchema.LEFT ? leftGraphs : rightGraphs;
-			
-			// Create filtered graphs for each schema in focus
-			for(Integer schemaID : harmonyModel.getMappingManager().getSchemaIDs(side))
-				if(filters.inFocus(side, schemaID))
-				{
-					HierarchicalGraph graph = harmonyModel.getSchemaManager().getGraph(schemaID);
-					FilteredGraph filteredGraph = new FilteredGraph(graph);
-	
-					// Set the filter roots
-					Focus focus = filters.getFocus(side,schemaID);
-					if(focus!=null && focus.getFocusedPaths().size()>0)
-						filteredGraph.setFilteredRoots(focus.getFocusedIDs());
-						
-					// Filter by minimum and maximum depth
-					filteredGraph.setMinDepth(filters.getMinDepth(side));
-					filteredGraph.setMaxDepth(filters.getMaxDepth(side));
-							
-					// Set the hidden elements
-					ArrayList<Integer> hiddenElements = new ArrayList<Integer>();
-					hiddenElements.addAll(harmonyModel.getPreferences().getFinishedElements(schemaID));
-					if(focus!=null) hiddenElements.addAll(focus.getHiddenElements());
-					filteredGraph.setHiddenElements(hiddenElements);
-	
-					// Add the filtered graph
-					filteredGraphs.add(filteredGraph);
-				}
+			if (matcherName.length() + voter.getName().length() > 45)
+				{ matcherName += "..., "; break; }
+			matcherName += voter.getName() + ", ";
 		}
+		matcherName = matcherName.substring(0, matcherName.length() - 2) + ")";
+		return matcherName;
+	}
+	
+	/** Returns the list of filtered graphs for the specified side */
+	private ArrayList<FilteredGraph> getFilteredGraphs(Integer side)
+	{
+		ArrayList<FilteredGraph> filteredGraphs = new ArrayList<FilteredGraph>();
+		FilterManager filters = harmonyModel.getFilters();
+		
+		// Create filtered graphs for each schema in focus
+		for(Integer schemaID : harmonyModel.getMappingManager().getSchemaIDs(side))
+			if(filters.inFocus(side, schemaID))
+			{
+				HierarchicalGraph graph = harmonyModel.getSchemaManager().getGraph(schemaID);
+				FilteredGraph filteredGraph = new FilteredGraph(graph);
 
-		// Matches all left graphs to all right graphs
-		for(FilteredGraph leftGraph : leftGraphs)
-			for(FilteredGraph rightGraph : rightGraphs)
-				try {
-					runMatch(leftGraph,rightGraph);
-				} catch (Exception e) { System.out.println("(E) MatcherDialog.run - " + e.getMessage()); }
+				// Set the filter roots
+				Focus focus = filters.getFocus(side,schemaID);
+				if(focus!=null && focus.getFocusedPaths().size()>0)
+					filteredGraph.setFilteredRoots(focus.getFocusedIDs());
+					
+				// Filter by minimum and maximum depth
+				filteredGraph.setMinDepth(filters.getMinDepth(side));
+				filteredGraph.setMaxDepth(filters.getMaxDepth(side));
+						
+				// Set the hidden elements
+				ArrayList<Integer> hiddenElements = new ArrayList<Integer>();
+				hiddenElements.addAll(harmonyModel.getPreferences().getFinishedElements(schemaID));
+				if(focus!=null) hiddenElements.addAll(focus.getHiddenElements());
+				filteredGraph.setHiddenElements(hiddenElements);
 
-		// Once matching is completed, shut down dialog box
-		dispose();
+				// Add the filtered graph
+				filteredGraphs.add(filteredGraph);
+			}
+		
+		return filteredGraphs;
 	}
 
-	private void runMatch(FilteredGraph leftGraph, FilteredGraph rightGraph)
+	/** Runs the matchers on the specified graphs */
+	private void runMatch(FilteredGraph leftGraph, FilteredGraph rightGraph, String matcherName)
 	{
 		// Generate the match scores for the left and right roots
 		MatchScores matchScores = MatcherManager.getScores(leftGraph, rightGraph, voters, merger);
@@ -174,6 +172,10 @@ class MatcherDialog extends JDialog implements ActionListener, Runnable
 		MappingCellManager manager = harmonyModel.getMappingCellManager();
 		for (MatchScore matchScore : matchScores.getScores())
 		{
+			// Don't proceed if process has been stopped
+			if(stop)
+				return;
+			
 			// Don't store mapping cells which were already validated
 			Integer mappingCellID = manager.getMappingCellID(matchScore.getElement1(), matchScore.getElement2());
 			if(mappingCellID!=null && manager.getMappingCell(mappingCellID).getValidated()) continue;
@@ -191,11 +193,36 @@ class MatcherDialog extends JDialog implements ActionListener, Runnable
 			manager.setMappingCell(mappingCell);
 		}
 	}
+	
+	/** Runs the matcher dialog processing as a separate thread */
+	public void run()
+	{
+		// Generate the matcher name
+		String matcherName = getMatcherName();
 
-	/**
-	 * Handles the pressing of the cancel button
-	 */
-	public void actionPerformed(ActionEvent e) {
-	// TODO: Implement ability to stop matchers
+		// Store the left and right graphs
+		ArrayList<FilteredGraph> leftGraphs = getFilteredGraphs(MappingSchema.LEFT);
+		ArrayList<FilteredGraph> rightGraphs = getFilteredGraphs(MappingSchema.RIGHT);
+
+		// Matches all left graphs to all right graphs
+		RunMatchers: for(FilteredGraph leftGraph : leftGraphs)
+			for(FilteredGraph rightGraph : rightGraphs)
+			{
+				if(stop) break RunMatchers;
+				try { runMatch(leftGraph,rightGraph, matcherName); }
+				catch (Exception e) { System.out.println("(E) MatcherDialog.run - " + e.getMessage()); }
+			}
+		
+		// Once matching is completed, shut down dialog box
+		if(!stop) dispose();
+	}
+
+	/** Cancels the running of the matchers */
+	public void actionPerformed(ActionEvent e)
+	{
+		stop=true;
+		try { Thread.sleep(500); } catch(Exception e2) {}
+		if(thread.isAlive()) thread.interrupt();
+		dispose();
 	}
 }
