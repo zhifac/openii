@@ -204,8 +204,7 @@ public class EditRepositoryDialog extends TitleAreaDialog implements ActionListe
 		boolean activate = nameField.getText().length()>0;
 		if(optionsPanel.getOption().equals(SERVICE))
 			activate &= webURL.getText().length()>0;
-		else activate &= databaseURI.isValid() && databaseName.getText().length()>0 &&
-						 databaseUser.getText().length()>0 && databasePassword.getText().length()>0;
+		else activate &= databaseURI.isValid() && databaseName.getText().length()>0;
 		getButton(IDialogConstants.OK_ID).setEnabled(activate);
 	}
 	
