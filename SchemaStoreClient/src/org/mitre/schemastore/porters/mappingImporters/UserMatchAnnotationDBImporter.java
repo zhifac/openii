@@ -49,16 +49,12 @@ public class UserMatchAnnotationDBImporter extends MappingImporter
 	        conn = DriverManager.getConnection(dbURL, "","");
 	        System.out.println ("Database connection established.");
 		}
-<<<<<<< .mine
-		catch(Exception e) { 
-		    System.err.println ("Error with database" + dataSourceName); 
-		    e.printStackTrace(); 
-=======
+
 		catch(Exception e)
 		{
 		    System.err.println ("Error with database" + dataSourceName);
 		    e.printStackTrace();
->>>>>>> .r1302
+
 		}
 	}
 
@@ -88,40 +84,25 @@ public class UserMatchAnnotationDBImporter extends MappingImporter
 		    e.printStackTrace();
 		}
 
-<<<<<<< .mine
-			while(rs.next()) {
-=======
 		// Retrieve mapping cells from database
 		try {
 			Statement stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery("select * from HSIPMIPT");
 			while(rs.next())
 			{
->>>>>>> .r1302
 				String notes = rs.getString("MPNotes");
-<<<<<<< .mine
 				String transform = rs.getString("Transform");
 				
-=======
-
->>>>>>> .r1302
 				// Path is stored in DB as "#parent#child#child"
 				// Chop the first #
 				String nodePath1 = rs.getString("HSIP-Path").substring(0);
 				String nodePath2 = rs.getString("IPT-Path").substring(1);
-<<<<<<< .mine
-				ArrayList<String> path1 = new ArrayList<String>();
-				path1.add(nodePath1);
-=======
-
+				
 				ArrayList<String> path1 = new ArrayList<String>(Arrays.asList(nodePath1.split("#")));
->>>>>>> .r1302
 				ArrayList<String> path2 = new ArrayList<String>(Arrays.asList(nodePath2.split("#")));
 
 				ArrayList<Integer> pathIds1 = hg1.getPathIDs(path1);
 				ArrayList<Integer> pathIds2 = hg2.getPathIDs(path2);
-
-<<<<<<< .mine
 				
 				if (pathIds1.size() < 1 || pathIds2.size() < 1) {
 					System.out.println("There is no path to " + path1 + " or " + path2);
@@ -131,34 +112,10 @@ public class UserMatchAnnotationDBImporter extends MappingImporter
 					// path array lists have only one item since paths are unique in our schemas
 					int element1 = pathIds1.get(0);
 					int element2 = pathIds2.get(0);
-					
-					//fixme: delete
-					//notes = "TESTING JOEL";
-				
-					MappingCell cell = new MappingCell(null, 
-							null,
-							element1,
-							element2,
-							1.0,
-							"",
-							Calendar.getInstance().getTime(),
-							transform,
-							notes,
-							true);
-	//fixme
-	//				cell.setElement1(1);
-	//				cell.setElement2(1);
-	//				cell.setNotes(notes);
-	//				cell.setTransform(transform);
-	//				// We aren't importing the date but OpenII requires one
-	//				cell.setModificationDate(Calendar.getInstance().getTime());
+			
+					MappingCell cell = MappingCell.createValidatedMappingCell(null, null, new Integer[]{element1}, element2, "", Calendar.getInstance().getTime(), IdentityFunction.class.getCanonicalName(), notes);
 					mappingCells.add(cell);
 				}
-=======
-
-				MappingCell cell = MappingCell.createValidatedMappingCell(null, null, new Integer[]{element1}, element2, "", Calendar.getInstance().getTime(), IdentityFunction.class.getCanonicalName(), notes);
-				mappingCells.add(cell);
->>>>>>> .r1302
 			}
 			stmt.close();
 
