@@ -72,6 +72,7 @@ public class GSIPImporter extends SchemaImporter {
 	
 	/** Initializes the importer for the specified URI */
 	protected void initializeSchemaStructures() throws ImporterException {
+		String filename = "";
 		try {
 			//  connect to MS Access database
 //	        conn = DriverManager.getConnection("jdbc:odbc:"+uri,"Admin",null); 
@@ -92,7 +93,10 @@ public class GSIPImporter extends SchemaImporter {
 //            String filename = file.getPath();//"c:/hsip/test.mdb";
 
 			//uri comes in as file:/foo, needs to be foo
-			String filename = uri.toString().substring(6);
+			filename = uri.toString().substring(6);
+			
+			//uris replace spaces with %20s.  Fix that.
+			filename = filename.replaceAll("%20"," ");
 			
 System.out.println(filename);
 			String database = "jdbc:odbc:Driver={Microsoft Access Driver (*.mdb)};DBQ=";
@@ -112,7 +116,7 @@ System.out.println(filename);
 		}
 		catch(Exception e) { 
 			// If anything goes wrong, alert on the command line.
-		    System.err.println ("Cannot connect to database server!"); 
+		    System.err.println ("Cannot connect to database server " + filename + "!"); 
 		    e.printStackTrace(); 
 			//throw new ImporterException(ImporterException.PARSE_FAILURE,e.getMessage()); 
 	    }		
