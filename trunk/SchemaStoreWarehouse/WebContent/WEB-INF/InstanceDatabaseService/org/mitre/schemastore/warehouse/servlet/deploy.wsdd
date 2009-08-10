@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?><!-- Use this file to deploy some handlers/chains and services      --><!-- Two ways to do this:                                           --><!--   java org.apache.axis.client.AdminClient deploy.wsdd          --><!--      after the axis server is running                          --><!-- or                                                             --><!--   java org.apache.axis.utils.Admin client|server deploy.wsdd   --><!--      from the same directory that the Axis engine runs         --><deployment xmlns="http://xml.apache.org/axis/wsdd/" xmlns:java="http://xml.apache.org/axis/wsdd/providers/java">
+
+  <!-- Services from InstanceDatabaseService WSDL service -->
+
+  <service name="InstanceDatabase" provider="java:RPC" style="wrapped" use="literal">
+      <parameter name="wsdlTargetNamespace" value="http://servlet.warehouse.schemastore.mitre.org"/>
+      <parameter name="wsdlServiceElement" value="InstanceDatabaseService"/>
+      <parameter name="schemaQualified" value="http://servlet.warehouse.schemastore.mitre.org"/>
+      <parameter name="wsdlServicePort" value="InstanceDatabase"/>
+      <parameter name="className" value="org.mitre.schemastore.warehouse.servlet.InstanceDatabase"/>
+      <parameter name="wsdlPortType" value="InstanceDatabase"/>
+      <parameter name="typeMappingVersion" value="1.2"/>
+      <operation xmlns:operNS="http://servlet.warehouse.schemastore.mitre.org" xmlns:retNS="http://servlet.warehouse.schemastore.mitre.org" xmlns:rtns="http://www.w3.org/2001/XMLSchema" name="getTypeString" qname="operNS:getTypeString" returnQName="retNS:getTypeStringReturn" returnType="rtns:string" soapAction="">
+      </operation>
+      <operation xmlns:operNS="http://servlet.warehouse.schemastore.mitre.org" name="releaseResources" qname="operNS:releaseResources" soapAction="">
+      </operation>
+      <operation xmlns:operNS="http://servlet.warehouse.schemastore.mitre.org" xmlns:retNS="http://servlet.warehouse.schemastore.mitre.org" xmlns:rtns="http://www.w3.org/2001/XMLSchema" name="isNewDbConnected" qname="operNS:isNewDbConnected" returnQName="retNS:isNewDbConnectedReturn" returnType="rtns:boolean" soapAction="">
+      </operation>
+      <operation xmlns:operNS="http://servlet.warehouse.schemastore.mitre.org" xmlns:retNS="http://servlet.warehouse.schemastore.mitre.org" xmlns:rtns="http://www.w3.org/2001/XMLSchema" name="getTypeNumeric" qname="operNS:getTypeNumeric" returnQName="retNS:getTypeNumericReturn" returnType="rtns:string" soapAction="">
+      </operation>
+      <operation xmlns:operNS="http://servlet.warehouse.schemastore.mitre.org" xmlns:retNS="http://servlet.warehouse.schemastore.mitre.org" xmlns:rtns="http://www.w3.org/2001/XMLSchema" name="getTypeBoolean" qname="operNS:getTypeBoolean" returnQName="retNS:getTypeBooleanReturn" returnType="rtns:string" soapAction="">
+      </operation>
+      <operation xmlns:operNS="http://servlet.warehouse.schemastore.mitre.org" name="createEntityTable" qname="operNS:createEntityTable" soapAction="">
+        <parameter xmlns:pns="http://servlet.warehouse.schemastore.mitre.org" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:entityTableName" type="tns:string"/>
+      </operation>
+      <operation xmlns:operNS="http://servlet.warehouse.schemastore.mitre.org" name="populateEntityTable" qname="operNS:populateEntityTable" soapAction="">
+        <parameter xmlns:pns="http://servlet.warehouse.schemastore.mitre.org" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:entityTableName" type="tns:string"/>
+        <parameter xmlns:pns="http://servlet.warehouse.schemastore.mitre.org" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:numberOfRowsOfData" type="tns:int"/>
+      </operation>
+      <operation xmlns:operNS="http://servlet.warehouse.schemastore.mitre.org" name="createAttributeTable" qname="operNS:createAttributeTable" soapAction="">
+        <parameter xmlns:pns="http://servlet.warehouse.schemastore.mitre.org" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:attributeTableName" type="tns:string"/>
+        <parameter xmlns:pns="http://servlet.warehouse.schemastore.mitre.org" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:type" type="tns:string"/>
+        <parameter xmlns:pns="http://servlet.warehouse.schemastore.mitre.org" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:entityTableName" type="tns:string"/>
+      </operation>
+      <operation xmlns:operNS="http://servlet.warehouse.schemastore.mitre.org" name="populateStringAttributeTable" qname="operNS:populateStringAttributeTable" soapAction="">
+        <parameter xmlns:pns="http://servlet.warehouse.schemastore.mitre.org" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:attributeTableName" type="tns:string"/>
+        <parameter xmlns:pns="http://servlet.warehouse.schemastore.mitre.org" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:values" type="tns:string"/>
+      </operation>
+      <operation xmlns:operNS="http://servlet.warehouse.schemastore.mitre.org" name="populateNumericAttributeTable" qname="operNS:populateNumericAttributeTable" soapAction="">
+        <parameter xmlns:pns="http://servlet.warehouse.schemastore.mitre.org" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:attributeTableName" type="tns:string"/>
+        <parameter xmlns:pns="http://servlet.warehouse.schemastore.mitre.org" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:values" type="tns:string"/>
+      </operation>
+      <operation xmlns:operNS="http://servlet.warehouse.schemastore.mitre.org" name="populateBooleanAttributeTable" qname="operNS:populateBooleanAttributeTable" soapAction="">
+        <parameter xmlns:pns="http://servlet.warehouse.schemastore.mitre.org" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:attributeTableName" type="tns:string"/>
+        <parameter xmlns:pns="http://servlet.warehouse.schemastore.mitre.org" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:values" type="tns:string"/>
+      </operation>
+      <parameter name="allowedMethods" value="populateNumericAttributeTable getTypeBoolean populateBooleanAttributeTable getTypeNumeric isNewDbConnected createEntityTable populateStringAttributeTable populateEntityTable getTypeString createAttributeTable releaseResources"/>
+
+  </service>
+</deployment>

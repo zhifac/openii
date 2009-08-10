@@ -1,0 +1,560 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions targetNamespace="http://servlet.warehouse.schemastore.mitre.org" xmlns:apachesoap="http://xml.apache.org/xml-soap" xmlns:impl="http://servlet.warehouse.schemastore.mitre.org" xmlns:intf="http://servlet.warehouse.schemastore.mitre.org" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<!--WSDL created by Apache Axis version: 1.4
+Built on Apr 22, 2006 (06:55:48 PDT)-->
+ <wsdl:types>
+  <schema elementFormDefault="qualified" targetNamespace="http://servlet.warehouse.schemastore.mitre.org" xmlns="http://www.w3.org/2001/XMLSchema">
+   <element name="getTypeString">
+    <complexType/>
+   </element>
+   <element name="getTypeStringResponse">
+    <complexType>
+     <sequence>
+      <element name="getTypeStringReturn" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="releaseResources">
+    <complexType/>
+   </element>
+   <element name="releaseResourcesResponse">
+    <complexType/>
+   </element>
+   <element name="isNewDbConnected">
+    <complexType/>
+   </element>
+   <element name="isNewDbConnectedResponse">
+    <complexType>
+     <sequence>
+      <element name="isNewDbConnectedReturn" type="xsd:boolean"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getTypeNumeric">
+    <complexType/>
+   </element>
+   <element name="getTypeNumericResponse">
+    <complexType>
+     <sequence>
+      <element name="getTypeNumericReturn" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getTypeBoolean">
+    <complexType/>
+   </element>
+   <element name="getTypeBooleanResponse">
+    <complexType>
+     <sequence>
+      <element name="getTypeBooleanReturn" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="createEntityTable">
+    <complexType>
+     <sequence>
+      <element name="entityTableName" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="createEntityTableResponse">
+    <complexType/>
+   </element>
+   <element name="populateEntityTable">
+    <complexType>
+     <sequence>
+      <element name="entityTableName" type="xsd:string"/>
+      <element name="numberOfRowsOfData" type="xsd:int"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="populateEntityTableResponse">
+    <complexType/>
+   </element>
+   <element name="createAttributeTable">
+    <complexType>
+     <sequence>
+      <element name="attributeTableName" type="xsd:string"/>
+      <element name="type" type="xsd:string"/>
+      <element name="entityTableName" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="createAttributeTableResponse">
+    <complexType/>
+   </element>
+   <element name="populateStringAttributeTable">
+    <complexType>
+     <sequence>
+      <element name="attributeTableName" type="xsd:string"/>
+      <element maxOccurs="unbounded" name="values" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="populateStringAttributeTableResponse">
+    <complexType/>
+   </element>
+   <element name="populateNumericAttributeTable">
+    <complexType>
+     <sequence>
+      <element name="attributeTableName" type="xsd:string"/>
+      <element maxOccurs="unbounded" name="values" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="populateNumericAttributeTableResponse">
+    <complexType/>
+   </element>
+   <element name="populateBooleanAttributeTable">
+    <complexType>
+     <sequence>
+      <element name="attributeTableName" type="xsd:string"/>
+      <element maxOccurs="unbounded" name="values" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="populateBooleanAttributeTableResponse">
+    <complexType/>
+   </element>
+  </schema>
+ </wsdl:types>
+
+   <wsdl:message name="populateEntityTableRequest">
+
+      <wsdl:part element="impl:populateEntityTable" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="createAttributeTableRequest">
+
+      <wsdl:part element="impl:createAttributeTable" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getTypeStringRequest">
+
+      <wsdl:part element="impl:getTypeString" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getTypeStringResponse">
+
+      <wsdl:part element="impl:getTypeStringResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="createEntityTableRequest">
+
+      <wsdl:part element="impl:createEntityTable" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="releaseResourcesRequest">
+
+      <wsdl:part element="impl:releaseResources" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="populateBooleanAttributeTableRequest">
+
+      <wsdl:part element="impl:populateBooleanAttributeTable" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getTypeNumericRequest">
+
+      <wsdl:part element="impl:getTypeNumeric" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="createAttributeTableResponse">
+
+      <wsdl:part element="impl:createAttributeTableResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="releaseResourcesResponse">
+
+      <wsdl:part element="impl:releaseResourcesResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="populateBooleanAttributeTableResponse">
+
+      <wsdl:part element="impl:populateBooleanAttributeTableResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getTypeBooleanResponse">
+
+      <wsdl:part element="impl:getTypeBooleanResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="populateStringAttributeTableResponse">
+
+      <wsdl:part element="impl:populateStringAttributeTableResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="populateNumericAttributeTableRequest">
+
+      <wsdl:part element="impl:populateNumericAttributeTable" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="isNewDbConnectedResponse">
+
+      <wsdl:part element="impl:isNewDbConnectedResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="populateStringAttributeTableRequest">
+
+      <wsdl:part element="impl:populateStringAttributeTable" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="populateNumericAttributeTableResponse">
+
+      <wsdl:part element="impl:populateNumericAttributeTableResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="populateEntityTableResponse">
+
+      <wsdl:part element="impl:populateEntityTableResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="isNewDbConnectedRequest">
+
+      <wsdl:part element="impl:isNewDbConnected" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="createEntityTableResponse">
+
+      <wsdl:part element="impl:createEntityTableResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getTypeNumericResponse">
+
+      <wsdl:part element="impl:getTypeNumericResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getTypeBooleanRequest">
+
+      <wsdl:part element="impl:getTypeBoolean" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:portType name="InstanceDatabase">
+
+      <wsdl:operation name="getTypeString">
+
+         <wsdl:input message="impl:getTypeStringRequest" name="getTypeStringRequest"/>
+
+         <wsdl:output message="impl:getTypeStringResponse" name="getTypeStringResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="releaseResources">
+
+         <wsdl:input message="impl:releaseResourcesRequest" name="releaseResourcesRequest"/>
+
+         <wsdl:output message="impl:releaseResourcesResponse" name="releaseResourcesResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="isNewDbConnected">
+
+         <wsdl:input message="impl:isNewDbConnectedRequest" name="isNewDbConnectedRequest"/>
+
+         <wsdl:output message="impl:isNewDbConnectedResponse" name="isNewDbConnectedResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getTypeNumeric">
+
+         <wsdl:input message="impl:getTypeNumericRequest" name="getTypeNumericRequest"/>
+
+         <wsdl:output message="impl:getTypeNumericResponse" name="getTypeNumericResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getTypeBoolean">
+
+         <wsdl:input message="impl:getTypeBooleanRequest" name="getTypeBooleanRequest"/>
+
+         <wsdl:output message="impl:getTypeBooleanResponse" name="getTypeBooleanResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="createEntityTable">
+
+         <wsdl:input message="impl:createEntityTableRequest" name="createEntityTableRequest"/>
+
+         <wsdl:output message="impl:createEntityTableResponse" name="createEntityTableResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="populateEntityTable">
+
+         <wsdl:input message="impl:populateEntityTableRequest" name="populateEntityTableRequest"/>
+
+         <wsdl:output message="impl:populateEntityTableResponse" name="populateEntityTableResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="createAttributeTable">
+
+         <wsdl:input message="impl:createAttributeTableRequest" name="createAttributeTableRequest"/>
+
+         <wsdl:output message="impl:createAttributeTableResponse" name="createAttributeTableResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="populateStringAttributeTable">
+
+         <wsdl:input message="impl:populateStringAttributeTableRequest" name="populateStringAttributeTableRequest"/>
+
+         <wsdl:output message="impl:populateStringAttributeTableResponse" name="populateStringAttributeTableResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="populateNumericAttributeTable">
+
+         <wsdl:input message="impl:populateNumericAttributeTableRequest" name="populateNumericAttributeTableRequest"/>
+
+         <wsdl:output message="impl:populateNumericAttributeTableResponse" name="populateNumericAttributeTableResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="populateBooleanAttributeTable">
+
+         <wsdl:input message="impl:populateBooleanAttributeTableRequest" name="populateBooleanAttributeTableRequest"/>
+
+         <wsdl:output message="impl:populateBooleanAttributeTableResponse" name="populateBooleanAttributeTableResponse"/>
+
+      </wsdl:operation>
+
+   </wsdl:portType>
+
+   <wsdl:binding name="InstanceDatabaseSoapBinding" type="impl:InstanceDatabase">
+
+      <wsdlsoap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+
+      <wsdl:operation name="getTypeString">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="getTypeStringRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="getTypeStringResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="releaseResources">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="releaseResourcesRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="releaseResourcesResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="isNewDbConnected">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="isNewDbConnectedRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="isNewDbConnectedResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getTypeNumeric">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="getTypeNumericRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="getTypeNumericResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getTypeBoolean">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="getTypeBooleanRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="getTypeBooleanResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="createEntityTable">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="createEntityTableRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="createEntityTableResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="populateEntityTable">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="populateEntityTableRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="populateEntityTableResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="createAttributeTable">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="createAttributeTableRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="createAttributeTableResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="populateStringAttributeTable">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="populateStringAttributeTableRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="populateStringAttributeTableResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="populateNumericAttributeTable">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="populateNumericAttributeTableRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="populateNumericAttributeTableResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="populateBooleanAttributeTable">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="populateBooleanAttributeTableRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="populateBooleanAttributeTableResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+   </wsdl:binding>
+
+   <wsdl:service name="InstanceDatabaseService">
+
+      <wsdl:port binding="impl:InstanceDatabaseSoapBinding" name="InstanceDatabase">
+
+         <wsdlsoap:address location="http://localhost:8080/SchemaStoreWarehouse/services/InstanceDatabase"/>
+
+      </wsdl:port>
+
+   </wsdl:service>
+
+</wsdl:definitions>

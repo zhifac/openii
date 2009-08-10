@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+	<repository type="1">
+  		<host>ygg</host>
+  		<databaseName>schemastore</databaseName>	<!-- existing database name -->
+  		<databaseUser>postgres</databaseUser>	<!-- super user with the privilege to create new databases -->
+  		<databasePassword>postgres</databasePassword>
+	</repository>
+	<repository type="2">
+  		<host>.</host>
+  		<databaseName>schemastore</databaseName>	<!-- existing database name -->
+  		<databaseUser>postgres</databaseUser>	<!-- schema name -->
+  		<databasePassword>postgres</databasePassword>
+	</repository>	
+</config>

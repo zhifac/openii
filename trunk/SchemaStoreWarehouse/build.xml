@@ -1,0 +1,87 @@
+<?xml version="1.0"?>
+<!-- ==================================================== -->
+<!--	SchemaStoreWarehouse / build.xml (JAR)			  -->
+<!-- ==================================================== -->
+
+<project name="SchemaStoreWarehouse" default="all" basedir=".">
+	
+    <!-- DO NOT DELETE - these are required when running ant outside Eclipse.  -->
+    <!-- If you need to delete these, contact Jeff Hoyt and he'll figure out a way to work around it. -->
+    <!-- This requires fatjar.jar to be in your ant's lib directory -->
+    <property name="fjepPath" value="fatjar.jar"/>
+    <taskdef name="fatjar.build" classname="net.sf.fjep.anttask.FJBuildTask" classpath="${fjepPath}"/>
+    <typedef name="fatjar.manifest" classname="net.sf.fjep.anttask.FJManifestType" classpath="${fjepPath}"/>
+    <typedef name="fatjar.exclude" classname="net.sf.fjep.anttask.FJExcludeType" classpath="${fjepPath}"/>
+    <typedef name="fatjar.jarsource" classname="net.sf.fjep.anttask.FJJarSourceType" classpath="${fjepPath}"/>
+    <typedef name="fatjar.filesource" classname="net.sf.fjep.anttask.FJFileSourceType" classpath="${fjepPath}"/>
+	
+	<!-- Initialization variables -->
+	<property name="app.name" value="${ant.project.name}"/>
+	
+    <!-- Defines the location of SchemaStore and SchemaStoreClient-->
+    <property name="SchemaStore" value="../SchemaStore"/>
+	<property name="SchemaStoreClient" value="../SchemaStoreClient"/>
+
+	<!-- Set up the class path -->
+	<!--
+	     =======================================================
+	        This builds the classpath used for compilation.
+	        NOTE: This is independent of the system classpath
+	     =======================================================
+	-->
+	<path id="project.class.path">
+		<fileset dir="../SchemaStoreWarehouse/lib">
+			<include name="**/*.jar"/>
+		</fileset>
+		<pathelement location="${SchemaStore}/SchemaStore.jar"/>
+		<pathelement location="${SchemaStoreClient}/SchemaStoreClient.jar"/>
+	</path>
+	
+	<target name="all" depends="buildSchemaStoreWarehouse" description="Execute all the targets"/>
+	
+    <!-- echos the date and time and sets the property to ensure junit is available -->
+    <target name="init">
+   		<!-- Create the time stamp -->
+	    <tstamp/>
+        <echo message="Build file: ${DSTAMP}, ${TSTAMP}" />
+    </target>
+	
+
+	<!-- Delete compiled and generated code -->
+	<target name="clean" depends="init" description="Deletes compiled and generated code">
+		<echo>DELETING build DIRECTORY</echo>
+		<delete dir="build"/>
+	</target>
+
+	<!-- Create build directory -->
+	<target name="prep" depends="clean">
+		<echo>START prep</echo>
+		<echo>CREATING build DIRECTORY</echo>
+		<mkdir dir="build" />
+		<mkdir dir="build/classes" />
+	</target>
+	
+	<!-- Compile the Java code -->
+	<target name="compile" depends="prep" description="Compiles the Java code">
+		<javac srcdir="src" destdir="build/classes" debug="on" deprecation="on" source="1.6" target="1.6">
+			<classpath refid="project.class.path"/>
+		</javac>
+		<copy file="src/repository.xml" todir="build/classes"/>
+	</target>	
+	
+	<!-- Builds the SchemaStoreWarehouse jar -->
+    <target name="buildSchemaStoreWarehouse" depends="compile">
+        <fatjar.build output="SchemaStoreWarehouse.jar">
+            <fatjar.manifest/>
+            <fatjar.filesource path="build/classes"/>
+            <fatjar.jarsource file="lib/poi-3.5-beta5-20090219.jar" relpath=""/>
+            <fatjar.jarsource file="lib/poi-contrib-3.5-beta5-20090219.jar" relpath=""/>
+            <fatjar.jarsource file="lib/poi-ooxml-3.5-beta5-20090219.jar" relpath=""/>
+            <fatjar.jarsource file="lib/poi-scratchpad-3.5-beta5-20090219.jar" relpath=""/>
+        	<fatjar.jarsource file="lib/postgresql-8.3-604.jdbc4.jar" relpath=""/>
+        	<fatjar.jarsource file="lib/derby.jar" relpath=""/>
+        	<fatjar.jarsource file="lib/derbytools.jar" relpath=""/>
+        </fatjar.build>
+    </target>
+     
+</project>
