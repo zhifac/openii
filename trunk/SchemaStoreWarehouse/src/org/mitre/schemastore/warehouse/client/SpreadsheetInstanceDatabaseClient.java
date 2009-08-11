@@ -24,14 +24,12 @@ import org.mitre.schemastore.model.Entity;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.graph.Graph;
-import org.mitre.schemastore.servlet.SchemaStoreProxy;
 import org.mitre.schemastore.warehouse.common.InstanceRepository;
 import org.mitre.schemastore.warehouse.common.NoDataFoundException;
 import org.mitre.schemastore.warehouse.servlet.InstanceDatabase;
 
 /**
  * Handles all communications to the SchemaStoreClient and to the instance database
- * It assumes the default database to be DERBY.  This has been hard-coded in this class. 
  * @author STANDON
  *
  */

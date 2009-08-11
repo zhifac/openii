@@ -96,8 +96,8 @@ public class CreatePostgresDatabaseFactory extends CreateDatabaseFactory
 			if((e.getErrorCode() == 0) && ("42P04".equals(e.getSQLState())))
 			{
 				// Database already exists
-				System.out.println("Database " + NEW_DB_NAME + " could not be created because it already exists");
-				printSQLException(e);
+				System.out.println("Database " + NEW_DB_NAME + " already exists");
+				//printSQLException(e);
 			}
 			else
 			{
