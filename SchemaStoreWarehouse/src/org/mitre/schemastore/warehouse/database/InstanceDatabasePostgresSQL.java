@@ -1,20 +1,17 @@
 package org.mitre.schemastore.warehouse.database;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import org.mitre.schemastore.model.Attribute;
-
 /**
- *  This class creates tables under the schema name same as 
- *  the user name that you are currently logged in as.
+ *  This class handles access to PostgreSQL database
+ * 
+ *  Tables are created under the default schema 'public' 
+ *  and are owned by the user name that you are currently logged-in as.
  *  This is different from the M3 model schema name found in
- *  the repository to the which the schema elements belong to
- */
-
-/**
- * Handles access to the database
+ *  the structural repository to the which the schema elements belong to
  * @author STANDON
  */
 public class InstanceDatabasePostgresSQL extends InstanceDatabaseSQL
@@ -31,7 +28,6 @@ public class InstanceDatabasePostgresSQL extends InstanceDatabaseSQL
 	private static final String TYPE_STRING = "text";
 	private static final String TYPE_BOOLEAN = "boolean";
 	
-
 	//---------------------------------------
 	// Returns the constants specifying types 
 	//---------------------------------------
@@ -43,12 +39,11 @@ public class InstanceDatabasePostgresSQL extends InstanceDatabaseSQL
 	
 	public String getTypeBoolean()
 	{	return TYPE_BOOLEAN;	}
+
 	
-	//-----------------------------------
-	// Drops a table 
-	//-----------------------------------
-	
-	/** Drop a instance table */
+	//------------------------
+	// Drop an instance table 
+	//------------------------
 	protected void dropTable(String tableName)
 	{
 		String query = "DROP TABLE " + tableName + " CASCADE";
@@ -71,9 +66,136 @@ public class InstanceDatabasePostgresSQL extends InstanceDatabaseSQL
 		}
 	}
 	
+	//----------------------------------------------------------------------------------------
+	// Create table that maintains max. value of id ever used for an Entity and its Attributes 
+	//----------------------------------------------------------------------------------------
+	protected void createMaxIdTable(String entityTableName)
+	{
+		// Drop the table if it exists
+		//dropTable("max_val_" + entityTableName.substring(1));
+		
+		String query = "CREATE SEQUENCE max_val_seq_" + entityTableName.toLowerCase() + " MINVALUE 0";
+		try 
+		{
+			System.out.println("Creating Max. Value Table for Entity" + entityTableName.substring(1));
+			Statement stmt = connection.createStatement();
+			int result = stmt.executeUpdate(query);
+			if(result == 0)
+				System.out.println("Created Table max_val_seq_" + entityTableName);
+			stmt.close();
+			
+			// Commit all changes
+			connection.commit();
+		} 
+		catch(SQLException e) 
+		{ 
+			System.out.println("Max. Value Table for Entity with id " + entityTableName.substring(1) + " could not be created.");
+			printSQLException(e);
+		}
+	}
+	
+	//-----------------------------------
+	// Insert data into Entity table 
+	//-----------------------------------
+	public void insertEntityData(String entityTableName, Integer numberOfRowsOfData, Integer currentAbsoluteMaxId)
+	{
+		String query = null;
+		for(int i=(currentAbsoluteMaxId+1); i<=(currentAbsoluteMaxId+numberOfRowsOfData); i++)
+		{
+			StringBuffer sb = new StringBuffer("INSERT INTO " + entityTableName + " (id)");
+			sb.append(" VALUES (" + i + ")");
+			
+			query = sb.toString();
+			try 
+			{
+				System.out.println("Inserting data into entity table");
+				Statement stmt = connection.createStatement();
+				int result = stmt.executeUpdate(query);
+				if(result != 0)
+					System.out.println("Inserted id value " + i + " into " + entityTableName);
+				stmt.close();
+				
+				// Commit all changes
+				connection.commit();
+			} 
+			catch(SQLException e) 
+			{ 
+				System.out.println("Values could not be inserted in Entity " + entityTableName.substring(1) + " tables");
+				printSQLException(e);
+			}
+		}
+		
+		int newAbsoluteMaxId = currentAbsoluteMaxId+numberOfRowsOfData;
+		insertMaxIdData(entityTableName, newAbsoluteMaxId);
+	}
 	
 	
-	/** Insert data into the table created for Attribute */
+	//--------------------------------------------------------------------------------------------------
+	// Insert data into table that maintains max. value of id ever used for an Entity and its Attributes 
+	//--------------------------------------------------------------------------------------------------
+	protected void insertMaxIdData(String entityTableName, int value)
+	{
+		String query = "SELECT setval('max_val_seq_" + entityTableName.toLowerCase() + "', " + value + ", false)";
+		try 
+		{
+			System.out.println("Inserting data into max. value table");
+			Statement stmt = connection.createStatement();
+			ResultSet rs = stmt.executeQuery(query);
+			while (rs.next()) 
+			{
+				int currentAbsoluteMaxId = rs.getInt(1);
+				if(currentAbsoluteMaxId == value)
+					System.out.println("Inserted new max. value " + value + " into max_val_seq_" + entityTableName.toLowerCase());
+			}
+			stmt.close();
+			
+			// Commit all changes
+			connection.commit();
+		} 
+		catch(SQLException e) 
+		{ 
+			System.out.println("Data could not be inserted into table max_val_seq_" + entityTableName.toLowerCase());
+			printSQLException(e);
+		}
+	}
+	
+	
+	//------------------------------------------------------------------------------
+	// Get max. value of id that was ever inserted for an Entity and its Attributes  
+	//------------------------------------------------------------------------------
+	public int getCurrentAbsoluteMaxId(String entityTableName)
+	{
+		int currentAbsoluteMaxId = 0;
+		
+		// Get the max value that was ever put in the id column of instance tables
+		// All values should be given in lower case - requirement of PostgreSQL		
+		String query = "SELECT nextval('max_val_seq_" + entityTableName.toLowerCase() + "')";
+		try 
+		{
+			System.out.println("Getting value of current max. id");
+			Statement stmt = connection.createStatement();
+			ResultSet rs = stmt.executeQuery(query);
+			while (rs.next()) 
+				currentAbsoluteMaxId = rs.getInt(1);
+			stmt.close();
+			
+			// Commit all changes
+			connection.commit();
+		} 
+		catch(SQLException e) 
+		{ 
+			System.out.println("Value of current max. id for Entity " + entityTableName.substring(1) + " could not be obtained");
+			printSQLException(e);
+		}
+		return currentAbsoluteMaxId;
+	}
+	
+	
+	//-----------------------------------
+	// Insert data into Attribute table 
+	//-----------------------------------
+	
+	/** Insert data into table created for Boolean type Attribute	*/
 	public void insertBooleanAttributeData(String attributeTableName, Integer rowNumber, String data)
 	{
 		insertStringAttributeData(attributeTableName, rowNumber, data);
