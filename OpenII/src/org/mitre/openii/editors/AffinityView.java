@@ -2,6 +2,7 @@ package org.mitre.openii.editors;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -20,18 +21,26 @@ import org.mitre.affinity.view.application.StackTraceDialog;
 import org.mitre.affinity.view.cluster_details.ClusterDetailsDlg;
 import org.mitre.affinity.view.event.SelectionClickedEvent;
 import org.mitre.affinity.view.event.SelectionClickedListener;
+import org.mitre.affinity.view.venn_diagram.model.HarmonyMatchScoreComputer;
+import org.mitre.affinity.view.venn_diagram.model.IMatchScoreComputer;
+import org.mitre.affinity.view.venn_diagram.model.VennDiagramSets;
+import org.mitre.affinity.view.venn_diagram.swt.VennDiagramDlg;
 import org.mitre.affinity.clusters.ClusterGroup;
 import org.mitre.affinity.model.AffinityModel;
 import org.mitre.affinity.model.AffinitySchemaStoreManager;
 import org.mitre.affinity.model.ClusterManager;
 import org.mitre.affinity.model.AffinitySchemaManager;
 import org.mitre.affinity.model.ISchemaManager;
+import org.mitre.harmony.matchers.mergers.VoteMerger;
+import org.mitre.harmony.matchers.voters.ExactStructureMatcher;
+import org.mitre.harmony.matchers.voters.MatchVoter;
 
 import org.mitre.openii.model.EditorInput;
 import org.mitre.openii.model.EditorManager;
 import org.mitre.openii.model.OpenIIManager;
 import org.mitre.openii.model.RepositoryManager;
 import org.mitre.openii.views.manager.groups.EditGroupDialog;
+import org.mitre.schemastore.model.Schema;
 
 /**
  * Constructs the Affinity View
@@ -59,6 +68,15 @@ public class AffinityView extends OpenIIEditor implements SelectionClickedListen
 	
 	/** Currently selected schemas */
 	private Collection<Integer> selectedSchemas;
+	
+	/** Used to compute match scores between two schemas */
+	private static IMatchScoreComputer matchScoreComputer; 
+	static {
+		ArrayList<MatchVoter> voters = new ArrayList<MatchVoter>();
+		//voters.add(new BagMatcher());
+		voters.add(new ExactStructureMatcher());
+		matchScoreComputer = new HarmonyMatchScoreComputer(voters, new VoteMerger());
+	}
 	
 	/*static {
 		//Initialize Icons
@@ -116,8 +134,22 @@ public class AffinityView extends OpenIIEditor implements SelectionClickedListen
 			multiSchemaMenu = new Menu(affinity);
 			SelectionListener multiSchemaMenuListener = new SelectionAdapter() {
 				public void widgetSelected(SelectionEvent e) {					
-					MenuItem item = (MenuItem)e.widget;					
-					if(item.getText().startsWith("View")) {
+					MenuItem item = (MenuItem)e.widget;
+					if(item.getText().startsWith("View Schema")) {
+						//Show the Venn diagarm view using the first two of the selected schemas
+						//(eventually we'll show a grid of Venn diagrams for all pairs of schemas)
+						if(selectedSchemas.size() >= 2) {
+							System.out.println("hello");
+							Shell shell = getSite().getWorkbenchWindow().getShell();
+							Iterator<Integer> iter = selectedSchemas.iterator();
+							Schema s1 = schemaManager.getSchema(iter.next());
+							Schema s2 = schemaManager.getSchema(iter.next());							
+							VennDiagramSets sets = new VennDiagramSets(s1, s2, 0.4, 1.0, schemaManager, matchScoreComputer);
+							VennDiagramDlg dlg = new VennDiagramDlg(shell, SWT.APPLICATION_MODAL, sets, true);
+							dlg.setVisible(true);
+						}												
+					}
+					else if(item.getText().startsWith("View Terms")) {
 						//Create a temporary cluster using the schemas in the group and display the TF-IDF dialog 
 						//for the cluster
 						ClusterGroup cluster = new ClusterGroup();
@@ -138,7 +170,10 @@ public class AffinityView extends OpenIIEditor implements SelectionClickedListen
 					}						
 				}
 			};
-			MenuItem item = new MenuItem (multiSchemaMenu, SWT.NONE);				
+			MenuItem item = new MenuItem (multiSchemaMenu, SWT.NONE);	
+			item.setText("View Schema Relatedness");
+			item.addSelectionListener(multiSchemaMenuListener);
+			item = new MenuItem (multiSchemaMenu, SWT.NONE);				
 			item.setText("View Terms in Schemas");
 			item.addSelectionListener(multiSchemaMenuListener);
 			item = new MenuItem (multiSchemaMenu, SWT.NONE);				
