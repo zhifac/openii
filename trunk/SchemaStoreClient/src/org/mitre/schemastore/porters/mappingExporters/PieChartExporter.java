@@ -83,7 +83,7 @@ public class PieChartExporter extends MappingExporter
 		int noCount = 0;
 		
 		// Cycles through all tree nodes to identify good, weak, and no links
-		HierarchicalGraph graph = new HierarchicalGraph(client.getGraph(schema.getId()),schema.geetGraphModel());
+		HierarchicalGraph graph = new HierarchicalGraph(client.getGraph(schema.getId()),schema.getGraphModel());
 		for(SchemaElement element : graph.getGraphElements())
 		{
 			double maxScore = Double.MIN_VALUE;
