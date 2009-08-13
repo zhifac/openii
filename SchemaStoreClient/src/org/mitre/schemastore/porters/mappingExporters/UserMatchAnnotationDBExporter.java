@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import javax.swing.filechooser.FileFilter;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
 
@@ -29,25 +28,34 @@ public class UserMatchAnnotationDBExporter  extends UserMatchAnotationExporter {
 	
 	/** Returns the file types associated with this converter */
 	public String getFileType()
-		{ return "mdb"; }
+		{ return ".mdb"; }
 	
-	/** Returns a file filter for this converter */
-	public FileFilter getFileFilter()
-	{
-		class MdbFilter extends FileFilter
-		{
-			public boolean accept(File file)
-			{
-				if(file.isDirectory()) return true;
-				if(file.toString().endsWith(".mdb")) return true;
-				return false;
-			}
+	/** Returns the exporter name */
+	public String getName()
+		{ return "User Annotation Match DB Exporter"; }
+	
+	/** Returns the exporter description */
+	public String getDescription()
+		{ return "This exporter can be used to export all pairings of terms within the mapping"; }
 
-			public String getDescription()
-				{ return "User Annotation Match Database (.mdb)"; }
-		}
-		return new MdbFilter();
-	}
+	
+//	/** Returns a file filter for this converter */
+//	public FileFilter getFileFilter()
+//	{
+//		class MdbFilter extends FileFilter
+//		{
+//			public boolean accept(File file)
+//			{
+//				if(file.isDirectory()) return true;
+//				if(file.toString().endsWith(".mdb")) return true;
+//				return false;
+//			}
+//
+//			public String getDescription()
+//				{ return "User Annotation Match Database (.mdb)"; }
+//		}
+//		return new MdbFilter();
+//	}
 	
 	/** Generates a list of the top 100 matches for this project */
 	public void exportMapping(Mapping mapping, ArrayList<MappingCell> mappingCells, File file) throws IOException
@@ -71,7 +79,7 @@ public class UserMatchAnnotationDBExporter  extends UserMatchAnotationExporter {
 	        
 	        
 	        // Create the table
-	        s = con.createStatement();
+//	        s = con.createStatement();
 	        s.execute("create table T_MatchLink ( " +
 	        		"linkIdentifier_PK integer," +
 	        		"leftSchema_FK integer," +
@@ -150,7 +158,7 @@ public class UserMatchAnnotationDBExporter  extends UserMatchAnotationExporter {
 		} //end try
 
 		catch(Exception e) { 
-		    System.err.println ("Error with databse" + dataSourceName); 
+		    System.err.println ("Error with database" + dataSourceName); 
 		    e.printStackTrace(); 
 		}
 	}

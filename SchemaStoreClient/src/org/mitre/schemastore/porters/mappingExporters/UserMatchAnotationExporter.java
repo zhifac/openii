@@ -28,7 +28,7 @@ import org.mitre.schemastore.model.graph.HierarchicalGraph;
 public class UserMatchAnotationExporter extends MappingExporter
 {	
 	/** Stores a hash map of all schema elements which exist in mapping */
-	private HashMap<Integer,SchemaElement> elements = null;
+	private HashMap<Integer,SchemaElement> elements = new HashMap<Integer,SchemaElement>();
 	
 	/** Stores an array of all schema graphs which exist in mapping */
 	ArrayList<HierarchicalGraph> graphs = new ArrayList<HierarchicalGraph>();
@@ -66,9 +66,9 @@ public class UserMatchAnotationExporter extends MappingExporter
 	
 	/** Returns the file types associated with this converter */
 	public String getFileType()
-		{ return "csv"; }
+		{ return ".csv"; }
 	
-	/** Generates a list of the top 100 matches for this project */
+	/** Generates a list of matches for this project */
 	public void exportMapping(Mapping mapping, ArrayList<MappingCell> mappingCells, File file) throws IOException
 	{				
 		
@@ -95,7 +95,7 @@ public class UserMatchAnotationExporter extends MappingExporter
     	out.close();
     	
     	// Clear out graph and schema element lists
-    	elements = null; graphs.clear();
+    	elements = new HashMap<Integer,SchemaElement>(); graphs.clear();
 	}
 
 	/** Gets paths for the specified element */
@@ -223,10 +223,19 @@ public class UserMatchAnotationExporter extends MappingExporter
 		protected void addMappingCell(MappingCell mappingCell)
 		{
   			// Construct the compressed match
-   			SchemaElement element1 = elements.get(mappingCell.getElement1());
-   			SchemaElement element2 = elements.get(mappingCell.getElement2());
+   			SchemaElement element1 = elements.get(mappingCell.getInput()[0]);
+   			SchemaElement element2 = elements.get(mappingCell.getOutput());
+
+  
+System.out.println("elements has " + elements.size());
+   			if (element1 == null || element2 == null) {
+   				System.out.println("Error in addMappingCell: " 
+   						+ mappingCell.getInput()[0] + ", "
+   						+ mappingCell.getOutput());
+   			}
+   			
    			CompressedMatch newMatch = new CompressedMatch(element1,element2,mappingCell.getScore(),
-   					mappingCell.getAuthor(),mappingCell.getModificationDate(),mappingCell.getTransform(),
+   					mappingCell.getAuthor(),mappingCell.getModificationDate(),mappingCell.getFunctionClass(),
    					mappingCell.getNotes());  	
 
    			// Add match to list of compressed matches
