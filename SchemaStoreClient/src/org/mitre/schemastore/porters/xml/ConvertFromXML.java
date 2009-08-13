@@ -36,7 +36,9 @@ public class ConvertFromXML
 				String value = el.getFirstChild().getNodeValue();
 				return value.equals("NULL") ? "" : value;
 			}
-		} catch(java.lang.NullPointerException e) {}
+		} catch(java.lang.NullPointerException e) {
+			System.out.println("Warning: NullPointerException in ConvertFromXML.getValue");
+		}
 		return null;
 	}
 	
@@ -201,8 +203,11 @@ public class ConvertFromXML
 			if(graph.getSchema().getName().equals(schema))
 			{
 				ArrayList<Integer> elementIDs = graph.getPathIDs(path);
-				if(elementIDs.size()>0) return elementIDs.get(0);
+				if(elementIDs.size()>0) {
+					return elementIDs.get(0);
+				}
 			}
+		System.out.println("Path not found for " + pathString.replaceFirst("/[^/]*/","") );
 		return null;
 	}
 	
@@ -215,11 +220,17 @@ public class ConvertFromXML
 		for(int i=0; i<inputCount; i++)
 		{
 			Integer inputID = getElementId(getValue(element,"MappingCellInput"+i+"Path"),graphs);
-			if(inputID==null) return null;
+			if(inputID==null) {
+				System.out.println("Warning: no input id for " + element.getNodeName());
+				return null;
+			}
 			inputIDs[i] = inputID;
 		}
 		Integer outputID = getElementId(getValue(element,"MappingCellOutputPath"),graphs);
-		if(outputID==null) return null;
+		if(outputID==null) {
+			System.out.println("Warning: no output id for " + element.getNodeName());
+			return null;
+		}
 		
 		// Retrieve the mapping cell elements
 		Integer id = getIntegerValue(element,"MappingCellId");
