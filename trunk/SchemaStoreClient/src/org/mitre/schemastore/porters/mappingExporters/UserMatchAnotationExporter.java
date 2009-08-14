@@ -28,7 +28,7 @@ import org.mitre.schemastore.model.graph.HierarchicalGraph;
 public class UserMatchAnotationExporter extends MappingExporter
 {	
 	/** Stores a hash map of all schema elements which exist in mapping */
-	private HashMap<Integer,SchemaElement> elements = new HashMap<Integer,SchemaElement>();
+	protected HashMap<Integer,SchemaElement> elements = new HashMap<Integer,SchemaElement>();
 	
 	/** Stores an array of all schema graphs which exist in mapping */
 	ArrayList<HierarchicalGraph> graphs = new ArrayList<HierarchicalGraph>();
@@ -226,8 +226,6 @@ public class UserMatchAnotationExporter extends MappingExporter
    			SchemaElement element1 = elements.get(mappingCell.getInput()[0]);
    			SchemaElement element2 = elements.get(mappingCell.getOutput());
 
-  
-System.out.println("elements has " + elements.size());
    			if (element1 == null || element2 == null) {
    				System.out.println("Error in addMappingCell: " 
    						+ mappingCell.getInput()[0] + ", "
