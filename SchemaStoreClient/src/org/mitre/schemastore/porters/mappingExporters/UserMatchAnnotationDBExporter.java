@@ -7,11 +7,16 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
+import org.mitre.schemastore.model.MappingSchema;
+import org.mitre.schemastore.model.SchemaElement;
+import org.mitre.schemastore.model.graph.HierarchicalGraph;
 
 import java.sql.*;
 
@@ -38,25 +43,6 @@ public class UserMatchAnnotationDBExporter  extends UserMatchAnotationExporter {
 	public String getDescription()
 		{ return "This exporter can be used to export all pairings of terms within the mapping"; }
 
-	
-//	/** Returns a file filter for this converter */
-//	public FileFilter getFileFilter()
-//	{
-//		class MdbFilter extends FileFilter
-//		{
-//			public boolean accept(File file)
-//			{
-//				if(file.isDirectory()) return true;
-//				if(file.toString().endsWith(".mdb")) return true;
-//				return false;
-//			}
-//
-//			public String getDescription()
-//				{ return "User Annotation Match Database (.mdb)"; }
-//		}
-//		return new MdbFilter();
-//	}
-	
 	/** Generates a list of the top 100 matches for this project */
 	public void exportMapping(Mapping mapping, ArrayList<MappingCell> mappingCells, File file) throws IOException
 	{		
@@ -93,6 +79,11 @@ public class UserMatchAnnotationDBExporter  extends UserMatchAnotationExporter {
 	        		"linkNote string)"); // create a table      
 	        s.close();	        	        
 	
+			// Initialize the graph and schema element lists
+			elements = getSchemaElements(Arrays.asList(mapping.getSchemaIDs()));
+			for(MappingSchema schema : mapping.getSchemas())
+				graphs.add(new HierarchicalGraph(client.getGraph(schema.getId()),null));
+
 			// Get the list of mapping cells
 			CompressedList matchList = new CompressedList();
 			for(MappingCell mappingCell : mappingCells)
@@ -101,60 +92,59 @@ public class UserMatchAnnotationDBExporter  extends UserMatchAnotationExporter {
 
 			
 			
-	   	// Outputs the top mapping cells
-	    	List<CompressedMatch> matches = matchList.getMatches();
+	   		List<CompressedMatch> matches = matchList.getMatches();
 			Collections.sort(matches);
 //			if(matches.size()>count) matches = matches.subList(0, count);
 	  		
 			int linkIdentifier_PK = 0; // the primary key for the table
 			for(CompressedMatch match : matches) {
 	 
-//	  			if ((match.getScore() >= minConfThreshold ) || (match.getScore() < 0.0) ) {
-	  				
-	  				
-	  				
-	  				
-	  				
-//  			        s.execute("insert into T_MatchLink values( " +
-//  			        		"1," +
-//  			        		"1," +
-//  			        		"'nodepathJOEL', " +
-//  			        		"'nodepath' )"); // create a table      
-
 
 //FIXME: Just faking these for now
-  					int leftSchema_FK = 1;
-  					int rightSchema_FK = 1;
-  					
-  					String leftNodePath = match.getPaths1();
-  					String rightNodePath = match.getPaths2();
-  					double linkWeight = match.getScore();
-  					String linkAuthor = match.getAuthor();
-  					String linkDateTime = match.getDate();
-  					String linkTransform = match.getTransform();
-  					String linkNote = match.getNotes();
-  					
+				int leftSchema_FK = 1;
+				int rightSchema_FK = 1;
+				
+				String leftNodePath = match.getPaths1();
+				String rightNodePath = match.getPaths2();
+				double linkWeight = match.getScore();
+				String linkAuthor = match.getAuthor();
+				String linkDateTime = match.getDate();
+				String linkTransform = match.getTransform();
+				String linkNote = match.getNotes();
+				
+				// Escape any single 's by doubling them for the SQL insert query
+				// Some of these fields shouldn't ever have 's, but being safe.
+				leftNodePath = leftNodePath.replaceAll("'", "''");
+				rightNodePath = rightNodePath.replaceAll("'", "''");
+				linkAuthor = linkAuthor.replaceAll("'", "''");
+				linkDateTime = linkDateTime.replaceAll("'", "''");
+				linkTransform = linkTransform.replaceAll("'", "''");
+				linkNote = linkNote.replaceAll("'", "''");
+				
 
-	  				// create a table      	         	
-  	  				
-  					s = con.createStatement();
+  				// create a table      	         	
+  				
+				s = con.createStatement();
 
-  					s.execute("insert into T_MatchLink values( " +
-  							linkIdentifier_PK + ", " + 
-  							leftSchema_FK + ", " +
-  							"'" + leftNodePath + "'" + ", " +
-  							rightSchema_FK+ ", " +
-  							"'" + rightNodePath + "'" + ", " +
-  							linkWeight+ ", " +
-  							"'" + linkAuthor + "'"+ ", " +
-  							"'" + linkDateTime + "'"+ ", " +
-  							"'" + linkTransform + "'"+ ", " +
-  							"'" + linkNote + "'" + ")");
-  						  
-  					s.close();
-	  			}
-	  			linkIdentifier_PK++;
-//	  		}
+				s.execute("insert into T_MatchLink values( " +
+						linkIdentifier_PK + ", " + 
+						leftSchema_FK + ", " +
+						"'" + leftNodePath + "'" + ", " +
+						rightSchema_FK+ ", " +
+						"'" + rightNodePath + "'" + ", " +
+						linkWeight+ ", " +
+						"'" + linkAuthor + "'"+ ", " +
+						"'" + linkDateTime + "'"+ ", " +
+						"'" + linkTransform + "'"+ ", " +
+						"'" + linkNote + "'" + ")");
+					  
+				s.close();
+  			}
+  			linkIdentifier_PK++;
+	
+  	    	// Clear out graph and schema element lists
+	  	    elements = new HashMap<Integer,SchemaElement>(); graphs.clear();
+
 		} //end try
 
 		catch(Exception e) { 
