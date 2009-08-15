@@ -36,9 +36,7 @@ public class ConvertFromXML
 				String value = el.getFirstChild().getNodeValue();
 				return value.equals("NULL") ? "" : value;
 			}
-		} catch(java.lang.NullPointerException e) {
-			System.out.println("Warning: NullPointerException in ConvertFromXML.getValue");
-		}
+		} catch(java.lang.NullPointerException e) {}
 		return null;
 	}
 	
@@ -195,19 +193,18 @@ public class ConvertFromXML
 	static private Integer getElementId(String pathString, ArrayList<HierarchicalGraph> graphs)
 	{
 		// Retrieve the schema and path
-		String schema = pathString.substring(1).replaceAll("/.*","");
-		ArrayList<String> path = new ArrayList<String>(Arrays.asList(pathString.replaceFirst("/[^/]*/","").split("/")));
-
+		String schema = pathString.substring(1).replaceAll("/.*","").replaceAll("&#47;","/");
+		ArrayList<String> path = new ArrayList<String>();
+		for(String element : new ArrayList<String>(Arrays.asList(pathString.replaceFirst("/[^/]*/","").split("/"))))
+			path.add(element.replaceAll("&#47;","/"));
+		
 		// Retrieve the element ID
 		for(HierarchicalGraph graph : graphs)
 			if(graph.getSchema().getName().equals(schema))
 			{
 				ArrayList<Integer> elementIDs = graph.getPathIDs(path);
-				if(elementIDs.size()>0) {
-					return elementIDs.get(0);
-				}
+				if(elementIDs.size()>0) return elementIDs.get(0);
 			}
-		System.out.println("Path not found for " + pathString.replaceFirst("/[^/]*/","") );
 		return null;
 	}
 	
@@ -220,17 +217,11 @@ public class ConvertFromXML
 		for(int i=0; i<inputCount; i++)
 		{
 			Integer inputID = getElementId(getValue(element,"MappingCellInput"+i+"Path"),graphs);
-			if(inputID==null) {
-				System.out.println("Warning: no input id for " + element.getNodeName());
-				return null;
-			}
+			if(inputID==null) return null;
 			inputIDs[i] = inputID;
 		}
 		Integer outputID = getElementId(getValue(element,"MappingCellOutputPath"),graphs);
-		if(outputID==null) {
-			System.out.println("Warning: no output id for " + element.getNodeName());
-			return null;
-		}
+		if(outputID==null) return null;
 		
 		// Retrieve the mapping cell elements
 		Integer id = getIntegerValue(element,"MappingCellId");

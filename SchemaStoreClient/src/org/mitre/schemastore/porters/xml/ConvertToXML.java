@@ -136,9 +136,9 @@ public class ConvertToXML
 				ArrayList<ArrayList<SchemaElement>> paths = graph.getPaths(elementID);
 				if(paths!=null && paths.size()>0)
 				{
-					StringBuffer path = new StringBuffer("/" + graph.getSchema().getName());
+					StringBuffer path = new StringBuffer("/" + graph.getSchema().getName().replaceAll("/","&#47;"));
 					for(SchemaElement element : paths.get(0))
-						path.append("/" + graph.getDisplayName(element.getId()));
+						path.append("/" + graph.getDisplayName(element.getId()).replaceAll("/","&#47;"));
 					return path.toString();
 				}
 			}
