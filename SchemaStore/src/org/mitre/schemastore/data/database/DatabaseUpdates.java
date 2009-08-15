@@ -184,6 +184,9 @@ public class DatabaseUpdates
         stmt.executeUpdate("ALTER TABLE proposed_mapping_cell ADD CONSTRAINT pmappingcell_mapping_id_fkey FOREIGN KEY (mapping_id) REFERENCES mapping(id)");
         stmt.executeUpdate("ALTER TABLE validated_mapping_cell ADD CONSTRAINT vmappingcell_mapping_id_fkey FOREIGN KEY (mapping_id) REFERENCES mapping(id)");
 
+        // Update the notes field to include the transform notes
+        stmt.executeUpdate("UPDATE mapping_cell SET notes = notes || '<transform>' || transform || '</transform>' WHERE transform IS NOT NULL AND transform!=''");
+        
         // Move all data to the new mapping cell table
         stmt.executeUpdate("INSERT INTO proposed_mapping_cell (id, mapping_id, input_id, output_id, score, author, modification_date, notes) select id, mapping_id, element1_id, element2_id, score, author, modification_date, notes from mapping_cell where validated = 'f'");
         stmt.executeUpdate("INSERT INTO validated_mapping_cell (id, mapping_id, function_class, output_id, author, modification_date, notes) select id, mapping_id, 'org.mitre.schemastore.mapfunctions.NullFunction', element2_id, author, modification_date, notes from mapping_cell where validated = 't'");
