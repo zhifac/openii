@@ -63,7 +63,7 @@ public class M3MappingImporter extends MappingImporter
 			mappingSchemas = new ArrayList<MappingSchema>(Arrays.asList(mapping.getSchemas()));
 			ArrayList<HierarchicalGraph> graphs = new ArrayList<HierarchicalGraph>();
 			for(MappingSchema schema : mappingSchemas)
-				graphs.add(new HierarchicalGraph(client.getGraph(schema.getId()),schema.getGraphModel()));
+				graphs.add(new HierarchicalGraph(client.getGraph(schema.getId()),schema.geetGraphModel()));
 			
 			// Extract mapping cells from the element
 			mappingCells.clear();
@@ -75,15 +75,10 @@ public class M3MappingImporter extends MappingImporter
 					if(node instanceof Element)
 					{
 						MappingCell mappingCell = ConvertFromXML.getMappingCell((Element)node, graphs);
-						if(mappingCell!=null) {
-							mappingCells.add(mappingCell);
-						}
+						if(mappingCell!=null) mappingCells.add(mappingCell);
 					}
 				}
-		} catch(Exception e) {
-			System.out.println("Exception in M3MappingImporter.initialize:");
-			e.printStackTrace();
-		}
+		} catch(Exception e) { throw new ImporterException(ImporterException.IMPORT_FAILURE, e.getMessage()); }
 	}
 
 	/** Returns the imported mapping schemas */
