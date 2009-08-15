@@ -34,15 +34,35 @@ public class XSDImporter extends SchemaImporter
 	{
 		try {
 			XSDImporter xsdImporter = new XSDImporter();
-			URI uri = new URI("C:/3_LMP/Schemas/3LayerMessage/3LayerMessage.xsd");
-			xsdImporter.getSchemaElements(uri);
-		}
-		catch(Exception e) { e.printStackTrace(); }
+			URI uri = new URI("C:/Electronic_Court_Filing_4.0/ecf-v4.0-spec/xsd/message/ECF-4.0-CaseListQueryMessage.xsd");
+			ArrayList<SchemaElement> schemaElements = xsdImporter.getSchemaElements(uri);
+			GraphModel xmlModel = null;
+			for (GraphModel gm : HierarchicalGraph.getGraphModels()){
+				if (gm.getName().equalsIgnoreCase("XML"))
+					gm = xmlModel;
+			}
+			HierarchicalGraph hier = new HierarchicalGraph(new Graph(new org.mitre.schemastore.model.Schema(1,"test","me","","","",false),new ArrayList<SchemaElement>(schemaElements)),xmlModel);
+			for (SchemaElement se : hier.getElements(Subtype.class)){
+				Subtype sub = (Subtype)se;
+				System.err.println("--------------------  id: " + sub.getId() 
+						+ " parent: " + sub.getParentID() 
+						+ " child: " + sub.getChildID()
+						+ " parentName: " + hier.getElement(sub.getParentID()).getName()
+						+ " childName: " + hier.getElement(sub.getChildID()).getName());
+	//			System.err.println(hier.getElement(10).getName());
+	//			for (SchemaElement se2 : hier.getChildElements(10)){
+	//				System.err.println(se2.getId() + " " + se2.getName() + se2.getClass());
+	//			}
+			}
+			
+		
+		} catch(Exception e) { e.printStackTrace(); }
 	}
 	
 	// Stores the M3 schema elements (entities, attributes, domain, relationships, etc.) 
 	private HashMap<String, SchemaElement> schemaElementsHS = new HashMap<String, SchemaElement>();
 	private HashMap<String,Domain> domainList = new HashMap<String,Domain>();
+	private HashMap<Integer,Integer> ssID_to_exolabHC = new HashMap<Integer,Integer>();
 	
 	// Stores the unique "Any" entity
 	private Entity anyEntity;
@@ -91,6 +111,7 @@ public class XSDImporter extends SchemaImporter
 			// reset the Importer
 			schemaElementsHS = new HashMap<String, SchemaElement>();
 			domainList = new HashMap<String, Domain>();
+			ssID_to_exolabHC = new HashMap<Integer, Integer>();
 			
 			// Preset domains and then process this schema
 			loadDomains();
@@ -101,11 +122,11 @@ public class XSDImporter extends SchemaImporter
 			getRootElements(mainSchema);
 			
 			// get all imported schemas (recursively)
-			ArrayList<Schema> importedSchemas = new ArrayList<Schema>();		
-			findReferredSchemas(importedSchemas, mainSchema);			
-			for (Schema refSchema : importedSchemas){
-				getRootElements(refSchema);
-			}		
+		//	ArrayList<Schema> importedSchemas = new ArrayList<Schema>();		
+		//	findReferredSchemas(importedSchemas, mainSchema);			
+		//	for (Schema refSchema : importedSchemas){
+		//		getRootElements(refSchema);
+		//	}		
 		
 			GraphModel xmlModel = null;
 			for (GraphModel gm : HierarchicalGraph.getGraphModels()){
@@ -199,13 +220,14 @@ public class XSDImporter extends SchemaImporter
 		// handle IDREF / IDREFS -- generate relationship to "Any" entity
 		if (parent instanceof Attribute && (typeName.equals("IDREF") || typeName.equals("IDREFS"))){
 		
-			if (this.anyEntity == null){
+			if (this.anyEntity == null)
 				this.anyEntity = new Entity(nextId(),"ANY","ANY ENTITY",0);
-				schemaElementsHS.put(this.compString(DEFAULT_NAMESPACE,null,null,this.anyEntity),this.anyEntity);
-			}	
+			schemaElementsHS.put(anyEntity.getId().toString(),anyEntity);
+			
 			Integer rightMax = ( typeName.equals("IDREFS") ) ? null : 1;   
 			Relationship rel = new Relationship(nextId(),parent.getName(),((Attribute)parent).getEntityID(),0,1,this.anyEntity.getId(),0,rightMax,0);
-			schemaElementsHS.put(this.compString(DEFAULT_NAMESPACE,null,null,rel),rel);
+			//schemaElementsHS.put(this.compString(DEFAULT_NAMESPACE,null,null,rel),rel);
+			schemaElementsHS.put(rel.getId().toString(),rel);
 			
 			// TODO: set the domain of the parent attribute to 
 			// TODO: should we remove the attribute with type Any?
@@ -221,7 +243,7 @@ public class XSDImporter extends SchemaImporter
 			String passedTypeNamespace = passedType == null ? DEFAULT_NAMESPACE : passedType.getSchema().getTargetNamespace();
 			if (domainList.containsKey(passedTypeNamespace + " " + domain.getName()) == false) {
 				domainList.put(passedTypeNamespace + " " + domain.getName(),domain);
-				schemaElementsHS.put(this.compString(passedTypeNamespace,null, null, domain), domain);
+				schemaElementsHS.put(new Integer(domain.hashCode()).toString(), domain);
 				
 				if (passedType instanceof SimpleType && !(passedType instanceof Union)){
 					// create DomainValues (if specified for SimpleType)
@@ -229,7 +251,7 @@ public class XSDImporter extends SchemaImporter
 					while (facets.hasMoreElements()) {
 						Facet facet = (Facet) facets.nextElement();
 						DomainValue domainValue = new DomainValue(nextId(), facet.getValue(), facet.getValue(), domain.getId(), 0);
-						schemaElementsHS.put(this.compString(passedTypeNamespace, passedType,facet,domainValue), domainValue);	
+						schemaElementsHS.put(new Integer(domainValue.hashCode()).toString(), domainValue);	
 					}
 				}
 				
@@ -240,15 +262,15 @@ public class XSDImporter extends SchemaImporter
 					while (memberTypes.hasMoreElements()){
 						SimpleType childType = (SimpleType)memberTypes.nextElement();
 						// create a subtype to capture union
-						//Subtype subtype = new Subtype(nextId(),domain.getId(),-1,0);
-						//	schemaElementsHS.put(this.compString(passedType, childType, subtype), subtype);
-						//processSimpleType(childType,subtype);
+						Subtype subtype = new Subtype(nextId(),domain.getId(),-1,0);
+						schemaElementsHS.put(new Integer(subtype.hashCode()).toString(), subtype);
+						processSimpleType(childType,subtype);
 					}
 				}
-				
 			}
+	 
 			// attached Domain as child to passed Attribute / Containment / Subtype
-			domain = (Domain)schemaElementsHS.get(this.compString(passedTypeNamespace,null,null,domain));
+			domain = domainList.get(passedTypeNamespace + " " + domain.getName()); 
 			if (parent instanceof Attribute)
 				((Attribute)parent).setDomainID(domain.getId());
 			else if (parent instanceof Containment)
@@ -275,12 +297,10 @@ public class XSDImporter extends SchemaImporter
 		// check to see if entity has been created for passed complex type
 		// create new Entity if none has been created 
 		Entity entity = new Entity(nextId(), passedType.getName(), this.getDocumentation(passedType), 0);
-	//	Entity entity = new Entity(nextId(), passedType.getName(), this.getDocumentation(passedType), passedType.getSchema().getTargetNamespace(),0);
 		
-		
-		if (schemaElementsHS.containsKey(this.compString(passedType.getSchema().getTargetNamespace(),passedType,null, entity)) == false) {
-			schemaElementsHS.put(this.compString(passedType.getSchema().getTargetNamespace(),passedType,null, entity), entity);
-	
+		if (schemaElementsHS.containsKey(getHashkey(passedType, null)) == false) {
+			ssID_to_exolabHC.put(entity.getId(), passedType.hashCode());
+			schemaElementsHS.put(getHashkey(passedType, null), entity);
 				
 			try {
 				// get Attributes for current complexType
@@ -293,13 +313,7 @@ public class XSDImporter extends SchemaImporter
 						
 					boolean containsID = attrDecl.getSimpleType() != null && attrDecl.getSimpleType().getName() != null && attrDecl.getSimpleType().getName().equals("ID");
 					Attribute attr = new Attribute(nextId(),(attrDecl.getName() == null ? "" : attrDecl.getName()),getDocumentation(attrDecl),entity.getId(),-1,(attrDecl.isRequired()? 1 : 0), 1, containsID, 0); 
-					if (attr.getName().equals("qualifier"))
-						System.err.println("stop");
-					
-					
-					//Attribute attr = new Attribute(nextId(),(attrDecl.getName() == null ? "" : attrDecl.getName()),getDocumentation(attrDecl),entity.getId(),-1,(attrDecl.isRequired()? 1 : 0), 1, containsID, attrDecl.getSchema().getTargetNamespace(), 0); 
-					
-					schemaElementsHS.put(this.compString(attrDecl.getSchema().getTargetNamespace(),passedType, null, attr), attr);
+					schemaElementsHS.put(new Integer(attrDecl.hashCode()).toString(), attr);
 					processSimpleType(attrDecl.getSimpleType(), attr);
 				}
 			} catch (IllegalStateException e){
@@ -313,47 +327,36 @@ public class XSDImporter extends SchemaImporter
 			}
 		
 			// get SuperTypes for current complexType 
-			XMLType baseType = null;
 			if (passedType.getBaseType() != null){
-				baseType = passedType.getBaseType();
+				XMLType baseType = passedType.getBaseType();
 				
 				// process simpleType supertype here -- create a "special" Entity
 				if (baseType instanceof SimpleType){
 					Subtype subtype = new Subtype(nextId(),-1,entity.getId(),0);
-					//Subtype subtype = new Subtype(nextId(),-1,entity.getId(),0);
-					// TODO: check the targetNamespace
-					schemaElementsHS.put(this.compString(passedType.getSchema().getTargetNamespace(),passedType, baseType, subtype), subtype);
+					schemaElementsHS.put(subtype.getId().toString(), subtype);
+					Entity simpleSuperTypeEntity = new Entity(nextId(), (baseType.getName() == null ? "" : baseType.getName()), this.getDocumentation(baseType), 0);
 					
-					Entity superTypeEntity = new Entity(nextId(), (baseType.getName() == null ? "" : baseType.getName()), this.getDocumentation(baseType), 0);
-					//Entity superTypeEntity = new Entity(nextId(), (baseType.getName() == null ? "" : baseType.getName()), this.getDocumentation(baseType), baseType.getSchema().getTargetNamespace(),0);
-					
-					// TODO: check the targetNamespace
-					if (schemaElementsHS.get(this.compString(baseType.getSchema().getTargetNamespace(),baseType,null,superTypeEntity)) == null)
-						schemaElementsHS.put(this.compString(baseType.getSchema().getTargetNamespace(),baseType,null,superTypeEntity), superTypeEntity);
-					superTypeEntity = (Entity)schemaElementsHS.get(this.compString(baseType.getSchema().getTargetNamespace(),baseType,null,superTypeEntity));
-					subtype.setParentID(superTypeEntity.getId());
+					if (schemaElementsHS.get(getHashkey(baseType, null)) == null){
+						schemaElementsHS.put(getHashkey(baseType, null), simpleSuperTypeEntity);
+					}
+					simpleSuperTypeEntity = (Entity)schemaElementsHS.get(getHashkey(baseType, null));
+					subtype.setParentID(simpleSuperTypeEntity.getId());
 				}
 				else if (baseType instanceof ComplexType){
 					Subtype subtype = new Subtype(nextId(),-1, entity.getId(),0);
-					//Subtype subtype = new Subtype(nextId(),-1, entity.getId(),baseType.getSchema().getTargetNamespace(),0);
-					// TODO: check the targetNamespace
-					schemaElementsHS.put(this.compString(baseType.getSchema().getTargetNamespace(),passedType, baseType, subtype), subtype);
+					schemaElementsHS.put(subtype.getId().toString(), subtype);
 					processComplexType((ComplexType)baseType, subtype);
 				}	
 			}	
 		}
-		else {
-			entity = (Entity)schemaElementsHS.get(this.compString(passedType.getSchema().getTargetNamespace(),passedType,null, entity));
-		}
 		
 		// add Entity for complexType as child of passed containment or subtype 
-		entity = (Entity)schemaElementsHS.get(this.compString(passedType.getSchema().getTargetNamespace(),passedType,null,entity));
+		entity = (Entity)schemaElementsHS.get(getHashkey(passedType, null));
 		if (parent instanceof Containment && parent != null)
 			((Containment)parent).setChildID(entity.getId());
 		else if (parent instanceof Subtype && parent != null)
 			((Subtype)parent).setParentID(entity.getId());
-			
-			
+				
 	} // end method	
 			
 	/**
@@ -377,7 +380,7 @@ public class XSDImporter extends SchemaImporter
 				Domain anyDomain = domainList.get(DEFAULT_NAMESPACE + " " + "Any");
 				Containment containment = new Containment(nextId(),"Any", this.getDocumentation((Annotated)obj), parent.getId(), anyDomain.getId(), 0, 1, 0);
 				//Containment containment = new Containment(nextId(),"", this.getDocumentation((Annotated)obj), parent.getId(), anyDomain.getId(), 0, 1, ((Wildcard) obj).getSchema().getTargetNamespace(),0);
-				schemaElementsHS.put(this.compString(((Wildcard) obj).getSchema().getTargetNamespace(), parent, obj, containment), containment);
+				schemaElementsHS.put(new Integer(containment.hashCode()).toString(), containment);
 				
 			}
 			// process Group item
@@ -407,11 +410,14 @@ public class XSDImporter extends SchemaImporter
 		// dereference xs:ref until we find actual element declarations
 		while (elementDecl.isReference() && elementDecl.getReference() != null)
 			elementDecl = elementDecl.getReference();
-		
+			
 		// create Containment for Element  
 		Containment containment = new Containment(nextId(),elementDecl.getName(),this.getDocumentation(elementDecl),((parent != null) ? parent.getId() : null),-1,elementDecl.getMinOccurs(),elementDecl.getMaxOccurs(),0);
 		//Containment containment = new Containment(nextId(),elementDecl.getName(),this.getDocumentation(elementDecl),((parent != null) ? parent.getId() : null),-1,elementDecl.getMinOccurs(),elementDecl.getMaxOccurs(),elementDecl.getSchema().getTargetNamespace(),0);
-		schemaElementsHS.put(this.compString(elementDecl.getSchema().getTargetNamespace(), parent, elementDecl, containment), containment);
+		if (schemaElementsHS.containsKey(getHashkey(elementDecl, parent)) == false){
+			ssID_to_exolabHC.put(containment.getId(),elementDecl.hashCode());
+			schemaElementsHS.put(getHashkey(elementDecl, parent), containment);
+		}
 		
 		// TODO: process substitution group
 //		Enumeration<?> substitutionGroup = elementDecl.getSubstitutionGroupMembers();
@@ -439,6 +445,13 @@ public class XSDImporter extends SchemaImporter
 		
 	} // end method
 
+	private String getHashkey(Object castorObj, SchemaElement se){
+		String retVal = new String();
+		retVal += ((castorObj == null) ? "" : castorObj.hashCode());  
+		if (retVal.length() > 0) retVal += "-";
+		retVal += ((se == null) ? "" :  ssID_to_exolabHC.get(se.getId()));  
+		return retVal;
+	}
 
 
 	/**
@@ -486,99 +499,36 @@ public class XSDImporter extends SchemaImporter
 	private void loadDomains() {
 
 		Domain domain = new Domain(nextId(), ANY, "The Any wildcard domain", 0);
-		schemaElementsHS.put(this.compString(DEFAULT_NAMESPACE,null,null,domain), domain);
+		schemaElementsHS.put(new Integer(domain.hashCode()).toString(), domain);
+		
 		domainList.put(DEFAULT_NAMESPACE + " " + ANY, domain);
 
 		domain = new Domain(nextId(), INTEGER,"The Integer domain", 0);
-		schemaElementsHS.put(this.compString(DEFAULT_NAMESPACE,null,null,domain), domain);
+		schemaElementsHS.put(new Integer(domain.hashCode()).toString(), domain);
 		domainList.put(DEFAULT_NAMESPACE + " " + INTEGER, domain);
 		
 		domain = new Domain(nextId(), REAL,"The Real domain", 0);
-		schemaElementsHS.put(this.compString(DEFAULT_NAMESPACE,null,null,domain), domain);
+		schemaElementsHS.put(new Integer(domain.hashCode()).toString(), domain);
 		domainList.put(DEFAULT_NAMESPACE + " " + REAL, domain);
 		
 		domain = new Domain(nextId(), STRING,"The String domain", 0);
-		schemaElementsHS.put(this.compString(DEFAULT_NAMESPACE,null,null,domain), domain);
+		schemaElementsHS.put(new Integer(domain.hashCode()).toString(), domain);
 		domainList.put(DEFAULT_NAMESPACE + " " + STRING, domain);
 		
 		domain = new Domain(nextId(), "string","The string domain", 0);
-		schemaElementsHS.put(this.compString(DEFAULT_NAMESPACE,null,null,domain), domain);
+		schemaElementsHS.put(new Integer(domain.hashCode()).toString(), domain);
 		domainList.put(DEFAULT_NAMESPACE + " " + "string", domain);
 		
 		domain = new Domain(nextId(), DATETIME,"The DateTime domain", 0);
-		schemaElementsHS.put(this.compString(DEFAULT_NAMESPACE,null,null,domain), domain);
+		schemaElementsHS.put(new Integer(domain.hashCode()).toString(), domain);
 		domainList.put(DEFAULT_NAMESPACE + " " + DATETIME, domain);
 		
 		domain = new Domain(nextId(), BOOLEAN,"The Boolean domain", 0);
-		schemaElementsHS.put(this.compString(DEFAULT_NAMESPACE,null,null,domain), domain);
+		schemaElementsHS.put(new Integer(domain.hashCode()).toString(), domain);
 		domainList.put(DEFAULT_NAMESPACE + " " + BOOLEAN, domain);
 	}
 	
-	
-	/**
-	 * compString: Generates a unique identifier string for each SchemaType
-	 * based on its contents. The contract for this function is that the unique 
-	 * identifier can serve as HashKey for an element in the SchemaElement list. 
-	 * Two schemaElements with the SAME compString are the SAME element
-	 * 
-	 * @param o  SchemaElement for which compString (hashKey) being generated
-	 * @return compString generated comparison String
-	 */
-	public String compString(String namespace, Object parent, Object child, SchemaElement o) {
-		String retVal = null;
 
-		/** Entity: NAME, DESC */
-		if (o instanceof Entity) {
-			if (((Entity)o).getName().equals(""))
-				retVal = new String(((Entity) o).getId() + ", ENTITY ");
-			 else 
-				retVal = new String(((Entity) o).getName() + ", ENTITY ");
-		
-		/** Containment: NAME, DESC, PARENT_ID, CHILD_ID */
-		} else if (o instanceof Containment) {
-			retVal = new String(((Containment) o).getName() + " , "
-					+ ((Containment) o).getParentID() + " , "
-					+ ((Containment) o).getChildID() + ", CONTAINMENT ");
-		
-		/** Relationship: NAME, DESC, LEFT_ID, RIGHT_ID */ 	
-		} else if (o instanceof Relationship){
-			retVal = new String(((Relationship) o).getName() + " , "
-					+ ((Relationship) o).getLeftID() + " , "
-					+ ((Relationship) o).getRightID() + ", RELATIONSHIP ");
-		
-		/** Attribute: NAME, DESC, DOMAIN_ID, ENTITY_ID */
-		} else if (o instanceof Attribute) {
-			retVal = new String(((Attribute) o).getName() + " , "
-					+ ((Attribute) o).getDomainID() + " , "
-					+ ((Attribute) o).getEntityID() + ", ATTRIBUTE ");
-		
-		/** Domain: NAME  **/
-		} else if (o instanceof Domain) {
-			retVal = new String(((Domain) o).getName() + " DOMAIN ");
-		
-		/** DomainValue: NAME, DESC  **/
-		} else if (o instanceof DomainValue) {
-			retVal = new String(((DomainValue) o).getDomainID() + " , "
-					+ ((DomainValue) o).getName() + ", DOMAIN VALUE ");
-		
-		/** Subtype: PARENT_ID, CHILD_ID  **/
-		} else if (o instanceof Subtype) {
-			retVal = new String(((Subtype) o).getParentID() + " , "
-					+ ((Subtype) o).getChildID() + " , " + " SUBTYPE ");
-		} else {
-			retVal = new String();
-		}
-		
-		// add the hashcodes associated with the parent / child objects to compString
-		if (parent != null) retVal += " " + parent.hashCode();
-		else retVal += " null";
-		
-		if (child != null) retVal += " " + child.hashCode();
-		else retVal += " null";
-		
-		retVal += " " + namespace;
-		
-		return retVal;
-	} // end method compString()
+	
 	
 } // end class
