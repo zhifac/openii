@@ -34,7 +34,8 @@ public class XSDImporter extends SchemaImporter
 	{
 		try {
 			XSDImporter xsdImporter = new XSDImporter();
-			URI uri = new URI("C:/Electronic_Court_Filing_4.0/ecf-v4.0-spec/xsd/message/ECF-4.0-CaseListQueryMessage.xsd");
+			//URI uri = new URI("C:/Electronic_Court_Filing_4.0/ecf-v4.0-spec/xsd/message/ECF-4.0-CaseListQueryMessage.xsd");
+			URI uri = new URI("C:/hdata/root.xsd");
 			ArrayList<SchemaElement> schemaElements = xsdImporter.getSchemaElements(uri);
 			GraphModel xmlModel = null;
 			for (GraphModel gm : HierarchicalGraph.getGraphModels()){
@@ -42,27 +43,45 @@ public class XSDImporter extends SchemaImporter
 					gm = xmlModel;
 			}
 			HierarchicalGraph hier = new HierarchicalGraph(new Graph(new org.mitre.schemastore.model.Schema(1,"test","me","","","",false),new ArrayList<SchemaElement>(schemaElements)),xmlModel);
-			for (SchemaElement se : hier.getElements(Subtype.class)){
-				Subtype sub = (Subtype)se;
-				System.err.println("--------------------  id: " + sub.getId() 
-						+ " parent: " + sub.getParentID() 
-						+ " child: " + sub.getChildID()
-						+ " parentName: " + hier.getElement(sub.getParentID()).getName()
-						+ " childName: " + hier.getElement(sub.getChildID()).getName());
+			for (SchemaElement se : hier.getElements(Attribute.class)){
+				Attribute cont = (Attribute)se;
+				System.err.println("--------------------  attr id: " + cont.getId() 
+						+ " name: " + cont.getName() 
+						+ " domID: " + cont.getDomainID()
+						+ " entityID: " + cont.getEntityID());
+			}
+			for (SchemaElement se2 : hier.getElements(Entity.class)){
+					Entity e = (Entity)se2;
+					System.err.println("--------------------  entity id: " + e.getId() 
+							+ " name: " + e.getName()); 
+			}			
+					
+					
+			for (SchemaElement se3 : hier.getElements(Domain.class)){
+						Domain dom = (Domain)se3;
+						System.err.println("--------------------  dom id: " + dom.getId() 
+								+ " name: " + dom.getName()); 
+			}								
+						
+				
 	//			System.err.println(hier.getElement(10).getName());
 	//			for (SchemaElement se2 : hier.getChildElements(10)){
 	//				System.err.println(se2.getId() + " " + se2.getName() + se2.getClass());
 	//			}
-			}
+			
 			
 		
 		} catch(Exception e) { e.printStackTrace(); }
 	}
 	
-	// Stores the M3 schema elements (entities, attributes, domain, relationships, etc.) 
+	/** Stores the M3 schema elements (entities, attributes, domain, relationships, etc.) */
 	private HashMap<String, SchemaElement> schemaElementsHS = new HashMap<String, SchemaElement>();
+	
+	/** Stores the list of domains */ 
 	private HashMap<String,Domain> domainList = new HashMap<String,Domain>();
-	private HashMap<Integer,Integer> ssID_to_exolabHC = new HashMap<Integer,Integer>();
+	
+	/** Store the mapping of ids for SchemaStore elements --> hashcodes for elements from DOM tree */
+	private HashMap<Integer,Integer> ssID_to_DOMtreeHC = new HashMap<Integer,Integer>();
 	
 	// Stores the unique "Any" entity
 	private Entity anyEntity;
@@ -111,7 +130,7 @@ public class XSDImporter extends SchemaImporter
 			// reset the Importer
 			schemaElementsHS = new HashMap<String, SchemaElement>();
 			domainList = new HashMap<String, Domain>();
-			ssID_to_exolabHC = new HashMap<Integer, Integer>();
+			ssID_to_DOMtreeHC = new HashMap<Integer, Integer>();
 			
 			// Preset domains and then process this schema
 			loadDomains();
@@ -224,10 +243,9 @@ public class XSDImporter extends SchemaImporter
 				this.anyEntity = new Entity(nextId(),"ANY","ANY ENTITY",0);
 			schemaElementsHS.put(anyEntity.getId().toString(),anyEntity);
 			
-			Integer rightMax = ( typeName.equals("IDREFS") ) ? null : 1;   
+			Integer rightMax = ( typeName.equals("IDREFS") ) ? -1 : 1;   
 			Relationship rel = new Relationship(nextId(),parent.getName(),((Attribute)parent).getEntityID(),0,1,this.anyEntity.getId(),0,rightMax,0);
-			//schemaElementsHS.put(this.compString(DEFAULT_NAMESPACE,null,null,rel),rel);
-			schemaElementsHS.put(rel.getId().toString(),rel);
+			schemaElementsHS.put(getHashkey(null,rel),rel);
 			
 			// TODO: set the domain of the parent attribute to 
 			// TODO: should we remove the attribute with type Any?
@@ -237,7 +255,7 @@ public class XSDImporter extends SchemaImporter
 		else {
 	
 			// find Domain for SimpleType (generated if required)
-			// Domain domain = new Domain(nextId(), typeName, this.getDocumentation(passedType), passedType.getSchema().getTargetNamespace(), 0);
+			
 			Domain domain = new Domain(nextId(), typeName, this.getDocumentation(passedType), 0);
 			//TODO: fix passedType namespace
 			String passedTypeNamespace = passedType == null ? DEFAULT_NAMESPACE : passedType.getSchema().getTargetNamespace();
@@ -299,7 +317,7 @@ public class XSDImporter extends SchemaImporter
 		Entity entity = new Entity(nextId(), passedType.getName(), this.getDocumentation(passedType), 0);
 		
 		if (schemaElementsHS.containsKey(getHashkey(passedType, null)) == false) {
-			ssID_to_exolabHC.put(entity.getId(), passedType.hashCode());
+			ssID_to_DOMtreeHC.put(entity.getId(), passedType.hashCode());
 			schemaElementsHS.put(getHashkey(passedType, null), entity);
 				
 			try {
@@ -313,7 +331,7 @@ public class XSDImporter extends SchemaImporter
 						
 					boolean containsID = attrDecl.getSimpleType() != null && attrDecl.getSimpleType().getName() != null && attrDecl.getSimpleType().getName().equals("ID");
 					Attribute attr = new Attribute(nextId(),(attrDecl.getName() == null ? "" : attrDecl.getName()),getDocumentation(attrDecl),entity.getId(),-1,(attrDecl.isRequired()? 1 : 0), 1, containsID, 0); 
-					schemaElementsHS.put(new Integer(attrDecl.hashCode()).toString(), attr);
+					schemaElementsHS.put(getHashkey(attrDecl,null), attr);
 					processSimpleType(attrDecl.getSimpleType(), attr);
 				}
 			} catch (IllegalStateException e){
@@ -333,7 +351,7 @@ public class XSDImporter extends SchemaImporter
 				// process simpleType supertype here -- create a "special" Entity
 				if (baseType instanceof SimpleType){
 					Subtype subtype = new Subtype(nextId(),-1,entity.getId(),0);
-					schemaElementsHS.put(subtype.getId().toString(), subtype);
+					schemaElementsHS.put(getHashkey(null,subtype), subtype);
 					Entity simpleSuperTypeEntity = new Entity(nextId(), (baseType.getName() == null ? "" : baseType.getName()), this.getDocumentation(baseType), 0);
 					
 					if (schemaElementsHS.get(getHashkey(baseType, null)) == null){
@@ -344,7 +362,7 @@ public class XSDImporter extends SchemaImporter
 				}
 				else if (baseType instanceof ComplexType){
 					Subtype subtype = new Subtype(nextId(),-1, entity.getId(),0);
-					schemaElementsHS.put(subtype.getId().toString(), subtype);
+					schemaElementsHS.put(getHashkey(null,subtype), subtype);
 					processComplexType((ComplexType)baseType, subtype);
 				}	
 			}	
@@ -378,9 +396,8 @@ public class XSDImporter extends SchemaImporter
 			// For WildCard, create containment child to "Any" domain
 			if (obj instanceof Wildcard){
 				Domain anyDomain = domainList.get(DEFAULT_NAMESPACE + " " + "Any");
-				Containment containment = new Containment(nextId(),"Any", this.getDocumentation((Annotated)obj), parent.getId(), anyDomain.getId(), 0, 1, 0);
-				//Containment containment = new Containment(nextId(),"", this.getDocumentation((Annotated)obj), parent.getId(), anyDomain.getId(), 0, 1, ((Wildcard) obj).getSchema().getTargetNamespace(),0);
-				schemaElementsHS.put(new Integer(containment.hashCode()).toString(), containment);
+				Containment containment = new Containment(nextId(),"Any", this.getDocumentation((Annotated)obj), parent.getId(), anyDomain.getId(), 0, -1, 0);
+				schemaElementsHS.put(getHashkey(null,containment), containment);
 				
 			}
 			// process Group item
@@ -407,15 +424,17 @@ public class XSDImporter extends SchemaImporter
 	 */
 	public void processElement(ElementDecl elementDecl, Entity parent)
 	{
+		Integer min = elementDecl.getMinOccurs();
+		Integer max = elementDecl.getMaxOccurs();
+		
 		// dereference xs:ref until we find actual element declarations
 		while (elementDecl.isReference() && elementDecl.getReference() != null)
 			elementDecl = elementDecl.getReference();
 			
 		// create Containment for Element  
-		Containment containment = new Containment(nextId(),elementDecl.getName(),this.getDocumentation(elementDecl),((parent != null) ? parent.getId() : null),-1,elementDecl.getMinOccurs(),elementDecl.getMaxOccurs(),0);
-		//Containment containment = new Containment(nextId(),elementDecl.getName(),this.getDocumentation(elementDecl),((parent != null) ? parent.getId() : null),-1,elementDecl.getMinOccurs(),elementDecl.getMaxOccurs(),elementDecl.getSchema().getTargetNamespace(),0);
+		Containment containment = new Containment(nextId(),elementDecl.getName(),this.getDocumentation(elementDecl),((parent != null) ? parent.getId() : null),-1,min,max,0);
 		if (schemaElementsHS.containsKey(getHashkey(elementDecl, parent)) == false){
-			ssID_to_exolabHC.put(containment.getId(),elementDecl.hashCode());
+			ssID_to_DOMtreeHC.put(containment.getId(),elementDecl.hashCode());
 			schemaElementsHS.put(getHashkey(elementDecl, parent), containment);
 		}
 		
@@ -441,15 +460,20 @@ public class XSDImporter extends SchemaImporter
 			System.err.println("(E) XSDImporter:processElement -- Encountered object named " 
 					+ elementDecl.getName() + " with unknown type " 
 					+  ((childElementType == null)? null : childElementType.getClass()));
-		
-		
+			
 	} // end method
 
+	/**
+	 * getHashkey: generates the hashkey for identifying the schemastore element
+	 * @param castorObj The object from the DOM tree (null if none exists) 
+	 * @param se The SchemaStore element corresponding to the DOM tree object (null if irrelevant)
+	 * @return hashkey to look for object in HT of SchemaElements for imported schema 
+	 */
 	private String getHashkey(Object castorObj, SchemaElement se){
 		String retVal = new String();
 		retVal += ((castorObj == null) ? "" : castorObj.hashCode());  
 		if (retVal.length() > 0) retVal += "-";
-		retVal += ((se == null) ? "" :  ssID_to_exolabHC.get(se.getId()));  
+		retVal += ((se == null) ? "" :  ssID_to_DOMtreeHC.get(se.getId()));  
 		return retVal;
 	}
 
@@ -499,36 +523,33 @@ public class XSDImporter extends SchemaImporter
 	private void loadDomains() {
 
 		Domain domain = new Domain(nextId(), ANY, "The Any wildcard domain", 0);
-		schemaElementsHS.put(new Integer(domain.hashCode()).toString(), domain);
+		schemaElementsHS.put(getHashkey(null,domain), domain);
 		
 		domainList.put(DEFAULT_NAMESPACE + " " + ANY, domain);
 
 		domain = new Domain(nextId(), INTEGER,"The Integer domain", 0);
-		schemaElementsHS.put(new Integer(domain.hashCode()).toString(), domain);
+		schemaElementsHS.put(getHashkey(null,domain), domain);
 		domainList.put(DEFAULT_NAMESPACE + " " + INTEGER, domain);
 		
 		domain = new Domain(nextId(), REAL,"The Real domain", 0);
-		schemaElementsHS.put(new Integer(domain.hashCode()).toString(), domain);
+		schemaElementsHS.put(getHashkey(null,domain), domain);
 		domainList.put(DEFAULT_NAMESPACE + " " + REAL, domain);
 		
 		domain = new Domain(nextId(), STRING,"The String domain", 0);
-		schemaElementsHS.put(new Integer(domain.hashCode()).toString(), domain);
+		schemaElementsHS.put(getHashkey(null,domain), domain);
 		domainList.put(DEFAULT_NAMESPACE + " " + STRING, domain);
 		
 		domain = new Domain(nextId(), "string","The string domain", 0);
-		schemaElementsHS.put(new Integer(domain.hashCode()).toString(), domain);
+		schemaElementsHS.put(getHashkey(null,domain), domain);
 		domainList.put(DEFAULT_NAMESPACE + " " + "string", domain);
 		
 		domain = new Domain(nextId(), DATETIME,"The DateTime domain", 0);
-		schemaElementsHS.put(new Integer(domain.hashCode()).toString(), domain);
+		schemaElementsHS.put(getHashkey(null,domain), domain);
 		domainList.put(DEFAULT_NAMESPACE + " " + DATETIME, domain);
 		
 		domain = new Domain(nextId(), BOOLEAN,"The Boolean domain", 0);
-		schemaElementsHS.put(new Integer(domain.hashCode()).toString(), domain);
+		schemaElementsHS.put(getHashkey(null,domain), domain);
 		domainList.put(DEFAULT_NAMESPACE + " " + BOOLEAN, domain);
 	}
-	
-
-	
-	
+		
 } // end class
