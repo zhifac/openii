@@ -211,7 +211,7 @@ public class SpreadsheetImporter extends SchemaImporter {
 		return filetypes;
 	}
 
-	protected void initializeSchemaStructures() throws ImporterException {
+	protected void initialize() throws ImporterException {
 		try {
 			InputStream excelStream;
 			_entities = new HashMap<String, Entity>();
@@ -238,11 +238,6 @@ public class SpreadsheetImporter extends SchemaImporter {
 			schemaElements.add(a);
 
 		return schemaElements;
-	}
-
-	/** Returns the list of schemas which this schema extends */
-	protected ArrayList<Integer> generateExtendedSchemaIDs() throws ImporterException {
-		return new ArrayList<Integer>();
 	}
 
 	/** Generate the schema elements */

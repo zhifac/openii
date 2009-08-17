@@ -87,7 +87,7 @@ public class XSDImporter extends SchemaImporter
 	}
 
 	/** Initializes the importer for the specified URI */
-	protected void initializeSchemaStructures() throws ImporterException
+	protected void initialize() throws ImporterException
 	{	
 		 try {
 	        String proxyHost = new String("gatekeeper.mitre.org");
@@ -159,11 +159,6 @@ public class XSDImporter extends SchemaImporter
 	
 		}
 	} // end method
-		
-	
-	/** Returns the list of schemas which this schema extends */
-	protected ArrayList<Integer> generateExtendedSchemaIDs() throws ImporterException
-		{ return new ArrayList<Integer>(); }
 	
 	/** Returns the schema elements from the specified URI */
 	public ArrayList<SchemaElement> generateSchemaElements() throws ImporterException
