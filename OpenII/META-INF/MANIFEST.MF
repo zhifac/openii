@@ -17,4 +17,5 @@ Bundle-ClassPath: .,
  lib/RMap.jar,
  lib/affinity/Affinity.jar,
  lib/affinity/edu.iu.iv.visualization.dendrogram.jar,
- lib/affinity/ivccore.jar
+ lib/affinity/ivccore.jar,
+ lib/SchemaStoreWarehouse.jar
