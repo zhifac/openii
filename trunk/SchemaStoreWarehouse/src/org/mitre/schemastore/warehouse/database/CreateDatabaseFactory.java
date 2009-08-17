@@ -3,6 +3,7 @@ package org.mitre.schemastore.warehouse.database;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.SQLWarning;
 import java.util.ArrayList;
 
 import org.mitre.schemastore.warehouse.common.InstanceRepository;
@@ -42,22 +43,35 @@ public abstract class CreateDatabaseFactory
 		allRepositories = repositoryParser.getAvailableRepositories();
 	}
 	
-	/** Get the class for issuing SQL commands through JDBC */
-	public InstanceDatabaseSQL getInstanceDatabaseSQL()
+	/** Get the class for issuing SQL commands through JDBC 
+	 * @throws NoDataFoundException */
+	public InstanceDatabaseSQL getInstanceDatabaseSQL() throws NoDataFoundException
 	{
 		if(instanceDbSql == null)
 			instanceDbSql = createInstanceDatabaseSQL();
 		return instanceDbSql;
 	}
 	
-	/** Creates the class for issuing SQL commands through JDBC */
-	protected abstract InstanceDatabaseSQL createInstanceDatabaseSQL();
+	/** Creates the class for issuing SQL commands through JDBC 
+	 * @throws NoDataFoundException */
+	protected abstract InstanceDatabaseSQL createInstanceDatabaseSQL() throws NoDataFoundException;
 	
-	/** Creates a new database and returns a connection to it */
-	protected abstract Connection createConnectionToNewDatabase();
+	/** Creates a new database and returns a connection to it 
+	 * @throws NoDataFoundException */
+	protected abstract Connection createConnectionToNewDatabase() throws NoDataFoundException;
 	
-	/** Release resources */
-	public abstract void releaseResources();
+	
+	/** Release resources 
+	 * @throws SQLException */
+	public abstract void releaseResources() throws SQLException;
+	
+	
+	/** Undo all changes made in the current transaction and 
+	 * release any database locks currently held by this connection 
+	 * @throws SQLException
+	 */
+	public abstract void rollback() throws SQLException;
+	
 	
 	/** This object has a specific "life cycle", such that SQL commands must be issued
 	  * through the InstanceDatabaseSQL object before calling releaseResources().
@@ -80,6 +94,22 @@ public abstract class CreateDatabaseFactory
 			e.printStackTrace(System.err);
 			
 			e = e.getNextException();
+		}
+	}
+	
+	/** Print details of a SQLWarning chain */
+	protected void printSQLWarning(SQLWarning w)
+	{
+		// Unwraps the entire exception chain to unveil the real cause of the Exception
+		while(w != null)
+		{
+			System.err.println("\n----- SQLException -----");
+			System.err.println("  SQL State: " + w.getSQLState());
+			System.err.println("  Error Code: " + w.getErrorCode());
+			System.err.println("  Message: " + w.getMessage());
+			w.printStackTrace(System.err);
+			
+			w = w.getNextWarning();
 		}
 	}
 	

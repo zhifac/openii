@@ -3,6 +3,7 @@ package org.mitre.schemastore.warehouse.database;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.SQLWarning;
 
 import org.mitre.schemastore.warehouse.common.InstanceRepository;
 import org.mitre.schemastore.warehouse.common.NoDataFoundException;
@@ -18,6 +19,8 @@ public class CreateDerbyDatabaseFactory extends CreateDatabaseFactory
 	private String USER_NAME = null;
 	private String PASSWORD = null;
 	
+	private Connection newDbConnection = null;
+	private boolean isNewDatabaseCreated = false;
 	
 	/** Constructor	
 	 * @throws NoDataFoundException */
@@ -44,14 +47,13 @@ public class CreateDerbyDatabaseFactory extends CreateDatabaseFactory
 			}
 		}
 		if(USER_NAME == null && PASSWORD == null)
-			throw new NoDataFoundException("***Could not determine where to create the new database- matching existing repository not found***");
+			throw new NoDataFoundException("Could not determine where to create the new database- matching existing repository not found");
 	}//end of constructor
 
-	/** Creates a new database and returns a connection to it */
-	protected Connection createConnectionToNewDatabase() 
+	/** Creates a new database and returns a connection to it 
+	 * @throws NoDataFoundException */
+	protected Connection createConnectionToNewDatabase() throws NoDataFoundException 
 	{
-		Connection newConnection = null;
-		
 		/* Load (and therefore register) the Driver with java.sql.DriverManager */
 		try
 		{
@@ -61,7 +63,8 @@ public class CreateDerbyDatabaseFactory extends CreateDatabaseFactory
 		catch (ClassNotFoundException e)
 		{
 			// Handle an error loading the driver
-			System.out.println("Driver could not be loaded");
+			e.printStackTrace(System.err);
+			throw new NoDataFoundException("Driver for the database could not be loaded");
 		}
 		
 		/* Create the database, if it does not already exist and
@@ -70,28 +73,62 @@ public class CreateDerbyDatabaseFactory extends CreateDatabaseFactory
 		 */
 		try
 		{
-			newConnection = DriverManager.getConnection(DB_CONN_STRING + ";create=true", USER_NAME, PASSWORD);
+			newDbConnection = DriverManager.getConnection(DB_CONN_STRING + ";create=true", USER_NAME, PASSWORD);
 			System.out.println("Created and connected to database " + NEW_DB_NAME);
 			
-			// set the flag to show that connection to new database is open
+			SQLWarning w = newDbConnection.getWarnings();
+			if(w!= null)
+			{
+				// Database exists
+				if((w.getErrorCode() == 10000) && ("01J01".equals(w.getSQLState())))
+				{
+					System.out.println("Database not created, connection made to existing database instead");
+					isNewDatabaseCreated = false;
+				}
+			}
+			else
+			{
+				// Database does not exist
+				System.out.println("Database created, connection made to new database");
+				isNewDatabaseCreated = true;
+			}
+			
+			// Control transactions manually
+			newDbConnection.setAutoCommit(false);
+			
+			// Set the flag to show that connection to new database is open
 			isConnected = true;
 		}
 		catch(SQLException e)
-		{	printSQLException(e);	}
+		{	
+			printSQLException(e);
+			throw new NoDataFoundException("Database creation or existing database access error occured");
+		}
 		
-		return newConnection;
+		return newDbConnection;
 	}
 
-	/** Creates the class for issuing SQL commands through JDBC */
-	protected InstanceDatabaseSQL createInstanceDatabaseSQL() 
+	/** Creates the class for issuing SQL commands through JDBC 
+	 * @throws NoDataFoundException */
+	protected InstanceDatabaseSQL createInstanceDatabaseSQL() throws NoDataFoundException 
 	{
 		InstanceDatabaseSQL instanceDb = new InstanceDatabaseDerbySQL(createConnectionToNewDatabase());
 		return instanceDb;
 	}
 
-	/** Release resources */
-	public void releaseResources()
+	/** Release resources 
+	 * @throws SQLException */
+	public void releaseResources() throws SQLException
 	{
+		try
+		{
+			newDbConnection.commit();
+		}
+		catch(SQLException e)
+		{
+			printSQLException(e);
+		}
+		
 		// Shut-down Derby database so that it can be accessed by another instance of database
 		try
 		{
@@ -102,7 +139,7 @@ public class CreateDerbyDatabaseFactory extends CreateDatabaseFactory
 			if((se.getErrorCode() == 45000) && ("08006".equals(se.getSQLState())))
 			{
 				// We got the expected exception
-				System.out.println("Single database shutdown, Derby engine still running");
+				System.out.println("Single database shutdown successfully, Derby engine still running");
 				
 				// set the flag to show that connection to new database is closed
 				isConnected = false;
@@ -111,9 +148,24 @@ public class CreateDerbyDatabaseFactory extends CreateDatabaseFactory
 			{
 				// If the error code or SQLState is different, we have an unexpected exception
 				// i.e. shutdown failed
-				System.out.println("Database did not shutdown normally");
 				printSQLException(se);
+				throw se;
 			}
+		}
+	}
+	
+	
+	/** Undo all changes made in the current transaction and 
+	 * release any database locks currently held by this connection 
+	 * @throws SQLException
+	 */
+	public void rollback() throws SQLException 
+	{
+		newDbConnection.rollback();
+		
+		if(isNewDatabaseCreated)
+		{
+			
 		}
 	}
 

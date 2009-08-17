@@ -1,8 +1,6 @@
 package org.mitre.schemastore.warehouse.database;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -53,8 +51,9 @@ public class RepositoryXMLParser
 		return listOfAvailableRepositories;
 	}
 	
-	/** Parse the content of the given XML file and create a new DOM Document object */
-	private void parseXmlFile()
+	/** Parse the content of the given XML file and create a new DOM Document object 
+	 * @throws NoDataFoundException */
+	private void parseXmlFile() throws NoDataFoundException
 	{
 		// Get the factory
 		DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
@@ -68,23 +67,24 @@ public class RepositoryXMLParser
 		}
 		catch(ParserConfigurationException pce)
 		{
-			System.out.println ("***DocumentBuilder cannot be created that satisfies the configuration requested***");
-			pce.printStackTrace();
+			pce.printStackTrace(System.err);
+			throw new NoDataFoundException("DocumentBuilder cannot be created that satisfies the configuration requested");
 		} 
 		catch (SAXException se) 
 		{
-			System.out.println ("***Parse error occured***");
-			se.printStackTrace();
+			se.printStackTrace(System.err);
+			throw new NoDataFoundException("Parse error occured while parsing repository information");
 		} 
 		catch (IOException ioe) 
 		{
-			System.out.println ("***I/O error occured***");
-			ioe.printStackTrace();
+			ioe.printStackTrace(System.err);
+			throw new NoDataFoundException("I/O error occured while parsing repository information");
 		}
 	}//end of method parseXmlFile
 	
-	/** Parse the content of the given XML stream and create a new DOM Document object */
-	private void parseXmlStream()
+	/** Parse the content of the given XML stream and create a new DOM Document object 
+	 * @throws NoDataFoundException */
+	private void parseXmlStream() throws NoDataFoundException
 	{
 		// Get the factory
 		DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
@@ -98,18 +98,18 @@ public class RepositoryXMLParser
 		}
 		catch(ParserConfigurationException pce)
 		{
-			System.out.println ("***DocumentBuilder cannot be created that satisfies the configuration requested***");
-			pce.printStackTrace();
+			pce.printStackTrace(System.err);
+			throw new NoDataFoundException("DocumentBuilder cannot be created that satisfies the configuration requested");
 		} 
 		catch (SAXException se) 
 		{
-			System.out.println ("***Parse error occured***");
-			se.printStackTrace();
+			se.printStackTrace(System.err);
+			throw new NoDataFoundException("Parse error occured while parsing repository information");
 		} 
 		catch (IOException ioe) 
 		{
-			System.out.println ("***I/O error occured***");
-			ioe.printStackTrace();
+			ioe.printStackTrace(System.err);
+			throw new NoDataFoundException("I/O error occured while parsing repository information");
 		}
 	}//end of method parseXmlStream
 	
@@ -170,7 +170,7 @@ public class RepositoryXMLParser
 		{	type = Integer.valueOf(typeAttribute);	}
 		catch(NumberFormatException nfe)
 		{	System.out.println("***Repository type cannot be parsed as an integer***");
-			nfe.printStackTrace();
+			nfe.printStackTrace(System.err);
 			throw new NoDataFoundException("Valid Repository \"type\" not found - should be an integer");
 		}
 		
@@ -219,7 +219,7 @@ public class RepositoryXMLParser
 		{	intVal = Integer.valueOf(intValAsString);	}
 		catch(NumberFormatException nfe)
 		{	System.out.println("***Value " + intValAsString + "cannot be parsed as an integer***");
-			nfe.printStackTrace();
+			nfe.printStackTrace(System.err);
 			throw new NoDataFoundException("Valid data not found for the repository");
 		}
 		return intVal;
@@ -261,29 +261,5 @@ public class RepositoryXMLParser
 			System.out.println("DatabasePassword = " + r.getPassword());
 		}
 	}//end of method printData
-	
-	
-	public static void main(String[] args)
-	{
-		//RepositoryXMLParser rp = new RepositoryXMLParser(new File("\\repository.xml"));
-		InputStream configStream = null;
-		try 
-		{
-			configStream = new FileInputStream(new File("\\repository.xml"));
-		}
-		catch (FileNotFoundException e1) 
-		{	e1.printStackTrace();	}
-		RepositoryXMLParser rp = new RepositoryXMLParser(configStream);
-		
-		try
-		{	rp.getAvailableRepositories();	}
-		catch(NoDataFoundException e)
-		{	e.printStackTrace();	}
-		
-		try
-		{	rp.printData();	}
-		catch(NoDataFoundException e)
-		{	e.printStackTrace();	}
 
-	}
 }//end of class
