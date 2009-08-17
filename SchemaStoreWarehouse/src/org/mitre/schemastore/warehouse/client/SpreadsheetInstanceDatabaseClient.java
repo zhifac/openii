@@ -54,7 +54,8 @@ public class SpreadsheetInstanceDatabaseClient implements InstanceDatabaseInterf
 	
 	/** Constructor 
 	 * @throws NoDataFoundException 
-	 * @throws RemoteException */
+	 * @throws RemoteException
+	 */
 	public SpreadsheetInstanceDatabaseClient(File clientFile, Schema schema, SchemaStoreClient schemastoreClient, String userSpecifiedName, Repository currentRepository) 
 													throws NoDataFoundException, RemoteException
 	{
@@ -74,13 +75,13 @@ public class SpreadsheetInstanceDatabaseClient implements InstanceDatabaseInterf
 		}
 		catch(FileNotFoundException e)
 		{
-			System.out.println("A file with the specified pathname either does not exist or it exists and is inaccessible.");
-			e.printStackTrace();
+			e.printStackTrace(System.out);
+			throw new NoDataFoundException("A file with the specified pathname either does not exist or it exists and is inaccessible.");
 		}
 		catch (IOException e)
 		{
-			System.out.println("An I/O error occurred, or the InputStream did not provide a compatible POIFS data structure");
-			e.printStackTrace();
+			e.printStackTrace(System.out);
+			throw new NoDataFoundException("An I/O error occurred, or the InputStream did not provide a compatible POIFS data structure.");
 		}		
 		
 		/* Store reference to the schema selected by the user */
@@ -99,7 +100,7 @@ public class SpreadsheetInstanceDatabaseClient implements InstanceDatabaseInterf
 		catch (RemoteException e) 
 		{
 			System.out.println("Problem occured while getting the Graph object from the client");
-			e.printStackTrace();
+			e.printStackTrace(System.out);
 		}
 		
 		/*	Instantiate the class for creating a new database in the same place where the structural database is located
@@ -133,7 +134,7 @@ public class SpreadsheetInstanceDatabaseClient implements InstanceDatabaseInterf
 			} 
 			catch (Exception e) 
 			{
-				e.printStackTrace();
+				e.printStackTrace(System.out);
 				throw new RemoteException("***Failed to connect to InstanceDatabase***" + e.getMessage());
 			} 
 			*/
@@ -222,9 +223,11 @@ public class SpreadsheetInstanceDatabaseClient implements InstanceDatabaseInterf
 				String cellValue = null;
 				if(cell.getCellType() == HSSFCell.CELL_TYPE_STRING)
 					cellValue = cell.getStringCellValue();
-
-				if(cellValue == null)
-					throw new NoDataFoundException("No proper column name found for column " + cell.getColumnIndex()+1);
+				else
+					continue;
+				
+				if(cellValue.isEmpty())
+					continue;
 				
 				// 4.	Get the Attribute that this cell is associated with
 				Attribute attribute = getAttributeCorrespondingToCell(cell, entity.getId());
@@ -270,8 +273,9 @@ public class SpreadsheetInstanceDatabaseClient implements InstanceDatabaseInterf
 				{
 					HSSFCell nextCellInColumn = wb.getSheetAt(i).getRow(n).getCell(columnIndexOfCell);
 					int actualCellType = nextCellInColumn.getCellType();
-					if(actualCellType != expectedCellType)
-						throw new NoDataFoundException("Data cannot be inserted in table because incorrect data types found in cell defined by row " + rowIndexOfCell+1 + "column " + columnIndexOfCell+1);
+					if(actualCellType != HSSFCell.CELL_TYPE_BLANK)
+						if(actualCellType != expectedCellType)
+							throw new NoDataFoundException("Data cannot be inserted in table because incorrect data types found in cell defined by row " + rowIndexOfCell+1 + "column " + columnIndexOfCell+1);
 				}
 				
 				/* Find the appropriate SQL data type to be used when creating the instance
