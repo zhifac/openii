@@ -106,19 +106,19 @@ public class ClusterRenderer {
 
 			// print elements of a groupE across a row
 			double score = 0;
-			int size = 0;
+			int schemaElementNodeSize = 0;
 			for (SchemaElementNode n : nodes) {
 				printSchemaElementNode(n, row);
 
-				// calculate and print average score
+				// calculate average score
 				for (int ptr = 0; ptr < n.pointers.size(); ptr++) {
 					score += n.distances.get(ptr);
-					size++;
+					schemaElementNodeSize++;
 				}
 			}
 
 			// print average score
-			double average = score / (double) size;
+			double average = score / (double) schemaElementNodeSize;
 			HSSFCell avgScoreCell = row.createCell(numSchema * SCHEMA_COLUMN_BLOCK_SIZE + 1);
 			avgScoreCell.setCellValue(average);
 		}
