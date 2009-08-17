@@ -59,21 +59,17 @@ public abstract class SchemaImporter extends Porter
 	/** Returns the importer URI file types (only needed when URI type is FILE) */
 	public ArrayList<String> getFileTypes() { return new ArrayList<String>(); }
 	
-	/** Returns the schema information for the specified URI */
-	protected SchemaProperties generateSchemaProperties() throws ImporterException { return null; }
-	
 	/** Initializes the schema structures */
-	abstract protected void initializeSchemaStructures() throws ImporterException;
+	protected void initialize() throws ImporterException {}
 	
 	/** Returns the list of schemas which this schema extends */
-	abstract protected ArrayList<Integer> generateExtendedSchemaIDs() throws ImporterException;
+	protected ArrayList<Integer> generateExtendedSchemaIDs() throws ImporterException { return new ArrayList<Integer>(); }
 	
 	/** Returns the schema elements for the specified URI */
-	abstract protected ArrayList<SchemaElement> generateSchemaElements() throws ImporterException;
+	protected ArrayList<SchemaElement> generateSchemaElements() throws ImporterException { return new ArrayList<SchemaElement>(); }
 	
 	/** Generate the schema */
-	final public SchemaProperties getSchemaProperties(URI uri) throws ImporterException
-		{ this.uri = uri; return generateSchemaProperties(); }
+	public Schema getSchema(URI uri) throws ImporterException { return null; }
 	
 	/** Return the schema elements */
 	final public ArrayList<SchemaElement> getSchemaElements(URI uri) throws ImporterException
@@ -84,7 +80,7 @@ public abstract class SchemaImporter extends Porter
 
 		// Generate the schema elements
 		this.uri = uri;
-		initializeSchemaStructures();
+		initialize();
 		return generateSchemaElements();
 	}
 	
@@ -93,18 +89,12 @@ public abstract class SchemaImporter extends Porter
 	{
 		// Initialize the importer
 		this.uri = uri;
-		initializeSchemaStructures();
+		initialize();
 
 		// Generate the schema
-		Schema schema = new Schema(nextId(),name,author,uri==null?"":uri.toString(),getName(),description,false);
-		SchemaProperties schemaProperties = generateSchemaProperties();
-		if(schemaProperties!=null)
-		{
-			schema.setName(schemaProperties.getName());
-			schema.setAuthor(schemaProperties.getAuthor());
-			schema.setType(schemaProperties.getType());
-			schema.setDescription(schemaProperties.getDescription());
-		}
+		Schema schema = getSchema(uri);
+		if(schema==null)
+			schema = new Schema(nextId(),name,author,uri==null?"":uri.toString(),getName(),description,false);
 		
 		// Generate the schema elements and extensions
 		ArrayList<SchemaElement> schemaElements = generateSchemaElements();

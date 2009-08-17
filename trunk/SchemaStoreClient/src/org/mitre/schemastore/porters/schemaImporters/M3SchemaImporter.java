@@ -8,6 +8,7 @@ import org.mitre.schemastore.porters.ImporterException;
 import org.mitre.schemastore.porters.xml.ConvertFromXML;
 
 import java.io.File;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -91,25 +92,18 @@ public class M3SchemaImporter extends SchemaImporter
 		return fileTypes;
 	}
 	
-	/** Returns the schema  from the specified URI */
-	public SchemaProperties generateSchemaProperties() throws ImporterException
+	/** Returns the schema from the specified URI */
+	public Schema getSchema(URI uri) throws ImporterException
 	{
 		try {
-			ArrayList<ExtendedGraph> graphs = parseDocument();
-			return new SchemaProperties(graphs.get(graphs.size()-1).getSchema());
+			NodeList schemaList = getXMLNodeList(uri);
+			Element schemaXMLElement = 	(Element)schemaList.item(schemaList.getLength()-1);
+			return ConvertFromXML.getSchema(schemaXMLElement);
 		} catch(Exception e) { throw new ImporterException(ImporterException.PARSE_FAILURE,e.getMessage()); }
 	}
-	
-	/** Returns the list of schemas which this schema extends */
-	protected ArrayList<Integer> generateExtendedSchemaIDs() throws ImporterException
-		{ return extendedSchemaIDs; }
-	
-	/** Returns the schema elements from the specified URI */
-	public ArrayList<SchemaElement> generateSchemaElements() throws ImporterException 
-		{ return schemaElements; }
 
 	/** Initialize the importer */
-	protected void initializeSchemaStructures() throws ImporterException
+	protected void initialize() throws ImporterException
 	{	
 		try {
 			// Extract out schema graphs from the XML document
@@ -177,21 +171,33 @@ public class M3SchemaImporter extends SchemaImporter
 		catch(Exception e) { throw new ImporterException(ImporterException.PARSE_FAILURE,e.getMessage()); }
 	}
 	
+	/** Returns the list of schemas which this schema extends */
+	protected ArrayList<Integer> generateExtendedSchemaIDs() throws ImporterException
+		{ return extendedSchemaIDs; }
+	
+	/** Returns the schema elements from the specified URI */
+	protected ArrayList<SchemaElement> generateSchemaElements() throws ImporterException 
+		{ return schemaElements; }
+
+	/** Connects to the XML document */
+	private NodeList getXMLNodeList(URI uri) throws Exception
+	{
+		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+		DocumentBuilder db = dbf.newDocumentBuilder();
+		Document document = db.parse(new File(uri));
+		Element element = document.getDocumentElement();
+		return element.getElementsByTagName("Schema");
+	}
+	
 	/** Parse out schema graphs from XML document */
 	private ArrayList<ExtendedGraph> parseDocument() throws Exception
 	{	
 		// Create a map to temporarily hold schema elements until after the entire file is parsed
 		HashMap<Integer,ArrayList<SchemaElement>> elementMap = new HashMap<Integer,ArrayList<SchemaElement>>();
 		
-		// Open up the XML document from reading
-		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-		DocumentBuilder db = dbf.newDocumentBuilder();
-		Document document = db.parse(new File(uri));
-		Element element = document.getDocumentElement();
-		
 		// Gather up all schema information from the XML document in the form of extended graphs
 		ArrayList<ExtendedGraph> graphs = new ArrayList<ExtendedGraph>();
-		NodeList schemaList = element.getElementsByTagName("Schema");
+		NodeList schemaList = getXMLNodeList(uri);
 		if(schemaList!=null)
 			for(int i=0 ; i<schemaList.getLength(); i++)
 			{	

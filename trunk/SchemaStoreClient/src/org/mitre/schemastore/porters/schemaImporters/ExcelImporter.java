@@ -124,7 +124,7 @@ public class ExcelImporter extends SchemaImporter {
 		return filetypes;
 	}
 
-	protected void initializeSchemaStructures() throws ImporterException
+	protected void initialize() throws ImporterException
 	{
 		try {
 			InputStream excelStream;
@@ -160,10 +160,6 @@ public class ExcelImporter extends SchemaImporter {
 			schemaElements.add(a);
 		return schemaElements;
 	}
-
-	/** Returns the list of schemas which this schema extends */
-	protected ArrayList<Integer> generateExtendedSchemaIDs() throws ImporterException
-		{ return new ArrayList<Integer>(); }
 	
 	/** Generate the schema elements */
 	public ArrayList<SchemaElement> generateSchemaElements() throws ImporterException

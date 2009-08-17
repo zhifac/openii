@@ -71,7 +71,7 @@ public class GSIPImporter extends SchemaImporter {
 	}
 	
 	/** Initializes the importer for the specified URI */
-	protected void initializeSchemaStructures() throws ImporterException {
+	protected void initialize() throws ImporterException {
 		String filename = "";
 		try {
 			//  connect to MS Access database
@@ -121,11 +121,6 @@ System.out.println(filename);
 			//throw new ImporterException(ImporterException.PARSE_FAILURE,e.getMessage()); 
 	    }		
 	}
-
-	/** Returns the list of schemas which this schema extends */
-	protected ArrayList<Integer> generateExtendedSchemaIDs() throws ImporterException { 
-		return new ArrayList<Integer>(); 
-    }
 
 	/** Returns the schema elements from the specified URI */
 	public ArrayList<SchemaElement> generateSchemaElements() throws ImporterException {	

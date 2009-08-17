@@ -2,11 +2,6 @@
 
 package org.mitre.schemastore.porters.schemaImporters;
 
-import org.mitre.schemastore.model.SchemaElement;
-import org.mitre.schemastore.porters.ImporterException;
-
-import java.util.ArrayList;
-
 /** Importer for generating new schemas */
 public class NewSchemaImporter extends SchemaImporter
 {
@@ -21,15 +16,4 @@ public class NewSchemaImporter extends SchemaImporter
 	/** Returns the importer URI type */
 	public Integer getURIType()
 		{ return NONE; }
-	
-	/** Initializes the importer for the specified URI */
-	protected void initializeSchemaStructures() throws ImporterException {}
-	
-	/** Returns the list of schemas which this schema extends */
-	protected ArrayList<Integer> generateExtendedSchemaIDs() throws ImporterException
-		{ return new ArrayList<Integer>(); }
-	
-	/** Returns the schema elements from the specified URI */
-	public ArrayList<SchemaElement> generateSchemaElements() throws ImporterException
-		{ return new ArrayList<SchemaElement>(); }
 }
