@@ -23,7 +23,9 @@ public interface InstanceDatabaseInterface
 	 * 4.  Each cell in the first (title) row has a unique value within the sheet - this is important
 	 *     because attributes are searched based on these values.
 	 *     
-	 * 5.  Each cell in the first (title) row has a String value.
+	 * 5.  Each cell in the first (title) row has a String value.  For cases where a cell of the first row
+	 *     is blank, or its value is of any other type, the entire column under it is ignored 
+	 *     i.e. data in that column is not stored in the database.
 	 * 
 	 * 6.  Excel treats dates as numeric.  The POI API only detects the following cell types:
 	 *     { NUMERIC, STRING, FORMULA, BLANK, BOOLEAN, ERROR }.  The importer creates the domain type
@@ -44,13 +46,13 @@ public interface InstanceDatabaseInterface
 	 * 10. If no value is found in a cell, NULL is inserted into the table.  The only SQL data types used
 	 *     to insert values into the table are "numeric", "varchar", "boolean".
 	 *     
-	 *  11. The maximum length of the string that can be stored in the database is 30 - can be changed by 
+	 * 11. The maximum length of the string that can be stored in the database is 30 - can be changed by 
 	 *  	changes in the code
 	 *  
-	 *  12. Numeric values can be stored in the database with a max. precision of 30 and scale of 10
+	 * 12. Numeric values can be stored in the database with a max. precision of 30 and scale of 10
 	 *      - can be changed by changes in the code
 	 *      
-	 *  13. There is no need to close the OpenII window to access the database using some other tool.     
+	 * 13. There is no need to close the OpenII window to access the database using some other tool.     
 	 * @throws RemoteException 
 	 */   
 	public void createInstanceDatabaseTables() throws NoDataFoundException, RemoteException;
