@@ -28,7 +28,6 @@ import org.mitre.openii.widgets.URIField;
 import org.mitre.openii.widgets.WidgetUtilities;
 import org.mitre.schemastore.porters.PorterManager;
 import org.mitre.schemastore.porters.schemaImporters.SchemaImporter;
-import org.mitre.schemastore.porters.schemaImporters.SchemaProperties;
 import org.mitre.schemastore.model.Schema;
 
 /** Constructs the Import Schema Dialog */
@@ -181,16 +180,16 @@ public class ImportSchemaDialog extends TitleAreaDialog implements ISelectionCha
 		if(e.getSource().equals(uriText))
 			try {
 				// Retrieve the schema properties
-				SchemaProperties properties = null;
+				Schema schema = null;
 				if(uriField.isValid())
-					properties = importer.getSchemaProperties(new File(uriText.getText()).toURI());
+					schema = importer.getSchema(new File(uriText.getText()).toURI());
 				
 				// Set the fields based on the given schema properties
-				if(properties!=null)
+				if(schema!=null)
 				{
-					nameField.setText(properties.getName());
-					authorField.setText(properties.getAuthor());
-					descriptionField.setText(properties.getDescription());
+					nameField.setText(schema.getName());
+					authorField.setText(schema.getAuthor());
+					descriptionField.setText(schema.getDescription());
 				}
 			} catch(Exception e2) {}
 		
