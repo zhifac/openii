@@ -12,5 +12,6 @@
 	<classpathentry kind="lib" path="lib/affinity/ivccore.jar"/>
 	<classpathentry kind="lib" path="lib/Harmony.jar"/>
 	<classpathentry kind="lib" path="lib/affinity/Affinity.jar"/>
+	<classpathentry kind="lib" path="lib/SchemaStoreWarehouse.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
