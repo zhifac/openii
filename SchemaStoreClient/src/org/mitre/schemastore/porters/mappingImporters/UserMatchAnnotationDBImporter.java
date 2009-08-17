@@ -91,7 +91,6 @@ public class UserMatchAnnotationDBImporter extends MappingImporter
 			while(rs.next())
 			{
 				String notes = rs.getString("MPNotes");
-				String transform = rs.getString("Transform");
 				
 				// Path is stored in DB as "#parent#child#child"
 				// Chop the first #
