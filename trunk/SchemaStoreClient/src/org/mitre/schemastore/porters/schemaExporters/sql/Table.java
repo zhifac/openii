@@ -1,20 +1,17 @@
 package org.mitre.schemastore.porters.schemaExporters.sql;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-
-import org.mitre.schemastore.model.SchemaElement;
 
 public class Table
 {
     public static String DEFAULT_PRIMARY_KEY = "ID";
-    private Rdb _rdb;
-    private String _name;
-    private ArrayList<RdbAttribute> _attributes = new ArrayList<RdbAttribute>();
-    private RdbAttribute _primaryKey = null; 
-    private ArrayList<RdbAttribute> _primaryKeySet = new ArrayList<RdbAttribute>();    
-    private boolean _hasAttributes = false;
-    private String _comment = "";
+    protected Rdb _rdb;
+    protected String _name;
+    protected ArrayList<RdbAttribute> _attributes = new ArrayList<RdbAttribute>();
+    protected RdbAttribute _primaryKey = null ; // TODO expand to composite Primary Key
+    protected ArrayList<RdbAttribute> _primaryKeySet = new ArrayList<RdbAttribute>();    
+    protected boolean _hasAttributes = false;
+    protected String _comment = "";
 
     public Table(Rdb db, String name) {
         _rdb = db;
@@ -22,13 +19,12 @@ public class Table
     }
 
     public String toString(){
-    	return getName();
+    	return _name;
     }
 
     public void setPrimaryKey( RdbAttribute att ) {
         _primaryKey = att;
         _primaryKeySet.add( att );
-       
         att.setIsPrimaryKey( true );
         if ( !_attributes.contains( att ) )
             _attributes.add( _primaryKey );
@@ -44,7 +40,6 @@ public class Table
     	return _primaryKeySet;
     }
 
-    // TODO: modify this to generate FULLY-QUALIFIED NAME
     public String getName() {
         return _name;
     }

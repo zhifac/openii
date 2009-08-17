@@ -4,11 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
-import org.mitre.schemastore.model.SchemaElement;
-
 public class RdbAttribute {
 
-	protected SchemaElement _element;
 	private ArrayList<String> _allowedValues = new ArrayList<String>();
 	private String _comment = "";
 	private String _databaseParam;
@@ -20,7 +17,6 @@ public class RdbAttribute {
 	protected String _defaultValue = null;
 	protected RdbAttribute _inverseAttribute; // TODO implement
 	protected boolean _isPrimaryKey = false; // TODO remove foreign key as a
-	
 	// type from databaseType
 	protected boolean _isRequired = false;
 	protected Number _maximumValue;
@@ -37,18 +33,12 @@ public class RdbAttribute {
 	public RdbAttribute(Rdb schema, Table rel, String attributeName, RdbValueType type) {
 		_type = type;
 		_name = attributeName;
-	
-		if (_name.length() == 0){
-			System.err.println("creating attr with no name");
-		}
-		
 		_rdb = schema;
 		_relation = rel;
 		_relName = rel.getName();
 		_rdb.addAttribute(rel, this);
 
 		if (_type.equals(RdbValueType.ID))  {
-			_type.equals(RdbValueType.ID);
 			_type = RdbValueType.AUTO_INCREMENT;
 			rel.setPrimaryKey(this); 
 		} 
@@ -61,13 +51,9 @@ public class RdbAttribute {
 		setIsRequired(isRequired);
 		setDefaultValue(defaultValue);
 	}
-	
+
 	public RdbAttribute(Rdb schema, String containerRelName, String attributeName, RdbValueType type)
 			throws NoRelationFoundException {
-		if (attributeName.length() == 0){
-			System.err.println("Adding attr with no name to " + containerRelName + " of type " + type.getClass());
-		}
-		
 		_name = attributeName;
 		_type = type;
 		_rdb = schema;
@@ -78,21 +64,18 @@ public class RdbAttribute {
 
 	}
 
-	
-	
-	
-//	public RdbAttribute(Table containerTbl, String attributeName, RdbValueType type,
-//			boolean isRequired, String defaultValue) {
-//		if (containerTbl != null) {
-//			_relName = containerTbl.getName();
-//			_relation = containerTbl;
-//		}
-//		_name = attributeName;
-//		_rdb = null;
-//		_type = type;
-//		_isRequired = isRequired;
-//		_defaultValue = defaultValue;
-//	}
+	public RdbAttribute(Table containerTbl, String attributeName, RdbValueType type,
+			boolean isRequired, String defaultValue) {
+		if (containerTbl != null) {
+			_relName = containerTbl.getName();
+			_relation = containerTbl;
+		}
+		_name = attributeName;
+		_rdb = null;
+		_type = type;
+		_isRequired = isRequired;
+		_defaultValue = defaultValue;
+	}
 
 	public String toString(){
 		return _name;
