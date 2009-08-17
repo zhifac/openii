@@ -44,7 +44,7 @@ public class InstanceDatabasePostgresSQL extends InstanceDatabaseSQL
 	//------------------------
 	// Drop an instance table 
 	//------------------------
-	protected void dropTable(String tableName)
+	protected void dropTable(String tableName) throws SQLException
 	{
 		String query = "DROP TABLE " + tableName + " CASCADE";
 		try 
@@ -57,19 +57,20 @@ public class InstanceDatabasePostgresSQL extends InstanceDatabaseSQL
 			stmt.close();
 			
 			// Commit all changes
-			connection.commit();
+			//connection.commit();
 		} 
 		catch(SQLException e) 
 		{ 
 			System.out.println("Table " + tableName + " could not be dropped.");
 			printSQLException(e);
+			throw e;
 		}
 	}
 	
 	//----------------------------------------------------------------------------------------
 	// Create table that maintains max. value of id ever used for an Entity and its Attributes 
 	//----------------------------------------------------------------------------------------
-	protected void createMaxIdTable(String entityTableName)
+	protected void createMaxIdTable(String entityTableName) throws SQLException
 	{
 		// Drop the table if it exists
 		//dropTable("max_val_" + entityTableName.substring(1));
@@ -85,19 +86,20 @@ public class InstanceDatabasePostgresSQL extends InstanceDatabaseSQL
 			stmt.close();
 			
 			// Commit all changes
-			connection.commit();
+			//connection.commit();
 		} 
 		catch(SQLException e) 
 		{ 
 			System.out.println("Max. Value Table for Entity with id " + entityTableName.substring(1) + " could not be created.");
 			printSQLException(e);
+			throw e;
 		}
 	}
 	
 	//-----------------------------------
 	// Insert data into Entity table 
 	//-----------------------------------
-	public void insertEntityData(String entityTableName, Integer numberOfRowsOfData, Integer currentAbsoluteMaxId)
+	public void insertEntityData(String entityTableName, Integer numberOfRowsOfData, Integer currentAbsoluteMaxId) throws SQLException
 	{
 		String query = null;
 		for(int i=(currentAbsoluteMaxId+1); i<=(currentAbsoluteMaxId+numberOfRowsOfData); i++)
@@ -116,12 +118,13 @@ public class InstanceDatabasePostgresSQL extends InstanceDatabaseSQL
 				stmt.close();
 				
 				// Commit all changes
-				connection.commit();
+				//connection.commit();
 			} 
 			catch(SQLException e) 
 			{ 
-				System.out.println("Values could not be inserted in Entity " + entityTableName.substring(1) + " tables");
+				System.out.println("Values could not be inserted in Entity " + entityTableName.substring(1) + " table");
 				printSQLException(e);
+				throw e;
 			}
 		}
 		
@@ -133,7 +136,7 @@ public class InstanceDatabasePostgresSQL extends InstanceDatabaseSQL
 	//--------------------------------------------------------------------------------------------------
 	// Insert data into table that maintains max. value of id ever used for an Entity and its Attributes 
 	//--------------------------------------------------------------------------------------------------
-	protected void insertMaxIdData(String entityTableName, int value)
+	protected void insertMaxIdData(String entityTableName, int value) throws SQLException
 	{
 		String query = "SELECT setval('max_val_seq_" + entityTableName.toLowerCase() + "', " + value + ", false)";
 		try 
@@ -147,15 +150,17 @@ public class InstanceDatabasePostgresSQL extends InstanceDatabaseSQL
 				if(currentAbsoluteMaxId == value)
 					System.out.println("Inserted new max. value " + value + " into max_val_seq_" + entityTableName.toLowerCase());
 			}
+			rs.close();
 			stmt.close();
 			
 			// Commit all changes
-			connection.commit();
+			//connection.commit();
 		} 
 		catch(SQLException e) 
 		{ 
 			System.out.println("Data could not be inserted into table max_val_seq_" + entityTableName.toLowerCase());
 			printSQLException(e);
+			throw e;
 		}
 	}
 	
@@ -163,7 +168,7 @@ public class InstanceDatabasePostgresSQL extends InstanceDatabaseSQL
 	//------------------------------------------------------------------------------
 	// Get max. value of id that was ever inserted for an Entity and its Attributes  
 	//------------------------------------------------------------------------------
-	public int getCurrentAbsoluteMaxId(String entityTableName)
+	public int getCurrentAbsoluteMaxId(String entityTableName) throws SQLException
 	{
 		int currentAbsoluteMaxId = 0;
 		
@@ -177,15 +182,17 @@ public class InstanceDatabasePostgresSQL extends InstanceDatabaseSQL
 			ResultSet rs = stmt.executeQuery(query);
 			while (rs.next()) 
 				currentAbsoluteMaxId = rs.getInt(1);
+			rs.close();
 			stmt.close();
 			
 			// Commit all changes
-			connection.commit();
+			//connection.commit();
 		} 
 		catch(SQLException e) 
 		{ 
 			System.out.println("Value of current max. id for Entity " + entityTableName.substring(1) + " could not be obtained");
 			printSQLException(e);
+			throw e;
 		}
 		return currentAbsoluteMaxId;
 	}
@@ -195,8 +202,9 @@ public class InstanceDatabasePostgresSQL extends InstanceDatabaseSQL
 	// Insert data into Attribute table 
 	//-----------------------------------
 	
-	/** Insert data into table created for Boolean type Attribute	*/
-	public void insertBooleanAttributeData(String attributeTableName, Integer rowNumber, String data)
+	/** Insert data into table created for Boolean type Attribute	
+	 * @throws SQLException */
+	public void insertBooleanAttributeData(String attributeTableName, Integer rowNumber, String data) throws SQLException
 	{
 		insertStringAttributeData(attributeTableName, rowNumber, data);
 	}

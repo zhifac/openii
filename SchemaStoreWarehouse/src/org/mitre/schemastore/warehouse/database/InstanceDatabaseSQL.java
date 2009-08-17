@@ -42,20 +42,21 @@ public abstract class InstanceDatabaseSQL
 	//------------------------
 	// Drop an instance table 
 	//------------------------
-	protected abstract void dropTable(String tableName);
+	protected abstract void dropTable(String tableName) throws SQLException;
 	
 	
 	//----------------------------------------------------------------------------------------
 	// Create table that maintains max. value of id ever used for an Entity and its Attributes 
 	//----------------------------------------------------------------------------------------
-	protected abstract void createMaxIdTable(String entityTableName);
+	protected abstract void createMaxIdTable(String entityTableName) throws SQLException;
 	
 	
 	//-----------------------------------
 	// Creates table for a Entity 
 	//-----------------------------------
-	/** Create instance table for the given Entity */
-	public void createEntityTable(String entityTableName)
+	/** Create instance table for the given Entity 
+	 * @throws SQLException */
+	public void createEntityTable(String entityTableName) throws SQLException
 	{
 		// Drop the table if it exists
 		//dropTable(entityTableName);
@@ -78,12 +79,13 @@ public abstract class InstanceDatabaseSQL
 			stmt.close();
 			
 			// Commit all changes
-			connection.commit();
+			//connection.commit();
 		} 
 		catch(SQLException e) 
 		{ 
 			System.out.println("Table for Entity with id " + entityTableName.substring(1) + " could not be created.");
 			printSQLException(e);
+			throw e;
 		}
 		
 		createMaxIdTable(entityTableName);
@@ -92,25 +94,25 @@ public abstract class InstanceDatabaseSQL
 	//-----------------------------------
 	// Insert data into Entity table 
 	//-----------------------------------
-	public abstract void insertEntityData(String entityTableName, Integer numberOfRowsOfData, Integer currentAbsoluteMaxId);
+	public abstract void insertEntityData(String entityTableName, Integer numberOfRowsOfData, Integer currentAbsoluteMaxId) throws SQLException;
 
 	
 	//--------------------------------------------------------------------------------------------------
 	// Insert data into table that maintains max. value of id ever used for an Entity and its Attributes 
 	//--------------------------------------------------------------------------------------------------
-	protected abstract void insertMaxIdData(String entityTableName, int value);
+	protected abstract void insertMaxIdData(String entityTableName, int value) throws SQLException;
 	
 	
 	//------------------------------------------------------------------------------
 	// Get max. value of id that was ever inserted for an Entity and its Attributes  
 	//------------------------------------------------------------------------------
-	public abstract int getCurrentAbsoluteMaxId(String entityTableName);
+	public abstract int getCurrentAbsoluteMaxId(String entityTableName) throws SQLException;
 
 	
 	//---------------------------------------
 	// Creates instance table for a Attribute 
 	//---------------------------------------
-	public void createAttributeTable(String attributeTableName, String type, String entityTableName)
+	public void createAttributeTable(String attributeTableName, String type, String entityTableName) throws SQLException
 	{
 		// Drop the table if it exists
 		//dropTable(attributeTableName);
@@ -136,12 +138,13 @@ public abstract class InstanceDatabaseSQL
 			stmt.close();
 			
 			// Commit all changes
-			connection.commit();
+			//connection.commit();
 		} 
 		catch(SQLException e) 
 		{ 
 			System.out.println("Table for Attribute with id " + attributeTableName.substring(1) + " could not be created.");
 			printSQLException(e);
+			throw e;
 		}
 	}
 	
@@ -150,8 +153,9 @@ public abstract class InstanceDatabaseSQL
 	// Insert data into Attribute table 
 	//-----------------------------------
 	
-	/** Insert data into table created for String type Attribute */
-	public void insertStringAttributeData(String attributeTableName, Integer rowNumber, String data)
+	/** Insert data into table created for String type Attribute 
+	 * @throws SQLException */
+	public void insertStringAttributeData(String attributeTableName, Integer rowNumber, String data) throws SQLException
 	{
 		String query = null;
 		
@@ -166,22 +170,24 @@ public abstract class InstanceDatabaseSQL
 			Statement stmt = connection.createStatement();
 			int result = stmt.executeUpdate(query);
 			if(result != 0)
-				System.out.println("Inserted value " + data + " into " + attributeTableName);
+				System.out.println("Inserted value " + data + " into table " + attributeTableName);
 			stmt.close();
 				
 			// Commit all changes
-			connection.commit();
+			//connection.commit();
 		} 
 		catch(SQLException e) 
 		{ 
-			System.out.println("Value could not be inserted into table for Attribute " + attributeTableName);
+			System.out.println("Value could not be inserted into table for Attribute " + attributeTableName.substring(1));
 			printSQLException(e);
+			throw e;
 		}
 	}
 	
 	
-	/** Insert data into table created for Numeric type Attribute */
-	public void insertNumericAttributeData(String attributeTableName, Integer rowNumber, String data)
+	/** Insert data into table created for Numeric type Attribute 
+	 * @throws SQLException */
+	public void insertNumericAttributeData(String attributeTableName, Integer rowNumber, String data) throws SQLException
 	{
 		String query = null;
 		
@@ -196,25 +202,27 @@ public abstract class InstanceDatabaseSQL
 			Statement stmt = connection.createStatement();
 			int result = stmt.executeUpdate(query);
 			if(result != 0)
-				System.out.println("Inserted value " + data + " into " + attributeTableName);
+				System.out.println("Inserted value " + data + " into table " + attributeTableName);
 			stmt.close();
 				
 			// Commit all changes
-			connection.commit();
+			//connection.commit();
 		} 
 		catch(SQLException e) 
 		{ 
-			System.out.println("Value could not be inserted into table for Attribute " + attributeTableName);
+			System.out.println("Value could not be inserted into table for Attribute " + attributeTableName.substring(1));
 			printSQLException(e);
+			throw e;
 		}
 	}
 	
 	
 	/** Insert data into table created for Boolean type Attribute 
 	 *  This function is specialized for Derby database that does not support boolean types
+	 * @throws SQLException 
 	 */
-	public abstract void insertBooleanAttributeData(String attributeTableName, Integer rowNumber, String data);
-
+	public abstract void insertBooleanAttributeData(String attributeTableName, Integer rowNumber, String data) throws SQLException;
+	
 	
 	//--------------------------------------
 	// Print details of a SQLException chain

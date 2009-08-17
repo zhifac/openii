@@ -15,12 +15,14 @@ public class CreatePostgresDatabaseFactory extends CreateDatabaseFactory
 	private String PROTOCOL = "jdbc:postgresql:";
 	private String HOSTNAME = null;
 	private String PORT = "5432";
-	private String DEFAULT_DB_NAME = "postgres";
+	private String DEFAULT_DB_NAME = null;
 	private String NEW_DB_NAME = null;
 	private String DB_CONN_STRING = null;
 	private String USER_NAME = null;
 	private String PASSWORD = null;
+	
 	private Connection newDbConnection = null;
+	private boolean isNewDatabaseCreated = false;
 	
 	/** Constructor	
 	 * @throws NoDataFoundException */
@@ -38,10 +40,11 @@ public class CreatePostgresDatabaseFactory extends CreateDatabaseFactory
 			// Set the user name and password 
 			if(r.getType().equals(InstanceRepository.POSTGRES) && r.getHost().equals(HOSTNAME))
 			{
+				// Get default database name
+				DEFAULT_DB_NAME = r.getDatabaseName();
+				
 				// Get the username and password
-				newDatabaseInfo.setUsername(r.getUsername());
 				USER_NAME = r.getUsername();
-				newDatabaseInfo.setPassword(r.getPassword());
 				PASSWORD = r.getPassword();
 			}
 		}
@@ -49,8 +52,9 @@ public class CreatePostgresDatabaseFactory extends CreateDatabaseFactory
 			throw new NoDataFoundException("***Could not determine where to create the new database- matching existing repository not found***");
 	}//end of constructor
 
-	/** Creates a new database and returns a connection to it */
-	protected Connection createConnectionToNewDatabase() 
+	/** Creates a new database and returns a connection to it 
+	 * @throws NoDataFoundException */
+	protected Connection createConnectionToNewDatabase() throws NoDataFoundException 
 	{
 		Connection defaultDbConnection = null;
 				
@@ -63,14 +67,14 @@ public class CreatePostgresDatabaseFactory extends CreateDatabaseFactory
 		catch (ClassNotFoundException e)
 		{
 			// Handle an error loading the driver
-			System.out.println("Driver could not be loaded");
+			e.printStackTrace(System.err);
+			throw new NoDataFoundException("Driver for the database could not be loaded");
 		}
 		
 		/* Create the database, if it does not already exist and
 		 * Get connection to the new database
 		 * A default schema "public" is also created
 		 */
-		boolean isDatabaseCreated = false;
 		try
 		{
 			//Connect to default database "postgres" as default user "postgres" who has the right to create new databases
@@ -86,7 +90,7 @@ public class CreatePostgresDatabaseFactory extends CreateDatabaseFactory
 			if(result == 0)
 			{
 				System.out.println("Created Database " + NEW_DB_NAME);
-				isDatabaseCreated = true;
+				isNewDatabaseCreated = true;
 			}
 			stmt.close();
 			defaultDbConnection.close();
@@ -97,13 +101,12 @@ public class CreatePostgresDatabaseFactory extends CreateDatabaseFactory
 			{
 				// Database already exists
 				System.out.println("Database " + NEW_DB_NAME + " already exists");
-				//printSQLException(e);
 			}
 			else
 			{
 				// If the error code or SQLState is different, we have an unexpected exception
-				System.out.println("Database " + NEW_DB_NAME + " could not be created for some other reason");
 				printSQLException(e);
+				throw new NoDataFoundException("Database creation or existing database access error occured");
 			}
 		}
 		
@@ -112,32 +115,50 @@ public class CreatePostgresDatabaseFactory extends CreateDatabaseFactory
 			// Open a connection to the new database for the same user i.e. superuser "postgres"
 			DB_CONN_STRING = PROTOCOL + "//" + HOSTNAME + ":" + PORT + "/" + NEW_DB_NAME;
 			newDbConnection = DriverManager.getConnection(DB_CONN_STRING, USER_NAME, PASSWORD);
-			System.out.println("***Connection has been established to new database " + NEW_DB_NAME + " as the super user***");
-
+			System.out.println("***Connection has been established to new database " + NEW_DB_NAME + " for the super user***");
+			
+			// Control transactions manually
+			newDbConnection.setAutoCommit(false);
+			
 			// set the flag to show that connection to new database is open
 			isConnected = true;
 			
-			if(isDatabaseCreated)
+			if(isNewDatabaseCreated)
 				System.out.println("Created and connected to new database " + NEW_DB_NAME);
 			else
 				System.out.println("Connected to existing database " + NEW_DB_NAME);
 		}
 		catch(SQLException e)
-		{	printSQLException(e);	}
+		{	
+			printSQLException(e);
+			throw new NoDataFoundException("Connection could not be established to new database " + NEW_DB_NAME);
+		}
 		
 		return newDbConnection;
 	}
 
-	/** Creates the class for issuing SQL commands through JDBC */
-	protected InstanceDatabaseSQL createInstanceDatabaseSQL() 
+	/** Creates the class for issuing SQL commands through JDBC 
+	 * @throws NoDataFoundException */
+	protected InstanceDatabaseSQL createInstanceDatabaseSQL() throws NoDataFoundException 
 	{
 		InstanceDatabaseSQL instanceDb = new InstanceDatabasePostgresSQL(createConnectionToNewDatabase());
 		return instanceDb;
 	}
 	
-	/** Release resources */
-	public void releaseResources()
-	{	try
+	/** Release resources 
+	 * @throws SQLException */
+	public void releaseResources() throws SQLException
+	{
+		try
+		{
+			newDbConnection.commit();
+		}
+		catch(SQLException e)
+		{
+			printSQLException(e);
+		}
+		
+		try
 		{
 			// If the method is called more than once, a no-operation occurs 
 			if(!isConnected)
@@ -155,10 +176,24 @@ public class CreatePostgresDatabaseFactory extends CreateDatabaseFactory
 		} 
 		catch (SQLException e) 
 		{
+			// Database connection could not be closed
 			printSQLException(e);
+			throw e;
 		}
 	}
 	
 	
-
+	/** Undo all changes made in the current transaction and 
+	 * release any database locks currently held by this connection 
+	 * @throws SQLException
+	 */
+	public void rollback() throws SQLException 
+	{
+		newDbConnection.rollback();
+		
+		if(isNewDatabaseCreated)
+		{
+			
+		}
+	}
 }
