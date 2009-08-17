@@ -1,5 +1,6 @@
 package org.mitre.schemastore.warehouse.servlet;
 
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -93,35 +94,90 @@ public class InstanceDatabase
 	//-----------------------------------
 	// Creates table for a Entity 
 	//-----------------------------------
-	public void createEntityTable(String entityTableName)
+	public void createEntityTable(String entityTableName) throws NoDataFoundException
 	{
-		instanceDbSql.createEntityTable(entityTableName);
+		try 
+		{
+			instanceDbSql.createEntityTable(entityTableName);
+		} 
+		catch (SQLException e1) 
+		{
+			// Roll back all changes to database
+			try 
+			{
+				createDbFactory.rollback();
+			} 
+			catch (SQLException e2) 
+			{
+				// Need to manually roll back all changes
+				e2.printStackTrace(System.err);
+				throw new NoDataFoundException("Instance database got corrupted - manually rollback all changes " +
+										"or try again with a new database name");
+			}
+		}
 	}
 	
 	
 	//-----------------------------------
 	// Populates table for Entity 
 	//-----------------------------------
-	public void populateEntityTable(String entityTableName, Integer numberOfRowsOfData)
+	public void populateEntityTable(String entityTableName, Integer numberOfRowsOfData) throws NoDataFoundException
 	{
-		currentAbsoluteMaxId = instanceDbSql.getCurrentAbsoluteMaxId(entityTableName);
-		instanceDbSql.insertEntityData(entityTableName, numberOfRowsOfData, new Integer(currentAbsoluteMaxId));
+		try 
+		{
+			currentAbsoluteMaxId = instanceDbSql.getCurrentAbsoluteMaxId(entityTableName);
+			instanceDbSql.insertEntityData(entityTableName, numberOfRowsOfData, new Integer(currentAbsoluteMaxId));
+		} 
+		catch (SQLException e1) 
+		{
+			// Roll back all changes to database
+			try 
+			{
+				createDbFactory.rollback();
+			} 
+			catch (SQLException e2) 
+			{
+				// Need to manually roll back all changes
+				e2.printStackTrace(System.err);
+				throw new NoDataFoundException("Instance database got corrupted - manually rollback all changes " +
+										"or try again with a new database name");
+			}
+		}
+		
 	}
 	
 	
 	//-----------------------------------
 	// Creates table for a Attribute 
 	//-----------------------------------
-	public void createAttributeTable(String attributeTableName, String type, String entityTableName)
+	public void createAttributeTable(String attributeTableName, String type, String entityTableName) throws NoDataFoundException
 	{
-		instanceDbSql.createAttributeTable(attributeTableName, type, entityTableName);
+		try 
+		{
+			instanceDbSql.createAttributeTable(attributeTableName, type, entityTableName);
+		} 
+		catch (SQLException e1) 
+		{
+			// Roll back all changes to database
+			try 
+			{
+				createDbFactory.rollback();
+			} 
+			catch (SQLException e2) 
+			{
+				// Need to manually roll back all changes
+				e2.printStackTrace(System.err);
+				throw new NoDataFoundException("Instance database got corrupted - manually rollback all changes " +
+										"or try again with a new database name");
+			}
+		}
 	}
 	
 	
 	//-----------------------------------
 	// Populates table for a Attribute 
 	//-----------------------------------
-	public void populateStringAttributeTable(String attributeTableName, String[] values)
+	public void populateStringAttributeTable(String attributeTableName, String[] values) throws NoDataFoundException
 	{
 		List<String> valuesList = Arrays.asList(values);  
 		int numberOfRowsOfData = valuesList.size();
@@ -129,11 +185,29 @@ public class InstanceDatabase
 		for(int n=1; n<=numberOfRowsOfData; n++)
 	    {
 			String data = valuesList.get(n-1);
-			instanceDbSql.insertStringAttributeData(attributeTableName, currentAbsoluteMaxId+n, data);
+			try 
+			{
+				instanceDbSql.insertStringAttributeData(attributeTableName, currentAbsoluteMaxId+n, data);
+			} 
+			catch (SQLException e1) 
+			{
+				// Roll back all changes to database
+				try 
+				{
+					createDbFactory.rollback();
+				} 
+				catch (SQLException e2) 
+				{
+					// Need to manually roll back all changes
+					e2.printStackTrace(System.err);
+					throw new NoDataFoundException("Instance database got corrupted - manually rollback all changes " +
+											"or try again with a new database name");
+				}
+			}
 	    }   
 	}
 	
-	public void populateNumericAttributeTable(String attributeTableName, String[] values)
+	public void populateNumericAttributeTable(String attributeTableName, String[] values) throws NoDataFoundException
 	{
 		List<String> valuesList = Arrays.asList(values);  
 		int numberOfRowsOfData = valuesList.size();
@@ -141,11 +215,29 @@ public class InstanceDatabase
 		for(int n=1; n<=numberOfRowsOfData; n++)
 	    {
 			String data = valuesList.get(n-1);
-			instanceDbSql.insertNumericAttributeData(attributeTableName, currentAbsoluteMaxId+n, data);
+			try 
+			{
+				instanceDbSql.insertNumericAttributeData(attributeTableName, currentAbsoluteMaxId+n, data);
+			} 
+			catch (SQLException e1) 
+			{
+				// Roll back all changes to database
+				try 
+				{
+					createDbFactory.rollback();
+				} 
+				catch (SQLException e2) 
+				{
+					// Need to manually roll back all changes
+					e2.printStackTrace(System.err);
+					throw new NoDataFoundException("Instance database got corrupted - manually rollback all changes " +
+											"or try again with a new database name");
+				}
+			}
 	    }   
 	}
 	
-	public void populateBooleanAttributeTable(String attributeTableName, String[] values)
+	public void populateBooleanAttributeTable(String attributeTableName, String[] values) throws NoDataFoundException
 	{
 		List<String> valuesList = Arrays.asList(values);  
 		int numberOfRowsOfData = valuesList.size();
@@ -153,7 +245,25 @@ public class InstanceDatabase
 		for(int n=1; n<=numberOfRowsOfData; n++)
 	    {
 			String data = valuesList.get(n-1);
-			instanceDbSql.insertBooleanAttributeData(attributeTableName, currentAbsoluteMaxId+n, data);
+			try 
+			{
+				instanceDbSql.insertBooleanAttributeData(attributeTableName, currentAbsoluteMaxId+n, data);
+			} 
+			catch (SQLException e) 
+			{
+				// Roll back all changes to database
+				try 
+				{
+					createDbFactory.rollback();
+				} 
+				catch (SQLException e2) 
+				{
+					// Need to manually roll back all changes
+					e2.printStackTrace(System.err);
+					throw new NoDataFoundException("Instance database got corrupted - manually rollback all changes " +
+											"or try again with a new database name");
+				}
+			}
 	    }   
 	}
 	
@@ -163,7 +273,14 @@ public class InstanceDatabase
 	//-----------------------------------------------
 	public void releaseResources()
 	{
-		createDbFactory.releaseResources();
+		try 
+		{
+			createDbFactory.releaseResources();
+		} 
+		catch (SQLException e) 
+		{
+			e.printStackTrace(System.err);
+		}
 	}
 
 }
