@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -21,7 +22,20 @@ import org.eclipse.swt.widgets.Text;
 
 import org.mitre.openii.widgets.BasicWidgets;
 import org.mitre.openii.widgets.URIField;
+import org.mitre.schemastore.client.Repository;
+import org.mitre.schemastore.client.SchemaStoreClient;
 import org.mitre.schemastore.model.Schema;
+
+import org.mitre.openii.model.RepositoryManager;
+import org.mitre.schemastore.model.SchemaElement;
+import org.mitre.schemastore.model.graph.Graph;
+import org.mitre.schemastore.model.Domain;
+import org.mitre.schemastore.model.Entity;
+import org.mitre.schemastore.model.Attribute;
+import org.mitre.schemastore.model.Containment;
+import org.mitre.schemastore.warehouse.client.SpreadsheetInstanceDatabaseClient;
+import org.mitre.schemastore.warehouse.common.NoDataFoundException;
+
 
 /** Constructs the Import Schema Dialog */
 public class CreateInstanceDatabaseDialog extends TitleAreaDialog implements ModifyListener
@@ -152,25 +166,43 @@ public class CreateInstanceDatabaseDialog extends TitleAreaDialog implements Mod
 	/** Handles the actual import of the specified file */
 	protected void okPressed()
 	{
-		System.out.println("Create Instance Database");
-		/*
 		try 
 		{
 			String pathname = uriField.getTextField().getText();
+			String userSpecifiedName = nameField.getText().trim();
 			
 			URI uri = uriField.getURI();
+			System.out.println(pathname);
 			System.out.println(uri.toString());
-			System.out.println(uriField.getTextField().getText());
+			
 			System.out.println(nameField.getText());
 			
-			File clientfile = new File(pathname);
-			InstanceSchemaGenerator g = new InstanceSchemaGenerator(clientfile, schema);
+			File clientFile = new File(pathname);
+			SchemaStoreClient schemastoreClient = RepositoryManager.getClient();
+			Repository selectedRepository = RepositoryManager.getSelectedRepository();
 			
-			SchemaStoreClient client = new SchemaStoreClient("C:\\workspace\\SchemaStore\\SchemaStore.jar");
-			System.out.println("SchemaElementCount: " + client.getSchemaElementCount(schema.getId()));
+			SpreadsheetInstanceDatabaseClient g = new SpreadsheetInstanceDatabaseClient(clientFile, schema, schemastoreClient, userSpecifiedName, selectedRepository) ;
+			
+			try
+			{	g.createInstanceDatabaseTables();	}
+			catch(NoDataFoundException e)
+			{	System.out.println(e.getMessage());	}
+			
+			//SchemaStoreClient client = new SchemaStoreClient("C:\\workspace\\SchemaStore\\SchemaStore.jar");
+			System.out.println("SchemaElementCount: " + schemastoreClient.getSchemaElementCount(schema.getId()));
 			
 			// Get the schema graph
-			Graph graph = OpenIIManager.getGraph(schema.getId());
+			//Graph graph = OpenIIManager.getGraph(schema.getId());
+			Graph graph = null;
+			try 
+			{
+				graph = schemastoreClient.getGraph(schema.getId());
+			} 
+			catch (RemoteException e) 
+			{
+				System.out.println("Problem occured while getting the Graph object from the client");
+				e.printStackTrace();
+			}
 			
 			// Returns the list of schema elements - Entity
 			ArrayList<SchemaElement> elementsEntity = graph.getElements(Entity.class);
@@ -190,8 +222,11 @@ public class CreateInstanceDatabaseDialog extends TitleAreaDialog implements Mod
 				Attribute attribute = (Attribute)element;
 				Integer id = attribute.getId();
 				String name = attribute.getName();
-				String description = attribute.getDescription();
-				System.out.println("Attribute ID= " + id + " Attribute name: " + name + " Attribute description: " + description);
+				Integer domainID = attribute.getDomainID();
+				System.out.println("Attribute ID= " + id + " Attribute name: " + name + " Attribute domain id: " + domainID);
+				SchemaElement domainElement = graph.getElement(domainID);
+				Domain domain = (Domain) domainElement;
+				System.out.println("Domain Name= " + domain.getName());
 			}
 			
 			// Returns the list of schema elements - Attribute
@@ -214,7 +249,6 @@ public class CreateInstanceDatabaseDialog extends TitleAreaDialog implements Mod
 		}
 		catch(Exception e)
 			{ setErrorMessage("Failed to create instance database. " + e.getMessage()); }
-			*/
 	}
 	
 }
