@@ -1,7 +1,6 @@
 package org.mitre.schemastore.porters.schemaExporters.sql;
 
 import java.util.ArrayList;
-import org.mitre.schemastore.model.Domain;
 
 public class Rdb {
 
@@ -16,7 +15,7 @@ public class Rdb {
 	protected ArrayList<ForeignKey> _foreignKeys = new ArrayList<ForeignKey>();
 	protected ArrayList<ViewReference> _viewKeys = new ArrayList<ViewReference>();
 	protected ArrayList<ReferenceValue> _refValues = new ArrayList<ReferenceValue>();
-	protected ArrayList<DomainTable> _referenceTables = new ArrayList<DomainTable>();
+	private ArrayList<DomainTable> _referenceTables = new ArrayList<DomainTable>();
 
 	public Rdb(String rdbName) 
 		{ _rdbName = rdbName; }
@@ -42,14 +41,23 @@ public class Rdb {
 	public ArrayList<ReferenceValue> getReferenceValues() 
 		{ return _refValues; }
 
-	
+	/**
+	 * Create a relationship in the RDB with a default ID field as primary key
+	 * 
+	 * @param relationName
+	 * @return
+	 */
+	private Table createRelation(String relationName) {
+		if (relationName == null) relationName = getUniqueRelationName();
+		Table table = new Table(this, relationName);
+		if (!_relations.contains(table)) _relations.add(table);
+		return table;
+	}
 
-
-	public Table createTable(String passedName, boolean setDefaultPK) {
-		Table retVal = new Table(this, passedName);
-		if (!_relations.contains(retVal)) _relations.add(retVal);
-		if (setDefaultPK) createDefaultPK(retVal);
-		return retVal;
+	public Table createTable(String relationName, boolean setDefaultPK) {
+		Table rel = createRelation(relationName);
+		if (setDefaultPK) createDefaultPK(rel);
+		return rel;
 	}
 
 	private void createDefaultPK(Table table) 
@@ -94,6 +102,10 @@ public class Rdb {
 		return view;
 	}
 
+	private String getUniqueRelationName() {
+		return "rel_" + _relations.size();
+	}
+
 	public boolean supportsArrayType() {
 		return _dbSupportsArrayType;
 	}
@@ -117,16 +129,29 @@ public class Rdb {
 		addAttribute(relation, fk);
 		addForeignKey(fk);
 	}
-	
-	public Table getRelation(String tableName) throws NoRelationFoundException {
-			
-		for (int i = 0; i < _relations.size(); i++) {
-			Table rel = (Table) _relations.get(i);
-			if (rel.getName().equalsIgnoreCase(tableName)) return rel;
-		}
-		throw new NoRelationFoundException("getRelation(String): " + tableName);
+
+	public void removeAttr(String relationName, String attribute) throws NoRelationFoundException,
+			Table.DeletePrimaryKeyException {
+		Table rel = getRelation(relationName);
+		rel.removeAttribute(attribute);
 	}
-	
+
+	public void renameAttribute(String relName, String oldAttName, String newAttName)
+			throws NoRelationFoundException, Table.NoAttributeFoundException {
+		Table rel = getRelation(relName);
+		RdbAttribute att = rel.getAttribute(oldAttName);
+		att.setName(newAttName);
+	}
+
+	public Table getRelation(String name) throws NoRelationFoundException {
+		Table rel;
+		for (int i = 0; i < _relations.size(); i++) {
+			rel = (Table) _relations.get(i);
+			if (rel.getName().equalsIgnoreCase(name)) return rel;
+		}
+
+		throw new NoRelationFoundException(name);
+	}
 
 	public View getView(String viewName) throws NoRelationFoundException {
 		View v;
@@ -150,17 +175,16 @@ public class Rdb {
 		if (!_relations.contains(domainTable)) _relations.add(domainTable);
 	}
 
-	public DomainTable createDomainTable(Domain domain, boolean setDefaultPK) {
+	public DomainTable createDomainTable(String name, boolean setDefaultPK) {
 		// DBURDICK: Added "TABLE_" prefix to Table created to store Domain Values
-		// TODO: Need to standardize the naming convention
-		String tableName = "TABLE_" + domain.getName();
-		DomainTable refTbl = new DomainTable(this, tableName);
+		DomainTable refTbl = new DomainTable(this, "TABLE_" + name);
 		addDomainTable(refTbl);
 		if (setDefaultPK) createDefaultPK(refTbl);
 		try {
 			addAttribute(refTbl, new RdbAttribute(this, refTbl, "value", RdbValueType.VARCHAR255,
 					false, null));
 		} catch (NoRelationFoundException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return refTbl;
