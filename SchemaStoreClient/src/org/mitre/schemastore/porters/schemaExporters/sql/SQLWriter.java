@@ -63,61 +63,37 @@ public class SQLWriter {
 
 		_sql.append(createDB(_rdb));
 
-		// DBURDICK: Added CREATE DOMAIN stmts for each Domain
-		Iterator<DomainTable> refItr2 = refTables.iterator();
-		while (refItr2.hasNext()) {
-			DomainTable ref = refItr2.next();
+		// TODO: DBURDICK: Added CREATE DOMAIN stmts for each Domain
+		for (DomainTable ref : refTables){
 			String domainName = ref.getName().replaceFirst("TABLE_", "");
 			String createDomainStmt = new String (" CREATE DOMAIN " + "\"" + domainName +"\"" + " AS varChar(255); \n ");
 			_sql.append( createDomainStmt );
-			
 		}
 		
 		// serialize tables
-		Iterator<Table> relItr = relations.iterator();
-		Table rel;
-		while (relItr.hasNext()) {
-			rel = (Table) relItr.next();
+		for (Table rel : relations){
 			_sql.append(createTable(rel));
 			_comments.append(createComment(rel));
 		}
 
 		// serialize domain tables and their values
-		Iterator<DomainTable> refItr = refTables.iterator();
-		while (refItr.hasNext()) {
-			DomainTable ref = refItr.next();
+		for (DomainTable ref : refTables){
 			ArrayList<ReferenceValue> vals = ref.getReferenceValues();
 			for (ReferenceValue val : vals)
 				_sql.append(insertReferenceValue(val));
 		}
 
 		// foreign keys
-		Iterator<ForeignKey> keyItr = foriegnKeys.iterator();
-		ForeignKey fk;
-		int fkCount = 0;
-		while (keyItr.hasNext()) {
-			fk = (ForeignKey) keyItr.next();
+		for (ForeignKey fk : foriegnKeys)
 			_sql.append(createForeignKey(fk));
-			fkCount++;
-		}
-
+		
 		// views
-		Iterator<View> viewItr = views.iterator();
-		View view;
-		while (viewItr.hasNext()) {
-			view = (View) viewItr.next();
+		for (View view : views)
 			_sql.append(createView(view));
-		}
-
+		
 		// view references or rules
-		Iterator<ViewReference> viewRefItr = viewReferences.iterator();
-		ViewReference vk;
-		int vkCount = 0;
-		while (viewRefItr.hasNext()) {
-			vk = (ViewReference) viewRefItr.next();
+		for (ViewReference vk : viewReferences)
 			_sql.append(createViewReference(vk));
-			vkCount++;
-		}
 
 		cleanupRDB();
 
@@ -252,9 +228,10 @@ public class SQLWriter {
 
 		// iterate through attribute definitions
 		for (int i = 0; i < attributes.size(); i++) {
-			RdbAttribute a = (RdbAttribute) attributes.get(i);
-			if (a.isAssociated())
+			RdbAttribute a = (RdbAttribute) attributes.get(i);		
+			if (a.isAssociated()){
 				s_table.append(defineAttribute(a));
+			}
 			_comments.append(createComment(a));
 		}
 
