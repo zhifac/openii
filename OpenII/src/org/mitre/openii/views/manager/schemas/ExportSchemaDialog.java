@@ -26,7 +26,7 @@ public class ExportSchemaDialog
 		FileDialog dialog = new FileDialog(shell, SWT.SAVE);
 		dialog.setText("Export Schema");
 		dialog.setFileName(schema.getName());
-		dialog.setFilterPath("C:/");
+		dialog.setFilterPath(OpenIIManager.getActiveDir());
 		
 		// Get the list of exporters available for use
 		PorterManager manager = new PorterManager(RepositoryManager.getClient());
@@ -48,7 +48,10 @@ public class ExportSchemaDialog
         if(filename != null)
         {        	
 			try {
-	        	// Generate the export text
+				// Set the active directory
+				OpenIIManager.setActiveDir(dialog.getFilterPath());
+				
+				// Generate the export text
 	        	SchemaExporter exporter = exporters.get(dialog.getFilterIndex());
 	        	Graph graph = OpenIIManager.getGraph(schema.getId());
 	        	StringBuffer buffer = exporter.exportSchema(schema.getId(), graph.getElements(null));

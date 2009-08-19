@@ -23,7 +23,7 @@ public class ExportMappingDialog
 		FileDialog dialog = new FileDialog(shell, SWT.SAVE);
 		dialog.setText("Export Mapping");
 		dialog.setFileName(mapping.getName());
-		dialog.setFilterPath("C:/");
+		dialog.setFilterPath(OpenIIManager.getActiveDir());
 		
 		// Get the list of exporters available for use
 		PorterManager manager = new PorterManager(RepositoryManager.getClient());
@@ -45,7 +45,8 @@ public class ExportMappingDialog
         if(filename != null)
         {        	
 			try {
-	        	MappingExporter exporter = exporters.get(dialog.getFilterIndex());
+				OpenIIManager.setActiveDir(dialog.getFilterPath());
+				MappingExporter exporter = exporters.get(dialog.getFilterIndex());
 	        	exporter.exportMapping(mapping, OpenIIManager.getMappingCells(mapping.getId()), new File(filename));
 			}
 			catch(Exception e)
