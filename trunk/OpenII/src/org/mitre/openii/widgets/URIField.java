@@ -18,6 +18,7 @@ import org.eclipse.swt.widgets.FileDialog;
 
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
+import org.mitre.openii.model.OpenIIManager;
 
 /** Constructs a URI composite */
 public class URIField implements ModifyListener, SelectionListener
@@ -134,18 +135,21 @@ public class URIField implements ModifyListener, SelectionListener
 		{
 			FileDialog dialog = new FileDialog(uriPane.getShell(), SWT.OPEN);
 			dialog.setText(dialogTitle);
-			dialog.setFilterPath("C:/");
+			dialog.setFilterPath(OpenIIManager.getActiveDir());
 			dialog.setFilterNames(new String[] {dialogFilterName});
 			dialog.setFilterExtensions(dialogFilterExtensions.toArray(new String[0]));
 		    filename = dialog.open();
+			OpenIIManager.setActiveDir(dialog.getFilterPath());
 		}
 		   
 		// Retrieves directory from directory dialog
 		if(mode.equals(DIRECTORY))
 		{
 			DirectoryDialog dialog = new DirectoryDialog(uriPane.getShell());
+			dialog.setFilterPath(OpenIIManager.getActiveDir());
 			dialog.setText(dialogTitle);
 			filename = dialog.open();
+			OpenIIManager.setActiveDir(dialog.getFilterPath());
 		}
 		
 		// Sets the file text field

@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 
+import org.eclipse.core.runtime.Preferences;
+import org.mitre.openii.application.OpenIIActivator;
 import org.mitre.schemastore.model.Group;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
@@ -52,6 +54,20 @@ public class OpenIIManager
 	/** Handles the adding and removal of listeners */
 	static public void addListener(OpenIIListener listener) { listeners.add(listener); }
 	static public void removeListener(OpenIIListener listener) { listeners.remove(listener); }
+	
+	//------------ OpenII Settings --------------------
+
+	/** Returns the active directory */
+	public static String getActiveDir()
+		{ return OpenIIActivator.getDefault().getPluginPreferences().getString("ActiveDirectory"); }
+	
+	/** Sets the active directory */
+	public static void setActiveDir(String activeDir)
+	{
+		Preferences preferences = OpenIIActivator.getDefault().getPluginPreferences();
+		preferences.setValue("ActiveDirectory",activeDir);
+		OpenIIActivator.getDefault().savePluginPreferences();
+	}
 	
 	//------------ Schema Functionality -------------
 	
