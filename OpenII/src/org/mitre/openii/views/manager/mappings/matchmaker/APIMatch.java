@@ -86,7 +86,8 @@ public class APIMatch {
 
 		// create mappingCells from mappingScores
 		for (MatchScore score : matchScores.getScores()) {
-			mappingCells.add(new MappingCell(null, apiMapping.getId(), score.getElement1(), score.getElement2(), score.getScore(), "MatchMaker", new Date(System.currentTimeMillis()), null, null, false));
+			mappingCells.add(MappingCell.createProposedMappingCell(null, APIMappingID, score.getElement1(), score.getElement2(), score.getScore(), "MatchMaker Auto Gen", new Date(System.currentTimeMillis()), ""));
+//			mappingCells.add(new MappingCell(null, apiMapping.getId(), score.getElement1(), score.getElement2(), score.getScore(), "MatchMaker", new Date(System.currentTimeMillis()), null, null, false));
 		}
 
 		// save the mapping and generate an ID
