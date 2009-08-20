@@ -55,9 +55,6 @@ public class InstanceDatabaseDerbySQL extends InstanceDatabaseSQL
 			if(result == 0)
 				System.out.println("Dropped Table " + tableName);
 			stmt.close();
-			
-			// Commit all changes
-			//connection.commit();
 		} 
 		catch(SQLException e) 
 		{ 
@@ -73,9 +70,6 @@ public class InstanceDatabaseDerbySQL extends InstanceDatabaseSQL
 	//----------------------------------------------------------------------------------------
 	protected void createMaxIdTable(String entityTableName) throws SQLException
 	{
-		// Drop the table if it exists
-		//dropTable("max_val_" + entityTableName.substring(1));
-		
 		StringBuffer sb = new StringBuffer("CREATE TABLE max_val_" + entityTableName);
 		sb.append("(");
 		sb.append("id_auto INTEGER GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1),");
@@ -92,9 +86,6 @@ public class InstanceDatabaseDerbySQL extends InstanceDatabaseSQL
 			if(result == 0)
 				System.out.println("Created Table max_val_" + entityTableName);
 			stmt.close();
-			
-			// Commit all changes
-			//connection.commit();
 		} 
 		catch(SQLException e) 
 		{ 
@@ -127,9 +118,6 @@ public class InstanceDatabaseDerbySQL extends InstanceDatabaseSQL
 				stmt.close();
 				
 				insertMaxIdData(entityTableName, i);
-				
-				// Commit all changes
-				//connection.commit();
 			} 
 			catch(SQLException e) 
 			{ 
@@ -159,9 +147,6 @@ public class InstanceDatabaseDerbySQL extends InstanceDatabaseSQL
 			if(result != 0)
 				System.out.println("Inserted id value " + value + " into max_val_" + entityTableName);
 			stmt.close();
-			
-			// Commit all changes
-			//connection.commit();
 		} 
 		catch(SQLException e) 
 		{ 
@@ -197,9 +182,6 @@ public class InstanceDatabaseDerbySQL extends InstanceDatabaseSQL
 				currentAbsoluteMaxId = rs.getInt(1);
 			rs.close();
 			stmt.close();
-			
-			// Commit all changes
-			//connection.commit();
 		} 
 		catch(SQLException e) 
 		{ 
@@ -222,8 +204,8 @@ public class InstanceDatabaseDerbySQL extends InstanceDatabaseSQL
 	public void insertBooleanAttributeData(String attributeTableName, Integer rowNumber, String data) throws SQLException
 	{
 		if(data.equalsIgnoreCase("true") || data.equalsIgnoreCase("t") || data.equalsIgnoreCase("yes") || data.equalsIgnoreCase("y") || data.equalsIgnoreCase("1"))
-			insertStringAttributeData(attributeTableName, rowNumber, "1");
+			insertStringAttributeData(attributeTableName, rowNumber, "T");
 		else if(data.equalsIgnoreCase("false") || data.equalsIgnoreCase("f") || data.equalsIgnoreCase("no") || data.equalsIgnoreCase("n") || data.equalsIgnoreCase("0"))
-			insertStringAttributeData(attributeTableName, rowNumber, "0");
+			insertStringAttributeData(attributeTableName, rowNumber, "F");
 	}
 }

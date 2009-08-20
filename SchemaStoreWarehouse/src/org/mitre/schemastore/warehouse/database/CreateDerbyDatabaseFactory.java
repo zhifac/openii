@@ -1,5 +1,6 @@
 package org.mitre.schemastore.warehouse.database;
 
+import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -19,6 +20,7 @@ public class CreateDerbyDatabaseFactory extends CreateDatabaseFactory
 	private String USER_NAME = null;
 	private String PASSWORD = null;
 	
+	private String FULL_PATH_TO_NEW_DB = null;
 	private Connection newDbConnection = null;
 	private boolean isNewDatabaseCreated = false;
 	
@@ -29,9 +31,19 @@ public class CreateDerbyDatabaseFactory extends CreateDatabaseFactory
 		super(newDatabaseInfo);
 		System.out.println(getClass().getName() + " constructor called");
 		
-		// Create the database connection string
-		PATH_TO_EXISTING_DB_FOLDER = newDatabaseInfo.getHost();
+		// Obtain path to existing database folder - this is where the new database will be created 
+		String FULL_PATH_TO_EXISTING_DB_FOLDER = newDatabaseInfo.getHost();
+		String[] parts = FULL_PATH_TO_EXISTING_DB_FOLDER.split(":", 2);
+		PATH_TO_EXISTING_DB_FOLDER = parts[1];
+
+		// Obtain the new database name as specified by the user
 		NEW_DB_NAME = newDatabaseInfo.getDatabaseName();
+		
+		// Obtain full path to new database folder - used to delete the folder
+		// if database needs to be deleted
+		FULL_PATH_TO_NEW_DB = FULL_PATH_TO_EXISTING_DB_FOLDER + NEW_DB_NAME;
+		
+		// Obtain connection string for jdbc access to the new database
 		DB_CONN_STRING = PROTOCOL + PATH_TO_EXISTING_DB_FOLDER + NEW_DB_NAME;
 		
 		for(InstanceRepository r : allRepositories)
@@ -120,14 +132,8 @@ public class CreateDerbyDatabaseFactory extends CreateDatabaseFactory
 	 * @throws SQLException */
 	public void releaseResources() throws SQLException
 	{
-		try
-		{
-			newDbConnection.commit();
-		}
-		catch(SQLException e)
-		{
-			printSQLException(e);
-		}
+		// Commit all changes
+		newDbConnection.commit();
 		
 		// Shut-down Derby database so that it can be accessed by another instance of database
 		try
@@ -161,12 +167,82 @@ public class CreateDerbyDatabaseFactory extends CreateDatabaseFactory
 	 */
 	public void rollback() throws SQLException 
 	{
+		// Undo all changes
 		newDbConnection.rollback();
 		
+		// Shut-down Derby database so that it can be accessed by another instance of database
+		// This is necessary to allow deletion of the database folder (in case where a new database was created).
+		try
+		{
+			DriverManager.getConnection(DB_CONN_STRING + ";shutdown=true", USER_NAME, PASSWORD);
+		}
+		catch(SQLException se)
+		{
+			if((se.getErrorCode() == 45000) && ("08006".equals(se.getSQLState())))
+			{
+				// We got the expected exception
+				System.out.println("Single database shutdown successfully, Derby engine still running");
+				
+				// set the flag to show that connection to new database is closed
+				isConnected = false;
+			}
+			else
+			{
+				// If the error code or SQLState is different, we have an unexpected exception
+				// i.e. shutdown failed
+				printSQLException(se);
+				throw se;
+			}
+		}
+		
+		// If new database is created, then it is deleted so that 
+		// a database with same name can be created in future 
 		if(isNewDatabaseCreated)
 		{
-			
+			File newDatabasePath = new File(FULL_PATH_TO_NEW_DB);
+			boolean success = deleteFile(newDatabasePath);
+			if(success)
+			{
+				System.out.println("New Database deleted");
+				isNewDatabaseCreated = false;
+			}
+			else
+				System.out.println("New Database could not be deleted");
 		}
 	}
+	
+	
+	/** Method for deleting any File recursively 
+	 *  @return success or failure
+	 */
+	private boolean deleteFile(File file) 
+    { 
+        if (!file.exists()) 
+        	return true;
+        
+        if (!file.isDirectory()) 
+        { 
+            return file.delete(); 
+        } 
+
+        return deleteDirectory(file); 
+    } 
+
+
+    /** Method for deleting a directory	 
+     *  @return success or failure
+	 */    
+	private boolean deleteDirectory(File directory) 
+    { 
+        File[] contents = directory.listFiles(); 
+        for (int i = 0; i < contents.length; i++) 
+        { 
+            File next = contents[i]; 
+            boolean result = deleteFile(next); 
+            if (!result) 
+            	return false;
+         } 
+        return directory.delete(); 
+    } 
 
 }

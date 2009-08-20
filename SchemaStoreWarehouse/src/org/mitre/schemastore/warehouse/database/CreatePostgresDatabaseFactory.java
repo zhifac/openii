@@ -21,6 +21,7 @@ public class CreatePostgresDatabaseFactory extends CreateDatabaseFactory
 	private String USER_NAME = null;
 	private String PASSWORD = null;
 	
+	private Connection defaultDbConnection = null;
 	private Connection newDbConnection = null;
 	private boolean isNewDatabaseCreated = false;
 	
@@ -56,7 +57,7 @@ public class CreatePostgresDatabaseFactory extends CreateDatabaseFactory
 	 * @throws NoDataFoundException */
 	protected Connection createConnectionToNewDatabase() throws NoDataFoundException 
 	{
-		Connection defaultDbConnection = null;
+		defaultDbConnection = null;
 				
 		/* Load (and therefore register) the Driver with java.sql.DriverManager */
 		try
@@ -101,6 +102,7 @@ public class CreatePostgresDatabaseFactory extends CreateDatabaseFactory
 			{
 				// Database already exists
 				System.out.println("Database " + NEW_DB_NAME + " already exists");
+				isNewDatabaseCreated = false;
 			}
 			else
 			{
@@ -145,40 +147,26 @@ public class CreatePostgresDatabaseFactory extends CreateDatabaseFactory
 		return instanceDb;
 	}
 	
-	/** Release resources 
+	/** Commits all changes and Releases resources 
 	 * @throws SQLException */
 	public void releaseResources() throws SQLException
 	{
-		try
+		// If the method is called more than once, a no-operation occurs 
+		if(!isConnected)
+			return;
+		else
 		{
-			newDbConnection.commit();
-		}
-		catch(SQLException e)
-		{
-			printSQLException(e);
-		}
-		
-		try
-		{
-			// If the method is called more than once, a no-operation occurs 
-			if(!isConnected)
-				return;
-			else
+			if(newDbConnection != null)
 			{
-				if(newDbConnection != null)
-				{
-					newDbConnection.close();
-					
-					// set the flag to show that connection to new database is closed
-					isConnected = false;
-				}
+				// Commit all changes
+				newDbConnection.commit();
+				
+				// Now, close the connection
+				newDbConnection.close();
+				
+				// Set the flag to show that connection to new database is closed
+				isConnected = false;
 			}
-		} 
-		catch (SQLException e) 
-		{
-			// Database connection could not be closed
-			printSQLException(e);
-			throw e;
 		}
 	}
 	
@@ -189,11 +177,46 @@ public class CreatePostgresDatabaseFactory extends CreateDatabaseFactory
 	 */
 	public void rollback() throws SQLException 
 	{
-		newDbConnection.rollback();
 		
+		// If the method is called more than once, a no-operation occurs 
+		if(!isConnected)
+			return;
+		else
+		{
+			if(newDbConnection != null)
+			{
+				// Undo all changes
+				newDbConnection.rollback();
+				
+				// Now, close the connection
+				newDbConnection.close();
+				
+				// Set the flag to show that connection to new database is closed
+				isConnected = false;
+			}
+		}
+		
+		// If new database is created, then it is dropped so that 
+		// a database with same name can be created in future 
 		if(isNewDatabaseCreated)
 		{
+			//Connect to default database "postgres" as default user "postgres" who has the right to drop databases
+			DB_CONN_STRING = PROTOCOL + "//" + HOSTNAME + ":" + PORT + "/" + DEFAULT_DB_NAME;
+			defaultDbConnection = DriverManager.getConnection(DB_CONN_STRING, USER_NAME, PASSWORD);
+			System.out.println("***Connection has been established to default database as the super user***");
 			
+			// Drop the new database whose owner is "postgres"
+			System.out.println("Dropping database " + NEW_DB_NAME);
+			String query = "DROP DATABASE " + NEW_DB_NAME;
+			Statement stmt = defaultDbConnection.createStatement();
+			int result = stmt.executeUpdate(query);
+			if(result == 0)
+			{
+				System.out.println("Dropped Database " + NEW_DB_NAME);
+				isNewDatabaseCreated = false;
+			}
+			stmt.close();
+			defaultDbConnection.close();
 		}
 	}
 }
