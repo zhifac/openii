@@ -186,7 +186,10 @@ public class CreateInstanceDatabaseDialog extends TitleAreaDialog implements Mod
 			try
 			{	g.createInstanceDatabaseTables();	}
 			catch(NoDataFoundException e)
-			{	System.out.println(e.getMessage());	}
+			{	System.out.println("----Application Terminated----");
+				System.out.println(e.getMessage());	
+				throw e;
+			}
 			
 			//SchemaStoreClient client = new SchemaStoreClient("C:\\workspace\\SchemaStore\\SchemaStore.jar");
 			System.out.println("SchemaElementCount: " + schemastoreClient.getSchemaElementCount(schema.getId()));
