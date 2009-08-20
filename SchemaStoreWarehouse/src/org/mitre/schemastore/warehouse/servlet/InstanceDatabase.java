@@ -100,20 +100,13 @@ public class InstanceDatabase
 		{
 			instanceDbSql.createEntityTable(entityTableName);
 		} 
-		catch (SQLException e1) 
+		catch (SQLException e) 
 		{
-			// Roll back all changes to database
-			try 
-			{
-				createDbFactory.rollback();
-			} 
-			catch (SQLException e2) 
-			{
-				// Need to manually roll back all changes
-				e2.printStackTrace(System.err);
-				throw new NoDataFoundException("Instance database got corrupted - manually rollback all changes " +
-										"or try again with a new database name");
-			}
+			// Roll back all changes to instance database
+			rollback();
+
+			// Inform the client
+			throw new NoDataFoundException("Table for Entity with id " + entityTableName.substring(1) + " could not be created.");
 		}
 	}
 	
@@ -128,20 +121,13 @@ public class InstanceDatabase
 			currentAbsoluteMaxId = instanceDbSql.getCurrentAbsoluteMaxId(entityTableName);
 			instanceDbSql.insertEntityData(entityTableName, numberOfRowsOfData, new Integer(currentAbsoluteMaxId));
 		} 
-		catch (SQLException e1) 
+		catch (SQLException e) 
 		{
-			// Roll back all changes to database
-			try 
-			{
-				createDbFactory.rollback();
-			} 
-			catch (SQLException e2) 
-			{
-				// Need to manually roll back all changes
-				e2.printStackTrace(System.err);
-				throw new NoDataFoundException("Instance database got corrupted - manually rollback all changes " +
-										"or try again with a new database name");
-			}
+			// Roll back all changes to instance database
+			rollback();
+			
+			// Inform the client
+			throw new NoDataFoundException("Values could not be inserted in Entity " + entityTableName.substring(1) + " table");
 		}
 		
 	}
@@ -156,20 +142,13 @@ public class InstanceDatabase
 		{
 			instanceDbSql.createAttributeTable(attributeTableName, type, entityTableName);
 		} 
-		catch (SQLException e1) 
+		catch (SQLException e) 
 		{
-			// Roll back all changes to database
-			try 
-			{
-				createDbFactory.rollback();
-			} 
-			catch (SQLException e2) 
-			{
-				// Need to manually roll back all changes
-				e2.printStackTrace(System.err);
-				throw new NoDataFoundException("Instance database got corrupted - manually rollback all changes " +
-										"or try again with a new database name");
-			}
+			// Roll back all changes to instance database
+			rollback();
+			
+			// Inform the client
+			throw new NoDataFoundException("Table for Attribute with id " + attributeTableName.substring(1) + " could not be created.");
 		}
 	}
 	
@@ -189,20 +168,13 @@ public class InstanceDatabase
 			{
 				instanceDbSql.insertStringAttributeData(attributeTableName, currentAbsoluteMaxId+n, data);
 			} 
-			catch (SQLException e1) 
+			catch (SQLException e) 
 			{
-				// Roll back all changes to database
-				try 
-				{
-					createDbFactory.rollback();
-				} 
-				catch (SQLException e2) 
-				{
-					// Need to manually roll back all changes
-					e2.printStackTrace(System.err);
-					throw new NoDataFoundException("Instance database got corrupted - manually rollback all changes " +
-											"or try again with a new database name");
-				}
+				// Roll back all changes to instance database
+				rollback();
+				
+				// Inform the client
+				throw new NoDataFoundException("Value could not be inserted into table for Attribute " + attributeTableName.substring(1));
 			}
 	    }   
 	}
@@ -219,20 +191,13 @@ public class InstanceDatabase
 			{
 				instanceDbSql.insertNumericAttributeData(attributeTableName, currentAbsoluteMaxId+n, data);
 			} 
-			catch (SQLException e1) 
+			catch (SQLException e) 
 			{
-				// Roll back all changes to database
-				try 
-				{
-					createDbFactory.rollback();
-				} 
-				catch (SQLException e2) 
-				{
-					// Need to manually roll back all changes
-					e2.printStackTrace(System.err);
-					throw new NoDataFoundException("Instance database got corrupted - manually rollback all changes " +
-											"or try again with a new database name");
-				}
+				// Roll back all changes to instance database
+				rollback();
+				
+				// Inform the client
+				throw new NoDataFoundException("Value could not be inserted into table for Attribute " + attributeTableName.substring(1));
 			}
 	    }   
 	}
@@ -251,26 +216,19 @@ public class InstanceDatabase
 			} 
 			catch (SQLException e) 
 			{
-				// Roll back all changes to database
-				try 
-				{
-					createDbFactory.rollback();
-				} 
-				catch (SQLException e2) 
-				{
-					// Need to manually roll back all changes
-					e2.printStackTrace(System.err);
-					throw new NoDataFoundException("Instance database got corrupted - manually rollback all changes " +
-											"or try again with a new database name");
-				}
+				// Roll back all changes to instance database
+				rollback();
+				
+				// Inform the client
+				throw new NoDataFoundException("Value could not be inserted into table for Attribute " + attributeTableName.substring(1));
 			}
 	    }   
 	}
 	
 	
-	//-----------------------------------------------
-	// Releases resources related to the new database 
-	//-----------------------------------------------
+	//-----------------------------------------------------------------------
+	// Commits all changes and Releases resources related to the new database 
+	//-----------------------------------------------------------------------
 	public void releaseResources()
 	{
 		try 
@@ -279,8 +237,34 @@ public class InstanceDatabase
 		} 
 		catch (SQLException e) 
 		{
+			// If there is a problem releasing resources, it is logged 
+			// But, the exception is not propagated to the client
 			e.printStackTrace(System.err);
 		}
 	}
+	
+	
+	//--------------------------------------------------
+	// Undo all changes made in the current transaction 
+	//--------------------------------------------------
+	public void rollback() throws NoDataFoundException
+	{
+		try 
+		{
+			createDbFactory.rollback();
+		} 
+		catch (SQLException e) 
+		{
+			// Roll back failed - Need to manually roll back all changes
+			// Log the error
+			e.printStackTrace(System.err);
+			
+			// Inform the client
+			throw new NoDataFoundException("Instance database got corrupted - manually rollback all changes " +
+									"or try again with a new database name");
+		}
+	}
+	
+	
 
 }
