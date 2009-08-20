@@ -78,4 +78,6 @@ public interface InstanceDatabaseInterface
 	public void populateRelationshipTable(Entity entity) throws NoDataFoundException, RemoteException;
 	
 	public void releaseResources() throws RemoteException;
+	
+	public void rollback() throws NoDataFoundException;
 }
