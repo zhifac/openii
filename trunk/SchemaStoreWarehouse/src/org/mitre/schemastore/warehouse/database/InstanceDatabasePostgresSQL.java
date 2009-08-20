@@ -55,9 +55,6 @@ public class InstanceDatabasePostgresSQL extends InstanceDatabaseSQL
 			if(result == 0)
 				System.out.println("Dropped Table " + tableName);
 			stmt.close();
-			
-			// Commit all changes
-			//connection.commit();
 		} 
 		catch(SQLException e) 
 		{ 
@@ -72,9 +69,6 @@ public class InstanceDatabasePostgresSQL extends InstanceDatabaseSQL
 	//----------------------------------------------------------------------------------------
 	protected void createMaxIdTable(String entityTableName) throws SQLException
 	{
-		// Drop the table if it exists
-		//dropTable("max_val_" + entityTableName.substring(1));
-		
 		String query = "CREATE SEQUENCE max_val_seq_" + entityTableName.toLowerCase() + " MINVALUE 0";
 		try 
 		{
@@ -84,9 +78,6 @@ public class InstanceDatabasePostgresSQL extends InstanceDatabaseSQL
 			if(result == 0)
 				System.out.println("Created Table max_val_seq_" + entityTableName);
 			stmt.close();
-			
-			// Commit all changes
-			//connection.commit();
 		} 
 		catch(SQLException e) 
 		{ 
@@ -116,9 +107,6 @@ public class InstanceDatabasePostgresSQL extends InstanceDatabaseSQL
 				if(result != 0)
 					System.out.println("Inserted id value " + i + " into " + entityTableName);
 				stmt.close();
-				
-				// Commit all changes
-				//connection.commit();
 			} 
 			catch(SQLException e) 
 			{ 
@@ -152,9 +140,6 @@ public class InstanceDatabasePostgresSQL extends InstanceDatabaseSQL
 			}
 			rs.close();
 			stmt.close();
-			
-			// Commit all changes
-			//connection.commit();
 		} 
 		catch(SQLException e) 
 		{ 
@@ -184,9 +169,6 @@ public class InstanceDatabasePostgresSQL extends InstanceDatabaseSQL
 				currentAbsoluteMaxId = rs.getInt(1);
 			rs.close();
 			stmt.close();
-			
-			// Commit all changes
-			//connection.commit();
 		} 
 		catch(SQLException e) 
 		{ 

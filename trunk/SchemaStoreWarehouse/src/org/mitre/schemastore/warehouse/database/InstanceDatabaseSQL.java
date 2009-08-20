@@ -58,9 +58,6 @@ public abstract class InstanceDatabaseSQL
 	 * @throws SQLException */
 	public void createEntityTable(String entityTableName) throws SQLException
 	{
-		// Drop the table if it exists
-		//dropTable(entityTableName);
-		
 		StringBuffer sb = new StringBuffer("CREATE TABLE " + entityTableName);
 		sb.append("(");
 		sb.append("id integer NOT NULL,");
@@ -77,9 +74,6 @@ public abstract class InstanceDatabaseSQL
 			if(result == 0)
 				System.out.println("Created Table " + entityTableName);
 			stmt.close();
-			
-			// Commit all changes
-			//connection.commit();
 		} 
 		catch(SQLException e) 
 		{ 
@@ -114,9 +108,6 @@ public abstract class InstanceDatabaseSQL
 	//---------------------------------------
 	public void createAttributeTable(String attributeTableName, String type, String entityTableName) throws SQLException
 	{
-		// Drop the table if it exists
-		//dropTable(attributeTableName);
-		
 		StringBuffer sb = new StringBuffer("CREATE TABLE " + attributeTableName);
 		sb.append("(");
 		sb.append("id integer NOT NULL, ");
@@ -136,9 +127,6 @@ public abstract class InstanceDatabaseSQL
 			if(result == 0)
 				System.out.println("Created Table " + attributeTableName);
 			stmt.close();
-			
-			// Commit all changes
-			//connection.commit();
 		} 
 		catch(SQLException e) 
 		{ 
@@ -172,9 +160,6 @@ public abstract class InstanceDatabaseSQL
 			if(result != 0)
 				System.out.println("Inserted value " + data + " into table " + attributeTableName);
 			stmt.close();
-				
-			// Commit all changes
-			//connection.commit();
 		} 
 		catch(SQLException e) 
 		{ 
@@ -204,9 +189,6 @@ public abstract class InstanceDatabaseSQL
 			if(result != 0)
 				System.out.println("Inserted value " + data + " into table " + attributeTableName);
 			stmt.close();
-				
-			// Commit all changes
-			//connection.commit();
 		} 
 		catch(SQLException e) 
 		{ 
