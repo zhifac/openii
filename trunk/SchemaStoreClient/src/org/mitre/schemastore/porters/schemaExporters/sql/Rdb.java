@@ -91,7 +91,7 @@ public class Rdb {
 		return vk;
 	}
 
-	private ForeignKey addForeignKey(ForeignKey fk) {
+	public ForeignKey addForeignKey(ForeignKey fk) {
 		if (!_foreignKeys.contains(fk)) _foreignKeys.add(fk);
 		return fk;
 	}
