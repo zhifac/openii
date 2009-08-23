@@ -1,11 +1,14 @@
 package org.mitre.schemastore.porters.schemaExporters;
 
 import java.io.IOException;
+import java.net.URI;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import org.mitre.schemastore.client.Repository;
+import org.mitre.schemastore.client.SchemaStoreClient;
 import org.mitre.schemastore.model.Attribute;
 import org.mitre.schemastore.model.Containment;
 import org.mitre.schemastore.model.Domain;
@@ -14,6 +17,9 @@ import org.mitre.schemastore.model.Entity;
 import org.mitre.schemastore.model.Relationship;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.Subtype;
+import org.mitre.schemastore.model.graph.Graph;
+import org.mitre.schemastore.model.graph.HierarchicalGraph;
+import org.mitre.schemastore.model.graph.model.GraphModel;
 import org.mitre.schemastore.porters.schemaExporters.sql.DomainTable;
 import org.mitre.schemastore.porters.schemaExporters.sql.ForeignKey;
 import org.mitre.schemastore.porters.schemaExporters.sql.NoRelationFoundException;
@@ -23,6 +29,8 @@ import org.mitre.schemastore.porters.schemaExporters.sql.RdbValueType;
 import org.mitre.schemastore.porters.schemaExporters.sql.SQLWriter;
 import org.mitre.schemastore.porters.schemaExporters.sql.Table;
 import org.mitre.schemastore.porters.schemaExporters.sql.View;
+import org.mitre.schemastore.porters.schemaImporters.SchemaImporter;
+import org.mitre.schemastore.porters.schemaImporters.XSDImporter;
 
 /**
  * Caveats: 1. all string fields are mapped to TEXT in the database
@@ -33,6 +41,18 @@ import org.mitre.schemastore.porters.schemaExporters.sql.View;
 
 public class SQLExporter extends SchemaExporter {
 
+	static public void main(String args[])
+	{
+		try {
+			SQLExporter sqlEx = new SQLExporter();
+			Repository serverLocation = new Repository(Repository.POSTGRES,new URI("ygg.mitre.org"),"schemastore","postgres","postgres"); 
+			SchemaStoreClient client = new SchemaStoreClient(serverLocation);
+			StringBuffer out = sqlEx.exportSchema(443024, client.getGraph(443024).getElements(null));
+			System.err.println(out);
+			
+		} catch(Exception e) { e.printStackTrace(); }
+	}
+	
 	private HashMap<Integer, Entity> _entities = new HashMap<Integer, Entity>();
 	private HashMap<Integer, Attribute> _attributes = new HashMap<Integer, Attribute>();
 	private HashMap<Integer, Relationship> _relationships = new HashMap<Integer, Relationship>();
@@ -170,18 +190,28 @@ public class SQLExporter extends SchemaExporter {
 			} else if (c.getMax() == -1) { // 1-many
 				String bridgeName = c.getName() + "." + parent.getName();
 				Table pTable = _rdb.getRelation(parent.getName());
-				Table bridge = _rdb.createTable(bridgeName, false);
-				ForeignKey pId = new ForeignKey(_rdb, bridge, "pID", pTable,
-						pTable.getPrimaryKey().getName(), RdbValueType.INTEGER);
+				Table bridge = _rdb.createTable(bridgeName, true);
+				//ForeignKey pId = new ForeignKey(_rdb, bridge, "pID", pTable,
+				//		pTable.getPrimaryKey().getName(), RdbValueType.INTEGER);
+				
+				ForeignKey fk = _rdb.addForeignKey(bridge, bridgeName, pTable, RdbValueType.INTEGER);
+				fk.setIsRequired(false);
+				fk.setComment(c.getDescription());
 				RdbAttribute att = _rdb.addAttribute(bridge, attributeName, dbType, false);
 				att.setComment(c.getDescription());
 
-				bridge.addAttribute(pId);
+			//	bridge.addAttribute(pId);
 				bridge.addAttribute(att);
-				bridge.setPrimaryKey(pId);
-				bridge.setPrimaryKey(att);
-				pId.setIsRequired(true);
+				//bridge.setPrimaryKey(pId);
+				//bridge.setPrimaryKey(att);
+			//	pId.setIsRequired(true);
 				att.setIsRequired(true);
+				
+//				String fkName = c.getName() + "." + parentTable.getName();
+//				ForeignKey fk = _rdb.addForeignKey(childTable, fkName, parentTable, RdbValueType.INTEGER);
+//				fk.setIsRequired(false);
+//				fk.setComment(c.getDescription());
+				
 			}
 		} catch (NoRelationFoundException e) {
 			e.printStackTrace();
