@@ -16,9 +16,11 @@
 
 package org.mitre.schemastore.porters.schemaImporters;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -27,6 +29,8 @@ import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.mitre.schemastore.client.Repository;
+import org.mitre.schemastore.client.SchemaStoreClient;
 import org.mitre.schemastore.model.Attribute;
 import org.mitre.schemastore.model.Domain;
 import org.mitre.schemastore.model.Entity;
@@ -34,7 +38,7 @@ import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.porters.ImporterException;
 
 /**
- * 
+ *
  * SpreadsheetImporter is a poor man's importer. It imports the schema of a spreadsheet. This is
  * very simplistic - the following are the assumptions:
  * <ul>
@@ -43,9 +47,9 @@ import org.mitre.schemastore.porters.ImporterException;
  *     <li>The schema attribute names are in the first row</li>
  *     <li>No breaks in the data listing (i.e., no blank rows until after all the data is listed)</li>
  * </ul>
- * 
+ *
  * @author Jeffrey Hoyt
- * 
+ *
  */
 public class SpreadsheetImporter extends SchemaImporter {
 	protected HSSFWorkbook _excelWorkbook;
@@ -81,6 +85,8 @@ public class SpreadsheetImporter extends SchemaImporter {
 			return cell.getCellFormula();
 		} else if (cell.getCellType() == HSSFCell.CELL_TYPE_ERROR) {
 			return String.valueOf(cell.getErrorCellValue());
+		} else if (cell.getCellType() == 1024) {
+			return String.valueOf(cell.getDateCellValue());
 		} else {
 			return "";
 		}
@@ -88,11 +94,24 @@ public class SpreadsheetImporter extends SchemaImporter {
 
 	/**
 	 * Returns the int of the cell type. The int returned will correspond to the value of the field
-	 * types in HSSFCell
+	 * types in HSSFCell.  Since the underlying platform doesn't return dates, we use 1024 to attempt to
+	 * represent a date
 	 */
 	protected int getCellDataType(HSSFCell cell) {
 		if (cell == null) return HSSFCell.CELL_TYPE_BLANK;
-		else return cell.getCellType();
+	    try
+	    {
+	        java.util.Date isItDate= cell.getDateCellValue();
+            if( isItDate != null && !cell.getCellStyle().getDataFormatString().equalsIgnoreCase("General") )
+            {
+                return 1024;
+            }
+        }
+        catch (RuntimeException e)
+        {
+            //it's a String...moving on
+        }
+		return cell.getCellType();
 	}
 
 	protected String documentation = "";
@@ -116,7 +135,7 @@ public class SpreadsheetImporter extends SchemaImporter {
 			Entity tblEntity = new Entity(nextId(), sheetName, "", 0);
 			_entities.put(sheetName, tblEntity);
 
-//			String topLeftCell = getCellValStr(topRow.getCell(0));
+			//			String topLeftCell = getCellValStr(topRow.getCell(0));
 			cellTypes = new int[topRow.getLastCellNum()];
 			Arrays.fill(cellTypes, -1);
 
@@ -154,7 +173,9 @@ public class SpreadsheetImporter extends SchemaImporter {
 				if (cellTypes[j] == HSSFCell.CELL_TYPE_STRING) {
 					continue;
 				}
+				//System.out.print(getCellValStr(row.getCell(j)) + " is a ");
 				currentCellType = getCellDataType(row.getCell(j));
+				//System.out.println( translateType(currentCellType ) + " and the date format is " + row.getCell(j).getCellStyle().getDataFormatString() );
 				if (cellTypes[j] == -1
 						|| (cellTypes[j] == HSSFCell.CELL_TYPE_BLANK && cellTypes[j] != currentCellType)) {
 					cellTypes[j] = currentCellType;
@@ -182,6 +203,8 @@ public class SpreadsheetImporter extends SchemaImporter {
 		case HSSFCell.CELL_TYPE_FORMULA:
 			throw new RuntimeException(
 					"Formulas are not valid return types.  The spreadsheet was processed incorrectly");
+        case 1024:
+			return DATETIME;
 		}
 		return STRING;
 	}
@@ -273,5 +296,14 @@ public class SpreadsheetImporter extends SchemaImporter {
 		domain = new Domain(SchemaImporter.nextId(), BOOLEAN, "The Boolean domain", 0);
 		schemaElements.add(domain);
 		domainList.put(BOOLEAN, domain);
+	}
+
+	public static void main(String[] args) throws IOException, URISyntaxException, ImporterException {
+		File excel = new File(args[0]);
+		SpreadsheetImporter tester = new SpreadsheetImporter();
+		Repository repository = new Repository(Repository.DERBY,new URI("."),"schemastore","postgres","postgres");
+		SchemaStoreClient client = new SchemaStoreClient(repository);
+		tester.setClient(client);
+		tester.importSchema(excel.getName(), "", "", excel.toURI());
 	}
 }
