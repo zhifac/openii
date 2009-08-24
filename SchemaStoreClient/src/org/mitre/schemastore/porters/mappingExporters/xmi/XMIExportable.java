@@ -1,4 +1,4 @@
-package org.mitre.dcgsa.d3;
+package org.mitre.schemastore.porters.mappingExporters.xmi;
 
 import java.util.Random;
 import java.util.UUID;

@@ -5,8 +5,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
-import org.mitre.dcgsa.d3.XMIModel;
-import org.mitre.dcgsa.d3.XMIWriter;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.MappingSchema;
@@ -14,8 +12,8 @@ import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.graph.HierarchicalGraph;
 import org.mitre.schemastore.model.graph.model.GraphModel;
 import org.mitre.schemastore.porters.mappingExporters.MappingExporter;
+import org.mitre.schemastore.porters.mappingExporters.xmi.*;
 
-import org.mitre.dcgsa.d3.*;
 
 /**
  * MappingExporter for OpenII.  Takes a mapping and exports it in XMI 2.1 suitable for importing
