@@ -11,11 +11,11 @@ import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.graph.FilteredGraph;
 
 /** Bag Matcher Class */
-public class BagMatcher implements MatchVoter
+public class BagMatcher extends MatchVoter
 {
 	/** Constant defining the score ceiling */
 	public final static double SCORE_CEILING=10;
-	
+
 	/** Returns the name of the match voter */
 	public String getName()
 		{ return "Documentation Similarity"; }
@@ -35,10 +35,15 @@ public class BagMatcher implements MatchVoter
 		for (SchemaElement targetElement : targetElements)
 			wordBags.put(targetElement.getId(), new WordBag(targetElement.getName(), targetElement.getDescription()));
 
+		// Sets the completed and total comparisons
+		completedComparisons = 0;
+		totalComparisons = sourceElements.size() * targetElements.size();
+		
 		// Generate the scores
 		VoterScores scores = new VoterScores(SCORE_CEILING);
 		for(SchemaElement sourceElement : sourceElements)
 			for(SchemaElement targetElement : targetElements)
+			{
 				if(scores.getScore(sourceElement.getId(), targetElement.getId())==null)
 				{
 					WordBag sourceBag = wordBags.get(sourceElement.getId());
@@ -47,11 +52,13 @@ public class BagMatcher implements MatchVoter
 					if(score != null)
 						scores.setScore(sourceElement.getId(), targetElement.getId(), score);
 				}
+				completedComparisons++;
+			}
 		return scores;
 	}
 
 	/** Compute the voter score */
-	public static VoterScore computeScore(WordBag sourceBag, WordBag targetBag)
+	protected static VoterScore computeScore(WordBag sourceBag, WordBag targetBag)
 	{
 		double directPositiveEvidence = computeIntersectionScore(sourceBag, targetBag);
 		double directTotalEvidence = Math.min(sourceBag.getBagWeight(), targetBag.getBagWeight());
@@ -76,7 +83,6 @@ public class BagMatcher implements MatchVoter
 					minWordCount = targetWordCount;
 			
 				// Calculate the score
-				//score += minWordCount * (2 / (sourceWordCount + targetWordCount));
 				score += minWordCount*2;
 			}
 		}

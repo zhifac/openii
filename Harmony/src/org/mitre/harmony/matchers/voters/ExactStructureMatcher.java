@@ -11,7 +11,7 @@ import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.graph.FilteredGraph;
 
 /** Exact Structure Matcher Class */
-public class ExactStructureMatcher implements MatchVoter
+public class ExactStructureMatcher extends MatchVoter
 {
 	/** Returns the name of the match voter */
 	public String getName()
@@ -20,9 +20,15 @@ public class ExactStructureMatcher implements MatchVoter
 	/** Generates scores for the specified elements */
 	public VoterScores match(FilteredGraph sourceSchema, FilteredGraph targetSchema)
 	{
+		// Get the source elements
+		ArrayList<SchemaElement> sourceElements = sourceSchema.getFilteredElements();
+		
+		// Sets the current and total comparisons
+		completedComparisons = 0;
+		totalComparisons = sourceElements.size();
+		
 		// Go through all source elements
 		VoterScores scores = new VoterScores(100.0);
-		ArrayList<SchemaElement> sourceElements = sourceSchema.getFilteredElements();
 		for(SchemaElement sourceElement : sourceElements)
 		{
 			// Retrieve all matching target elements
@@ -38,6 +44,9 @@ public class ExactStructureMatcher implements MatchVoter
 			// Set scores for the matching target elements
 			for(Integer targetID : targetIDs)
 				scores.setScore(sourceElement.getId(), targetID, new VoterScore(100.0,100.0));								
+
+			// Update the completed comparison count
+			completedComparisons++;
 		}
 		return scores;
 	}

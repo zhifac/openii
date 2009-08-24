@@ -36,6 +36,10 @@ public class ThesaurusMatcher extends BagMatcher
 		for(SchemaElement targetElement : targetElements)
 			wordBags.put(targetElement.getId(), new WordBag(targetElement.getName(), targetElement.getDescription()));
 
+		// Sets the completed and total comparisons
+		completedComparisons = 0;
+		totalComparisons = sourceElements.size() * targetElements.size();
+
 		// Get the thesaurus and acronym dictionaries
 		URL thesaurusFile = getClass().getResource("dictionary.txt");
 		HashMap<String, ArrayList<String>> thesaurus = getDictionary(thesaurusFile);
@@ -51,6 +55,7 @@ public class ThesaurusMatcher extends BagMatcher
 		VoterScores voterScores = new VoterScores(SCORE_CEILING);
 		for(SchemaElement sourceElement : sourceElements)
 			for(SchemaElement targetElement : targetElements)
+			{
 				if(voterScores.getScore(sourceElement.getId(), targetElement.getId())==null)
 				{
 					WordBag sourceBag = wordBags.get(sourceElement.getId());
@@ -59,6 +64,8 @@ public class ThesaurusMatcher extends BagMatcher
 					if(score != null)
 						voterScores.setScore(sourceElement.getId(), targetElement.getId(), score);
 				}
+				completedComparisons++;
+			}
 		return voterScores;
 	}
 	

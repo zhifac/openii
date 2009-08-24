@@ -10,7 +10,7 @@ import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.graph.FilteredGraph;
 
 /** Edit Distance Matcher Class */
-public class EditDistanceMatcher implements MatchVoter
+public class EditDistanceMatcher extends MatchVoter
 {
 	// Scoring penalties
 	public static final double PREFIX_PENALTY = -0.5;
@@ -24,7 +24,7 @@ public class EditDistanceMatcher implements MatchVoter
 	
 	// Scoring bonuses
 	public static final double MATCH_BONUS = 1;
-	
+
 	/** Returns the name of the match voter */
 	public String getName()
 		{ return "Name Similarity"; }
@@ -32,21 +32,31 @@ public class EditDistanceMatcher implements MatchVoter
 	/** Generates scores for the specified elements */
 	public VoterScores match(FilteredGraph sourceSchema, FilteredGraph targetSchema)
 	{
-		VoterScores scores = new VoterScores(SCORE_CEILING);
+		// Get the source and target elements
 		ArrayList<SchemaElement> sourceElements = sourceSchema.getFilteredElements();
 		ArrayList<SchemaElement> targetElements = targetSchema.getFilteredElements();
+
+		// Sets the completed and total comparisons
+		completedComparisons = 0;
+		totalComparisons = sourceElements.size() * targetElements.size();
+		
+		// Generate the scores
+		VoterScores scores = new VoterScores(SCORE_CEILING);		
 		for(SchemaElement sourceElement : sourceElements)
 			for(SchemaElement targetElement : targetElements)
+			{
 				if(scores.getScore(sourceElement.getId(), targetElement.getId())==null)
 				{
 					VoterScore score = matchElements(sourceElement, targetElement);
 					if(score != null) scores.setScore(sourceElement.getId(), targetElement.getId(), score);
 				}
+				completedComparisons++;
+			}
 		return scores;
 	}
 
 	/** Matches a single pair of elements */
-	public static VoterScore matchElements(SchemaElement sourceElement, SchemaElement targetElement)
+	private static VoterScore matchElements(SchemaElement sourceElement, SchemaElement targetElement)
 	{
 		// Get character representations of the element names
 		char[] source = sourceElement.getName().toCharArray();
@@ -73,7 +83,7 @@ public class EditDistanceMatcher implements MatchVoter
 	}
 
 	/** Initializes a distance matrix */
-	public static double[][] createDistanceMatrix(int sourceLength, int targetLength)
+	private static double[][] createDistanceMatrix(int sourceLength, int targetLength)
 	{
 		// Allocate space for the matrix.
 		double[][] matrix = new double[sourceLength+1][];
@@ -95,7 +105,7 @@ public class EditDistanceMatcher implements MatchVoter
 	 * bonus/penalty, b) The cell left + an insertion/suffix penalty, c) The
 	 * cell above + an insertion/suffix penalty.
 	 */
-	public static void populateDistanceMatrix(double[][] matrix, char[] source, char[] target)
+	private static void populateDistanceMatrix(double[][] matrix, char[] source, char[] target)
 	{
 		for (int i = 0; i < source.length; i++)
 		{

@@ -6,11 +6,18 @@ import org.mitre.harmony.matchers.VoterScores;
 import org.mitre.schemastore.model.graph.FilteredGraph;
 
 /** MatchVoter Interface - A match voter scores source-target linkages based on a specific algorithm */	
-public interface MatchVoter
+public abstract class MatchVoter
 {
+	// Stores the completed and total number of comparisons that need to be performed
+	protected int completedComparisons=0, totalComparisons=1;
+	
 	/** Return the name of the match voter */
-	public String getName();
+	abstract public String getName();
 	
 	/** Generates scores for the specified graphs */
-	public VoterScores match(FilteredGraph sourceSchema, FilteredGraph targetSchema);
+	abstract public VoterScores match(FilteredGraph sourceSchema, FilteredGraph targetSchema);
+	
+	/** Indicates the completion percentage of the matcher */
+	public double getPercentComplete()
+		{ return 1.0 * completedComparisons / totalComparisons; }
 }
