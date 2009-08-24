@@ -2,36 +2,30 @@
 // ALL RIGHTS RESERVED
 package org.mitre.harmony.view.dialogs.matcher;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
-
-import java.awt.*;
-
-
 
 import javax.swing.JCheckBox;
 import javax.swing.JDialog;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
+import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
 
 import org.mitre.harmony.matchers.mergers.TypedVoteMerger.TypeMappings;
 import org.mitre.harmony.model.HarmonyModel;
-import org.mitre.harmony.model.SchemaManager;
-import org.mitre.harmony.model.mapping.MappingManager;
 import org.mitre.harmony.view.dialogs.AbstractButtonPane;
-import org.mitre.schemastore.model.Attribute;
-import org.mitre.schemastore.model.Containment;
-import org.mitre.schemastore.model.Domain;
-import org.mitre.schemastore.model.DomainValue;
-import org.mitre.schemastore.model.Entity;
 import org.mitre.schemastore.model.MappingSchema;
-import org.mitre.schemastore.model.Relationship;
 import org.mitre.schemastore.model.SchemaElement;
-import org.mitre.schemastore.model.graph.HierarchicalGraph;
 
 /**
  * Class used for selecting which type(s) to match to which type(s)
@@ -40,13 +34,59 @@ import org.mitre.schemastore.model.graph.HierarchicalGraph;
  */
 class TypeDialog extends JDialog
 {		
-	private HarmonyModel harmonyModel;
+	// Stores the list of source and target types
+	private HashSet<Class> sourceTypes = new HashSet<Class>();
+	private HashSet<Class> targetTypes = new HashSet<Class>();
 	
 	// List of selected match voters
 	private TypeMappings typeMappings = new TypeMappings();
 	
 	// Set of checkboxes containing the possible type pairings
-	private ArrayList<TypeCheckBox> checkboxes = new ArrayList<TypeCheckBox>();
+	private JPanel checkboxes = new JPanel();
+	
+	/** Returns the text width */
+	private int getTextWidth(String text, Graphics g)
+		{ return (int)g.getFontMetrics().getStringBounds(text, g).getWidth(); }
+	
+	/** Display the checkbox labels */
+	private class CheckboxLabels extends JPanel
+	{
+		public void paint(Graphics g)
+		{
+			// Paints the background
+			g.setColor(new Color(0xd0,0xd0,0xd0));
+			g.fillPolygon(new int[]{5,5,getWidth()-10}, new int[]{10,getHeight()-5,getHeight()-5},3);
+			g.fillPolygon(new int[]{10,getWidth()-5,getWidth()-5}, new int[]{5,5,getHeight()-10},3);
+
+			// Paints the labels
+			g.setColor(Color.black);
+			g.drawString("Left",(getWidth()-getTextWidth("Left",g))/3,2*getHeight()/3+5);
+			g.drawString("Right",2*(getWidth()-getTextWidth("Left",g))/3,getHeight()/3+5);
+		}
+	}
+	
+	/** Displays the specified type label */
+	private class TypeLabel extends JPanel
+	{
+		String label;
+		boolean vertical;
+
+		/** Constructs the label class */
+		private TypeLabel(String label, boolean vertical)
+		{
+			this.label=label; this.vertical=vertical;
+			setPreferredSize(vertical ? new Dimension(20,90) : new Dimension(90,20));
+		}
+		
+		/** Draws the label */
+		public void paint(Graphics g)
+		{
+		    Graphics2D g2 = (Graphics2D)g;
+		    if(vertical) { g2.rotate(-Math.PI/2.0); g2.translate(-getHeight()+5, 0); }
+		    else g2.translate(getWidth()-getTextWidth(label, g)-5, 0);
+		    g2.drawString(label, 0, 15);
+		}
+	}
 	
 	/** Class for storing a type checkbox */
 	private class TypeCheckBox extends JCheckBox
@@ -56,13 +96,34 @@ class TypeDialog extends JDialog
 		private Class<SchemaElement> targetType;
 		
 		/** Initializes the type check box */
-		private TypeCheckBox(Class<SchemaElement> sourceType, Class<SchemaElement> targetType)
+		private TypeCheckBox(Class<SchemaElement> sourceType, Class<SchemaElement> targetType, boolean selected)
 		{
 			this.sourceType = sourceType;
 			this.targetType = targetType;
 			setText("");
-//			setBackground(Color.white);
 			setFocusable(false);
+			setSelected(selected);
+		}
+	}
+	
+	/** Private class for defining the checkbox pane */
+	private class CheckboxPane extends JPanel
+	{
+		/** Constructs the checkbox pane */
+		private CheckboxPane()
+		{
+			setBorder(new CompoundBorder(new EmptyBorder(10,10,10,10),new CompoundBorder(new LineBorder(Color.lightGray),new EmptyBorder(5,5,5,5))));
+			setLayout(new GridBagLayout());
+		}
+		
+		/** Adds a component to the checkbox pane */
+		private void add(JPanel pane, int xLoc, int yLoc)
+		{
+			GridBagConstraints c = new GridBagConstraints();
+			c.gridx = xLoc;
+			c.gridy = yLoc;
+			c.fill = GridBagConstraints.BOTH;
+			add(pane, c);
 		}
 	}
 	
@@ -77,13 +138,16 @@ class TypeDialog extends JDialog
 		protected void button1Action()
 		{
 			// Retrieves all selected match voters from the dialog
-			for(TypeCheckBox checkbox : checkboxes)
+			for(Component component : checkboxes.getComponents())
+			{
+				TypeCheckBox checkbox = (TypeCheckBox)component;
 				if(checkbox.isSelected())
 				{
 					ArrayList<Class<SchemaElement>> typeMapping = typeMappings.get(checkbox.sourceType);
 					if(typeMapping==null) typeMappings.put(checkbox.sourceType, typeMapping = new ArrayList<Class<SchemaElement>>());
 					typeMapping.add(checkbox.targetType);
 				}
+			}
 			dispose();
 		}
 
@@ -91,117 +155,38 @@ class TypeDialog extends JDialog
 		protected void button2Action()
 			{ dispose(); }
 	}
-	
-	
-	
-	
-	/** Generates the type dialog */ @SuppressWarnings("unchecked")
-	private JPanel mainPane()
-	{
-		// Generate the source and target labels
-		HashSet<SchemaElement> leftSchemaElements = harmonyModel.getMappingManager().getSchemaElements(MappingSchema.LEFT);
-//			harmonyModel.getSelectedInfo().getSelectedElements(MappingSchema.LEFT);
-		HashSet<SchemaElement> rightSchemaElements = harmonyModel.getMappingManager().getSchemaElements(MappingSchema.RIGHT);
 
-		SchemaManager sm = harmonyModel.getSchemaManager();
-//		String [] type1Array = { "Entity", "Attribute", "Domain", "DomainValue", "Relationship", "Containment"};
-		
-//		Class[] types = new Class[] { Entity.class, Attribute.class, Domain.class, DomainValue.class, Relationship.class, Containment.class };		
-		
-		HashMap<Class, Integer> sourceTypes = new HashMap<Class, Integer>();
-		for (SchemaElement e : leftSchemaElements) {
-			sourceTypes.put(e.getClass(), 1);
-		}
-		HashMap<Class, Integer> targetTypes = new HashMap<Class, Integer>();
-		for (SchemaElement e: rightSchemaElements) {
-			targetTypes.put(e.getClass(), 1);
-		}
-		
-		
-		
+	/** Generates the checkbox pane */
+	private JPanel getCheckboxPane()
+	{		
 		// Create pane for storing all checkbox items
-		JPanel checkboxPane = new JPanel();
-//		checkboxPane.setBackground(Color.white);
-		checkboxPane.setLayout(new GridBagLayout());
-		GridBagConstraints c = new GridBagConstraints();
+		CheckboxPane checkboxPane = new CheckboxPane();
 
-		// Generate the source label
-		JLabel sourceLabel = new JLabel("Source", JLabel.CENTER);
-		sourceLabel.setUI(new VerticalLabelUI(false));
-		sourceLabel.setFont(new Font("Dialog", Font.PLAIN, 18));
-		c.gridx = 0;
-		c.ipadx = 20;
-		c.fill = GridBagConstraints.VERTICAL;
-		c.gridheight = sourceTypes.size();
-		c.gridy = 2;
-		checkboxPane.add(sourceLabel, c);
+		// Set aside space for the checkbox labels
+		checkboxPane.add(new CheckboxLabels(),0,0);
+		
+		// Generate the source labels
+		JPanel sourceLabels = new JPanel();
+		sourceLabels.setLayout(new GridLayout(sourceTypes.size(),1));
+		for(Class<SchemaElement> sourceType : sourceTypes)
+			sourceLabels.add(new TypeLabel(sourceType.getSimpleName(),false));
+		checkboxPane.add(sourceLabels,0,1);
+		
+		// Generate the target labels
+		JPanel targetLabels = new JPanel();
+		targetLabels.setLayout(new GridLayout(1,targetTypes.size()));
+		for(Class<SchemaElement> targetType : targetTypes)
+			targetLabels.add(new TypeLabel(targetType.getSimpleName(),true));
+		checkboxPane.add(targetLabels,1,0);
+		
+		// Generate the checkbox grid
+		checkboxes.setLayout(new GridLayout(sourceTypes.size(),targetTypes.size()));
+		for(Class<SchemaElement> sourceType : sourceTypes)
+			for(Class<SchemaElement> targetType : targetTypes)
+				checkboxes.add(new TypeCheckBox(sourceType, targetType,sourceType.equals(targetType)));
+		checkboxPane.add(checkboxes,1,1);
 
-		c.ipadx = 0;
-		c.gridheight = 1;
-		
-		
-		// Generate the target label
-		JLabel targetLabel = new JLabel("Target", JLabel.CENTER);
-		targetLabel.setFont(new Font("Dialog", Font.PLAIN, 18));
-		c.ipady = 20; 
-		c.gridx = 2;
-		c.fill = GridBagConstraints.HORIZONTAL;
-		c.gridwidth = targetTypes.size();
-		c.gridy = 0;
-		checkboxPane.add(targetLabel, c);
-		
-		c.gridwidth = 1;
-		c.ipady = 0; 
-		
-		int x = 2;
-		int y = 2;
-		for (Class type : sourceTypes.keySet()) {
-			JLabel sLabel = new JLabel(type.getSimpleName());
-//			sLabel.setFont(new Font("Arial", Font.PLAIN, 14));
-			c.gridx = 1;
-			c.gridy = y++;
-			checkboxPane.add(sLabel, c);
-		}
-		for (Class type : targetTypes.keySet()) {
-			JLabel tLabel = new JLabel(type.getSimpleName());
-//			tLabel.setFont(new Font("Arial", Font.PLAIN, 14));
-			tLabel.setUI(new VerticalLabelUI(false));
-			c.gridx = x++;
-			c.gridy = 1;
-			checkboxPane.add(tLabel, c);		
-		}
-		
-		// Generate the type grid
-		x = 2;
-		y = 2;
-		
-		for(Class sourceType : sourceTypes.keySet()) {
-			for(Class targetType : targetTypes.keySet())
-			{
-				TypeCheckBox checkbox = new TypeCheckBox(sourceType, targetType);
-				checkboxes.add(checkbox);
-				if(sourceType.equals(targetType)) checkbox.setSelected(true);
-				c.gridx = x++;
-				c.gridy = y;
-				checkboxPane.add(checkbox, c);
-			}
-			x = 2;
-			y++;
-		}
-		
-//		JPanel checkboxPane = new JPanel(checkboxPane);
-//		checkboxPane.setPreferredSize(new Dimension(250, 300));
-	    
-		// Place list of roots in center of project pane
-		JPanel pane = new JPanel();
-//		pane.setBorder(new EmptyBorder(20,20,20,20));
-		pane.setLayout(new BorderLayout());
-		
-
-		
-		pane.add(checkboxPane,BorderLayout.CENTER);
-		pane.add(new ButtonPane(),BorderLayout.SOUTH);
-		return pane;
+		return checkboxPane;
 	}
 
 	/** Constructs the type match dialog */
@@ -209,12 +194,24 @@ class TypeDialog extends JDialog
 	{
 		super(harmonyModel.getBaseFrame());
 		
-		this.harmonyModel = harmonyModel;
+		// Determine the source and target types to be displayed
+		for(SchemaElement sourceElement : harmonyModel.getMappingManager().getSchemaElements(MappingSchema.LEFT))
+			sourceTypes.add(sourceElement.getClass());
+		for(SchemaElement targetElement : harmonyModel.getMappingManager().getSchemaElements(MappingSchema.RIGHT))
+			targetTypes.add(targetElement.getClass());
 		
-		setTitle("Which Types Would You Like To Match?");
+		// Generate the main pane
+		JPanel pane = new JPanel();
+		pane.setLayout(new BorderLayout());
+		pane.add(getCheckboxPane(),BorderLayout.CENTER);
+		pane.add(new ButtonPane(),BorderLayout.SOUTH);
+		
+		// Lay out the dialog
+		setTitle("Types To Match?");
+    	setResizable(false);
 		setModal(true);
-    	setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
-		setContentPane(mainPane());
+    	setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+    	setContentPane(pane);
 		pack();
 		setLocationRelativeTo(harmonyModel.getBaseFrame());
 		setVisible(true);
