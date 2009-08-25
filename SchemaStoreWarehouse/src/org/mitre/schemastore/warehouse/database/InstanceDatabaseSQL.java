@@ -4,6 +4,8 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import org.mitre.schemastore.warehouse.common.ViewDTO;
+
 /**
  * This class handles access to the databases
  * 
@@ -205,6 +207,12 @@ public abstract class InstanceDatabaseSQL
 	 */
 	public abstract void insertBooleanAttributeData(String attributeTableName, Integer rowNumber, String data) throws SQLException;
 	
+	
+	//----------------------------------------
+	// Create view corresponding to an Entity 
+	//----------------------------------------
+	public abstract void createView(ViewDTO detailsOfOneView) throws SQLException;
+
 	
 	//--------------------------------------
 	// Print details of a SQLException chain

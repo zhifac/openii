@@ -201,7 +201,10 @@ public class RepositoryXMLParser
 		if(nl != null && nl.getLength() > 0) 
 		{
 			Element el = (Element)nl.item(0);
-			textVal = el.getFirstChild().getNodeValue();
+			if(el.hasChildNodes())
+				textVal = el.getFirstChild().getNodeValue();
+			else
+				textVal = "";	//set it to an empty string
 		}
 		return textVal;
 	}//end of method getTextValue

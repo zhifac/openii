@@ -5,6 +5,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import org.mitre.schemastore.warehouse.common.ViewDTO;
+
 /**
  *  This class handles access to PostgreSQL database
  * 
@@ -189,5 +191,48 @@ public class InstanceDatabasePostgresSQL extends InstanceDatabaseSQL
 	public void insertBooleanAttributeData(String attributeTableName, Integer rowNumber, String data) throws SQLException
 	{
 		insertStringAttributeData(attributeTableName, rowNumber, data);
+	}
+	
+	
+	//----------------------------------------
+	// Create view corresponding to an Entity 
+	//----------------------------------------
+	public void createView(ViewDTO detailsOfOneView) throws SQLException
+	{
+		String query = null;
+		
+		String[] columnNames = detailsOfOneView.getColumnNames();
+		String[] attributeTableNames = detailsOfOneView.getAttributeTableNames();
+		
+		StringBuffer sb = new StringBuffer("CREATE OR REPLACE VIEW " + detailsOfOneView.getViewName() + " AS ");
+		sb.append("SELECT e.id AS id, ");
+		
+		for(int i=0; i<(columnNames.length-1); i++)
+			sb.append("a" + (i+1) + ".val AS " + columnNames[i] + ", ");
+		sb.append("a" + (columnNames.length) + ".val AS " + columnNames[columnNames.length-1] + " ");
+		
+		sb.append("FROM " + detailsOfOneView.getEntityTableName() + " AS e ");
+		
+		for(int i=0; i<attributeTableNames.length; i++)
+			sb.append("LEFT OUTER JOIN " + attributeTableNames[i] + " AS a" + (i+1) + " ON e.id = a" + (i+1) + ".id ");
+			
+		query = sb.toString();
+		System.out.println(query);
+		
+		try
+		{
+			System.out.println("Creating view " + detailsOfOneView.getViewName());
+			Statement stmt = connection.createStatement();
+			int result = stmt.executeUpdate(query);
+			if(result == 0)
+				System.out.println("Created view " + detailsOfOneView.getViewName());
+			stmt.close();
+		}
+		catch(SQLException e) 
+		{ 
+			System.out.println("View " + detailsOfOneView.getViewName() + " could not be created.");
+			printSQLException(e);
+			throw e;
+		}
 	}
 }
