@@ -5,6 +5,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import org.mitre.schemastore.warehouse.common.ViewDTO;
+
 /**
  *  This class handles access to the Derby database
  * 
@@ -207,5 +209,83 @@ public class InstanceDatabaseDerbySQL extends InstanceDatabaseSQL
 			insertStringAttributeData(attributeTableName, rowNumber, "T");
 		else if(data.equalsIgnoreCase("false") || data.equalsIgnoreCase("f") || data.equalsIgnoreCase("no") || data.equalsIgnoreCase("n") || data.equalsIgnoreCase("0"))
 			insertStringAttributeData(attributeTableName, rowNumber, "F");
+	}
+	
+	//----------------------------------------
+	// Drop view corresponding to an Entity 
+	//----------------------------------------
+	private void dropView(String viewName) throws SQLException
+	{
+		String query = "DROP VIEW " + viewName;
+		
+		try
+		{
+			System.out.println("Dropping view " + viewName);
+			Statement stmt = connection.createStatement();
+			int result = stmt.executeUpdate(query);
+			if(result == 0)
+				System.out.println("Dropped view " + viewName);
+			stmt.close();
+		}
+		catch(SQLException e) 
+		{
+			if((e.getErrorCode() == 20000) && ("X0X05".equals(e.getSQLState())))
+			{
+				// View is being created for the first time - exception is ignored
+				System.out.println("View " + viewName + " is being created for the first time");
+			}
+			else
+			{
+				// If the error code or SQLState is different, we have an unexpected exception
+				// i.e. an existing view could not be dropped
+				System.out.println("View " + viewName + " could not be dropped.");
+				printSQLException(e);
+				throw e;
+			}
+		}
+	}
+	
+	//----------------------------------------
+	// Create view corresponding to an Entity 
+	//----------------------------------------
+	public void createView(ViewDTO detailsOfOneView) throws SQLException
+	{
+		String query = null;
+		
+		String[] columnNames = detailsOfOneView.getColumnNames();
+		String[] attributeTableNames = detailsOfOneView.getAttributeTableNames();
+		
+		dropView(detailsOfOneView.getViewName());
+		
+		StringBuffer sb = new StringBuffer("CREATE VIEW " + detailsOfOneView.getViewName() + " AS ");
+		sb.append("SELECT e.id AS id, ");
+		
+		for(int i=0; i<(columnNames.length-1); i++)
+			sb.append("a" + (i+1) + ".val AS " + columnNames[i] + ", ");
+		sb.append("a" + (columnNames.length) + ".val AS " + columnNames[columnNames.length-1] + " ");
+		
+		sb.append("FROM " + detailsOfOneView.getEntityTableName() + " AS e ");
+		
+		for(int i=0; i<attributeTableNames.length; i++)
+			sb.append("LEFT OUTER JOIN " + attributeTableNames[i] + " AS a" + (i+1) + " ON e.id = a" + (i+1) + ".id ");
+			
+		query = sb.toString();
+		System.out.println(query);
+		
+		try
+		{
+			System.out.println("Creating view " + detailsOfOneView.getViewName());
+			Statement stmt = connection.createStatement();
+			int result = stmt.executeUpdate(query);
+			if(result == 0)
+				System.out.println("Created view " + detailsOfOneView.getViewName());
+			stmt.close();
+		}
+		catch(SQLException e) 
+		{ 
+			System.out.println("View " + detailsOfOneView.getViewName() + " could not be created.");
+			printSQLException(e);
+			throw e;
+		}
 	}
 }
