@@ -8,6 +8,11 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Random;
 
+/**
+ * An XMI model.  Typically, these are modeled as UML Packages.  Basically, these are just
+ * containers for other XMIModelElements, and they hold and track UML steroetypes.
+ * @author DMALLEN
+ */
 public class XMIModel extends XMIModelElement {	
 	Hashtable <String,ArrayList <XMIModelElement>> stereotypes; 
 	private static int EA_LOCALID = 20;  
@@ -48,6 +53,10 @@ public class XMIModel extends XMIModelElement {
 		l.add(target); 
 	} // End addStereotype
 	
+	/**
+	 * Testing method.  Generates a simple model containing three hierarchies with mappings.
+	 * @return a sample model.
+	 */
 	public static XMIModel generateSimple() { 
 		XMIModel m = new XMIModel("Class Model");
 		
@@ -112,6 +121,10 @@ public class XMIModel extends XMIModelElement {
 		return null;
 	}
 	
+	/**
+	 * Get a flattened list of all objects that have a child relationship to this model.
+	 * @return an array list of XMIModelElement objects.
+	 */
 	public ArrayList <XMIModelElement> getCatalog() { 
 		ArrayList <XMIModelElement> arr = new ArrayList <XMIModelElement> ();
 		
