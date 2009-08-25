@@ -26,6 +26,8 @@ import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.graph.Graph;
 import org.mitre.schemastore.warehouse.common.InstanceRepository;
 import org.mitre.schemastore.warehouse.common.NoDataFoundException;
+import org.mitre.schemastore.warehouse.common.ViewDTO;
+import org.mitre.schemastore.warehouse.common.ViewDTOArray;
 import org.mitre.schemastore.warehouse.servlet.InstanceDatabase;
 
 /**
@@ -177,6 +179,9 @@ public class SpreadsheetInstanceDatabaseClient implements InstanceDatabaseInterf
 			throw new NoDataFoundException("Connection to instance database not available...Try Again!!!");
 		}
 		
+		// Create a list of transfer objects necessary for creating views representing each sheet in the .xls file
+		List<ViewDTO> listOfViewDTO = new ArrayList<ViewDTO>();
+		
 		/* Iterate through each sheet in the excel file */ 
 		for(int i=0; i<wb.getNumberOfSheets(); i++)
 		{
@@ -274,6 +279,9 @@ public class SpreadsheetInstanceDatabaseClient implements InstanceDatabaseInterf
 				throw e;
 			}
 			
+			// 5.	Get the list of Attributes associated with this Entity
+			ArrayList<Attribute> listOfAttributes = graph.getAttributes(entity.getId());
+			
 			
 			/* Create instance table corresponding to each column in this sheet */
 			
@@ -282,8 +290,8 @@ public class SpreadsheetInstanceDatabaseClient implements InstanceDatabaseInterf
 			HSSFRow firstRow = wb.getSheetAt(i).getRow(0);
 			
 			// Iterate through each defined value in the first row and obtain a list of cell objects
-			ArrayList<HSSFCell> listOfFirstRowCells = new ArrayList<HSSFCell>();
-
+			List<HSSFCell> listOfFirstRowCells = new ArrayList<HSSFCell>();
+			
 			int minColumnIndex = firstRow.getFirstCellNum();
 			if(minColumnIndex == -1)
 			{
@@ -327,7 +335,7 @@ public class SpreadsheetInstanceDatabaseClient implements InstanceDatabaseInterf
 				Attribute attribute;
 				try 
 				{
-					attribute = getAttributeCorrespondingToCell(cell, entity.getId());
+					attribute = getAttributeCorrespondingToCell(cell, listOfAttributes);
 				} 
 				catch (NoDataFoundException e) 
 				{
@@ -575,7 +583,50 @@ public class SpreadsheetInstanceDatabaseClient implements InstanceDatabaseInterf
 						throw new NoDataFoundException("Valid data type could not be found for attribute" + attribute.getName());
 				}
 			}//end of iteration over list of first row cells and creation of instance tables for each column
+			
+			/* Now create transfer object necessary for creating the View corresponding to this Entity */
+			
+			// 1.	Create a list of all Attribute table names associated with this Entity
+			List<String> listOfAttributeTableNames = new ArrayList<String>();
+			for(Attribute attribute : listOfAttributes)
+				listOfAttributeTableNames.add(ATTRIBUTE + attribute.getId());
+			
+			// 2.	Create a list of all Column names associated with this Entity/Sheet
+			List<String> listOfColumnNames = new ArrayList<String>();
+			for(Attribute attribute : listOfAttributes)
+				// Store the column name - remove all except alpha-numeric characters and in lower casse
+				listOfColumnNames.add(attribute.getName().toLowerCase().replaceAll("[^a-zA-Z0-9]", ""));
+			
+			// 3.	Create transfer object containing information necessary for creating view for this Entity
+			ViewDTO detailsOfOneView = new ViewDTO(entity.getName(), ENTITY + entity.getId(), 
+					listOfAttributeTableNames.toArray(new String[listOfAttributeTableNames.size()]), 
+					listOfColumnNames.toArray(new String[listOfColumnNames.size()]));
+			
+			// 4.	Add it to the list of all the view transfer objects for this excel file
+			listOfViewDTO.add(detailsOfOneView);
 		}//end of iteration over sheets in the workbook
+		
+		/* Create views for all the sheets in the workbook */
+		ViewDTO[] arrayOfViewDetails = listOfViewDTO.toArray(new ViewDTO[listOfViewDTO.size()]);
+		ViewDTOArray v = new ViewDTOArray(arrayOfViewDetails);
+		try 
+		{
+			createInstanceDatabaseViews(v);
+		} 
+		catch (NoDataFoundException e) 
+		{
+			// Attribute table could not be created - log it
+			e.printStackTrace(System.err);
+				
+			// Undo all changes made to structural repository
+			deleteDataSourceIfNeeded();
+			
+			// This exception has come from the server - 
+			// Changes to instance repository have been rolled back by the server
+				
+			// Propagate the exception and terminate this process
+			throw e;
+		}
 		
 		// Release resources
 		releaseResources();
@@ -679,6 +730,16 @@ public class SpreadsheetInstanceDatabaseClient implements InstanceDatabaseInterf
 	public void populateRelationshipTable(Entity entity) throws NoDataFoundException, RemoteException
 	{	}
 	
+	/** Implementing method of InstanceDatabaseInterface -
+	 *  creates views representing each of the sheets in the given excel file 
+	 * @throws RemoteException 
+	 * @throws NoDataFoundException */
+	public void createInstanceDatabaseViews(ViewDTOArray v) throws NoDataFoundException, RemoteException
+	{
+		((InstanceDatabase) instanceDatabase).createAllViews(v);
+		/*callMethod("createAllViews", new Object[] {v});*/
+	}
+	
 	/** Release resources 
 	 * @throws RemoteException */
 	public void releaseResources() throws RemoteException
@@ -741,13 +802,13 @@ public class SpreadsheetInstanceDatabaseClient implements InstanceDatabaseInterf
 	 * @throws RemoteException */
 	private String getInstanceDatabaseName(Repository structuralRepository) throws RemoteException
 	{
-		// Remove all alpha-numeric characters - in PostgreSQL, new database cannot be created with any except "_"
+		// Remove all except alpha-numeric characters - in PostgreSQL, new database cannot be created with any except "_"
 		// In PostgreSQL, name of database, as used in connection string, is case-sensitive - so only lower-case is used
 		userSpecifiedName = userSpecifiedName.toLowerCase().replaceAll("[^a-zA-Z0-9]", "");
 		
 		/* Find if a dataSource with the userSpecifiedName exists for this schema */
 		ArrayList<DataSource> listOfDSforSchema = schemastoreClient.getDataSources(schema.getId());
-		ArrayList<DataSource> listOfDSwithSpecificName = new ArrayList<DataSource>();
+		List<DataSource> listOfDSwithSpecificName = new ArrayList<DataSource>();
 		for(DataSource ds : listOfDSforSchema)
 			if(ds.getName().equals(userSpecifiedName))
 				listOfDSwithSpecificName.add(ds);
@@ -881,13 +942,13 @@ public class SpreadsheetInstanceDatabaseClient implements InstanceDatabaseInterf
 	
 	/** Get the attribute that corresponds to given cell 
 	 * @throws NoDataFoundException */
-	private Attribute getAttributeCorrespondingToCell(HSSFCell cell, Integer entityID) throws NoDataFoundException
+	private Attribute getAttributeCorrespondingToCell(HSSFCell cell, ArrayList<Attribute> listOfAttributes) throws NoDataFoundException
 	{
 		// Stores the attribute to be found
 		Attribute correspondingAttribute = null;
 			
 		// Find the attribute that the given cell corresponds to 
-		for(Attribute attribute : graph.getAttributes(entityID))
+		for(Attribute attribute : listOfAttributes)
 			if(attribute.getName().equals(cell.getStringCellValue()))
 			{
 				System.out.println("Cell value = " + cell.getStringCellValue());
