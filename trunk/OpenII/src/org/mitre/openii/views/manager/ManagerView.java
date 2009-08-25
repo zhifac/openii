@@ -53,6 +53,8 @@ public class ManagerView extends ViewPart implements OpenIIListener, IDoubleClic
 	public void schemaAdded(Integer schemaID) { viewer.refresh(); }
 	public void schemaModified(Integer schemaID) { viewer.refresh(); }
 	public void schemaDeleted(Integer schemaID) { viewer.refresh(); }
+	public void dataSourceAdded(Integer dataSourceID) { viewer.refresh(); }
+	public void dataSourceDeleted(Integer dataSourceID) { viewer.refresh(); }
 	public void groupAdded(Integer groupID) { viewer.refresh(); }
 	public void groupModified(Integer groupID) { viewer.refresh(); }
 	public void groupDeleted(Integer groupID) { viewer.refresh(); }

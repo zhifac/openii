@@ -12,18 +12,20 @@ import org.mitre.openii.views.manager.SchemaInGroup;
 import org.mitre.openii.views.manager.SchemaInMapping;
 import org.mitre.openii.views.manager.groups.DeleteGroupDialog;
 import org.mitre.openii.views.manager.groups.EditGroupDialog;
+import org.mitre.openii.views.manager.mappings.AutoMappingDialog;
 import org.mitre.openii.views.manager.mappings.DeleteMappingDialog;
 import org.mitre.openii.views.manager.mappings.EditMappingDialog;
 import org.mitre.openii.views.manager.mappings.ExportMappingDialog;
-import org.mitre.openii.views.manager.mappings.AutoMappingDialog;
 import org.mitre.openii.views.manager.mappings.MergeMappingDialog;
 import org.mitre.openii.views.manager.mappings.importer.ImportMappingWizard;
+import org.mitre.openii.views.manager.schemas.CreateDataSourceDialog;
+import org.mitre.openii.views.manager.schemas.DeleteDataSourceDialog;
 import org.mitre.openii.views.manager.schemas.DeleteSchemaDialog;
 import org.mitre.openii.views.manager.schemas.EditSchemaDialog;
 import org.mitre.openii.views.manager.schemas.ExportSchemaDialog;
 import org.mitre.openii.views.manager.schemas.ExtendSchemaDialog;
 import org.mitre.openii.views.manager.schemas.ImportSchemaDialog;
-import org.mitre.openii.views.manager.schemas.CreateInstanceDatabaseDialog;
+import org.mitre.schemastore.model.DataSource;
 import org.mitre.schemastore.model.Group;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingSchema;
@@ -37,19 +39,20 @@ public class ManagerAction extends Action
 	static final int EXTEND_SCHEMA = 2;
 	static final int EXPORT_SCHEMA = 3;
 	static final int DELETE_SCHEMA = 4;
-	static final int NEW_GROUP = 5;
-	static final int EDIT_GROUP = 6;
-	static final int DELETE_GROUP = 7;
-	static final int DELETE_GROUP_SCHEMA = 8;
-	static final int NEW_MAPPING = 9;
-	static final int IMPORT_MAPPING = 10;
-	static final int MERGE_MAPPINGS = 11;
-	static final int EDIT_MAPPING = 12;
-	static final int EXPORT_MAPPING = 13;
-	static final int DELETE_MAPPING = 14;
-	static final int DELETE_MAPPING_SCHEMA = 15;
-	static final int CREATE_INSTANCE_DATABASE = 16;
-	static final int AUTO_GENERATE_MATCHES = 17;
+	static final int CREATE_DATA_SOURCE= 5;
+	static final int DELETE_DATA_SOURCE = 6;
+	static final int NEW_GROUP = 7;
+	static final int EDIT_GROUP = 8;
+	static final int DELETE_GROUP = 9;
+	static final int DELETE_GROUP_SCHEMA = 10;
+	static final int NEW_MAPPING = 11;
+	static final int IMPORT_MAPPING = 12;
+	static final int MERGE_MAPPINGS = 13;
+	static final int EDIT_MAPPING = 14;
+	static final int EXPORT_MAPPING = 15;
+	static final int DELETE_MAPPING = 16;
+	static final int DELETE_MAPPING_SCHEMA = 17;
+	static final int AUTO_GENERATE_MATCHES = 18;
 	
 	/** Stores the menu manager to which this action is tied */
 	private ManagerMenuManager menuManager;
@@ -74,6 +77,8 @@ public class ManagerAction extends Action
 			case EXTEND_SCHEMA: icon = "Schema.gif"; break;
 			case EXPORT_SCHEMA: icon = "Export.gif"; break;
 			case DELETE_SCHEMA: icon = "Delete.gif"; break;
+			case CREATE_DATA_SOURCE: icon = "DataSource.gif"; break;
+			case DELETE_DATA_SOURCE: icon = "Delete.gif"; break;
 			case NEW_GROUP: icon = "Group.gif"; break;
 			case EDIT_GROUP: icon = "Edit.gif"; break;
 			case DELETE_GROUP: icon = "Delete.gif"; break;
@@ -85,7 +90,6 @@ public class ManagerAction extends Action
 			case EXPORT_MAPPING: icon = "Export.gif"; break;
 			case DELETE_MAPPING: icon = "Delete.gif"; break;
 			case DELETE_MAPPING_SCHEMA: icon = "Delete.gif"; break;
-			case CREATE_INSTANCE_DATABASE: icon = "CreateInstanceDb.gif"; break;
 			case AUTO_GENERATE_MATCHES : icon = "Mapping.gif"; break;
 		}		
 		setImageDescriptor(OpenIIActivator.getImageDescriptor("icons/"+icon));
@@ -121,9 +125,13 @@ public class ManagerAction extends Action
 			DeleteSchemaDialog.delete(shell,(Schema)selection);
 		
 		/** Handles the creation of instance database */
-		if(actionType == CREATE_INSTANCE_DATABASE)
-			new CreateInstanceDatabaseDialog(shell,(Schema)selection).open();
-				
+		if(actionType == CREATE_DATA_SOURCE)
+			new CreateDataSourceDialog(shell,(Schema)selection).open();
+
+		/** Handles the deletion of a data source*/
+		if(actionType == DELETE_DATA_SOURCE)
+			DeleteDataSourceDialog.delete(shell,(DataSource)selection);
+		
 		// ----------------- Group Actions ------------------
 		
 		/** Handles the addition of a group */

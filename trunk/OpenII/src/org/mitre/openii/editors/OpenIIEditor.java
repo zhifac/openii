@@ -74,6 +74,8 @@ abstract class OpenIIEditor extends EditorPart implements OpenIIListener
 	
 	// Unused event listeners
 	public void schemaModified(Integer schemaID) {}
+	public void dataSourceAdded(Integer dataSourceID) {}
+	public void dataSourceDeleted(Integer dataSourceID) {}
 	public void groupAdded(Integer groupID) {}
 	public void groupModified(Integer groupID) {}
 	public void mappingAdded(Integer mappingID) {}

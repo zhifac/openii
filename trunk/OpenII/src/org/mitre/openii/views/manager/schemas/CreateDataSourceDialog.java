@@ -37,8 +37,8 @@ import org.mitre.schemastore.warehouse.client.SpreadsheetInstanceDatabaseClient;
 import org.mitre.schemastore.warehouse.common.NoDataFoundException;
 
 
-/** Constructs the Import Schema Dialog */
-public class CreateInstanceDatabaseDialog extends TitleAreaDialog implements ModifyListener
+/** Constructs the Create Data Source Dialog */
+public class CreateDataSourceDialog extends TitleAreaDialog implements ModifyListener
 {
 	/** Stores the schema being edited */
 	private Schema schema = null;
@@ -48,7 +48,7 @@ public class CreateInstanceDatabaseDialog extends TitleAreaDialog implements Mod
 	private URIField uriField = null;
 	
 	/** Constructs the dialog */
-	public CreateInstanceDatabaseDialog(Shell parentShell, Schema schema)
+	public CreateDataSourceDialog(Shell parentShell, Schema schema)
 	{
 		super(parentShell); 
 		this.schema = schema;
@@ -59,7 +59,6 @@ public class CreateInstanceDatabaseDialog extends TitleAreaDialog implements Mod
 	{
 		super.configureShell(shell);
 		shell.setText("Create Instance Database");
-		//setTitleImage(OpenIIActivator.getImage("CreateInstanceDb.gif"));
 	}
 	
 	/** Creates the info pane for creating database instance */

@@ -14,6 +14,7 @@ import org.mitre.openii.model.EditorManager;
 import org.mitre.openii.model.OpenIIManager;
 import org.mitre.openii.views.manager.SchemaInGroup;
 import org.mitre.openii.views.manager.SchemaInMapping;
+import org.mitre.schemastore.model.DataSource;
 import org.mitre.schemastore.model.Group;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.Schema;
@@ -100,9 +101,9 @@ public class ManagerMenuManager extends MenuManager implements IMenuListener
 			menuManager.add(new Separator());
 			
 			// Display option to create instance database
-			Action createInstanceAction = new ManagerAction(this,"Create Instance Database",ManagerAction.CREATE_INSTANCE_DATABASE);
-			if(!((((Schema)element).getType()).equals("Spreadsheet Importer"))) createInstanceAction.setEnabled(false);
-			menuManager.add(createInstanceAction);
+			Action createDataSourceAction = new ManagerAction(this,"Create Instance Database",ManagerAction.CREATE_DATA_SOURCE);
+			if(!((((Schema)element).getType()).equals("Spreadsheet Importer"))) createDataSourceAction.setEnabled(false);
+			menuManager.add(createDataSourceAction);
 		}
 		
 		// Display the menu for the "Groups" header
@@ -142,6 +143,10 @@ public class ManagerMenuManager extends MenuManager implements IMenuListener
 		// Display the menu for a selection mapping schema
 		if(element instanceof SchemaInMapping)
 			menuManager.add(new ManagerAction(this,"Remove Schema from Mapping",ManagerAction.DELETE_MAPPING_SCHEMA));
+
+		// Display the menu for a selected data source
+		if(element instanceof DataSource)
+			menuManager.add(new ManagerAction(this,"Delete Data Source",ManagerAction.DELETE_DATA_SOURCE));
 	}
 	
 	/** Generate the context menu before being displayed */

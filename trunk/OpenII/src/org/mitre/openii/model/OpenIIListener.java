@@ -15,6 +15,12 @@ public interface OpenIIListener
 	/** Informs the listener that the specified schema has been deleted */
 	public void schemaDeleted(Integer schemaID);
 
+	/** Informs the listener that the specified data source has been added */
+	public void dataSourceAdded(Integer dataSourceID);
+	
+	/** Informs the listener that the specified data source has been deleted */
+	public void dataSourceDeleted(Integer dataSourceID);
+	
 	/** Informs the listener that the specified group has been added */
 	public void groupAdded(Integer groupID);
 

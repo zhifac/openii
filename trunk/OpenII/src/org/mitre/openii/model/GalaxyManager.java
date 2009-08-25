@@ -30,6 +30,8 @@ public class GalaxyManager
 		public void schemaModified(Integer schemaID) { Schemas.resetSchema(schemaID); }
 
 		// Unused listener events
+		public void dataSourceAdded(Integer dataSourceID) {}
+		public void dataSourceDeleted(Integer dataSourceID) {}
 		public void groupAdded(Integer groupID) {}
 		public void groupDeleted(Integer groupID) {}
 		public void groupModified(Integer groupID) {}
