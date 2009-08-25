@@ -1,15 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <config>
-	<repository type="1">
+	<repository type="1">	<!-- PostgreSQL repository -->
   		<host>ygg</host>
   		<databaseName>schemastore</databaseName>	<!-- existing database name -->
   		<databaseUser>postgres</databaseUser>	<!-- super user with the privilege to create new databases -->
   		<databasePassword>postgres</databasePassword>
 	</repository>
-	<repository type="2">
+	<repository type="2">	<!-- Apache Derby repository -->
   		<host>.</host>
-  		<databaseName>schemastore</databaseName>	<!-- existing database name -->
-  		<databaseUser>postgres</databaseUser>	<!-- schema name -->
-  		<databasePassword>postgres</databasePassword>
+  		<databaseName></databaseName>	<!-- existing database name -->
+  										<!-- no need to log into an existing database in order to create a new database -->
+  		<databaseUser></databaseUser>	<!-- schema name --> 
+  										<!-- when not given, created under default schema app -->
+  		<databasePassword></databasePassword>
 	</repository>	
 </config>
