@@ -7,6 +7,10 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import java.util.UUID;
 
+/**
+ * An element in an XMIModel.  Typically used for UML classes.
+ * @author DMALLEN
+ */
 public class XMIModelElement extends XMIExportable {
 	String name;
 	String id; 	
@@ -75,10 +79,16 @@ public class XMIModelElement extends XMIExportable {
 		generalizations.add(gen);
 	}
 	
+	/**
+	 * @see XMIExportable#renderAsXML(Document)
+	 */
 	public Element renderAsXML(Document doc) { 
 		return renderAsXML("packagedElement", doc); 
 	}
 	
+	/**
+	 * @see XMIExportable#renderExtensionXML(XMIModel, Document)
+	 */
 	public Element renderExtensionXML(XMIModel model, Document doc) { 
 		Element e = doc.createElement("element"); 
 		e.setAttribute("xmi:idref", id); 

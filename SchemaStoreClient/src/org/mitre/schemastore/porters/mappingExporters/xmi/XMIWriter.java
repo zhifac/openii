@@ -8,6 +8,10 @@ import javax.xml.transform.*;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+/**
+ * A class that writes XMIModels to files.
+ * @author DMALLEN
+ */
 public class XMIWriter {	
 	public static void write(XMIModel xmimodel, File f) throws Exception { 
 		DocumentBuilderFactory factory =
@@ -79,6 +83,11 @@ public class XMIWriter {
 		r.close();		
 	} // End write
 	
+	/**
+	 * Sample test main.  Generate sample model.
+	 * @param args
+	 * @throws Exception
+	 */
 	public static void main(String [] args) throws Exception { 
 		XMIModel m = XMIModel.generateSimple(); 
 		XMIWriter.write(m, new File("c:\\documents and settings\\dmallen\\Desktop\\jc model\\simple.xml"));

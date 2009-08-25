@@ -6,6 +6,10 @@ import java.util.UUID;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+/**
+ * An object that is exportable as XMI.
+ * @author DMALLEN
+ */
 public abstract class XMIExportable {
 	public static final String UML_PROPERTY = "uml:Property";
 	public static final String UML_CLASS = "uml:Class";
@@ -15,9 +19,25 @@ public abstract class XMIExportable {
 	public static final String UML_STEREOTYPE = "uml:Stereotype";
 	public static final String UML_EXTENSION = "uml:Extension";
 	public static final String UML_ASSOCIATION = "uml:Association";
-	
+		
+	/**
+	 * Render the exportable item as XMI, suitable for the xmi:Model portion.
+	 * @param doc an XML document
+	 * @return an element representing this XMIExportable. 
+	 */
 	public abstract Element renderAsXML(Document doc); 
+	/**
+	 * Render the exportable item as an XMI extension, suitable for xmi:Extension.
+	 * @param model the model that owns this XMIExportable.
+	 * @param doc an XML document
+	 * @return the element representing the XMI extension serialization.
+	 */
+	public abstract Element renderExtensionXML(XMIModel model, Document doc);
 	
+	/**
+	 * Method used for testing only.
+	 * @return random string
+	 */
 	public static String randomName() { 
 		String [] toks = new String [] { 
 			"foo", "bar", "baz", "quux", "blizzens", "blargo", "florko",
@@ -37,6 +57,12 @@ public abstract class XMIExportable {
 		return name;
 	} // End randomName
 	
+	/**
+	 * Generate a new ID for an XMI element.  IDs are basically string formatted UUIDs, but with their
+	 * third component in lowercase hexidecimal (all other portions uppercase hexidecimal).  Odd, but
+	 * this seems to make a difference for importability into some tools.
+	 * @return a new unique ID
+	 */
 	public String newID() { 
 		String s = UUID.randomUUID().toString();
 		String [] arr = s.split("-");
@@ -52,5 +78,5 @@ public abstract class XMIExportable {
 		} // End for
 		
 		return agg; 		
-	}
-}
+	} // End newID()
+} // End XMIExportable

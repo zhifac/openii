@@ -7,12 +7,17 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.UUID;
 
+/**
+ * A link between two XMIModelElements.  Mostly, this is used to render UML Associations.
+ * @author DMALLEN
+ */
 public class XMILink extends XMIModelElement {
 	public XMIModelElement from;
 	public XMIModelElement to;
 	String id;
 	String subID; 
 	
+	/** For XML serialization -- a bunch of default settings that most elements get */
 	protected static final Hashtable <String,String> defaultAttributes;
 	
 	static { 
@@ -25,7 +30,7 @@ public class XMILink extends XMIModelElement {
 		defaultAttributes.put("aggregation", "none"); 		
 	}
 
-	public Element copyDefaults(Element elem) { 
+	private Element copyDefaults(Element elem) { 
 		Enumeration <String>e = defaultAttributes.keys();
 		while(e.hasMoreElements()) {  
 			String k = e.nextElement();
@@ -59,6 +64,9 @@ public class XMILink extends XMIModelElement {
 		System.out.println("New subID: " + subID); 
 	}
 	
+	/**
+	 * Documentation on XMILinks is rendered as part of the xmi:Extension section.
+	 */
 	public Element renderExtensionXML(XMIModel model, Document doc) { 
 		Element conn = doc.createElement("connector");
 		conn.setAttribute("xmi:idref", id); 
