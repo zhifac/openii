@@ -968,6 +968,11 @@ public class SpreadsheetInstanceDatabaseClient implements InstanceDatabaseInterf
 	}
 	
 	
+	/** If a new data source got created, it returns the id of the new data source
+	 *  else it returns null
+	 */
+	public Integer getNewDataSourceCreated()
+	{	return newDataSourceId;	}
 	
 	
 }
