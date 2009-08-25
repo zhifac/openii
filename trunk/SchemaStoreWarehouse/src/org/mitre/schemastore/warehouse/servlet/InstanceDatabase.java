@@ -1,6 +1,7 @@
 package org.mitre.schemastore.warehouse.servlet;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -8,6 +9,8 @@ import org.mitre.schemastore.model.Attribute;
 import org.mitre.schemastore.model.Entity;
 import org.mitre.schemastore.warehouse.common.InstanceRepository;
 import org.mitre.schemastore.warehouse.common.NoDataFoundException;
+import org.mitre.schemastore.warehouse.common.ViewDTO;
+import org.mitre.schemastore.warehouse.common.ViewDTOArray;
 import org.mitre.schemastore.warehouse.database.CreateDatabaseFactory;
 import org.mitre.schemastore.warehouse.database.CreateDerbyDatabaseFactory;
 import org.mitre.schemastore.warehouse.database.CreatePostgresDatabaseFactory;
@@ -223,6 +226,31 @@ public class InstanceDatabase
 				throw new NoDataFoundException("Value could not be inserted into table for Attribute " + attributeTableName.substring(1));
 			}
 	    }   
+	}
+	
+	
+	//-----------------------------------
+	// Creates view for all Entities 
+	//-----------------------------------
+	public void createAllViews(ViewDTOArray v) throws NoDataFoundException
+	{
+		ViewDTO[] arrayOfViewDetails = v.getArrayOfViewDetails();
+		for(int i=0; i<arrayOfViewDetails.length; i++)
+		{
+			ViewDTO detailsOfOneView = arrayOfViewDetails[i];
+			try 
+			{
+				instanceDbSql.createView(detailsOfOneView);
+			} 
+			catch (SQLException e) 
+			{
+				// Roll back all changes to instance database
+				rollback();
+
+				// Inform the client
+				throw new NoDataFoundException("View for sheet " + detailsOfOneView.getViewName() + " could not be created.");
+			}
+		}
 	}
 	
 	
