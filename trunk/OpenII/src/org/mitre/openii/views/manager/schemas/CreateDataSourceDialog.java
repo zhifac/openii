@@ -26,6 +26,7 @@ import org.mitre.schemastore.client.Repository;
 import org.mitre.schemastore.client.SchemaStoreClient;
 import org.mitre.schemastore.model.Schema;
 
+import org.mitre.openii.model.OpenIIManager;
 import org.mitre.openii.model.RepositoryManager;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.graph.Graph;
@@ -190,11 +191,14 @@ public class CreateDataSourceDialog extends TitleAreaDialog implements ModifyLis
 				throw e;
 			}
 			
+			Integer newDataSourceId = g.getNewDataSourceCreated();
+			if(newDataSourceId != null)
+				OpenIIManager.fireDataSourceAdded(newDataSourceId);
+			
 			//SchemaStoreClient client = new SchemaStoreClient("C:\\workspace\\SchemaStore\\SchemaStore.jar");
 			System.out.println("SchemaElementCount: " + schemastoreClient.getSchemaElementCount(schema.getId()));
 			
 			// Get the schema graph
-			//Graph graph = OpenIIManager.getGraph(schema.getId());
 			Graph graph = null;
 			try 
 			{
