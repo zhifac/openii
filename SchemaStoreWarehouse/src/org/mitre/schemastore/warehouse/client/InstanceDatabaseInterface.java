@@ -5,6 +5,7 @@ import java.rmi.RemoteException;
 import org.mitre.schemastore.model.Attribute;
 import org.mitre.schemastore.model.Entity;
 import org.mitre.schemastore.warehouse.common.NoDataFoundException;
+import org.mitre.schemastore.warehouse.common.ViewDTOArray;
 
 public interface InstanceDatabaseInterface 
 {
@@ -76,6 +77,8 @@ public interface InstanceDatabaseInterface
 	public void createRelationshipTable(Entity entity) throws NoDataFoundException, RemoteException;
 	
 	public void populateRelationshipTable(Entity entity) throws NoDataFoundException, RemoteException;
+	
+	public void createInstanceDatabaseViews(ViewDTOArray v) throws NoDataFoundException, RemoteException;
 	
 	public void releaseResources() throws RemoteException;
 	
