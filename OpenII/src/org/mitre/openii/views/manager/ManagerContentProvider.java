@@ -6,8 +6,10 @@ import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.mitre.openii.model.OpenIIManager;
 import org.mitre.openii.widgets.WidgetUtilities;
+import org.mitre.schemastore.model.DataSource;
 import org.mitre.schemastore.model.Group;
 import org.mitre.schemastore.model.Mapping;
+import org.mitre.schemastore.model.Schema;
 
 public class ManagerContentProvider implements ITreeContentProvider
 {
@@ -28,6 +30,16 @@ public class ManagerContentProvider implements ITreeContentProvider
 		    if(element.equals(mappingHeader)) return WidgetUtilities.sortList(OpenIIManager.getMappings()).toArray();
 		}
 		    
+		// Handles schema elements
+		if(element instanceof Schema)
+		{
+			Schema schema = (Schema)element;
+			ArrayList<Object> elements = new ArrayList<Object>();
+			for(DataSource dataSource : OpenIIManager.getDataSources(schema.getId()))
+				elements.add(dataSource);
+			return WidgetUtilities.sortList(elements).toArray();		
+		}
+		
 		// Handles group elements
 		if(element instanceof Group)
 		{

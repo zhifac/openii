@@ -6,6 +6,7 @@ import java.util.HashMap;
 
 import org.eclipse.core.runtime.Preferences;
 import org.mitre.openii.application.OpenIIActivator;
+import org.mitre.schemastore.model.DataSource;
 import org.mitre.schemastore.model.Group;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
@@ -119,7 +120,7 @@ public class OpenIIManager
 		} catch(Exception e) {}
 		return false;
 	}
-
+	
 	/** Inform listeners that schema was added */
 	public static void fireSchemaAdded(Schema schema)
 	{
@@ -342,4 +343,28 @@ public class OpenIIManager
 	/** Inform listeners that mapping was removed */
 	public static void fireMappingDeleted(Integer mappingID)
 		{ for(OpenIIListener listener : listeners.get()) listener.mappingDeleted(mappingID); }
+	
+	//------------ Data Source Functionality -------------
+
+	/** Returns the data sources for the specified schema */
+	public static ArrayList<DataSource> getDataSources(Integer schemaID)
+		{ try { return RepositoryManager.getClient().getDataSources(schemaID); } catch(Exception e) { return new ArrayList<DataSource>(); } }
+	
+	/** Deletes the specified data source */
+	public static boolean deleteDataSource(Integer dataSourceID)
+	{
+		try {
+			if(RepositoryManager.getClient().deleteDataSource(dataSourceID))
+				{ fireDataSourceDeleted(dataSourceID); return true; }
+		} catch(Exception e) {}
+		return false;
+	}
+	
+	/** Inform listeners that data source was added */
+	public static void fireDataSourceAdded(Integer dataSourceID)
+		{ for(OpenIIListener listener : listeners.get()) listener.dataSourceAdded(dataSourceID); }
+	
+	/** Inform listeners that data source was removed */
+	public static void fireDataSourceDeleted(Integer dataSourceID)
+		{ for(OpenIIListener listener : listeners.get()) listener.dataSourceDeleted(dataSourceID); }
 }
