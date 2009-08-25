@@ -257,12 +257,12 @@ public class InstanceDatabaseDerbySQL extends InstanceDatabaseSQL
 		
 		dropView(detailsOfOneView.getViewName());
 		
-		StringBuffer sb = new StringBuffer("CREATE VIEW " + detailsOfOneView.getViewName() + " AS ");
+		StringBuffer sb = new StringBuffer("CREATE VIEW \"" + detailsOfOneView.getViewName() + "\" AS ");
 		sb.append("SELECT e.id AS id, ");
 		
 		for(int i=0; i<(columnNames.length-1); i++)
-			sb.append("a" + (i+1) + ".val AS " + columnNames[i] + ", ");
-		sb.append("a" + (columnNames.length) + ".val AS " + columnNames[columnNames.length-1] + " ");
+			sb.append("a" + (i+1) + ".val AS \"" + columnNames[i] + "\", ");
+		sb.append("a" + (columnNames.length) + ".val AS \"" + columnNames[columnNames.length-1] + "\" ");
 		
 		sb.append("FROM " + detailsOfOneView.getEntityTableName() + " AS e ");
 		
