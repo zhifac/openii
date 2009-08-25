@@ -594,8 +594,8 @@ public class SpreadsheetInstanceDatabaseClient implements InstanceDatabaseInterf
 			// 2.	Create a list of all Column names associated with this Entity/Sheet
 			List<String> listOfColumnNames = new ArrayList<String>();
 			for(Attribute attribute : listOfAttributes)
-				// Store the column name - remove all except alpha-numeric characters and in lower casse
-				listOfColumnNames.add(attribute.getName().toLowerCase().replaceAll("[^a-zA-Z0-9]", ""));
+				// Store the column name
+				listOfColumnNames.add(attribute.getName());
 			
 			// 3.	Create transfer object containing information necessary for creating view for this Entity
 			ViewDTO detailsOfOneView = new ViewDTO(entity.getName(), ENTITY + entity.getId(), 
