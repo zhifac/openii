@@ -93,6 +93,26 @@ public class InstanceDatabase
 		return instanceDbSql.getTypeBoolean();
 	}
 	
+	public String getTypeDate()
+	{
+		return instanceDbSql.getTypeDate();
+	}
+	
+	public String getTypeNull()
+	{
+		return instanceDbSql.getTypeNull();
+	}
+	
+	// Get all types in the following order -
+	// Numeric, String, Boolean, Date, Null
+	public String[] getAllTypes()
+	{
+		List<String> listOfTypes = instanceDbSql.getAllTypes();
+		String[] arrayOfTypes = listOfTypes.toArray(new String[listOfTypes.size()]);
+		
+		return arrayOfTypes;
+	}
+	
 	
 	//-----------------------------------
 	// Creates table for a Entity 
@@ -216,6 +236,29 @@ public class InstanceDatabase
 			try 
 			{
 				instanceDbSql.insertBooleanAttributeData(attributeTableName, currentAbsoluteMaxId+n, data);
+			} 
+			catch (SQLException e) 
+			{
+				// Roll back all changes to instance database
+				rollback();
+				
+				// Inform the client
+				throw new NoDataFoundException("Value could not be inserted into table for Attribute " + attributeTableName.substring(1));
+			}
+	    }   
+	}
+	
+	public void populateDateAttributeTable(String attributeTableName, String[] values) throws NoDataFoundException
+	{
+		List<String> valuesList = Arrays.asList(values);  
+		int numberOfRowsOfData = valuesList.size();
+	    
+		for(int n=1; n<=numberOfRowsOfData; n++)
+	    {
+			String data = valuesList.get(n-1);
+			try 
+			{
+				instanceDbSql.insertDateAttributeData(attributeTableName, currentAbsoluteMaxId+n, data);
 			} 
 			catch (SQLException e) 
 			{

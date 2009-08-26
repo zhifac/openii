@@ -29,6 +29,7 @@ public class InstanceDatabaseDerbySQL extends InstanceDatabaseSQL
 	private static final String TYPE_NUMERIC = "decimal(30,10)";
 	private static final String TYPE_STRING = "varchar(30)";
 	private static final String TYPE_BOOLEAN = "char(1)";
+	private static final String TYPE_DATE = "date";
 	
 	//---------------------------------------
 	// Returns the constants specifying types 
@@ -41,6 +42,9 @@ public class InstanceDatabaseDerbySQL extends InstanceDatabaseSQL
 	
 	public String getTypeBoolean()
 	{	return TYPE_BOOLEAN;	}
+	
+	public String getTypeDate()
+	{	return TYPE_DATE;	}
 
 	
 	//------------------------
@@ -216,7 +220,7 @@ public class InstanceDatabaseDerbySQL extends InstanceDatabaseSQL
 	//----------------------------------------
 	private void dropView(String viewName) throws SQLException
 	{
-		String query = "DROP VIEW " + viewName;
+		String query = "DROP VIEW \"" + viewName + "\"";
 		
 		try
 		{
@@ -258,7 +262,7 @@ public class InstanceDatabaseDerbySQL extends InstanceDatabaseSQL
 		dropView(detailsOfOneView.getViewName());
 		
 		StringBuffer sb = new StringBuffer("CREATE VIEW \"" + detailsOfOneView.getViewName() + "\" AS ");
-		sb.append("SELECT e.id AS id, ");
+		sb.append("SELECT e.id AS \"id\", ");
 		
 		for(int i=0; i<(columnNames.length-1); i++)
 			sb.append("a" + (i+1) + ".val AS \"" + columnNames[i] + "\", ");

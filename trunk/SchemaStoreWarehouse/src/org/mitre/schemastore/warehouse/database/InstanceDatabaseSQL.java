@@ -3,6 +3,8 @@ package org.mitre.schemastore.warehouse.database;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.mitre.schemastore.warehouse.common.ViewDTO;
 
@@ -22,6 +24,9 @@ public abstract class InstanceDatabaseSQL
 	protected static final String CONTAINMENT = "C";
 	protected static final String RELATIONSHIP = "R";
 	
+	// Constants used in specifying types
+	protected static final String TYPE_NULL = "NULL";
+	
 	// Resources used for accessing the new database
 	protected Connection connection = null;
 	
@@ -40,6 +45,25 @@ public abstract class InstanceDatabaseSQL
 	public abstract String getTypeString();
 	
 	public abstract String getTypeBoolean();
+	
+	public abstract String getTypeDate();
+	
+	public String getTypeNull()
+	{	return TYPE_NULL;	}
+	
+	// Get all types in the following order -
+	// Numeric, String, Boolean, Date, Null
+	public List<String> getAllTypes()
+	{
+		List<String> listOfTypes = new ArrayList<String>();
+		listOfTypes.add(getTypeNumeric());
+		listOfTypes.add(getTypeString());
+		listOfTypes.add(getTypeBoolean());
+		listOfTypes.add(getTypeDate());
+		listOfTypes.add(getTypeNull());
+		
+		return listOfTypes;
+	}
 	
 	//------------------------
 	// Drop an instance table 
@@ -147,27 +171,33 @@ public abstract class InstanceDatabaseSQL
 	 * @throws SQLException */
 	public void insertStringAttributeData(String attributeTableName, Integer rowNumber, String data) throws SQLException
 	{
-		String query = null;
-		
-		StringBuffer sb = new StringBuffer("INSERT INTO " + attributeTableName + " (id, val)");
-		sb.append(" VALUES (" + rowNumber + ", '" + data + "')");
-			
-		query = sb.toString();
-		System.out.println(query);
-		try 
+		if(data.equals(TYPE_NULL))
+			// Insert the data without the quotes - otherwise a String with value "NULL" gets inserted 
+			insertNumericAttributeData(attributeTableName, rowNumber, data);
+		else
 		{
-			System.out.println("Inserting data into attribute table");
-			Statement stmt = connection.createStatement();
-			int result = stmt.executeUpdate(query);
-			if(result != 0)
-				System.out.println("Inserted value " + data + " into table " + attributeTableName);
-			stmt.close();
-		} 
-		catch(SQLException e) 
-		{ 
-			System.out.println("Value could not be inserted into table for Attribute " + attributeTableName.substring(1));
-			printSQLException(e);
-			throw e;
+			String query = null;
+		
+			StringBuffer sb = new StringBuffer("INSERT INTO " + attributeTableName + " (id, val)");
+			sb.append(" VALUES (" + rowNumber + ", '" + data + "')");
+			
+			query = sb.toString();
+			System.out.println(query);
+			try 
+			{
+				System.out.println("Inserting data into attribute table");
+				Statement stmt = connection.createStatement();
+				int result = stmt.executeUpdate(query);
+				if(result != 0)
+					System.out.println("Inserted value " + data + " into table " + attributeTableName);
+				stmt.close();
+			} 
+			catch(SQLException e) 
+			{ 
+				System.out.println("Value could not be inserted into table for Attribute " + attributeTableName.substring(1));
+				printSQLException(e);
+				throw e;
+			}
 		}
 	}
 	
@@ -206,6 +236,14 @@ public abstract class InstanceDatabaseSQL
 	 * @throws SQLException 
 	 */
 	public abstract void insertBooleanAttributeData(String attributeTableName, Integer rowNumber, String data) throws SQLException;
+	
+	
+	/** Insert data into table created for Date type Attribute 
+	 * @throws SQLException */
+	public void insertDateAttributeData(String attributeTableName, Integer rowNumber, String data) throws SQLException
+	{
+		insertStringAttributeData(attributeTableName, rowNumber, data);
+	}
 	
 	
 	//----------------------------------------
