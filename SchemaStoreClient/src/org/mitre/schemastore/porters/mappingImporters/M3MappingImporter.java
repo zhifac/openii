@@ -22,11 +22,8 @@ import org.w3c.dom.NodeList;
 /** Importer for copying schemas from other repositories */
 public class M3MappingImporter extends MappingImporter
 {	
-	/** Stores the list of schemas associated with the mapping */
-	private ArrayList<MappingSchema> mappingSchemas = new ArrayList<MappingSchema>();
-
-	/** Stores the list of mapping cells associated with the mapping */
-	private ArrayList<MappingCell> mappingCells = new ArrayList<MappingCell>();
+	/** Stores the M3 document to be imported */
+	private Element element;
 	
 	/** Returns the importer name */
 	public String getName()
@@ -56,17 +53,37 @@ public class M3MappingImporter extends MappingImporter
 			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 			DocumentBuilder db = dbf.newDocumentBuilder();
 			Document document = db.parse(new File(uri));
-			Element element = document.getDocumentElement();
-			
-			// Gather up the mapping schemas from the XML document
+			element = document.getDocumentElement();
+		} catch(Exception e) { throw new ImporterException(ImporterException.IMPORT_FAILURE, e.getMessage()); }
+	}
+
+	/** Returns the imported mapping schemas */
+	protected ArrayList<MappingSchema> getSchemas() throws ImporterException
+	{
+		try {
 			Mapping mapping = ConvertFromXML.getMapping(element);
-			mappingSchemas = new ArrayList<MappingSchema>(Arrays.asList(mapping.getSchemas()));
+			ArrayList<MappingSchema> mappingSchemas = new ArrayList<MappingSchema>(Arrays.asList(mapping.getSchemas()));
+			return mappingSchemas;
+		} catch(Exception e) { throw new ImporterException(ImporterException.IMPORT_FAILURE, e.getMessage()); }
+	}
+
+	/** Returns the imported mapping cells */
+	protected ArrayList<MappingCell> getMappingCells() throws ImporterException
+	{
+		try {			
+			// Generate graphs for the available schemas (using original schema names for matching purposes)
 			ArrayList<HierarchicalGraph> graphs = new ArrayList<HierarchicalGraph>();
-			for(MappingSchema schema : mappingSchemas)
-				graphs.add(new HierarchicalGraph(client.getGraph(schema.getId()),schema.geetGraphModel()));
+			ArrayList<MappingSchema> origSchemas = getSchemas();
+			for(int i=0; i<schemas.size(); i++)
+			{
+				MappingSchema schema = schemas.get(i);
+				HierarchicalGraph graph = new HierarchicalGraph(client.getGraph(schema.getId()),schema.geetGraphModel());
+				graph.getSchema().setName(origSchemas.get(i).getName());
+				graphs.add(graph);
+			}
 			
-			// Extract mapping cells from the element
-			mappingCells.clear();
+			// Generate the list of mapping cells
+			ArrayList<MappingCell> mappingCells = new ArrayList<MappingCell>();
 			NodeList mappingCellNodeList = element.getElementsByTagName("MappingCell");
 			if(mappingCellNodeList != null)
 				for(int j=0; j<mappingCellNodeList.getLength(); j++)
@@ -78,14 +95,7 @@ public class M3MappingImporter extends MappingImporter
 						if(mappingCell!=null) mappingCells.add(mappingCell);
 					}
 				}
+			return mappingCells;
 		} catch(Exception e) { throw new ImporterException(ImporterException.IMPORT_FAILURE, e.getMessage()); }
 	}
-
-	/** Returns the imported mapping schemas */
-	protected ArrayList<MappingSchema> getSchemas() throws ImporterException
-		{ return mappingSchemas; }
-
-	/** Returns the imported mapping cells */
-	protected ArrayList<MappingCell> getMappingCells() throws ImporterException
-		{ return mappingCells; }
 }
