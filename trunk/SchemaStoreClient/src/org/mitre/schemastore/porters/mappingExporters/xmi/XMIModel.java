@@ -6,7 +6,6 @@ import org.w3c.dom.Element;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.Random;
 
 /**
  * An XMI model.  Typically, these are modeled as UML Packages.  Basically, these are just
@@ -128,8 +127,6 @@ public class XMIModel extends XMIModelElement {
 	public ArrayList <XMIModelElement> getCatalog() { 
 		ArrayList <XMIModelElement> arr = new ArrayList <XMIModelElement> ();
 		
-		boolean more = true;
-		
 		arr.addAll(children);
 		int lastIDX = 0;
 		int inspected = 0; 
@@ -169,7 +166,6 @@ public class XMIModel extends XMIModelElement {
 		
 		ArrayList <XMIModelElement> catalog = getCatalog(); 
 		
-		int ea_localid = 20; 
 		for(XMIModelElement elem : catalog) {
 			if(!elem.hasDocs()) continue;
 			if(elem instanceof XMILink) { 

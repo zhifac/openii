@@ -2,11 +2,9 @@ package org.mitre.schemastore.porters.mappingExporters.xmi;
 
 import org.w3c.dom.*;
 import java.io.*;
-import java.util.*;
 import javax.xml.parsers.*;
 import javax.xml.transform.*;
 import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 
 /**
  * A class that writes XMIModels to files.
