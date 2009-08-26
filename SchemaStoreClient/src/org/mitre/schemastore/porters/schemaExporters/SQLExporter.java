@@ -17,9 +17,6 @@ import org.mitre.schemastore.model.Entity;
 import org.mitre.schemastore.model.Relationship;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.Subtype;
-import org.mitre.schemastore.model.graph.Graph;
-import org.mitre.schemastore.model.graph.HierarchicalGraph;
-import org.mitre.schemastore.model.graph.model.GraphModel;
 import org.mitre.schemastore.porters.schemaExporters.sql.DomainTable;
 import org.mitre.schemastore.porters.schemaExporters.sql.ForeignKey;
 import org.mitre.schemastore.porters.schemaExporters.sql.NoRelationFoundException;
@@ -29,8 +26,6 @@ import org.mitre.schemastore.porters.schemaExporters.sql.RdbValueType;
 import org.mitre.schemastore.porters.schemaExporters.sql.SQLWriter;
 import org.mitre.schemastore.porters.schemaExporters.sql.Table;
 import org.mitre.schemastore.porters.schemaExporters.sql.View;
-import org.mitre.schemastore.porters.schemaImporters.SchemaImporter;
-import org.mitre.schemastore.porters.schemaImporters.XSDImporter;
 
 /**
  * Caveats: 1. all string fields are mapped to TEXT in the database
