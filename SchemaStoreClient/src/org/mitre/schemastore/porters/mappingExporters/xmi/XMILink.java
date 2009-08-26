@@ -5,7 +5,6 @@ import org.w3c.dom.Element;
 
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.UUID;
 
 /**
  * A link between two XMIModelElements.  Mostly, this is used to render UML Associations.

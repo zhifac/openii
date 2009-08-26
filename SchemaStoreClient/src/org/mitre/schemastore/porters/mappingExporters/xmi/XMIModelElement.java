@@ -5,7 +5,6 @@ import java.util.Hashtable;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import java.util.UUID;
 
 /**
  * An element in an XMIModel.  Typically used for UML classes.
