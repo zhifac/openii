@@ -29,6 +29,7 @@ public class InstanceDatabasePostgresSQL extends InstanceDatabaseSQL
 	private static final String TYPE_NUMERIC = "decimal";
 	private static final String TYPE_STRING = "text";
 	private static final String TYPE_BOOLEAN = "boolean";
+	private static final String TYPE_DATE = "date";
 	
 	//---------------------------------------
 	// Returns the constants specifying types 
@@ -41,6 +42,9 @@ public class InstanceDatabasePostgresSQL extends InstanceDatabaseSQL
 	
 	public String getTypeBoolean()
 	{	return TYPE_BOOLEAN;	}
+	
+	public String getTypeDate()
+	{	return TYPE_DATE;	}
 
 	
 	//------------------------
@@ -205,7 +209,7 @@ public class InstanceDatabasePostgresSQL extends InstanceDatabaseSQL
 		String[] attributeTableNames = detailsOfOneView.getAttributeTableNames();
 		
 		StringBuffer sb = new StringBuffer("CREATE OR REPLACE VIEW \"" + detailsOfOneView.getViewName() + "\" AS ");
-		sb.append("SELECT e.id AS id, ");
+		sb.append("SELECT e.id AS \"id\", ");
 		
 		for(int i=0; i<(columnNames.length-1); i++)
 			sb.append("a" + (i+1) + ".val AS \"" + columnNames[i] + "\", ");

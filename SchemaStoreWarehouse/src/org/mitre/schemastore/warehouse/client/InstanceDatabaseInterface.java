@@ -70,6 +70,8 @@ public interface InstanceDatabaseInterface
 	
 	public void populateBooleanAttributeTable(Attribute attribute, String[] values) throws NoDataFoundException, RemoteException;
 	
+	public void populateDateAttributeTable(Attribute attribute, String[] values) throws NoDataFoundException, RemoteException;
+	
 	public void createContainmentTable(Entity entity) throws NoDataFoundException, RemoteException;
 	
 	public void populateContainmentTable(Entity entity) throws NoDataFoundException, RemoteException;

@@ -8,7 +8,9 @@ import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.rmi.RemoteException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.poi.hssf.usermodel.HSSFCell;
@@ -50,10 +52,13 @@ public class SpreadsheetInstanceDatabaseClient implements InstanceDatabaseInterf
 	private Integer newDataSourceId = null;
 	
 	/** Constants used for naming instance tables */
-	protected static final String ENTITY = "E";
-	protected static final String ATTRIBUTE = "A";
-	protected static final String CONTAINMENT = "C";
-	protected static final String RELATIONSHIP = "R";
+	private static final String ENTITY = "E";
+	private static final String ATTRIBUTE = "A";
+	private static final String CONTAINMENT = "C";
+	private static final String RELATIONSHIP = "R";
+	
+	/** Constant used to identify a cell of type date/time */
+	private static final int CELL_TYPE_DATETIME = 1024;
 	
 	/** Constructor 
 	 * @throws NoDataFoundException 
@@ -181,6 +186,13 @@ public class SpreadsheetInstanceDatabaseClient implements InstanceDatabaseInterf
 		
 		// Create a list of transfer objects necessary for creating views representing each sheet in the .xls file
 		List<ViewDTO> listOfViewDTO = new ArrayList<ViewDTO>();
+		
+		// Get the database-specific SQL data types used for creating tables and inserting data
+		String TYPE_NUMERIC = ((InstanceDatabase) instanceDatabase).getTypeNumeric();
+		String TYPE_STRING = ((InstanceDatabase) instanceDatabase).getTypeString();
+		String TYPE_BOOLEAN = ((InstanceDatabase) instanceDatabase).getTypeBoolean();
+		String TYPE_DATE = ((InstanceDatabase) instanceDatabase).getTypeDate();
+		String TYPE_NULL = ((InstanceDatabase) instanceDatabase).getTypeNull();
 		
 		/* Iterate through each sheet in the excel file */ 
 		for(int i=0; i<wb.getNumberOfSheets(); i++)
@@ -375,7 +387,7 @@ public class SpreadsheetInstanceDatabaseClient implements InstanceDatabaseInterf
 				else if(attributeDomainName.trim().equalsIgnoreCase("STRING"))
 					expectedCellType = HSSFCell.CELL_TYPE_STRING;
 				else if(attributeDomainName.trim().equalsIgnoreCase("DATETIME"))
-					expectedCellType = HSSFCell.CELL_TYPE_NUMERIC;
+					expectedCellType = CELL_TYPE_DATETIME;
 				else if(attributeDomainName.trim().equalsIgnoreCase("BOOLEAN"))
 					expectedCellType = HSSFCell.CELL_TYPE_BOOLEAN;
 				
@@ -390,7 +402,7 @@ public class SpreadsheetInstanceDatabaseClient implements InstanceDatabaseInterf
 				// zero-based row index of this cell
 				int rowIndexOfCell = cell.getRowIndex();
 				
-				for(int n=rowIndexOfCell+1; n<=numberOfRowsOfData; n++)
+				/*for(int n=rowIndexOfCell+1; n<=numberOfRowsOfData; n++)
 				{
 					HSSFCell nextCellInColumn = wb.getSheetAt(i).getRow(n).getCell(columnIndexOfCell);
 					int actualCellType = nextCellInColumn.getCellType();
@@ -408,7 +420,7 @@ public class SpreadsheetInstanceDatabaseClient implements InstanceDatabaseInterf
 							throw new NoDataFoundException("Data cannot be inserted in table because incorrect data types found in cell defined by row " 
 									+ (rowIndexOfCell+1) + " column " + (columnIndexOfCell+1));
 						}
-				}
+				}*/
 				
 				/* Find the appropriate SQL data type to be used when creating the instance
 				 * table for this Attribute object
@@ -419,18 +431,22 @@ public class SpreadsheetInstanceDatabaseClient implements InstanceDatabaseInterf
 					case HSSFCell.CELL_TYPE_NUMERIC:
 						// creates a column in which numeric values of any precision and scale can be stored,
 						// up to the implementation limit on precision
-						type = ((InstanceDatabase) instanceDatabase).getTypeNumeric();	//Need to choose the type based on the type of database
+						type = TYPE_NUMERIC;	//Need to choose the type based on the type of database
 						break;
 					case HSSFCell.CELL_TYPE_STRING:
 						// creates a column in which variable-length strings can be stored,
 						// with no limit on the number of characters
-						type = ((InstanceDatabase) instanceDatabase).getTypeString();		// max. length of the String is 30 characters
+						type = TYPE_STRING;		// max. length of the String is 30 characters for Derby
 						break;	
 					case HSSFCell.CELL_TYPE_BOOLEAN:
 						// creates a column in which one of the two states "true" or "false" can be stored,
 						// a "null" value represents the unknown state
-						type = ((InstanceDatabase) instanceDatabase).getTypeBoolean();	//Need to choose the type based on the type of database
-						break;									
+						type = TYPE_BOOLEAN;	//Need to choose the type based on the type of database
+						break;	
+					case CELL_TYPE_DATETIME:
+						// creates a column in which date is stored in the database-specific format
+						type = TYPE_DATE;
+						break;	
 					default:
 						// Undo all changes made to structural repository
 						deleteDataSourceIfNeeded();
@@ -442,7 +458,7 @@ public class SpreadsheetInstanceDatabaseClient implements InstanceDatabaseInterf
 						// Throw an exception and terminate this process
 						throw new NoDataFoundException("Valid data type could not be found for attribute" + attribute.getName());
 				}
-				
+
 				// 6.	Create instance table corresponding to this attribute
 				if(createNewDatabase)
 				{
@@ -471,10 +487,21 @@ public class SpreadsheetInstanceDatabaseClient implements InstanceDatabaseInterf
 				for(int n=1; n<=numberOfRowsOfData; n++)
 				{
 					HSSFCell nextCellInColumn = wb.getSheetAt(i).getRow(n).getCell(columnIndexOfCell);
+					int actualCellType = nextCellInColumn.getCellType();
 					
-					// If the cell is blank, store a "null" value					
-					if(nextCellInColumn.getCellType() == HSSFCell.CELL_TYPE_BLANK)
-						columnDataList.add("null");
+					// If any of the cell in this column is blank, store a NULL value					
+					if(actualCellType == HSSFCell.CELL_TYPE_BLANK)
+						columnDataList.add(TYPE_NULL);
+					
+					// If any of the data in this column is found to be not of the same type as the domain,
+					// store a NULL value
+					else if(expectedCellType == CELL_TYPE_DATETIME && actualCellType != HSSFCell.CELL_TYPE_NUMERIC)
+						columnDataList.add(TYPE_NULL);
+					
+					else if(expectedCellType != CELL_TYPE_DATETIME && expectedCellType != actualCellType)
+						columnDataList.add(TYPE_NULL);
+					
+					// If the value is as expected	
 					else
 					{
 						String valueAsString = null;
@@ -490,7 +517,12 @@ public class SpreadsheetInstanceDatabaseClient implements InstanceDatabaseInterf
 							case HSSFCell.CELL_TYPE_BOOLEAN:
 								boolean b = nextCellInColumn.getBooleanCellValue();
 								valueAsString = Boolean.toString(b);
-								break;									
+								break;	
+							case CELL_TYPE_DATETIME:
+								Date d = nextCellInColumn.getDateCellValue();
+								SimpleDateFormat dateFormatter = new SimpleDateFormat("MM/dd/yyyy");
+								valueAsString = dateFormatter.format(d);
+								break;
 							default:
 								// Undo all changes made to structural repository
 								deleteDataSourceIfNeeded();
@@ -570,7 +602,27 @@ public class SpreadsheetInstanceDatabaseClient implements InstanceDatabaseInterf
 							// Propagate the exception and terminate this process
 							throw e;
 						}
-						break;									
+						break;
+					case CELL_TYPE_DATETIME:
+						try 
+						{
+							populateDateAttributeTable(attribute, columnDataArray);
+						} 
+						catch (NoDataFoundException e) 
+						{
+							// Attribute table could not be populated - log it
+							e.printStackTrace(System.err);
+							
+							// Undo all changes made to structural repository
+							deleteDataSourceIfNeeded();
+							
+							// This exception has come from the server - 
+							// Changes to instance repository have been rolled back by the server
+							
+							// Propagate the exception and terminate this process
+							throw e;
+						}
+						break;
 					default:
 						// Undo all changes made to structural repository
 						deleteDataSourceIfNeeded();
@@ -715,6 +767,15 @@ public class SpreadsheetInstanceDatabaseClient implements InstanceDatabaseInterf
 	{
 		String attributeTableName = ATTRIBUTE + attribute.getId();
 		((InstanceDatabase) instanceDatabase).populateBooleanAttributeTable(attributeTableName, values);
+		/*callMethod("populateBooleanAttributeTable", new Object[] {attributeTableName, values});*/
+	}
+	
+	/** Implementing method of InstanceDatabaseInterface - populates table for given Attribute with Date data 
+	 * @throws NoDataFoundException, RemoteException */
+	public void populateDateAttributeTable(Attribute attribute, String[] values) throws NoDataFoundException, RemoteException
+	{
+		String attributeTableName = ATTRIBUTE + attribute.getId();
+		((InstanceDatabase) instanceDatabase).populateDateAttributeTable(attributeTableName, values);
 		/*callMethod("populateBooleanAttributeTable", new Object[] {attributeTableName, values});*/
 	}
 	
