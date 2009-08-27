@@ -1,4 +1,4 @@
-package org.mitre.openii.views.manager.groups;
+package org.mitre.openii.widgets.schemaList;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -16,15 +16,15 @@ import org.eclipse.swt.widgets.Text;
 import org.mitre.openii.application.OpenIIActivator;
 import org.mitre.openii.widgets.BasicWidgets;
 
-/** Constructs the Query Schemas For Group Dialog */
-public class QuerySchemasForGroupDialog extends Dialog implements SelectionListener
+/** Constructs the Query Schemas For List Dialog */
+public class QuerySchemasForListDialog extends Dialog implements SelectionListener
 {
 	// Stores the various dialog fields
 	private Text queryField = null;
 	private Button queryButton = null;
 	
 	/** Constructs the dialog */
-	public QuerySchemasForGroupDialog(Shell shell)
+	public QuerySchemasForListDialog(Shell shell)
 		{ super(shell); }
 
 	/** Configures the dialog shell */
