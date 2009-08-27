@@ -135,7 +135,7 @@ public class MappingSchemasPage extends WizardPage
 			try {
 				for(MappingSchema schema : propertiesPage.getImporter().getSchemas(currentURI))
 					selectionPanes.add(new SelectionPane(schemaPane,schema));
-			} catch(Exception e) {}
+			} catch(Exception e) { System.out.println("(E) MappingSchemasPage.setVisible - " + e.getMessage()); }
 			
 			// Refresh the scroll pane to display the updated schemas
 			scrolledPane.setContent(schemaPane);
