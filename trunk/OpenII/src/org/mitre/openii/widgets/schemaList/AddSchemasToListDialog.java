@@ -1,4 +1,4 @@
-package org.mitre.openii.views.manager.groups;
+package org.mitre.openii.widgets.schemaList;
 
 import java.util.ArrayList;
 
@@ -10,13 +10,13 @@ import org.mitre.openii.model.OpenIIManager;
 import org.mitre.openii.widgets.WidgetUtilities;
 import org.mitre.schemastore.model.Schema;
 
-/** Constructs the Edit Group Dialog */
-class AddSchemasToGroupDialog extends ElementListSelectionDialog
+/** Constructs the Add Schemas to List Dialog */
+class AddSchemasToListDialog extends ElementListSelectionDialog
 {
 	/** Constructs the dialog */
-	AddSchemasToGroupDialog(Shell shell, ArrayList<Integer> selectedSchemaIDs)
+	AddSchemasToListDialog(Shell shell, ArrayList<Integer> selectedSchemaIDs)
 	{
-		super(shell,new LabelProvider());//DialogComponents.SchemaLabelProvider());
+		super(shell,new LabelProvider());
 		setMessage("Select Schemas (* = any string, ? = any char):");
 		setMultipleSelection(true);
 		ArrayList<Schema> schemas = OpenIIManager.getSchemas();
