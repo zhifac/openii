@@ -243,7 +243,7 @@ public class SchemaTree extends JTree implements MappingListener, PreferencesLis
 	{
 		while(node.getUserObject() instanceof Integer)
 			node = (DefaultMutableTreeNode)node.getParent();
-		return ((Schema)node.getUserObject()).getId();
+		return node.getUserObject() instanceof Schema ? ((Schema)node.getUserObject()).getId() : null;
 	}
 	
 	/** Returns the node associated with the specified schema */
