@@ -16,6 +16,7 @@ import java.util.List;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.DateUtil;
 
 import org.mitre.schemastore.client.Repository;
 import org.mitre.schemastore.client.SchemaStoreClient;
@@ -26,6 +27,7 @@ import org.mitre.schemastore.model.Entity;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.graph.Graph;
+import org.mitre.schemastore.warehouse.common.DataWarning;
 import org.mitre.schemastore.warehouse.common.InstanceRepository;
 import org.mitre.schemastore.warehouse.common.NoDataFoundException;
 import org.mitre.schemastore.warehouse.common.ViewDTO;
@@ -59,6 +61,9 @@ public class SpreadsheetInstanceDatabaseClient implements InstanceDatabaseInterf
 	
 	/** Constant used to identify a cell of type date/time */
 	private static final int CELL_TYPE_DATETIME = 1024;
+	
+	/** List of warnings generated when data is read from the .xls file	*/
+	List<DataWarning> listOfDataWarning = null;
 	
 	/** Constructor 
 	 * @throws NoDataFoundException 
@@ -184,21 +189,26 @@ public class SpreadsheetInstanceDatabaseClient implements InstanceDatabaseInterf
 			throw new NoDataFoundException("Connection to instance database not available...Try Again!!!");
 		}
 		
+		// Create a list of warnings generated when data is read from the .xls file
+		listOfDataWarning = new ArrayList<DataWarning>();
+		
 		// Create a list of transfer objects necessary for creating views representing each sheet in the .xls file
 		List<ViewDTO> listOfViewDTO = new ArrayList<ViewDTO>();
 		
 		// Get the database-specific SQL data types used for creating tables and inserting data
-		String TYPE_NUMERIC = ((InstanceDatabase) instanceDatabase).getTypeNumeric();
-		String TYPE_STRING = ((InstanceDatabase) instanceDatabase).getTypeString();
-		String TYPE_BOOLEAN = ((InstanceDatabase) instanceDatabase).getTypeBoolean();
-		String TYPE_DATE = ((InstanceDatabase) instanceDatabase).getTypeDate();
-		String TYPE_NULL = ((InstanceDatabase) instanceDatabase).getTypeNull();
+		// Get all types in the following order - Numeric, String, Boolean, Date, Null
+		String[] arrayOfTypes = ((InstanceDatabase) instanceDatabase).getAllTypes();
+		String TYPE_NUMERIC = arrayOfTypes[0];
+		String TYPE_STRING = arrayOfTypes[1];
+		String TYPE_BOOLEAN = arrayOfTypes[2];
+		String TYPE_DATE = arrayOfTypes[3];
+		String TYPE_NULL = arrayOfTypes[4];
 		
 		/* Iterate through each sheet in the excel file */ 
 		for(int i=0; i<wb.getNumberOfSheets(); i++)
 		{
 			System.out.println("-----------------------------------");
-			System.out.println("Creating instance data for Sheet " + i);
+			System.out.println("Creating instance data for Sheet " + (i+1));
 			System.out.println("-----------------------------------");
 			
 			/* Create instance table corresponding to this sheet */
@@ -322,14 +332,20 @@ public class SpreadsheetInstanceDatabaseClient implements InstanceDatabaseInterf
 			for(int j=minColumnIndex; j<maxColumnIndex; j++)
 			{
 				HSSFCell cell = firstRow.getCell(j);
-				if(cell == null)
-					continue;
 				listOfFirstRowCells.add(cell);
 			}
 			
 			// 2.	Iterate through each cell in the above list of cell objects
 			for(HSSFCell cell : listOfFirstRowCells)
 			{
+				if(cell == null)
+				{
+					DataWarning w1 = new DataWarning("Data for column " + (listOfFirstRowCells.indexOf(cell)+1) + " in Sheet " + (i+1) + " not persisted in database. " +
+							"Reason - First row in this column not defined");
+					listOfDataWarning.add(w1);
+					continue;
+				}
+				
 				/* 3.	Get the value in this cell - title of the column (= Attribute name)
 				   Assumption is that the title of the column is a String.
 				   Any other value is not accepted
@@ -338,10 +354,20 @@ public class SpreadsheetInstanceDatabaseClient implements InstanceDatabaseInterf
 				if(cell.getCellType() == HSSFCell.CELL_TYPE_STRING)
 					cellValue = cell.getStringCellValue();
 				else
+				{
+					DataWarning w2 = new DataWarning("Data for column " + (listOfFirstRowCells.indexOf(cell)+1) + " in Sheet " + (i+1) + " not persisted in database. " +
+							"Reason - First row in this column is not a String/Text");
+					listOfDataWarning.add(w2);
 					continue;
+				}
 				
 				if(cellValue.isEmpty())
+				{
+					DataWarning w3 = new DataWarning("Data for column " + (listOfFirstRowCells.indexOf(cell)+1) + " in Sheet " + (i+1) + " not persisted in database. " +
+							"Reason - First row in this column is defined but has no contents (i.e. is empty)");
+					listOfDataWarning.add(w3);
 					continue;
+				}
 				
 				// 4.	Get the Attribute that this cell is associated with
 				Attribute attribute;
@@ -391,36 +417,11 @@ public class SpreadsheetInstanceDatabaseClient implements InstanceDatabaseInterf
 				else if(attributeDomainName.trim().equalsIgnoreCase("BOOLEAN"))
 					expectedCellType = HSSFCell.CELL_TYPE_BOOLEAN;
 				
-				/* Find the type of data populated in this column of the spreadsheet
-				 * This is important to make sure that the proper data is inserted 
-				 * If any of the data in this column is found to be not of the same type
-				 * as the domain, an exception is thrown
-				 */
 				// zero-based column index of this cell
 				int columnIndexOfCell = cell.getColumnIndex();
 				
 				// zero-based row index of this cell
 				int rowIndexOfCell = cell.getRowIndex();
-				
-				/*for(int n=rowIndexOfCell+1; n<=numberOfRowsOfData; n++)
-				{
-					HSSFCell nextCellInColumn = wb.getSheetAt(i).getRow(n).getCell(columnIndexOfCell);
-					int actualCellType = nextCellInColumn.getCellType();
-					if(actualCellType != HSSFCell.CELL_TYPE_BLANK)
-						if(actualCellType != expectedCellType)
-						{
-							// Undo all changes made to structural repository
-							deleteDataSourceIfNeeded();
-							
-							// Since client is deciding to throw an exception -
-							// need to tell server to roll back all changes made to database
-							rollback();
-							
-							// Throw an exception and terminate this process
-							throw new NoDataFoundException("Data cannot be inserted in table because incorrect data types found in cell defined by row " 
-									+ (rowIndexOfCell+1) + " column " + (columnIndexOfCell+1));
-						}
-				}*/
 				
 				/* Find the appropriate SQL data type to be used when creating the instance
 				 * table for this Attribute object
@@ -491,15 +492,34 @@ public class SpreadsheetInstanceDatabaseClient implements InstanceDatabaseInterf
 					
 					// If any of the cell in this column is blank, store a NULL value					
 					if(actualCellType == HSSFCell.CELL_TYPE_BLANK)
+					{	
 						columnDataList.add(TYPE_NULL);
+						
+						DataWarning w4 = new DataWarning("Data in cell at row " + (n+1) + " and column " + (columnIndexOfCell+1) + " in Sheet " + (i+1) + " not persisted in database. " +
+						"Reason - Cell is blank");
+						listOfDataWarning.add(w4);
+					}
+					
 					
 					// If any of the data in this column is found to be not of the same type as the domain,
 					// store a NULL value
 					else if(expectedCellType == CELL_TYPE_DATETIME && actualCellType != HSSFCell.CELL_TYPE_NUMERIC)
+					{
 						columnDataList.add(TYPE_NULL);
+						
+						DataWarning w5 = new DataWarning("Data in cell at row " + (n+1) + " and column " + (columnIndexOfCell+1) + " in Sheet " + (i+1) + " not persisted in database. " +
+						"Reason - Valid data not found in the cell");
+						listOfDataWarning.add(w5);
+					}
 					
 					else if(expectedCellType != CELL_TYPE_DATETIME && expectedCellType != actualCellType)
+					{
 						columnDataList.add(TYPE_NULL);
+						
+						DataWarning w6 = new DataWarning("Data in cell at row " + (n+1) + " and column " + (columnIndexOfCell+1) + " in Sheet " + (i+1) + " not persisted in database. " +
+						"Reason - Valid data not found in the cell");
+						listOfDataWarning.add(w6);
+					}
 					
 					// If the value is as expected	
 					else
@@ -508,8 +528,20 @@ public class SpreadsheetInstanceDatabaseClient implements InstanceDatabaseInterf
 						switch (expectedCellType) 
 						{
 							case HSSFCell.CELL_TYPE_NUMERIC:
-								double valueAsNumber = nextCellInColumn.getNumericCellValue();
-								valueAsString = Double.toString(valueAsNumber);
+								if(DateUtil.isCellDateFormatted(nextCellInColumn)) 
+					        	{	
+									//If a date is stored in the cell
+									valueAsString = TYPE_NULL; 
+									
+									DataWarning w7 = new DataWarning("Data in cell at row " + (n+1) + " and column " + (columnIndexOfCell+1) + " in Sheet " + (i+1) + " not persisted in database. " +
+									"Reason - Valid data not found in the cell");
+									listOfDataWarning.add(w7);
+								}	
+					        	else 
+					        	{
+					                double valueAsNumber = nextCellInColumn.getNumericCellValue();
+					                valueAsString = Double.toString(valueAsNumber);
+					        	}
 								break;
 							case HSSFCell.CELL_TYPE_STRING:
 								valueAsString = nextCellInColumn.getStringCellValue();
@@ -519,9 +551,21 @@ public class SpreadsheetInstanceDatabaseClient implements InstanceDatabaseInterf
 								valueAsString = Boolean.toString(b);
 								break;	
 							case CELL_TYPE_DATETIME:
-								Date d = nextCellInColumn.getDateCellValue();
-								SimpleDateFormat dateFormatter = new SimpleDateFormat("MM/dd/yyyy");
-								valueAsString = dateFormatter.format(d);
+								if(DateUtil.isCellDateFormatted(nextCellInColumn))
+								{
+									Date d = nextCellInColumn.getDateCellValue();
+									SimpleDateFormat dateFormatter = new SimpleDateFormat("MM/dd/yyyy");
+									valueAsString = dateFormatter.format(d);
+								}
+								else
+								{
+									//If a number is stored in the cell
+									valueAsString = TYPE_NULL;	
+									
+									DataWarning w8 = new DataWarning("Data in cell at row " + (n+1) + " and column " + (columnIndexOfCell+1) + " in Sheet " + (i+1) + " not persisted in database. " +
+									"Reason - Valid data not found in the cell");
+									listOfDataWarning.add(w8);
+								}
 								break;
 							default:
 								// Undo all changes made to structural repository
@@ -533,7 +577,7 @@ public class SpreadsheetInstanceDatabaseClient implements InstanceDatabaseInterf
 								
 								// Throw an exception and terminate this process
 								throw new NoDataFoundException("Data could not be read for cell at column " 
-										+ columnIndexOfCell + " and row " + n);
+										+ (columnIndexOfCell+1) + " and row " + (n+1));
 						}
 						columnDataList.add(valueAsString);
 					}
@@ -682,6 +726,15 @@ public class SpreadsheetInstanceDatabaseClient implements InstanceDatabaseInterf
 		
 		// Release resources
 		releaseResources();
+		
+		// Print out all the warnings, if there are any
+		if(!(listOfDataWarning.isEmpty()))
+		{
+			System.out.println("\n----- Data Warnings -----");
+			for(DataWarning w : listOfDataWarning)
+				System.out.println("Warning " + (listOfDataWarning.indexOf(w)+1) + ": " + w.getMessage() + "\n");
+		}
+
 	}//end of method createInstanceDatabaseTables
 	
 	
@@ -1034,6 +1087,14 @@ public class SpreadsheetInstanceDatabaseClient implements InstanceDatabaseInterf
 	 */
 	public Integer getNewDataSourceCreated()
 	{	return newDataSourceId;	}
+	
+	
+	/** Get the list of warnings generated when data is read from the .xls file	
+	 *  returns null if no such list has been created */
+	public List<DataWarning> getListOfDataWarning()
+	{
+		return listOfDataWarning;
+	}
 	
 	
 }
