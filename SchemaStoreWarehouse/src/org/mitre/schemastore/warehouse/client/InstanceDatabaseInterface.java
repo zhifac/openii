@@ -1,9 +1,11 @@
 package org.mitre.schemastore.warehouse.client;
 
 import java.rmi.RemoteException;
+import java.util.List;
 
 import org.mitre.schemastore.model.Attribute;
 import org.mitre.schemastore.model.Entity;
+import org.mitre.schemastore.warehouse.common.DataWarning;
 import org.mitre.schemastore.warehouse.common.NoDataFoundException;
 import org.mitre.schemastore.warehouse.common.ViewDTOArray;
 
@@ -28,33 +30,24 @@ public interface InstanceDatabaseInterface
 	 *     is blank, or its value is of any other type, the entire column under it is ignored 
 	 *     i.e. data in that column is not stored in the database.
 	 * 
-	 * 6.  Excel treats dates as numeric.  The POI API only detects the following cell types:
-	 *     { NUMERIC, STRING, FORMULA, BLANK, BOOLEAN, ERROR }.  The importer creates the domain type
-	 *     "DATETIME", but, this type is not loaded into any Attribute object created because
-	 *     the POI API does not detect "dates" separately from numbers.
-	 *     
-	 * 7.  For every cellType detected as NUMERIC by the POI API, the importer gives the domain name
+	 * 6.  For every cellType detected as NUMERIC by the POI API, the importer gives the domain name
 	 *     "REAL" to the Attribute object.  The domain name "INTEGER" does not seem to be used. 
 	 *     
-	 * 8.  The importer, as it is set up now, stores the domain name "REAL" for the following data types:
-	 *     { integer, numeric, decimal, real, date, time } which are all detected as NUMERIC by POI API.  
+	 * 7.  The importer, as it is set up now, stores the domain name "REAL" for the following data types:
+	 *     { integer, numeric, decimal, real } which are all detected as NUMERIC by POI API.  
 	 *     
-	 * 9.  If the type of data found in a cell is not the same as the domain type stored in the Attribute
-	 *     object, an exception is thrown -- is this valid since we are allowing creation of instance 
-	 *     tables for not just the .xls from which the entity was originally created but also we are allowing
-	 *     the user to select any .xls file.
+	 * 8.  If the type of data found in a cell is not the same as the domain type stored in the Attribute
+	 *     object, a null is inserted in its place.
 	 *     
-	 * 10. If no value is found in a cell, NULL is inserted into the table.  The only SQL data types used
-	 *     to insert values into the table are "numeric", "varchar", "boolean".
+	 * 9. If no value is found in a cell, NULL is inserted into the table.  
 	 *     
-	 * 11. The maximum length of the string that can be stored in the database is 30 - can be changed by 
-	 *  	changes in the code
+	 * 11. The maximum length of the string that can be stored in the database is 30 - for Derby database
 	 *  
 	 * 12. Numeric values can be stored in the database with a max. precision of 30 and scale of 10
-	 *      - can be changed by changes in the code
+	 *      - for Derby database
 	 *      
 	 * 13. There is no need to close the OpenII window to access the database using some other tool.     
-	 * @throws RemoteException 
+	 * @throws NoDataFoundException, RemoteException 
 	 */   
 	public void createInstanceDatabaseTables() throws NoDataFoundException, RemoteException;
 	
@@ -85,4 +78,8 @@ public interface InstanceDatabaseInterface
 	public void releaseResources() throws RemoteException;
 	
 	public void rollback() throws NoDataFoundException;
+	
+	/** Get the list of warnings generated when data is read	
+	 *  returns null if no such list has been created */
+	public List<DataWarning> getListOfDataWarning();
 }
