@@ -156,7 +156,7 @@ public class SpreadsheetInstanceDatabaseClient implements InstanceDatabaseInterf
 	
 	
 	/** Method to create and populate all instance tables for the excel file that this client refers to 
-	 * @throws RemoteException */
+	 * @throws NoDataFoundException, RemoteException */
 	public void createInstanceDatabaseTables() throws NoDataFoundException, RemoteException
 	{
 		/* Check if connection is available */
@@ -512,7 +512,7 @@ public class SpreadsheetInstanceDatabaseClient implements InstanceDatabaseInterf
 						listOfDataWarning.add(w5);
 					}
 					
-					else if(expectedCellType != CELL_TYPE_DATETIME && expectedCellType != actualCellType)
+					else if(expectedCellType != CELL_TYPE_DATETIME && expectedCellType != HSSFCell.CELL_TYPE_STRING && expectedCellType != actualCellType)
 					{
 						columnDataList.add(TYPE_NULL);
 						
@@ -542,14 +542,49 @@ public class SpreadsheetInstanceDatabaseClient implements InstanceDatabaseInterf
 					                double valueAsNumber = nextCellInColumn.getNumericCellValue();
 					                valueAsString = Double.toString(valueAsNumber);
 					        	}
-								break;
+							break;
 							case HSSFCell.CELL_TYPE_STRING:
-								valueAsString = nextCellInColumn.getStringCellValue();
-								break;	
+								// All types of values are accepted
+								switch(actualCellType)
+								{
+									case HSSFCell.CELL_TYPE_NUMERIC:
+										{
+											// If the value is a date from 1/1/1900 and beyond
+											if(DateUtil.isCellDateFormatted(nextCellInColumn)) 
+											{	
+												Date d = nextCellInColumn.getDateCellValue();
+												SimpleDateFormat dateFormatter = new SimpleDateFormat("MM/dd/yyyy");
+												valueAsString = dateFormatter.format(d);
+											}
+											// If the value is a number
+											else 
+											{
+												double valueAsNumber = nextCellInColumn.getNumericCellValue();
+												valueAsString = Double.toString(valueAsNumber);
+											}
+										}
+									break;
+									case HSSFCell.CELL_TYPE_BOOLEAN: 
+										{
+											// If value is a boolean
+											boolean b = nextCellInColumn.getBooleanCellValue();
+											valueAsString = Boolean.toString(b);
+										}
+									break;
+									case HSSFCell.CELL_TYPE_STRING:
+										// If the value is a string or a date before 1/1/1900
+										valueAsString = nextCellInColumn.getStringCellValue();
+									break;	
+									default:
+										DataWarning w8 = new DataWarning("Data in cell at row " + (n+1) + " and column " + (columnIndexOfCell+1) + " in Sheet " + (i+1) + " not persisted in database. " +
+										"Reason - Valid data not found in the cell");
+										listOfDataWarning.add(w8);
+								}
+							break;
 							case HSSFCell.CELL_TYPE_BOOLEAN:
 								boolean b = nextCellInColumn.getBooleanCellValue();
 								valueAsString = Boolean.toString(b);
-								break;	
+							break;	
 							case CELL_TYPE_DATETIME:
 								if(DateUtil.isCellDateFormatted(nextCellInColumn))
 								{
@@ -562,12 +597,13 @@ public class SpreadsheetInstanceDatabaseClient implements InstanceDatabaseInterf
 									//If a number is stored in the cell
 									valueAsString = TYPE_NULL;	
 									
-									DataWarning w8 = new DataWarning("Data in cell at row " + (n+1) + " and column " + (columnIndexOfCell+1) + " in Sheet " + (i+1) + " not persisted in database. " +
+									DataWarning w9 = new DataWarning("Data in cell at row " + (n+1) + " and column " + (columnIndexOfCell+1) + " in Sheet " + (i+1) + " not persisted in database. " +
 									"Reason - Valid data not found in the cell");
-									listOfDataWarning.add(w8);
+									listOfDataWarning.add(w9);
 								}
-								break;
+							break;
 							default:
+								// Unexpected cell type obtained from M3 model
 								// Undo all changes made to structural repository
 								deleteDataSourceIfNeeded();
 								
@@ -576,8 +612,7 @@ public class SpreadsheetInstanceDatabaseClient implements InstanceDatabaseInterf
 								rollback();
 								
 								// Throw an exception and terminate this process
-								throw new NoDataFoundException("Data could not be read for cell at column " 
-										+ (columnIndexOfCell+1) + " and row " + (n+1));
+								throw new NoDataFoundException("Domain obtained from M3 model cannot be processed by this application");
 						}
 						columnDataList.add(valueAsString);
 					}
@@ -1089,7 +1124,8 @@ public class SpreadsheetInstanceDatabaseClient implements InstanceDatabaseInterf
 	{	return newDataSourceId;	}
 	
 	
-	/** Get the list of warnings generated when data is read from the .xls file	
+	/** Implementing method of InstanceDatabaseInterface - 
+	 *  Get the list of warnings generated when data is read from the .xls file	
 	 *  returns null if no such list has been created */
 	public List<DataWarning> getListOfDataWarning()
 	{
