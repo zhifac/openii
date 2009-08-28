@@ -142,8 +142,10 @@ public class XMIMappingExporter extends MappingExporter {
 		
 		// Stereotype with a custom label depending on depth.
 		String schemaName = owner.getSchema().getName();
-		if(hasChildren) m.addStereotype(schemaName + "_L" + depth, thisnode); 
-		else m.addStereotype(schemaName + "_LF", thisnode); // Leaf node.
+		String stName = schemaName + "_L" + depth;
+		if(!hasChildren) stName = stName + "_LF";
+		
+		m.addStereotype(stName, thisnode);
 		return thisnode; 
 	} // End recurseHashModel
 	
