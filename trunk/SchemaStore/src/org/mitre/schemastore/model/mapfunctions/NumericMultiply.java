@@ -22,14 +22,14 @@ package org.mitre.schemastore.model.mapfunctions;
  *  @author     Jeffrey Hoyt
  *  @version    1.0
  */
-public class NumericSubtract extends BinaryOperation
+public class NumericMultiply extends BinaryOperation
 {
 
-    public NumericSubtract( )
+    public NumericMultiply( )
     {
         super();
-        operator = "-";
-        displayName = "Numeric Subtract";
+        operator = "*";
+        displayName = "Numeric Multiplyfa";
         KEY = String.valueOf( getClass().getName() );
     }
 

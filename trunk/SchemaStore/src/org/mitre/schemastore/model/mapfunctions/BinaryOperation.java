@@ -23,14 +23,18 @@ import org.mitre.schemastore.model.SchemaElement;
 
 
 /**
- *  This class provides the for the addition of two fields.
+ *  This class provides a base class for binary operations.  For example, NumericAdd is a BinaryOperation that
+ *  utilizes a '+' character
  *  @author     Jeffrey Hoyt
  *  @version    1.0
  */
-public class IdentityFunction extends AbstractMappingFunction
+public class BinaryOperation extends AbstractMappingFunction
 {
 
-    public IdentityFunction( )
+    protected String operator = "+";
+    protected String space = " ";
+
+    public BinaryOperation( )
     {
         setMetaData();
     }
@@ -38,26 +42,20 @@ public class IdentityFunction extends AbstractMappingFunction
     private void setMetaData()
     {
         KEY = String.valueOf( getClass().getName() );
-        minArgs = 1;
-        maxArgs = 1;
-        inputDomains.add( MappingDefinition.ANY );
-        outputDomain = MappingDefinition.ANY;
-        displayName = "Identity Function";
-        description = "Passes the value through un-changed";
+        minArgs = 2;
+        maxArgs = 2;
+        inputDomains.add( MappingDefinition.REAL );
+        inputDomains.add( MappingDefinition.INTEGER );
+        outputDomain = MappingDefinition.REAL;
+        displayName = "Binary Operation";
+        description = "Takes in two number types and outputs a REAL.  Casts will be necessary to get int values, however some databases will do the cast for you.";
         version = "1.0";
     }
 
-    public String getRelationalString( String colPrefix[], MappingCell cell, MappingDefinition def ) throws IllegalArgumentException
+    public String getRelationalString( String[] colPrefix, MappingCell cell, MappingDefinition def ) throws IllegalArgumentException
     {
-        HierarchicalGraph graph = def.getLeftGraph();
-        if( cell.getInput().length != 1 )
-        {
-            throw new IllegalArgumentException( KEY + " requires exactly 1 input." );
-        }
-        SchemaElement one;
-        one = graph.getElement( cell.getInput()[0] );
-        //TODO -check the types
-        return colPrefix[0] + QUOTE + one.getName() + QUOTE;
+        String[] processedInputStrings = processInputStrings( colPrefix, cell, def, true );
+        return processedInputStrings[0] + space + operator + space + processedInputStrings[1];
     }
 }
 

@@ -17,12 +17,15 @@
 package test.org.mitre.schemastore.model.mapfunctions;
 
 import org.mitre.schemastore.model.mapfunctions.*;
+import org.mitre.schemastore.model.*;
 import org.junit.*;
 import static org.junit.Assert.*;
 
 public class IdentityFunctionTest {
 
     private IdentityFunction add = null;
+    private MappingCell cell = null;
+    private TestFixtures factory = new TestFixtures();
 
     /**
      * Sets up the test fixture.
@@ -31,7 +34,7 @@ public class IdentityFunctionTest {
     @Before
     public void setUp() {
         add = new IdentityFunction();
-        add.addInput( 9 ); //Ht attribute
+        cell = factory.getMappingCells().get("identity");
     }
 
     /**
@@ -41,13 +44,14 @@ public class IdentityFunctionTest {
     @After
     public void tearDown() {
         add = null;
+        cell = null;
     }
 
     @Test
     public void testGetRelationalString() {
         try
         {
-            assertEquals("personID", add.getRelationalString("", TestFixtures.getSourceGraph()));
+            assertEquals("\"Ht\"", add.getRelationalString(factory.getPrefixArray("", cell.getInput().length), cell, factory.getMappingDefinition()));
         }
         catch (Exception e)
         {

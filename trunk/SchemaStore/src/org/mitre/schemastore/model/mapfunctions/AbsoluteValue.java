@@ -22,14 +22,15 @@ package org.mitre.schemastore.model.mapfunctions;
  *  @author     Jeffrey Hoyt
  *  @version    1.0
  */
-public class NumericSubtract extends BinaryOperation
+public class AbsoluteValue extends SingularFunction
 {
 
-    public NumericSubtract( )
+    public AbsoluteValue( )
     {
         super();
-        operator = "-";
-        displayName = "Numeric Subtract";
+        functionName = "ABS";
+        displayName = "Absolute Value";
+        description = "Returns the absolute value of the input";
         KEY = String.valueOf( getClass().getName() );
     }
 

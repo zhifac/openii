@@ -22,18 +22,17 @@ package org.mitre.schemastore.model.mapfunctions;
  *  @author     Jeffrey Hoyt
  *  @version    1.0
  */
-public class NumericSubtract extends BinaryOperation
+public class Maximum extends SingularFunction
 {
 
-    public NumericSubtract( )
+    public Maximum( )
     {
         super();
-        operator = "-";
-        displayName = "Numeric Subtract";
+        functionName = "MAX";
+        displayName = "Maximum";
+        description = "Returns the largest value from all tuples in the table.";
         KEY = String.valueOf( getClass().getName() );
     }
 
 }
 
-// Please do not remove the line below - jch
-// :wrap=soft:noTabs=true:collapseFolds=1:maxLineLen=120:mode=java:tabSize=4:indentSize=4:noWordSep=_:folding=indent

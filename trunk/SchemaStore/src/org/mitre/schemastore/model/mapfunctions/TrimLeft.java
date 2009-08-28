@@ -17,23 +17,27 @@
 
 package org.mitre.schemastore.model.mapfunctions;
 
+import org.mitre.schemastore.model.*;
+import java.util.*;
+
 /**
  *  This class provides the for the addition of two fields.
  *  @author     Jeffrey Hoyt
  *  @version    1.0
  */
-public class NumericSubtract extends BinaryOperation
+public class TrimLeft extends SingularFunction
 {
 
-    public NumericSubtract( )
+    public TrimLeft( )
     {
         super();
-        operator = "-";
-        displayName = "Numeric Subtract";
+        functionName = "LTRIM";
+        displayName = "TrimLeft";
+        inputDomains=new ArrayList<String>();
+        inputDomains.add( MappingDefinition.STRING );
+        description = "Returns the value with all leading whitespace removed.";
         KEY = String.valueOf( getClass().getName() );
     }
 
 }
 
-// Please do not remove the line below - jch
-// :wrap=soft:noTabs=true:collapseFolds=1:maxLineLen=120:mode=java:tabSize=4:indentSize=4:noWordSep=_:folding=indent

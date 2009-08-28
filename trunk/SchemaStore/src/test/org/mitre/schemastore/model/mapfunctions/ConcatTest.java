@@ -19,11 +19,13 @@ package test.org.mitre.schemastore.model.mapfunctions;
 import org.mitre.schemastore.model.mapfunctions.*;
 import org.mitre.schemastore.model.*;
 import org.junit.*;
+import java.util.*;
+
 import static org.junit.Assert.*;
 
-public class NumericAddTest {
+public class ConcatTest {
 
-    private NumericAdd add = null;
+    private Concat testee = null;
     private MappingCell cell = null;
     private TestFixtures factory = new TestFixtures();
 
@@ -34,8 +36,8 @@ public class NumericAddTest {
      */
     @Before
     public void setUp() {
-        add = new NumericAdd();
-        cell = factory.getMappingCells().get("add");
+        testee = new Concat();
+        cell = factory.getMappingCells().get("concat");
     }
 
     /**
@@ -44,13 +46,27 @@ public class NumericAddTest {
      */
     @After
     public void tearDown() {
-        add = null;
+        testee = null;
         cell = null;
     }
 
     @Test
     public void testGetRelationalString() {
-        assertEquals("\"Ht\" + \"Wt\"", add.getRelationalString(factory.getPrefixArray("", cell.getInput().length), cell, factory.getMappingDefinition()));
+        assertEquals("\"Diagnosis\" || \"Diagnosis\"", testee.getRelationalString(factory.getPrefixArray("", cell.getInput().length), cell, factory.getMappingDefinition()));
     }
+
+    @Test
+    public void testMoreTerms() {
+        cell.setInput( Arrays.asList(53,53,53,53).toArray(new Integer[0]));
+        assertEquals("\"Diagnosis\" || \"Diagnosis\" || \"Diagnosis\" || \"Diagnosis\"", testee.getRelationalString(factory.getPrefixArray("", cell.getInput().length), cell, factory.getMappingDefinition()));
+    }
+
+    @Test (expected=IllegalArgumentException.class)
+    public void testOneTerm() {
+        cell.setInput( Arrays.asList(53).toArray(new Integer[0]) );
+        MappingDefinition d = factory.getMappingDefinition();
+        d.checkMappingCell(cell);  //this should throw an IllegalArgumentException because there aren't enough inputs
+    }
+
 }
 

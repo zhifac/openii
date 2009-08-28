@@ -17,12 +17,16 @@
 package test.org.mitre.schemastore.model.mapfunctions;
 
 import org.mitre.schemastore.model.mapfunctions.*;
+import org.mitre.schemastore.model.*;
 import org.junit.*;
 import static org.junit.Assert.*;
 
 public class NumericSubtractTest {
 
     private NumericSubtract subtract = null;
+    private MappingCell cell = null;
+    private TestFixtures factory = new TestFixtures();
+
 
     /**
      * Sets up the test fixture.
@@ -31,8 +35,8 @@ public class NumericSubtractTest {
     @Before
     public void setUp() {
         subtract = new NumericSubtract();
-        subtract.addInput( 11 );
-        subtract.addInput( 8 );
+        cell = factory.getMappingCells().get("add");
+        cell.setFunctionClass("org.mitre.schemastore.model.mapfunctions.NumericSubtract");
     }
 
     /**
@@ -42,11 +46,12 @@ public class NumericSubtractTest {
     @After
     public void tearDown() {
         subtract = null;
+        cell = null;
     }
 
     @Test
     public void testGetRelationalString() {
-        assertEquals("\"last name\" - sourceEntity", subtract.getRelationalString("", TestFixtures.getSourceGraph()));
+        assertEquals("\"Ht\" - \"Wt\"", subtract.getRelationalString(factory.getPrefixArray( "", cell.getInput().length), cell, factory.getMappingDefinition()));
     }
 }
 

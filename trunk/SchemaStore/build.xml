@@ -36,6 +36,7 @@
             <formatter type="plain" usefile="false" />
             <classpath>
                 <pathelement path="${build}" />
+                <path path="lib/derby.jar"/>
             </classpath>
             <!-- Pass in the location of the ant file.  This will be used to set up the schemastore db -->
             <sysproperty key="antfile.dir" value="${antfile.dir}"/>

@@ -17,7 +17,7 @@
 package org.mitre.schemastore.model.mapfunctions;
 
 @SuppressWarnings("serial")
-public class FunctionNotFoundException extends Exception
+public class FunctionNotFoundException extends RuntimeException
 {
 
 	public FunctionNotFoundException(String message)
