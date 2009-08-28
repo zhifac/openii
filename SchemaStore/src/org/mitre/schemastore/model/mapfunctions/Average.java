@@ -22,18 +22,17 @@ package org.mitre.schemastore.model.mapfunctions;
  *  @author     Jeffrey Hoyt
  *  @version    1.0
  */
-public class NumericSubtract extends BinaryOperation
+public class Average extends SingularFunction
 {
 
-    public NumericSubtract( )
+    public Average( )
     {
         super();
-        operator = "-";
-        displayName = "Numeric Subtract";
+        functionName = "AVG";
+        displayName = "Average";
+        description = "Returns the average of all in the table.";
         KEY = String.valueOf( getClass().getName() );
     }
 
 }
 
-// Please do not remove the line below - jch
-// :wrap=soft:noTabs=true:collapseFolds=1:maxLineLen=120:mode=java:tabSize=4:indentSize=4:noWordSep=_:folding=indent

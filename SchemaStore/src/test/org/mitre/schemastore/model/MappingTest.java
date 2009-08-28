@@ -14,19 +14,21 @@
  * limitations under the License.
  */
 
-package test.org.mitre.schemastore.model.mapfunctions;
+package test.org.mitre.schemastore.model;
 
-import org.mitre.schemastore.model.mapfunctions.*;
-import org.mitre.schemastore.model.*;
+import java.util.Arrays;
+import java.util.Date;
 import org.junit.*;
+import org.mitre.schemastore.model.*;
+import test.org.mitre.schemastore.model.mapfunctions.TestFixtures;
+import org.mitre.schemastore.model.mapfunctions.*;
+import org.mitre.schemastore.model.graph.*;
 import static org.junit.Assert.*;
 
-public class NumericAddTest {
-
-    private NumericAdd add = null;
-    private MappingCell cell = null;
+public class MappingTest
+{
+    Mapping fixture = null;
     private TestFixtures factory = new TestFixtures();
-
 
     /**
      * Sets up the test fixture.
@@ -34,8 +36,7 @@ public class NumericAddTest {
      */
     @Before
     public void setUp() {
-        add = new NumericAdd();
-        cell = factory.getMappingCells().get("add");
+        fixture = new Mapping(57, "name", "description", "author", factory.getMappingSchemas() );
     }
 
     /**
@@ -44,13 +45,15 @@ public class NumericAddTest {
      */
     @After
     public void tearDown() {
-        add = null;
-        cell = null;
+        fixture = null;
     }
 
     @Test
-    public void testGetRelationalString() {
-        assertEquals("\"Ht\" + \"Wt\"", add.getRelationalString(factory.getPrefixArray("", cell.getInput().length), cell, factory.getMappingDefinition()));
+    public void testGetLeftRight() {
+        assertEquals( MappingSchema.LEFT, fixture.getLeftSchema().getSide() );
+        assertEquals( MappingSchema.RIGHT, fixture.getRightSchema().getSide() );
     }
+
+
 }
 

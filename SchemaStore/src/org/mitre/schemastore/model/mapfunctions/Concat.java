@@ -23,14 +23,15 @@ import org.mitre.schemastore.model.SchemaElement;
 
 
 /**
- *  This class provides the for the addition of two fields.
+ *  This function concatenates 2 or more fields together
  *  @author     Jeffrey Hoyt
  *  @version    1.0
  */
-public class IdentityFunction extends AbstractMappingFunction
+public class Concat extends AbstractMappingFunction
 {
-
-    public IdentityFunction( )
+    private final String operator = "||";
+    private final String space = " ";
+    public Concat( )
     {
         setMetaData();
     }
@@ -38,26 +39,29 @@ public class IdentityFunction extends AbstractMappingFunction
     private void setMetaData()
     {
         KEY = String.valueOf( getClass().getName() );
-        minArgs = 1;
-        maxArgs = 1;
-        inputDomains.add( MappingDefinition.ANY );
-        outputDomain = MappingDefinition.ANY;
-        displayName = "Identity Function";
-        description = "Passes the value through un-changed";
+        minArgs = 2;
+        maxArgs = -1;
+        inputDomains.add( MappingDefinition.REAL );
+        inputDomains.add( MappingDefinition.INTEGER );
+        inputDomains.add( MappingDefinition.STRING );
+        outputDomain = MappingDefinition.STRING;
+        displayName = "Concatenate";
+        description = "Takes in two or more fields and concatenates them together.";
         version = "1.0";
     }
 
-    public String getRelationalString( String colPrefix[], MappingCell cell, MappingDefinition def ) throws IllegalArgumentException
+    public String getRelationalString( String[] colPrefix, MappingCell cell, MappingDefinition def ) throws IllegalArgumentException
     {
-        HierarchicalGraph graph = def.getLeftGraph();
-        if( cell.getInput().length != 1 )
+        String[] processedInputStrings = processInputStrings( colPrefix, cell, def, true );
+        StringBuilder ret = new StringBuilder( processedInputStrings[0] );
+        for(int i = 1; i < processedInputStrings.length; i++)
         {
-            throw new IllegalArgumentException( KEY + " requires exactly 1 input." );
+            ret.append( space );
+            ret.append( operator );
+            ret.append( space );
+            ret.append( processedInputStrings[i] );
         }
-        SchemaElement one;
-        one = graph.getElement( cell.getInput()[0] );
-        //TODO -check the types
-        return colPrefix[0] + QUOTE + one.getName() + QUOTE;
+        return ret.toString();
     }
 }
 

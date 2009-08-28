@@ -22,18 +22,17 @@ package org.mitre.schemastore.model.mapfunctions;
  *  @author     Jeffrey Hoyt
  *  @version    1.0
  */
-public class NumericSubtract extends BinaryOperation
+public class Ceiling extends SingularFunction
 {
 
-    public NumericSubtract( )
+    public Ceiling( )
     {
         super();
-        operator = "-";
-        displayName = "Numeric Subtract";
+        functionName = "CEILING";
+        displayName = "Ceiling";
+        description = "Returns the next largest integer";
         KEY = String.valueOf( getClass().getName() );
     }
 
 }
 
-// Please do not remove the line below - jch
-// :wrap=soft:noTabs=true:collapseFolds=1:maxLineLen=120:mode=java:tabSize=4:indentSize=4:noWordSep=_:folding=indent

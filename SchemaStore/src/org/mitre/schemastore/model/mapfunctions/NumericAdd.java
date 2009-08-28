@@ -17,47 +17,22 @@
 
 package org.mitre.schemastore.model.mapfunctions;
 
-import org.mitre.schemastore.model.graph.*;
-
-import org.mitre.schemastore.model.SchemaElement;
-
-
 /**
  *  This class provides the for the addition of two fields.
  *  @author     Jeffrey Hoyt
  *  @version    1.0
  */
-public class NumericAdd extends AbstractMappingFunction
+public class NumericAdd extends BinaryOperation
 {
 
     public NumericAdd( )
     {
-        setMetaData();
-    }
-
-    private void setMetaData()
-    {
-        KEY = String.valueOf( getClass().getName() );
-        minArgs = 2;
-        maxArgs = 2;
-        inputDomains.add( DOUBLE );
-        inputDomains.add( DOUBLE );
-        outputDomain = DOUBLE;
+        super();
+        operator = "+";
         displayName = "Numeric Add";
-        description = "Takes in two REALs and outputs a REAL.  Casts will be necessary to get int values, however some databases will do the cast for you.";
-        version = "1.0";
+        KEY = String.valueOf( getClass().getName() );
     }
 
-    public String getRelationalString( String colPrefix, Graph graph ) throws IllegalArgumentException
-    {
-        checkInputCount();
-        SchemaElement one, two;
-        one = getSchemaElement( inputs.get(0), graph );
-        two = getSchemaElement( inputs.get(1), graph);
-        //TODO -check the types
-
-        return colPrefix + scrubAttributeName(one.getName()) + " + " + colPrefix + scrubAttributeName(two.getName());
-    }
 }
 
 // Please do not remove the line below - jch

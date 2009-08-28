@@ -23,14 +23,17 @@ import org.mitre.schemastore.model.SchemaElement;
 
 
 /**
- *  This class provides the for the addition of two fields.
+ *  This class provides a base class for functions with one argument (e.g., FLOOR, ABS, MAX)
  *  @author     Jeffrey Hoyt
  *  @version    1.0
  */
-public class IdentityFunction extends AbstractMappingFunction
+public class SingularFunction extends AbstractMappingFunction
 {
 
-    public IdentityFunction( )
+    protected String functionName = "ABS";
+    protected String space = " ";
+
+    public SingularFunction( )
     {
         setMetaData();
     }
@@ -40,26 +43,18 @@ public class IdentityFunction extends AbstractMappingFunction
         KEY = String.valueOf( getClass().getName() );
         minArgs = 1;
         maxArgs = 1;
-        inputDomains.add( MappingDefinition.ANY );
-        outputDomain = MappingDefinition.ANY;
-        displayName = "Identity Function";
-        description = "Passes the value through un-changed";
+        inputDomains.add( MappingDefinition.REAL );
+        inputDomains.add( MappingDefinition.INTEGER );
+        outputDomain = MappingDefinition.REAL;
+        displayName = "Function with single input";
+        description = "Base class for all functions with only a single input.";
         version = "1.0";
     }
 
-    public String getRelationalString( String colPrefix[], MappingCell cell, MappingDefinition def ) throws IllegalArgumentException
+    public String getRelationalString( String[] colPrefix, MappingCell cell, MappingDefinition def ) throws IllegalArgumentException
     {
-        HierarchicalGraph graph = def.getLeftGraph();
-        if( cell.getInput().length != 1 )
-        {
-            throw new IllegalArgumentException( KEY + " requires exactly 1 input." );
-        }
-        SchemaElement one;
-        one = graph.getElement( cell.getInput()[0] );
-        //TODO -check the types
-        return colPrefix[0] + QUOTE + one.getName() + QUOTE;
+        String[] processedInputStrings = processInputStrings( colPrefix, cell, def, true );
+        return functionName + "(" + processedInputStrings[0] + ")";
     }
 }
 
-// Please do not remove the line below - jch
-// :wrap=soft:noTabs=true:collapseFolds=1:maxLineLen=120:mode=java:tabSize=4:indentSize=4:noWordSep=_:folding=indent

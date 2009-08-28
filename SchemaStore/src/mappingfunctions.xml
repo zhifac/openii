@@ -1,3 +1,19 @@
 <mappingfunctions>
-    <class>org.mitre.schemastore.mapfunctions.NumericAdd</class>
+    <class>org.mitre.schemastore.model.mapfunctions.IdentityFunction</class>
+    <class>org.mitre.schemastore.model.mapfunctions.NumericAdd</class>
+    <class>org.mitre.schemastore.model.mapfunctions.NumericSubtract</class>
+    <class>org.mitre.schemastore.model.mapfunctions.NumericMultiply</class>
+    <class>org.mitre.schemastore.model.mapfunctions.Concat</class>
+    <class>org.mitre.schemastore.model.mapfunctions.AbsoluteValue</class>
+    <class>org.mitre.schemastore.model.mapfunctions.Ceiling</class>
+    <class>org.mitre.schemastore.model.mapfunctions.Floor</class>
+    <class>org.mitre.schemastore.model.mapfunctions.Round</class>
+    <class>org.mitre.schemastore.model.mapfunctions.Minimum</class>
+    <class>org.mitre.schemastore.model.mapfunctions.Maximum</class>
+    <class>org.mitre.schemastore.model.mapfunctions.Average</class>
+    <class>org.mitre.schemastore.model.mapfunctions.TrimLeft</class>
+    <class>org.mitre.schemastore.model.mapfunctions.TrimRight</class>
+    <class>org.mitre.schemastore.model.mapfunctions.Trim</class>
+    <class>org.mitre.schemastore.model.mapfunctions.Sum</class>
 </mappingfunctions>
+

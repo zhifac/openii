@@ -27,32 +27,37 @@ import org.xml.sax.helpers.*;
 public class FunctionManager
 {
 	/** Stores listings of the map function display names */
-	private List<String> displayNames = null;
+	private static List<String> displayNames = null;
 
     /** stores the mapping between displayName and class name  */
-    private Properties functionLookup = null;
+    private static Properties functionLookup = null;
+
+    private static Map<String,AbstractMappingFunction> functionLib = null;
+
+    static { reloadFunctions( ); }
 
 	/**
      * Constructs the porter manager class
      */
-	public FunctionManager()
+	private FunctionManager()
 	{
-        reloadFunctions( );
 	}
 
     /**
      *  takes a list of fully qualified class names and populates the displayNames List as
      *  well as the functionLookup Map
      */
-    public void reloadFunctions( )
+    public static void reloadFunctions( )
     {
         displayNames = new ArrayList<String>();
         functionLookup = new Properties();
+        functionLib = new HashMap<String,AbstractMappingFunction>();
+
         FunctionListParser parser = new FunctionListParser();
         try
         {
             // parse the mappingfunctions.xml file
-            InputStream in = getClass().getResourceAsStream("/mappingfunctions.xml");
+            InputStream in = FunctionManager.class.getResourceAsStream("/mappingfunctions.xml");
             XMLReader xr = XMLReaderFactory.createXMLReader();
             xr.setContentHandler(parser);
             xr.parse(new InputSource(in));
@@ -80,13 +85,14 @@ public class FunctionManager
             }
             displayNames.add( displayName );
             functionLookup.setProperty( displayName, name );
+            functionLib.put(name, f);
         }
     }
 
 	/**
      * Returns a list of names of map functions.  To get an instance of the function, use {@link #getFunction() getFunction}.
      */
-	public List<String> getAvailableFunctions()
+	public static List<String> getAvailableFunctions()
 	{
         return Collections.unmodifiableList( displayNames );
     }
@@ -94,18 +100,20 @@ public class FunctionManager
 
     /**
      *  returns the AbstractMappingFunction corresponding to the display name passed in
+     * @param name Either the display name or the qualified class name
      */
-    public AbstractMappingFunction getFunction(String displayName) throws FunctionNotFoundException
+    public static AbstractMappingFunction getFunction(String name) throws FunctionNotFoundException
     {
-        String className = functionLookup.getProperty(displayName);
-        if( className == null )
+        String key = name;
+        String className = functionLookup.getProperty(key);
+        if( className != null )
         {
-            throw new FunctionNotFoundException( displayName + " was not found as an available function" );
+            key = className;
         }
-        AbstractMappingFunction ret = castFunction(className);
+        AbstractMappingFunction ret = functionLib.get( key );
         if( ret == null )
         {
-            throw new FunctionNotFoundException( displayName + " was not found as an available function" );
+            throw new FunctionNotFoundException( name + " was not found as an available function" );
         }
         return ret;
     }
@@ -121,7 +129,7 @@ public class FunctionManager
      *      the input String
      *@exception  MraldParserException  Description of Exception
      */
-    protected static AbstractMappingFunction castFunction( String className )
+    private static AbstractMappingFunction castFunction( String className )
     {
         try
         {

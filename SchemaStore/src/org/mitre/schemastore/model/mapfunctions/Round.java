@@ -17,23 +17,31 @@
 
 package org.mitre.schemastore.model.mapfunctions;
 
+import org.mitre.schemastore.model.*;
+import java.util.*;
+
+
 /**
  *  This class provides the for the addition of two fields.
  *  @author     Jeffrey Hoyt
  *  @version    1.0
  */
-public class NumericSubtract extends BinaryOperation
+public class Round extends SingularFunction
 {
 
-    public NumericSubtract( )
+    public Round( )
     {
         super();
-        operator = "-";
-        displayName = "Numeric Subtract";
+        functionName = "FLOOR";
+        displayName = "Round";
+        description = "Rounds to the nearest integer";
         KEY = String.valueOf( getClass().getName() );
     }
 
+    public String getRelationalString( String[] colPrefix, MappingCell cell, MappingDefinition def ) throws IllegalArgumentException
+    {
+        String[] processedInputStrings = processInputStrings( colPrefix, cell, def, true );
+        return functionName + "(" + processedInputStrings[0] + " + 0.5)";
+    }
 }
 
-// Please do not remove the line below - jch
-// :wrap=soft:noTabs=true:collapseFolds=1:maxLineLen=120:mode=java:tabSize=4:indentSize=4:noWordSep=_:folding=indent

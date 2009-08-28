@@ -20,10 +20,10 @@ import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.Subtype;
 
 /**
- * Class for storing the graph of schema elements 
+ * Class for storing the graph of schema elements
  */
 public class Graph implements Serializable
-{		
+{
 	/** Private class for caching graph data */
 	private class GraphCache implements Serializable
 	{
@@ -35,7 +35,7 @@ public class Graph implements Serializable
 		private HashMap<Integer,ArrayList<Subtype>> subtypeLists = null;
 		private HashMap<Integer,ArrayList<DomainValue>> domainValueLists = null;
 		private HashMap<Integer,Alias> aliasList = null;
-		
+
 		/** Resets the cache */
 		private void reset()
 		{
@@ -47,7 +47,7 @@ public class Graph implements Serializable
 			domainValueLists = null;
 			aliasList = null;
 		}
-		
+
 		/** Adds an element to the list of elements */
 		private <S,T> void addElement(S identifier, T element, HashMap<S,ArrayList<T>> lists)
 		{
@@ -55,7 +55,7 @@ public class Graph implements Serializable
 			if(list==null) lists.put(identifier,list = new ArrayList<T>());
 			list.add(element);
 		}
-		
+
 		/** Retrieves the elements of the specified type */
 		private ArrayList<SchemaElement> getElements(Class type)
 		{
@@ -102,7 +102,7 @@ public class Graph implements Serializable
 			ArrayList<Containment> containmentList = containmentLists.get(elementID);
 			return containmentList==null ? new ArrayList<Containment>() : containmentList;
 		}
-		
+
 		/** Returns relationships associated with a specified entity */
 		public ArrayList<Relationship> getRelationships(Integer elementID)
 		{
@@ -166,16 +166,16 @@ public class Graph implements Serializable
 		}
 	}
 	private GraphCache cache = new GraphCache();
-	
+
 	/** Stores the schema associated with this graph */
 	private Schema schema;
 
 	/** Stores the schema elements associated with this graph */
 	private HashMap<Integer,SchemaElement> graphHash = new HashMap<Integer,SchemaElement>();
-	
+
 	/** Stores graph listeners */
 	private ArrayList<GraphListener> listeners = new ArrayList<GraphListener>();
-	
+
 	/** Constructs the graph */
 	public Graph(Schema schema, ArrayList<SchemaElement> elements)
 		{ this.schema = schema; addElements(elements); }
@@ -192,23 +192,23 @@ public class Graph implements Serializable
 			elements.add(element.copy());
 		return new Graph(schema.copy(),elements);
 	}
-	
+
 	/** Returns the schema referenced by this graph */
 	public Schema getSchema()
 		{ return schema; }
-	
+
 	/** Returns the size of the graph */
 	public Integer size()
 		{ return graphHash.size(); }
-	
+
 	/** Returns the specified schema element */
 	public SchemaElement getElement(Integer elementID)
 		{ return graphHash.get(elementID); }
-	
+
 	/** Indicates if the schema contains the specified schema element */
 	public boolean containsElement(Integer elementID)
 		{ return getElement(elementID)!=null; }
-	
+
 	/** Returns the schema elements associated with the specified type */
 	public ArrayList<SchemaElement> getElements(Class type)
 	{
@@ -220,12 +220,12 @@ public class Graph implements Serializable
 	public ArrayList<SchemaElement> getBaseElements(Class type)
 	{
 		ArrayList<SchemaElement> baseElements = new ArrayList<SchemaElement>();
-		
+
 		// Identify base schema elements of the specified type
 		for(SchemaElement element : getElements(type))
 			if(schema.getId().equals(element.getBase()))
 				baseElements.add(element);
-		
+
 		// Identify default domains first used by this schema
 		if(type==null || type.equals(Domain.class))
 		{
@@ -241,30 +241,30 @@ public class Graph implements Serializable
 					if(baseReferencesOnly) baseElements.add(domainElement);
 				}
 		}
-			
+
 		return baseElements;
 	}
-	
+
 	/** Returns the entity associated with the specified attribute */
 	public Entity getEntity(Integer attributeID)
 		{ return (Entity)getElement(((Attribute)getElement(attributeID)).getEntityID()); }
-	
+
 	/** Returns the attributes associated with the specified entity */
 	public ArrayList<Attribute> getAttributes(Integer elementID)
 		{ return cache.getAttributes(elementID); }
-	
+
 	/** Returns the containments associated with the specified schema element */
 	public ArrayList<Containment> getContainments(Integer elementID)
 		{ return cache.getContainments(elementID); }
-	
+
 	/** Returns the containments associated with the specified schema element */
 	public ArrayList<Relationship> getRelationships(Integer elementID)
 		{ return cache.getRelationships(elementID); }
-	
+
 	/** Returns the sub-type relationships for a given entity */
 	public ArrayList<Subtype> getSubTypes(Integer elementID)
 		{ return cache.getSubtypes(elementID); }
-	
+
 	/** Returns the domain values associated with the specified domain */
 	public ArrayList<DomainValue> getDomainValuesForDomain(Integer domainID)
 		{ return cache.getDomainValues(domainID); }
@@ -297,7 +297,7 @@ public class Graph implements Serializable
 		// Otherwise, return nothing
 		return "";
 	}
-	
+
 	/** Adds a list of elements to the graph */
 	public boolean addElements(ArrayList<SchemaElement> elements)
 	{
@@ -312,9 +312,9 @@ public class Graph implements Serializable
 				if(e1 instanceof Attribute) return -1; if(e2 instanceof Attribute) return 1;
 				if(!(e1 instanceof Alias)) return -1; if(!(e2 instanceof Alias)) return 1;
 				return 0;
-			}		
+			}
 		}
-		
+
 		// Populates the graph with elements
 		boolean success = true;
 		Collections.sort(elements, new ElementComparator());
@@ -322,7 +322,7 @@ public class Graph implements Serializable
 			success &= addElement(element);
 		return success;
 	}
-	
+
 	/** Returns the list of schema elements referencing the specified element within the graph */
 	public ArrayList<SchemaElement> getReferencingElements(Integer elementID)
 	{
@@ -333,7 +333,7 @@ public class Graph implements Serializable
 				if(referencedID==elementID) { referencingElements.add(element); break; }
 		return referencingElements;
 	}
-	
+
 	/** Adds a list of elements to the graph */
 	public boolean addElement(SchemaElement element)
 	{
@@ -376,46 +376,46 @@ public class Graph implements Serializable
 			Alias alias = (Alias)element;
 			if(getElement(alias.getElementID())==null) return false;
 		}
-		
+
 		// Add element to the graph
 		graphHash.put(element.getId(),element.copy());
 
 		// Inform listeners of the added element
 		for(GraphListener listener : listeners)
 			listener.schemaElementAdded(element);
-		
+
 		cache.reset();
 		return true;
 	}
-	
+
 	/** Removes an element from the graph */
 	public boolean deleteElement(Integer elementID)
 	{
 		// Don't proceed with deleting element, if referenced by other elements
 		if(getReferencingElements(elementID).size()>0) return false;
-		
+
 		// Remove element from graph
 		SchemaElement element = graphHash.get(elementID);
 		graphHash.remove(elementID);
-		
+
 		// Inform listeners of the removed element
 		for(GraphListener listener : listeners)
 			listener.schemaElementRemoved(element);
-		
+
 		cache.reset();
 		return true;
 	}
-	
+
 	/** Updates the id of an element in the graph */
 	public void updateElementID(Integer oldID, Integer newID)
 	{
 		// Only update element if ID changed
 		if(oldID.equals(newID)) return;
-		
+
 		// Shift the ID of any elements that conflict with this updated ID
 		if(getElement(newID)!=null)
 			{ updateElementID(newID,newID+10000); }
-		
+
 		// Replace all references to old ID with new ID
 		for(SchemaElement schemaElement : getElements(null))
 		{
@@ -442,13 +442,13 @@ public class Graph implements Serializable
 				Containment containment = (Containment)schemaElement;
 				Integer parentID = containment.getParentID();
 				if(parentID!=null && parentID.equals(oldID)) containment.setParentID(newID);
-				if(containment.getChildID().equals(oldID)) containment.setChildID(newID);				
+				if(containment.getChildID().equals(oldID)) containment.setChildID(newID);
 			}
 			if(schemaElement instanceof Subtype)
 			{
 				Subtype subtype = (Subtype)schemaElement;
 				if(subtype.getParentID().equals(oldID)) subtype.setParentID(newID);
-				if(subtype.getChildID().equals(oldID)) subtype.setChildID(newID);				
+				if(subtype.getChildID().equals(oldID)) subtype.setChildID(newID);
 			}
 			if(schemaElement instanceof Alias)
 			{
@@ -456,15 +456,15 @@ public class Graph implements Serializable
 				if(alias.getElementID().equals(oldID)) alias.setElementID(newID);
 			}
 		}
-		
+
 		// Resets the cache
 		cache.reset();
 	}
-	
+
 	/** Adds a graph listener */
 	public void addGraphListener(GraphListener listener)
 		{ listeners.add(listener); }
-	
+
 	/** Removes a graph listener */
 	public void removeGraphListener(GraphListener listener)
 		{ listeners.remove(listener); }

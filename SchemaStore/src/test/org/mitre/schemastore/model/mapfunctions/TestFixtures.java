@@ -14,91 +14,114 @@
  * limitations under the License.
  */
 
+
 package test.org.mitre.schemastore.model.mapfunctions;
 
+import java.net.*;
+import java.io.*;
 import org.mitre.schemastore.model.*;
+import org.mitre.schemastore.data.database.*;
+import org.mitre.schemastore.servlet.*;
 import org.mitre.schemastore.model.graph.*;
+import org.mitre.schemastore.model.graph.model.*;
 import java.util.*;
 
 
 public class TestFixtures
 {
-    /*
-     *  returns one statement
-     *  "INSERT INTO targetEntity (BMI,Height-cm,peopleID,personName,Weight-kg)  SELECT DISTINCT 1,T0.Height-Inches,T0.personID,T0.lastName,T0.Weight-Pounds FROM sourceEntity AS T0;"
+
+    private SchemaStore store = new SchemaStore( DatabaseConnection.DERBY,System.getProperty("java.io.tmpdir"),"schemastore","postgres","postgres");
+    private MappingSchema[] schemas = new MappingSchema[2];
+    private Mapping map;
+
+    public TestFixtures()
+    {
+        schemas[0] = new MappingSchema(1025, "left", GraphModel.class.getName(), MappingSchema.LEFT );
+        schemas[1] = new MappingSchema(1026, "right", GraphModel.class.getName(), MappingSchema.RIGHT);
+        map = new Mapping( new Integer(1024), "name", "description", "author", schemas );
+    }
+
+    public boolean reset()
+    {
+        return deleteDir( new File(System.getProperty("java.io.tmpdir"), "schemastore") );
+    }
+
+    /**
+     * Deletes all files and subdirectories under dir.
+     * Returns true if all deletions were successful.
+     * If a deletion fails, the method stops attempting to delete and returns false.
      */
-	// public Object[] getFixtureOne() throws Exception
-    // {
+    protected boolean deleteDir(File dir) {
+        if (dir.isDirectory()) {
+            String[] children = dir.list();
+            for (int i=0; i<children.length; i++) {
+                boolean success = deleteDir(new File(dir, children[i]));
+                if (!success) {
+                    return false;
+                }
+            }
+        }
 
-    //     Graph targetGraph = getTargetGraph();
-
-    //     ArrayList<LogicalRelation> sourceLogRels = LogicalRelation.createLogicalRelations(sourceGraph);
-    //     ArrayList<LogicalRelation> targetLogRels = LogicalRelation.createLogicalRelations(targetGraph);
-    //     ArrayList<MappingCell> coveredCorrs = new ArrayList<MappingCell>();
-
-    //     coveredCorrs.add( MappingCell.createValidatedMappingCell(1,new Integer(-1),Arrays.asList(s1.getId()).toArray(new Integer[0]),t1.getId(),"Author Q. Tester",new Date(),"org.mitre.schemastore.mapfunctions.IdentityFunction","notes"));
-    //     coveredCorrs.add( MappingCell.createValidatedMappingCell(2,new Integer(-1),Arrays.asList(s3.getId()).toArray(new Integer[0]),t2.getId(),"Author Q. Tester",new Date(),"org.mitre.schemastore.mapfunctions.IdentityFunction","notes"));
-    //     // coveredCorrs.add( MappingCell.createValidatedMappingCell(3,new Integer(-1),Arrays.asList(s4.getId(), s5.getId()).toArray(new Integer[0]),t3.getId(),"Author Q. Tester",new Date(),"org.mitre.schemastore.mapfunctions.NumericAdd","notes"));
-    //     coveredCorrs.add( MappingCell.createValidatedMappingCell(4,new Integer(-1),Arrays.asList(s4.getId()).toArray(new Integer[0]),t3.getId(),"Author Q. Tester",new Date(),"org.mitre.schemastore.mapfunctions.IdentityFunction","notes"));
-    //     coveredCorrs.add( MappingCell.createValidatedMappingCell(5,new Integer(-1),Arrays.asList(s5.getId()).toArray(new Integer[0]),t4.getId(),"Author Q. Tester",new Date(),"org.mitre.schemastore.mapfunctions.IdentityFunction","notes"));
-    //     ArrayList<Dependency> dependsArrayList = Dependency.generateDependencies(sourceLogRels, targetLogRels, coveredCorrs);
-
-    //     Dependency depend = dependsArrayList.get(0);
-    //     Objec        Graph sourceGraph = getSourceGraph();t[] retVals=null;
-    //     retVals = SQLGenerator.generateDependencySQLScript(depend, client);
-    //     return retVals;
-	// }
-
-    public static Graph getSourceGraph()
-    {
-        ArrayList<SchemaElement> sourceElements = new ArrayList<SchemaElement>();
-        Domain stringDom = new Domain(6,"String","",0);
-        Domain integerDom = new Domain(7,"Integer","",0);
-
-        Entity sourceEntity = new Entity(8,"sourceEntity","src entity",0);
-        sourceElements.add(stringDom);
-        sourceElements.add(integerDom);
-        sourceElements.add(sourceEntity);
-		SchemaElement s1 = new Attribute(9,"personID","",sourceEntity.getId(),stringDom.getId(),1,1,true,0);
-		SchemaElement s2 = new Attribute(10,"firstName","",sourceEntity.getId(),stringDom.getId(),1,1,false,0);
-		SchemaElement s3 = new Attribute(11,"last name","",sourceEntity.getId(),stringDom.getId(),1,1,false,0);
-		SchemaElement s4 = new Attribute(12,"Height-Inches","",sourceEntity.getId(),integerDom.getId(),1,1,false,0);
-		SchemaElement s5 = new Attribute(13,"Weight-Pounds","",sourceEntity.getId(),integerDom.getId(),1,1,false,0);        // SchemaElement s1 = client.getSchemaElement(50);  //ConsentStatus
-        sourceElements.add(s1);
-        sourceElements.add(s2);
-        sourceElements.add(s3);
-        sourceElements.add(s4);
-        sourceElements.add(s5);
-
-        Graph sourceGraph = new Graph(new Schema(14,"sourceSchema","doug","","","",false),sourceElements);
-        return sourceGraph;
+        // The directory is now empty so delete it
+        return dir.delete();
     }
 
 
-    public static Graph getTargetGraph()
+    public HierarchicalGraph getSourceGraph()
     {
-        ArrayList<SchemaElement> targetElements = new ArrayList<SchemaElement>();
-        Domain stringDom = new Domain(15,"String","",0);
-        Domain integerDom = new Domain(16,"Integer","",0);
-
-        Entity targetEntity = new Entity(17,"targetEntity","tgt entity",0);
-        targetElements.add(stringDom);
-        targetElements.add(integerDom);
-        targetElements.add(targetEntity);
-		SchemaElement t1 = new Attribute(18,"peopleID","",targetEntity.getId(),integerDom.getId(),1,1,true,0);
-		SchemaElement t2 = new Attribute(19,"personName","",targetEntity.getId(),stringDom.getId(),1,1,false,0);
-		SchemaElement t3 = new Attribute(20,"Height-cm","",targetEntity.getId(),integerDom.getId(),1,1,false,0);
-		SchemaElement t4 = new Attribute(21,"Weight-kg","",targetEntity.getId(),integerDom.getId(),1,1,false,0);
-		SchemaElement t5 = new Attribute(22,"BMI","",targetEntity.getId(),integerDom.getId(),1,1,false,0);        // SchemaElement t1 = client.getSchemaElement(55);  //Stop
-        targetElements.add(t1);
-        targetElements.add(t2);
-        targetElements.add(t3);
-        targetElements.add(t4);
-        targetElements.add(t5);
-
-        Graph targetGraph = new Graph(new Schema(23,"targetSchema","doug","","","",false),targetElements);
-        return targetGraph;
+        ArrayList<SchemaElement> list = new ArrayList<SchemaElement>(Arrays.asList(store.getSchemaElements(10).getSchemaElements()));
+        Schema s = store.getSchema(10);
+        Graph ret = new Graph( s,list );
+        return new HierarchicalGraph(ret, new RelationalGraphModel());
     }
 
+
+    public HierarchicalGraph getTargetGraph()
+    {
+        ArrayList<SchemaElement> list = new ArrayList<SchemaElement>(Arrays.asList(store.getSchemaElements(12).getSchemaElements()));
+        Schema s = store.getSchema(12);
+        Graph ret = new Graph( s,list );
+        return new HierarchicalGraph(ret, new RelationalGraphModel());
+    }
+
+
+    public Map<String, MappingCell> getMappingCells()
+    {
+        HashMap<String,MappingCell> ret = new HashMap<String,MappingCell>();
+        // "add" maps HT + WT to hdl
+        ret.put("add",  MappingCell.createValidatedMappingCell(1027,new Integer(-1),Arrays.asList(59,60).toArray(new Integer[0]),67,"Author Q. Tester",new Date(),"org.mitre.schemastore.model.mapfunctions.NumericAdd","notes"));
+        // "Identity maps HT to hdl
+        ret.put( "identity", MappingCell.createValidatedMappingCell(1028,new Integer(-1),Arrays.asList(59).toArray(new Integer[0]),67,"Author Q. Tester",new Date(),"org.mitre.schemastore.model.mapfunctions.IdentityFunction","notes"));
+        // "concat" maps Diagnosis and Diagnosis to funding
+        ret.put( "concat", MappingCell.createValidatedMappingCell(1028,new Integer(-1),Arrays.asList(53,53).toArray(new Integer[0]),53,"Author Q. Tester",new Date(),"org.mitre.schemastore.model.mapfunctions.Concat","notes"));
+        return ret;
+    }
+
+
+    public MappingSchema[] getMappingSchemas()
+    {
+        return schemas;
+    }
+
+    public Mapping getMapping()
+    {
+        Mapping mapping = new Mapping(new Integer(333),"","","",getMappingSchemas());
+        return mapping;
+    }
+
+    public String[] getPrefixArray( String value, int size )
+    {
+        String[] ret = new String[size];
+        Arrays.fill( ret, value );
+        return ret;
+    }
+
+
+    public MappingDefinition getMappingDefinition()
+    {
+        ArrayList<MappingCell> cells = new ArrayList<MappingCell>();
+        cells.addAll(getMappingCells().values());
+        return new MappingDefinition( getMapping(), cells, getSourceGraph(), getTargetGraph());
+    }
 
 }

@@ -21,9 +21,9 @@ import org.mitre.schemastore.model.*;
 import org.junit.*;
 import static org.junit.Assert.*;
 
-public class NumericAddTest {
+public class AbsoluteValueTest {
 
-    private NumericAdd add = null;
+    private AbsoluteValue add = null;
     private MappingCell cell = null;
     private TestFixtures factory = new TestFixtures();
 
@@ -34,8 +34,8 @@ public class NumericAddTest {
      */
     @Before
     public void setUp() {
-        add = new NumericAdd();
-        cell = factory.getMappingCells().get("add");
+        add = new AbsoluteValue();
+        cell = factory.getMappingCells().get("identity");
     }
 
     /**
@@ -50,7 +50,19 @@ public class NumericAddTest {
 
     @Test
     public void testGetRelationalString() {
-        assertEquals("\"Ht\" + \"Wt\"", add.getRelationalString(factory.getPrefixArray("", cell.getInput().length), cell, factory.getMappingDefinition()));
+        assertEquals("ABS(hoorayfortesting.\"Ht\")", add.getRelationalString(factory.getPrefixArray("hoorayfortesting.", cell.getInput().length), cell, factory.getMappingDefinition()));
     }
+
+    @Test (expected=IllegalArgumentException.class)
+    public void testTooManyArgs() {
+        cell = factory.getMappingCells().get("add");
+        cell.setFunctionClass("org.mitre.schemastore.model.mapfunctions.AbsoluteValue");
+        MappingDefinition d = factory.getMappingDefinition();
+        d.addMappingCell(cell);
+        d.checkMappingCell(cell);  //this should throw an IllegalArgumentException because there are too many inputs
+
+    }
+
+
 }
 

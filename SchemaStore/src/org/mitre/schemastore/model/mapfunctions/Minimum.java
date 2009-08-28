@@ -22,18 +22,17 @@ package org.mitre.schemastore.model.mapfunctions;
  *  @author     Jeffrey Hoyt
  *  @version    1.0
  */
-public class NumericSubtract extends BinaryOperation
+public class Minimum extends SingularFunction
 {
 
-    public NumericSubtract( )
+    public Minimum( )
     {
         super();
-        operator = "-";
-        displayName = "Numeric Subtract";
+        functionName = "MIN";
+        displayName = "Minimum";
+        description = "Returns the smallest value from all tuples in the table.f";
         KEY = String.valueOf( getClass().getName() );
     }
 
 }
 
-// Please do not remove the line below - jch
-// :wrap=soft:noTabs=true:collapseFolds=1:maxLineLen=120:mode=java:tabSize=4:indentSize=4:noWordSep=_:folding=indent
