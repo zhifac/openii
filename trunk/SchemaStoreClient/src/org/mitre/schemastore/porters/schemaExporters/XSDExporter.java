@@ -3,8 +3,24 @@
 
 package org.mitre.schemastore.porters.schemaExporters;
 
-import java.util.*;
-import org.mitre.schemastore.model.*;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+
+import org.mitre.schemastore.model.Attribute;
+import org.mitre.schemastore.model.Containment;
+import org.mitre.schemastore.model.Domain;
+import org.mitre.schemastore.model.DomainValue;
+import org.mitre.schemastore.model.Entity;
+import org.mitre.schemastore.model.Relationship;
+import org.mitre.schemastore.model.Schema;
+import org.mitre.schemastore.model.SchemaElement;
+import org.mitre.schemastore.model.Subtype;
 
 
 /**
@@ -79,7 +95,7 @@ public class XSDExporter extends SchemaExporter
 	 * @param schemaID ID for the schema being exported
 	 * @return ArrayList of strings representing the XSD
 	 */
-	public StringBuffer exportSchema(Integer schemaID, ArrayList<SchemaElement> elementList) 
+	public void exportSchema(Schema schema, ArrayList<SchemaElement> elementList, File file) throws IOException 
 	{		
 		// Scan schemaElements to initialize hashtables
 		for (SchemaElement elem : elementList){
@@ -145,19 +161,19 @@ public class XSDExporter extends SchemaExporter
 		} // end for (SchemaElement elem : elementList){
 
 		// add header for XML file
-		StringBuffer output = new StringBuffer();
-		output.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
-		output.append("<!-- Created with OpenII XSDExporter -->\n");
-		output.append("<xs:schema xmlns:xs=\"http://www.w3.org/2001/XMLSchema\">\n");
+		BufferedWriter out = new BufferedWriter(new FileWriter(file));
+		out.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+		out.append("<!-- Created with OpenII XSDExporter -->\n");
+		out.append("<xs:schema xmlns:xs=\"http://www.w3.org/2001/XMLSchema\">\n");
 		
 		// Generate XML for each remaining NON-ANNONYMOUS entity
 		Collection<Entity> entities = entitySet.values();
 		for (Entity entity : entities)
 			if (entity.getName().equals("") == false)
-				output.append(outputEntity(entity, new String("")) + "\n");
+				out.append(outputEntity(entity, new String("")) + "\n");
 		
 		// Generate XML for each top-level entity (represented as containment with parentID == null)
-		output.append(outputContainments(topLevelContainments,true));
+		out.append(outputContainments(topLevelContainments,true));
 		
 		
 	   // Generate XML for simple types
@@ -173,25 +189,25 @@ public class XSDExporter extends SchemaExporter
 		  //{
 			  outputNames.add(d.getName());
 		  
-			  output.append("<xs:simpleType name=\"" + d.getName() + "\">\n");
+			  out.append("<xs:simpleType name=\"" + d.getName() + "\">\n");
 			  if (d.getDescription().length() > 0)
-				  output.append(INDENT2 + "<xs:annotation> <xs:documentation> " + d.getDescription() + " </xs:documentation> </xs:annotation>\n");
+				  out.append(INDENT2 + "<xs:annotation> <xs:documentation> " + d.getDescription() + " </xs:documentation> </xs:annotation>\n");
 
 			  // TODO: Set the restriction base here -- need to add restrictionBase to domain
 			  String restrictionBaseType = new String("xs:string");
-			  output.append(INDENT2 + "<xs:restriction base=\"" + restrictionBaseType + "\">\n");
+			  out.append(INDENT2 + "<xs:restriction base=\"" + restrictionBaseType + "\">\n");
 			  ArrayList<DomainValue> domVals = domainValueSet.get(d.getId());
 			  if(domVals != null)
 				  for (DomainValue dv : domVals)
-					  output.append(INDENT4 + "<xs:enumeration value=\""+ dv.getName() +"\"/>\n");  
-			  output.append(INDENT2 + "</xs:restriction>\n");
-			  output.append("</xs:simpleType>\n");
+					  out.append(INDENT4 + "<xs:enumeration value=\""+ dv.getName() +"\"/>\n");  
+			  out.append(INDENT2 + "</xs:restriction>\n");
+			  out.append("</xs:simpleType>\n");
 		 // }
 	   }
 	   
 	   // add closing schema tag
-	   output.append("</xs:schema>\n");
-	   return output;
+	   out.append("</xs:schema>\n");
+	   out.close();
 	} // end method
 	
 	/**
