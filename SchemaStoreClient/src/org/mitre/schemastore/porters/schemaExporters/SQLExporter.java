@@ -1,20 +1,21 @@
 package org.mitre.schemastore.porters.schemaExporters;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.net.URI;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import org.mitre.schemastore.client.Repository;
-import org.mitre.schemastore.client.SchemaStoreClient;
 import org.mitre.schemastore.model.Attribute;
 import org.mitre.schemastore.model.Containment;
 import org.mitre.schemastore.model.Domain;
 import org.mitre.schemastore.model.DomainValue;
 import org.mitre.schemastore.model.Entity;
 import org.mitre.schemastore.model.Relationship;
+import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.Subtype;
 import org.mitre.schemastore.porters.schemaExporters.sql.DomainTable;
@@ -34,20 +35,8 @@ import org.mitre.schemastore.porters.schemaExporters.sql.View;
  * 
  */
 
-public class SQLExporter extends SchemaExporter {
-
-	static public void main(String args[])
-	{
-		try {
-			SQLExporter sqlEx = new SQLExporter();
-			Repository serverLocation = new Repository(Repository.POSTGRES,new URI("ygg.mitre.org"),"schemastore","postgres","postgres"); 
-			SchemaStoreClient client = new SchemaStoreClient(serverLocation);
-			StringBuffer out = sqlEx.exportSchema(443024, client.getGraph(443024).getElements(null));
-			System.err.println(out);
-			
-		} catch(Exception e) { e.printStackTrace(); }
-	}
-	
+public class SQLExporter extends SchemaExporter
+{	
 	private HashMap<Integer, Entity> _entities = new HashMap<Integer, Entity>();
 	private HashMap<Integer, Attribute> _attributes = new HashMap<Integer, Attribute>();
 	private HashMap<Integer, Relationship> _relationships = new HashMap<Integer, Relationship>();
@@ -78,9 +67,6 @@ public class SQLExporter extends SchemaExporter {
 				Integer lmax = rel.getLeftMax();
 				Integer rmin = rel.getRightMin();
 				Integer rmax = rel.getRightMax();
-
-//				System.err.println(rel.getName() + " " + rel.getLeftMin() + ": " + rel.getLeftMax()
-//						+ " || " + rel.getRightMin() + " : " + rel.getRightMax());
 
 				if (lmax == null || lmax.equals(-1) || lmax > 1) { // L*
 					if (rmax == null || rmax.equals(-1) || rmax > 1) {
@@ -429,8 +415,8 @@ public class SQLExporter extends SchemaExporter {
 	}
 
 	// cache all schema elements and bucket them into hash maps by their types
-	private void initialize(Integer schemaID, ArrayList<SchemaElement> elements)
-			throws RemoteException {
+	private void initialize(ArrayList<SchemaElement> elements) throws RemoteException
+	{
 		_rdb = new Rdb("");
 		_entities.clear(); _attributes.clear(); _containments.clear();
 		_subtypes.clear(); _relationships.clear(); _domains.clear();
@@ -445,41 +431,38 @@ public class SQLExporter extends SchemaExporter {
 			else if (e instanceof Domain) _domains.put(new Integer(e.getId()), (Domain) e);
 			else if (e instanceof DomainValue) _domainValues.put(new Integer(e.getId()), (DomainValue) e);
 		}
-
-		// create ANY table
-		//		_rdb.createDomainTable("ANY", true);
 	}
 
-	public StringBuffer exportSchema(Integer schemaID, ArrayList<SchemaElement> schemaElements) {
+	public void exportSchema(Schema schema, ArrayList<SchemaElement> schemaElements, File file) throws IOException
+	{
 		try {
-					
 			// load schema and schema elements into memory
-			initialize(schemaID, schemaElements);
-
+			initialize(schemaElements);
+	
 			// map complex domains to tables
 			mapDomains();
-
+	
 			// entities to tables.
 			mapEntities();
-
+	
 			// attributes to RdbAttributes
 			mapAttirbutes();
-
+	
 			// containments to either RdbAttributes or Foreign Keys
 			mapContainments();
-
+	
 			// map relationships
 			mapRelationships();
-
+	
 			// a view for every entity (union of subTypes)
 			mapSubtypes();
-
-			// write DDL
-			return exportDDL();
-		} catch (Exception e) {
-			e.printStackTrace();
-			return new StringBuffer(e.getMessage());
-		}
+	
+			// Generates a DDL file
+			BufferedWriter out = new BufferedWriter(new FileWriter(file));
+			out.append(exportDDL().toString());
+			out.close();
+			
+		} catch(Exception e) { throw new IOException(e); }
 	}
 
 	@Override
