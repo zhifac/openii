@@ -2,22 +2,25 @@
 
 package org.mitre.schemastore.porters.schemaImporters;
 
-import org.mitre.schemastore.model.*;
-import org.mitre.schemastore.model.graph.Graph;
-import org.mitre.schemastore.porters.ImporterException;
-import org.mitre.schemastore.porters.xml.ConvertFromXML;
-
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.zip.ZipInputStream;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.mitre.schemastore.model.Schema;
+import org.mitre.schemastore.model.SchemaElement;
+import org.mitre.schemastore.model.graph.Graph;
+import org.mitre.schemastore.porters.ImporterException;
+import org.mitre.schemastore.porters.xml.ConvertFromXML;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -182,10 +185,25 @@ public class M3SchemaImporter extends SchemaImporter
 	/** Connects to the XML document */
 	private NodeList getXMLNodeList(URI uri) throws Exception
 	{
+		// Uncompresses the file
+		ZipInputStream zipIn = new ZipInputStream(new FileInputStream(new File(uri)));
+		File tempFile = File.createTempFile("M3S", ".xml");
+		FileOutputStream out = new FileOutputStream(tempFile);
+		zipIn.getNextEntry();
+		byte data[] = new byte[100000]; int count;
+		while((count = zipIn.read(data)) > 0)
+			out.write(data, 0, count);
+		zipIn.close();
+		out.close();
+		
+		// Retrieve the XML document element
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 		DocumentBuilder db = dbf.newDocumentBuilder();
-		Document document = db.parse(new File(uri));
+		Document document = db.parse(tempFile);
 		Element element = document.getDocumentElement();
+		tempFile.delete();
+		
+		// Returns the XML node list		
 		return element.getElementsByTagName("Schema");
 	}
 	
