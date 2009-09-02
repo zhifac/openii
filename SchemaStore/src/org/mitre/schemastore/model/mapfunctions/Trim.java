@@ -19,6 +19,7 @@ package org.mitre.schemastore.model.mapfunctions;
 
 import java.util.*;
 import org.mitre.schemastore.model.*;
+import org.mitre.schemastore.model.mappingInfo.MappingInfo;
 
 /**
  *  This class provides the for the addition of two fields.
@@ -34,12 +35,12 @@ public class Trim extends SingularFunction
         functionName = "LTRIM(RTRIM";
         displayName = "Trim";
         inputDomains=new ArrayList<String>();
-        inputDomains.add( MappingDefinition.STRING );
+        inputDomains.add( MappingInfo.STRING );
         description = "Returns the value with all leading whitespace removed.";
         KEY = String.valueOf( getClass().getName() );
     }
 
-    public String getRelationalString( String[] colPrefix, MappingCell cell, MappingDefinition def ) throws IllegalArgumentException
+    public String getRelationalString( String[] colPrefix, MappingCell cell, MappingInfo def ) throws IllegalArgumentException
     {
         //just need to close the parenthesis in the functionName
         return super.getRelationalString(colPrefix, cell, def) + ")";

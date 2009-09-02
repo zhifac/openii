@@ -1,0 +1,10 @@
+<schemaModels>
+  <schemaModel>org.mitre.schemastore.model.schemaInfo.model.XMLSchemaModel</schemaModel>
+  <schemaModel>org.mitre.schemastore.model.schemaInfo.model.XMLnoAttrsSchemaModel</schemaModel>
+  <schemaModel>org.mitre.schemastore.model.schemaInfo.model.RelationalSchemaModel</schemaModel>
+  <schemaModel>org.mitre.schemastore.model.schemaInfo.model.DomainSchemaModel</schemaModel>
+  <schemaModel>org.mitre.schemastore.model.schemaInfo.model.RMapSchemaModel</schemaModel>
+  <schemaModel>org.mitre.schemastore.model.schemaInfo.model.RMap_1_to_N_SchemaModel</schemaModel>
+  <schemaModel>org.mitre.schemastore.model.schemaInfo.model.RMap_N_to_1_SchemaModel</schemaModel>
+  <schemaModel>org.mitre.schemastore.model.schemaInfo.model.GSIPSchemaModel</schemaModel>
+</schemaModels>

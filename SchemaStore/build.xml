@@ -53,7 +53,7 @@
 	    <mkdir dir="build/classes"/>
 	    <javac srcdir="src" destdir="build/classes" deprecation="on" debug="on" source="1.6" target="1.6"/>
 		<copy file="src/schemastore.xml" todir="build/classes"/>
-		<copy file="src/graphmodels.xml" todir="build/classes"/>
+		<copy file="src/schemamodels.xml" todir="build/classes"/>
         <copy file="src/mappingfunctions.xml" todir="build/classes"/>
 		<copy file="src/org/mitre/schemastore/data/database/SchemaStoreData.txt" todir="build/classes/org/mitre/schemastore/data/database"/>
 		<copy file="src/org/mitre/schemastore/data/database/SchemaStoreStructure.txt" todir="build/classes/org/mitre/schemastore/data/database"/>

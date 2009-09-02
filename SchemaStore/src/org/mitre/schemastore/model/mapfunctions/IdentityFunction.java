@@ -17,9 +17,9 @@
 
 package org.mitre.schemastore.model.mapfunctions;
 
-import org.mitre.schemastore.model.graph.*;
+import org.mitre.schemastore.model.mappingInfo.MappingInfo;
+import org.mitre.schemastore.model.schemaInfo.*;
 import org.mitre.schemastore.model.*;
-import org.mitre.schemastore.model.SchemaElement;
 
 
 /**
@@ -40,22 +40,22 @@ public class IdentityFunction extends AbstractMappingFunction
         KEY = String.valueOf( getClass().getName() );
         minArgs = 1;
         maxArgs = 1;
-        inputDomains.add( MappingDefinition.ANY );
-        outputDomain = MappingDefinition.ANY;
+        inputDomains.add( MappingInfo.ANY );
+        outputDomain = MappingInfo.ANY;
         displayName = "Identity Function";
         description = "Passes the value through un-changed";
         version = "1.0";
     }
 
-    public String getRelationalString( String colPrefix[], MappingCell cell, MappingDefinition def ) throws IllegalArgumentException
+    public String getRelationalString( String colPrefix[], MappingCell cell, MappingInfo def ) throws IllegalArgumentException
     {
-        HierarchicalGraph graph = def.getLeftGraph();
+        HierarchicalSchemaInfo schemaInfo = def.getLeftSchema();
         if( cell.getInput().length != 1 )
         {
             throw new IllegalArgumentException( KEY + " requires exactly 1 input." );
         }
         SchemaElement one;
-        one = graph.getElement( cell.getInput()[0] );
+        one = schemaInfo.getElement( cell.getInput()[0] );
         //TODO -check the types
         return colPrefix[0] + QUOTE + one.getName() + QUOTE;
     }

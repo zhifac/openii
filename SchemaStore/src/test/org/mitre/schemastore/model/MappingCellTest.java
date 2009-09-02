@@ -6,7 +6,8 @@ import org.junit.*;
 import org.mitre.schemastore.model.*;
 import test.org.mitre.schemastore.model.mapfunctions.TestFixtures;
 import org.mitre.schemastore.model.mapfunctions.*;
-import org.mitre.schemastore.model.graph.*;
+import org.mitre.schemastore.model.schemaInfo.*;
+
 import static org.junit.Assert.*;
 
 public class MappingCellTest {
@@ -97,7 +98,7 @@ public class MappingCellTest {
     public void testSetInputAndDomain()
     {
         MappingCell cell = factory.getMappingCells().get("identity");
-        HierarchicalGraph graph = factory.getTargetGraph();
+        HierarchicalSchemaInfo schemaInfo = factory.getTargetSchema();
         // String domainType = cell.getOutput();
     }
 }

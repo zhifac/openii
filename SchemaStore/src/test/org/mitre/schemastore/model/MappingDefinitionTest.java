@@ -21,7 +21,9 @@ import org.junit.*;
 import org.mitre.schemastore.model.*;
 import test.org.mitre.schemastore.model.mapfunctions.TestFixtures;
 import org.mitre.schemastore.model.mapfunctions.*;
-import org.mitre.schemastore.model.graph.*;
+import org.mitre.schemastore.model.mappingInfo.MappingInfo;
+import org.mitre.schemastore.model.schemaInfo.*;
+
 import static org.junit.Assert.*;
 
 public class MappingDefinitionTest
@@ -58,7 +60,7 @@ public class MappingDefinitionTest
         MappingCell mc = MappingCell.createValidatedMappingCell(new Integer(1),new Integer(13),
             Arrays.asList(new Integer(59), new Integer(60)).toArray(new Integer[0]),new Integer(69),"Author",new Date(),"org.mitre.schemastore.model.mapfunctions.NumericAdd","notes");
         list.add( mc );
-        MappingDefinition fixture = new MappingDefinition(map, list, factory.getSourceGraph(), factory.getTargetGraph());
+        MappingInfo fixture = new MappingInfo(map, list, factory.getSourceSchema(), factory.getTargetSchema());
         fixture.addMappingCell(mc);
         fixture.checkMappingCell( mc );
     }
@@ -70,7 +72,7 @@ public class MappingDefinitionTest
         MappingCell mc = MappingCell.createValidatedMappingCell(new Integer(1),new Integer(13),
             Arrays.asList(new Integer(59)).toArray(new Integer[0]),new Integer(69),"Author",new Date(),"org.mitre.schemastore.model.mapfunctions.NumericAdd","notes");
         list.add( mc );
-        MappingDefinition fixture = new MappingDefinition(map, list, factory.getSourceGraph(), factory.getTargetGraph());
+        MappingInfo fixture = new MappingInfo(map, list, factory.getSourceSchema(), factory.getTargetSchema());
         fixture.addMappingCell(mc);
         fixture.checkMappingCell( mc );
     }
@@ -82,7 +84,7 @@ public class MappingDefinitionTest
         MappingCell mc = MappingCell.createValidatedMappingCell(new Integer(1),new Integer(13),
             Arrays.asList(new Integer(59), new Integer(60), new Integer(8899)).toArray(new Integer[0]),new Integer(69),"Author",new Date(),"org.mitre.schemastore.model.mapfunctions.NumericAdd","notes");
         list.add( mc );
-        MappingDefinition fixture = new MappingDefinition(map, list, factory.getSourceGraph(), factory.getTargetGraph());
+        MappingInfo fixture = new MappingInfo(map, list, factory.getSourceSchema(), factory.getTargetSchema());
         fixture.addMappingCell(mc);
         fixture.checkMappingCell( mc );
     }
@@ -93,7 +95,7 @@ public class MappingDefinitionTest
         MappingCell mc = MappingCell.createValidatedMappingCell(new Integer(1),new Integer(13),
             Arrays.asList(new Integer(59), new Integer(53)).toArray(new Integer[0]),new Integer(53),"Author",new Date(),"org.mitre.schemastore.model.mapfunctions.NumericAdd","notes");
         list.add( mc );
-        MappingDefinition fixture = new MappingDefinition(map, list, factory.getSourceGraph(), factory.getTargetGraph());
+        MappingInfo fixture = new MappingInfo(map, list, factory.getSourceSchema(), factory.getTargetSchema());
         fixture.addMappingCell(mc);
         fixture.checkMappingCell( mc );
     }
@@ -104,7 +106,7 @@ public class MappingDefinitionTest
         MappingCell mc = MappingCell.createValidatedMappingCell(new Integer(1),new Integer(13),
             Arrays.asList(new Integer(51)).toArray(new Integer[0]),new Integer(69),"Author",new Date(),"org.mitre.schemastore.model.mapfunctions.IdentityFunction","notes");
         list.add( mc );
-        MappingDefinition fixture = new MappingDefinition(map, list, factory.getSourceGraph(), factory.getTargetGraph());
+        MappingInfo fixture = new MappingInfo(map, list, factory.getSourceSchema(), factory.getTargetSchema());
         fixture.addMappingCell(mc);
         fixture.checkMappingCell( mc );
     }
