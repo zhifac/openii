@@ -19,7 +19,7 @@ import org.mitre.schemastore.model.Entity;
 import org.mitre.schemastore.model.Relationship;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.Subtype;
-import org.mitre.schemastore.model.graph.HierarchicalGraph;
+import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
 
 /** Class for tracking primary matches */
 public class PrimaryMatches
@@ -55,29 +55,29 @@ public class PrimaryMatches
 	}
 	
 	/** Gets the primary matches for the specified element */
-	private ArrayList<SchemaElement> getPrimaryMatches(SchemaElement match, HierarchicalGraph graph)
+	private ArrayList<SchemaElement> getPrimaryMatches(SchemaElement match, HierarchicalSchemaInfo schemaInfo)
 	{
 		// Identify the list of primary matches
 		ArrayList<SchemaElement> primaryMatches = new ArrayList<SchemaElement>();
 		if(match instanceof Attribute)
 		{
-			Entity entity = graph.getEntity(match.getId());
-			primaryMatches.addAll(getPrimaryMatches(entity,graph));
+			Entity entity = schemaInfo.getEntity(match.getId());
+			primaryMatches.addAll(getPrimaryMatches(entity,schemaInfo));
 		}
 		else if(match instanceof Domain)
 		{
-			for(Attribute attribute : graph.getAttributes(match.getId()))
-				primaryMatches.addAll(getPrimaryMatches(attribute,graph));
+			for(Attribute attribute : schemaInfo.getAttributes(match.getId()))
+				primaryMatches.addAll(getPrimaryMatches(attribute,schemaInfo));
 		}
 		else if(match instanceof DomainValue)
 		{
-			Domain domain = (Domain)graph.getElement(((DomainValue)match).getDomainID());
-			primaryMatches.addAll(getPrimaryMatches(domain,graph));
+			Domain domain = (Domain)schemaInfo.getElement(((DomainValue)match).getDomainID());
+			primaryMatches.addAll(getPrimaryMatches(domain,schemaInfo));
 		}
 		else if(match instanceof Alias)
 		{
-			SchemaElement element = graph.getElement(((Alias)match).getElementID());
-			primaryMatches.addAll(getPrimaryMatches(element,graph));
+			SchemaElement element = schemaInfo.getElement(((Alias)match).getElementID());
+			primaryMatches.addAll(getPrimaryMatches(element,schemaInfo));
 		}
 		
 		// If no primary matches found and a match, mark self as primary match
@@ -107,9 +107,9 @@ public class PrimaryMatches
 		// If subsumed matches are possible, identify them
 		if(subsumedMatchesPossible(matches))
 		{
-			HierarchicalGraph graph = Schemas.getGraph(schemaID);
+			HierarchicalSchemaInfo schemaInfo = Schemas.getSchemaInfo(schemaID);
 			for(SchemaElement match : matches)
-				for(SchemaElement primaryMatch : getPrimaryMatches(match,graph))
+				for(SchemaElement primaryMatch : getPrimaryMatches(match,schemaInfo))
 					addPrimaryMatch(primaryMatch, match);
 		}
 

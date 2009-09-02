@@ -22,7 +22,7 @@ import org.mitre.schemastore.model.Domain;
 import org.mitre.schemastore.model.DomainValue;
 import org.mitre.schemastore.model.Relationship;
 import org.mitre.schemastore.model.SchemaElement;
-import org.mitre.schemastore.model.graph.HierarchicalGraph;
+import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
 
 /** Class for viewing information about a schema object */
 class ViewPane extends JPanel
@@ -93,10 +93,10 @@ class ViewPane extends JPanel
 	/** Displays the specified schema element in the view pane */
 	void displayInfo(SchemaElement schemaElement, Integer schemaID)
 	{
-		HierarchicalGraph graph = Schemas.getGraph(schemaID);
+		HierarchicalSchemaInfo schemaInfo = Schemas.getSchemaInfo(schemaID);
 		
 		// Update the title pane
-		title.setText("Information on " + graph.getElement(schemaElement.getId()).getName());
+		title.setText("Information on " + schemaInfo.getElement(schemaElement.getId()).getName());
 		
 		// Update the view pane
 		StringBuffer text = new StringBuffer("");
@@ -124,11 +124,11 @@ class ViewPane extends JPanel
 			Attribute attribute = (Attribute)schemaElement;
 			Domain domain = (Domain)Schemas.getSchemaElement(attribute.getDomainID());
 			boolean newDomain = schemaID.equals(domain.getBase());
-			ArrayList<DomainValue> domainValues = graph.getDomainValuesForDomain(attribute.getDomainID());
+			ArrayList<DomainValue> domainValues = schemaInfo.getDomainValuesForDomain(attribute.getDomainID());
 			text.append("    <table cellPadding=0 cellSpacing=0>");
 			text.append("      <tr>");
 			text.append("        <td nowrap valign=top><b>Domain: </b></td>");
-			text.append("        <td>"+(newDomain?"<b>":"")+graph.getElement(attribute.getDomainID()).getName()+(newDomain?"</b>":""));
+			text.append("        <td>"+(newDomain?"<b>":"")+schemaInfo.getElement(attribute.getDomainID()).getName()+(newDomain?"</b>":""));
 			if(!domainValues.isEmpty())
 			{
 				text.append(" (");
@@ -146,7 +146,7 @@ class ViewPane extends JPanel
 		if(schemaElement instanceof Domain)
 		{
 			Domain domain = (Domain)schemaElement;
-			ArrayList<Attribute> attributes = graph.getAttributes(domain.getId());
+			ArrayList<Attribute> attributes = schemaInfo.getAttributes(domain.getId());
 			if(attributes.size()>0)
 			{
 				text.append("    <table cellPadding=0 cellSpacing=0>");
@@ -201,7 +201,7 @@ class ViewPane extends JPanel
 	/** Display relationship entity info */
 	private String getRelationshipEntityInfo(Integer schemaID, int entityID, Integer min, Integer max)
 	{
-		SchemaElement element = Schemas.getGraph(schemaID).getElement(entityID);
+		SchemaElement element = Schemas.getSchemaInfo(schemaID).getElement(entityID);
 		String info = getElementName(schemaID,element);
 		if(min!=null || max!=null)
 			info += " ("+(min!=null?"Min="+min:"")+(min!=null&&max!=null?", ":"")+(max!=null?"Max="+max:"")+")";

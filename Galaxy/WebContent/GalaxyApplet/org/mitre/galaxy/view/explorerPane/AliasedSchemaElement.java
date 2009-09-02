@@ -20,7 +20,7 @@ public class AliasedSchemaElement implements Comparable<AliasedSchemaElement>
 	public AliasedSchemaElement(Integer schemaID, Integer schemaElementID)
 	{
 		this.schemaElementID = schemaElementID;
-		Alias alias = Schemas.getGraph(schemaID).getAlias(schemaElementID);
+		Alias alias = Schemas.getSchemaInfo(schemaID).getAlias(schemaElementID);
 		if(alias!=null) aliasID = alias.getId();
 	}
 	

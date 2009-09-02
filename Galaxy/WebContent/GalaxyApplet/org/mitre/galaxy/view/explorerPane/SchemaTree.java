@@ -22,7 +22,7 @@ import org.mitre.schemastore.model.Entity;
 import org.mitre.schemastore.model.Relationship;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
-import org.mitre.schemastore.model.graph.HierarchicalGraph;
+import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
 
 
 /** Class for displaying the schema tree for the specified schema */
@@ -51,20 +51,20 @@ class SchemaTree extends JTree implements MouseMotionListener, TreeWillExpandLis
 		// Only display entities and attributes for the selected node
 		if(root==getModel().getRoot())
 		{
-			// Retrieve the schema graph
-			HierarchicalGraph graph = Schemas.getGraph(schemaID);
+			// Retrieve the schema info
+			HierarchicalSchemaInfo schemaInfo = Schemas.getSchemaInfo(schemaID);
 			
 			// Display the schema entities
-			ArrayList<SchemaElement> entities = graph.getRootElements();
+			ArrayList<SchemaElement> entities = schemaInfo.getRootElements();
 			if(entities==null)
-				graph.getElements(Entity.class);
+				schemaInfo.getElements(Entity.class);
 			if(entities.size()>0)
 			{
 				SchemaTreeNode entitiesNode = getSchemaTreeNode("Entities");
 				for(SchemaElement entity : entities)
 				{
 					SchemaTreeNode entityNode = getSchemaTreeNode(entity.getId());
-					for(SchemaElement childEntity : graph.getChildElements(entity.getId()))
+					for(SchemaElement childEntity : schemaInfo.getChildElements(entity.getId()))
 						entityNode.add(getSchemaTreeNode(childEntity.getId()));
 					entitiesNode.add(entityNode);
 				}
@@ -72,7 +72,7 @@ class SchemaTree extends JTree implements MouseMotionListener, TreeWillExpandLis
 			}
 			
 			// Display the schema relationships (if any exist)
-			ArrayList<SchemaElement> relationships = graph.getElements(Relationship.class);
+			ArrayList<SchemaElement> relationships = schemaInfo.getElements(Relationship.class);
 			if(relationships.size()>0)
 			{
 				SchemaTreeNode relationshipsNode = getSchemaTreeNode("Relationships");
@@ -82,7 +82,7 @@ class SchemaTree extends JTree implements MouseMotionListener, TreeWillExpandLis
 			}
 			
 			// Display the schema domains (if any exist)
-			ArrayList<SchemaElement> domains = graph.getElements(Domain.class);
+			ArrayList<SchemaElement> domains = schemaInfo.getElements(Domain.class);
 			int domainCount = 0;
 			for(SchemaElement domain : domains) if(domain.getId()>0) domainCount++;
 			if(domainCount>0)
@@ -91,7 +91,7 @@ class SchemaTree extends JTree implements MouseMotionListener, TreeWillExpandLis
 				for(SchemaElement domain : domains)
 				{
 					SchemaTreeNode domainNode = getSchemaTreeNode(domain.getId());
-					for(DomainValue domainValue : graph.getDomainValuesForDomain(domain.getId()))
+					for(DomainValue domainValue : schemaInfo.getDomainValuesForDomain(domain.getId()))
 						domainNode.add(getSchemaTreeNode(domainValue.getId()));					
 					domainsNode.add(domainNode);
 				}

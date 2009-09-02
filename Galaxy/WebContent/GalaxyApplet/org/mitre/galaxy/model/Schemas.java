@@ -11,7 +11,7 @@ import java.util.HashSet;
 import org.mitre.galaxy.model.server.SchemaStoreManager;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
-import org.mitre.schemastore.model.graph.HierarchicalGraph;
+import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
 
 
 /**
@@ -36,7 +36,7 @@ public class Schemas
 	static private HashMap<Integer,SchemaElement> schemaElements = new HashMap<Integer,SchemaElement>();
 	
 	/** Caches schema elements associated with schemas */
-	static private HashMap<Integer,HierarchicalGraph> schemaGraphs = new HashMap<Integer,HierarchicalGraph>();
+	static private HashMap<Integer,HierarchicalSchemaInfo> schemaInfoList = new HashMap<Integer,HierarchicalSchemaInfo>();
 		
 	//---------------
 	// Reset Actions
@@ -49,7 +49,7 @@ public class Schemas
 		schemas = null;
 		schemaElementCounts.remove(schemaID);
 		schemaElements.remove(schemaID);
-		schemaGraphs.remove(schemaID);
+		schemaInfoList.remove(schemaID);
 
 		// Clear schema associations
 		for(Integer associatedSchemaID : SchemaStoreManager.getAssociatedSchemas(schemaID))
@@ -174,17 +174,17 @@ public class Schemas
 		return schemaElements.get(elementID);
 	}
 	
-	/** Retrieves the schema element graph */
-	static public HierarchicalGraph getGraph(Integer schemaID)
+	/** Retrieves the schema info */
+	static public HierarchicalSchemaInfo getSchemaInfo(Integer schemaID)
 	{
-		// Retrieve graph if needed
-		if(!schemaGraphs.containsKey(schemaID))
+		// Retrieve schema info if needed
+		if(!schemaInfoList.containsKey(schemaID))
 		{
-			HierarchicalGraph graph = new HierarchicalGraph(SchemaStoreManager.getGraph(schemaID),null);
-			schemaGraphs.put(schemaID,graph);
-			for(SchemaElement element : graph.getElements(null))
+			HierarchicalSchemaInfo schemaInfo = new HierarchicalSchemaInfo(SchemaStoreManager.getSchemaInfo(schemaID),null);
+			schemaInfoList.put(schemaID,schemaInfo);
+			for(SchemaElement element : schemaInfo.getElements(null))
 				schemaElements.put(element.getId(), element);
 		}
-		return schemaGraphs.get(schemaID);
+		return schemaInfoList.get(schemaID);
 	}
 }

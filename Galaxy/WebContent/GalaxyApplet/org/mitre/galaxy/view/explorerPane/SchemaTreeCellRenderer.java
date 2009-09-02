@@ -23,7 +23,7 @@ import org.mitre.schemastore.model.Domain;
 import org.mitre.schemastore.model.DomainValue;
 import org.mitre.schemastore.model.Entity;
 import org.mitre.schemastore.model.SchemaElement;
-import org.mitre.schemastore.model.graph.HierarchicalGraph;
+import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
 
 
 /** Class for rendering schema components */
@@ -35,17 +35,17 @@ class SchemaTreeCellRenderer extends DefaultTreeCellRenderer
 	/** Returns if this schema element has any new children for specified schema */
 	private boolean hasNewChildren(SchemaElement schemaElement, Integer schemaID)
 	{
-		HierarchicalGraph graph = Schemas.getGraph(schemaID);
+		HierarchicalSchemaInfo schemaInfo = Schemas.getSchemaInfo(schemaID);
 		
 		// Checks for new children in entities
 		if(schemaElement instanceof Entity)
-			for(Attribute attribute : graph.getAttributes(((Entity)schemaElement).getId()))
+			for(Attribute attribute : schemaInfo.getAttributes(((Entity)schemaElement).getId()))
 				if(schemaID.equals(attribute.getBase()) || hasNewChildren(attribute,schemaID))
 					return true;
 		
 		// Checks for new children in attributes
 		if(schemaElement instanceof Domain)
-			for(DomainValue domainValue : graph.getDomainValuesForDomain(((Domain)schemaElement).getId()))
+			for(DomainValue domainValue : schemaInfo.getDomainValuesForDomain(((Domain)schemaElement).getId()))
 				if(schemaID.equals(domainValue.getBase()))
 					return true;
 		

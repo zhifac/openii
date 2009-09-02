@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import org.mitre.schemastore.model.Alias;
 import org.mitre.schemastore.model.DomainValue;
 import org.mitre.schemastore.model.SchemaElement;
-import org.mitre.schemastore.model.graph.HierarchicalGraph;
+import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
 
 /** Stores a schema tree object */
 public class SchemaTreeObject
@@ -30,29 +30,29 @@ public class SchemaTreeObject
 	private Integer type;
 	
 	/** Constructs the schema tree object */
-	public SchemaTreeObject(Integer elementID, HierarchicalGraph sGraph, HierarchicalGraph cGraph)
+	public SchemaTreeObject(Integer elementID, HierarchicalSchemaInfo sInfo, HierarchicalSchemaInfo cInfo)
 	{
 		boolean hasDomain = false;
 		
 		// Identify the selected id
-		SchemaElement sElement = sGraph.getElement(elementID);
+		SchemaElement sElement = sInfo.getElement(elementID);
 		if(sElement!=null)
 		{
 			selectedID = elementID;
-			selectedName = sGraph.getDisplayName(elementID);
-			hasDomain |= sGraph.getDomainForElement(elementID)!=null;
-			Alias alias = sGraph.getAlias(elementID);
+			selectedName = sInfo.getDisplayName(elementID);
+			hasDomain |= sInfo.getDomainForElement(elementID)!=null;
+			Alias alias = sInfo.getAlias(elementID);
 			if(alias!=null) selectedAliasID = alias.getId();
 		}
 
 		// Identify the compared id
-		SchemaElement cElement = cGraph==null ? null : cGraph.getElement(elementID);
+		SchemaElement cElement = cInfo==null ? null : cInfo.getElement(elementID);
 		if(cElement!=null)
 		{
 			comparedID = elementID;
-			comparedName = cGraph.getDisplayName(elementID);
-			hasDomain |= cGraph.getDomainForElement(elementID)!=null;
-			Alias alias = cGraph.getAlias(elementID);
+			comparedName = cInfo.getDisplayName(elementID);
+			hasDomain |= cInfo.getDomainForElement(elementID)!=null;
+			Alias alias = cInfo.getAlias(elementID);
 			if(alias!=null) comparedAliasID = alias.getId();
 		}
 
@@ -74,12 +74,12 @@ public class SchemaTreeObject
 		return ids;
 	}
 	
-	/** Returns if node is in selected graph */
-	public Boolean inSelectedGraph()
+	/** Returns if node is in selected schema */
+	public Boolean inSelectedSchema()
 		{ return selectedID!=null; }
 	
-	/** Returns if node is in compared graph */
-	public Boolean inComparedGraph()
+	/** Returns if node is in compared schema */
+	public Boolean inComparedSchema()
 		{ return comparedID!=null; }
 	
 	/** Returns the node label */
