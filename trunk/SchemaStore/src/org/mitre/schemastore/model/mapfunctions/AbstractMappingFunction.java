@@ -18,7 +18,9 @@
 package org.mitre.schemastore.model.mapfunctions;
 
 import org.mitre.schemastore.model.*;
-import org.mitre.schemastore.model.graph.*;
+import org.mitre.schemastore.model.mappingInfo.MappingInfo;
+import org.mitre.schemastore.model.schemaInfo.*;
+
 import java.util.*;
 
 /**
@@ -167,7 +169,7 @@ abstract public class AbstractMappingFunction
      *  @param colPrefix table alias (possibly with schema) to be prepended to every column name.  No decimal is\
      *                    added..if that's the intent, this parameter should end with a "."
      */
-    abstract public String getRelationalString( String[] colPrefix, MappingCell cell, MappingDefinition def )
+    abstract public String getRelationalString( String[] colPrefix, MappingCell cell, MappingInfo def )
         throws IllegalArgumentException;
 
 
@@ -175,14 +177,14 @@ abstract public class AbstractMappingFunction
      *  If possible, performs a cast from the expected datatype to the needed datatype.
      */
 
-     protected String[] processInputStrings(String colPrefix[], MappingCell cell, MappingDefinition def, boolean doCasts)
+     protected String[] processInputStrings(String colPrefix[], MappingCell cell, MappingInfo def, boolean doCasts)
     {
         String[] ret = new String[cell.getInput().length];
         String name = null;
         for(int i = 0; i < ret.length; i++)
         {
-            HierarchicalGraph graph = def.getLeftGraph();
-            SchemaElement ele = graph.getElement( cell.getInput()[i] );
+            HierarchicalSchemaInfo schemaInfo = def.getLeftSchema();
+            SchemaElement ele = schemaInfo.getElement( cell.getInput()[i] );
             name = colPrefix[i] + QUOTE + ele.getName() + QUOTE;
             if( doCasts )
             {
@@ -206,9 +208,9 @@ abstract public class AbstractMappingFunction
     {
         if( expected.equals(actual) )
             return name;
-        if( expected.equals(MappingDefinition.STRING) )
+        if( expected.equals(MappingInfo.STRING) )
             return "CAST( " + name + " AS VARCHAR )";
-        if( expected.equals(MappingDefinition.REAL) && actual.equals(MappingDefinition.INTEGER) )
+        if( expected.equals(MappingInfo.REAL) && actual.equals(MappingInfo.INTEGER) )
             return "CAST( " + name + " AS NUMERIC )";
         return name;
     }

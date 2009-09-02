@@ -18,6 +18,8 @@
 package org.mitre.schemastore.model.mapfunctions;
 
 import org.mitre.schemastore.model.*;
+import org.mitre.schemastore.model.mappingInfo.MappingInfo;
+
 import java.util.*;
 
 
@@ -35,7 +37,7 @@ public class TrimRight extends SingularFunction
         functionName = "RTRIM";
         displayName = "TrimRight";
         inputDomains=new ArrayList<String>();
-        inputDomains.add( MappingDefinition.STRING );
+        inputDomains.add( MappingInfo.STRING );
         description = "Returns the value with all trailing whitespace removed";
         KEY = String.valueOf( getClass().getName() );
     }

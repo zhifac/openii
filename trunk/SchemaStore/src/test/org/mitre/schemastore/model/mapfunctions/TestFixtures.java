@@ -17,13 +17,14 @@
 
 package test.org.mitre.schemastore.model.mapfunctions;
 
-import java.net.*;
 import java.io.*;
 import org.mitre.schemastore.model.*;
 import org.mitre.schemastore.data.database.*;
 import org.mitre.schemastore.servlet.*;
-import org.mitre.schemastore.model.graph.*;
-import org.mitre.schemastore.model.graph.model.*;
+import org.mitre.schemastore.model.mappingInfo.MappingInfo;
+import org.mitre.schemastore.model.schemaInfo.*;
+import org.mitre.schemastore.model.schemaInfo.model.*;
+
 import java.util.*;
 
 
@@ -36,8 +37,8 @@ public class TestFixtures
 
     public TestFixtures()
     {
-        schemas[0] = new MappingSchema(1025, "left", GraphModel.class.getName(), MappingSchema.LEFT );
-        schemas[1] = new MappingSchema(1026, "right", GraphModel.class.getName(), MappingSchema.RIGHT);
+        schemas[0] = new MappingSchema(1025, "left", SchemaModel.class.getName(), MappingSchema.LEFT );
+        schemas[1] = new MappingSchema(1026, "right", SchemaModel.class.getName(), MappingSchema.RIGHT);
         map = new Mapping( new Integer(1024), "name", "description", "author", schemas );
     }
 
@@ -67,21 +68,27 @@ public class TestFixtures
     }
 
 
-    public HierarchicalGraph getSourceGraph()
+    public HierarchicalSchemaInfo getSourceSchema()
     {
-        ArrayList<SchemaElement> list = new ArrayList<SchemaElement>(Arrays.asList(store.getSchemaElements(10).getSchemaElements()));
         Schema s = store.getSchema(10);
-        Graph ret = new Graph( s,list );
-        return new HierarchicalGraph(ret, new RelationalGraphModel());
+        ArrayList<Integer> parentSchemaIDs = new ArrayList<Integer>();
+        for(int parentSchemaID : store.getParentSchemas(10))
+        	parentSchemaIDs.add(parentSchemaID);
+        ArrayList<SchemaElement> list = new ArrayList<SchemaElement>(Arrays.asList(store.getSchemaElements(10).getSchemaElements()));
+        SchemaInfo ret = new SchemaInfo( s,parentSchemaIDs,list );
+        return new HierarchicalSchemaInfo(ret, new RelationalSchemaModel());
     }
 
 
-    public HierarchicalGraph getTargetGraph()
+    public HierarchicalSchemaInfo getTargetSchema()
     {
-        ArrayList<SchemaElement> list = new ArrayList<SchemaElement>(Arrays.asList(store.getSchemaElements(12).getSchemaElements()));
         Schema s = store.getSchema(12);
-        Graph ret = new Graph( s,list );
-        return new HierarchicalGraph(ret, new RelationalGraphModel());
+        ArrayList<Integer> parentSchemaIDs = new ArrayList<Integer>();
+        for(int parentSchemaID : store.getParentSchemas(10))
+        	parentSchemaIDs.add(parentSchemaID);
+        ArrayList<SchemaElement> list = new ArrayList<SchemaElement>(Arrays.asList(store.getSchemaElements(12).getSchemaElements()));
+        SchemaInfo ret = new SchemaInfo( s,parentSchemaIDs,list );
+        return new HierarchicalSchemaInfo(ret, new RelationalSchemaModel());
     }
 
 
@@ -117,11 +124,11 @@ public class TestFixtures
     }
 
 
-    public MappingDefinition getMappingDefinition()
+    public MappingInfo getMappingDefinition()
     {
         ArrayList<MappingCell> cells = new ArrayList<MappingCell>();
         cells.addAll(getMappingCells().values());
-        return new MappingDefinition( getMapping(), cells, getSourceGraph(), getTargetGraph());
+        return new MappingInfo( getMapping(), cells, getSourceSchema(), getTargetSchema());
     }
 
 }

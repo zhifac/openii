@@ -17,6 +17,7 @@
 package test.org.mitre.schemastore.model.mapfunctions;
 
 import org.mitre.schemastore.model.mapfunctions.*;
+import org.mitre.schemastore.model.mappingInfo.MappingInfo;
 import org.mitre.schemastore.model.*;
 import org.junit.*;
 import static org.junit.Assert.*;
@@ -57,7 +58,7 @@ public class AbsoluteValueTest {
     public void testTooManyArgs() {
         cell = factory.getMappingCells().get("add");
         cell.setFunctionClass("org.mitre.schemastore.model.mapfunctions.AbsoluteValue");
-        MappingDefinition d = factory.getMappingDefinition();
+        MappingInfo d = factory.getMappingDefinition();
         d.addMappingCell(cell);
         d.checkMappingCell(cell);  //this should throw an IllegalArgumentException because there are too many inputs
 

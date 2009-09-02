@@ -18,6 +18,8 @@
 package org.mitre.schemastore.model.mapfunctions;
 
 import org.mitre.schemastore.model.*;
+import org.mitre.schemastore.model.mappingInfo.MappingInfo;
+
 import java.util.*;
 
 
@@ -38,7 +40,7 @@ public class Round extends SingularFunction
         KEY = String.valueOf( getClass().getName() );
     }
 
-    public String getRelationalString( String[] colPrefix, MappingCell cell, MappingDefinition def ) throws IllegalArgumentException
+    public String getRelationalString( String[] colPrefix, MappingCell cell, MappingInfo def ) throws IllegalArgumentException
     {
         String[] processedInputStrings = processInputStrings( colPrefix, cell, def, true );
         return functionName + "(" + processedInputStrings[0] + " + 0.5)";

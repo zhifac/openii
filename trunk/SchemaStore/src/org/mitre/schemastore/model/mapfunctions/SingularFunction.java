@@ -17,9 +17,9 @@
 
 package org.mitre.schemastore.model.mapfunctions;
 
-import org.mitre.schemastore.model.graph.*;
+import org.mitre.schemastore.model.mappingInfo.MappingInfo;
+import org.mitre.schemastore.model.schemaInfo.*;
 import org.mitre.schemastore.model.*;
-import org.mitre.schemastore.model.SchemaElement;
 
 
 /**
@@ -43,15 +43,15 @@ public class SingularFunction extends AbstractMappingFunction
         KEY = String.valueOf( getClass().getName() );
         minArgs = 1;
         maxArgs = 1;
-        inputDomains.add( MappingDefinition.REAL );
-        inputDomains.add( MappingDefinition.INTEGER );
-        outputDomain = MappingDefinition.REAL;
+        inputDomains.add( MappingInfo.REAL );
+        inputDomains.add( MappingInfo.INTEGER );
+        outputDomain = MappingInfo.REAL;
         displayName = "Function with single input";
         description = "Base class for all functions with only a single input.";
         version = "1.0";
     }
 
-    public String getRelationalString( String[] colPrefix, MappingCell cell, MappingDefinition def ) throws IllegalArgumentException
+    public String getRelationalString( String[] colPrefix, MappingCell cell, MappingInfo def ) throws IllegalArgumentException
     {
         String[] processedInputStrings = processInputStrings( colPrefix, cell, def, true );
         return functionName + "(" + processedInputStrings[0] + ")";

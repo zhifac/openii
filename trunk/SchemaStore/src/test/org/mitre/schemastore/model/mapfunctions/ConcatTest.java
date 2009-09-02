@@ -17,6 +17,7 @@
 package test.org.mitre.schemastore.model.mapfunctions;
 
 import org.mitre.schemastore.model.mapfunctions.*;
+import org.mitre.schemastore.model.mappingInfo.MappingInfo;
 import org.mitre.schemastore.model.*;
 import org.junit.*;
 import java.util.*;
@@ -64,7 +65,7 @@ public class ConcatTest {
     @Test (expected=IllegalArgumentException.class)
     public void testOneTerm() {
         cell.setInput( Arrays.asList(53).toArray(new Integer[0]) );
-        MappingDefinition d = factory.getMappingDefinition();
+        MappingInfo d = factory.getMappingDefinition();
         d.checkMappingCell(cell);  //this should throw an IllegalArgumentException because there aren't enough inputs
     }
 

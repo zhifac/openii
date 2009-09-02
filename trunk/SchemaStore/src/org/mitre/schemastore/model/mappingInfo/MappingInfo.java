@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mitre.schemastore.model;
+package org.mitre.schemastore.model.mappingInfo;
 
-import org.mitre.schemastore.model.*;
 import org.mitre.schemastore.model.mapfunctions.*;
+import org.mitre.schemastore.model.schemaInfo.*;
+import org.mitre.schemastore.model.Domain;
+import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
-import org.mitre.schemastore.model.graph.*;
-import org.mitre.schemastore.model.graph.model.*;
 import java.util.*;
 
 
@@ -30,7 +30,7 @@ import java.util.*;
  *  @author     Jeffrey Hoyt
  *  @version    1.0
  */
-public class MappingDefinition {
+public class MappingInfo {
 
     //{{{ Member variables
     /**
@@ -45,14 +45,14 @@ public class MappingDefinition {
     protected List <MappingCell> mappingCells = null;
 
     /**
-     * LeftGraph property.
+     * LeftSchema property.
      */
-    protected HierarchicalGraph leftGraph = null;
+    protected HierarchicalSchemaInfo leftSchema = null;
 
     /**
-     * RightGraph property.
+     * RightSchema property.
      */
-    protected HierarchicalGraph rightGraph = null;
+    protected HierarchicalSchemaInfo rightSchema = null;
 
 	/**  The different types available */
     public static final String ANY = "Any";
@@ -109,60 +109,60 @@ public class MappingDefinition {
 
 
     /**
-     * Get leftGraph property.
+     * Get leftSchema property.
      *
-     *@return LeftGraph property.
+     *@return LeftSchema property.
      */
-    public HierarchicalGraph getLeftGraph()
+    public HierarchicalSchemaInfo getLeftSchema()
     {
-        return this.leftGraph;
+        return this.leftSchema;
     }
 
     /**
-     * Set leftGraph property.
+     * Set leftSchema property.
      *
-     *@param leftGraph New leftGraph property.
+     *@param leftSchema New leftSchema property.
      */
-    public void setLeftGraph(HierarchicalGraph leftGraph)
+    public void setLeftSchema(HierarchicalSchemaInfo leftSchema)
     {
-        this.leftGraph = leftGraph;
+        this.leftSchema = leftSchema;
     }
 
 
     /**
-     * Get rightGraph property.
+     * Get rightSchema property.
      *
-     *@return RightGraph property.
+     *@return RightSchema property.
      */
-    public HierarchicalGraph getRightGraph()
+    public HierarchicalSchemaInfo getRightSchema()
     {
-        return this.rightGraph;
+        return this.rightSchema;
     }
 
     /**
-     * Set rightGraph property.
+     * Set rightSchema property.
      *
-     *@param rightGraph New rightGraph property.
+     *@param rightSchema New rightSchema property.
      */
-    public void setRightGraph(HierarchicalGraph rightGraph)
+    public void setRightSchema(HierarchicalSchemaInfo rightSchema)
     {
-        this.rightGraph = rightGraph;
+        this.rightSchema = rightSchema;
     }
     //}}}
 
     //{{{ Constructors
-    public MappingDefinition()
+    public MappingInfo()
     {
         mapping = new Mapping();
         mappingCells = new ArrayList <MappingCell>();
     }
 
 
-    public MappingDefinition(Mapping m, List <MappingCell> cells, HierarchicalGraph left, HierarchicalGraph right)
+    public MappingInfo(Mapping m, List <MappingCell> cells, HierarchicalSchemaInfo left, HierarchicalSchemaInfo right)
     {
         mapping = m;
-        leftGraph = left;
-        rightGraph = right;
+        leftSchema = left;
+        rightSchema = right;
         mappingCells =  new ArrayList<MappingCell>();
         for(MappingCell cell : cells)
         {
@@ -252,26 +252,26 @@ public class MappingDefinition {
         Domain domain;
         for(int i = 0; i < input.length; i++)
         {
-            domain = leftGraph.getDomainForElement(input[i]);
+            domain = leftSchema.getDomainForElement(input[i]);
             if( domain != null )
             {
-                types[i] = leftGraph.getDomainForElement(input[i]).getName();
+                types[i] = leftSchema.getDomainForElement(input[i]).getName();
             }
             else
             {
-                System.out.println(input[i] +"(" +leftGraph.getElement(input[i]) + ") didn't have a domain.");
-                types[i] = MappingDefinition.ANY;
+                System.out.println(input[i] +"(" +leftSchema.getElement(input[i]) + ") didn't have a domain.");
+                types[i] = MappingInfo.ANY;
             }
         }
         cell.setInputType( types );
 
         /* set output Domain */
         // Integer output = cell.getOutput();
-        // domain = rightGraph.getDomainForElement(output);
+        // domain = rightSchema.getDomainForElement(output);
         // String type = null;
         // if( domain != null )
         // {
-        //     type = rightGraph.getDomainForElement(output).getName();
+        //     type = rightSchema.getDomainForElement(output).getName();
         // }
         //     type = MappingDefinition.ANY;
     }

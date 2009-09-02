@@ -4,8 +4,8 @@ package org.mitre.schemastore.model;
 
 import java.io.Serializable;
 
-import org.mitre.schemastore.model.graph.HierarchicalGraph;
-import org.mitre.schemastore.model.graph.model.GraphModel;
+import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
+import org.mitre.schemastore.model.schemaInfo.model.SchemaModel;
 
 /**
  * Class for storing a mapping schema
@@ -53,15 +53,15 @@ public class MappingSchema implements Serializable
 	public void setModel(String model) { this.model = model; }
 	public void setSide(Integer side) { this.side = side; }
 	
-	/** Retrieves the graph model */
-	public GraphModel geetGraphModel()
+	/** Retrieves the schema model */
+	public SchemaModel geetSchemaModel()
 	{
-		for(GraphModel graphModel : HierarchicalGraph.getGraphModels())
-			if(graphModel.getClass().getName().equals(model)) return graphModel;
+		for(SchemaModel schemaModel : HierarchicalSchemaInfo.getSchemaModels())
+			if(schemaModel.getClass().getName().equals(model)) return schemaModel;
 		return null;
 	}
 	
-	/** Stores the graph model */
-	public void seetGraphModel(GraphModel graphModel)
-		{ model = graphModel.getClass().getName(); }
+	/** Stores the schema model */
+	public void seetSchemaModel(SchemaModel schemaModel)
+		{ model = schemaModel.getClass().getName(); }
 }

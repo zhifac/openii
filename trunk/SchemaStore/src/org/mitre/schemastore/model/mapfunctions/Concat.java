@@ -17,9 +17,9 @@
 
 package org.mitre.schemastore.model.mapfunctions;
 
-import org.mitre.schemastore.model.graph.*;
+import org.mitre.schemastore.model.mappingInfo.MappingInfo;
+import org.mitre.schemastore.model.schemaInfo.*;
 import org.mitre.schemastore.model.*;
-import org.mitre.schemastore.model.SchemaElement;
 
 
 /**
@@ -41,16 +41,16 @@ public class Concat extends AbstractMappingFunction
         KEY = String.valueOf( getClass().getName() );
         minArgs = 2;
         maxArgs = -1;
-        inputDomains.add( MappingDefinition.REAL );
-        inputDomains.add( MappingDefinition.INTEGER );
-        inputDomains.add( MappingDefinition.STRING );
-        outputDomain = MappingDefinition.STRING;
+        inputDomains.add( MappingInfo.REAL );
+        inputDomains.add( MappingInfo.INTEGER );
+        inputDomains.add( MappingInfo.STRING );
+        outputDomain = MappingInfo.STRING;
         displayName = "Concatenate";
         description = "Takes in two or more fields and concatenates them together.";
         version = "1.0";
     }
 
-    public String getRelationalString( String[] colPrefix, MappingCell cell, MappingDefinition def ) throws IllegalArgumentException
+    public String getRelationalString( String[] colPrefix, MappingCell cell, MappingInfo def ) throws IllegalArgumentException
     {
         String[] processedInputStrings = processInputStrings( colPrefix, cell, def, true );
         StringBuilder ret = new StringBuilder( processedInputStrings[0] );
