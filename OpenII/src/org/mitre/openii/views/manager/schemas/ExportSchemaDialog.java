@@ -1,8 +1,6 @@
 package org.mitre.openii.views.manager.schemas;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.util.ArrayList;
 
 import org.eclipse.swt.SWT;
@@ -54,12 +52,7 @@ public class ExportSchemaDialog
 				// Generate the export text
 	        	SchemaExporter exporter = exporters.get(dialog.getFilterIndex());
 	        	Graph graph = OpenIIManager.getGraph(schema.getId());
-	        	StringBuffer buffer = exporter.exportSchema(schema.getId(), graph.getElements(null));
-
-	        	// Export the schema to file
-				BufferedWriter out = new BufferedWriter(new FileWriter(new File(filename)));
-				out.write(buffer.toString());
-				out.close();
+	        	exporter.exportSchema(schema, graph.getElements(null), new File(filename));
 			}
 			catch(Exception e)
 			{
