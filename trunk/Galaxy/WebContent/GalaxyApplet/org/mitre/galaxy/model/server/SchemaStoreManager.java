@@ -18,7 +18,8 @@ import org.mitre.schemastore.model.DataSource;
 import org.mitre.schemastore.model.Group;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
-import org.mitre.schemastore.model.graph.Graph;
+import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
+import org.mitre.schemastore.model.schemaInfo.SchemaInfo;
 
 /**
  * Handles all communications to the database (via servlets)
@@ -171,9 +172,9 @@ public class SchemaStoreManager
 	static public Integer getSchemaElementCount(Integer schemaID)
 		{ return (Integer)callFunction("getSchemaElementCount",new Object[] {schemaID}); }
 	
-	/** Retrieves the schema element graph for the specified schema from the web service */
-	static public Graph getGraph(Integer schemaID)
-		{ return (Graph)callFunction("getGraph",new Object[] {schemaID}); }	
+	/** Retrieves the schema info for the specified schema from the web service */
+	static public SchemaInfo getSchemaInfo(Integer schemaID)
+		{ return (SchemaInfo)callFunction("getSchemaInfo",new Object[] {schemaID}); }	
 
 	/** Retrieves the specified schema element from the web service */
 	static public SchemaElement getSchemaElement(Integer schemaElementID)

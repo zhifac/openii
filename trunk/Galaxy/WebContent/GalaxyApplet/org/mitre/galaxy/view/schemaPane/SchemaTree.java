@@ -9,7 +9,7 @@ import java.util.HashSet;
 import org.mitre.galaxy.model.Schemas;
 import org.mitre.schemastore.model.DomainValue;
 import org.mitre.schemastore.model.SchemaElement;
-import org.mitre.schemastore.model.graph.HierarchicalGraph;
+import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
 
 import prefuse.data.Node;
 import prefuse.data.Tree;
@@ -28,7 +28,7 @@ public class SchemaTree extends Tree
 	}
 	
 	/** Build the specified schema branches */
-	private void buildBranches(Node node, HashSet<SchemaElement> elements, HierarchicalGraph sGraph, HierarchicalGraph cGraph)
+	private void buildBranches(Node node, HashSet<SchemaElement> elements, HierarchicalSchemaInfo sInfo, HierarchicalSchemaInfo cInfo)
 	{
 		// Cycle through all elements associated with this branch
 		for(SchemaElement element : elements)
@@ -38,21 +38,21 @@ public class SchemaTree extends Tree
 			
 			// Attach the branch to the tree
 			Node childNode = addChild(node);
-			childNode.set("SchemaObject", new SchemaTreeObject(element.getId(),sGraph,cGraph));
+			childNode.set("SchemaObject", new SchemaTreeObject(element.getId(),sInfo,cInfo));
 
 			// Attach domain values to this branch
-			HashSet<DomainValue> domainValues = new HashSet<DomainValue>(sGraph.getDomainValuesForElement(element.getId()));
-			if(cGraph!=null) domainValues.addAll(cGraph.getDomainValuesForElement(element.getId()));
+			HashSet<DomainValue> domainValues = new HashSet<DomainValue>(sInfo.getDomainValuesForElement(element.getId()));
+			if(cInfo!=null) domainValues.addAll(cInfo.getDomainValuesForElement(element.getId()));
 			for(SchemaElement domainValue : domainValues)
 			{
 				Node domainNode = addChild(childNode);
-				domainNode.set("SchemaObject",new SchemaTreeObject(domainValue.getId(),sGraph,cGraph));
+				domainNode.set("SchemaObject",new SchemaTreeObject(domainValue.getId(),sInfo,cInfo));
 			}			
 			
 			// Build lower layer of branches
-			HashSet<SchemaElement> childElements = new HashSet<SchemaElement>(sGraph.getChildElements(element.getId()));
-			if(cGraph!=null) childElements.addAll(cGraph.getChildElements(element.getId()));
-			buildBranches(childNode, childElements, sGraph, cGraph);
+			HashSet<SchemaElement> childElements = new HashSet<SchemaElement>(sInfo.getChildElements(element.getId()));
+			if(cInfo!=null) childElements.addAll(cInfo.getChildElements(element.getId()));
+			buildBranches(childNode, childElements, sInfo, cInfo);
 		}		
 	}
 	
@@ -71,10 +71,10 @@ public class SchemaTree extends Tree
 		schemaNode.set("SchemaObject", schemaID);
 
 		// Build the first layer of the tree
-		HierarchicalGraph sGraph = Schemas.getGraph(schemaID);
-		HierarchicalGraph cGraph = comparisonID==null ? null : Schemas.getGraph(comparisonID);
-		HashSet<SchemaElement> elements = new HashSet<SchemaElement>(sGraph.getRootElements());
-		if(cGraph!=null) elements.addAll(cGraph.getRootElements());
-		buildBranches(schemaNode, elements, sGraph, cGraph);
+		HierarchicalSchemaInfo sInfo = Schemas.getSchemaInfo(schemaID);
+		HierarchicalSchemaInfo cInfo = comparisonID==null ? null : Schemas.getSchemaInfo(comparisonID);
+		HashSet<SchemaElement> elements = new HashSet<SchemaElement>(sInfo.getRootElements());
+		if(cInfo!=null) elements.addAll(cInfo.getRootElements());
+		buildBranches(schemaNode, elements, sInfo, cInfo);
 	}
 }

@@ -44,11 +44,11 @@ public class SchemaColors
 				if(pane.getComparisonSchemaID()!=null)
 				{
 					// Highlights the items only existent in the selected schema
-					if(!schemaObject.inComparedGraph())
+					if(!schemaObject.inComparedSchema())
 						return selectedSchemaOnlyColor;
 					
 					// Highlight the items only existent in the compared schema
-					if(!schemaObject.inSelectedGraph())
+					if(!schemaObject.inSelectedSchema())
 						return comparisonSchemaOnlyColor;
 				}
 				return schemaObject.getType()==SchemaTreeObject.ATTRIBUTE ? attributeColor : entityColor;
