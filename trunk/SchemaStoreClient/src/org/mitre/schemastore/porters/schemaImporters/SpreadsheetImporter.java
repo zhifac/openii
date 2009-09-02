@@ -265,16 +265,10 @@ System.out.println( translateType(currentCellType ) + " and the date format is "
 	}
 
 	/** Generate the schema elements */
-	public ArrayList<SchemaElement> generateSchemaElements() throws ImporterException {
+	public ArrayList<SchemaElement> generateSchemaElements() throws ImporterException
+	{
 		generate();
-		ArrayList<SchemaElement> elements = generateSchemaElementList();
-		// Schema schema = new Schema(nextId(),"thisschema","me","","","description",false);
-		// org.mitre.schemastore.model.graph.Graph g = new org.mitre.schemastore.model.graph.Graph(schema, elements);
-		// for(SchemaElement e : g.getElements(null))
-		// {
-		//     System.out.println( e.getId() + ": " + e.getName());
-		// }
-		return elements;
+		return generateSchemaElementList();
 	}
 
 	/**

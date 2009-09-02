@@ -22,7 +22,7 @@ import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.MappingSchema;
 import org.mitre.schemastore.model.SchemaElement;
-import org.mitre.schemastore.model.graph.HierarchicalGraph;
+import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
 
 /**
  * Class for exporting projects to a pie chart showing schemas' matched percentage
@@ -83,8 +83,8 @@ public class PieChartExporter extends MappingExporter
 		int noCount = 0;
 		
 		// Cycles through all tree nodes to identify good, weak, and no links
-		HierarchicalGraph graph = new HierarchicalGraph(client.getGraph(schema.getId()),schema.geetGraphModel());
-		for(SchemaElement element : graph.getGraphElements())
+		HierarchicalSchemaInfo schemaInfo = new HierarchicalSchemaInfo(client.getSchemaInfo(schema.getId()),schema.geetSchemaModel());
+		for(SchemaElement element : schemaInfo.getHierarchicalElements())
 		{
 			double maxScore = Double.MIN_VALUE;
    			for(MappingCell mappingCell : getMappingCellsByElement(element.getId(), mappingCells))

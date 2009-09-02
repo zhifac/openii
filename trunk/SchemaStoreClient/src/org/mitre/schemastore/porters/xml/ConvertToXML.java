@@ -14,7 +14,7 @@ import org.mitre.schemastore.model.Relationship;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.Subtype;
-import org.mitre.schemastore.model.graph.HierarchicalGraph;
+import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -128,17 +128,17 @@ public class ConvertToXML
 	}	
 	
 	/** Retrieves the element path for the given element ID */
-	static private String getElementPath(Integer elementID, ArrayList<HierarchicalGraph> graphs)
+	static private String getElementPath(Integer elementID, ArrayList<HierarchicalSchemaInfo> schemaInfoList)
 	{
-		for(HierarchicalGraph graph : graphs)
-			if(graph.containsElement(elementID))
+		for(HierarchicalSchemaInfo schemaInfo : schemaInfoList)
+			if(schemaInfo.containsElement(elementID))
 			{
-				ArrayList<ArrayList<SchemaElement>> paths = graph.getPaths(elementID);
+				ArrayList<ArrayList<SchemaElement>> paths = schemaInfo.getPaths(elementID);
 				if(paths!=null && paths.size()>0)
 				{
-					StringBuffer path = new StringBuffer("/" + graph.getSchema().getName().replaceAll("/","&#47;"));
+					StringBuffer path = new StringBuffer("/" + schemaInfo.getSchema().getName().replaceAll("/","&#47;"));
 					for(SchemaElement element : paths.get(0))
-						path.append("/" + graph.getDisplayName(element.getId()).replaceAll("/","&#47;"));
+						path.append("/" + schemaInfo.getDisplayName(element.getId()).replaceAll("/","&#47;"));
 					return path.toString();
 				}
 			}
@@ -146,7 +146,7 @@ public class ConvertToXML
 	}
 	
 	/** Generates the XML for the specified mapping */
-	static public Element generate(Mapping mapping, ArrayList<MappingCell> mappingCells, ArrayList<HierarchicalGraph> graphs, Document documentIn)
+	static public Element generate(Mapping mapping, ArrayList<MappingCell> mappingCells, ArrayList<HierarchicalSchemaInfo> schemaInfoList, Document documentIn)
 	{
 		document = documentIn;
 		
@@ -162,9 +162,9 @@ public class ConvertToXML
 		{
 			// Retrieve the associated schema
 			Schema schema = null;
-			for(HierarchicalGraph graph : graphs)
-				if(graph.getSchema().getId().equals(mappingSchema.getId()))
-					{ schema = graph.getSchema(); break; }
+			for(HierarchicalSchemaInfo schemaInfo : schemaInfoList)
+				if(schemaInfo.getSchema().getId().equals(mappingSchema.getId()))
+					{ schema = schemaInfo.getSchema(); break; }
 			if(schema==null) continue;
 			
 			// Stores the mapping schema
@@ -182,11 +182,11 @@ public class ConvertToXML
 			ArrayList<String> inputPaths = new ArrayList<String>();
 			for(Integer input : mappingCell.getInput())
 			{
-				String inputPath = getElementPath(input,graphs);
+				String inputPath = getElementPath(input,schemaInfoList);
 				if(inputPath==null) continue;
 				inputPaths.add(inputPath);
 			}
-			String outputPath = getElementPath(mappingCell.getOutput(),graphs);
+			String outputPath = getElementPath(mappingCell.getOutput(),schemaInfoList);
 			if(outputPath==null) continue;
 			
 			// Stores the mapping cell information

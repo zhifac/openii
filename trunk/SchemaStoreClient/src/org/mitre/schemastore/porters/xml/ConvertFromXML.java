@@ -18,7 +18,7 @@ import org.mitre.schemastore.model.Relationship;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.Subtype;
-import org.mitre.schemastore.model.graph.HierarchicalGraph;
+import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
@@ -190,7 +190,7 @@ public class ConvertFromXML
 	}
 
 	/** Retrieve the elementID for the given element path */
-	static private Integer getElementId(String pathString, ArrayList<HierarchicalGraph> graphs)
+	static private Integer getElementId(String pathString, ArrayList<HierarchicalSchemaInfo> schemaInfoList)
 	{
 		// Retrieve the schema and path
 		String schema = pathString.substring(1).replaceAll("/.*","").replaceAll("&#47;","/");
@@ -199,28 +199,28 @@ public class ConvertFromXML
 			path.add(element.replaceAll("&#47;","/"));
 		
 		// Retrieve the element ID
-		for(HierarchicalGraph graph : graphs)
-			if(graph.getSchema().getName().equals(schema))
+		for(HierarchicalSchemaInfo schemaInfo : schemaInfoList)
+			if(schemaInfo.getSchema().getName().equals(schema))
 			{
-				ArrayList<Integer> elementIDs = graph.getPathIDs(path);
+				ArrayList<Integer> elementIDs = schemaInfo.getPathIDs(path);
 				if(elementIDs.size()>0) return elementIDs.get(0);
 			}
 		return null;
 	}
 	
 	/** Retrieve the mapping cell from the specified XML */
-	static public MappingCell getMappingCell(Element element, ArrayList<HierarchicalGraph> graphs)
+	static public MappingCell getMappingCell(Element element, ArrayList<HierarchicalSchemaInfo> schemaInfoList)
 	{
 		// Retrieve the mapping cell input and output IDs
 		Integer inputCount = getIntegerValue(element,"MappingCellInputCount");
 		Integer inputIDs[] = new Integer[inputCount];
 		for(int i=0; i<inputCount; i++)
 		{
-			Integer inputID = getElementId(getValue(element,"MappingCellInput"+i+"Path"),graphs);
+			Integer inputID = getElementId(getValue(element,"MappingCellInput"+i+"Path"),schemaInfoList);
 			if(inputID==null) return null;
 			inputIDs[i] = inputID;
 		}
-		Integer outputID = getElementId(getValue(element,"MappingCellOutputPath"),graphs);
+		Integer outputID = getElementId(getValue(element,"MappingCellOutputPath"),schemaInfoList);
 		if(outputID==null) return null;
 		
 		// Retrieve the mapping cell elements

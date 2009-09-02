@@ -15,7 +15,7 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.mitre.schemastore.client.SchemaStoreClient;
 import org.mitre.schemastore.model.SchemaElement;
-import org.mitre.schemastore.model.graph.HierarchicalGraph;
+import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
 
 /**
  * This object starts with a completed set of clustered results, and determines
@@ -160,16 +160,16 @@ public class ClusterRenderer {
 		for (Integer schemaId : schemaIDs) {
 			System.out.println("     Print schema : " + schemaId);
 
-			HierarchicalGraph hGraph;
+			HierarchicalSchemaInfo schemaInfo;
 			try {
-				hGraph = new HierarchicalGraph(schemaStoreClient.getGraph(schemaId), null);
+				schemaInfo = new HierarchicalSchemaInfo(schemaStoreClient.getSchemaInfo(schemaId), null);
 
 				Integer colIDX = schemaColumnPosHash.get(schemaId);
 
 				// print schema name over ID
 				HSSFRow row0 = sheet.getRow(0);
 				HSSFCell cell = row0.getCell(colIDX);
-				cell.setCellValue(new HSSFRichTextString(hGraph.getSchema().getName()));
+				cell.setCellValue(new HSSFRichTextString(schemaInfo.getSchema().getName()));
 
 				for (int i = 1; i <= lastRow; i++) {
 					HSSFRow currRow = sheet.getRow(i);
@@ -181,10 +181,10 @@ public class ClusterRenderer {
 						HSSFCell descCell = currRow.createCell(colIDX + 2);
 
 						Integer elementID = Integer.decode(idCell.getRichStringCellValue().toString());
-						SchemaElement e = hGraph.getElement(elementID);
+						SchemaElement e = schemaInfo.getElement(elementID);
 
 						// path
-						pathCell.setCellValue(new HSSFRichTextString(getPath(hGraph, elementID)));
+						pathCell.setCellValue(new HSSFRichTextString(getPath(schemaInfo, elementID)));
 						// value
 						elementCell.setCellValue(new HSSFRichTextString(e.getName()));
 						// description
@@ -199,15 +199,15 @@ public class ClusterRenderer {
 	}
 
 	/**
-	 * returns a string of paths for an element in a graph
+	 * returns a string of paths for an element in a schema
 	 * 
-	 * @param graph
+	 * @param schemaInfo
 	 * @param elementID
 	 * @return
 	 */
-	private String getPath(HierarchicalGraph graph, Integer elementID) {
-		String path = ""; // graph.getSchema().getName();
-		ArrayList<ArrayList<SchemaElement>> paths = graph.getPaths(elementID);
+	private String getPath(HierarchicalSchemaInfo schemaInfo, Integer elementID) {
+		String path = "";
+		ArrayList<ArrayList<SchemaElement>> paths = schemaInfo.getPaths(elementID);
 
 		for (ArrayList<SchemaElement> p : paths) {
 			for (SchemaElement node : p)

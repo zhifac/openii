@@ -18,7 +18,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
-import org.mitre.schemastore.model.graph.Graph;
+import org.mitre.schemastore.model.schemaInfo.SchemaInfo;
 import org.mitre.schemastore.porters.ImporterException;
 import org.mitre.schemastore.porters.xml.ConvertFromXML;
 import org.w3c.dom.Document;
@@ -47,26 +47,11 @@ public class M3SchemaImporter extends SchemaImporter
 		}
 	}
 	
-	/** Private class for storing a graph that contains parent schema information */ @SuppressWarnings("serial")
-	private class ExtendedGraph extends Graph implements Comparable<ExtendedGraph>
+	/** Private class for sorting schema info */
+	private class SchemaInfoComparator implements Comparator<SchemaInfo>
 	{
-		/** Stores the parent schemas */
-		private ArrayList<Integer> parentSchemaIDs;
-		
-		/** Constructs the extended graph */
-		private ExtendedGraph(Schema schema, ArrayList<Integer> parentSchemaIDs, ArrayList<SchemaElement> elements)
-		{
-			super(schema,elements);
-			this.parentSchemaIDs = parentSchemaIDs;
-		}
-		
-		/** Returns the parent schema IDs */
-		private ArrayList<Integer> getParentSchemaIDs()
-			{ return parentSchemaIDs; }
-		
-		/** Compares two extended graphs based on the schema ID */
-		public int compareTo(ExtendedGraph graph)
-			{ return getSchema().getId().compareTo(graph.getSchema().getId()); }
+		public int compare(SchemaInfo schemaInfo1, SchemaInfo schemaInfo2)
+			{ return schemaInfo1.getSchema().getId().compareTo(schemaInfo2.getSchema().getId()); }
 	}
 	
 	/** Stores the list of extended schemas */
@@ -109,43 +94,43 @@ public class M3SchemaImporter extends SchemaImporter
 	protected void initialize() throws ImporterException
 	{	
 		try {
-			// Extract out schema graphs from the XML document
-			ArrayList<ExtendedGraph> graphs = parseDocument();
+			// Extract out schema info from the XML document
+			ArrayList<SchemaInfo> schemaInfoList = parseDocument();
 
 			// Create ID translation table between file and repository
 			HashMap<Integer,Integer> translationTable = new HashMap<Integer,Integer>();
 			
 			// Transfer all schemas from which this schema is extended
 			ArrayList<Schema> availableSchemas = client.getSchemas();
-			for(ExtendedGraph graph : graphs.subList(0, graphs.size()-1))
+			for(SchemaInfo schemaInfo : schemaInfoList.subList(0, schemaInfoList.size()-1))
 			{
 				// Get the schema and schema ID
-				Schema schema = graph.getSchema();
+				Schema schema = schemaInfo.getSchema();
 				Integer schemaID = schema.getId();
 
 				// Find if schema already exists in repository
-				Integer newSchemaID = getMatchedSchema(availableSchemas, graph);
+				Integer newSchemaID = getMatchedSchema(availableSchemas, schemaInfo);
 				
-				// Translate all IDs in the graph
+				// Translate all IDs in the schema
 				for(Integer key : translationTable.keySet())
-					graph.updateElementID(key, translationTable.get(key));
+					schemaInfo.updateElementID(key, translationTable.get(key));
 				
 				// Create extended schema if does not yet exist
 				if(newSchemaID==null)
-					newSchemaID = importParentSchema(graph);
-				if(newSchemaID==null) throw new Exception("Failure to import schema " + graph.getSchema().getName());
+					newSchemaID = importParentSchema(schemaInfo);
+				if(newSchemaID==null) throw new Exception("Failure to import schema " + schemaInfo.getSchema().getName());
 				
 				// Update references to the schema ID
-				for(ExtendedGraph currGraph : graphs)
+				for(SchemaInfo currSchemaInfo : schemaInfoList)
 				{
-					ArrayList<Integer> parentSchemaIDs = currGraph.getParentSchemaIDs();
+					ArrayList<Integer> parentSchemaIDs = currSchemaInfo.getParentSchemaIDs();
 					if(parentSchemaIDs.contains(schemaID))
 						{ parentSchemaIDs.remove(schemaID); parentSchemaIDs.add(newSchemaID); }
 				}
 				
 				// Collect and sort the elements from the two repositories
-				ArrayList<SchemaElement> origElements = graph.getBaseElements(null);
-				ArrayList<SchemaElement> newElements = client.getGraph(newSchemaID).getBaseElements(null);				
+				ArrayList<SchemaElement> origElements = schemaInfo.getBaseElements(null);
+				ArrayList<SchemaElement> newElements = client.getSchemaInfo(newSchemaID).getBaseElements(null);				
 				Collections.sort(origElements,new SchemaElementComparator());
 				Collections.sort(newElements,new SchemaElementComparator());
 
@@ -159,17 +144,17 @@ public class M3SchemaImporter extends SchemaImporter
 			}
 			
 			// Get the schema being imported
-			ExtendedGraph graph = graphs.get(graphs.size()-1);
+			SchemaInfo schemaInfo = schemaInfoList.get(schemaInfoList.size()-1);
 
 			// Throw an exception if schema already exists in repository
-			if(getMatchedSchema(availableSchemas, graph)!=null)
+			if(getMatchedSchema(availableSchemas, schemaInfo)!=null)
 				throw new Exception("Schema already exists in repository");
 			
 			// Store the information for the schema being imported
 			for(Integer key : translationTable.keySet())
-				graph.updateElementID(key, translationTable.get(key));
-			extendedSchemaIDs = graph.getParentSchemaIDs();
-			schemaElements = graph.getBaseElements(null);
+				schemaInfo.updateElementID(key, translationTable.get(key));
+			extendedSchemaIDs = schemaInfo.getParentSchemaIDs();
+			schemaElements = schemaInfo.getBaseElements(null);
 		}
 		catch(Exception e) { throw new ImporterException(ImporterException.PARSE_FAILURE,e.getMessage()); }
 	}
@@ -207,14 +192,14 @@ public class M3SchemaImporter extends SchemaImporter
 		return element.getElementsByTagName("Schema");
 	}
 	
-	/** Parse out schema graphs from XML document */
-	private ArrayList<ExtendedGraph> parseDocument() throws Exception
+	/** Parse out schema from XML document */
+	private ArrayList<SchemaInfo> parseDocument() throws Exception
 	{	
 		// Create a map to temporarily hold schema elements until after the entire file is parsed
 		HashMap<Integer,ArrayList<SchemaElement>> elementMap = new HashMap<Integer,ArrayList<SchemaElement>>();
 		
-		// Gather up all schema information from the XML document in the form of extended graphs
-		ArrayList<ExtendedGraph> graphs = new ArrayList<ExtendedGraph>();
+		// Gather up all schema information from the XML document
+		ArrayList<SchemaInfo> schemaInfoList = new ArrayList<SchemaInfo>();
 		NodeList schemaList = getXMLNodeList(uri);
 		if(schemaList!=null)
 			for(int i=0 ; i<schemaList.getLength(); i++)
@@ -240,69 +225,69 @@ public class M3SchemaImporter extends SchemaImporter
 						}
 					}
 						
-				// Add the extended graph to the list of extended graphs
+				// Add the schema info to the list of schema info
 				elementMap.put(schema.getId(), schemaElements);
-				graphs.add(new ExtendedGraph(schema, parentIDs, new ArrayList<SchemaElement>()));
+				schemaInfoList.add(new SchemaInfo(schema, parentIDs, new ArrayList<SchemaElement>()));
 			}
 
-		// Add schema elements to the generated graphs
-		for(ExtendedGraph graph : graphs)
+		// Add schema elements to the generated schema info
+		for(SchemaInfo schemaInfo : schemaInfoList)
 		{
-			Integer schemaID = graph.getSchema().getId();
+			Integer schemaID = schemaInfo.getSchema().getId();
 			HashSet<SchemaElement> elements = new HashSet<SchemaElement>(elementMap.get(schemaID));
-			for(Integer extendedSchemaID : getExtendedSchemas(schemaID,graphs))
+			for(Integer extendedSchemaID : getExtendedSchemas(schemaID,schemaInfoList))
 				elements.addAll(elementMap.get(extendedSchemaID));
-			boolean success = graph.addElements(new ArrayList<SchemaElement>(elements));
-			if(!success) throw new Exception("Failure to generate a schema graph from the M3 schema file");
+			boolean success = schemaInfo.addElements(new ArrayList<SchemaElement>(elements));
+			if(!success) throw new Exception("Failure to generate the schema from the M3 schema file");
 		}
 		
-		// Sort graphs by schema ID and then return
-		Collections.sort(graphs);
-		return graphs;
+		// Sort schemas by schema ID and then return
+		Collections.sort(schemaInfoList,new SchemaInfoComparator());
+		return schemaInfoList;
 	}
 	
 	/** Returns the list of extended schemas for the specified schema ID */
-	private ArrayList<Integer> getExtendedSchemas(Integer schemaID, ArrayList<ExtendedGraph> graphs)
+	private ArrayList<Integer> getExtendedSchemas(Integer schemaID, ArrayList<SchemaInfo> schemaInfoList)
 	{
-		// Get the graph associated with the specified schema ID
-		ExtendedGraph graph = null;
-		for(ExtendedGraph currGraph : graphs)
-			if(currGraph.getSchema().getId().equals(schemaID))
-				{ graph=currGraph; break; }
-		if(graph==null) return new ArrayList<Integer>();
+		// Get the schema info associated with the specified schema ID
+		SchemaInfo schemaInfo = null;
+		for(SchemaInfo currSchemaInfo : schemaInfoList)
+			if(currSchemaInfo.getSchema().getId().equals(schemaID))
+				{ schemaInfo=currSchemaInfo; break; }
+		if(schemaInfo==null) return new ArrayList<Integer>();
 		
 		// Generate the list of extended schemas
-		ArrayList<Integer> extendedSchemas = new ArrayList<Integer>(graph.getParentSchemaIDs());
-		for(Integer parentSchemaID : graph.getParentSchemaIDs())
-			extendedSchemas.addAll(getExtendedSchemas(parentSchemaID, graphs));
+		ArrayList<Integer> extendedSchemas = new ArrayList<Integer>(schemaInfo.getParentSchemaIDs());
+		for(Integer parentSchemaID : schemaInfo.getParentSchemaIDs())
+			extendedSchemas.addAll(getExtendedSchemas(parentSchemaID, schemaInfoList));
 		return extendedSchemas;
 	}
 	
 	/** Identifies the matching schema in the repository if one exists */
-	private Integer getMatchedSchema(ArrayList<Schema> availableSchemas, Graph graph) throws Exception
+	private Integer getMatchedSchema(ArrayList<Schema> availableSchemas, SchemaInfo schemaInfo) throws Exception
 	{
 		// Search through available schemas to find if one matches
 		for(Schema possSchema : availableSchemas)
-			if(possSchema.getName().equals(graph.getSchema().getName()))
+			if(possSchema.getName().equals(schemaInfo.getSchema().getName()))
 			{
-				// Generate graphs for both schemas
-				Graph possGraph = client.getGraph(possSchema.getId());
+				// Generate schema info for both schemas
+				SchemaInfo possSchemaInfo = client.getSchemaInfo(possSchema.getId());
 				
 				// Check to see if number of elements matches
-				ArrayList<SchemaElement> graphElements = graph.getElements(null);
-				ArrayList<SchemaElement> possGraphElements = possGraph.getElements(null);
-				if(graphElements.size()==possGraphElements.size())
+				ArrayList<SchemaElement> elements = schemaInfo.getElements(null);
+				ArrayList<SchemaElement> possElements = possSchemaInfo.getElements(null);
+				if(elements.size()==possElements.size())
 				{
 					// Sort the elements in each list
-					Collections.sort(graphElements,new SchemaElementComparator());
-					Collections.sort(possGraphElements,new SchemaElementComparator());
+					Collections.sort(elements,new SchemaElementComparator());
+					Collections.sort(possElements,new SchemaElementComparator());
 
 					// Validate that all of the elements are indeed the same
 					boolean match = true;
-					for(int i=0; i<graphElements.size(); i++)
+					for(int i=0; i<elements.size(); i++)
 					{
-						SchemaElement s1 = graphElements.get(i);
-						SchemaElement s2 = possGraphElements.get(i);
+						SchemaElement s1 = elements.get(i);
+						SchemaElement s2 = possElements.get(i);
 						if((s1.getClass().equals(s2.getClass()) && s1.getName().equals(s2.getName()))==false)
 							{ match = false; break; }
 					}
@@ -314,20 +299,20 @@ public class M3SchemaImporter extends SchemaImporter
 		return null;
 	}
 	
-	/** Import the graph to the repository */
-	private Integer importParentSchema(ExtendedGraph graph)
+	/** Import the schema to the repository */
+	private Integer importParentSchema(SchemaInfo schemaInfo)
 	{
 		boolean success = false;
 		
-		// Import the graph
+		// Import the schema
 		Integer schemaID = null;
 		try {
-			schemaID = client.importSchema(graph.getSchema(), graph.getBaseElements(null));
-			success = client.setParentSchemas(schemaID, graph.getParentSchemaIDs());
+			schemaID = client.importSchema(schemaInfo.getSchema(), schemaInfo.getBaseElements(null));
+			success = client.setParentSchemas(schemaID, schemaInfo.getParentSchemaIDs());
 			if(success) client.lockSchema(schemaID);
 		} catch(Exception e) {}
 
-		// Delete the imported graph if failure occurred
+		// Delete the imported schema if failure occurred
 		if(!success && schemaID!=null)
 		{
 			try { client.deleteSchema(schemaID); } catch(Exception e) {};

@@ -20,7 +20,7 @@ import org.apache.xml.serialize.XMLSerializer;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.MappingSchema;
-import org.mitre.schemastore.model.graph.HierarchicalGraph;
+import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
 import org.mitre.schemastore.porters.xml.ConvertToXML;
 import org.w3c.dom.Document;
 
@@ -54,10 +54,10 @@ public class M3MappingExporter extends MappingExporter
 		document = db.newDocument();
 
 		// Create the XML document
-		ArrayList<HierarchicalGraph> graphs = new ArrayList<HierarchicalGraph>();
+		ArrayList<HierarchicalSchemaInfo> schemaInfoList = new ArrayList<HierarchicalSchemaInfo>();
 		for(MappingSchema mappingSchema : mapping.getSchemas())
-			graphs.add(new HierarchicalGraph(client.getGraph(mappingSchema.getId()),mappingSchema.geetGraphModel()));
-		document.appendChild(ConvertToXML.generate(mapping, mappingCells, graphs, document));
+			schemaInfoList.add(new HierarchicalSchemaInfo(client.getSchemaInfo(mappingSchema.getId()),mappingSchema.geetSchemaModel()));
+		document.appendChild(ConvertToXML.generate(mapping, mappingCells, schemaInfoList, document));
 
 		// Returns the generated document
 		return document;

@@ -9,8 +9,8 @@ import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.MappingSchema;
 import org.mitre.schemastore.model.SchemaElement;
-import org.mitre.schemastore.model.graph.HierarchicalGraph;
-import org.mitre.schemastore.model.graph.model.GraphModel;
+import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
+import org.mitre.schemastore.model.schemaInfo.model.SchemaModel;
 import org.mitre.schemastore.porters.mappingExporters.MappingExporter;
 import org.mitre.schemastore.porters.mappingExporters.xmi.*;
 
@@ -46,9 +46,9 @@ public class XMIMappingExporter extends MappingExporter {
 		ArrayList <XMIModelElement> xmiSchemas = new ArrayList <XMIModelElement> ();
 		int x=0; 
 		for(MappingSchema mappingSchema : mapping.getSchemas()) {
-			System.out.println("Getting hierarchical graph for " + mappingSchema); 
-			HierarchicalGraph hg = new HierarchicalGraph(client.getGraph(mappingSchema.getId()),
-														 mappingSchema.geetGraphModel());
+			System.out.println("Getting hierarchical schema info for " + mappingSchema); 
+			HierarchicalSchemaInfo hg = new HierarchicalSchemaInfo(client.getSchemaInfo(mappingSchema.getId()),
+														 mappingSchema.geetSchemaModel());
 			String pkgName = hg.getSchema().getName();
 			if(pkgName == null || "".equals(pkgName)) pkgName = "Default package name";			
 			pkgs[x] = new XMIModelElement(pkgName, XMIExportable.UML_PACKAGE);
@@ -100,12 +100,12 @@ public class XMIMappingExporter extends MappingExporter {
 	}
 	
 	/**
-	 * Process a hierarchical graph into an XMI model
-	 * @param m the model to place the graph objects into 
-	 * @param hg the graph being processed
-	 * @param pkg the enclosing "UML Package" model element to place the graph into.
+	 * Process a hierarchical schema info into an XMI model
+	 * @param m the model to place the schema info objects into 
+	 * @param hg the schema being processed
+	 * @param pkg the enclosing "UML Package" model element to place the schema into.
 	 */
-	private void hashModel(XMIModel m, HierarchicalGraph hg, XMIModelElement pkg) {
+	private void hashModel(XMIModel m, HierarchicalSchemaInfo hg, XMIModelElement pkg) {
 		System.out.println("hashModel: Getting roots"); 
 		ArrayList <SchemaElement> roots = hg.getRootElements(); 
 		
@@ -114,7 +114,7 @@ public class XMIMappingExporter extends MappingExporter {
 		}
 	} // end hashModel
 	
-	private XMIModelElement recursivelyHash(XMIModel m, SchemaElement elem, HierarchicalGraph owner, 
+	private XMIModelElement recursivelyHash(XMIModel m, SchemaElement elem, HierarchicalSchemaInfo owner, 
 								  XMIModelElement container, int depth) {
 		System.out.println("hashModel: Recursing on " + elem);  
 		XMIModelElement thisnode = new XMIModelElement(elem.getName());

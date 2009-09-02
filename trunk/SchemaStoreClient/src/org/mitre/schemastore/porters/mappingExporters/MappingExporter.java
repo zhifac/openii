@@ -28,7 +28,7 @@ public abstract class MappingExporter extends Porter
 	{
 		HashMap<Integer,SchemaElement> elements = new HashMap<Integer,SchemaElement>();
 		for(Integer schemaID : schemaIDs)
-			for(SchemaElement element : client.getGraph(schemaID).getElements(null))
+			for(SchemaElement element : client.getSchemaInfo(schemaID).getElements(null))
 				elements.put(element.getId(),element);
 		return elements;
 	}
