@@ -16,7 +16,7 @@ import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.MappingSchema;
 import org.mitre.schemastore.model.SchemaElement;
-import org.mitre.schemastore.model.graph.HierarchicalGraph;
+import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
 
 import java.sql.*;
 
@@ -79,10 +79,10 @@ public class UserMatchAnnotationDBExporter  extends UserMatchAnotationExporter {
 	        		"linkNote string)"); // create a table      
 	        s.close();	        	        
 	
-			// Initialize the graph and schema element lists
+			// Initialize the schema and schema element lists
 			elements = getSchemaElements(Arrays.asList(mapping.getSchemaIDs()));
 			for(MappingSchema schema : mapping.getSchemas())
-				graphs.add(new HierarchicalGraph(client.getGraph(schema.getId()),null));
+				schemaInfoList.add(new HierarchicalSchemaInfo(client.getSchemaInfo(schema.getId()),null));
 
 			// Get the list of mapping cells
 			CompressedList matchList = new CompressedList();
@@ -142,8 +142,8 @@ public class UserMatchAnnotationDBExporter  extends UserMatchAnotationExporter {
   			}
   			linkIdentifier_PK++;
 	
-  	    	// Clear out graph and schema element lists
-	  	    elements = new HashMap<Integer,SchemaElement>(); graphs.clear();
+  	    	// Clear out schemas and schema element lists
+	  	    elements = new HashMap<Integer,SchemaElement>(); schemaInfoList.clear();
 
 		} //end try
 

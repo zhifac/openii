@@ -11,9 +11,9 @@ import org.exolab.castor.xml.schema.Group;
 import org.exolab.castor.xml.schema.Schema;
 import org.exolab.castor.xml.schema.reader.SchemaReader;
 import org.mitre.schemastore.model.*;
-import org.mitre.schemastore.model.graph.Graph;
-import org.mitre.schemastore.model.graph.HierarchicalGraph;
-import org.mitre.schemastore.model.graph.model.GraphModel;
+import org.mitre.schemastore.model.schemaInfo.SchemaInfo;
+import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
+import org.mitre.schemastore.model.schemaInfo.model.SchemaModel;
 import org.mitre.schemastore.porters.ImporterException;
 
 
@@ -36,12 +36,12 @@ public class XSDImporter extends SchemaImporter
 			XSDImporter xsdImporter = new XSDImporter();
 			URI uri = new URI("C:/Electronic_Court_Filing_4.0/ecf-v4.0-spec/xsd/message/ECF-4.0-CaseListQueryMessage.xsd");
 			ArrayList<SchemaElement> schemaElements = xsdImporter.getSchemaElements(uri);
-			GraphModel xmlModel = null;
-			for (GraphModel gm : HierarchicalGraph.getGraphModels()){
+			SchemaModel xmlModel = null;
+			for (SchemaModel gm : HierarchicalSchemaInfo.getSchemaModels()){
 				if (gm.getName().equalsIgnoreCase("XML"))
 					gm = xmlModel;
 			}
-			HierarchicalGraph hier = new HierarchicalGraph(new Graph(new org.mitre.schemastore.model.Schema(1,"test","me","","","",false),new ArrayList<SchemaElement>(schemaElements)),xmlModel);
+			HierarchicalSchemaInfo hier = new HierarchicalSchemaInfo(new SchemaInfo(new org.mitre.schemastore.model.Schema(1,"test","me","","","",false),new ArrayList<SchemaElement>(schemaElements)),xmlModel);
 			for (SchemaElement se : hier.getElements(Subtype.class)){
 				Subtype sub = (Subtype)se;
 				System.err.println("--------------------  id: " + sub.getId() 
@@ -126,12 +126,12 @@ public class XSDImporter extends SchemaImporter
 		//		getRootElements(refSchema);
 		//	}		
 		
-			GraphModel xmlModel = null;
-			for (GraphModel gm : HierarchicalGraph.getGraphModels()){
+			SchemaModel xmlModel = null;
+			for (SchemaModel gm : HierarchicalSchemaInfo.getSchemaModels()){
 				if (gm.getName().equalsIgnoreCase("XML"))
 					gm = xmlModel;
 			}
-			HierarchicalGraph hier = new HierarchicalGraph(new Graph(new org.mitre.schemastore.model.Schema(1,"test","me","","","",false),new ArrayList<SchemaElement>(schemaElementsHS.values())),xmlModel);
+			new SchemaInfo(new org.mitre.schemastore.model.Schema(1,"test","me","","","",false),new ArrayList<SchemaElement>(schemaElementsHS.values()));
 		
 		}
 		catch(Exception e) { 			

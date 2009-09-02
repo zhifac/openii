@@ -44,7 +44,7 @@ public class MatchMakerExporter extends MappingExporter {
 		for (Integer schemaID : this.mapping.getSchemaIDs()) {
 			// Loop through each element
 			
-			for (SchemaElement element : client.getGraph(schemaID).getElements(null) ) {
+			for (SchemaElement element : client.getSchemaInfo(schemaID).getElements(null) ) {
 				elementID = element.getId();
 
 				// hash current schemaID to the list by elementID
@@ -164,7 +164,7 @@ public class MatchMakerExporter extends MappingExporter {
 
 			// sort schema elements in the schema
 			try {
-				refList = client.getGraph(schemaID).getElements(null);
+				refList = client.getSchemaInfo(schemaID).getElements(null);
 
 				Collections.sort(refList, elementComparator);
 

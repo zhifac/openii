@@ -3,7 +3,7 @@
 package org.mitre.schemastore.porters.mappingImporters;
 
 import org.mitre.schemastore.model.*;
-import org.mitre.schemastore.model.graph.HierarchicalGraph;
+import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
 import org.mitre.schemastore.porters.ImporterException;
 import org.mitre.schemastore.porters.xml.ConvertFromXML;
 
@@ -87,15 +87,15 @@ public class M3MappingImporter extends MappingImporter
 	protected ArrayList<MappingCell> getMappingCells() throws ImporterException
 	{
 		try {			
-			// Generate graphs for the available schemas (using original schema names for matching purposes)
-			ArrayList<HierarchicalGraph> graphs = new ArrayList<HierarchicalGraph>();
+			// Retrieve info for the available schemas (using original schema names for matching purposes)
+			ArrayList<HierarchicalSchemaInfo> schemaInfoList = new ArrayList<HierarchicalSchemaInfo>();
 			ArrayList<MappingSchema> origSchemas = getSchemas();
 			for(int i=0; i<schemas.size(); i++)
 			{
 				MappingSchema schema = schemas.get(i);
-				HierarchicalGraph graph = new HierarchicalGraph(client.getGraph(schema.getId()),schema.geetGraphModel());
-				graph.getSchema().setName(origSchemas.get(i).getName());
-				graphs.add(graph);
+				HierarchicalSchemaInfo schemaInfo = new HierarchicalSchemaInfo(client.getSchemaInfo(schema.getId()),schema.geetSchemaModel());
+				schemaInfo.getSchema().setName(origSchemas.get(i).getName());
+				schemaInfoList.add(schemaInfo);
 			}
 			
 			// Generate the list of mapping cells
@@ -107,7 +107,7 @@ public class M3MappingImporter extends MappingImporter
 					Node node = mappingCellNodeList.item(j);
 					if(node instanceof Element)
 					{
-						MappingCell mappingCell = ConvertFromXML.getMappingCell((Element)node, graphs);
+						MappingCell mappingCell = ConvertFromXML.getMappingCell((Element)node, schemaInfoList);
 						if(mappingCell!=null) mappingCells.add(mappingCell);
 					}
 				}

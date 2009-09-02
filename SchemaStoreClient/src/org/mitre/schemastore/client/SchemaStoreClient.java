@@ -24,7 +24,7 @@ import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.SchemaElementList;
 import org.mitre.schemastore.model.Subtype;
-import org.mitre.schemastore.model.graph.Graph;
+import org.mitre.schemastore.model.schemaInfo.SchemaInfo;
 import org.mitre.schemastore.servlet.SchemaStore;
 import org.mitre.schemastore.servlet.SchemaStoreProxy;
 
@@ -375,12 +375,12 @@ public class SchemaStoreClient
 	public Integer getSchemaElementCount(Integer schemaID) throws RemoteException
 		{ return (Integer)callMethod("getSchemaElementCount",new Object[] {schemaID}); }
 
-	/** Retrieves the schema element graph for the specified schema from the web service */
-	public Graph getGraph(Integer schemaID) throws RemoteException
+	/** Retrieves the schema info for the specified schema from the web service */
+	public SchemaInfo getSchemaInfo(Integer schemaID) throws RemoteException
 	{
 		SchemaElement[] schemaElements = ((SchemaElementList)callMethod("getSchemaElements",new Object[] {schemaID})).getSchemaElements();
 		ArrayList<SchemaElement> elements = schemaElements==null ? new ArrayList<SchemaElement>() : new ArrayList<SchemaElement>(Arrays.asList(schemaElements));
-		return new Graph(getSchema(schemaID),elements);
+		return new SchemaInfo(getSchema(schemaID),getParentSchemas(schemaID),elements);
 	}
 
 	//-----------------------

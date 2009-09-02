@@ -67,7 +67,7 @@ public class M3SchemaExporter extends SchemaExporter
 			Element schemaXMLElement = ConvertToXML.generate(currSchema, parentSchemaIDs, document);
 
 			// Generate XML for the various schema elements
-			for(SchemaElement schemaElement : client.getGraph(currSchemaID).getBaseElements(null))
+			for(SchemaElement schemaElement : client.getSchemaInfo(currSchemaID).getBaseElements(null))
 			{
 				Element schemaElementXMLElement = ConvertToXML.generate(schemaElement, document);
 				schemaXMLElement.appendChild(schemaElementXMLElement);

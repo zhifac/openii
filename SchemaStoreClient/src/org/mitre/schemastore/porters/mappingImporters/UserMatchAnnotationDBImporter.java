@@ -13,8 +13,8 @@ import java.util.Calendar;
 
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.MappingSchema;
-import org.mitre.schemastore.model.graph.HierarchicalGraph;
 import org.mitre.schemastore.model.mapfunctions.IdentityFunction;
+import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
 import org.mitre.schemastore.porters.ImporterException;
 
 public class UserMatchAnnotationDBImporter extends MappingImporter
@@ -72,15 +72,15 @@ public class UserMatchAnnotationDBImporter extends MappingImporter
 	{
 		ArrayList<MappingCell> mappingCells = new ArrayList<MappingCell>();
 
-		// Retrieve the schema graphs for the specified schemas
-		HierarchicalGraph hg1 = null, hg2 = null;
+		// Retrieve info for the specified schemas
+		HierarchicalSchemaInfo hg1 = null, hg2 = null;
 		try {
-			hg1 = new HierarchicalGraph(client.getGraph(schemas.get(0).getId()), null);
-			hg2 = new HierarchicalGraph(client.getGraph(schemas.get(1).getId()), null);
+			hg1 = new HierarchicalSchemaInfo(client.getSchemaInfo(schemas.get(0).getId()), null);
+			hg2 = new HierarchicalSchemaInfo(client.getSchemaInfo(schemas.get(1).getId()), null);
 		}
 		catch (Exception e)
 		{
-		    System.err.println ("Error getting graph");
+		    System.err.println ("Error getting schema info");
 		    e.printStackTrace();
 		}
 

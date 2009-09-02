@@ -18,7 +18,7 @@ import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.MappingSchema;
 import org.mitre.schemastore.model.SchemaElement;
-import org.mitre.schemastore.model.graph.HierarchicalGraph;
+import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
 
 
 /**
@@ -30,8 +30,8 @@ public class UserMatchAnotationExporter extends MappingExporter
 	/** Stores a hash map of all schema elements which exist in mapping */
 	protected HashMap<Integer,SchemaElement> elements = new HashMap<Integer,SchemaElement>();
 	
-	/** Stores an array of all schema graphs which exist in mapping */
-	ArrayList<HierarchicalGraph> graphs = new ArrayList<HierarchicalGraph>();
+	/** Stores an array of all schema which exist in mapping */
+	ArrayList<HierarchicalSchemaInfo> schemaInfoList = new ArrayList<HierarchicalSchemaInfo>();
 
 	
 	private String header;
@@ -75,10 +75,10 @@ public class UserMatchAnotationExporter extends MappingExporter
 		// Prepare to export source and target node information
 		BufferedWriter out = new BufferedWriter(new FileWriter(file));
 
-		// Initialize the graph and schema element lists
+		// Initialize the schemas and schema element lists
 		elements = getSchemaElements(Arrays.asList(mapping.getSchemaIDs()));
 		for(MappingSchema schema : mapping.getSchemas())
-			graphs.add(new HierarchicalGraph(client.getGraph(schema.getId()),null));
+			schemaInfoList.add(new HierarchicalSchemaInfo(client.getSchemaInfo(schema.getId()),null));
 			
 		// Get the list of mapping cells
 		CompressedList matchList = new CompressedList();
@@ -94,16 +94,16 @@ public class UserMatchAnotationExporter extends MappingExporter
     		out.write(match.toString() + "\n");
     	out.close();
     	
-    	// Clear out graph and schema element lists
-    	elements = new HashMap<Integer,SchemaElement>(); graphs.clear();
+    	// Clear out schemas and schema element lists
+    	elements = new HashMap<Integer,SchemaElement>(); schemaInfoList.clear();
 	}
 
 	/** Gets paths for the specified element */
 	private HashSet<String> getPaths(Integer elementID)
 	{
 		HashSet<String> paths = new HashSet<String>();
-		for(HierarchicalGraph graph : graphs)
-			for(ArrayList<SchemaElement> pathElements : graph.getPaths(elementID))
+		for(HierarchicalSchemaInfo schemaInfo : schemaInfoList)
+			for(ArrayList<SchemaElement> pathElements : schemaInfo.getPaths(elementID))
 			{
 				StringBuffer path = new StringBuffer("");
 				for(SchemaElement element : pathElements)
