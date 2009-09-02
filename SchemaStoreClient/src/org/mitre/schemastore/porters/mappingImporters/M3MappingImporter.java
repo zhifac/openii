@@ -8,8 +8,11 @@ import org.mitre.schemastore.porters.ImporterException;
 import org.mitre.schemastore.porters.xml.ConvertFromXML;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.zip.ZipInputStream;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -49,12 +52,25 @@ public class M3MappingImporter extends MappingImporter
 	protected void initialize() throws ImporterException
 	{	
 		try {
-			// Open up the XML document from reading
+			// Uncompresses the file
+			ZipInputStream zipIn = new ZipInputStream(new FileInputStream(new File(uri)));
+			File tempFile = File.createTempFile("M3M", ".xml");
+			FileOutputStream out = new FileOutputStream(tempFile);
+			zipIn.getNextEntry();
+			byte data[] = new byte[100000]; int count;
+			while((count = zipIn.read(data)) > 0)
+				out.write(data, 0, count);
+			zipIn.close();
+			out.close();
+			
+			// Retrieve the XML document element
 			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 			DocumentBuilder db = dbf.newDocumentBuilder();
-			Document document = db.parse(new File(uri));
+			Document document = db.parse(tempFile);
 			element = document.getDocumentElement();
-		} catch(Exception e) { throw new ImporterException(ImporterException.IMPORT_FAILURE, e.getMessage()); }
+			tempFile.delete();
+		}
+		catch(Exception e) { throw new ImporterException(ImporterException.IMPORT_FAILURE, e.getMessage()); }
 	}
 
 	/** Returns the imported mapping schemas */
