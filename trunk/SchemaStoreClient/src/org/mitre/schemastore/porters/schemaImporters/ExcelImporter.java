@@ -31,11 +31,11 @@ import org.mitre.schemastore.porters.ImporterException;
 
 public class ExcelImporter extends SchemaImporter {
 	protected HSSFWorkbook _excelWorkbook;
-	private URI _excelURI;
-	private HashMap<String, Entity> _entities;
-	private HashMap<String, Attribute> _attributes;
+	protected URI _excelURI;
+	protected HashMap<String, Entity> _entities;
+	protected HashMap<String, Attribute> _attributes;
 	protected ArrayList<SchemaElement> _schemaElements;
-	private static Domain D_ANY = new Domain(nextId(), ANY, null, 0);
+	protected static Domain D_ANY = new Domain(nextId(), ANY, null, 0);
 
 	
 	// get rid of characters
@@ -106,8 +106,8 @@ public class ExcelImporter extends SchemaImporter {
 	/** Generate the schema elements */
 	protected ArrayList<SchemaElement> generateSchemaElements() throws ImporterException {
 		int numSheets = _excelWorkbook.getNumberOfSheets();
-		ArrayList<SchemaElement> schemaElements = new ArrayList<SchemaElement>();
-		schemaElements.add(D_ANY); 
+		_schemaElements = new ArrayList<SchemaElement>();
+		_schemaElements.add(D_ANY); 
 
 		// iterate and load individual work sheets
 		for (int s = 0; s < numSheets; s++) {
@@ -133,19 +133,19 @@ public class ExcelImporter extends SchemaImporter {
 				if (!_entities.containsKey(tblName)) {
 					tblEntity = new Entity(nextId(), tblName, "", 0);
 					_entities.put(tblName, tblEntity);
-					schemaElements.add(tblEntity);
+					_schemaElements.add(tblEntity);
 				} else tblEntity = _entities.get(tblName);
 
 				// create an attribute for each attribute name
 				attribute = new Attribute(nextId(), attName, documentation, tblEntity.getId(), D_ANY.getId(), null, null, false, 0);
 				_attributes.put(attribute.getName(), attribute);
-				schemaElements.add(attribute);
+				_schemaElements.add(attribute);
 
 				System.out.println("Importing row " + i + " | " + tblName + " | " + attName);
 			}
 		}
 
-		return schemaElements;
+		return _schemaElements;
 	}
 
 }
