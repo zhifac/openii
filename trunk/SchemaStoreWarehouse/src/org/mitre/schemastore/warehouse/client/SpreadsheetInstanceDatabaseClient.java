@@ -5,7 +5,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.rmi.RemoteException;
 import java.text.SimpleDateFormat;
@@ -17,7 +16,6 @@ import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.DateUtil;
-
 import org.mitre.schemastore.client.Repository;
 import org.mitre.schemastore.client.SchemaStoreClient;
 import org.mitre.schemastore.model.Attribute;
@@ -26,7 +24,7 @@ import org.mitre.schemastore.model.Domain;
 import org.mitre.schemastore.model.Entity;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
-import org.mitre.schemastore.model.graph.Graph;
+import org.mitre.schemastore.model.schemaInfo.SchemaInfo;
 import org.mitre.schemastore.warehouse.common.DataWarning;
 import org.mitre.schemastore.warehouse.common.InstanceRepository;
 import org.mitre.schemastore.warehouse.common.NoDataFoundException;
@@ -47,7 +45,7 @@ public class SpreadsheetInstanceDatabaseClient implements InstanceDatabaseInterf
 	private SchemaStoreClient schemastoreClient = null;
 	private String userSpecifiedName = null;
 	private Repository currentRepository = null;
-	private Graph graph = null;
+	private SchemaInfo schemaInfo = null;
 	private InstanceRepository instanceRepository = null;
 	private Object instanceDatabase = null;
 	private boolean createNewDatabase = false;
@@ -105,14 +103,14 @@ public class SpreadsheetInstanceDatabaseClient implements InstanceDatabaseInterf
 		this.schemastoreClient = schemastoreClient;
 		System.out.println("SchemaStoreClient selected by client: " + schemastoreClient.toString());
 		
-		/* Get the schema graph */
+		/* Get the schema info */
 		try 
 		{
-			this.graph = schemastoreClient.getGraph(schema.getId());
+			this.schemaInfo = schemastoreClient.getSchemaInfo(schema.getId());
 		} 
 		catch (RemoteException e) 
 		{
-			System.out.println("Problem occured while getting the Graph object from the client");
+			System.out.println("Problem occured while getting the SchemaInfo object from the client");
 			e.printStackTrace(System.out);
 		}
 		
@@ -302,7 +300,7 @@ public class SpreadsheetInstanceDatabaseClient implements InstanceDatabaseInterf
 			}
 			
 			// 5.	Get the list of Attributes associated with this Entity
-			ArrayList<Attribute> listOfAttributes = graph.getAttributes(entity.getId());
+			ArrayList<Attribute> listOfAttributes = schemaInfo.getAttributes(entity.getId());
 			
 			
 			/* Create instance table corresponding to each column in this sheet */
@@ -398,7 +396,7 @@ public class SpreadsheetInstanceDatabaseClient implements InstanceDatabaseInterf
 				   {INTEGER, REAL, STRING, DATETIME, BOOLEAN}
 				*/
 				Integer domainID = attribute.getDomainID();
-				SchemaElement domainElement = graph.getElement(domainID);
+				SchemaElement domainElement = schemaInfo.getElement(domainID);
 				Domain domain = (Domain) domainElement;
 				String attributeDomainName = domain.getName();
 				
@@ -1049,7 +1047,7 @@ public class SpreadsheetInstanceDatabaseClient implements InstanceDatabaseInterf
 	}
 	
 	/** Find all entities in the selected schema 
-	 * Before using this method the instance variable "graph" must be instantiated
+	 * Before using this method the instance variable "schemaInfo" must be instantiated
 	 */
 	private ArrayList<Entity> listEntitiesOfSchema()
 	{
@@ -1057,7 +1055,7 @@ public class SpreadsheetInstanceDatabaseClient implements InstanceDatabaseInterf
 		ArrayList<Entity> entitiesOfSchema = new ArrayList<Entity>();
 		
 		// Returns the list of schema elements - Entity
-		ArrayList<SchemaElement> elementsEntity = graph.getElements(Entity.class);
+		ArrayList<SchemaElement> elementsEntity = schemaInfo.getElements(Entity.class);
 		for(SchemaElement element : elementsEntity)
 		{
 			Entity entity = (Entity)element;
