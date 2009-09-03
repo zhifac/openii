@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import org.mitre.harmony.matchers.VoterScore;
 import org.mitre.harmony.matchers.VoterScores;
 import org.mitre.schemastore.model.SchemaElement;
-import org.mitre.schemastore.model.graph.FilteredGraph;
+import org.mitre.schemastore.model.schemaInfo.FilteredSchemaInfo;
 
 /** Edit Distance Matcher Class */
 public class EditDistanceMatcher extends MatchVoter
@@ -30,11 +30,11 @@ public class EditDistanceMatcher extends MatchVoter
 		{ return "Name Similarity"; }
 	
 	/** Generates scores for the specified elements */
-	public VoterScores match(FilteredGraph sourceSchema, FilteredGraph targetSchema)
+	public VoterScores match(FilteredSchemaInfo schemaInfo1, FilteredSchemaInfo schemaInfo2)
 	{
 		// Get the source and target elements
-		ArrayList<SchemaElement> sourceElements = sourceSchema.getFilteredElements();
-		ArrayList<SchemaElement> targetElements = targetSchema.getFilteredElements();
+		ArrayList<SchemaElement> sourceElements = schemaInfo1.getFilteredElements();
+		ArrayList<SchemaElement> targetElements = schemaInfo2.getFilteredElements();
 
 		// Sets the completed and total comparisons
 		completedComparisons = 0;

@@ -3,7 +3,7 @@
 package org.mitre.harmony.matchers.voters;
 
 import org.mitre.harmony.matchers.VoterScores;
-import org.mitre.schemastore.model.graph.FilteredGraph;
+import org.mitre.schemastore.model.schemaInfo.FilteredSchemaInfo;
 
 /** MatchVoter Interface - A match voter scores source-target linkages based on a specific algorithm */	
 public abstract class MatchVoter
@@ -15,7 +15,7 @@ public abstract class MatchVoter
 	abstract public String getName();
 	
 	/** Generates scores for the specified graphs */
-	abstract public VoterScores match(FilteredGraph sourceSchema, FilteredGraph targetSchema);
+	abstract public VoterScores match(FilteredSchemaInfo schemaInfo1, FilteredSchemaInfo schemaInfo2);
 	
 	/** Indicates the completion percentage of the matcher */
 	public double getPercentComplete()

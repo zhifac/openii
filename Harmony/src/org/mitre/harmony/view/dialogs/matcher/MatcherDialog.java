@@ -28,8 +28,8 @@ import org.mitre.harmony.model.filters.Focus;
 import org.mitre.harmony.model.mapping.MappingCellManager;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.MappingSchema;
-import org.mitre.schemastore.model.graph.FilteredGraph;
-import org.mitre.schemastore.model.graph.HierarchicalGraph;
+import org.mitre.schemastore.model.schemaInfo.FilteredSchemaInfo;
+import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
 
 /**
  * Displays the dialog which displays the matcher processing
@@ -127,46 +127,46 @@ class MatcherDialog extends JDialog implements ActionListener, Runnable
 		return matcherName;
 	}
 	
-	/** Returns the list of filtered graphs for the specified side */
-	private ArrayList<FilteredGraph> getFilteredGraphs(Integer side)
+	/** Returns the list of filtered schema info for the specified side */
+	private ArrayList<FilteredSchemaInfo> getFilteredSchemaInfoList(Integer side)
 	{
-		ArrayList<FilteredGraph> filteredGraphs = new ArrayList<FilteredGraph>();
+		ArrayList<FilteredSchemaInfo> filteredSchemaInfoList = new ArrayList<FilteredSchemaInfo>();
 		FilterManager filters = harmonyModel.getFilters();
 		
-		// Create filtered graphs for each schema in focus
+		// Create filtered schema info for each schema in focus
 		for(Integer schemaID : harmonyModel.getMappingManager().getSchemaIDs(side))
 			if(filters.inFocus(side, schemaID))
 			{
-				HierarchicalGraph graph = harmonyModel.getSchemaManager().getGraph(schemaID);
-				FilteredGraph filteredGraph = new FilteredGraph(graph);
+				HierarchicalSchemaInfo schemaInfo = harmonyModel.getSchemaManager().getSchemaInfo(schemaID);
+				FilteredSchemaInfo filteredSchemaInfo = new FilteredSchemaInfo(schemaInfo);
 
 				// Set the filter roots
 				Focus focus = filters.getFocus(side,schemaID);
 				if(focus!=null && focus.getFocusedPaths().size()>0)
-					filteredGraph.setFilteredRoots(focus.getFocusedIDs());
+					filteredSchemaInfo.setFilteredRoots(focus.getFocusedIDs());
 					
 				// Filter by minimum and maximum depth
-				filteredGraph.setMinDepth(filters.getMinDepth(side));
-				filteredGraph.setMaxDepth(filters.getMaxDepth(side));
+				filteredSchemaInfo.setMinDepth(filters.getMinDepth(side));
+				filteredSchemaInfo.setMaxDepth(filters.getMaxDepth(side));
 						
 				// Set the hidden elements
 				ArrayList<Integer> hiddenElements = new ArrayList<Integer>();
 				hiddenElements.addAll(harmonyModel.getPreferences().getFinishedElements(schemaID));
 				if(focus!=null) hiddenElements.addAll(focus.getHiddenElements());
-				filteredGraph.setHiddenElements(hiddenElements);
+				filteredSchemaInfo.setHiddenElements(hiddenElements);
 
-				// Add the filtered graph
-				filteredGraphs.add(filteredGraph);
+				// Add the filtered schema info
+				filteredSchemaInfoList.add(filteredSchemaInfo);
 			}
 		
-		return filteredGraphs;
+		return filteredSchemaInfoList;
 	}
 
-	/** Runs the matchers on the specified graphs */
-	private void runMatch(FilteredGraph leftGraph, FilteredGraph rightGraph, String matcherName)
+	/** Runs the matchers on the specified schemas */
+	private void runMatch(FilteredSchemaInfo leftSchemaInfo, FilteredSchemaInfo rightSchemaInfo, String matcherName)
 	{
 		// Generate the match scores for the left and right roots
-		MatchScores matchScores = MatcherManager.getScores(leftGraph, rightGraph, voters, merger);
+		MatchScores matchScores = MatcherManager.getScores(leftSchemaInfo, rightSchemaInfo, voters, merger);
 
 		// Store all generated match scores
 		MappingCellManager manager = harmonyModel.getMappingCellManager();
@@ -200,16 +200,16 @@ class MatcherDialog extends JDialog implements ActionListener, Runnable
 		// Generate the matcher name
 		String matcherName = getMatcherName();
 
-		// Store the left and right graphs
-		ArrayList<FilteredGraph> leftGraphs = getFilteredGraphs(MappingSchema.LEFT);
-		ArrayList<FilteredGraph> rightGraphs = getFilteredGraphs(MappingSchema.RIGHT);
+		// Store the left and right schema info
+		ArrayList<FilteredSchemaInfo> leftSchemaInfoList = getFilteredSchemaInfoList(MappingSchema.LEFT);
+		ArrayList<FilteredSchemaInfo> rightSchemaInfoList = getFilteredSchemaInfoList(MappingSchema.RIGHT);
 
-		// Matches all left graphs to all right graphs
-		RunMatchers: for(FilteredGraph leftGraph : leftGraphs)
-			for(FilteredGraph rightGraph : rightGraphs)
+		// Matches all left schemas to all right schemas
+		RunMatchers: for(FilteredSchemaInfo leftSchemaInfo : leftSchemaInfoList)
+			for(FilteredSchemaInfo rightSchemaInfo : rightSchemaInfoList)
 			{
 				if(stop) break RunMatchers;
-				try { runMatch(leftGraph,rightGraph, matcherName); }
+				try { runMatch(leftSchemaInfo,rightSchemaInfo, matcherName); }
 				catch (Exception e) { System.out.println("(E) MatcherDialog.run - " + e.getMessage()); }
 			}
 		

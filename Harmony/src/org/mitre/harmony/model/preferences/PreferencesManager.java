@@ -48,7 +48,7 @@ public class PreferencesManager extends AbstractManager<PreferencesListener> imp
 			}
 	}
 
-	/** Remove the specified graph model when a schema is removed */
+	/** Remove the specified schema model when a schema is removed */
 	public void schemaRemoved(Integer schemaID)
 	{
 		// Remove all "finished element" preferences associated with the removed schema

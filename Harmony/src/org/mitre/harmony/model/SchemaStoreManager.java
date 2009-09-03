@@ -9,7 +9,7 @@ import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
-import org.mitre.schemastore.model.graph.HierarchicalGraph;
+import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
 import org.mitre.schemastore.porters.PorterManager;
 import org.mitre.schemastore.porters.mappingExporters.MappingExporter;
 import org.mitre.schemastore.porters.schemaImporters.SchemaImporter;
@@ -60,8 +60,8 @@ public class SchemaStoreManager
 	//--------------------------
 
 	/** Retrieves the schema elements for the specified schema and type from the web service */
-	static HierarchicalGraph getGraph(Integer schemaID) throws RemoteException
-		{ return new HierarchicalGraph(client.getGraph(schemaID),null); }
+	static HierarchicalSchemaInfo getSchemaInfo(Integer schemaID) throws RemoteException
+		{ return new HierarchicalSchemaInfo(client.getSchemaInfo(schemaID),null); }
 
 	/** Retrieves the specified schema element from the web service */
 	static SchemaElement getSchemaElement(Integer schemaElementID) throws RemoteException

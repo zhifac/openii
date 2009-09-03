@@ -1,6 +1,6 @@
 package org.mitre.harmony.matchers.affinity;
 
-import org.mitre.schemastore.model.graph.FilteredGraph;
+import org.mitre.schemastore.model.schemaInfo.FilteredSchemaInfo;
 import org.mitre.harmony.matchers.AffinityScore;
 
 /**
@@ -9,6 +9,6 @@ import org.mitre.harmony.matchers.AffinityScore;
  */
 public interface AffinityInterface
 {
-	public AffinityScore getAffinity(FilteredGraph schema1);
+	public AffinityScore getAffinity(FilteredSchemaInfo schemaInfo);
 }
 	

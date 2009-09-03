@@ -15,7 +15,7 @@ import javax.swing.border.LineBorder;
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.view.dialogs.UnderlinedLabel;
 import org.mitre.schemastore.model.Schema;
-import org.mitre.schemastore.model.graph.model.GraphModel;
+import org.mitre.schemastore.model.schemaInfo.model.SchemaModel;
 
 /** Class for handling the setting of the schema model */
 public class SchemaModelPane extends JPanel
@@ -32,7 +32,7 @@ public class SchemaModelPane extends JPanel
 		this.harmonyModel = harmonyModel;
 		
 		// Create the header
-		JLabel col1Label = new UnderlinedLabel("Graph Model");
+		JLabel col1Label = new UnderlinedLabel("Schema Model");
 		JLabel col2Label = new UnderlinedLabel("Schema");
 		JPanel headerPane = new SchemaModelRow(col1Label, col2Label);
 
@@ -82,7 +82,7 @@ public class SchemaModelPane extends JPanel
 	}
 	
 	/** Returns the selected model for the specified schema */
-	public GraphModel getModel(Integer schemaID)
+	public SchemaModel getModel(Integer schemaID)
 	{
 		for(int i=0; i<schemaList.getComponentCount(); i++)
 		{

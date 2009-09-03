@@ -22,8 +22,8 @@ import org.mitre.harmony.model.search.SearchResult;
 import org.mitre.schemastore.model.Domain;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
-import org.mitre.schemastore.model.graph.HierarchicalGraph;
-import org.mitre.schemastore.model.graph.model.GraphModel;
+import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
+import org.mitre.schemastore.model.schemaInfo.model.SchemaModel;
 
 /**
  * Renders schema tree node
@@ -95,8 +95,8 @@ class SchemaTreeRenderer extends DefaultTreeCellRenderer
 			
 			// Get the schema element domain
 			Integer schemaID = SchemaTree.getSchema((DefaultMutableTreeNode)value);
-			HierarchicalGraph graph = harmonyModel.getSchemaManager().getGraph(schemaID);
-			Domain domain = graph.getDomainForElement(element.getId());
+			HierarchicalSchemaInfo schemaInfo = harmonyModel.getSchemaManager().getSchemaInfo(schemaID);
+			Domain domain = schemaInfo.getDomainForElement(element.getId());
 
 			// Sets the tool tip
 			String tooltip = element.getDescription() + ((domain != null) ? " (Domain: " + domain.getName() + ")" : "");
@@ -113,10 +113,10 @@ class SchemaTreeRenderer extends DefaultTreeCellRenderer
 			boolean isHiddenElement = focus!=null && focus.getHiddenElements().contains(elementID);
 			
 			// Set the text
-			String name = graph.getDisplayName(element.getId());
+			String name = schemaInfo.getDisplayName(element.getId());
 			String text = "<html>" + name.replace("<","&lt;").replace(">","&gt;");
-			if(harmonyModel.getPreferences().getShowSchemaTypes() && graph.getModel().getType(graph,element.getId()) != null)
-				text += " <font color='#888888'>(" + graph.getModel().getType(graph,element.getId()) + ")</font>";
+			if(harmonyModel.getPreferences().getShowSchemaTypes() && schemaInfo.getModel().getType(schemaInfo,element.getId()) != null)
+				text += " <font color='#888888'>(" + schemaInfo.getModel().getType(schemaInfo,element.getId()) + ")</font>";
 			text += "</html>";
 			setText(text);
 			
@@ -142,9 +142,9 @@ class SchemaTreeRenderer extends DefaultTreeCellRenderer
 			if(obj instanceof Schema)
 			{
 				Schema schema = (Schema)obj;
-				GraphModel graphModel = harmonyModel.getSchemaManager().getGraph(schema.getId()).getModel();
+				SchemaModel model = harmonyModel.getSchemaManager().getSchemaInfo(schema.getId()).getModel();
 				text = "<html>" + schema.getName().replace("<","&lt;").replace(">","&gt;");
-				text += " <font color='#0000ff'>(" + graphModel.getName() + ")</font>";
+				text += " <font color='#0000ff'>(" + model.getName() + ")</font>";
 				text += "</html>";
 			}
 			setText(text);

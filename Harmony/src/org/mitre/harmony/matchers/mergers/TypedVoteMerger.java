@@ -6,7 +6,7 @@ import java.util.HashMap;
 import org.mitre.harmony.matchers.ElementPair;
 import org.mitre.harmony.matchers.VoterScores;
 import org.mitre.schemastore.model.SchemaElement;
-import org.mitre.schemastore.model.graph.FilteredGraph;
+import org.mitre.schemastore.model.schemaInfo.FilteredSchemaInfo;
 
 /**
  * Vote merger which only merges together elements types the user specifies
@@ -18,7 +18,7 @@ public class TypedVoteMerger extends VoteMerger
 	static public class TypeMappings extends HashMap<Class<SchemaElement>,ArrayList<Class<SchemaElement>>>{};
 	
 	/** Stores the schemas between which votes are being merged */
-	private FilteredGraph sourceSchema, targetSchema; 
+	private FilteredSchemaInfo schemaInfo1, schemaInfo2; 
 	
 	/** Stores the mapping of allowable types */
 	private TypeMappings typeMappings = null;
@@ -28,10 +28,10 @@ public class TypedVoteMerger extends VoteMerger
 		{ return "Typed Vote Merger"; }
 
 	/** Initializes the typed vote merger */
-	public void initialize(FilteredGraph sourceSchema, FilteredGraph targetSchema)
+	public void initialize(FilteredSchemaInfo schemaInfo1, FilteredSchemaInfo schemaInfo2)
 	{
-		super.initialize(sourceSchema, targetSchema);
-		this.sourceSchema = sourceSchema; this.targetSchema = targetSchema;
+		super.initialize(schemaInfo1, schemaInfo2);
+		this.schemaInfo1 = schemaInfo1; this.schemaInfo2 = schemaInfo2;
 	}
 	
 	/** Sets the allowable types that can be mapped together */
@@ -46,8 +46,8 @@ public class TypedVoteMerger extends VoteMerger
 		for(ElementPair elementPair : voterScores.getElementPairs())
 		{
 			// Get the elements being mapped together
-			SchemaElement sourceElement = sourceSchema.getElement(elementPair.getSourceElement());
-			SchemaElement targetElement = targetSchema.getElement(elementPair.getTargetElement());
+			SchemaElement sourceElement = schemaInfo1.getElement(elementPair.getSourceElement());
+			SchemaElement targetElement = schemaInfo2.getElement(elementPair.getTargetElement());
 
 			// Throw out any pairing which are not defined in the type mapping
 			if(typeMappings!=null)
