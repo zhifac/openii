@@ -11,7 +11,7 @@ import org.mitre.schemastore.model.Group;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.Schema;
-import org.mitre.schemastore.model.graph.Graph;
+import org.mitre.schemastore.model.schemaInfo.SchemaInfo;
 
 /**
  * Generates the schema store connection for use by all components
@@ -103,9 +103,9 @@ public class OpenIIManager
 		return null;
 	}
 	
-	/** Returns the graph for the specified schema */
-	public static Graph getGraph(Integer schemaID)
-		{ try { return RepositoryManager.getClient().getGraph(schemaID); } catch(Exception e) { return null; } }
+	/** Returns the schema info for the specified schema */
+	public static SchemaInfo getSchemaInfo(Integer schemaID)
+		{ try { return RepositoryManager.getClient().getSchemaInfo(schemaID); } catch(Exception e) { return null; } }
 	
 	/** Returns if the schema is deletable */
 	public static boolean isDeletable(Integer schemaID)

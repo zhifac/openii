@@ -15,13 +15,13 @@ import org.mitre.schemastore.model.Group;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.Schema;
 
-/** Constructs the Schema Graph */
+/** Constructs the OpenII Editor */
 abstract class OpenIIEditor extends EditorPart implements OpenIIListener
 {
 	/** Stores the id associated with this editor */
 	protected Integer elementID = null;
 	
-	/** Initializes the Schema Graph */
+	/** Initializes the OpenII Editor */
 	public void init(IEditorSite site, IEditorInput input) throws PartInitException
 	{
 		// Initialize the site and input

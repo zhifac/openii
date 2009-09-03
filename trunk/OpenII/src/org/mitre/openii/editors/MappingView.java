@@ -14,9 +14,9 @@ import org.mitre.openii.widgets.ExpandBarWidgets;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.MappingSchema;
-import org.mitre.schemastore.model.graph.Graph;
+import org.mitre.schemastore.model.schemaInfo.SchemaInfo;
 
-/** Constructs the Schema Graph */
+/** Constructs the Mapping View */
 public class MappingView extends OpenIIEditor
 {	
 	/** Generates the schema pane */
@@ -38,7 +38,7 @@ public class MappingView extends OpenIIEditor
 	}
 
 	/** Generates a mapping cell pane */
-	private void generateMappingCellPane(ExpandBar bar, Graph leftGraph, Graph rightGraph, ArrayList<MappingCell> mappingCells)
+	private void generateMappingCellPane(ExpandBar bar, SchemaInfo leftSchemaInfo, SchemaInfo rightSchemaInfo, ArrayList<MappingCell> mappingCells)
 	{		
 		// Sort the list of mapping cells
 		class MappingCellComparator implements Comparator<MappingCell>
@@ -56,9 +56,9 @@ public class MappingView extends OpenIIEditor
 			// Gather mapping cell input and output information
 			String inputs = "";
 			for(Integer input : mappingCell.getInput())
-				inputs += leftGraph.getElement(input).getName() + " (" + input  + "), ";
+				inputs += leftSchemaInfo.getElement(input).getName() + " (" + input  + "), ";
 			if(inputs.length()>2) inputs = inputs.substring(0,inputs.length()-2);
-			String output = rightGraph.getElement(mappingCell.getOutput()).getName() + " (" + mappingCell.getOutput() + ")";
+			String output = rightSchemaInfo.getElement(mappingCell.getOutput()).getName() + " (" + mappingCell.getOutput() + ")";
 			
 			// Gather general mapping cell information
 			Integer id = mappingCell.getId();
@@ -79,8 +79,8 @@ public class MappingView extends OpenIIEditor
 		}
 
 		// Generates the mapping cell pane
-		String leftSchema = leftGraph.getSchema().getName();
-		String rightSchema = rightGraph.getSchema().getName();		
+		String leftSchema = leftSchemaInfo.getSchema().getName();
+		String rightSchema = rightSchemaInfo.getSchema().getName();		
 		ExpandBarWidgets.createTablePane(bar, "Mapping Cells - '"+leftSchema+"' to '"+rightSchema+"'", fields, rows);
 	}
 	
@@ -91,35 +91,35 @@ public class MappingView extends OpenIIEditor
 		MappingSchema schemas[] = OpenIIManager.getMapping(elementID).getSchemas();
 		ArrayList<MappingCell> allMappingCells = OpenIIManager.getMappingCells(elementID);
 
-		// Retrieve the various schema graphs
-		ArrayList<Graph> graphs = new ArrayList<Graph>();
+		// Retrieve the various schemas
+		ArrayList<SchemaInfo> schemaInfoList = new ArrayList<SchemaInfo>();
 		for(MappingSchema schema : schemas)
-			graphs.add(OpenIIManager.getGraph(schema.getId()));
+			schemaInfoList.add(OpenIIManager.getSchemaInfo(schema.getId()));
 		
 		// Generate a mapping cell pane for each pair of schemas containing mapping cells
-		for(Graph leftGraph : graphs)
-			for(Graph rightGraph : graphs)
+		for(SchemaInfo leftSchemaInfo : schemaInfoList)
+			for(SchemaInfo rightSchemaInfo : schemaInfoList)
 			{
 				// Don't proceed if the left and right schemas are the same
-				if(leftGraph.getSchema().equals(rightGraph.getSchema())) continue;
+				if(leftSchemaInfo.getSchema().equals(rightSchemaInfo.getSchema())) continue;
 				
 				// Gather up the list of mappings cells for the schema pair
 				ArrayList<MappingCell> mappingCells = new ArrayList<MappingCell>();
 				MappingCellLoop: for(MappingCell mappingCell : allMappingCells)
 				{
 					for(Integer input : mappingCell.getInput())
-						if(!leftGraph.containsElement(input)) continue MappingCellLoop;
-					if(!rightGraph.containsElement(mappingCell.getOutput())) continue;
+						if(!leftSchemaInfo.containsElement(input)) continue MappingCellLoop;
+					if(!rightSchemaInfo.containsElement(mappingCell.getOutput())) continue;
 					mappingCells.add(mappingCell);
 				}
 				
 				// Display the mapping cells for the schema pair
 				if(mappingCells.size()>0)
-					generateMappingCellPane(bar, leftGraph, rightGraph, mappingCells);
+					generateMappingCellPane(bar, leftSchemaInfo, rightSchemaInfo, mappingCells);
 			}
 	}
 	
-	/** Displays the Schema Graph */
+	/** Displays the Mapping View */
 	public void createPartControl(Composite parent)
 	{
 		// Retrieve the mapping and mapping schemas

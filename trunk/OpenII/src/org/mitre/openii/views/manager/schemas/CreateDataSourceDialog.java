@@ -29,7 +29,7 @@ import org.mitre.schemastore.model.Schema;
 import org.mitre.openii.model.OpenIIManager;
 import org.mitre.openii.model.RepositoryManager;
 import org.mitre.schemastore.model.SchemaElement;
-import org.mitre.schemastore.model.graph.Graph;
+import org.mitre.schemastore.model.schemaInfo.SchemaInfo;
 import org.mitre.schemastore.model.Domain;
 import org.mitre.schemastore.model.Entity;
 import org.mitre.schemastore.model.Attribute;
@@ -198,20 +198,20 @@ public class CreateDataSourceDialog extends TitleAreaDialog implements ModifyLis
 			//SchemaStoreClient client = new SchemaStoreClient("C:\\workspace\\SchemaStore\\SchemaStore.jar");
 			System.out.println("SchemaElementCount: " + schemastoreClient.getSchemaElementCount(schema.getId()));
 			
-			// Get the schema graph
-			Graph graph = null;
+			// Get the schema info
+			SchemaInfo schemaInfo = null;
 			try 
 			{
-				graph = schemastoreClient.getGraph(schema.getId());
+				schemaInfo = schemastoreClient.getSchemaInfo(schema.getId());
 			} 
 			catch (RemoteException e) 
 			{
-				System.out.println("Problem occured while getting the Graph object from the client");
+				System.out.println("Problem occured while getting the SchemaInfo object from the client");
 				e.printStackTrace();
 			}
 			
 			// Returns the list of schema elements - Entity
-			ArrayList<SchemaElement> elementsEntity = graph.getElements(Entity.class);
+			ArrayList<SchemaElement> elementsEntity = schemaInfo.getElements(Entity.class);
 			for(SchemaElement element : elementsEntity)
 			{
 				Entity entity = (Entity)element;
@@ -222,7 +222,7 @@ public class CreateDataSourceDialog extends TitleAreaDialog implements ModifyLis
 			}
 			
 			// Returns the list of schema elements - Attribute
-			ArrayList<SchemaElement> elementsAttribute = graph.getElements(Attribute.class);
+			ArrayList<SchemaElement> elementsAttribute = schemaInfo.getElements(Attribute.class);
 			for(SchemaElement element : elementsAttribute)
 			{
 				Attribute attribute = (Attribute)element;
@@ -230,13 +230,13 @@ public class CreateDataSourceDialog extends TitleAreaDialog implements ModifyLis
 				String name = attribute.getName();
 				Integer domainID = attribute.getDomainID();
 				System.out.println("Attribute ID= " + id + " Attribute name: " + name + " Attribute domain id: " + domainID);
-				SchemaElement domainElement = graph.getElement(domainID);
+				SchemaElement domainElement = schemaInfo.getElement(domainID);
 				Domain domain = (Domain) domainElement;
 				System.out.println("Domain Name= " + domain.getName());
 			}
 			
 			// Returns the list of schema elements - Attribute
-			ArrayList<SchemaElement> elementsContainment = graph.getElements(Containment.class);
+			ArrayList<SchemaElement> elementsContainment = schemaInfo.getElements(Containment.class);
 			if(elementsContainment.isEmpty())
 				System.out.println("No containments found");
 			else

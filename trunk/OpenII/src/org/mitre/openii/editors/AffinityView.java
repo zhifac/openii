@@ -46,7 +46,7 @@ import org.mitre.openii.model.EditorManager;
 import org.mitre.openii.model.OpenIIManager;
 import org.mitre.openii.model.RepositoryManager;
 import org.mitre.openii.views.manager.groups.EditGroupDialog;
-import org.mitre.schemastore.model.graph.FilteredGraph;
+import org.mitre.schemastore.model.schemaInfo.FilteredSchemaInfo;
 
 /**
  * Constructs the Affinity View
@@ -253,7 +253,7 @@ public class AffinityView extends OpenIIEditor implements SelectionClickedListen
 		}
 		else {
 			//Create a dialog with a VennDiagramMatrixPane for N schemas								
-			ArrayList<FilteredGraph> schemaGraphs = new ArrayList<FilteredGraph>();
+			ArrayList<FilteredSchemaInfo> schemaGraphs = new ArrayList<FilteredSchemaInfo>();
 			while(iter.hasNext()) {
 				CachedFilteredGraph graph = VennDiagramUtils.createCachedFilteredGraph(iter.next(), schemaManager);
 				VennDiagramUtils.sortFilteredElements(graph);

@@ -18,11 +18,11 @@ import org.mitre.openii.model.RepositoryManager;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.MappingSchema;
-import org.mitre.schemastore.model.graph.FilteredGraph;
+import org.mitre.schemastore.model.schemaInfo.FilteredSchemaInfo;
 import org.mitre.schemastore.porters.schemaImporters.SchemaImporter;
 
 /**
- * Match a pair of filteredGraphs
+ * Match a pair of filteredSchemaInfo items
  * 
  * @author HAOLI
  * 
@@ -37,15 +37,15 @@ public class APIMatch {
 	/** Contains the result product after matching is finished. */
 	private MatchScores matchScores;
 
-	private FilteredGraph graphA;
-	private FilteredGraph graphB;
+	private FilteredSchemaInfo schemaInfoA;
+	private FilteredSchemaInfo schemaInfoB;
 
 	/** mapping ID for this APIMatch, not null after saving to repository **/
 	private Integer APIMappingID = null;
 
-	public APIMatch(FilteredGraph graphLeft, FilteredGraph graphRight) {
-		graphA = graphLeft;
-		graphB = graphRight;
+	public APIMatch(FilteredSchemaInfo leftSchemaInfo, FilteredSchemaInfo rightSchemaInfo) {
+		schemaInfoA = leftSchemaInfo;
+		schemaInfoB = rightSchemaInfo;
 	}
 
 	/**
@@ -56,7 +56,7 @@ public class APIMatch {
 	 */
 	public void runMatch() throws RemoteException {
 		Informant.status("Beginning to match two schemas.");
-		Informant.status("Schema A has " + graphA.size() + " elements and schema B has " + graphB.size());
+		Informant.status("Schema A has " + schemaInfoA.getElementCount() + " elements and schema B has " + schemaInfoB.getElementCount());
 
 		ArrayList<MatchVoter> voters = new ArrayList<MatchVoter>();
 
@@ -68,7 +68,7 @@ public class APIMatch {
 		VoteMerger merger = new VoteMerger();
 
 		Informant.status("Calling Harmony matching algorithms...");
-		matchScores = MatcherManager.getScores(graphA, graphB, voters, merger);
+		matchScores = MatcherManager.getScores(schemaInfoA, schemaInfoB, voters, merger);
 	}
 
 	/**

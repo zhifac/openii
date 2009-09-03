@@ -5,8 +5,8 @@ import java.rmi.RemoteException;
 import org.mitre.openii.model.OpenIIManager;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingSchema;
-import org.mitre.schemastore.model.graph.FilteredGraph;
-import org.mitre.schemastore.model.graph.HierarchicalGraph;
+import org.mitre.schemastore.model.schemaInfo.FilteredSchemaInfo;
+import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
 
 /**
  * Help to manage a series of pairwise matches.
@@ -40,14 +40,14 @@ public class MatchEnumeration {
 	}
 
 	/**
-	 * Take a graph and return a filtering down to only domains.
+	 * Take a schema and return a filtering down to only domains.
 	 * 
 	 * @param g
-	 *            the input graph
-	 * @return a FilteredGraph containing only domains.
+	 *            the input schema info
+	 * @return a FilteredSchemaInfo containing only domains.
 	 */
-	public static FilteredGraph getDomainsOnly(HierarchicalGraph g) {
-		FilteredGraph f = new FilteredGraph(g);
+	public static FilteredSchemaInfo getDomainsOnly(HierarchicalSchemaInfo g) {
+		FilteredSchemaInfo f = new FilteredSchemaInfo(g);
 		f.setMaxDepth(1);
 		f.setMinDepth(1);
 
@@ -87,10 +87,10 @@ public class MatchEnumeration {
 		Informant.status("Matching " + pair.a + " to " + pair.b);
 
 		try {
-			FilteredGraph fGraphA = getGraph((Integer) pair.a);
-			FilteredGraph fGraphB = getGraph((Integer) pair.b);
+			FilteredSchemaInfo fSchemaInfoA = getSchemaInfo((Integer) pair.a);
+			FilteredSchemaInfo fSchemaInfoB = getSchemaInfo((Integer) pair.b);
 
-			matcher = new APIMatch(fGraphA, fGraphB);
+			matcher = new APIMatch(fSchemaInfoA, fSchemaInfoB);
 			// run match
 			matcher.runMatch();
 
@@ -100,8 +100,8 @@ public class MatchEnumeration {
 			schemas[1] = getMappingSchema((Integer)pair.b); 
 			matcher.saveMatch( schemas);
 
-			fGraphA = null;
-			fGraphB = null;
+			fSchemaInfoA = null;
+			fSchemaInfoB = null;
 			System.gc();
 		} catch (RemoteException e1) {
 			Informant.status("Unable to access remote database for schemas to match. ", true);
@@ -111,10 +111,10 @@ public class MatchEnumeration {
 		return matcher;
 	}// End runNextMatch
 
-	protected FilteredGraph getGraph(Integer schemaID) throws RemoteException {
+	protected FilteredSchemaInfo getSchemaInfo(Integer schemaID) throws RemoteException {
 
-		HierarchicalGraph graph = new HierarchicalGraph(OpenIIManager.getGraph(schemaID), null);
-		FilteredGraph fGraph = new FilteredGraph(graph);
-		return fGraph;
+		HierarchicalSchemaInfo schemaInfo = new HierarchicalSchemaInfo(OpenIIManager.getSchemaInfo(schemaID), null);
+		FilteredSchemaInfo fSchemaInfo = new FilteredSchemaInfo(schemaInfo);
+		return fSchemaInfo;
 	}
 } // End MatchEnumeration
