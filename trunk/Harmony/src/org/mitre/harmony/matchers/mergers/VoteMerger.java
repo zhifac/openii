@@ -8,7 +8,7 @@ import org.mitre.harmony.matchers.ElementPair;
 import org.mitre.harmony.matchers.MatchScores;
 import org.mitre.harmony.matchers.VoterScore;
 import org.mitre.harmony.matchers.VoterScores;
-import org.mitre.schemastore.model.graph.FilteredGraph;
+import org.mitre.schemastore.model.schemaInfo.FilteredSchemaInfo;
 
 /**
  * The basic vote merger for merging together match voters
@@ -27,7 +27,7 @@ public class VoteMerger implements MatchMerger
 		{ return "Vote Merger"; }
 
 	/** Initializes the vote merger */
-	public void initialize(FilteredGraph sourceSchema, FilteredGraph targetSchema)
+	public void initialize(FilteredSchemaInfo schemaInfo1, FilteredSchemaInfo targetSchema)
 		{ summedScores.clear(); }
 	
 	/** Adds a new set of voter scores to the vote merger */

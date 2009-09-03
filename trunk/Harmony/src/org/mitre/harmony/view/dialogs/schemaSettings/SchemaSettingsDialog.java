@@ -15,7 +15,7 @@ import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.view.dialogs.AbstractButtonPane;
 import org.mitre.schemastore.model.MappingSchema;
 import org.mitre.schemastore.model.Schema;
-import org.mitre.schemastore.model.graph.model.GraphModel;
+import org.mitre.schemastore.model.schemaInfo.model.SchemaModel;
 
 /**
  * Displays the dialog containing all mapping information
@@ -124,10 +124,10 @@ public class SchemaSettingsDialog extends JDialog
 		ArrayList<MappingSchema> schemas = new ArrayList<MappingSchema>();
 		for(Integer schemaID : selectedSchemas)
 		{
-			GraphModel graphModel = modelPane.getModel(schemaID);
+			SchemaModel schemaModel = modelPane.getModel(schemaID);
 			Integer side = displayPane.getSide(schemaID);
 			Schema schema = harmonyModel.getSchemaManager().getSchema(schemaID);
-			schemas.add(new MappingSchema(schemaID,schema.getName(),graphModel==null?null:graphModel.getClass().getName(),side));
+			schemas.add(new MappingSchema(schemaID,schema.getName(),schemaModel==null?null:schemaModel.getClass().getName(),side));
 		}
 		harmonyModel.getMappingManager().setSchemas(schemas);
 	}

@@ -12,7 +12,7 @@ import java.util.StringTokenizer;
 import org.mitre.harmony.matchers.VoterScore;
 import org.mitre.harmony.matchers.VoterScores;
 import org.mitre.schemastore.model.SchemaElement;
-import org.mitre.schemastore.model.graph.FilteredGraph;
+import org.mitre.schemastore.model.schemaInfo.FilteredSchemaInfo;
 
 /**
  * WordNet Matcher 
@@ -27,11 +27,11 @@ public class WordNetMatcher extends BagMatcher
 		{ return "WordNet Thesaurus"; }
 	
 	/** Generates scores for the specified elements */
-	public VoterScores match(FilteredGraph sourceSchema, FilteredGraph targetSchema)
+	public VoterScores match(FilteredSchemaInfo schemaInfo1, FilteredSchemaInfo schemaInfo2)
 	{		
 		// Create word bags for the source and target elements
-		ArrayList<SchemaElement> sourceElements = sourceSchema.getFilteredElements();
-		ArrayList<SchemaElement> targetElements = targetSchema.getFilteredElements();
+		ArrayList<SchemaElement> sourceElements = schemaInfo1.getFilteredElements();
+		ArrayList<SchemaElement> targetElements = schemaInfo2.getFilteredElements();
 
 		// Get the thesaurus and acronym dictionaries
 		URL thesaurusFile = getClass().getResource("wordnet.txt");

@@ -7,7 +7,7 @@ import java.util.HashMap;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
-import org.mitre.schemastore.model.graph.HierarchicalGraph;
+import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
 
 /**
  * Class for managing the schemas in the schema repository
@@ -24,8 +24,8 @@ public class SchemaManager
 	/** Caches schema element information */
 	protected HashMap<Integer,SchemaElement> schemaElements = new HashMap<Integer,SchemaElement>();
 	
-	/** Caches graphs associated with schemas */
-	protected HashMap<Integer,HierarchicalGraph> schemaGraphs = new HashMap<Integer,HierarchicalGraph>();
+	/** Caches schema info associated with schemas */
+	protected HashMap<Integer,HierarchicalSchemaInfo> schemaInfoList = new HashMap<Integer,HierarchicalSchemaInfo>();
 	
 	//** Constructs the Schema Manager */
 	public SchemaManager(HarmonyModel harmonyModel)
@@ -98,27 +98,27 @@ public class SchemaManager
 	// Schema Element Functions
 	//--------------------------
 	
-	/** Returns the graph for the specified schema */
-	public HierarchicalGraph getGraph(Integer schemaID)
+	/** Returns the schema info for the specified schema */
+	public HierarchicalSchemaInfo getSchemaInfo(Integer schemaID)
 	{
 		// Fill cache if needed
-		if(!schemaGraphs.containsKey(schemaID))
+		if(!schemaInfoList.containsKey(schemaID))
 		{
 			try {
-				HierarchicalGraph graph = SchemaStoreManager.getGraph(schemaID);
-				graph.setModel(harmonyModel.getMappingManager().getGraphModel(schemaID));
-				for(SchemaElement schemaElement : graph.getElements(null))
+				HierarchicalSchemaInfo schemaInfo = SchemaStoreManager.getSchemaInfo(schemaID);
+				schemaInfo.setModel(harmonyModel.getMappingManager().getSchemaModel(schemaID));
+				for(SchemaElement schemaElement : schemaInfo.getElements(null))
 					schemaElements.put(schemaElement.getId(), schemaElement);
-				schemaGraphs.put(schemaID, graph);
+				schemaInfoList.put(schemaID, schemaInfo);
 			}
-			catch(RemoteException e) { schemaGraphs.put(schemaID,null); }
+			catch(RemoteException e) { schemaInfoList.put(schemaID,null); }
 		}
-		return schemaGraphs.get(schemaID);
+		return schemaInfoList.get(schemaID);
 	}
 	
 	/** Retrieves the schema elements for the specified schema and type from the web service */
 	public ArrayList<SchemaElement> getSchemaElements(Integer schemaID, Class type)
-		{ return getGraph(schemaID).getElements(type); }	
+		{ return getSchemaInfo(schemaID).getElements(type); }	
 	
 	/** Gets the specified schema element */
 	public SchemaElement getSchemaElement(Integer schemaElementID)
@@ -133,11 +133,11 @@ public class SchemaManager
 
 	/** Returns the list of descendant elements for the specified schema and element */
 	public ArrayList<SchemaElement> getDescendantElements(Integer schemaID, Integer elementID)
-		{ return getGraph(schemaID).getDescendantElements(elementID); }
+		{ return getSchemaInfo(schemaID).getDescendantElements(elementID); }
 
 	/** Returns the various depths of the specified schema element */
 	public ArrayList<Integer> getDepths(Integer schemaID, Integer elementID)
-		{ return getGraph(schemaID).getDepths(elementID); }
+		{ return getSchemaInfo(schemaID).getDepths(elementID); }
 	
 	//-------------------
 	// Mapping Functions

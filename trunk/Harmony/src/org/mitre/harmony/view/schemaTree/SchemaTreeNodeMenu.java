@@ -17,7 +17,7 @@ import org.mitre.harmony.view.dialogs.SchemaPropertiesDialog;
 import org.mitre.harmony.view.dialogs.SchemaStatisticsDialog;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
-import org.mitre.schemastore.model.graph.HierarchicalGraph;
+import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
 
 /**
  * Constructs a popup menu to appear when schema nodes are right clicked
@@ -81,8 +81,8 @@ class SchemaTreeNodeMenu extends JPopupMenu implements ActionListener
 			// Show menu options for allowing elements to be hidden
 			if(focus==null || !focus.getHiddenIDs().contains(elementID))
 			{
-				HierarchicalGraph graph = harmonyModel.getSchemaManager().getGraph(schemaID);
-				if(graph.getChildElements(elementID).size()>0) add(hideChildElement);
+				HierarchicalSchemaInfo schemaInfo = harmonyModel.getSchemaManager().getSchemaInfo(schemaID);
+				if(schemaInfo.getChildElements(elementID).size()>0) add(hideChildElement);
 			}
 			if(focus!=null && focus.getHiddenIDs().contains(elementID)) add(unhideChildElement);			
 			

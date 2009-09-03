@@ -8,13 +8,13 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.view.schemaTree.SchemaTree;
 import org.mitre.schemastore.model.SchemaElement;
-import org.mitre.schemastore.model.graph.HierarchicalGraph;
+import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
 
 /** Class for storing the focus */
 public class Focus
 {	
-	/** Stores the graph being focused on */
-	private HierarchicalGraph graph;
+	/** Stores the schema info being focused on */
+	private HierarchicalSchemaInfo schemaInfo;
 	
 	/** Stores the list of focused IDs */
 	private ArrayList<ElementPath> focusPaths = new ArrayList<ElementPath>();
@@ -32,7 +32,7 @@ public class Focus
 	private HashSet<Integer> getDescendantIDs(Integer elementID, HashSet<Integer> descendantIDs)
 	{
 		if(!hiddenIDs.contains(elementID))
-			for(SchemaElement childElement : graph.getChildElements(elementID))
+			for(SchemaElement childElement : schemaInfo.getChildElements(elementID))
 				if(!descendantIDs.contains(childElement.getId()))
 				{
 					descendantIDs.add(childElement.getId());
@@ -43,10 +43,10 @@ public class Focus
 	
 	/** Constructs the focus object */
 	public Focus(Integer schemaID, HarmonyModel harmonyModel)
-		{ graph = harmonyModel.getSchemaManager().getGraph(schemaID); }
+		{ schemaInfo = harmonyModel.getSchemaManager().getSchemaInfo(schemaID); }
 	
 	/** Returns the schema associated with this focus */
-	public Integer getSchemaID() { return graph.getSchema().getId(); }
+	public Integer getSchemaID() { return schemaInfo.getSchema().getId(); }
 	
 	/** Returns the focus paths */
 	public ArrayList<ElementPath> getFocusedPaths() { return focusPaths; }
@@ -68,7 +68,7 @@ public class Focus
 	{
 		// Get descendants of the specified element
 		ArrayList<Integer> descendantIDs = new ArrayList<Integer>();
-		for(SchemaElement descendant : graph.getDescendantElements(elementPath.getElementID()))
+		for(SchemaElement descendant : schemaInfo.getDescendantElements(elementPath.getElementID()))
 			descendantIDs.add(descendant.getId());
 		
 		// Remove focus elements which are superseded of is a sub-item of the new focus
@@ -95,7 +95,7 @@ public class Focus
 	{
 		// Get descendants of the specified element
 		ArrayList<Integer> descendantIDs = new ArrayList<Integer>();
-		for(SchemaElement descendant : graph.getDescendantElements(elementID))
+		for(SchemaElement descendant : schemaInfo.getDescendantElements(elementID))
 			descendantIDs.add(descendant.getId());
 		
 		// Remove focus elements which are superseded by the hidden element
@@ -123,7 +123,7 @@ public class Focus
 			for(ElementPath focusPath : focusPaths)
 				rootIDs.add(focusPath.getElementID());
 			if(rootIDs.size()==0)
-				for(SchemaElement element : graph.getRootElements())
+				for(SchemaElement element : schemaInfo.getRootElements())
 					rootIDs.add(element.getId());
 
 			// Generate the elements in focus
@@ -144,7 +144,7 @@ public class Focus
 		{
 			hiddenElements = new HashSet<Integer>();
 			for(Integer hiddenID : hiddenIDs)
-				for(SchemaElement descendant : graph.getDescendantElements(hiddenID))
+				for(SchemaElement descendant : schemaInfo.getDescendantElements(hiddenID))
 					if(!contains(descendant.getId()))
 						hiddenElements.add(descendant.getId());
 		}

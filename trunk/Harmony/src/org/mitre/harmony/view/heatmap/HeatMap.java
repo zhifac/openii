@@ -17,7 +17,7 @@ import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.MappingSchema;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
-import org.mitre.schemastore.model.graph.HierarchicalGraph;
+import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
 import org.mitre.harmony.model.mapping.MappingCellManager;
 
 /** Class used for displaying the heat map */
@@ -110,14 +110,14 @@ public class HeatMap extends JPanel implements MouseListener, MouseMotionListene
     }
     
     public void setUp(Schema schema1, Schema schema2){
-    	HierarchicalGraph graph1 = harmonyModel.getSchemaManager().getGraph(schema1.getId());
-		HierarchicalGraph graph2 = harmonyModel.getSchemaManager().getGraph(schema2.getId());
+    	HierarchicalSchemaInfo schemaInfo1 = harmonyModel.getSchemaManager().getSchemaInfo(schema1.getId());
+    	HierarchicalSchemaInfo schemaInfo2 = harmonyModel.getSchemaManager().getSchemaInfo(schema2.getId());
 		
-		ArrayList<SchemaElement> elements1 = graph1.getGraphElements();
-		ArrayList<SchemaElement> elements2 = graph2.getGraphElements();
+		ArrayList<SchemaElement> elements1 = schemaInfo1.getHierarchicalElements();
+		ArrayList<SchemaElement> elements2 = schemaInfo2.getHierarchicalElements();
 		
-		ArrayList<SchemaElement> roots1 = graph1.getRootElements();
-		ArrayList<SchemaElement> roots2 = graph2.getRootElements();
+		ArrayList<SchemaElement> roots1 = schemaInfo1.getRootElements();
+		ArrayList<SchemaElement> roots2 = schemaInfo2.getRootElements();
 		
 		int x1 = elements1.size();
 		int x2 = elements2.size();
@@ -127,14 +127,14 @@ public class HeatMap extends JPanel implements MouseListener, MouseMotionListene
 		int SpotX = 0;
 		int SpotY = 0;
 		
-		//basic idea, use a stack to dfs the graph to generate a list of elements
+		//basic idea, use a stack to dfs the schema info to generate a list of elements
 		//that are in an order based on structure.
 		Stack<SchemaElement> stack = new Stack<SchemaElement>();
 		Stack<elementObject> eoStack = new Stack<elementObject>();
-		Stack<Integer> level = new Stack<Integer>(); // tell me which level of graph I'm at.
+		Stack<Integer> level = new Stack<Integer>(); // tell me which level of the schema hierarchy I'm at.
 		String forwardDelimitor = "  ";
 		
-		//no size is known ahead of time, due to graph/tree issues, hence stick into dynamic structure.
+		//no size is known ahead of time, due to hierarchy/tree issues, hence stick into dynamic structure.
 		ArrayList<elementObject> eXes = new ArrayList<elementObject>();
 		ArrayList<elementObject> eYes = new ArrayList<elementObject>();
 		
@@ -145,12 +145,12 @@ public class HeatMap extends JPanel implements MouseListener, MouseMotionListene
 		//elementsX = new elementObject[x1];
 		//elementsY = new elementObject[x2];
 		
-		//handle graph1.
+		//handle schemaInfo1.
 		for(SchemaElement seA: roots1){
 			hashX.put(seA, 1);
 			stack.push(seA); //push each root
 			level.push(0);
-			elementObject nEO = new elementObject(seA, graph1.getDisplayName(seA.getId()));
+			elementObject nEO = new elementObject(seA, schemaInfo1.getDisplayName(seA.getId()));
 			eoStack.push(nEO);
 		}
 		elements1 = new ArrayList<SchemaElement>();
@@ -164,19 +164,19 @@ public class HeatMap extends JPanel implements MouseListener, MouseMotionListene
 			StringBuffer prefixBit = new StringBuffer();
 			int levelAt = level.pop();
 			for(int j=0; j < levelAt;j++) prefixBit.append(forwardDelimitor);
-			prefixBit.append(graph1.getDisplayName(current.getId()));
+			prefixBit.append(schemaInfo1.getDisplayName(current.getId()));
 			eXes.add(eoCurrent);
 //			elementsX[SpotX] = eoCurrent;
 			eoCurrent.setLevel(levelAt);
 			eoCurrent.setLabel(prefixBit.toString());
 			SpotX++;
-			ArrayList<SchemaElement> children = graph1.getChildElements(current.getId());
+			ArrayList<SchemaElement> children = schemaInfo1.getChildElements(current.getId());
 			for(SchemaElement mychild: children){
 				if(hashX.containsKey(mychild)) continue;
 				hashX.put(mychild,1);
 				stack.push(mychild);
 				level.push(levelAt+1);
-				elementObject nEO = new elementObject(mychild,graph1.getDisplayName(mychild.getId()));
+				elementObject nEO = new elementObject(mychild,schemaInfo1.getDisplayName(mychild.getId()));
 				nEO.setParent(eoCurrent);
 				eoCurrent.addChild(nEO);
 				eoStack.push(nEO);
@@ -189,12 +189,12 @@ public class HeatMap extends JPanel implements MouseListener, MouseMotionListene
 			elementsX[placePointer++] = v;
 		}
 		
-		//handle graph2.  yuckie, cookie-cuttering code.
+		//handle schemaInfo2.  yuckie, cookie-cuttering code.
 		for(SchemaElement seA: roots2){
 			hashY.put(seA,1);
 			stack.push(seA); //push each root
 			level.push(0);
-			elementObject nEO = new elementObject(seA,graph2.getDisplayName(seA.getId()));
+			elementObject nEO = new elementObject(seA,schemaInfo2.getDisplayName(seA.getId()));
 			eoStack.push(nEO);
 		}
 		elements2 = new ArrayList<SchemaElement>();
@@ -208,19 +208,19 @@ public class HeatMap extends JPanel implements MouseListener, MouseMotionListene
 			StringBuffer prefixBit = new StringBuffer();
 			int levelAt = level.pop();
 			for(int j=0; j < levelAt;j++) prefixBit.append(forwardDelimitor);
-			prefixBit.append(graph2.getDisplayName(current.getId()));
+			prefixBit.append(schemaInfo2.getDisplayName(current.getId()));
 			eYes.add(eoCurrent);
 			//elementsY[SpotY] = eoCurrent;
 			eoCurrent.setLevel(levelAt);
 			eoCurrent.setLabel(prefixBit.toString());
 			SpotY++;
-			ArrayList<SchemaElement> children = graph2.getChildElements(current.getId());
+			ArrayList<SchemaElement> children = schemaInfo2.getChildElements(current.getId());
 			for(SchemaElement mychild: children){
 				if(hashY.containsKey(mychild)) continue;
 				hashY.put(mychild,1);
 				stack.push(mychild);
 				level.push(levelAt+1);
-				elementObject nEO = new elementObject(mychild,graph2.getDisplayName(mychild.getId()));
+				elementObject nEO = new elementObject(mychild,schemaInfo2.getDisplayName(mychild.getId()));
 				nEO.setParent(eoCurrent);
 				eoCurrent.addChild(nEO);
 				eoStack.push(nEO);

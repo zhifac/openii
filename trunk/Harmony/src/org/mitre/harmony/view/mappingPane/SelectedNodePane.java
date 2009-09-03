@@ -19,7 +19,7 @@ import org.mitre.harmony.model.selectedInfo.SelectedInfoListener;
 import org.mitre.schemastore.model.Domain;
 import org.mitre.schemastore.model.DomainValue;
 import org.mitre.schemastore.model.SchemaElement;
-import org.mitre.schemastore.model.graph.HierarchicalGraph;
+import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
 
 /**
  * Pane used to display source or target node info in the NodeInfoPane
@@ -96,9 +96,9 @@ class SelectedNodePane extends JPanel implements SelectedInfoListener, SearchLis
 		HashSet<DomainValue> domainValues = new HashSet<DomainValue>();
 		for(Integer schemaID : harmonyModel.getMappingManager().getSchemaIDs(side))
 		{
-			HierarchicalGraph graph = harmonyModel.getSchemaManager().getGraph(schemaID);
-			if(domain==null) domain = graph.getDomainForElement(element.getId());
-			domainValues.addAll(graph.getDomainValuesForElement(element.getId()));
+			HierarchicalSchemaInfo schemaInfo = harmonyModel.getSchemaManager().getSchemaInfo(schemaID);
+			if(domain==null) domain = schemaInfo.getDomainForElement(element.getId());
+			domainValues.addAll(schemaInfo.getDomainValuesForElement(element.getId()));
 		}
 		
 		// Display domain if found
@@ -135,9 +135,9 @@ class SelectedNodePane extends JPanel implements SelectedInfoListener, SearchLis
 		HashSet<String> names = new HashSet<String>();
 		for(Integer schemaID : harmonyModel.getMappingManager().getSchemaIDs(side))
 		{
-			HierarchicalGraph graph = harmonyModel.getSchemaManager().getGraph(schemaID);
-			if(graph.containsElement(element.getId()))
-				names.add(graph.getDisplayName(element.getId()));
+			HierarchicalSchemaInfo schemaInfo = harmonyModel.getSchemaManager().getSchemaInfo(schemaID);
+			if(schemaInfo.containsElement(element.getId()))
+				names.add(schemaInfo.getDisplayName(element.getId()));
 		}
 		
 		// Generate the name to display

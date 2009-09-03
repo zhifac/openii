@@ -11,20 +11,20 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
-import org.mitre.schemastore.model.graph.HierarchicalGraph;
+import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
 
 /** Used to generate all nodes within the schema tree */
 class SchemaTreeGenerator
 {	
 	/** Adds a schema element */
-	static private DefaultMutableTreeNode addNode(HierarchicalGraph graph, Integer elementID, HashSet<Integer> pathIDs)
+	static private DefaultMutableTreeNode addNode(HierarchicalSchemaInfo schemaInfo, Integer elementID, HashSet<Integer> pathIDs)
 	{
 		// Create element node
 		DefaultMutableTreeNode node = new DefaultMutableTreeNode(elementID);
 		pathIDs.add(elementID);
-		for(SchemaElement childElement : graph.getChildElements(elementID,pathIDs))
+		for(SchemaElement childElement : schemaInfo.getChildElements(elementID,pathIDs))
 		{
-			DefaultMutableTreeNode childNode = addNode(graph, childElement.getId(), pathIDs);
+			DefaultMutableTreeNode childNode = addNode(schemaInfo, childElement.getId(), pathIDs);
 			if(childNode!=null) node.add(childNode);				
 		}
 		pathIDs.remove(elementID);
@@ -65,10 +65,10 @@ class SchemaTreeGenerator
 		tree.expandPath(new TreePath(((DefaultMutableTreeNode)node.getParent()).getPath()));
 
 		// Add root elements to the schema
-		HierarchicalGraph graph = harmonyModel.getSchemaManager().getGraph(schemaID);
-		for(SchemaElement element : graph.getRootElements())
+		HierarchicalSchemaInfo schemaInfo = harmonyModel.getSchemaManager().getSchemaInfo(schemaID);
+		for(SchemaElement element : schemaInfo.getRootElements())
 		{
-			DefaultMutableTreeNode entityNode = addNode(graph, element.getId(), new HashSet<Integer>());
+			DefaultMutableTreeNode entityNode = addNode(schemaInfo, element.getId(), new HashSet<Integer>());
 			node.add(entityNode);
 			tree.expandPath(new TreePath(((DefaultMutableTreeNode)entityNode.getParent()).getPath()));
 		}

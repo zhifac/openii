@@ -14,7 +14,7 @@ import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.MappingSchema;
 import org.mitre.schemastore.model.SchemaElement;
-import org.mitre.schemastore.model.graph.model.GraphModel;
+import org.mitre.schemastore.model.schemaInfo.model.SchemaModel;
 
 /**
  * Class used to manage the current project
@@ -73,7 +73,7 @@ public class MappingManager extends AbstractManager<MappingListener> implements 
 	{
 		HashSet<SchemaElement> elements = new HashSet<SchemaElement>();
 		for(Integer schemaID : getSchemaIDs(side))
-			elements.addAll(getModel().getSchemaManager().getGraph(schemaID).getGraphElements());
+			elements.addAll(getModel().getSchemaManager().getSchemaInfo(schemaID).getHierarchicalElements());
 		return elements;
 	}
 
@@ -86,11 +86,11 @@ public class MappingManager extends AbstractManager<MappingListener> implements 
 		return elementIDs;
 	}
 
-	/** Returns the graph model for the specified schema */
-	public GraphModel getGraphModel(Integer schemaID)
+	/** Returns the schema model for the specified schema */
+	public SchemaModel getSchemaModel(Integer schemaID)
 	{
 		for(MappingSchema schema : getSchemas())
-			if(schema.getId().equals(schemaID)) return schema.geetGraphModel();
+			if(schema.getId().equals(schemaID)) return schema.geetSchemaModel();
 		return null;
 	}
 	
@@ -157,17 +157,17 @@ public class MappingManager extends AbstractManager<MappingListener> implements 
 				// Determines if the schema side was modified
 				boolean sideModified = !oldSchema.getSide().equals(newSchema.getSide());
 
-				// Determines if the graph model was modified
-				boolean graphModelModified = oldSchema.getModel()==null && newSchema.getModel()!=null;
-				graphModelModified |= oldSchema.getModel()!=null && !oldSchema.getModel().equals(newSchema.getModel());
-				if(graphModelModified)
+				// Determines if the schema model was modified
+				boolean schemaModelModified = oldSchema.getModel()==null && newSchema.getModel()!=null;
+				schemaModelModified |= oldSchema.getModel()!=null && !oldSchema.getModel().equals(newSchema.getModel());
+				if(schemaModelModified)
 				{
-					GraphModel graphModel = getGraphModel(newSchemaID);
-					getModel().getSchemaManager().getGraph(newSchemaID).setModel(graphModel);
+					SchemaModel schemaModel = getSchemaModel(newSchemaID);
+					getModel().getSchemaManager().getSchemaInfo(newSchemaID).setModel(schemaModel);
 				}
 
 				// Informs listeners of modifications to the schema
-				if(sideModified || graphModelModified)
+				if(sideModified || schemaModelModified)
 				{
 					for(MappingListener listener : getListeners())
 						listener.schemaModified(newSchemaID);
@@ -179,14 +179,14 @@ public class MappingManager extends AbstractManager<MappingListener> implements 
 		if(changesOccured) setModified(true);
 	}
 	
-	/** Sets the specified schema's graph model */
-	public void setGraphModel(Integer schemaID, GraphModel graphModel)
+	/** Sets the specified schema's schema model */
+	public void setSchemaModel(Integer schemaID, SchemaModel schemaModel)
 	{
 		for(MappingSchema schema : getSchemas())
 			if(schema.getId().equals(schemaID))
 			{
-				schema.seetGraphModel(graphModel);
-				getModel().getSchemaManager().getGraph(schemaID).setModel(graphModel);
+				schema.seetSchemaModel(schemaModel);
+				getModel().getSchemaManager().getSchemaInfo(schemaID).setModel(schemaModel);
 				for(MappingListener listener : getListeners())
 					listener.schemaModified(schemaID);		
 				return;

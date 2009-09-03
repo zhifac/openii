@@ -8,7 +8,7 @@ import java.util.HashMap;
 import org.mitre.harmony.matchers.VoterScore;
 import org.mitre.harmony.matchers.VoterScores;
 import org.mitre.schemastore.model.SchemaElement;
-import org.mitre.schemastore.model.graph.FilteredGraph;
+import org.mitre.schemastore.model.schemaInfo.FilteredSchemaInfo;
 
 /** Bag Matcher Class */
 public class BagMatcher extends MatchVoter
@@ -21,17 +21,17 @@ public class BagMatcher extends MatchVoter
 		{ return "Documentation Similarity"; }
 	
 	/** Generates scores for the specified elements */
-	public VoterScores match(FilteredGraph sourceSchema, FilteredGraph targetSchema)
+	public VoterScores match(FilteredSchemaInfo schemaInfo1, FilteredSchemaInfo schemaInfo2)
 	{
 		HashMap<Integer,WordBag> wordBags = new HashMap<Integer,WordBag>();
 
 		//Create word bags for the source elements
-		ArrayList<SchemaElement> sourceElements = sourceSchema.getFilteredElements();
+		ArrayList<SchemaElement> sourceElements = schemaInfo1.getFilteredElements();
 		for(SchemaElement sourceElement : sourceElements)
 			wordBags.put(sourceElement.getId(), new WordBag(sourceElement.getName(), sourceElement.getDescription()));
 		
 		// Create word bags for the target elements
-		ArrayList<SchemaElement> targetElements = targetSchema.getFilteredElements();
+		ArrayList<SchemaElement> targetElements = schemaInfo2.getFilteredElements();
 		for (SchemaElement targetElement : targetElements)
 			wordBags.put(targetElement.getId(), new WordBag(targetElement.getName(), targetElement.getDescription()));
 

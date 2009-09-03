@@ -12,7 +12,7 @@ import org.mitre.harmony.matchers.mergers.*;
 import org.mitre.harmony.matchers.voters.*;
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.schemastore.model.Schema;
-import org.mitre.schemastore.model.graph.FilteredGraph;
+import org.mitre.schemastore.model.schemaInfo.FilteredSchemaInfo;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -129,11 +129,11 @@ public class AlgorithmMappings
 			currentMatchedSchemas.add(schemaTwo);
 		
 			//Setting up the schema for using the matcher
-			FilteredGraph schema1 = new FilteredGraph(harmonyModel.getSchemaManager().getGraph(schemaOne.getId()));
-			FilteredGraph schema2 = new FilteredGraph(harmonyModel.getSchemaManager().getGraph(schemaTwo.getId()));
+			FilteredSchemaInfo schemaInfo1 = new FilteredSchemaInfo(harmonyModel.getSchemaManager().getSchemaInfo(schemaOne.getId()));
+			FilteredSchemaInfo schemaInfo2 = new FilteredSchemaInfo(harmonyModel.getSchemaManager().getSchemaInfo(schemaTwo.getId()));
 			
 			//Obtain merged algorithm scores for this pair of schemas found in ground truths file
-			MatchScores schemaPairMergedScores = MatcherManager.getScores(schema1, schema2, selectedVoters, merger);
+			MatchScores schemaPairMergedScores = MatcherManager.getScores(schemaInfo1, schemaInfo2, selectedVoters, merger);
 			
 			//Calculate precision and recall for this pair of schema for all threshold values
 			//Add these to the database storing the sum of all values of precision and recall

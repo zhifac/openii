@@ -15,8 +15,8 @@ import javax.swing.ListSelectionModel;
 import javax.swing.border.EmptyBorder;
 
 import org.mitre.harmony.model.HarmonyModel;
-import org.mitre.schemastore.model.graph.HierarchicalGraph;
-import org.mitre.schemastore.model.graph.model.GraphModel;
+import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
+import org.mitre.schemastore.model.schemaInfo.model.SchemaModel;
 
 /**
  * Displays the dialog which allows mapping cells to be accepted/rejected
@@ -43,8 +43,8 @@ public class SchemaModelDialog extends JDialog
 		/** Handles selection of okay button */
 		protected void button1Action()
 		{
-			GraphModel model = (GraphModel)modelList.getSelectedValue();
-			harmonyModel.getMappingManager().setGraphModel(schemaID, model);
+			SchemaModel model = (SchemaModel)modelList.getSelectedValue();
+			harmonyModel.getMappingManager().setSchemaModel(schemaID, model);
 			dispose();
 		}
 
@@ -61,10 +61,10 @@ public class SchemaModelDialog extends JDialog
 		// Initialize the selected links
 		this.schemaID = schemaID;
 		this.harmonyModel = harmonyModel;
-		GraphModel model = harmonyModel.getSchemaManager().getGraph(schemaID).getModel();
+		SchemaModel model = harmonyModel.getSchemaManager().getSchemaInfo(schemaID).getModel();
 		
 		// Initializes the mapping list
-		modelList = new JList(new Vector<GraphModel>(HierarchicalGraph.getGraphModels()));
+		modelList = new JList(new Vector<SchemaModel>(HierarchicalSchemaInfo.getSchemaModels()));
 		modelList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		for(int i=0; i<modelList.getModel().getSize(); i++)
 			if(modelList.getModel().getElementAt(i).getClass().equals(model.getClass()))

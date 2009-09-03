@@ -10,8 +10,8 @@ import javax.swing.border.EmptyBorder;
 
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.schemastore.model.Schema;
-import org.mitre.schemastore.model.graph.model.GraphModel;
-import org.mitre.schemastore.model.graph.HierarchicalGraph;
+import org.mitre.schemastore.model.schemaInfo.model.SchemaModel;
+import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
 
 /** Displays a schema item with the model setting */
 class SchemaModelItem extends JPanel
@@ -36,11 +36,11 @@ class SchemaModelItem extends JPanel
 		modelSelection.setOpaque(false);
 		modelSelection.setPreferredSize(new Dimension(80,20));
 		modelSelection.addItem("<Default>");
-		for(GraphModel model : HierarchicalGraph.getGraphModels())
+		for(SchemaModel model : HierarchicalSchemaInfo.getSchemaModels())
 			modelSelection.addItem(model);
 
 		// Set the selected model
-		GraphModel selectedModel = harmonyModel.getMappingManager().getGraphModel(schema.getId());
+		SchemaModel selectedModel = harmonyModel.getMappingManager().getSchemaModel(schema.getId());
 		if(selectedModel!=null)
 			modelSelection.setSelectedItem(selectedModel);
 		
@@ -56,10 +56,10 @@ class SchemaModelItem extends JPanel
 	/** Returns the schema associated with this item */
 	Schema getSchema() { return schema; }
 	
-	/** Returns the graph model associated with this item */
-	GraphModel getModel()
+	/** Returns the schema model associated with this item */
+	SchemaModel getModel()
 	{
 		Object model = modelSelection.getSelectedItem();
-		return (model instanceof GraphModel) ? (GraphModel)model : null;
+		return (model instanceof SchemaModel) ? (SchemaModel)model : null;
 	}
 }
