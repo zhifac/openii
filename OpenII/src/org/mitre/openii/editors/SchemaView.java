@@ -19,13 +19,13 @@ import org.mitre.schemastore.model.Relationship;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.Subtype;
-import org.mitre.schemastore.model.graph.Graph;
+import org.mitre.schemastore.model.schemaInfo.SchemaInfo;
 
-/** Constructs the Schema Graph */
+/** Constructs the Schema View */
 public class SchemaView extends OpenIIEditor
 {	
 	/** Returns the list of schema elements for the specified element type */
-	private ArrayList<SchemaElement> getElements(Graph graph, Class<?> type)
+	private ArrayList<SchemaElement> getElements(SchemaInfo schemaInfo, Class<?> type)
 	{
 		// Class for sorting schema elements
 		class ElementComparator implements Comparator<SchemaElement>
@@ -35,7 +35,7 @@ public class SchemaView extends OpenIIEditor
 		}
 		
 		// Returns the list of schema elements
-		ArrayList<SchemaElement> elements = graph.getElements(type);
+		ArrayList<SchemaElement> elements = schemaInfo.getElements(type);
 		Collections.sort(elements,new ElementComparator());
 		return elements;
 	}
@@ -43,13 +43,13 @@ public class SchemaView extends OpenIIEditor
 	/** Generate the schema element panes */
 	private void generateElementPanes(ExpandBar bar)
 	{
-		// Get the schema graph
-		Graph graph = OpenIIManager.getGraph(elementID);
+		// Get the schema info
+		SchemaInfo schemaInfo = OpenIIManager.getSchemaInfo(elementID);
 
 		// Generate the entities table
 		String[] fields = new String[]{"ID","Name","Description"};
 		ArrayList<Object[]> rows = new ArrayList<Object[]>();
-		for(SchemaElement element : getElements(graph,Entity.class))
+		for(SchemaElement element : getElements(schemaInfo,Entity.class))
 		{
 			Entity entity = (Entity)element;
 			Integer id = entity.getId();
@@ -62,13 +62,13 @@ public class SchemaView extends OpenIIEditor
 		// Generate the attributes table
 		fields = new String[]{"ID","Name","Entity","Domain","Min","Max","IsKey","Description"};
 		rows = new ArrayList<Object[]>();
-		for(SchemaElement element : getElements(graph,Attribute.class))
+		for(SchemaElement element : getElements(schemaInfo,Attribute.class))
 		{
 			Attribute attribute = (Attribute)element;
 			Integer id = attribute.getId();
 			String name = attribute.getName();
-			String entity = graph.getElement(attribute.getEntityID()).getName() + " (" + attribute.getEntityID() + ")";
-			String domain = graph.getElement(attribute.getDomainID()).getName() + " (" + attribute.getDomainID() + ")";
+			String entity = schemaInfo.getElement(attribute.getEntityID()).getName() + " (" + attribute.getEntityID() + ")";
+			String domain = schemaInfo.getElement(attribute.getDomainID()).getName() + " (" + attribute.getDomainID() + ")";
 			Integer min = attribute.getMin();
 			Integer max = attribute.getMax();
 			Boolean isKey = attribute.isKey();
@@ -80,7 +80,7 @@ public class SchemaView extends OpenIIEditor
 		// Generate the domains table
 		fields = new String[]{"ID","Name","Description"};
 		rows = new ArrayList<Object[]>();
-		for(SchemaElement element : getElements(graph,Domain.class))
+		for(SchemaElement element : getElements(schemaInfo,Domain.class))
 		{
 			Domain domain = (Domain)element;
 			Integer id = domain.getId();
@@ -93,12 +93,12 @@ public class SchemaView extends OpenIIEditor
 		// Generate the domain values table
 		fields = new String[]{"ID","Name","Domain","Description"};
 		rows = new ArrayList<Object[]>();
-		for(SchemaElement element : getElements(graph,DomainValue.class))
+		for(SchemaElement element : getElements(schemaInfo,DomainValue.class))
 		{
 			DomainValue domainValue = (DomainValue)element;
 			Integer id = domainValue.getId();
 			String name = domainValue.getName();
-			String domain = graph.getElement(domainValue.getDomainID()).getName() + " (" + domainValue.getDomainID() + ")";
+			String domain = schemaInfo.getElement(domainValue.getDomainID()).getName() + " (" + domainValue.getDomainID() + ")";
 			String description = domainValue.getDescription();
 			rows.add(new Object[]{id,name,domain,description});
 		}
@@ -107,15 +107,15 @@ public class SchemaView extends OpenIIEditor
 		// Generate the relationships table
 		fields = new String[]{"ID","Name","Left Element","Left Min","Left Max","Right Element","Right Min","Right Max","Description"};
 		rows = new ArrayList<Object[]>();
-		for(SchemaElement element : getElements(graph,Relationship.class))
+		for(SchemaElement element : getElements(schemaInfo,Relationship.class))
 		{
 			Relationship relationship = (Relationship)element;
 			Integer id = relationship.getId();
 			String name = relationship.getName();
-			String left = graph.getElement(relationship.getLeftID()).getName() + " (" + relationship.getLeftID() + ")";
+			String left = schemaInfo.getElement(relationship.getLeftID()).getName() + " (" + relationship.getLeftID() + ")";
 			Integer leftMin = relationship.getLeftMin();
 			Integer leftMax = relationship.getLeftMax();
-			String right = graph.getElement(relationship.getRightID()).getName() + " (" + relationship.getRightID() + ")";
+			String right = schemaInfo.getElement(relationship.getRightID()).getName() + " (" + relationship.getRightID() + ")";
 			Integer rightMin = relationship.getRightMin();
 			Integer rightMax = relationship.getRightMax();
 			String description = relationship.getDescription();
@@ -126,13 +126,13 @@ public class SchemaView extends OpenIIEditor
 		// Generate the containments table
 		fields = new String[]{"ID","Name","Parent Element","Child Element","Min","Max","Description"};
 		rows = new ArrayList<Object[]>();
-		for(SchemaElement element : getElements(graph,Containment.class))
+		for(SchemaElement element : getElements(schemaInfo,Containment.class))
 		{
 			Containment containment = (Containment)element;
 			Integer id = containment.getId();
 			String name = containment.getName();
-			String parentElement = containment.getParentID()==null ? "" : graph.getElement(containment.getParentID()).getName() + " (" + containment.getParentID() + ")";
-			String childElement = graph.getElement(containment.getChildID()).getName() + " (" + containment.getChildID() + ")";
+			String parentElement = containment.getParentID()==null ? "" : schemaInfo.getElement(containment.getParentID()).getName() + " (" + containment.getParentID() + ")";
+			String childElement = schemaInfo.getElement(containment.getChildID()).getName() + " (" + containment.getChildID() + ")";
 			Integer min = containment.getMin();
 			Integer max = containment.getMax();
 			String description = containment.getDescription();
@@ -143,13 +143,13 @@ public class SchemaView extends OpenIIEditor
 		// Generate the subtypes table
 		fields = new String[]{"ID","Name","Parent Element","Child Element","Description"};
 		rows = new ArrayList<Object[]>();
-		for(SchemaElement element : getElements(graph,Subtype.class))
+		for(SchemaElement element : getElements(schemaInfo,Subtype.class))
 		{
 			Subtype subtype = (Subtype)element;
 			Integer id = subtype.getId();
 			String name = subtype.getName();
-			String parentElement = graph.getElement(subtype.getParentID()).getName() + " (" + subtype.getParentID() + ")";
-			String childElement = graph.getElement(subtype.getChildID()).getName() + " (" + subtype.getChildID() + ")";
+			String parentElement = schemaInfo.getElement(subtype.getParentID()).getName() + " (" + subtype.getParentID() + ")";
+			String childElement = schemaInfo.getElement(subtype.getChildID()).getName() + " (" + subtype.getChildID() + ")";
 			String description = subtype.getDescription();
 			rows.add(new Object[]{id,name,parentElement,childElement,description});
 		}
@@ -158,18 +158,18 @@ public class SchemaView extends OpenIIEditor
 		// Generate the aliases table
 		fields = new String[]{"ID","Name","Aliased Element"};
 		rows = new ArrayList<Object[]>();
-		for(SchemaElement element : getElements(graph,Alias.class))
+		for(SchemaElement element : getElements(schemaInfo,Alias.class))
 		{
 			Alias alias = (Alias)element;
 			Integer id = alias.getId();
 			String name = alias.getName();
-			String aliasedElement = graph.getElement(alias.getElementID()).getName() + " (" + alias.getElementID() + ")";
+			String aliasedElement = schemaInfo.getElement(alias.getElementID()).getName() + " (" + alias.getElementID() + ")";
 			rows.add(new Object[]{id,name,aliasedElement});
 		}
 		ExpandBarWidgets.createTablePane(bar, "Aliases", fields, rows);
 	}
 	
-	/** Displays the Schema Graph */
+	/** Displays the Schema View */
 	public void createPartControl(Composite parent)
 	{		
 		// Create the expand bar

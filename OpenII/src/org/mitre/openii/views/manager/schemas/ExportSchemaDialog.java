@@ -10,7 +10,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.mitre.openii.model.OpenIIManager;
 import org.mitre.openii.model.RepositoryManager;
 import org.mitre.schemastore.model.Schema;
-import org.mitre.schemastore.model.graph.Graph;
+import org.mitre.schemastore.model.schemaInfo.SchemaInfo;
 import org.mitre.schemastore.porters.PorterManager;
 import org.mitre.schemastore.porters.schemaExporters.SchemaExporter;
 
@@ -51,8 +51,8 @@ public class ExportSchemaDialog
 				
 				// Generate the export text
 	        	SchemaExporter exporter = exporters.get(dialog.getFilterIndex());
-	        	Graph graph = OpenIIManager.getGraph(schema.getId());
-	        	exporter.exportSchema(schema, graph.getElements(null), new File(filename));
+	        	SchemaInfo schemaInfo = OpenIIManager.getSchemaInfo(schema.getId());
+	        	exporter.exportSchema(schema, schemaInfo.getElements(null), new File(filename));
 			}
 			catch(Exception e)
 			{

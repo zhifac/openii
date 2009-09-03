@@ -11,10 +11,10 @@ import org.mitre.openii.model.RepositoryManager;
 
 import GUI.SQLGeneratorGUI;
 
-/** Constructs the Schema Graph */
+/** Constructs the RMap View */
 public class RMapView extends OpenIIEditor
 {
-	/** Displays the Schema Graph */
+	/** Displays the RMap View */
 	public void createPartControl(Composite parent)
 	{
 		// Construct the applet pane to contain the Harmony frame
