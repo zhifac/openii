@@ -20,8 +20,8 @@ import org.mitre.schemastore.porters.ImporterException;
  */
 
 public class DomainValueImporter extends ExcelImporter {
-	private HashMap<String, Domain> _domains = new HashMap<String, Domain>();
-	private HashMap<String, DomainValue> _domainValues = new HashMap<String, DomainValue>();
+	protected HashMap<String, Domain> _domains = new HashMap<String, Domain>();
+	protected HashMap<String, DomainValue> _domainValues = new HashMap<String, DomainValue>();
 
 	@Override
 	public String getDescription() {
