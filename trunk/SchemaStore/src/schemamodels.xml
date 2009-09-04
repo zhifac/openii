@@ -7,4 +7,5 @@
   <schemaModel>org.mitre.schemastore.model.schemaInfo.model.RMap_1_to_N_SchemaModel</schemaModel>
   <schemaModel>org.mitre.schemastore.model.schemaInfo.model.RMap_N_to_1_SchemaModel</schemaModel>
   <schemaModel>org.mitre.schemastore.model.schemaInfo.model.GSIPSchemaModel</schemaModel>
+  <schemaModel>org.mitre.schemastore.model.schemaInfo.model.CompleteSchemaModel</schemaModel>
 </schemaModels>
