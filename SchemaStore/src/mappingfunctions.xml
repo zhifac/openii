@@ -15,5 +15,14 @@
     <class>org.mitre.schemastore.model.mapfunctions.TrimRight</class>
     <class>org.mitre.schemastore.model.mapfunctions.Trim</class>
     <class>org.mitre.schemastore.model.mapfunctions.Sum</class>
+    <class>org.mitre.schemastore.model.mapfunctions.ExtractYear</class>
+    <class>org.mitre.schemastore.model.mapfunctions.ExtractMonth</class>
+    <class>org.mitre.schemastore.model.mapfunctions.ExtractDay</class>
+    <class>org.mitre.schemastore.model.mapfunctions.ExtractHour</class>
+    <class>org.mitre.schemastore.model.mapfunctions.ExtractMinute</class>
+    <class>org.mitre.schemastore.model.mapfunctions.ExtractSecond</class>
+    <class>org.mitre.schemastore.model.mapfunctions.LowerCase</class>
+    <class>org.mitre.schemastore.model.mapfunctions.UpperCase</class>
+    <class>org.mitre.schemastore.model.mapfunctions.StringLength</class>
 </mappingfunctions>
 
