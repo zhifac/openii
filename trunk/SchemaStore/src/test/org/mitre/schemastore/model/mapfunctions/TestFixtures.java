@@ -101,6 +101,8 @@ public class TestFixtures
         ret.put( "identity", MappingCell.createValidatedMappingCell(1028,new Integer(-1),Arrays.asList(59).toArray(new Integer[0]),67,"Author Q. Tester",new Date(),"org.mitre.schemastore.model.mapfunctions.IdentityFunction","notes"));
         // "concat" maps Diagnosis and Diagnosis to funding
         ret.put( "concat", MappingCell.createValidatedMappingCell(1028,new Integer(-1),Arrays.asList(53,53).toArray(new Integer[0]),53,"Author Q. Tester",new Date(),"org.mitre.schemastore.model.mapfunctions.Concat","notes"));
+        // "extract" maps DOB to hdl
+        ret.put( "extract", MappingCell.createValidatedMappingCell(1028,new Integer(-1),Arrays.asList(48).toArray(new Integer[0]),67,"Author Q. Tester",new Date(),"org.mitre.schemastore.model.mapfunctions.ExtractYear","notes"));
         return ret;
     }
 
