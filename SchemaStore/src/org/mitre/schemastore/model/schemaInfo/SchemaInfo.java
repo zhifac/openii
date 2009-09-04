@@ -180,10 +180,6 @@ public class SchemaInfo implements Serializable
 	private ArrayList<SchemaInfoListener> listeners = new ArrayList<SchemaInfoListener>();
 
 	/** Constructs the schema info */
-	public SchemaInfo(Schema schema, ArrayList<SchemaElement> elements)
-		{ this.schema = schema; this.parentSchemaIDs = new ArrayList<Integer>(); addElements(elements); }
-
-	/** Constructs the schema info */
 	public SchemaInfo(Schema schema, ArrayList<Integer> parentSchemaIDs, ArrayList<SchemaElement> elements)
 		{ this.schema = schema; this.parentSchemaIDs = parentSchemaIDs; addElements(elements); }
 
