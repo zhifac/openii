@@ -22,7 +22,7 @@ import org.mitre.affinity.view.cluster_details.ClusterDetailsDlg;
 import org.mitre.affinity.view.event.SelectionClickedEvent;
 import org.mitre.affinity.view.event.SelectionClickedListener;
 import org.mitre.affinity.view.venn_diagram.VennDiagramUtils;
-import org.mitre.affinity.view.venn_diagram.model.CachedFilteredGraph;
+import org.mitre.affinity.view.venn_diagram.model.CachedFilteredSchemaInfo;
 import org.mitre.affinity.view.venn_diagram.model.HarmonyMatchScoreComputer;
 import org.mitre.affinity.view.venn_diagram.model.IMatchScoreComputer;
 import org.mitre.affinity.view.venn_diagram.model.VennDiagramSets;
@@ -35,6 +35,7 @@ import org.mitre.affinity.model.AffinitySchemaStoreManager;
 import org.mitre.affinity.model.ClusterManager;
 import org.mitre.affinity.model.AffinitySchemaManager;
 import org.mitre.affinity.model.ISchemaManager;
+
 import org.mitre.harmony.matchers.mergers.VoteMerger;
 import org.mitre.harmony.matchers.voters.BagMatcher;
 import org.mitre.harmony.matchers.voters.EditDistanceMatcher;
@@ -244,22 +245,22 @@ public class AffinityView extends OpenIIEditor implements SelectionClickedListen
 		int preferredWidth = 400;
 		if(schemaIDs.size() == 2) {
 			//Create a dialog with a VennDiagramPane for 2 schemas
-			CachedFilteredGraph graph1 = VennDiagramUtils.createCachedFilteredGraph(iter.next(), schemaManager);
-			VennDiagramUtils.sortFilteredElements(graph1);
-			CachedFilteredGraph graph2 = VennDiagramUtils.createCachedFilteredGraph(iter.next(), schemaManager);
-			VennDiagramUtils.sortFilteredElements(graph2);								
-			VennDiagramSets sets = new VennDiagramSets(graph1, graph2, 0.4, 1.0, matchScoreComputer);								
+			CachedFilteredSchemaInfo schemaInfo1 = VennDiagramUtils.createCachedFilteredSchemaInfo(iter.next(), schemaManager);
+			VennDiagramUtils.sortFilteredElements(schemaInfo1);
+			CachedFilteredSchemaInfo schemaInfo2 = VennDiagramUtils.createCachedFilteredSchemaInfo(iter.next(), schemaManager);
+			VennDiagramUtils.sortFilteredElements(schemaInfo2);								
+			VennDiagramSets sets = new VennDiagramSets(schemaInfo1, schemaInfo2, 0.4, 1.0, matchScoreComputer);								
 			dlg = new VennDiagramDlg(shell, SWT.APPLICATION_MODAL | SWT.RESIZE, sets, true);								
 		}
 		else {
 			//Create a dialog with a VennDiagramMatrixPane for N schemas								
-			ArrayList<FilteredSchemaInfo> schemaGraphs = new ArrayList<FilteredSchemaInfo>();
+			ArrayList<FilteredSchemaInfo> schemaInfos = new ArrayList<FilteredSchemaInfo>();
 			while(iter.hasNext()) {
-				CachedFilteredGraph graph = VennDiagramUtils.createCachedFilteredGraph(iter.next(), schemaManager);
-				VennDiagramUtils.sortFilteredElements(graph);
-				schemaGraphs.add(graph);
+				CachedFilteredSchemaInfo schemaInfo = VennDiagramUtils.createCachedFilteredSchemaInfo(iter.next(), schemaManager);
+				VennDiagramUtils.sortFilteredElements(schemaInfo);
+				schemaInfos.add(schemaInfo);
 			}
-			VennDiagramSetsMatrix matrix = new VennDiagramSetsMatrix(schemaGraphs, 0.4, 1.0, matchScoreComputer);
+			VennDiagramSetsMatrix matrix = new VennDiagramSetsMatrix(schemaInfos, 0.4, 1.0, matchScoreComputer);
 			dlg = new VennDiagramDlg(shell, SWT.APPLICATION_MODAL | SWT.RESIZE, matrix, true);
 			preferredWidth = schemaIDs.size() * 100 + 100;
 		}
