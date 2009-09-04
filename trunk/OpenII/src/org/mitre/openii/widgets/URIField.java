@@ -37,7 +37,7 @@ public class URIField implements ModifyListener, SelectionListener
 	// Stores the dialog information
 	private String dialogTitle = null;
 	private String dialogFilterName = null;
-	private ArrayList<String> dialogFilterExtensions = null;
+	private String dialogFilterExtension = null;
 
 	/** Stores the current mode */
 	private Integer mode = null;
@@ -78,7 +78,12 @@ public class URIField implements ModifyListener, SelectionListener
 	{
 		this.dialogTitle=dialogTitle;
 		this.dialogFilterName=dialogFilterName;
-		this.dialogFilterExtensions=dialogFilterExtensions;
+		
+		// Stores the dialog filter extension
+		dialogFilterExtension = "";
+		for(String extension : dialogFilterExtensions)
+			dialogFilterExtension += extension + ";";
+		dialogFilterExtension = dialogFilterExtension.substring(0,dialogFilterExtension.length()-1);
 	}
 	
 	/** Sets the URI field mode */
@@ -137,7 +142,7 @@ public class URIField implements ModifyListener, SelectionListener
 			dialog.setText(dialogTitle);
 			dialog.setFilterPath(OpenIIManager.getActiveDir());
 			dialog.setFilterNames(new String[] {dialogFilterName});
-			dialog.setFilterExtensions(dialogFilterExtensions.toArray(new String[0]));
+			dialog.setFilterExtensions(new String[]{dialogFilterExtension});
 		    filename = dialog.open();
 			OpenIIManager.setActiveDir(dialog.getFilterPath());
 		}
