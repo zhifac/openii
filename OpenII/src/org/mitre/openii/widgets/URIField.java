@@ -81,9 +81,12 @@ public class URIField implements ModifyListener, SelectionListener
 		
 		// Stores the dialog filter extension
 		dialogFilterExtension = "";
-		for(String extension : dialogFilterExtensions)
-			dialogFilterExtension += extension + ";";
-		dialogFilterExtension = dialogFilterExtension.substring(0,dialogFilterExtension.length()-1);
+		if(dialogFilterExtensions!=null)
+		{
+			for(String extension : dialogFilterExtensions)
+				dialogFilterExtension += extension + ";";
+			dialogFilterExtension = dialogFilterExtension.substring(0,dialogFilterExtension.length()-1);
+		}
 	}
 	
 	/** Sets the URI field mode */
