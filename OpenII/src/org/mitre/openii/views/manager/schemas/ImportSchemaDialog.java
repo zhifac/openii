@@ -191,7 +191,7 @@ public class ImportSchemaDialog extends TitleAreaDialog implements ISelectionCha
 					authorField.setText(schema.getAuthor());
 					descriptionField.setText(schema.getDescription());
 				}
-			} catch(Exception e2) {}
+			} catch(Exception e2) { setErrorMessage("Failed to retrieve schema info. " + e2.getMessage()); }
 		
 		// Determine if the OK button should be activated
 		boolean activate = nameField.getText().length()>0;
