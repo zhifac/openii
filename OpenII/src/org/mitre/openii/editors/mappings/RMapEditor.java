@@ -13,7 +13,7 @@ import org.mitre.openii.model.RepositoryManager;
 import GUI.SQLGeneratorGUI;
 
 /** Constructs the RMap View */
-public class RMapView extends OpenIIEditor
+public class RMapEditor extends OpenIIEditor
 {
 	/** Displays the RMap View */
 	public void createPartControl(Composite parent)

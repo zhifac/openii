@@ -18,7 +18,7 @@ import org.mitre.schemastore.model.MappingSchema;
 import org.mitre.schemastore.model.schemaInfo.SchemaInfo;
 
 /** Constructs the Mapping View */
-public class M3MappingView extends OpenIIEditor
+public class M3MappingEditor extends OpenIIEditor
 {	
 	/** Generates the schema pane */
 	private void generateSchemasPane(ExpandBar bar)

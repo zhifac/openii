@@ -11,7 +11,7 @@ import org.mitre.openii.editors.OpenIIEditor;
 import org.mitre.openii.model.GalaxyManager;
 
 /** Constructs the Schema Graph */
-public class SchemaView extends OpenIIEditor
+public class SchemaEditor extends OpenIIEditor
 {
 	/** Displays the Schema Graph */
 	public void createPartControl(Composite parent)
