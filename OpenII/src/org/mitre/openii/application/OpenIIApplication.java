@@ -22,7 +22,7 @@ public class OpenIIApplication implements IApplication
 	/** Class for defining the window layout for the workbench advisor */
 	public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor
 	{
-		@Override
+		/** Define the images for this application */
 		public void createWindowContents(Shell shell)
 		{
 			super.createWindowContents(shell);
@@ -33,12 +33,13 @@ public class OpenIIApplication implements IApplication
 		/** Constructs the workbench window advisor */
 	    public ApplicationWorkbenchWindowAdvisor(IWorkbenchWindowConfigurer configurer)
 	    	{ super(configurer); }
-	    
-	    /** Defines the layout of the workbench */
+
+		/** Defines the layout of the workbench */
 	    public void preWindowOpen()
 	    {
 	        IWorkbenchWindowConfigurer configurer = getWindowConfigurer();
 	        configurer.setInitialSize(new Point(1024, 768));
+	        configurer.setShowMenuBar(true);
 	        configurer.setShowCoolBar(false);
 	        configurer.setShowStatusLine(false);
 	    }    
@@ -47,8 +48,6 @@ public class OpenIIApplication implements IApplication
 	/** Class for defining which perspectives should be displayed in the workbench */
 	private class OpenIIWorkbenchAdvisor extends WorkbenchAdvisor
 	{
-		private static final String PERSPECTIVE_ID = "org.mitre.openii.plugin.OpenIIPerspective";
-
 		/** Creates the workbench advisor */
 	    public WorkbenchWindowAdvisor createWorkbenchWindowAdvisor(IWorkbenchWindowConfigurer configurer)
 	    	{ return new ApplicationWorkbenchWindowAdvisor(configurer); }
@@ -62,7 +61,7 @@ public class OpenIIApplication implements IApplication
 	    
 	    /** Defines the initial perspective for the workbench advisor */
 		public String getInitialWindowPerspectiveId()
-			{ return PERSPECTIVE_ID; }
+			{ return "OpenIIPerspective"; }
 	}
 	
 	/** Starts the OpenII application */
