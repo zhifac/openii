@@ -157,7 +157,7 @@ public class AffinityView extends OpenIIEditor implements SelectionClickedListen
 					}
 					else if(item.getText().startsWith("Open")) {
 						//Open schemas in a new Affinity Pane
-						EditorManager.launchEditor("org.mitre.openii.editors.AffinityView", selectedSchemas);
+						EditorManager.launchEditor("AffinityView", selectedSchemas);
 					}
 					else {
 						//Create a new group containing the schemas
@@ -201,7 +201,7 @@ public class AffinityView extends OpenIIEditor implements SelectionClickedListen
 					}
 					else if(item.getText().startsWith("Open")) {
 						//Open cluster in a new Affinity pane						
-						EditorManager.launchEditor("org.mitre.openii.editors.AffinityView", selectedCluster.getSchemaIDs());								
+						EditorManager.launchEditor("AffinityView", selectedCluster.getSchemaIDs());								
 					}
 					else {
 						//Create a new group containing the schemas in the cluster

@@ -18,26 +18,53 @@
 
    <!-- Declares the OpenII perspective -->
    <extension point="org.eclipse.ui.perspectives">
-      <perspective class="org.mitre.openii.application.OpenIIPerspective" fixed="false" icon="icons/Harmony.jpg" id="org.mitre.openii.plugin.OpenIIPerspective" name="OpenII"></perspective>
+      <perspective class="org.mitre.openii.application.OpenIIPerspective" fixed="false" icon="icons/Harmony.jpg" id="OpenIIPerspective" name="OpenII"></perspective>
    </extension>
  
    <!-- Declares the OpenII views -->
    <extension id="org.mitre.openii.views" point="org.eclipse.ui.views">
       <category name="OpenII" id="Ygg"></category>
-      <view name="Repositories" icon="icons/Repositories.gif" category="OpenII" class="org.mitre.openii.views.repositories.RepositoryView" id="org.mitre.openii.views.repositories.RepositoryView"></view>
-      <view name="Manager" icon="icons/Manager.gif" category="OpenII" class="org.mitre.openii.views.manager.ManagerView" id="org.mitre.openii.views.manager.ManagerView"></view>
-      <view name="Search" icon="icons/Search.gif" category="OpenII" class="org.mitre.openii.views.SearchView" id="org.mitre.openii.views.SearchView"></view>
+      <view name="Repositories" icon="icons/Repositories.gif" category="OpenII" class="org.mitre.openii.views.repositories.RepositoryView" id="RepositoryView"></view>
+      <view name="Manager" icon="icons/Manager.gif" category="OpenII" class="org.mitre.openii.views.manager.ManagerView" id="ManagerView"></view>
+      <view name="Search" icon="icons/Search.gif" category="OpenII" class="org.mitre.openii.views.SearchView" id="SearchView"></view>
    </extension>
 
-	<!-- Declares the OpenII editors -->
+   <!-- Declares the OpenII editors -->
    <extension point="org.eclipse.ui.editors">
-      <editor name="Schema Graph" extensions="schema" icon="icons/Schema.gif" class="org.mitre.openii.editors.SchemaGraphView" id="org.mitre.openii.editors.SchemaGraphView"></editor>
-      <editor name="Extension Graph" extensions="schema" icon="icons/Extensions.gif" class="org.mitre.openii.editors.ExtensionGraphView" id="org.mitre.openii.editors.ExtensionGraphView"></editor>
-      <editor name="M3 Model" extensions="schema" icon="icons/Schema.gif" class="org.mitre.openii.editors.SchemaView" id="org.mitre.openii.editors.SchemaView"></editor>
-      <editor name="Harmony" extensions="mapping" icon="icons/Harmony.gif" class="org.mitre.openii.editors.HarmonyView" id="org.mitre.openii.editors.HarmonyView"></editor>
-      <editor name="M3 Model" extensions="mapping" icon="icons/Mapping.gif" class="org.mitre.openii.editors.MappingView" id="org.mitre.openii.editors.MappingView"></editor>
-   	  <editor name="RMap" extensions="mapping" icon="icons/RMap.gif" class="org.mitre.openii.editors.RMapView" id="org.mitre.openii.editors.RMapView"></editor>
-   	  <editor name="Affinity" extensions="group" icon="icons/Harmony.gif" class="org.mitre.openii.editors.AffinityView" id="org.mitre.openii.editors.AffinityView"></editor>-->
+      <editor name="Schema" extensions="schema" icon="icons/Schema.gif" class="org.mitre.openii.editors.schemas.SchemaView" id="SchemaView"></editor>
+      <editor name="Extension Graph" extensions="schema" icon="icons/Extensions.gif" class="org.mitre.openii.editors.schemas.ExtensionGraphView" id="ExtensionGraphView"></editor>
+      <editor name="M3 Model" extensions="schema" icon="icons/Schema.gif" class="org.mitre.openii.editors.schemas.M3SchemaView" id="M3SchemaView"></editor>
+      <editor name="Harmony" extensions="mapping" icon="icons/Harmony.gif" class="org.mitre.openii.editors.mappings.HarmonyView" id="HarmonyView"></editor>
+      <editor name="M3 Model" extensions="mapping" icon="icons/Mapping.gif" class="org.mitre.openii.editors.mappings.M3MappingView" id="M3MappingView"></editor>
+   	  <editor name="RMap" extensions="mapping" icon="icons/RMap.gif" class="org.mitre.openii.editors.mappings.RMapView" id="RMapView"></editor>
+   	  <editor name="Affinity" extensions="group" icon="icons/Harmony.gif" class="org.mitre.openii.editors.AffinityView" id="AffinityView"></editor>-->
+   </extension>
+
+   <!-- Declares the OpenII menu -->
+   <extension point="org.eclipse.ui.menus">
+      <menuContribution locationURI="menu:org.eclipse.ui.main.menu">
+         <menu label="OpenII" mnemonic="O" id="org.mitre.openii.menu.openii">
+            <command commandId="NewRepositoryCommand" id="NewRepositoryCommand" icon="icons/Repositories.gif"></command>
+            <command commandId="ExitCommand" id="ExitCommand"></command>
+         </menu>
+         <menu label="Help" mnemonic="H" id="org.mitre.openii.menu.help">
+            <command commandId="AboutOpenIICommand" id="AboutOpenIICommand"></command>
+         </menu>
+      </menuContribution>
+   </extension>
+
+   <!-- Defines the OpenII commands -->
+   <extension point="org.eclipse.ui.commands">
+      <command name="New Repository..." id="NewRepositoryCommand"></command>
+      <command name="Exit" id="ExitCommand"></command>
+      <command name="About OpenII" id="AboutOpenIICommand"></command>
+   </extension>
+
+   <!-- Defines the OpenII command handlers -->
+   <extension point="org.eclipse.ui.handlers">
+      <handler commandId="NewRepositoryCommand" class="org.mitre.openii.commands.NewRepositoryCommand"></handler>
+      <handler commandId="ExitCommand" class="org.mitre.openii.commands.ExitCommand"></handler>
+      <handler commandId="AboutOpenIICommand" class="org.mitre.openii.commands.AboutOpenIICommand"></handler>
    </extension>
 
 </plugin>

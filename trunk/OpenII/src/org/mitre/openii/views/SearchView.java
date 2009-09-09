@@ -54,7 +54,7 @@ public class SearchView extends ViewPart implements SearchPaneListener
 			{
 				try {
 					EditorInput input = new EditorInput(schema);
-					String editorID = "org.mitre.openii.editors.SchemaGraphView";
+					String editorID = "SchemaView";
 					getSite().getPage().openEditor(input,editorID);
 				} catch(Exception e) { System.out.println(e); }
 			}

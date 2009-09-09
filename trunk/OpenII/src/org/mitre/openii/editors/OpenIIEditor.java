@@ -16,7 +16,7 @@ import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.Schema;
 
 /** Constructs the OpenII Editor */
-abstract class OpenIIEditor extends EditorPart implements OpenIIListener
+abstract public class OpenIIEditor extends EditorPart implements OpenIIListener
 {
 	/** Stores the id associated with this editor */
 	protected Integer elementID = null;
