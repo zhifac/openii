@@ -1,4 +1,4 @@
-package org.mitre.openii.editors;
+package org.mitre.openii.editors.groups;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -42,6 +42,7 @@ import org.mitre.harmony.matchers.voters.EditDistanceMatcher;
 import org.mitre.harmony.matchers.voters.ExactStructureMatcher;
 import org.mitre.harmony.matchers.voters.MatchVoter;
 
+import org.mitre.openii.editors.OpenIIEditor;
 import org.mitre.openii.model.EditorInput;
 import org.mitre.openii.model.EditorManager;
 import org.mitre.openii.model.OpenIIManager;
@@ -52,7 +53,7 @@ import org.mitre.schemastore.model.schemaInfo.FilteredSchemaInfo;
 /**
  * Constructs the Affinity View
  */
-public class AffinityView extends OpenIIEditor implements SelectionClickedListener
+public class AffinityEditor extends OpenIIEditor implements SelectionClickedListener
 {	
 	/** Stores the Affinity model */
 	private AffinityModel affinityModel;

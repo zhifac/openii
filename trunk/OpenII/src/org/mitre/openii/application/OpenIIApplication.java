@@ -13,6 +13,7 @@ import org.eclipse.ui.application.IWorkbenchConfigurer;
 import org.eclipse.ui.application.IWorkbenchWindowConfigurer;
 import org.eclipse.ui.application.WorkbenchAdvisor;
 import org.eclipse.ui.application.WorkbenchWindowAdvisor;
+import org.mitre.openii.model.EditorManager;
 
 /**
  * Class for controlling all aspects of the application's execution
@@ -42,7 +43,11 @@ public class OpenIIApplication implements IApplication
 	        configurer.setShowMenuBar(true);
 	        configurer.setShowCoolBar(false);
 	        configurer.setShowStatusLine(false);
-	    }    
+	    }
+	    
+		/** Displays the "OpenII Editor" on launch */
+		public void postWindowCreate()
+			{ EditorManager.launchEditor("AboutOpenIIEditor", null); }
 	}
 	
 	/** Class for defining which perspectives should be displayed in the workbench */
@@ -57,7 +62,7 @@ public class OpenIIApplication implements IApplication
 		{
 			super.initialize(configurer);
 	    	PlatformUI.getPreferenceStore().setValue(IWorkbenchPreferenceConstants.SHOW_TRADITIONAL_STYLE_TABS, false);
-		}
+	    }
 	    
 	    /** Defines the initial perspective for the workbench advisor */
 		public String getInitialWindowPerspectiveId()

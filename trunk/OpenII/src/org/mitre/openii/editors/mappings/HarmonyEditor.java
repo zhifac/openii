@@ -16,7 +16,7 @@ import org.mitre.openii.model.RepositoryManager;
 import org.mitre.schemastore.model.MappingSchema;
 
 /** Constructs the Harmony View */
-public class HarmonyView extends OpenIIEditor
+public class HarmonyEditor extends OpenIIEditor
 {
 	/** Private class for running the applet */ @SuppressWarnings("serial")
 	private class HarmonyApplet extends JApplet

@@ -1,6 +1,8 @@
 package org.mitre.openii.application;
 
-import org.eclipse.ui.*;
+import org.eclipse.ui.IFolderLayout;
+import org.eclipse.ui.IPageLayout;
+import org.eclipse.ui.IPerspectiveFactory;
 
 /** Lays out the OpenII perspective */
 public class OpenIIPerspective implements IPerspectiveFactory

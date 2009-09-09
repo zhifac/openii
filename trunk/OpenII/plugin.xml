@@ -31,13 +31,14 @@
 
    <!-- Declares the OpenII editors -->
    <extension point="org.eclipse.ui.editors">
-      <editor name="Schema" extensions="schema" icon="icons/Schema.gif" class="org.mitre.openii.editors.schemas.SchemaView" id="SchemaView"></editor>
-      <editor name="Extension Graph" extensions="schema" icon="icons/Extensions.gif" class="org.mitre.openii.editors.schemas.ExtensionGraphView" id="ExtensionGraphView"></editor>
-      <editor name="M3 Model" extensions="schema" icon="icons/Schema.gif" class="org.mitre.openii.editors.schemas.M3SchemaView" id="M3SchemaView"></editor>
-      <editor name="Harmony" extensions="mapping" icon="icons/Harmony.gif" class="org.mitre.openii.editors.mappings.HarmonyView" id="HarmonyView"></editor>
-      <editor name="M3 Model" extensions="mapping" icon="icons/Mapping.gif" class="org.mitre.openii.editors.mappings.M3MappingView" id="M3MappingView"></editor>
-   	  <editor name="RMap" extensions="mapping" icon="icons/RMap.gif" class="org.mitre.openii.editors.mappings.RMapView" id="RMapView"></editor>
-   	  <editor name="Affinity" extensions="group" icon="icons/Harmony.gif" class="org.mitre.openii.editors.AffinityView" id="AffinityView"></editor>-->
+      <editor name="AboutOpenII" icon="icons/About.gif" class="org.mitre.openii.editors.help.AboutOpenIIEditor" id="AboutOpenIIEditor"></editor>
+      <editor name="Schema" extensions="schema" icon="icons/Schema.gif" class="org.mitre.openii.editors.schemas.SchemaEditor" id="SchemaViewEditor"></editor>
+      <editor name="Extension Graph" extensions="schema" icon="icons/Extensions.gif" class="org.mitre.openii.editors.schemas.ExtensionGraphEditor" id="ExtensionGraphEditor"></editor>
+      <editor name="M3 Model" extensions="schema" icon="icons/Schema.gif" class="org.mitre.openii.editors.schemas.M3SchemaEditor" id="M3SchemaEditor"></editor>
+      <editor name="Harmony" extensions="mapping" icon="icons/Harmony.gif" class="org.mitre.openii.editors.mappings.HarmonyEditor" id="HarmonyEditor"></editor>
+      <editor name="M3 Model" extensions="mapping" icon="icons/Mapping.gif" class="org.mitre.openii.editors.mappings.M3MappingEditor" id="M3MappingEditor"></editor>
+   	  <editor name="RMap" extensions="mapping" icon="icons/RMap.gif" class="org.mitre.openii.editors.mappings.RMapEditor" id="RMapEditor"></editor>
+   	  <editor name="Affinity" extensions="group" icon="icons/Harmony.gif" class="org.mitre.openii.editors.groups.AffinityEditor" id="AffinityEditor"></editor>-->
    </extension>
 
    <!-- Declares the OpenII menu -->
