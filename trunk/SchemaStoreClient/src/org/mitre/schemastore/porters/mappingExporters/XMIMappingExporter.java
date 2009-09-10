@@ -116,7 +116,7 @@ public class XMIMappingExporter extends MappingExporter {
 	
 	private XMIModelElement recursivelyHash(XMIModel m, SchemaElement elem, HierarchicalSchemaInfo owner, 
 								  XMIModelElement container, int depth) {
-		System.out.println("hashModel: Recursing on " + elem);  
+		System.out.println("XMIMappingExporter: Recursing on " + elem + " depth " + depth);  
 		XMIModelElement thisnode = new XMIModelElement(elem.getName());
 		
 		SchemaElement type = owner.getModel().getType(owner, elem.getId());
@@ -134,12 +134,14 @@ public class XMIMappingExporter extends MappingExporter {
 		
 		boolean hasChildren = false;
 		ArrayList <SchemaElement> chillun = owner.getChildElements(elem.getId()); 
-		for(SchemaElement child : chillun) {
+		for(int z=0; z<chillun.size(); z++) { 
+			SchemaElement child = chillun.get(z);
 			hasChildren = true;
 			XMIModelElement sub = recursivelyHash(m, child, owner, thisnode, (depth + 1));
 			sub.addGeneralization(thisnode); 
 		}
-		
+
+		System.out.println("Finished " + chillun.size() + " children - stereotyping."); 
 		// Stereotype with a custom label depending on depth.
 		String schemaName = owner.getSchema().getName();
 		String stName = schemaName + "_L" + depth;

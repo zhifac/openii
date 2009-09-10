@@ -116,9 +116,8 @@ public class XMIModel extends XMIModelElement {
 			if(UML_PACKAGE.equals(children.get(x).type) && 
 			   children.get(x).contains(em)) return children.get(x); 
 		}
-		
 		return null;
-	}
+	} // End getPackageOwner
 	
 	/**
 	 * Get a flattened list of all objects that have a child relationship to this model.
@@ -158,6 +157,7 @@ public class XMIModel extends XMIModelElement {
 	}
 	
 	public Element [] renderExtensionsElement(Document doc) {
+		System.out.println("XMI: (model/extensions) " + name); 
 		Element [] results = new Element [2];
 		Element elements = doc.createElement("elements");
 		results[0] = elements;
@@ -165,7 +165,7 @@ public class XMIModel extends XMIModelElement {
 		results[1] = connectors; 
 		
 		ArrayList <XMIModelElement> catalog = getCatalog(); 
-		
+		int t=0;
 		for(XMIModelElement elem : catalog) {
 			if(!elem.hasDocs()) continue;
 			if(elem instanceof XMILink) { 
@@ -175,6 +175,8 @@ public class XMIModel extends XMIModelElement {
 				Element e = elem.renderExtensionXML(this, doc);
 				elements.appendChild(e); 
 			} // End else 
+			
+			System.out.println("XMIModel: Rendered extension " + ++t + " of " + catalog.size());
 		} // End for
 		
 		return results; 
@@ -182,7 +184,7 @@ public class XMIModel extends XMIModelElement {
 	
 	public Element renderAsXML(String tagName, Document doc) {
 		Element e = super.renderAsXML(tagName, doc); 
-		
+		System.out.println("XMI: (model/xml) " + name);
 		Enumeration <String>en = stereotypes.keys();
 		while(en.hasMoreElements()) { 
 			String k = en.nextElement();

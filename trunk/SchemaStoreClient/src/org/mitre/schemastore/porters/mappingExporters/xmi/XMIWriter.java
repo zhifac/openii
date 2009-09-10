@@ -39,6 +39,7 @@ public class XMIWriter {
 		model.setAttribute("visibility", "public"); 
 		root.appendChild(model);
 				
+		System.out.println("XMIWriter: rendering base model..."); 
 		model.appendChild(xmimodel.renderAsXML(d)); 
 
 		Element ext = d.createElement("xmi:Extension"); 
@@ -47,9 +48,12 @@ public class XMIWriter {
 		ext.appendChild(d.createTextNode("\n")); 
 		root.appendChild(ext); 
 		
+		System.out.println("XMIWriter: rendering extensions..."); 
 		Element [] extensions = xmimodel.renderExtensionsElement(d);
+		System.out.println("XMIWriter: adding extensions..."); 
 		for(int y=0; y<extensions.length; y++) ext.appendChild(extensions[y]);		
 		
+		System.out.println("XMIWriter: starting transformation and write..."); 
 		// Can you believe that you have to go through this many acrobatics to print XML????
 		javax.xml.transform.TransformerFactory tfactory = TransformerFactory.newInstance();
 		javax.xml.transform.Transformer xform = tfactory.newTransformer();
@@ -62,6 +66,7 @@ public class XMIWriter {
 		// Then wrap the DOM into a javax.xml.transform.Source.
 		javax.xml.transform.Source src = new DOMSource(d);
 
+		System.out.println("XMIWriter: transforming..."); 
 		// Now create a java.io.StringWriter to receive the output and wrap it 
 		// into a javax.xml.transform.stream.StreamResult.
 		java.io.StringWriter writer = new StringWriter();
@@ -76,9 +81,11 @@ public class XMIWriter {
 		// Just kidding.
 		// Last is to extract the DOM as a text string by using the toString method on the 
 		// StringWriter that we created.
+		System.out.println("XMIWriter: writing..."); 
 		BufferedWriter r = new BufferedWriter(new FileWriter(f)); 
 		r.write(writer.toString());
 		r.close();		
+		System.out.println("XMIWriter: finished."); 
 	} // End write
 	
 	/**

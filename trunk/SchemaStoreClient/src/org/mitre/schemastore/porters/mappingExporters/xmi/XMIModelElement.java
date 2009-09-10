@@ -1,6 +1,7 @@
 package org.mitre.schemastore.porters.mappingExporters.xmi;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Hashtable;
 
 import org.w3c.dom.Document;
@@ -15,7 +16,7 @@ public class XMIModelElement extends XMIExportable {
 	String id; 	
 	String type;	
 	String documentation;
-	Hashtable <String,String> metadata = new Hashtable<String,String>(); 
+	HashMap <String,String> metadata = new HashMap<String,String>(); 
 	ArrayList <XMIModelElement> children;
 	ArrayList <XMIModelElement> generalizations; 
 	
@@ -49,7 +50,7 @@ public class XMIModelElement extends XMIExportable {
 		}
 		
 		return false;
-	}
+	} // End contains
 	
 	public String toString() { return name + " (" + type + ")"; } 
 	public String getDocs() { return documentation; } 	
@@ -88,7 +89,8 @@ public class XMIModelElement extends XMIExportable {
 	/**
 	 * @see XMIExportable#renderExtensionXML(XMIModel, Document)
 	 */
-	public Element renderExtensionXML(XMIModel model, Document doc) { 
+	public Element renderExtensionXML(XMIModel model, Document doc) {
+		System.out.println("XMI: (element/extensions) " + name + " " + id);
 		Element e = doc.createElement("element"); 
 		e.setAttribute("xmi:idref", id); 
 		e.setAttribute("xmi:type", type); 
@@ -129,6 +131,8 @@ public class XMIModelElement extends XMIExportable {
 	
 	public Element renderAsXML(String tagName, Document doc) { 
 		Element e = doc.createElement(tagName);
+		
+		System.out.println("XMI: (element/xml) " + name + " " + id);
 		
 		e.setAttribute("xmi:type", type);
 		e.setAttribute("xmi:id", id); 		 

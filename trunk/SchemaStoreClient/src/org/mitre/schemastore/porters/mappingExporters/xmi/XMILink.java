@@ -66,7 +66,8 @@ public class XMILink extends XMIModelElement {
 	/**
 	 * Documentation on XMILinks is rendered as part of the xmi:Extension section.
 	 */
-	public Element renderExtensionXML(XMIModel model, Document doc) { 
+	public Element renderExtensionXML(XMIModel model, Document doc) {
+		System.out.println("XMI: (link/extensions) " + name); 
 		Element conn = doc.createElement("connector");
 		conn.setAttribute("xmi:idref", id); 
 		
@@ -111,7 +112,7 @@ public class XMILink extends XMIModelElement {
 				</ownedEnd>
 			</packagedElement>
 		 */
-		
+		System.out.println("XMI: (link/xml) " + name + " " + id); 
 		Element e = doc.createElement("packagedElement");
 		e.setAttribute("xmi:type", UML_ASSOCIATION); 
 		// Castleberry didn't want link names for associations.
