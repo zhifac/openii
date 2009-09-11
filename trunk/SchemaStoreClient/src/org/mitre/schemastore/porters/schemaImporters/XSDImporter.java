@@ -30,34 +30,7 @@ public class XSDImporter extends SchemaImporter
 	
 	private static final String DEFAULT_NAMESPACE = "urn:mitre.org:M3";
 
-	static public void main(String args[])
-	{
-		try {
-			XSDImporter xsdImporter = new XSDImporter();
-			URI uri = new URI("C:/Electronic_Court_Filing_4.0/ecf-v4.0-spec/xsd/message/ECF-4.0-CaseListQueryMessage.xsd");
-			ArrayList<SchemaElement> schemaElements = xsdImporter.getSchemaElements(uri);
-			SchemaModel xmlModel = null;
-			for (SchemaModel gm : HierarchicalSchemaInfo.getSchemaModels()){
-				if (gm.getName().equalsIgnoreCase("XML"))
-					gm = xmlModel;
-			}
-			HierarchicalSchemaInfo hier = new HierarchicalSchemaInfo(new SchemaInfo(new org.mitre.schemastore.model.Schema(1,"test","me","","","",false),new ArrayList<SchemaElement>(schemaElements)),xmlModel);
-			for (SchemaElement se : hier.getElements(Subtype.class)){
-				Subtype sub = (Subtype)se;
-				System.err.println("--------------------  id: " + sub.getId() 
-						+ " parent: " + sub.getParentID() 
-						+ " child: " + sub.getChildID()
-						+ " parentName: " + hier.getElement(sub.getParentID()).getName()
-						+ " childName: " + hier.getElement(sub.getChildID()).getName());
-	//			System.err.println(hier.getElement(10).getName());
-	//			for (SchemaElement se2 : hier.getChildElements(10)){
-	//				System.err.println(se2.getId() + " " + se2.getName() + se2.getClass());
-	//			}
-			}
-			
-		
-		} catch(Exception e) { e.printStackTrace(); }
-	}
+	
 	
 	// Stores the M3 schema elements (entities, attributes, domain, relationships, etc.) 
 	private HashMap<Integer, SchemaElement> schemaElementsHS = new HashMap<Integer, SchemaElement>();
@@ -131,8 +104,7 @@ public class XSDImporter extends SchemaImporter
 				if (gm.getName().equalsIgnoreCase("XML"))
 					gm = xmlModel;
 			}
-			new SchemaInfo(new org.mitre.schemastore.model.Schema(1,"test","me","","","",false),new ArrayList<SchemaElement>(schemaElementsHS.values()));
-		
+			
 		}
 		catch(Exception e) { 			
 			e.printStackTrace();
