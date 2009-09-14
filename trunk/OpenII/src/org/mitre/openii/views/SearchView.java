@@ -54,7 +54,7 @@ public class SearchView extends ViewPart implements SearchPaneListener
 			{
 				try {
 					EditorInput input = new EditorInput(schema);
-					String editorID = "SchemaView";
+					String editorID = "SchemaViewEditor";
 					getSite().getPage().openEditor(input,editorID);
 				} catch(Exception e) { System.out.println(e); }
 			}
