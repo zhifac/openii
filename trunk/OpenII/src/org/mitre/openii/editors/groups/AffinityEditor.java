@@ -158,7 +158,7 @@ public class AffinityEditor extends OpenIIEditor implements SelectionClickedList
 					}
 					else if(item.getText().startsWith("Open")) {
 						//Open schemas in a new Affinity Pane
-						EditorManager.launchEditor("AffinityView", selectedSchemas);
+						EditorManager.launchEditor("AffinityEditor", selectedSchemas);
 					}
 					else {
 						//Create a new group containing the schemas
@@ -202,7 +202,7 @@ public class AffinityEditor extends OpenIIEditor implements SelectionClickedList
 					}
 					else if(item.getText().startsWith("Open")) {
 						//Open cluster in a new Affinity pane						
-						EditorManager.launchEditor("AffinityView", selectedCluster.getSchemaIDs());								
+						EditorManager.launchEditor("AffinityEditor", selectedCluster.getSchemaIDs());								
 					}
 					else {
 						//Create a new group containing the schemas in the cluster
@@ -224,7 +224,7 @@ public class AffinityEditor extends OpenIIEditor implements SelectionClickedList
 			item.setText("View terms in cluster");
 			item.addSelectionListener(clusterMenuListener);
 			item = new MenuItem (clusterMenu, SWT.NONE);				
-			item.setText("Open cluster in new affinity window");
+			item.setText("Open cluster in new Affinity window");
 			item.addSelectionListener(clusterMenuListener);
 			item = new MenuItem (clusterMenu, SWT.NONE);				
 			item.setText("Create group from cluster");
