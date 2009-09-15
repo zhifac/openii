@@ -29,12 +29,7 @@ public class RepositoryView extends ViewPart implements RepositoryListener, Sele
 	{
 		// Remove all old repository items
 		for(TreeItem item : tree.getItem(0).getItems())
-		{
-			((Button)item.getData()).dispose();
-			item.dispose();
-		}
-		if(tree.getItem(0).getItems().length>0)
-			tree.getItem(0).removeAll();
+			{ ((Button)item.getData()).dispose(); item.dispose(); }
 		
 		// Generate the nodes for the available repositories
 		for(Repository repository : WidgetUtilities.sortList(RepositoryManager.getRepositories()))
