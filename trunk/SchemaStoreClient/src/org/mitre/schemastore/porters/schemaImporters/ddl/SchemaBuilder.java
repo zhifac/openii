@@ -22,8 +22,10 @@ public class SchemaBuilder
     int currentAttributeId;
     Schema schema = new Schema( SchemaImporter.nextId(), "name", "","","","desc", false );
     ArrayList<SchemaElement> schemaObjects = new ArrayList<SchemaElement>();
+    /* mapping of string domain to Object Domain.  New domains will be added. */
     private HashMap<String, Domain> domainList = new HashMap<String, Domain>();
-
+    /* mapping of various flavors to standardized mapping names.  New names will be added. */
+    private HashMap<String, String> domainMapping = new HashMap<String, String>();
 
     /**
      *  Constructor - only loads in the Domain items.
@@ -31,6 +33,7 @@ public class SchemaBuilder
     public SchemaBuilder()
     {
         loadDomains();
+        loadStandardizedMappings();
     }
 
 
@@ -61,8 +64,33 @@ public class SchemaBuilder
     public void setDomainOfLastAttribute( String domain )
     {
         Attribute a = (Attribute) getSchemaObject( currentAttributeId );
+        System.out.print(a.getName() + ": ");
         // System.out.println( this.getClass().getName() + " ( setDomainOfLastAttribute ): " + domain);
-        a.setDomainID( domainList.get( domain ).getId() );
+        a.setDomainID( convertDomain( domain ) );
+    }
+
+    /**
+     *  Convert a string representation of the domain to the appropriate Domain ID.  If necessary, a new Domain and all mappings will be added
+     */
+    protected int convertDomain( String domain )
+    {
+        domain = domain.toLowerCase();
+        System.out.println(domain);
+        String stdName = domainMapping.get(domain);
+        if( stdName == null )
+        {
+            //add it so all instances will use the same DomainID
+            //add standardized mapping (to itself)
+            domainMapping.put(domain, domain);
+            System.out.println("added new domain");
+            //add corresponding Domain
+            Domain d = new Domain(SchemaImporter.nextId(), domain, domain, 0);
+            schemaObjects.add(d);
+            domainList.put(domain, d);
+            System.out.println("added new Domain:  " + d.getName());
+            stdName = domain;
+        }
+        return domainList.get( stdName ).getId();
     }
 
 
@@ -95,7 +123,7 @@ public class SchemaBuilder
 		schemaObjects.add(domain);
 		domainList.put(SchemaImporter.INTEGER, domain);
 
-		domain = new Domain(SchemaImporter.nextId(), SchemaImporter.REAL, "The Double domain", 0);
+		domain = new Domain(SchemaImporter.nextId(), SchemaImporter.REAL, "The Real domain", 0);
 		schemaObjects.add(domain);
 		domainList.put(SchemaImporter.REAL, domain);
 
@@ -110,17 +138,44 @@ public class SchemaBuilder
 		domain = new Domain(SchemaImporter.nextId(), SchemaImporter.BOOLEAN, "The Boolean domain", 0);
 		schemaObjects.add(domain);
 		domainList.put(SchemaImporter.BOOLEAN, domain);
-
-		domain = new Domain(SchemaImporter.nextId(), "Float", "The Float domain", 0);
-		schemaObjects.add(domain);
-		domainList.put("Float", domain);
-
-		domain = new Domain(SchemaImporter.nextId(), "Double", "The Float domain", 0);
-		schemaObjects.add(domain);
-		domainList.put("Double", domain);
 	}
 
-
+	private void loadStandardizedMappings() {
+	    //strings
+	    domainMapping.put("varchar", SchemaImporter.STRING);
+	    domainMapping.put("varchar2", SchemaImporter.STRING);
+	    domainMapping.put("char", SchemaImporter.STRING);
+	    domainMapping.put("text", SchemaImporter.STRING);
+	    domainMapping.put("char varying", SchemaImporter.STRING);
+	    domainMapping.put("character varying", SchemaImporter.STRING);
+	    domainMapping.put("nchar", SchemaImporter.STRING);
+	    domainMapping.put("nchar varying", SchemaImporter.STRING);
+	    domainMapping.put("clob", SchemaImporter.STRING);
+	    domainMapping.put("nclob", SchemaImporter.STRING);
+	    domainMapping.put("uniqueidentifier", SchemaImporter.STRING);
+	    //boolean
+	    domainMapping.put("bit", SchemaImporter.BOOLEAN);
+	    domainMapping.put("bit varying", SchemaImporter.BOOLEAN);
+	    //real
+	    domainMapping.put("float", SchemaImporter.REAL);
+	    domainMapping.put("real", SchemaImporter.REAL);
+	    domainMapping.put("double", SchemaImporter.REAL);
+	    domainMapping.put("double precision", SchemaImporter.REAL);
+	    domainMapping.put("numeric", SchemaImporter.REAL);
+	    domainMapping.put("number", SchemaImporter.REAL);
+	    domainMapping.put("decimal", SchemaImporter.REAL);
+	    domainMapping.put("dec", SchemaImporter.REAL);
+	    //integer
+	    domainMapping.put("int", SchemaImporter.INTEGER);
+	    domainMapping.put("integer", SchemaImporter.INTEGER);
+	    domainMapping.put("tinyint", SchemaImporter.INTEGER);
+	    domainMapping.put("smallint", SchemaImporter.INTEGER);
+	    //datetime
+	    domainMapping.put("date", SchemaImporter.DATETIME);
+	    domainMapping.put("time", SchemaImporter.DATETIME);
+	    domainMapping.put("datetime", SchemaImporter.DATETIME);
+	    domainMapping.put("tiemstamp", SchemaImporter.DATETIME);
+    }
 
     /**
      *  Set the currentEntityId member to the SchemaElement ID with the given name

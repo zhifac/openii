@@ -26,7 +26,7 @@ public class DdlFilteredReader extends BufferedReader
         throws FileNotFoundException
     {
         super(in);
-        // System.out.println( this.getClass().getName() + " ( in constructor ) " );
+        System.out.println( this.getClass().getName() + " ( in constructor ) " );
     }
 
 
@@ -57,7 +57,12 @@ public class DdlFilteredReader extends BufferedReader
     {
         String line = super.readLine();
         if(line==null)
+        {
             return null;
+            // char c = 0;
+            // System.out.println(Character.toString('\0'));
+            // return Character.toString( '\0' );
+        }
 
         //get rid of comments (/* ... */ style)
         if( !inComment && line.contains( "/*")  )
@@ -138,7 +143,7 @@ public class DdlFilteredReader extends BufferedReader
         buffer = buffer.replaceAll("varchar2", "varchar");
 
         if( buffer.toLowerCase().startsWith( "create table" )
-            //|| buffer.toLowerCase().startsWith( "alter table" )
+            || buffer.toLowerCase().startsWith( "alter table" )
             //|| buffer.toLowerCase().startsWith( "comment on" )
             )
         {
