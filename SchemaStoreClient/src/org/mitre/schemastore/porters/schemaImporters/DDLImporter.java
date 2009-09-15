@@ -2,16 +2,25 @@
 
 package org.mitre.schemastore.porters.schemaImporters;
 
+import org.antlr.runtime.ANTLRFileStream;
+import org.antlr.runtime.CommonTokenStream;
+
 import java.util.*;
 
 import antlr.*;
 import java.io.*;
-
+import java.net.URI;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.porters.ImporterException;
 import org.mitre.schemastore.porters.schemaImporters.ddl.DdlFilteredReader;
-import org.mitre.schemastore.porters.schemaImporters.ddl.SqlSQL2Lexer;
-import org.mitre.schemastore.porters.schemaImporters.ddl.SqlSQL2Parser;
+import org.mitre.schemastore.porters.schemaImporters.ddl.SqlLexer;
+import org.mitre.schemastore.porters.schemaImporters.ddl.SqlParser;
+// import org.mitre.schemastore.porters.schemaImporters.ddl.SqlSQL2Lexer;
+// import org.mitre.schemastore.porters.schemaImporters.ddl.SqlSQL2Parser;
+import org.mitre.schemastore.client.Repository;
+import org.mitre.schemastore.client.SchemaStoreClient;
+import org.antlr.runtime.ANTLRReaderStream;
+
 
 /**
  * DOCUMENT ME!
@@ -45,34 +54,49 @@ public class DDLImporter extends SchemaImporter
 	public ArrayList<SchemaElement> generateSchemaElements() throws ImporterException
 	{
 		try {
-	        SqlSQL2Lexer lexer = new SqlSQL2Lexer( new DdlFilteredReader( new FileReader( new File(uri) ) ) );
-	        SqlSQL2Parser parser = new SqlSQL2Parser( lexer );
+	        SqlLexer lexer = new SqlLexer( new ANTLRFileStream( uri.getPath() ) );
+	        CommonTokenStream tokens = new CommonTokenStream( lexer );
+	        SqlParser parser = new SqlParser( tokens );
+
 	        try
 	        {
 	            //parse the entire script
 	            //parser.sql_script(  );
 	            while(true)
 	            {
-	                try
-	                {
+	                // try
+	                // {
 	                    parser.sql_stmt();
-	                }
-	                catch (NoViableAltException e)
-	                {
-                        System.out.print( e.getClass().getName() + ": " );
-	                    e.printStackTrace();
-	                    return parser.getSchemaObjects();
-	                }
+	                // }
+	            //     catch (NoViableAltException e)
+	            //     {
+                //         System.out.print( e.getClass().getName() + ": " );
+	            //         e.printStackTrace();
+	            //         return parser.getSchemaObjects();
+	            //     }
 	            }
 	        }
 	        catch ( Exception e )
 	        {
-	            System.out.println( this.getClass().getName() + " ( loadSchem ): " + e.getClass().getName());
-	            e.printStackTrace( System.err );
+	            if( e.getMessage()==null || !e.getMessage().contains("<EOF>") )
+                {
+                    System.out.println( this.getClass().getName() + " ( loadSchem ): " + e.getClass().getName());
+                    e.printStackTrace( System.err );
+                }
 	        }
 	        return parser.getSchemaObjects();
 		}
 		catch(Exception e) { System.out.print( e.getClass().getName() + ": " ); e.printStackTrace();
         throw new ImporterException(ImporterException.PARSE_FAILURE,e.getMessage()); }
+	}
+
+
+	public static void main(String[] args) throws Exception {
+		File ddlFile = new File(args[0]);
+		DDLImporter tester = new DDLImporter();
+		Repository repository = new Repository(Repository.DERBY,new URI("."),"schemastore","postgres","postgres");
+		SchemaStoreClient client = new SchemaStoreClient(repository);
+		tester.setClient(client);
+		tester.importSchema(ddlFile.getName(), "", "", ddlFile.toURI());
 	}
 }

@@ -174,9 +174,9 @@ public class SpreadsheetImporter extends SchemaImporter {
 				if (cellTypes[j] == HSSFCell.CELL_TYPE_STRING) {
 					continue;
 				}
-System.out.print(getCellValStr(row.getCell(j)) + " is a ");
+				//System.out.print(getCellValStr(row.getCell(j)) + " is a ");
 				currentCellType = getCellDataType(row.getCell(j));
-System.out.println( translateType(currentCellType ) + " and the date format is " + row.getCell(j).getCellStyle().getDataFormatString() );
+				//System.out.println( translateType(currentCellType ) + " and the date format is " + row.getCell(j).getCellStyle().getDataFormatString() );
 				if (cellTypes[j] == -1
 						|| (cellTypes[j] == HSSFCell.CELL_TYPE_BLANK && cellTypes[j] != currentCellType)) {
 					cellTypes[j] = currentCellType;
