@@ -27,8 +27,6 @@ import org.mitre.affinity.view.venn_diagram.model.HarmonyMatchScoreComputer;
 import org.mitre.affinity.view.venn_diagram.model.IMatchScoreComputer;
 import org.mitre.affinity.view.venn_diagram.model.VennDiagramSets;
 import org.mitre.affinity.view.venn_diagram.model.VennDiagramSetsMatrix;
-import org.mitre.affinity.view.venn_diagram.view.swing.VennDiagramPane.VennDiagramView;
-import org.mitre.affinity.view.venn_diagram.view.swt.VennDiagramDlg;
 import org.mitre.affinity.clusters.ClusterGroup;
 import org.mitre.affinity.model.AffinityModel;
 import org.mitre.affinity.model.AffinitySchemaStoreManager;
@@ -78,7 +76,7 @@ public class AffinityEditor extends OpenIIEditor implements SelectionClickedList
 	private Collection<Integer> selectedSchemas;
 	
 	/** Used to compute match scores between two schemas */
-	private static IMatchScoreComputer matchScoreComputer; 
+	protected static IMatchScoreComputer matchScoreComputer; 
 	static {
 		ArrayList<MatchVoter> voters = new ArrayList<MatchVoter>();
 		//We use all the Harmony voters by default
@@ -240,20 +238,39 @@ public class AffinityEditor extends OpenIIEditor implements SelectionClickedList
 	
 	/** Show a Venn Diagram dialog for the given schemas */
 	private void showVennDiagramDlg(Collection<Integer> schemaIDs) {
-		Shell shell = getSite().getWorkbenchWindow().getShell();
+		//Shell shell = getSite().getWorkbenchWindow().getShell();		
+		//VennDiagramDlg dlg = null;
+		//int preferredWidth = 400;
 		Iterator<Integer> iter = schemaIDs.iterator();
-		VennDiagramDlg dlg = null;
-		int preferredWidth = 400;
 		if(schemaIDs.size() == 2) {
-			//Create a dialog with a VennDiagramPane for 2 schemas
+			//Open a VennDiagram with 2 schemas
+			CachedFilteredSchemaInfo schemaInfo1 = VennDiagramUtils.createCachedFilteredSchemaInfo(iter.next(), schemaManager);
+			VennDiagramUtils.sortFilteredElements(schemaInfo1);
+			CachedFilteredSchemaInfo schemaInfo2 = VennDiagramUtils.createCachedFilteredSchemaInfo(iter.next(), schemaManager);
+			VennDiagramUtils.sortFilteredElements(schemaInfo2);								
+			VennDiagramSets sets = new VennDiagramSets(schemaInfo1, schemaInfo2, 0.4, 1.0, matchScoreComputer);
+			EditorManager.launchEditor("VennDiagramEditor", sets);
+			/*
+			//Create a dialog with a VennDiagramPane for 2 schemas			
 			CachedFilteredSchemaInfo schemaInfo1 = VennDiagramUtils.createCachedFilteredSchemaInfo(iter.next(), schemaManager);
 			VennDiagramUtils.sortFilteredElements(schemaInfo1);
 			CachedFilteredSchemaInfo schemaInfo2 = VennDiagramUtils.createCachedFilteredSchemaInfo(iter.next(), schemaManager);
 			VennDiagramUtils.sortFilteredElements(schemaInfo2);								
 			VennDiagramSets sets = new VennDiagramSets(schemaInfo1, schemaInfo2, 0.4, 1.0, matchScoreComputer);								
-			dlg = new VennDiagramDlg(shell, SWT.APPLICATION_MODAL | SWT.RESIZE, sets, true);								
+			dlg = new VennDiagramDlg(shell, SWT.APPLICATION_MODAL | SWT.RESIZE, sets, true);
+			*/								
 		}
 		else {
+			//Open a VennDiagramMatrix with N schemas
+			ArrayList<FilteredSchemaInfo> schemaInfos = new ArrayList<FilteredSchemaInfo>();
+			while(iter.hasNext()) {
+				CachedFilteredSchemaInfo schemaInfo = VennDiagramUtils.createCachedFilteredSchemaInfo(iter.next(), schemaManager);
+				VennDiagramUtils.sortFilteredElements(schemaInfo);
+				schemaInfos.add(schemaInfo);
+			}
+			VennDiagramSetsMatrix matrix = new VennDiagramSetsMatrix(schemaInfos, 0.4, 1.0, matchScoreComputer);
+			EditorManager.launchEditor("VennDiagramEditor", matrix);
+			/*
 			//Create a dialog with a VennDiagramMatrixPane for N schemas								
 			ArrayList<FilteredSchemaInfo> schemaInfos = new ArrayList<FilteredSchemaInfo>();
 			while(iter.hasNext()) {
@@ -263,15 +280,16 @@ public class AffinityEditor extends OpenIIEditor implements SelectionClickedList
 			}
 			VennDiagramSetsMatrix matrix = new VennDiagramSetsMatrix(schemaInfos, 0.4, 1.0, matchScoreComputer);
 			dlg = new VennDiagramDlg(shell, SWT.APPLICATION_MODAL | SWT.RESIZE, matrix, true);
-			preferredWidth = schemaIDs.size() * 100 + 100;
+			preferredWidth = schemaIDs.size() * 100 + 100;*/
 		}
+		/*
 		if(preferredWidth > shell.getSize().x) 
 			preferredWidth = shell.getSize().x;	
 		if(preferredWidth > shell.getSize().y)
 			preferredWidth = shell.getSize().y;							
 		dlg.setSize(preferredWidth, preferredWidth);
 		dlg.setVisible(true);
-		VennDiagramView.closeMouseOverDialog();
+		VennDiagramView.closeMouseOverDialog();*/
 	}
 	
 	//SelectionClickedListener method	
