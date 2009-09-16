@@ -44,13 +44,15 @@ import org.mitre.schemastore.model.Schema;
  */
 public class SchemaTree extends JTree implements MappingListener, PreferencesListener, MouseListener, MouseMotionListener
 {	
-	/**
-	 * Prevents the root node from being expanded or collapsed
-	 */
+	/** Manages the schema tree UI */
 	class SchemaTreeUI extends MetalTreeUI
 	{
+		// Prevent the root node from being expanded or collapsed
 		protected void toggleExpandState(TreePath path)
 			{ if(!new TreePath(root.getPath()).equals(path)) super.toggleExpandState(path); }
+
+		// Prevent the schema tree from realigning itself
+		protected void ensureRowsAreVisible(int beginRow, int endRow) {}
 	}
 	
 	/**
