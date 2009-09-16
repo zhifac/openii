@@ -1,2 +1,0 @@
-export CLASSPATH=$CLASSPATH:../../../../../../../../lib/antlr.jar
-
