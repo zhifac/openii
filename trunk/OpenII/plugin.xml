@@ -39,6 +39,7 @@
       <editor name="M3 Model" extensions="mapping" icon="icons/Mapping.gif" class="org.mitre.openii.editors.mappings.M3MappingEditor" id="M3MappingEditor"></editor>
    	  <editor name="RMap" extensions="mapping" icon="icons/RMap.gif" class="org.mitre.openii.editors.mappings.RMapEditor" id="RMapEditor"></editor>
    	  <editor name="Affinity" extensions="group" icon="icons/Harmony.gif" class="org.mitre.openii.editors.groups.AffinityEditor" id="AffinityEditor"></editor>-->
+   	  <editor name="VennDiagram" extensions="group" icon="icons/Harmony.gif" class="org.mitre.openii.editors.groups.VennDiagramEditor" id="VennDiagramEditor"></editor>-->
    </extension>
 
    <!-- Declares the OpenII menu -->
