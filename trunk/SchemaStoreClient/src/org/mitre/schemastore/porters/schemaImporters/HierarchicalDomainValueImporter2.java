@@ -12,6 +12,15 @@ import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.Subtype;
 import org.mitre.schemastore.porters.ImporterException;
 
+/**
+ * Imports domain value listed in an excel spreadsheet with the following column sequence 
+ * [domain][domain value level][domain value][description] 
+ * 
+ * Domain value level indicates the hierarchical structure of the domain value.  
+ * This is custom made for Mark Bahre. 
+ * @author HAOLI
+ *
+ */
 public class HierarchicalDomainValueImporter2 extends DomainValueImporter {
 	protected HashMap<String, Subtype> _subtypes = new HashMap<String, Subtype>();
 

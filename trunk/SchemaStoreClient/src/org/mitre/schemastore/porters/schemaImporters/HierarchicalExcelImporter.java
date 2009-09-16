@@ -10,6 +10,12 @@ import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.Subtype;
 import org.mitre.schemastore.porters.ImporterException;
 
+/**
+ * Imports a schema listed in an excel spreadsheet with the following column sequence 
+ * [entity][attribute][description][parent entity]
+ * @author HAOLI
+ *
+ */
 public class HierarchicalExcelImporter extends ExcelImporter {
 
 	/** Generate the schema elements */

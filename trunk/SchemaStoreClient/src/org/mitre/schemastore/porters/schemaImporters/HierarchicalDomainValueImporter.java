@@ -12,6 +12,12 @@ import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.Subtype;
 import org.mitre.schemastore.porters.ImporterException;
 
+/**
+ * Imports domain value listed in an excel spreadsheet with the following column sequence 
+ * [domain][parent entity][domain value][description] 
+ * @author HAOLI
+ *
+ */
 public class HierarchicalDomainValueImporter extends DomainValueImporter {
 	protected HashMap<String, Subtype> _subtypes = new HashMap<String, Subtype>();
 	
