@@ -80,6 +80,8 @@ public class Database
 		if(word!=null)
 		{
 			word = word.replace("'","''");
+			if(connection.getDatabaseType()==DatabaseConnection.POSTGRES)
+				word = word.replace("\\","\\\\");
 			if(word.length()>length) word = word.substring(0,length);
 		}
 		return word;
