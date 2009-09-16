@@ -131,6 +131,10 @@ public class DatabaseConnection
 		throw new SQLException();
     }
 
+    /** Returns the database type */
+    Integer getDatabaseType()
+    	{ return databaseType; }
+    
 	/** Creates a sql statement */
 	Statement getStatement() throws SQLException
 	{
