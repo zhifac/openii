@@ -7,7 +7,6 @@ import java.util.HashSet;
 
 import javax.swing.JComponent;
 import javax.swing.JInternalFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
@@ -41,7 +40,6 @@ public class HarmonyFrame extends JInternalFrame implements PreferencesListener
 		switch (harmonyModel.getPreferences().getViewToDisplay())
 		{
 			case HarmonyConsts.MAPPING_VIEW: view = new MappingPane(this,harmonyModel); break;
-			case HarmonyConsts.TABLE_VIEW: view = new JLabel("Test"); break;
 			case HarmonyConsts.HEATMAP_VIEW: view = new HeatMapPane(this,harmonyModel); break;
 		}
 		return new TitledPane(null, view);
