@@ -200,6 +200,6 @@ public class ManagerAction extends Action
 		
 		/** Handles the auto-generation of a mapping's matches */
 		if(actionType == AUTO_GENERATE_MATCHES) 
-			AutoMappingDialog.match( shell, (Mapping)selection);
+			new AutoMappingDialog( shell, (Mapping)selection).open();
 	}
 }
