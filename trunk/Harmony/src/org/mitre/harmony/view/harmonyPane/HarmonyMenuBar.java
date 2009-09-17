@@ -215,7 +215,6 @@ public class HarmonyMenuBar extends JMenuBar
 	private class ViewMenu extends JMenu implements ActionListener
 	{
 		private JRadioButtonMenuItem mappingView;	// Option to view schema mapping
-		private JRadioButtonMenuItem tableView;		// Option to view schema table
 		private JRadioButtonMenuItem heatmapView;	// Option to view heat map
 		private JMenuItem showTypes;				// Option to show schema data types
 		
@@ -227,32 +226,27 @@ public class HarmonyMenuBar extends JMenuBar
 
 			// Initialize view drop-down items
 			mappingView = new JRadioButtonMenuItem("Mapping View",true);
-			tableView = new JRadioButtonMenuItem("Table View");
 			heatmapView = new JRadioButtonMenuItem("Heatmap View");
 			showTypes = new JCheckBoxMenuItem("Show Types");
 			
 			// Groups the radio buttons together
 			ButtonGroup group = new ButtonGroup();
 			group.add(mappingView);
-			group.add(tableView);
 			group.add(heatmapView);
 			
 			// Set the displayed view
 			switch(harmonyModel.getPreferences().getViewToDisplay())
 			{
-				case HarmonyConsts.TABLE_VIEW: tableView.setSelected(true);
 				case HarmonyConsts.HEATMAP_VIEW: heatmapView.setSelected(true);
 			}			
 			
 			// Attach action listeners to view drop-down items
 			mappingView.addActionListener(this);
-			tableView.addActionListener(this);
 			heatmapView.addActionListener(this);
 			showTypes.addActionListener(this);
 
 			// Add view drop-down items to view drop-down menu
 		    add(mappingView);
-		    add(tableView);
 		    add(heatmapView);
 		    addSeparator();
 		    add(showTypes);
@@ -267,7 +261,6 @@ public class HarmonyMenuBar extends JMenuBar
 	    	// Switch to the selected view
 	    	Object source = e.getSource();
 	    	if(source==mappingView) harmonyModel.getPreferences().setViewToDisplay(HarmonyConsts.MAPPING_VIEW);
-	    	if(source==tableView) harmonyModel.getPreferences().setViewToDisplay(HarmonyConsts.TABLE_VIEW);
 	    	if(source==heatmapView) harmonyModel.getPreferences().setViewToDisplay(HarmonyConsts.HEATMAP_VIEW);
 	    	
 	    	// Handles the "show types" preference option
