@@ -1,7 +1,6 @@
 package org.mitre.openii.views.manager.mappings.matchmaker;
 
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.Hashtable;
 
 
