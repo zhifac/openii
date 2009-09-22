@@ -367,10 +367,12 @@ public class SchemaExplorer {
 		} // End if		
 		
 		SchemaElement domain = null;
+		ArrayList <SchemaElement> domainShared = null;
 		String cls = null;
 		if(e != null) {
 			System.out.println("ELEMENT TYPE: " + e.getClass().getSimpleName());
 			domain = hsi.getDomainForElement(e.getId());
+			if(domain != null) domainShared = hsi.getElementsForDomain(domain.getId());
 			cls = e.getClass().getSimpleName();
 		} // End if
 		
@@ -389,9 +391,28 @@ public class SchemaExplorer {
 	    		  (cls == null ? "" : " (" + cls + ")") + 
 	    		  "</h1>");
 	    if(!"".equals(bpath.toString())) out.write("<p><b>Path</b>: " + bpath.toString()); 
-	    out.write("<p><b>Description</b>: " + descr);
-	    if(domain != null) 
-	    	out.write("<p><b>Domain</b>: " + domain.getName());	    
+	    out.write("<p><b>Documentation</b>: " + 
+	    		  ("".equals(descr) ? "No documentation available." : descr));
+	    if(domain != null) {
+	    	out.write("<p><b>Domain</b>: " + domain.getName());
+	    	
+	    	if(domainShared != null && domainShared.size() > 1) { 
+		    	StringBuffer tbuf = new StringBuffer("");
+		    	tbuf.append("&nbsp;/&nbsp;Other elements with this domain: ");
+		    	for(int x=0; x<domainShared.size(); x++) {		    		
+		    		SchemaElement dse = domainShared.get(x);
+		    		if(dse.getId().equals(e.getId())) continue; 
+		    		tbuf.append(linkThing(dse.getId(), dse.getName()));
+		    		if(x < (domainShared.size()-1)) tbuf.append(", "); 
+		    		if(x > 8 && x<(domainShared.size()-1)) { 
+		    			tbuf.append("(" + (domainShared.size()-8) + " others...)"); 
+		    			break; 
+		    		} // End if 		    		
+		    	} // End if
+		    	
+		    	out.write(tbuf.toString()); 
+	    	} // End if
+	    } // End if
 		    		      
 	    if(e != null && schema != null) out.write("<p><b>Parent model</b>: " + 
 	    		                                  linkThing(schema.getId(), schema.getName()));
