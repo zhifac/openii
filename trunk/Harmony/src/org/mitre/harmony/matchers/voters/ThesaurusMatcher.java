@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Arrays;
 
+import org.mitre.harmony.matchers.TypeMappings;
 import org.mitre.harmony.matchers.VoterScore;
 import org.mitre.harmony.matchers.VoterScores;
 import org.mitre.schemastore.model.SchemaElement;
@@ -24,7 +25,7 @@ public class ThesaurusMatcher extends BagMatcher
 		{ return "Documentation + Synonyms"; }
 
 	/** Generates match scores for the specified elements */
-	public VoterScores match(FilteredSchemaInfo schemaInfo1, FilteredSchemaInfo schemaInfo2)
+	public VoterScores match(FilteredSchemaInfo schemaInfo1, FilteredSchemaInfo schemaInfo2, TypeMappings typeMappings)
 	{		
 		// Create word bags for the source elements
 		ArrayList<SchemaElement> sourceElements = schemaInfo1.getFilteredElements();
@@ -55,17 +56,18 @@ public class ThesaurusMatcher extends BagMatcher
 		VoterScores voterScores = new VoterScores(SCORE_CEILING);
 		for(SchemaElement sourceElement : sourceElements)
 			for(SchemaElement targetElement : targetElements)
-			{
-				if(voterScores.getScore(sourceElement.getId(), targetElement.getId())==null)
+				if(typeMappings.isMapped(sourceElement, targetElement))
 				{
-					WordBag sourceBag = wordBags.get(sourceElement.getId());
-					WordBag targetBag = wordBags.get(targetElement.getId());
-					VoterScore score = computeScore(sourceBag, targetBag);
-					if(score != null)
-						voterScores.setScore(sourceElement.getId(), targetElement.getId(), score);
+					if(voterScores.getScore(sourceElement.getId(), targetElement.getId())==null)
+					{
+						WordBag sourceBag = wordBags.get(sourceElement.getId());
+						WordBag targetBag = wordBags.get(targetElement.getId());
+						VoterScore score = computeScore(sourceBag, targetBag);
+						if(score != null)
+							voterScores.setScore(sourceElement.getId(), targetElement.getId(), score);
+					}
+					completedComparisons++;
 				}
-				completedComparisons++;
-			}
 		return voterScores;
 	}
 	

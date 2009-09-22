@@ -5,6 +5,7 @@ package org.mitre.harmony.matchers.voters;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.mitre.harmony.matchers.TypeMappings;
 import org.mitre.harmony.matchers.VoterScore;
 import org.mitre.harmony.matchers.VoterScores;
 import org.mitre.schemastore.model.SchemaElement;
@@ -21,7 +22,7 @@ public class BagMatcher extends MatchVoter
 		{ return "Documentation Similarity"; }
 	
 	/** Generates scores for the specified elements */
-	public VoterScores match(FilteredSchemaInfo schemaInfo1, FilteredSchemaInfo schemaInfo2)
+	public VoterScores match(FilteredSchemaInfo schemaInfo1, FilteredSchemaInfo schemaInfo2, TypeMappings typeMappings)
 	{
 		HashMap<Integer,WordBag> wordBags = new HashMap<Integer,WordBag>();
 
@@ -43,17 +44,18 @@ public class BagMatcher extends MatchVoter
 		VoterScores scores = new VoterScores(SCORE_CEILING);
 		for(SchemaElement sourceElement : sourceElements)
 			for(SchemaElement targetElement : targetElements)
-			{
-				if(scores.getScore(sourceElement.getId(), targetElement.getId())==null)
+				if(typeMappings.isMapped(sourceElement, targetElement))
 				{
-					WordBag sourceBag = wordBags.get(sourceElement.getId());
-					WordBag targetBag = wordBags.get(targetElement.getId());
-					VoterScore score = computeScore(sourceBag, targetBag);
-					if(score != null)
-						scores.setScore(sourceElement.getId(), targetElement.getId(), score);
+					if(scores.getScore(sourceElement.getId(), targetElement.getId())==null)
+					{
+						WordBag sourceBag = wordBags.get(sourceElement.getId());
+						WordBag targetBag = wordBags.get(targetElement.getId());
+						VoterScore score = computeScore(sourceBag, targetBag);
+						if(score != null)
+							scores.setScore(sourceElement.getId(), targetElement.getId(), score);
+					}
+					completedComparisons++;
 				}
-				completedComparisons++;
-			}
 		return scores;
 	}
 

@@ -14,8 +14,8 @@ import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
+import org.mitre.harmony.matchers.TypeMappings;
 import org.mitre.harmony.matchers.mergers.MatchMerger;
-import org.mitre.harmony.matchers.mergers.MatchMerger.TypeMappings;
 import org.mitre.harmony.matchers.voters.MatchVoter;
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.view.dialogs.matcher.wizard.WizardPanel;

@@ -12,7 +12,6 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
 import java.util.HashSet;
 
 import javax.swing.BoxLayout;
@@ -25,7 +24,7 @@ import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
-import org.mitre.harmony.matchers.mergers.MatchMerger.TypeMappings;
+import org.mitre.harmony.matchers.TypeMappings;
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.view.dialogs.matcher.wizard.WizardPanel;
 import org.mitre.schemastore.model.MappingSchema;
@@ -249,11 +248,7 @@ public class TypePane extends WizardPanel implements ActionListener
 		{
 			TypeCheckBox checkbox = (TypeCheckBox)component;
 			if(checkbox.isSelected())
-			{
-				ArrayList<Class<SchemaElement>> typeMapping = typeMappings.get(checkbox.sourceType);
-				if(typeMapping==null) typeMappings.put(checkbox.sourceType, typeMapping = new ArrayList<Class<SchemaElement>>());
-				typeMapping.add(checkbox.targetType);
-			}
+				typeMappings.addMapping(checkbox.sourceType, checkbox.targetType);
 		}
 		return typeMappings;
 	}

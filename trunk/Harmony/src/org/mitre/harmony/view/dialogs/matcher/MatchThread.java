@@ -7,8 +7,8 @@ import java.util.Date;
 import org.mitre.harmony.matchers.MatchScore;
 import org.mitre.harmony.matchers.MatchScores;
 import org.mitre.harmony.matchers.MatcherManager;
+import org.mitre.harmony.matchers.TypeMappings;
 import org.mitre.harmony.matchers.mergers.MatchMerger;
-import org.mitre.harmony.matchers.mergers.MatchMerger.TypeMappings;
 import org.mitre.harmony.matchers.voters.MatchVoter;
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.filters.FilterManager;
@@ -169,7 +169,7 @@ public class MatchThread extends Thread
 		for(MatchVoter voter : voters)
 		{
 			progressThread.setCurrentVoter(voter);
-			merger.addVoterScores(voter.match(leftSchemaInfo, rightSchemaInfo));
+			merger.addVoterScores(voter.match(leftSchemaInfo, rightSchemaInfo, typeMappings));
 		}
 		MatchScores matchScores =  merger.getMatchScores();
 		
@@ -226,8 +226,8 @@ public class MatchThread extends Thread
 				progressThread.setCurrentSchemaPair(leftName,rightName);
 				
 				// Run the matcher of the current pair of schemas
-				try { runMatch(leftSchemaInfo,rightSchemaInfo, matcherName, progressThread); }
-				catch (Exception e) { System.out.println("(E) MatcherDialog.run - " + e.getMessage()); }
+				try { runMatch(leftSchemaInfo,rightSchemaInfo,matcherName,progressThread); }
+				catch (Exception e) { System.out.println("(E) MatchThread.run - " + e.getMessage()); }
 			}
 		
 		// Stops the progress thread

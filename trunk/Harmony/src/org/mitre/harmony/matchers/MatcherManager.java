@@ -5,7 +5,6 @@ package org.mitre.harmony.matchers;
 import java.util.ArrayList;
 
 import org.mitre.harmony.matchers.mergers.MatchMerger;
-import org.mitre.harmony.matchers.mergers.MatchMerger.TypeMappings;
 import org.mitre.harmony.matchers.voters.MatchVoter;
 import org.mitre.harmony.model.ToolManager;
 import org.mitre.schemastore.model.schemaInfo.FilteredSchemaInfo;
@@ -55,7 +54,7 @@ public class MatcherManager
 	{
 		merger.initialize(schemaInfo1, schemaInfo2, typeMappings);
 		for(MatchVoter voter : voters)
-			merger.addVoterScores(voter.match(schemaInfo1, schemaInfo2));
+			merger.addVoterScores(voter.match(schemaInfo1, schemaInfo2, typeMappings));
 		return merger.getMatchScores();
 	}
 }

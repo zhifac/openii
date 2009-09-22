@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.StringTokenizer;
 
+import org.mitre.harmony.matchers.TypeMappings;
 import org.mitre.harmony.matchers.VoterScore;
 import org.mitre.harmony.matchers.VoterScores;
 import org.mitre.schemastore.model.SchemaElement;
@@ -27,7 +28,7 @@ public class WordNetMatcher extends BagMatcher
 		{ return "WordNet Thesaurus"; }
 	
 	/** Generates scores for the specified elements */
-	public VoterScores match(FilteredSchemaInfo schemaInfo1, FilteredSchemaInfo schemaInfo2)
+	public VoterScores match(FilteredSchemaInfo schemaInfo1, FilteredSchemaInfo schemaInfo2, TypeMappings typeMappings)
 	{		
 		// Create word bags for the source and target elements
 		ArrayList<SchemaElement> sourceElements = schemaInfo1.getFilteredElements();
@@ -41,11 +42,12 @@ public class WordNetMatcher extends BagMatcher
 		VoterScores scores = new VoterScores(SCORE_CEILING);
 		for(SchemaElement sourceElement : sourceElements)
 			for(SchemaElement targetElement : targetElements)
-				if(scores.getScore(sourceElement.getId(), targetElement.getId())==null)
-				{
-					VoterScore score = findVoterScore(sourceElement,targetElement,thesaurus);
-					if(score != null) scores.setScore(sourceElement.getId(), targetElement.getId(), score);
-				}
+				if(typeMappings.isMapped(sourceElement, targetElement))
+					if(scores.getScore(sourceElement.getId(), targetElement.getId())==null)
+					{
+						VoterScore score = findVoterScore(sourceElement,targetElement,thesaurus);
+						if(score != null) scores.setScore(sourceElement.getId(), targetElement.getId(), score);
+					}
 		return scores;
 	}
 	
