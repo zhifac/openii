@@ -30,7 +30,7 @@
    </extension>
 
    <!-- Declares the OpenII editors -->
-   <extension point="org.eclipse.ui.editors">
+   <extension point="org.eclipse.ui.editors">      
       <editor name="AboutOpenII" icon="icons/About.gif" class="org.mitre.openii.editors.help.AboutOpenIIEditor" id="AboutOpenIIEditor"></editor>
       <editor name="Schema" extensions="schema" icon="icons/Schema.gif" class="org.mitre.openii.editors.schemas.SchemaEditor" id="SchemaViewEditor"></editor>
       <editor name="Extension Graph" extensions="schema" icon="icons/Extensions.gif" class="org.mitre.openii.editors.schemas.ExtensionGraphEditor" id="ExtensionGraphEditor"></editor>
@@ -40,6 +40,7 @@
    	  <editor name="RMap" extensions="mapping" icon="icons/RMap.gif" class="org.mitre.openii.editors.mappings.RMapEditor" id="RMapEditor"></editor>
    	  <editor name="Affinity" extensions="group" icon="icons/Harmony.gif" class="org.mitre.openii.editors.groups.AffinityEditor" id="AffinityEditor"></editor>-->
    	  <editor name="VennDiagram" extensions="group" icon="icons/Harmony.gif" class="org.mitre.openii.editors.groups.VennDiagramEditor" id="VennDiagramEditor"></editor>-->
+   	  <editor name="Explorer" extensions="schema" icon="icons/Schema.gif" class="org.mitre.openii.editors.schemas.ExplorerView" id="ExplorerView"></editor>
    </extension>
 
    <!-- Declares the OpenII menu -->
