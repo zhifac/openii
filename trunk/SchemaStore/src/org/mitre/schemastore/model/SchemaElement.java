@@ -42,6 +42,11 @@ public class SchemaElement implements Serializable
 	public Integer getId() { return id; }
 	public String getName() { return name==null ? "" : name; }
 	public String getDescription() { return description==null ? "" : description; }
+	
+	/**
+	 * Get the identifier of the base schema used to define this schema element.
+	 * @return a schema identifier.
+	 */
 	public Integer getBase() { return base; }
 	
 	// Handles all schema element setters
