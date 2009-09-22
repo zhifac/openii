@@ -59,7 +59,9 @@ public class HierarchicalSchemaInfo extends SchemaInfo
 			{ System.out.println("(E)HierarchicalSchemaInfo - schemamodels.xml has failed to load!\n"+e.getMessage()); }
 	}
 
-	/** Constructs the hierarchical schema with the specified model */
+	/** Constructs the hierarchical schema with the specified model.
+	 * The SchemaModel argument may be null. If it is, the code will choose the best available SchemaModel. 
+	 */
 	public HierarchicalSchemaInfo(SchemaInfo schemaInfo, SchemaModel model)
 		{ super(schemaInfo); setModel(model); }
 
