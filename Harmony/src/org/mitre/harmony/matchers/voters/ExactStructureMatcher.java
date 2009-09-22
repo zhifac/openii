@@ -5,6 +5,7 @@ package org.mitre.harmony.matchers.voters;
 import java.util.ArrayList;
 import java.util.HashSet;
 
+import org.mitre.harmony.matchers.TypeMappings;
 import org.mitre.harmony.matchers.VoterScore;
 import org.mitre.harmony.matchers.VoterScores;
 import org.mitre.schemastore.model.SchemaElement;
@@ -18,7 +19,7 @@ public class ExactStructureMatcher extends MatchVoter
 		{ return "Exact Structure"; }
 	
 	/** Generates scores for the specified elements */
-	public VoterScores match(FilteredSchemaInfo schemaInfo1, FilteredSchemaInfo schemaInfo2)
+	public VoterScores match(FilteredSchemaInfo schemaInfo1, FilteredSchemaInfo schemaInfo2, TypeMappings typeMappings)
 	{
 		// Get the source elements
 		ArrayList<SchemaElement> sourceElements = schemaInfo1.getFilteredElements();

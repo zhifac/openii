@@ -2,6 +2,7 @@
 // ALL RIGHTS RESERVED
 package org.mitre.harmony.matchers.voters;
 
+import org.mitre.harmony.matchers.TypeMappings;
 import org.mitre.harmony.matchers.VoterScores;
 import org.mitre.schemastore.model.schemaInfo.FilteredSchemaInfo;
 
@@ -15,7 +16,7 @@ public abstract class MatchVoter
 	abstract public String getName();
 	
 	/** Generates scores for the specified graphs */
-	abstract public VoterScores match(FilteredSchemaInfo schemaInfo1, FilteredSchemaInfo schemaInfo2);
+	abstract public VoterScores match(FilteredSchemaInfo schemaInfo1, FilteredSchemaInfo schemaInfo2, TypeMappings typeMappings);
 	
 	/** Indicates the completion percentage of the matcher */
 	public double getPercentComplete()

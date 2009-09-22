@@ -2,11 +2,9 @@
 // ALL RIGHTS RESERVED
 package org.mitre.harmony.matchers.mergers;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-
 import org.mitre.harmony.matchers.ElementPair;
 import org.mitre.harmony.matchers.MatchScores;
+import org.mitre.harmony.matchers.TypeMappings;
 import org.mitre.harmony.matchers.VoterScores;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.schemaInfo.FilteredSchemaInfo;
@@ -14,9 +12,6 @@ import org.mitre.schemastore.model.schemaInfo.FilteredSchemaInfo;
 /** Matcher Interface - A match merger merged together the results of multiple match voters */
 public abstract class MatchMerger
 {
-	/** Class defining the type mappings */
-	static public class TypeMappings extends HashMap<Class<SchemaElement>,ArrayList<Class<SchemaElement>>>{};
-	
 	// Stores the match merger schema information
 	protected FilteredSchemaInfo schema1, schema2;
 
@@ -47,8 +42,7 @@ public abstract class MatchMerger
 			SchemaElement sourceElement = schema1.getElement(elementPair.getSourceElement());
 			SchemaElement targetElement = schema2.getElement(elementPair.getTargetElement());
 
-			ArrayList<Class<SchemaElement>> typeMapping = typeMappings.get(sourceElement.getClass());
-			if(!typeMapping.contains(targetElement.getClass())) continue;
+			if(!typeMappings.isMapped(sourceElement,targetElement)) continue;
 			filteredScores.setScore(sourceElement.getId(), targetElement.getId(), scores.getScore(elementPair));
 		}
 		addVoterScoresToMerger(filteredScores);
