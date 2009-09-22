@@ -193,13 +193,13 @@ public class TypePane extends WizardPanel implements ActionListener
 			/** Provides a type rank for the specified class */
 			private Integer getTypeRank(Class class1)
 			{
-				if(class1.equals(Entity.class)) return 6;
-				if(class1.equals(Attribute.class)) return 5;
-				if(class1.equals(Domain.class)) return 4;
-				if(class1.equals(DomainValue.class)) return 3;
-				if(class1.equals(Containment.class)) return 2;
-				if(class1.equals(Relationship.class)) return 1;
-				return 0;
+				if(class1.equals(Entity.class)) return 1;
+				if(class1.equals(Attribute.class)) return 2;
+				if(class1.equals(Domain.class)) return 3;
+				if(class1.equals(DomainValue.class)) return 4;
+				if(class1.equals(Containment.class)) return 5;
+				if(class1.equals(Relationship.class)) return 6;
+				return 7;
 			}
 			
 			/** Returns a comparison value between two classes */
