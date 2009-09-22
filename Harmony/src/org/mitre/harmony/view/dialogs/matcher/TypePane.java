@@ -12,6 +12,9 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 
 import javax.swing.BoxLayout;
@@ -27,7 +30,13 @@ import javax.swing.border.LineBorder;
 import org.mitre.harmony.matchers.TypeMappings;
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.view.dialogs.matcher.wizard.WizardPanel;
+import org.mitre.schemastore.model.Attribute;
+import org.mitre.schemastore.model.Containment;
+import org.mitre.schemastore.model.Domain;
+import org.mitre.schemastore.model.DomainValue;
+import org.mitre.schemastore.model.Entity;
 import org.mitre.schemastore.model.MappingSchema;
+import org.mitre.schemastore.model.Relationship;
 import org.mitre.schemastore.model.SchemaElement;
 
 /** Constructs the type pane for the matcher wizard */
@@ -35,10 +44,6 @@ public class TypePane extends WizardPanel implements ActionListener
 {
 	// Defines the identifier for the match voter pane
 	static public final String IDENTIFIER = "TYPE_PANEL";
-	
-	// Stores the list of source and target types
-	private HashSet<Class> sourceTypes = new HashSet<Class>();
-	private HashSet<Class> targetTypes = new HashSet<Class>();
 	
 	/** Stores the type configuration pane */
 	private TypeConfigPane typeConfigPane = null;
@@ -179,15 +184,47 @@ public class TypePane extends WizardPanel implements ActionListener
 		return c;
 	}
     
+	/** Retrieve the types for the specified side */
+	private ArrayList<Class> getTypes(HarmonyModel harmonyModel, Integer side)
+	{
+		/** Class for defining the proper order for schema element types */
+		class TypeComparator implements Comparator<Class>
+		{
+			/** Provides a type rank for the specified class */
+			private Integer getTypeRank(Class class1)
+			{
+				if(class1.equals(Entity.class)) return 6;
+				if(class1.equals(Attribute.class)) return 5;
+				if(class1.equals(Domain.class)) return 4;
+				if(class1.equals(DomainValue.class)) return 3;
+				if(class1.equals(Containment.class)) return 2;
+				if(class1.equals(Relationship.class)) return 1;
+				return 0;
+			}
+			
+			/** Returns a comparison value between two classes */
+			public int compare(Class class1, Class class2)
+				{ return getTypeRank(class1).compareTo(getTypeRank(class2)); }
+		}
+
+		// Identify the types on the specified side
+		HashSet<Class> types = new HashSet<Class>();
+		for(SchemaElement element : harmonyModel.getMappingManager().getSchemaElements(side))
+			types.add(element.getClass());
+
+		// Return a sorted list of the types
+		ArrayList<Class> sortedTypes = new ArrayList<Class>(types);
+		Collections.sort(sortedTypes, new TypeComparator());
+		return sortedTypes;
+	}
+	
 	/** Generates the type grid pane */
 	private JPanel getTypeGridPane(HarmonyModel harmonyModel)
 	{
-		// Determine the source and target types to be displayed
-		for(SchemaElement sourceElement : harmonyModel.getMappingManager().getSchemaElements(MappingSchema.LEFT))
-			sourceTypes.add(sourceElement.getClass());
-		for(SchemaElement targetElement : harmonyModel.getMappingManager().getSchemaElements(MappingSchema.RIGHT))
-			targetTypes.add(targetElement.getClass());
-				
+		// Retrieve the source and target types
+		ArrayList<Class> sourceTypes = getTypes(harmonyModel, MappingSchema.LEFT);
+		ArrayList<Class> targetTypes = getTypes(harmonyModel, MappingSchema.RIGHT);
+		
 		// Generate the source labels
 		JPanel sourceLabels = new JPanel();
 		sourceLabels.setLayout(new GridLayout(sourceTypes.size(),1));
