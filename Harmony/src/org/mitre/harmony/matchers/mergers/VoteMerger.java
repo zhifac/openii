@@ -8,17 +8,13 @@ import org.mitre.harmony.matchers.ElementPair;
 import org.mitre.harmony.matchers.MatchScores;
 import org.mitre.harmony.matchers.VoterScore;
 import org.mitre.harmony.matchers.VoterScores;
-import org.mitre.schemastore.model.schemaInfo.FilteredSchemaInfo;
 
 /**
  * The basic vote merger for merging together match voters
  * @author CWOLF
  */
-public class VoteMerger implements MatchMerger
+public class VoteMerger extends MatchMerger
 {
-	/** Constant used in calculating the merged score */
-	static final double J = 2;
-	
 	/** Stores the current summation of voter scores */
 	private HashMap<ElementPair,VoterScore> summedScores = new HashMap<ElementPair,VoterScore>();
 	
@@ -27,11 +23,11 @@ public class VoteMerger implements MatchMerger
 		{ return "Vote Merger"; }
 
 	/** Initializes the vote merger */
-	public void initialize(FilteredSchemaInfo schemaInfo1, FilteredSchemaInfo targetSchema)
+	protected void initialize()
 		{ summedScores.clear(); }
 	
 	/** Adds a new set of voter scores to the vote merger */
-	public void addVoterScores(VoterScores voterScores)
+	protected void addVoterScoresToMerger(VoterScores voterScores)
 	{
 		// Retrieve the score ceiling
 		Double scoreCeiling = voterScores.getScoreCeiling();
@@ -75,8 +71,8 @@ public class VoteMerger implements MatchMerger
 
 			// Calculate the match score
 			double evidenceRatio = positiveEvidence / totalEvidence;
-			double weightedEvidenceRatio = Math.pow(evidenceRatio, (1 / J)) * (Math.E - 1) + 1;
-			double scaledPositiveEvidence = positiveEvidence / J;
+			double weightedEvidenceRatio = Math.pow(evidenceRatio, (1 / 2)) * (Math.E - 1) + 1;
+			double scaledPositiveEvidence = positiveEvidence / 2;
 			double evidenceFactor = Math.pow((1 + scaledPositiveEvidence), (1 / scaledPositiveEvidence));
 			double matchScore = Math.log(weightedEvidenceRatio / evidenceFactor);
 			
