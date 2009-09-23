@@ -61,7 +61,7 @@ public class SchemaStoreManager
 
 	/** Retrieves the schema elements for the specified schema and type from the web service */
 	static HierarchicalSchemaInfo getSchemaInfo(Integer schemaID) throws RemoteException
-		{ return new HierarchicalSchemaInfo(client.getSchemaInfo(schemaID),null); }
+		{ return new HierarchicalSchemaInfo(client.getSchemaInfo(schemaID)); }
 
 	/** Retrieves the specified schema element from the web service */
 	static SchemaElement getSchemaElement(Integer schemaElementID) throws RemoteException
