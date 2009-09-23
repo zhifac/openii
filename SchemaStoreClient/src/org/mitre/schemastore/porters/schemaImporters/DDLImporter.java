@@ -2,24 +2,18 @@
 
 package org.mitre.schemastore.porters.schemaImporters;
 
+import java.io.File;
+import java.net.URI;
+import java.util.ArrayList;
+
 import org.antlr.runtime.ANTLRFileStream;
 import org.antlr.runtime.CommonTokenStream;
-
-import java.util.*;
-
-import antlr.*;
-import java.io.*;
-import java.net.URI;
-import org.mitre.schemastore.model.SchemaElement;
-import org.mitre.schemastore.porters.ImporterException;
-import org.mitre.schemastore.porters.schemaImporters.ddl.DdlFilteredReader;
-import org.mitre.schemastore.porters.schemaImporters.ddl.SqlLexer;
-import org.mitre.schemastore.porters.schemaImporters.ddl.SqlParser;
-// import org.mitre.schemastore.porters.schemaImporters.ddl.SqlSQL2Lexer;
-// import org.mitre.schemastore.porters.schemaImporters.ddl.SqlSQL2Parser;
 import org.mitre.schemastore.client.Repository;
 import org.mitre.schemastore.client.SchemaStoreClient;
-import org.antlr.runtime.ANTLRReaderStream;
+import org.mitre.schemastore.model.SchemaElement;
+import org.mitre.schemastore.porters.ImporterException;
+import org.mitre.schemastore.porters.schemaImporters.ddl.SqlLexer;
+import org.mitre.schemastore.porters.schemaImporters.ddl.SqlParser;
 
 
 /**
