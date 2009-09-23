@@ -2,7 +2,6 @@ package org.mitre.schemastore.porters.mappingExporters.xmi;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Hashtable;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
