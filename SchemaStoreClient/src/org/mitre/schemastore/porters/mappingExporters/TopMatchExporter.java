@@ -52,7 +52,7 @@ public class TopMatchExporter extends MappingExporter
 		// Initialize the schemas and schema element lists
 		elements = getSchemaElements(Arrays.asList(mapping.getSchemaIDs()));
 		for(MappingSchema schema : mapping.getSchemas())
-			schemaInfoList.add(new HierarchicalSchemaInfo(client.getSchemaInfo(schema.getId()),null));
+			schemaInfoList.add(new HierarchicalSchemaInfo(client.getSchemaInfo(schema.getId())));
 			
 		// Get the list of mapping cells
 		CompressedList matchList = new CompressedList();
