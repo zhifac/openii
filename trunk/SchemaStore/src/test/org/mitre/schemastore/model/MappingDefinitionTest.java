@@ -16,15 +16,19 @@
 
 package test.org.mitre.schemastore.model;
 
-import java.util.*;
-import org.junit.*;
-import org.mitre.schemastore.model.*;
-import test.org.mitre.schemastore.model.mapfunctions.TestFixtures;
-import org.mitre.schemastore.model.mapfunctions.*;
-import org.mitre.schemastore.model.mappingInfo.MappingInfo;
-import org.mitre.schemastore.model.schemaInfo.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
 
-import static org.junit.Assert.*;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.mitre.schemastore.model.Mapping;
+import org.mitre.schemastore.model.MappingCell;
+import org.mitre.schemastore.model.mappingInfo.MappingInfo;
+
+import test.org.mitre.schemastore.model.mapfunctions.TestFixtures;
 
 public class MappingDefinitionTest
 {
@@ -39,7 +43,7 @@ public class MappingDefinitionTest
     @Before
     public void setUp() {
         factory = new TestFixtures();
-        Mapping map = new Mapping(57, "name", "description", "author",factory.getMappingSchemas() );
+        map = new Mapping(57, "name", "description", "author",factory.getMappingSchemas() );
         list = new ArrayList<MappingCell>();
     }
 

@@ -16,15 +16,15 @@
 
 package test.org.mitre.schemastore.model;
 
-import java.util.Arrays;
-import java.util.Date;
-import org.junit.*;
-import org.mitre.schemastore.model.*;
-import test.org.mitre.schemastore.model.mapfunctions.TestFixtures;
-import org.mitre.schemastore.model.mapfunctions.*;
-import org.mitre.schemastore.model.schemaInfo.*;
+import static org.junit.Assert.assertEquals;
 
-import static org.junit.Assert.*;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.mitre.schemastore.model.Mapping;
+import org.mitre.schemastore.model.MappingSchema;
+
+import test.org.mitre.schemastore.model.mapfunctions.TestFixtures;
 
 public class MappingTest
 {
