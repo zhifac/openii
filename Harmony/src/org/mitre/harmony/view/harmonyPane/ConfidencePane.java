@@ -113,10 +113,10 @@ public class ConfidencePane extends JPanel implements SelectedInfoListener
 				
 				// Paint the color ranges
 				Graphics2D g2d = (Graphics2D)g;
-				g2d.setPaint(new GradientPaint(10,max,Color.green,10,pt1,Color.yellow));
-				g2d.fillRect(10,max,4,pt1-max+1);
-				g2d.setPaint(new GradientPaint(10,pt1,Color.yellow,10,min,Color.red));
-				g2d.fillRect(10,pt1,4,min-pt1);
+				g2d.setPaint(new GradientPaint(15,max,Color.green,15,pt1,Color.yellow));
+				g2d.fillRect(15,max,4,pt1-max+1);
+				g2d.setPaint(new GradientPaint(15,pt1,Color.yellow,15,min,Color.red));
+				g2d.fillRect(15,pt1,4,min-pt1);
 				
 				// Reset graphic clip shape with original
 				g.setClip(origShape);

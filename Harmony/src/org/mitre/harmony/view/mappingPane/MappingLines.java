@@ -18,6 +18,7 @@ import java.util.Enumeration;
 import javax.swing.JViewport;
 
 import org.mitre.harmony.model.HarmonyModel;
+import org.mitre.harmony.model.filters.FilterManager;
 import org.mitre.harmony.model.filters.FiltersListener;
 import org.mitre.harmony.model.mapping.MappingCellListener;
 import org.mitre.harmony.model.selectedInfo.SelectedInfoListener;
@@ -179,8 +180,11 @@ public class MappingLines implements MappingCellListener, FiltersListener, Schem
 		{ fireLinesModified(); }	
 	
 	/** Updates mapping cell lines when assertion filters changed */
-	public void assertionsChanged()
-		{ updateHidden(); }
+	public void filterChanged(Integer filter)
+	{
+		if(filter.equals(FilterManager.HIERARCHY_FILTER)) updateLines();
+		else updateHidden();
+	}
 	
 	/** Updates mapping cell lines when confidence filters changed */
 	public void confidenceChanged()

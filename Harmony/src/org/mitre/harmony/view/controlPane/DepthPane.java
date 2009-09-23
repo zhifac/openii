@@ -251,7 +251,7 @@ public class DepthPane extends JPanel
 		
 		/** Unused event listeners */
 		public void schemaDisplayModified(SchemaTree tree) {}
-		public void assertionsChanged() {}
+		public void filterChanged(Integer filter) {}
 		public void confidenceChanged() {}
 		public void maxConfidenceChanged(Integer schemaObjectID) {}
 		public void componentHidden(ComponentEvent arg0) {}

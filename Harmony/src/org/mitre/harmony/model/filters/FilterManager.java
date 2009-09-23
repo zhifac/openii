@@ -20,13 +20,14 @@ import org.mitre.schemastore.model.MappingSchema;
  */
 public class FilterManager extends AbstractManager<FiltersListener> implements MappingListener
 {	
-	// Constants for referencing the assertion array
-	static final public int USER = 0;
-	static final public int SYSTEM = 1;
-	static final public int BEST = 2;
+	// Constants for referencing the available filters
+	static final public int USER_FILTER = 0;
+	static final public int SYSTEM_FILTER = 1;
+	static final public int HIERARCHY_FILTER = 2;
+	static final public int BEST_FILTER = 3;
 	
-	// Stores all assertion filter settings
-	private boolean assertions[];
+	// Stores the various filter settings
+	private boolean filters[];
 	
 	// Stores all confidence filter settings
 	private double minConfThreshold;
@@ -51,7 +52,8 @@ public class FilterManager extends AbstractManager<FiltersListener> implements M
 		super(harmonyModel);
 		
 		// Initialize the various filter settings
-		assertions = new boolean[3]; assertions[USER]=true; assertions[SYSTEM]=true; assertions[BEST]=false;
+		filters = new boolean[4];
+		filters[USER_FILTER]=true; filters[SYSTEM_FILTER]=true; filters[HIERARCHY_FILTER]=false; filters[BEST_FILTER]=false;
 		minConfThreshold = MappingCellManager.MIN_CONFIDENCE;
 		maxConfThreshold = MappingCellManager.MAX_CONFIDENCE;
 		leftFoci = new ArrayList<Focus>();
@@ -60,21 +62,25 @@ public class FilterManager extends AbstractManager<FiltersListener> implements M
 		maxLeftDepth = maxRightDepth = Integer.MAX_VALUE;
 	}
 	
-	//--------------------
-	// Handles assertions
-	//--------------------
+	//-----------------------------
+	// Handles changes to a filter 
+	//-----------------------------
 	
-	/** Sets the assertion values */
-	public void setAssertions(boolean[] newAssertions)
+	/** Sets the filter value */
+	public void setFilter(Integer filter, boolean value)
 	{
-		assertions = newAssertions;
-		if(assertions[BEST]) { if(elementConfidences==null) elementConfidences = new ElementConfHashTable(getModel()); }
-		else { if(elementConfidences!=null) elementConfidences=null; }
-		for(FiltersListener listener : getListeners()) listener.assertionsChanged();
+		// Only set filter if value has changed
+		if(filters[filter]!=value)
+		{
+			filters[filter]=value;
+			if(filter.equals(BEST_FILTER))
+				elementConfidences = value ? new ElementConfHashTable(getModel()) : null;
+			for(FiltersListener listener : getListeners()) listener.filterChanged(filter);
+		}
 	}
 	
-	/** Returns the current assertions */
-	public boolean[] getAssertions() { return assertions; }
+	/** Returns the current filter value */
+	public boolean getFilter(Integer filter) { return filters[filter]; }
 
 	//--------------------
 	// Handles confidence
@@ -254,7 +260,7 @@ public class FilterManager extends AbstractManager<FiltersListener> implements M
 		if(confidence < minConfThreshold || confidence > maxConfThreshold) return false;
 		
 		// If BEST is asserted, check to ensure that link is best link for either left or right
-		if(getAssertions()[BEST])
+		if(getFilter(BEST_FILTER))
 		{
 			boolean element1Best = confidence == elementConfidences.get(element1);
 			boolean element2Best = confidence == elementConfidences.get(element2);
@@ -263,8 +269,8 @@ public class FilterManager extends AbstractManager<FiltersListener> implements M
 
 		// Check that link matches current filters for USER and SYSTEM links		
 		boolean validated = mappingCell.getValidated();
-		if(validated && !getAssertions()[USER]) return false;
-		if(!validated && !getAssertions()[SYSTEM]) return false;
+		if(validated && !getFilter(USER_FILTER)) return false;
+		if(!validated && !getFilter(SYSTEM_FILTER)) return false;
 
 		// Indicates that the mapping cell is visible
 		return true;

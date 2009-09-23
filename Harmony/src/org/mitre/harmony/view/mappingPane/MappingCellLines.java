@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.mitre.harmony.model.HarmonyModel;
+import org.mitre.harmony.model.filters.FilterManager;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.MappingSchema;
 
@@ -50,6 +51,8 @@ class MappingCellLines
 		for(DefaultMutableTreeNode leftNode : left.getComponentNodes(leftID))
 			for(DefaultMutableTreeNode rightNode : right.getComponentNodes(rightID))
 			{
+				if(harmonyModel.getFilters().getFilter(FilterManager.HIERARCHY_FILTER)) continue;
+				
 				// Only create lines if they are within the specified depths
 				if(!harmonyModel.getFilters().isVisibleNode(MappingSchema.LEFT,leftNode)) continue;
 				if(!harmonyModel.getFilters().isVisibleNode(MappingSchema.RIGHT,rightNode)) continue;
