@@ -48,6 +48,14 @@ public class MatcherManager
 	/** Returns the list of match mergers */
 	static public ArrayList<MatchMerger> getMergers()
 		{ return mergers; }
+
+	/** Run the matchers to calculate match scores */
+	static public MatchScores getScores(FilteredSchemaInfo schemaInfo1, FilteredSchemaInfo schemaInfo2, ArrayList<MatchVoter> voters, MatchMerger merger)
+	{
+		TypeMappings typeMappings = new TypeMappings();
+		typeMappings.mapAll();
+		return getScores(schemaInfo1,schemaInfo2,voters,merger,typeMappings);
+	}	
 	
 	/** Run the matchers to calculate match scores */
 	static public MatchScores getScores(FilteredSchemaInfo schemaInfo1, FilteredSchemaInfo schemaInfo2, ArrayList<MatchVoter> voters, MatchMerger merger, TypeMappings typeMappings)
