@@ -113,7 +113,8 @@ public class DatabaseConnection
 			{
 				// Connect to the database
 	    		boolean useDerby = databaseType.equals(DERBY);
-    			Class.forName(useDerby ? "org.apache.derby.jdbc.EmbeddedDriver" : "org.postgresql.Driver");
+	    		if(databaseURI.equals("")) databaseURI = ".";
+	    		Class.forName(useDerby ? "org.apache.derby.jdbc.EmbeddedDriver" : "org.postgresql.Driver");
 	    		String dbURL = useDerby ? "jdbc:derby:"+databaseURI+"/"+databaseName+";create=true" : "jdbc:postgresql://"+databaseURI+":5432/"+databaseName;
     			connection = DriverManager.getConnection(dbURL,databaseUser,databasePassword);
 	    		connection.setAutoCommit(false);
