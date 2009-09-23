@@ -281,12 +281,14 @@ public class TypePane extends WizardPanel implements ActionListener
 	{
 		// Retrieves all selected match voters from the dialog
 		TypeMappings typeMappings = new TypeMappings();
-		for(Component component : checkboxes.getComponents())
-		{
-			TypeCheckBox checkbox = (TypeCheckBox)component;
-			if(checkbox.isSelected())
-				typeMappings.addMapping(checkbox.sourceType, checkbox.targetType);
-		}
+		if(!typeConfigPane.matchAllButton.isSelected())
+			for(Component component : checkboxes.getComponents())
+			{
+				TypeCheckBox checkbox = (TypeCheckBox)component;
+				if(checkbox.isSelected())
+					typeMappings.addMapping(checkbox.sourceType, checkbox.targetType);
+			}
+		else typeMappings.mapAll();
 		return typeMappings;
 	}
 
