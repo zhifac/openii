@@ -1,14 +1,19 @@
 package test.org.mitre.schemastore.model;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import java.util.Arrays;
 import java.util.Date;
-import org.junit.*;
-import org.mitre.schemastore.model.*;
-import test.org.mitre.schemastore.model.mapfunctions.TestFixtures;
-import org.mitre.schemastore.model.mapfunctions.*;
-import org.mitre.schemastore.model.schemaInfo.*;
 
-import static org.junit.Assert.*;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.mitre.schemastore.model.MappingCell;
+import org.mitre.schemastore.model.mapfunctions.FunctionManager;
+
+import test.org.mitre.schemastore.model.mapfunctions.TestFixtures;
 
 public class MappingCellTest {
 
@@ -97,9 +102,8 @@ public class MappingCellTest {
     @Test
     public void testSetInputAndDomain()
     {
-        MappingCell cell = factory.getMappingCells().get("identity");
-        HierarchicalSchemaInfo schemaInfo = factory.getTargetSchema();
-        // String domainType = cell.getOutput();
+        factory.getMappingCells().get("identity");
+        factory.getTargetSchema();
     }
 }
 

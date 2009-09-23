@@ -33,13 +33,12 @@ public class TestFixtures
 
     private SchemaStore store = new SchemaStore( DatabaseConnection.DERBY,System.getProperty("java.io.tmpdir"),"schemastore","postgres","postgres");
     private MappingSchema[] schemas = new MappingSchema[2];
-    private Mapping map;
 
     public TestFixtures()
     {
         schemas[0] = new MappingSchema(1025, "left", SchemaModel.class.getName(), MappingSchema.LEFT );
         schemas[1] = new MappingSchema(1026, "right", SchemaModel.class.getName(), MappingSchema.RIGHT);
-        map = new Mapping( new Integer(1024), "name", "description", "author", schemas );
+        new Mapping( new Integer(1024), "name", "description", "author", schemas );
     }
 
     public boolean reset()

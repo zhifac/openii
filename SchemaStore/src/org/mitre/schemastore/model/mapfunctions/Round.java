@@ -17,10 +17,8 @@
 
 package org.mitre.schemastore.model.mapfunctions;
 
-import org.mitre.schemastore.model.*;
+import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.mappingInfo.MappingInfo;
-
-import java.util.*;
 
 
 /**

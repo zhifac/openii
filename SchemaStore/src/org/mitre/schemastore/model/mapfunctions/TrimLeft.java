@@ -17,10 +17,9 @@
 
 package org.mitre.schemastore.model.mapfunctions;
 
-import org.mitre.schemastore.model.*;
-import org.mitre.schemastore.model.mappingInfo.MappingInfo;
+import java.util.ArrayList;
 
-import java.util.*;
+import org.mitre.schemastore.model.mappingInfo.MappingInfo;
 
 /**
  *  This class provides the for the addition of two fields.

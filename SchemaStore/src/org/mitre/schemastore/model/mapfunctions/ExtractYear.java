@@ -17,11 +17,9 @@
 
 package org.mitre.schemastore.model.mapfunctions;
 
-import java.util.*;
+import java.util.ArrayList;
 
-// import org.mitre.schemastore.model.graph.*;
-import org.mitre.schemastore.model.*;
-import org.mitre.schemastore.model.SchemaElement;
+import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.mappingInfo.MappingInfo;
 
 
