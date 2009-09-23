@@ -8,8 +8,8 @@ package org.mitre.harmony.model.filters;
  */
 public interface FiltersListener
 {
-	/** Indicates change to assertion filters */
-	public void assertionsChanged();
+	/** Indicates change to the specified filter */
+	public void filterChanged(Integer filter);
 	
 	/** Indicates change to confidence filters */
 	public void confidenceChanged();

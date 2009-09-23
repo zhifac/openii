@@ -50,7 +50,7 @@ public class HarmonyFrame extends JInternalFrame implements PreferencesListener
 	{
 		// Initialize the various panes shown in the main Harmony pane
 		TitledPane confidencePane = new TitledPane("Confidence", new ConfidencePane(harmonyModel));
-		TitledPane assertionPane = new TitledPane("Show Links", new AssertionPane(harmonyModel));
+		TitledPane filterPane = new TitledPane("Filters", new FilterPane(harmonyModel));
 
 		// Layout the view pane of Harmony
 		viewPane.setLayout(new BorderLayout());
@@ -60,7 +60,7 @@ public class HarmonyFrame extends JInternalFrame implements PreferencesListener
 		JPanel sidePane = new JPanel();
 		sidePane.setLayout(new BorderLayout());
 		sidePane.add(confidencePane, BorderLayout.CENTER);
-		sidePane.add(assertionPane, BorderLayout.SOUTH);
+		sidePane.add(filterPane, BorderLayout.SOUTH);
 
 		// Generate the main pane of Harmony
 		JPanel mainPane = new JPanel();

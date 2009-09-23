@@ -304,7 +304,7 @@ public class SelectedInfoManager extends AbstractManager<SelectedInfoListener> i
 	public void schemaModified(Integer schemaID) {}
 	public void mappingCellAdded(MappingCell mappingCell) {}
 	public void mappingCellModified(MappingCell oldMappingCell, MappingCell newMappingCell) {}
-	public void assertionsChanged() {}
+	public void filterChanged(Integer filter) {}
 	public void confidenceChanged() {}
 	public void maxConfidenceChanged(Integer schemaObjectID) {}
 }
