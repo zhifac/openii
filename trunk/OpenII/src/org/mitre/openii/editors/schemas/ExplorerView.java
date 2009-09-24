@@ -55,14 +55,10 @@ public class ExplorerView extends OpenIIEditor {
 			browser = new Browser(form, SWT.NONE); 
 			
 			back.addListener(SWT.Selection, new Listener() {
-				public void handleEvent(Event event) {
-					browser.back();
-				}
+				public void handleEvent(Event event) { browser.back(); }
 			});
 			forward.addListener(SWT.Selection, new Listener() {
-				public void handleEvent(Event event) {
-					browser.forward();
-				}
+				public void handleEvent(Event event) { browser.forward(); }
 			});
 			
 			//final ExplorerView me = this; 
@@ -92,7 +88,7 @@ public class ExplorerView extends OpenIIEditor {
 			browser.addLocationListener(locationListener);						
 			String u = explorer.urlForElement(elementID); 
 			System.err.println("Navigating to " + u);  
-			browser.setUrl(u);
+			browser.setUrl(u);			
 		} catch (SWTError e) {	          
 	         e.printStackTrace();
 	         System.err.println("Browser cannot be initialized.");
