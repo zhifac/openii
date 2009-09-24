@@ -41,7 +41,7 @@ public class SchemaExplorer {
 	public static double LOW_SCORE_CUTOFF = 0.5;
 	
 	/** Scores below this threshold will be considered "medium" strength matches **/
-	public static double MEDIUM_SCORE_CUTOFF = 0.7; 
+	public static double MEDIUM_SCORE_CUTOFF = 0.67; 
 		
 	/** Each instance is tied to a particular editor window and needs a unique ID **/
 	protected int editorID = 0; 
@@ -382,7 +382,10 @@ public class SchemaExplorer {
 		if(e != null) descr = e.getDescription(); else if(schema != null) descr = schema.getDescription();
 				 
 	    out = new BufferedWriter(new FileWriter(f));
-	    out.write(header("OpenII"));
+	    
+	    String pageTitle = ((schema == null ? "Unknown Schema" : schema.getName()) + 
+	    		            (e == null ? "" : " - " + e.getName()));
+	    out.write(header(pageTitle));
 	    	    
 	    out.write("<div id='hd'>");
 	    out.write("<h1>" + 
