@@ -61,8 +61,20 @@ public class SchemaInfo implements Serializable
 		{
 			if(typeLists==null)
 			{
+				/** Handles the sorting of elements by ID */
+				class ElementComparator implements Comparator<SchemaElement>
+				{
+					public int compare(SchemaElement e1, SchemaElement e2)
+						{ return e1.getId().compareTo(e2.getId()); }
+				}
+				
+				// Create an ordered list of schema elements
+				ArrayList<SchemaElement> elements = new ArrayList<SchemaElement>(elementHash.values());
+				Collections.sort(elements,new ElementComparator());
+
+				// Generate the type lists
 				typeLists = new HashMap<Class,ArrayList<SchemaElement>>();
-				for(SchemaElement element : elementHash.values())
+				for(SchemaElement element : elements)
 					addElement(element.getClass(),element,typeLists);
 			}
 			ArrayList<SchemaElement> typeList = typeLists.get(type);
@@ -313,7 +325,6 @@ public class SchemaInfo implements Serializable
 		{
 			public int compare(SchemaElement e1, SchemaElement e2)
 			{
-				if(e1.getClass().equals(e2.getClass())) return e1.getId().compareTo(e2.getId());
 				if(e1 instanceof Domain) return -1; if(e2 instanceof Domain) return 1;
 				if(e1 instanceof DomainValue) return -1; if(e2 instanceof DomainValue) return 1;
 				if(e1 instanceof Entity) return -1; if(e2 instanceof Entity) return 1;
