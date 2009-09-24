@@ -50,29 +50,6 @@ class MappingCellLines
 		/** Constructs the tree node pair */
 		private TreeNodePair(DefaultMutableTreeNode leftNode, DefaultMutableTreeNode rightNode)
 			{ this.leftNode=leftNode; this.rightNode=rightNode; }
-
-		/** Calculates the weight for the pair of nodes */
-		private Double getWeight(DefaultMutableTreeNode node1, DefaultMutableTreeNode node2)
-		{
-			Integer element1ID = SchemaTree.getElement(node1);
-			Integer element2ID = SchemaTree.getElement(node2);
-			Integer mappingID = harmonyModel.getMappingCellManager().getMappingCellID(element1ID, element2ID);
-			return mappingID==null ? 0.0 : harmonyModel.getMappingCellManager().getMappingCell(mappingID).getScore();
-		}
-		
-		/** Calculates the parent weight */
-		private Double getParentWeight()
-		{
-			// Retrieve the parent nodes
-			DefaultMutableTreeNode leftParentNode = (DefaultMutableTreeNode)leftNode.getParent();
-			DefaultMutableTreeNode rightParentNode = (DefaultMutableTreeNode)rightNode.getParent();
-
-			// Calculate the parent weight
-			Double weight1 = getWeight(leftParentNode,rightParentNode);
-			Double weight2 = getWeight(leftNode,rightParentNode);
-			Double weight3 = getWeight(leftParentNode,rightNode);
-			return weight1 + weight2 + weight3;
-		}
 	}
 	
 	/** Private class for storing pairs of tree nodes */
@@ -80,6 +57,15 @@ class MappingCellLines
 	{
 		/** Stores the list of tree node pairs */
 		private ArrayList<TreeNodePair> pairs = new ArrayList<TreeNodePair>();
+		
+		/** Calculates the score for the pair of nodes */
+		private Double getScore(Integer direction, DefaultMutableTreeNode node1, DefaultMutableTreeNode node2)
+		{
+			Integer element1ID = SchemaTree.getElement(direction.equals(MappingSchema.LEFT) ? node1 : node2);
+			Integer element2ID = SchemaTree.getElement(direction.equals(MappingSchema.LEFT) ? node2 : node1);
+			Integer mappingID = harmonyModel.getMappingCellManager().getMappingCellID(element1ID, element2ID);
+			return mappingID==null ? 0.0 : harmonyModel.getMappingCellManager().getMappingCell(mappingID).getScore();
+		}
 		
 		/** Constructs the tree node pairs */
 		private TreeNodePairs(Integer leftID, Integer rightID)
@@ -98,18 +84,43 @@ class MappingCellLines
 			if(pairs.size()<2) return;
 			
 			// Eliminate all node pairs where there exists a better hierarchical match
-			for(int loc1=0; loc1<pairs.size(); loc1++)
-				for(int loc2=loc1+1; loc2<pairs.size(); loc2++)
+			PAIR1_LOOP: for(int loc1=0; loc1<pairs.size(); loc1++)
+				PAIR2_LOOP: for(int loc2=loc1+1; loc2<pairs.size(); loc2++)
 				{
-					// Examine pairs which share the left or right node
+					// Define the two tree nodes being compared
 					TreeNodePair pair1 = pairs.get(loc1);
 					TreeNodePair pair2 = pairs.get(loc2);
-					if(pair1.leftNode.equals(pair2.leftNode) || pair1.rightNode.equals(pair2.rightNode))
+					
+					// Identify the focal node and matched nodes
+					Integer direction = null;
+					DefaultMutableTreeNode focalNode=null, match1=null, match2=null;
+					if(pair1.leftNode.equals(pair2.leftNode))
 					{
-						Double pair1Weight = pair1.getParentWeight();
-						Double pair2Weight = pair2.getParentWeight();
-						if(pair1Weight>pair2Weight+0.1) pairs.remove(loc2--);
-						if(pair2Weight>pair1Weight+0.1) { pairs.remove(loc1--); break; }
+						direction=MappingSchema.LEFT; focalNode=pair1.leftNode;
+						match1=pair1.rightNode; match2=pair2.rightNode;
+					}
+					else if(pair1.rightNode.equals(pair2.rightNode))
+					{
+						direction=MappingSchema.RIGHT; focalNode=pair1.rightNode;
+						match1=pair1.leftNode; match2=pair2.leftNode;
+					}
+					if(focalNode==null) continue;
+
+					// Shift the matched nodes to the first unique parent node
+					while(SchemaTree.getElement(match1).equals(SchemaTree.getElement(match2)))
+					{
+						match1 = (DefaultMutableTreeNode)match1.getParent();
+						match2 = (DefaultMutableTreeNode)match2.getParent();
+					}
+					
+					// Identify the better matched node based on context
+					while(focalNode.getParent()!=null)
+					{
+						focalNode = (DefaultMutableTreeNode)focalNode.getParent();
+						Double pair1Score = getScore(direction,focalNode,match1);
+						Double pair2Score = getScore(direction,focalNode,match2);
+						if(pair1Score>pair2Score+0.1) { pairs.remove(loc2--); break PAIR2_LOOP; }
+						if(pair2Score>pair1Score+0.1) { pairs.remove(loc1--); break PAIR1_LOOP; }
 					}
 				}
 		}
