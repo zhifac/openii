@@ -2,20 +2,21 @@
 // ALL RIGHTS RESERVED
 package org.mitre.harmony.view.mappingPane;
 
-import java.awt.Point;
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.Rectangle;
-import java.awt.BasicStroke;
 import java.awt.Stroke;
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Vector;
-import java.util.Hashtable;
 import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.Vector;
 
 import javax.swing.JViewport;
+import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.filters.FilterManager;
@@ -26,6 +27,8 @@ import org.mitre.harmony.view.schemaTree.SchemaTree;
 import org.mitre.harmony.view.schemaTree.SchemaTreeListener;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.MappingSchema;
+import org.mitre.schemastore.model.SchemaElement;
+import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
 
 /**
  * Stores all lines currently associated with the mapping
@@ -162,18 +165,76 @@ public class MappingLines implements MappingCellListener, FiltersListener, Schem
 		// Return array of all selected mapping cells
 		return selMappingCells;
 	}
+
+	/** Collects all elements hierarchically influenced by the specified element */
+	private ArrayList<Integer> getHierarchicallyAffectedNodes(Integer side, Integer elementID)
+	{
+		ArrayList<Integer> affectedNodeIDs = new ArrayList<Integer>();
+		for(DefaultMutableTreeNode leftNode : mappingPane.getTree(side).getSchemaElementNodes(elementID))
+			for(int i=0; i<leftNode.getChildCount(); i++)
+			{
+				// Retrieve information about the child node
+				DefaultMutableTreeNode childNode = (DefaultMutableTreeNode)leftNode.getChildAt(i);
+				Integer schemaID = SchemaTree.getSchema(childNode);
+				Integer childID = SchemaTree.getElement(childNode);
+
+				// Store any mapping cells possibly affected
+				HierarchicalSchemaInfo schemaInfo = harmonyModel.getSchemaManager().getSchemaInfo(schemaID);
+				if(schemaInfo.getParentElements(childID).size()>1)
+				{
+					affectedNodeIDs.add(childID);
+					for(SchemaElement element : schemaInfo.getDescendantElements(childID))
+						affectedNodeIDs.add(element.getId());
+				}
+			}
+		return affectedNodeIDs;
+	}
+	
+	/** Updates the hierarchical filter as needed */
+	private void updateHierarchicalFilterAsNeeded(MappingCell mappingCell)
+	{
+		if(harmonyModel.getFilters().getFilter(FilterManager.HIERARCHY_FILTER))
+		{
+			// Build up list of elements affected by changed mapping cell
+			HashSet<Integer> elementIDs = new HashSet<Integer>();
+			for(Integer inputID : mappingCell.getInput())
+				elementIDs.addAll(getHierarchicallyAffectedNodes(MappingSchema.LEFT, inputID));
+			elementIDs.addAll(getHierarchicallyAffectedNodes(MappingSchema.RIGHT, mappingCell.getOutput()));
+			
+			// Translate list of affected elements into list of mapping cells
+			HashSet<Integer> mappingCellIDs = new HashSet<Integer>();
+			for(Integer elementID : elementIDs)
+				mappingCellIDs.addAll(harmonyModel.getMappingCellManager().getMappingCellsByElement(elementID));
+			
+			// Update the lines for the affected mappings cells
+			for(Integer mappingCellID : mappingCellIDs)
+				getLines().get(mappingCellID).updateLines();
+		}
+	}
 	
 	/** Handles the addition of a mapping cell */
 	public void mappingCellAdded(MappingCell mappingCell)
-		{ getLines().put(mappingCell.getId(),new MappingCellLines(mappingPane,mappingCell.getId(),harmonyModel)); fireLinesModified(); }
+	{
+		getLines().put(mappingCell.getId(),new MappingCellLines(mappingPane,mappingCell.getId(),harmonyModel));
+		updateHierarchicalFilterAsNeeded(mappingCell);
+		fireLinesModified();
+	}
 
 	/** Handles the modification of a mapping cell */
 	public void mappingCellModified(MappingCell oldMappingCell, MappingCell newMappingCell)
-		{ getLines().get(newMappingCell.getId()).updateHidden(); fireLinesModified(); }
+	{
+		getLines().get(newMappingCell.getId()).updateHidden();
+		updateHierarchicalFilterAsNeeded(newMappingCell);
+		fireLinesModified();
+	}
 	
 	/** Handles the removal of a mapping cell */
 	public void mappingCellRemoved(MappingCell mappingCell)
-		{ getLines().remove(mappingCell.getId()); fireLinesModified(); }
+	{
+		getLines().remove(mappingCell.getId());
+		updateHierarchicalFilterAsNeeded(mappingCell);
+		fireLinesModified();
+	}
 
 	/** Handles the modification of a schema node */
 	public void schemaModified(Integer schemaID)

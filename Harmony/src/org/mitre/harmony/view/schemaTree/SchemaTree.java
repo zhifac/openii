@@ -413,9 +413,9 @@ public class SchemaTree extends JTree implements MappingListener, PreferencesLis
 	public Integer getNodeRow(DefaultMutableTreeNode node)
 		{ return nodeRows.getRow(node); }
 	
-	/** Returns vector of all schema node tree locations */
-	public ArrayList<DefaultMutableTreeNode> getComponentNodes(Integer node)
-		{ return schemaTreeHash.get(node); }
+	/** Returns the list of all schema node tree locations for the specified schema element */
+	public ArrayList<DefaultMutableTreeNode> getSchemaElementNodes(Integer elementID)
+		{ return schemaTreeHash.get(elementID); }
 	
 	/** Handles the addition to the specified schema */
 	public void schemaAdded(Integer schemaID)
@@ -582,7 +582,7 @@ public class SchemaTree extends JTree implements MappingListener, PreferencesLis
 				g2d.setStroke(DASHED_LINE);
 				
 				// Draw a box around each node in focus.
-				for(DefaultMutableTreeNode node : getComponentNodes(focusPath.getElementID()))
+				for(DefaultMutableTreeNode node : getSchemaElementNodes(focusPath.getElementID()))
 					if(getSchema(node).equals(focus.getSchemaID()))
 						if(focusPath.equals(SchemaTree.getElementPath(node)))
 						{
