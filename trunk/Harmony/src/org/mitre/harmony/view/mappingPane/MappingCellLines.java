@@ -111,6 +111,7 @@ class MappingCellLines
 					{
 						match1 = (DefaultMutableTreeNode)match1.getParent();
 						match2 = (DefaultMutableTreeNode)match2.getParent();
+						if(SchemaTree.getElement(match1)==null || SchemaTree.getElement(match2)==null) break;
 					}
 					
 					// Identify the better matched node based on context
