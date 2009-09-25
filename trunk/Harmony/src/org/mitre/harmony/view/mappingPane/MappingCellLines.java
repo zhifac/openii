@@ -75,8 +75,8 @@ class MappingCellLines
 			SchemaTreeImp rightTree = mappingPane.getTree(MappingSchema.RIGHT);
 			
 			// Create the list of all node pairs
-			for(DefaultMutableTreeNode leftNode : leftTree.getComponentNodes(leftID))
-				for(DefaultMutableTreeNode rightNode : rightTree.getComponentNodes(rightID))
+			for(DefaultMutableTreeNode leftNode : leftTree.getSchemaElementNodes(leftID))
+				for(DefaultMutableTreeNode rightNode : rightTree.getSchemaElementNodes(rightID))
 					pairs.add(new TreeNodePair(leftNode,rightNode));
 			
 			// Only proceed if hierarchical filtering is on and more than one node pair exists

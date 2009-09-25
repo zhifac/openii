@@ -53,7 +53,7 @@ public class FilterManager extends AbstractManager<FiltersListener> implements M
 		
 		// Initialize the various filter settings
 		filters = new boolean[4];
-		filters[USER_FILTER]=true; filters[SYSTEM_FILTER]=true; filters[HIERARCHY_FILTER]=false; filters[BEST_FILTER]=false;
+		filters[USER_FILTER]=true; filters[SYSTEM_FILTER]=true; filters[HIERARCHY_FILTER]=true; filters[BEST_FILTER]=false;
 		minConfThreshold = MappingCellManager.MIN_CONFIDENCE;
 		maxConfThreshold = MappingCellManager.MAX_CONFIDENCE;
 		leftFoci = new ArrayList<Focus>();
