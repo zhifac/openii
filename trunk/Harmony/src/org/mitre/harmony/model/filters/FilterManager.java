@@ -3,6 +3,7 @@
 package org.mitre.harmony.model.filters;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
@@ -252,8 +253,6 @@ public class FilterManager extends AbstractManager<FiltersListener> implements M
 	{
 		// Retrieve the mapping cell info
 		MappingCell mappingCell = getModel().getMappingCellManager().getMappingCell(mappingCellID);
-		Integer element1 = mappingCell.getElement1();
-		Integer element2 = mappingCell.getElement2();
 		
 		// Check if link is within confidence thresholds
 		double confidence = mappingCell.getScore();
@@ -262,9 +261,15 @@ public class FilterManager extends AbstractManager<FiltersListener> implements M
 		// If BEST is asserted, check to ensure that link is best link for either left or right
 		if(getFilter(BEST_FILTER))
 		{
-			boolean element1Best = confidence == elementConfidences.get(element1);
-			boolean element2Best = confidence == elementConfidences.get(element2);
-			if(!element1Best && !element2Best) return false;
+			// Gather up all elements associated with the mapping cell
+			ArrayList<Integer> elementIDs = new ArrayList<Integer>(mappingCell.getOutput());
+			elementIDs.addAll(Arrays.asList(mappingCell.getInput()));
+
+			// Determine if considered a "best" mapping cell
+			boolean best = false;
+			for(Integer elementID : elementIDs)
+				if(confidence == elementConfidences.get(elementID)) { best=true; break; }
+			if(!best) return false;
 		}
 
 		// Check that link matches current filters for USER and SYSTEM links		
