@@ -54,7 +54,7 @@ public class SchemaBuilder
      */
     public void addAttributeToLastEntity( String name )
     {
-        System.out.println( "Adding " + name );
+        // System.out.println( "Adding " + name );
         Attribute newAttribute = new Attribute( SchemaImporter.nextId(), name, "", currentEntityId, domainList.get("String").getId(), 1, 1, false, schema.getId() );
         currentAttributeId = newAttribute.getId();
         schemaObjects.add( newAttribute );
@@ -64,7 +64,7 @@ public class SchemaBuilder
     public void setDomainOfLastAttribute( String domain )
     {
         Attribute a = (Attribute) getSchemaObject( currentAttributeId );
-        System.out.print(a.getName() + ": ");
+        // System.out.print(a.getName() + ": ");
         // System.out.println( this.getClass().getName() + " ( setDomainOfLastAttribute ): " + domain);
         a.setDomainID( convertDomain( domain ) );
     }
@@ -75,19 +75,19 @@ public class SchemaBuilder
     protected int convertDomain( String domain )
     {
         domain = domain.toLowerCase();
-        System.out.println(domain);
+        // System.out.println(domain);
         String stdName = domainMapping.get(domain);
         if( stdName == null )
         {
             //add it so all instances will use the same DomainID
             //add standardized mapping (to itself)
             domainMapping.put(domain, domain);
-            System.out.println("added new domain");
+            // System.out.println("added new domain");
             //add corresponding Domain
             Domain d = new Domain(SchemaImporter.nextId(), domain, domain, 0);
             schemaObjects.add(d);
             domainList.put(domain, d);
-            System.out.println("added new Domain:  " + d.getName());
+            // System.out.println("added new Domain:  " + d.getName());
             stdName = domain;
         }
         return domainList.get( stdName ).getId();
@@ -99,12 +99,12 @@ public class SchemaBuilder
      */
     public void addReferenceTo(String tablename)
     {
-        System.out.println(  );
+        // System.out.println( "Current entity: " + getSchemaObject(currentEntityId).getName() + " has a relationship (FK) to " + tablename );
         int id = SchemaImporter.nextId();
         String name = getSchemaObject( currentEntityId ).getName() + ":" + tablename;
         int leftMin =0;
         int leftMax=-1;
-        int relatedId = getSchemaObject(tablename).getId();
+        int relatedId = getEntity(tablename).getId();
         int rightID = relatedId;
         int rightMin = 1;
         int rightMax = 1;
@@ -182,7 +182,8 @@ public class SchemaBuilder
      */
     public void setEntityTo( String name )
     {
-        currentEntityId = getSchemaObject( name ).getId();
+        SchemaElement o = getEntity(name);
+        currentEntityId = o.getId();
     }
 
 
@@ -226,5 +227,36 @@ public class SchemaBuilder
         return null;
     }
 
-}
+
+    /**
+     *  Given a name, return the SchemaElement that has that name and it must be a give class
+     */
+    public Entity getEntity( String name )
+    {
+        for(SchemaElement o : schemaObjects )
+        {
+            if( o.getName().equals(name) && o instanceof Entity)
+            {
+                return (Entity)o;
+            }
+        }
+        return null;
+    }
+
+
+    /**
+     *  Given a name, return the SchemaElement that has that name and it must be a give class
+     */
+    public Attribute getAttribute( String name )
+    {
+        for(SchemaElement o : schemaObjects )
+        {
+            if( o.getName().equals(name) && o instanceof Attribute)
+            {
+                return (Attribute)o;
+            }
+        }
+        return null;
+    }}
+
 

@@ -1,7 +1,7 @@
 /*
  * Sql.g
  * Copyright (C) 2009 TMate Software Ltd
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; version 2 of the License.
@@ -106,7 +106,7 @@ sql_stmt_core
   | analyze_stmt
   | reindex_stmt
   | vacuum_stmt
-  
+
   | select_stmt
   | insert_stmt
   | update_stmt
@@ -116,7 +116,7 @@ sql_stmt_core
   | rollback_stmt
   | savepoint_stmt
   | release_stmt
-  
+
   | create_virtual_table_stmt
   | create_table_stmt
   | drop_table_stmt
@@ -127,6 +127,8 @@ sql_stmt_core
   | drop_index_stmt
   | create_trigger_stmt
   | drop_trigger_stmt
+  | table_comment
+  | col_comment
   ;
 
 qualified_table_name: (database_name=id DOT)? table_name=id (INDEXED BY index_name=id | NOT INDEXED)?;
@@ -203,7 +205,7 @@ bind_parameter
 
 raise_function: RAISE^ LPAREN! (IGNORE | (ROLLBACK | ABORT | FAIL) COMMA! error_message=STRING) RPAREN!;
 
-type_name: names+=ID+ (LPAREN size1= (signed_number | MAX ) (COMMA size2=signed_number)? RPAREN)? {builder.setDomainOfLastAttribute(String.valueOf(list_names.get(0)).split("'")[1]);}
+type_name: names+=ID+ (LPAREN size1= (signed_number | MAX | signed_number BYTE) (COMMA size2=signed_number)? RPAREN)? {builder.setDomainOfLastAttribute(String.valueOf(list_names.get(0)).split("'")[1]);}
 -> ^(TYPE ^(TYPE_PARAMS $size1? $size2?) $names+);
 
 signed_number: (PLUS | MINUS)? (INTEGER | FLOAT);
@@ -332,9 +334,9 @@ create_virtual_table_stmt: CREATE VIRTUAL TABLE (database_name=id DOT)? table_na
   USING module_name=id (LPAREN column_def (COMMA column_def)* RPAREN)?;
 
 // CREATE TABLE
-create_table_stmt: CREATE TEMPORARY? TABLE (IF NOT EXISTS)? (database_name=id DOT)? table_name=id {builder.addEntity( table_name.getTree().toString() ); System.out.println(table_name.getTree().toString());}
+create_table_stmt: CREATE TEMPORARY? TABLE (IF NOT EXISTS)? (database_name=id DOT)? table_name=id {builder.addEntity( table_name.getTree().toString() ); }
   ( LPAREN column_def (COMMA column_def)* (COMMA table_constraint)* RPAREN
-  | AS select_stmt) 
+  | AS select_stmt)
 -> ^(CREATE_TABLE ^(OPTIONS TEMPORARY? EXISTS?) ^($table_name $database_name?)
   ^(COLUMNS column_def+)? ^(CONSTRAINTS table_constraint*)? select_stmt?);
 
@@ -345,7 +347,7 @@ column_constraint: (CONSTRAINT name=id)?
   ( column_constraint_pk
   | column_constraint_null
   | column_constraint_not_null
-  | column_constraint_not_for_replication 
+  | column_constraint_not_for_replication
   | column_constraint_unique
   | column_constraint_check
   | column_constraint_default
@@ -388,10 +390,10 @@ column_constraint_default: DEFAULT^ (signed_default_number | literal_value | LPA
 column_constraint_collate: COLLATE^ collation_name=id; // collation_name: (BINARY|NOCASE|RTRIM)
 
 table_constraint: (CONSTRAINT name=id)?
-  ( table_constraint_pk {System.out.println("\tPK constraint");}
+  ( table_constraint_pk
   | table_constraint_unique
   | table_constraint_check
-  | table_constraint_fk )
+  | table_constraint_fk)
 -> ^(TABLE_CONSTRAINT
   table_constraint_pk?
   table_constraint_unique?
@@ -412,7 +414,7 @@ table_constraint_check: CHECK^ LPAREN! expr RPAREN!;
 table_constraint_fk: FOREIGN KEY LPAREN column_names+=id (COMMA column_names+=id )* RPAREN fk_clause
 -> ^(FOREIGN ^(COLUMNS $column_names+) fk_clause);
 
-fk_clause: REFERENCES foreign_table=id { builder.addReferenceTo( foreign_table.getTree().toString() ); } (LPAREN column_names+=id (COMMA column_names+=id)* RPAREN)? 
+fk_clause: REFERENCES foreign_table=id { builder.addReferenceTo( foreign_table.getTree().toString() ); } (LPAREN column_names+=id (COMMA column_names+=id)* RPAREN)?
   fk_clause_action* fk_clause_deferrable?
 -> ^(REFERENCES $foreign_table ^(COLUMNS $column_names+) fk_clause_action* fk_clause_deferrable?);
 
@@ -427,7 +429,7 @@ drop_table_stmt: DROP TABLE (IF EXISTS)? (database_name=id DOT)? table_name=id
 -> ^(DROP_TABLE ^(OPTIONS EXISTS?) ^($table_name $database_name?));
 
 // ALTER TABLE
-alter_table_stmt: ALTER TABLE (database_name=id DOT)? table_name=id { builder.setEntityTo( table_name.getTree().toString()); } (RENAME TO new_table_name=id | ADD (COLUMN)? column_def);
+alter_table_stmt: ALTER TABLE ONLY? (database_name=id DOT)? table_name=id { builder.setEntityTo( table_name.getTree().toString()); } (RENAME TO new_table_name=id | ADD (COLUMN)? column_def | ADD table_constraint (COMMA table_constraint)*);
 
 // CREATE VIEW
 create_view_stmt: CREATE TEMPORARY? VIEW (IF NOT EXISTS)? (database_name=id DOT)? view_name=id AS select_stmt;
@@ -456,10 +458,13 @@ create_trigger_stmt: CREATE TEMPORARY? TRIGGER (IF NOT EXISTS)? (database_name=i
 // DROP TRIGGER
 drop_trigger_stmt: DROP TRIGGER (IF EXISTS)? (database_name=id DOT)? trigger_name=id;
 
+// JCH - ORACLE table/column comments
+table_comment: META_COMMENT ON TABLE (database_name=id DOT)? name=id IS text=STRING { builder.getEntity(name.getTree().toString()).setDescription(text.getText()); };
 
+col_comment: META_COMMENT ON COLUMN (database_name=id DOT)? name=id IS text=STRING { builder.getAttribute(name.getTree().toString()).setDescription(text.getText());  };
 // Special rules that allow to use certain keywords as identifiers.
 
-id: ID | keyword;
+id:  ID | keyword;
 
 keyword: (
     ABORT
@@ -535,6 +540,7 @@ keyword: (
 //  | LIKE
   | LIMIT
 //  | MATCH
+  | META_COMMENT
   | NATURAL
 //  | NOT
 //  | NOTNULL
@@ -560,6 +566,7 @@ keyword: (
   | ROLLBACK
   | ROW
   | SAVEPOINT
+  | SCHEMA
   | SELECT
   | SET
   | TABLE
@@ -656,6 +663,7 @@ keyword_column_def: (
   | LIKE
   | LIMIT
   | MATCH
+  | META_COMMENT
   | NATURAL
   | NOT
   | NOTNULL
@@ -681,6 +689,7 @@ keyword_column_def: (
   | ROLLBACK
   | ROW
   | SAVEPOINT
+  | SCHEMA
   | SELECT
   | SET
   | TABLE
@@ -734,6 +743,7 @@ COLON:         ':';
 AT:            '@';
 DOLLAR:        '$';
 
+
 // http://www.antlr.org/wiki/pages/viewpage.action?pageId=1782
 fragment A:('a'|'A');
 fragment B:('b'|'B');
@@ -777,12 +787,14 @@ BEFORE: B E F O R E;
 BEGIN: B E G I N;
 BETWEEN: B E T W E E N;
 BY: B Y;
+BYTE	:	B Y T E;
 CASCADE: C A S C A D E;
 CASE: C A S E;
 CAST: C A S T;
 CHECK: C H E C K;
 COLLATE: C O L L A T E;
 COLUMN: C O L U M N;
+META_COMMENT: C O M M E N T;
 COMMIT: C O M M I T;
 CONFLICT: C O N F L I C T;
 CONSTRAINT: C O N S T R A I N T;
@@ -843,6 +855,7 @@ NULL: N U L L;
 OF: O F;
 OFFSET: O F F S E T;
 ON: O N;
+ONLY	:	O N L Y;
 OR: O R;
 ORDER: O R D E R;
 OUTER: O U T E R;
@@ -862,6 +875,7 @@ RESTRICT: R E S T R I C T;
 ROLLBACK: R O L L B A C K;
 ROW: R O W;
 SAVEPOINT: S A V E P O I N T;
+SCHEMA: S C H E M A;
 SELECT: S E L E C T;
 SET: S E T;
 TABLE: T A B L E;
@@ -881,13 +895,13 @@ VIRTUAL: V I R T U A L;
 WHEN: W H E N;
 WHERE: W H E R E;
 
-fragment ID_START: ('a'..'z'|'A'..'Z'|'_');
+fragment ID_START: ('a'..'z'|'A'..'Z'|'_'|'"');
 ID: ID_START (ID_START|'0'..'9')*;
 //TCL_ID: ID_START (ID_START|'0'..'9'|'::')* (LPAREN ( options {greedy=false;} : . )* RPAREN)?;
 ESCAPE_SEQ: '\\'  ('\"'|'\''|'\\');
 STRING
-	: '"' ( ESCAPE_SEQ | ~('\\'|'"') )* '"'
-	| '\'' ( ESCAPE_SEQ | ~('\\'|'\'') )* '\''
+	: '"' ( ESCAPE_SEQ |  ~('\\'|'"') )* '"'
+	| '\'' ( ESCAPE_SEQ | '\'\'' | ~('\\'|'\'') )* '\''
 	;
 INTEGER: ('0'..'9')+;
 fragment FLOAT_EXP : ('e'|'E') ('+'|'-')? ('0'..'9')+ ;
