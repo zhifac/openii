@@ -7,6 +7,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.view.schemaTree.SchemaTree;
+import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
 
@@ -66,15 +67,20 @@ public class Focus
 	/** Adds a focus */
 	public void addFocus(ElementPath elementPath)
 	{
-		// Get descendants of the specified element
-		ArrayList<Integer> descendantIDs = new ArrayList<Integer>();
-		for(SchemaElement descendant : schemaInfo.getDescendantElements(elementPath.getElementID()))
-			descendantIDs.add(descendant.getId());
-		
-		// Remove focus elements which are superseded of is a sub-item of the new focus
-		for(ElementPath focusPath : new ArrayList<ElementPath>(focusPaths))
-			if(elementPath.contains(focusPath) || descendantIDs.contains(focusPath.getElementID()))
-				focusPaths.remove(focusPath);
+		// Removes focus elements which are sub-items of the new focus 
+		if(elementPath.size()>0)
+		{
+			// Get descendants of the specified element
+			ArrayList<Integer> descendantIDs = new ArrayList<Integer>();
+			for(SchemaElement descendant : schemaInfo.getDescendantElements(elementPath.getElementID()))
+				descendantIDs.add(descendant.getId());
+			
+			// Remove focus elements which are sub-items of the new focus
+			for(ElementPath focusPath : new ArrayList<ElementPath>(focusPaths))
+				if(elementPath.contains(focusPath) || descendantIDs.contains(focusPath.getElementID()))
+					focusPaths.remove(focusPath);
+		}
+		else focusPaths.clear();
 			
 		// Adds the focus element
 		focusPaths.add(elementPath);
@@ -118,16 +124,23 @@ public class Focus
 	{
 		if(elementsInFocus==null)
 		{
+			elementsInFocus = new HashSet<Integer>();
+			
 			// Identify the root IDs
 			ArrayList<Integer> rootIDs = new ArrayList<Integer>();
 			for(ElementPath focusPath : focusPaths)
-				rootIDs.add(focusPath.getElementID());
+				if(focusPath.size()>0)
+					rootIDs.add(focusPath.getElementID());
+
+			// Handle the case where no root IDs are declared
 			if(rootIDs.size()==0)
+			{
+				elementsInFocus.add(schemaInfo.getSchema().getId());
 				for(SchemaElement element : schemaInfo.getRootElements())
 					rootIDs.add(element.getId());
-
-			// Generate the elements in focus
-			elementsInFocus = new HashSet<Integer>();
+			}
+				
+			// Create the list of all elements in focus
 			for(Integer elementID : rootIDs)
 			{
 				elementsInFocus.add(elementID);
@@ -163,15 +176,16 @@ public class Focus
 		if(!getSchemaID().equals(schemaID)) return false;
 		
 		// Check to make sure the node is focused on
-		Object elementID = node.getUserObject();
-		if(!(elementID instanceof Integer)) return false;
-		if(!contains((Integer)elementID)) return false;
-		
-		// Make sure that the node is on the selected path
-		if(focusPaths.size()==0) return true;
-		ElementPath elementPath = SchemaTree.getElementPath(node);
-		for(ElementPath focusPath : focusPaths)
-			if(elementPath.contains(focusPath)) return true;
+		Object element = node.getUserObject();
+		if(element instanceof Schema) return contains(((Schema)element).getId());
+		if(element instanceof Integer && contains((Integer)element))
+		{
+			// Make sure that the node is on the selected path
+			if(focusPaths.size()==0) return true;
+			ElementPath elementPath = SchemaTree.getElementPath(node);
+			for(ElementPath focusPath : focusPaths)
+				if(elementPath.contains(focusPath)) return true;
+		}
 		return false;
 	}
 }

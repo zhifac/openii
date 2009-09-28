@@ -141,7 +141,7 @@ public class MatchThread extends Thread
 
 				// Set the filter roots
 				Focus focus = filters.getFocus(side,schemaID);
-				if(focus!=null && focus.getFocusedPaths().size()>0)
+				if(focus!=null && !focus.contains(schemaID))
 					filteredSchemaInfo.setFilteredRoots(focus.getFocusedIDs());
 					
 				// Filter by minimum and maximum depth
