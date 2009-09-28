@@ -77,7 +77,7 @@ class SchemaTreeRenderer extends DefaultTreeCellRenderer
 		Object obj = ((DefaultMutableTreeNode)value).getUserObject();
 		
 		// Handle root nodes, the most simple case
-		if (row == 0)
+		if(row == 0)
 		{
 			JPanel schemaLabelPane = new JPanel();
 			schemaLabelPane.setBackground(Color.white);
@@ -135,7 +135,9 @@ class SchemaTreeRenderer extends DefaultTreeCellRenderer
 		{
 			// Determine if the node is in focus
 			SchemaTree schemaTree = (SchemaTree)tree;
-			isFocused = harmonyModel.getFilters().getFocusCount(schemaTree.getSide())==0;
+			if(obj instanceof Schema)
+				isFocused = harmonyModel.getFilters().inFocus(schemaTree.getSide(),(DefaultMutableTreeNode)value);
+			else isFocused = true;
 			
 			// Set the text and icon
 			String text = " " + obj;

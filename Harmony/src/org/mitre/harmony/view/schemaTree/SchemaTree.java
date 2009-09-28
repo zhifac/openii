@@ -581,14 +581,22 @@ public class SchemaTree extends JTree implements MappingListener, PreferencesLis
 				Stroke s = g2d.getStroke();
 				g2d.setStroke(DASHED_LINE);
 				
-				// Draw a box around each node in focus.
-				for(DefaultMutableTreeNode node : getSchemaElementNodes(focusPath.getElementID()))
+				// Draw a box around each schema in focus
+				if(focusPath.size()==0)
+				{
+					Rectangle r = computeFocusRectangle(getSchemaNode(focus.getSchemaID()));
+					g2d.drawRect(r.x, r.y, r.width, r.height);					
+				}
+				
+				// Draw a box around each schema element in focus
+				else for(DefaultMutableTreeNode node : getSchemaElementNodes(focusPath.getElementID()))
 					if(getSchema(node).equals(focus.getSchemaID()))
 						if(focusPath.equals(SchemaTree.getElementPath(node)))
 						{
 							Rectangle r = computeFocusRectangle(node);
 							g2d.drawRect(r.x, r.y, r.width, r.height);
 						}
+				
 				g2d.setStroke(s);
 			}
 	}

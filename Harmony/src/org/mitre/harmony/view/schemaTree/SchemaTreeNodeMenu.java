@@ -52,6 +52,11 @@ class SchemaTreeNodeMenu extends JPopupMenu implements ActionListener
 		this.node = node;
 		this.harmonyModel = harmonyModel;
 		
+		// Get the schema and element associated with this menu
+		Object obj = node.getUserObject();
+		Integer schemaID = SchemaTree.getSchema(node);
+		Integer elementID = obj instanceof Integer ? (Integer)obj : null;
+		
 		// Show collapse and expand menu options only if not leaf node
 		if(!tree.getModel().isLeaf(node))
 		{
@@ -59,25 +64,29 @@ class SchemaTreeNodeMenu extends JPopupMenu implements ActionListener
 			add(collapse);
 		}
 
-		// Show focus and mark/unmark menu options as needed
-		Object obj = node.getUserObject();
-		if(obj instanceof Integer)
+		// Retrieve focus information for the selected node
+		Focus focus = harmonyModel.getFilters().getFocus(tree.getSide(), schemaID);
+		boolean isFocus = focus!=null && focus.getFocusedPaths().contains(SchemaTree.getElementPath(node));
+		boolean isHidden = focus!=null && focus.getHiddenElements().contains(elementID);
+
+		// Show menu option for allowing focus to be set and cleared
+		if(getComponentCount()>0) add(new JSeparator());
+		if(!isFocus && !isHidden) add(setFocus);
+		if(isFocus) add(clearFocus);
+		add(clearAllFoci);
+
+		// Allow "matched" statistics to be viewed if node is schema
+		if(obj instanceof Schema)
 		{
-			// Get the schema and element associated with this menu
-			Integer schemaID = SchemaTree.getSchema(node);
-			Integer elementID = (Integer)obj;
-			
-			// Retrieve focus information about the element associated with this menu
-			Focus focus = harmonyModel.getFilters().getFocus(tree.getSide(), schemaID);
-			boolean isFocus = focus!=null && focus.getFocusedPaths().contains(SchemaTree.getElementPath(node));
-			boolean isHidden = focus!=null && focus.getHiddenElements().contains(elementID);
-			
-			// Show menu option for allowing focus to be set and cleared
-			if(getComponentCount()>0) add(new JSeparator());
-			if(!isFocus && !isHidden) add(setFocus);
-			if(isFocus) add(clearFocus);
-			add(clearAllFoci);
-			
+			// Place menu option for editing the schema
+			add(new JSeparator());
+			add(statistics);
+			add(properties);
+		}
+		
+		// Show focus and mark/unmark menu options as needed
+		if(obj instanceof Integer)
+		{			
 			// Show menu options for allowing elements to be hidden
 			if(focus==null || !focus.getHiddenIDs().contains(elementID))
 			{
@@ -105,15 +114,6 @@ class SchemaTreeNodeMenu extends JPopupMenu implements ActionListener
 				if(!isFinished) add(markFinished);
 			}
 		}
-
-		// Allow "matched" statistics to be viewed if node is schema
-		if(obj instanceof Schema)
-		{
-			// Place menu option for editing the schema
-			add(new JSeparator());
-			add(statistics);
-			add(properties);
-		}
 		
 		// Add listeners to all menu items
 		expand.addActionListener(this);
@@ -129,9 +129,7 @@ class SchemaTreeNodeMenu extends JPopupMenu implements ActionListener
 		properties.addActionListener(this);
 	}
 	
-	/**
-	 * Reacts to selection of various menu options
-	 */
+	/** Reacts to selection of various menu options */
 	public void actionPerformed(ActionEvent e)
 	{
 		// Generate easy reference to managers

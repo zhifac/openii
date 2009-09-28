@@ -137,7 +137,7 @@ public class FilterManager extends AbstractManager<FiltersListener> implements M
 		}
 
 		// Adds the specified element to the focus
-		focus.addFocus(elementPath);
+		if(elementPath!=null) focus.addFocus(elementPath);
 		for(FiltersListener listener : getListeners()) listener.focusModified(side);
 	}
 
@@ -224,8 +224,9 @@ public class FilterManager extends AbstractManager<FiltersListener> implements M
 	}
 
 	/** Indicates if the specified node is in focus */
-	public boolean inFocus(Integer side, Integer schemaID, DefaultMutableTreeNode node)
+	public boolean inFocus(Integer side, DefaultMutableTreeNode node)
 	{
+		Integer schemaID = SchemaTree.getSchema(node);
 		if(!inFocus(side,schemaID)) return false;
 		Focus focus = getFocus(side, schemaID);
 		return focus==null || focus.contains(node);
@@ -239,9 +240,7 @@ public class FilterManager extends AbstractManager<FiltersListener> implements M
 	public boolean isVisibleNode(Integer side, DefaultMutableTreeNode node)
 	{
 		// Check that the element is within focus
-		Integer schemaID = SchemaTree.getSchema(node);
-		Object elementID = node.getUserObject();
-		if(elementID instanceof Integer && !inFocus(side, schemaID, node)) return false;
+		if(!inFocus(side, node)) return false;
 		
 		// Check that the element is within depth
 		int depth = node.getPath().length-2;

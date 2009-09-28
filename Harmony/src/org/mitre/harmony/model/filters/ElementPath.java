@@ -16,6 +16,10 @@ public class ElementPath
 	public Integer getElementID()
 		{ return elementPath.get(elementPath.size()-1); }
 
+	/** Returns the size of the element path */
+	public Integer size()
+		{ return elementPath.size(); }
+	
 	/** Indicates if this path contains the specified path */
 	public boolean contains(ElementPath elementPath)
 	{
