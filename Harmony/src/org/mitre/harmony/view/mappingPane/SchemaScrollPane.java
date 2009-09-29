@@ -22,6 +22,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 
 import org.mitre.harmony.model.HarmonyModel;
+import org.mitre.harmony.model.filters.FiltersListener;
 import org.mitre.harmony.model.search.SearchListener;
 import org.mitre.harmony.model.search.SearchResult;
 import org.mitre.harmony.view.schemaTree.SchemaTree;
@@ -32,7 +33,7 @@ import org.mitre.schemastore.model.MappingSchema;
  * Displays the scroll pane next to each schema tree pane (includes selection marks)
  * @author CWOLF
  */
-public class SchemaScrollPane extends JScrollPane implements AdjustmentListener, SearchListener, SchemaTreeListener
+public class SchemaScrollPane extends JScrollPane implements AdjustmentListener, FiltersListener, SearchListener, SchemaTreeListener
 {
 	/** Stores the mapping pane to which this scroll pane is associated */
 	private MappingPane mappingPane;
@@ -86,7 +87,7 @@ public class SchemaScrollPane extends JScrollPane implements AdjustmentListener,
 		{
 			DefaultMutableTreeNode node = (DefaultMutableTreeNode)subNodes.nextElement();
 			if(!node.isRoot() && node.getUserObject() instanceof Integer)
-				if(matches.containsKey(node.getUserObject()))
+				if(matches.containsKey(node.getUserObject()) && harmonyModel.getFilters().inFocus(tree.getSide(),node))
 					paths.add(new TreePath(node.getPath()));
 		}
 		
@@ -133,6 +134,7 @@ public class SchemaScrollPane extends JScrollPane implements AdjustmentListener,
 		// Listen for changes which might affect offsets
 		getHorizontalScrollBar().addAdjustmentListener(this);
 		getVerticalScrollBar().addAdjustmentListener(this);
+		harmonyModel.getFilters().addListener(this);
 		harmonyModel.getSearchManager().addListener(this);
 		tree.addSchemaTreeListener(this);
 	}
@@ -177,6 +179,14 @@ public class SchemaScrollPane extends JScrollPane implements AdjustmentListener,
 	public void schemaStructureModified(SchemaTree tree)
 		{ updateSearchResultRows(); }
 
+	/** Handles a change in focus */
+	public void focusModified(Integer side)
+		{ if(tree.getSide().equals(side)) updateSearchResultRows(); }
+	
 	// Unused event listener
 	public void schemaDisplayModified(SchemaTree tree) {}
+	public void confidenceChanged() {}
+	public void depthChanged() {}
+	public void filterChanged(Integer filter) {}
+	public void maxConfidenceChanged(Integer schemaObjectID) {}
 }
