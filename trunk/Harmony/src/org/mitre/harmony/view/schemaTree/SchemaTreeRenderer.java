@@ -154,9 +154,9 @@ class SchemaTreeRenderer extends DefaultTreeCellRenderer
 		}
 
 		// Adjust the settings based on the state of the node
-		selected = isSelected;
+		selected = isFocused && isSelected;
 		setFont(isFocused ? bold : ital);
-		setBackgroundNonSelectionColor(result==null ? Color.white : result.nameMatched() ? nameHighlightColor : descHighlightColor);
+		setBackgroundNonSelectionColor(result==null || !isFocused ? Color.white : result.nameMatched() ? nameHighlightColor : descHighlightColor);
 		
 		// Returns the rendered node
 		return this;
