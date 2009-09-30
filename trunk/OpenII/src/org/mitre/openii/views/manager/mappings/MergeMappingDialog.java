@@ -271,8 +271,7 @@ public class MergeMappingDialog extends Dialog implements ModifyListener
 		boolean activate = false;
 		for(MappingCheckbox checkbox : checkboxes)
 			if(checkbox.isSelected()) { activate = true; break; }
-		activate &= nameField.getText().length()>0 && authorField.getText().length()>0 &&
-		   descriptionField.getText().length()>0;
+		activate &= nameField.getText().length()>0 && authorField.getText().length()>0;
 		getButton(IDialogConstants.OK_ID).setEnabled(activate);
 	}
 	

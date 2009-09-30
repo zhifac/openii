@@ -196,7 +196,6 @@ public class ImportSchemaDialog extends TitleAreaDialog implements ISelectionCha
 		// Determine if the OK button should be activated
 		boolean activate = nameField.getText().length()>0;
 		activate &= authorField.getText().length()>0;
-		activate &= descriptionField.getText().length()>0;
 		activate &= uriText.getText().length()>0;
 		getButton(IDialogConstants.OK_ID).setEnabled(activate && uriField.isValid());
 	}
