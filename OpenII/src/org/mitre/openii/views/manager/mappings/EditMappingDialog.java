@@ -144,8 +144,7 @@ public class EditMappingDialog extends Dialog implements ModifyListener, ISelect
 	/** Validates the fields in order to activate the OK button */
 	private void validateFields()
 	{
-		boolean activate = nameField.getText().length()>0 && authorField.getText().length()>0 &&
-		   descriptionField.getText().length()>0;	
+		boolean activate = nameField.getText().length()>0 && authorField.getText().length()>0;	
 		activate &= schemaList.getCheckedElements().length>0;
 		getButton(IDialogConstants.OK_ID).setEnabled(activate);
 	}

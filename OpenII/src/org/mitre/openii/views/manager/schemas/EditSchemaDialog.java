@@ -101,7 +101,7 @@ public class EditSchemaDialog extends Dialog implements ModifyListener
 	/** Handles modifications to the various text fields */
 	public void modifyText(ModifyEvent e)
 	{   
-		boolean activate = nameField.getText().length()>0 && authorField.getText().length()>0 && descriptionField.getText().length()>0;
+		boolean activate = nameField.getText().length()>0 && authorField.getText().length()>0;
 		getButton(IDialogConstants.OK_ID).setEnabled(activate);
 	}
 	
