@@ -81,7 +81,7 @@ public class AffinityEditor extends OpenIIEditor implements SelectionClickedList
 		ArrayList<MatchVoter> voters = new ArrayList<MatchVoter>();
 		//We use all the Harmony voters by default
 		//TODO: Determine optimized set of matchers and run in separate thread.  For
-		//now, running all matchers is too time consuming
+		//  now, running all matchers is too time consuming
 		voters.add(new EditDistanceMatcher());
 		voters.add(new BagMatcher());
 		//voters.add(new ThesaurusMatcher()); //ThesaurusMatcher seems to be most time consuming
@@ -142,7 +142,7 @@ public class AffinityEditor extends OpenIIEditor implements SelectionClickedList
 						//Show a Venn Diagram view with a single venn diagram (for comparing 2 schemas),
 						//or with a matrix of diagrams for each pair of schemas (for comparing more than 2 schemas)
 						if(selectedSchemas.size() >= 2) {							
-							showVennDiagramDlg(selectedSchemas);
+							showVennDiagram(selectedSchemas);
 						}
 					}
 					else if(item.getText().startsWith("View terms")) {
@@ -189,7 +189,7 @@ public class AffinityEditor extends OpenIIEditor implements SelectionClickedList
 						//or with a matrix of diagrams for each pair of schemas (for comparing more than 2 schemas)
 						//for the schemas in the cluster
 						if(selectedCluster.getNumSchemas() >= 2) {							
-							showVennDiagramDlg(selectedCluster.getSchemaIDs());
+							showVennDiagram(selectedCluster.getSchemaIDs());
 						}
 					}
 					else if(item.getText().startsWith("View terms")) {
@@ -236,8 +236,8 @@ public class AffinityEditor extends OpenIIEditor implements SelectionClickedList
 		}
 	}	
 	
-	/** Show a Venn Diagram dialog for the given schemas */
-	private void showVennDiagramDlg(Collection<Integer> schemaIDs) {
+	/** Show a Venn Diagram for the given schemas */
+	private void showVennDiagram(Collection<Integer> schemaIDs) {
 		//Shell shell = getSite().getWorkbenchWindow().getShell();		
 		//VennDiagramDlg dlg = null;
 		//int preferredWidth = 400;
@@ -248,7 +248,7 @@ public class AffinityEditor extends OpenIIEditor implements SelectionClickedList
 			VennDiagramUtils.sortFilteredElements(schemaInfo1);
 			CachedFilteredSchemaInfo schemaInfo2 = VennDiagramUtils.createCachedFilteredSchemaInfo(iter.next(), schemaManager);
 			VennDiagramUtils.sortFilteredElements(schemaInfo2);								
-			VennDiagramSets sets = new VennDiagramSets(schemaInfo1, schemaInfo2, 0.4, 1.0, matchScoreComputer);
+			VennDiagramSets sets = new VennDiagramSets(schemaInfo1, schemaInfo2, 0.6, 1.0, matchScoreComputer);
 			EditorManager.launchEditor("VennDiagramEditor", sets);
 			/*
 			//Create a dialog with a VennDiagramPane for 2 schemas			
@@ -268,7 +268,7 @@ public class AffinityEditor extends OpenIIEditor implements SelectionClickedList
 				VennDiagramUtils.sortFilteredElements(schemaInfo);
 				schemaInfos.add(schemaInfo);
 			}
-			VennDiagramSetsMatrix matrix = new VennDiagramSetsMatrix(schemaInfos, 0.4, 1.0, matchScoreComputer);
+			VennDiagramSetsMatrix matrix = new VennDiagramSetsMatrix(schemaInfos, 0.6, 1.0, matchScoreComputer);
 			EditorManager.launchEditor("VennDiagramEditor", matrix);
 			/*
 			//Create a dialog with a VennDiagramMatrixPane for N schemas								
