@@ -4,11 +4,9 @@ package org.mitre.harmony.matchers.voters;
 
 import java.util.ArrayList;
 
-import org.mitre.harmony.matchers.TypeMappings;
 import org.mitre.harmony.matchers.VoterScore;
 import org.mitre.harmony.matchers.VoterScores;
 import org.mitre.schemastore.model.SchemaElement;
-import org.mitre.schemastore.model.schemaInfo.FilteredSchemaInfo;
 
 /** Edit Distance Matcher Class */
 public class EditDistanceMatcher extends MatchVoter
@@ -31,11 +29,11 @@ public class EditDistanceMatcher extends MatchVoter
 		{ return "Name Similarity"; }
 	
 	/** Generates scores for the specified elements */
-	public VoterScores match(FilteredSchemaInfo schemaInfo1, FilteredSchemaInfo schemaInfo2, TypeMappings typeMappings)
+	public VoterScores match()
 	{
 		// Get the source and target elements
-		ArrayList<SchemaElement> sourceElements = schemaInfo1.getFilteredElements();
-		ArrayList<SchemaElement> targetElements = schemaInfo2.getFilteredElements();
+		ArrayList<SchemaElement> sourceElements = schema1.getFilteredElements();
+		ArrayList<SchemaElement> targetElements = schema2.getFilteredElements();
 
 		// Sets the completed and total comparisons
 		completedComparisons = 0;
@@ -45,7 +43,7 @@ public class EditDistanceMatcher extends MatchVoter
 		VoterScores scores = new VoterScores(SCORE_CEILING);		
 		for(SchemaElement sourceElement : sourceElements)
 			for(SchemaElement targetElement : targetElements)
-				if(typeMappings.isMapped(sourceElement, targetElement))
+				if(isAllowableMatch(sourceElement, targetElement))
 				{
 					if(scores.getScore(sourceElement.getId(), targetElement.getId())==null)
 					{

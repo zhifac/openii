@@ -280,15 +280,17 @@ public class TypePane extends WizardPanel implements ActionListener
 	public TypeMappings getTypeMappings()
 	{
 		// Retrieves all selected match voters from the dialog
-		TypeMappings typeMappings = new TypeMappings();
+		TypeMappings typeMappings = null;
 		if(!typeConfigPane.matchAllButton.isSelected())
+		{
+			typeMappings = new TypeMappings();
 			for(Component component : checkboxes.getComponents())
 			{
 				TypeCheckBox checkbox = (TypeCheckBox)component;
 				if(checkbox.isSelected())
 					typeMappings.addMapping(checkbox.sourceType, checkbox.targetType);
 			}
-		else typeMappings.mapAll();
+		}
 		return typeMappings;
 	}
 
@@ -296,6 +298,7 @@ public class TypePane extends WizardPanel implements ActionListener
 	public void actionPerformed(ActionEvent e)
 	{
 		typeConfigPane.customButton.setSelected(true);
-		getWizard().setNextFinishButtonEnabled(getTypeMappings().size()>0);
+		TypeMappings typeMappings = getTypeMappings();
+		getWizard().setNextFinishButtonEnabled(typeMappings==null || typeMappings.size()>0);
 	}
 }
