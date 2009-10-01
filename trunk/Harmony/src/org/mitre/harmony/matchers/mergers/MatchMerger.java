@@ -16,11 +16,15 @@ public abstract class MatchMerger
 	protected FilteredSchemaInfo schema1, schema2;
 
 	/** Stores the match merger type mapping information */
-	protected TypeMappings typeMappings;
+	private TypeMappings typeMappings;
 	
 	/** Return the name of the match merger */
 	abstract public String getName();
 
+	/** Initializes the match merger */
+	public void initialize(FilteredSchemaInfo schema1, FilteredSchemaInfo schema2)
+		{ this.schema1 = schema1; this.schema2 = schema2; this.typeMappings = null; }
+	
 	/** Initializes the match merger */
 	public void initialize(FilteredSchemaInfo schema1, FilteredSchemaInfo schema2, TypeMappings typeMappings)
 		{ this.schema1 = schema1; this.schema2 = schema2; this.typeMappings = typeMappings; initialize(); }
@@ -32,7 +36,7 @@ public abstract class MatchMerger
 	public void addVoterScores(VoterScores scores)
 	{
 		// Add all scores to merger if no type mapping is set
-		if(typeMappings==null) addVoterScoresToMerger(scores);
+		if(typeMappings==null) { addVoterScoresToMerger(scores); return; }
 		
 		// Otherwise, filter out all scores which are not part of the type mapping
 		VoterScores filteredScores = new VoterScores(scores.getScoreCeiling());

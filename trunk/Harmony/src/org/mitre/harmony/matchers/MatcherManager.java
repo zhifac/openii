@@ -51,18 +51,17 @@ public class MatcherManager
 
 	/** Run the matchers to calculate match scores */
 	static public MatchScores getScores(FilteredSchemaInfo schemaInfo1, FilteredSchemaInfo schemaInfo2, ArrayList<MatchVoter> voters, MatchMerger merger)
-	{
-		TypeMappings typeMappings = new TypeMappings();
-		typeMappings.mapAll();
-		return getScores(schemaInfo1,schemaInfo2,voters,merger,typeMappings);
-	}	
+		{ return getScores(schemaInfo1,schemaInfo2,voters,merger,null); }
 	
 	/** Run the matchers to calculate match scores */
-	static public MatchScores getScores(FilteredSchemaInfo schemaInfo1, FilteredSchemaInfo schemaInfo2, ArrayList<MatchVoter> voters, MatchMerger merger, TypeMappings typeMappings)
+	static public MatchScores getScores(FilteredSchemaInfo schema1, FilteredSchemaInfo schema2, ArrayList<MatchVoter> voters, MatchMerger merger, TypeMappings typeMappings)
 	{
-		merger.initialize(schemaInfo1, schemaInfo2, typeMappings);
+		merger.initialize(schema1, schema2, typeMappings);
 		for(MatchVoter voter : voters)
-			merger.addVoterScores(voter.match(schemaInfo1, schemaInfo2, typeMappings));
+		{
+			voter.initialize(schema1, schema2, typeMappings);
+			merger.addVoterScores(voter.match());
+		}
 		return merger.getMatchScores();
 	}
 }

@@ -169,7 +169,8 @@ public class MatchThread extends Thread
 		for(MatchVoter voter : voters)
 		{
 			progressThread.setCurrentVoter(voter);
-			merger.addVoterScores(voter.match(leftSchemaInfo, rightSchemaInfo, typeMappings));
+			voter.initialize(leftSchemaInfo, rightSchemaInfo, typeMappings);
+			merger.addVoterScores(voter.match());
 		}
 		MatchScores matchScores =  merger.getMatchScores();
 		

@@ -5,11 +5,9 @@ package org.mitre.harmony.matchers.voters;
 import java.util.ArrayList;
 import java.util.HashSet;
 
-import org.mitre.harmony.matchers.TypeMappings;
 import org.mitre.harmony.matchers.VoterScore;
 import org.mitre.harmony.matchers.VoterScores;
 import org.mitre.schemastore.model.SchemaElement;
-import org.mitre.schemastore.model.schemaInfo.FilteredSchemaInfo;
 
 /** Exact Structure Matcher Class */
 public class ExactStructureMatcher extends MatchVoter
@@ -19,10 +17,10 @@ public class ExactStructureMatcher extends MatchVoter
 		{ return "Exact Structure"; }
 	
 	/** Generates scores for the specified elements */
-	public VoterScores match(FilteredSchemaInfo schemaInfo1, FilteredSchemaInfo schemaInfo2, TypeMappings typeMappings)
+	public VoterScores match()
 	{
 		// Get the source elements
-		ArrayList<SchemaElement> sourceElements = schemaInfo1.getFilteredElements();
+		ArrayList<SchemaElement> sourceElements = schema1.getFilteredElements();
 		
 		// Sets the current and total comparisons
 		completedComparisons = 0;
@@ -34,12 +32,12 @@ public class ExactStructureMatcher extends MatchVoter
 		{
 			// Retrieve all matching target elements
 			HashSet<Integer> targetIDs = new HashSet<Integer>();
-			for(ArrayList<SchemaElement> sourcePath : schemaInfo1.getPaths(sourceElement.getId()))
+			for(ArrayList<SchemaElement> sourcePath : schema1.getPaths(sourceElement.getId()))
 			{
 				ArrayList<String> path = new ArrayList<String>();
 				for(SchemaElement element : sourcePath)
-					path.add(schemaInfo1.getDisplayName(element.getId()));
-				targetIDs.addAll(schemaInfo2.getPathIDs(path));
+					path.add(schema1.getDisplayName(element.getId()));
+				targetIDs.addAll(schema2.getPathIDs(path));
 			}
 	
 			// Set scores for the matching target elements

@@ -18,13 +18,9 @@ public class TypeMappings
 	public void addMapping(Class<SchemaElement> type1, Class<SchemaElement> type2)
 		{ mapping.add(getKey(type1,type2)); }
 	
-	/** Indicates that all types should be mapped */
-	public void mapAll()
-		{ mapping=null; }
-	
 	/** Indicates if there is a mapping between the two specified classes */
 	public boolean isMapped(SchemaElement element1, SchemaElement element2)
-		{ return mapping==null || mapping.contains(getKey(element1.getClass(),element2.getClass())); }
+		{ return mapping.contains(getKey(element1.getClass(),element2.getClass())); }
 	
 	/** Returns the number of type pairs which have been mapped */
 	public Integer size()
