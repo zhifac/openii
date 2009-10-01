@@ -11,10 +11,7 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorInput;
-import org.mitre.affinity.clusters.ClusterGroup;
-import org.mitre.affinity.view.cluster_details.ClusterDetailsDlg;
 import org.mitre.affinity.view.venn_diagram.VennDiagramUtils;
 import org.mitre.affinity.view.venn_diagram.model.CachedFilteredSchemaInfo;
 import org.mitre.affinity.view.venn_diagram.model.VennDiagramSets;
@@ -27,7 +24,9 @@ import org.mitre.openii.editors.OpenIIEditor;
 import org.mitre.openii.model.EditorInput;
 import org.mitre.openii.model.EditorManager;
 import org.mitre.openii.model.OpenIIManager;
-import org.mitre.openii.views.manager.groups.EditGroupDialog;
+import org.mitre.schemastore.model.Mapping;
+import org.mitre.schemastore.model.MappingSchema;
+import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.schemaInfo.FilteredSchemaInfo;
 import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
 
@@ -40,6 +39,7 @@ import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
 public class VennDiagramEditor extends OpenIIEditor implements VennDiagramListener
 {	
 	private SWTVennDiagramMatrix vennDiagramMatrix;
+	private VennDiagramEvent currSelectionEvent;
 	private Menu menu;
 	
 	/** Displays the Venn Diagram View */
@@ -49,7 +49,9 @@ public class VennDiagramEditor extends OpenIIEditor implements VennDiagramListen
 		parent.setLayout(new FillLayout());
 
 		VennDiagramSets sets = null;
-		VennDiagramSetsMatrix matrix = null;		
+		VennDiagramSetsMatrix matrix = null;	
+		
+		//Get the sets or matrix object passed in as the element of the editor input
 		IEditorInput editorInput = getEditorInput();
 		if(editorInput != null && editorInput instanceof EditorInput) {
 			Object element = ((EditorInput)editorInput).getElement();
@@ -99,9 +101,15 @@ public class VennDiagramEditor extends OpenIIEditor implements VennDiagramListen
 	private Menu createMenu(Composite parent) {
 		Menu menu = new Menu(vennDiagramMatrix);
 		SelectionListener menuListener = new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				//Open selected schemas in Harmony 
-				//EditorManager.launchEditor("HarmonyEditor", selectedSchemas);
+			public void widgetSelected(SelectionEvent e) {				
+				//Create a temporary mapping with the selected schemas and open in a new Harmony tab				
+				Mapping tempMapping = createMapping(currSelectionEvent.getSets().getSchema1(),
+						currSelectionEvent.getSets().getSchema2());				
+				OpenIIManager.addMapping(tempMapping);	
+				EditorManager.launchDefaultEditor(tempMapping);				
+			
+				//Remove the temporary mapping
+				OpenIIManager.deleteMapping(tempMapping.getId());
 			}
 		};
 		
@@ -111,14 +119,31 @@ public class VennDiagramEditor extends OpenIIEditor implements VennDiagramListen
 		
 		return menu;
 	}
+	
+	/** Create a temporary mapping using the given schemas */
+	private Mapping createMapping(Schema s1, Schema s2) {
+		Integer mappingID = 99;
+		//while(OpenIIManager.getMapping(mappingID) != null) mappingID++;		
+		
+		MappingSchema leftSchema = new MappingSchema(s1.getId(), s1.getName(), "", MappingSchema.LEFT);
+		//leftSchema.seetSchemaModel(OpenIIManager.getSchemaInfo(s1.getId()).get);		
+		MappingSchema rightSchema = new MappingSchema(s2.getId(), s1.getName(), "", MappingSchema.RIGHT);;
+		Mapping mapping = new Mapping(mappingID, s1.getName() + " to " + s2.getName(), 
+				"Mapping of " + s1.getName() + ", and " + s2.getName(),
+				"", new MappingSchema[] {leftSchema, rightSchema});
+		mapping.setLeftSchema(leftSchema);
+		mapping.setRightSchema(rightSchema);
+		return mapping;
+	}
 
 	/** Show right-click menu with option to open the schemas corresponding to the selected venn 
 	 * diagram in Harmony */
 	@Override
 	public void vennDiagramSelected(final VennDiagramEvent event) {
-		if(event.getMouseButton() == 3 && menu != null) {	
+		if(event.getMouseButton() == 3 && menu != null && event.getSets() != null) {	
 			menu.getDisplay().asyncExec(new Runnable() {
-				public void run() {			
+				public void run() {		
+					currSelectionEvent = event;
 					menu.setVisible(true);
 				}
 			});
