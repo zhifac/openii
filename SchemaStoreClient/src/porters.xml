@@ -10,6 +10,7 @@
       <schemaImporter>org.mitre.schemastore.porters.schemaImporters.DomainValueImporter</schemaImporter>
       <schemaImporter>org.mitre.schemastore.porters.schemaImporters.SpreadsheetImporter</schemaImporter>
       <schemaImporter>org.mitre.schemastore.porters.schemaImporters.GSIPImporter</schemaImporter>
+      <schemaImporter>org.mitre.schemastore.porters.schemaImporters.DocumentImporter</schemaImporter>
     </schemaImporters>
     <mappingImporters>
     	<mappingImporter>org.mitre.schemastore.porters.mappingImporters.M3MappingImporter</mappingImporter>
