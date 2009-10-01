@@ -95,7 +95,7 @@ public class AffinityEditor extends OpenIIEditor implements SelectionClickedList
 	{
 		// Connects the SchemaStoreClient to Affinity's SchemaStoreManager
 		AffinitySchemaStoreManager.setConnection(RepositoryManager.getClient());
-		
+	
 		//Create a dialog to show progress as Affinity loads
 		final LoadProgressDialog progressDlg = new LoadProgressDialog(parent.getShell());
 		progressDlg.setText("Opening Affinity");		
