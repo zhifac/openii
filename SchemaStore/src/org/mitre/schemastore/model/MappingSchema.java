@@ -64,4 +64,16 @@ public class MappingSchema implements Serializable
 	/** Stores the schema model */
 	public void seetSchemaModel(SchemaModel schemaModel)
 		{ model = schemaModel.getClass().getName(); }
+	
+	/** Returns the hash code */
+	public int hashCode()
+		{ return id.hashCode(); }
+	
+	/** Indicates that two mapping schemas are equals */
+	public boolean equals(Object mappingSchema)
+	{
+		if(mappingSchema instanceof MappingSchema)
+			return id.equals(((MappingSchema)mappingSchema).id) && side.equals(((MappingSchema)mappingSchema).side);
+		return false;
+	}
 }
