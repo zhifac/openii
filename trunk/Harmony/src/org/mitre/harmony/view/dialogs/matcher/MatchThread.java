@@ -174,7 +174,8 @@ public class MatchThread extends Thread
 		}
 		MatchScores matchScores =  merger.getMatchScores();
 		
-		// Store all generated match scores
+		// Store the generated match scores
+		ArrayList<MappingCell> mappingCells = new ArrayList<MappingCell>();
 		MappingCellManager manager = harmonyModel.getMappingCellManager();
 		for (MatchScore matchScore : matchScores.getScores())
 		{	
@@ -193,10 +194,10 @@ public class MatchThread extends Thread
 			Double score = matchScore.getScore();
 			Date date = Calendar.getInstance().getTime();
 			
-			// Set the mapping cell
-			MappingCell mappingCell = MappingCell.createProposedMappingCell(id, mappingID, input, output, score, matcherName, date, null);
-			manager.setMappingCell(mappingCell);
+			// Generate the mapping cell
+			mappingCells.add(MappingCell.createProposedMappingCell(id, mappingID, input, output, score, matcherName, date, null));
 		}
+		manager.setMappingCells(mappingCells);
 	}
 	
 	/** Runs the thread */

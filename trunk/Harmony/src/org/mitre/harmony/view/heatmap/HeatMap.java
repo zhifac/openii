@@ -6,6 +6,7 @@ import java.awt.image.BufferedImage;
 import javax.swing.*;
 import java.awt.event.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Stack;
 import java.util.List;
 import java.util.Hashtable;
@@ -286,8 +287,11 @@ public class HeatMap extends JPanel implements MouseListener, MouseMotionListene
     			int xID = elementsX[j].getID();
     			int yID = elementsY[k].getID();
     			if(bigGrid.isModified(xID, yID) == true)
-    				manager.validateMappingCell(manager.getMappingCellID(xID, yID));
-	    	}
+    			{
+    				Integer mappingCellID = manager.getMappingCellID(xID, yID);
+    				manager.validateMappingCellsByID(Arrays.asList(new Integer[]{mappingCellID}));
+    			}
+    		}
     	}
     }
     

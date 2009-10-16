@@ -13,6 +13,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -179,7 +180,7 @@ class MousePane extends JPanel implements MouseListener, MouseMotionListener
 				Date date = Calendar.getInstance().getTime();
 				String function = IdentityFunction.class.getCanonicalName();
 				MappingCell mappingCell = MappingCell.createValidatedMappingCell(id, mappingID, new Integer[]{leftID}, rightID, author, date, function, null);
-				manager.setMappingCell(mappingCell);
+				manager.setMappingCells(Arrays.asList(new MappingCell[]{mappingCell}));
 			}
 			repaint();
 

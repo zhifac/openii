@@ -383,18 +383,20 @@ public class SchemaTree extends JTree implements MappingListener, PreferencesLis
 	 */
 	private void updateMappingCells(Integer elementID)
 	{
-		// Mark all visible links as user selected and all others as rejected
+		// Identify the visible and hidden links
 		MappingCellManager manager = harmonyModel.getMappingCellManager();
+		ArrayList<MappingCell> visibleMappingCells = new ArrayList<MappingCell>();
+		ArrayList<MappingCell> hiddenMappingCells = new ArrayList<MappingCell>();
 		for(Integer mappingCellID : manager.getMappingCellsByElement(elementID))
 		{
 			MappingCell mappingCell = manager.getMappingCell(mappingCellID);
-			if(!mappingCell.getValidated())
-			{
-				if(harmonyModel.getFilters().isVisibleMappingCell(mappingCellID))
-					manager.validateMappingCell(mappingCell.getId());
-				else manager.deleteMappingCell(mappingCell.getId());
-			}
-		}
+			if(!mappingCell.getValidated()) visibleMappingCells.add(mappingCell);
+			hiddenMappingCells.add(mappingCell);
+		}		
+		
+		// Mark all visible links as user selected and all others as rejected
+		manager.validateMappingCells(visibleMappingCells);
+		manager.deleteMappingCells(hiddenMappingCells);
 	}
 
 	/** Returns the specified row's bounds */

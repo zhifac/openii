@@ -292,18 +292,19 @@ public class SelectedInfoManager extends AbstractManager<SelectedInfoListener> i
 	}
 		
 	/** Unselect mapping cells that have been removed */
-	public void mappingCellRemoved(MappingCell mappingCell)
+	public void mappingCellsRemoved(List<MappingCell> mappingCells)
 	{
-		List<Integer> mappingCells = Arrays.asList(new Integer[] {mappingCell.getId()});
-		setSelectedMappingCells(mappingCells,REMOVE);
+		ArrayList<Integer> mappingCellIDs = new ArrayList<Integer>();
+		for(MappingCell mappingCell : mappingCells) mappingCellIDs.add(mappingCell.getId());
+		setSelectedMappingCells(mappingCellIDs,REMOVE);
 	}
 
 	// Unused action events
 	public void mappingModified() {}
 	public void schemaAdded(Integer schemaID) {}
 	public void schemaModified(Integer schemaID) {}
-	public void mappingCellAdded(MappingCell mappingCell) {}
-	public void mappingCellModified(MappingCell oldMappingCell, MappingCell newMappingCell) {}
+	public void mappingCellsAdded(List<MappingCell> mappingCells) {}
+	public void mappingCellsModified(List<MappingCell> oldMappingCells, List<MappingCell> newMappingCells) {}
 	public void filterChanged(Integer filter) {}
 	public void confidenceChanged() {}
 	public void maxConfidenceChanged(Integer schemaObjectID) {}

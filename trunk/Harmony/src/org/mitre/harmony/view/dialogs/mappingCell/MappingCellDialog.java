@@ -10,6 +10,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -24,8 +25,8 @@ import javax.swing.KeyStroke;
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.mapping.MappingCellManager;
 import org.mitre.harmony.view.dialogs.AbstractButtonPane;
-import org.mitre.schemastore.model.mapfunctions.IdentityFunction;
 import org.mitre.schemastore.model.MappingCell;
+import org.mitre.schemastore.model.mapfunctions.IdentityFunction;
 
 /**
  * Displays the dialog which allows mapping cells to be accepted/rejected
@@ -59,31 +60,27 @@ public class MappingCellDialog extends JDialog implements MouseListener, MouseMo
 
 			// Throw out mapping cells if they have been rejected
 			if(confidencePane.isRejected())
-				for(MappingCell mappingCell : mappingCells)
-					manager.deleteMappingCell(mappingCell.getId());
+				manager.deleteMappingCells(mappingCells);
 
-			// Handles modifications to the mapping cells
-			else
+			// Validate mapping cells if they have been accepted
+			else if(confidencePane.isAccepted())
 			{
-				// Cycle through all mapping cells to update annotations
+				ArrayList<MappingCell> newMappingCells = new ArrayList<MappingCell>();
 				for(MappingCell mappingCell : annotationPane.getMappingCells())
 				{
-					// Mark mapping cells as accepted as needed
-					if(confidencePane.isAccepted())
-					{
-						Integer id = mappingCell.getId();
-						Integer mappingID = mappingCell.getMappingId();
-						String author = System.getProperty("user.name");
-						Date date = Calendar.getInstance().getTime();
-						String function = IdentityFunction.class.getCanonicalName();
-						MappingCell newMappingCell = MappingCell.createValidatedMappingCell(id, mappingID, mappingCell.getInput(), mappingCell.getOutput(), author, date, function, mappingCell.getNotes());
-						manager.setMappingCell(newMappingCell);
-					}
-
-					// Save the modified mapping cell
-					else manager.setMappingCell(mappingCell);
+					Integer id = mappingCell.getId();
+					Integer mappingID = mappingCell.getMappingId();
+					String author = System.getProperty("user.name");
+					Date date = Calendar.getInstance().getTime();
+					String function = IdentityFunction.class.getCanonicalName();
+					MappingCell newMappingCell = MappingCell.createValidatedMappingCell(id, mappingID, mappingCell.getInput(), mappingCell.getOutput(), author, date, function, mappingCell.getNotes());
+					newMappingCells.add(newMappingCell);
 				}
+				manager.setMappingCells(newMappingCells);
 			}
+			
+			// Update annotations for the selected mapping cells
+			else manager.setMappingCells(annotationPane.getMappingCells());
 			
 			// Close link dialog
 			dispose();

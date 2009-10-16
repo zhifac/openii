@@ -11,6 +11,7 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.JComponent;
@@ -53,8 +54,8 @@ public class MappingPane extends JDesktopPane implements ComponentListener, Line
 		/** Accept selected link */
 		public void actionPerformed(ActionEvent arg0)
 		{
-			for(Integer mappingCellID : harmonyModel.getSelectedInfo().getSelectedMappingCells())
-				harmonyModel.getMappingCellManager().validateMappingCell(mappingCellID);
+			List<Integer> mappingCellIDs = harmonyModel.getSelectedInfo().getSelectedMappingCells();
+			harmonyModel.getMappingCellManager().validateMappingCellsByID(mappingCellIDs);
 			harmonyModel.getSelectedInfo().setMappingCells(new ArrayList<Integer>(),false);
 		}
 	};
@@ -65,8 +66,8 @@ public class MappingPane extends JDesktopPane implements ComponentListener, Line
 		/** Reject selected link */
 		public void actionPerformed(ActionEvent arg0)
 		{
-			for(Integer mappingCellID : harmonyModel.getSelectedInfo().getSelectedMappingCells())
-				harmonyModel.getMappingCellManager().deleteMappingCell(mappingCellID);
+			List<Integer> mappingCellIDs = harmonyModel.getSelectedInfo().getSelectedMappingCells();
+			harmonyModel.getMappingCellManager().deleteMappingCellsByID(mappingCellIDs);
 			harmonyModel.getSelectedInfo().setMappingCells(new ArrayList<Integer>(),false);
 		}
 	};

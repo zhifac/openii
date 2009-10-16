@@ -2,6 +2,8 @@
 // ALL RIGHTS RESERVED
 package org.mitre.harmony.model.mapping;
 
+import java.util.List;
+
 import org.mitre.schemastore.model.MappingCell;
 
 /**
@@ -10,12 +12,12 @@ import org.mitre.schemastore.model.MappingCell;
  */
 public interface MappingCellListener
 {
-	/** Indicates that a mapping cell has been added */
-	public void mappingCellAdded(MappingCell mappingCell);
+	/** Indicates that mapping cells have been added */
+	public void mappingCellsAdded(List<MappingCell> mappingCells);
 
-	/** Indicates that a mapping cell has been modified */
-	public void mappingCellModified(MappingCell oldMappingCell, MappingCell newMappingCell);
+	/** Indicates that mapping cells have been modified */
+	public void mappingCellsModified(List<MappingCell> oldMappingCells, List<MappingCell> newMappingCells);
 	
-	/** Indicates that a mapping cell has been removed */
-	public void mappingCellRemoved(MappingCell mappingCell);
+	/** Indicates that mapping cells have been removed */
+	public void mappingCellsRemoved(List<MappingCell> mappingCells);
 }

@@ -5,6 +5,7 @@ package org.mitre.harmony.model.filters;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Hashtable;
+import java.util.List;
 
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.mapping.MappingCellListener;
@@ -54,57 +55,69 @@ class ElementConfHashTable extends Hashtable<Integer,Double> implements MappingC
 	}
 	
 	/** Updates confidences when a new mapping cell is added to the model */
-	public void mappingCellAdded(MappingCell mappingCell)
+	public void mappingCellsAdded(List<MappingCell> mappingCells)
 	{
-		// Retrieve mapping cell info
-		ArrayList<Integer> elementIDs = getElementIDs(mappingCell);
-		Double conf = mappingCell.getScore();
-		
-		// Updates the best element confidence score if needed
-		for(Integer elementID : elementIDs)
+		// Cycle through all mapping cells
+		for(MappingCell mappingCell : mappingCells)
 		{
-			Double elementConf = super.get(elementID);	
-			if(elementConf!=null && conf>elementConf)
-				{ put(elementID,conf); harmonyModel.getFilters().fireMaxConfidenceChanged(elementID); }
-		}
-	}
-
-	/** Updates confidences when a mapping cell is modified in the model */
-	public void mappingCellModified(MappingCell oldMappingCell, MappingCell newMappingCell)
-	{
-		// Retrieve mapping cell info
-		ArrayList<Integer> elementIDs = getElementIDs(newMappingCell);
-		Double oldConf = oldMappingCell.getScore();
-		Double newConf = newMappingCell.getScore();
-		
-		// Only update max confidence if the mapping cell's confidence changed
-		if(oldConf!=newConf)
+			// Retrieve mapping cell info
+			ArrayList<Integer> elementIDs = getElementIDs(mappingCell);
+			Double conf = mappingCell.getScore();
+			
+			// Updates the best element confidence score if needed
 			for(Integer elementID : elementIDs)
 			{
-				Double elementConf = super.get(elementID);
-				if(elementConf!=null)
-				{
-					boolean changed = false;
-					if(newConf>elementConf) { put(elementID,newConf); changed = true; }
-					else if(oldConf.equals(elementConf)) { remove(elementID); changed = true; }
-					if(changed) harmonyModel.getFilters().fireMaxConfidenceChanged(elementID);
-				}
+				Double elementConf = super.get(elementID);	
+				if(elementConf!=null && conf>elementConf)
+					{ put(elementID,conf); harmonyModel.getFilters().fireMaxConfidenceChanged(elementID); }
 			}
+		}
+	}
+	
+	/** Updates confidences when a mapping cell is modified in the model */
+	public void mappingCellsModified(List<MappingCell> oldMappingCells, List<MappingCell> newMappingCells)
+	{
+		// Cycle through all modified cells
+		for(int i=0; i<oldMappingCells.size(); i++)
+		{
+			// Retrieve mapping cell info
+			ArrayList<Integer> elementIDs = getElementIDs(newMappingCells.get(i));
+			Double oldConf = oldMappingCells.get(i).getScore();
+			Double newConf = newMappingCells.get(i).getScore();
+			
+			// Only update max confidence if the mapping cell's confidence changed
+			if(oldConf!=newConf)
+				for(Integer elementID : elementIDs)
+				{
+					Double elementConf = super.get(elementID);
+					if(elementConf!=null)
+					{
+						boolean changed = false;
+						if(newConf>elementConf) { put(elementID,newConf); changed = true; }
+						else if(oldConf.equals(elementConf)) { remove(elementID); changed = true; }
+						if(changed) harmonyModel.getFilters().fireMaxConfidenceChanged(elementID);
+					}
+				}
+		}
 	}
 		
 	/** Updates confidences when a mapping cell is removed from the model */
-	public void mappingCellRemoved(MappingCell mappingCell)
+	public void mappingCellsRemoved(List<MappingCell> mappingCells)
 	{
-		// Retrieve mapping cell info
-		ArrayList<Integer> elementIDs = getElementIDs(mappingCell);
-		Double conf = mappingCell.getScore();
-
-		// Modify the first node's confidence score as needed
-		for(Integer elementID : elementIDs)
+		// Cycle through mapping cells
+		for(MappingCell mappingCell : mappingCells)
 		{
-			Double elementConf = super.get(elementID);
-			if(elementConf!=null && conf.equals(elementConf))
-				{ remove(elementID); harmonyModel.getFilters().fireMaxConfidenceChanged(elementID); }
+			// Retrieve mapping cell info
+			ArrayList<Integer> elementIDs = getElementIDs(mappingCell);
+			Double conf = mappingCell.getScore();
+	
+			// Modify the first node's confidence score as needed
+			for(Integer elementID : elementIDs)
+			{
+				Double elementConf = super.get(elementID);
+				if(elementConf!=null && conf.equals(elementConf))
+					{ remove(elementID); harmonyModel.getFilters().fireMaxConfidenceChanged(elementID); }
+			}
 		}
 	}
 }

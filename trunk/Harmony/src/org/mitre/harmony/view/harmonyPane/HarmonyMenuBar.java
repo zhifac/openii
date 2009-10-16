@@ -206,7 +206,7 @@ public class HarmonyMenuBar extends JMenuBar
 	    			HashSet<Integer> finishedElements = new HashSet<Integer>(harmonyModel.getPreferences().getFinishedElements(schemaID));
 	    			harmonyModel.getPreferences().setFinished(schemaID, finishedElements, false);
 	    		}
-	    		harmonyModel.getMappingCellManager().deleteMappingCells();
+	    		harmonyModel.getMappingCellManager().deleteAllMappingCells();
 	    	}
 	    }
 	}
