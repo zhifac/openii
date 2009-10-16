@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 
 import org.mitre.harmony.model.AbstractManager;
 import org.mitre.harmony.model.HarmonyModel;
@@ -196,7 +197,7 @@ public class MappingManager extends AbstractManager<MappingListener> implements 
 	/** Creates a new mapping */
 	public void newMapping()
 	{
-		getModel().getMappingCellManager().deleteMappingCells();
+		getModel().getMappingCellManager().deleteAllMappingCells();
 		setSchemas(new ArrayList<MappingSchema>());
 		mapping = new Mapping();
 		mapping.setAuthor(System.getProperty("user.name"));
@@ -212,14 +213,11 @@ public class MappingManager extends AbstractManager<MappingListener> implements 
 			ArrayList<MappingCell> newMappingCells = SchemaStoreManager.getMappingCells(mappingID);
 
 			// Sets the new mapping information
-			getModel().getMappingCellManager().deleteMappingCells();
+			getModel().getMappingCellManager().deleteAllMappingCells();
 			setSchemas(new ArrayList<MappingSchema>(Arrays.asList(newMapping.getSchemas())));
 			mapping = newMapping;
-			for(MappingCell mappingCell : newMappingCells)
-			{
-				mappingCell.setId(null);
-				getModel().getMappingCellManager().setMappingCell(mappingCell);
-			}	
+			for(MappingCell newMappingCell : newMappingCells) newMappingCell.setId(null);
+			getModel().getMappingCellManager().setMappingCells(newMappingCells);
 			
 			// Inform listeners of modified mapping
 			setModified(false);
@@ -262,7 +260,7 @@ public class MappingManager extends AbstractManager<MappingListener> implements 
 	}
 
 	// Mark the mapping as modified whenever a mapping cell is modified
-	public void mappingCellAdded(MappingCell mappingCell) { setModified(true); }
-	public void mappingCellModified(MappingCell oldMappingCell, MappingCell newMappingCell) { setModified(true); }
-	public void mappingCellRemoved(MappingCell mappingCell) { setModified(true); }
+	public void mappingCellsAdded(List<MappingCell> mappingCells) { setModified(true); }
+	public void mappingCellsModified(List<MappingCell> oldMappingCells, List<MappingCell> newMappingCells) { setModified(true); }
+	public void mappingCellsRemoved(List<MappingCell> mappingCells) { setModified(true); }
 }

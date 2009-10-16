@@ -10,9 +10,11 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Stroke;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Vector;
 
 import javax.swing.JViewport;
@@ -191,15 +193,18 @@ public class MappingLines implements MappingCellListener, FiltersListener, Schem
 	}
 	
 	/** Updates the hierarchical filter as needed */
-	private void updateHierarchicalFilterAsNeeded(MappingCell mappingCell)
+	private void updateHierarchicalFilterAsNeeded(List<MappingCell> mappingCells)
 	{
 		if(harmonyModel.getFilters().getFilter(FilterManager.HIERARCHY_FILTER))
 		{
 			// Build up list of elements affected by changed mapping cell
 			HashSet<Integer> elementIDs = new HashSet<Integer>();
-			for(Integer inputID : mappingCell.getInput())
-				elementIDs.addAll(getHierarchicallyAffectedNodes(MappingSchema.LEFT, inputID));
-			elementIDs.addAll(getHierarchicallyAffectedNodes(MappingSchema.RIGHT, mappingCell.getOutput()));
+			for(MappingCell mappingCell : mappingCells)
+			{
+				for(Integer inputID : mappingCell.getInput())
+					elementIDs.addAll(getHierarchicallyAffectedNodes(MappingSchema.LEFT, inputID));
+				elementIDs.addAll(getHierarchicallyAffectedNodes(MappingSchema.RIGHT, mappingCell.getOutput()));
+			}
 			
 			// Translate list of affected elements into list of mapping cells
 			HashSet<Integer> mappingCellIDs = new HashSet<Integer>();
@@ -213,26 +218,31 @@ public class MappingLines implements MappingCellListener, FiltersListener, Schem
 	}
 	
 	/** Handles the addition of a mapping cell */
-	public void mappingCellAdded(MappingCell mappingCell)
+	public void mappingCellsAdded(List<MappingCell> mappingCells)
 	{
-		getLines().put(mappingCell.getId(),new MappingCellLines(mappingPane,mappingCell.getId(),harmonyModel));
-		updateHierarchicalFilterAsNeeded(mappingCell);
+		for(MappingCell mappingCell : mappingCells)
+			getLines().put(mappingCell.getId(),new MappingCellLines(mappingPane,mappingCell.getId(),harmonyModel));
+		updateHierarchicalFilterAsNeeded(mappingCells);
 		fireLinesModified();
 	}
 
 	/** Handles the modification of a mapping cell */
-	public void mappingCellModified(MappingCell oldMappingCell, MappingCell newMappingCell)
+	public void mappingCellsModified(List<MappingCell> oldMappingCells, List<MappingCell> newMappingCells)
 	{
-		getLines().get(newMappingCell.getId()).updateHidden();
-		updateHierarchicalFilterAsNeeded(newMappingCell);
+		for(MappingCell newMappingCell : newMappingCells)
+		{
+			getLines().get(newMappingCell.getId()).updateHidden();
+			updateHierarchicalFilterAsNeeded(Arrays.asList(new MappingCell[] {newMappingCell}));
+		}
 		fireLinesModified();
 	}
 	
 	/** Handles the removal of a mapping cell */
-	public void mappingCellRemoved(MappingCell mappingCell)
+	public void mappingCellsRemoved(List<MappingCell> mappingCells)
 	{
-		getLines().remove(mappingCell.getId());
-		updateHierarchicalFilterAsNeeded(mappingCell);
+		for(MappingCell mappingCell : mappingCells)
+			getLines().remove(mappingCell.getId());
+		updateHierarchicalFilterAsNeeded(mappingCells);
 		fireLinesModified();
 	}
 

@@ -149,7 +149,7 @@ class MappingCellLines
 			if(leftRow>leftTree.lastVisibleRow && rightRow>rightTree.lastVisibleRow) continue;
 			
 			// Add line linking the left and right nodes
-			lines.add(new MappingCellLine(mappingPane,pair.leftNode,pair.rightNode));
+			if(lines!=null) lines.add(new MappingCellLine(mappingPane,pair.leftNode,pair.rightNode));
 		}
 	}
 	
