@@ -269,27 +269,8 @@ public class AffinityEditor extends OpenIIEditor implements SelectionClickedList
 				schemaInfos.add(schemaInfo);
 			}
 			VennDiagramSetsMatrix matrix = new VennDiagramSetsMatrix(schemaInfos, 0.6, 1.0, matchScoreComputer);
-			EditorManager.launchEditor("VennDiagramEditor", matrix);
-			/*
-			//Create a dialog with a VennDiagramMatrixPane for N schemas								
-			ArrayList<FilteredSchemaInfo> schemaInfos = new ArrayList<FilteredSchemaInfo>();
-			while(iter.hasNext()) {
-				CachedFilteredSchemaInfo schemaInfo = VennDiagramUtils.createCachedFilteredSchemaInfo(iter.next(), schemaManager);
-				VennDiagramUtils.sortFilteredElements(schemaInfo);
-				schemaInfos.add(schemaInfo);
-			}
-			VennDiagramSetsMatrix matrix = new VennDiagramSetsMatrix(schemaInfos, 0.4, 1.0, matchScoreComputer);
-			dlg = new VennDiagramDlg(shell, SWT.APPLICATION_MODAL | SWT.RESIZE, matrix, true);
-			preferredWidth = schemaIDs.size() * 100 + 100;*/
+			EditorManager.launchEditor("VennDiagramEditor", matrix);			
 		}
-		/*
-		if(preferredWidth > shell.getSize().x) 
-			preferredWidth = shell.getSize().x;	
-		if(preferredWidth > shell.getSize().y)
-			preferredWidth = shell.getSize().y;							
-		dlg.setSize(preferredWidth, preferredWidth);
-		dlg.setVisible(true);
-		VennDiagramView.closeMouseOverDialog();*/
 	}
 	
 	//SelectionClickedListener method	
@@ -309,7 +290,7 @@ public class AffinityEditor extends OpenIIEditor implements SelectionClickedList
 			else {
 				//Multiple schemas are currently selected
 				selectedSchemas = event.selectedSchemas;
-				if(event.button == 3) {
+				if(event.button == 3 || (event.button == 1 && event.controlDown)) {
 					//Multiple schemas were right-clicked, display right-click menu for multiple schemas					
 					multiSchemaMenu.setVisible(true);
 				}
@@ -324,7 +305,7 @@ public class AffinityEditor extends OpenIIEditor implements SelectionClickedList
 				ClusterDetailsDlg dlg = new ClusterDetailsDlg(shell, SWT.APPLICATION_MODAL, affinityModel, selectedCluster);				
 				dlg.setVisible(true);		
 			}			
-			else if(event.button == 3) {
+			else if(event.button == 3 || (event.button == 1 && event.controlDown)) {
 				//A single cluster was right-clicked, display right-click menu for cluster
 				//System.out.println("cluster right clicked");				
 				clusterMenu.setVisible(true);
