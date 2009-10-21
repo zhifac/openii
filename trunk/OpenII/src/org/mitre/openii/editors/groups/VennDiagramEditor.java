@@ -140,7 +140,8 @@ public class VennDiagramEditor extends OpenIIEditor implements VennDiagramListen
 	 * diagram in Harmony */
 	@Override
 	public void vennDiagramSelected(final VennDiagramEvent event) {
-		if(event.getMouseButton() == 3 && menu != null && event.getSets() != null) {	
+		if((event.getMouseButton() == 3 || (event.getMouseButton() == 1 && event.isControlDown())) 
+				&& menu != null && event.getSets() != null) {	
 			menu.getDisplay().asyncExec(new Runnable() {
 				public void run() {		
 					currSelectionEvent = event;
