@@ -31,13 +31,12 @@ public abstract class MappingImporter extends Porter
 	// Defines the various types of URIs that may be requested
 	public static final Integer FILE = 0;
 	public static final Integer URI = 1;
-	public static final Integer M3MODEL = 2;
 	
 	/** Stores the URI being imported */
 	protected URI uri;
 	
-	/** Stores the schemas to which the mapping is associated */
-	protected ArrayList<MappingSchema> schemas;
+	/** Stores the list of aligned schemas */
+	protected ArrayList<MappingSchema> alignedSchemas;
 	
 	/** Returns the importer URI type */
 	abstract public Integer getURIType();
@@ -45,29 +44,33 @@ public abstract class MappingImporter extends Porter
 	/** Returns the importer URI file types (only needed when URI type is FILE) */
 	public ArrayList<String> getFileTypes() { return new ArrayList<String>(); }
 	
+	/** Indicates if alignment is needed */
+	public boolean schemaAlignmentNeeded() { return false; }
+	
 	/** Initializes the importer */
 	abstract protected void initialize() throws ImporterException;
-	
-	/** Returns the schemas from the specified URI */
-	abstract protected ArrayList<MappingSchema> getSchemas() throws ImporterException;
+
+	/** Returns the schemas in need of alignment */
+	abstract public ArrayList<MappingSchema> getSchemas() throws ImporterException;
 	
 	/** Returns the mapping cells from the specified URI */
 	abstract protected ArrayList<MappingCell> getMappingCells() throws ImporterException;
 
-	/** Return the schemas */
-	final public ArrayList<MappingSchema> getSchemas(URI uri) throws ImporterException
-		{ this.uri = uri; initialize(); return getSchemas(); }
-	
+	/** Initializes the importer for the specified URI */
+	final public void initialize(URI uri) throws ImporterException
+		{ this.uri = uri; initialize(); }
+
 	/** Imports the specified URI */
-	final public Integer importMapping(String name, String author, String description, ArrayList<MappingSchema> schemas, URI uri) throws ImporterException
+	final public Integer importMapping(String name, String author, String description, ArrayList<Integer> schemaIDs) throws ImporterException
 	{
-		// Initialize the importer
-		this.uri = uri;
-		this.schemas = schemas;
-		initialize();
+		// Generate the list of mapping schemas
+		alignedSchemas = getSchemas();
+		if(schemaIDs!=null)
+			for(int i=0; i<schemaIDs.size(); i++)
+				alignedSchemas.get(i).setId(schemaIDs.get(i));
 		
 		// Generate the mapping and mapping cells
-		Mapping mapping = new Mapping(null,name,description,author,schemas.toArray(new MappingSchema[0]));
+		Mapping mapping = new Mapping(null,name,description,author,alignedSchemas.toArray(new MappingSchema[0]));
 		ArrayList<MappingCell> mappingCells = getMappingCells();
 			
 		// Imports the mapping
