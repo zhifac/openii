@@ -38,6 +38,10 @@ public class UserMatchAnnotationDBImporter extends MappingImporter
 	public Integer getURIType()
 		{ return URI; }
 
+	/** Indicates that alignment is needed */
+	public boolean schemaAlignmentNeeded()
+		{ return true; }
+	
 	/** Initializes the importer */
 	protected void initialize() throws ImporterException
 	{
@@ -59,7 +63,7 @@ public class UserMatchAnnotationDBImporter extends MappingImporter
 	}
 
 	/** Returns the schemas from the specified URI */
-	protected ArrayList<MappingSchema> getSchemas() throws ImporterException
+	public ArrayList<MappingSchema> getSchemas() throws ImporterException
 	{
 		ArrayList<MappingSchema> schemas = new ArrayList<MappingSchema>();
 		schemas.add(new MappingSchema(null,"HSIP",null,MappingSchema.NONE));
@@ -75,8 +79,8 @@ public class UserMatchAnnotationDBImporter extends MappingImporter
 		// Retrieve info for the specified schemas
 		HierarchicalSchemaInfo hg1 = null, hg2 = null;
 		try {
-			hg1 = new HierarchicalSchemaInfo(client.getSchemaInfo(schemas.get(0).getId()), null);
-			hg2 = new HierarchicalSchemaInfo(client.getSchemaInfo(schemas.get(1).getId()), null);
+			hg1 = new HierarchicalSchemaInfo(client.getSchemaInfo(alignedSchemas.get(0).getId()), null);
+			hg2 = new HierarchicalSchemaInfo(client.getSchemaInfo(alignedSchemas.get(1).getId()), null);
 		}
 		catch (Exception e)
 		{

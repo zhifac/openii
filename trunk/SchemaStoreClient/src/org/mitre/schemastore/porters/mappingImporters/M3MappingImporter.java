@@ -30,7 +30,7 @@ public class M3MappingImporter extends MappingImporter
 	
 	/** Returns the importer name */
 	public String getName()
-		{ return "M3 Importer"; }
+		{ return "M3 Mapping Importer"; }
 	
 	/** Returns the importer description */
 	public String getDescription()
@@ -39,7 +39,7 @@ public class M3MappingImporter extends MappingImporter
 	/** Returns the importer URI type */
 	public Integer getURIType()
 		{ return FILE; }
-
+	
 	/** Returns the importer URI file types */
 	public ArrayList<String> getFileTypes()
 	{
@@ -48,6 +48,10 @@ public class M3MappingImporter extends MappingImporter
 		return fileTypes;
 	}
 
+	/** Indicates that alignment is needed */
+	public boolean schemaAlignmentNeeded()
+		{ return true; }
+	
 	/** Initialize the importer */
 	protected void initialize() throws ImporterException
 	{	
@@ -74,11 +78,12 @@ public class M3MappingImporter extends MappingImporter
 	}
 
 	/** Returns the imported mapping schemas */
-	protected ArrayList<MappingSchema> getSchemas() throws ImporterException
+	public ArrayList<MappingSchema> getSchemas() throws ImporterException
 	{
 		try {
 			Mapping mapping = ConvertFromXML.getMapping(element);
 			ArrayList<MappingSchema> mappingSchemas = new ArrayList<MappingSchema>(Arrays.asList(mapping.getSchemas()));
+			for(MappingSchema mappingSchema : mappingSchemas) mappingSchema.setId(null);
 			return mappingSchemas;
 		} catch(Exception e) { throw new ImporterException(ImporterException.IMPORT_FAILURE, e.getMessage()); }
 	}
@@ -90,9 +95,9 @@ public class M3MappingImporter extends MappingImporter
 			// Retrieve info for the available schemas (using original schema names for matching purposes)
 			ArrayList<HierarchicalSchemaInfo> schemaInfoList = new ArrayList<HierarchicalSchemaInfo>();
 			ArrayList<MappingSchema> origSchemas = getSchemas();
-			for(int i=0; i<schemas.size(); i++)
+			for(int i=0; i<alignedSchemas.size(); i++)
 			{
-				MappingSchema schema = schemas.get(i);
+				MappingSchema schema = alignedSchemas.get(i);
 				HierarchicalSchemaInfo schemaInfo = new HierarchicalSchemaInfo(client.getSchemaInfo(schema.getId()),schema.geetSchemaModel());
 				schemaInfo.getSchema().setName(origSchemas.get(i).getName());
 				schemaInfoList.add(schemaInfo);
