@@ -8,7 +8,8 @@ public class ImporterException extends Exception
 	// Stores various types of importer exceptions
 	public static final int INVALID_URI = 0;
 	public static final int PARSE_FAILURE = 1;
-	public static final int IMPORT_FAILURE = 2;
+	public static final int DUPLICATION_FAILURE = 2;
+	public static final int IMPORT_FAILURE = 3;
 	
 	/** Stores the exception type */
 	private Integer exceptionType;
@@ -29,6 +30,7 @@ public class ImporterException extends Exception
 		{
 			case INVALID_URI: header = "Invalid URI"; break;
 			case PARSE_FAILURE: header = "Parse Failure"; break;
+			case DUPLICATION_FAILURE: header = "Duplicated Schema"; break;
 			case IMPORT_FAILURE: header = "Import Failure"; break;			
 		}
 		return header + ": " + super.getMessage();

@@ -25,16 +25,14 @@ import org.mitre.schemastore.porters.xml.ConvertToXML;
 import org.w3c.dom.Document;
 
 /**
- * Class for moving SchemaStore format between SchemaStore Instances
- * Given schemaID, exporter finds parent types, and other schema dependencies and exports these too.
- *  
- * @author MDMORSE
+ * Class for moving SchemaStore mappings between SchemaStore repositories
+ * @author CWOLf
  */
 public class M3MappingExporter extends MappingExporter
 {	
 	/** Returns the exporter name */
 	public String getName()
-		{ return "M3 Exporter"; }
+		{ return "M3 Mapping Exporter"; }
 	
 	/** Returns the exporter description */
 	public String getDescription()

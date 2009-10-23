@@ -83,11 +83,17 @@ public class M3SchemaImporter extends SchemaImporter
 	/** Returns the schema from the specified URI */
 	public Schema getSchema(URI uri) throws ImporterException
 	{
+		Schema schema = null;
 		try {
 			NodeList schemaList = getXMLNodeList(uri);
-			Element schemaXMLElement = 	(Element)schemaList.item(schemaList.getLength()-1);
-			return ConvertFromXML.getSchema(schemaXMLElement);
+			for(int i=0 ; i<schemaList.getLength(); i++)
+			{
+				Element schemaXMLElement = 	(Element)schemaList.item(i);
+				Schema currSchema = ConvertFromXML.getSchema(schemaXMLElement);
+				if(schema==null || currSchema.getId()>schema.getId()) schema=currSchema;
+			}
 		} catch(Exception e) { throw new ImporterException(ImporterException.PARSE_FAILURE,e.getMessage()); }
+		return schema;
 	}
 
 	/** Initialize the importer */
@@ -147,8 +153,9 @@ public class M3SchemaImporter extends SchemaImporter
 			SchemaInfo schemaInfo = schemaInfoList.get(schemaInfoList.size()-1);
 
 			// Throw an exception if schema already exists in repository
-			if(getMatchedSchema(availableSchemas, schemaInfo)!=null)
-				throw new Exception("Schema already exists in repository");
+			Integer schemaID = getMatchedSchema(availableSchemas, schemaInfo);
+			if(schemaID!=null)
+				throw new ImporterException(ImporterException.DUPLICATION_FAILURE,"Schema already exists in repository ("+schemaID+")");
 			
 			// Store the information for the schema being imported
 			for(Integer key : translationTable.keySet())
@@ -156,6 +163,7 @@ public class M3SchemaImporter extends SchemaImporter
 			extendedSchemaIDs = schemaInfo.getParentSchemaIDs();
 			schemaElements = schemaInfo.getBaseElements(null);
 		}
+		catch(ImporterException e) { throw e; }
 		catch(Exception e) { throw new ImporterException(ImporterException.PARSE_FAILURE,e.getMessage()); }
 	}
 	
