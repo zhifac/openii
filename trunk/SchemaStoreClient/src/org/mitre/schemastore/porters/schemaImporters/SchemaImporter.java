@@ -30,10 +30,9 @@ public abstract class SchemaImporter extends Porter
 	// Defines the various types of URIs that may be requested
 	public static final Integer NONE = 0;
 	public static final Integer SCHEMA = 1;
-	public static final Integer REPOSITORY = 2;
-	public static final Integer FILE = 3;
-	public static final Integer M3MODEL = 4;
-	public static final Integer URI = 5;
+	public static final Integer FILE = 2;
+	public static final Integer M3MODEL = 3;
+	public static final Integer URI = 4;
 	
 	// Defines the various base domain types
 	public static final String ANY = "Any";
@@ -109,7 +108,7 @@ public abstract class SchemaImporter extends Porter
 			success = client.setParentSchemas(schema.getId(), extendedSchemaIDs);
 
 			// Lock the schema if needed
-			if(success && (getURIType()==M3MODEL || getURIType()==REPOSITORY || getURIType()==FILE))
+			if(success && (getURIType()==M3MODEL || getURIType()==FILE))
 				client.lockSchema(schema.getId());
 		}
 		catch(Exception e) {}

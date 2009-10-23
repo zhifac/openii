@@ -22,7 +22,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-/** Importer for copying schemas from other repositories */
+/** Importer for copying mappings from other repositories */
 public class M3MappingImporter extends MappingImporter
 {	
 	/** Stores the M3 document to be imported */
