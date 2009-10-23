@@ -133,7 +133,8 @@ public class MappingSchemasPage extends WizardPage
 			Composite schemaPane = new Composite(scrolledPane, SWT.NONE);
 			schemaPane.setLayout(new GridLayout(2,false));
 			try {
-				for(MappingSchema schema : propertiesPage.getImporter().getSchemas(currentURI))
+				propertiesPage.getImporter().initialize(currentURI);
+				for(MappingSchema schema : propertiesPage.getImporter().getSchemas())
 					selectionPanes.add(new SelectionPane(schemaPane,schema));
 			} catch(Exception e) { System.out.println("(E) MappingSchemasPage.setVisible - " + e.getMessage()); }
 			
@@ -151,13 +152,13 @@ public class MappingSchemasPage extends WizardPage
 		super.setVisible(visible);
 	}
 	
-	/** Returns the generated list of mapping schemas */
-	ArrayList<MappingSchema> getMappingSchemas()
+	/** Returns the generated list of aligned schema IDs */
+	ArrayList<Integer> getSchemaIDs()
 	{
-		ArrayList<MappingSchema> mappingSchemas = new ArrayList<MappingSchema>();
+		ArrayList<Integer> schemaIDs = new ArrayList<Integer>();
 		for(SelectionPane selectionPane : selectionPanes)
-			mappingSchemas.add(selectionPane.getMappingSchema());
-		return mappingSchemas;
+			schemaIDs.add(selectionPane.getMappingSchema().getId());
+		return schemaIDs;
 	}
 	
 	/** Checks completion of page */

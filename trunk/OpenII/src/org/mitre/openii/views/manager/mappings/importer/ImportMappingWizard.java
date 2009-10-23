@@ -1,6 +1,7 @@
 package org.mitre.openii.views.manager.mappings.importer;
 
 import java.net.URI;
+import java.util.ArrayList;
 
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardPage;
@@ -44,7 +45,10 @@ public class ImportMappingWizard extends Wizard
 	
 	/** Indicates if the import process can be finished */
 	public boolean canFinish()
-		{ return schemasPage.isPageComplete(); }
+	{
+		boolean schemaAlignmentNeeded = propertiesPage.getImporter().schemaAlignmentNeeded();
+		return (propertiesPage.areFieldsCompleted() && !schemaAlignmentNeeded) || schemasPage.isPageComplete();
+	}
 	
 	/** Imports the mapping once the wizard is complete */
 	public boolean performFinish()
@@ -56,9 +60,15 @@ public class ImportMappingWizard extends Wizard
 			String description = propertiesPage.getMappingDescription();
 			URI uri = propertiesPage.getURI();
 
+			// Gather up schema alignment settings
+			ArrayList<Integer> schemaIDs = null;
+			if(propertiesPage.getImporter().schemaAlignmentNeeded())
+				schemaIDs = schemasPage.getSchemaIDs();
+			
 			// Import mapping
 			MappingImporter importer = propertiesPage.getImporter();
-			Integer mappingID = importer.importMapping(name, author, description, schemasPage.getMappingSchemas(), uri);
+			importer.initialize(uri);
+			Integer mappingID = importer.importMapping(name, author, description, schemaIDs);
 			if(mappingID!=null)
 			{
 				Mapping mapping = RepositoryManager.getClient().getMapping(mappingID);

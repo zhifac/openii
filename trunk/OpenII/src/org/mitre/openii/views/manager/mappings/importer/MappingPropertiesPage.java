@@ -146,6 +146,10 @@ public class MappingPropertiesPage extends WizardPage implements ISelectionChang
 	public void selectionChanged(SelectionChangedEvent e)
 		{ updateFields(); }
 
+	/** Indicates if all fields have been completed */
+	boolean areFieldsCompleted()
+		{ return nameField.getText().length()>0 && authorField.getText().length()>0 && uriField.isValid(); }
+	
 	/** Handles modifications to the various text fields */
 	public void modifyText(ModifyEvent e)
 	{   
@@ -159,7 +163,6 @@ public class MappingPropertiesPage extends WizardPage implements ISelectionChang
 		}
 		
 		// Determine if the OK button should be activated
-		boolean completed = nameField.getText().length()>0 && authorField.getText().length()>0 && descriptionField.getText().length()>0;
-		setPageComplete(completed && uriField.isValid());
+		setPageComplete(getImporter().schemaAlignmentNeeded() && areFieldsCompleted());
 	}
 }
