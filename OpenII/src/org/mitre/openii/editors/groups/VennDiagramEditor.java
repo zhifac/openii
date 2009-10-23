@@ -138,7 +138,6 @@ public class VennDiagramEditor extends OpenIIEditor implements VennDiagramListen
 
 	/** Show right-click menu with option to open the schemas corresponding to the selected venn 
 	 * diagram in Harmony */
-	@Override
 	public void vennDiagramSelected(final VennDiagramEvent event) {
 		if((event.getMouseButton() == 3 || (event.getMouseButton() == 1 && event.isControlDown())) 
 				&& menu != null && event.getSets() != null) {	
