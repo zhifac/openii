@@ -16,33 +16,20 @@
 
 package org.mitre.schemastore.porters.mappingImporters;
 
-import org.mitre.schemastore.model.Mapping;
-import org.mitre.schemastore.model.MappingCell;
-import org.mitre.schemastore.model.MappingSchema;
-import org.mitre.schemastore.porters.ImporterException;
-import org.mitre.schemastore.porters.Porter;
-
 import java.net.URI;
 import java.util.ArrayList;
 
+import org.mitre.schemastore.model.Mapping;
+import org.mitre.schemastore.model.MappingCell;
+import org.mitre.schemastore.model.MappingSchema;
+import org.mitre.schemastore.porters.Importer;
+import org.mitre.schemastore.porters.ImporterException;
+
 /** Abstract Mapping Importer class */
-public abstract class MappingImporter extends Porter
+public abstract class MappingImporter extends Importer
 {
-	// Defines the various types of URIs that may be requested
-	public static final Integer FILE = 0;
-	public static final Integer URI = 1;
-	
-	/** Stores the URI being imported */
-	protected URI uri;
-	
 	/** Stores the list of aligned schemas */
 	protected ArrayList<MappingSchema> alignedSchemas;
-	
-	/** Returns the importer URI type */
-	abstract public Integer getURIType();
-	
-	/** Returns the importer URI file types (only needed when URI type is FILE) */
-	public ArrayList<String> getFileTypes() { return new ArrayList<String>(); }
 	
 	/** Indicates if alignment is needed */
 	public boolean schemaAlignmentNeeded() { return false; }

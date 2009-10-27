@@ -16,24 +16,17 @@
 
 package org.mitre.schemastore.porters.schemaImporters;
 
-import org.mitre.schemastore.model.Schema;
-import org.mitre.schemastore.model.SchemaElement;
-import org.mitre.schemastore.porters.ImporterException;
-import org.mitre.schemastore.porters.Porter;
-
 import java.net.URI;
 import java.util.ArrayList;
 
+import org.mitre.schemastore.model.Schema;
+import org.mitre.schemastore.model.SchemaElement;
+import org.mitre.schemastore.porters.Importer;
+import org.mitre.schemastore.porters.ImporterException;
+
 /** Abstract Schema Importer class */
-public abstract class SchemaImporter extends Porter
+public abstract class SchemaImporter extends Importer
 {
-	// Defines the various types of URIs that may be requested
-	public static final Integer NONE = 0;
-	public static final Integer SCHEMA = 1;
-	public static final Integer FILE = 2;
-	public static final Integer M3MODEL = 3;
-	public static final Integer URI = 4;
-	
 	// Defines the various base domain types
 	public static final String ANY = "Any";
 	public static final String INTEGER = "Integer";
@@ -42,21 +35,12 @@ public abstract class SchemaImporter extends Porter
 	public static final String DATETIME = "DateTime";
 	public static final String BOOLEAN = "Boolean";
 	
-	/** Stores the URI being imported */
-	protected URI uri;
-	
 	/** Stores a auto-increment counter for handing out IDs */
 	private static Integer autoIncrementedId = 0;
 	
 	/** Returns the next available ID */
 	public static Integer nextId()
 		{ return autoIncrementedId++; }
-	
-	/** Returns the importer URI type */
-	abstract public Integer getURIType();
-	
-	/** Returns the importer URI file types (only needed when URI type is FILE) */
-	public ArrayList<String> getFileTypes() { return new ArrayList<String>(); }
 	
 	/** Initializes the schema structures */
 	protected void initialize() throws ImporterException {}
