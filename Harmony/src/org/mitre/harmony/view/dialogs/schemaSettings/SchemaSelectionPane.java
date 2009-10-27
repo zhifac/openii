@@ -20,7 +20,7 @@ import javax.swing.border.EmptyBorder;
 import org.mitre.harmony.Harmony;
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.view.dialogs.TitledPane;
-import org.mitre.harmony.view.dialogs.importer.ImporterDialog;
+import org.mitre.harmony.view.dialogs.porters.SchemaImporterDialog;
 import org.mitre.schemastore.model.Schema;
 
 /** Class for allowing the selection of schemas */
@@ -120,12 +120,11 @@ public class SchemaSelectionPane extends JPanel implements ActionListener
 			parent = parent.getParent();
 			
 		// Launch the importer dialog
-		ImporterDialog dialog = new ImporterDialog((JDialog)parent, harmonyModel);
+		SchemaImporterDialog dialog = new SchemaImporterDialog((JDialog)parent, harmonyModel);
 		while(dialog.isDisplayable()) try { Thread.sleep(500); } catch(Exception e2) {}
 
 		// Update the list of schemas if a new schema was imported
-		Integer schemaID = dialog.getSchemaID();
-		if(schemaID!=null)
+		if(dialog.isSuccessful())
 		{
 			harmonyModel.getSchemaManager().initSchemas();
 			generateSchemaList();

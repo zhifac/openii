@@ -2,6 +2,8 @@ package org.mitre.harmony.model;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 import org.mitre.schemastore.client.Repository;
 import org.mitre.schemastore.client.SchemaStoreClient;
@@ -12,6 +14,7 @@ import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
 import org.mitre.schemastore.porters.PorterManager;
 import org.mitre.schemastore.porters.mappingExporters.MappingExporter;
+import org.mitre.schemastore.porters.mappingImporters.M3ProjectImporter;
 import org.mitre.schemastore.porters.schemaImporters.SchemaImporter;
 
 /**
@@ -96,7 +99,27 @@ public class SchemaStoreManager
 	
 	/** Gets the list of available schema importers */
 	public static ArrayList<SchemaImporter> getSchemaImporters()
-		{ return new PorterManager(client).getSchemaImporters(); }
+	{		
+		// Sorts the importers alphabetically
+		class ImporterComparator implements Comparator<SchemaImporter>
+			{ public int compare(SchemaImporter importer1, SchemaImporter importer2)
+				{ return importer1.getName().compareTo(importer2.getName()); } }
+
+		// Retrieves the list of available importers
+		ArrayList<SchemaImporter> importers = new ArrayList<SchemaImporter>();
+		for(SchemaImporter importer : new PorterManager(client).getSchemaImporters())
+		{
+			Integer uriType = importer.getURIType();
+			if(!uriType.equals(SchemaImporter.NONE) && !uriType.equals(SchemaImporter.SCHEMA))
+				importers.add(importer);
+		}
+		Collections.sort(importers, new ImporterComparator());
+		return importers;
+	}
+
+	/** Gets the M3 Project importer */
+	public static M3ProjectImporter getM3ProjectImporter()
+		{ return (M3ProjectImporter)new PorterManager(client).getPorter(M3ProjectImporter.class); }
 
 	/** Gets the list of available mapping exporters */
 	public static ArrayList<MappingExporter> getMappingExporters()
