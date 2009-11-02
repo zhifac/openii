@@ -71,8 +71,7 @@ public class MappingLines implements MappingCellListener, FiltersListener, Schem
 		{
 			lines = new Hashtable<Integer, MappingCellLines>();
 			for(MappingCell mappingCell : harmonyModel.getMappingCellManager().getMappingCells())
-				if(harmonyModel.getFilters().isVisibleMappingCell(mappingCell.getId()))
-					lines.put(mappingCell.getId(), new MappingCellLines(mappingPane,mappingCell.getId(),harmonyModel));
+				lines.put(mappingCell.getId(), new MappingCellLines(mappingPane,mappingCell.getId(),harmonyModel));
 		}
 		return lines;
 	}
