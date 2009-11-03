@@ -110,7 +110,7 @@ public class FilterManager extends AbstractManager<FiltersListener> implements M
 	{
 		if(side==MappingSchema.LEFT) { minLeftDepth = newMinDepth; maxLeftDepth = newMaxDepth; }
 		else { minRightDepth = newMinDepth; maxRightDepth = newMaxDepth; }
-		for(FiltersListener listener : getListeners()) listener.depthChanged();
+		for(FiltersListener listener : getListeners()) listener.depthChanged(side);
 	}
 	
 	/** Returns the minimum depth */

@@ -18,7 +18,7 @@ public interface FiltersListener
 	public void focusModified(Integer side);
 	
 	/** Indicates change to depth filter */
-	public void depthChanged();
+	public void depthChanged(Integer side);
 	
 	/** Indicates change to max confidence filter */
 	public void maxConfidenceChanged(Integer schemaObjectID);

@@ -84,7 +84,7 @@ public class SchemaScrollPane extends JScrollPane implements AdjustmentListener,
 			ArrayList<TreePath> paths = new ArrayList<TreePath>();
 			for(Integer match : matches.keySet())
 				for(DefaultMutableTreeNode node : tree.getSchemaElementNodes(match))
-					if(harmonyModel.getFilters().inFocus(tree.getSide(),node))
+					if(harmonyModel.getFilters().isVisibleNode(tree.getSide(),node))
 						paths.add(new TreePath(node.getPath()));
 			
 			// Expand the paths and mark the rows
@@ -175,10 +175,13 @@ public class SchemaScrollPane extends JScrollPane implements AdjustmentListener,
 	public void focusModified(Integer side)
 		{ if(tree.getSide().equals(side)) updateSearchResultRows(); }
 	
+	/** Handles a change in depth */
+	public void depthChanged(Integer side)
+		{ if(tree.getSide().equals(side)) updateSearchResultRows(); }
+	
 	// Unused event listener
 	public void schemaDisplayModified(SchemaTree tree) {}
 	public void confidenceChanged() {}
-	public void depthChanged() {}
 	public void filterChanged(Integer filter) {}
 	public void maxConfidenceChanged(Integer schemaObjectID) {}
 }
