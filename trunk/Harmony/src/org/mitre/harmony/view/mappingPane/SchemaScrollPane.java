@@ -3,20 +3,19 @@
 package org.mitre.harmony.view.mappingPane;
 
 import java.awt.Color;
-import java.awt.Container;
-import java.awt.Point;
-import java.awt.Graphics;
-import java.awt.Rectangle;
 import java.awt.ComponentOrientation;
+import java.awt.Container;
+import java.awt.Graphics;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.HashMap;
 
-import javax.swing.JViewport;
 import javax.swing.JComponent;
 import javax.swing.JScrollPane;
+import javax.swing.JViewport;
 import javax.swing.plaf.metal.MetalScrollBarUI;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
@@ -77,31 +76,24 @@ public class SchemaScrollPane extends JScrollPane implements AdjustmentListener,
 	{
 		searchResultRows.clear();
 
-		// Gets the matched elements
+		// Gets the matched elements in need of marking
 		HashMap<Integer,SearchResult> matches = harmonyModel.getSearchManager().getMatches(tree.getSide());
-		
-		// Identify the matched paths
-		ArrayList<TreePath> paths = new ArrayList<TreePath>();
-		Enumeration subNodes = tree.root.depthFirstEnumeration();
-		while(subNodes.hasMoreElements())
+		if(matches.size()>0)
 		{
-			DefaultMutableTreeNode node = (DefaultMutableTreeNode)subNodes.nextElement();
-			if(!node.isRoot() && node.getUserObject() instanceof Integer)
-				if(matches.containsKey(node.getUserObject()) && harmonyModel.getFilters().inFocus(tree.getSide(),node))
-					paths.add(new TreePath(node.getPath()));
+			// Identify the matched paths
+			ArrayList<TreePath> paths = new ArrayList<TreePath>();
+			for(Integer match : matches.keySet())
+				for(DefaultMutableTreeNode node : tree.getSchemaElementNodes(match))
+					if(harmonyModel.getFilters().inFocus(tree.getSide(),node))
+						paths.add(new TreePath(node.getPath()));
+			
+			// Expand the paths and mark the rows
+			tree.expandPaths(paths);
+			for(TreePath path : paths)
+				searchResultRows.add(tree.getRowForPath(path));
 		}
-		
-		// Expand the paths and mark the rows
-		for(TreePath path : paths) tree.expandFullPath(path);
-		for(TreePath path : paths) searchResultRows.add(tree.getRowForPath(path));
-
-		// Inform tree listeners of the modified tree structure
-		tree.removeSchemaTreeListener(this);
-		for(SchemaTreeListener listener : tree.getSchemaTreeListeners())
-			listener.schemaStructureModified(tree);
-		tree.addSchemaTreeListener(this);	
-		
-		// Repaint the scroll bar
+			
+		// Repaint the lines on the scroll bar
 		repaint();
 	}
 	

@@ -232,10 +232,6 @@ public class DepthPane extends JPanel
 			setMaxValue(getMaximum());
 		}
 
-		/** When the focus changes, make sure the focus' links are visible */
-		public void focusModified(Integer side)
-			{ setMinValue(1); setMaxValue(getMaximum()); }
-
 		/** When the depth changes, the depth sliders must be repainted */
 		public void depthChanged()
 			{ repaint(); }
@@ -252,6 +248,7 @@ public class DepthPane extends JPanel
 		/** Unused event listeners */
 		public void schemaDisplayModified(SchemaTree tree) {}
 		public void filterChanged(Integer filter) {}
+		public void focusModified(Integer side) {}
 		public void confidenceChanged() {}
 		public void maxConfidenceChanged(Integer schemaObjectID) {}
 		public void componentHidden(ComponentEvent arg0) {}

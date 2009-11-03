@@ -289,14 +289,26 @@ public class SchemaTree extends JTree implements MappingListener, PreferencesLis
 	}
 
 	/** Expands the specified tree path (expand any hidden parents) */
-	public void expandFullPath(TreePath path)
+	public void expandPaths(ArrayList<TreePath> paths)
 	{
-		DefaultMutableTreeNode node = (DefaultMutableTreeNode)path.getLastPathComponent();
-		while(node!=null)
+		// Expand the paths
+		boolean pathsExpanded = false;
+		for(TreePath path : paths)
 		{
-			super.expandPath(new TreePath(node.getPath()));
-			node = (DefaultMutableTreeNode)node.getParent();
+			DefaultMutableTreeNode node = (DefaultMutableTreeNode)path.getLastPathComponent();
+			if(visibleNodes.isVisible(node)) continue;
+			while(node!=null)
+			{
+				super.expandPath(new TreePath(node.getPath()));
+				node = (DefaultMutableTreeNode)node.getParent();
+			}
+			pathsExpanded = true;
 		}
+		
+		// Inform listeners of change to schema tree
+		if(pathsExpanded)
+			for(SchemaTreeListener listener : listeners)
+				listener.schemaDisplayModified(this);		
 	}
 	
 	/** Expands the specified tree node */
