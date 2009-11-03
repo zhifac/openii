@@ -174,7 +174,7 @@ public class DepthPane extends JPanel
 		}
 
 		// Stores schema tree to which this depth slider is associated
-		private Integer role;
+		private Integer side;
 		
 		// Stores the min and max values for the depth slider
 		private int minValue = 1;
@@ -185,7 +185,7 @@ public class DepthPane extends JPanel
 		{
 			minValue = minValueIn;
 			minDepthLabel.setText("Depth " + minValue + " ");
-			harmonyModel.getFilters().setDepth(role,minValue,maxValue);
+			harmonyModel.getFilters().setDepth(side,minValue,maxValue);
 		}
 		
 		/** Set max value and inform listeners */
@@ -193,14 +193,14 @@ public class DepthPane extends JPanel
 		{
 			maxValue = maxValueIn;
 			maxDepthLabel.setText(" Depth " + maxValue);
-			harmonyModel.getFilters().setDepth(role,minValue,maxValue);
+			harmonyModel.getFilters().setDepth(side,minValue,maxValue);
 		}		
 		
 		/** Depth slider constructor */
 		private DepthSlider(SchemaTree tree)
 		{
 			// Initialize the role associated with this depth pane
-			role = tree.getSide();
+			side = tree.getSide();
 
 			// Initialize the min and max depth values
 			setMinimum(minValue = 1);
@@ -233,8 +233,8 @@ public class DepthPane extends JPanel
 		}
 
 		/** When the depth changes, the depth sliders must be repainted */
-		public void depthChanged()
-			{ repaint(); }
+		public void depthChanged(Integer side)
+			{ if(this.side.equals(side)) repaint(); }
 
 		/** If the depth slider is resized, make sure that whole Harmony screen is refreshed */
 		public void componentResized(ComponentEvent arg0)

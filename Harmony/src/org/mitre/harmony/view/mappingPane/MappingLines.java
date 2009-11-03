@@ -265,7 +265,7 @@ public class MappingLines implements MappingCellListener, FiltersListener, Schem
 		{ updateLines(); }
 	
 	/** Updates mapping cell lines when depth filters changed */
-	public void depthChanged()
+	public void depthChanged(Integer side)
 		{ updateLines(); }
 
 	/** Handles changes to the selected mapping cells */

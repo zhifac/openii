@@ -242,7 +242,7 @@ public class SelectedInfoManager extends AbstractManager<SelectedInfoListener> i
 	}
 	
 	/** Unselect elements that are out of depth */
-	public void depthChanged()
+	public void depthChanged(Integer sideIn)
 	{
 		Integer sides[] = { MappingSchema.LEFT, MappingSchema.RIGHT };
 		for(Integer side : sides)
