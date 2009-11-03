@@ -164,7 +164,7 @@ public class MappingCellManager extends AbstractManager<MappingCellListener> imp
 		{
 			mappingCellsByElement.get(mappingCell.getElement1()).remove(mappingCell.getElement2());
 			mappingCellsByElement.get(mappingCell.getElement2()).remove(mappingCell.getElement1());
-			mappingCells.remove(mappingCell.getId());
+			mappingCellHash.remove(mappingCell.getId());
 		}
 		for(MappingCellListener listener : getListeners()) listener.mappingCellsRemoved(mappingCells);		
 	}
