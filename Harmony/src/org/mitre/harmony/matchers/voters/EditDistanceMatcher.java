@@ -17,6 +17,8 @@ public class EditDistanceMatcher extends MatchVoter
 	public static final double INSERT_PENALTY = -0.5;
 	public static final double MISMATCH_PENALTY = -1;
 	public static final double MAX_PENALTY = Math.min(PREFIX_PENALTY, Math.min(SUFFIX_PENALTY,Math.min(INSERT_PENALTY,MISMATCH_PENALTY / 2)));
+	
+	public static final double CHARS_PER_EVIDENCE = 4.0 * 2;
 
 	//max value that this matcher can return.  A scaling factor.
 	public static final double SCORE_CEILING = 8.0;
@@ -59,8 +61,12 @@ public class EditDistanceMatcher extends MatchVoter
 	private static VoterScore matchElements(SchemaElement sourceElement, SchemaElement targetElement)
 	{
 		// Get character representations of the element names
-		char[] source = sourceElement.getName().toCharArray();
-		char[] target = targetElement.getName().toCharArray();
+		return matchStrings(sourceElement.getName(), targetElement.getName());
+	}
+	
+	private static VoterScore matchStrings(String sourceString, String targetString) {
+		char[] source = sourceString.toLowerCase().toCharArray();
+		char[] target = targetString.toLowerCase().toCharArray();
 		
 		// Generate the distance matrix
 		double[][] distance = createDistanceMatrix(source.length, target.length);
@@ -69,17 +75,57 @@ public class EditDistanceMatcher extends MatchVoter
 		// Identify the edit distance score
 		double editDistanceScore = distance[source.length][target.length];
 		
-		if(editDistanceScore <= 0) return null;
+//		if(editDistanceScore <= 0) return null;
 
 		// Scale the result into the range (-1,+1)
-		double positive = (Math.min(source.length, target.length) + 1) * MATCH_BONUS;
-		double negative = -(source.length + target.length + 1) * MAX_PENALTY;
+//		double positive = (Math.min(source.length, target.length) + 1) * MATCH_BONUS;
+//		double negative = -(source.length + target.length + 1) * MAX_PENALTY;
 		
-		double reScaledEDScore = editDistanceScore+negative; //now in range (0,max_pos+max_neg).
-		double total_evidence = negative+positive; // should be max_pos+max_neg.
+		// Determine the largest possible score for strings of this length.
+		double positive = Math.min(source.length, target.length) * MATCH_BONUS;
+		// Determine the smallest possible score for strings of this length
+		// If there are no matches, the minimum distance will be purely a prefix and a suffix.
+		double negative = Math.min(source.length, target.length) * PREFIX_PENALTY + Math.max(source.length, target.length) * SUFFIX_PENALTY;
+		
+		// Old (incorrect) calculation of the minimum possible score.
+//		double negative = -(source.length + target.length) * MAX_PENALTY;
+		
+//		double reScaledEDScore = editDistanceScore+negative; //now in range (0,max_pos+max_neg).
+//		double total_evidence = negative+positive; // should be max_pos+max_neg.
+		
+		// Shift into the range 0..TotalEvidence.
+		double positiveEvidence = editDistanceScore - negative;
+		double totalEvidence = positive - negative;
 		
 		// modify what this procedure returns to return a MatchScore object.
-		return new VoterScore(reScaledEDScore, total_evidence);				
+		return new VoterScore(positiveEvidence / CHARS_PER_EVIDENCE, totalEvidence / CHARS_PER_EVIDENCE);				
+	}
+	
+	public static void main(String[] args) {
+		System.out.println("" + "," + "");
+		VoterScore result = matchStrings("", "");
+		System.out.println(result.getPositiveEvidence());
+		System.out.println(result.getTotalEvidence());
+		System.out.println("Jolly" + "," + "Jolly");
+		result = matchStrings("Jolly", "Jolly");
+		System.out.println(result.getPositiveEvidence());
+		System.out.println(result.getTotalEvidence());
+		System.out.println("Jolly" + "," + "JollyRoger");
+		result = matchStrings("Jolly", "JollyRoger");
+		System.out.println(result.getPositiveEvidence());
+		System.out.println(result.getTotalEvidence());
+		System.out.println("ABCDE" + "," + "FGHIJ");
+		result = matchStrings("ABCDE", "FGHIJ");
+		System.out.println(result.getPositiveEvidence());
+		System.out.println(result.getTotalEvidence());
+		System.out.println("ABCDE" + "," + "FGHIJKLMNO");
+		result = matchStrings("ABCDE", "FGHIJKLMNO");
+		System.out.println(result.getPositiveEvidence());
+		System.out.println(result.getTotalEvidence());
+		System.out.println("ConditionViolationText" + "," + "EntityOrganization");
+		result = matchStrings("ConditionViolationText", "EntityOrganization");
+		System.out.println(result.getPositiveEvidence());
+		System.out.println(result.getTotalEvidence());
 	}
 
 	/** Initializes a distance matrix */
