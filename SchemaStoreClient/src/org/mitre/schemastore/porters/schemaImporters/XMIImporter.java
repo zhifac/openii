@@ -59,9 +59,14 @@ public class XMIImporter extends SchemaImporter {
 			elements.put(""+domain.getId(), domain);	
 		}
 		
+		// TODO I don't know how to create the linkage from an Entity to the Domain that represents its
+		// data type.  In XMI/XML, this is the "UML stereotype".
+		
+		// Here are a couple of approaches that totally fail.
 		//Containment c = new Containment(nextId(), "type:" + domainName, domainName, referent.getId(), domain.getId(), 0, 1, 0);
 		//Attribute attribute = new Attribute(nextId(), domainName, 
 		//		"type:" + domainName, referent.getId(), domain.getId(), null,null,false,0);
+
 		//elements.put(""+attribute.getId(), attribute); 
 		//elements.put(""+c.getId(), c); 
 	} // End processDomain
@@ -105,6 +110,10 @@ public class XMIImporter extends SchemaImporter {
 						throw new Exception();  
 					} // End if
 					
+					// TODO I don't know how to create the linkage from a parent entity to a child entity.
+					// In XMI/XML for UML, this is the association links.
+					
+					// BTW, this method totally fails.
 					Containment c = new Containment(SchemaImporter.nextId(),
 													child.getName(), child.getDescription(), 
 													parent.getId(), child.getId(),
