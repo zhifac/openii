@@ -37,6 +37,8 @@ import org.mitre.harmony.view.mappingPane.MappingPane;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.MappingSchema;
 import org.mitre.schemastore.model.Schema;
+import org.mitre.schemastore.model.SchemaElement;
+import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
 
 /**
  * Creates the source or target schema tree 
@@ -365,15 +367,16 @@ public class SchemaTree extends JTree implements MappingListener, PreferencesLis
 		Object obj = node.getUserObject();
 		if(obj instanceof Integer)
 		{
-			HashSet<Integer> elementIDs = new HashSet<Integer>();
-			
-			// Determine the finished state of the specified node
+			// Determine the currently selected schema/element
 			Integer schemaID = getSchema(node);
-			
-			// Set finished state of specified node and its descendants
-			Enumeration descendants = node.depthFirstEnumeration();
-			while(descendants.hasMoreElements())
-				elementIDs.add(getElement((DefaultMutableTreeNode)descendants.nextElement()));
+			Integer elementID = getElement(node);
+
+			// Identify the list of elements to mark as finished
+			HierarchicalSchemaInfo schemaInfo = harmonyModel.getSchemaManager().getSchemaInfo(schemaID);
+			HashSet<Integer> elementIDs = new HashSet<Integer>();
+			elementIDs.add(elementID);
+			for(SchemaElement descendant : schemaInfo.getDescendantElements(elementID))
+				elementIDs.add(descendant.getId());
 
 			// If node set to unfinished, unmark the path back to the root as well
 			if(!isFinished)
@@ -402,8 +405,10 @@ public class SchemaTree extends JTree implements MappingListener, PreferencesLis
 		for(Integer mappingCellID : manager.getMappingCellsByElement(elementID))
 		{
 			MappingCell mappingCell = manager.getMappingCell(mappingCellID);
-			if(!mappingCell.getValidated()) visibleMappingCells.add(mappingCell);
-			hiddenMappingCells.add(mappingCell);
+			if(!harmonyModel.getFilters().isVisibleMappingCell(mappingCellID))
+				hiddenMappingCells.add(mappingCell);
+			else if(!mappingCell.getValidated())
+				visibleMappingCells.add(mappingCell);
 		}		
 		
 		// Mark all visible links as user selected and all others as rejected
