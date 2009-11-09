@@ -198,6 +198,7 @@ public class MappingManager extends AbstractManager<MappingListener> implements 
 	public void newMapping()
 	{
 		getModel().getMappingCellManager().deleteAllMappingCells();
+		getModel().getPreferences().unmarkAllFinished();
 		setSchemas(new ArrayList<MappingSchema>());
 		mapping = new Mapping();
 		mapping.setAuthor(System.getProperty("user.name"));
@@ -218,6 +219,7 @@ public class MappingManager extends AbstractManager<MappingListener> implements 
 			mapping = newMapping;
 			for(MappingCell newMappingCell : newMappingCells) newMappingCell.setId(null);
 			getModel().getMappingCellManager().setMappingCells(newMappingCells);
+			getModel().getPreferences().unmarkAllFinished();
 			
 			// Inform listeners of modified mapping
 			setModified(false);
@@ -240,7 +242,6 @@ public class MappingManager extends AbstractManager<MappingListener> implements 
 			this.mapping.setId(mappingID);
 			
 			// Indicates that the mapping has been modified
-			for(MappingListener listener : getListeners()) listener.mappingModified();
 			setModified(false);
 			return true;
 		}
