@@ -3,6 +3,7 @@ package org.mitre.schemastore.porters.schemaImporters;
 import java.io.File;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -23,6 +24,7 @@ import org.mitre.schemastore.model.Entity;
 import org.mitre.schemastore.model.Relationship;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
+import org.mitre.schemastore.model.Subtype;
 import org.mitre.schemastore.porters.ImporterException;
 
 /**
@@ -38,12 +40,18 @@ public class XMIImporter extends SchemaImporter {
 	public HashMap<String,SchemaElement> elements = new HashMap<String,SchemaElement>();
 	public HashMap<String,String> mappings = new HashMap<String,String>();
 	public HashMap<String,Domain> domains = new HashMap<String,Domain>();
+	Entity root = null;
 	
 	public void processDomain(Node n) throws Exception { 
 		String name = n.getNodeName();
 		String ref = n.getAttributes().getNamedItem("base_Class").getNodeValue(); 
 		SchemaElement referent = elements.get(ref); 
 		String domainName = null;
+		
+		if(referent == null) { 
+			System.err.println("No referent for domain " + name + " with base_Class " + ref); 
+			return;
+		}
 		
 		if(name.contains("thecustomprofile"))  
 			domainName = name.substring(name.indexOf(":") + 1);
@@ -56,7 +64,7 @@ public class XMIImporter extends SchemaImporter {
 		if(domain == null) { 
 			domain = new Domain(SchemaImporter.nextId(), domainName, "UML Stereotype imported from EA", 0);
 			domains.put(domainName, domain);
-			elements.put(""+domain.getId(), domain);	
+			elements.put(ref + "-domain", domain);
 		}
 		
 		// TODO I don't know how to create the linkage from an Entity to the Domain that represents its
@@ -66,16 +74,17 @@ public class XMIImporter extends SchemaImporter {
 		//Containment c = new Containment(nextId(), "type:" + domainName, domainName, referent.getId(), domain.getId(), 0, 1, 0);
 		//Attribute attribute = new Attribute(nextId(), domainName, 
 		//		"type:" + domainName, referent.getId(), domain.getId(), null,null,false,0);
-
+		Subtype subtype = new Subtype(nextId(), referent.getId(), domain.getId(), 0);
+		
 		//elements.put(""+attribute.getId(), attribute); 
-		//elements.put(""+c.getId(), c); 
+		elements.put(""+subtype.getId(), subtype); 
 	} // End processDomain
 	
 	public void processExtensionElement(Node element) throws Exception { 
 		NodeList children = element.getChildNodes();
 		String xmiID = element.getAttributes().getNamedItem("xmi:idref").getNodeValue();
 		SchemaElement se = elements.get(xmiID);
-		System.out.println("Extension element " + xmiID); 
+		// System.out.println("Extension element " + xmiID); 
 		if(se == null) { 
 			System.err.println("No schema element for XMI ID " + xmiID); 
 			return;
@@ -83,11 +92,11 @@ public class XMIImporter extends SchemaImporter {
 		
 		for(int x=0; x<children.getLength(); x++) { 
 			Node n = children.item(x);
-			
+			//System.out.println("ExtElement child " + n.getNodeName()); 
 			if(n.getNodeName().equals("properties")) { 
 				try {
 					String docs = n.getAttributes().getNamedItem("documentation").getNodeValue();
-					System.out.println("DOCUMENTATION: " + docs); 
+					// System.out.println("DOCUMENTATION: " + docs); 
 					se.setDescription(docs); 
 				} catch(NullPointerException e) { ; } 
 			} else if(n.getNodeName().equals("links")) { 
@@ -101,24 +110,22 @@ public class XMIImporter extends SchemaImporter {
 					SchemaElement parent = elements.get(parentID);										
 					SchemaElement child = elements.get(childID);
 					
-					System.out.println("LINK: " + 
-							           " Parent=" + parent.getName() + " => " + 
-					                   " Child=" + child.getName()); 
+					//System.out.println("LINK: " + 
+					//		           parent.getName() + " => " + 
+					//                   " " + child.getName()); 
 					
 					if(parent == null || child == null) { 
 						System.err.println("MISSING SCHEMA ELEMENTS: parent=" + parent + " child=" + child); 
-						throw new Exception();  
+						//throw new Exception();
+						return;
 					} // End if
 					
 					// TODO I don't know how to create the linkage from a parent entity to a child entity.
-					// In XMI/XML for UML, this is the association links.
-					
+					// In XMI/XML for UML, this is the association links.					
 					// BTW, this method totally fails.
-					Containment c = new Containment(SchemaImporter.nextId(),
-													child.getName(), child.getDescription(), 
-													parent.getId(), child.getId(),
-													0, 1, 0); 
-					elements.put(""+c.getId(), c); 
+					
+					Subtype subtype = new Subtype(nextId(), parent.getId(), child.getId(), 0);
+					elements.put(""+subtype.getId(), subtype);
 				} // End for
 			} // end else if
 		} // End for
@@ -126,24 +133,30 @@ public class XMIImporter extends SchemaImporter {
 	
 	public SchemaElement processClass(Node pe) {  
 		SchemaElement result = null;
-		System.out.println("Processing class: " + pe.getAttributes().getNamedItem("name"));
+		//System.out.println("Processing class: " + pe.getAttributes().getNamedItem("name"));
 		
 		String xmiID = pe.getAttributes().getNamedItem("xmi:id").getNodeValue(); 		
 		String name = pe.getAttributes().getNamedItem("name").getNodeValue();
 		String documentation = "";
 		Integer base = 0; 
+			
+		NodeList nl = pe.getChildNodes();
+		
+		if(nl.getLength() == 0) { 
+			System.err.println("0 Children for node " + name + " xmiID=" + xmiID + " skipping."); 
+			return null;
+		}
 		
 		Entity entity = new Entity(SchemaImporter.nextId(), name, documentation, base);
-				
-		elements.put(xmiID, entity);
+		//Containment entity = new Containment(nextId(), name, documentation, null, null, 0, 1, 0);
+		elements.put(xmiID, entity); 
 		
-		NodeList nl = pe.getChildNodes();
 		for(int x=0; x<nl.getLength(); x++) { 
 			Node n = nl.item(x); 
 			String locname = n.getNodeName();
 			if(!"ownedAttribute".equals(locname)) continue; 
 			String oaid = n.getAttributes().getNamedItem("xmi:id").getNodeValue();
-			System.out.println("ADDING MAPPING: " + oaid + " => " + xmiID); 
+			// System.out.println("ADDING MAPPING: " + oaid + " => " + xmiID); 
 			mappings.put(oaid, xmiID); 
 		} // End for
 		
@@ -152,7 +165,7 @@ public class XMIImporter extends SchemaImporter {
 	
 	public SchemaElement processAssociation(Node pe) { 
 		SchemaElement result = null;
-		System.out.println("Processing association: " + pe.getAttributes().getNamedItem("xmi:id"));
+		// System.out.println("Processing association: " + pe.getAttributes().getNamedItem("xmi:id"));
 		
 		ArrayList <String> memberEndIDs = new ArrayList <String>();
 		
@@ -178,7 +191,7 @@ public class XMIImporter extends SchemaImporter {
 
 		//System.out.println("Process packaged element: " + pe.getAttributes().getNamedItem("xmi:type") + 
 		//		"/" + pe.getAttributes().getNamedItem("name"));
-		
+				
 		if(nodeType.equals("uml:Class")) here = processClass(pe);
 		else if(nodeType.equals("uml:Association")) here = processAssociation(pe); 
 		
@@ -193,6 +206,7 @@ public class XMIImporter extends SchemaImporter {
 	
 	public static void main(String [] args) throws Exception {
 		Repository repository = new Repository(Repository.DERBY,new URI("file:///c:/schemastore/"),"schemastore","postgres","postgres");
+		
 		SchemaStoreClient client = new SchemaStoreClient(repository);
 		
 		XMIImporter xmi = new XMIImporter();
@@ -200,13 +214,9 @@ public class XMIImporter extends SchemaImporter {
 		
 		URI uri = new URI("file:///c:/test.xml"); 
 		
-		System.out.println("Importing.");
+		//System.out.println("Importing.");
 		Integer schemaID = xmi.importSchema("Schema " + new Date(), "Author", "Description", uri);
-		System.out.println("Finished importing."); 
-		
-		for(Schema schema : client.getSchemas()) {
-			System.out.println(schema.getId() + ": " + schema.getName());			
-		} // End for
+		System.out.println("Finished importing."); 		
 	} // End main
 	
 	public Integer getURIType() {
@@ -232,6 +242,9 @@ public class XMIImporter extends SchemaImporter {
 	protected void initialize() throws ImporterException {
 		elements = new HashMap<String,SchemaElement> (); 
 		
+		root = new Entity(SchemaImporter.nextId(), "ROOT", "ROOT ELEMENT", 0); 
+		elements.put(root.getId()+"", root); 
+		
 		try { 
 	        DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
 	        DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
@@ -249,13 +262,10 @@ public class XMIImporter extends SchemaImporter {
 	        
 	        for(int x=0; x<nl.getLength(); x++) { 
 	        	Node n = nl.item(x);
-	        	System.out.println("Examining child of root: " + n.getNodeName()); 
+	        	//System.out.println("Examining child of root: " + n.getNodeName()); 
 	        	if(n.getNodeName().equals(modelLabel)) model = n;
 	        	if(n.getNodeName().equals(extLabel)) ext = n;        	
 	        }
-	        
-	        System.out.println(model);
-	        System.out.println(ext); 
 	        
 	        NodeList pes = model.getChildNodes();
 	        for(int x=0; x<pes.getLength(); x++) { 
@@ -291,8 +301,6 @@ public class XMIImporter extends SchemaImporter {
 			e.printStackTrace();
 			throw new ImporterException(ImporterException.PARSE_FAILURE, e.getMessage()); 
 		} // End catch
-		
-		System.out.println("XMIImporter initialization complete"); 
 	} // End initialize
 	
 	protected ArrayList<SchemaElement> generateSchemaElements() throws ImporterException {
