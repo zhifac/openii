@@ -164,4 +164,11 @@ public class PreferencesManager extends AbstractManager<PreferencesListener> imp
 			else listener.elementsMarkedAsUnfinished(schemaID, elementIDs);
 		}
 	}
+	
+	/** Unmarks all finished elements */
+	public void unmarkAllFinished()
+	{
+		for(Integer schemaID : finishedElementMap.keySet())
+			setFinished(schemaID,finishedElementMap.get(schemaID),false);
+	}
 }
