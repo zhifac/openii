@@ -180,7 +180,7 @@ public class M3SchemaEditor extends OpenIIEditor
 		// Creates the properties pane
 		ArrayList<String> attributes = new ArrayList<String>();
 		Schema schema = OpenIIManager.getSchema(elementID);
-		attributes.add("Name:"+schema.getName());
+		attributes.add("Name:"+schema.getName()+" ("+schema.getId()+")");
 		attributes.add("Author:"+schema.getAuthor());
 		attributes.add("Source:"+schema.getSource());
 		attributes.add("Type:"+schema.getType());

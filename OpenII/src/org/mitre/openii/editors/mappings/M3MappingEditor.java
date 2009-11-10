@@ -134,7 +134,7 @@ public class M3MappingEditor extends OpenIIEditor
 
 		// Creates the properties pane
 		ArrayList<String> attributes = new ArrayList<String>();
-		attributes.add("Name:"+mapping.getName());
+		attributes.add("Name:"+mapping.getName()+" ("+mapping.getId()+")");
 		attributes.add("Author:"+mapping.getAuthor());
 		attributes.add("Description:"+mapping.getDescription());
 		ExpandBarWidgets.createPropertiesPane(bar, "Mapping Properties", attributes);
