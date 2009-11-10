@@ -73,7 +73,7 @@ public class TestFixtures
         ArrayList<Integer> parentSchemaIDs = new ArrayList<Integer>();
         for(int parentSchemaID : store.getParentSchemas(10))
         	parentSchemaIDs.add(parentSchemaID);
-        ArrayList<SchemaElement> list = new ArrayList<SchemaElement>(Arrays.asList(store.getSchemaElements(10).getSchemaElements()));
+        ArrayList<SchemaElement> list = new ArrayList<SchemaElement>(Arrays.asList(store.getSchemaElements(10).geetSchemaElements()));
         SchemaInfo ret = new SchemaInfo( s,parentSchemaIDs,list );
         return new HierarchicalSchemaInfo(ret, new RelationalSchemaModel());
     }
@@ -85,7 +85,7 @@ public class TestFixtures
         ArrayList<Integer> parentSchemaIDs = new ArrayList<Integer>();
         for(int parentSchemaID : store.getParentSchemas(10))
         	parentSchemaIDs.add(parentSchemaID);
-        ArrayList<SchemaElement> list = new ArrayList<SchemaElement>(Arrays.asList(store.getSchemaElements(12).getSchemaElements()));
+        ArrayList<SchemaElement> list = new ArrayList<SchemaElement>(Arrays.asList(store.getSchemaElements(12).geetSchemaElements()));
         SchemaInfo ret = new SchemaInfo( s,parentSchemaIDs,list );
         return new HierarchicalSchemaInfo(ret, new RelationalSchemaModel());
     }

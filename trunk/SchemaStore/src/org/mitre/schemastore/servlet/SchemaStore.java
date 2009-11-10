@@ -444,7 +444,7 @@ public class SchemaStore
 	public int importSchema(Schema schema, SchemaElementList schemaElementList) throws RemoteException
 	{
 		ArrayList<SchemaElement> elements = new ArrayList<SchemaElement>();
-		for(SchemaElement element : Arrays.asList(schemaElementList.getSchemaElements()))
+		for(SchemaElement element : Arrays.asList(schemaElementList.geetSchemaElements()))
 			elements.add(element.copy());
 		return ImportSchema.importSchema(this, manager, schema, elements);
 	}
