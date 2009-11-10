@@ -24,20 +24,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
      <element maxOccurs="unbounded" minOccurs="0" name="item" type="xsd:int"/>
     </sequence>
    </complexType>
-   <element name="addGroup">
-    <complexType>
-     <sequence>
-      <element name="group" type="tns1:Group"/>
-     </sequence>
-    </complexType>
-   </element>
-   <element name="addGroupResponse">
-    <complexType>
-     <sequence>
-      <element name="addGroupReturn" type="xsd:int"/>
-     </sequence>
-    </complexType>
-   </element>
    <element name="getMappings">
     <complexType/>
    </element>
@@ -53,27 +39,17 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
      <element maxOccurs="unbounded" minOccurs="0" name="item" type="tns1:MappingSchema"/>
     </sequence>
    </complexType>
-   <element name="getGroups">
-    <complexType/>
-   </element>
-   <element name="getGroupsResponse">
+   <element name="addGroup">
     <complexType>
      <sequence>
-      <element maxOccurs="unbounded" name="getGroupsReturn" type="tns1:Group"/>
+      <element name="group" type="tns1:Group"/>
      </sequence>
     </complexType>
    </element>
-   <element name="updateAttribute">
+   <element name="addGroupResponse">
     <complexType>
      <sequence>
-      <element name="attribute" type="tns1:Attribute"/>
-     </sequence>
-    </complexType>
-   </element>
-   <element name="updateAttributeResponse">
-    <complexType>
-     <sequence>
-      <element name="updateAttributeReturn" type="xsd:boolean"/>
+      <element name="addGroupReturn" type="xsd:int"/>
      </sequence>
     </complexType>
    </element>
@@ -90,6 +66,16 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
     <complexType>
      <sequence>
       <element name="setAnnotationReturn" type="xsd:boolean"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getGroups">
+    <complexType/>
+   </element>
+   <element name="getGroupsResponse">
+    <complexType>
+     <sequence>
+      <element maxOccurs="unbounded" name="getGroupsReturn" type="tns1:Group"/>
      </sequence>
     </complexType>
    </element>
@@ -121,20 +107,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
      </sequence>
     </complexType>
    </element>
-   <element name="addSubtype">
-    <complexType>
-     <sequence>
-      <element name="subtype" type="tns1:Subtype"/>
-     </sequence>
-    </complexType>
-   </element>
-   <element name="addSubtypeResponse">
-    <complexType>
-     <sequence>
-      <element name="addSubtypeReturn" type="xsd:int"/>
-     </sequence>
-    </complexType>
-   </element>
    <element name="addSchema">
     <complexType>
      <sequence>
@@ -156,6 +128,34 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
     <complexType>
      <sequence>
       <element maxOccurs="unbounded" name="getSchemasReturn" type="tns1:Schema"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="updateAttribute">
+    <complexType>
+     <sequence>
+      <element name="attribute" type="tns1:Attribute"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="updateAttributeResponse">
+    <complexType>
+     <sequence>
+      <element name="updateAttributeReturn" type="xsd:boolean"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="addSubtype">
+    <complexType>
+     <sequence>
+      <element name="subtype" type="tns1:Subtype"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="addSubtypeResponse">
+    <complexType>
+     <sequence>
+      <element name="addSubtypeReturn" type="xsd:int"/>
      </sequence>
     </complexType>
    </element>
@@ -200,11 +200,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
    <complexType name="ArrayOf_tns1_Relationship">
     <sequence>
      <element maxOccurs="unbounded" minOccurs="0" name="item" type="tns1:Relationship"/>
-    </sequence>
-   </complexType>
-   <complexType name="ArrayOf_tns1_SchemaElement">
-    <sequence>
-     <element maxOccurs="unbounded" minOccurs="0" name="item" type="tns1:SchemaElement"/>
     </sequence>
    </complexType>
    <complexType name="ArrayOf_tns1_Subtype">
@@ -1057,6 +1052,11 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
      </sequence>
     </complexType>
    </element>
+   <complexType name="ArrayOf_xsd_string">
+    <sequence>
+     <element maxOccurs="unbounded" minOccurs="0" name="item" type="xsd:string"/>
+    </sequence>
+   </complexType>
    <element name="addMappingCell">
     <complexType>
      <sequence>
@@ -1256,13 +1256,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
      </extension>
     </complexContent>
    </complexType>
-   <complexType name="Group">
-    <sequence>
-     <element name="id" nillable="true" type="xsd:int"/>
-     <element name="name" nillable="true" type="xsd:string"/>
-     <element name="parentId" nillable="true" type="xsd:int"/>
-    </sequence>
-   </complexType>
    <complexType name="MappingSchema">
     <sequence>
      <element name="id" nillable="true" type="xsd:int"/>
@@ -1276,23 +1269,19 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
      <element name="author" nillable="true" type="xsd:string"/>
      <element name="description" nillable="true" type="xsd:string"/>
      <element name="id" nillable="true" type="xsd:int"/>
+     <element name="leftSchema" nillable="true" type="tns1:MappingSchema"/>
      <element name="name" nillable="true" type="xsd:string"/>
+     <element name="rightSchema" nillable="true" type="tns1:MappingSchema"/>
      <element name="schemaIDs" nillable="true" type="impl:ArrayOf_xsd_int"/>
      <element name="schemas" nillable="true" type="impl:ArrayOf_tns1_MappingSchema"/>
     </sequence>
    </complexType>
-   <complexType name="Attribute">
-    <complexContent>
-     <extension base="tns1:SchemaElement">
-      <sequence>
-       <element name="domainID" nillable="true" type="xsd:int"/>
-       <element name="entityID" nillable="true" type="xsd:int"/>
-       <element name="key" type="xsd:boolean"/>
-       <element name="max" nillable="true" type="xsd:int"/>
-       <element name="min" nillable="true" type="xsd:int"/>
-      </sequence>
-     </extension>
-    </complexContent>
+   <complexType name="Group">
+    <sequence>
+     <element name="id" nillable="true" type="xsd:int"/>
+     <element name="name" nillable="true" type="xsd:string"/>
+     <element name="parentId" nillable="true" type="xsd:int"/>
+    </sequence>
    </complexType>
    <complexType name="Relationship">
     <complexContent>
@@ -1315,16 +1304,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
      </extension>
     </complexContent>
    </complexType>
-   <complexType name="Subtype">
-    <complexContent>
-     <extension base="tns1:SchemaElement">
-      <sequence>
-       <element name="childID" nillable="true" type="xsd:int"/>
-       <element name="parentID" nillable="true" type="xsd:int"/>
-      </sequence>
-     </extension>
-    </complexContent>
-   </complexType>
    <complexType name="Schema">
     <sequence>
      <element name="author" nillable="true" type="xsd:string"/>
@@ -1335,6 +1314,29 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
      <element name="source" nillable="true" type="xsd:string"/>
      <element name="type" nillable="true" type="xsd:string"/>
     </sequence>
+   </complexType>
+   <complexType name="Attribute">
+    <complexContent>
+     <extension base="tns1:SchemaElement">
+      <sequence>
+       <element name="domainID" nillable="true" type="xsd:int"/>
+       <element name="entityID" nillable="true" type="xsd:int"/>
+       <element name="key" type="xsd:boolean"/>
+       <element name="max" nillable="true" type="xsd:int"/>
+       <element name="min" nillable="true" type="xsd:int"/>
+      </sequence>
+     </extension>
+    </complexContent>
+   </complexType>
+   <complexType name="Subtype">
+    <complexContent>
+     <extension base="tns1:SchemaElement">
+      <sequence>
+       <element name="childID" nillable="true" type="xsd:int"/>
+       <element name="parentID" nillable="true" type="xsd:int"/>
+      </sequence>
+     </extension>
+    </complexContent>
    </complexType>
    <complexType name="Alias">
     <complexContent>
@@ -1375,7 +1377,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
      <element name="domains" nillable="true" type="impl:ArrayOf_tns1_Domain"/>
      <element name="entities" nillable="true" type="impl:ArrayOf_tns1_Entity"/>
      <element name="relationships" nillable="true" type="impl:ArrayOf_tns1_Relationship"/>
-     <element name="schemaElements" nillable="true" type="impl:ArrayOf_tns1_SchemaElement"/>
      <element name="subtypes" nillable="true" type="impl:ArrayOf_tns1_Subtype"/>
     </sequence>
    </complexType>
@@ -1396,10 +1397,12 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
      <element name="functionClass" nillable="true" type="xsd:string"/>
      <element name="id" nillable="true" type="xsd:int"/>
      <element name="input" nillable="true" type="impl:ArrayOf_xsd_int"/>
+     <element name="inputType" nillable="true" type="impl:ArrayOf_xsd_string"/>
      <element name="mappingId" nillable="true" type="xsd:int"/>
      <element name="modificationDate" nillable="true" type="xsd:dateTime"/>
      <element name="notes" nillable="true" type="xsd:string"/>
      <element name="output" nillable="true" type="xsd:int"/>
+     <element name="outputType" nillable="true" type="xsd:string"/>
      <element name="score" nillable="true" type="xsd:double"/>
      <element name="transform" nillable="true" type="xsd:string"/>
      <element name="validated" nillable="true" type="xsd:boolean"/>
@@ -2438,14 +2441,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
       </wsdl:operation>
 
-      <wsdl:operation name="addGroup">
-
-         <wsdl:input message="impl:addGroupRequest" name="addGroupRequest"/>
-
-         <wsdl:output message="impl:addGroupResponse" name="addGroupResponse"/>
-
-      </wsdl:operation>
-
       <wsdl:operation name="getMappings">
 
          <wsdl:input message="impl:getMappingsRequest" name="getMappingsRequest"/>
@@ -2454,19 +2449,11 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
       </wsdl:operation>
 
-      <wsdl:operation name="getGroups">
+      <wsdl:operation name="addGroup">
 
-         <wsdl:input message="impl:getGroupsRequest" name="getGroupsRequest"/>
+         <wsdl:input message="impl:addGroupRequest" name="addGroupRequest"/>
 
-         <wsdl:output message="impl:getGroupsResponse" name="getGroupsResponse"/>
-
-      </wsdl:operation>
-
-      <wsdl:operation name="updateAttribute">
-
-         <wsdl:input message="impl:updateAttributeRequest" name="updateAttributeRequest"/>
-
-         <wsdl:output message="impl:updateAttributeResponse" name="updateAttributeResponse"/>
+         <wsdl:output message="impl:addGroupResponse" name="addGroupResponse"/>
 
       </wsdl:operation>
 
@@ -2475,6 +2462,14 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
          <wsdl:input message="impl:setAnnotationRequest" name="setAnnotationRequest"/>
 
          <wsdl:output message="impl:setAnnotationResponse" name="setAnnotationResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getGroups">
+
+         <wsdl:input message="impl:getGroupsRequest" name="getGroupsRequest"/>
+
+         <wsdl:output message="impl:getGroupsResponse" name="getGroupsResponse"/>
 
       </wsdl:operation>
 
@@ -2494,14 +2489,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
       </wsdl:operation>
 
-      <wsdl:operation name="addSubtype">
-
-         <wsdl:input message="impl:addSubtypeRequest" name="addSubtypeRequest"/>
-
-         <wsdl:output message="impl:addSubtypeResponse" name="addSubtypeResponse"/>
-
-      </wsdl:operation>
-
       <wsdl:operation name="addSchema">
 
          <wsdl:input message="impl:addSchemaRequest" name="addSchemaRequest"/>
@@ -2515,6 +2502,22 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
          <wsdl:input message="impl:getSchemasRequest" name="getSchemasRequest"/>
 
          <wsdl:output message="impl:getSchemasResponse" name="getSchemasResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="updateAttribute">
+
+         <wsdl:input message="impl:updateAttributeRequest" name="updateAttributeRequest"/>
+
+         <wsdl:output message="impl:updateAttributeResponse" name="updateAttributeResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="addSubtype">
+
+         <wsdl:input message="impl:addSubtypeRequest" name="addSubtypeRequest"/>
+
+         <wsdl:output message="impl:addSubtypeResponse" name="addSubtypeResponse"/>
 
       </wsdl:operation>
 
@@ -3134,24 +3137,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
       </wsdl:operation>
 
-      <wsdl:operation name="addGroup">
-
-         <wsdlsoap:operation soapAction=""/>
-
-         <wsdl:input name="addGroupRequest">
-
-            <wsdlsoap:body use="literal"/>
-
-         </wsdl:input>
-
-         <wsdl:output name="addGroupResponse">
-
-            <wsdlsoap:body use="literal"/>
-
-         </wsdl:output>
-
-      </wsdl:operation>
-
       <wsdl:operation name="getMappings">
 
          <wsdlsoap:operation soapAction=""/>
@@ -3170,35 +3155,17 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
       </wsdl:operation>
 
-      <wsdl:operation name="getGroups">
+      <wsdl:operation name="addGroup">
 
          <wsdlsoap:operation soapAction=""/>
 
-         <wsdl:input name="getGroupsRequest">
+         <wsdl:input name="addGroupRequest">
 
             <wsdlsoap:body use="literal"/>
 
          </wsdl:input>
 
-         <wsdl:output name="getGroupsResponse">
-
-            <wsdlsoap:body use="literal"/>
-
-         </wsdl:output>
-
-      </wsdl:operation>
-
-      <wsdl:operation name="updateAttribute">
-
-         <wsdlsoap:operation soapAction=""/>
-
-         <wsdl:input name="updateAttributeRequest">
-
-            <wsdlsoap:body use="literal"/>
-
-         </wsdl:input>
-
-         <wsdl:output name="updateAttributeResponse">
+         <wsdl:output name="addGroupResponse">
 
             <wsdlsoap:body use="literal"/>
 
@@ -3217,6 +3184,24 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
          </wsdl:input>
 
          <wsdl:output name="setAnnotationResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getGroups">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="getGroupsRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="getGroupsResponse">
 
             <wsdlsoap:body use="literal"/>
 
@@ -3260,24 +3245,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
       </wsdl:operation>
 
-      <wsdl:operation name="addSubtype">
-
-         <wsdlsoap:operation soapAction=""/>
-
-         <wsdl:input name="addSubtypeRequest">
-
-            <wsdlsoap:body use="literal"/>
-
-         </wsdl:input>
-
-         <wsdl:output name="addSubtypeResponse">
-
-            <wsdlsoap:body use="literal"/>
-
-         </wsdl:output>
-
-      </wsdl:operation>
-
       <wsdl:operation name="addSchema">
 
          <wsdlsoap:operation soapAction=""/>
@@ -3307,6 +3274,42 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
          </wsdl:input>
 
          <wsdl:output name="getSchemasResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="updateAttribute">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="updateAttributeRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="updateAttributeResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="addSubtype">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="addSubtypeRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="addSubtypeResponse">
 
             <wsdlsoap:body use="literal"/>
 

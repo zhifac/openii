@@ -79,7 +79,7 @@ public class SchemaElementList
 	public void setAliases(Alias[] aliases) { this.aliases = aliases; }
 
 	/** Returns the schema elements */
-	public SchemaElement[] getSchemaElements()
+	public SchemaElement[] geetSchemaElements()
 	{
 		ArrayList<SchemaElement> schemaElements = new ArrayList<SchemaElement>();
 		schemaElements.addAll(Arrays.asList(entities));
