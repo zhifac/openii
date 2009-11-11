@@ -48,7 +48,7 @@ public class ExtensionLabelRenderer extends LabelRenderer
 		{
 			Integer schemaID = ((Schema)object).getId();
 			String image = "Schema";
-			if(!pane.inSelectedGroups(schemaID)) image += "Unavailable";
+			if(!pane.inSelectedTags(schemaID)) image += "Unavailable";
 			else if(schemaID.equals(pane.getSchemaID())) image += "Selected";
 			else if(schemaID.equals(pane.getComparisonSchemaID())) image += "Comparison";
 			return ImageManager.getImage(image);

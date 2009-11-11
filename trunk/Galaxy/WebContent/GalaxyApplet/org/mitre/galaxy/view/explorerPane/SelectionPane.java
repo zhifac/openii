@@ -48,7 +48,7 @@ class SelectionPane extends JPanel implements ActionListener, SelectedObjectsLis
 		// Gather the schemas to display
 		ArrayList<Schema> schemas = new ArrayList<Schema>();
 		for(Schema schema : Schemas.getSchemas())
-			if(SelectedObjects.inSelectedGroups(schema.getId())) schemas.add(schema);
+			if(SelectedObjects.inSelectedTags(schema.getId())) schemas.add(schema);
 		Schemas.sort(schemas);
 		
 		// Set the selection model
@@ -113,8 +113,8 @@ class SelectionPane extends JPanel implements ActionListener, SelectedObjectsLis
 		}
 	}
 
-	/** Handles changes to the selected groups */
-	public void selectedGroupsChanged()
+	/** Handles changes to the selected tags */
+	public void selectedTagsChanged()
 		{ updateSchemaList(); }
 	
 	// Unused listener events

@@ -77,5 +77,5 @@ public class ExplorerPane extends JPanel implements SelectedObjectsListener
 		{ if(schemaTree!=null) schemaTree.selectedComparisonSchemaChanged(); }
 	
 	// Unused listener events
-	public void selectedGroupsChanged() {}
+	public void selectedTagsChanged() {}
 }

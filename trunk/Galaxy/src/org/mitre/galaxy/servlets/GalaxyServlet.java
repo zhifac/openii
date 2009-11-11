@@ -68,28 +68,28 @@ public class GalaxyServlet extends HttpServlet
 				output = client.getSchema(schemaID);
 			}
 			
-			//-------------------------------
-			// Handles schema group requests
-			//-------------------------------
+			//-----------------------------
+			// Handles schema tag requests
+			//-----------------------------
 			
-			/** Get the list of schema groups from the web service */
-			if(action.equals("getGroups"))
+			/** Get the list of schema tags from the web service */
+			if(action.equals("getTags"))
 			{
-				output = client.getGroups();
+				output = client.getTags();
 			}
 			
-			/** Get list of schemas associated with group in web service */
-			if(action.equals("getGroupSchemas"))
+			/** Get list of schemas associated with tag in web service */
+			if(action.equals("getTagSchemas"))
 			{
-				Integer groupID = (Integer)in.readObject();
-				output = client.getGroupSchemas(groupID);				
+				Integer tagID = (Integer)in.readObject();
+				output = client.getTagSchemas(tagID);				
 			}
 			
-			/** Get list of groups associated with schema in the web service */
-			if(action.equals("getSchemaGroups"))
+			/** Get list of tags associated with schema in the web service */
+			if(action.equals("getSchemaTags"))
 			{
-				Integer groupID = (Integer)in.readObject();
-				output = client.getSchemaGroups(groupID);				
+				Integer tagID = (Integer)in.readObject();
+				output = client.getSchemaTags(tagID);				
 			}
 			
 			//--------------------------------------
@@ -176,8 +176,8 @@ public class GalaxyServlet extends HttpServlet
 			if(action.equals("getSchemaElementsForKeyword"))
 			{
 				String keyword = (String)in.readObject();
-				ArrayList<Integer> groups = (ArrayList<Integer>)in.readObject();
-				output = client.getSchemaElementsForKeyword(keyword, groups);
+				ArrayList<Integer> tags = (ArrayList<Integer>)in.readObject();
+				output = client.getSchemaElementsForKeyword(keyword, tags);
 			}
 
 			//------------------------------

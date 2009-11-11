@@ -27,11 +27,11 @@ import org.mitre.galaxy.model.server.SchemaStoreManager;
 import org.mitre.galaxy.view.explorerPane.ExplorerPane;
 import org.mitre.galaxy.view.extensionsPane.ExtensionsPane;
 import org.mitre.galaxy.view.extensionsPane.ExtensionsPaneListener;
-import org.mitre.galaxy.view.groupPane.GroupPane;
 import org.mitre.galaxy.view.schemaPane.SchemaPane;
 import org.mitre.galaxy.view.schemaPane.SchemaPaneListener;
 import org.mitre.galaxy.view.searchPane.SearchPane;
 import org.mitre.galaxy.view.searchPane.SearchPaneListener;
+import org.mitre.galaxy.view.tagPane.TagPane;
 
 /** Class for displaying the Galaxy Applet */
 public class GalaxyApplet extends Applet implements SelectedObjectsListener, SearchListener, SchemaPaneListener, ExtensionsPaneListener, SearchPaneListener, MouseListener, MouseMotionListener
@@ -104,7 +104,7 @@ public class GalaxyApplet extends Applet implements SelectedObjectsListener, Sea
 		// Construct the explorer pane
 		explorerPane.setBorder(new EmptyBorder(5,0,0,0));
 		explorerPane.addTab("Explore",new ExplorerPane());
-		explorerPane.addTab("Groups",new GroupPane());
+		explorerPane.addTab("Tags",new TagPane());
 		explorerPane.addTab("Search",searchPane);
 		
 		// Constructs the left pane
@@ -206,13 +206,13 @@ public class GalaxyApplet extends Applet implements SelectedObjectsListener, Sea
 		extensionsPane.setComparisonSchema(comparisonSchemaID);
 	}
 	
-	/** Update panes when the selected groups change */
-	public void selectedGroupsChanged()
+	/** Update panes when the selected tags change */
+	public void selectedTagsChanged()
 	{
-		HashSet<Integer> selectedSchemaGroups = null;
-		if(SelectedObjects.getSelectedGroups().size()>0)
-			selectedSchemaGroups = SelectedObjects.getSelectedGroupSchemas();
-		extensionsPane.setSelectedGroupSchemas(selectedSchemaGroups);
+		HashSet<Integer> selectedSchemaTags = null;
+		if(SelectedObjects.getSelectedTags().size()>0)
+			selectedSchemaTags = SelectedObjects.getSelectedTagSchemas();
+		extensionsPane.setSelectedTagSchemas(selectedSchemaTags);
 	}
 
 	/** Update panes when the search results change */

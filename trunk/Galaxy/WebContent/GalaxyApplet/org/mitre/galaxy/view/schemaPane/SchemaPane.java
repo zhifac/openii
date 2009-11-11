@@ -171,7 +171,7 @@ public class SchemaPane extends JPanel implements ComponentListener
 	public void componentShown(ComponentEvent e) {}
 	public void componentHidden(ComponentEvent e) {}
 	public void componentMoved(ComponentEvent e) {}
-	public void selectedGroupsChanged() {}
+	public void selectedTagsChanged() {}
 
 	/** Adds a listener monitoring the schema pane */
 	public void addSchemaPaneListener(SchemaPaneListener listener)
