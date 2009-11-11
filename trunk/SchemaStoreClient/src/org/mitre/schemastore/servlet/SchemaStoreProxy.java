@@ -50,28 +50,16 @@ public class SchemaStoreProxy implements org.mitre.schemastore.servlet.SchemaSto
     return schemaStore.getDomain(domainID);
   }
   
-  public int addGroup(org.mitre.schemastore.model.Group group) throws java.rmi.RemoteException{
-    if (schemaStore == null)
-      _initSchemaStoreProxy();
-    return schemaStore.addGroup(group);
-  }
-  
   public org.mitre.schemastore.model.Mapping[] getMappings() throws java.rmi.RemoteException{
     if (schemaStore == null)
       _initSchemaStoreProxy();
     return schemaStore.getMappings();
   }
   
-  public org.mitre.schemastore.model.Group[] getGroups() throws java.rmi.RemoteException{
+  public org.mitre.schemastore.model.Tag[] getTags() throws java.rmi.RemoteException{
     if (schemaStore == null)
       _initSchemaStoreProxy();
-    return schemaStore.getGroups();
-  }
-  
-  public boolean updateAttribute(org.mitre.schemastore.model.Attribute attribute) throws java.rmi.RemoteException{
-    if (schemaStore == null)
-      _initSchemaStoreProxy();
-    return schemaStore.updateAttribute(attribute);
+    return schemaStore.getTags();
   }
   
   public boolean setAnnotation(int elementID, java.lang.String attribute, java.lang.String value) throws java.rmi.RemoteException{
@@ -92,12 +80,6 @@ public class SchemaStoreProxy implements org.mitre.schemastore.servlet.SchemaSto
     return schemaStore.getEntity(entityID);
   }
   
-  public int addSubtype(org.mitre.schemastore.model.Subtype subtype) throws java.rmi.RemoteException{
-    if (schemaStore == null)
-      _initSchemaStoreProxy();
-    return schemaStore.addSubtype(subtype);
-  }
-  
   public int addSchema(org.mitre.schemastore.model.Schema schema) throws java.rmi.RemoteException{
     if (schemaStore == null)
       _initSchemaStoreProxy();
@@ -108,6 +90,18 @@ public class SchemaStoreProxy implements org.mitre.schemastore.servlet.SchemaSto
     if (schemaStore == null)
       _initSchemaStoreProxy();
     return schemaStore.getSchemas();
+  }
+  
+  public boolean updateAttribute(org.mitre.schemastore.model.Attribute attribute) throws java.rmi.RemoteException{
+    if (schemaStore == null)
+      _initSchemaStoreProxy();
+    return schemaStore.updateAttribute(attribute);
+  }
+  
+  public int addSubtype(org.mitre.schemastore.model.Subtype subtype) throws java.rmi.RemoteException{
+    if (schemaStore == null)
+      _initSchemaStoreProxy();
+    return schemaStore.addSubtype(subtype);
   }
   
   public int importSchema(org.mitre.schemastore.model.Schema schema, org.mitre.schemastore.model.SchemaElementList schemaElementList) throws java.rmi.RemoteException{
@@ -164,46 +158,52 @@ public class SchemaStoreProxy implements org.mitre.schemastore.servlet.SchemaSto
     return schemaStore.deleteSchema(schemaID);
   }
   
-  public org.mitre.schemastore.model.Group[] getSubgroups(int groupID) throws java.rmi.RemoteException{
+  public org.mitre.schemastore.model.Tag[] getSubcategories(int tagID) throws java.rmi.RemoteException{
     if (schemaStore == null)
       _initSchemaStoreProxy();
-    return schemaStore.getSubgroups(groupID);
+    return schemaStore.getSubcategories(tagID);
   }
   
-  public boolean updateGroup(org.mitre.schemastore.model.Group group) throws java.rmi.RemoteException{
+  public int addTag(org.mitre.schemastore.model.Tag tag) throws java.rmi.RemoteException{
     if (schemaStore == null)
       _initSchemaStoreProxy();
-    return schemaStore.updateGroup(group);
+    return schemaStore.addTag(tag);
   }
   
-  public boolean deleteGroup(int groupID) throws java.rmi.RemoteException{
+  public boolean updateTag(org.mitre.schemastore.model.Tag tag) throws java.rmi.RemoteException{
     if (schemaStore == null)
       _initSchemaStoreProxy();
-    return schemaStore.deleteGroup(groupID);
+    return schemaStore.updateTag(tag);
   }
   
-  public int[] getGroupSchemas(int groupID) throws java.rmi.RemoteException{
+  public boolean deleteTag(int tagID) throws java.rmi.RemoteException{
     if (schemaStore == null)
       _initSchemaStoreProxy();
-    return schemaStore.getGroupSchemas(groupID);
+    return schemaStore.deleteTag(tagID);
   }
   
-  public int[] getSchemaGroups(int schemaID) throws java.rmi.RemoteException{
+  public int[] getTagSchemas(int tagID) throws java.rmi.RemoteException{
     if (schemaStore == null)
       _initSchemaStoreProxy();
-    return schemaStore.getSchemaGroups(schemaID);
+    return schemaStore.getTagSchemas(tagID);
   }
   
-  public boolean addGroupToSchema(int schemaID, int groupID) throws java.rmi.RemoteException{
+  public int[] getSchemaTags(int schemaID) throws java.rmi.RemoteException{
     if (schemaStore == null)
       _initSchemaStoreProxy();
-    return schemaStore.addGroupToSchema(schemaID, groupID);
+    return schemaStore.getSchemaTags(schemaID);
   }
   
-  public boolean removeGroupFromSchema(int schemaID, int groupID) throws java.rmi.RemoteException{
+  public boolean addTagToSchema(int schemaID, int tagID) throws java.rmi.RemoteException{
     if (schemaStore == null)
       _initSchemaStoreProxy();
-    return schemaStore.removeGroupFromSchema(schemaID, groupID);
+    return schemaStore.addTagToSchema(schemaID, tagID);
+  }
+  
+  public boolean removeTagFromSchema(int schemaID, int tagID) throws java.rmi.RemoteException{
+    if (schemaStore == null)
+      _initSchemaStoreProxy();
+    return schemaStore.removeTagFromSchema(schemaID, tagID);
   }
   
   public int[] getParentSchemas(int schemaID) throws java.rmi.RemoteException{
@@ -410,10 +410,10 @@ public class SchemaStoreProxy implements org.mitre.schemastore.servlet.SchemaSto
     return schemaStore.getSchemaElementCount(schemaID);
   }
   
-  public org.mitre.schemastore.model.SchemaElementList getSchemaElementsForKeyword(java.lang.String keyword, int[] groupIDs) throws java.rmi.RemoteException{
+  public org.mitre.schemastore.model.SchemaElementList getSchemaElementsForKeyword(java.lang.String keyword, int[] tagIDs) throws java.rmi.RemoteException{
     if (schemaStore == null)
       _initSchemaStoreProxy();
-    return schemaStore.getSchemaElementsForKeyword(keyword, groupIDs);
+    return schemaStore.getSchemaElementsForKeyword(keyword, tagIDs);
   }
   
   public java.lang.String getSchemaElementType(int schemaElementID) throws java.rmi.RemoteException{
@@ -518,12 +518,6 @@ public class SchemaStoreProxy implements org.mitre.schemastore.servlet.SchemaSto
     return schemaStore.getAttribute(attributeID);
   }
   
-  public org.mitre.schemastore.model.Group getGroup(int groupID) throws java.rmi.RemoteException{
-    if (schemaStore == null)
-      _initSchemaStoreProxy();
-    return schemaStore.getGroup(groupID);
-  }
-  
   public boolean isConnected() throws java.rmi.RemoteException{
     if (schemaStore == null)
       _initSchemaStoreProxy();
@@ -552,6 +546,12 @@ public class SchemaStoreProxy implements org.mitre.schemastore.servlet.SchemaSto
     if (schemaStore == null)
       _initSchemaStoreProxy();
     return schemaStore.addAlias(alias);
+  }
+  
+  public org.mitre.schemastore.model.Tag getTag(int tagID) throws java.rmi.RemoteException{
+    if (schemaStore == null)
+      _initSchemaStoreProxy();
+    return schemaStore.getTag(tagID);
   }
   
   
