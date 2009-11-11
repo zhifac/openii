@@ -43,7 +43,7 @@ public class ManagerView extends ViewPart implements OpenIIListener, IDoubleClic
 	public void doubleClick(DoubleClickEvent e)
 	{
 		Object element = ((TreeSelection)e.getSelection()).getFirstElement();
-		if(element instanceof SchemaInGroup) element = ((SchemaInGroup)element).getSchema();
+		if(element instanceof SchemaInTag) element = ((SchemaInTag)element).getSchema();
 		if(element instanceof SchemaInMapping) element = ((SchemaInMapping)element).getSchema();
 		EditorManager.launchDefaultEditor(element);
 	}
@@ -55,9 +55,9 @@ public class ManagerView extends ViewPart implements OpenIIListener, IDoubleClic
 	public void schemaDeleted(Integer schemaID) { viewer.refresh(); }
 	public void dataSourceAdded(Integer dataSourceID) { viewer.refresh(); }
 	public void dataSourceDeleted(Integer dataSourceID) { viewer.refresh(); }
-	public void groupAdded(Integer groupID) { viewer.refresh(); }
-	public void groupModified(Integer groupID) { viewer.refresh(); }
-	public void groupDeleted(Integer groupID) { viewer.refresh(); }
+	public void tagAdded(Integer tagID) { viewer.refresh(); }
+	public void tagModified(Integer tagID) { viewer.refresh(); }
+	public void tagDeleted(Integer tagID) { viewer.refresh(); }
 	public void mappingAdded(Integer mappingID) { viewer.refresh(); }
 	public void mappingModified(Integer schemaID) { viewer.refresh(); }
 	public void mappingDeleted(Integer mappingID) { viewer.refresh(); }

@@ -21,14 +21,14 @@ public interface OpenIIListener
 	/** Informs the listener that the specified data source has been deleted */
 	public void dataSourceDeleted(Integer dataSourceID);
 	
-	/** Informs the listener that the specified group has been added */
-	public void groupAdded(Integer groupID);
+	/** Informs the listener that the specified tag has been added */
+	public void tagAdded(Integer tagID);
 
-	/** Informs the listener that the specified group has been modified */
-	public void groupModified(Integer groupID);
+	/** Informs the listener that the specified agt has been modified */
+	public void tagModified(Integer tagID);
 	
-	/** Informs the listener that the specified group has been deleted */
-	public void groupDeleted(Integer groupID);
+	/** Informs the listener that the specified tag has been deleted */
+	public void tagDeleted(Integer tagID);
 	
 	/** Informs the listener that the specified mapping has been added */
 	public void mappingAdded(Integer mappingID);

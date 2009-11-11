@@ -7,7 +7,7 @@ import org.eclipse.jface.viewers.Viewer;
 import org.mitre.openii.model.OpenIIManager;
 import org.mitre.openii.widgets.WidgetUtilities;
 import org.mitre.schemastore.model.DataSource;
-import org.mitre.schemastore.model.Group;
+import org.mitre.schemastore.model.Tag;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.Schema;
 
@@ -15,7 +15,7 @@ public class ManagerContentProvider implements ITreeContentProvider
 {
 	// Stores the headers
 	private String schemaHeader = "Schemas";
-	private String groupHeader = "Groups";
+	private String tagHeader = "Tags";
 	private String mappingHeader = "Mappings";
 	
 	/** Returns the children elements for the specified element */
@@ -24,9 +24,9 @@ public class ManagerContentProvider implements ITreeContentProvider
 		// Handles data categories
 		if(element instanceof String)
 		{
-			if(element.equals("")) return new String[] {schemaHeader,groupHeader,mappingHeader};
+			if(element.equals("")) return new String[] {schemaHeader,tagHeader,mappingHeader};
 			if(element.equals(schemaHeader)) return WidgetUtilities.sortList(OpenIIManager.getSchemas()).toArray();
-		    if(element.equals(groupHeader)) return WidgetUtilities.sortList(OpenIIManager.getSubgroups(null)).toArray();
+		    if(element.equals(tagHeader)) return WidgetUtilities.sortList(OpenIIManager.getSubcategories(null)).toArray();
 		    if(element.equals(mappingHeader)) return WidgetUtilities.sortList(OpenIIManager.getMappings()).toArray();
 		}
 		    
@@ -40,18 +40,18 @@ public class ManagerContentProvider implements ITreeContentProvider
 			return WidgetUtilities.sortList(elements).toArray();		
 		}
 		
-		// Handles group elements
-		if(element instanceof Group)
+		// Handles tag elements
+		if(element instanceof Tag)
 		{
-			Group group = (Group)element;
-			ArrayList<SchemaInGroup> schemas = new ArrayList<SchemaInGroup>();
-			for(Integer schemaID : OpenIIManager.getGroupSchemas(group.getId()))
-				schemas.add(new SchemaInGroup(group.getId(),OpenIIManager.getSchema(schemaID)));
+			Tag tag = (Tag)element;
+			ArrayList<SchemaInTag> schemas = new ArrayList<SchemaInTag>();
+			for(Integer schemaID : OpenIIManager.getTagSchemas(tag.getId()))
+				schemas.add(new SchemaInTag(tag.getId(),OpenIIManager.getSchema(schemaID)));
 
-			// Put together the list of elements listed under group
+			// Put together the list of elements listed under tag
 			ArrayList<Object> elements = new ArrayList<Object>();
 			elements.addAll(WidgetUtilities.sortList(schemas));
-			elements.addAll(WidgetUtilities.sortList(OpenIIManager.getSubgroups(group.getId())));
+			elements.addAll(WidgetUtilities.sortList(OpenIIManager.getSubcategories(tag.getId())));
 			return elements.toArray();
 		}
 			

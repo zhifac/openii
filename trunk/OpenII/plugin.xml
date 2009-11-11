@@ -38,8 +38,8 @@
       <editor name="Harmony" extensions="mapping" icon="icons/Harmony.gif" class="org.mitre.openii.editors.mappings.HarmonyEditor" id="HarmonyEditor"></editor>
       <editor name="M3 Model" extensions="mapping" icon="icons/Mapping.gif" class="org.mitre.openii.editors.mappings.M3MappingEditor" id="M3MappingEditor"></editor>
    	  <editor name="RMap" extensions="mapping" icon="icons/RMap.gif" class="org.mitre.openii.editors.mappings.RMapEditor" id="RMapEditor"></editor>
-   	  <editor name="Affinity" extensions="group" icon="icons/Harmony.gif" class="org.mitre.openii.editors.groups.AffinityEditor" id="AffinityEditor"></editor>-->
-   	  <editor name="VennDiagram" extensions="group" icon="icons/Harmony.gif" class="org.mitre.openii.editors.groups.VennDiagramEditor" id="VennDiagramEditor"></editor>-->
+   	  <editor name="Affinity" extensions="tag" icon="icons/Harmony.gif" class="org.mitre.openii.editors.tags.AffinityEditor" id="AffinityEditor"></editor>-->
+   	  <editor name="VennDiagram" extensions="tag" icon="icons/Harmony.gif" class="org.mitre.openii.editors.tags.VennDiagramEditor" id="VennDiagramEditor"></editor>-->
    	  <editor name="Explorer" extensions="schema" icon="icons/Schema.gif" class="org.mitre.openii.editors.schemas.ExplorerView" id="ExplorerView"></editor>
    </extension>
 
