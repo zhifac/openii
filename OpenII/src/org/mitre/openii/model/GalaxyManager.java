@@ -32,9 +32,9 @@ public class GalaxyManager
 		// Unused listener events
 		public void dataSourceAdded(Integer dataSourceID) {}
 		public void dataSourceDeleted(Integer dataSourceID) {}
-		public void groupAdded(Integer groupID) {}
-		public void groupDeleted(Integer groupID) {}
-		public void groupModified(Integer groupID) {}
+		public void tagAdded(Integer tagID) {}
+		public void tagDeleted(Integer tagID) {}
+		public void tagModified(Integer tagID) {}
 		public void mappingAdded(Integer mappingID) {}
 		public void mappingDeleted(Integer mappingID) {}
 		public void mappingModified(Integer mappingID) {}		

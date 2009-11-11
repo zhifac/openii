@@ -13,7 +13,7 @@ public class OptionPane extends Composite
 	public OptionPane(Composite parent, String options[], SelectionListener listener)
 	{
 		super(parent, SWT.NONE);
-		GridLayout layout = new GridLayout(options.length,true);
+		GridLayout layout = new GridLayout(options.length,false);
 		layout.marginHeight = 0; layout.marginLeft = 0;
 		setLayout(layout);
 

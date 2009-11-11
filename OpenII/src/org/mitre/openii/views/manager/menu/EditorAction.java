@@ -5,7 +5,7 @@ import org.eclipse.jface.action.IAction;
 import org.eclipse.ui.IEditorDescriptor;
 import org.mitre.openii.application.OpenIIActivator;
 import org.mitre.openii.model.EditorManager;
-import org.mitre.openii.views.manager.SchemaInGroup;
+import org.mitre.openii.views.manager.SchemaInTag;
 import org.mitre.openii.views.manager.SchemaInMapping;
 
 /** Handles an action related to launching an editor */
@@ -25,7 +25,7 @@ public class EditorAction extends Action
 		if(!title.equals("Open")) setImageDescriptor(OpenIIActivator.getImageDescriptor("icons/Editor.gif"));
 	}
 
-	/** Indicates if action is part of radio group */
+	/** Indicates if action is part of radio tag */
 	public int getStyle()
 		{ return getText().equals("Open") ? IAction.AS_UNSPECIFIED : IAction.AS_RADIO_BUTTON; }
 	
@@ -35,7 +35,7 @@ public class EditorAction extends Action
 		if(getText().equals("Open") || isChecked())
 		{
 			Object element = menuManager.getElement();
-			if(element instanceof SchemaInGroup) element = ((SchemaInGroup)element).getSchema();
+			if(element instanceof SchemaInTag) element = ((SchemaInTag)element).getSchema();
 			if(element instanceof SchemaInMapping) element = ((SchemaInMapping)element).getSchema();
 			EditorManager.launchEditor(editor.getId(), element);
 		}

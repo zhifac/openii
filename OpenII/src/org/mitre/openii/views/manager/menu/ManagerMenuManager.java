@@ -12,10 +12,10 @@ import org.eclipse.ui.IEditorRegistry;
 import org.eclipse.ui.PlatformUI;
 import org.mitre.openii.model.EditorManager;
 import org.mitre.openii.model.OpenIIManager;
-import org.mitre.openii.views.manager.SchemaInGroup;
+import org.mitre.openii.views.manager.SchemaInTag;
 import org.mitre.openii.views.manager.SchemaInMapping;
 import org.mitre.schemastore.model.DataSource;
-import org.mitre.schemastore.model.Group;
+import org.mitre.schemastore.model.Tag;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.Schema;
 
@@ -44,9 +44,9 @@ public class ManagerMenuManager extends MenuManager implements IMenuListener
 	public Integer getElementID()
 	{
 		if(element instanceof Schema) return ((Schema)element).getId();
-		if(element instanceof SchemaInGroup) return ((SchemaInGroup)element).getSchema().getId();
+		if(element instanceof SchemaInTag) return ((SchemaInTag)element).getSchema().getId();
 		if(element instanceof SchemaInMapping) return ((SchemaInMapping)element).getSchema().getId();
-		if(element instanceof Group) return ((Group)element).getId();
+		if(element instanceof Tag) return ((Tag)element).getId();
 		if(element instanceof Mapping) return ((Mapping)element).getId();
 		return null;
 	}
@@ -106,21 +106,21 @@ public class ManagerMenuManager extends MenuManager implements IMenuListener
 			menuManager.add(createDataSourceAction);
 		}
 		
-		// Display the menu for the "Groups" header
-		if(element instanceof String && element.equals("Groups"))
-			menuManager.add(new ManagerAction(this,"New Group",ManagerAction.NEW_GROUP));
+		// Display the menu for the "Tags" header
+		if(element instanceof String && element.equals("Tags"))
+			menuManager.add(new ManagerAction(this,"New Tag",ManagerAction.NEW_TAG));
 		
-		// Display the menu for a selected group
-		if(element instanceof Group)
+		// Display the menu for a selected tag
+		if(element instanceof Tag)
 		{
-			menuManager.add(new ManagerAction(this,"Add Subgroup",ManagerAction.NEW_GROUP));
-			menuManager.add(new ManagerAction(this,"Edit Group",ManagerAction.EDIT_GROUP));
-			menuManager.add(new ManagerAction(this,"Delete Group",ManagerAction.DELETE_GROUP));
+			menuManager.add(new ManagerAction(this,"Add Subcategory",ManagerAction.NEW_TAG));
+			menuManager.add(new ManagerAction(this,"Edit Tag",ManagerAction.EDIT_TAG));
+			menuManager.add(new ManagerAction(this,"Delete Tag",ManagerAction.DELETE_TAG));
 		}
 		
-		// Display the menu for a selection group schema
-		if(element instanceof SchemaInGroup)
-			menuManager.add(new ManagerAction(this,"Remove Schema from Group",ManagerAction.DELETE_GROUP_SCHEMA));
+		// Display the menu for a selection tag schema
+		if(element instanceof SchemaInTag)
+			menuManager.add(new ManagerAction(this,"Remove Schema from Tag",ManagerAction.DELETE_TAG_SCHEMA));
 			
 		// Display the menu for the "Mappings" header
 		if(element instanceof String && element.equals("Mappings"))

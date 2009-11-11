@@ -7,7 +7,7 @@ import java.util.HashMap;
 import org.eclipse.core.runtime.Preferences;
 import org.mitre.openii.application.OpenIIActivator;
 import org.mitre.schemastore.model.DataSource;
-import org.mitre.schemastore.model.Group;
+import org.mitre.schemastore.model.Tag;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.Schema;
@@ -22,8 +22,8 @@ public class OpenIIManager
 	/** Caches the list of schemas currently available */
 	static private HashMap<Integer,Schema> schemas = null;
 	
-	/** Caches the list of groups currently available */
-	static private HashMap<Integer,Group> groups = null;
+	/** Caches the list of tags currently available */
+	static private HashMap<Integer,Tag> tags = null;
 	
 	/** Stores listeners to the OpenII Manager */
 	static private ListenerGroup<OpenIIListener> listeners = new ListenerGroup<OpenIIListener>();
@@ -41,11 +41,11 @@ public class OpenIIManager
 				schemas.put(schema.getId(),schema);
 		} catch(Exception e) {}
 
-		// Initialize the list of groups
+		// Initialize the list of tags
 		try {
-			groups = new HashMap<Integer,Group>();
-			for(Group group : RepositoryManager.getClient().getGroups())
-				groups.put(group.getId(),group);
+			tags = new HashMap<Integer,Tag>();
+			for(Tag tag : RepositoryManager.getClient().getTags())
+				tags.put(tag.getId(),tag);
 		} catch(Exception e) {}
 		
 		// Informs listeners that the OpenII repository has been reset
@@ -142,134 +142,134 @@ public class OpenIIManager
 		for(OpenIIListener listener : listeners.get()) listener.schemaDeleted(schemaID);
 	}
 	
-	//------------ Group Functionality -------------
+	//------------ Tag Functionality -------------
 	
-	/** Returns the list of groups */
-	public static ArrayList<Group> getGroups()
-		{ return new ArrayList<Group>(groups.values()); }
+	/** Returns the list of tags */
+	public static ArrayList<Tag> getTags()
+		{ return new ArrayList<Tag>(tags.values()); }
 
-	/** Returns the specified group */
-	public static Group getGroup(Integer groupID)
-		{ return groups.get(groupID); }
+	/** Returns the specified tag */
+	public static Tag getTag(Integer tagID)
+		{ return tags.get(tagID); }
 	
-	/** Returns the list of subgroups for the specified group */
-	public static ArrayList<Group> getSubgroups(Integer groupID)
+	/** Returns the list of subcategories for the specified tag */
+	public static ArrayList<Tag> getSubcategories(Integer tagID)
 	{
-		try { return RepositoryManager.getClient().getSubgroups(groupID); }
-		catch(Exception e) { return new ArrayList<Group>(); }
+		try { return RepositoryManager.getClient().getSubcategories(tagID); }
+		catch(Exception e) { return new ArrayList<Tag>(); }
 	} 
 	
-	/** Add group to the repository */
-	public static Integer addGroup(Group group)
+	/** Add tag to the repository */
+	public static Integer addTag(Tag tag)
 	{
 		try {
-			Integer groupID = RepositoryManager.getClient().addGroup(group);
-			if(groupID!=null)
-				{ group.setId(groupID); fireGroupAdded(group); return groupID; }
+			Integer tagID = RepositoryManager.getClient().addTag(tag);
+			if(tagID!=null)
+				{ tag.setId(tagID); fireTagAdded(tag); return tagID; }
 		} catch(Exception e) {}
 		return null;
 	}
 	
-	/** Modifies the group in the repository */
-	public static boolean updateGroup(Group group)
+	/** Modifies the tag in the repository */
+	public static boolean updateTag(Tag tag)
 	{
 		try {
-			if(RepositoryManager.getClient().updateGroup(group))
-				{ fireGroupModified(group); return true; }
+			if(RepositoryManager.getClient().updateTag(tag))
+				{ fireTagModified(tag); return true; }
 		} catch(Exception e) {}
 		return false;
 	}
 	
-	/** Removes group from the repository */
-	public static boolean deleteGroup(Integer groupID)
+	/** Removes tag from the repository */
+	public static boolean deleteTag(Integer tagID)
 	{
-		// First move all group schemas to parent group if such a group exists
-		Integer parentID = getGroup(groupID).getParentId();
+		// First move all tag schemas to parent tag if such a tag exists
+		Integer parentID = getTag(tagID).getParentId();
 		if(parentID!=null)
 		{
-			ArrayList<Integer> schemaIDs = getGroupSchemas(groupID);
-			schemaIDs.addAll(getGroupSchemas(parentID));
-			setGroupSchemas(groupID,new ArrayList<Integer>());
-			setGroupSchemas(parentID, schemaIDs);
+			ArrayList<Integer> schemaIDs = getTagSchemas(tagID);
+			schemaIDs.addAll(getTagSchemas(parentID));
+			setTagSchemas(tagID,new ArrayList<Integer>());
+			setTagSchemas(parentID, schemaIDs);
 		}
 		
-		// Delete the group
+		// Delete the tag
 		try {
-			if(RepositoryManager.getClient().deleteGroup(groupID))
-				{ fireGroupDeleted(groupID); return true; }
+			if(RepositoryManager.getClient().deleteTag(tagID))
+				{ fireTagDeleted(tagID); return true; }
 		} catch(Exception e) {}
 		return false;
 	}
 
-	/** Returns the list of schemas associated with the specified group */
-	public static ArrayList<Integer> getGroupSchemas(Integer groupID)
-		{ try { return RepositoryManager.getClient().getGroupSchemas(groupID); } catch(Exception e) { return new ArrayList<Integer>(); } }
+	/** Returns the list of schemas associated with the specified tag */
+	public static ArrayList<Integer> getTagSchemas(Integer tagID)
+		{ try { return RepositoryManager.getClient().getTagSchemas(tagID); } catch(Exception e) { return new ArrayList<Integer>(); } }
 
-	/** Returns the list of schemas associate with child groups */
-	public static ArrayList<Integer> getChildGroupSchemas(Integer groupID)
+	/** Returns the list of schemas associate with child tags */
+	public static ArrayList<Integer> getChildTagSchemas(Integer tagID)
 	{
 		ArrayList<Integer> descendantSchemas = new ArrayList<Integer>();
-		for(Group subgroup : getSubgroups(groupID))
+		for(Tag subcategory : getSubcategories(tagID))
 		{
-			descendantSchemas.addAll(getGroupSchemas(subgroup.getId()));
-			descendantSchemas.addAll(getChildGroupSchemas(subgroup.getId()));
+			descendantSchemas.addAll(getTagSchemas(subcategory.getId()));
+			descendantSchemas.addAll(getChildTagSchemas(subcategory.getId()));
 		}
 		return descendantSchemas;
 	}
 	
-	/** Sets the list of schema associated with the specified group */
-	public static boolean setGroupSchemas(Integer groupID, ArrayList<Integer> schemaIDs)
+	/** Sets the list of schema associated with the specified tag */
+	public static boolean setTagSchemas(Integer tagID, ArrayList<Integer> schemaIDs)
 	{
-		// Only set group schemas if changes have been made
-		ArrayList<Integer> oldSchemaIDs = getGroupSchemas(groupID);
+		// Only set tag schemas if changes have been made
+		ArrayList<Integer> oldSchemaIDs = getTagSchemas(tagID);
 		Collections.sort(oldSchemaIDs);
 		Collections.sort(schemaIDs);
 		if(oldSchemaIDs.equals(schemaIDs)) return true;
 		
-		// Remove schemas in child groups from list since prohibited from being selected
-		schemaIDs.removeAll(getChildGroupSchemas(groupID));
+		// Remove schemas in child agst from list since prohibited from being selected
+		schemaIDs.removeAll(getChildTagSchemas(tagID));
 		
-		// Remove selected schemas from ancestor groups
-		Group parentGroup = getGroup(groupID);
-		while(parentGroup.getParentId()!=null)
+		// Remove selected schemas from ancestor tags
+		Tag parentTag = getTag(tagID);
+		while(parentTag.getParentId()!=null)
 		{
-			parentGroup = getGroup(parentGroup.getParentId());
-			ArrayList<Integer> parentSchemaIDs = getGroupSchemas(parentGroup.getId());
+			parentTag = getTag(parentTag.getParentId());
+			ArrayList<Integer> parentSchemaIDs = getTagSchemas(parentTag.getId());
 			parentSchemaIDs.removeAll(schemaIDs);
-			setGroupSchemas(parentGroup.getId(), parentSchemaIDs);
+			setTagSchemas(parentTag.getId(), parentSchemaIDs);
 		}
 		
-		// Add and remove schemas from the group as needed
+		// Add and remove schemas from the tag as needed
 		try {
 			for(Integer oldSchemaID : oldSchemaIDs)
-				if(!schemaIDs.contains(oldSchemaID)) RepositoryManager.getClient().removeGroupFromSchema(oldSchemaID, groupID);
+				if(!schemaIDs.contains(oldSchemaID)) RepositoryManager.getClient().removeTagFromSchema(oldSchemaID, tagID);
 			for(Integer schemaID : schemaIDs)
-				if(!oldSchemaIDs.contains(schemaID)) RepositoryManager.getClient().addGroupToSchema(schemaID, groupID);
+				if(!oldSchemaIDs.contains(schemaID)) RepositoryManager.getClient().addTagToSchema(schemaID, tagID);
 		} catch(Exception e) { return false; }
 		
-		// Inform listeners that the group has been modified
-		fireGroupModified(getGroup(groupID));
+		// Inform listeners that the tag has been modified
+		fireTagModified(getTag(tagID));
 		return true;
 	}
 	
-	/** Inform listeners that group was added */
-	public static void fireGroupAdded(Group group)
+	/** Inform listeners that tag was added */
+	public static void fireTagAdded(Tag tag)
 	{
-		groups.put(group.getId(), group);
-		for(OpenIIListener listener : listeners.get()) listener.groupAdded(group.getId());
+		tags.put(tag.getId(), tag);
+		for(OpenIIListener listener : listeners.get()) listener.tagAdded(tag.getId());
 	}
 
-	/** Inform listeners that group was modified */
-	public static void fireGroupModified(Group group)
+	/** Inform listeners that tag was modified */
+	public static void fireTagModified(Tag tag)
 	{
-		groups.put(group.getId(), group);
-		for(OpenIIListener listener : listeners.get()) listener.groupModified(group.getId()); }
+		tags.put(tag.getId(), tag);
+		for(OpenIIListener listener : listeners.get()) listener.tagModified(tag.getId()); }
 
-	/** Inform listeners that group was removed */
-	public static void fireGroupDeleted(Integer groupID)
+	/** Inform listeners that tag was removed */
+	public static void fireTagDeleted(Integer tagID)
 	{
-		groups.remove(groupID);
-		for(OpenIIListener listener : listeners.get()) listener.groupDeleted(groupID);
+		tags.remove(tagID);
+		for(OpenIIListener listener : listeners.get()) listener.tagDeleted(tagID);
 	}
 	
 	//------------ Mapping Functionality -------------

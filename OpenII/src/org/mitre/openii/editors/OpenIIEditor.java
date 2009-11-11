@@ -11,7 +11,7 @@ import org.eclipse.ui.part.EditorPart;
 import org.mitre.openii.model.EditorInput;
 import org.mitre.openii.model.OpenIIListener;
 import org.mitre.openii.model.OpenIIManager;
-import org.mitre.schemastore.model.Group;
+import org.mitre.schemastore.model.Tag;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.Schema;
 
@@ -30,7 +30,7 @@ abstract public class OpenIIEditor extends EditorPart implements OpenIIListener
 		// Extract element ID
 		Object element = ((EditorInput)input).getElement();
 		if(element instanceof Schema) elementID = ((Schema)element).getId();
-		if(element instanceof Group) elementID = ((Group)element).getId();
+		if(element instanceof Tag) elementID = ((Tag)element).getId();
 		if(element instanceof Mapping) elementID = ((Mapping)element).getId();
 
 		// Set the title
@@ -64,9 +64,9 @@ abstract public class OpenIIEditor extends EditorPart implements OpenIIListener
 	public void schemaDeleted(Integer schemaID)
 		{ if(elementID.equals(schemaID)) closeEditor(); }	
 	
-	/** Dispose of the editor pane if referencing the deleted group */
-	public void groupDeleted(Integer groupID)
-		{ if(elementID.equals(groupID)) closeEditor(); }	
+	/** Dispose of the editor pane if referencing the deleted tag */
+	public void tagDeleted(Integer tagID)
+		{ if(elementID.equals(tagID)) closeEditor(); }	
 
 	/** Dispose of the editor pane if referencing the deleted mapping */
 	public void mappingDeleted(Integer mappingID)
@@ -76,8 +76,8 @@ abstract public class OpenIIEditor extends EditorPart implements OpenIIListener
 	public void schemaModified(Integer schemaID) {}
 	public void dataSourceAdded(Integer dataSourceID) {}
 	public void dataSourceDeleted(Integer dataSourceID) {}
-	public void groupAdded(Integer groupID) {}
-	public void groupModified(Integer groupID) {}
+	public void tagAdded(Integer tagID) {}
+	public void tagModified(Integer tagID) {}
 	public void mappingAdded(Integer mappingID) {}
 	public void mappingModified(Integer mappingID) {}
 	public void schemaAdded(Integer schemaID) {}

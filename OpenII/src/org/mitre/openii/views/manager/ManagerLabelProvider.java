@@ -5,7 +5,7 @@ import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.swt.graphics.Image;
 import org.mitre.openii.application.OpenIIActivator;
 import org.mitre.schemastore.model.DataSource;
-import org.mitre.schemastore.model.Group;
+import org.mitre.schemastore.model.Tag;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.Schema;
 
@@ -15,12 +15,12 @@ public class ManagerLabelProvider implements ILabelProvider
 	public Image getImage(Object element)
 	{
 		String imageName = "";
-		if(element instanceof Schema || element instanceof SchemaInGroup || element instanceof SchemaInMapping) imageName = "Schema.gif";
+		if(element instanceof Schema || element instanceof SchemaInTag || element instanceof SchemaInMapping) imageName = "Schema.gif";
 		else if(element instanceof Mapping) imageName = "Mapping.gif";
-		else if(element instanceof Group) imageName = "Group.gif";
+		else if(element instanceof Tag) imageName = "Tag.gif";
 		else if(element instanceof DataSource) imageName = "DataSource.gif";
 		else if(element.equals("Schemas")) imageName = "Schemas.gif";
-		else if(element.equals("Groups")) imageName = "Groups.gif";
+		else if(element.equals("Tags")) imageName = "Tags.gif";
 		else if(element.equals("Mappings")) imageName = "Mappings.gif";
 		return OpenIIActivator.getImage(imageName);
 	}

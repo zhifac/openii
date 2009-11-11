@@ -8,10 +8,8 @@ import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.mitre.openii.application.OpenIIActivator;
 import org.mitre.openii.model.OpenIIManager;
-import org.mitre.openii.views.manager.SchemaInGroup;
 import org.mitre.openii.views.manager.SchemaInMapping;
-import org.mitre.openii.views.manager.groups.DeleteGroupDialog;
-import org.mitre.openii.views.manager.groups.EditGroupDialog;
+import org.mitre.openii.views.manager.SchemaInTag;
 import org.mitre.openii.views.manager.mappings.AutoMappingDialog;
 import org.mitre.openii.views.manager.mappings.DeleteMappingDialog;
 import org.mitre.openii.views.manager.mappings.EditMappingDialog;
@@ -25,11 +23,13 @@ import org.mitre.openii.views.manager.schemas.EditSchemaDialog;
 import org.mitre.openii.views.manager.schemas.ExportSchemaDialog;
 import org.mitre.openii.views.manager.schemas.ExtendSchemaDialog;
 import org.mitre.openii.views.manager.schemas.ImportSchemaDialog;
+import org.mitre.openii.views.manager.tags.DeleteTagDialog;
+import org.mitre.openii.views.manager.tags.EditTagDialog;
 import org.mitre.schemastore.model.DataSource;
-import org.mitre.schemastore.model.Group;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingSchema;
 import org.mitre.schemastore.model.Schema;
+import org.mitre.schemastore.model.Tag;
 
 public class ManagerAction extends Action
 {
@@ -41,10 +41,10 @@ public class ManagerAction extends Action
 	static final int DELETE_SCHEMA = 4;
 	static final int CREATE_DATA_SOURCE= 5;
 	static final int DELETE_DATA_SOURCE = 6;
-	static final int NEW_GROUP = 7;
-	static final int EDIT_GROUP = 8;
-	static final int DELETE_GROUP = 9;
-	static final int DELETE_GROUP_SCHEMA = 10;
+	static final int NEW_TAG = 7;
+	static final int EDIT_TAG = 8;
+	static final int DELETE_TAG = 9;
+	static final int DELETE_TAG_SCHEMA = 10;
 	static final int NEW_MAPPING = 11;
 	static final int IMPORT_MAPPING = 12;
 	static final int MERGE_MAPPINGS = 13;
@@ -79,10 +79,10 @@ public class ManagerAction extends Action
 			case DELETE_SCHEMA: icon = "Delete.gif"; break;
 			case CREATE_DATA_SOURCE: icon = "DataSource.gif"; break;
 			case DELETE_DATA_SOURCE: icon = "Delete.gif"; break;
-			case NEW_GROUP: icon = "Group.gif"; break;
-			case EDIT_GROUP: icon = "Edit.gif"; break;
-			case DELETE_GROUP: icon = "Delete.gif"; break;
-			case DELETE_GROUP_SCHEMA: icon = "Delete.gif"; break;
+			case NEW_TAG: icon = "Group.gif"; break;
+			case EDIT_TAG: icon = "Edit.gif"; break;
+			case DELETE_TAG: icon = "Delete.gif"; break;
+			case DELETE_TAG_SCHEMA: icon = "Delete.gif"; break;
 			case NEW_MAPPING: icon = "Mapping.gif"; break;
 			case IMPORT_MAPPING: icon = "Import.gif"; break;
 			case MERGE_MAPPINGS: icon = "Merge.gif"; break;
@@ -132,31 +132,31 @@ public class ManagerAction extends Action
 		if(actionType == DELETE_DATA_SOURCE)
 			DeleteDataSourceDialog.delete(shell,(DataSource)selection);
 		
-		// ----------------- Group Actions ------------------
+		// ----------------- Tag Actions ------------------
 		
-		/** Handles the addition of a group */
-		if(actionType == NEW_GROUP)
+		/** Handles the addition of a tag */
+		if(actionType == NEW_TAG)
 		{
 			Integer parentID = null;
-			if(selection instanceof Group) parentID = ((Group)selection).getId();
-			new EditGroupDialog(shell,null,parentID).open();
+			if(selection instanceof Tag) parentID = ((Tag)selection).getId();
+			new EditTagDialog(shell,null,parentID).open();
 		}
 			
-		/** Handles the editing of a group */
-		if(actionType == EDIT_GROUP)
-			new EditGroupDialog(shell,(Group)selection,((Group)selection).getParentId()).open();
+		/** Handles the editing of a tag */
+		if(actionType == EDIT_TAG)
+			new EditTagDialog(shell,(Tag)selection,((Tag)selection).getParentId()).open();
 		
-		/** Handles the deletion of a group */
-		if(actionType == DELETE_GROUP)
-			DeleteGroupDialog.delete(shell,(Group)selection);
+		/** Handles the deletion of a tag */
+		if(actionType == DELETE_TAG)
+			DeleteTagDialog.delete(shell,(Tag)selection);
 		
-		/** Handles the deletion of a group schema */
-		if(actionType == DELETE_GROUP_SCHEMA)
+		/** Handles the deletion of a tag schema */
+		if(actionType == DELETE_TAG_SCHEMA)
 		{
-			SchemaInGroup groupSchema = (SchemaInGroup)selection;
-			ArrayList<Integer> schemaIDs = OpenIIManager.getGroupSchemas(groupSchema.getGroupID());
-			schemaIDs.remove(groupSchema.getSchema().getId());
-			OpenIIManager.setGroupSchemas(groupSchema.getGroupID(), schemaIDs);
+			SchemaInTag tagSchema = (SchemaInTag)selection;
+			ArrayList<Integer> schemaIDs = OpenIIManager.getTagSchemas(tagSchema.getTagID());
+			schemaIDs.remove(tagSchema.getSchema().getId());
+			OpenIIManager.setTagSchemas(tagSchema.getTagID(), schemaIDs);
 		}
 		
 		// ----------------- Mapping Actions ------------------
