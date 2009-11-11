@@ -39,17 +39,13 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
      <element maxOccurs="unbounded" minOccurs="0" name="item" type="tns1:MappingSchema"/>
     </sequence>
    </complexType>
-   <element name="addGroup">
-    <complexType>
-     <sequence>
-      <element name="group" type="tns1:Group"/>
-     </sequence>
-    </complexType>
+   <element name="getTags">
+    <complexType/>
    </element>
-   <element name="addGroupResponse">
+   <element name="getTagsResponse">
     <complexType>
      <sequence>
-      <element name="addGroupReturn" type="xsd:int"/>
+      <element maxOccurs="unbounded" name="getTagsReturn" type="tns1:Tag"/>
      </sequence>
     </complexType>
    </element>
@@ -66,16 +62,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
     <complexType>
      <sequence>
       <element name="setAnnotationReturn" type="xsd:boolean"/>
-     </sequence>
-    </complexType>
-   </element>
-   <element name="getGroups">
-    <complexType/>
-   </element>
-   <element name="getGroupsResponse">
-    <complexType>
-     <sequence>
-      <element maxOccurs="unbounded" name="getGroupsReturn" type="tns1:Group"/>
      </sequence>
     </complexType>
    </element>
@@ -322,103 +308,117 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
      </sequence>
     </complexType>
    </element>
-   <element name="getSubgroups">
+   <element name="getSubcategories">
     <complexType>
      <sequence>
-      <element name="groupID" type="xsd:int"/>
+      <element name="tagID" type="xsd:int"/>
      </sequence>
     </complexType>
    </element>
-   <element name="getSubgroupsResponse">
+   <element name="getSubcategoriesResponse">
     <complexType>
      <sequence>
-      <element maxOccurs="unbounded" name="getSubgroupsReturn" type="tns1:Group"/>
+      <element maxOccurs="unbounded" name="getSubcategoriesReturn" type="tns1:Tag"/>
      </sequence>
     </complexType>
    </element>
-   <element name="updateGroup">
+   <element name="addTag">
     <complexType>
      <sequence>
-      <element name="group" type="tns1:Group"/>
+      <element name="tag" type="tns1:Tag"/>
      </sequence>
     </complexType>
    </element>
-   <element name="updateGroupResponse">
+   <element name="addTagResponse">
     <complexType>
      <sequence>
-      <element name="updateGroupReturn" type="xsd:boolean"/>
+      <element name="addTagReturn" type="xsd:int"/>
      </sequence>
     </complexType>
    </element>
-   <element name="deleteGroup">
+   <element name="updateTag">
     <complexType>
      <sequence>
-      <element name="groupID" type="xsd:int"/>
+      <element name="tag" type="tns1:Tag"/>
      </sequence>
     </complexType>
    </element>
-   <element name="deleteGroupResponse">
+   <element name="updateTagResponse">
     <complexType>
      <sequence>
-      <element name="deleteGroupReturn" type="xsd:boolean"/>
+      <element name="updateTagReturn" type="xsd:boolean"/>
      </sequence>
     </complexType>
    </element>
-   <element name="getGroupSchemas">
+   <element name="deleteTag">
     <complexType>
      <sequence>
-      <element name="groupID" type="xsd:int"/>
+      <element name="tagID" type="xsd:int"/>
      </sequence>
     </complexType>
    </element>
-   <element name="getGroupSchemasResponse">
+   <element name="deleteTagResponse">
     <complexType>
      <sequence>
-      <element maxOccurs="unbounded" name="getGroupSchemasReturn" type="xsd:int"/>
+      <element name="deleteTagReturn" type="xsd:boolean"/>
      </sequence>
     </complexType>
    </element>
-   <element name="getSchemaGroups">
+   <element name="getTagSchemas">
+    <complexType>
+     <sequence>
+      <element name="tagID" type="xsd:int"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getTagSchemasResponse">
+    <complexType>
+     <sequence>
+      <element maxOccurs="unbounded" name="getTagSchemasReturn" type="xsd:int"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getSchemaTags">
     <complexType>
      <sequence>
       <element name="schemaID" type="xsd:int"/>
      </sequence>
     </complexType>
    </element>
-   <element name="getSchemaGroupsResponse">
+   <element name="getSchemaTagsResponse">
     <complexType>
      <sequence>
-      <element maxOccurs="unbounded" name="getSchemaGroupsReturn" type="xsd:int"/>
+      <element maxOccurs="unbounded" name="getSchemaTagsReturn" type="xsd:int"/>
      </sequence>
     </complexType>
    </element>
-   <element name="addGroupToSchema">
+   <element name="addTagToSchema">
     <complexType>
      <sequence>
       <element name="schemaID" type="xsd:int"/>
-      <element name="groupID" type="xsd:int"/>
+      <element name="tagID" type="xsd:int"/>
      </sequence>
     </complexType>
    </element>
-   <element name="addGroupToSchemaResponse">
+   <element name="addTagToSchemaResponse">
     <complexType>
      <sequence>
-      <element name="addGroupToSchemaReturn" type="xsd:boolean"/>
+      <element name="addTagToSchemaReturn" type="xsd:boolean"/>
      </sequence>
     </complexType>
    </element>
-   <element name="removeGroupFromSchema">
+   <element name="removeTagFromSchema">
     <complexType>
      <sequence>
       <element name="schemaID" type="xsd:int"/>
-      <element name="groupID" type="xsd:int"/>
+      <element name="tagID" type="xsd:int"/>
      </sequence>
     </complexType>
    </element>
-   <element name="removeGroupFromSchemaResponse">
+   <element name="removeTagFromSchemaResponse">
     <complexType>
      <sequence>
-      <element name="removeGroupFromSchemaReturn" type="xsd:boolean"/>
+      <element name="removeTagFromSchemaReturn" type="xsd:boolean"/>
      </sequence>
     </complexType>
    </element>
@@ -905,7 +905,7 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
     <complexType>
      <sequence>
       <element name="keyword" type="xsd:string"/>
-      <element maxOccurs="unbounded" name="groupIDs" type="xsd:int"/>
+      <element maxOccurs="unbounded" name="tagIDs" type="xsd:int"/>
      </sequence>
     </complexType>
    </element>
@@ -1157,20 +1157,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
      </sequence>
     </complexType>
    </element>
-   <element name="getGroup">
-    <complexType>
-     <sequence>
-      <element name="groupID" type="xsd:int"/>
-     </sequence>
-    </complexType>
-   </element>
-   <element name="getGroupResponse">
-    <complexType>
-     <sequence>
-      <element name="getGroupReturn" type="tns1:Group"/>
-     </sequence>
-    </complexType>
-   </element>
    <element name="isConnected">
     <complexType/>
    </element>
@@ -1237,6 +1223,20 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
      </sequence>
     </complexType>
    </element>
+   <element name="getTag">
+    <complexType>
+     <sequence>
+      <element name="tagID" type="xsd:int"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getTagResponse">
+    <complexType>
+     <sequence>
+      <element name="getTagReturn" type="tns1:Tag"/>
+     </sequence>
+    </complexType>
+   </element>
   </schema>
   <schema elementFormDefault="qualified" targetNamespace="http://model.schemastore.mitre.org" xmlns="http://www.w3.org/2001/XMLSchema">
    <import namespace="http://servlet.schemastore.mitre.org"/>
@@ -1276,7 +1276,7 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
      <element name="schemas" nillable="true" type="impl:ArrayOf_tns1_MappingSchema"/>
     </sequence>
    </complexType>
-   <complexType name="Group">
+   <complexType name="Tag">
     <sequence>
      <element name="id" nillable="true" type="xsd:int"/>
      <element name="name" nillable="true" type="xsd:string"/>
@@ -1417,9 +1417,9 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
    </wsdl:message>
 
-   <wsdl:message name="addGroupToSchemaResponse">
+   <wsdl:message name="deleteTagRequest">
 
-      <wsdl:part element="impl:addGroupToSchemaResponse" name="parameters"/>
+      <wsdl:part element="impl:deleteTag" name="parameters"/>
 
    </wsdl:message>
 
@@ -1453,9 +1453,9 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
    </wsdl:message>
 
-   <wsdl:message name="getSchemaGroupsRequest">
+   <wsdl:message name="getSchemaTagsRequest">
 
-      <wsdl:part element="impl:getSchemaGroups" name="parameters"/>
+      <wsdl:part element="impl:getSchemaTags" name="parameters"/>
 
    </wsdl:message>
 
@@ -1471,9 +1471,9 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
    </wsdl:message>
 
-   <wsdl:message name="deleteGroupRequest">
+   <wsdl:message name="removeTagFromSchemaResponse">
 
-      <wsdl:part element="impl:deleteGroup" name="parameters"/>
+      <wsdl:part element="impl:removeTagFromSchemaResponse" name="parameters"/>
 
    </wsdl:message>
 
@@ -1498,18 +1498,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
    <wsdl:message name="isDeletableRequest">
 
       <wsdl:part element="impl:isDeletable" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="getSchemaGroupsResponse">
-
-      <wsdl:part element="impl:getSchemaGroupsResponse" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="removeGroupFromSchemaRequest">
-
-      <wsdl:part element="impl:removeGroupFromSchema" name="parameters"/>
 
    </wsdl:message>
 
@@ -1561,6 +1549,12 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
    </wsdl:message>
 
+   <wsdl:message name="getTagSchemasRequest">
+
+      <wsdl:part element="impl:getTagSchemas" name="parameters"/>
+
+   </wsdl:message>
+
    <wsdl:message name="updateAttributeResponse">
 
       <wsdl:part element="impl:updateAttributeResponse" name="parameters"/>
@@ -1576,12 +1570,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
    <wsdl:message name="getAliasRequest">
 
       <wsdl:part element="impl:getAlias" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="getGroupRequest">
-
-      <wsdl:part element="impl:getGroup" name="parameters"/>
 
    </wsdl:message>
 
@@ -1609,6 +1597,12 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
    </wsdl:message>
 
+   <wsdl:message name="addTagToSchemaRequest">
+
+      <wsdl:part element="impl:addTagToSchema" name="parameters"/>
+
+   </wsdl:message>
+
    <wsdl:message name="updateAliasRequest">
 
       <wsdl:part element="impl:updateAlias" name="parameters"/>
@@ -1618,18 +1612,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
    <wsdl:message name="getAllDataSourcesRequest">
 
       <wsdl:part element="impl:getAllDataSources" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="getSubgroupsResponse">
-
-      <wsdl:part element="impl:getSubgroupsResponse" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="removeGroupFromSchemaResponse">
-
-      <wsdl:part element="impl:removeGroupFromSchemaResponse" name="parameters"/>
 
    </wsdl:message>
 
@@ -1651,12 +1633,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
    </wsdl:message>
 
-   <wsdl:message name="getSubgroupsRequest">
-
-      <wsdl:part element="impl:getSubgroups" name="parameters"/>
-
-   </wsdl:message>
-
    <wsdl:message name="updateMappingCellRequest">
 
       <wsdl:part element="impl:updateMappingCell" name="parameters"/>
@@ -1669,21 +1645,9 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
    </wsdl:message>
 
-   <wsdl:message name="getGroupResponse">
-
-      <wsdl:part element="impl:getGroupResponse" name="parameters"/>
-
-   </wsdl:message>
-
    <wsdl:message name="isDeletableResponse">
 
       <wsdl:part element="impl:isDeletableResponse" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="addGroupToSchemaRequest">
-
-      <wsdl:part element="impl:addGroupToSchema" name="parameters"/>
 
    </wsdl:message>
 
@@ -1711,12 +1675,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
    </wsdl:message>
 
-   <wsdl:message name="addGroupResponse">
-
-      <wsdl:part element="impl:addGroupResponse" name="parameters"/>
-
-   </wsdl:message>
-
    <wsdl:message name="updateContainmentRequest">
 
       <wsdl:part element="impl:updateContainment" name="parameters"/>
@@ -1729,9 +1687,9 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
    </wsdl:message>
 
-   <wsdl:message name="updateGroupResponse">
+   <wsdl:message name="addTagResponse">
 
-      <wsdl:part element="impl:updateGroupResponse" name="parameters"/>
+      <wsdl:part element="impl:addTagResponse" name="parameters"/>
 
    </wsdl:message>
 
@@ -1744,6 +1702,12 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
    <wsdl:message name="getMappingRequest">
 
       <wsdl:part element="impl:getMapping" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getTagRequest">
+
+      <wsdl:part element="impl:getTag" name="parameters"/>
 
    </wsdl:message>
 
@@ -1765,9 +1729,9 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
    </wsdl:message>
 
-   <wsdl:message name="getGroupSchemasResponse">
+   <wsdl:message name="updateTagRequest">
 
-      <wsdl:part element="impl:getGroupSchemasResponse" name="parameters"/>
+      <wsdl:part element="impl:updateTag" name="parameters"/>
 
    </wsdl:message>
 
@@ -1807,6 +1771,12 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
    </wsdl:message>
 
+   <wsdl:message name="addTagRequest">
+
+      <wsdl:part element="impl:addTag" name="parameters"/>
+
+   </wsdl:message>
+
    <wsdl:message name="getSubtypeRequest">
 
       <wsdl:part element="impl:getSubtype" name="parameters"/>
@@ -1837,6 +1807,12 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
    </wsdl:message>
 
+   <wsdl:message name="getTagSchemasResponse">
+
+      <wsdl:part element="impl:getTagSchemasResponse" name="parameters"/>
+
+   </wsdl:message>
+
    <wsdl:message name="updateAliasResponse">
 
       <wsdl:part element="impl:updateAliasResponse" name="parameters"/>
@@ -1852,6 +1828,12 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
    <wsdl:message name="updateEntityRequest">
 
       <wsdl:part element="impl:updateEntity" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="addTagToSchemaResponse">
+
+      <wsdl:part element="impl:addTagToSchemaResponse" name="parameters"/>
 
    </wsdl:message>
 
@@ -1876,6 +1858,12 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
    <wsdl:message name="updateRelationshipResponse">
 
       <wsdl:part element="impl:updateRelationshipResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getSchemaTagsResponse">
+
+      <wsdl:part element="impl:getSchemaTagsResponse" name="parameters"/>
 
    </wsdl:message>
 
@@ -1927,21 +1915,21 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
    </wsdl:message>
 
+   <wsdl:message name="removeTagFromSchemaRequest">
+
+      <wsdl:part element="impl:removeTagFromSchema" name="parameters"/>
+
+   </wsdl:message>
+
    <wsdl:message name="getDataSourceByURLResponse">
 
       <wsdl:part element="impl:getDataSourceByURLResponse" name="parameters"/>
 
    </wsdl:message>
 
-   <wsdl:message name="deleteGroupResponse">
+   <wsdl:message name="deleteTagResponse">
 
-      <wsdl:part element="impl:deleteGroupResponse" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="getGroupsRequest">
-
-      <wsdl:part element="impl:getGroups" name="parameters"/>
+      <wsdl:part element="impl:deleteTagResponse" name="parameters"/>
 
    </wsdl:message>
 
@@ -2011,6 +1999,12 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
    </wsdl:message>
 
+   <wsdl:message name="updateTagResponse">
+
+      <wsdl:part element="impl:updateTagResponse" name="parameters"/>
+
+   </wsdl:message>
+
    <wsdl:message name="getMappingCellsResponse">
 
       <wsdl:part element="impl:getMappingCellsResponse" name="parameters"/>
@@ -2020,12 +2014,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
    <wsdl:message name="deleteDomainResponse">
 
       <wsdl:part element="impl:deleteDomainResponse" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="getGroupsResponse">
-
-      <wsdl:part element="impl:getGroupsResponse" name="parameters"/>
 
    </wsdl:message>
 
@@ -2044,12 +2032,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
    <wsdl:message name="addAttributeRequest">
 
       <wsdl:part element="impl:addAttribute" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="addGroupRequest">
-
-      <wsdl:part element="impl:addGroup" name="parameters"/>
 
    </wsdl:message>
 
@@ -2074,6 +2056,12 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
    <wsdl:message name="updateDomainResponse">
 
       <wsdl:part element="impl:updateDomainResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getSubcategoriesRequest">
+
+      <wsdl:part element="impl:getSubcategories" name="parameters"/>
 
    </wsdl:message>
 
@@ -2227,6 +2215,12 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
    </wsdl:message>
 
+   <wsdl:message name="getTagsResponse">
+
+      <wsdl:part element="impl:getTagsResponse" name="parameters"/>
+
+   </wsdl:message>
+
    <wsdl:message name="getParentSchemasRequest">
 
       <wsdl:part element="impl:getParentSchemas" name="parameters"/>
@@ -2260,6 +2254,12 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
    <wsdl:message name="getAnnotationResponse">
 
       <wsdl:part element="impl:getAnnotationResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getSubcategoriesResponse">
+
+      <wsdl:part element="impl:getSubcategoriesResponse" name="parameters"/>
 
    </wsdl:message>
 
@@ -2323,6 +2323,12 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
    </wsdl:message>
 
+   <wsdl:message name="getTagsRequest">
+
+      <wsdl:part element="impl:getTags" name="parameters"/>
+
+   </wsdl:message>
+
    <wsdl:message name="deleteContainmentResponse">
 
       <wsdl:part element="impl:deleteContainmentResponse" name="parameters"/>
@@ -2338,12 +2344,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
    <wsdl:message name="getSchemaElementCountResponse">
 
       <wsdl:part element="impl:getSchemaElementCountResponse" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="getGroupSchemasRequest">
-
-      <wsdl:part element="impl:getGroupSchemas" name="parameters"/>
 
    </wsdl:message>
 
@@ -2413,9 +2413,9 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
    </wsdl:message>
 
-   <wsdl:message name="updateGroupRequest">
+   <wsdl:message name="getTagResponse">
 
-      <wsdl:part element="impl:updateGroup" name="parameters"/>
+      <wsdl:part element="impl:getTagResponse" name="parameters"/>
 
    </wsdl:message>
 
@@ -2449,11 +2449,11 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
       </wsdl:operation>
 
-      <wsdl:operation name="addGroup">
+      <wsdl:operation name="getTags">
 
-         <wsdl:input message="impl:addGroupRequest" name="addGroupRequest"/>
+         <wsdl:input message="impl:getTagsRequest" name="getTagsRequest"/>
 
-         <wsdl:output message="impl:addGroupResponse" name="addGroupResponse"/>
+         <wsdl:output message="impl:getTagsResponse" name="getTagsResponse"/>
 
       </wsdl:operation>
 
@@ -2462,14 +2462,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
          <wsdl:input message="impl:setAnnotationRequest" name="setAnnotationRequest"/>
 
          <wsdl:output message="impl:setAnnotationResponse" name="setAnnotationResponse"/>
-
-      </wsdl:operation>
-
-      <wsdl:operation name="getGroups">
-
-         <wsdl:input message="impl:getGroupsRequest" name="getGroupsRequest"/>
-
-         <wsdl:output message="impl:getGroupsResponse" name="getGroupsResponse"/>
 
       </wsdl:operation>
 
@@ -2593,59 +2585,67 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
       </wsdl:operation>
 
-      <wsdl:operation name="getSubgroups">
+      <wsdl:operation name="getSubcategories">
 
-         <wsdl:input message="impl:getSubgroupsRequest" name="getSubgroupsRequest"/>
+         <wsdl:input message="impl:getSubcategoriesRequest" name="getSubcategoriesRequest"/>
 
-         <wsdl:output message="impl:getSubgroupsResponse" name="getSubgroupsResponse"/>
-
-      </wsdl:operation>
-
-      <wsdl:operation name="updateGroup">
-
-         <wsdl:input message="impl:updateGroupRequest" name="updateGroupRequest"/>
-
-         <wsdl:output message="impl:updateGroupResponse" name="updateGroupResponse"/>
+         <wsdl:output message="impl:getSubcategoriesResponse" name="getSubcategoriesResponse"/>
 
       </wsdl:operation>
 
-      <wsdl:operation name="deleteGroup">
+      <wsdl:operation name="addTag">
 
-         <wsdl:input message="impl:deleteGroupRequest" name="deleteGroupRequest"/>
+         <wsdl:input message="impl:addTagRequest" name="addTagRequest"/>
 
-         <wsdl:output message="impl:deleteGroupResponse" name="deleteGroupResponse"/>
-
-      </wsdl:operation>
-
-      <wsdl:operation name="getGroupSchemas">
-
-         <wsdl:input message="impl:getGroupSchemasRequest" name="getGroupSchemasRequest"/>
-
-         <wsdl:output message="impl:getGroupSchemasResponse" name="getGroupSchemasResponse"/>
+         <wsdl:output message="impl:addTagResponse" name="addTagResponse"/>
 
       </wsdl:operation>
 
-      <wsdl:operation name="getSchemaGroups">
+      <wsdl:operation name="updateTag">
 
-         <wsdl:input message="impl:getSchemaGroupsRequest" name="getSchemaGroupsRequest"/>
+         <wsdl:input message="impl:updateTagRequest" name="updateTagRequest"/>
 
-         <wsdl:output message="impl:getSchemaGroupsResponse" name="getSchemaGroupsResponse"/>
-
-      </wsdl:operation>
-
-      <wsdl:operation name="addGroupToSchema">
-
-         <wsdl:input message="impl:addGroupToSchemaRequest" name="addGroupToSchemaRequest"/>
-
-         <wsdl:output message="impl:addGroupToSchemaResponse" name="addGroupToSchemaResponse"/>
+         <wsdl:output message="impl:updateTagResponse" name="updateTagResponse"/>
 
       </wsdl:operation>
 
-      <wsdl:operation name="removeGroupFromSchema">
+      <wsdl:operation name="deleteTag">
 
-         <wsdl:input message="impl:removeGroupFromSchemaRequest" name="removeGroupFromSchemaRequest"/>
+         <wsdl:input message="impl:deleteTagRequest" name="deleteTagRequest"/>
 
-         <wsdl:output message="impl:removeGroupFromSchemaResponse" name="removeGroupFromSchemaResponse"/>
+         <wsdl:output message="impl:deleteTagResponse" name="deleteTagResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getTagSchemas">
+
+         <wsdl:input message="impl:getTagSchemasRequest" name="getTagSchemasRequest"/>
+
+         <wsdl:output message="impl:getTagSchemasResponse" name="getTagSchemasResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getSchemaTags">
+
+         <wsdl:input message="impl:getSchemaTagsRequest" name="getSchemaTagsRequest"/>
+
+         <wsdl:output message="impl:getSchemaTagsResponse" name="getSchemaTagsResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="addTagToSchema">
+
+         <wsdl:input message="impl:addTagToSchemaRequest" name="addTagToSchemaRequest"/>
+
+         <wsdl:output message="impl:addTagToSchemaResponse" name="addTagToSchemaResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="removeTagFromSchema">
+
+         <wsdl:input message="impl:removeTagFromSchemaRequest" name="removeTagFromSchemaRequest"/>
+
+         <wsdl:output message="impl:removeTagFromSchemaResponse" name="removeTagFromSchemaResponse"/>
 
       </wsdl:operation>
 
@@ -3065,14 +3065,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
       </wsdl:operation>
 
-      <wsdl:operation name="getGroup">
-
-         <wsdl:input message="impl:getGroupRequest" name="getGroupRequest"/>
-
-         <wsdl:output message="impl:getGroupResponse" name="getGroupResponse"/>
-
-      </wsdl:operation>
-
       <wsdl:operation name="isConnected">
 
          <wsdl:input message="impl:isConnectedRequest" name="isConnectedRequest"/>
@@ -3110,6 +3102,14 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
          <wsdl:input message="impl:addAliasRequest" name="addAliasRequest"/>
 
          <wsdl:output message="impl:addAliasResponse" name="addAliasResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getTag">
+
+         <wsdl:input message="impl:getTagRequest" name="getTagRequest"/>
+
+         <wsdl:output message="impl:getTagResponse" name="getTagResponse"/>
 
       </wsdl:operation>
 
@@ -3155,17 +3155,17 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
       </wsdl:operation>
 
-      <wsdl:operation name="addGroup">
+      <wsdl:operation name="getTags">
 
          <wsdlsoap:operation soapAction=""/>
 
-         <wsdl:input name="addGroupRequest">
+         <wsdl:input name="getTagsRequest">
 
             <wsdlsoap:body use="literal"/>
 
          </wsdl:input>
 
-         <wsdl:output name="addGroupResponse">
+         <wsdl:output name="getTagsResponse">
 
             <wsdlsoap:body use="literal"/>
 
@@ -3184,24 +3184,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
          </wsdl:input>
 
          <wsdl:output name="setAnnotationResponse">
-
-            <wsdlsoap:body use="literal"/>
-
-         </wsdl:output>
-
-      </wsdl:operation>
-
-      <wsdl:operation name="getGroups">
-
-         <wsdlsoap:operation soapAction=""/>
-
-         <wsdl:input name="getGroupsRequest">
-
-            <wsdlsoap:body use="literal"/>
-
-         </wsdl:input>
-
-         <wsdl:output name="getGroupsResponse">
 
             <wsdlsoap:body use="literal"/>
 
@@ -3479,17 +3461,17 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
       </wsdl:operation>
 
-      <wsdl:operation name="getSubgroups">
+      <wsdl:operation name="getSubcategories">
 
          <wsdlsoap:operation soapAction=""/>
 
-         <wsdl:input name="getSubgroupsRequest">
+         <wsdl:input name="getSubcategoriesRequest">
 
             <wsdlsoap:body use="literal"/>
 
          </wsdl:input>
 
-         <wsdl:output name="getSubgroupsResponse">
+         <wsdl:output name="getSubcategoriesResponse">
 
             <wsdlsoap:body use="literal"/>
 
@@ -3497,17 +3479,17 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
       </wsdl:operation>
 
-      <wsdl:operation name="updateGroup">
+      <wsdl:operation name="addTag">
 
          <wsdlsoap:operation soapAction=""/>
 
-         <wsdl:input name="updateGroupRequest">
+         <wsdl:input name="addTagRequest">
 
             <wsdlsoap:body use="literal"/>
 
          </wsdl:input>
 
-         <wsdl:output name="updateGroupResponse">
+         <wsdl:output name="addTagResponse">
 
             <wsdlsoap:body use="literal"/>
 
@@ -3515,17 +3497,17 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
       </wsdl:operation>
 
-      <wsdl:operation name="deleteGroup">
+      <wsdl:operation name="updateTag">
 
          <wsdlsoap:operation soapAction=""/>
 
-         <wsdl:input name="deleteGroupRequest">
+         <wsdl:input name="updateTagRequest">
 
             <wsdlsoap:body use="literal"/>
 
          </wsdl:input>
 
-         <wsdl:output name="deleteGroupResponse">
+         <wsdl:output name="updateTagResponse">
 
             <wsdlsoap:body use="literal"/>
 
@@ -3533,17 +3515,17 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
       </wsdl:operation>
 
-      <wsdl:operation name="getGroupSchemas">
+      <wsdl:operation name="deleteTag">
 
          <wsdlsoap:operation soapAction=""/>
 
-         <wsdl:input name="getGroupSchemasRequest">
+         <wsdl:input name="deleteTagRequest">
 
             <wsdlsoap:body use="literal"/>
 
          </wsdl:input>
 
-         <wsdl:output name="getGroupSchemasResponse">
+         <wsdl:output name="deleteTagResponse">
 
             <wsdlsoap:body use="literal"/>
 
@@ -3551,17 +3533,17 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
       </wsdl:operation>
 
-      <wsdl:operation name="getSchemaGroups">
+      <wsdl:operation name="getTagSchemas">
 
          <wsdlsoap:operation soapAction=""/>
 
-         <wsdl:input name="getSchemaGroupsRequest">
+         <wsdl:input name="getTagSchemasRequest">
 
             <wsdlsoap:body use="literal"/>
 
          </wsdl:input>
 
-         <wsdl:output name="getSchemaGroupsResponse">
+         <wsdl:output name="getTagSchemasResponse">
 
             <wsdlsoap:body use="literal"/>
 
@@ -3569,17 +3551,17 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
       </wsdl:operation>
 
-      <wsdl:operation name="addGroupToSchema">
+      <wsdl:operation name="getSchemaTags">
 
          <wsdlsoap:operation soapAction=""/>
 
-         <wsdl:input name="addGroupToSchemaRequest">
+         <wsdl:input name="getSchemaTagsRequest">
 
             <wsdlsoap:body use="literal"/>
 
          </wsdl:input>
 
-         <wsdl:output name="addGroupToSchemaResponse">
+         <wsdl:output name="getSchemaTagsResponse">
 
             <wsdlsoap:body use="literal"/>
 
@@ -3587,17 +3569,35 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
       </wsdl:operation>
 
-      <wsdl:operation name="removeGroupFromSchema">
+      <wsdl:operation name="addTagToSchema">
 
          <wsdlsoap:operation soapAction=""/>
 
-         <wsdl:input name="removeGroupFromSchemaRequest">
+         <wsdl:input name="addTagToSchemaRequest">
 
             <wsdlsoap:body use="literal"/>
 
          </wsdl:input>
 
-         <wsdl:output name="removeGroupFromSchemaResponse">
+         <wsdl:output name="addTagToSchemaResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="removeTagFromSchema">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="removeTagFromSchemaRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="removeTagFromSchemaResponse">
 
             <wsdlsoap:body use="literal"/>
 
@@ -4541,24 +4541,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
       </wsdl:operation>
 
-      <wsdl:operation name="getGroup">
-
-         <wsdlsoap:operation soapAction=""/>
-
-         <wsdl:input name="getGroupRequest">
-
-            <wsdlsoap:body use="literal"/>
-
-         </wsdl:input>
-
-         <wsdl:output name="getGroupResponse">
-
-            <wsdlsoap:body use="literal"/>
-
-         </wsdl:output>
-
-      </wsdl:operation>
-
       <wsdl:operation name="isConnected">
 
          <wsdlsoap:operation soapAction=""/>
@@ -4642,6 +4624,24 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
          </wsdl:input>
 
          <wsdl:output name="addAliasResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getTag">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="getTagRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="getTagResponse">
 
             <wsdlsoap:body use="literal"/>
 

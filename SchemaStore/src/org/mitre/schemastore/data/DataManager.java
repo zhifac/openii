@@ -13,7 +13,7 @@ public class DataManager
 	
 	// Stores the various data caches
 	private DataSources dataSources = null;
-	private Groups groups = null;
+	private Tags tags = null;
 	private Mappings mappings = null;
 	private SchemaElements schemaElements = null;
 	private SchemaRelationships schemaRelationships = null;
@@ -27,7 +27,7 @@ public class DataManager
 		
 		// Constructs the data caches
 		dataSources = new DataSources(this);
-		groups = new Groups(this);
+		tags = new Tags(this);
 		mappings = new Mappings(this);
 		schemaElements = new SchemaElements(this);
 		schemaRelationships = new SchemaRelationships(this);
@@ -39,7 +39,7 @@ public class DataManager
 	
 	// Returns the various data caches
 	public DataSources getDataSources() { return dataSources; }
-	public Groups getGroups() { return groups; }
+	public Tags getTags() { return tags; }
 	public Mappings getMappings() { return mappings; }
 	public SchemaElements getSchemaElements() { return schemaElements; }
 	public SchemaRelationships getSchemaRelationships() { return schemaRelationships; }

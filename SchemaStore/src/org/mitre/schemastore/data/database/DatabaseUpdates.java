@@ -18,7 +18,7 @@ import java.sql.Statement;
 public class DatabaseUpdates
 {
 	/** Stores the current version */
-	static private Integer currVersion = 5;
+	static private Integer currVersion = 6;
 
 	/** Retrieve the contents of a file as a buffered string */
 	static private StringBuffer getFileContents(String file) throws IOException
@@ -109,6 +109,13 @@ public class DatabaseUpdates
 		// Return the current version
 		stmt.close();
 		return version;
+	}
+
+	/** Renames the specified table (different versions for Derby and Postgres) */
+	static private void renameTable(Statement stmt, String table, String newTableName) throws SQLException
+	{
+		try { stmt.executeUpdate("ALTER TABLE " + table + " RENAME TO " + newTableName); }
+		catch(Exception e) { stmt.executeUpdate("RENAME TABLE " + table + " TO " + newTableName); }
 	}
 
 	/** Renames the specified column (different versions for Derby and Postgres) */
@@ -220,6 +227,35 @@ public class DatabaseUpdates
 		stmt.executeUpdate("UPDATE version SET id=5");
 		stmt.close(); connection.commit();
 	}
+
+	/** Installs version 6 updates */
+	static private void version6Updates(Connection connection) throws SQLException
+	{
+		Statement stmt = connection.createStatement();
+
+		// Remove contraints referencing tables and columns referencing "group"
+		stmt.executeUpdate("ALTER TABLE schema_group DROP CONSTRAINT schemagroup_schema_fkey");
+		stmt.executeUpdate("ALTER TABLE schema_group DROP CONSTRAINT schemagroup_groups_fkey");
+		stmt.executeUpdate("ALTER TABLE groups DROP CONSTRAINT groups_groups_fkey");
+		stmt.executeUpdate("ALTER TABLE groups DROP CONSTRAINT groups_pkey");
+		stmt.executeUpdate("DROP INDEX schema_group_idx");
+		
+		// Rename group to tag on database tables and columns
+		renameTable(stmt,"groups","tags");
+		renameTable(stmt,"schema_group","schema_tag");
+		renameColumn(stmt,"schema_tag","group_id","tag_id");
+
+		// Add constraints back to reference renamed tables and columns
+		stmt.executeUpdate("ALTER TABLE tags ADD CONSTRAINT tags_pkey PRIMARY KEY (id)");
+		stmt.executeUpdate("ALTER TABLE tags ADD CONSTRAINT tags_tags_fkey FOREIGN KEY (parent_id) REFERENCES tags(id)");		
+		stmt.executeUpdate("ALTER TABLE schema_tag ADD CONSTRAINT schematag_tags_fkey FOREIGN KEY (tag_id) REFERENCES tags(id)");
+		stmt.executeUpdate("ALTER TABLE schema_tag ADD CONSTRAINT schematag_schema_fkey FOREIGN KEY (schema_id) REFERENCES \"schema\"(id)");
+		stmt.executeUpdate("CREATE UNIQUE INDEX schema_tag_idx ON schema_tag (schema_id, tag_id)");
+		
+		// Increase the version id
+		stmt.executeUpdate("UPDATE version SET id=6");
+		stmt.close(); connection.commit();
+	}
 	
 	/** Updates the database as needed */
 	static void updateDatabase(Connection connection) throws SQLException
@@ -231,6 +267,7 @@ public class DatabaseUpdates
 			if(version<3) { version3Updates(connection); version=3; }
 			if(version<4) { version4Updates(connection); version=4; }
 			if(version<5) { version5Updates(connection); version=5; }
+			if(version<6) { version6Updates(connection); version=6; }
 			if(version>currVersion) throw new Exception("(E) Software must be updated to handle database version " + version);
 		}
 		catch (Exception e)

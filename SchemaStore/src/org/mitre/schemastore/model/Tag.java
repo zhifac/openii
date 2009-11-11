@@ -5,25 +5,25 @@ package org.mitre.schemastore.model;
 import java.io.Serializable;
 
 /**
- * Class for storing a schema group
+ * Class for storing a schema tag
  * @author CWOLF
  */
-public class Group implements Serializable
+public class Tag implements Serializable
 {
-	/** Stores the group id */
+	/** Stores the tag id */
 	private Integer id;
 	
-	/** Stores the group name */
+	/** Stores the tag name */
 	private String name;
 	
-	/** Stores the parent category for this group */
+	/** Stores the parent category for this tag */
 	private Integer parentID;
 	
-	/** Constructs a default group */
-	public Group() {}
+	/** Constructs a default tag */
+	public Tag() {}
 	
 	/** Constructs a mapping */
-	public Group(Integer id, String name, Integer parentID)
+	public Tag(Integer id, String name, Integer parentID)
 		{ this.id = id; this.name = name; this.parentID = (parentID==null || parentID==0) ? null : parentID; }
 	
 	// Handles all mapping getters
@@ -40,15 +40,15 @@ public class Group implements Serializable
 	public int hashCode()
 		{ return id.hashCode(); }
 	
-	/** Indicates that two groups are equals */
+	/** Indicates that two tags are equals */
 	public boolean equals(Object object)
 	{
 		if(object instanceof Integer) return ((Integer)object).equals(id);
-		if(object instanceof Group) return ((Group)object).id.equals(id);
+		if(object instanceof Tag) return ((Tag)object).id.equals(id);
 		return false;
 	}
 	
-	/** String representation of the group */
+	/** String representation of the tag */
 	public String toString()
 		{ return name; }
 }

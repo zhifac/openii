@@ -136,11 +136,11 @@ public class SchemaElements extends DataCache
 	}
 
 	/** Retrieves the schema elements for the specified schema containing the specified keyword */
-	public ArrayList<SchemaElement> getSchemaElementsForKeyword(String keyword, ArrayList<Integer> groupIDs)
+	public ArrayList<SchemaElement> getSchemaElementsForKeyword(String keyword, ArrayList<Integer> tagIDs)
 	{
 		HashSet<Integer> schemaIDs = new HashSet<Integer>();
-		for(Integer groupID : groupIDs)
-			schemaIDs.addAll(getManager().getGroups().getGroupSchemas(groupID));
+		for(Integer tagID : tagIDs)
+			schemaIDs.addAll(getManager().getTags().getTagSchemas(tagID));
 		return getDatabase().getSchemaElementsForKeyword(keyword, new ArrayList<Integer>(schemaIDs));
 	}
 	

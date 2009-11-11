@@ -15,7 +15,7 @@ import org.mitre.schemastore.model.DataSource;
 import org.mitre.schemastore.model.Domain;
 import org.mitre.schemastore.model.DomainValue;
 import org.mitre.schemastore.model.Entity;
-import org.mitre.schemastore.model.Group;
+import org.mitre.schemastore.model.Tag;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.Relationship;
@@ -117,49 +117,49 @@ public class SchemaStore
 	public boolean deleteSchema(int schemaID)
 		{ return manager.getSchemas().deleteSchema(schemaID); }
 	
-	//---------------------------------
-	// Handles schema group operations
-	//---------------------------------
+	//-------------------------------
+	// Handles schema tag operations
+	//-------------------------------
 
-	/** Web service to get the list of schema groups */
-	public Group[] getGroups()
-		{ return manager.getGroups().getGroups().toArray(new Group[0]); }
+	/** Web service to get the list of schema tags */
+	public Tag[] getTags()
+		{ return manager.getTags().getTags().toArray(new Tag[0]); }
 
-	/** Web service to get the specified group */
-	public Group getGroup(int groupID)
-		{ return manager.getGroups().getGroup(groupID); }
+	/** Web service to get the specified tag */
+	public Tag getTag(int tagID)
+		{ return manager.getTags().getTag(tagID); }
 
-	/** Web service to get the subgroups for the specified group */
-	public Group[] getSubgroups(int groupID)
-		{ return manager.getGroups().getSubgroups(groupID==0 ? null : groupID).toArray(new Group[0]); }
+	/** Web service to get the sub-categories for the specified tag */
+	public Tag[] getSubcategories(int tagID)
+		{ return manager.getTags().getSubcategories(tagID==0 ? null : tagID).toArray(new Tag[0]); }
 	
-	/** Web service to add a group */
-	public int addGroup(Group group)
-		{ return manager.getGroups().addGroup(group); }
+	/** Web service to add a tag */
+	public int addTag(Tag tag)
+		{ return manager.getTags().addTag(tag); }
 
-	/** Web service to update a group */
-	public boolean updateGroup(Group group)
-		{ return manager.getGroups().updateGroup(group); }
+	/** Web service to update a tag */
+	public boolean updateTag(Tag tag)
+		{ return manager.getTags().updateTag(tag); }
 	
-	/** Web service to delete a group */
-	public boolean deleteGroup(int groupID)
-		{ return manager.getGroups().deleteGroup(groupID); }
+	/** Web service to delete a tag */
+	public boolean deleteTag(int tagID)
+		{ return manager.getTags().deleteTag(tagID); }
 	
-	/** Web service to get list of schemas associated with group */
-	public int[] getGroupSchemas(int groupID)
-		{ return convertArray(manager.getGroups().getGroupSchemas(groupID)); }	
+	/** Web service to get list of schemas associated with tag */
+	public int[] getTagSchemas(int tagID)
+		{ return convertArray(manager.getTags().getTagSchemas(tagID)); }	
 	
-	/** Web service to get list of groups associated with schema */
-	public int[] getSchemaGroups(int schemaID)
-		{ return convertArray(manager.getGroups().getSchemaGroups(schemaID)); }
+	/** Web service to get list of tags associated with schema */
+	public int[] getSchemaTags(int schemaID)
+		{ return convertArray(manager.getTags().getSchemaTags(schemaID)); }
 		
-	/** Web service to add a group to a schema */
-	public boolean addGroupToSchema(int schemaID, int groupID)
-		{ return manager.getGroups().addGroupToSchema(schemaID, groupID); }
+	/** Web service to add a tag to a schema */
+	public boolean addTagToSchema(int schemaID, int tagID)
+		{ return manager.getTags().addTagToSchema(schemaID, tagID); }
 	
-	/** Web service to remove a group from a schema */
-	public boolean removeGroupFromSchema(int schemaID, int groupID)
-		{ return manager.getGroups().removeGroupFromSchema(schemaID, groupID); }
+	/** Web service to remove a tag from a schema */
+	public boolean removeTagFromSchema(int schemaID, int tagID)
+		{ return manager.getTags().removeTagFromSchema(schemaID, tagID); }
 	
 	//----------------------------------------
 	// Handles schema relationship operations
@@ -342,10 +342,10 @@ public class SchemaStore
 		{ return new SchemaElementList(manager.getSchemaElements().getSchemaElements(schemaID).toArray(new SchemaElement[0])); }
 
 	/** Web service to get the schemas elements referencing the specified keyword */
-	public SchemaElementList getSchemaElementsForKeyword(String keyword, int[] groupIDs)
+	public SchemaElementList getSchemaElementsForKeyword(String keyword, int[] tagIDs)
 	{
-		ArrayList<Integer> groupList = convertArray(groupIDs);
-		return new SchemaElementList(manager.getSchemaElements().getSchemaElementsForKeyword(keyword,groupList).toArray(new SchemaElement[0]));
+		ArrayList<Integer> tagList = convertArray(tagIDs);
+		return new SchemaElementList(manager.getSchemaElements().getSchemaElementsForKeyword(keyword,tagList).toArray(new SchemaElement[0]));
 	}
 	
 	/** Web service to get the schema element type */

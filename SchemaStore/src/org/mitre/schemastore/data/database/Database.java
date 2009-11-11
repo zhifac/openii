@@ -16,7 +16,7 @@ import org.mitre.schemastore.model.DataSource;
 import org.mitre.schemastore.model.Domain;
 import org.mitre.schemastore.model.DomainValue;
 import org.mitre.schemastore.model.Entity;
-import org.mitre.schemastore.model.Group;
+import org.mitre.schemastore.model.Tag;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.MappingSchema;
@@ -54,24 +54,24 @@ public class Database
 		public Integer getExtensionID() { return extensionID; }
 	}
 
-	/** Class for returning a schema group */
-	public class SchemaGroup
+	/** Class for returning a schema tag */
+	public class SchemaTag
 	{
 		/** Stores the schema ID */
 		private Integer schemaID;
 
-		/** Stores the group ID */
-		private Integer groupID;
+		/** Stores the tag ID */
+		private Integer tagID;
 
-		/** Constructs the schema group */
-		private SchemaGroup(Integer schemaID, Integer groupID)
-			{ this.schemaID = schemaID;  this.groupID = groupID; }
+		/** Constructs the schema tag */
+		private SchemaTag(Integer schemaID, Integer tagID)
+			{ this.schemaID = schemaID;  this.tagID = tagID; }
 
 		/** Returns the schema ID */
 		public Integer getSchemaID() { return schemaID; }
 
-		/** Returns the group ID */
-		public Integer getGroupID() { return groupID; }
+		/** Returns the tag ID */
+		public Integer getTagID() { return tagID; }
 	}
 
 	/** Scrub strings to avoid database errors */
@@ -242,7 +242,7 @@ public class Database
 			stmt.executeUpdate("DELETE FROM entity WHERE schema_id="+schemaID);
 
 			// Delete the schema from the database
-			stmt.executeUpdate("DELETE FROM schema_group WHERE schema_id="+schemaID);
+			stmt.executeUpdate("DELETE FROM schema_tag WHERE schema_id="+schemaID);
 			stmt.executeUpdate("DELETE FROM extensions WHERE schema_id="+schemaID);
 			stmt.executeUpdate("DELETE FROM \"schema\" WHERE id="+schemaID);
 			stmt.close();
@@ -277,92 +277,92 @@ public class Database
 	}
 
 	//---------------------------------------
-	// Handles Schema Groups in the Database
+	// Handles Schema Tags in the Database
 	//---------------------------------------
 
-	/** Retrieves the schema groups validation number */
-	public Integer getSchemaGroupValidationNumber()
+	/** Retrieves the schema tags validation number */
+	public Integer getSchemaTagValidationNumber()
 	{
 		Integer validationNumber = 0;
 		try {
 			Statement stmt = connection.getStatement();
-			ResultSet rs = stmt.executeQuery("SELECT sum((mod(schema_id,100)+1)*(mod(group_id,100)+1)) AS validation_number FROM schema_group");
+			ResultSet rs = stmt.executeQuery("SELECT sum((mod(schema_id,100)+1)*(mod(tag_id,100)+1)) AS validation_number FROM schema_tag");
 			if(rs.next())
 				validationNumber = rs.getInt("validation_number");
 			stmt.close();
-		} catch(SQLException e) { System.out.println("(E) Database:getSchemaGroupValidationNumber: "+e.getMessage()); }
+		} catch(SQLException e) { System.out.println("(E) Database:getSchemaTagValidationNumber: "+e.getMessage()); }
 		return validationNumber;
 	}
 
-	/** Retrieves the list of groups */
-	public ArrayList<Group> getGroups()
+	/** Retrieves the list of tags */
+	public ArrayList<Tag> getTags()
 	{
-		ArrayList<Group> groups = new ArrayList<Group>();
+		ArrayList<Tag> tags = new ArrayList<Tag>();
 		try {
 			Statement stmt = connection.getStatement();
-			ResultSet rs = stmt.executeQuery("SELECT id,name,parent_id FROM groups");
+			ResultSet rs = stmt.executeQuery("SELECT id,name,parent_id FROM tags");
 			while(rs.next())
-				groups.add(new Group(rs.getInt("id"),rs.getString("name"),rs.getInt("parent_id")));
+				tags.add(new Tag(rs.getInt("id"),rs.getString("name"),rs.getInt("parent_id")));
 			stmt.close();
-		} catch(SQLException e) { System.out.println("(E) Database:getGroups: "+e.getMessage()); }
-		return groups;
+		} catch(SQLException e) { System.out.println("(E) Database:getTags: "+e.getMessage()); }
+		return tags;
 	}
 
-	/** Retrieves the specified group from the repository */
-	public Group getGroup(Integer groupID)
+	/** Retrieves the specified tag from the repository */
+	public Tag getTag(Integer tagID)
 	{
-		Group group = null;
+		Tag tag = null;
 		try {
 			Statement stmt = connection.getStatement();
-			ResultSet rs = stmt.executeQuery("SELECT id,name,parent_id FROM groups");
+			ResultSet rs = stmt.executeQuery("SELECT id,name,parent_id FROM tags");
 			if(rs.next())
-				group = new Group(rs.getInt("id"),rs.getString("name"),rs.getInt("parent_id"));
+				tag = new Tag(rs.getInt("id"),rs.getString("name"),rs.getInt("parent_id"));
 			stmt.close();
-		} catch(SQLException e) { System.out.println("(E) Database:getGroup: "+e.getMessage()); }
-		return group;
+		} catch(SQLException e) { System.out.println("(E) Database:getTag: "+e.getMessage()); }
+		return tag;
 	}
 
-	/** Retrieves the list of subgroups for the specified group */
-	public ArrayList<Group> getSubgroups(Integer groupID)
+	/** Retrieves the list of sub-categories for the specified tag */
+	public ArrayList<Tag> getSubcategories(Integer tagID)
 	{
-		ArrayList<Group> groups = new ArrayList<Group>();
+		ArrayList<Tag> tags = new ArrayList<Tag>();
 		try {
 			Statement stmt = connection.getStatement();
-			ResultSet rs = stmt.executeQuery("SELECT id,name,parent_id FROM groups WHERE parent_id " + (groupID==null ? " IS NULL" : "= "+groupID));
+			ResultSet rs = stmt.executeQuery("SELECT id,name,parent_id FROM tags WHERE parent_id " + (tagID==null ? " IS NULL" : "= "+tagID));
 			while(rs.next())
-				groups.add(new Group(rs.getInt("id"),rs.getString("name"),rs.getInt("parent_id")));
+				tags.add(new Tag(rs.getInt("id"),rs.getString("name"),rs.getInt("parent_id")));
 			stmt.close();
-		} catch(SQLException e) { System.out.println("(E) Database:getGroups: "+e.getMessage()); }
-		return groups;
+		} catch(SQLException e) { System.out.println("(E) Database:getSubcatagories: "+e.getMessage()); }
+		return tags;
 	}
 
-	/** Adds the specified group */
-	public Integer addGroup(Group group)
+	/** Adds the specified tag */
+	public Integer addTag(Tag tag)
 	{
-		Integer groupID = 0;
+		Integer tagID = 0;
 		try {
-			groupID = getUniversalIDs(1);
+			tagID = getUniversalIDs(1);
 			Statement stmt = connection.getStatement();
-			stmt.executeUpdate("INSERT INTO groups(id,name,parent_id) VALUES("+groupID+",'"+scrub(group.getName(),100)+"',"+group.getParentId()+")");
+			stmt.executeUpdate("INSERT INTO tags(id,name,parent_id) VALUES("+tagID+",'"+scrub(tag.getName(),100)+"',"+tag.getParentId()+")");
 			stmt.close();
 			connection.commit();
 		}
 		catch(SQLException e)
 		{
 			try { connection.rollback(); } catch(SQLException e2) {}
-			groupID = 0;
-			System.out.println("(E) Database:addGroup: "+e.getMessage());
+			tagID = 0;
+			System.out.println("(E) Database:addTag: "+e.getMessage());
 		}
-		return groupID;
+		return tagID;
 	}
 
-	/** Updates the specified group */
-	public Boolean updateGroup(Group group)
+	/** Updates the specified tag */
+	public Boolean updateTag(Tag tag)
 	{
 		boolean success = false;
 		try {
 			Statement stmt = connection.getStatement();
-			stmt.executeUpdate("UPDATE groups SET name='"+scrub(group.getName(),100)+"' WHERE id="+group.getId());
+			stmt.executeUpdate("UPDATE tags SET name='"+scrub(tag.getName(),100)+"' WHERE id="+tag.getId());
 			stmt.close();
 			connection.commit();
 			success = true;
@@ -370,19 +370,19 @@ public class Database
 		catch(SQLException e)
 		{
 			try { connection.rollback(); } catch(SQLException e2) {}
-			System.out.println("(E) Database:updateGroup: "+e.getMessage());
+			System.out.println("(E) Database:updateTags: "+e.getMessage());
 		}
 		return success;
 	}
 
-	/** Deletes the specified group */
-	public boolean deleteGroup(int groupID)
+	/** Deletes the specified tag */
+	public boolean deleteTag(int tagID)
 	{
 		boolean success = false;
 		try {
 			Statement stmt = connection.getStatement();
-			stmt.executeUpdate("DELETE FROM schema_group WHERE group_id="+groupID);
-			stmt.executeUpdate("DELETE FROM groups WHERE id="+groupID);
+			stmt.executeUpdate("DELETE FROM schema_tag WHERE tag_id="+tagID);
+			stmt.executeUpdate("DELETE FROM tags WHERE id="+tagID);
 			stmt.close();
 			connection.commit();
 			success = true;
@@ -390,35 +390,35 @@ public class Database
 		catch(SQLException e)
 		{
 			try { connection.rollback(); } catch(SQLException e2) {}
-			System.out.println("(E) Database:deleteGroup: "+e.getMessage());
+			System.out.println("(E) Database:deleteTag: "+e.getMessage());
 		}
 		return success;
 	}
 
-	/** Retrieve the list of schema groups */
-	public ArrayList<SchemaGroup> getSchemaGroups()
+	/** Retrieve the list of schema tags */
+	public ArrayList<SchemaTag> getSchemaTags()
 	{
-		ArrayList<SchemaGroup> schemaGroups = new ArrayList<SchemaGroup>();
+		ArrayList<SchemaTag> schemaTags = new ArrayList<SchemaTag>();
 		try {
 			Statement stmt = connection.getStatement();
-			ResultSet rs = stmt.executeQuery("SELECT schema_id, group_id FROM schema_group");
+			ResultSet rs = stmt.executeQuery("SELECT schema_id, tag_id FROM schema_tag");
 			while(rs.next())
-				schemaGroups.add(new SchemaGroup(rs.getInt("schema_id"),rs.getInt("group_id")));
+				schemaTags.add(new SchemaTag(rs.getInt("schema_id"),rs.getInt("tag_id")));
 			stmt.close();
-		} catch(SQLException e) { System.out.println("(E) Database:getSchemaGroups: "+e.getMessage()); }
-		return schemaGroups;
+		} catch(SQLException e) { System.out.println("(E) Database:getSchemaTags: "+e.getMessage()); }
+		return schemaTags;
 	}
 
-	/** Add the group to the specified schema */
-	public Boolean addGroupToSchema(Integer schemaID, Integer groupID)
+	/** Add the tag to the specified schema */
+	public Boolean addTagToSchema(Integer schemaID, Integer tagID)
 	{
 		Boolean success = false;
 		try {
 			Statement stmt = connection.getStatement();
-			ResultSet rs = stmt.executeQuery("SELECT count(*) AS count FROM schema_group WHERE schema_id="+schemaID+" AND group_id="+groupID);
+			ResultSet rs = stmt.executeQuery("SELECT count(*) AS count FROM schema_tag WHERE schema_id="+schemaID+" AND tag_id="+tagID);
 			rs.next();
 			if(rs.getInt("count")==0)
-				stmt.executeUpdate("INSERT INTO schema_group(schema_id,group_id) VALUES ("+schemaID+","+groupID+")");
+				stmt.executeUpdate("INSERT INTO schema_tag(schema_id,tag_id) VALUES ("+schemaID+","+tagID+")");
 			stmt.close();
 			connection.commit();
 			success = true;
@@ -426,18 +426,18 @@ public class Database
 		catch(SQLException e)
 		{
 			try { connection.rollback(); } catch(SQLException e2) {}
-			System.out.println("(E) Database:addGroupToSchema: "+e.getMessage());
+			System.out.println("(E) Database:addTagToSchema: "+e.getMessage());
 		}
 		return success;
 	}
 
-	/** Remove the group to the specified schema */
-	public Boolean removeGroupFromSchema(Integer schemaID, Integer groupID)
+	/** Remove the tag to the specified schema */
+	public Boolean removeTagFromSchema(Integer schemaID, Integer tagID)
 	{
 		Boolean success = false;
 		try {
 			Statement stmt = connection.getStatement();
-			stmt.executeUpdate("DELETE FROM schema_group WHERE schema_id="+schemaID+" AND group_id="+groupID);
+			stmt.executeUpdate("DELETE FROM schema_tag WHERE schema_id="+schemaID+" AND tag_id="+tagID);
 			stmt.close();
 			connection.commit();
 			success = true;
@@ -445,7 +445,7 @@ public class Database
 		catch(SQLException e)
 		{
 			try { connection.rollback(); } catch(SQLException e2) {}
-			System.out.println("(E) Database:removeGroupFromSchema: "+e.getMessage());
+			System.out.println("(E) Database:removeTagFromSchema: "+e.getMessage());
 		}
 		return success;
 	}
