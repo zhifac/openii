@@ -16,7 +16,6 @@ import org.mitre.schemastore.model.DataSource;
 import org.mitre.schemastore.model.Domain;
 import org.mitre.schemastore.model.DomainValue;
 import org.mitre.schemastore.model.Entity;
-import org.mitre.schemastore.model.Group;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.Relationship;
@@ -24,6 +23,7 @@ import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.SchemaElementList;
 import org.mitre.schemastore.model.Subtype;
+import org.mitre.schemastore.model.Tag;
 import org.mitre.schemastore.model.schemaInfo.SchemaInfo;
 import org.mitre.schemastore.servlet.SchemaStore;
 import org.mitre.schemastore.servlet.SchemaStoreProxy;
@@ -145,72 +145,72 @@ public class SchemaStoreClient
 	public boolean deleteSchema(Integer schemaID) throws RemoteException
 		{ return (Boolean)callMethod("deleteSchema",new Object[] {schemaID}); }
 
-	//------------------------
-	// Schema Group Functions
-	//------------------------
+	//----------------------
+	// Schema Tag Functions
+	//----------------------
 
-	/** Get the list of groups from the web service */
-	public ArrayList<Group> getGroups() throws RemoteException
+	/** Get the list of tags from the web service */
+	public ArrayList<Tag> getTags() throws RemoteException
 	{
-		Group[] groups = (Group[])callMethod("getGroups",new Object[] {});
-		return groups==null ? new ArrayList<Group>() : new ArrayList<Group>(Arrays.asList(groups));
+		Tag[] tags = (Tag[])callMethod("getTags",new Object[] {});
+		return tags==null ? new ArrayList<Tag>() : new ArrayList<Tag>(Arrays.asList(tags));
 	}
 
-	/** Gets the specified group from the web service */
-	public Schema getGroup(Integer groupID) throws RemoteException
-		{ return (Schema)callMethod("getGroup",new Object[] {groupID}); }
+	/** Gets the specified tag from the web service */
+	public Schema getTag(Integer tagID) throws RemoteException
+		{ return (Schema)callMethod("getTag",new Object[] {tagID}); }
 
-	/** Get the list of subgroups for the specified group from the web service */
-	public ArrayList<Group> getSubgroups(Integer groupID) throws RemoteException
+	/** Get the list of sub-categories for the specified tag from the web service */
+	public ArrayList<Tag> getSubcategories(Integer tagID) throws RemoteException
 	{
-		Group[] groups = (Group[])callMethod("getSubgroups",new Object[] {groupID==null ? 0 : groupID});
-		return groups==null ? new ArrayList<Group>() : new ArrayList<Group>(Arrays.asList(groups));
+		Tag[] tags = (Tag[])callMethod("getSubcategories",new Object[] {tagID==null ? 0 : tagID});
+		return tags==null ? new ArrayList<Tag>() : new ArrayList<Tag>(Arrays.asList(tags));
 	}
 
-	/** Add a group to the web service */
-	public Integer addGroup(Group group) throws RemoteException
+	/** Add a tag to the web service */
+	public Integer addTag(Tag tag) throws RemoteException
 	{
-		Integer groupID = (Integer)callMethod("addGroup",new Object[] {group});
-		return groupID==0 ? null : groupID;
+		Integer tagID = (Integer)callMethod("addTag",new Object[] {tag});
+		return tagID==0 ? null : tagID;
 	}
 
-	/** Update a group in the web service */
-	public boolean updateGroup(Group group) throws RemoteException
-		{ return (Boolean)callMethod("updateGroup",new Object[] {group}); }
+	/** Update a tag in the web service */
+	public boolean updateTag(Tag tag) throws RemoteException
+		{ return (Boolean)callMethod("updateTag",new Object[] {tag}); }
 
-	/** Delete a group from the web service */
-	public boolean deleteGroup(Integer groupID) throws RemoteException
-		{ return (Boolean)callMethod("deleteGroup",new Object[] {groupID}); }
+	/** Delete a tag from the web service */
+	public boolean deleteTag(Integer tagID) throws RemoteException
+		{ return (Boolean)callMethod("deleteTag",new Object[] {tagID}); }
 
-	/** Get list of schemas associated with group in web service */
-	public ArrayList<Integer> getGroupSchemas(Integer groupID) throws RemoteException
+	/** Get list of schemas associated with tag in web service */
+	public ArrayList<Integer> getTagSchemas(Integer tagID) throws RemoteException
 	{
-		ArrayList<Integer> groupSchemas = new ArrayList<Integer>();
-		int[] groupSchemaArray = (int[])callMethod("getGroupSchemas",new Object[] {groupID});
-		if(groupSchemaArray!=null)
-			for(Integer groupSchema : groupSchemaArray)
-				groupSchemas.add(groupSchema);
-		return groupSchemas;
+		ArrayList<Integer> tagSchemas = new ArrayList<Integer>();
+		int[] tagSchemaArray = (int[])callMethod("getTagSchemas",new Object[] {tagID});
+		if(tagSchemaArray!=null)
+			for(Integer tagSchema : tagSchemaArray)
+				tagSchemas.add(tagSchema);
+		return tagSchemas;
 	}
 
-	/** Get list of groups associated with schema in the web service */
-	public ArrayList<Integer> getSchemaGroups(Integer schemaID) throws RemoteException
+	/** Get list of tags associated with schema in the web service */
+	public ArrayList<Integer> getSchemaTags(Integer schemaID) throws RemoteException
 	{
-		ArrayList<Integer> schemaGroups = new ArrayList<Integer>();
-		int[] schemaGroupArray = (int[])callMethod("getSchemaGroups",new Object[] {schemaID});
-		if(schemaGroupArray!=null)
-			for(Integer schemaGroup : schemaGroupArray)
-				schemaGroups.add(schemaGroup);
-		return schemaGroups;
+		ArrayList<Integer> schemaTags = new ArrayList<Integer>();
+		int[] schemaTagArray = (int[])callMethod("getSchemaTags",new Object[] {schemaID});
+		if(schemaTagArray!=null)
+			for(Integer schemaTag : schemaTagArray)
+				schemaTags.add(schemaTag);
+		return schemaTags;
 	}
 
-	/** Add a group to a schema in the web service */
-	public boolean addGroupToSchema(Integer schemaID, Integer groupID) throws RemoteException
-		{ return (Boolean)callMethod("addGroupToSchema",new Object[] {schemaID,groupID}); }
+	/** Add a tag to a schema in the web service */
+	public boolean addTagToSchema(Integer schemaID, Integer tagID) throws RemoteException
+		{ return (Boolean)callMethod("addTagToSchema",new Object[] {schemaID,tagID}); }
 
-	/** Remove a group from a schema in the web service */
-	public boolean removeGroupFromSchema(Integer schemaID, Integer groupID) throws RemoteException
-		{ return (Boolean)callMethod("removeGroupFromSchema",new Object[] {schemaID,groupID}); }
+	/** Remove a tag from a schema in the web service */
+	public boolean removeTagFromSchema(Integer schemaID, Integer tagID) throws RemoteException
+		{ return (Boolean)callMethod("removeTagFromSchema",new Object[] {schemaID,tagID}); }
 
 	//-------------------------------
 	// Schema Relationship Functions
@@ -359,15 +359,15 @@ public class SchemaStoreClient
 	}
 
 	/** Retrieves the schemas elements referencing the specified keyword */
-	public ArrayList<SchemaElement> getSchemaElementsForKeyword(String keyword, ArrayList<Integer> groups) throws RemoteException
+	public ArrayList<SchemaElement> getSchemaElementsForKeyword(String keyword, ArrayList<Integer> tags) throws RemoteException
 	{
-		int groupList[] = new int[0];
-		if(groups!=null)
+		int tagList[] = new int[0];
+		if(tags!=null)
 		{
-			groupList = new int[groups.size()];
-			for(int i=0; i<groups.size(); i++) groupList[i] = groups.get(i);
+			tagList = new int[tags.size()];
+			for(int i=0; i<tags.size(); i++) tagList[i] = tags.get(i);
 		}
-		SchemaElement[] schemaElements = ((SchemaElementList)callMethod("getSchemaElementsForKeyword",new Object[] {keyword, groupList})).getSchemaElements();
+		SchemaElement[] schemaElements = ((SchemaElementList)callMethod("getSchemaElementsForKeyword",new Object[] {keyword, tagList})).geetSchemaElements();
 		return schemaElements==null ? new ArrayList<SchemaElement>() : new ArrayList<SchemaElement>(Arrays.asList(schemaElements));
 	}
 
@@ -378,7 +378,7 @@ public class SchemaStoreClient
 	/** Retrieves the schema info for the specified schema from the web service */
 	public SchemaInfo getSchemaInfo(Integer schemaID) throws RemoteException
 	{
-		SchemaElement[] schemaElements = ((SchemaElementList)callMethod("getSchemaElements",new Object[] {schemaID})).getSchemaElements();
+		SchemaElement[] schemaElements = ((SchemaElementList)callMethod("getSchemaElements",new Object[] {schemaID})).geetSchemaElements();
 		ArrayList<SchemaElement> elements = schemaElements==null ? new ArrayList<SchemaElement>() : new ArrayList<SchemaElement>(Arrays.asList(schemaElements));
 		return new SchemaInfo(getSchema(schemaID),getParentSchemas(schemaID),elements);
 	}
