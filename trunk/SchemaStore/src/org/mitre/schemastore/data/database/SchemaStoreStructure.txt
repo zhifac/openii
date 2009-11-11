@@ -72,7 +72,7 @@ CREATE TABLE extensions (
     base_id integer NOT NULL
 );
 
-CREATE TABLE groups (
+CREATE TABLE tags (
     id integer NOT NULL,
     name character varying(100) NOT NULL,
     parent_id integer
@@ -141,8 +141,8 @@ CREATE TABLE "schema" (
     locked character NOT NULL
 );
 
-CREATE TABLE schema_group (
-    group_id integer NOT NULL,
+CREATE TABLE schema_tag (
+    tag_id integer NOT NULL,
     schema_id integer NOT NULL
 );
 
@@ -183,8 +183,8 @@ ALTER TABLE domainvalue
 ALTER TABLE entity
     ADD CONSTRAINT entity_pkey PRIMARY KEY (id);
 
-ALTER TABLE groups
-    ADD CONSTRAINT groups_pkey PRIMARY KEY (id);
+ALTER TABLE tags
+    ADD CONSTRAINT tags_pkey PRIMARY KEY (id);
 
 ALTER TABLE data_source
     ADD CONSTRAINT instance_pkey PRIMARY KEY (id);
@@ -232,14 +232,14 @@ ALTER TABLE relationship
 ALTER TABLE data_source
     ADD CONSTRAINT datasource_schema_fkey FOREIGN KEY (schema_id) REFERENCES "schema"(id);
 
-ALTER TABLE groups
-    ADD CONSTRAINT groups_groups_fkey FOREIGN KEY (parent_id) REFERENCES groups(id);
+ALTER TABLE tags
+    ADD CONSTRAINT tags_tags_fkey FOREIGN KEY (parent_id) REFERENCES tags(id);
 
-ALTER TABLE schema_group
-    ADD CONSTRAINT schemagroup_groups_fkey FOREIGN KEY (group_id) REFERENCES groups(id);
+ALTER TABLE schema_tag
+    ADD CONSTRAINT schematag_tags_fkey FOREIGN KEY (tag_id) REFERENCES tags(id);
 
-ALTER TABLE schema_group
-    ADD CONSTRAINT schemagroup_schema_fkey FOREIGN KEY (schema_id) REFERENCES "schema"(id);
+ALTER TABLE schema_tag
+    ADD CONSTRAINT schematag_schema_fkey FOREIGN KEY (schema_id) REFERENCES "schema"(id);
 
 ALTER TABLE mapping_input
     ADD CONSTRAINT mapping_input_fkey FOREIGN KEY (cell_id) REFERENCES validated_mapping_cell(id);
@@ -284,7 +284,7 @@ ALTER TABLE subtype
 // Generate Indexes
 //------------------
 
-CREATE UNIQUE INDEX schema_group_idx ON schema_group (schema_id, group_id);
+CREATE UNIQUE INDEX schema_tag_idx ON schema_tag (schema_id, tag_id);
 
 CREATE INDEX alias_schema_idx ON alias (schema_id);
 
