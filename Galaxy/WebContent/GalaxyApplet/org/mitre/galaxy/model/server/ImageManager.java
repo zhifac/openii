@@ -16,8 +16,8 @@ public class ImageManager
 	/** Listing of the images being managed by this class */
 	private static final String[] imageNames = new String[] {"GalaxyTitle.jpg","GalaxyTile.jpg","Schema.jpg",
 		"SchemaUnavailable.jpg","SchemaSelected.jpg","SchemaComparison.jpg","SchemaElements.jpg","DependantElement.jpg",
-		"Children.jpg","SchemaElement.jpg","Parents.jpg","Document.jpg","Expand.jpg","Collapse.jpg","Group.gif",
-		"Groups.gif","Schemas.jpg","Unassigned.jpg"};
+		"Children.jpg","SchemaElement.jpg","Parents.jpg","Document.jpg","Expand.jpg","Collapse.jpg","Tag.gif",
+		"Tags.gif","Schemas.jpg","Unassigned.jpg"};
 	
 	/** Mapping of images available within the applet */
 	private static Map<String,Image> images = new HashMap<String,Image>();

@@ -55,7 +55,7 @@ class DataSourcePane extends JPanel implements ActionListener, SelectedObjectsLi
 		// Gather the data sources to display
 		ArrayList<DataSource> dataSources = new ArrayList<DataSource>();
 		for(DataSource dataSource : DataSources.getDataSources())
-			if(SelectedObjects.inSelectedGroups(dataSource.getSchemaID())) dataSources.add(dataSource);
+			if(SelectedObjects.inSelectedTags(dataSource.getSchemaID())) dataSources.add(dataSource);
 		DataSources.sort(dataSources);
 		
 		// Set the data source list model
@@ -102,7 +102,7 @@ class DataSourcePane extends JPanel implements ActionListener, SelectedObjectsLi
 	}
 
 	/** Handles changes to the data source list */
-	public void selectedGroupsChanged()
+	public void selectedTagsChanged()
 		{ updateDataSourceList(); }
 
 	/** Handles changes to the selected schema */

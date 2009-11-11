@@ -151,8 +151,8 @@ public class Schemas
 	//------------------------
 
 	/** Gets the list of elements with the specified keyword */
-	static public ArrayList<SchemaElement> getElementsForKeyword(String keyword, HashSet<Integer> groups)
-		{ return SchemaStoreManager.getSchemaElementsForKeyword(keyword, new ArrayList<Integer>(groups)); }
+	static public ArrayList<SchemaElement> getElementsForKeyword(String keyword, HashSet<Integer> tags)
+		{ return SchemaStoreManager.getSchemaElementsForKeyword(keyword, new ArrayList<Integer>(tags)); }
 
 	/** Returns the schema element count */
 	static public int getSchemaElementCount(Integer schemaID)
@@ -180,7 +180,7 @@ public class Schemas
 		// Retrieve schema info if needed
 		if(!schemaInfoList.containsKey(schemaID))
 		{
-			HierarchicalSchemaInfo schemaInfo = new HierarchicalSchemaInfo(SchemaStoreManager.getSchemaInfo(schemaID),null);
+			HierarchicalSchemaInfo schemaInfo = new HierarchicalSchemaInfo(SchemaStoreManager.getSchemaInfo(schemaID));
 			schemaInfoList.put(schemaID,schemaInfo);
 			for(SchemaElement element : schemaInfo.getElements(null))
 				schemaElements.put(element.getId(), element);

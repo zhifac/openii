@@ -46,8 +46,8 @@ public class ExtensionsPane extends JPanel implements ComponentListener
 	/** Stores the comparison schema ID */
 	private Integer comparisonSchemaID;
 
-	/** Stores the currently selected group schemas */
-	private HashSet<Integer> selectedGroupSchemas = null;
+	/** Stores the currently selected tag schemas */
+	private HashSet<Integer> selectedTagSchemas = null;
 	
 	/** List of listeners monitoring the extensions pane */
 	private ArrayList<ExtensionsPaneListener> listeners = new ArrayList<ExtensionsPaneListener>();
@@ -70,7 +70,7 @@ public class ExtensionsPane extends JPanel implements ComponentListener
 				if(object instanceof Schema)
 				{
 					Integer schemaID = ((Schema)object).getId();
-					if(inSelectedGroups(schemaID))
+					if(inSelectedTags(schemaID))
 					{
 						if(e.getButton()==MouseEvent.BUTTON1)
 							for(ExtensionsPaneListener listener : listeners)
@@ -121,11 +121,11 @@ public class ExtensionsPane extends JPanel implements ComponentListener
 	public Integer getComparisonSchemaID()
 		{ return comparisonSchemaID; }
 
-	/** Indicates if the specified schema is contained in selected groups */
-	public boolean inSelectedGroups(Integer schemaID)
+	/** Indicates if the specified schema is contained in selected tags */
+	public boolean inSelectedTags(Integer schemaID)
 	{
-		if(selectedGroupSchemas==null) return true;
-		return selectedGroupSchemas.contains(schemaID);
+		if(selectedTagSchemas==null) return true;
+		return selectedTagSchemas.contains(schemaID);
 	}
 	
 	/** Refreshes the Extensions Pane */
@@ -242,9 +242,9 @@ public class ExtensionsPane extends JPanel implements ComponentListener
 	public void setComparisonSchema(Integer comparisonSchemaID)
 		{ this.comparisonSchemaID=comparisonSchemaID; refresh(); }
 
-	/** Handles changes to the selected groups */
-	public void setSelectedGroupSchemas(HashSet<Integer> selectedGroupSchemas)
-		{ this.selectedGroupSchemas = selectedGroupSchemas; refresh(); }
+	/** Handles changes to the selected tags */
+	public void setSelectedTagSchemas(HashSet<Integer> selectedTagSchemas)
+		{ this.selectedTagSchemas = selectedTagSchemas; refresh(); }
 	
 	/** Centers the display when the component is moved */
 	public void componentResized(ComponentEvent e)

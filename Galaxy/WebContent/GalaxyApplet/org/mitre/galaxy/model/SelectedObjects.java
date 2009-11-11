@@ -20,11 +20,11 @@ public class SelectedObjects
 	/** Stores the selected comparison schema */
 	static private Integer selectedComparisonSchema = null;
 	
-	/** Stores the selected groups */
-	static private HashSet<Integer> selectedGroups = new HashSet<Integer>();
+	/** Stores the selected tags */
+	static private HashSet<Integer> selectedTags = new HashSet<Integer>();
 
-	/** Stores the selected group schemas */
-	static private HashSet<Integer> selectedGroupSchemas = new HashSet<Integer>();
+	/** Stores the selected tag schemas */
+	static private HashSet<Integer> selectedTagSchemas = new HashSet<Integer>();
 	
 	/** List of listeners monitoring selected object events */
 	static private ArrayList<SelectedObjectsListener> selectedObjectListeners = new ArrayList<SelectedObjectsListener>();
@@ -52,33 +52,33 @@ public class SelectedObjects
 		fireSelectedComparisonSchemaChangedEvent();
 	}
 	
-	/** Returns the selected groups */
-	static public HashSet<Integer> getSelectedGroups()
-		{ return new HashSet<Integer>(selectedGroups); }
+	/** Returns the selected tags */
+	static public HashSet<Integer> getSelectedTags()
+		{ return new HashSet<Integer>(selectedTags); }
 	
-	/** Sets the selected groups */
-	static public void setSelectedGroups(ArrayList<Integer> groups)
+	/** Sets the selected tags */
+	static public void setSelectedTags(ArrayList<Integer> tags)
 	{		
-		// Update the selected groups
-		selectedGroups = new HashSet<Integer>(groups);
-		selectedGroupSchemas.clear();
-		for(Integer groupID : groups)
-			selectedGroupSchemas.addAll(Groups.getGroupSchemas(groupID));
+		// Update the selected tags
+		selectedTags = new HashSet<Integer>(tags);
+		selectedTagSchemas.clear();
+		for(Integer tagID : tags)
+			selectedTagSchemas.addAll(Tags.getTagSchemas(tagID));
 
-		// Inform listeners of change to selected groups
-		fireSelectedGroupsChangedEvent();
+		// Inform listeners of change to selected tags
+		fireSelectedTagsChangedEvent();
 	}
 	
-	/** Indicates if the specified schema is contained in selected groups */
-	static public boolean inSelectedGroups(Integer schemaID)
+	/** Indicates if the specified schema is contained in selected tags */
+	static public boolean inSelectedTags(Integer schemaID)
 	{
-		if(selectedGroups.size()==0) return true;
-		return selectedGroupSchemas.contains(schemaID);
+		if(selectedTags.size()==0) return true;
+		return selectedTagSchemas.contains(schemaID);
 	}
 	
-	/** Returns the selected group schemas */
-	static public HashSet<Integer> getSelectedGroupSchemas()
-		{ return new HashSet<Integer>(selectedGroupSchemas); }
+	/** Returns the selected tag schemas */
+	static public HashSet<Integer> getSelectedTagSchemas()
+		{ return new HashSet<Integer>(selectedTagSchemas); }
 	
 	/** Adds a listener monitoring selected schema events */
 	static public void addSelectedObjectsListener(SelectedObjectsListener listener)
@@ -102,10 +102,10 @@ public class SelectedObjects
 			listener.selectedComparisonSchemaChanged();
 	}
 	
-	/** Inform listeners that the selected groups have changed */
-	static private void fireSelectedGroupsChangedEvent()
+	/** Inform listeners that the selected tags have changed */
+	static private void fireSelectedTagsChangedEvent()
 	{
 		for(SelectedObjectsListener listener : new ArrayList<SelectedObjectsListener>(selectedObjectListeners))
-			listener.selectedGroupsChanged();
+			listener.selectedTagsChanged();
 	}
 }

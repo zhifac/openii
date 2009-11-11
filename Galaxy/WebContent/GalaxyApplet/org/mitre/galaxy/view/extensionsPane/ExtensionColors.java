@@ -33,7 +33,7 @@ public class ExtensionColors
 		{
 			// Define various node fill colors
 			final int schemaColor = ColorLib.color(Color.white);
-			final int unavailableGroupColor = ColorLib.color(Color.lightGray);
+			final int unavailableTagColor = ColorLib.color(Color.lightGray);
 			final int selectedSchemaColor = ColorLib.color(Color.yellow);
 			final int comparisonSchemaColor = ColorLib.color(Color.orange);
 			final int dataSourceColor = ColorLib.color(new Color((float)0.8,(float)0.8,(float)1.0));
@@ -43,7 +43,7 @@ public class ExtensionColors
 			if(object instanceof Schema)
 			{
 				Integer schemaID = ((Schema)object).getId();
-				if(!pane.inSelectedGroups(schemaID)) return unavailableGroupColor;
+				if(!pane.inSelectedTags(schemaID)) return unavailableTagColor;
 				else if(schemaID.equals(pane.getSchemaID())) return selectedSchemaColor;
 				else if(schemaID.equals(pane.getComparisonSchemaID())) return comparisonSchemaColor;
 				return schemaColor;

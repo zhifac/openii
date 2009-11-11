@@ -11,6 +11,6 @@ public interface SelectedObjectsListener
 	/** Indicates that the selected comparison schema has been changed */
 	public void selectedComparisonSchemaChanged();
 	
-	/** Indicates that the selected groups have changed */
-	public void selectedGroupsChanged();
+	/** Indicates that the selected tags have changed */
+	public void selectedTagsChanged();
 }

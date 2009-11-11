@@ -74,12 +74,12 @@ public class SearchManager
 				// Retrieve all matching schemas
 				if(type==null || type==Keyword.SCHEMA)
 					for(Schema schema : Schemas.getSchemas())
-						if(SelectedObjects.inSelectedGroups(schema.getId()))
+						if(SelectedObjects.inSelectedTags(schema.getId()))
 							if(keyword.isContainedIn(schema.getName()) || keyword.isContainedIn(schema.getDescription()))
 								matches.add(new Match(schema));
 				
 				// Retrieve all matching schema elements
-				for(SchemaElement element : Schemas.getElementsForKeyword(keyword.getKeyword(), SelectedObjects.getSelectedGroups()))
+				for(SchemaElement element : Schemas.getElementsForKeyword(keyword.getKeyword(), SelectedObjects.getSelectedTags()))
 					if(type==null || type.equals(getType(element)))
 						matches.add(new Match(element));
 			}

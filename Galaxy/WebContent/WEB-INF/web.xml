@@ -3,23 +3,23 @@
 	<display-name>Galaxy</display-name>
 	<context-param>
 		<param-name>connectionType</param-name>
-		<param-value>uri</param-value>
+		<param-value>derby</param-value>
 	</context-param>
 	<context-param>
 		<param-name>connectionLocation</param-name>
-		<param-value>http://localhost:8080/SchemaStore/services/SchemaStore</param-value>
+		<param-value>.</param-value>
 	</context-param>
 	<context-param>
 		<param-name>connectionDatabase</param-name>
-		<param-value></param-value>
+		<param-value>schemastore</param-value>
 	</context-param>
 	<context-param>
 		<param-name>connectionUsername</param-name>
-		<param-value></param-value>
+		<param-value>postgres</param-value>
 	</context-param>
 	<context-param>
 		<param-name>connectionPassword</param-name>
-		<param-value></param-value>
+		<param-value>postgres</param-value>
 	</context-param>
 	<servlet>
 		<description></description>

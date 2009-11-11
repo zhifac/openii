@@ -15,7 +15,7 @@ import java.util.ArrayList;
 
 import org.mitre.schemastore.client.SchemaStoreClient;
 import org.mitre.schemastore.model.DataSource;
-import org.mitre.schemastore.model.Group;
+import org.mitre.schemastore.model.Tag;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.schemaInfo.SchemaInfo;
@@ -116,20 +116,20 @@ public class SchemaStoreManager
 		{ return (Schema)callFunction("getSchema",new Object[] {schemaID}); }
 	
 	//------------------------
-	// Schema Group Functions
+	// Schema Tag Functions
 	//------------------------
 	
-	/** Get the list of schema groups from the web service */ @SuppressWarnings("unchecked")
-	static public ArrayList<Group> getGroups()
-		{ return (ArrayList<Group>)callFunction("getGroups",new Object[] {}); }
+	/** Get the list of schema tags from the web service */ @SuppressWarnings("unchecked")
+	static public ArrayList<Tag> getTags()
+		{ return (ArrayList<Tag>)callFunction("getTags",new Object[] {}); }
 	
-	/** Get list of schemas associated with group in web service */ @SuppressWarnings("unchecked")
-	static public ArrayList<Integer> getGroupSchemas(Integer groupID)
-		{ return (ArrayList<Integer>)callFunction("getGroupSchemas",new Object[] {groupID}); }
+	/** Get list of schemas associated with tag in web service */ @SuppressWarnings("unchecked")
+	static public ArrayList<Integer> getTagSchemas(Integer tagID)
+		{ return (ArrayList<Integer>)callFunction("getTagSchemas",new Object[] {tagID}); }
 	
-	/** Get list of groups associated with schema in the web service */ @SuppressWarnings("unchecked")
-	static public ArrayList<Integer> getSchemaGroups(Integer schemaID)
-		{ return (ArrayList<Integer>)callFunction("getSchemaGroups",new Object[] {schemaID}); }
+	/** Get list of tags associated with schema in the web service */ @SuppressWarnings("unchecked")
+	static public ArrayList<Integer> getSchemaTags(Integer schemaID)
+		{ return (ArrayList<Integer>)callFunction("getSchemaTags",new Object[] {schemaID}); }
 	
 	//-------------------------------
 	// Schema Relationship Functions
@@ -180,8 +180,8 @@ public class SchemaStoreManager
 		{ return (SchemaElement)callFunction("getSchemaElement",new Object[] {schemaElementID}); }	
 
 	/** Retrieves the schema elements which contain the specified keyword from the web service */ @SuppressWarnings("unchecked")
-	static public ArrayList<SchemaElement> getSchemaElementsForKeyword(String keyword, ArrayList<Integer> groups)
-		{ return (ArrayList<SchemaElement>)callFunction("getSchemaElementsForKeyword",new Object[] {keyword, groups}); }
+	static public ArrayList<SchemaElement> getSchemaElementsForKeyword(String keyword, ArrayList<Integer> tags)
+		{ return (ArrayList<SchemaElement>)callFunction("getSchemaElementsForKeyword",new Object[] {keyword, tags}); }
 
 	//-----------------------
 	// Data Source Functions
