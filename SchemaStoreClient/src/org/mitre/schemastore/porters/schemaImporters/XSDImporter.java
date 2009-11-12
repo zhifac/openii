@@ -284,22 +284,24 @@ public class XSDImporter extends SchemaImporter
 				
 			try {
 				// get Attributes for current complexType
-				Enumeration<?> attrDecls = passedType.getAttributeDecls();
+				Enumeration<?> attrDecls = passedType.getAttributeDecls(); 
 				while (attrDecls.hasMoreElements()){
 				
 					AttributeDecl attrDecl = (AttributeDecl)attrDecls.nextElement();
 					Integer origHashcode = attrDecl.hashCode();
-					while (attrDecl.isReference() == true && attrDecl.getReference() != null)
+					try {
+						while (attrDecl != null && attrDecl.isReference() == true && attrDecl.getReference() != null)
 							attrDecl = attrDecl.getReference();
-						
+					} catch(IllegalStateException e){} // handle malformed XSDs that do not have parent set (depreciated attrs as parents)
+					
 					boolean containsID = attrDecl.getSimpleType() != null && attrDecl.getSimpleType().getName() != null && attrDecl.getSimpleType().getName().equals("ID");
 					Attribute attr = new Attribute(nextId(),(attrDecl.getName() == null ? "" : attrDecl.getName()),getDocumentation(attrDecl),entity.getId(),-1,(attrDecl.isRequired()? 1 : 0), 1, containsID, 0); 
 					schemaElementsHS.put(origHashcode, attr);
 					processSimpleType(attrDecl.getSimpleType(), attr);
 				}
-			} catch (IllegalStateException e){
-				System.err.println("(E) XSDImporter:processComplexType -- failed reading attributes for " + parent.getName() + " of type " + passedType.getName() + " in schema location " + passedType.getSchema().getSchemaLocation() + " schema namespace " + passedType.getSchema().getTargetNamespace());
-			}
+				
+			} catch (IllegalStateException e){}
+				 
 			// get Elements for current complexType
 			Enumeration<?> elementDecls = passedType.enumerate();
 			while (elementDecls.hasMoreElements()) {
@@ -391,9 +393,10 @@ public class XSDImporter extends SchemaImporter
 		Integer origMin = elementDecl.getMinOccurs();
 		Integer origMax = elementDecl.getMaxOccurs();
 		Integer origHashcode = elementDecl.hashCode();
-		while (elementDecl.isReference() && elementDecl.getReference() != null)
-			elementDecl = elementDecl.getReference();
-			
+		try {
+			while (elementDecl.isReference() && elementDecl.getReference() != null)
+				elementDecl = elementDecl.getReference();
+		} catch (IllegalStateException e) {}{}	
 		// create Containment for Element  
 		Containment containment = new Containment(nextId(),elementDecl.getName(),this.getDocumentation(elementDecl),((parent != null) ? parent.getId() : null),-1,origMin,origMax,0);
 		
@@ -410,8 +413,10 @@ public class XSDImporter extends SchemaImporter
 
 		// If the element type is 1) NULL, 2) SimpleType, or 3) Any type THEN process as SimpleType
 		// Otherwise, process as ComplexType
-		XMLType childElementType = elementDecl.getType();
-				
+		XMLType childElementType = null;
+		try { 
+			childElementType = elementDecl.getType();
+		} catch (IllegalStateException e){} 
 		if ((childElementType == null) || (childElementType instanceof SimpleType) || (childElementType instanceof AnyType)) 				
 			processSimpleType(childElementType, containment);
 	
