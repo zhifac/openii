@@ -189,7 +189,7 @@ public class ImportSchemaDialog extends TitleAreaDialog implements ISelectionCha
 				{
 					nameField.setText(schema.getName());
 					authorField.setText(schema.getAuthor());
-					descriptionField.setText(schema.getDescription());
+					if(schema.getDescription()!=null) descriptionField.setText(schema.getDescription());
 				}
 			} catch(Exception e2) { setErrorMessage("Failed to retrieve schema info. " + e2.getMessage()); }
 		
