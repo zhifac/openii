@@ -2,17 +2,16 @@
 // ALL RIGHTS RESERVED
 package org.mitre.harmony.matchers.voters;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Arrays;
+import java.util.HashMap;
 
-import org.mitre.harmony.matchers.TypeMappings;
 import org.mitre.harmony.matchers.VoterScore;
 import org.mitre.harmony.matchers.VoterScores;
 import org.mitre.schemastore.model.SchemaElement;
-import org.mitre.schemastore.model.schemaInfo.FilteredSchemaInfo;
 
 /** Thesaurus Matcher Class */
 public class ThesaurusMatcher extends BagMatcher
@@ -25,15 +24,15 @@ public class ThesaurusMatcher extends BagMatcher
 		{ return "Documentation + Synonyms"; }
 
 	/** Generates match scores for the specified elements */
-	public VoterScores match(FilteredSchemaInfo schemaInfo1, FilteredSchemaInfo schemaInfo2, TypeMappings typeMappings)
+	public VoterScores match()
 	{		
 		// Create word bags for the source elements
-		ArrayList<SchemaElement> sourceElements = schemaInfo1.getFilteredElements();
+		ArrayList<SchemaElement> sourceElements = schema1.getFilteredElements();
 		for(SchemaElement sourceElement : sourceElements)
 			wordBags.put(sourceElement.getId(), new WordBag(sourceElement.getName(), sourceElement.getDescription()));
 		
 		// Create word bags for the target elements
-		ArrayList<SchemaElement> targetElements = schemaInfo2.getFilteredElements();
+		ArrayList<SchemaElement> targetElements = schema2.getFilteredElements();
 		for(SchemaElement targetElement : targetElements)
 			wordBags.put(targetElement.getId(), new WordBag(targetElement.getName(), targetElement.getDescription()));
 
@@ -56,8 +55,8 @@ public class ThesaurusMatcher extends BagMatcher
 		VoterScores voterScores = new VoterScores(SCORE_CEILING);
 		for(SchemaElement sourceElement : sourceElements)
 			for(SchemaElement targetElement : targetElements)
-				if(typeMappings.isMapped(sourceElement, targetElement))
-				{
+			{
+				if(isAllowableMatch(sourceElement, targetElement))
 					if(voterScores.getScore(sourceElement.getId(), targetElement.getId())==null)
 					{
 						WordBag sourceBag = wordBags.get(sourceElement.getId());
@@ -66,8 +65,8 @@ public class ThesaurusMatcher extends BagMatcher
 						if(score != null)
 							voterScores.setScore(sourceElement.getId(), targetElement.getId(), score);
 					}
-					completedComparisons++;
-				}
+				completedComparisons++;
+			}
 		return voterScores;
 	}
 	

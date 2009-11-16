@@ -45,15 +45,15 @@ public class EditDistanceMatcher extends MatchVoter
 		VoterScores scores = new VoterScores(SCORE_CEILING);		
 		for(SchemaElement sourceElement : sourceElements)
 			for(SchemaElement targetElement : targetElements)
+			{
 				if(isAllowableMatch(sourceElement, targetElement))
-				{
 					if(scores.getScore(sourceElement.getId(), targetElement.getId())==null)
 					{
 						VoterScore score = matchElements(sourceElement, targetElement);
 						if(score != null) scores.setScore(sourceElement.getId(), targetElement.getId(), score);
 					}
-					completedComparisons++;
-				}
+				completedComparisons++;
+			}
 		return scores;
 	}
 
