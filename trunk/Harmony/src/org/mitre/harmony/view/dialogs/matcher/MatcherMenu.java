@@ -83,8 +83,8 @@ public class MatcherMenu extends JMenu
 			if(leftSchemas.equals(0) || rightSchemas.equals(0)) return;
 			
 			// Run the matcher (through the matcher wizard)
-			if(e.getSource()==fullMatch) launchMatchWizard(MatcherManager.getVoters(),merger,false);
-			else if(e.getSource()==customMatch) launchMatchWizard(MatcherManager.getVoters(),merger,true);
+			if(e.getSource()==fullMatch) launchMatchWizard(MatcherManager.getDefaultVoters(),merger,false);
+			else if(e.getSource()==customMatch) launchMatchWizard(MatcherManager.getDefaultVoters(),merger,true);
 		}
 	}
 	

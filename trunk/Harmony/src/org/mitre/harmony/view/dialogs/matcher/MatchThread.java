@@ -74,7 +74,6 @@ public class MatchThread extends Thread
 			{
 				// Update progress information
 				if(voter==null) voter = voters.get(0);
-			//	Double voterProgress = 100*(voters.indexOf(voter)+voter.getPercentComplete())/voters.size();
 
 				// Update the schema progress
 				Double voterProgress = 100.0*voter.getPercentComplete();

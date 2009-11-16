@@ -27,8 +27,10 @@ public class EditDistanceMatcher extends MatchVoter
 	public static final double MATCH_BONUS = 1;
 
 	/** Returns the name of the match voter */
-	public String getName()
-		{ return "Name Similarity"; }
+	public String getName() { return "Name Similarity"; }
+	
+	/** Indicates a default voter */
+	public boolean isDefault() { return true; }
 	
 	/** Generates scores for the specified elements */
 	public VoterScores match()
