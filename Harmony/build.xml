@@ -30,8 +30,6 @@
     <target name="buildHarmonyMatchers" depends="compile">
         <fatjar.build output="HarmonyMatchers.jar">
             <fatjar.filesource path="build/classes/org/mitre/harmony/matchers" relpath="org/mitre/harmony/matchers"/>
-            <fatjar.filesource path="build/classes/org/mitre/harmony/model/ToolManager.class" relpath="org/mitre/harmony/model"/>
-            <fatjar.filesource path="build/classes/org/mitre/harmony/model/ToolManager$Tools.class" relpath="org/mitre/harmony/model"/>
             <fatjar.filesource path="build/classes/harmony.xml" relpath=""/>
         </fatjar.build>
     </target>

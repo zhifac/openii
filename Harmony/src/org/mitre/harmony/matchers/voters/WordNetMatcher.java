@@ -2,18 +2,17 @@
 // ALL RIGHTS RESERVED
 package org.mitre.harmony.matchers.voters;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.StringTokenizer;
 
-import org.mitre.harmony.matchers.TypeMappings;
 import org.mitre.harmony.matchers.VoterScore;
 import org.mitre.harmony.matchers.VoterScores;
 import org.mitre.schemastore.model.SchemaElement;
-import org.mitre.schemastore.model.schemaInfo.FilteredSchemaInfo;
 
 /**
  * WordNet Matcher 
@@ -28,26 +27,33 @@ public class WordNetMatcher extends BagMatcher
 		{ return "WordNet Thesaurus"; }
 	
 	/** Generates scores for the specified elements */
-	public VoterScores match(FilteredSchemaInfo schemaInfo1, FilteredSchemaInfo schemaInfo2, TypeMappings typeMappings)
+	public VoterScores match()
 	{		
 		// Create word bags for the source and target elements
-		ArrayList<SchemaElement> sourceElements = schemaInfo1.getFilteredElements();
-		ArrayList<SchemaElement> targetElements = schemaInfo2.getFilteredElements();
+		ArrayList<SchemaElement> sourceElements = schema1.getFilteredElements();
+		ArrayList<SchemaElement> targetElements = schema2.getFilteredElements();
+
+		// Sets the completed and total comparisons
+		completedComparisons = 0;
+		totalComparisons = sourceElements.size() * targetElements.size();
 
 		// Get the thesaurus and acronym dictionaries
 		URL thesaurusFile = getClass().getResource("wordnet.txt");
 		HashMap<String, HashSet<Integer>> thesaurus = getThesaurus(thesaurusFile);
-
+		
 		// Generate the match scores
 		VoterScores scores = new VoterScores(SCORE_CEILING);
 		for(SchemaElement sourceElement : sourceElements)
 			for(SchemaElement targetElement : targetElements)
-				if(typeMappings.isMapped(sourceElement, targetElement))
+			{
+				if(isAllowableMatch(sourceElement, targetElement))
 					if(scores.getScore(sourceElement.getId(), targetElement.getId())==null)
 					{
 						VoterScore score = findVoterScore(sourceElement,targetElement,thesaurus);
 						if(score != null) scores.setScore(sourceElement.getId(), targetElement.getId(), score);
 					}
+				completedComparisons++;
+			}
 		return scores;
 	}
 	

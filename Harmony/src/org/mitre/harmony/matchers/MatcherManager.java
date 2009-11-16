@@ -2,12 +2,18 @@
 // ALL RIGHTS RESERVED
 package org.mitre.harmony.matchers;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.mitre.harmony.matchers.mergers.MatchMerger;
 import org.mitre.harmony.matchers.voters.MatchVoter;
-import org.mitre.harmony.model.ToolManager;
 import org.mitre.schemastore.model.schemaInfo.FilteredSchemaInfo;
+import org.mitre.schemastore.porters.PorterList;
 
 /**
  * Manages the Harmony Matchers
@@ -15,6 +21,10 @@ import org.mitre.schemastore.model.schemaInfo.FilteredSchemaInfo;
  */
 public class MatcherManager
 {
+	// Patterns used to extract voter and merger information
+	static private Pattern voterPattern = Pattern.compile("<voter>(.*?)</voter>");
+	static private Pattern mergerPattern = Pattern.compile("<merger>(.*?)</merger>");
+	
 	/** Stores a listing of all match voters */
 	static private ArrayList<MatchVoter> voters = new ArrayList<MatchVoter>();
 
@@ -24,21 +34,34 @@ public class MatcherManager
 	/** Initializes the matcher manager with all defined match voters and mergers */
 	static
 	{
+		// Retrieve matcher configuration file
+		StringBuffer buffer = new StringBuffer("");
+		try {
+			InputStream configStream = PorterList.class.getResourceAsStream("/matchers.xml");
+			BufferedReader in = new BufferedReader(new InputStreamReader(configStream));
+			String line; while((line=in.readLine())!=null) buffer.append(line);
+			in.close();
+		}
+		catch(IOException e)
+			{ System.out.println("(E)PorterManager - porters.xml has failed to load!\n"+e.getMessage()); }
+		
 		// Retrieve the match voters
-		for(String voterString : ToolManager.getTools("voter"))
+		Matcher voterMatcher = voterPattern.matcher(buffer);
+		while(voterMatcher.find())
 			try {
-				Class voterClass = Class.forName(voterString);
+				Class voterClass = Class.forName(voterMatcher.group(1));
 				voters.add((MatchVoter)voterClass.newInstance());
 			}
-		    catch(Exception e) { System.out.println("(E)MatcherManager - Failed to locate voter class "+voterString); }
+		    catch(Exception e) { System.out.println("(E)MatcherManager - Failed to locate voter class "+voterMatcher.group(1)); }
 
 		// Retrieve match mergers
-		for(String mergerString : ToolManager.getTools("merger"))
+		Matcher mergerMatcher = mergerPattern.matcher(buffer);
+		while(mergerMatcher.find())
 			try {
-				Class mergerClass = Class.forName(mergerString);
+				Class mergerClass = Class.forName(mergerMatcher.group(1));
 				mergers.add((MatchMerger)mergerClass.newInstance());
 			}
-		    catch(Exception e) { System.out.println("(E)MatcherManager - Failed to locate merger class "+mergerString); }
+		    catch(Exception e) { System.out.println("(E)MatcherManager - Failed to locate merger class "+mergerMatcher.group(1)); }
 	}
 
 	/** Returns the list of match voters */
