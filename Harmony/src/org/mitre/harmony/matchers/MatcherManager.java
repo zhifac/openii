@@ -67,6 +67,15 @@ public class MatcherManager
 	/** Returns the list of match voters */
 	static public ArrayList<MatchVoter> getVoters()
 		{ return voters; }
+
+	/** Returns the list of default match voters */
+	static public ArrayList<MatchVoter> getDefaultVoters()
+	{
+		ArrayList<MatchVoter> defaultVoters = new ArrayList<MatchVoter>();
+		for(MatchVoter voter : voters)
+			if(voter.isDefault()) defaultVoters.add(voter);
+		return defaultVoters;
+	}
 	
 	/** Returns the list of match mergers */
 	static public ArrayList<MatchMerger> getMergers()

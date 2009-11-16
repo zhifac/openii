@@ -20,8 +20,10 @@ public class ThesaurusMatcher extends BagMatcher
 	private HashMap<Integer, WordBag> wordBags = new HashMap<Integer, WordBag>();
 	
 	/** Returns the name of the match voter */
-	public String getName()
-		{ return "Documentation + Synonyms"; }
+	public String getName() { return "Documentation + Synonyms"; }
+	
+	/** Indicates a default voter */
+	public boolean isDefault() { return true; }
 
 	/** Generates match scores for the specified elements */
 	public VoterScores match()

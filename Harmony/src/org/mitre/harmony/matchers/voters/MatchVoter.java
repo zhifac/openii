@@ -22,6 +22,9 @@ public abstract class MatchVoter
 	/** Return the name of the match voter */
 	abstract public String getName();
 	
+	/** Indicates if a default voter */
+	public boolean isDefault() { return false; }
+	
 	/** Initializes the match voter */
 	public void initialize(FilteredSchemaInfo schema1, FilteredSchemaInfo schema2)
 		{ this.schema1 = schema1; this.schema2 = schema2; this.typeMappings = null; }

@@ -13,8 +13,10 @@ import org.mitre.schemastore.model.SchemaElement;
 public class DocumentationMatcher extends BagMatcher
 {
 	/** Returns the name of the match voter */
-	public String getName()
-		{ return "Documentation Similarity"; }
+	public String getName() { return "Documentation Similarity"; }
+	
+	/** Indicates a default voter */
+	public boolean isDefault() { return true; }
 	
 	/** Generates scores for the specified elements */
 	public VoterScores match()
