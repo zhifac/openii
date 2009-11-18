@@ -10,23 +10,16 @@ package org.mitre.harmony.matchers.voters;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-//import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.HashSet;
-import java.util.Vector;
-import java.util.*;
+import java.util.Hashtable;
+
+import org.mitre.schemastore.model.SchemaElement;
 
 /** Class for storing a word bag */
 public class WordBag
 {	
 	/** Stores a list of all stopwords */
 	private static HashSet<String> stopwords = null;
-	
-	/** Stores a list of all processed words */
-	public Hashtable<String, Integer> wordMap = new Hashtable<String, Integer>();	
-	
-	/** Stores the bag weight */
-	private Double bagWeight = null;
 	
 	/** Initializes the list of stopwords */
 	static
@@ -71,6 +64,12 @@ public class WordBag
 		stopwords = new HashSet<String>(Arrays.asList(stopwordArray));
 	}
 
+	/** Stores a list of all processed words */
+	public Hashtable<String, Integer> wordMap = new Hashtable<String, Integer>();	
+	
+	/** Stores the bag weight */
+	private Double bagWeight = null;
+	
 	/** Splits text into a list of words by camelCase and non-alphanumeric symbols */
 	private ArrayList<String> tokenize(String text)
 	{
@@ -83,16 +82,17 @@ public class WordBag
 		return new ArrayList<String>(Arrays.asList(text.split("[^a-zA-Z0-9]+")));
 	}
 	
-	/** Construct the word bag for the given name and description */
-	public WordBag(String name, String description)
+	/** Construct the word bag for the given schema element */
+	public WordBag(SchemaElement element)
+		{ addElement(element); }
+	
+	/** Adds schema elements to the word bag */
+	public void addElement(SchemaElement element)
 	{
-		String text = (name!=null ? name+" "+name+" " : "") + (description!=null ? description : "");
+		String text = element.getName()==null ? "" : element.getName() + " " + element.getName();
+		text += element.getDescription()==null ? "" : element.getDescription();
 		addWords(tokenize(text));
 	}
-
-	/** Add words to the word bag */
-	public void addWords(String text)
-		{ addWords(tokenize(text)); }
 	
 	/** Add words to the word bag */
 	public void addWords(ArrayList<String> words)
@@ -119,10 +119,10 @@ public class WordBag
 			Integer count = wordMap.get(word);
 			if(count==null) count=1;
 			wordMap.put(word, count);
-			
-			// Resets the bag weight
-			bagWeight = null;
 		}
+		
+		// Resets the bag weight
+		bagWeight = null;
 	}	
 
 	/** Removes a word from the word bag */
@@ -160,32 +160,5 @@ public class WordBag
 				bagWeight += 2 / getWordCount(word);
 		}
 		return bagWeight;
-	}
-	
-	// words in name should be weighted twice as strongly
-	public WordBag(String textDescription) {
-		addWords(tokenize(textDescription));
-	}
-	
-	public WordBag(){
-	}
-	
-	public void putInMoreWords(Vector<String> tWords){
-        Enumeration<String> elements = tWords.elements();
-        while(elements.hasMoreElements()){
-                String s = (String) elements.nextElement();
-                StringTokenizer st = new StringTokenizer(s);
-                while (st.hasMoreTokens()) {
-                        addWords(tokenize(st.nextToken()));
-                }
-        }
-	}
-	
-	public void putInMoreWords(String textWords){
-	        //StringTokenizer st = new StringTokenizer(textWords);
-	        //while (st.hasMoreTokens()) {
-	        //        addWords(tokenize(st.nextToken()));
-	        //}
-	        addWords(tokenize(textWords));
 	}
 }

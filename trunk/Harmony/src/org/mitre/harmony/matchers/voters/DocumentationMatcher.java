@@ -26,12 +26,12 @@ public class DocumentationMatcher extends BagMatcher
 		//Create word bags for the source elements
 		ArrayList<SchemaElement> sourceElements = schema1.getFilteredElements();
 		for(SchemaElement sourceElement : sourceElements)
-			wordBags.put(sourceElement.getId(), new WordBag(sourceElement.getName(), sourceElement.getDescription()));
+			wordBags.put(sourceElement.getId(), new WordBag(sourceElement));
 		
 		// Create word bags for the target elements
 		ArrayList<SchemaElement> targetElements = schema2.getFilteredElements();
 		for (SchemaElement targetElement : targetElements)
-			wordBags.put(targetElement.getId(), new WordBag(targetElement.getName(), targetElement.getDescription()));
+			wordBags.put(targetElement.getId(), new WordBag(targetElement));
 
 		// Sets the completed and total comparisons
 		completedComparisons = 0;

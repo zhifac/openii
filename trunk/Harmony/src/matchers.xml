@@ -5,6 +5,7 @@
     <voter>org.mitre.harmony.matchers.voters.ThesaurusMatcher</voter>
     <voter>org.mitre.harmony.matchers.voters.ExactStructureMatcher</voter>
     <voter>org.mitre.harmony.matchers.voters.WordNetMatcher</voter>
+    <voter>org.mitre.harmony.matchers.voters.EntityMatcher</voter>
   </voters>
   <mergers>
     <merger>org.mitre.harmony.matchers.mergers.VoteMerger</merger>
