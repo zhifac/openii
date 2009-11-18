@@ -88,8 +88,8 @@ public class WordNetMatcher extends BagMatcher
 		int matches = 0;
 		
 		// Compile sets of words contained in both source and target elements
-		WordBag sourceWordBag = new WordBag(source.getName(),source.getDescription());
-		WordBag targetWordBag = new WordBag(target.getName(),target.getDescription());
+		WordBag sourceWordBag = new WordBag(source);
+		WordBag targetWordBag = new WordBag(target);
 		
 		// Get text in both.
 		ArrayList<String> sourceWords = sourceWordBag.getWords();
