@@ -23,14 +23,14 @@
 		<copy todir="build/classes/org/mitre/harmony/view/graphics">
 			<fileset dir="src/org/mitre/harmony/view/graphics"/>
 		</copy>
-		<copy file="src/harmony.xml" todir="build/classes"/>
+		<copy file="src/matchers.xml" todir="build/classes"/>
     </target>
 
 	<!-- Builds the HarmonyMatchers jar -->
     <target name="buildHarmonyMatchers" depends="compile">
         <fatjar.build output="HarmonyMatchers.jar">
             <fatjar.filesource path="build/classes/org/mitre/harmony/matchers" relpath="org/mitre/harmony/matchers"/>
-            <fatjar.filesource path="build/classes/harmony.xml" relpath=""/>
+            <fatjar.filesource path="build/classes/matchers.xml" relpath=""/>
         </fatjar.build>
     </target>
 
