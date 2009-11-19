@@ -2,6 +2,7 @@
 // ALL RIGHTS RESERVED
 package org.mitre.harmony.matchers.voters;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
@@ -63,27 +64,35 @@ public class QuickDocumentationMatcher extends EntityMatcher
 	private HashSet<ElementPair> getBestMatches(VoterScores scores)
 	{
 		// Scan through voter scores to identify best matches
-		HashMap<Integer,Double> elementScores = new HashMap<Integer,Double>();
-		HashMap<Integer,ElementPair> bestMatches = new HashMap<Integer,ElementPair>();
+		HashMap<Integer,Double> bestScores = new HashMap<Integer,Double>();
+		HashMap<Integer,ArrayList<ElementPair>> bestPairs = new HashMap<Integer,ArrayList<ElementPair>>();
 		for(ElementPair elementPair : scores.getElementPairs())
 		{
 			// Calculate rough match score (not as accurate as through merger)
 			VoterScore voterScore = scores.getScore(elementPair);
 			Double score = voterScore.getPositiveEvidence()/voterScore.getTotalEvidence();
 			
-			// Determine if element pair is best match
+			// Determine if the element pair is best match
 			for(Integer elementID : new Integer[]{elementPair.getSourceElement(),elementPair.getTargetElement()})
 			{
-				Double elementScore = elementScores.get(elementID);
-				if(elementScore==null || score>elementScore)
+				Double elementScore = bestScores.get(elementID);
+				if(elementScore==null || score>=elementScore)
 				{
-					elementScores.put(elementID, score);
-					bestMatches.put(elementID, elementPair);
+					// Updates the best score
+					bestScores.put(elementID, score);
+					
+					// Updates the best element pairs
+					ArrayList<ElementPair> elementPairs = bestPairs.get(elementID);
+					if(!score.equals(elementScore)) bestPairs.put(elementID, elementPairs = new ArrayList<ElementPair>());
+					elementPairs.add(elementPair);
 				}
 			}
 		}
 		
 		// Return the best matches
-		return new HashSet<ElementPair>(bestMatches.values());
+		HashSet<ElementPair> bestMatches = new HashSet<ElementPair>();
+		for(ArrayList<ElementPair> elementPairs : bestPairs.values())
+			bestMatches.addAll(elementPairs);
+		return bestMatches;
 	}
 }
