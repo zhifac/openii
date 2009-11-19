@@ -2,17 +2,16 @@
 // ALL RIGHTS RESERVED
 package org.mitre.harmony.view.controlPane;
 
-import java.util.Enumeration;
 import java.util.HashSet;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.preferences.PreferencesListener;
 import org.mitre.harmony.view.schemaTree.SchemaTree;
 import org.mitre.harmony.view.schemaTree.SchemaTreeListener;
+import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
 
 /**
  * Pane used to display the finished ratio of the schema tree
@@ -56,28 +55,13 @@ public class SchemaTreeFinished extends JPanel implements PreferencesListener, S
 		finished=0;
 		total=0;
 		
-		// Only count up nodes if schema exists
-		if(!(((DefaultMutableTreeNode)tree.root.getChildAt(0)).getUserObject() instanceof String))
+		// Count up all displayed elements in each schema
+		for(Integer schemaID : tree.getSchemas())
 		{
-			// Update the finished and total counts
-			for(int i=0; i<tree.root.getChildCount(); i++)
-			{
-				DefaultMutableTreeNode node = (DefaultMutableTreeNode)tree.root.getChildAt(i);
-				Enumeration descendants = node.depthFirstEnumeration();
-				while (descendants.hasMoreElements())
-				{
-					DefaultMutableTreeNode descendantNode = (DefaultMutableTreeNode)descendants.nextElement();
-					Object obj = descendantNode.getUserObject();
-					if(obj instanceof Integer)
-					{
-						Integer schemaID = SchemaTree.getSchema(descendantNode);
-						Integer elementID = (Integer)obj;
-						if(harmonyModel.getPreferences().isFinished(schemaID,elementID)) finished++;
-						total++;
-					}
-				}
-			}
+			HierarchicalSchemaInfo schemaInfo = harmonyModel.getSchemaManager().getSchemaInfo(schemaID);
+			total += schemaInfo.getHierarchicalElements().size();
 		}
+
 		refresh();
 	}
 	
