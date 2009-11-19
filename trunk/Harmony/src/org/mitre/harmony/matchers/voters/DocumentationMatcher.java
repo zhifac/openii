@@ -23,7 +23,7 @@ public class DocumentationMatcher extends BagMatcher
 	{
 		HashMap<Integer,WordBag> wordBags = new HashMap<Integer,WordBag>();
 
-		//Create word bags for the source elements
+		// Create word bags for the source elements
 		ArrayList<SchemaElement> sourceElements = schema1.getFilteredElements();
 		for(SchemaElement sourceElement : sourceElements)
 			wordBags.put(sourceElement.getId(), new WordBag(sourceElement));

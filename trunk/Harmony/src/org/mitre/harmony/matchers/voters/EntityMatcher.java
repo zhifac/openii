@@ -34,16 +34,12 @@ public class EntityMatcher extends BagMatcher
 	/** Generates scores for the specified source and target entities */
 	protected VoterScores match(EntityMap sourceEntities, EntityMap targetEntities)
 	{
+		// Generate the word bags for each entity
 		HashMap<Integer,WordBag> wordBags = new HashMap<Integer,WordBag>();
-		
-		// Create word bags for the source entities
-		for(SchemaElement sourceEntity : sourceEntities.keySet())
-			wordBags.put(sourceEntity.getId(), generateWordBag(sourceEntity,sourceEntities.get(sourceEntity)));
-
-		// Create word bags for the target entities
-		for(SchemaElement targetEntity : targetEntities.keySet())
-			wordBags.put(targetEntity.getId(), generateWordBag(targetEntity,targetEntities.get(targetEntity)));
-
+		for(EntityMap entities : new EntityMap[]{sourceEntities,targetEntities})
+			for(SchemaElement entity : entities.keySet())
+				wordBags.put(entity.getId(), generateWordBag(entity,entities.get(entity)));
+				
 		// Sets the completed and total comparisons
 		completedComparisons = 0;
 		totalComparisons = sourceEntities.size() * targetEntities.size();
@@ -67,7 +63,7 @@ public class EntityMatcher extends BagMatcher
 	}
 	
 	/** Returns the entities for the specified schema */
-	private EntityMap getEntities(FilteredSchemaInfo schema)
+	protected EntityMap getEntities(FilteredSchemaInfo schema)
 	{
 		EntityMap entityMap = new EntityMap();
 		for(SchemaElement entity : schema.getElements(Entity.class))
