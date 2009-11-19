@@ -80,6 +80,15 @@ public class MatcherManager
 			if(voter.isDefault()) defaultVoters.add(voter);
 		return defaultVoters;
 	}
+
+	/** Returns the list of visible match voters */
+	static public ArrayList<MatchVoter> getVisibleVoters()
+	{
+		ArrayList<MatchVoter> visibleVoters = new ArrayList<MatchVoter>();
+		for(MatchVoter voter : voters)
+			if(!voter.isHidden()) visibleVoters.add(voter);
+		return visibleVoters;
+	}
 	
 	/** Returns the list of match mergers */
 	static public ArrayList<MatchMerger> getMergers()
