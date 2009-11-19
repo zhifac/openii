@@ -22,7 +22,7 @@ import org.mitre.schemastore.porters.PorterList;
 public class MatcherManager
 {
 	// Patterns used to extract voter and merger information
-	static private Pattern voterPattern = Pattern.compile("<voter>(.*?)</voter>");
+	static private Pattern voterPattern = Pattern.compile("<voter( .*?)?>(.*?)</voter>");
 	static private Pattern mergerPattern = Pattern.compile("<merger>(.*?)</merger>");
 	
 	/** Stores a listing of all match voters */
@@ -49,8 +49,12 @@ public class MatcherManager
 		Matcher voterMatcher = voterPattern.matcher(buffer);
 		while(voterMatcher.find())
 			try {
-				Class voterClass = Class.forName(voterMatcher.group(1));
-				voters.add((MatchVoter)voterClass.newInstance());
+				Class voterClass = Class.forName(voterMatcher.group(2));
+				MatchVoter voter = (MatchVoter)voterClass.newInstance();
+				String attrs = voterMatcher.group(1);
+				if(attrs!=null && attrs.contains("default='true'")) voter.setDefault(true);
+				if(attrs!=null && attrs.contains("hidden='true'")) voter.setHidden(true);
+				voters.add(voter);
 			}
 		    catch(Exception e) { System.out.println("(E)MatcherManager - Failed to locate voter class "+voterMatcher.group(1)); }
 

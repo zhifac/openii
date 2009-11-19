@@ -21,9 +21,6 @@ public class ThesaurusMatcher extends BagMatcher
 	
 	/** Returns the name of the match voter */
 	public String getName() { return "Documentation + Synonyms"; }
-	
-	/** Indicates a default voter */
-	public boolean isDefault() { return true; }
 
 	/** Generates match scores for the specified elements */
 	public VoterScores match()
