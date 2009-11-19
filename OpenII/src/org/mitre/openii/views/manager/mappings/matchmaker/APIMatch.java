@@ -8,7 +8,7 @@ import org.mitre.harmony.matchers.MatchScore;
 import org.mitre.harmony.matchers.MatchScores;
 import org.mitre.harmony.matchers.MatcherManager;
 import org.mitre.harmony.matchers.mergers.VoteMerger;
-import org.mitre.harmony.matchers.voters.BagMatcher;
+import org.mitre.harmony.matchers.voters.DocumentationMatcher;
 import org.mitre.harmony.matchers.voters.EditDistanceMatcher;
 import org.mitre.harmony.matchers.voters.ExactStructureMatcher;
 import org.mitre.harmony.matchers.voters.MatchVoter;
@@ -60,7 +60,7 @@ public class APIMatch {
 
 		ArrayList<MatchVoter> voters = new ArrayList<MatchVoter>();
 
-		voters.add(new BagMatcher());
+		voters.add(new DocumentationMatcher());
 		voters.add(new ThesaurusMatcher());
 		voters.add(new EditDistanceMatcher());
 		voters.add(new ExactStructureMatcher());

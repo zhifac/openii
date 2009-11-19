@@ -14,7 +14,12 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorInput;
-
+import org.mitre.affinity.clusters.ClusterGroup;
+import org.mitre.affinity.model.AffinityModel;
+import org.mitre.affinity.model.AffinitySchemaManager;
+import org.mitre.affinity.model.AffinitySchemaStoreManager;
+import org.mitre.affinity.model.ClusterManager;
+import org.mitre.affinity.model.ISchemaManager;
 import org.mitre.affinity.view.application.AffinityPane;
 import org.mitre.affinity.view.application.LoadProgressDialog;
 import org.mitre.affinity.view.application.StackTraceDialog;
@@ -27,19 +32,11 @@ import org.mitre.affinity.view.venn_diagram.model.HarmonyMatchScoreComputer;
 import org.mitre.affinity.view.venn_diagram.model.IMatchScoreComputer;
 import org.mitre.affinity.view.venn_diagram.model.VennDiagramSets;
 import org.mitre.affinity.view.venn_diagram.model.VennDiagramSetsMatrix;
-import org.mitre.affinity.clusters.ClusterGroup;
-import org.mitre.affinity.model.AffinityModel;
-import org.mitre.affinity.model.AffinitySchemaStoreManager;
-import org.mitre.affinity.model.ClusterManager;
-import org.mitre.affinity.model.AffinitySchemaManager;
-import org.mitre.affinity.model.ISchemaManager;
-
 import org.mitre.harmony.matchers.mergers.VoteMerger;
-import org.mitre.harmony.matchers.voters.BagMatcher;
+import org.mitre.harmony.matchers.voters.DocumentationMatcher;
 import org.mitre.harmony.matchers.voters.EditDistanceMatcher;
 import org.mitre.harmony.matchers.voters.ExactStructureMatcher;
 import org.mitre.harmony.matchers.voters.MatchVoter;
-
 import org.mitre.openii.editors.OpenIIEditor;
 import org.mitre.openii.model.EditorInput;
 import org.mitre.openii.model.EditorManager;
@@ -83,7 +80,7 @@ public class AffinityEditor extends OpenIIEditor implements SelectionClickedList
 		//TODO: Determine optimized set of matchers and run in separate thread.  For
 		//  now, running all matchers is too time consuming
 		voters.add(new EditDistanceMatcher());
-		voters.add(new BagMatcher());
+		voters.add(new DocumentationMatcher());
 		//voters.add(new ThesaurusMatcher()); //ThesaurusMatcher seems to be most time consuming
 		voters.add(new ExactStructureMatcher());
 		matchScoreComputer = new HarmonyMatchScoreComputer(voters, new VoteMerger());
