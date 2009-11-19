@@ -24,17 +24,22 @@ public class QuickDocumentationMatcher extends EntityMatcher
 		// Retrieve the source and target entities
 		EntityMap sourceEntities = getEntities(schema1);
 		EntityMap targetEntities = getEntities(schema2);		
-		
+	
 		// Identify best matches between entities
 		VoterScores entityScores = match(sourceEntities, targetEntities);
 		HashSet<ElementPair> bestMatches = getBestMatches(entityScores);
 
+		// Sets the completed and total comparisons
+		completedComparisons = 0;
+		totalComparisons = bestMatches.size();
+		
 		// Start generation of list of scores
 		VoterScores scores = new VoterScores(SCORE_CEILING);
 		
 		// Generate element scores
 		HashMap<Integer,WordBag> wordBags = new HashMap<Integer,WordBag>();
 		for(ElementPair pair : bestMatches)
+		{
 			for(SchemaElement source : sourceEntities.get(schema1.getElement(pair.getSourceElement())))
 				if(schema1.isVisible(source.getId()))
 					for(SchemaElement target : targetEntities.get(schema2.getElement(pair.getTargetElement())))
@@ -50,6 +55,8 @@ public class QuickDocumentationMatcher extends EntityMatcher
 							VoterScore score = computeScore(sourceBag,targetBag);
 							if(score!=null) scores.setScore(source.getId(), target.getId(), score);
 						}
+			completedComparisons++;
+		}
 		
 		// Transfer over entity scores
 		for(ElementPair elementPair : entityScores.getElementPairs())
