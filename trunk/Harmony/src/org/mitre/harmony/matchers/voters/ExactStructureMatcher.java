@@ -15,9 +15,6 @@ public class ExactStructureMatcher extends MatchVoter
 	/** Returns the name of the match voter */
 	public String getName() { return "Exact Structure"; }
 	
-	/** Indicates a default voter */
-	public boolean isDefault() { return true; }
-	
 	/** Generates scores for the specified elements */
 	public VoterScores match()
 	{

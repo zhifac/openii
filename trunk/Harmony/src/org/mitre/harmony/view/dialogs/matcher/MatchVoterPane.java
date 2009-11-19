@@ -54,12 +54,13 @@ public class MatchVoterPane extends WizardPanel implements ActionListener
 		
 		// Populate the match voters
 		for(MatchVoter matchVoter : MatcherManager.getVoters())
-		{
-			MatchVoterCheckBox checkbox = new MatchVoterCheckBox(matchVoter);
-			checkbox.setSelected(matchVoters.contains(matchVoter));
-			checkbox.addActionListener(this);
-			checkboxPane.add(checkbox);
-		}
+			if(!matchVoter.isHidden())
+			{
+				MatchVoterCheckBox checkbox = new MatchVoterCheckBox(matchVoter);
+				checkbox.setSelected(matchVoters.contains(matchVoter));
+				checkbox.addActionListener(this);
+				checkboxPane.add(checkbox);
+			}
 	    
 		// Place list of match voters in center of pane
 		JPanel pane = getPanel();

@@ -116,6 +116,6 @@ public class MatcherMenu extends JMenu
 		
 		// Place all match voters into menu
 		for(MatchVoter matchVoter : MatcherManager.getVoters())
-			add(new MatchVoterMenuItem(matchVoter));
+			if(!matchVoter.isHidden()) add(new MatchVoterMenuItem(matchVoter));
 	}
 }
