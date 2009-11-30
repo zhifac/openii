@@ -1,0 +1,14 @@
+#Fat Jar Configuration File
+#Sun May 03 22:22:07 EDT 2009
+onejar.license.required=true
+manifest.classpath=
+manifest.removesigners=true
+onejar.checkbox=false
+jarname=RMap.jar
+manifest.mergeall=true
+manifest.mainclass=
+manifest.file=<createnew>
+jarname.isextern=false
+onejar.expand=
+excludes=<jar|SchemaStoreClient.jar>;<jar|Harmony.jar>
+includes=
