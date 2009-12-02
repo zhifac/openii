@@ -29,7 +29,6 @@
 	  <mappingExporter>org.mitre.schemastore.porters.mappingExporters.M3ProjectExporter</mappingExporter>
 	  <mappingExporter>org.mitre.schemastore.porters.mappingExporters.DataDictionaryExporter</mappingExporter>
       <mappingExporter>org.mitre.schemastore.porters.mappingExporters.PieChartExporter</mappingExporter>
-      <mappingExporter>org.mitre.schemastore.porters.mappingExporters.TopMatchExporter</mappingExporter>
       <mappingExporter>org.mitre.schemastore.porters.mappingExporters.UserMatchAnotationExporter</mappingExporter>
       <mappingExporter>org.mitre.schemastore.porters.mappingExporters.MatchMakerExporter</mappingExporter>
       <mappingExporter>org.mitre.schemastore.porters.mappingExporters.XMIMappingExporter</mappingExporter>
