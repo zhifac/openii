@@ -4,6 +4,7 @@ package org.mitre.harmony.model.filters;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
@@ -14,6 +15,8 @@ import org.mitre.harmony.model.mapping.MappingListener;
 import org.mitre.harmony.view.schemaTree.SchemaTree;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.MappingSchema;
+import org.mitre.schemastore.model.SchemaElement;
+import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
 
 /**
  * Tracks link filters used in Harmony
@@ -230,6 +233,25 @@ public class FilterManager extends AbstractManager<FiltersListener> implements M
 		if(!inFocus(side,schemaID)) return false;
 		Focus focus = getFocus(side, schemaID);
 		return focus==null || focus.contains(node);
+	}
+	
+	/** Identifies all elements in focus on the specified side */
+	public HashSet<Integer> getFocusedElementIDs(Integer side)
+	{
+		HashSet<Integer> focusedElements = new HashSet<Integer>();
+		for(Integer schemaID : getModel().getMappingManager().getSchemaIDs(side))
+			if(inFocus(side,schemaID))
+			{
+				Focus focus = getFocus(side, schemaID);
+				if(focus==null)
+				{
+					HierarchicalSchemaInfo schema = getModel().getSchemaManager().getSchemaInfo(schemaID);
+					for(SchemaElement element : schema.getElements(null))
+						focusedElements.add(element.getId());
+				}
+				else focusedElements.addAll(focus.getElementIDs());
+			}
+		return focusedElements;
 	}
 	
 	//--------------------

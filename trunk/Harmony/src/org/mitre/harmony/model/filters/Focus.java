@@ -120,7 +120,7 @@ public class Focus
 		{ hiddenIDs.remove(elementID); elementsInFocus=null; hiddenElements=null; }
 
 	/** Returns the list of elements in focus */
-	private HashSet<Integer> getFocusedElements()
+	public HashSet<Integer> getElementIDs()
 	{
 		if(elementsInFocus==null)
 		{
@@ -166,7 +166,7 @@ public class Focus
 	
 	/** Indicates if the specified element is within focus */
 	public boolean contains(Integer elementID)
-		{ return getFocusedElements().contains(elementID); }
+		{ return getElementIDs().contains(elementID); }
 
 	/** Indicates if the specified node is within focus */
 	public boolean contains(DefaultMutableTreeNode node)
