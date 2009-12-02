@@ -22,7 +22,7 @@ import org.mitre.openii.views.manager.schemas.DeleteSchemaDialog;
 import org.mitre.openii.views.manager.schemas.EditSchemaDialog;
 import org.mitre.openii.views.manager.schemas.ExportSchemaDialog;
 import org.mitre.openii.views.manager.schemas.ExtendSchemaDialog;
-import org.mitre.openii.views.manager.schemas.ImportSchemaDialog;
+import org.mitre.openii.views.manager.schemas.importer.ImportSchemaDialog;
 import org.mitre.openii.views.manager.tags.DeleteTagDialog;
 import org.mitre.openii.views.manager.tags.EditTagDialog;
 import org.mitre.schemastore.model.DataSource;

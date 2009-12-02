@@ -117,6 +117,10 @@ public class URIField implements ModifyListener, SelectionListener
 		uriPane.getParent().layout(true,true);
 	}
 	
+	/** Returns the mode */
+	public Integer getMode()
+		{ return mode; }
+	
 	/** Returns the text field */
 	public Text getTextField()
 		{ return uriField; }

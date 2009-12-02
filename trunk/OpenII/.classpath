@@ -4,7 +4,7 @@
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry exported="true" kind="lib" path="lib/SchemaStoreClient.jar" sourcepath="/SchemaStore/src"/>
-	<classpathentry kind="lib" path="lib/SchemaStorePorters.jar" sourcepath="/SchemaStoreClient/src"/>
+	<classpathentry kind="lib" path="lib/SchemaStorePorters.jar" sourcepath="/SchemaStoreClient"/>
 	<classpathentry kind="lib" path="lib/affinity/Prefuse.jar"/>
 	<classpathentry kind="lib" path="lib/Galaxy.jar" sourcepath="/Galaxy/WebContent"/>
 	<classpathentry kind="lib" path="lib/RMap.jar"/>
