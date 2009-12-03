@@ -213,39 +213,34 @@ public class HarmonyMenuBar extends JMenuBar
 	    	// Retrieve the needed managers
 	    	MappingCellManager mappingCellManager = harmonyModel.getMappingCellManager();
 	    	FilterManager filterManager = harmonyModel.getFilters();
+
+    		// Retrieve the visible source and target nodes
+    		HashSet<Integer> sourceIDs = new HashSet<Integer>(filterManager.getFocusedElementIDs(MappingSchema.LEFT));
+    		HashSet<Integer> targetIDs = new HashSet<Integer>(filterManager.getFocusedElementIDs(MappingSchema.RIGHT));	    	
 	    	
+	    	// Create list of all mapping cells in focus
+	    	ArrayList<MappingCell> mappingCells = new ArrayList<MappingCell>();
+    		for(Integer sourceID : sourceIDs)
+    			for(Integer mappingCellID : mappingCellManager.getMappingCellsByElement(sourceID))
+    			{
+    				MappingCell mappingCell = mappingCellManager.getMappingCell(mappingCellID);
+    				if(targetIDs.contains(mappingCell.getOutput()))
+    					mappingCells.add(mappingCell);
+    			}
+    		
 	    	// Removed hidden links from the currently focused area of Harmony
 	    	if(e.getSource() == removeHiddenLinks)
 	    	{
-	    		// Retrieve the visible source and target nodes
-	    		HashSet<Integer> sourceIDs = new HashSet<Integer>(filterManager.getFocusedElementIDs(MappingSchema.LEFT));
-	    		HashSet<Integer> targetIDs = new HashSet<Integer>(filterManager.getFocusedElementIDs(MappingSchema.RIGHT));
-	    		
-	    		// Identify the hidden links
-	    		ArrayList<MappingCell> mappingCells = new ArrayList<MappingCell>();
-	    		for(Integer sourceID : sourceIDs)
-	    			for(Integer mappingCellID : mappingCellManager.getMappingCellsByElement(sourceID))
-	    			{
-	    				MappingCell mappingCell = mappingCellManager.getMappingCell(mappingCellID);
-	    				if(targetIDs.contains(mappingCell.getOutput()))
-	    					if(!filterManager.isVisibleMappingCell(mappingCell.getId()))
-	    						mappingCells.add(mappingCell);
-	    			}
-	    					
-	    		// Delete the hidden links
-	    		harmonyModel.getMappingCellManager().deleteMappingCells(mappingCells);
+	    		ArrayList<MappingCell> hiddenMappingCells = new ArrayList<MappingCell>();
+	    		for(MappingCell mappingCell : mappingCells)    			
+	    			if(!filterManager.isVisibleMappingCell(mappingCell.getId()))
+	    				hiddenMappingCells.add(mappingCell);
+	    		mappingCellManager.deleteMappingCells(hiddenMappingCells);
 	    	}
 
-	    	// Removes all links currently loaded into Harmony
+	    	// Removes all links from the currently focused area of Harmony
 	    	if(e.getSource() == removeLinks)
-	    	{
-	    		for(Integer schemaID : harmonyModel.getMappingManager().getSchemaIDs())
-	    		{
-	    			HashSet<Integer> finishedElements = new HashSet<Integer>(harmonyModel.getPreferences().getFinishedElements(schemaID));
-	    			harmonyModel.getPreferences().setFinished(schemaID, finishedElements, false);
-	    		}
-	    		mappingCellManager.deleteAllMappingCells();
-	    	}
+	    		mappingCellManager.deleteMappingCells(mappingCells);
 	    }
 	}
 
