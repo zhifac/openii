@@ -38,8 +38,12 @@ public class DatabaseUpdates
 		return buffer;
 	}
 
+	/** Sets the specified property in DERBY */
+	static private void setProperty(Statement statement, String parameter, String value) throws SQLException
+		{ statement.executeUpdate("CALL SYSCS_UTIL.SYSCS_SET_DATABASE_PROPERTY('" + parameter + "','" + value + "')"); }
+
 	/** Initializes the database if needed */
-	static void initializeDatabase(Connection connection) throws SQLException
+	static void initializeDatabase(Connection connection, Integer type, String user, String password) throws SQLException
 	{
 		// Checks to see if database structure already exists
 		boolean exists = true;
@@ -51,6 +55,16 @@ public class DatabaseUpdates
 		if(!exists)
 		{
 			try {
+		   		// Set authentication for DERBY databases
+	    		if(type.equals(DatabaseConnection.DERBY))
+	    		{
+	     	        setProperty(stmt,"derby.connection.requireAuthentication","true");
+	    	        setProperty(stmt,"derby.authentication.provider","BUILTIN");
+	    	        setProperty(stmt,"derby.user."+user,password);
+	    	        setProperty(stmt,"derby.database.fullAccessUsers",user);
+	    	        setProperty(stmt,"derby.database.defaultConnectionMode","noAccess");
+	    		}
+				
 				// Generate the database structure
 				StringBuffer buffer = getFileContents("SchemaStoreStructure.txt");
 				String commands[] = buffer.toString().split(";");

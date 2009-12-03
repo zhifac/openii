@@ -120,7 +120,7 @@ public class DatabaseConnection
 	    		connection.setAutoCommit(false);
 
 	    		// Initialize and update the database as needed
-	    		DatabaseUpdates.initializeDatabase(connection);
+	    		DatabaseUpdates.initializeDatabase(connection,databaseType,databaseUser,databasePassword);
 	    		DatabaseUpdates.updateDatabase(connection);
                 return true;
 			}
