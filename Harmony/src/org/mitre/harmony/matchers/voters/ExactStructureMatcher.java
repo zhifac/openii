@@ -33,10 +33,15 @@ public class ExactStructureMatcher extends MatchVoter
 			HashSet<Integer> targetIDs = new HashSet<Integer>();
 			for(ArrayList<SchemaElement> sourcePath : schema1.getPaths(sourceElement.getId()))
 			{
+				// Retrieve the source path
 				ArrayList<String> path = new ArrayList<String>();
 				for(SchemaElement element : sourcePath)
 					path.add(schema1.getDisplayName(element.getId()));
-				targetIDs.addAll(schema2.getPathIDs(path));
+				
+				// Identify all target paths
+				for(Integer targetID : schema2.getPathIDs(path))
+					if(schema2.isVisible(targetID))
+						targetIDs.add(targetID);
 			}
 	
 			// Set scores for the matching target elements
