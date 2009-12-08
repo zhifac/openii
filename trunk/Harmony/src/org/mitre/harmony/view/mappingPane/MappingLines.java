@@ -106,7 +106,7 @@ public class MappingLines implements MappingCellListener, FiltersListener, Schem
 		{
 			// Examine all non-hidden mapping cells
 			MappingCellLines mappingCellLines = (MappingCellLines)mappingCells.nextElement();
-			if(!mappingCellLines.getHidden() && !harmonyModel.getMappingCellManager().isMappingCellFinished(mappingCellLines.getMappingCellID()))
+			if(!mappingCellLines.getHidden())
 			{
 				// Cycle through all mapping cell lines
 				for(MappingCellLine line : mappingCellLines.getLines())
@@ -114,7 +114,7 @@ public class MappingLines implements MappingCellListener, FiltersListener, Schem
 					// Examines all visible lines
 					if(line.isVisible())
 					{
-						// If shortest dist between point/line, mark as current closest
+						// If shortest distance between point/line, mark as current closest
 						double dist = line.ptSegDistSq(point.x,point.y);
 						if(dist<shortestDist && dist<101) {
 							bestMappingCell = mappingCellLines.getMappingCellID();
@@ -126,8 +126,6 @@ public class MappingLines implements MappingCellListener, FiltersListener, Schem
 		}
 		
 		// Return the mapping cell which was determined to be closest to the point
-		if(bestMappingCell==null || harmonyModel.getMappingCellManager().isMappingCellFinished(bestMappingCell))
-			return null;
 		return bestMappingCell;
 	}
 	
@@ -154,8 +152,7 @@ public class MappingLines implements MappingCellListener, FiltersListener, Schem
 						// Add mapping cell to list if intersects region
 						if(region==null || line.intersects(region))
 						{
-							if(!harmonyModel.getMappingCellManager().isMappingCellFinished(mappingCell.getMappingCellID()))
-								selMappingCells.add(mappingCell.getMappingCellID());
+							selMappingCells.add(mappingCell.getMappingCellID());
 							break;
 						}
 					}
