@@ -26,15 +26,14 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
+import org.mitre.harmony.controllers.MappingController;
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.filters.ElementPath;
 import org.mitre.harmony.model.filters.Focus;
-import org.mitre.harmony.model.mapping.MappingCellManager;
 import org.mitre.harmony.model.mapping.MappingListener;
 import org.mitre.harmony.model.preferences.PreferencesListener;
 import org.mitre.harmony.view.dialogs.SchemaModelDialog;
 import org.mitre.harmony.view.mappingPane.MappingPane;
-import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.MappingSchema;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
@@ -390,31 +389,6 @@ public class SchemaTree extends JTree implements MappingListener, PreferencesLis
 			harmonyModel.getPreferences().setFinished(schemaID,elementIDs,isFinished);			
 		}
 	}
-	
-	/**
-	 * This method deletes all system-generated links for the indicated node; a
-	 * user-specified copy of each visible link is made.
-	 * @param node A schema node that has just been marked as completed.
-	 */
-	private void updateMappingCells(Integer elementID)
-	{
-		// Identify the visible and hidden links
-		MappingCellManager manager = harmonyModel.getMappingCellManager();
-		ArrayList<MappingCell> visibleMappingCells = new ArrayList<MappingCell>();
-		ArrayList<MappingCell> hiddenMappingCells = new ArrayList<MappingCell>();
-		for(Integer mappingCellID : manager.getMappingCellsByElement(elementID))
-		{
-			MappingCell mappingCell = manager.getMappingCell(mappingCellID);
-			if(!harmonyModel.getFilters().isVisibleMappingCell(mappingCellID))
-				hiddenMappingCells.add(mappingCell);
-			else if(!mappingCell.getValidated())
-				visibleMappingCells.add(mappingCell);
-		}		
-		
-		// Mark all visible links as user selected and all others as rejected
-		manager.validateMappingCells(visibleMappingCells);
-		manager.deleteMappingCells(hiddenMappingCells);
-	}
 
 	/** Returns the specified row's bounds */
 	public Rectangle getBufferedRowBounds(int row)
@@ -551,16 +525,23 @@ public class SchemaTree extends JTree implements MappingListener, PreferencesLis
 	/** Handles the marking of a element as finished */
 	public void elementsMarkedAsFinished(Integer schemaID, HashSet<Integer> elementIDs)
 	{
-		for(Integer elementID : elementIDs) updateMappingCells(elementID);
-		DefaultMutableTreeNode node = getSchemaNode(schemaID);
-		if(node!=null) repaint(computeFocusRectangle(node));
+		if(getSchemas().contains(schemaID))
+		{
+			for(Integer elementID : elementIDs)
+				MappingController.markAsFinished(harmonyModel,elementID);
+			DefaultMutableTreeNode node = getSchemaNode(schemaID);
+			if(node!=null) repaint(computeFocusRectangle(node));
+		}
 	}
 
 	/** Handles the marking of a element as unfinished */
 	public void elementsMarkedAsUnfinished(Integer schemaID, HashSet<Integer> elementIDs)
 	{
-		DefaultMutableTreeNode node = getSchemaNode(schemaID);
-		if(node!=null) repaint(computeFocusRectangle(node));
+		if(getSchemas().contains(schemaID))
+		{
+			DefaultMutableTreeNode node = getSchemaNode(schemaID);
+			if(node!=null) repaint(computeFocusRectangle(node));
+		}
 	}
 	
 	// Unused listener events

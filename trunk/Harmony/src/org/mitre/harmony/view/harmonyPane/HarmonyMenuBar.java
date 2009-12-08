@@ -5,8 +5,6 @@ package org.mitre.harmony.view.harmonyPane;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.util.ArrayList;
-import java.util.HashSet;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JCheckBoxMenuItem;
@@ -18,10 +16,9 @@ import javax.swing.JRadioButtonMenuItem;
 import javax.swing.KeyStroke;
 
 import org.mitre.harmony.Harmony;
+import org.mitre.harmony.controllers.MappingController;
 import org.mitre.harmony.model.HarmonyConsts;
 import org.mitre.harmony.model.HarmonyModel;
-import org.mitre.harmony.model.filters.FilterManager;
-import org.mitre.harmony.model.mapping.MappingCellManager;
 import org.mitre.harmony.view.dialogs.AboutDialog;
 import org.mitre.harmony.view.dialogs.GettingStartedDialog;
 import org.mitre.harmony.view.dialogs.mappings.LoadMappingDialog;
@@ -30,7 +27,6 @@ import org.mitre.harmony.view.dialogs.matcher.MatcherMenu;
 import org.mitre.harmony.view.dialogs.porters.ExportMappingDialog;
 import org.mitre.harmony.view.dialogs.porters.MappingImporterDialog;
 import org.mitre.harmony.view.dialogs.schemaSettings.SchemaSettingsDialog;
-import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.MappingSchema;
 
 /**
@@ -185,9 +181,7 @@ public class HarmonyMenuBar extends JMenuBar
 		private JMenuItem removeHiddenLinks;	// Option to remove hidden links
 		private JMenuItem removeLinks;			// Option to remove all current links
 		
-		/**
-		 * Initializes the edit drop-down menu
-		 */
+		/** Initializes the edit drop-down menu */
 		private EditMenu()
 		{
 			// Gives the drop-down menu the title of "Edit"
@@ -209,38 +203,14 @@ public class HarmonyMenuBar extends JMenuBar
 		
 		/** Handles the edit drop-down action selected by the user */
 	    public void actionPerformed(ActionEvent e)
-	    {	    	
-	    	// Retrieve the needed managers
-	    	MappingCellManager mappingCellManager = harmonyModel.getMappingCellManager();
-	    	FilterManager filterManager = harmonyModel.getFilters();
-
-    		// Retrieve the visible source and target nodes
-    		HashSet<Integer> sourceIDs = new HashSet<Integer>(filterManager.getFocusedElementIDs(MappingSchema.LEFT));
-    		HashSet<Integer> targetIDs = new HashSet<Integer>(filterManager.getFocusedElementIDs(MappingSchema.RIGHT));	    	
-	    	
-	    	// Create list of all mapping cells in focus
-	    	ArrayList<MappingCell> mappingCells = new ArrayList<MappingCell>();
-    		for(Integer sourceID : sourceIDs)
-    			for(Integer mappingCellID : mappingCellManager.getMappingCellsByElement(sourceID))
-    			{
-    				MappingCell mappingCell = mappingCellManager.getMappingCell(mappingCellID);
-    				if(targetIDs.contains(mappingCell.getOutput()))
-    					mappingCells.add(mappingCell);
-    			}
-    		
+	    {
 	    	// Removed hidden links from the currently focused area of Harmony
 	    	if(e.getSource() == removeHiddenLinks)
-	    	{
-	    		ArrayList<MappingCell> hiddenMappingCells = new ArrayList<MappingCell>();
-	    		for(MappingCell mappingCell : mappingCells)    			
-	    			if(!filterManager.isVisibleMappingCell(mappingCell.getId()))
-	    				hiddenMappingCells.add(mappingCell);
-	    		mappingCellManager.deleteMappingCells(hiddenMappingCells);
-	    	}
-
+	    		MappingController.deleteHiddenMappingCells(harmonyModel);
+	    	
 	    	// Removes all links from the currently focused area of Harmony
 	    	if(e.getSource() == removeLinks)
-	    		mappingCellManager.deleteMappingCells(mappingCells);
+	    		MappingController.deleteAllMappingCells(harmonyModel);
 	    }
 	}
 
@@ -269,9 +239,7 @@ public class HarmonyMenuBar extends JMenuBar
 			
 			// Set the displayed view
 			switch(harmonyModel.getPreferences().getViewToDisplay())
-			{
-				case HarmonyConsts.HEATMAP_VIEW: heatmapView.setSelected(true);
-			}			
+				{ case HarmonyConsts.HEATMAP_VIEW: heatmapView.setSelected(true); }			
 			
 			// Attach action listeners to view drop-down items
 			mappingView.addActionListener(this);
