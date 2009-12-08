@@ -12,14 +12,14 @@ import org.mitre.schemastore.model.MappingSchema;
 public class MappingController
 {
 	/** Retrieves the focused mapping cells */
-	static public ArrayList<MappingCell> getFocusedMappingCells(HarmonyModel harmonyModel)
+	static public HashSet<MappingCell> getFocusedMappingCells(HarmonyModel harmonyModel)
 	{
 		// Retrieve the visible source and target nodes
 		HashSet<Integer> leftIDs = new HashSet<Integer>(harmonyModel.getFilters().getFocusedElementIDs(MappingSchema.LEFT));
 		HashSet<Integer> rightIDs = new HashSet<Integer>(harmonyModel.getFilters().getFocusedElementIDs(MappingSchema.RIGHT));	    	
 		
 		// Create list of all mapping cells in focus
-		ArrayList<MappingCell> mappingCells = new ArrayList<MappingCell>();
+		HashSet<MappingCell> mappingCells = new HashSet<MappingCell>();
 		for(Integer leftID : leftIDs)
 		{
 			ArrayList<Integer> mappingCellIDs = harmonyModel.getMappingCellManager().getMappingCellsByElement(leftID);
@@ -40,7 +40,7 @@ public class MappingController
 	static public void markAsFinished(HarmonyModel harmonyModel, Integer elementID)
 	{
 		// Retrieve the focused mapping cells
-		ArrayList<MappingCell> focusedMappingCells = getFocusedMappingCells(harmonyModel);
+		HashSet<MappingCell> focusedMappingCells = getFocusedMappingCells(harmonyModel);
 		
 		// Identify the visible and hidden links
 		MappingCellManager manager = harmonyModel.getMappingCellManager();
@@ -73,7 +73,7 @@ public class MappingController
 	/** Deletes all mapping cells from the area currently in focus */
 	static public void deleteAllMappingCells(HarmonyModel harmonyModel)
 	{
-		ArrayList<MappingCell> mappingCells = getFocusedMappingCells(harmonyModel);
+		ArrayList<MappingCell> mappingCells = new ArrayList<MappingCell>(getFocusedMappingCells(harmonyModel));
 		harmonyModel.getMappingCellManager().deleteMappingCells(mappingCells);		
 	}
 }
