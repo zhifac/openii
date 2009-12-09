@@ -49,10 +49,12 @@ public class MappingController
 		for(Integer mappingCellID : manager.getMappingCellsByElement(elementID))
 		{
 			MappingCell mappingCell = manager.getMappingCell(mappingCellID);
-			if(!focusedMappingCells.contains(mappingCell) || !harmonyModel.getFilters().isVisibleMappingCell(mappingCellID))
-				hiddenMappingCells.add(mappingCell);
-			else if(!mappingCell.getValidated())
-				visibleMappingCells.add(mappingCell);
+			if(!mappingCell.getValidated())
+			{
+				if(!focusedMappingCells.contains(mappingCell) || !harmonyModel.getFilters().isVisibleMappingCell(mappingCellID))
+					hiddenMappingCells.add(mappingCell);
+				else visibleMappingCells.add(mappingCell);
+			}
 		}		
 		
 		// Mark all visible links as user selected and all others as rejected
