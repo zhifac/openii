@@ -156,7 +156,12 @@ class SchemaTreeRenderer extends DefaultTreeCellRenderer
 		// Adjust the settings based on the state of the node
 		selected = isFocused && isSelected;
 		setFont(isFocused ? bold : ital);
-		setBackgroundNonSelectionColor(result==null || !isFocused ? Color.white : result.nameMatched() ? nameHighlightColor : descHighlightColor);
+		
+		// Sets the node background color
+		Color color = Color.white;
+		if(result!=null && (harmonyModel.getSearchManager().getHighlightAll() || isFocused))
+			color = result.nameMatched() ? nameHighlightColor : descHighlightColor;
+		setBackgroundNonSelectionColor(color);
 		
 		// Returns the rendered node
 		return this;

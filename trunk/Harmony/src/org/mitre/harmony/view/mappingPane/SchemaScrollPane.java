@@ -80,11 +80,14 @@ public class SchemaScrollPane extends JScrollPane implements AdjustmentListener,
 		HashMap<Integer,SearchResult> matches = harmonyModel.getSearchManager().getMatches(tree.getSide());
 		if(matches.size()>0)
 		{
+			// Determine if all matches should be shown
+			boolean highlightAll = harmonyModel.getSearchManager().getHighlightAll();			
+			
 			// Identify the matched paths
 			ArrayList<TreePath> paths = new ArrayList<TreePath>();
 			for(Integer match : matches.keySet())
 				for(DefaultMutableTreeNode node : tree.getSchemaElementNodes(match))
-					if(harmonyModel.getFilters().isVisibleNode(tree.getSide(),node))
+					if(highlightAll || harmonyModel.getFilters().isVisibleNode(tree.getSide(),node))
 						paths.add(new TreePath(node.getPath()));
 			
 			// Expand the paths and mark the rows
@@ -162,6 +165,10 @@ public class SchemaScrollPane extends JScrollPane implements AdjustmentListener,
 		tree.firstVisibleRow = (int)rect.getMinY()/tree.getRowHeight();
 		tree.lastVisibleRow = (int)rect.getMaxY()/tree.getRowHeight();
 	}
+
+	/** Updates the search result rows when the highlighted area changes */
+	public void highlightSettingChanged()
+		{ updateSearchResultRows(); }
 	
 	/** Updates the search result rows when the search results change */
 	public void searchResultsModified(Integer side)

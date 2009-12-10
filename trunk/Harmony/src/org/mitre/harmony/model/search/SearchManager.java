@@ -20,6 +20,9 @@ public class SearchManager extends AbstractManager<SearchListener> implements Ma
 	
 	/** Stores the right query */
 	private String rightQuery = "";
+
+	/** Indicates if highlights should be shown across whole schema */
+	private boolean highlightAll = true;
 	
 	/** Stores the left matches */
 	private HashMap<Integer,SearchResult> leftMatches = new HashMap<Integer,SearchResult>();
@@ -93,6 +96,24 @@ public class SearchManager extends AbstractManager<SearchListener> implements Ma
 		// Select all tree nodes which match search criteria
 		for(SearchListener listener : getListeners())
 			listener.searchResultsModified(side);
+	}
+	
+	// ------------- Indicates if the whole schema should be highlighted ------------
+
+	/** Returns the preference for the highlighted area */
+	public boolean getHighlightAll()
+		{ return highlightAll; }
+	
+	/** Set preference for highlighted area */
+	public void setHighlightAll(boolean highlightAll)
+	{
+		// Only set preference if changed from original
+		if(highlightAll!=this.highlightAll)
+		{
+			this.highlightAll = highlightAll;
+			for(SearchListener listener : getListeners())
+				listener.highlightSettingChanged();
+		}
 	}
 	
 	//------------ Updates the selected information based on the occurrence of events ------------

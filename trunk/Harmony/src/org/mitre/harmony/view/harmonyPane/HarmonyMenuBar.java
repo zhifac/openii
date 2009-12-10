@@ -269,6 +269,47 @@ public class HarmonyMenuBar extends JMenuBar
 	    		{ harmonyModel.getPreferences().setShowSchemaTypes(showTypes.isSelected()); }
 	    }
 	}
+
+	/** Drop-down menu found under search menu bar heading */
+	private class SearchMenu extends JMenu implements ActionListener
+	{
+		private JRadioButtonMenuItem highlightFocusArea;	// Option to view schema mapping
+		private JRadioButtonMenuItem highlightAll;			// Option to view heat map
+		
+		/** Initializes the search drop-down menu */
+		private SearchMenu()
+		{
+			super("Search");
+			setMnemonic(KeyEvent.VK_V);
+
+			// Initialize view drop-down items
+			highlightFocusArea = new JRadioButtonMenuItem("Highlight Focus Area",true);
+			highlightAll = new JRadioButtonMenuItem("Highlight All");
+			
+			// Groups the radio buttons together
+			ButtonGroup group = new ButtonGroup();
+			group.add(highlightFocusArea);
+			group.add(highlightAll);
+			highlightAll.setSelected(true);
+			
+			// Attach action listeners to view drop-down items
+			highlightFocusArea.addActionListener(this);
+			highlightAll.addActionListener(this);
+
+			// Add view drop-down items to view drop-down menu
+		    add(highlightFocusArea);
+		    add(highlightAll);
+		}
+		
+		/** Handles the selection of a highlight area */
+	    public void actionPerformed(ActionEvent e)
+	    {
+	    	// Switch to the selected view
+	    	Object source = e.getSource();
+	    	if(source==highlightFocusArea || source==highlightAll)
+	    		harmonyModel.getSearchManager().setHighlightAll(source==highlightAll);
+	    }
+	}
 	
 	/** Drop-down menu found under help menu bar heading */
 	private class HelpMenu extends JMenu implements ActionListener
@@ -314,6 +355,7 @@ public class HarmonyMenuBar extends JMenuBar
 		this.harmonyModel = harmonyModel;
 	    add(new ProjectMenu());	
 	    add(new EditMenu());
+	    add(new SearchMenu());
 	    add(new MatcherMenu(harmonyModel));
 	    add(new ViewMenu());
 	    add(new HelpMenu());
