@@ -155,6 +155,7 @@ class SelectedNodePane extends JPanel implements SelectedInfoListener, SearchLis
 		{ displayedElementModified(side); }
 	
 	// Unused event listeners
+	public void highlightSettingChanged() {}
 	public void selectedElementsModified(Integer role) {}
 	public void selectedMappingCellsModified() {}
 	
