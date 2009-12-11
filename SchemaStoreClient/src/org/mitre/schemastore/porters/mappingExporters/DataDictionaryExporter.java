@@ -54,10 +54,13 @@ public class DataDictionaryExporter extends MappingExporter
     			String sDesc = element1.getDescription();
     			String tName = element2.getName();
     			String tDesc = element2.getDescription();
+//    			String notes = mappingCell.getNotes();
+//    			Double score = mappingCell.getScore();
+    			
     			out.write(sName+",\""+sDesc+"\","+tName+",\""+tDesc+"\"\n");
     		}
 
-    	// Then output all source nodes with no links
+    	// Then output all  nodes with no links
 		for(SchemaElement element : elements.values())
 			if(getMappingCellsByElement(element.getId(),mappingCells).size()==0)
   				out.write(element.getName()+",\""+element.getDescription().replace('\n',' ').replaceAll("\"","\"\"")+"\",,\n");
