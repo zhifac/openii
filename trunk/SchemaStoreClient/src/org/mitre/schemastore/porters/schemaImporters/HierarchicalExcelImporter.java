@@ -11,10 +11,11 @@ import org.mitre.schemastore.model.Subtype;
 import org.mitre.schemastore.porters.ImporterException;
 
 /**
- * Imports a schema listed in an excel spreadsheet with the following column sequence 
- * [entity][attribute][description][parent entity]
+ * Imports a schema listed in an excel spreadsheet with the following column
+ * sequence [entity][attribute][description][parent entity]
+ * 
  * @author HAOLI
- *
+ * 
  */
 public class HierarchicalExcelImporter extends ExcelImporter {
 
@@ -40,35 +41,38 @@ public class HierarchicalExcelImporter extends ExcelImporter {
 				Entity tblEntity, parentEntity;
 				Attribute attribute;
 
-				if (tblName.length() == 0 && attName.length() == 0) break;
+				// Create an entity for table name
+				if (tblName.length() == 0) break;
 				tblEntity = _entities.get(tblName);
-
-				// create an entity for table name
 				if (tblEntity == null) {
 					tblEntity = new Entity(nextId(), tblName, "", 0);
 					_entities.put(tblName, tblEntity);
 					_schemaElements.add(tblEntity);
 				}
 
-				// create an attribute for each attribute name
+				// Create an attribute for each attribute name
 				if (attName.length() > 0) {
-					attribute = new Attribute(nextId(), attName, documentation, tblEntity.getId(), D_ANY.getId(), null, null, false, 0);
-					_attributes.put(attribute.getName(), attribute);
-					_schemaElements.add(attribute);
+					attribute = _attributes.get(attName);
+					if (attribute == null) {
+						attribute = new Attribute(nextId(), attName, documentation, tblEntity.getId(), D_ANY.getId(), null, null, false, 0);
+						_attributes.put(attName, attribute);
+						_schemaElements.add(attribute);
+					}
 				}
 
-				if (parent.length() > 0 ) {
-					parentEntity = _entities.get(parent); 
-					if ( parentEntity == null ) {
-						parentEntity = new Entity(nextId(), parent, "", 0 ); 
-						_entities.put(tblName, tblEntity);
-						_schemaElements.add(parentEntity); 
+				// Create a subtype 
+				if (parent.length() > 0) {
+					parentEntity = _entities.get(parent);
+					if (parentEntity == null) {
+						parentEntity = new Entity(nextId(), parent, "", 0);
+						_entities.put(parent, parentEntity);
+						_schemaElements.add(parentEntity);
 					}
-					
-					Subtype subtype = new Subtype(nextId(), parentEntity.getId(), tblEntity.getId(), 0); 
-					_schemaElements.add(subtype); 
+
+					Subtype subtype = new Subtype(nextId(), parentEntity.getId(), tblEntity.getId(), 0);
+					_schemaElements.add(subtype);
 				}
-			}
+			} // End for loop
 		}
 
 		return _schemaElements;
@@ -76,7 +80,7 @@ public class HierarchicalExcelImporter extends ExcelImporter {
 
 	@Override
 	public String getDescription() {
-		return "Imports Excel formatted schema. ";
+		return "Imports Excel formatted schema with hierarchy column. ";
 	}
 
 	@Override
