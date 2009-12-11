@@ -58,7 +58,8 @@ public class HierarchicalExcelImporter extends ExcelImporter {
 						_attributes.put(attName, attribute);
 						_schemaElements.add(attribute);
 					}
-				}
+				} else if ( documentation.length() > 0 )
+						tblEntity.setDescription(documentation); 
 
 				// Create a subtype 
 				if (parent.length() > 0) {

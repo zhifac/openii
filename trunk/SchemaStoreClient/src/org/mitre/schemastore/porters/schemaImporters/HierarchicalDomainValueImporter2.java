@@ -61,7 +61,7 @@ public class HierarchicalDomainValueImporter2 extends DomainValueImporter {
 				if (descrCell != null) documentation = getCellValStr(descrCell);
 
 				if (domainName.length() == 0) break;
-				if (outlineLevelStr.length() == 0) outlineLevelStr = "1";
+				if (outlineLevelStr.length() == 0) outlineLevelStr = Integer.toString(1); 
 
 				int level = Integer.parseInt(outlineLevelStr.substring(0, outlineLevelStr.indexOf(".")));
 				if (level == 0) hierarchy = new ArrayList<SchemaElement>();
@@ -127,7 +127,7 @@ public class HierarchicalDomainValueImporter2 extends DomainValueImporter {
 
 	@Override
 	public String getName() {
-		return "Hierarchical Domain Value Importer 2";
+		return "Hierarchical Domain Value Importer";
 	}
 
 }
