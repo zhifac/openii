@@ -64,7 +64,7 @@ public class HierarchicalDomainValueImporter2 extends DomainValueImporter {
 				if (outlineLevelStr.length() == 0) outlineLevelStr = "1";
 
 				int level = Integer.parseInt(outlineLevelStr.substring(0, outlineLevelStr.indexOf(".")));
-				if (level == 1) hierarchy = new ArrayList<SchemaElement>();
+				if (level == 0) hierarchy = new ArrayList<SchemaElement>();
 
 				Domain domain;
 				DomainValue domainValue;
@@ -97,14 +97,14 @@ public class HierarchicalDomainValueImporter2 extends DomainValueImporter {
 					// System.out.println( "Add DV " + domainValueStr );
 				}
 
-				// update the hierarchy in the middle or adding to the end
-				if (level > hierarchy.size()) hierarchy.add((level - 1), domainValue);
-				else hierarchy.set((level - 1), domainValue);
+				// Update the hierarchy in the middle or adding to the end
+				if (level > (hierarchy.size()-1)) hierarchy.add(level, domainValue);
+				else hierarchy.set(level, domainValue);
 				
 				// Create a subtype relationship for the parent
-				if (level > 1) {
+				if (level > 0) {
 					// First get parent DomainValue
-					parentValue = (DomainValue) hierarchy.get(level - 2);
+					parentValue = (DomainValue) hierarchy.get(level - 1);
 
 					// Then create subtype
 					String subtypeHash = parentValue.getId() + "/" + valueHashKey;

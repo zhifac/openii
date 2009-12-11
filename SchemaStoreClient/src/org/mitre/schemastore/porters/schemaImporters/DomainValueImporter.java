@@ -20,8 +20,8 @@ import org.mitre.schemastore.porters.ImporterException;
  */
 
 public class DomainValueImporter extends ExcelImporter {
-	protected HashMap<String, Domain> _domains = new HashMap<String, Domain>();
-	protected HashMap<String, DomainValue> _domainValues = new HashMap<String, DomainValue>();
+	protected HashMap<String, Domain> _domains; 
+	protected HashMap<String, DomainValue> _domainValues;
 
 	@Override
 	public String getDescription() {
@@ -40,8 +40,9 @@ public class DomainValueImporter extends ExcelImporter {
 		} catch (ImporterException e) {
 			throw new RuntimeException(e);
 		}
-		_domains = new HashMap<String, Domain>();
-		_domainValues = new HashMap<String, DomainValue>();
+		
+		_domains  = new HashMap<String, Domain>();
+		_domainValues  = new HashMap<String, DomainValue>();
 	}
 
 	protected ArrayList<SchemaElement> generateSchemaElements()throws ImporterException {
@@ -108,10 +109,6 @@ public class DomainValueImporter extends ExcelImporter {
 
 			}
 		}
-
-		// System.out.println("Imported # domains " + _domains.size());
-		// System.out.println("Imported # domain values " +
-		// _domainValues.size());
 
 		return _schemaElements;
 	}
