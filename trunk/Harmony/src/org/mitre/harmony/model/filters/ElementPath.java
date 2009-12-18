@@ -2,6 +2,8 @@ package org.mitre.harmony.model.filters;
 
 import java.util.ArrayList;
 
+import org.mitre.schemastore.model.SchemaElement;
+
 /** Class for storing an element path */
 public class ElementPath
 {	
@@ -34,5 +36,14 @@ public class ElementPath
 	{
 		if(!(obj instanceof ElementPath)) return false;
 		return elementPath.equals(((ElementPath)obj).elementPath);
+	}
+	
+	/** Generates an element path for the array of schema elements */
+	static public ElementPath getElementPath(ArrayList<SchemaElement> elements)
+	{
+		ArrayList<Integer> elementPath = new ArrayList<Integer>();
+		for(SchemaElement element : elements)
+			elementPath.add(element.getId());
+		return new ElementPath(elementPath);
 	}
 }
