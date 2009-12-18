@@ -141,6 +141,7 @@ public class SearchDialog extends JDialog implements KeyListener
     	setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		setContentPane(pane);
 		setSize(200,250);
+		setResizable(false);
 		setLocationRelativeTo(harmonyModel.getBaseFrame());
 		pack();
 		setVisible(true);

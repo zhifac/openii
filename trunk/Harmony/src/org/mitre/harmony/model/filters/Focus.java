@@ -69,17 +69,9 @@ public class Focus
 	{
 		// Removes focus elements which are sub-items of the new focus 
 		if(elementPath.size()>0)
-		{
-			// Get descendants of the specified element
-			ArrayList<Integer> descendantIDs = new ArrayList<Integer>();
-			for(SchemaElement descendant : schemaInfo.getDescendantElements(elementPath.getElementID()))
-				descendantIDs.add(descendant.getId());
-			
-			// Remove focus elements which are sub-items of the new focus
 			for(ElementPath focusPath : new ArrayList<ElementPath>(focusPaths))
-				if(elementPath.contains(focusPath) || descendantIDs.contains(focusPath.getElementID()))
+				if(elementPath.contains(focusPath) || focusPath.contains(elementPath))
 					focusPaths.remove(focusPath);
-		}
 		else focusPaths.clear();
 			
 		// Adds the focus element
