@@ -36,27 +36,27 @@ public class LoadMappingDialog extends JDialog implements ListSelectionListener
 	{
 		/** Constructs the button pane */
 		public ButtonPane()
-			{ super("OK", "Cancel"); }
+			{ super(new String[]{"OK", "Cancel"},1,2); }
 
-		/** Handles selection of okay button */
-		protected void button1Action()
+		/** Handles selection of button */
+		protected void buttonPressed(String label)
 		{
-			// Loads in the selected mapping
-			Mapping mapping = mappingPane.getMapping();
-			if(mapping==null) harmonyModel.getMappingManager().newMapping();
-			else harmonyModel.getMappingManager().loadMapping(mapping.getId());
-			dispose();
-			
-			// Launches the schema dialog window if no schemas displayed
-			int displayedSchemas = 0;
-			for(MappingSchema schema : harmonyModel.getMappingManager().getSchemas())
-				if(!schema.getSide().equals(MappingSchema.NONE)) displayedSchemas++;
-			if(displayedSchemas==0) new SchemaSettingsDialog(harmonyModel);
+			if(label.equals("OK"))
+			{
+				// Loads in the selected mapping
+				Mapping mapping = mappingPane.getMapping();
+				if(mapping==null) harmonyModel.getMappingManager().newMapping();
+				else harmonyModel.getMappingManager().loadMapping(mapping.getId());
+				dispose();
+				
+				// Launches the schema dialog window if no schemas displayed
+				int displayedSchemas = 0;
+				for(MappingSchema schema : harmonyModel.getMappingManager().getSchemas())
+					if(!schema.getSide().equals(MappingSchema.NONE)) displayedSchemas++;
+				if(displayedSchemas==0) new SchemaSettingsDialog(harmonyModel);
+			}			
+			else dispose();
 		}
-
-		/** Handles selection of cancel button */
-		protected void button2Action()
-			{ dispose(); }
 	}
 	
 	/** Generates the main pane of the dialog for loading mappings */

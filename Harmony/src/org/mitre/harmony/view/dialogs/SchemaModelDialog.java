@@ -38,19 +38,18 @@ public class SchemaModelDialog extends JDialog
 	{
 		/** Constructs the button pane */
 		public ButtonPane()
-			{ super("OK", "Cancel"); }
+			{ super(new String[]{"OK", "Cancel"},1,2); }
 
-		/** Handles selection of okay button */
-		protected void button1Action()
+		/** Handles selection of button */
+		protected void buttonPressed(String label)
 		{
-			SchemaModel model = (SchemaModel)modelList.getSelectedValue();
-			harmonyModel.getMappingManager().setSchemaModel(schemaID, model);
+			if(label.equals("OK"))
+			{
+				SchemaModel model = (SchemaModel)modelList.getSelectedValue();
+				harmonyModel.getMappingManager().setSchemaModel(schemaID, model);
+			}
 			dispose();
 		}
-
-		/** Handles selection of cancel button */
-		protected void button2Action()
-			{ dispose(); }
 	}
 		
 	/** Initializes the mapping cell dialog */

@@ -40,15 +40,14 @@ public class SchemaSettingsDialog extends JDialog
 	{
 		/** Constructs the button pane */
 		public ButtonPane()
-			{ super("OK", "Cancel"); }
+			{ super(new String[]{"OK", "Cancel"},1,2); }
 
-		/** Handles selection of okay button */
-		protected void button1Action()
-			{ save(); dispose(); }
-
-		/** Handles selection of cancel button */
-		protected void button2Action()
-			{ dispose(); }
+		/** Handles selection of button */
+		protected void buttonPressed(String label)
+		{
+			if(label.equals("OK")) save();
+			dispose();
+		}
 	}
 	
 	/** Initializes the properties dialog */
