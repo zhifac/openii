@@ -59,21 +59,11 @@ public class SearchManager extends AbstractManager<SearchListener> implements Ma
 		// Only proceed with finding matches if keyword given
 		if(!query.equals(""))
 		{
-			boolean caseSensitive = false;
+			// Allows query to exist in the middle of words
+			String searchTerm = ".*" + query + ".*";
 			
-			// Modify search term to computer format
-			String searchTerm = "*" + query + "*";
-			for(int i=0; i<searchTerm.length(); i++)
-			{
-				if(searchTerm.charAt(i)=='*')
-				{
-					searchTerm = ((i>0)?searchTerm.substring(0,i):"") + ".*" +
-						((i<searchTerm.length()-1)?searchTerm.substring(i+1,searchTerm.length()):"");
-					i++;
-				}
-				else if(Character.isUpperCase(searchTerm.charAt(i)))
-					caseSensitive = true;
-			}
+			// Determines if the query should be case sensitive
+			boolean caseSensitive = !query.toLowerCase().equals(query);
 			if(!caseSensitive) searchTerm = "(?i)" + searchTerm;
 				
 			// Determine what elements match search criteria
