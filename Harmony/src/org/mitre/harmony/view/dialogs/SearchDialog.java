@@ -5,9 +5,9 @@ package org.mitre.harmony.view.dialogs;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.GridLayout;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -19,6 +19,7 @@ import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
+import org.mitre.harmony.controllers.FocusController;
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.schemastore.model.MappingSchema;
 
@@ -50,27 +51,21 @@ public class SearchDialog extends JDialog implements KeyListener
 		protected void buttonPressed(String label)
 		{
 			// Run a search if "Search" selected
-			if(!label.equals("Cancel")) runSearch();
-
-			// Set focus areas on search results
-			if(label.equals("Set Focus") || label.equals("Add to Focus"))
+			if(!label.equals("Cancel"))
 			{
-				// Identify all matches
-//				HashMap<Integer,SearchResult> matches = harmonyModel.getSearchManager().getMatches(tree.getSide());
-//				if(matches.keySet().size()>0)
-//				{
-//					// Set focus on all identified matches
-//					for(Integer match : matches.keySet())
-//					{
-//						for(DefaultMutableTreeNode node : tree.getSchemaElementNodes(match))
-//						{
-//							Integer schemaID = SchemaTree.getSchema(node);
-//							ElementPath elementPath = SchemaTree.getElementPath(node);
-//							harmonyModel.getFilters().addFocus(tree.getSide(), schemaID, elementPath);
-//						}
-//					}
-//				}
+				// Only operate on selected sides
+				for(Integer side : getSelectedSides())
+				{
+					// Run search on specified query
+					harmonyModel.getSearchManager().runQuery(side, searchField.getText());
 
+					// Set focus areas on search results
+					if(label.equals("Set Focus") || label.equals("Add to Focus"))
+					{
+						boolean append = label.equals("Add to Focus");
+						FocusController.setFocusOnSearchResults(harmonyModel, side, append);
+					}
+				}
 			}
 			
 			// Close down the search pane if "Cancel" selected
@@ -151,18 +146,22 @@ public class SearchDialog extends JDialog implements KeyListener
 		setVisible(true);
 	}
 	
-	/** Runs a search on the specified search term */
-	private void runSearch()
+	/** Returns the selected sides */
+	private ArrayList<Integer> getSelectedSides()
 	{
-		if(!rightButton.isSelected())
-			harmonyModel.getSearchManager().runQuery(MappingSchema.LEFT, searchField.getText());
-		if(!leftButton.isSelected())
-			harmonyModel.getSearchManager().runQuery(MappingSchema.RIGHT, searchField.getText());
+		ArrayList<Integer> sides = new ArrayList<Integer>();
+		if(!rightButton.isSelected()) sides.add(MappingSchema.LEFT);
+		if(!leftButton.isSelected()) sides.add(MappingSchema.RIGHT);
+		return sides;
 	}
 	
 	/** Update matches every time a new search keyword is entered */
 	public void keyTyped(KeyEvent e)
-		{ if(e.getKeyChar() == KeyEvent.VK_ENTER) runSearch(); }
+	{
+		if(e.getKeyChar() == KeyEvent.VK_ENTER)
+			for(Integer side : getSelectedSides())
+				harmonyModel.getSearchManager().runQuery(side, searchField.getText());
+	}
 	
 	/** Unused listener actions */
 	public void keyPressed(KeyEvent e) {}
