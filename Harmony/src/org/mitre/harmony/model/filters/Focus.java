@@ -69,9 +69,11 @@ public class Focus
 	{
 		// Removes focus elements which are sub-items of the new focus 
 		if(elementPath.size()>0)
+		{
 			for(ElementPath focusPath : new ArrayList<ElementPath>(focusPaths))
 				if(elementPath.contains(focusPath) || focusPath.contains(elementPath))
 					focusPaths.remove(focusPath);
+		}
 		else focusPaths.clear();
 			
 		// Adds the focus element
