@@ -49,36 +49,36 @@ abstract public class ImporterDialog extends JDialog
 	{
 		/** Constructs the button pane */
 		public ButtonPane()
-			{ super("OK", "Cancel"); }
+			{ super(new String[]{"OK", "Cancel"},1,2); }
 
-		/** Handles selection of okay button */
-		protected void button1Action()
+		/** Handles selection of button */
+		protected void buttonPressed(String label)
 		{
-			// Retrieve the information from the various fields
-			String name = nameField.getText();
-			String author = authorField.getText();
-			String description = descriptionField.getText();
-			URI uri = uriField.getValue();
-			
-			// Update highlighting
-			nameField.setBackground(name.length()>0 ? Color.white : Color.yellow);
-			authorField.setBackground(author.length()>0 ? Color.white : Color.yellow);
-			descriptionField.setBackground(description.length()>0 ? Color.white : Color.yellow);
-			uriField.setBackground(uri!=null ? Color.white : Color.yellow);
-			
-			// If completed, run importer
-			if(name.length()>0 && author.length()>0 && uri!=null)
+			if(label.equals("OK"))
 			{
-				// Run the importer
-				try { importItem(name, author, description, uri); successful=true; dispose(); }
-				catch(Exception e2) { JOptionPane.showMessageDialog(null,e2.getMessage(),"Import Error",JOptionPane.ERROR_MESSAGE); }
+				// Retrieve the information from the various fields
+				String name = nameField.getText();
+				String author = authorField.getText();
+				String description = descriptionField.getText();
+				URI uri = uriField.getValue();
+				
+				// Update highlighting
+				nameField.setBackground(name.length()>0 ? Color.white : Color.yellow);
+				authorField.setBackground(author.length()>0 ? Color.white : Color.yellow);
+				descriptionField.setBackground(description.length()>0 ? Color.white : Color.yellow);
+				uriField.setBackground(uri!=null ? Color.white : Color.yellow);
+				
+				// If completed, run importer
+				if(name.length()>0 && author.length()>0 && uri!=null)
+				{
+					// Run the importer
+					try { importItem(name, author, description, uri); successful=true; dispose(); }
+					catch(Exception e2) { JOptionPane.showMessageDialog(null,e2.getMessage(),"Import Error",JOptionPane.ERROR_MESSAGE); }
+				}
+				else JOptionPane.showMessageDialog(null,"All fields must be completed before import!","Missing Fields",JOptionPane.ERROR_MESSAGE);
 			}
-			else JOptionPane.showMessageDialog(null,"All fields must be completed before import!","Missing Fields",JOptionPane.ERROR_MESSAGE);
+			else dispose();
 		}
-
-		/** Handles selection of cancel button */
-		protected void button2Action()
-			{ dispose(); }
 	}
 	
 	/** Constructs the selection pane */

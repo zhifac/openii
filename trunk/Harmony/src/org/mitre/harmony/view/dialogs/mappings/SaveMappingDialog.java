@@ -33,21 +33,21 @@ public class SaveMappingDialog extends JDialog implements ListSelectionListener
 	{
 		/** Constructs the button pane */
 		public ButtonPane()
-			{ super("Save", "Cancel"); }
+			{ super(new String[]{"Save", "Cancel"},1,2); }
 
-		/** Handles selection of okay button */
-		protected void button1Action()
+		/** Handles selection of button */
+		protected void buttonPressed(String label)
 		{
-			if(infoPane.validateInfo())
+			if(label.equals("OK"))
 			{
-				harmonyModel.getMappingManager().saveMapping(mappingPane.getMapping());
-				dispose();
+				if(infoPane.validateInfo())
+				{
+					harmonyModel.getMappingManager().saveMapping(mappingPane.getMapping());
+					dispose();
+				}
 			}
+			else dispose();
 		}
-
-		/** Handles selection of cancel button */
-		protected void button2Action()
-			{ dispose(); }
 	}
 	
 	/** Generates the main pane of the dialog for saving mappings */

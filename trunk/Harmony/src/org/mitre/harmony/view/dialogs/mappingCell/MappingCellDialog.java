@@ -51,44 +51,43 @@ public class MappingCellDialog extends JDialog implements MouseListener, MouseMo
 	{
 		/** Constructs the button pane */
 		public ButtonPane()
-			{ super("OK", "Cancel"); }
+			{ super(new String[]{"OK", "Cancel"},1,2); }
 
-		/** Handles selection of okay button */
-		protected void button1Action()
+		/** Handles selection of button */
+		protected void buttonPressed(String label)
 		{
-			MappingCellManager manager = harmonyModel.getMappingCellManager();
-
-			// Throw out mapping cells if they have been rejected
-			if(confidencePane.isRejected())
-				manager.deleteMappingCells(mappingCells);
-
-			// Validate mapping cells if they have been accepted
-			else if(confidencePane.isAccepted())
+			if(label.equals("OK"))
 			{
-				ArrayList<MappingCell> newMappingCells = new ArrayList<MappingCell>();
-				for(MappingCell mappingCell : annotationPane.getMappingCells())
+				MappingCellManager manager = harmonyModel.getMappingCellManager();
+	
+				// Throw out mapping cells if they have been rejected
+				if(confidencePane.isRejected())
+					manager.deleteMappingCells(mappingCells);
+	
+				// Validate mapping cells if they have been accepted
+				else if(confidencePane.isAccepted())
 				{
-					Integer id = mappingCell.getId();
-					Integer mappingID = mappingCell.getMappingId();
-					String author = System.getProperty("user.name");
-					Date date = Calendar.getInstance().getTime();
-					String function = IdentityFunction.class.getCanonicalName();
-					MappingCell newMappingCell = MappingCell.createValidatedMappingCell(id, mappingID, mappingCell.getInput(), mappingCell.getOutput(), author, date, function, mappingCell.getNotes());
-					newMappingCells.add(newMappingCell);
+					ArrayList<MappingCell> newMappingCells = new ArrayList<MappingCell>();
+					for(MappingCell mappingCell : annotationPane.getMappingCells())
+					{
+						Integer id = mappingCell.getId();
+						Integer mappingID = mappingCell.getMappingId();
+						String author = System.getProperty("user.name");
+						Date date = Calendar.getInstance().getTime();
+						String function = IdentityFunction.class.getCanonicalName();
+						MappingCell newMappingCell = MappingCell.createValidatedMappingCell(id, mappingID, mappingCell.getInput(), mappingCell.getOutput(), author, date, function, mappingCell.getNotes());
+						newMappingCells.add(newMappingCell);
+					}
+					manager.setMappingCells(newMappingCells);
 				}
-				manager.setMappingCells(newMappingCells);
+				
+				// Update annotations for the selected mapping cells
+				else manager.setMappingCells(annotationPane.getMappingCells());
 			}
-			
-			// Update annotations for the selected mapping cells
-			else manager.setMappingCells(annotationPane.getMappingCells());
 			
 			// Close link dialog
 			dispose();
 		}
-
-		/** Handles selection of cancel button */
-		protected void button2Action()
-			{ dispose(); }
 	}
 	
 	/** Initializes the mapping cell dialog */

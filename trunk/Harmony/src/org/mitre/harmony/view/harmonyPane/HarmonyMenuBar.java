@@ -21,6 +21,7 @@ import org.mitre.harmony.model.HarmonyConsts;
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.view.dialogs.AboutDialog;
 import org.mitre.harmony.view.dialogs.GettingStartedDialog;
+import org.mitre.harmony.view.dialogs.SearchDialog;
 import org.mitre.harmony.view.dialogs.mappings.LoadMappingDialog;
 import org.mitre.harmony.view.dialogs.mappings.SaveMappingDialog;
 import org.mitre.harmony.view.dialogs.matcher.MatcherMenu;
@@ -273,8 +274,10 @@ public class HarmonyMenuBar extends JMenuBar
 	/** Drop-down menu found under search menu bar heading */
 	private class SearchMenu extends JMenu implements ActionListener
 	{
-		private JRadioButtonMenuItem highlightFocusArea;	// Option to view schema mapping
-		private JRadioButtonMenuItem highlightAll;			// Option to view heat map
+	    private JMenuItem clearResults;		// Clears the search results
+		private JMenuItem search;			// Launches a search dialog
+		private JRadioButtonMenuItem highlightFocusArea;	// Option to highlight focus area
+		private JRadioButtonMenuItem highlightAll;			// Option to highlight all
 		
 		/** Initializes the search drop-down menu */
 		private SearchMenu()
@@ -283,6 +286,8 @@ public class HarmonyMenuBar extends JMenuBar
 			setMnemonic(KeyEvent.VK_V);
 
 			// Initialize view drop-down items
+			clearResults = new JMenuItem("Clear Results");
+			search = new JMenuItem("Search...");
 			highlightFocusArea = new JRadioButtonMenuItem("Highlight Focus Area",true);
 			highlightAll = new JRadioButtonMenuItem("Highlight All");
 			
@@ -293,10 +298,15 @@ public class HarmonyMenuBar extends JMenuBar
 			highlightAll.setSelected(true);
 			
 			// Attach action listeners to view drop-down items
+			clearResults.addActionListener(this);
+			search.addActionListener(this);
 			highlightFocusArea.addActionListener(this);
 			highlightAll.addActionListener(this);
 
 			// Add view drop-down items to view drop-down menu
+			add(clearResults);
+			add(search);
+			addSeparator();
 		    add(highlightFocusArea);
 		    add(highlightAll);
 		}
@@ -304,8 +314,20 @@ public class HarmonyMenuBar extends JMenuBar
 		/** Handles the selection of a highlight area */
 	    public void actionPerformed(ActionEvent e)
 	    {
-	    	// Switch to the selected view
 	    	Object source = e.getSource();
+	    	
+	    	// Handle the clearing of search results
+	    	if(source==clearResults)
+	    	{
+	    		harmonyModel.getSearchManager().runQuery(MappingSchema.LEFT, "");
+	    		harmonyModel.getSearchManager().runQuery(MappingSchema.RIGHT, "");
+	    	}
+	    	
+	    	// Handles the launching of the search dialog box
+	    	if(source==search)
+	    		new SearchDialog(harmonyModel);
+	    	
+	    	// Switch to the selected view
 	    	if(source==highlightFocusArea || source==highlightAll)
 	    		harmonyModel.getSearchManager().setHighlightAll(source==highlightAll);
 	    }
@@ -346,8 +368,9 @@ public class HarmonyMenuBar extends JMenuBar
 
 	    	// Shows the "Getting Started" dialog
 	    	if(e.getSource().equals(gettingStarted))
-	    		new GettingStartedDialog(harmonyModel); }
-		}
+	    		new GettingStartedDialog(harmonyModel);
+	    }
+	}
 	
 	/** Initializes the Harmony menu bar */
 	public HarmonyMenuBar(HarmonyModel harmonyModel)
