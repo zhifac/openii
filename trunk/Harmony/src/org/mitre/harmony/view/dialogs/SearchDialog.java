@@ -81,20 +81,35 @@ public class SearchDialog extends JDialog implements KeyListener
 	/** Generates the info pane */
 	private JPanel getInfoPane()
 	{
-		// Monitors for 
+		// Generate the search label
+		JLabel searchLabel = new JLabel("Search: ");
+		searchLabel.setBorder(new EmptyBorder(0,0,15,0));
+		
+		// Generate the regular expression label
+		JLabel regExpLabel = new JLabel("(regular expressions permitted)");
+		regExpLabel.setFont(new Font("Default",Font.PLAIN,9));
+		
+		// Add a key listener to the search field
 		searchField.addKeyListener(this);
+		
+		// Generates the search field pane
+		JPanel searchFieldPane = new JPanel();
+		searchFieldPane.setLayout(new BorderLayout());
+		searchFieldPane.add(searchField,BorderLayout.NORTH);
+		searchFieldPane.add(regExpLabel,BorderLayout.SOUTH);
 		
 		// Generates the search pane
 		JPanel searchPane = new JPanel();
 		searchPane.setLayout(new BoxLayout(searchPane,BoxLayout.X_AXIS));
-		searchPane.add(new JLabel("Search: "));
-		searchPane.add(searchField);
+		searchPane.add(searchLabel);
+		searchPane.add(searchFieldPane);
 		
 		// Generates the side selection options
 		JPanel sidePane = new JPanel();
-		ButtonGroup buttonGroup = new ButtonGroup();
+		sidePane.setBorder(new EmptyBorder(3,0,0,4));
 		sidePane.setLayout(new BoxLayout(sidePane,BoxLayout.X_AXIS));
-		sidePane.add(new JLabel("     Side: "));
+		sidePane.add(new JLabel("Side: "));
+		ButtonGroup buttonGroup = new ButtonGroup();
 		for(JRadioButton button : new JRadioButton[]{leftButton,rightButton,bothButton})
 		{
 			buttonGroup.add(button);
@@ -107,7 +122,7 @@ public class SearchDialog extends JDialog implements KeyListener
 		// Generate the info pane
 		JPanel pane = new JPanel();
 		pane.setBorder(new EmptyBorder(10,10,0,10));
-		pane.setLayout(new GridLayout(2,1));
+		pane.setLayout(new BoxLayout(pane,BoxLayout.Y_AXIS));
 		pane.add(searchPane);
 		pane.add(sidePane);
 		return pane;
