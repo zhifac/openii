@@ -21,7 +21,7 @@ public class EditorManager
 	static public Class<?> getElementType(Object element)
 	{
 		if(element instanceof Schema || element instanceof SchemaInTag || element instanceof SchemaInMapping) return Schema.class;
-		if(element instanceof Tag) return Tag.class;
+		if((element instanceof String && element.equals("All Schemas")) || element instanceof Tag) return Tag.class;
 		if(element instanceof Mapping) return Mapping.class;
 		return null;
 	}

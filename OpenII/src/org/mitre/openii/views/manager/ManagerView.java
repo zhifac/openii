@@ -16,6 +16,11 @@ import org.mitre.openii.views.manager.menu.ManagerMenuManager;
 /** Constructs the Manager View */
 public class ManagerView extends ViewPart implements OpenIIListener, IDoubleClickListener
 {	
+	/** Stores constants for various tree labels */
+	static public final String SCHEMAS_HEADER = "Schemas";
+	static public final String ALL_SCHEMAS_HEADER = "All Schemas";
+	static public final String MAPPINGS_HEADER = "Mappings";
+	
 	/** Stores a reference to the viewer */
 	private TreeViewer viewer = null;
 	

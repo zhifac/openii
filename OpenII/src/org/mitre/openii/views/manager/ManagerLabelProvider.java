@@ -15,13 +15,15 @@ public class ManagerLabelProvider implements ILabelProvider
 	public Image getImage(Object element)
 	{
 		String imageName = "";
-		if(element instanceof Schema || element instanceof SchemaInTag || element instanceof SchemaInMapping) imageName = "Schema.gif";
+		if(element instanceof Schema) imageName = "Schema.gif";
+		else if(element instanceof SchemaInTag) imageName = "Schema.gif";
+		else if(element instanceof SchemaInMapping) imageName = "Schema.gif";
 		else if(element instanceof Mapping) imageName = "Mapping.gif";
-		else if(element instanceof Tag) imageName = "Tag.gif";
+		else if(element instanceof Tag) imageName = "SchemaGroup.gif";
 		else if(element instanceof DataSource) imageName = "DataSource.gif";
-		else if(element.equals("Schemas")) imageName = "Schemas.gif";
-		else if(element.equals("Tags")) imageName = "Tags.gif";
-		else if(element.equals("Mappings")) imageName = "Mappings.gif";
+		else if(element==ManagerView.SCHEMAS_HEADER) imageName = "Schemas.gif";
+		else if(element==ManagerView.ALL_SCHEMAS_HEADER) imageName = "SchemaGroup.gif";
+		else if(element==ManagerView.MAPPINGS_HEADER) imageName = "Mappings.gif";
 		return OpenIIActivator.getImage(imageName);
 	}
 

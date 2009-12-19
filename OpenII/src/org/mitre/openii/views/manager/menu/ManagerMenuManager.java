@@ -85,8 +85,11 @@ public class ManagerMenuManager extends MenuManager implements IMenuListener
 	{
 		// Display the menu for the "Schemas" header
 		if(element instanceof String && element.equals("Schemas"))
+		{
 			menuManager.add(new ManagerAction(this,"Import Schema",ManagerAction.IMPORT_SCHEMA));
-			
+			menuManager.add(new ManagerAction(this,"New Tag",ManagerAction.NEW_TAG));
+		}
+		
 		// Display the menu for a selected schema
 		if(element instanceof Schema)
 		{
@@ -105,10 +108,6 @@ public class ManagerMenuManager extends MenuManager implements IMenuListener
 			if(!((((Schema)element).getType()).equals("Spreadsheet Importer"))) createDataSourceAction.setEnabled(false);
 			menuManager.add(createDataSourceAction);
 		}
-		
-		// Display the menu for the "Tags" header
-		if(element instanceof String && element.equals("Tags"))
-			menuManager.add(new ManagerAction(this,"New Tag",ManagerAction.NEW_TAG));
 		
 		// Display the menu for a selected tag
 		if(element instanceof Tag)

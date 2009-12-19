@@ -13,7 +13,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.IEditorInput;
 import org.mitre.affinity.clusters.ClusterGroup;
 import org.mitre.affinity.model.AffinityModel;
 import org.mitre.affinity.model.AffinitySchemaManager;
@@ -101,28 +100,20 @@ public class AffinityEditor extends OpenIIEditor implements SelectionClickedList
 		//Construct the Affinity pane
 		parent.setLayout(new FillLayout());
 		
+		// Generate the list of schemas to be clustered
 		ArrayList<Integer> schemaIDs = null;
-		IEditorInput editorInput = getEditorInput();
-		if(editorInput != null && editorInput instanceof EditorInput) {
-			Object element = ((EditorInput)editorInput).getElement();
-			if(element != null && element instanceof Collection) {
-				schemaIDs = new ArrayList<Integer>((Collection)element);
-				setPartName("*New Tag");
-				/*this.addListenerObject(new Listener() {
-					public void handleEvent(Event event) {
-						System.out.println("listener triggered");
-					}					
-				});*/
-			}
-		}
-		if(schemaIDs == null) {
+		if(elementID!=null)
+		{
 			schemaIDs = OpenIIManager.getTagSchemas(elementID);			
-			schemaIDs.addAll(OpenIIManager.getChildTagSchemas(elementID));
+			schemaIDs.addAll(OpenIIManager.getChildTagSchemas(elementID));			
+		}
+		else
+		{
+			Object object = ((EditorInput)getEditorInput()).getElement();
+			schemaIDs = new ArrayList<Integer>((Collection)object);
+			setPartName(schemaIDs.size()==OpenIIManager.getSchemaIDs().size() ? "All Schemas" : "*New Tag");
 		}
 		this.affinityModel =  new AffinityModel(schemaManager, clusterManager);
-		
-		//System.out.println("Element id: " + elementID);
-		//System.out.println("SchemaIDs: " + schemaIDs);		
 		
 		affinity = new AffinityPane(parent, SWT.NONE, affinityModel, schemaIDs, progressDlg);
 		progressDlg.close();
