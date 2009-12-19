@@ -58,7 +58,7 @@ public class EditTagDialog extends Dialog implements ActionListener, ModifyListe
 	protected void configureShell(Shell shell)
 	{
 		super.configureShell(shell);
-		shell.setImage(OpenIIActivator.getImage("Tag.gif"));
+		shell.setImage(OpenIIActivator.getImage("SchemaGroup.gif"));
 		shell.setText((tag==null ? "Create" : "Edit") + " Tag");
 	}
 	

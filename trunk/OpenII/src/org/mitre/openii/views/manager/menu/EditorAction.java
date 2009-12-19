@@ -5,8 +5,10 @@ import org.eclipse.jface.action.IAction;
 import org.eclipse.ui.IEditorDescriptor;
 import org.mitre.openii.application.OpenIIActivator;
 import org.mitre.openii.model.EditorManager;
-import org.mitre.openii.views.manager.SchemaInTag;
+import org.mitre.openii.model.OpenIIManager;
+import org.mitre.openii.views.manager.ManagerView;
 import org.mitre.openii.views.manager.SchemaInMapping;
+import org.mitre.openii.views.manager.SchemaInTag;
 
 /** Handles an action related to launching an editor */
 public class EditorAction extends Action
@@ -35,8 +37,13 @@ public class EditorAction extends Action
 		if(getText().equals("Open") || isChecked())
 		{
 			Object element = menuManager.getElement();
+
+			// Get schemas from tag and mapping objects
 			if(element instanceof SchemaInTag) element = ((SchemaInTag)element).getSchema();
 			if(element instanceof SchemaInMapping) element = ((SchemaInMapping)element).getSchema();
+			if(element==ManagerView.ALL_SCHEMAS_HEADER) element = OpenIIManager.getSchemaIDs();			
+
+			// Launch specified editor with specified element
 			EditorManager.launchEditor(editor.getId(), element);
 		}
 	}

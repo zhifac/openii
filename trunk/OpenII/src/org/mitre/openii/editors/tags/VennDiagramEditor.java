@@ -1,6 +1,7 @@
 package org.mitre.openii.editors.tags;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 
 import org.eclipse.swt.SWT;
@@ -42,7 +43,7 @@ public class VennDiagramEditor extends OpenIIEditor implements VennDiagramListen
 	private VennDiagramEvent currSelectionEvent;
 	private Menu menu;
 	
-	/** Displays the Venn Diagram View */
+	/** Displays the Venn Diagram View */ @SuppressWarnings("unchecked")
 	public void createPartControl(final Composite parent)
 	{
 		//Construct the Venn Diagram pane
@@ -63,10 +64,18 @@ public class VennDiagramEditor extends OpenIIEditor implements VennDiagramListen
 			}
 		}
 		
-		if(sets == null && matrix == null) {
+		if(sets == null && matrix == null)
+		{
+			// Retrieve the schema IDs from which to generate the Venn diagram chart
+			ArrayList<Integer> schemaIDs = null;
+			if(elementID!=null)
+			{
+				schemaIDs = OpenIIManager.getTagSchemas(elementID);
+				schemaIDs.addAll(OpenIIManager.getChildTagSchemas(elementID));				
+			}
+			else schemaIDs = new ArrayList<Integer>((Collection)((EditorInput)editorInput).getElement());
+			
 			//If given a tag, get all the schemas with the tag and create a Venn Diagram
-			ArrayList<Integer> schemaIDs = OpenIIManager.getTagSchemas(elementID);
-			schemaIDs.addAll(OpenIIManager.getChildTagSchemas(elementID));
 			if(schemaIDs != null && schemaIDs.size() > 1) {
 				Iterator<Integer> iter = schemaIDs.iterator();
 				ArrayList<FilteredSchemaInfo> schemaInfos = new ArrayList<FilteredSchemaInfo>();
@@ -82,7 +91,7 @@ public class VennDiagramEditor extends OpenIIEditor implements VennDiagramListen
 				else
 					matrix = new VennDiagramSetsMatrix(schemaInfos, 0.6, 1.0, AffinityEditor.matchScoreComputer);
 			}
-			setPartName(OpenIIManager.getTag(elementID).getName());
+			setPartName(elementID!=null ? OpenIIManager.getTag(elementID).getName() : "All Schemas");
 		}
 		else
 			setPartName("New Tag");	

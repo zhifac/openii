@@ -75,6 +75,10 @@ public class OpenIIManager
 	/** Returns the list of schemas */
 	public static ArrayList<Schema> getSchemas()
 		{ return new ArrayList<Schema>(schemas.values()); }
+	
+	/** Returns the list of schema IDs */
+	public static ArrayList<Integer> getSchemaIDs()
+		{ return new ArrayList<Integer>(schemas.keySet()); }
 
 	/** Returns the specified schema */
 	public static Schema getSchema(Integer schemaID)

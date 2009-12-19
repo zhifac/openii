@@ -14,9 +14,6 @@ import org.mitre.schemastore.model.Schema;
 public class ManagerContentProvider implements ITreeContentProvider
 {
 	// Stores the headers
-	private String schemaHeader = "Schemas";
-	private String tagHeader = "Tags";
-	private String mappingHeader = "Mappings";
 	
 	/** Returns the children elements for the specified element */
 	public Object[] getChildren(Object element)
@@ -24,10 +21,16 @@ public class ManagerContentProvider implements ITreeContentProvider
 		// Handles data categories
 		if(element instanceof String)
 		{
-			if(element.equals("")) return new String[] {schemaHeader,tagHeader,mappingHeader};
-			if(element.equals(schemaHeader)) return WidgetUtilities.sortList(OpenIIManager.getSchemas()).toArray();
-		    if(element.equals(tagHeader)) return WidgetUtilities.sortList(OpenIIManager.getSubcategories(null)).toArray();
-		    if(element.equals(mappingHeader)) return WidgetUtilities.sortList(OpenIIManager.getMappings()).toArray();
+			if(element.equals("")) return new String[] {ManagerView.SCHEMAS_HEADER,ManagerView.MAPPINGS_HEADER};
+			if(element.equals(ManagerView.SCHEMAS_HEADER))
+			{
+				ArrayList<Object> tags = new ArrayList<Object>();
+				tags.add(ManagerView.ALL_SCHEMAS_HEADER);
+				tags.addAll(WidgetUtilities.sortList(OpenIIManager.getSubcategories(null)));
+				return tags.toArray();
+			}
+			if(element.equals(ManagerView.ALL_SCHEMAS_HEADER)) return WidgetUtilities.sortList(OpenIIManager.getSchemas()).toArray();
+		    if(element.equals(ManagerView.MAPPINGS_HEADER)) return WidgetUtilities.sortList(OpenIIManager.getMappings()).toArray();
 		}
 		    
 		// Handles schema elements

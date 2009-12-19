@@ -79,7 +79,7 @@ public class ManagerAction extends Action
 			case DELETE_SCHEMA: icon = "Delete.gif"; break;
 			case CREATE_DATA_SOURCE: icon = "DataSource.gif"; break;
 			case DELETE_DATA_SOURCE: icon = "Delete.gif"; break;
-			case NEW_TAG: icon = "Group.gif"; break;
+			case NEW_TAG: icon = "NewSchemaGroup.gif"; break;
 			case EDIT_TAG: icon = "Edit.gif"; break;
 			case DELETE_TAG: icon = "Delete.gif"; break;
 			case DELETE_TAG_SCHEMA: icon = "Delete.gif"; break;
