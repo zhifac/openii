@@ -1,4 +1,4 @@
-package org.mitre.schemastore.porters.mappingExporters.xmi;
+package org.mitre.schemastore.porters.projectExporters.xmi;
 
 import java.util.ArrayList;
 import java.util.HashMap;

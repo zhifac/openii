@@ -13,7 +13,8 @@ import org.mitre.schemastore.model.DomainValue;
 import org.mitre.schemastore.model.Entity;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
-import org.mitre.schemastore.model.MappingSchema;
+import org.mitre.schemastore.model.Project;
+import org.mitre.schemastore.model.ProjectSchema;
 import org.mitre.schemastore.model.Relationship;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
@@ -158,19 +159,19 @@ public class ConvertFromXML
 		return schemaElement;
 	}
 
-	/** Retrieve the mapping from the specified XML */
-	static public Mapping getMapping(Element element)
+	/** Retrieve the project from the specified XML */
+	static public Project getProject(Element element)
 	{
-		// Populate the mapping 
-		Mapping mapping = new Mapping();
-		mapping.setId(getIntegerValue(element,"MappingId"));
-		mapping.setName(getValue(element,"MappingName"));
-		mapping.setAuthor(getValue(element,"MappingAuthor"));
-		mapping.setDescription(getValue(element,"MappingDescription"));
+		// Populate the project 
+		Project project = new Project();
+		project.setId(getIntegerValue(element,"MappingId"));
+		project.setName(getValue(element,"MappingName"));
+		project.setAuthor(getValue(element,"MappingAuthor"));
+		project.setDescription(getValue(element,"MappingDescription"));
 
-		// Populate the mapping schemas
-		ArrayList<MappingSchema> schemas = new ArrayList<MappingSchema>();
-		NodeList schemaList = element.getElementsByTagName("MappingSchema");
+		// Populate the project schemas
+		ArrayList<ProjectSchema> schemas = new ArrayList<ProjectSchema>();
+		NodeList schemaList = element.getElementsByTagName("ProjectSchema");
 		if(schemaList!=null)
 			for(int i=0; i<schemaList.getLength(); i++)
 			{
@@ -178,49 +179,73 @@ public class ConvertFromXML
 				Element schemaElement = (Element)schemaList.item(i);
 
 				// Extract the schema information from the element
-				MappingSchema schema = new MappingSchema();
+				ProjectSchema schema = new ProjectSchema();
 				schema.setId(getIntegerValue(schemaElement,"SchemaId"));
 				schema.setName(getValue(schemaElement,"SchemaName"));
 				schema.setModel(getValue(schemaElement,"SchemaModel"));
-				schema.setSide(getIntegerValue(schemaElement,"SchemaSide"));
 				schemas.add(schema);
 			}
-		mapping.setSchemas(schemas.toArray(new MappingSchema[0]));
-		return mapping;
+		project.setSchemas(schemas.toArray(new ProjectSchema[0]));
+		return project;
+	}
+	
+	/** Retrieve information on the source schema from the specified XML */
+	static public ProjectSchema getSourceSchema(Element element)
+	{
+		ProjectSchema schema = new ProjectSchema();
+		schema.setId(getIntegerValue(element,"MappingSourceId"));
+		schema.setName(getValue(element,"MappingSourceName"));
+		schema.setModel(getValue(element,"MappingSourceModel"));		
+		return schema;
 	}
 
+	/** Retrieve information on the target schema from the specified XML */
+	static public ProjectSchema getTargetSchema(Element element)
+	{
+		ProjectSchema schema = new ProjectSchema();
+		schema.setId(getIntegerValue(element,"MappingTargetId"));
+		schema.setName(getValue(element,"MappingTargetName"));
+		schema.setModel(getValue(element,"MappingTargetModel"));		
+		return schema;
+	}
+	
+	/** Retrieve the mapping from the specified XML */
+	static public Mapping getMapping(Element element)
+	{
+		Mapping mapping = new Mapping();
+		mapping.setId(getIntegerValue(element,"MappingId"));
+		mapping.setProjectId(getIntegerValue(element,"MappingProjectId"));
+		mapping.setSourceId(getIntegerValue(element,"MappingSourceId"));
+		mapping.setTargetId(getIntegerValue(element,"MappingTargetId"));
+		return mapping;
+	}
+	
 	/** Retrieve the elementID for the given element path */
-	static private Integer getElementId(String pathString, ArrayList<HierarchicalSchemaInfo> schemaInfoList)
+	static private Integer getElementId(String pathString, HierarchicalSchemaInfo schemaInfo)
 	{
 		// Retrieve the schema and path
-		String schema = pathString.substring(1).replaceAll("/.*","").replaceAll("&#47;","/");
 		ArrayList<String> path = new ArrayList<String>();
 		for(String element : new ArrayList<String>(Arrays.asList(pathString.replaceFirst("/[^/]*/","").split("/"))))
 			path.add(element.replaceAll("&#47;","/"));
 		
 		// Retrieve the element ID
-		for(HierarchicalSchemaInfo schemaInfo : schemaInfoList)
-			if(schemaInfo.getSchema().getName().equals(schema))
-			{
-				ArrayList<Integer> elementIDs = schemaInfo.getPathIDs(path);
-				if(elementIDs.size()>0) return elementIDs.get(0);
-			}
-		return null;
+		ArrayList<Integer> elementIDs = schemaInfo.getPathIDs(path);
+		return elementIDs.size()>0 ? elementIDs.get(0) : null;
 	}
 	
 	/** Retrieve the mapping cell from the specified XML */
-	static public MappingCell getMappingCell(Element element, ArrayList<HierarchicalSchemaInfo> schemaInfoList)
+	static public MappingCell getMappingCell(Element element, HierarchicalSchemaInfo sourceInfo, HierarchicalSchemaInfo targetInfo)
 	{
 		// Retrieve the mapping cell input and output IDs
 		Integer inputCount = getIntegerValue(element,"MappingCellInputCount");
 		Integer inputIDs[] = new Integer[inputCount];
 		for(int i=0; i<inputCount; i++)
 		{
-			Integer inputID = getElementId(getValue(element,"MappingCellInput"+i+"Path"),schemaInfoList);
+			Integer inputID = getElementId(getValue(element,"MappingCellInput"+i+"Path"),sourceInfo);
 			if(inputID==null) return null;
 			inputIDs[i] = inputID;
 		}
-		Integer outputID = getElementId(getValue(element,"MappingCellOutputPath"),schemaInfoList);
+		Integer outputID = getElementId(getValue(element,"MappingCellOutputPath"),targetInfo);
 		if(outputID==null) return null;
 		
 		// Retrieve the mapping cell elements

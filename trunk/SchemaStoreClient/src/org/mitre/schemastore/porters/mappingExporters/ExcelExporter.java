@@ -2,7 +2,6 @@
 // ALL RIGHTS RESERVED
 package org.mitre.schemastore.porters.mappingExporters;
 
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -18,6 +17,7 @@ import org.mitre.schemastore.model.DomainValue;
 import org.mitre.schemastore.model.Entity;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
+import org.mitre.schemastore.model.Project;
 import org.mitre.schemastore.model.Relationship;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.schemaInfo.SchemaInfo;
@@ -46,7 +46,7 @@ public class ExcelExporter extends MappingExporter
 	 * This helper class keeps track of whether or not an element has ever been removed from the array list.
 	 * It also contains a boolean that is set whenever it is determined that a container (or one of its elements) is used as a target.
 	 * @param <E> The type being maintained in the array list.
-	 */
+	 */ @SuppressWarnings("serial")
 	private static class ArrayListHelper<E> extends ArrayList<E> {
 		private boolean removeWasCalled = false;
 		public boolean isSource = true;
@@ -72,7 +72,7 @@ public class ExcelExporter extends MappingExporter
 		{ return ".csv"; }
 	
 	/** Generates a data dictionary for this project */
-	public void exportMapping(Mapping mapping, ArrayList<MappingCell> mappingCells, File file) throws IOException
+	public void exportMapping(Project project, Mapping mapping, ArrayList<MappingCell> mappingCells, File file) throws IOException
 	{
 		this.mapping = mapping;
 		out = new PrintWriter(new FileWriter(file));
@@ -97,7 +97,7 @@ public class ExcelExporter extends MappingExporter
 	 * Populates the hash maps that map containers to a) their contents and b) their mapping cells.
 	 */
 	private void initHashMaps(ArrayList<MappingCell> cells) throws RemoteException {
-		for (Integer schemaID : mapping.getSchemaIDs()) {
+		for (Integer schemaID : new Integer[]{mapping.getSourceId(),mapping.getTargetId()}) {
 			SchemaInfo info = client.getSchemaInfo(schemaID);
 			schemataInfo.add(info);
 			initContainersFor(info);

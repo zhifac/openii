@@ -1,27 +1,30 @@
 // Copyright (C) The MITRE Corporation 2008
 // ALL RIGHTS RESERVED
 
-package org.mitre.schemastore.porters.mappingExporters;
+package org.mitre.schemastore.porters.projectExporters;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import org.mitre.schemastore.model.Mapping;
+import org.mitre.schemastore.model.Project;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
+import org.mitre.schemastore.porters.mappingExporters.M3MappingExporter;
 import org.mitre.schemastore.porters.schemaExporters.M3SchemaExporter;
 
 /**
  * Class for moving SchemaStore projects between SchemaStore repositories
  * @author CWOLf
  */
-public class M3ProjectExporter extends MappingExporter
+public class M3ProjectExporter extends ProjectExporter
 {	
 	/** Returns the exporter name */
 	public String getName()
@@ -47,8 +50,8 @@ public class M3ProjectExporter extends MappingExporter
 		in.close();
 	}
 	
-	/** Exports the mapping to a SchemaStore archive file */
-	public void exportMapping(Mapping mapping, ArrayList<MappingCell> mappingCells, File file) throws IOException
+	/** Exports the project to a SchemaStore archive file */
+	public void exportProject(Project project, HashMap<Mapping,ArrayList<MappingCell>> mappings, File file) throws IOException
 	{
 		try {				
 				
@@ -59,7 +62,7 @@ public class M3ProjectExporter extends MappingExporter
 			// Store the schema information for the project
 			M3SchemaExporter schemaExporter = new M3SchemaExporter();
 			schemaExporter.setClient(client);
-			for(Integer schemaID : mapping.getSchemaIDs())
+			for(Integer schemaID : project.getSchemaIDs())
 			{
 				Schema schema = client.getSchema(schemaID);
 				ArrayList<SchemaElement> schemaElements = client.getSchemaInfo(schemaID).getElements(null);
@@ -68,10 +71,13 @@ public class M3ProjectExporter extends MappingExporter
 			}
 			
 			// Store the mapping information for the project
-			M3MappingExporter mappingExporter = new M3MappingExporter();
-			mappingExporter.setClient(client);
-			mappingExporter.exportMapping(mapping, mappingCells, tempFile);
-			zipUpFile(zipOut,mapping.getName()+".m3m",tempFile);
+			for(Mapping mapping : mappings.keySet())
+			{
+				M3MappingExporter mappingExporter = new M3MappingExporter();
+				mappingExporter.setClient(client);
+				mappingExporter.exportMapping(project, mapping, mappings.get(mapping), tempFile);
+				zipUpFile(zipOut,mapping.getSourceId()+"-"+mapping.getTargetId()+".m3m",tempFile);
+			}
 			
 			// Close the generated zip file
 			tempFile.delete();

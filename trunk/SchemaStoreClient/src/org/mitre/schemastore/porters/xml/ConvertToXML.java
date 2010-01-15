@@ -2,6 +2,7 @@ package org.mitre.schemastore.porters.xml;
 
 import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.mitre.schemastore.model.Alias;
 import org.mitre.schemastore.model.Attribute;
@@ -9,12 +10,14 @@ import org.mitre.schemastore.model.Containment;
 import org.mitre.schemastore.model.DomainValue;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
-import org.mitre.schemastore.model.MappingSchema;
+import org.mitre.schemastore.model.Project;
+import org.mitre.schemastore.model.ProjectSchema;
 import org.mitre.schemastore.model.Relationship;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.Subtype;
 import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
+import org.mitre.schemastore.model.schemaInfo.SchemaInfo;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -127,54 +130,61 @@ public class ConvertToXML
 		return element;
 	}	
 	
-	/** Retrieves the element path for the given element ID */
-	static private String getElementPath(Integer elementID, ArrayList<HierarchicalSchemaInfo> schemaInfoList)
-	{
-		for(HierarchicalSchemaInfo schemaInfo : schemaInfoList)
-			if(schemaInfo.containsElement(elementID))
-			{
-				ArrayList<ArrayList<SchemaElement>> paths = schemaInfo.getPaths(elementID);
-				if(paths!=null && paths.size()>0)
-				{
-					StringBuffer path = new StringBuffer("/" + schemaInfo.getSchema().getName().replaceAll("/","&#47;"));
-					for(SchemaElement element : paths.get(0))
-						path.append("/" + schemaInfo.getDisplayName(element.getId()).replaceAll("/","&#47;"));
-					return path.toString();
-				}
-			}
-		return null;
-	}
-	
-	/** Generates the XML for the specified mapping */
-	static public Element generate(Mapping mapping, ArrayList<MappingCell> mappingCells, ArrayList<HierarchicalSchemaInfo> schemaInfoList, Document documentIn)
+	/** Generates the XML for the specified project */
+	static public Element generate(Project project, HashMap<Integer,SchemaInfo> schemaInfoList, Document documentIn)
 	{
 		document = documentIn;
 		
-		// Generate the mapping property XML elements
-		Element element = document.createElement("Mapping");			
-		addChildElement(element,"MappingId",mapping.getId());
-		addChildElement(element,"MappingName", mapping.getName());
-		addChildElement(element,"MappingAuthor", mapping.getAuthor());
-		addChildElement(element,"MappingDescription", mapping.getDescription());
+		// Generate the project XML elements
+		Element element = document.createElement("Project");			
+		addChildElement(element,"ProjectId",project.getId());
+		addChildElement(element,"ProjectName", project.getName());
+		addChildElement(element,"ProjectAuthor", project.getAuthor());
+		addChildElement(element,"ProjectDescription", project.getDescription());
 		
-		// Generate the mapping schema XML elements
-		for(MappingSchema mappingSchema : mapping.getSchemas())
+		// Generate the project schema XML elements
+		for(ProjectSchema projectSchema : project.getSchemas())
 		{
 			// Retrieve the associated schema
-			Schema schema = null;
-			for(HierarchicalSchemaInfo schemaInfo : schemaInfoList)
-				if(schemaInfo.getSchema().getId().equals(mappingSchema.getId()))
-					{ schema = schemaInfo.getSchema(); break; }
-			if(schema==null) continue;
+			SchemaInfo schemaInfo = schemaInfoList.get(projectSchema.getId());
 			
 			// Stores the mapping schema
-			Element schemaElement = addChildElement(element,"MappingSchema",null);
-			addChildElement(schemaElement,"SchemaId",mappingSchema.getId());
-			addChildElement(schemaElement,"SchemaName",schema.getName());
-			addChildElement(schemaElement,"SchemaModel",mappingSchema.getModel());
-			addChildElement(schemaElement,"SchemaSide",mappingSchema.getSide());
-		}		
+			Element schemaElement = addChildElement(element,"ProjectSchema",null);
+			addChildElement(schemaElement,"SchemaId",projectSchema.getId());
+			addChildElement(schemaElement,"SchemaName",schemaInfo.getSchema().getName());
+			addChildElement(schemaElement,"SchemaModel",projectSchema.getModel());
+		}
+		
+		return element;
+	}
 
+	/** Retrieves the element path for the given element ID */
+	static private String getElementPath(Integer elementID, HierarchicalSchemaInfo schemaInfo)
+	{
+		ArrayList<ArrayList<SchemaElement>> paths = schemaInfo.getPaths(elementID);
+		if(paths==null || paths.size()==0) return null;
+		StringBuffer path = new StringBuffer("/" + schemaInfo.getSchema().getName().replaceAll("/","&#47;"));
+		for(SchemaElement element : paths.get(0))
+			path.append("/" + schemaInfo.getDisplayName(element.getId()).replaceAll("/","&#47;"));
+		return path.toString();
+	}	
+	
+	/** Generates the XML for the specified project */
+	static public Element generate(Mapping mapping, ArrayList<MappingCell> mappingCells, HierarchicalSchemaInfo sourceInfo, HierarchicalSchemaInfo targetInfo, Document documentIn)
+	{
+		document = documentIn;
+
+		// Generate the mapping XML elements
+		Element element = document.createElement("Mapping");
+		addChildElement(element,"MappingId",mapping.getId());
+		addChildElement(element,"MappingProjectId",mapping.getProjectId());
+		addChildElement(element,"MappingSourceId",mapping.getSourceId());
+		addChildElement(element,"MappingSourceName",sourceInfo.getSchema().getName());
+		addChildElement(element,"MappingSourceModel",sourceInfo.getModel());
+		addChildElement(element,"MappingTargetId",mapping.getTargetId());
+		addChildElement(element,"MappingTargetName",targetInfo.getSchema().getName());
+		addChildElement(element,"mappingTargetModel",targetInfo.getModel());
+		
 		// Generate the mapping cell XML elements
 		for(MappingCell mappingCell : mappingCells)
 		{
@@ -182,11 +192,11 @@ public class ConvertToXML
 			ArrayList<String> inputPaths = new ArrayList<String>();
 			for(Integer input : mappingCell.getInput())
 			{
-				String inputPath = getElementPath(input,schemaInfoList);
+				String inputPath = getElementPath(input,sourceInfo);
 				if(inputPath==null) continue;
 				inputPaths.add(inputPath);
 			}
-			String outputPath = getElementPath(mappingCell.getOutput(),schemaInfoList);
+			String outputPath = getElementPath(mappingCell.getOutput(),targetInfo);
 			if(outputPath==null) continue;
 			
 			// Stores the mapping cell information
