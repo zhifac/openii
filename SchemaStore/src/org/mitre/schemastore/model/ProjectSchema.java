@@ -8,16 +8,11 @@ import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
 import org.mitre.schemastore.model.schemaInfo.model.SchemaModel;
 
 /**
- * Class for storing a mapping schema
+ * Class for storing a project schema
  * @author CWOLF
  */
-public class MappingSchema implements Serializable
+public class ProjectSchema implements Serializable
 {
-	// Constants for storing the schema side
-	static public final Integer NONE = 0;
-	static public final Integer LEFT = 1;
-	static public final Integer RIGHT = 2;
-	
 	/** Stores the schema id */
 	private Integer id;
 	
@@ -27,31 +22,26 @@ public class MappingSchema implements Serializable
 	/** Stores the schema model */
 	private String model;
 	
-	/** Stores the schema side */
-	private Integer side;
+	/** Constructs a default project schema */
+	public ProjectSchema() {}
 	
-	/** Constructs a default mapping schema */
-	public MappingSchema() {}
+	/** Constructs a project schema */
+	public ProjectSchema(Integer id, String name, String model)
+		{ this.id = id; this.name = name; this.model = model; }
 	
-	/** Constructs a mapping schema */
-	public MappingSchema(Integer id, String name, String model, Integer side)
-		{ this.id = id; this.name = name; this.model = model; this.side = side; }
+	/** Copies the project schema */
+	public ProjectSchema copy()
+		{ return new ProjectSchema(getId(),getName(),getModel()); }
 	
-	/** Copies the mapping schema */
-	public MappingSchema copy()
-		{ return new MappingSchema(getId(),getName(),getModel(),getSide()); }
-	
-	// Handles all mapping schema getters
+	// Handles all project schema getters
 	public Integer getId() { return id; }
 	public String getName() { return name; }
 	public String getModel() { return model; }
-	public Integer getSide() { return side; }
 	
-	// Handles all mapping schema setters
+	// Handles all project schema setters
 	public void setId(Integer id) { this.id = id; }
 	public void setName(String name) { this.name = name; }
 	public void setModel(String model) { this.model = model; }
-	public void setSide(Integer side) { this.side = side; }
 	
 	/** Retrieves the schema model */
 	public SchemaModel geetSchemaModel()
@@ -69,11 +59,11 @@ public class MappingSchema implements Serializable
 	public int hashCode()
 		{ return id.hashCode(); }
 	
-	/** Indicates that two mapping schemas are equals */
+	/** Indicates that two project schemas are equals */
 	public boolean equals(Object mappingSchema)
 	{
-		if(mappingSchema instanceof MappingSchema)
-			return id.equals(((MappingSchema)mappingSchema).id) && side.equals(((MappingSchema)mappingSchema).side);
+		if(mappingSchema instanceof ProjectSchema)
+			return id.equals(((ProjectSchema)mappingSchema).id);
 		return false;
 	}
 }

@@ -45,7 +45,7 @@ public class Schemas extends DataCache
 	/** Unlocks the specified schema */
 	public boolean unlockSchema(Integer schemaID)
 	{
-		if(getDatabase().getSchemaMappingIDs(schemaID).size()>0) return false;
+		if(getDatabase().getSchemaProjectIDs(schemaID).size()>0) return false;
 		if(!getSchema(schemaID).getType().equals("Manual")) return false;
 		for(Integer childSchemaID : getManager().getSchemaRelationships().getChildren(schemaID))
 			if(getSchema(childSchemaID).getLocked()) return false;
@@ -61,7 +61,7 @@ public class Schemas extends DataCache
 	{
 		Integer children = getManager().getSchemaRelationships().getChildren(schemaID).size();
 		Integer dataSources = getManager().getDataSources().getDataSources(schemaID).size();
-		Integer mappings = getDatabase().getSchemaMappingIDs(schemaID).size();
+		Integer mappings = getDatabase().getSchemaProjectIDs(schemaID).size();
 		return children==0 && dataSources==0 && mappings==0;
 	}
 	

@@ -9,11 +9,14 @@ import java.io.InputStreamReader;
 import java.net.URI;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.sql.PreparedStatement;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.mitre.schemastore.data.database.updates.DatabaseUpdates;
+
 
 /**
  * Handles the connection to the database
@@ -120,8 +123,8 @@ public class DatabaseConnection
 	    		connection.setAutoCommit(false);
 
 	    		// Initialize and update the database as needed
-	    		DatabaseUpdates.initializeDatabase(connection,databaseType,databaseUser,databasePassword);
-	    		DatabaseUpdates.updateDatabase(connection);
+	    		DatabaseUpdates.initialize(connection,databaseType,databaseUser,databasePassword);
+	    		DatabaseUpdates.update(connection);
                 return true;
 			}
 		}

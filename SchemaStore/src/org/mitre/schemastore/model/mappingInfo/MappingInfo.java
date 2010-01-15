@@ -18,7 +18,7 @@ package org.mitre.schemastore.model.mappingInfo;
 import org.mitre.schemastore.model.mapfunctions.*;
 import org.mitre.schemastore.model.schemaInfo.*;
 import org.mitre.schemastore.model.Domain;
-import org.mitre.schemastore.model.Mapping;
+import org.mitre.schemastore.model.Project;
 import org.mitre.schemastore.model.MappingCell;
 import java.util.*;
 
@@ -36,7 +36,7 @@ public class MappingInfo {
     /**
      * Mapping property.
      */
-    protected Mapping mapping = null;
+    protected Project mapping = null;
 
 
     /**
@@ -71,7 +71,7 @@ public class MappingInfo {
      *
      *@return Mapping property.
      */
-    public Mapping getMapping()
+    public Project getMapping()
     {
         return this.mapping;
     }
@@ -82,7 +82,7 @@ public class MappingInfo {
      *
      *@param mapping New mapping property.
      */
-    public void setMapping(Mapping mapping)
+    public void setMapping(Project mapping)
     {
         this.mapping = mapping;
     }
@@ -153,12 +153,12 @@ public class MappingInfo {
     //{{{ Constructors
     public MappingInfo()
     {
-        mapping = new Mapping();
+        mapping = new Project();
         mappingCells = new ArrayList <MappingCell>();
     }
 
 
-    public MappingInfo(Mapping m, List <MappingCell> cells, HierarchicalSchemaInfo left, HierarchicalSchemaInfo right)
+    public MappingInfo(Project m, List <MappingCell> cells, HierarchicalSchemaInfo left, HierarchicalSchemaInfo right)
     {
         mapping = m;
         leftSchema = left;

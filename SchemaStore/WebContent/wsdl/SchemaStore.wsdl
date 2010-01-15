@@ -24,21 +24,49 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
      <element maxOccurs="unbounded" minOccurs="0" name="item" type="xsd:int"/>
     </sequence>
    </complexType>
-   <element name="getMappings">
-    <complexType/>
-   </element>
-   <element name="getMappingsResponse">
+   <element name="getProject">
     <complexType>
      <sequence>
-      <element maxOccurs="unbounded" name="getMappingsReturn" type="tns1:Mapping"/>
+      <element name="projectID" type="xsd:int"/>
      </sequence>
     </complexType>
    </element>
-   <complexType name="ArrayOf_tns1_MappingSchema">
+   <element name="getProjectResponse">
+    <complexType>
+     <sequence>
+      <element name="getProjectReturn" type="tns1:Project"/>
+     </sequence>
+    </complexType>
+   </element>
+   <complexType name="ArrayOf_tns1_ProjectSchema">
     <sequence>
-     <element maxOccurs="unbounded" minOccurs="0" name="item" type="tns1:MappingSchema"/>
+     <element maxOccurs="unbounded" minOccurs="0" name="item" type="tns1:ProjectSchema"/>
     </sequence>
    </complexType>
+   <element name="getProjects">
+    <complexType/>
+   </element>
+   <element name="getProjectsResponse">
+    <complexType>
+     <sequence>
+      <element maxOccurs="unbounded" name="getProjectsReturn" type="tns1:Project"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="deleteProject">
+    <complexType>
+     <sequence>
+      <element name="projectID" type="xsd:int"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="deleteProjectResponse">
+    <complexType>
+     <sequence>
+      <element name="deleteProjectReturn" type="xsd:boolean"/>
+     </sequence>
+    </complexType>
+   </element>
    <element name="getTags">
     <complexType/>
    </element>
@@ -46,6 +74,20 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
     <complexType>
      <sequence>
       <element maxOccurs="unbounded" name="getTagsReturn" type="tns1:Tag"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getMappings">
+    <complexType>
+     <sequence>
+      <element name="projectID" type="xsd:int"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getMappingsResponse">
+    <complexType>
+     <sequence>
+      <element maxOccurs="unbounded" name="getMappingsReturn" type="tns1:Mapping"/>
      </sequence>
     </complexType>
    </element>
@@ -93,30 +135,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
      </sequence>
     </complexType>
    </element>
-   <element name="addSchema">
-    <complexType>
-     <sequence>
-      <element name="schema" type="tns1:Schema"/>
-     </sequence>
-    </complexType>
-   </element>
-   <element name="addSchemaResponse">
-    <complexType>
-     <sequence>
-      <element name="addSchemaReturn" type="xsd:int"/>
-     </sequence>
-    </complexType>
-   </element>
-   <element name="getSchemas">
-    <complexType/>
-   </element>
-   <element name="getSchemasResponse">
-    <complexType>
-     <sequence>
-      <element maxOccurs="unbounded" name="getSchemasReturn" type="tns1:Schema"/>
-     </sequence>
-    </complexType>
-   </element>
    <element name="updateAttribute">
     <complexType>
      <sequence>
@@ -142,6 +160,44 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
     <complexType>
      <sequence>
       <element name="addSubtypeReturn" type="xsd:int"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="addProject">
+    <complexType>
+     <sequence>
+      <element name="project" type="tns1:Project"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="addProjectResponse">
+    <complexType>
+     <sequence>
+      <element name="addProjectReturn" type="xsd:int"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="addSchema">
+    <complexType>
+     <sequence>
+      <element name="schema" type="tns1:Schema"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="addSchemaResponse">
+    <complexType>
+     <sequence>
+      <element name="addSchemaReturn" type="xsd:int"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getSchemas">
+    <complexType/>
+   </element>
+   <element name="getSchemasResponse">
+    <complexType>
+     <sequence>
+      <element maxOccurs="unbounded" name="getSchemasReturn" type="tns1:Schema"/>
      </sequence>
     </complexType>
    </element>
@@ -1010,31 +1066,17 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
      </sequence>
     </complexType>
    </element>
-   <element name="updateMapping">
+   <element name="updateProject">
     <complexType>
      <sequence>
-      <element name="mapping" type="tns1:Mapping"/>
+      <element name="project" type="tns1:Project"/>
      </sequence>
     </complexType>
    </element>
-   <element name="updateMappingResponse">
+   <element name="updateProjectResponse">
     <complexType>
      <sequence>
-      <element name="updateMappingReturn" type="xsd:boolean"/>
-     </sequence>
-    </complexType>
-   </element>
-   <element name="deleteMapping">
-    <complexType>
-     <sequence>
-      <element name="mappingID" type="xsd:int"/>
-     </sequence>
-    </complexType>
-   </element>
-   <element name="deleteMappingResponse">
-    <complexType>
-     <sequence>
-      <element name="deleteMappingReturn" type="xsd:boolean"/>
+      <element name="updateProjectReturn" type="xsd:boolean"/>
      </sequence>
     </complexType>
    </element>
@@ -1111,6 +1153,20 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
     <complexType>
      <sequence>
       <element name="saveMappingReturn" type="xsd:int"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="deleteMapping">
+    <complexType>
+     <sequence>
+      <element name="mappingID" type="xsd:int"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="deleteMappingResponse">
+    <complexType>
+     <sequence>
+      <element name="deleteMappingReturn" type="xsd:boolean"/>
      </sequence>
     </complexType>
    </element>
@@ -1256,24 +1312,21 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
      </extension>
     </complexContent>
    </complexType>
-   <complexType name="MappingSchema">
+   <complexType name="ProjectSchema">
     <sequence>
      <element name="id" nillable="true" type="xsd:int"/>
      <element name="model" nillable="true" type="xsd:string"/>
      <element name="name" nillable="true" type="xsd:string"/>
-     <element name="side" nillable="true" type="xsd:int"/>
     </sequence>
    </complexType>
-   <complexType name="Mapping">
+   <complexType name="Project">
     <sequence>
      <element name="author" nillable="true" type="xsd:string"/>
      <element name="description" nillable="true" type="xsd:string"/>
      <element name="id" nillable="true" type="xsd:int"/>
-     <element name="leftSchema" nillable="true" type="tns1:MappingSchema"/>
      <element name="name" nillable="true" type="xsd:string"/>
-     <element name="rightSchema" nillable="true" type="tns1:MappingSchema"/>
      <element name="schemaIDs" nillable="true" type="impl:ArrayOf_xsd_int"/>
-     <element name="schemas" nillable="true" type="impl:ArrayOf_tns1_MappingSchema"/>
+     <element name="schemas" nillable="true" type="impl:ArrayOf_tns1_ProjectSchema"/>
     </sequence>
    </complexType>
    <complexType name="Tag">
@@ -1281,6 +1334,14 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
      <element name="id" nillable="true" type="xsd:int"/>
      <element name="name" nillable="true" type="xsd:string"/>
      <element name="parentId" nillable="true" type="xsd:int"/>
+    </sequence>
+   </complexType>
+   <complexType name="Mapping">
+    <sequence>
+     <element name="id" nillable="true" type="xsd:int"/>
+     <element name="projectId" nillable="true" type="xsd:int"/>
+     <element name="sourceId" nillable="true" type="xsd:int"/>
+     <element name="targetId" nillable="true" type="xsd:int"/>
     </sequence>
    </complexType>
    <complexType name="Relationship">
@@ -1304,17 +1365,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
      </extension>
     </complexContent>
    </complexType>
-   <complexType name="Schema">
-    <sequence>
-     <element name="author" nillable="true" type="xsd:string"/>
-     <element name="description" nillable="true" type="xsd:string"/>
-     <element name="id" nillable="true" type="xsd:int"/>
-     <element name="locked" type="xsd:boolean"/>
-     <element name="name" nillable="true" type="xsd:string"/>
-     <element name="source" nillable="true" type="xsd:string"/>
-     <element name="type" nillable="true" type="xsd:string"/>
-    </sequence>
-   </complexType>
    <complexType name="Attribute">
     <complexContent>
      <extension base="tns1:SchemaElement">
@@ -1337,6 +1387,17 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
       </sequence>
      </extension>
     </complexContent>
+   </complexType>
+   <complexType name="Schema">
+    <sequence>
+     <element name="author" nillable="true" type="xsd:string"/>
+     <element name="description" nillable="true" type="xsd:string"/>
+     <element name="id" nillable="true" type="xsd:int"/>
+     <element name="locked" type="xsd:boolean"/>
+     <element name="name" nillable="true" type="xsd:string"/>
+     <element name="source" nillable="true" type="xsd:string"/>
+     <element name="type" nillable="true" type="xsd:string"/>
+    </sequence>
    </complexType>
    <complexType name="Alias">
     <complexContent>
@@ -1392,8 +1453,7 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
     <sequence>
      <element name="author" nillable="true" type="xsd:string"/>
      <element name="date" nillable="true" type="xsd:string"/>
-     <element name="element1" nillable="true" type="xsd:int"/>
-     <element name="element2" nillable="true" type="xsd:int"/>
+     <element name="firstInput" nillable="true" type="xsd:int"/>
      <element name="functionClass" nillable="true" type="xsd:string"/>
      <element name="id" nillable="true" type="xsd:int"/>
      <element name="input" nillable="true" type="impl:ArrayOf_xsd_int"/>
@@ -1404,7 +1464,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
      <element name="output" nillable="true" type="xsd:int"/>
      <element name="outputType" nillable="true" type="xsd:string"/>
      <element name="score" nillable="true" type="xsd:double"/>
-     <element name="transform" nillable="true" type="xsd:string"/>
      <element name="validated" nillable="true" type="xsd:boolean"/>
     </sequence>
    </complexType>
@@ -1414,6 +1473,12 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
    <wsdl:message name="getRelationshipRequest">
 
       <wsdl:part element="impl:getRelationship" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getProjectRequest">
+
+      <wsdl:part element="impl:getProject" name="parameters"/>
 
    </wsdl:message>
 
@@ -1561,6 +1626,12 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
    </wsdl:message>
 
+   <wsdl:message name="addProjectRequest">
+
+      <wsdl:part element="impl:addProject" name="parameters"/>
+
+   </wsdl:message>
+
    <wsdl:message name="getSchemaPathRequest">
 
       <wsdl:part element="impl:getSchemaPath" name="parameters"/>
@@ -1597,15 +1668,21 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
    </wsdl:message>
 
+   <wsdl:message name="updateAliasRequest">
+
+      <wsdl:part element="impl:updateAlias" name="parameters"/>
+
+   </wsdl:message>
+
    <wsdl:message name="addTagToSchemaRequest">
 
       <wsdl:part element="impl:addTagToSchema" name="parameters"/>
 
    </wsdl:message>
 
-   <wsdl:message name="updateAliasRequest">
+   <wsdl:message name="deleteProjectRequest">
 
-      <wsdl:part element="impl:updateAlias" name="parameters"/>
+      <wsdl:part element="impl:deleteProject" name="parameters"/>
 
    </wsdl:message>
 
@@ -1729,15 +1806,15 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
    </wsdl:message>
 
-   <wsdl:message name="updateTagRequest">
-
-      <wsdl:part element="impl:updateTag" name="parameters"/>
-
-   </wsdl:message>
-
    <wsdl:message name="getDeletableSchemasResponse">
 
       <wsdl:part element="impl:getDeletableSchemasResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="updateTagRequest">
+
+      <wsdl:part element="impl:updateTag" name="parameters"/>
 
    </wsdl:message>
 
@@ -1807,15 +1884,15 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
    </wsdl:message>
 
-   <wsdl:message name="getTagSchemasResponse">
-
-      <wsdl:part element="impl:getTagSchemasResponse" name="parameters"/>
-
-   </wsdl:message>
-
    <wsdl:message name="updateAliasResponse">
 
       <wsdl:part element="impl:updateAliasResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getTagSchemasResponse">
+
+      <wsdl:part element="impl:getTagSchemasResponse" name="parameters"/>
 
    </wsdl:message>
 
@@ -1828,6 +1905,12 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
    <wsdl:message name="updateEntityRequest">
 
       <wsdl:part element="impl:updateEntity" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getProjectsRequest">
+
+      <wsdl:part element="impl:getProjects" name="parameters"/>
 
    </wsdl:message>
 
@@ -1915,6 +1998,18 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
    </wsdl:message>
 
+   <wsdl:message name="addProjectResponse">
+
+      <wsdl:part element="impl:addProjectResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="updateProjectResponse">
+
+      <wsdl:part element="impl:updateProjectResponse" name="parameters"/>
+
+   </wsdl:message>
+
    <wsdl:message name="removeTagFromSchemaRequest">
 
       <wsdl:part element="impl:removeTagFromSchema" name="parameters"/>
@@ -1930,12 +2025,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
    <wsdl:message name="deleteTagResponse">
 
       <wsdl:part element="impl:deleteTagResponse" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="updateMappingResponse">
-
-      <wsdl:part element="impl:updateMappingResponse" name="parameters"/>
 
    </wsdl:message>
 
@@ -1993,6 +2082,12 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
    </wsdl:message>
 
+   <wsdl:message name="updateProjectRequest">
+
+      <wsdl:part element="impl:updateProject" name="parameters"/>
+
+   </wsdl:message>
+
    <wsdl:message name="getSchemasResponse">
 
       <wsdl:part element="impl:getSchemasResponse" name="parameters"/>
@@ -2014,6 +2109,12 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
    <wsdl:message name="deleteDomainResponse">
 
       <wsdl:part element="impl:deleteDomainResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getProjectResponse">
+
+      <wsdl:part element="impl:getProjectResponse" name="parameters"/>
 
    </wsdl:message>
 
@@ -2113,6 +2214,12 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
    </wsdl:message>
 
+   <wsdl:message name="deleteProjectResponse">
+
+      <wsdl:part element="impl:deleteProjectResponse" name="parameters"/>
+
+   </wsdl:message>
+
    <wsdl:message name="getParentSchemasResponse">
 
       <wsdl:part element="impl:getParentSchemasResponse" name="parameters"/>
@@ -2164,6 +2271,12 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
    <wsdl:message name="deleteSchemaResponse">
 
       <wsdl:part element="impl:deleteSchemaResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getProjectsResponse">
+
+      <wsdl:part element="impl:getProjectsResponse" name="parameters"/>
 
    </wsdl:message>
 
@@ -2305,15 +2418,15 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
    </wsdl:message>
 
-   <wsdl:message name="getMappingsResponse">
-
-      <wsdl:part element="impl:getMappingsResponse" name="parameters"/>
-
-   </wsdl:message>
-
    <wsdl:message name="importSchemaResponse">
 
       <wsdl:part element="impl:importSchemaResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getMappingsResponse">
+
+      <wsdl:part element="impl:getMappingsResponse" name="parameters"/>
 
    </wsdl:message>
 
@@ -2401,12 +2514,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
    </wsdl:message>
 
-   <wsdl:message name="updateMappingRequest">
-
-      <wsdl:part element="impl:updateMapping" name="parameters"/>
-
-   </wsdl:message>
-
    <wsdl:message name="getContainmentResponse">
 
       <wsdl:part element="impl:getContainmentResponse" name="parameters"/>
@@ -2441,11 +2548,27 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
       </wsdl:operation>
 
-      <wsdl:operation name="getMappings">
+      <wsdl:operation name="getProject">
 
-         <wsdl:input message="impl:getMappingsRequest" name="getMappingsRequest"/>
+         <wsdl:input message="impl:getProjectRequest" name="getProjectRequest"/>
 
-         <wsdl:output message="impl:getMappingsResponse" name="getMappingsResponse"/>
+         <wsdl:output message="impl:getProjectResponse" name="getProjectResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getProjects">
+
+         <wsdl:input message="impl:getProjectsRequest" name="getProjectsRequest"/>
+
+         <wsdl:output message="impl:getProjectsResponse" name="getProjectsResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="deleteProject">
+
+         <wsdl:input message="impl:deleteProjectRequest" name="deleteProjectRequest"/>
+
+         <wsdl:output message="impl:deleteProjectResponse" name="deleteProjectResponse"/>
 
       </wsdl:operation>
 
@@ -2454,6 +2577,14 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
          <wsdl:input message="impl:getTagsRequest" name="getTagsRequest"/>
 
          <wsdl:output message="impl:getTagsResponse" name="getTagsResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getMappings">
+
+         <wsdl:input message="impl:getMappingsRequest" name="getMappingsRequest"/>
+
+         <wsdl:output message="impl:getMappingsResponse" name="getMappingsResponse"/>
 
       </wsdl:operation>
 
@@ -2481,22 +2612,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
       </wsdl:operation>
 
-      <wsdl:operation name="addSchema">
-
-         <wsdl:input message="impl:addSchemaRequest" name="addSchemaRequest"/>
-
-         <wsdl:output message="impl:addSchemaResponse" name="addSchemaResponse"/>
-
-      </wsdl:operation>
-
-      <wsdl:operation name="getSchemas">
-
-         <wsdl:input message="impl:getSchemasRequest" name="getSchemasRequest"/>
-
-         <wsdl:output message="impl:getSchemasResponse" name="getSchemasResponse"/>
-
-      </wsdl:operation>
-
       <wsdl:operation name="updateAttribute">
 
          <wsdl:input message="impl:updateAttributeRequest" name="updateAttributeRequest"/>
@@ -2510,6 +2625,30 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
          <wsdl:input message="impl:addSubtypeRequest" name="addSubtypeRequest"/>
 
          <wsdl:output message="impl:addSubtypeResponse" name="addSubtypeResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="addProject">
+
+         <wsdl:input message="impl:addProjectRequest" name="addProjectRequest"/>
+
+         <wsdl:output message="impl:addProjectResponse" name="addProjectResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="addSchema">
+
+         <wsdl:input message="impl:addSchemaRequest" name="addSchemaRequest"/>
+
+         <wsdl:output message="impl:addSchemaResponse" name="addSchemaResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getSchemas">
+
+         <wsdl:input message="impl:getSchemasRequest" name="getSchemasRequest"/>
+
+         <wsdl:output message="impl:getSchemasResponse" name="getSchemasResponse"/>
 
       </wsdl:operation>
 
@@ -2985,19 +3124,11 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
       </wsdl:operation>
 
-      <wsdl:operation name="updateMapping">
+      <wsdl:operation name="updateProject">
 
-         <wsdl:input message="impl:updateMappingRequest" name="updateMappingRequest"/>
+         <wsdl:input message="impl:updateProjectRequest" name="updateProjectRequest"/>
 
-         <wsdl:output message="impl:updateMappingResponse" name="updateMappingResponse"/>
-
-      </wsdl:operation>
-
-      <wsdl:operation name="deleteMapping">
-
-         <wsdl:input message="impl:deleteMappingRequest" name="deleteMappingRequest"/>
-
-         <wsdl:output message="impl:deleteMappingResponse" name="deleteMappingResponse"/>
+         <wsdl:output message="impl:updateProjectResponse" name="updateProjectResponse"/>
 
       </wsdl:operation>
 
@@ -3038,6 +3169,14 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
          <wsdl:input message="impl:saveMappingRequest" name="saveMappingRequest"/>
 
          <wsdl:output message="impl:saveMappingResponse" name="saveMappingResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="deleteMapping">
+
+         <wsdl:input message="impl:deleteMappingRequest" name="deleteMappingRequest"/>
+
+         <wsdl:output message="impl:deleteMappingResponse" name="deleteMappingResponse"/>
 
       </wsdl:operation>
 
@@ -3137,17 +3276,53 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
       </wsdl:operation>
 
-      <wsdl:operation name="getMappings">
+      <wsdl:operation name="getProject">
 
          <wsdlsoap:operation soapAction=""/>
 
-         <wsdl:input name="getMappingsRequest">
+         <wsdl:input name="getProjectRequest">
 
             <wsdlsoap:body use="literal"/>
 
          </wsdl:input>
 
-         <wsdl:output name="getMappingsResponse">
+         <wsdl:output name="getProjectResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getProjects">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="getProjectsRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="getProjectsResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="deleteProject">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="deleteProjectRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="deleteProjectResponse">
 
             <wsdlsoap:body use="literal"/>
 
@@ -3166,6 +3341,24 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
          </wsdl:input>
 
          <wsdl:output name="getTagsResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getMappings">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="getMappingsRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="getMappingsResponse">
 
             <wsdlsoap:body use="literal"/>
 
@@ -3227,42 +3420,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
       </wsdl:operation>
 
-      <wsdl:operation name="addSchema">
-
-         <wsdlsoap:operation soapAction=""/>
-
-         <wsdl:input name="addSchemaRequest">
-
-            <wsdlsoap:body use="literal"/>
-
-         </wsdl:input>
-
-         <wsdl:output name="addSchemaResponse">
-
-            <wsdlsoap:body use="literal"/>
-
-         </wsdl:output>
-
-      </wsdl:operation>
-
-      <wsdl:operation name="getSchemas">
-
-         <wsdlsoap:operation soapAction=""/>
-
-         <wsdl:input name="getSchemasRequest">
-
-            <wsdlsoap:body use="literal"/>
-
-         </wsdl:input>
-
-         <wsdl:output name="getSchemasResponse">
-
-            <wsdlsoap:body use="literal"/>
-
-         </wsdl:output>
-
-      </wsdl:operation>
-
       <wsdl:operation name="updateAttribute">
 
          <wsdlsoap:operation soapAction=""/>
@@ -3292,6 +3449,60 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
          </wsdl:input>
 
          <wsdl:output name="addSubtypeResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="addProject">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="addProjectRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="addProjectResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="addSchema">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="addSchemaRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="addSchemaResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getSchemas">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="getSchemasRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="getSchemasResponse">
 
             <wsdlsoap:body use="literal"/>
 
@@ -4361,35 +4572,17 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
       </wsdl:operation>
 
-      <wsdl:operation name="updateMapping">
+      <wsdl:operation name="updateProject">
 
          <wsdlsoap:operation soapAction=""/>
 
-         <wsdl:input name="updateMappingRequest">
+         <wsdl:input name="updateProjectRequest">
 
             <wsdlsoap:body use="literal"/>
 
          </wsdl:input>
 
-         <wsdl:output name="updateMappingResponse">
-
-            <wsdlsoap:body use="literal"/>
-
-         </wsdl:output>
-
-      </wsdl:operation>
-
-      <wsdl:operation name="deleteMapping">
-
-         <wsdlsoap:operation soapAction=""/>
-
-         <wsdl:input name="deleteMappingRequest">
-
-            <wsdlsoap:body use="literal"/>
-
-         </wsdl:input>
-
-         <wsdl:output name="deleteMappingResponse">
+         <wsdl:output name="updateProjectResponse">
 
             <wsdlsoap:body use="literal"/>
 
@@ -4480,6 +4673,24 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
          </wsdl:input>
 
          <wsdl:output name="saveMappingResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="deleteMapping">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="deleteMappingRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="deleteMappingResponse">
 
             <wsdlsoap:body use="literal"/>
 

@@ -15,14 +15,15 @@ import org.mitre.schemastore.model.DataSource;
 import org.mitre.schemastore.model.Domain;
 import org.mitre.schemastore.model.DomainValue;
 import org.mitre.schemastore.model.Entity;
-import org.mitre.schemastore.model.Tag;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
+import org.mitre.schemastore.model.Project;
 import org.mitre.schemastore.model.Relationship;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.SchemaElementList;
 import org.mitre.schemastore.model.Subtype;
+import org.mitre.schemastore.model.Tag;
 
 /**
  * Web service for retrieving schema information from SchemaStore
@@ -385,44 +386,60 @@ public class SchemaStore
 		{ return manager.getDataSources().deleteDataSource(dataSourceID); }
 
 	//----------------------------
-	// Handles Mapping Operations
+	// Handles Project Operations
 	//----------------------------
 
-	/** Web service to retrieve the list of mappings */
-	public Mapping[] getMappings()
-		{ return manager.getMappings().getMappings().toArray(new Mapping[0]); }
+	/** Web service to retrieve the list of projects */
+	public Project[] getProjects()
+		{ return manager.getProjects().getProjects().toArray(new Project[0]); }
+		
+	/** Web service to retrieve the specified project */
+	public Project getProject(int projectID)
+		{ return manager.getProjects().getProject(projectID); }
+	
+	/** Web service to add the specified project */
+	public int addProject(Project project)
+		{ return manager.getProjects().addProject(project); }
+
+	/** Web service to update the specified project */
+	public boolean updateProject(Project project)
+		{ return manager.getProjects().updateProject(project); }
+
+	/** Web service to delete the specified project */
+	public boolean deleteProject(int projectID)
+		{ return manager.getProjects().deleteProject(projectID); }
+
+	/** Web service to retrieve the list of mappings for the specified project */
+	public Mapping[] getMappings(int projectID)
+		{ return manager.getProjects().getMappings(projectID).toArray(new Mapping[0]); }
 		
 	/** Web service to retrieve the specified mapping */
 	public Mapping getMapping(int mappingID)
-		{ return manager.getMappings().getMapping(mappingID); }
+		{ return manager.getProjects().getMapping(mappingID); }
 	
 	/** Web service to add the specified mapping */
 	public int addMapping(Mapping mapping)
-		{ return manager.getMappings().addMapping(mapping); }
-
-	/** Web service to update the specified mapping */
-	public boolean updateMapping(Mapping mapping)
-		{ return manager.getMappings().updateMapping(mapping); }
+		{ return manager.getProjects().addMapping(mapping); }
 
 	/** Web service to delete the specified mapping */
 	public boolean deleteMapping(int mappingID)
-		{ return manager.getMappings().deleteMapping(mappingID); }
+		{ return manager.getProjects().deleteMapping(mappingID); }
 	
-	/** Web service to get the mapping cells for the specified schema */
+	/** Web service to get the mapping cells for the specified mapping */
 	public MappingCell[] getMappingCells(int mappingID)
-		{ return manager.getMappings().getMappingCells(mappingID).toArray(new MappingCell[0]); }
+		{ return manager.getProjects().getMappingCells(mappingID).toArray(new MappingCell[0]); }
 
 	/** Web service to add the specified mapping cell */
 	public int addMappingCell(MappingCell mappingCell)
-		{ return manager.getMappings().addMappingCell(mappingCell); }
+		{ return manager.getProjects().addMappingCell(mappingCell); }
 
 	/** Web service to update the specified mapping cell */
 	public boolean updateMappingCell(MappingCell mappingCell)
-		{ return manager.getMappings().updateMappingCell(mappingCell); }
+		{ return manager.getProjects().updateMappingCell(mappingCell); }
 	
 	/** Web service to delete the specified mapping cell */
 	public boolean deleteMappingCell(int mappingCellID)
-		{ return manager.getMappings().deleteMappingCell(mappingCellID); }
+		{ return manager.getProjects().deleteMappingCell(mappingCellID); }
 
 	//-------------------------------
 	// Handles Annotation Operations

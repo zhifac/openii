@@ -32,13 +32,14 @@ public class TestFixtures
 {
 
     private SchemaStore store = new SchemaStore( DatabaseConnection.DERBY,System.getProperty("java.io.tmpdir"),"schemastore","postgres","postgres");
-    private MappingSchema[] schemas = new MappingSchema[2];
+    private ProjectSchema[] schemas = new ProjectSchema[2];
+    private Mapping[] mappings = new Mapping[1];
 
     public TestFixtures()
     {
-        schemas[0] = new MappingSchema(1025, "left", SchemaModel.class.getName(), MappingSchema.LEFT );
-        schemas[1] = new MappingSchema(1026, "right", SchemaModel.class.getName(), MappingSchema.RIGHT);
-        new Mapping( new Integer(1024), "name", "description", "author", schemas );
+        schemas[0] = new ProjectSchema(1025, "left", SchemaModel.class.getName());
+        schemas[1] = new ProjectSchema(1026, "right", SchemaModel.class.getName());
+        mappings[0] = new Mapping(1027,1024,1025,1026);
     }
 
     public boolean reset()
@@ -106,15 +107,19 @@ public class TestFixtures
     }
 
 
-    public MappingSchema[] getMappingSchemas()
+    public ProjectSchema[] getSchemas()
     {
         return schemas;
     }
 
-    public Mapping getMapping()
+    public Mapping[] getMappings()
     {
-        Mapping mapping = new Mapping(new Integer(333),"","","",getMappingSchemas());
-        return mapping;
+        return mappings;
+    }
+
+    public Project getProject()
+    {
+        return new Project(new Integer(333),"","","",getSchemas());
     }
 
     public String[] getPrefixArray( String value, int size )
@@ -129,7 +134,7 @@ public class TestFixtures
     {
         ArrayList<MappingCell> cells = new ArrayList<MappingCell>();
         cells.addAll(getMappingCells().values());
-        return new MappingInfo( getMapping(), cells, getSourceSchema(), getTargetSchema());
+        return new MappingInfo( getProject(), cells, getSourceSchema(), getTargetSchema());
     }
 
 }
