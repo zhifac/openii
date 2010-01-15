@@ -78,25 +78,32 @@ CREATE TABLE tags (
     parent_id integer
 );
 
-CREATE TABLE mapping (
+CREATE TABLE project (
     id integer NOT NULL,
     name character varying(100),
     author character varying(100),
     description character varying(4096)
 );
 
+CREATE TABLE mapping (
+    id integer NOT NULL,
+    project_id integer NOT NULL,
+    source_id integer NOT NULL,
+    target_id integer NOT NULL
+);
+
 CREATE TABLE mapping_input (
-    cell_id integer,
-    input_id integer,
-    input_order integer
+    cell_id integer NOT NULL,
+    input_id integer NOT NULL,
+    input_order integer NOT NULL
 );
 
 CREATE TABLE proposed_mapping_cell (
     id integer NOT NULL,
-    mapping_id integer,
-    input_id integer,
-    output_id integer,
-    score numeric(6,3),
+    mapping_id integer NOT NULL,
+    input_id integer NOT NULL,
+    output_id integer NOT NULL,
+    score numeric(6,3) NOT NULL,
     author character varying(100),
     modification_date date,
     notes character varying(4096)
@@ -104,19 +111,18 @@ CREATE TABLE proposed_mapping_cell (
 
 CREATE TABLE validated_mapping_cell (
     id integer NOT NULL,
-    mapping_id integer,
-    function_class character varying(100),
-    output_id integer,
+    mapping_id integer NOT NULL,
+    function_class character varying(100) NOT NULL,
+    output_id integer NOT NULL,
     author character varying(100),
     modification_date date,
     notes character varying(4096)
 );
 
-CREATE TABLE mapping_schema (
-    mapping_id integer NOT NULL,
+CREATE TABLE project_schema (
+    project_id integer NOT NULL,
     schema_id integer NOT NULL,
-    model character varying(256),
-    side character
+    model character varying(256)
 );
 
 CREATE TABLE relationship (
@@ -195,6 +201,9 @@ ALTER TABLE proposed_mapping_cell
 ALTER TABLE validated_mapping_cell
     ADD CONSTRAINT vmappingcell_pkey PRIMARY KEY (id);
 
+ALTER TABLE project
+    ADD CONSTRAINT project_pkey PRIMARY KEY (id);
+
 ALTER TABLE mapping
     ADD CONSTRAINT mapping_pkey PRIMARY KEY (id);
 
@@ -250,11 +259,11 @@ ALTER TABLE proposed_mapping_cell
 ALTER TABLE validated_mapping_cell
     ADD CONSTRAINT vmappingcell_mapping_id_fkey FOREIGN KEY (mapping_id) REFERENCES mapping(id);
 
-ALTER TABLE mapping_schema
-    ADD CONSTRAINT mappingschema_mapping_fkey FOREIGN KEY (mapping_id) REFERENCES mapping(id);
+ALTER TABLE project_schema
+    ADD CONSTRAINT projectschema_project_fkey FOREIGN KEY (project_id) REFERENCES project(id);
 
-ALTER TABLE mapping_schema
-    ADD CONSTRAINT mappingschema_schema_fkey FOREIGN KEY (schema_id) REFERENCES "schema"(id);
+ALTER TABLE project_schema
+    ADD CONSTRAINT projectschema_schema_fkey FOREIGN KEY (schema_id) REFERENCES "schema"(id);
 
 ALTER TABLE alias
     ADD CONSTRAINT alias_schema_fkey FOREIGN KEY (schema_id) REFERENCES "schema"(id);

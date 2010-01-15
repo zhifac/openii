@@ -48,15 +48,13 @@ public class SaveMapping
 		Integer mappingID = null;
 		
 		// Stores the old mapping information
-		Mapping oldMapping = null;
 		ArrayList<MappingCell> oldMappingCells = new ArrayList<MappingCell>();
 		
 		// Get old mapping information
 		if(mapping.getId()!=null)
 		{
 			mappingID = mapping.getId();
-			oldMapping = manager.getMappings().getMapping(mappingID);
-			oldMappingCells = manager.getMappings().getMappingCells(mappingID);
+			oldMappingCells = manager.getProjects().getMappingCells(mappingID);
 		}
 		
 		// Build reference tables for the old and new mapping cells
@@ -76,18 +74,17 @@ public class SaveMapping
 		// Update the mapping
 		try
 		{
-			// Adds or updates the mapping
+			// Adds the mapping if needed
 			if(mappingID==null)
 			{
-				mappingID = manager.getMappings().addMapping(mapping);
+				mappingID = manager.getProjects().addMapping(mapping);
 				mapping.setId(mappingID);
 			}
-			else if(!manager.getMappings().updateMapping(mapping)) success = false;
 			
 			// Removes all mapping cells that are no longer used
 			for(MappingCell oldMappingCell : oldMappingCells)
 				if(!mappingCellRefs.contains(oldMappingCell))
-					if(!manager.getMappings().deleteMappingCell(oldMappingCell.getId())) success = false;
+					if(!manager.getProjects().deleteMappingCell(oldMappingCell.getId())) success = false;
 					
 			// Adds or updates all new mapping cells
 			for(MappingCell mappingCell : mappingCells)
@@ -97,12 +94,12 @@ public class SaveMapping
 				// Handles new mapping cells
 				if(mappingCell.getId()==null)
 				{
-					mappingCell.setId(manager.getMappings().addMappingCell(mappingCell));
+					mappingCell.setId(manager.getProjects().addMappingCell(mappingCell));
 					if(mappingCell.getId()==null) success = false;
 				}
 				
 				// Handles updated mapping cells
-				else if(!manager.getMappings().updateMappingCell(mappingCell)) success = false;
+				else if(!manager.getProjects().updateMappingCell(mappingCell)) success = false;
 			}
 			
 			// If not successful, throw exception
@@ -115,21 +112,20 @@ public class SaveMapping
 			mappingID = null;
 			
 			// Resets a newly created mapping
-			if(oldMapping==null && mapping.getId()!=null)
+			if(mapping.getId()==null && mapping.getId()!=null)
 			{
-				manager.getMappings().deleteMapping(mapping.getId());
+				manager.getProjects().deleteProject(mapping.getId());
 				mapping.setId(null);
 			}
 			
 			// Resets to the original mapping
 			else
 			{
-				manager.getMappings().updateMapping(oldMapping);
-				for(MappingCell mappingCell : manager.getMappings().getMappingCells(oldMapping.getId()))
+				for(MappingCell mappingCell : manager.getProjects().getMappingCells(mapping.getId()))
 				{
 					MappingCell oldMappingCell = oldMappingCellRefs.getMappingCell(mappingCell);
-					if(oldMappingCell==null) manager.getMappings().deleteMappingCell(mappingCell.getId());
-					else manager.getMappings().updateMappingCell(oldMappingCell);
+					if(oldMappingCell==null) manager.getProjects().deleteMappingCell(mappingCell.getId());
+					else manager.getProjects().updateMappingCell(oldMappingCell);
 				}
 			}
 		}

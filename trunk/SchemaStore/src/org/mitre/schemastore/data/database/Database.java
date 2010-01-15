@@ -16,10 +16,11 @@ import org.mitre.schemastore.model.DataSource;
 import org.mitre.schemastore.model.Domain;
 import org.mitre.schemastore.model.DomainValue;
 import org.mitre.schemastore.model.Entity;
-import org.mitre.schemastore.model.Tag;
 import org.mitre.schemastore.model.Mapping;
+import org.mitre.schemastore.model.Tag;
+import org.mitre.schemastore.model.Project;
 import org.mitre.schemastore.model.MappingCell;
-import org.mitre.schemastore.model.MappingSchema;
+import org.mitre.schemastore.model.ProjectSchema;
 import org.mitre.schemastore.model.Relationship;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
@@ -1141,64 +1142,164 @@ public class Database
 	}
 
 	//----------------------------------
+	// Handles Projects in the Database
+	//----------------------------------
+
+	/** Retrieves the list of projects in the repository */
+	public ArrayList<Project> getProjects()
+	{
+		ArrayList<Project> projects = new ArrayList<Project>();
+		try {
+			Statement stmt = connection.getStatement();
+			ResultSet rs = stmt.executeQuery("SELECT id FROM project");
+			while(rs.next())
+				projects.add(getProject(rs.getInt("id")));
+			stmt.close();
+		} catch(SQLException e) { System.out.println("(E) Database:getProjects: "+e.getMessage()); }
+		return projects;
+	}
+
+	/** Retrieves the specified project from the repository */
+	public Project getProject(Integer projectID)
+	{
+		Project project = null;
+		try {
+			Statement stmt = connection.getStatement();
+
+			// Get the schemas associated with project
+			ArrayList<ProjectSchema> schemas = new ArrayList<ProjectSchema>();
+			ResultSet rs = stmt.executeQuery("SELECT schema_id,name,model FROM project_schema,\"schema\" WHERE project_id="+projectID+" AND schema_id=id");
+			while(rs.next())
+				schemas.add(new ProjectSchema(rs.getInt("schema_id"),rs.getString("name"),rs.getString("model")));
+			
+			// Get the project information
+			ResultSet rs2 = stmt.executeQuery("SELECT name,description,author FROM project WHERE id="+projectID);
+			if(rs2.next())
+				project = new Project(projectID,rs2.getString("name"),rs2.getString("description"),rs2.getString("author"),schemas.toArray(new ProjectSchema[0]));
+
+			stmt.close();
+		} catch(SQLException e) { System.out.println("(E) Database:getProject: "+e.getMessage()); }
+		return project;
+	}
+
+	/** Retrieves the list of projects associated with the specified schema in the repository */
+	public ArrayList<Integer> getSchemaProjectIDs(Integer schemaID)
+	{
+		ArrayList<Integer> projectIDs = new ArrayList<Integer>();
+		try {
+			Statement stmt = connection.getStatement();
+			ResultSet rs = stmt.executeQuery("SELECT DISTINCT project_id FROM project_schema WHERE schema_id="+schemaID);
+			while(rs.next())
+				projectIDs.add(rs.getInt("project_id"));
+			stmt.close();
+		} catch(SQLException e) { System.out.println("(E) Database:getSchemaProjects: "+e.getMessage()); }
+		return projectIDs;
+	}
+
+	/** Adds the specified project */
+	public Integer addProject(Project project)
+	{
+		Integer projectID = 0;
+		try {
+			projectID = getUniversalIDs(1);
+			Statement stmt = connection.getStatement();
+			stmt.executeUpdate("INSERT INTO project(id,name,description,author) VALUES("+projectID+",'"+scrub(project.getName(),100)+"','"+scrub(project.getDescription(),4096)+"','"+scrub(project.getAuthor(),100)+"')");
+			for(ProjectSchema schema : project.getSchemas())
+				stmt.executeUpdate("INSERT INTO project_schema(project_id,schema_id,model) VALUES("+projectID+","+schema.getId()+",'"+schema.getModel()+"')");
+			stmt.close();
+			connection.commit();
+		}
+		catch(SQLException e)
+		{
+			try { connection.rollback(); } catch(SQLException e2) {}
+			projectID = 0;
+			System.out.println("(E) Database:addProject: "+e.getMessage());
+		}
+		return projectID;
+	}
+
+	/** Updates the specified project */
+	public boolean updateProject(Project project)
+	{
+		boolean success = false;
+		try {
+			Statement stmt = connection.getStatement();
+			stmt.executeUpdate("UPDATE project SET name='"+scrub(project.getName(),100)+"', description='"+scrub(project.getDescription(),4096)+"', author='"+scrub(project.getAuthor(),100)+"' WHERE id="+project.getId());
+			stmt.executeUpdate("DELETE FROM project_schema WHERE project_id="+project.getId());
+			for(ProjectSchema schema : project.getSchemas())
+				stmt.executeUpdate("INSERT INTO project_schema(project_id,schema_id,model) VALUES("+project.getId()+","+schema.getId()+",'"+schema.getModel()+"')");
+			stmt.close();
+			connection.commit();
+			success = true;
+		}
+		catch(SQLException e)
+		{
+			try { connection.rollback(); } catch(SQLException e2) {}
+			System.out.println("(E) Database:updateProject: "+e.getMessage());
+		}
+		return success;
+	}
+
+	/** Deletes the specified project */
+	public boolean deleteProject(int projectID)
+	{
+		boolean success = false;
+		try {
+			// Delete all mappings associated with the project
+			Statement stmt = connection.getStatement();
+			ResultSet rs = stmt.executeQuery("SELECT id FROM mapping WHERE project_id="+projectID);
+			while(rs.next())
+				deleteMapping(rs.getInt("id"));
+			
+			// Delete the project
+			stmt.executeUpdate("DELETE FROM project_schema WHERE project_id="+projectID);
+			stmt.executeUpdate("DELETE FROM project WHERE id="+projectID);
+			stmt.close();
+
+			// Commit the deletion of the project
+			connection.commit();
+			success = true;
+		}
+		catch(SQLException e)
+		{
+			try { connection.rollback(); } catch(SQLException e2) {}
+			System.out.println("(E) Database:deleteProject: "+e.getMessage());
+		}
+		return success;
+	}
+
+	//----------------------------------
 	// Handles Mappings in the Database
 	//----------------------------------
 
-	/** Retrieves the specified mapping from the repository */
+	/** Retrieves the list of mappings for the specified project ID */
+	public ArrayList<Mapping> getMappings(Integer projectID)
+	{
+		ArrayList<Mapping> mappings = new ArrayList<Mapping>();
+		try {
+			Statement stmt = connection.getStatement();
+			ResultSet rs = stmt.executeQuery("SELECT id,source_id,target_id FROM mapping WHERE project_id="+projectID);
+			while(rs.next())
+				mappings.add(new Mapping(rs.getInt("id"),projectID,rs.getInt("source_id"),rs.getInt("target_id")));
+			stmt.close();
+		} catch(SQLException e) { System.out.println("(E) Database:getMappings: "+e.getMessage()); }
+		return mappings;		
+	}
+
+	/** Retrieves the specified mapping */
 	public Mapping getMapping(Integer mappingID)
 	{
 		Mapping mapping = null;
 		try {
 			Statement stmt = connection.getStatement();
-
-			// Get the schemas associated with mapping
-			ArrayList<MappingSchema> schemas = new ArrayList<MappingSchema>();
-			ResultSet rs = stmt.executeQuery("SELECT schema_id,name,model,side FROM mapping_schema,\"schema\" WHERE mapping_id="+mappingID+" AND schema_id=id");
-			while(rs.next())
-			{
-				String sideChar = rs.getString("side"); if(sideChar==null) sideChar="";
-				Integer side = sideChar.equals("l")?MappingSchema.LEFT:sideChar.equals("r")?MappingSchema.RIGHT:MappingSchema.NONE;
-				schemas.add(new MappingSchema(rs.getInt("schema_id"),rs.getString("name"),rs.getString("model"),side));
-			}
-
-			// Get the mapping information
-			ResultSet rs2 = stmt.executeQuery("SELECT name,description,author FROM mapping WHERE id="+mappingID);
-			if(rs2.next())
-				mapping = new Mapping(mappingID,rs2.getString("name"),rs2.getString("description"),rs2.getString("author"),schemas.toArray(new MappingSchema[0]));
-
+			ResultSet rs = stmt.executeQuery("SELECT project_id,source_id,target_id FROM mapping WHERE id="+mappingID);
+			if(rs.next())
+				mapping = new Mapping(mappingID,rs.getInt("project_id"),rs.getInt("source_id"),rs.getInt("target_id"));
 			stmt.close();
 		} catch(SQLException e) { System.out.println("(E) Database:getMapping: "+e.getMessage()); }
 		return mapping;
 	}
-
-	/** Retrieves the list of mappings in the repository */
-	public ArrayList<Mapping> getMappings()
-	{
-		ArrayList<Mapping> mappings = new ArrayList<Mapping>();
-		try {
-			Statement stmt = connection.getStatement();
-			ResultSet rs = stmt.executeQuery("SELECT id FROM mapping");
-			while(rs.next())
-				mappings.add(getMapping(rs.getInt("id")));
-			stmt.close();
-		} catch(SQLException e) { System.out.println("(E) Database:getMappings: "+e.getMessage()); }
-		return mappings;
-	}
-
-	/** Retrieves the list of mappings associated with the specified schema in the repository */
-	public ArrayList<Integer> getSchemaMappingIDs(Integer schemaID)
-	{
-		ArrayList<Integer> mappingIDs = new ArrayList<Integer>();
-		try {
-			Statement stmt = connection.getStatement();
-			ResultSet rs = stmt.executeQuery("SELECT DISTINCT mapping_id FROM mapping_schema WHERE schema_id="+schemaID);
-			while(rs.next())
-				mappingIDs.add(rs.getInt("mapping_id"));
-			stmt.close();
-		} catch(SQLException e) { System.out.println("(E) Database:getSchemaMappings: "+e.getMessage()); }
-		return mappingIDs;
-	}
-
+	
 	/** Adds the specified mapping */
 	public Integer addMapping(Mapping mapping)
 	{
@@ -1206,14 +1307,7 @@ public class Database
 		try {
 			mappingID = getUniversalIDs(1);
 			Statement stmt = connection.getStatement();
-			stmt.executeUpdate("INSERT INTO mapping(id,name,description,author) VALUES("+mappingID+",'"+scrub(mapping.getName(),100)+"','"+scrub(mapping.getDescription(),4096)+"','"+scrub(mapping.getAuthor(),100)+"')");
-			for(MappingSchema schema : mapping.getSchemas())
-			{
-				String sideChar = "null";
-				if(schema.getSide().equals(MappingSchema.LEFT)) sideChar = "'l'";
-				else if(schema.getSide().equals(MappingSchema.RIGHT)) sideChar = "'r'";
-				stmt.executeUpdate("INSERT INTO mapping_schema(mapping_id,schema_id,model,side) VALUES("+mappingID+","+schema.getId()+",'"+schema.getModel()+"',"+sideChar+")");
-			}
+			stmt.executeUpdate("INSERT INTO mapping(id,project_id,source_id,target_id) VALUES("+mappingID+","+mapping.getProjectId()+","+mapping.getSourceId()+","+mapping.getTargetId()+")");
 			stmt.close();
 			connection.commit();
 		}
@@ -1226,44 +1320,16 @@ public class Database
 		return mappingID;
 	}
 
-	/** Updates the specified mapping */
-	public boolean updateMapping(Mapping mapping)
-	{
-		boolean success = false;
-		try {
-			Statement stmt = connection.getStatement();
-			stmt.executeUpdate("UPDATE mapping SET name='"+scrub(mapping.getName(),100)+"', description='"+scrub(mapping.getDescription(),4096)+"', author='"+scrub(mapping.getAuthor(),100)+"' WHERE id="+mapping.getId());
-			stmt.executeUpdate("DELETE FROM mapping_schema WHERE mapping_id="+mapping.getId());
-			for(MappingSchema schema : mapping.getSchemas())
-			{
-				String sideChar = "null";
-				if(schema.getSide().equals(MappingSchema.LEFT)) sideChar = "'l'";
-				else if(schema.getSide().equals(MappingSchema.RIGHT)) sideChar = "'r'";
-				stmt.executeUpdate("INSERT INTO mapping_schema(mapping_id,schema_id,model,side) VALUES("+mapping.getId()+","+schema.getId()+",'"+schema.getModel()+"',"+sideChar+")");
-			}
-			stmt.close();
-			connection.commit();
-			success = true;
-		}
-		catch(SQLException e)
-		{
-			try { connection.rollback(); } catch(SQLException e2) {}
-			System.out.println("(E) Database:updateMapping: "+e.getMessage());
-		}
-		return success;
-	}
-
 	/** Deletes the specified mapping */
 	public boolean deleteMapping(int mappingID)
 	{
 		boolean success = false;
 		try {
 			Statement stmt = connection.getStatement();
-			stmt.executeUpdate("DELETE FROM proposed_mapping_cell WHERE mapping_id="+mappingID);
-			stmt.executeUpdate("DELETE FROM mapping_input WHERE cell_id IN (SELECT id FROM validated_mapping_cell WHERE mapping_id="+mappingID+")");
-			stmt.executeUpdate("DELETE FROM validated_mapping_cell WHERE mapping_id="+mappingID);
-			stmt.executeUpdate("DELETE FROM mapping_schema WHERE mapping_id="+mappingID);
-			stmt.executeUpdate("DELETE FROM mapping WHERE id="+mappingID);
+			stmt.executeUpdate("DELETE FROM proposed_mapping_cell WHERE mapping_id="+mappingID+")");
+			stmt.executeUpdate("DELETE FROM mapping_input WHERE cell_id IN (SELECT id FROM validated_mapping_cell,mapping WHERE mapping_id="+mappingID+")");
+			stmt.executeUpdate("DELETE FROM validated_mapping_cell,mapping WHERE mapping_id="+mappingID);
+			stmt.executeUpdate("DELETE FROM mapping WHERE mapping_id="+mappingID);
 			stmt.close();
 			connection.commit();
 			success = true;
@@ -1274,7 +1340,11 @@ public class Database
 			System.out.println("(E) Database:deleteMapping: "+e.getMessage());
 		}
 		return success;
-	}
+	}	
+	
+	//---------------------------------------
+	// Handles Mapping Cells in the Database
+	//---------------------------------------
 
 	/** Retrieves the list of mapping cells in the repository for the specified mapping */
 	public ArrayList<MappingCell> getMappingCells(Integer mappingID)
@@ -1291,7 +1361,7 @@ public class Database
             rs.close();
 
             // Retrieve validated cells
-            rs = stmt.executeQuery("SELECT id,output_id,author,modification_date,function_class,notes FROM validated_mapping_cell WHERE mapping_id="+mappingID);
+            rs = stmt.executeQuery("SELECT validated_mapping_cell.id,output_id,author,modification_date,function_class,notes FROM validated_mapping_cell WHERE mapping_id="+mappingID);
             while(rs.next())
             {
                 int cellID = rs.getInt("id");
