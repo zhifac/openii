@@ -1,4 +1,4 @@
-package org.mitre.schemastore.porters.mappingExporters.matchmaker;
+package org.mitre.schemastore.porters.projectExporters.matchmaker;
 
 import java.util.ArrayList;
 import java.util.Collections;

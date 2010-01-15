@@ -21,10 +21,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.mitre.schemastore.client.SchemaStoreClient;
 import org.mitre.schemastore.porters.mappingExporters.MappingExporter;
 import org.mitre.schemastore.porters.mappingImporters.MappingImporter;
+import org.mitre.schemastore.porters.projectExporters.ProjectExporter;
+import org.mitre.schemastore.porters.projectImporters.ProjectImporter;
 import org.mitre.schemastore.porters.schemaExporters.SchemaExporter;
 import org.mitre.schemastore.porters.schemaImporters.SchemaImporter;
 
@@ -34,14 +37,13 @@ public class PorterManager
 	// Constants for references the various porter lists
 	static public final Integer SCHEMA_IMPORTERS = 0;
 	static public final Integer SCHEMA_EXPORTERS = 1;
-	static public final Integer MAPPING_IMPORTERS = 2;
-	static public final Integer MAPPING_EXPORTERS = 3;
+	static public final Integer PROJECT_IMPORTERS = 2;
+	static public final Integer PROJECT_EXPORTERS = 3;
+	static public final Integer MAPPING_IMPORTERS = 4;
+	static public final Integer MAPPING_EXPORTERS = 5;
 	
 	/** Stores listings of the porters */
-	private ArrayList<SchemaImporter> schemaImporters;
-	private ArrayList<SchemaExporter> schemaExporters;
-	private ArrayList<MappingImporter> mappingImporters;
-	private ArrayList<MappingExporter> mappingExporters;
+	private HashMap<Integer,PorterList<? extends Porter>> porters = new HashMap<Integer,PorterList<? extends Porter>>();
 	
 	/** Constructs the porter manager class */
 	public PorterManager(SchemaStoreClient client)
@@ -58,41 +60,28 @@ public class PorterManager
 			{ System.out.println("(E)PorterManager - porters.xml has failed to load!\n"+e.getMessage()); }
 		
 		// Parse out the various importers and exporters
-		schemaImporters = new PorterList<SchemaImporter>(buffer,"schemaImporter",client);
-		schemaExporters = new PorterList<SchemaExporter>(buffer,"schemaExporter",client);
-		mappingImporters = new PorterList<MappingImporter>(buffer,"mappingImporter",client);
-		mappingExporters = new PorterList<MappingExporter>(buffer,"mappingExporter",client);
+		porters.put(SCHEMA_IMPORTERS, new PorterList<SchemaImporter>(buffer,"schemaImporter",client));
+		porters.put(SCHEMA_EXPORTERS, new PorterList<SchemaExporter>(buffer,"schemaExporter",client));
+		porters.put(PROJECT_IMPORTERS, new PorterList<ProjectImporter>(buffer,"projectImporter",client));
+		porters.put(PROJECT_EXPORTERS, new PorterList<ProjectExporter>(buffer,"projectExporter",client));
+		porters.put(MAPPING_IMPORTERS, new PorterList<MappingImporter>(buffer,"mappingImporter",client));
+		porters.put(MAPPING_EXPORTERS, new PorterList<MappingExporter>(buffer,"mappingExporter",client));
 	}
 	
-	/** Returns the list of schema importers */
-	public ArrayList<SchemaImporter> getSchemaImporters()
-		{ return new ArrayList<SchemaImporter>(schemaImporters); }
-	
-	/** Returns the list of schema exporters */
-	public ArrayList<SchemaExporter> getSchemaExporters()
-		{ return new ArrayList<SchemaExporter>(schemaExporters); }
-	
-	/** Returns the list of mapping importers */
-	public ArrayList<MappingImporter> getMappingImporters()
-		{ return new ArrayList<MappingImporter>(mappingImporters); }
-	
-	/** Returns the list of mapping exporters */
-	public ArrayList<MappingExporter> getMappingExporters()
-		{ return new ArrayList<MappingExporter>(mappingExporters); }
+	/** Returns the list of specified porters */ @SuppressWarnings("unchecked")
+	public <T> ArrayList<T> getPorters(int type)
+	{
+		ArrayList<T> porterList = new ArrayList<T>();
+		for(Porter porter : porters.get(type)) porterList.add((T)porter);
+		return porterList;
+	}
 	
 	/** Returns the specified porter */
 	public Porter getPorter(Class<?> porterClass)
 	{
-		// Generate a list of all porters
-		ArrayList<Porter> porters = new ArrayList<Porter>();
-		porters.addAll(schemaImporters);
-		porters.addAll(schemaExporters);
-		porters.addAll(mappingImporters);
-		porters.addAll(mappingExporters);
-		
-		// Returns the specified porter
-		for(Porter porter : porters)
-			if(porter.getClass().equals(porterClass)) return porter;
+		for(ArrayList<? extends Porter> porterList : porters.values())
+			for(Porter porter : porterList)
+				if(porter.getClass().equals(porterClass)) return porter;
 		return null;
 	}
 }

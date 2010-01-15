@@ -1,4 +1,4 @@
-package org.mitre.schemastore.porters.mappingExporters.xmi;
+package org.mitre.schemastore.porters.projectExporters.xmi;
 
 import org.w3c.dom.*;
 import java.io.*;

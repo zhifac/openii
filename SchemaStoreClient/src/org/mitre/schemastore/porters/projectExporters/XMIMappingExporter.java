@@ -1,18 +1,18 @@
-package org.mitre.schemastore.porters.mappingExporters;
+package org.mitre.schemastore.porters.projectExporters;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
-import org.mitre.schemastore.model.Mapping;
+import org.mitre.schemastore.model.Project;
 import org.mitre.schemastore.model.MappingCell;
-import org.mitre.schemastore.model.MappingSchema;
+import org.mitre.schemastore.model.ProjectSchema;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
 import org.mitre.schemastore.model.schemaInfo.model.SchemaModel;
-import org.mitre.schemastore.porters.mappingExporters.MappingExporter;
-import org.mitre.schemastore.porters.mappingExporters.xmi.*;
+import org.mitre.schemastore.porters.projectExporters.ProjectExporter;
+import org.mitre.schemastore.porters.projectExporters.xmi.*;
 
 
 /**
@@ -24,7 +24,7 @@ import org.mitre.schemastore.porters.mappingExporters.xmi.*;
  * @author DMALLEN
  *
  */
-public class XMIMappingExporter extends MappingExporter {
+public class XMIMappingExporter extends ProjectExporter {
 	Hashtable <Integer, XMIModelElement> modelElements = new Hashtable <Integer,XMIModelElement> ();
 	
 	/** Match scores below this value are considered "weak" matches */
@@ -32,7 +32,7 @@ public class XMIMappingExporter extends MappingExporter {
 	/** Match scores below this value are considered "medium" matches */ 
 	public static final double MEDIUM_THRESHOLD = 0.65;
 
-	public void exportMapping(Mapping mapping,
+	public void exportMapping(Project mapping,
 			ArrayList<MappingCell> mappingCells, File file) throws IOException {
 		XMIModel m = null;
 		try { 
@@ -45,7 +45,7 @@ public class XMIMappingExporter extends MappingExporter {
 		 */
 		ArrayList <XMIModelElement> xmiSchemas = new ArrayList <XMIModelElement> ();
 		int x=0; 
-		for(MappingSchema mappingSchema : mapping.getSchemas()) {
+		for(ProjectSchema mappingSchema : mapping.getSchemas()) {
 			System.out.println("Getting hierarchical schema info for " + mappingSchema); 
 			HierarchicalSchemaInfo hg = new HierarchicalSchemaInfo(client.getSchemaInfo(mappingSchema.getId()),
 														 mappingSchema.geetSchemaModel());

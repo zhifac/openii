@@ -18,6 +18,7 @@ import org.mitre.schemastore.model.DomainValue;
 import org.mitre.schemastore.model.Entity;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
+import org.mitre.schemastore.model.Project;
 import org.mitre.schemastore.model.Relationship;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
@@ -60,32 +61,45 @@ public class SchemaStoreClient
 	/** Constructor for the Schema Store Client */
 	public SchemaStoreClient() throws RemoteException
 	{
-		try {
-			Constructor<?> constructor = SchemaStore.class.getConstructor(new Class<?>[]{});
-			schemaStore = constructor.newInstance(new Object[]{});
-		} catch(Exception e) { throw new RemoteException("(E) Failed to connect to SchemaStore: " + e.getMessage()); }
+//		try {
+//			Constructor<?> constructor = SchemaStore.class.getConstructor(new Class<?>[]{});
+//			schemaStore = constructor.newInstance(new Object[]{});
+//		} catch(Exception e) { throw new RemoteException("(E) Failed to connect to SchemaStore: " + e.getMessage()); }
+
+		System.out.println("Use of SchemaStoreClient has been temporarily disabled during the upgrade to Version 7");
+		System.out.println("Please contact Christopher Wolf (703-983-4565) if you have questions");
+		System.out.println("To reactivate, uncomment the constructor of the SchemaStoreClient class");
+		System.out.println("Proceed at your own risk!!!!");
+		System.exit(0);
 	}
 
 	/** Constructor for the Schema Store Client */
 	public SchemaStoreClient(Repository repository) throws RemoteException
 	{
-		try {			
-			// Connects to a database or web service
-			if(!repository.getType().equals(Repository.SERVICE))
-			{
-				Integer type = repository.getType().equals(Repository.POSTGRES) ? DatabaseConnection.POSTGRES : DatabaseConnection.DERBY;
-				Class<?> types[] = new Class[] {Integer.class,String.class,String.class,String.class,String.class};
-				Object args[] = new Object[] {type,repository.getURI().toString(),repository.getDatabaseName(),repository.getDatabaseUser(),repository.getDatabasePassword()};
-				Constructor<?> constructor = SchemaStore.class.getConstructor(types);
-				schemaStore = constructor.newInstance(args);
-			}
-			else schemaStore = new SchemaStoreProxy(repository.getURI().toString());
+//		try {			
+//			// Connects to a database or web service
+//			if(!repository.getType().equals(Repository.SERVICE))
+//			{
+//				Integer type = repository.getType().equals(Repository.POSTGRES) ? DatabaseConnection.POSTGRES : DatabaseConnection.DERBY;
+//				Class<?> types[] = new Class[] {Integer.class,String.class,String.class,String.class,String.class};
+//				Object args[] = new Object[] {type,repository.getURI().toString(),repository.getDatabaseName(),repository.getDatabaseUser(),repository.getDatabasePassword()};
+//				Constructor<?> constructor = SchemaStore.class.getConstructor(types);
+//				schemaStore = constructor.newInstance(args);
+//			}
+//			else schemaStore = new SchemaStoreProxy(repository.getURI().toString());
+//
+//			// Verify connection
+//			boolean connected = (Boolean)callMethod("isConnected",new Object[] {});
+//			if(!connected) throw new Exception("Invalid database connection");
+//		}
+//		catch(Exception e) { throw new RemoteException("(E) Failed to connect to SchemaStore: " + e.getMessage()); }
 
-			// Verify connection
-			boolean connected = (Boolean)callMethod("isConnected",new Object[] {});
-			if(!connected) throw new Exception("Invalid database connection");
-		}
-		catch(Exception e) { throw new RemoteException("(E) Failed to connect to SchemaStore: " + e.getMessage()); }
+
+		System.out.println("Use of SchemaStoreClient has been temporarily disabled during the upgrade to Version 7");
+		System.out.println("Please contact Christopher Wolf (703-983-4565) if you have questions");
+		System.out.println("To reactivate, uncomment the constructor of the SchemaStoreClient class");
+		System.out.println("Proceed at your own risk!!!!");
+		System.exit(0);
 	}
 
 	//------------------
@@ -418,13 +432,39 @@ public class SchemaStoreClient
 		{ return (Boolean)callMethod("deleteDataSource",new Object[] {dataSourceID}); }
 
 	//-------------------
-	// Mapping Functions
+	// Project Functions
 	//-------------------
 
-	/** Gets the list of mappings from the web service */
-	public ArrayList<Mapping> getMappings() throws RemoteException
+	/** Gets the list of projects from the web service */
+	public ArrayList<Project> getProjects() throws RemoteException
 	{
-		Mapping[] mappings = (Mapping[])callMethod("getMappings",new Object[] {});
+		Project[] projects = (Project[])callMethod("getProjects",new Object[] {});
+		return projects==null ? new ArrayList<Project>() : new ArrayList<Project>(Arrays.asList(projects));
+	}
+
+	/** Gets the specified project from the web service */
+	public Project getProject(Integer projectID) throws RemoteException
+		{ return (Project)callMethod("getProject",new Object[] {projectID}); }
+
+	/** Adds the specified project to the web service */
+	public Integer addProject(Project project) throws RemoteException
+	{
+		Integer projectID = (Integer)callMethod("addProject",new Object[] {project});
+		return projectID==0 ? null : projectID;
+	}
+
+	/** Updates the specified project in the web service */
+	public boolean updateProject(Project project) throws RemoteException
+		{ return (Boolean)callMethod("updateProject",new Object[] {project}); }
+
+	/** Deletes the specified project from the web service */
+	public boolean deleteProject(Integer projectID) throws RemoteException
+		{ return (Boolean)callMethod("deleteProject",new Object[] {projectID}); }
+
+	/** Gets the list of mappings for the specified project from the web service */
+	public ArrayList<Mapping> getMappings(Integer projectID) throws RemoteException
+	{
+		Mapping[] mappings = (Mapping[])callMethod("getMappings",new Object[] {projectID});
 		return mappings==null ? new ArrayList<Mapping>() : new ArrayList<Mapping>(Arrays.asList(mappings));
 	}
 
@@ -439,20 +479,9 @@ public class SchemaStoreClient
 		return mappingID==0 ? null : mappingID;
 	}
 
-	/** Updates the specified mapping in the web service */
-	public boolean updateMapping(Mapping mapping) throws RemoteException
-		{ return (Boolean)callMethod("updateMapping",new Object[] {mapping}); }
-
 	/** Deletes the specified mapping from the web service */
 	public boolean deleteMapping(Integer mappingID) throws RemoteException
 		{ return (Boolean)callMethod("deleteMapping",new Object[] {mappingID}); }
-
-	/** Gets the list of mapping cells for the specified mapping from the web service */
-	public ArrayList<MappingCell> getMappingCells(Integer mappingID) throws RemoteException
-	{
-		MappingCell[] mappingCells = (MappingCell[])callMethod("getMappingCells",new Object[] {mappingID});
-		return mappingCells==null ? new ArrayList<MappingCell>() : new ArrayList<MappingCell>(Arrays.asList(mappingCells));
-	}
 
 	/** Adds the specified mapping cell to the web service */
 	public Integer addMappingCell(MappingCell mappingCell) throws RemoteException
@@ -468,6 +497,13 @@ public class SchemaStoreClient
 	/** Deletes the specified mapping from the web service */
 	public boolean deleteMappingCell(Integer mappingCellID) throws RemoteException
 		{ return (Boolean)callMethod("deleteMappingCell",new Object[] {mappingCellID}); }
+
+	/** Gets the list of mapping cells for the specified mapping from the web service */
+	public ArrayList<MappingCell> getMappingCells(Integer mappingID) throws RemoteException
+	{
+		MappingCell[] mappingCells = (MappingCell[])callMethod("getMappingCells",new Object[] {mappingID});
+		return mappingCells==null ? new ArrayList<MappingCell>() : new ArrayList<MappingCell>(Arrays.asList(mappingCells));
+	}
 
 	//----------------------
 	// Annotation Functions

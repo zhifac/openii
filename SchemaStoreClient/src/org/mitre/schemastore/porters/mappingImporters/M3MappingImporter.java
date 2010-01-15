@@ -2,21 +2,20 @@
 
 package org.mitre.schemastore.porters.mappingImporters;
 
-import org.mitre.schemastore.model.*;
-import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
-import org.mitre.schemastore.porters.ImporterException;
-import org.mitre.schemastore.porters.xml.ConvertFromXML;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.zip.ZipInputStream;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.mitre.schemastore.model.MappingCell;
+import org.mitre.schemastore.model.ProjectSchema;
+import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
+import org.mitre.schemastore.porters.ImporterException;
+import org.mitre.schemastore.porters.xml.ConvertFromXML;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -34,7 +33,7 @@ public class M3MappingImporter extends MappingImporter
 	
 	/** Returns the importer description */
 	public String getDescription()
-		{ return "This importer can be used to download a schema in the M3 format"; }
+		{ return "This importer can be used to download a mapping in the M3 format"; }
 		
 	/** Returns the importer URI type */
 	public Integer getURIType()
@@ -47,10 +46,6 @@ public class M3MappingImporter extends MappingImporter
 		fileTypes.add(".m3m");
 		return fileTypes;
 	}
-
-	/** Indicates that alignment is needed */
-	public boolean schemaAlignmentNeeded()
-		{ return true; }
 	
 	/** Initialize the importer */
 	protected void initialize() throws ImporterException
@@ -77,31 +72,27 @@ public class M3MappingImporter extends MappingImporter
 		catch(Exception e) { throw new ImporterException(ImporterException.IMPORT_FAILURE, e.getMessage()); }
 	}
 
-	/** Returns the imported mapping schemas */
-	public ArrayList<MappingSchema> getSchemas() throws ImporterException
+	/** Returns the source schema in the mapping */
+	public ProjectSchema getSourceSchema() throws ImporterException
 	{
-		try {
-			Mapping mapping = ConvertFromXML.getMapping(element);
-			ArrayList<MappingSchema> mappingSchemas = new ArrayList<MappingSchema>(Arrays.asList(mapping.getSchemas()));
-			for(MappingSchema mappingSchema : mappingSchemas) mappingSchema.setId(null);
-			return mappingSchemas;
-		} catch(Exception e) { throw new ImporterException(ImporterException.IMPORT_FAILURE, e.getMessage()); }
+		try { return ConvertFromXML.getSourceSchema(element); }
+		catch(Exception e) { throw new ImporterException(ImporterException.IMPORT_FAILURE, e.getMessage()); }
+	}
+
+	/** Returns the target schema in the mapping */
+	public ProjectSchema getTargetSchema() throws ImporterException
+	{
+		try { return ConvertFromXML.getTargetSchema(element); }
+		catch(Exception e) { throw new ImporterException(ImporterException.IMPORT_FAILURE, e.getMessage()); }
 	}
 
 	/** Returns the imported mapping cells */
-	protected ArrayList<MappingCell> getMappingCells() throws ImporterException
+	public ArrayList<MappingCell> getMappingCells() throws ImporterException
 	{
 		try {			
-			// Retrieve info for the available schemas (using original schema names for matching purposes)
-			ArrayList<HierarchicalSchemaInfo> schemaInfoList = new ArrayList<HierarchicalSchemaInfo>();
-			ArrayList<MappingSchema> origSchemas = getSchemas();
-			for(int i=0; i<alignedSchemas.size(); i++)
-			{
-				MappingSchema schema = alignedSchemas.get(i);
-				HierarchicalSchemaInfo schemaInfo = new HierarchicalSchemaInfo(client.getSchemaInfo(schema.getId()),schema.geetSchemaModel());
-				schemaInfo.getSchema().setName(origSchemas.get(i).getName());
-				schemaInfoList.add(schemaInfo);
-			}
+			// Retrieve info for the source and target schemas (using original schema names for matching purposes)
+			HierarchicalSchemaInfo sourceInfo = new HierarchicalSchemaInfo(client.getSchemaInfo(source.getId()));
+			HierarchicalSchemaInfo targetInfo = new HierarchicalSchemaInfo(client.getSchemaInfo(target.getId()));
 			
 			// Generate the list of mapping cells
 			ArrayList<MappingCell> mappingCells = new ArrayList<MappingCell>();
@@ -112,7 +103,7 @@ public class M3MappingImporter extends MappingImporter
 					Node node = mappingCellNodeList.item(j);
 					if(node instanceof Element)
 					{
-						MappingCell mappingCell = ConvertFromXML.getMappingCell((Element)node, schemaInfoList);
+						MappingCell mappingCell = ConvertFromXML.getMappingCell((Element)node, sourceInfo, targetInfo);
 						if(mappingCell!=null) mappingCells.add(mappingCell);
 					}
 				}

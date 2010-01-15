@@ -1,4 +1,4 @@
-package org.mitre.schemastore.porters.mappingExporters;
+package org.mitre.schemastore.porters.projectExporters;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,15 +12,15 @@ import javax.swing.filechooser.FileFilter;
 
 import org.mitre.schemastore.model.Domain;
 import org.mitre.schemastore.model.DomainValue;
-import org.mitre.schemastore.model.Mapping;
+import org.mitre.schemastore.model.Project;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.SchemaElement;
-import org.mitre.schemastore.porters.mappingExporters.matchmaker.ClusterNode;
-import org.mitre.schemastore.porters.mappingExporters.matchmaker.ClusterRenderer;
-import org.mitre.schemastore.porters.mappingExporters.matchmaker.SchemaElementNode;
-import org.mitre.schemastore.porters.mappingExporters.matchmaker.groupE;
+import org.mitre.schemastore.porters.projectExporters.matchmaker.ClusterNode;
+import org.mitre.schemastore.porters.projectExporters.matchmaker.ClusterRenderer;
+import org.mitre.schemastore.porters.projectExporters.matchmaker.SchemaElementNode;
+import org.mitre.schemastore.porters.projectExporters.matchmaker.groupE;
 
-public class MatchMakerExporter extends MappingExporter {
+public class MatchMakerExporter extends ProjectExporter {
 
 	private Integer[] schemaIDs = null;
 	private ClusterNode cluster;
@@ -28,7 +28,7 @@ public class MatchMakerExporter extends MappingExporter {
 	HashMap<String, SchemaElementNode> clusterElements; // cluster name to schemaElementNode
 	HashMap<Integer, ArrayList<Integer>> elementSchemaLookUp; // schema element ID to a list of schema IDs
 	
-	private Mapping mapping;
+	private Project mapping;
 	private ArrayList<MappingCell> mappingCells;
 
 
@@ -87,8 +87,8 @@ public class MatchMakerExporter extends MappingExporter {
 	private void clusterMatchResults() {
 		// Create SchemaElementNode used by ClusterNode from MappingCells
 		for (MappingCell mappingCell :  this.mappingCells ) {
-			for (SchemaElementNode node1 : getNode(mappingCell.getElement1())) {
-				for (SchemaElementNode node2 : getNode(mappingCell.getElement2())) {
+			for (SchemaElementNode node1 : getNode(mappingCell.getFirstInput())) {
+				for (SchemaElementNode node2 : getNode(mappingCell.getOutput())) {
 					// Add the nodes and score to each other's score list.
 					node1.add(node2, mappingCell.getScore());
 					node2.add(node1, mappingCell.getScore());
@@ -256,7 +256,7 @@ public class MatchMakerExporter extends MappingExporter {
 	}
 
 	@Override
-	public void exportMapping(Mapping mapping, ArrayList<MappingCell> mappingCells, File file) throws IOException {
+	public void exportMapping(Project mapping, ArrayList<MappingCell> mappingCells, File file) throws IOException {
 		this.mapping = mapping; 
 		this.mappingCells = mappingCells; 
 		this.elementSchemaLookUp = new HashMap<Integer, ArrayList<Integer>>(); 

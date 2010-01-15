@@ -12,11 +12,12 @@
       <schemaImporter>org.mitre.schemastore.porters.schemaImporters.GSIPImporter</schemaImporter>
       <schemaImporter>org.mitre.schemastore.porters.schemaImporters.DocumentImporter</schemaImporter>
     </schemaImporters>
-    <mappingImporters>
-    	<mappingImporter>org.mitre.schemastore.porters.mappingImporters.M3MappingImporter</mappingImporter>
-    	<mappingImporter>org.mitre.schemastore.porters.mappingImporters.M3ProjectImporter</mappingImporter>
-    	<mappingImporter>org.mitre.schemastore.porters.mappingImporters.UserMatchAnnotationDBImporter</mappingImporter>
-    </mappingImporters>
+    <projectImporters>
+    	<projectImporter>org.mitre.schemastore.porters.projectImporters.M3ProjectImporter</projectImporter>
+    </projectImporters>
+	<mappingImporters>
+		<mappingImporter>org.mitre.schemastore.porters.mappingImporters.M3MappingImporter</mappingImporter>
+	</mappingImporters>
   </importers>
   <exporters>
     <schemaExporters>
@@ -24,14 +25,17 @@
       <schemaExporter>org.mitre.schemastore.porters.schemaExporters.XSDExporter</schemaExporter>
       <schemaExporter>org.mitre.schemastore.porters.schemaExporters.SQLExporter</schemaExporter>
     </schemaExporters>
+    <projectExporters>
+	  <projectExporter>org.mitre.schemastore.porters.projectExporters.M3ProjectExporter</projectExporter>
+	  <projectExporter>org.mitre.schemastore.porters.projectExporters.DataDictionaryExporter</projectExporter>
+      <projectExporter>org.mitre.schemastore.porters.projectExporters.PieChartExporter</projectExporter>
+      <projectExporter>org.mitre.schemastore.porters.projectExporters.MatchMakerExporter</projectExporter>
+      <projectExporter>org.mitre.schemastore.porters.projectExporters.XMIMappingExporter</projectExporter>
+    </projectExporters>
     <mappingExporters>
-	  <mappingExporter>org.mitre.schemastore.porters.mappingExporters.M3MappingExporter</mappingExporter>
-	  <mappingExporter>org.mitre.schemastore.porters.mappingExporters.M3ProjectExporter</mappingExporter>
 	  <mappingExporter>org.mitre.schemastore.porters.mappingExporters.DataDictionaryExporter</mappingExporter>
-      <mappingExporter>org.mitre.schemastore.porters.mappingExporters.PieChartExporter</mappingExporter>
-      <mappingExporter>org.mitre.schemastore.porters.mappingExporters.UserMatchAnotationExporter</mappingExporter>
-      <mappingExporter>org.mitre.schemastore.porters.mappingExporters.MatchMakerExporter</mappingExporter>
-      <mappingExporter>org.mitre.schemastore.porters.mappingExporters.XMIMappingExporter</mappingExporter>
+	  <mappingExporter>org.mitre.schemastore.porters.mappingExporters.ExcelExporter</mappingExporter>
+	  <mappingExporter>org.mitre.schemastore.porters.mappingExporters.M3MappingExporter</mappingExporter>
     </mappingExporters>
   </exporters>
 </porters>

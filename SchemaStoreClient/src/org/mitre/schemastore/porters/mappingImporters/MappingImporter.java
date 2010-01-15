@@ -21,43 +21,51 @@ import java.util.ArrayList;
 
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
-import org.mitre.schemastore.model.MappingSchema;
+import org.mitre.schemastore.model.Project;
+import org.mitre.schemastore.model.ProjectSchema;
 import org.mitre.schemastore.porters.Importer;
 import org.mitre.schemastore.porters.ImporterException;
 
 /** Abstract Mapping Importer class */
 public abstract class MappingImporter extends Importer
 {
-	/** Stores the list of aligned schemas */
-	protected ArrayList<MappingSchema> alignedSchemas;
+	/** Stores the aligned source schema */
+	protected ProjectSchema source;
 	
-	/** Indicates if alignment is needed */
-	public boolean schemaAlignmentNeeded() { return false; }
+	/** Stores the aligned target schema */
+	protected ProjectSchema target;
 	
 	/** Initializes the importer */
 	abstract protected void initialize() throws ImporterException;
 
-	/** Returns the schemas in need of alignment */
-	abstract public ArrayList<MappingSchema> getSchemas() throws ImporterException;
+	/** Returns the source schema in the mapping */
+	abstract public ProjectSchema getSourceSchema() throws ImporterException;
+
+	/** Returns the target schema in the mapping */
+	abstract public ProjectSchema getTargetSchema() throws ImporterException;
 	
 	/** Returns the mapping cells from the specified URI */
-	abstract protected ArrayList<MappingCell> getMappingCells() throws ImporterException;
+	abstract public ArrayList<MappingCell> getMappingCells() throws ImporterException;
 
 	/** Initializes the importer for the specified URI */
 	final public void initialize(URI uri) throws ImporterException
 		{ this.uri = uri; initialize(); }
 
-	/** Imports the specified URI */
-	final public Integer importMapping(String name, String author, String description, ArrayList<Integer> schemaIDs) throws ImporterException
+	/** Sets the source and target schemas */
+	final public void setSchemas(Integer sourceID, Integer targetID) throws ImporterException
 	{
-		// Generate the list of mapping schemas
-		alignedSchemas = getSchemas();
-		if(schemaIDs!=null)
-			for(int i=0; i<schemaIDs.size(); i++)
-				alignedSchemas.get(i).setId(schemaIDs.get(i));
+		source = getSourceSchema(); if(sourceID!=null) source.setId(sourceID);
+		target = getTargetSchema(); if(targetID!=null) target.setId(targetID);
+	}
+	
+	/** Imports the specified URI */
+	final public Integer importMapping(Project project, Integer sourceID, Integer targetID) throws ImporterException
+	{
+		// Set the schema information
+		setSchemas(sourceID, targetID);
 		
 		// Generate the mapping and mapping cells
-		Mapping mapping = new Mapping(null,name,description,author,alignedSchemas.toArray(new MappingSchema[0]));
+		Mapping mapping = new Mapping(null,project.getId(),sourceID,targetID);
 		ArrayList<MappingCell> mappingCells = getMappingCells();
 			
 		// Imports the mapping

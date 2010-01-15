@@ -19,7 +19,8 @@ import org.apache.xml.serialize.OutputFormat;
 import org.apache.xml.serialize.XMLSerializer;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
-import org.mitre.schemastore.model.MappingSchema;
+import org.mitre.schemastore.model.Project;
+import org.mitre.schemastore.model.ProjectSchema;
 import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
 import org.mitre.schemastore.porters.xml.ConvertToXML;
 import org.w3c.dom.Document;
@@ -43,7 +44,7 @@ public class M3MappingExporter extends MappingExporter
 		{ return ".m3m"; }
 	
 	/** Generates the XML document */
-	private Document generateXMLDocument(Mapping mapping, ArrayList<MappingCell> mappingCells) throws Exception
+	private Document generateXMLDocument(Project project, Mapping mapping, ArrayList<MappingCell> mappingCells) throws Exception
 	{
 		// Initialize the XML document
 		Document document = null;
@@ -51,22 +52,29 @@ public class M3MappingExporter extends MappingExporter
 		DocumentBuilder db = dbf.newDocumentBuilder();
 		document = db.newDocument();
 
+		// Retrieve the source and target schema info
+		HierarchicalSchemaInfo sourceInfo=null, targetInfo=null;
+		for(ProjectSchema schema : project.getSchemas())
+		{
+			if(schema.getId().equals(mapping.getSourceId()))
+				sourceInfo = new HierarchicalSchemaInfo(client.getSchemaInfo(schema.getId()),schema.geetSchemaModel());
+			if(schema.getId().equals(mapping.getTargetId()))
+				targetInfo = new HierarchicalSchemaInfo(client.getSchemaInfo(schema.getId()),schema.geetSchemaModel());			
+		}
+		
 		// Create the XML document
-		ArrayList<HierarchicalSchemaInfo> schemaInfoList = new ArrayList<HierarchicalSchemaInfo>();
-		for(MappingSchema mappingSchema : mapping.getSchemas())
-			schemaInfoList.add(new HierarchicalSchemaInfo(client.getSchemaInfo(mappingSchema.getId()),mappingSchema.geetSchemaModel()));
-		document.appendChild(ConvertToXML.generate(mapping, mappingCells, schemaInfoList, document));
+		document.appendChild(ConvertToXML.generate(mapping, mappingCells, sourceInfo, targetInfo, document));
 
 		// Returns the generated document
 		return document;
 	}
 	
 	/** Exports the mapping to a SchemaStore archive file */
-	public void exportMapping(Mapping mapping, ArrayList<MappingCell> mappingCells, File file) throws IOException
+	public void exportMapping(Project project, Mapping mapping, ArrayList<MappingCell> mappingCells, File file) throws IOException
 	{
 		try {				
 			// Generates the XML document
-			Document document = generateXMLDocument(mapping, mappingCells);
+			Document document = generateXMLDocument(project, mapping, mappingCells);
 
 			// Save the XML document to a temporary file
 			File tempFile = File.createTempFile("M3M", ".xml");

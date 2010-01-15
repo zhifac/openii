@@ -7,15 +7,16 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
+import org.mitre.schemastore.model.Project;
 import org.mitre.schemastore.model.SchemaElement;
 
 /**
- * Class for exporting a data dictionary from the project
+ * Class for exporting a data dictionary from the mapping
  * @author CWOLF
  */
 public class DataDictionaryExporter extends MappingExporter
@@ -32,37 +33,42 @@ public class DataDictionaryExporter extends MappingExporter
 	public String getFileType()
 		{ return ".csv"; }
 	
-	/** Generates a data dictionary for this project */
-	public void exportMapping(Mapping mapping, ArrayList<MappingCell> mappingCells, File file) throws IOException
+	/** Generates a data dictionary for this mapping */
+	public void exportMapping(Project project, Mapping mapping, ArrayList<MappingCell> mappingCells, File file) throws IOException
 	{
 		// Prepare to export source and target node information
 		BufferedWriter out = new BufferedWriter(new FileWriter(file));
 
-		// Generate a list of all schema elements and mapping cells
-		HashMap<Integer,SchemaElement> elements = getSchemaElements(Arrays.asList(mapping.getSchemaIDs()));
-		
+		// Generate a list of all schema elements
+		HashMap<Integer,SchemaElement> elements = new HashMap<Integer,SchemaElement>();
+		for(Integer schemaID : new Integer[]{mapping.getSourceId(),mapping.getTargetId()})
+			for(SchemaElement element : client.getSchemaInfo(schemaID).getElements(null))
+				elements.put(element.getId(),element);
+
     	// First, output all user selected node pairings
+		HashSet<Integer> usedElements = new HashSet<Integer>();
 		for(MappingCell mappingCell : mappingCells)
     		if(mappingCell.getAuthor().equals("User") && mappingCell.getScore()>0)
     		{
     			// Gets the elements associated with the mapping cell
-    			SchemaElement element1 = elements.get(mappingCell.getElement1());
-    			SchemaElement element2 = elements.get(mappingCell.getElement2());
+    			SchemaElement inputElement = elements.get(mappingCell.getFirstInput());
+    			SchemaElement outputElement = elements.get(mappingCell.getOutput());
     			
     			// Display the pairing of schema elements
-    			String sName = element1.getName();
-    			String sDesc = element1.getDescription();
-    			String tName = element2.getName();
-    			String tDesc = element2.getDescription();
-//    			String notes = mappingCell.getNotes();
-//    			Double score = mappingCell.getScore();
-    			
-    			out.write(sName+",\""+sDesc+"\","+tName+",\""+tDesc+"\"\n");
+    			String inputName = inputElement.getName();
+    			String inputDescription = inputElement.getDescription();
+    			String outputName = outputElement.getName();
+    			String outputDescription = outputElement.getDescription();
+    			out.write(inputName+",\""+inputDescription+"\","+outputName+",\""+outputDescription+"\"\n");
+    
+    			// Mark the elements as used
+    			usedElements.add(inputElement.getId());
+    			usedElements.add(outputElement.getId());
     		}
 
-    	// Then output all  nodes with no links
+    	// Then output all source nodes with no links
 		for(SchemaElement element : elements.values())
-			if(getMappingCellsByElement(element.getId(),mappingCells).size()==0)
+			if(!usedElements.contains(element.getId()))
   				out.write(element.getName()+",\""+element.getDescription().replace('\n',' ').replaceAll("\"","\"\"")+"\",,\n");
  
     	out.close();
