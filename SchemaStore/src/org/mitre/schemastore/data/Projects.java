@@ -54,7 +54,7 @@ public class Projects extends DataCache
 	{
 		Integer mappingID = 0;
 		try {
-			ArrayList<Integer> schemaIDs = new ArrayList<Integer>(Arrays.asList(getDatabase().getProject(mapping.getId()).getSchemaIDs()));
+			ArrayList<Integer> schemaIDs = new ArrayList<Integer>(Arrays.asList(getDatabase().getProject(mapping.getProjectId()).getSchemaIDs()));
 			if(mapping.getSourceId().equals(mapping.getTargetId())) return 0;
 			if(!schemaIDs.contains(mapping.getSourceId()) || !schemaIDs.contains(mapping.getTargetId())) return 0;
 			mappingID = getDatabase().addMapping(mapping);
