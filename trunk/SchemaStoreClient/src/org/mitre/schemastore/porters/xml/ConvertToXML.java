@@ -183,7 +183,7 @@ public class ConvertToXML
 		addChildElement(element,"MappingSourceModel",sourceInfo.getModel());
 		addChildElement(element,"MappingTargetId",mapping.getTargetId());
 		addChildElement(element,"MappingTargetName",targetInfo.getSchema().getName());
-		addChildElement(element,"mappingTargetModel",targetInfo.getModel());
+		addChildElement(element,"MappingTargetModel",targetInfo.getModel());
 		
 		// Generate the mapping cell XML elements
 		for(MappingCell mappingCell : mappingCells)
