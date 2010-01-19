@@ -18,7 +18,6 @@ package org.mitre.schemastore.porters.projectImporters;
 
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
@@ -30,6 +29,15 @@ import org.mitre.schemastore.porters.ImporterException;
 /** Abstract Project Importer class */
 public abstract class ProjectImporter extends Importer
 {
+	/** Defines a class to contain mapping information */
+	class MappingContainer
+	{
+		private Mapping mapping;
+		private ArrayList<MappingCell> mappingCells;
+		MappingContainer(Mapping mapping, ArrayList<MappingCell> mappingCells)
+			{ this.mapping = mapping; this.mappingCells = mappingCells; }
+	}
+	
 	/** Initializes the importer */
 	abstract protected void initialize() throws ImporterException;
 
@@ -37,7 +45,7 @@ public abstract class ProjectImporter extends Importer
 	abstract public ArrayList<ProjectSchema> getSchemas() throws ImporterException;
 	
 	/** Returns the mapping cells from the specified URI */
-	abstract protected HashMap<Mapping,ArrayList<MappingCell>> getMappings() throws ImporterException;
+	abstract protected ArrayList<MappingContainer> getMappings() throws ImporterException;
 
 	/** Initializes the importer for the specified URI */
 	final public void initialize(URI uri) throws ImporterException
@@ -48,7 +56,7 @@ public abstract class ProjectImporter extends Importer
 	{
 		// Generate the project and mappings
 		Project project = new Project(null,name,description,author,getSchemas().toArray(new ProjectSchema[0]));
-		HashMap<Mapping,ArrayList<MappingCell>> mappings = getMappings();
+		ArrayList<MappingContainer> mappings = getMappings();
 			
 		// Imports the project and mappings
 		try {
@@ -57,10 +65,10 @@ public abstract class ProjectImporter extends Importer
 			project.setId(projectID);
 
 			// Imports the mappings
-			for(Mapping mapping : mappings.keySet())
+			for(MappingContainer mapping : mappings)
 			{
-				mapping.setProjectId(projectID);
-				client.saveMapping(mapping, mappings.get(mapping));
+				mapping.mapping.setProjectId(projectID);
+				client.saveMapping(mapping.mapping, mapping.mappingCells);
 			}
 		}
 

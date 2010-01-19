@@ -7,11 +7,11 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import org.mitre.schemastore.model.Mapping;
-import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.ProjectSchema;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.porters.ImporterException;
@@ -22,10 +22,10 @@ import org.mitre.schemastore.porters.schemaImporters.M3SchemaImporter;
 public class M3ProjectImporter extends ProjectImporter
 {	
 	/** Stores the schemas associated this project */
-	private ArrayList<ProjectSchema> schemas = null;
+	private HashSet<ProjectSchema> schemas = null;
 	
 	/** Stores the mappings associated with this project */
-	private HashMap<Mapping,ArrayList<MappingCell>> mappings = null;
+	private ArrayList<MappingContainer> mappings = null;
 	
 	/** Returns the importer name */
 	public String getName()
@@ -62,6 +62,10 @@ public class M3ProjectImporter extends ProjectImporter
 	/** Retrieves the schemas and mappings from file */
 	private void retrieveSchemasAndMapping() throws ImporterException
 	{
+		// Initialize the schema and mapping cell arrays
+		schemas = new HashSet<ProjectSchema>();
+		mappings = new ArrayList<MappingContainer>();
+		
 		// Retrieve all schemas and mapping cells		
 		try {
 			// Open up the zip input stream
@@ -109,14 +113,17 @@ public class M3ProjectImporter extends ProjectImporter
 					mappingImporter.setClient(client);
 					mappingImporter.initialize(tempFile.toURI());
 					
-					// Align the mapping schemas with imported schemas
-					Integer sourceID = mappingImporter.getSourceSchema().getId();
-					Integer targetID = mappingImporter.getTargetSchema().getId();
-					mappingImporter.setSchemas(schemaIDMap.get(sourceID), schemaIDMap.get(targetID));
-					
+					// Retrieve the source and target schemas for this mapping
+					ProjectSchema source = mappingImporter.getSourceSchema();
+					ProjectSchema target = mappingImporter.getTargetSchema();
+					source.setId(schemaIDMap.get(source.getId()));
+					target.setId(schemaIDMap.get(target.getId()));
+					schemas.add(source); schemas.add(target);
+										
 					// Retrieve the mapping cells
-					Mapping mapping = new Mapping(null,null,sourceID,targetID);
-					mappings.put(mapping, mappingImporter.getMappingCells());
+					Mapping mapping = new Mapping(null,null,source.getId(),target.getId());
+					mappingImporter.setSchemas(source.getId(), target.getId());
+					mappings.add(new MappingContainer(mapping, mappingImporter.getMappingCells()));
 				}
 			}
 			
@@ -131,11 +138,11 @@ public class M3ProjectImporter extends ProjectImporter
 	public ArrayList<ProjectSchema> getSchemas() throws ImporterException
 	{
 		if(schemas==null) retrieveSchemasAndMapping();
-		return schemas;
+		return new ArrayList<ProjectSchema>(schemas);
 	}
 	
 	/** Returns the mappings associated with this project */
-	protected HashMap<Mapping,ArrayList<MappingCell>> getMappings() throws ImporterException
+	protected ArrayList<MappingContainer> getMappings() throws ImporterException
 	{
 		if(mappings==null) retrieveSchemasAndMapping();
 		return mappings;
