@@ -342,6 +342,11 @@ public class MappingLines implements MappingCellListener, FiltersListener, Schem
 			g.setColor(new Color(Integer.parseInt(info[0])));
 			g.drawLine(Integer.parseInt(info[1]),Integer.parseInt(info[2]),
 					Integer.parseInt(info[3]),Integer.parseInt(info[4]));
+			
+			//Draw circles to the edge of the lines
+			int circleSize = 2;
+			g.fillOval(Integer.parseInt(info[1])-1,Integer.parseInt(info[2])-4, 4*circleSize, 4*circleSize);
+			g.fillOval(Integer.parseInt(info[3])-6,Integer.parseInt(info[4])-5, 4*circleSize, 4*circleSize);
 		}
 	}		
 	

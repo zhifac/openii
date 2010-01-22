@@ -3,7 +3,9 @@
 package org.mitre.harmony.view.mappingPane;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Container;
+import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
@@ -14,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.AbstractAction;
+import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JDesktopPane;
 import javax.swing.JPanel;
@@ -47,6 +50,7 @@ public class MappingPane extends JDesktopPane implements ComponentListener, Line
 	private JPanel schemaPane = null;
 	private JPanel leftInfoPane = null;
 	private JPanel rightInfoPane = null;
+	private JPanel midPane = null;
 	
 	/** Subclass used to accept links */
 	private class AcceptLink extends AbstractAction
@@ -94,9 +98,21 @@ public class MappingPane extends JDesktopPane implements ComponentListener, Line
 		
 		// Create the schema pane
 		schemaPane = new JPanel();
-		schemaPane.setLayout(new GridLayout(1,2));
+
+		//setMidPane();
+		midPane = new MidPane(this, harmonyModel); //getMidPane();
+		midPane.setBorder(BorderFactory.createLineBorder (Color.gray, 1));
+		midPane.setBackground(Color.YELLOW);
+		midPane.setOpaque(true);
+
+		schemaPane.setLayout(new GridLayout(1,3));  
 		schemaPane.add(getSchemaTreePane(leftTree));
+		
+		//added mid pane to schemaPane
+		schemaPane.add(midPane, PALETTE_LAYER);
+
 		schemaPane.add(getSchemaTreePane(rightTree));
+		
 		
 		// Set up the various layers to be displayed
 		add(schemaPane,DEFAULT_LAYER);
@@ -123,6 +139,34 @@ public class MappingPane extends JDesktopPane implements ComponentListener, Line
 		mappingLines.addLinesListener(this);
 		harmonyModel.getSelectedInfo().addListener(this);
 	}
+	
+
+	/** set the mapping pane for mapping lines */
+	public void setMidPane()
+		{ 
+			JPanel mPane = new JPanel();
+			mPane.setLayout(new BorderLayout());
+			JPanel topPane = new JPanel();
+			topPane.setBackground(Color.white);
+			JPanel bottomPane = new JPanel();
+			bottomPane.setBorder(BorderFactory.createLineBorder (Color.gray, 1));
+			bottomPane.setPreferredSize(new Dimension(0, 73));
+			
+			mPane.add(topPane, BorderLayout.CENTER);
+			mPane.add(bottomPane, BorderLayout.SOUTH);
+			
+			//mPane.setBorder(BorderFactory.createLineBorder (Color.gray, 1));
+			mPane.setBackground(Color.WHITE);
+			
+			midPane = mPane; 
+			
+		}
+	
+	/** Returns the mapping pane lines */
+	public JPanel getMidPane(){
+		return midPane;
+	}
+
 	
 	/** Returns the mapping pane lines */
 	public MappingLines getLines()
@@ -193,4 +237,6 @@ public class MappingPane extends JDesktopPane implements ComponentListener, Line
 	public void componentHidden(ComponentEvent e) {}
 	public void componentMoved(ComponentEvent e) {}
 	public void selectedElementsModified(Integer role) {}
+	
+	
 }
