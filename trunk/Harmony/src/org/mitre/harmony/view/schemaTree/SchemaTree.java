@@ -3,6 +3,7 @@
 package org.mitre.harmony.view.schemaTree;
 
 import java.awt.BasicStroke;
+import java.awt.Color;
 import java.awt.Container;
 import java.awt.Cursor;
 import java.awt.Graphics;
@@ -34,6 +35,8 @@ import org.mitre.harmony.model.mapping.MappingListener;
 import org.mitre.harmony.model.preferences.PreferencesListener;
 import org.mitre.harmony.view.dialogs.SchemaModelDialog;
 import org.mitre.harmony.view.mappingPane.MappingPane;
+import org.mitre.harmony.view.mappingPane.SchemaTreeImp;
+import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.MappingSchema;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
@@ -72,7 +75,14 @@ public class SchemaTree extends JTree implements MappingListener, PreferencesLis
 		{
 			row = new Rectangle[getRowCount()];
 			for(int i=0; i<getRowCount(); i++)
-				row[i]=getRowBounds(i);
+		      //row[i]=getRowBounds(i);  		
+			//Change row bound
+			{
+				int width=getParent().getWidth();
+				Rectangle rect = getRowBounds(i);
+				rect.setSize(width-rect.x, getRowBounds(i).height);
+				row[i]=rect;
+			}
 			needUpdating = false;
 		}
 		
@@ -599,6 +609,9 @@ public class SchemaTree extends JTree implements MappingListener, PreferencesLis
 				
 				g2d.setStroke(s);
 			}
+		//added extended dash lines
+		addExtendedLines(g);
+		
 	}
 	
 	/** Calculates the drawing of a rectangle around focused items */
@@ -623,4 +636,78 @@ public class SchemaTree extends JTree implements MappingListener, PreferencesLis
 		result.width += 2*SPACE;
 		return result;
 	}
+	
+
+	/** Added extended dash lines */
+	void addExtendedLines(Graphics g){
+	        TreePath tp = new TreePath(root);	        
+	        findTreePath(this, tp, g);  
+	}  
+	    
+	
+	private TreePath findTreePath(SchemaTree tree, TreePath parent, Graphics g) {
+			
+			DefaultMutableTreeNode rootNode = (DefaultMutableTreeNode)parent.getLastPathComponent();
+			Color m_tGrey = new Color(230, 230, 230, 150);
+			Color m_tBlue = new Color(0, 0, 255, 150);
+			Color m_tGreen = new Color(0, 250, 0, 150);
+			int circleSize = 5;
+			
+			Graphics2D g2d = (Graphics2D) g;
+			Stroke s = g2d.getStroke();
+			g2d.setStroke(DASHED_LINE);
+			
+			//SchemaTreeImp leftTree = tree.(MappingSchema.LEFT);
+			
+	        // Traverse children
+	        if (rootNode.getChildCount() >= 0) {
+	            for (Enumeration e=rootNode.children(); e.hasMoreElements(); ) {
+	            	DefaultMutableTreeNode childNode = (DefaultMutableTreeNode)e.nextElement();
+	                TreePath path = parent.pathByAddingChild(childNode);
+	                
+	                Rectangle rect = null;
+	    			
+	    			rect = tree.getPathBounds(path);
+	    			int width=tree.getParent().getWidth();
+	    			
+	    			if(rect != null)
+	    			{    
+	    				if(tree.getSide()==MappingSchema.LEFT){
+	    					//Draw line
+		    				g2d.setColor(m_tGrey);
+		    				g2d.drawLine((int) rect.getMaxX(), (int) rect.getCenterY(), width - circleSize, (int) rect.getCenterY());
+		    			    
+		    				//Draw inside circle
+		    				//g2d.setColor(m_tGreen);
+		    				//g2d.fillOval(width-circleSize, (int) rect.getCenterY()-circleSize, 2*circleSize, 2*circleSize);
+		    					
+	    				}
+	    				else{  //right side
+	    					//Draw line
+		    				g2d.setColor(m_tGrey);
+		    				//Full line
+		    				g2d.drawLine(0, (int) rect.getCenterY(), (int)rect.getMinX(), (int) rect.getCenterY());
+		    				//Small line
+		    				//g2d.drawLine(circleSize, (int) rect.getCenterY(), 2*circleSize, (int) rect.getCenterY());
+		    			    
+		    				//Draw inside circle
+		    				//g2d.setColor(m_tGreen);
+		    				//g2d.fillOval(0-circleSize-1, (int) rect.getCenterY()-circleSize, 2*circleSize, 2*circleSize);	    					    	    		
+	    				}
+	    				
+	    			}
+	              
+	                TreePath result = findTreePath(tree, path, g);
+	                // Found a path
+	                if (result != null) {
+	                    return result;
+	                }
+	            }
+	        }
+
+	    
+	        // No match at this branch
+	        return null;
+	    }
+
 }

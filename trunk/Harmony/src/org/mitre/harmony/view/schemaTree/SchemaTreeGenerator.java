@@ -2,11 +2,15 @@
 // ALL RIGHTS RESERVED
 package org.mitre.harmony.view.schemaTree;
 
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Rectangle;
+import java.util.Enumeration;
 import java.util.HashSet;
 
-import javax.swing.tree.TreePath;
-import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreePath;
 
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.schemastore.model.Schema;
@@ -81,8 +85,9 @@ class SchemaTreeGenerator
 		}	
 
 		// Ensure that the added nodes are properly displayed
-		((DefaultTreeModel)tree.getModel()).nodeStructureChanged(node);		
+		((DefaultTreeModel)tree.getModel()).nodeStructureChanged(node);	
 	}
+	
 	
 	/** Removes a schema from the schema tree */
 	static void removeSchema(SchemaTree tree, Integer schemaID)
