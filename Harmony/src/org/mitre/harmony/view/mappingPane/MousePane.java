@@ -17,6 +17,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 
+import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
@@ -24,9 +25,9 @@ import javax.swing.tree.TreePath;
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.mapping.MappingCellManager;
 import org.mitre.harmony.view.dialogs.mappingCell.MappingCellDialog;
-import org.mitre.schemastore.model.mapfunctions.IdentityFunction;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.MappingSchema;
+import org.mitre.schemastore.model.mapfunctions.IdentityFunction;
 
 /**
  * Holds mouse pane which manages all mouse actions
@@ -54,6 +55,7 @@ class MousePane extends JPanel implements MouseListener, MouseMotionListener
 		setOpaque(false);
 
 		// Add mouse listeners
+		
 		mappingPane.getTree(MappingSchema.LEFT).addMouseListenr(this);
 		mappingPane.getTree(MappingSchema.LEFT).addMouseMotionListenr(this);
 		mappingPane.getTree(MappingSchema.RIGHT).addMouseListenr(this);
@@ -140,20 +142,23 @@ class MousePane extends JPanel implements MouseListener, MouseMotionListener
 				mappingCellDialog.setVisible(true);
 			}
 		}
+		
 	}
 
 	/** Handles the drawing of the new mapping cell or bounding box as the mouse is dragged around */
 	public void mouseDragged(MouseEvent e)
 	{
 		endPoint = e.getPoint();
-
+		
 		// Calculate selected row point
 		Rectangle rect = null;
 		if(leftPath != null) rect = mappingPane.getTree(MappingSchema.LEFT).getPthBounds(leftPath);
 		if(rightPath != null) rect = mappingPane.getTree(MappingSchema.RIGHT).getPthBounds(rightPath);
 
 		// Draw line between selected row and mouse
-		if(rect != null || startPoint != null) repaint();
+		//if(rect != null || startPoint != null) repaint();
+
+		repaint();
 	}
 
 	/** Handles the creation of a new link or selects mapping cells in bounding box when mouse is released */

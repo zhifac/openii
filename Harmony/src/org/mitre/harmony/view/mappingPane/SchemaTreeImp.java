@@ -38,8 +38,11 @@ public class SchemaTreeImp extends SchemaTree
 		{ Rectangle rect = new Rectangle(super.getBufferedRowBounds(row)); rect.translate(offset.x,offset.y); return rect; }
 	
 	/** Retrieves the requested path bounds */
-	public Rectangle getPthBounds(TreePath path)
-		{ Rectangle rect = new Rectangle(getPathBounds(path)); rect.translate(offset.x,offset.y); return rect; }
+	public Rectangle getPthBounds(TreePath path){ 	
+			Rectangle rect = new Rectangle(getPathBounds(path)); 
+			rect.translate(offset.x,offset.y);
+			return rect; 
+		}
 
 	/** Returns the path associated with the specified location */
 	public TreePath getPathForLoc(int x, int y)

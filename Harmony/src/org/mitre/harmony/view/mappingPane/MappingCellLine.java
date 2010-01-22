@@ -32,8 +32,17 @@ class MappingCellLine extends Line2D.Double
 		// Calculate start and end point for line and set line
 		Rectangle sRect = source.getBufferedRowBounds(source.getNodeRow(sNode));
 		Point sourcePt = new Point((int)sRect.getMaxX(),(int)sRect.getCenterY());
+		
+		//Mid pane mapping line starting point
+		sourcePt = new Point(mappingPane.getMidPane().getWidth(), sourcePt.y);
+		
 		Rectangle tRect = target.getBufferedRowBounds(target.getNodeRow(tNode));
-		Point targetPt = new Point((int)tRect.getMinX()-2,(int)tRect.getCenterY());
+		//Point targetPt = new Point((int)tRect.getMinX()-2,(int)tRect.getCenterY()); 
+		
+		//Ending points for the mapping line in mid pane
+		int X = mappingPane.getMidPane().getWidth()*2;
+		Point targetPt = new Point(X,(int)tRect.getCenterY());  		
+		
 		if(sourcePt.x>mappingPane.getBounds().getCenterX())
 			sourcePt.x=(int)mappingPane.getBounds().getCenterX();
 		setLine(sourcePt,targetPt);
