@@ -213,7 +213,7 @@ public class ManagerAction extends Action
 		
 		/** Handles the auto-generation of a mapping's matches */
 		if(actionType == AUTO_GENERATE_MATCHES) 
-			new AutoMappingDialog( shell, (Mapping)selection).open();
+			new AutoMappingDialog(shell, (Project)selection).open();
 
 		// ----------------- Mapping Actions ----------------------
 		
