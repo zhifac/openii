@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Hashtable;
@@ -16,6 +17,7 @@ import org.mitre.openii.model.RepositoryManager;
 import org.mitre.schemastore.client.SchemaStoreClient;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
+import org.mitre.schemastore.model.Project;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
@@ -82,43 +84,46 @@ public class SchemaExplorer {
 		
 		// Look through all mappings in the system to see which ones talk about the schema that
 		// contains the element we care about.
-		ArrayList<Mapping> mappings = OpenIIManager.getMappings(); 
 		
-		for(Mapping m : mappings) {
-			if(m == null) { System.err.println("Skipping null mapping."); continue; } 
-			if(m.getLeftSchema() == null) { System.err.println("Skipping missing left mapping schema"); continue; }
-			if(m.getRightSchema() == null) { System.err.println("Skipping missing right mapping schema"); continue; }
+		for(Project project : OpenIIManager.getProjects())
+		{
+			// Don't proceed if project doesn't use schema
+			if(!Arrays.asList(project.getSchemaIDs()).contains(schemaID)) continue;
 			
-			if(schemaID != m.getLeftSchema().getId() && 
-			   schemaID != m.getRightSchema().getId()) {
-				continue;   // Don't care.
-			}
+			// Cycle through all project mappings
+			for(Mapping m : OpenIIManager.getMappings(project.getId()))
+			{
+				// Don't proceed if mapping doesn't reference current schema
+				if(schemaID != m.getSourceId() && schemaID != m.getTargetId()) continue;
 			
-			// We know this mapping is relevant to the schema we want.
-			ArrayList <MappingCell> mcs = OpenIIManager.getMappingCells(m.getId());
-			System.out.println("Got " + mcs.size() + " mapping cells in relevant mapping."); 
+				// We know this mapping is relevant to the schema we want.
+				ArrayList <MappingCell> mcs = OpenIIManager.getMappingCells(m.getId());
+				System.out.println("Got " + mcs.size() + " mapping cells in relevant mapping."); 
 			
-			// Check each of the mapping cells in this mapping.  Add the cell to our list if it
-			// references the element we care about.
-			for(MappingCell mc : mcs) {
-				if(mc.getScore() < SchemaExplorer.MATCH_SCORE_CUTOFF) continue;
-				
-				if(mc.getOutput().equals(e.getId())) {					
-					System.out.println("Added mapping cell " + mc + " on output check. "); 
-					arr.add(mc);
-					continue; 
-				} // End if
-				
-				Integer [] inputs = mc.getInput();
-				for(int x=0; x<inputs.length; x++) { 
-					if(inputs[x].equals(e.getId())) {
-						System.out.println("Added mapping cell " + mc + " on input check."); 
+				// Check each of the mapping cells in this mapping.  Add the cell to our list if it
+				// references the element we care about.
+				for(MappingCell mc : mcs)
+				{
+					if(mc.getScore() < SchemaExplorer.MATCH_SCORE_CUTOFF) continue;
+					
+					if(mc.getOutput().equals(e.getId()))
+					{
+						System.out.println("Added mapping cell " + mc + " on output check. "); 
 						arr.add(mc);
-						break;
-					} // End if
-				} // End for
-			} // End for
-		} // End for
+						continue; 
+					}
+					
+					Integer [] inputs = mc.getInput();
+					for(int x=0; x<inputs.length; x++)
+						if(inputs[x].equals(e.getId()))
+						{
+							System.out.println("Added mapping cell " + mc + " on input check."); 
+							arr.add(mc);
+							break;
+						}
+				}
+			}
+		}
 		
 		// Viola.  We have our list.
 		System.out.println("Overall: found " + arr.size() + " relevant mapping cells.");
