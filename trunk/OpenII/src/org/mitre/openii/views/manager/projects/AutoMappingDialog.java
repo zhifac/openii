@@ -14,23 +14,24 @@ import org.eclipse.swt.widgets.Text;
 import org.mitre.openii.application.OpenIIActivator;
 import org.mitre.openii.views.manager.projects.matchmaker.Feeder;
 import org.mitre.openii.widgets.BasicWidgets;
-import org.mitre.schemastore.model.Mapping;
+import org.mitre.schemastore.model.Project;
 
 /**
  * Map all possible pair-wise schemas in a "Mapping" object 
  * @author HAOLI
  *
  */
-public class AutoMappingDialog extends Dialog implements ModifyListener {
-	
-	private Mapping mapping;
+public class AutoMappingDialog extends Dialog implements ModifyListener
+{
+	private Project project;
 	private Text nameField;
 	private Text authorField;
 	private Text descriptionField;
 	
-	public AutoMappingDialog( Shell shell, Mapping mapping ) { 
+	public AutoMappingDialog(Shell shell, Project project)
+	{ 
 		super(shell); 
-		this.mapping = mapping; 
+		this.project = project; 
 	}
 	
 	protected void runFeeder() {
@@ -38,7 +39,7 @@ public class AutoMappingDialog extends Dialog implements ModifyListener {
 		
 		try {
 			// match maker runs n-way matches
-			feeder = new Feeder(mapping);
+			feeder = new Feeder(project);
 			feeder.startRepeatedMatches(); 
 			feeder.mergeMatches(); 
 			System.out.println("Map All completed.");
@@ -93,12 +94,12 @@ public class AutoMappingDialog extends Dialog implements ModifyListener {
 		authorField = BasicWidgets.createTextField(pane,"Author");
 		descriptionField = BasicWidgets.createTextField(pane,"Description",4);
 		
-		if(mapping!=null)
+		if(project!=null)
 		{
 			// Set general information fields
-			nameField.setText(mapping.getName());
-			authorField.setText(mapping.getAuthor());
-			descriptionField.setText(mapping.getDescription());
+			nameField.setText(project.getName());
+			authorField.setText(project.getAuthor());
+			descriptionField.setText(project.getDescription());
 		}
 		
 		nameField.addModifyListener(this);
