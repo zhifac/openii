@@ -4,18 +4,20 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.eclipse.jface.action.Action;
-import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.mitre.openii.application.OpenIIActivator;
 import org.mitre.openii.model.OpenIIManager;
-import org.mitre.openii.views.manager.SchemaInMapping;
+import org.mitre.openii.views.manager.SchemaInProject;
 import org.mitre.openii.views.manager.SchemaInTag;
-import org.mitre.openii.views.manager.mappings.AutoMappingDialog;
 import org.mitre.openii.views.manager.mappings.DeleteMappingDialog;
-import org.mitre.openii.views.manager.mappings.EditMappingDialog;
 import org.mitre.openii.views.manager.mappings.ExportMappingDialog;
-import org.mitre.openii.views.manager.mappings.MergeMappingDialog;
-import org.mitre.openii.views.manager.mappings.importer.ImportMappingWizard;
+import org.mitre.openii.views.manager.mappings.importer.ImportMappingDialog;
+import org.mitre.openii.views.manager.projects.AutoMappingDialog;
+import org.mitre.openii.views.manager.projects.DeleteProjectDialog;
+import org.mitre.openii.views.manager.projects.EditProjectDialog;
+import org.mitre.openii.views.manager.projects.ExportProjectDialog;
+import org.mitre.openii.views.manager.projects.MergeMappingDialog;
+import org.mitre.openii.views.manager.projects.importer.ImportProjectDialog;
 import org.mitre.openii.views.manager.schemas.CreateDataSourceDialog;
 import org.mitre.openii.views.manager.schemas.DeleteDataSourceDialog;
 import org.mitre.openii.views.manager.schemas.DeleteSchemaDialog;
@@ -27,7 +29,8 @@ import org.mitre.openii.views.manager.tags.DeleteTagDialog;
 import org.mitre.openii.views.manager.tags.EditTagDialog;
 import org.mitre.schemastore.model.DataSource;
 import org.mitre.schemastore.model.Mapping;
-import org.mitre.schemastore.model.MappingSchema;
+import org.mitre.schemastore.model.Project;
+import org.mitre.schemastore.model.ProjectSchema;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.Tag;
 
@@ -45,14 +48,17 @@ public class ManagerAction extends Action
 	static final int EDIT_TAG = 8;
 	static final int DELETE_TAG = 9;
 	static final int DELETE_TAG_SCHEMA = 10;
-	static final int NEW_MAPPING = 11;
-	static final int IMPORT_MAPPING = 12;
-	static final int MERGE_MAPPINGS = 13;
-	static final int EDIT_MAPPING = 14;
-	static final int EXPORT_MAPPING = 15;
-	static final int DELETE_MAPPING = 16;
-	static final int DELETE_MAPPING_SCHEMA = 17;
-	static final int AUTO_GENERATE_MATCHES = 18;
+	static final int NEW_PROJECT = 11;
+	static final int IMPORT_PROJECT = 12;
+	static final int MERGE_PROJECTS = 13;
+	static final int EDIT_PROJECT = 14;
+	static final int EXPORT_PROJECT = 15;
+	static final int DELETE_PROJECT = 16;
+	static final int DELETE_PROJECT_SCHEMA = 17;
+	static final int IMPORT_MAPPING = 18;
+	static final int AUTO_GENERATE_MATCHES = 19;
+	static final int EXPORT_MAPPING = 20;
+	static final int DELETE_MAPPING = 21;
 	
 	/** Stores the menu manager to which this action is tied */
 	private ManagerMenuManager menuManager;
@@ -83,14 +89,17 @@ public class ManagerAction extends Action
 			case EDIT_TAG: icon = "Edit.gif"; break;
 			case DELETE_TAG: icon = "Delete.gif"; break;
 			case DELETE_TAG_SCHEMA: icon = "Delete.gif"; break;
-			case NEW_MAPPING: icon = "Mapping.gif"; break;
+			case NEW_PROJECT: icon = "Mapping.gif"; break;
+			case IMPORT_PROJECT: icon = "Import.gif"; break;
+			case MERGE_PROJECTS: icon = "Merge.gif"; break;
+			case EDIT_PROJECT: icon = "Edit.gif"; break;
+			case EXPORT_PROJECT: icon = "Export.gif"; break;
+			case DELETE_PROJECT: icon = "Delete.gif"; break;
+			case DELETE_PROJECT_SCHEMA: icon = "Delete.gif"; break;
 			case IMPORT_MAPPING: icon = "Import.gif"; break;
-			case MERGE_MAPPINGS: icon = "Merge.gif"; break;
-			case EDIT_MAPPING: icon = "Edit.gif"; break;
+			case AUTO_GENERATE_MATCHES : icon = "Mapping.gif"; break;
 			case EXPORT_MAPPING: icon = "Export.gif"; break;
 			case DELETE_MAPPING: icon = "Delete.gif"; break;
-			case DELETE_MAPPING_SCHEMA: icon = "Delete.gif"; break;
-			case AUTO_GENERATE_MATCHES : icon = "Mapping.gif"; break;
 		}		
 		setImageDescriptor(OpenIIActivator.getImageDescriptor("icons/"+icon));
 	}
@@ -159,23 +168,54 @@ public class ManagerAction extends Action
 			OpenIIManager.setTagSchemas(tagSchema.getTagID(), schemaIDs);
 		}
 		
-		// ----------------- Mapping Actions ------------------
+		// ----------------- Project Actions ------------------
 		
-		/** Handles the addition of a mapping */
-		if(actionType == NEW_MAPPING)
-			new EditMappingDialog(shell,null).open();
+		/** Handles the addition of a project */
+		if(actionType == NEW_PROJECT)
+			new EditProjectDialog(shell,null).open();
 		
-		/** Handles the import of a mapping */
-		if(actionType == IMPORT_MAPPING)
-			new WizardDialog(shell,new ImportMappingWizard()).open();
+		/** Handles the import of a project */
+		if(actionType == IMPORT_PROJECT)
+			new ImportProjectDialog(shell).open();
 
-		/** Handles the merging of mappings */
-		if(actionType == MERGE_MAPPINGS)
+		/** Handles the merging of project */
+		if(actionType == MERGE_PROJECTS)
 			new MergeMappingDialog(shell).open();
 		
-		/** Handles the editing of a mapping */
-		if(actionType == EDIT_MAPPING)
-			new EditMappingDialog(shell,(Mapping)selection).open();
+		/** Handles the editing of a project */
+		if(actionType == EDIT_PROJECT)
+			new EditProjectDialog(shell,(Project)selection).open();
+		
+		/** Handles the exporting of a project */
+		if(actionType == EXPORT_PROJECT)
+			ExportProjectDialog.export(shell,(Project)selection);
+		
+		/** Handles the deletion of a project */
+		if(actionType == DELETE_PROJECT)
+			DeleteProjectDialog.delete(shell,(Project)selection);
+		
+		/** Handles the deletion of a project schema */
+		if(actionType == DELETE_PROJECT_SCHEMA)
+		{
+			SchemaInProject projectSchema = (SchemaInProject)selection;
+			Project project = OpenIIManager.getProject(projectSchema.getProjectID());
+			ArrayList<ProjectSchema> schemas = new ArrayList<ProjectSchema>(Arrays.asList(project.getSchemas()));
+			for(ProjectSchema schema : schemas)
+				if(schema.getId().equals(projectSchema.getSchema().getId()))
+					schemas.remove(schema);
+			project.setSchemas(schemas.toArray(new ProjectSchema[0]));
+			OpenIIManager.updateProject(project);
+		}
+		
+		/** Handles the importing of a mapping */
+		if(actionType == IMPORT_MAPPING)
+			new ImportMappingDialog(shell,(Project)selection).open();
+		
+		/** Handles the auto-generation of a mapping's matches */
+		if(actionType == AUTO_GENERATE_MATCHES) 
+			new AutoMappingDialog( shell, (Mapping)selection).open();
+
+		// ----------------- Mapping Actions ----------------------
 		
 		/** Handles the exporting of a mapping */
 		if(actionType == EXPORT_MAPPING)
@@ -184,22 +224,5 @@ public class ManagerAction extends Action
 		/** Handles the deletion of a mapping */
 		if(actionType == DELETE_MAPPING)
 			DeleteMappingDialog.delete(shell,(Mapping)selection);
-		
-		/** Handles the deletion of a mapping schema */
-		if(actionType == DELETE_MAPPING_SCHEMA)
-		{
-			SchemaInMapping mappingSchema = (SchemaInMapping)selection;
-			Mapping mapping = OpenIIManager.getMapping(mappingSchema.getMappingID());
-			ArrayList<MappingSchema> schemas = new ArrayList<MappingSchema>(Arrays.asList(mapping.getSchemas()));
-			for(MappingSchema schema : schemas)
-				if(schema.getId().equals(mappingSchema.getSchema().getId()))
-					schemas.remove(schema);
-			mapping.setSchemas(schemas.toArray(new MappingSchema[0]));
-			OpenIIManager.updateMapping(mapping);
-		}
-		
-		/** Handles the auto-generation of a mapping's matches */
-		if(actionType == AUTO_GENERATE_MATCHES) 
-			new AutoMappingDialog( shell, (Mapping)selection).open();
 	}
 }

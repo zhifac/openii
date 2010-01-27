@@ -10,6 +10,8 @@ import org.eclipse.swt.widgets.Shell;
 import org.mitre.openii.model.OpenIIManager;
 import org.mitre.openii.model.RepositoryManager;
 import org.mitre.schemastore.model.Mapping;
+import org.mitre.schemastore.model.Project;
+import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.porters.PorterManager;
 import org.mitre.schemastore.porters.mappingExporters.MappingExporter;
 
@@ -19,15 +21,19 @@ public class ExportMappingDialog
 	/** Function for exporting the specified mapping */
 	static public void export(Shell shell, Mapping mapping)
 	{
+		// Retrieve the schemas associated with the mapping
+		Schema source = OpenIIManager.getSchema(mapping.getSourceId());
+		Schema target = OpenIIManager.getSchema(mapping.getTargetId());
+		
 		// Create the dialog
 		FileDialog dialog = new FileDialog(shell, SWT.SAVE);
 		dialog.setText("Export Mapping");
-		dialog.setFileName(mapping.getName());
+		dialog.setFileName(source.getName() + " to " + target.getName());
 		dialog.setFilterPath(OpenIIManager.getActiveDir());
 		
 		// Get the list of exporters available for use
 		PorterManager manager = new PorterManager(RepositoryManager.getClient());
-		ArrayList<MappingExporter> exporters = manager.getMappingExporters();
+		ArrayList<MappingExporter> exporters =  manager.getPorters(PorterManager.MAPPING_EXPORTERS);
 		
 		// Set up the filter names and extensions
 		ArrayList<String> names = new ArrayList<String>();
@@ -47,7 +53,8 @@ public class ExportMappingDialog
 			try {
 				OpenIIManager.setActiveDir(dialog.getFilterPath());
 				MappingExporter exporter = exporters.get(dialog.getFilterIndex());
-	        	exporter.exportMapping(mapping, OpenIIManager.getMappingCells(mapping.getId()), new File(filename));
+				Project project = OpenIIManager.getProject(mapping.getProjectId());
+	        	exporter.exportMapping(project, mapping, OpenIIManager.getMappingCells(mapping.getId()), new File(filename));
 			}
 			catch(Exception e)
 			{

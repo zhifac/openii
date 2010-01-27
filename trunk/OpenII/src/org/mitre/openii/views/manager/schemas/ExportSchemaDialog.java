@@ -28,7 +28,7 @@ public class ExportSchemaDialog
 		
 		// Get the list of exporters available for use
 		PorterManager manager = new PorterManager(RepositoryManager.getClient());
-		ArrayList<SchemaExporter> exporters = manager.getSchemaExporters();
+		ArrayList<SchemaExporter> exporters = manager.getPorters(PorterManager.SCHEMA_EXPORTERS);
 		
 		// Set up the filter names and extensions
 		ArrayList<String> names = new ArrayList<String>();

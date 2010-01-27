@@ -1,28 +1,21 @@
 package org.mitre.openii.widgets.schemaList;
 
 import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Text;
 import org.mitre.openii.application.OpenIIActivator;
 import org.mitre.openii.widgets.BasicWidgets;
 
 /** Constructs the Query Schemas For List Dialog */
 public class QuerySchemasForListDialog extends Dialog implements SelectionListener
 {
-	// Stores the various dialog fields
-	private Text queryField = null;
-	private Button queryButton = null;
-	
 	/** Constructs the dialog */
 	public QuerySchemasForListDialog(Shell shell)
 		{ super(shell); }
@@ -52,8 +45,8 @@ public class QuerySchemasForListDialog extends Dialog implements SelectionListen
 		Composite queryPane = new Composite(pane, SWT.NONE);
 		queryPane.setLayout(new GridLayout(2,false));
 		queryPane.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-		queryField = BasicWidgets.createText(queryPane,null);
-		queryButton = BasicWidgets.createButton(queryPane,"Search",this);
+		BasicWidgets.createText(queryPane,null);
+		BasicWidgets.createButton(queryPane,"Search",this);
 		
 		// Constructs the results pane
 		Composite resultsPane = new Composite(pane, SWT.BORDER | SWT.V_SCROLL);
@@ -65,13 +58,6 @@ public class QuerySchemasForListDialog extends Dialog implements SelectionListen
 		
 		// Return the generated pane
 		return pane;
-	}
-	
-	/** Validates the fields in order to activate the OK button */
-	private void validateFields()
-	{
-		boolean activate = false;
-		getButton(IDialogConstants.OK_ID).setEnabled(activate);
 	}
 	
 	/** Handles the actual import of the specified file */

@@ -13,7 +13,7 @@ import org.mitre.harmony.view.dialogs.schemaSettings.SchemaSettingsDialog;
 import org.mitre.harmony.view.harmonyPane.HarmonyFrame;
 import org.mitre.openii.editors.OpenIIEditor;
 import org.mitre.openii.model.RepositoryManager;
-import org.mitre.schemastore.model.MappingSchema;
+import org.mitre.schemastore.model.ProjectSchema;
 
 /** Constructs the Harmony View */
 public class HarmonyEditor extends OpenIIEditor
@@ -43,7 +43,7 @@ public class HarmonyEditor extends OpenIIEditor
 			if(!initializationCompleted)
 			{
 				int displayedSchemas = 0;
-				for(MappingSchema schema : harmonyModel.getMappingManager().getSchemas())
+				for(ProjectSchema schema : harmonyModel.getMappingManager().getSchemas())
 					if(!schema.getSide().equals(MappingSchema.NONE)) displayedSchemas++;
 				if(displayedSchemas==0) new SchemaSettingsDialog(harmonyModel);
 				initializationCompleted = true;

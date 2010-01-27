@@ -27,17 +27,20 @@ public class ListWithButtonBar extends Composite
 		setLayout(new GridLayout(1,false));
 	
 		// Create the list heading
-		Label label = new Label(this, SWT.NONE);
-		label.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING));
-		label.setText(" "+heading+": ");
-
+		if(heading!=null)
+		{
+			Label label = new Label(this, SWT.NONE);
+			label.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING));
+			label.setText(" "+heading+": ");
+		}
+			
 		// Create the list pane
 		Composite listPane = new Composite(this, SWT.NONE);
 		GridLayout layout = new GridLayout(2,false);
 		layout.marginHeight = 0; layout.marginWidth = 0;
 		listPane.setLayout(layout);
 		GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
-		gridData.heightHint = 200;
+		gridData.heightHint = 150;
 		listPane.setLayoutData(gridData);
 		
 		// Create the dialog list

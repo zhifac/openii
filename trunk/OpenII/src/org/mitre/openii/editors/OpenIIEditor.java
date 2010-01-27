@@ -11,9 +11,10 @@ import org.eclipse.ui.part.EditorPart;
 import org.mitre.openii.model.EditorInput;
 import org.mitre.openii.model.OpenIIListener;
 import org.mitre.openii.model.OpenIIManager;
-import org.mitre.schemastore.model.Tag;
 import org.mitre.schemastore.model.Mapping;
+import org.mitre.schemastore.model.Project;
 import org.mitre.schemastore.model.Schema;
+import org.mitre.schemastore.model.Tag;
 
 /** Constructs the OpenII Editor */
 abstract public class OpenIIEditor extends EditorPart implements OpenIIListener
@@ -31,10 +32,18 @@ abstract public class OpenIIEditor extends EditorPart implements OpenIIListener
 		Object element = ((EditorInput)input).getElement();
 		if(element instanceof Schema) elementID = ((Schema)element).getId();
 		if(element instanceof Tag) elementID = ((Tag)element).getId();
+		if(element instanceof Project) elementID = ((Project)element).getId();
 		if(element instanceof Mapping) elementID = ((Mapping)element).getId();
 
 		// Set the title
-		setPartName(element.toString());
+		if(element instanceof Mapping)
+		{
+			Mapping mapping = (Mapping)element;
+			Schema source = OpenIIManager.getSchema(mapping.getSourceId());
+			Schema target = OpenIIManager.getSchema(mapping.getTargetId());
+			setPartName(source.getName() + " to " + target.getName());
+		}
+		else setPartName(element.toString());
 		
 		// Listen for modifications to the repository and OpenII model
 		OpenIIManager.addListener(this);
@@ -62,23 +71,29 @@ abstract public class OpenIIEditor extends EditorPart implements OpenIIListener
 	
 	/** Dispose of the editor pane if referencing the deleted schema */
 	public void schemaDeleted(Integer schemaID)
-		{ if(elementID.equals(schemaID)) closeEditor(); }	
+		{ if(elementID.equals(schemaID)) closeEditor(); }
 	
 	/** Dispose of the editor pane if referencing the deleted tag */
 	public void tagDeleted(Integer tagID)
-		{ if(elementID.equals(tagID)) closeEditor(); }	
+		{ if(elementID.equals(tagID)) closeEditor(); }
+
+	/** Dispose of the editor pane if referencing the deleted project */
+	public void projectDeleted(Integer projectID)
+		{ if(elementID.equals(projectID)) closeEditor(); }
 
 	/** Dispose of the editor pane if referencing the deleted mapping */
 	public void mappingDeleted(Integer mappingID)
-		{ if(elementID.equals(mappingID)) closeEditor(); }	
-	
+		{ if(elementID.equals(mappingID)) closeEditor(); }
+
 	// Unused event listeners
+	public void schemaAdded(Integer schemaID) {}
 	public void schemaModified(Integer schemaID) {}
 	public void dataSourceAdded(Integer dataSourceID) {}
 	public void dataSourceDeleted(Integer dataSourceID) {}
 	public void tagAdded(Integer tagID) {}
 	public void tagModified(Integer tagID) {}
+	public void projectAdded(Integer mappingID) {}
+	public void projectModified(Integer mappingID) {}
 	public void mappingAdded(Integer mappingID) {}
 	public void mappingModified(Integer mappingID) {}
-	public void schemaAdded(Integer schemaID) {}
 }

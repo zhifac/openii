@@ -24,11 +24,20 @@ public interface OpenIIListener
 	/** Informs the listener that the specified tag has been added */
 	public void tagAdded(Integer tagID);
 
-	/** Informs the listener that the specified agt has been modified */
+	/** Informs the listener that the specified tag has been modified */
 	public void tagModified(Integer tagID);
 	
 	/** Informs the listener that the specified tag has been deleted */
 	public void tagDeleted(Integer tagID);
+	
+	/** Informs the listener that the specified project has been added */
+	public void projectAdded(Integer projectID);
+
+	/** Informs the listener that the specified project has been modified */
+	public void projectModified(Integer projectID);
+	
+	/** Informs the listener that the specified project has been deleted */
+	public void projectDeleted(Integer projectID);
 	
 	/** Informs the listener that the specified mapping has been added */
 	public void mappingAdded(Integer mappingID);
@@ -38,5 +47,4 @@ public interface OpenIIListener
 	
 	/** Informs the listener that the specified mapping has been deleted */
 	public void mappingDeleted(Integer mappingID);
-
 }

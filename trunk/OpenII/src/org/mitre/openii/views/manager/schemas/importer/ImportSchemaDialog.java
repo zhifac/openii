@@ -25,6 +25,7 @@ import org.mitre.openii.widgets.BasicWidgets;
 import org.mitre.openii.widgets.URIField;
 import org.mitre.openii.widgets.WidgetUtilities;
 import org.mitre.schemastore.model.Schema;
+import org.mitre.schemastore.porters.Importer;
 import org.mitre.schemastore.porters.PorterManager;
 import org.mitre.schemastore.porters.schemaImporters.SchemaImporter;
 
@@ -58,11 +59,11 @@ public class ImportSchemaDialog extends TitleAreaDialog implements ISelectionCha
 		// Construct a list of all importers that can be selected
 		BasicWidgets.createLabel(pane,"Importer");
 		importerList = new ComboViewer(pane, SWT.NONE);
-		ArrayList<SchemaImporter> importers = new PorterManager(RepositoryManager.getClient()).getSchemaImporters();
+		ArrayList<SchemaImporter> importers = new PorterManager(RepositoryManager.getClient()).getPorters(PorterManager.SCHEMA_IMPORTERS);
 		for(SchemaImporter importer : WidgetUtilities.sortList(importers))
 		{
 			Integer uriType = importer.getURIType();
-			if(uriType==SchemaImporter.FILE || uriType==SchemaImporter.M3MODEL || uriType==SchemaImporter.URI)
+			if(uriType==Importer.FILE || uriType==Importer.M3MODEL || uriType==Importer.URI)
 				importerList.add(importer);
 		}
 	}
