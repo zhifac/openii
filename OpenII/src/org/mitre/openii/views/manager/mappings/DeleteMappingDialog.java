@@ -10,7 +10,9 @@ public class DeleteMappingDialog
 {
 	static public void delete(Shell shell, Mapping mapping)
 	{
-		boolean confirmed = MessageDialog.openConfirm(shell, "Confirm Delete", "Are you sure you want to delete mapping '" + mapping.getName() + "'?");
+		String source = OpenIIManager.getSchema(mapping.getSourceId()).getName();
+		String target = OpenIIManager.getSchema(mapping.getTargetId()).getName();
+		boolean confirmed = MessageDialog.openConfirm(shell, "Confirm Delete", "Are you sure you want to delete mapping between '" + source + "' and '" + target + "'?");
 		if(confirmed)
 		{
 			boolean success = OpenIIManager.deleteMapping(mapping.getId());

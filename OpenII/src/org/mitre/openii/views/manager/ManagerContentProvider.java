@@ -1,15 +1,17 @@
 package org.mitre.openii.views.manager;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.mitre.openii.model.OpenIIManager;
 import org.mitre.openii.widgets.WidgetUtilities;
 import org.mitre.schemastore.model.DataSource;
-import org.mitre.schemastore.model.Tag;
 import org.mitre.schemastore.model.Mapping;
+import org.mitre.schemastore.model.Project;
 import org.mitre.schemastore.model.Schema;
+import org.mitre.schemastore.model.Tag;
 
 public class ManagerContentProvider implements ITreeContentProvider
 {
@@ -21,7 +23,7 @@ public class ManagerContentProvider implements ITreeContentProvider
 		// Handles data categories
 		if(element instanceof String)
 		{
-			if(element.equals("")) return new String[] {ManagerView.SCHEMAS_HEADER,ManagerView.MAPPINGS_HEADER};
+			if(element.equals("")) return new String[] {ManagerView.SCHEMAS_HEADER,ManagerView.PROJECTS_HEADER};
 			if(element.equals(ManagerView.SCHEMAS_HEADER))
 			{
 				ArrayList<Object> tags = new ArrayList<Object>();
@@ -30,7 +32,7 @@ public class ManagerContentProvider implements ITreeContentProvider
 				return tags.toArray();
 			}
 			if(element.equals(ManagerView.ALL_SCHEMAS_HEADER)) return WidgetUtilities.sortList(OpenIIManager.getSchemas()).toArray();
-		    if(element.equals(ManagerView.MAPPINGS_HEADER)) return WidgetUtilities.sortList(OpenIIManager.getMappings()).toArray();
+		    if(element.equals(ManagerView.PROJECTS_HEADER)) return WidgetUtilities.sortList(OpenIIManager.getProjects()).toArray();
 		}
 		    
 		// Handles schema elements
@@ -58,14 +60,41 @@ public class ManagerContentProvider implements ITreeContentProvider
 			return elements.toArray();
 		}
 			
+		// Handles project elements
+		if(element instanceof Project)
+		{
+			Project project = (Project)element;
+			ArrayList<Integer> schemaIDs = new ArrayList<Integer>(Arrays.asList(project.getSchemaIDs()));
+			
+			// Display mappings
+			ArrayList<Mapping> mappings = new ArrayList<Mapping>();
+			for(Mapping mapping : OpenIIManager.getMappings(project.getId()))
+			{
+				mappings.add(mapping);
+				schemaIDs.remove(mapping.getSourceId());
+				schemaIDs.remove(mapping.getTargetId());
+			}
+			
+			// Display schemas which are not part of a mapping
+			ArrayList<SchemaInProject> schemas = new ArrayList<SchemaInProject>();
+			for(Integer schemaID : schemaIDs)
+				schemas.add(new SchemaInProject(project.getId(),OpenIIManager.getSchema(schemaID),true));
+
+			// Return the sorted list of project elements
+			ArrayList<Object> elements = new ArrayList<Object>();
+			elements.addAll(WidgetUtilities.sortList(mappings));
+			elements.addAll(WidgetUtilities.sortList(schemas));
+			return elements.toArray();
+		}
+		
 		// Handles mapping elements
 		if(element instanceof Mapping)
 		{
 			Mapping mapping = (Mapping)element;
-			ArrayList<Object> elements = new ArrayList<Object>();
-			for(Integer schemaID : mapping.getSchemaIDs())
-				elements.add(new SchemaInMapping(mapping.getId(),OpenIIManager.getSchema(schemaID)));
-			return WidgetUtilities.sortList(elements).toArray();
+			ArrayList<SchemaInProject> schemas = new ArrayList<SchemaInProject>();
+			schemas.add(new SchemaInProject(mapping.getProjectId(),OpenIIManager.getSchema(mapping.getSourceId()),false));
+			schemas.add(new SchemaInProject(mapping.getProjectId(),OpenIIManager.getSchema(mapping.getTargetId()),false));
+			return schemas.toArray();
 		}
 		
 		return new String[] {};

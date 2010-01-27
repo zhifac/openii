@@ -12,12 +12,14 @@ import org.eclipse.ui.IEditorRegistry;
 import org.eclipse.ui.PlatformUI;
 import org.mitre.openii.model.EditorManager;
 import org.mitre.openii.model.OpenIIManager;
+import org.mitre.openii.views.manager.ManagerView;
+import org.mitre.openii.views.manager.SchemaInProject;
 import org.mitre.openii.views.manager.SchemaInTag;
-import org.mitre.openii.views.manager.SchemaInMapping;
 import org.mitre.schemastore.model.DataSource;
-import org.mitre.schemastore.model.Tag;
 import org.mitre.schemastore.model.Mapping;
+import org.mitre.schemastore.model.Project;
 import org.mitre.schemastore.model.Schema;
+import org.mitre.schemastore.model.Tag;
 
 /** Handles the displaying of the Manager popup menu */
 public class ManagerMenuManager extends MenuManager implements IMenuListener
@@ -45,7 +47,7 @@ public class ManagerMenuManager extends MenuManager implements IMenuListener
 	{
 		if(element instanceof Schema) return ((Schema)element).getId();
 		if(element instanceof SchemaInTag) return ((SchemaInTag)element).getSchema().getId();
-		if(element instanceof SchemaInMapping) return ((SchemaInMapping)element).getSchema().getId();
+		if(element instanceof SchemaInProject) return ((SchemaInProject)element).getSchema().getId();
 		if(element instanceof Tag) return ((Tag)element).getId();
 		if(element instanceof Mapping) return ((Mapping)element).getId();
 		return null;
@@ -84,7 +86,7 @@ public class ManagerMenuManager extends MenuManager implements IMenuListener
 	private void getManagerMenu(IMenuManager menuManager)
 	{
 		// Display the menu for the "Schemas" header
-		if(element instanceof String && element.equals("Schemas"))
+		if(element.equals(ManagerView.SCHEMAS_HEADER))
 		{
 			menuManager.add(new ManagerAction(this,"Import Schema",ManagerAction.IMPORT_SCHEMA));
 			menuManager.add(new ManagerAction(this,"New Tag",ManagerAction.NEW_TAG));
@@ -121,28 +123,39 @@ public class ManagerMenuManager extends MenuManager implements IMenuListener
 		if(element instanceof SchemaInTag)
 			menuManager.add(new ManagerAction(this,"Remove Schema from Tag",ManagerAction.DELETE_TAG_SCHEMA));
 			
-		// Display the menu for the "Mappings" header
-		if(element instanceof String && element.equals("Mappings"))
+		// Display the menu for the "Projects" header
+		if(element.equals(ManagerView.PROJECTS_HEADER))
 		{
-			menuManager.add(new ManagerAction(this,"New Mapping",ManagerAction.NEW_MAPPING));
-			menuManager.add(new ManagerAction(this,"Import Mapping",ManagerAction.IMPORT_MAPPING));
-			menuManager.add(new ManagerAction(this,"Merge Mappings",ManagerAction.MERGE_MAPPINGS));
+			menuManager.add(new ManagerAction(this,"New Project",ManagerAction.NEW_PROJECT));
+			menuManager.add(new ManagerAction(this,"Import Project",ManagerAction.IMPORT_PROJECT));
+			menuManager.add(new ManagerAction(this,"Merge Projects",ManagerAction.MERGE_PROJECTS));
 		}
 
-		// Display the menu for a selected mapping
-		if(element instanceof Mapping)
+		// Display the menu for a selected project
+		if(element instanceof Project)
 		{
-			menuManager.add(new ManagerAction(this,"Edit Mapping",ManagerAction.EDIT_MAPPING));
-			menuManager.add(new ManagerAction(this,"Export Mapping",ManagerAction.EXPORT_MAPPING));
-			menuManager.add(new ManagerAction(this,"Delete Mapping",ManagerAction.DELETE_MAPPING));
-			menuManager.add(new Separator());			
+			menuManager.add(new ManagerAction(this,"Edit Project",ManagerAction.EDIT_PROJECT));
+			menuManager.add(new ManagerAction(this,"Export Project",ManagerAction.EXPORT_PROJECT));
+			menuManager.add(new ManagerAction(this,"Delete Project",ManagerAction.DELETE_PROJECT));
+			menuManager.add(new Separator());
+			menuManager.add(new ManagerAction(this,"Import Mapping",ManagerAction.IMPORT_MAPPING));
 			menuManager.add(new ManagerAction(this,"AutoGenerate Matches",ManagerAction.AUTO_GENERATE_MATCHES));
 		}
 		
-		// Display the menu for a selection mapping schema
-		if(element instanceof SchemaInMapping)
-			menuManager.add(new ManagerAction(this,"Remove Schema from Mapping",ManagerAction.DELETE_MAPPING_SCHEMA));
-
+		// Display the menu for a selected mapping
+		if(element instanceof Mapping)
+		{
+			menuManager.add(new ManagerAction(this,"Export Mapping",ManagerAction.EXPORT_MAPPING));
+			menuManager.add(new ManagerAction(this,"Delete Mapping",ManagerAction.DELETE_MAPPING));
+		}
+		
+		// Display the menu for a selection project schema
+		if(element instanceof SchemaInProject)
+		{
+			if(((SchemaInProject)element).isDeletable())
+				menuManager.add(new ManagerAction(this,"Remove Schema from Project",ManagerAction.DELETE_PROJECT_SCHEMA));
+		}
+		
 		// Display the menu for a selected data source
 		if(element instanceof DataSource)
 			menuManager.add(new ManagerAction(this,"Delete Data Source",ManagerAction.DELETE_DATA_SOURCE));

@@ -19,7 +19,7 @@ public class ManagerView extends ViewPart implements OpenIIListener, IDoubleClic
 	/** Stores constants for various tree labels */
 	static public final String SCHEMAS_HEADER = "Schemas";
 	static public final String ALL_SCHEMAS_HEADER = "All Schemas";
-	static public final String MAPPINGS_HEADER = "Mappings";
+	static public final String PROJECTS_HEADER = "Projects";
 	
 	/** Stores a reference to the viewer */
 	private TreeViewer viewer = null;
@@ -49,7 +49,7 @@ public class ManagerView extends ViewPart implements OpenIIListener, IDoubleClic
 	{
 		Object element = ((TreeSelection)e.getSelection()).getFirstElement();
 		if(element instanceof SchemaInTag) element = ((SchemaInTag)element).getSchema();
-		if(element instanceof SchemaInMapping) element = ((SchemaInMapping)element).getSchema();
+		if(element instanceof SchemaInProject) element = ((SchemaInProject)element).getSchema();
 		EditorManager.launchDefaultEditor(element);
 	}
 	
@@ -63,9 +63,12 @@ public class ManagerView extends ViewPart implements OpenIIListener, IDoubleClic
 	public void tagAdded(Integer tagID) { viewer.refresh(); }
 	public void tagModified(Integer tagID) { viewer.refresh(); }
 	public void tagDeleted(Integer tagID) { viewer.refresh(); }
+	public void projectAdded(Integer mappingID) { viewer.refresh(); }
+	public void projectModified(Integer schemaID) { viewer.refresh(); }
+	public void projectDeleted(Integer mappingID) { viewer.refresh(); }
 	public void mappingAdded(Integer mappingID) { viewer.refresh(); }
-	public void mappingModified(Integer schemaID) { viewer.refresh(); }
 	public void mappingDeleted(Integer mappingID) { viewer.refresh(); }
+	public void mappingModified(Integer mappingID) { viewer.refresh(); }
 	
 	// Sets the focus in this view
 	public void setFocus() {}

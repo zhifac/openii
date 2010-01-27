@@ -88,7 +88,7 @@ public class EditTagDialog extends Dialog implements ActionListener, ModifyListe
 	
 		// Generate the pane components
 		createNamePane(pane);
-		list = new SchemaList(pane,"Schemas in Tag",initialSchemas);
+		list = new SchemaList(pane,"Schemas in Tag");
 		list.addListener(this);
 		
 		// Return the generated pane
@@ -151,7 +151,7 @@ public class EditTagDialog extends Dialog implements ActionListener, ModifyListe
 		// Handles the assignment of schemas
 		if(creationSuccess && updateSuccess)
 		{
-			ArrayList<Integer> schemaIDs = list.getSchemas();
+			ArrayList<Integer> schemaIDs = list.getSchemaIDs();
 			schemaAssignmentSuccess = OpenIIManager.setTagSchemas(tag.getId(),schemaIDs);
 		}
 

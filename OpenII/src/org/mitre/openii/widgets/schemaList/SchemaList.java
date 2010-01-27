@@ -3,22 +3,29 @@ package org.mitre.openii.widgets.schemaList;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.TableItem;
 import org.mitre.openii.model.OpenIIManager;
-import org.mitre.openii.widgets.BasicWidgets;
 import org.mitre.openii.widgets.ListWithButtonBar;
 import org.mitre.openii.widgets.WidgetUtilities;
 import org.mitre.schemastore.model.Schema;
 
 /** Constructs a Schema List */
-public class SchemaList extends ListWithButtonBar implements SelectionListener
+public class SchemaList extends ListWithButtonBar implements SelectionListener, ISelectionChangedListener
 {
+	/** Stores the locked schemas (prohibited from being removed) */
+	private HashSet<Integer> lockedIDs = new HashSet<Integer>();
+	
 	/** Stores schema list listeners */
 	private ArrayList<ActionListener> listeners = new ArrayList<ActionListener>();
 	
@@ -29,42 +36,66 @@ public class SchemaList extends ListWithButtonBar implements SelectionListener
 	private Button removeButton = null;
 	
 	/** Constructs the dialog */
-	public SchemaList(Composite parent, String heading, ArrayList<Integer> initialSchemas)
+	public SchemaList(Composite parent, String heading)
 	{
 		super(parent, heading, "Schema");
 		addButton = addButton("Add...",this);
-		searchButton = addButton("Search...",this);
+		searchButton = addButton("Find...",this);
 		removeButton = addButton("Remove",this);
 		list = getList();
-		list.setLabelProvider(new BasicWidgets.SchemaLabelProvider());
+		list.setLabelProvider(new SchemaLabelProvider());
+		
+		// Listens for changes to the selected schemas
+		list.addSelectionChangedListener(this);
 	}	
 
-	public void setSchemas(ArrayList<Integer> schemaIDs)
+	/** Sets the schemas to be displayed in the list */
+	public void setSchemas(List<Integer> schemaIDs)
 	{
 		// Set the schemas displayed in the list
 		ArrayList<Schema> schemas = new ArrayList<Schema>();
 		for(Integer schemaID : schemaIDs)
 			schemas.add(OpenIIManager.getSchema(schemaID));
-		for(Schema schema : WidgetUtilities.sortList(schemas))
-			list.add(schema);
+		list.add(WidgetUtilities.sortList(schemas).toArray());
 		
 		// Inform listeners of the change to displayed list items
 		for(ActionListener listener : listeners)
 			listener.actionPerformed(new ActionEvent(this,0,null));
 	}
 		
+	/** Sets the locked schemas */
+	public void setLockedSchemas(HashSet<Integer> lockedIDs)
+		{ this.lockedIDs = lockedIDs; }
+	
 	/** Returns the list of schemas */
-	public ArrayList<Integer> getSchemas()
+	public ArrayList<Schema> getSchemas()
+	{
+		ArrayList<Schema> schemas = new ArrayList<Schema>();
+		for(int i=0; i<list.getTable().getItemCount(); i++)
+			schemas.add((Schema)list.getElementAt(i));
+		return schemas;
+	}
+	
+	/** Returns the list of schema IDs */
+	public ArrayList<Integer> getSchemaIDs()
 	{
 		ArrayList<Integer> schemaIDs = new ArrayList<Integer>();
-		for(int i=0; i<list.getTable().getItemCount(); i++)
-			schemaIDs.add(((Schema)list.getElementAt(i)).getId());
+		for(Schema schema : getSchemas()) schemaIDs.add(schema.getId());
 		return schemaIDs;
 	}
-
+	
 	/** Adds a schema list listener */
 	public void addListener(ActionListener listener)
 		{ listeners.add(listener); }
+	
+	/** Disable the "Delete" button if locked schemas are selected */
+	public void selectionChanged(SelectionChangedEvent e)
+	{
+		boolean enabled = true;
+		for(TableItem item : list.getTable().getSelection())
+			enabled &= !lockedIDs.contains(((Schema)item.getData()).getId());
+		removeButton.setEnabled(enabled);
+	}
 	
 	/** Handles the pressing of list buttons */
 	public void widgetSelected(SelectionEvent e)

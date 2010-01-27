@@ -7,10 +7,11 @@ import java.util.HashMap;
 import org.eclipse.core.runtime.Preferences;
 import org.mitre.openii.application.OpenIIActivator;
 import org.mitre.schemastore.model.DataSource;
-import org.mitre.schemastore.model.Tag;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
+import org.mitre.schemastore.model.Project;
 import org.mitre.schemastore.model.Schema;
+import org.mitre.schemastore.model.Tag;
 import org.mitre.schemastore.model.schemaInfo.SchemaInfo;
 
 /**
@@ -276,19 +277,68 @@ public class OpenIIManager
 		for(OpenIIListener listener : listeners.get()) listener.tagDeleted(tagID);
 	}
 	
-	//------------ Mapping Functionality -------------
+	//------------ Project Functionality -------------
 	
-	/** Returns the list of mappings */
-	public static ArrayList<Mapping> getMappings()
-		{ try { return RepositoryManager.getClient().getMappings(); } catch(Exception e) { return new ArrayList<Mapping>(); } }
+	/** Returns the list of projects */
+	public static ArrayList<Project> getProjects()
+		{ try { return RepositoryManager.getClient().getProjects(); } catch(Exception e) { return new ArrayList<Project>(); } }
 
+	/** Returns the specified project */
+	public static Project getProject(Integer projectID)
+		{ try { return RepositoryManager.getClient().getProject(projectID); } catch(Exception e) { return null; } }
+	
+	/** Add project to the repository */
+	public static Integer addProject(Project project)
+	{
+		try {
+			Integer projectID = RepositoryManager.getClient().addProject(project);
+			if(projectID!=null)
+				{ project.setId(projectID); fireProjectAdded(project); return projectID; }
+		} catch(Exception e) {}
+		return null;
+	}
+
+	/** Modifies the project in the repository */
+	public static boolean updateProject(Project project)
+	{
+		try {
+			if(RepositoryManager.getClient().updateProject(project))
+				{ fireProjectModified(project.getId()); return true; }
+		} catch(Exception e) {}
+		return false;
+	}
+	
+	/** Deletes the specified project */
+	public static boolean deleteProject(Integer projectID)
+	{
+		try {
+			if(RepositoryManager.getClient().deleteProject(projectID))
+				{ fireProjectDeleted(projectID); return true; }
+		} catch(Exception e) {}
+		return false;
+	}
+	
+	/** Inform listeners that project was added */
+	public static void fireProjectAdded(Project project)
+		{ for(OpenIIListener listener : listeners.get()) listener.projectAdded(project.getId()); }
+
+	/** Inform listeners that project was modified */
+	public static void fireProjectModified(Integer projectID)
+		{ for(OpenIIListener listener : listeners.get()) listener.projectModified(projectID); }
+	
+	/** Inform listeners that project was removed */
+	public static void fireProjectDeleted(Integer projectID)
+		{ for(OpenIIListener listener : listeners.get()) listener.projectDeleted(projectID); }
+
+	//------------ Mapping Functionality -------------
+
+	/** Returns the list of mappings */
+	public static ArrayList<Mapping> getMappings(Integer projectID)
+		{ try { return RepositoryManager.getClient().getMappings(projectID); } catch(Exception e) { return new ArrayList<Mapping>(); } }
+	
 	/** Returns the specified mapping */
 	public static Mapping getMapping(Integer mappingID)
 		{ try { return RepositoryManager.getClient().getMapping(mappingID); } catch(Exception e) { return null; } }
-	
-	/** Returns the specified mapping cells */
-	public static ArrayList<MappingCell> getMappingCells(Integer mappingID)
-		{ try { return RepositoryManager.getClient().getMappingCells(mappingID); } catch(Exception e) { return new ArrayList<MappingCell>(); } }
 	
 	/** Add mapping to the repository */
 	public static Integer addMapping(Mapping mapping)
@@ -297,32 +347,7 @@ public class OpenIIManager
 			Integer mappingID = RepositoryManager.getClient().addMapping(mapping);
 			if(mappingID!=null)
 				{ mapping.setId(mappingID); fireMappingAdded(mapping); return mappingID; }
-		} catch(Exception e) {}
-		return null;
-	}
-
-	/** Modifies the mapping in the repository */
-	public static boolean updateMapping(Mapping mapping)
-	{
-		try {
-			if(RepositoryManager.getClient().updateMapping(mapping))
-				{ fireMappingModified(mapping.getId()); return true; }
-		} catch(Exception e) {}
-		return false;
-	}
-	
-	/** Saves the mapping to the repository */
-	public static Integer saveMapping(Mapping mapping, ArrayList<MappingCell> mappingCells)
-	{
-		try {
-			Integer mappingID = RepositoryManager.getClient().saveMapping(mapping,mappingCells);
-			if(mappingID!=null)
-			{
-				if(mapping.getId()==null || !mapping.getId().equals(mappingID))
-					{ mapping.setId(mappingID); fireMappingAdded(mapping); return mappingID; }
-				else { fireMappingModified(mappingID); return mappingID; }
-			}
-		} catch(Exception e) {}
+		} catch(Exception e) {System.out.println(e.getMessage());}
 		return null;
 	}
 	
@@ -347,6 +372,12 @@ public class OpenIIManager
 	/** Inform listeners that mapping was removed */
 	public static void fireMappingDeleted(Integer mappingID)
 		{ for(OpenIIListener listener : listeners.get()) listener.mappingDeleted(mappingID); }
+	
+	//------------ Mapping Cell Functionality -------------
+
+	/** Returns the specified mapping cells */
+	public static ArrayList<MappingCell> getMappingCells(Integer mappingID)
+		{ try { return RepositoryManager.getClient().getMappingCells(mappingID); } catch(Exception e) { return new ArrayList<MappingCell>(); } }
 	
 	//------------ Data Source Functionality -------------
 

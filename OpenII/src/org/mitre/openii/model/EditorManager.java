@@ -5,11 +5,12 @@ import org.eclipse.ui.IEditorRegistry;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
+import org.mitre.openii.views.manager.SchemaInProject;
 import org.mitre.openii.views.manager.SchemaInTag;
-import org.mitre.openii.views.manager.SchemaInMapping;
-import org.mitre.schemastore.model.Tag;
 import org.mitre.schemastore.model.Mapping;
+import org.mitre.schemastore.model.Project;
 import org.mitre.schemastore.model.Schema;
+import org.mitre.schemastore.model.Tag;
 
 /**
  * Manages editor actions
@@ -20,8 +21,9 @@ public class EditorManager
 	/** Returns the type associated with the selected element */
 	static public Class<?> getElementType(Object element)
 	{
-		if(element instanceof Schema || element instanceof SchemaInTag || element instanceof SchemaInMapping) return Schema.class;
+		if(element instanceof Schema || element instanceof SchemaInTag || element instanceof SchemaInProject) return Schema.class;
 		if((element instanceof String && element.equals("All Schemas")) || element instanceof Tag) return Tag.class;
+		if(element instanceof Project) return Project.class;
 		if(element instanceof Mapping) return Mapping.class;
 		return null;
 	}

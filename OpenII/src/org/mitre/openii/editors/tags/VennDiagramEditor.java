@@ -114,7 +114,7 @@ public class VennDiagramEditor extends OpenIIEditor implements VennDiagramListen
 				//Create a temporary mapping with the selected schemas and open in a new Harmony tab				
 				Mapping tempMapping = createMapping(currSelectionEvent.getSets().getSchema1(),
 						currSelectionEvent.getSets().getSchema2());				
-				OpenIIManager.addMapping(tempMapping);	
+				OpenIIManager.addProject(tempMapping);	
 				EditorManager.launchDefaultEditor(tempMapping);				
 			
 				//Remove the temporary mapping

@@ -14,13 +14,13 @@ import org.mitre.schemastore.model.Schema;
 class AddSchemasToListDialog extends ElementListSelectionDialog
 {
 	/** Constructs the dialog */
-	AddSchemasToListDialog(Shell shell, ArrayList<Integer> selectedSchemaIDs)
+	AddSchemasToListDialog(Shell shell, ArrayList<Schema> selectedSchemas)
 	{
 		super(shell,new LabelProvider());
 		setMessage("Select Schemas (* = any string, ? = any char):");
 		setMultipleSelection(true);
 		ArrayList<Schema> schemas = OpenIIManager.getSchemas();
-		schemas.removeAll(selectedSchemaIDs);
+		schemas.removeAll(selectedSchemas);
 		setElements(WidgetUtilities.sortList(schemas).toArray());
 	}	
 
