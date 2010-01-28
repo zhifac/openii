@@ -16,7 +16,7 @@ import org.mitre.openii.views.manager.projects.AutoMappingDialog;
 import org.mitre.openii.views.manager.projects.DeleteProjectDialog;
 import org.mitre.openii.views.manager.projects.EditProjectDialog;
 import org.mitre.openii.views.manager.projects.ExportProjectDialog;
-import org.mitre.openii.views.manager.projects.MergeMappingDialog;
+import org.mitre.openii.views.manager.projects.MergeProjectsDialog;
 import org.mitre.openii.views.manager.projects.importer.ImportProjectDialog;
 import org.mitre.openii.views.manager.schemas.CreateDataSourceDialog;
 import org.mitre.openii.views.manager.schemas.DeleteDataSourceDialog;
@@ -180,7 +180,7 @@ public class ManagerAction extends Action
 
 		/** Handles the merging of project */
 		if(actionType == MERGE_PROJECTS)
-			new MergeMappingDialog(shell).open();
+			new MergeProjectsDialog(shell).open();
 		
 		/** Handles the editing of a project */
 		if(actionType == EDIT_PROJECT)

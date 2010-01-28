@@ -347,7 +347,7 @@ public class OpenIIManager
 			Integer mappingID = RepositoryManager.getClient().addMapping(mapping);
 			if(mappingID!=null)
 				{ mapping.setId(mappingID); fireMappingAdded(mapping); return mappingID; }
-		} catch(Exception e) {System.out.println(e.getMessage());}
+		} catch(Exception e) {}
 		return null;
 	}
 	
@@ -357,6 +357,20 @@ public class OpenIIManager
 		try {
 			if(RepositoryManager.getClient().deleteMapping(mappingID))
 				{ fireMappingDeleted(mappingID); return true; }
+		} catch(Exception e) {}
+		return false;
+	}
+	
+	/** Returns the specified mapping cells */
+	public static ArrayList<MappingCell> getMappingCells(Integer mappingID)
+		{ try { return RepositoryManager.getClient().getMappingCells(mappingID); } catch(Exception e) { return new ArrayList<MappingCell>(); } }
+
+	/** Saves mapping cells to the repository */
+	public static boolean saveMappingCells(Integer mappingID, ArrayList<MappingCell> mappingCells)
+	{
+		try {
+			if(RepositoryManager.getClient().saveMappingCells(mappingID, mappingCells))
+				{ fireMappingModified(mappingID); return true; }
 		} catch(Exception e) {}
 		return false;
 	}
@@ -372,12 +386,6 @@ public class OpenIIManager
 	/** Inform listeners that mapping was removed */
 	public static void fireMappingDeleted(Integer mappingID)
 		{ for(OpenIIListener listener : listeners.get()) listener.mappingDeleted(mappingID); }
-	
-	//------------ Mapping Cell Functionality -------------
-
-	/** Returns the specified mapping cells */
-	public static ArrayList<MappingCell> getMappingCells(Integer mappingID)
-		{ try { return RepositoryManager.getClient().getMappingCells(mappingID); } catch(Exception e) { return new ArrayList<MappingCell>(); } }
 	
 	//------------ Data Source Functionality -------------
 
