@@ -61,45 +61,32 @@ public class SchemaStoreClient
 	/** Constructor for the Schema Store Client */
 	public SchemaStoreClient() throws RemoteException
 	{
-//		try {
-//			Constructor<?> constructor = SchemaStore.class.getConstructor(new Class<?>[]{});
-//			schemaStore = constructor.newInstance(new Object[]{});
-//		} catch(Exception e) { throw new RemoteException("(E) Failed to connect to SchemaStore: " + e.getMessage()); }
-
-		System.out.println("Use of SchemaStoreClient has been temporarily disabled during the upgrade to Version 7");
-		System.out.println("Please contact Christopher Wolf (703-983-4565) if you have questions");
-		System.out.println("To reactivate, uncomment the constructor of the SchemaStoreClient class");
-		System.out.println("Proceed at your own risk!!!!");
-		System.exit(0);
+		try {
+			Constructor<?> constructor = SchemaStore.class.getConstructor(new Class<?>[]{});
+			schemaStore = constructor.newInstance(new Object[]{});
+		} catch(Exception e) { throw new RemoteException("(E) Failed to connect to SchemaStore: " + e.getMessage()); }
 	}
 
 	/** Constructor for the Schema Store Client */
 	public SchemaStoreClient(Repository repository) throws RemoteException
 	{
-//		try {			
-//			// Connects to a database or web service
-//			if(!repository.getType().equals(Repository.SERVICE))
-//			{
-//				Integer type = repository.getType().equals(Repository.POSTGRES) ? DatabaseConnection.POSTGRES : DatabaseConnection.DERBY;
-//				Class<?> types[] = new Class[] {Integer.class,String.class,String.class,String.class,String.class};
-//				Object args[] = new Object[] {type,repository.getURI().toString(),repository.getDatabaseName(),repository.getDatabaseUser(),repository.getDatabasePassword()};
-//				Constructor<?> constructor = SchemaStore.class.getConstructor(types);
-//				schemaStore = constructor.newInstance(args);
-//			}
-//			else schemaStore = new SchemaStoreProxy(repository.getURI().toString());
-//
-//			// Verify connection
-//			boolean connected = (Boolean)callMethod("isConnected",new Object[] {});
-//			if(!connected) throw new Exception("Invalid database connection");
-//		}
-//		catch(Exception e) { throw new RemoteException("(E) Failed to connect to SchemaStore: " + e.getMessage()); }
+		try {			
+			// Connects to a database or web service
+			if(!repository.getType().equals(Repository.SERVICE))
+			{
+				Integer type = repository.getType().equals(Repository.POSTGRES) ? DatabaseConnection.POSTGRES : DatabaseConnection.DERBY;
+				Class<?> types[] = new Class[] {Integer.class,String.class,String.class,String.class,String.class};
+				Object args[] = new Object[] {type,repository.getURI().toString(),repository.getDatabaseName(),repository.getDatabaseUser(),repository.getDatabasePassword()};
+				Constructor<?> constructor = SchemaStore.class.getConstructor(types);
+				schemaStore = constructor.newInstance(args);
+			}
+			else schemaStore = new SchemaStoreProxy(repository.getURI().toString());
 
-
-		System.out.println("Use of SchemaStoreClient has been temporarily disabled during the upgrade to Version 7");
-		System.out.println("Please contact Christopher Wolf (703-983-4565) if you have questions");
-		System.out.println("To reactivate, uncomment the constructor of the SchemaStoreClient class");
-		System.out.println("Proceed at your own risk!!!!");
-		System.exit(0);
+			// Verify connection
+			boolean connected = (Boolean)callMethod("isConnected",new Object[] {});
+			if(!connected) throw new Exception("Invalid database connection");
+		}
+		catch(Exception e) { throw new RemoteException("(E) Failed to connect to SchemaStore: " + e.getMessage()); }
 	}
 
 	//------------------
@@ -536,10 +523,7 @@ public class SchemaStoreClient
 		return schemaID==0 ? null : schemaID;
 	}
 
-	/** Saves the mapping and mapping cells to the web service */
-	public Integer saveMapping(Mapping mapping, ArrayList<MappingCell> mappingCells) throws RemoteException
-	{
-		Integer mappingID = (Integer)callMethod("saveMapping",new Object[] {mapping,mappingCells.toArray(new MappingCell[0])});
-		return mappingID==0 ? null : mappingID;
-	}
+	/** Saves the mapping cells to the web service */
+	public boolean saveMappingCells(Integer mappingID, ArrayList<MappingCell> mappingCells) throws RemoteException
+		{ return (Boolean)callMethod("saveMappingCells",new Object[] {mappingID,mappingCells.toArray(new MappingCell[0])}); }
 }
