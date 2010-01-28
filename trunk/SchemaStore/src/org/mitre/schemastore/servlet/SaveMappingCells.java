@@ -7,14 +7,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.mitre.schemastore.data.DataManager;
-import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
 
 /**
  * Handles the saving of a mapping to the schema store web service
  * @author CWOLF
  */
-public class SaveMapping
+public class SaveMappingCells
 {	
 	/** Private class for referencing mapping cell IDs */
 	static private class MappingCellHashMap extends HashMap<String,MappingCell>
@@ -43,19 +42,10 @@ public class SaveMapping
 	}
 	
 	/** Saves the specified mapping into the web services */
-	static Integer saveMapping(DataManager manager, Mapping mapping, ArrayList<MappingCell> mappingCells) throws RemoteException
-	{
-		Integer mappingID = null;
-		
-		// Stores the old mapping information
-		ArrayList<MappingCell> oldMappingCells = new ArrayList<MappingCell>();
-		
-		// Get old mapping information
-		if(mapping.getId()!=null)
-		{
-			mappingID = mapping.getId();
-			oldMappingCells = manager.getProjects().getMappingCells(mappingID);
-		}
+	static Boolean saveMappingCells(DataManager manager, Integer mappingID, ArrayList<MappingCell> mappingCells) throws RemoteException
+	{		
+		// Get old mapping cells
+		ArrayList<MappingCell> oldMappingCells = manager.getProjects().getMappingCells(mappingID);
 		
 		// Build reference tables for the old and new mapping cells
 		MappingCellHashMap oldMappingCellRefs = new MappingCellHashMap(oldMappingCells);
@@ -74,13 +64,6 @@ public class SaveMapping
 		// Update the mapping
 		try
 		{
-			// Adds the mapping if needed
-			if(mappingID==null)
-			{
-				mappingID = manager.getProjects().addMapping(mapping);
-				mapping.setId(mappingID);
-			}
-			
 			// Removes all mapping cells that are no longer used
 			for(MappingCell oldMappingCell : oldMappingCells)
 				if(!mappingCellRefs.contains(oldMappingCell))
@@ -89,7 +72,7 @@ public class SaveMapping
 			// Adds or updates all new mapping cells
 			for(MappingCell mappingCell : mappingCells)
 			{
-				mappingCell.setMappingId(mapping.getId());
+				mappingCell.setMappingId(mappingID);
 
 				// Handles new mapping cells
 				if(mappingCell.getId()==null)
@@ -109,27 +92,14 @@ public class SaveMapping
 		// Reverts back to the old mapping if a failure occurred
 		catch(Exception e)
 		{
-			mappingID = null;
-			
-			// Resets a newly created mapping
-			if(mapping.getId()==null && mapping.getId()!=null)
+			for(MappingCell mappingCell : manager.getProjects().getMappingCells(mappingID))
 			{
-				manager.getProjects().deleteProject(mapping.getId());
-				mapping.setId(null);
-			}
-			
-			// Resets to the original mapping
-			else
-			{
-				for(MappingCell mappingCell : manager.getProjects().getMappingCells(mapping.getId()))
-				{
-					MappingCell oldMappingCell = oldMappingCellRefs.getMappingCell(mappingCell);
-					if(oldMappingCell==null) manager.getProjects().deleteMappingCell(mappingCell.getId());
-					else manager.getProjects().updateMappingCell(oldMappingCell);
-				}
+				MappingCell oldMappingCell = oldMappingCellRefs.getMappingCell(mappingCell);
+				if(oldMappingCell==null) manager.getProjects().deleteMappingCell(mappingCell.getId());
+				else manager.getProjects().updateMappingCell(oldMappingCell);
 			}
 		}
 		
-		return mappingID==null ? 0 : mappingID;
+		return success;
 	}
 }

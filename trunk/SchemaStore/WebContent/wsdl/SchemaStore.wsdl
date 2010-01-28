@@ -163,44 +163,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
      </sequence>
     </complexType>
    </element>
-   <element name="addProject">
-    <complexType>
-     <sequence>
-      <element name="project" type="tns1:Project"/>
-     </sequence>
-    </complexType>
-   </element>
-   <element name="addProjectResponse">
-    <complexType>
-     <sequence>
-      <element name="addProjectReturn" type="xsd:int"/>
-     </sequence>
-    </complexType>
-   </element>
-   <element name="addSchema">
-    <complexType>
-     <sequence>
-      <element name="schema" type="tns1:Schema"/>
-     </sequence>
-    </complexType>
-   </element>
-   <element name="addSchemaResponse">
-    <complexType>
-     <sequence>
-      <element name="addSchemaReturn" type="xsd:int"/>
-     </sequence>
-    </complexType>
-   </element>
-   <element name="getSchemas">
-    <complexType/>
-   </element>
-   <element name="getSchemasResponse">
-    <complexType>
-     <sequence>
-      <element maxOccurs="unbounded" name="getSchemasReturn" type="tns1:Schema"/>
-     </sequence>
-    </complexType>
-   </element>
    <element name="importSchema">
     <complexType>
      <sequence>
@@ -267,6 +229,44 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
     <complexType>
      <sequence>
       <element name="getDataSourceReturn" type="tns1:DataSource"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="addProject">
+    <complexType>
+     <sequence>
+      <element name="project" type="tns1:Project"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="addProjectResponse">
+    <complexType>
+     <sequence>
+      <element name="addProjectReturn" type="xsd:int"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getSchemas">
+    <complexType/>
+   </element>
+   <element name="getSchemasResponse">
+    <complexType>
+     <sequence>
+      <element maxOccurs="unbounded" name="getSchemasReturn" type="tns1:Schema"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="addSchema">
+    <complexType>
+     <sequence>
+      <element name="schema" type="tns1:Schema"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="addSchemaResponse">
+    <complexType>
+     <sequence>
+      <element name="addSchemaReturn" type="xsd:int"/>
      </sequence>
     </complexType>
    </element>
@@ -1080,6 +1080,20 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
      </sequence>
     </complexType>
    </element>
+   <element name="deleteMapping">
+    <complexType>
+     <sequence>
+      <element name="mappingID" type="xsd:int"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="deleteMappingResponse">
+    <complexType>
+     <sequence>
+      <element name="deleteMappingReturn" type="xsd:boolean"/>
+     </sequence>
+    </complexType>
+   </element>
    <element name="getMappingCells">
     <complexType>
      <sequence>
@@ -1141,32 +1155,18 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
      </sequence>
     </complexType>
    </element>
-   <element name="saveMapping">
+   <element name="saveMappingCells">
     <complexType>
      <sequence>
-      <element name="mapping" type="tns1:Mapping"/>
+      <element name="mappingID" type="xsd:int"/>
       <element maxOccurs="unbounded" name="mappingCells" type="tns1:MappingCell"/>
      </sequence>
     </complexType>
    </element>
-   <element name="saveMappingResponse">
+   <element name="saveMappingCellsResponse">
     <complexType>
      <sequence>
-      <element name="saveMappingReturn" type="xsd:int"/>
-     </sequence>
-    </complexType>
-   </element>
-   <element name="deleteMapping">
-    <complexType>
-     <sequence>
-      <element name="mappingID" type="xsd:int"/>
-     </sequence>
-    </complexType>
-   </element>
-   <element name="deleteMappingResponse">
-    <complexType>
-     <sequence>
-      <element name="deleteMappingReturn" type="xsd:boolean"/>
+      <element name="saveMappingCellsReturn" type="xsd:boolean"/>
      </sequence>
     </complexType>
    </element>
@@ -1992,15 +1992,15 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
    </wsdl:message>
 
-   <wsdl:message name="setAnnotationRequest">
-
-      <wsdl:part element="impl:setAnnotation" name="parameters"/>
-
-   </wsdl:message>
-
    <wsdl:message name="addProjectResponse">
 
       <wsdl:part element="impl:addProjectResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="setAnnotationRequest">
+
+      <wsdl:part element="impl:setAnnotation" name="parameters"/>
 
    </wsdl:message>
 
@@ -2112,15 +2112,15 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
    </wsdl:message>
 
-   <wsdl:message name="getProjectResponse">
-
-      <wsdl:part element="impl:getProjectResponse" name="parameters"/>
-
-   </wsdl:message>
-
    <wsdl:message name="addSchemaRequest">
 
       <wsdl:part element="impl:addSchema" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getProjectResponse">
+
+      <wsdl:part element="impl:getProjectResponse" name="parameters"/>
 
    </wsdl:message>
 
@@ -2196,12 +2196,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
    </wsdl:message>
 
-   <wsdl:message name="saveMappingRequest">
-
-      <wsdl:part element="impl:saveMapping" name="parameters"/>
-
-   </wsdl:message>
-
    <wsdl:message name="getAnnotationRequest">
 
       <wsdl:part element="impl:getAnnotation" name="parameters"/>
@@ -2229,6 +2223,12 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
    <wsdl:message name="deleteSchemaRequest">
 
       <wsdl:part element="impl:deleteSchema" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="saveMappingCellsRequest">
+
+      <wsdl:part element="impl:saveMappingCells" name="parameters"/>
 
    </wsdl:message>
 
@@ -2376,12 +2376,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
    </wsdl:message>
 
-   <wsdl:message name="saveMappingResponse">
-
-      <wsdl:part element="impl:saveMappingResponse" name="parameters"/>
-
-   </wsdl:message>
-
    <wsdl:message name="deleteAliasResponse">
 
       <wsdl:part element="impl:deleteAliasResponse" name="parameters"/>
@@ -2418,15 +2412,15 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
    </wsdl:message>
 
-   <wsdl:message name="importSchemaResponse">
-
-      <wsdl:part element="impl:importSchemaResponse" name="parameters"/>
-
-   </wsdl:message>
-
    <wsdl:message name="getMappingsResponse">
 
       <wsdl:part element="impl:getMappingsResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="importSchemaResponse">
+
+      <wsdl:part element="impl:importSchemaResponse" name="parameters"/>
 
    </wsdl:message>
 
@@ -2457,6 +2451,12 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
    <wsdl:message name="getSchemaElementCountResponse">
 
       <wsdl:part element="impl:getSchemaElementCountResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="saveMappingCellsResponse">
+
+      <wsdl:part element="impl:saveMappingCellsResponse" name="parameters"/>
 
    </wsdl:message>
 
@@ -2628,30 +2628,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
       </wsdl:operation>
 
-      <wsdl:operation name="addProject">
-
-         <wsdl:input message="impl:addProjectRequest" name="addProjectRequest"/>
-
-         <wsdl:output message="impl:addProjectResponse" name="addProjectResponse"/>
-
-      </wsdl:operation>
-
-      <wsdl:operation name="addSchema">
-
-         <wsdl:input message="impl:addSchemaRequest" name="addSchemaRequest"/>
-
-         <wsdl:output message="impl:addSchemaResponse" name="addSchemaResponse"/>
-
-      </wsdl:operation>
-
-      <wsdl:operation name="getSchemas">
-
-         <wsdl:input message="impl:getSchemasRequest" name="getSchemasRequest"/>
-
-         <wsdl:output message="impl:getSchemasResponse" name="getSchemasResponse"/>
-
-      </wsdl:operation>
-
       <wsdl:operation name="importSchema">
 
          <wsdl:input message="impl:importSchemaRequest" name="importSchemaRequest"/>
@@ -2665,6 +2641,30 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
          <wsdl:input message="impl:getDataSourceRequest" name="getDataSourceRequest"/>
 
          <wsdl:output message="impl:getDataSourceResponse" name="getDataSourceResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="addProject">
+
+         <wsdl:input message="impl:addProjectRequest" name="addProjectRequest"/>
+
+         <wsdl:output message="impl:addProjectResponse" name="addProjectResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getSchemas">
+
+         <wsdl:input message="impl:getSchemasRequest" name="getSchemasRequest"/>
+
+         <wsdl:output message="impl:getSchemasResponse" name="getSchemasResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="addSchema">
+
+         <wsdl:input message="impl:addSchemaRequest" name="addSchemaRequest"/>
+
+         <wsdl:output message="impl:addSchemaResponse" name="addSchemaResponse"/>
 
       </wsdl:operation>
 
@@ -3132,6 +3132,14 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
       </wsdl:operation>
 
+      <wsdl:operation name="deleteMapping">
+
+         <wsdl:input message="impl:deleteMappingRequest" name="deleteMappingRequest"/>
+
+         <wsdl:output message="impl:deleteMappingResponse" name="deleteMappingResponse"/>
+
+      </wsdl:operation>
+
       <wsdl:operation name="getMappingCells">
 
          <wsdl:input message="impl:getMappingCellsRequest" name="getMappingCellsRequest"/>
@@ -3164,19 +3172,11 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
       </wsdl:operation>
 
-      <wsdl:operation name="saveMapping">
+      <wsdl:operation name="saveMappingCells">
 
-         <wsdl:input message="impl:saveMappingRequest" name="saveMappingRequest"/>
+         <wsdl:input message="impl:saveMappingCellsRequest" name="saveMappingCellsRequest"/>
 
-         <wsdl:output message="impl:saveMappingResponse" name="saveMappingResponse"/>
-
-      </wsdl:operation>
-
-      <wsdl:operation name="deleteMapping">
-
-         <wsdl:input message="impl:deleteMappingRequest" name="deleteMappingRequest"/>
-
-         <wsdl:output message="impl:deleteMappingResponse" name="deleteMappingResponse"/>
+         <wsdl:output message="impl:saveMappingCellsResponse" name="saveMappingCellsResponse"/>
 
       </wsdl:operation>
 
@@ -3456,60 +3456,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
       </wsdl:operation>
 
-      <wsdl:operation name="addProject">
-
-         <wsdlsoap:operation soapAction=""/>
-
-         <wsdl:input name="addProjectRequest">
-
-            <wsdlsoap:body use="literal"/>
-
-         </wsdl:input>
-
-         <wsdl:output name="addProjectResponse">
-
-            <wsdlsoap:body use="literal"/>
-
-         </wsdl:output>
-
-      </wsdl:operation>
-
-      <wsdl:operation name="addSchema">
-
-         <wsdlsoap:operation soapAction=""/>
-
-         <wsdl:input name="addSchemaRequest">
-
-            <wsdlsoap:body use="literal"/>
-
-         </wsdl:input>
-
-         <wsdl:output name="addSchemaResponse">
-
-            <wsdlsoap:body use="literal"/>
-
-         </wsdl:output>
-
-      </wsdl:operation>
-
-      <wsdl:operation name="getSchemas">
-
-         <wsdlsoap:operation soapAction=""/>
-
-         <wsdl:input name="getSchemasRequest">
-
-            <wsdlsoap:body use="literal"/>
-
-         </wsdl:input>
-
-         <wsdl:output name="getSchemasResponse">
-
-            <wsdlsoap:body use="literal"/>
-
-         </wsdl:output>
-
-      </wsdl:operation>
-
       <wsdl:operation name="importSchema">
 
          <wsdlsoap:operation soapAction=""/>
@@ -3539,6 +3485,60 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
          </wsdl:input>
 
          <wsdl:output name="getDataSourceResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="addProject">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="addProjectRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="addProjectResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getSchemas">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="getSchemasRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="getSchemasResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="addSchema">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="addSchemaRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="addSchemaResponse">
 
             <wsdlsoap:body use="literal"/>
 
@@ -4590,6 +4590,24 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
       </wsdl:operation>
 
+      <wsdl:operation name="deleteMapping">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="deleteMappingRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="deleteMappingResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
       <wsdl:operation name="getMappingCells">
 
          <wsdlsoap:operation soapAction=""/>
@@ -4662,35 +4680,17 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
       </wsdl:operation>
 
-      <wsdl:operation name="saveMapping">
+      <wsdl:operation name="saveMappingCells">
 
          <wsdlsoap:operation soapAction=""/>
 
-         <wsdl:input name="saveMappingRequest">
+         <wsdl:input name="saveMappingCellsRequest">
 
             <wsdlsoap:body use="literal"/>
 
          </wsdl:input>
 
-         <wsdl:output name="saveMappingResponse">
-
-            <wsdlsoap:body use="literal"/>
-
-         </wsdl:output>
-
-      </wsdl:operation>
-
-      <wsdl:operation name="deleteMapping">
-
-         <wsdlsoap:operation soapAction=""/>
-
-         <wsdl:input name="deleteMappingRequest">
-
-            <wsdlsoap:body use="literal"/>
-
-         </wsdl:input>
-
-         <wsdl:output name="deleteMappingResponse">
+         <wsdl:output name="saveMappingCellsResponse">
 
             <wsdlsoap:body use="literal"/>
 
