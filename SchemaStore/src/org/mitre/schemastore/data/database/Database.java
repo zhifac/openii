@@ -1326,10 +1326,10 @@ public class Database
 		boolean success = false;
 		try {
 			Statement stmt = connection.getStatement();
-			stmt.executeUpdate("DELETE FROM proposed_mapping_cell WHERE mapping_id="+mappingID+")");
-			stmt.executeUpdate("DELETE FROM mapping_input WHERE cell_id IN (SELECT id FROM validated_mapping_cell,mapping WHERE mapping_id="+mappingID+")");
-			stmt.executeUpdate("DELETE FROM validated_mapping_cell,mapping WHERE mapping_id="+mappingID);
-			stmt.executeUpdate("DELETE FROM mapping WHERE mapping_id="+mappingID);
+			stmt.executeUpdate("DELETE FROM proposed_mapping_cell WHERE mapping_id="+mappingID);
+			stmt.executeUpdate("DELETE FROM mapping_input WHERE cell_id IN (SELECT id FROM validated_mapping_cell WHERE mapping_id="+mappingID+")");
+			stmt.executeUpdate("DELETE FROM validated_mapping_cell WHERE mapping_id="+mappingID);
+			stmt.executeUpdate("DELETE FROM mapping WHERE id="+mappingID);
 			stmt.close();
 			connection.commit();
 			success = true;

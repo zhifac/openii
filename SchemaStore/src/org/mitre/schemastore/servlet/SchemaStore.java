@@ -467,12 +467,12 @@ public class SchemaStore
 	}
 	
 	/** Web service to save the mapping and mapping cells */
-	public int saveMapping(Mapping mapping, MappingCell[] mappingCells) throws RemoteException
+	public boolean saveMappingCells(int mappingID, MappingCell[] mappingCells) throws RemoteException
 	{
 		ArrayList<MappingCell> mappingCellArray = new ArrayList<MappingCell>();
 		if(mappingCells!=null)
 			for(MappingCell mappingCell : Arrays.asList(mappingCells))
 				mappingCellArray.add(mappingCell.copy());
-		return SaveMapping.saveMapping(manager,mapping,mappingCellArray);
+		return SaveMappingCells.saveMappingCells(manager,mappingID,mappingCellArray);
 	}
 }
