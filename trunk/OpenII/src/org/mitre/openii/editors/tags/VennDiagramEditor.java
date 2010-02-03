@@ -26,7 +26,8 @@ import org.mitre.openii.model.EditorInput;
 import org.mitre.openii.model.EditorManager;
 import org.mitre.openii.model.OpenIIManager;
 import org.mitre.schemastore.model.Mapping;
-import org.mitre.schemastore.model.MappingSchema;
+import org.mitre.schemastore.model.Project;
+import org.mitre.schemastore.model.ProjectSchema;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.schemaInfo.FilteredSchemaInfo;
 import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
@@ -107,42 +108,52 @@ public class VennDiagramEditor extends OpenIIEditor implements VennDiagramListen
 		}
 	}
 	
-	private Menu createMenu(Composite parent) {
-		Menu menu = new Menu(vennDiagramMatrix);
-		SelectionListener menuListener = new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {				
-				//Create a temporary mapping with the selected schemas and open in a new Harmony tab				
-				Mapping tempMapping = createMapping(currSelectionEvent.getSets().getSchema1(),
-						currSelectionEvent.getSets().getSchema2());				
-				OpenIIManager.addProject(tempMapping);	
-				EditorManager.launchDefaultEditor(tempMapping);				
+	/** Displays a drop-down menu in the Venn Diagram editor */
+	private Menu createMenu(Composite parent)
+	{
+		// Handles the selection of the Harmony menu item
+		SelectionListener menuListener = new SelectionAdapter()
+		{
+			public void widgetSelected(SelectionEvent e)
+			{
+				// Create a temporary project with the selected schemas
+				Schema schema1 = currSelectionEvent.getSets().getSchema1();
+				Schema schema2 = currSelectionEvent.getSets().getSchema2();
+				Project project = createProject(schema1,schema2);
+
+				// Launch the Harmony editor on the temporary project
+				EditorManager.launchDefaultEditor(project);
 			
-				//Remove the temporary mapping
-				OpenIIManager.deleteMapping(tempMapping.getId());
+				// Remove the temporary project
+				OpenIIManager.deleteMapping(project.getId());
 			}
 		};
 		
+		// Generate the drop-down menu
+		Menu menu = new Menu(vennDiagramMatrix);
 		MenuItem item = new MenuItem (menu, SWT.NONE);	
 		item.setText("Open schemas in Harmony");
-		item.addSelectionListener(menuListener);
-		
+		item.addSelectionListener(menuListener);		
 		return menu;
 	}
 	
-	/** Create a temporary mapping using the given schemas */
-	private Mapping createMapping(Schema s1, Schema s2) {
-		Integer mappingID = 99;
-		//while(OpenIIManager.getMapping(mappingID) != null) mappingID++;		
+	/** Create a temporary project using the given schemas */
+	private Project createProject(Schema schema1, Schema schema2)
+	{
+		// Generate the project
+		ProjectSchema leftSchema = new ProjectSchema(schema1.getId(), schema1.getName(), null);
+		ProjectSchema rightSchema = new ProjectSchema(schema2.getId(), schema2.getName(), null);
+		ProjectSchema[] schemas = new ProjectSchema[]{leftSchema,rightSchema};
+		String pair = schema1.getName() + " to " + schema2.getName();
+		Project project = new Project(null,pair,"Mapping frpm " + pair,"",schemas);
+		OpenIIManager.addProject(project);
 		
-		MappingSchema leftSchema = new MappingSchema(s1.getId(), s1.getName(), "", MappingSchema.LEFT);
-		//leftSchema.seetSchemaModel(OpenIIManager.getSchemaInfo(s1.getId()).get);		
-		MappingSchema rightSchema = new MappingSchema(s2.getId(), s1.getName(), "", MappingSchema.RIGHT);;
-		Mapping mapping = new Mapping(mappingID, s1.getName() + " to " + s2.getName(), 
-				"Mapping of " + s1.getName() + ", and " + s2.getName(),
-				"", new MappingSchema[] {leftSchema, rightSchema});
-		mapping.setLeftSchema(leftSchema);
-		mapping.setRightSchema(rightSchema);
-		return mapping;
+		// Generate the mapping
+		Mapping mapping = new Mapping(null,project.getId(),schema1.getId(),schema2.getId());
+		OpenIIManager.addMapping(mapping);
+
+		// Return the generated project
+		return project;
 	}
 
 	/** Show right-click menu with option to open the schemas corresponding to the selected venn 
