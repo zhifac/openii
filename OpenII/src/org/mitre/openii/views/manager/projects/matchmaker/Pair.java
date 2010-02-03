@@ -1,27 +1,35 @@
 package org.mitre.openii.views.manager.projects.matchmaker;
 
-
 /**
- * A pair of files. Since all Harmony matching is done between two targets,
- * this is intended to represent a pair of files that either have been matched,
- * or will be matched.
- * 
- * <p>Pair objects are what Permuters will return.  See the GenericPermuter and nextElement() for its relevance.
+ * Class for storing a pair of elements
  * @author DMALLEN
  */
-public class Pair {
-	public Object a;
-	public Object b;
+public class Pair<T>
+{
+	// Stores the pair of objects
+	private T item1, item2;
 
-	public Pair(Object a, Object b) {
-		this.a = a;
-		this.b = b;
+	/** Constructs the pair */
+	public Pair(T item1, T item2)
+		{ this.item1 = item1; this.item2 = item2; }
+
+	/** Returns the first item */
+	public T getItem1() { return item1; }
+
+	/** Returns the second item */
+	public T getItem2() { return item2; }
+
+	/** Indicates that two pairs are equal */
+	public boolean equals(Object object)
+	{
+		if(!(object instanceof Pair)) return false;
+		Pair<?> pair = (Pair<?>)object;
+		if(pair.getItem1().equals(item1) && pair.getItem2().equals(item2)) return true;
+		if(pair.getItem1().equals(item2) && pair.getItem2().equals(item1)) return true;
+		return false;
 	}
-
-	public Object getA() { return a; }
-	public Object getB() { return b; }
-
-	public String toString() {
-		return new String("Pair: (" + a + ", " + b + ")");
-	} // End toString()
-} // End FilePair
+	
+	/** Displays the pair of items */
+	public String toString()
+		{ return new String(item1.toString() + " and " + item2.toString()); }
+}
