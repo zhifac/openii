@@ -2,51 +2,38 @@ package org.mitre.openii.views.manager.projects;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.mitre.openii.application.OpenIIActivator;
-import org.mitre.openii.views.manager.projects.matchmaker.Feeder;
+import org.mitre.openii.views.manager.projects.matchmaker.MappingProcessor;
 import org.mitre.openii.widgets.BasicWidgets;
 import org.mitre.schemastore.model.Project;
 
 /**
- * Map all possible pair-wise schemas in a "Mapping" object 
+ * Map all possible pair-wise schemas in a project
  * @author HAOLI
- *
  */
-public class AutoMappingDialog extends Dialog implements ModifyListener
+public class AutoMappingDialog extends Dialog
 {
+	/** Stores the project being mapped */
 	private Project project;
+	
+	// Stores various fields used by the dialog
 	private Text nameField;
 	private Text authorField;
 	private Text descriptionField;
 	
+	/** Constructs the auto-map dialog */
 	public AutoMappingDialog(Shell shell, Project project)
 	{ 
 		super(shell); 
 		this.project = project; 
-	}
-	
-	protected void runFeeder() {
-		Feeder feeder;
-		
-		try {
-			// match maker runs n-way matches
-			feeder = new Feeder(project);
-			feeder.startRepeatedMatches(); 
-			feeder.mergeMatches(); 
-			System.out.println("Map All completed.");
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} 
 	}
 	
 	/** Configures the dialog shell */
@@ -56,30 +43,7 @@ public class AutoMappingDialog extends Dialog implements ModifyListener
 		shell.setImage(OpenIIActivator.getImage("Mapping.gif"));
 		shell.setText("Auto Mapping");
 	}
-	
-	protected Control createDialogArea(Composite parent)
-	{			
-		// Construct the main pane
-		Composite pane = new Composite(parent, SWT.DIALOG_TRIM);
-		pane.setLayout(new GridLayout(1,false));
-		GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
-		gridData.widthHint = 400;
-		pane.setLayoutData(gridData);
-		
-		
-		// Generate the pane components
-		createInfoPane(pane);
-//		createSchemaPane(pane);
 
-		// Return the generated pane
-		return pane;
-	}
-	
-	protected void okPressed()
-	{		
-		runFeeder();
-	}
-	
 	/** Creates the mapping info pane */
 	private void createInfoPane(Composite parent)
 	{
@@ -101,13 +65,39 @@ public class AutoMappingDialog extends Dialog implements ModifyListener
 			authorField.setText(project.getAuthor());
 			descriptionField.setText(project.getDescription());
 		}
-		
-		nameField.addModifyListener(this);
-		authorField.addModifyListener(this);
-		descriptionField.addModifyListener(this);
 	}
+	
+	/** Lays out the dialog pane */
+	protected Control createDialogArea(Composite parent)
+	{			
+		// Construct the main pane
+		Composite pane = new Composite(parent, SWT.DIALOG_TRIM);
+		pane.setLayout(new GridLayout(1,false));
+		GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
+		gridData.widthHint = 400;
+		pane.setLayoutData(gridData);		
+		
+		// Generate the pane components
+		createInfoPane(pane);
 
-	public void modifyText(ModifyEvent e) {
-		System.out.println( ((Text)e.getSource()).getText() );
+		// Return the generated pane
+		return pane;
+	}
+	
+	/** Automatically maps the various schemas in the project */
+	protected void okPressed()
+	{
+		try {
+			MappingProcessor.run(project);
+			getShell().dispose();
+		}
+		catch(Exception e)
+		{
+			MessageBox messageBox = new MessageBox(getShell(),SWT.ERROR);
+			messageBox.setText("Mapping Generation Error");
+			messageBox.setMessage("Failed to automatically generate mappings!  " + e.getMessage());
+			messageBox.open();
+			return;
+		}
 	}
 }
