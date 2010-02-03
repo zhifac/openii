@@ -55,8 +55,8 @@
 		<copy file="src/schemastore.xml" todir="build/classes"/>
 		<copy file="src/schemamodels.xml" todir="build/classes"/>
         <copy file="src/mappingfunctions.xml" todir="build/classes"/>
-		<copy file="src/org/mitre/schemastore/data/database/SchemaStoreData.txt" todir="build/classes/org/mitre/schemastore/data/database"/>
-		<copy file="src/org/mitre/schemastore/data/database/SchemaStoreStructure.txt" todir="build/classes/org/mitre/schemastore/data/database"/>
+		<copy file="src/org/mitre/schemastore/data/database/updates/SchemaStoreData.txt" todir="build/classes/org/mitre/schemastore/data/database/updates"/>
+		<copy file="src/org/mitre/schemastore/data/database/updates/SchemaStoreStructure.txt" todir="build/classes/org/mitre/schemastore/data/database/updates"/>
 	</target>
 
 	<!-- Builds the SchemaStoreModel file jar -->

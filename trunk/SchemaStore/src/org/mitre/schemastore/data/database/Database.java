@@ -214,7 +214,7 @@ public class Database
 			Statement stmt = connection.getStatement();
 			ResultSet rs = stmt.executeQuery("SELECT id FROM \"schema\" " +
 											 "EXCEPT SELECT schema_id AS id FROM data_source " +
-											 "EXCEPT SELECT schema_id AS id FROM mapping_schema " +
+											 "EXCEPT SELECT schema_id AS id FROM project_schema " +
 											 "EXCEPT SELECT base_id AS id FROM extensions");
 			while(rs.next())
 				schemas.add(rs.getInt("id"));
