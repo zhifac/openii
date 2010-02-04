@@ -3,8 +3,10 @@ package org.mitre.schemastore.porters.projectExporters;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Hashtable;
 
+import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.Project;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.ProjectSchema;
@@ -161,5 +163,11 @@ public class XMIMappingExporter extends ProjectExporter {
 	
 	public String getName() {
 		return "XMI Exporter";
+	}
+
+	@Override
+	public void exportProject(Project project, HashMap<Mapping, ArrayList<MappingCell>> mappings, File file) throws IOException {
+		// TODO Auto-generated method stub
+		
 	}
 } // End XMIMappingExporter
