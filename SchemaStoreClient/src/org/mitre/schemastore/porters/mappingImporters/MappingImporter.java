@@ -70,8 +70,10 @@ public abstract class MappingImporter extends Importer
 			
 		// Imports the mapping
 		try {
-			Integer mappingID = client.saveMapping(mapping, mappingCells);
+			Integer mappingID = client.addMapping(mapping);
 			mapping.setId(mappingID);
+			if(!client.saveMappingCells(mapping.getId(), mappingCells))
+				throw new Exception("");
 		}
 
 		// Delete the mapping if import wasn't totally successful
