@@ -181,6 +181,8 @@ public class XMIImporter extends SchemaImporter {
 			} 
 		} // End for
 		
+		// TODO CREATE relationship
+		
 		return result; 
 	} // End processAssociation
 	
