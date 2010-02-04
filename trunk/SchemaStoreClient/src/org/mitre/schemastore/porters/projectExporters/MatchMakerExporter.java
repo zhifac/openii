@@ -12,6 +12,7 @@ import javax.swing.filechooser.FileFilter;
 
 import org.mitre.schemastore.model.Domain;
 import org.mitre.schemastore.model.DomainValue;
+import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.Project;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.SchemaElement;
@@ -87,7 +88,7 @@ public class MatchMakerExporter extends ProjectExporter {
 	private void clusterMatchResults() {
 		// Create SchemaElementNode used by ClusterNode from MappingCells
 		for (MappingCell mappingCell :  this.mappingCells ) {
-			for (SchemaElementNode node1 : getNode(mappingCell.getFirstInput())) {
+			for (SchemaElementNode node1 : getInputNodeList(mappingCell.getInput()) ) {
 				for (SchemaElementNode node2 : getNode(mappingCell.getOutput())) {
 					// Add the nodes and score to each other's score list.
 					node1.add(node2, mappingCell.getScore());
@@ -130,6 +131,14 @@ public class MatchMakerExporter extends ProjectExporter {
 			e.printStackTrace();
 		}
 		return results;
+	}
+	
+	private ArrayList<SchemaElementNode> getInputNodeList(Integer[] elementIDs) {
+		ArrayList<SchemaElementNode> masterList = new ArrayList<SchemaElementNode> ();
+		
+		for ( Integer i : elementIDs )
+			masterList.addAll(getNode(i)); 
+		return masterList; 
 	}
 
 	// Sort cluster's groupEs by number of elements in each and each groupE's
@@ -255,7 +264,6 @@ public class MatchMakerExporter extends ProjectExporter {
 		}
 	}
 
-	@Override
 	public void exportMapping(Project mapping, ArrayList<MappingCell> mappingCells, File file) throws IOException {
 		this.mapping = mapping; 
 		this.mappingCells = mappingCells; 
@@ -278,7 +286,6 @@ public class MatchMakerExporter extends ProjectExporter {
 		clusterRenderer.print(file);
 	}
 
-	@Override
 	public String getDescription() {
 		return "Export N-way match results to an xls spreadsheet.";
 	}
@@ -286,6 +293,13 @@ public class MatchMakerExporter extends ProjectExporter {
 	@Override
 	public String getName() {
 		return "Match Maker";
+	}
+
+
+	@Override
+	public void exportProject(Project project, HashMap<Mapping, ArrayList<MappingCell>> mappings, File file) throws IOException {
+		// TODO Auto-generated method stub
+		
 	}
 
 
