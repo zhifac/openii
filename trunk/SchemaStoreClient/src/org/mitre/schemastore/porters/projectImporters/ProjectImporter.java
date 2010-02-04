@@ -68,7 +68,7 @@ public abstract class ProjectImporter extends Importer
 			for(MappingContainer mapping : mappings)
 			{
 				mapping.mapping.setProjectId(projectID);
-				client.saveMapping(mapping.mapping, mapping.mappingCells);
+				client.saveMappingCells(mapping.mapping.getId(), mapping.mappingCells);
 			}
 		}
 
