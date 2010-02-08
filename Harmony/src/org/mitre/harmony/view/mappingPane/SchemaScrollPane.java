@@ -20,13 +20,13 @@ import javax.swing.plaf.metal.MetalScrollBarUI;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 
+import org.mitre.harmony.model.HarmonyConsts;
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.filters.FiltersListener;
 import org.mitre.harmony.model.search.SearchListener;
 import org.mitre.harmony.model.search.SearchResult;
 import org.mitre.harmony.view.schemaTree.SchemaTree;
 import org.mitre.harmony.view.schemaTree.SchemaTreeListener;
-import org.mitre.schemastore.model.MappingSchema;
 
 /**
  * Displays the scroll pane next to each schema tree pane (includes selection marks)
@@ -115,7 +115,7 @@ public class SchemaScrollPane extends JScrollPane implements AdjustmentListener,
 		getVerticalScrollBar().setUI(new SchemaScrollBarUI());
 		
 		// Shift scroll bars to mirror image for left schema tree
-		if(tree.getSide()==MappingSchema.LEFT)
+		if(tree.getSide()==HarmonyConsts.LEFT)
 		{
 			setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 			getHorizontalScrollBar().setValue(getHorizontalScrollBar().getMaximum());

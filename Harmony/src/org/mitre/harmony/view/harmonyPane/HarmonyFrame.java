@@ -77,8 +77,8 @@ public class HarmonyFrame extends JInternalFrame implements PreferencesListener
 		this.harmonyModel = harmonyModel;
 		
 		// Place title on application
-		String mappingName = harmonyModel.getMappingManager().getMapping().getName();
-		setTitle("Harmony Schema Matcher" + (mappingName != null ? " - " + harmonyModel.getMappingManager().getMapping().getName() : ""));
+		String mappingName = harmonyModel.getProjectManager().getProject().getName();
+		setTitle("Harmony Schema Matcher" + (mappingName != null ? " - " + harmonyModel.getProjectManager().getProject().getName() : ""));
 
 		// Set dialog pane settings
 		((javax.swing.plaf.basic.BasicInternalFrameUI) getUI()).setNorthPane(null);

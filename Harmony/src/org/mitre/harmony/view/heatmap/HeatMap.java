@@ -1,25 +1,30 @@
 package org.mitre.harmony.view.heatmap;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
-
-import javax.swing.*;
-import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Stack;
-import java.util.List;
-import java.util.Hashtable;
 import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Stack;
 import java.util.Vector;
 
+import javax.swing.JPanel;
+
+import org.mitre.harmony.model.HarmonyConsts;
 import org.mitre.harmony.model.HarmonyModel;
+import org.mitre.harmony.model.project.MappingManager;
 import org.mitre.schemastore.model.MappingCell;
-import org.mitre.schemastore.model.MappingSchema;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
-import org.mitre.harmony.model.mapping.MappingCellManager;
 
 /** Class used for displaying the heat map */
 public class HeatMap extends JPanel implements MouseListener, MouseMotionListener
@@ -90,7 +95,7 @@ public class HeatMap extends JPanel implements MouseListener, MouseMotionListene
         this.colors = (Color[]) GRADIENT_HOT.clone();
         
         // just to get it off the ground.
-        ArrayList<Integer> schemas = harmonyModel.getMappingManager().getSchemaIDs();        
+        ArrayList<Integer> schemas = harmonyModel.getProjectManager().getSchemaIDs();        
         Schema schema1 = harmonyModel.getSchemaManager().getSchema(schemas.get(0));
 		Schema schema2 = harmonyModel.getSchemaManager().getSchema(schemas.get(1));
 		this.setUp(schema1, schema2);		
@@ -239,12 +244,12 @@ public class HeatMap extends JPanel implements MouseListener, MouseMotionListene
 		bigGrid = new scoreGrid();
 		for(SchemaElement se1: elements1){
 			for(SchemaElement se2: elements2){
-				Integer id = harmonyModel.getMappingCellManager().getMappingCellID(se1.getId(), se2.getId());
+				Integer id = harmonyModel.getMappingManager().getMappingCellID(se1.getId(), se2.getId());
 				if(id == null){
 					SpotY++;
 					continue;
 				}
-				MappingCell mc = harmonyModel.getMappingCellManager().getMappingCell(id);
+				MappingCell mc = harmonyModel.getMappingManager().getMappingCell(id);
 				bigGrid.insert(se1.getId(), se2.getId(), mc.getScore());
 			}
 			SpotX++;
@@ -279,7 +284,7 @@ public class HeatMap extends JPanel implements MouseListener, MouseMotionListene
     /** Saves current modified mapping elements to schemastore */
     void SaveMapping()
     {
-    	MappingCellManager manager = harmonyModel.getMappingCellManager();
+    	MappingManager manager = harmonyModel.getMappingManager();
     	for(int j=0; j < elementsX.length; j++)
     	{
     		for(int k=0; k < elementsY.length;k++)
@@ -831,11 +836,11 @@ public class HeatMap extends JPanel implements MouseListener, MouseMotionListene
         
         //get score
         Double mc_score=0.0;
-        Integer id = harmonyModel.getMappingCellManager().getMappingCellID(elementsX[xVal].getID(), elementsY[yLabelEnd-yVal-1].getID());
+        Integer id = harmonyModel.getMappingManager().getMappingCellID(elementsX[xVal].getID(), elementsY[yLabelEnd-yVal-1].getID());
 		if(id == null){
 			mc_score = 0.0;
 		}else{
-			MappingCell mc = harmonyModel.getMappingCellManager().getMappingCell(id);
+			MappingCell mc = harmonyModel.getMappingManager().getMappingCell(id);
 			mc_score = mc.getScore();
 		}
         
@@ -883,7 +888,7 @@ public class HeatMap extends JPanel implements MouseListener, MouseMotionListene
     }
     
     private int getHighlightedXGridLoc(){
-    	List<Integer>lefts = harmonyModel.getSelectedInfo().getSelectedElements(MappingSchema.RIGHT);
+    	List<Integer>lefts = harmonyModel.getSelectedInfo().getSelectedElements(HarmonyConsts.RIGHT);
     	if(lefts != null && lefts.size() >0){
     		int highlighted = lefts.get(0);
     		for(int j=0; j < elementsX.length; j++){
@@ -894,7 +899,7 @@ public class HeatMap extends JPanel implements MouseListener, MouseMotionListene
     }
     
     private int getHighlightedYGridLoc(){
-    	List<Integer>lefts = harmonyModel.getSelectedInfo().getSelectedElements(MappingSchema.LEFT);
+    	List<Integer>lefts = harmonyModel.getSelectedInfo().getSelectedElements(HarmonyConsts.LEFT);
     	if(lefts != null && lefts.size() > 0){
     		int highlighted = lefts.get(0);
     		for(int j=0; j < elementsY.length; j++){

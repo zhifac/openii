@@ -24,10 +24,10 @@ import javax.swing.JViewport;
 import javax.swing.KeyStroke;
 import javax.swing.border.EmptyBorder;
 
+import org.mitre.harmony.model.HarmonyConsts;
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.selectedInfo.SelectedInfoListener;
 import org.mitre.harmony.view.controlPane.ControlPane;
-import org.mitre.schemastore.model.MappingSchema;
 
 /**
  * Displays the entire mapping pane including schema tree and linkages
@@ -41,16 +41,18 @@ public class MappingPane extends JDesktopPane implements ComponentListener, Line
 	/** Stores the left and right schema tree associated with the mapping pane */
 	private SchemaTreeImp leftTree=null, rightTree=null;
 
+	/** Stores the function pane */
+	private FunctionPane functionPane = null;
+	
 	/** Stores the mapping lines */
 	private MappingLines mappingLines;
 
 	// Reference to the various panes
 	private JPanel mousePane = null;
 	private JPanel linkPane = null;
-	private JPanel schemaPane = null;
+	private JPanel mainPane = null;
 	private JPanel leftInfoPane = null;
 	private JPanel rightInfoPane = null;
-	private JPanel midPane = null;
 	
 	/** Subclass used to accept links */
 	private class AcceptLink extends AbstractAction
@@ -59,7 +61,7 @@ public class MappingPane extends JDesktopPane implements ComponentListener, Line
 		public void actionPerformed(ActionEvent arg0)
 		{
 			List<Integer> mappingCellIDs = harmonyModel.getSelectedInfo().getSelectedMappingCells();
-			harmonyModel.getMappingCellManager().validateMappingCellsByID(mappingCellIDs);
+			harmonyModel.getMappingManager().validateMappingCellsByID(mappingCellIDs);
 			harmonyModel.getSelectedInfo().setMappingCells(new ArrayList<Integer>(),false);
 		}
 	};
@@ -71,7 +73,7 @@ public class MappingPane extends JDesktopPane implements ComponentListener, Line
 		public void actionPerformed(ActionEvent arg0)
 		{
 			List<Integer> mappingCellIDs = harmonyModel.getSelectedInfo().getSelectedMappingCells();
-			harmonyModel.getMappingCellManager().deleteMappingCellsByID(mappingCellIDs);
+			harmonyModel.getMappingManager().deleteMappingCellsByID(mappingCellIDs);
 			harmonyModel.getSelectedInfo().setMappingCells(new ArrayList<Integer>(),false);
 		}
 	};
@@ -91,34 +93,24 @@ public class MappingPane extends JDesktopPane implements ComponentListener, Line
 	{
 		this.harmonyModel = harmonyModel;
 		
-		// Initialize the left and right schema trees
-		leftTree = new SchemaTreeImp(MappingSchema.LEFT, harmonyModel);
-		rightTree = new SchemaTreeImp(MappingSchema.RIGHT, harmonyModel);
+		// Initialize the child panes of the main pane
+		leftTree = new SchemaTreeImp(HarmonyConsts.LEFT, harmonyModel);
+		functionPane = new FunctionPane(this, harmonyModel);
+		rightTree = new SchemaTreeImp(HarmonyConsts.RIGHT, harmonyModel);
 		mappingLines = new MappingLines(this, harmonyModel);
-		
-		// Create the schema pane
-		schemaPane = new JPanel();
 
-		//setMidPane();
-		midPane = new MidPane(this, harmonyModel); //getMidPane();
-		midPane.setBorder(BorderFactory.createLineBorder (Color.gray, 1));
-		midPane.setBackground(Color.YELLOW);
-		midPane.setOpaque(true);
-
-		schemaPane.setLayout(new GridLayout(1,3));  
-		schemaPane.add(getSchemaTreePane(leftTree));
-		
-		//added mid pane to schemaPane
-		schemaPane.add(midPane, PALETTE_LAYER);
-
-		schemaPane.add(getSchemaTreePane(rightTree));
-		
+		// Create the main pane
+		mainPane = new JPanel();
+		mainPane.setLayout(new GridLayout(1,3));  
+		mainPane.add(getSchemaTreePane(leftTree));
+		mainPane.add(functionPane);
+		mainPane.add(getSchemaTreePane(rightTree));
 		
 		// Set up the various layers to be displayed
-		add(schemaPane,DEFAULT_LAYER);
+		add(mainPane,DEFAULT_LAYER);
 		add(linkPane = new MappingCellsPane(this,harmonyModel),PALETTE_LAYER);
-		add(leftInfoPane = new SelectedNodePane(MappingSchema.LEFT,harmonyModel),MODAL_LAYER);
-		add(rightInfoPane = new SelectedNodePane(MappingSchema.RIGHT,harmonyModel),MODAL_LAYER);
+		add(leftInfoPane = new SelectedNodePane(HarmonyConsts.LEFT,harmonyModel),MODAL_LAYER);
+		add(rightInfoPane = new SelectedNodePane(HarmonyConsts.RIGHT,harmonyModel),MODAL_LAYER);
 		add(mousePane = new MousePane(this,harmonyModel),DRAG_LAYER);
 		
 		// Register keyboard actions for accepting links
@@ -135,38 +127,14 @@ public class MappingPane extends JDesktopPane implements ComponentListener, Line
 		
 		// Adds listeners to watch for events where the mapping pane need to be redrawn
 		addComponentListener(this);	
-		getTreeViewport(MappingSchema.LEFT).addComponentListener(this);		
+		getTreeViewport(HarmonyConsts.LEFT).addComponentListener(this);		
 		mappingLines.addLinesListener(this);
 		harmonyModel.getSelectedInfo().addListener(this);
-	}
+	}	
 	
-
-	/** set the mapping pane for mapping lines */
-	public void setMidPane()
-		{ 
-			JPanel mPane = new JPanel();
-			mPane.setLayout(new BorderLayout());
-			JPanel topPane = new JPanel();
-			topPane.setBackground(Color.white);
-			JPanel bottomPane = new JPanel();
-			bottomPane.setBorder(BorderFactory.createLineBorder (Color.gray, 1));
-			bottomPane.setPreferredSize(new Dimension(0, 73));
-			
-			mPane.add(topPane, BorderLayout.CENTER);
-			mPane.add(bottomPane, BorderLayout.SOUTH);
-			
-			//mPane.setBorder(BorderFactory.createLineBorder (Color.gray, 1));
-			mPane.setBackground(Color.WHITE);
-			
-			midPane = mPane; 
-			
-		}
-	
-	/** Returns the mapping pane lines */
-	public JPanel getMidPane(){
-		return midPane;
-	}
-
+	/** Returns reference to the function pane */
+	public FunctionPane getFunctionPane()
+		{ return functionPane; }
 	
 	/** Returns the mapping pane lines */
 	public MappingLines getLines()
@@ -174,11 +142,11 @@ public class MappingPane extends JDesktopPane implements ComponentListener, Line
 	
 	/** Returns the schema tree */
 	public SchemaTreeImp getTree(Integer role)
-		{ return role.equals(MappingSchema.LEFT) ? leftTree : rightTree; }
+		{ return role.equals(HarmonyConsts.LEFT) ? leftTree : rightTree; }
 	
 	/** Returns the schema tree viewer */
 	public JViewport getTreeViewport(Integer role)
-		{ return role.equals(MappingSchema.LEFT) ? (JViewport)leftTree.getParent() : (JViewport)rightTree.getParent(); }
+		{ return role.equals(HarmonyConsts.LEFT) ? (JViewport)leftTree.getParent() : (JViewport)rightTree.getParent(); }
 	
 	/** Get the bounds of the specified pane in association with the mapping pane */
 	public Rectangle getPaneBounds(Container container)
@@ -198,7 +166,7 @@ public class MappingPane extends JDesktopPane implements ComponentListener, Line
 		// Set the bounds for the three main mapping panes
 		if(e.getSource()==this)
 		{
-			schemaPane.setBounds(0,0,getWidth(),getHeight());
+			mainPane.setBounds(0,0,getWidth(),getHeight());
 			linkPane.setBounds(0,0,getWidth(),getHeight());
 			mousePane.setBounds(0,0,getWidth(),getHeight());
 		}
@@ -222,7 +190,7 @@ public class MappingPane extends JDesktopPane implements ComponentListener, Line
 	/** Handles changes to the selected nodes */
 	public void displayedElementModified(Integer role)
 	{
-		SchemaTreeImp tree = role==MappingSchema.LEFT ? leftTree : rightTree;
+		SchemaTreeImp tree = role==HarmonyConsts.LEFT ? leftTree : rightTree;
 		Integer border = harmonyModel.getSelectedInfo().getDisplayedElement(role)!=null ? 160 : 10;
 		tree.setBorder(new EmptyBorder(0,0,border,0));
 		tree.fireTreeExpanded(tree.getPathForRow(0));
@@ -237,6 +205,4 @@ public class MappingPane extends JDesktopPane implements ComponentListener, Line
 	public void componentHidden(ComponentEvent e) {}
 	public void componentMoved(ComponentEvent e) {}
 	public void selectedElementsModified(Integer role) {}
-	
-	
 }

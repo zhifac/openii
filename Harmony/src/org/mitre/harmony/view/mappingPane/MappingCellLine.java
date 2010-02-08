@@ -8,7 +8,7 @@ import java.awt.geom.Line2D;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
-import org.mitre.schemastore.model.MappingSchema;
+import org.mitre.harmony.model.HarmonyConsts;
 
 /**
  * Stores the info on a single line associated with a schema tree
@@ -23,8 +23,8 @@ class MappingCellLine extends Line2D.Double
 	MappingCellLine(MappingPane mappingPane, DefaultMutableTreeNode sNode, DefaultMutableTreeNode tNode)
 	{		
 		// Retrieve the source and target schema trees
-		SchemaTreeImp source = mappingPane.getTree(MappingSchema.LEFT);
-		SchemaTreeImp target = mappingPane.getTree(MappingSchema.RIGHT);
+		SchemaTreeImp source = mappingPane.getTree(HarmonyConsts.LEFT);
+		SchemaTreeImp target = mappingPane.getTree(HarmonyConsts.RIGHT);
 		
 		// Initialize local parameters
 		visible = source.isVisible(sNode) && target.isVisible(tNode);
@@ -34,13 +34,13 @@ class MappingCellLine extends Line2D.Double
 		Point sourcePt = new Point((int)sRect.getMaxX(),(int)sRect.getCenterY());
 		
 		//Mid pane mapping line starting point
-		sourcePt = new Point(mappingPane.getMidPane().getWidth(), sourcePt.y);
+		sourcePt = new Point(mappingPane.getFunctionPane().getWidth(), sourcePt.y);
 		
 		Rectangle tRect = target.getBufferedRowBounds(target.getNodeRow(tNode));
 		//Point targetPt = new Point((int)tRect.getMinX()-2,(int)tRect.getCenterY()); 
 		
 		//Ending points for the mapping line in mid pane
-		int X = mappingPane.getMidPane().getWidth()*2;
+		int X = mappingPane.getFunctionPane().getWidth()*2;
 		Point targetPt = new Point(X,(int)tRect.getCenterY());  		
 		
 		if(sourcePt.x>mappingPane.getBounds().getCenterX())

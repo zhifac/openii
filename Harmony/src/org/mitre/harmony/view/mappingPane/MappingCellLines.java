@@ -7,11 +7,11 @@ import java.util.ArrayList;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
+import org.mitre.harmony.model.HarmonyConsts;
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.filters.FilterManager;
 import org.mitre.harmony.view.schemaTree.SchemaTree;
 import org.mitre.schemastore.model.MappingCell;
-import org.mitre.schemastore.model.MappingSchema;
 
 /**
  * Stores the info on mapping cell's lines
@@ -59,18 +59,18 @@ class MappingCellLines
 		/** Calculates the score for the pair of nodes */
 		private Double getScore(Integer direction, DefaultMutableTreeNode node1, DefaultMutableTreeNode node2)
 		{
-			Integer element1ID = SchemaTree.getElement(direction.equals(MappingSchema.LEFT) ? node1 : node2);
-			Integer element2ID = SchemaTree.getElement(direction.equals(MappingSchema.LEFT) ? node2 : node1);
-			Integer mappingID = harmonyModel.getMappingCellManager().getMappingCellID(element1ID, element2ID);
-			return mappingID==null ? 0.0 : harmonyModel.getMappingCellManager().getMappingCell(mappingID).getScore();
+			Integer element1ID = SchemaTree.getElement(direction.equals(HarmonyConsts.LEFT) ? node1 : node2);
+			Integer element2ID = SchemaTree.getElement(direction.equals(HarmonyConsts.LEFT) ? node2 : node1);
+			Integer mappingID = harmonyModel.getMappingManager().getMappingCellID(element1ID, element2ID);
+			return mappingID==null ? 0.0 : harmonyModel.getMappingManager().getMappingCell(mappingID).getScore();
 		}
 		
 		/** Constructs the tree node pairs */
 		private TreeNodePairs(Integer leftID, Integer rightID)
 		{
 			// Retrieve the left and right schema trees
-			SchemaTreeImp leftTree = mappingPane.getTree(MappingSchema.LEFT);
-			SchemaTreeImp rightTree = mappingPane.getTree(MappingSchema.RIGHT);
+			SchemaTreeImp leftTree = mappingPane.getTree(HarmonyConsts.LEFT);
+			SchemaTreeImp rightTree = mappingPane.getTree(HarmonyConsts.RIGHT);
 			
 			// Create the list of all node pairs
 			for(DefaultMutableTreeNode leftNode : leftTree.getSchemaElementNodes(leftID))
@@ -94,12 +94,12 @@ class MappingCellLines
 					DefaultMutableTreeNode focalNode=null, match1=null, match2=null;
 					if(pair1.leftNode.equals(pair2.leftNode))
 					{
-						direction=MappingSchema.LEFT; focalNode=pair1.leftNode;
+						direction=HarmonyConsts.LEFT; focalNode=pair1.leftNode;
 						match1=pair1.rightNode; match2=pair2.rightNode;
 					}
 					else if(pair1.rightNode.equals(pair2.rightNode))
 					{
-						direction=MappingSchema.RIGHT; focalNode=pair1.rightNode;
+						direction=HarmonyConsts.RIGHT; focalNode=pair1.rightNode;
 						match1=pair1.leftNode; match2=pair2.leftNode;
 					}
 					if(focalNode==null) continue;
@@ -129,16 +129,16 @@ class MappingCellLines
 	private void getLines(Integer leftID, Integer rightID)
 	{
 		// Retrieve the left and right schema trees
-		SchemaTreeImp leftTree = mappingPane.getTree(MappingSchema.LEFT);
-		SchemaTreeImp rightTree = mappingPane.getTree(MappingSchema.RIGHT);
+		SchemaTreeImp leftTree = mappingPane.getTree(HarmonyConsts.LEFT);
+		SchemaTreeImp rightTree = mappingPane.getTree(HarmonyConsts.RIGHT);
 
 		// Cycle through all combination of source and target nodes
 		TreeNodePairs nodePairs = new TreeNodePairs(leftID,rightID);
 		for(TreeNodePair pair : nodePairs.pairs)
 		{
 			// Only create lines if they are within the specified depths
-			if(!harmonyModel.getFilters().isVisibleNode(MappingSchema.LEFT,pair.leftNode)) continue;
-			if(!harmonyModel.getFilters().isVisibleNode(MappingSchema.RIGHT,pair.rightNode)) continue;
+			if(!harmonyModel.getFilters().isVisibleNode(HarmonyConsts.LEFT,pair.leftNode)) continue;
+			if(!harmonyModel.getFilters().isVisibleNode(HarmonyConsts.RIGHT,pair.rightNode)) continue;
 			
 			// Only create lines if they are visible on the screen (saves processing time)
 			Integer leftRow = leftTree.getNodeRow(pair.leftNode);
@@ -169,9 +169,9 @@ class MappingCellLines
 		if(!getHidden() && lines==null)
 		{
 			lines = new ArrayList<MappingCellLine>();
-			MappingCell mappingCell = harmonyModel.getMappingCellManager().getMappingCell(mappingCellID);
-			getLines(mappingCell.getElement1(),mappingCell.getElement2());
-			getLines(mappingCell.getElement2(),mappingCell.getElement1());
+			MappingCell mappingCell = harmonyModel.getMappingManager().getMappingCell(mappingCellID);
+			getLines(mappingCell.getFirstInput(),mappingCell.getOutput());
+			getLines(mappingCell.getOutput(),mappingCell.getFirstInput());
 		}
 		return lines==null ? new ArrayList<MappingCellLine>() : new ArrayList<MappingCellLine>(lines);
 	}
@@ -190,7 +190,7 @@ class MappingCellLines
 	/** Returns the color associated with this mapping cell */
 	Color getColor()
 	{
-		MappingCell mappingCell = harmonyModel.getMappingCellManager().getMappingCell(mappingCellID);
+		MappingCell mappingCell = harmonyModel.getMappingManager().getMappingCell(mappingCellID);
 		double conf = mappingCell.getScore();
     	if(harmonyModel.getSelectedInfo().isMappingCellSelected(mappingCellID)) return BLUE;
     	else if(mappingCell.getValidated()) return BLACK;

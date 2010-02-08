@@ -2,11 +2,11 @@
 // ALL RIGHTS RESERVED
 package org.mitre.harmony.view.harmonyPane;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.BorderLayout;
-import java.awt.GradientPaint;
 import java.awt.Shape;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -23,7 +23,7 @@ import javax.swing.plaf.metal.MetalIconFactory;
 import javax.swing.plaf.metal.MetalSliderUI;
 
 import org.mitre.harmony.model.HarmonyModel;
-import org.mitre.harmony.model.mapping.MappingCellManager;
+import org.mitre.harmony.model.project.ProjectMapping;
 import org.mitre.harmony.model.selectedInfo.SelectedInfoListener;
 import org.mitre.schemastore.model.MappingCell;
 
@@ -35,8 +35,8 @@ public class ConfidencePane extends JPanel implements SelectedInfoListener
 {
 	// Manages confidence range constants within Harmony
 	public static final int CONFIDENCE_SCALE = 100;
-	private static final int MIN_CONFIDENCE = new Double(MappingCellManager.MIN_CONFIDENCE*CONFIDENCE_SCALE).intValue();
-	private static final int MAX_CONFIDENCE = new Double(MappingCellManager.MAX_CONFIDENCE*CONFIDENCE_SCALE).intValue();
+	private static final int MIN_CONFIDENCE = new Double(ProjectMapping.MIN_CONFIDENCE*CONFIDENCE_SCALE).intValue();
+	private static final int MAX_CONFIDENCE = new Double(ProjectMapping.MAX_CONFIDENCE*CONFIDENCE_SCALE).intValue();
 	
 	/** Stores the Harmony model */
 	private HarmonyModel harmonyModel;
@@ -132,7 +132,7 @@ public class ConfidencePane extends JPanel implements SelectedInfoListener
 				List<Integer> selectedMappingCells = harmonyModel.getSelectedInfo().getSelectedMappingCells();
 				if(selectedMappingCells.size()==1)
 				{
-					MappingCell mappingCell = harmonyModel.getMappingCellManager().getMappingCell(selectedMappingCells.get(0));
+					MappingCell mappingCell = harmonyModel.getMappingManager().getMappingCell(selectedMappingCells.get(0));
 					int yLoc = yPositionForValue((int)(100*mappingCell.getScore()));
 					g.setColor(Color.blue);
 					g.fillPolygon(new int[]{14,20,20},new int[]{yLoc,yLoc-5,yLoc+5},3);
