@@ -22,8 +22,9 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 
+import org.mitre.harmony.controllers.MappingController;
 import org.mitre.harmony.model.HarmonyModel;
-import org.mitre.harmony.model.mapping.MappingCellManager;
+import org.mitre.harmony.model.project.MappingManager;
 import org.mitre.harmony.view.dialogs.AbstractButtonPane;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.mapfunctions.IdentityFunction;
@@ -44,7 +45,7 @@ public class MappingCellDialog extends JDialog implements MouseListener, MouseMo
 	private MappingCellConfidencePane confidencePane;
 
 	/** Stores the list of mapping cells to which this dialog pertains */
-	private List<MappingCell> mappingCells;
+	private ArrayList<MappingCell> mappingCells;
 	
 	/** Private class for defining the button pane */
 	private class ButtonPane extends AbstractButtonPane
@@ -58,11 +59,11 @@ public class MappingCellDialog extends JDialog implements MouseListener, MouseMo
 		{
 			if(label.equals("OK"))
 			{
-				MappingCellManager manager = harmonyModel.getMappingCellManager();
+				MappingManager manager = harmonyModel.getMappingManager();
 	
 				// Throw out mapping cells if they have been rejected
 				if(confidencePane.isRejected())
-					manager.deleteMappingCells(mappingCells);
+					MappingController.deleteMappingCells(harmonyModel,mappingCells);
 	
 				// Validate mapping cells if they have been accepted
 				else if(confidencePane.isAccepted())

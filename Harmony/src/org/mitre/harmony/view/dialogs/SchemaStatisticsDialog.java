@@ -53,9 +53,9 @@ public class SchemaStatisticsDialog extends JDialog
 			for(SchemaElement schemaElement : harmonyModel.getSchemaManager().getSchemaInfo(schemaID).getHierarchicalElements())
 			{
 				double maxConf = Double.MIN_VALUE;
-				for(Integer mappingCellID : harmonyModel.getMappingCellManager().getMappingCellsByElement(schemaElement.getId()))
+				for(Integer mappingCellID : harmonyModel.getMappingManager().getMappingCellsByElement(schemaElement.getId()))
 				{
-					double conf = harmonyModel.getMappingCellManager().getMappingCell(mappingCellID).getScore();
+					double conf = harmonyModel.getMappingManager().getMappingCell(mappingCellID).getScore();
 					if(conf>maxConf) maxConf=conf;
 				}
 				if(maxConf>0.75) goodCount++;
