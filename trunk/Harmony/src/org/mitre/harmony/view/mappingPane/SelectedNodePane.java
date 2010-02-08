@@ -94,7 +94,7 @@ class SelectedNodePane extends JPanel implements SelectedInfoListener, SearchLis
 		// Collect domain information
 		Domain domain = null;
 		HashSet<DomainValue> domainValues = new HashSet<DomainValue>();
-		for(Integer schemaID : harmonyModel.getMappingManager().getSchemaIDs(side))
+		for(Integer schemaID : harmonyModel.getProjectManager().getSchemaIDs(side))
 		{
 			HierarchicalSchemaInfo schemaInfo = harmonyModel.getSchemaManager().getSchemaInfo(schemaID);
 			if(domain==null) domain = schemaInfo.getDomainForElement(element.getId());
@@ -133,7 +133,7 @@ class SelectedNodePane extends JPanel implements SelectedInfoListener, SearchLis
 
 		// Gather up names to display
 		HashSet<String> names = new HashSet<String>();
-		for(Integer schemaID : harmonyModel.getMappingManager().getSchemaIDs(side))
+		for(Integer schemaID : harmonyModel.getProjectManager().getSchemaIDs(side))
 		{
 			HierarchicalSchemaInfo schemaInfo = harmonyModel.getSchemaManager().getSchemaInfo(schemaID);
 			if(schemaInfo.containsElement(element.getId()))

@@ -17,18 +17,18 @@ import javax.swing.KeyStroke;
 
 import org.mitre.harmony.Harmony;
 import org.mitre.harmony.controllers.MappingController;
+import org.mitre.harmony.controllers.ProjectController;
 import org.mitre.harmony.model.HarmonyConsts;
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.view.dialogs.AboutDialog;
 import org.mitre.harmony.view.dialogs.GettingStartedDialog;
 import org.mitre.harmony.view.dialogs.SearchDialog;
-import org.mitre.harmony.view.dialogs.mappings.LoadMappingDialog;
-import org.mitre.harmony.view.dialogs.mappings.SaveMappingDialog;
 import org.mitre.harmony.view.dialogs.matcher.MatcherMenu;
 import org.mitre.harmony.view.dialogs.porters.ExportMappingDialog;
 import org.mitre.harmony.view.dialogs.porters.MappingImporterDialog;
-import org.mitre.harmony.view.dialogs.schemaSettings.SchemaSettingsDialog;
-import org.mitre.schemastore.model.MappingSchema;
+import org.mitre.harmony.view.dialogs.project.ProjectDialog;
+import org.mitre.harmony.view.dialogs.projects.LoadProjectDialog;
+import org.mitre.harmony.view.dialogs.projects.SaveMappingDialog;
 
 /**
  * Displays all menu bar choices in Harmony
@@ -42,55 +42,55 @@ public class HarmonyMenuBar extends JMenuBar
 	/** Drop-down menu found under project menu bar heading */
 	private class ProjectMenu extends JMenu implements ActionListener
 	{
-	    private JMenuItem newMapping;		// Option to create a new mapping
-		private JMenuItem openMapping;		// Option to open a created mapping
+	    private JMenuItem newProject;		// Option to create a new mapping
+		private JMenuItem openProject;		// Option to open a created mapping
 		private JMenuItem saveMapping;		// Option to save a created mapping
-		private JMenuItem manageSchemas;	// Option for managing the mapping schemas
-		private JMenuItem importMapping;	// Option for importing a mapping
+		private JMenuItem configureProject;	// Option for managing the project configuration
+		private JMenuItem importProject;	// Option for importing a mapping
 		private JMenuItem exportMapping;	// Option for exporting a mapping
 		private JMenuItem exitApp;			// Option to exit the Harmony application
 		
 		/** Initializes the project drop-down menu */
 		private ProjectMenu()
 		{
-			// Gives the drop-down menu the title of "Mapping"
-			super("Mapping");
+			// Gives the drop-down menu the title of "Project"
+			super("Project");
 			setMnemonic(KeyEvent.VK_P);
 
 			// Set up menu for stand-alone mode
 			if(harmonyModel.getBaseFrame() instanceof Harmony)
 			{
 				// Initialize project drop-down items
-			    newMapping = new JMenuItem("New",KeyEvent.VK_N);
-				openMapping = new JMenuItem("Open...",KeyEvent.VK_O);
+			    newProject = new JMenuItem("New",KeyEvent.VK_N);
+				openProject = new JMenuItem("Open...",KeyEvent.VK_O);
 				saveMapping = new JMenuItem("Save...",KeyEvent.VK_S);
-				manageSchemas = new JMenuItem("Manage Schemas...",KeyEvent.VK_M);
-				importMapping = new JMenuItem("Import Mapping...",KeyEvent.VK_I);
+				configureProject = new JMenuItem("Configure...",KeyEvent.VK_M);
+				importProject = new JMenuItem("Import Mapping...",KeyEvent.VK_I);
 				exportMapping = new JMenuItem("Export Mapping...",KeyEvent.VK_E);
 				exitApp = new JMenuItem("Exit",KeyEvent.VK_X);
 	
 				// Set accelerator keys for the menu items
-				newMapping.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, ActionEvent.CTRL_MASK));
-				openMapping.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK));
+				newProject.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, ActionEvent.CTRL_MASK));
+				openProject.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK));
 				saveMapping.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK));
 				
 				// Attach action listeners to project drop-down items
-				newMapping.addActionListener(this);
-				openMapping.addActionListener(this);
+				newProject.addActionListener(this);
+				openProject.addActionListener(this);
 				saveMapping.addActionListener(this);
-				manageSchemas.addActionListener(this);
-				importMapping.addActionListener(this);
+				configureProject.addActionListener(this);
+				importProject.addActionListener(this);
 				exportMapping.addActionListener(this);
 				exitApp.addActionListener(this);
 				
 				// Add project drop-down items to project drop-down menu
-				add(newMapping);
-				add(openMapping);
+				add(newProject);
+				add(openProject);
 				add(saveMapping);
 				addSeparator();
-				add(manageSchemas);
+				add(configureProject);
 				addSeparator();
-				add(importMapping);
+				add(importProject);
 				add(exportMapping);
 				addSeparator();
 			    add(exitApp);
@@ -105,13 +105,13 @@ public class HarmonyMenuBar extends JMenuBar
 				saveMapping.addActionListener(this);
 
 				// Create the schema settings menu option
-				manageSchemas = new JMenuItem("Manage Schemas...",KeyEvent.VK_P);
-				manageSchemas.addActionListener(this);
+				configureProject = new JMenuItem("Configure...",KeyEvent.VK_P);
+				configureProject.addActionListener(this);
 				
 				// Add project drop-down items to project drop-down menu
 				add(saveMapping);
 				addSeparator();
-				add(manageSchemas);
+				add(configureProject);
 			}
 		}
 		
@@ -121,10 +121,10 @@ public class HarmonyMenuBar extends JMenuBar
 	    	Object source = e.getSource();
 	    	
 	    	// If action overwrites old data, ask user to save old data first
-	    	if(source==newMapping || source==openMapping)
+	    	if(source==newProject || source==openProject)
 	    	{
 	    		int option = 1;
-	    		if(harmonyModel.getMappingManager().isModified())
+	    		if(harmonyModel.getProjectManager().isModified())
 	        		option = JOptionPane.showConfirmDialog(harmonyModel.getBaseFrame(),
 	        			"This mapping has been modified.  Do you want to save changes?",
 						"Save Mapping", JOptionPane.YES_NO_CANCEL_OPTION,
@@ -134,32 +134,32 @@ public class HarmonyMenuBar extends JMenuBar
 	    	}
 	    		
 	    	// Create a new project
-	    	if(source==newMapping)
-	    		{ harmonyModel.getMappingManager().newMapping(); new SchemaSettingsDialog(harmonyModel); }
+	    	if(source==newProject)
+	    		{ ProjectController.newProject(harmonyModel); new ProjectDialog(harmonyModel); }
 	    	
 	    	// Open a project
-	    	else if(source==openMapping)
-	    		{ new LoadMappingDialog(harmonyModel); }
+	    	else if(source==openProject)
+	    		{ new LoadProjectDialog(harmonyModel); }
 	    	
 	    	// Save a project
 	    	else if(source==saveMapping)
 	    	{
 	    		if(harmonyModel.getBaseFrame() instanceof Harmony)
 	    			new SaveMappingDialog(harmonyModel);
-	    		else harmonyModel.getMappingManager().saveMapping(harmonyModel.getMappingManager().getMapping());
+	    		else ProjectController.saveProject(harmonyModel.getProjectManager().getProject());
 	    	}
 		    
 	    	// Import project
-	    	else if(source==importMapping)
+	    	else if(source==importProject)
 	    	{
 	    		MappingImporterDialog dialog = new MappingImporterDialog(harmonyModel.getBaseFrame(),harmonyModel);
 	    		while(dialog.isDisplayable()) try { Thread.sleep(500); } catch(Exception e2) {}
 	    		
 	    		// Launches the schema dialog window if no schemas displayed
-	    		int displayedSchemas = 0;
-	    		for(MappingSchema schema : harmonyModel.getMappingManager().getSchemas())
-	    			if(!schema.getSide().equals(MappingSchema.NONE)) displayedSchemas++;
-	    		if(displayedSchemas==0) new SchemaSettingsDialog(harmonyModel);
+//	    		int displayedSchemas = 0;
+//	    		for(ProjectSchema schema : harmonyModel.getProjectManager().getSchemas())
+//	    			if(!schema.getSide().equals(MappingSchema.NONE)) displayedSchemas++;
+//	    		if(displayedSchemas==0) new SchemaSettingsDialog(harmonyModel);
 	    	}
 	    
 	    	// Export project
@@ -167,8 +167,8 @@ public class HarmonyMenuBar extends JMenuBar
 	    		{ ExportMappingDialog.exportMapping(harmonyModel); }
 	    	
 	    	// Display the mapping properties
-	    	else if(source==manageSchemas)
-	    		new SchemaSettingsDialog(harmonyModel);
+	    	else if(source==configureProject)
+	    		new ProjectDialog(harmonyModel);
 	    	
 	    	// Exit Harmony
 	    	else if(source==exitApp)
@@ -319,8 +319,8 @@ public class HarmonyMenuBar extends JMenuBar
 	    	// Handle the clearing of search results
 	    	if(source==clearResults)
 	    	{
-	    		harmonyModel.getSearchManager().runQuery(MappingSchema.LEFT, "");
-	    		harmonyModel.getSearchManager().runQuery(MappingSchema.RIGHT, "");
+	    		harmonyModel.getSearchManager().runQuery(HarmonyConsts.LEFT, "");
+	    		harmonyModel.getSearchManager().runQuery(HarmonyConsts.RIGHT, "");
 	    	}
 	    	
 	    	// Handles the launching of the search dialog box

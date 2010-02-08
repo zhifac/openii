@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.List;
 
 import javax.swing.JLabel;
 import javax.swing.JTree;
@@ -28,16 +29,16 @@ import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
 import org.mitre.harmony.controllers.MappingController;
+import org.mitre.harmony.model.HarmonyConsts;
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.filters.ElementPath;
 import org.mitre.harmony.model.filters.Focus;
-import org.mitre.harmony.model.mapping.MappingListener;
 import org.mitre.harmony.model.preferences.PreferencesListener;
+import org.mitre.harmony.model.project.MappingListener;
+import org.mitre.harmony.model.project.ProjectListener;
 import org.mitre.harmony.view.dialogs.SchemaModelDialog;
 import org.mitre.harmony.view.mappingPane.MappingPane;
-import org.mitre.harmony.view.mappingPane.SchemaTreeImp;
 import org.mitre.schemastore.model.MappingCell;
-import org.mitre.schemastore.model.MappingSchema;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
@@ -46,7 +47,7 @@ import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
  * Creates the source or target schema tree 
  * @author CWOLF
  */
-public class SchemaTree extends JTree implements MappingListener, PreferencesListener, MouseListener, MouseMotionListener
+public class SchemaTree extends JTree implements MappingListener, ProjectListener, PreferencesListener, MouseListener, MouseMotionListener
 {	
 	/** Manages the schema tree UI */
 	class SchemaTreeUI extends MetalTreeUI
@@ -75,8 +76,6 @@ public class SchemaTree extends JTree implements MappingListener, PreferencesLis
 		{
 			row = new Rectangle[getRowCount()];
 			for(int i=0; i<getRowCount(); i++)
-		      //row[i]=getRowBounds(i);  		
-			//Change row bound
 			{
 				int width=getParent().getWidth();
 				Rectangle rect = getRowBounds(i);
@@ -206,7 +205,7 @@ public class SchemaTree extends JTree implements MappingListener, PreferencesLis
 		this.harmonyModel = harmonyModel;
 		
 		// Initializes tree variables
-		root = new DefaultMutableTreeNode(side==MappingSchema.LEFT ? " Mapping Schemas" : " Selected Schema");
+		root = new DefaultMutableTreeNode(side==HarmonyConsts.LEFT ? " Mapping Schemas" : " Selected Schema");
 		schemaTreeHash = new SchemaTreeHash(this);
 		rowBounds = new RowBounds();
 		visibleNodes = new VisibleNodes();
@@ -221,7 +220,7 @@ public class SchemaTree extends JTree implements MappingListener, PreferencesLis
 
 		// Set up the schema tree schemas
 		SchemaTreeGenerator.initialize(this);
-		for(Integer schemaID : harmonyModel.getMappingManager().getSchemaIDs(side))
+		for(Integer schemaID : harmonyModel.getProjectManager().getSchemaIDs(side))
 			SchemaTreeGenerator.addSchema(this,schemaID,harmonyModel);
 			
 		// Set up tool tips for the tree items
@@ -232,6 +231,7 @@ public class SchemaTree extends JTree implements MappingListener, PreferencesLis
 		addMouseMotionListener(this);
 		harmonyModel.getPreferences().addListener(this);
 		harmonyModel.getMappingManager().addListener(this);
+		harmonyModel.getProjectManager().addListener(this);
 	}
 
 	/** Returns the side associated with this schema tree */
@@ -276,7 +276,7 @@ public class SchemaTree extends JTree implements MappingListener, PreferencesLis
 		{ return (node.getUserObject() instanceof Integer) ? (Integer)(node.getUserObject()) : null; }
 	
 	/** Returns the schema node associated with the provided path */
-	public Integer getElement(TreePath path)
+	static public Integer getElement(TreePath path)
 		{ return getElement((DefaultMutableTreeNode)path.getLastPathComponent()); }
 	
 	/** Returns the element path associated with the tree node */
@@ -419,24 +419,32 @@ public class SchemaTree extends JTree implements MappingListener, PreferencesLis
 	/** Returns the list of all schema node tree locations for the specified schema element */
 	public ArrayList<DefaultMutableTreeNode> getSchemaElementNodes(Integer elementID)
 		{ return schemaTreeHash.get(elementID); }
-	
-	/** Handles the addition to the specified schema */
-	public void schemaAdded(Integer schemaID)
-	{
-		if(harmonyModel.getMappingManager().getSchemaIDs(side).contains(schemaID))
-			SchemaTreeGenerator.addSchema(this, schemaID, harmonyModel);			
-	}
 
-	/** Handles the removal of the specified schema */
-	public void schemaRemoved(Integer schemaID)
-		{ SchemaTreeGenerator.removeSchema(this, schemaID); }
-	
-	/** Handles changes to the specified schema */
-	public void schemaModified(Integer schemaID)
+	/** Display schemas based on changes to the mapping visibility */
+	public void mappingVisibilityChanged(Integer mappingID)
 	{
-		SchemaTreeGenerator.removeSchema(this, schemaID);
-		if(harmonyModel.getMappingManager().getSchemaIDs(side).contains(schemaID))
+		// Remove schemas which are no longer visible
+		HashSet<Integer> schemaIDs = harmonyModel.getProjectManager().getSchemaIDs(side);
+		for(Integer schemaID : getSchemas())
+		{
+			if(!schemaIDs.contains(schemaID))
+				SchemaTreeGenerator.removeSchema(this, schemaID);
+			else schemaIDs.remove(schemaID);
+		}
+		
+		// Add schemas which are now visible
+		for(Integer schemaID : schemaIDs)
 			SchemaTreeGenerator.addSchema(this, schemaID, harmonyModel);
+	}
+	
+	/** Handles changes to the specified schema model */
+	public void schemaModelModified(Integer schemaID)
+	{
+		if(harmonyModel.getProjectManager().getSchemaIDs(side).contains(schemaID))
+		{
+			SchemaTreeGenerator.removeSchema(this, schemaID);
+			SchemaTreeGenerator.addSchema(this, schemaID, harmonyModel);
+		}
 	}
 	
 	/** Handles mouse clicks on the schema tree */
@@ -555,7 +563,14 @@ public class SchemaTree extends JTree implements MappingListener, PreferencesLis
 	}
 	
 	// Unused listener events
-	public void mappingModified() {}
+	public void projectModified() {}
+	public void schemaAdded(Integer schemaID) {}
+	public void schemaRemoved(Integer schemaID) {}
+	public void mappingAdded(Integer mappingID) {}
+	public void mappingCellsAdded(Integer mappingID, List<MappingCell> mappingCells) {}
+	public void mappingCellsModified(Integer mappingID,	List<MappingCell> oldMappingCells, List<MappingCell> newMappingCells) {}
+	public void mappingCellsRemoved(Integer mappingID, List<MappingCell> mappingCells) {}
+	public void mappingRemoved(Integer mappingID) {}
 	public void displayedViewChanged() {}
 	public void mouseExited(MouseEvent e) {}
 	public void mouseEntered(MouseEvent e) {}
@@ -649,15 +664,10 @@ public class SchemaTree extends JTree implements MappingListener, PreferencesLis
 			
 			DefaultMutableTreeNode rootNode = (DefaultMutableTreeNode)parent.getLastPathComponent();
 			Color m_tGrey = new Color(230, 230, 230, 150);
-			Color m_tBlue = new Color(0, 0, 255, 150);
-			Color m_tGreen = new Color(0, 250, 0, 150);
 			int circleSize = 5;
 			
 			Graphics2D g2d = (Graphics2D) g;
-			Stroke s = g2d.getStroke();
 			g2d.setStroke(DASHED_LINE);
-			
-			//SchemaTreeImp leftTree = tree.(MappingSchema.LEFT);
 			
 	        // Traverse children
 	        if (rootNode.getChildCount() >= 0) {
@@ -672,27 +682,17 @@ public class SchemaTree extends JTree implements MappingListener, PreferencesLis
 	    			
 	    			if(rect != null)
 	    			{    
-	    				if(tree.getSide()==MappingSchema.LEFT){
+	    				if(tree.getSide()==HarmonyConsts.LEFT)
+	    				{
 	    					//Draw line
 		    				g2d.setColor(m_tGrey);
 		    				g2d.drawLine((int) rect.getMaxX(), (int) rect.getCenterY(), width - circleSize, (int) rect.getCenterY());
-		    			    
-		    				//Draw inside circle
-		    				//g2d.setColor(m_tGreen);
-		    				//g2d.fillOval(width-circleSize, (int) rect.getCenterY()-circleSize, 2*circleSize, 2*circleSize);
-		    					
 	    				}
 	    				else{  //right side
 	    					//Draw line
 		    				g2d.setColor(m_tGrey);
 		    				//Full line
 		    				g2d.drawLine(0, (int) rect.getCenterY(), (int)rect.getMinX(), (int) rect.getCenterY());
-		    				//Small line
-		    				//g2d.drawLine(circleSize, (int) rect.getCenterY(), 2*circleSize, (int) rect.getCenterY());
-		    			    
-		    				//Draw inside circle
-		    				//g2d.setColor(m_tGreen);
-		    				//g2d.fillOval(0-circleSize-1, (int) rect.getCenterY()-circleSize, 2*circleSize, 2*circleSize);	    					    	    		
 	    				}
 	    				
 	    			}
@@ -709,5 +709,4 @@ public class SchemaTree extends JTree implements MappingListener, PreferencesLis
 	        // No match at this branch
 	        return null;
 	    }
-
 }
