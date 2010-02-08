@@ -2,6 +2,7 @@
 // ALL RIGHTS RESERVED
 package org.mitre.harmony.view.mappingPane;
 
+import java.awt.Component;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.geom.Line2D;
@@ -30,21 +31,13 @@ class MappingCellLine extends Line2D.Double
 		visible = source.isVisible(sNode) && target.isVisible(tNode);
 
 		// Calculate start and end point for line and set line
+		Component functionPane = mappingPane.getFunctionPane();
 		Rectangle sRect = source.getBufferedRowBounds(source.getNodeRow(sNode));
-		Point sourcePt = new Point((int)sRect.getMaxX(),(int)sRect.getCenterY());
-		
-		//Mid pane mapping line starting point
-		sourcePt = new Point(mappingPane.getFunctionPane().getWidth(), sourcePt.y);
-		
 		Rectangle tRect = target.getBufferedRowBounds(target.getNodeRow(tNode));
-		//Point targetPt = new Point((int)tRect.getMinX()-2,(int)tRect.getCenterY()); 
-		
-		//Ending points for the mapping line in mid pane
-		int X = mappingPane.getFunctionPane().getWidth()*2;
-		Point targetPt = new Point(X,(int)tRect.getCenterY());  		
-		
-		if(sourcePt.x>mappingPane.getBounds().getCenterX())
-			sourcePt.x=(int)mappingPane.getBounds().getCenterX();
+		Point sourcePt = new Point(functionPane.getX(), (int)sRect.getCenterY());
+		Point targetPt = new Point(functionPane.getX()+functionPane.getWidth(),(int)tRect.getCenterY());  		
+
+		// Define the mapping cell line
 		setLine(sourcePt,targetPt);
 	}
 	
