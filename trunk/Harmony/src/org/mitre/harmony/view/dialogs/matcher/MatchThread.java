@@ -3,6 +3,7 @@ package org.mitre.harmony.view.dialogs.matcher;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 
 import org.mitre.harmony.matchers.MatchScore;
 import org.mitre.harmony.matchers.MatchScores;
@@ -10,12 +11,13 @@ import org.mitre.harmony.matchers.MatcherManager;
 import org.mitre.harmony.matchers.TypeMappings;
 import org.mitre.harmony.matchers.mergers.MatchMerger;
 import org.mitre.harmony.matchers.voters.MatchVoter;
+import org.mitre.harmony.model.HarmonyConsts;
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.filters.FilterManager;
 import org.mitre.harmony.model.filters.Focus;
-import org.mitre.harmony.model.mapping.MappingCellManager;
+import org.mitre.harmony.model.project.MappingManager;
+import org.mitre.harmony.model.project.ProjectMapping;
 import org.mitre.schemastore.model.MappingCell;
-import org.mitre.schemastore.model.MappingSchema;
 import org.mitre.schemastore.model.schemaInfo.FilteredSchemaInfo;
 import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
 
@@ -43,10 +45,10 @@ public class MatchThread extends Thread
 	/** Class for monitoring match progress */
 	private class ProgressThread extends Thread
 	{
-		/** Stores the total number of schema pairs being matched */
-		private Integer currentPair=0, totalPairs=0;
+		/** Stores the total number of mappings being matched */
+		private Integer currentMapping=0, totalMappings=0;
 		
-		/** Stores the current schema pairs being matched */
+		/** Stores the current mapping being matched */
 		private String leftSchema, rightSchema;
 		
 		/** Stores the current voter being used */
@@ -55,13 +57,13 @@ public class MatchThread extends Thread
 		/** Indicates that the thread should be stopped */
 		private boolean stop=false;
 		
-		/** Sets the total number of schema pairs */
-		void setTotalSchemaPairs(Integer totalPairs)
-			{ this.currentPair=-1; this.totalPairs=totalPairs; }
+		/** Sets the total number of mappings */
+		void setTotalMappings(Integer totalMappings)
+			{ this.currentMapping=-1; this.totalMappings=totalMappings; }
 		
-		/** Sets the current schema pairs being matched */
+		/** Sets the current schema pair being matched */
 		void setCurrentSchemaPair(String leftSchema, String rightSchema)
-			{ this.leftSchema=leftSchema; this.rightSchema=rightSchema; currentPair++; voter=null; }
+			{ this.leftSchema=leftSchema; this.rightSchema=rightSchema; currentMapping++; voter=null; }
 		
 		/** Sets the current voter being used */
 		void setCurrentVoter(MatchVoter voter)
@@ -80,7 +82,7 @@ public class MatchThread extends Thread
 				Double overallProgress = 0.0;
 				try {
 					Double votersProgress = (100*voters.indexOf(voter)+voterProgress)/voters.size();
-					overallProgress = new Double((100*currentPair+votersProgress)/totalPairs);
+					overallProgress = new Double((100*currentMapping+votersProgress)/totalMappings);
 				} catch(Exception e) {}
 				String status = "Matching " + leftSchema + " to " + rightSchema + " with " + voter.getName();
 				for(MatchListener listener : listeners)
@@ -126,42 +128,37 @@ public class MatchThread extends Thread
 	}
 
 	/** Returns the list of filtered schema info for the specified side */
-	private ArrayList<FilteredSchemaInfo> getFilteredSchemaInfoList(Integer side)
+	private FilteredSchemaInfo getFilteredSchemaInfo(Integer schemaID, Integer side)
 	{
-		ArrayList<FilteredSchemaInfo> filteredSchemaInfoList = new ArrayList<FilteredSchemaInfo>();
+		// Check to make sure that the schema is currently in focus
 		FilterManager filters = harmonyModel.getFilters();
-		
-		// Create filtered schema info for each schema in focus
-		for(Integer schemaID : harmonyModel.getMappingManager().getSchemaIDs(side))
-			if(filters.inFocus(side, schemaID))
-			{
-				HierarchicalSchemaInfo schemaInfo = harmonyModel.getSchemaManager().getSchemaInfo(schemaID);
-				FilteredSchemaInfo filteredSchemaInfo = new FilteredSchemaInfo(schemaInfo);
+		if(!filters.inFocus(side, schemaID)) return null;
 
-				// Set the filter roots
-				Focus focus = filters.getFocus(side,schemaID);
-				if(focus!=null && !focus.contains(schemaID))
-					filteredSchemaInfo.setFilteredRoots(focus.getFocusedIDs());
-					
-				// Filter by minimum and maximum depth
-				filteredSchemaInfo.setMinDepth(filters.getMinDepth(side));
-				filteredSchemaInfo.setMaxDepth(filters.getMaxDepth(side));
-						
-				// Set the hidden elements
-				ArrayList<Integer> hiddenElements = new ArrayList<Integer>();
-				hiddenElements.addAll(harmonyModel.getPreferences().getFinishedElements(schemaID));
-				if(focus!=null) hiddenElements.addAll(focus.getHiddenElements());
-				filteredSchemaInfo.setHiddenElements(hiddenElements);
+		// Create the filtered schema info object
+		HierarchicalSchemaInfo schemaInfo = harmonyModel.getSchemaManager().getSchemaInfo(schemaID);
+		FilteredSchemaInfo filteredSchemaInfo = new FilteredSchemaInfo(schemaInfo);
 
-				// Add the filtered schema info
-				filteredSchemaInfoList.add(filteredSchemaInfo);
-			}
-		
-		return filteredSchemaInfoList;
+		// Set the filter roots
+		Focus focus = filters.getFocus(side,schemaID);
+		if(focus!=null && !focus.contains(schemaID))
+			filteredSchemaInfo.setFilteredRoots(focus.getFocusedIDs());
+			
+		// Filter by minimum and maximum depth
+		filteredSchemaInfo.setMinDepth(filters.getMinDepth(side));
+		filteredSchemaInfo.setMaxDepth(filters.getMaxDepth(side));
+				
+		// Set the hidden elements
+		ArrayList<Integer> hiddenElements = new ArrayList<Integer>();
+		hiddenElements.addAll(harmonyModel.getPreferences().getFinishedElements(schemaID));
+		if(focus!=null) hiddenElements.addAll(focus.getHiddenElements());
+		filteredSchemaInfo.setHiddenElements(hiddenElements);
+
+		// Return the filtered schema info object
+		return filteredSchemaInfo;
 	}
     
 	/** Runs the matchers on the specified schemas */
-	private void runMatch(FilteredSchemaInfo leftSchemaInfo, FilteredSchemaInfo rightSchemaInfo, String matcherName, ProgressThread progressThread)
+	private void runMatch(Integer mappingID, FilteredSchemaInfo leftSchemaInfo, FilteredSchemaInfo rightSchemaInfo, String matcherName, ProgressThread progressThread)
 	{
 		// Generate the match scores for the left and right roots
 		merger.initialize(leftSchemaInfo, rightSchemaInfo, typeMappings);
@@ -173,9 +170,9 @@ public class MatchThread extends Thread
 		}
 		MatchScores matchScores =  merger.getMatchScores();
 		
-		// Store the generated match scores
+		// Store the generated mapping cells
 		ArrayList<MappingCell> mappingCells = new ArrayList<MappingCell>();
-		MappingCellManager manager = harmonyModel.getMappingCellManager();
+		MappingManager manager = harmonyModel.getMappingManager();
 		for (MatchScore matchScore : matchScores.getScores())
 		{	
 			// Don't proceed if process has been stopped
@@ -187,7 +184,6 @@ public class MatchThread extends Thread
 			
 			// Get the mapping cell properties
 			Integer id = manager.getMappingCellID(matchScore.getElement1(), matchScore.getElement2());
-			Integer mappingID = harmonyModel.getMappingManager().getMapping().getId();
 			Integer input = matchScore.getElement1();
 			Integer output = matchScore.getElement2();
 			Double score = matchScore.getScore();
@@ -196,7 +192,7 @@ public class MatchThread extends Thread
 			// Generate the mapping cell
 			mappingCells.add(MappingCell.createProposedMappingCell(id, mappingID, input, output, score, matcherName, date, null));
 		}
-		manager.setMappingCells(mappingCells);
+		manager.getMapping(mappingID).setMappingCells(mappingCells);
 	}
 	
 	/** Runs the thread */
@@ -205,31 +201,46 @@ public class MatchThread extends Thread
 		// Generate the matcher name
 		String matcherName = getMatcherName();
 
-		// Store the left and right schema info
-		ArrayList<FilteredSchemaInfo> leftSchemaInfoList = getFilteredSchemaInfoList(MappingSchema.LEFT);
-		ArrayList<FilteredSchemaInfo> rightSchemaInfoList = getFilteredSchemaInfoList(MappingSchema.RIGHT);
+		// Retrieve the visible mappings
+		ArrayList<ProjectMapping> mappings = new ArrayList<ProjectMapping>();
+		for(ProjectMapping mapping : harmonyModel.getMappingManager().getMappings())
+			if(mapping.isVisible()) mappings.add(mapping);
+		
+		// Gather up the schema info
+		HashMap<Integer,FilteredSchemaInfo> schemaInfoList = new HashMap<Integer,FilteredSchemaInfo>();
+		for(ProjectMapping mapping : mappings)
+		{
+			Integer sourceID = mapping.getSourceId(), targetID = mapping.getTargetId();
+			if(!schemaInfoList.containsKey(sourceID))
+				schemaInfoList.put(sourceID, getFilteredSchemaInfo(sourceID,HarmonyConsts.LEFT));
+			if(!schemaInfoList.containsKey(targetID))
+				schemaInfoList.put(targetID, getFilteredSchemaInfo(targetID,HarmonyConsts.RIGHT));
+		}
 
 		// Create a thread for monitoring the progress of the match process
 		ProgressThread progressThread = new ProgressThread();
 		progressThread.start();
-		progressThread.setTotalSchemaPairs(leftSchemaInfoList.size()*rightSchemaInfoList.size());
+		progressThread.setTotalMappings(mappings.size());
 		
 		// Matches all left schemas to all right schemas
-		RunMatchers: for(FilteredSchemaInfo leftSchemaInfo : leftSchemaInfoList)
-			for(FilteredSchemaInfo rightSchemaInfo : rightSchemaInfoList)
-			{				
-				// Don't proceed if the matching has been stopped
-				if(stop) break RunMatchers;
+		for(ProjectMapping mapping : mappings)
+		{
+			// Don't proceed if the matching has been stopped
+			if(stop) break;
 
-				// Inform the progress thread of the current pair of schemas being matched
-				String leftName = leftSchemaInfo.getSchema().getName();
-				String rightName = rightSchemaInfo.getSchema().getName();
-				progressThread.setCurrentSchemaPair(leftName,rightName);
+			// Get schema info
+			FilteredSchemaInfo leftSchemaInfo = schemaInfoList.get(mapping.getSourceId());
+			FilteredSchemaInfo rightSchemaInfo = schemaInfoList.get(mapping.getTargetId());
+			
+			// Inform the progress thread of the current pair of schemas being matched
+			String leftName = leftSchemaInfo.getSchema().getName();
+			String rightName = rightSchemaInfo.getSchema().getName();
+			progressThread.setCurrentSchemaPair(leftName,rightName);
 				
-				// Run the matcher of the current pair of schemas
-				try { runMatch(leftSchemaInfo,rightSchemaInfo,matcherName,progressThread); }
-				catch (Exception e) { System.out.println("(E) MatchThread.run - " + e.getMessage()); }
-			}
+			// Run the matcher of the current pair of schemas
+			try { runMatch(mapping.getId(),leftSchemaInfo,rightSchemaInfo,matcherName,progressThread); }
+			catch (Exception e) { System.out.println("(E) MatchThread.run - " + e.getMessage()); }
+		}
 		
 		// Stops the progress thread
 		progressThread.stopThread();

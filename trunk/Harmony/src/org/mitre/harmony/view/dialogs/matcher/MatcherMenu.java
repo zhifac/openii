@@ -14,10 +14,10 @@ import org.mitre.harmony.matchers.MatcherManager;
 import org.mitre.harmony.matchers.mergers.MatchMerger;
 import org.mitre.harmony.matchers.mergers.VoteMerger;
 import org.mitre.harmony.matchers.voters.MatchVoter;
+import org.mitre.harmony.model.HarmonyConsts;
 import org.mitre.harmony.model.HarmonyModel;
-import org.mitre.harmony.model.mapping.MappingManager;
+import org.mitre.harmony.model.project.ProjectManager;
 import org.mitre.harmony.view.dialogs.matcher.wizard.Wizard;
-import org.mitre.schemastore.model.MappingSchema;
 
 /** Menu to display all available matchers */
 public class MatcherMenu extends JMenu
@@ -77,9 +77,9 @@ public class MatcherMenu extends JMenu
 		public void actionPerformed(ActionEvent e)
 		{
 			// No need to proceed if no schemas exist on a specific side
-			MappingManager mappingManager = harmonyModel.getMappingManager();
-			Integer leftSchemas = mappingManager.getSchemaElements(MappingSchema.LEFT).size();
-			Integer rightSchemas = mappingManager.getSchemaElements(MappingSchema.RIGHT).size();
+			ProjectManager projectManager = harmonyModel.getProjectManager();
+			Integer leftSchemas = projectManager.getSchemaElements(HarmonyConsts.LEFT).size();
+			Integer rightSchemas = projectManager.getSchemaElements(HarmonyConsts.RIGHT).size();
 			if(leftSchemas.equals(0) || rightSchemas.equals(0)) return;
 			
 			// Run the matcher (through the matcher wizard)

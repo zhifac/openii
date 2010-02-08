@@ -81,7 +81,7 @@ public class ExportMappingDialog
 			
 			// Export the project to the specified file
 			Mapping mapping = harmonyModel.getMappingManager().getMapping();
-			ArrayList<MappingCell> mappingCells = harmonyModel.getMappingCellManager().getMappingCells();
+			ArrayList<MappingCell> mappingCells = harmonyModel.getMappingManager().getMappingCells();
 			try { exporter.exportMapping(mapping, mappingCells, file); }
 			catch(IOException e)
 			{
