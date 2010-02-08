@@ -28,6 +28,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
 import org.mitre.harmony.matchers.TypeMappings;
+import org.mitre.harmony.model.HarmonyConsts;
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.view.dialogs.matcher.wizard.WizardPanel;
 import org.mitre.schemastore.model.Attribute;
@@ -35,7 +36,6 @@ import org.mitre.schemastore.model.Containment;
 import org.mitre.schemastore.model.Domain;
 import org.mitre.schemastore.model.DomainValue;
 import org.mitre.schemastore.model.Entity;
-import org.mitre.schemastore.model.MappingSchema;
 import org.mitre.schemastore.model.Relationship;
 import org.mitre.schemastore.model.SchemaElement;
 
@@ -209,7 +209,7 @@ public class TypePane extends WizardPanel implements ActionListener
 
 		// Identify the types on the specified side
 		HashSet<Class> types = new HashSet<Class>();
-		for(SchemaElement element : harmonyModel.getMappingManager().getSchemaElements(side))
+		for(SchemaElement element : harmonyModel.getProjectManager().getSchemaElements(side))
 			types.add(element.getClass());
 
 		// Return a sorted list of the types
@@ -222,8 +222,8 @@ public class TypePane extends WizardPanel implements ActionListener
 	private JPanel getTypeGridPane(HarmonyModel harmonyModel)
 	{
 		// Retrieve the source and target types
-		ArrayList<Class> sourceTypes = getTypes(harmonyModel, MappingSchema.LEFT);
-		ArrayList<Class> targetTypes = getTypes(harmonyModel, MappingSchema.RIGHT);
+		ArrayList<Class> sourceTypes = getTypes(harmonyModel, HarmonyConsts.LEFT);
+		ArrayList<Class> targetTypes = getTypes(harmonyModel, HarmonyConsts.RIGHT);
 		
 		// Generate the source labels
 		JPanel sourceLabels = new JPanel();
