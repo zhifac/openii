@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import org.mitre.harmony.model.HarmonyConsts;
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.filters.ElementPath;
 import org.mitre.harmony.model.filters.Focus;
 import org.mitre.harmony.model.search.SearchResult;
 import org.mitre.schemastore.model.MappingCell;
-import org.mitre.schemastore.model.MappingSchema;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
 
@@ -27,7 +27,7 @@ public class FocusController
 		
 		// Construct new focused paths based on matches
 		HashMap<Integer,SearchResult> matches = harmonyModel.getSearchManager().getMatches(side);
-		for(Integer schemaID : harmonyModel.getMappingManager().getSchemaIDs(side))
+		for(Integer schemaID : harmonyModel.getProjectManager().getSchemaIDs(side))
 		{
 			// Retrieve the schema paths
 			ArrayList<ElementPath> schemaPaths = paths.get(schemaID);
@@ -59,18 +59,18 @@ public class FocusController
 	static public HashSet<MappingCell> getFocusedMappingCells(HarmonyModel harmonyModel)
 	{
 		// Retrieve the visible source and target nodes
-		HashSet<Integer> leftIDs = new HashSet<Integer>(harmonyModel.getFilters().getFocusedElementIDs(MappingSchema.LEFT));
-		HashSet<Integer> rightIDs = new HashSet<Integer>(harmonyModel.getFilters().getFocusedElementIDs(MappingSchema.RIGHT));	    	
+		HashSet<Integer> leftIDs = new HashSet<Integer>(harmonyModel.getFilters().getFocusedElementIDs(HarmonyConsts.LEFT));
+		HashSet<Integer> rightIDs = new HashSet<Integer>(harmonyModel.getFilters().getFocusedElementIDs(HarmonyConsts.RIGHT));	    	
 		
 		// Create list of all mapping cells in focus
 		HashSet<MappingCell> mappingCells = new HashSet<MappingCell>();
 		for(Integer leftID : leftIDs)
 		{
-			ArrayList<Integer> mappingCellIDs = harmonyModel.getMappingCellManager().getMappingCellsByElement(leftID);
+			ArrayList<Integer> mappingCellIDs = harmonyModel.getMappingManager().getMappingCellsByElement(leftID);
 			MAPPING_CELL_LOOP: for(Integer mappingCellID : mappingCellIDs)
 			{
 				// Make sure that all elements referenced by the mapping cell do exist
-				MappingCell mappingCell = harmonyModel.getMappingCellManager().getMappingCell(mappingCellID);
+				MappingCell mappingCell = harmonyModel.getMappingManager().getMappingCell(mappingCellID);
 				for(Integer inputID : mappingCell.getInput())
 					if(!leftIDs.contains(inputID)) continue MAPPING_CELL_LOOP;
 				if(!rightIDs.contains(mappingCell.getOutput())) continue;

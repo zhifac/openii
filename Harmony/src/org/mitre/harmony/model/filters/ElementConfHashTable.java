@@ -8,14 +8,15 @@ import java.util.Hashtable;
 import java.util.List;
 
 import org.mitre.harmony.model.HarmonyModel;
-import org.mitre.harmony.model.mapping.MappingCellListener;
+import org.mitre.harmony.model.project.MappingListener;
+import org.mitre.harmony.model.project.ProjectMapping;
 import org.mitre.schemastore.model.MappingCell;
 
 /**
  * Keeps an updated listing of the maximum confidence associated with each element
  * @author CWOLF
  */
-class ElementConfHashTable extends Hashtable<Integer,Double> implements MappingCellListener
+class ElementConfHashTable extends Hashtable<Integer,Double> implements MappingListener
 {
 	/** Stores the Harmony model */
 	private HarmonyModel harmonyModel;
@@ -33,7 +34,7 @@ class ElementConfHashTable extends Hashtable<Integer,Double> implements MappingC
 	ElementConfHashTable(HarmonyModel harmonyModel)
 	{
 		this.harmonyModel = harmonyModel;
-		harmonyModel.getMappingCellManager().addListener(this);
+		harmonyModel.getMappingManager().addListener(this);
 	}
 	
 	/** Retrieves the specified element's confidence from the hash table */
@@ -45,17 +46,18 @@ class ElementConfHashTable extends Hashtable<Integer,Double> implements MappingC
 		
 		// Calculates the node confidence
 		confidence = Double.MIN_VALUE;
-		for(Integer mappingCellID : harmonyModel.getMappingCellManager().getMappingCellsByElement(elementID))
-		{
-			Double mappingCellConf = harmonyModel.getMappingCellManager().getMappingCell(mappingCellID).getScore();
-			if(mappingCellConf>confidence) confidence = mappingCellConf;
-		}
+		for(ProjectMapping mapping : harmonyModel.getMappingManager().getMappings())
+			for(Integer mappingCellID : mapping.getMappingCellsByElement(elementID))
+			{
+				Double mappingCellConf = mapping.getMappingCell(mappingCellID).getScore();
+				if(mappingCellConf>confidence) confidence = mappingCellConf;
+			}
 		put(elementID,confidence);
 		return confidence;
 	}
 	
 	/** Updates confidences when a new mapping cell is added to the model */
-	public void mappingCellsAdded(List<MappingCell> mappingCells)
+	public void mappingCellsAdded(Integer mappingID, List<MappingCell> mappingCells)
 	{
 		// Cycle through all mapping cells
 		for(MappingCell mappingCell : mappingCells)
@@ -75,7 +77,7 @@ class ElementConfHashTable extends Hashtable<Integer,Double> implements MappingC
 	}
 	
 	/** Updates confidences when a mapping cell is modified in the model */
-	public void mappingCellsModified(List<MappingCell> oldMappingCells, List<MappingCell> newMappingCells)
+	public void mappingCellsModified(Integer mappingID, List<MappingCell> oldMappingCells, List<MappingCell> newMappingCells)
 	{
 		// Cycle through all modified cells
 		for(int i=0; i<oldMappingCells.size(); i++)
@@ -102,7 +104,7 @@ class ElementConfHashTable extends Hashtable<Integer,Double> implements MappingC
 	}
 		
 	/** Updates confidences when a mapping cell is removed from the model */
-	public void mappingCellsRemoved(List<MappingCell> mappingCells)
+	public void mappingCellsRemoved(Integer mappingID, List<MappingCell> mappingCells)
 	{
 		// Cycle through mapping cells
 		for(MappingCell mappingCell : mappingCells)
@@ -120,4 +122,9 @@ class ElementConfHashTable extends Hashtable<Integer,Double> implements MappingC
 			}
 		}
 	}
+
+	// Unused event listeners
+	public void mappingAdded(Integer mappingID) {}
+	public void mappingRemoved(Integer mappingID) {}
+	public void mappingVisibilityChanged(Integer mappingID) {}
 }
