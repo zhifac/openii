@@ -3,9 +3,9 @@ package org.mitre.harmony.model;
 import java.awt.Frame;
 
 import org.mitre.harmony.model.filters.FilterManager;
-import org.mitre.harmony.model.mapping.MappingCellManager;
-import org.mitre.harmony.model.mapping.MappingManager;
 import org.mitre.harmony.model.preferences.PreferencesManager;
+import org.mitre.harmony.model.project.MappingManager;
+import org.mitre.harmony.model.project.ProjectManager;
 import org.mitre.harmony.model.search.SearchManager;
 import org.mitre.harmony.model.selectedInfo.SelectedInfoManager;
 
@@ -17,8 +17,8 @@ public class HarmonyModel
 	
 	// Stores the managers associated with the currently displayed mapping
 	protected SchemaManager schemaManager = new SchemaManager(this);
+	protected ProjectManager projectManager = new ProjectManager(this);
 	protected MappingManager mappingManager = new MappingManager(this);
-	protected MappingCellManager mappingCellManager = new MappingCellManager(this);
 	
 	// Stores the various managers associated with the model
 	protected FilterManager filterManager = new FilterManager(this);
@@ -33,14 +33,11 @@ public class HarmonyModel
 
 		// Add listeners to the various model objects
 		filterManager.addListener(selectedInfoManager);
-		preferencesManager.addListener(mappingCellManager);
+		mappingManager.addListener(projectManager);
 		mappingManager.addListener(filterManager);
-		mappingManager.addListener(mappingCellManager);
-		mappingManager.addListener(preferencesManager);
 		mappingManager.addListener(searchManager);
 		mappingManager.addListener(selectedInfoManager);
-		mappingCellManager.addListener(mappingManager);
-		mappingCellManager.addListener(selectedInfoManager);
+		projectManager.addListener(preferencesManager);
 	}
 	
 	/** Returns the base frame */
@@ -67,11 +64,11 @@ public class HarmonyModel
 	public SchemaManager getSchemaManager()
 		{ return schemaManager; }
 
+	/** Returns the project manager */
+	public ProjectManager getProjectManager()
+		{ return projectManager; }
+
 	/** Returns the mapping manager */
 	public MappingManager getMappingManager()
 		{ return mappingManager; }
-	
-	/** Returns the mapping cell manager */
-	public MappingCellManager getMappingCellManager()
-		{ return mappingCellManager; }
 }

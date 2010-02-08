@@ -14,13 +14,13 @@ import javax.swing.JOptionPane;
 import org.mitre.harmony.model.ConfigManager;
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.SchemaStoreManager;
-import org.mitre.harmony.model.mapping.MappingListener;
-import org.mitre.harmony.view.dialogs.mappings.SaveMappingDialog;
+import org.mitre.harmony.model.project.ProjectListener;
+import org.mitre.harmony.view.dialogs.projects.SaveMappingDialog;
 import org.mitre.harmony.view.harmonyPane.HarmonyFrame;
 import org.mitre.schemastore.client.Repository;
 
 /** Main Harmony class */
-public class Harmony extends JFrame implements MappingListener, WindowListener
+public class Harmony extends JFrame implements ProjectListener, WindowListener
 {
 	/** Stores the Harmony model */
 	private HarmonyModel harmonyModel;
@@ -32,8 +32,8 @@ public class Harmony extends JFrame implements MappingListener, WindowListener
     	harmonyModel = new HarmonyModel(this);
     	
     	// Place title on application
-		String mappingName = harmonyModel.getMappingManager().getMapping().getName();
-		setTitle("Harmony Schema Matcher" + (mappingName!=null ? " - " + harmonyModel.getMappingManager().getMapping().getName() : ""));
+		String projectName = harmonyModel.getProjectManager().getProject().getName();
+		setTitle("Harmony Schema Matcher" + (projectName!=null ? " - " + harmonyModel.getProjectManager().getProject().getName() : ""));
     	
     	// Set dialog pane settings
 	   	setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/org/mitre/harmony/view/graphics/SSM.jpg")));
@@ -45,22 +45,22 @@ public class Harmony extends JFrame implements MappingListener, WindowListener
  	   	setVisible(true);
 
 	   	// Add in application listeners
- 	   	harmonyModel.getMappingManager().addListener(this);
+ 	   	harmonyModel.getProjectManager().addListener(this);
 		addWindowListener(this);
     }
 
     /** Adjusts Harmony title to indicate currently opened project file */
-	public void mappingModified()
+	public void projectModified()
 	{
-		String mappingName = harmonyModel.getMappingManager().getMapping().getName();
-		setTitle("Harmony Schema Matcher" + (mappingName!=null ? " - " + harmonyModel.getMappingManager().getMapping().getName() : ""));
+		String projectName = harmonyModel.getProjectManager().getProject().getName();
+		setTitle("Harmony Schema Matcher" + (projectName!=null ? " - " + harmonyModel.getProjectManager().getProject().getName() : ""));
 	}
 
 	/** Disposes of the Harmony frame */
 	public void dispose()
 	{
 		int option = 1;
-		if(harmonyModel.getMappingManager().isModified())
+		if(harmonyModel.getProjectManager().isModified())
     		option = JOptionPane.showConfirmDialog(harmonyModel.getBaseFrame(),
     			"This mapping has been modified.  Do you want to save changes?",
 				"Save Mapping", JOptionPane.YES_NO_CANCEL_OPTION,
@@ -80,9 +80,6 @@ public class Harmony extends JFrame implements MappingListener, WindowListener
 	public void windowDeiconified(WindowEvent arg0) {}
 	public void windowIconified(WindowEvent arg0) {}
 	public void windowOpened(WindowEvent arg0) {}
-	public void schemaAdded(Integer schemaID) {}
-	public void schemaModified(Integer schemaID) {}
-	public void schemaRemoved(Integer schemaID) {}
 
 	/** Launches Harmony */
 	static public void main(String args[])
@@ -107,4 +104,9 @@ public class Harmony extends JFrame implements MappingListener, WindowListener
 		if(SchemaStoreManager.setConnection(repository)) new Harmony();
 		else System.out.println("(E) Failed to connect to SchemaStore");
 	}
+
+	// Unused event listeners
+	public void schemaAdded(Integer schemaID) {}
+	public void schemaModelModified(Integer schemaID) {}
+	public void schemaRemoved(Integer schemaID) {}
 }

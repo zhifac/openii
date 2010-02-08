@@ -9,12 +9,13 @@ import org.mitre.schemastore.client.Repository;
 import org.mitre.schemastore.client.SchemaStoreClient;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
+import org.mitre.schemastore.model.Project;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
 import org.mitre.schemastore.porters.PorterManager;
 import org.mitre.schemastore.porters.mappingExporters.MappingExporter;
-import org.mitre.schemastore.porters.mappingImporters.M3ProjectImporter;
+import org.mitre.schemastore.porters.projectImporters.M3ProjectImporter;
 import org.mitre.schemastore.porters.schemaImporters.SchemaImporter;
 
 /**
@@ -71,27 +72,36 @@ public class SchemaStoreManager
 		{ return client.getSchemaElement(schemaElementID); }
 	
 	//-------------------
-	// Mapping Functions
+	// Project Functions
 	//-------------------
 
-	static ArrayList<Mapping> getMappingList() throws RemoteException
-		{ return client.getMappings(); }
+	/** Retrieves the list of all projects from the web service */
+	static ArrayList<Project> getProjects() throws RemoteException
+		{ return client.getProjects(); }
 	
-	/** Retrieves the specified mapping from the web service */
-	public static Mapping getMapping(Integer mappingID) throws RemoteException
-		{ return client.getMapping(mappingID); }
+	/** Retrieves the specified project from the web service */
+	public static Project getProject(Integer projectID) throws RemoteException
+		{ return client.getProject(projectID); }
 	
-	/** Saves the specified mapping to the web service */
-	public static Integer saveMapping(Mapping mapping, ArrayList<MappingCell> mappingCells) throws RemoteException
-		{ return client.saveMapping(mapping, mappingCells); }
+	/** Adds the specified project to the web service */
+	public static Integer addProject(Project project) throws RemoteException
+		{ return client.addProject(project); }
 	
-	/** Deletes the specified mapping from the web service */
-	public static Boolean deleteMapping(Integer mappingID) throws RemoteException
-		{ return client.deleteMapping(mappingID); }
+	/** Deletes the specified project from the web service */
+	public static Boolean deleteProject(Integer projectID) throws RemoteException
+		{ return client.deleteProject(projectID); }
 	
-	/** Retrieves the mapping cells for the specified mapping */
+	/** Retrieves the list of all mappings for the specified project from the web service */
+	public static ArrayList<Mapping> getMappings(Integer projectID) throws RemoteException
+		{ return client.getMappings(projectID); }
+	
+	/** Retrieves the mapping cells for the specified mapping from the web service */
 	public static ArrayList<MappingCell> getMappingCells(Integer mappingID) throws RemoteException
 		{ return client.getMappingCells(mappingID); }
+	
+	/** Saves the specified mapping to the web service */
+	public static boolean saveMappingCells(Integer mappingID, ArrayList<MappingCell> mappingCells) throws RemoteException
+		{ return client.saveMappingCells(mappingID, mappingCells); }
 	
 	//--------------------
 	// Importer Functions
@@ -106,12 +116,12 @@ public class SchemaStoreManager
 				{ return importer1.getName().compareTo(importer2.getName()); } }
 
 		// Retrieves the list of available importers
-		ArrayList<SchemaImporter> importers = new ArrayList<SchemaImporter>();
-		for(SchemaImporter importer : new PorterManager(client).getSchemaImporters())
+		ArrayList<SchemaImporter> importers = new PorterManager(client).getPorters(PorterManager.SCHEMA_IMPORTERS);
+		for(SchemaImporter importer : new ArrayList<SchemaImporter>(importers))
 		{
 			Integer uriType = importer.getURIType();
-			if(!uriType.equals(SchemaImporter.NONE) && !uriType.equals(SchemaImporter.SCHEMA))
-				importers.add(importer);
+			if(uriType.equals(SchemaImporter.NONE) || uriType.equals(SchemaImporter.SCHEMA))
+				importers.remove(importer);
 		}
 		Collections.sort(importers, new ImporterComparator());
 		return importers;
@@ -123,5 +133,5 @@ public class SchemaStoreManager
 
 	/** Gets the list of available mapping exporters */
 	public static ArrayList<MappingExporter> getMappingExporters()
-		{ return new PorterManager(client).getMappingExporters(); }
+		{ return new PorterManager(client).getPorters(PorterManager.MAPPING_EXPORTERS); }
 }

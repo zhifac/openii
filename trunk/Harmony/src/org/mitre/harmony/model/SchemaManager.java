@@ -4,7 +4,7 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.mitre.schemastore.model.Mapping;
+import org.mitre.schemastore.model.Project;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
@@ -14,7 +14,7 @@ import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
  * @author CWOLF
  */
 public class SchemaManager
-{
+{	
 	/** Stores the Harmony model */
 	private HarmonyModel harmonyModel;
 	
@@ -106,7 +106,7 @@ public class SchemaManager
 		{
 			try {
 				HierarchicalSchemaInfo schemaInfo = SchemaStoreManager.getSchemaInfo(schemaID);
-				schemaInfo.setModel(harmonyModel.getMappingManager().getSchemaModel(schemaID));
+				schemaInfo.setModel(harmonyModel.getProjectManager().getSchemaModel(schemaID));
 				for(SchemaElement schemaElement : schemaInfo.getElements(null))
 					schemaElements.put(schemaElement.getId(), schemaElement);
 				schemaInfoList.put(schemaID, schemaInfo);
@@ -140,19 +140,19 @@ public class SchemaManager
 		{ return getSchemaInfo(schemaID).getDepths(elementID); }
 	
 	//-------------------
-	// Mapping Functions
+	// Project Functions
 	//-------------------
 	
-	/** Returns a list of all available mappings */
-	public ArrayList<Mapping> getAvailableMappings()
+	/** Returns a list of all available projects */
+	public ArrayList<Project> getAvailableProjects()
 	{
-		ArrayList<Mapping> mappingList = new ArrayList<Mapping>();
+		ArrayList<Project> projects = new ArrayList<Project>();
 		try {
-			mappingList = SchemaStoreManager.getMappingList();
+			projects = SchemaStoreManager.getProjects();
 		} catch(Exception e) {
-			System.err.println("Error getting Mapping List from SchemaStoreConnection");
+			System.err.println("Error getting projects from SchemaStoreConnection");
 			e.printStackTrace();
 		}
-		return mappingList;
+		return projects;
 	}
 }

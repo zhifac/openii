@@ -5,16 +5,17 @@ package org.mitre.harmony.model.filters;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.mitre.harmony.model.AbstractManager;
+import org.mitre.harmony.model.HarmonyConsts;
 import org.mitre.harmony.model.HarmonyModel;
-import org.mitre.harmony.model.mapping.MappingCellManager;
-import org.mitre.harmony.model.mapping.MappingListener;
+import org.mitre.harmony.model.project.MappingListener;
+import org.mitre.harmony.model.project.ProjectMapping;
 import org.mitre.harmony.view.schemaTree.SchemaTree;
 import org.mitre.schemastore.model.MappingCell;
-import org.mitre.schemastore.model.MappingSchema;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
 
@@ -58,8 +59,8 @@ public class FilterManager extends AbstractManager<FiltersListener> implements M
 		// Initialize the various filter settings
 		filters = new boolean[4];
 		filters[USER_FILTER]=true; filters[SYSTEM_FILTER]=true; filters[HIERARCHY_FILTER]=true; filters[BEST_FILTER]=false;
-		minConfThreshold = MappingCellManager.MIN_CONFIDENCE;
-		maxConfThreshold = MappingCellManager.MAX_CONFIDENCE;
+		minConfThreshold = ProjectMapping.MIN_CONFIDENCE;
+		maxConfThreshold = ProjectMapping.MAX_CONFIDENCE;
 		leftFoci = new ArrayList<Focus>();
 		rightFoci = new ArrayList<Focus>();
 		minLeftDepth = minRightDepth = 1;
@@ -111,18 +112,18 @@ public class FilterManager extends AbstractManager<FiltersListener> implements M
 	/** Sets the depth; only links that originate from a node above this depth are to be displayed */
 	public void setDepth(Integer side, int newMinDepth, int newMaxDepth)
 	{
-		if(side==MappingSchema.LEFT) { minLeftDepth = newMinDepth; maxLeftDepth = newMaxDepth; }
+		if(side==HarmonyConsts.LEFT) { minLeftDepth = newMinDepth; maxLeftDepth = newMaxDepth; }
 		else { minRightDepth = newMinDepth; maxRightDepth = newMaxDepth; }
 		for(FiltersListener listener : getListeners()) listener.depthChanged(side);
 	}
 	
 	/** Returns the minimum depth */
 	public int getMinDepth(Integer side)
-		{ return side==MappingSchema.LEFT ? minLeftDepth : minRightDepth; }
+		{ return side==HarmonyConsts.LEFT ? minLeftDepth : minRightDepth; }
 	
 	/** Returns the maximum depth */
 	public int getMaxDepth(Integer side)
-		{ return side==MappingSchema.LEFT ? maxLeftDepth : maxRightDepth; }
+		{ return side==HarmonyConsts.LEFT ? maxLeftDepth : maxRightDepth; }
 	
 	//---------------
 	// Handles focus
@@ -135,7 +136,7 @@ public class FilterManager extends AbstractManager<FiltersListener> implements M
 		Focus focus = getFocus(side,schemaID);
 		if(focus==null)
 		{
-			ArrayList<Focus> foci = side==MappingSchema.LEFT ? leftFoci : rightFoci;
+			ArrayList<Focus> foci = side==HarmonyConsts.LEFT ? leftFoci : rightFoci;
 			foci.add(focus = new Focus(schemaID, getModel()));
 		}
 
@@ -158,7 +159,7 @@ public class FilterManager extends AbstractManager<FiltersListener> implements M
 	/** Removes all foci from the specified side */
 	public void removeFoci(Integer side)
 	{
-		for(Focus focus : side==MappingSchema.LEFT ? leftFoci : rightFoci)
+		for(Focus focus : side==HarmonyConsts.LEFT ? leftFoci : rightFoci)
 			focus.removeAllFoci();
 		for(FiltersListener listener : getListeners()) listener.focusModified(side);		
 	}
@@ -170,7 +171,7 @@ public class FilterManager extends AbstractManager<FiltersListener> implements M
 		Focus focus = getFocus(side,schemaID);
 		if(focus==null)
 		{
-			ArrayList<Focus> foci = side==MappingSchema.LEFT ? leftFoci : rightFoci;
+			ArrayList<Focus> foci = side==HarmonyConsts.LEFT ? leftFoci : rightFoci;
 			foci.add(focus = new Focus(schemaID, getModel()));
 		}
 
@@ -192,7 +193,7 @@ public class FilterManager extends AbstractManager<FiltersListener> implements M
 	
 	/** Return the list of foci on the specified side */
 	public ArrayList<Focus> getFoci(Integer side)
-		{ return new ArrayList<Focus>(side==MappingSchema.LEFT ? leftFoci : rightFoci); }
+		{ return new ArrayList<Focus>(side==HarmonyConsts.LEFT ? leftFoci : rightFoci); }
 	
 	/** Returns the number of focused elements on the specified side */
 	public Integer getFocusCount(Integer side)
@@ -239,7 +240,7 @@ public class FilterManager extends AbstractManager<FiltersListener> implements M
 	public HashSet<Integer> getFocusedElementIDs(Integer side)
 	{
 		HashSet<Integer> focusedElements = new HashSet<Integer>();
-		for(Integer schemaID : getModel().getMappingManager().getSchemaIDs(side))
+		for(Integer schemaID : getModel().getProjectManager().getSchemaIDs(side))
 			if(inFocus(side,schemaID))
 			{
 				Focus focus = getFocus(side, schemaID);
@@ -273,7 +274,7 @@ public class FilterManager extends AbstractManager<FiltersListener> implements M
 	public boolean isVisibleMappingCell(Integer mappingCellID)
 	{
 		// Retrieve the mapping cell info
-		MappingCell mappingCell = getModel().getMappingCellManager().getMappingCell(mappingCellID);
+		MappingCell mappingCell = getModel().getMappingManager().getMappingCell(mappingCellID);
 		
 		// Check if link is within confidence thresholds
 		double confidence = mappingCell.getScore();
@@ -303,14 +304,14 @@ public class FilterManager extends AbstractManager<FiltersListener> implements M
 	}
 	
 	/** Remove focus filters to schemas that are no longer being viewed */
-	public void mappingModified()
+	public void mappingRemoved(Integer mappingID)
 	{
 		// Remove foci from left and right side based on modification to selected schema
-		Integer sides[] = { MappingSchema.LEFT, MappingSchema.RIGHT };
+		Integer sides[] = { HarmonyConsts.LEFT, HarmonyConsts.RIGHT };
 		for(Integer side : sides)
 		{
-			ArrayList<Integer> schemas = getModel().getMappingManager().getSchemaIDs(side);
-			ArrayList<Focus> foci = side==MappingSchema.LEFT ? leftFoci : rightFoci;
+			HashSet<Integer> schemas = getModel().getProjectManager().getSchemaIDs(side);
+			ArrayList<Focus> foci = side==HarmonyConsts.LEFT ? leftFoci : rightFoci;
 			for(Focus focus : new ArrayList<Focus>(foci))
 				if(!schemas.contains(focus.getSchemaID()))
 				{
@@ -321,9 +322,11 @@ public class FilterManager extends AbstractManager<FiltersListener> implements M
 	}
 	
 	// Unused event listeners
-	public void schemaAdded(Integer schemaID) {}
-	public void schemaModified(Integer schemaID) {}
-	public void schemaRemoved(Integer schemaID) {}
+	public void mappingAdded(Integer mappingID) {}
+	public void mappingVisibilityChanged(Integer mappingID) {}
+	public void mappingCellsAdded(Integer mappingID, List<MappingCell> mappingCells) {}
+	public void mappingCellsModified(Integer mappingID, List<MappingCell> oldMappingCells, List<MappingCell> newMappingCells) {}
+	public void mappingCellsRemoved(Integer mappingID, List<MappingCell> mappingCells) {}
 
 	/** Inform listeners that the max confidence has changed */
 	void fireMaxConfidenceChanged(Integer schemaObjectID)
