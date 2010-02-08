@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 
-import org.mitre.harmony.model.HarmonyConsts;
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.view.dialogs.mappingCell.MappingCellDialog;
 import org.mitre.schemastore.model.MappingCell;
@@ -66,9 +65,22 @@ class FunctionPane extends JPanel implements MouseListener, MouseMotionListener
 		// Add mouse listeners		
 		addMouseListener(this);
 		addMouseMotionListener(this);
-
 	}
 
+	/** Adjusts the point to the specified parent component */
+	private Point adjustMouseLocation(Point point)
+	{
+		int x = point.x, y = point.y;
+		Component comp = this;
+		while(!comp.equals(mappingPane))
+		{
+			x += comp.getX();
+			y += comp.getY();
+			comp = comp.getParent();
+		}
+		return new Point(x, y);
+	}
+	
 	/** Handles drawing of new mapping cells and selection of old mapping cells */
 	public void mousePressed(MouseEvent e)
 	{
@@ -113,11 +125,15 @@ class FunctionPane extends JPanel implements MouseListener, MouseMotionListener
 		// Only take action if left button is released
 		if(e.getButton() == MouseEvent.BUTTON1)
 		{
+			// Adjust the mouse start and end points to correspond to the mapping pane
+			startPoint = adjustMouseLocation(startPoint);
+			if(endPoint!=null) endPoint = adjustMouseLocation(endPoint);
+			
 			// Select all mapping cells next to the clicked location or within the bounding box
-			if (startPoint != null)
+			if(startPoint != null)
 			{
 				// Handles the case where a single mapping cell is selected
-				if (endPoint == null)
+				if(endPoint == null)
 				{
 					Integer mappingCell = mappingPane.getLines().getClosestMappingCellToPoint(startPoint);
 					ArrayList<Integer> mappingCells = new ArrayList<Integer>();
@@ -146,7 +162,7 @@ class FunctionPane extends JPanel implements MouseListener, MouseMotionListener
 	public void paint(Graphics g)
 	{
 		super.paint(g);
-
+		
 		if (startPoint != null && endPoint != null)
 		{
 			// Calculate points on rectangle to be drawn
