@@ -3,9 +3,7 @@
 package org.mitre.harmony.view.mappingPane;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Container;
-import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
@@ -16,7 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.AbstractAction;
-import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JDesktopPane;
 import javax.swing.JPanel;
@@ -24,10 +21,12 @@ import javax.swing.JViewport;
 import javax.swing.KeyStroke;
 import javax.swing.border.EmptyBorder;
 
+import org.mitre.harmony.controllers.MappingController;
 import org.mitre.harmony.model.HarmonyConsts;
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.selectedInfo.SelectedInfoListener;
 import org.mitre.harmony.view.controlPane.ControlPane;
+import org.mitre.schemastore.model.MappingCell;
 
 /**
  * Displays the entire mapping pane including schema tree and linkages
@@ -61,7 +60,8 @@ public class MappingPane extends JDesktopPane implements ComponentListener, Line
 		public void actionPerformed(ActionEvent arg0)
 		{
 			List<Integer> mappingCellIDs = harmonyModel.getSelectedInfo().getSelectedMappingCells();
-			harmonyModel.getMappingManager().validateMappingCellsByID(mappingCellIDs);
+			List<MappingCell> mappingCells = harmonyModel.getMappingManager().getMappingCellsByID(mappingCellIDs);
+			MappingController.validateMappingCells(harmonyModel,mappingCells);
 			harmonyModel.getSelectedInfo().setMappingCells(new ArrayList<Integer>(),false);
 		}
 	};
@@ -73,7 +73,8 @@ public class MappingPane extends JDesktopPane implements ComponentListener, Line
 		public void actionPerformed(ActionEvent arg0)
 		{
 			List<Integer> mappingCellIDs = harmonyModel.getSelectedInfo().getSelectedMappingCells();
-			harmonyModel.getMappingManager().deleteMappingCellsByID(mappingCellIDs);
+			List<MappingCell> mappingCells = harmonyModel.getMappingManager().getMappingCellsByID(mappingCellIDs);
+			MappingController.deleteMappingCells(harmonyModel,mappingCells);
 			harmonyModel.getSelectedInfo().setMappingCells(new ArrayList<Integer>(),false);
 		}
 	};
