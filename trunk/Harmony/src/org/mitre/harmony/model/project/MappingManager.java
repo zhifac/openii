@@ -3,6 +3,7 @@
 package org.mitre.harmony.model.project;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.mitre.harmony.model.AbstractManager;
 import org.mitre.harmony.model.HarmonyModel;
@@ -53,7 +54,16 @@ public class MappingManager extends AbstractManager<MappingListener>
 			mappingCells.addAll(mapping.getMappingCells());
 		return mappingCells;
 	}
-
+	
+	/** Deletes the specified mapping cells by ID */
+	public ArrayList<MappingCell> getMappingCellsByID(List<Integer> mappingCellIDs)
+	{
+		ArrayList<MappingCell> mappingCells = new ArrayList<MappingCell>();
+		for(Integer mappingCellID : mappingCellIDs)
+			mappingCells.add(getMappingCell(mappingCellID));
+		return mappingCells;
+	}
+	
 	/** Returns the list of mapping cells for the specified element */
 	public ArrayList<Integer> getMappingCellsByElement(Integer elementID)
 	{

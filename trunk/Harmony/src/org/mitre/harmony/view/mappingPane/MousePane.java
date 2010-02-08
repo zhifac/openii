@@ -2,17 +2,13 @@
 // ALL RIGHTS RESERVED
 package org.mitre.harmony.view.mappingPane;
 
-import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
@@ -24,7 +20,6 @@ import javax.swing.tree.TreePath;
 import org.mitre.harmony.model.HarmonyConsts;
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.project.MappingManager;
-import org.mitre.harmony.view.dialogs.mappingCell.MappingCellDialog;
 import org.mitre.harmony.view.schemaTree.SchemaTree;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.mapfunctions.IdentityFunction;
@@ -37,8 +32,8 @@ import org.mitre.schemastore.model.mapfunctions.IdentityFunction;
 class MousePane extends JPanel implements MouseListener, MouseMotionListener
 {
 	/** Variables used to keep track of mouse actions */
-	private Point startPoint = null, endPoint = null;
 	private TreePath leftPath = null, rightPath = null;
+	private Point endPoint = null;
 
 	/** Stores the mappingPane to which the mouse pane is associated */
 	private MappingPane mappingPane;
@@ -54,8 +49,7 @@ class MousePane extends JPanel implements MouseListener, MouseMotionListener
 		this.harmonyModel = harmonyModel;
 		setOpaque(false);
 
-		// Add mouse listeners
-		
+		// Add mouse listeners		
 		mappingPane.getTree(HarmonyConsts.LEFT).addMouseListenr(this);
 		mappingPane.getTree(HarmonyConsts.LEFT).addMouseMotionListenr(this);
 		mappingPane.getTree(HarmonyConsts.RIGHT).addMouseListenr(this);
@@ -83,66 +77,11 @@ class MousePane extends JPanel implements MouseListener, MouseMotionListener
 		return harmonyModel.getFilters().isVisibleNode(role, node);
 	}
 
-	/** Indicates if the specified point is over a node */
-	private boolean overlapsNode(Point point)
-	{
-		if(mappingPane.getTree(HarmonyConsts.LEFT).getPathForLoc(point.x + 18, point.y) != null) return true;
-		if(mappingPane.getTree(HarmonyConsts.RIGHT).getPathForLoc(point.x + 18, point.y) != null) return true;
-		return false;
-	}
-
-	/** Adjusts the point to the specified parent component */
-	private Point adjustMouseLocation(Point point)
-	{
-		int x = point.x, y = point.y;
-		Component comp = this;
-		while(comp != null)
-		{
-			x += comp.getX();
-			y += comp.getY();
-			comp = comp.getParent();
-		}
-		return new Point(x, y);
-	}
-
-	/** Handles drawing of new mapping cells and selection of old mapping cells */
+	/** Handles the selection of a node from which a mapping cell is being created */
 	public void mousePressed(MouseEvent e)
 	{
-		// If left button pressed, find selected node or start bounding box
 		if(e.getButton() == MouseEvent.BUTTON1 && !e.isControlDown())
-		{
-			// Determine if a node was selected
 			getSelectedRow(e.getPoint());
-
-			// If no node selected, start bounding box for selecting existent mapping cells
-			if(leftPath == null && rightPath == null && !overlapsNode(e.getPoint())) startPoint = e.getPoint();
-		}
-
-		// If right button pressed, display mapping cell dialog box
-		else if(e.getButton()==MouseEvent.BUTTON3 || e.isControlDown())
-		{
-			// Determine what mapping cell was selected for showing the dialog box
-			Integer mappingCellID = mappingPane.getLines().getClosestMappingCellToPoint(e.getPoint());
-			if(mappingCellID != null)
-			{
-				// Mark the mapping cell as selected (if not already done)
-				if(!harmonyModel.getSelectedInfo().isMappingCellSelected(mappingCellID))
-				{
-					ArrayList<Integer> mappingCellIDs = new ArrayList<Integer>();
-					mappingCellIDs.add(mappingCellID);
-					harmonyModel.getSelectedInfo().setMappingCells(mappingCellIDs, false);
-				}
-
-				// Display the dialog box next to the selected mapping cell
-				ArrayList<MappingCell> mappingCells = new ArrayList<MappingCell>();
-				for(Integer selectedMappingCellID : harmonyModel.getSelectedInfo().getSelectedMappingCells())
-					mappingCells.add(harmonyModel.getMappingManager().getMappingCell(selectedMappingCellID));
-				MappingCellDialog mappingCellDialog = new MappingCellDialog(mappingCells, harmonyModel);
-				mappingCellDialog.setLocation(adjustMouseLocation(e.getPoint()));
-				mappingCellDialog.setVisible(true);
-			}
-		}
-		
 	}
 
 	/** Handles the drawing of the new mapping cell or bounding box as the mouse is dragged around */
@@ -156,7 +95,7 @@ class MousePane extends JPanel implements MouseListener, MouseMotionListener
 		if(rightPath != null) rect = mappingPane.getTree(HarmonyConsts.RIGHT).getPthBounds(rightPath);
 
 		// Draw line between selected row and mouse
-		if(rect != null || startPoint != null) repaint();
+		if(rect != null) repaint();
 	}
 
 	/** Handles the creation of a new link or selects mapping cells in bounding box when mouse is released */
@@ -191,42 +130,14 @@ class MousePane extends JPanel implements MouseListener, MouseMotionListener
 			}
 			repaint();
 
-			// Select all mapping cells next to the clicked location or within the bounding box
-			if (startPoint != null)
-			{
-				// Handles the case where a single mapping cell is selected
-				if (endPoint == null)
-				{
-					Integer mappingCell = mappingPane.getLines().getClosestMappingCellToPoint(startPoint);
-					ArrayList<Integer> mappingCells = new ArrayList<Integer>();
-					if (mappingCell != null) mappingCells.add(mappingCell);
-					harmonyModel.getSelectedInfo().setMappingCells(mappingCells, e.isControlDown());
-				}
-
-				// Handles the case where a bounding box was drawn around mapping cells to select
-				else
-				{
-					int x1 = startPoint.x < endPoint.x ? startPoint.x : endPoint.x;
-					int y1 = startPoint.y < endPoint.y ? startPoint.y : endPoint.y;
-					int width = Math.abs(startPoint.x - endPoint.x) + 1;
-					int height = Math.abs(startPoint.y - endPoint.y) + 1;
-					Rectangle rect = new Rectangle(x1, y1, width, height);
-					harmonyModel.getSelectedInfo().setMappingCells(mappingPane.getLines().getMappingCellsInRegion(rect), e.isControlDown());
-				}
-			}
-
 			// Reinitialize the left and right paths for future use
-			startPoint = null;
-			endPoint = null;
-			leftPath = null;
-			rightPath = null;
+			endPoint = null; leftPath = null; rightPath = null;
 		}
 	}
 
-	/** Draw the selection reference and possible new mapping line */
+	/** Draw the possible new mapping line */
 	public void paint(Graphics g)
 	{
-		// Draws possible new mapping line
 		if((leftPath != null || rightPath != null) && endPoint != null)
 		{
 			Rectangle rect = null;
@@ -238,22 +149,6 @@ class MousePane extends JPanel implements MouseListener, MouseMotionListener
 				g.drawLine((int) rect.getCenterX(), (int) rect.getCenterY(), endPoint.x, endPoint.y);
 			}
 		}
-
-		// Draws the selection reference
-		if (startPoint != null && endPoint != null)
-		{
-			// Calculate points on rectangle to be drawn
-			int x1 = startPoint.x < endPoint.x ? startPoint.x : endPoint.x;
-			int y1 = startPoint.y < endPoint.y ? startPoint.y : endPoint.y;
-			int width = Math.abs(startPoint.x - endPoint.x);
-			int height = Math.abs(startPoint.y - endPoint.y);
-
-			// Draw the selection rectangle
-			((Graphics2D) g).setStroke(new BasicStroke((float) 1.0, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_BEVEL, (float) 0.0, new float[] { 5, 5 }, (float) 2.0));
-			g.setColor(Color.darkGray);
-			g.drawRect(x1, y1, width, height);
-		}
-
 		super.paint(g);
 	}
 

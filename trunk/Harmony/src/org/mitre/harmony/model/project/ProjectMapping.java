@@ -184,7 +184,7 @@ public class ProjectMapping extends Mapping
 		{
 			// Retrieve the various mapping cell fields
 			Integer id = mappingCell.getId();
-			Integer mappingID = mappingCell.getId();
+			Integer mappingID = mappingCell.getMappingId();
 			Integer inputIDs[] = mappingCell.getInput();
 			Integer outputID = mappingCell.getOutput();
 			String author = System.getProperty("user.name");

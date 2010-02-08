@@ -3,6 +3,7 @@ package org.mitre.harmony.controllers;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.project.MappingManager;
@@ -11,7 +12,55 @@ import org.mitre.schemastore.model.MappingCell;
 
 /** Class for various mapping controls */
 public class MappingController
-{
+{	
+	/** Separate out mapping cells by mapping */
+	static private HashMap<Integer,ArrayList<MappingCell>> getMappingCellMap(HarmonyModel harmonyModel, List<MappingCell> mappingCells)
+	{
+		HashMap<Integer,ArrayList<MappingCell>> mappingCellMap = new HashMap<Integer,ArrayList<MappingCell>>();
+		for(MappingCell mappingCell : mappingCells)
+		{
+			ArrayList<MappingCell> mappingCellList = mappingCellMap.get(mappingCell.getMappingId());
+			if(mappingCellList==null) mappingCellMap.put(mappingCell.getMappingId(),mappingCellList=new ArrayList<MappingCell>());
+			mappingCellList.add(mappingCell);
+		}
+		return mappingCellMap;
+	}
+	
+	/** Validates the specified mapping cells */
+	static public void validateMappingCells(HarmonyModel harmonyModel, List<MappingCell> mappingCells)
+	{
+		MappingManager manager = harmonyModel.getMappingManager();
+		HashMap<Integer,ArrayList<MappingCell>> mappingCellMap = getMappingCellMap(harmonyModel, mappingCells);
+		for(Integer mappingID : mappingCellMap.keySet())
+			manager.getMapping(mappingID).validateMappingCells(mappingCellMap.get(mappingID));
+	}
+	
+	/** Deletes the specified mapping cells */
+	static public void deleteMappingCells(HarmonyModel harmonyModel, List<MappingCell> mappingCells)
+	{
+		MappingManager manager = harmonyModel.getMappingManager();
+		HashMap<Integer,ArrayList<MappingCell>> mappingCellMap = getMappingCellMap(harmonyModel, mappingCells);
+		for(Integer mappingID : mappingCellMap.keySet())
+			manager.getMapping(mappingID).deleteMappingCells(mappingCellMap.get(mappingID));
+	}
+	
+	/** Deletes hidden mapping cells from the area currently in focus */
+	static public void deleteHiddenMappingCells(HarmonyModel harmonyModel)
+	{
+		ArrayList<MappingCell> hiddenMappingCells = new ArrayList<MappingCell>();
+		for(MappingCell mappingCell : FocusController.getFocusedMappingCells(harmonyModel))    			
+			if(!harmonyModel.getFilters().isVisibleMappingCell(mappingCell.getId()))
+				hiddenMappingCells.add(mappingCell);
+		deleteMappingCells(harmonyModel,hiddenMappingCells);		
+	}
+	
+	/** Deletes all mapping cells from the area currently in focus */
+	static public void deleteAllMappingCells(HarmonyModel harmonyModel)
+	{
+		ArrayList<MappingCell> mappingCells = new ArrayList<MappingCell>(FocusController.getFocusedMappingCells(harmonyModel));
+		deleteMappingCells(harmonyModel,mappingCells);		
+	}
+
 	/** Mark visible mapping cells associated with the specified node as finished */
 	static public void markAsFinished(HarmonyModel harmonyModel, Integer elementID)
 	{
@@ -38,40 +87,5 @@ public class MappingController
 			mapping.validateMappingCells(visibleMappingCells);
 			mapping.deleteMappingCells(hiddenMappingCells);
 		}
-	}
-	
-	/** Deletes the specified mapping cells */
-	static public void deleteMappingCells(HarmonyModel harmonyModel, ArrayList<MappingCell> mappingCells)
-	{
-		// Sort the mapping cells by the mapping they are associated with
-		HashMap<Integer,ArrayList<MappingCell>> mappingCellMap = new HashMap<Integer,ArrayList<MappingCell>>();
-		for(MappingCell mappingCell : mappingCells)
-		{
-			ArrayList<MappingCell> mappingCellList = mappingCellMap.get(mappingCell.getMappingId());
-			if(mappingCellList==null) mappingCellMap.put(mappingCell.getMappingId(),mappingCellList=new ArrayList<MappingCell>());
-			mappingCellList.add(mappingCell);
-		}
-
-		// Delete the mapping cells from their respective mappings
-		MappingManager manager = harmonyModel.getMappingManager();
-		for(Integer mappingID : mappingCellMap.keySet())
-			manager.getMapping(mappingID).deleteMappingCells(mappingCellMap.get(mappingID));
-	}
-	
-	/** Deletes hidden mapping cells from the area currently in focus */
-	static public void deleteHiddenMappingCells(HarmonyModel harmonyModel)
-	{
-		ArrayList<MappingCell> hiddenMappingCells = new ArrayList<MappingCell>();
-		for(MappingCell mappingCell : FocusController.getFocusedMappingCells(harmonyModel))    			
-			if(!harmonyModel.getFilters().isVisibleMappingCell(mappingCell.getId()))
-				hiddenMappingCells.add(mappingCell);
-		deleteMappingCells(harmonyModel,hiddenMappingCells);		
-	}
-	
-	/** Deletes all mapping cells from the area currently in focus */
-	static public void deleteAllMappingCells(HarmonyModel harmonyModel)
-	{
-		ArrayList<MappingCell> mappingCells = new ArrayList<MappingCell>(FocusController.getFocusedMappingCells(harmonyModel));
-		deleteMappingCells(harmonyModel,mappingCells);		
 	}
 }
