@@ -46,7 +46,7 @@ public class SchemaModelDialog extends JDialog
 			if(label.equals("OK"))
 			{
 				SchemaModel model = (SchemaModel)modelList.getSelectedValue();
-				harmonyModel.getMappingManager().setSchemaModel(schemaID, model);
+				harmonyModel.getProjectManager().setSchemaModel(schemaID, model);
 			}
 			dispose();
 		}

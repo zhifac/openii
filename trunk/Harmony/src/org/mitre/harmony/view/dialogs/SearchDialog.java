@@ -20,8 +20,8 @@ import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
 import org.mitre.harmony.controllers.FocusController;
+import org.mitre.harmony.model.HarmonyConsts;
 import org.mitre.harmony.model.HarmonyModel;
-import org.mitre.schemastore.model.MappingSchema;
 
 /**
  * Displays the search dialog for search for keywords in schemas
@@ -151,8 +151,8 @@ public class SearchDialog extends JDialog implements KeyListener
 	private ArrayList<Integer> getSelectedSides()
 	{
 		ArrayList<Integer> sides = new ArrayList<Integer>();
-		if(!rightButton.isSelected()) sides.add(MappingSchema.LEFT);
-		if(!leftButton.isSelected()) sides.add(MappingSchema.RIGHT);
+		if(!rightButton.isSelected()) sides.add(HarmonyConsts.LEFT);
+		if(!leftButton.isSelected()) sides.add(HarmonyConsts.RIGHT);
 		return sides;
 	}
 	
