@@ -11,13 +11,13 @@ import org.mitre.harmony.model.AbstractManager;
 import org.mitre.harmony.model.ConfigManager;
 import org.mitre.harmony.model.HarmonyConsts;
 import org.mitre.harmony.model.HarmonyModel;
-import org.mitre.harmony.model.mapping.MappingListener;
+import org.mitre.harmony.model.project.ProjectListener;
 
 /**
  * Tracks preferences used in Harmony
  * @author CWOLF
  */
-public class PreferencesManager extends AbstractManager<PreferencesListener> implements MappingListener
+public class PreferencesManager extends AbstractManager<PreferencesListener> implements ProjectListener
 {	
 	/** Stores the currently displayed view */
 	private Integer displayedView = HarmonyConsts.MAPPING_VIEW;
@@ -29,7 +29,7 @@ public class PreferencesManager extends AbstractManager<PreferencesListener> imp
 	public PreferencesManager(HarmonyModel harmonyModel)
 	{
 		super(harmonyModel);
-		ArrayList<Integer> schemaIDs = harmonyModel.getMappingManager().getSchemaIDs();
+		ArrayList<Integer> schemaIDs = harmonyModel.getProjectManager().getSchemaIDs();
 		
 		// Only set finished element preferences for schemas that exist in the mapping
 		HashMap<Integer,String> map = ConfigManager.getHashMap("preferences.finished");
@@ -48,7 +48,7 @@ public class PreferencesManager extends AbstractManager<PreferencesListener> imp
 			}
 	}
 
-	/** Remove the specified schema model when a schema is removed */
+	/** Remove the finished elements associated with a removed schema */
 	public void schemaRemoved(Integer schemaID)
 	{
 		// Remove all "finished element" preferences associated with the removed schema
@@ -56,11 +56,6 @@ public class PreferencesManager extends AbstractManager<PreferencesListener> imp
 		if(finishedElements!=null)
 			setFinished(schemaID, finishedElements, false);
 	}
-	
-	// Unused action listeners
-	public void mappingModified() {}
-	public void schemaAdded(Integer schemaID) {}
-	public void schemaModified(Integer schemaID) {}
 	
 	// ------------- Preference for view to be displayed ------------
 
@@ -171,4 +166,9 @@ public class PreferencesManager extends AbstractManager<PreferencesListener> imp
 		for(Integer schemaID : finishedElementMap.keySet())
 			setFinished(schemaID,finishedElementMap.get(schemaID),false);
 	}
+
+	// Unused listener events
+	public void projectModified() {}
+	public void schemaAdded(Integer schemaID) {}
+	public void schemaModelModified(Integer schemaID) {}
 }
