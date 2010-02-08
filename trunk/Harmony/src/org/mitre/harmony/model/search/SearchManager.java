@@ -3,11 +3,13 @@
 package org.mitre.harmony.model.search;
 
 import java.util.HashMap;
+import java.util.List;
 
 import org.mitre.harmony.model.AbstractManager;
+import org.mitre.harmony.model.HarmonyConsts;
 import org.mitre.harmony.model.HarmonyModel;
-import org.mitre.harmony.model.mapping.MappingListener;
-import org.mitre.schemastore.model.MappingSchema;
+import org.mitre.harmony.model.project.MappingListener;
+import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.SchemaElement;
 
 /**
@@ -36,7 +38,7 @@ public class SearchManager extends AbstractManager<SearchListener> implements Ma
 	
 	/** Returns the query for the specified side */
 	public String getQuery(Integer side)
-		{ return side.equals(MappingSchema.LEFT) ? leftQuery : rightQuery; }
+		{ return side.equals(HarmonyConsts.LEFT) ? leftQuery : rightQuery; }
 	
 	/** Returns the result for the specified element and side */
 	public SearchResult getResult(Integer elementID, Integer side)
@@ -44,16 +46,16 @@ public class SearchManager extends AbstractManager<SearchListener> implements Ma
 	
 	/** Returns the matches for the specified side */
 	public HashMap<Integer,SearchResult> getMatches(Integer side)
-		{ return side.equals(MappingSchema.LEFT) ? leftMatches : rightMatches; }
+		{ return side.equals(HarmonyConsts.LEFT) ? leftMatches : rightMatches; }
 	
 	/** Runs the specified query */
 	public void runQuery(Integer side, String query)
 	{
 		// Set the query
-		if(side.equals(MappingSchema.LEFT)) leftQuery = query; else rightQuery = query;
+		if(side.equals(HarmonyConsts.LEFT)) leftQuery = query; else rightQuery = query;
 		
 		// Retrieve the list of matches
-		HashMap<Integer,SearchResult> matches = side==MappingSchema.LEFT ? leftMatches : rightMatches;
+		HashMap<Integer,SearchResult> matches = side==HarmonyConsts.LEFT ? leftMatches : rightMatches;
 		matches.clear();
 		
 		// Only proceed with finding matches if keyword given
@@ -67,7 +69,7 @@ public class SearchManager extends AbstractManager<SearchListener> implements Ma
 			if(!caseSensitive) searchTerm = "(?i)" + searchTerm;
 				
 			// Determine what elements match search criteria
-			for(SchemaElement element : getModel().getMappingManager().getSchemaElements(side))
+			for(SchemaElement element : getModel().getProjectManager().getSchemaElements(side))
 			{				
 				// Check to see if element name matches search criteria
 				String name = element.getName();
@@ -108,12 +110,17 @@ public class SearchManager extends AbstractManager<SearchListener> implements Ma
 	
 	//------------ Updates the selected information based on the occurrence of events ------------
 
-	/** Reruns the queries if the selected schemas have been modified */
-	public void mappingModified() {}
-		{ runQuery(MappingSchema.LEFT, leftQuery); runQuery(MappingSchema.RIGHT, rightQuery); }
+	/** Reruns the queries if any mappings have been added */
+	public void mappingAdded(Integer mappingID)
+		{ runQuery(HarmonyConsts.LEFT, leftQuery); runQuery(HarmonyConsts.RIGHT, rightQuery); }
+
+	/** Reruns the queries if any mappings have been removed */
+	public void mappingRemoved(Integer mappingID)
+		{ runQuery(HarmonyConsts.LEFT, leftQuery); runQuery(HarmonyConsts.RIGHT, rightQuery); }
 
 	// Unused action events
-	public void schemaAdded(Integer schemaID) {}
-	public void schemaModified(Integer schemaID) {}
-	public void schemaRemoved(Integer schemaID) {}
+	public void mappingVisibilityChanged(Integer mappingID) {}
+	public void mappingCellsAdded(Integer mappingID, List<MappingCell> mappingCells) {}
+	public void mappingCellsModified(Integer mappingID, List<MappingCell> oldMappingCells, List<MappingCell> newMappingCells) {}
+	public void mappingCellsRemoved(Integer mappingID, List<MappingCell> mappingCells) {}
 }
