@@ -11,9 +11,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -24,10 +21,8 @@ import javax.swing.KeyStroke;
 
 import org.mitre.harmony.controllers.MappingController;
 import org.mitre.harmony.model.HarmonyModel;
-import org.mitre.harmony.model.project.MappingManager;
 import org.mitre.harmony.view.dialogs.AbstractButtonPane;
 import org.mitre.schemastore.model.MappingCell;
-import org.mitre.schemastore.model.mapfunctions.IdentityFunction;
 
 /**
  * Displays the dialog which allows mapping cells to be accepted/rejected
@@ -59,31 +54,21 @@ public class MappingCellDialog extends JDialog implements MouseListener, MouseMo
 		{
 			if(label.equals("OK"))
 			{
-				MappingManager manager = harmonyModel.getMappingManager();
-	
 				// Throw out mapping cells if they have been rejected
 				if(confidencePane.isRejected())
 					MappingController.deleteMappingCells(harmonyModel,mappingCells);
 	
 				// Validate mapping cells if they have been accepted
-				else if(confidencePane.isAccepted())
+				else
 				{
-					ArrayList<MappingCell> newMappingCells = new ArrayList<MappingCell>();
-					for(MappingCell mappingCell : annotationPane.getMappingCells())
-					{
-						Integer id = mappingCell.getId();
-						Integer mappingID = mappingCell.getMappingId();
-						String author = System.getProperty("user.name");
-						Date date = Calendar.getInstance().getTime();
-						String function = IdentityFunction.class.getCanonicalName();
-						MappingCell newMappingCell = MappingCell.createValidatedMappingCell(id, mappingID, mappingCell.getInput(), mappingCell.getOutput(), author, date, function, mappingCell.getNotes());
-						newMappingCells.add(newMappingCell);
-					}
-					manager.setMappingCells(newMappingCells);
+					// Adjust the mapping cells to reflect changes
+					ArrayList<MappingCell> newMappingCells = annotationPane.getMappingCells();
+					MappingController.setMappingCells(harmonyModel,newMappingCells);
+					
+					// If the mapping cells were accepted, validate as needed
+					if(confidencePane.isAccepted())
+						MappingController.validateMappingCells(harmonyModel,newMappingCells);
 				}
-				
-				// Update annotations for the selected mapping cells
-				else manager.setMappingCells(annotationPane.getMappingCells());
 			}
 			
 			// Close link dialog
@@ -92,7 +77,7 @@ public class MappingCellDialog extends JDialog implements MouseListener, MouseMo
 	}
 	
 	/** Initializes the mapping cell dialog */
-	public MappingCellDialog(List<MappingCell> mappingCells, HarmonyModel harmonyModel)
+	public MappingCellDialog(ArrayList<MappingCell> mappingCells, HarmonyModel harmonyModel)
 	{
 		super(harmonyModel.getBaseFrame());
 		

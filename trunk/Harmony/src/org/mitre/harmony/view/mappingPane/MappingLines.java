@@ -95,7 +95,7 @@ public class MappingLines implements MappingListener, FiltersListener, SchemaTre
 	}
 	
 	/** Determine which mapping cell resides closest to the provided point */
-	Integer getClosestMappingCellToPoint(Point point)
+	public Integer getClosestMappingCellToPoint(Point point)
 	{
 		Integer bestMappingCell = null;
 		double shortestDist = Double.MAX_VALUE;

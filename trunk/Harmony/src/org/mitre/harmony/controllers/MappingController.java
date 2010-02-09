@@ -26,6 +26,15 @@ public class MappingController
 		return mappingCellMap;
 	}
 	
+	/** Sets the specified mapping cells */
+	static public void setMappingCells(HarmonyModel harmonyModel, List<MappingCell> mappingCells)
+	{
+		MappingManager manager = harmonyModel.getMappingManager();
+		HashMap<Integer,ArrayList<MappingCell>> mappingCellMap = getMappingCellMap(harmonyModel, mappingCells);
+		for(Integer mappingID : mappingCellMap.keySet())
+			manager.getMapping(mappingID).setMappingCells(mappingCellMap.get(mappingID));
+	}
+	
 	/** Validates the specified mapping cells */
 	static public void validateMappingCells(HarmonyModel harmonyModel, List<MappingCell> mappingCells)
 	{
