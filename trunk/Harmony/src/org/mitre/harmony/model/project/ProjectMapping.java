@@ -150,7 +150,7 @@ public class ProjectMapping extends Mapping
 			
 			// Informs listeners of the added mapping cells
 			for(MappingListener listener : mappingManager.getListeners())
-				listener.mappingCellsAdded(getId(), existingMappingCells);
+				listener.mappingCellsAdded(getId(), newMappingCells);
 		}
 		
 		// Handles the modification of existing mapping cells
