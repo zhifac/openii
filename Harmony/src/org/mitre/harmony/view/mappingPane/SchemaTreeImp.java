@@ -10,7 +10,6 @@ import java.awt.event.MouseMotionListener;
 import java.awt.geom.Point2D;
 import java.util.Vector;
 
-import javax.swing.border.EmptyBorder;
 import javax.swing.tree.TreePath;
 
 import org.mitre.harmony.model.HarmonyModel;
@@ -28,10 +27,7 @@ public class SchemaTreeImp extends SchemaTree
 	
 	/** Initializes the schema tree implementation */
 	public SchemaTreeImp(Integer role, HarmonyModel harmonyModel)
-	{
-		super(role, harmonyModel);
-		setBorder(new EmptyBorder(0,0,10,0));
-	}
+		{ super(role, harmonyModel); }
 	
 	/** Retrieves the buffered row bounds */
 	public Rectangle getBufferedRowBounds(int row)
