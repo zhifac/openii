@@ -16,7 +16,6 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
 
-import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
@@ -71,11 +70,11 @@ public class FunctionPane extends JPanel implements MouseListener, MouseMotionLi
 	}
 
 	/** Adjusts the point to the specified parent component */
-	private Point adjustMouseLocation(Point point)
+	private Point adjustMouseLocation(Point point, Component referencePane)
 	{
 		int x = point.x, y = point.y;
 		Component comp = this;
-		while(!comp.equals(mappingPane))
+		while(comp!=null && !comp.equals(referencePane))
 		{
 			x += comp.getX();
 			y += comp.getY();
@@ -95,7 +94,7 @@ public class FunctionPane extends JPanel implements MouseListener, MouseMotionLi
 		else if(e.getButton()==MouseEvent.BUTTON3 || e.isControlDown())
 		{
 			// Determine what mapping cell was selected for showing the dialog box
-			Point point = adjustMouseLocation(new Point((e.getPoint().x), e.getPoint().y));
+			Point point = adjustMouseLocation(e.getPoint(), mappingPane);
 			Integer mappingCellID = mappingPane.getLines().getClosestMappingCellToPoint(point); 
 			if(mappingCellID != null)
 			{
@@ -112,7 +111,7 @@ public class FunctionPane extends JPanel implements MouseListener, MouseMotionLi
 				for(Integer selectedMappingCellID : harmonyModel.getSelectedInfo().getSelectedMappingCells())
 					mappingCells.add(harmonyModel.getMappingManager().getMappingCell(selectedMappingCellID));
 				MappingCellDialog mappingCellDialog = new MappingCellDialog(mappingCells, harmonyModel);
-				mappingCellDialog.setLocation(e.getPoint());
+				mappingCellDialog.setLocation(adjustMouseLocation(e.getPoint(), null));
 				mappingCellDialog.setVisible(true);
 			}
 		}		
@@ -129,8 +128,8 @@ public class FunctionPane extends JPanel implements MouseListener, MouseMotionLi
 		if(e.getButton() == MouseEvent.BUTTON1)
 		{
 			// Adjust the mouse start and end points to correspond to the mapping pane
-			startPoint = adjustMouseLocation(startPoint);
-			if(endPoint!=null) endPoint = adjustMouseLocation(endPoint);
+			startPoint = adjustMouseLocation(startPoint, mappingPane);
+			if(endPoint!=null) endPoint = adjustMouseLocation(endPoint, mappingPane);
 			
 			// Select all mapping cells next to the clicked location or within the bounding box
 			if(startPoint != null)
