@@ -1,6 +1,6 @@
 // (c) The MITRE Corporation 2006
 // ALL RIGHTS RESERVED
-package org.mitre.harmony.view.mappingPane;
+package org.mitre.harmony.view.functionPane;
 
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
@@ -18,16 +18,20 @@ import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
 
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.view.dialogs.mappingCell.MappingCellDialog;
+import org.mitre.harmony.view.mappingPane.MappingPane;
 import org.mitre.schemastore.model.MappingCell;
 
 /**
  * Holds function pane
  * @author KZHENG
  */
-class FunctionPane extends JPanel implements MouseListener, MouseMotionListener
+public class FunctionPane extends JPanel implements MouseListener, MouseMotionListener
 {
 	/** Variables used to keep track of mouse actions */
 	private Point startPoint = null, endPoint = null;
@@ -38,8 +42,8 @@ class FunctionPane extends JPanel implements MouseListener, MouseMotionListener
 	/** Stores the Harmony model */
 	private HarmonyModel harmonyModel;
 
-	/** Initializes the mouse pane */
-	FunctionPane(MappingPane mappingPane, HarmonyModel harmonyModel)
+	/** Initializes the function pane */
+	public FunctionPane(MappingPane mappingPane, HarmonyModel harmonyModel)
 	{
 		this.mappingPane = mappingPane;
 		this.harmonyModel = harmonyModel;
@@ -50,13 +54,12 @@ class FunctionPane extends JPanel implements MouseListener, MouseMotionListener
 		functionPane.setOpaque(true);
 		
 		// Create the function details pane
-		JPanel detailsPane = new JPanel();
-		detailsPane.setBorder(BorderFactory.createLineBorder (Color.gray, 1));
-		detailsPane.setPreferredSize(new Dimension(0, 73));
+		FunctionDetailsPane detailsPane = new FunctionDetailsPane();
+		detailsPane.setPreferredSize(new Dimension(0, 72));
 		
 		// Create the function pane
 		setBackground(Color.WHITE);
-		setBorder(BorderFactory.createLineBorder (Color.gray, 1));
+		setBorder(new CompoundBorder(new EmptyBorder(0,0,1,1),new LineBorder(Color.gray)));
 		setOpaque(true);
 		setLayout(new BorderLayout());
 		add(functionPane, BorderLayout.CENTER);

@@ -26,6 +26,7 @@ import org.mitre.harmony.model.HarmonyConsts;
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.selectedInfo.SelectedInfoListener;
 import org.mitre.harmony.view.controlPane.ControlPane;
+import org.mitre.harmony.view.functionPane.FunctionPane;
 import org.mitre.schemastore.model.MappingCell;
 
 /**
