@@ -3,8 +3,10 @@
 package org.mitre.harmony.model.project;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
+import org.mitre.harmony.controllers.FocusController;
 import org.mitre.harmony.model.AbstractManager;
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.schemastore.model.Mapping;
@@ -118,6 +120,60 @@ public class MappingManager extends AbstractManager<MappingListener>
 		// Inform listeners that the mapping was removed
 		for(MappingListener listener : getListeners())
 			listener.mappingRemoved(mapping.getId());
+	}
+	
+	/** Separate out mapping cells by mapping */
+	private HashMap<Integer,ArrayList<MappingCell>> getMappingCellMap(List<MappingCell> mappingCells)
+	{
+		HashMap<Integer,ArrayList<MappingCell>> mappingCellMap = new HashMap<Integer,ArrayList<MappingCell>>();
+		for(MappingCell mappingCell : mappingCells)
+		{
+			ArrayList<MappingCell> mappingCellList = mappingCellMap.get(mappingCell.getMappingId());
+			if(mappingCellList==null) mappingCellMap.put(mappingCell.getMappingId(),mappingCellList=new ArrayList<MappingCell>());
+			mappingCellList.add(mappingCell);
+		}
+		return mappingCellMap;
+	}
+	
+	/** Sets the specified mapping cells */
+	public void setMappingCells(List<MappingCell> mappingCells)
+	{
+		HashMap<Integer,ArrayList<MappingCell>> mappingCellMap = getMappingCellMap(mappingCells);
+		for(Integer mappingID : mappingCellMap.keySet())
+			getMapping(mappingID).setMappingCells(mappingCellMap.get(mappingID));
+	}
+	
+	/** Validates the specified mapping cells */
+	public void validateMappingCells(List<MappingCell> mappingCells)
+	{
+		HashMap<Integer,ArrayList<MappingCell>> mappingCellMap = getMappingCellMap(mappingCells);
+		for(Integer mappingID : mappingCellMap.keySet())
+			getMapping(mappingID).validateMappingCells(mappingCellMap.get(mappingID));
+	}
+	
+	/** Deletes the specified mapping cells */
+	public void deleteMappingCells(List<MappingCell> mappingCells)
+	{
+		HashMap<Integer,ArrayList<MappingCell>> mappingCellMap = getMappingCellMap(mappingCells);
+		for(Integer mappingID : mappingCellMap.keySet())
+			getMapping(mappingID).deleteMappingCells(mappingCellMap.get(mappingID));
+	}
+	
+	/** Deletes hidden mapping cells from the area currently in focus */
+	public void deleteHiddenMappingCells()
+	{
+		ArrayList<MappingCell> hiddenMappingCells = new ArrayList<MappingCell>();
+		for(MappingCell mappingCell : FocusController.getFocusedMappingCells(getModel()))    			
+			if(!getModel().getFilters().isVisibleMappingCell(mappingCell.getId()))
+				hiddenMappingCells.add(mappingCell);
+		deleteMappingCells(hiddenMappingCells);		
+	}
+	
+	/** Deletes all mapping cells from the area currently in focus */
+	public void deleteAllMappingCells()
+	{
+		ArrayList<MappingCell> mappingCells = new ArrayList<MappingCell>(FocusController.getFocusedMappingCells(getModel()));
+		deleteMappingCells(mappingCells);		
 	}
 	
 	/** Removes all mappings */

@@ -21,6 +21,7 @@ import javax.swing.JPanel;
 import org.mitre.harmony.model.HarmonyConsts;
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.project.MappingManager;
+import org.mitre.harmony.model.project.ProjectMapping;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
@@ -294,7 +295,9 @@ public class HeatMap extends JPanel implements MouseListener, MouseMotionListene
     			if(bigGrid.isModified(xID, yID) == true)
     			{
     				Integer mappingCellID = manager.getMappingCellID(xID, yID);
-    				manager.validateMappingCellsByID(Arrays.asList(new Integer[]{mappingCellID}));
+    				MappingCell mappingCell = manager.getMappingCell(mappingCellID);
+    				ProjectMapping mapping = harmonyModel.getMappingManager().getMapping(mappingCell.getMappingId());
+    				mapping.validateMappingCells(Arrays.asList(new MappingCell[]{mappingCell}));
     			}
     		}
     	}

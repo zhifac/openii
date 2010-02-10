@@ -21,7 +21,6 @@ import javax.swing.JViewport;
 import javax.swing.KeyStroke;
 import javax.swing.border.EmptyBorder;
 
-import org.mitre.harmony.controllers.MappingController;
 import org.mitre.harmony.model.HarmonyConsts;
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.selectedInfo.SelectedInfoListener;
@@ -62,7 +61,7 @@ public class MappingPane extends JDesktopPane implements ComponentListener, Line
 		{
 			List<Integer> mappingCellIDs = harmonyModel.getSelectedInfo().getSelectedMappingCells();
 			List<MappingCell> mappingCells = harmonyModel.getMappingManager().getMappingCellsByID(mappingCellIDs);
-			MappingController.validateMappingCells(harmonyModel,mappingCells);
+			harmonyModel.getMappingManager().validateMappingCells(mappingCells);
 			harmonyModel.getSelectedInfo().setMappingCells(new ArrayList<Integer>(),false);
 		}
 	};
@@ -75,7 +74,7 @@ public class MappingPane extends JDesktopPane implements ComponentListener, Line
 		{
 			List<Integer> mappingCellIDs = harmonyModel.getSelectedInfo().getSelectedMappingCells();
 			List<MappingCell> mappingCells = harmonyModel.getMappingManager().getMappingCellsByID(mappingCellIDs);
-			MappingController.deleteMappingCells(harmonyModel,mappingCells);
+			harmonyModel.getMappingManager().deleteMappingCells(mappingCells);
 			harmonyModel.getSelectedInfo().setMappingCells(new ArrayList<Integer>(),false);
 		}
 	};
