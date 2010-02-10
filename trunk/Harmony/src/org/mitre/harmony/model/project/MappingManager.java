@@ -109,28 +109,20 @@ public class MappingManager extends AbstractManager<MappingListener>
 
 	
 	/** Removes the specified mapping */
-	public void removeMapping(Integer mappingID)
+	public void removeMapping(ProjectMapping mapping)
 	{
 		// Remove the mapping
-		for(ProjectMapping mapping : mappings)
-			if(mapping.getId().equals(mappingID))
-				mappings.remove(mapping);
-
+		mapping.deleteMappingCells(mapping.getMappingCells());
+		mappings.remove(mapping);
+		
 		// Inform listeners that the mapping was removed
 		for(MappingListener listener : getListeners())
-			listener.mappingRemoved(mappingID);
+			listener.mappingRemoved(mapping.getId());
 	}
 	
 	/** Removes all mappings */
 	public void removeAllMappings()
-	{
-		for(ProjectMapping mapping : new ArrayList<ProjectMapping>(mappings))
-		{
-			mappings.remove(mapping);
-			for(MappingListener listener : getListeners())
-				listener.mappingRemoved(mapping.getId());
-		}
-	}
+		{ for(ProjectMapping mapping : new ArrayList<ProjectMapping>(mappings)) removeMapping(mapping); }
 	
 	/** Returns the listeners associated with this manager */
 	public ArrayList<MappingListener> getListeners()

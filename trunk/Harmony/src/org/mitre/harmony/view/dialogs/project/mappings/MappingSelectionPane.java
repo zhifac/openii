@@ -145,6 +145,6 @@ class MappingSelectionPane extends JPanel
 		
 		// Remove any old mappings
 		for(ProjectMapping mapping : oldMappings.values())
-			mappingManager.removeMapping(mapping.getId());
+			mappingManager.removeMapping(mapping);
 	}
 }
