@@ -25,6 +25,7 @@ import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.filters.FilterManager;
 import org.mitre.harmony.model.filters.FiltersListener;
 import org.mitre.harmony.model.project.MappingListener;
+import org.mitre.harmony.model.project.ProjectMapping;
 import org.mitre.harmony.model.selectedInfo.SelectedInfoListener;
 import org.mitre.harmony.view.schemaTree.SchemaTree;
 import org.mitre.harmony.view.schemaTree.SchemaTreeListener;
@@ -70,8 +71,9 @@ public class MappingLines implements MappingListener, FiltersListener, SchemaTre
 		if(lines == null)
 		{
 			lines = new Hashtable<Integer, MappingCellLines>();
-			for(MappingCell mappingCell : harmonyModel.getMappingManager().getMappingCells())
-				lines.put(mappingCell.getId(), new MappingCellLines(mappingPane,mappingCell.getId(),harmonyModel));
+			for(ProjectMapping mapping : harmonyModel.getMappingManager().getMappings())
+				for(MappingCell mappingCell : mapping.getMappingCells())
+					lines.put(mappingCell.getId(), new MappingCellLines(mappingPane,mappingCell.getId(),harmonyModel));
 		}
 		return lines;
 	}

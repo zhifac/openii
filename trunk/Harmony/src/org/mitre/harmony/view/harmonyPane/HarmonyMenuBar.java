@@ -16,7 +16,6 @@ import javax.swing.JRadioButtonMenuItem;
 import javax.swing.KeyStroke;
 
 import org.mitre.harmony.Harmony;
-import org.mitre.harmony.controllers.MappingController;
 import org.mitre.harmony.controllers.ProjectController;
 import org.mitre.harmony.model.HarmonyConsts;
 import org.mitre.harmony.model.HarmonyModel;
@@ -24,7 +23,7 @@ import org.mitre.harmony.view.dialogs.AboutDialog;
 import org.mitre.harmony.view.dialogs.GettingStartedDialog;
 import org.mitre.harmony.view.dialogs.SearchDialog;
 import org.mitre.harmony.view.dialogs.matcher.MatcherMenu;
-import org.mitre.harmony.view.dialogs.porters.ExportMappingDialog;
+import org.mitre.harmony.view.dialogs.porters.ExportProjectDialog;
 import org.mitre.harmony.view.dialogs.porters.MappingImporterDialog;
 import org.mitre.harmony.view.dialogs.project.ProjectDialog;
 import org.mitre.harmony.view.dialogs.projects.LoadProjectDialog;
@@ -164,7 +163,7 @@ public class HarmonyMenuBar extends JMenuBar
 	    
 	    	// Export project
 	    	else if(source==exportMapping)
-	    		{ ExportMappingDialog.exportMapping(harmonyModel); }
+	    		{ ExportProjectDialog.exportProject(harmonyModel); }
 	    	
 	    	// Display the mapping properties
 	    	else if(source==configureProject)
@@ -207,11 +206,11 @@ public class HarmonyMenuBar extends JMenuBar
 	    {
 	    	// Removed hidden links from the currently focused area of Harmony
 	    	if(e.getSource() == removeHiddenLinks)
-	    		MappingController.deleteHiddenMappingCells(harmonyModel);
+	    		harmonyModel.getMappingManager().deleteHiddenMappingCells();
 	    	
 	    	// Removes all links from the currently focused area of Harmony
 	    	if(e.getSource() == removeLinks)
-	    		MappingController.deleteAllMappingCells(harmonyModel);
+	    		harmonyModel.getMappingManager().deleteAllMappingCells();
 	    }
 	}
 

@@ -14,7 +14,7 @@ import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
 import org.mitre.schemastore.porters.PorterManager;
-import org.mitre.schemastore.porters.mappingExporters.MappingExporter;
+import org.mitre.schemastore.porters.projectExporters.ProjectExporter;
 import org.mitre.schemastore.porters.projectImporters.M3ProjectImporter;
 import org.mitre.schemastore.porters.schemaImporters.SchemaImporter;
 
@@ -131,7 +131,7 @@ public class SchemaStoreManager
 	public static M3ProjectImporter getM3ProjectImporter()
 		{ return (M3ProjectImporter)new PorterManager(client).getPorter(M3ProjectImporter.class); }
 
-	/** Gets the list of available mapping exporters */
-	public static ArrayList<MappingExporter> getMappingExporters()
-		{ return new PorterManager(client).getPorters(PorterManager.MAPPING_EXPORTERS); }
+	/** Gets the list of available project exporters */
+	public static ArrayList<ProjectExporter> getProjectExporters()
+		{ return new PorterManager(client).getPorters(PorterManager.PROJECT_EXPORTERS); }
 }

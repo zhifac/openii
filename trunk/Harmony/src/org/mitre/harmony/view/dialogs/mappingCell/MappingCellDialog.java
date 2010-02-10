@@ -19,7 +19,6 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 
-import org.mitre.harmony.controllers.MappingController;
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.view.dialogs.AbstractButtonPane;
 import org.mitre.schemastore.model.MappingCell;
@@ -56,18 +55,18 @@ public class MappingCellDialog extends JDialog implements MouseListener, MouseMo
 			{
 				// Throw out mapping cells if they have been rejected
 				if(confidencePane.isRejected())
-					MappingController.deleteMappingCells(harmonyModel,mappingCells);
+					harmonyModel.getMappingManager().deleteMappingCells(mappingCells);
 	
 				// Validate mapping cells if they have been accepted
 				else
 				{
 					// Adjust the mapping cells to reflect changes
 					ArrayList<MappingCell> newMappingCells = annotationPane.getMappingCells();
-					MappingController.setMappingCells(harmonyModel,newMappingCells);
+					harmonyModel.getMappingManager().setMappingCells(newMappingCells);
 					
 					// If the mapping cells were accepted, validate as needed
 					if(confidencePane.isAccepted())
-						MappingController.validateMappingCells(harmonyModel,newMappingCells);
+						harmonyModel.getMappingManager().validateMappingCells(newMappingCells);
 				}
 			}
 			
