@@ -6,8 +6,10 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Cursor;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Stroke;
 import java.awt.event.MouseEvent;
@@ -69,31 +71,20 @@ public class SchemaTree extends JTree implements MappingListener, ProjectListene
 		private boolean needUpdating = true;	// Indicates if the row bounds currently need updating
 		private Rectangle row[];				// Array of all row bounds associated with schema tree
 
-		/**
-		 * Update the row bounds associated with the schema tree
-		 */
+		/** Update the row bounds associated with the schema tree */
 		private void update()
 		{
 			row = new Rectangle[getRowCount()];
 			for(int i=0; i<getRowCount(); i++)
-			{
-				int width=getParent().getWidth();
-				Rectangle rect = getRowBounds(i);
-				rect.setSize(width-rect.x, getRowBounds(i).height);
-				row[i]=rect;
-			}
+				row[i]=getRowBounds(i);
 			needUpdating = false;
 		}
 		
-		/**
-		 * Initialize the caching of row bounds
-		 */
+		/** Initialize the caching of row bounds */
 		private RowBounds()
 			{ needUpdating=true; addSchemaTreeListener(this); }
 
-		/**
-		 * @return Row bound of specified row
-		 */
+		/** @return Row bound of specified row */
 		Rectangle getRow(int i)
 			{ if(needUpdating) update(); return row[i]; } 
 		
@@ -113,9 +104,7 @@ public class SchemaTree extends JTree implements MappingListener, ProjectListene
 		private boolean needUpdating;						// Indicates if the visible nodes need updating
 		private HashSet<DefaultMutableTreeNode> visible;	// Hash used to store visible nodes
 
-		/**
-		 * Update the visible nodes associated with the schema tree
-		 */
+		/** Update the visible nodes associated with the schema tree */
 		private void update()
 		{
 			visible = new HashSet<DefaultMutableTreeNode>();
@@ -124,15 +113,11 @@ public class SchemaTree extends JTree implements MappingListener, ProjectListene
 			needUpdating = false;
 		}
 		
-		/**
-		 * Initialize the caching of visible nodes
-		 */
+		/** Initialize the caching of visible nodes */
 		private VisibleNodes()
 			{ needUpdating=true; addSchemaTreeListener(this); }
 
-		/**
-		 * @return Indication if node is currently visible
-		 */
+		/** @return Indication if node is currently visible */
 		private boolean isVisible(DefaultMutableTreeNode node)
 			{ if(needUpdating) update(); return visible.contains(node); }
 		
@@ -626,87 +611,88 @@ public class SchemaTree extends JTree implements MappingListener, ProjectListene
 			}
 		//added extended dash lines
 		addExtendedLines(g);
-		
 	}
 	
 	/** Calculates the drawing of a rectangle around focused items */
-	public Rectangle computeFocusRectangle(DefaultMutableTreeNode node)
+	private Rectangle computeFocusRectangle(DefaultMutableTreeNode node)
 	{
-		Rectangle result = (Rectangle) getBufferedRowBounds(node).clone();
+		// Get the location of the focus rectangle
+		Rectangle nodeRect = getBufferedRowBounds(node);
+		Point location = nodeRect.getLocation();
+		
+		// Get the size of the focus rectangle
+		Dimension size = nodeRect.getSize();
 		Enumeration childNodes = node.depthFirstEnumeration();
-		// Visit each child...
-		while(childNodes.hasMoreElements()) {
+		while(childNodes.hasMoreElements())
+		{
 			DefaultMutableTreeNode childNode = (DefaultMutableTreeNode)childNodes.nextElement();
 			Rectangle childRect = getBufferedRowBounds(childNode);
-			// And expand the rectangle as needed.
-			if (childRect.x + childRect.width > result.x + result.width) {
-				result.width = childRect.x + childRect.width - result.x;
-			}
-			if (childRect.y + childRect.height > result.y + result.height) {
-				result.height = childRect.y + childRect.height - result.y;
-			}
-		}
-		// Nudge the horizontal distance for a less cluttered appearance.
-		result.x -= SPACE;
-		result.width += 2*SPACE;
-		return result;
+			if(childRect.getMaxX()-location.x>size.width) size.width = (int)(childRect.getMaxX()-location.x);
+			if(childRect.getMaxY()-location.y>size.height) size.height = (int)(childRect.getMaxY()-location.y);
+		}		
+
+		// Construct the focus rectangle
+		Rectangle focusRect = new Rectangle(location,size);
+		focusRect.x -= SPACE; focusRect.width += 2*SPACE;
+
+		// Return the focus rectangle
+		return focusRect;
 	}
-	
 
 	/** Added extended dash lines */
-	void addExtendedLines(Graphics g){
-	        TreePath tp = new TreePath(root);	        
-	        findTreePath(this, tp, g);  
-	}  
-	    
+	private void addExtendedLines(Graphics g)
+	{
+        TreePath tp = new TreePath(root);	        
+        findTreePath(this, tp, g);  
+	}
 	
-	private TreePath findTreePath(SchemaTree tree, TreePath parent, Graphics g) {
-			
-			DefaultMutableTreeNode rootNode = (DefaultMutableTreeNode)parent.getLastPathComponent();
-			Color m_tGrey = new Color(230, 230, 230, 150);
-			int circleSize = 5;
-			
-			Graphics2D g2d = (Graphics2D) g;
-			g2d.setStroke(DASHED_LINE);
-			
-	        // Traverse children
-	        if (rootNode.getChildCount() >= 0) {
-	            for (Enumeration e=rootNode.children(); e.hasMoreElements(); ) {
-	            	DefaultMutableTreeNode childNode = (DefaultMutableTreeNode)e.nextElement();
-	                TreePath path = parent.pathByAddingChild(childNode);
-	                
-	                Rectangle rect = null;
-	    			
-	    			rect = tree.getPathBounds(path);
-	    			int width=tree.getParent().getWidth();
-	    			
-	    			if(rect != null)
-	    			{    
-	    				if(tree.getSide()==HarmonyConsts.LEFT)
-	    				{
-	    					//Draw line
-		    				g2d.setColor(m_tGrey);
-		    				g2d.drawLine((int) rect.getMaxX(), (int) rect.getCenterY(), width - circleSize, (int) rect.getCenterY());
-	    				}
-	    				else{  //right side
-	    					//Draw line
-		    				g2d.setColor(m_tGrey);
-		    				//Full line
-		    				g2d.drawLine(0, (int) rect.getCenterY(), (int)rect.getMinX(), (int) rect.getCenterY());
-	    				}
-	    				
-	    			}
-	              
-	                TreePath result = findTreePath(tree, path, g);
-	                // Found a path
-	                if (result != null) {
-	                    return result;
-	                }
-	            }
-	        }
+	private TreePath findTreePath(SchemaTree tree, TreePath parent, Graphics g)
+	{
+		DefaultMutableTreeNode rootNode = (DefaultMutableTreeNode)parent.getLastPathComponent();
+		Color m_tGrey = new Color(230, 230, 230, 150);
+		int circleSize = 5;
+		
+		Graphics2D g2d = (Graphics2D) g;
+		g2d.setStroke(DASHED_LINE);
+		
+        // Traverse children
+        if (rootNode.getChildCount() >= 0) {
+            for (Enumeration e=rootNode.children(); e.hasMoreElements(); ) {
+            	DefaultMutableTreeNode childNode = (DefaultMutableTreeNode)e.nextElement();
+                TreePath path = parent.pathByAddingChild(childNode);
+                
+                Rectangle rect = null;
+    			
+    			rect = tree.getPathBounds(path);
+    			int width=tree.getParent().getWidth();
+    			
+    			if(rect != null)
+    			{    
+    				if(tree.getSide()==HarmonyConsts.LEFT)
+    				{
+    					//Draw line
+	    				g2d.setColor(m_tGrey);
+	    				g2d.drawLine((int) rect.getMaxX(), (int) rect.getCenterY(), width - circleSize, (int) rect.getCenterY());
+    				}
+    				else{  //right side
+    					//Draw line
+	    				g2d.setColor(m_tGrey);
+	    				//Full line
+	    				g2d.drawLine(0, (int) rect.getCenterY(), (int)rect.getMinX(), (int) rect.getCenterY());
+    				}
+    				
+    			}
+              
+                TreePath result = findTreePath(tree, path, g);
+                // Found a path
+                if (result != null) {
+                    return result;
+                }
+            }
+        }
 
-	    
-	        // No match at this branch
-	        return null;
-	    }
+    
+        // No match at this branch
+        return null;
+    }
 }
