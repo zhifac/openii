@@ -421,6 +421,10 @@ public class SchemaTree extends JTree implements MappingListener, ProjectListene
 		for(Integer schemaID : schemaIDs)
 			SchemaTreeGenerator.addSchema(this, schemaID, harmonyModel);
 	}
+
+	/** Handles the removal of a mapping */
+	public void mappingRemoved(Integer mappingID)
+		{ mappingVisibilityChanged(mappingID); }
 	
 	/** Handles changes to the specified schema model */
 	public void schemaModelModified(Integer schemaID)
@@ -555,7 +559,6 @@ public class SchemaTree extends JTree implements MappingListener, ProjectListene
 	public void mappingCellsAdded(Integer mappingID, List<MappingCell> mappingCells) {}
 	public void mappingCellsModified(Integer mappingID,	List<MappingCell> oldMappingCells, List<MappingCell> newMappingCells) {}
 	public void mappingCellsRemoved(Integer mappingID, List<MappingCell> mappingCells) {}
-	public void mappingRemoved(Integer mappingID) {}
 	public void displayedViewChanged() {}
 	public void mouseExited(MouseEvent e) {}
 	public void mouseEntered(MouseEvent e) {}
