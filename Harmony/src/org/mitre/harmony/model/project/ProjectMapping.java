@@ -182,9 +182,8 @@ public class ProjectMapping extends Mapping
 		ArrayList<MappingCell> validatedMappingCells = new ArrayList<MappingCell>();
 		for(MappingCell mappingCell : new ArrayList<MappingCell>(mappingCells))
 		{
-			// Check to make sure mapping cell is already validated
-			if(mappingCell.getValidated())
-				{ validatedMappingCells.remove(mappingCell); break; }
+			// Check to make sure mapping cell isn't already validated
+			if(mappingCell.getValidated()) continue;
 			
 			// Retrieve the various mapping cell fields
 			Integer id = mappingCell.getId();
