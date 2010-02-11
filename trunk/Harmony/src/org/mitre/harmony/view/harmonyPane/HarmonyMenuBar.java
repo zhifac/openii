@@ -24,7 +24,7 @@ import org.mitre.harmony.view.dialogs.GettingStartedDialog;
 import org.mitre.harmony.view.dialogs.SearchDialog;
 import org.mitre.harmony.view.dialogs.matcher.MatcherMenu;
 import org.mitre.harmony.view.dialogs.porters.ExportProjectDialog;
-import org.mitre.harmony.view.dialogs.porters.MappingImporterDialog;
+import org.mitre.harmony.view.dialogs.porters.ProjectImporterDialog;
 import org.mitre.harmony.view.dialogs.project.ProjectDialog;
 import org.mitre.harmony.view.dialogs.projects.LoadProjectDialog;
 import org.mitre.harmony.view.dialogs.projects.SaveMappingDialog;
@@ -145,13 +145,13 @@ public class HarmonyMenuBar extends JMenuBar
 	    	{
 	    		if(harmonyModel.getBaseFrame() instanceof Harmony)
 	    			new SaveMappingDialog(harmonyModel);
-	    		else ProjectController.saveProject(harmonyModel.getProjectManager().getProject());
+	    		else ProjectController.saveProject(harmonyModel,harmonyModel.getProjectManager().getProject());
 	    	}
 		    
 	    	// Import project
 	    	else if(source==importProject)
 	    	{
-	    		MappingImporterDialog dialog = new MappingImporterDialog(harmonyModel.getBaseFrame(),harmonyModel);
+	    		ProjectImporterDialog dialog = new ProjectImporterDialog(harmonyModel.getBaseFrame(),harmonyModel);
 	    		while(dialog.isDisplayable()) try { Thread.sleep(500); } catch(Exception e2) {}
 	    		
 	    		// Launches the schema dialog window if no schemas displayed

@@ -87,6 +87,10 @@ public class SchemaStoreManager
 	public static Integer addProject(Project project) throws RemoteException
 		{ return client.addProject(project); }
 	
+	/** Modifies the specified project in the web service */
+	public static boolean updateProject(Project project) throws RemoteException
+		{ return client.updateProject(project); }
+	
 	/** Deletes the specified project from the web service */
 	public static Boolean deleteProject(Integer projectID) throws RemoteException
 		{ return client.deleteProject(projectID); }
@@ -95,6 +99,10 @@ public class SchemaStoreManager
 	public static ArrayList<Mapping> getMappings(Integer projectID) throws RemoteException
 		{ return client.getMappings(projectID); }
 	
+	/** Adds the specified mapping to the web service */
+	public static Integer addMapping(Mapping mapping) throws RemoteException
+		{ return client.addMapping(mapping); }
+	
 	/** Retrieves the mapping cells for the specified mapping from the web service */
 	public static ArrayList<MappingCell> getMappingCells(Integer mappingID) throws RemoteException
 		{ return client.getMappingCells(mappingID); }
@@ -102,6 +110,11 @@ public class SchemaStoreManager
 	/** Saves the specified mapping to the web service */
 	public static boolean saveMappingCells(Integer mappingID, ArrayList<MappingCell> mappingCells) throws RemoteException
 		{ return client.saveMappingCells(mappingID, mappingCells); }
+	
+	/** Deletes the specified mapping from the web service */
+	public static Boolean deleteMapping(Integer mappingID) throws RemoteException
+		{ return client.deleteMapping(mappingID); }
+
 	
 	//--------------------
 	// Importer Functions

@@ -39,7 +39,7 @@ public class ProjectManager extends AbstractManager<ProjectListener> implements 
 		{ return modified; }
 	
 	/** Sets the project as modified */
-	private void setModified(boolean modified)
+	public void setModified(boolean modified)
 	{
 		this.modified = modified;
 		for(ProjectListener listener : getListeners())

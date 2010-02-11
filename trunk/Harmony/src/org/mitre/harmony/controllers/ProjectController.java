@@ -1,15 +1,15 @@
 package org.mitre.harmony.controllers;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.SchemaStoreManager;
+import org.mitre.harmony.model.project.ProjectMapping;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.Project;
-import org.mitre.schemastore.model.ProjectSchema;
 
 /** Class for various project controls */
 public class ProjectController
@@ -66,21 +66,64 @@ public class ProjectController
 	}
 	
 	/** Saves the specified project */
-	static public boolean saveProject(Project project)
+	static public boolean saveProject(HarmonyModel harmonyModel, Project project)
 	{
 		try {
-			// Update the project schema settings
-			project.setSchemas(this.project.getSchemas());
+			// Set the project schemas
+			project.setSchemas(harmonyModel.getProjectManager().getProject().getSchemas());
 			
 			// Save the project
-			Integer projectID = SchemaStoreManager.saveProject(project, getModel().getMappingManager().getMappingCells());
-			if(projectID==null) throw new Exception("Failed to save mapping");
-			this.project.setId(projectID);
+			if(project.getId()!=null)
+			{
+				// Collect keys for the current project mappings
+				HashSet<String> mappingKeys = new HashSet<String>();
+				for(ProjectMapping mapping : harmonyModel.getMappingManager().getMappings())
+					mappingKeys.add(mapping.getSourceId() + "_" + mapping.getTargetId());
+				
+				// Remove mappings which no longer can be supported
+				for(Mapping mapping : SchemaStoreManager.getMappings(project.getId()))
+					if(!mappingKeys.contains(mapping.getSourceId() + "_" + mapping.getTargetId()))
+						if(!SchemaStoreManager.deleteMapping(mapping.getId()))
+							throw new Exception("Failed to delete mapping " + mapping.getId());
+				
+				// Update the project information
+				if(!SchemaStoreManager.updateProject(project))
+					throw new Exception("Failed to update project");
+			}
+			else
+			{
+				Integer projectID = SchemaStoreManager.addProject(project);
+				if(project!=null) project.setId(projectID);
+				else throw new Exception("Failed to create project");
+			}
+
+			// Identify the current project mappings
+			HashMap<String,Integer> mappingIDs = new HashMap<String,Integer>();
+			for(Mapping mapping : SchemaStoreManager.getMappings(project.getId()))
+				mappingIDs.put(mapping.getSourceId() + "_" + mapping.getTargetId(),mapping.getId());
+			
+			// Save the project mappings
+			for(ProjectMapping mapping : harmonyModel.getMappingManager().getMappings())
+			{
+				// Identify the mapping where to save the 
+				Integer mappingID = mappingIDs.get(mapping.getSourceId() + "_" + mapping.getTargetId());
+				if(mappingID==null)
+				{
+					Mapping newMapping = mapping.copy();
+					newMapping.setProjectId(project.getId());
+					mapping.setId(SchemaStoreManager.addMapping(newMapping));
+				}
+				else mapping.setId(mappingID);
+				if(mapping.getId()==null) throw new Exception("Failed to create mapping");
+
+				// Save the mapping cells to the mapping
+				SchemaStoreManager.saveMappingCells(mapping.getId(), mapping.getMappingCells());
+			}
 			
 			// Indicates that the mapping has been modified
-			setModified(false);
+			harmonyModel.getProjectManager().setModified(false);
 			return true;
 		}
-		catch(Exception e) { System.out.println("(E) MappingManager.saveMapping - " + e.getMessage()); return false; }
+		catch(Exception e) { System.out.println("(E) ProjectController.saveProject - " + e.getMessage()); return false; }
 	}
 }
