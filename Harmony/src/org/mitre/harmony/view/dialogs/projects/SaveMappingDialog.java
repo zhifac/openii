@@ -10,6 +10,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import org.mitre.harmony.controllers.ProjectController;
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.view.dialogs.AbstractButtonPane;
 
@@ -38,11 +39,11 @@ public class SaveMappingDialog extends JDialog implements ListSelectionListener
 		/** Handles selection of button */
 		protected void buttonPressed(String label)
 		{
-			if(label.equals("OK"))
+			if(label.equals("Save"))
 			{
 				if(infoPane.validateInfo())
 				{
-					harmonyModel.getProjectManager().saveProject(projectPane.getProject());
+					ProjectController.saveProject(harmonyModel,projectPane.getProject());
 					dispose();
 				}
 			}
