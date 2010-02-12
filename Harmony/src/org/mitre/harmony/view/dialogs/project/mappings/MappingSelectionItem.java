@@ -43,20 +43,20 @@ class MappingSelectionItem extends JPanel implements ActionListener
 		// Initialize the check box
 		checkbox = new JCheckBox(label);
 		checkbox.setOpaque(false);
+		checkbox.setEnabled(!harmonyModel.getMappingManager().areMappingsLocked());
 		checkbox.setFocusable(false);
-		checkbox.setEnabled(standaloneMode);
 		checkbox.setSelected(selected);
 		checkbox.addActionListener(this);
 	
 		// Initialize the delete link
-		deleteMapping = new Link("Delete",this);
+		if(standaloneMode) deleteMapping = new Link("Delete",this);
 		
 		// Constructs the check box pane
 		JPanel checkboxPane = new JPanel();
 		checkboxPane.setOpaque(false);
 		checkboxPane.setLayout(new BoxLayout(checkboxPane,BoxLayout.X_AXIS));
 		checkboxPane.add(checkbox);
-		checkboxPane.add(deleteMapping);
+		if(deleteMapping!=null) checkboxPane.add(deleteMapping);
 		
 		// Constructs the schema check box
 		setOpaque(false);

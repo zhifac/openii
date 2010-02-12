@@ -77,7 +77,7 @@ public class ProjectMapping extends Mapping
 	/** Sets the visibility of the mapping */
 	public void setVisibility(boolean visibility)
 	{
-		if(!isVisible==visibility)
+		if(!isVisible==visibility && !mappingManager.areMappingsLocked())
 		{
 			isVisible = visibility;
 			for(MappingListener listener : mappingManager.getListeners())

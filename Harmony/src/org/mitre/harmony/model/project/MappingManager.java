@@ -21,6 +21,9 @@ public class MappingManager extends AbstractManager<MappingListener>
 	/** Stores the mappings associated with the project */
 	private ArrayList<ProjectMapping> mappings = new ArrayList<ProjectMapping>();
 	
+	/** Store lock to prevent changing of mappings */
+	private boolean mappingLock = false;
+	
 	/** Stores the last mapping cell id handed out */
 	protected Integer maxID = 0;
 	
@@ -28,6 +31,14 @@ public class MappingManager extends AbstractManager<MappingListener>
 	public MappingManager(HarmonyModel harmonyModel)
 		{ super(harmonyModel); }
 
+	/** Returns if the mappings are currently locked */
+	public boolean areMappingsLocked()
+		{ return mappingLock; }
+	
+	/** Sets the mapping lock */
+	public void setMappingLock(boolean mappingLock)
+		{ this.mappingLock = mappingLock; }
+	
 	/** Returns the list of mappings */
 	public ArrayList<ProjectMapping> getMappings()
 		{ return new ArrayList<ProjectMapping>(mappings); }
