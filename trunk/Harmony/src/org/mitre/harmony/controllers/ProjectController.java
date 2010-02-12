@@ -7,6 +7,7 @@ import java.util.HashSet;
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.SchemaStoreManager;
 import org.mitre.harmony.model.project.ProjectMapping;
+import org.mitre.harmony.view.dialogs.project.ProjectDialog;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.Project;
@@ -60,9 +61,31 @@ public class ProjectController
 			harmonyModel.getMappingManager().addMapping(mapping);
 			harmonyModel.getMappingManager().getMapping(mapping.getId()).setMappingCells(mappingCells.get(i));
 		}
-
+		
 		// Indicates that the project was successfully loaded
 		return true;
+	}
+
+	/** Automatically selects the mappings to display */
+	static public void selectMappings(HarmonyModel harmonyModel)
+	{
+		// Checks to see if all mappings can be displayed simultaneously
+		boolean displayAll = true;
+		HashSet<Integer> sourceIDs = new HashSet<Integer>();
+		HashSet<Integer> targetIDs = new HashSet<Integer>();
+		for(ProjectMapping mapping : harmonyModel.getMappingManager().getMappings())
+		{
+			sourceIDs.add(mapping.getSourceId());
+			targetIDs.add(mapping.getTargetId());
+			if(sourceIDs.contains(mapping.getTargetId()) || targetIDs.contains(mapping.getSourceId()))
+				{ displayAll = false; break; }
+		}
+		
+		// Display all mappings if possible
+		if(displayAll)
+			for(ProjectMapping mapping : harmonyModel.getMappingManager().getMappings())
+				mapping.setVisibility(true);
+		else new ProjectDialog(harmonyModel);
 	}
 	
 	/** Saves the specified project */

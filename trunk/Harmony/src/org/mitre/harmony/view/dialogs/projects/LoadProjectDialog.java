@@ -3,7 +3,6 @@
 package org.mitre.harmony.view.dialogs.projects;
 
 import java.awt.BorderLayout;
-import java.util.HashSet;
 
 import javax.swing.JDialog;
 import javax.swing.JPanel;
@@ -13,9 +12,7 @@ import javax.swing.event.ListSelectionListener;
 
 import org.mitre.harmony.controllers.ProjectController;
 import org.mitre.harmony.model.HarmonyModel;
-import org.mitre.harmony.model.project.ProjectMapping;
 import org.mitre.harmony.view.dialogs.AbstractButtonPane;
-import org.mitre.harmony.view.dialogs.project.ProjectDialog;
 import org.mitre.schemastore.model.Project;
 
 /**
@@ -49,27 +46,9 @@ public class LoadProjectDialog extends JDialog implements ListSelectionListener
 				Project project = projectPane.getProject();
 				if(project==null) ProjectController.newProject(harmonyModel);
 				else ProjectController.loadProject(harmonyModel,project.getId());
-				dispose();
-
-				// Checks to see if all mappings can be displayed
-				boolean displayAll = true;
-				HashSet<Integer> sourceIDs = new HashSet<Integer>();
-				HashSet<Integer> targetIDs = new HashSet<Integer>();
-				for(ProjectMapping mapping : harmonyModel.getMappingManager().getMappings())
-				{
-					sourceIDs.add(mapping.getSourceId());
-					targetIDs.add(mapping.getTargetId());
-					if(sourceIDs.contains(mapping.getTargetId()) || targetIDs.contains(mapping.getSourceId()))
-						{ displayAll = false; break; }
-				}
-				
-				// Select all if possible or otherwise launch configuration dialog
-				if(displayAll)
-					for(ProjectMapping mapping : harmonyModel.getMappingManager().getMappings())
-						mapping.setVisibility(true);
-				else new ProjectDialog(harmonyModel);
+				ProjectController.selectMappings(harmonyModel);
 			}			
-			else dispose();
+			dispose();
 		}
 	}
 	
