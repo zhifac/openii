@@ -1,10 +1,13 @@
 <config>
-  <repository>
-    <type>derby</type>
-    <location></location>
-	<database>schemastore</database>
-    <username>postgres</username>
-    <password>postgres</password>
-  </repository>
   <extraMappingCellFields>[transform]</extraMappingCellFields>
+  <preferences>
+    <showSchemaTypes>false</showSchemaTypes>
+  </preferences>
+  <repository>
+    <database>schemastore</database>
+    <location></location>
+    <password>postgres</password>
+    <type>derby</type>
+    <username>postgres</username>
+  </repository>
 </config>

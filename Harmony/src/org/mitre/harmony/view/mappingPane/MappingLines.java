@@ -10,7 +10,6 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Stroke;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -18,7 +17,6 @@ import java.util.List;
 import java.util.Vector;
 
 import javax.swing.JViewport;
-import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.mitre.harmony.model.HarmonyConsts;
 import org.mitre.harmony.model.HarmonyModel;
@@ -167,27 +165,21 @@ public class MappingLines implements MappingListener, FiltersListener, SchemaTre
 	}
 
 	/** Collects all elements hierarchically influenced by the specified element */
-	private ArrayList<Integer> getHierarchicallyAffectedNodes(Integer side, Integer elementID)
+	private ArrayList<Integer> getHierarchicallyAffectedElementIDs(HashSet<Integer> schemaIDs, Integer elementID)
 	{
-		ArrayList<Integer> affectedNodeIDs = new ArrayList<Integer>();
-		for(DefaultMutableTreeNode leftNode : mappingPane.getTree(side).getSchemaElementNodes(elementID))
-			for(int i=0; i<leftNode.getChildCount(); i++)
-			{
-				// Retrieve information about the child node
-				DefaultMutableTreeNode childNode = (DefaultMutableTreeNode)leftNode.getChildAt(i);
-				Integer schemaID = SchemaTree.getSchema(childNode);
-				Integer childID = SchemaTree.getElement(childNode);
+		// Find all affected element IDs
+		ArrayList<Integer> affectedElementIDs = new ArrayList<Integer>();
+		for(Integer schemaID : schemaIDs)
+		{
+			// Retrieve the schema information
+			HierarchicalSchemaInfo schemaInfo = harmonyModel.getSchemaManager().getSchemaInfo(schemaID);
 
-				// Store any mapping cells possibly affected
-				HierarchicalSchemaInfo schemaInfo = harmonyModel.getSchemaManager().getSchemaInfo(schemaID);
-				if(schemaInfo.getParentElements(childID).size()>1)
-				{
-					affectedNodeIDs.add(childID);
-					for(SchemaElement element : schemaInfo.getDescendantElements(childID))
-						affectedNodeIDs.add(element.getId());
-				}
-			}
-		return affectedNodeIDs;
+			// Identify all affected elements
+			if(schemaInfo.containsElement(elementID))
+				for(SchemaElement element : schemaInfo.getDescendantElements(elementID))
+					affectedElementIDs.add(element.getId());
+		}
+		return affectedElementIDs;
 	}
 	
 	/** Updates the hierarchical filter as needed */
@@ -195,18 +187,30 @@ public class MappingLines implements MappingListener, FiltersListener, SchemaTre
 	{
 		if(harmonyModel.getFilters().getFilter(FilterManager.HIERARCHY_FILTER))
 		{
+			// Identify the visible schemas
+			HashSet<Integer> schemaIDs = new HashSet<Integer>();
+			for(ProjectMapping mapping : harmonyModel.getMappingManager().getMappings())
+				if(mapping.isVisible())
+					{ schemaIDs.add(mapping.getSourceId()); schemaIDs.add(mapping.getTargetId()); }
+			
 			// Build up list of elements affected by changed mapping cell
-			HashSet<Integer> elementIDs = new HashSet<Integer>();
+			HashSet<Integer> affectedElementIDs = new HashSet<Integer>();
 			for(MappingCell mappingCell : mappingCells)
 			{
-				for(Integer inputID : mappingCell.getInput())
-					elementIDs.addAll(getHierarchicallyAffectedNodes(HarmonyConsts.LEFT, inputID));
-				elementIDs.addAll(getHierarchicallyAffectedNodes(HarmonyConsts.RIGHT, mappingCell.getOutput()));
+				// Generate list of elements still in need of checking
+				ArrayList<Integer> elementIDs = new ArrayList<Integer>();
+				if(!affectedElementIDs.contains(mappingCell.getOutput())) elementIDs.add(mappingCell.getOutput());
+				for(Integer elementID : mappingCell.getInput())
+					if(!affectedElementIDs.contains(elementID)) elementIDs.add(mappingCell.getOutput());
+
+				// Gather up hierarchically affected element IDs
+				for(Integer elementID : elementIDs)
+					affectedElementIDs.addAll(getHierarchicallyAffectedElementIDs(schemaIDs, elementID));
 			}
 			
 			// Translate list of affected elements into list of mapping cells
 			HashSet<Integer> mappingCellIDs = new HashSet<Integer>();
-			for(Integer elementID : elementIDs)
+			for(Integer elementID : affectedElementIDs)
 				mappingCellIDs.addAll(harmonyModel.getMappingManager().getMappingCellsByElement(elementID));
 			
 			// Update the lines for the affected mappings cells
@@ -228,10 +232,8 @@ public class MappingLines implements MappingListener, FiltersListener, SchemaTre
 	public void mappingCellsModified(Integer mappingID, List<MappingCell> oldMappingCells, List<MappingCell> newMappingCells)
 	{
 		for(MappingCell newMappingCell : newMappingCells)
-		{
 			getLines().get(newMappingCell.getId()).updateHidden();
-			updateHierarchicalFilterAsNeeded(Arrays.asList(new MappingCell[] {newMappingCell}));
-		}
+		updateHierarchicalFilterAsNeeded(newMappingCells);
 		fireLinesModified();
 	}
 	
