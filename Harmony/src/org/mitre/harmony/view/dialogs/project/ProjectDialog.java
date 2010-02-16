@@ -6,6 +6,7 @@ import java.awt.BorderLayout;
 import java.awt.GridLayout;
 
 import javax.swing.JDialog;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
@@ -13,7 +14,6 @@ import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.view.dialogs.AbstractButtonPane;
 import org.mitre.harmony.view.dialogs.project.mappings.MappingPane;
 import org.mitre.harmony.view.dialogs.project.schemas.SchemaPane;
-import org.mitre.schemastore.model.Mapping;
 
 /**
  * Displays the project dialog
@@ -37,7 +37,18 @@ public class ProjectDialog extends JDialog
 
 		/** Handles selection of button */
 		protected void buttonPressed(String label)
-			{ if(label.equals("OK")) save(); dispose(); }
+		{
+			if(label.equals("OK"))
+			{
+				if(mappingPane.getMappings().size()==0)
+				{
+					int reply = JOptionPane.showConfirmDialog(null,"No mappings have been defined.  Proceed?","Project Failure",JOptionPane.YES_NO_OPTION,JOptionPane.WARNING_MESSAGE);
+					if(reply==JOptionPane.NO_OPTION) return;
+				}
+				save();
+			}
+			dispose();
+		}
 	}
 	
 	/** Initializes the project dialog */
@@ -81,14 +92,6 @@ public class ProjectDialog extends JDialog
 	/** Returns the mapping pane */
 	public MappingPane getMappingPane()
 		{ return mappingPane; }
-	
-	/** Adds a schema */
-	public void addSchema(Integer schemaID)
-		{ schemaPane.selectSchema(schemaID); }
-	
-	/** Adds a mapping */
-	public void addMapping(Mapping mapping)
-		{ mappingPane.addMapping(mapping); }
 	
 	/** Saves the project */
 	void save()
