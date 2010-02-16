@@ -153,12 +153,7 @@ public class HarmonyMenuBar extends JMenuBar
 	    	{
 	    		ProjectImporterDialog dialog = new ProjectImporterDialog(harmonyModel.getBaseFrame(),harmonyModel);
 	    		while(dialog.isDisplayable()) try { Thread.sleep(500); } catch(Exception e2) {}
-	    		
-	    		// Launches the schema dialog window if no schemas displayed
-//	    		int displayedSchemas = 0;
-//	    		for(ProjectSchema schema : harmonyModel.getProjectManager().getSchemas())
-//	    			if(!schema.getSide().equals(MappingSchema.NONE)) displayedSchemas++;
-//	    		if(displayedSchemas==0) new SchemaSettingsDialog(harmonyModel);
+	    		ProjectController.selectMappings(harmonyModel);
 	    	}
 	    
 	    	// Export project
@@ -178,8 +173,9 @@ public class HarmonyMenuBar extends JMenuBar
 	/** Drop-down menu found under edit menu bar heading */
 	private class EditMenu extends JMenu implements ActionListener
 	{
+		private JMenuItem selectAllLinks;			// Option to select all current links
 		private JMenuItem removeHiddenLinks;	// Option to remove hidden links
-		private JMenuItem removeLinks;			// Option to remove all current links
+		private JMenuItem removeAllLinks;			// Option to remove all current links
 		
 		/** Initializes the edit drop-down menu */
 		private EditMenu()
@@ -189,27 +185,34 @@ public class HarmonyMenuBar extends JMenuBar
 		    setMnemonic(KeyEvent.VK_E);
 		    
 			// Initialize project drop-down items
+		    selectAllLinks = new JMenuItem("Select All Links");
 		    removeHiddenLinks = new JMenuItem("Remove Hidden Links");
-			removeLinks = new JMenuItem("Remove All Links");
+			removeAllLinks = new JMenuItem("Remove All Links");
 			
 			// Attach action listeners to edit drop-down items
+			selectAllLinks.addActionListener(this);
 			removeHiddenLinks.addActionListener(this);
-			removeLinks.addActionListener(this);
+			removeAllLinks.addActionListener(this);
 			
 			// Add edit drop-down items to edit drop-down menu
+			add(selectAllLinks);
 			add(removeHiddenLinks);
-		    add(removeLinks);
+		    add(removeAllLinks);
 		}
 		
 		/** Handles the edit drop-down action selected by the user */
 	    public void actionPerformed(ActionEvent e)
 	    {
+	    	// Selects all links from the currently focused area of Harmony
+	    	if(e.getSource() == selectAllLinks)
+	    		harmonyModel.getSelectedInfo().selectAllMappingCells();
+	    		
 	    	// Removed hidden links from the currently focused area of Harmony
 	    	if(e.getSource() == removeHiddenLinks)
 	    		harmonyModel.getMappingManager().deleteHiddenMappingCells();
 	    	
 	    	// Removes all links from the currently focused area of Harmony
-	    	if(e.getSource() == removeLinks)
+	    	if(e.getSource() == removeAllLinks)
 	    		harmonyModel.getMappingManager().deleteAllMappingCells();
 	    }
 	}

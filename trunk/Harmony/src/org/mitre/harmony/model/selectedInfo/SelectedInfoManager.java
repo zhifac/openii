@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
+import org.mitre.harmony.controllers.FocusController;
 import org.mitre.harmony.model.AbstractManager;
 import org.mitre.harmony.model.HarmonyConsts;
 import org.mitre.harmony.model.HarmonyModel;
@@ -222,6 +223,15 @@ public class SelectedInfoManager extends AbstractManager<SelectedInfoListener> i
 		// Handles the case where the specified mapping cells should replace the old selected mapping cells
 		if(!append) setSelectedMappingCells(selected ? new ArrayList<Integer>() : mappingCells, REPLACE);
 		else setSelectedMappingCells(mappingCells,selected?REMOVE:ADD);
+	}
+	
+	/** Selects all mapping cells */
+	public void selectAllMappingCells()
+	{
+		ArrayList<Integer> mappingCellIDs = new ArrayList<Integer>();
+		for(MappingCell mappingCell : FocusController.getFocusedMappingCells(getModel()))
+			mappingCellIDs.add(mappingCell.getId());
+		setMappingCells(mappingCellIDs, false);
 	}
 	
 	//------------ Updates the selected information based on the occurrence of events ------------
