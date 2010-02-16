@@ -26,6 +26,7 @@ public class ProjectController
 		Project project = new Project();
 		project.setAuthor(System.getProperty("user.name"));		
 		harmonyModel.getProjectManager().setProject(project);
+		harmonyModel.getProjectManager().setModified(false);
 	}
 	
 	/** Loads the specified project */
@@ -63,6 +64,7 @@ public class ProjectController
 		}
 		
 		// Indicates that the project was successfully loaded
+		harmonyModel.getProjectManager().setModified(false);
 		return true;
 	}
 
