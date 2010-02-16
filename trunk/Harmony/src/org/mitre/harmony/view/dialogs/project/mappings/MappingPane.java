@@ -55,10 +55,10 @@ public class MappingPane extends JPanel implements ActionListener
 		add(mappingSelectionPane,BorderLayout.CENTER);
 		add(button,BorderLayout.SOUTH);
    	}
-
-	/** Adds the specified mapping */
-	public void addMapping(Mapping mapping)
-		{ mappingSelectionPane.addMapping(mapping,false); }
+	
+	/** Returns the declared mappings */
+	public ArrayList<Mapping> getMappings()
+		{ return mappingSelectionPane.getMappings(); }
 	
 	/** Handles the pressing of the "Add Mapping" button */
 	public void actionPerformed(ActionEvent e)
@@ -71,7 +71,7 @@ public class MappingPane extends JPanel implements ActionListener
 
 		// Add the mapping
 		Mapping mapping = dialog.getMapping();
-		if(mapping!=null) addMapping(mapping);
+		if(mapping!=null) mappingSelectionPane.addMapping(mapping);
 	}
 	
 	/** Saves the project mappings */

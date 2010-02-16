@@ -76,6 +76,20 @@ class MappingSelectionPane extends JPanel
 	}
 	
 	/** Adds mapping to the pane */
+	void addMapping(Mapping mapping)
+	{
+		boolean selected = true;
+		for(MappingSelectionItem item : getItems())
+			if(item.isSelected())
+			{
+				if(mapping.getSourceId().equals(item.getMapping().getTargetId())) selected = false;
+				if(mapping.getTargetId().equals(item.getMapping().getSourceId())) selected = false;
+				if(selected==false) break;
+			}
+		addMapping(mapping, selected);
+	}
+	
+	/** Adds mapping to the pane */
 	void addMapping(Mapping mapping, boolean selected)
 	{
 		MappingSelectionItem newItem = new MappingSelectionItem(harmonyModel,mapping,selected);
@@ -86,6 +100,7 @@ class MappingSelectionPane extends JPanel
 			if(item.toString().compareTo(newItem.toString())>0) break;
 		}
 		mappingList.add(newItem,loc);
+		updateEnabledCheckboxes();
 		revalidate(); repaint();
 	}
 
