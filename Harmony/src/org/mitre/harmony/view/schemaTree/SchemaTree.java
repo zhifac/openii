@@ -183,6 +183,9 @@ public class SchemaTree extends JTree implements MappingListener, ProjectListene
 	/** Stores the Harmony model */
 	private HarmonyModel harmonyModel;
 	
+	/** Handles the generation of the schema tree */
+	private SchemaTreeGenerator schemaTreeGenerator = null;
+	
 	/** Initializes the schema tree */
 	public SchemaTree(Integer sideIn, HarmonyModel harmonyModel)
 	{
@@ -204,9 +207,9 @@ public class SchemaTree extends JTree implements MappingListener, ProjectListene
 		setSelectionModel(null);
 
 		// Set up the schema tree schemas
-		SchemaTreeGenerator.initialize(this);
+		schemaTreeGenerator = new SchemaTreeGenerator(this, harmonyModel);
 		for(Integer schemaID : harmonyModel.getProjectManager().getSchemaIDs(side))
-			SchemaTreeGenerator.addSchema(this,schemaID,harmonyModel);
+			schemaTreeGenerator.addSchema(schemaID);
 			
 		// Set up tool tips for the tree items
 		ToolTipManager.sharedInstance().registerComponent(this);
@@ -413,13 +416,13 @@ public class SchemaTree extends JTree implements MappingListener, ProjectListene
 		for(Integer schemaID : getSchemas())
 		{
 			if(!schemaIDs.contains(schemaID))
-				SchemaTreeGenerator.removeSchema(this, schemaID);
+				schemaTreeGenerator.removeSchema(schemaID);
 			else schemaIDs.remove(schemaID);
 		}
 		
 		// Add schemas which are now visible
 		for(Integer schemaID : schemaIDs)
-			SchemaTreeGenerator.addSchema(this, schemaID, harmonyModel);
+			schemaTreeGenerator.addSchema(schemaID);
 	}
 
 	/** Handles the removal of a mapping */
@@ -430,10 +433,7 @@ public class SchemaTree extends JTree implements MappingListener, ProjectListene
 	public void schemaModelModified(Integer schemaID)
 	{
 		if(harmonyModel.getProjectManager().getSchemaIDs(side).contains(schemaID))
-		{
-			SchemaTreeGenerator.removeSchema(this, schemaID);
-			SchemaTreeGenerator.addSchema(this, schemaID, harmonyModel);
-		}
+			schemaTreeGenerator.regenerateSchema(schemaID);
 	}
 	
 	/** Handles mouse clicks on the schema tree */
@@ -511,6 +511,13 @@ public class SchemaTree extends JTree implements MappingListener, ProjectListene
 		// If not over the "Add Schemas" link, switch cursor back to default
 		if(mappingPane.getCursor()!=Cursor.getDefaultCursor())
 			mappingPane.setCursor(Cursor.getDefaultCursor());
+	}
+
+	/** Handles the alphabetizing of the schema tree */
+	public void alphabetizedChanged()
+	{
+		for(Integer schemaID : getSchemas())
+			schemaTreeGenerator.regenerateSchema(schemaID);
 	}
 	
 	/** Handles preference changes */

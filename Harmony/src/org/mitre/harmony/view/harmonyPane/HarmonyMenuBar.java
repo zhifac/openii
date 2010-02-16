@@ -219,6 +219,7 @@ public class HarmonyMenuBar extends JMenuBar
 	{
 		private JRadioButtonMenuItem mappingView;	// Option to view schema mapping
 		private JRadioButtonMenuItem heatmapView;	// Option to view heat map
+		private JMenuItem alphabetize;				// Option to alphabetize child elements
 		private JMenuItem showTypes;				// Option to show schema data types
 		
 		/** Initializes the view drop-down menu */
@@ -230,6 +231,7 @@ public class HarmonyMenuBar extends JMenuBar
 			// Initialize view drop-down items
 			mappingView = new JRadioButtonMenuItem("Mapping View",true);
 			heatmapView = new JRadioButtonMenuItem("Heatmap View");
+			alphabetize = new JCheckBoxMenuItem("Alphabetize");
 			showTypes = new JCheckBoxMenuItem("Show Types");
 			
 			// Groups the radio buttons together
@@ -244,15 +246,18 @@ public class HarmonyMenuBar extends JMenuBar
 			// Attach action listeners to view drop-down items
 			mappingView.addActionListener(this);
 			heatmapView.addActionListener(this);
+			alphabetize.addActionListener(this);
 			showTypes.addActionListener(this);
 
 			// Add view drop-down items to view drop-down menu
 		    add(mappingView);
 		    add(heatmapView);
 		    addSeparator();
+		    add(alphabetize);
 		    add(showTypes);
 			
 			// Initialize preference menu options
+		    alphabetize.setSelected(harmonyModel.getPreferences().getAlphabetized());
 			showTypes.setSelected(harmonyModel.getPreferences().getShowSchemaTypes());
 		}
 		
@@ -264,9 +269,13 @@ public class HarmonyMenuBar extends JMenuBar
 	    	if(source==mappingView) harmonyModel.getPreferences().setViewToDisplay(HarmonyConsts.MAPPING_VIEW);
 	    	if(source==heatmapView) harmonyModel.getPreferences().setViewToDisplay(HarmonyConsts.HEATMAP_VIEW);
 	    	
+	    	// Handles the alphabetization of the child elements
+	    	if(source == alphabetize)
+	    		harmonyModel.getPreferences().setAlphabetized(alphabetize.isSelected());
+	    	
 	    	// Handles the "show types" preference option
 	    	if(source == showTypes)
-	    		{ harmonyModel.getPreferences().setShowSchemaTypes(showTypes.isSelected()); }
+	    		harmonyModel.getPreferences().setShowSchemaTypes(showTypes.isSelected());
 	    }
 	}
 

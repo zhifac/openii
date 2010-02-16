@@ -75,6 +75,7 @@ public class SchemaTreeFinished extends JPanel implements PreferencesListener, S
 		
 	// Unused event listeners
 	public void schemaDisplayModified(SchemaTree tree) {}
+	public void alphabetizedChanged() {}
 	public void displayedViewChanged() {}
 	public void showSchemaTypesChanged() {}
 }
