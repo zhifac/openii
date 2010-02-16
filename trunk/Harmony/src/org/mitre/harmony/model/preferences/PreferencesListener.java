@@ -15,6 +15,9 @@ public interface PreferencesListener
 
 	/** Indicates change to schema type display setting */
 	public void showSchemaTypesChanged();
+
+	/** Indicates change to alphabetize setting */
+	public void alphabetizedChanged();
 	
 	/** Indicates the marking of an element as finished */
 	public void elementsMarkedAsFinished(Integer schemaID, HashSet<Integer> elementIDs);

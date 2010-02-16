@@ -92,7 +92,25 @@ public class PreferencesManager extends AbstractManager<PreferencesListener> imp
 				listener.showSchemaTypesChanged();
 		}
 	}
+	
+	// ------------- Preference for if schema nodes should be alphabetized ------------
 
+	/** Returns the preference for if schema nodes should be alphabetized */
+	public boolean getAlphabetized()
+		{ try { return Boolean.parseBoolean(ConfigManager.getParm("preferences.alphabetize")); } catch(Exception e) {} return false; }
+	
+	/** Set preference to alphabetize */
+	public void setAlphabetized(boolean newAlphabetized)
+	{
+		// Only set preference if changed from original
+		if(newAlphabetized!=getAlphabetized())
+		{
+			ConfigManager.setParm("preferences.alphabetize",Boolean.toString(newAlphabetized));
+			for(PreferencesListener listener : getListeners())
+				listener.alphabetizedChanged();
+		}
+	}	
+	
 	// ------------- Preferences for storing the import and export directories -------------
 	
 	/** Returns the import directory */

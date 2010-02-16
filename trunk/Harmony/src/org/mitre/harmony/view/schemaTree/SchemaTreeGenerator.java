@@ -2,6 +2,9 @@
 // ALL RIGHTS RESERVED
 package org.mitre.harmony.view.schemaTree;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -16,23 +19,29 @@ import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
 /** Used to generate all nodes within the schema tree */
 class SchemaTreeGenerator
 {	
-	/** Adds a schema element */
-	static private DefaultMutableTreeNode addNode(HierarchicalSchemaInfo schemaInfo, Integer elementID, HashSet<Integer> pathIDs)
-	{
-		// Create element node
-		DefaultMutableTreeNode node = new DefaultMutableTreeNode(elementID);
-		pathIDs.add(elementID);
-		for(SchemaElement childElement : schemaInfo.getChildElements(elementID,pathIDs))
-		{
-			DefaultMutableTreeNode childNode = addNode(schemaInfo, childElement.getId(), pathIDs);
-			if(childNode!=null) node.add(childNode);				
-		}
-		pathIDs.remove(elementID);
-		return node;
-	}
+	/** Stores reference to the harmony model */
+	private HarmonyModel harmonyModel = null;
 	
+	/** Stores the schema tree being generated */
+	private SchemaTree tree = null;
+		
+	/** Returns the sorted schema elements */
+	private ArrayList<SchemaElement> sortElements(ArrayList<SchemaElement> schemaElements)
+	{
+		/** Handles the sorting of the element list */
+		class ElementComparator implements Comparator<SchemaElement> 
+		{
+			public int compare(SchemaElement element1, SchemaElement element2)
+				{ return element1.getName().toLowerCase().compareTo(element2.getName().toLowerCase()); }
+		}
+		
+		// Sorts the elements if needed
+		if(harmonyModel.getPreferences().getAlphabetized()) Collections.sort(schemaElements, new ElementComparator());
+		return schemaElements;
+	}
+
 	/** Initializes schema tree when no schemas are present */
-	static void initialize(SchemaTree tree)
+	private void initialize()
 	{
 		// Initialize tree by only indicating the no schemas are available
 		DefaultMutableTreeNode node = new DefaultMutableTreeNode("<No Schemas>");
@@ -40,8 +49,31 @@ class SchemaTreeGenerator
         tree.scrollPathToVisible(new TreePath(node.getPath()));
 	}
 	
+	/** Adds a schema element */
+	private DefaultMutableTreeNode addNode(HierarchicalSchemaInfo schemaInfo, Integer elementID, HashSet<Integer> pathIDs)
+	{
+		// Create element node
+		DefaultMutableTreeNode node = new DefaultMutableTreeNode(elementID);
+		pathIDs.add(elementID);
+
+		// Create child nodes
+		for(SchemaElement childElement : sortElements(schemaInfo.getChildElements(elementID,pathIDs)))
+		{
+			DefaultMutableTreeNode childNode = addNode(schemaInfo, childElement.getId(), pathIDs);
+			if(childNode!=null) node.add(childNode);				
+		}
+		
+		// Return element node
+		pathIDs.remove(elementID);
+		return node;
+	}
+	
+	/** Constructs the Schema Tree Generator */
+	SchemaTreeGenerator(SchemaTree tree, HarmonyModel harmonyModel)
+		{ this.tree = tree; this.harmonyModel = harmonyModel; initialize(); }
+	
 	/** Adds a schema to the schema tree */
-	static void addSchema(SchemaTree tree, Integer schemaID, HarmonyModel harmonyModel)
+	void addSchema(Integer schemaID)
 	{
 		// Get the schema associated with the schema ID
 		Schema schema = harmonyModel.getSchemaManager().getSchema(schemaID);
@@ -64,10 +96,10 @@ class SchemaTreeGenerator
 		((DefaultTreeModel)tree.getModel()).insertNodeInto(node,tree.root,loc);
 		tree.expandPath(new TreePath(((DefaultMutableTreeNode)node.getParent()).getPath()));
 
-		// Add root elements to the schema
+		// Add root elements to the schema		
 		HierarchicalSchemaInfo schemaInfo = harmonyModel.getSchemaManager().getSchemaInfo(schemaID);
-		for(SchemaElement element : schemaInfo.getRootElements())
-		{
+		for(SchemaElement element : sortElements(schemaInfo.getRootElements()))
+		{				
 			DefaultMutableTreeNode entityNode = addNode(schemaInfo, element.getId(), new HashSet<Integer>());
 			node.add(entityNode);
 			tree.expandPath(new TreePath(((DefaultMutableTreeNode)entityNode.getParent()).getPath()));
@@ -85,7 +117,7 @@ class SchemaTreeGenerator
 	}
 	
 	/** Removes a schema from the schema tree */
-	static void removeSchema(SchemaTree tree, Integer schemaID)
+	void removeSchema(Integer schemaID)
 	{
 		// Remove the schema from the schema tree
 		DefaultMutableTreeNode node = tree.getSchemaNode(schemaID);
@@ -93,7 +125,7 @@ class SchemaTreeGenerator
 		
 		// Insert placeholder if "no schemas"
 		if(tree.root.getChildCount()==0)
-			initialize(tree);
+			initialize();
 		
 		// Indicate that schema tree has changed
 		for(SchemaTreeListener listener : tree.getSchemaTreeListeners())
@@ -102,4 +134,8 @@ class SchemaTreeGenerator
 			listener.schemaDisplayModified(tree);
 		}
 	}
+	
+	/** Regenerate the specified schema */
+	void regenerateSchema(Integer schemaID)
+		{ removeSchema(schemaID); addSchema(schemaID); }
 }
