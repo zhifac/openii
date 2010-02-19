@@ -22,6 +22,7 @@ import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.view.dialogs.AboutDialog;
 import org.mitre.harmony.view.dialogs.GettingStartedDialog;
 import org.mitre.harmony.view.dialogs.SearchDialog;
+import org.mitre.harmony.view.dialogs.SelectionDialog;
 import org.mitre.harmony.view.dialogs.matcher.MatcherMenu;
 import org.mitre.harmony.view.dialogs.porters.ExportProjectDialog;
 import org.mitre.harmony.view.dialogs.porters.ProjectImporterDialog;
@@ -173,9 +174,8 @@ public class HarmonyMenuBar extends JMenuBar
 	/** Drop-down menu found under edit menu bar heading */
 	private class EditMenu extends JMenu implements ActionListener
 	{
-		private JMenuItem selectAllLinks;			// Option to select all current links
-		private JMenuItem removeHiddenLinks;	// Option to remove hidden links
-		private JMenuItem removeAllLinks;			// Option to remove all current links
+		private JMenuItem selectLinks;		// Option to select links
+		private JMenuItem removeLinks;		// Option to remove links
 		
 		/** Initializes the edit drop-down menu */
 		private EditMenu()
@@ -185,35 +185,28 @@ public class HarmonyMenuBar extends JMenuBar
 		    setMnemonic(KeyEvent.VK_E);
 		    
 			// Initialize project drop-down items
-		    selectAllLinks = new JMenuItem("Select All Links");
-		    removeHiddenLinks = new JMenuItem("Remove Hidden Links");
-			removeAllLinks = new JMenuItem("Remove All Links");
+		    selectLinks = new JMenuItem("Select Links...");
+		    removeLinks = new JMenuItem("Remove Links...");
 			
 			// Attach action listeners to edit drop-down items
-			selectAllLinks.addActionListener(this);
-			removeHiddenLinks.addActionListener(this);
-			removeAllLinks.addActionListener(this);
+		    selectLinks.addActionListener(this);
+		    removeLinks.addActionListener(this);
 			
 			// Add edit drop-down items to edit drop-down menu
-			add(selectAllLinks);
-			add(removeHiddenLinks);
-		    add(removeAllLinks);
+			add(selectLinks);
+			add(removeLinks);
 		}
 		
 		/** Handles the edit drop-down action selected by the user */
 	    public void actionPerformed(ActionEvent e)
 	    {
 	    	// Selects all links from the currently focused area of Harmony
-	    	if(e.getSource() == selectAllLinks)
-	    		harmonyModel.getSelectedInfo().selectAllMappingCells();
+	    	if(e.getSource() == selectLinks)
+	    		new SelectionDialog(harmonyModel,SelectionDialog.SELECT);
 	    		
 	    	// Removed hidden links from the currently focused area of Harmony
-	    	if(e.getSource() == removeHiddenLinks)
-	    		harmonyModel.getMappingManager().deleteHiddenMappingCells();
-	    	
-	    	// Removes all links from the currently focused area of Harmony
-	    	if(e.getSource() == removeAllLinks)
-	    		harmonyModel.getMappingManager().deleteAllMappingCells();
+	    	if(e.getSource() == removeLinks)
+	    		new SelectionDialog(harmonyModel,SelectionDialog.DELETE);
 	    }
 	}
 

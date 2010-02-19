@@ -11,9 +11,9 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import org.mitre.harmony.model.HarmonyModel;
-import org.mitre.harmony.view.dialogs.AbstractButtonPane;
 import org.mitre.harmony.view.dialogs.project.mappings.MappingPane;
 import org.mitre.harmony.view.dialogs.project.schemas.SchemaPane;
+import org.mitre.harmony.view.dialogs.widgets.AbstractButtonPane;
 
 /**
  * Displays the project dialog

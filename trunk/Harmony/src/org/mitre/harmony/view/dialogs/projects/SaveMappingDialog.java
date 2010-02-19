@@ -12,7 +12,7 @@ import javax.swing.event.ListSelectionListener;
 
 import org.mitre.harmony.controllers.ProjectController;
 import org.mitre.harmony.model.HarmonyModel;
-import org.mitre.harmony.view.dialogs.AbstractButtonPane;
+import org.mitre.harmony.view.dialogs.widgets.AbstractButtonPane;
 
 /**
  * Class used for the saving the current project

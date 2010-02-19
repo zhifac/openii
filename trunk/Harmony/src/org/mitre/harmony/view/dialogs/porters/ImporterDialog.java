@@ -25,7 +25,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
 import org.mitre.harmony.model.HarmonyModel;
-import org.mitre.harmony.view.dialogs.AbstractButtonPane;
+import org.mitre.harmony.view.dialogs.widgets.AbstractButtonPane;
 import org.mitre.schemastore.porters.Importer;
 
 /** Class for displaying the importer dialog */

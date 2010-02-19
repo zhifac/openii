@@ -1,4 +1,4 @@
-package org.mitre.harmony.view.dialogs;
+package org.mitre.harmony.view.dialogs.widgets;
 
 import java.awt.BorderLayout;
 
@@ -6,6 +6,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+
 
 
 /** Class used to construct a titled pane */

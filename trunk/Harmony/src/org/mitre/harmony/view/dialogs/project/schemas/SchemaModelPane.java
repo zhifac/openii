@@ -13,7 +13,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
 import org.mitre.harmony.model.HarmonyModel;
-import org.mitre.harmony.view.dialogs.UnderlinedLabel;
+import org.mitre.harmony.view.dialogs.widgets.UnderlinedLabel;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.schemaInfo.model.SchemaModel;
 

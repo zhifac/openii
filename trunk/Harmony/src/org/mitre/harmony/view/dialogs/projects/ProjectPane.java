@@ -20,7 +20,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionListener;
 
 import org.mitre.harmony.model.HarmonyModel;
-import org.mitre.harmony.view.dialogs.TitledPane;
+import org.mitre.harmony.view.dialogs.widgets.TitledPane;
 import org.mitre.schemastore.model.Project;
 
 /** Private class for managing the project list */

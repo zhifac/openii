@@ -1,4 +1,4 @@
-package org.mitre.harmony.view.dialogs;
+package org.mitre.harmony.view.dialogs.widgets;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
