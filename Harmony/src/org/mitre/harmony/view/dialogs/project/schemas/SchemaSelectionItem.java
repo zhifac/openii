@@ -12,7 +12,7 @@ import javax.swing.JPanel;
 
 import org.mitre.harmony.Harmony;
 import org.mitre.harmony.model.HarmonyModel;
-import org.mitre.harmony.view.dialogs.Link;
+import org.mitre.harmony.view.dialogs.widgets.Link;
 import org.mitre.schemastore.model.Schema;
 
 /** Schema selection item class */

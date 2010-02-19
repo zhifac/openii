@@ -7,7 +7,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
-import org.mitre.harmony.controllers.FocusController;
+import org.mitre.harmony.controllers.MappingController;
 import org.mitre.harmony.model.AbstractManager;
 import org.mitre.harmony.model.HarmonyConsts;
 import org.mitre.harmony.model.HarmonyModel;
@@ -225,15 +225,6 @@ public class SelectedInfoManager extends AbstractManager<SelectedInfoListener> i
 		else setSelectedMappingCells(mappingCells,selected?REMOVE:ADD);
 	}
 	
-	/** Selects all mapping cells */
-	public void selectAllMappingCells()
-	{
-		ArrayList<Integer> mappingCellIDs = new ArrayList<Integer>();
-		for(MappingCell mappingCell : FocusController.getFocusedMappingCells(getModel()))
-			mappingCellIDs.add(mappingCell.getId());
-		setMappingCells(mappingCellIDs, false);
-	}
-	
 	//------------ Updates the selected information based on the occurrence of events ------------
 	
 	/** Unselect elements that are out of focus */
@@ -302,11 +293,7 @@ public class SelectedInfoManager extends AbstractManager<SelectedInfoListener> i
 		
 	/** Unselect mapping cells that have been removed */
 	public void mappingCellsRemoved(Integer mappingID, List<MappingCell> mappingCells)
-	{
-		ArrayList<Integer> mappingCellIDs = new ArrayList<Integer>();
-		for(MappingCell mappingCell : mappingCells) mappingCellIDs.add(mappingCell.getId());
-		setSelectedMappingCells(mappingCellIDs,REMOVE);
-	}
+		{ setSelectedMappingCells(MappingController.getMappingCellIDs(mappingCells),REMOVE); }
 
 	// Unused action events
 	public void mappingAdded(Integer mappingID) {}

@@ -18,7 +18,7 @@ import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
 
 import org.mitre.harmony.model.HarmonyModel;
-import org.mitre.harmony.view.dialogs.TitledPane;
+import org.mitre.harmony.view.dialogs.widgets.TitledPane;
 import org.mitre.schemastore.model.Project;
 import org.mitre.schemastore.model.ProjectSchema;
 

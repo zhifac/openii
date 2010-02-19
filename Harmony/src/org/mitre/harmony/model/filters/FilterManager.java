@@ -255,6 +255,31 @@ public class FilterManager extends AbstractManager<FiltersListener> implements M
 		return focusedElements;
 	}
 	
+	/** Retrieves the focused mapping cells */
+	public HashSet<MappingCell> getFocusedMappingCells()
+	{
+		// Retrieve the visible source and target nodes
+		HashSet<Integer> leftIDs = new HashSet<Integer>(getModel().getFilters().getFocusedElementIDs(HarmonyConsts.LEFT));
+		HashSet<Integer> rightIDs = new HashSet<Integer>(getModel().getFilters().getFocusedElementIDs(HarmonyConsts.RIGHT));	    	
+		
+		// Create list of all mapping cells in focus
+		HashSet<MappingCell> mappingCells = new HashSet<MappingCell>();
+		for(Integer leftID : leftIDs)
+		{
+			ArrayList<Integer> mappingCellIDs = getModel().getMappingManager().getMappingCellsByElement(leftID);
+			MAPPING_CELL_LOOP: for(Integer mappingCellID : mappingCellIDs)
+			{
+				// Make sure that all elements referenced by the mapping cell do exist
+				MappingCell mappingCell = getModel().getMappingManager().getMappingCell(mappingCellID);
+				for(Integer inputID : mappingCell.getInput())
+					if(!leftIDs.contains(inputID)) continue MAPPING_CELL_LOOP;
+				if(!rightIDs.contains(mappingCell.getOutput())) continue;
+				mappingCells.add(mappingCell);
+			}
+		}
+		return mappingCells;
+	}
+	
 	//--------------------
 	// Handles visibility
 	//--------------------

@@ -11,17 +11,17 @@ import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
-import javax.swing.ButtonGroup;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
 import org.mitre.harmony.controllers.FocusController;
 import org.mitre.harmony.model.HarmonyConsts;
 import org.mitre.harmony.model.HarmonyModel;
+import org.mitre.harmony.view.dialogs.widgets.AbstractButtonPane;
+import org.mitre.harmony.view.dialogs.widgets.OptionPane;
 
 /**
  * Displays the search dialog for search for keywords in schemas
@@ -32,13 +32,16 @@ public class SearchDialog extends JDialog implements KeyListener
 	/** Stores the Harmony model */
 	private HarmonyModel harmonyModel;
 	
-	// Stores the search field
+	/** Stores the search field */
 	private JTextField searchField = new JTextField();
 	
+	/** Stores the search side */
+	private OptionPane searchSide = null;
+	
 	// Stores the search dialog options
-	private JRadioButton leftButton = new JRadioButton("Left");
-	private JRadioButton rightButton = new JRadioButton("Right");	
-	private JRadioButton bothButton = new JRadioButton("Both");
+//	private JRadioButton leftButton = new JRadioButton("Left");
+//	private JRadioButton rightButton = new JRadioButton("Right");	
+//	private JRadioButton bothButton = new JRadioButton("Both");
 	
 	/** Private class for defining the button pane */
 	private class ButtonPane extends AbstractButtonPane
@@ -100,26 +103,15 @@ public class SearchDialog extends JDialog implements KeyListener
 		searchPane.add(searchFieldPane);
 		
 		// Generates the side selection options
-		JPanel sidePane = new JPanel();
-		sidePane.setBorder(new EmptyBorder(3,0,0,4));
-		sidePane.setLayout(new BoxLayout(sidePane,BoxLayout.X_AXIS));
-		sidePane.add(new JLabel("Side: "));
-		ButtonGroup buttonGroup = new ButtonGroup();
-		for(JRadioButton button : new JRadioButton[]{leftButton,rightButton,bothButton})
-		{
-			buttonGroup.add(button);
-			button.setFont(new Font("Arial",Font.PLAIN,12));
-			button.setFocusable(false);
-			sidePane.add(button);
-		}
-		bothButton.setSelected(true);
+		searchSide = new OptionPane("Side",new String[]{"Left","Right","Both"});
+		searchSide.setSelectedButton("Both");
 		
 		// Generate the info pane
 		JPanel pane = new JPanel();
 		pane.setBorder(new EmptyBorder(10,10,0,10));
 		pane.setLayout(new BoxLayout(pane,BoxLayout.Y_AXIS));
 		pane.add(searchPane);
-		pane.add(sidePane);
+		pane.add(searchSide);
 		return pane;
 	}
 	
@@ -151,8 +143,9 @@ public class SearchDialog extends JDialog implements KeyListener
 	private ArrayList<Integer> getSelectedSides()
 	{
 		ArrayList<Integer> sides = new ArrayList<Integer>();
-		if(!rightButton.isSelected()) sides.add(HarmonyConsts.LEFT);
-		if(!leftButton.isSelected()) sides.add(HarmonyConsts.RIGHT);
+		String side = searchSide.getSelectedButton();
+		if(!side.equals("Right")) sides.add(HarmonyConsts.LEFT);
+		if(!side.equals("Left")) sides.add(HarmonyConsts.RIGHT);
 		return sides;
 	}
 	

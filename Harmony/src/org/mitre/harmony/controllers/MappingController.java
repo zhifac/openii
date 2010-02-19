@@ -2,6 +2,7 @@ package org.mitre.harmony.controllers;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.project.ProjectMapping;
@@ -14,7 +15,7 @@ public class MappingController
 	static public void markAsFinished(HarmonyModel harmonyModel, Integer elementID)
 	{
 		// Retrieve the focused mapping cells
-		HashSet<MappingCell> focusedMappingCells = FocusController.getFocusedMappingCells(harmonyModel);
+		HashSet<MappingCell> focusedMappingCells = harmonyModel.getFilters().getFocusedMappingCells();
 		
 		// Identify the visible and hidden links
 		for(ProjectMapping mapping : harmonyModel.getMappingManager().getMappings())
@@ -37,4 +38,12 @@ public class MappingController
 			mapping.deleteMappingCells(hiddenMappingCells);
 		}
 	}
+	
+	/** Translate the list of mapping cells to mapping cell IDs */
+	static public ArrayList<Integer> getMappingCellIDs(List<MappingCell> mappingCells)
+	{
+		ArrayList<Integer> mappingCellIDs = new ArrayList<Integer>();
+		for(MappingCell mappingCell : mappingCells) mappingCellIDs.add(mappingCell.getId());
+		return mappingCellIDs;
+	} 
 }
