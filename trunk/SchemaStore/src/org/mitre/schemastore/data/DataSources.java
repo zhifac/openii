@@ -25,10 +25,6 @@ public class DataSources extends DataCache
 	public DataSource getDataSource(Integer dataSourceID)
 		{ return getDatabase().getDataSource(dataSourceID); }
 
-	/** Get the data source specified by its URL */
-	public DataSource getDataSourceByURL(String url)
-		{ return getDatabase().getDataSourceByURL(url); }
-
 	/** Add the specified data source */
 	public Integer addDataSource(DataSource dataSource)
 		{ return getDatabase().addDataSource(dataSource); }

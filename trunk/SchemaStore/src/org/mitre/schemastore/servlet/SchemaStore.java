@@ -371,10 +371,6 @@ public class SchemaStore
 	public DataSource getDataSource(int dataSourceID)
 		{ return getManager().getDataSources().getDataSource(dataSourceID); }
 
-	/** Web service to get the data source specified by its URL */
-	public DataSource getDataSourceByURL(String url)
-		{ return getManager().getDataSources().getDataSourceByURL(url); }
-
 	/** Web service to add the specified data source */
 	public int addDataSource(DataSource dataSource)
 		{ return getManager().getDataSources().addDataSource(dataSource); }

@@ -1047,9 +1047,12 @@ public class Database
 		ArrayList<DataSource> dataSources = new ArrayList<DataSource>();
 		try {
 			Statement stmt = connection.getStatement();
-			ResultSet rs = stmt.executeQuery("SELECT id,name,schema_id,url FROM data_source" + (schemaID!=null?" WHERE schema_id="+schemaID:""));
+			ResultSet rs = stmt.executeQuery("SELECT id,name,url,schema_id,element_id FROM data_source" + (schemaID!=null?" WHERE schema_id="+schemaID:""));
 			while(rs.next())
-				dataSources.add(new DataSource(rs.getInt("id"),rs.getString("name"),rs.getInt("schema_id"),rs.getString("url")));
+			{
+				Integer elementID = rs.getString("element_id")==null?null:rs.getInt("element_id");
+				dataSources.add(new DataSource(rs.getInt("id"),rs.getString("name"),rs.getString("url"),rs.getInt("schema_id"),elementID));
+			}
 			stmt.close();
 		} catch(SQLException e) { System.out.println("(E) Database:getDataSources - "+e.getMessage()); }
 		return dataSources;
@@ -1061,25 +1064,14 @@ public class Database
 		DataSource dataSource = null;
 		try {
 			Statement stmt = connection.getStatement();
-			ResultSet rs = stmt.executeQuery("SELECT id,name,schema_id,url FROM data_source WHERE id="+dataSourceID);
+			ResultSet rs = stmt.executeQuery("SELECT id,name,url,schema_id,element_id FROM data_source WHERE id="+dataSourceID);
 			if(rs.next())
-				dataSource = new DataSource(rs.getInt("id"),rs.getString("name"),rs.getInt("schema_id"),rs.getString("url"));
+			{
+				Integer elementID = rs.getInt("element_id"); if(elementID==0) elementID=null;
+				dataSource = new DataSource(rs.getInt("id"),rs.getString("name"),rs.getString("url"),rs.getInt("schema_id"),elementID);
+			}
 			stmt.close();
 		} catch(SQLException e) { System.out.println("(E) Database:getDataSource - "+e.getMessage()); }
-		return dataSource;
-	}
-
-	/** Retrieve the specified data source based on the specified URL */
-	public DataSource getDataSourceByURL(String url)
-	{
-		DataSource dataSource = null;
-		try {
-			Statement stmt = connection.getStatement();
-			ResultSet rs = stmt.executeQuery("SELECT id,name,schema_id,url FROM data_source WHERE url='"+url+"'");
-			if(rs.next())
-				dataSource = new DataSource(rs.getInt("id"),rs.getString("name"),rs.getInt("schema_id"),rs.getString("url"));
-			stmt.close();
-		} catch(SQLException e) { System.out.println("(E) Database:getDataSourceByURL - "+e.getMessage()); }
 		return dataSource;
 	}
 
@@ -1090,7 +1082,7 @@ public class Database
 		try {
 			dataSourceID = getUniversalIDs(1);
 			Statement stmt = connection.getStatement();
-			stmt.executeUpdate("INSERT INTO data_source(id,name,url,schema_id) VALUES("+dataSourceID+",'"+scrub(dataSource.getName(),100)+"','"+scrub(dataSource.getUrl(),200)+"',"+dataSource.getSchemaID()+")");
+			stmt.executeUpdate("INSERT INTO data_source(id,name,url,schema_id,element_id) VALUES("+dataSourceID+",'"+scrub(dataSource.getName(),100)+"','"+scrub(dataSource.getUrl(),200)+"',"+dataSource.getSchemaID()+","+(dataSource.getElementID()==null?"null":dataSource.getElementID())+")");
 			stmt.close();
 			connection.commit();
 		}
@@ -1109,7 +1101,7 @@ public class Database
 		boolean success = false;
 		try {
 			Statement stmt = connection.getStatement();
-			stmt.executeUpdate("UPDATE data_source SET name='"+scrub(dataSource.getName(),100)+"', url='"+scrub(dataSource.getUrl(),200)+"' WHERE id="+dataSource.getId());
+			stmt.executeUpdate("UPDATE data_source SET name='"+scrub(dataSource.getName(),100)+"', url='"+scrub(dataSource.getUrl(),200)+"', schema_id="+dataSource.getSchemaID()+", element_id="+(dataSource.getElementID()==null?"null":dataSource.getElementID())+" WHERE id="+dataSource.getId());
 			stmt.close();
 			connection.commit();
 			success = true;

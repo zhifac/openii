@@ -16,30 +16,35 @@ public class DataSource implements Serializable
 	/** Stores the data source name */
 	private String name;
 	
+	/** Stores the data source URL */
+	private String url;
+	
 	/** Stores the data source schema ID */
 	private Integer schemaID;
 	
-	/** Stores the data source URL */
-	private String url;
+	/** Stores the data source element ID */
+	private Integer elementID;
 
 	/** Constructs a default data source */
 	public DataSource() {} 
 	
 	/** Constructs a data source object */
-	public DataSource(Integer id, String name, Integer schemaID, String url)
-		{ this.id = id; this.name = name; this.schemaID = schemaID; this.url = url; }
+	public DataSource(Integer id, String name, String url, Integer schemaID, Integer elementID)
+		{ this.id = id; this.name = name; this.url = url; this.schemaID = schemaID; this.elementID = elementID; }
 	
 	// Handles all data source getters
 	public Integer getId() { return id; }
 	public String getName() { return name; }
-	public Integer getSchemaID() { return schemaID; }
 	public String getUrl() { return url; }
+	public Integer getSchemaID() { return schemaID; }
+	public Integer getElementID() { return elementID; }
 
 	// Handles all data source setters
 	public void setId(Integer id) { this.id = id; }
 	public void setUrl(String url) { this.url = url; }
 	public void setName(String name) { this.name = name; }
 	public void setSchemaID(Integer schemaID) { this.schemaID = schemaID; }
+	public void setElementID(Integer elementID) { this.elementID = elementID; }
 
 	/** Returns the hash code */
 	public int hashCode()

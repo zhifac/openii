@@ -42,7 +42,8 @@ CREATE TABLE data_source (
     id integer NOT NULL,
     name character varying(100) NOT NULL,
     url character varying(200) NOT NULL,
-    schema_id integer NOT NULL
+    schema_id integer NOT NULL,
+    element_id integer
 );
 
 CREATE TABLE "domain" (
