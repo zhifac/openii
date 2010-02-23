@@ -399,10 +399,6 @@ public class SchemaStoreClient
 	public DataSource getDataSource(Integer dataSourceID) throws RemoteException
 		{ return (DataSource)callMethod("getDataSource",new Object[] {dataSourceID}); }
 
-	/** Gets the specified data source based on the specified url from the web service */
-	public DataSource getDataSourceByURL(String url) throws RemoteException
-		{ return (DataSource)callMethod("getDataSourceByURL",new Object[] {url}); }
-
 	/** Adds the specified data source to the web service */
 	public Integer addDataSource(DataSource dataSource) throws RemoteException
 	{
