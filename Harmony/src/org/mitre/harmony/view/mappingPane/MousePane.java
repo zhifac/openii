@@ -80,7 +80,7 @@ class MousePane extends JPanel implements MouseListener, MouseMotionListener
 	/** Handles the selection of a node from which a mapping cell is being created */
 	public void mousePressed(MouseEvent e)
 	{
-		if(e.getButton() == MouseEvent.BUTTON1 && !e.isControlDown())
+		if(e.getButton() == MouseEvent.BUTTON1 && !e.isMetaDown())
 			getSelectedRow(e.getPoint());
 	}
 

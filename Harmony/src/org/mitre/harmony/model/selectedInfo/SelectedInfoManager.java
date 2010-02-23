@@ -211,6 +211,10 @@ public class SelectedInfoManager extends AbstractManager<SelectedInfoListener> i
 		else setSelectedElements(elements,side,selected?REMOVE:ADD);
 	}
 	
+	/** Clears the selected elements */
+	public void clearElements(Integer side)
+		{ setSelectedElements(new ArrayList<Integer>(),side,REPLACE); }
+	
 	/** Toggles the selected mapping cells */
 	public void setMappingCells(List<Integer> mappingCells, boolean append)
 	{
