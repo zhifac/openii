@@ -87,11 +87,11 @@ public class FunctionPane extends JPanel implements MouseListener, MouseMotionLi
 	public void mousePressed(MouseEvent e)
 	{
 		// If left button pressed, find start bounding box
-		if(e.getButton() == MouseEvent.BUTTON1 && !e.isControlDown())
+		if(e.getButton() == MouseEvent.BUTTON1 && !e.isMetaDown())
 			startPoint = e.getPoint();
 
 		// If right button pressed, display mapping cell dialog box
-		else if(e.getButton()==MouseEvent.BUTTON3 || e.isControlDown())
+		else if(e.getButton()==MouseEvent.BUTTON3 || e.isMetaDown())
 		{
 			// Determine what mapping cell was selected for showing the dialog box
 			Point point = adjustMouseLocation(e.getPoint(), mappingPane);
