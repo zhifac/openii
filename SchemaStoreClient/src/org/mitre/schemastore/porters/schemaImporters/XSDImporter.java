@@ -288,17 +288,22 @@ public class XSDImporter extends SchemaImporter
 				while (attrDecls.hasMoreElements()){
 				
 					AttributeDecl attrDecl = (AttributeDecl)attrDecls.nextElement();
-					Integer origHashcode = attrDecl.hashCode();
+					//Integer origHashcode = attrDecl.hashCode();
+				
 					try {
 						while (attrDecl != null && attrDecl.isReference() == true && attrDecl.getReference() != null)
 							attrDecl = attrDecl.getReference();
 					} catch(IllegalStateException e){} // handle malformed XSDs that do not have parent set (depreciated attrs as parents)
 					
 					boolean containsID = attrDecl.getSimpleType() != null && attrDecl.getSimpleType().getName() != null && attrDecl.getSimpleType().getName().equals("ID");
+					
 					Attribute attr = new Attribute(nextId(),(attrDecl.getName() == null ? "" : attrDecl.getName()),getDocumentation(attrDecl),entity.getId(),-1,(attrDecl.isRequired()? 1 : 0), 1, containsID, 0); 
-					schemaElementsHS.put(origHashcode, attr);
+					//schemaElementsHS.put(origHashcode, attr);
+					schemaElementsHS.put(nextId(), attr);
 					processSimpleType(attrDecl.getSimpleType(), attr);
 				}
+				
+				
 				
 			} catch (IllegalStateException e){}
 				 
