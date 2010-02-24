@@ -88,9 +88,9 @@ public class VennDiagramEditor extends OpenIIEditor implements VennDiagramListen
 					schemaInfos.add(schemaInfo);
 				}
 				if(schemaInfos.size() == 2)
-					sets = new VennDiagramSets(schemaInfos.get(0), schemaInfos.get(1), 0.6, 1.0, AffinityEditor.matchScoreComputer);
+					sets = new VennDiagramSets(schemaInfos.get(0), schemaInfos.get(1), 0.6, 1.0, AffinityEditor.matchScoreComputer, 2);
 				else
-					matrix = new VennDiagramSetsMatrix(schemaInfos, 0.6, 1.0, AffinityEditor.matchScoreComputer);
+					matrix = new VennDiagramSetsMatrix(schemaInfos, 0.6, 1.0, AffinityEditor.matchScoreComputer, 2);
 			}
 			setPartName(elementID!=null ? OpenIIManager.getTag(elementID).getName() : "All Schemas");
 		}
