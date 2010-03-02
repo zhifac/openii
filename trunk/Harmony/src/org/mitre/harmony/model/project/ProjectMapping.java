@@ -91,7 +91,10 @@ public class ProjectMapping extends Mapping
 
 	/** Returns the requested mapping cell */
 	public MappingCell getMappingCell(Integer mappingCellID)
-		{ return mappingCellHash.get(mappingCellID).copy(); }
+	{
+		MappingCell mappingCell = mappingCellHash.get(mappingCellID);
+		return mappingCell==null ? null : mappingCell.copy();
+	} 
 	
 	/** Returns the requested mapping cell ID */
 	public Integer getMappingCellID(Integer inputID, Integer outputID)
