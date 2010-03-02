@@ -192,22 +192,25 @@ public class XSDExporter extends SchemaExporter
 		out.append("<xs:schema xmlns:xs=\"http://www.w3.org/2001/XMLSchema\">\n");
 		
 		// Generate XML for each remaining NON-ANNONYMOUS entity
-		Collection<Entity> entities = entitySet.values();
-		for (Entity entity : entities)
+		ArrayList<SchemaElement> sortedEntities = this.sortElementList(new ArrayList<SchemaElement>(entitySet.values()));
+		for (SchemaElement entity : sortedEntities){
+			//System.out.println("entity order: " + entity.getId());
 			if (entity.getName().equals("") == false)
 				out.append(outputEntity(entity, new String("")) + "\n");
-		
+		}
 		// Generate XML for each top-level entity (represented as containment with parentID == null)
 		out.append(outputContainments(topLevelContainments,true));
 		
 		
 	   // Generate XML for simple types
-	   Collection<Domain> domains = domainSet.values();
+	   ArrayList<SchemaElement> sortedDomains = this.sortElementList(new ArrayList<SchemaElement>(domainSet.values()));
+		
+	   
 	   HashSet<String> outputNames = new HashSet<String>();
 	   
 	   // Generate XML for each domain.  
 	   // Need to insure that common types are NOT added twice
-	   for (Domain d : domains)
+	   for (SchemaElement d : sortedDomains)
 	   {
 		  // Make sure that each output domain is unique
 		 // if(!outputNames.contains(d.getName()))
@@ -240,7 +243,7 @@ public class XSDExporter extends SchemaExporter
 	 * @param entity Entity to generate XML for
 	 * @return ArrayList of strings containing XML for entity
 	 */
-	private StringBuffer outputEntity (Entity entity, String indentBase)
+	private StringBuffer outputEntity (SchemaElement entity, String indentBase)
 	{	
 		StringBuffer output = new StringBuffer();
 		
