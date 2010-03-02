@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -89,6 +90,25 @@ public class XSDExporter extends SchemaExporter
 		{ return ".xsd"; }
 
 	
+	
+	
+	private ArrayList<SchemaElement> sortElementList(ArrayList<SchemaElement> passed){
+		
+		ArrayList<SchemaElement> retVal = new ArrayList<SchemaElement>();
+		Pair[] pairs = new Pair[passed.size()];
+		int index = 0;
+		for (int i=0; i<passed.size();i++){
+			pairs[index] = new Pair(index,passed.get(i).getId());
+			index++;
+		}
+		Arrays.sort(pairs);
+		
+		for (int i=0; i<pairs.length;i++){
+			retVal.add(passed.get(pairs[i].index));
+		}
+		return retVal;
+	}
+	
 	/**
 	 * export(): Exports the given schema from schemaStore to XSD 
 	 * @param elementList elements for the schema to be exported
@@ -98,7 +118,12 @@ public class XSDExporter extends SchemaExporter
 	public void exportSchema(Schema schema, ArrayList<SchemaElement> elementList, File file) throws IOException 
 	{		
 		// Scan schemaElements to initialize hashtables
-		for (SchemaElement elem : elementList){
+		ArrayList<SchemaElement> sortedList = sortElementList(elementList);
+	
+		
+		for (SchemaElement elem : sortedList){
+			
+		//	System.out.println("elem id: " + elem.getId());
 			
 			if (elem instanceof Entity)
 				entitySet.put(elem.getId(), (Entity)elem);
@@ -355,5 +380,23 @@ public class XSDExporter extends SchemaExporter
 		s1 = s1.toUpperCase();
 		return new String(s1 + s2);
 	}
-	
+
 } // end class
+
+@SuppressWarnings("unchecked")
+class Pair implements Comparable{
+	int index;
+	int id;
+	
+	public Pair(int index, int id){
+		this.index = index;
+		this.id = id;
+	}
+	
+	public int compareTo(Object passed){
+		if  (this.id > ((Pair)passed).id) return 1;
+		else if (this.id < ((Pair)passed).id) return -1;
+		else return 0;
+	}
+	
+}
