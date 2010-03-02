@@ -47,18 +47,19 @@ public class ManagerAction extends Action
 	static final int NEW_TAG = 7;
 	static final int EDIT_TAG = 8;
 	static final int DELETE_TAG = 9;
-	static final int DELETE_TAG_SCHEMA = 10;
-	static final int NEW_PROJECT = 11;
-	static final int IMPORT_PROJECT = 12;
-	static final int MERGE_PROJECTS = 13;
-	static final int EDIT_PROJECT = 14;
-	static final int EXPORT_PROJECT = 15;
-	static final int DELETE_PROJECT = 16;
-	static final int DELETE_PROJECT_SCHEMA = 17;
-	static final int IMPORT_MAPPING = 18;
-	static final int AUTO_GENERATE_MATCHES = 19;
-	static final int EXPORT_MAPPING = 20;
-	static final int DELETE_MAPPING = 21;
+	static final int CREATE_PROJECT_FROM_TAG = 10;
+	static final int DELETE_TAG_SCHEMA = 11;
+	static final int NEW_PROJECT = 12;
+	static final int IMPORT_PROJECT = 13;
+	static final int MERGE_PROJECTS = 14;
+	static final int EDIT_PROJECT = 15;
+	static final int EXPORT_PROJECT = 16;
+	static final int DELETE_PROJECT = 17;
+	static final int DELETE_PROJECT_SCHEMA = 18;
+	static final int IMPORT_MAPPING = 19;
+	static final int AUTO_GENERATE_MATCHES = 20;
+	static final int EXPORT_MAPPING = 21;
+	static final int DELETE_MAPPING = 22;
 	
 	/** Stores the menu manager to which this action is tied */
 	private ManagerMenuManager menuManager;
@@ -88,8 +89,9 @@ public class ManagerAction extends Action
 			case NEW_TAG: icon = "NewSchemaGroup.gif"; break;
 			case EDIT_TAG: icon = "Edit.gif"; break;
 			case DELETE_TAG: icon = "Delete.gif"; break;
+			case CREATE_PROJECT_FROM_TAG: icon = "Project.gif"; break;
 			case DELETE_TAG_SCHEMA: icon = "Delete.gif"; break;
-			case NEW_PROJECT: icon = "Mapping.gif"; break;
+			case NEW_PROJECT: icon = "Project.gif"; break;
 			case IMPORT_PROJECT: icon = "Import.gif"; break;
 			case MERGE_PROJECTS: icon = "Merge.gif"; break;
 			case EDIT_PROJECT: icon = "Edit.gif"; break;
@@ -159,6 +161,10 @@ public class ManagerAction extends Action
 		if(actionType == DELETE_TAG)
 			DeleteTagDialog.delete(shell,(Tag)selection);
 		
+		/** Creates a project based on the schemas in a tag */
+		if(actionType == CREATE_PROJECT_FROM_TAG)
+			new EditProjectDialog(shell,(Tag)selection).open();
+			
 		/** Handles the deletion of a tag schema */
 		if(actionType == DELETE_TAG_SCHEMA)
 		{
@@ -172,7 +178,7 @@ public class ManagerAction extends Action
 		
 		/** Handles the addition of a project */
 		if(actionType == NEW_PROJECT)
-			new EditProjectDialog(shell,null).open();
+			new EditProjectDialog(shell).open();
 		
 		/** Handles the import of a project */
 		if(actionType == IMPORT_PROJECT)

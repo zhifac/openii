@@ -114,9 +114,15 @@ public class ManagerMenuManager extends MenuManager implements IMenuListener
 		// Display the menu for a selected tag
 		if(element instanceof Tag)
 		{
+			// Display tag options
 			menuManager.add(new ManagerAction(this,"Add Subcategory",ManagerAction.NEW_TAG));
 			menuManager.add(new ManagerAction(this,"Edit Tag",ManagerAction.EDIT_TAG));
 			menuManager.add(new ManagerAction(this,"Delete Tag",ManagerAction.DELETE_TAG));
+	
+			menuManager.add(new Separator());
+
+			// Display option to create project
+			menuManager.add(new ManagerAction(this,"Create Project",ManagerAction.CREATE_PROJECT_FROM_TAG));
 		}
 		
 		// Display the menu for a selection tag schema
