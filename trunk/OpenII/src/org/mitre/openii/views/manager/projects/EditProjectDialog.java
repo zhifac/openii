@@ -144,9 +144,15 @@ public class EditProjectDialog extends Dialog implements ActionListener, ModifyL
 
 		// Make default mapping dialog selections if a tag was given
 		if(tag!=null)
-		{		
+		{
+			// Set the name field
 			nameField.setText(tag.getName());
-			schemaList.setSchemas(OpenIIManager.getTagSchemas(tag.getId()));
+
+			// Set the selected schema
+			ArrayList<Integer> schemaIDs = new ArrayList<Integer>();
+			schemaIDs.addAll(OpenIIManager.getTagSchemas(tag.getId()));
+			schemaIDs.addAll(OpenIIManager.getChildTagSchemas(tag.getId()));			
+			schemaList.setSchemas(schemaIDs);
 		}
 		
 		// Make default mapping dialog selections if a project was given
