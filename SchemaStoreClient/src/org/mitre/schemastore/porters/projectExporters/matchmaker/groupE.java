@@ -13,21 +13,21 @@ import java.util.ArrayList;
  * 
  */
 public class groupE implements Comparable<groupE> {
-        public ArrayList<SchemaElementNode> nodes;
+        public ArrayList<SchemaElementClusterNode> nodes;
 
-        public SchemaElementNode leastNode = null;
+        public SchemaElementClusterNode leastNode = null;
 
-        public groupE(SchemaElementNode n) {
-                nodes = new ArrayList<SchemaElementNode>();
+        public groupE(SchemaElementClusterNode n) {
+                nodes = new ArrayList<SchemaElementClusterNode>();
                 add(n);
         }
 
-        void add(SchemaElementNode n) {
+        void add(SchemaElementClusterNode n) {
                 nodes.add(n);
                 updateLeastNode(n);
         }
 
-        private void updateLeastNode(SchemaElementNode n) {
+        private void updateLeastNode(SchemaElementClusterNode n) {
                 if (leastNode == null || leastNode.compareTo(n) > 0) leastNode = n;
         }
 
@@ -58,7 +58,7 @@ public class groupE implements Comparable<groupE> {
         }
 
         // Returns minimum distance between two nodes
-        float simpleLinkage(groupE two) {
+        public float simpleLinkage(groupE two) {
                 int i, j;
                 float minDist = 1;
                 for (i = 0; i < this.nodes.size(); i++) {
@@ -74,13 +74,13 @@ public class groupE implements Comparable<groupE> {
                 return minDist;
         }
 
-        void groupEcombine(groupE two) {
+        public void groupEcombine(groupE two) {
                 nodes.ensureCapacity(nodes.size() + two.nodes.size());
                 nodes.addAll(two.nodes);
                 updateLeastNode(two.leastNode);
         }
 
-        public ArrayList<SchemaElementNode> getGroup() {
+        public ArrayList<SchemaElementClusterNode> getGroup() {
                 return nodes;
         }
 
@@ -92,10 +92,10 @@ public class groupE implements Comparable<groupE> {
          * returns the schemaelement node that belongs to the specified schema
          * 
          * @param baseSchema
-         * @return SchemaElementNode
+         * @return SchemaElementClusterNode
          */
-        public SchemaElementNode getNode(Integer baseSchema) {
-                for (SchemaElementNode n : nodes)
+        public SchemaElementClusterNode getNode(Integer baseSchema) {
+                for (SchemaElementClusterNode n : nodes)
                         if (n.schemaId == baseSchema) return n ;
                 return null;
         }

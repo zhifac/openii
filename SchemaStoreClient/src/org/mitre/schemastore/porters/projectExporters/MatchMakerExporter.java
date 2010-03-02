@@ -7,8 +7,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-
-import javax.swing.filechooser.FileFilter;
+import java.util.HashSet;
+import java.util.Iterator;
 
 import org.mitre.schemastore.model.Domain;
 import org.mitre.schemastore.model.DomainValue;
@@ -18,7 +18,7 @@ import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.porters.projectExporters.matchmaker.ClusterNode;
 import org.mitre.schemastore.porters.projectExporters.matchmaker.ClusterRenderer;
-import org.mitre.schemastore.porters.projectExporters.matchmaker.SchemaElementNode;
+import org.mitre.schemastore.porters.projectExporters.matchmaker.SchemaElementClusterNode;
 import org.mitre.schemastore.porters.projectExporters.matchmaker.groupE;
 
 public class MatchMakerExporter extends ProjectExporter {
@@ -26,37 +26,34 @@ public class MatchMakerExporter extends ProjectExporter {
 	private Integer[] schemaIDs = null;
 	private ClusterNode cluster;
 
-	HashMap<String, SchemaElementNode> clusterElements; // cluster name to schemaElementNode
-	HashMap<Integer, ArrayList<Integer>> elementSchemaLookUp; // schema element ID to a list of schema IDs
-	
-	private Project mapping;
-	private ArrayList<MappingCell> mappingCells;
+	// Cluster name to schemaElementNode
+	HashMap<String, SchemaElementClusterNode> clusterElements;
+	// Schema element ID to a list of schema IDs
+	HashMap<Integer, ArrayList<Integer>> elementSchemaLookUp;
 
+	private Project project;
+	private HashMap<Mapping, ArrayList<MappingCell>> mappings;
 
 	/**
 	 * Initialize elementSchemaLookUp, which is a hash of elementID to a list of
 	 * schemaIDs that it belongs to
-	 * @throws RemoteException 
+	 * 
+	 * @throws RemoteException
 	 */
 	private void initElementSchemaLookUp() throws RemoteException {
-		Integer elementID;
-		
-		// Loop through each schemaID
-		for (Integer schemaID : this.mapping.getSchemaIDs()) {
+		// Loop through each schema ID
+		for (Integer schemaID : this.schemaIDs) {
 			// Loop through each element
-			
-			for (SchemaElement element : client.getSchemaInfo(schemaID).getElements(null) ) {
-				elementID = element.getId();
-
-				// hash current schemaID to the list by elementID
-				ArrayList<Integer> schemaIDList = lookupSchemaIDs(elementID);
+			for (SchemaElement element : client.getSchemaInfo(schemaID).getElements(null)) {
+				// Hash current schemaID to the list by elementID
+				ArrayList<Integer> schemaIDList = lookupSchemaIDs(element.getId());
 				schemaIDList.add(schemaID);
 			}
 		}
 	}
 
-	
-	// Returns an array list of schema IDs that the element belongs to. Create a new list if none exists yet. 
+	// Returns an array list of schema IDs that the element belongs to. Create a
+	// new list if none exists yet.
 	private ArrayList<Integer> lookupSchemaIDs(Integer elementID) {
 		ArrayList<Integer> schemaIDList = elementSchemaLookUp.get(elementID);
 		if (schemaIDList == null) {
@@ -66,65 +63,73 @@ public class MatchMakerExporter extends ProjectExporter {
 		return schemaIDList;
 	}
 
-	public FileFilter getFileFilter() {
-		class CsvFilter extends FileFilter {
-			public boolean accept(File file) {
-				if (file.isDirectory()) return true;
-				if (file.toString().endsWith(".xls")) return true;
-				return false;
-			}
-
-			public String getDescription() {
-				return "MatchMaker (.xls)";
-			}
-		}
-		return new CsvFilter();
-	}
+	// public FileFilter getFileFilter() {
+	// class CsvFilter extends FileFilter {
+	// public boolean accept(File file) {
+	// if (file.isDirectory()) return true;
+	// if (file.toString().endsWith(".xls")) return true;
+	// return false;
+	// }
+	//
+	// public String getDescription() {
+	// return "MatchMaker (.xls)";
+	// }
+	// }
+	// return new CsvFilter();
+	// }
 
 	public String getFileType() {
 		return ".xls";
 	}
 
+	// Create SchemaElementClusterNode used by ClusterNode from MappingCells
 	private void clusterMatchResults() {
-		// Create SchemaElementNode used by ClusterNode from MappingCells
-		for (MappingCell mappingCell :  this.mappingCells ) {
-			for (SchemaElementNode node1 : getInputNodeList(mappingCell.getInput()) ) {
-				for (SchemaElementNode node2 : getNode(mappingCell.getOutput())) {
-					// Add the nodes and score to each other's score list.
-					node1.add(node2, mappingCell.getScore());
-					node2.add(node1, mappingCell.getScore());
+		// Loop through all mapping cell ArrayLists
+		Iterator<ArrayList<MappingCell>> mcListItr = this.mappings.values().iterator(); 
+		while (mcListItr.hasNext()){
+			ArrayList<MappingCell> mcList = mcListItr.next(); 
+			// Loop through all mapping cells
+			for ( MappingCell mappingCell : mcList ){
+				// Loop through mapping cells input cluster nodes
+				for (SchemaElementClusterNode inputNode : getClusterNodeList(mappingCell.getInput())) {
+					// Loop through mapping cells output cluster nodes
+					for (SchemaElementClusterNode outputNode : getClusterNode(mappingCell.getOutput())) {
+						// Add the nodes and score to each other's score list.
+						inputNode.add(outputNode, mappingCell.getScore());
+						outputNode.add(inputNode, mappingCell.getScore());
+					}
 				}
 			}
 		}
-
+		
 		// Run clustering algorithm
-		cluster = new ClusterNode(new ArrayList<SchemaElementNode>(clusterElements.values()));
+		cluster = new ClusterNode(new ArrayList<SchemaElementClusterNode>(clusterElements.values()));
 		cluster.cluster(schemaIDs.length, 0);
 	}
 
 	// Manages cluster nodes: since each element may be associated with multiple
 	// schemas, one Schema Element node is created for each schema that the
 	// element belongs to
-	private ArrayList<SchemaElementNode> getNode(Integer elementID) {
+	private ArrayList<SchemaElementClusterNode> getClusterNode(Integer elementID) {
 		SchemaElement element;
-		ArrayList<SchemaElementNode> results = new ArrayList<SchemaElementNode>();
+		ArrayList<SchemaElementClusterNode> results = new ArrayList<SchemaElementClusterNode>();
 		try {
 			element = client.getSchemaElement(elementID);
 			ArrayList<Integer> schemaIdList = lookupSchemaIDs(elementID);
-			
-			SchemaElementNode node;
+
+			SchemaElementClusterNode node;
 			String elementHashKey;
-			for ( Integer sid : schemaIdList ) {
-				elementHashKey = sid + element.getName() + elementID; 
-				
+			for (Integer sid : schemaIdList) {
+				elementHashKey = sid + element.getName() + elementID;
+
 				// get node from hashed cluster elements or create a new one
 				node = clusterElements.get(elementHashKey);
-				if ( node == null ) {
-					node = new SchemaElementNode(sid, elementID, element.getName());
+				if (node == null) {
+					node = new SchemaElementClusterNode(sid, elementID, element.getName());
 					clusterElements.put(elementHashKey, node);
 				}
-				
-				results.add(node); 
+
+				results.add(node);
 			}
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
@@ -132,13 +137,13 @@ public class MatchMakerExporter extends ProjectExporter {
 		}
 		return results;
 	}
-	
-	private ArrayList<SchemaElementNode> getInputNodeList(Integer[] elementIDs) {
-		ArrayList<SchemaElementNode> masterList = new ArrayList<SchemaElementNode> ();
-		
-		for ( Integer i : elementIDs )
-			masterList.addAll(getNode(i)); 
-		return masterList; 
+
+	// Given a set of element IDs, for each, create its cluster node list. Return all.  
+	private ArrayList<SchemaElementClusterNode> getClusterNodeList(Integer[] elementIDs) {
+		ArrayList<SchemaElementClusterNode> masterList = new ArrayList<SchemaElementClusterNode>();
+		for (Integer i : elementIDs)
+			masterList.addAll(getClusterNode(i));
+		return masterList;
 	}
 
 	// Sort cluster's groupEs by number of elements in each and each groupE's
@@ -164,7 +169,7 @@ public class MatchMakerExporter extends ProjectExporter {
 		for (Integer schemaID : schemaIDs) {
 			ArrayList<SchemaElement> refList;
 			int groupEIDX = 0, allIDX = 0;
-			SchemaElementNode groupENode;
+			SchemaElementClusterNode groupENode;
 			SchemaElement refNode;
 			int compareResult;
 
@@ -205,7 +210,7 @@ public class MatchMakerExporter extends ProjectExporter {
 
 					// create a new groupE for graphNode that doesn't exist
 					if (compareResult < 0) {
-						for (SchemaElementNode newNode : getNode(refNode.getId())) {
+						for (SchemaElementClusterNode newNode : getClusterNode(refNode.getId())) {
 							cluster.groupEs.add(groupEIDX, new groupE(newNode));
 							System.out.println("Insert node " + newNode.elementName + " (" + refNode.getId() + ")");
 						}
@@ -220,7 +225,7 @@ public class MatchMakerExporter extends ProjectExporter {
 					System.err.println(schemaID + " has total of " + refList.size() + " but allIDX=" + allIDX);
 					while (allIDX < refList.size()) {
 						refNode = refList.get(allIDX);
-						for (SchemaElementNode newNode : getNode(refNode.getId())) {
+						for (SchemaElementClusterNode newNode : getClusterNode(refNode.getId())) {
 							cluster.groupEs.add(groupEIDX++, new groupE(newNode));
 							System.out.println("Insert node " + newNode.elementName + " (" + refNode.getId() + ")");
 						}
@@ -264,30 +269,32 @@ public class MatchMakerExporter extends ProjectExporter {
 		}
 	}
 
-	public void exportMapping(Project mapping, ArrayList<MappingCell> mappingCells, File file) throws IOException {
-		this.mapping = mapping; 
-		this.mappingCells = mappingCells; 
-		this.elementSchemaLookUp = new HashMap<Integer, ArrayList<Integer>>(); 
-		this.clusterElements = new HashMap<String, SchemaElementNode>(); 
-		this.schemaIDs = mapping.getSchemaIDs();
-		
-		// Create look up for elementIDs to SchemaIDs
-		initElementSchemaLookUp();
-
-		// Cluster results
-		clusterMatchResults();
-
-		// ensure all schema element
-		ensureCompleteness();
-		sortByParticipation();
-
-		// Render clustered results
-		ClusterRenderer clusterRenderer = new ClusterRenderer(cluster, client, schemaIDs);
-		clusterRenderer.print(file);
-	}
+	// public void exportMapping(Project mapping, ArrayList<MappingCell>
+	// mappingCells, File file) throws IOException {
+	// this.mapping = mapping;
+	// this.mappingCells = mappingCells;
+	// this.elementSchemaLookUp = new HashMap<Integer, ArrayList<Integer>>();
+	// this.clusterElements = new HashMap<String, SchemaElementClusterNode>();
+	// this.schemaIDs = mapping.getSchemaIDs();
+	//		
+	// // Create look up for elementIDs to SchemaIDs
+	// initElementSchemaLookUp();
+	//
+	// // Cluster results
+	// clusterMatchResults();
+	//
+	// // ensure all schema element
+	// ensureCompleteness();
+	// sortByParticipation();
+	//
+	// // Render clustered results
+	// ClusterRenderer clusterRenderer = new ClusterRenderer(cluster, client,
+	// schemaIDs);
+	// clusterRenderer.print(file);
+	// }
 
 	public String getDescription() {
-		return "Export N-way match results to an xls spreadsheet.";
+		return "Export N-way match results to an Excel spreadsheet.";
 	}
 
 	@Override
@@ -295,12 +302,46 @@ public class MatchMakerExporter extends ProjectExporter {
 		return "Match Maker";
 	}
 
-
 	@Override
 	public void exportProject(Project project, HashMap<Mapping, ArrayList<MappingCell>> mappings, File file) throws IOException {
-		// TODO Auto-generated method stub
+		this.project = project;
+		this.mappings = mappings;
+		this.elementSchemaLookUp = new HashMap<Integer, ArrayList<Integer>>();
+		this.clusterElements = new HashMap<String, SchemaElementClusterNode>();
+
+		// Initialize schema IDs used in all of the mappings.
+		initSchemaIDs();
+
+		// Create look up for elementIDs to SchemaIDs
+		initElementSchemaLookUp();
+
+		// Cluster results
+		clusterMatchResults();
+
+		// Ensure all schema element are included in the result
+		ensureCompleteness();
 		
+		// Sort result rows by the number of participating schemas
+		sortByParticipation();
+
+		// Render clustered results
+		ClusterRenderer clusterRenderer = new ClusterRenderer(cluster, client, schemaIDs);
+		clusterRenderer.print(file);
 	}
 
+	// Populate the schemaID lists from schemas that participate in all of the
+	// project's mappings.
+	private void initSchemaIDs() {
+		HashSet<Integer> idList = new HashSet<Integer>();
+		Mapping[] mappingObjects = mappings.keySet().toArray(new Mapping[0]);
+
+		for (Mapping m : mappingObjects) {
+			idList.add(m.getSourceId());
+			idList.add(m.getTargetId());
+		}
+
+		this.schemaIDs = idList.toArray(new Integer[0]);
+
+	}
 
 }
