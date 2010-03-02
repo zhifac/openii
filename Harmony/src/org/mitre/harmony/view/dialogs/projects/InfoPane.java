@@ -131,15 +131,13 @@ class InfoPane extends JPanel implements CaretListener
 		// Retrieve the information from the various fields
 		String name = nameField.getText();
 		String author = authorField.getText();
-		String description = descriptionField.getText();
 		
 		// Update highlighting
 		nameField.setBackground(name.length()>0 ? Color.white : Color.yellow);
 		authorField.setBackground(author.length()>0 ? Color.white : Color.yellow);
-		descriptionField.setBackground(description.length()>0 ? Color.white : Color.yellow);
 
 		// Indicates if the general info is completely provided
-		return name.length()>0 && author.length()>0 && description.length()>0;
+		return name.length()>0 && author.length()>0;
 	}
 
 	/** Update the project when the data fields are modified */
