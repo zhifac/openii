@@ -8,7 +8,7 @@ import java.util.Comparator;
  * The main clustering code, originally written by Michael Morse with lots of
  * modifications for MatchMaker.
  * <p>
- * This code takes as an input a list of SchemaElementNode objects, and its
+ * This code takes as an input a list of SchemaElementClusterNode objects, and its
  * output is a list of sorted clusters. Each cluster is stored as a groupE
  * object.
  * 
@@ -22,9 +22,9 @@ public class ClusterNode {
 	// is filtered out.
 	public static float MAGIC_THRESHOLD = (float) 0.2;
 
-	public ClusterNode(ArrayList<SchemaElementNode> nodes) {
+	public ClusterNode(ArrayList<SchemaElementClusterNode> nodes) {
 		groupEs = new ArrayList<groupE>();
-		for (SchemaElementNode n : nodes) {
+		for (SchemaElementClusterNode n : nodes) {
 			groupEs.add(new groupE(n));
 		}
 	}
@@ -34,7 +34,7 @@ public class ClusterNode {
 	 *            the index of the cluster
 	 * @return the jth cluster in the object.
 	 */
-	public ArrayList<SchemaElementNode> getGroup(int j) {
+	public ArrayList<SchemaElementClusterNode> getGroup(int j) {
 		return groupEs.get(j).getGroup();
 	}
 
@@ -137,7 +137,7 @@ public class ClusterNode {
 					groupE n2 = groupEs.get(j);
 
 					float temp_dist = n1.simpleLinkage(n2);
-					if (temp_dist > max_dist) {
+					if (temp_dist > max_dist && 	notInSameSchema(groupEs.get(spot1), groupEs.get(spot2))) {
 						max_dist = temp_dist;
 						spot1 = i;
 						spot2 = j;
@@ -151,7 +151,7 @@ public class ClusterNode {
 			// If max distance between two groups is found greater than the
 			// magic threshold, combine the two groups.
 			if (max_dist > MAGIC_THRESHOLD) {
-				if (notInSameSchema(groupEs.get(spot1), groupEs.get(spot2))) {
+//				if (notInSameSchema(groupEs.get(spot1), groupEs.get(spot2))){
 					groupE growing = groupEs.get(spot1);
 					growing.groupEcombine(groupEs.get(spot2));
 					removeCluster(spot2);
@@ -160,7 +160,7 @@ public class ClusterNode {
 						completedClusters.add(growing);
 						removeCluster(spot1);
 					}
-				} else System.err.println("(E)Found groupes in same schema: " + groupEs.get(spot1).leastNode.elementName + " \n\t " + groupEs.get(spot2).leastNode.elementName);
+//				} else System.err.println("(E)Found groupes in same schema: " + groupEs.get(spot1).leastNode.elementName + " \n\t " + groupEs.get(spot2).leastNode.elementName);
 			} else {
 				for (int x = groupEs.size() - 1; x >= 0; x--)
 					completedClusters.add(groupEs.get(x));
@@ -196,10 +196,10 @@ public class ClusterNode {
 	 */
 	private boolean notInSameSchema(groupE groupE1, groupE groupE2) {
 		for (Node n1 : groupE1.getGroup()) {
-			if (!(n1 instanceof SchemaElementNode)) continue;
+			if (!(n1 instanceof SchemaElementClusterNode)) continue;
 			for (Node n2 : groupE2.getGroup()) {
-				if (!(n2 instanceof SchemaElementNode)) continue;
-				if (((SchemaElementNode) n1).schemaId.equals(((SchemaElementNode) n2).schemaId)) return false;
+				if (!(n2 instanceof SchemaElementClusterNode)) continue;
+				if (((SchemaElementClusterNode) n1).schemaId.equals(((SchemaElementClusterNode) n2).schemaId)) return false;
 			}
 		}
 		return true;
@@ -221,7 +221,7 @@ public class ClusterNode {
 		private Double getAverageScore(groupE g) {
 			Double score = 0.0;
 			int numNodes = 0;
-			for (SchemaElementNode node : g.getGroup()) {
+			for (SchemaElementClusterNode node : g.getGroup()) {
 				for (Double s : node.distances) {
 					score += s;
 					numNodes++;
@@ -248,8 +248,8 @@ public class ClusterNode {
 
 		public int compare(groupE g1, groupE g2) {
 
-			SchemaElementNode n1 = g1.getNode(baseSchema);
-			SchemaElementNode n2 = g2.getNode(baseSchema);
+			SchemaElementClusterNode n1 = g1.getNode(baseSchema);
+			SchemaElementClusterNode n2 = g2.getNode(baseSchema);
 
 			if (n1 == null && n2 == null) return 0;
 			else if (n1 == null) return -1;

@@ -89,7 +89,7 @@ public class ClusterRenderer {
 		if (everyN <= 0) everyN = clusters;
 
 		System.out.println("Collator: everyN = " + everyN + " for " + clusters + " clusters");
-		ArrayList<SchemaElementNode> nodes;
+		ArrayList<SchemaElementClusterNode> nodes;
 		// output clusters (groupEs)
 		for (groupE groupe : cluster.groupEs) {
 			nodes = groupe.getGroup();
@@ -107,7 +107,7 @@ public class ClusterRenderer {
 			// print elements of a groupE across a row
 			double score = 0;
 			int schemaElementNodeSize = 0;
-			for (SchemaElementNode n : nodes) {
+			for (SchemaElementClusterNode n : nodes) {
 				printSchemaElementNode(n, row);
 
 				// calculate average score
@@ -249,7 +249,7 @@ public class ClusterRenderer {
 		else return col;
 	}
 
-	private void printSchemaElementNode(SchemaElementNode seNode, HSSFRow row) {
+	private void printSchemaElementNode(SchemaElementClusterNode seNode, HSSFRow row) {
 		Integer colNum = getColumnIdx(seNode.schemaId);
 		if (colNum < 0) return;
 
