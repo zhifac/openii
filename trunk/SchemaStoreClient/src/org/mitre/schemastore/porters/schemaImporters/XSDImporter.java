@@ -197,7 +197,7 @@ public class XSDImporter extends SchemaImporter
 			typeName = passedType.getName();
 		
 		// handle "Any" type
-		if (passedType instanceof AnyType)
+		if (passedType != null && passedType instanceof AnyType)
 			typeName = "Any";
 		
 		// handle IDREF / IDREFS -- generate relationship to "Any" entity
@@ -219,14 +219,14 @@ public class XSDImporter extends SchemaImporter
 		else {
 	
 			// find Domain for SimpleType (generated if required)
-			Domain domain = new Domain(nextId(), typeName, this.getDocumentation(passedType), 0);
+			Domain domain = new Domain(nextId(), typeName, (passedType == null ? "" : this.getDocumentation(passedType)), 0);
 			//TODO: fix passedType namespace
 			String passedTypeNamespace = passedType == null ? DEFAULT_NAMESPACE : passedType.getSchema().getTargetNamespace();
 			if (domainList.containsKey(passedTypeNamespace + " " + domain.getName()) == false) {
 				domainList.put(passedTypeNamespace + " " + domain.getName(),domain);
 				schemaElementsHS.put(domain.hashCode(), domain);
 				
-				if (passedType instanceof SimpleType && !(passedType instanceof Union)){
+				if (passedType != null && passedType instanceof SimpleType && !(passedType instanceof Union)){
 					// create DomainValues (if specified for SimpleType)
 					Enumeration<?> facets = ((SimpleType)passedType).getFacets("enumeration");
 					while (facets.hasMoreElements()) {
@@ -237,7 +237,7 @@ public class XSDImporter extends SchemaImporter
 				}
 				
 				// TODO: process Union Types
-				else if (passedType instanceof Union){
+				else if (passedType != null && passedType instanceof Union){
 					Union passedUnion = (Union)passedType;
 					Enumeration<?> memberTypes = passedUnion.getMemberTypes();
 					while (memberTypes.hasMoreElements()){
@@ -285,6 +285,7 @@ public class XSDImporter extends SchemaImporter
 			try {
 				// get Attributes for current complexType
 				Enumeration<?> attrDecls = passedType.getAttributeDecls(); 
+				boolean sawSimpleContentVal = false;
 				while (attrDecls.hasMoreElements()){
 				
 					AttributeDecl attrDecl = (AttributeDecl)attrDecls.nextElement();
@@ -298,12 +299,20 @@ public class XSDImporter extends SchemaImporter
 					boolean containsID = attrDecl.getSimpleType() != null && attrDecl.getSimpleType().getName() != null && attrDecl.getSimpleType().getName().equals("ID");
 					
 					Attribute attr = new Attribute(nextId(),(attrDecl.getName() == null ? "" : attrDecl.getName()),getDocumentation(attrDecl),entity.getId(),-1,(attrDecl.isRequired()? 1 : 0), 1, containsID, 0); 
+					if (attr.getName().equalsIgnoreCase("simpleContentValue")){
+						sawSimpleContentVal = true;
+					}
 					//schemaElementsHS.put(origHashcode, attr);
 					schemaElementsHS.put(nextId(), attr);
 					processSimpleType(attrDecl.getSimpleType(), attr);
 				}
 				
-				
+				if (passedType.isSimpleContent()){
+					Attribute simpleContentAttr = new Attribute(nextId(),(sawSimpleContentVal ? "simpleContentValue2" : "simpleContentValue"),"added attribute to handle simpleContent",entity.getId(),-1, 0, 1, false, 0);  
+					//schemaElementsHS.put(origHashcode, attr);
+					schemaElementsHS.put(nextId(), simpleContentAttr);
+					processSimpleType(null, simpleContentAttr);
+				}
 				
 			} catch (IllegalStateException e){}
 				 
