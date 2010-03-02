@@ -14,6 +14,7 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -93,6 +94,7 @@ public class EditProjectDialog extends Dialog implements ActionListener, ModifyL
 
 		// Generate the schema list
 		schemaList = new SchemaList(pane,null);
+		schemaList.setWidth(300);
 		schemaList.addListener(this);
 	}
 	
@@ -106,6 +108,7 @@ public class EditProjectDialog extends Dialog implements ActionListener, ModifyL
 		
 		// Construct the list of mappings
 		mappingList = new MappingList(pane);
+		mappingList.setWidth(300);
 		mappingList.addListener(this);
 	}
 	

@@ -17,11 +17,14 @@ public class ListWithButtonBar extends Composite
 	/** Stores the list viewer */
 	private TableViewer list = null;
 	
+	/** Stores the list viewer column */
+	private TableViewerColumn column = null;
+	
 	/** Stores the button pane */
 	private Composite buttonPane = null;
 	
 	/** Constructs the dialog list */
-	public ListWithButtonBar(Composite parent, String heading,  String listHeader)
+	public ListWithButtonBar(Composite parent, String heading, String listHeader)
 	{
 		super(parent, SWT.NONE);
 		setLayout(new GridLayout(1,false));
@@ -51,7 +54,7 @@ public class ListWithButtonBar extends Composite
 		table.setLayoutData(new GridData(GridData.FILL_VERTICAL));
 
 		// Add the list header
-		TableViewerColumn column = new TableViewerColumn(list, SWT.NONE);
+		column = new TableViewerColumn(list, SWT.NONE);
 		column.getColumn().setText(listHeader);
 		column.getColumn().setWidth(200);
 
@@ -62,6 +65,10 @@ public class ListWithButtonBar extends Composite
 		buttonPane.setLayout(layout);
 		buttonPane.setLayoutData(new GridData(GridData.VERTICAL_ALIGN_BEGINNING));
 	}
+	
+	/** Sets the width of this list */
+	public void setWidth(int width)
+		{ column.getColumn().setWidth(width); }
 	
 	/** Adds a button to the dialog list */
 	public Button addButton(String label, SelectionListener listener)
