@@ -14,7 +14,6 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -32,10 +31,14 @@ import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.Project;
 import org.mitre.schemastore.model.ProjectSchema;
 import org.mitre.schemastore.model.Schema;
+import org.mitre.schemastore.model.Tag;
 
 /** Constructs the Edit Project Dialog */
 public class EditProjectDialog extends Dialog implements ActionListener, ModifyListener, ISelectionChangedListener
-{	
+{
+	/** Stores the tag from which the project is being created */
+	private Tag tag = null;
+	
 	/** Stores the project being edited */
 	private Project project = null;
 	
@@ -50,12 +53,16 @@ public class EditProjectDialog extends Dialog implements ActionListener, ModifyL
 	/** Stores the project mappings */
 	private MappingList mappingList = null;
 	
-	/** Constructs the dialog */
+	/** Constructs the dialog for a new project */
+	public EditProjectDialog(Shell shell) { super(shell); }
+
+	/** Constructs the dialog for a project based on the specified tag */
+	public EditProjectDialog(Shell shell, Tag tag)
+		{ super(shell); this.tag = tag; }
+	
+	/** Constructs the dialog for the specified project */
 	public EditProjectDialog(Shell shell, Project project)
-	{
-		super(shell);
-		this.project = project;
-	}	
+		{ super(shell); this.project = project; }	
 
 	/** Configures the dialog shell */
 	protected void configureShell(Shell shell)
@@ -135,7 +142,14 @@ public class EditProjectDialog extends Dialog implements ActionListener, ModifyL
 	{
 		Control control = super.createContents(parent);
 
-		// Make default mapping dialog selections
+		// Make default mapping dialog selections if a tag was given
+		if(tag!=null)
+		{		
+			nameField.setText(tag.getName());
+			schemaList.setSchemas(OpenIIManager.getTagSchemas(tag.getId()));
+		}
+		
+		// Make default mapping dialog selections if a project was given
 		if(project!=null)
 		{
 			// Set general information fields
@@ -151,11 +165,10 @@ public class EditProjectDialog extends Dialog implements ActionListener, ModifyL
 			mappingList.setMappings(OpenIIManager.getMappings(project.getId()));
 		}
 		else authorField.setText(System.getProperty("user.name"));
-		updateButton();
 		
 		return control;
 	}
-
+	
 	/** Monitors changes to the fields to determine when to activate the OK button */
 	public void modifyText(ModifyEvent e)
 		{ updateButton(); }
