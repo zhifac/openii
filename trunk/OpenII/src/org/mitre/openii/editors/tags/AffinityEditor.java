@@ -37,11 +37,13 @@ import org.mitre.harmony.matchers.voters.DocumentationMatcher;
 import org.mitre.harmony.matchers.voters.EditDistanceMatcher;
 import org.mitre.harmony.matchers.voters.ExactStructureMatcher;
 import org.mitre.harmony.matchers.voters.MatchVoter;
+import org.mitre.harmony.matchers.voters.ThesaurusMatcher;
 import org.mitre.openii.editors.OpenIIEditor;
 import org.mitre.openii.model.EditorInput;
 import org.mitre.openii.model.EditorManager;
 import org.mitre.openii.model.OpenIIManager;
 import org.mitre.openii.model.RepositoryManager;
+import org.mitre.openii.views.manager.projects.EditProjectDialog;
 import org.mitre.openii.views.manager.tags.EditTagDialog;
 import org.mitre.schemastore.model.schemaInfo.FilteredSchemaInfo;
 
@@ -83,6 +85,7 @@ public class AffinityEditor extends OpenIIEditor implements SelectionClickedList
 		voters.add(new DocumentationMatcher());
 		//voters.add(new ThesaurusMatcher()); //ThesaurusMatcher seems to be most time consuming
 		voters.add(new ExactStructureMatcher());
+		
 		matchScoreComputer = new HarmonyMatchScoreComputer(voters, new VoteMerger());
 
 		
@@ -178,6 +181,10 @@ public class AffinityEditor extends OpenIIEditor implements SelectionClickedList
 			item.setText("Create a tag for all schemas in this cluster");
 			item.addSelectionListener(multiSchemaMenuListener);	
 			
+			/*item = new MenuItem (multiSchemaMenu, SWT.NONE);				
+			item.setText("Create a project with all schemas in this cluster");
+			item.addSelectionListener(multiSchemaMenuListener);
+			*/
 			item = new MenuItem (multiSchemaMenu, SWT.NONE);				
 			item.setText("Open schemas in new Affinity window");
 			item.addSelectionListener(multiSchemaMenuListener);
@@ -198,10 +205,15 @@ public class AffinityEditor extends OpenIIEditor implements SelectionClickedList
 			item = new MenuItem (multiSchemaMenu, SWT.NONE);				
 			item.setText("View terms shared by these schemas (bag of words approach)");
 			item.addSelectionListener(multiSchemaMenuListener);
+			
+			item = new MenuItem (multiSchemaMenu, SWT.NONE);				
+			item.setText("Create a project which includes all schemas in this cluster");
+			item.addSelectionListener(multiSchemaMenuListener);	
 
-			item = new MenuItem (multiSchemaMenu, SWT.NONE);
+			/*item = new MenuItem (multiSchemaMenu, SWT.NONE);
 			item.setText("View common vocabulary debug view");
 			item.addSelectionListener(multiSchemaMenuListener);
+			*/
 			
 			
 			// Create cluster right-click menu			
@@ -232,8 +244,14 @@ public class AffinityEditor extends OpenIIEditor implements SelectionClickedList
 						EditorManager.launchEditor("AffinityEditor", selectedCluster.getSchemaIDs());								
 					}else if(item.getText().startsWith("View common vocabulary")){
 						System.out.println("Open up debug view");
+						//EditorManager.launchEditor("VocabDebugEditr", null);
 					}
-					else {
+					else if(item.getText().startsWith("Create a project")){
+						Shell shell = getSite().getWorkbenchWindow().getShell();
+						EditProjectDialog dlg = new EditProjectDialog(shell);
+						dlg.open();
+					}
+					else{
 						//Create a new tag containing the schemas in the cluster
 						Shell shell = getSite().getWorkbenchWindow().getShell();
 						EditTagDialog dlg = new EditTagDialog(shell, null, null, selectedCluster.getSchemaIDs());						
@@ -242,14 +260,10 @@ public class AffinityEditor extends OpenIIEditor implements SelectionClickedList
 				}
 			};
 			
-			
 			item = new MenuItem (clusterMenu, SWT.NONE);				
-			item.setText("Create a tag for all schemas in this cluster");
-			item.addSelectionListener(clusterMenuListener);	
-			
-			item = new MenuItem (clusterMenu, SWT.NONE);				
-			item.setText("Open schemas in new Affinity window");
+			item.setText("View terms shared by these schemas (bag of words approach)");
 			item.addSelectionListener(clusterMenuListener);
+
 
 			MenuItem typeRelatedness = new MenuItem(clusterMenu, SWT.CASCADE);
 			typeRelatedness.setText("View amount of overlap(Venn Diagram Matrix)");
@@ -266,13 +280,23 @@ public class AffinityEditor extends OpenIIEditor implements SelectionClickedList
 			item.addSelectionListener(clusterMenuListener);
 			
 			item = new MenuItem (clusterMenu, SWT.NONE);				
-			item.setText("View terms shared by these schemas (bag of words approach)");
+			item.setText("Open schemas in new Affinity window");
 			item.addSelectionListener(clusterMenuListener);
 			
-			item = new MenuItem (clusterMenu, SWT.NONE);
+		
+			item = new MenuItem (clusterMenu, SWT.NONE);				
+			item.setText("Create a tag for all schemas in this cluster");
+			item.addSelectionListener(clusterMenuListener);	
+			
+			item = new MenuItem (clusterMenu, SWT.NONE);				
+			item.setText("Create a project which includes all schemas in this cluster");
+			item.addSelectionListener(clusterMenuListener);	
+			
+			
+		/*	item = new MenuItem (clusterMenu, SWT.NONE);
 			item.setText("View common vocabulary debug view");
 			item.addSelectionListener(clusterMenuListener);
-			
+			*/
 		
 		}
 		else {
