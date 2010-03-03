@@ -203,11 +203,11 @@ public class ManagerAction extends Action
 		/** Handles the deletion of a project schema */
 		if(actionType == DELETE_PROJECT_SCHEMA)
 		{
-			SchemaInProject projectSchema = (SchemaInProject)selection;
-			Project project = OpenIIManager.getProject(projectSchema.getProjectID());
+			SchemaInProject schemaInProject = (SchemaInProject)selection;
+			Project project = OpenIIManager.getProject(schemaInProject.getProjectID());
 			ArrayList<ProjectSchema> schemas = new ArrayList<ProjectSchema>(Arrays.asList(project.getSchemas()));
-			for(ProjectSchema schema : schemas)
-				if(schema.getId().equals(projectSchema.getSchema().getId()))
+			for(ProjectSchema schema : new ArrayList<ProjectSchema>(schemas))
+				if(schema.getId().equals(schemaInProject.getSchema().getId()))
 					schemas.remove(schema);
 			project.setSchemas(schemas.toArray(new ProjectSchema[0]));
 			OpenIIManager.updateProject(project);

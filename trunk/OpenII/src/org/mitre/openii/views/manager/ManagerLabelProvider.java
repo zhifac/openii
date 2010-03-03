@@ -19,6 +19,7 @@ public class ManagerLabelProvider implements ILabelProvider
 		String imageName = "";
 		if(element instanceof Schema) imageName = "Schema.gif";
 		else if(element instanceof SchemaInTag) imageName = "Schema.gif";
+		else if(element instanceof SchemasInProject) imageName = "Schemas.gif";
 		else if(element instanceof SchemaInProject) imageName = "Schema.gif";
 		else if(element instanceof Project) imageName = "Project.gif";
 		else if(element instanceof Mapping) imageName = "Mapping.gif";

@@ -1,7 +1,8 @@
 package org.mitre.openii.views.manager;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
 
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
@@ -15,7 +16,8 @@ import org.mitre.schemastore.model.Tag;
 
 public class ManagerContentProvider implements ITreeContentProvider
 {
-	// Stores the headers
+	// Stores pool of project schema labels
+	private HashMap<Integer,SchemasInProject> schemasInProjectList = new HashMap<Integer,SchemasInProject>();
 	
 	/** Returns the children elements for the specified element */
 	public Object[] getChildren(Object element)
@@ -63,28 +65,39 @@ public class ManagerContentProvider implements ITreeContentProvider
 		// Handles project elements
 		if(element instanceof Project)
 		{
-			Project project = (Project)element;
-			ArrayList<Integer> schemaIDs = new ArrayList<Integer>(Arrays.asList(project.getSchemaIDs()));
+			// Retrieve the project schemas label
+			Integer projectID = ((Project)element).getId();
+			SchemasInProject schemasInProject = schemasInProjectList.get(projectID);
+			if(schemasInProject==null) schemasInProjectList.put(projectID, schemasInProject = new SchemasInProject(projectID));
 			
-			// Display mappings
-			ArrayList<Mapping> mappings = new ArrayList<Mapping>();
+			// Return the list of mappings and project schema label
+			ArrayList<Object> elements = new ArrayList<Object>();
+			elements.addAll(WidgetUtilities.sortList(OpenIIManager.getMappings(projectID)));
+			elements.add(schemasInProject);
+			return elements.toArray();
+		}
+		
+		// Handles project schemas
+		if(element instanceof SchemasInProject)
+		{
+			Project project = OpenIIManager.getProject(((SchemasInProject)element).getProjectId());
+
+			// Retrieve the schemas used in mappings (and thus not deletable)
+			HashSet<Integer> schemaIDs = new HashSet<Integer>();
 			for(Mapping mapping : OpenIIManager.getMappings(project.getId()))
 			{
-				mappings.add(mapping);
-				schemaIDs.remove(mapping.getSourceId());
-				schemaIDs.remove(mapping.getTargetId());
+				schemaIDs.add(mapping.getSourceId());
+				schemaIDs.add(mapping.getTargetId());
 			}
-			
-			// Display schemas which are not part of a mapping
-			ArrayList<SchemaInProject> schemas = new ArrayList<SchemaInProject>();
-			for(Integer schemaID : schemaIDs)
-				schemas.add(new SchemaInProject(project.getId(),OpenIIManager.getSchema(schemaID),true));
 
-			// Return the sorted list of project elements
-			ArrayList<Object> elements = new ArrayList<Object>();
-			elements.addAll(WidgetUtilities.sortList(mappings));
-			elements.addAll(WidgetUtilities.sortList(schemas));
-			return elements.toArray();
+			// Return the sorted list of schemas associated with the project
+			ArrayList<SchemaInProject> schemas = new ArrayList<SchemaInProject>();
+			for(Integer schemaID : project.getSchemaIDs())
+			{
+				boolean deletable = !schemaIDs.contains(schemaID);
+				schemas.add(new SchemaInProject(project.getId(),OpenIIManager.getSchema(schemaID),deletable));
+			}
+			return WidgetUtilities.sortList(schemas).toArray();
 		}
 		
 		// Handles mapping elements
