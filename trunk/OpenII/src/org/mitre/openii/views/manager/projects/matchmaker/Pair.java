@@ -22,7 +22,7 @@ public class Pair<T>
 	/** Indicates that two pairs are equal */
 	public boolean equals(Object object)
 	{
-		if(!(object instanceof Pair)) return false;
+		if(!(object instanceof Pair<?>)) return false;
 		Pair<?> pair = (Pair<?>)object;
 		if(pair.getItem1().equals(item1) && pair.getItem2().equals(item2)) return true;
 		if(pair.getItem1().equals(item2) && pair.getItem2().equals(item1)) return true;

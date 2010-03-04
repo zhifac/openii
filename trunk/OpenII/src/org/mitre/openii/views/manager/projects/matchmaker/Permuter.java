@@ -37,8 +37,11 @@ public class Permuter<T> implements java.util.Enumeration<Pair<T>>
 		{ excludedPairs.add(pair); }
 	
 	/** Determines if there are any more permutations */
+//	public boolean hasMoreElements()
+//		{ return items.size()>1 && (loc2<items.size()-1 || loc1<loc2-1); }
+
 	public boolean hasMoreElements()
-		{ return items.size()>1 && (loc2<items.size()-1 || loc1<loc2-1); }
+	{ return size()>1 && (loc2<size()-1 || loc1<loc2-1); }
 
 	/** Returns the permutation count */
 	public int size()
