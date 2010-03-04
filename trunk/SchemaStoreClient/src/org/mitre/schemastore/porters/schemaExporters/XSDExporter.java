@@ -188,7 +188,8 @@ public class XSDExporter extends SchemaExporter
 		BufferedWriter out = new BufferedWriter(new FileWriter(file));
 		out.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
 		out.append("<!-- Created with OpenII XSDExporter -->\n");
-		out.append("<xs:schema xmlns:xs=\"http://www.w3.org/2001/XMLSchema\">\n");
+		out.append("<xs:schema xmlns:xs=\"http://www.w3.org/2001/XMLSchema\" xmlns:m3=\"m3\" targetNamespace=\"m3\">\n");
+		
 		
 		// Generate XML for each remaining NON-ANNONYMOUS entity
 		ArrayList<SchemaElement> sortedEntities = this.sortElementList(new ArrayList<SchemaElement>(entitySet.values()));
@@ -324,7 +325,7 @@ public class XSDExporter extends SchemaExporter
 		if (attributes != null)
 			for (Attribute a : attributes)
 			{
-				if (a.getName() != null && (a.getName().equals("simpleContentValue") || a.getName().equals("simpleContentValue2"))){
+				if (!(a.getName() != null && (a.getName().equals("simpleContentValue") || a.getName().equals("simpleContentValue2")))){
 					Domain dom = domainSet.get(a.getDomainID());
 					String domName = new String("");
 					if (dom != null)
@@ -339,10 +340,10 @@ public class XSDExporter extends SchemaExporter
 		{
 			output.append(indentBase + INDENT2 + "</xs:extension>\n");
 			if (checkSimpleContent(attributes)){
-				output.append(indentBase + INDENT2 + "<xs:simpleContent>\n");
+				output.append(indentBase + INDENT2 + "</xs:simpleContent>\n");
 			}
 			else {
-				output.append(indentBase + INDENT2 + "<xs:complexContent>\n");
+				output.append(indentBase + INDENT2 + "</xs:complexContent>\n");
 			}
 			
 		} 
