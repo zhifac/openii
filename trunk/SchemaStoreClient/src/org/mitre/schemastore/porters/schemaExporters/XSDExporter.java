@@ -9,7 +9,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 
@@ -264,7 +263,12 @@ public class XSDExporter extends SchemaExporter
 			// get ID of parent type 
 			int parentTypeID = ((Subtype)subtypeSet.get(entity.getId())).getParentID();
 			String parentTypeName = ((Entity)entitySet.get(parentTypeID)).getName();
-			output.append(indentBase + INDENT2 + "<xs:complexContent>\n");
+			if (checkSimpleContent(attributes)){
+				output.append(indentBase + INDENT2 + "<xs:simpleContent>\n");
+			}
+			else {
+				output.append(indentBase + INDENT2 + "<xs:complexContent>\n");
+			}
 			output.append(indentBase + INDENT2 + "<xs:extension base=\"" + parentTypeName + "\">\n");
 		} 
 		
@@ -316,26 +320,45 @@ public class XSDExporter extends SchemaExporter
 		}
 	
 		// put all attributes together at end
+		// NOTE:  This will not output an attribute named 
 		if (attributes != null)
 			for (Attribute a : attributes)
 			{
-				Domain dom = domainSet.get(a.getDomainID());
-				String domName = new String("");
-				if (dom != null)
-					domName = dom.getName(); 
-				output.append(indentBase + INDENT4 + "<xs:attribute name=\"" + a.getName() + "\" type=\"" + domName + "\"/>\n");	
+				if (a.getName() != null && (a.getName().equals("simpleContentValue") || a.getName().equals("simpleContentValue2"))){
+					Domain dom = domainSet.get(a.getDomainID());
+					String domName = new String("");
+					if (dom != null)
+						domName = dom.getName(); 
+					output.append(indentBase + INDENT4 + "<xs:attribute name=\"" + a.getName() + "\" type=\"" + domName + "\"/>\n");	
+			
+				}
 			}
 	
 		// Close off tags if entity is a subtype
 		if (subtypeSet.get(entity.getId()) != null)
 		{
 			output.append(indentBase + INDENT2 + "</xs:extension>\n");
-			output.append(indentBase + INDENT2 + "</xs:complexContent>\n");
+			if (checkSimpleContent(attributes)){
+				output.append(indentBase + INDENT2 + "<xs:simpleContent>\n");
+			}
+			else {
+				output.append(indentBase + INDENT2 + "<xs:complexContent>\n");
+			}
+			
 		} 
 		output.append(indentBase + "</xs:complexType>\n");
 		
 		return output;
 	} // end method outputComplexTypeEntity
+	
+	private boolean checkSimpleContent(ArrayList<Attribute> attrs){
+		
+		for (Attribute attr : attrs)
+			if (attr.getName() != null && (attr.getName().equals("simpleContentValue") || attr.getName().equals("simpleContentValue2")))
+				return true;
+			
+		return false;
+	}
 	
 	/** Outputs the list of containments */
 	private StringBuffer outputContainments(ArrayList<Containment> containments, boolean topLevel)
