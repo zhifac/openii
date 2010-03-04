@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.mitre.openii.application.OpenIIActivator;
 import org.mitre.openii.model.OpenIIManager;
@@ -12,12 +13,12 @@ import org.mitre.openii.views.manager.SchemaInTag;
 import org.mitre.openii.views.manager.mappings.DeleteMappingDialog;
 import org.mitre.openii.views.manager.mappings.ExportMappingDialog;
 import org.mitre.openii.views.manager.mappings.importer.ImportMappingDialog;
-import org.mitre.openii.views.manager.projects.AutoMappingDialog;
 import org.mitre.openii.views.manager.projects.DeleteProjectDialog;
 import org.mitre.openii.views.manager.projects.EditProjectDialog;
 import org.mitre.openii.views.manager.projects.ExportProjectDialog;
 import org.mitre.openii.views.manager.projects.MergeProjectsDialog;
 import org.mitre.openii.views.manager.projects.importer.ImportProjectDialog;
+import org.mitre.openii.views.manager.projects.unity.GenerateVocabularyWizard;
 import org.mitre.openii.views.manager.schemas.CreateDataSourceDialog;
 import org.mitre.openii.views.manager.schemas.DeleteDataSourceDialog;
 import org.mitre.openii.views.manager.schemas.DeleteSchemaDialog;
@@ -60,6 +61,8 @@ public class ManagerAction extends Action
 	static final int AUTO_GENERATE_MATCHES = 20;
 	static final int EXPORT_MAPPING = 21;
 	static final int DELETE_MAPPING = 22;
+	static final int GENERATE_VOCABULARY = 23;
+	static final int MATCH_MAKER = 24;
 	
 	/** Stores the menu manager to which this action is tied */
 	private ManagerMenuManager menuManager;
@@ -218,8 +221,8 @@ public class ManagerAction extends Action
 			new ImportMappingDialog(shell,(Project)selection).open();
 		
 		/** Handles the auto-generation of a mapping's matches */
-		if(actionType == AUTO_GENERATE_MATCHES) 
-			new AutoMappingDialog(shell, (Project)selection).open();
+		if ( actionType == GENERATE_VOCABULARY )
+			new WizardDialog(shell, new GenerateVocabularyWizard((Project)selection)).open();
 
 		// ----------------- Mapping Actions ----------------------
 		
@@ -230,5 +233,7 @@ public class ManagerAction extends Action
 		/** Handles the deletion of a mapping */
 		if(actionType == DELETE_MAPPING)
 			DeleteMappingDialog.delete(shell,(Mapping)selection);
+		
+		
 	}
 }
