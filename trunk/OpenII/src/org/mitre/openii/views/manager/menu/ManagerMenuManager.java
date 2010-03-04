@@ -145,7 +145,8 @@ public class ManagerMenuManager extends MenuManager implements IMenuListener
 			menuManager.add(new ManagerAction(this,"Delete Project",ManagerAction.DELETE_PROJECT));
 			menuManager.add(new Separator());
 			menuManager.add(new ManagerAction(this,"Import Mapping",ManagerAction.IMPORT_MAPPING));
-			menuManager.add(new ManagerAction(this,"AutoGenerate Matches",ManagerAction.AUTO_GENERATE_MATCHES));
+			menuManager.add(new ManagerAction(this,"Match Maker",ManagerAction.MATCH_MAKER));
+			menuManager.add(new ManagerAction(this,"Generate Vocabulary...",ManagerAction.GENERATE_VOCABULARY));
 		}
 		
 		// Display the menu for a selected mapping
