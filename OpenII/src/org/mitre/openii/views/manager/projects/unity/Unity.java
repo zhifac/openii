@@ -15,47 +15,47 @@ import org.mitre.schemastore.model.SchemaElement;
 public class Unity {
 
 	private Project project;
-	private ArrayList<Synset> synsets; 
-	private Schema vocabulary;
-
+	private Vocabulary vocabulary; 
+	
 	public Unity(Project project) {
 		this.project = project;
+		this.vocabulary = new Vocabulary(project);
 	}
 
 	/**
-	 * Generate a vocabulary for a project. It will make sure that all pairwise
+	 * Generate a core for a project. It will make sure that all pairwise
 	 * mappings are created. Then MatchMaker is used to cluster the mappings. A
-	 * new vocabulary schema is created with a new schema element added to each
+	 * new core schema is created with a new schema element added to each
 	 * synset.
 	 * 
 	 * @param project
 	 * @param voters
 	 *            default voters will be used if null
 	 * @param name
-	 *            name of the vocabulary
+	 *            name of the core
 	 * @param author
-	 *            author of the vocabulary
+	 *            author of the core
 	 * @param description
-	 *            description of the vocabulary
+	 *            description of the core
 	 * @return
 	 * @throws Exception
 	 */
-	public Schema generateVocabulary(ArrayList<MatchVoter> voters, String name, String author, String description) throws Exception {
+	public Vocabulary generateVocabulary(ArrayList<MatchVoter> voters, String name, String author, String description) throws Exception {
 		Integer vocabularyID = null;
 
 		// Ensure that all pair-wise mappings already exist
 		MappingProcessor.run(project, voters);
 
 		// Run MatchMaker to cluster the matches get synsets
-		synsets = new MatchMaker(project).cluster().getSynsets();
+		vocabulary.setSynsetList( new MatchMaker(project).cluster().getSynsets() );
 
-		// Create a vocabulary schema and add an empty
-		vocabulary = new Schema(0, name, author, null, null, description, false);
+		// Create a core schema and add an empty
+		vocabulary.setCore(  new Schema(0, name, author, null, null, description, false) );
 
-		vocabularyID = RepositoryManager.getClient().addSchema(vocabulary);
-		for (Synset s : synsets) {
+		vocabularyID = RepositoryManager.getClient().addSchema(vocabulary.getCore());
+		for (Synset s : vocabulary.getSynsetList()) {
 			SchemaElement newElement = new SchemaElement(); 
-			newElement.setName(createVocabTerm(s)); 
+			newElement.setName(createCoreTerm(s)); 
 			newElement.setBase(vocabularyID); 
 			Integer newElementID = RepositoryManager.getClient().addSchemaElement(newElement);
 			newElement.setId(newElementID); 
@@ -70,16 +70,12 @@ public class Unity {
 	 * @param s
 	 * @return
 	 */
-	private String createVocabTerm(Synset s) {
+	private String createCoreTerm(Synset s) {
 		return s.getGroup().get(0).elementName; 
 	}
 	
-	public Schema getVocabulary() {
+	public Vocabulary getVocabulary(){
 		return vocabulary;
-	}
-	
-	public ArrayList<Synset> getSynsets() {
-		return synsets;
 	}
 
 }
