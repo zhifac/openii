@@ -62,7 +62,6 @@ public class ManagerAction extends Action
 	static final int EXPORT_MAPPING = 21;
 	static final int DELETE_MAPPING = 22;
 	static final int GENERATE_VOCABULARY = 23;
-	static final int MATCH_MAKER = 24;
 	
 	/** Stores the menu manager to which this action is tied */
 	private ManagerMenuManager menuManager;
