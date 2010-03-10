@@ -42,7 +42,7 @@ public interface OpenIIListener
 	public void projectDeleted(Integer projectID);
 
 	/** Informs the listener that the specified projects have been merged together */
-	public void projectsMerged(ArrayList<Integer> mergedProjectIDs, Integer projectID);
+	public void projectsMerged(ArrayList<Integer> projectIDs, Integer mergedProjectID);
 	
 	/** Informs the listener that the specified mapping has been added */
 	public void mappingAdded(Integer mappingID);

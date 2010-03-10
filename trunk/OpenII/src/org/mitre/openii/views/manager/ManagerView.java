@@ -68,7 +68,7 @@ public class ManagerView extends ViewPart implements OpenIIListener, IDoubleClic
 	public void projectAdded(Integer mappingID) { viewer.refresh(); }
 	public void projectModified(Integer schemaID) { viewer.refresh(); }
 	public void projectDeleted(Integer mappingID) { viewer.refresh(); }
-	public void projectsMerged(ArrayList<Integer> mergedProjectIDs, Integer projectID) { viewer.refresh(); }
+	public void projectsMerged(ArrayList<Integer> projectIDs, Integer mergedProjectID) { viewer.refresh(); }
 	public void mappingAdded(Integer mappingID) { viewer.refresh(); }
 	public void mappingDeleted(Integer mappingID) { viewer.refresh(); }
 	public void mappingModified(Integer mappingID) { viewer.refresh(); }

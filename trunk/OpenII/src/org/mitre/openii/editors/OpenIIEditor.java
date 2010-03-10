@@ -96,7 +96,7 @@ abstract public class OpenIIEditor extends EditorPart implements OpenIIListener
 	public void tagModified(Integer tagID) {}
 	public void projectAdded(Integer mappingID) {}
 	public void projectModified(Integer mappingID) {}
-	public void projectsMerged(ArrayList<Integer> mergedProjectIDs, Integer projectID) {}
+	public void projectsMerged(ArrayList<Integer> projectIDs, Integer mergedProjectID) {}
 	public void mappingAdded(Integer mappingID) {}
 	public void mappingModified(Integer mappingID) {}
 }

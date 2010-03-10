@@ -325,7 +325,7 @@ public class OpenIIManager
 	/** Merges the specified projects */
 	public static Integer mergeProjects(String name, String description, String author, ArrayList<Project> projects)
 	{		
-		Integer projectID = null;
+		Integer mergedProjectID = null;
 		try {
 			// Gather up the list of schemas and mapping cells in the merged project
 			HashSet<ProjectSchema> schemas = new HashSet<ProjectSchema>();
@@ -346,9 +346,9 @@ public class OpenIIManager
 			}
 			
 			// Handles the creation of the project
-			Project project = new Project(null,name,description,author,schemas.toArray(new ProjectSchema[0]));
-			projectID = RepositoryManager.getClient().addProject(project);
-			if(projectID==null) throw new Exception();
+			Project mergedProject = new Project(null,name,description,author,schemas.toArray(new ProjectSchema[0]));
+			mergedProjectID = RepositoryManager.getClient().addProject(mergedProject);
+			if(mergedProjectID==null) throw new Exception();
 			
 			// Handles the creation of the mappings
 			for(String key : mappings.keySet())
@@ -356,7 +356,7 @@ public class OpenIIManager
 				// Stores the mapping
 				Integer sourceID = Integer.parseInt(key.replaceAll("_.*",""));
 				Integer targetID = Integer.parseInt(key.replaceAll(".*_",""));
-				Mapping mapping = new Mapping(null,projectID,sourceID,targetID);
+				Mapping mapping = new Mapping(null,mergedProjectID,sourceID,targetID);
 				Integer mappingID = RepositoryManager.getClient().addMapping(mapping);
 				if(mappingID==null) throw new Exception();
 			
@@ -366,7 +366,15 @@ public class OpenIIManager
 				if(!OpenIIManager.saveMappingCells(mappingID, mappingCells))
 					throw new Exception();
 			}
-		} catch(Exception e) { if(projectID!=null) try { RepositoryManager.getClient().deleteProject(projectID); } catch(Exception e2) {} }
+			
+			// Inform others that the projects have been merged
+			ArrayList<Integer> projectIDs = new ArrayList<Integer>();
+			for(Project project : projects) projectIDs.add(project.getId());
+			fireProjectsMerged(projectIDs,mergedProjectID);
+			return mergedProjectID;
+			
+		}
+		catch(Exception e) { if(mergedProjectID!=null) try { RepositoryManager.getClient().deleteProject(mergedProjectID); } catch(Exception e2) {} }
 		return null;
 	}
 	
@@ -383,8 +391,8 @@ public class OpenIIManager
 		{ for(OpenIIListener listener : listeners.get()) listener.projectDeleted(projectID); }
 	
 	/** Inform listeners that projects were merged */
-	public static void fireProjectsMerged(ArrayList<Integer> mergedProjectIDs, Integer projectID)
-		{ for(OpenIIListener listener : listeners.get()) listener.projectsMerged(mergedProjectIDs, projectID); }
+	public static void fireProjectsMerged(ArrayList<Integer> projectIDs, Integer mergedProjectID)
+		{ for(OpenIIListener listener : listeners.get()) listener.projectsMerged(projectIDs, mergedProjectID); }
 
 	//------------ Mapping Functionality -------------
 
