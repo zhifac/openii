@@ -1,5 +1,7 @@
 package org.mitre.openii.editors;
 
+import java.util.ArrayList;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IEditorInput;
@@ -94,6 +96,7 @@ abstract public class OpenIIEditor extends EditorPart implements OpenIIListener
 	public void tagModified(Integer tagID) {}
 	public void projectAdded(Integer mappingID) {}
 	public void projectModified(Integer mappingID) {}
+	public void projectsMerged(ArrayList<Integer> mergedProjectIDs, Integer projectID) {}
 	public void mappingAdded(Integer mappingID) {}
 	public void mappingModified(Integer mappingID) {}
 }

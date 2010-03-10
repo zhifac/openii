@@ -1,5 +1,7 @@
 package org.mitre.openii.model;
 
+import java.util.ArrayList;
+
 /** Interface used by objects listening to the OpenII model */
 public interface OpenIIListener
 {
@@ -32,12 +34,15 @@ public interface OpenIIListener
 	
 	/** Informs the listener that the specified project has been added */
 	public void projectAdded(Integer projectID);
-
+	
 	/** Informs the listener that the specified project has been modified */
 	public void projectModified(Integer projectID);
 	
 	/** Informs the listener that the specified project has been deleted */
 	public void projectDeleted(Integer projectID);
+
+	/** Informs the listener that the specified projects have been merged together */
+	public void projectsMerged(ArrayList<Integer> mergedProjectIDs, Integer projectID);
 	
 	/** Informs the listener that the specified mapping has been added */
 	public void mappingAdded(Integer mappingID);
