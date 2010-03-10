@@ -36,8 +36,9 @@ public class GalaxyManager
 		public void tagDeleted(Integer tagID) {}
 		public void tagModified(Integer tagID) {}
 		public void projectAdded(Integer projectID) {}
-		public void projectDeleted(Integer projectID) {}
 		public void projectModified(Integer projectID) {}		
+		public void projectDeleted(Integer projectID) {}
+		public void projectsMerged(ArrayList<Integer> mergedProjectIDs, Integer projectID) {}
 		public void mappingAdded(Integer mappingID) {}
 		public void mappingDeleted(Integer mappingID) {}
 		public void mappingModified(Integer mappingID) {}		

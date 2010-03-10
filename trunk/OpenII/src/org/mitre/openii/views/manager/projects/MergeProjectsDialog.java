@@ -1,11 +1,8 @@
 package org.mitre.openii.views.manager.projects;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -32,10 +29,7 @@ import org.mitre.openii.application.OpenIIActivator;
 import org.mitre.openii.model.OpenIIManager;
 import org.mitre.openii.widgets.BasicWidgets;
 import org.mitre.openii.widgets.WidgetUtilities;
-import org.mitre.schemastore.model.Mapping;
-import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.Project;
-import org.mitre.schemastore.model.ProjectSchema;
 
 /** Constructs the Merge Projects Dialog */
 public class MergeProjectsDialog extends Dialog implements ModifyListener
@@ -75,20 +69,6 @@ public class MergeProjectsDialog extends Dialog implements ModifyListener
 		public void widgetSelected(SelectionEvent e)
 			{ validateFields(); }
 	}
-
-	/** Private class for comparing mapping cells */
-	private class MappingCellComparator implements Comparator<MappingCell>
-	{
-		public int compare(MappingCell mappingCell1, MappingCell mappingCell2)
-		{
-			// First prioritize validated mapping cells over unvalidated mapping cells
-			if(mappingCell1.getValidated()!=mappingCell2.getValidated())
-				return mappingCell2.getValidated().compareTo(mappingCell1.getValidated());
-
-			// Next prioritize higher scores over lower scores
-			return mappingCell2.getScore().compareTo(mappingCell1.getScore());
-		}
-	}
 	
 	// Stores the various dialog fields
 	private Text nameField = null;
@@ -119,34 +99,6 @@ public class MergeProjectsDialog extends Dialog implements ModifyListener
 			projectList.add(project);
 		}
 		return projects;
-	}
-
-	/** Private class for merging the mapping cells */
-	private ArrayList<MappingCell> mergeMappingCells(ArrayList<MappingCell> mappingCells)
-	{
-		// Group together mapping cells in need of merging
-		HashMap<String,ArrayList<MappingCell>> mappingCellHash = new HashMap<String,ArrayList<MappingCell>>();
-		for(MappingCell mappingCell : mappingCells)
-		{
-			// Generate hash key
-			Integer element1 = mappingCell.getFirstInput();
-			Integer element2 = mappingCell.getOutput();
-			String key = element1<element2 ? element1+"-"+element2 : element2+"-"+element1;
-			
-			// Place mapping cell in hash map
-			ArrayList<MappingCell> mappingCellList = mappingCellHash.get(key);
-			if(mappingCellList==null) mappingCellHash.put(key, mappingCellList = new ArrayList<MappingCell>());
-			mappingCellList.add(mappingCell);
-		}
-		
-		// Merge mapping cells into single list
-		ArrayList<MappingCell> mergedMappingCells = new ArrayList<MappingCell>();
-		for(ArrayList<MappingCell> mappingCellList : mappingCellHash.values())
-		{
-			Collections.sort(mappingCellList, new MappingCellComparator());
-			mergedMappingCells.add(mappingCellList.get(0));
-		}
-		return mergedMappingCells;
 	}
 	
 	/** Constructs the dialog */
@@ -285,66 +237,21 @@ public class MergeProjectsDialog extends Dialog implements ModifyListener
 		String description = descriptionField.getText();	
 		
 		// Gather up the list of schemas and mapping cells in the merged project
-		HashSet<ProjectSchema> schemas = new HashSet<ProjectSchema>();
-		HashMap<String,ArrayList<MappingCell>> mappings = new HashMap<String,ArrayList<MappingCell>>();
+		ArrayList<Project> projects = new ArrayList<Project>();
 		for(ProjectCheckbox checkbox : checkboxes)
-			if(checkbox.isSelected())
-			{
-				// Add schemas to the schema list
-				schemas.addAll(Arrays.asList(checkbox.getProject().getSchemas()));
-
-				// Add mapping cells to the mapping list
-				for(Mapping mapping : OpenIIManager.getMappings(checkbox.getProject().getId()))
-				{
-					String key = mapping.getSourceId() + "_" + mapping.getTargetId();
-					ArrayList<MappingCell> mappingCells = mappings.get(key);
-					if(mappingCells==null) mappings.put(key, mappingCells = new ArrayList<MappingCell>());
-					mappingCells.addAll(OpenIIManager.getMappingCells(mapping.getId()));
-				}
-			}
-		
-		// Stores the project and underlying mappings
-		Integer projectID = null;
-		try {
-			// Handles the creation of the project
-			Project project = new Project(null,name,description,author,schemas.toArray(new ProjectSchema[0]));
-			projectID = OpenIIManager.addProject(project);
-			if(projectID==null) throw new Exception();
-			
-			// Handles the creation of the mappings
-			for(String key : mappings.keySet())
-			{
-				// Stores the mapping
-				Integer sourceID = Integer.parseInt(key.replaceAll("_.*",""));
-				Integer targetID = Integer.parseInt(key.replaceAll(".*_",""));
-				Mapping mapping = new Mapping(null,projectID,sourceID,targetID);
-				Integer mappingID = OpenIIManager.addMapping(mapping);
-				if(mappingID==null) throw new Exception();
-				
-				// Stores the mapping cells
-				ArrayList<MappingCell> mappingCells = mappings.get(key);
-				mappingCells = mergeMappingCells(mappingCells);
-				if(!OpenIIManager.saveMappingCells(mappingID, mappingCells))
-					throw new Exception();
-			}
-
-			// Close the dialog
-			getShell().dispose();
-		}
+			if(checkbox.isSelected()) projects.add(checkbox.getProject());
 		
 		// Handles the failure to create the project and mapping cells
+		try {
+			OpenIIManager.mergeProjects(name, description, author, projects);
+			getShell().dispose();
+		}
 		catch(Exception e)
 		{
-			// Delete the created project
-			OpenIIManager.deleteProject(projectID);
-
-			// Generate the message to be displayed
-			String message = "Unable to generate project '" + name + "'";
-			
 			// Display the error message
 			MessageBox messageBox = new MessageBox(getShell(),SWT.ERROR);
 			messageBox.setText("Mapping Generation Error");
-			messageBox.setMessage(message);
+			messageBox.setMessage("Unable to generate project '" + name + "'");
 			messageBox.open();
 		}
 	}

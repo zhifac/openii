@@ -32,7 +32,6 @@ import org.mitre.affinity.view.venn_diagram.model.IMatchScoreComputer;
 import org.mitre.affinity.view.venn_diagram.model.VennDiagramSets;
 import org.mitre.affinity.view.venn_diagram.model.VennDiagramSetsMatrix;
 import org.mitre.harmony.matchers.mergers.VoteMerger;
-import org.mitre.harmony.matchers.voters.BagMatcher;
 import org.mitre.harmony.matchers.voters.DocumentationMatcher;
 import org.mitre.harmony.matchers.voters.EditDistanceMatcher;
 import org.mitre.harmony.matchers.voters.ExactStructureMatcher;

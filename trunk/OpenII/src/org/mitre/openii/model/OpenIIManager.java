@@ -1,15 +1,19 @@
 package org.mitre.openii.model;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 
 import org.eclipse.core.runtime.Preferences;
 import org.mitre.openii.application.OpenIIActivator;
+import org.mitre.openii.model.controllers.MappingCellMerger;
 import org.mitre.schemastore.model.DataSource;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.Project;
+import org.mitre.schemastore.model.ProjectSchema;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.Tag;
 import org.mitre.schemastore.model.schemaInfo.SchemaInfo;
@@ -317,6 +321,54 @@ public class OpenIIManager
 		} catch(Exception e) {}
 		return false;
 	}
+
+	/** Merges the specified projects */
+	public static Integer mergeProjects(String name, String description, String author, ArrayList<Project> projects)
+	{		
+		Integer projectID = null;
+		try {
+			// Gather up the list of schemas and mapping cells in the merged project
+			HashSet<ProjectSchema> schemas = new HashSet<ProjectSchema>();
+			HashMap<String,ArrayList<MappingCell>> mappings = new HashMap<String,ArrayList<MappingCell>>();
+			for(Project project : projects)
+			{
+				// Add schemas to the schema list
+				schemas.addAll(Arrays.asList(project.getSchemas()));
+
+				// Add mapping cells to the mapping list
+				for(Mapping mapping : OpenIIManager.getMappings(project.getId()))
+				{
+					String key = mapping.getSourceId() + "_" + mapping.getTargetId();
+					ArrayList<MappingCell> mappingCells = mappings.get(key);
+					if(mappingCells==null) mappings.put(key, mappingCells = new ArrayList<MappingCell>());
+					mappingCells.addAll(OpenIIManager.getMappingCells(mapping.getId()));
+				}
+			}
+			
+			// Handles the creation of the project
+			Project project = new Project(null,name,description,author,schemas.toArray(new ProjectSchema[0]));
+			projectID = RepositoryManager.getClient().addProject(project);
+			if(projectID==null) throw new Exception();
+			
+			// Handles the creation of the mappings
+			for(String key : mappings.keySet())
+			{
+				// Stores the mapping
+				Integer sourceID = Integer.parseInt(key.replaceAll("_.*",""));
+				Integer targetID = Integer.parseInt(key.replaceAll(".*_",""));
+				Mapping mapping = new Mapping(null,projectID,sourceID,targetID);
+				Integer mappingID = RepositoryManager.getClient().addMapping(mapping);
+				if(mappingID==null) throw new Exception();
+			
+				// Stores the mapping cells
+				ArrayList<MappingCell> mappingCells = mappings.get(key);
+				mappingCells = MappingCellMerger.merge(mappingCells);
+				if(!OpenIIManager.saveMappingCells(mappingID, mappingCells))
+					throw new Exception();
+			}
+		} catch(Exception e) { if(projectID!=null) try { RepositoryManager.getClient().deleteProject(projectID); } catch(Exception e2) {} }
+		return null;
+	}
 	
 	/** Inform listeners that project was added */
 	public static void fireProjectAdded(Project project)
@@ -329,6 +381,10 @@ public class OpenIIManager
 	/** Inform listeners that project was removed */
 	public static void fireProjectDeleted(Integer projectID)
 		{ for(OpenIIListener listener : listeners.get()) listener.projectDeleted(projectID); }
+	
+	/** Inform listeners that projects were merged */
+	public static void fireProjectsMerged(ArrayList<Integer> mergedProjectIDs, Integer projectID)
+		{ for(OpenIIListener listener : listeners.get()) listener.projectsMerged(mergedProjectIDs, projectID); }
 
 	//------------ Mapping Functionality -------------
 
