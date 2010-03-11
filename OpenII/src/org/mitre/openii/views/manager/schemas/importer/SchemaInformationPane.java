@@ -113,8 +113,8 @@ public class SchemaInformationPane implements SelectionListener
 	{
 		boolean valid = uriField.getTextField().getText().length()>0 && uriField.isValid();
 		valid &= uriType.getOption().equals("Directory") || nameField.getText().length()>0;
-		valid &= authorField.getText().length()>0;
-		return valid;		
+		valid &= !authorField.getEnabled() || authorField.getText().length()>0;
+		return valid;
 	}
 
 	/** Handles the toggling of the URI type */
