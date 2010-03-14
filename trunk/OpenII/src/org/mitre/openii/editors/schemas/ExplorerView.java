@@ -77,7 +77,7 @@ public class ExplorerView extends OpenIIEditor {
 			    	  	String location = event.location;
 			    	  	System.err.println("Browser changing location: " + location);
 			    	  	
-			    	  	if(location.indexOf("file:") != -1) return; 
+			    	  	if(location.indexOf("file:") == -1) return; 
 			    	  	explorer.generatePage(SchemaExplorer.elementIDFromURL(location));
 			    	  	
 			    	  	// For some reason, if this isn't called then the browser has funky display issues.
