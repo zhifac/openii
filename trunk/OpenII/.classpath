@@ -1,17 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/J2SE-1.5"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry exported="true" kind="lib" path="lib/SchemaStoreClient.jar" sourcepath="/SchemaStoreClient/src"/>
 	<classpathentry kind="lib" path="lib/SchemaStorePorters.jar" sourcepath="/SchemaStoreClient"/>
-	<classpathentry kind="lib" path="lib/affinity/Prefuse.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/Harmony.jar" sourcepath="OpenIIsrc.zip"/>
+	<classpathentry exported="true" kind="lib" path="lib/affinity/Prefuse.jar" sourcepath="OpenIIsrc.zip"/>
 	<classpathentry kind="lib" path="lib/Galaxy.jar" sourcepath="/Galaxy/WebContent"/>
-	<classpathentry kind="lib" path="lib/RMap.jar"/>
-	<classpathentry kind="lib" path="lib/affinity/edu.iu.iv.visualization.dendrogram.jar"/>
-	<classpathentry kind="lib" path="lib/affinity/ivccore.jar"/>
-	<classpathentry kind="lib" path="lib/affinity/Affinity.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/RMap.jar" sourcepath="OpenIIsrc.zip"/>
+	<classpathentry exported="true" kind="lib" path="lib/affinity/Affinity.jar" sourcepath="OpenIIsrc.zip"/>
+	<classpathentry exported="true" kind="lib" path="lib/affinity/edu.iu.iv.visualization.dendrogram.jar" sourcepath="OpenIIsrc.zip"/>
+	<classpathentry exported="true" kind="lib" path="lib/affinity/ivccore.jar" sourcepath="OpenIIsrc.zip"/>
 	<classpathentry kind="lib" path="lib/SchemaStoreWarehouse.jar" sourcepath="/SchemaStoreWarehouse"/>
-	<classpathentry kind="lib" path="lib/Harmony.jar"/>
+	<classpathentry kind="lib" path="lib/PLUSv2.jar"/>
+	<classpathentry kind="lib" path="lib/mysql-connector-java-5.0.7-bin.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
