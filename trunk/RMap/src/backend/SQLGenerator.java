@@ -1,32 +1,27 @@
 // Copyright 2008 The MITRE Corporation. ALL RIGHTS RESERVED.
 package backend;
+
 import java.util.*;
 import java.util.regex.Pattern;
 
 import org.mitre.schemastore.model.*;
-
 import org.mitre.schemastore.model.mapfunctions.*;
 import org.mitre.schemastore.model.mappingInfo.MappingInfo;
 import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
-
 import GUI.SQLGeneratorGUI;
 
-
 public class SQLGenerator {
-
 	public static final String TABLE_CHAR = "T";
 	public static final String VARIABLE_CHAR ="V";
 	public static final String SKOLEM_TABLE_CHAR = "SK";
 	public static String DELIM = "\"";
 
-
-	public static Object[] generateDependencySQLScript(Dependency depend, String targetDB){
-
+	public static Object[] generateDependencySQLScript(Project project, Dependency depend, String targetDB) {
 		Object[] retVal = new Object[3];
 		ArrayList<String> cleanup = new ArrayList<String>();
 		HashMap<Integer,Boolean> needToGen = new HashMap<Integer,Boolean>();
 		HashMap<Integer,Boolean> needToGenSkolem = new HashMap<Integer,Boolean>();
-		HashMap<Integer,String> statements = generateStatements(depend, needToGen,needToGenSkolem);
+		HashMap<Integer,String> statements = generateStatements(project, depend, needToGen, needToGenSkolem);
 		ArrayList<String> skolemStatements = createSkolemTables(depend, cleanup, needToGenSkolem, targetDB);
 
 		retVal[0] = skolemStatements;
@@ -35,15 +30,15 @@ public class SQLGenerator {
 		return retVal;
 	}
 
-	static private ArrayList<Entity> topologicalSort (ArrayList<Dependency> depends){
-
+	static private ArrayList<Entity> topologicalSort (ArrayList<Dependency> depends) {
 		HashMap<Integer,Entity> entitiesBySSID = new HashMap<Integer,Entity>();
 		ArrayList<Relationship> relsWithSSID = new ArrayList<Relationship>();
-		for (Dependency depend : depends){
 
+		for (Dependency depend : depends) {
 			// build the UNION of Entities from SchemaStore schemaInfos across all dependencies
-			for (Entity entity : depend.getTargetLogRel().getEntitySet())
+			for (Entity entity : depend.getTargetLogRel().getEntitySet()) {
 				entitiesBySSID.put(entity.getId(),entity);
+			}
 
 			// build the UNION of all relationships across the schemaInfo
 			// NOTE:  need to copy the relationship so LEFT and RIGHT in SSID-space are consistent
@@ -58,17 +53,18 @@ public class SQLGenerator {
 		boolean proceed = true;
 		ArrayList<Entity> retVal = new ArrayList<Entity>();
 
-		while (proceed){
-
+		while (proceed) {
 			 // find all entities e without rel r s.t. r.rightID == e.id
 			ArrayList<Entity> leafEntities = new ArrayList<Entity>();
 			ArrayList<Integer> entityIDList = new ArrayList<Integer>(entitiesBySSID.keySet());
 			for (Integer entityID : entityIDList){
 				boolean isLeaf = true;
-				for (Relationship rel : relsWithSSID)
-					if (rel.getLeftID().equals(entityID))
+				for (Relationship rel : relsWithSSID) {
+					if (rel.getLeftID().equals(entityID)) {
 						isLeaf = false;
-				if (isLeaf){
+					}
+				}
+				if (isLeaf) {
 					leafEntities.add(entitiesBySSID.get(entityID));
 					entitiesBySSID.remove(entityID);
 				}
@@ -78,12 +74,13 @@ public class SQLGenerator {
 
 			// for each relationship rel, check that rel.rightID not removed from entity set
 			ArrayList<Relationship> relsLeft = new ArrayList<Relationship>();
-			for (Relationship rel : relsWithSSID)
-				if (entitiesBySSID.get(rel.getRightID()) != null)
+			for (Relationship rel : relsWithSSID) {
+				if (entitiesBySSID.get(rel.getRightID()) != null) {
 					relsLeft.add(rel);
+				}
+			}
 
 			relsWithSSID = relsLeft;
-
 		}
 		return retVal;
 	}
@@ -96,17 +93,16 @@ public class SQLGenerator {
 	 * @return final executable SQL script (each line as separate string)
 	 */
 	@SuppressWarnings("unchecked")
-	static public ArrayList<String> generateFinalSQLScript (ArrayList<Dependency> depends, String targetDB){
-
+	static public ArrayList<String> generateFinalSQLScript(Project project, ArrayList<Dependency> depends, String targetDB) {
 		ArrayList<String> retVal = new ArrayList<String>();
 
 		/** Perform topological sort of entities */
 		ArrayList<Entity> toplogicalSortedEntities = topologicalSort(depends);
 
-
 		/**********************************************************************/
-		if (targetDB.equals(SQLGeneratorGUI.POSTGRES_TYPE))
+		if (targetDB.equals(SQLGeneratorGUI.POSTGRES_TYPE)) {
 			retVal.add(new String("CREATE TEMPORARY SEQUENCE " + "seqImport" + ";"));
+		}
 
 		ArrayList<String> finalSkolemStatements = new ArrayList<String>();
 		ArrayList<String> finalSelectStatements = new ArrayList<String>();
@@ -114,10 +110,9 @@ public class SQLGenerator {
 
 		HashMap <Integer, String> selectStatementBySSID = new HashMap<Integer,String>();
 
-		for (Dependency depend : depends){
-
+		for (Dependency depend : depends) {
 			// create SQL statement block for each dependency
-			Object[] dependStatements  = generateDependencySQLScript(depend, targetDB);
+			Object[] dependStatements  = generateDependencySQLScript(project, depend, targetDB);
 			finalSkolemStatements.addAll((ArrayList<String>)dependStatements[0]);
 			finalCleanupStatements.addAll((ArrayList<String>)dependStatements[2]);
 
@@ -126,9 +121,9 @@ public class SQLGenerator {
 				String currStmt = ((HashMap<Integer,String>)dependStatements[1]).get(mapID);
 				Integer ssID = depend.getTargetLogRel().getIDmappings_LR_to_SS().get(mapID);
 				String unionStmt = selectStatementBySSID.get(ssID);
-				if (unionStmt == null)
+				if (unionStmt == null) {
 					unionStmt = currStmt.replace(";","");
-				else{
+				} else {
 					currStmt = currStmt.replace(";", "");
 					Pattern myPattern = Pattern.compile("SELECT DISTINCT");
 					String[] strArray = myPattern.split(currStmt);
@@ -140,12 +135,14 @@ public class SQLGenerator {
 		} // end for each dependency block
 
 
-		for (Entity entity : toplogicalSortedEntities){
-			if  (selectStatementBySSID.get(entity.getId()) != null)
+		for (Entity entity : toplogicalSortedEntities) {
+			if  (selectStatementBySSID.get(entity.getId()) != null) {
 				finalSelectStatements.add(selectStatementBySSID.get(entity.getId()) + ";");
+			}
 		}
-		if (targetDB.equals(SQLGeneratorGUI.POSTGRES_TYPE))
+		if (targetDB.equals(SQLGeneratorGUI.POSTGRES_TYPE)) {
 			finalCleanupStatements.add(new String("DROP SEQUENCE " + "seqImport" + ";"));
+		}
 
 		retVal.addAll(finalSkolemStatements);
 		retVal.addAll(finalSelectStatements);
@@ -168,10 +165,8 @@ public class SQLGenerator {
 		HierarchicalSchemaInfo sourceSchemaInfo = depend.getSourceLogRel().getMappingSchemaInfo();
 
 		// check for each source entity whether we need to create skolem table or not
-		for (Integer entityID : needToGenSkolem.keySet()){
-
-			if (needToGenSkolem.get(entityID) != null && needToGenSkolem.get(entityID) == true){
-
+		for (Integer entityID : needToGenSkolem.keySet()) {
+			if (needToGenSkolem.get(entityID) != null && needToGenSkolem.get(entityID) == true) {
 				// generate a skolem table that has value for EVERY covered attribute
 				String skolemTableName = SQLGenerator.SKOLEM_TABLE_CHAR  + entityID;
 				String createTable = new String("CREATE TABLE " + DELIM + skolemTableName + DELIM + " ( ");
@@ -182,27 +177,27 @@ public class SQLGenerator {
 
 				// Generate CREATE TABLE statement for skolem table
 				int index = 0;
-				for (int i=0 ; i < depend.getCoveredCorrespondences().size(); i++){
+				for (int i=0 ; i < depend.getCoveredCorrespondences().size(); i++) {
 					MappingCell cell = depend.getCoveredCorrespondences().get(i);
 
 					// get the domain type for attribute
-					for (Integer inputId : cell.getInput()){
+					for (Integer inputId : cell.getInput()) {
 						String domainName = "String";
-						if (sourceSchemaInfo.getElement(inputId) instanceof Relationship){
+						if (sourceSchemaInfo.getElement(inputId) instanceof Relationship) {
 							Integer entityId = ((Relationship)sourceSchemaInfo.getElement(inputId)).getRightID();
 							domainName = sourceSchemaInfo.getElement(getKey(entityId, sourceSchemaInfo).getDomainID()).getName();
 						}
-						else if (sourceSchemaInfo.getElement(inputId) instanceof Attribute){
+						else if (sourceSchemaInfo.getElement(inputId) instanceof Attribute) {
 							domainName = sourceSchemaInfo.getElement(((Attribute)sourceSchemaInfo.getElement(inputId)).getDomainID()).getName();
 						}
-						else{
+						else {
 							System.err.println("[E] SQLGenerator -- error in generated SQL -- no domain assigned skolem attribute");
 						}
 						//String domainName = sourceSchemaGraph.getElement(((Attribute)sourceSchemaGraph.getElement(inputId)).getDomainID()).getName();
 						createTable += DELIM + SQLGenerator.VARIABLE_CHAR + index + DELIM + " " + domainName;
 						index++;
 					}
-					if (i < depend.getCoveredCorrespondences().size()-1) createTable += ", ";
+					if (i < depend.getCoveredCorrespondences().size()-1) { createTable += ", "; }
 
 				}
 				createTable += " );";
@@ -210,9 +205,9 @@ public class SQLGenerator {
 				cleanup.add(new String("DROP TABLE " + DELIM + skolemTableName + DELIM +";"));
 
 				String insertInto= "INSERT INTO " + DELIM + skolemTableName + DELIM + " ( ";
-				for (int i=0 ; i < depend.getCoveredCorrespondences().size(); i++){
+				for (int i=0 ; i < depend.getCoveredCorrespondences().size(); i++) {
 					insertInto += DELIM + SQLGenerator.VARIABLE_CHAR + i + DELIM;
-					if (i<depend.getCoveredCorrespondences().size()-1) insertInto += ", ";
+					if (i<depend.getCoveredCorrespondences().size()-1) { insertInto += ", "; }
 				}
 				insertInto += " ) ";
 
@@ -253,35 +248,35 @@ public class SQLGenerator {
 	// where SKOLEM tables are to be used for Attribute, generate SELECT statement from appropriate Skolem table
 	// to populate the Attribute
 	@SuppressWarnings("unchecked")
-	private static HashMap<Integer,String> generateStatements(Dependency depend, HashMap<Integer,Boolean> needToGen, HashMap<Integer,Boolean> needToGenSkolem){
-
+	private static HashMap<Integer,String> generateStatements(Project project, Dependency depend, HashMap<Integer,Boolean> needToGen, HashMap<Integer,Boolean> needToGenSkolem) {
 		HierarchicalSchemaInfo sourceSchemaGraph = depend.getSourceLogRel().getMappingSchemaInfo();
 		HierarchicalSchemaInfo targetSchemaGraph = depend.getTargetLogRel().getMappingSchemaInfo();
 		HashMap<Integer, String> retVal = new HashMap<Integer,String>();
 
-		//create the MappingDefinition for use when doing mapping functions
-		Object[] mappingDefData = depend.generateMapping();
-		MappingInfo mappingDefinition = new MappingInfo( (Mapping)mappingDefData[0],(ArrayList<MappingCell>)mappingDefData[1], (HierarchicalSchemaInfo)mappingDefData[2], (HierarchicalSchemaInfo)mappingDefData[3]);
+		// create the MappingDefinition for use when doing mapping functions
+		
+		Object[] mappingDefData = depend.generateMapping(project);
+		MappingInfo mappingDefinition = new MappingInfo(project, (ArrayList<MappingCell>)mappingDefData[1], (HierarchicalSchemaInfo)mappingDefData[2], (HierarchicalSchemaInfo)mappingDefData[3]);
 
 		/** Determine which target entities require generation */
 		/** PASS 1:  Determine which entities have correspondences */
-		for(Entity path : depend.getTargetLogRel().getMappingSchemaEntitySet()){
+		for(Entity path : depend.getTargetLogRel().getMappingSchemaEntitySet()) {
 
 			// CASE: target entity has generated values
-			for (MappingCell cell : depend.getCoveredCorrespondences()){
+			for (MappingCell cell : depend.getCoveredCorrespondences()) {
 				Integer outputEntityId = null;
 
-				if (targetSchemaGraph.getElement(cell.getOutput()) instanceof Relationship)
+				if (targetSchemaGraph.getElement(cell.getOutput()) instanceof Relationship) {
 					outputEntityId = ((Relationship)targetSchemaGraph.getElement(cell.getOutput())).getLeftID();
-
-				else if (targetSchemaGraph.getElement(cell.getOutput()) instanceof Attribute)
+				} else if (targetSchemaGraph.getElement(cell.getOutput()) instanceof Attribute) {
 					outputEntityId = targetSchemaGraph.getEntity(cell.getOutput()).getId();
-
-				else
+				} else {
 					System.err.println("[E] SQLGenerator: Error in Generated SQL -- have Entity as input");
+				}
 
-				if (outputEntityId.equals(path.getId()))
+				if (outputEntityId.equals(path.getId())) {
 					needToGen.put(path.getId(), true);
+				}
 			}
 		}
 		/** PASS 2: Determine which entities must be generated to satisfy FK dependencies (to entities identified in Pass 1)*/
@@ -318,8 +313,8 @@ public class SQLGenerator {
 						targetChild = (Attribute)child;
 
 					boolean seen = false;
-					for (MappingCell cell: depend.getCoveredCorrespondences()){
-						if (targetChild.getId().equals(cell.getOutput())){
+					for (MappingCell cell: depend.getCoveredCorrespondences()) {
+						if (targetChild.getId().equals(cell.getOutput())) {
 							Integer[] pathIds = new Integer[cell.getInput().length];
 							for (int j = 0; j<pathIds.length; j++){
 								if (sourceSchemaGraph.getElement(cell.getInput()[j]) instanceof Relationship){
@@ -332,20 +327,21 @@ public class SQLGenerator {
 									pathIds[j] = 0;
 									System.err.println("[E] SQLGenerator: Error in Generated SQL -- have Entity as input");
 								}
-
 							}
 
 							String[] colPrefixs = new String[pathIds.length];
-							for (int j=0; j<colPrefixs.length;j++)
+							for (int j=0; j<colPrefixs.length;j++) {
 								colPrefixs[j] = DELIM + SQLGenerator.TABLE_CHAR + pathIds[j] + DELIM + ".";
+							}
                             AbstractMappingFunction transform = FunctionManager.getFunction( cell.getFunctionClass() );
-                            //now the string can be built
+
+                            // now the string can be built
 							try {
 							    mapper = FunctionManager.getFunction( cell.getFunctionClass() );
                                 valueString = mapper.getRelationalString( colPrefixs, cell, mappingDefinition );
+                            } catch(Exception e) {
+                            	throw new RuntimeException(e);
                             }
-                            catch(Exception e)
-                            	{ throw new RuntimeException(e);}
 
 							seen = true;
 						}
