@@ -38,11 +38,6 @@ public class SearchDialog extends JDialog implements KeyListener
 	/** Stores the search side */
 	private OptionPane searchSide = null;
 	
-	// Stores the search dialog options
-//	private JRadioButton leftButton = new JRadioButton("Left");
-//	private JRadioButton rightButton = new JRadioButton("Right");	
-//	private JRadioButton bothButton = new JRadioButton("Both");
-	
 	/** Private class for defining the button pane */
 	private class ButtonPane extends AbstractButtonPane
 	{
