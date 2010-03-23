@@ -6,6 +6,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.ButtonGroup;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenu;
@@ -27,8 +29,8 @@ import org.mitre.harmony.view.dialogs.GettingStartedDialog;
 import org.mitre.harmony.view.dialogs.SearchDialog;
 import org.mitre.harmony.view.dialogs.SelectionDialog;
 import org.mitre.harmony.view.dialogs.matcher.MatcherMenu;
-import org.mitre.harmony.view.dialogs.porters.ExportMappingDialog;
-import org.mitre.harmony.view.dialogs.porters.ExportProjectDialog;
+import org.mitre.harmony.view.dialogs.porters.MappingExporterDialog;
+import org.mitre.harmony.view.dialogs.porters.ProjectExporterDialog;
 import org.mitre.harmony.view.dialogs.porters.ProjectImporterDialog;
 import org.mitre.harmony.view.dialogs.project.ProjectDialog;
 import org.mitre.harmony.view.dialogs.projects.LoadProjectDialog;
@@ -42,9 +44,34 @@ public class HarmonyMenuBar extends JMenuBar
 {	
 	/** Stores the Harmony model */
 	private HarmonyModel harmonyModel;
+
+	/** Create a abstract menu class */
+	private abstract class AbstractMenu extends JMenu
+	{
+		/** Constructs the menu */
+		private AbstractMenu(String label)
+			{ super(label); }
+		
+		/** Creates a menu item */
+		protected JMenuItem createMenuItem(String name, int mnemonic, Action action)
+		{
+			JMenuItem item = new JMenuItem(action);
+			item.setText(name);
+			item.setMnemonic(mnemonic);
+			return item;
+		}
+		
+		/** Creates a checkbox menu item */
+		protected JMenuItem createCheckboxItem(String name, boolean selected, Action action)
+		{
+			JMenuItem item = new JCheckBoxMenuItem(name,selected);
+			item.setAction(action);
+			return item;
+		}
+	}	
 	
 	/** Drop-down menu found under project menu bar heading */
-	private class ProjectMenu extends JMenu implements ActionListener, MenuListener
+	private class ProjectMenu extends AbstractMenu implements MenuListener
 	{
 		/** Stores a mapping menu item */
 		class MappingMenuItem extends JMenuItem implements ActionListener
@@ -57,17 +84,10 @@ public class HarmonyMenuBar extends JMenuBar
 
 			/** Handles the selection of a mapping menu item */
 			public void actionPerformed(ActionEvent e)
-				{ ExportMappingDialog.exportMapping(harmonyModel,mapping); }
+				{ MappingExporterDialog.exportMapping(harmonyModel,mapping); }
 		}
 		
-	    private JMenuItem newProject;		// Option to create a new project
-		private JMenuItem openProject;		// Option to open a created project
-		private JMenuItem saveProject;		// Option to save a created project
-		private JMenuItem configureProject;	// Option for managing the project configuration
-		private JMenuItem importProject;	// Option for importing a project
-		private JMenuItem exportProject;	// Option for exporting a project
-		private JMenu exportMapping;		// Option for exporting a mapping
-		private JMenuItem exitApp;			// Option to exit the Harmony application
+		private JMenu exportMappingMenu;	// Option for exporting a mapping
 		
 		/** Initializes the project drop-down menu */
 		private ProjectMenu()
@@ -79,249 +99,230 @@ public class HarmonyMenuBar extends JMenuBar
 			// Set up menu for stand-alone mode
 			if(harmonyModel.getBaseFrame() instanceof Harmony)
 			{	
-				// Intialize the export mapping menu
-				exportMapping = new JMenu("Export Mapping");
-				exportMapping.setMnemonic(KeyEvent.VK_M);
-				exportMapping.addMenuListener(this);
+				// Constructs the new, open, and save menu items
+				JMenuItem newProject = createMenuItem("New", KeyEvent.VK_N, new CreateProjectAction());
+				JMenuItem openProject = createMenuItem("Open...", KeyEvent.VK_O, new OpenProjectAction());
+				JMenuItem saveProject = createMenuItem("Save...", KeyEvent.VK_S, new SaveProjectAction());
 				
-				// Initialize project drop-down items
-			    newProject = new JMenuItem("New",KeyEvent.VK_N);
-				openProject = new JMenuItem("Open...",KeyEvent.VK_O);
-				saveProject = new JMenuItem("Save...",KeyEvent.VK_S);
-				configureProject = new JMenuItem("Configure...",KeyEvent.VK_C);
-				importProject = new JMenuItem("Import Project...",KeyEvent.VK_I);
-				exportProject = new JMenuItem("Export Project...",KeyEvent.VK_E);
-				exitApp = new JMenuItem("Exit",KeyEvent.VK_X);
+				// Initialize the import menu
+				JMenu importMenu = new JMenu("Import");
+				importMenu.setMnemonic(KeyEvent.VK_I);
+				importMenu.add(createMenuItem("Import Project", KeyEvent.VK_P, new ImportProjectAction()));
+				importMenu.add(createMenuItem("Import Mapping", KeyEvent.VK_M, new ImportMappingAction()));
+				
+				// Initialize the export mapping menu
+				exportMappingMenu = new JMenu("Export Mapping");
+				exportMappingMenu.setMnemonic(KeyEvent.VK_X);
+				exportMappingMenu.addMenuListener(this);
 	
-				// Set accelerator keys for the menu items
-				newProject.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, ActionEvent.CTRL_MASK));
-				openProject.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK));
-				saveProject.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK));
-				
-				// Attach action listeners to project drop-down items
-				newProject.addActionListener(this);
-				openProject.addActionListener(this);
-				saveProject.addActionListener(this);
-				configureProject.addActionListener(this);
-				importProject.addActionListener(this);
-				exportProject.addActionListener(this);
-				exitApp.addActionListener(this);
+				// Initialize the export menu
+				JMenu exportMenu = new JMenu("Export");
+				exportMenu.setMnemonic(KeyEvent.VK_E);
+				exportMenu.add(createMenuItem("Export Project", KeyEvent.VK_P, new ExportProjectAction()));
+				exportMenu.add(exportMappingMenu);
 				
 				// Add project drop-down items to project drop-down menu
 				add(newProject);
 				add(openProject);
 				add(saveProject);
 				addSeparator();
-				add(configureProject);
+				add(createMenuItem("Configure...", KeyEvent.VK_C, new ConfigurationAction()));
 				addSeparator();
-				add(importProject);
-				add(exportProject);
-				add(exportMapping);
+				add(importMenu);
+				add(exportMenu);
 				addSeparator();
-			    add(exitApp);
+			    add(createMenuItem("Exit", KeyEvent.VK_X, new ExitAction()));
+			    
+				// Set accelerator keys for the menu items
+				newProject.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, ActionEvent.CTRL_MASK));
+				openProject.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK));
+				saveProject.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK));
 			}
 
 			// Otherwise, set up menu to be embedded in OpenII
 			else
 			{
-				// Create the save mapping menu option
-				saveProject = new JMenuItem("Save",KeyEvent.VK_S);
-				saveProject.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK));
-				saveProject.addActionListener(this);
-
-				// Create the schema settings menu option
-				configureProject = new JMenuItem("Configure...",KeyEvent.VK_P);
-				configureProject.addActionListener(this);
+				// Constructs the save menu item
+				JMenuItem saveProject = createMenuItem("Save", KeyEvent.VK_S, new SaveProjectAction());
 				
 				// Add project drop-down items to project drop-down menu
 				add(saveProject);
 				addSeparator();
-				add(configureProject);
+				add(createMenuItem("Configure...", KeyEvent.VK_P, new ConfigurationAction()));
+
+				// Set accelerator keys for the save menu item
+				saveProject.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK));
 			}
 		}
 
 		/** Generates the sub-menu on the fly */
 		public void menuSelected(MenuEvent e)
 		{
-			exportMapping.removeAll();
+			exportMappingMenu.removeAll();
 			for(ProjectMapping mapping : harmonyModel.getMappingManager().getMappings())
-			{
-				JMenuItem menuItem = new MappingMenuItem(mapping);
-				menuItem.addActionListener(this);
-				exportMapping.add(menuItem);
-			}
-			exportMapping.revalidate();
+				exportMappingMenu.add(new MappingMenuItem(mapping));
+			exportMappingMenu.revalidate();
 		}
-		
-		/** Handles the project drop-down action selected by the user */
-	    public void actionPerformed(ActionEvent e)
+	    
+	    /** Attempts to save old projects before opening new projects */
+	    private boolean saveOldProject()
 	    {
-	    	Object source = e.getSource();
-	    	
-	    	// If action overwrites old data, ask user to save old data first
-	    	if(source==newProject || source==openProject)
-	    	{
-	    		int option = 1;
-	    		if(harmonyModel.getProjectManager().isModified())
-	        		option = JOptionPane.showConfirmDialog(harmonyModel.getBaseFrame(),
-	        			"This mapping has been modified.  Do you want to save changes?",
-						"Save Mapping", JOptionPane.YES_NO_CANCEL_OPTION,
-						JOptionPane.WARNING_MESSAGE);
-	    		if(option==2) return;
-	    		if(option==0) new SaveMappingDialog(harmonyModel);
-	    	}
-	    		
-	    	// Create a new project
-	    	if(source==newProject)
-	    		{ ProjectController.newProject(harmonyModel); new ProjectDialog(harmonyModel); }
-	    	
-	    	// Open a project
-	    	else if(source==openProject)
-	    		{ new LoadProjectDialog(harmonyModel); }
-	    	
-	    	// Save a project
-	    	else if(source==saveProject)
-	    	{
+    		int option = 1;
+    		if(harmonyModel.getProjectManager().isModified())
+        		option = JOptionPane.showConfirmDialog(harmonyModel.getBaseFrame(),
+        			"This mapping has been modified.  Do you want to save changes?",
+					"Save Mapping", JOptionPane.YES_NO_CANCEL_OPTION,
+					JOptionPane.WARNING_MESSAGE);
+    		if(option==2) return false;
+    		if(option==0) new SaveMappingDialog(harmonyModel);
+    		return true;
+	    }
+	    
+		/** Action for creating a new project */
+		private class CreateProjectAction extends AbstractAction
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				if(saveOldProject())
+					{ ProjectController.newProject(harmonyModel); new ProjectDialog(harmonyModel); }
+			}
+		}
+	    
+		/** Action for opening a project */
+		private class OpenProjectAction extends AbstractAction
+		{
+			public void actionPerformed(ActionEvent e)
+				{ if(saveOldProject()) new LoadProjectDialog(harmonyModel); }
+		}
+	    
+		/** Action for saving the project */
+		private class SaveProjectAction extends AbstractAction
+		{
+			public void actionPerformed(ActionEvent e)
+			{
 	    		if(harmonyModel.getBaseFrame() instanceof Harmony)
 	    			new SaveMappingDialog(harmonyModel);
 	    		else ProjectController.saveProject(harmonyModel,harmonyModel.getProjectManager().getProject());
-	    	}
-		    
-	    	// Import project
-	    	else if(source==importProject)
-	    	{
+			}
+		}
+	    
+		/** Action for launching the "Import Project" dialog */
+		private class ImportProjectAction extends AbstractAction
+		{
+			public void actionPerformed(ActionEvent e)
+			{
 	    		ProjectImporterDialog dialog = new ProjectImporterDialog(harmonyModel.getBaseFrame(),harmonyModel);
 	    		while(dialog.isDisplayable()) try { Thread.sleep(500); } catch(Exception e2) {}
 	    		ProjectController.selectMappings(harmonyModel);
-	    	}
+			}
+		}
 	    
-	    	// Export project
-	    	else if(source==exportProject)
-	    		{ ExportProjectDialog.exportProject(harmonyModel); }
-	    	
-	    	// Display the mapping properties
-	    	else if(source==configureProject)
-	    		new ProjectDialog(harmonyModel);
-	    	
-	    	// Exit Harmony
-	    	else if(source==exitApp)
-	    		{ harmonyModel.getBaseFrame().dispose(); }
-	    }
-
+		/** Action for launching the "Export Project" dialog */
+		private class ExportProjectAction extends AbstractAction
+			{ public void actionPerformed(ActionEvent e) { ProjectExporterDialog.exportProject(harmonyModel); } }
+	    
+		/** Action for launching the "Import Mapping" dialog */
+		private class ImportMappingAction extends AbstractAction
+			{ public void actionPerformed(ActionEvent e) { }}//MappingImporterDialog.importMapping(harmonyModel); } }
+	    
+		/** Action for launching the configuration dialog */
+		private class ConfigurationAction extends AbstractAction
+			{ public void actionPerformed(ActionEvent e) { new ProjectDialog(harmonyModel); } }
+	    
+		/** Action for exiting Harmony */
+		private class ExitAction extends AbstractAction
+			{ public void actionPerformed(ActionEvent e) { harmonyModel.getBaseFrame().dispose(); } }
+	    
 		// Unused action listener
 		public void menuCanceled(MenuEvent e) {}
 		public void menuDeselected(MenuEvent e) {}
 	}
 
 	/** Drop-down menu found under edit menu bar heading */
-	private class EditMenu extends JMenu implements ActionListener
+	private class EditMenu extends AbstractMenu
 	{
-		private JMenuItem selectLinks;		// Option to select links
-		private JMenuItem removeLinks;		// Option to remove links
-		
 		/** Initializes the edit drop-down menu */
 		private EditMenu()
 		{
 			// Gives the drop-down menu the title of "Edit"
 			super("Edit");
 		    setMnemonic(KeyEvent.VK_E);
-		    
-			// Initialize project drop-down items
-		    selectLinks = new JMenuItem("Select Links...");
-		    removeLinks = new JMenuItem("Remove Links...");
-			
-			// Attach action listeners to edit drop-down items
-		    selectLinks.addActionListener(this);
-		    removeLinks.addActionListener(this);
 			
 			// Add edit drop-down items to edit drop-down menu
-			add(selectLinks);
-			add(removeLinks);
+			add(createMenuItem("Select Links...", KeyEvent.VK_S, new SelectLinksAction()));
+			add(createMenuItem("Remove Links...", KeyEvent.VK_R, new RemoveLinksAction()));
 		}
-		
-		/** Handles the edit drop-down action selected by the user */
-	    public void actionPerformed(ActionEvent e)
-	    {
-	    	// Selects all links from the currently focused area of Harmony
-	    	if(e.getSource() == selectLinks)
-	    		new SelectionDialog(harmonyModel,SelectionDialog.SELECT);
-	    		
-	    	// Removed hidden links from the currently focused area of Harmony
-	    	if(e.getSource() == removeLinks)
-	    		new SelectionDialog(harmonyModel,SelectionDialog.DELETE);
-	    }
+	    
+		/** Action for selecting links */
+		private class SelectLinksAction extends AbstractAction
+			{ public void actionPerformed(ActionEvent e) { new SelectionDialog(harmonyModel,SelectionDialog.SELECT); } }
+	    
+		/** Action for removing links */
+		private class RemoveLinksAction extends AbstractAction
+			{ public void actionPerformed(ActionEvent e) { new SelectionDialog(harmonyModel,SelectionDialog.DELETE); } }
 	}
 
 	/** Drop-down menu found under view menu bar heading */
-	private class ViewMenu extends JMenu implements ActionListener
+	private class ViewMenu extends AbstractMenu
 	{
 		private JRadioButtonMenuItem mappingView;	// Option to view schema mapping
 		private JRadioButtonMenuItem heatmapView;	// Option to view heat map
-		private JMenuItem alphabetize;				// Option to alphabetize child elements
-		private JMenuItem showTypes;				// Option to show schema data types
 		
 		/** Initializes the view drop-down menu */
 		private ViewMenu()
 		{
 			super("View");
 			setMnemonic(KeyEvent.VK_V);
-
-			// Initialize view drop-down items
-			mappingView = new JRadioButtonMenuItem("Mapping View",true);
-			heatmapView = new JRadioButtonMenuItem("Heatmap View");
-			alphabetize = new JCheckBoxMenuItem("Alphabetize");
-			showTypes = new JCheckBoxMenuItem("Show Types");
 			
 			// Groups the radio buttons together
 			ButtonGroup group = new ButtonGroup();
-			group.add(mappingView);
-			group.add(heatmapView);
+			group.add(mappingView = new JRadioButtonMenuItem("Mapping View",true));
+			group.add(heatmapView = new JRadioButtonMenuItem("Heatmap View"));
 			
 			// Set the displayed view
 			switch(harmonyModel.getPreferences().getViewToDisplay())
 				{ case HarmonyConsts.HEATMAP_VIEW: heatmapView.setSelected(true); }			
-			
-			// Attach action listeners to view drop-down items
-			mappingView.addActionListener(this);
-			heatmapView.addActionListener(this);
-			alphabetize.addActionListener(this);
-			showTypes.addActionListener(this);
 
 			// Add view drop-down items to view drop-down menu
 		    add(mappingView);
 		    add(heatmapView);
 		    addSeparator();
-		    add(alphabetize);
-		    add(showTypes);
-			
-			// Initialize preference menu options
-		    alphabetize.setSelected(harmonyModel.getPreferences().getAlphabetized());
-			showTypes.setSelected(harmonyModel.getPreferences().getShowSchemaTypes());
+		    add(createCheckboxItem("Alphabetize", harmonyModel.getPreferences().getAlphabetized(), new AlphabetizeAction()));
+		    add(createCheckboxItem("Show Types", harmonyModel.getPreferences().getShowSchemaTypes(), new ShowTypesAction()));
 		}
 		
 		/** Handles the selection of a view */
 	    public void actionPerformed(ActionEvent e)
 	    {
-	    	// Switch to the selected view
 	    	Object source = e.getSource();
 	    	if(source==mappingView) harmonyModel.getPreferences().setViewToDisplay(HarmonyConsts.MAPPING_VIEW);
 	    	if(source==heatmapView) harmonyModel.getPreferences().setViewToDisplay(HarmonyConsts.HEATMAP_VIEW);
-	    	
-	    	// Handles the alphabetization of the child elements
-	    	if(source == alphabetize)
-	    		harmonyModel.getPreferences().setAlphabetized(alphabetize.isSelected());
-	    	
-	    	// Handles the "show types" preference option
-	    	if(source == showTypes)
-	    		harmonyModel.getPreferences().setShowSchemaTypes(showTypes.isSelected());
 	    }
+	    
+		/** Action for alphabetizing sibling elements */
+		private class AlphabetizeAction extends AbstractAction
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				boolean isSelected = ((JCheckBoxMenuItem)(e.getSource())).isSelected();
+				harmonyModel.getPreferences().setAlphabetized(isSelected);
+			}
+		}
+
+		/** Action for showing types */
+		private class ShowTypesAction extends AbstractAction
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				boolean isSelected = ((JCheckBoxMenuItem)(e.getSource())).isSelected();			
+				harmonyModel.getPreferences().setShowSchemaTypes(isSelected);
+			}
+		}
 	}
 
 	/** Drop-down menu found under search menu bar heading */
-	private class SearchMenu extends JMenu implements ActionListener
+	private class SearchMenu extends AbstractMenu implements ActionListener
 	{
-	    private JMenuItem clearResults;		// Clears the search results
-		private JMenuItem search;			// Launches a search dialog
 		private JRadioButtonMenuItem highlightFocusArea;	// Option to highlight focus area
 		private JRadioButtonMenuItem highlightAll;			// Option to highlight all
 		
@@ -332,8 +333,6 @@ public class HarmonyMenuBar extends JMenuBar
 			setMnemonic(KeyEvent.VK_V);
 
 			// Initialize view drop-down items
-			clearResults = new JMenuItem("Clear Results");
-			search = new JMenuItem("Search...");
 			highlightFocusArea = new JRadioButtonMenuItem("Highlight Focus Area",true);
 			highlightAll = new JRadioButtonMenuItem("Highlight All");
 			
@@ -344,14 +343,12 @@ public class HarmonyMenuBar extends JMenuBar
 			highlightAll.setSelected(true);
 			
 			// Attach action listeners to view drop-down items
-			clearResults.addActionListener(this);
-			search.addActionListener(this);
 			highlightFocusArea.addActionListener(this);
 			highlightAll.addActionListener(this);
 
 			// Add view drop-down items to view drop-down menu
-			add(clearResults);
-			add(search);
+			add(createMenuItem("Clear Results", KeyEvent.VK_C, new ClearResultsAction()));
+			add(createMenuItem("Search...", KeyEvent.VK_S, new SearchAction()));
 			addSeparator();
 		    add(highlightFocusArea);
 		    add(highlightAll);
@@ -361,61 +358,47 @@ public class HarmonyMenuBar extends JMenuBar
 	    public void actionPerformed(ActionEvent e)
 	    {
 	    	Object source = e.getSource();
-	    	
-	    	// Handle the clearing of search results
-	    	if(source==clearResults)
-	    	{
-	    		harmonyModel.getSearchManager().runQuery(HarmonyConsts.LEFT, "");
-	    		harmonyModel.getSearchManager().runQuery(HarmonyConsts.RIGHT, "");
-	    	}
-	    	
-	    	// Handles the launching of the search dialog box
-	    	if(source==search)
-	    		new SearchDialog(harmonyModel);
-	    	
-	    	// Switch to the selected view
 	    	if(source==highlightFocusArea || source==highlightAll)
 	    		harmonyModel.getSearchManager().setHighlightAll(source==highlightAll);
 	    }
+		
+		/** Action for clearing the search results */
+		private class ClearResultsAction extends AbstractAction
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+	    		harmonyModel.getSearchManager().runQuery(HarmonyConsts.LEFT, "");
+	    		harmonyModel.getSearchManager().runQuery(HarmonyConsts.RIGHT, "");
+			}
+		}
+		
+		/** Action for displaying the "Search" dialog */
+		private class SearchAction extends AbstractAction
+			{ public void actionPerformed(ActionEvent e) { new SearchDialog(harmonyModel); } }
 	}
 	
 	/** Drop-down menu found under help menu bar heading */
-	private class HelpMenu extends JMenu implements ActionListener
+	private class HelpMenu extends AbstractMenu
 	{
-		private JMenuItem about;			// Option to view info on Harmony
-		private JMenuItem gettingStarted;	// Option to view info on getting started
-
 		/** Initializes the help drop-down menu */
 		private HelpMenu()
 		{
 			// Gives the drop-down menu the title of "Help"
 			super("Help");
 		    setMnemonic(KeyEvent.VK_H);
-
-			// Initialize project drop-down items
-			about = new JMenuItem("About Harmony",KeyEvent.VK_A);
-			gettingStarted = new JMenuItem("Getting Started",KeyEvent.VK_G);
-			
-			// Attach action listeners to help drop-down items
-			about.addActionListener(this);
-			gettingStarted.addActionListener(this);
 			
 			// Add help drop-down items to help drop-down menu
-		    add(about);
-		    add(gettingStarted);
+		    add(createMenuItem("About Harmony", KeyEvent.VK_A, new AboutAction()));
+		    add(createMenuItem("Getting Started", KeyEvent.VK_G, new GettingStartedAction()));
 		}
 		
-		/** Handles the help menu drop-down action selected by the user */
-	    public void actionPerformed(ActionEvent e)
-	    {
-	    	// Shows the "About" dialog
-	    	if(e.getSource().equals(about))
-	    		new AboutDialog(harmonyModel);
+		/** Action for displaying the "About" dialog */
+		private class AboutAction extends AbstractAction
+			{ public void actionPerformed(ActionEvent e) { new AboutDialog(harmonyModel); } }
 
-	    	// Shows the "Getting Started" dialog
-	    	if(e.getSource().equals(gettingStarted))
-	    		new GettingStartedDialog(harmonyModel);
-	    }
+		/** Action for displaying the "Getting Started" dialog */
+		private class GettingStartedAction extends AbstractAction
+			{ public void actionPerformed(ActionEvent e) { new GettingStartedDialog(harmonyModel); } }
 	}
 	
 	/** Initializes the Harmony menu bar */

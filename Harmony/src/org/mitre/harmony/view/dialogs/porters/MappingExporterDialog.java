@@ -19,7 +19,7 @@ import org.mitre.schemastore.porters.mappingExporters.MappingExporter;
  * Dialog for exporting the selected mapping
  * @author CWOLF
  */
-public class ExportMappingDialog
+public class MappingExporterDialog
 {	
 	/** Private class for creating a mapping file filter */
 	private static class MappingFileFilter extends FileFilter

@@ -23,7 +23,7 @@ import org.mitre.schemastore.porters.projectExporters.ProjectExporter;
  * Dialog for exporting the current project
  * @author CWOLF
  */
-public class ExportProjectDialog
+public class ProjectExporterDialog
 {	
 	/** Private class for creating a project file filter */
 	private static class ProjectFileFilter extends FileFilter
