@@ -65,7 +65,6 @@ abstract public class ImporterDialog extends JDialog
 				// Update highlighting
 				nameField.setBackground(name.length()>0 ? Color.white : Color.yellow);
 				authorField.setBackground(author.length()>0 ? Color.white : Color.yellow);
-				descriptionField.setBackground(description.length()>0 ? Color.white : Color.yellow);
 				uriField.setBackground(uri!=null ? Color.white : Color.yellow);
 				
 				// If completed, run importer

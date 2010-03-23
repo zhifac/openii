@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.mapfunctions.IdentityFunction;
@@ -24,8 +25,8 @@ public class ProjectMapping extends Mapping
 	/** Maximum mapping cell score */
 	public static final double MAX_CONFIDENCE = 1.0;
 	
-	/** Reference to the mapping manager */
-	private MappingManager mappingManager = null;
+	/** Reference to the harmony model */
+	private HarmonyModel harmonyModel = null;
 	
 	/** Indicates if the mapping is currently visible */
 	private boolean isVisible = false;
@@ -64,23 +65,31 @@ public class ProjectMapping extends Mapping
 	}
 	
 	/** Constructor for the MappingInfo object*/
-	public ProjectMapping(Mapping mapping, MappingManager mappingManager)
+	public ProjectMapping(Mapping mapping, HarmonyModel harmonyModel)
 	{
 		super(mapping.getId(),mapping.getProjectId(),mapping.getSourceId(),mapping.getTargetId());
-		this.mappingManager = mappingManager;
+		this.harmonyModel = harmonyModel;
 	}
 	
 	/** Indicates if the mapping is visible */
 	public boolean isVisible()
 		{ return isVisible; }
 	
+	/** Returns the mapping name */
+	public String getName()
+	{
+		String schema1 = harmonyModel.getSchemaManager().getSchema(getSourceId()).getName();
+		String schema2 = harmonyModel.getSchemaManager().getSchema(getTargetId()).getName();
+		return "'" + schema1 + "' to '" + schema2 + "'";
+	}
+	
 	/** Sets the visibility of the mapping */
 	public void setVisibility(boolean visibility)
 	{
-		if(!isVisible==visibility && !mappingManager.areMappingsLocked())
+		if(!isVisible==visibility && !harmonyModel.getMappingManager().areMappingsLocked())
 		{
 			isVisible = visibility;
-			for(MappingListener listener : mappingManager.getListeners())
+			for(MappingListener listener : harmonyModel.getMappingManager().getListeners())
 				listener.mappingVisibilityChanged(getId());
 		}
 	}
@@ -130,7 +139,7 @@ public class ProjectMapping extends Mapping
 			for(MappingCell mappingCell : newMappingCells)
 			{
 				// Get information about the mapping cell to be stored
-				Integer mappingCellID = ++mappingManager.maxID;
+				Integer mappingCellID = ++harmonyModel.getMappingManager().maxID;
 				Integer inputIDs[] = mappingCell.getInput();
 				Integer outputID = mappingCell.getOutput();
 				mappingCell.setId(mappingCellID);
@@ -152,7 +161,7 @@ public class ProjectMapping extends Mapping
 			}
 			
 			// Informs listeners of the added mapping cells
-			for(MappingListener listener : mappingManager.getListeners())
+			for(MappingListener listener : harmonyModel.getMappingManager().getListeners())
 				listener.mappingCellsAdded(getId(), newMappingCells);
 		}
 		
@@ -174,7 +183,7 @@ public class ProjectMapping extends Mapping
 			}
 			
 			// Informs listeners of the modified mapping cells
-			for(MappingListener listener : mappingManager.getListeners())
+			for(MappingListener listener : harmonyModel.getMappingManager().getListeners())
 				listener.mappingCellsModified(getId(), oldMappingCells, existingMappingCells);
 		}
 	}
@@ -205,7 +214,7 @@ public class ProjectMapping extends Mapping
 		}
 		
 		// Informs listeners of the modified mapping cells
-		for(MappingListener listener : mappingManager.getListeners())
+		for(MappingListener listener : harmonyModel.getMappingManager().getListeners())
 			listener.mappingCellsModified(getId(), mappingCells, validatedMappingCells);
 	}
 	
@@ -234,11 +243,15 @@ public class ProjectMapping extends Mapping
 		}
 		
 		// Informs listeners of the removed mapping cells
-		for(MappingListener listener : mappingManager.getListeners())
+		for(MappingListener listener : harmonyModel.getMappingManager().getListeners())
 			listener.mappingCellsRemoved(getId(), mappingCells);
 	}
 	
 	/** Deletes the specified mapping cells by ID */
 	public void deleteMappingCellsByID(List<Integer> mappingCellIDs)
 		{ deleteMappingCells(getMappingCellsByID(mappingCellIDs)); }
+
+	/** Returns the string representation of this project mapping */
+	public String toString()
+		{ return getName(); }
 }
