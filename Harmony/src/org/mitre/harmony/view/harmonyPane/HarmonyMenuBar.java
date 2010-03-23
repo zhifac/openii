@@ -14,16 +14,20 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.KeyStroke;
+import javax.swing.event.MenuEvent;
+import javax.swing.event.MenuListener;
 
 import org.mitre.harmony.Harmony;
 import org.mitre.harmony.controllers.ProjectController;
 import org.mitre.harmony.model.HarmonyConsts;
 import org.mitre.harmony.model.HarmonyModel;
+import org.mitre.harmony.model.project.ProjectMapping;
 import org.mitre.harmony.view.dialogs.AboutDialog;
 import org.mitre.harmony.view.dialogs.GettingStartedDialog;
 import org.mitre.harmony.view.dialogs.SearchDialog;
 import org.mitre.harmony.view.dialogs.SelectionDialog;
 import org.mitre.harmony.view.dialogs.matcher.MatcherMenu;
+import org.mitre.harmony.view.dialogs.porters.ExportMappingDialog;
 import org.mitre.harmony.view.dialogs.porters.ExportProjectDialog;
 import org.mitre.harmony.view.dialogs.porters.ProjectImporterDialog;
 import org.mitre.harmony.view.dialogs.project.ProjectDialog;
@@ -40,14 +44,29 @@ public class HarmonyMenuBar extends JMenuBar
 	private HarmonyModel harmonyModel;
 	
 	/** Drop-down menu found under project menu bar heading */
-	private class ProjectMenu extends JMenu implements ActionListener
+	private class ProjectMenu extends JMenu implements ActionListener, MenuListener
 	{
-	    private JMenuItem newProject;		// Option to create a new mapping
-		private JMenuItem openProject;		// Option to open a created mapping
-		private JMenuItem saveMapping;		// Option to save a created mapping
+		/** Stores a mapping menu item */
+		class MappingMenuItem extends JMenuItem implements ActionListener
+		{
+			private ProjectMapping mapping = null;
+			
+			/** Constructs the mapping menu item */
+			private MappingMenuItem(ProjectMapping mapping)
+				{ super(mapping.getName()); this.mapping = mapping; addActionListener(this); }
+
+			/** Handles the selection of a mapping menu item */
+			public void actionPerformed(ActionEvent e)
+				{ ExportMappingDialog.exportMapping(harmonyModel,mapping); }
+		}
+		
+	    private JMenuItem newProject;		// Option to create a new project
+		private JMenuItem openProject;		// Option to open a created project
+		private JMenuItem saveProject;		// Option to save a created project
 		private JMenuItem configureProject;	// Option for managing the project configuration
-		private JMenuItem importProject;	// Option for importing a mapping
-		private JMenuItem exportMapping;	// Option for exporting a mapping
+		private JMenuItem importProject;	// Option for importing a project
+		private JMenuItem exportProject;	// Option for exporting a project
+		private JMenu exportMapping;		// Option for exporting a mapping
 		private JMenuItem exitApp;			// Option to exit the Harmony application
 		
 		/** Initializes the project drop-down menu */
@@ -56,41 +75,47 @@ public class HarmonyMenuBar extends JMenuBar
 			// Gives the drop-down menu the title of "Project"
 			super("Project");
 			setMnemonic(KeyEvent.VK_P);
-
+			
 			// Set up menu for stand-alone mode
 			if(harmonyModel.getBaseFrame() instanceof Harmony)
-			{
+			{	
+				// Intialize the export mapping menu
+				exportMapping = new JMenu("Export Mapping");
+				exportMapping.setMnemonic(KeyEvent.VK_M);
+				exportMapping.addMenuListener(this);
+				
 				// Initialize project drop-down items
 			    newProject = new JMenuItem("New",KeyEvent.VK_N);
 				openProject = new JMenuItem("Open...",KeyEvent.VK_O);
-				saveMapping = new JMenuItem("Save...",KeyEvent.VK_S);
-				configureProject = new JMenuItem("Configure...",KeyEvent.VK_M);
-				importProject = new JMenuItem("Import Mapping...",KeyEvent.VK_I);
-				exportMapping = new JMenuItem("Export Mapping...",KeyEvent.VK_E);
+				saveProject = new JMenuItem("Save...",KeyEvent.VK_S);
+				configureProject = new JMenuItem("Configure...",KeyEvent.VK_C);
+				importProject = new JMenuItem("Import Project...",KeyEvent.VK_I);
+				exportProject = new JMenuItem("Export Project...",KeyEvent.VK_E);
 				exitApp = new JMenuItem("Exit",KeyEvent.VK_X);
 	
 				// Set accelerator keys for the menu items
 				newProject.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, ActionEvent.CTRL_MASK));
 				openProject.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK));
-				saveMapping.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK));
+				saveProject.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK));
 				
 				// Attach action listeners to project drop-down items
 				newProject.addActionListener(this);
 				openProject.addActionListener(this);
-				saveMapping.addActionListener(this);
+				saveProject.addActionListener(this);
 				configureProject.addActionListener(this);
 				importProject.addActionListener(this);
-				exportMapping.addActionListener(this);
+				exportProject.addActionListener(this);
 				exitApp.addActionListener(this);
 				
 				// Add project drop-down items to project drop-down menu
 				add(newProject);
 				add(openProject);
-				add(saveMapping);
+				add(saveProject);
 				addSeparator();
 				add(configureProject);
 				addSeparator();
 				add(importProject);
+				add(exportProject);
 				add(exportMapping);
 				addSeparator();
 			    add(exitApp);
@@ -100,19 +125,32 @@ public class HarmonyMenuBar extends JMenuBar
 			else
 			{
 				// Create the save mapping menu option
-				saveMapping = new JMenuItem("Save",KeyEvent.VK_S);
-				saveMapping.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK));
-				saveMapping.addActionListener(this);
+				saveProject = new JMenuItem("Save",KeyEvent.VK_S);
+				saveProject.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK));
+				saveProject.addActionListener(this);
 
 				// Create the schema settings menu option
 				configureProject = new JMenuItem("Configure...",KeyEvent.VK_P);
 				configureProject.addActionListener(this);
 				
 				// Add project drop-down items to project drop-down menu
-				add(saveMapping);
+				add(saveProject);
 				addSeparator();
 				add(configureProject);
 			}
+		}
+
+		/** Generates the sub-menu on the fly */
+		public void menuSelected(MenuEvent e)
+		{
+			exportMapping.removeAll();
+			for(ProjectMapping mapping : harmonyModel.getMappingManager().getMappings())
+			{
+				JMenuItem menuItem = new MappingMenuItem(mapping);
+				menuItem.addActionListener(this);
+				exportMapping.add(menuItem);
+			}
+			exportMapping.revalidate();
 		}
 		
 		/** Handles the project drop-down action selected by the user */
@@ -142,7 +180,7 @@ public class HarmonyMenuBar extends JMenuBar
 	    		{ new LoadProjectDialog(harmonyModel); }
 	    	
 	    	// Save a project
-	    	else if(source==saveMapping)
+	    	else if(source==saveProject)
 	    	{
 	    		if(harmonyModel.getBaseFrame() instanceof Harmony)
 	    			new SaveMappingDialog(harmonyModel);
@@ -158,7 +196,7 @@ public class HarmonyMenuBar extends JMenuBar
 	    	}
 	    
 	    	// Export project
-	    	else if(source==exportMapping)
+	    	else if(source==exportProject)
 	    		{ ExportProjectDialog.exportProject(harmonyModel); }
 	    	
 	    	// Display the mapping properties
@@ -169,6 +207,10 @@ public class HarmonyMenuBar extends JMenuBar
 	    	else if(source==exitApp)
 	    		{ harmonyModel.getBaseFrame().dispose(); }
 	    }
+
+		// Unused action listener
+		public void menuCanceled(MenuEvent e) {}
+		public void menuDeselected(MenuEvent e) {}
 	}
 
 	/** Drop-down menu found under edit menu bar heading */
