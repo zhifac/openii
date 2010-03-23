@@ -122,6 +122,7 @@ public class ExcelExporter extends MappingExporter
 	 */
 	private void initEntityContainers(SchemaInfo info) {
 		ArrayList<SchemaElement> entities = info.getElements(Entity.class);
+		entities.add(null);
 		for (SchemaElement entity : entities) {
 			container2mappingCells.put(entity, new ArrayList<MappingCell>());
 			ArrayListHelper<SchemaElement> children = new ArrayListHelper<SchemaElement>();
@@ -137,9 +138,10 @@ public class ExcelExporter extends MappingExporter
 		for (SchemaElement containment : containments) {
 			SchemaElement parent = info.getElement(((Containment)containment).getParentID());
 			// Top-level containments will not be found.
-			if (container2contents.get(parent) != null) {
-				container2contents.get(parent).add(containment);
-			}
+//			if (container2contents.get(parent) != null) {
+			// If the parent is null, the containment will be added to the null container.
+			container2contents.get(parent).add(containment);
+//			}
 		}
 	}
 	
@@ -190,13 +192,13 @@ public class ExcelExporter extends MappingExporter
 					container2contents.get(base).remove(tgt);
 					container2contents.get(srcBase).remove(src);
 					// Convert to human readable names.
-					String srcBaseName = getDisplayNameByID(srcBase.getId());
-					String srcName = (srcBase == src) ? "-" : getDisplayNameByID(src.getId());
-					String tgtBaseName = getDisplayNameByID(base.getId());
-					String tgtName = (base == tgt) ? "-" : getDisplayNameByID(tgt.getId());
+					String srcBaseName = getDisplayName(srcBase);
+					String srcName = (srcBase == src) ? "-" : getDisplayName(src);
+					String tgtBaseName = getDisplayName(base);
+					String tgtName = (base == tgt) ? "-" : getDisplayName(tgt);
 					// Export the results.
-					out.println(srcBaseName + "," + srcName + ",\"" + src.getDescription() + "\"," +
-								tgtBaseName + "," + tgtName + ",\"" + tgt.getDescription() + "\"," +
+					out.println(srcBaseName + "," + srcName + ",\"" + getDescription(src) + "\"," +
+								tgtBaseName + "," + tgtName + ",\"" + getDescription(tgt) + "\"," +
 								cell.getScore() + ",\"" + cell.getNotes() + "\"");
 				}
 			}
@@ -214,12 +216,12 @@ public class ExcelExporter extends MappingExporter
 				// If the container was used as a target it will be exported in the target columns, otherwise it will be exported to the source columns.
 				boolean baseIsSource = container2contents.get(base).isSource;
 				for (SchemaElement child : container2contents.get(base)) {
-					String srcBaseName = (baseIsSource) ? getDisplayNameByID(base.getId()) : "";
-					String srcName = (baseIsSource) ? (base == child) ? "-" : getDisplayNameByID(child.getId()) : "";
-					String tgtBaseName = (baseIsSource) ? "" : getDisplayNameByID(base.getId());
-					String tgtName = (baseIsSource) ? "" : (base == child) ? "-" : getDisplayNameByID(child.getId());
-					out.println(srcBaseName + "," + srcName + ",\"" + ((baseIsSource) ? child.getDescription() : "") + "\"," +
-							tgtBaseName + "," + tgtName + ",\"" + ((baseIsSource) ? "" : child.getDescription()) + "\",");
+					String srcBaseName = (baseIsSource) ? getDisplayName(base) : "";
+					String srcName = (baseIsSource) ? (base == child) ? "-" : getDisplayName(child) : "";
+					String tgtBaseName = (baseIsSource) ? "" : getDisplayName(base);
+					String tgtName = (baseIsSource) ? "" : (base == child) ? "-" : getDisplayName(child);
+					out.println(srcBaseName + "," + srcName + ",\"" + ((baseIsSource) ? getDescription(child) : "") + "\"," +
+							tgtBaseName + "," + tgtName + ",\"" + ((baseIsSource) ? "" : getDescription(child)) + "\",");
 				}
 			}
 		}
@@ -236,24 +238,34 @@ public class ExcelExporter extends MappingExporter
 	 * Finds a given schema element by iterating through all available schemata.
 	 */
 	private SchemaElement findElementByID(Integer id) throws RemoteException {
+		if (id == null) return null;
 		for (SchemaInfo info : schemataInfo) {
 			if (contains(id, info)) {
 				return info.getElement(id);
 			}
 		}
-		return null;
+		throw new IllegalArgumentException("No such id: " + id);
 	}
 
 	/**
 	 * Finds the display name (which accounts for anonymous elements) by iterating through all available schemata.
 	 */
-	private String getDisplayNameByID(Integer id) throws RemoteException {
+	private String getDisplayName(SchemaElement elem) throws RemoteException {
+		if (elem == null) return "[root]";
 		for (SchemaInfo info : schemataInfo) {
-			if (contains(id, info)) {
-				return info.getDisplayName(id);
+			if (contains(elem.getId(), info)) {
+				return info.getDisplayName(elem.getId());
 			}
 		}
-		return null;
+		throw new IllegalArgumentException("No such id: " + elem.getId());
+	}
+	
+	/**
+	 * Returns the description or the empty string if the element is null.
+	 */
+	private String getDescription(SchemaElement elem) {
+		if (elem == null) return "";
+		return elem.getDescription();
 	}
 	
 	/**
@@ -261,6 +273,7 @@ public class ExcelExporter extends MappingExporter
 	 * stored with their domains, all other elements are stored in themselves (entities, relationships, and domains).
 	 */
 	private SchemaElement getContainerForElement(Integer id) throws RemoteException {
+		if (id == null) return null;
 		SchemaElement base = findElementByID(id);
 		if (base instanceof DomainValue) {
 			return findElementByID(((DomainValue)base).getDomainID());
