@@ -308,8 +308,10 @@ public class IMPLUSListener implements OpenIIListener {
 			
 			// Sort most recent first.  This way, if modifications have been made, we're up to date.
 			Collections.sort(r, new Comparator <PLUSObject> () {
-				public int compare(PLUSObject a, PLUSObject b) { 
-					return b.getCreated().compareTo(a.getCreated()); 
+				public int compare(PLUSObject a, PLUSObject b) {
+					Long aCreated = new Long(a.getCreated());
+					Long bCreated = new Long(b.getCreated());
+					return aCreated.compareTo(bCreated);
 				}
 			}); 
 
