@@ -58,6 +58,7 @@ public class MappingExporterDialog
 		ArrayList<MappingExporter> exporters =  SchemaStoreManager.getPorters(PorterManager.MAPPING_EXPORTERS);
 		for(MappingExporter exporter : exporters)
 			chooser.addChoosableFileFilter(new MappingFileFilter(exporter));
+		chooser.setFileFilter(chooser.getChoosableFileFilters()[0]);
 
 		// Display the dialog for selecting which exporter to use
 		if(chooser.showDialog(harmonyModel.getBaseFrame(),"Export")==JFileChooser.APPROVE_OPTION)

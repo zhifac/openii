@@ -51,7 +51,7 @@ public class MappingImporterDialog extends JDialog implements ActionListener, Ca
 	private HarmonyModel harmonyModel;
 	
 	// Stores the panes associated with this dialog
-	private JComboBox selectionList = null;
+	private JComboBox importerList = null;
 	private UriParameter uriField = null;	
 	private SchemaSelector sourceSelector = new SchemaSelector();
 	private SchemaSelector targetSelector = new SchemaSelector();
@@ -187,17 +187,18 @@ public class MappingImporterDialog extends JDialog implements ActionListener, Ca
 		
 		// Generate the selection list
 		ArrayList<Importer> importers = SchemaStoreManager.getPorters(PorterManager.MAPPING_IMPORTERS);
-		selectionList = new JComboBox(new Vector<Importer>(importers));
-		selectionList.setBackground(Color.white);
-		selectionList.setFocusable(false);
-		selectionList.setSelectedIndex(0);
+		importerList = new JComboBox(new Vector<Importer>(importers));
+		importerList.setBackground(Color.white);
+		importerList.setFocusable(false);
+		importerList.setSelectedIndex(0);
+		importerList.addActionListener(this);
 		
 		// Generate the importer list pane
 		JPanel importerPane = new JPanel();
 		importerPane.setOpaque(false);
 		importerPane.setLayout(new BoxLayout(importerPane,BoxLayout.X_AXIS));
 		importerPane.add(selectionLabel);
-		importerPane.add(selectionList);
+		importerPane.add(importerList);
 		
 		// Generate the selection pane
 		JPanel pane = new JPanel();
@@ -279,11 +280,19 @@ public class MappingImporterDialog extends JDialog implements ActionListener, Ca
 	
 	/** Returns the currently selected importer */
 	private Importer getImporter()
-		{ return (Importer)selectionList.getSelectedItem(); }
+		{ return (Importer)importerList.getSelectedItem(); }
 	
-	/** Handles the checking of the "Show All Schemas" checkbox */
+	/** Handles various actions performed on this dialog */
 	public void actionPerformed(ActionEvent e)
-		{ updateSchemas(showAllSchemas.isSelected()); }
+	{
+		// Handles changes to the selected importer
+		if(e.getSource().equals(importerList))
+			uriField.setImporter(getImporter());
+		
+		// Handles the checking/unchecking of the "Show All Schemas" checkbox
+		if(e.getSource().equals(showAllSchemas))
+			updateSchemas(showAllSchemas.isSelected());
+	}
 
 	/** Handles changes to the specified file to import */
 	public void caretUpdate(CaretEvent e)
