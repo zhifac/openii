@@ -4,6 +4,7 @@ package org.mitre.harmony.view.dialogs.porters;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
@@ -13,6 +14,7 @@ import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.SchemaStoreManager;
 import org.mitre.harmony.model.project.ProjectMapping;
 import org.mitre.schemastore.model.Project;
+import org.mitre.schemastore.porters.PorterManager;
 import org.mitre.schemastore.porters.mappingExporters.MappingExporter;
 
 /**
@@ -53,7 +55,8 @@ public class MappingExporterDialog
 		chooser.setAcceptAllFileFilterUsed(false);
 
 		// Set up file filters for the various mapping exporters
-		for(MappingExporter exporter : SchemaStoreManager.getMappingExporters())
+		ArrayList<MappingExporter> exporters =  SchemaStoreManager.getPorters(PorterManager.MAPPING_EXPORTERS);
+		for(MappingExporter exporter : exporters)
 			chooser.addChoosableFileFilter(new MappingFileFilter(exporter));
 
 		// Display the dialog for selecting which exporter to use

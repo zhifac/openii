@@ -30,6 +30,7 @@ import org.mitre.harmony.view.dialogs.SearchDialog;
 import org.mitre.harmony.view.dialogs.SelectionDialog;
 import org.mitre.harmony.view.dialogs.matcher.MatcherMenu;
 import org.mitre.harmony.view.dialogs.porters.MappingExporterDialog;
+import org.mitre.harmony.view.dialogs.porters.MappingImporterDialog;
 import org.mitre.harmony.view.dialogs.porters.ProjectExporterDialog;
 import org.mitre.harmony.view.dialogs.porters.ProjectImporterDialog;
 import org.mitre.harmony.view.dialogs.project.ProjectDialog;
@@ -64,8 +65,9 @@ public class HarmonyMenuBar extends JMenuBar
 		/** Creates a checkbox menu item */
 		protected JMenuItem createCheckboxItem(String name, boolean selected, Action action)
 		{
-			JMenuItem item = new JCheckBoxMenuItem(name,selected);
-			item.setAction(action);
+			JMenuItem item = new JCheckBoxMenuItem(action);
+			item.setText(name);
+			item.setSelected(selected);
 			return item;
 		}
 	}	
@@ -223,7 +225,7 @@ public class HarmonyMenuBar extends JMenuBar
 	    
 		/** Action for launching the "Import Mapping" dialog */
 		private class ImportMappingAction extends AbstractAction
-			{ public void actionPerformed(ActionEvent e) { }}//MappingImporterDialog.importMapping(harmonyModel); } }
+			{ public void actionPerformed(ActionEvent e) { new MappingImporterDialog(harmonyModel.getBaseFrame(),harmonyModel); } }
 	    
 		/** Action for launching the configuration dialog */
 		private class ConfigurationAction extends AbstractAction
