@@ -198,7 +198,7 @@ public class ExcelExporter extends MappingExporter
 					String tgtName = (base == tgt) ? "-" : getDisplayName(tgt);
 					// Export the results.
 					out.println("\""+srcBaseName + "\",\"" + srcName + "\",\"" + getDescription(src) + "\",\"" +
-								tgtBaseName + "\",\"" + tgtName + ",\"" + getDescription(tgt) + "\"," +
+								tgtBaseName + "\",\"" + tgtName + "\",\"" + getDescription(tgt) + "\"," +
 								cell.getScore() + ",\"" + cell.getNotes() + "\"");
 				}
 			}
