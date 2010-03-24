@@ -109,12 +109,13 @@ class InfoPane extends JPanel implements CaretListener
 			descriptionField.setText(project.getDescription());
 	
 			// Display the selected schema information
-			for(ProjectSchema schema : project.getSchemas())
-			{
-				JLabel label = new JLabel(harmonyModel.getSchemaManager().getSchema(schema.getId()).getName());
-				label.setFont(defaultFont);
-				schemaPane.add(label);
-			}
+			if(project.getSchemas()!=null)
+				for(ProjectSchema schema : project.getSchemas())
+				{
+					JLabel label = new JLabel(harmonyModel.getSchemaManager().getSchema(schema.getId()).getName());
+					label.setFont(defaultFont);
+					schemaPane.add(label);
+				}
 		}
 
 		// Refresh the schema pane to display the new schemas

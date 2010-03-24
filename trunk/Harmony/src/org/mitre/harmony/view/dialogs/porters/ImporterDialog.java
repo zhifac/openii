@@ -60,7 +60,7 @@ abstract public class ImporterDialog extends JDialog
 				String name = nameField.getText();
 				String author = authorField.getText();
 				String description = descriptionField.getText();
-				URI uri = uriField.getValue();
+				URI uri = uriField.getURI();
 				
 				// Update highlighting
 				nameField.setBackground(name.length()>0 ? Color.white : Color.yellow);
@@ -142,6 +142,7 @@ abstract public class ImporterDialog extends JDialog
 	/** Constructs the importer dialog */
 	public ImporterDialog(Component parent, HarmonyModel harmonyModel)
 	{
+		super(harmonyModel.getBaseFrame());
 		this.harmonyModel = harmonyModel;
 		
 		// Initialize the main pane

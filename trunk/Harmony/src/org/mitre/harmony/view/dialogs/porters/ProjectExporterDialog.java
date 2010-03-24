@@ -17,6 +17,7 @@ import org.mitre.harmony.model.project.ProjectMapping;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.Project;
+import org.mitre.schemastore.porters.PorterManager;
 import org.mitre.schemastore.porters.projectExporters.ProjectExporter;
 
 /**
@@ -57,7 +58,8 @@ public class ProjectExporterDialog
 		chooser.setAcceptAllFileFilterUsed(false);
 
 		// Set up file filters for the various project exporters
-		for(ProjectExporter exporter : SchemaStoreManager.getProjectExporters())
+		ArrayList<ProjectExporter> exporters = SchemaStoreManager.getPorters(PorterManager.PROJECT_EXPORTERS);
+		for(ProjectExporter exporter : exporters)
 			chooser.addChoosableFileFilter(new ProjectFileFilter(exporter));
 
 		// Display the dialog for selecting which exporter to use

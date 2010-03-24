@@ -69,9 +69,9 @@ public class SchemaImporterDialog extends ImporterDialog implements ActionListen
 	public void caretUpdate(CaretEvent e)
 	{
 		SchemaImporter importer = (SchemaImporter)selectionList.getSelectedItem();
-		if(uriField.getValue()!=null)
+		if(uriField.getURI()!=null)
 			try {
-				Schema schema = importer.getSchema(uriField.getValue());
+				Schema schema = importer.getSchema(uriField.getURI());
 				if(schema!=null)
 				{
 					nameField.setText(schema.getName());

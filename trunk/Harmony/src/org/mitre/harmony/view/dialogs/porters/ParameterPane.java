@@ -27,8 +27,8 @@ public class ParameterPane extends JPanel
 		constraints.gridx = 0;
 		constraints.gridy = getComponentCount()/2;
 		constraints.anchor = GridBagConstraints.FIRST_LINE_END;
-		constraints.insets = new Insets(1,0,1,0);
-		add(new JLabel(label + ": "),constraints);
+		constraints.insets = new Insets(2,0,1,0);
+		add(new JLabel(label!=null ? label + ": " : ""),constraints);
 			
 		// Position the parameter component
 		constraints.gridx = 1;

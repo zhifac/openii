@@ -113,7 +113,6 @@ public class SearchDialog extends JDialog implements KeyListener
 	/** Initializes the search dialog */
 	public SearchDialog(HarmonyModel harmonyModel)
 	{
-		super(harmonyModel.getBaseFrame());
 		this.harmonyModel = harmonyModel;
 		
 		// Generate the main dialog pane
@@ -127,10 +126,9 @@ public class SearchDialog extends JDialog implements KeyListener
 		setTitle("Search");
     	setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		setContentPane(pane);
-		setSize(200,250);
 		setResizable(false);
-		setLocationRelativeTo(harmonyModel.getBaseFrame());
 		pack();
+		setLocationRelativeTo(harmonyModel.getBaseFrame());
 		setVisible(true);
 	}
 	

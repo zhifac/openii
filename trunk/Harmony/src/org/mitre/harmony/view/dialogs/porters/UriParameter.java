@@ -90,8 +90,8 @@ public class UriParameter extends JPanel implements ActionListener
 		fileButton.setVisible(importer.getURIType()!=Importer.URI);
 	}
 	
-	/** Returns the parameter value */
-	public URI getValue()
+	/** Returns the parameter URI */
+	public URI getURI()
 	{
 		String value = fileField.getText();
 		if(value==null || value.length()==0) return null;
