@@ -197,8 +197,8 @@ public class ExcelExporter extends MappingExporter
 					String tgtBaseName = getDisplayName(base);
 					String tgtName = (base == tgt) ? "-" : getDisplayName(tgt);
 					// Export the results.
-					out.println(srcBaseName + "," + srcName + ",\"" + getDescription(src) + "\"," +
-								tgtBaseName + "," + tgtName + ",\"" + getDescription(tgt) + "\"," +
+					out.println("\""+srcBaseName + "\",\"" + srcName + "\",\"" + getDescription(src) + "\",\"" +
+								tgtBaseName + "\",\"" + tgtName + ",\"" + getDescription(tgt) + "\"," +
 								cell.getScore() + ",\"" + cell.getNotes() + "\"");
 				}
 			}
@@ -220,8 +220,8 @@ public class ExcelExporter extends MappingExporter
 					String srcName = (baseIsSource) ? (base == child) ? "-" : getDisplayName(child) : "";
 					String tgtBaseName = (baseIsSource) ? "" : getDisplayName(base);
 					String tgtName = (baseIsSource) ? "" : (base == child) ? "-" : getDisplayName(child);
-					out.println(srcBaseName + "," + srcName + ",\"" + ((baseIsSource) ? getDescription(child) : "") + "\"," +
-							tgtBaseName + "," + tgtName + ",\"" + ((baseIsSource) ? "" : getDescription(child)) + "\",");
+					out.println("\""+ srcBaseName + "\",\"" + srcName + "\",\"" + ((baseIsSource) ? getDescription(child) : "") + "\",\"" +
+							tgtBaseName + "\",\"" + tgtName + "\",\"" + ((baseIsSource) ? "" : getDescription(child)) + "\",");
 				}
 			}
 		}
