@@ -49,7 +49,7 @@
    <extension point="org.eclipse.ui.menus">
       <menuContribution locationURI="menu:org.eclipse.ui.main.menu">
          <menu label="OpenII" mnemonic="O" id="org.mitre.openii.menu.openii">
-            <command commandId="NewRepositoryCommand" id="NewRepositoryCommand" icon="icons/Repositories.gif"></command>
+            <command commandId="AddRepositoryCommand" id="AddRepositoryCommand" icon="icons/Repositories.gif"></command>
             <command commandId="ExitCommand" id="ExitCommand"></command>
          </menu>
          <menu label="Help" mnemonic="H" id="org.mitre.openii.menu.help">
@@ -60,14 +60,14 @@
 
    <!-- Defines the OpenII commands -->
    <extension point="org.eclipse.ui.commands">
-      <command name="New Repository..." id="NewRepositoryCommand"></command>
+      <command name="Add Repository..." id="AddRepositoryCommand"></command>
       <command name="Exit" id="ExitCommand"></command>
       <command name="About OpenII" id="AboutOpenIICommand"></command>
    </extension>
 
    <!-- Defines the OpenII command handlers -->
    <extension point="org.eclipse.ui.handlers">
-      <handler commandId="NewRepositoryCommand" class="org.mitre.openii.commands.NewRepositoryCommand"></handler>
+      <handler commandId="AddRepositoryCommand" class="org.mitre.openii.commands.AddRepositoryCommand"></handler>
       <handler commandId="ExitCommand" class="org.mitre.openii.commands.ExitCommand"></handler>
       <handler commandId="AboutOpenIICommand" class="org.mitre.openii.commands.AboutOpenIICommand"></handler>
    </extension>
