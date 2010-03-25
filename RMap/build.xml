@@ -1,7 +1,5 @@
 <?xml version="1.0"?>
 <project name="schemastoreclient" default="build" basedir=".">
-
-
     <property name="src" value="src" description="location of source code" />
     <property name="build" value="build" description="location to build the files to " />
     <property name="jars" value="lib" description="location of necessary jar files" />
@@ -37,7 +35,7 @@
 
 	<!-- Builds the SQLCodeGen jar -->
     <target name="buildSQLCodeGen" depends="compile">
-        <fatjar.build output="SQLCodeGen.jar">
+        <fatjar.build output="RMap.jar">
             <fatjar.manifest/>
             <fatjar.filesource path="build"/>
             <fatjar.jarsource file="lib/TableLayout.jar" relpath=""/>
@@ -52,7 +50,7 @@
 	<!-- Cleans up the constructed jar files -->
 	<target name="clean">
 		<delete dir="build"/>
-	    <delete file="SQLCodeGen.jar"/>
+	    <delete file="RMap.jar"/>
     </target>
 
     <!-- Runs the unit tests -->
