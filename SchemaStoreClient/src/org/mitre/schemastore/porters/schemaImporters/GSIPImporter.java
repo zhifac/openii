@@ -184,7 +184,7 @@ System.out.println(filename);
             while(attributes.next()) {              	
             	String attName= attributes.getString("attName");           	
             	String qualifiedPathName = attributes.getString("qualifiedPathName");
-            	if (qualifiedPathName==null || !qualifiedPathName.isEmpty()) {
+            	if (qualifiedPathName!=null && !qualifiedPathName.isEmpty()) {
             		attName= concatNonNullFields(qualifiedPathName, attName, " : ");
             	}
             	String attDefinition = attributes.getString("definition");
