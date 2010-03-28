@@ -58,10 +58,9 @@ public class HierarchicalExcelImporter extends ExcelImporter {
 						_attributes.put(attName, attribute);
 						_schemaElements.add(attribute);
 					}
-				} else if ( documentation.length() > 0 )
-						tblEntity.setDescription(documentation); 
+				} else if (documentation.length() > 0) tblEntity.setDescription(documentation);
 
-				// Create a subtype 
+				// Create a subtype
 				if (parent.length() > 0) {
 					parentEntity = _entities.get(parent);
 					if (parentEntity == null) {
@@ -70,8 +69,11 @@ public class HierarchicalExcelImporter extends ExcelImporter {
 						_schemaElements.add(parentEntity);
 					}
 
-					Subtype subtype = new Subtype(nextId(), parentEntity.getId(), tblEntity.getId(), 0);
-					_schemaElements.add(subtype);
+					if (_subtypes.get(parentEntity.getName() + "." + tblEntity.getName()) == null) {
+						Subtype subtype = new Subtype(nextId(), parentEntity.getId(), tblEntity.getId(), 0);
+						_subtypes.put(parentEntity.getName() + "." + tblEntity.getName(), subtype);
+						_schemaElements.add(subtype);
+					}
 				}
 			} // End for loop
 		}
