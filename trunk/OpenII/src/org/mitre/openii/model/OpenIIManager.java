@@ -88,6 +88,16 @@ public class OpenIIManager
 	public static ArrayList<Schema> getSchemas()
 		{ return new ArrayList<Schema>(schemas.values()); }
 	
+	/** Create a new schema */
+	public static Integer addSchema(Schema schema) {
+		Integer newId = null;
+		try {
+			newId = RepositoryManager.getClient().addSchema(schema);
+			if (newId != null) fireSchemaAdded(schema);
+		} catch (Exception e) {}
+		return newId;
+	}
+	
 	/** Returns the list of schema IDs */
 	public static ArrayList<Integer> getSchemaIDs()
 		{ return new ArrayList<Integer>(schemas.keySet()); }
