@@ -59,7 +59,7 @@ public class Synset implements Comparable<Synset> {
 		return maxDist;
 	}
 
-	// Returns minimum distance between two terms
+	// Returns minimum distance between two synsets
 	public float simpleLinkage(Synset two) {
 		int i, j;
 		float minDist = 1;

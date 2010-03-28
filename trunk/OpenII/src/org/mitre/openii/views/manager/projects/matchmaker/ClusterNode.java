@@ -57,10 +57,6 @@ public class ClusterNode {
 		Collections.sort(synsets);
 	}
 
-	public void sortByScore() {
-		Collections.sort(synsets, new SynsetScoreComparator());
-	}
-
 	/**
 	 * Sort Synset alphabetically by specified particular schema ID.
 	 */
@@ -209,32 +205,6 @@ public class ClusterNode {
 		return true;
 	}
 
-	/**
-	 * Compares synsets by a Synset's average scores, rank from low to high.
-	 * 
-	 * @author HAOLI
-	 * 
-	 */
-	class SynsetScoreComparator implements Comparator<Synset> {
-		SynsetScoreComparator() {}
-
-		public int compare(Synset g1, Synset g2) {
-			return -(getAverageScore(g1).compareTo(getAverageScore(g2)));
-		}
-
-		private Double getAverageScore(Synset g) {
-			Double score = 0.0;
-			int numNodes = 0;
-			for (Term node : g.getGroup()) {
-				for (Double s : node.distances) {
-					score += s;
-					numNodes++;
-				}
-			}
-			if (numNodes == 0) return 0.0;
-			else return score / numNodes;
-		}
-	}
 
 	/**
 	 * sort by a selected schema node in two Synset
