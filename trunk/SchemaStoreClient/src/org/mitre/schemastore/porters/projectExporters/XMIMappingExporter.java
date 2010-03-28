@@ -7,14 +7,16 @@ import java.util.HashMap;
 import java.util.Hashtable;
 
 import org.mitre.schemastore.model.Mapping;
-import org.mitre.schemastore.model.Project;
 import org.mitre.schemastore.model.MappingCell;
+import org.mitre.schemastore.model.Project;
 import org.mitre.schemastore.model.ProjectSchema;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
-import org.mitre.schemastore.model.schemaInfo.model.SchemaModel;
-import org.mitre.schemastore.porters.projectExporters.ProjectExporter;
-import org.mitre.schemastore.porters.projectExporters.xmi.*;
+import org.mitre.schemastore.porters.projectExporters.xmi.XMIExportable;
+import org.mitre.schemastore.porters.projectExporters.xmi.XMILink;
+import org.mitre.schemastore.porters.projectExporters.xmi.XMIModel;
+import org.mitre.schemastore.porters.projectExporters.xmi.XMIModelElement;
+import org.mitre.schemastore.porters.projectExporters.xmi.XMIWriter;
 
 
 /**
