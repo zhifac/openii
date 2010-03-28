@@ -16,6 +16,7 @@ import org.mitre.schemastore.model.Attribute;
 import org.mitre.schemastore.model.Domain;
 import org.mitre.schemastore.model.Entity;
 import org.mitre.schemastore.model.SchemaElement;
+import org.mitre.schemastore.model.Subtype;
 import org.mitre.schemastore.porters.ImporterException;
 
 /**
@@ -35,6 +36,7 @@ public class ExcelImporter extends SchemaImporter {
 	protected HashMap<String, Entity> _entities;
 	protected HashMap<String, Attribute> _attributes;
 	protected ArrayList<SchemaElement> _schemaElements;
+	protected HashMap<String, Subtype> _subtypes; 
 	protected static Domain D_ANY = new Domain(nextId(), ANY, null, 0);
 
 	
@@ -83,6 +85,7 @@ public class ExcelImporter extends SchemaImporter {
 			InputStream excelStream;
 			_entities = new HashMap<String, Entity>();
 			_attributes = new HashMap<String, Attribute>();
+			_subtypes = new HashMap<String, Subtype>();
 			_schemaElements = new ArrayList<SchemaElement>();
 
 			// Do nothing if the excel sheet has been cached.
