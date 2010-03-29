@@ -10,6 +10,8 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.mitre.schemastore.model.Attribute;
 import org.mitre.schemastore.model.Containment;
@@ -49,10 +51,13 @@ public class ExcelExporter extends MappingExporter
 	private SchemaInfo targetInfo;
 	
 	/** Maps the target "containers" to the mapping cells that reference the container */
-	HashMap<SchemaElement, ArrayList<MappingCell>> mappingCellHash;
+	private HashMap<SchemaElement, ArrayList<MappingCell>> mappingCellHash;
 	
 	/** Maps the "containers" to the elements in the container that have yet to be matched */
 	private HashMap<Integer, FlaggedArrayList> containerHash;
+	
+	/** Stores the extra fields stored with the mapping cells */
+	private ArrayList<String> extraFields = new ArrayList<String>();
 	
 	/** Returns the exporter name */
 	public String getName()
@@ -71,18 +76,18 @@ public class ExcelExporter extends MappingExporter
 	{
 		// Initialize the hashes used in exporting the mapping
 		this.mapping = mapping;
-		initHashMaps(mappingCells);
+		initialize(mappingCells);
 
 		// Export the mapping
 		PrintWriter out = new PrintWriter(new FileWriter(file));
-		out.println("Source Type,Source Property,Source Documentation,Target Type,Target Property,Target Documentation,Score,Comment");
+		generateHeader(out);
 		exportMatchedElements(out);
 		exportUnmatchedElements(out);
     	out.close();
 	}
 	
 	/** Populates the hash maps that map containers to a) their contents and b) their mapping cells */
-	private void initHashMaps(ArrayList<MappingCell> cells) throws RemoteException
+	private void initialize(ArrayList<MappingCell> cells) throws RemoteException
 	{
 		// Initialize the source and target schemas
 		sourceInfo = client.getSchemaInfo(mapping.getSourceId());
@@ -97,10 +102,24 @@ public class ExcelExporter extends MappingExporter
 		mappingCellHash = new HashMap<SchemaElement, ArrayList<MappingCell>>();
 		for(MappingCell cell : cells)
 		{
+			// Associate the mapping cells with the containers
 			SchemaElement containingElement = getContainingElement(cell.getOutput());
 			ArrayList<MappingCell> mappingCells = mappingCellHash.get(containingElement);
 			if(mappingCells==null) mappingCellHash.put(containingElement, mappingCells = new ArrayList<MappingCell>());
 			mappingCells.add(cell);
+
+			// Identify any extra fields provided in the mapping cells
+			if(cell.getNotes()!=null && !cell.getNotes().equals(""))
+			{
+				String fieldString = "<([^>]*)>.*</\\1>";
+				Pattern fieldPattern = Pattern.compile(fieldString);
+				Matcher fieldMatcher = fieldPattern.matcher(cell.getNotes());
+				while(fieldMatcher.find())
+				{
+					String extraField = fieldMatcher.group(1);
+					if(!extraFields.contains(extraField)) extraFields.add(extraField);
+				}
+			}
 		}
 	}
 
@@ -134,8 +153,17 @@ public class ExcelExporter extends MappingExporter
 			containerHash.put(relationship.getId(), new FlaggedArrayList());
 	}
 
+	/** Generates the header */
+	private void generateHeader(PrintWriter out)
+	{
+		out.print("Source Type,Source Property,Source Documentation,Target Type,");
+		out.print("Target Property,Target Documentation,Score,Comment");
+		for(String extraField : extraFields) out.print(","+extraField);
+		out.println();
+	}
+	
 	/** Exports all of the pairs of matched elements */
-	private void exportMatchedElements(PrintWriter out) throws RemoteException
+	private void exportMatchedElements(PrintWriter out)
 	{
 		// Iterate over each mapping cell pairing (grouped by element container)
 		for(SchemaElement targetBase : mappingCellHash.keySet())
@@ -147,11 +175,25 @@ public class ExcelExporter extends MappingExporter
 					SchemaElement sourceBase = getContainingElement(sourceID);
 					SchemaElement targetElement = findElementByID(mappingCell.getOutput());
 
+					// Parse out extra field information
+					String note = mappingCell.getNotes();
+					ArrayList<String> extraValues = new ArrayList<String>();
+					for(String extraField : extraFields)
+					{
+						String fieldString = "<"+extraField+">(.*?)</"+extraField+">";
+						Pattern fieldPattern = Pattern.compile(fieldString);
+						Matcher fieldMatcher = fieldPattern.matcher(note);
+						extraValues.add(fieldMatcher.find() ? fieldMatcher.group(1).trim() : "");
+						note = note.replaceAll(fieldString, "");
+					}
+					
 					// Output the results
-					out.println(getElementString(sourceBase, sourceElement) + "," +
-								getElementString(targetBase, targetElement) + "," +							
-								mappingCell.getScore() + ",\"" + mappingCell.getNotes() + "\"");
-
+					out.print(getElementString(sourceBase, sourceElement) + "," +
+							  getElementString(targetBase, targetElement) + "," +							
+							  mappingCell.getScore() + ",\"" + note + "\"");
+					for(String extraValue : extraValues) out.print(","+extraValue);
+					out.println();
+					
 					// Remove the source and target elements from the container hash
 					containerHash.get(targetBase.getId()).remove(targetElement);
 					containerHash.get(sourceBase.getId()).remove(sourceElement);
@@ -159,7 +201,7 @@ public class ExcelExporter extends MappingExporter
 	}
 	
 	/** Exports all unmatched elements, provided the container has at least one exported match */
-	private void exportUnmatchedElements(PrintWriter out) throws RemoteException
+	private void exportUnmatchedElements(PrintWriter out)
 	{
 		// Identify all target containers
 		HashSet<Integer> targetContainers = new HashSet<Integer>();
@@ -192,7 +234,7 @@ public class ExcelExporter extends MappingExporter
 		{ return "\""+getDisplayName(base) + "\",\"" + getDisplayName(base,element) + "\",\"" + element.getDescription() + "\""; }
 	
 	/** Finds a given schema element by iterating through all available schemata */
-	private SchemaElement findElementByID(Integer elementID) throws RemoteException
+	private SchemaElement findElementByID(Integer elementID)
 	{
 		if(elementID == null) return null;
 		if(sourceInfo.containsElement(elementID)) return sourceInfo.getElement(elementID);
@@ -217,7 +259,7 @@ public class ExcelExporter extends MappingExporter
 	 * Finds the container for a given element: attributes and containments are stored with the parent entity, domain values are
 	 * stored with their domains, all other elements are stored in themselves (entities, relationships, and domains).
 	 */
-	private SchemaElement getContainingElement(Integer elementID) throws RemoteException
+	private SchemaElement getContainingElement(Integer elementID)
 	{
 		if(elementID == null) return null;
 		SchemaElement base = findElementByID(elementID);
