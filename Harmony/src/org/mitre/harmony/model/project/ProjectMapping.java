@@ -176,9 +176,16 @@ public class ProjectMapping extends Mapping
 				oldMappingCells.add(oldMappingCell);
 				mappingCellHash.put(mappingCell.getId(), mappingCell);
 				
+				// Determine if the mapping cell has been modified
+				boolean modified = (mappingCell.getScore()==null && oldMappingCell.getScore()!=null) ||
+								   (!mappingCell.getScore().equals(oldMappingCell.getScore()));
+				modified |= (mappingCell.getFunctionClass()==null && oldMappingCell.getFunctionClass()!=null) ||
+							(!mappingCell.getFunctionClass().equals(oldMappingCell.getFunctionClass()));
+				modified |= (mappingCell.getNotes()==null && oldMappingCell.getNotes()!=null) ||
+					        (!mappingCell.getNotes().equals(oldMappingCell.getNotes()));
+				
 				// Set the modification date if the score has been modified
-				if(!mappingCell.getScore().equals(oldMappingCell.getScore()))
-					mappingCell.setModificationDate(Calendar.getInstance().getTime());
+				if(modified) mappingCell.setModificationDate(Calendar.getInstance().getTime());
 				else mappingCell.setModificationDate(oldMappingCell.getModificationDate());
 			}
 			
