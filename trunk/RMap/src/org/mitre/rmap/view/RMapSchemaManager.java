@@ -2,7 +2,9 @@
 package org.mitre.rmap.view;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 
 import org.mitre.harmony.model.SchemaManager;
 import org.mitre.schemastore.model.*;
@@ -23,15 +25,16 @@ public class RMapSchemaManager extends SchemaManager {
 	public ArrayList<Mapping> getMappingList() { return _mappingList; }
 	public HashMap<Integer, ArrayList<MappingCell>> getMappingCellsByMapping() { return _mappingCellsByMapping; }
 	
-	public RMapSchemaManager(RMapHarmonyModel harmonyModel){
+	public RMapSchemaManager(RMapHarmonyModel harmonyModel) {
 		super(null);
 		_harmonyModel = harmonyModel;
 	}
 	
 	public Mapping getMapping(Integer mappingID){
 		Mapping retVal = null;
-		for (Mapping mapping : _mappingList)
+		for (Mapping mapping : _mappingList) {
 			if (mapping.getId().equals(mappingID)) retVal = mapping;
+		}
 		return retVal;
 	}
 	
@@ -41,14 +44,13 @@ public class RMapSchemaManager extends SchemaManager {
 	
 	public Boolean setMappingCells(Dependency depend, ArrayList<MappingCell> newMappingCells){
 		Integer mappingID = _mappingID_by_Dependency.get(depend);
-		if (mappingID != null){
+		if (mappingID != null) {
 			_mappingCellsByMapping.put(mappingID, newMappingCells);
 			return true;
-		}
-		else 	
+		} else { 	
 			return false;
+		}
 	}
-
 	
 	//------------------
 	// Overridden Schema Functions
@@ -56,8 +58,9 @@ public class RMapSchemaManager extends SchemaManager {
 	
 	/** Override -- Initializes the schema list */
 	@SuppressWarnings("unchecked")
-	public void initSchemas(ArrayList<Dependency> dependList)
-	{
+	public void initSchemas(ArrayList<Dependency> dependList) {
+		System.err.println("[D] RMapSchemaManager.initSchemas - called");
+
 		schemas = new HashMap<Integer,Schema>();
 		_mappingList = new ArrayList<Mapping>();
 		_mappingCellsByMapping = new HashMap<Integer,ArrayList<MappingCell>>();
@@ -67,8 +70,7 @@ public class RMapSchemaManager extends SchemaManager {
 		_mappingID_by_Dependency = new HashMap<Dependency,Integer>();
 		
 		try {
-		
-			for (Dependency depend : dependList ){
+			for (Dependency depend : dependList) {
 				// generate the mapping, mapping matrix, and logical relation "schema" graphs
 				Object[] mapInfo = depend.generateMapping(_harmonyModel.getProjectManager().getProject());
 				
@@ -81,8 +83,8 @@ public class RMapSchemaManager extends SchemaManager {
 				_mappingCellsByMapping.put(mapping.getId(),mappingCells);
 				
 				// store the IDs for the Logical Relation "schemas" for dependency
-				_sourceSchemaIDForMappingID.put(mapping.getId(), getSchema(mapping.getSourceId()));
-				_targetSchemaIDForMappingID.put(mapping.getId(), getSchema(mapping.getTargetId()));
+				_sourceSchemaIDForMappingID.put(mapping.getId(), sourceGraph.getSchema());
+				_targetSchemaIDForMappingID.put(mapping.getId(), targetGraph.getSchema());
 				_mappingID_by_Dependency.put(depend, mapping.getId());
 					
 				// add schemas for the logical relations
@@ -105,11 +107,11 @@ public class RMapSchemaManager extends SchemaManager {
 		} catch(Exception e) { 
 			System.err.println("[E] RMapSchemaManager.initSchemas - " + e.getMessage()); 
 			e.printStackTrace();
-		}	
+		}
+		
+		System.err.println("[D] RMapSchemaManager.initSchemas - number of schemas is " + schemas.size());
+		System.err.println("[D] RMapSchemaManager.initSchemas - values: " + schemas);
 	}
-	
-	/** Initializes the schema list */
-	public void initSchemas(){return;}
 
 	/** @Override -- Returns a list of all schemas */
 	public ArrayList<Schema> getSchemas() {
@@ -123,11 +125,14 @@ public class RMapSchemaManager extends SchemaManager {
 	
 	/** @Override -- Returns the specified schema */
 	public Schema getSchema(Integer schemaID) {
-		if(schemas==null) initSchemas();
-		if(!schemas.containsKey(schemaID)) {
-			System.err.println("[E] RMapSchemaManager.getSchema -- trying to use undefined schema " + schemaID);
+		if (schemas != null) {
+			if (!schemas.containsKey(schemaID)) {
+				System.err.println("[E] RMapSchemaManager.getSchema -- trying to return an undefined schema " + schemaID);
+			}
+			return schemas.get(schemaID);
+		} else {
+			return null;
 		}
-		return schemas.get(schemaID);
 	}
 
 	//--------------------------
@@ -135,20 +140,19 @@ public class RMapSchemaManager extends SchemaManager {
 	//--------------------------
 	
 	/** @Override - Returns the graph for the specified schema */
-	public HierarchicalSchemaInfo getSchemaInfo(Integer schemaID)
-	{
+	public HierarchicalSchemaInfo getSchemaInfo(Integer schemaID) {
 		// Fill cache if needed
-		if(!schemaInfoList.containsKey(schemaID))
+		if (!schemaInfoList.containsKey(schemaID)) {
 			System.err.println("[E] RMapSchemaManager.getSchemaInfoList -- trying to use undefined schemaInfo " + schemaID);
-		
+		}
 		return schemaInfoList.get(schemaID);
 	}
 	
 	/** @Override - Gets the specified schema element */
-	public SchemaElement getSchemaElement(Integer schemaElementID)
-	{
-		if(!schemaElements.containsKey(schemaElementID))
+	public SchemaElement getSchemaElement(Integer schemaElementID) {
+		if(!schemaElements.containsKey(schemaElementID)) {
 			System.err.println("[E] RMapSchemaManager.getSchemaElement -- trying to use undefined schemaElement " + schemaElementID);
+		}
 		return schemaElements.get(schemaElementID);
 	}
 
