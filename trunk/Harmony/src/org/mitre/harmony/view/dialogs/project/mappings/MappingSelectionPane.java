@@ -107,7 +107,7 @@ class MappingSelectionPane extends JPanel
 	/** Deletes mapping from the pane */
 	void deleteMappingItem(MappingSelectionItem item)
 	{
-		mappingList.remove(this);
+		mappingList.remove(item);
 		revalidate(); repaint();
 	}
 	
