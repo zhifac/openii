@@ -176,7 +176,7 @@ public class ExcelExporter extends MappingExporter
 					SchemaElement targetElement = findElementByID(mappingCell.getOutput());
 
 					// Parse out extra field information
-					String note = mappingCell.getNotes();
+					String note = scrub(mappingCell.getNotes());
 					ArrayList<String> extraValues = new ArrayList<String>();
 					for(String extraField : extraFields)
 					{
@@ -191,7 +191,7 @@ public class ExcelExporter extends MappingExporter
 					out.print(getElementString(sourceBase, sourceElement) + "," +
 							  getElementString(targetBase, targetElement) + "," +							
 							  mappingCell.getScore() + ",\"" + note + "\"");
-					for(String extraValue : extraValues) out.print(","+extraValue);
+					for(String extraValue : extraValues) out.print(",\""+extraValue+"\"");
 					out.println();
 					
 					// Remove the source and target elements from the container hash
@@ -231,7 +231,14 @@ public class ExcelExporter extends MappingExporter
 	
 	/** Generates a string for the specified base and element */
 	private String getElementString(SchemaElement base, SchemaElement element)
-		{ return "\""+getDisplayName(base) + "\",\"" + getDisplayName(base,element) + "\",\"" + element.getDescription() + "\""; }
+	{
+		return "\"" + getDisplayName(base) + "\",\"" + getDisplayName(base,element) + "\"," +
+			   "\"" + scrub(element.getDescription()) + "\"";
+	}
+	
+	/** Scrubs the specified string to replace quotation marks */
+	private String scrub(String text)
+		{ return text.replaceAll("\"", "\"\""); }
 	
 	/** Finds a given schema element by iterating through all available schemata */
 	private SchemaElement findElementByID(Integer elementID)
@@ -250,8 +257,8 @@ public class ExcelExporter extends MappingExporter
 	private String getDisplayName(SchemaElement element)
 	{
 		if(element == null) return "[root]";
-		if(sourceInfo.containsElement(element.getId())) return sourceInfo.getDisplayName(element.getId());
-		if(targetInfo.containsElement(element.getId())) return targetInfo.getDisplayName(element.getId());
+		if(sourceInfo.containsElement(element.getId())) return scrub(sourceInfo.getDisplayName(element.getId()));
+		if(targetInfo.containsElement(element.getId())) return scrub(targetInfo.getDisplayName(element.getId()));
 		return null;
 	}
 	
