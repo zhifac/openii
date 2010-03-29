@@ -31,10 +31,11 @@ public class ExcelExporter extends MappingExporter
 	/** Stores the mapping being exported. */
 	private Mapping mapping;
 	
-	private PrintWriter out; 
+	/** Stores the source schema used in the mapping */
+	private SchemaInfo sourceInfo;
 	
-	/** Maintains the information for ALL of the schemata referenced by the mapping. */
-	ArrayList<SchemaInfo> schemataInfo;
+	/** Stores the target schema used in the mapping */
+	private SchemaInfo targetInfo;
 	
 	/** Maps the "containers" to the mappings that reference something in the container. */
 	HashMap<SchemaElement, ArrayList<MappingCell>> container2mappingCells;
@@ -47,16 +48,14 @@ public class ExcelExporter extends MappingExporter
 	 * It also contains a boolean that is set whenever it is determined that a container (or one of its elements) is used as a target.
 	 * @param <E> The type being maintained in the array list.
 	 */ @SuppressWarnings("serial")
-	private static class ArrayListHelper<E> extends ArrayList<E> {
+	private static class ArrayListHelper<E> extends ArrayList<E>
+	{
 		private boolean removeWasCalled = false;
 		public boolean isSource = true;
-		public boolean remove(Object o) {
-			removeWasCalled = true;
-			return super.remove(o);
-		}
-		public void reset() {
-			removeWasCalled = false;
-		}
+		
+		/** Remove an object from the array while flagging this action as having occurred */
+		public boolean remove(Object o)
+			{ removeWasCalled = true; return super.remove(o); }
 	}
 	
 	/** Returns the exporter name */
@@ -74,44 +73,46 @@ public class ExcelExporter extends MappingExporter
 	/** Generates a data dictionary for this project */
 	public void exportMapping(Project project, Mapping mapping, ArrayList<MappingCell> mappingCells, File file) throws IOException
 	{
+		// Initialize the hashes used in exporting the mapping
 		this.mapping = mapping;
-		out = new PrintWriter(new FileWriter(file));
-		initDataStructures();
 		initHashMaps(mappingCells);
-		out.println("Source Type,Source Property,Source Documentation,Target Type,Target Property,Target Documentation,Score,Comment");
-		exportMatchedElements();
-		exportUnmatchedElements();
-    	out.close();
-	}
 
-	/**
-	 * Initializes all of the internal data structures.
-	 */
-	private void initDataStructures() {
-		container2mappingCells = new HashMap<SchemaElement, ArrayList<MappingCell>>();
-		container2contents = new HashMap<SchemaElement,ArrayListHelper<SchemaElement>>();		
-		schemataInfo = new ArrayList<SchemaInfo>();
+		// Export the mapping
+		PrintWriter out = new PrintWriter(new FileWriter(file));
+		out.println("Source Type,Source Property,Source Documentation,Target Type,Target Property,Target Documentation,Score,Comment");
+		exportMatchedElements(out);
+		exportUnmatchedElements(out);
+    	out.close();
 	}
 	
 	/**
 	 * Populates the hash maps that map containers to a) their contents and b) their mapping cells.
 	 */
-	private void initHashMaps(ArrayList<MappingCell> cells) throws RemoteException {
-		for (Integer schemaID : new Integer[]{mapping.getSourceId(),mapping.getTargetId()}) {
-			SchemaInfo info = client.getSchemaInfo(schemaID);
-			schemataInfo.add(info);
-			initContainersFor(info);
-		}
-		for (MappingCell cell : cells) {
+	private void initHashMaps(ArrayList<MappingCell> cells) throws RemoteException
+	{
+		// Initialize the hash maps
+		container2mappingCells = new HashMap<SchemaElement, ArrayList<MappingCell>>();
+		container2contents = new HashMap<SchemaElement,ArrayListHelper<SchemaElement>>();		
+		
+		// Initialize the source schema
+		sourceInfo = client.getSchemaInfo(mapping.getSourceId());
+		initContainersFor(sourceInfo);
+		
+		// Initialize the target schema
+		targetInfo = client.getSchemaInfo(mapping.getTargetId());
+		initContainersFor(targetInfo);
+		
+		// Initialize the mapping cells
+		for(MappingCell cell : cells)
 			container2mappingCells.get(getContainerForElement(cell.getOutput())).add(cell);
-		}
 	}
 	
 	/**
 	 * Populates the container hash map for a single schema.
 	 * @param info A schema from which entity, domain and relationship containers will be read.
 	 */
-	private void initContainersFor(SchemaInfo info) {
+	private void initContainersFor(SchemaInfo info)
+	{
 		initEntityContainers(info);
 		initDomainContainers(info);
 		initRelationshipContainers(info);
@@ -177,7 +178,7 @@ public class ExcelExporter extends MappingExporter
 	 * Exports all of the pairs of matched elements.
 	 * @throws RemoteException
 	 */
-	private void exportMatchedElements() throws RemoteException {
+	private void exportMatchedElements(PrintWriter out) throws RemoteException {
 		// Iterate over all "containers" and export all of the mappings for which elements in that container appear as a target.
 		for (SchemaElement base : container2mappingCells.keySet()) {
 			for (MappingCell cell : container2mappingCells.get(base)) {
@@ -197,8 +198,8 @@ public class ExcelExporter extends MappingExporter
 					String tgtBaseName = getDisplayName(base);
 					String tgtName = (base == tgt) ? "-" : getDisplayName(tgt);
 					// Export the results.
-					out.println("\""+srcBaseName + "\",\"" + srcName + "\",\"" + getDescription(src) + "\",\"" +
-								tgtBaseName + "\",\"" + tgtName + "\",\"" + getDescription(tgt) + "\"," +
+					out.println("\""+srcBaseName + "\",\"" + srcName + "\",\"" + src.getDescription() + "\",\"" +
+								tgtBaseName + "\",\"" + tgtName + "\",\"" + tgt.getDescription() + "\"," +
 								cell.getScore() + ",\"" + cell.getNotes() + "\"");
 				}
 			}
@@ -209,7 +210,7 @@ public class ExcelExporter extends MappingExporter
 	 * Exports all unmatched elements, provided the container has at least one exported match.
 	 * @throws RemoteException
 	 */
-	private void exportUnmatchedElements() throws RemoteException {
+	private void exportUnmatchedElements(PrintWriter out) throws RemoteException {
 		for (SchemaElement base : container2mappingCells.keySet()) {
 			// If remove was invoked, then at least one match was exported.  Do NOT export containers with no matches.
 			if (container2contents.get(base).removeWasCalled) {
@@ -220,71 +221,45 @@ public class ExcelExporter extends MappingExporter
 					String srcName = (baseIsSource) ? (base == child) ? "-" : getDisplayName(child) : "";
 					String tgtBaseName = (baseIsSource) ? "" : getDisplayName(base);
 					String tgtName = (baseIsSource) ? "" : (base == child) ? "-" : getDisplayName(child);
-					out.println("\""+ srcBaseName + "\",\"" + srcName + "\",\"" + ((baseIsSource) ? getDescription(child) : "") + "\",\"" +
-							tgtBaseName + "\",\"" + tgtName + "\",\"" + ((baseIsSource) ? "" : getDescription(child)) + "\",");
+					out.println("\""+ srcBaseName + "\",\"" + srcName + "\",\"" + ((baseIsSource) ? child.getDescription() : "") + "\",\"" +
+							tgtBaseName + "\",\"" + tgtName + "\",\"" + ((baseIsSource) ? "" : child.getDescription()) + "\",");
 				}
 			}
 		}
 	}
-
-	/**
-	 * Determines if a given ID is found in the indicated schema.
-	 */
-	static private boolean contains(Integer id, SchemaInfo info) {
-		return (info.getElement(id) != null);
-	}
 	
-	/**
-	 * Finds a given schema element by iterating through all available schemata.
-	 */
-	private SchemaElement findElementByID(Integer id) throws RemoteException {
-		if (id == null) return null;
-		for (SchemaInfo info : schemataInfo) {
-			if (contains(id, info)) {
-				return info.getElement(id);
-			}
-		}
-		throw new IllegalArgumentException("No such id: " + id);
+	/** Finds a given schema element by iterating through all available schemata */
+	private SchemaElement findElementByID(Integer elementID) throws RemoteException
+	{
+		if(elementID == null) return null;
+		if(sourceInfo.containsElement(elementID)) return sourceInfo.getElement(elementID);
+		if(targetInfo.containsElement(elementID)) return targetInfo.getElement(elementID);
+		return null;
 	}
 
-	/**
-	 * Finds the display name (which accounts for anonymous elements) by iterating through all available schemata.
-	 */
-	private String getDisplayName(SchemaElement elem) throws RemoteException {
-		if (elem == null) return "[root]";
-		for (SchemaInfo info : schemataInfo) {
-			if (contains(elem.getId(), info)) {
-				return info.getDisplayName(elem.getId());
-			}
-		}
-		throw new IllegalArgumentException("No such id: " + elem.getId());
-	}
-	
-	/**
-	 * Returns the description or the empty string if the element is null.
-	 */
-	private String getDescription(SchemaElement elem) {
-		if (elem == null) return "";
-		return elem.getDescription();
+	/** Finds the display name (which accounts for anonymous elements) by iterating through all available schemata */
+	private String getDisplayName(SchemaElement element) throws RemoteException
+	{
+		if(element == null) return "[root]";
+		if(sourceInfo.containsElement(element.getId())) return sourceInfo.getDisplayName(element.getId());
+		if(targetInfo.containsElement(element.getId())) return targetInfo.getDisplayName(element.getId());
+		return null;
 	}
 	
 	/**
 	 * Finds the container for a given element: attributes and containments are stored with the parent entity, domain values are
 	 * stored with their domains, all other elements are stored in themselves (entities, relationships, and domains).
 	 */
-	private SchemaElement getContainerForElement(Integer id) throws RemoteException {
-		if (id == null) return null;
+	private SchemaElement getContainerForElement(Integer id) throws RemoteException
+	{
+		if(id == null) return null;
 		SchemaElement base = findElementByID(id);
-		if (base instanceof DomainValue) {
+		if(base instanceof DomainValue)
 			return findElementByID(((DomainValue)base).getDomainID());
-		}
-		if (base instanceof Attribute) {
+		if(base instanceof Attribute)
 			return findElementByID(((Attribute)base).getEntityID());
-		}
-		if (base instanceof Containment) {
-			return findElementByID (((Containment)base).getParentID());
-		}
+		if(base instanceof Containment)
+			return findElementByID(((Containment)base).getParentID());
 		return base;
 	}
-
 }
