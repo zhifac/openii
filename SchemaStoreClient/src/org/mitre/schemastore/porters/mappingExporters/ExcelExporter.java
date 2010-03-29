@@ -9,6 +9,7 @@ import java.io.PrintWriter;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 
 import org.mitre.schemastore.model.Attribute;
 import org.mitre.schemastore.model.Containment;
@@ -23,11 +24,21 @@ import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.schemaInfo.SchemaInfo;
 
 /**
- * Class for exporting a data dictionary from the project
- * @author pmork
+ * Class for exporting a mapping formatted in csv
+ * @author cwolf
  */
 public class ExcelExporter extends MappingExporter
 {
+	/** Private class used to flag an array when items are deleted */ @SuppressWarnings("serial")
+	private class FlaggedArrayList extends ArrayList<SchemaElement>
+	{
+		boolean flag = false;
+		private FlaggedArrayList() { super(); }
+		private FlaggedArrayList(SchemaElement element) { super(); add(element); }
+		public boolean remove(Object o) { flag = true; 	return super.remove(o); }
+		private boolean isFlagged() { return flag; }
+	}
+	
 	/** Stores the mapping being exported. */
 	private Mapping mapping;
 	
@@ -37,26 +48,11 @@ public class ExcelExporter extends MappingExporter
 	/** Stores the target schema used in the mapping */
 	private SchemaInfo targetInfo;
 	
-	/** Maps the "containers" to the mappings that reference something in the container. */
-	HashMap<SchemaElement, ArrayList<MappingCell>> container2mappingCells;
+	/** Maps the target "containers" to the mapping cells that reference the container */
+	HashMap<SchemaElement, ArrayList<MappingCell>> mappingCellHash;
 	
-	/** Maps the "containers" to the elements for that container. It is used to track which containers/elements have NOT been matched. */
-	private HashMap<SchemaElement, ArrayListHelper<SchemaElement>> container2contents;
-
-	/**
-	 * This helper class keeps track of whether or not an element has ever been removed from the array list.
-	 * It also contains a boolean that is set whenever it is determined that a container (or one of its elements) is used as a target.
-	 * @param <E> The type being maintained in the array list.
-	 */ @SuppressWarnings("serial")
-	private static class ArrayListHelper<E> extends ArrayList<E>
-	{
-		private boolean removeWasCalled = false;
-		public boolean isSource = true;
-		
-		/** Remove an object from the array while flagging this action as having occurred */
-		public boolean remove(Object o)
-			{ removeWasCalled = true; return super.remove(o); }
-	}
+	/** Maps the "containers" to the elements in the container that have yet to be matched */
+	private HashMap<Integer, FlaggedArrayList> containerHash;
 	
 	/** Returns the exporter name */
 	public String getName()
@@ -85,148 +81,115 @@ public class ExcelExporter extends MappingExporter
     	out.close();
 	}
 	
-	/**
-	 * Populates the hash maps that map containers to a) their contents and b) their mapping cells.
-	 */
+	/** Populates the hash maps that map containers to a) their contents and b) their mapping cells */
 	private void initHashMaps(ArrayList<MappingCell> cells) throws RemoteException
 	{
-		// Initialize the hash maps
-		container2mappingCells = new HashMap<SchemaElement, ArrayList<MappingCell>>();
-		container2contents = new HashMap<SchemaElement,ArrayListHelper<SchemaElement>>();		
-		
-		// Initialize the source schema
+		// Initialize the source and target schemas
 		sourceInfo = client.getSchemaInfo(mapping.getSourceId());
-		initContainersFor(sourceInfo);
-		
-		// Initialize the target schema
 		targetInfo = client.getSchemaInfo(mapping.getTargetId());
-		initContainersFor(targetInfo);
+
+		// Initialize the containers
+		containerHash = new HashMap<Integer,FlaggedArrayList>();		
+		for(SchemaInfo schemaInfo : new SchemaInfo[]{sourceInfo,targetInfo})
+			initializeContainers(schemaInfo);
 		
 		// Initialize the mapping cells
+		mappingCellHash = new HashMap<SchemaElement, ArrayList<MappingCell>>();
 		for(MappingCell cell : cells)
-			container2mappingCells.get(getContainerForElement(cell.getOutput())).add(cell);
+		{
+			SchemaElement containingElement = getContainingElement(cell.getOutput());
+			ArrayList<MappingCell> mappingCells = mappingCellHash.get(containingElement);
+			if(mappingCells==null) mappingCellHash.put(containingElement, mappingCells = new ArrayList<MappingCell>());
+			mappingCells.add(cell);
+		}
 	}
-	
-	/**
-	 * Populates the container hash map for a single schema.
-	 * @param info A schema from which entity, domain and relationship containers will be read.
-	 */
-	private void initContainersFor(SchemaInfo info)
+
+	/** Initializes the containers with their associated schema elements */
+	private void initializeContainers(SchemaInfo schemaInfo)
 	{
-		initEntityContainers(info);
-		initDomainContainers(info);
-		initRelationshipContainers(info);
-	}
+		// Stores entities in their own containers
+		for (SchemaElement entity : schemaInfo.getElements(Entity.class))
+			containerHash.put(entity.getId(), new FlaggedArrayList(entity));
+		containerHash.put(null, new FlaggedArrayList(null));
+		
+		// Store attributes in the associated entity container
+		for (SchemaElement attribute : schemaInfo.getElements(Attribute.class))
+			containerHash.get(((Attribute)attribute).getEntityID()).add(attribute);
 
-	/**
-	 * Populates the container hash map with entities whose children are attributes and properties.
-	 */
-	private void initEntityContainers(SchemaInfo info) {
-		ArrayList<SchemaElement> entities = info.getElements(Entity.class);
-		entities.add(null);
-		for (SchemaElement entity : entities) {
-			container2mappingCells.put(entity, new ArrayList<MappingCell>());
-			ArrayListHelper<SchemaElement> children = new ArrayListHelper<SchemaElement>();
-			container2contents.put(entity, children);
-			children.add(entity);
-		}
-		ArrayList<SchemaElement> attributes = info.getElements(Attribute.class);
-		for (SchemaElement attribute : attributes) {
-			SchemaElement entity = info.getEntity(attribute.getId());
-			container2contents.get(entity).add(attribute);
-		}
-		ArrayList<SchemaElement> containments = info.getElements(Containment.class);
-		for (SchemaElement containment : containments) {
-			SchemaElement parent = info.getElement(((Containment)containment).getParentID());
-			// Top-level containments will not be found.
-//			if (container2contents.get(parent) != null) {
-			// If the parent is null, the containment will be added to the null container.
-			container2contents.get(parent).add(containment);
-//			}
-		}
-	}
-	
-	/**
-	 * Populates the container hash map with domains whose children are domain values.
-	 */
-	private void initDomainContainers(SchemaInfo info) {
-		ArrayList<SchemaElement> domains = info.getElements(Domain.class);
-		for (SchemaElement domain : domains) {
-			container2mappingCells.put(domain, new ArrayList<MappingCell>());
-			ArrayListHelper<SchemaElement> children = new ArrayListHelper<SchemaElement>();
-			container2contents.put(domain, children);
+		// Stores containments in the associated entity container
+		for (SchemaElement containment : schemaInfo.getElements(Containment.class))
+			containerHash.get(((Containment)containment).getParentID()).add(containment);
+		
+		// Stores domains and their associated values in domain containers
+		for (SchemaElement domain : schemaInfo.getElements(Domain.class))
+		{
+			FlaggedArrayList children = new FlaggedArrayList();
 			children.add(domain);
-			for (SchemaElement domainvalue : info.getDomainValuesForDomain(domain.getId())) {
-				children.add(domainvalue);
-			}
+			children.addAll(schemaInfo.getDomainValuesForDomain(domain.getId()));
+			containerHash.put(domain.getId(), children);
 		}
+		
+		// Stores relationships in their own containers
+		for (SchemaElement relationship : schemaInfo.getElements(Relationship.class))
+			containerHash.put(relationship.getId(), new FlaggedArrayList());
 	}
 
-	/**
-	 * Populates the container hash map with relationships, which have no children.
-	 */
-	private void initRelationshipContainers(SchemaInfo info) {
-		ArrayList<SchemaElement> relationships = info.getElements(Relationship.class);
-		for (SchemaElement relationship : relationships) {
-			container2mappingCells.put(relationship, new ArrayList<MappingCell>());
-			ArrayListHelper<SchemaElement> children = new ArrayListHelper<SchemaElement>();
-			container2contents.put(relationship, children);
-		}
-	}
+	/** Exports all of the pairs of matched elements */
+	private void exportMatchedElements(PrintWriter out) throws RemoteException
+	{
+		// Iterate over each mapping cell pairing (grouped by element container)
+		for(SchemaElement targetBase : mappingCellHash.keySet())
+			for(MappingCell mappingCell : mappingCellHash.get(targetBase))
+				for(Integer sourceID : mappingCell.getInput())
+				{
+					// Retrieve the source and target element
+					SchemaElement sourceElement = findElementByID(sourceID);
+					SchemaElement sourceBase = getContainingElement(sourceID);
+					SchemaElement targetElement = findElementByID(mappingCell.getOutput());
 
-	/**
-	 * Exports all of the pairs of matched elements.
-	 * @throws RemoteException
-	 */
-	private void exportMatchedElements(PrintWriter out) throws RemoteException {
-		// Iterate over all "containers" and export all of the mappings for which elements in that container appear as a target.
-		for (SchemaElement base : container2mappingCells.keySet()) {
-			for (MappingCell cell : container2mappingCells.get(base)) {
-				// Because the container appears as a target, mark it.
-				container2contents.get(base).isSource = false;
-				SchemaElement tgt = findElementByID(cell.getOutput());
-				// The mapping cell might be associated with multiple source schema elements.
-				for (Integer srcID : cell.getInput()) {
-					SchemaElement src = findElementByID(srcID);
-					SchemaElement srcBase = getContainerForElement(srcID);
-					// The source and target elements are being exported, so remove them from the list of unprocessed elements.
-					container2contents.get(base).remove(tgt);
-					container2contents.get(srcBase).remove(src);
-					// Convert to human readable names.
-					String srcBaseName = getDisplayName(srcBase);
-					String srcName = (srcBase == src) ? "-" : getDisplayName(src);
-					String tgtBaseName = getDisplayName(base);
-					String tgtName = (base == tgt) ? "-" : getDisplayName(tgt);
-					// Export the results.
-					out.println("\""+srcBaseName + "\",\"" + srcName + "\",\"" + src.getDescription() + "\",\"" +
-								tgtBaseName + "\",\"" + tgtName + "\",\"" + tgt.getDescription() + "\"," +
-								cell.getScore() + ",\"" + cell.getNotes() + "\"");
+					// Output the results
+					out.println(getElementString(sourceBase, sourceElement) + "," +
+								getElementString(targetBase, targetElement) + "," +							
+								mappingCell.getScore() + ",\"" + mappingCell.getNotes() + "\"");
+
+					// Remove the source and target elements from the container hash
+					containerHash.get(targetBase.getId()).remove(targetElement);
+					containerHash.get(sourceBase.getId()).remove(sourceElement);
 				}
+	}
+	
+	/** Exports all unmatched elements, provided the container has at least one exported match */
+	private void exportUnmatchedElements(PrintWriter out) throws RemoteException
+	{
+		// Identify all target containers
+		HashSet<Integer> targetContainers = new HashSet<Integer>();
+		for(SchemaElement targetContainer : mappingCellHash.keySet())
+			targetContainers.add(targetContainer.getId());
+		
+		// Cycle through all containers to identify unmatched elements
+		for(Integer baseID : containerHash.keySet())
+		{
+			// Make sure that container was associated with at least one match
+			FlaggedArrayList elements = containerHash.get(baseID);
+			if(!elements.isFlagged()) continue;
+
+			// Determine if the container is part of the source or target schema	
+			boolean isSource = !targetContainers.contains(baseID);
+			SchemaElement base = isSource ? sourceInfo.getElement(baseID) : targetInfo.getElement(baseID);
+
+			// Display the unmatched elements which make up the container
+			for(SchemaElement child : containerHash.get(baseID))
+			{
+				String sourceString = isSource ? getElementString(base, child) : ",,";
+				String targetString = isSource ? ",," : getElementString(base, child);
+				out.println(sourceString + "," + targetString);
 			}
 		}
 	}
 	
-	/**
-	 * Exports all unmatched elements, provided the container has at least one exported match.
-	 * @throws RemoteException
-	 */
-	private void exportUnmatchedElements(PrintWriter out) throws RemoteException {
-		for (SchemaElement base : container2mappingCells.keySet()) {
-			// If remove was invoked, then at least one match was exported.  Do NOT export containers with no matches.
-			if (container2contents.get(base).removeWasCalled) {
-				// If the container was used as a target it will be exported in the target columns, otherwise it will be exported to the source columns.
-				boolean baseIsSource = container2contents.get(base).isSource;
-				for (SchemaElement child : container2contents.get(base)) {
-					String srcBaseName = (baseIsSource) ? getDisplayName(base) : "";
-					String srcName = (baseIsSource) ? (base == child) ? "-" : getDisplayName(child) : "";
-					String tgtBaseName = (baseIsSource) ? "" : getDisplayName(base);
-					String tgtName = (baseIsSource) ? "" : (base == child) ? "-" : getDisplayName(child);
-					out.println("\""+ srcBaseName + "\",\"" + srcName + "\",\"" + ((baseIsSource) ? child.getDescription() : "") + "\",\"" +
-							tgtBaseName + "\",\"" + tgtName + "\",\"" + ((baseIsSource) ? "" : child.getDescription()) + "\",");
-				}
-			}
-		}
-	}
+	/** Generates a string for the specified base and element */
+	private String getElementString(SchemaElement base, SchemaElement element)
+		{ return "\""+getDisplayName(base) + "\",\"" + getDisplayName(base,element) + "\",\"" + element.getDescription() + "\""; }
 	
 	/** Finds a given schema element by iterating through all available schemata */
 	private SchemaElement findElementByID(Integer elementID) throws RemoteException
@@ -237,8 +200,12 @@ public class ExcelExporter extends MappingExporter
 		return null;
 	}
 
-	/** Finds the display name (which accounts for anonymous elements) by iterating through all available schemata */
-	private String getDisplayName(SchemaElement element) throws RemoteException
+	/** Finds the display name (which accounts for anonymous elements) by iterating through all available schemas */
+	private String getDisplayName(SchemaElement root, SchemaElement element)
+		{ if(element.equals(root)) return "-"; return getDisplayName(element); }
+	
+	/** Finds the display name (which accounts for anonymous elements) by iterating through all available schemas */
+	private String getDisplayName(SchemaElement element)
 	{
 		if(element == null) return "[root]";
 		if(sourceInfo.containsElement(element.getId())) return sourceInfo.getDisplayName(element.getId());
@@ -250,10 +217,10 @@ public class ExcelExporter extends MappingExporter
 	 * Finds the container for a given element: attributes and containments are stored with the parent entity, domain values are
 	 * stored with their domains, all other elements are stored in themselves (entities, relationships, and domains).
 	 */
-	private SchemaElement getContainerForElement(Integer id) throws RemoteException
+	private SchemaElement getContainingElement(Integer elementID) throws RemoteException
 	{
-		if(id == null) return null;
-		SchemaElement base = findElementByID(id);
+		if(elementID == null) return null;
+		SchemaElement base = findElementByID(elementID);
 		if(base instanceof DomainValue)
 			return findElementByID(((DomainValue)base).getDomainID());
 		if(base instanceof Attribute)
