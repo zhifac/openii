@@ -60,18 +60,25 @@ public class RMapGUI extends JPanel implements ProjectListener {
 		_dependsOrdered = Dependency.generate(elementID, client);
 		_dependDisplayedIndex = -1;
 		
-		/** Initialize mapping pane data structures */
+		// create the rmap version of the harmony model and initialize the schema list
 		_harmonyModel = new RMapHarmonyModel(null);
-        _mappingPane = new MappingPane(this, _harmonyModel);
         _harmonyModel.getProjectManager().addListener(this);
 		_harmonyModel.getSchemaManager().initSchemas(_dependsOrdered);
-		
-		/** Create the Dependency Table and put in a scroll pane */
+
+		// initialize the mapping pane where we will show everything
+        _mappingPane = new MappingPane(this, _harmonyModel);
+
+		// create the Dependency Table and put in a scroll pane
 		Object[][] dependTableData = new Object[_dependsOrdered.size()][2];
 		for (int i=0; i<_dependsOrdered.size(); i++){
-			dependTableData[i][0] = new String(i + " -- [" 
-					+ _dependsOrdered.get(i).getSourceLogRel().getMappingSchemaEntitySet().get(0).getName() + "][" 
-					+ _dependsOrdered.get(i).getTargetLogRel().getMappingSchemaEntitySet().get(0).getName() +"]");
+			dependTableData[i][0] = new String(
+				i +
+				" -- [" + 
+					_dependsOrdered.get(i).getSourceLogRel().getMappingSchemaEntitySet().get(0).getName() +
+				"][" + 
+					_dependsOrdered.get(i).getTargetLogRel().getMappingSchemaEntitySet().get(0).getName() +
+				"]"
+			);
 			dependTableData[i][1] = new Boolean(false);
 		}
 		
@@ -83,21 +90,20 @@ public class RMapGUI extends JPanel implements ProjectListener {
 		_dependencyTable.setCellSelectionEnabled(true);
 		_dependencyTable.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         JScrollPane dependencyListScrollPane = new JScrollPane(_dependencyTable);
-     
-       
-        /** create checkbox */
+
+        // create checkbox
         JRadioButton derbyButton = new JRadioButton(RMapGUI.DERBY_TYPE,true);
         derbyButton.setName(RMapGUI.DERBY_TYPE);
         derbyButton.setSelected(true);
         JRadioButton postgresButton = new JRadioButton(RMapGUI.POSTGRES_TYPE,true);
         postgresButton.setName(RMapGUI.POSTGRES_TYPE);
 
-        //Group the radio buttons.
+        // Group the radio buttons.
         ButtonGroup group = new ButtonGroup();
         group.add(derbyButton);
         group.add(postgresButton);
   
-        //Register a listener for the radio buttons.
+        // Register a listener for the radio buttons.
         derbyButton.addActionListener(new SelectDBListener(derbyButton));
         postgresButton.addActionListener(new SelectDBListener(postgresButton));
         
