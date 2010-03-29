@@ -177,7 +177,7 @@ public class ProjectMapping extends Mapping
 				mappingCellHash.put(mappingCell.getId(), mappingCell);
 				
 				// Set the modification date if the score has been modified
-				if(mappingCell.getScore().equals(oldMappingCell.getScore()))
+				if(!mappingCell.getScore().equals(oldMappingCell.getScore()))
 					mappingCell.setModificationDate(Calendar.getInstance().getTime());
 				else mappingCell.setModificationDate(oldMappingCell.getModificationDate());
 			}
