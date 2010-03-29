@@ -53,7 +53,7 @@ public class XMIImporter extends SchemaImporter {
 		else if (name.contains("EAUML:table")) domainName = referent.getName();
 		else return;
 
-		referent.setDescription(referent.getDescription() + "\n value type: " + domainName);
+		referent.setDescription(referent.getDescription() + "\n (Value type: " + domainName + ")");
 
 		// The following code doesn't work because an Entity for a vocabulary
 		// cannot have domain types.
@@ -78,11 +78,11 @@ public class XMIImporter extends SchemaImporter {
 
 		for (int x = 0; x < children.getLength(); x++) {
 			Node n = children.item(x);
-			// System.out.println("ExtElement child " + n.getNodeName());
+			System.out.println("ExtElement child " + n.getNodeName());
 			if (n.getNodeName().equals("properties")) {
 				try {
 					String docs = n.getAttributes().getNamedItem("documentation").getNodeValue();
-					// System.out.println("DOCUMENTATION: " + docs);
+					System.out.println("DOCUMENTATION for " + n.getNodeName() + ": " + docs);
 					schemaElement.setDescription(docs);
 				} catch (NullPointerException e) {
 					;
@@ -106,11 +106,9 @@ public class XMIImporter extends SchemaImporter {
 						}
 
 						if (elements.get(aggId) == null) {
-							// elements.put(aggId, new Containment(nextId(),
-							// child.getName() + ".isPartOf." +
-							// parent.getName(), aggId, parent.getId(),
-							// child.getId(), 0, 1, 0));
-							elements.put(aggId, new Containment(nextId(), "[" + child.getName() + "]", "xmi:id=" + aggId, parent.getId(), child.getId(), 0, 1, 0));
+							elements.put(aggId, new Containment(nextId(), "[" + parent.getName() + "->" + child.getName() + "]", "xmi:id=" + aggId, parent.getId(), child.getId(), 0, 1, 0));
+							// If the element had a [root]->elmeent containment
+							// relationship, remove that
 							if (elements.containsKey(childID + ".containment")) elements.remove(childID + ".containment");
 						}
 					} else if ("Generalization".equals(linkNode.getNodeName())) {
@@ -126,7 +124,7 @@ public class XMIImporter extends SchemaImporter {
 							System.err.println("MISSING SCHEMA ELEMENTS: parent=" + parent + " child=" + child);
 							continue;
 						}
-
+						// Create a subtype for generalization
 						if (elements.get(genId) == null) elements.put(genId, new Subtype(nextId(), parent.getId(), child.getId(), 0));
 
 					}
@@ -141,9 +139,10 @@ public class XMIImporter extends SchemaImporter {
 		String documentation = "";
 		Entity entity = new Entity(nextId(), name, documentation, 0);
 		if (!elements.containsKey(xmiID)) elements.put(xmiID, entity);
-		if (!elements.containsKey(xmiID + ".containment")) {
-			elements.put(xmiID + ".containment", new Containment(nextId(), (parent == null) ? "" : parent.getName() + "->" + name, "", (parent == null) ? null : parent.getId(), entity.getId(), 0, 1, 0));
-		}
+
+		// For the elements with no parent, make them be contained under the
+		// root
+		if (parent == null && (!elements.containsKey(xmiID + ".containment"))) elements.put(xmiID + ".containment", new Containment(nextId(), "[" + name + "]", "", null, entity.getId(), 0, 1, 0));
 
 		return entity;
 	}
