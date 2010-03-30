@@ -26,17 +26,12 @@ public class Mapping implements Serializable
 	public Mapping() {}
 
 	/** Constructs a mapping */
-	public Mapping(Integer id, Integer projectId, Integer sourceId, Integer targetId) {
-		this.id = id;
-		this.projectId = projectId;
-		this.sourceId = sourceId;
-		this.targetId = targetId;
-	}
+	public Mapping(Integer id, Integer projectId, Integer sourceId, Integer targetId)
+		{ this.id = id; this.projectId = projectId; this.sourceId = sourceId; this.targetId = targetId; }
 
 	/** Copies the mapping */
-	public Mapping copy() {
-		return new Mapping(getId(), getProjectId(), getSourceId(), getTargetId());
-	}
+	public Mapping copy()
+		{ return new Mapping(getId(),getProjectId(),getSourceId(),getTargetId()); }
 
 	// Handles all mapping getters
 	public Integer getId() { return id; }
@@ -51,19 +46,18 @@ public class Mapping implements Serializable
 	public void setTargetId(Integer targetId) { this.targetId = targetId; }
 
 	/** Returns the hash code */
-	public int hashCode() {
-		return id.hashCode();
-	}
+	public int hashCode()
+		{ return id.hashCode(); }
 
 	/** Indicates that two mappings are equals */
-	public boolean equals(Object object) {
-		if (object instanceof Integer) { return ((Integer)object).equals(id); }
-		if (object instanceof Mapping) { return ((Mapping)object).id.equals(id); }
+	public boolean equals(Object object)
+	{
+		if(object instanceof Integer) return ((Integer)object).equals(id);
+		if(object instanceof Mapping) return ((Mapping)object).id.equals(id);
 		return false;
 	}
 
 	/** String representation of the project */
-	public String toString() {
-		return sourceId + " -> " + targetId;
-	}
+	public String toString()
+		{ return sourceId + " -> " + targetId; }
 }
