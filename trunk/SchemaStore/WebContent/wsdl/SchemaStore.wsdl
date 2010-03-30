@@ -67,6 +67,16 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
      </sequence>
     </complexType>
    </element>
+   <element name="getTags">
+    <complexType/>
+   </element>
+   <element name="getTagsResponse">
+    <complexType>
+     <sequence>
+      <element maxOccurs="unbounded" name="getTagsReturn" type="tns1:Tag"/>
+     </sequence>
+    </complexType>
+   </element>
    <element name="getMappings">
     <complexType>
      <sequence>
@@ -81,55 +91,19 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
      </sequence>
     </complexType>
    </element>
-   <element name="getTags">
-    <complexType/>
-   </element>
-   <element name="getTagsResponse">
+   <element name="setAnnotation">
     <complexType>
      <sequence>
-      <element maxOccurs="unbounded" name="getTagsReturn" type="tns1:Tag"/>
+      <element name="elementID" type="xsd:int"/>
+      <element name="attribute" type="xsd:string"/>
+      <element name="value" type="xsd:string"/>
      </sequence>
     </complexType>
    </element>
-   <element name="addProject">
+   <element name="setAnnotationResponse">
     <complexType>
      <sequence>
-      <element name="project" type="tns1:Project"/>
-     </sequence>
-    </complexType>
-   </element>
-   <element name="addProjectResponse">
-    <complexType>
-     <sequence>
-      <element name="addProjectReturn" type="xsd:int"/>
-     </sequence>
-    </complexType>
-   </element>
-   <element name="updateAttribute">
-    <complexType>
-     <sequence>
-      <element name="attribute" type="tns1:Attribute"/>
-     </sequence>
-    </complexType>
-   </element>
-   <element name="updateAttributeResponse">
-    <complexType>
-     <sequence>
-      <element name="updateAttributeReturn" type="xsd:boolean"/>
-     </sequence>
-    </complexType>
-   </element>
-   <element name="addSubtype">
-    <complexType>
-     <sequence>
-      <element name="subtype" type="tns1:Subtype"/>
-     </sequence>
-    </complexType>
-   </element>
-   <element name="addSubtypeResponse">
-    <complexType>
-     <sequence>
-      <element name="addSubtypeReturn" type="xsd:int"/>
+      <element name="setAnnotationReturn" type="xsd:boolean"/>
      </sequence>
     </complexType>
    </element>
@@ -161,19 +135,31 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
      </sequence>
     </complexType>
    </element>
-   <element name="setAnnotation">
+   <element name="updateAttribute">
     <complexType>
      <sequence>
-      <element name="elementID" type="xsd:int"/>
-      <element name="attribute" type="xsd:string"/>
-      <element name="value" type="xsd:string"/>
+      <element name="attribute" type="tns1:Attribute"/>
      </sequence>
     </complexType>
    </element>
-   <element name="setAnnotationResponse">
+   <element name="updateAttributeResponse">
     <complexType>
      <sequence>
-      <element name="setAnnotationReturn" type="xsd:boolean"/>
+      <element name="updateAttributeReturn" type="xsd:boolean"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="addProject">
+    <complexType>
+     <sequence>
+      <element name="project" type="tns1:Project"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="addProjectResponse">
+    <complexType>
+     <sequence>
+      <element name="addProjectReturn" type="xsd:int"/>
      </sequence>
     </complexType>
    </element>
@@ -201,17 +187,17 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
      </sequence>
     </complexType>
    </element>
-   <element name="updateTag">
+   <element name="addSubtype">
     <complexType>
      <sequence>
-      <element name="tag" type="tns1:Tag"/>
+      <element name="subtype" type="tns1:Subtype"/>
      </sequence>
     </complexType>
    </element>
-   <element name="updateTagResponse">
+   <element name="addSubtypeResponse">
     <complexType>
      <sequence>
-      <element name="updateTagReturn" type="xsd:boolean"/>
+      <element name="addSubtypeReturn" type="xsd:int"/>
      </sequence>
     </complexType>
    </element>
@@ -417,6 +403,20 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
     <complexType>
      <sequence>
       <element name="addTagReturn" type="xsd:int"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="updateTag">
+    <complexType>
+     <sequence>
+      <element name="tag" type="tns1:Tag"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="updateTagResponse">
+    <complexType>
+     <sequence>
+      <element name="updateTagReturn" type="xsd:boolean"/>
      </sequence>
     </complexType>
    </element>
@@ -1315,14 +1315,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
      <element name="schemas" nillable="true" type="impl:ArrayOf_tns1_ProjectSchema"/>
     </sequence>
    </complexType>
-   <complexType name="Mapping">
-    <sequence>
-     <element name="id" nillable="true" type="xsd:int"/>
-     <element name="projectId" nillable="true" type="xsd:int"/>
-     <element name="sourceId" nillable="true" type="xsd:int"/>
-     <element name="targetId" nillable="true" type="xsd:int"/>
-    </sequence>
-   </complexType>
    <complexType name="Tag">
     <sequence>
      <element name="id" nillable="true" type="xsd:int"/>
@@ -1330,28 +1322,13 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
      <element name="parentId" nillable="true" type="xsd:int"/>
     </sequence>
    </complexType>
-   <complexType name="Attribute">
-    <complexContent>
-     <extension base="tns1:SchemaElement">
-      <sequence>
-       <element name="domainID" nillable="true" type="xsd:int"/>
-       <element name="entityID" nillable="true" type="xsd:int"/>
-       <element name="key" type="xsd:boolean"/>
-       <element name="max" nillable="true" type="xsd:int"/>
-       <element name="min" nillable="true" type="xsd:int"/>
-      </sequence>
-     </extension>
-    </complexContent>
-   </complexType>
-   <complexType name="Subtype">
-    <complexContent>
-     <extension base="tns1:SchemaElement">
-      <sequence>
-       <element name="childID" nillable="true" type="xsd:int"/>
-       <element name="parentID" nillable="true" type="xsd:int"/>
-      </sequence>
-     </extension>
-    </complexContent>
+   <complexType name="Mapping">
+    <sequence>
+     <element name="id" nillable="true" type="xsd:int"/>
+     <element name="projectId" nillable="true" type="xsd:int"/>
+     <element name="sourceId" nillable="true" type="xsd:int"/>
+     <element name="targetId" nillable="true" type="xsd:int"/>
+    </sequence>
    </complexType>
    <complexType name="Relationship">
     <complexContent>
@@ -1374,6 +1351,19 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
      </extension>
     </complexContent>
    </complexType>
+   <complexType name="Attribute">
+    <complexContent>
+     <extension base="tns1:SchemaElement">
+      <sequence>
+       <element name="domainID" nillable="true" type="xsd:int"/>
+       <element name="entityID" nillable="true" type="xsd:int"/>
+       <element name="key" type="xsd:boolean"/>
+       <element name="max" nillable="true" type="xsd:int"/>
+       <element name="min" nillable="true" type="xsd:int"/>
+      </sequence>
+     </extension>
+    </complexContent>
+   </complexType>
    <complexType name="Schema">
     <sequence>
      <element name="author" nillable="true" type="xsd:string"/>
@@ -1384,6 +1374,16 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
      <element name="source" nillable="true" type="xsd:string"/>
      <element name="type" nillable="true" type="xsd:string"/>
     </sequence>
+   </complexType>
+   <complexType name="Subtype">
+    <complexContent>
+     <extension base="tns1:SchemaElement">
+      <sequence>
+       <element name="childID" nillable="true" type="xsd:int"/>
+       <element name="parentID" nillable="true" type="xsd:int"/>
+      </sequence>
+     </extension>
+    </complexContent>
    </complexType>
    <complexType name="Alias">
     <complexContent>
@@ -1979,15 +1979,15 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
    </wsdl:message>
 
-   <wsdl:message name="addProjectResponse">
-
-      <wsdl:part element="impl:addProjectResponse" name="parameters"/>
-
-   </wsdl:message>
-
    <wsdl:message name="setAnnotationRequest">
 
       <wsdl:part element="impl:setAnnotation" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="addProjectResponse">
+
+      <wsdl:part element="impl:addProjectResponse" name="parameters"/>
 
    </wsdl:message>
 
@@ -2243,15 +2243,15 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
    </wsdl:message>
 
-   <wsdl:message name="getProjectsResponse">
-
-      <wsdl:part element="impl:getProjectsResponse" name="parameters"/>
-
-   </wsdl:message>
-
    <wsdl:message name="deleteSchemaResponse">
 
       <wsdl:part element="impl:deleteSchemaResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getProjectsResponse">
+
+      <wsdl:part element="impl:getProjectsResponse" name="parameters"/>
 
    </wsdl:message>
 
@@ -2547,14 +2547,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
       </wsdl:operation>
 
-      <wsdl:operation name="getMappings">
-
-         <wsdl:input message="impl:getMappingsRequest" name="getMappingsRequest"/>
-
-         <wsdl:output message="impl:getMappingsResponse" name="getMappingsResponse"/>
-
-      </wsdl:operation>
-
       <wsdl:operation name="getTags">
 
          <wsdl:input message="impl:getTagsRequest" name="getTagsRequest"/>
@@ -2563,27 +2555,19 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
       </wsdl:operation>
 
-      <wsdl:operation name="addProject">
+      <wsdl:operation name="getMappings">
 
-         <wsdl:input message="impl:addProjectRequest" name="addProjectRequest"/>
+         <wsdl:input message="impl:getMappingsRequest" name="getMappingsRequest"/>
 
-         <wsdl:output message="impl:addProjectResponse" name="addProjectResponse"/>
-
-      </wsdl:operation>
-
-      <wsdl:operation name="updateAttribute">
-
-         <wsdl:input message="impl:updateAttributeRequest" name="updateAttributeRequest"/>
-
-         <wsdl:output message="impl:updateAttributeResponse" name="updateAttributeResponse"/>
+         <wsdl:output message="impl:getMappingsResponse" name="getMappingsResponse"/>
 
       </wsdl:operation>
 
-      <wsdl:operation name="addSubtype">
+      <wsdl:operation name="setAnnotation">
 
-         <wsdl:input message="impl:addSubtypeRequest" name="addSubtypeRequest"/>
+         <wsdl:input message="impl:setAnnotationRequest" name="setAnnotationRequest"/>
 
-         <wsdl:output message="impl:addSubtypeResponse" name="addSubtypeResponse"/>
+         <wsdl:output message="impl:setAnnotationResponse" name="setAnnotationResponse"/>
 
       </wsdl:operation>
 
@@ -2603,11 +2587,19 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
       </wsdl:operation>
 
-      <wsdl:operation name="setAnnotation">
+      <wsdl:operation name="updateAttribute">
 
-         <wsdl:input message="impl:setAnnotationRequest" name="setAnnotationRequest"/>
+         <wsdl:input message="impl:updateAttributeRequest" name="updateAttributeRequest"/>
 
-         <wsdl:output message="impl:setAnnotationResponse" name="setAnnotationResponse"/>
+         <wsdl:output message="impl:updateAttributeResponse" name="updateAttributeResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="addProject">
+
+         <wsdl:input message="impl:addProjectRequest" name="addProjectRequest"/>
+
+         <wsdl:output message="impl:addProjectResponse" name="addProjectResponse"/>
 
       </wsdl:operation>
 
@@ -2627,11 +2619,11 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
       </wsdl:operation>
 
-      <wsdl:operation name="updateTag">
+      <wsdl:operation name="addSubtype">
 
-         <wsdl:input message="impl:updateTagRequest" name="updateTagRequest"/>
+         <wsdl:input message="impl:addSubtypeRequest" name="addSubtypeRequest"/>
 
-         <wsdl:output message="impl:updateTagResponse" name="updateTagResponse"/>
+         <wsdl:output message="impl:addSubtypeResponse" name="addSubtypeResponse"/>
 
       </wsdl:operation>
 
@@ -2728,6 +2720,14 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
          <wsdl:input message="impl:addTagRequest" name="addTagRequest"/>
 
          <wsdl:output message="impl:addTagResponse" name="addTagResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="updateTag">
+
+         <wsdl:input message="impl:updateTagRequest" name="updateTagRequest"/>
+
+         <wsdl:output message="impl:updateTagResponse" name="updateTagResponse"/>
 
       </wsdl:operation>
 
@@ -3297,24 +3297,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
       </wsdl:operation>
 
-      <wsdl:operation name="getMappings">
-
-         <wsdlsoap:operation soapAction=""/>
-
-         <wsdl:input name="getMappingsRequest">
-
-            <wsdlsoap:body use="literal"/>
-
-         </wsdl:input>
-
-         <wsdl:output name="getMappingsResponse">
-
-            <wsdlsoap:body use="literal"/>
-
-         </wsdl:output>
-
-      </wsdl:operation>
-
       <wsdl:operation name="getTags">
 
          <wsdlsoap:operation soapAction=""/>
@@ -3333,17 +3315,17 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
       </wsdl:operation>
 
-      <wsdl:operation name="addProject">
+      <wsdl:operation name="getMappings">
 
          <wsdlsoap:operation soapAction=""/>
 
-         <wsdl:input name="addProjectRequest">
+         <wsdl:input name="getMappingsRequest">
 
             <wsdlsoap:body use="literal"/>
 
          </wsdl:input>
 
-         <wsdl:output name="addProjectResponse">
+         <wsdl:output name="getMappingsResponse">
 
             <wsdlsoap:body use="literal"/>
 
@@ -3351,35 +3333,17 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
       </wsdl:operation>
 
-      <wsdl:operation name="updateAttribute">
+      <wsdl:operation name="setAnnotation">
 
          <wsdlsoap:operation soapAction=""/>
 
-         <wsdl:input name="updateAttributeRequest">
+         <wsdl:input name="setAnnotationRequest">
 
             <wsdlsoap:body use="literal"/>
 
          </wsdl:input>
 
-         <wsdl:output name="updateAttributeResponse">
-
-            <wsdlsoap:body use="literal"/>
-
-         </wsdl:output>
-
-      </wsdl:operation>
-
-      <wsdl:operation name="addSubtype">
-
-         <wsdlsoap:operation soapAction=""/>
-
-         <wsdl:input name="addSubtypeRequest">
-
-            <wsdlsoap:body use="literal"/>
-
-         </wsdl:input>
-
-         <wsdl:output name="addSubtypeResponse">
+         <wsdl:output name="setAnnotationResponse">
 
             <wsdlsoap:body use="literal"/>
 
@@ -3423,17 +3387,35 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
       </wsdl:operation>
 
-      <wsdl:operation name="setAnnotation">
+      <wsdl:operation name="updateAttribute">
 
          <wsdlsoap:operation soapAction=""/>
 
-         <wsdl:input name="setAnnotationRequest">
+         <wsdl:input name="updateAttributeRequest">
 
             <wsdlsoap:body use="literal"/>
 
          </wsdl:input>
 
-         <wsdl:output name="setAnnotationResponse">
+         <wsdl:output name="updateAttributeResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="addProject">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="addProjectRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="addProjectResponse">
 
             <wsdlsoap:body use="literal"/>
 
@@ -3477,17 +3459,17 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
       </wsdl:operation>
 
-      <wsdl:operation name="updateTag">
+      <wsdl:operation name="addSubtype">
 
          <wsdlsoap:operation soapAction=""/>
 
-         <wsdl:input name="updateTagRequest">
+         <wsdl:input name="addSubtypeRequest">
 
             <wsdlsoap:body use="literal"/>
 
          </wsdl:input>
 
-         <wsdl:output name="updateTagResponse">
+         <wsdl:output name="addSubtypeResponse">
 
             <wsdlsoap:body use="literal"/>
 
@@ -3704,6 +3686,24 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
          </wsdl:input>
 
          <wsdl:output name="addTagResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="updateTag">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="updateTagRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="updateTagResponse">
 
             <wsdlsoap:body use="literal"/>
 
