@@ -1,7 +1,6 @@
 package org.mitre.harmony.controllers;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
 import org.mitre.harmony.model.HarmonyModel;
@@ -14,28 +13,19 @@ public class MappingController
 	/** Mark visible mapping cells associated with the specified node as finished */
 	static public void markAsFinished(HarmonyModel harmonyModel, Integer elementID)
 	{
-		// Retrieve the focused mapping cells
-		HashSet<MappingCell> focusedMappingCells = harmonyModel.getFilters().getFocusedMappingCells();
-		
-		// Identify the visible and hidden links
+		// Cycle through all mappings in the project
 		for(ProjectMapping mapping : harmonyModel.getMappingManager().getMappings())
 		{
-			ArrayList<MappingCell> visibleMappingCells = new ArrayList<MappingCell>();
-			ArrayList<MappingCell> hiddenMappingCells = new ArrayList<MappingCell>();
+			// Identify all computer generated links
+			ArrayList<MappingCell> mappingCellsToDelete = new ArrayList<MappingCell>();
 			for(Integer mappingCellID : mapping.getMappingCellsByElement(elementID))
 			{
 				MappingCell mappingCell = mapping.getMappingCell(mappingCellID);
-				if(!mappingCell.getValidated())
-				{
-					if(!focusedMappingCells.contains(mappingCell) || !harmonyModel.getFilters().isVisibleMappingCell(mappingCellID))
-						hiddenMappingCells.add(mappingCell);
-					else visibleMappingCells.add(mappingCell);
-				}
+				if(!mappingCell.getValidated()) mappingCellsToDelete.add(mappingCell);
 			}		
 			
-			// Mark all visible links as user selected and all others as rejected
-			mapping.validateMappingCells(visibleMappingCells);
-			mapping.deleteMappingCells(hiddenMappingCells);
+			// Delete all Mark all visible links as user selected and all others as rejected
+			mapping.deleteMappingCells(mappingCellsToDelete);
 		}
 	}
 	
