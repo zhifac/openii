@@ -118,4 +118,37 @@ public class MixedSchemaModel extends SchemaModel
 	{
 		return null;	
 	}
+
+	public enum Relationship {
+		NEITHER, INHERITANCE, AGGREGATION, BOTH
+	}
+
+	/** Returns the relationship between a particular pair of schema elements. */
+	public Relationship getRelationshipBetween(HierarchicalSchemaInfo schemaInfo, Integer parentID, Integer childID) {
+		boolean inh = inheritanceExists(schemaInfo, parentID, childID);
+		boolean agg = aggregationExists(schemaInfo, parentID, childID);
+		if (inh && agg) return Relationship.BOTH;
+		if (inh) return Relationship.INHERITANCE;
+		if (agg) return Relationship.AGGREGATION;
+		return Relationship.NEITHER;
+	}
+	
+	/** Returns true if there exists a subtype relationship between the parent and child. */
+	private boolean inheritanceExists(HierarchicalSchemaInfo schemaInfo, Integer parentID, Integer childID) {
+		for (Subtype subtype : schemaInfo.getSubTypes(parentID)) {
+			if (subtype.getParentID().equals(parentID) && subtype.getChildID().equals(childID))
+				return true;
+		}
+		return false;
+	}
+
+	/** Returns true if there exists a subtype relationship between the parent and child. */
+	private boolean aggregationExists(HierarchicalSchemaInfo schemaInfo, Integer parentID, Integer childID) {
+		for (Containment containment : schemaInfo.getContainments(parentID)) {
+			if (containment.getParentID().equals(parentID) && containment.getChildID().equals(childID))
+				return true;
+		}
+		return false;
+	}
+
 }
