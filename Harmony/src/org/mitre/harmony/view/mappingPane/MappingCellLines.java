@@ -171,7 +171,6 @@ class MappingCellLines
 			lines = new ArrayList<MappingCellLine>();
 			MappingCell mappingCell = harmonyModel.getMappingManager().getMappingCell(mappingCellID);
 			getLines(mappingCell.getFirstInput(),mappingCell.getOutput());
-			getLines(mappingCell.getOutput(),mappingCell.getFirstInput());
 		}
 		return lines==null ? new ArrayList<MappingCellLine>() : new ArrayList<MappingCellLine>(lines);
 	}
