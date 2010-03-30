@@ -15,7 +15,7 @@ import org.mitre.rmap.model.Dependency;
 public class RMapSchemaManager extends SchemaManager {
 
 	/** Caches schema information for Logical Relation "schemas" by Dependency */
-	private RMapHarmonyModel _harmonyModel;
+	private RMapHarmonyModel harmonyModel;
 	public HashMap<Integer,Schema> _sourceSchemaIDForMappingID = null;
 	public HashMap<Integer,Schema> _targetSchemaIDForMappingID = null;
 	public ArrayList<Mapping> _mappingList = null;
@@ -27,7 +27,7 @@ public class RMapSchemaManager extends SchemaManager {
 	
 	public RMapSchemaManager(RMapHarmonyModel harmonyModel) {
 		super(null);
-		_harmonyModel = harmonyModel;
+		this.harmonyModel = harmonyModel;
 	}
 	
 	public Mapping getMapping(Integer mappingID){
@@ -59,8 +59,6 @@ public class RMapSchemaManager extends SchemaManager {
 	/** Override -- Initializes the schema list */
 	@SuppressWarnings("unchecked")
 	public void initSchemas(ArrayList<Dependency> dependList) {
-		System.err.println("[D] RMapSchemaManager.initSchemas - called");
-
 		schemas = new HashMap<Integer,Schema>();
 		_mappingList = new ArrayList<Mapping>();
 		_mappingCellsByMapping = new HashMap<Integer,ArrayList<MappingCell>>();
@@ -72,7 +70,7 @@ public class RMapSchemaManager extends SchemaManager {
 		try {
 			for (Dependency depend : dependList) {
 				// generate the mapping, mapping matrix, and logical relation "schema" graphs
-				Object[] mapInfo = depend.generateMapping(_harmonyModel.getProjectManager().getProject());
+				Object[] mapInfo = depend.generateMapping(harmonyModel.getProjectManager().getProject());
 				
 				HierarchicalSchemaInfo sourceGraph = (HierarchicalSchemaInfo) mapInfo[2];
 				HierarchicalSchemaInfo targetGraph = (HierarchicalSchemaInfo) mapInfo[3];
@@ -108,9 +106,6 @@ public class RMapSchemaManager extends SchemaManager {
 			System.err.println("[E] RMapSchemaManager.initSchemas - " + e.getMessage()); 
 			e.printStackTrace();
 		}
-		
-		System.err.println("[D] RMapSchemaManager.initSchemas - number of schemas is " + schemas.size());
-		System.err.println("[D] RMapSchemaManager.initSchemas - values: " + schemas);
 	}
 
 	/** @Override -- Returns a list of all schemas */
