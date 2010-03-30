@@ -53,10 +53,7 @@ public class MappingCell implements Serializable
 	/** Stores the modification date */
 	private Date modificationDate;
 
-    /**
-     * Stores the fully qualified class name of the Java class that represents
-     * the transformation that should occur for this mapping
-     */
+    /** Stores the fully qualified class name of the Java class that represents the transformation */
     private String functionClass = "org.mitre.schemastore.model.mapfunctions.IdentityFunction";
 
 	/** Stores notes about the mapping cell */
@@ -78,11 +75,11 @@ public class MappingCell implements Serializable
 
     /**  Factory method to create a proposed mapping cell  */
     public static MappingCell createProposedMappingCell(Integer id, Integer mappingId, Integer input, Integer output, Double score, String author, Date modificationDate, String notes)
-    	{ return new MappingCell(id,  mappingId, input, output, score, author, modificationDate, notes); }
+    	{ return new MappingCell(id, mappingId, input, output, score, author, modificationDate, notes); }
 
     /** Factory method to create a validated mapping cell */
     public static MappingCell createValidatedMappingCell(Integer id, Integer mappingId, Integer[] input, Integer output, String author, Date modificationDate, String functionClass, String notes)
-    	{ return new MappingCell( id,  mappingId,  input,  output,  author,  modificationDate,  functionClass,  notes); }
+    	{ return new MappingCell(id, mappingId, input, output, author, modificationDate, functionClass, notes); }
 
 	/** Copies the mapping cell */
 	public MappingCell copy()
@@ -119,7 +116,8 @@ public class MappingCell implements Serializable
 	public void setModificationDate(Date modificationDate) { this.modificationDate = modificationDate; }
 	public void setFunctionClass(String functionClass) { this.functionClass = functionClass==null ? "" : functionClass; }
     public void setNotes(String notes) { this.notes = notes==null ? "" : notes; }
-
+    public void setValidated(Boolean validated) { this.validated = validated; }
+    
    /** @deprecated This version assumes only one input */
 	public Integer getFirstInput() {  if( input != null && input.length>0 ) return input[0]; else return null; }
 
