@@ -19,6 +19,7 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.filters.Focus;
 import org.mitre.harmony.model.search.SearchResult;
+import org.mitre.schemastore.model.Containment;
 import org.mitre.schemastore.model.Domain;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
@@ -43,6 +44,9 @@ class SchemaTreeRenderer extends DefaultTreeCellRenderer
 	static private Icon finishedAttributeIcon = getIcon("FinishedAttribute.jpg");
 	static private Icon hiddenRootIcon = getIcon("HiddenRoot.gif");
 	static private Icon hiddenElementIcon = getIcon("HiddenElement.gif");
+	static private Icon containmentIcon = getIcon("Containment.jpg");
+	static private Icon finishedContainmentIcon = getIcon("FinishedContainment.jpg");
+	
 	
 	/** Defines highlight color used in displaying highlighted schema tree nodes */
 	static private Color nameHighlightColor = new Color(0xFFFF66);
@@ -124,6 +128,7 @@ class SchemaTreeRenderer extends DefaultTreeCellRenderer
 			if(isHiddenRoot) setIcon(hiddenRootIcon);
 			else if(isHiddenElement) setIcon(hiddenElementIcon);
 			else if(domain!=null) setIcon(isFinished ? finishedAttributeIcon : attributeIcon);
+			else if ( element instanceof Containment) setIcon( isFinished ? finishedContainmentIcon: containmentIcon );  
 			else setIcon(isFinished ? finishedSchemaElementIcon : schemaElementIcon);
 
 			// Retrieves if element is match for current search
