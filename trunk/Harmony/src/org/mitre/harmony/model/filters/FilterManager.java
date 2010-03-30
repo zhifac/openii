@@ -264,7 +264,7 @@ public class FilterManager extends AbstractManager<FiltersListener> implements M
 		
 		// Create list of all mapping cells in focus
 		HashSet<MappingCell> mappingCells = new HashSet<MappingCell>();
-		for(Integer leftID : leftIDs)
+		for(Integer leftID : (leftIDs.size()<rightIDs.size() ? leftIDs : rightIDs))
 		{
 			ArrayList<Integer> mappingCellIDs = getModel().getMappingManager().getMappingCellsByElement(leftID);
 			MAPPING_CELL_LOOP: for(Integer mappingCellID : mappingCellIDs)
