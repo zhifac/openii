@@ -75,7 +75,7 @@ public class TitledPane extends JPanel
 	}
 	
 	/** Construct the 3D title pane */
-	TitledPane(String title, JComponent pane)
+	public TitledPane(String title, JComponent pane)
 	{
 		// Layout main pane
 		JPanel mainPane = new JPanel();
