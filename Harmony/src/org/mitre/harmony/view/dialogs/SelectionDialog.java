@@ -5,8 +5,6 @@ package org.mitre.harmony.view.dialogs;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.GridLayout;
-import java.util.ArrayList;
-import java.util.HashSet;
 
 import javax.swing.BorderFactory;
 import javax.swing.JDialog;
@@ -19,7 +17,6 @@ import org.mitre.harmony.controllers.MappingController;
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.view.dialogs.widgets.AbstractButtonPane;
 import org.mitre.harmony.view.dialogs.widgets.OptionPane;
-import org.mitre.schemastore.model.MappingCell;
 
 /**
  * Displays the search dialog for search for keywords in schemas
@@ -52,48 +49,22 @@ public class SelectionDialog extends JDialog
 		{
 			if(label.equals("OK"))
 			{
-				// Get the list of mapping cells
-				HashSet<MappingCell> mappingCells = new HashSet<MappingCell>();
+				// Retrieve the mapping cell type setting
 				String type = typeFilter.getSelectedButton();
-				for(MappingCell mappingCell : harmonyModel.getMappingManager().getMappingCells())
-				{
-					boolean validated = mappingCell.getValidated();
-					if(type.equals("All") || (type.equals("System") && !validated) || (type.equals("User") && validated))
-						mappingCells.add(mappingCell);
-				}
+				Integer typeSetting = type.equals("All") ? MappingController.ALL : type.equals("System") ? MappingController.SYSTEM : MappingController.USER;
 				
-				// Filter out mapping cells based on filter settings
+				// Retrieve the mapping cell focus setting
 				String focus = focusFilter.getSelectedButton();
-				if(!focus.equals("All"))
-				{
-					boolean useFocused = focus.equals("Focused");
-					HashSet<MappingCell> focusedMappingCells = harmonyModel.getFilters().getFocusedMappingCells();
-					for(MappingCell mappingCell : new ArrayList<MappingCell>(mappingCells))
-					{
-						boolean isFocused = focusedMappingCells.contains(mappingCell);
-						if(useFocused != isFocused) mappingCells.remove(mappingCell);
-					}					
-				}
-
-				// Filter out mapping cells based on visibility
-				String visibility = visibilityFilter.getSelectedButton();
-				if(!visibility.equals("All"))
-				{
-					boolean useVisible = visibility.equals("Visible");
-					for(MappingCell mappingCell : new ArrayList<MappingCell>(mappingCells))
-					{
-						boolean isVisible = harmonyModel.getFilters().isVisibleMappingCell(mappingCell.getId());
-						if(useVisible != isVisible) mappingCells.remove(mappingCell);
-					}
-				}
+				Integer focusSetting = focus.equals("All") ? MappingController.ALL : focus.equals("Focused") ? MappingController.FOCUSED : MappingController.UNFOCUSED;
+				
+				// Retrieve the mapping cell visibility setting
+				String visibility = typeFilter.getSelectedButton();
+				Integer visibilitySetting = visibility.equals("All") ? MappingController.ALL : visibility.equals("Visible") ? MappingController.VISIBLE : MappingController.HIDDEN;
 				
 				// Select or delete mapping cells
 				if(mode.equals(SELECT))
-				{
-					ArrayList<Integer> mappingCellIDs = MappingController.getMappingCellIDs(new ArrayList<MappingCell>(mappingCells));
-					harmonyModel.getSelectedInfo().setMappingCells(mappingCellIDs, false);
-				}
-				else harmonyModel.getMappingManager().deleteMappingCells(new ArrayList<MappingCell>(mappingCells));
+					MappingController.selectMappingCells(harmonyModel, typeSetting, focusSetting, visibilitySetting);
+				else MappingController.deleteMappingCells(harmonyModel, typeSetting, focusSetting, visibilitySetting);
 			}
 			dispose();
 		}
