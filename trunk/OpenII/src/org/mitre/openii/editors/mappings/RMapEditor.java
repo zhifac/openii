@@ -9,7 +9,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.awt.SWT_AWT;
 import org.mitre.openii.editors.OpenIIEditor;
 import org.mitre.openii.model.RepositoryManager;
-import org.mitre.rmap.view.RMapGUI;
+import org.mitre.rmap.view.RMapFrame;
 
 /** Constructs the RMap View */
 public class RMapEditor extends OpenIIEditor
@@ -20,7 +20,7 @@ public class RMapEditor extends OpenIIEditor
 		// Construct the applet pane to contain the Harmony frame 
 	    JApplet appletPane = new JApplet(); 
 	    try { 
-	    	appletPane.add(new RMapGUI(RepositoryManager.getClient(), elementID)); 
+	    	appletPane.add(new RMapFrame(RepositoryManager.getClient(), elementID)); 
 	    } catch (Exception e){ 
             e.printStackTrace(); 
 	    } 
