@@ -226,33 +226,40 @@ public class EditProjectDialog extends Dialog implements ActionListener, ModifyL
 		for(Schema schema : schemaList.getSchemas())
 			schemas.add(new ProjectSchema(schema.getId(),schema.getName(),null));
 		
-		// Handles the creation of the project
-		if(project==null)
-		{
-			project = new Project(0,name,description,author,schemas.toArray(new ProjectSchema[0]));
-			Integer projectID = OpenIIManager.addProject(project);
-			if(projectID==null) errorMessage = "Unable to generate project '" + project.getName() + "'";
-			else project.setId(projectID);
-		}
-		
-		// Handles the modification of the project
-		else
-		{
-			project.setName(name); project.setAuthor(author); project.setDescription(description);
-			project.setSchemas(schemas.toArray(new ProjectSchema[0]));
-			if(!OpenIIManager.updateProject(project))
-				errorMessage = "Unable to update project '" + project.getName() + "'";
-		}
-		
-		// Add/remove mappings in project
-		if(errorMessage==null)
-		{
-			// Generate list of old mappings
-			HashMap<String,Integer> oldMappings = new HashMap<String,Integer>();
+		// Generate list of old mappings
+		HashMap<String,Integer> oldMappings = new HashMap<String,Integer>();
+		if(project!=null)
 			for(Mapping oldMapping : OpenIIManager.getMappings(project.getId()))
 				oldMappings.put(oldMapping.getSourceId()+"_"+oldMapping.getTargetId(), oldMapping.getId());
+		
+		// Remove old mappings in project
+		for(Integer oldMappingID : oldMappings.values())
+			if(!OpenIIManager.deleteMapping(oldMappingID))
+				errorMessage = "Unable to delete project mappings";
 
-			// Add new mappings
+		// Handles the creation of the project
+		if(errorMessage==null)
+		{
+			if(project==null)
+			{
+				project = new Project(0,name,description,author,schemas.toArray(new ProjectSchema[0]));
+				Integer projectID = OpenIIManager.addProject(project);
+				if(projectID==null) errorMessage = "Unable to generate project '" + project.getName() + "'";
+				else project.setId(projectID);
+			}
+			
+			// Handles the modification of the project
+			else
+			{
+				project.setName(name); project.setAuthor(author); project.setDescription(description);
+				project.setSchemas(schemas.toArray(new ProjectSchema[0]));
+				if(!OpenIIManager.updateProject(project))
+					errorMessage = "Unable to update project '" + project.getName() + "'";
+			}
+		}
+		
+		// Add mappings in project
+		if(errorMessage==null)
 			for(Mapping newMapping : mappingList.getMappings())
 			{
 				String key = newMapping.getSourceId()+"_"+newMapping.getTargetId();
@@ -264,12 +271,6 @@ public class EditProjectDialog extends Dialog implements ActionListener, ModifyL
 				}
 				else oldMappings.remove(key);
 			}
-			
-			// Remove old mappings
-			for(Integer oldMappingID : oldMappings.values())
-				if(!OpenIIManager.deleteMapping(oldMappingID))
-					errorMessage = "Unable to delete project mappings";
-		}
 		
 		// Display error message if needed
 		if(errorMessage!=null)
