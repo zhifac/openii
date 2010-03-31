@@ -13,24 +13,24 @@
 	
     <!-- Compiles the code -->
 	<target name="compile">
-	    <mkdir dir="bin/classes"/>
-	    <javac srcdir="src" destdir="bin/classes" deprecation="on" debug="on" source="1.6" target="1.6">
+	    <mkdir dir="bin"/>
+	    <javac srcdir="src" destdir="bin" deprecation="on" debug="on" source="1.6" target="1.6">
 	    	<classpath>
     	    	<path path="lib/SchemaStoreClient.jar"/>
     	    	<path path="lib/SchemaStorePorters.jar"/>
             </classpath>
         </javac>
-		<copy todir="bin/classes/org/mitre/harmony/view/graphics">
+		<copy todir="bin/org/mitre/harmony/view/graphics">
 			<fileset dir="src/org/mitre/harmony/view/graphics"/>
 		</copy>
-		<copy file="src/matchers.xml" todir="bin/classes"/>
+		<copy file="src/matchers.xml" todir="bin"/>
     </target>
 
 	<!-- Builds the HarmonyMatchers jar -->
     <target name="buildHarmonyMatchers" depends="compile">
         <fatjar.build output="HarmonyMatchers.jar">
-            <fatjar.filesource path="build/classes/org/mitre/harmony/matchers" relpath="org/mitre/harmony/matchers"/>
-            <fatjar.filesource path="build/classes/matchers.xml" relpath=""/>
+            <fatjar.filesource path="bin/org/mitre/harmony/matchers" relpath="org/mitre/harmony/matchers"/>
+            <fatjar.filesource path="bin/matchers.xml" relpath=""/>
         </fatjar.build>
     </target>
 
@@ -40,7 +40,7 @@
  		<!-- Builds the Harmony jar file -->
         <fatjar.build output="Harmony.jar">
             <fatjar.manifest mainclass="org.mitre.harmony.Harmony" classpath="SchemaStoreClient.jar SchemaStorePorters.jar"/>
-            <fatjar.filesource path="bin/classes"/>
+            <fatjar.filesource path="bin"/>
         </fatjar.build>
 
 		<!-- Package Harmony into a zip file -->
@@ -65,7 +65,7 @@
 
 	<!-- Cleans up the constructed jar files -->
 	<target name="clean">
-		<delete dir="bin/classes"/>
+		<delete dir="bin"/>
 		<delete file="HarmonyMatchers.jar"/>
 	    <delete file="Harmony.jar"/>
     </target>
