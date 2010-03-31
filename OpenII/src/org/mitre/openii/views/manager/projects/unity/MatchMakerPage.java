@@ -31,7 +31,6 @@ class MatchMakerPage extends WizardPage implements ModifyListener {
 		setPageComplete(false); 
 	}
 
-	@Override
 	/** Constructs the Mapping Properties page */
 	public void createControl(Composite parent) {
 		// Construct the main pane
@@ -66,7 +65,6 @@ class MatchMakerPage extends WizardPage implements ModifyListener {
 	public String getAuthor() { return authorField.getText(); }
 	public String getDescription() { return descriptionField.getText(); }
 
-	@Override
 	public void modifyText(ModifyEvent arg0) {
 		setPageComplete(getVocabularyName().length() > 0 && getAuthor().length() > 0 && getDescription().length() > 0);
 	}

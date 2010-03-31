@@ -39,7 +39,6 @@ class AutoMappingPage extends WizardPage implements ModifyListener, SelectionLis
 		setDescription("Ensure that all pair-wise mappings exists for all of the schemas in selected project.");
 	}
 
-	@Override
 	/** Constructs the Mapping Properties page */
 	public void createControl(Composite parent) {
 		// Construct the main pane
@@ -152,7 +151,6 @@ class AutoMappingPage extends WizardPage implements ModifyListener, SelectionLis
 		descriptionField.addModifyListener(this);
 	}
 
-	@Override
 	public void modifyText(ModifyEvent event) {
 		updatePageCompleteStatus();
 	}
@@ -170,14 +168,12 @@ class AutoMappingPage extends WizardPage implements ModifyListener, SelectionLis
 			}
 	}
 
-	@Override
 	public void widgetDefaultSelected(SelectionEvent arg0) {}
 
 	private void updatePageCompleteStatus() {
 		setPageComplete(selectedVoters.size() > 0 && authorField.getText().trim().length() > 0 && descriptionField.getText().trim().length() > 0);
 	}
 
-	@Override
 	public void widgetSelected(SelectionEvent event) {
 		Button voterButton = (Button) event.widget;
 		if (voterButton.getSelection()) selectedVoters.add(voterButton.getText());
