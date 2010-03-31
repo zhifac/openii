@@ -36,7 +36,6 @@ import org.mitre.harmony.matchers.voters.DocumentationMatcher;
 import org.mitre.harmony.matchers.voters.EditDistanceMatcher;
 import org.mitre.harmony.matchers.voters.ExactStructureMatcher;
 import org.mitre.harmony.matchers.voters.MatchVoter;
-import org.mitre.harmony.matchers.voters.ThesaurusMatcher;
 import org.mitre.openii.editors.OpenIIEditor;
 import org.mitre.openii.model.EditorInput;
 import org.mitre.openii.model.EditorManager;
