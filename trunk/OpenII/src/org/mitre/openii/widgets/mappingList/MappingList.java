@@ -77,7 +77,7 @@ public class MappingList extends ListWithButtonBar implements SelectionListener
 		{
 			AddMappingsToListDialog dialog = new AddMappingsToListDialog(getShell(),schemas,getMappings());
 			if(dialog.open() == Window.OK)
-				list.add(dialog.getResult());
+				list.add(dialog.getMapping());
 		}
 
 		// Handles the removal of mappings
