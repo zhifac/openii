@@ -143,7 +143,8 @@ public class ProjectMapping extends Mapping
 				Integer inputIDs[] = mappingCell.getInput();
 				Integer outputID = mappingCell.getOutput();
 				mappingCell.setId(mappingCellID);
-				mappingCell.setModificationDate(Calendar.getInstance().getTime());
+				if(mappingCell.getDate()==null)
+					mappingCell.setModificationDate(Calendar.getInstance().getTime());
 	
 				// Store the mapping cell info in the hash and by key
 				mappingCellHash.put(mappingCellID, mappingCell);
