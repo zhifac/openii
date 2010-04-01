@@ -30,7 +30,7 @@ import org.mitre.schemastore.model.schemaInfo.SchemaInfo;
  * @author cwolf
  */
 public class ExcelExporter extends MappingExporter
-{
+{	
 	/** Private class used to flag an array when items are deleted */ @SuppressWarnings("serial")
 	private class FlaggedArrayList extends ArrayList<SchemaElement>
 	{
@@ -125,7 +125,7 @@ public class ExcelExporter extends MappingExporter
 
 	/** Initializes the containers with their associated schema elements */
 	private void initializeContainers(SchemaInfo schemaInfo)
-	{
+	{	
 		// Stores entities in their own containers
 		for (SchemaElement entity : schemaInfo.getElements(Entity.class))
 			containerHash.put(entity.getId(), new FlaggedArrayList(entity));
@@ -138,7 +138,7 @@ public class ExcelExporter extends MappingExporter
 		// Stores containments in the associated entity container
 		for (SchemaElement containment : schemaInfo.getElements(Containment.class))
 			containerHash.get(((Containment)containment).getParentID()).add(containment);
-		
+			
 		// Stores domains and their associated values in domain containers
 		for (SchemaElement domain : schemaInfo.getElements(Domain.class))
 		{
@@ -195,8 +195,8 @@ public class ExcelExporter extends MappingExporter
 					out.println();
 					
 					// Remove the source and target elements from the container hash
-					containerHash.get(targetBase.getId()).remove(targetElement);
-					containerHash.get(sourceBase.getId()).remove(sourceElement);
+					containerHash.get(getId(targetBase)).remove(targetElement);
+					containerHash.get(getId(sourceBase)).remove(sourceElement);
 				}
 	}
 	
@@ -206,7 +206,7 @@ public class ExcelExporter extends MappingExporter
 		// Identify all target containers
 		HashSet<Integer> targetContainers = new HashSet<Integer>();
 		for(SchemaElement targetContainer : mappingCellHash.keySet())
-			targetContainers.add(targetContainer.getId());
+			targetContainers.add(getId(targetContainer));
 		
 		// Cycle through all containers to identify unmatched elements
 		for(Integer baseID : containerHash.keySet())
@@ -229,11 +229,15 @@ public class ExcelExporter extends MappingExporter
 		}
 	}
 	
+	/** Returns the ID for the specified schema element */
+	private Integer getId(SchemaElement element)
+		{ return element==null ? null : element.getId(); }
+	
 	/** Generates a string for the specified base and element */
 	private String getElementString(SchemaElement base, SchemaElement element)
 	{
 		return "\"" + getDisplayName(base) + "\",\"" + getDisplayName(base,element) + "\"," +
-			   "\"" + scrub(element.getDescription()) + "\"";
+			   "\"" + (element==null?"":scrub(element.getDescription())) + "\"";
 	}
 	
 	/** Scrubs the specified string to replace quotation marks */
@@ -251,7 +255,10 @@ public class ExcelExporter extends MappingExporter
 
 	/** Finds the display name (which accounts for anonymous elements) by iterating through all available schemas */
 	private String getDisplayName(SchemaElement root, SchemaElement element)
-		{ if(element.equals(root)) return "-"; return getDisplayName(element); }
+	{
+		if((element==null && root==null) || element.equals(root)) return "-";
+		return getDisplayName(element);
+	}
 	
 	/** Finds the display name (which accounts for anonymous elements) by iterating through all available schemas */
 	private String getDisplayName(SchemaElement element)
