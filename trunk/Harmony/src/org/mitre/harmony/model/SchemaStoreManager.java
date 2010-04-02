@@ -44,19 +44,19 @@ public class SchemaStoreManager
 	//------------------
 	
 	/** Gets the list of schemas from the web service */
-	static ArrayList<Schema> getSchemas() throws RemoteException
+	public static ArrayList<Schema> getSchemas() throws RemoteException
 		{ return client.getSchemas(); }
 	
 	/** Gets the list of deletable schemas from the web service */
-	static ArrayList<Integer> getDeletableSchemas() throws RemoteException
+	public static ArrayList<Integer> getDeletableSchemas() throws RemoteException
 		{ return client.getDeletableSchemas(); }
 	
 	/** Gets the specified schema from the web service */
-	static Schema getSchema(Integer schemaID) throws RemoteException
+	public static Schema getSchema(Integer schemaID) throws RemoteException
 		{ return client.getSchema(schemaID); }
 
 	/** Deletes the specified schema from the web service */
-	static boolean deleteSchema(Integer schemaID) throws RemoteException
+	public static boolean deleteSchema(Integer schemaID) throws RemoteException
 		{ return client.deleteSchema(schemaID); }
 	
 	//--------------------------
@@ -64,11 +64,11 @@ public class SchemaStoreManager
 	//--------------------------
 
 	/** Retrieves the schema elements for the specified schema and type from the web service */
-	static HierarchicalSchemaInfo getSchemaInfo(Integer schemaID) throws RemoteException
+	public static HierarchicalSchemaInfo getSchemaInfo(Integer schemaID) throws RemoteException
 		{ return new HierarchicalSchemaInfo(client.getSchemaInfo(schemaID)); }
 
 	/** Retrieves the specified schema element from the web service */
-	static SchemaElement getSchemaElement(Integer schemaElementID) throws RemoteException
+	public static SchemaElement getSchemaElement(Integer schemaElementID) throws RemoteException
 		{ return client.getSchemaElement(schemaElementID); }
 	
 	//-------------------
@@ -76,7 +76,7 @@ public class SchemaStoreManager
 	//-------------------
 
 	/** Retrieves the list of all projects from the web service */
-	static ArrayList<Project> getProjects() throws RemoteException
+	public static ArrayList<Project> getProjects() throws RemoteException
 		{ return client.getProjects(); }
 	
 	/** Retrieves the specified project from the web service */
