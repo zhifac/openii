@@ -161,9 +161,12 @@ public class AffinityEditor extends OpenIIEditor implements SelectionClickedList
 					else if(item.getText().startsWith("Open")) {
 						//Open schemas in a new Affinity Pane
 						EditorManager.launchEditor("AffinityEditor", selectedSchemas);
-					}else if(item.getText().startsWith("View debug view")){
-						//EditorManager.launchEditor("VocabDebugEditor", selectedSchemas);
-						System.out.println("Open up debug view");
+					}else if(item.getText().startsWith("View vocab debug")){
+						EditorManager.launchEditor("VocabDebugEditor", selectedSchemas);
+						//System.out.println("Open up debug view");
+					}else if(item.getText().startsWith("View vocab view")){
+						EditorManager.launchEditor("VocabEditor", selectedSchemas);
+						//System.out.println("Open up debug view");
 					}
 					else {
 						//Create a new tag containing the schemas
@@ -208,10 +211,13 @@ public class AffinityEditor extends OpenIIEditor implements SelectionClickedList
 			item.setText("Create a project which includes all schemas in this cluster");
 			item.addSelectionListener(multiSchemaMenuListener);	
 
-			/*item = new MenuItem (multiSchemaMenu, SWT.NONE);
-			item.setText("View common vocabulary debug view");
+			item = new MenuItem (multiSchemaMenu, SWT.NONE);
+			item.setText("View vocab debug view");
 			item.addSelectionListener(multiSchemaMenuListener);
-			*/
+			
+			item = new MenuItem (multiSchemaMenu, SWT.NONE);
+			item.setText("View vocab view");
+			item.addSelectionListener(multiSchemaMenuListener);
 			
 			
 			// Create cluster right-click menu			
@@ -240,11 +246,12 @@ public class AffinityEditor extends OpenIIEditor implements SelectionClickedList
 					else if(item.getText().startsWith("Open")) {
 						//Open cluster in a new Affinity pane						
 						EditorManager.launchEditor("AffinityEditor", selectedCluster.getSchemaIDs());								
-					}else if(item.getText().startsWith("View common vocabulary")){
-						System.out.println("Open up debug view");
-						//EditorManager.launchEditor("VocabDebugEditr", null);
-					}
-					else if(item.getText().startsWith("Create a project")){
+					}else if(item.getText().startsWith("View vocab debug view")){
+						//System.out.println("Open up debug view");
+						EditorManager.launchEditor("VocabDebugEditor", selectedCluster.getSchemaIDs());
+					}else if(item.getText().startsWith("View vocab view")){
+						EditorManager.launchEditor("VocabEditor", selectedCluster.getSchemaIDs());
+					}else if(item.getText().startsWith("Create a project")){
 						Shell shell = getSite().getWorkbenchWindow().getShell();
 						EditProjectDialog dlg = new EditProjectDialog(shell);
 						dlg.open();
@@ -291,11 +298,14 @@ public class AffinityEditor extends OpenIIEditor implements SelectionClickedList
 			item.addSelectionListener(clusterMenuListener);	
 			
 			
-		/*	item = new MenuItem (clusterMenu, SWT.NONE);
-			item.setText("View common vocabulary debug view");
+			item = new MenuItem (clusterMenu, SWT.NONE);
+			item.setText("View vocab debug view");
 			item.addSelectionListener(clusterMenuListener);
-			*/
-		
+			
+			item = new MenuItem (clusterMenu, SWT.NONE);
+			item.setText("View vocab view");
+			item.addSelectionListener(clusterMenuListener);
+			
 		}
 		else {
 			//There was an error creating the Affinity pane, show the error dialog

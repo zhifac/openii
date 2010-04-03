@@ -24,7 +24,7 @@ public class Synset implements Comparable<Synset> {
 		add(n);
 	}
 
-	void add(Term n) {
+	public void add(Term n) {
 		terms.add(n);
 		updateLeastNode(n);
 	}
