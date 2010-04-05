@@ -9,7 +9,6 @@ import java.util.HashSet;
 
 import org.mitre.harmony.model.AbstractManager;
 import org.mitre.harmony.model.ConfigManager;
-import org.mitre.harmony.model.HarmonyConsts;
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.project.ProjectListener;
 
@@ -19,9 +18,6 @@ import org.mitre.harmony.model.project.ProjectListener;
  */
 public class PreferencesManager extends AbstractManager<PreferencesListener> implements ProjectListener
 {	
-	/** Stores the currently displayed view */
-	private Integer displayedView = HarmonyConsts.MAPPING_VIEW;
-	
 	/** Stores if the various schema elements have been marked as finished */
 	private HashMap<Integer,HashSet<Integer>> finishedElementMap = new HashMap<Integer,HashSet<Integer>>();
 	
@@ -55,24 +51,6 @@ public class PreferencesManager extends AbstractManager<PreferencesListener> imp
 		HashSet<Integer> finishedElements = finishedElementMap.get(schemaID);
 		if(finishedElements!=null)
 			setFinished(schemaID, finishedElements, false);
-	}
-	
-	// ------------- Preference for view to be displayed ------------
-
-	/** Returns the preference for view to be displayed */
-	public Integer getViewToDisplay()
-		{ return displayedView; }
-	
-	/** Set preference to view to be displayed */
-	public void setViewToDisplay(Integer displayedView)
-	{
-		// Only set preference if changed from original
-		if(displayedView!=this.displayedView)
-		{
-			this.displayedView = displayedView;
-			for(PreferencesListener listener : getListeners())
-				listener.displayedViewChanged();
-		}
 	}
 	
 	// ------------- Preference for if schema types should be shown ------------
