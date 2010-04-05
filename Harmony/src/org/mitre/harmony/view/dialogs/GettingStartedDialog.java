@@ -30,7 +30,7 @@ public class GettingStartedDialog extends JDialog
 		instructions.setText(
 			"<b>Starting From Scratch</b>" +
 			"<ul style='margin-left:10px'>" +
-			"<li>Select &quot;New&quot; under the &quot;Mapping&quot; menu</li>" +
+			"<li>Select &quot;New&quot; under the &quot;Project&quot; menu</li>" +
 			"<li>Bring the schemas you want to match into Harmony's database by  clicking " +
 			    "&quot;Import Schema&quot;.  Select the importer appropriate to your schema " +
 			    "file type (e.g., .xsd, .ddl) from the &quot;Importers&quot; drop down menu</li>" +
@@ -55,8 +55,8 @@ public class GettingStartedDialog extends JDialog
 			"</ul><br>" +
 			"<b>Resuming Previous Work</b>" +
 			"<ul style='margin-left:10px'>" +
-				"<li>Select &quot;Open&quot; under the &quot;Mapping&quot; menu</li>" +
-				"<li>Select your mapping from the menu on the left, and click &quot;OK&quot;</li>" +
+				"<li>Select &quot;Open&quot; under the &quot;Project&quot; menu</li>" +
+				"<li>Select your project from the menu on the left, and click &quot;OK&quot;</li>" +
 			"</ul><br>" +
 			"<b>For Large Matching Problems</b>" +
 			"<p>Harmony has been used sucessfully with schemas of having 1000's " +
