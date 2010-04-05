@@ -6,6 +6,7 @@ import java.util.HashSet;
 
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.SchemaStoreManager;
+import org.mitre.harmony.model.project.ProjectManager;
 import org.mitre.harmony.model.project.ProjectMapping;
 import org.mitre.harmony.view.dialogs.project.ProjectDialog;
 import org.mitre.schemastore.model.Mapping;
@@ -145,8 +146,10 @@ public class ProjectController
 				SchemaStoreManager.saveMappingCells(mapping.getId(), mapping.getMappingCells());
 			}
 			
-			// Indicates that the mapping has been modified
-			harmonyModel.getProjectManager().setModified(false);
+			// Updates the mapping has reflect the changes
+			ProjectManager projectManager = harmonyModel.getProjectManager();
+			projectManager.setProjectInfo(project.getName(), project.getAuthor(), project.getDescription());
+			projectManager.setModified(false);
 			return true;
 		}
 		catch(Exception e) { System.out.println("(E) ProjectController.saveProject - " + e.getMessage()); return false; }
