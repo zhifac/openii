@@ -109,7 +109,7 @@ public class SelectionDialog extends JDialog
 		pane.add(new ButtonPane(),BorderLayout.SOUTH);
 		
 		// Initialize the dialog parameters
-		setTitle((mode==SELECT ? "Select" : "Delete") + " Links");
+		setTitle((mode==SELECT ? "Select" : "Remove") + " Links");
     	setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		setContentPane(pane);
 		setSize(200,250);
