@@ -267,39 +267,16 @@ public class HarmonyMenuBar extends JMenuBar
 	/** Drop-down menu found under view menu bar heading */
 	private class ViewMenu extends AbstractMenu
 	{
-		private JRadioButtonMenuItem mappingView;	// Option to view schema mapping
-		private JRadioButtonMenuItem heatmapView;	// Option to view heat map
-		
 		/** Initializes the view drop-down menu */
 		private ViewMenu()
 		{
 			super("View");
 			setMnemonic(KeyEvent.VK_V);
-			
-			// Groups the radio buttons together
-			ButtonGroup group = new ButtonGroup();
-			group.add(mappingView = new JRadioButtonMenuItem("Mapping View",true));
-			group.add(heatmapView = new JRadioButtonMenuItem("Heatmap View"));
-			
-			// Set the displayed view
-			switch(harmonyModel.getPreferences().getViewToDisplay())
-				{ case HarmonyConsts.HEATMAP_VIEW: heatmapView.setSelected(true); }			
-
-			// Add view drop-down items to view drop-down menu
-		    add(mappingView);
-		    add(heatmapView);
-		    addSeparator();
+	
+			// Add view items to view drop-down menu
 		    add(createCheckboxItem("Alphabetize", harmonyModel.getPreferences().getAlphabetized(), new AlphabetizeAction()));
 		    add(createCheckboxItem("Show Types", harmonyModel.getPreferences().getShowSchemaTypes(), new ShowTypesAction()));
 		}
-		
-		/** Handles the selection of a view */
-	    public void actionPerformed(ActionEvent e)
-	    {
-	    	Object source = e.getSource();
-	    	if(source==mappingView) harmonyModel.getPreferences().setViewToDisplay(HarmonyConsts.MAPPING_VIEW);
-	    	if(source==heatmapView) harmonyModel.getPreferences().setViewToDisplay(HarmonyConsts.HEATMAP_VIEW);
-	    }
 	    
 		/** Action for alphabetizing sibling elements */
 		private class AlphabetizeAction extends AbstractAction

@@ -10,10 +10,8 @@ import javax.swing.JInternalFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
-import org.mitre.harmony.model.HarmonyConsts;
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.preferences.PreferencesListener;
-import org.mitre.harmony.view.heatmap.HeatMapPane;
 import org.mitre.harmony.view.mappingPane.MappingPane;
 
 /**
@@ -36,12 +34,7 @@ public class HarmonyFrame extends JInternalFrame implements PreferencesListener
 		getActionMap().clear();
 
 		// Generate the new view
-		JComponent view = null;
-		switch (harmonyModel.getPreferences().getViewToDisplay())
-		{
-			case HarmonyConsts.MAPPING_VIEW: view = new MappingPane(this,harmonyModel); break;
-			case HarmonyConsts.HEATMAP_VIEW: view = new HeatMapPane(this,harmonyModel); break;
-		}
+		JComponent view = new MappingPane(this,harmonyModel);
 		return new TitledPane(null, view);
 	}
 
