@@ -84,7 +84,7 @@ abstract public class ImporterDialog extends JDialog
 	private JPanel getSelectionPane()
 	{
 		// Initializes the label
-		JLabel selectionLabel = new JLabel("Importers: ");
+		JLabel selectionLabel = new JLabel("Importer: ");
 		selectionLabel.setVerticalAlignment(SwingConstants.CENTER);
 		
 		// Generate the selection list
