@@ -20,32 +20,16 @@ import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.project.ProjectMapping;
 import org.mitre.harmony.view.dialogs.porters.ExportMappingDialog;
 import org.mitre.harmony.view.dialogs.porters.ExportProjectDialog;
-import org.mitre.harmony.view.dialogs.porters.ExportSchemaDialog;
 import org.mitre.harmony.view.dialogs.porters.ImportMappingDialog;
 import org.mitre.harmony.view.dialogs.porters.ImportProjectDialog;
-import org.mitre.harmony.view.dialogs.porters.ImportSchemaDialog;
 import org.mitre.harmony.view.dialogs.project.ProjectDialog;
 import org.mitre.harmony.view.dialogs.projects.LoadProjectDialog;
 import org.mitre.harmony.view.dialogs.projects.SaveMappingDialog;
-import org.mitre.schemastore.model.Schema;
+import org.mitre.harmony.view.dialogs.schema.SchemaDialog;
 
 /** Drop-down menu found under project menu bar heading */
 class ProjectMenu extends AbstractMenu implements MenuListener
 {
-	/** Stores a schema menu item */
-	class SchemaMenuItem extends JMenuItem implements ActionListener
-	{
-		private Schema schema = null;
-		
-		/** Constructs the schema menu item */
-		private SchemaMenuItem(Schema schema)
-			{ super(schema.getName()); this.schema = schema; addActionListener(this); }
-
-		/** Handles the selection of a schema menu item */
-		public void actionPerformed(ActionEvent e)
-			{ new ExportSchemaDialog(schema).export(harmonyModel); }
-	}
-	
 	/** Stores a mapping menu item */
 	class MappingMenuItem extends JMenuItem implements ActionListener
 	{
@@ -62,9 +46,6 @@ class ProjectMenu extends AbstractMenu implements MenuListener
 	
 	/** Stores the Harmony model */
 	private HarmonyModel harmonyModel;
-	
-	/** Stores the menu of schemas to export */
-	private JMenu exportSchemaMenu;
 	
 	/** Stores the menu of mappings to export */
 	private JMenu exportMappingMenu;
@@ -88,14 +69,8 @@ class ProjectMenu extends AbstractMenu implements MenuListener
 			// Initialize the import menu
 			JMenu importMenu = new JMenu("Import");
 			importMenu.setMnemonic(KeyEvent.VK_I);
-			importMenu.add(createMenuItem("Import Schema", KeyEvent.VK_S, new ImportSchemaAction()));
 			importMenu.add(createMenuItem("Import Project", KeyEvent.VK_P, new ImportProjectAction()));
 			importMenu.add(createMenuItem("Import Mapping", KeyEvent.VK_M, new ImportMappingAction()));
-			
-			// Initialize the export schema menu
-			exportSchemaMenu = new JMenu("Export Schema");
-			exportSchemaMenu.setMnemonic(KeyEvent.VK_S);
-			exportSchemaMenu.addMenuListener(this);
 			
 			// Initialize the export mapping menu
 			exportMappingMenu = new JMenu("Export Mapping");
@@ -105,7 +80,6 @@ class ProjectMenu extends AbstractMenu implements MenuListener
 			// Initialize the export menu
 			JMenu exportMenu = new JMenu("Export");
 			exportMenu.setMnemonic(KeyEvent.VK_E);
-			exportMenu.add(exportSchemaMenu);
 			exportMenu.add(createMenuItem("Export Project", KeyEvent.VK_P, new ExportProjectAction()));
 			exportMenu.add(exportMappingMenu);
 			
@@ -114,7 +88,8 @@ class ProjectMenu extends AbstractMenu implements MenuListener
 			add(openProject);
 			add(saveProject);
 			addSeparator();
-			add(createMenuItem("Configure...", KeyEvent.VK_C, new ConfigurationAction()));
+			add(createMenuItem("Project Settings...", KeyEvent.VK_C, new ProjectSettingsAction()));
+			add(createMenuItem("Manage Schemas...", KeyEvent.VK_M, new ManageSchemaAction()));
 			addSeparator();
 			add(importMenu);
 			add(exportMenu);
@@ -136,26 +111,16 @@ class ProjectMenu extends AbstractMenu implements MenuListener
 			// Add project drop-down items to project drop-down menu
 			add(saveProject);
 			addSeparator();
-			add(createMenuItem("Configure...", KeyEvent.VK_P, new ConfigurationAction()));
+			add(createMenuItem("Project Settings...", KeyEvent.VK_P, new ProjectSettingsAction()));
 
 			// Set accelerator keys for the save menu item
 			saveProject.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK));
 		}
 	}
 
-	/** Generates the sub-menu on the fly */
+	/** Dynamically generates the "Export Mapping" menu */
 	public void menuSelected(MenuEvent e)
 	{
-		// Dynamically generates the "Export Schema" menu
-		if(e.getSource().equals(exportSchemaMenu))
-		{
-			exportSchemaMenu.removeAll();
-			for(Integer schemaID : harmonyModel.getProjectManager().getSchemaIDs())
-				exportSchemaMenu.add(new SchemaMenuItem(harmonyModel.getSchemaManager().getSchema(schemaID)));
-			exportSchemaMenu.revalidate();				
-		}
-		
-		// Dynamically generates the "Export Mapping" menu
 		if(e.getSource().equals(exportMappingMenu))
 		{
 			exportMappingMenu.removeAll();
@@ -206,10 +171,6 @@ class ProjectMenu extends AbstractMenu implements MenuListener
     		else ProjectController.saveProject(harmonyModel,harmonyModel.getProjectManager().getProject());
 		}
 	}
-    
-	/** Action for launching the "Import Schema" dialog */
-	private class ImportSchemaAction extends AbstractAction
-		{ public void actionPerformed(ActionEvent e) { new ImportSchemaDialog(harmonyModel.getBaseFrame(),harmonyModel); } }
 	
 	/** Action for launching the "Import Project" dialog */
 	private class ImportProjectAction extends AbstractAction
@@ -231,9 +192,13 @@ class ProjectMenu extends AbstractMenu implements MenuListener
 		{ public void actionPerformed(ActionEvent e) { new ImportMappingDialog(harmonyModel.getBaseFrame(),harmonyModel); } }
     
 	/** Action for launching the configuration dialog */
-	private class ConfigurationAction extends AbstractAction
+	private class ProjectSettingsAction extends AbstractAction
 		{ public void actionPerformed(ActionEvent e) { new ProjectDialog(harmonyModel); } }
     
+	/** Action for launching the schema management dialog */
+	private class ManageSchemaAction extends AbstractAction
+		{ public void actionPerformed(ActionEvent e) { new SchemaDialog(harmonyModel); } }
+ 
 	/** Action for exiting Harmony */
 	private class ExitAction extends AbstractAction
 		{ public void actionPerformed(ActionEvent e) { harmonyModel.getBaseFrame().dispose(); } }
