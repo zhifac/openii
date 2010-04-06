@@ -8,14 +8,11 @@ import java.util.ArrayList;
 
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
-import org.mitre.schemastore.porters.Porter;
+import org.mitre.schemastore.porters.Exporter;
 
 /** Abstract Schema Exporter class */
-public abstract class SchemaExporter extends Porter
+public abstract class SchemaExporter extends Exporter
 {
-	/** Returns the exporter file type */
-	abstract public String getFileType();
-	
 	/** Exports the specified schema to the specified file */
 	abstract public void exportSchema(Schema schema, ArrayList<SchemaElement> schemaElements, File file) throws IOException;
 }

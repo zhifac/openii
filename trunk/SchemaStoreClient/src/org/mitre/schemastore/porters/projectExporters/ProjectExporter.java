@@ -13,14 +13,11 @@ import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.Project;
 import org.mitre.schemastore.model.SchemaElement;
-import org.mitre.schemastore.porters.Porter;
+import org.mitre.schemastore.porters.Exporter;
 
 /** Export Class - An exporter enables the exporting of projects */
-public abstract class ProjectExporter extends Porter
+public abstract class ProjectExporter extends Exporter
 {
-	/** Return the file type available for use with this exporter */
-	abstract public String getFileType();
-
 	/** Exports the project to the specified file */
 	abstract public void exportProject(Project project, HashMap<Mapping,ArrayList<MappingCell>> mappings, File file) throws IOException;
 	
