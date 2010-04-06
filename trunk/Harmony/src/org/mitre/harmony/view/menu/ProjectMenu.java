@@ -5,6 +5,7 @@ package org.mitre.harmony.view.menu;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
 
 import javax.swing.AbstractAction;
 import javax.swing.JMenu;
@@ -197,7 +198,7 @@ class ProjectMenu extends AbstractMenu implements MenuListener
     
 	/** Action for launching the schema management dialog */
 	private class ManageSchemaAction extends AbstractAction
-		{ public void actionPerformed(ActionEvent e) { new SchemaDialog(harmonyModel); } }
+		{ public void actionPerformed(ActionEvent e) { new SchemaDialog(harmonyModel, new ArrayList<Integer>()); } }
  
 	/** Action for exiting Harmony */
 	private class ExitAction extends AbstractAction

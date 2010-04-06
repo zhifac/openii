@@ -46,7 +46,7 @@ public class FocusController
 		}
 
 		// Update the foci with the newly generated foci
-		harmonyModel.getFilters().removeFoci(side);
+		harmonyModel.getFilters().removeAllFoci(side);
 		for(Integer schemaID : paths.keySet())
 			for(ElementPath path : paths.get(schemaID))
 				harmonyModel.getFilters().addFocus(side, schemaID, path);

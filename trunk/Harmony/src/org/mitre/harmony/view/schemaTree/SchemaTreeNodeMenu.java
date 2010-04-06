@@ -149,7 +149,7 @@ class SchemaTreeNodeMenu extends JPopupMenu implements ActionListener
 		// Handles focus settings
 		if(e.getSource()==setFocus) filters.addFocus(side, schemaID, SchemaTree.getElementPath(node));
 		if(e.getSource()==clearFocus) filters.removeFocus(side, schemaID, SchemaTree.getElementPath(node));
-		if(e.getSource()==clearAllFoci) filters.removeFoci(side);
+		if(e.getSource()==clearAllFoci) filters.removeAllFoci(side);
 
 		// Handles hidden element settings
 		if(e.getSource()==hideChildElement) filters.hideElement(side, schemaID, elementID);

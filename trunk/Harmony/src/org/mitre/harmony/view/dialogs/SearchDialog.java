@@ -43,20 +43,23 @@ public class SearchDialog extends JDialog implements KeyListener
 	{
 		/** Constructs the button pane */
 		private ButtonPane()
-			{ super(new String[]{"Set Focus", "Add to Focus","Search","Cancel"},2,2); }
+			{ super(new String[]{"Set Focus", "Search", "Add Focus", "Clear Search", "Remove Foci", "Close"},3,2); }
 
 		/** Handles selection of button */
 		protected void buttonPressed(String label)
-		{
-			// Run a search if "Search" selected
-			if(!label.equals("Cancel"))
-			{
-				// Only operate on selected sides
-				for(Integer side : getSelectedSides())
+		{		
+			// Close down the search pane if "Close" selected
+			if(label.equals("Close")) { dispose(); return; }
+
+			// Perform operations on specified sides
+			for(Integer side : getSelectedSides())
+			{			
+				// Run a search if "Search" selected
+				if(label.equals("Search") || label.equals("Set Focus") || label.equals("Add Focus"))
 				{
 					// Run search on specified query
 					harmonyModel.getSearchManager().runQuery(side, searchField.getText());
-
+	
 					// Set focus areas on search results
 					if(label.equals("Set Focus") || label.equals("Add to Focus"))
 					{
@@ -64,10 +67,15 @@ public class SearchDialog extends JDialog implements KeyListener
 						FocusController.setFocusOnSearchResults(harmonyModel, side, append);
 					}
 				}
-			}
+		
+				// Clear the search terms if "Clear Search" selected
+				else if(label.equals("Clear Search"))
+					harmonyModel.getSearchManager().runQuery(side, "");
 			
-			// Close down the search pane if "Cancel" selected
-			if(label.equals("Cancel")) dispose();
+				// Remove the foci if "Remove Foci" selected
+				else if(label.equals("Remove Foci"))
+					harmonyModel.getFilters().removeAllFoci(side);
+			}
 		}
 	}
 		
