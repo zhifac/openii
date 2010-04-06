@@ -1,6 +1,6 @@
 // (c) The MITRE Corporation 2006
 // ALL RIGHTS RESERVED
-package org.mitre.harmony.view.dialogs.matcher;
+package org.mitre.harmony.view.menu;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -17,6 +17,9 @@ import org.mitre.harmony.matchers.voters.MatchVoter;
 import org.mitre.harmony.model.HarmonyConsts;
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.project.ProjectManager;
+import org.mitre.harmony.view.dialogs.matcher.MatchPane;
+import org.mitre.harmony.view.dialogs.matcher.MatchVoterPane;
+import org.mitre.harmony.view.dialogs.matcher.TypePane;
 import org.mitre.harmony.view.dialogs.matcher.wizard.Wizard;
 
 /** Menu to display all available matchers */

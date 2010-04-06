@@ -21,10 +21,10 @@ import org.mitre.schemastore.porters.Importer;
 import org.mitre.schemastore.porters.schemaImporters.SchemaImporter;
 
 /** Class for displaying the schema importer dialog */
-public class SchemaImporterDialog extends ImporterDialog implements ActionListener, CaretListener
+public class ImportSchemaDialog extends AbstractImportDialog implements ActionListener, CaretListener
 {	
 	/** Constructs the importer dialog */
-	public SchemaImporterDialog(Component parent, HarmonyModel harmonyModel)
+	public ImportSchemaDialog(Component parent, HarmonyModel harmonyModel)
 	{
 		super(parent, harmonyModel);
 		selectionList.addActionListener(this);
@@ -49,6 +49,7 @@ public class SchemaImporterDialog extends ImporterDialog implements ActionListen
 	{
 		SchemaImporter importer = (SchemaImporter)selectionList.getSelectedItem();
 		importer.importSchema(name, author, description, uri);
+		harmonyModel.getSchemaManager().initSchemas();
 	}
 	
 	/** Handles the selection of the importer */

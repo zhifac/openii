@@ -15,10 +15,10 @@ import org.mitre.schemastore.porters.Importer;
 import org.mitre.schemastore.porters.projectImporters.ProjectImporter;
 
 /** Class for displaying the project importer dialog */
-public class ProjectImporterDialog extends ImporterDialog
+public class ImportProjectDialog extends AbstractImportDialog
 {	
 	/** Constructs the importer dialog */
-	public ProjectImporterDialog(Component parent, HarmonyModel harmonyModel)
+	public ImportProjectDialog(Component parent, HarmonyModel harmonyModel)
 		{ super(parent, harmonyModel); setVisible(true); }
 	
 	/** Returns the type of importer being run */

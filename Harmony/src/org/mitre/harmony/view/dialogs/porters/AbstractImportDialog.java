@@ -28,8 +28,11 @@ import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.view.dialogs.widgets.AbstractButtonPane;
 import org.mitre.schemastore.porters.Importer;
 
-/** Class for displaying the importer dialog */
-abstract public class ImporterDialog extends JDialog
+/**
+ * Abstract dialog for importing
+ * @author CWOLF
+ */
+abstract public class AbstractImportDialog extends JDialog
 {		
 	/** Stores the harmony model */
 	protected HarmonyModel harmonyModel;
@@ -140,7 +143,7 @@ abstract public class ImporterDialog extends JDialog
 	}
 	
 	/** Constructs the importer dialog */
-	public ImporterDialog(Component parent, HarmonyModel harmonyModel)
+	public AbstractImportDialog(Component parent, HarmonyModel harmonyModel)
 	{
 		super(harmonyModel.getBaseFrame());
 		this.harmonyModel = harmonyModel;

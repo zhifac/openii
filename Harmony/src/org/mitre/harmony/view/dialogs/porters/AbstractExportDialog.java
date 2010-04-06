@@ -5,7 +5,6 @@ package org.mitre.harmony.view.dialogs.porters;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
@@ -13,27 +12,22 @@ import javax.swing.filechooser.FileFilter;
 
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.SchemaStoreManager;
-import org.mitre.harmony.model.project.ProjectMapping;
-import org.mitre.schemastore.model.Mapping;
-import org.mitre.schemastore.model.MappingCell;
-import org.mitre.schemastore.model.Project;
-import org.mitre.schemastore.porters.PorterManager;
-import org.mitre.schemastore.porters.projectExporters.ProjectExporter;
+import org.mitre.schemastore.porters.Exporter;
 
 /**
- * Dialog for exporting the current project
+ * Abstract dialog for exporting
  * @author CWOLF
  */
-public class ProjectExporterDialog
+abstract class AbstractExportDialog
 {	
-	/** Private class for creating a project file filter */
-	private static class ProjectFileFilter extends FileFilter
+	/** Private class for creating an exporter file filter */
+	private static class ExportFileFilter extends FileFilter
 	{
-		/** Stores the project exporter */
-		private ProjectExporter exporter = null;
+		/** Stores the porter */
+		private Exporter exporter = null;
 		
 		/** Constructs the project file filter */
-		private ProjectFileFilter(ProjectExporter exporter)
+		private ExportFileFilter(Exporter exporter)
 			{ this.exporter = exporter; }
 
 		/** Indicates if the file should be accepted */
@@ -49,8 +43,14 @@ public class ProjectExporterDialog
 			{ return exporter.getName() + "(" + exporter.getFileType() + ")"; }
 	}
 	
-	/** Allows user to export a project */
-	public static void exportProject(HarmonyModel harmonyModel)
+	/** Abstract class for defining the type of exporters */
+	abstract protected int getExporterType();
+	
+	/** Abstract class for exporting to the specified file */
+	abstract protected void export(HarmonyModel harmonyModel, Exporter exporter, File file) throws IOException;
+	
+	/** Allows user to export */
+	public void export(HarmonyModel harmonyModel)
 	{
 		// Initialize the file chooser
 		JFileChooser chooser = new JFileChooser(harmonyModel.getPreferences().getExportDir());
@@ -58,9 +58,9 @@ public class ProjectExporterDialog
 		chooser.setAcceptAllFileFilterUsed(false);
 
 		// Set up file filters for the various project exporters
-		ArrayList<ProjectExporter> exporters = SchemaStoreManager.getPorters(PorterManager.PROJECT_EXPORTERS);
-		for(ProjectExporter exporter : exporters)
-			chooser.addChoosableFileFilter(new ProjectFileFilter(exporter));
+		ArrayList<Exporter> exporters = SchemaStoreManager.getPorters(getExporterType());
+		for(Exporter exporter : exporters)
+			chooser.addChoosableFileFilter(new ExportFileFilter(exporter));
 
 		// Display the dialog for selecting which exporter to use
 		if(chooser.showDialog(harmonyModel.getBaseFrame(),"Export")==JFileChooser.APPROVE_OPTION)
@@ -68,7 +68,7 @@ public class ProjectExporterDialog
 			// Retrieve the selected file and exporter from the file chooser
 			File file = chooser.getSelectedFile();
 			harmonyModel.getPreferences().setExportDir(file.getParentFile());
-			ProjectExporter exporter = ((ProjectFileFilter)chooser.getFileFilter()).exporter;
+			Exporter exporter = ((ExportFileFilter)chooser.getFileFilter()).exporter;
 
 			// Ensure that file has the proper ending
 			if(!file.getName().endsWith(exporter.getFileType()))
@@ -83,15 +83,9 @@ public class ProjectExporterDialog
 						JOptionPane.WARNING_MESSAGE);
 	    		if(option==1) return;
     		}
-			
-			// Gather up the project to export
-			Project project = harmonyModel.getProjectManager().getProject();
-			HashMap<Mapping,ArrayList<MappingCell>> mappings = new HashMap<Mapping,ArrayList<MappingCell>>();
-			for(ProjectMapping mapping : harmonyModel.getMappingManager().getMappings())
-				mappings.put(mapping, mapping.getMappingCells());
 
 			// Export the project to the specified file
-			try { exporter.exportProject(project,mappings, file); }
+			try { export(harmonyModel, exporter, file); }
 			catch(IOException e)
 			{
 				JOptionPane.showMessageDialog(harmonyModel.getBaseFrame(),
