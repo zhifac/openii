@@ -45,7 +45,7 @@ import org.mitre.schemastore.porters.PorterManager;
 import org.mitre.schemastore.porters.mappingImporters.MappingImporter;
 
 /** Class for displaying the mapping importer dialog */
-public class MappingImporterDialog extends JDialog implements ActionListener, CaretListener
+public class ImportMappingDialog extends JDialog implements ActionListener, CaretListener
 {		
 	/** Stores the harmony model */
 	private HarmonyModel harmonyModel;
@@ -237,7 +237,7 @@ public class MappingImporterDialog extends JDialog implements ActionListener, Ca
 	}
 	
 	/** Constructs the mapping importer dialog */
-	public MappingImporterDialog(Component parent, HarmonyModel harmonyModel)
+	public ImportMappingDialog(Component parent, HarmonyModel harmonyModel)
 	{
 		super(harmonyModel.getBaseFrame());
 		this.harmonyModel = harmonyModel;

@@ -13,6 +13,7 @@ import javax.swing.border.EmptyBorder;
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.preferences.PreferencesListener;
 import org.mitre.harmony.view.mappingPane.MappingPane;
+import org.mitre.harmony.view.menu.HarmonyMenuBar;
 
 /**
  * Displays main Harmony window
