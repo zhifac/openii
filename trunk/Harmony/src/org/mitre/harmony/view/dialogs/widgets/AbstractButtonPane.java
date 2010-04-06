@@ -5,6 +5,7 @@ import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
@@ -13,6 +14,9 @@ import javax.swing.border.EmptyBorder;
 /** Class used to construct the acstract button pane */
 abstract public class AbstractButtonPane extends JPanel implements ActionListener
 {
+	/** Stores reference to the buttons */
+	private ArrayList<JButton> buttons = new ArrayList<JButton>();
+	
 	/** Constructs the abstract button pane */
 	public AbstractButtonPane(String[] labels, int rows, int cols)
 	{
@@ -25,6 +29,7 @@ abstract public class AbstractButtonPane extends JPanel implements ActionListene
 		{
 			// Generate the button
 			JButton button = new JButton(label);
+			buttons.add(button);
 			button.addActionListener(this);
 			
 			// Place the button in a pane
@@ -40,6 +45,14 @@ abstract public class AbstractButtonPane extends JPanel implements ActionListene
 		// Construct the button pane
 		setLayout(new FlowLayout());
 		add(buttonsPane);
+	}
+	
+	/** Enable the specified button */
+	public void setEnabled(String label, boolean enable)
+	{
+		for(JButton button : buttons)
+			if(button.getText().equals(label))
+				button.setEnabled(enable);
 	}
 	
 	/** Reacts to the buttons being pressed */
