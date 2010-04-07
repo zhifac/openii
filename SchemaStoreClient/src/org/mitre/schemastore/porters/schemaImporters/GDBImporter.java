@@ -25,7 +25,7 @@ import org.mitre.schemastore.porters.ImporterException;
  * @author piekut
  * @version $Revision: 1.0 $
  */
-public class GSIPImporter extends SchemaImporter {
+public class GDBImporter extends SchemaImporter {
 	private ArrayList<Entity> _entities;
 	private ArrayList<Attribute> _attributes;
 	private ArrayList<Domain> _domains;
@@ -33,28 +33,8 @@ public class GSIPImporter extends SchemaImporter {
 	private ArrayList<Containment> _containments;
 	Connection conn = null; 
             
-//	/** Private class for creating a GSIP file filter */
-//	private static class GSIPFileFilter extends FileFilter
-//	{
-//
-//		/** Indicates if the file should be accepted */
-//		public boolean accept(File file)
-//		{
-//			if(file.isDirectory()) return true;
-//			if(file.toString().endsWith(".mdb")) return true;
-//			return false;
-//		}
-//
-//		/** Provides the exporter file description */
-//		public String getDescription()
-//			{ return "Microsoft Access Database (mdb)"; }
-//	};
-//
-//	
-//	
-	
 	/** Returns the importer name */
-	public String getName() { return "GSIP Importer"; }
+	public String getName() { return "GDB Importer"; }
 
 	/** Returns the importer description */
     public String getDescription()  { return "This imports schemas from the NAS-specific Access MDB"; }
@@ -73,21 +53,7 @@ public class GSIPImporter extends SchemaImporter {
 	/** Initializes the importer for the specified URI */
 	protected void initialize() throws ImporterException {
 		String filename = "";
-		try {
-			//  connect to MS Access database
-//	        conn = DriverManager.getConnection("jdbc:odbc:"+uri,"Admin",null); 
-
-			//file method
-			// Initialize the file chooser
-//			JFileChooser chooser = new JFileChooser();
-//			chooser.setDialogType(JFileChooser.OPEN_DIALOG);
-//			chooser.setAcceptAllFileFilterUsed(false);
-//			chooser.addChoosableFileFilter(new GSIPFileFilter());
-//			
-//			File file = chooser.getSelectedFile();
-			
-			
-			
+		try {			
 			Class.forName("sun.jdbc.odbc.JdbcOdbcDriver");
             // set this to a MS Access DB you have on your machine
 //            String filename = file.getPath();//"c:/hsip/test.mdb";
