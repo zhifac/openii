@@ -61,6 +61,9 @@ public class UserMatchAnnotationExporter extends MappingExporter
 	public String getDescription()
 		{ return "This exporter can be used to export all pairings of terms within the mapping"; }
 	
+	public void setSourceInfo(HierarchicalSchemaInfo sourceInfo) { this.sourceInfo=sourceInfo; }
+	public void setTargetInfo(HierarchicalSchemaInfo targetInfo) { this.targetInfo=targetInfo; }
+	
 	/** Returns the file types associated with this converter */
 	public String getFileType()
 		{ return ".csv"; }
@@ -179,7 +182,7 @@ public class UserMatchAnnotationExporter extends MappingExporter
 	
 	/** Class used to store the compress mapping cell list */
 	class CompressedList
-	{
+	{	
 		/** Stores the list of compressed mapping cells */
 		private HashMap<String,CompressedMatch> matches = new HashMap<String,CompressedMatch>();
 
@@ -190,12 +193,23 @@ public class UserMatchAnnotationExporter extends MappingExporter
 			String element2String = match.element2.getName() + "|" + match.element2.getDescription();
 			return element1String + "|" + element2String + "|" + match.score;
 		}
-		
+	
 		/** Adds a mapping cell to the list */
 		protected void addMappingCell(MappingCell mappingCell)
 		{
   			// Construct the compressed match
-   			SchemaElement element1 = sourceInfo.getElement(mappingCell.getFirstInput());
+			if (sourceInfo==null) {
+				System.out.println("sourceInfo NULL");
+			}
+			if (targetInfo==null) {
+				System.out.println("targetInfo NULL");
+			}
+			/*System.out.println("sourceInfo="+sourceInfo.getClass().getCanonicalName());
+			
+			System.out.println("sourceInfo="+sourceInfo.getHierarchicalElements().size());
+			System.out.println("sourceInfo="+sourceInfo.getElementCount());*/
+			
+   			SchemaElement element1 = sourceInfo.getElement(mappingCell.getInput()[0]);
    			SchemaElement element2 = targetInfo.getElement(mappingCell.getOutput());
 
    			if (element1 == null || element2 == null) {
@@ -214,6 +228,36 @@ public class UserMatchAnnotationExporter extends MappingExporter
    			if(match==null) matches.put(key,newMatch);
    			else match.merge(newMatch);
 		}
+		
+		protected void addMappingCell(MappingCell mappingCell, HierarchicalSchemaInfo source, HierarchicalSchemaInfo target)
+		{
+  			// Construct the compressed match
+			if (source==null) {
+				System.out.println("source NULL");
+			}
+			if (target==null) {
+				System.out.println("target NULL");
+			}
+			
+   			SchemaElement element1 = source.getElement(mappingCell.getInput()[0]);
+   			SchemaElement element2 = target.getElement(mappingCell.getOutput());
+
+   			if (element1 == null || element2 == null) {
+   				System.out.println("Error in addMappingCell: " 
+   						+ mappingCell.getInput()[0] + ", "
+   						+ mappingCell.getOutput());
+   			}
+   			
+   			CompressedMatch newMatch = new CompressedMatch(element1,element2,mappingCell.getScore(),
+   					mappingCell.getAuthor(),mappingCell.getModificationDate(),mappingCell.getFunctionClass(),
+   					mappingCell.getNotes());  	
+
+   			// Add match to list of compressed matches
+   			String key = getKey(newMatch);
+   			CompressedMatch match = matches.get(key);
+   			if(match==null) matches.put(key,newMatch);
+   			else match.merge(newMatch);
+		}		
 		
 		/** Returns the list of compressed mapping cells */
 		protected ArrayList<CompressedMatch> getMatches()
