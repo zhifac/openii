@@ -4,5 +4,5 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/SchemaStoreClient.jar" sourcepath="/SchemaStore/src"/>
 	<classpathentry kind="lib" path="lib/SchemaStorePorters.jar" sourcepath="/SchemaStoreClient/src"/>
-	<classpathentry kind="output" path="build/classes"/>
+	<classpathentry kind="output" path="bin"/>
 </classpath>
