@@ -34,6 +34,6 @@ public abstract class AbstractManager<Listener>
 	public void removeListener(Listener listener) { listeners.remove(listener); }
 
 	/** Returns the list of listeners */
-	protected ArrayList<Listener> getListeners()
+	public ArrayList<Listener> getListeners()
 		{ return listeners.get(); }
 }
