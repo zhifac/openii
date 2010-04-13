@@ -88,6 +88,10 @@ public class SchemaStoreClient
 		}
 		catch(Exception e) { throw new RemoteException("(E) Failed to connect to SchemaStore: " + e.getMessage()); }
 	}
+	
+	/** Compresses the database */
+	public Boolean compress() throws RemoteException
+		{ return (Boolean)callMethod("compress",new Object[] {}); }
 
 	//------------------
 	// Schema Functions
