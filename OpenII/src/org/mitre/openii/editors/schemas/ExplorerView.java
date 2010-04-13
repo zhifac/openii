@@ -64,29 +64,38 @@ public class ExplorerView extends OpenIIEditor {
 			//final ExplorerView me = this; 
 			final SchemaExplorer explorer = new SchemaExplorer();
 			
-			// Whenever the user clicks on a link, figure out where they are going,
-			// and generate the page just before they get there.  :)
+			// Listens for and handles events relating to browser URL 
+			// changes.
+			// WARNING: Sometimes the browser re-writes the URL (i.e. the provided
+			// URL is file://c:/foo.html and it will rewrite it to c:\foo.html) so
+			// beware that redirects are possible.
 			LocationListener locationListener = new LocationListener() {
 			      public void changed(LocationEvent event) { 
 						Browser browser = (Browser)event.widget;
 						back.setEnabled(browser.isBackEnabled());
 						forward.setEnabled(browser.isForwardEnabled());
-			      }
+			      } // End changed
+			      
 			      public void changing(LocationEvent event) {
 			    	  	Browser browser = (Browser)event.widget;
 			    	  	String location = event.location;
 			    	  	System.err.println("Browser changing location: " + location);
 			    	  	
-			    	  	if(location.indexOf("file:") == -1) return; 
-			    	  	explorer.generatePage(SchemaExplorer.elementIDFromURL(location));
-			    	  	
-			    	  	// For some reason, if this isn't called then the browser has funky display issues.
+			    	  	// On Internet Explorer, if this isn't called then there are often
+			    	  	// display issues.
 			    	  	browser.redraw(); 
 			         } // End changing
 			      };
 			
-			browser.addLocationListener(locationListener);						
-			String u = explorer.urlForElement(elementID); 
+			browser.addLocationListener(locationListener);
+		
+			// Determine what URL corresponds to this schema element.
+			String u = explorer.urlForElement(elementID);
+			
+			// Generate the HTML page corresponding to that element.
+			explorer.generatePage(SchemaExplorer.elementIDFromURL(u));
+			
+			// Point the browser at the just-in-time generated HTML
 			System.err.println("Navigating to " + u);  
 			browser.setUrl(u);			
 		} catch (SWTError e) {	          
