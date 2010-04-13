@@ -127,10 +127,12 @@ public class ProjectMapping extends Mapping
 		// Sort out new and already created mapping cells
 		ArrayList<MappingCell> newMappingCells = new ArrayList<MappingCell>();
 		ArrayList<MappingCell> existingMappingCells = new ArrayList<MappingCell>();
-		for(MappingCell mappingCell : mappingCells)
-		{
-			if(mappingCell.getId()==null) newMappingCells.add(mappingCell);
-			else existingMappingCells.add(mappingCell);
+		for(MappingCell mappingCell : mappingCells) {
+			if (mappingCellHash.containsKey(mappingCell.getId())) {
+				existingMappingCells.add(mappingCell);
+			} else {
+				newMappingCells.add(mappingCell);
+			}
 		}
 		
 		// Handles the addition of new mapping cells
