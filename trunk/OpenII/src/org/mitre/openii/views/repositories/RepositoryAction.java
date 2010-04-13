@@ -3,12 +3,14 @@ package org.mitre.openii.views.repositories;
 import org.eclipse.jface.action.Action;
 import org.eclipse.swt.widgets.Shell;
 import org.mitre.openii.application.OpenIIActivator;
+import org.mitre.openii.model.RepositoryManager;
 public class RepositoryAction extends Action
 {
 	// Constants defining the various Manager action types available
 	static final int ADD_REPOSITORY = 0;
 	static final int EDIT_REPOSITORY = 1;
 	static final int DELETE_REPOSITORY = 2;
+	static final int COMPRESS_REPOSITORY = 3;
 	
 	/** Stores the menu manager to which this action is tied */
 	private RepositoryMenuManager menuManager;
@@ -31,6 +33,7 @@ public class RepositoryAction extends Action
 			case ADD_REPOSITORY: icon = "Repository.gif"; break;
 			case EDIT_REPOSITORY: icon = "Edit.gif"; break;
 			case DELETE_REPOSITORY: icon = "Delete.gif"; break;
+			case COMPRESS_REPOSITORY: icon = "Compress.gif"; break;
 		}		
 		setImageDescriptor(OpenIIActivator.getImageDescriptor("icons/"+icon));
 	}
@@ -41,16 +44,20 @@ public class RepositoryAction extends Action
 		// Determine which tree element was selected
 		Shell shell = menuManager.getMenu().getShell();
 		
-		/** Handles the importing of a schema */
+		/** Handles the adding of a repository */
 		if(actionType == ADD_REPOSITORY)
 			new EditRepositoryDialog(shell,null).open();
 		
-		/** Handles the extending of a schema */
+		/** Handles the editing of a repository */
 		if(actionType == EDIT_REPOSITORY)
 			new EditRepositoryDialog(shell,menuManager.getRepository()).open();
 		
-		/** Handles the extending of a schema */
+		/** Handles the deleting of a repository */
 		if(actionType == DELETE_REPOSITORY)
 			DeleteRepositoryDialog.delete(shell,menuManager.getRepository());
+		
+		/** Handles the compressing of a repository */
+		if(actionType == COMPRESS_REPOSITORY)
+			try { RepositoryManager.getClient().compress(); } catch(Exception e) {}
 	}
 }
