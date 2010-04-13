@@ -1,5 +1,5 @@
 // Copyright 2008 The MITRE Corporation. ALL RIGHTS RESERVED.
-package org.mitre.rmap.view;
+package org.mitre.rmap.model;
 
 import java.awt.Frame;
 
@@ -9,8 +9,9 @@ import org.mitre.harmony.model.HarmonyModel;
 public class RMapHarmonyModel extends HarmonyModel {
 	// Stores the managers associated with the currently displayed mapping
 	private RMapSchemaManager _RMapSchemaManager;
-	private RMapProjectManager _RMapProjectManager; 
 	private RMapSelectedInfoManager _RMapSelectedInfoManager;
+	public static final String DERBY_TYPE = "Derby";
+	public static final String POSTGRES_TYPE = "Postgres";
 	
 	/** Constructs the Harmony model */
 	public RMapHarmonyModel(Frame baseFrame) {
@@ -23,14 +24,6 @@ public class RMapHarmonyModel extends HarmonyModel {
 			_RMapSchemaManager = new RMapSchemaManager(this);
 		}
 		return _RMapSchemaManager; 
-	}
-
-	/** Returns the mapping manager */
-	public RMapProjectManager getProjectManager() {
-		if (_RMapProjectManager == null) {
-			_RMapProjectManager = new RMapProjectManager(this);
-		}
-		return _RMapProjectManager; 
 	}
 
 	/** Returns the selected info manager */

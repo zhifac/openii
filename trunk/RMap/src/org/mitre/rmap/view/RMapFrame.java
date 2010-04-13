@@ -1,6 +1,8 @@
 // Copyright 2008 The MITRE Corporation. ALL RIGHTS RESERVED.
 package org.mitre.rmap.view;
 
+import java.util.*;
+
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -9,27 +11,18 @@ import java.awt.event.ActionListener;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
-import org.mitre.schemastore.client.Repository;
 import org.mitre.schemastore.client.SchemaStoreClient;
 import org.mitre.schemastore.model.MappingCell;
-
-import java.net.URI;
-import java.util.*;
 
 import org.mitre.harmony.model.preferences.PreferencesListener;
 import org.mitre.harmony.view.harmonyPane.TitledPane;
 import org.mitre.harmony.view.mappingPane.MappingPane;
 
-import org.mitre.rmap.model.Dependency;
-import org.mitre.rmap.model.SQLGenerator;
+import org.mitre.rmap.generator.Dependency;
+import org.mitre.rmap.model.RMapHarmonyModel;
 
 @SuppressWarnings("serial")
 public class RMapFrame extends JInternalFrame implements PreferencesListener {
-	/** type of database generated */
-	public static String _targetDB;
-	public static final String POSTGRES_TYPE = "Postgres";
-	public static final String DERBY_TYPE = "Derby";
-
 	/** Stores a reference to the view pane */
 	private JPanel viewPane = new JPanel();
 
@@ -38,89 +31,58 @@ public class RMapFrame extends JInternalFrame implements PreferencesListener {
 
 	/** Stores the Harmony model */
 	private RMapHarmonyModel harmonyModel;
-	
+	private MappingPane mappingPane;
 	private DependencyPane dependencyPane;
-	private CorrectionPane correctionPane;
 	private Integer dependencyDisplayedIndex;
-	
-	public RMapFrame(SchemaStoreClient client, Integer elementID) {
-		super();
 
-		GroupLayout layout = new GroupLayout(this);
-		layout.setAutoCreateGaps(true);
-		layout.setAutoCreateContainerGaps(true);
-		this.setLayout(layout);
-
-		// Generate dependencies
-		dependenciesOrdered = Dependency.generate(elementID, client);
-
-		// create the rmap version of the harmony model and initialize the schema list
-		harmonyModel = new RMapHarmonyModel(null);
-		harmonyModel.getSchemaManager().initSchemas(dependenciesOrdered);
-
-		// Place title on application
-		String mappingName = harmonyModel.getProjectManager().getProject().getName();
-		setTitle("RMap SQL Generator" + (mappingName != null ? " - " + harmonyModel.getProjectManager().getProject().getName() : ""));
-
-		// Set dialog pane settings
-		((javax.swing.plaf.basic.BasicInternalFrameUI) getUI()).setNorthPane(null);
-		setBorder(new EmptyBorder(0, 0, 0, 0));
-		try { setMaximum(true); } catch (Exception e) {}
-		setContentPane(getMainPane());
-        setVisible(true);
-
-		// Add a listener to monitor for the closing of the parent frame
-		harmonyModel.getPreferences().addListener(this);
-	}
-
-	/** Returns the view pane */
+	/** Returns the view pane
+	 *  the view pane contains the three column mapping dimensions */
 	private JPanel getViewPane() {
 		// Clear out the action map
 		getActionMap().clear();
 		
+		// generate a mapping pane
+		mappingPane = new MappingPane(this, harmonyModel);
+
 		// Generate the new view
-		return new TitledPane(null, (JComponent)new MappingPane(this, harmonyModel));
+		return new TitledPane(null, (JComponent)mappingPane);
 	}
 
-	/** Generates the main pane */
+	/** Generates the main pane
+	 *  the main pane contains in it both the view pane (see above)
+	 *  and the dependencies pane, which is generated in this method */
 	private JPanel getMainPane() {
+        // THIS PANEL BASICALLY DEFINES THE ENTIRE WIDTH OF THE RIGHT COLUMN (in this case, it is 225)
+		Integer sidePaneWidth = 225;
+		Integer sidePaneDependencyHeight = 300;
+        Dimension sidePaneSize = new Dimension(sidePaneWidth, 40);
+
+		// layout the view pane of RMap
+		// the function call to getViewPane() has a side effect of creating the instance of mappingPane
+		// i hate functions that have side-effects, but it seems necessary in this case
+        // as a result, this MUST go at the top of this method so that we can send an initialized mappingPane to DependencyPane
+		viewPane.setLayout(new BorderLayout());
+		viewPane.add(getViewPane(), BorderLayout.CENTER);
+
 		// initialize the panels, we will need to work with them
-		dependencyPane = new DependencyPane(harmonyModel, dependenciesOrdered);
-		correctionPane = new CorrectionPane(harmonyModel);
-		
-		// initialize the various panes shown in the main Harmony pane
+		dependencyPane = new DependencyPane(harmonyModel, mappingPane, dependenciesOrdered);
 		TitledPane dependencyTitledPane = new TitledPane("Dependencies", dependencyPane);
-		TitledPane correctionTitledPane = new TitledPane("Corrections", correctionPane);
-		
+        dependencyTitledPane.setPreferredSize(new Dimension(sidePaneWidth, sidePaneDependencyHeight));
+
 		// initialize the button that generates SQL
         JButton generateSQLButton = new JButton("Generate SQL");
         generateSQLButton.setName("Generate SQL");
         generateSQLButton.addActionListener(new GenerateSQLButtonListener(generateSQLButton));
         generateSQLButton.setEnabled(true);
-        
+
         // create a panel with padding to put the button in
         JPanel generateSQLButtonPanel = new JPanel();
         generateSQLButtonPanel.add(generateSQLButton, JPanel.CENTER_ALIGNMENT);
 
-		// layout the view pane of RMap
-		viewPane.setLayout(new BorderLayout());
-		viewPane.add(getViewPane(), BorderLayout.CENTER);
-		
-        // THIS PANEL BASICALLY DEFINES THE ENTIRE WIDTH OF THE RIGHT COLUMN (in this case, it is 250)
-		Integer sidePaneMaxWidth = 250;
-		Integer sidePaneDependencyMaxHeight = 300;
-        Dimension sidePaneSize = new Dimension(sidePaneMaxWidth, 40);
-        Dimension sidePaneDependencySize = new Dimension(sidePaneMaxWidth, sidePaneDependencyMaxHeight);
-        
-        // specify the maximum height of the dependencies frame
-        dependencyTitledPane.setPreferredSize(sidePaneDependencySize);
-        dependencyTitledPane.setMaximumSize(sidePaneDependencySize);
-
 		// layout the side pane of RMap
 		JPanel sidePane = new JPanel();
 		sidePane.setLayout(new BorderLayout());
-		sidePane.add(dependencyTitledPane, BorderLayout.NORTH);
-		sidePane.add(correctionTitledPane, BorderLayout.CENTER);
+		sidePane.add(dependencyTitledPane, BorderLayout.CENTER);
 		sidePane.add(generateSQLButtonPanel, BorderLayout.SOUTH);
 		sidePane.setPreferredSize(sidePaneSize);
 		sidePane.setMaximumSize(sidePaneSize);
@@ -143,49 +105,40 @@ public class RMapFrame extends JInternalFrame implements PreferencesListener {
         }
 
         public void actionPerformed(ActionEvent e) {
-        	// save current work (for visible Dependency)
-            Dependency dependDisplayed = null;
-            if (dependencyDisplayedIndex >= 0) {
-                ArrayList<MappingCell> mappingCells = harmonyModel.getMappingManager().getMappingCells();
-                ArrayList<MappingCell> updatedCells = new ArrayList<MappingCell>();
-                dependDisplayed = dependenciesOrdered.get(dependencyDisplayedIndex);
-                for (MappingCell cell : mappingCells){
-                    if (cell.getScore() > -1.0){
-                        MappingCell cellCopy = cell.copy();
-                        updatedCells.add(cellCopy);
-                    }
-                }
-                dependDisplayed.updateCorrespondences(updatedCells);
-                harmonyModel.getSchemaManager().setMappingCells(dependDisplayed, updatedCells);
-            }
+        	Dependency dependenciesDisplayed = null;
+        	if (dependencyDisplayedIndex >= 0){
+        		ArrayList<MappingCell> mappingCells = harmonyModel.getMappingManager().getMappingCells();
+        		ArrayList<MappingCell> updatedCells = new ArrayList<MappingCell>();
+        		dependenciesDisplayed = dependenciesOrdered.get(dependencyDisplayedIndex);
+        		for (MappingCell cell : mappingCells){
+        			if (cell.getScore() > -1.0) {
+        				MappingCell cellCopy = cell.copy();
+        				updatedCells.add(cellCopy);
+        			}
+        		}
+        		dependenciesDisplayed.updateCorrespondences(updatedCells);
+        		harmonyModel.getSchemaManager().setMappingCells(dependenciesDisplayed, updatedCells);
+        	}
 
-            correctionPane.getCorrections().setText("");
-            ArrayList<String> finalScript = new ArrayList<String>();
-            ArrayList<Integer> selectedIndices = new ArrayList<Integer>();
+        	// store what has been checked
+        	ArrayList<Integer> selectedIndices = new ArrayList<Integer>();
+        	for (int i = 0; i < dependencyPane.getDependencyTableData().length; i++) {
+        		if ((Boolean)dependencyPane.getDependencyTableData()[i][0]) { selectedIndices.add(i); }
+        	}
 
-            Object[][] data = dependencyPane.getDependencyTableData(); 
-            for (int i = 0; i < data.length; i++) {
-            	if ((Boolean)data[i][1]) { selectedIndices.add(i); }
-            }
+        	// if things have been checked, add them to the list of dependencies for our SQL generator
+        	if (selectedIndices.size() > 0) {
+        		ArrayList<Dependency> selectedDependencies = new ArrayList<Dependency>();
+        		for (Integer index : selectedIndices) {
+        			selectedDependencies.add(dependenciesOrdered.get(index));
+        		}
 
-            if (selectedIndices.size() > 0) { 
-                ArrayList<Dependency> selectedDepends = new ArrayList<Dependency>();
-                for (Integer index : selectedIndices) {
-                    selectedDepends.add(dependenciesOrdered.get(index));
-                }
-
-                finalScript = new ArrayList<String>(); // SQLGenerator.performErrorChecking(_dependsOrdered, selectedIndices);
-                if (finalScript.size() == 0) {
-                    finalScript = SQLGenerator.generateFinalSQLScript(harmonyModel.getProjectManager().getProject(), selectedDepends, _targetDB);
-                }
-
-                String output = new String();
-                for (String str : finalScript) { output += str + "\n"; }
-                correctionPane.getCorrections().setText(output);
-                correctionPane.getCorrections().setCaretPosition(0);
-            } else {
-                correctionPane.getCorrections().setText("No Dependencies are selected!");
-            }
+        		// TODO: add this to the list of the final script
+        		// TODO: generate the final script? perhaps ask for what type of output they'd like
+        		// TODO: whether that be postgresql or derby or whatever
+        	} else {
+        		// nothing has been selected
+        	}
         }
         
         private void enableButton() {
@@ -193,30 +146,36 @@ public class RMapFrame extends JInternalFrame implements PreferencesListener {
         }
     } // end class GenerateSQLButtonListener
 
-   	public static void main(String[] args) {
-   		javax.swing.SwingUtilities.invokeLater(new Runnable() {
-   			public void run() {
-	           	/** SET SchemaStoreClient location, Source and Target schemas **/
-	       		try { 
-	       			Repository serverLocation = new Repository(Repository.POSTGRES, new URI("ygg.mitre.org"),"schemastore","postgres","postgres"); 
-	       			SchemaStoreClient client = new SchemaStoreClient(serverLocation);      			
-	       			JFrame frame = new JFrame("SQL Mapping Generator");
-	       	        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	
-	       	        //Create and set up the content pane.
-	       	        JComponent newContentPane = new RMapFrame(client, 422130);
-	       	        //JComponent newContentPane = new SQLGeneratorGUI(client, 446405);
-	       	        newContentPane.setOpaque(true); //content panes must be opaque
-	       	        frame.setContentPane(newContentPane);
-	
-	       	        //Display the window.
-	       	        frame.setVisible(true);
-	       		} catch (Exception e){
-	       			e.printStackTrace();
-	       		}
-   			} 
-       });
-   	}
+	public RMapFrame(RMapHarmonyModel harmonyModel, SchemaStoreClient client, Integer elementID) {
+		super();
+		this.harmonyModel = harmonyModel;
+
+		// Place title on application
+		String mappingName = harmonyModel.getProjectManager().getProject().getName();
+		setTitle("RMap SQL Generator" + (mappingName != null ? " - " + harmonyModel.getProjectManager().getProject().getName() : ""));
+
+		// Generate dependencies
+		dependenciesOrdered = Dependency.generate(client, elementID);
+
+		// initialize the schema list
+		harmonyModel.getSchemaManager().initSchemas(dependenciesOrdered);
+
+		// build a layout for the display
+		GroupLayout layout = new GroupLayout(this);
+		layout.setAutoCreateGaps(true);
+		layout.setAutoCreateContainerGaps(true);
+		this.setLayout(layout);
+
+		// Set dialog pane settings
+		((javax.swing.plaf.basic.BasicInternalFrameUI) getUI()).setNorthPane(null);
+		setBorder(new EmptyBorder(0, 0, 0, 0));
+		try { setMaximum(true); } catch (Exception e) {}
+		setContentPane(getMainPane());
+        setVisible(true);
+
+		// Add a listener to monitor for the closing of the parent frame
+		harmonyModel.getPreferences().addListener(this);
+	}
 
 	public void displayedViewChanged() {
 		viewPane.removeAll();

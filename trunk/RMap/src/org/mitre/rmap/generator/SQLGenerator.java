@@ -1,11 +1,11 @@
 // Copyright 2008 The MITRE Corporation. ALL RIGHTS RESERVED.
-package org.mitre.rmap.model;
+package org.mitre.rmap.generator;
 
 import java.util.*;
 import java.util.regex.Pattern;
 
-import org.mitre.rmap.model.Dependency;
-import org.mitre.rmap.view.RMapFrame;
+import org.mitre.rmap.generator.Dependency;
+import org.mitre.rmap.model.RMapHarmonyModel;
 import org.mitre.schemastore.model.*;
 import org.mitre.schemastore.model.mapfunctions.*;
 import org.mitre.schemastore.model.mappingInfo.MappingInfo;
@@ -37,16 +37,16 @@ public class SQLGenerator {
 
 		for (Dependency depend : depends) {
 			// build the UNION of Entities from SchemaStore schemaInfos across all dependencies
-			for (Entity entity : depend.getTargetLogRel().getEntitySet()) {
+			for (Entity entity : depend.getTargetLogicalRelation().getEntitySet()) {
 				entitiesBySSID.put(entity.getId(),entity);
 			}
 
 			// build the UNION of all relationships across the schemaInfo
 			// NOTE:  need to copy the relationship so LEFT and RIGHT in SSID-space are consistent
-			for (SchemaElement se : depend.getTargetLogRel().getMappingSchemaInfo().getElements(Relationship.class)){
+			for (SchemaElement se : depend.getTargetLogicalRelation().getMappingSchemaInfo().getElements(Relationship.class)){
 				Relationship rel = ((Relationship)se).copy();
-				rel.setLeftID(depend.getTargetLogRel().getIDmappings_LR_to_SS().get(rel.getLeftID()));
-				rel.setRightID(depend.getTargetLogRel().getIDmappings_LR_to_SS().get(rel.getRightID()));
+				rel.setLeftID(depend.getTargetLogicalRelation().getIDmappings_LR_to_SS().get(rel.getLeftID()));
+				rel.setRightID(depend.getTargetLogicalRelation().getIDmappings_LR_to_SS().get(rel.getRightID()));
 				relsWithSSID.add(rel);
 			}
 		}
@@ -101,7 +101,7 @@ public class SQLGenerator {
 		ArrayList<Entity> toplogicalSortedEntities = topologicalSort(depends);
 
 		/**********************************************************************/
-		if (targetDB.equals(RMapFrame.POSTGRES_TYPE)) {
+		if (targetDB.equals(RMapHarmonyModel.POSTGRES_TYPE)) {
 			retVal.add(new String("CREATE TEMPORARY SEQUENCE " + "seqImport" + ";"));
 		}
 
@@ -120,7 +120,7 @@ public class SQLGenerator {
 			for (Integer mapID : ((HashMap<Integer,String>)dependStatements[1]).keySet()){
 
 				String currStmt = ((HashMap<Integer,String>)dependStatements[1]).get(mapID);
-				Integer ssID = depend.getTargetLogRel().getIDmappings_LR_to_SS().get(mapID);
+				Integer ssID = depend.getTargetLogicalRelation().getIDmappings_LR_to_SS().get(mapID);
 				String unionStmt = selectStatementBySSID.get(ssID);
 				if (unionStmt == null) {
 					unionStmt = currStmt.replace(";","");
@@ -141,7 +141,7 @@ public class SQLGenerator {
 				finalSelectStatements.add(selectStatementBySSID.get(entity.getId()) + ";");
 			}
 		}
-		if (targetDB.equals(RMapFrame.POSTGRES_TYPE)) {
+		if (targetDB.equals(RMapHarmonyModel.POSTGRES_TYPE)) {
 			finalCleanupStatements.add(new String("DROP SEQUENCE " + "seqImport" + ";"));
 		}
 
@@ -163,7 +163,7 @@ public class SQLGenerator {
 	 */
 	static private ArrayList<String> createSkolemTables(Dependency depend, ArrayList<String> cleanup, HashMap<Integer,Boolean> needToGenSkolem, String targetDB){
 		ArrayList<String> retVal = new ArrayList<String>();
-		HierarchicalSchemaInfo sourceSchemaInfo = depend.getSourceLogRel().getMappingSchemaInfo();
+		HierarchicalSchemaInfo sourceSchemaInfo = depend.getSourceLogicalRelation().getMappingSchemaInfo();
 
 		// check for each source entity whether we need to create skolem table or not
 		for (Integer entityID : needToGenSkolem.keySet()) {
@@ -171,9 +171,9 @@ public class SQLGenerator {
 				// generate a skolem table that has value for EVERY covered attribute
 				String skolemTableName = SQLGenerator.SKOLEM_TABLE_CHAR  + entityID;
 				String createTable = new String("CREATE TABLE " + DELIM + skolemTableName + DELIM + " ( ");
-				if (targetDB.equals(RMapFrame.POSTGRES_TYPE))
+				if (targetDB.equals(RMapHarmonyModel.POSTGRES_TYPE))
 					createTable += DELIM + "skid" + DELIM +" INTEGER PRIMARY KEY DEFAULT NEXTVAL('" + "seqImport" + "'),";
-				else if (targetDB.equals(RMapFrame.DERBY_TYPE))
+				else if (targetDB.equals(RMapHarmonyModel.DERBY_TYPE))
 					createTable += DELIM + "skid" + DELIM +" int GENERATED ALWAYS AS IDENTITY ,";
 
 				// Generate CREATE TABLE statement for skolem table
@@ -223,10 +223,10 @@ public class SQLGenerator {
 					for (Integer indexId : cell.getInput()){
 						Integer pathId = 0;
 						if (sourceSchemaInfo.getElement(indexId) instanceof Relationship) {
-							pathId = depend.getSourceLogRel().getEntityIndicesByRel().get(depend.getSourceLogRel().getIDmappings_LR_to_SS().get(sourceSchemaInfo.getElement(indexId).getId())).get(0);
+							pathId = depend.getSourceLogicalRelation().getEntityIndicesByRel().get(depend.getSourceLogicalRelation().getIDmappings_LR_to_SS().get(sourceSchemaInfo.getElement(indexId).getId())).get(0);
 						}
 						else if (sourceSchemaInfo.getElement(indexId) instanceof Attribute) {
-							pathId = depend.getSourceLogRel().getPositionMapingSchemaEntitySet(sourceSchemaInfo.getEntity(indexId).getId() );
+							pathId = depend.getSourceLogicalRelation().getPositionMappingSchemaEntitySet(sourceSchemaInfo.getEntity(indexId).getId() );
 						}
 						else {
 							pathId = 0;
@@ -238,7 +238,7 @@ public class SQLGenerator {
 					}
 					if (i < depend.getCoveredCorrespondences().size()-1) insertInto += ",";
 				}
-				insertInto += SQLGenerator.generateFromWhereLogRel(depend.getSourceLogRel());
+				insertInto += SQLGenerator.generateFromWhereLogRel(depend.getSourceLogicalRelation());
 				retVal.add(insertInto);
 			}
 		}
@@ -250,8 +250,8 @@ public class SQLGenerator {
 	// to populate the Attribute
 	@SuppressWarnings("unchecked")
 	private static HashMap<Integer,String> generateStatements(Project project, Dependency depend, HashMap<Integer,Boolean> needToGen, HashMap<Integer,Boolean> needToGenSkolem) {
-		HierarchicalSchemaInfo sourceSchemaGraph = depend.getSourceLogRel().getMappingSchemaInfo();
-		HierarchicalSchemaInfo targetSchemaGraph = depend.getTargetLogRel().getMappingSchemaInfo();
+		HierarchicalSchemaInfo sourceSchemaGraph = depend.getSourceLogicalRelation().getMappingSchemaInfo();
+		HierarchicalSchemaInfo targetSchemaGraph = depend.getTargetLogicalRelation().getMappingSchemaInfo();
 		HashMap<Integer, String> retVal = new HashMap<Integer,String>();
 
 		// create the MappingDefinition for use when doing mapping functions
@@ -261,7 +261,7 @@ public class SQLGenerator {
 
 		/** Determine which target entities require generation */
 		/** PASS 1:  Determine which entities have correspondences */
-		for(Entity path : depend.getTargetLogRel().getMappingSchemaEntitySet()) {
+		for(Entity path : depend.getTargetLogicalRelation().getMappingSchemaEntitySet()) {
 
 			// CASE: target entity has generated values
 			for (MappingCell cell : depend.getCoveredCorrespondences()) {
@@ -288,13 +288,13 @@ public class SQLGenerator {
 		}
 
 		/** PASS 3: Remaining entities do not need to be generated */
-		for(Entity path : depend.getTargetLogRel().getMappingSchemaEntitySet()) {
+		for(Entity path : depend.getTargetLogicalRelation().getMappingSchemaEntitySet()) {
 			if (needToGen.get(path.getId()) == null) {
 				needToGen.put(path.getId(), false);
 			}
 		}
 
-		for(Entity path : depend.getTargetLogRel().getMappingSchemaEntitySet()) {
+		for(Entity path : depend.getTargetLogicalRelation().getMappingSchemaEntitySet()) {
 			if (needToGen.get(path.getId()) == true) {
 				String insertIntoString = "INSERT INTO " + DELIM + path.getName() + DELIM + " (";
 				for (int i = 0; i < targetSchemaGraph.getChildElements(path.getId()).size(); i++){
@@ -324,10 +324,10 @@ public class SQLGenerator {
 							Integer[] pathIds = new Integer[cell.getInput().length];
 							for (int j = 0; j<pathIds.length; j++) {
 								if (sourceSchemaGraph.getElement(cell.getInput()[j]) instanceof Relationship){
-									pathIds[j] = depend.getSourceLogRel().getEntityIndicesByRel().get(depend.getSourceLogRel().getIDmappings_LR_to_SS().get(sourceSchemaGraph.getElement(cell.getInput()[j]).getId())).get(0);
+									pathIds[j] = depend.getSourceLogicalRelation().getEntityIndicesByRel().get(depend.getSourceLogicalRelation().getIDmappings_LR_to_SS().get(sourceSchemaGraph.getElement(cell.getInput()[j]).getId())).get(0);
 								}
 								else if (sourceSchemaGraph.getElement(cell.getInput()[j]) instanceof Attribute){
-									pathIds[j] = depend.getSourceLogRel().getPositionMapingSchemaEntitySet(sourceSchemaGraph.getEntity(cell.getInput()[0]).getId() );
+									pathIds[j] = depend.getSourceLogicalRelation().getPositionMappingSchemaEntitySet(sourceSchemaGraph.getEntity(cell.getInput()[0]).getId() );
 								}
 								else {
 									pathIds[j] = 0;
@@ -371,10 +371,10 @@ public class SQLGenerator {
 								for (Integer inputId : cell.getInput()){
 									Integer pathId = 0;
 									if (sourceSchemaGraph.getElement(inputId) instanceof Relationship) {
-										pathId = depend.getSourceLogRel().getEntityIndicesByRel().get(depend.getSourceLogRel().getIDmappings_LR_to_SS().get(sourceSchemaGraph.getElement(inputId).getId())).get(0);
+										pathId = depend.getSourceLogicalRelation().getEntityIndicesByRel().get(depend.getSourceLogicalRelation().getIDmappings_LR_to_SS().get(sourceSchemaGraph.getElement(inputId).getId())).get(0);
 									}
 									else if (sourceSchemaGraph.getElement(inputId) instanceof Attribute) {
-										pathId = depend.getSourceLogRel().getPositionMapingSchemaEntitySet(sourceSchemaGraph.getEntity(inputId).getId() );
+										pathId = depend.getSourceLogicalRelation().getPositionMappingSchemaEntitySet(sourceSchemaGraph.getEntity(inputId).getId() );
 									}
 									else {
 										System.err.println("[E] SQLGenerator: Error in Generated SQL -- have Entity as input");
@@ -404,7 +404,7 @@ public class SQLGenerator {
 					if (i < targetSchemaGraph.getChildElements(path.getId()).size()-1) { selectString += ","; }
 				} // end for
 
-				String queryString = insertIntoString + selectString + generateFromWhereLogRel(depend.getSourceLogRel());
+				String queryString = insertIntoString + selectString + generateFromWhereLogRel(depend.getSourceLogicalRelation());
 				retVal.put(path.getId(),queryString);
 			} // end if (needToGen.get(path.getId()) == true){
 		}

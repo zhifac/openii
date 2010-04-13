@@ -1,5 +1,5 @@
 // Copyright 2008 The MITRE Corporation. ALL RIGHTS RESERVED.
-package org.mitre.rmap.model;
+package org.mitre.rmap.generator;
 
 import java.util.*;
 import org.mitre.schemastore.client.SchemaStoreClient;
@@ -9,56 +9,61 @@ import org.mitre.schemastore.model.schemaInfo.SchemaInfo;
 public class Dependency {
 
 	// store source logical relation
-	private LogicalRelation _sourceLogRel;
+	private LogicalRelation sourceLogicalRelation;
 
 	// store target logical relation
-	private LogicalRelation _targetLogRel;
+	private LogicalRelation targetLogicalRelation;
 
 	// store set of constraints between source and target from mapping function
-	private ArrayList<MappingCell> _coveredCorrespondences;
+	private ArrayList<MappingCell> coveredCorrespondences;
 
 	// constant ID assigned to the base type 
 	private static final Integer INTEGER_DOMAIN_ID = -1;
 	public void updateCorrespondences(ArrayList<MappingCell> newCellList){
-		_coveredCorrespondences = new ArrayList<MappingCell>();
+		coveredCorrespondences = new ArrayList<MappingCell>();
 		for (MappingCell corr : newCellList) {
-			this._coveredCorrespondences.add(corr);
+			this.coveredCorrespondences.add(corr);
 		}
 	}
 
-	public Dependency(LogicalRelation source, LogicalRelation target, ArrayList<MappingCell> corrs){
-		_sourceLogRel = source.copy(); _targetLogRel = target.copy();
-		_coveredCorrespondences = corrs;
+	public Dependency(LogicalRelation source, LogicalRelation target, ArrayList<MappingCell> corrs) {
+		sourceLogicalRelation = source.copy();
+		targetLogicalRelation = target.copy();
+		coveredCorrespondences = corrs;
 	}
 
-	public ArrayList<MappingCell> getCoveredCorrespondences() { return _coveredCorrespondences;}
-	public LogicalRelation getSourceLogRel(){ return _sourceLogRel; }
-	public LogicalRelation getTargetLogRel(){ return _targetLogRel; }
+	public ArrayList<MappingCell> getCoveredCorrespondences() {
+		return coveredCorrespondences;
+	}
 
+	public LogicalRelation getSourceLogicalRelation() {
+		return sourceLogicalRelation;
+	}
+
+	public LogicalRelation getTargetLogicalRelation() {
+		return targetLogicalRelation;
+	}
 
 	// generate all of the information necessary to represent the dependency
 	// as a mapping
 	public Object[] generateMapping(Project project) {
 		Object[] retVal = new Object[4];
-
+		
 		// generate return Mapping
-		Schema sourceSchema = this._sourceLogRel.getMappingSchemaInfo().getSchema();
-		Schema targetSchema = this._targetLogRel.getMappingSchemaInfo().getSchema();
-		ProjectSchema sourceProjectSchema = new ProjectSchema(sourceSchema.getId(), sourceSchema.getName(), "RMap");
-		ProjectSchema targetProjectSchema = new ProjectSchema(targetSchema.getId(), targetSchema.getName(), "RMap");
-		Mapping mapping = new Mapping(LogicalRelation.getNextID(), project.getId(), sourceProjectSchema.getId(), targetProjectSchema.getId());
+		Schema sourceSchema = sourceLogicalRelation.getMappingSchemaInfo().getSchema();
+		Schema targetSchema = targetLogicalRelation.getMappingSchemaInfo().getSchema();
+		Mapping mapping = new Mapping(LogicalRelation.getNextID(), project.getId(), sourceSchema.getId(), targetSchema.getId());
 
-		// generate "translated" mapping cell for each covered correspondence
-		ArrayList<MappingCell> mappingCells= new ArrayList<MappingCell>();
-		for (MappingCell corr : _coveredCorrespondences) {
+		ArrayList<MappingCell> mappingCells = new ArrayList<MappingCell>();
+		for (MappingCell corr : coveredCorrespondences) {
 			// create copy of mapping cell for correspondence
 			MappingCell cell = corr.copy();
 			cell.setId(LogicalRelation.getNextID());
 			cell.setMappingId(mapping.getId());
 
-			try { 
-				Integer sourceCount = this._sourceLogRel.getIDmappings_SS_to_LR().get(this._sourceLogRel.getIDmappings_LR_to_SS().get(cell.getInput()[0])).size();
-				Integer targetCount = this._targetLogRel.getIDmappings_SS_to_LR().get(this._targetLogRel.getIDmappings_LR_to_SS().get(cell.getOutput())).size();
+			try {
+				Integer sourceCount = sourceLogicalRelation.getIDmappings_SS_to_LR().get(sourceLogicalRelation.getIDmappings_LR_to_SS().get(cell.getInput()[0])).size();
+				Integer targetCount = targetLogicalRelation.getIDmappings_SS_to_LR().get(targetLogicalRelation.getIDmappings_LR_to_SS().get(cell.getOutput())).size();
 				// TODO: Need to modify here to add "color" back to lines
 				if (sourceCount > 1 || targetCount > 1) {
 					cell.setScore(0.1);
@@ -67,14 +72,15 @@ public class Dependency {
 				e.printStackTrace();
 			}
 
+			// actually put the mapping cell into our list
 			mappingCells.add(cell);
 		}
 
-		this._coveredCorrespondences = mappingCells;
+		this.coveredCorrespondences = mappingCells;
 		retVal[0] = mapping;
 		retVal[1] = mappingCells;
-		retVal[2] = _sourceLogRel.getMappingSchemaInfo();
-		retVal[3] = _targetLogRel.getMappingSchemaInfo();
+		retVal[2] = sourceLogicalRelation.getMappingSchemaInfo();
+		retVal[3] = targetLogicalRelation.getMappingSchemaInfo();
 		return retVal;
 	} // end method
 
@@ -84,18 +90,18 @@ public class Dependency {
 		ArrayList<Dependency> retVal = new ArrayList<Dependency>();
 		for (LogicalRelation sourceLogRel : sourceLogRels ){
 			for (LogicalRelation targetLogRel : targetLogRels){
-				ArrayList<MappingCell> coveredCorrs = new ArrayList<MappingCell>();
-				for (MappingCell corr : correspondences){
-					if (sourceLogRel.translate_SS_to_LR(corr.getInput()) != null && targetLogRel.getIDmappings_SS_to_LR().get(corr.getOutput()) != null) {						
-						MappingCell corrCopy = corr.copy();
-						corrCopy.setInput(sourceLogRel.translate_SS_to_LR(corr.getInput()).get(0));
-						corrCopy.setOutput(targetLogRel.getIDmappings_SS_to_LR().get(corr.getOutput()).get(0));
-						coveredCorrs.add(corrCopy);
+				ArrayList<MappingCell> coveredCorrespondences = new ArrayList<MappingCell>();
+				for (MappingCell correspondence : correspondences){
+					if (sourceLogRel.translate_SS_to_LR(correspondence.getInput()) != null && targetLogRel.getIDmappings_SS_to_LR().get(correspondence.getOutput()) != null) {						
+						MappingCell correspondenceCopy = correspondence.copy();
+						correspondenceCopy.setInput(sourceLogRel.translate_SS_to_LR(correspondence.getInput()).get(0));
+						correspondenceCopy.setOutput(targetLogRel.getIDmappings_SS_to_LR().get(correspondence.getOutput()).get(0));
+						coveredCorrespondences.add(correspondenceCopy);
 					}
 				}
 			
-				if (coveredCorrs.size() > 0) {
-					retVal.add(new Dependency(sourceLogRel, targetLogRel, coveredCorrs));
+				if (coveredCorrespondences.size() > 0) {
+					retVal.add(new Dependency(sourceLogRel, targetLogRel, coveredCorrespondences));
 				}
 			}
 		}
@@ -103,7 +109,7 @@ public class Dependency {
 		return retVal;
 	}
 
-	public static ArrayList<Dependency> generate(Integer mappingID, SchemaStoreClient client){
+	public static ArrayList<Dependency> generate(SchemaStoreClient client, Integer mappingID) {
 		// create logical relations for source / target schemas
 		ArrayList<Dependency> retVal = new ArrayList<Dependency>();
 		ArrayList<LogicalRelation> allSourceLogRels = new ArrayList<LogicalRelation>();
@@ -111,16 +117,17 @@ public class Dependency {
 		
 		// find source / target graphs mentioned in the selected mapping
 		try {
-			// get the SchemaInfo objects for the source and target
-			SchemaInfo sourceGraph = client.getSchemaInfo(client.getMapping(mappingID).getSourceId());
-			SchemaInfo targetGraph = client.getSchemaInfo(client.getMapping(mappingID).getTargetId());
-
-			// render the source and target
-			renderRelational(sourceGraph);
-			renderRelational(targetGraph);
+			// don't have to run a for loop anymore because
+			// 1. we don't have the ProjectSchema objects contained in the Mapping object
+			// 2. we only have a source and a target and the ID for both is in the Mapping object
+			// 3. the source/target id lines up with both the Schema and ProjectSchema
 			
-			// add them to the list of relationals
+			SchemaInfo sourceGraph = client.getSchemaInfo(client.getMapping(mappingID).getSourceId()).copy();
+			renderRelational(sourceGraph);
 			allSourceLogRels.addAll(LogicalRelation.createLogicalRelations(sourceGraph));
+
+			SchemaInfo targetGraph = client.getSchemaInfo(client.getMapping(mappingID).getTargetId()).copy();
+			renderRelational(targetGraph);
 			allTargetLogRels.addAll(LogicalRelation.createLogicalRelations(targetGraph));
 
 			// get correspondences
@@ -149,7 +156,6 @@ public class Dependency {
 		
 		for (SchemaElement se : inGraph.getElements(Relationship.class)) {
 			Relationship rel = (Relationship) se;
-			
 			
 			// make sure LEFT FK --> RIGHT
 			if (rel.getRightMax() == null || rel.getRightMax() != 1){
