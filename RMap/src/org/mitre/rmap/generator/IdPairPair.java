@@ -1,5 +1,5 @@
 // Copyright 2008 The MITRE Corporation. ALL RIGHTS RESERVED.
-package org.mitre.rmap.model;
+package org.mitre.rmap.generator;
 
 import java.util.ArrayList;
 import java.util.HashMap;
