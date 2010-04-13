@@ -139,6 +139,10 @@ public class DatabaseConnection
     Integer getDatabaseType()
     	{ return databaseType; }
     
+    /** Returns the database user */
+    String getDatabaseUser()
+    	{ return databaseUser; }
+    
 	/** Creates a sql statement */
 	Statement getStatement() throws SQLException
 	{
@@ -153,6 +157,10 @@ public class DatabaseConnection
         return connection.prepareStatement(statement);
 	}
 
+	/** Sets the auto commit */
+	void setAutoCommit(boolean autoCommit) throws SQLException
+		{ connection.setAutoCommit(autoCommit); }
+	
 	/** Commits changes to the database */
 	void commit() throws SQLException
 		{ connection.commit(); }

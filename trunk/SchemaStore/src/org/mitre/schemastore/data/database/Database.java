@@ -3,10 +3,10 @@
 package org.mitre.schemastore.data.database;
 
 import java.sql.Date;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.sql.PreparedStatement;
 import java.util.ArrayList;
 
 import org.mitre.schemastore.model.Alias;
@@ -17,14 +17,14 @@ import org.mitre.schemastore.model.Domain;
 import org.mitre.schemastore.model.DomainValue;
 import org.mitre.schemastore.model.Entity;
 import org.mitre.schemastore.model.Mapping;
-import org.mitre.schemastore.model.Tag;
-import org.mitre.schemastore.model.Project;
 import org.mitre.schemastore.model.MappingCell;
+import org.mitre.schemastore.model.Project;
 import org.mitre.schemastore.model.ProjectSchema;
 import org.mitre.schemastore.model.Relationship;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.Subtype;
+import org.mitre.schemastore.model.Tag;
 
 /**
  * Handles access to the database
@@ -95,6 +95,47 @@ public class Database
     /** Indicates if the database is properly connected */
  	public boolean isConnected()
  		{ try { connection.getStatement(); return true; } catch(SQLException e) { return false; } }
+ 	
+ 	/** Compresses the database */
+ 	public boolean compress()
+ 	{
+		try {
+    		Statement stmt = connection.getStatement();
+
+    		// Compresses a derby database
+    		if(connection.getDatabaseType().equals(DatabaseConnection.DERBY))
+        	{
+    			// Retrieve the tables to compress
+    			ArrayList<String> tableNames = new ArrayList<String>();
+    			ResultSet rs = stmt.executeQuery("SELECT tablename FROM SYS.SYSTABLES WHERE TABLETYPE='T'");
+    			while(rs.next())
+    				tableNames.add(rs.getString("tablename"));
+    			
+    			// Compress the tables
+				String schema = connection.getDatabaseUser().toUpperCase();
+				for(String tableName : tableNames)
+    				stmt.execute("CALL SYSCS_UTIL.SYSCS_COMPRESS_TABLE('"+schema+"','"+tableName+"',0)");
+        	}
+			
+			// Compresses a postgres database
+			else
+			{
+				connection.setAutoCommit(true);
+				stmt.execute("VACUUM FULL");
+				connection.setAutoCommit(false);
+			}
+			
+			stmt.close();
+			connection.commit();
+			return true;
+		}
+  		catch(SQLException e)
+		{
+			try { connection.rollback(); } catch(SQLException e2) {}
+			System.out.println("(E) Database:compress: "+e.getMessage());
+	  		return false;
+		}
+ 	}
 
 	//---------------------------------------
 	// Handles Universal IDs in the Database

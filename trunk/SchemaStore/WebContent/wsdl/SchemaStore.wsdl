@@ -91,6 +91,20 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
      </sequence>
     </complexType>
    </element>
+   <element name="updateAttribute">
+    <complexType>
+     <sequence>
+      <element name="attribute" type="tns1:Attribute"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="updateAttributeResponse">
+    <complexType>
+     <sequence>
+      <element name="updateAttributeReturn" type="xsd:boolean"/>
+     </sequence>
+    </complexType>
+   </element>
    <element name="setAnnotation">
     <complexType>
      <sequence>
@@ -135,58 +149,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
      </sequence>
     </complexType>
    </element>
-   <element name="updateAttribute">
-    <complexType>
-     <sequence>
-      <element name="attribute" type="tns1:Attribute"/>
-     </sequence>
-    </complexType>
-   </element>
-   <element name="updateAttributeResponse">
-    <complexType>
-     <sequence>
-      <element name="updateAttributeReturn" type="xsd:boolean"/>
-     </sequence>
-    </complexType>
-   </element>
-   <element name="addProject">
-    <complexType>
-     <sequence>
-      <element name="project" type="tns1:Project"/>
-     </sequence>
-    </complexType>
-   </element>
-   <element name="addProjectResponse">
-    <complexType>
-     <sequence>
-      <element name="addProjectReturn" type="xsd:int"/>
-     </sequence>
-    </complexType>
-   </element>
-   <element name="addSchema">
-    <complexType>
-     <sequence>
-      <element name="schema" type="tns1:Schema"/>
-     </sequence>
-    </complexType>
-   </element>
-   <element name="addSchemaResponse">
-    <complexType>
-     <sequence>
-      <element name="addSchemaReturn" type="xsd:int"/>
-     </sequence>
-    </complexType>
-   </element>
-   <element name="getSchemas">
-    <complexType/>
-   </element>
-   <element name="getSchemasResponse">
-    <complexType>
-     <sequence>
-      <element maxOccurs="unbounded" name="getSchemasReturn" type="tns1:Schema"/>
-     </sequence>
-    </complexType>
-   </element>
    <element name="addSubtype">
     <complexType>
      <sequence>
@@ -198,20 +160,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
     <complexType>
      <sequence>
       <element name="addSubtypeReturn" type="xsd:int"/>
-     </sequence>
-    </complexType>
-   </element>
-   <element name="addEntity">
-    <complexType>
-     <sequence>
-      <element name="entity" type="tns1:Entity"/>
-     </sequence>
-    </complexType>
-   </element>
-   <element name="addEntityResponse">
-    <complexType>
-     <sequence>
-      <element name="addEntityReturn" type="xsd:int"/>
      </sequence>
     </complexType>
    </element>
@@ -281,6 +229,44 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
     <complexType>
      <sequence>
       <element name="getDataSourceReturn" type="tns1:DataSource"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="addProject">
+    <complexType>
+     <sequence>
+      <element name="project" type="tns1:Project"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="addProjectResponse">
+    <complexType>
+     <sequence>
+      <element name="addProjectReturn" type="xsd:int"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="addSchema">
+    <complexType>
+     <sequence>
+      <element name="schema" type="tns1:Schema"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="addSchemaResponse">
+    <complexType>
+     <sequence>
+      <element name="addSchemaReturn" type="xsd:int"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getSchemas">
+    <complexType/>
+   </element>
+   <element name="getSchemasResponse">
+    <complexType>
+     <sequence>
+      <element maxOccurs="unbounded" name="getSchemasReturn" type="tns1:Schema"/>
      </sequence>
     </complexType>
    </element>
@@ -604,6 +590,20 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
     <complexType>
      <sequence>
       <element name="setParentSchemasReturn" type="xsd:boolean"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="addEntity">
+    <complexType>
+     <sequence>
+      <element name="entity" type="tns1:Entity"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="addEntityResponse">
+    <complexType>
+     <sequence>
+      <element name="addEntityReturn" type="xsd:int"/>
      </sequence>
     </complexType>
    </element>
@@ -1330,6 +1330,19 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
      <element name="targetId" nillable="true" type="xsd:int"/>
     </sequence>
    </complexType>
+   <complexType name="Attribute">
+    <complexContent>
+     <extension base="tns1:SchemaElement">
+      <sequence>
+       <element name="domainID" nillable="true" type="xsd:int"/>
+       <element name="entityID" nillable="true" type="xsd:int"/>
+       <element name="key" type="xsd:boolean"/>
+       <element name="max" nillable="true" type="xsd:int"/>
+       <element name="min" nillable="true" type="xsd:int"/>
+      </sequence>
+     </extension>
+    </complexContent>
+   </complexType>
    <complexType name="Relationship">
     <complexContent>
      <extension base="tns1:SchemaElement">
@@ -1351,15 +1364,12 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
      </extension>
     </complexContent>
    </complexType>
-   <complexType name="Attribute">
+   <complexType name="Subtype">
     <complexContent>
      <extension base="tns1:SchemaElement">
       <sequence>
-       <element name="domainID" nillable="true" type="xsd:int"/>
-       <element name="entityID" nillable="true" type="xsd:int"/>
-       <element name="key" type="xsd:boolean"/>
-       <element name="max" nillable="true" type="xsd:int"/>
-       <element name="min" nillable="true" type="xsd:int"/>
+       <element name="childID" nillable="true" type="xsd:int"/>
+       <element name="parentID" nillable="true" type="xsd:int"/>
       </sequence>
      </extension>
     </complexContent>
@@ -1374,16 +1384,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
      <element name="source" nillable="true" type="xsd:string"/>
      <element name="type" nillable="true" type="xsd:string"/>
     </sequence>
-   </complexType>
-   <complexType name="Subtype">
-    <complexContent>
-     <extension base="tns1:SchemaElement">
-      <sequence>
-       <element name="childID" nillable="true" type="xsd:int"/>
-       <element name="parentID" nillable="true" type="xsd:int"/>
-      </sequence>
-     </extension>
-    </complexContent>
    </complexType>
    <complexType name="Alias">
     <complexContent>
@@ -1571,9 +1571,9 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
    </wsdl:message>
 
-   <wsdl:message name="addEntityResponse">
+   <wsdl:message name="getRootSchemaRequest">
 
-      <wsdl:part element="impl:addEntityResponse" name="parameters"/>
+      <wsdl:part element="impl:getRootSchema" name="parameters"/>
 
    </wsdl:message>
 
@@ -1583,9 +1583,9 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
    </wsdl:message>
 
-   <wsdl:message name="getRootSchemaRequest">
+   <wsdl:message name="addEntityResponse">
 
-      <wsdl:part element="impl:getRootSchema" name="parameters"/>
+      <wsdl:part element="impl:addEntityResponse" name="parameters"/>
 
    </wsdl:message>
 
@@ -1979,15 +1979,15 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
    </wsdl:message>
 
-   <wsdl:message name="setAnnotationRequest">
-
-      <wsdl:part element="impl:setAnnotation" name="parameters"/>
-
-   </wsdl:message>
-
    <wsdl:message name="addProjectResponse">
 
       <wsdl:part element="impl:addProjectResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="setAnnotationRequest">
+
+      <wsdl:part element="impl:setAnnotation" name="parameters"/>
 
    </wsdl:message>
 
@@ -2093,15 +2093,15 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
    </wsdl:message>
 
-   <wsdl:message name="getProjectResponse">
-
-      <wsdl:part element="impl:getProjectResponse" name="parameters"/>
-
-   </wsdl:message>
-
    <wsdl:message name="addSchemaRequest">
 
       <wsdl:part element="impl:addSchema" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getProjectResponse">
+
+      <wsdl:part element="impl:getProjectResponse" name="parameters"/>
 
    </wsdl:message>
 
@@ -2387,15 +2387,15 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
    </wsdl:message>
 
-   <wsdl:message name="importSchemaResponse">
-
-      <wsdl:part element="impl:importSchemaResponse" name="parameters"/>
-
-   </wsdl:message>
-
    <wsdl:message name="getMappingsResponse">
 
       <wsdl:part element="impl:getMappingsResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="importSchemaResponse">
+
+      <wsdl:part element="impl:importSchemaResponse" name="parameters"/>
 
    </wsdl:message>
 
@@ -2563,6 +2563,14 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
       </wsdl:operation>
 
+      <wsdl:operation name="updateAttribute">
+
+         <wsdl:input message="impl:updateAttributeRequest" name="updateAttributeRequest"/>
+
+         <wsdl:output message="impl:updateAttributeResponse" name="updateAttributeResponse"/>
+
+      </wsdl:operation>
+
       <wsdl:operation name="setAnnotation">
 
          <wsdl:input message="impl:setAnnotationRequest" name="setAnnotationRequest"/>
@@ -2587,11 +2595,27 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
       </wsdl:operation>
 
-      <wsdl:operation name="updateAttribute">
+      <wsdl:operation name="addSubtype">
 
-         <wsdl:input message="impl:updateAttributeRequest" name="updateAttributeRequest"/>
+         <wsdl:input message="impl:addSubtypeRequest" name="addSubtypeRequest"/>
 
-         <wsdl:output message="impl:updateAttributeResponse" name="updateAttributeResponse"/>
+         <wsdl:output message="impl:addSubtypeResponse" name="addSubtypeResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="importSchema">
+
+         <wsdl:input message="impl:importSchemaRequest" name="importSchemaRequest"/>
+
+         <wsdl:output message="impl:importSchemaResponse" name="importSchemaResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getDataSource">
+
+         <wsdl:input message="impl:getDataSourceRequest" name="getDataSourceRequest"/>
+
+         <wsdl:output message="impl:getDataSourceResponse" name="getDataSourceResponse"/>
 
       </wsdl:operation>
 
@@ -2616,38 +2640,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
          <wsdl:input message="impl:getSchemasRequest" name="getSchemasRequest"/>
 
          <wsdl:output message="impl:getSchemasResponse" name="getSchemasResponse"/>
-
-      </wsdl:operation>
-
-      <wsdl:operation name="addSubtype">
-
-         <wsdl:input message="impl:addSubtypeRequest" name="addSubtypeRequest"/>
-
-         <wsdl:output message="impl:addSubtypeResponse" name="addSubtypeResponse"/>
-
-      </wsdl:operation>
-
-      <wsdl:operation name="addEntity">
-
-         <wsdl:input message="impl:addEntityRequest" name="addEntityRequest"/>
-
-         <wsdl:output message="impl:addEntityResponse" name="addEntityResponse"/>
-
-      </wsdl:operation>
-
-      <wsdl:operation name="importSchema">
-
-         <wsdl:input message="impl:importSchemaRequest" name="importSchemaRequest"/>
-
-         <wsdl:output message="impl:importSchemaResponse" name="importSchemaResponse"/>
-
-      </wsdl:operation>
-
-      <wsdl:operation name="getDataSource">
-
-         <wsdl:input message="impl:getDataSourceRequest" name="getDataSourceRequest"/>
-
-         <wsdl:output message="impl:getDataSourceResponse" name="getDataSourceResponse"/>
 
       </wsdl:operation>
 
@@ -2832,6 +2824,14 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
          <wsdl:input message="impl:setParentSchemasRequest" name="setParentSchemasRequest"/>
 
          <wsdl:output message="impl:setParentSchemasResponse" name="setParentSchemasResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="addEntity">
+
+         <wsdl:input message="impl:addEntityRequest" name="addEntityRequest"/>
+
+         <wsdl:output message="impl:addEntityResponse" name="addEntityResponse"/>
 
       </wsdl:operation>
 
@@ -3333,6 +3333,24 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
       </wsdl:operation>
 
+      <wsdl:operation name="updateAttribute">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="updateAttributeRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="updateAttributeResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
       <wsdl:operation name="setAnnotation">
 
          <wsdlsoap:operation soapAction=""/>
@@ -3387,17 +3405,53 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
       </wsdl:operation>
 
-      <wsdl:operation name="updateAttribute">
+      <wsdl:operation name="addSubtype">
 
          <wsdlsoap:operation soapAction=""/>
 
-         <wsdl:input name="updateAttributeRequest">
+         <wsdl:input name="addSubtypeRequest">
 
             <wsdlsoap:body use="literal"/>
 
          </wsdl:input>
 
-         <wsdl:output name="updateAttributeResponse">
+         <wsdl:output name="addSubtypeResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="importSchema">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="importSchemaRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="importSchemaResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getDataSource">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="getDataSourceRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="getDataSourceResponse">
 
             <wsdlsoap:body use="literal"/>
 
@@ -3452,78 +3506,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
          </wsdl:input>
 
          <wsdl:output name="getSchemasResponse">
-
-            <wsdlsoap:body use="literal"/>
-
-         </wsdl:output>
-
-      </wsdl:operation>
-
-      <wsdl:operation name="addSubtype">
-
-         <wsdlsoap:operation soapAction=""/>
-
-         <wsdl:input name="addSubtypeRequest">
-
-            <wsdlsoap:body use="literal"/>
-
-         </wsdl:input>
-
-         <wsdl:output name="addSubtypeResponse">
-
-            <wsdlsoap:body use="literal"/>
-
-         </wsdl:output>
-
-      </wsdl:operation>
-
-      <wsdl:operation name="addEntity">
-
-         <wsdlsoap:operation soapAction=""/>
-
-         <wsdl:input name="addEntityRequest">
-
-            <wsdlsoap:body use="literal"/>
-
-         </wsdl:input>
-
-         <wsdl:output name="addEntityResponse">
-
-            <wsdlsoap:body use="literal"/>
-
-         </wsdl:output>
-
-      </wsdl:operation>
-
-      <wsdl:operation name="importSchema">
-
-         <wsdlsoap:operation soapAction=""/>
-
-         <wsdl:input name="importSchemaRequest">
-
-            <wsdlsoap:body use="literal"/>
-
-         </wsdl:input>
-
-         <wsdl:output name="importSchemaResponse">
-
-            <wsdlsoap:body use="literal"/>
-
-         </wsdl:output>
-
-      </wsdl:operation>
-
-      <wsdl:operation name="getDataSource">
-
-         <wsdlsoap:operation soapAction=""/>
-
-         <wsdl:input name="getDataSourceRequest">
-
-            <wsdlsoap:body use="literal"/>
-
-         </wsdl:input>
-
-         <wsdl:output name="getDataSourceResponse">
 
             <wsdlsoap:body use="literal"/>
 
@@ -3938,6 +3920,24 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
          </wsdl:input>
 
          <wsdl:output name="setParentSchemasResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="addEntity">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="addEntityRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="addEntityResponse">
 
             <wsdlsoap:body use="literal"/>
 
