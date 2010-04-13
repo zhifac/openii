@@ -325,8 +325,16 @@ public class SchemaExplorer {
 	 * @param elementID the element ID
 	 * @return a URL string.
 	 */
-	public String urlForElement(Integer elementID) { 
-		return new String("file://" + fileForElement(elementID));    
+	public String urlForElement(Integer elementID) {
+		File f = fileForElement(elementID); 
+		String fullPath = f.getAbsolutePath();
+		
+		// Triple slash is required for local URIs.  This relates back to the
+		// URI spec; the third slash indicates the root of the windows FS.
+		// Oddly enough, "C:" is considered to be under this "root".
+		// Some browsers are OK with a double slash, but triple slash is more
+		// correct for the URL specification.
+		return new String("file:///" + fullPath.replaceAll("\\\\", "\\/"));    
 	} // End urlForElement
 	
 	/**
