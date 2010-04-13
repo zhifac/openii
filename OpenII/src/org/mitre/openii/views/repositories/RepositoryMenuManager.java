@@ -3,6 +3,7 @@ package org.mitre.openii.views.repositories;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.action.Separator;
 import org.mitre.schemastore.client.Repository;
 
 /** Handles the displaying of the Repository pop-up menu */
@@ -35,6 +36,8 @@ public class RepositoryMenuManager extends MenuManager implements IMenuListener
 		{
 			menuManager.add(new RepositoryAction(this,"Edit Repository",RepositoryAction.EDIT_REPOSITORY));
 			menuManager.add(new RepositoryAction(this,"Delete Repository",RepositoryAction.DELETE_REPOSITORY));
+			menuManager.add(new Separator());
+			menuManager.add(new RepositoryAction(this,"Compress Repository",RepositoryAction.COMPRESS_REPOSITORY));
 		}
 	}
 	
