@@ -4,14 +4,10 @@ package org.mitre.schemastore.porters.mappingExporters;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
@@ -22,19 +18,10 @@ import java.util.List;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.Project;
-import org.mitre.schemastore.client.SchemaStoreClient;
 import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
-import org.mitre.schemastore.porters.mappingExporters.UserMatchAnnotationExporter.CompressedList;
-import org.mitre.schemastore.porters.mappingExporters.UserMatchAnnotationExporter.CompressedMatch;
 
 public class UserMatchAnnotationDBExporter  extends UserMatchAnnotationExporter
 {
-	/** Stores the source schema info */
-/*	private HierarchicalSchemaInfo sourceInfo = null;
-	
-	/** Stores the target schema info */
-	//private HierarchicalSchemaInfo targetInfo = null;
-
 	/** Constructs the DataDictionary exporter */
 	public UserMatchAnnotationDBExporter()
 		{ super(); }
@@ -42,6 +29,10 @@ public class UserMatchAnnotationDBExporter  extends UserMatchAnnotationExporter
 	/** Returns the file types associated with this converter */
 	public String getFileType()
 		{ return ".mdb"; }
+	
+	/** Indicates if the file is overwritten */
+	public boolean isFileOverwritten()
+		{ return false; }
 	
 	/** Returns the exporter name */
 	public String getName()

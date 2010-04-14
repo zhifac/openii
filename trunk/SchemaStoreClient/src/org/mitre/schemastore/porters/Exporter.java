@@ -21,4 +21,7 @@ public abstract class Exporter extends Porter
 {
 	/** Return the file type available for use with this exporter */
 	abstract public String getFileType();
+	
+	/** Indicates if the file is overwritten */
+	public boolean isFileOverwritten() { return true; }
 }
