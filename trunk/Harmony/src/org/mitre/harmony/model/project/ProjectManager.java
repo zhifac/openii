@@ -31,35 +31,45 @@ public class ProjectManager extends AbstractManager<ProjectListener> implements 
 	private boolean modified = false;
 	
 	/** Constructs the project manager */
-	public ProjectManager(HarmonyModel harmonyModel) {
-		super(harmonyModel);
+	public ProjectManager(HarmonyModel harmonyModel)
+		{ super(harmonyModel); }
+	
+	/** Returns a list of all projects */
+	public ArrayList<Project> getProjects()
+	{
+		ArrayList<Project> projects = new ArrayList<Project>();
+		try {
+			projects = SchemaStoreManager.getProjects();
+		} catch(Exception e) {
+			System.err.println("Error getting projects from SchemaStoreConnection");
+			e.printStackTrace();
+		}
+		return projects;
 	}
 	
 	/** Indicates if the project has been modified */
-	public boolean isModified() {
-		return modified;
-	}
+	public boolean isModified()
+		{ return modified; }
 	
 	/** Sets the project as modified */
-	public void setModified(boolean modified) {
+	public void setModified(boolean modified)
+	{
 		this.modified = modified;
-		for (ProjectListener listener : getListeners()) {
+		for(ProjectListener listener : getListeners())
 			listener.projectModified();
-		}
 	}
 	
 	/** Gets the project info */
-	public Project getProject() {
-		return project.copy();
-	}
+	public Project getProject()
+		{ return project.copy(); }
 
 	/** Sets the project info */
-	public void setProject(Project project) {
+	public void setProject(Project project)
+	{
 		// Set the schema information
 		setSchemas(new ArrayList<ProjectSchema>());
-		if (project.getSchemas() != null) {
+		if(project.getSchemas()!=null)
 			setSchemas(new ArrayList<ProjectSchema>(Arrays.asList(project.getSchemas())));
-		}
 
 		// Set the project information
 		this.project = project;
@@ -67,127 +77,120 @@ public class ProjectManager extends AbstractManager<ProjectListener> implements 
 	}
 	
 	/** Gets the project schemas */
-	public ArrayList<ProjectSchema> getSchemas() {
-		if (project.getSchemas() == null) { return new ArrayList<ProjectSchema>(); }
+	public ArrayList<ProjectSchema> getSchemas()
+	{
+		if(project.getSchemas()==null) return new ArrayList<ProjectSchema>();
 		return new ArrayList<ProjectSchema>(Arrays.asList(project.getSchemas()));
 	}
 	
 	/** Gets a specific project schema */
-	public ProjectSchema getSchema(Integer schemaID) {
-		for (ProjectSchema schema : getSchemas()) {
-			if (schema.getId() == schemaID) {
-				return schema;
-			}
-		}
+	public ProjectSchema getSchema(Integer schemaID)
+	{
+		for (ProjectSchema schema : getSchemas())
+			if (schema.getId() == schemaID) return schema;
 		return null;
 	}
 	
 	/** Gets the project schema IDs */
-	public ArrayList<Integer> getSchemaIDs() {
-		return new ArrayList<Integer>(Arrays.asList(project.getSchemaIDs()));
-	}
+	public ArrayList<Integer> getSchemaIDs()
+		{ return new ArrayList<Integer>(Arrays.asList(project.getSchemaIDs())); }
 
 	/** Returns the schemas displayed on the specified side of the mapping */
-	public HashSet<Integer> getSchemaIDs(Integer side) {
+	public HashSet<Integer> getSchemaIDs(Integer side)
+	{
 		HashSet<Integer> schemaIDs = new HashSet<Integer>();
-		for (ProjectMapping mapping : getModel().getMappingManager().getMappings()) {
-			if (mapping.isVisible()) {
-				if (side.equals(HarmonyConsts.LEFT)) {
-					schemaIDs.add(mapping.getSourceId());
-				} else {
-					schemaIDs.add(mapping.getTargetId());
-				}
+		for(ProjectMapping mapping : getModel().getMappingManager().getMappings())
+			if(mapping.isVisible())
+			{
+				if(side.equals(HarmonyConsts.LEFT)) schemaIDs.add(mapping.getSourceId());
+				else schemaIDs.add(mapping.getTargetId());
 			}
-		}
 		return schemaIDs;
 	}
 	
 	/** Returns all elements displayed on the specified side of the mapping */
-	public HashSet<SchemaElement> getSchemaElements(Integer side) {
+	public HashSet<SchemaElement> getSchemaElements(Integer side)
+	{
 		HashSet<SchemaElement> elements = new HashSet<SchemaElement>();
-		for (Integer schemaID : getSchemaIDs(side)) {
+		for(Integer schemaID : getSchemaIDs(side))
 			elements.addAll(getModel().getSchemaManager().getSchemaInfo(schemaID).getHierarchicalElements());
-		}
 		return elements;
 	}
 
 	/** Returns all element IDs displayed on the specified side of the mapping */
-	public HashSet<Integer> getSchemaElementIDs(Integer side) {
+	public HashSet<Integer> getSchemaElementIDs(Integer side)
+	{
 		HashSet<Integer> elementIDs = new HashSet<Integer>();
-		for (SchemaElement element : getSchemaElements(side)) {
+		for(SchemaElement element : getSchemaElements(side))
 			elementIDs.add(element.getId());
-		}
 		return elementIDs;
 	}
 
 	/** Returns the schema model for the specified schema */
-	public SchemaModel getSchemaModel(Integer schemaID) {
-		for(ProjectSchema schema : getSchemas()) {
-			if (schema.getId().equals(schemaID)) {
-				return schema.geetSchemaModel();
-			}
-		}
+	public SchemaModel getSchemaModel(Integer schemaID)
+	{
+		for(ProjectSchema schema : getSchemas())
+			if(schema.getId().equals(schemaID)) return schema.geetSchemaModel();
 		return null;
 	}
 	
 	/** Sets the project info */
-	public void setProjectInfo(String name, String author, String description) {
+	public void setProjectInfo(String name, String author, String description)
+	{
 		// Only save information if changes made
-		if(!name.equals(project.getName()) || !author.equals(project.getAuthor()) || !description.equals(project.getDescription())) {
+		if(!name.equals(project.getName()) || !author.equals(project.getAuthor()) || !description.equals(project.getDescription()))
+		{
 			// Sets the mapping
 			project.setName(name);
 			project.setAuthor(author);
 			project.setDescription(description);
 			
 			// Indicates that the project has been modified
-			for(ProjectListener listener : getListeners()) {
+			for(ProjectListener listener : getListeners())
 				listener.projectModified();
-			}
 		}
 	}
 
 	/** Sets the project schemas */
-	public void setSchemas(ArrayList<ProjectSchema> schemas) {
+	public void setSchemas(ArrayList<ProjectSchema> schemas)
+	{		
 		boolean changesOccured = false;
 		
 		// Create hash table for the old schema
 		HashMap<Integer, ProjectSchema> oldSchemas = new HashMap<Integer, ProjectSchema>();
-		for (ProjectSchema schema : getSchemas()) {
+		for(ProjectSchema schema : getSchemas())
 			oldSchemas.put(schema.getId(), schema);
-		}
 
 		// Create hash table for the new schema
 		HashMap<Integer, ProjectSchema> newSchemas = new HashMap<Integer, ProjectSchema>();
-		for (ProjectSchema schema : schemas) {
+		for(ProjectSchema schema : schemas)
 			newSchemas.put(schema.getId(), schema);
-		}
 		
 		// Set the project schemas
 		project.setSchemas(schemas.toArray(new ProjectSchema[0]));
 		
 		// Inform listeners of any schemas that were added
-		for (Integer newSchemaID : newSchemas.keySet()) {
-			if (!oldSchemas.containsKey(newSchemaID)) {
-				for (ProjectListener listener : getListeners()) {
+		for(Integer newSchemaID : newSchemas.keySet())
+			if(!oldSchemas.containsKey(newSchemaID))
+			{
+				for(ProjectListener listener : getListeners())
 					listener.schemaAdded(newSchemaID);
-				}
 				changesOccured = true;
 			}
-		}
 				
 		// Inform listeners of any schemas that were removed
-		for (Integer oldSchemaID : oldSchemas.keySet()) {
-			if (!newSchemas.containsKey(oldSchemaID)) {
-				for (ProjectListener listener : getListeners()) {
+		for(Integer oldSchemaID : oldSchemas.keySet())
+			if(!newSchemas.containsKey(oldSchemaID))
+			{
+				for(ProjectListener listener : getListeners())
 					listener.schemaRemoved(oldSchemaID);
-				}
 				changesOccured = true;
 			}
-		}
 				
 		// Inform listeners of any schemas that were modified
-		for (Integer newSchemaID : newSchemas.keySet()) {
-			if (oldSchemas.containsKey(newSchemaID)) {
+		for(Integer newSchemaID : newSchemas.keySet())
+			if(oldSchemas.containsKey(newSchemaID))
+			{
 				ProjectSchema oldSchema = oldSchemas.get(newSchemaID);
 				ProjectSchema newSchema = newSchemas.get(newSchemaID);
 	
@@ -196,47 +199,46 @@ public class ProjectManager extends AbstractManager<ProjectListener> implements 
 				schemaModelModified |= oldSchema.getModel()!=null && !oldSchema.getModel().equals(newSchema.getModel());
 
 				// If the schema model was modified, update schema and inform listeners
-				if(schemaModelModified) {
+				if(schemaModelModified)
+				{
 					// Update schema model
 					SchemaModel schemaModel = getSchemaModel(newSchemaID);
 					getModel().getSchemaManager().getSchemaInfo(newSchemaID).setModel(schemaModel);
 
 					// Inform schema listeners
-					for(ProjectListener listener : getListeners()) {
+					for(ProjectListener listener : getListeners())
 						listener.schemaModelModified(newSchemaID);
-					}
 					changesOccured = true;
 				}
 			}
-		}
 		
 		// Set the mapping as being modified
-		if (changesOccured) { setModified(true); }
+		if(changesOccured) setModified(true);
 	}
 	
 	/** Sets the specified schema's schema model */
-	public void setSchemaModel(Integer schemaID, SchemaModel schemaModel) {
-		for (ProjectSchema schema : getSchemas()) {
-			if (schema.getId().equals(schemaID)) {
+	public void setSchemaModel(Integer schemaID, SchemaModel schemaModel)
+	{
+		for(ProjectSchema schema : getSchemas())
+			if(schema.getId().equals(schemaID))
+			{
 				schema.seetSchemaModel(schemaModel);
 				getModel().getSchemaManager().getSchemaInfo(schemaID).setModel(schemaModel);
-				for(ProjectListener listener : getListeners()) {
-					listener.schemaModelModified(schemaID);
-				}
+				for(ProjectListener listener : getListeners())
+					listener.schemaModelModified(schemaID);		
 				return;
 			}
-		}
 	}
 	
 	/** Deletes the specified project */
-	public boolean deleteProject(Integer projectID) {
+	public boolean deleteProject(Integer projectID)
+	{
 		// Delete the project
 		try {
 			SchemaStoreManager.deleteProject(projectID);
 			return true;
-		} catch(Exception e) {
-			System.out.println("(E) MappingManager:deleteProject - " + e.getMessage());
 		}
+		catch(Exception e) { System.out.println("(E) MappingManager:deleteProject - " + e.getMessage()); }
 		return false;
 	}
 
