@@ -44,6 +44,15 @@ public class ImportSchemaDialog extends AbstractImportDialog implements ActionLi
 		return importers;
 	}
 
+	/** Returns the list of used schema names */
+	protected ArrayList<String> getUsedNames()
+	{ 
+		ArrayList<String> usedNames = new ArrayList<String>();
+		for(Schema schema : harmonyModel.getSchemaManager().getSchemas())
+			usedNames.add(schema.getName());
+		return usedNames;
+	}
+	
 	/** Imports the currently specified item */
 	protected void importItem(String name, String author, String description, URI uri) throws Exception
 	{

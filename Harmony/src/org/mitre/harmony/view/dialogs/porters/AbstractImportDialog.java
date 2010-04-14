@@ -65,6 +65,14 @@ abstract public class AbstractImportDialog extends JDialog
 				String description = descriptionField.getText();
 				URI uri = uriField.getURI();
 				
+				// Determine if the name is unique
+				if(getUsedNames().contains(name))
+				{
+					nameField.setBackground(Color.yellow);
+					JOptionPane.showMessageDialog(AbstractImportDialog.this,"The provided name is already used!","Duplicated Name",JOptionPane.ERROR_MESSAGE);
+					return;
+				}
+				
 				// Update highlighting
 				nameField.setBackground(name.length()>0 ? Color.white : Color.yellow);
 				authorField.setBackground(author.length()>0 ? Color.white : Color.yellow);
@@ -77,7 +85,7 @@ abstract public class AbstractImportDialog extends JDialog
 					try { importItem(name, author, description, uri); successful=true; dispose(); }
 					catch(Exception e2) { JOptionPane.showMessageDialog(null,e2.getMessage(),"Import Error",JOptionPane.ERROR_MESSAGE); }
 				}
-				else JOptionPane.showMessageDialog(null,"All fields must be completed before import!","Missing Fields",JOptionPane.ERROR_MESSAGE);
+				else JOptionPane.showMessageDialog(AbstractImportDialog.this,"All fields must be completed before import!","Missing Fields",JOptionPane.ERROR_MESSAGE);
 			}
 			else dispose();
 		}
@@ -170,6 +178,9 @@ abstract public class AbstractImportDialog extends JDialog
 	
 	/** Returns the importers from which the user can select */
 	abstract protected ArrayList<Importer> getImporters();
+	
+	/** Returns the list of used names */
+	abstract protected ArrayList<String> getUsedNames();
 	
 	/** Imports the currently specified item */
 	abstract protected void importItem(String name, String author, String description, URI uri) throws Exception;

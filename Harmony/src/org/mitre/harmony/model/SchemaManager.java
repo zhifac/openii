@@ -4,7 +4,6 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.mitre.schemastore.model.Project;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
@@ -138,21 +137,4 @@ public class SchemaManager
 	/** Returns the various depths of the specified schema element */
 	public ArrayList<Integer> getDepths(Integer schemaID, Integer elementID)
 		{ return getSchemaInfo(schemaID).getDepths(elementID); }
-	
-	//-------------------
-	// Project Functions
-	//-------------------
-	
-	/** Returns a list of all available projects */
-	public ArrayList<Project> getAvailableProjects()
-	{
-		ArrayList<Project> projects = new ArrayList<Project>();
-		try {
-			projects = SchemaStoreManager.getProjects();
-		} catch(Exception e) {
-			System.err.println("Error getting projects from SchemaStoreConnection");
-			e.printStackTrace();
-		}
-		return projects;
-	}
 }
