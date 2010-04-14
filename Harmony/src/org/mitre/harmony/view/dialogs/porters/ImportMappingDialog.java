@@ -233,18 +233,9 @@ public class ImportMappingDialog extends JDialog implements ActionListener, Care
 		pane.addParameter("Source", sourceSelector);
 		pane.addParameter("Target", targetSelector);
 		pane.addParameter(null, showAllSchemas);
-		
-		// Don't delete (or at least just comment out);  Paul Birkel wants this capability to make MDB
-		// link importing easier.
-		System.out.println("Schema name / ID value:");
-		ArrayList<Schema> schemas = harmonyModel.getSchemaManager().getSchemas();
-		for(Schema schema : schemas) {
-			System.out.println(schema.getName()+" / "+schema.getId());
-		}
-		
 		return pane;
 	}
-	
+
 	/** Constructs the mapping importer dialog */
 	public ImportMappingDialog(Component parent, HarmonyModel harmonyModel)
 	{
