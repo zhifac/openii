@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import org.mitre.harmony.controllers.ProjectController;
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.SchemaStoreManager;
+import org.mitre.schemastore.model.Project;
 import org.mitre.schemastore.porters.Importer;
 import org.mitre.schemastore.porters.projectImporters.ProjectImporter;
 
@@ -32,6 +33,15 @@ public class ImportProjectDialog extends AbstractImportDialog
 		return importers;
 	}
 
+	/** Returns the list of used project names */
+	protected ArrayList<String> getUsedNames()
+	{ 
+		ArrayList<String> usedNames = new ArrayList<String>();
+		for(Project project : harmonyModel.getProjectManager().getProjects())
+			usedNames.add(project.getName());
+		return usedNames;
+	}
+	
 	/** Imports the currently specified item */
 	protected void importItem(String name, String author, String description, URI uri) throws Exception
 	{

@@ -44,7 +44,7 @@ public class SchemaDialog extends JDialog implements ListSelectionListener
 		/** Constructs the button pane */
 		private ButtonPane()
 		{
-			super(new String[]{"Import", "Export", "Delete", "Close"},2,2);
+			super(new String[]{"Import", "Export", "Delete", "Close"},1,4);
 			setEnabled("Export", false);
 			setEnabled("Delete", false);
 		}
@@ -55,7 +55,7 @@ public class SchemaDialog extends JDialog implements ListSelectionListener
 			// Handles the import of a schema
 			if(label.equals("Import"))
 			{
-				ImportSchemaDialog dialog = new ImportSchemaDialog(this, harmonyModel);
+				ImportSchemaDialog dialog = new ImportSchemaDialog(SchemaDialog.this, harmonyModel);
 				while(dialog.isDisplayable()) try { Thread.sleep(500); } catch(Exception e2) {}
 				if(dialog.isSuccessful()) updateSchemaList();
 			}
@@ -68,7 +68,7 @@ public class SchemaDialog extends JDialog implements ListSelectionListener
 			else if(label.equals("Delete"))
 			{
 				Schema schema = getSchema();
-				int reply = JOptionPane.showConfirmDialog(null,"This action cannot be reversed!  Are you certain that you would like to delete \"" + schema.getName() + "\"","Delete Schema",JOptionPane.YES_NO_OPTION,JOptionPane.WARNING_MESSAGE);
+				int reply = JOptionPane.showConfirmDialog(SchemaDialog.this,"This action cannot be reversed!  Are you certain that you would like to delete \"" + schema.getName() + "\"","Delete Schema",JOptionPane.YES_NO_OPTION,JOptionPane.WARNING_MESSAGE);
 				if(reply==0)
 					if(harmonyModel.getSchemaManager().deleteSchema(schema.getId()))
 						updateSchemaList();
@@ -134,7 +134,6 @@ public class SchemaDialog extends JDialog implements ListSelectionListener
     	setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		setContentPane(pane);
 		pack();
-		setSize(250,350);
 		setLocationRelativeTo(harmonyModel.getBaseFrame());
 		setVisible(true);
    	}

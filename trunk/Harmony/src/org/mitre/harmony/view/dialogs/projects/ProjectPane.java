@@ -58,7 +58,7 @@ class ProjectPane extends JPanel
 		this.harmonyModel = harmonyModel;
 		
 		// Retrieve the list of projects
-		Vector<Project> projects = new Vector<Project>(harmonyModel.getSchemaManager().getAvailableProjects());
+		Vector<Project> projects = new Vector<Project>(harmonyModel.getProjectManager().getProjects());
 		Collections.sort(projects, new ProjectComparator());
 		if(saveMode)
 		{
