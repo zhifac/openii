@@ -76,6 +76,10 @@ public class SchemaStore
 	public boolean isConnected()
 		{ return new Database(connection).isConnected(); }
 	
+	/** Handles the compression of the database */
+	public boolean compress()
+		{ return new Database(connection).compress(); }
+	
 	//---------------------------
 	// Handles schema operations 
 	//---------------------------
