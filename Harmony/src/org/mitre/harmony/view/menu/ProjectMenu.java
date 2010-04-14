@@ -89,7 +89,7 @@ class ProjectMenu extends AbstractMenu implements MenuListener
 			add(openProject);
 			add(saveProject);
 			addSeparator();
-			add(createMenuItem("Project Settings...", KeyEvent.VK_C, new ProjectSettingsAction()));
+			add(createMenuItem("Configure Project...", KeyEvent.VK_C, new ProjectSettingsAction()));
 			add(createMenuItem("Manage Schemas...", KeyEvent.VK_M, new ManageSchemaAction()));
 			addSeparator();
 			add(importMenu);
