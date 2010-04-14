@@ -3,7 +3,7 @@
 package org.mitre.harmony.view.dialogs.mappingCell;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -22,7 +22,7 @@ public class AnnotationFields
 	private String note;
 
 	/** Stores the extra annotation fields */
-	private HashMap<String, String> extraFields = new HashMap<String, String>();
+	private LinkedHashMap<String, String> extraFields = new LinkedHashMap<String, String>();
 	
 	/** Constructs the annotation fields */
 	public AnnotationFields(MappingCell mappingCell)
