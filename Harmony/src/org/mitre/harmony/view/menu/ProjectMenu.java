@@ -112,7 +112,7 @@ class ProjectMenu extends AbstractMenu implements MenuListener
 			// Add project drop-down items to project drop-down menu
 			add(saveProject);
 			addSeparator();
-			add(createMenuItem("Project Settings...", KeyEvent.VK_P, new ProjectSettingsAction()));
+			add(createMenuItem("Configure Project...", KeyEvent.VK_P, new ProjectSettingsAction()));
 
 			// Set accelerator keys for the save menu item
 			saveProject.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK));
