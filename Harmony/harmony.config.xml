@@ -1,5 +1,5 @@
 <config>
-  <extraMappingCellFields>[transform]</extraMappingCellFields>
+  <extraMappingCellFields>[Transform]</extraMappingCellFields>
   <preferences>
     <alphabetize>true</alphabetize>
     <showSchemaTypes>false</showSchemaTypes>
