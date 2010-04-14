@@ -75,8 +75,7 @@ abstract class AbstractExportDialog
 				file = new File(file.getPath()+exporter.getFileType());
 			
 			// Check to see if file already exists and checks to make sure it can be overwritten
-			// Not for the User Annotation Match DB Exporter - this exporter only uses the .mdb file as a *template*.
-			if(file!=null && file.exists()&& !exporter.getName().equals("User Annotation Match DB Exporter"))
+			if(file!=null && file.exists() && exporter.isFileOverwritten())
     		{
 	    		int option = JOptionPane.showConfirmDialog(harmonyModel.getBaseFrame(),
 	        			file + " exists.  Overwrite?",
