@@ -1,6 +1,7 @@
 package org.mitre.openii.views.repositories;
 
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.mitre.openii.application.OpenIIActivator;
 import org.mitre.openii.model.RepositoryManager;
@@ -58,6 +59,11 @@ public class RepositoryAction extends Action
 		
 		/** Handles the compressing of a repository */
 		if(actionType == COMPRESS_REPOSITORY)
-			try { RepositoryManager.getClient().compress(); } catch(Exception e) {}
+		{
+			boolean success = false;
+			try { success = RepositoryManager.getClient().compress(); } catch(Exception e) {}
+			if(success) MessageDialog.openConfirm(shell, "Repository Compression", "The repository was successfully compressed!");
+			else MessageDialog.openError(shell, "Repository Compression Failure", "The repository failed to be compressed!");
+		}
 	}
 }
