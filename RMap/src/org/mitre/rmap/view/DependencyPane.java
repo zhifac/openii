@@ -117,7 +117,7 @@ public class DependencyPane extends JPanel implements SelectedInfoListener {
         	}
 
     		// clicked on the dependency, so show it on the schema list
-        	if (table.getSelectedColumn() == 1 && dependenciesOrdered != null) {
+        	if (dependenciesOrdered != null) {
     			dependencyDisplayedIndex = table.getSelectedRow(); // save the value of the currently displayed dependency
         		dependencyDisplayed = dependenciesOrdered.get(dependencyDisplayedIndex);
     			Integer displayedMappingID = harmonyModel.getSchemaManager().getMappingID(dependencyDisplayed);
