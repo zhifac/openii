@@ -11,8 +11,6 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.mitre.harmony.model.HarmonyConsts;
-import org.mitre.harmony.model.project.MappingListener;
-import org.mitre.harmony.model.project.ProjectListener;
 import org.mitre.harmony.model.selectedInfo.SelectedInfoListener;
 import org.mitre.harmony.view.mappingPane.MappingPane;
 import org.mitre.rmap.generator.Dependency;
@@ -21,6 +19,7 @@ import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.ProjectSchema;
 
+@SuppressWarnings("serial")
 public class DependencyPane extends JPanel implements SelectedInfoListener {
 
 	/** Stores the Harmony model */
