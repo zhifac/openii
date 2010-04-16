@@ -309,11 +309,8 @@ public class RMapFrame extends JInternalFrame {
         		}
 
         		// this call actually generates the SQL and puts it into a string array
-        		ArrayList<String> generatedSQL = SQLGenerator.generateFinalSQLScript(
-    				harmonyModel.getProjectManager().getProject(),
-    				selectedDependencies,
-    				exportDialog
-				);
+        		SQLGenerator generator = new SQLGenerator(harmonyModel.getProjectManager().getProject());
+        		ArrayList<String> generatedSQL = generator.generate(selectedDependencies, exportDialog);
 
         		// collect the generated SQL into a normal string
         		StringBuffer generatedString = new StringBuffer();
