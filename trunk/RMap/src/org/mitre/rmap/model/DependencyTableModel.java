@@ -1,10 +1,10 @@
 // Copyright 2008 The MITRE Corporation. ALL RIGHTS RESERVED.
-package org.mitre.rmap.view;
+package org.mitre.rmap.model;
 
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
 
-class DependencyTableModel implements TableModel {
+public class DependencyTableModel implements TableModel {
 	private String[] columnNames = {"", "Dependency"};
 	private Object[][] data;
 
