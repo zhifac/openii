@@ -192,6 +192,7 @@ public class SQLGenerator {
 							domainName = sourceSchemaInfo.getElement(((Attribute)sourceSchemaInfo.getElement(inputId)).getDomainID()).getName();
 						}
 						else {
+							// TODO: show something or do something when this happens
 							System.err.println("[E] SQLGenerator -- error in generated SQL -- no domain assigned skolem attribute");
 						}
 						//String domainName = sourceSchemaGraph.getElement(((Attribute)sourceSchemaGraph.getElement(inputId)).getDomainID()).getName();
@@ -230,6 +231,7 @@ public class SQLGenerator {
 						}
 						else {
 							pathId = 0;
+							// TODO: show something or do something when this happens
 							System.err.println("[E] SQLGenerator: Error in Generated SQL -- have Entity as input");
 						}
 						String attrName = sourceSchemaInfo.getElement(indexId).getName();
@@ -255,14 +257,12 @@ public class SQLGenerator {
 		HashMap<Integer, String> retVal = new HashMap<Integer,String>();
 
 		// create the MappingDefinition for use when doing mapping functions
-		
 		Object[] mappingDefData = depend.generateMapping(project);
 		MappingInfo mappingDefinition = new MappingInfo(project, (ArrayList<MappingCell>)mappingDefData[1], (HierarchicalSchemaInfo)mappingDefData[2], (HierarchicalSchemaInfo)mappingDefData[3]);
 
 		/** Determine which target entities require generation */
 		/** PASS 1:  Determine which entities have correspondences */
 		for(Entity path : depend.getTargetLogicalRelation().getMappingSchemaEntitySet()) {
-
 			// CASE: target entity has generated values
 			for (MappingCell cell : depend.getCoveredCorrespondences()) {
 				Integer outputEntityId = null;
@@ -272,6 +272,7 @@ public class SQLGenerator {
 				} else if (targetSchemaGraph.getElement(cell.getOutput()) instanceof Attribute) {
 					outputEntityId = targetSchemaGraph.getEntity(cell.getOutput()).getId();
 				} else {
+					// TODO: show something or do something when this happens
 					System.err.println("[E] SQLGenerator: Error in Generated SQL -- have Entity as input");
 				}
 
@@ -280,6 +281,7 @@ public class SQLGenerator {
 				}
 			}
 		}
+
 		/** PASS 2: Determine which entities must be generated to satisfy FK dependencies (to entities identified in Pass 1)*/
 		for (SchemaElement se : targetSchemaGraph.getElements(Relationship.class)) {
 			if (needToGen.get(((Relationship)se).getLeftID()) != null &&  needToGen.get(((Relationship)se).getLeftID()) == true) {
@@ -288,16 +290,16 @@ public class SQLGenerator {
 		}
 
 		/** PASS 3: Remaining entities do not need to be generated */
-		for(Entity path : depend.getTargetLogicalRelation().getMappingSchemaEntitySet()) {
+		for (Entity path : depend.getTargetLogicalRelation().getMappingSchemaEntitySet()) {
 			if (needToGen.get(path.getId()) == null) {
 				needToGen.put(path.getId(), false);
 			}
 		}
 
-		for(Entity path : depend.getTargetLogicalRelation().getMappingSchemaEntitySet()) {
+		for (Entity path : depend.getTargetLogicalRelation().getMappingSchemaEntitySet()) {
 			if (needToGen.get(path.getId()) == true) {
 				String insertIntoString = "INSERT INTO " + DELIM + path.getName() + DELIM + " (";
-				for (int i = 0; i < targetSchemaGraph.getChildElements(path.getId()).size(); i++){
+				for (int i = 0; i < targetSchemaGraph.getChildElements(path.getId()).size(); i++) {
 					String attrString = targetSchemaGraph.getChildElements(path.getId()).get(i).getName();
 					attrString = DELIM + attrString + DELIM;
 					insertIntoString += attrString;
@@ -331,6 +333,7 @@ public class SQLGenerator {
 								}
 								else {
 									pathIds[j] = 0;
+									// TODO: show something or do something when this happens
 									System.err.println("[E] SQLGenerator: Error in Generated SQL -- have Entity as input");
 								}
 							}
@@ -339,12 +342,11 @@ public class SQLGenerator {
 							for (int j=0; j<colPrefixs.length;j++) {
 								colPrefixs[j] = DELIM + SQLGenerator.TABLE_CHAR + pathIds[j] + DELIM + ".";
 							}
-                            AbstractMappingFunction transform = FunctionManager.getFunction( cell.getFunctionClass() );
 
                             // now the string can be built
 							try {
-							    mapper = FunctionManager.getFunction( cell.getFunctionClass() );
-                                valueString = mapper.getRelationalString( colPrefixs, cell, mappingDefinition );
+							    mapper = FunctionManager.getFunction(cell.getFunctionClass());
+                                valueString = mapper.getRelationalString(colPrefixs, cell, mappingDefinition);
                             } catch(Exception e) {
                             	throw new RuntimeException(e);
                             }
@@ -352,13 +354,14 @@ public class SQLGenerator {
 							seen = true;
 						}
 					}
+
 					// check to see if values must be generated
 					if (seen == false) {
 						boolean isNullable = true, useSkolem = false;
-						if (targetChild.isKey()) {useSkolem = true; isNullable = false;}
-						if (targetChild.getMin() == null || targetChild.getMin() != 0) {isNullable = false; }
+						if (targetChild.isKey()) { useSkolem = true; isNullable = false; }
+						if (targetChild.getMin() == null || targetChild.getMin() != 0) { isNullable = false; }
 
-						if (isNullable == false && useSkolem == true){
+						if (isNullable == false && useSkolem == true) {
 							// use SKOLEM table
 							needToGenSkolem.put(targetSchemaGraph.getEntity(targetChild.getId()).getId(), true);
 
@@ -372,11 +375,10 @@ public class SQLGenerator {
 									Integer pathId = 0;
 									if (sourceSchemaGraph.getElement(inputId) instanceof Relationship) {
 										pathId = depend.getSourceLogicalRelation().getEntityIndicesByRel().get(depend.getSourceLogicalRelation().getIDmappings_LR_to_SS().get(sourceSchemaGraph.getElement(inputId).getId())).get(0);
-									}
-									else if (sourceSchemaGraph.getElement(inputId) instanceof Attribute) {
+									}else if (sourceSchemaGraph.getElement(inputId) instanceof Attribute) {
 										pathId = depend.getSourceLogicalRelation().getPositionMappingSchemaEntitySet(sourceSchemaGraph.getEntity(inputId).getId() );
-									}
-									else {
+									} else {
+										// TODO: show something or do something when this happens
 										System.err.println("[E] SQLGenerator: Error in Generated SQL -- have Entity as input");
 									}
 
@@ -388,14 +390,12 @@ public class SQLGenerator {
 								if (j < depend.getCoveredCorrespondences().size() - 1) { valueString += " AND "; }
 							}
 							valueString += ")";
-						}
-						else if (isNullable == false && useSkolem == false) {
+						} else if (isNullable == false && useSkolem == false) {
 							valueString = "1";
-						}
-						else if (isNullable == true && useSkolem == false) {
+						} else if (isNullable == true && useSkolem == false) {
 							valueString = "null";
-						}
-						else {
+						} else {
+							// TODO: show something or do something when this happens
 							System.err.println("[E]SQLGenerator:generateStatements -- cannot be nullable and required to generate Skolem constant");
 						}
 					}
@@ -426,8 +426,7 @@ public class SQLGenerator {
 	 * @param schemaGraph the schema graph on which the logical relation is based
 	 * @return String containing FROM-WHERE statement to generate logical relation
 	 */
-	private static String generateFromWhereLogRel(LogicalRelation logRel){
-
+	private static String generateFromWhereLogRel(LogicalRelation logRel) {
 		// FROM: list of paths in source schemaRelation
 		String fromString = new String(" FROM ");
 		for (int i = 0; i < logRel.getMappingSchemaEntitySet().size(); i++) {
@@ -438,9 +437,7 @@ public class SQLGenerator {
 
 		ArrayList<SchemaElement> relationships = logRel.getMappingSchemaInfo().getElements(Relationship.class);
 		String whereString = new String("");
-		if (relationships.size() > 0) {
-			whereString += " WHERE ";
-		}
+		if (relationships.size() > 0) { whereString += " WHERE "; }
 		for (int i = 0; i<relationships.size(); i++) {
 			// CLAUSE: leftEntityName.relationshipName = rightEntityName.rightAttrName
 			Relationship currRel = (Relationship)relationships.get(i);
@@ -456,5 +453,4 @@ public class SQLGenerator {
 		}
 		return new String(fromString + whereString +";");
 	}
-	
 }

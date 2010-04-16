@@ -15,10 +15,10 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import org.mitre.schemastore.client.SchemaStoreClient;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.ProjectSchema;
+import org.mitre.schemastore.client.SchemaStoreClient;
 
 import org.mitre.harmony.model.HarmonyConsts;
 import org.mitre.harmony.view.harmonyPane.TitledPane;
@@ -280,50 +280,52 @@ public class RMapFrame extends JInternalFrame {
         	for (int i = 0; i < dependencyTableData.length; i++) {
         		if ((Boolean)dependencyTableData[i][0]) { selectedIndices.add(i); }
         	}
+        	
+        	// if no dependencies has been checked show a warning
+        	if (selectedIndices.size() == 0) {
+        		JOptionPane.showMessageDialog(mainPane, "No dependencies are selected. Cannot generate SQL.", "Error", JOptionPane.ERROR_MESSAGE);
+        		return;
+        	}
 
-        	// if things have been checked, add them to the list of dependencies for our SQL generator
-        	if (selectedIndices.size() > 0) {
-        		// ask what kind of output they would like to generate
-        		// TODO: go to the database and get a list of all the output types
-        		Object[] exportChoices = {"Derby", "Postgres"};
-        		String exportDialog = (String)JOptionPane.showInputDialog(
-    				mappingPane,						// what frame to make ourselves modal to
-    				"Choose a SQL dialect:",		// the question in the box
-    				"Generate SQL",					// the title bar
-    				JOptionPane.QUESTION_MESSAGE,	// the type of dialog
-    				null,							// a custom icon
-    				exportChoices,					// an string object array of choices
-    				exportChoices[0]				// the default choice
+    		// ask what kind of output they would like to generate
+    		// TODO: go to the database and get a list of all the output types
+    		Object[] exportChoices = {"Derby", "Postgres"};
+    		String exportDialog = (String)JOptionPane.showInputDialog(
+				mappingPane,						// what frame to make ourselves modal to
+				"Choose a SQL dialect:",		// the question in the box
+				"Generate SQL",					// the title bar
+				JOptionPane.QUESTION_MESSAGE,	// the type of dialog
+				null,							// a custom icon
+				exportChoices,					// an string object array of choices
+				exportChoices[0]				// the default choice
+			);
+
+    		if (exportDialog != null && exportDialog.length() > 0) {
+            	// if no depencies between elements are in this relation, show a warning
+        		ArrayList<Dependency> selectedDependencies = new ArrayList<Dependency>();
+        		for (Integer index : selectedIndices) {
+        			Dependency selected = dependenciesOrdered.get(index);
+        			selectedDependencies.add(selected);
+        		}
+
+        		// this call actually generates the SQL and puts it into a string array
+        		ArrayList<String> generatedSQL = SQLGenerator.generateFinalSQLScript(
+    				harmonyModel.getProjectManager().getProject(),
+    				selectedDependencies,
+    				exportDialog
 				);
 
-        		if (exportDialog != null && exportDialog.length() > 0) {
-            		ArrayList<Dependency> selectedDependencies = new ArrayList<Dependency>();
-            		for (Integer index : selectedIndices) {
-            			selectedDependencies.add(dependenciesOrdered.get(index));
-            		}
+        		// collect the generated SQL into a normal string
+        		StringBuffer generatedString = new StringBuffer();
+        		for (String i : generatedSQL) { generatedString.append(i).append("\n"); }
 
-            		// this call actually generates the SQL and puts it into a string array
-            		ArrayList<String> generatedSQL = SQLGenerator.generateFinalSQLScript(
-        				harmonyModel.getProjectManager().getProject(),
-        				selectedDependencies,
-        				exportDialog
-    				);
+        		// set the text into the generated pane's text box
+        		textArea.setText(generatedString.toString());
+        		textArea.setCaretPosition(0);
 
-            		// collect the generated SQL into a normal string
-            		StringBuffer generatedString = new StringBuffer();
-            		for (String i : generatedSQL) { generatedString.append(i).append("\n"); }
-
-            		// set the text into the generated pane's text box
-            		textArea.setText(generatedString.toString());
-            		textArea.setCaretPosition(0);
-
-            		// change cards
-            		CardLayout c1 = (CardLayout)(cardPane.getLayout());
-            		c1.show(cardPane, GENERATED_PANE);
-            	}
-        	} else {
-        		// nothing has been selected, show a warning
-        		JOptionPane.showMessageDialog(mainPane, "No dependencies are selected. Cannot generate SQL.", "Error", JOptionPane.ERROR_MESSAGE);
+        		// change cards to the generated SQL
+        		CardLayout c = (CardLayout)(cardPane.getLayout());
+        		c.show(cardPane, GENERATED_PANE);
         	}
         }
     } // end class GenerateSQLButtonListener
@@ -338,9 +340,9 @@ public class RMapFrame extends JInternalFrame {
     		textArea.setText("");
     		textArea.setCaretPosition(0);
 
-    		// change cards
-    		CardLayout c1 = (CardLayout)(cardPane.getLayout());
-    		c1.show(cardPane, MAPPING_PANE);
+    		// change cards to the mapping pane again
+    		CardLayout c = (CardLayout)(cardPane.getLayout());
+    		c.show(cardPane, MAPPING_PANE);
         }
     }
 
