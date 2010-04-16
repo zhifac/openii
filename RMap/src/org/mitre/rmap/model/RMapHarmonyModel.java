@@ -10,8 +10,6 @@ public class RMapHarmonyModel extends HarmonyModel {
 	// Stores the managers associated with the currently displayed mapping
 	private RMapSchemaManager _RMapSchemaManager;
 	private RMapSelectedInfoManager _RMapSelectedInfoManager;
-	public static final String DERBY_TYPE = "Derby";
-	public static final String POSTGRES_TYPE = "Postgres";
 	
 	/** Constructs the Harmony model */
 	public RMapHarmonyModel(Frame baseFrame) {
