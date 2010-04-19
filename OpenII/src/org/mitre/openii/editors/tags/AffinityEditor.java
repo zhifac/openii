@@ -43,6 +43,8 @@ import org.mitre.openii.model.OpenIIManager;
 import org.mitre.openii.model.RepositoryManager;
 import org.mitre.openii.views.manager.projects.EditProjectDialog;
 import org.mitre.openii.views.manager.tags.EditTagDialog;
+import org.mitre.schemastore.model.Project;
+import org.mitre.schemastore.model.ProjectSchema;
 import org.mitre.schemastore.model.schemaInfo.FilteredSchemaInfo;
 
 /**
@@ -161,10 +163,12 @@ public class AffinityEditor extends OpenIIEditor implements SelectionClickedList
 					else if(item.getText().startsWith("Open")) {
 						//Open schemas in a new Affinity Pane
 						EditorManager.launchEditor("AffinityEditor", selectedSchemas);
-					}else if(item.getText().startsWith("View vocab debug")){
-						EditorManager.launchEditor("VocabDebugEditor", selectedSchemas);
+					//}else if(item.getText().startsWith("View vocab debug")){
+						//EditorManager.launchEditor("VocabDebugEditor", selectedSchemas);
 						//System.out.println("Open up debug view");
 					}else if(item.getText().startsWith("View vocab view")){
+						//need to send it a project object.. no object exists for projects starting in Affinity
+						//temp create one
 						EditorManager.launchEditor("VocabEditor", selectedSchemas);
 						//System.out.println("Open up debug view");
 					}
@@ -246,17 +250,16 @@ public class AffinityEditor extends OpenIIEditor implements SelectionClickedList
 					else if(item.getText().startsWith("Open")) {
 						//Open cluster in a new Affinity pane						
 						EditorManager.launchEditor("AffinityEditor", selectedCluster.getSchemaIDs());								
-					}else if(item.getText().startsWith("View vocab debug view")){
+					//}else if(item.getText().startsWith("View vocab debug view")){
 						//System.out.println("Open up debug view");
-						EditorManager.launchEditor("VocabDebugEditor", selectedCluster.getSchemaIDs());
+						//EditorManager.launchEditor("VocabDebugEditor", selectedCluster.getSchemaIDs());
 					}else if(item.getText().startsWith("View vocab view")){
 						EditorManager.launchEditor("VocabEditor", selectedCluster.getSchemaIDs());
 					}else if(item.getText().startsWith("Create a project")){
 						Shell shell = getSite().getWorkbenchWindow().getShell();
 						EditProjectDialog dlg = new EditProjectDialog(shell);
 						dlg.open();
-					}
-					else{
+					}else{
 						//Create a new tag containing the schemas in the cluster
 						Shell shell = getSite().getWorkbenchWindow().getShell();
 						EditTagDialog dlg = new EditTagDialog(shell, null, null, selectedCluster.getSchemaIDs());						
@@ -298,9 +301,9 @@ public class AffinityEditor extends OpenIIEditor implements SelectionClickedList
 			item.addSelectionListener(clusterMenuListener);	
 			
 			
-			item = new MenuItem (clusterMenu, SWT.NONE);
-			item.setText("View vocab debug view");
-			item.addSelectionListener(clusterMenuListener);
+			//item = new MenuItem (clusterMenu, SWT.NONE);
+			//item.setText("View vocab debug view");
+			//item.addSelectionListener(clusterMenuListener);
 			
 			item = new MenuItem (clusterMenu, SWT.NONE);
 			item.setText("View vocab view");
@@ -314,6 +317,7 @@ public class AffinityEditor extends OpenIIEditor implements SelectionClickedList
 			stackTraceDlg.open();
 		}
 	}	
+
 	
 	private void showVennDiagramWEntities(Collection<Integer> schemaIDs){
 		Iterator<Integer> iter = schemaIDs.iterator();
