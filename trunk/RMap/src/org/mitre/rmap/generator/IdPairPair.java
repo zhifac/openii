@@ -50,20 +50,27 @@ class IdPair {
 /** stores (relationshipID, leftPathIndex, rightPathIndex, rightAttrId) triples */
 
 class IdTriple {
-	private Integer _relationshipId, _leftPathIndex, _rightPathIndex,  _rightAttrId;
-	public IdTriple(Integer relId, Integer leftId, Integer rightId, Integer rightAttr){
-		_relationshipId = relId;
-		_leftPathIndex = leftId;
-		_rightPathIndex = rightId;
-		_rightAttrId = rightAttr;
+	private Integer relationshipId;
+	private Integer leftPathIndex;
+	private Integer rightPathIndex;
+	private Integer rightAttributeId;
+	
+	public IdTriple(Integer relationshipId, Integer leftPathIndex, Integer rightPathIndex, Integer rightAttributeId){
+		this.relationshipId = relationshipId;
+		this.leftPathIndex = leftPathIndex;
+		this.rightPathIndex = rightPathIndex;
+		this.rightAttributeId = rightAttributeId;
 	}
+
 	public IdTriple copy(){
-		return new IdTriple(_relationshipId, _leftPathIndex, _rightPathIndex,  _rightAttrId);
+		return new IdTriple(relationshipId, leftPathIndex, rightPathIndex,  rightAttributeId);
 	}
 	
 	private Integer getKey(Integer entityID, SchemaInfo g){
 		ArrayList<Attribute> attrs = g.getAttributes(entityID); 
-		for (Attribute a : attrs){ if (a.isKey() == true) return a.getId(); }
+		for (Attribute a : attrs) {
+			if (a.isKey() == true) { return a.getId(); }
+		}
 		System.err.println("[E] NRI:getKey -- no attribute was assigned as key for entity");
 		return null;	
 	}
@@ -83,40 +90,40 @@ class IdTriple {
 	 */
 	public IdTriple(Relationship relationship, SchemaInfo graph){
 		
-		_relationshipId = relationship.getId();
+		relationshipId = relationship.getId();
 		// if the LEFT entity is the key, swap left and right 
 		if ((relationship.getLeftMax() != null) && (relationship.getLeftMax() == 1)){
-			_rightPathIndex = relationship.getLeftID();
-			_rightAttrId = getKey(relationship.getLeftID(), graph);
-			_leftPathIndex = relationship.getRightID();
+			rightPathIndex = relationship.getLeftID();
+			rightAttributeId = getKey(relationship.getLeftID(), graph);
+			leftPathIndex = relationship.getRightID();
 			
 		} else { // if the RIGHT entity is the key, just copy 
-			_rightPathIndex = relationship.getRightID();
-			_rightAttrId = getKey(relationship.getRightID(), graph); 
-			_leftPathIndex = relationship.getLeftID();
+			rightPathIndex = relationship.getRightID();
+			rightAttributeId = getKey(relationship.getRightID(), graph); 
+			leftPathIndex = relationship.getLeftID();
 			
 		} 
 	} // end constructor
 	
 	static public HashMap<Integer, IdTriple> createTripleSet(SchemaInfo schemaGraph, ArrayList<Entity> entitySet){	
-		HashMap<Integer, IdTriple> retVal = new HashMap<Integer, IdTriple>();
-		for (SchemaElement rel : schemaGraph.getElements(Relationship.class))
-			retVal.put(rel.getId(),  new IdTriple((Relationship) rel, schemaGraph));
-		
-		return retVal;
+		HashMap<Integer, IdTriple> value = new HashMap<Integer, IdTriple>();
+		for (SchemaElement rel : schemaGraph.getElements(Relationship.class)) {
+			value.put(rel.getId(),  new IdTriple((Relationship) rel, schemaGraph));
+		}
+		return value;
 	}
 	
 	
 	//exports IdTriple as clause: [TABLE_CHAR][PATH-INDEX].[rel.name] = [TABLE_CHAR][PATH-INDEX].[rightAttr.name]
 	public String toClause(SchemaInfo schemaGraph){ 
 		Relationship rel = (Relationship)schemaGraph.getElement(getRelationshipId());
-		return new String(SQLGenerator.TABLE_CHAR + _leftPathIndex + "." +  rel.getName() + " = " + SQLGenerator.TABLE_CHAR + _rightPathIndex +"."+schemaGraph.getElement(_rightAttrId));
+		return new String(SQLGenerator.TABLE_CHAR + leftPathIndex + "." +  rel.getName() + " = " + SQLGenerator.TABLE_CHAR + rightPathIndex + "." + schemaGraph.getElement(rightAttributeId));
 	}
 	
-	public Integer getLeftPathId(){ return _leftPathIndex; }
-	public Integer getRightPathId(){ return _rightPathIndex; }
-	public Integer getRelationshipId(){ return _relationshipId; }
-	public Integer getRightAttrId(){ return _rightAttrId;}
+	public Integer getLeftPathId() { return leftPathIndex; }
+	public Integer getRightPathId() { return rightPathIndex; }
+	public Integer getRelationshipId() { return relationshipId; }
+	public Integer getRightAttrId() { return rightAttributeId;}
 	
 
 } // end class IDTriple
