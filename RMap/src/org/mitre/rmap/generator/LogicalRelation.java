@@ -8,7 +8,6 @@ import org.mitre.schemastore.model.schemaInfo.model.*;
 import org.mitre.schemastore.model.schemaInfo.*;
 
 public class LogicalRelation {
-
 	static private Integer nextID = 1;
 	static public Integer getNextID() { return nextID++; }
 
@@ -310,34 +309,34 @@ public class LogicalRelation {
 		
 		// create logical relation for each entity
 		for (Entity entity : entitySet) {
-			LogicalRelation currLogRel = new LogicalRelation();
+			LogicalRelation currentLogicalRelation = new LogicalRelation();
 			HashSet<Integer> seenEdges = new HashSet<Integer>();
 			ArrayList<Entity> queue = new ArrayList<Entity>();
 			queue.add(entity);
-			currLogRel.getEntitySet().add(entity);
+			currentLogicalRelation.getEntitySet().add(entity);
 			Integer leftPathIndex =  null;
-			Integer rightPathIndex = currLogRel.getEntitySet().lastIndexOf(entity);
+			Integer rightPathIndex = currentLogicalRelation.getEntitySet().lastIndexOf(entity);
 	
 			while (queue.size() > 0) {
 				Entity leftPath = queue.remove(0);
 
 				ArrayList<Relationship> relEdges = inputSchemaInfo.getRelationships(leftPath.getId());
-				for (Relationship rel : relEdges) {
-					if ( rel.getLeftID().equals(leftPath.getId())&& !seenEdges.contains(rel.getId())) {
+				for (Relationship relationship : relEdges) {
+					if (relationship.getLeftID().equals(leftPath.getId())&& !seenEdges.contains(relationship.getId())) {
 						// update attribute sets; pathIndex is index of path in LogicalRelation's pathSet
-						leftPathIndex = currLogRel.getEntitySet().lastIndexOf(leftPath);
-						rightPathIndex = currLogRel.getEntitySet().size();
+						leftPathIndex = currentLogicalRelation.getEntitySet().lastIndexOf(leftPath);
+						rightPathIndex = currentLogicalRelation.getEntitySet().size();
 						ArrayList<Integer> indices = new ArrayList<Integer>();
 						indices.add(leftPathIndex); indices.add(rightPathIndex);
-						currLogRel.entityIndicesByRel.put(rel.getId(),indices);
+						currentLogicalRelation.entityIndicesByRel.put(relationship.getId(),indices);
 						
-						currLogRel.getEntitySet().add((Entity)inputSchemaInfo.getElement(rel.getRightID()));
-						queue.add((Entity)inputSchemaInfo.getElement(rel.getRightID()));
-						seenEdges.add(rel.getId());
+						currentLogicalRelation.getEntitySet().add((Entity)inputSchemaInfo.getElement(relationship.getRightID()));
+						queue.add((Entity)inputSchemaInfo.getElement(relationship.getRightID()));
+						seenEdges.add(relationship.getId());
 					}
 				}
 			}
-			logicalRelations.add(currLogRel);
+			logicalRelations.add(currentLogicalRelation);
 		}
 		return logicalRelations;
 	}

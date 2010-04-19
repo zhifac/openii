@@ -47,7 +47,7 @@ public class Dependency {
 	// generate all of the information necessary to represent the dependency
 	// as a mapping
 	public Object[] generateMapping(Project project) {
-		Object[] retVal = new Object[4];
+		Object[] value = new Object[4];
 		
 		// generate return Mapping
 		Schema sourceSchema = sourceLogicalRelation.getMappingSchemaInfo().getSchema();
@@ -77,21 +77,21 @@ public class Dependency {
 		}
 
 		this.coveredCorrespondences = mappingCells;
-		retVal[0] = mapping;
-		retVal[1] = mappingCells;
-		retVal[2] = sourceLogicalRelation.getMappingSchemaInfo();
-		retVal[3] = targetLogicalRelation.getMappingSchemaInfo();
-		return retVal;
+		value[0] = mapping;
+		value[1] = mappingCells;
+		value[2] = sourceLogicalRelation.getMappingSchemaInfo();
+		value[3] = targetLogicalRelation.getMappingSchemaInfo();
+		return value;
 	} // end method
 
 	// generateDependencies(): For each pair of source and target logical relations,
 	// 	generate a dependency for each possible coverage of covered correspondences 
 	static public ArrayList<Dependency> generateDependencies(ArrayList<LogicalRelation> sourceLogRels, ArrayList<LogicalRelation> targetLogRels, ArrayList<MappingCell> correspondences) {
 		ArrayList<Dependency> retVal = new ArrayList<Dependency>();
-		for (LogicalRelation sourceLogRel : sourceLogRels ){
-			for (LogicalRelation targetLogRel : targetLogRels){
+		for (LogicalRelation sourceLogRel : sourceLogRels) {
+			for (LogicalRelation targetLogRel : targetLogRels) {
 				ArrayList<MappingCell> coveredCorrespondences = new ArrayList<MappingCell>();
-				for (MappingCell correspondence : correspondences){
+				for (MappingCell correspondence : correspondences) {
 					if (sourceLogRel.translate_SS_to_LR(correspondence.getInput()) != null && targetLogRel.getIDmappings_SS_to_LR().get(correspondence.getOutput()) != null) {						
 						MappingCell correspondenceCopy = correspondence.copy();
 						correspondenceCopy.setInput(sourceLogRel.translate_SS_to_LR(correspondence.getInput()).get(0));
@@ -158,7 +158,7 @@ public class Dependency {
 			Relationship rel = (Relationship) se;
 			
 			// make sure LEFT FK --> RIGHT
-			if (rel.getRightMax() == null || rel.getRightMax() != 1){
+			if (rel.getRightMax() == null || rel.getRightMax() != 1) {
 				Integer temp = rel.getRightID();
 				rel.setRightID(rel.getLeftID());
 				rel.setLeftID(temp);
@@ -177,14 +177,14 @@ public class Dependency {
 		if (inGraph.getElements(Containment.class).size() > 0) {
 			if (inGraph.getElement(Dependency.INTEGER_DOMAIN_ID) == null) {
 				if (!inGraph.addElement(new Domain(-1,"Integer","The Integer domain",inGraph.getSchema().getId()))) {
-					System.err.println("RMap:renderRelational -- failed to add Integer domain");
+					System.err.println("[E] Dependency:renderRelational -- failed to add Integer domain");
 				}
 			}
 			for (SchemaElement se : inGraph.getElements(Entity.class)) {
 				Entity entity = (Entity)se;
 				Attribute entityKey = new Attribute(maxID++,"ID","",entity.getId(),Dependency.INTEGER_DOMAIN_ID,1,1,true,inGraph.getSchema().getId());
 				if (!inGraph.addElement(entityKey)) {
-					System.err.println("RMap:renderRelational -- failed to add entityKey for entity " + entity.getName());
+					System.err.println("[E] Dependency:renderRelational -- failed to add entityKey for entity " + entity.getName());
 				}
 			}
 		}
@@ -195,17 +195,18 @@ public class Dependency {
 			SchemaElement child = inGraph.getElement(cont.getChildID());
 			
 			// CASE: schema --> (entity | domain) ==> delete
-			if (cont.getParentID() == null){
-				if (!inGraph.deleteElement(cont.getId()))
-					System.err.println("RMap:renderRelational -- failed to delete schema-level containement");
+			if (cont.getParentID() == null) {
+				if (!inGraph.deleteElement(cont.getId())) {
+					System.err.println("[E] Dependency:renderRelational -- failed to delete schema-level containement");
+				}
 			}
 			// CASE: entity --> entity ==> replace with relationship 
 			else if (child instanceof Entity){
 				Relationship rel = new Relationship(cont.getId(),cont.getName(),cont.getChildID(),cont.getMin(),cont.getMax(),cont.getParentID(),1,1,inGraph.getSchema().getId());
 				if (!inGraph.deleteElement(cont.getId()))
-					System.err.println("RMap:renderRelational -- failed to delete containement " + cont.getName());
+					System.err.println("[E] Dependency:renderRelational -- failed to delete containement " + cont.getName());
 				if (inGraph.addElement(rel) == false)
-					System.err.println("RMap:renderRelational -- failed to add relationship " + rel.getName());	
+					System.err.println("[E] Dependency:renderRelational -- failed to add relationship " + rel.getName());	
 			}
 			
 			// CASE: entity --> domain ==>
@@ -219,25 +220,31 @@ public class Dependency {
 					Relationship rel = new Relationship(maxID++,name,domEntity.getId(),cont.getMin(),cont.getMax(),cont.getParentID(),1,1,inGraph.getSchema().getId());
 					Attribute domAttr = new Attribute(cont.getId(),cont.getName(),cont.getDescription(),domEntity.getId(),child.getId(),0,1,false,inGraph.getSchema().getId());
 					Attribute domEntityKey = new Attribute(maxID++,"ID","",domEntity.getId(),Dependency.INTEGER_DOMAIN_ID,1,1,true,inGraph.getSchema().getId());
-					//Attribute domEntityFK = new Attribute(maxID++,name,"",domEntity);//(maxID++,name,"",domEntity.getId(),);
 
-					if (!inGraph.deleteElement(cont.getId()))
-						System.err.println("RMap:renderRelational -- failed to delete containement");
-					if (!inGraph.addElement(domEntity))
-						System.err.println("RMap:renderRelational -- failed to add domEntity");
-					if (!inGraph.addElement(rel))
-						System.err.println("RMap:renderRelational -- failed to add relationship");
-					if (!inGraph.addElement(domAttr))
-						System.err.println("RMap:renderRelational -- failed to add domAttr");
-					if (!inGraph.addElement(domEntityKey))
-						System.err.println("RMap:renderRelational -- failed to add domEntityKey");
+					if (!inGraph.deleteElement(cont.getId())) {
+						System.err.println("[E] Dependency:renderRelational -- failed to delete containement");
+					}
+					if (!inGraph.addElement(domEntity)) {
+						System.err.println("[E] Dependency:renderRelational -- failed to add domEntity");
+					}
+					if (!inGraph.addElement(rel)) {
+						System.err.println("[E] Dependency:renderRelational -- failed to add relationship");
+					}
+					if (!inGraph.addElement(domAttr)) {
+						System.err.println("[E] Dependency:renderRelational -- failed to add domAttr");
+					}
+					if (!inGraph.addElement(domEntityKey)) {
+						System.err.println("[E] Dependency:renderRelational -- failed to add domEntityKey");
+					}
 				} else {
 					Attribute attr = new Attribute(cont.getId(),cont.getName(),cont.getDescription(),cont.getParentID(),cont.getChildID(),cont.getMin(),cont.getMax(),false,inGraph.getSchema().getId());
 
-					if (!inGraph.deleteElement(cont.getId()))
-						System.err.println("RMap:renderRelational -- failed to delete containement");
-					if (!inGraph.addElement(attr))
-						System.err.println("RMap:renderRelational -- failed to add attribute " + attr.getName());
+					if (!inGraph.deleteElement(cont.getId())) {
+						System.err.println("[E] Dependency:renderRelational -- failed to delete containement");
+					}
+					if (!inGraph.addElement(attr)) {
+						System.err.println("[E] Dependency:renderRelational -- failed to add attribute " + attr.getName());
+					}
 				}
 			}
 		}

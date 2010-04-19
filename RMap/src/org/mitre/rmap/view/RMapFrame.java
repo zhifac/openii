@@ -9,6 +9,10 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -55,6 +59,7 @@ public class RMapFrame extends JInternalFrame {
 	private Integer dependencyDisplayedIndex = null;
 
 	/** For the card layout */
+	// each string is the label for the card that we want to show
 	private final static String MAPPING_PANE = "MAPPING_PANE";
 	private final static String GENERATED_PANE = "GENERATED_PANE";
 
@@ -89,15 +94,27 @@ public class RMapFrame extends JInternalFrame {
 		JScrollPane generatedTextScrollPane = new JScrollPane(textArea);
 		pane.add(generatedTextScrollPane, BorderLayout.CENTER);
 
+		// add a button to save the SQL
+		JButton saveSQLButton = new JButton("Save Generated SQL");
+		saveSQLButton.addActionListener(new SaveSQLButtonListener(saveSQLButton));
+		saveSQLButton.setEnabled(true);
+
+        // add a button to copy the text
+        JButton copySQLButton = new JButton("Copy Generated SQL");
+        copySQLButton.addActionListener(new CopySQLButtonListener(copySQLButton));
+        copySQLButton.setEnabled(true);
+
 		// add a button to close the window
         JButton generateSQLButton = new JButton("Close Generated SQL");
         generateSQLButton.addActionListener(new CloseSQLButtonListener(generateSQLButton));
         generateSQLButton.setEnabled(true);
 
         // create a panel with padding to put the button in and add it to the panel
-        JPanel generateSQLButtonPane = new JPanel();
-        generateSQLButtonPane.add(generateSQLButton, JPanel.CENTER_ALIGNMENT);
-        pane.add(generateSQLButtonPane, BorderLayout.SOUTH);
+        JPanel SQLButtonPane = new JPanel();
+        SQLButtonPane.add(saveSQLButton, JPanel.LEFT_ALIGNMENT);
+        SQLButtonPane.add(copySQLButton, JPanel.CENTER_ALIGNMENT);
+        SQLButtonPane.add(generateSQLButton, JPanel.RIGHT_ALIGNMENT);
+        pane.add(SQLButtonPane, BorderLayout.SOUTH);
 
         // put a title on this pane
 		return new TitledPane("Generated SQL", pane);
@@ -149,7 +166,7 @@ public class RMapFrame extends JInternalFrame {
         // create a panel with padding to put the button in
         JPanel generateSQLButtonPane = new JPanel();
         generateSQLButtonPane.add(generateSQLButton, JPanel.CENTER_ALIGNMENT);
-        
+
         // add the button to the bottom
         pane.add(generateSQLButtonPane, BorderLayout.SOUTH);
         
@@ -254,6 +271,41 @@ public class RMapFrame extends JInternalFrame {
         }
 	} // end SelectionListener class
 
+	private class CopySQLButtonListener implements ActionListener {
+		public CopySQLButtonListener(JButton button) {
+			button.setEnabled(true);
+		}
+
+		public void actionPerformed(ActionEvent e) {
+			textArea.selectAll();
+			textArea.copy();
+		}
+	} // end CopySQLButtonListener
+
+	private class SaveSQLButtonListener implements ActionListener {
+		public SaveSQLButtonListener(JButton button) {
+			button.setEnabled(true);
+		}
+
+		public void actionPerformed(ActionEvent e) {
+			// show a dialog to save the SQL
+			JFileChooser fc = new JFileChooser(harmonyModel.getPreferences().getExportDir());
+			fc.setDialogType(JFileChooser.SAVE_DIALOG);
+			if (fc.showDialog(mappingPane, "Save") == JFileChooser.APPROVE_OPTION) {
+				File file = fc.getSelectedFile();
+				harmonyModel.getPreferences().setImportDir(fc.getSelectedFile().getParentFile());
+
+				try {
+					BufferedWriter out = new BufferedWriter(new FileWriter(file.getAbsoluteFile().toString()));
+					out.write(textArea.getText());
+					out.close();
+				} catch (IOException ioe) {
+					System.err.println("[E] Failed to save file: " + ioe.getMessage());
+				}
+			}
+		}
+	} // end SaveSQLButtonListener
+
     private class GenerateSQLButtonListener implements ActionListener {
         public GenerateSQLButtonListener(JButton button) {
             button.setEnabled(true);
@@ -287,20 +339,22 @@ public class RMapFrame extends JInternalFrame {
         		return;
         	}
 
+        	// create the generator which has all of our SQL stuff in it
+    		SQLGenerator generator = new SQLGenerator(harmonyModel.getProjectManager().getProject());
+
     		// ask what kind of output they would like to generate
-    		// TODO: go to the database and get a list of all the output types
-    		Object[] exportChoices = {"Derby", "Postgres"};
-    		String exportDialog = (String)JOptionPane.showInputDialog(
-				mappingPane,						// what frame to make ourselves modal to
+    		Object[] exportChoices = generator.getExportTypes().toArray();
+    		String selectTargetDB = (String)JOptionPane.showInputDialog(
+				mappingPane,					// what frame to make ourselves modal to
 				"Choose a SQL dialect:",		// the question in the box
 				"Generate SQL",					// the title bar
 				JOptionPane.QUESTION_MESSAGE,	// the type of dialog
 				null,							// a custom icon
-				exportChoices,					// an string object array of choices
+				exportChoices,  				// an string object array of choices
 				exportChoices[0]				// the default choice
 			);
 
-    		if (exportDialog != null && exportDialog.length() > 0) {
+    		if (selectTargetDB != null && selectTargetDB.length() > 0) {
             	// if no depencies between elements are in this relation, show a warning
         		ArrayList<Dependency> selectedDependencies = new ArrayList<Dependency>();
         		for (Integer index : selectedIndices) {
@@ -309,12 +363,14 @@ public class RMapFrame extends JInternalFrame {
         		}
 
         		// this call actually generates the SQL and puts it into a string array
-        		SQLGenerator generator = new SQLGenerator(harmonyModel.getProjectManager().getProject());
-        		ArrayList<String> generatedSQL = generator.generate(selectedDependencies, exportDialog);
+        		ArrayList<String> generatedSQL = generator.generate(selectedDependencies, selectTargetDB);
 
         		// collect the generated SQL into a normal string
         		StringBuffer generatedString = new StringBuffer();
-        		for (String i : generatedSQL) { generatedString.append(i).append("\n"); }
+        		for (String i : generatedSQL) {
+        			if (i == null) { continue; }
+        			generatedString.append(i).append("\n");
+        		}
 
         		// set the text into the generated pane's text box
         		textArea.setText(generatedString.toString());

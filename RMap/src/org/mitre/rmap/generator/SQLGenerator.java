@@ -5,6 +5,7 @@ import java.util.*;
 import java.util.regex.Pattern;
 
 import org.mitre.rmap.generator.Dependency;
+import org.mitre.rmap.model.exports.Export;
 import org.mitre.schemastore.model.*;
 import org.mitre.schemastore.model.mapfunctions.*;
 import org.mitre.schemastore.model.mappingInfo.MappingInfo;
@@ -16,13 +17,23 @@ public class SQLGenerator {
 	public static final String SKOLEM_TABLE_CHAR = "SK";
 	public static final String DELIM = "\"";
 
-	public static final String DERBY_TYPE = "Derby";
-	public static final String POSTGRES_TYPE = "Postgres";
-
 	private Project project;
+	private ArrayList<String> targetExportTypes;
+	private Object exportType;	// contains the object that has our Export implementation
 
 	public SQLGenerator(Project project) {
 		this.project = project;
+	}
+
+	public ArrayList<String> getExportTypes() {
+		if (targetExportTypes == null) {
+			// build the list
+			// TODO: make the list come out of the database
+			targetExportTypes = new ArrayList<String>();
+			targetExportTypes.add("Derby");
+			targetExportTypes.add("Postgres");
+		}
+		return targetExportTypes;
 	}
 
 	/**
@@ -36,13 +47,19 @@ public class SQLGenerator {
 	public ArrayList<String> generate(ArrayList<Dependency> dependencies, String targetDB) {
 		ArrayList<String> value = new ArrayList<String>();
 
+		// create a new object from the targetDB
+		try {
+			exportType = Class.forName("org.mitre.rmap.model.exports." + targetDB).newInstance();
+		} catch (Exception e) {
+			System.err.println("[E] SQLGenerator: could not create an instance of the " + targetDB + " class.");
+			return null;
+		}
+
 		/** Perform topological sort of entities */
 		ArrayList<Entity> toplogicalSortedEntities = topologicalSort(dependencies);
 
-		/**********************************************************************/
-		if (targetDB.equals(POSTGRES_TYPE)) {
-			value.add(new String("CREATE TEMPORARY SEQUENCE " + "seqImport" + ";"));
-		}
+		// should add any special declarations to the top of the generated sql
+		value.add((String)((Export)exportType).getOpeningSQL());
 
 		ArrayList<String> finalSkolemStatements = new ArrayList<String>();
 		ArrayList<String> finalSelectStatements = new ArrayList<String>();
@@ -80,9 +97,8 @@ public class SQLGenerator {
 			}
 		}
 
-		if (targetDB.equals(POSTGRES_TYPE)) {
-			finalCleanupStatements.add(new String("DROP SEQUENCE " + "seqImport" + ";"));
-		}
+		// should add any special cleaning statements to the bottom of the generated sql
+		finalCleanupStatements.add((String)((Export)exportType).getClosingSQL());
 
 		value.addAll(finalSkolemStatements);
 		value.addAll(finalSelectStatements);
@@ -179,15 +195,13 @@ public class SQLGenerator {
 				// generate a skolem table that has value for EVERY covered attribute
 				String skolemTableName = SQLGenerator.SKOLEM_TABLE_CHAR  + entityID;
 				String createTable = new String("CREATE TABLE " + DELIM + skolemTableName + DELIM + " ( ");
-				if (targetDB.equals(POSTGRES_TYPE)) {
-					createTable += DELIM + "skid" + DELIM +" INTEGER PRIMARY KEY DEFAULT NEXTVAL('" + "seqImport" + "'),";
-				} else if (targetDB.equals(DERBY_TYPE)) {
-					createTable += DELIM + "skid" + DELIM +" int GENERATED ALWAYS AS IDENTITY ,";
-				}
+
+				// add on special parameters for creating a table
+				createTable += (String)((Export)exportType).getCreateTableOptions();
 
 				// Generate CREATE TABLE statement for skolem table
 				int index = 0;
-				for (int i=0 ; i < dependency.getCoveredCorrespondences().size(); i++) {
+				for (int i = 0; i < dependency.getCoveredCorrespondences().size(); i++) {
 					MappingCell cell = dependency.getCoveredCorrespondences().get(i);
 
 					// get the domain type for attribute
@@ -204,7 +218,6 @@ public class SQLGenerator {
 							// TODO: show something or do something when this happens
 							System.err.println("[E] SQLGenerator -- error in generated SQL -- no domain assigned skolem attribute");
 						}
-						//String domainName = sourceSchemaGraph.getElement(((Attribute)sourceSchemaGraph.getElement(inputId)).getDomainID()).getName();
 						createTable += DELIM + SQLGenerator.VARIABLE_CHAR + index + DELIM + " " + domainName;
 						index++;
 					}
