@@ -58,7 +58,7 @@ public class SelectionDialog extends JDialog
 				Integer focusSetting = focus.equals("All") ? MappingController.ALL : focus.equals("Focused") ? MappingController.FOCUSED : MappingController.UNFOCUSED;
 				
 				// Retrieve the mapping cell visibility setting
-				String visibility = typeFilter.getSelectedButton();
+				String visibility = visibilityFilter.getSelectedButton();
 				Integer visibilitySetting = visibility.equals("All") ? MappingController.ALL : visibility.equals("Visible") ? MappingController.VISIBLE : MappingController.HIDDEN;
 				
 				// Select or delete mapping cells
