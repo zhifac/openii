@@ -16,6 +16,8 @@ import org.mitre.schemastore.model.DataSource;
 import org.mitre.schemastore.model.Domain;
 import org.mitre.schemastore.model.DomainValue;
 import org.mitre.schemastore.model.Entity;
+import org.mitre.schemastore.model.Function;
+import org.mitre.schemastore.model.FunctionImp;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.Project;
@@ -418,6 +420,58 @@ public class SchemaStoreClient
 	public boolean deleteDataSource(Integer dataSourceID) throws RemoteException
 		{ return (Boolean)callMethod("deleteDataSource",new Object[] {dataSourceID}); }
 
+	//--------------------
+	// Function Functions
+	//--------------------
+
+	/** Gets the list of functions from the web service */
+	public ArrayList<Function> getFunctions() throws RemoteException
+	{
+		Function[] functions = (Function[])callMethod("getFunctions",new Object[] {});
+		return functions==null ? new ArrayList<Function>() : new ArrayList<Function>(Arrays.asList(functions));
+	}
+	
+	/** Gets the specified function from the web service */
+	public Function getFunction(Integer functionID) throws RemoteException
+		{ return (Function)callMethod("getFunction",new Object[] {functionID}); }
+
+	/** Adds the specified function to the web service */
+	public Integer addFunction(Function function) throws RemoteException
+	{
+		Integer functionID = (Integer)callMethod("addFunction",new Object[] {function});
+		return functionID==0 ? null : functionID;
+	}
+
+	/** Returns the list of deletable functions from the web service */
+	public ArrayList<Integer> getDeletableFunctions() throws RemoteException
+	{
+		ArrayList<Integer> deletableFunctions = new ArrayList<Integer>();
+		int[] deletableFunctionArray = (int[])callMethod("getDeletableFunctions",new Object[] {});
+		if(deletableFunctionArray!=null)
+			for(Integer deletableFunction : deletableFunctionArray)
+				deletableFunctions.add(deletableFunction);
+		return deletableFunctions;
+	}
+
+	/** Deletes the specified function from the web service */
+	public boolean deleteFunction(Integer functionID) throws RemoteException
+		{ return (Boolean)callMethod("deleteFunction",new Object[] {functionID}); }
+
+	/** Gets the list of function implementations from the web service */
+	public ArrayList<FunctionImp> getFunctionImps() throws RemoteException
+	{
+		FunctionImp[] functionImps = (FunctionImp[])callMethod("getFunctionImps",new Object[] {});
+		return functionImps==null ? new ArrayList<FunctionImp>() : new ArrayList<FunctionImp>(Arrays.asList(functionImps));
+	}
+
+	/** Sets the specified function implementation in the web service */
+	public boolean setFunctionImp(FunctionImp functionImp) throws RemoteException
+		{ return (Boolean)callMethod("setFunctionImp",new Object[] {functionImp}); }
+
+	/** Deletes the specified function implementation from the web service */
+	public boolean deleteFunctionImp(FunctionImp functionImp) throws RemoteException
+		{ return (Boolean)callMethod("deleteFunctionImp",new Object[] {functionImp}); }
+	
 	//-------------------
 	// Project Functions
 	//-------------------

@@ -169,7 +169,7 @@ public class ConvertToXML
 		return path.toString();
 	}	
 	
-	/** Generates the XML for the specified project */
+	/** Generates the XML for the specified mapping */
 	static public Element generate(Mapping mapping, ArrayList<MappingCell> mappingCells, HierarchicalSchemaInfo sourceInfo, HierarchicalSchemaInfo targetInfo, Document documentIn)
 	{
 		document = documentIn;
@@ -213,9 +213,8 @@ public class ConvertToXML
 			addChildElement(mappingCellElement,"MappingCellOutputId",mappingCell.getOutput());
 			addChildElement(mappingCellElement,"MappingCellOutputPath",outputPath);
 			addChildElement(mappingCellElement,"MappingCellScore",mappingCell.getScore());
-			addChildElement(mappingCellElement,"MappingCellFunction",mappingCell.getFunctionClass());
+			addChildElement(mappingCellElement,"MappingCellFunction",mappingCell.getFunctionID());
 			addChildElement(mappingCellElement,"MappingCellNotes",mappingCell.getNotes());
-			addChildElement(mappingCellElement,"MappingCellValidated",mappingCell.getValidated());
 		}
 		
 		return element;

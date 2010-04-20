@@ -219,7 +219,7 @@ public class UserMatchAnnotationExporter extends MappingExporter
    			}
    			
    			CompressedMatch newMatch = new CompressedMatch(element1,element2,mappingCell.getScore(),
-   					mappingCell.getAuthor(),mappingCell.getModificationDate(),mappingCell.getFunctionClass(),
+   					mappingCell.getAuthor(),mappingCell.getModificationDate(),mappingCell.getFunctionID().toString(),
    					mappingCell.getNotes());  	
 
    			// Add match to list of compressed matches
@@ -249,7 +249,7 @@ public class UserMatchAnnotationExporter extends MappingExporter
    			}
    			
    			CompressedMatch newMatch = new CompressedMatch(element1,element2,mappingCell.getScore(),
-   					mappingCell.getAuthor(),mappingCell.getModificationDate(),mappingCell.getFunctionClass(),
+   					mappingCell.getAuthor(),mappingCell.getModificationDate(),mappingCell.getFunctionID().toString(),
    					mappingCell.getNotes());  	
 
    			// Add match to list of compressed matches
