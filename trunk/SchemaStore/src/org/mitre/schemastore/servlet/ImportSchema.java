@@ -174,12 +174,12 @@ public class ImportSchema
 			Collections.sort(elements,new SchemaElementComparator());
 
 			// Assign universal IDs to all elements
-			Integer elementID = manager.getDatabase().getUniversalIDs(elements.size());
+			Integer elementID = manager.getUniversalIDs(elements.size());
 			for(SchemaElement element : elements)
 				updateElementID(elementRefs,element.getId(),elementID++);
 			
 			// Add schema elements to the web service
-			if(!manager.getDatabase().addSchemaElements(elements)) throw new Exception();
+			if(!manager.getSchemaElementCache().addSchemaElements(elements)) throw new Exception();
 		}
 		catch(Exception e) { if(schemaID>0) client.deleteSchema(schemaID); schemaID=0; }
 		return schemaID;

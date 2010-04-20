@@ -2,7 +2,6 @@
 // ALL RIGHTS RESERVED
 package org.mitre.schemastore.data;
 
-import org.mitre.schemastore.data.database.Database;
 
 /**
  * Class defining an abstract data cache
@@ -20,8 +19,4 @@ public abstract class DataCache
 	/** Returns the data manager */
 	protected DataManager getManager()
 		{ return dataManager; }
-
-	/** Returns the database */
-	protected Database getDatabase()
-		{ return dataManager.getDatabase(); }
 }

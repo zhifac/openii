@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import org.mitre.schemastore.data.database.SchemaElementDataCalls;
 import org.mitre.schemastore.model.Alias;
 import org.mitre.schemastore.model.Attribute;
 import org.mitre.schemastore.model.Containment;
@@ -18,11 +19,14 @@ import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.Subtype;
 
 /** Class for managing the current list of schema elements in the schema repository */
-public class SchemaElements extends DataCache
+public class SchemaElementCache extends DataCache
 {
+	/** Stores reference to the schema element data calls */
+	private SchemaElementDataCalls dataCalls = null;
+	
 	/** Constructs the schema elements cache */
-	SchemaElements(DataManager manager)
-		{ super(manager); }
+	SchemaElementCache(DataManager manager, SchemaElementDataCalls dataCalls)
+		{ super(manager); this.dataCalls=dataCalls; }
 	
 	/** Returns the alias to use for the specified schema */
 	private Alias getAlias(Integer schemaID, ArrayList<Alias> aliases)
@@ -35,7 +39,7 @@ public class SchemaElements extends DataCache
 		if(pickedAlias!=null) return pickedAlias;
 				
 		// Next, determine alias based on parents
-		ArrayList<Integer> parentSchemaIDs = getManager().getSchemaRelationships().getParentsInternal(schemaID);
+		ArrayList<Integer> parentSchemaIDs = getManager().getSchemaRelationshipCache().getParentsInternal(schemaID);
 		if(parentSchemaIDs.size()==0) return null;
 		for(Integer parentSchemaID : parentSchemaIDs)
 		{
@@ -78,18 +82,27 @@ public class SchemaElements extends DataCache
 	/** Adds a schema element */
 	public Integer addSchemaElement(SchemaElement schemaElement)
 	{
-		Schema schema = getManager().getSchemas().getSchema(schemaElement.getBase());
+		Schema schema = getManager().getSchemaCache().getSchema(schemaElement.getBase());
 		if(schema!=null && !schema.getLocked())
-			return getDatabase().addSchemaElement(schemaElement);
+			return dataCalls.addSchemaElement(schemaElement);
 		return 0;
+	}
+	
+	/** Adds the specified schema elements */
+	public boolean addSchemaElements(ArrayList<SchemaElement> schemaElements)
+	{
+		Schema schema = getManager().getSchemaCache().getSchema(schemaElements.get(0).getBase());
+		if(schema!=null && !schema.getLocked())
+			return dataCalls.addSchemaElements(schemaElements);
+		return false;
 	}
 	
 	/** Updates a schema element */
 	public boolean updateSchemaElement(SchemaElement schemaElement)
 	{
-		Schema schema = getManager().getSchemas().getSchema(schemaElement.getBase());
+		Schema schema = getManager().getSchemaCache().getSchema(schemaElement.getBase());
 		if(schema!=null && !schema.getLocked())
-			return getDatabase().updateSchemaElement(schemaElement);
+			return dataCalls.updateSchemaElement(schemaElement);
 		return false;
 	}
 	
@@ -97,15 +110,15 @@ public class SchemaElements extends DataCache
 	public boolean deleteSchemaElement(Integer schemaElementID)
 	{
 		SchemaElement schemaElement = getSchemaElement(schemaElementID);
-		Schema schema = getManager().getSchemas().getSchema(schemaElement.getBase());
+		Schema schema = getManager().getSchemaCache().getSchema(schemaElement.getBase());
 		if(schema!=null && !schema.getLocked())
-			return getDatabase().deleteSchemaElement(schemaElementID);
+			return dataCalls.deleteSchemaElement(schemaElementID);
 		return false;
 	}
 
 	/** Retrieves the specified schema element */
 	public SchemaElement getSchemaElement(Integer schemaElementID)
-		{ return getDatabase().getSchemaElement(schemaElementID); }
+		{ return dataCalls.getSchemaElement(schemaElementID); }
 	
 	/** Retrieves the schema element count for the specified schema */
 	public Integer getSchemaElementCount(Integer schemaID)
@@ -116,19 +129,19 @@ public class SchemaElements extends DataCache
 	{
 		// Collect all schema elements
 		ArrayList<SchemaElement> elements = new ArrayList<SchemaElement>();
-		elements.addAll(getDatabase().getBaseElements(schemaID));
-		for(Integer ancestorID : getManager().getSchemaRelationships().getAncestors(schemaID))
-			elements.addAll(getDatabase().getBaseElements(ancestorID));
+		elements.addAll(dataCalls.getBaseElements(schemaID));
+		for(Integer ancestorID : getManager().getSchemaRelationshipCache().getAncestors(schemaID))
+			elements.addAll(dataCalls.getBaseElements(ancestorID));
 		
 		// Add in all used default domains
-		for(Domain domain : getDatabase().getDefaultDomains())
+		for(Domain domain : dataCalls.getDefaultDomains())
 			for(SchemaElement element : elements)
 				if((element instanceof Containment && ((Containment)element).getChildID().equals(domain.getId())) ||
 				   (element instanceof Attribute && ((Attribute)element).getDomainID().equals(domain.getId())))
 					{ elements.add(domain); break; }
 
 		// Filter out conflicting aliases as needed
-		getManager().getSchemaRelationships().recacheAsNeeded();
+		getManager().getSchemaRelationshipCache().recacheAsNeeded();
 		elements = filterOutConflictingAliases(schemaID, elements);
 		
 		// Return the schema elements
@@ -140,8 +153,8 @@ public class SchemaElements extends DataCache
 	{
 		HashSet<Integer> schemaIDs = new HashSet<Integer>();
 		for(Integer tagID : tagIDs)
-			schemaIDs.addAll(getManager().getTags().getTagSchemas(tagID));
-		return getDatabase().getSchemaElementsForKeyword(keyword, new ArrayList<Integer>(schemaIDs));
+			schemaIDs.addAll(getManager().getTagCache().getTagSchemas(tagID));
+		return dataCalls.getSchemaElementsForKeyword(keyword, new ArrayList<Integer>(schemaIDs));
 	}
 	
 	/** Retrieves the specified schema element type */

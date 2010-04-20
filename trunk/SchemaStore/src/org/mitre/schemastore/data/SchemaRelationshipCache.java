@@ -8,10 +8,11 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 
-import org.mitre.schemastore.data.database.Database.Extension;
+import org.mitre.schemastore.data.database.SchemaRelationshipsDataCalls;
+import org.mitre.schemastore.data.database.SchemaRelationshipsDataCalls.Extension;
 
 /** Class for managing the current list of schema relationships */
-public class SchemaRelationships extends DataCache
+public class SchemaRelationshipCache extends DataCache
 {	
 	/** Private class for managing schema linkages */
 	private class SchemaLinks
@@ -36,6 +37,9 @@ public class SchemaRelationships extends DataCache
 		}
 	}
 
+	/** Stores reference to the schema relationship data calls */
+	private SchemaRelationshipsDataCalls dataCalls = null;
+	
 	/** Stores the validation number */
 	private Integer validationNumber = 0;
 	
@@ -49,7 +53,7 @@ public class SchemaRelationships extends DataCache
 	void recacheAsNeeded()
 	{
 		// Check to see if the schema relationships have changed any
-		Integer newValidationNumber = getDatabase().getSchemaExtensionsValidationNumber();
+		Integer newValidationNumber = dataCalls.getSchemaExtensionsValidationNumber();
 		if(!newValidationNumber.equals(validationNumber))
 		{
 			validationNumber = newValidationNumber;
@@ -59,7 +63,7 @@ public class SchemaRelationships extends DataCache
 			children.links.clear();
 			
 			// Caches the schema relationships
-			for(Extension extension : getDatabase().getSchemaExtensions())
+			for(Extension extension : dataCalls.getSchemaExtensions())
 			{
 				parents.addLink(extension.getExtensionID(),extension.getSchemaID());
 				children.addLink(extension.getSchemaID(),extension.getExtensionID());
@@ -68,8 +72,8 @@ public class SchemaRelationships extends DataCache
 	}
 	
 	/** Constructs the schema elements cache */
-	SchemaRelationships(DataManager manager)
-		{ super(manager); }
+	SchemaRelationshipCache(DataManager manager, SchemaRelationshipsDataCalls dataCalls)
+		{ super(manager); this.dataCalls=dataCalls; }
 	
 	//------------------
 	// Public Functions
@@ -105,7 +109,7 @@ public class SchemaRelationships extends DataCache
 	
 	/** Sets the parent schemas for the specified schema */
 	public boolean setParents(Integer schemaID, ArrayList<Integer> parentIDs)
-		{ return getDatabase().setSchemaParents(schemaID,parentIDs); }
+		{ return dataCalls.setSchemaParents(schemaID,parentIDs); }
 
 	//-------------------------------------------------
 	// Internal instantiations of the public functions
