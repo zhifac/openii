@@ -11,7 +11,6 @@ import java.util.List;
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
-import org.mitre.schemastore.model.mapfunctions.IdentityFunction;
 
 /**
  * Class for storing information about a mapping associated with the currently loaded project
@@ -182,8 +181,8 @@ public class ProjectMapping extends Mapping
 				// Determine if the mapping cell has been modified
 				boolean modified = (mappingCell.getScore()==null && oldMappingCell.getScore()!=null) ||
 								   (!mappingCell.getScore().equals(oldMappingCell.getScore()));
-				modified |= (mappingCell.getFunctionClass()==null && oldMappingCell.getFunctionClass()!=null) ||
-							(!mappingCell.getFunctionClass().equals(oldMappingCell.getFunctionClass()));
+				modified |= (mappingCell.getFunctionID()==null && oldMappingCell.getFunctionID()!=null) ||
+							(!mappingCell.getFunctionID().equals(oldMappingCell.getFunctionID()));
 				modified |= (mappingCell.getNotes()==null && oldMappingCell.getNotes()!=null) ||
 					        (!mappingCell.getNotes().equals(oldMappingCell.getNotes()));
 				
@@ -205,20 +204,19 @@ public class ProjectMapping extends Mapping
 		for(MappingCell mappingCell : new ArrayList<MappingCell>(mappingCells))
 		{
 			// Check to make sure mapping cell isn't already validated
-			if(mappingCell.getValidated()) continue;
+			if(mappingCell.isValidated()) continue;
 			
 			// Retrieve the various mapping cell fields
 			Integer id = mappingCell.getId();
 			Integer mappingID = mappingCell.getMappingId();
-			Integer inputIDs[] = mappingCell.getInput();
+			Integer inputID = mappingCell.getFirstInput();
 			Integer outputID = mappingCell.getOutput();
 			String author = System.getProperty("user.name");
-			Date date = Calendar.getInstance().getTime();
-			String function = IdentityFunction.class.getCanonicalName();			
+			Date date = Calendar.getInstance().getTime();		
 			String notes = mappingCell.getNotes();
 	
 			// Generate the validated mapping cell
-			MappingCell validatedMappingCell = MappingCell.createValidatedMappingCell(id, mappingID, inputIDs, outputID, author, date, function, notes);
+			MappingCell validatedMappingCell = MappingCell.createIdentityMappingCell(id, mappingID, inputID, outputID, author, date, notes);
 			validatedMappingCells.add(validatedMappingCell);
 			mappingCellHash.put(validatedMappingCell.getId(), validatedMappingCell);
 		}

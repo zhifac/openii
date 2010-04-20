@@ -180,7 +180,7 @@ public class MatchThread extends Thread
 			
 			// Don't store mapping cells which were already validated
 			Integer mappingCellID = manager.getMappingCellID(matchScore.getElement1(), matchScore.getElement2());
-			if(mappingCellID!=null && manager.getMappingCell(mappingCellID).getValidated()) continue;
+			if(mappingCellID!=null && manager.getMappingCell(mappingCellID).isValidated()) continue;
 			
 			// Get the mapping cell properties
 			Integer id = manager.getMappingCellID(matchScore.getElement1(), matchScore.getElement2());
@@ -190,7 +190,7 @@ public class MatchThread extends Thread
 			Date date = Calendar.getInstance().getTime();
 			
 			// Generate the mapping cell
-			mappingCells.add(MappingCell.createProposedMappingCell(id, mappingID, input, output, score, matcherName, date, null));
+			mappingCells.add( MappingCell.createProposedMappingCell(id, mappingID, input, output, score, matcherName, date, null));
 		}
 		manager.getMapping(mappingID).setMappingCells(mappingCells);
 	}

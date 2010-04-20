@@ -22,7 +22,6 @@ import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.project.MappingManager;
 import org.mitre.harmony.view.schemaTree.SchemaTree;
 import org.mitre.schemastore.model.MappingCell;
-import org.mitre.schemastore.model.mapfunctions.IdentityFunction;
 
 /**
  * Holds mouse pane which manages all mouse actions
@@ -124,8 +123,7 @@ class MousePane extends JPanel implements MouseListener, MouseMotionListener
 				Integer id = manager.getMappingCellID(leftID, rightID);
 				String author = System.getProperty("user.name");
 				Date date = Calendar.getInstance().getTime();
-				String function = IdentityFunction.class.getCanonicalName();
-				MappingCell mappingCell = MappingCell.createValidatedMappingCell(id, mappingID, new Integer[]{leftID}, rightID, author, date, function, null);
+				MappingCell mappingCell = MappingCell.createIdentityMappingCell(id, mappingID, leftID, rightID, author, date, null);
 				manager.getMapping(mappingID).setMappingCells(Arrays.asList(new MappingCell[]{mappingCell}));
 			}
 			repaint();
