@@ -13,7 +13,6 @@ import java.util.Calendar;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.ProjectSchema;
 import org.mitre.schemastore.model.Schema;
-import org.mitre.schemastore.model.mapfunctions.IdentityFunction;
 import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
 import org.mitre.schemastore.porters.ImporterException;
 
@@ -183,7 +182,7 @@ public class UserMatchAnnotationDBImporter extends MappingImporter
 					int element1 = pathIds1.get(0);
 					int element2 = pathIds2.get(0);
 			
-					MappingCell cell = MappingCell.createValidatedMappingCell(null, null, new Integer[]{element1}, element2, author, Calendar.getInstance().getTime(), IdentityFunction.class.getCanonicalName(), notes);
+					MappingCell cell = MappingCell.createIdentityMappingCell(null, null, element1, element2, author, Calendar.getInstance().getTime(), notes);
 					cell.setScore(rs.getDouble("linkWeight"));
 					mappingCells.add(cell);
 				}

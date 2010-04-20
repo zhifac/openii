@@ -253,12 +253,10 @@ public class ConvertFromXML
 		String author = getValue(element,"MappingCellAuthor");
 		Date date = getDateValue(element,"MappingCellDate");
 		Double score = getDoubleValue(element,"MappingCellScore");
-		String function = getValue(element,"MappingCellFunction");
+		Integer functionID = getIntegerValue(element,"MappingCellFunction");
 		String notes = getValue(element,"MappingCellNotes");
-		Boolean validated = getBooleanValue(element,"MappingCellValidated");
 		
 		// Return the generated mapping cell
-		if(validated) return MappingCell.createValidatedMappingCell(id, null, inputIDs, outputID, author, date, function, notes);
-		else return MappingCell.createProposedMappingCell(id, null, inputIDs[0], outputID, score, author, date, notes);
+		return new MappingCell(id, null, inputIDs, outputID, score, functionID, author, date, notes);
 	}
 }
