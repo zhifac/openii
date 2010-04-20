@@ -5,12 +5,16 @@ package org.mitre.schemastore.data;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.mitre.schemastore.data.database.Database.SchemaTag;
+import org.mitre.schemastore.data.database.TagDataCalls;
+import org.mitre.schemastore.data.database.TagDataCalls.SchemaTag;
 import org.mitre.schemastore.model.Tag;
 
 /** Class for managing the tags in the schema repository */
-public class Tags extends DataCache
+public class TagCache extends DataCache
 {
+	/** Stores reference to the tag data calls */
+	private TagDataCalls dataCalls = null;
+	
 	/** Stores the validation number */
 	private Integer validationNumber = 0;
 	
@@ -21,14 +25,14 @@ public class Tags extends DataCache
 	private HashMap<Integer,ArrayList<Integer>> tagSchemas = new HashMap<Integer,ArrayList<Integer>>();
 	
 	/** Constructs the tags cache */
-	Tags(DataManager manager)
-		{ super(manager); }
+	TagCache(DataManager manager, TagDataCalls dataCalls)
+		{ super(manager); this.dataCalls=dataCalls; }
 	
 	/** Refreshes the schema tags */
 	private void recacheAsNeeded()
 	{
 		// Check to see if the schema tags have changed any
-		Integer newValidationNumber = getDatabase().getSchemaTagValidationNumber();
+		Integer newValidationNumber = dataCalls.getSchemaTagValidationNumber();
 		if(!newValidationNumber.equals(validationNumber))
 		{
 			validationNumber = newValidationNumber;
@@ -38,7 +42,7 @@ public class Tags extends DataCache
 			tagSchemas.clear();
 			
 			// Caches the schema tags
-			for(SchemaTag schemaTag : getDatabase().getSchemaTags())
+			for(SchemaTag schemaTag : dataCalls.getSchemaTags())
 			{
 				// Place in schema tag hash
 				ArrayList<Integer> schemaTagArray = schemaTags.get(schemaTag.getSchemaID());
@@ -55,30 +59,30 @@ public class Tags extends DataCache
 	
 	/** Returns a listing of all tags */
 	public ArrayList<Tag> getTags()
-		{ return getDatabase().getTags(); }
+		{ return dataCalls.getTags(); }
 
 	/** Returns the specified tag */
 	public Tag getTag(Integer tagID)
-		{ return getDatabase().getTag(tagID); }
+		{ return dataCalls.getTag(tagID); }
 	
 	/** Returns the listing of sub-categories for the specified tag */
 	public ArrayList<Tag> getSubcategories(Integer tagID)
-		{ return getDatabase().getSubcategories(tagID); }
+		{ return dataCalls.getSubcategories(tagID); }
 	
 	/** Adds the specified tag */
 	public Integer addTag(Tag tag)
-		{ return getDatabase().addTag(tag); }
+		{ return dataCalls.addTag(tag); }
 	
 	/** Updates the specified tag */
 	public boolean updateTag(Tag tag)
-		{ return getDatabase().updateTag(tag); }
+		{ return dataCalls.updateTag(tag); }
 	
 	/** Removes the specified tag (and all sub-categories) */
 	public boolean deleteTag(Integer tagID)
 	{
 		for(Tag subcategory : getSubcategories(tagID))
 			if(!deleteTag(subcategory.getId())) return false;
-		return getDatabase().deleteTag(tagID);
+		return dataCalls.deleteTag(tagID);
 	}
 	
 	/** Returns the list of tag schemas */
@@ -101,9 +105,9 @@ public class Tags extends DataCache
 	
 	/** Adds a tag to the specified schema */
 	public Boolean addTagToSchema(Integer schemaID, Integer tagID)
-		{ return getDatabase().addTagToSchema(schemaID, tagID); }
+		{ return dataCalls.addTagToSchema(schemaID, tagID); }
 
 	/** Removes a tag from the specified schema */
 	public Boolean removeTagFromSchema(Integer schemaID, Integer tagID)
-		{ return getDatabase().removeTagFromSchema(schemaID, tagID); }
+		{ return dataCalls.removeTagFromSchema(schemaID, tagID); }
 }

@@ -13,7 +13,6 @@ import java.sql.Statement;
 
 import org.mitre.schemastore.data.database.DatabaseConnection;
 
-
 /**
  * Handles initialization and updates to the database
  * @author CWOLF
@@ -21,16 +20,16 @@ import org.mitre.schemastore.data.database.DatabaseConnection;
 public class DatabaseUpdates
 {
 	/** Stores the current version */
-	static private Integer currVersion = 8;
+	static private Integer currVersion = 9;
 
 	/** Retrieve the contents of a file as a buffered string */
-	static private StringBuffer getFileContents(String file) throws IOException
+	static private StringBuffer getFileContents(String filename) throws IOException
 	{
 		// Initialize the string buffer
 		StringBuffer buffer = new StringBuffer("");
 
 		// Transfer the file to the string buffer
-		InputStream fileStream = DatabaseUpdates.class.getResourceAsStream(file);
+		InputStream fileStream = DatabaseUpdates.class.getResourceAsStream(filename);
 		BufferedReader in = new BufferedReader(new InputStreamReader(fileStream));
 		String line;
 		while((line=in.readLine())!=null)
@@ -45,6 +44,27 @@ public class DatabaseUpdates
 	static private void setProperty(Statement statement, String parameter, String value) throws SQLException
 		{ statement.executeUpdate("CALL SYSCS_UTIL.SYSCS_SET_DATABASE_PROPERTY('" + parameter + "','" + value + "')"); }
 
+	/** Initializes the specified data file */
+	static public void initializeData(Statement stmt, String filename) throws SQLException
+	{
+		// Retrieve the data from file
+		StringBuffer buffer = null;
+		try { buffer = getFileContents(filename); }
+		catch(IOException e) { throw new SQLException("Failed to access data file " + filename); }
+		
+		// Parse out data and store to database
+		String commands[] = buffer.toString().split("\\n\\s*\\n");
+		for(String command : commands)
+		{
+			// Run through series of insert statements
+			String rows[] = command.split("\\n");
+			String header = rows[0];
+			for(int i=1; i<rows.length; i++)
+				stmt.addBatch(header + " VALUES (" + rows[i] + ")");
+		}
+		stmt.executeBatch();		
+	}
+	
 	/** Initializes the database if needed */
 	static public void initialize(Connection connection, Integer type, String user, String password) throws SQLException
 	{
@@ -79,18 +99,9 @@ public class DatabaseUpdates
 				stmt.executeBatch();
 
 				// Generate the database data
-				buffer = getFileContents("SchemaStoreData.txt");
-				commands = buffer.toString().split("\\n\\s*\\n");
-				for(String command : commands)
-				{
-					// Run through series of insert statements
-					String rows[] = command.split("\\n");
-					String header = rows[0];
-					for(int i=1; i<rows.length; i++)
-						stmt.addBatch(header + " VALUES (" + rows[i] + ")");
-				}
-				stmt.addBatch("INSERT INTO version(id) VALUES("+DatabaseUpdates.currVersion+")");
-				stmt.executeBatch();
+				initializeData(stmt,"SchemaStoreSchemaData.txt");
+				initializeData(stmt,"SchemaStoreFunctionData.txt");
+				stmt.executeUpdate("INSERT INTO version(id) VALUES("+DatabaseUpdates.currVersion+")");
 
 				// Commit all changes
 				connection.commit();
@@ -133,14 +144,15 @@ public class DatabaseUpdates
 	{
 		try {
 			Integer version = getVersion(connection);
-			if(version<1) { new Version1Updates().runUpdates(connection); version=1; }
-			if(version<2) { new Version2Updates().runUpdates(connection); version=2; }
-			if(version<3) { new Version3Updates().runUpdates(connection); version=3; }
-			if(version<4) { new Version4Updates().runUpdates(connection); version=4; }
-			if(version<5) { new Version5Updates().runUpdates(connection); version=5; }
-			if(version<6) { new Version6Updates().runUpdates(connection); version=6; }
-			if(version<7) { new Version7Updates().runUpdates(connection); version=7; }
-			if(version<8) { new Version8Updates().runUpdates(connection); version=8; }
+			if(version<1) new Version1Updates().runUpdates(connection);
+			if(version<2) new Version2Updates().runUpdates(connection);
+			if(version<3) new Version3Updates().runUpdates(connection);
+			if(version<4) new Version4Updates().runUpdates(connection);
+			if(version<5) new Version5Updates().runUpdates(connection);
+			if(version<6) new Version6Updates().runUpdates(connection);
+			if(version<7) new Version7Updates().runUpdates(connection);
+			if(version<8) new Version8Updates().runUpdates(connection);
+			if(version<9) new Version9Updates().runUpdates(connection);
 			if(version>currVersion) throw new Exception("(E) Software must be updated to handle database version " + version);
 		}
 		catch (Exception e)

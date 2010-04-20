@@ -2,6 +2,8 @@
 
 package org.mitre.schemastore.data;
 
+import java.sql.SQLException;
+
 import org.mitre.schemastore.data.database.Database;
 import org.mitre.schemastore.data.database.DatabaseConnection;
 
@@ -12,36 +14,49 @@ public class DataManager
 	private Database database = null;
 	
 	// Stores the various data caches
-	private DataSources dataSources = null;
-	private Tags tags = null;
-	private Projects projects = null;
-	private SchemaElements schemaElements = null;
-	private SchemaRelationships schemaRelationships = null;
-	private Schemas schemas = null;
+	private DataSourceCache dataSourceCache = null;
+	private TagCache tagCache = null;
+	private FunctionCache functionCache = null;
+	private ProjectCache projectCache = null;
+	private SchemaElementCache schemaElementCache = null;
+	private SchemaRelationshipCache schemaRelationshipCache = null;
+	private SchemaCache schemaCache = null;
 
 	/** Constructs the data manager */
 	public DataManager(DatabaseConnection connection)
 	{
 		// Constructs the database
 		this.database = new Database(connection);
-		
-		// Constructs the data caches
-		dataSources = new DataSources(this);
-		tags = new Tags(this);
-		projects = new Projects(this);
-		schemaElements = new SchemaElements(this);
-		schemaRelationships = new SchemaRelationships(this);
-		schemas = new Schemas(this);
-	}
 
-	/** Returns the database */
-	public Database getDatabase() { return database; }
+		// Constructs the data caches
+		dataSourceCache = new DataSourceCache(this,database.getDataSourceDataCalls());
+		tagCache = new TagCache(this,database.getTagDataCalls());
+		functionCache = new FunctionCache(this,database.getFunctionDataCalls());
+		projectCache = new ProjectCache(this,database.getProjectDataCalls());
+		schemaElementCache = new SchemaElementCache(this,database.getSchemaElementDataCalls());
+		schemaRelationshipCache = new SchemaRelationshipCache(this,database.getSchemaRelationshipsDataCalls());
+		schemaCache = new SchemaCache(this,database.getSchemaDataCalls());
+	}
 	
 	// Returns the various data caches
-	public DataSources getDataSources() { return dataSources; }
-	public Tags getTags() { return tags; }
-	public Projects getProjects() { return projects; }
-	public SchemaElements getSchemaElements() { return schemaElements; }
-	public SchemaRelationships getSchemaRelationships() { return schemaRelationships; }
-	public Schemas getSchemas() { return schemas; }
+	public DataSourceCache getDataSourceCache() { return dataSourceCache; }
+	public TagCache getTagCache() { return tagCache; }
+	public FunctionCache getFunctionCache() { return functionCache; }
+	public ProjectCache getProjectCache() { return projectCache; }
+	public SchemaElementCache getSchemaElementCache() { return schemaElementCache; }
+	public SchemaRelationshipCache getSchemaRelationshipCache() { return schemaRelationshipCache; }
+	public SchemaCache getSchemaCache() { return schemaCache; }
+	
+	/** Retrieves a universal ID from the database */
+	public Integer getUniversalIDs(Integer count) throws SQLException
+		{ return database.getUniversalIDs(count); }
+	
+	/** Sets an annotation for the specified element */
+	public boolean setAnnotation(int elementID, String attribute, String value)
+		{ return database.setAnnotation(elementID, attribute, value); }
+
+	/** Gets the annotation for the specified element */
+	public String getAnnotation(int elementID, String attribute)
+		{ return database.getAnnotation(elementID, attribute); }
+
 }

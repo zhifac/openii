@@ -45,7 +45,7 @@ public class SaveMappingCells
 	static Boolean saveMappingCells(DataManager manager, Integer mappingID, ArrayList<MappingCell> mappingCells) throws RemoteException
 	{		
 		// Get old mapping cells
-		ArrayList<MappingCell> oldMappingCells = manager.getProjects().getMappingCells(mappingID);
+		ArrayList<MappingCell> oldMappingCells = manager.getProjectCache().getMappingCells(mappingID);
 		
 		// Build reference tables for the old and new mapping cells
 		MappingCellHashMap oldMappingCellRefs = new MappingCellHashMap(oldMappingCells);
@@ -67,7 +67,7 @@ public class SaveMappingCells
 			// Removes all mapping cells that are no longer used
 			for(MappingCell oldMappingCell : oldMappingCells)
 				if(!mappingCellRefs.contains(oldMappingCell))
-					if(!manager.getProjects().deleteMappingCell(oldMappingCell.getId())) success = false;
+					if(!manager.getProjectCache().deleteMappingCell(oldMappingCell.getId())) success = false;
 					
 			// Adds or updates all new mapping cells
 			for(MappingCell mappingCell : mappingCells)
@@ -77,12 +77,12 @@ public class SaveMappingCells
 				// Handles new mapping cells
 				if(mappingCell.getId()==null)
 				{
-					mappingCell.setId(manager.getProjects().addMappingCell(mappingCell));
+					mappingCell.setId(manager.getProjectCache().addMappingCell(mappingCell));
 					if(mappingCell.getId()==null) success = false;
 				}
 				
 				// Handles updated mapping cells
-				else if(!manager.getProjects().updateMappingCell(mappingCell)) success = false;
+				else if(!manager.getProjectCache().updateMappingCell(mappingCell)) success = false;
 			}
 			
 			// If not successful, throw exception
@@ -92,11 +92,11 @@ public class SaveMappingCells
 		// Reverts back to the old mapping if a failure occurred
 		catch(Exception e)
 		{
-			for(MappingCell mappingCell : manager.getProjects().getMappingCells(mappingID))
+			for(MappingCell mappingCell : manager.getProjectCache().getMappingCells(mappingID))
 			{
 				MappingCell oldMappingCell = oldMappingCellRefs.getMappingCell(mappingCell);
-				if(oldMappingCell==null) manager.getProjects().deleteMappingCell(mappingCell.getId());
-				else manager.getProjects().updateMappingCell(oldMappingCell);
+				if(oldMappingCell==null) manager.getProjectCache().deleteMappingCell(mappingCell.getId());
+				else manager.getProjectCache().updateMappingCell(oldMappingCell);
 			}
 		}
 		

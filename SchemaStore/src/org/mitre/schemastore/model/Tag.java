@@ -22,16 +22,16 @@ public class Tag implements Serializable
 	/** Constructs a default tag */
 	public Tag() {}
 	
-	/** Constructs a mapping */
+	/** Constructs a tag */
 	public Tag(Integer id, String name, Integer parentID)
 		{ this.id = id; this.name = name; this.parentID = (parentID==null || parentID==0) ? null : parentID; }
 	
-	// Handles all mapping getters
+	// Handles all tag getters
 	public Integer getId() { return id; }
 	public String getName() { return name; }
 	public Integer getParentId() { return parentID; }
 	
-	// Handles all mapping setters
+	// Handles all tag setters
 	public void setId(Integer id) { this.id = id; }
 	public void setName(String name) { this.name = name; }
 	public void setParentId(Integer parentID) { this.parentID = (parentID==null || parentID==0) ? null : parentID; }
