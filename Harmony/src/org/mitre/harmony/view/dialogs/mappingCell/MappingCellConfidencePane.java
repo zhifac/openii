@@ -32,7 +32,7 @@ public class MappingCellConfidencePane extends JPanel implements ActionListener
 	private boolean mappingCellsAccepted()
 	{
 		for(MappingCell mappingCell : mappingCells)
-			if(!mappingCell.getValidated() || mappingCell.getScore()!=1.0) return false;
+			if(!mappingCell.isValidated() || mappingCell.getScore()!=1.0) return false;
 		return true;
 	}
 
@@ -40,7 +40,7 @@ public class MappingCellConfidencePane extends JPanel implements ActionListener
 	private boolean mappingCellsRejected()
 	{
 		for(MappingCell mappingCell : mappingCells)
-			if(!mappingCell.getValidated() || mappingCell.getScore()!=-1.0) return false;
+			if(!mappingCell.isValidated() || mappingCell.getScore()!=-1.0) return false;
 		return true;
 	}
 	

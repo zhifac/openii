@@ -320,7 +320,7 @@ public class FilterManager extends AbstractManager<FiltersListener> implements M
 		}
 
 		// Check that link matches current filters for USER and SYSTEM links		
-		boolean validated = mappingCell.getValidated();
+		boolean validated = mappingCell.isValidated();
 		if(validated && !getFilter(USER_FILTER)) return false;
 		if(!validated && !getFilter(SYSTEM_FILTER)) return false;
 

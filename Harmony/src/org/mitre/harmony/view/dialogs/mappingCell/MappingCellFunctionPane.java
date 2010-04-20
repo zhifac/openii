@@ -57,7 +57,7 @@ public class MappingCellFunctionPane extends JPanel implements ActionListener, K
 	private boolean mappingCellsAccepted()
 	{
 		for(MappingCell mappingCell : mappingCells2)
-			if(!mappingCell.getValidated() || mappingCell.getScore()!=1.0) return false;
+			if(!mappingCell.isValidated() || mappingCell.getScore()!=1.0) return false;
 		return true;
 	}
 
@@ -65,7 +65,7 @@ public class MappingCellFunctionPane extends JPanel implements ActionListener, K
 	private boolean mappingCellsRejected()
 	{
 		for(MappingCell mappingCell : mappingCells2)
-			if(!mappingCell.getValidated() || mappingCell.getScore()!=-1.0) return false;
+			if(!mappingCell.isValidated() || mappingCell.getScore()!=-1.0) return false;
 		return true;
 	}
 	

@@ -192,7 +192,7 @@ class MappingCellLines
 		MappingCell mappingCell = harmonyModel.getMappingManager().getMappingCell(mappingCellID);
 		double conf = mappingCell.getScore();
     	if(harmonyModel.getSelectedInfo().isMappingCellSelected(mappingCellID)) return BLUE;
-    	else if(mappingCell.getValidated()) return BLACK;
+    	else if(mappingCell.isValidated()) return BLACK;
     	else if(conf>=1) return GREEN;
     	else if(conf<0.333) return new Color(0.8f,0.8f-1.2f*(0.333f-(float)conf),0.0f);
 	    else return new Color(0.8f-1.2f*((float)conf-0.333f),0.8f,0.0f);

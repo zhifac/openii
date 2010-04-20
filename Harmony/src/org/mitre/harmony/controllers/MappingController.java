@@ -35,7 +35,7 @@ public class MappingController
 		HashSet<MappingCell> mappingCells = new HashSet<MappingCell>();
 		for(MappingCell mappingCell : harmonyModel.getMappingManager().getMappingCells())
 		{
-			boolean validated = mappingCell.getValidated();
+			boolean validated = mappingCell.isValidated();
 			if(type==ALL || (type==SYSTEM && !validated) || (type== USER && validated))
 				mappingCells.add(mappingCell);
 		}
@@ -92,7 +92,7 @@ public class MappingController
 			for(Integer mappingCellID : mapping.getMappingCellsByElement(elementID))
 			{
 				MappingCell mappingCell = mapping.getMappingCell(mappingCellID);
-				if(!mappingCell.getValidated()) mappingCellsToDelete.add(mappingCell);
+				if(!mappingCell.isValidated()) mappingCellsToDelete.add(mappingCell);
 			}		
 			
 			// Delete all Mark all visible links as user selected and all others as rejected
