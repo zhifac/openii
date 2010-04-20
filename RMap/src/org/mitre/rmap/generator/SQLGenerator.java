@@ -36,6 +36,35 @@ public class SQLGenerator {
 		return targetExportTypes;
 	}
 
+	public Boolean checkForErrors(ArrayList<Dependency> dependencies) throws SQLGeneratorException {
+		for (Dependency dependency : dependencies) {
+			for (MappingCell cell : dependency.getCoveredCorrespondences()) {
+				SchemaElement sourceElement = dependency.getSourceLogicalRelation().getMappingSchemaInfo().getElement(cell.getInput()[0]);
+				SchemaElement targetElement = dependency.getTargetLogicalRelation().getMappingSchemaInfo().getElement(cell.getOutput());
+
+				if (sourceElement == null) {
+					throw new SQLGeneratorException("Correspondence references NULL source attribute.");
+				}
+				if (!(sourceElement instanceof Attribute)) {
+					throw new SQLGeneratorException("Dependency source element " + sourceElement.getName() + " is not an attribute.");
+				}
+				if (targetElement == null) {
+					throw new SQLGeneratorException("Correspondence references NULL target attribute.");
+				}
+				if (!(targetElement instanceof Attribute)) {
+					throw new SQLGeneratorException("Dependency target element " + targetElement.getName() + " is not an attribute.");
+				}
+				if (sourceElement instanceof Attribute && !((Attribute)sourceElement).isKey() && targetElement instanceof Attribute && ((Attribute)targetElement).isKey()) {
+					throw new SQLGeneratorException("Dependency target element " + targetElement.getName() + " is key attribute and can only be populated by key attributes.");
+				}
+				if (cell.getScore() != 1.0) {
+					throw new SQLGeneratorException("Dependency between " + sourceElement.getName() + " and " + targetElement.getName() + " must be validated.");
+				}
+			}
+		}
+		return true;
+	}
+
 	/**
 	 * PART OF INTERFACE TO GUI -- takes selected dependences --> final SQL Script
 	 *
@@ -44,7 +73,7 @@ public class SQLGenerator {
 	 * @return final executable SQL script (each line as separate string)
 	 */
 	@SuppressWarnings("unchecked")
-	public ArrayList<String> generate(ArrayList<Dependency> dependencies, String targetDB) {
+	public ArrayList<String> generate(ArrayList<Dependency> dependencies, String targetDB) throws SQLGeneratorException {
 		ArrayList<String> value = new ArrayList<String>();
 
 		// create a new object from the targetDB
@@ -107,7 +136,7 @@ public class SQLGenerator {
 	}
 
 	// generates SQL to generate the Skolem table
-	private Object[] generateDependencySQLScript(Dependency dependency, String targetDB) {
+	private Object[] generateDependencySQLScript(Dependency dependency, String targetDB) throws SQLGeneratorException {
 		Object[] value = new Object[3];
 		ArrayList<String> cleanup = new ArrayList<String>();
 		HashMap<Integer,Boolean> needToGen = new HashMap<Integer,Boolean>();
@@ -121,7 +150,7 @@ public class SQLGenerator {
 		return value;
 	}
 
-	private ArrayList<Entity> topologicalSort (ArrayList<Dependency> dependencies) {
+	private ArrayList<Entity> topologicalSort (ArrayList<Dependency> dependencies) throws SQLGeneratorException {
 		HashMap<Integer,Entity> entitiesBySSID = new HashMap<Integer,Entity>();
 		ArrayList<Relationship> relsWithSSID = new ArrayList<Relationship>();
 
@@ -185,7 +214,7 @@ public class SQLGenerator {
 	 * @param needToGenSkolem
 	 * @return
 	 */
-	private ArrayList<String> createSkolemTables(Dependency dependency, ArrayList<String> cleanup, HashMap<Integer,Boolean> needToGenSkolem, String targetDB) {
+	private ArrayList<String> createSkolemTables(Dependency dependency, ArrayList<String> cleanup, HashMap<Integer,Boolean> needToGenSkolem, String targetDB) throws SQLGeneratorException {
 		ArrayList<String> retVal = new ArrayList<String>();
 		HierarchicalSchemaInfo sourceSchemaInfo = dependency.getSourceLogicalRelation().getMappingSchemaInfo();
 
@@ -215,8 +244,7 @@ public class SQLGenerator {
 							domainName = sourceSchemaInfo.getElement(((Attribute)sourceSchemaInfo.getElement(inputId)).getDomainID()).getName();
 						}
 						else {
-							// TODO: show something or do something when this happens
-							System.err.println("[E] SQLGenerator -- error in generated SQL -- no domain assigned skolem attribute");
+							throw new SQLGeneratorException("No domain assigned skolem attribute.");
 						}
 						createTable += DELIM + SQLGenerator.VARIABLE_CHAR + index + DELIM + " " + domainName;
 						index++;
@@ -252,9 +280,7 @@ public class SQLGenerator {
 							pathId = dependency.getSourceLogicalRelation().getPositionMappingSchemaEntitySet(sourceSchemaInfo.getEntity(indexId).getId() );
 						}
 						else {
-							pathId = 0;
-							// TODO: show something or do something when this happens
-							System.err.println("[E] SQLGenerator: Error in Generated SQL -- have Entity as input");
+							throw new SQLGeneratorException("Source is neither a relationship nor an attribute.");
 						}
 						String attrName = sourceSchemaInfo.getElement(indexId).getName();
 						attrName = DELIM + attrName + DELIM;
@@ -273,10 +299,10 @@ public class SQLGenerator {
 	// where SKOLEM tables are to be used for Attribute, generate SELECT statement from appropriate Skolem table
 	// to populate the Attribute
 	@SuppressWarnings("unchecked")
-	private HashMap<Integer,String> generateStatements(Dependency dependency, HashMap<Integer,Boolean> needToGen, HashMap<Integer,Boolean> needToGenSkolem) {
+	private HashMap<Integer,String> generateStatements(Dependency dependency, HashMap<Integer,Boolean> needToGen, HashMap<Integer,Boolean> needToGenSkolem) throws SQLGeneratorException {
 		HierarchicalSchemaInfo sourceSchemaGraph = dependency.getSourceLogicalRelation().getMappingSchemaInfo();
 		HierarchicalSchemaInfo targetSchemaGraph = dependency.getTargetLogicalRelation().getMappingSchemaInfo();
-		HashMap<Integer, String> retVal = new HashMap<Integer,String>();
+		HashMap<Integer, String> value = new HashMap<Integer,String>();
 
 		// create the MappingDefinition for use when doing mapping functions
 		Object[] mappingDefData = dependency.generateMapping(project);
@@ -294,8 +320,7 @@ public class SQLGenerator {
 				} else if (targetSchemaGraph.getElement(cell.getOutput()) instanceof Attribute) {
 					outputEntityId = targetSchemaGraph.getEntity(cell.getOutput()).getId();
 				} else {
-					// TODO: show something or do something when this happens
-					System.err.println("[E] SQLGenerator: Error in Generated SQL -- have Entity as input");
+					throw new SQLGeneratorException("Target is neither a relationship nor an attribute.");
 				}
 
 				if (outputEntityId.equals(path.getId())) {
@@ -332,7 +357,7 @@ public class SQLGenerator {
 				// Build SELECT DISTINCT string
 				String selectString = new String(" SELECT DISTINCT ");
 				String valueString = null;
-				AbstractMappingFunction mapper=null;
+				AbstractMappingFunction mapper = null;
 				for (int i = 0; i < targetSchemaGraph.getChildElements(path.getId()).size(); i++) {
 					SchemaElement child = targetSchemaGraph.getChildElements(path.getId()).get(i);
 					Attribute targetChild = null;
@@ -354,14 +379,12 @@ public class SQLGenerator {
 									pathIds[j] = dependency.getSourceLogicalRelation().getPositionMappingSchemaEntitySet(sourceSchemaGraph.getEntity(cell.getInput()[0]).getId() );
 								}
 								else {
-									pathIds[j] = 0;
-									// TODO: show something or do something when this happens
-									System.err.println("[E] SQLGenerator: Error in Generated SQL -- have Entity as input");
+									throw new SQLGeneratorException("Source is neither a relationship nor an attribute.");
 								}
 							}
 
 							String[] colPrefixs = new String[pathIds.length];
-							for (int j=0; j<colPrefixs.length;j++) {
+							for (int j = 0; j < colPrefixs.length; j++) {
 								colPrefixs[j] = DELIM + SQLGenerator.TABLE_CHAR + pathIds[j] + DELIM + ".";
 							}
 
@@ -388,7 +411,7 @@ public class SQLGenerator {
 							needToGenSkolem.put(targetSchemaGraph.getEntity(targetChild.getId()).getId(), true);
 
 							valueString = new String();
-							valueString += " ( SELECT " + DELIM  +"skid" + DELIM + " FROM " + DELIM + SQLGenerator.SKOLEM_TABLE_CHAR + targetSchemaGraph.getEntity(targetChild.getId()).getId() + DELIM + " WHERE ";
+							valueString += " ( SELECT " + DELIM + "skid" + DELIM + " FROM " + DELIM + SQLGenerator.SKOLEM_TABLE_CHAR + targetSchemaGraph.getEntity(targetChild.getId()).getId() + DELIM + " WHERE ";
 
 							for (int j = 0; j < dependency.getCoveredCorrespondences().size(); j++) {
 								MappingCell cell = dependency.getCoveredCorrespondences().get(j);
@@ -397,13 +420,11 @@ public class SQLGenerator {
 									Integer pathId = 0;
 									if (sourceSchemaGraph.getElement(inputId) instanceof Relationship) {
 										pathId = dependency.getSourceLogicalRelation().getEntityIndicesByRel().get(dependency.getSourceLogicalRelation().getIDmappings_LR_to_SS().get(sourceSchemaGraph.getElement(inputId).getId())).get(0);
-									}else if (sourceSchemaGraph.getElement(inputId) instanceof Attribute) {
+									} else if (sourceSchemaGraph.getElement(inputId) instanceof Attribute) {
 										pathId = dependency.getSourceLogicalRelation().getPositionMappingSchemaEntitySet(sourceSchemaGraph.getEntity(inputId).getId() );
 									} else {
-										// TODO: show something or do something when this happens
-										System.err.println("[E] SQLGenerator: Error in Generated SQL -- have Entity as input");
+										throw new SQLGeneratorException("Source is neither a relationship nor an attribute.");
 									}
-
 
 									String attrName = sourceSchemaGraph.getElement(inputId).getName();
 									attrName = DELIM + attrName +DELIM;
@@ -417,8 +438,7 @@ public class SQLGenerator {
 						} else if (isNullable == true && useSkolem == false) {
 							valueString = "null";
 						} else {
-							// TODO: show something or do something when this happens
-							System.err.println("[E]SQLGenerator:generateStatements -- cannot be nullable and required to generate Skolem constant");
+							throw new SQLGeneratorException("Cannot have a nullable field and be required to generate a skolem constant.");
 						}
 					}
 
@@ -427,10 +447,10 @@ public class SQLGenerator {
 				} // end for
 
 				String queryString = insertIntoString + selectString + generateFromWhereLogRel(dependency.getSourceLogicalRelation());
-				retVal.put(path.getId(),queryString);
+				value.put(path.getId(),queryString);
 			} // end if (needToGen.get(path.getId()) == true){
 		}
-		return retVal;
+		return value;
 	}
 
 	private Attribute getKey(Integer id, HierarchicalSchemaInfo targetSchemaGraph) {

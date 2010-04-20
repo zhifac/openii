@@ -30,6 +30,7 @@ import org.mitre.harmony.view.mappingPane.MappingPane;
 
 import org.mitre.rmap.generator.Dependency;
 import org.mitre.rmap.generator.SQLGenerator;
+import org.mitre.rmap.generator.SQLGeneratorException;
 import org.mitre.rmap.model.DependencyTableModel;
 import org.mitre.rmap.model.RMapHarmonyModel;
 
@@ -332,15 +333,30 @@ public class RMapFrame extends JInternalFrame {
         	for (int i = 0; i < dependencyTableData.length; i++) {
         		if ((Boolean)dependencyTableData[i][0]) { selectedIndices.add(i); }
         	}
-        	
+
+        	// if no depencies between elements are in this relation, show a warning
+    		ArrayList<Dependency> selectedDependencies = new ArrayList<Dependency>();
+    		for (Integer index : selectedIndices) {
+    			Dependency selected = dependenciesOrdered.get(index);
+    			selectedDependencies.add(selected);
+    		}
+
         	// if no dependencies has been checked show a warning
-        	if (selectedIndices.size() == 0) {
+        	if (selectedDependencies.size() == 0) {
         		JOptionPane.showMessageDialog(mainPane, "No dependencies are selected. Cannot generate SQL.", "Error", JOptionPane.ERROR_MESSAGE);
         		return;
         	}
-
+        	
         	// create the generator which has all of our SQL stuff in it
     		SQLGenerator generator = new SQLGenerator(harmonyModel.getProjectManager().getProject());
+
+        	// if there is a problem with the dependencies, show a warning
+        	try {
+        		generator.checkForErrors(selectedDependencies);
+        	} catch (SQLGeneratorException exp) {
+        		JOptionPane.showMessageDialog(mainPane, exp.getMessage() + " Cannot generate SQL.", "Error", JOptionPane.ERROR_MESSAGE);
+        		return;
+        	}
 
     		// ask what kind of output they would like to generate
     		Object[] exportChoices = generator.getExportTypes().toArray();
@@ -355,30 +371,29 @@ public class RMapFrame extends JInternalFrame {
 			);
 
     		if (selectTargetDB != null && selectTargetDB.length() > 0) {
-            	// if no depencies between elements are in this relation, show a warning
-        		ArrayList<Dependency> selectedDependencies = new ArrayList<Dependency>();
-        		for (Integer index : selectedIndices) {
-        			Dependency selected = dependenciesOrdered.get(index);
-        			selectedDependencies.add(selected);
-        		}
+    			// if there is an error while generating the SQL, show it
+    			try {
+    				// this call actually generates the SQL and puts it into a string array
+    				ArrayList<String> generatedSQL = generator.generate(selectedDependencies, selectTargetDB);
 
-        		// this call actually generates the SQL and puts it into a string array
-        		ArrayList<String> generatedSQL = generator.generate(selectedDependencies, selectTargetDB);
+	        		// collect the generated SQL into a normal string
+	        		StringBuffer generatedString = new StringBuffer();
+	        		for (String i : generatedSQL) {
+	        			if (i == null) { continue; }
+	        			generatedString.append(i).append("\n");
+	        		}
 
-        		// collect the generated SQL into a normal string
-        		StringBuffer generatedString = new StringBuffer();
-        		for (String i : generatedSQL) {
-        			if (i == null) { continue; }
-        			generatedString.append(i).append("\n");
-        		}
+	        		// set the text into the generated pane's text box
+	        		textArea.setText(generatedString.toString());
+	        		textArea.setCaretPosition(0);
 
-        		// set the text into the generated pane's text box
-        		textArea.setText(generatedString.toString());
-        		textArea.setCaretPosition(0);
-
-        		// change cards to the generated SQL
-        		CardLayout c = (CardLayout)(cardPane.getLayout());
-        		c.show(cardPane, GENERATED_PANE);
+        			// change cards to the generated SQL
+        			CardLayout c = (CardLayout)(cardPane.getLayout());
+        			c.show(cardPane, GENERATED_PANE);
+    			} catch (SQLGeneratorException exp) {
+            		JOptionPane.showMessageDialog(mainPane, exp.getMessage() + " Cannot generate SQL.", "Error", JOptionPane.ERROR_MESSAGE);
+            		return;
+    			}
         	}
         }
     } // end class GenerateSQLButtonListener
