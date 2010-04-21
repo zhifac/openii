@@ -11,8 +11,8 @@ public class WizardModel
     public static final String CURRENT_PANEL_DESCRIPTOR_PROPERTY = "currentPanelDescriptorProperty";
     public static final String BACK_BUTTON_TEXT_PROPERTY = "backButtonTextProperty";
     public static final String BACK_BUTTON_ENABLED_PROPERTY = "backButtonEnabledProperty";
-    public static final String NEXT_FINISH_BUTTON_TEXT_PROPERTY = "nextButtonTextProperty";
-    public static final String NEXT_FINISH_BUTTON_ENABLED_PROPERTY = "nextButtonEnabledProperty";
+    public static final String NEXT_BUTTON_TEXT_PROPERTY = "nextButtonTextProperty";
+    public static final String NEXT_BUTTON_ENABLED_PROPERTY = "nextButtonEnabledProperty";
     public static final String CANCEL_BUTTON_TEXT_PROPERTY = "cancelButtonTextProperty";
     public static final String CANCEL_BUTTON_ENABLED_PROPERTY = "cancelButtonEnabledProperty";
     

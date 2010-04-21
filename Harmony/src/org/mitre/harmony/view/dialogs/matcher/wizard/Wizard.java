@@ -3,13 +3,12 @@ package org.mitre.harmony.view.dialogs.matcher.wizard;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Frame;
+import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.WindowAdapter;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
-import javax.swing.Box;
-import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
@@ -38,20 +37,27 @@ public class Wizard extends WindowAdapter implements PropertyChangeListener
     private JPanel cardPanel;
     
     // References to the various wizard buttons
-    private JButton backButton;
-    private JButton nextButton;
-    private JButton cancelButton;
+    private JButton backButton = new JButton();
+    private JButton nextButton = new JButton();
+    private JButton cancelButton = new JButton();
     
     /** Stores the wizard return code */
     private int returnCode;
 
     /** Generates a button with the specified action command */
-    private JButton generateButton(String command)
+    private JPanel generateButton(JButton button, String command)
     {
-        JButton button = new JButton();
-    	button.setActionCommand(command);
+    	// Generate the button
+     	button.setActionCommand(command);
     	button.addActionListener(wizardController);
-    	return button;
+    	button.setFocusable(false);
+
+    	// Generate the button pane
+    	JPanel pane = new JPanel();
+    	pane.setBorder(new EmptyBorder(5,5,5,5));
+    	pane.setLayout(new BorderLayout());
+    	pane.add(button,BorderLayout.CENTER);
+    	return pane; 
     }
     
     /** Constructs the wizard */
@@ -68,19 +74,17 @@ public class Wizard extends WindowAdapter implements PropertyChangeListener
         cardPanel.setLayout(new CardLayout());
         
         // Generate the button box
-        Box buttonBox = new Box(BoxLayout.X_AXIS);
-        buttonBox.setBorder(new EmptyBorder(new Insets(5, 10, 5, 10)));       
-        buttonBox.add(backButton = generateButton(BACK_BUTTON_ACTION_COMMAND));
-        buttonBox.add(Box.createHorizontalStrut(10));
-        buttonBox.add(nextButton = generateButton(NEXT_BUTTON_ACTION_COMMAND));
-        buttonBox.add(Box.createHorizontalStrut(30));
-        buttonBox.add(cancelButton = generateButton(CANCEL_BUTTON_ACTION_COMMAND));
+        JPanel buttonPane = new JPanel();
+        buttonPane.setLayout(new GridLayout(1,3));
+        buttonPane.add(generateButton(backButton, BACK_BUTTON_ACTION_COMMAND));
+        buttonPane.add(generateButton(nextButton, NEXT_BUTTON_ACTION_COMMAND));
+        buttonPane.add(generateButton(cancelButton, CANCEL_BUTTON_ACTION_COMMAND));
         
         // Generate the button pane
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new BorderLayout());
         buttonPanel.add(new JSeparator(), BorderLayout.NORTH);
-        buttonPanel.add(buttonBox, java.awt.BorderLayout.EAST);
+        buttonPanel.add(buttonPane, java.awt.BorderLayout.SOUTH);
 
         // Generate the wizard dialog
         wizardDialog = new JDialog(owner);         
@@ -145,13 +149,13 @@ public class Wizard extends WindowAdapter implements PropertyChangeListener
     {    
         if (evt.getPropertyName().equals(WizardModel.CURRENT_PANEL_DESCRIPTOR_PROPERTY))
             wizardController.resetButtonsToPanelRules(); 
-        else if (evt.getPropertyName().equals(WizardModel.NEXT_FINISH_BUTTON_TEXT_PROPERTY))
+        else if (evt.getPropertyName().equals(WizardModel.NEXT_BUTTON_TEXT_PROPERTY))
             nextButton.setText(evt.getNewValue().toString());
         else if (evt.getPropertyName().equals(WizardModel.BACK_BUTTON_TEXT_PROPERTY))            
             backButton.setText(evt.getNewValue().toString());
         else if (evt.getPropertyName().equals(WizardModel.CANCEL_BUTTON_TEXT_PROPERTY))      
             cancelButton.setText(evt.getNewValue().toString());
-        else if (evt.getPropertyName().equals(WizardModel.NEXT_FINISH_BUTTON_ENABLED_PROPERTY))
+        else if (evt.getPropertyName().equals(WizardModel.NEXT_BUTTON_ENABLED_PROPERTY))
             nextButton.setEnabled(((Boolean)evt.getNewValue()).booleanValue());
         else if (evt.getPropertyName().equals(WizardModel.BACK_BUTTON_ENABLED_PROPERTY))
             backButton.setEnabled(((Boolean)evt.getNewValue()).booleanValue());
@@ -169,7 +173,7 @@ public class Wizard extends WindowAdapter implements PropertyChangeListener
 
     /** Sets the next button as enabled/disabled */
     public void setNextFinishButtonEnabled(boolean newValue)
-    	{ wizardModel.setProperty(WizardModel.NEXT_FINISH_BUTTON_ENABLED_PROPERTY,newValue); }
+    	{ wizardModel.setProperty(WizardModel.NEXT_BUTTON_ENABLED_PROPERTY,newValue); }
     
     /* Sets the cancel button as enabled/disabled */
     public void setCancelButtonEnabled(boolean newValue)
