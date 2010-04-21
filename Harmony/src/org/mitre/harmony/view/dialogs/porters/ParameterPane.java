@@ -20,14 +20,14 @@ public class ParameterPane extends JPanel
 	}
 	
 	/** Adds a parameter to the pane */
-	public void addParameter(String label, JComponent component)
+	public void addParameter(String label, JComponent component, int offset)
 	{
 		// Position the parameter label
 		GridBagConstraints constraints = new GridBagConstraints();
 		constraints.gridx = 0;
 		constraints.gridy = getComponentCount()/2;
 		constraints.anchor = GridBagConstraints.FIRST_LINE_END;
-		constraints.insets = new Insets(2,0,1,0);
+		constraints.insets = new Insets(2+offset,0,1,0);
 		add(new JLabel(label!=null ? label + ": " : ""),constraints);
 			
 		// Position the parameter component
@@ -39,4 +39,8 @@ public class ParameterPane extends JPanel
 			{ constraints.fill = GridBagConstraints.BOTH; constraints.weighty = 1; }
 		add(component,constraints);
 	}
+	
+	/** Adds a parameter to the pane */
+	public void addParameter(String label, JComponent component)
+		{ addParameter(label,component,0); }
 }
