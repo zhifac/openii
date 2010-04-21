@@ -77,6 +77,7 @@ public class ImportMappingDialog extends JDialog implements ActionListener, Care
 			JLabel label = new JLabel("Schema: ");
 			label.setFont(new Font("Default",Font.BOLD,getFont().getSize()-2));
 			comboBox.setBackground(Color.white);
+			comboBox.setFocusable(false);
 			referenceLabel.setFont(new Font("Default",Font.BOLD,getFont().getSize()-2));
 			setSchema(null);
 			
@@ -87,6 +88,7 @@ public class ImportMappingDialog extends JDialog implements ActionListener, Care
 			referencePane.add(referenceLabel,BorderLayout.CENTER);
 
 			// Generate the selector pane
+			setBorder(new EmptyBorder(3,0,0,0));
 			setLayout(new BorderLayout());
 			add(comboBox,BorderLayout.NORTH);
 			add(referencePane,BorderLayout.SOUTH);
@@ -230,8 +232,8 @@ public class ImportMappingDialog extends JDialog implements ActionListener, Care
 		ParameterPane pane = new ParameterPane();
 		pane.setBorder(new CompoundBorder(new LineBorder(Color.gray),new EmptyBorder(6,6,6,6)));
 		pane.addParameter("File / URI", uriField);
-		pane.addParameter("Source", sourceSelector);
-		pane.addParameter("Target", targetSelector);
+		pane.addParameter("Source",sourceSelector,6);
+		pane.addParameter("Target",targetSelector,6);
 		pane.addParameter(null, showAllSchemas);
 		return pane;
 	}
