@@ -2,6 +2,7 @@
 // ALL RIGHTS RESERVED
 package org.mitre.harmony;
 
+import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
@@ -39,8 +40,8 @@ public class Harmony extends JFrame implements ProjectListener, WindowListener
 	   	setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/org/mitre/harmony/view/graphics/SSM.jpg")));
 	   	setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		setContentPane(new HarmonyFrame(harmonyModel));
-	   	setSize(600,500);
-		setExtendedState(MAXIMIZED_BOTH);
+		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+	   	setSize(dim.width*3/4,dim.height*3/4);
 	   	setLocationRelativeTo(null);
  	   	setVisible(true);
 
