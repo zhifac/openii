@@ -8,7 +8,7 @@ import org.mitre.rmap.generator.Dependency;
 import org.mitre.rmap.model.exports.Export;
 import org.mitre.schemastore.model.*;
 import org.mitre.schemastore.model.mapfunctions.*;
-import org.mitre.schemastore.model.mappingInfo.MappingInfo;
+import org.mitre.schemastore.model.mappingInfo.*;
 import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
 
 public class SQLGenerator {
@@ -303,10 +303,6 @@ public class SQLGenerator {
 		HierarchicalSchemaInfo targetSchemaGraph = dependency.getTargetLogicalRelation().getMappingSchemaInfo();
 		HashMap<Integer, String> value = new HashMap<Integer,String>();
 
-		// create the MappingDefinition for use when doing mapping functions
-		Object[] mappingDefData = dependency.generateMapping(project);
-		MappingInfo mappingDefinition = new MappingInfo(project, (ArrayList<MappingCell>)mappingDefData[1], (HierarchicalSchemaInfo)mappingDefData[2], (HierarchicalSchemaInfo)mappingDefData[3]);
-
 		/** Determine which target entities require generation */
 		/** PASS 1:  Determine which entities have correspondences */
 		for(Entity path : dependency.getTargetLogicalRelation().getMappingSchemaEntitySet()) {
@@ -355,8 +351,7 @@ public class SQLGenerator {
 
 				// Build SELECT DISTINCT string
 				String selectString = new String(" SELECT DISTINCT ");
-				String valueString = null;
-				AbstractMappingFunction mapper = null;
+				String valueString = new String();
 				for (int i = 0; i < targetSchemaGraph.getChildElements(path.getId()).size(); i++) {
 					SchemaElement child = targetSchemaGraph.getChildElements(path.getId()).get(i);
 					Attribute targetChild = null;
@@ -366,83 +361,47 @@ public class SQLGenerator {
 						targetChild = (Attribute)child;
 					}
 
-					boolean seen = false;
-					for (MappingCell cell: dependency.getCoveredCorrespondences()) {
-						if (targetChild.getId().equals(cell.getOutput())) {
-							Integer[] pathIds = new Integer[cell.getInput().length];
-							for (int j = 0; j<pathIds.length; j++) {
-								if (sourceSchemaGraph.getElement(cell.getInput()[j]) instanceof Relationship){
-									pathIds[j] = dependency.getSourceLogicalRelation().getEntityIndicesByRel().get(dependency.getSourceLogicalRelation().getIDmappings_LR_to_SS().get(sourceSchemaGraph.getElement(cell.getInput()[j]).getId())).get(0);
-								}
-								else if (sourceSchemaGraph.getElement(cell.getInput()[j]) instanceof Attribute){
-									pathIds[j] = dependency.getSourceLogicalRelation().getPositionMappingSchemaEntitySet(sourceSchemaGraph.getEntity(cell.getInput()[0]).getId() );
-								}
-								else {
+					// check to see if values must be generated
+					boolean isNullable = true, useSkolem = false;
+					if (targetChild.isKey()) { useSkolem = true; isNullable = false; }
+					if (targetChild.getMin() == null || targetChild.getMin() != 0) { isNullable = false; }
+
+					if (isNullable == false && useSkolem == true) {
+						// use SKOLEM table
+						needToGenSkolem.put(targetSchemaGraph.getEntity(targetChild.getId()).getId(), true);
+
+						valueString += " ( SELECT " + DELIM + "skid" + DELIM + " FROM " + DELIM + SQLGenerator.SKOLEM_TABLE_CHAR + targetSchemaGraph.getEntity(targetChild.getId()).getId() + DELIM + " WHERE ";
+
+						for (int j = 0; j < dependency.getCoveredCorrespondences().size(); j++) {
+							MappingCell cell = dependency.getCoveredCorrespondences().get(j);
+
+							for (Integer inputId : cell.getInput()){
+								Integer pathId = 0;
+								if (sourceSchemaGraph.getElement(inputId) instanceof Relationship) {
+									pathId = dependency.getSourceLogicalRelation().getEntityIndicesByRel().get(dependency.getSourceLogicalRelation().getIDmappings_LR_to_SS().get(sourceSchemaGraph.getElement(inputId).getId())).get(0);
+								} else if (sourceSchemaGraph.getElement(inputId) instanceof Attribute) {
+									pathId = dependency.getSourceLogicalRelation().getPositionMappingSchemaEntitySet(sourceSchemaGraph.getEntity(inputId).getId() );
+								} else {
 									throw new SQLGeneratorException("Source is neither a relationship nor an attribute.");
 								}
+
+								String attrName = sourceSchemaGraph.getElement(inputId).getName();
+								attrName = DELIM + attrName +DELIM;
+								valueString += DELIM + SQLGenerator.VARIABLE_CHAR + j + DELIM + " = " + DELIM + SQLGenerator.TABLE_CHAR +pathId + DELIM + "." + attrName;
 							}
-
-							String[] colPrefixs = new String[pathIds.length];
-							for (int j = 0; j < colPrefixs.length; j++) {
-								colPrefixs[j] = DELIM + SQLGenerator.TABLE_CHAR + pathIds[j] + DELIM + ".";
-							}
-
-                            // now the string can be built
-							try {
-							    mapper = FunctionManager.getFunction(cell.getFunctionClass());
-                                valueString = mapper.getRelationalString(colPrefixs, cell, mappingDefinition);
-                            } catch(Exception e) {
-                            	throw new RuntimeException(e);
-                            }
-
-							seen = true;
+							if (j < dependency.getCoveredCorrespondences().size() - 1) { valueString += " AND "; }
 						}
-					}
-
-					// check to see if values must be generated
-					if (seen == false) {
-						boolean isNullable = true, useSkolem = false;
-						if (targetChild.isKey()) { useSkolem = true; isNullable = false; }
-						if (targetChild.getMin() == null || targetChild.getMin() != 0) { isNullable = false; }
-
-						if (isNullable == false && useSkolem == true) {
-							// use SKOLEM table
-							needToGenSkolem.put(targetSchemaGraph.getEntity(targetChild.getId()).getId(), true);
-
-							valueString = new String();
-							valueString += " ( SELECT " + DELIM + "skid" + DELIM + " FROM " + DELIM + SQLGenerator.SKOLEM_TABLE_CHAR + targetSchemaGraph.getEntity(targetChild.getId()).getId() + DELIM + " WHERE ";
-
-							for (int j = 0; j < dependency.getCoveredCorrespondences().size(); j++) {
-								MappingCell cell = dependency.getCoveredCorrespondences().get(j);
-
-								for (Integer inputId : cell.getInput()){
-									Integer pathId = 0;
-									if (sourceSchemaGraph.getElement(inputId) instanceof Relationship) {
-										pathId = dependency.getSourceLogicalRelation().getEntityIndicesByRel().get(dependency.getSourceLogicalRelation().getIDmappings_LR_to_SS().get(sourceSchemaGraph.getElement(inputId).getId())).get(0);
-									} else if (sourceSchemaGraph.getElement(inputId) instanceof Attribute) {
-										pathId = dependency.getSourceLogicalRelation().getPositionMappingSchemaEntitySet(sourceSchemaGraph.getEntity(inputId).getId() );
-									} else {
-										throw new SQLGeneratorException("Source is neither a relationship nor an attribute.");
-									}
-
-									String attrName = sourceSchemaGraph.getElement(inputId).getName();
-									attrName = DELIM + attrName +DELIM;
-									valueString += DELIM + SQLGenerator.VARIABLE_CHAR + j + DELIM + " = " + DELIM + SQLGenerator.TABLE_CHAR +pathId + DELIM + "." + attrName;
-								}
-								if (j < dependency.getCoveredCorrespondences().size() - 1) { valueString += " AND "; }
-							}
-							valueString += ")";
-						} else if (isNullable == false && useSkolem == false) {
-							valueString = "1";
-						} else if (isNullable == true && useSkolem == false) {
-							valueString = "null";
-						} else {
-							throw new SQLGeneratorException("Cannot have a nullable field and be required to generate a skolem constant.");
-						}
+						valueString += ")";
+					} else if (isNullable == false && useSkolem == false) {
+						valueString = "1";
+					} else if (isNullable == true && useSkolem == false) {
+						valueString = "null";
+					} else {
+						throw new SQLGeneratorException("Cannot have a nullable field and be required to generate a skolem constant.");
 					}
 
 					selectString += valueString;
-					if (i < targetSchemaGraph.getChildElements(path.getId()).size()-1) { selectString += ","; }
+					if (i < targetSchemaGraph.getChildElements(path.getId()).size() - 1) { selectString += ","; }
 				} // end for
 
 				String queryString = insertIntoString + selectString + generateFromWhereLogRel(dependency.getSourceLogicalRelation());
