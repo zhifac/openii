@@ -97,12 +97,12 @@ public class SQLGenerator {
 
 		for (Dependency dependency : dependencies) {
 			// create SQL statement block for each dependency
-			Object[] dependStatements  = generateDependencySQLScript(dependency, targetDB);
-			finalSkolemStatements.addAll((ArrayList<String>)dependStatements[0]);
-			finalCleanupStatements.addAll((ArrayList<String>)dependStatements[2]);
+			Object[] dependencyStatements  = generateDependencySQLScript(dependency, targetDB);
+			finalSkolemStatements.addAll((ArrayList<String>)dependencyStatements[0]);
+			finalCleanupStatements.addAll((ArrayList<String>)dependencyStatements[2]);
 
-			for (Integer mapID : ((HashMap<Integer,String>)dependStatements[1]).keySet()) {
-				String currStmt = ((HashMap<Integer,String>)dependStatements[1]).get(mapID);
+			for (Integer mapID : ((HashMap<Integer,String>)dependencyStatements[1]).keySet()) {
+				String currStmt = ((HashMap<Integer,String>)dependencyStatements[1]).get(mapID);
 				Integer ssID = dependency.getTargetLogicalRelation().getIDmappings_LR_to_SS().get(mapID);
 				String unionStmt = selectStatementBySSID.get(ssID);
 
