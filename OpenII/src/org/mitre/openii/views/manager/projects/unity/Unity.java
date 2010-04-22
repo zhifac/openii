@@ -1,7 +1,6 @@
 package org.mitre.openii.views.manager.projects.unity;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -92,7 +91,7 @@ public class Unity {
 			// Create mapping cells between the new term and the other term in the synset
 			ArrayList<Term> sourceTerm = synset.getGroup(); 
 			for ( Term term : sourceTerm ) {
-				MappingCell.createValidatedMappingCell(null, mappingHash.get(term.schemaId), Arrays.asList(new Integer(term.elementId)).toArray(new Integer[0])	, newElementID, "unity", new Date(), "map function?", "");
+				MappingCell.createIdentityMappingCell(null, mappingHash.get(term.schemaId), term. elementId, newElementID, "unity", new Date(), "");
 			}
 
 			// Add new term to synset

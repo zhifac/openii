@@ -16,8 +16,8 @@ public class MappingCellMerger
 		public int compare(MappingCell mappingCell1, MappingCell mappingCell2)
 		{
 			// First prioritize validated mapping cells over unvalidated mapping cells
-			if(mappingCell1.getValidated()!=mappingCell2.getValidated())
-				return mappingCell2.getValidated().compareTo(mappingCell1.getValidated());
+			if(mappingCell1.isValidated()!=mappingCell2.isValidated())
+				return mappingCell2.isValidated().compareTo(mappingCell1.isValidated());
 
 			// Next prioritize higher scores over lower scores
 			return mappingCell2.getScore().compareTo(mappingCell1.getScore());
