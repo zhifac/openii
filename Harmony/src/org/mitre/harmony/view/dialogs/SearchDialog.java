@@ -121,6 +121,7 @@ public class SearchDialog extends JDialog implements KeyListener
 	/** Initializes the search dialog */
 	public SearchDialog(HarmonyModel harmonyModel)
 	{
+		super(harmonyModel.getBaseFrame());
 		this.harmonyModel = harmonyModel;
 		
 		// Generate the main dialog pane
