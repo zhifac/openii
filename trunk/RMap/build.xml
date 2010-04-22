@@ -1,9 +1,5 @@
 <?xml version="1.0"?>
 <project name="schemastoreclient" default="build" basedir=".">
-    <property name="src" value="src" description="location of source code" />
-    <property name="build" value="build" description="location to build the files to " />
-    <property name="jars" value="lib" description="location of necessary jar files" />
-    <property name="doc" value="doc" description="location of javadocs" />
 
     <!-- DO NOT DELETE - these are required when running ant outside Eclipse.  -->
     <!-- If you need to delete these, contact Jeff Hoyt and he'll figure out a way to work around it. -->
@@ -15,61 +11,42 @@
     <typedef name="fatjar.jarsource" classname="net.sf.fjep.anttask.FJJarSourceType" classpath="${fjepPath}"/>
     <typedef name="fatjar.filesource" classname="net.sf.fjep.anttask.FJFileSourceType" classpath="${fjepPath}"/>
 
-
-    <path id="jarspath">
-        <fileset dir="${jars}">
-            <include name="**/*.jar" />
-        </fileset>
-    </path>
-
-
     <!-- Compiles the code -->
 	<target name="compile">
-	    <mkdir dir="build"/>
-	    <javac srcdir="src" destdir="build" deprecation="on" debug="on" source="1.6" target="1.6">
-            <classpath>
-                <path refid="jarspath" />
+	    <mkdir dir="bin"/>
+	    <javac srcdir="src" destdir="bin" deprecation="on" debug="on" source="1.6" target="1.6">
+	    	<classpath>
+    	    	<path path="lib/SchemaStoreClient.jar"/>
+    	    	<path path="lib/TableLayout.jar"/>
             </classpath>
         </javac>
     </target>
 
-	<!-- Builds the SQLCodeGen jar -->
-    <target name="buildSQLCodeGen" depends="compile">
+	<!-- Builds RMap -->
+    <target name="buildRMap" depends="compile">
+ 
+ 		<!-- Builds the RMap jar file -->
         <fatjar.build output="RMap.jar">
-            <fatjar.manifest/>
-            <fatjar.filesource path="build"/>
-            <fatjar.jarsource file="lib/TableLayout.jar" relpath=""/>
+            <fatjar.filesource path="bin"/>
         </fatjar.build>
+
+		<!-- Package Harmony into a zip file -->
+        <fatjar.build output="RMap.zip">
+            <fatjar.filesource path="RMap.jar" relpath="RMap"/>
+            <fatjar.filesource path="lib/SchemaStoreClient.jar" relpath="RMap"/>
+            <fatjar.filesource path="lib/TableLayout.jar" relpath="RMap"/>
+       </fatjar.build>
+
     </target>
 
-	<!-- Builds the SchemaStore jars -->
+	<!-- Builds the RMap jars -->
     <target name="build">
-    	<antcall target="buildSQLCodeGen"/>
-   </target>
+    	<antcall target="buildRMap"/>
+    </target>
 
 	<!-- Cleans up the constructed jar files -->
 	<target name="clean">
-		<delete dir="build"/>
-	    <delete file="RMap.jar"/>
+		<delete dir="bin"/>
+		<delete file="RMap.jar"/>
     </target>
-
-    <!-- Runs the unit tests -->
-    <target name="test" depends="compile">
-        <junit haltonfailure="yes">
-            <formatter type="plain" usefile="false" />
-            <classpath>
-                <pathelement path="${build}" />
-                <path refid="jarspath" />
-            </classpath>
-            <!-- Pass in the location of the ant file.  This will be used to set up the schemastore db -->
-            <sysproperty key="antfile.dir" value="${antfile.dir}"/>
-            <!-- <sysproperty key="SchemaStoreJar" value="${SchemaStore}/SchemaStore.jar"/> -->
-            <batchtest fork="yes" todir="${build}">
-                <fileset dir="${src}">
-                    <include name="test/**/*Test.java" />
-                </fileset>
-            </batchtest>
-        </junit>
-    </target>
-
 </project>
