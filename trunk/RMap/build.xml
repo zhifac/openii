@@ -30,7 +30,7 @@
             <fatjar.filesource path="bin"/>
         </fatjar.build>
 
-		<!-- Package Harmony into a zip file -->
+		<!-- Package RMap into a zip file -->
         <fatjar.build output="RMap.zip">
             <fatjar.filesource path="RMap.jar" relpath="RMap"/>
             <fatjar.filesource path="lib/SchemaStoreClient.jar" relpath="RMap"/>
