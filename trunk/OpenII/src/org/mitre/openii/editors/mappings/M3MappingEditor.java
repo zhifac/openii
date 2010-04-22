@@ -54,13 +54,10 @@ public class M3MappingEditor extends OpenIIEditor
 			Date modifiedDate = mappingCell.getModificationDate();
 			String notes = mappingCell.getNotes();
 			
-			// Gets the function/score based on if mapping cell is validated
+			// Gets the function/score from the mapping cell
 			String functionScore = mappingCell.getScore().toString();
-			if(mappingCell.getValidated())
-			{
-				functionScore = mappingCell.getFunctionClass();
-				if(functionScore!=null) functionScore = functionScore.replaceAll(".*\\.", "");
-			}
+			if(mappingCell.getFunctionID()!=null)
+				functionScore = OpenIIManager.getFunction(mappingCell.getFunctionID()).getName();
 			
 			// Display mapping cell
 			rows.add(new Object[]{id,functionScore,inputs,output,author,modifiedDate,notes});

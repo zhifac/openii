@@ -11,6 +11,7 @@ import org.mitre.openii.application.OpenIIActivator;
 import org.mitre.openii.implus.IMPLUSListener;
 import org.mitre.openii.model.controllers.MappingCellMerger;
 import org.mitre.schemastore.model.DataSource;
+import org.mitre.schemastore.model.Function;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.Project;
@@ -467,6 +468,11 @@ public class OpenIIManager
 	/** Inform listeners that mapping was removed */
 	public static void fireMappingDeleted(Integer mappingID)
 		{ for(OpenIIListener listener : listeners.get()) listener.mappingDeleted(mappingID); }
+	
+	//------------ Function Functionality -------------
+	
+	public static Function getFunction(Integer functionID)
+		{ try { return RepositoryManager.getClient().getFunction(functionID); } catch(Exception e) { return null; } }	
 	
 	//------------ Data Source Functionality -------------
 
