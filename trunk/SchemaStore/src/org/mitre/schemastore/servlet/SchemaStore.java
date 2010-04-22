@@ -403,11 +403,11 @@ public class SchemaStore
 		{ return getManager().getFunctionCache().getFunctions().toArray(new Function[0]); }
 
 	/** Web service to retrieve the specified function */
-	public Function getFunction(Integer functionID)
+	public Function getFunction(int functionID)
 		{ return getManager().getFunctionCache().getFunction(functionID); }
 
 	/** Web service to add the specified function */
-	public Integer addFunction(Function function)
+	public int addFunction(Function function)
 		{ return getManager().getFunctionCache().addFunction(function); }
 	
 	/** Web service to get the deletable functions */
@@ -415,7 +415,7 @@ public class SchemaStore
 		{ return convertArray(getManager().getFunctionCache().getDeletableFunctions()); }
 	
 	/** Web service to delete the specified function */
-	public boolean deleteFunction(Integer functionID)
+	public boolean deleteFunction(int functionID)
 		{ return getManager().getFunctionCache().deleteFunction(functionID); }
 	
 	/** Web service to retrieve the list of function implementations */
