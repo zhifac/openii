@@ -1,5 +1,7 @@
 package org.mitre.openii.editors.help;
 
+import java.io.IOException;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
@@ -11,6 +13,7 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.EditorPart;
+import org.mitre.openii.application.OpenIIActivator;
 
 /** Constructs the About OpenII Editor */
 public class AboutOpenIIEditor extends EditorPart
@@ -29,10 +32,22 @@ public class AboutOpenIIEditor extends EditorPart
 	/** Displays the Schema View */
 	public void createPartControl(Composite parent)
 	{		
-		new Browser(parent,SWT.NONE);
-		//BasicWidgets.createLabel(parent,"Hello World");
+		Browser browser = new Browser(parent,SWT.NONE);
+		
+		try {
+			// get the base location of our application
+			String homePath = OpenIIActivator.getBundleFile().toURI().toString();
+			//homePath = "file:///" + homePath.replace("\\", "/") + "/";
+			System.err.println("path: " + homePath);
+
+			// now tell the browser to browse to our HTML pages
+			browser.setUrl(homePath + "html/index.html");
+		} catch (IOException e) {
+			System.err.println(e.getMessage());
+			e.printStackTrace();
+		}
 	}
-	
+
 	/** Launches the editor */
 	static public void launchEditor()
 	{
@@ -40,7 +55,9 @@ public class AboutOpenIIEditor extends EditorPart
 			IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
 			IWorkbenchPage page = window.getActivePage();
 			page.openEditor(null,"AboutOpenIIEditor");
+		} catch(Exception e) {
+			System.err.println(e.getMessage());
+			e.printStackTrace();
 		}
-		catch(Exception e) { System.err.println(e.getMessage()); e.printStackTrace();}
 	}
 }
