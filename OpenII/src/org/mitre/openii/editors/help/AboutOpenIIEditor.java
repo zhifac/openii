@@ -16,11 +16,13 @@ import org.eclipse.ui.part.EditorPart;
 import org.mitre.openii.application.OpenIIActivator;
 
 /** Constructs the About OpenII Editor */
-public class AboutOpenIIEditor extends EditorPart
-{	
+public class AboutOpenIIEditor extends EditorPart {
 	/** Initializes the About OpenII Editor */
-	public void init(IEditorSite site, IEditorInput input) throws PartInitException
-		{ setSite(site); setInput(input); setPartName("About OpenII"); }
+	public void init(IEditorSite site, IEditorInput input) throws PartInitException	{
+		setSite(site);
+		setInput(input);
+		setPartName("About OpenII");
+	}
 
 	// Default instantiations of editor functions
 	public boolean isDirty() { return false; }
@@ -30,15 +32,13 @@ public class AboutOpenIIEditor extends EditorPart
 	public void setFocus() {}
 	
 	/** Displays the Schema View */
-	public void createPartControl(Composite parent)
-	{		
-		Browser browser = new Browser(parent,SWT.NONE);
+	public void createPartControl(Composite parent) {
+		// create a browser to display in the window
+		Browser browser = new Browser(parent, SWT.NONE);
 		
 		try {
 			// get the base location of our application
 			String homePath = OpenIIActivator.getBundleFile().toURI().toString();
-			//homePath = "file:///" + homePath.replace("\\", "/") + "/";
-			System.err.println("path: " + homePath);
 
 			// now tell the browser to browse to our HTML pages
 			browser.setUrl(homePath + "html/index.html");
@@ -49,8 +49,7 @@ public class AboutOpenIIEditor extends EditorPart
 	}
 
 	/** Launches the editor */
-	static public void launchEditor()
-	{
+	static public void launchEditor() {
 		try {
 			IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
 			IWorkbenchPage page = window.getActivePage();
