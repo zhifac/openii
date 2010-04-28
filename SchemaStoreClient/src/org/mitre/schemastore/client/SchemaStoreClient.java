@@ -435,6 +435,13 @@ public class SchemaStoreClient
 	public Function getFunction(Integer functionID) throws RemoteException
 		{ return (Function)callMethod("getFunction",new Object[] {functionID}); }
 
+	/** Gets the dependent functions for the specified function from the web service */
+	public ArrayList<Function> getDependentFunctions(Integer functionID) throws RemoteException
+	{
+		Function[] functions = (Function[])callMethod("getDependentFunctions",new Object[] {functionID});
+		return functions==null ? new ArrayList<Function>() : new ArrayList<Function>(Arrays.asList(functions));
+	}
+	
 	/** Adds the specified function to the web service */
 	public Integer addFunction(Function function) throws RemoteException
 	{
