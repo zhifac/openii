@@ -3,6 +3,7 @@ package org.mitre.openii.editors.tags;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -10,6 +11,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
@@ -45,6 +47,7 @@ import org.mitre.openii.views.manager.projects.EditProjectDialog;
 import org.mitre.openii.views.manager.tags.EditTagDialog;
 import org.mitre.schemastore.model.Project;
 import org.mitre.schemastore.model.ProjectSchema;
+import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.schemaInfo.FilteredSchemaInfo;
 
 /**
@@ -129,10 +132,12 @@ public class AffinityEditor extends OpenIIEditor implements SelectionClickedList
 		this.affinityModel =  new AffinityModel(schemaManager, clusterManager);
 		
 		affinity = new AffinityPane(parent, SWT.NONE, affinityModel, schemaIDs, progressDlg);
+		
 		progressDlg.close();
 		if(affinity.isAffinityPaneCreated()) {
 			affinity.getCraigrogram().debug = false;
 			affinity.addSelectionClickedListener(this);	
+			
 			
 			// Create multiple schemas right-click menu
 			multiSchemaMenu = new Menu(affinity);
@@ -223,7 +228,10 @@ public class AffinityEditor extends OpenIIEditor implements SelectionClickedList
 			item.setText("View vocab view");
 			item.addSelectionListener(multiSchemaMenuListener);
 			
-			
+			item = new MenuItem(multiSchemaMenu, SWT.NONE);
+			item.setText("Save statistics to...");
+			item.addSelectionListener(multiSchemaMenuListener);
+
 			// Create cluster right-click menu			
 			clusterMenu = new Menu(affinity);
 			SelectionListener clusterMenuListener = new SelectionAdapter() {
@@ -259,6 +267,17 @@ public class AffinityEditor extends OpenIIEditor implements SelectionClickedList
 						Shell shell = getSite().getWorkbenchWindow().getShell();
 						EditProjectDialog dlg = new EditProjectDialog(shell);
 						dlg.open();
+					}else if(item.getText().startsWith("Save statistics")){
+						Shell shell = getSite().getWorkbenchWindow().getShell();
+						//FileDialog fileDlg = new FileDialog(parent.getShell(), SWT.SAVE);
+						FileDialog dlg = new FileDialog(shell, SWT.SAVE);
+						dlg.setText("Save Stats");
+						dlg.setFilterPath("C:/");
+						dlg.setFilterExtensions(new String[]{"*.xls"});
+						dlg.setFileName("AffinityStatistics.xls");
+						dlg.setOverwrite(true);
+						String selectedFileName = dlg.open();
+						affinity.writeToSpreadsheet(selectedFileName);
 					}else{
 						//Create a new tag containing the schemas in the cluster
 						Shell shell = getSite().getWorkbenchWindow().getShell();
@@ -305,10 +324,15 @@ public class AffinityEditor extends OpenIIEditor implements SelectionClickedList
 			//item.setText("View vocab debug view");
 			//item.addSelectionListener(clusterMenuListener);
 			
-			item = new MenuItem (clusterMenu, SWT.NONE);
-			item.setText("View vocab view");
-			item.addSelectionListener(clusterMenuListener);
+		//	item = new MenuItem (clusterMenu, SWT.NONE);
+			//item.setText("View vocab view");
+			//item.addSelectionListener(clusterMenuListener);
 			
+			item = new MenuItem (clusterMenu, SWT.NONE);
+			item.setText("Save statistics to...");
+			item.addSelectionListener(clusterMenuListener);
+		
+		
 		}
 		else {
 			//There was an error creating the Affinity pane, show the error dialog
