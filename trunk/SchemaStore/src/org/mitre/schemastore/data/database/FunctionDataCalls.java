@@ -58,6 +58,20 @@ public class FunctionDataCalls extends AbstractDataCalls
 	/** Constructs the data call class */
 	FunctionDataCalls(DatabaseConnection connection) { super(connection); }
 
+	/** Retrieves the function validation number */
+	public Integer getFunctionValidationNumber()
+	{
+		Integer validationNumber = 0;
+		try {
+			Statement stmt = connection.getStatement();
+			ResultSet rs = stmt.executeQuery("SELECT sum(function_id) AS validation_number FROM functions");
+			if(rs.next())
+				validationNumber = rs.getInt("validation_number");
+			stmt.close();
+		} catch(SQLException e) { System.out.println("(E) TapDataCalls:getFunctionValidationNumber: "+e.getMessage()); }
+		return validationNumber;
+	}
+	
 	//-----------------------------------
 	// Handles Functions in the Database
 	//-----------------------------------
