@@ -406,6 +406,10 @@ public class SchemaStore
 	public Function getFunction(int functionID)
 		{ return getManager().getFunctionCache().getFunction(functionID); }
 
+	/** Returns the dependent functions of the specified function */
+	public Function[] getDependentFunctions(int functionID)
+		{ return getManager().getFunctionCache().getDependentFunctions(functionID).toArray(new Function[0]); }
+	
 	/** Web service to add the specified function */
 	public int addFunction(Function function)
 		{ return getManager().getFunctionCache().addFunction(function); }
