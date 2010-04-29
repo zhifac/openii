@@ -23,10 +23,10 @@ public class FunctionCache extends DataCache
 	private Integer validationNumber = 0;
 	
 	/** Stores a mapping of function names to functions */
-	private HashMap<String,Function> functionRefs = new HashMap<String,Function>();
+	private HashMap<String,Function> functionNameRefs = new HashMap<String,Function>();
 	
-	/** Stores a listing of function dependencies */
-	private HashMap<Integer,ArrayList<Function>> functionDependencies = new HashMap<Integer,ArrayList<Function>>();
+	/** Stores a listing of function references */
+	private HashMap<Integer,ArrayList<Function>> functionReferences = new HashMap<Integer,ArrayList<Function>>();
 	
 	/** Constructs the functions cache */
 	FunctionCache(DataManager manager, FunctionDataCalls dataCalls)
@@ -42,21 +42,21 @@ public class FunctionCache extends DataCache
 			validationNumber = newValidationNumber;
 			
 			// Clears the cached function hashes
-			functionRefs.clear();
-			functionDependencies.clear();
+			functionNameRefs.clear();
+			functionReferences.clear();
 			
 			// Caches the function names
 			ArrayList<Function> functions = dataCalls.getFunctions();
 			for(Function function : functions)
-				functionRefs.put(function.getName(), function);
+				functionNameRefs.put(function.getName(), function);
 
-			// Caches the function dependencies
+			// Caches the function references
 			for(Function function : functions)
 			{
 				ArrayList<Function> dependentFunctions = new ArrayList<Function>();
 				for(String name : function.getExpression().split("[\\(\\),]+"))
-					dependentFunctions.add(functionRefs.get(name));
-				functionDependencies.put(function.getId(), dependentFunctions);
+					dependentFunctions.add(functionNameRefs.get(name));
+				functionReferences.put(function.getId(), dependentFunctions);
 			}
 		}
 	}
@@ -67,22 +67,22 @@ public class FunctionCache extends DataCache
 	
 	/** Returns a listing of all functions */
 	public ArrayList<Function> getFunctions()
-		{ recacheAsNeeded(); return new ArrayList<Function>(functionRefs.values()); }
+		{ recacheAsNeeded(); return new ArrayList<Function>(functionNameRefs.values()); }
 	
 	/** Returns the specified function */
 	public Function getFunction(Integer functionID)
 		{ return dataCalls.getFunction(functionID); }
 
-	/** Returns the dependent functions of the specified function */
-	public ArrayList<Function> getDependentFunctions(Integer functionID)
+	/** Returns the referenced functions of the specified function */
+	public ArrayList<Function> getReferencedFunctions(Integer functionID)
 	{
 		recacheAsNeeded();
-		ArrayList<Function> dependentFunctions = new ArrayList<Function>(functionDependencies.get(functionID));
-		for(int i=0; i<dependentFunctions.size(); i++)
-			for(Function dependentFunction : functionDependencies.get(dependentFunctions.get(i).getId()))
-				if(!dependentFunctions.contains(dependentFunction))
-					dependentFunctions.add(dependentFunction);
-		return dependentFunctions;
+		ArrayList<Function> referencedFunctions = new ArrayList<Function>(functionReferences.get(functionID));
+		for(int i=0; i<referencedFunctions.size(); i++)
+			for(Function referencedFunction : functionReferences.get(referencedFunctions.get(i).getId()))
+				if(!referencedFunctions.contains(referencedFunction))
+					referencedFunctions.add(referencedFunction);
+		return referencedFunctions;
 	}
 	
 	/** Adds the specified function */
@@ -95,7 +95,7 @@ public class FunctionCache extends DataCache
 		while(expression.matches(functionExp))
 		{
 			String dependentFunction = expression.replaceFirst(functionExp, "$1");
-			if(!functionRefs.containsKey(dependentFunction.replaceFirst(functionExp, "$2"))) return 0;
+			if(!functionNameRefs.containsKey(dependentFunction.replaceFirst(functionExp, "$2"))) return 0;
 			expression = expression.replace(dependentFunction, "$0");
 		}
 		if(!expression.equals("$0")) return 0;
