@@ -45,10 +45,18 @@ public class SchemaDialog extends JDialog implements ListSelectionListener
 		private ButtonPane()
 		{
 			super(new String[]{"Import", "Export", "Delete", "Close"},1,4);
-			setEnabled("Export", false);
-			setEnabled("Delete", false);
+			setEnabled(1, false);
+			setEnabled(2, false);
 		}
 
+		/** Reconfigures the buttons based on the currently selected item */
+		private void reconfigure(boolean itemSelected, boolean deletable)
+		{
+			setEnabled(1, itemSelected);
+			setEnabled(2, itemSelected);
+			relabelButton(2, deletable?"Delete":"Usage");
+		}
+		
 		/** Handles selection of button */
 		protected void buttonPressed(String label)
 		{		
@@ -63,6 +71,10 @@ public class SchemaDialog extends JDialog implements ListSelectionListener
 			// Handles the export of a schema
 			else if(label.equals("Export"))
 				new ExportSchemaDialog(getSchema()).export(harmonyModel);
+			
+			// Handles the displaying of info for a schema
+			else if(label.equals("Usage"))
+				new SchemaReferencesDialog(harmonyModel, getSchema());
 			
 			// Handles the deletion of a schema
 			else if(label.equals("Delete"))
@@ -152,7 +164,6 @@ public class SchemaDialog extends JDialog implements ListSelectionListener
 		deletable = deletable && !lockedSchemas.contains(schema.getId());
 		
 		// Update the ability to export and delete the schema
-		buttonPane.setEnabled("Export",schema!=null);
-		buttonPane.setEnabled("Delete",deletable);
+		buttonPane.reconfigure(schema!=null,deletable);
 	}
 }
