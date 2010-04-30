@@ -62,12 +62,19 @@ public class SchemaManager
 		return schemaIDs;
 	}
 	
+	/** Retrieve the list of descendent schemas */
+	public ArrayList<Integer> getDescendentSchemas(Integer schemaID)
+	{
+		try { return SchemaStoreManager.getDescendantSchemas(schemaID); }
+		catch(Exception e) { System.out.println("(E) SchemaManager.getDescendentSchemas - " + e.getMessage()); }
+		return new ArrayList<Integer>();
+	}
+		
 	/** Returns the deletable schemas */
 	public ArrayList<Integer> getDeletableSchemas()
 	{
-		try {
-			return SchemaStoreManager.getDeletableSchemas();
-		} catch(Exception e) { System.out.println("(E) SchemaManager.getDeletableSchemas - " + e.getMessage()); }
+		try { return SchemaStoreManager.getDeletableSchemas(); }
+		catch(Exception e) { System.out.println("(E) SchemaManager.getDeletableSchemas - " + e.getMessage()); }
 		return new ArrayList<Integer>();
 	}
 	
