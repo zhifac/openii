@@ -47,6 +47,10 @@ public class SchemaStoreManager
 	public static ArrayList<Schema> getSchemas() throws RemoteException
 		{ return client.getSchemas(); }
 	
+	/** Gets the descendant schemas from the web service for the specified schema */
+	public static ArrayList<Integer> getDescendantSchemas(Integer schemaID) throws RemoteException
+		{ return client.getDescendantSchemas(schemaID); }
+	
 	/** Gets the list of deletable schemas from the web service */
 	public static ArrayList<Integer> getDeletableSchemas() throws RemoteException
 		{ return client.getDeletableSchemas(); }
