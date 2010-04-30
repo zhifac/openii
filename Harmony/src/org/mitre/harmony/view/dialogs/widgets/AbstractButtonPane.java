@@ -29,8 +29,9 @@ abstract public class AbstractButtonPane extends JPanel implements ActionListene
 		{
 			// Generate the button
 			JButton button = new JButton(label);
-			buttons.add(button);
+			button.setFocusable(false);
 			button.addActionListener(this);
+			buttons.add(button);
 			
 			// Place the button in a pane
 			JPanel buttonPane = new JPanel();
@@ -46,14 +47,14 @@ abstract public class AbstractButtonPane extends JPanel implements ActionListene
 		setLayout(new FlowLayout());
 		add(buttonsPane);
 	}
+
+	/** Relabels the specified button */
+	protected void relabelButton(Integer loc, String label)
+		{ buttons.get(loc).setText(label); }
 	
 	/** Enable the specified button */
-	public void setEnabled(String label, boolean enable)
-	{
-		for(JButton button : buttons)
-			if(button.getText().equals(label))
-				button.setEnabled(enable);
-	}
+	protected void setEnabled(Integer loc, boolean enable)
+		{ buttons.get(loc).setEnabled(enable); }
 	
 	/** Reacts to the buttons being pressed */
 	public void actionPerformed(ActionEvent e)
