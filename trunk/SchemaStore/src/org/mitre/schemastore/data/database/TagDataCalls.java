@@ -48,7 +48,7 @@ public class TagDataCalls extends AbstractDataCalls
 			if(rs.next())
 				validationNumber = rs.getInt("validation_number");
 			stmt.close();
-		} catch(SQLException e) { System.out.println("(E) TapDataCalls:getSchemaTagValidationNumber: "+e.getMessage()); }
+		} catch(SQLException e) { System.out.println("(E) TagDataCalls:getSchemaTagValidationNumber: "+e.getMessage()); }
 		return validationNumber;
 	}
 
@@ -62,7 +62,7 @@ public class TagDataCalls extends AbstractDataCalls
 			while(rs.next())
 				tags.add(new Tag(rs.getInt("id"),rs.getString("name"),rs.getInt("parent_id")));
 			stmt.close();
-		} catch(SQLException e) { System.out.println("(E) TapDataCalls:getTags: "+e.getMessage()); }
+		} catch(SQLException e) { System.out.println("(E) TagDataCalls:getTags: "+e.getMessage()); }
 		return tags;
 	}
 
@@ -76,7 +76,7 @@ public class TagDataCalls extends AbstractDataCalls
 			if(rs.next())
 				tag = new Tag(rs.getInt("id"),rs.getString("name"),rs.getInt("parent_id"));
 			stmt.close();
-		} catch(SQLException e) { System.out.println("(E) TapDataCalls:getTag: "+e.getMessage()); }
+		} catch(SQLException e) { System.out.println("(E) TagDataCalls:getTag: "+e.getMessage()); }
 		return tag;
 	}
 
@@ -90,7 +90,7 @@ public class TagDataCalls extends AbstractDataCalls
 			while(rs.next())
 				tags.add(new Tag(rs.getInt("id"),rs.getString("name"),rs.getInt("parent_id")));
 			stmt.close();
-		} catch(SQLException e) { System.out.println("(E) TapDataCalls:getSubcatagories: "+e.getMessage()); }
+		} catch(SQLException e) { System.out.println("(E) TagDataCalls:getSubcatagories: "+e.getMessage()); }
 		return tags;
 	}
 
@@ -163,7 +163,7 @@ public class TagDataCalls extends AbstractDataCalls
 			while(rs.next())
 				schemaTags.add(new SchemaTag(rs.getInt("schema_id"),rs.getInt("tag_id")));
 			stmt.close();
-		} catch(SQLException e) { System.out.println("(E) TapDataCalls:getSchemaTags: "+e.getMessage()); }
+		} catch(SQLException e) { System.out.println("(E) TagDataCalls:getSchemaTags: "+e.getMessage()); }
 		return schemaTags;
 	}
 
@@ -184,7 +184,7 @@ public class TagDataCalls extends AbstractDataCalls
 		catch(SQLException e)
 		{
 			try { connection.rollback(); } catch(SQLException e2) {}
-			System.out.println("(E) TapDataCalls:addTagToSchema: "+e.getMessage());
+			System.out.println("(E) TagDataCalls:addTagToSchema: "+e.getMessage());
 		}
 		return success;
 	}
@@ -203,7 +203,7 @@ public class TagDataCalls extends AbstractDataCalls
 		catch(SQLException e)
 		{
 			try { connection.rollback(); } catch(SQLException e2) {}
-			System.out.println("(E) TapDataCalls:removeTagFromSchema: "+e.getMessage());
+			System.out.println("(E) TagDataCalls:removeTagFromSchema: "+e.getMessage());
 		}
 		return success;
 	}
