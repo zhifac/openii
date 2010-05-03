@@ -6,11 +6,14 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.zip.ZipInputStream;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.mitre.schemastore.model.Function;
+import org.mitre.schemastore.model.FunctionImp;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.ProjectSchema;
 import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
@@ -86,6 +89,36 @@ public class M3MappingImporter extends MappingImporter
 		catch(Exception e) { throw new ImporterException(ImporterException.IMPORT_FAILURE, e.getMessage()); }
 	}
 
+	/** Retrieves the elements with the specified label */
+	private ArrayList<Element> getElements(String label)
+	{
+		ArrayList<Element> elements = new ArrayList<Element>();
+		NodeList elementList = element.getElementsByTagName(label);
+		if(elementList != null)
+			for(int i=0; i<elementList.getLength(); i++)
+			{
+				Node node = elementList.item(i);
+				if(node instanceof Element)
+					elements.add((Element)node);
+			}
+		return elements;
+	}
+	
+	/** Returns the imported functions */
+	public HashMap<Function,ArrayList<FunctionImp>> getFunctions() throws ImporterException
+	{
+		try {			
+			HashMap<Function,ArrayList<FunctionImp>> functions = new HashMap<Function,ArrayList<FunctionImp>>();
+			for(Element element : getElements("Function"))
+			{
+				Function function = ConvertFromXML.getFunction(element);
+				ArrayList<FunctionImp> functionImps = ConvertFromXML.getFunctionImps(element);
+				functions.put(function, functionImps);
+			}
+			return functions;
+		} catch(Exception e) { throw new ImporterException(ImporterException.IMPORT_FAILURE, e.getMessage()); }
+	}
+	
 	/** Returns the imported mapping cells */
 	public ArrayList<MappingCell> getMappingCells() throws ImporterException
 	{
@@ -96,17 +129,11 @@ public class M3MappingImporter extends MappingImporter
 			
 			// Generate the list of mapping cells
 			ArrayList<MappingCell> mappingCells = new ArrayList<MappingCell>();
-			NodeList mappingCellNodeList = element.getElementsByTagName("MappingCell");
-			if(mappingCellNodeList != null)
-				for(int j=0; j<mappingCellNodeList.getLength(); j++)
-				{
-					Node node = mappingCellNodeList.item(j);
-					if(node instanceof Element)
-					{
-						MappingCell mappingCell = ConvertFromXML.getMappingCell((Element)node, sourceInfo, targetInfo);
-						if(mappingCell!=null) mappingCells.add(mappingCell);
-					}
-				}
+			for(Element element : getElements("MappingCell"))
+			{
+				MappingCell mappingCell = ConvertFromXML.getMappingCell(element, sourceInfo, targetInfo);
+				if(mappingCell!=null) mappingCells.add(mappingCell);
+			}
 			return mappingCells;
 		} catch(Exception e) { throw new ImporterException(ImporterException.IMPORT_FAILURE, e.getMessage()); }
 	}

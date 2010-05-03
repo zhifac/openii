@@ -9,6 +9,8 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -17,6 +19,8 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.xml.serialize.OutputFormat;
 import org.apache.xml.serialize.XMLSerializer;
+import org.mitre.schemastore.model.Function;
+import org.mitre.schemastore.model.FunctionImp;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.Project;
@@ -24,6 +28,7 @@ import org.mitre.schemastore.model.ProjectSchema;
 import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
 import org.mitre.schemastore.porters.xml.ConvertToXML;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 /**
  * Class for moving SchemaStore mappings between SchemaStore repositories
@@ -43,6 +48,39 @@ public class M3MappingExporter extends MappingExporter
 	public String getFileType()
 		{ return ".m3m"; }
 	
+	/** Retrieve the schema info for the specified schema */
+	private HierarchicalSchemaInfo getSchemaInfo(Project project, Integer schemaID) throws Exception
+	{
+		for(ProjectSchema schema : project.getSchemas())
+			if(schema.getId().equals(schemaID))
+				return new HierarchicalSchemaInfo(client.getSchemaInfo(schemaID),schema.geetSchemaModel());
+		return null;
+	}
+	
+	/** Retrieve the functions used by the mapping cells */
+	private HashMap<Function,ArrayList<FunctionImp>> getFunctions(ArrayList<MappingCell> mappingCells) throws Exception
+	{
+		// Identify all function IDs referenced by the mapping
+		HashSet<Integer> functionIDHash = new HashSet<Integer>();
+		for(MappingCell mappingCell : mappingCells)
+			if(mappingCell.getFunctionID()!=null)
+				functionIDHash.add(mappingCell.getFunctionID());
+
+		// Generate a list of all functions referenced (directly and indirectly) by the mapping
+		HashSet<Function> functionHash = new HashSet<Function>();
+		for(Integer functionID : functionIDHash)
+		{
+			functionHash.add(client.getFunction(functionID));
+			functionHash.addAll(client.getReferencedFunctions(functionID));
+		}
+		
+		// Create the array of functions and their defined implementations
+		HashMap<Function,ArrayList<FunctionImp>> functions = new HashMap<Function,ArrayList<FunctionImp>>();
+		for(Function function : functionHash)
+			functions.put(function,client.getFunctionImps(function.getId()));
+		return functions;
+	}
+	
 	/** Generates the XML document */
 	private Document generateXMLDocument(Project project, Mapping mapping, ArrayList<MappingCell> mappingCells) throws Exception
 	{
@@ -53,19 +91,21 @@ public class M3MappingExporter extends MappingExporter
 		document = db.newDocument();
 
 		// Retrieve the source and target schema info
-		HierarchicalSchemaInfo sourceInfo=null, targetInfo=null;
-		for(ProjectSchema schema : project.getSchemas())
-		{
-			if(schema.getId().equals(mapping.getSourceId()))
-				sourceInfo = new HierarchicalSchemaInfo(client.getSchemaInfo(schema.getId()),schema.geetSchemaModel());
-			if(schema.getId().equals(mapping.getTargetId()))
-				targetInfo = new HierarchicalSchemaInfo(client.getSchemaInfo(schema.getId()),schema.geetSchemaModel());			
-		}
+		HierarchicalSchemaInfo sourceInfo = getSchemaInfo(project, mapping.getSourceId());
+		HierarchicalSchemaInfo targetInfo = getSchemaInfo(project, mapping.getTargetId());
 		
-		// Create the XML document
-		document.appendChild(ConvertToXML.generate(mapping, mappingCells, sourceInfo, targetInfo, document));
-
-		// Returns the generated document
+		// Retrieve the functions used in this mapping
+		HashMap<Function,ArrayList<FunctionImp>> functions = getFunctions(mappingCells);
+		
+		// Create XML for the mapping
+		Element mappingXMLElement = ConvertToXML.generate(mapping, sourceInfo, targetInfo, document);
+		for(Function function : functions.keySet())
+			mappingXMLElement.appendChild(ConvertToXML.generate(function, functions.get(function), document));
+		for(MappingCell mappingCell : mappingCells)
+			mappingXMLElement.appendChild(ConvertToXML.generate(mappingCell, sourceInfo, targetInfo, document));
+		
+		// Returns the generated XML document
+		document.appendChild(mappingXMLElement);
 		return document;
 	}
 	

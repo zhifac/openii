@@ -2,22 +2,20 @@ package org.mitre.schemastore.porters.xml;
 
 import java.text.DateFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import org.mitre.schemastore.model.Alias;
 import org.mitre.schemastore.model.Attribute;
 import org.mitre.schemastore.model.Containment;
 import org.mitre.schemastore.model.DomainValue;
+import org.mitre.schemastore.model.Function;
+import org.mitre.schemastore.model.FunctionImp;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
-import org.mitre.schemastore.model.Project;
-import org.mitre.schemastore.model.ProjectSchema;
 import org.mitre.schemastore.model.Relationship;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.Subtype;
 import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
-import org.mitre.schemastore.model.schemaInfo.SchemaInfo;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -28,7 +26,7 @@ public class ConvertToXML
 	static private Document document;
 	
 	/** Adds a new child element to the specified element */
-	static private Element addChildElement(Element element, String name, Object object)
+	static private Element addElement(Element element, String name, Object object)
 	{
 		Element childElement = document.createElement(name);
 		String text = object==null ? "" : object.toString().replaceAll("[^\\p{ASCII}]","#");
@@ -44,24 +42,18 @@ public class ConvertToXML
 		
 		// Generate the schema XML element
 		Element element = document.createElement("Schema");			
-		addChildElement(element,"SchemaId",schema.getId());
-		addChildElement(element,"SchemaName", schema.getName());
-		addChildElement(element,"SchemaAuthor", schema.getAuthor());
-		addChildElement(element,"SchemaSource", schema.getSource());
-		addChildElement(element,"SchemaType", schema.getType());
-		addChildElement(element,"SchemaDescription", schema.getDescription());
-		addChildElement(element,"SchemaLocked", new Boolean(schema.getLocked()));
+		addElement(element,"SchemaId",schema.getId());
+		addElement(element,"SchemaName", schema.getName());
+		addElement(element,"SchemaAuthor", schema.getAuthor());
+		addElement(element,"SchemaSource", schema.getSource());
+		addElement(element,"SchemaType", schema.getType());
+		addElement(element,"SchemaDescription", schema.getDescription());
+		addElement(element,"SchemaLocked", new Boolean(schema.getLocked()));
 		
-		// Add parent schemas to the schema XML element
-		if(parentIDs != null)
-		{
-			int x = 0;
+		// Generate the schema parents
+		if(parentIDs!=null)
 			for(Integer parentID : parentIDs)
-			{
-				String name = "SchemaParentId"+new Integer(x++).toString();
-				addChildElement(element,name,parentID);				
-			}
-		}
+				addElement(element,"SchemaParentId",parentID);
 		
 		return element;
 	}
@@ -73,91 +65,109 @@ public class ConvertToXML
 
 		// Generate XML for the generic schema element information
 		Element element = document.createElement(schemaElement.getClass().getName());
-		addChildElement(element,"ElementId",schemaElement.getId());
-		addChildElement(element,"ElementName",schemaElement.getName());
-		addChildElement(element,"ElementDescription",schemaElement.getDescription());
-		addChildElement(element,"ElementBase",schemaElement.getBase());
+		addElement(element,"ElementId",schemaElement.getId());
+		addElement(element,"ElementName",schemaElement.getName());
+		addElement(element,"ElementDescription",schemaElement.getDescription());
+		addElement(element,"ElementBase",schemaElement.getBase());
 		
 		// Generate XML for alias schema elements
 		if(schemaElement instanceof Alias)
-			addChildElement(element,"AliasIdElement",((Alias)schemaElement).getElementID());
+			addElement(element,"AliasIdElement",((Alias)schemaElement).getElementID());
 
 		// Generate XML for attribute schema elements
 		if(schemaElement instanceof Attribute)
 		{
 			Attribute attribute = (Attribute)schemaElement;
-			addChildElement(element,"AttributeEntityId", attribute.getEntityID());
-			addChildElement(element,"AttributeDomainId", attribute.getDomainID());
-			addChildElement(element,"AttributeMin", attribute.getMin());
-			addChildElement(element,"AttributeMax", attribute.getMax());
-			addChildElement(element,"AttributeKey", new Boolean(attribute.isKey()));
+			addElement(element,"AttributeEntityId", attribute.getEntityID());
+			addElement(element,"AttributeDomainId", attribute.getDomainID());
+			addElement(element,"AttributeMin", attribute.getMin());
+			addElement(element,"AttributeMax", attribute.getMax());
+			addElement(element,"AttributeKey", new Boolean(attribute.isKey()));
 		}
 		
 		// Generate XML for containment schema elements
 		if(schemaElement instanceof Containment)
 		{
 			Containment containment = (Containment)schemaElement;
-			addChildElement(element,"ContainmentParentId",containment.getParentID()==null?"NULL":containment.getParentID());
-			addChildElement(element,"ContainmentChildId",containment.getChildID());
-			addChildElement(element,"ContainmentMin",containment.getMin());
-			addChildElement(element,"ContainmentMax",containment.getMax());
+			addElement(element,"ContainmentParentId",containment.getParentID()==null?"NULL":containment.getParentID());
+			addElement(element,"ContainmentChildId",containment.getChildID());
+			addElement(element,"ContainmentMin",containment.getMin());
+			addElement(element,"ContainmentMax",containment.getMax());
 		}
 		
 		// Generate XML for domain value schema elements
 		if(schemaElement instanceof DomainValue)
-			addChildElement(element,"DomainValueDomainId",((DomainValue)schemaElement).getDomainID());
+			addElement(element,"DomainValueDomainId",((DomainValue)schemaElement).getDomainID());
 
 		// Generate XML for relationship schema elements
 		if(schemaElement instanceof Relationship)
 		{
 			Relationship relationship = (Relationship)schemaElement;
-			addChildElement(element,"RelationshipLeftId",relationship.getLeftID());
-			addChildElement(element,"RelationshipLeftMin",relationship.getLeftMin());
-			addChildElement(element,"RelationshipLeftMax",relationship.getLeftMax());
-			addChildElement(element,"RelationshipRightId",relationship.getRightID());
-			addChildElement(element,"RelationshipRightMin",relationship.getRightMin());
-			addChildElement(element,"RelationshipRightMax",relationship.getRightMax());
+			addElement(element,"RelationshipLeftId",relationship.getLeftID());
+			addElement(element,"RelationshipLeftMin",relationship.getLeftMin());
+			addElement(element,"RelationshipLeftMax",relationship.getLeftMax());
+			addElement(element,"RelationshipRightId",relationship.getRightID());
+			addElement(element,"RelationshipRightMin",relationship.getRightMin());
+			addElement(element,"RelationshipRightMax",relationship.getRightMax());
 		}
 		
 		// Generate XML for subtype schema elements
 		if(schemaElement instanceof Subtype)
 		{
 			Subtype subtype = (Subtype)schemaElement;
-			addChildElement(element,"SubTypeParentId",subtype.getParentID());
-			addChildElement(element,"SubTypeChildId",subtype.getChildID());
+			addElement(element,"SubTypeParentId",subtype.getParentID());
+			addElement(element,"SubTypeChildId",subtype.getChildID());
 		}
 		
 		return element;
 	}	
 	
-	/** Generates the XML for the specified project */
-	static public Element generate(Project project, HashMap<Integer,SchemaInfo> schemaInfoList, Document documentIn)
+	/** Generates the XML for the specified mapping */
+	static public Element generate(Mapping mapping, HierarchicalSchemaInfo sourceInfo, HierarchicalSchemaInfo targetInfo, Document documentIn)
+	{
+		document = documentIn;
+
+		// Generate the mapping XML elements
+		Element element = document.createElement("Mapping");
+		addElement(element,"MappingId",mapping.getId());
+		addElement(element,"MappingProjectId",mapping.getProjectId());
+		addElement(element,"MappingSourceId",mapping.getSourceId());
+		addElement(element,"MappingSourceName",sourceInfo.getSchema().getName());
+		addElement(element,"MappingSourceModel",sourceInfo.getModel());
+		addElement(element,"MappingTargetId",mapping.getTargetId());
+		addElement(element,"MappingTargetName",targetInfo.getSchema().getName());
+		addElement(element,"MappingTargetModel",targetInfo.getModel());
+		return element;
+	}
+	
+	/** Generates the XML for the specified function */
+	static public Element generate(Function function, ArrayList<FunctionImp> functionImps, Document documentIn)
 	{
 		document = documentIn;
 		
-		// Generate the project XML elements
-		Element element = document.createElement("Project");			
-		addChildElement(element,"ProjectId",project.getId());
-		addChildElement(element,"ProjectName", project.getName());
-		addChildElement(element,"ProjectAuthor", project.getAuthor());
-		addChildElement(element,"ProjectDescription", project.getDescription());
+		// Generate the function XML elements
+		Element element = document.createElement("Function");			
+		addElement(element,"FunctionId",function.getId());
+		addElement(element,"FunctionName", function.getName());
+		addElement(element,"FunctionDescription", function.getDescription());
+		addElement(element,"FunctionExpression", function.getExpression());
+		addElement(element,"FunctionCategory", function.getCategory());
+		for(Integer inputType : function.getInputTypes())
+			addElement(element,"FunctionInputType", inputType);
+		addElement(element,"FunctionOutputType", function.getOutputType());
 		
-		// Generate the project schema XML elements
-		for(ProjectSchema projectSchema : project.getSchemas())
+		// Generate the function implementation XML elements
+		for(FunctionImp functionImp : functionImps)
 		{
-			// Retrieve the associated schema
-			SchemaInfo schemaInfo = schemaInfoList.get(projectSchema.getId());
-			
-			// Stores the mapping schema
-			Element schemaElement = addChildElement(element,"ProjectSchema",null);
-			addChildElement(schemaElement,"SchemaId",projectSchema.getId());
-			addChildElement(schemaElement,"SchemaName",schemaInfo.getSchema().getName());
-			addChildElement(schemaElement,"SchemaModel",projectSchema.getModel());
+			Element functionImpElement = document.createElement("FunctionImp");
+			addElement(functionImpElement,"FunctionImpLanguage",functionImp.getLanguage());
+			addElement(functionImpElement,"FunctionImpDialect",functionImp.getDialect());
+			addElement(functionImpElement,"FunctionImpImplementation",functionImp.getImplementation());
 		}
 		
 		return element;
 	}
-
+	
 	/** Retrieves the element path for the given element ID */
 	static private String getElementPath(Integer elementID, HierarchicalSchemaInfo schemaInfo)
 	{
@@ -169,52 +179,39 @@ public class ConvertToXML
 		return path.toString();
 	}	
 	
-	/** Generates the XML for the specified mapping */
-	static public Element generate(Mapping mapping, ArrayList<MappingCell> mappingCells, HierarchicalSchemaInfo sourceInfo, HierarchicalSchemaInfo targetInfo, Document documentIn)
+	/** Generates the XML for the specified mapping cell */
+	static public Element generate(MappingCell mappingCell, HierarchicalSchemaInfo sourceInfo, HierarchicalSchemaInfo targetInfo, Document documentIn)
 	{
 		document = documentIn;
 
-		// Generate the mapping XML elements
-		Element element = document.createElement("Mapping");
-		addChildElement(element,"MappingId",mapping.getId());
-		addChildElement(element,"MappingProjectId",mapping.getProjectId());
-		addChildElement(element,"MappingSourceId",mapping.getSourceId());
-		addChildElement(element,"MappingSourceName",sourceInfo.getSchema().getName());
-		addChildElement(element,"MappingSourceModel",sourceInfo.getModel());
-		addChildElement(element,"MappingTargetId",mapping.getTargetId());
-		addChildElement(element,"MappingTargetName",targetInfo.getSchema().getName());
-		addChildElement(element,"MappingTargetModel",targetInfo.getModel());
-		
-		// Generate the mapping cell XML elements
-		for(MappingCell mappingCell : mappingCells)
+		// Retrieve the input and output paths
+		ArrayList<String> inputPaths = new ArrayList<String>();
+		for(Integer input : mappingCell.getInput())
 		{
-			// Retrieve the input and output paths
-			ArrayList<String> inputPaths = new ArrayList<String>();
-			for(Integer input : mappingCell.getInput())
-			{
-				String inputPath = getElementPath(input,sourceInfo);
-				if(inputPath==null) continue;
-				inputPaths.add(inputPath);
-			}
-			String outputPath = getElementPath(mappingCell.getOutput(),targetInfo);
-			if(outputPath==null) continue;
-			
-			// Stores the mapping cell information
-			Element mappingCellElement = addChildElement(element,"MappingCell",null);
-			addChildElement(mappingCellElement,"MappingCellId",mappingCell.getId());
-			addChildElement(mappingCellElement,"MappingCellAuthor",mappingCell.getAuthor());
-			addChildElement(mappingCellElement,"MappingCellDate",DateFormat.getDateInstance(DateFormat.MEDIUM).format(mappingCell.getModificationDate()));
-			addChildElement(mappingCellElement,"MappingCellInputCount",mappingCell.getInput().length);
-			for(int i=0; i<mappingCell.getInput().length; i++)
-			{
-				addChildElement(mappingCellElement,"MappingCellInput"+i+"Id",mappingCell.getInput()[i]);			
-				addChildElement(mappingCellElement,"MappingCellInput"+i+"Path",inputPaths.get(i));
-			}
-			addChildElement(mappingCellElement,"MappingCellOutputId",mappingCell.getOutput());
-			addChildElement(mappingCellElement,"MappingCellOutputPath",outputPath);
-			addChildElement(mappingCellElement,"MappingCellScore",mappingCell.getScore());
-			addChildElement(mappingCellElement,"MappingCellFunction",mappingCell.getFunctionID());
-			addChildElement(mappingCellElement,"MappingCellNotes",mappingCell.getNotes());
+			String inputPath = getElementPath(input,sourceInfo);
+			if(inputPath==null) return null;
+			inputPaths.add(inputPath);
+		}
+		String outputPath = getElementPath(mappingCell.getOutput(),targetInfo);
+		if(outputPath==null) return null;
+
+		// Generate the mapping cell XML elements
+		Element element = document.createElement("MappingCell");
+		addElement(element,"MappingCellId",mappingCell.getId());
+		addElement(element,"MappingCellAuthor",mappingCell.getAuthor());
+		addElement(element,"MappingCellDate",DateFormat.getDateInstance(DateFormat.MEDIUM).format(mappingCell.getModificationDate()));
+		addElement(element,"MappingCellOutputId",mappingCell.getOutput());
+		addElement(element,"MappingCellOutputPath",outputPath);
+		addElement(element,"MappingCellScore",mappingCell.getScore());
+		addElement(element,"MappingCellFunctionId",mappingCell.getFunctionID());
+		addElement(element,"MappingCellNotes",mappingCell.getNotes());			
+		
+		// Generate the mapping cell inputs XML elements
+		for(int i=0; i<mappingCell.getInput().length; i++)
+		{
+			Element inputElement = addElement(element,"MappingCellInput",null);
+			addElement(inputElement,"MappingCellInputId",mappingCell.getInput()[i]);			
+			addElement(inputElement,"MappingCellInputPath",inputPaths.get(i));				
 		}
 		
 		return element;
