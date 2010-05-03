@@ -46,7 +46,6 @@ public class MappingCellFunctionPane extends JPanel implements ActionListener, K
 	// Components used within the mapping cell confidence pane
 	private JCheckBox acceptCheckbox;
 	private JCheckBox rejectCheckbox;
-	private JTextField textField;
 	private JComboBox functionComboBox;
 	private JTextField formulaTextField;
 	private JComboBox variableComboBox;
