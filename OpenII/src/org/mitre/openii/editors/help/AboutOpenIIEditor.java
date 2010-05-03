@@ -1,7 +1,6 @@
 package org.mitre.openii.editors.help;
 
 import java.io.File;
-import java.io.IOException;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.swt.SWT;
@@ -14,7 +13,6 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.EditorPart;
-import org.mitre.openii.application.OpenIIActivator;
 
 /** Constructs the About OpenII Editor */
 public class AboutOpenIIEditor extends EditorPart {
