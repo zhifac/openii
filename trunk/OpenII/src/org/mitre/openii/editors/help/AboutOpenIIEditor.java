@@ -1,5 +1,6 @@
 package org.mitre.openii.editors.help;
 
+import java.io.File;
 import java.io.IOException;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -36,16 +37,24 @@ public class AboutOpenIIEditor extends EditorPart {
 		// create a browser to display in the window
 		Browser browser = new Browser(parent, SWT.NONE);
 		
-		try {
-			// get the base location of our application
-			String homePath = OpenIIActivator.getBundleFile().toURI().toString();
+		// get the base location of our application
+		String homeURL = getClass().getProtectionDomain().getCodeSource().getLocation().toString().replaceAll("\\%20"," ");
+		String homePath = getClass().getProtectionDomain().getCodeSource().getLocation().getPath().replaceAll("\\%20"," ");
 
-			// now tell the browser to browse to our HTML pages
-			browser.setUrl(homePath + "html/index.html");
-		} catch (IOException e) {
-			System.err.println(e.getMessage());
-			e.printStackTrace();
+		// remove any references to the openii jar
+		homeURL = homeURL.replaceAll("org\\.mitre\\.openii.*\\.jar$", "");
+		homePath = homePath.replaceAll("org\\.mitre\\.openii.*\\.jar$", "");
+
+		// check to see if it is in a location one above us
+		// this should match both the IDE and standalone
+		File f = new File(homePath + "../OpenII Documentation");
+		if (f.exists()) {
+			browser.setUrl(homeURL + "../OpenII Documentation/html/index.html");
+			return;
 		}
+
+		// couldn't find it, show an error
+		browser.setText("<html><body>Could not find OpenII Documentation.</body></html>");
 	}
 
 	/** Launches the editor */
