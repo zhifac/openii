@@ -187,30 +187,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
      </sequence>
     </complexType>
    </element>
-   <element name="getFunction">
-    <complexType>
-     <sequence>
-      <element name="functionID" type="xsd:int"/>
-     </sequence>
-    </complexType>
-   </element>
-   <element name="getFunctionResponse">
-    <complexType>
-     <sequence>
-      <element name="getFunctionReturn" type="tns1:Function"/>
-     </sequence>
-    </complexType>
-   </element>
-   <element name="getFunctions">
-    <complexType/>
-   </element>
-   <element name="getFunctionsResponse">
-    <complexType>
-     <sequence>
-      <element maxOccurs="unbounded" name="getFunctionsReturn" type="tns1:Function"/>
-     </sequence>
-    </complexType>
-   </element>
    <element name="addSchema">
     <complexType>
      <sequence>
@@ -301,6 +277,30 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
     <complexType>
      <sequence>
       <element name="getDataSourceReturn" type="tns1:DataSource"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getFunction">
+    <complexType>
+     <sequence>
+      <element name="functionID" type="xsd:int"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getFunctionResponse">
+    <complexType>
+     <sequence>
+      <element name="getFunctionReturn" type="tns1:Function"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getFunctions">
+    <complexType/>
+   </element>
+   <element name="getFunctionsResponse">
+    <complexType>
+     <sequence>
+      <element maxOccurs="unbounded" name="getFunctionsReturn" type="tns1:Function"/>
      </sequence>
     </complexType>
    </element>
@@ -1148,8 +1148,22 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
      </sequence>
     </complexType>
    </element>
-   <element name="getFunctionImps">
+   <element name="getAllFunctionImps">
     <complexType/>
+   </element>
+   <element name="getAllFunctionImpsResponse">
+    <complexType>
+     <sequence>
+      <element maxOccurs="unbounded" name="getAllFunctionImpsReturn" type="tns1:FunctionImp"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getFunctionImps">
+    <complexType>
+     <sequence>
+      <element name="functionID" type="xsd:int"/>
+     </sequence>
+    </complexType>
    </element>
    <element name="getFunctionImpsResponse">
     <complexType>
@@ -1503,17 +1517,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
      </extension>
     </complexContent>
    </complexType>
-   <complexType name="Function">
-    <sequence>
-     <element name="category" nillable="true" type="xsd:string"/>
-     <element name="description" nillable="true" type="xsd:string"/>
-     <element name="expression" nillable="true" type="xsd:string"/>
-     <element name="id" nillable="true" type="xsd:int"/>
-     <element name="inputTypes" nillable="true" type="impl:ArrayOf_xsd_int"/>
-     <element name="name" nillable="true" type="xsd:string"/>
-     <element name="outputType" nillable="true" type="xsd:int"/>
-    </sequence>
-   </complexType>
    <complexType name="Schema">
     <sequence>
      <element name="author" nillable="true" type="xsd:string"/>
@@ -1574,6 +1577,17 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
      <element name="name" nillable="true" type="xsd:string"/>
      <element name="schemaID" nillable="true" type="xsd:int"/>
      <element name="url" nillable="true" type="xsd:string"/>
+    </sequence>
+   </complexType>
+   <complexType name="Function">
+    <sequence>
+     <element name="category" nillable="true" type="xsd:string"/>
+     <element name="description" nillable="true" type="xsd:string"/>
+     <element name="expression" nillable="true" type="xsd:string"/>
+     <element name="id" nillable="true" type="xsd:int"/>
+     <element name="inputTypes" nillable="true" type="impl:ArrayOf_xsd_int"/>
+     <element name="name" nillable="true" type="xsd:string"/>
+     <element name="outputType" nillable="true" type="xsd:int"/>
     </sequence>
    </complexType>
    <complexType name="DataType">
@@ -1825,6 +1839,12 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
    </wsdl:message>
 
+   <wsdl:message name="getAllFunctionImpsResponse">
+
+      <wsdl:part element="impl:getAllFunctionImpsResponse" name="parameters"/>
+
+   </wsdl:message>
+
    <wsdl:message name="getFunctionImpsResponse">
 
       <wsdl:part element="impl:getFunctionImpsResponse" name="parameters"/>
@@ -2011,6 +2031,12 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
    </wsdl:message>
 
+   <wsdl:message name="getAllFunctionImpsRequest">
+
+      <wsdl:part element="impl:getAllFunctionImps" name="parameters"/>
+
+   </wsdl:message>
+
    <wsdl:message name="deleteProjectResponse">
 
       <wsdl:part element="impl:deleteProjectResponse" name="parameters"/>
@@ -2041,15 +2067,15 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
    </wsdl:message>
 
-   <wsdl:message name="isConnectedResponse">
-
-      <wsdl:part element="impl:isConnectedResponse" name="parameters"/>
-
-   </wsdl:message>
-
    <wsdl:message name="addMappingResponse">
 
       <wsdl:part element="impl:addMappingResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="isConnectedResponse">
+
+      <wsdl:part element="impl:isConnectedResponse" name="parameters"/>
 
    </wsdl:message>
 
@@ -2903,22 +2929,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
       </wsdl:operation>
 
-      <wsdl:operation name="getFunction">
-
-         <wsdl:input message="impl:getFunctionRequest" name="getFunctionRequest"/>
-
-         <wsdl:output message="impl:getFunctionResponse" name="getFunctionResponse"/>
-
-      </wsdl:operation>
-
-      <wsdl:operation name="getFunctions">
-
-         <wsdl:input message="impl:getFunctionsRequest" name="getFunctionsRequest"/>
-
-         <wsdl:output message="impl:getFunctionsResponse" name="getFunctionsResponse"/>
-
-      </wsdl:operation>
-
       <wsdl:operation name="addSchema">
 
          <wsdl:input message="impl:addSchemaRequest" name="addSchemaRequest"/>
@@ -2948,6 +2958,22 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
          <wsdl:input message="impl:getDataSourceRequest" name="getDataSourceRequest"/>
 
          <wsdl:output message="impl:getDataSourceResponse" name="getDataSourceResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getFunction">
+
+         <wsdl:input message="impl:getFunctionRequest" name="getFunctionRequest"/>
+
+         <wsdl:output message="impl:getFunctionResponse" name="getFunctionResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getFunctions">
+
+         <wsdl:input message="impl:getFunctionsRequest" name="getFunctionsRequest"/>
+
+         <wsdl:output message="impl:getFunctionsResponse" name="getFunctionsResponse"/>
 
       </wsdl:operation>
 
@@ -3439,6 +3465,14 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
       </wsdl:operation>
 
+      <wsdl:operation name="getAllFunctionImps">
+
+         <wsdl:input message="impl:getAllFunctionImpsRequest" name="getAllFunctionImpsRequest"/>
+
+         <wsdl:output message="impl:getAllFunctionImpsResponse" name="getAllFunctionImpsResponse"/>
+
+      </wsdl:operation>
+
       <wsdl:operation name="getFunctionImps">
 
          <wsdl:input message="impl:getFunctionImpsRequest" name="getFunctionImpsRequest"/>
@@ -3831,42 +3865,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
       </wsdl:operation>
 
-      <wsdl:operation name="getFunction">
-
-         <wsdlsoap:operation soapAction=""/>
-
-         <wsdl:input name="getFunctionRequest">
-
-            <wsdlsoap:body use="literal"/>
-
-         </wsdl:input>
-
-         <wsdl:output name="getFunctionResponse">
-
-            <wsdlsoap:body use="literal"/>
-
-         </wsdl:output>
-
-      </wsdl:operation>
-
-      <wsdl:operation name="getFunctions">
-
-         <wsdlsoap:operation soapAction=""/>
-
-         <wsdl:input name="getFunctionsRequest">
-
-            <wsdlsoap:body use="literal"/>
-
-         </wsdl:input>
-
-         <wsdl:output name="getFunctionsResponse">
-
-            <wsdlsoap:body use="literal"/>
-
-         </wsdl:output>
-
-      </wsdl:operation>
-
       <wsdl:operation name="addSchema">
 
          <wsdlsoap:operation soapAction=""/>
@@ -3932,6 +3930,42 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
          </wsdl:input>
 
          <wsdl:output name="getDataSourceResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getFunction">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="getFunctionRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="getFunctionResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getFunctions">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="getFunctionsRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="getFunctionsResponse">
 
             <wsdlsoap:body use="literal"/>
 
@@ -5030,6 +5064,24 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
          </wsdl:input>
 
          <wsdl:output name="deleteFunctionResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getAllFunctionImps">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="getAllFunctionImpsRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="getAllFunctionImpsResponse">
 
             <wsdlsoap:body use="literal"/>
 

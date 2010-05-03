@@ -64,11 +64,11 @@ public class FunctionDataCalls extends AbstractDataCalls
 		Integer validationNumber = 0;
 		try {
 			Statement stmt = connection.getStatement();
-			ResultSet rs = stmt.executeQuery("SELECT sum(function_id) AS validation_number FROM functions");
+			ResultSet rs = stmt.executeQuery("SELECT sum(id) AS validation_number FROM functions");
 			if(rs.next())
 				validationNumber = rs.getInt("validation_number");
 			stmt.close();
-		} catch(SQLException e) { System.out.println("(E) TapDataCalls:getFunctionValidationNumber: "+e.getMessage()); }
+		} catch(SQLException e) { System.out.println("(E) FunctionDataCalls:getFunctionValidationNumber: "+e.getMessage()); }
 		return validationNumber;
 	}
 	
@@ -170,13 +170,13 @@ public class FunctionDataCalls extends AbstractDataCalls
 	// Handles Function Implementations in the Database
 	//--------------------------------------------------
 	
-	/** Retrieves the list of function implementations in the repository */
-	public ArrayList<FunctionImp> getFunctionImps()
+	/** Retrieves the list of function implementations in the repository for the specified function */
+	public ArrayList<FunctionImp> getFunctionImps(Integer functionID)
 	{
 		ArrayList<FunctionImp> functionImps = new ArrayList<FunctionImp>();
 		try {
 			Statement stmt = connection.getStatement();
-			ResultSet rs = stmt.executeQuery("SELECT function_id,language,dialect,implementation FROM function_implementation");
+			ResultSet rs = stmt.executeQuery("SELECT function_id,language,dialect,implementation FROM function_implementation"+(functionID==null?"":" WHERE function_id="+functionID));
 			while(rs.next())
 			{				
 				// Retrieve the function info
@@ -192,6 +192,10 @@ public class FunctionDataCalls extends AbstractDataCalls
 		} catch(SQLException e) { System.out.println("(E) FunctionDataCalls:getFunctionImps: "+e.getMessage()); }
 		return functionImps;
 	}
+	
+	/** Retrieves the list of function implementations in the repository */
+	public ArrayList<FunctionImp> getFunctionImps()
+		{ return getFunctionImps(null); }
 	
 	/** Sets the specified function implementation */
 	public boolean setFunctionImp(FunctionImp functionImp)

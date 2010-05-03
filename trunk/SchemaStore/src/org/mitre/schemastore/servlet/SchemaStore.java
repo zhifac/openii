@@ -423,8 +423,12 @@ public class SchemaStore
 		{ return getManager().getFunctionCache().deleteFunction(functionID); }
 	
 	/** Web service to retrieve the list of function implementations */
-	public FunctionImp[] getFunctionImps()
+	public FunctionImp[] getAllFunctionImps()
 		{ return getManager().getFunctionCache().getFunctionImps().toArray(new FunctionImp[0]); }
+	
+	/** Web service to retrieve the list of function implementations for the specified function */
+	public FunctionImp[] getFunctionImps(int functionID)
+		{ return getManager().getFunctionCache().getFunctionImps(functionID).toArray(new FunctionImp[0]); }
 	
 	/** Web service to set the specified function implementation */
 	public boolean setFunctionImp(FunctionImp functionImp)
