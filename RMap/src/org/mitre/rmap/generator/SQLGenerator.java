@@ -7,8 +7,6 @@ import java.util.regex.Pattern;
 import org.mitre.rmap.generator.Dependency;
 import org.mitre.rmap.model.exports.Export;
 import org.mitre.schemastore.model.*;
-import org.mitre.schemastore.model.mapfunctions.*;
-import org.mitre.schemastore.model.mappingInfo.*;
 import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
 
 public class SQLGenerator {

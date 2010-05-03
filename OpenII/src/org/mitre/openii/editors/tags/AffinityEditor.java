@@ -3,7 +3,6 @@ package org.mitre.openii.editors.tags;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -45,9 +44,6 @@ import org.mitre.openii.model.OpenIIManager;
 import org.mitre.openii.model.RepositoryManager;
 import org.mitre.openii.views.manager.projects.EditProjectDialog;
 import org.mitre.openii.views.manager.tags.EditTagDialog;
-import org.mitre.schemastore.model.Project;
-import org.mitre.schemastore.model.ProjectSchema;
-import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.schemaInfo.FilteredSchemaInfo;
 
 /**

@@ -1,21 +1,17 @@
-	package org.mitre.openii.editors.projects;
+package org.mitre.openii.editors.projects;
 
-	import java.util.ArrayList;
-	import java.util.Collection;
-	import java.util.Iterator;
+import java.util.ArrayList;
 
 import org.eclipse.swt.SWT;
-	import org.eclipse.swt.widgets.Composite;
-	import org.eclipse.ui.IEditorInput;
-	import org.mitre.openii.editors.OpenIIEditor;
-	import org.mitre.openii.model.EditorInput;
-	import org.mitre.openii.model.OpenIIManager;
-	import org.mitre.openii.views.manager.projects.matchmaker.Synset;
-	import org.mitre.openii.views.manager.projects.matchmaker.Term;
-	import org.mitre.openii.views.manager.projects.unity.Vocabulary;
-	import org.mitre.schemastore.model.Project;
-	import org.mitre.affinity.view.vocab_debug_view.view.swt.SWTVocabDebugViewTwo;
-	
+import org.eclipse.swt.widgets.Composite;
+import org.mitre.openii.editors.OpenIIEditor;
+import org.mitre.openii.model.EditorInput;
+import org.mitre.openii.model.OpenIIManager;
+import org.mitre.openii.views.manager.projects.matchmaker.Synset;
+import org.mitre.openii.views.manager.projects.matchmaker.Term;
+import org.mitre.openii.views.manager.projects.unity.Vocabulary;
+import org.mitre.schemastore.model.Project;
+import org.mitre.affinity.view.vocab_debug_view.view.swt.SWTVocabDebugViewTwo;
 
 public class VocabEditor extends OpenIIEditor{
 		
