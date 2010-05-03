@@ -11,9 +11,10 @@ import org.mitre.schemastore.model.Containment;
 import org.mitre.schemastore.model.Domain;
 import org.mitre.schemastore.model.DomainValue;
 import org.mitre.schemastore.model.Entity;
+import org.mitre.schemastore.model.Function;
+import org.mitre.schemastore.model.FunctionImp;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
-import org.mitre.schemastore.model.Project;
 import org.mitre.schemastore.model.ProjectSchema;
 import org.mitre.schemastore.model.Relationship;
 import org.mitre.schemastore.model.Schema;
@@ -26,20 +27,42 @@ import org.w3c.dom.NodeList;
 /** Class for converting SchemaStore objects from XML */
 public class ConvertFromXML
 {
+	/** Retrieves child elements from the element */
+	static private ArrayList<Element> getElements(Element element, String tag)
+	{
+		ArrayList<Element> elements = new ArrayList<Element>();
+		NodeList tagList = element.getElementsByTagName(tag);
+		if(tagList!=null)
+			for(int i=0; i<tagList.getLength(); i++)
+				elements.add((Element)tagList.item(i));
+		return elements;
+	}
+	
+	/** Retrieves values from the element */
+	static private ArrayList<String> getValues(Element element, String tag)
+	{
+		ArrayList<String> values = new ArrayList<String>();
+		for(Element childElement : getElements(element,tag))
+		{
+			String value = childElement.getFirstChild().getNodeValue();
+			values.add(value.equals("NULL") ? "" : value);			
+		}
+		return values;
+	}
+	
+	/** Retrieves integer values from the element */
+	static private ArrayList<Integer> getIntegerValues(Element element, String tag)
+	{
+		ArrayList<Integer> values = new ArrayList<Integer>();
+		for(String value : getValues(element,tag))
+			try { values.add(Integer.parseInt(value)); } catch(Exception e) {}
+		return values;
+	}
+
+	
 	/** Retrieves a value from the element */
 	static private String getValue(Element element, String tag)
-	{
-		NodeList tagList = element.getElementsByTagName(tag);
-		try {
-			if(tagList!=null && tagList.getLength()>0)
-			{
-				Element el = (Element)tagList.item(0);
-				String value = el.getFirstChild().getNodeValue();
-				return value.equals("NULL") ? "" : value;
-			}
-		} catch(java.lang.NullPointerException e) {}
-		return null;
-	}
+		{ try { return getValues(element,tag).get(0); } catch(Exception e) { return null; } }
 	
 	/** Retrieves an integer value from the element */
 	static private Integer getIntegerValue(Element element, String tag)
@@ -76,14 +99,7 @@ public class ConvertFromXML
 	
 	/** Retrieve the parent schemas from the specified XML */
 	static public ArrayList<Integer> getParentSchemaIDs(Element element)
-	{
-		ArrayList<Integer> schemaIDs = new ArrayList<Integer>();
-		int x = 0;
-		String textValue;
-		while((textValue = getValue(element,"SchemaParentId"+new Integer(x++).toString())) != null)
-			schemaIDs.add(Integer.parseInt(textValue));
-		return schemaIDs;
-	}
+		{ return getIntegerValues(element,"SchemaParentId"); }
 	
 	/** Retrieves the schema element from the specified XML */
 	static public SchemaElement getSchemaElement(Element element)
@@ -159,34 +175,39 @@ public class ConvertFromXML
 		return schemaElement;
 	}
 
-	/** Retrieve the project from the specified XML */
-	static public Project getProject(Element element)
+	/** Retrieve the function from the specified XML */
+	static public Function getFunction(Element element)
 	{
-		// Populate the project 
-		Project project = new Project();
-		project.setId(getIntegerValue(element,"MappingId"));
-		project.setName(getValue(element,"MappingName"));
-		project.setAuthor(getValue(element,"MappingAuthor"));
-		project.setDescription(getValue(element,"MappingDescription"));
-
-		// Populate the project schemas
-		ArrayList<ProjectSchema> schemas = new ArrayList<ProjectSchema>();
-		NodeList schemaList = element.getElementsByTagName("ProjectSchema");
-		if(schemaList!=null)
-			for(int i=0; i<schemaList.getLength(); i++)
-			{
-				// Get the schema element
-				Element schemaElement = (Element)schemaList.item(i);
-
-				// Extract the schema information from the element
-				ProjectSchema schema = new ProjectSchema();
-				schema.setId(getIntegerValue(schemaElement,"SchemaId"));
-				schema.setName(getValue(schemaElement,"SchemaName"));
-				schema.setModel(getValue(schemaElement,"SchemaModel"));
-				schemas.add(schema);
-			}
-		project.setSchemas(schemas.toArray(new ProjectSchema[0]));
-		return project;
+		// Populate the function
+		Function function = new Function();
+		function.setId(getIntegerValue(element,"FunctionId"));
+		function.setName(getValue(element,"FunctionName"));
+		function.setDescription(getValue(element,"FunctionDescription"));
+		function.setExpression(getValue(element,"FunctionExpression"));
+		function.setCategory(getValue(element,"FunctionCategory"));
+		function.setInputTypes(getIntegerValues(element,"FunctionInputType").toArray(new Integer[0]));
+		function.setOutputType(getIntegerValue(element,"FunctionOutputType"));
+		return function;
+	}
+	
+	/** Retrieve the function implementations from the specified XML */
+	static public ArrayList<FunctionImp> getFunctionImps(Element element)
+	{
+		// Retrieve the function ID
+		Integer functionID = getIntegerValue(element,"FunctionId");
+		
+		// Populate the function implementations
+		ArrayList<FunctionImp> functionImps = new ArrayList<FunctionImp>();
+		for(Element functionImpElement : getElements(element,"FunctionImp"))
+		{
+			FunctionImp functionImp = new FunctionImp();
+			functionImp.setFunctionID(functionID);
+			functionImp.setLanguage(getValue(functionImpElement,"FunctionImpLanguage"));
+			functionImp.setDialect(getValue(functionImpElement,"FunctionImpDialect"));
+			functionImp.setImplementation(getValue(functionImpElement,"FunctionImpImplementation"));
+			functionImps.add(functionImp);
+		}
+		return functionImps;
 	}
 	
 	/** Retrieve information on the source schema from the specified XML */
@@ -234,29 +255,28 @@ public class ConvertFromXML
 	}
 	
 	/** Retrieve the mapping cell from the specified XML */
-	static public MappingCell getMappingCell(Element element, HierarchicalSchemaInfo sourceInfo, HierarchicalSchemaInfo targetInfo)
+	static public MappingCell getMappingCell(Element element, HierarchicalSchemaInfo sourceInfo, HierarchicalSchemaInfo targetInfo) throws Exception
 	{
-		// Retrieve the mapping cell input and output IDs
-		Integer inputCount = getIntegerValue(element,"MappingCellInputCount");
-		Integer inputIDs[] = new Integer[inputCount];
-		for(int i=0; i<inputCount; i++)
-		{
-			Integer inputID = getElementId(getValue(element,"MappingCellInput"+i+"Path"),sourceInfo);
-			if(inputID==null) return null;
-			inputIDs[i] = inputID;
-		}
-		Integer outputID = getElementId(getValue(element,"MappingCellOutputPath"),targetInfo);
-		if(outputID==null) return null;
-		
 		// Retrieve the mapping cell elements
 		Integer id = getIntegerValue(element,"MappingCellId");
 		String author = getValue(element,"MappingCellAuthor");
 		Date date = getDateValue(element,"MappingCellDate");
 		Double score = getDoubleValue(element,"MappingCellScore");
-		Integer functionID = getIntegerValue(element,"MappingCellFunction");
+		Integer functionID = getIntegerValue(element,"MappingCellFunctionId");
 		String notes = getValue(element,"MappingCellNotes");
+		Integer outputID = getElementId(getValue(element,"MappingCellOutputPath"),targetInfo);
+		if(outputID==null) return null;
+	
+		// Retrieve the mapping cell inputs
+		ArrayList<Integer> inputIDs = new ArrayList<Integer>();
+		for(Element inputElement : getElements(element,"MappingCellInput"))
+		{
+			Integer inputID = getElementId(getValue(inputElement,"MappingCellInputPath"),sourceInfo);
+			if(inputID==null) return null;
+			inputIDs.add(inputID);
+		}
 		
 		// Return the generated mapping cell
-		return new MappingCell(id, null, inputIDs, outputID, score, functionID, author, date, notes);
+		return new MappingCell(id, null, inputIDs.toArray(new Integer[0]), outputID, score, functionID, author, date, notes);
 	}
 }
