@@ -9,6 +9,7 @@
       <schemaImporter>org.mitre.schemastore.porters.schemaImporters.XSDImporter</schemaImporter>
       <schemaImporter>org.mitre.schemastore.porters.schemaImporters.DomainValueImporter</schemaImporter>
       <schemaImporter>org.mitre.schemastore.porters.schemaImporters.SpreadsheetImporter</schemaImporter>
+      <schemaImporter>org.mitre.schemastore.porters.schemaImporters.HierarchicalDomainValueImporter2</schemaImporter>
       <schemaImporter>org.mitre.schemastore.porters.schemaImporters.GSIPImporter</schemaImporter>
       <schemaImporter>org.mitre.schemastore.porters.schemaImporters.GDBImporter</schemaImporter>
       <schemaImporter>org.mitre.schemastore.porters.schemaImporters.DocumentImporter</schemaImporter>

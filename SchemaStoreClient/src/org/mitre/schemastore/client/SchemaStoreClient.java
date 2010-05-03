@@ -435,10 +435,10 @@ public class SchemaStoreClient
 	public Function getFunction(Integer functionID) throws RemoteException
 		{ return (Function)callMethod("getFunction",new Object[] {functionID}); }
 
-	/** Gets the dependent functions for the specified function from the web service */
-	public ArrayList<Function> getDependentFunctions(Integer functionID) throws RemoteException
+	/** Gets the functions referenced by the specified function from the web service */
+	public ArrayList<Function> getReferencedFunctions(Integer functionID) throws RemoteException
 	{
-		Function[] functions = (Function[])callMethod("getDependentFunctions",new Object[] {functionID});
+		Function[] functions = (Function[])callMethod("getReferencedFunctions",new Object[] {functionID});
 		return functions==null ? new ArrayList<Function>() : new ArrayList<Function>(Arrays.asList(functions));
 	}
 	
@@ -467,10 +467,17 @@ public class SchemaStoreClient
 	/** Gets the list of function implementations from the web service */
 	public ArrayList<FunctionImp> getFunctionImps() throws RemoteException
 	{
-		FunctionImp[] functionImps = (FunctionImp[])callMethod("getFunctionImps",new Object[] {});
+		FunctionImp[] functionImps = (FunctionImp[])callMethod("getAllFunctionImps",new Object[] {});
 		return functionImps==null ? new ArrayList<FunctionImp>() : new ArrayList<FunctionImp>(Arrays.asList(functionImps));
 	}
 
+	/** Gets the list of function implementations for the specified function from the web service */
+	public ArrayList<FunctionImp> getFunctionImps(Integer functionID) throws RemoteException
+	{
+		FunctionImp[] functionImps = (FunctionImp[])callMethod("getFunctionImps",new Object[] {functionID});
+		return functionImps==null ? new ArrayList<FunctionImp>() : new ArrayList<FunctionImp>(Arrays.asList(functionImps));
+	}
+	
 	/** Sets the specified function implementation in the web service */
 	public boolean setFunctionImp(FunctionImp functionImp) throws RemoteException
 		{ return (Boolean)callMethod("setFunctionImp",new Object[] {functionImp}); }
