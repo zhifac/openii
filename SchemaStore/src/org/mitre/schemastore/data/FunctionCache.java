@@ -52,13 +52,21 @@ public class FunctionCache extends DataCache
 
 			// Caches the function references
 			for(Function function : functions)
-			{
-				ArrayList<Function> dependentFunctions = new ArrayList<Function>();
-				for(String name : function.getExpression().split("[\\(\\),]+"))
-					dependentFunctions.add(functionNameRefs.get(name));
-				functionReferences.put(function.getId(), dependentFunctions);
-			}
+				if(function.getExpression()!=null)
+				{
+					ArrayList<Function> dependentFunctions = new ArrayList<Function>();
+					for(String name : function.getExpression().split("[\\(\\),]+"))
+						dependentFunctions.add(functionNameRefs.get(name));
+					functionReferences.put(function.getId(), dependentFunctions);
+				}
 		}
+	}
+	
+	/** Returns the referenced functions */
+	private ArrayList<Function> getFunctionReferences(Integer functionID)
+	{
+		ArrayList<Function> referencedFunctions = functionReferences.get(functionID);
+		return referencedFunctions==null ? new ArrayList<Function>() : referencedFunctions;
 	}
 	
 	/** Returns a listing of all data types */
@@ -77,12 +85,12 @@ public class FunctionCache extends DataCache
 	public ArrayList<Function> getReferencedFunctions(Integer functionID)
 	{
 		recacheAsNeeded();
-		ArrayList<Function> referencedFunctions = new ArrayList<Function>(functionReferences.get(functionID));
+		ArrayList<Function> referencedFunctions = new ArrayList<Function>(getFunctionReferences(functionID));
 		for(int i=0; i<referencedFunctions.size(); i++)
-			for(Function referencedFunction : functionReferences.get(referencedFunctions.get(i).getId()))
+			for(Function referencedFunction : getFunctionReferences(referencedFunctions.get(i).getId()))
 				if(!referencedFunctions.contains(referencedFunction))
 					referencedFunctions.add(referencedFunction);
-		return referencedFunctions;
+		return referencedFunctions==null ? new ArrayList<Function>() : referencedFunctions;
 	}
 	
 	/** Adds the specified function */
@@ -92,13 +100,16 @@ public class FunctionCache extends DataCache
 
 		// Validate the syntax of the expression
 		String expression = function.getExpression();
-		while(expression.matches(functionExp))
+		if(expression!=null)
 		{
-			String dependentFunction = expression.replaceFirst(functionExp, "$1");
-			if(!functionNameRefs.containsKey(dependentFunction.replaceFirst(functionExp, "$2"))) return 0;
-			expression = expression.replace(dependentFunction, "$0");
+			while(expression.matches(functionExp))
+			{
+				String dependentFunction = expression.replaceFirst(functionExp, "$1");
+				if(!functionNameRefs.containsKey(dependentFunction.replaceFirst(functionExp, "$2"))) return 0;
+				expression = expression.replace(dependentFunction, "$0");
+			}
+			if(!expression.equals("$0")) return 0;
 		}
-		if(!expression.equals("$0")) return 0;
 		
 		// Add the function
 		return dataCalls.addFunction(function);
@@ -115,6 +126,10 @@ public class FunctionCache extends DataCache
 	/** Returns the implementations for all functions */
 	public ArrayList<FunctionImp> getFunctionImps()
 		{ return dataCalls.getFunctionImps(); }
+	
+	/** Returns the implementations for the specified function */
+	public ArrayList<FunctionImp> getFunctionImps(Integer functionID)
+		{ return dataCalls.getFunctionImps(functionID); }
 	
 	/** Sets the specified function implementation */
 	public boolean setFunctionImp(FunctionImp functionImp)
