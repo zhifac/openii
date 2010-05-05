@@ -115,6 +115,7 @@ public class ProjectController
 				// Update the project information
 				if(!SchemaStoreManager.updateProject(project))
 					throw new Exception("Failed to update project");
+				harmonyModel.getProjectManager().setProject(project);
 			}
 			else
 			{
