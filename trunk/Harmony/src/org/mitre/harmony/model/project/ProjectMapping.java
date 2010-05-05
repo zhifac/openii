@@ -82,6 +82,14 @@ public class ProjectMapping extends Mapping
 		return "'" + schema1 + "' to '" + schema2 + "'";
 	}
 	
+	/** Sets the mapping ID as well as the references to all of the stored mapping cells */
+	public void setId(Integer id)
+	{
+		super.setId(id);
+		for(MappingCell mappingCell : mappingCellHash.values())
+			mappingCell.setMappingId(id);
+	}
+	
 	/** Sets the visibility of the mapping */
 	public void setVisibility(boolean visibility)
 	{
