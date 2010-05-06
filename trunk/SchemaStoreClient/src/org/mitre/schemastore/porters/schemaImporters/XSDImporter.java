@@ -2,14 +2,22 @@
 
 package org.mitre.schemastore.porters.schemaImporters;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintStream;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 
+import org.exolab.castor.types.AnyNode;
 import org.exolab.castor.xml.schema.Annotated;
 import org.exolab.castor.xml.schema.Annotation;
 import org.exolab.castor.xml.schema.AnyType;
+import org.exolab.castor.xml.schema.AppInfo;
 import org.exolab.castor.xml.schema.AttributeDecl;
 import org.exolab.castor.xml.schema.ComplexType;
 import org.exolab.castor.xml.schema.Documentation;
@@ -22,6 +30,8 @@ import org.exolab.castor.xml.schema.Union;
 import org.exolab.castor.xml.schema.Wildcard;
 import org.exolab.castor.xml.schema.XMLType;
 import org.exolab.castor.xml.schema.reader.SchemaReader;
+import org.mitre.schemastore.client.Repository;
+import org.mitre.schemastore.client.SchemaStoreClient;
 import org.mitre.schemastore.model.Attribute;
 import org.mitre.schemastore.model.Containment;
 import org.mitre.schemastore.model.Domain;
@@ -48,7 +58,7 @@ public class XSDImporter extends SchemaImporter
 	
 	private static final String DEFAULT_NAMESPACE = "urn:mitre.org:M3";
 
-	
+	private String schemaName = "";
 	
 	// Stores the M3 schema elements (entities, attributes, domain, relationships, etc.) 
 	private HashMap<Integer, SchemaElement> schemaElementsHS = new HashMap<Integer, SchemaElement>();
@@ -77,6 +87,65 @@ public class XSDImporter extends SchemaImporter
 		return fileTypes;
 	}
 
+	public static void main(String args[]) throws URISyntaxException, ImporterException, RemoteException, FileNotFoundException{
+		XSDImporter xsdImporter = new XSDImporter();
+		Repository repository = new Repository(Repository.POSTGRES,new URI("platform-2.mitre.org"),"schemastore","postgres","postgres");
+		SchemaStoreClient client = new SchemaStoreClient(repository);
+		System.out.println("initialized client");
+
+		File file = new File(new URI("C:/messageSchemas").getPath());
+		String[] children = file.list();
+		int failCount = 0;
+		int totalCount = 0;
+		
+		for (String child : children){
+			
+			if (child.equalsIgnoreCase("IC-ISM-v2.xsd")){
+				continue;
+			}
+			else if (!child.equalsIgnoreCase("purple")){
+				continue;
+			}
+			else {
+				String xsdURI = "C:/messageSchemas" + "/" + child + "/" + "messages.xsd"; 
+				xsdImporter.uri = new URI(xsdURI);
+				
+				try {
+					// xsdImporter.importSchema(name, author, description, uri);
+					// Generate the schema elements and extensions
+					xsdImporter.initialize();
+					org.mitre.schemastore.model.Schema schema = new org.mitre.schemastore.model.Schema(nextId(),"message","dburdick","","","",false);
+					ArrayList<SchemaElement> schemaElements = xsdImporter.generateSchemaElements();
+					ArrayList<Integer> extendedSchemaIDs = xsdImporter.generateExtendedSchemaIDs();
+				
+					// Imports the schema
+					boolean success = false;
+				
+					// Import the schema -- change name
+					schema.setName(xsdImporter.schemaName);
+					Integer schemaID = client.importSchema(schema, schemaElements);
+					schema.setId(schemaID);
+					success = client.setParentSchemas(schema.getId(), extendedSchemaIDs);
+	
+					// Delete the schema if import wasn't totally successful
+					if(!success){
+						System.out.println("success false ?");
+						client.deleteSchema(schema.getId());  	
+					}
+					//throw new ImporterException(ImporterException.IMPORT_FAILURE,"A failure occured in transferring the schema to the repository");
+					System.out.println("xsdURI2: " + xsdURI);
+				} catch (Exception e){
+					failCount++;
+					System.out.println("******* " + xsdURI + " failed " + " --- failcount: " + failCount + " totalCount: " + totalCount);
+				}
+				
+			}
+			totalCount++;
+		}
+		System.out.println("fail count: " + failCount + " total Count: "  + totalCount);
+	} // end main
+	
+	
 	/** Initializes the importer for the specified URI */
 	protected void initialize() throws ImporterException
 	{	
@@ -152,7 +221,11 @@ public class XSDImporter extends SchemaImporter
 	
 	/** Returns the schema elements from the specified URI */
 	public ArrayList<SchemaElement> generateSchemaElements() throws ImporterException
-		{ return new ArrayList<SchemaElement>(schemaElementsHS.values()); }
+	{ 
+		ArrayList<SchemaElement> retVal = new ArrayList<SchemaElement>(schemaElementsHS.values());
+		return retVal; 
+		
+	}
 
 
 	/**
@@ -348,6 +421,10 @@ public class XSDImporter extends SchemaImporter
 		}
 		
 		// add Entity for complexType as child of passed containment or subtype 
+		SchemaElement testSE = schemaElementsHS.get(passedType.hashCode());
+		if (!(testSE instanceof Entity)){
+			System.out.println();
+		}
 		entity = (Entity)schemaElementsHS.get(passedType.hashCode());
 		if (parent instanceof Containment && parent != null)
 			((Containment)parent).setChildID(entity.getId());
@@ -417,6 +494,7 @@ public class XSDImporter extends SchemaImporter
 		if (schemaElementsHS.containsKey(origHashcode) == false)
 			schemaElementsHS.put(origHashcode, containment);
 		
+		
 		// TODO: process substitution group
 //		Enumeration<?> substitutionGroup = elementDecl.getSubstitutionGroupMembers();
 //		while (substitutionGroup.hasMoreElements()){
@@ -476,6 +554,38 @@ public class XSDImporter extends SchemaImporter
 						documentation.append(doc.getContent().replaceAll("<",
 								"&lt;").replaceAll(">", "&gt;").replaceAll("&",
 								"&amp;"));
+				}
+				Enumeration appInfoEnum = annotation.getAppInfo();
+				if (appInfoEnum != null){
+					while (appInfoEnum.hasMoreElements()){
+						AppInfo appInfo = (AppInfo)appInfoEnum.nextElement(); 
+						Enumeration appInfoObjects = appInfo.getObjects();
+						if (appInfoObjects != null){
+							while (appInfoObjects.hasMoreElements()){
+				
+								AnyNode anyNode = (AnyNode)appInfoObjects.nextElement();
+								
+								// set the schema name
+								if (anyNode.getLocalName() != null && anyNode.getLocalName().equalsIgnoreCase("MtfName")){
+								//	System.out.println("setting schema name: " + anyNode.getStringValue());
+									this.schemaName = anyNode.getStringValue();
+								}
+								
+								if (anyNode.getLocalName() != null && anyNode.getLocalName().equalsIgnoreCase("MtfPurpose")){
+									documentation.append(anyNode.getStringValue().replaceAll("<","&lt;").replaceAll(">", "&gt;").replaceAll("&","&amp;"));				
+								//	System.out.println("setting doc for top element: " + anyNode.getStringValue());
+								}
+								
+								// set the documentation for the element
+								if (anyNode.getLocalName() != null && anyNode.getLocalName().equalsIgnoreCase("SetFormatPositionConcept")){
+									documentation.append(anyNode.getStringValue().replaceAll("<","&lt;").replaceAll(">", "&gt;").replaceAll("&","&amp;"));			
+								//	System.out.println("setting doc for element: " + anyNode.getStringValue());
+								}
+							
+							
+							}
+						}
+					}
 				}
 			}
 		}
