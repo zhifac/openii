@@ -15,6 +15,7 @@ import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.ProjectSchema;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.porters.ImporterException;
+import org.mitre.schemastore.porters.ImporterException.ImporterExceptionType;
 import org.mitre.schemastore.porters.mappingImporters.M3MappingImporter;
 import org.mitre.schemastore.porters.schemaImporters.M3SchemaImporter;
 
@@ -97,7 +98,7 @@ public class M3ProjectImporter extends ProjectImporter
 					}
 					catch(ImporterException e)
 					{
-						if(e.getExceptionType().equals(ImporterException.DUPLICATION_FAILURE))
+						if(e.getExceptionType().equals(ImporterExceptionType.DUPLICATION_FAILURE))
 							schemaID = Integer.valueOf(e.getMessage().replaceAll(".*\\(","").replaceAll("\\).*",""));
 					}
 					if(schemaID==null) throw new Exception("Failed to import schema " + schema.getName());
@@ -131,7 +132,7 @@ public class M3ProjectImporter extends ProjectImporter
 			tempFile.delete();
 			zipIn.close();
 		}
-		catch(Exception e) { throw new ImporterException(ImporterException.IMPORT_FAILURE, e.getMessage()); }
+		catch(Exception e) { throw new ImporterException(ImporterExceptionType.IMPORT_FAILURE, e.getMessage()); }
 	}
 	
 	/** Returns the schemas associated with this project */

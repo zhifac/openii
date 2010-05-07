@@ -33,6 +33,7 @@ import org.mitre.schemastore.model.Subtype;
 import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
 import org.mitre.schemastore.model.schemaInfo.model.SchemaModel;
 import org.mitre.schemastore.porters.ImporterException;
+import org.mitre.schemastore.porters.ImporterException.ImporterExceptionType;
 
 
 /**
@@ -93,7 +94,7 @@ public class XSDImporter extends SchemaImporter
 	                		"must allow modification to system properties if " +
 	                		"you want to use the proxy");
 	          	e.printStackTrace();
-	          	throw new ImporterException(ImporterException.PARSE_FAILURE,message); 
+	          	throw new ImporterException(ImporterExceptionType.PARSE_FAILURE,message); 
 	     }
 
 		try {
@@ -126,7 +127,7 @@ public class XSDImporter extends SchemaImporter
 		}
 		catch(Exception e) { 			
 			e.printStackTrace();
-			throw new ImporterException(ImporterException.PARSE_FAILURE,e.getMessage()); 
+			throw new ImporterException(ImporterExceptionType.PARSE_FAILURE,e.getMessage()); 
 		}
 	}
 	

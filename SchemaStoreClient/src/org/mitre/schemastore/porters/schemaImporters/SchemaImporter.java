@@ -23,6 +23,7 @@ import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.porters.Importer;
 import org.mitre.schemastore.porters.ImporterException;
+import org.mitre.schemastore.porters.ImporterException.ImporterExceptionType;
 
 /** Abstract Schema Importer class */
 public abstract class SchemaImporter extends Importer
@@ -59,7 +60,7 @@ public abstract class SchemaImporter extends Importer
 	{
 		// Schema elements can generated separately only for file importers
 		if(getURIType()!=FILE)
-			throw new ImporterException(ImporterException.PARSE_FAILURE,"Schema elements can only be retrieved for file importers");
+			throw new ImporterException(ImporterExceptionType.PARSE_FAILURE,"Schema elements can only be retrieved for file importers");
 
 		// Generate the schema elements
 		this.uri = uri;
@@ -101,7 +102,7 @@ public abstract class SchemaImporter extends Importer
 		if(!success)
 		{
 			try { client.deleteSchema(schema.getId()); } catch(Exception e) {}
-			throw new ImporterException(ImporterException.IMPORT_FAILURE,"A failure occured in transferring the schema to the repository");
+			throw new ImporterException(ImporterExceptionType.IMPORT_FAILURE,"A failure occured in transferring the schema to the repository");
 		}
 
 		// Returns the id of the imported schema

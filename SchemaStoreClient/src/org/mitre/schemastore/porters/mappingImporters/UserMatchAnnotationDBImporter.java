@@ -15,6 +15,7 @@ import org.mitre.schemastore.model.ProjectSchema;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
 import org.mitre.schemastore.porters.ImporterException;
+import org.mitre.schemastore.porters.ImporterException.ImporterExceptionType;
 
 public class UserMatchAnnotationDBImporter extends MappingImporter
 {
@@ -94,9 +95,9 @@ public class UserMatchAnnotationDBImporter extends MappingImporter
 				return schema;	
 			}
 			else if (sourceMatch>1) { 
-				throw new ImporterException(ImporterException.PARSE_FAILURE,"Error - more than one schema exists with name '"+sourceName+"'."); 
+				throw new ImporterException(ImporterExceptionType.PARSE_FAILURE,"Error - more than one schema exists with name '"+sourceName+"'."); 
 			}
-			else { throw new ImporterException(ImporterException.PARSE_FAILURE,"Error - schema with name '"+sourceName+"' does not exist.");  }
+			else { throw new ImporterException(ImporterExceptionType.PARSE_FAILURE,"Error - schema with name '"+sourceName+"' does not exist.");  }
 		}
 		catch(Exception e) { 
 			// If anything goes wrong, alert on the command line.
@@ -131,9 +132,9 @@ public class UserMatchAnnotationDBImporter extends MappingImporter
 				return schema;	
 			}
 			else if (targetMatch>1) { 
-				throw new ImporterException(ImporterException.IMPORT_FAILURE,"Error - more than one schema exists with name '"+targetName+"'."); 
+				throw new ImporterException(ImporterExceptionType.IMPORT_FAILURE,"Error - more than one schema exists with name '"+targetName+"'."); 
 			}
-			else { throw new ImporterException(ImporterException.IMPORT_FAILURE,"Error - schema with name '"+targetName+"' does not exist.");  }			
+			else { throw new ImporterException(ImporterExceptionType.IMPORT_FAILURE,"Error - schema with name '"+targetName+"' does not exist.");  }			
 		}
 		catch(Exception e) { 
 			// If anything goes wrong, alert on the command line.

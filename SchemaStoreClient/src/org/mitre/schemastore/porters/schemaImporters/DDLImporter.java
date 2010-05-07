@@ -12,6 +12,7 @@ import org.mitre.schemastore.client.Repository;
 import org.mitre.schemastore.client.SchemaStoreClient;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.porters.ImporterException;
+import org.mitre.schemastore.porters.ImporterException.ImporterExceptionType;
 import org.mitre.schemastore.porters.schemaImporters.ddl.SqlLexer;
 import org.mitre.schemastore.porters.schemaImporters.ddl.SqlParser;
 
@@ -81,7 +82,7 @@ public class DDLImporter extends SchemaImporter
 	        return parser.getSchemaObjects();
 		}
 		catch(Exception e) { System.out.print( e.getClass().getName() + ": " ); e.printStackTrace();
-        throw new ImporterException(ImporterException.PARSE_FAILURE,e.getMessage()); }
+        throw new ImporterException(ImporterExceptionType.PARSE_FAILURE,e.getMessage()); }
 	}
 
 

@@ -18,6 +18,7 @@ import org.mitre.schemastore.model.Entity;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.Subtype;
 import org.mitre.schemastore.porters.ImporterException;
+import org.mitre.schemastore.porters.ImporterException.ImporterExceptionType;
 
 /**
  * 
@@ -96,7 +97,7 @@ public class ExcelImporter extends SchemaImporter {
 			_excelWorkbook = new HSSFWorkbook(excelStream);
 			excelStream.close();
 		} catch (IOException e) {
-			throw new ImporterException(ImporterException.PARSE_FAILURE, e.getMessage());
+			throw new ImporterException(ImporterExceptionType.PARSE_FAILURE, e.getMessage());
 		}
 	}
 

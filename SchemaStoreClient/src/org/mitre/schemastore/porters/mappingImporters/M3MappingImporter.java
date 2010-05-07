@@ -18,6 +18,7 @@ import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.ProjectSchema;
 import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
 import org.mitre.schemastore.porters.ImporterException;
+import org.mitre.schemastore.porters.ImporterException.ImporterExceptionType;
 import org.mitre.schemastore.porters.xml.ConvertFromXML;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -72,21 +73,21 @@ public class M3MappingImporter extends MappingImporter
 			element = document.getDocumentElement();
 			tempFile.delete();
 		}
-		catch(Exception e) { throw new ImporterException(ImporterException.IMPORT_FAILURE, e.getMessage()); }
+		catch(Exception e) { throw new ImporterException(ImporterExceptionType.IMPORT_FAILURE, e.getMessage()); }
 	}
 
 	/** Returns the source schema in the mapping */
 	public ProjectSchema getSourceSchema() throws ImporterException
 	{
 		try { return ConvertFromXML.getSourceSchema(element); }
-		catch(Exception e) { throw new ImporterException(ImporterException.IMPORT_FAILURE, e.getMessage()); }
+		catch(Exception e) { throw new ImporterException(ImporterExceptionType.IMPORT_FAILURE, e.getMessage()); }
 	}
 
 	/** Returns the target schema in the mapping */
 	public ProjectSchema getTargetSchema() throws ImporterException
 	{
 		try { return ConvertFromXML.getTargetSchema(element); }
-		catch(Exception e) { throw new ImporterException(ImporterException.IMPORT_FAILURE, e.getMessage()); }
+		catch(Exception e) { throw new ImporterException(ImporterExceptionType.IMPORT_FAILURE, e.getMessage()); }
 	}
 
 	/** Retrieves the elements with the specified label */
@@ -116,7 +117,7 @@ public class M3MappingImporter extends MappingImporter
 				functions.put(function, functionImps);
 			}
 			return functions;
-		} catch(Exception e) { throw new ImporterException(ImporterException.IMPORT_FAILURE, e.getMessage()); }
+		} catch(Exception e) { throw new ImporterException(ImporterExceptionType.IMPORT_FAILURE, e.getMessage()); }
 	}
 	
 	/** Returns the imported mapping cells */
@@ -135,6 +136,6 @@ public class M3MappingImporter extends MappingImporter
 				if(mappingCell!=null) mappingCells.add(mappingCell);
 			}
 			return mappingCells;
-		} catch(Exception e) { throw new ImporterException(ImporterException.IMPORT_FAILURE, e.getMessage()); }
+		} catch(Exception e) { throw new ImporterException(ImporterExceptionType.IMPORT_FAILURE, e.getMessage()); }
 	}
 }
