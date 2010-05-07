@@ -20,6 +20,7 @@ import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.schemaInfo.SchemaInfo;
 import org.mitre.schemastore.porters.ImporterException;
+import org.mitre.schemastore.porters.ImporterException.ImporterExceptionType;
 import org.mitre.schemastore.porters.xml.ConvertFromXML;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -92,7 +93,7 @@ public class M3SchemaImporter extends SchemaImporter
 				Schema currSchema = ConvertFromXML.getSchema(schemaXMLElement);
 				if(schema==null || currSchema.getId()>schema.getId()) schema=currSchema;
 			}
-		} catch(Exception e) { throw new ImporterException(ImporterException.PARSE_FAILURE,e.getMessage()); }
+		} catch(Exception e) { throw new ImporterException(ImporterExceptionType.PARSE_FAILURE,e.getMessage()); }
 		return schema;
 	}
 
@@ -155,7 +156,7 @@ public class M3SchemaImporter extends SchemaImporter
 			// Throw an exception if schema already exists in repository
 			Integer schemaID = getMatchedSchema(availableSchemas, schemaInfo);
 			if(schemaID!=null)
-				throw new ImporterException(ImporterException.DUPLICATION_FAILURE,"Schema already exists in repository ("+schemaID+")");
+				throw new ImporterException(ImporterExceptionType.DUPLICATION_FAILURE,"Schema already exists in repository ("+schemaID+")");
 			
 			// Store the information for the schema being imported
 			for(Integer key : translationTable.keySet())
@@ -164,7 +165,7 @@ public class M3SchemaImporter extends SchemaImporter
 			schemaElements = schemaInfo.getBaseElements(null);
 		}
 		catch(ImporterException e) { throw e; }
-		catch(Exception e) { throw new ImporterException(ImporterException.PARSE_FAILURE,e.getMessage()); }
+		catch(Exception e) { throw new ImporterException(ImporterExceptionType.PARSE_FAILURE,e.getMessage()); }
 	}
 	
 	/** Returns the list of schemas which this schema extends */

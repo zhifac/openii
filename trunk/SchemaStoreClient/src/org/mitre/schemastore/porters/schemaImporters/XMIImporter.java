@@ -17,6 +17,7 @@ import org.mitre.schemastore.model.Entity;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.Subtype;
 import org.mitre.schemastore.porters.ImporterException;
+import org.mitre.schemastore.porters.ImporterException.ImporterExceptionType;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -275,7 +276,7 @@ public class XMIImporter extends SchemaImporter {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new ImporterException(ImporterException.PARSE_FAILURE, e.getMessage());
+			throw new ImporterException(ImporterExceptionType.PARSE_FAILURE, e.getMessage());
 		}
 	}
 

@@ -25,6 +25,7 @@ import org.mitre.schemastore.model.Project;
 import org.mitre.schemastore.model.ProjectSchema;
 import org.mitre.schemastore.porters.Importer;
 import org.mitre.schemastore.porters.ImporterException;
+import org.mitre.schemastore.porters.ImporterException.ImporterExceptionType;
 
 /** Abstract Project Importer class */
 public abstract class ProjectImporter extends Importer
@@ -78,7 +79,7 @@ public abstract class ProjectImporter extends Importer
 		catch(Exception e) 
 		{
 			try { client.deleteProject(project.getId()); } catch(Exception e2) {}
-			throw new ImporterException(ImporterException.IMPORT_FAILURE,"A failure occurred in transferring the project to the repository");
+			throw new ImporterException(ImporterExceptionType.IMPORT_FAILURE,"A failure occurred in transferring the project to the repository");
 		}
 
 		// Returns the id of the imported project

@@ -28,6 +28,7 @@ import org.mitre.schemastore.model.Project;
 import org.mitre.schemastore.model.ProjectSchema;
 import org.mitre.schemastore.porters.Importer;
 import org.mitre.schemastore.porters.ImporterException;
+import org.mitre.schemastore.porters.ImporterException.ImporterExceptionType;
 
 /** Abstract Mapping Importer class */
 public abstract class MappingImporter extends Importer
@@ -54,6 +55,8 @@ public abstract class MappingImporter extends Importer
 	/** Returns the mapping cells from the specified URI */
 	abstract public ArrayList<MappingCell> getMappingCells() throws ImporterException;
 
+	/** Returns the 
+	
 	/** Initializes the importer for the specified URI */
 	final public void initialize(URI uri) throws ImporterException
 		{ this.uri = uri; initialize(); }
@@ -155,7 +158,7 @@ public abstract class MappingImporter extends Importer
 		catch(Exception e) 
 		{
 			try { client.deleteMapping(mapping.getId()); } catch(Exception e2) {}
-			throw new ImporterException(ImporterException.IMPORT_FAILURE,"A failure occurred in transferring the mapping to the repository. "+e.getMessage());
+			throw new ImporterException(ImporterExceptionType.IMPORT_FAILURE,"A failure occurred in transferring the mapping to the repository. "+e.getMessage());
 		}
 
 		// Returns the id of the imported mapping

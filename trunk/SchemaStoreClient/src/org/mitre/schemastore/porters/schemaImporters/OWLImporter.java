@@ -16,6 +16,7 @@ import org.mitre.schemastore.model.Relationship;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.Subtype;
 import org.mitre.schemastore.porters.ImporterException;
+import org.mitre.schemastore.porters.ImporterException.ImporterExceptionType;
 
 import com.hp.hpl.jena.ontology.DatatypeProperty;
 import com.hp.hpl.jena.ontology.ObjectProperty;
@@ -89,7 +90,7 @@ public class OWLImporter extends SchemaImporter implements RDFErrorHandler {
 			initializeOntModel(uri);
 
 		} catch (Exception e) {
-			throw new ImporterException(ImporterException.PARSE_FAILURE, e.getMessage());
+			throw new ImporterException(ImporterExceptionType.PARSE_FAILURE, e.getMessage());
 		}
 	}
 
