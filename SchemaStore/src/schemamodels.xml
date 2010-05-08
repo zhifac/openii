@@ -8,4 +8,5 @@
   <schemaModel>org.mitre.schemastore.model.schemaInfo.model.RMap_N_to_1_SchemaModel</schemaModel>
   <schemaModel>org.mitre.schemastore.model.schemaInfo.model.GSIPSchemaModel</schemaModel>
   <schemaModel>org.mitre.schemastore.model.schemaInfo.model.CompleteSchemaModel</schemaModel>
+  <schemaModel>org.mitre.schemastore.model.schemaInfo.model.MixedSchemaModel</schemaModel>
 </schemaModels>
