@@ -20,8 +20,8 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.mitre.harmony.model.HarmonyModel;
-import org.mitre.harmony.view.dialogs.porters.ExportSchemaDialog;
-import org.mitre.harmony.view.dialogs.porters.ImportSchemaDialog;
+import org.mitre.harmony.view.dialogs.exporters.ExportSchemaDialog;
+import org.mitre.harmony.view.dialogs.importers.ImportSchemaDialog;
 import org.mitre.harmony.view.dialogs.widgets.AbstractButtonPane;
 import org.mitre.schemastore.model.Schema;
 
