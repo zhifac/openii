@@ -21,6 +21,7 @@ import org.mitre.affinity.view.venn_diagram.view.event.VennDiagramEvent;
 import org.mitre.affinity.view.venn_diagram.view.event.VennDiagramListener;
 import org.mitre.affinity.view.venn_diagram.view.swt.SWTVennDiagram;
 import org.mitre.affinity.view.venn_diagram.view.swt.SWTVennDiagramMatrix;
+import org.mitre.affinity.view.venn_diagram.view.swt.SWTVennDiagramMatrix_KNeighbors;
 import org.mitre.openii.editors.OpenIIEditor;
 import org.mitre.openii.model.EditorInput;
 import org.mitre.openii.model.EditorManager;
@@ -38,9 +39,9 @@ import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
  * @author CBONACETO
  *
  */
-public class VennDiagramEditor extends OpenIIEditor implements VennDiagramListener
+public class VennDiagramKNearestEditor extends OpenIIEditor implements VennDiagramListener
 {	
-	private SWTVennDiagramMatrix vennDiagramMatrix;
+	private SWTVennDiagramMatrix_KNeighbors vennKNeighborsDiagramMatrix;
 	private VennDiagramEvent currSelectionEvent;
 	private Menu menu;
 	
@@ -90,7 +91,6 @@ public class VennDiagramEditor extends OpenIIEditor implements VennDiagramListen
 				if(schemaInfos.size() == 2)
 					sets = new VennDiagramSets(schemaInfos.get(0), schemaInfos.get(1), 0.6, 1.0, AffinityEditor.matchScoreComputer, 2);
 				else
-					//matrix = new VennDiagramSetsMatrix(schemaInfos, 0.6, 1.0, AffinityEditor.matchScoreComputer, 2);
 					matrix = new VennDiagramSetsMatrix(schemaInfos, AffinityEditor.matchScoreComputer, 2);
 			}
 			setPartName(elementID!=null ? OpenIIManager.getTag(elementID).getName() : "All Schemas");
@@ -102,10 +102,10 @@ public class VennDiagramEditor extends OpenIIEditor implements VennDiagramListen
 			new SWTVennDiagram(parent, SWT.NONE, sets, true);
 		}
 		else if(matrix != null) {
-			this.vennDiagramMatrix = new SWTVennDiagramMatrix(parent, SWT.NONE, matrix, true);
-			vennDiagramMatrix.getVennDiagramMatrix().addVennDiagramListener(this);
+			this.vennKNeighborsDiagramMatrix = new SWTVennDiagramMatrix_KNeighbors(parent, SWT.NONE, matrix, true);
+			vennKNeighborsDiagramMatrix.getVennDiagramMatrix().addVennDiagramListener(this);
 			//Construct the right-click menu
-			this.menu = createMenu(vennDiagramMatrix);
+			this.menu = createMenu(vennKNeighborsDiagramMatrix);
 		}
 	}
 	
@@ -131,7 +131,7 @@ public class VennDiagramEditor extends OpenIIEditor implements VennDiagramListen
 		};
 		
 		// Generate the drop-down menu
-		Menu menu = new Menu(vennDiagramMatrix);
+		Menu menu = new Menu(vennKNeighborsDiagramMatrix);
 		MenuItem item = new MenuItem (menu, SWT.NONE);	
 		item.setText("Open schemas in Harmony");
 		item.addSelectionListener(menuListener);		
