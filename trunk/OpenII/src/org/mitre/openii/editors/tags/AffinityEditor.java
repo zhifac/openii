@@ -348,9 +348,8 @@ public class AffinityEditor extends OpenIIEditor implements SelectionClickedList
 			CachedFilteredSchemaInfo schemaInfo2 = VennDiagramUtils.createCachedFilteredSchemaInfo(iter.next(), schemaManager);
 			VennDiagramUtils.sortFilteredElements(schemaInfo2);	
 			
-			
-			
-			VennDiagramSets sets = new VennDiagramSets(schemaInfo1, schemaInfo2, 0.6, 1.0, entityMatchScoreComputer, 2);
+			//VennDiagramSets sets = new VennDiagramSets(schemaInfo1, schemaInfo2, 0.6, 1.0, entityMatchScoreComputer, 2);
+			VennDiagramSets sets = new VennDiagramSets(schemaInfo1, schemaInfo2, 0.8, 1.0, entityMatchScoreComputer, 2);
 			EditorManager.launchEditor("VennDiagramEditor", sets);
 			/*
 			//Create a dialog with a VennDiagramPane for 2 schemas			
@@ -370,7 +369,9 @@ public class AffinityEditor extends OpenIIEditor implements SelectionClickedList
 				VennDiagramUtils.sortFilteredElements(schemaInfo);
 				schemaInfos.add(schemaInfo);
 			}
-			VennDiagramSetsMatrix matrix = new VennDiagramSetsMatrix(schemaInfos, 0.6, 1.0, entityMatchScoreComputer, 2);
+			
+			//VennDiagramSetsMatrix matrix = new VennDiagramSetsMatrix(schemaInfos, 0.8, 1.0, entityMatchScoreComputer, 2);
+			VennDiagramSetsMatrix matrix = new VennDiagramSetsMatrix(schemaInfos, entityMatchScoreComputer, 2);
 			EditorManager.launchEditor("VennDiagramEditor", matrix);			
 		}
 	}
@@ -388,7 +389,7 @@ public class AffinityEditor extends OpenIIEditor implements SelectionClickedList
 			VennDiagramUtils.sortFilteredElements(schemaInfo1);
 			CachedFilteredSchemaInfo schemaInfo2 = VennDiagramUtils.createCachedFilteredSchemaInfo(iter.next(), schemaManager);
 			VennDiagramUtils.sortFilteredElements(schemaInfo2);								
-			VennDiagramSets sets = new VennDiagramSets(schemaInfo1, schemaInfo2, 0.6, 1.0, matchScoreComputer, 1);
+			VennDiagramSets sets = new VennDiagramSets(schemaInfo1, schemaInfo2, 0.8, 1.0, matchScoreComputer, 1);
 			EditorManager.launchEditor("VennDiagramEditor", sets);
 			/*
 			//Create a dialog with a VennDiagramPane for 2 schemas			
@@ -408,7 +409,10 @@ public class AffinityEditor extends OpenIIEditor implements SelectionClickedList
 				VennDiagramUtils.sortFilteredElements(schemaInfo);
 				schemaInfos.add(schemaInfo);
 			}
-			VennDiagramSetsMatrix matrix = new VennDiagramSetsMatrix(schemaInfos, 0.6, 1.0, matchScoreComputer, 1);
+			
+			//VennDiagramSetsMatrix matrix = new VennDiagramSetsMatrix(schemaInfos, 0.8, 1.0, matchScoreComputer, 1);
+			VennDiagramSetsMatrix matrix = new VennDiagramSetsMatrix(schemaInfos, matchScoreComputer, 1);
+			
 			EditorManager.launchEditor("VennDiagramEditor", matrix);			
 		}
 	}
