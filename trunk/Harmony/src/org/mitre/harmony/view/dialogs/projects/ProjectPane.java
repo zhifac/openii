@@ -5,6 +5,8 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Vector;
@@ -12,8 +14,10 @@ import java.util.Vector;
 import javax.swing.AbstractAction;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JList;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
@@ -24,7 +28,7 @@ import org.mitre.harmony.view.dialogs.widgets.TitledPane;
 import org.mitre.schemastore.model.Project;
 
 /** Private class for managing the project list */
-class ProjectPane extends JPanel
+class ProjectPane extends JPanel implements MouseListener
 {
 	/** Comparator used to alphabetize projects */
 	private class ProjectComparator implements Comparator<Object>
@@ -37,7 +41,7 @@ class ProjectPane extends JPanel
 	}
 	
 	/** Defines how the projects in the list should be rendered */
-	class ListRenderer extends DefaultListCellRenderer
+	private class ListRenderer extends DefaultListCellRenderer
 	{
 		public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus)
 		{
@@ -45,6 +49,51 @@ class ProjectPane extends JPanel
 			return super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 		}
 	 }
+	
+	/** Handles the deletion of a project */
+	private class DeleteProject extends AbstractAction
+	{
+		/** Stores the project to be deleted */
+		private Project project = null;
+		
+		/** Constructs the "Delete Project" action */
+		private DeleteProject()
+			{ super("Delete Project"); }
+		
+		/** Constructs the "Delete Project" action with the specified project */
+		private DeleteProject(Project project)
+			{ this(); this.project = project; }
+		
+		/** Deletes selected project */
+		public void actionPerformed(ActionEvent e)
+		{
+			// Gets the selected project
+			if(project==null) project = getProject();
+			if(project.getId()!=null)
+			{
+				// Ask user before deleting project
+				int option = JOptionPane.showConfirmDialog(harmonyModel.getBaseFrame(),
+		    		"Continue with deletion of project \"" + project.getName() + "\"?",
+					"Delete Project", JOptionPane.OK_CANCEL_OPTION,
+					JOptionPane.WARNING_MESSAGE);
+				if(option==2) return;
+	
+				// Delete the selected project
+				if(harmonyModel.getProjectManager().deleteProject(project.getId()))
+				{
+					// Generate a list of projects with the specified project removed
+					Vector<Project> projects = new Vector<Project>();
+					for(int i=0; i<projectList.getModel().getSize(); i++)
+						projects.add((Project)projectList.getModel().getElementAt(i));
+					projects.remove(project);
+				
+					// Reset the list
+					projectList.setListData(projects);
+					projectList.setSelectedIndex(0);
+				}
+			}
+		}
+	}
 	
 	/** Stores the Harmony model */
 	private HarmonyModel harmonyModel;
@@ -72,6 +121,7 @@ class ProjectPane extends JPanel
 		projectList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		projectList.setCellRenderer(new ListRenderer());
 		projectList.setSelectedIndex(0);
+		projectList.addMouseListener(this);
 
 		// If in save mode, select current project
 		if(saveMode)
@@ -105,38 +155,23 @@ class ProjectPane extends JPanel
 	/** Adds a list listener */
 	void addListSelectionListener(ListSelectionListener listener)
 		{ projectList.addListSelectionListener(listener); }
-	
-	/** Handles the deletion of a project */
-	private class DeleteProject extends AbstractAction
+
+	/** Handles the clicking of the mouse on a project in the list */
+	public void mouseClicked(MouseEvent e)
 	{
-		/** Deletes selected project */
-		public void actionPerformed(ActionEvent arg0)
+		int index = projectList.locationToIndex(e.getPoint());
+		Project project = (Project)projectList.getModel().getElementAt(index);
+		if(project.getId()!=null)
 		{
-			// Gets the selected project
-			Project project = getProject();
-			if(project.getId()!=null)
-			{
-				// Ask user before deleting project
-				int option = JOptionPane.showConfirmDialog(harmonyModel.getBaseFrame(),
-		    		"Continue with deletion of project \"" + project.getName() + "\"?",
-					"Delete Project", JOptionPane.OK_CANCEL_OPTION,
-					JOptionPane.WARNING_MESSAGE);
-				if(option==2) return;
-	
-				// Delete the selected project
-				if(harmonyModel.getProjectManager().deleteProject(project.getId()))
-				{
-					// Generate a list of projects with the specified project removed
-					Vector<Project> projects = new Vector<Project>();
-					for(int i=0; i<projectList.getModel().getSize(); i++)
-						projects.add((Project)projectList.getModel().getElementAt(i));
-					projects.remove(project);
-				
-					// Reset the list
-					projectList.setListData(projects);
-					projectList.setSelectedIndex(0);
-				}
-			}
+			JPopupMenu menu = new JPopupMenu();
+			menu.add(new JMenuItem(new DeleteProject(project)));
+			menu.show(e.getComponent(), e.getX(), e.getY());
 		}
 	}
+	
+	// Unused event actions
+	public void mouseEntered(MouseEvent arg0) {}
+	public void mouseExited(MouseEvent arg0) {}
+	public void mousePressed(MouseEvent arg0) {}
+	public void mouseReleased(MouseEvent arg0) {}
 }
