@@ -10,7 +10,9 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
@@ -160,8 +162,7 @@ public class AffinityEditor extends OpenIIEditor implements SelectionClickedList
 						Shell shell = getSite().getWorkbenchWindow().getShell();
 						ClusterDetailsDlg dlg = new ClusterDetailsDlg(shell, SWT.APPLICATION_MODAL, affinityModel, cluster);				
 						dlg.setVisible(true);						
-					}
-					else if(item.getText().startsWith("Open")) {
+					}else if(item.getText().startsWith("Open")) {
 						//Open schemas in a new Affinity Pane
 						EditorManager.launchEditor("AffinityEditor", selectedSchemas);
 					//}else if(item.getText().startsWith("View vocab debug")){
@@ -187,18 +188,19 @@ public class AffinityEditor extends OpenIIEditor implements SelectionClickedList
 			item.setText("Create a tag for all schemas in this cluster");
 			item.addSelectionListener(multiSchemaMenuListener);	
 			
-			/*item = new MenuItem (multiSchemaMenu, SWT.NONE);				
-			item.setText("Create a project with all schemas in this cluster");
-			item.addSelectionListener(multiSchemaMenuListener);
-			*/
+
 			item = new MenuItem (multiSchemaMenu, SWT.NONE);				
 			item.setText("Open schemas in new Affinity window");
 			item.addSelectionListener(multiSchemaMenuListener);
-			
+
+			MenuItem kneighbor = new MenuItem(multiSchemaMenu, SWT.POP_UP);
+			kneighbor.setText("Venn Diagram K Nearest Neighbors for schema...");
+			kneighbor.addSelectionListener(multiSchemaMenuListener);
+						
 			MenuItem typeOfRelatedness1 = new MenuItem(multiSchemaMenu, SWT.CASCADE);
 			typeOfRelatedness1.setText("View amount of overlap(Venn Diagram Matrix)");
 			typeOfRelatedness1.addSelectionListener(multiSchemaMenuListener);			
-
+		
 			Menu subMenu1 = new Menu(multiSchemaMenu);
 			typeOfRelatedness1.setMenu(subMenu1);
 			item = new MenuItem (subMenu1, SWT.NONE);					
@@ -230,7 +232,7 @@ public class AffinityEditor extends OpenIIEditor implements SelectionClickedList
 
 			// Create cluster right-click menu			
 			clusterMenu = new Menu(affinity);
-			SelectionListener clusterMenuListener = new SelectionAdapter() {
+			final SelectionListener clusterMenuListener = new SelectionAdapter() {
 				public void widgetSelected(SelectionEvent e) {				
 					MenuItem item = (MenuItem)e.widget;
 					if(item.getText().startsWith("Element")) {
@@ -250,13 +252,15 @@ public class AffinityEditor extends OpenIIEditor implements SelectionClickedList
 						Shell shell = getSite().getWorkbenchWindow().getShell();
 						ClusterDetailsDlg dlg = new ClusterDetailsDlg(shell, SWT.APPLICATION_MODAL, affinityModel, selectedCluster);				
 						dlg.setVisible(true);	
-					}
-					else if(item.getText().startsWith("Open")) {
+					}else if(item.getText().startsWith("Open schemas")) {
 						//Open cluster in a new Affinity pane						
 						EditorManager.launchEditor("AffinityEditor", selectedCluster.getSchemaIDs());								
 					//}else if(item.getText().startsWith("View vocab debug view")){
 						//System.out.println("Open up debug view");
 						//EditorManager.launchEditor("VocabDebugEditor", selectedCluster.getSchemaIDs());
+					//}else if(item.getText().startsWith("Open Venn Diagram")) {
+						//Open cluster in k nearest neighbor view				
+						//showVennDiagramKNearest(selectedCluster.getSchemaIDs());	
 					}else if(item.getText().startsWith("View vocab view")){
 						EditorManager.launchEditor("VocabEditor", selectedCluster.getSchemaIDs());
 					}else if(item.getText().startsWith("Create a project")){
@@ -274,12 +278,16 @@ public class AffinityEditor extends OpenIIEditor implements SelectionClickedList
 						dlg.setOverwrite(true);
 						String selectedFileName = dlg.open();
 						affinity.writeToSpreadsheet(selectedFileName);
-					}else{
+					}else if(item.getText().startsWith("Create a tag")){
 						//Create a new tag containing the schemas in the cluster
 						Shell shell = getSite().getWorkbenchWindow().getShell();
 						EditTagDialog dlg = new EditTagDialog(shell, null, null, selectedCluster.getSchemaIDs());						
 						dlg.open();
-					}						
+					}else{
+						//a schema name to use with K-nearest neighbors was selected
+						//System.out.println("selected " + item.getText());
+						showVennDiagramKNearest(item.getText(), selectedCluster.getSchemaIDs());
+					}
 				}
 			};
 			
@@ -287,7 +295,31 @@ public class AffinityEditor extends OpenIIEditor implements SelectionClickedList
 			item.setText("View terms shared by these schemas (bag of words approach)");
 			item.addSelectionListener(clusterMenuListener);
 
+			
 
+			MenuItem kneighbors = new MenuItem(clusterMenu, SWT.CASCADE);
+			kneighbors.setText("Venn Diagram K Nearest Neighbors for schema...");
+			
+			final Menu subMenuK = new Menu(clusterMenu);
+			kneighbors.setMenu(subMenuK);
+			
+			subMenuK.addListener(SWT.Show, new Listener(){
+				public void handleEvent(Event e){
+					MenuItem[] menuItems = subMenuK.getItems();
+					for(MenuItem MI : menuItems){
+						MI.dispose();
+					}
+					//get schemas in the cluster
+					ArrayList<Integer> schemaIDsForSelection = selectedCluster.getSchemaIDs();
+					for(int i=0; i<selectedCluster.getNumSchemas(); i++){
+						MenuItem menuItem = new MenuItem(subMenuK, SWT.PUSH);
+						menuItem.setText(schemaManager.getSchema(schemaIDsForSelection.get(i)).getName());
+						menuItem.addSelectionListener(clusterMenuListener);
+					}
+				}
+			});
+
+			
 			MenuItem typeRelatedness = new MenuItem(clusterMenu, SWT.CASCADE);
 			typeRelatedness.setText("View amount of overlap(Venn Diagram Matrix)");
 			
@@ -338,6 +370,24 @@ public class AffinityEditor extends OpenIIEditor implements SelectionClickedList
 		}
 	}	
 
+	
+	/** this will launch the K nearest neighbors view **/
+	private void showVennDiagramKNearest(String mainSchemaName, Collection<Integer> schemaIDs){
+		//NOTE: May still need to handle case with size 2
+		//right now this is only for size N
+		Iterator<Integer> iter = schemaIDs.iterator();
+		ArrayList<FilteredSchemaInfo> schemaInfos = new ArrayList<FilteredSchemaInfo>();
+		while(iter.hasNext()) {
+			CachedFilteredSchemaInfo schemaInfo = VennDiagramUtils.createCachedFilteredSchemaInfo(iter.next(), schemaManager);
+			VennDiagramUtils.sortFilteredElements(schemaInfo);
+			schemaInfos.add(schemaInfo);
+		}
+		
+		//VennDiagramSetsMatrix matrix = new VennDiagramSetsMatrix(schemaInfos, matchScoreComputer, 1);		
+		VennDiagramSetsMatrix matrix = new VennDiagramSetsMatrix(mainSchemaName, schemaInfos, matchScoreComputer, 1);		
+		EditorManager.launchEditor("VennDiagramKNearestEditor", matrix);			
+	}
+	
 	
 	private void showVennDiagramWEntities(Collection<Integer> schemaIDs){
 		Iterator<Integer> iter = schemaIDs.iterator();
