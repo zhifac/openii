@@ -147,8 +147,12 @@ public class ImportMappingDialog extends JDialog implements ActionListener, Care
 					// Check to see if mapping already exists in project
 					for(ProjectMapping mapping : harmonyModel.getMappingManager().getMappings())
 						if(mapping.getSourceId().equals(source.getId()) && mapping.getTargetId().equals(target.getId()))
-							throw new Exception("Mapping already exists in project");
-					
+						{
+							if(mapping.getMappingCells().size()>0)
+								throw new Exception("Mapping already exists in project");
+							else harmonyModel.getMappingManager().removeMapping(mapping);
+						}
+							
 					// Retrieve the mapping cells from the importer
 					MappingImporter importer = (MappingImporter)getImporter();
 					importer.initialize(uri);
