@@ -42,6 +42,7 @@ import org.mitre.schemastore.model.ProjectSchema;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.porters.Importer;
 import org.mitre.schemastore.porters.PorterManager;
+import org.mitre.schemastore.porters.mappingImporters.MappingCellPaths;
 import org.mitre.schemastore.porters.mappingImporters.MappingImporter;
 
 /** Class for displaying the mapping importer dialog */
@@ -172,10 +173,15 @@ public class ImportMappingDialog extends JDialog implements ActionListener, Care
 					Mapping mapping = new Mapping(null,project.getId(),source.getId(),target.getId());
 					harmonyModel.getMappingManager().addMapping(mapping);
 					harmonyModel.getMappingManager().getMapping(mapping.getId()).setMappingCells(mappingCells);
-
+					
 					// Display the mapping before shutting down
 					ProjectController.selectMappings(harmonyModel);
 					dispose();
+					
+					// Display a dialog with any ignored mapping cells
+					ArrayList<MappingCellPaths> paths = importer.getUnidentifiedMappingCellPaths();
+					if(paths.size()>0)
+						new UnidentifiedMappingCellsDialog(ImportMappingDialog.this, paths);
 				}
 				catch(Exception e)
 					{ JOptionPane.showMessageDialog(this,e.getMessage(),"Import Error",JOptionPane.ERROR_MESSAGE); }
