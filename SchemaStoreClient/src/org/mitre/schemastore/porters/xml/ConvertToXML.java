@@ -173,7 +173,7 @@ public class ConvertToXML
 	{
 		ArrayList<ArrayList<SchemaElement>> paths = schemaInfo.getPaths(elementID);
 		if(paths==null || paths.size()==0) return null;
-		StringBuffer path = new StringBuffer("/" + schemaInfo.getSchema().getName().replaceAll("/","&#47;"));
+		StringBuffer path = new StringBuffer();
 		for(SchemaElement element : paths.get(0))
 			path.append("/" + schemaInfo.getDisplayName(element.getId()).replaceAll("/","&#47;"));
 		return path.toString();
