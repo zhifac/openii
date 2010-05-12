@@ -21,6 +21,7 @@ import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.Subtype;
 import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
+import org.mitre.schemastore.porters.mappingImporters.MappingCellPaths;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
@@ -246,13 +247,28 @@ public class ConvertFromXML
 	{
 		// Retrieve the schema and path
 		ArrayList<String> path = new ArrayList<String>();
-		for(String element : new ArrayList<String>(Arrays.asList(pathString.replaceFirst("/[^/]*/","").split("/"))))
+		for(String element : new ArrayList<String>(Arrays.asList(pathString.replaceFirst("/","").split("/"))))
 			path.add(element.replaceAll("&#47;","/"));
 		
 		// Retrieve the element ID
 		ArrayList<Integer> elementIDs = schemaInfo.getPathIDs(path);
 		return elementIDs.size()>0 ? elementIDs.get(0) : null;
 	}
+	
+	/** Retrieve the mapping cell paths from the specified XML */
+	static public MappingCellPaths getMappingCellPaths(Element element) throws Exception
+	{	
+		// Retrieve the mapping cell input paths
+		ArrayList<String> inputPaths = new ArrayList<String>();
+		for(Element inputElement : getElements(element,"MappingCellInput"))
+			inputPaths.add(getValue(inputElement,"MappingCellInputPath"));
+
+		// Retrieve the mapping cell output paths
+		String outputPath = getValue(element,"MappingCellOutputPath");
+	
+		// Return the generated mapping cell
+		return new MappingCellPaths(inputPaths, outputPath);
+	}	
 	
 	/** Retrieve the mapping cell from the specified XML */
 	static public MappingCell getMappingCell(Element element, HierarchicalSchemaInfo sourceInfo, HierarchicalSchemaInfo targetInfo) throws Exception

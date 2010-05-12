@@ -32,12 +32,15 @@ import org.mitre.schemastore.porters.ImporterException.ImporterExceptionType;
 
 /** Abstract Mapping Importer class */
 public abstract class MappingImporter extends Importer
-{
+{	
 	/** Stores the aligned source schema */
 	protected ProjectSchema source;
 	
 	/** Stores the aligned target schema */
 	protected ProjectSchema target;
+	
+	/** Stores the unidentified mapping cells */
+	protected ArrayList<MappingCellPaths> unidentifiedMappingCellPaths = new ArrayList<MappingCellPaths>();
 	
 	/** Initializes the importer */
 	abstract protected void initialize() throws ImporterException;
@@ -54,8 +57,6 @@ public abstract class MappingImporter extends Importer
 	
 	/** Returns the mapping cells from the specified URI */
 	abstract public ArrayList<MappingCell> getMappingCells() throws ImporterException;
-
-	/** Returns the 
 	
 	/** Initializes the importer for the specified URI */
 	final public void initialize(URI uri) throws ImporterException
@@ -164,4 +165,8 @@ public abstract class MappingImporter extends Importer
 		// Returns the id of the imported mapping
 		return mapping.getId();
 	}
+
+	/** Returns the unidentified mapping cells */
+	final public ArrayList<MappingCellPaths> getUnidentifiedMappingCellPaths()
+		{ return unidentifiedMappingCellPaths; }
 }

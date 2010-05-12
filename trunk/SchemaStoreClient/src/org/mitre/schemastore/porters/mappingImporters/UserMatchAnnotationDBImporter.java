@@ -149,7 +149,10 @@ public class UserMatchAnnotationDBImporter extends MappingImporter
 	public ArrayList<MappingCell> getMappingCells() throws ImporterException
 	{
 		ArrayList<MappingCell> mappingCells = new ArrayList<MappingCell>();
-
+		
+		// Clear out the list if unidentified mapping cells
+		unidentifiedMappingCellPaths.clear();
+		
 		// Retrieve mapping cells from database
 		try {
 			HierarchicalSchemaInfo hsi1 = new HierarchicalSchemaInfo(client.getSchemaInfo(source.getId()), null);
@@ -174,9 +177,10 @@ public class UserMatchAnnotationDBImporter extends MappingImporter
 				ArrayList<Integer> pathIds1 = hsi1.getPathIDs(path1);
 				ArrayList<Integer> pathIds2 = hsi2.getPathIDs(path2);
 				
-				if (pathIds1.size() < 1 || pathIds2.size() < 1) {
-					String msg = "There is no path from" + path1 + " to " + path2;
-					System.out.println(msg);
+				if (pathIds1.size() < 1 || pathIds2.size() < 1)
+				{
+					MappingCellPaths paths = new MappingCellPaths(Arrays.asList(new String[]{nodePath1}),nodePath2);
+					unidentifiedMappingCellPaths.add(paths);
 				}
 				else {
 					// path array lists have only one item since paths are unique in our schemas
