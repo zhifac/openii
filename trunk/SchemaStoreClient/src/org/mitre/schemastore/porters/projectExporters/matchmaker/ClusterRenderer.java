@@ -131,9 +131,9 @@ public class ClusterRenderer {
 		ExcelFormatting.hiliteImperfections(wb, sheet, schemaColumnPosHash);
 
 		// Write it to a file...
-		FileOutputStream fileOut = new FileOutputStream(output);
-		wb.write(fileOut);
-		fileOut.close();
+		FileOutputStream os = new FileOutputStream(output); 
+		wb.write(os);
+		os.close();
 
 		int totalCt = cluster.groupEs.size();
 		System.out.println("Total result row: " + totalCt);
