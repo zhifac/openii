@@ -159,16 +159,19 @@ class ProjectPane extends JPanel implements MouseListener
 	/** Handles the clicking of the mouse on a project in the list */
 	public void mouseClicked(MouseEvent e)
 	{
-		int index = projectList.locationToIndex(e.getPoint());
-		Project project = (Project)projectList.getModel().getElementAt(index);
-		if(project.getId()!=null)
+		if(e.getButton() == MouseEvent.BUTTON3 || e.isMetaDown())
 		{
-			JPopupMenu menu = new JPopupMenu();
-			menu.add(new JMenuItem(new DeleteProject(project)));
-			menu.show(e.getComponent(), e.getX(), e.getY());
+			int index = projectList.locationToIndex(e.getPoint());
+			Project project = (Project)projectList.getModel().getElementAt(index);
+			if(project.getId()!=null)
+			{
+				JPopupMenu menu = new JPopupMenu();
+				menu.add(new JMenuItem(new DeleteProject(project)));
+				menu.show(e.getComponent(), e.getX(), e.getY());
+			}
 		}
 	}
-	
+
 	// Unused event actions
 	public void mouseEntered(MouseEvent arg0) {}
 	public void mouseExited(MouseEvent arg0) {}
