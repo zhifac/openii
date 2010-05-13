@@ -33,6 +33,7 @@ public class FilterPane extends JPanel
 		{
 			super(label);
 			this.filter = filter;
+			setFocusable(false);
 			setSelected(harmonyModel.getFilters().getFilter(filter));
 			addActionListener(this);
 		}
