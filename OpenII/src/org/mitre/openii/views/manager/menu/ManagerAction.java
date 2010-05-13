@@ -24,6 +24,7 @@ import org.mitre.openii.views.manager.schemas.DeleteDataSourceDialog;
 import org.mitre.openii.views.manager.schemas.DeleteSchemaDialog;
 import org.mitre.openii.views.manager.schemas.EditSchemaDialog;
 import org.mitre.openii.views.manager.schemas.ExportSchemaDialog;
+import org.mitre.openii.views.manager.schemas.ExportSchemasDialog;
 import org.mitre.openii.views.manager.schemas.ExtendSchemaDialog;
 import org.mitre.openii.views.manager.schemas.importer.ImportSchemaDialog;
 import org.mitre.openii.views.manager.tags.DeleteTagDialog;
@@ -38,39 +39,21 @@ import org.mitre.schemastore.model.Tag;
 public class ManagerAction extends Action
 {
 	// Constants defining the various Manager action types available
-	static final int IMPORT_SCHEMA = 0;
-	static final int EDIT_SCHEMA = 1;
-	static final int EXTEND_SCHEMA = 2;
-	static final int EXPORT_SCHEMA = 3;
-	static final int DELETE_SCHEMA = 4;
-	static final int CREATE_DATA_SOURCE= 5;
-	static final int DELETE_DATA_SOURCE = 6;
-	static final int NEW_TAG = 7;
-	static final int EDIT_TAG = 8;
-	static final int DELETE_TAG = 9;
-	static final int CREATE_PROJECT_FROM_TAG = 10;
-	static final int DELETE_TAG_SCHEMA = 11;
-	static final int NEW_PROJECT = 12;
-	static final int IMPORT_PROJECT = 13;
-	static final int MERGE_PROJECTS = 14;
-	static final int EDIT_PROJECT = 15;
-	static final int EXPORT_PROJECT = 16;
-	static final int DELETE_PROJECT = 17;
-	static final int DELETE_PROJECT_SCHEMA = 18;
-	static final int IMPORT_MAPPING = 19;
-	static final int AUTO_GENERATE_MATCHES = 20;
-	static final int EXPORT_MAPPING = 21;
-	static final int DELETE_MAPPING = 22;
-	static final int GENERATE_VOCABULARY = 23;
+	static enum ActionType {IMPORT_SCHEMA, EDIT_SCHEMA, EXTEND_SCHEMA, EXPORT_SCHEMA, DELETE_SCHEMA,
+							CREATE_DATA_SOURCE, DELETE_DATA_SOURCE, NEW_TAG, EDIT_TAG, DELETE_TAG,
+							CREATE_PROJECT_FROM_TAG,  EXPORT_SCHEMAS_BY_TAG, DELETE_TAG_SCHEMA,
+							NEW_PROJECT, IMPORT_PROJECT , MERGE_PROJECTS, EDIT_PROJECT, EXPORT_PROJECT,
+							DELETE_PROJECT, DELETE_PROJECT_SCHEMA, IMPORT_MAPPING, AUTO_GENERATE_MATCHES,
+							EXPORT_MAPPING, DELETE_MAPPING, GENERATE_VOCABULARY};
 	
 	/** Stores the menu manager to which this action is tied */
 	private ManagerMenuManager menuManager;
 	
 	/** Stores the action type */
-	private Integer actionType;
+	private ActionType actionType;
 	
 	/** Constructs the Manager action */
-	ManagerAction(ManagerMenuManager menuManager, String title, Integer actionType)
+	ManagerAction(ManagerMenuManager menuManager, String title, ActionType actionType)
 	{
 		// Set the title and action type
 		this.menuManager = menuManager;
@@ -92,6 +75,7 @@ public class ManagerAction extends Action
 			case EDIT_TAG: icon = "Edit.gif"; break;
 			case DELETE_TAG: icon = "Delete.gif"; break;
 			case CREATE_PROJECT_FROM_TAG: icon = "Project.gif"; break;
+			case EXPORT_SCHEMAS_BY_TAG: icon = "Export.gif"; break;
 			case DELETE_TAG_SCHEMA: icon = "Delete.gif"; break;
 			case NEW_PROJECT: icon = "Project.gif"; break;
 			case IMPORT_PROJECT: icon = "Import.gif"; break;
@@ -118,37 +102,37 @@ public class ManagerAction extends Action
 		// ----------------- Schema Actions ------------------
 		
 		/** Handles the importing of a schema */
-		if(actionType == IMPORT_SCHEMA)
+		if(actionType == ActionType.IMPORT_SCHEMA)
 			new ImportSchemaDialog(shell).open();
 		
 		/** Handles the extending of a schema */
-		if(actionType == EDIT_SCHEMA)
+		if(actionType == ActionType.EDIT_SCHEMA)
 			new EditSchemaDialog(shell,(Schema)selection).open();
 		
 		/** Handles the extending of a schema */
-		if(actionType == EXTEND_SCHEMA)
+		if(actionType == ActionType.EXTEND_SCHEMA)
 			new ExtendSchemaDialog(shell,(Schema)selection).open();
 		
 		/** Handles the exporting of a schema */
-		if(actionType == EXPORT_SCHEMA)
+		if(actionType == ActionType.EXPORT_SCHEMA)
 			ExportSchemaDialog.export(shell,(Schema)selection);
 
 		/** Handles the deletion of a schema */
-		if(actionType == DELETE_SCHEMA)
+		if(actionType == ActionType.DELETE_SCHEMA)
 			DeleteSchemaDialog.delete(shell,(Schema)selection);
 		
 		/** Handles the creation of instance database */
-		if(actionType == CREATE_DATA_SOURCE)
+		if(actionType == ActionType.CREATE_DATA_SOURCE)
 			new CreateDataSourceDialog(shell,(Schema)selection).open();
 
 		/** Handles the deletion of a data source*/
-		if(actionType == DELETE_DATA_SOURCE)
+		if(actionType == ActionType.DELETE_DATA_SOURCE)
 			DeleteDataSourceDialog.delete(shell,(DataSource)selection);
 		
 		// ----------------- Tag Actions ------------------
 		
 		/** Handles the addition of a tag */
-		if(actionType == NEW_TAG)
+		if(actionType == ActionType.NEW_TAG)
 		{
 			Integer parentID = null;
 			if(selection instanceof Tag) parentID = ((Tag)selection).getId();
@@ -156,19 +140,23 @@ public class ManagerAction extends Action
 		}
 			
 		/** Handles the editing of a tag */
-		if(actionType == EDIT_TAG)
+		if(actionType == ActionType.EDIT_TAG)
 			new EditTagDialog(shell,(Tag)selection,((Tag)selection).getParentId()).open();
 		
 		/** Handles the deletion of a tag */
-		if(actionType == DELETE_TAG)
+		if(actionType == ActionType.DELETE_TAG)
 			DeleteTagDialog.delete(shell,(Tag)selection);
 		
 		/** Creates a project based on the schemas in a tag */
-		if(actionType == CREATE_PROJECT_FROM_TAG)
+		if(actionType == ActionType.CREATE_PROJECT_FROM_TAG)
 			new EditProjectDialog(shell,(Tag)selection).open();
-			
+		
+		/** Handles the exporting of a list of schemas */
+		if(actionType == ActionType.EXPORT_SCHEMAS_BY_TAG)
+			ExportSchemasDialog.export(shell,(Tag)selection);
+		
 		/** Handles the deletion of a tag schema */
-		if(actionType == DELETE_TAG_SCHEMA)
+		if(actionType == ActionType.DELETE_TAG_SCHEMA)
 		{
 			SchemaInTag tagSchema = (SchemaInTag)selection;
 			ArrayList<Integer> schemaIDs = OpenIIManager.getTagSchemas(tagSchema.getTagID());
@@ -179,31 +167,31 @@ public class ManagerAction extends Action
 		// ----------------- Project Actions ------------------
 		
 		/** Handles the addition of a project */
-		if(actionType == NEW_PROJECT)
+		if(actionType == ActionType.NEW_PROJECT)
 			new EditProjectDialog(shell).open();
 		
 		/** Handles the import of a project */
-		if(actionType == IMPORT_PROJECT)
+		if(actionType == ActionType.IMPORT_PROJECT)
 			new ImportProjectDialog(shell).open();
 
 		/** Handles the merging of project */
-		if(actionType == MERGE_PROJECTS)
+		if(actionType == ActionType.MERGE_PROJECTS)
 			new MergeProjectsDialog(shell).open();
 		
 		/** Handles the editing of a project */
-		if(actionType == EDIT_PROJECT)
+		if(actionType == ActionType.EDIT_PROJECT)
 			new EditProjectDialog(shell,(Project)selection).open();
 		
 		/** Handles the exporting of a project */
-		if(actionType == EXPORT_PROJECT)
+		if(actionType == ActionType.EXPORT_PROJECT)
 			ExportProjectDialog.export(shell,(Project)selection);
 		
 		/** Handles the deletion of a project */
-		if(actionType == DELETE_PROJECT)
+		if(actionType == ActionType.DELETE_PROJECT)
 			DeleteProjectDialog.delete(shell,(Project)selection);
 		
 		/** Handles the deletion of a project schema */
-		if(actionType == DELETE_PROJECT_SCHEMA)
+		if(actionType == ActionType.DELETE_PROJECT_SCHEMA)
 		{
 			SchemaInProject schemaInProject = (SchemaInProject)selection;
 			Project project = OpenIIManager.getProject(schemaInProject.getProjectID());
@@ -216,21 +204,21 @@ public class ManagerAction extends Action
 		}
 		
 		/** Handles the importing of a mapping */
-		if(actionType == IMPORT_MAPPING)
+		if(actionType == ActionType.IMPORT_MAPPING)
 			new ImportMappingDialog(shell,(Project)selection).open();
 		
 		/** Handles the auto-generation of a mapping's matches */
-		if ( actionType == GENERATE_VOCABULARY )
+		if ( actionType == ActionType.GENERATE_VOCABULARY )
 			new WizardDialog(shell, new GenerateVocabularyWizard((Project)selection)).open();
 
 		// ----------------- Mapping Actions ----------------------
 		
 		/** Handles the exporting of a mapping */
-		if(actionType == EXPORT_MAPPING)
+		if(actionType == ActionType.EXPORT_MAPPING)
 			ExportMappingDialog.export(shell,(Mapping)selection);
 		
 		/** Handles the deletion of a mapping */
-		if(actionType == DELETE_MAPPING)
+		if(actionType == ActionType.DELETE_MAPPING)
 			DeleteMappingDialog.delete(shell,(Mapping)selection);
 		
 		
