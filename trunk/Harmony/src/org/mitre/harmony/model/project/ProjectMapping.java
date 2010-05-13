@@ -128,6 +128,10 @@ public class ProjectMapping extends Mapping
 		return mappingCellIDs;
 	}
 	
+	/** Returns if two objects are equal to one another */
+	private boolean areEqual(Object object1, Object object2)
+		{ return object1==null ? object2==null : object1.equals(object2); }
+	
 	/** Sets the mapping cell */
 	public void setMappingCells(List<MappingCell> mappingCells)
 	{
@@ -187,12 +191,9 @@ public class ProjectMapping extends Mapping
 				mappingCellHash.put(mappingCell.getId(), mappingCell);
 				
 				// Determine if the mapping cell has been modified
-				boolean modified = (mappingCell.getScore()==null && oldMappingCell.getScore()!=null) ||
-								   (!mappingCell.getScore().equals(oldMappingCell.getScore()));
-				modified |= (mappingCell.getFunctionID()==null && oldMappingCell.getFunctionID()!=null) ||
-							(!mappingCell.getFunctionID().equals(oldMappingCell.getFunctionID()));
-				modified |= (mappingCell.getNotes()==null && oldMappingCell.getNotes()!=null) ||
-					        (!mappingCell.getNotes().equals(oldMappingCell.getNotes()));
+				boolean modified = !areEqual(mappingCell.getScore(),oldMappingCell.getScore()) ||
+								   !areEqual(mappingCell.getFunctionID(),oldMappingCell.getFunctionID()) ||
+								   !areEqual(mappingCell.getNotes(),oldMappingCell.getNotes());
 				
 				// Set the modification date if the score has been modified
 				if(modified) mappingCell.setModificationDate(Calendar.getInstance().getTime());
