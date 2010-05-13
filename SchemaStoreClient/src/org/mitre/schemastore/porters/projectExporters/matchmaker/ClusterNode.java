@@ -137,7 +137,7 @@ public class ClusterNode {
 					groupE n2 = groupEs.get(j);
 
 					float temp_dist = n1.simpleLinkage(n2);
-					if (temp_dist > max_dist && 	notInSameSchema(groupEs.get(spot1), groupEs.get(spot2))) {
+					if (temp_dist > max_dist && 	notInSameSchema(groupEs.get(i), groupEs.get(j))) {
 						max_dist = temp_dist;
 						spot1 = i;
 						spot2 = j;
