@@ -96,7 +96,10 @@ public class Harmony extends JFrame implements ProjectListener, WindowListener
 			
 			// Create a repository connection
 			Integer type = typeParm.equals("service")?Repository.SERVICE:typeParm.equals("postgres")?Repository.POSTGRES:Repository.DERBY;
-			URI uri = null;	try { uri = new URI(locationParm); } catch(Exception e) {}
+			URI uri = null;
+			if(new File(locationParm).exists())
+				try { uri = new File(locationParm).toURI(); } catch(Exception e) {}
+			else try { uri = new URI(locationParm); } catch(Exception e) {}
 			repository = new Repository(type,uri,databaseParm,usernameParm,passwordParm);
 		}
 		catch(Exception e) { repository = new Repository(Repository.DERBY,new File("").toURI(),"schemastore","postgres","postgres"); }			
