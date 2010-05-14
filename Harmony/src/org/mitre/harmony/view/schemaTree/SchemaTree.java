@@ -660,7 +660,8 @@ public class SchemaTree extends JTree implements MappingListener, ProjectListene
 	private TreePath findTreePath(SchemaTree tree, TreePath parent, Graphics g)
 	{
 		DefaultMutableTreeNode rootNode = (DefaultMutableTreeNode)parent.getLastPathComponent();
-		Color m_tGrey = new Color(230, 230, 230, 150);
+		Color m_tGrey = new Color(105, 105, 105, 250);
+		
 		int circleSize = 5;
 		
 		Graphics2D g2d = (Graphics2D) g;
@@ -679,6 +680,7 @@ public class SchemaTree extends JTree implements MappingListener, ProjectListene
     			
     			if(rect != null)
     			{    
+    				
     				if(tree.getSide()==HarmonyConsts.LEFT)
     				{
     					//Draw line
@@ -688,6 +690,7 @@ public class SchemaTree extends JTree implements MappingListener, ProjectListene
     				else{  //right side
     					//Draw line
 	    				g2d.setColor(m_tGrey);
+	    			
 	    				//Full line
 	    				g2d.drawLine(0, (int) rect.getCenterY(), (int)rect.getMinX(), (int) rect.getCenterY());
     				}
