@@ -47,7 +47,7 @@ ul {
 
 #header .breadcrumbs {
     padding: 5px;
-    width: 714px;
+    width: 704px;
     margin: 0px auto 0px auto;
     font: bold 10pt verdana,sans-serif;
 }
@@ -58,7 +58,7 @@ ul {
 
 #content {
 	padding: 5px;
-	width: 714px;
+	width: 704px;
 	margin: 0px auto 0px auto;
 	font: 10pt verdana,sans-serif;
 }
@@ -71,7 +71,7 @@ ul {
 #content .toc > div {
 	float: left;
 	margin: 0px 2px 8px 2px;
-	width: 353px;
+	width: 348px;
 }
 
 #content .toc div.header {
