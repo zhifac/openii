@@ -13,6 +13,7 @@ import org.mitre.schemastore.model.Alias;
 import org.mitre.schemastore.model.Attribute;
 import org.mitre.schemastore.model.Containment;
 import org.mitre.schemastore.model.DataSource;
+import org.mitre.schemastore.model.DataType;
 import org.mitre.schemastore.model.Domain;
 import org.mitre.schemastore.model.DomainValue;
 import org.mitre.schemastore.model.Entity;
@@ -424,6 +425,13 @@ public class SchemaStoreClient
 	// Function Functions
 	//--------------------
 
+	/** Web service to retrieve the list of data types */
+	public ArrayList<DataType> getDataTypes() throws RemoteException
+	{
+		DataType[] dataTypes = (DataType[])callMethod("getDataTypes",new Object[] {});
+		return dataTypes==null ? new ArrayList<DataType>() : new ArrayList<DataType>(Arrays.asList(dataTypes));
+	}
+	
 	/** Gets the list of functions from the web service */
 	public ArrayList<Function> getFunctions() throws RemoteException
 	{
