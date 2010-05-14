@@ -82,16 +82,16 @@ public class FunctionDataCalls extends AbstractDataCalls
 		ArrayList<DataType> dataTypes = new ArrayList<DataType>();
 		try {
 			Statement stmt = connection.getStatement();
-			ResultSet rs = stmt.executeQuery("SELECT id,name,description FROM data_types");
+			ResultSet rs = stmt.executeQuery("SELECT id,type,description FROM data_type");
 			while(rs.next())
 			{				
 				// Retrieve the function info
 				Integer id = rs.getInt("id");
-				String name = rs.getString("name");
+				String type = rs.getString("type");
 				String description = rs.getString("description");
 				
 				// Store the function
-				dataTypes.add(new DataType(id,name,description));
+				dataTypes.add(new DataType(id,type,description));
 			}
 			stmt.close();
 		} catch(SQLException e) { System.out.println("(E) FunctionDataCalls:getDataTypes: "+e.getMessage()); }
