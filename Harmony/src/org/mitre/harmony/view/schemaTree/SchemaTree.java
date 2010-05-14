@@ -692,7 +692,7 @@ public class SchemaTree extends JTree implements MappingListener, ProjectListene
 	    				g2d.setColor(m_tGrey);
 	    			
 	    				//Full line
-	    				g2d.drawLine(0, (int) rect.getCenterY(), (int)rect.getMinX(), (int) rect.getCenterY());
+	    				g2d.drawLine(0, (int) rect.getCenterY(), (int)rect.getMinX()-14, (int) rect.getCenterY());
     				}
     				
     			}
