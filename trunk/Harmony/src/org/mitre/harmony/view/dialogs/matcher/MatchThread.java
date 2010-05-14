@@ -203,8 +203,10 @@ public class MatchThread extends Thread
 
 		// Retrieve the visible mappings
 		ArrayList<ProjectMapping> mappings = new ArrayList<ProjectMapping>();
+		FilterManager filters = harmonyModel.getFilters();
 		for(ProjectMapping mapping : harmonyModel.getMappingManager().getMappings())
-			if(mapping.isVisible()) mappings.add(mapping);
+			if(mapping.isVisible() && filters.inFocus(HarmonyConsts.LEFT, mapping.getSourceId()) && filters.inFocus(HarmonyConsts.RIGHT, mapping.getTargetId()))
+				mappings.add(mapping);
 		
 		// Gather up the schema info
 		HashMap<Integer,FilteredSchemaInfo> schemaInfoList = new HashMap<Integer,FilteredSchemaInfo>();
