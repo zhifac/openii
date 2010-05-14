@@ -50,9 +50,7 @@ INSERT INTO function_input (function_id, input_type, input_loc)
 480, 442, 1
 480, 442, 2
 481, 442, 1
-481, 442, 2
 482, 442, 1
-482, 442, 2
 483, 442, 1
 484, 442, 1
 485, 442, 1
