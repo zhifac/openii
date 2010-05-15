@@ -34,253 +34,240 @@ import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.Tag;
 
 /** Constructs the Edit Project Dialog */
-public class EditProjectDialog extends Dialog implements ActionListener, ModifyListener, ISelectionChangedListener
-{
+public class EditProjectDialog extends Dialog implements ActionListener, ModifyListener, ISelectionChangedListener {
 	/** Stores the tag from which the project is being created */
 	private Tag tag = null;
-	
+
 	/** Stores the project being edited */
 	private Project project = null;
-	
+
 	// Stores the various property fields
 	private Text nameField = null;
 	private Text authorField = null;
 	private Text descriptionField = null;
-	
+
 	/** Stores the project schemas */
 	private SchemaList schemaList = null;
-	
+
 	/** Stores the project mappings */
 	private MappingList mappingList = null;
-	
+
 	/** Constructs the dialog for a new project */
-	public EditProjectDialog(Shell shell) { super(shell); }
+	public EditProjectDialog(Shell shell) {
+		super(shell);
+	}
 
 	/** Constructs the dialog for a project based on the specified tag */
-	public EditProjectDialog(Shell shell, Tag tag)
-		{ super(shell); this.tag = tag; }
-	
+	public EditProjectDialog(Shell shell, Tag tag) {
+		super(shell);
+		this.tag = tag;
+	}
+
 	/** Constructs the dialog for the specified project */
-	public EditProjectDialog(Shell shell, Project project)
-		{ super(shell); this.project = project; }	
+	public EditProjectDialog(Shell shell, Project project) {
+		super(shell);
+		this.project = project;
+	}
 
 	/** Configures the dialog shell */
-	protected void configureShell(Shell shell)
-	{
+	protected void configureShell(Shell shell) {
 		super.configureShell(shell);
 		shell.setImage(OpenIIActivator.getImage("Project.gif"));
-		shell.setText((project==null ? "Create" : "Edit") + " Project");
+		shell.setText((project == null ? "Create" : "Edit") + " Project");
 	}
-	
+
 	/** Creates the mapping info pane */
-	private void createInfoPane(Composite parent)
-	{
+	private void createInfoPane(Composite parent) {
 		// Construct the pane for showing the info for the selected project
 		Group pane = new Group(parent, SWT.NONE);
 		pane.setText("General Info");
-		pane.setLayout(new GridLayout(2,false));
-		
+		pane.setLayout(new GridLayout(2, false));
+
 		// Generate the properties to be displayed by the info pane
-		nameField = BasicWidgets.createTextField(pane,"Name");
-		authorField = BasicWidgets.createTextField(pane,"Author");
-		descriptionField = BasicWidgets.createTextField(pane,"Description",4);
-		
+		nameField = BasicWidgets.createTextField(pane, "Name");
+		authorField = BasicWidgets.createTextField(pane, "Author");
+		descriptionField = BasicWidgets.createTextField(pane, "Description", 4);
+
 		// Add listeners to the fields to monitor for changes
 		nameField.addModifyListener(this);
 		authorField.addModifyListener(this);
 		descriptionField.addModifyListener(this);
 	}
-	
+
 	/** Creates the project schema pane */
-	private void createSchemaPane(Composite parent)
-	{
+	private void createSchemaPane(Composite parent) {
 		// Construct the pane for showing the project schemas
 		Group pane = new Group(parent, SWT.NONE);
 		pane.setText("Schemas");
-		pane.setLayout(new GridLayout(1,false));
+		pane.setLayout(new GridLayout(1, false));
 
 		// Generate the schema list
-		schemaList = new SchemaList(pane,null);
+		schemaList = new SchemaList(pane, null);
 		schemaList.setWidth(300);
 		schemaList.addListener(this);
 	}
-	
+
 	/** Creates the mappings pane */
-	private void createMappingPane(Composite parent)
-	{		
+	private void createMappingPane(Composite parent) {
 		// Construct the pane for showing the mappings
 		Group pane = new Group(parent, SWT.NONE);
 		pane.setText("Mappings");
-		pane.setLayout(new GridLayout(1,false));
-		
+		pane.setLayout(new GridLayout(1, false));
+
 		// Construct the list of mappings
 		mappingList = new MappingList(pane);
 		mappingList.setWidth(300);
 		mappingList.addListener(this);
 	}
-	
+
 	/** Creates the contents for the Import Schema Dialog */
-	protected Control createDialogArea(Composite parent)
-	{			
+	protected Control createDialogArea(Composite parent) {
 		// Construct the main pane
 		Composite pane = new Composite(parent, SWT.DIALOG_TRIM);
 		RowLayout layout = new RowLayout(SWT.VERTICAL);
 		layout.fill = true;
 		pane.setLayout(layout);
-	
+
 		// Generate the pane components
 		createInfoPane(pane);
 		createSchemaPane(pane);
 		createMappingPane(pane);
-		
+
 		// Return the generated pane
 		return pane;
 	}
 
 	/** Creates the contents for the Edit Project Dialog */
-	protected Control createContents(Composite parent)
-	{
+	protected Control createContents(Composite parent) {
 		Control control = super.createContents(parent);
 
 		// Make default mapping dialog selections if a tag was given
-		if(tag!=null)
-		{
+		if (tag != null) {
 			// Set the name field
 			nameField.setText(tag.getName());
 
 			// Set the selected schema
 			ArrayList<Integer> schemaIDs = new ArrayList<Integer>();
 			schemaIDs.addAll(OpenIIManager.getTagSchemas(tag.getId()));
-			schemaIDs.addAll(OpenIIManager.getChildTagSchemas(tag.getId()));			
+			schemaIDs.addAll(OpenIIManager.getChildTagSchemas(tag.getId()));
 			schemaList.setSchemas(schemaIDs);
 		}
-		
+
 		// Make default mapping dialog selections if a project was given
-		if(project!=null)
-		{
+		if (project != null) {
 			// Set general information fields
 			nameField.setText(project.getName());
 			authorField.setText(project.getAuthor());
 			descriptionField.setText(project.getDescription());
-			
+
 			// Set all project schemas
 			schemaList.setSchemas(Arrays.asList(project.getSchemaIDs()));
-			
+
 			// Set all project mappings
 			mappingList.setSchemas(schemaList.getSchemas());
 			mappingList.setMappings(OpenIIManager.getMappings(project.getId()));
-		}
-		else authorField.setText(System.getProperty("user.name"));
-		
+		} else authorField.setText(System.getProperty("user.name"));
+
 		return control;
 	}
-	
-	/** Monitors changes to the fields to determine when to activate the OK button */
-	public void modifyText(ModifyEvent e)
-		{ updateButton(); }
-	
+
+	/**
+	 * Monitors changes to the fields to determine when to activate the OK
+	 * button
+	 */
+	public void modifyText(ModifyEvent e) {
+		updateButton();
+	}
+
 	/** Handles changes to the schemas selected in the list */
-	public void selectionChanged(SelectionChangedEvent e)
-		{ updateButton(); }
+	public void selectionChanged(SelectionChangedEvent e) {
+		updateButton();
+	}
 
 	/** Informs the mapping list of changes to the schema list */
-	public void actionPerformed(ActionEvent e)
-	{
+	public void actionPerformed(ActionEvent e) {
 		// Handles changes to the schema list
-		if(e.getSource().equals(schemaList))
-		{
+		if (e.getSource().equals(schemaList)) {
 			mappingList.setSchemas(schemaList.getSchemas());
 			updateButton();
 		}
-			
+
 		// Handles changes to the mapping list
-		else
-		{
+		else {
 			HashSet<Integer> lockedIDs = new HashSet<Integer>();
-			for(Mapping mapping : mappingList.getMappings())
-				{ lockedIDs.add(mapping.getSourceId()); lockedIDs.add(mapping.getTargetId()); }
+			for (Mapping mapping : mappingList.getMappings()) {
+				lockedIDs.add(mapping.getSourceId());
+				lockedIDs.add(mapping.getTargetId());
+			}
 			schemaList.setLockedSchemas(lockedIDs);
 		}
 	}
-	
+
 	/** Updates the OK button if all fields are filled out correctly */
-	private void updateButton()
-	{
-		boolean valid = nameField.getText().length()>0 && authorField.getText().length()>0;	
-		valid &= schemaList.getSchemas().size()>0;
+	private void updateButton() {
+		boolean valid = nameField.getText().length() > 0 && authorField.getText().length() > 0;
+		valid &= schemaList.getSchemas().size() > 0;
 		getButton(IDialogConstants.OK_ID).setEnabled(valid);
 	}
-	
+
 	/** Handles the actual import of the specified file */
-	protected void okPressed()
-	{
+	protected void okPressed() {
 		String errorMessage = null;
-		
+
 		// Gather the general information
 		String name = nameField.getText();
 		String author = authorField.getText();
-		String description = descriptionField.getText();	
-		
+		String description = descriptionField.getText();
+
 		// Generate the list of schemas which have been selected
 		ArrayList<ProjectSchema> schemas = new ArrayList<ProjectSchema>();
-		for(Schema schema : schemaList.getSchemas())
-			schemas.add(new ProjectSchema(schema.getId(),schema.getName(),null));
-		
+		for (Schema schema : schemaList.getSchemas())
+			schemas.add(new ProjectSchema(schema.getId(), schema.getName(), null));
+
 		// Generate list of old mappings
-		HashMap<String,Integer> oldMappings = new HashMap<String,Integer>();
-		if(project!=null)
-			for(Mapping oldMapping : OpenIIManager.getMappings(project.getId()))
-				oldMappings.put(oldMapping.getSourceId()+"_"+oldMapping.getTargetId(), oldMapping.getId());
-		
+		HashMap<String, Integer> oldMappings = new HashMap<String, Integer>();
+		if (project != null) for (Mapping oldMapping : OpenIIManager.getMappings(project.getId()))
+			oldMappings.put(oldMapping.getSourceId() + "_" + oldMapping.getTargetId(), oldMapping.getId());
+
 		// Remove old mappings in project
-		for(Integer oldMappingID : oldMappings.values())
-			if(!OpenIIManager.deleteMapping(oldMappingID))
-				errorMessage = "Unable to delete project mappings";
+		for (Integer oldMappingID : oldMappings.values())
+			if (!OpenIIManager.deleteMapping(oldMappingID)) errorMessage = "Unable to delete project mappings";
 
 		// Handles the creation of the project
-		if(errorMessage==null)
-		{
-			if(project==null)
-			{
-				project = new Project(0,name,description,author,schemas.toArray(new ProjectSchema[0]));
+		if (errorMessage == null) {
+			if (project == null) {
+				project = new Project(0, name, description, author, schemas.toArray(new ProjectSchema[0]));
 				Integer projectID = OpenIIManager.addProject(project);
-				if(projectID==null) errorMessage = "Unable to generate project '" + project.getName() + "'";
+				if (projectID == null) errorMessage = "Unable to generate project '" + project.getName() + "'";
 				else project.setId(projectID);
 			}
-			
+
 			// Handles the modification of the project
-			else
-			{
-				project.setName(name); project.setAuthor(author); project.setDescription(description);
+			else {
+				project.setName(name);
+				project.setAuthor(author);
+				project.setDescription(description);
 				project.setSchemas(schemas.toArray(new ProjectSchema[0]));
-				if(!OpenIIManager.updateProject(project))
-					errorMessage = "Unable to update project '" + project.getName() + "'";
+				if (!OpenIIManager.updateProject(project)) errorMessage = "Unable to update project '" + project.getName() + "'";
 			}
 		}
-		
+
 		// Add mappings in project
-		if(errorMessage==null)
-			for(Mapping newMapping : mappingList.getMappings())
-			{
-				String key = newMapping.getSourceId()+"_"+newMapping.getTargetId();
-				if(!oldMappings.containsKey(key))
-				{
-					newMapping.setProjectId(project.getId());
-					if(OpenIIManager.addMapping(newMapping)<=0)
-						errorMessage = "Unable to add project mappings";
-				}
-				else oldMappings.remove(key);
-			}
-		
+		if (errorMessage == null) for (Mapping newMapping : mappingList.getMappings()) {
+			String key = newMapping.getSourceId() + "_" + newMapping.getTargetId();
+			// if (!oldMappings.containsKey(key)) {
+			newMapping.setProjectId(project.getId());
+			if (OpenIIManager.addMapping(newMapping) <= 0) errorMessage = "Unable to add project mappings";
+			// } else oldMappings.remove(key);
+		}
+
 		// Display error message if needed
-		if(errorMessage!=null)
-		{
-			MessageBox messageBox = new MessageBox(getShell(),SWT.ERROR);
+		if (errorMessage != null) {
+			MessageBox messageBox = new MessageBox(getShell(), SWT.ERROR);
 			messageBox.setText("Mapping Generation Error");
 			messageBox.setMessage(errorMessage);
 			messageBox.open();
 			return;
-		}			
-		else getShell().dispose();
+		} else getShell().dispose();
 	}
 }
