@@ -93,3 +93,58 @@ ul {
 	padding: 2px 0px;
 	font: 10pt verdana,sans-serif;
 }
+
+#content .chapter {
+	border-bottom: 1px solid #999999;
+	padding: 0px 0px 8px 0px;
+	margin: 0px 5px 15px 0px;
+}
+
+#content .chapter h3 {
+	font: bold 16pt arial,sans-serif;
+	padding: 0px;
+	margin: 0px 0px 8px 0px;
+}
+
+#content .chapter h4 {
+	font: bold 12pt arial,sans-serif;
+	padding: 0px;
+	margin: 3px 0px;
+}
+
+#content .chapter p {
+	font: 10pt verdana,sans-serif;
+	padding: 0px;
+	margin: 0px 0px 15px 0px;
+}
+
+#content .footnotes h3 {
+	font: bold 16pt arial,sans-serif;
+	padding: 0px;
+	margin: 0px 0px 5px 0px;
+}
+
+#content .footnotes p {
+	font: 8pt verdana,sans-serif;
+	padding: 0px;
+	margin: 0px 0px 15px 0px;
+}
+
+#toc h2 {
+	text-align: center;
+}
+
+#toc ol li {
+	list-style-type: decimal;
+	font-weight: bold;
+}
+
+#toc ol li ol li {
+	list-style-type: upper-roman;
+	font-weight: normal;
+}
+
+#toc ol li ol li ol li {
+	list-style-type: lower-roman;
+	font-weight: normal;
+}
