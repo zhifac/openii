@@ -1,0 +1,160 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+		<link REL="STYLESHEET" TYPE="text/css" HREF="./../../support/standard.css"/>
+		<title>OpenII Help System</title>
+	</head>
+	<body>
+		<div id="header">
+			<div class="breadcrumbs">
+				<a href="./../../index.html">home</a> | 
+				<a href="./../../projects/openii/index.html">openii</a> | 
+				<a href="./../../projects/harmony/index.html">harmony</a> | 
+				<a href="./../../projects/affinity/index.html">affinity</a> |
+				<a href="./../../projects/unity/index.html">unity</a> |
+				<a href="./../../projects/rmap/index.html">rmap</a>
+			</div>
+		</div>
+		<div id="content">
+			<h1>Overview</h1>
+
+			<div class="chapter">
+				<a name="background"></a>
+				<h3>Background</h3>
+
+				<p>
+					Harmony is a tool designed to assist in the task of data integration: the
+					process of merging data from different sources. For example, imagine that the
+					U.S. Army has a database which includes a field called "target_loc" which
+					stores the location of a potential target as a pair of latitude and longitude
+					values. The U.S. Navy might have an XML schema with an entity that also
+					represents the location of an enemy target, but it is called "EnemyLocation"
+					and is stored using a different coordinate system. Without data integration,
+					the two military services will not be able to use each other's data or indeed
+					may not even know that the other has the data in question.
+				</p>
+
+				<p> 
+					If the Army and Navy were to, in advance, carefully compare the Army database
+					schema to the Navy's XML schema, they could identify that "target_loc" and
+					"EnemyLocation" represent the same kind of data. Given similarity in missions,
+					possibly other data type matches exist as well between the service-specific
+					data schemas.
+				</p>
+
+				<p>
+					Without a tool like Harmony, data integration can be very time-consuming,
+					especially if the data schemas are large. Data integration specialists often
+					spend weeks poring over spreadsheets creating the mappings more or less
+					"by	hand". Harmony is designed to make data schema matching much easier and
+					faster. Our experience with several large tasks has shown a dramatic reduction
+					in the time -- informally, around an 80% reduction -- needed to create a
+					complete mapping between two data schemas as compared to working with
+					spreadsheets alone.
+				</p>
+			</div>
+
+			<div class="chapter">
+				<a name="terminology"></a>
+				<h3>Terminology</h3>
+
+				<h4>Schema</h4>
+				<p>
+					A structured representation of a set of concepts and the relationships between
+					them. Examples of schemas include database schemas, XML schemas, and OWL ontologies.
+				</p>
+
+				<h4>Element</h4>
+				<p>
+					The basic unit of data in a schema. Examples of elements include database
+					fields, XML elements, and OWL elements.
+				</p>
+
+				<h4>Source and Target</h4>
+				<p>
+					A source (schema) contains elements that are being "mapped-from" while a target
+					(schema) contains those elements that are being "mapped-to". In the GUI, sources
+					will be on the left and targets on the right. The user specifies which schema is
+					to be the source and which schema is to be the target for any given mapping.
+				</p>
+
+				<h4>Link</h4>
+				<p>
+					A relationship from an element in a source schema to an element in a target schema.
+				</p>
+
+				<h4>Mapping</h4>
+				<p>
+					The set of all links between elements in a given schema-pair (source, target).
+				</p>
+
+				<h4>Graph Model</h4>
+				<p>
+					A view of a schema which ignores some relationships within the schema to produce
+					a tree. Schemas in Harmony are always displayed using tree-based graph models.
+					<sup>[<a href="#footnote1">1</a>]</sup>
+				</p>
+
+				<h4>Project</h4> 
+				<p>
+					A named set of two or more schemas with zero or more associated schema-pair mappings.
+				</p>
+			</div>
+
+			<div class="chapter">
+				<a name="components"></a>
+				<h3>Components</h3>
+
+				<p>
+					Harmony consists of three major components.
+				</p>
+
+				<h4>Data Repository</h4>
+				<p>
+					Harmony uses an internal database (by default an open-source Apache Derby database)
+					to store schemas (converted to a custom format known as M3), mappings, annotations,
+					and relationships between schemas (e.g., extensions). Various tools are provided
+					for working with the data repository, so the user does not need to interact with it
+					directly. Those tools will be explained throughout this document where relevant to
+					the task at hand.
+				</p>
+
+				<h4>Automatic Matchers</h4>
+				<p>
+					Several automated schema matchers are included with Harmony. They use clues like the
+					similarity of element names, the words in description fields, and the structure of
+					the schemas to provide candidate mappings. While they are far from perfect, it is
+					generally much faster for a user to begin with an automatic mapping and then modify
+					it than to create the mapping from scratch. Included automatic matchers are described
+					in the section <a href="mappings/automatic.html#matchers">Element Matchers</a>.
+				</p>
+
+				<h4>Graphical User Interface</h4>
+				<p>
+					The Graphical User Interface (GUI) provides a graphical representation of the schemas
+					and the mappings between them as well as a central "command center" for all of the
+					various tools associated with Harmony. The rest of this document will explain how to
+					accomplish various tasks from within the GUI.
+				</p>
+
+				<p>
+					The Harmony framework is also designed to be extensible. Developers may create their
+					own schema importers, mapping importers/exporters, and automatic matchers. Development
+					of those extensions is, however, outside the scope of this user guide.
+				</p>
+			</div>
+
+			<div class="footnotes">
+				<h3>Footnotes</h3>
+				<p>
+					<a target="footnote1">1.</a> Note that, in general, schemas may be cyclical or
+					disconnected, while Harmony is only capable of displaying trees – connected
+					graphs where there is a root element and a series of "contained elements",
+					which may themselves contain a series of "contained elements", and so on until
+					the leaf elements are reached.
+				</p>
+			</div>
+		</div>
+	</body>
+</html>
