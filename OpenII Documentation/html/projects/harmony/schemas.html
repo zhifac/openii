@@ -22,26 +22,263 @@
 			<div class="chapter">
 				<a name="graphmodel"></a>
 				<h3>The Graph Model</h3>
+
+				<p>
+					After a project has been fully configured by selecting a schema pair and a
+					mapping, the schema pair and mapping will be displayed in the main Harmony
+					window using three large vertical panes, as follows:
+					<img src="./../../support/harmony/images/image025.png" alt=""/>
+				</p>
+
+				<p>
+					Under the word "<b>Schemas</b>" on each side, each schema is represented by
+					a blue bubble containing a white 'S' followed by the name of the schema. This
+					is the root of the schema presentation.
+				</p>
+
+				<p>
+					Following, in blue surrounded by blue parentheses, is the name of the <b>Schema
+					Model</b> (the Harmony graph model) that is being used to display that schema.
+				</p>
+
+				<p>
+					An alternate Schema Model may be specified by selecting the blue text and then
+					selecting the desired model from the <b>Select Schema Model</b> dialog, as follows:
+					<img src="./../../support/harmony/images/image026.png" alt=""/>
+				</p>
+
+				<p>
+					The model choices have the following behaviors:
+				</p>
+
+				<ul>
+					<li>
+						<b>XML:</b> Layout used to display XML-based schemas.
+					</li>
+					<li>
+						<b>XML-NoAttrs:</b> Layout used to display XML-based schemas while excluding
+						their attributes.
+					</li>
+					<li>
+						<b>Relational:</b> Treats the graph as consisting of a two level hierarchy of
+						tables and then fields.
+					</li>
+					<li>
+						<b>Domain:</b> Layout used to display the domain values of a schema.
+					</li>
+					<li>
+						<b>RMap:</b> Specialized layouts used for generating XQuery code between
+						relational schemas.
+					</li>
+					<li>
+						<b>RMap - 1 to N:</b> TODO
+					</li>
+					<li>
+						<b>RMap - N to 1:</b> TODO
+					</li>
+					<li>
+						<b>GSIP:</b> Treats the graph as consisting of a three level hierarchy of
+						entities, attributes, and then individual domain values.
+					</li>
+					<li>
+						<b>Complete:</b> Layout attempting to display all components of the schema
+						in as hierarchically concise format as possible.
+					</li>
+				</ul>
+
+				<p>
+					Schemas in Harmony are displayed as tree graphs. Every row in a Harmony schema
+					pane (either left or right) other than the word "<b>Schemas</b>" is a node in the
+					graph that represents an element in that schema. An element may or may not have
+					contained elements and thus the corresponding node may or may not have dependent
+					child nodes. To the left of every node is an icon representing the type of that
+					node; the root node representing the schema as a whole has a special icon.
+				</p>
+
+				<p>
+					Trees are organized according to the Harmony graph model being used. The icon
+					displayed for a node may depend on the choice of graph model. The <b>name</b>
+					of the schema element is displayed with the node icon.
+				</p>
+
+				<p>
+					The Harmony <b>View</b> menu may also be used to control the presentation of
+					the graph model using the lower two check-box settings, as seen in the following:
+					<img src="./../../support/harmony/images/image027.png" alt=""/>
+				</p>
+ 
+ 				<p>
+					Checking <b>Alphabetize</b> will always order subordinate nodes using an alphanumeric
+					sort, otherwise the order will be that established when the schema was originally
+					imported into the Harmony data repository. Alphabetization is the default behavior.
+				</p>
+
+				<p>
+					Checking <b>Show Types</b> will always display additional information for nodes that
+					are understood by the Harmony data repository to be representing "datatypes".
+				</p>
 			</div>
 
 			<div class="chapter">
 				<a name="subgraphvisibility"></a>
 				<h3>Controlling Subgraph Visibility</h3>
+
+				<p>
+					If a node has child nodes, a gray switch icon will be displayed to its left.
+				</p>
+
+				<ul>
+					<li style="list-style-image: url('./../../support/harmony/images/image001.png');">
+						When it is horizontal (closed), all child nodes (and their child nodes,
+						etc.) will be hidden.
+					</li>
+					<li style="list-style-image: url('./../../support/harmony/images/image002.png');">
+						Then it is vertical (open), all child nodes (and their child nodes, etc.)
+						will be displayed.
+					</li>
+					<li style="list-style-type: disc;">
+						Clicking the switch alternates between its two states.
+					</li>
+				</ul>
+
+				<p>
+					For example, in the following schema display a variety of nodes have different
+					settings: <img src="./../../support/harmony/images/image028.png" alt=""/>
+				</p>
+
+				<p>
+					Selection of a node (either the node icon or the element name) using the right
+					mouse-button pop-up menu enables setting or deselecting a switch recursively
+					at all levels below that node<sup>[<a href="#footnote1">1</a>]</sup>. That menu
+					appears as follows: <img src="./../../support/harmony/images/image029.png" alt=""/>
+ 				</p>
+
+				<p>
+					The first choice, <b>Expand All</b>, recursively sets all switches to vertical (open).
+				</p>
+
+				<p>
+					The second choice, <b>Collapse All</b>, recursively sets all switches to horizontal (closed).
+				<p>
+
+				<p>
+					Selecting <b>Expand All</b> on the root node (schema name) will cause all nodes
+					(schema elements) to be displayed for that schema.
+				</p>
+
+				<p>
+					In combination with the horizontal and vertical scroll bars any appropriate section
+					of the schema may be visualized in the Harmony window.
+				</p>
 			</div>
 
 			<div class="chapter">
 				<a name="elementdescriptions"></a>
 				<h3>Element Descriptions</h3>
+
+				<p>
+					Selection of a node (either the node icon or the element name) using the left
+					mouse-button highlights the node and enables the appearance of a simple dialog
+					at the bottom of (but overlying) the schema pane. This dialog displays the
+					description (and possibly datatype) of the schema element. For example:
+					<img src="./../../support/harmony/images/image030.png" alt=""/>
+				</p>
+
+				<p>
+					The content of the dialog may vary depending on the nature of the schema; it
+					always displays the element name in its header.
+				</p>
+
+				<p>
+					Selecting the node again will remove the dialog (and the highlight). Selecting
+					a different node will change the dialog content accordingly. A double-click on
+					the dialog header will also close it.
+				</p>
+
+				<p>
+					Additionally, all nodes support hover pop-up display of their schema element
+					description.
+				</p>
 			</div>
 
 			<div class="chapter">
 				<a name="elementsearch"></a>
 				<h3>Element Search</h3>
+
+				<p>
+					To search for text strings (key words or phrases) within the names and
+					descriptions of elements in a given schema, enter the substring into the
+					<b>Search</b> text-box located below the applicable schema pane and then
+					press "Enter" on the keyboard. For example, using the search string "grain":
+					<img src="./../../support/harmony/images/image031.png" alt=""/>
+				</p>
+
+				<p>
+					All nodes representing schema elements containing that string of characters will be:
+				</p>
+				
+				<ul>
+					<li>
+						Opened so that they are visible; this may require opening all nodes
+						between the node-of-interest and the root node for that schema.
+					</li>
+					<li>
+						Highlighted in dark yellow if the search string appears in the element name.
+					</li>
+					<li>
+						Highlighted in light yellow if the search string appears in the element description.
+					</li>
+				</ul>
+
+				<p>
+					On the adjacent vertical scrollbar, one or more red lines will appear that
+					indicate each of the locations of any matching schema elements which cannot
+					be displayed without scrolling the schema graph display vertically. Search
+					is <b>not</b> case sensitive.
+				</p>
+
+				<p>
+					The asterisk wildcard may be used in searches. For example, searching for
+					"new*time" would locate schema elements with the names "NewStartTime",
+					"NewStartingTime", and "NewClosingTime". Schema elements with descriptions
+					containing these substrings would also be located.
+				</p>
+
+				<p>
+					There is also a general search capability accessible from the main menu as
+					follows: <img src="./../../support/harmony/images/image032.png" alt=""/>
+				</p>
+
+				<p> 
+					The "<b>Search &raquo; Clear Results</b>" menu entry removes the search-derived
+					highlighting from all elements in both schemas. The "<b>Search &raquo;
+					Search...</b>" menu entry activates the <b>Search</b> dialog, as follows:
+					<img src="./../../support/harmony/images/image033.png" alt=""/>
+				</p>
+
+				<p>
+					Unlike other dialogs in Harmony, this dialog does not grab the GUI focus,
+					therefore it can be left open, dragged out of the way, and used for search
+					while other functions are being performed. By default, searches are performed
+					in both schemas. The results of searches may be used to set element foci for
+					use in subsequent schema matching, or to augment previously set focus areas.
+				</p>
+
+				<p>
+					The "<b>Search &raquo; Highlight Focus Area</b>" menu entry selection restricts
+					the results of all search to only identified focus areas; "<b>Search &raquo;
+					Highlight All</b>" is the default behavior and results in all matched schema
+					elements being highlighted regardless of the setting of focus areas. The use
+					of focus areas is described in <a href="./mappings/automatic.html#narrowing">Narrowing the Match Space</a>.
+				</p>
 			</div>
 
-			<div class="chapter">
-				<a name="importing"></a>
-				<h3>Importing Schemas</h3>
+			<div class="footnotes">
+				<h3>Footnotes</h3>
+				<p>
+					<a target="footnote1">1.</a> The other menu entries are explained as part of
+					the discussion of schema element matching.
+				</p>
 			</div>
 		</div>
 	</body>
