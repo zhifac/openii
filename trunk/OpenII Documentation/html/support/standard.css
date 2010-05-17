@@ -33,11 +33,6 @@ div {
 	margin: 0px;
 }
 
-ul {
-	padding: 0px;
-	margin: 0px;
-}
-
 #header {
     color: #ffffff;
     background-color: #888888;
@@ -114,8 +109,27 @@ ul {
 
 #content .chapter p {
 	font: 10pt verdana,sans-serif;
-	padding: 0px;
+	padding: 0px 15px;
 	margin: 0px 0px 15px 0px;
+}
+
+#content .chapter li p {
+	padding: 0px;
+}
+
+#content .chapter p.caption {
+	font: 10pt verdana,sans-serif;
+	text-align: center;
+}
+
+#content .chapter img {
+	display: block;
+	padding: 5px;
+	margin: 0px auto;
+}
+
+#content .chapter li {
+	padding-bottom: 3px;
 }
 
 #content .footnotes h3 {

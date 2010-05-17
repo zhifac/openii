@@ -22,31 +22,151 @@
 			<div class="chapter">
 				<a name="introduction"></a>
 				<h3>Introduction</h3>
-			</div>
+				
+				<p>
+					Harmony manages the relationships between two schemas as a mapping.
+				</p>
+				
+				<p>
+					A <b>mapping</b> is the set of all links between elements in a given
+					ordered schema-pair (source, target). A given schema-pair has two
+					associated mappings: one in "forward order" and one in "reverse order".
+					These two mappings may be different.
+				</p>
 
-			<div class="chapter">
-				<a name="opening"></a>
-				<h3>Opening Mappings</h3>
-			</div>
+				<p>
+					A <b>link</b> (or "match link") is a directed relationship from an element
+					in a source schema to an element in a target schema.
+				</p>
 
-			<div class="chapter">
-				<a name="saving"></a>
-				<h3>Saving Mappings</h3>
-			</div>
+				<p>
+					A given element in a source schema may be linked to more than one element
+					in a target schema; each link has an associated degree of confidence that
+					the relationship between the two elements is "semantically valid".
+				</p>
 
-			<div class="chapter">
-				<a name="importing"></a>
-				<h3>Importing Mappings</h3>
+				<p>
+					The following sections discuss the management of mappings, the visualization
+					and inspection of match links, the manual creation (and review) of match links,
+					and the automated creation of match links.
+				</p>
 			</div>
 
 			<div class="chapter">
 				<a name="inspecting"></a>
 				<h3>Inspecting Mappings</h3>
-			</div>
 
-			<div class="chapter">
-				<a name="annotations"></a>
-				<h3>Custom Link Annotations</h3>
+				<p>
+					Once a project containing a mapping has been selected and opened, the main
+					Harmony window will show three principal vertical panes. The left pane
+					visualizes the source schema, the right pane visualizes the target schema,
+					and the middle pane visualizes the set of links in that mapping. The section
+					on <a href="./schemas.html">Schemas</a>, described how to manipulate the
+					presentation of schemas in the left and right panes. This section describes
+					how to manipulate the presentation of mappings in the middle pane.
+				</p>
+
+				<p>
+					Individual links in the current mapping appear as individual lines between
+					nodes (rows labeled by the name of an element and adorned with a node-icon)
+					in the linked schemas.
+				</p>
+
+				<ul>
+					<li>
+						Links between schema elements that are both expanded ("visible" although
+						perhaps vertically-scrolled off of the current schema display) appear as
+						solid lines that are colored in correspondence with their degree of
+						confidence. If the link has a degree of confidence of 1.0 then it is black.
+					</li>
+					<li>
+						Links to descendants of a non-expanded schema element will appear as dotted
+						gray lines connected to that non-expanded schema element. Expanding that
+						portion of the schema graph until the element itself has been expanded
+						(for both the source and target schemas) will result in the link changing
+						to a colored, solid line.
+					</li>
+				</ul>
+
+				<p>
+					When a link is presented as a solid line then it may be selected. Metadata
+					regarding that link may be accessed by right-clicking on that line to bring
+					up the <b>Annotations</b> dialog. The line turns blue, indicating that it has
+					been selected, and the element description dialogs (see <a href="schemas.html#elementdescriptions">Element Descriptions</a>)
+					for the two linked elements are automatically displayed, as follows:
+					<img src="./../../support/harmony/images/image038.png" alt=""/>
+				</p>
+
+				<p>
+					A confidence score is attached to each link. If the link was created by the
+					user, the confidence score is always set to 1. If the link was created by a
+					software matcher, the confidence score may vary between 0.0 and 1.0,
+					representing the degree of confidence of the matcher, with 1.0 representing
+					100% confidence. The color of the link reflects the confidence score.
+				</p>
+
+				<p>
+					In the following example, match links have confidence scores ranging between
+					0.15 and 0.50; the selected link (in blue) has a confidence score of 0.19 –
+					this is indicated in the <b>Confidence</b> pane by the pair of facing blue
+					triangles. <img src="./../../support/harmony/images/image039.png" alt=""/>
+				</p>
+ 
+ 				<p>
+					The <b>Confidence</b> pane at the right of the Harmony window controls the
+					visibility of links. It contains a color-shaded (red to green) bar and two
+					sliders. The sliders control a pair of confidence thresholds which, by default,
+					are set to ensure that all links are visible – the low confidence threshold 
+					is set to 0.0 and the high confidence threshold is set to 1.0. To view only
+					links within a specified range of confidence one or both confidence thresholds
+					(low-end and high-end) may be adjusted.
+				</p>
+
+				<p>
+					The <b>Filters</b> pane at the bottom right of the Harmony window allows links
+					to be filtered by other considerations.
+				</p>
+
+				<ul>
+					<li>
+						The <b>User</b> filter enables only links generated by the user to be visible.
+					</li>
+					<li>
+						The <b>System</b> filter enables only links generated by the schema matchers to be visible.
+					</li>
+					<li>
+						The <b>Hierarchy</b> filter filters links to elements which appear in
+						multiple parts of the schema hierarchy.  Imagine a schema which has the
+						element "Telephone" appear as a child of the elements "Home" and "Business".
+						A matched schema containing "Company->Telephone" would have the element
+						Telephone match both locations in the other schemas.  The hierarchical
+						filter works by examining parent elements to find the most relevant
+						linkage while hiding all other linkages.
+					</li>
+					<li>
+						The <b>Best</b> filter enables only the link with the highest confidence
+						score that is connected to each element to be visible.
+					</li>
+				</ul>
+
+				<p>
+					In the <b>Annotations</b> dialog, the <b>Date</b> indicates the date on which
+					the link was created or last edited; it is system-determined.
+				</p>
+
+				<p>
+					By default, in the <b>Annotations</b> dialog Harmony specifies the <b>Transform</b>
+					and <b>Notes</b> text-fields to hold annotations. In this example they are both
+					empty, but they both may be edited along with the <b>Author</b> field. In the
+					case that the link was created by a software matcher then the <b>Transform</b>
+					field will be automatically populated.
+				</p>
+
+				<p>
+					Either <b>Cancel</b>, or if no change was made then <b>OK</b>, may be selected,
+					thus closing the Annotations dialog. A different link may then be selected and
+					its annotations inspected.
+				</p>
 			</div>
 		</div>
 	</body>

@@ -22,21 +22,182 @@
 			<div class="chapter">
 				<a name="introduction"></a>
 				<h3>Introduction</h3>
+
+				<p>
+					Although Harmony is principally designed as a tool for employing automated
+					schema matching algorithms it is often the case that manual methods must be
+					employed to address shortcomings in (or to finalize) the automated analysis.
+					Where there is significant domain knowledge available but documented element
+					metadata is poor it may be necessary to establish element links manually.
+				</p>
 			</div>
 
 			<div class="chapter">
 				<a name="creation"></a>
 				<h3>Link Creation</h3>
+
+				<p>
+					To manually create a link between two schema elements, select an element in
+					one schema and drag (with the mouse left-button depressed) to an element in
+					the other schema. Harmony will display a black line between them since
+					user-generated links are always assigned a level of confidence of 1.0
+					(see <a href="./../mappings.html#inspecting">Inspecting Mappings</a>).
+				</p>
+
+				<p>
+					Metadata regarding that link may be accessed by right-clicking on that line
+					to bring up the <b>Annotations</b> dialog. The line turns blue, indicating
+					that it has been selected, and the element description dialogs (see
+					<a href="./../schemas.html#elementdescriptions">Element Descriptions</a>) for
+					the two linked elements are automatically displayed.
+				</p>
+
+				<p>
+					A sample Annotations dialog is as follows:
+					<img src="./../../../support/harmony/images/image040.png" alt=""/>
+				</p>
+
+				<p>
+					The <b>Date</b> indicates the date on which the link was created or last
+					edited; it is system-determined.
+				</p>
+
+				<p>
+					Harmony auto-populates the <b>Author</b> field based on the Windows user
+					account that started Harmony. If desired, it may be changed.
+				</p>
+
+				<p>
+					By default, Harmony provides two fields for annotation, labeled <b>Transform</b>
+					and <b>Notes</b>; both are simple text fields.
+				</p>
+
+				<ul>
+					<li>
+						The <b>Transform</b> field is intended to store metadata regarding how the
+						link was generated; this is particularly useful when automated schema
+						matching methods are employed. In the case of manual schema matching the
+						value "manual" may be appropriate, or the value may be left unspecified.
+					</li>
+					<li>
+						The <b>Notes</b> field contains free-form comments entered by the analyst.
+						It may also be left unspecified.
+					</li>
+				</ul>
+
+				<p>
+					Selecting <b>Accept</b> and then <b>OK</b> will confirm the confidence score
+					as 1.0; the dialog will close and the link color will remain black.
+				</p>
+
+				<p>
+					Selecting <b>Reject</b> and then <b>OK</b> will close the dialog and delete
+					the match link.
+				</p>
+
+				<p>
+					Selecting <b>Cancel</b> will simply close the dialog; any changes made to
+					dialog fields will be lost.
+				</p>
 			</div>
 
 			<div class="chapter">
 				<a name="management"></a>
 				<h3>Link Management</h3>
+
+				<p>
+					In addition to link-by-link inspection, several other mechanisms are available
+					to process links. More than a single link may be selected by either:
+				</p>
+
+				<ul>
+					<li>
+						Holding down the CTRL-key while repeatedly selecting links with the left-button, or
+					</li>
+					<li>
+						Executing "rubber-band multi-select" by using a left-button down-and-drag maneuver
+						to select all links intersecting the rectangle thus defined.
+					</li>
+				</ul>
+
+				<p>
+					In the case of multi-select the <b>Annotations</b> dialog (activated by a right-click)
+					summarizes the values for all multi-selected links, and takes the indicated action on
+					all included links when the dialog is closed.
+				</p>
+
+				<p>
+					The <b>Edit</b> menu includes functions for selecting or removing links, as follows:
+					<img src="./../../../support/harmony/images/image042.png" alt=""/>
+				</p>
+ 
+ 				<ul>
+					<li>
+						The "Edit &raquo; Select Links..." menu entry selection activates the <b>Select
+						Links</b> dialog, as follows: <img src="./../../../support/harmony/images/image043.png" alt=""/>
+						<p class="caption">
+							This dialog allows the filtered-selection of links.
+						</p>
+					</li>
+					<li>
+						The "Edit &raquo; Delete Links..." menu entry selection activates the <b>Delete
+						Links</b> dialog, as follows: <img src="./../../../support/harmony/images/image044.png" alt=""/>
+						<p class="caption">
+							This dialog allows the filtered-deletion of links.
+						</p>
+					</li>
+ 				</ul>
 			</div>
 
 			<div class="chapter">
 				<a name="finishing"></a>
 				<h3>Link Finishing</h3>
+
+				<p>
+					In order to constrain the focus of the automated schema matchers, nodes may
+					be marked as "finished".
+				</p>
+
+				<ul>
+					<li>
+						<p>
+							All match links involving a given entity schema element and its node
+							descendants will be marked as "finished" (with their existing level
+							of confidence) by selecting that schema element with the right
+							mouse-button pop-up menu and then selecting "<b>Mark as Finished</b>".
+						</p>
+						<p>
+							That menu appears as follows in the context is which it is enabled;
+							e.g., if the "1 Agriculture and Food" node was selected then the following
+							would appear: <img src="./../../../support/harmony/images/image045.png" alt=""/>
+						</p>
+ 						<p>
+ 							The node-icons will subsequently reflect this change by including a
+ 							check-mark (green for leaf nodes, red for interior nodes).
+ 						</p>
+ 					</li>
+ 					<li>
+						<p>
+							If the given schema element has already been "marked as finished" (thus
+							showing a check-mark in its node-icon) then the right mouse-button
+							pop-up menu will instead include the option of "<b>Mark as Unfinished</b>".
+						</p>
+						<p>
+							That menu appears as follows in the context is which it is enabled;
+							e.g., if the "1 Agriculture and Food" node was selected then the following
+							would appear: <img src="./../../../support/harmony/images/image046.png" alt=""/>
+						</p>
+						<p>
+							All match links involving that entity element and its node descendants will
+							be marked as "<b>Unfinished</b>" (with their existing level of confidence).
+							The node-icons will subsequently reflect this change by removing the check-mark.
+						</p>
+					</li>
+				</ul>
+
+				<p>
+					Nodes that are marked as "finished" will be ignored in the automated schema matching process.
+				</p>
 			</div>
 		</div>
 	</body>

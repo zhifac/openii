@@ -22,21 +22,242 @@
 			<div class="chapter">
 				<a name="introduction"></a>
 				<h3>Introduction</h3>
+
+				<p>
+					Creating match links manually is very time-consuming. Harmony provides a
+					number of automatic matchers which use clues like the similarity of entity
+					names, the words in the description fields, and the structure of the schema
+					graphs to suggest candidate links between schema elements. Match links are
+					given a confidence score based on the matcher's confidence that the link
+					represents a genuine match. Information regarding a proposed match may be
+					examined by right-clicking on the match link. Links are also color-coded
+					by their confidence score.
+				</p>
+
+				<p>
+					Many real-world schemas are very large; a complete automatic matching between
+					any given pair might take so long and use so much computer memory as to be
+					impractical. Therefore, Harmony provides several ways of narrowing the schema
+					matching problem.
+				</p>
+
+				<p>
+					Harmony has been successfully used with schemas containing thousands of
+					elements. A case study is described in: <i>Ken Smith, Peter Mork, Len
+					Seligman, Arnon Rosenthal, Michael Morse, David M. Allen, and Maya Li, "The
+					Role of Schema Matching in Large Enterprises", Conference on Innovative
+					Database Research (CIDR '09), Jan 2009.</i>
+				</p>
 			</div>
 
 			<div class="chapter">
 				<a name="matchers"></a>
 				<h3>Element Matchers</h3>
+
+				<p>
+					Harmony currently incorporates four general-purpose schema matching algorithms.
+					These are:
+				</p>
+
+				<ul>
+					<li>
+						<b>Name Similarity:</b> Compares names based on their similarity, using
+						"edit distance" – a standard computational linguistic technique. As an
+						example "control" and "cntrl" have an edit distance of 2 (two characters
+						are deleted) so they would have a relatively high similarity score.
+					</li> 
+					<li>
+						<b>Documentation Similarity:</b> Compares the words found in the documentation
+						as well as in the names without regard to order or syntax. For example, if
+						in one schema you have an entity with the name "AC" and a description that
+						says "Airport Code", and in the other schema an entity called "Code, Airport",
+						then this matcher would link them.
+					</li>
+					<li>
+						<b>Documentation + Synonyms:</b> Works like the Documentation Similarity matcher,
+						except that it uses a thesaurus (WordNet) to match synonymous words. For example,
+						it would link "Airport" and "Aerodrome".
+					</li>
+					<li>
+						<b>Exact Structure:</b> Used to quickly identify elements in matched schemas
+						which have the exact same hierarchical naming of elements all of the way to the
+						root. This matcher is primarily used to identify elements in xsd schemas which
+						come from shared base schemas.
+					</li>
+				</ul>
+
+				<p>
+					There are also two special-purpose matchers that may be employed separately:
+				</p>
+
+				<ul>
+					<li>
+						<b>WordNet Thesaurus:</b> Works identically to the "Documentation + Synonyms"
+						matcher, but uses the WordNet Thesaurus for gathering synonyms.
+					</li>
+					<li>
+						<b>Quick Documentation:</b> Instead of matching all elements with one another,
+						this matcher groups the schemas into subgroups which are matched first. Then only
+						the elements in the matched subsections are matched together to identify linkages.
+					</li>
+				</ul>
 			</div>
 
 			<div class="chapter">
 				<a name="narrowing"></a>
 				<h3>Narrowing the Match Space</h3>
+
+				<p>
+					There are several methods of choosing a subset of elements from each schema that
+					will participate in a match process. If the schemas are large or if it is advantageous
+					to divide the work, then the use of one or more of these techniques will help narrow
+					the "match space" before executing the applicable matching algorithms.
+				</p>
+
+				<ul>
+					<li>
+						<b>Setting the Focus</b>
+						<p>
+							This technique is especially useful for matching within a single schema
+							subgraph at a time. Right mouse-click on the schema element and choose
+							"<b>Set Focus</b>" to set the focus on that schema element and all of
+							its descendants in the current schema graph.
+							<img src="./../../../support/harmony/images/image029.png" alt=""/>
+						</p> 
+						<p>
+							The resulting schema display, given a focus on node "1.1.1 Crop Production",
+							would appear as follows: <img src="./../../../support/harmony/images/image047.png" alt=""/>
+						</p>
+						<p>
+							The focused elements are outlined in a dashed rectangle with the elements
+							outside of the focus displayed in italicized text with a gray font.
+						</p>
+						<p>
+							More than a single focus may be set simultaneously in a schema. Given a focus
+							on both node "1.1.1 Crop Production" and node "1.1.2.3 Poultry and Egg Production
+							Farms" the resulting schema display would appear as follows:
+							<img src="./../../../support/harmony/images/image048.png" alt=""/>
+						</p>
+						<p>
+							To clear an existing focus, right mouse-click on the schema element and
+							choose "<b>Clear Focus</b>". In the following example the focus on node
+							"1.1.1 Crop Production" (and <i>just</i> that node) might be cleared as follows:
+							<img src="./../../../support/harmony/images/image049.png" alt=""/>
+			  			</p>
+			  			<p>
+							To clear all currently-set foci, right mouse-click on any node and choose
+							"<b>Clear All Foci</b>".
+						</p>
+					</li>
+					<li>
+						<b>Setting the Depth</b>
+						<p>
+							This technique is especially useful if the schema graph is deep and the
+							primary schema matching objective is matching schema elements at specific
+							distances/depths from the root.
+						</p>
+						<p>
+							At the bottom of each schema pane is a bar with two sliders. The sliders
+							control a pair of depth thresholds which, by default, are set to ensure 
+							that all graph nodes are visible. <img src="./../../../support/harmony/images/image050.png" alt=""/>
+						</p>
+						<p>
+							Both the minimum and maximum depth may be set. Nodes immediately below
+							the root are at depth 1, their children at depth 2, etc. Nodes that
+							excluded are in gray italic text.
+						</p>
+					</li>
+				</ul>
+				<p>
+					These two methods may be applied simultaneously. In the following example, two
+					subgraphs are in focus on the left schema while the right schema is set to
+					minimum and maximum depth = 1: <img src="./../../../support/harmony/images/image051.png" alt=""/>
+				</p>
+				<p>
+					Note that schema elements falling outside of the focus or depth limits are
+					grayed out and italicized. They will be ignored during automated schema element
+					matching.
+				</p>
 			</div>
 
 			<div class="chapter">
 				<a name="running"></a>
 				<h3>Running the Schema Element Matchers</h3>
+
+				<p>
+					The performance of the schema element matchers tends to degrade in proportion
+					to the cross-product of the node count of the schema-pair. Unless the schemas
+					are relatively small and the complete schemas must be matched "at once" it is
+					always appropriate to set the focus and/or depth to restrict the size of
+					the match space.
+				</p>
+
+				<p>
+					Matchers may be run individually or in combination. When run in combination,
+					the scores from all of the schema element matchers are combined using a
+					mathematical formula by a "Vote Merger".
+				</p>
+
+				<ul> 
+					<li>
+						To run all matchers, use the <b>Matchers</b> menu to select <b>Vote
+						Merger</b> and then <b>Full Match</b>; the match process will start
+						immediately. <img src="./../../../support/harmony/images/image052.png" alt=""/>
+					</li>
+					<li>
+						To match only on selected element types in on schema, for example entities,
+						attributes, or subtypes matchers, use the <b>Matchers</b> menu to select
+						<b>Vote Merger</b> and then <b>Custom Match...</b>. The activated <b>Run
+						Schema Matchers</b> dialog may then be used to select which types to run.
+						By default all types will be selected for both schemas.
+						<img src="./../../../support/harmony/images/image053.png" alt=""/> 
+					</li>
+					<li>
+						<p>
+							To run only selected matchers, use the <b>Matchers</b> menu to select
+							<b>Vote Merger</b> and then <b>Custom Match...</b>. The activated <b>Run
+							Schema Matchers</b> dialog may then be used to select which matchers
+							(also known as "match voters") to run. By default the four standard
+							matchers are selected, as illustrated in the following:
+							<img src="./../../../support/harmony/images/image054.png" alt=""/>
+						</p>
+						<p> 
+							After adjusting the set of schema matchers to be used, selecting Next will initiate the match process.
+						</p>
+					</li>
+					<li>
+						To run an individual matcher, select that matcher from the Matchers menu;
+						the match process will start immediately.
+						<img src="./../../../support/harmony/images/image055.png" alt=""/>
+					</li>
+				</ul>
+
+				<p>
+					While the match process is executing the <b>Run Schema Matchers</b> dialog
+					reports progress, as follows: <img src="./../../../support/harmony/images/image056.png" alt=""/>
+				</p>
+
+				<p>
+					The upper progress bar reports which matcher is currently executing and its
+					present state of completion. The lower progress bar reports the overall
+					state of completion.
+				</p>
+
+				<p>
+					The results of completing the schema element match process will be displayed
+					as a set of new match links. In the following example, only links having
+					confidence scores ranging between 0.10 and 0.55 are displayed; the selected
+					link (in blue) has a confidence score of 0.55.
+					<img src="./../../../support/harmony/images/image057.png" alt=""/>
+				</p>
+
+				<p>
+					<a href="../mappings.html#inspecting">Inspecting Mappings</a> describes how to review individual links.
+				</p>
+
+				<p>
+					<a href="manual.html#management">Link Management</a> describes how to manipulate links.
+				</p>
 			</div>
 		</div>
 	</body>
