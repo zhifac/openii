@@ -6,29 +6,22 @@
 		<title>OpenII Help System</title>
 	</head>
 	<body>
-		<div id="header">
-			<div class="breadcrumbs">
-				<a href="./index.html">home</a> | 
-				<a href="./projects/openii/index.html">openii</a> | 
-				<a href="./projects/harmony/index.html">harmony</a> | 
-				<a href="./projects/affinity/index.html">affinity</a> |
-				<a href="./projects/unity/index.html">unity</a> |
-				<a href="./projects/rmap/index.html">rmap</a>
-			</div>
-		</div>
+	  	<iframe src="./header.html" width="100%" height="30" scrolling="no" frameborder="0"></iframe>
 		<div id="content">
-			<div style="float: right; margin-left: 10px;">
+			<div style="float: right; margin-left: 10px; margin-top: 40px;">
 				<img src="./support/images/Ygg.jpg" alt="OpenII" title="OpenII" style="width: 200px; height: 200px;"/>
 			</div>
 			<h1>Welcome to OpenII</h1>
 			<p>
-				Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-				tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
-				veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-				commodo consequat. Duis aute irure dolor in reprehenderit in voluptate
-				velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint
-				occaecat cupidatat non proident, sunt in culpa qui officia deserunt
-				mollit anim id est laborum.
+				OpenII is a collaborative effort spearheaded by The MITRE Corporation to create a suite
+				of open-source tools for information integration. The project is leveraging the latest
+				developments in research on information integration to create a platform on which integration
+				applications can be built and further research can be conducted.  Our goal is to create tools
+				that can be applied in a variety of architectural contexts and can easily be tailored to the
+				needs of particular domains.  OpenII tools include, among others, wrappers for common data
+				sources, tools for creating matches and mappings between disparate schemas, a tool for searching
+				collections of schemas and extending schemas,  and run-time tools for processing queries over
+				heterogeneous data sources.
 			</p>
 			<div style="clear: both;"></div>
 
@@ -60,48 +53,6 @@
 						</li>
 					</ul>
 				</div>
-				
-				<!--  USING THE TOOLS -->
-				<div>
-					<div class="header">Using The Tools</div>
-					<ul>
-						<li class="subheader">
-							<a href="./projects/openii/index.html">OpenII</a>
-							<p>
-								Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-								tempor incididunt ut labore et dolore magna aliqua.
-							</p>
-						</li>
-						<li class="subheader">
-							<a href="./projects/affinity/index.html">Affinity</a>
-							<p>
-								Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-								tempor incididunt ut labore et dolore magna aliqua.
-							</p>
-						</li>
-						<li class="subheader">
-							<a href="./projects/harmony/index.html">Harmony</a>
-							<p>
-								Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-								tempor incididunt ut labore et dolore magna aliqua.
-							</p>
-						</li>
-						<li class="subheader">
-							<a href="./projects/unity/index.html">Unity</a>
-							<p>
-								Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-								tempor incididunt ut labore et dolore magna aliqua.
-							</p>
-						</li>
-						<li class="subheader">
-							<a href="./projects/rmap/index.html">RMap</a>
-							<p>
-								Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-								tempor incididunt ut labore et dolore magna aliqua.
-							</p>
-						</li>
-					</ul>
-				</div>
 
 				<!-- WORK PROCESSES -->
 				<div>
@@ -110,22 +61,81 @@
 						<li class="subheader">
 							Common Ground Workflow
 							<p>
-								Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-								tempor incididunt ut labore et dolore magna aliqua.
+								Some users have a large pool of data sources from which they need to discover
+								any associations which might exist between them or to a single data standard.
+								This workflow discusses the steps required to move from discovering these
+								associations to identifying a central set of data fields which are common
+								among the group.
 							</p>
 						</li>
 						<li class="subheader">
 							Message Transform Workflow
 							<p>
-								Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-								tempor incididunt ut labore et dolore magna aliqua.
+								The transformation problem deals with the situation where the user has a known
+								set of data sources which needs to be transformed into a single data standard.
+								This workflow discusses the steps needed to import the data sources, create
+								a mapping between these data sources, and generate code to perform the
+								transformation.
 							</p>
 						</li>
 						<li class="subheader">
 							Schema Management Workflow
 							<p>
-								Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-								tempor incididunt ut labore et dolore magna aliqua.
+								Some users view this tool suite as a useful schema repository.  This workflow
+								discusses the various capabilities available from storage abilities, search
+								and viewing capabilities, as well as export options.
+							</p>
+						</li>
+					</ul>
+				</div>
+
+				<!--  USING THE TOOLS -->
+				<div>
+					<div class="header">Using The Tools</div>
+					<ul>
+						<li class="subheader">
+							<a href="./projects/affinity/index.html">Affinity</a>
+							<p>
+								Affinity is used for finding associations between members of a generic
+								group of data sources.  Through this tool, users can see which data sources
+								are closely associated, inspect the reason for these associations, and then
+								perform actions on these closely related data sources.
+							</p>
+						</li>
+						<li class="subheader">
+							<a href="./projects/harmony/index.html">Proximity</a>
+							<p>
+								Proximity is used to examine the exact alignment of a single data source with other
+								data sources in a selected group.  This view allows one to see a ranking of
+								the most closely aligned data sources as well as detailed information on
+								why these alignments took place.
+							</p>
+						</li>
+						<li class="subheader">
+							<a href="./projects/harmony/index.html">Harmony</a>
+							<p>
+								Harmony is used to generate mappings between pairings of data sources.  This
+								tool takes a semi-automated approach where algorithms attempt first guess
+								estimates of associated data fields.  Then, users can examine these linkages
+								to verify and annotate these linkages.
+							</p>
+						</li>
+						<li class="subheader">
+							<a href="./projects/unity/index.html">Unity</a>
+							<p>
+								Unity is used to create a collective vocabulary for a group of schemas by
+								examining the mappings generated by tools such as Harmony.  This vocabulary
+								can then be used to help refine future matching inside of the domain or to
+								help construct a messaging standard through which the schemas can communicate.
+							</p>
+						</li>
+						<li class="subheader">
+							<a href="./projects/rmap/index.html">RMap</a>
+							<p>
+								RMap is used to generate transformation code between a pair of relational
+								schemas.  The resultant SQL code can be used to take data from the source
+								schema and transform it into a format which can be accepted by the target
+								schema.
 							</p>
 						</li>
 					</ul>
@@ -138,36 +148,46 @@
 						<li class="subheader">
 							The M3 Model
 							<p>
-								Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-								tempor incididunt ut labore et dolore magna aliqua.
+								Underlying the entire OpenII repository is the M3 model.  This model represents
+								both schemas as well as the mappings between these schemas.  This section
+								discusses OpenII's data model, how to access this data model, and how this will
+								help in the construction of the various OpenII plugin components.
 							</p>
 						</li>
 						<li class="subheader">
 							Constructing Importers/Exporters
 							<p>
-								Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-								tempor incididunt ut labore et dolore magna aliqua.
+								This discusses how to construct new importers and exporters for use in OpenII.
+								This section includes demonstrations on how to build importers and exporters for
+								schemas, mapping, as well as projects.
 							</p>
 						</li>
 						<li class="subheader">
 							Defining Schema Models
 							<p>
-								Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-								tempor incididunt ut labore et dolore magna aliqua.
+								In OpenII, the element hierarchy within a data source can be displayed in various
+								ways.  This section talks about the various schema models which are currently
+								available as well as how to construct new schema models to represent schemas
+								in a custom way.
 							</p>
 						</li>
 						<li class="subheader">
 							Building Matchers/Mergers
 							<p>
-								Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-								tempor incididunt ut labore et dolore magna aliqua.
+								Underlying the Harmony program is a series of matchers and mergers which
+								automatically generate mappings between data sources.  Learn how to construct
+								new matchers as well as the mergers which generates a concensus between these
+								matchers.
 							</p>
 						</li>
 						<li class="subheader">
 							Building Viewers/Editors
 							<p>
-								Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-								tempor incididunt ut labore et dolore magna aliqua.
+								OpenII runs in the Eclipse framework which provides a flexible framework for
+								adding new viewers and editors to help interpret and work with the data in the
+								selected repository.  This section demonstrates how a new module can be constructed
+								and the basics on how to connect it with all of the information in the data
+								repository.
 							</p>
 						</li>
 					</ul>
