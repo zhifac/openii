@@ -74,11 +74,9 @@ public class WordBag
 	private ArrayList<String> tokenize(String text)
 	{
 		text = text.replaceAll("([a-z0-9])(A-Z)","$1 $2");
-		for(int j=0; j < text.length()-1; j++){
-			if(Character.isLowerCase(text.charAt(j)) && Character.isUpperCase(text.charAt(j+1))){
+		for(int j=0; j < text.length()-1; j++)
+			if(Character.isLowerCase(text.charAt(j)) && Character.isUpperCase(text.charAt(j+1)))
 				text = text.substring(0, j+1)+" "+text.substring(j+1);
-			}
-		}
 		return new ArrayList<String>(Arrays.asList(text.split("[^a-zA-Z0-9]+")));
 	}
 	
@@ -89,9 +87,9 @@ public class WordBag
 	/** Adds schema elements to the word bag */
 	public void addElement(SchemaElement element)
 	{
-		String text = element.getName()==null ? "" : element.getName() + " " + element.getName();
+		String text = element.getName()==null ? "" : element.getName() + " " + element.getName() + " ";
 		text += element.getDescription()==null ? "" : element.getDescription();
-		addWords(tokenize(text));
+		addWords(tokenize(text.trim()));
 	}
 	
 	/** Add words to the word bag */
