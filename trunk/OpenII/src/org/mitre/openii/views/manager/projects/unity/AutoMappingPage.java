@@ -18,8 +18,6 @@ import org.eclipse.swt.widgets.Text;
 import org.mitre.harmony.matchers.MatcherManager;
 import org.mitre.harmony.matchers.voters.MatchVoter;
 import org.mitre.openii.model.OpenIIManager;
-import org.mitre.openii.views.manager.projects.matchmaker.Pair;
-import org.mitre.openii.views.manager.projects.matchmaker.Permuter;
 import org.mitre.openii.widgets.BasicWidgets;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.Project;
@@ -162,7 +160,7 @@ class AutoMappingPage extends WizardPage implements ModifyListener, SelectionLis
 
 		// Set voters to a set of optimized choices (hard coded)
 		for (MatchVoterCheckBox checkbox : voterCheckBoxes)
-			if (checkbox.getName().equals("Documentation Similarity") || checkbox.getName().equals("Documentation + Synonyms") || checkbox.getName().equals("Name Similarity") || checkbox.getName().equals("Exact Structure")) {
+			if (checkbox.getName().equals("Documentation Similarity") || /*checkbox.getName().equals("Documentation + Synonyms") ||*/ checkbox.getName().equals("Name Similarity") || checkbox.getName().equals("Exact Structure")) {
 				checkbox.checkBox.setSelection(true);
 				selectedVoters.add(checkbox.getName());
 			}

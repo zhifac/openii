@@ -14,12 +14,10 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Text;
-import org.mitre.openii.views.manager.projects.matchmaker.MatchMaker;
 import org.mitre.openii.widgets.BasicWidgets;
 
 class MatchMakerPage extends WizardPage implements ModifyListener {
 
-	MatchMaker matchMaker;
 	private Text vocabNameField;
 	private Text authorField;
 	private Text descriptionField;
@@ -49,6 +47,8 @@ class MatchMakerPage extends WizardPage implements ModifyListener {
 		descriptionField = BasicWidgets.createTextField(group, "Description", 5);
 		
 		if (authorField.getText().equals("")) authorField.setText(System.getProperty("user.name"));
+		if (vocabNameField.getText().equals("")) vocabNameField.setText( ((GenerateVocabularyWizard)(getWizard())).getProject().getName()+"_Vocabulary");
+		
 		
 		vocabNameField.addModifyListener(this); 
 		authorField.addModifyListener(this); 
