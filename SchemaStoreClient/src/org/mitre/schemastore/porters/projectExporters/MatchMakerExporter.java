@@ -8,18 +8,18 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 
+import org.mitre.schemastore.client.SchemaStoreClient;
 import org.mitre.schemastore.model.Domain;
 import org.mitre.schemastore.model.DomainValue;
 import org.mitre.schemastore.model.Mapping;
-import org.mitre.schemastore.model.Project;
 import org.mitre.schemastore.model.MappingCell;
+import org.mitre.schemastore.model.Project;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.porters.projectExporters.matchmaker.ClusterNode;
 import org.mitre.schemastore.porters.projectExporters.matchmaker.ClusterRenderer;
-import org.mitre.schemastore.porters.projectExporters.matchmaker.SchemaElementClusterNode;
-import org.mitre.schemastore.porters.projectExporters.matchmaker.groupE;
+import org.mitre.schemastore.porters.projectExporters.matchmaker.SynsetTerm;
+import org.mitre.schemastore.porters.projectExporters.matchmaker.Synset;
 
 public class MatchMakerExporter extends ProjectExporter {
 
@@ -27,7 +27,7 @@ public class MatchMakerExporter extends ProjectExporter {
 	private ClusterNode cluster;
 
 	// Cluster name to schemaElementNode
-	HashMap<String, SchemaElementClusterNode> clusterElements;
+	HashMap<String, SynsetTerm> clusterElements;
 	// Schema element ID to a list of schema IDs
 	HashMap<Integer, ArrayList<Integer>> elementSchemaLookUp;
 
@@ -81,9 +81,8 @@ public class MatchMakerExporter extends ProjectExporter {
 		return ".xls";
 	}
 
-	// Create SchemaElementClusterNode used by ClusterNode from MappingCells
+	// Create SynsetTerm used by ClusterNode from MappingCells
 	private void clusterMatchResults() {
-
 		// Initialize SchemaElementClusterNodes for each MappingCell that
 		// exists.
 		for (ArrayList<MappingCell> mcList : mappings.values()) {
@@ -92,9 +91,9 @@ public class MatchMakerExporter extends ProjectExporter {
 			
 			for (MappingCell mappingCell : mcList) {
 				// Loop through mapping cells input cluster nodes
-				for (SchemaElementClusterNode inputNode : getClusterNodeList(mappingCell.getInput())) {
+				for (SynsetTerm inputNode : getClusterNodeList(mappingCell.getInput())) {
 					// Loop through mapping cells output cluster nodes
-					for (SchemaElementClusterNode outputNode : getClusterNode(mappingCell.getOutput())) {
+					for (SynsetTerm outputNode : getClusterNode(mappingCell.getOutput())) {
 						// Add the nodes and score to each other's score list.
 						inputNode.add(outputNode, mappingCell.getScore());
 						outputNode.add(inputNode, mappingCell.getScore());
@@ -106,23 +105,22 @@ public class MatchMakerExporter extends ProjectExporter {
 		
 		System.out.println( "Num of cluster elements : " +  clusterElements.values().size() );
 		
-		
 		// Run clustering algorithm
-		cluster = new ClusterNode(new ArrayList<SchemaElementClusterNode>(clusterElements.values()));
+		cluster = new ClusterNode(new ArrayList<SynsetTerm>(clusterElements.values()));
 		cluster.cluster(schemaIDs.length, 0);
 	}
 
 	// Manages cluster nodes: since each element may be associated with multiple
 	// schemas, one Schema Element node is created for each schema that the
 	// element belongs to
-	private ArrayList<SchemaElementClusterNode> getClusterNode(Integer elementID) {
+	private ArrayList<SynsetTerm> getClusterNode(Integer elementID) {
 		SchemaElement element;
-		ArrayList<SchemaElementClusterNode> results = new ArrayList<SchemaElementClusterNode>();
+		ArrayList<SynsetTerm> results = new ArrayList<SynsetTerm>();
 		try {
 			element = client.getSchemaElement(elementID);
 			ArrayList<Integer> schemaIdList = lookupSchemaIDs(elementID);
 
-			SchemaElementClusterNode node;
+			SynsetTerm node;
 			String elementHashKey;
 			for (Integer sid : schemaIdList) {
 				elementHashKey = sid + element.getName() + elementID;
@@ -130,7 +128,7 @@ public class MatchMakerExporter extends ProjectExporter {
 				// get node from hashed cluster elements or create a new one
 				node = clusterElements.get(elementHashKey);
 				if (node == null) {
-					node = new SchemaElementClusterNode(sid, elementID, element.getName());
+					node = new SynsetTerm(sid, elementID, element.getName());
 					clusterElements.put(elementHashKey, node);
 				}
 
@@ -144,17 +142,17 @@ public class MatchMakerExporter extends ProjectExporter {
 	}
 
 	// Given a set of element IDs, create its cluster node list. Return all.
-	private ArrayList<SchemaElementClusterNode> getClusterNodeList(Integer[] elementIDs) {
-		ArrayList<SchemaElementClusterNode> masterList = new ArrayList<SchemaElementClusterNode>();
+	private ArrayList<SynsetTerm> getClusterNodeList(Integer[] elementIDs) {
+		ArrayList<SynsetTerm> masterList = new ArrayList<SynsetTerm>();
 		for (Integer i : elementIDs)
 			masterList.addAll(getClusterNode(i));
 		return masterList;
 	}
 
-	// Sort cluster's groupEs by number of elements in each and each groupE's
+	// Sort cluster's synsets by number of elements in each and each Synset's
 	// representing lowest alpha element
 	private void sortByParticipation() {
-		Collections.sort(cluster.groupEs, new groupEParticipationComparator());
+		Collections.sort(cluster.synsets, new groupEParticipationComparator());
 	}
 
 	/**
@@ -168,17 +166,17 @@ public class MatchMakerExporter extends ProjectExporter {
 		// 1) sort clusterNode by that schema
 		// 2) sort all schema elements in the schema
 		// 3) iterate down the two lists together, insert missing elements as a
-		// new groupE into into the cluster
+		// new Synset into into the cluster
 		SchemaElementAlphaComparator elementComparator = new SchemaElementAlphaComparator();
 
 		for (Integer schemaID : schemaIDs) {
 			ArrayList<SchemaElement> refList;
 			int groupEIDX = 0, allIDX = 0;
-			SchemaElementClusterNode groupENode;
+			SynsetTerm groupENode;
 			SchemaElement refNode;
 			int compareResult;
 
-			// sort groupEs with respective to one schema
+			// sort synsets with respective to one schema
 			cluster.sort(schemaID);
 
 			// sort schema elements in the schema
@@ -187,9 +185,9 @@ public class MatchMakerExporter extends ProjectExporter {
 
 				Collections.sort(refList, elementComparator);
 
-				// compare sorted groupEs with sorted complete schema elements
-				while (groupEIDX < cluster.groupEs.size() && allIDX < refList.size()) {
-					groupENode = cluster.groupEs.get(groupEIDX).getNode(schemaID);
+				// compare sorted synsets with sorted complete schema elements
+				while (groupEIDX < cluster.synsets.size() && allIDX < refList.size()) {
+					groupENode = cluster.synsets.get(groupEIDX).getTerm(schemaID);
 					refNode = refList.get(allIDX);
 
 					// skip goupE if it doesn't have an element for this schema
@@ -211,10 +209,10 @@ public class MatchMakerExporter extends ProjectExporter {
 					// compare by ID
 					compareResult = refNode.getName().compareToIgnoreCase(groupENode.elementName);
 
-					// create a new groupE for graphNode that doesn't exist
+					// create a new Synset for graphNode that doesn't exist
 					if (compareResult < 0) {
-						for (SchemaElementClusterNode newNode : getClusterNode(refNode.getId())) {
-							cluster.groupEs.add(groupEIDX, new groupE(newNode));
+						for (SynsetTerm newNode : getClusterNode(refNode.getId())) {
+							cluster.synsets.add(groupEIDX, new Synset(newNode));
 							System.out.println("Insert node " + newNode.elementName + " (" + refNode.getId() + ")");
 						}
 					}
@@ -228,8 +226,8 @@ public class MatchMakerExporter extends ProjectExporter {
 					System.err.println(schemaID + " has total of " + refList.size() + " but allIDX=" + allIDX);
 					while (allIDX < refList.size()) {
 						refNode = refList.get(allIDX);
-						for (SchemaElementClusterNode newNode : getClusterNode(refNode.getId())) {
-							cluster.groupEs.add(groupEIDX++, new groupE(newNode));
+						for (SynsetTerm newNode : getClusterNode(refNode.getId())) {
+							cluster.synsets.add(groupEIDX++, new Synset(newNode));
 							System.out.println("Insert node " + newNode.elementName + " (" + refNode.getId() + ")");
 						}
 						allIDX++;
@@ -258,10 +256,10 @@ public class MatchMakerExporter extends ProjectExporter {
 	 * @author HAOLI
 	 * 
 	 */
-	class groupEParticipationComparator implements Comparator<groupE> {
+	class groupEParticipationComparator implements Comparator<Synset> {
 		public groupEParticipationComparator() {}
 
-		public int compare(groupE g1, groupE g2) {
+		public int compare(Synset g1, Synset g2) {
 
 			int g1Size = g1.getGroup().size();
 			int g2Size = g2.getGroup().size();
@@ -271,30 +269,6 @@ public class MatchMakerExporter extends ProjectExporter {
 			else return diff;
 		}
 	}
-
-	// public void exportMapping(Project mapping, ArrayList<MappingCell>
-	// mappingCells, File file) throws IOException {
-	// this.mapping = mapping;
-	// this.mappingCells = mappingCells;
-	// this.elementSchemaLookUp = new HashMap<Integer, ArrayList<Integer>>();
-	// this.clusterElements = new HashMap<String, SchemaElementClusterNode>();
-	// this.schemaIDs = mapping.getSchemaIDs();
-	//			
-	// // Create look up for elementIDs to SchemaIDs
-	// initElementSchemaLookUp();
-	//	
-	// // Cluster results
-	// clusterMatchResults();
-	//	
-	// // ensure all schema element
-	// ensureCompleteness();
-	// sortByParticipation();
-	//	
-	// // Render clustered results
-	// ClusterRenderer clusterRenderer = new ClusterRenderer(cluster, client,
-	// schemaIDs);
-	// clusterRenderer.print(file);
-	// }
 
 	public String getDescription() {
 		return "Export N-way match results to an Excel spreadsheet.";
@@ -307,9 +281,18 @@ public class MatchMakerExporter extends ProjectExporter {
 
 	@Override
 	public void exportProject(Project project, HashMap<Mapping, ArrayList<MappingCell>> mappings, File file) throws IOException {
+		// initialize variables
+		initialize(project, mappings) ;
+		// Cluster all mappings
+		cluster(); 
+		// Render clustered results
+		render( file );
+	}
+	
+	public void initialize(Project project, HashMap<Mapping, ArrayList<MappingCell>> mappings) throws RemoteException {
 		this.mappings = mappings;
 		this.elementSchemaLookUp = new HashMap<Integer, ArrayList<Integer>>();
-		this.clusterElements = new HashMap<String, SchemaElementClusterNode>();
+		this.clusterElements = new HashMap<String, SynsetTerm>();
 
 		System.out.println("Project: " + project.getId());
 		for (Mapping mapping : mappings.keySet())
@@ -320,24 +303,32 @@ public class MatchMakerExporter extends ProjectExporter {
 
 		// Create look up for elementIDs to SchemaIDs
 		initElementSchemaLookUp();
-
-		System.out.println("Num of clusters: " + clusterElements.keySet().size());
-
+	}
+	
+	private void render(File file ) throws IOException{
+		render(cluster.synsets, client, schemaIDs, file); 
+	}
+	
+	public static void render(ArrayList<Synset> synsets, SchemaStoreClient client, Integer[] schemaIDs, File file) throws IOException {
+		ClusterRenderer clusterRenderer = new ClusterRenderer(synsets, client, schemaIDs);
+		clusterRenderer.print(file);
+	}
+	
+	public ClusterNode cluster() throws RemoteException {
+		if ( mappings == null ) return null;
+		
 		// Cluster results
 		clusterMatchResults();
-
-		System.out.println("Num of groupEs: " + cluster.groupEs.size());
 
 		// Ensure all schema element are included in the result
 		ensureCompleteness();
 
 		// Sort result rows by the number of participating schemas
 		sortByParticipation();
-
-		// Render clustered results
-		ClusterRenderer clusterRenderer = new ClusterRenderer(cluster, client, schemaIDs);
-		clusterRenderer.print(file);
+		return cluster;
 	}
+	
+	
 
 	// Populate the schemaID lists from schemas that participate in all of the
 	// project's mappings.
