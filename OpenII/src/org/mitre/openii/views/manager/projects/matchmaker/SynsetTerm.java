@@ -11,16 +11,16 @@ import java.util.ArrayList;
  * 
  */
 
-public class Term implements Comparable<Term> {
+public class SynsetTerm implements Comparable<SynsetTerm> {
 	public String elementName;
 	public Integer elementId;
 	public Integer schemaId;
 	
-	public ArrayList<Term> pointers;
+	public ArrayList<SynsetTerm> pointers;
 	public ArrayList<Double> distances;
 
-	public Term(Integer schemaID, Integer elementId, String elementName) {
-		pointers = new ArrayList<Term>();
+	public SynsetTerm(Integer schemaID, Integer elementId, String elementName) {
+		pointers = new ArrayList<SynsetTerm>();
 		distances = new ArrayList<Double>();
 
 		this.schemaId = schemaID;
@@ -28,12 +28,12 @@ public class Term implements Comparable<Term> {
 		this.elementName = elementName;
 	}
 
-	public void add(Term t, Double d) {
+	public void add(SynsetTerm t, Double d) {
 		pointers.add(t);
 		distances.add(new Double(d));
 	}
 	
-	public int compareTo(Term o) {
+	public int compareTo(SynsetTerm o) {
 		return this.toString().compareToIgnoreCase(o.toString());
 	}
 
@@ -41,4 +41,4 @@ public class Term implements Comparable<Term> {
 		return schemaId + elementName + elementId;
 	}
 
-} // End Term
+} // End SynsetTerm

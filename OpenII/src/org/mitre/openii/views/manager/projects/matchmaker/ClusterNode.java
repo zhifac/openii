@@ -1,14 +1,14 @@
 package org.mitre.openii.views.manager.projects.matchmaker;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+
 
 /**
  * The main clustering code, originally written by Michael Morse with lots of
  * modifications for MatchMaker.
  * <p>
- * This code takes as an input a list of Term objects, and
+ * This code takes as an input a list of SynsetTerm objects, and
  * its output is a list of sorted clusters. Each cluster is stored as a Synset
  * object.
  * 
@@ -22,9 +22,9 @@ public class ClusterNode {
 	// is filtered out.
 	public static float MAGIC_THRESHOLD = (float) 0.2;
 
-	public ClusterNode(ArrayList<Term> nodes) {
+	public ClusterNode(ArrayList<SynsetTerm> nodes) {
 		synsets = new ArrayList<Synset>();
-		for (Term n : nodes) {
+		for (SynsetTerm n : nodes) {
 			synsets.add(new Synset(n));
 		}
 	}
@@ -34,7 +34,7 @@ public class ClusterNode {
 	 *            the index of the cluster
 	 * @return the jth cluster in the object.
 	 */
-	public ArrayList<Term> getGroup(int j) {
+	public ArrayList<SynsetTerm> getGroup(int j) {
 		return synsets.get(j).getGroup();
 	}
 
@@ -171,6 +171,18 @@ public class ClusterNode {
 			}
 		}
 	}
+	
+	/**
+	 * returns the schemaelement node that belongs to the specified schema
+	 * 
+	 * @param baseSchema
+	 * @return SynsetTerm
+	 */
+	public static SynsetTerm getTerm(Synset synset, Integer baseSchema) {
+		for (SynsetTerm n : synset.terms)
+			if (n.schemaId == baseSchema) return n;
+		return null;
+	}
 
 	/**
 	 * Faster way of removing a cluster at a given index. In big lists, it's
@@ -195,11 +207,11 @@ public class ClusterNode {
 	 * @return
 	 */
 	private boolean notInSameSchema(Synset synset1, Synset synset2) {
-		for (Term n1 : synset1.getGroup()) {
-			if (!(n1 instanceof Term)) continue;
-			for (Term n2 : synset2.getGroup()) {
-				if (!(n2 instanceof Term)) continue;
-				if (((Term) n1).schemaId.equals(((Term) n2).schemaId)) return false;
+		for (SynsetTerm n1 : synset1.getGroup()) {
+			if (!(n1 instanceof SynsetTerm)) continue;
+			for (SynsetTerm n2 : synset2.getGroup() ) {
+				if (!(n2 instanceof SynsetTerm)) continue;
+				if (((SynsetTerm) n1).schemaId.equals(((SynsetTerm) n2).schemaId)) return false;
 			}
 		}
 		return true;
@@ -222,14 +234,17 @@ public class ClusterNode {
 
 		public int compare(Synset g1, Synset g2) {
 
-			Term n1 = g1.getTerm(baseSchema);
-			Term n2 = g2.getTerm(baseSchema);
+			SynsetTerm n1 = getTerm(g1, baseSchema);
+			SynsetTerm n2 = getTerm(g2, baseSchema);
 
 			if (n1 == null && n2 == null) return 0;
 			else if (n1 == null) return -1;
 			else if (n2 == null) return 1;
 			else return n1.elementName.compareToIgnoreCase(n2.elementName);
 		}
+		
+
+	
 	}
 
 }

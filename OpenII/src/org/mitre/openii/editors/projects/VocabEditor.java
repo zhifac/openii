@@ -7,10 +7,10 @@ import org.eclipse.swt.widgets.Composite;
 import org.mitre.openii.editors.OpenIIEditor;
 import org.mitre.openii.model.EditorInput;
 import org.mitre.openii.model.OpenIIManager;
-import org.mitre.openii.views.manager.projects.matchmaker.Synset;
-import org.mitre.openii.views.manager.projects.matchmaker.Term;
 import org.mitre.openii.views.manager.projects.unity.Vocabulary;
 import org.mitre.schemastore.model.Project;
+import org.mitre.schemastore.porters.projectExporters.matchmaker.Synset;
+import org.mitre.schemastore.porters.projectExporters.matchmaker.SynsetTerm;
 import org.mitre.affinity.view.vocab_debug_view.view.swt.SWTVocabDebugViewTwo;
 
 public class VocabEditor extends OpenIIEditor{
@@ -57,11 +57,11 @@ public class VocabEditor extends OpenIIEditor{
 
 			for(int i=0; i<numFakeSynsets; i++){
 				//using first schema ID as fake core
-				Term t = new Term(schemaIDs[0], null, "common term for fake synset " + i);
+				SynsetTerm t = new SynsetTerm(schemaIDs[0], null, "common term for fake synset " + i);
 				Synset s = new Synset(t);
 				for (int j = 0; j<schemaIDs.length; j++){
 					//create a term for each schema
-					t = new Term(schemaIDs[j], null, "synset " + i + " term from " + 
+					t = new SynsetTerm(schemaIDs[j], null, "synset " + i + " term from " + 
 							OpenIIManager.getSchemaInfo(schemaIDs[j]).getSchema().getName());
 					//add term to synset - note I made this public only so I could test this
 					//as soon as real data is there, no reason to call s.add(t)

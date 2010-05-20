@@ -15,21 +15,21 @@ import java.util.ArrayList;
  * 
  */
 public class Synset implements Comparable<Synset> {
-	public ArrayList<Term> terms;
+	public ArrayList<SynsetTerm> terms;
 
-	public Term leastNode = null;
+	public SynsetTerm leastNode = null;
 
-	public Synset(Term n) {
-		terms = new ArrayList<Term>();
+	public Synset(SynsetTerm n) {
+		terms = new ArrayList<SynsetTerm>();
 		add(n);
 	}
 
-	public void add(Term n) {
+	public void add(SynsetTerm n) {
 		terms.add(n);
 		updateLeastNode(n);
 	}
 
-	private void updateLeastNode(Term n) {
+	private void updateLeastNode(SynsetTerm n) {
 		if (leastNode == null || leastNode.compareTo(n) > 0) leastNode = n;
 	}
 
@@ -44,9 +44,9 @@ public class Synset implements Comparable<Synset> {
 		int j;
 		float maxDist = 0;
 		for (i = 0; i < this.terms.size(); i++) {
-			Term t_node = this.terms.get(i);
+			SynsetTerm t_node = this.terms.get(i);
 			for (j = 0; j < two.terms.size(); j++) {
-				Term s_node = two.terms.get(j);
+				SynsetTerm s_node = two.terms.get(j);
 				int m = t_node.pointers.indexOf(s_node);
 				if (m == -1) continue;
 				// return 0;
@@ -64,9 +64,9 @@ public class Synset implements Comparable<Synset> {
 		int i, j;
 		float minDist = 1;
 		for (i = 0; i < this.terms.size(); i++) {
-			Term t_node = this.terms.get(i);
+			SynsetTerm t_node = this.terms.get(i);
 			for (j = 0; j < two.terms.size(); j++) {
-				Term s_node = two.terms.get(j);
+				SynsetTerm s_node = two.terms.get(j);
 				int m = t_node.pointers.indexOf(s_node);
 				if (m == -1) return 0;
 				float st_dist = t_node.distances.get(m).floatValue();
@@ -82,7 +82,7 @@ public class Synset implements Comparable<Synset> {
 		updateLeastNode(two.leastNode);
 	}
 
-	public ArrayList<Term> getGroup() {
+	public ArrayList<SynsetTerm> getGroup() {
 		return terms;
 	}
 
@@ -94,10 +94,10 @@ public class Synset implements Comparable<Synset> {
 	 * returns the schemaelement node that belongs to the specified schema
 	 * 
 	 * @param baseSchema
-	 * @return Term
+	 * @return SynsetTerm
 	 */
-	public Term getTerm(Integer baseSchema) {
-		for (Term n : terms)
+	public SynsetTerm getTerm(Integer baseSchema) {
+		for (SynsetTerm n : terms)
 			if (n.schemaId == baseSchema) return n;
 		return null;
 	}
