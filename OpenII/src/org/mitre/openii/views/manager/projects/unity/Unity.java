@@ -55,6 +55,11 @@ public class Unity {
 	public Vocabulary generateVocabulary(ArrayList<MatchVoter> voters, String name, String author, String description) throws Exception {
 		vocabulary = new Vocabulary(project);
 
+		if (voters == null) voters = MappingProcessor.getDefaultMatchVoters();
+		if (name == null) name = project.getName() + Vocabulary._VOCABULARY_TAG;
+		if (author == null) author = System.getProperty("user.name");
+		if (description == null) description = "Unity auto-generated vocabulary";
+
 		// Ensure that all pair-wise mappings already exist
 		try {
 			System.out.println(" Running all matches ... ");
@@ -80,14 +85,17 @@ public class Unity {
 		HashMap<Integer, Integer> vocabMappingHash = new HashMap<Integer, Integer>();
 		HashMap<Integer, ArrayList<MappingCell>> mappings = new HashMap<Integer, ArrayList<MappingCell>>();
 		for (Integer sourceSchemaId : project.getSchemaIDs()) {
-			if ( sourceSchemaId.equals(vocabulary.getCoreSchemaId() )) continue; 
-			Mapping newMapping = new Mapping(null, project.getId(), sourceSchemaId, vocabulary.getCoreSchemaId()); 
+			if (sourceSchemaId.equals(vocabulary.getCoreSchemaId())) continue;
+			Mapping newMapping = new Mapping(null, project.getId(), sourceSchemaId, vocabulary.getCoreSchemaId());
 			Integer newMappingId = RepositoryManager.getClient().addMapping(newMapping);
-			if (newMappingId == null || newMappingId <= 0) {System.out.println( "Add mapping failed for " + sourceSchemaId ); continue; }
+			if (newMappingId == null || newMappingId <= 0) {
+				System.out.println("Add mapping failed for " + sourceSchemaId);
+				continue;
+			}
 
 			vocabMappingHash.put(sourceSchemaId, newMappingId);
 			mappings.put(newMappingId, new ArrayList<MappingCell>());
-			OpenIIManager.fireMappingAdded(newMapping); 
+			OpenIIManager.fireMappingAdded(newMapping);
 			System.out.println("new mapping: " + newMappingId + " added for " + sourceSchemaId);
 		}
 
@@ -107,7 +115,7 @@ public class Unity {
 		}
 
 		// Save mapping cells
-		System.out.println("Saving mapping cells... " );
+		System.out.println("Saving mapping cells... ");
 		for (Integer mappingId : mappings.keySet())
 			if (!RepositoryManager.getClient().saveMappingCells(mappingId, mappings.get(mappingId))) throw new Exception("Unable to save mappings");
 
@@ -116,19 +124,18 @@ public class Unity {
 	}
 
 	public void exportVocabulary(File file) throws IOException {
-		// reorganize the schema IDs so that vocabulary appears first 
-		Integer[] schemaIds = project.getSchemaIDs(); 
-		for ( int i = 1; i < schemaIds.length; i++ )  {
-			if ( schemaIds[i].equals(vocabulary.getCoreSchemaId()) )
-			{
-				Integer idZero = new Integer(schemaIds[0]); 
-				schemaIds[0] = vocabulary.getCoreSchemaId(); 
-				schemaIds[i] = idZero; 
+		// reorganize the schema IDs so that vocabulary appears first
+		Integer[] schemaIds = project.getSchemaIDs();
+		for (int i = 1; i < schemaIds.length; i++) {
+			if (schemaIds[i].equals(vocabulary.getCoreSchemaId())) {
+				Integer idZero = new Integer(schemaIds[0]);
+				schemaIds[0] = vocabulary.getCoreSchemaId();
+				schemaIds[i] = idZero;
 				break;
 			}
 		}
-		
-		// Render to an xls file 
+
+		// Render to an xls file
 		ClusterRenderer render = new ClusterRenderer(vocabulary.getSynsetList(), RepositoryManager.getClient(), schemaIds);
 		render.print(file);
 	}
