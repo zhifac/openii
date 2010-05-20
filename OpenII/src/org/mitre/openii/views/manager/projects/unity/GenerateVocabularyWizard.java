@@ -1,5 +1,7 @@
 package org.mitre.openii.views.manager.projects.unity;
 
+import java.io.File;
+
 import org.eclipse.jface.wizard.Wizard;
 import org.mitre.schemastore.model.Project;
 
@@ -24,7 +26,7 @@ public class GenerateVocabularyWizard extends Wizard {
 	/** Adds the pages associated with the import process */
 	public void addPages() {
 		addPage(autoMappingPage = new AutoMappingPage());
-		addPage(autoMappingProgressPage = new AutoMappingProgressPage());
+		// addPage(autoMappingProgressPage = new AutoMappingProgressPage());
 		addPage(matchMakerPage = new MatchMakerPage());
 	}
 
@@ -42,13 +44,15 @@ public class GenerateVocabularyWizard extends Wizard {
 
 	/** Indicates if the import process can be finished */
 	public boolean canFinish() {
-		return (matchMakerPage.isPageComplete() && autoMappingProgressPage.isPageComplete());
+		return (matchMakerPage.isPageComplete() ); //&& autoMappingProgressPage.isPageComplete());
 	}
 
 	/** Imports the mapping once the wizard is complete */
 	public boolean performFinish() {
 		try {
-			 new Unity(project).generateVocabulary(autoMappingPage.getMatchVoters(), matchMakerPage.getName(), matchMakerPage.getAuthor(), matchMakerPage.getDescription());
+			Unity unity = new Unity(project);
+			unity.generateVocabulary(autoMappingPage.getMatchVoters(), matchMakerPage.getVocabularyName(), matchMakerPage.getAuthor(), matchMakerPage.getDescription());
+			unity.exportVocabulary(new File("C://MatchMaker.xls"));
 			return true;
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
