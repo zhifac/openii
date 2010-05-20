@@ -89,9 +89,8 @@ public class ClusterRenderer {
 		if (everyN <= 0) everyN = clusters;
 
 		System.out.println("Collator: everyN = " + everyN + " for " + clusters + " clusters");
-		ArrayList<Term> nodes;
-		// output clusters (synsets)
-		for (Synset groupe : cluster.getSynsets()) {
+		ArrayList<SynsetTerm> nodes;
+		for (Synset groupe : cluster.getSynsets() ) {
 			nodes = groupe.getGroup();
 
 			row = sheet.createRow(rowIDX++);
@@ -107,7 +106,7 @@ public class ClusterRenderer {
 			// print elements of a Synset across a row
 			double score = 0;
 			int schemaElementNodeSize = 0;
-			for (Term n : nodes) {
+			for (SynsetTerm n : nodes) {
 				printSchemaElementNode(n, row);
 
 				// calculate average score
@@ -244,7 +243,7 @@ public class ClusterRenderer {
 		else return col;
 	}
 
-	private void printSchemaElementNode(Term seNode, HSSFRow row) {
+	private void printSchemaElementNode(SynsetTerm seNode, HSSFRow row) {
 		Integer colNum = getColumnIdx(seNode.schemaId);
 		if (colNum < 0) return;
 

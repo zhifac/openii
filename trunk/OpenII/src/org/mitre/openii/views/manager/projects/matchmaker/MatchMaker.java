@@ -8,7 +8,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 
 import org.mitre.openii.model.OpenIIManager;
 import org.mitre.schemastore.model.Domain;
@@ -24,7 +23,7 @@ public class MatchMaker {
 	private ClusterNode cluster;
 
 	// Cluster name to schemaElementNode
-	HashMap<String, Term> clusterElements;
+	HashMap<String, SynsetTerm> clusterElements;
 	// Schema element ID to a list of schema IDs
 	HashMap<Integer, ArrayList<Integer>> elementSchemaLookUp;
 
@@ -83,19 +82,20 @@ public class MatchMaker {
 //		return ".xls";
 //	}
 
-	// Create Term used by ClusterNode from MappingCells
+	// Create SynsetTerm used by ClusterNode from MappingCells
 	private void clusterMatchResults() {
-		// Loop through all mapping cell ArrayLists to build the node matrix
-		Iterator<ArrayList<MappingCell>> mcListItr = this.mappings.values().iterator();
-		while (mcListItr.hasNext()) {
-			ArrayList<MappingCell> mcList = mcListItr.next();
-			// Loop through all mapping cells
+		// Initialize SchemaElementClusterNodes for each MappingCell that
+		// exists.
+		for (ArrayList<MappingCell> mcList : mappings.values()) {
+			
+			System.out.println( " mapping cell list size: " + mcList.size() ); 
+			
 			for (MappingCell mappingCell : mcList) {
-				// Loop through mapping cells input cluster terms
-				for (Term inputNode : getClusterNodeList(mappingCell.getInput())) {
-					// Loop through mapping cells output cluster terms
-					for (Term outputNode : getClusterNode(mappingCell.getOutput())) {
-						// Add the terms and score to each other's score list.
+				// Loop through mapping cells input cluster nodes
+				for (SynsetTerm inputNode : getClusterNodeList(mappingCell.getInput())) {
+					// Loop through mapping cells output cluster nodes
+					for (SynsetTerm outputNode : getClusterNode(mappingCell.getOutput())) {
+						// Add the nodes and score to each other's score list.
 						inputNode.add(outputNode, mappingCell.getScore());
 						outputNode.add(inputNode, mappingCell.getScore());
 					}
@@ -104,21 +104,21 @@ public class MatchMaker {
 		}
 
 		// Run clustering algorithm
-		cluster = new ClusterNode(new ArrayList<Term>(clusterElements.values()));
+		cluster = new ClusterNode(new ArrayList<SynsetTerm>(clusterElements.values()));
 		cluster.cluster(schemaIDs.length, 0);
 	}
 
 	// Manages cluster terms: since each element may be associated with multiple
 	// schemas, one Schema Element node is created for each schema that the
 	// element belongs to
-	private ArrayList<Term> getClusterNode(Integer elementID) {
+	private ArrayList<SynsetTerm> getClusterNode(Integer elementID) {
 		SchemaElement element;
-		ArrayList<Term> results = new ArrayList<Term>();
+		ArrayList<SynsetTerm> results = new ArrayList<SynsetTerm>();
 		
 		ArrayList<Integer> schemaIdList = lookupSchemaIDs(elementID);
 		element = OpenIIManager.getSchemaInfo(schemaIdList.get(0)).getElement(elementID); 
 
-		Term node;
+		SynsetTerm node;
 		String elementHashKey;
 		for (Integer sid : schemaIdList) {
 			elementHashKey = sid + element.getName() + elementID;
@@ -126,7 +126,7 @@ public class MatchMaker {
 			// get node from hashed cluster elements or create a new one
 			node = clusterElements.get(elementHashKey);
 			if (node == null) {
-				node = new Term(sid, elementID, element.getName());
+				node = new SynsetTerm(sid, elementID, element.getName());
 				clusterElements.put(elementHashKey, node);
 			}
 
@@ -137,8 +137,8 @@ public class MatchMaker {
 
 	// Given a set of element IDs, for each, create its cluster node list.
 	// Return all.
-	private ArrayList<Term> getClusterNodeList(Integer[] elementIDs) {
-		ArrayList<Term> masterList = new ArrayList<Term>();
+	private ArrayList<SynsetTerm> getClusterNodeList(Integer[] elementIDs) {
+		ArrayList<SynsetTerm> masterList = new ArrayList<SynsetTerm>();
 		for (Integer i : elementIDs)
 			masterList.addAll(getClusterNode(i));
 		return masterList;
@@ -167,7 +167,7 @@ public class MatchMaker {
 		for (Integer schemaID : schemaIDs) {
 			ArrayList<SchemaElement> refList;
 			int groupEIDX = 0, allIDX = 0;
-			Term groupENode;
+			SynsetTerm groupENode;
 			SchemaElement refNode;
 			int compareResult;
 
@@ -181,7 +181,8 @@ public class MatchMaker {
 
 			// compare sorted synsets with sorted complete schema elements
 			while (groupEIDX < cluster.getSynsets().size() && allIDX < refList.size()) {
-				groupENode = cluster.getSynsets().get(groupEIDX).getTerm(schemaID);
+				Synset synset =cluster.getSynsets().get(groupEIDX); 
+				groupENode = synset.getTerm(schemaID);
 				refNode = refList.get(allIDX);
 
 				// skip goupE if it doesn't have an element for this schema
@@ -191,12 +192,12 @@ public class MatchMaker {
 				}
 
 				// skip terms that are Domains or DomainValus or with no
-				// name
-				if (/* !INCLUDE_DOMAIN_IN_OUTPUT && */
-				(refNode instanceof Domain || refNode instanceof DomainValue)) {
+				// name /* !INCLUDE_DOMAIN_IN_OUTPUT && */
+				if (refNode instanceof Domain || refNode instanceof DomainValue) {
 					allIDX++;
 					continue;
 				}
+				// Do not include elements with no element name
 				if (refNode.getName().length() == 0) {
 					allIDX++;
 					continue;
@@ -207,7 +208,7 @@ public class MatchMaker {
 
 				// create a new Synset for graphNode that doesn't exist
 				if (compareResult < 0) {
-					for (Term newNode : getClusterNode(refNode.getId())) {
+					for (SynsetTerm newNode : getClusterNode(refNode.getId())) {
 						cluster.getSynsets().add(groupEIDX, new Synset(newNode));
 						System.out.println("Insert node " + newNode.elementName + " (" + refNode.getId() + ")");
 					}
@@ -219,10 +220,10 @@ public class MatchMaker {
 
 			// In case we have not included all that's in the reference List
 			if (allIDX < refList.size()) {
-				System.err.println(schemaID + " has total of " + refList.size() + " but allIDX=" + allIDX);
+				System.err.println(schemaID + " has total of " + refList.size() + " elements; but allIDX=" + allIDX);
 				while (allIDX < refList.size()) {
 					refNode = refList.get(allIDX);
-					for (Term newNode : getClusterNode(refNode.getId())) {
+					for (SynsetTerm newNode : getClusterNode(refNode.getId())) {
 						cluster.getSynsets().add(groupEIDX++, new Synset(newNode));
 						System.out.println("Insert node " + newNode.elementName + " (" + refNode.getId() + ")");
 					}
@@ -267,7 +268,7 @@ public class MatchMaker {
 	// this.mapping = mapping;
 	// this.mappingCells = mappingCells;
 	// this.elementSchemaLookUp = new HashMap<Integer, ArrayList<Integer>>();
-	// this.clusterElements = new HashMap<String, Term>();
+	// this.clusterElements = new HashMap<String, SynsetTerm>();
 	// this.schemaIDs = mapping.getSchemaIDs();
 	//		
 	// // Create look up for elementIDs to SchemaIDs
@@ -297,22 +298,26 @@ public class MatchMaker {
 		System.out.println( " Start Match Maker ..."); 
 
 		this.elementSchemaLookUp = new HashMap<Integer, ArrayList<Integer>>();
-		this.clusterElements = new HashMap<String, Term>();
+		this.clusterElements = new HashMap<String, SynsetTerm>();
 		this.mappings = new HashMap<Mapping, ArrayList<MappingCell>>();
 
 		// Initialize mapping-mappingcell
 		for (Mapping map : OpenIIManager.getMappings(project.getId()))
 			this.mappings.put(map, OpenIIManager.getMappingCells(map.getId()));
 
+		System.out.println( " init schema Ids ");
 		// Initialize schema IDs used in all of the mappings.
 		initSchemaIDs();
 
+		System.out.println( " init element schema lookup ");
 		// Create look up for elementIDs to SchemaIDs
 		initElementSchemaLookUp();
 
+		System.out.println( " cluster match results ");
 		// Cluster results
 		clusterMatchResults();
 
+		System.out.println( " ensurecompleteness " ) ;
 		// Ensure all schema element are included in the result
 		ensureCompleteness();
 
@@ -321,7 +326,7 @@ public class MatchMaker {
 
 		// Render clustered results
 		try {
-			File output = new File("MatchMakerAutoGen.xls");
+			File output = new File("C://Documents and Settings//haoli//workspace//OpenII//MatchMakerAutoGen.xls");
 			ClusterRenderer clusterRenderer = new ClusterRenderer(cluster, schemaIDs);
 			clusterRenderer.print(output);
 			System.out.println( " Match Maker writing to " + output.getPath());
