@@ -9,19 +9,19 @@ package org.mitre.schemastore.porters.projectExporters.matchmaker;
  * 
  */
 
-public class SchemaElementClusterNode extends Node implements Comparable<SchemaElementClusterNode> {
+public class SynsetTerm extends Node implements Comparable<SynsetTerm> {
 	public Integer elementId;
 	public String elementName;
 	public Integer schemaId;
 
-	public SchemaElementClusterNode(Integer schemaID, Integer elementId, String elementName) {
+	public SynsetTerm(Integer schemaID, Integer elementId, String elementName) {
 		super(elementId.toString());
 		this.schemaId = schemaID;
 		this.elementId = elementId;
 		this.elementName = elementName;
 	}
 
-	public int compareTo(SchemaElementClusterNode o) {
+	public int compareTo(SynsetTerm o) {
 		return this.toString().compareToIgnoreCase(o.toString());
 	}
 
@@ -29,4 +29,4 @@ public class SchemaElementClusterNode extends Node implements Comparable<SchemaE
 		return schemaId + elementName + elementId;
 	}
 
-} // End SchemaElementClusterNode
+} // End SynsetTerm

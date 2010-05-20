@@ -8,24 +8,24 @@ import java.util.Comparator;
  * The main clustering code, originally written by Michael Morse with lots of
  * modifications for MatchMaker.
  * <p>
- * This code takes as an input a list of SchemaElementClusterNode objects, and its
- * output is a list of sorted clusters. Each cluster is stored as a groupE
+ * This code takes as an input a list of SynsetTerm objects, and its
+ * output is a list of sorted clusters. Each cluster is stored as a Synset
  * object.
  * 
  * @author MDMORSE, DMALLEN
  */
 public class ClusterNode {
-	public ArrayList<groupE> groupEs;
+	public ArrayList<Synset> synsets;
 
-	// I don't know how this really affects the groupE's . But any two groupE
+	// I don't know how this really affects the Synset's . But any two Synset
 	// with distance (or confidence) less than this number
 	// is filtered out.
 	public static float MAGIC_THRESHOLD = (float) 0.2;
 
-	public ClusterNode(ArrayList<SchemaElementClusterNode> nodes) {
-		groupEs = new ArrayList<groupE>();
-		for (SchemaElementClusterNode n : nodes) {
-			groupEs.add(new groupE(n));
+	public ClusterNode(ArrayList<SynsetTerm> nodes) {
+		synsets = new ArrayList<Synset>();
+		for (SynsetTerm n : nodes) {
+			synsets.add(new Synset(n));
 		}
 	}
 
@@ -34,35 +34,35 @@ public class ClusterNode {
 	 *            the index of the cluster
 	 * @return the jth cluster in the object.
 	 */
-	public ArrayList<SchemaElementClusterNode> getGroup(int j) {
-		return groupEs.get(j).getGroup();
+	public ArrayList<SynsetTerm> getGroup(int j) {
+		return synsets.get(j).getGroup();
 	}
 
 	/**
 	 * @return the number of clusters that ClusterNode currently has
 	 */
 	public int numGroups() {
-		return groupEs.size();
+		return synsets.size();
 	}
 
 	/**
-	 * Sort groupEs alphabetically using groupEs comparator and rely on merge
+	 * Sort synsets alphabetically using synsets comparator and rely on merge
 	 * sort implemented for java.utils.Arrays.sort() which is O(n log n )
 	 */
 	public void sortAlpha() {
-		Collections.sort(groupEs);
+		Collections.sort(synsets);
 	}
 
 	public void sortByScore() {
-		Collections.sort(groupEs, new groupEScoreComparator());
+		Collections.sort(synsets, new groupEScoreComparator());
 	}
 
 	/**
-	 * Sort groupE alphabetically by specified particular schema ID.
+	 * Sort Synset alphabetically by specified particular schema ID.
 	 */
 
 	public void sort(Integer schemaId) {
-		Collections.sort(groupEs, new groupEComparator(schemaId));
+		Collections.sort(synsets, new groupEComparator(schemaId));
 	}
 
 	/**
@@ -85,9 +85,9 @@ public class ClusterNode {
 		if (maxElements < 0) maxElements = 0;
 
 		// We need at most maxElements clusters of schemaCount elements each.
-		// With each pass through the while() loop, groupEs gets shorter (adding
+		// With each pass through the while() loop, synsets gets shorter (adding
 		// things to clusters)
-		int totalLoops = groupEs.size() - maxElements;
+		int totalLoops = synsets.size() - maxElements;
 		int pctMod = 1;
 		int everyN = (int) Math.ceil((double) totalLoops / (double) 100);
 		// One step for every percentage.
@@ -105,13 +105,13 @@ public class ClusterNode {
 
 		// By making the "complete list" a separate array, we avoid a penalty on
 		// remove() statements associated with moving completed clusters around
-		// in the groupE array. Each time we combine two groups and remove one
+		// in the Synset array. Each time we combine two groups and remove one
 		// of them, the array list has to do a lot of work. Say I have the list
 		// [A, B, C, D, E] and we remove C, the array list has to shift D and E
 		// over. When a cluster is completed, we move it out of the array so
 		// moving
 		// it never pays a penalty.
-		ArrayList<groupE> completedClusters = new ArrayList<groupE>();
+		ArrayList<Synset> completedClusters = new ArrayList<Synset>();
 
 		// We'll probably end up needing more than this many slots, but this
 		// will reduce the number of times the ArrayList has to reallocate more
@@ -130,14 +130,14 @@ public class ClusterNode {
 			int i = 0, j = 0;
 			max_dist = (float) MAGIC_THRESHOLD;
 
-			for (i = 0; i < groupEs.size(); i++) {
-				groupE n1 = groupEs.get(i);
+			for (i = 0; i < synsets.size(); i++) {
+				Synset n1 = synsets.get(i);
 
-				for (j = i + 1; j < groupEs.size(); j++) {
-					groupE n2 = groupEs.get(j);
+				for (j = i + 1; j < synsets.size(); j++) {
+					Synset n2 = synsets.get(j);
 
 					float temp_dist = n1.simpleLinkage(n2);
-					if (temp_dist > max_dist && 	notInSameSchema(groupEs.get(i), groupEs.get(j))) {
+					if (temp_dist > max_dist && 	notInSameSchema(synsets.get(i), synsets.get(j))) {
 						max_dist = temp_dist;
 						spot1 = i;
 						spot2 = j;
@@ -145,26 +145,26 @@ public class ClusterNode {
 				}
 			}
 
-			// System.err.println("Loop " + loopCounter + ": " + groupEs.size()
+			// System.err.println("Loop " + loopCounter + ": " + synsets.size()
 			// + " clusters");
 
 			// If max distance between two groups is found greater than the
 			// magic threshold, combine the two groups.
 			if (max_dist > MAGIC_THRESHOLD) {
-//				if (notInSameSchema(groupEs.get(spot1), groupEs.get(spot2))){
-					groupE growing = groupEs.get(spot1);
-					growing.groupEcombine(groupEs.get(spot2));
+//				if (notInSameSchema(synsets.get(spot1), synsets.get(spot2))){
+					Synset growing = synsets.get(spot1);
+					growing.groupEcombine(synsets.get(spot2));
 					removeCluster(spot2);
 
 					if (growing.nodes.size() >= schemaCount) {
 						completedClusters.add(growing);
 						removeCluster(spot1);
 					}
-//				} else System.err.println("(E)Found groupes in same schema: " + groupEs.get(spot1).leastNode.elementName + " \n\t " + groupEs.get(spot2).leastNode.elementName);
+//				} else System.err.println("(E)Found groupes in same schema: " + synsets.get(spot1).leastNode.elementName + " \n\t " + synsets.get(spot2).leastNode.elementName);
 			} else {
-				for (int x = groupEs.size() - 1; x >= 0; x--)
-					completedClusters.add(groupEs.get(x));
-				groupEs = completedClusters;
+				for (int x = synsets.size() - 1; x >= 0; x--)
+					completedClusters.add(synsets.get(x));
+				synsets = completedClusters;
 
 				System.out.println("Clustering completed.");
 				return;
@@ -181,10 +181,10 @@ public class ClusterNode {
 	 * @param idx
 	 */
 	public void removeCluster(int idx) {
-		int lastIdx = groupEs.size() - 1;
-		groupE swap = groupEs.get(lastIdx);
-		groupEs.set(idx, swap);
-		groupEs.remove(lastIdx);
+		int lastIdx = synsets.size() - 1;
+		Synset swap = synsets.get(lastIdx);
+		synsets.set(idx, swap);
+		synsets.remove(lastIdx);
 	}
 
 	/**
@@ -194,34 +194,34 @@ public class ClusterNode {
 	 * @param groupE2
 	 * @return
 	 */
-	private boolean notInSameSchema(groupE groupE1, groupE groupE2) {
+	private boolean notInSameSchema(Synset groupE1, Synset groupE2) {
 		for (Node n1 : groupE1.getGroup()) {
-			if (!(n1 instanceof SchemaElementClusterNode)) continue;
+			if (!(n1 instanceof SynsetTerm)) continue;
 			for (Node n2 : groupE2.getGroup()) {
-				if (!(n2 instanceof SchemaElementClusterNode)) continue;
-				if (((SchemaElementClusterNode) n1).schemaId.equals(((SchemaElementClusterNode) n2).schemaId)) return false;
+				if (!(n2 instanceof SynsetTerm)) continue;
+				if (((SynsetTerm) n1).schemaId.equals(((SynsetTerm) n2).schemaId)) return false;
 			}
 		}
 		return true;
 	}
 
 	/**
-	 * Compares groupEs by a groupE's average scores, rank from low to high.
+	 * Compares synsets by a Synset's average scores, rank from low to high.
 	 * 
 	 * @author HAOLI
 	 * 
 	 */
-	class groupEScoreComparator implements Comparator<groupE> {
+	class groupEScoreComparator implements Comparator<Synset> {
 		groupEScoreComparator() {}
 
-		public int compare(groupE g1, groupE g2) {
+		public int compare(Synset g1, Synset g2) {
 			return -(getAverageScore(g1).compareTo(getAverageScore(g2)));
 		}
 
-		private Double getAverageScore(groupE g) {
+		private Double getAverageScore(Synset g) {
 			Double score = 0.0;
 			int numNodes = 0;
-			for (SchemaElementClusterNode node : g.getGroup()) {
+			for (SynsetTerm node : g.getGroup()) {
 				for (Double s : node.distances) {
 					score += s;
 					numNodes++;
@@ -233,12 +233,12 @@ public class ClusterNode {
 	}
 
 	/**
-	 * sort by a selected schema node in two groupE
+	 * sort by a selected schema node in two Synset
 	 * 
 	 * @author HAOLI
 	 * 
 	 */
-	public class groupEComparator implements Comparator<groupE> {
+	public class groupEComparator implements Comparator<Synset> {
 		Integer baseSchema;
 
 		groupEComparator(Integer schemaId) {
@@ -246,10 +246,10 @@ public class ClusterNode {
 			this.baseSchema = schemaId;
 		}
 
-		public int compare(groupE g1, groupE g2) {
+		public int compare(Synset g1, Synset g2) {
 
-			SchemaElementClusterNode n1 = g1.getNode(baseSchema);
-			SchemaElementClusterNode n2 = g2.getNode(baseSchema);
+			SynsetTerm n1 = g1.getTerm(baseSchema);
+			SynsetTerm n2 = g2.getTerm(baseSchema);
 
 			if (n1 == null && n2 == null) return 0;
 			else if (n1 == null) return -1;

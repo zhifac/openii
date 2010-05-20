@@ -31,8 +31,9 @@ public class ClusterRenderer {
 	private HashMap<Integer, Integer> schemaColumnPosHash; // <schemaID, column
 	// position>
 
-	private ClusterNode cluster;
 	private Integer[] schemaIDs;
+	
+	private ArrayList<Synset> synsets; 
 
 	private SchemaStoreClient schemaStoreClient;
 
@@ -45,7 +46,10 @@ public class ClusterRenderer {
 	private static short SCHEMA_COLUMN_BLOCK_SIZE = 3;
 
 	public ClusterRenderer(ClusterNode cluster, SchemaStoreClient schemaStoreClient, Integer[] schemaIDs) {
-		this.cluster = cluster;
+		this(cluster.synsets, schemaStoreClient, schemaIDs );
+	}
+	public ClusterRenderer(ArrayList<Synset> synsets, SchemaStoreClient schemaStoreClient, Integer[] schemaIDs ) {
+		this.synsets = synsets;
 		this.schemaStoreClient = schemaStoreClient;
 		this.schemaIDs = schemaIDs;
 		allotColumnBlocks();
@@ -63,15 +67,14 @@ public class ClusterRenderer {
 		sheet = wb.createSheet();
 		int rowIDX = 0;
 
-		// print sheet headings for each schema (domain, value,
-		// description)
+		// print sheet headings for each schema (schemaId, value, description)
 		HSSFRow row = sheet.createRow(rowIDX++);
 		Iterator<Integer> sItr = schemaColumnPosHash.keySet().iterator();
 		while (sItr.hasNext()) {
 			Integer schemaId = sItr.next();
 			Integer columnIdx = schemaColumnPosHash.get(schemaId);
 			HSSFCell schemaNameCell = row.createCell(columnIdx);
-			schemaNameCell.setCellValue(new HSSFRichTextString(schemaId.toString())); // schemaList.get(schemaId).getName()));
+			schemaNameCell.setCellValue(new HSSFRichTextString(schemaId.toString())); 
 
 			HSSFCell nameCell = row.createCell(columnIdx + 1);
 			nameCell.setCellValue(new HSSFRichTextString("value"));
@@ -83,16 +86,17 @@ public class ClusterRenderer {
 		HSSFCell averageCell = row.createCell(numSchema * SCHEMA_COLUMN_BLOCK_SIZE + 1);
 		averageCell.setCellValue(new HSSFRichTextString("average"));
 
-		int clusters = cluster.groupEs.size();
+		int clusters = synsets.size();
 		int everyN = (int) Math.ceil((double) clusters / (double) 100);
 		if (everyN <= 0) everyN = clusters / 4;
 		if (everyN <= 0) everyN = clusters;
 
 		System.out.println("Collator: everyN = " + everyN + " for " + clusters + " clusters");
-		ArrayList<SchemaElementClusterNode> nodes;
-		// output clusters (groupEs)
-		for (groupE groupe : cluster.groupEs) {
-			nodes = groupe.getGroup();
+		ArrayList<SynsetTerm> nodes;
+		// output clusters (synsets)
+		for (Synset synset : synsets) {
+			nodes = synset.getGroup();
+			if (nodes.size() < 1) continue; 
 
 			row = sheet.createRow(rowIDX++);
 
@@ -104,10 +108,10 @@ public class ClusterRenderer {
 			// update match count
 			matchCount[nodes.size() - 1]++;
 
-			// print elements of a groupE across a row
+			// print elements of a Synset across a row
 			double score = 0;
 			int schemaElementNodeSize = 0;
-			for (SchemaElementClusterNode n : nodes) {
+			for (SynsetTerm n : nodes) {
 				printSchemaElementNode(n, row);
 
 				// calculate average score
@@ -135,7 +139,7 @@ public class ClusterRenderer {
 		wb.write(os);
 		os.close();
 
-		int totalCt = cluster.groupEs.size();
+		int totalCt = synsets.size();
 		System.out.println("Total result row: " + totalCt);
 		System.out.println("Number of mapped schemas elements: ");
 		double percent;
@@ -249,7 +253,7 @@ public class ClusterRenderer {
 		else return col;
 	}
 
-	private void printSchemaElementNode(SchemaElementClusterNode seNode, HSSFRow row) {
+	private void printSchemaElementNode(SynsetTerm seNode, HSSFRow row) {
 		Integer colNum = getColumnIdx(seNode.schemaId);
 		if (colNum < 0) return;
 
