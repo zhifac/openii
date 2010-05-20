@@ -13,21 +13,8 @@ public class Vocabulary {
 
 	private SchemaInfo core = null;
 	private ArrayList<Synset> synsetList = null;
-	static private String _VOCABULARY = "_Vocabulary";
-	static public Tag vocabTag = null;
-
-	{
-		for (Tag tag : OpenIIManager.getTags()) {
-			if (tag.getName().equals(_VOCABULARY)) {
-				vocabTag = tag;
-				break;
-			}
-		}
-		if (vocabTag == null) {
-			Integer vocabTagID = OpenIIManager.addTag(new Tag(null, _VOCABULARY, null));
-			vocabTag = OpenIIManager.getTag(vocabTagID);
-		}
-	}
+	static public String _VOCABULARY_TAG = "_Vocabulary";
+	static private Tag vocabTag = getVocabTag();
 
 	public Vocabulary(Project project) {
 	// TODO Given a project from the database, get all of the schema, schema
@@ -46,6 +33,23 @@ public class Vocabulary {
 	public ArrayList<Synset> getSynsetList() {
 		return synsetList;
 	}
+	
+	public static Tag getVocabTag() {
+		if (vocabTag != null ) return vocabTag; 
+		
+		for (Tag t : OpenIIManager.getTags())
+			if (t.getName().equals(Vocabulary._VOCABULARY_TAG)) {
+				vocabTag = t;
+				break;
+			}
+		
+		if ( vocabTag == null ) {
+			vocabTag = new Tag(null, Vocabulary._VOCABULARY_TAG, null); 
+			vocabTag.setId( OpenIIManager.addTag(vocabTag) ); 
+		}
+		System.out.println("vocabTag: " + vocabTag.getId());
+		return vocabTag;
+	}
 
 	public void setCore(Schema core) {
 		this.core = OpenIIManager.getSchemaInfo(core.getId());
@@ -63,4 +67,6 @@ public class Vocabulary {
 	public Integer getCoreSchemaId() {
 		return core.getSchema().getId();
 	}
+	
+	 
 }

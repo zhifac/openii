@@ -74,6 +74,7 @@ public class Unity {
 		// Create a vocabulary schema
 		System.out.println("Build vocabulary schema...");
 		generateCoreSchema(name, author, description);
+		OpenIIManager.fireSchemaAdded(vocabulary.getCore().getSchema());
 
 		// Create mappings for each source schema to the vocabulary schema
 		HashMap<Integer, Integer> vocabMappingHash = new HashMap<Integer, Integer>();
@@ -86,10 +87,11 @@ public class Unity {
 
 			vocabMappingHash.put(sourceSchemaId, newMappingId);
 			mappings.put(newMappingId, new ArrayList<MappingCell>());
+			OpenIIManager.fireMappingAdded(newMapping); 
 			System.out.println("new mapping: " + newMappingId + " added for " + sourceSchemaId);
 		}
 
-		// Create a new term for each synset and mapping to existing terms
+		// Create a new term for each synset and a mapping cell to existing terms
 		for (Synset synset : vocabulary.getSynsetList()) {
 			// Add a new canonical term to each synset
 			SchemaElement vocabElement = createCoreTerm(synset);
