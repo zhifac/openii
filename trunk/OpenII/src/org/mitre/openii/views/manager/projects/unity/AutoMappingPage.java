@@ -57,25 +57,30 @@ class AutoMappingPage extends WizardPage implements ModifyListener, SelectionLis
 	}
 
 	/**
-	 * Not all of the mappings exists in the project yet. This display should
-	 * list the mappings that already exist and the ones that will be
-	 * automatically generated.
+	 * Not all of the mappings exists in the project yet. This display should list the mappings that already exist and
+	 * the ones that will be automatically generated.
 	 * 
 	 * @param pane
 	 */
 	private void createMappingList(Composite parent) {
 		Project project = ((GenerateVocabularyWizard) this.getWizard()).getProject();
-		// Generate a hash of project schemas
-		HashMap<Integer, ProjectSchema> schemas = new HashMap<Integer, ProjectSchema>();
-		for (ProjectSchema schema : project.getSchemas())
-			schemas.put(schema.getId(), schema);
+		HashMap<Integer, ProjectSchema> schemas = ((GenerateVocabularyWizard) this.getWizard()).getSchemas();
 		Permuter<ProjectSchema> permuter = new Permuter<ProjectSchema>(new ArrayList<ProjectSchema>(schemas.values()));
 		ArrayList<Pair<ProjectSchema>> excludeList = new ArrayList<Pair<ProjectSchema>>();
+
+		// Display existing schemas
+		Group projectSchemaGroup = new Group(parent, SWT.NONE);
+		projectSchemaGroup.setText("Project Schemas");
+		projectSchemaGroup.setLayout(new GridLayout(1, false));
+		for (ProjectSchema schema : schemas.values())
+			BasicWidgets.createText(projectSchemaGroup, null).setText(schema.getName());
 
 		// Generate a group for existing mappings
 		for (Mapping mapping : OpenIIManager.getMappings(project.getId())) {
 			ProjectSchema schema1 = schemas.get(mapping.getSourceId());
 			ProjectSchema schema2 = schemas.get(mapping.getTargetId());
+			if ( schema1 == null || schema2 == null ) continue;
+			
 			Pair<ProjectSchema> exclude = new Pair<ProjectSchema>(schema1, schema2);
 			permuter.addExcludedPair(exclude);
 			excludeList.add(exclude);
@@ -86,31 +91,30 @@ class AutoMappingPage extends WizardPage implements ModifyListener, SelectionLis
 		existGroup.setLayout(new GridLayout(1, false));
 		existGroup.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
-		if (excludeList.size() == 0) {
-			Text msg = new Text(existGroup, SWT.ITALIC);
-			msg.setText("No mappings have been created for the project");
-		} else for (Pair<ProjectSchema> exclude : excludeList) {
+		if (excludeList.size() == 0) new Text(existGroup, SWT.ITALIC).setText("No mappings have been created for the project");
+		else for (Pair<ProjectSchema> exclude : excludeList) {
 			Button mapped = new Button(existGroup, SWT.CHECK);
 			mapped.setText(((ProjectSchema) exclude.getItem1()).getName() + " to " + ((ProjectSchema) exclude.getItem2()).getName());
 			mapped.setSelection(true);
 			mapped.setEnabled(false);
 		}
-
-		// Generate group for new mappings to be added
-		if (permuter.size() > excludeList.size()) {
-			Group newGroup = new Group(parent, SWT.NONE);
-			newGroup.setText("New Mappings To Be Added Automatically");
-			newGroup.setLayout(new GridLayout(1, false));
-			newGroup.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-			while (permuter.hasMoreElements()) {
-				Pair<ProjectSchema> pair = permuter.nextElement();
-				Button unmapped = new Button(newGroup, SWT.CHECK);
-				unmapped.setText(((ProjectSchema) pair.getItem1()).getName() + " to " + ((ProjectSchema) pair.getItem2()).getName());
-				unmapped.setEnabled(false);
-				unmapped.setSelection(true);
-				newMappings.add(pair);
-			}
-		}
+		//
+		// // Generate group for new mappings to be added
+		// if (permuter.size() > excludeList.size()) {
+		// Group newGroup = new Group(parent, SWT.NONE);
+		// newGroup.setText("New Mappings To Be Added Automatically");
+		// newGroup.setLayout(new GridLayout(1, false));
+		// newGroup.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		// while (permuter.hasMoreElements()) {
+		// Pair<ProjectSchema> pair = permuter.nextElement();
+		// Button unmapped = new Button(newGroup, SWT.CHECK);
+		// unmapped.setText(((ProjectSchema) pair.getItem1()).getName() + " to " + ((ProjectSchema)
+		// pair.getItem2()).getName());
+		// unmapped.setEnabled(false);
+		// unmapped.setSelection(true);
+		// newMappings.add(pair);
+		// }
+		// }
 	}
 
 	ArrayList<Pair<ProjectSchema>> getNewMappings() {
@@ -160,7 +164,10 @@ class AutoMappingPage extends WizardPage implements ModifyListener, SelectionLis
 
 		// Set voters to a set of optimized choices (hard coded)
 		for (MatchVoterCheckBox checkbox : voterCheckBoxes)
-			if (checkbox.getName().equals("Documentation Similarity") || /*checkbox.getName().equals("Documentation + Synonyms") ||*/ checkbox.getName().equals("Name Similarity") || checkbox.getName().equals("Exact Structure")) {
+			if (checkbox.getName().equals("Documentation Similarity") || /*
+																		 * checkbox.getName().equals("Documentation + Synonyms"
+																		 * ) ||
+																		 */checkbox.getName().equals("Name Similarity") || checkbox.getName().equals("Exact Structure")) {
 				checkbox.checkBox.setSelection(true);
 				selectedVoters.add(checkbox.getName());
 			}
@@ -169,7 +176,12 @@ class AutoMappingPage extends WizardPage implements ModifyListener, SelectionLis
 	public void widgetDefaultSelected(SelectionEvent arg0) {}
 
 	private void updatePageCompleteStatus() {
-		setPageComplete(selectedVoters.size() > 0 && authorField.getText().trim().length() > 0 && descriptionField.getText().trim().length() > 0);
+		setPageComplete(selectedVoters.size() > 0 && authorField.getText().trim().length() > 0 /*
+																								 * &&
+																								 * descriptionField.getText
+																								 * ().trim().length() >
+																								 * 0
+																								 */);
 	}
 
 	public void widgetSelected(SelectionEvent event) {
@@ -195,7 +207,7 @@ class AutoMappingPage extends WizardPage implements ModifyListener, SelectionLis
 	String getAuthor() {
 		return authorField.getText();
 	}
-
+	
 	String getMappingDescription() {
 		return descriptionField.getText();
 	}
