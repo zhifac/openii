@@ -17,14 +17,20 @@ import org.mitre.affinity.view.vocab_debug_view.view.swt.SWTVocabDebugViewTwo;
 public class VocabEditor extends OpenIIEditor {
 
 	// uses schema IDs to create an array of schema names
-	// schema names are passed to the viewer **viewer assumes that the first schemaID is the core**
+	// schema names are passed to the viewer **viewer assumes that the LAST schemaID is the core**
 	private String[] getSchemaNames(Project p) {
 		Integer[] schemaIDs = p.getSchemaIDs();
 		String[] schemaNamesArray = new String[schemaIDs.length];
-		schemaNamesArray[0] = OpenIIManager.getSchemaInfo(schemaIDs[0]).getSchema().getName() + " (Core)";
+		/*schemaNamesArray[0] = OpenIIManager.getSchemaInfo(schemaIDs[0]).getSchema().getName() + " (Core)";
 		for (int i = 1; i < schemaIDs.length; i++) {
 			schemaNamesArray[i] = OpenIIManager.getSchemaInfo(schemaIDs[i]).getSchema().getName();
+		}*/
+		int coreLocation = schemaIDs.length - 1;
+		schemaNamesArray[coreLocation] = OpenIIManager.getSchemaInfo(schemaIDs[coreLocation]).getSchema().getName() + " (Core)";
+		for (int i = 0; i < coreLocation; i++) {
+			schemaNamesArray[i] = OpenIIManager.getSchemaInfo(schemaIDs[i]).getSchema().getName();
 		}
+		
 		return schemaNamesArray;
 	}
 
@@ -40,6 +46,7 @@ public class VocabEditor extends OpenIIEditor {
 			for (int j = 0; j < schemaIDs.length; j++) {
 				SynsetTerm t = origS.getTerm(schemaIDs[j]);
 				s[j] = (t == null) ? "" : t.elementName;
+				
 			}
 			synsets.add(s);
 		}
