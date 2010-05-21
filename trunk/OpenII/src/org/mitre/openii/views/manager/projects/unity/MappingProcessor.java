@@ -67,7 +67,7 @@ public class MappingProcessor {
 		
 		// Gather up the schemas in need of matching
 		Pair<ProjectSchema> pair = (Pair<ProjectSchema>) permuter.nextElement();
-		Informant.status("Matching " + pair.getItem1() + " to " + pair.getItem2());
+		Informant.status("Matching " + pair.getItem1().getName() + " to " + pair.getItem2().getName());
 		FilteredSchemaInfo schemaInfo1 = getSchemaInfo(pair.getItem1());
 		FilteredSchemaInfo schemaInfo2 = getSchemaInfo(pair.getItem2());
 
@@ -126,10 +126,10 @@ public class MappingProcessor {
 			ProjectSchema schema1 = schemas.get(mapping.getSourceId());
 			ProjectSchema schema2 = schemas.get(mapping.getTargetId());
 
-			if (OpenIIManager.getMappingCells(mapping.getId()).size() > 0) {
+			if (OpenIIManager.getMappingCells(mapping.getId()).size() > 0)
 				permuter.addExcludedPair(new Pair<ProjectSchema>(schema1, schema2));
-				System.out.println("Generating Project Matching Pair: " + schema1.getId() + " - " + schema2.getId());
-			}
+			
+			System.out.println("Generating  Matching Pair: " + schema1.getId() + " - " + schema2.getId());
 		}
 
 		// Run the mapping processor on un-run mappings

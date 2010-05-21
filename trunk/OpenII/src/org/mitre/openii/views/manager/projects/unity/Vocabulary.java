@@ -53,7 +53,7 @@ public class Vocabulary {
 
 	public void setCore(Schema core) {
 		this.core = OpenIIManager.getSchemaInfo(core.getId());
-		
+
 		// Tag core with vocabulary tag until we have a permanent vocabulary object in the database;
 		ArrayList<Integer> coreIds = new ArrayList<Integer>();
 		coreIds.add(core.getId());

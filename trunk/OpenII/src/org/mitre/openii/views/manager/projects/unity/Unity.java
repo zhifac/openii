@@ -80,6 +80,7 @@ public class Unity {
 		System.out.println("Build vocabulary schema...");
 		generateCoreSchema(name, author, description);
 		OpenIIManager.fireSchemaAdded(vocabulary.getCore().getSchema());
+		System.out.println( "new schema id = " + vocabulary.getCoreSchemaId() );
 
 		// Create mappings for each source schema to the vocabulary schema
 		HashMap<Integer, Integer> vocabMappingHash = new HashMap<Integer, Integer>();
