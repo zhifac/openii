@@ -82,6 +82,7 @@ class AutoMappingPage extends WizardPage implements ModifyListener, SelectionLis
 			if ( schema1 == null || schema2 == null ) continue;
 			
 			Pair<ProjectSchema> exclude = new Pair<ProjectSchema>(schema1, schema2);
+			
 			permuter.addExcludedPair(exclude);
 			excludeList.add(exclude);
 		}
@@ -98,23 +99,23 @@ class AutoMappingPage extends WizardPage implements ModifyListener, SelectionLis
 			mapped.setSelection(true);
 			mapped.setEnabled(false);
 		}
-		//
-		// // Generate group for new mappings to be added
-		// if (permuter.size() > excludeList.size()) {
-		// Group newGroup = new Group(parent, SWT.NONE);
-		// newGroup.setText("New Mappings To Be Added Automatically");
-		// newGroup.setLayout(new GridLayout(1, false));
-		// newGroup.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-		// while (permuter.hasMoreElements()) {
-		// Pair<ProjectSchema> pair = permuter.nextElement();
-		// Button unmapped = new Button(newGroup, SWT.CHECK);
-		// unmapped.setText(((ProjectSchema) pair.getItem1()).getName() + " to " + ((ProjectSchema)
-		// pair.getItem2()).getName());
-		// unmapped.setEnabled(false);
-		// unmapped.setSelection(true);
-		// newMappings.add(pair);
-		// }
-		// }
+
+		// Generate group for new mappings to be added
+		Group newGroup = new Group(parent, SWT.NONE);
+		newGroup.setText("New Mappings To Be Added Automatically");
+		newGroup.setLayout(new GridLayout(1, false));
+		newGroup.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		if (permuter.size() > 0) {
+			while (permuter.hasMoreElements()) {
+				Pair<ProjectSchema> pair = permuter.nextElement();
+				Button unmapped = new Button(newGroup, SWT.CHECK);
+				unmapped.setText(((ProjectSchema) pair.getItem1()).getName() + " to " + ((ProjectSchema) pair.getItem2()).getName());
+				unmapped.setEnabled(false);
+				unmapped.setSelection(true);
+				newMappings.add(pair);
+			}
+		} else 
+			new Text (newGroup, SWT.ITALIC).setText("No new mappings will be added."); 
 	}
 
 	ArrayList<Pair<ProjectSchema>> getNewMappings() {
