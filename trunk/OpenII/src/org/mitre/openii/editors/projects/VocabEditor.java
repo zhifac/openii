@@ -17,20 +17,14 @@ import org.mitre.affinity.view.vocab_debug_view.view.swt.SWTVocabDebugViewTwo;
 public class VocabEditor extends OpenIIEditor {
 
 	// uses schema IDs to create an array of schema names
-	// schema names are passed to the viewer **viewer assumes that the LAST schemaID is the core**
+	// schema names are passed to the viewer **viewer assumes that the first schemaID is the core**
 	private String[] getSchemaNames(Project p) {
 		Integer[] schemaIDs = p.getSchemaIDs();
 		String[] schemaNamesArray = new String[schemaIDs.length];
-		/*schemaNamesArray[0] = OpenIIManager.getSchemaInfo(schemaIDs[0]).getSchema().getName() + " (Core)";
+		schemaNamesArray[0] = OpenIIManager.getSchemaInfo(schemaIDs[0]).getSchema().getName() + " (Core)";
 		for (int i = 1; i < schemaIDs.length; i++) {
 			schemaNamesArray[i] = OpenIIManager.getSchemaInfo(schemaIDs[i]).getSchema().getName();
-		}*/
-		int coreLocation = schemaIDs.length - 1;
-		schemaNamesArray[coreLocation] = OpenIIManager.getSchemaInfo(schemaIDs[coreLocation]).getSchema().getName() + " (Core)";
-		for (int i = 0; i < coreLocation; i++) {
-			schemaNamesArray[i] = OpenIIManager.getSchemaInfo(schemaIDs[i]).getSchema().getName();
 		}
-		
 		return schemaNamesArray;
 	}
 
@@ -38,6 +32,19 @@ public class VocabEditor extends OpenIIEditor {
 	// the data structure is an ArrayList<String[num_schemas_incl_core]>
 	private ArrayList<String[]> transformSynsetArray(Integer[] schemaIDs, ArrayList<Synset> synsetsOrig) {
 		ArrayList<String[]> synsets = new ArrayList<String[]>(); // same order as schemaNames
+		
+		for ( Integer i : schemaIDs )
+			System.out.println( " schema id : "+i ); 
+		
+		for ( Synset synset : synsetsOrig ) {
+			String[] set = new String[schemaIDs.length]; 
+			for ( SynsetTerm term : synset.nodes) {
+				System.out.println( "term schema id " + term.schemaId ) ;
+			}
+			break;
+		}
+		
+		
 
 		// transform each synset into a a String[] to be used in viewer
 		for (int i = 0; i < synsetsOrig.size(); i++) {
@@ -45,8 +52,7 @@ public class VocabEditor extends OpenIIEditor {
 			String[] s = new String[schemaIDs.length];
 			for (int j = 0; j < schemaIDs.length; j++) {
 				SynsetTerm t = origS.getTerm(schemaIDs[j]);
-				s[j] = (t == null) ? "" : t.elementName;
-				
+				s[j] = (t == null) ?  "" : t.elementName;
 			}
 			synsets.add(s);
 		}
