@@ -21,8 +21,7 @@ public class VocabEditor extends OpenIIEditor {
 	private String[] getSchemaNames(Project p) {
 		Integer[] schemaIDs = p.getSchemaIDs();
 		String[] schemaNamesArray = new String[schemaIDs.length];
-		schemaNamesArray[0] = OpenIIManager.getSchemaInfo(schemaIDs[0]).getSchema().getName() + " (Core)";
-		for (int i = 1; i < schemaIDs.length; i++) {
+		for (int i = 0; i < schemaIDs.length; i++) {
 			schemaNamesArray[i] = OpenIIManager.getSchemaInfo(schemaIDs[i]).getSchema().getName();
 		}
 		return schemaNamesArray;
@@ -33,19 +32,6 @@ public class VocabEditor extends OpenIIEditor {
 	private ArrayList<String[]> transformSynsetArray(Integer[] schemaIDs, ArrayList<Synset> synsetsOrig) {
 		ArrayList<String[]> synsets = new ArrayList<String[]>(); // same order as schemaNames
 		
-		for ( Integer i : schemaIDs )
-			System.out.println( " schema id : "+i ); 
-		
-		for ( Synset synset : synsetsOrig ) {
-			String[] set = new String[schemaIDs.length]; 
-			for ( SynsetTerm term : synset.nodes) {
-				System.out.println( "term schema id " + term.schemaId ) ;
-			}
-			break;
-		}
-		
-		
-
 		// transform each synset into a a String[] to be used in viewer
 		for (int i = 0; i < synsetsOrig.size(); i++) {
 			Synset origS = synsetsOrig.get(i);
