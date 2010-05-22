@@ -32,7 +32,19 @@ public class Unity {
 
 	public Unity(Project project) {
 		this.project = project;
-		authoritySchemaId = project.getSchemaIDs()[0];
+	}
+
+	public static Vocabulary getProjectVocabulary(Project project) throws Exception {
+		Unity unity = new Unity(project);
+		Vocabulary vocabulary = new Vocabulary(project);
+
+		if (!vocabulary.exists()) vocabulary = unity.getVocabulary();
+		return vocabulary;
+	}
+
+	public Vocabulary getVocabulary() throws Exception {
+		vocabulary = new Vocabulary(project);
+		return (vocabulary.exists()) ? vocabulary : generateVocabulary(null, null, null, null);
 	}
 
 	/**
@@ -48,12 +60,12 @@ public class Unity {
 	 *            author of the core
 	 * @param description
 	 *            description of the core
-	 * @return
-	 * @throws Exception
+	 * @return a vocabulary object
 	 * @throws Exception
 	 */
 	public Vocabulary generateVocabulary(ArrayList<MatchVoter> voters, String name, String author, String description) throws Exception {
 		vocabulary = new Vocabulary(project);
+		if (vocabulary.exists()) vocabulary.deleteVocabularySchema();
 
 		if (voters == null) voters = MappingProcessor.getDefaultMatchVoters();
 		if (name == null) name = project.getName() + Vocabulary._VOCABULARY_TAG;
@@ -71,7 +83,7 @@ public class Unity {
 		// Run MatchMaker to cluster the matches get synsets
 		try {
 			System.out.println(" Generating synsets...");
-			generateSynsets();
+			vocabulary.setSynsetList(generateSynsets(project));
 		} catch (RemoteException e) {
 			throw new Exception("Error occured while generating synsets. \n" + e.getMessage());
 		}
@@ -79,15 +91,15 @@ public class Unity {
 		// Create a vocabulary schema
 		System.out.println("Build vocabulary schema...");
 		generateCoreSchema(name, author, description);
-		OpenIIManager.fireSchemaAdded(vocabulary.getCore().getSchema());
-		System.out.println( "new schema id = " + vocabulary.getCoreSchemaId() );
+
+		System.out.println("new schema id = " + vocabulary.getVocabularyId());
 
 		// Create mappings for each source schema to the vocabulary schema
 		HashMap<Integer, Integer> vocabMappingHash = new HashMap<Integer, Integer>();
 		HashMap<Integer, ArrayList<MappingCell>> mappings = new HashMap<Integer, ArrayList<MappingCell>>();
 		for (Integer sourceSchemaId : project.getSchemaIDs()) {
-			if (sourceSchemaId.equals(vocabulary.getCoreSchemaId())) continue;
-			Mapping newMapping = new Mapping(null, project.getId(), sourceSchemaId, vocabulary.getCoreSchemaId());
+			if (sourceSchemaId.equals(vocabulary.getVocabularyId())) continue;
+			Mapping newMapping = new Mapping(null, project.getId(), sourceSchemaId, vocabulary.getVocabularyId());
 			Integer newMappingId = RepositoryManager.getClient().addMapping(newMapping);
 			if (newMappingId == null || newMappingId <= 0) {
 				System.out.println("Add mapping failed for " + sourceSchemaId);
@@ -104,7 +116,7 @@ public class Unity {
 		for (Synset synset : vocabulary.getSynsetList()) {
 			// Add a new canonical term to each synset
 			SchemaElement vocabElement = createCoreTerm(synset);
-			synset.add(new SynsetTerm(vocabulary.getCoreSchemaId(), vocabElement.getId(), vocabElement.getName()));
+			synset.add(new SynsetTerm(vocabulary.getVocabularyId(), vocabElement.getId(), vocabElement.getName()));
 
 			// Create mappingcells between the new term and existing terms in a synset
 			for (SynsetTerm sourceTerm : synset.getGroup()) {
@@ -128,9 +140,9 @@ public class Unity {
 		// reorganize the schema IDs so that vocabulary appears first
 		Integer[] schemaIds = project.getSchemaIDs();
 		for (int i = 1; i < schemaIds.length; i++) {
-			if (schemaIds[i].equals(vocabulary.getCoreSchemaId())) {
+			if (schemaIds[i].equals(vocabulary.getVocabularyId())) {
 				Integer idZero = new Integer(schemaIds[0]);
-				schemaIds[0] = vocabulary.getCoreSchemaId();
+				schemaIds[0] = vocabulary.getVocabularyId();
 				schemaIds[i] = idZero;
 				break;
 			}
@@ -141,14 +153,25 @@ public class Unity {
 		render.print(file);
 	}
 
+	public Integer getAuthoritativeSchemaId() {
+		if (authoritySchemaId == 0 && project.getSchemaIDs().length > 0) authoritySchemaId = project.getSchemaIDs()[0];
+		return authoritySchemaId;
+	}
+
+	public void setAuthoritativeSchemaId(Integer id) {
+		authoritySchemaId = id;
+	}
+
 	/** Generate a core schema and set that to be the core vocabulary schema **/
 	private void generateCoreSchema(String name, String author, String description) {
+		// Create a new schema
 		Schema vocabSchema = new Schema(null, name, author, null, null, description, false);
 		Integer vocabularyID = OpenIIManager.addSchema(vocabSchema);
 		vocabSchema.setId(vocabularyID);
-		vocabulary.setCore(vocabSchema);
+		vocabulary.setVocabularySchema(vocabSchema);
+		OpenIIManager.fireSchemaAdded(vocabulary.getVocabularySchema().getSchema());
 
-		// Update project in OpenII
+		// Add vocabulary schema to the project
 		ArrayList<ProjectSchema> schemas = new ArrayList<ProjectSchema>(Arrays.asList(project.getSchemas()));
 		schemas.add(new ProjectSchema(vocabSchema.getId(), vocabSchema.getName(), null));
 		project.setSchemas(schemas.toArray(new ProjectSchema[0]));
@@ -160,8 +183,7 @@ public class Unity {
 	 * 
 	 * @throws RemoteException
 	 **/
-	private void generateSynsets() throws RemoteException {
-		System.out.println(" Cluster all matches...");
+	public static ArrayList<Synset> generateSynsets(Project project) throws RemoteException {
 		HashMap<Mapping, ArrayList<MappingCell>> mappings = new HashMap<Mapping, ArrayList<MappingCell>>();
 		for (Mapping mapping : OpenIIManager.getMappings(project.getId()))
 			mappings.put(mapping, OpenIIManager.getMappingCells(mapping.getId()));
@@ -170,10 +192,9 @@ public class Unity {
 		matchMaker.setClient(RepositoryManager.getClient());
 		matchMaker.initialize(project, mappings);
 
+		System.out.println(" Cluster all matches...");
 		ClusterNode cluster = matchMaker.cluster();
-		vocabulary.setSynsetList(cluster.synsets);
-		// matchMaker.exportProject(project, mappings, new
-		// File("C://MatchMaker.xls"));
+		return cluster.synsets;
 	}
 
 	/**
@@ -198,7 +219,7 @@ public class Unity {
 
 		// Add term to the repository
 		try {
-			entity = new Entity(0, name, description, vocabulary.getCoreSchemaId());
+			entity = new Entity(0, name, description, vocabulary.getVocabularyId());
 			newElementId = RepositoryManager.getClient().addSchemaElement(entity);
 			entity.setId(newElementId);
 		} catch (RemoteException e) {
@@ -208,12 +229,13 @@ public class Unity {
 		return entity;
 	}
 
-	private SchemaElement sourceTerm(Synset synset) {
+	/** generates a cononical term from the synset **/
+	protected SchemaElement sourceTerm(Synset synset) {
 		SchemaElement result = null;
 		try {
-			// Use authority schema term
+			// Use authority schema term if available
 			for (SynsetTerm term : synset.getGroup())
-				if (term.schemaId.equals(authoritySchemaId) && term.elementName.length() > 0) {
+				if (term.schemaId.equals(getAuthoritativeSchemaId()) && term.elementName.length() > 0) {
 					SchemaElement e = RepositoryManager.getClient().getSchemaElement(term.elementId);
 					if (e != null) {
 						result = e.copy();
@@ -238,8 +260,9 @@ public class Unity {
 		return result;
 	}
 
-	public Vocabulary getVocabulary() {
-		return vocabulary;
+
+	public void setAuthoritativeSchema(Integer schemaId) {
+		this.authoritySchemaId = schemaId;
 	}
 
 }
