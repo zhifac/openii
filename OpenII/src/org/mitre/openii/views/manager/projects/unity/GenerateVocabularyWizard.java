@@ -26,12 +26,12 @@ public class GenerateVocabularyWizard extends Wizard {
 		// Generate a hash of project schemas EXCLUDING schemas with _VOCABULARY_TAG tag
 	}
 
+	/** Get all of the schemas in this project that aren't vocabulary **/ 
 	private void initSchemas() {
 		ArrayList<Integer> vocabIDs = OpenIIManager.getTagSchemas(Vocabulary.getVocabTag().getId());
 		schemas = new HashMap<Integer, ProjectSchema>();
 		for (ProjectSchema schema : project.getSchemas())
 			if (vocabIDs.size() <= 0 || !vocabIDs.contains(schema.getId())) {
-				System.out.println(schema.getName());
 				schemas.put(schema.getId(), schema);
 			}
 	}

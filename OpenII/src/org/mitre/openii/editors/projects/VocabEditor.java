@@ -77,7 +77,7 @@ public class VocabEditor extends OpenIIEditor {
 			Unity unity = new Unity(proj);
 			Vocabulary vocab;
 			try {
-				vocab = unity.generateVocabulary(null, null, null, null);
+				vocab = unity.getVocabulary(); 
 				String[] schemaNames = getSchemaNames(proj);
 
 				// ArrayList<Synset> synsets = createFakeSynsets(proj);
