@@ -98,8 +98,8 @@ INSERT INTO attribute (id, name, description, entity_id, domain_id, "key", schem
 72, 'Modality', 'Modality', 24, 106, 'f', 12
 73, 'PrimaryLanguage', NULL, 22, 107, 'f', 15
 
-INSERT INTO relationship (id, name, left_id, left_min, left_max, right_id, right_min, right_max, schema_id)
-435, 'CapturedFor', 22, 1, 1, 23, 0, NULL, 10
+INSERT INTO relationship (id, name, description, left_id, left_min, left_max, right_id, right_min, right_max, schema_id)
+435, 'CapturedFor', 'Indicates for which protocol the measurement was captured for', 22, 1, 1, 23, 0, NULL, 10
 
 INSERT INTO containment (id, parent_id, child_id, "min", "max", description, name, schema_id)
 410, 20, 22, NULL, NULL, NULL, NULL, 10
