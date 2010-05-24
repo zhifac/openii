@@ -170,10 +170,14 @@ public class AboutOpenIIEditor extends EditorPart {
 		// get the base location of our application so we can send our users to the documentation
 		String homeURL = getClass().getProtectionDomain().getCodeSource().getLocation().toString().replaceAll("\\%20"," ");
 		String homePath = getClass().getProtectionDomain().getCodeSource().getLocation().getPath().replaceAll("\\%20"," ");
-
+		
 		// remove any references to the openii jar
 		homeURL = homeURL.replaceAll("org\\.mitre\\.openii.*\\.jar$", "");
 		homePath = homePath.replaceAll("org\\.mitre\\.openii.*\\.jar$", "");
+		
+		// pmork: Remove any trailing folders by finding the last instance of "OpenII" and tossing everything from that point on.
+		homePath = homePath.substring(0, homePath.lastIndexOf("OpenII")+"OpenII/".length());
+		homeURL = homeURL.substring(0, homeURL.lastIndexOf("OpenII")+"OpenII/".length());
 
 		// check to see if it is in a location one above us
 		// this should match both the IDE and standalone
