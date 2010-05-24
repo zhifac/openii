@@ -3,7 +3,6 @@ package org.mitre.openii.editors.help;
 import java.io.File;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.jface.action.IStatusLineManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.browser.LocationEvent;
