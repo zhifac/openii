@@ -644,7 +644,6 @@ public class IMPLUSListener implements OpenIIListener {
 	public void tagModified(Integer tagID) {
 		System.out.println("IMPLUS: tagModified");
 		try { 
-			Tag tag = OpenIIManager.getTag(tagID);
 			PLUSObject oldTagObj = loadOpenIIPLUSObject(TAG, tagID); 
 			ArrayList <PLUSObject> oldSchemaSet = extractAssociatedSchemasFromTag(oldTagObj);
 			 

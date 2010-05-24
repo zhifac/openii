@@ -69,7 +69,6 @@ public class VocabEditor extends OpenIIEditor {
 	}
 
 	/** Displays the VocabDebugView */
-	@SuppressWarnings("unchecked")
 	public void createPartControl(final Composite parent) {
 		Object object = ((EditorInput) getEditorInput()).getElement();
 		if (object instanceof Project) {

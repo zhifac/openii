@@ -1,6 +1,8 @@
 package org.mitre.openii.editors.help;
 
 import java.io.File;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.swt.SWT;
@@ -167,16 +169,21 @@ public class AboutOpenIIEditor extends EditorPart {
 	/** determines our home page */
 	private String getHomePage() throws HomePageNotFoundException {
 		// get the base location of our application so we can send our users to the documentation
+		// also replace any references to %20 which is actually a space. we want the space
 		String homeURL = getClass().getProtectionDomain().getCodeSource().getLocation().toString().replaceAll("\\%20"," ");
 		String homePath = getClass().getProtectionDomain().getCodeSource().getLocation().getPath().replaceAll("\\%20"," ");
-		
-		// remove any references to the openii jar
-		homeURL = homeURL.replaceAll("org\\.mitre\\.openii.*\\.jar$", "");
-		homePath = homePath.replaceAll("org\\.mitre\\.openii.*\\.jar$", "");
-		
-		// pmork: Remove any trailing folders by finding the last instance of "OpenII" and tossing everything from that point on.
-		homePath = homePath.substring(0, homePath.lastIndexOf("OpenII")+"OpenII/".length());
-		homeURL = homeURL.substring(0, homeURL.lastIndexOf("OpenII")+"OpenII/".length());
+
+		Pattern pattern = Pattern.compile("org\\.mitre\\.openii.*\\.jar$");
+		Matcher matcher = pattern.matcher(homeURL);
+		if (matcher.find()) {
+			// if in the jar, remove any references to the openii jar
+			homeURL = homeURL.replaceAll("org\\.mitre\\.openii.*\\.jar$", "");
+			homePath = homePath.replaceAll("org\\.mitre\\.openii.*\\.jar$", "");
+		} else {
+			// if not in the jar (i.e. in eclipse), remove trailing folders by finding the last instance of "OpenII" and tossing everything after that
+			homePath = homePath.substring(0, homePath.lastIndexOf("OpenII") + "OpenII/".length());
+			homeURL = homeURL.substring(0, homeURL.lastIndexOf("OpenII") + "OpenII/".length());
+		}
 
 		// check to see if it is in a location one above us
 		// this should match both the IDE and standalone

@@ -20,7 +20,6 @@ import org.mitre.affinity.view.venn_diagram.model.VennDiagramSetsMatrix;
 import org.mitre.affinity.view.venn_diagram.view.event.VennDiagramEvent;
 import org.mitre.affinity.view.venn_diagram.view.event.VennDiagramListener;
 import org.mitre.affinity.view.venn_diagram.view.swt.SWTVennDiagram;
-import org.mitre.affinity.view.venn_diagram.view.swt.SWTVennDiagramMatrix;
 import org.mitre.affinity.view.venn_diagram.view.swt.SWTVennDiagramMatrix_KNeighbors;
 import org.mitre.openii.editors.OpenIIEditor;
 import org.mitre.openii.model.EditorInput;
