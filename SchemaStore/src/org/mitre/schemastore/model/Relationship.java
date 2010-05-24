@@ -30,12 +30,12 @@ public class Relationship extends SchemaElement
 	public Relationship() {}
 	
 	/** Constructs the relationship */
-	public Relationship(Integer id, String name, Integer leftID, Integer leftMin, Integer leftMax, Integer rightID, Integer rightMin, Integer rightMax, Integer base)
-		{ super(id,name,"",base); this.leftID=leftID; this.leftMin=leftMin; this.leftMax=leftMax; this.rightID=rightID; this.rightMin=rightMin; this.rightMax=rightMax; }
+	public Relationship(Integer id, String name, String description, Integer leftID, Integer leftMin, Integer leftMax, Integer rightID, Integer rightMin, Integer rightMax, Integer base)
+		{ super(id,name,description,base); this.leftID=leftID; this.leftMin=leftMin; this.leftMax=leftMax; this.rightID=rightID; this.rightMin=rightMin; this.rightMax=rightMax; }
 	
 	/** Copies the relationship */
 	public Relationship copy()
-		{ return new Relationship(getId(),getName(),getLeftID(),getLeftMin(),getLeftMax(),getRightID(),getRightMin(),getRightMax(),getBase()); }
+		{ return new Relationship(getId(),getName(),getDescription(),getLeftID(),getLeftMin(),getLeftMax(),getRightID(),getRightMin(),getRightMax(),getBase()); }
 	
 	// Handles all relationship getters
 	public Integer getLeftID() { return leftID; }

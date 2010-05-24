@@ -142,6 +142,7 @@ CREATE TABLE project_schema (
 CREATE TABLE relationship (
     id integer NOT NULL,
     name character varying(100) NOT NULL,
+    description character varying(4096),
     left_id integer NOT NULL,
     left_min integer,
     left_max integer,

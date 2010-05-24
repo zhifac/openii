@@ -92,18 +92,19 @@ public class SchemaElementDataCalls extends AbstractDataCalls
 				baseElements.add(new DomainValue(rs.getInt("id"),rs.getString("value"),rs.getString("description"),rs.getInt("domain_id"),schemaID));
 
 			// Gets the schema relationships
-			rs = stmt.executeQuery("SELECT id,name,left_id,left_min,left_max,right_id,right_min,right_max FROM relationship WHERE schema_id="+schemaID);
+			rs = stmt.executeQuery("SELECT id,name,description,left_id,left_min,left_max,right_id,right_min,right_max FROM relationship WHERE schema_id="+schemaID);
 			while(rs.next())
 			{
 				Integer id = rs.getInt("id");
 				String name = rs.getString("name");
+				String description = rs.getString("description");
 				Integer leftID = rs.getInt("left_id");
 				Integer leftMin = rs.getString("left_min")==null?null:rs.getInt("left_min");
 				Integer leftMax = rs.getString("left_max")==null?null:rs.getInt("left_max");
 				Integer rightID = rs.getInt("right_id");
 				Integer rightMin = rs.getString("right_min")==null?null:rs.getInt("right_min");
 				Integer rightMax = rs.getString("right_max")==null?null:rs.getInt("right_max");
-				baseElements.add(new Relationship(id,name,leftID,leftMin,leftMax,rightID,rightMin,rightMax,schemaID));
+				baseElements.add(new Relationship(id,name,description,leftID,leftMin,leftMax,rightID,rightMin,rightMax,schemaID));
 			}
 
 			// Gets the schema containment relationships
@@ -197,17 +198,18 @@ public class SchemaElementDataCalls extends AbstractDataCalls
 			// Gets the specified relationship
 			else if(type.equals("relationship"))
 			{
-				rs = stmt.executeQuery("SELECT id,name,left_id,left_min,left_max,right_id,right_min,right_max FROM relationship WHERE id="+schemaElementID);
+				rs = stmt.executeQuery("SELECT id,name,description,left_id,left_min,left_max,right_id,right_min,right_max FROM relationship WHERE id="+schemaElementID);
 				rs.next();
 				Integer id = rs.getInt("id");
 				String name = rs.getString("name");
+				String description = rs.getString("description");
 				Integer leftID = rs.getInt("left_id");
 				Integer leftMin = rs.getString("left_min")==null?null:rs.getInt("left_min");
 				Integer leftMax = rs.getString("left_max")==null?null:rs.getInt("left_max");
 				Integer rightID = rs.getInt("right_id");
 				Integer rightMin = rs.getString("right_min")==null?null:rs.getInt("right_min");
 				Integer rightMax = rs.getString("right_max")==null?null:rs.getInt("right_max");
-				schemaElement = new Relationship(id,name,leftID,leftMin,leftMax,rightID,rightMin,rightMax,base);
+				schemaElement = new Relationship(id,name,description,leftID,leftMin,leftMax,rightID,rightMin,rightMax,base);
 			}
 
 			// Gets the specified containment relationship
@@ -284,7 +286,7 @@ public class SchemaElementDataCalls extends AbstractDataCalls
 		if(schemaElement instanceof Relationship)
 		{
 			Relationship relationship = (Relationship)schemaElement;
-			stmt.addBatch("INSERT INTO relationship(id,name,left_id,left_min,left_max,right_id,right_min,right_max,schema_id) VALUES("+id+",'"+name+"',"+relationship.getLeftID()+","+relationship.getLeftMin()+","+relationship.getLeftMax()+","+relationship.getRightID()+","+relationship.getRightMin()+","+relationship.getRightMax()+","+baseID+")");
+			stmt.addBatch("INSERT INTO relationship(id,name,description,left_id,left_min,left_max,right_id,right_min,right_max,schema_id) VALUES("+id+",'"+name+"','"+description+"',"+relationship.getLeftID()+","+relationship.getLeftMin()+","+relationship.getLeftMax()+","+relationship.getRightID()+","+relationship.getRightMin()+","+relationship.getRightMax()+","+baseID+")");
 		}
 
 		// Inserts a containment relationship
@@ -397,7 +399,7 @@ public class SchemaElementDataCalls extends AbstractDataCalls
 			if(schemaElement instanceof Relationship)
 			{
 				Relationship relationship = (Relationship)schemaElement;
-				stmt.executeUpdate("UPDATE relationship SET name='"+name+"', left_id="+relationship.getLeftID()+", left_min="+relationship.getLeftMin()+", left_max="+relationship.getLeftMax()+", right_id="+relationship.getRightID()+", right_min="+relationship.getRightMin()+", right_max="+relationship.getRightMax()+" WHERE id="+relationship.getId());
+				stmt.executeUpdate("UPDATE relationship SET name='"+name+"', description='"+description+"', left_id="+relationship.getLeftID()+", left_min="+relationship.getLeftMin()+", left_max="+relationship.getLeftMax()+", right_id="+relationship.getRightID()+", right_min="+relationship.getRightMin()+", right_max="+relationship.getRightMax()+" WHERE id="+relationship.getId());
 			}
 
 			// Updates a containment relationship
@@ -520,6 +522,7 @@ public class SchemaElementDataCalls extends AbstractDataCalls
 			{
 				Integer id = rs.getInt("id");
 				String name = rs.getString("name");
+				String description = rs.getString("description");
 				Integer leftID = rs.getInt("left_id");
 				Integer leftMin = rs.getString("left_min")==null?null:rs.getInt("left_min");
 				Integer leftMax = rs.getString("left_max")==null?null:rs.getInt("left_max");
@@ -527,7 +530,7 @@ public class SchemaElementDataCalls extends AbstractDataCalls
 				Integer rightMin = rs.getString("right_min")==null?null:rs.getInt("right_min");
 				Integer rightMax = rs.getString("right_max")==null?null:rs.getInt("right_max");
 				Integer schemaID = rs.getInt("schema_id");
-				elements.add(new Relationship(id,name,leftID,leftMin,leftMax,rightID,rightMin,rightMax,schemaID));
+				elements.add(new Relationship(id,name,description,leftID,leftMin,leftMax,rightID,rightMin,rightMax,schemaID));
 			}
 
 			// Gets the schema containment relationships
