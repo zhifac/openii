@@ -209,7 +209,7 @@ public class XSDImporter extends SchemaImporter
 			schemaElementsHS.put(anyEntity.hashCode(),anyEntity);
 			
 			Integer rightMax = ( typeName.equals("IDREFS") ) ? null : 1;   
-			Relationship rel = new Relationship(nextId(),parent.getName(),((Attribute)parent).getEntityID(),0,1,this.anyEntity.getId(),0,rightMax,0);
+			Relationship rel = new Relationship(nextId(),parent.getName(),"",((Attribute)parent).getEntityID(),0,1,this.anyEntity.getId(),0,rightMax,0);
 			schemaElementsHS.put(rel.hashCode(),rel);
 			
 			// TODO: set the domain of the parent attribute to 

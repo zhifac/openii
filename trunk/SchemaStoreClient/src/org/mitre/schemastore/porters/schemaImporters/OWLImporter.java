@@ -243,7 +243,7 @@ public class OWLImporter extends SchemaImporter implements RDFErrorHandler {
 					Integer rightClsMin = null;
 					Integer rightClsMax = (relMax > 0) ? relMax : 0;
 
-					Relationship rel = new Relationship(nextId(), objProp.getLocalName(), leftEntity.getId(), leftClsMin, leftClsMax, rightEntity.getId(), rightClsMin, rightClsMax, 0);
+					Relationship rel = new Relationship(nextId(), objProp.getLocalName(), "", leftEntity.getId(), leftClsMin, leftClsMax, rightEntity.getId(), rightClsMin, rightClsMax, 0);
 					_schemaElements.add(rel);
 				}
 			}

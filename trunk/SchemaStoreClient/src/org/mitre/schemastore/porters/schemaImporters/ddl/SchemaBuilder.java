@@ -109,7 +109,7 @@ public class SchemaBuilder
         int rightMin = 1;
         int rightMax = 1;
         int base = schema.getId();
-        Relationship r = new Relationship(id, name, currentEntityId, leftMin, leftMax, rightID, rightMin, rightMax, base );
+        Relationship r = new Relationship(id, name, "", currentEntityId, leftMin, leftMax, rightID, rightMin, rightMax, base );
         schemaObjects.add( r );
     }
 
