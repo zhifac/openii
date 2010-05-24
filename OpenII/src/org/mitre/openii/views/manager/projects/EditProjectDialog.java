@@ -254,11 +254,10 @@ public class EditProjectDialog extends Dialog implements ActionListener, ModifyL
 
 		// Add mappings in project
 		if (errorMessage == null) for (Mapping newMapping : mappingList.getMappings()) {
-			String key = newMapping.getSourceId() + "_" + newMapping.getTargetId();
-			// if (!oldMappings.containsKey(key)) {
 			newMapping.setProjectId(project.getId());
-			if (OpenIIManager.addMapping(newMapping) <= 0) errorMessage = "Unable to add project mappings";
-			// } else oldMappings.remove(key);
+			if (OpenIIManager.addMapping(newMapping) <= 0) {
+				errorMessage = "Unable to add project mappings";
+			}
 		}
 
 		// Display error message if needed
@@ -268,6 +267,8 @@ public class EditProjectDialog extends Dialog implements ActionListener, ModifyL
 			messageBox.setMessage(errorMessage);
 			messageBox.open();
 			return;
-		} else getShell().dispose();
+		} else {
+			getShell().dispose();
+		}
 	}
 }
