@@ -62,7 +62,7 @@ public class ClusterRenderer {
 		System.out.println("Writing output");
 		System.out.println("Printing collated matches to " + output);
 		int numSchema = schemaColumnPosHash.keySet().size();
-
+		
 		wb = new HSSFWorkbook();
 		sheet = wb.createSheet();
 		int rowIDX = 0;
@@ -110,19 +110,27 @@ public class ClusterRenderer {
 
 			// print elements of a Synset across a row
 			double score = 0;
-			int schemaElementNodeSize = 0;
-			for (SynsetTerm n : nodes) {
-				printSchemaElementNode(n, row);
+			int synsetSize = 0;
+			for (SynsetTerm stNode : nodes) {
+				
+				Integer colNum = getColumnIdx(stNode.schemaId);
+				if (colNum < 0) return;
+
+				HSSFCell idCell = row.getCell(colNum);
+				if (idCell == null) {
+					idCell = row.createCell(colNum);
+					idCell.setCellValue(new HSSFRichTextString( stNode.elementId.toString()) );
+				}
 
 				// calculate average score
-				for (int ptr = 0; ptr < n.pointers.size(); ptr++) {
-					score += n.distances.get(ptr);
-					schemaElementNodeSize++;
+				for (int ptr = 0; ptr < stNode.pointers.size(); ptr++) {
+					score += stNode.distances.get(ptr);
+					synsetSize++;
 				}
 			}
 
 			// print average score
-			double average = score / (double) schemaElementNodeSize;
+			double average = score / (double) synsetSize;
 			HSSFCell avgScoreCell = row.createCell(numSchema * SCHEMA_COLUMN_BLOCK_SIZE + 1);
 			avgScoreCell.setCellValue(average);
 		}
@@ -260,7 +268,7 @@ public class ClusterRenderer {
 		HSSFCell cell = row.getCell(colNum);
 		if (cell == null) {
 			cell = row.createCell(colNum);
-			cell.setCellValue(new HSSFRichTextString(seNode.name));
+			cell.setCellValue(new HSSFRichTextString(seNode.elementId.toString()));
 		}
 	}
 }
