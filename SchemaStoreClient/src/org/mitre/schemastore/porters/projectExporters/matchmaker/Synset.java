@@ -10,7 +10,7 @@ import java.util.ArrayList;
  * cluster. The hierarchical clustering code's result is a list of synsets,
  * which are "chains" of pairwise matches that all logically group together.
  * 
- * @author MDMORSE
+ * @author MDMORSE, HAOLI
  * 
  */
 public class Synset implements Comparable<Synset> {
@@ -28,14 +28,41 @@ public class Synset implements Comparable<Synset> {
 		updateLeastNode(n);
 	}
 
-	public void combineSynsets(Synset two) {
+	/** 
+	 * Combine another synsets into one
+	 * @param two
+	 */
+	public void combine(Synset two) {
 		nodes.ensureCapacity(nodes.size() + two.nodes.size());
 		nodes.addAll(two.nodes);
 		updateLeastNode(two.leastNode);
 	}
+	
+	/**
+	 * removes a term from the current synset and return the term as a new synset
+	 * @param removeTerm
+	 * @return a new synset that's consisted of the removed term
+	 */
+	public Synset remove(SynsetTerm removeTerm) {
+		for ( SynsetTerm term : nodes )
+			if ( term.equals(removeTerm) ) { 
+				nodes.remove(term);
+				break;
+			}
+		updateLeastNode(null);
+		return new Synset(removeTerm); 
+	}
+	
 
 	private void updateLeastNode(SynsetTerm n) {
-		if (leastNode == null || leastNode.compareTo(n) > 0) leastNode = n;
+		if ( n == null )
+		{
+			for ( SynsetTerm term : nodes ) {
+				if (leastNode == null || leastNode.compareTo(n) > 0) 
+					leastNode = term;
+			}
+		}
+		else if (leastNode == null || leastNode.compareTo(n) > 0) leastNode = n;
 	}
 
 	/**
@@ -103,7 +130,7 @@ public class Synset implements Comparable<Synset> {
 	 */
 	public SynsetTerm getTerm(Integer baseSchema) {
 		for (SynsetTerm n : nodes)
-			if (n.schemaId == baseSchema) return n;
+			if (n.schemaId.equals( baseSchema)) return n;
 		return null;
 	}
 	
