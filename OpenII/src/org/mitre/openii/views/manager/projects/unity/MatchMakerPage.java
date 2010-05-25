@@ -81,11 +81,19 @@ class MatchMakerPage extends WizardPage implements ModifyListener, SelectionList
 		setPageComplete(getVocabularyName().length() > 0 && getAuthor().length() > 0 && getDescription().length() > 0);
 	}
 
+	@Override
 	public void widgetDefaultSelected(SelectionEvent arg0) {
 		// TODO Auto-generated method stub
 	}
 
-	public void widgetSelected(SelectionEvent arg0) {
-		// TODO Auto-generated method stub
-	}	
+	@Override
+	public void widgetSelected(SelectionEvent event) {
+		// Create the dialog
+//		FileDialog dialog = new FileDialog(new Shell(), SWT.SAVE);
+//		dialog.setText("Export vocabulary");
+//		dialog.setFileName(getVocabularyName() + ".xls");
+//		dialog.setFilterPath(OpenIIManager.getActiveDir());
+	}
+	
+	
 }
