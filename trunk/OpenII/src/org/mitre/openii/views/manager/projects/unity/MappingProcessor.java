@@ -63,8 +63,8 @@ public class MappingProcessor {
 	/** Processes the next mapping */
 	public void processNextMapping() throws Exception {
 		// Don't proceed if no more mappings in need of creation
-		if (!permuter.hasMoreElements()) return; 
-		
+		if (!permuter.hasMoreElements()) return;
+
 		// Gather up the schemas in need of matching
 		Pair<ProjectSchema> pair = (Pair<ProjectSchema>) permuter.nextElement();
 		Informant.status("Matching " + pair.getItem1().getName() + " to " + pair.getItem2().getName());
@@ -103,19 +103,19 @@ public class MappingProcessor {
 	public static ArrayList<MatchVoter> getDefaultMatchVoters() {
 		ArrayList<MatchVoter> voters = new ArrayList<MatchVoter>();
 		voters.add(new DocumentationMatcher());
-//		 voters.add(new ThesaurusMatcher());
+		// voters.add(new ThesaurusMatcher());
 		voters.add(new EditDistanceMatcher());
 		voters.add(new ExactStructureMatcher());
 		return voters;
 	}
 
 	/**
-	 * Runs the automatic mapping process . voters can be null and default set
-	 * will be chosen
+	 * Runs the automatic mapping process . voters can be null and default set will be chosen
+	 * 
 	 * @return number of pairwise matches
 	 */
 	static public int run(Project project, ArrayList<MatchVoter> voters) throws Exception {
-		int numMatches = 0; 
+		int numMatches = 0;
 		// Generate a hash of project schemas
 		HashMap<Integer, ProjectSchema> schemas = new HashMap<Integer, ProjectSchema>();
 		for (ProjectSchema schema : project.getSchemas())
@@ -127,12 +127,12 @@ public class MappingProcessor {
 			ProjectSchema schema1 = schemas.get(mapping.getSourceId());
 			ProjectSchema schema2 = schemas.get(mapping.getTargetId());
 
-			// empty mapping object with mapping cell 
-			if (OpenIIManager.getMappingCells(mapping.getId()).size() > 0) {
-				OpenIIManager.deleteMapping(mapping.getId()); 
-				permuter.addExcludedPair(new Pair<ProjectSchema>(schema1, schema2));
+			// empty mapping object with mapping cell
+			if (OpenIIManager.getMappingCells(mapping.getId()).size() <= 0) { 
+				OpenIIManager.deleteMapping(mapping.getId()); continue;
 			}
-			
+
+			permuter.addExcludedPair(new Pair<ProjectSchema>(schema1, schema2));
 			System.out.println("Generating  Matching Pair: " + schema1.getId() + " - " + schema2.getId());
 		}
 
@@ -141,11 +141,11 @@ public class MappingProcessor {
 		Informant.progress(0);
 		MappingProcessor mappingProcessor = new MappingProcessor(project, permuter, voters);
 		int current = 0, total = mappingProcessor.size();
-		
+
 		while (mappingProcessor.hasMoreMappings()) {
 			mappingProcessor.processNextMapping();
 			Informant.progress((int) (((float) ++current / (float) total) * (float) 100));
-			numMatches ++;
+			numMatches++;
 		}
 		Informant.progress(100);
 		return numMatches;
