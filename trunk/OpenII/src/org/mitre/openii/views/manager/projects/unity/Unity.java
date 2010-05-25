@@ -44,7 +44,13 @@ public class Unity {
 
 	public Vocabulary getVocabulary() throws Exception {
 		vocabulary = new Vocabulary(project);
-		return (vocabulary.exists()) ? vocabulary : generateVocabulary(null, null, null, null);
+		return generateVocabulary(null, null, null, null);
+	}
+
+	public Vocabulary replaceVocabulary(ArrayList<MatchVoter> voters, String name, String author, String description) throws Exception {
+		vocabulary = new Vocabulary(project);
+		if (vocabulary.exists()) vocabulary.deleteVocabularySchema();
+		return generateVocabulary(voters, name, author, description);
 	}
 
 	/**
@@ -65,7 +71,7 @@ public class Unity {
 	 */
 	public Vocabulary generateVocabulary(ArrayList<MatchVoter> voters, String name, String author, String description) throws Exception {
 		vocabulary = new Vocabulary(project);
-		if (vocabulary.exists()) vocabulary.deleteVocabularySchema();
+		if (vocabulary.exists()) return vocabulary;
 
 		if (voters == null) voters = MappingProcessor.getDefaultMatchVoters();
 		if (name == null) name = project.getName() + Vocabulary._VOCABULARY_TAG;
@@ -77,9 +83,10 @@ public class Unity {
 			System.out.println(" Running all matches ... ");
 			MappingProcessor.run(project, voters);
 		} catch (Exception e) {
-			throw new Exception("Match all error. /n" + e.getMessage());
+			e.printStackTrace();
+			throw new Exception("Match all error. " + e.getMessage());
 		}
-
+		
 		// Run MatchMaker to cluster the matches get synsets
 		try {
 			System.out.println(" Generating synsets...");
@@ -91,25 +98,22 @@ public class Unity {
 		// Create a vocabulary schema
 		System.out.println("Build vocabulary schema...");
 		generateCoreSchema(name, author, description);
-
 		System.out.println("new schema id = " + vocabulary.getVocabularyId());
 
 		// Create mappings for each source schema to the vocabulary schema
+		System.out.println("Generate mappings for vocabulary schema... ");
 		HashMap<Integer, Integer> vocabMappingHash = new HashMap<Integer, Integer>();
 		HashMap<Integer, ArrayList<MappingCell>> mappings = new HashMap<Integer, ArrayList<MappingCell>>();
 		for (Integer sourceSchemaId : project.getSchemaIDs()) {
 			if (sourceSchemaId.equals(vocabulary.getVocabularyId())) continue;
-			Mapping newMapping = new Mapping(null, project.getId(), sourceSchemaId, vocabulary.getVocabularyId());
-			Integer newMappingId = RepositoryManager.getClient().addMapping(newMapping);
-			if (newMappingId == null || newMappingId <= 0) {
-				System.out.println("Add mapping failed for " + sourceSchemaId);
-				continue;
-			}
 
-			vocabMappingHash.put(sourceSchemaId, newMappingId);
-			mappings.put(newMappingId, new ArrayList<MappingCell>());
-			OpenIIManager.fireMappingAdded(newMapping);
-			System.out.println("new mapping: " + newMappingId + " added for " + sourceSchemaId);
+			Mapping newMapping = new Mapping(null, project.getId(), sourceSchemaId, vocabulary.getVocabularyId());
+			Integer newMappingId = OpenIIManager.addMapping(newMapping);
+			if (newMappingId != null) {
+				vocabMappingHash.put(sourceSchemaId, newMappingId);
+				mappings.put(newMappingId, new ArrayList<MappingCell>());
+				System.out.println("new mapping: " + newMappingId + " added for " + sourceSchemaId);
+			} else System.err.println("Add mapping failed for " + sourceSchemaId);
 		}
 
 		// Create a new term for each synset and a mapping cell to existing terms
@@ -167,15 +171,17 @@ public class Unity {
 		// Create a new schema
 		Schema vocabSchema = new Schema(null, name, author, null, null, description, false);
 		Integer vocabularyID = OpenIIManager.addSchema(vocabSchema);
-		vocabSchema.setId(vocabularyID);
-		vocabulary.setVocabularySchema(vocabSchema);
-		OpenIIManager.fireSchemaAdded(vocabulary.getVocabularySchema().getSchema());
+		if (vocabularyID != null) {
+			vocabSchema.setId(vocabularyID);
+			OpenIIManager.updateSchema(vocabSchema);
+			vocabulary.setCoreID(vocabularyID);
 
-		// Add vocabulary schema to the project
-		ArrayList<ProjectSchema> schemas = new ArrayList<ProjectSchema>(Arrays.asList(project.getSchemas()));
-		schemas.add(new ProjectSchema(vocabSchema.getId(), vocabSchema.getName(), null));
-		project.setSchemas(schemas.toArray(new ProjectSchema[0]));
-		OpenIIManager.updateProject(project);
+			// Add vocabulary schema to the project
+			ArrayList<ProjectSchema> pSchemas = new ArrayList<ProjectSchema>(Arrays.asList(project.getSchemas()));
+			pSchemas.add(new ProjectSchema(vocabSchema.getId(), vocabSchema.getName(), null));
+			project.setSchemas(pSchemas.toArray(new ProjectSchema[0]));
+			OpenIIManager.updateProject(project);
+		} else System.err.println(" Vocabulary schema wasn't added. ");
 	}
 
 	/**
@@ -194,6 +200,7 @@ public class Unity {
 
 		System.out.println(" Cluster all matches...");
 		ClusterNode cluster = matchMaker.cluster();
+		System.out.println(" Cluster complete "); 
 		return cluster.synsets;
 	}
 
@@ -259,7 +266,6 @@ public class Unity {
 		}
 		return result;
 	}
-
 
 	public void setAuthoritativeSchema(Integer schemaId) {
 		this.authoritySchemaId = schemaId;
