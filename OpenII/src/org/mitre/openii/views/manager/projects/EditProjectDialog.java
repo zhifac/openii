@@ -166,7 +166,9 @@ public class EditProjectDialog extends Dialog implements ActionListener, ModifyL
 			// Set all project mappings
 			mappingList.setSchemas(schemaList.getSchemas());
 			mappingList.setMappings(OpenIIManager.getMappings(project.getId()));
-		} else authorField.setText(System.getProperty("user.name"));
+		} else {
+			authorField.setText(System.getProperty("user.name"));
+		}
 
 		return control;
 	}
@@ -230,16 +232,22 @@ public class EditProjectDialog extends Dialog implements ActionListener, ModifyL
 			oldMappings.put(oldMapping.getSourceId() + "_" + oldMapping.getTargetId(), oldMapping.getId());
 
 		// Remove old mappings in project
-		for (Integer oldMappingID : oldMappings.values())
-			if (!OpenIIManager.deleteMapping(oldMappingID)) errorMessage = "Unable to delete project mappings";
+		for (Integer oldMappingID : oldMappings.values()) {
+			if (!OpenIIManager.deleteMapping(oldMappingID)) {
+				errorMessage = "Unable to delete project mappings";
+			}
+		}
 
 		// Handles the creation of the project
 		if (errorMessage == null) {
 			if (project == null) {
 				project = new Project(0, name, description, author, schemas.toArray(new ProjectSchema[0]));
 				Integer projectID = OpenIIManager.addProject(project);
-				if (projectID == null) errorMessage = "Unable to generate project '" + project.getName() + "'";
-				else project.setId(projectID);
+				if (projectID == null) {
+					errorMessage = "Unable to generate project '" + project.getName() + "'";
+				} else {
+					project.setId(projectID);
+				}
 			}
 
 			// Handles the modification of the project
@@ -248,7 +256,9 @@ public class EditProjectDialog extends Dialog implements ActionListener, ModifyL
 				project.setAuthor(author);
 				project.setDescription(description);
 				project.setSchemas(schemas.toArray(new ProjectSchema[0]));
-				if (!OpenIIManager.updateProject(project)) errorMessage = "Unable to update project '" + project.getName() + "'";
+				if (!OpenIIManager.updateProject(project)) {
+					errorMessage = "Unable to update project '" + project.getName() + "'";
+				}
 			}
 		}
 

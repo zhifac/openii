@@ -11,12 +11,10 @@ import org.mitre.openii.widgets.WidgetUtilities;
 import org.mitre.schemastore.model.Schema;
 
 /** Constructs the Add Schemas to List Dialog */
-class AddSchemasToListDialog extends ElementListSelectionDialog
-{
+class AddSchemasToListDialog extends ElementListSelectionDialog {
 	/** Constructs the dialog */
-	AddSchemasToListDialog(Shell shell, ArrayList<Schema> selectedSchemas)
-	{
-		super(shell,new LabelProvider());
+	AddSchemasToListDialog(Shell shell, ArrayList<Schema> selectedSchemas) {
+		super(shell, new LabelProvider());
 		setMessage("Select Schemas (* = any string, ? = any char):");
 		setMultipleSelection(true);
 		ArrayList<Schema> schemas = OpenIIManager.getSchemas();
@@ -25,8 +23,7 @@ class AddSchemasToListDialog extends ElementListSelectionDialog
 	}	
 
 	/** Configures the dialog shell */
-	protected void configureShell(Shell shell)
-	{
+	protected void configureShell(Shell shell) {
 		super.configureShell(shell);
 		shell.setImage(OpenIIActivator.getImage("Schema.gif"));
 		shell.setText("Schema Selection");
