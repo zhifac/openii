@@ -6,10 +6,8 @@ import java.util.ArrayList;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
-import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
-import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -22,11 +20,9 @@ import org.mitre.openii.application.OpenIIActivator;
 import org.mitre.openii.model.OpenIIManager;
 import org.mitre.openii.model.RepositoryManager;
 import org.mitre.openii.widgets.BasicWidgets;
+import org.mitre.openii.widgets.ImporterSelector;
 import org.mitre.openii.widgets.URIField;
-import org.mitre.openii.widgets.WidgetUtilities;
 import org.mitre.schemastore.model.Schema;
-import org.mitre.schemastore.porters.PorterManager;
-import org.mitre.schemastore.porters.Importer.URIType;
 import org.mitre.schemastore.porters.PorterManager.PorterType;
 import org.mitre.schemastore.porters.schemaImporters.SchemaImporter;
 
@@ -34,7 +30,7 @@ import org.mitre.schemastore.porters.schemaImporters.SchemaImporter;
 public class ImportSchemaDialog extends TitleAreaDialog implements ISelectionChangedListener
 {	
 	// Stores the various dialog fields
-	private ComboViewer importerList = null;
+	private ImporterSelector importerSelector = null;
 	private SchemaInformationPane schemaInfoPane = null;
 	private FileInformationPane fileSelectionPane = null;
 	
@@ -59,14 +55,7 @@ public class ImportSchemaDialog extends TitleAreaDialog implements ISelectionCha
 		
 		// Construct a list of all importers that can be selected
 		BasicWidgets.createLabel(pane,"Importer");
-		importerList = new ComboViewer(pane, SWT.NONE);
-		ArrayList<SchemaImporter> importers = new PorterManager(RepositoryManager.getClient()).getPorters(PorterType.SCHEMA_IMPORTERS);
-		for(SchemaImporter importer : WidgetUtilities.sortList(importers))
-		{
-			URIType uriType = importer.getURIType();
-			if(uriType==URIType.FILE || uriType==URIType.M3MODEL || uriType==URIType.URI)
-				importerList.add(importer);
-		}
+		importerSelector = new ImporterSelector(pane, PorterType.SCHEMA_IMPORTERS);
 	}
 
 	/** Creates the dialog area for the Import Schema Dialog */
@@ -87,7 +76,7 @@ public class ImportSchemaDialog extends TitleAreaDialog implements ISelectionCha
 		fileSelectionPane = new FileInformationPane(pane);
 		
 		// Add listeners to the various panes
-		importerList.addSelectionChangedListener(this);
+		importerSelector.addSelectionChangedListener(this);
 		schemaInfoPane.addListener(new SchemaInfoListener());
 		schemaInfoPane.addURIListener(new SchemaURIListener());
 		fileSelectionPane.addListener(new FileSelectionListener());		
@@ -100,12 +89,7 @@ public class ImportSchemaDialog extends TitleAreaDialog implements ISelectionCha
 	protected Control createContents(Composite parent)
 	{
 		Control control = super.createContents(parent);
-
-		// Make the default importer selections
-		importerList.getCombo().select(0);
-		SchemaImporter importer = (SchemaImporter)((StructuredSelection)importerList.getSelection()).getFirstElement();
-		schemaInfoPane.initializeSchemaInfo(importer);
-		
+		schemaInfoPane.initializeSchemaInfo((SchemaImporter)importerSelector.getImporter());		
 		return control;
 	}
 	
@@ -120,7 +104,7 @@ public class ImportSchemaDialog extends TitleAreaDialog implements ISelectionCha
 	/** Handles changes to the selected importer */
 	public void selectionChanged(SelectionChangedEvent e)
 	{
-		SchemaImporter importer = (SchemaImporter)((StructuredSelection)importerList.getSelection()).getFirstElement();
+		SchemaImporter importer = importerSelector.getImporter();
 		schemaInfoPane.initializeSchemaInfo(importer);
 		updateButton();
 	}
@@ -131,7 +115,7 @@ public class ImportSchemaDialog extends TitleAreaDialog implements ISelectionCha
 		String errorMessage = null;
 		
 		// Retrieve the schema importer to be used
-		SchemaImporter importer = (SchemaImporter)((StructuredSelection)importerList.getSelection()).getFirstElement();
+		SchemaImporter importer = importerSelector.getImporter();
 		
 		// Build the list of URIs to be imported
 		ArrayList<URI> uris = new ArrayList<URI>();
@@ -181,7 +165,7 @@ public class ImportSchemaDialog extends TitleAreaDialog implements ISelectionCha
 				setErrorMessage(uriField.isValid() ? null : "A valid file must be selected");
 
 			// Update name, author, and description info when file modified
-			SchemaImporter importer = (SchemaImporter)((StructuredSelection)importerList.getSelection()).getFirstElement();
+			SchemaImporter importer = importerSelector.getImporter();
 			try {
 				File file = new File(uriString);
 				if(!uriField.getMode().equals(URIField.DIRECTORY))
