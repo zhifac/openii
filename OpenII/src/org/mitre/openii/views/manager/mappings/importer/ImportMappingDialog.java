@@ -5,10 +5,8 @@ import java.util.ArrayList;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
-import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
-import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -27,11 +25,10 @@ import org.mitre.openii.application.OpenIIActivator;
 import org.mitre.openii.model.OpenIIManager;
 import org.mitre.openii.model.RepositoryManager;
 import org.mitre.openii.widgets.BasicWidgets;
+import org.mitre.openii.widgets.ImporterSelector;
 import org.mitre.openii.widgets.URIField;
-import org.mitre.openii.widgets.WidgetUtilities;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.Project;
-import org.mitre.schemastore.porters.PorterManager;
 import org.mitre.schemastore.porters.Importer.URIType;
 import org.mitre.schemastore.porters.PorterManager.PorterType;
 import org.mitre.schemastore.porters.mappingImporters.MappingImporter;
@@ -45,7 +42,7 @@ public class ImportMappingDialog extends TitleAreaDialog implements ISelectionCh
 	private Project project = null;
 	
 	// Stores the pages used by this wizard
-	private ComboViewer importerList = null;
+	private ImporterSelector importerSelector = null;
 	private URIField uriField = null;
 	private SchemaSelectionPane sourcePane = null;
 	private SchemaSelectionPane targetPane = null;
@@ -74,11 +71,8 @@ public class ImportMappingDialog extends TitleAreaDialog implements ISelectionCh
 		
 		// Construct a list of all importers that can be selected
 		BasicWidgets.createLabel(pane,"Importer");
-		importerList = new ComboViewer(pane, SWT.NONE);
-		ArrayList<MappingImporter> importers = new PorterManager(RepositoryManager.getClient()).getPorters(PorterType.MAPPING_IMPORTERS);
-		for(MappingImporter importer : WidgetUtilities.sortList(importers))
-			importerList.add(importer);
-		importerList.addSelectionChangedListener(this);
+		importerSelector = new ImporterSelector(pane, PorterType.MAPPING_IMPORTERS);
+		importerSelector.addSelectionChangedListener(this);
 	}
 	
 	/** Creates the dialog area for the Import Mapping Dialog */
@@ -129,7 +123,6 @@ public class ImportMappingDialog extends TitleAreaDialog implements ISelectionCh
 		Control control = super.createContents(parent);
 
 		// Make the default importer selections
-		importerList.getCombo().select(0);
 		updateFields();
 		uriField.getTextField().setFocus();
 		
@@ -140,7 +133,7 @@ public class ImportMappingDialog extends TitleAreaDialog implements ISelectionCh
 	public void updateFields()
 	{
 		// Retrieve the selected importer
-		MappingImporter importer = (MappingImporter)((StructuredSelection)importerList.getSelection()).getFirstElement();
+		MappingImporter importer = importerSelector.getImporter();
 		boolean uriImporter = importer.getURIType()==URIType.URI;
 
 		// Generate the list of extensions that are available
@@ -166,7 +159,7 @@ public class ImportMappingDialog extends TitleAreaDialog implements ISelectionCh
 	/** Handles changes to the selected importer */
 	public void selectionChanged(SelectionChangedEvent e)
 	{
-		if(e.getSource().equals(importerList)) updateFields();
+		if(e.getSource().equals(importerSelector)) updateFields();
 		else updateButton();
 	}
 	
@@ -183,7 +176,7 @@ public class ImportMappingDialog extends TitleAreaDialog implements ISelectionCh
 
 			// Update the labeling on the source and schema panes
 			try {
-				MappingImporter importer = (MappingImporter)((StructuredSelection)importerList.getSelection()).getFirstElement();
+				MappingImporter importer = importerSelector.getImporter();
 				importer.initialize(uriField.getURI());
 				sourcePane.setSchema(importer.getSourceSchema());
 				targetPane.setSchema(importer.getTargetSchema());
@@ -219,7 +212,7 @@ public class ImportMappingDialog extends TitleAreaDialog implements ISelectionCh
 					throw new Exception("Mapping already exists in project");
 			
 			// Import mapping
-			MappingImporter importer = (MappingImporter)((StructuredSelection)importerList.getSelection()).getFirstElement();
+			MappingImporter importer = importerSelector.getImporter();;
 			importer.initialize(uri);
 			Integer mappingID = importer.importMapping(project, sourceID, targetID);
 			if(mappingID!=null)

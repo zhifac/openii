@@ -20,6 +20,7 @@ import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.Tag;
 import org.mitre.schemastore.model.schemaInfo.SchemaInfo;
 import org.mitre.schemastore.porters.Porter;
+import org.mitre.schemastore.porters.PorterManager.PorterType;
 
 /**
  * Generates the schema store connection for use by all components
@@ -85,18 +86,17 @@ public class OpenIIManager
 	}
 	
 	/** Returns the current porter preference */
-	public static Class<?> getPorterPreference(String porterType)
+	public static Class<?> getPorterPreference(PorterType porterType)
 	{
-		String porterClass = OpenIIActivator.getDefault().getPreferenceStore().getString(porterType);
-		try { Class.forName(porterClass); } catch(Exception e) { System.out.println("(E)OpenIIManager.getPorterPreference - Failed to find the specified porter class"); }
-		return null;
+		String porterClass = OpenIIActivator.getDefault().getPreferenceStore().getString(porterType.name());
+		try { return Class.forName(porterClass); } catch(Exception e) { return null; }
 	}
 	
 	/** Sets the porter preference */
-	public static void setPorterPreference(String porterType, Porter porter)
+	public static void setPorterPreference(PorterType porterType, Porter porter)
 	{
 		ScopedPreferenceStore preferences = (ScopedPreferenceStore)OpenIIActivator.getDefault().getPreferenceStore();
-		preferences.setValue(porterType,porter.getClass().toString());
+		preferences.setValue(porterType.name(),porter.getClass().getName());
 		try { preferences.save(); } catch(Exception e) { System.out.println("(E)OpenIIManager.setPorterPreference - Failed to save the setting for the selected porter"); }		
 	}
 	

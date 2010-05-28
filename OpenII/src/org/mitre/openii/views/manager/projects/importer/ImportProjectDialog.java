@@ -1,12 +1,9 @@
 package org.mitre.openii.views.manager.projects.importer;
 
 import java.io.File;
-import java.util.ArrayList;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
-import org.eclipse.jface.viewers.ComboViewer;
-import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -19,11 +16,9 @@ import org.mitre.openii.application.OpenIIActivator;
 import org.mitre.openii.model.OpenIIManager;
 import org.mitre.openii.model.RepositoryManager;
 import org.mitre.openii.widgets.BasicWidgets;
+import org.mitre.openii.widgets.ImporterSelector;
 import org.mitre.openii.widgets.URIField;
-import org.mitre.openii.widgets.WidgetUtilities;
 import org.mitre.schemastore.model.Project;
-import org.mitre.schemastore.porters.PorterManager;
-import org.mitre.schemastore.porters.Importer.URIType;
 import org.mitre.schemastore.porters.PorterManager.PorterType;
 import org.mitre.schemastore.porters.projectImporters.ProjectImporter;
 
@@ -31,7 +26,7 @@ import org.mitre.schemastore.porters.projectImporters.ProjectImporter;
 public class ImportProjectDialog extends TitleAreaDialog
 {	
 	// Stores the various dialog fields
-	private ComboViewer importerList = null;
+	private ImporterSelector importerSelector = null;
 	private ProjectInformationPane projectInfoPane = null;
 	
 	/** Constructs the dialog */
@@ -55,14 +50,7 @@ public class ImportProjectDialog extends TitleAreaDialog
 		
 		// Construct a list of all importers that can be selected
 		BasicWidgets.createLabel(pane,"Importer");
-		importerList = new ComboViewer(pane, SWT.NONE);
-		ArrayList<ProjectImporter> importers = new PorterManager(RepositoryManager.getClient()).getPorters(PorterType.PROJECT_IMPORTERS);
-		for(ProjectImporter importer : WidgetUtilities.sortList(importers))
-		{
-			URIType uriType = importer.getURIType();
-			if(uriType==URIType.FILE || uriType==URIType.M3MODEL || uriType==URIType.URI)
-				importerList.add(importer);
-		}
+		importerSelector = new ImporterSelector(pane, PorterType.PROJECT_IMPORTERS);
 	}
 
 	/** Creates the dialog area for the Import Project Dialog */
@@ -95,9 +83,7 @@ public class ImportProjectDialog extends TitleAreaDialog
 		Control control = super.createContents(parent);
 
 		// Make the default importer selections
-		importerList.getCombo().select(0);
-		ProjectImporter importer = (ProjectImporter)((StructuredSelection)importerList.getSelection()).getFirstElement();
-		projectInfoPane.initializeProjectInfo(importer);
+		projectInfoPane.initializeProjectInfo((ProjectImporter)importerSelector.getImporter());
 		
 		return control;
 	}
@@ -112,7 +98,7 @@ public class ImportProjectDialog extends TitleAreaDialog
 		String errorMessage = null;
 		
 		// Imports the project
-		ProjectImporter importer = (ProjectImporter)((StructuredSelection)importerList.getSelection()).getFirstElement();
+		ProjectImporter importer = importerSelector.getImporter();
 		try {
 			importer.initialize(projectInfoPane.getURIField().getURI());
 			Integer projectID = importer.importProject(projectInfoPane.getName(), projectInfoPane.getAuthor(), projectInfoPane.getDescription());
