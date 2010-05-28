@@ -232,7 +232,9 @@ public class XSDImporter extends SchemaImporter
 					Enumeration<?> facets = ((SimpleType)passedType).getFacets("enumeration");
 					while (facets.hasMoreElements()) {
 						Facet facet = (Facet) facets.nextElement();
-						DomainValue domainValue = new DomainValue(nextId(), facet.getValue(), facet.getValue(), domain.getId(), 0);
+						// TODO: Uncomment this to use the DOMAINVALUE NAME as documentation
+						//DomainValue domainValue = new DomainValue(nextId(), facet.getValue(), facet.getValue(), domain.getId(), 0);
+						DomainValue domainValue = new DomainValue(nextId(), facet.getValue(), this.getDocumentation(facet), domain.getId(), 0);
 						schemaElementsHS.put(domainValue.hashCode(), domainValue);	
 					}
 				}
