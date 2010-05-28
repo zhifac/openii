@@ -6,7 +6,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 
-import org.eclipse.core.runtime.Preferences;
+import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.mitre.openii.application.OpenIIActivator;
 import org.mitre.openii.implus.IMPLUSListener;
 import org.mitre.openii.model.controllers.MappingCellMerger;
@@ -73,14 +73,14 @@ public class OpenIIManager
 
 	/** Returns the active directory */
 	public static String getActiveDir()
-		{ return OpenIIActivator.getDefault().getPluginPreferences().getString("ActiveDirectory"); }
+		{ return OpenIIActivator.getDefault().getPreferenceStore().getString("ActiveDirectory"); }
 	
 	/** Sets the active directory */
 	public static void setActiveDir(String activeDir)
 	{
-		Preferences preferences = OpenIIActivator.getDefault().getPluginPreferences();
+		ScopedPreferenceStore preferences = (ScopedPreferenceStore)OpenIIActivator.getDefault().getPreferenceStore();
 		preferences.setValue("ActiveDirectory",activeDir);
-		OpenIIActivator.getDefault().savePluginPreferences();
+		try { preferences.save(); } catch(Exception e) {}
 	}
 	
 	//------------ Schema Functionality -------------
