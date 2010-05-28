@@ -15,6 +15,8 @@ import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
 import org.mitre.schemastore.porters.Porter;
 import org.mitre.schemastore.porters.PorterManager;
+import org.mitre.schemastore.porters.Importer.URIType;
+import org.mitre.schemastore.porters.PorterManager.PorterType;
 import org.mitre.schemastore.porters.projectImporters.M3ProjectImporter;
 import org.mitre.schemastore.porters.schemaImporters.SchemaImporter;
 
@@ -133,11 +135,11 @@ public class SchemaStoreManager
 				{ return importer1.getName().compareTo(importer2.getName()); } }
 
 		// Retrieves the list of available importers
-		ArrayList<SchemaImporter> importers = new PorterManager(client).getPorters(PorterManager.SCHEMA_IMPORTERS);
+		ArrayList<SchemaImporter> importers = new PorterManager(client).getPorters(PorterType.SCHEMA_IMPORTERS);
 		for(SchemaImporter importer : new ArrayList<SchemaImporter>(importers))
 		{
-			Integer uriType = importer.getURIType();
-			if(uriType.equals(SchemaImporter.NONE) || uriType.equals(SchemaImporter.SCHEMA))
+			URIType uriType = importer.getURIType();
+			if(uriType.equals(URIType.NONE) || uriType.equals(URIType.SCHEMA))
 				importers.remove(importer);
 		}
 		Collections.sort(importers, new ImporterComparator());
@@ -149,6 +151,6 @@ public class SchemaStoreManager
 		{ return (M3ProjectImporter)new PorterManager(client).getPorter(M3ProjectImporter.class); }
 
 	/** Returns the specified list of porters */
-	public static <T extends Porter> ArrayList<T> getPorters(int type)
+	public static <T extends Porter> ArrayList<T> getPorters(PorterType type)
 		{ return new PorterManager(client).getPorters(type); }
 }

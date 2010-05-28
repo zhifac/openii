@@ -41,7 +41,7 @@ import org.mitre.schemastore.model.Project;
 import org.mitre.schemastore.model.ProjectSchema;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.porters.Importer;
-import org.mitre.schemastore.porters.PorterManager;
+import org.mitre.schemastore.porters.PorterManager.PorterType;
 import org.mitre.schemastore.porters.mappingImporters.MappingCellPaths;
 import org.mitre.schemastore.porters.mappingImporters.MappingImporter;
 
@@ -198,7 +198,7 @@ public class ImportMappingDialog extends JDialog implements ActionListener, Care
 		selectionLabel.setVerticalAlignment(SwingConstants.CENTER);
 		
 		// Generate the selection list
-		ArrayList<Importer> importers = SchemaStoreManager.getPorters(PorterManager.MAPPING_IMPORTERS);
+		ArrayList<Importer> importers = SchemaStoreManager.getPorters(PorterType.MAPPING_IMPORTERS);
 		importerList = new JComboBox(new Vector<Importer>(importers));
 		importerList.setBackground(Color.white);
 		importerList.setFocusable(false);

@@ -18,6 +18,7 @@ import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.SchemaStoreManager;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.porters.Importer;
+import org.mitre.schemastore.porters.Importer.URIType;
 import org.mitre.schemastore.porters.schemaImporters.SchemaImporter;
 
 /** Class for displaying the schema importer dialog */
@@ -66,7 +67,7 @@ public class ImportSchemaDialog extends AbstractImportDialog implements ActionLi
 	{
 		// Initialize the importer pane
 		SchemaImporter importer = (SchemaImporter)getImporter();
-		boolean isM3SchemaImporter = importer.getURIType()==SchemaImporter.M3MODEL;
+		boolean isM3SchemaImporter = importer.getURIType()==URIType.M3MODEL;
 		uriField.setImporter(getImporter());
 
 		// Lock down the name and description fields for archive importers

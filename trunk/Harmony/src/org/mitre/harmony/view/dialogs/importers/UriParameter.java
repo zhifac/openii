@@ -22,6 +22,7 @@ import javax.swing.filechooser.FileFilter;
 
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.schemastore.porters.Importer;
+import org.mitre.schemastore.porters.Importer.URIType;
 
 /** URI parameter class */
 public class UriParameter extends JPanel implements ActionListener
@@ -87,7 +88,7 @@ public class UriParameter extends JPanel implements ActionListener
 	{
 		this.importer = importer;
 		fileField.setText("");
-		fileButton.setVisible(importer.getURIType()!=Importer.URI);
+		fileButton.setVisible(importer.getURIType()!=URIType.URI);
 	}
 	
 	/** Returns the parameter URI */
@@ -95,7 +96,7 @@ public class UriParameter extends JPanel implements ActionListener
 	{
 		String value = fileField.getText();
 		if(value==null || value.length()==0) return null;
-		if(importer.getURIType()==Importer.URI) try { return new URI(value); } catch(Exception e) { return null; }
+		if(importer.getURIType()==URIType.URI) try { return new URI(value); } catch(Exception e) { return null; }
 		else return new File(value).toURI();
 	}
 	
