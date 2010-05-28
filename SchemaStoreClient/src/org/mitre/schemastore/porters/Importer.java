@@ -23,17 +23,13 @@ import java.util.ArrayList;
 public abstract class Importer extends Porter
 {
 	// Defines the various types of URIs that may be requested
-	public static final Integer NONE = 0;
-	public static final Integer SCHEMA = 1;
-	public static final Integer FILE = 2;
-	public static final Integer M3MODEL = 3;
-	public static final Integer URI = 4;
+	public static enum URIType {NONE, SCHEMA, FILE, M3MODEL, URI};
 	
 	/** Stores the URI being imported */
 	protected URI uri;
 	
 	/** Returns the importer URI type */
-	abstract public Integer getURIType();
+	abstract public URIType getURIType();
 	
 	/** Returns the importer URI file types (only needed when URI type is FILE) */
 	public ArrayList<String> getFileTypes() { return new ArrayList<String>(); }

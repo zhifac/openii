@@ -37,8 +37,8 @@ public class M3ProjectImporter extends ProjectImporter
 		{ return "This importer can be used to download a project in the M3 format"; }
 		
 	/** Returns the importer URI type */
-	public Integer getURIType()
-		{ return FILE; }
+	public URIType getURIType()
+		{ return URIType.FILE; }
 
 	/** Returns the importer URI file types */
 	public ArrayList<String> getFileTypes()

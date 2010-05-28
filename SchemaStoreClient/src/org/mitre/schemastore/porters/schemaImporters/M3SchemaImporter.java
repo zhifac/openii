@@ -70,8 +70,8 @@ public class M3SchemaImporter extends SchemaImporter
 		{ return "This importer can be used to download a schema in the M3 format"; }
 		
 	/** Returns the importer URI type */
-	public Integer getURIType()
-		{ return M3MODEL; }
+	public URIType getURIType()
+		{ return URIType.M3MODEL; }
 
 	/** Returns the importer URI file types */
 	public ArrayList<String> getFileTypes()

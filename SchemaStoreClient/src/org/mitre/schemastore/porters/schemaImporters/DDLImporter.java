@@ -34,8 +34,8 @@ public class DDLImporter extends SchemaImporter
 		{ return "This importer can be used to import schemas from a ddl format"; }
 
 	/** Returns the importer URI type */
-	public Integer getURIType()
-		{ return FILE; }
+	public URIType getURIType()
+		{ return URIType.FILE; }
 
 	/** Returns the importer URI file types */
 	public ArrayList<String> getFileTypes()

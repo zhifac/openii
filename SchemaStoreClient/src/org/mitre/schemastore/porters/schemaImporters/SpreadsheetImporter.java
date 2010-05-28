@@ -222,8 +222,8 @@ public class SpreadsheetImporter extends SchemaImporter {
 	}
 
 	/** Returns the importer URI type */
-	public Integer getURIType() {
-		return FILE;
+	public URIType getURIType() {
+		return URIType.FILE;
 	}
 
 	/** Returns the importer URI file types */

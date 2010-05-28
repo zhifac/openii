@@ -40,8 +40,8 @@ public class M3MappingImporter extends MappingImporter
 		{ return "This importer can be used to download a mapping in the M3 format"; }
 		
 	/** Returns the importer URI type */
-	public Integer getURIType()
-		{ return FILE; }
+	public URIType getURIType()
+		{ return URIType.FILE; }
 	
 	/** Returns the importer URI file types */
 	public ArrayList<String> getFileTypes()

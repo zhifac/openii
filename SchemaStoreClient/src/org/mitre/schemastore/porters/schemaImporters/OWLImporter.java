@@ -66,8 +66,8 @@ public class OWLImporter extends SchemaImporter implements RDFErrorHandler {
 	}
 
 	/** Returns the importer URI type */
-	public Integer getURIType() {
-		return FILE;
+	public URIType getURIType() {
+		return URIType.FILE;
 	}
 
 	/** Returns the importer URI file types */
