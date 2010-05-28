@@ -5,7 +5,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.eclipse.core.runtime.Preferences;
+import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.mitre.openii.application.OpenIIActivator;
 import org.mitre.schemastore.client.Repository;
 import org.mitre.schemastore.client.SchemaStoreClient;
@@ -34,7 +34,7 @@ public class RepositoryManager
 	/** Loads in any saved repositories */
 	private static void loadRepositories()
 	{
-		Preferences preferences = OpenIIActivator.getDefault().getPluginPreferences();
+		ScopedPreferenceStore preferences = (ScopedPreferenceStore)OpenIIActivator.getDefault().getPreferenceStore();
 	
 		// Retrieves the stored repositories
 		Integer count = preferences.getInt("RepositoryCount");
@@ -59,7 +59,7 @@ public class RepositoryManager
 	/** Saves the current set of repositories */
 	private static void saveRepositories()
 	{
-		Preferences preferences = OpenIIActivator.getDefault().getPluginPreferences();
+		ScopedPreferenceStore preferences = (ScopedPreferenceStore)OpenIIActivator.getDefault().getPreferenceStore();
 		
 		// Stores the repositories
 		preferences.setValue("RepositoryCount",repositories.size());
@@ -78,7 +78,8 @@ public class RepositoryManager
 		Integer loc = repositories.indexOf(selectedRepository);
 		if(loc>=0) preferences.setValue("SelectedRepository", loc);
 		
-		OpenIIActivator.getDefault().savePluginPreferences();
+		// Save the preferences
+		try { preferences.save(); } catch(Exception e) { System.out.println("(E)RepositoryManager.saveRepositories - Failed to save the repository settings"); }
 	}
 	
 	/** Initializes the schema store repositories */
