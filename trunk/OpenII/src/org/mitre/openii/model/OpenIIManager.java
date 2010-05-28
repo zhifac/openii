@@ -80,7 +80,7 @@ public class OpenIIManager
 	{
 		ScopedPreferenceStore preferences = (ScopedPreferenceStore)OpenIIActivator.getDefault().getPreferenceStore();
 		preferences.setValue("ActiveDirectory",activeDir);
-		try { preferences.save(); } catch(Exception e) {}
+		try { preferences.save(); } catch(Exception e) { System.out.println("(E)OpenIIManager.setActiveDir - Failed to save the active directory setting"); }
 	}
 	
 	//------------ Schema Functionality -------------
