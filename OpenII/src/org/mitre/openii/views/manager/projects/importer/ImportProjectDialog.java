@@ -22,8 +22,9 @@ import org.mitre.openii.widgets.BasicWidgets;
 import org.mitre.openii.widgets.URIField;
 import org.mitre.openii.widgets.WidgetUtilities;
 import org.mitre.schemastore.model.Project;
-import org.mitre.schemastore.porters.Importer;
 import org.mitre.schemastore.porters.PorterManager;
+import org.mitre.schemastore.porters.Importer.URIType;
+import org.mitre.schemastore.porters.PorterManager.PorterType;
 import org.mitre.schemastore.porters.projectImporters.ProjectImporter;
 
 /** Constructs the Import Schema Dialog */
@@ -55,11 +56,11 @@ public class ImportProjectDialog extends TitleAreaDialog
 		// Construct a list of all importers that can be selected
 		BasicWidgets.createLabel(pane,"Importer");
 		importerList = new ComboViewer(pane, SWT.NONE);
-		ArrayList<ProjectImporter> importers = new PorterManager(RepositoryManager.getClient()).getPorters(PorterManager.PROJECT_IMPORTERS);
+		ArrayList<ProjectImporter> importers = new PorterManager(RepositoryManager.getClient()).getPorters(PorterType.PROJECT_IMPORTERS);
 		for(ProjectImporter importer : WidgetUtilities.sortList(importers))
 		{
-			Integer uriType = importer.getURIType();
-			if(uriType==Importer.FILE || uriType==Importer.M3MODEL || uriType==Importer.URI)
+			URIType uriType = importer.getURIType();
+			if(uriType==URIType.FILE || uriType==URIType.M3MODEL || uriType==URIType.URI)
 				importerList.add(importer);
 		}
 	}

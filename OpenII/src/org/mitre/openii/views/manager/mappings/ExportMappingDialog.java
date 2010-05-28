@@ -13,6 +13,7 @@ import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.Project;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.porters.PorterManager;
+import org.mitre.schemastore.porters.PorterManager.PorterType;
 import org.mitre.schemastore.porters.mappingExporters.MappingExporter;
 
 /** Constructs the Export Mapping Dialog class */
@@ -33,7 +34,7 @@ public class ExportMappingDialog
 		
 		// Get the list of exporters available for use
 		PorterManager manager = new PorterManager(RepositoryManager.getClient());
-		ArrayList<MappingExporter> exporters =  manager.getPorters(PorterManager.MAPPING_EXPORTERS);
+		ArrayList<MappingExporter> exporters =  manager.getPorters(PorterType.MAPPING_EXPORTERS);
 		
 		// Set up the filter names and extensions
 		ArrayList<String> names = new ArrayList<String>();

@@ -32,6 +32,8 @@ import org.mitre.openii.widgets.WidgetUtilities;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.Project;
 import org.mitre.schemastore.porters.PorterManager;
+import org.mitre.schemastore.porters.Importer.URIType;
+import org.mitre.schemastore.porters.PorterManager.PorterType;
 import org.mitre.schemastore.porters.mappingImporters.MappingImporter;
 
 /**
@@ -73,7 +75,7 @@ public class ImportMappingDialog extends TitleAreaDialog implements ISelectionCh
 		// Construct a list of all importers that can be selected
 		BasicWidgets.createLabel(pane,"Importer");
 		importerList = new ComboViewer(pane, SWT.NONE);
-		ArrayList<MappingImporter> importers = new PorterManager(RepositoryManager.getClient()).getPorters(PorterManager.MAPPING_IMPORTERS);
+		ArrayList<MappingImporter> importers = new PorterManager(RepositoryManager.getClient()).getPorters(PorterType.MAPPING_IMPORTERS);
 		for(MappingImporter importer : WidgetUtilities.sortList(importers))
 			importerList.add(importer);
 		importerList.addSelectionChangedListener(this);
@@ -139,7 +141,7 @@ public class ImportMappingDialog extends TitleAreaDialog implements ISelectionCh
 	{
 		// Retrieve the selected importer
 		MappingImporter importer = (MappingImporter)((StructuredSelection)importerList.getSelection()).getFirstElement();
-		boolean uriImporter = importer.getURIType()==MappingImporter.URI;
+		boolean uriImporter = importer.getURIType()==URIType.URI;
 
 		// Generate the list of extensions that are available
 		ArrayList<String> extensions = new ArrayList<String>();
