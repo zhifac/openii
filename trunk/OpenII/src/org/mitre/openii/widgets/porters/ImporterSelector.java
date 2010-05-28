@@ -1,4 +1,4 @@
-package org.mitre.openii.widgets;
+package org.mitre.openii.widgets.porters;
 
 import java.util.ArrayList;
 
@@ -10,12 +10,12 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.mitre.openii.model.OpenIIManager;
 import org.mitre.openii.model.RepositoryManager;
+import org.mitre.openii.widgets.WidgetUtilities;
 import org.mitre.schemastore.porters.Importer;
 import org.mitre.schemastore.porters.Porter;
 import org.mitre.schemastore.porters.PorterManager;
 import org.mitre.schemastore.porters.Importer.URIType;
 import org.mitre.schemastore.porters.PorterManager.PorterType;
-import org.mitre.schemastore.porters.schemaImporters.SchemaImporter;
 
 /** Constructs the Importer Selector */
 public class ImporterSelector extends ComboViewer implements ISelectionChangedListener
