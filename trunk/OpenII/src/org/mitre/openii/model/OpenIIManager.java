@@ -19,6 +19,7 @@ import org.mitre.schemastore.model.ProjectSchema;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.Tag;
 import org.mitre.schemastore.model.schemaInfo.SchemaInfo;
+import org.mitre.schemastore.porters.Porter;
 
 /**
  * Generates the schema store connection for use by all components
@@ -81,6 +82,22 @@ public class OpenIIManager
 		ScopedPreferenceStore preferences = (ScopedPreferenceStore)OpenIIActivator.getDefault().getPreferenceStore();
 		preferences.setValue("ActiveDirectory",activeDir);
 		try { preferences.save(); } catch(Exception e) { System.out.println("(E)OpenIIManager.setActiveDir - Failed to save the active directory setting"); }
+	}
+	
+	/** Returns the current porter preference */
+	public static Class<?> getPorterPreference(String porterType)
+	{
+		String porterClass = OpenIIActivator.getDefault().getPreferenceStore().getString(porterType);
+		try { Class.forName(porterClass); } catch(Exception e) { System.out.println("(E)OpenIIManager.getPorterPreference - Failed to find the specified porter class"); }
+		return null;
+	}
+	
+	/** Sets the porter preference */
+	public static void setPorterPreference(String porterType, Porter porter)
+	{
+		ScopedPreferenceStore preferences = (ScopedPreferenceStore)OpenIIActivator.getDefault().getPreferenceStore();
+		preferences.setValue(porterType,porter.getClass().toString());
+		try { preferences.save(); } catch(Exception e) { System.out.println("(E)OpenIIManager.setPorterPreference - Failed to save the setting for the selected porter"); }		
 	}
 	
 	//------------ Schema Functionality -------------

@@ -15,6 +15,7 @@ import org.mitre.openii.widgets.BasicWidgets;
 import org.mitre.openii.widgets.OptionPane;
 import org.mitre.openii.widgets.URIField;
 import org.mitre.schemastore.model.Schema;
+import org.mitre.schemastore.porters.Importer.URIType;
 import org.mitre.schemastore.porters.schemaImporters.SchemaImporter;
 
 /** Class for storing schema information for the files to be imported */
@@ -51,8 +52,8 @@ public class SchemaInformationPane implements SelectionListener
 	void initializeSchemaInfo(SchemaImporter importer)
 	{
 		// Identify the importer type
-		boolean m3Importer = importer.getURIType()==SchemaImporter.M3MODEL;
-		boolean uriImporter = importer.getURIType()==SchemaImporter.URI;
+		boolean m3Importer = importer.getURIType()==URIType.M3MODEL;
+		boolean uriImporter = importer.getURIType()==URIType.URI;
 		
 		// Clear out the fields as needed
 		if(m3Importer)

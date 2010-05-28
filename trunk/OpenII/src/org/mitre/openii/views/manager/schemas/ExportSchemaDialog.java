@@ -12,6 +12,7 @@ import org.mitre.openii.model.RepositoryManager;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.schemaInfo.SchemaInfo;
 import org.mitre.schemastore.porters.PorterManager;
+import org.mitre.schemastore.porters.PorterManager.PorterType;
 import org.mitre.schemastore.porters.schemaExporters.SchemaExporter;
 
 /** Constructs the Export Schema Dialog class */
@@ -28,7 +29,7 @@ public class ExportSchemaDialog
 		
 		// Get the list of exporters available for use
 		PorterManager manager = new PorterManager(RepositoryManager.getClient());
-		ArrayList<SchemaExporter> exporters = manager.getPorters(PorterManager.SCHEMA_EXPORTERS);
+		ArrayList<SchemaExporter> exporters = manager.getPorters(PorterType.SCHEMA_EXPORTERS);
 		
 		// Set up the filter names and extensions
 		ArrayList<String> names = new ArrayList<String>();
