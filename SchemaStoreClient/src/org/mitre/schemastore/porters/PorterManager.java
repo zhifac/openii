@@ -64,7 +64,7 @@ public class PorterManager
 	}
 	
 	/** Returns the list of specified porters */ @SuppressWarnings("unchecked")
-	public <T> ArrayList<T> getPorters(int type)
+	public <T> ArrayList<T> getPorters(PorterType type)
 	{
 		ArrayList<T> porterList = new ArrayList<T>();
 		for(Porter porter : porters.get(type)) porterList.add((T)porter);
