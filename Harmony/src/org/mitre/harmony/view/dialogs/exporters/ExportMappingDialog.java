@@ -9,7 +9,7 @@ import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.project.ProjectMapping;
 import org.mitre.schemastore.model.Project;
 import org.mitre.schemastore.porters.Exporter;
-import org.mitre.schemastore.porters.PorterManager;
+import org.mitre.schemastore.porters.PorterManager.PorterType;
 import org.mitre.schemastore.porters.mappingExporters.MappingExporter;
 
 /**
@@ -26,7 +26,7 @@ public class ExportMappingDialog extends AbstractExportDialog
 		{ this.mapping = mapping; }
 	
 	/** Declares the export type */
-	protected int getExporterType() { return PorterManager.MAPPING_EXPORTERS; }
+	protected PorterType getExporterType() { return PorterType.MAPPING_EXPORTERS; }
 	
 	/** Handles the export to the specified file */
 	protected void export(HarmonyModel harmonyModel, Exporter exporter, File file) throws IOException

@@ -13,6 +13,7 @@ import javax.swing.filechooser.FileFilter;
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.SchemaStoreManager;
 import org.mitre.schemastore.porters.Exporter;
+import org.mitre.schemastore.porters.PorterManager.PorterType;
 
 /**
  * Abstract dialog for exporting
@@ -44,7 +45,7 @@ abstract class AbstractExportDialog
 	}
 	
 	/** Abstract class for defining the type of exporters */
-	abstract protected int getExporterType();
+	abstract protected PorterType getExporterType();
 	
 	/** Abstract class for exporting to the specified file */
 	abstract protected void export(HarmonyModel harmonyModel, Exporter exporter, File file) throws IOException;
