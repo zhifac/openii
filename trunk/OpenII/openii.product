@@ -56,7 +56,8 @@
    </features>
 
    <configurations>
-      <plugin id="org.eclipse.osgi" autoStart="false" startLevel="0" />
+      <plugin id="org.eclipse.core.runtime" autoStart="true" startLevel="0" />
+      <plugin id="org.eclipse.osgi" autoStart="true" startLevel="0" />
    </configurations>
 
 </product>
