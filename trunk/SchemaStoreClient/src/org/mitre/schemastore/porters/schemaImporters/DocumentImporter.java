@@ -24,7 +24,7 @@ public class DocumentImporter extends SchemaImporter {
     public String getDescription()  { return "This imports schemas text documents"; }
 
 	/** Returns the importer URI type */
-	public Integer getURIType() { return FILE; }
+	public URIType getURIType() { return URIType.FILE; }
 	
 	/** Returns the importer URI file types */
 	public ArrayList<String> getFileTypes()

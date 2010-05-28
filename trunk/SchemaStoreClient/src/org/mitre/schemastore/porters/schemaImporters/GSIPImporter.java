@@ -60,7 +60,7 @@ public class GSIPImporter extends SchemaImporter {
     public String getDescription()  { return "This imports schemas from the NAS-specific Access MDB"; }
 
 	/** Returns the importer URI type */
-	public Integer getURIType() { return FILE; }
+	public URIType getURIType() { return URIType.FILE; }
 	
 	/** Returns the importer URI file types */
 	public ArrayList<String> getFileTypes()

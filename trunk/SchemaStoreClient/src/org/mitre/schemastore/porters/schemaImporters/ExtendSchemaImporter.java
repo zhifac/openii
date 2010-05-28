@@ -16,8 +16,8 @@ public class ExtendSchemaImporter extends SchemaImporter
 		{ return "This method allows the extending of a schema in the repository"; }
 	
 	/** Returns the importer URI type */
-	public Integer getURIType()
-		{ return SCHEMA; }
+	public URIType getURIType()
+		{ return URIType.SCHEMA; }
 	
 	/** Returns the list of schemas which this schema extends */
 	protected ArrayList<Integer> generateExtendedSchemaIDs()

@@ -67,8 +67,8 @@ public class XSDImporter extends SchemaImporter
 		{ return "This importer can be used to import schemas from an xsd format"; }
 	
 	/** Returns the importer URI type */
-	public Integer getURIType()
-		{ return FILE; }
+	public URIType getURIType()
+		{ return URIType.FILE; }
 	
 	/** Returns the importer URI file types */
 	public ArrayList<String> getFileTypes()

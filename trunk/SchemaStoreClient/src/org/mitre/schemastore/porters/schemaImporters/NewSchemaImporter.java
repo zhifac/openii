@@ -14,6 +14,6 @@ public class NewSchemaImporter extends SchemaImporter
 		{ return "This method creates a basic schema with no schema elements"; }
 	
 	/** Returns the importer URI type */
-	public Integer getURIType()
-		{ return NONE; }
+	public URIType getURIType()
+		{ return URIType.NONE; }
 }

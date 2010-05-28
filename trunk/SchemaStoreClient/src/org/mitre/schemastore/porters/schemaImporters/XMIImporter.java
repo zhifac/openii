@@ -193,8 +193,8 @@ public class XMIImporter extends SchemaImporter {
 		}
 	}
 
-	public Integer getURIType() {
-		return FILE;
+	public URIType getURIType() {
+		return URIType.FILE;
 	}
 
 	public String getDescription() {

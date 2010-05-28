@@ -39,8 +39,8 @@ public class UserMatchAnnotationDBImporter extends MappingImporter
 	}
 
 	/** Returns the importer URI type */
-	public Integer getURIType()
-		{ return FILE; }
+	public URIType getURIType()
+		{ return URIType.FILE; }
 
 	/** Initializes the importer */
 	protected void initialize() throws ImporterException

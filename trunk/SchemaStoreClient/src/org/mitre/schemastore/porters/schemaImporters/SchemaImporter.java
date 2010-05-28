@@ -59,7 +59,7 @@ public abstract class SchemaImporter extends Importer
 	final public ArrayList<SchemaElement> getSchemaElements(URI uri) throws ImporterException
 	{
 		// Schema elements can generated separately only for file importers
-		if(getURIType()!=FILE)
+		if(getURIType()!=URIType.FILE)
 			throw new ImporterException(ImporterExceptionType.PARSE_FAILURE,"Schema elements can only be retrieved for file importers");
 
 		// Generate the schema elements
@@ -93,7 +93,7 @@ public abstract class SchemaImporter extends Importer
 			success = client.setParentSchemas(schema.getId(), extendedSchemaIDs);
 
 			// Lock the schema if needed
-			if(success && (getURIType()==M3MODEL || getURIType()==FILE))
+			if(success && (getURIType()==URIType.M3MODEL || getURIType()==URIType.FILE))
 				client.lockSchema(schema.getId());
 		}
 		catch(Exception e) {}

@@ -35,15 +35,10 @@ import org.mitre.schemastore.porters.schemaImporters.SchemaImporter;
 public class PorterManager
 {
 	// Constants for references the various porter lists
-	static public final Integer SCHEMA_IMPORTERS = 0;
-	static public final Integer SCHEMA_EXPORTERS = 1;
-	static public final Integer PROJECT_IMPORTERS = 2;
-	static public final Integer PROJECT_EXPORTERS = 3;
-	static public final Integer MAPPING_IMPORTERS = 4;
-	static public final Integer MAPPING_EXPORTERS = 5;
+	static public enum PorterType {SCHEMA_IMPORTERS, SCHEMA_EXPORTERS, PROJECT_IMPORTERS, PROJECT_EXPORTERS, MAPPING_IMPORTERS, MAPPING_EXPORTERS};
 	
 	/** Stores listings of the porters */
-	private HashMap<Integer,PorterList<? extends Porter>> porters = new HashMap<Integer,PorterList<? extends Porter>>();
+	private HashMap<PorterType,PorterList<? extends Porter>> porters = new HashMap<PorterType,PorterList<? extends Porter>>();
 	
 	/** Constructs the porter manager class */
 	public PorterManager(SchemaStoreClient client)
@@ -60,12 +55,12 @@ public class PorterManager
 			{ System.out.println("(E)PorterManager - porters.xml has failed to load!\n"+e.getMessage()); }
 		
 		// Parse out the various importers and exporters
-		porters.put(SCHEMA_IMPORTERS, new PorterList<SchemaImporter>(buffer,"schemaImporter",client));
-		porters.put(SCHEMA_EXPORTERS, new PorterList<SchemaExporter>(buffer,"schemaExporter",client));
-		porters.put(PROJECT_IMPORTERS, new PorterList<ProjectImporter>(buffer,"projectImporter",client));
-		porters.put(PROJECT_EXPORTERS, new PorterList<ProjectExporter>(buffer,"projectExporter",client));
-		porters.put(MAPPING_IMPORTERS, new PorterList<MappingImporter>(buffer,"mappingImporter",client));
-		porters.put(MAPPING_EXPORTERS, new PorterList<MappingExporter>(buffer,"mappingExporter",client));
+		porters.put(PorterType.SCHEMA_IMPORTERS, new PorterList<SchemaImporter>(buffer,"schemaImporter",client));
+		porters.put(PorterType.SCHEMA_EXPORTERS, new PorterList<SchemaExporter>(buffer,"schemaExporter",client));
+		porters.put(PorterType.PROJECT_IMPORTERS, new PorterList<ProjectImporter>(buffer,"projectImporter",client));
+		porters.put(PorterType.PROJECT_EXPORTERS, new PorterList<ProjectExporter>(buffer,"projectExporter",client));
+		porters.put(PorterType.MAPPING_IMPORTERS, new PorterList<MappingImporter>(buffer,"mappingImporter",client));
+		porters.put(PorterType.MAPPING_EXPORTERS, new PorterList<MappingExporter>(buffer,"mappingExporter",client));
 	}
 	
 	/** Returns the list of specified porters */ @SuppressWarnings("unchecked")
