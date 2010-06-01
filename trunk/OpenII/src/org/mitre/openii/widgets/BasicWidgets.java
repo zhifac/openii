@@ -28,7 +28,12 @@ public class BasicWidgets
 		// Display the text
 		Text field = new Text(parent, SWT.BORDER | (rows==null ? SWT.NONE : SWT.MULTI | SWT.V_SCROLL | SWT.WRAP));
 		GridData fieldGridData = new GridData(GridData.FILL_HORIZONTAL);
-		if(rows!=null) fieldGridData.heightHint = new GC(field).getFontMetrics().getHeight()*rows;
+		if(rows!=null)
+		{
+			GC gc = new GC(field);
+			fieldGridData.heightHint = gc.getFontMetrics().getHeight()*rows;
+			gc.dispose();
+		}
 		field.setLayoutData(fieldGridData);
 		return field;
 	}
