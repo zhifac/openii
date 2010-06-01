@@ -34,6 +34,10 @@ abstract public class SchemaModel
 	/** Returns the type name associated with the specified element (or NULL if element has no name) */
 	abstract public SchemaElement getType(HierarchicalSchemaInfo schemaInfo, Integer elementID);
 	
+	/** Returns the type display (allows overriding of the type) */
+	public String getTypeDisplay(HierarchicalSchemaInfo schemaInfo, Integer elementID)
+		{ return getType(schemaInfo,elementID).getName(); }
+	
 	/** Returns the name of the schema model */
 	public String toString() { return getName(); }
 }
