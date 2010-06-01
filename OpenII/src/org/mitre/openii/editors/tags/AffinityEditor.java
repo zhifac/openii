@@ -17,6 +17,7 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
 import org.mitre.affinity.clusters.ClusterGroup;
+import org.mitre.affinity.clusters.distanceFunctions.JaccardDistanceFunction;
 import org.mitre.affinity.model.AffinityModel;
 import org.mitre.affinity.model.AffinitySchemaManager;
 import org.mitre.affinity.model.AffinitySchemaStoreManager;
@@ -128,8 +129,11 @@ public class AffinityEditor extends OpenIIEditor implements SelectionClickedList
 			setPartName(schemaIDs.size()==OpenIIManager.getSchemaIDs().size() ? "All Schemas" : "*New Tag");
 		}
 		this.affinityModel =  new AffinityModel(schemaManager, clusterManager);
-		
+		JaccardDistanceFunction jdf = new JaccardDistanceFunction();
 		affinity = new AffinityPane(parent, SWT.NONE, affinityModel, schemaIDs, progressDlg);
+		//affinity = new AffinityPane(parent, SWT.NONE, affinityModel, schemaIDs, jdf, progressDlg);
+		//is this the right one to call?
+		
 		
 		progressDlg.close();
 		if(affinity.isAffinityPaneCreated()) {
@@ -173,8 +177,17 @@ public class AffinityEditor extends OpenIIEditor implements SelectionClickedList
 						//temp create one
 						EditorManager.launchEditor("VocabEditor", selectedSchemas);
 						//System.out.println("Open up debug view");
-					}
-					else {
+					}else if(item.getText().startsWith("Jaccard")){
+						//change the distance metric from dice to Jaccard
+						//if(affinity.getCurrentDistFunction() == "Dice"){
+						//	affinity.changeCurrentDistFunction("Jacard");							
+						//}
+					}else if(item.getText().startsWith("Dice")){
+						//change the distance metric from jaccard to dice						
+						//if(affinity.getCurrentDistFunction() == "Jacard"){
+							//affinity.changeCurrentDistFunction("Dice");
+						//}											
+					}else {
 						//Create a new tag containing the schemas
 						Shell shell = getSite().getWorkbenchWindow().getShell();
 						EditTagDialog dlg = new EditTagDialog(shell, null, null, new ArrayList<Integer>(selectedSchemas));						
@@ -225,6 +238,24 @@ public class AffinityEditor extends OpenIIEditor implements SelectionClickedList
 			item = new MenuItem (multiSchemaMenu, SWT.NONE);
 			item.setText("View vocab view");
 			item.addSelectionListener(multiSchemaMenuListener);
+
+			//item = new MenuItem (multiSchemaMenu, SWT.NONE);
+			//item.setText("Change distance function to...");
+			//item.addSelectionListener(multiSchemaMenuListener);
+
+			MenuItem typeDistFunction = new MenuItem(multiSchemaMenu, SWT.CASCADE);
+			typeDistFunction.setText("Change distance function to...");
+			typeDistFunction.addSelectionListener(multiSchemaMenuListener);			
+		
+			Menu subMenu2 = new Menu(multiSchemaMenu);
+			typeDistFunction.setMenu(subMenu2);
+			item = new MenuItem (subMenu2, SWT.NONE);					
+			item.setText("Jaccard");
+			item.addSelectionListener(multiSchemaMenuListener);
+			item = new MenuItem (subMenu2, SWT.NONE);
+			item.setText("Dice");
+			item.addSelectionListener(multiSchemaMenuListener);
+
 			
 			item = new MenuItem(multiSchemaMenu, SWT.NONE);
 			item.setText("Save statistics to...");
@@ -267,6 +298,16 @@ public class AffinityEditor extends OpenIIEditor implements SelectionClickedList
 						Shell shell = getSite().getWorkbenchWindow().getShell();
 						EditProjectDialog dlg = new EditProjectDialog(shell);
 						dlg.open();
+					}else if(item.getText().startsWith("Jaccard")){
+						//change the distance metric from dice to Jaccard
+						//if(affinity.getCurrentDistFunction() == "Dice"){
+							//affinity.changeCurrentDistFunction("Jaccard");
+						//}
+					}else if(item.getText().startsWith("Dice")){
+						//change the distance metric from jaccard to dice						
+						//if(affinity.getCurrentDistFunction() == "Jaccard"){
+							//affinity.changeCurrentDistFunction("Dice");
+						//}						
 					}else if(item.getText().startsWith("Save statistics")){
 						Shell shell = getSite().getWorkbenchWindow().getShell();
 						//FileDialog fileDlg = new FileDialog(parent.getShell(), SWT.SAVE);
@@ -347,7 +388,20 @@ public class AffinityEditor extends OpenIIEditor implements SelectionClickedList
 			item.setText("Create a project which includes all schemas in this cluster");
 			item.addSelectionListener(clusterMenuListener);	
 			
+			MenuItem distFunctionSelection = new MenuItem(clusterMenu, SWT.CASCADE);
+			distFunctionSelection.setText("Change distance metric to...");
 			
+			Menu subMenu3 = new Menu(clusterMenu);
+			distFunctionSelection.setMenu(subMenu2);
+
+			item = new MenuItem (subMenu3, SWT.NONE);					
+			item.setText("Jaccard");
+			item.addSelectionListener(clusterMenuListener);
+			
+			item = new MenuItem (subMenu3, SWT.NONE);
+			item.setText("Dice");
+			item.addSelectionListener(clusterMenuListener);
+
 			//item = new MenuItem (clusterMenu, SWT.NONE);
 			//item.setText("View vocab debug view");
 			//item.addSelectionListener(clusterMenuListener);
