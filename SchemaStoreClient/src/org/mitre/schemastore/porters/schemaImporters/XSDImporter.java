@@ -193,7 +193,7 @@ public class XSDImporter extends SchemaImporter
 	public void processSimpleType (XMLType passedType, SchemaElement parent)
 	{		
 		// assign the default type of String
-		String typeName = "String";
+		String typeName = "StringDef";
 		if ((passedType != null) && (passedType.getName() != null) && (passedType.getName().length() > 0)) 
 			typeName = passedType.getName();
 		
