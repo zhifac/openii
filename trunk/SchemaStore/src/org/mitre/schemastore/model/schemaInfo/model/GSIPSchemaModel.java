@@ -9,6 +9,7 @@ import org.mitre.schemastore.model.Containment;
 import org.mitre.schemastore.model.Domain;
 import org.mitre.schemastore.model.DomainValue;
 import org.mitre.schemastore.model.Entity;
+import org.mitre.schemastore.model.Relationship;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.Subtype;
 import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
@@ -52,6 +53,9 @@ public class GSIPSchemaModel extends SchemaModel
 		if(element instanceof Attribute)
 			parentElements.add(schemaInfo.getEntity(elementID));
 		
+		if(element instanceof Relationship) {
+			parentElements.add(schemaInfo.getEntity(((Relationship) element).getLeftID()));
+		}
 		if (element instanceof DomainValue) {
 			DomainValue domainValue = (DomainValue) element;
 			Integer domainID = domainValue.getDomainID();
@@ -87,15 +91,16 @@ public class GSIPSchemaModel extends SchemaModel
 	public ArrayList<SchemaElement> getChildElements(HierarchicalSchemaInfo schemaInfo, Integer elementID)
 	{
 		ArrayList<SchemaElement> childElements = new ArrayList<SchemaElement>();
-		
+
 		// Produce the list of children elements (only entities have children elements)
 		SchemaElement element = schemaInfo.getElement(elementID);
+	
 		if(element instanceof Entity)
 		{
 			// Retrieve entity attributes		
-			for(Attribute value : orderAttributesByName(schemaInfo.getAttributes(elementID)))
+			for(Attribute value : orderAttributesByName(schemaInfo.getAttributes(elementID))) {
 				childElements.add(value);
-
+			}
 			// Retrieve subtypes as children
 			for (Subtype subtype : schemaInfo.getSubTypes(element.getId()))
 			{
@@ -103,13 +108,31 @@ public class GSIPSchemaModel extends SchemaModel
 				if (!elementID.equals(childID))
 					childElements.add(schemaInfo.getElement(childID));
 			}
-			
+
+			// Retrieve relationships		
+			String rIDs = ":";
+			for(Relationship value : schemaInfo.getRelationships(elementID)) {				
+				if (value.getLeftID().equals(elementID))  {
+					int match=0;
+					for (Containment containment : schemaInfo.getContainments(elementID))  {
+						if (containment.getChildID().equals(value.getId())) { match++; }
+					}
+					if (match==0 && !rIDs.contains(":"+value.getId()+":")) { 
+						childElements.add(value); 
+						rIDs+= value.getId()+":";
+					}					
+				}				
+			}
 			// Retrieve children via containments.
-			for (Containment containment : schemaInfo.getContainments(element.getId()))
+			for (Containment containment : schemaInfo.getContainments(element.getId()))  {				
 				// might not need second predicate, copied from RelationalSchemaModel
-				if(elementID.equals(containment.getParentID()) && !containment.getName().equals(""))
-					childElements.add(schemaInfo.getElement(containment.getChildID()));
-							
+				if(elementID.equals(containment.getParentID()) && !containment.getName().equals("")) {
+					if (schemaInfo.getElement(containment.getChildID()) instanceof Entity) {
+						childElements.add(schemaInfo.getElement(containment.getChildID()));
+					}
+					else { childElements.add(containment); }  //just show containment icon.
+				}
+			}
 		}
 		else if (element instanceof Attribute) {
 			// Retrieve entity attributes		
@@ -121,7 +144,15 @@ public class GSIPSchemaModel extends SchemaModel
 				childElements.add(domainValue);
 			}		
 		}
-
+		else if (element instanceof Containment) {
+			Containment c = (Containment) element;
+			SchemaElement child = schemaInfo.getElement(c.getChildID());
+			if (child instanceof Relationship) { 
+				Relationship r = (Relationship) child;
+				Entity e = (Entity) schemaInfo.getElement(r.getRightID());
+				r.setName(e.getName());
+			}
+		}
 		return childElements;
 	}
 	
@@ -176,19 +207,19 @@ public class GSIPSchemaModel extends SchemaModel
 	
     public Comparator byNameComparator = new Comparator() {
     	public int compare(Object o1, Object o2) {
-                SchemaElement item1 = (SchemaElement) o1;
-                SchemaElement item2 = (SchemaElement) o2;
+            SchemaElement item1 = (SchemaElement) o1;
+            SchemaElement item2 = (SchemaElement) o2;
                 
-                if (item1 == null && item2 == null) { return 0; }
-                else if (item2 == null) { return 1; }
-                else if (item1 == null) { return -1; }
+            if (item1 == null && item2 == null) { return 0; }
+            else if (item2 == null) { return 1; }
+            else if (item1 == null) { return -1; }
                 
-                String name1 = item1.getName();
-                String name2 = item2.getName();
+            String name1 = item1.getName();
+            String name2 = item2.getName();
                 
-                if (name1 == null) { name1 = ""; }
-                if (name2 == null) { name2 = ""; }
-                return name1.toUpperCase().compareTo(name2.toUpperCase());
+            if (name1 == null) { name1 = ""; }
+            if (name2 == null) { name2 = ""; }
+            return name1.toUpperCase().compareTo(name2.toUpperCase());
     	}
     };
 	
@@ -208,5 +239,17 @@ public class GSIPSchemaModel extends SchemaModel
 			return childElement;
 
 		return null;	
+	}
+	
+	public String getTypeString(HierarchicalSchemaInfo schemaInfo, Integer elementID)
+	{
+		SchemaElement type = getType(schemaInfo,elementID);
+		if (schemaInfo.getElement(elementID) instanceof Relationship) { 
+			Relationship r = (Relationship) schemaInfo.getElement(elementID);
+			String rDescription = r.getDescription().replaceFirst("\\(", "");
+			rDescription = rDescription.split(" :")[0];  System.out.println(rDescription);
+			return rDescription; 
+		}
+		return type==null ? null : type.getName();
 	}
 }
