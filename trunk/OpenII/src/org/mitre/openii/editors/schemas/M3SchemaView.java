@@ -23,7 +23,7 @@ import org.mitre.schemastore.model.Subtype;
 import org.mitre.schemastore.model.schemaInfo.SchemaInfo;
 
 /** Constructs the Schema View */
-public class M3SchemaEditor extends OpenIIEditor
+public class M3SchemaView extends OpenIIEditor
 {	
 	/** Returns the list of schema elements for the specified element type */
 	private ArrayList<SchemaElement> getElements(SchemaInfo schemaInfo, Class<?> type)

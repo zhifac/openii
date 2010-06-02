@@ -29,6 +29,7 @@ import org.mitre.openii.views.manager.schemas.ExtendSchemaDialog;
 import org.mitre.openii.views.manager.schemas.importer.ImportSchemaDialog;
 import org.mitre.openii.views.manager.tags.DeleteTagDialog;
 import org.mitre.openii.views.manager.tags.EditTagDialog;
+import org.mitre.openii.views.manager.tags.SearchDialog;
 import org.mitre.schemastore.model.DataSource;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.Project;
@@ -41,10 +42,10 @@ public class ManagerAction extends Action
 	// Constants defining the various Manager action types available
 	static enum ActionType {IMPORT_SCHEMA, EDIT_SCHEMA, EXTEND_SCHEMA, EXPORT_SCHEMA, DELETE_SCHEMA,
 							CREATE_DATA_SOURCE, DELETE_DATA_SOURCE, NEW_TAG, EDIT_TAG, DELETE_TAG,
-							CREATE_PROJECT_FROM_TAG,  EXPORT_SCHEMAS_BY_TAG, DELETE_TAG_SCHEMA,
-							NEW_PROJECT, IMPORT_PROJECT , MERGE_PROJECTS, EDIT_PROJECT, EXPORT_PROJECT,
-							DELETE_PROJECT, DELETE_PROJECT_SCHEMA, IMPORT_MAPPING, AUTO_GENERATE_MATCHES,
-							EXPORT_MAPPING, DELETE_MAPPING, GENERATE_VOCABULARY};
+							KEYWORD_SEARCH, CREATE_PROJECT_FROM_TAG,  EXPORT_SCHEMAS_BY_TAG,
+							DELETE_TAG_SCHEMA, NEW_PROJECT, IMPORT_PROJECT , MERGE_PROJECTS, EDIT_PROJECT,
+							EXPORT_PROJECT, DELETE_PROJECT, DELETE_PROJECT_SCHEMA, IMPORT_MAPPING,
+							AUTO_GENERATE_MATCHES, EXPORT_MAPPING, DELETE_MAPPING, GENERATE_VOCABULARY};
 	
 	/** Stores the menu manager to which this action is tied */
 	private ManagerMenuManager menuManager;
@@ -74,6 +75,7 @@ public class ManagerAction extends Action
 			case NEW_TAG: icon = "NewSchemaGroup.gif"; break;
 			case EDIT_TAG: icon = "Edit.gif"; break;
 			case DELETE_TAG: icon = "Delete.gif"; break;
+			case KEYWORD_SEARCH: icon = "Search.gif"; break;
 			case CREATE_PROJECT_FROM_TAG: icon = "Project.gif"; break;
 			case EXPORT_SCHEMAS_BY_TAG: icon = "Export.gif"; break;
 			case DELETE_TAG_SCHEMA: icon = "Delete.gif"; break;
@@ -146,6 +148,10 @@ public class ManagerAction extends Action
 		/** Handles the deletion of a tag */
 		if(actionType == ActionType.DELETE_TAG)
 			DeleteTagDialog.delete(shell,(Tag)selection);
+		
+		/** Launches a keyword search */
+		if(actionType == ActionType.KEYWORD_SEARCH)
+			new SearchDialog(shell,(selection instanceof Tag ? (Tag)selection : null)).open();
 		
 		/** Creates a project based on the schemas in a tag */
 		if(actionType == ActionType.CREATE_PROJECT_FROM_TAG)
