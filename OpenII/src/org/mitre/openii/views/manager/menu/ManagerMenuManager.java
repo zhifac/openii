@@ -93,6 +93,12 @@ public class ManagerMenuManager extends MenuManager implements IMenuListener
 			menuManager.add(new ManagerAction(this,"New Tag",ActionType.NEW_TAG));
 		}
 		
+		// Display the menu for the "All Schemas" header
+		if(element.equals(ManagerView.ALL_SCHEMAS_HEADER))
+		{
+			menuManager.add(new ManagerAction(this,"Keyword Search",ActionType.KEYWORD_SEARCH));			
+		}
+		
 		// Display the menu for a selected schema
 		if(element instanceof Schema)
 		{
@@ -123,6 +129,7 @@ public class ManagerMenuManager extends MenuManager implements IMenuListener
 			menuManager.add(new Separator());
 			
 			// Display option to create project
+			menuManager.add(new ManagerAction(this,"Keyword Search",ActionType.KEYWORD_SEARCH));
 			menuManager.add(new ManagerAction(this,"Create Project",ActionType.CREATE_PROJECT_FROM_TAG));
 			menuManager.add(new ManagerAction(this,"Export Schemas",ActionType.EXPORT_SCHEMAS_BY_TAG));
 		}

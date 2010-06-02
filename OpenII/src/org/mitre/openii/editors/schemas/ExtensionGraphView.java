@@ -18,7 +18,7 @@ import org.mitre.openii.model.OpenIIManager;
 import org.mitre.schemastore.model.Schema;
 
 /** Constructs the Extension graph */
-public class ExtensionGraphEditor extends OpenIIEditor implements ExtensionsPaneListener
+public class ExtensionGraphView extends OpenIIEditor implements ExtensionsPaneListener
 {
 	/** Stores the extension pane used within this editor */
 	private ExtensionsPane extensionsPane = null;
