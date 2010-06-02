@@ -12,8 +12,11 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
 import org.mitre.harmony.model.HarmonyModel;
+import org.mitre.schemastore.model.Relationship;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
+import org.mitre.schemastore.model.Attribute;
+import org.mitre.schemastore.model.Containment;
 import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
 
 /** Used to generate all nodes within the schema tree */
@@ -32,7 +35,16 @@ class SchemaTreeGenerator
 		class ElementComparator implements Comparator<SchemaElement> 
 		{
 			public int compare(SchemaElement element1, SchemaElement element2)
-				{ return element1.getName().toLowerCase().compareTo(element2.getName().toLowerCase()); }
+				{ 
+				// Special case - if Attributes are being compared to non-attributes, list attributes first.
+				if (element1 instanceof Attribute && !(element2 instanceof Attribute)) { return -1; }
+				else if( element2 instanceof Attribute && !(element1 instanceof Attribute)) { return 1; }
+				else if (element1 instanceof Containment && !(element2 instanceof Containment)) { return -1; }
+				else if( element2 instanceof Containment && !(element1 instanceof Containment)) { return 1; }
+				else if (element1 instanceof Relationship && !(element2 instanceof Relationship)) { return -1; }
+				else if( element2 instanceof Relationship && !(element1 instanceof Relationship)) { return 1; }
+				return element1.getName().toLowerCase().compareTo(element2.getName().toLowerCase()); 				
+				}
 		}
 		
 		// Sorts the elements if needed

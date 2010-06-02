@@ -22,6 +22,7 @@ import org.mitre.harmony.model.search.SearchResult;
 import org.mitre.schemastore.model.Containment;
 import org.mitre.schemastore.model.Domain;
 import org.mitre.schemastore.model.DomainValue;
+import org.mitre.schemastore.model.Relationship;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
@@ -49,6 +50,7 @@ class SchemaTreeRenderer extends DefaultTreeCellRenderer
 	static private Icon finishedContainmentIcon = getIcon("FinishedContainment.jpg");
 	static private Icon domainValueIcon = getIcon("DomainValue.jpg");
 	static private Icon finishedDomainValueIcon = getIcon("FinishedDomainValue.jpg");
+	static private Icon RelationshipIcon = getIcon("Relationship.jpg");
 	
 	
 	/** Defines highlight color used in displaying highlighted schema tree nodes */
@@ -136,6 +138,7 @@ class SchemaTreeRenderer extends DefaultTreeCellRenderer
 			else if(domain!=null) setIcon(isFinished ? finishedAttributeIcon : attributeIcon);
 			else if ( element instanceof Containment) setIcon( isFinished ? finishedContainmentIcon: containmentIcon );  
 			else if ( element instanceof DomainValue) setIcon( isFinished ? finishedDomainValueIcon: domainValueIcon );  
+			else if ( element instanceof Relationship) setIcon( RelationshipIcon );  
 			else setIcon(isFinished ? finishedSchemaElementIcon : schemaElementIcon);
 
 			// Retrieves if element is match for current search
