@@ -4,11 +4,11 @@ import java.util.ArrayList;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
+import org.mitre.openii.dialogs.projects.unity.Unity;
+import org.mitre.openii.dialogs.projects.unity.Vocabulary;
 import org.mitre.openii.editors.OpenIIEditor;
 import org.mitre.openii.model.EditorInput;
 import org.mitre.openii.model.OpenIIManager;
-import org.mitre.openii.views.manager.projects.unity.Unity;
-import org.mitre.openii.views.manager.projects.unity.Vocabulary;
 import org.mitre.schemastore.model.Project;
 import org.mitre.schemastore.porters.projectExporters.matchmaker.Synset;
 import org.mitre.schemastore.porters.projectExporters.matchmaker.SynsetTerm;
