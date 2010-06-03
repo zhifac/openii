@@ -40,13 +40,13 @@ import org.mitre.harmony.matchers.voters.DocumentationMatcher;
 import org.mitre.harmony.matchers.voters.EditDistanceMatcher;
 import org.mitre.harmony.matchers.voters.ExactStructureMatcher;
 import org.mitre.harmony.matchers.voters.MatchVoter;
-import org.mitre.openii.dialogs.projects.EditProjectDialog;
-import org.mitre.openii.dialogs.tags.EditTagDialog;
 import org.mitre.openii.editors.OpenIIEditor;
 import org.mitre.openii.model.EditorInput;
 import org.mitre.openii.model.EditorManager;
 import org.mitre.openii.model.OpenIIManager;
 import org.mitre.openii.model.RepositoryManager;
+import org.mitre.openii.views.manager.projects.EditProjectDialog;
+import org.mitre.openii.views.manager.tags.EditTagDialog;
 import org.mitre.schemastore.model.schemaInfo.FilteredSchemaInfo;
 
 /**
@@ -166,7 +166,7 @@ public class AffinityEditor extends OpenIIEditor implements SelectionClickedList
 						Shell shell = getSite().getWorkbenchWindow().getShell();
 						ClusterDetailsDlg dlg = new ClusterDetailsDlg(shell, SWT.APPLICATION_MODAL, affinityModel, cluster);				
 						dlg.setVisible(true);						
-					}else if(item.getText().startsWith("Open")) {
+					}else if(item.getText().startsWith("Open schemas in")) {
 						//Open schemas in a new Affinity Pane
 						EditorManager.launchEditor("AffinityEditor", selectedSchemas);
 					//}else if(item.getText().startsWith("View vocab debug")){
@@ -207,7 +207,7 @@ public class AffinityEditor extends OpenIIEditor implements SelectionClickedList
 			item.addSelectionListener(multiSchemaMenuListener);
 
 			MenuItem kneighbor = new MenuItem(multiSchemaMenu, SWT.POP_UP);
-			kneighbor.setText("Venn Diagram K Nearest Neighbors for schema...");
+			kneighbor.setText("Open Proximity for schema...");
 			kneighbor.addSelectionListener(multiSchemaMenuListener);
 						
 			MenuItem typeOfRelatedness1 = new MenuItem(multiSchemaMenu, SWT.CASCADE);
@@ -227,34 +227,34 @@ public class AffinityEditor extends OpenIIEditor implements SelectionClickedList
 			item.setText("View terms shared by these schemas (bag of words approach)");
 			item.addSelectionListener(multiSchemaMenuListener);
 			
-			item = new MenuItem (multiSchemaMenu, SWT.NONE);				
-			item.setText("Create a project which includes all schemas in this cluster");
-			item.addSelectionListener(multiSchemaMenuListener);	
+			//item = new MenuItem (multiSchemaMenu, SWT.NONE);				
+			//item.setText("Create a project which includes all schemas in this cluster");
+			//item.addSelectionListener(multiSchemaMenuListener);	
 
-			item = new MenuItem (multiSchemaMenu, SWT.NONE);
-			item.setText("View vocab debug view");
-			item.addSelectionListener(multiSchemaMenuListener);
+			//item = new MenuItem (multiSchemaMenu, SWT.NONE);
+			//item.setText("View vocab debug view");
+			//item.addSelectionListener(multiSchemaMenuListener);
 			
-			item = new MenuItem (multiSchemaMenu, SWT.NONE);
-			item.setText("View vocab view");
-			item.addSelectionListener(multiSchemaMenuListener);
+			//item = new MenuItem (multiSchemaMenu, SWT.NONE);
+			//item.setText("View vocab view");
+			//item.addSelectionListener(multiSchemaMenuListener);
 
 			//item = new MenuItem (multiSchemaMenu, SWT.NONE);
 			//item.setText("Change distance function to...");
 			//item.addSelectionListener(multiSchemaMenuListener);
 
-			MenuItem typeDistFunction = new MenuItem(multiSchemaMenu, SWT.CASCADE);
-			typeDistFunction.setText("Change distance function to...");
-			typeDistFunction.addSelectionListener(multiSchemaMenuListener);			
+			//MenuItem typeDistFunction = new MenuItem(multiSchemaMenu, SWT.CASCADE);
+			//typeDistFunction.setText("Change distance function to...");
+			//typeDistFunction.addSelectionListener(multiSchemaMenuListener);			
 		
-			Menu subMenu2 = new Menu(multiSchemaMenu);
-			typeDistFunction.setMenu(subMenu2);
-			item = new MenuItem (subMenu2, SWT.NONE);					
-			item.setText("Jaccard");
-			item.addSelectionListener(multiSchemaMenuListener);
-			item = new MenuItem (subMenu2, SWT.NONE);
-			item.setText("Dice");
-			item.addSelectionListener(multiSchemaMenuListener);
+			//Menu subMenu2 = new Menu(multiSchemaMenu);
+			//typeDistFunction.setMenu(subMenu2);
+			//item = new MenuItem (subMenu2, SWT.NONE);					
+			//item.setText("Jaccard");
+			//item.addSelectionListener(multiSchemaMenuListener);
+			//item = new MenuItem (subMenu2, SWT.NONE);
+			//item.setText("Dice");
+			//item.addSelectionListener(multiSchemaMenuListener);
 
 			
 			item = new MenuItem(multiSchemaMenu, SWT.NONE);
@@ -339,7 +339,7 @@ public class AffinityEditor extends OpenIIEditor implements SelectionClickedList
 			
 
 			MenuItem kneighbors = new MenuItem(clusterMenu, SWT.CASCADE);
-			kneighbors.setText("Venn Diagram K Nearest Neighbors for schema...");
+			kneighbors.setText("Open Proximity for schema...");
 			
 			final Menu subMenuK = new Menu(clusterMenu);
 			kneighbors.setMenu(subMenuK);
@@ -384,7 +384,7 @@ public class AffinityEditor extends OpenIIEditor implements SelectionClickedList
 			item.setText("Create a tag for all schemas in this cluster");
 			item.addSelectionListener(clusterMenuListener);	
 			
-			item = new MenuItem (clusterMenu, SWT.NONE);				
+			/*item = new MenuItem (clusterMenu, SWT.NONE);				
 			item.setText("Create a project which includes all schemas in this cluster");
 			item.addSelectionListener(clusterMenuListener);	
 			
@@ -401,7 +401,7 @@ public class AffinityEditor extends OpenIIEditor implements SelectionClickedList
 			item = new MenuItem (subMenu3, SWT.NONE);
 			item.setText("Dice");
 			item.addSelectionListener(clusterMenuListener);
-
+			 */
 			//item = new MenuItem (clusterMenu, SWT.NONE);
 			//item.setText("View vocab debug view");
 			//item.addSelectionListener(clusterMenuListener);
