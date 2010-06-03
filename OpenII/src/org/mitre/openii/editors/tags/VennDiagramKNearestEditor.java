@@ -95,7 +95,7 @@ public class VennDiagramKNearestEditor extends OpenIIEditor implements VennDiagr
 			setPartName(elementID!=null ? OpenIIManager.getTag(elementID).getName() : "All Schemas");
 		}
 		else
-			setPartName("New Tag");	
+			setPartName("Proximity");	
 		
 		if(sets != null) {
 			new SWTVennDiagram(parent, SWT.NONE, sets, true);
