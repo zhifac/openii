@@ -30,17 +30,25 @@ public class MappingList extends ListWithButtonBar implements SelectionListener,
 	private TableViewer list = null;
 	private Button addButton = null;
 	private Button removeButton = null;
-	
+
+	// Stores the projectID so we can get mappings out of this
+	private Integer projectID;
+
 	/** Constructs the dialog */
-	public MappingList(Composite parent) {
-		super(parent, null, "Mapping");
+	public MappingList(Composite parent, String heading, Integer projectID) {
+		super(parent, heading, "Mapping");
+		// record our project id
+		this.projectID = projectID;
+
+		// create buttons down the right
 		addButton = addButton("Add...",this);
 		removeButton = addButton("Remove",this);
-		list = getList();
-		list.setLabelProvider(new MappingLabelProvider());
-		
+
 		// the remove button should be invalid until something is selected
 		removeButton.setEnabled(false);
+
+		list = getList();
+		list.setLabelProvider(new MappingLabelProvider());
 
 		// Listens for changes to the selected schemas
 		list.addSelectionChangedListener(this);
