@@ -1,4 +1,4 @@
-package org.mitre.openii.views.manager.mappings.importer;
+package org.mitre.openii.dialogs.mappings.importer;
 
 import java.net.URI;
 import java.util.ArrayList;
