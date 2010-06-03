@@ -13,6 +13,8 @@ import org.eclipse.ui.part.EditorPart;
 import org.mitre.openii.model.EditorInput;
 import org.mitre.openii.model.OpenIIListener;
 import org.mitre.openii.model.OpenIIManager;
+import org.mitre.openii.views.manager.SchemaInProject;
+import org.mitre.openii.views.manager.SchemaInTag;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.Project;
 import org.mitre.schemastore.model.Schema;
@@ -32,6 +34,8 @@ abstract public class OpenIIEditor extends EditorPart implements OpenIIListener
 		
 		// Extract element ID
 		Object element = ((EditorInput)input).getElement();
+		if(element instanceof SchemaInTag) elementID = ((SchemaInTag)element).getSchema().getId();
+		if(element instanceof SchemaInProject) elementID = ((SchemaInProject)element).getSchema().getId();
 		if(element instanceof Schema) elementID = ((Schema)element).getId();
 		if(element instanceof Tag) elementID = ((Tag)element).getId();
 		if(element instanceof Project) elementID = ((Project)element).getId();

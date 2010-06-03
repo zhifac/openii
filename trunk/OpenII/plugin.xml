@@ -35,14 +35,14 @@
       <editor name="Schema" extensions="schema" icon="icons/Schema.gif" class="org.mitre.openii.editors.schemas.schema.SchemaView" id="SchemaView"></editor>
       <editor name="Extension Graph" extensions="schema" icon="icons/Extensions.gif" class="org.mitre.openii.editors.schemas.ExtensionGraphView" id="ExtensionGraphView"></editor>
       <editor name="M3 Model" extensions="schema" icon="icons/Schema.gif" class="org.mitre.openii.editors.schemas.M3SchemaView" id="M3SchemaView"></editor>
+      <editor name="Proximity" extensions="schema" icon="icons/Harmony.gif" class="org.mitre.openii.editors.schemas.ProximityView" id="ProximityView"></editor>
    	  <editor name="Explorer" extensions="schema" icon="icons/Schema.gif" class="org.mitre.openii.editors.schemas.ExplorerView" id="ExplorerView"></editor>
-      <editor name="Affinity" extensions="tag" icon="icons/Harmony.gif" class="org.mitre.openii.editors.tags.AffinityEditor" id="AffinityEditor"></editor>-->
-   	  <editor name="VennDiagram" extensions="tag" icon="icons/Harmony.gif" class="org.mitre.openii.editors.tags.VennDiagramEditor" id="VennDiagramEditor"></editor>-->-->   	
-      <editor name="VennDiagramKNearest" extensions="tag" icon="icons/Harmony.gif" class="org.mitre.openii.editors.tags.VennDiagramKNearestEditor" id="VennDiagramKNearestEditor"></editor>-->-->   	
-   	  <editor name="Harmony" extensions="project" icon="icons/Harmony.gif" class="org.mitre.openii.editors.projects.HarmonyEditor" id="HarmonyEditor"></editor>
+      <editor name="Affinity" extensions="tag" icon="icons/Harmony.gif" class="org.mitre.openii.editors.tags.AffinityEditor" id="AffinityEditor"></editor>
+   	  <editor name="Proximity" extensions="tag" icon="icons/Harmony.gif" class="org.mitre.openii.editors.tags.VennDiagramEditor" id="VennDiagramEditor"></editor>   	
+      <editor name="Harmony" extensions="project" icon="icons/Harmony.gif" class="org.mitre.openii.editors.projects.HarmonyEditor" id="HarmonyEditor"></editor>
       <editor name="M3 Model" extensions="project" icon="icons/Project.gif" class="org.mitre.openii.editors.projects.M3ProjectEditor" id="M3ProjectEditor"></editor>
-      <editor name="VocabView" extensions="project" icon="icons/Harmony.gif" class="org.mitre.openii.editors.projects.VocabEditor" id="VocabEditor"></editor>-->
-      <editor name="NWayMatchView" extensions="project" icon="icons/Harmony.gif" class="org.mitre.openii.editors.projects.NWayMatchEditor" id="NWayMatchEditor"></editor>-->
+      <editor name="VocabView" extensions="project" icon="icons/Harmony.gif" class="org.mitre.openii.editors.projects.VocabEditor" id="VocabEditor"></editor>
+      <editor name="NWayMatchView" extensions="project" icon="icons/Harmony.gif" class="org.mitre.openii.editors.projects.NWayMatchEditor" id="NWayMatchEditor"></editor>
       <editor name="Harmony" extensions="mapping" icon="icons/Harmony.gif" class="org.mitre.openii.editors.projects.HarmonyEditor" id="HarmonyEditor"></editor>
       <editor name="M3 Model" extensions="mapping" icon="icons/Mapping.gif" class="org.mitre.openii.editors.mappings.M3MappingEditor" id="M3MappingEditor"></editor>
    	  <editor name="RMap" extensions="mapping" icon="icons/RMap.gif" class="org.mitre.openii.editors.mappings.RMapEditor" id="RMapEditor"></editor>
