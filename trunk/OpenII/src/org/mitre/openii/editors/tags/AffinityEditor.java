@@ -40,13 +40,13 @@ import org.mitre.harmony.matchers.voters.DocumentationMatcher;
 import org.mitre.harmony.matchers.voters.EditDistanceMatcher;
 import org.mitre.harmony.matchers.voters.ExactStructureMatcher;
 import org.mitre.harmony.matchers.voters.MatchVoter;
+import org.mitre.openii.dialogs.projects.EditProjectDialog;
+import org.mitre.openii.dialogs.tags.EditTagDialog;
 import org.mitre.openii.editors.OpenIIEditor;
 import org.mitre.openii.model.EditorInput;
 import org.mitre.openii.model.EditorManager;
 import org.mitre.openii.model.OpenIIManager;
 import org.mitre.openii.model.RepositoryManager;
-import org.mitre.openii.views.manager.projects.EditProjectDialog;
-import org.mitre.openii.views.manager.tags.EditTagDialog;
 import org.mitre.schemastore.model.schemaInfo.FilteredSchemaInfo;
 
 /**
