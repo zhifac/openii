@@ -102,7 +102,7 @@ public class EditProjectDialog extends Dialog implements ActionListener, ModifyL
 		pane.setLayout(new GridLayout(1, false));
 
 		// Generate the schema list
-		schemaList = new SchemaList(pane, null);
+		schemaList = new SchemaList(pane, null, project.getId());
 		schemaList.setWidth(300);
 		schemaList.addListener(this);
 	}
@@ -115,7 +115,7 @@ public class EditProjectDialog extends Dialog implements ActionListener, ModifyL
 		pane.setLayout(new GridLayout(1, false));
 
 		// Construct the list of mappings
-		mappingList = new MappingList(pane);
+		mappingList = new MappingList(pane, null, project.getId());
 		mappingList.setWidth(300);
 		mappingList.addListener(this);
 	}
