@@ -77,7 +77,7 @@ public class AffinityEditor extends OpenIIEditor implements SelectionClickedList
 	private Collection<Integer> selectedSchemas;
 	
 	/** Used to compute match scores between two schemas */
-	protected static IMatchScoreComputer matchScoreComputer; 
+	public static IMatchScoreComputer matchScoreComputer; 
 	static {
 		ArrayList<MatchVoter> voters = new ArrayList<MatchVoter>();
 		//We use all the Harmony voters by default
@@ -439,7 +439,7 @@ public class AffinityEditor extends OpenIIEditor implements SelectionClickedList
 		
 		//VennDiagramSetsMatrix matrix = new VennDiagramSetsMatrix(schemaInfos, matchScoreComputer, 1);		
 		VennDiagramSetsMatrix matrix = new VennDiagramSetsMatrix(mainSchemaName, schemaInfos, matchScoreComputer, 1);		
-		EditorManager.launchEditor("VennDiagramKNearestEditor", matrix);			
+		EditorManager.launchEditor("ProximityView", matrix);			
 	}
 	
 	
