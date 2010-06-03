@@ -1,4 +1,4 @@
-package org.mitre.openii.views.manager.projects.importer;
+package org.mitre.openii.dialogs.projects.importer;
 
 import java.io.File;
 

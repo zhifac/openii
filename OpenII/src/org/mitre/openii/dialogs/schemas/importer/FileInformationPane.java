@@ -1,4 +1,4 @@
-package org.mitre.openii.views.manager.schemas.importer;
+package org.mitre.openii.dialogs.schemas.importer;
 
 import java.io.File;
 import java.util.ArrayList;
