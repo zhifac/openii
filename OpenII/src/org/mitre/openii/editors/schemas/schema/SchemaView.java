@@ -82,9 +82,6 @@ public class SchemaView extends OpenIIEditor implements ISelectionChangedListene
 		schemaView.setContentProvider(new SchemaContentProvider(schema));
 		schemaView.setLabelProvider(new SchemaLabelProvider(schema));
 		schemaView.setInput("");
-		
-		// Expand out the first level of the schema tree
-		schemaView.getTree().getItem(0).setExpanded(true);
 	}
 	
 	/** Displays the Schema View */
