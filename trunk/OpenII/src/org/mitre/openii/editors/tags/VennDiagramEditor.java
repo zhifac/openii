@@ -126,7 +126,7 @@ public class VennDiagramEditor extends OpenIIEditor implements VennDiagramListen
 				EditorManager.launchDefaultEditor(project);
 			
 				// Remove the temporary project
-				OpenIIManager.deleteMapping(project.getId());
+				OpenIIManager.deleteProject(project.getId());
 			}
 		};
 		

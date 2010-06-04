@@ -148,16 +148,18 @@ public class ProximityView extends OpenIIEditor implements VennDiagramListener
 		{
 			public void widgetSelected(SelectionEvent e)
 			{
-				// Create a temporary project with the selected schemas
-				Schema schema1 = currSelectionEvent.getSets().getSchema1();
-				Schema schema2 = currSelectionEvent.getSets().getSchema2();
-				Project project = createProject(schema1,schema2);
-
-				// Launch the Harmony editor on the temporary project
-				EditorManager.launchDefaultEditor(project);
-			
-				// Remove the temporary project
-				OpenIIManager.deleteMapping(project.getId());
+				try {
+					// Create a temporary project with the selected schemas
+					Schema schema1 = currSelectionEvent.getSets().getSchema1();
+					Schema schema2 = currSelectionEvent.getSets().getSchema2();
+					Project project = createProject(schema1,schema2);
+	
+					// Launch the Harmony editor on the temporary project
+					EditorManager.launchDefaultEditor(project);
+					
+					// Delete the temporary project
+					RepositoryManager.getClient().deleteProject(project.getId());
+				} catch(Exception e2) { System.out.println("(E)ProximityView: Failed to launch Harmony"); }
 			}
 		};
 		
@@ -170,35 +172,31 @@ public class ProximityView extends OpenIIEditor implements VennDiagramListener
 	}
 	
 	/** Create a temporary project using the given schemas */
-	private Project createProject(Schema schema1, Schema schema2)
+	private Project createProject(Schema schema1, Schema schema2) throws Exception
 	{
-		// Generate the project
+		// Retrieve the project info
 		ProjectSchema leftSchema = new ProjectSchema(schema1.getId(), schema1.getName(), null);
 		ProjectSchema rightSchema = new ProjectSchema(schema2.getId(), schema2.getName(), null);
 		ProjectSchema[] schemas = new ProjectSchema[]{leftSchema,rightSchema};
 		String pair = schema1.getName() + " to " + schema2.getName();
-		Project project = new Project(null,pair,"Mapping from " + pair,"",schemas);
-		OpenIIManager.addProject(project);
 		
-		// Generate the mapping
+		// Generate the project
+		Project project = new Project(null,pair,"Mapping from " + pair,"",schemas);
+		project.setId(RepositoryManager.getClient().addProject(project));
 		Mapping mapping = new Mapping(null,project.getId(),schema1.getId(),schema2.getId());
-		OpenIIManager.addMapping(mapping);
-
-		// Return the generated project
+		RepositoryManager.getClient().addMapping(mapping);
 		return project;
 	}
 
-	/** Show right-click menu with option to open the schemas corresponding to the selected venn 
-	 * diagram in Harmony */
-	public void vennDiagramSelected(final VennDiagramEvent event) {
-		if((event.getMouseButton() == 3 || (event.getMouseButton() == 1 && event.isControlDown())) 
-				&& menu != null && event.getSets() != null) {	
-			menu.getDisplay().asyncExec(new Runnable() {
-				public void run() {		
-					currSelectionEvent = event;
-					menu.setVisible(true);
-				}
-			});
-		}
+	/** Show right-click menu with option to open the schemas corresponding to the selected schema pair in Harmony */
+	public void vennDiagramSelected(final VennDiagramEvent event)
+	{
+		if((event.getMouseButton() == 3 || (event.getMouseButton() == 1 && event.isControlDown())))
+			if(menu != null && event.getSets()!=null)
+			{	
+				Runnable action = new Runnable()
+					{ public void run() { currSelectionEvent = event; menu.setVisible(true); } };
+				menu.getDisplay().asyncExec(action);
+			}
 	}	
 }
