@@ -223,13 +223,15 @@ public class EditProjectDialog extends Dialog implements ActionListener, ModifyL
 
 		// Generate the list of schemas which have been selected
 		ArrayList<ProjectSchema> schemas = new ArrayList<ProjectSchema>();
-		for (Schema schema : schemaList.getSchemas())
+		for (Schema schema : schemaList.getSchemas()) {
 			schemas.add(new ProjectSchema(schema.getId(), schema.getName(), null));
+		}
 
 		// Generate list of old mappings
 		HashMap<String, Integer> oldMappings = new HashMap<String, Integer>();
-		if (project != null) for (Mapping oldMapping : OpenIIManager.getMappings(project.getId()))
+		if (project != null) for (Mapping oldMapping : OpenIIManager.getMappings(project.getId())) {
 			oldMappings.put(oldMapping.getSourceId() + "_" + oldMapping.getTargetId(), oldMapping.getId());
+		}
 
 		// Remove old mappings in project
 		for (Integer oldMappingID : oldMappings.values()) {

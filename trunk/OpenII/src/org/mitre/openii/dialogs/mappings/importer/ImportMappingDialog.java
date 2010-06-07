@@ -36,8 +36,7 @@ import org.mitre.schemastore.porters.mappingImporters.MappingImporter;
 /**
  * Class defining a wizard for importing mappings
  */
-public class ImportMappingDialog extends TitleAreaDialog implements ISelectionChangedListener, ModifyListener, SelectionListener
-{
+public class ImportMappingDialog extends TitleAreaDialog implements ISelectionChangedListener, ModifyListener, SelectionListener {
 	/** Stores the project to which the mapping is being imported */
 	private Project project = null;
 	
@@ -49,20 +48,20 @@ public class ImportMappingDialog extends TitleAreaDialog implements ISelectionCh
 	private Button allSchemasCheckbox = null;
 	
 	/** Constructs the wizard */
-	public ImportMappingDialog(Shell parentShell, Project project)
-		{ super(parentShell); this.project = project; }
+	public ImportMappingDialog(Shell parentShell, Project project) {
+		super(parentShell);
+		this.project = project;
+	}
 	
 	/** Configures the dialog shell */
-	protected void configureShell(Shell shell)
-	{
+	protected void configureShell(Shell shell) {
 		super.configureShell(shell);
 		shell.setText("Import Mapping");
 		setTitleImage(OpenIIActivator.getImage("ImportLarge.png"));
 	}
 
 	/** Creates the importer list */
-	private void createImporterList(Composite parent)
-	{
+	private void createImporterList(Composite parent) {
 		// Construct the composite pane
 		Composite pane = new Composite(parent, SWT.NONE);
 		GridLayout layout = new GridLayout();
@@ -76,8 +75,7 @@ public class ImportMappingDialog extends TitleAreaDialog implements ISelectionCh
 	}
 	
 	/** Creates the dialog area for the Import Mapping Dialog */
-	protected Control createDialogArea(Composite parent)
-	{			
+	protected Control createDialogArea(Composite parent) {			
 		// Set the dialog title and message
 		setTitle("Import Mapping");
 		setMessage("Import a mapping from a file");
@@ -118,8 +116,7 @@ public class ImportMappingDialog extends TitleAreaDialog implements ISelectionCh
 	}
 
 	/** Creates the contents for the Import Mapping Dialog */
-	protected Control createContents(Composite parent)
-	{
+	protected Control createContents(Composite parent) {
 		Control control = super.createContents(parent);
 
 		// Make the default importer selections
@@ -130,16 +127,16 @@ public class ImportMappingDialog extends TitleAreaDialog implements ISelectionCh
 	}
 	
 	/** Handles the updating of the fields based on the selected importer */
-	public void updateFields()
-	{
+	public void updateFields() {
 		// Retrieve the selected importer
 		MappingImporter importer = importerSelector.getImporter();
-		boolean uriImporter = importer.getURIType()==URIType.URI;
+		boolean uriImporter = (importer.getURIType() == URIType.URI);
 
 		// Generate the list of extensions that are available
 		ArrayList<String> extensions = new ArrayList<String>();
-		for(String extension : importer.getFileTypes())
-			extensions.add("*"+extension);
+		for (String extension : importer.getFileTypes()) {
+			extensions.add("*" + extension);
+		}
 		
 		// Update the fields as needed
 		uriField.setMode(uriImporter ? URIField.URI : URIField.FILE);
@@ -150,29 +147,30 @@ public class ImportMappingDialog extends TitleAreaDialog implements ISelectionCh
 	}	
 
 	/** Update button */
-	private void updateButton()
-	{
+	private void updateButton() {
 		boolean valid = sourcePane.getSchema()!=null && targetPane.getSchema()!=null && uriField.isValid();
 		getButton(IDialogConstants.OK_ID).setEnabled(valid);		
 	}	
 	
 	/** Handles changes to the selected importer */
-	public void selectionChanged(SelectionChangedEvent e)
-	{
-		if(e.getSource().equals(importerSelector)) updateFields();
-		else updateButton();
+	public void selectionChanged(SelectionChangedEvent e) {
+		if (e.getSource().equals(importerSelector)) {
+			updateFields();
+		} else {
+			updateButton();
+		}
 	}
 	
 	/** Handles modifications to the various text fields */
-	public void modifyText(ModifyEvent e)
-	{   
+	public void modifyText(ModifyEvent e) {
 		// Check the validity of the file field
 		if(e.getSource().equals(uriField.getTextField()))
 		{
 			// Determine if a valid uri was given
 			setErrorMessage(null);
-			if(uriField.getTextField().getText().length()>0)
+			if (uriField.getTextField().getText().length() > 0) {
 				setErrorMessage(uriField.isValid() ? null : "A valid file must be selected");
+			}
 
 			// Update the labeling on the source and schema panes
 			try {
@@ -188,16 +186,14 @@ public class ImportMappingDialog extends TitleAreaDialog implements ISelectionCh
 	}
 	
 	/** Handles the marking of the checkbox */
-	public void widgetSelected(SelectionEvent e)
-	{
+	public void widgetSelected(SelectionEvent e) {
 		sourcePane.setProjectFilter(!allSchemasCheckbox.getSelection());
 		targetPane.setProjectFilter(!allSchemasCheckbox.getSelection());
 		updateButton();
 	}
 	
 	/** Handles the actual import of the specified file(s) */
-	protected void okPressed()
-	{
+	protected void okPressed() {
 		try {
 			// Gather up URI of the file being imported
 			URI uri = uriField.getURI();
@@ -207,22 +203,24 @@ public class ImportMappingDialog extends TitleAreaDialog implements ISelectionCh
 			Integer targetID = targetPane.getSchema().getId();
 			
 			// Check to see if mapping already exists in project
-			for(Mapping mapping : OpenIIManager.getMappings(project.getId()))
-				if(mapping.getSourceId().equals(sourceID) && mapping.getTargetId().equals(targetID))
+			for (Mapping mapping : OpenIIManager.getMappings(project.getId())) {
+				if (mapping.getSourceId().equals(sourceID) && mapping.getTargetId().equals(targetID)) {
 					throw new Exception("Mapping already exists in project");
+				}
+			}
 			
 			// Import mapping
 			MappingImporter importer = importerSelector.getImporter();;
 			importer.initialize(uri);
 			Integer mappingID = importer.importMapping(project, sourceID, targetID);
-			if(mappingID!=null)
-			{
+			if (mappingID != null) {
 				Mapping mapping = RepositoryManager.getClient().getMapping(mappingID);
-				OpenIIManager.fireMappingAdded(mapping); getShell().dispose();
+				OpenIIManager.fireMappingAdded(mapping);
 				getShell().dispose();
 			}
+		} catch(Exception e) {
+			setErrorMessage("Failed to import mapping. " + e.getMessage());
 		}
-		catch(Exception e) { setErrorMessage("Failed to import mapping. " + e.getMessage()); }
 	}
 	
 	// Unused listener

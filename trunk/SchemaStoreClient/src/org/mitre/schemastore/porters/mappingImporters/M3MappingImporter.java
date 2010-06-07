@@ -32,28 +32,34 @@ public class M3MappingImporter extends MappingImporter
 	private Element element;
 	
 	/** Returns the importer name */
-	public String getName()
-		{ return "M3 Mapping Importer"; }
+	public String getName() {
+		return "M3 Mapping Importer";
+	}
 	
 	/** Returns the importer description */
-	public String getDescription()
-		{ return "This importer can be used to download a mapping in the M3 format"; }
+	public String getDescription() {
+		return "This importer can be used to download a mapping in the M3 format";
+	}
 		
 	/** Returns the importer URI type */
-	public URIType getURIType()
-		{ return URIType.FILE; }
+	public URIType getURIType() {
+		return URIType.FILE;
+	}
 	
 	/** Returns the importer URI file types */
-	public ArrayList<String> getFileTypes()
-	{
+	public ArrayList<String> getFileTypes() {
 		ArrayList<String> fileTypes = new ArrayList<String>();
 		fileTypes.add(".m3m");
 		return fileTypes;
 	}
+
+	/** Initializes the importer for the specified Document */
+	final public void initialize(Document document) throws ImporterException {
+		element = document.getDocumentElement();
+	}
 	
 	/** Initialize the importer */
-	protected void initialize() throws ImporterException
-	{	
+	protected void initialize() throws ImporterException {
 		try {
 			// Uncompresses the file
 			ZipInputStream zipIn = new ZipInputStream(new FileInputStream(new File(uri)));
@@ -72,57 +78,61 @@ public class M3MappingImporter extends MappingImporter
 			Document document = db.parse(tempFile);
 			element = document.getDocumentElement();
 			tempFile.delete();
+		} catch(Exception e) {
+			throw new ImporterException(ImporterExceptionType.IMPORT_FAILURE, e.getMessage());
 		}
-		catch(Exception e) { throw new ImporterException(ImporterExceptionType.IMPORT_FAILURE, e.getMessage()); }
 	}
 
 	/** Returns the source schema in the mapping */
-	public ProjectSchema getSourceSchema() throws ImporterException
-	{
-		try { return ConvertFromXML.getSourceSchema(element); }
-		catch(Exception e) { throw new ImporterException(ImporterExceptionType.IMPORT_FAILURE, e.getMessage()); }
+	public ProjectSchema getSourceSchema() throws ImporterException {
+		try {
+			return ConvertFromXML.getSourceSchema(element);
+		} catch(Exception e) {
+			throw new ImporterException(ImporterExceptionType.IMPORT_FAILURE, e.getMessage());
+		}
 	}
 
 	/** Returns the target schema in the mapping */
-	public ProjectSchema getTargetSchema() throws ImporterException
-	{
-		try { return ConvertFromXML.getTargetSchema(element); }
-		catch(Exception e) { throw new ImporterException(ImporterExceptionType.IMPORT_FAILURE, e.getMessage()); }
+	public ProjectSchema getTargetSchema() throws ImporterException {
+		try {
+			return ConvertFromXML.getTargetSchema(element);
+		} catch(Exception e) {
+			throw new ImporterException(ImporterExceptionType.IMPORT_FAILURE, e.getMessage());
+		}
 	}
 
 	/** Retrieves the elements with the specified label */
-	private ArrayList<Element> getElements(String label)
-	{
+	private ArrayList<Element> getElements(String label) {
 		ArrayList<Element> elements = new ArrayList<Element>();
 		NodeList elementList = element.getElementsByTagName(label);
-		if(elementList != null)
-			for(int i=0; i<elementList.getLength(); i++)
-			{
+		if (elementList != null) {
+			for (int i = 0; i < elementList.getLength(); i++) {
 				Node node = elementList.item(i);
-				if(node instanceof Element)
+				if (node instanceof Element) {
 					elements.add((Element)node);
+				}
 			}
+		}
 		return elements;
 	}
 	
 	/** Returns the imported functions */
-	public HashMap<Function,ArrayList<FunctionImp>> getFunctions() throws ImporterException
-	{
-		try {			
+	public HashMap<Function,ArrayList<FunctionImp>> getFunctions() throws ImporterException {
+		try {
 			HashMap<Function,ArrayList<FunctionImp>> functions = new HashMap<Function,ArrayList<FunctionImp>>();
-			for(Element element : getElements("Function"))
-			{
+			for (Element element : getElements("Function")) {
 				Function function = ConvertFromXML.getFunction(element);
 				ArrayList<FunctionImp> functionImps = ConvertFromXML.getFunctionImps(element);
 				functions.put(function, functionImps);
 			}
 			return functions;
-		} catch(Exception e) { throw new ImporterException(ImporterExceptionType.IMPORT_FAILURE, e.getMessage()); }
+		} catch(Exception e) {
+			throw new ImporterException(ImporterExceptionType.IMPORT_FAILURE, e.getMessage());
+		}
 	}
 	
 	/** Returns the imported mapping cells */
-	public ArrayList<MappingCell> getMappingCells() throws ImporterException
-	{
+	public ArrayList<MappingCell> getMappingCells() throws ImporterException {
 		// Clear out the unidentified mapping cells
 		unidentifiedMappingCellPaths.clear();
 
@@ -133,15 +143,18 @@ public class M3MappingImporter extends MappingImporter
 			
 			// Generate the list of mapping cells
 			ArrayList<MappingCell> mappingCells = new ArrayList<MappingCell>();
-			for(Element element : getElements("MappingCell"))
-			{
+			for (Element element : getElements("MappingCell")) {
 				// Gets the imported mapping cell
 				MappingCell mappingCell = ConvertFromXML.getMappingCell(element, sourceInfo, targetInfo);
-				if(mappingCell==null)
+				if (mappingCell==null) {
 					unidentifiedMappingCellPaths.add(ConvertFromXML.getMappingCellPaths(element));
-				else mappingCells.add(mappingCell);
+				} else {
+					mappingCells.add(mappingCell);
+				}
 			}
 			return mappingCells;
-		} catch(Exception e) { throw new ImporterException(ImporterExceptionType.IMPORT_FAILURE, e.getMessage()); }
+		} catch(Exception e) {
+			throw new ImporterException(ImporterExceptionType.IMPORT_FAILURE, e.getMessage());
+		}
 	}
 }

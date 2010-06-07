@@ -11,7 +11,7 @@ import org.mitre.openii.widgets.WidgetUtilities;
 import org.mitre.schemastore.model.Schema;
 
 /** Constructs the Add Schemas to List Dialog */
-class AddSchemasToListDialog extends ElementListSelectionDialog {
+public class AddSchemasToListDialog extends ElementListSelectionDialog {
 	/** Constructs the dialog */
 	AddSchemasToListDialog(Shell shell, ArrayList<Schema> selectedSchemas) {
 		super(shell, new LabelProvider());

@@ -3,7 +3,6 @@ package org.mitre.openii.widgets.schemaList;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
@@ -17,19 +16,9 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TableItem;
 import org.mitre.openii.model.OpenIIManager;
-import org.mitre.openii.model.RepositoryManager;
 import org.mitre.openii.widgets.ListWithButtonBar;
 import org.mitre.openii.widgets.WidgetUtilities;
-import org.mitre.schemastore.model.Function;
-import org.mitre.schemastore.model.FunctionImp;
-import org.mitre.schemastore.model.Mapping;
-import org.mitre.schemastore.model.MappingCell;
-import org.mitre.schemastore.model.ProjectSchema;
 import org.mitre.schemastore.model.Schema;
-import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
-import org.mitre.schemastore.porters.PorterManager;
-import org.mitre.schemastore.porters.PorterManager.PorterType;
-import org.mitre.schemastore.porters.mappingExporters.MappingExporter;
 
 /** Constructs a Schema List */
 public class SchemaList extends ListWithButtonBar implements SelectionListener, ISelectionChangedListener
@@ -45,7 +34,6 @@ public class SchemaList extends ListWithButtonBar implements SelectionListener, 
 	private Button addButton = null;
 	private Button searchButton = null;
 	private Button removeButton = null;
-	private Button replaceButton = null;
 
 	// Stores the projectID so we can get mappings out of this
 	private Integer projectID;
@@ -65,19 +53,14 @@ public class SchemaList extends ListWithButtonBar implements SelectionListener, 
 		// the remove button should be disabled by default, until the user selects something
 		removeButton.setEnabled(false);
 
-		// if there is no projectID, we can't replace a schema
-		// also, the replace button should be disabled by default
-		if (projectID != null) {
-			replaceButton = addButton("Replace...", this);
-			replaceButton.setEnabled(false);
-		}
-
 		list = getList();
 		list.setLabelProvider(new SchemaLabelProvider());
 
 		// Listens for changes to the selected schemas
 		list.addSelectionChangedListener(this);
 	}	
+
+
 
 	/** Sets the schemas to be displayed in the list */
 	public void setSchemas(List<Integer> schemaIDs) {
@@ -122,7 +105,7 @@ public class SchemaList extends ListWithButtonBar implements SelectionListener, 
 		listeners.add(listener);
 	}
 	
-	/** Disable the "Remove" and "Replace" button if locked schemas are selected */
+	/** Disable the "Remove" button if locked schemas are selected */
 	public void selectionChanged(SelectionChangedEvent e) {
 		int selected = 0;
 		boolean enabled = true;
@@ -131,19 +114,12 @@ public class SchemaList extends ListWithButtonBar implements SelectionListener, 
 			selected++;
 		}
 
-		// do not show the remove button if zero schemas are selected
-		if (selected > 0) {
-			removeButton.setEnabled(enabled);
-		} else {
-			removeButton.setEnabled(false);
-		}
-
-		// do not show the replace button if zero or more than one schema is selected
-		if (replaceButton != null) {
-			if (selected == 1) {
-				replaceButton.setEnabled(true);
+		// do not enable the remove button if zero schemas are selected
+		if (removeButton != null) {
+			if (selected > 0) {
+				removeButton.setEnabled(enabled);
 			} else {
-				replaceButton.setEnabled(false);
+				removeButton.setEnabled(false);
 			}
 		}
 	}
@@ -168,63 +144,6 @@ public class SchemaList extends ListWithButtonBar implements SelectionListener, 
 			list.getTable().remove(list.getTable().getSelectionIndices());
 		}
 
-		// Handles the replacement of a schema
-		if (e.getSource().equals(replaceButton)) {
-			ReplaceSchemasOnListDialog dialog = new ReplaceSchemasOnListDialog(getShell(), getSchemas());
-			if (dialog.open() == Window.OK) {
-				// check to see if this schema is currently in a mapping
-				boolean unlocked = true;
-				for (TableItem item : list.getTable().getSelection()) {
-					unlocked &= !lockedIDs.contains(((Schema)item.getData()).getId());
-				}
-
-				if (unlocked) {
-					// if the schema is NOT in a mapping, just remove one and insert the other
-					list.getTable().remove(list.getTable().getSelectionIndices());
-					list.add(dialog.getResult());
-				} else {
-					// if the schema we replaced is in a mapping, change the mappings to the new schema
-					// and tell the user what mappings are being dropped
-
-					// 1. figure out what we are replacing and with what
-					Schema original = ((Schema)list.getTable().getSelection()[0].getData());
-					Schema replacement = ((Schema)dialog.getResult()[0]);
-					
-					// 2. find all affected mappings and remember them
-					ArrayList<Integer> mappings = new ArrayList<Integer>();
-					for (Mapping mapping : OpenIIManager.getMappings(projectID)) {
-						Integer mappingID = mapping.getId();
-
-						// don't bother putting this mapping into the list if it is already there
-						if (!mappings.contains(mappingID)) {
-							if (mapping.getSourceId().equals(original.getId())) {
-								mappings.add(mappingID);
-							}
-							if (mapping.getTargetId().equals(original.getId())) {
-								mappings.add(mappingID);
-							}
-						}
-					}
-
-					// 3. save the details for each mapping that is going to be affected
-					for (Integer mappingID : mappings) {
-						Mapping mapping = OpenIIManager.getMapping(mappingID);
-						Integer sourceID = mapping.getSourceId();	// the source schema for this mapping
-						Integer targetID = mapping.getTargetId();	// the target schema for this mapping
-
-					}
-
-					// 3. get the diff between the two schemas
-					// 4. ask the user to confirm the diff
-					// 5. save the mappings to the existing schema
-					// 6. erase the existing schema
-					// 7. add the new schema
-					// 8. re-apply the mappings to the new schema
-					// TODO: finish this
-				}
-			}
-		}
-		
 		// Inform listeners of the change to displayed list items
 		for (ActionListener listener : listeners) {
 			listener.actionPerformed(new ActionEvent(this,0,null));

@@ -37,53 +37,57 @@ import org.w3c.dom.Element;
 public class M3MappingExporter extends MappingExporter
 {	
 	/** Returns the exporter name */
-	public String getName()
-		{ return "M3 Mapping Exporter"; }
+	public String getName() {
+		return "M3 Mapping Exporter";
+	}
 	
 	/** Returns the exporter description */
-	public String getDescription()
-		{ return "This exporter can be used to export the M3 format of a mapping"; }
+	public String getDescription() {
+		return "This exporter can be used to export the M3 format of a mapping";
+	}
 	
 	/** Returns the exporter file type */
-	public String getFileType()
-		{ return ".m3m"; }
+	public String getFileType() {
+		return ".m3m";
+	}
 	
 	/** Retrieve the schema info for the specified schema */
-	private HierarchicalSchemaInfo getSchemaInfo(Project project, Integer schemaID) throws Exception
-	{
-		for(ProjectSchema schema : project.getSchemas())
-			if(schema.getId().equals(schemaID))
+	private HierarchicalSchemaInfo getSchemaInfo(Project project, Integer schemaID) throws Exception {
+		for (ProjectSchema schema : project.getSchemas()) {
+			if (schema.getId().equals(schemaID)) {
 				return new HierarchicalSchemaInfo(client.getSchemaInfo(schemaID),schema.geetSchemaModel());
+			}
+		}
 		return null;
 	}
 	
 	/** Retrieve the functions used by the mapping cells */
-	private HashMap<Function,ArrayList<FunctionImp>> getFunctions(ArrayList<MappingCell> mappingCells) throws Exception
-	{
+	private HashMap<Function,ArrayList<FunctionImp>> getFunctions(ArrayList<MappingCell> mappingCells) throws Exception {
 		// Identify all function IDs referenced by the mapping
 		HashSet<Integer> functionIDHash = new HashSet<Integer>();
-		for(MappingCell mappingCell : mappingCells)
-			if(mappingCell.getFunctionID()!=null)
+		for (MappingCell mappingCell : mappingCells) {
+			if (mappingCell.getFunctionID() != null) {
 				functionIDHash.add(mappingCell.getFunctionID());
+			}
+		}
 
 		// Generate a list of all functions referenced (directly and indirectly) by the mapping
 		HashSet<Function> functionHash = new HashSet<Function>();
-		for(Integer functionID : functionIDHash)
-		{
+		for(Integer functionID : functionIDHash) {
 			functionHash.add(client.getFunction(functionID));
 			functionHash.addAll(client.getReferencedFunctions(functionID));
 		}
 		
 		// Create the array of functions and their defined implementations
 		HashMap<Function,ArrayList<FunctionImp>> functions = new HashMap<Function,ArrayList<FunctionImp>>();
-		for(Function function : functionHash)
-			functions.put(function,client.getFunctionImps(function.getId()));
+		for (Function function : functionHash) {
+			functions.put(function, client.getFunctionImps(function.getId()));
+		}
 		return functions;
 	}
 	
 	/** Generates the XML document */
-	private Document generateXMLDocument(Project project, Mapping mapping, ArrayList<MappingCell> mappingCells) throws Exception
-	{
+	public Document generateXMLDocument(Project project, Mapping mapping, ArrayList<MappingCell> mappingCells) throws Exception {
 		// Initialize the XML document
 		Document document = null;
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -99,10 +103,12 @@ public class M3MappingExporter extends MappingExporter
 		
 		// Create XML for the mapping
 		Element mappingXMLElement = ConvertToXML.generate(mapping, sourceInfo, targetInfo, document);
-		for(Function function : functions.keySet())
+		for(Function function : functions.keySet()) {
 			mappingXMLElement.appendChild(ConvertToXML.generate(function, functions.get(function), document));
-		for(MappingCell mappingCell : mappingCells)
+		}
+		for(MappingCell mappingCell : mappingCells) {
 			mappingXMLElement.appendChild(ConvertToXML.generate(mappingCell, sourceInfo, targetInfo, document));
+		}
 		
 		// Returns the generated XML document
 		document.appendChild(mappingXMLElement);
@@ -110,9 +116,8 @@ public class M3MappingExporter extends MappingExporter
 	}
 	
 	/** Exports the mapping to a SchemaStore archive file */
-	public void exportMapping(Project project, Mapping mapping, ArrayList<MappingCell> mappingCells, File file) throws IOException
-	{
-		try {				
+	public void exportMapping(Project project, Mapping mapping, ArrayList<MappingCell> mappingCells, File file) throws IOException {
+		try {
 			// Generates the XML document
 			Document document = generateXMLDocument(project, mapping, mappingCells);
 
@@ -123,21 +128,23 @@ public class M3MappingExporter extends MappingExporter
 			format.setIndenting(true);
 			XMLSerializer serializer = new XMLSerializer(out, format);
 			serializer.serialize(document);
-				
+
 			// Generate a zip file for the specified file
 			ZipOutputStream zipOut = new ZipOutputStream(new FileOutputStream(file));
 			FileInputStream in = new FileInputStream(tempFile);
 			byte data[] = new byte[100000]; int count;
 			zipOut.putNextEntry(new ZipEntry("mapping.xml"));
-			while((count = in.read(data)) > 0)
+			while((count = in.read(data)) > 0) {
 				zipOut.write(data, 0, count);
+			}
 			zipOut.closeEntry();
 			zipOut.close();
 			in.close();
-			
+
 			// Remove the temporary file
 			tempFile.delete();			
+		} catch(Exception e) {
+			System.out.println("(E)M3MappingExporter.exportMapping - " + e.getMessage());
 		}
-		catch(Exception e) { System.out.println("(E)M3MappingExporter.exportMapping - " + e.getMessage()); }
 	}
 }

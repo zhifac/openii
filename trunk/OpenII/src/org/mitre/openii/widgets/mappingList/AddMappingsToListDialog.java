@@ -20,8 +20,7 @@ import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.Schema;
 
 /** Constructs the Add Mappings to List Dialog */
-class AddMappingsToListDialog extends Dialog implements ISelectionChangedListener
-{
+public class AddMappingsToListDialog extends Dialog implements ISelectionChangedListener {
 	/** Stores the schemas from which to create mappings */
 	private ArrayList<Schema> schemas = null;
 	
@@ -36,29 +35,29 @@ class AddMappingsToListDialog extends Dialog implements ISelectionChangedListene
 	private Schema source, target;
 	
 	/** Constructs the dialog */
-	AddMappingsToListDialog(Shell shell, ArrayList<Schema> schemas, ArrayList<Mapping> mappings)
-		{ super(shell); this.schemas = schemas; this.mappings = mappings; }
+	AddMappingsToListDialog(Shell shell, ArrayList<Schema> schemas, ArrayList<Mapping> mappings) {
+		super(shell);
+		this.schemas = schemas;
+		this.mappings = mappings;
+	}
 
 	/** Configures the dialog shell */
-	protected void configureShell(Shell shell)
-	{
+	protected void configureShell(Shell shell) {
 		super.configureShell(shell);
 		shell.setImage(OpenIIActivator.getImage("Mapping.gif"));
 		shell.setText("Add Mapping");
 	}
 	
 	/** Creates a schema list */
-	private ComboViewer createSchemaList(Composite parent)
-	{
+	private ComboViewer createSchemaList(Composite parent) {
 		ComboViewer list = new ComboViewer(parent, SWT.NONE);
-		for(Schema schema : schemas) list.add(schema);
+		for (Schema schema : schemas) { list.add(schema); }
 		list.addSelectionChangedListener(this);
 		return list;
 	}
 	
 	/** Creates the contents for the Add Mapping Dialog */
-	protected Control createDialogArea(Composite parent)
-	{
+	protected Control createDialogArea(Composite parent) {
 		// Construct the composite pane
 		Composite pane = new Composite(parent, SWT.NONE);
 		pane.setLayout(new GridLayout(2,false));
@@ -74,16 +73,14 @@ class AddMappingsToListDialog extends Dialog implements ISelectionChangedListene
 	}
 	
 	/** Creates the contents for the Add Mappings Dialog */
-	protected Control createContents(Composite parent)
-	{
+	protected Control createContents(Composite parent) {
 		Control control = super.createContents(parent);
 		getButton(IDialogConstants.OK_ID).setEnabled(false);
 		return control;
 	}
 	
 	/** Update the schema lists */
-	private void updateSchemas(ComboViewer schemaList)
-	{		
+	private void updateSchemas(ComboViewer schemaList) {
 		// Get the selected schema
 		Schema selectedSchema = getSchema(schemaList);
 		
@@ -94,27 +91,30 @@ class AddMappingsToListDialog extends Dialog implements ISelectionChangedListene
 		
 		// Construct the list of prohibited schemas
 		HashSet<Integer> prohibitedSchemas = new HashSet<Integer>();
-		if(otherID!=null) prohibitedSchemas.add(otherID);
-		for(Mapping mapping : mappings)
-		{
-			if(schemaList==sourceList && mapping.getTargetId().equals(otherID))
+		if (otherID != null) { prohibitedSchemas.add(otherID); }
+		for (Mapping mapping : mappings) {
+			if (schemaList==sourceList && mapping.getTargetId().equals(otherID)) {
 				prohibitedSchemas.add(mapping.getSourceId());
-			if(schemaList==targetList && mapping.getSourceId().equals(otherID))
-				prohibitedSchemas.add(mapping.getTargetId());			
+			}
+			if (schemaList==targetList && mapping.getSourceId().equals(otherID)) {
+				prohibitedSchemas.add(mapping.getTargetId());
+			}
 		}
 		
 		// Clear out the schema list
-		while(schemaList.getCombo().getItemCount()>0)
+		while (schemaList.getCombo().getItemCount() > 0) {
 			schemaList.remove(schemaList.getElementAt(0));
+		}
 
 		// Rebuild the schema list while skipping prohibited schemas
-		for(Schema schema : schemas)
-			if(!prohibitedSchemas.contains(schema.getId()))
+		for (Schema schema : schemas) {
+			if (!prohibitedSchemas.contains(schema.getId())) {
 				schemaList.add(schema);
+			}
+		}
 
 		// Reset the selected schema
-		if(selectedSchema!=null)
-		{
+		if (selectedSchema != null) {
 			schemaList.removeSelectionChangedListener(this);
 			schemaList.setSelection(new StructuredSelection(selectedSchema));
 			schemaList.addSelectionChangedListener(this);
@@ -122,8 +122,7 @@ class AddMappingsToListDialog extends Dialog implements ISelectionChangedListene
 	}
 	
 	/** Handles changes to the selected importer */
-	public void selectionChanged(SelectionChangedEvent e)
-	{
+	public void selectionChanged(SelectionChangedEvent e) {
 		// Updates the schemas
 		updateSchemas(e.getSource().equals(sourceList) ? targetList : sourceList);
 		
@@ -133,20 +132,26 @@ class AddMappingsToListDialog extends Dialog implements ISelectionChangedListene
 		
 		// Determine if the button should be enabled
 		boolean disable = source==null || target==null || source.equals(target);
-		if(!disable)
-			for(Mapping mapping : mappings)
-				if(mapping.getSourceId().equals(source.getId()) && mapping.getTargetId().equals(target.getId()))
-					{ disable = true; break; }
+		if (!disable) {
+			for (Mapping mapping : mappings) {
+				if (mapping.getSourceId().equals(source.getId()) && mapping.getTargetId().equals(target.getId())) {
+					disable = true;
+					break;
+				}
+			}
+		}
 
 		// Enable/disable the button based on if the mapping exists
 		getButton(IDialogConstants.OK_ID).setEnabled(!disable);
 	}
 	
 	/** Returns the selected schema for the specified list */
-	private Schema getSchema(ComboViewer schemaList)
-		{ return (Schema)((StructuredSelection)schemaList.getSelection()).getFirstElement(); }
-	
+	private Schema getSchema(ComboViewer schemaList) {
+		return (Schema)((StructuredSelection)schemaList.getSelection()).getFirstElement();
+	}
+
 	/** Returns the selected mapping */
-	Mapping getMapping()
-		{ return new MappingReference(new Mapping(null,null,source.getId(),target.getId()),schemas); }
+	Mapping getMapping() {
+		return new MappingReference(new Mapping(null, null, source.getId(), target.getId()), schemas);
+	}
 }
