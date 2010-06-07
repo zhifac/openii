@@ -31,8 +31,7 @@ import org.mitre.schemastore.porters.ImporterException;
 import org.mitre.schemastore.porters.ImporterException.ImporterExceptionType;
 
 /** Abstract Mapping Importer class */
-public abstract class MappingImporter extends Importer
-{	
+public abstract class MappingImporter extends Importer {
 	/** Stores the aligned source schema */
 	protected ProjectSchema source;
 	
@@ -52,70 +51,97 @@ public abstract class MappingImporter extends Importer
 	abstract public ProjectSchema getTargetSchema() throws ImporterException;
 
 	/** Returns the functions from the specified URI */
-	public HashMap<Function, ArrayList<FunctionImp>> getFunctions() throws ImporterException
-		{ return new HashMap<Function, ArrayList<FunctionImp>>(); }
+	public HashMap<Function, ArrayList<FunctionImp>> getFunctions() throws ImporterException {
+		return new HashMap<Function, ArrayList<FunctionImp>>();
+	}
 	
 	/** Returns the mapping cells from the specified URI */
 	abstract public ArrayList<MappingCell> getMappingCells() throws ImporterException;
 	
 	/** Initializes the importer for the specified URI */
-	final public void initialize(URI uri) throws ImporterException
-		{ this.uri = uri; initialize(); }
+	final public void initialize(URI uri) throws ImporterException {
+		this.uri = uri;
+		initialize();
+	}
 
 	/** Sets the source and target schemas */
-	final public void setSchemas(Integer sourceID, Integer targetID) throws ImporterException
-	{
+	final public void setSchemas(Integer sourceID, Integer targetID) throws ImporterException {
 		source = getSourceSchema(); if(sourceID!=null) source.setId(sourceID);
 		target = getTargetSchema(); if(targetID!=null) target.setId(targetID);
 	}
 
 	/** Indicates if the two specified functions match */
-	final private boolean functionsMatch(Function function1, Function function2)
-	{
-		if(function1.getExpression()==null) { if(function2.getExpression()!=null) return false; }
-		else if(!function1.getExpression().equals(function2.getExpression())) return false;
-		if(!function1.getOutputType().equals(function2.getOutputType())) return false;
-		if(function1.getInputTypes().length != function2.getInputTypes().length) return false;
-		for(int i=0; i<function1.getInputTypes().length; i++)
-			if(!function1.getInputTypes()[i].equals(function2.getInputTypes()[i])) return false;
+	final private boolean functionsMatch(Function function1, Function function2) {
+		// if either expression is null and the other is an empty string, convert both to empty strings
+		if (function1.getExpression() == null) {
+			if (function2.getExpression() != "" && function2.getExpression() != null) {
+				return false;
+			}
+			function1.setExpression("");
+			function2.setExpression("");
+		} else if (function2.getExpression() == null) {
+			if (function1.getExpression() != "" && function1.getExpression() != null) {
+				return false;
+			}
+			function1.setExpression("");
+			function2.setExpression("");
+		} else if (!function1.getExpression().equals(function2.getExpression())) {
+			return false;
+		}
+
+		if (!function1.getOutputType().equals(function2.getOutputType())) {
+			return false;
+		}
+
+		if (function1.getInputTypes().length != function2.getInputTypes().length) {
+			return false;
+		}
+
+		for (int i = 0; i < function1.getInputTypes().length; i++) { 
+			if (!function1.getInputTypes()[i].equals(function2.getInputTypes()[i])) {
+				return false;
+			}
+		}
+
 		return true;
 	}
 	
 	/** Imports the specified functions */
-	final private HashMap<Integer,Integer> importFunctions() throws Exception
-	{
+	final private HashMap<Integer,Integer> importFunctions() throws Exception {
 		HashMap<Integer,Integer> functionMap = new HashMap<Integer,Integer>();
 		
 		// Retrieve all functions currently in repository
 		HashMap<String,Function> repositoryFunctions = new HashMap<String,Function>();
-		for(Function function : client.getFunctions())
+		for (Function function : client.getFunctions()) {
 			repositoryFunctions.put(function.getName(), function);
+		}
 		
 		// Associate specified functions with repository functions
 		HashMap<Function,ArrayList<FunctionImp>> functions = getFunctions();
-		for(Function function : functions.keySet())
-		{
+		for (Function function : functions.keySet()) {
 			// Aligns the function with the function defined in the repository
 			Function repositoryFunction = repositoryFunctions.get(function.getName());
-			if(repositoryFunction!=null)
-			{
-				if(functionsMatch(function,repositoryFunction))
+			if (repositoryFunction != null) {
+				if (functionsMatch(function, repositoryFunction)) {
 					functionMap.put(function.getId(), repositoryFunction.getId());
-				else throw new Exception ("Mismatched function definition given for function " + function.getName());
-			}
-			
-			// Creates a new function as needed
-			else
-			{
+				} else {
+					throw new Exception("Mismatched function definition given for function '" + function.getName() + "'.");
+				}
+			} else {
+				// Creates a new function as needed
 				Integer functionID = client.addFunction(function);
-				if(functionID==null) throw new Exception("Unable to save function " + function.getName());
+				if (functionID == null) {
+					throw new Exception("Unable to save function " + function.getName());
+				}
 				functionMap.put(function.getId(), functionID);
 			}
 			
 			// Store the function implementations
-			for(FunctionImp functionImp : functions.get(function))
-				if(!client.setFunctionImp(functionImp))
-					throw new Exception("Failed to store the function implementation for function " + function.getName());
+			for (FunctionImp functionImp : functions.get(function)) {
+				if (!client.setFunctionImp(functionImp)) {
+					throw new Exception("Failed to store the function implementation for function '" + function.getName() + "'.");
+				}
+			}
 		}
 		
 		// Return the generated function mapping
@@ -123,43 +149,44 @@ public abstract class MappingImporter extends Importer
 	}
 	
 	/** Imports the mapping specified by the currently set URI */
-	final public Integer importMapping(Project project, Integer sourceID, Integer targetID) throws ImporterException
-	{
+	final public Integer importMapping(Project project, Integer sourceID, Integer targetID) throws ImporterException {
 		// Set the schema information
 		setSchemas(sourceID, targetID);
 		
 		// Generate the mapping and mapping cells
-		Mapping mapping = new Mapping(null,project.getId(),source.getId(),target.getId());
+		Mapping mapping = new Mapping(null, project.getId(), source.getId(), target.getId());
 		ArrayList<MappingCell> mappingCells = getMappingCells();
 			
 		// Imports the mapping (and associated functions)
 		try {
 			// Imports the functions and converts the mapping cells to properly reference the functions
 			HashMap<Integer,Integer> functionMap = importFunctions();
-			for(MappingCell mappingCell : mappingCells)
-			{
+			for (MappingCell mappingCell : mappingCells) {
 				Integer functionID = mappingCell.getFunctionID();
-				if(functionID!=null)
-				{
+				if (functionID != null) {
 					Integer newFunctionID = functionMap.get(functionID);
-					if(newFunctionID==null) throw new Exception("Undefined functions were encountered!");
+					if (newFunctionID == null) {
+						throw new Exception("Undefined functions were encountered!");
+					}
 					mappingCell.setFunctionID(newFunctionID);
 				}
 			}
 
 			// Imports the mapping
 			Integer mappingID = client.addMapping(mapping);
-			if(mappingID==null) throw new Exception ("Unable to save the mapping to the database!");
+			if (mappingID == null) {
+				throw new Exception("Unable to save the mapping to the database!");
+			}
 			mapping.setId(mappingID);
-			if(!client.saveMappingCells(mapping.getId(), mappingCells))
+			if (!client.saveMappingCells(mapping.getId(), mappingCells)) {
 				throw new Exception("Unable to save the mapping cells to the database!");
-		}
-
-		// Delete the mapping if import wasn't totally successful
-		catch(Exception e) 
-		{
-			try { client.deleteMapping(mapping.getId()); } catch(Exception e2) {}
-			throw new ImporterException(ImporterExceptionType.IMPORT_FAILURE,"A failure occurred in transferring the mapping to the repository. "+e.getMessage());
+			}
+		} catch(Exception e)  {
+			// Delete the mapping if import wasn't totally successful
+			try {
+				client.deleteMapping(mapping.getId());
+			} catch(Exception e2) {}
+			throw new ImporterException(ImporterExceptionType.IMPORT_FAILURE, "A failure occurred in transferring the mapping to the repository. " + e.getMessage());
 		}
 
 		// Returns the id of the imported mapping
@@ -167,6 +194,7 @@ public abstract class MappingImporter extends Importer
 	}
 
 	/** Returns the unidentified mapping cells */
-	final public ArrayList<MappingCellPaths> getUnidentifiedMappingCellPaths()
-		{ return unidentifiedMappingCellPaths; }
+	final public ArrayList<MappingCellPaths> getUnidentifiedMappingCellPaths() {
+		return unidentifiedMappingCellPaths;
+	}
 }

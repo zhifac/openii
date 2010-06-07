@@ -12,6 +12,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.TableItem;
 import org.mitre.openii.widgets.ListWithButtonBar;
 import org.mitre.openii.widgets.WidgetUtilities;
 import org.mitre.schemastore.model.Mapping;
@@ -29,6 +30,7 @@ public class MappingList extends ListWithButtonBar implements SelectionListener,
 	// Stores the various dialog fields
 	private TableViewer list = null;
 	private Button addButton = null;
+	private Button editButton = null;
 	private Button removeButton = null;
 
 	// Stores the projectID so we can get mappings out of this
@@ -41,8 +43,12 @@ public class MappingList extends ListWithButtonBar implements SelectionListener,
 		this.projectID = projectID;
 
 		// create buttons down the right
-		addButton = addButton("Add...",this);
-		removeButton = addButton("Remove",this);
+		addButton = addButton("Add...", this);
+		editButton = addButton("Edit...", this);
+		removeButton = addButton("Remove", this);
+
+		// the edit button should be invalid until something is selected
+		editButton.setEnabled(false);
 
 		// the remove button should be invalid until something is selected
 		removeButton.setEnabled(false);
@@ -88,17 +94,40 @@ public class MappingList extends ListWithButtonBar implements SelectionListener,
 	}
 
 	public void selectionChanged(SelectionChangedEvent event) {
-		removeButton.setEnabled(true);
+		int selected = list.getTable().getSelectionCount();
+
+		// do not enable the edit button if some number other than one schemas are selected
+		if (editButton != null) {
+			if (selected == 1) {
+				editButton.setEnabled(true);
+			} else {
+				editButton.setEnabled(false);
+			}
+		}
+
+		// do not enable the remove button if zero schemas are selected
+		if (removeButton != null) {
+			if (selected > 0) {
+				removeButton.setEnabled(true);
+			} else {
+				removeButton.setEnabled(false);
+			}
+		}
 	}
 	
 	/** Handles the pressing of list buttons */
 	public void widgetSelected(SelectionEvent e) {
 		// Handles the addition of mappings
 		if (e.getSource().equals(addButton)) {
-			AddMappingsToListDialog dialog = new AddMappingsToListDialog(getShell(),schemas,getMappings());
+			AddMappingsToListDialog dialog = new AddMappingsToListDialog(getShell(), schemas, getMappings());
 			if (dialog.open() == Window.OK) {
 				list.add(dialog.getMapping());
 			}
+		}
+
+		// Handles the editing of a mapping
+		if (e.getSource().equals(editButton)) {
+			
 		}
 
 		// Handles the removal of mappings
