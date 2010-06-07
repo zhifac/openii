@@ -101,8 +101,12 @@ public class EditProjectDialog extends Dialog implements ActionListener, ModifyL
 		pane.setText("Schemas");
 		pane.setLayout(new GridLayout(1, false));
 
+		// get the project id, if it exists
+		Integer projectId = null;
+		if (project != null) { projectId = project.getId(); }
+
 		// Generate the schema list
-		schemaList = new SchemaList(pane, null, project.getId());
+		schemaList = new SchemaList(pane, null, projectId);
 		schemaList.setWidth(300);
 		schemaList.addListener(this);
 	}
@@ -113,9 +117,13 @@ public class EditProjectDialog extends Dialog implements ActionListener, ModifyL
 		Group pane = new Group(parent, SWT.NONE);
 		pane.setText("Mappings");
 		pane.setLayout(new GridLayout(1, false));
+		
+		// get the project id, if it exists
+		Integer projectId = null;
+		if (project != null) { projectId = project.getId(); }
 
 		// Construct the list of mappings
-		mappingList = new MappingList(pane, null, project.getId());
+		mappingList = new MappingList(pane, null, projectId);
 		mappingList.setWidth(300);
 		mappingList.addListener(this);
 	}
