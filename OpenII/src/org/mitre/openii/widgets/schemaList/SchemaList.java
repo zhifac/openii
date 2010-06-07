@@ -36,14 +36,14 @@ public class SchemaList extends ListWithButtonBar implements SelectionListener, 
 	private Button removeButton = null;
 
 	// Stores the projectID so we can get mappings out of this
-	private Integer projectID;
+	private Integer projectId;
 
 	/** Constructs the dialog */
-	public SchemaList(Composite parent, String heading, Integer projectID) {
+	public SchemaList(Composite parent, String heading, Integer projectId) {
 		super(parent, heading, "Schema");
 
 		// record our project id
-		this.projectID = projectID;
+		this.projectId = projectId;
 
 		// create buttons down the right
 		addButton     = addButton("Add...", this);
@@ -59,8 +59,6 @@ public class SchemaList extends ListWithButtonBar implements SelectionListener, 
 		// Listens for changes to the selected schemas
 		list.addSelectionChangedListener(this);
 	}	
-
-
 
 	/** Sets the schemas to be displayed in the list */
 	public void setSchemas(List<Integer> schemaIDs) {
@@ -85,7 +83,7 @@ public class SchemaList extends ListWithButtonBar implements SelectionListener, 
 	/** Returns the list of schemas */
 	public ArrayList<Schema> getSchemas() {
 		ArrayList<Schema> schemas = new ArrayList<Schema>();
-		for (int i=0; i<list.getTable().getItemCount(); i++) {
+		for (int i = 0; i < list.getTable().getItemCount(); i++) {
 			schemas.add((Schema)list.getElementAt(i));
 		}
 		return schemas;
@@ -107,12 +105,14 @@ public class SchemaList extends ListWithButtonBar implements SelectionListener, 
 	
 	/** Disable the "Remove" button if locked schemas are selected */
 	public void selectionChanged(SelectionChangedEvent e) {
-		int selected = 0;
+		// see if any that are selected are currently in a mapping
 		boolean enabled = true;
 		for (TableItem item : list.getTable().getSelection()) {
 			enabled &= !lockedIDs.contains(((Schema)item.getData()).getId());
-			selected++;
 		}
+
+		// how many are selected
+		int selected = list.getTable().getSelectionCount();
 
 		// do not enable the remove button if zero schemas are selected
 		if (removeButton != null) {
@@ -128,7 +128,13 @@ public class SchemaList extends ListWithButtonBar implements SelectionListener, 
 	public void widgetSelected(SelectionEvent e) {
 		// Handles the addition of schemas
 		if (e.getSource().equals(addButton)) {
-			AddSchemasToListDialog dialog = new AddSchemasToListDialog(getShell(), getSchemas());
+			// get a list of all the schemas and remove the ones that we already have in this project
+			ArrayList<Schema> schemas = OpenIIManager.getSchemas();
+			schemas.removeAll(getSchemas());
+			
+			// create a dialog to display and select these schemas
+			// pass the list of schemas we want to display and indicate that we do want to allow multiple selections
+			SchemaSelectionDialog dialog = new SchemaSelectionDialog(getShell(), schemas, true);
 			if (dialog.open() == Window.OK) {
 				list.add(dialog.getResult());
 			}
