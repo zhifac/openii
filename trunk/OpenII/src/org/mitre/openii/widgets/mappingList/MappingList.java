@@ -34,13 +34,14 @@ public class MappingList extends ListWithButtonBar implements SelectionListener,
 	private Button removeButton = null;
 
 	// Stores the projectID so we can get mappings out of this
-	private Integer projectID;
+	private Integer projectId;
 
 	/** Constructs the dialog */
-	public MappingList(Composite parent, String heading, Integer projectID) {
+	public MappingList(Composite parent, String heading, Integer projectId) {
 		super(parent, heading, "Mapping");
+
 		// record our project id
-		this.projectID = projectID;
+		this.projectId = projectId;
 
 		// create buttons down the right
 		addButton = addButton("Add...", this);
@@ -94,6 +95,7 @@ public class MappingList extends ListWithButtonBar implements SelectionListener,
 	}
 
 	public void selectionChanged(SelectionChangedEvent event) {
+		// how many are selected
 		int selected = list.getTable().getSelectionCount();
 
 		// do not enable the edit button if some number other than one schemas are selected
@@ -119,7 +121,8 @@ public class MappingList extends ListWithButtonBar implements SelectionListener,
 	public void widgetSelected(SelectionEvent e) {
 		// Handles the addition of mappings
 		if (e.getSource().equals(addButton)) {
-			AddMappingsToListDialog dialog = new AddMappingsToListDialog(getShell(), schemas, getMappings());
+			//AddMappingsToListDialog dialog = new AddMappingsToListDialog(getShell(), schemas, getMappings());
+			MappingSelectionDialog dialog = new MappingSelectionDialog(getShell(), schemas, getMappings(), null);
 			if (dialog.open() == Window.OK) {
 				list.add(dialog.getMapping());
 			}
@@ -127,7 +130,10 @@ public class MappingList extends ListWithButtonBar implements SelectionListener,
 
 		// Handles the editing of a mapping
 		if (e.getSource().equals(editButton)) {
-			
+			MappingSelectionDialog dialog = new MappingSelectionDialog(getShell(), schemas, getMappings(), (Mapping)list.getTable().getSelection()[0].getData());
+			if (dialog.open() == Window.OK) {
+				// TODO
+			}
 		}
 
 		// Handles the removal of mappings
