@@ -25,7 +25,7 @@ public class MappingSelectionDialog extends Dialog implements ISelectionChangedL
 	private ArrayList<Schema> schemas = null;
 	
 	/** Stores the list of generated mappings */
-	private ArrayList<Mapping> mappings = null;
+	private ArrayList<MappingReference> mappings = null;
 
 	/** Stores the mapping that we are editing */
 	private Mapping mapping = null;
@@ -40,7 +40,7 @@ public class MappingSelectionDialog extends Dialog implements ISelectionChangedL
 	private Schema source, target;
 	
 	/** Constructs the dialog */
-	MappingSelectionDialog(Shell shell, ArrayList<Schema> schemas, ArrayList<Mapping> mappings, Mapping mapping) {
+	MappingSelectionDialog(Shell shell, ArrayList<Schema> schemas, ArrayList<MappingReference> mappings, Mapping mapping) {
 		super(shell);
 		this.schemas = schemas;
 		this.mappings = mappings;
@@ -217,7 +217,7 @@ public class MappingSelectionDialog extends Dialog implements ISelectionChangedL
 
 
 	/** Returns the selected mapping */
-	Mapping getMapping() {
+	public MappingReference getMapping() {
 		return new MappingReference(new Mapping(null, null, source.getId(), target.getId()), schemas);
 	}
 }

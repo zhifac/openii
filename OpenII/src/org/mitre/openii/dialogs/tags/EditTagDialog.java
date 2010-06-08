@@ -85,7 +85,7 @@ public class EditTagDialog extends Dialog implements ActionListener, ModifyListe
 	
 		// Generate the pane components
 		createNamePane(pane);
-		list = new SchemaList(pane, "Schemas in Tag", null);
+		list = new SchemaList(pane, "Schemas in Tag");
 		list.addListener(this);
 		
 		// Return the generated pane
