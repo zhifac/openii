@@ -35,15 +35,9 @@ public class SchemaList extends ListWithButtonBar implements SelectionListener, 
 	private Button searchButton = null;
 	private Button removeButton = null;
 
-	// Stores the projectID so we can get mappings out of this
-	private Integer projectId;
-
 	/** Constructs the dialog */
-	public SchemaList(Composite parent, String heading, Integer projectId) {
+	public SchemaList(Composite parent, String heading) {
 		super(parent, heading, "Schema");
-
-		// record our project id
-		this.projectId = projectId;
 
 		// create buttons down the right
 		addButton     = addButton("Add...", this);

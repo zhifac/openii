@@ -12,7 +12,6 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.TableItem;
 import org.mitre.openii.widgets.ListWithButtonBar;
 import org.mitre.openii.widgets.WidgetUtilities;
 import org.mitre.schemastore.model.Mapping;
@@ -33,15 +32,9 @@ public class MappingList extends ListWithButtonBar implements SelectionListener,
 	private Button editButton = null;
 	private Button removeButton = null;
 
-	// Stores the projectID so we can get mappings out of this
-	private Integer projectId;
-
 	/** Constructs the dialog */
-	public MappingList(Composite parent, String heading, Integer projectId) {
+	public MappingList(Composite parent, String heading) {
 		super(parent, heading, "Mapping");
-
-		// record our project id
-		this.projectId = projectId;
 
 		// create buttons down the right
 		addButton = addButton("Add...", this);
@@ -69,8 +62,8 @@ public class MappingList extends ListWithButtonBar implements SelectionListener,
 	/** Sets the mappings currently in this list */
 	public void setMappings(ArrayList<Mapping> mappings) {
 		ArrayList<MappingReference> mappingRefs = new ArrayList<MappingReference>();
-		for(Mapping mapping : mappings) {
-			mappingRefs.add(new MappingReference(mapping,schemas));
+		for (Mapping mapping : mappings) {
+			mappingRefs.add(new MappingReference(mapping, schemas));
 		}
 		list.add(WidgetUtilities.sortList(mappingRefs).toArray());
 		
@@ -81,10 +74,10 @@ public class MappingList extends ListWithButtonBar implements SelectionListener,
 	}
 		
 	/** Returns the list of mappings */
-	public ArrayList<Mapping> getMappings() {
-		ArrayList<Mapping> mappings = new ArrayList<Mapping>();
-		for (int i=0; i<list.getTable().getItemCount(); i++) {
-			mappings.add(((Mapping)list.getElementAt(i)).copy());
+	public ArrayList<MappingReference> getMappings() {
+		ArrayList<MappingReference> mappings = new ArrayList<MappingReference>();
+		for (int i = 0; i < list.getTable().getItemCount(); i++) {
+			mappings.add((MappingReference) list.getElementAt(i));
 		}
 		return mappings;
 	}
@@ -121,7 +114,6 @@ public class MappingList extends ListWithButtonBar implements SelectionListener,
 	public void widgetSelected(SelectionEvent e) {
 		// Handles the addition of mappings
 		if (e.getSource().equals(addButton)) {
-			//AddMappingsToListDialog dialog = new AddMappingsToListDialog(getShell(), schemas, getMappings());
 			MappingSelectionDialog dialog = new MappingSelectionDialog(getShell(), schemas, getMappings(), null);
 			if (dialog.open() == Window.OK) {
 				list.add(dialog.getMapping());
@@ -130,9 +122,20 @@ public class MappingList extends ListWithButtonBar implements SelectionListener,
 
 		// Handles the editing of a mapping
 		if (e.getSource().equals(editButton)) {
-			MappingSelectionDialog dialog = new MappingSelectionDialog(getShell(), schemas, getMappings(), (Mapping)list.getTable().getSelection()[0].getData());
+			// get our old mapping for ease of access
+			Mapping oldMapping = (Mapping)list.getTable().getSelection()[0].getData();
+
+			MappingSelectionDialog dialog = new MappingSelectionDialog(getShell(), schemas, getMappings(), oldMapping);
 			if (dialog.open() == Window.OK) {
-				// TODO
+				// get our new mapping and record what our old mapping was
+				MappingReference newMapping = dialog.getMapping();
+				newMapping.setOldSourceId(oldMapping.getSourceId());
+				newMapping.setOldTargetId(oldMapping.getTargetId());
+				newMapping.setOldMappingid(oldMapping.getId());
+
+				// swap out the mappings on the list
+				list.getTable().remove(list.getTable().getSelectionIndices());
+				list.add(newMapping);
 			}
 		}
 
