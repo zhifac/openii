@@ -23,13 +23,13 @@ public class HierarchicalDomainValueImporter extends DomainValueImporter {
 	
 
 	protected ArrayList<SchemaElement> generateSchemaElements() throws ImporterException {
-		int numSheets = _excelWorkbook.getNumberOfSheets();
+		int numSheets = excelWorkbook.getNumberOfSheets();
 		ArrayList<SchemaElement> _schemaElements = new ArrayList<SchemaElement>();
 		
 
 		// iterate and load individual work sheets
 		for (int s = 0; s < numSheets; s++) {
-			HSSFSheet sheet = _excelWorkbook.getSheetAt(s);
+			HSSFSheet sheet = excelWorkbook.getSheetAt(s);
 			if (sheet == null) break;
 			
 			// iterate through rows and create table/attribute nodes
@@ -49,13 +49,13 @@ public class HierarchicalDomainValueImporter extends DomainValueImporter {
 				HSSFCell descrCell = row.getCell(3);
 				
 				// Ignore rows without domain specified
-				if ( domainCell != null ) domainName = getCellValStr(domainCell);
+				if ( domainCell != null ) domainName = getCellValue(domainCell);
 				// Get domain value
-				if (descrCell != null ) domainValueStr = getCellValStr(valueCell);
+				if (descrCell != null ) domainValueStr = getCellValue(valueCell);
 				// Get parent value
-				if (parentCell != null) parentValueStr = getCellValStr(parentCell);
+				if (parentCell != null) parentValueStr = getCellValue(parentCell);
 				// Get documentation value
-				if (descrCell != null) documentation = getCellValStr(descrCell);
+				if (descrCell != null) documentation = getCellValue(descrCell);
 				
 				if (domainName.length() == 0) break; 
 

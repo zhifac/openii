@@ -25,12 +25,12 @@ public class HierarchicalDomainValueImporter2 extends DomainValueImporter {
 	protected HashMap<String, Subtype> _subtypes = new HashMap<String, Subtype>();
 
 	protected ArrayList<SchemaElement> generateSchemaElements() throws ImporterException {
-		int numSheets = _excelWorkbook.getNumberOfSheets();
+		int numSheets = excelWorkbook.getNumberOfSheets();
 		ArrayList<SchemaElement> _schemaElements = new ArrayList<SchemaElement>();
 
 		// iterate and load individual work sheets
 		for (int s = 0; s < numSheets; s++) {
-			HSSFSheet sheet = _excelWorkbook.getSheetAt(s);
+			HSSFSheet sheet = excelWorkbook.getSheetAt(s);
 			if (sheet == null) break;
 
 			ArrayList<SchemaElement> hierarchy = new ArrayList<SchemaElement>();
@@ -52,13 +52,13 @@ public class HierarchicalDomainValueImporter2 extends DomainValueImporter {
 				HSSFCell descrCell = row.getCell(3);
 
 				// Ignore rows without domain specified
-				if (domainCell != null) domainName = getCellValStr(domainCell);
+				if (domainCell != null) domainName = getCellValue(domainCell);
 				// Get parent value
-				if (levelCell != null) outlineLevelStr = getCellValStr(levelCell);
+				if (levelCell != null) outlineLevelStr = getCellValue(levelCell);
 				// Get domain value
-				if (valueCell != null) domainValueStr = getCellValStr(valueCell);
+				if (valueCell != null) domainValueStr = getCellValue(valueCell);
 				// Get documentation value
-				if (descrCell != null) documentation = getCellValStr(descrCell);
+				if (descrCell != null) documentation = getCellValue(descrCell);
 
 				if (domainName.length() == 0) break;
 				if (outlineLevelStr.length() == 0) outlineLevelStr = Integer.toString(1); 

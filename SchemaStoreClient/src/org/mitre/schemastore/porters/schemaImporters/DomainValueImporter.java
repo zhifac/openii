@@ -46,12 +46,12 @@ public class DomainValueImporter extends ExcelImporter {
 	}
 
 	protected ArrayList<SchemaElement> generateSchemaElements()throws ImporterException {
-		int numSheets = _excelWorkbook.getNumberOfSheets();
+		int numSheets = excelWorkbook.getNumberOfSheets();
 		ArrayList<SchemaElement>  _schemaElements = new ArrayList<SchemaElement>();
 		
 		// iterate and load individual work sheets
 		for (int s = 0; s < numSheets; s++) {
-			HSSFSheet sheet = _excelWorkbook.getSheetAt(s);
+			HSSFSheet sheet = excelWorkbook.getSheetAt(s);
 			if ( sheet == null ) break;
 
 			// iterate through rows and create table/attribute nodes
@@ -70,7 +70,7 @@ public class DomainValueImporter extends ExcelImporter {
 
 				// ignore rows without domain specified
 				if (domainCell == null) continue;
-				String domainName = getCellValStr(domainCell);
+				String domainName = getCellValue(domainCell);
 				if (domainName.length() == 0) break;
 
 				if (valueCell == null) // getRichStringCellValue().toString().length()==0)
@@ -80,13 +80,13 @@ public class DomainValueImporter extends ExcelImporter {
 
 				// get domain values. this can be either string or number
 				if (!domainDefOnly) {
-					domainValueStr = getCellValStr(valueCell);
+					domainValueStr = getCellValue(valueCell);
 
 					if (domainValueStr.trim().length() == 0) domainDefOnly = true;
 				}
 
 				String documentation = "";
-				if (descrCell != null) documentation = getCellValStr(descrCell);
+				if (descrCell != null) documentation = getCellValue(descrCell);
 
 				Domain domain ;
 				DomainValue domainValue;
