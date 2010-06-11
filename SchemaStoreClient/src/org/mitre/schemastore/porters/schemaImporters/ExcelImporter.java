@@ -1,17 +1,12 @@
 package org.mitre.schemastore.porters.schemaImporters;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
 import org.apache.poi.hssf.usermodel.HSSFCell;
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.mitre.schemastore.model.Attribute;
 import org.mitre.schemastore.model.Domain;
@@ -32,15 +27,14 @@ import org.mitre.schemastore.porters.ImporterException.ImporterExceptionType;
  * 
  */
 
-public class ExcelImporter extends SchemaImporter {
+public abstract class ExcelImporter extends SchemaImporter
+{
 	protected HSSFWorkbook excelWorkbook;
-	protected URI _excelURI;
 	protected HashMap<String, Entity> _entities;
 	protected HashMap<String, Attribute> _attributes;
 	protected ArrayList<SchemaElement> _schemaElements;
 	protected HashMap<String, Subtype> _subtypes; 
 	protected static Domain D_ANY = new Domain(nextId(), ANY, null, 0);
-
 	
 	/** Scrub the cell value */
 	protected String scrub(String s)
@@ -59,16 +53,6 @@ public class ExcelImporter extends SchemaImporter {
 		else return "";
 	}
 
-	/** Returns the importer name */
-	public String getName() {
-		return "Excel Importer";
-	}
-
-	/** Returns the importer description */
-	public String getDescription() {
-		return "Imports Excel formatted schema into the schema store.";
-	}
-
 	/** Returns the importer URI type */
 	public URIType getURIType()
 		{ return URIType.FILE; }
@@ -77,75 +61,22 @@ public class ExcelImporter extends SchemaImporter {
 	public ArrayList<String> getFileTypes()
 		{ return new ArrayList<String>(Arrays.asList(new String[]{"xls","csv"})); }
 
-	protected void initialize() throws ImporterException {
+	/** Initializes the excel importer */
+	protected void initialize() throws ImporterException
+	{
 		try {
-			InputStream excelStream;
+			// Clear out the hash maps
 			_entities = new HashMap<String, Entity>();
 			_attributes = new HashMap<String, Attribute>();
 			_subtypes = new HashMap<String, Subtype>();
 			_schemaElements = new ArrayList<SchemaElement>();
 
-			// Do nothing if the excel sheet has been cached.
-			if (_excelURI != null && _excelURI.equals(uri)) return;
-
-			_excelURI = uri;
-			excelStream = _excelURI.toURL().openStream();
+			// Connect to the Excel workbook
+			InputStream excelStream;
+			excelStream = uri.toURL().openStream();
 			excelWorkbook = new HSSFWorkbook(excelStream);
 			excelStream.close();
-		} catch (IOException e) {
-			throw new ImporterException(ImporterExceptionType.PARSE_FAILURE, e.getMessage());
 		}
+		catch (IOException e) { throw new ImporterException(ImporterExceptionType.PARSE_FAILURE, e.getMessage()); }
 	}
-
-	public static void main(String[] args) throws IOException, URISyntaxException, ImporterException {
-		File excel = new File("TED_Final.xls");
-		ExcelImporter tester = new ExcelImporter();
-		tester.importSchema(excel.getName(), "", "", excel.toURI());
-	}
-
-	/** Generate the schema elements */
-	protected ArrayList<SchemaElement> generateSchemaElements() throws ImporterException {
-		int numSheets = excelWorkbook.getNumberOfSheets();
-		_schemaElements = new ArrayList<SchemaElement>();
-		_schemaElements.add(D_ANY); 
-
-		// iterate and load individual work sheets
-		for (int s = 0; s < numSheets; s++) {
-			HSSFSheet sheet = excelWorkbook.getSheetAt(s);
-
-			if (sheet == null) break;
-			System.out.println(sheet.getLastRowNum());
-
-			// iterate through rows and create table/attribute nodes
-			for (int i = sheet.getFirstRowNum(); i <= sheet.getLastRowNum(); i++) {
-				HSSFRow row = sheet.getRow(i);
-				if (row == null || row.getPhysicalNumberOfCells() == 0) break;
-
-				String tblName = getCellValue(row.getCell(0));
-				String attName = getCellValue(row.getCell(1));
-				String documentation = getCellValue(row.getCell(2));
-				Entity tblEntity;
-				Attribute attribute;
-
-				if (tblName.length() == 0 && attName.length() == 0) break;
-
-				// create an entity for table name
-				if (!_entities.containsKey(tblName)) {
-					tblEntity = new Entity(nextId(), tblName, "", 0);
-					_entities.put(tblName, tblEntity);
-					_schemaElements.add(tblEntity);
-				} else tblEntity = _entities.get(tblName);
-
-				// create an attribute for each attribute name
-				attribute = new Attribute(nextId(), attName, documentation, tblEntity.getId(), D_ANY.getId(), null, null, false, 0);
-				_attributes.put(attribute.getName(), attribute);
-				_schemaElements.add(attribute);
-
-				System.out.println("Importing row " + i + " | " + tblName + " | " + attName);
-			}
-		}
-
-		return _schemaElements;
-	}
-
 }

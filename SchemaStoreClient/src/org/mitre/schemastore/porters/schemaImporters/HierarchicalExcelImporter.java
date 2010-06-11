@@ -17,7 +17,15 @@ import org.mitre.schemastore.porters.ImporterException;
  * @author HAOLI
  * 
  */
-public class HierarchicalExcelImporter extends ExcelImporter {
+public class HierarchicalExcelImporter extends ExcelImporter
+{
+	/** Returns the importer name */
+	public String getName()
+		{ return "Hierarchical Excel Importer"; }
+	
+	/** Returns the importer description */
+	public String getDescription()
+		{ return "Imports Excel formatted schema with hierarchy column. "; }
 
 	/** Generate the schema elements */
 	protected ArrayList<SchemaElement> generateSchemaElements() throws ImporterException {
@@ -80,15 +88,4 @@ public class HierarchicalExcelImporter extends ExcelImporter {
 
 		return _schemaElements;
 	}
-
-	@Override
-	public String getDescription() {
-		return "Imports Excel formatted schema with hierarchy column. ";
-	}
-
-	@Override
-	public String getName() {
-		return "Hierarchical Excel Importer";
-	}
-
 }

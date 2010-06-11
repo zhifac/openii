@@ -18,20 +18,18 @@ import org.mitre.schemastore.porters.ImporterException;
  * @author HAOLI
  * 
  */
-
-public class DomainValueImporter extends ExcelImporter {
+public class DomainValueImporter extends ExcelImporter
+{
 	protected HashMap<String, Domain> _domains; 
 	protected HashMap<String, DomainValue> _domainValues;
 
-	@Override
-	public String getDescription() {
-		return "Imports Excel formatted domain and domain values. Domains are synonymous to " + "referenced look up lists for controled vocabulary or controled data inputs.";
-	}
-
-	@Override
-	public String getName() {
-		return "Domain Importer";
-	}
+	/** Returns the importer name */
+	public String getName()
+		{ return "Domain Importer"; }
+	
+	/** Returns the importer description */
+	public String getDescription()
+		{ return "Imports Excel formatted domain and domain values. Domains are synonymous to " + "referenced look up lists for controled vocabulary or controled data inputs."; }
 
 	@Override
 	protected void initialize() {
@@ -111,7 +109,5 @@ public class DomainValueImporter extends ExcelImporter {
 		}
 
 		return _schemaElements;
-	}
-	
-	
+	}	
 }
