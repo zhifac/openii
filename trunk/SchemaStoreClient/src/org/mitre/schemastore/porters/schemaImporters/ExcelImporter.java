@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 import org.apache.poi.hssf.usermodel.HSSFCell;
@@ -32,7 +33,7 @@ import org.mitre.schemastore.porters.ImporterException.ImporterExceptionType;
  */
 
 public class ExcelImporter extends SchemaImporter {
-	protected HSSFWorkbook _excelWorkbook;
+	protected HSSFWorkbook excelWorkbook;
 	protected URI _excelURI;
 	protected HashMap<String, Entity> _entities;
 	protected HashMap<String, Attribute> _attributes;
@@ -41,17 +42,17 @@ public class ExcelImporter extends SchemaImporter {
 	protected static Domain D_ANY = new Domain(nextId(), ANY, null, 0);
 
 	
-	// get rid of characters
-	protected String cleanup(String s) {
-		s = s.trim().replaceAll("'", "\'").replaceAll("\"", "\\\"");
-		return s;
-	}
+	/** Scrub the cell value */
+	protected String scrub(String s)
+		{ return s.trim().replaceAll("'", "\'").replaceAll("\"", "\\\""); }
 
-	protected String getCellValStr(HSSFCell cell) {
+	/** Returns the cell value */
+	protected String getCellValue(HSSFCell cell)
+	{
 		if (cell == null) return "";
 		else if (cell.getCellType() == HSSFCell.CELL_TYPE_BOOLEAN) return Boolean.toString(cell.getBooleanCellValue());
 		else if (cell.getCellType() == HSSFCell.CELL_TYPE_NUMERIC) return Double.toString(cell.getNumericCellValue());
-		else if (cell.getCellType() == HSSFCell.CELL_TYPE_STRING) return cleanup(cell.getRichStringCellValue().toString());
+		else if (cell.getCellType() == HSSFCell.CELL_TYPE_STRING) return scrub(cell.getRichStringCellValue().toString());
 		else if (cell.getCellType() == HSSFCell.CELL_TYPE_BLANK) return "";
 		else if (cell.getCellType() == HSSFCell.CELL_TYPE_FORMULA) return cell.getCellFormula().trim();
 		else if (cell.getCellType() == HSSFCell.CELL_TYPE_ERROR) return String.valueOf(cell.getErrorCellValue()).trim();
@@ -69,17 +70,12 @@ public class ExcelImporter extends SchemaImporter {
 	}
 
 	/** Returns the importer URI type */
-	public URIType getURIType() {
-		return URIType.FILE;
-	}
+	public URIType getURIType()
+		{ return URIType.FILE; }
 
 	/** Returns the importer URI file types */
-	public ArrayList<String> getFileTypes() {
-		ArrayList<String> filetypes = new ArrayList<String>(2);
-		filetypes.add("xls");
-		filetypes.add("csv");
-		return filetypes;
-	}
+	public ArrayList<String> getFileTypes()
+		{ return new ArrayList<String>(Arrays.asList(new String[]{"xls","csv"})); }
 
 	protected void initialize() throws ImporterException {
 		try {
@@ -94,7 +90,7 @@ public class ExcelImporter extends SchemaImporter {
 
 			_excelURI = uri;
 			excelStream = _excelURI.toURL().openStream();
-			_excelWorkbook = new HSSFWorkbook(excelStream);
+			excelWorkbook = new HSSFWorkbook(excelStream);
 			excelStream.close();
 		} catch (IOException e) {
 			throw new ImporterException(ImporterExceptionType.PARSE_FAILURE, e.getMessage());
@@ -109,13 +105,13 @@ public class ExcelImporter extends SchemaImporter {
 
 	/** Generate the schema elements */
 	protected ArrayList<SchemaElement> generateSchemaElements() throws ImporterException {
-		int numSheets = _excelWorkbook.getNumberOfSheets();
+		int numSheets = excelWorkbook.getNumberOfSheets();
 		_schemaElements = new ArrayList<SchemaElement>();
 		_schemaElements.add(D_ANY); 
 
 		// iterate and load individual work sheets
 		for (int s = 0; s < numSheets; s++) {
-			HSSFSheet sheet = _excelWorkbook.getSheetAt(s);
+			HSSFSheet sheet = excelWorkbook.getSheetAt(s);
 
 			if (sheet == null) break;
 			System.out.println(sheet.getLastRowNum());
@@ -125,9 +121,9 @@ public class ExcelImporter extends SchemaImporter {
 				HSSFRow row = sheet.getRow(i);
 				if (row == null || row.getPhysicalNumberOfCells() == 0) break;
 
-				String tblName = getCellValStr(row.getCell(0));
-				String attName = getCellValStr(row.getCell(1));
-				String documentation = getCellValStr(row.getCell(2));
+				String tblName = getCellValue(row.getCell(0));
+				String attName = getCellValue(row.getCell(1));
+				String documentation = getCellValue(row.getCell(2));
 				Entity tblEntity;
 				Attribute attribute;
 

@@ -21,22 +21,22 @@ public class HierarchicalExcelImporter extends ExcelImporter {
 
 	/** Generate the schema elements */
 	protected ArrayList<SchemaElement> generateSchemaElements() throws ImporterException {
-		int numSheets = _excelWorkbook.getNumberOfSheets();
+		int numSheets = excelWorkbook.getNumberOfSheets();
 		_schemaElements = new ArrayList<SchemaElement>();
 		_schemaElements.add(D_ANY);
 
 		// iterate and load individual work sheets
 		for (int s = 0; s < numSheets; s++) {
-			HSSFSheet sheet = _excelWorkbook.getSheetAt(s);
+			HSSFSheet sheet = excelWorkbook.getSheetAt(s);
 
 			// iterate through rows and create table/attribute nodes
 			for (int i = sheet.getFirstRowNum(); i <= sheet.getLastRowNum(); i++) {
 				HSSFRow row = sheet.getRow(i);
 
-				String tblName = getCellValStr(row.getCell(0));
-				String attName = getCellValStr(row.getCell(1));
-				String documentation = getCellValStr(row.getCell(2));
-				String parent = getCellValStr(row.getCell(3));
+				String tblName = getCellValue(row.getCell(0));
+				String attName = getCellValue(row.getCell(1));
+				String documentation = getCellValue(row.getCell(2));
+				String parent = getCellValue(row.getCell(3));
 
 				Entity tblEntity, parentEntity;
 				Attribute attribute;
