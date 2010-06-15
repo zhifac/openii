@@ -71,8 +71,8 @@ public class VoteMerger extends MatchMerger
 
 			// Calculate the match score
 			double evidenceRatio = positiveEvidence / totalEvidence;
-			double weightedEvidenceRatio = Math.pow(evidenceRatio, (1 / 2)) * (Math.E - 1) + 1;
-			double scaledPositiveEvidence = positiveEvidence / 2;
+			double weightedEvidenceRatio = Math.pow(evidenceRatio, 0.5) * (Math.E - 1) + 1;
+			double scaledPositiveEvidence = positiveEvidence * 0.5;
 			double evidenceFactor = Math.pow((1 + scaledPositiveEvidence), (1 / scaledPositiveEvidence));
 			double matchScore = Math.log(weightedEvidenceRatio / evidenceFactor);
 			
