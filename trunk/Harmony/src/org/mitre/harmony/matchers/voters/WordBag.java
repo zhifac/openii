@@ -87,7 +87,7 @@ public class WordBag
 	/** Adds schema elements to the word bag */
 	public void addElement(SchemaElement element)
 	{
-		String text = element.getName()==null ? "" : element.getName() + " " + element.getName() + " ";
+		String text = element.getName()==null ? "" : element.getName() + " ";
 		text += element.getDescription()==null ? "" : element.getDescription();
 		addWords(tokenize(text.trim()));
 	}
