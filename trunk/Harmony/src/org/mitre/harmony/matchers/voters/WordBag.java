@@ -115,8 +115,8 @@ public class WordBag
 
 			// Add word to word map
 			Integer count = wordMap.get(word);
-			if(count==null) count=1;
-			wordMap.put(word, count);
+			if(count==null) count=0;
+			wordMap.put(word, count+1);
 		}
 		
 		// Resets the bag weight
