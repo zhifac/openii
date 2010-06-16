@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
-import org.mitre.harmony.matchers.VoterScore;
 import org.mitre.harmony.matchers.VoterScores;
 import org.mitre.schemastore.client.SchemaStoreClient;
 import org.mitre.schemastore.model.Mapping;
@@ -50,34 +49,16 @@ public class MappingMatcher extends BagMatcher
 		associatedMappings = getAssociatedMappings(schema2.getSchema().getId());
 		
 		// Generate scores (only if associated mappings exist)
-		VoterScores voterScores = new VoterScores(SCORE_CEILING);
 		if(associatedMappings.size()>0)
 		{
 			// Add terms from associated mappings
 			for(Mapping associatedMapping : associatedMappings)
 				addAssociatedTerms(associatedMapping);
 			
-			// Sets the completed and total comparisons
-			completedComparisons = 0;
-			totalComparisons = sourceElements.size() * targetElements.size();
-			
 			// Generate the match scores
-			for(SchemaElement sourceElement : sourceElements)
-				for(SchemaElement targetElement : targetElements)
-				{
-					if(isAllowableMatch(sourceElement, targetElement))
-						if(voterScores.getScore(sourceElement.getId(), targetElement.getId())==null)
-						{
-							WordBag sourceBag = wordBags.get(sourceElement.getId());
-							WordBag targetBag = wordBags.get(targetElement.getId());
-							VoterScore score = computeScore(sourceBag, targetBag);
-							if(score != null)
-								voterScores.setScore(sourceElement.getId(), targetElement.getId(), score);
-						}
-					completedComparisons++;
-				}
+			return computeScores(sourceElements, targetElements, wordBags);
 		}
-		return voterScores;
+		return new VoterScores(SCORE_CEILING);
 	}
 
 	/** Returns the associated mappings */

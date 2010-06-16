@@ -23,7 +23,7 @@ public class QuickDocumentationMatcher extends EntityMatcher
 	{
 		// Retrieve the source and target entities
 		EntityMap sourceEntities = getEntities(schema1);
-		EntityMap targetEntities = getEntities(schema2);		
+		EntityMap targetEntities = getEntities(schema2);
 	
 		// Identify best matches between entities
 		VoterScores entityScores = match(sourceEntities, targetEntities);
@@ -32,17 +32,15 @@ public class QuickDocumentationMatcher extends EntityMatcher
 		// Sets the completed and total comparisons
 		completedComparisons = 0;
 		totalComparisons = bestMatches.size();
-		
-		// Start generation of list of scores
-		VoterScores scores = new VoterScores(SCORE_CEILING);
-		
-		// Generate element scores
+
+		// Generate the word bags
 		HashMap<Integer,WordBag> wordBags = new HashMap<Integer,WordBag>();
-		for(ElementPair pair : bestMatches)
+		ArrayList<ElementPair> pairs = new ArrayList<ElementPair>();
+		for(ElementPair bestMatch : bestMatches)
 		{
-			for(SchemaElement source : sourceEntities.get(schema1.getElement(pair.getSourceElement())))
+			for(SchemaElement source : sourceEntities.get(schema1.getElement(bestMatch.getSourceElement())))
 				if(schema1.isVisible(source.getId()))
-					for(SchemaElement target : targetEntities.get(schema2.getElement(pair.getTargetElement())))
+					for(SchemaElement target : targetEntities.get(schema2.getElement(bestMatch.getTargetElement())))
 						if(schema2.isVisible(target.getId()))
 						{
 							// Get word bags for source and target
@@ -50,13 +48,38 @@ public class QuickDocumentationMatcher extends EntityMatcher
 							if(sourceBag==null) wordBags.put(source.getId(), sourceBag = new WordBag(source));
 							WordBag targetBag = wordBags.get(target.getId());
 							if(targetBag==null) wordBags.put(target.getId(), targetBag = new WordBag(target));
-							
-							// Set the score
-							VoterScore score = computeScore(sourceBag,targetBag);
-							if(score!=null) scores.setScore(source.getId(), target.getId(), score);
+
+							// Stores the element pair
+							pairs.add(new ElementPair(source.getId(), target.getId()));
 						}
-			completedComparisons++;
 		}
+
+		// Calculate the word weights
+		HashSet<SchemaElement> sourceElements = new HashSet<SchemaElement>();
+		HashSet<SchemaElement> targetElements = new HashSet<SchemaElement>();
+		for(ElementPair pair : pairs)
+		{
+			sourceElements.add(schema1.getElement(pair.getSourceElement()));
+			targetElements.add(schema2.getElement(pair.getTargetElement()));
+		}
+		HashMap<String,Double> wordWeights = getWordWeights(new ArrayList<SchemaElement>(sourceElements), new ArrayList<SchemaElement>(targetElements), wordBags);
+		
+		// Generate element scores
+		VoterScores scores = new VoterScores(SCORE_CEILING);
+		for(ElementPair pair : pairs)
+		{
+			// Get the source and target elements
+			SchemaElement sourceElement = schema1.getElement(pair.getSourceElement());
+			SchemaElement targetElement = schema2.getElement(pair.getTargetElement());
+			if(scores.getScore(sourceElement.getId(), targetElement.getId())==null)
+			{
+				WordBag sourceBag = wordBags.get(sourceElement.getId());
+				WordBag targetBag = wordBags.get(targetElement.getId());
+				VoterScore score = computeScore(sourceBag, targetBag, wordWeights);
+				scores.setScore(sourceElement.getId(), targetElement.getId(), score);
+			}
+			completedComparisons++;
+		}		
 		
 		// Transfer over entity scores
 		for(ElementPair elementPair : entityScores.getElementPairs())
