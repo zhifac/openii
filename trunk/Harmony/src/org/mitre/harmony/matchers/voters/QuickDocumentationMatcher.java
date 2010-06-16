@@ -76,7 +76,7 @@ public class QuickDocumentationMatcher extends EntityMatcher
 				WordBag sourceBag = wordBags.get(sourceElement.getId());
 				WordBag targetBag = wordBags.get(targetElement.getId());
 				VoterScore score = computeScore(sourceBag, targetBag, wordWeights);
-				scores.setScore(sourceElement.getId(), targetElement.getId(), score);
+				if(score!=null) scores.setScore(sourceElement.getId(), targetElement.getId(), score);
 			}
 			completedComparisons++;
 		}		

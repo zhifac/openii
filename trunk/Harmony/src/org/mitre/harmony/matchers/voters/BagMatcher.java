@@ -66,6 +66,7 @@ abstract public class BagMatcher extends MatchVoter
 		}
 
 		// Return the voter score
+		if(intersectionScore ==0) return null;
 		return new VoterScore(intersectionScore, Math.min(sourceScore, targetScore));
 	}
 	
@@ -90,7 +91,7 @@ abstract public class BagMatcher extends MatchVoter
 						WordBag sourceBag = wordBags.get(sourceElement.getId());
 						WordBag targetBag = wordBags.get(targetElement.getId());
 						VoterScore score = computeScore(sourceBag, targetBag, wordWeights);
-						scores.setScore(sourceElement.getId(), targetElement.getId(), score);
+						if(score!=null) scores.setScore(sourceElement.getId(), targetElement.getId(), score);
 					}
 				completedComparisons++;
 			}
