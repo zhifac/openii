@@ -5,7 +5,6 @@ package org.mitre.harmony.matchers.voters;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.mitre.harmony.matchers.VoterScore;
 import org.mitre.harmony.matchers.VoterScores;
 import org.mitre.schemastore.model.Containment;
 import org.mitre.schemastore.model.Entity;
@@ -39,27 +38,9 @@ public class EntityMatcher extends BagMatcher
 		for(EntityMap entities : new EntityMap[]{sourceEntities,targetEntities})
 			for(SchemaElement entity : entities.keySet())
 				wordBags.put(entity.getId(), generateWordBag(entity,entities.get(entity)));
-				
-		// Sets the completed and total comparisons
-		completedComparisons = 0;
-		totalComparisons = sourceEntities.size() * targetEntities.size();
 		
 		// Generate the scores
-		VoterScores scores = new VoterScores(SCORE_CEILING);
-		for(SchemaElement sourceElement : sourceEntities.keySet())
-			for(SchemaElement targetElement : targetEntities.keySet())
-			{
-				if(scores.getScore(sourceElement.getId(), targetElement.getId())==null)
-				{
-					WordBag sourceBag = wordBags.get(sourceElement.getId());
-					WordBag targetBag = wordBags.get(targetElement.getId());
-					VoterScore score = computeScore(sourceBag, targetBag);
-					if(score != null)
-						scores.setScore(sourceElement.getId(), targetElement.getId(), score);
-				}
-				completedComparisons++;
-			}
-		return scores;
+		return computeScores(new ArrayList<SchemaElement>(sourceEntities.keySet()), new ArrayList<SchemaElement>(targetEntities.keySet()), wordBags);
 	}
 	
 	/** Returns the entities for the specified schema */

@@ -5,7 +5,6 @@ package org.mitre.harmony.matchers.voters;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.mitre.harmony.matchers.VoterScore;
 import org.mitre.harmony.matchers.VoterScores;
 import org.mitre.schemastore.model.SchemaElement;
 
@@ -30,26 +29,7 @@ public class DocumentationMatcher extends BagMatcher
 		for (SchemaElement targetElement : targetElements)
 			wordBags.put(targetElement.getId(), new WordBag(targetElement));
 
-		// Sets the completed and total comparisons
-		completedComparisons = 0;
-		totalComparisons = sourceElements.size() * targetElements.size();
-		
 		// Generate the scores
-		VoterScores scores = new VoterScores(SCORE_CEILING);
-		for(SchemaElement sourceElement : sourceElements)
-			for(SchemaElement targetElement : targetElements)
-			{
-				if(isAllowableMatch(sourceElement, targetElement))
-					if(scores.getScore(sourceElement.getId(), targetElement.getId())==null)
-					{
-						WordBag sourceBag = wordBags.get(sourceElement.getId());
-						WordBag targetBag = wordBags.get(targetElement.getId());
-						VoterScore score = computeScore(sourceBag, targetBag);
-						if(score != null)
-							scores.setScore(sourceElement.getId(), targetElement.getId(), score);
-					}
-				completedComparisons++;
-			}
-		return scores;
+		return computeScores(sourceElements, targetElements, wordBags);
 	}
 }

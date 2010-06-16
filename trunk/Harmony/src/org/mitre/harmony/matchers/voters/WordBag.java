@@ -18,10 +18,10 @@ import org.mitre.schemastore.model.SchemaElement;
 /** Class for storing a word bag */
 public class WordBag
 {	
-	/** Stores a list of all stopwords */
+	/** Stores a list of all stop words */
 	private static HashSet<String> stopwords = null;
 	
-	/** Initializes the list of stopwords */
+	/** Initializes the list of stop words */
 	static
 	{
 		String[] stopwordArray =
@@ -66,9 +66,6 @@ public class WordBag
 
 	/** Stores a list of all processed words */
 	public Hashtable<String, Integer> wordMap = new Hashtable<String, Integer>();	
-	
-	/** Stores the bag weight */
-	private Double bagWeight = null;
 	
 	/** Splits text into a list of words by camelCase and non-alphanumeric symbols */
 	private ArrayList<String> tokenize(String text)
@@ -118,14 +115,11 @@ public class WordBag
 			if(count==null) count=0;
 			wordMap.put(word, count+1);
 		}
-		
-		// Resets the bag weight
-		bagWeight = null;
 	}	
 
 	/** Removes a word from the word bag */
 	public void removeWord(String word)
-		{ wordMap.remove(word); bagWeight=null; }
+		{ wordMap.remove(word); }
 	
 	/** Returns the list of unique words found in the word bag */
 	public ArrayList<String> getDistinctWords()
@@ -146,17 +140,8 @@ public class WordBag
 	
 	/** Returns a weight indicating the uniqueness of the specified word */
 	public Integer getWordCount(String word)
-		{ return wordMap.get(word); }
-	
-	/** Returns a weight which is the sum of all word weights */
-	public Double getBagWeight()
-	{ 
-		if(bagWeight==null)
-		{
-			bagWeight = 0.0;
-			for(String word : wordMap.keySet())
-				bagWeight += 2 / getWordCount(word);
-		}
-		return bagWeight;
+	{
+		Integer wordCount = wordMap.get(word);
+		return wordCount==null ? 0 : wordCount;
 	}
 }
