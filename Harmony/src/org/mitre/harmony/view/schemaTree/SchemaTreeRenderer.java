@@ -18,7 +18,6 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.filters.Focus;
-import org.mitre.harmony.model.search.SearchResult;
 import org.mitre.schemastore.model.Containment;
 import org.mitre.schemastore.model.Domain;
 import org.mitre.schemastore.model.DomainValue;
@@ -27,6 +26,7 @@ import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
 import org.mitre.schemastore.model.schemaInfo.model.SchemaModel;
+import org.mitre.schemastore.search.SearchResult;
 
 /**
  * Renders schema tree node
