@@ -117,8 +117,14 @@ public class ManagerAction extends Action
 		
 		/** Handles the exporting of a schema */
 		if(actionType == ActionType.EXPORT_SCHEMA)
-			ExportSchemaDialog.export(shell,(Schema)selection);
-
+		{
+			Schema schema = null;
+			if(selection instanceof Schema) schema = (Schema)selection;
+			else if(selection instanceof SchemaInTag) schema = ((SchemaInTag)selection).getSchema();
+			else if(selection instanceof SchemaInProject) schema = ((SchemaInProject)selection).getSchema();
+			ExportSchemaDialog.export(shell,schema);
+		}
+		
 		/** Handles the deletion of a schema */
 		if(actionType == ActionType.DELETE_SCHEMA)
 			DeleteSchemaDialog.delete(shell,(Schema)selection);

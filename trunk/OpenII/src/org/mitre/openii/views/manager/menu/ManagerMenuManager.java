@@ -136,8 +136,11 @@ public class ManagerMenuManager extends MenuManager implements IMenuListener
 		
 		// Display the menu for a selection tag schema
 		if(element instanceof SchemaInTag)
+		{
+			menuManager.add(new ManagerAction(this,"Export Schema",ActionType.EXPORT_SCHEMA));
 			menuManager.add(new ManagerAction(this,"Remove Schema from Tag",ActionType.DELETE_TAG_SCHEMA));
-			
+		}
+		
 		// Display the menu for the "Projects" header
 		if(element.equals(ManagerView.PROJECTS_HEADER))
 		{
@@ -167,6 +170,7 @@ public class ManagerMenuManager extends MenuManager implements IMenuListener
 		// Display the menu for a selection project schema
 		if(element instanceof SchemaInProject)
 		{
+			menuManager.add(new ManagerAction(this,"Export Schema",ActionType.EXPORT_SCHEMA));
 			if(((SchemaInProject)element).isDeletable())
 				menuManager.add(new ManagerAction(this,"Remove Schema from Project",ActionType.DELETE_PROJECT_SCHEMA));
 		}
