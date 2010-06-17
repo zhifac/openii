@@ -36,11 +36,20 @@ abstract public class BagMatcher extends MatchVoter
 				corpus.put(word, count+1);
 			}
 		}
+
+		// Calculate out the average word count
+		Integer totalCount = 0;
+		for(Integer wordCount : corpus.values())
+			totalCount += wordCount;
+		Double averageCount = 1.0*totalCount/corpus.size();
 		
 		// Calculate out the word weights
 		HashMap<String, Double> wordWeights = new HashMap<String, Double>();
 		for(String word : corpus.keySet())
-			wordWeights.put(word, Math.min(1.0, 2.0/corpus.get(word)));
+		{
+			Double count = corpus.get(word)-averageCount;
+			wordWeights.put(word, count<=0 ? 1.0 : Math.min(1.0, 2.0/count));
+		}
 		return wordWeights;
 	}
 
