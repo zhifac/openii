@@ -6,9 +6,9 @@ import java.util.HashMap;
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.filters.ElementPath;
 import org.mitre.harmony.model.filters.Focus;
-import org.mitre.harmony.model.search.SearchResult;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
+import org.mitre.schemastore.search.SearchResult;
 
 /** Class for various focus controls */
 public class FocusController

@@ -24,9 +24,9 @@ import org.mitre.harmony.model.HarmonyConsts;
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.filters.FiltersListener;
 import org.mitre.harmony.model.search.SearchListener;
-import org.mitre.harmony.model.search.SearchResult;
 import org.mitre.harmony.view.schemaTree.SchemaTree;
 import org.mitre.harmony.view.schemaTree.SchemaTreeListener;
+import org.mitre.schemastore.search.SearchResult;
 
 /**
  * Displays the scroll pane next to each schema tree pane (includes selection marks)

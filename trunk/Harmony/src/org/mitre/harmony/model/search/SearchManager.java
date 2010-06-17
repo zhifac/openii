@@ -10,7 +10,9 @@ import org.mitre.harmony.model.HarmonyConsts;
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.project.MappingListener;
 import org.mitre.schemastore.model.MappingCell;
-import org.mitre.schemastore.model.SchemaElement;
+import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
+import org.mitre.schemastore.search.Search;
+import org.mitre.schemastore.search.SearchResult;
 
 /**
  * Manages searches run within Harmony
@@ -59,30 +61,11 @@ public class SearchManager extends AbstractManager<SearchListener> implements Ma
 		matches.clear();
 		
 		// Only proceed with finding matches if keyword given
-		if(!query.equals(""))
+		for(Integer schemaID : getModel().getProjectManager().getSchemaIDs(side))
 		{
-			// Allows query to exist in the middle of words
-			String searchTerm = ".*" + query + ".*";
-			
-			// Determines if the query should be case sensitive
-			boolean caseSensitive = !query.toLowerCase().equals(query);
-			if(!caseSensitive) searchTerm = "(?i)" + searchTerm;
-				
-			// Determine what elements match search criteria
-			for(SchemaElement element : getModel().getProjectManager().getSchemaElements(side))
-			{				
-				// Check to see if element name matches search criteria
-				String name = element.getName();
-				boolean nameMatched = name.matches(searchTerm);
-				
-				// Check to see if element description matches search criteria
-				String description = element.getDescription();
-				boolean descriptionMatched = description.matches(searchTerm);
-
-				// Stores a new search result if needed
-				if(nameMatched || descriptionMatched)
-					matches.put(element.getId(), new SearchResult(nameMatched,descriptionMatched));
-			}
+			HierarchicalSchemaInfo schema = getModel().getSchemaManager().getSchemaInfo(schemaID);
+			HashMap<Integer,SearchResult> results = Search.runQuery(query,schema);
+			matches.putAll(results);
 		}
 		
 		// Select all tree nodes which match search criteria
