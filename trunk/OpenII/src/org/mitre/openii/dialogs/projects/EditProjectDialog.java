@@ -259,18 +259,20 @@ public class EditProjectDialog extends Dialog implements ActionListener, ModifyL
 			ArrayList<Integer> newMappings = new ArrayList<Integer>();
 
 			// add mappings in project or update a mapping that was edited
-			for (MappingReference newMapping : mappingList.getMappings()) {
+			for (MappingReference newMappingReference : mappingList.getMappings()) {
+				Mapping newMapping = new Mapping(newMappingReference.getId(), newMappingReference.getProjectId(), newMappingReference.getSourceId(), newMappingReference.getTargetId());
+
 				// the mapping needs a project id
 				newMapping.setProjectId(project.getId());
 
-				if (newMapping.isModified()) {
+				if (newMappingReference.isModified()) {
 					try {
 						// create the exporter/importer manager
 						PorterManager manager = new PorterManager(RepositoryManager.getClient());
 
 						// create an exporter and export the mapping into a portable format
 						M3MappingExporter exporter = (M3MappingExporter) manager.getPorter(M3MappingExporter.class);
-						Document document = exporter.generateXMLDocument(project, OpenIIManager.getMapping(newMapping.getOldMappingId()), OpenIIManager.getMappingCells(newMapping.getOldMappingId()));
+						Document document = exporter.generateXMLDocument(project, OpenIIManager.getMapping(newMappingReference.getOldMappingId()), OpenIIManager.getMappingCells(newMappingReference.getOldMappingId()));
 
 						// create an importer and import the mapping from the portable format using the new target/source
 						M3MappingImporter importer = (M3MappingImporter) manager.getPorter(M3MappingImporter.class);
