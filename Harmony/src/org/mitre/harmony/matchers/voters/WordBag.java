@@ -81,10 +81,19 @@ public class WordBag
 	public WordBag(SchemaElement element)
 		{ addElement(element); }
 	
+	/** Construct the word bag for the given schema element */
+	public WordBag(SchemaElement element, boolean useLabel)
+		{ addElement(element, useLabel); }
+	
 	/** Adds schema elements to the word bag */
 	public void addElement(SchemaElement element)
+		{ addElement(element,true); }
+	
+	/** Adds schema elements to the word bag */
+	public void addElement(SchemaElement element, boolean useLabel)
 	{
-		String text = element.getName()==null ? "" : element.getName() + " ";
+		String text = "";
+		if(useLabel) text += element.getName()==null ? "" : element.getName() + " ";
 		text += element.getDescription()==null ? "" : element.getDescription();
 		addWords(tokenize(text.trim()));
 	}
