@@ -44,6 +44,7 @@
       <editor name="NWayMatchView" extensions="project" icon="icons/Harmony.gif" class="org.mitre.openii.editors.projects.NWayMatchEditor" id="NWayMatchEditor"></editor>
       <editor name="Harmony" extensions="mapping" icon="icons/Harmony.gif" class="org.mitre.openii.editors.projects.HarmonyEditor" id="HarmonyEditor"></editor>
       <editor name="M3 Model" extensions="mapping" icon="icons/Mapping.gif" class="org.mitre.openii.editors.mappings.M3MappingEditor" id="M3MappingEditor"></editor>
+      <editor name="QuickAlign" extensions="mapping" icon="icons/Mapping.gif" class="org.mitre.openii.editors.mappings.QuickAlignEditor" id="QuickAlignEditor"></editor>
    	  <editor name="RMap" extensions="mapping" icon="icons/RMap.gif" class="org.mitre.openii.editors.mappings.RMapEditor" id="RMapEditor"></editor>
     </extension>
 
