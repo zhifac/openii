@@ -151,6 +151,14 @@ public class OpenIIManager
 	public static SchemaInfo getSchemaInfo(Integer schemaID)
 		{ try { return RepositoryManager.getClient().getSchemaInfo(schemaID); } catch(Exception e) { return null; } }
 	
+	/** Returns the schema parents */
+	public static ArrayList<Integer> getParentSchemas(Integer schemaID)
+		{ try { return RepositoryManager.getClient().getParentSchemas(schemaID); } catch(Exception e) { return new ArrayList<Integer>(); } }
+	
+	/** Returns the schema children */
+	public static ArrayList<Integer> getChildrenSchemas(Integer schemaID)
+		{ try { return RepositoryManager.getClient().getChildSchemas(schemaID); } catch(Exception e) { return new ArrayList<Integer>(); } }
+	
 	/** Returns if the schema is deletable */
 	public static boolean isDeletable(Integer schemaID)
 		{ try { return RepositoryManager.getClient().isDeletable(schemaID); } catch(Exception e) { return false; } }
