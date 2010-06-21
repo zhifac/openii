@@ -12,13 +12,13 @@ import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
 
-public class SchemaLabelProvider implements ILabelProvider
+public class SchemaElementLabelProvider implements ILabelProvider
 {
 	/** Holds a reference to the schema */
 	private HierarchicalSchemaInfo schema = null;
 	
 	/** Constructs the content provider */
-	public SchemaLabelProvider(HierarchicalSchemaInfo schema)
+	public SchemaElementLabelProvider(HierarchicalSchemaInfo schema)
 		{ this.schema = schema; }
 
 	/** Returns the image associated with the specified element */

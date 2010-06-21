@@ -1,23 +1,31 @@
 package org.mitre.openii.editors.schemas.schema;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Text;
 import org.mitre.openii.editors.OpenIIEditor;
 import org.mitre.openii.model.OpenIIManager;
 import org.mitre.openii.widgets.BasicWidgets;
 import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
 import org.mitre.schemastore.model.schemaInfo.model.SchemaModel;
+import org.mitre.schemastore.search.Search;
+import org.mitre.schemastore.search.SearchResult;
 
 /** Constructs the Hierarchical View */
-public class SchemaView extends OpenIIEditor implements ISelectionChangedListener
+public class SchemaView extends OpenIIEditor implements ISelectionChangedListener, KeyListener
 {	
 	/** Stores the hierarchical schema being displayed */
 	private HierarchicalSchemaInfo schema = null;
@@ -25,7 +33,7 @@ public class SchemaView extends OpenIIEditor implements ISelectionChangedListene
 	// Stores the various dialog fields
 	private ComboViewer modelList = null;
 	private Text searchField = null;
-	private TreeViewer schemaView = null;
+	private TreeViewer schemaViewer = null;
 	
 	/** Generate the menu pane */
 	private void generateMenuPane(Composite parent)
@@ -61,6 +69,7 @@ public class SchemaView extends OpenIIEditor implements ISelectionChangedListene
 		
 		// Construct the search bar
 		searchField = BasicWidgets.createTextField(searchPane, "Search");
+		searchField.addKeyListener(this);
 	}
 	
 	/** Generate the tree pane */
@@ -75,15 +84,46 @@ public class SchemaView extends OpenIIEditor implements ISelectionChangedListene
 		treePane.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		
 		// Create the tree viewer
-		schemaView = new TreeViewer(treePane, SWT.SINGLE);
-		schemaView.getTree().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		schemaViewer = new TreeViewer(treePane, SWT.SINGLE);
+		schemaViewer.getTree().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		
 		// Populate the tree viewer
-		schemaView.setContentProvider(new SchemaContentProvider(schema));
-		schemaView.setLabelProvider(new SchemaLabelProvider(schema));
-		schemaView.setInput("");
+		schemaViewer.setContentProvider(new SchemaElementContentProvider(schema));
+		schemaViewer.setLabelProvider(new SchemaElementLabelProvider(schema));
+		schemaViewer.setInput("");
+		
+		// Add the tree popup menu
+		SchemaMenuManager menuManager = new SchemaMenuManager(schemaViewer);
+		Menu menu = menuManager.createContextMenu(schemaViewer.getControl());
+		schemaViewer.getControl().setMenu(menu);
 	}
-	
+
+	/** Generate the extension pane */
+	private void generateExtensionPane(Composite parent)
+	{
+		// Retrieve the parent and children schemas
+		ArrayList<Integer> parentIDs = OpenIIManager.getParentSchemas(elementID);
+		ArrayList<Integer> childIDs = OpenIIManager.getChildrenSchemas(elementID);
+		
+		// Only draw pane if there are parent or children IDs to display
+		if(parentIDs.size()>0 || childIDs.size()>0)
+		{			
+			// Construct the extensions pane
+			Composite pane = new Composite(parent, SWT.NONE);
+			GridLayout layout = new GridLayout(2,true);
+			layout.marginHeight = 0;
+			layout.marginWidth = 0;
+			pane.setLayout(layout);
+			GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
+			gridData.heightHint = 150;
+			pane.setLayoutData(gridData);
+		
+			// Construct the "Extends" and "Extensions" pane
+			new ExtensionList(pane,"Extended Schemas", parentIDs);
+			new ExtensionList(pane,"Extending Schemas", childIDs);
+		}
+	}
+
 	/** Displays the Schema View */
 	public void createPartControl(Composite parent)
 	{	
@@ -98,13 +138,32 @@ public class SchemaView extends OpenIIEditor implements ISelectionChangedListene
 		// Layout the menu pane and tree pane
 		generateMenuPane(pane);
 		generateTreePane(pane);
+		generateExtensionPane(pane);
+
+		// Expand out the tree
+		schemaViewer.getTree().getItem(0).setExpanded(true);
+		schemaViewer.refresh();
 	}
 
 	/** Handles changes to the schema model */
-	public void selectionChanged(SelectionChangedEvent arg0)
+	public void selectionChanged(SelectionChangedEvent e)
 	{
 		SchemaModel model = (SchemaModel)((StructuredSelection)modelList.getSelection()).getFirstElement();
 		schema.setModel(model);
-		schemaView.refresh();
+		schemaViewer.refresh();
 	}
+
+	/** Runs the search query (when ENTER is pressed) */
+	public void keyReleased(KeyEvent e)
+	{
+		if(e.character==SWT.CR)
+		{
+			HashMap<Integer,SearchResult> results = Search.runQuery(searchField.getText(), schema);
+			for(Integer elementID : results.keySet())
+				schemaViewer.expandToLevel(schema.getElement(elementID),1);
+		}
+	}
+	
+	// Unused event listeners
+	public void keyPressed(KeyEvent e) {}
 }
