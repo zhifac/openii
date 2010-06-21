@@ -6,13 +6,13 @@ import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
 
-public class SchemaContentProvider implements ITreeContentProvider
+public class SchemaElementContentProvider implements ITreeContentProvider
 {
 	/** Holds a reference to the schema */
 	private HierarchicalSchemaInfo schema = null;
 	
 	/** Constructs the content provider */
-	public SchemaContentProvider(HierarchicalSchemaInfo schema)
+	public SchemaElementContentProvider(HierarchicalSchemaInfo schema)
 		{ this.schema = schema; }
 	
 	/** Returns the children elements for the specified element */
