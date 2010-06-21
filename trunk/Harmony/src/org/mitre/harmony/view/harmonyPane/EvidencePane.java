@@ -31,7 +31,7 @@ import org.mitre.schemastore.model.MappingCell;
  * Pane to display currently set confidence level
  * @author CWOLF
  */
-public class ConfidencePane extends JPanel implements SelectedInfoListener
+public class EvidencePane extends JPanel implements SelectedInfoListener
 {
 	// Manages confidence range constants within Harmony
 	public static final int CONFIDENCE_SCALE = 100;
@@ -41,11 +41,11 @@ public class ConfidencePane extends JPanel implements SelectedInfoListener
 	/** Stores the Harmony model */
 	private HarmonyModel harmonyModel;
 	
-	/** Class constructing the confidence slider */
-	private class ConfidenceSlider extends JSlider
+	/** Class constructing the evidence slider */
+	private class EvidenceSlider extends JSlider
 	{
-		/** Class to handle display and action of the confidence slider */
-		private class ConfSliderUI extends MetalSliderUI implements MouseListener, MouseMotionListener
+		/** Class to handle display and action of the evidence slider */
+		private class EvidenceSliderUI extends MetalSliderUI implements MouseListener, MouseMotionListener
 		{	
 			@Override
 			public void installUI(JComponent c)
@@ -58,21 +58,21 @@ public class ConfidencePane extends JPanel implements SelectedInfoListener
 			}
 
 			//--------------------------------------------------------------
-			// Purpose: Helps get and set positions on the confidence slider
+			// Purpose: Helps get and set positions on the evidence slider
 			//--------------------------------------------------------------
 			private int getMinPos() { return (int)trackRect.getMaxY() - (minValue-slider.getMinimum())*trackRect.height/(slider.getMaximum()-slider.getMinimum()); }	
 			private int getMaxPos() { return (int)trackRect.getMaxY() - (maxValue-slider.getMinimum())*trackRect.height/(slider.getMaximum()-slider.getMinimum()); }	
 			private void setMinPos(int pos) { minValue = valueForYPosition(pos); }
 			private void setMaxPos(int pos) { maxValue = valueForYPosition(pos); }
 		
-			/** Initializes confidence level slider */
-			ConfSliderUI(JSlider slider)
+			/** Initializes evidence level slider */
+			EvidenceSliderUI(JSlider slider)
 			{
 				slider.addMouseListener(this);
 				slider.addMouseMotionListener(this);
 			}
 	
-			/** Paints the min and max thumbs for the confidence slider */
+			/** Paints the min and max thumbs for the evidence slider */
 			public void paintThumb(Graphics g)
 			{
 				// Store original clip shape
@@ -95,7 +95,7 @@ public class ConfidencePane extends JPanel implements SelectedInfoListener
 				g.setClip(origShape);
 			}
 			
-			/** Paints the track for the confidence slider */
+			/** Paints the track for the evidence slider */
 			public void paintTrack(Graphics g)
 			{
 				// First, draw entire track as empty
@@ -106,26 +106,26 @@ public class ConfidencePane extends JPanel implements SelectedInfoListener
 				Shape origShape = g.getClip();
 				g.setClip(getX(),getMaxPos(),getWidth(),getMinPos()-getMaxPos());
 				
-				// Calculate out the various color range endpoints
+				// Calculate out the various color range end points
 				int min=yPositionForValue(MIN_CONFIDENCE);
 				int max=yPositionForValue(MAX_CONFIDENCE);
 				int pt1=(min-max)/2+max;
 				
 				// Paint the color ranges
 				Graphics2D g2d = (Graphics2D)g;
-				g2d.setPaint(new GradientPaint(15,max,Color.green,15,pt1,Color.yellow));
-				g2d.fillRect(15,max,4,pt1-max+1);
-				g2d.setPaint(new GradientPaint(15,pt1,Color.yellow,15,min,Color.red));
-				g2d.fillRect(15,pt1,4,min-pt1);
+				g2d.setPaint(new GradientPaint(21,max,Color.green,21,pt1,Color.yellow));
+				g2d.fillRect(21,max,4,pt1-max+1);
+				g2d.setPaint(new GradientPaint(21,pt1,Color.yellow,21,min,Color.orange));
+				g2d.fillRect(21,pt1,4,min-pt1);
 				
 				// Reset graphic clip shape with original
 				g.setClip(origShape);
 			}
 			
-			/** Handles painting of the confidence slider */
+			/** Handles painting of the evidence slider */
 			public void paint(Graphics g, JComponent component)
 			{
-				// Draw the confidence slider track
+				// Draw the evidence slider track
 				paintTrack(g);
 				
 				// Marks the currently selected mapping cell confidence
@@ -135,11 +135,11 @@ public class ConfidencePane extends JPanel implements SelectedInfoListener
 					MappingCell mappingCell = harmonyModel.getMappingManager().getMappingCell(selectedMappingCells.get(0));
 					int yLoc = yPositionForValue((int)(100*mappingCell.getScore()));
 					g.setColor(Color.blue);
-					g.fillPolygon(new int[]{14,20,20},new int[]{yLoc,yLoc-5,yLoc+5},3);
-					g.fillPolygon(new int[]{10,5,5},new int[]{yLoc,yLoc-5,yLoc+5},3);
+					g.fillPolygon(new int[]{25,31,31},new int[]{yLoc,yLoc-5,yLoc+5},3);
+					g.fillPolygon(new int[]{21,16,16},new int[]{yLoc,yLoc-5,yLoc+5},3);
 				}			
 
-				// Draws various parts of the confidence slider
+				// Draws various parts of the evidence slider
 				paintThumb(g);
 				paintTicks(g);
 				paintLabels(g);
@@ -197,25 +197,28 @@ public class ConfidencePane extends JPanel implements SelectedInfoListener
 		private int minValue = 0;
 		private int maxValue = 0;
 		
-		/** Initializes the confidence slider */
-		private ConfidenceSlider()
+		/** Initializes the evidence slider */
+		private EvidenceSlider()
 		{
-			// Initialize super class of confidence slider
+			// Initialize super class of evidence slider
 			super(MIN_CONFIDENCE,MAX_CONFIDENCE);
 			
-			// Initialize labels for confidence slider
+			// Initialize labels for evidence slider
 			Hashtable<Integer,JLabel> labels = new Hashtable<Integer,JLabel>();
-			for(int i=MIN_CONFIDENCE; i<=MAX_CONFIDENCE; i+= (MAX_CONFIDENCE-MIN_CONFIDENCE)/5)
-				labels.put(new Integer(i), new JLabel(" "+(i>0?"+":i<0?"\u2013":"")+String.valueOf(Math.abs(i))));
+			for(int i=MIN_CONFIDENCE; i<=MAX_CONFIDENCE; i+=(MAX_CONFIDENCE-MIN_CONFIDENCE)/5)
+			{
+				String label = new Double(1.0*i/CONFIDENCE_SCALE).toString().replaceAll("(\\..).*","$1");
+				labels.put(new Integer(i), new JLabel(" "+label));
+			}
 			
-			// Set attributes of confidence slider
+			// Set attributes of evidence slider
 			setOrientation(JSlider.VERTICAL);
 			setMajorTickSpacing((MAX_CONFIDENCE-MIN_CONFIDENCE) / 5);
 			setMinorTickSpacing((MAX_CONFIDENCE-MIN_CONFIDENCE) / 20);
 			setPaintTicks(true);
 			setPaintLabels(true);
 			setLabelTable(labels);
-			setUI(new ConfSliderUI(this));
+			setUI(new EvidenceSliderUI(this));
 			
 			// Initialize the min and max confidence values
 			minValue = new Double(harmonyModel.getFilters().getMinConfThreshold()*CONFIDENCE_SCALE).intValue();
@@ -223,16 +226,16 @@ public class ConfidencePane extends JPanel implements SelectedInfoListener
 		}
 	}
 	
-	/** Initializes the confidence pane */
-	public ConfidencePane(HarmonyModel harmonyModel)
+	/** Initializes the evidence pane */
+	public EvidencePane(HarmonyModel harmonyModel)
 	{
 		this.harmonyModel = harmonyModel;
 		setLayout(new BorderLayout());
-		add(new ConfidenceSlider(),BorderLayout.CENTER);
+		add(new EvidenceSlider(),BorderLayout.CENTER);
 		harmonyModel.getSelectedInfo().addListener(this);
 	}
 
-	/** Repaints the confidence pane if the selected mapping cells were modified */
+	/** Repaints the evidence pane if the selected mapping cells were modified */
 	public void selectedMappingCellsModified()
 		{ repaint(); }
 	
