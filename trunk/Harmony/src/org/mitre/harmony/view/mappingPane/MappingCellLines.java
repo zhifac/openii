@@ -194,8 +194,8 @@ class MappingCellLines
     	if(harmonyModel.getSelectedInfo().isMappingCellSelected(mappingCellID)) return BLUE;
     	else if(mappingCell.isValidated()) return BLACK;
     	else if(conf>=1) return GREEN;
-    	else if(conf<0.333) return new Color(0.8f,0.8f-1.2f*(0.333f-(float)conf),0.0f);
-	    else return new Color(0.8f-1.2f*((float)conf-0.333f),0.8f,0.0f);
+    	else if(conf<0.5) return new Color(0.8f,0.8f-0.4f*(0.5f-(float)conf),0.0f);
+	    else return new Color(0.8f-0.8f*((float)conf-0.5f),0.8f,0.0f);
 	}
 	
 	/** Calculates all of the lines associated with this mapping cell */
