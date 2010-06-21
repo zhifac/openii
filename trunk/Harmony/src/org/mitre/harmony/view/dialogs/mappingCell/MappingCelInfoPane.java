@@ -35,7 +35,7 @@ class MappingCellInfoPane extends JPanel
 	{
 		// Calculate the confidence range of the selected mapping cells
 		Double minConf = 1.0;
-		Double maxConf = -1.0;
+		Double maxConf = 0.0;
 		for(MappingCell mappingCell : mappingCells)
 		{
 			Double conf = mappingCell.getScore();
@@ -50,23 +50,21 @@ class MappingCellInfoPane extends JPanel
 			
 		// Label computer selection line
 		g.setColor(Color.black);
-		g.drawString("Not a Match",5,height);
-		int width = (int)g.getFontMetrics().getStringBounds("Is a Match",g).getWidth();
-		g.drawString("Is a Match",195-width,height);
+		g.drawString("No Evidence",5,height);
+		int width = (int)g.getFontMetrics().getStringBounds("Much Evidence",g).getWidth();
+		g.drawString("Much Evidence",195-width,height);
 	
 		// Draw computer selection line
 		Graphics2D g2d = (Graphics2D)g;
-		g2d.setPaint(Color.RED);
-		g2d.fillRect(5,height+3,64,3);
-		g2d.setPaint(new GradientPaint(69,height+4,Color.red,132,height+4,Color.yellow));
-		g2d.fillRect(69,height+3,63,3);
-		g2d.setPaint(new GradientPaint(132,height+4,Color.yellow,195,height+4,Color.green));
-		g2d.fillRect(132,height+3,63,3);
+		g2d.setPaint(new GradientPaint(5,height+4,Color.orange,100,height+4,Color.yellow));
+		g2d.fillRect(5,height+3,95,3);
+		g2d.setPaint(new GradientPaint(100,height+4,Color.yellow,195,height+4,Color.green));
+		g2d.fillRect(100,height+3,95,3);
 		
 		// Point at selected point on computer selection line
 		g.setColor(Color.black);
-		int minXLoc = (int)(minConf*95)+100;
-		int maxXLoc = (int)(maxConf*95)+100;
+		int minXLoc = (int)(minConf*190)+5;
+		int maxXLoc = (int)(maxConf*190)+5;
 		int midXLoc = (minXLoc+maxXLoc)/2;
 		int yLoc = height+5;
 		if(minXLoc==maxXLoc)
@@ -86,7 +84,7 @@ class MappingCellInfoPane extends JPanel
 		
 		// Get label to display in link dialog box
 		String label;
-		label = "Confidence ("+minConf+(!minConf.equals(maxConf)?"-"+maxConf:"")+")";
+		label = "Evidence ("+minConf+(!minConf.equals(maxConf)?"-"+maxConf:"")+")";
 
 		// Display label with arrow going to confidence location
 		width = (int)g.getFontMetrics().getStringBounds(label,g).getWidth();
