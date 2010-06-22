@@ -19,6 +19,7 @@ import org.eclipse.swt.widgets.Text;
 import org.mitre.openii.editors.OpenIIEditor;
 import org.mitre.openii.model.OpenIIManager;
 import org.mitre.openii.widgets.BasicWidgets;
+import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
 import org.mitre.schemastore.model.schemaInfo.model.SchemaModel;
 import org.mitre.schemastore.search.Search;
@@ -29,6 +30,9 @@ public class SchemaView extends OpenIIEditor implements ISelectionChangedListene
 {	
 	/** Stores the hierarchical schema being displayed */
 	private HierarchicalSchemaInfo schema = null;
+	
+	/** Stores the search results */
+	private HashMap<Integer,SearchResult> searchResults = new HashMap<Integer,SearchResult>();
 	
 	// Stores the various dialog fields
 	private ComboViewer modelList = null;
@@ -89,7 +93,7 @@ public class SchemaView extends OpenIIEditor implements ISelectionChangedListene
 		
 		// Populate the tree viewer
 		schemaViewer.setContentProvider(new SchemaElementContentProvider(schema));
-		schemaViewer.setLabelProvider(new SchemaElementLabelProvider(schema));
+		schemaViewer.setLabelProvider(new SchemaElementLabelProvider(this));
 		schemaViewer.setInput("");
 		
 		// Add the tree popup menu
@@ -145,6 +149,14 @@ public class SchemaView extends OpenIIEditor implements ISelectionChangedListene
 		schemaViewer.refresh();
 	}
 
+	/** Returns the schema associated with this view */
+	HierarchicalSchemaInfo getSchema()
+		{ return schema; }
+	
+	/** Returns the search result for the specified schema element */
+	SearchResult getSearchResult(Integer elementID)
+		{ return searchResults.get(elementID); }
+	
 	/** Handles changes to the schema model */
 	public void selectionChanged(SelectionChangedEvent e)
 	{
@@ -158,9 +170,12 @@ public class SchemaView extends OpenIIEditor implements ISelectionChangedListene
 	{
 		if(e.character==SWT.CR)
 		{
-			HashMap<Integer,SearchResult> results = Search.runQuery(searchField.getText(), schema);
-			for(Integer elementID : results.keySet())
-				schemaViewer.expandToLevel(schema.getElement(elementID),1);
+			searchResults = Search.runQuery(searchField.getText(), schema);
+			for(Integer elementID : searchResults.keySet())
+				for(ArrayList<SchemaElement> path : schema.getPaths(elementID))
+					for(SchemaElement element : path)
+						schemaViewer.expandToLevel(element,1);					
+			schemaViewer.refresh();
 		}
 	}
 	
