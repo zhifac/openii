@@ -1,8 +1,11 @@
 package org.mitre.openii.editors.schemas.schema;
 
-import org.eclipse.jface.viewers.ILabelProvider;
-import org.eclipse.jface.viewers.ILabelProviderListener;
+import org.eclipse.jface.viewers.StyledCellLabelProvider;
+import org.eclipse.jface.viewers.ViewerCell;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.widgets.Display;
 import org.mitre.openii.application.OpenIIActivator;
 import org.mitre.schemastore.model.Attribute;
 import org.mitre.schemastore.model.Containment;
@@ -10,16 +13,21 @@ import org.mitre.schemastore.model.DomainValue;
 import org.mitre.schemastore.model.Relationship;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
-import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
+import org.mitre.schemastore.search.SearchResult;
 
-public class SchemaElementLabelProvider implements ILabelProvider
+public class SchemaElementLabelProvider extends StyledCellLabelProvider
 {
-	/** Holds a reference to the schema */
-	private HierarchicalSchemaInfo schema = null;
+	// Defines the various referenced colors
+	private static final Color YELLOW = Display.getCurrent().getSystemColor(SWT.COLOR_YELLOW); 
+	private static final Color ORANGE = new Color(Display.getCurrent(), 255, 200, 145); 
+	private static final Color WHITE = Display.getCurrent().getSystemColor(SWT.COLOR_WHITE); 
+	
+	/** Holds a reference to the schema view */
+	private SchemaView schemaView = null;
 	
 	/** Constructs the content provider */
-	public SchemaElementLabelProvider(HierarchicalSchemaInfo schema)
-		{ this.schema = schema; }
+	public SchemaElementLabelProvider(SchemaView schemaView)
+		{ this.schemaView = schemaView; }
 
 	/** Returns the image associated with the specified element */
 	public Image getImage(Object element)
@@ -38,15 +46,32 @@ public class SchemaElementLabelProvider implements ILabelProvider
 	public String getText(Object element)
 	{
 		if(element instanceof SchemaElement)
-			return schema.getDisplayName(((SchemaElement)element).getId());
+			return schemaView.getSchema().getDisplayName(((SchemaElement)element).getId());
 		return element.toString();
 	}
 
-	/** Indicates that the label is not influenced by an element property */
-	public boolean isLabelProperty(Object element, String property) { return false; }
-	
-	// Unused functions
-	public void addListener(ILabelProviderListener listener) {}
-	public void dispose() {}
-	public void removeListener(ILabelProviderListener listener) {}
+	/** Updates the viewer cell */
+	public void update(ViewerCell cell)
+	{
+		// Set up the cell text and image
+		Object element = cell.getElement();
+		cell.setImage(getImage(element));
+		cell.setText(getText(element));
+
+		// Highlight cells which match the search results
+		if(element instanceof SchemaElement)
+		{
+			// Get the search result
+			SchemaElement schemaElement = (SchemaElement)element;
+			SearchResult searchResult = schemaView.getSearchResult(schemaElement.getId());
+
+			// Assign the background color
+			Color color = WHITE;
+			if(searchResult!=null)
+				{ color = searchResult.nameMatched() ? YELLOW : searchResult.descriptionMatched() ? ORANGE : WHITE; }
+			cell.setBackground(color);
+		}
+		
+		super.update(cell);
+	}
 }
