@@ -20,14 +20,18 @@ abstract public class BagMatcher extends MatchVoter
 	protected HashMap<String,Double> getWordWeights(List<SchemaElement> sourceElements, List<SchemaElement> targetElements, HashMap<Integer,WordBag> wordBags)
 	{
 		HashMap<String, Integer> corpus = new HashMap<String, Integer>();
+		Integer totalWordCount = 0;
 		
 		// Cycle through all source and target elements
 		ArrayList<SchemaElement> elements = new ArrayList<SchemaElement>();
 		elements.addAll(sourceElements); elements.addAll(targetElements);
 		for(SchemaElement element : elements)
 		{
-			// Store all distinct words in the element to the corpus
+			// Extract the word bag for the element
 			WordBag wordBag = wordBags.get(element.getId());
+			totalWordCount += wordBag.getWords().size();
+			
+			// Store all distinct words in the element to the corpus
 			for(String word : wordBag.getDistinctWords())
 			{
 				// Increment the word count in the corpus
@@ -37,18 +41,16 @@ abstract public class BagMatcher extends MatchVoter
 			}
 		}
 
-		// Calculate out the average word count
-		Integer totalCount = 0;
-		for(Integer wordCount : corpus.values())
-			totalCount += wordCount;
-		Double averageCount = 1.0*totalCount/corpus.size();
+		// Calculate the document weight and inflation constant
+		double documentWeight = Math.log(elements.size());
+		double inflationConstant = 10.0 * elements.size() / totalWordCount;
 		
 		// Calculate out the word weights
 		HashMap<String, Double> wordWeights = new HashMap<String, Double>();
 		for(String word : corpus.keySet())
 		{
-			Double count = corpus.get(word)-averageCount;
-			wordWeights.put(word, count<=0 ? 1.0 : Math.min(1.0, 2.0/count));
+			double wordWeight = Math.log(corpus.get(word));
+			wordWeights.put(word, inflationConstant*(documentWeight-wordWeight)/documentWeight);
 		}
 		return wordWeights;
 	}

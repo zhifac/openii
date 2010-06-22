@@ -25,10 +25,10 @@ public class DocumentationMatcher extends BagMatcher
 			wordBags.put(sourceElement.getId(), new WordBag(sourceElement,useLabels));
 		
 		// Create word bags for the target elements
-		ArrayList<SchemaElement> targetElements = schema1.getFilteredElements();
+		ArrayList<SchemaElement> targetElements = schema2.getFilteredElements();
 		for (SchemaElement targetElement : targetElements)
 			wordBags.put(targetElement.getId(), new WordBag(targetElement,useLabels));
-
+		
 		// Generate the voter scores
 		return computeScores(sourceElements, targetElements, wordBags);
 	}

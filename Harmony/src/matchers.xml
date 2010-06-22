@@ -3,7 +3,6 @@
     <voter default='true'>org.mitre.harmony.matchers.voters.EditDistanceMatcher</voter>
     <voter default='true'>org.mitre.harmony.matchers.voters.DocumentationMatcher</voter>
     <voter default='true'>org.mitre.harmony.matchers.voters.ExactStructureMatcher</voter>
-    <voter>org.mitre.harmony.matchers.voters.MappingMatcher</voter>
     <voter>org.mitre.harmony.matchers.voters.ThesaurusMatcher</voter>
     <voter>org.mitre.harmony.matchers.voters.WordNetMatcher</voter>
     <voter>org.mitre.harmony.matchers.voters.QuickDocumentationMatcher</voter>
