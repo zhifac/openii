@@ -133,12 +133,17 @@ class InfoPane extends JPanel implements CaretListener
 		String name = nameField.getText();
 		String author = authorField.getText();
 		
+		// Checks to make sure name is unique
+		boolean duplicateName = false;
+		for(Project project : harmonyModel.getProjectManager().getProjects())
+			duplicateName |= project.getName().equals(name);
+		
 		// Update highlighting
-		nameField.setBackground(name.length()>0 ? Color.white : Color.yellow);
+		nameField.setBackground(name.length()>0 && !duplicateName ? Color.white : Color.yellow);
 		authorField.setBackground(author.length()>0 ? Color.white : Color.yellow);
 
 		// Indicates if the general info is completely provided
-		return name.length()>0 && author.length()>0;
+		return name.length()>0 && !duplicateName && author.length()>0;
 	}
 
 	/** Update the project when the data fields are modified */
