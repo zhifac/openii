@@ -129,21 +129,25 @@ class InfoPane extends JPanel implements CaretListener
 	/** Validates the general info */
 	boolean validateInfo()
 	{
-		// Retrieve the information from the various fields
+		// Checks for a valid name (no duplication of project names allowed)
+		boolean validName = nameField.getText().length()>0;		
 		String name = nameField.getText();
-		String author = authorField.getText();
-		
-		// Checks to make sure name is unique
-		boolean duplicateName = false;
 		for(Project project : harmonyModel.getProjectManager().getProjects())
-			duplicateName |= project.getName().equals(name);
+			validName |= project.getName().equals(name);
+		
+		// Checks for a valid author
+		boolean validAuthor = authorField.getText().length()>0;
+
+		// Check for valid schemas
+		boolean validSchemas = schemaPane.getComponents().length>=2;
 		
 		// Update highlighting
-		nameField.setBackground(name.length()>0 && !duplicateName ? Color.white : Color.yellow);
-		authorField.setBackground(author.length()>0 ? Color.white : Color.yellow);
-
+		nameField.setBackground(validName ? Color.white : Color.yellow);
+		authorField.setBackground(validAuthor ? Color.white : Color.yellow);
+		schemaPane.setBackground(validSchemas ? Color.white : Color.yellow);
+		
 		// Indicates if the general info is completely provided
-		return name.length()>0 && !duplicateName && author.length()>0;
+		return validName && validAuthor && validSchemas;
 	}
 
 	/** Update the project when the data fields are modified */
