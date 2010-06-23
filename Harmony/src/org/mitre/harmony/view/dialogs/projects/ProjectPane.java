@@ -84,8 +84,8 @@ class ProjectPane extends JPanel implements MouseListener
 					// Generate a list of projects with the specified project removed
 					Vector<Project> projects = new Vector<Project>();
 					for(int i=0; i<projectList.getModel().getSize(); i++)
-						projects.add((Project)projectList.getModel().getElementAt(i));
-					projects.remove(project);
+						if(i!=projectList.getSelectedIndex())
+							projects.add((Project)projectList.getModel().getElementAt(i));
 				
 					// Reset the list
 					projectList.setListData(projects);
