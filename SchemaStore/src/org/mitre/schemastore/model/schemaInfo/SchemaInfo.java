@@ -329,6 +329,7 @@ public class SchemaInfo implements Serializable
 				if(e1 instanceof DomainValue) return -1; if(e2 instanceof DomainValue) return 1;
 				if(e1 instanceof Entity) return -1; if(e2 instanceof Entity) return 1;
 				if(e1 instanceof Attribute) return -1; if(e2 instanceof Attribute) return 1;
+				if(e1 instanceof Relationship) return -1; if(e2 instanceof Relationship) return 1;
 				if(!(e1 instanceof Alias)) return -1; if(!(e2 instanceof Alias)) return 1;
 				return 0;
 			}
