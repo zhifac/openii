@@ -5,6 +5,7 @@ package org.mitre.schemastore.porters.mappingImporters;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -199,7 +200,10 @@ public class UserMatchAnnotationDBImporter extends MappingImporter
 		    System.err.println ("Error reading DB");
 		    e.printStackTrace();
 		}
-
+		try {
+			conn.close();
+		} 
+		catch (SQLException e) { e.printStackTrace();	}
 		return mappingCells;
 	}
 }
