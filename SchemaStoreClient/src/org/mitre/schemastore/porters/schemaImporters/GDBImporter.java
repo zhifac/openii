@@ -91,6 +91,10 @@ System.out.println(filename);
 	/** Returns the schema elements from the specified URI */
 	public ArrayList<SchemaElement> generateSchemaElements() throws ImporterException {	
 		generate();
+		try {
+			conn.close();
+		} 
+		catch (SQLException e) { e.printStackTrace();	}
 		return generateSchemaElementList();
 	}
 	
