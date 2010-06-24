@@ -27,7 +27,7 @@ import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
-import org.mitre.harmony.matchers.TypeMappings;
+import org.mitre.harmony.matchers.MatchTypeMappings;
 import org.mitre.harmony.model.HarmonyConsts;
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.view.dialogs.matcher.wizard.WizardPanel;
@@ -40,12 +40,12 @@ import org.mitre.schemastore.model.Relationship;
 import org.mitre.schemastore.model.SchemaElement;
 
 /** Constructs the type pane for the matcher wizard */
-public class TypePane extends WizardPanel implements ActionListener {
+public class SelectMatchTypePane extends WizardPanel implements ActionListener {
 	// Defines the identifier for the match voter pane
-	static public final String IDENTIFIER = "TYPE_PANEL";
+	static public final String IDENTIFIER = "SELECT_MATCH_TYPE_PANEL";
 
 	/** Stores the type configuration pane */
-	private TypeConfigPane typeConfigPane = null;
+	private MatchTypeConfigPane typeConfigPane = null;
 
 	/** Set of checkboxes containing the possible type pairings */
 	private JPanel checkboxes = new JPanel();
@@ -56,16 +56,16 @@ public class TypePane extends WizardPanel implements ActionListener {
 	}
 
 	/** Generates the type configuration pane */
-	private class TypeConfigPane extends JPanel implements ActionListener {
-		// Stores the configuration options
+	private class MatchTypeConfigPane extends JPanel implements ActionListener {
+		// Stores the configuration optionsf
 		private JRadioButton matchAllButton = new JRadioButton("Match All");
-		private JRadioButton byTypeButton = new JRadioButton("By Type");
+		private JRadioButton byTypeButton = new JRadioButton("Match By Type");
 		private JRadioButton customButton = new JRadioButton("Custom");	
 
 		/** Constructs the type configuration pane */
-		private TypeConfigPane() {
+		private MatchTypeConfigPane() {
 			// Set the title
-			JLabel title = new JLabel("<html><u>Match Options</u></html");
+			JLabel title = new JLabel("<html><u>Matching Options</u></html");
 
 			// Generates the option pane
 			JPanel optionPane = new JPanel();
@@ -73,7 +73,7 @@ public class TypePane extends WizardPanel implements ActionListener {
 			optionPane.setLayout(new BoxLayout(optionPane,BoxLayout.Y_AXIS));
 			for(JRadioButton button : new JRadioButton[]{matchAllButton,byTypeButton,customButton}) {
 				buttonGroup.add(button);
-				button.setFont(new Font("Arial",Font.PLAIN,12));
+				button.setFont(new Font("Arial", Font.PLAIN, 12));
 				button.setFocusable(false);
 				button.addActionListener(this);
 				optionPane.add(button);
@@ -114,7 +114,7 @@ public class TypePane extends WizardPanel implements ActionListener {
 	}
 
 	/** Display the checkbox labels */
-	private class CheckboxLabels extends JPanel {
+	private class LeftRightLabels extends JPanel {
 		public void paint(Graphics g) {
 			// Paints the background
 			g.setColor(new Color(0xd0,0xd0,0xd0));
@@ -124,7 +124,7 @@ public class TypePane extends WizardPanel implements ActionListener {
 			// Paints the labels
 			g.setColor(Color.black);
 			g.drawString("Left",(getWidth()-getTextWidth("Left",g))/3,2*getHeight()/3+5);
-			g.drawString("Right",2*(getWidth()-getTextWidth("Left",g))/3,getHeight()/3+5);
+			g.drawString("Right",2*(getWidth()-getTextWidth("Right",g))/3,getHeight()/3+5);
 		}
 	}
 
@@ -243,7 +243,7 @@ public class TypePane extends WizardPanel implements ActionListener {
 		// Generate the type grid pane
 		JPanel gridPane = new JPanel();
 		gridPane.setLayout(new GridBagLayout());
-		gridPane.add(new CheckboxLabels(),getGridBagConstraints(0,0));
+		gridPane.add(new LeftRightLabels(),getGridBagConstraints(0,0));
 		gridPane.add(sourceLabels,getGridBagConstraints(0,1));
 		gridPane.add(targetLabels,getGridBagConstraints(1,0));		
 		gridPane.add(checkboxes,getGridBagConstraints(1,1));
@@ -251,45 +251,45 @@ public class TypePane extends WizardPanel implements ActionListener {
 	}
 
 	/** Constructs the type pane */
-    public TypePane(HarmonyModel harmonyModel) {
+    public SelectMatchTypePane(HarmonyModel harmonyModel) {
 		// Initialize the layout of the type pane
 		JPanel pane = getPanel();
 		pane.setBorder(new CompoundBorder(new EmptyBorder(10,10,10,10),new CompoundBorder(new LineBorder(Color.lightGray),new EmptyBorder(5,5,5,5))));
 		pane.setLayout(new BorderLayout());
-		pane.add(getTypeGridPane(harmonyModel),BorderLayout.EAST);
-		pane.add(typeConfigPane = new TypeConfigPane(),BorderLayout.WEST);
+		pane.add(getTypeGridPane(harmonyModel), BorderLayout.EAST);
+		pane.add(typeConfigPane = new MatchTypeConfigPane(), BorderLayout.WEST);
     }
 
     /** Describes the next pane to display */
     public String getNextPanelDescriptor() {
-    	return MatchPane.IDENTIFIER;
+    	return SelectMatchOptionsPane.IDENTIFIER;
     }
 
     /** Describes the previous pane that was displayed */
     public String getBackPanelDescriptor() {
-    	return MatchVoterPane.IDENTIFIER;
+    	return SelectMatchersPane.IDENTIFIER;
     }
 
 	/** Returns the type mappings */
-	public TypeMappings getTypeMappings() {
+	public MatchTypeMappings getMatchTypeMappings() {
 		// Retrieves all selected match voters from the dialog
-		TypeMappings typeMappings = null;
+		MatchTypeMappings matchTypeMappings = null;
 		if (!typeConfigPane.matchAllButton.isSelected()) {
-			typeMappings = new TypeMappings();
+			matchTypeMappings = new MatchTypeMappings();
 			for (Component component : checkboxes.getComponents()) {
 				TypeCheckBox checkbox = (TypeCheckBox)component;
 				if (checkbox.isSelected()) {
-					typeMappings.addMapping(checkbox.sourceType, checkbox.targetType);
+					matchTypeMappings.addMapping(checkbox.sourceType, checkbox.targetType);
 				}
 			}
 		}
-		return typeMappings;
+		return matchTypeMappings;
 	}
 
 	/** Updates the 'next' button whenever the checkboxes are changed */
 	public void actionPerformed(ActionEvent e) {
 		typeConfigPane.customButton.setSelected(true);
-		TypeMappings typeMappings = getTypeMappings();
-		getWizard().setNextFinishButtonEnabled(typeMappings == null || typeMappings.size() > 0);
+		MatchTypeMappings matchTypeMappings = getMatchTypeMappings();
+		getWizard().setNextFinishButtonEnabled(matchTypeMappings == null || matchTypeMappings.size() > 0);
 	}
 }

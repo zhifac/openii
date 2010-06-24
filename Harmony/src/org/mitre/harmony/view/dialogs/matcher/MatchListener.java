@@ -6,8 +6,7 @@ package org.mitre.harmony.view.dialogs.matcher;
  * Interface used by all match listeners
  * @author CWOLF
  */
-public interface MatchListener
-{
+public interface MatchListener {
 	/** Indicates the current progress of the voters */
 	public void updateVoterProgress(Double percentComplete, String status);
 

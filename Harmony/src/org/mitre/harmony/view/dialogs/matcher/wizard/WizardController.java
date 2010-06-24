@@ -3,7 +3,7 @@ package org.mitre.harmony.view.dialogs.matcher.wizard;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import org.mitre.harmony.view.dialogs.matcher.MatchPane;
+import org.mitre.harmony.view.dialogs.matcher.MatchingStatusPane;
 
 /** Controls the buttons in the wizard */
 public class WizardController implements ActionListener {    
@@ -67,8 +67,8 @@ public class WizardController implements ActionListener {
         model.setProperty(WizardModel.BACK_BUTTON_ENABLED_PROPERTY, (backPanelDescriptor != null));
 
         // Sets the next/finish button
-        boolean isMatchPane = panel instanceof MatchPane;
-        boolean nextIsMatchPane = MatchPane.IDENTIFIER.equals(panel.getNextPanelDescriptor());
+        boolean isMatchPane = panel instanceof MatchingStatusPane;
+        boolean nextIsMatchPane = MatchingStatusPane.IDENTIFIER.equals(panel.getNextPanelDescriptor());
         model.setProperty(WizardModel.NEXT_BUTTON_ENABLED_PROPERTY, !isMatchPane);
         model.setProperty(WizardModel.NEXT_BUTTON_TEXT_PROPERTY, (isMatchPane || nextIsMatchPane ? "Run" : "Next"));
     }

@@ -146,21 +146,20 @@ public class Wizard extends WindowAdapter implements PropertyChangeListener {
 
     /** Handles a change to a wizard property */
     public void propertyChange(PropertyChangeEvent evt) {    
-        if (evt.getPropertyName().equals(WizardModel.CURRENT_PANEL_DESCRIPTOR_PROPERTY)) {
-            wizardController.resetButtonsToPanelRules(); 
-        } else if (evt.getPropertyName().equals(WizardModel.NEXT_BUTTON_TEXT_PROPERTY)) {
-            nextButton.setText(evt.getNewValue().toString());
-        } else if (evt.getPropertyName().equals(WizardModel.BACK_BUTTON_TEXT_PROPERTY)) {            
-            backButton.setText(evt.getNewValue().toString());
-        } else if (evt.getPropertyName().equals(WizardModel.CANCEL_BUTTON_TEXT_PROPERTY)) {      
-            cancelButton.setText(evt.getNewValue().toString());
-        } else if (evt.getPropertyName().equals(WizardModel.NEXT_BUTTON_ENABLED_PROPERTY)) {
-            nextButton.setEnabled(((Boolean)evt.getNewValue()).booleanValue());
-        } else if (evt.getPropertyName().equals(WizardModel.BACK_BUTTON_ENABLED_PROPERTY)) {
-            backButton.setEnabled(((Boolean)evt.getNewValue()).booleanValue());
-        } else if (evt.getPropertyName().equals(WizardModel.CANCEL_BUTTON_ENABLED_PROPERTY)) {            
-            cancelButton.setEnabled(((Boolean)evt.getNewValue()).booleanValue());
-        }
+        if (evt.getPropertyName().equals(WizardModel.CURRENT_PANEL_DESCRIPTOR_PROPERTY))
+        	{ wizardController.resetButtonsToPanelRules(); }
+        if (evt.getPropertyName().equals(WizardModel.NEXT_BUTTON_TEXT_PROPERTY))
+        	{ nextButton.setText(evt.getNewValue().toString()); }
+        if (evt.getPropertyName().equals(WizardModel.BACK_BUTTON_TEXT_PROPERTY))
+        	{ backButton.setText(evt.getNewValue().toString()); }
+        if (evt.getPropertyName().equals(WizardModel.CANCEL_BUTTON_TEXT_PROPERTY))
+        	{ cancelButton.setText(evt.getNewValue().toString()); }
+        if (evt.getPropertyName().equals(WizardModel.NEXT_BUTTON_ENABLED_PROPERTY))
+        	{ nextButton.setEnabled(((Boolean)evt.getNewValue()).booleanValue()); }
+        if (evt.getPropertyName().equals(WizardModel.BACK_BUTTON_ENABLED_PROPERTY))
+        	{ backButton.setEnabled(((Boolean)evt.getNewValue()).booleanValue()); }
+        if (evt.getPropertyName().equals(WizardModel.CANCEL_BUTTON_ENABLED_PROPERTY))
+        	{ cancelButton.setEnabled(((Boolean)evt.getNewValue()).booleanValue()); }
     }
 
     /** Returns the return code associated with the wizard */

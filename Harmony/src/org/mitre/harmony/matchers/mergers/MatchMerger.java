@@ -4,7 +4,7 @@ package org.mitre.harmony.matchers.mergers;
 
 import org.mitre.harmony.matchers.ElementPair;
 import org.mitre.harmony.matchers.MatchScores;
-import org.mitre.harmony.matchers.TypeMappings;
+import org.mitre.harmony.matchers.MatchTypeMappings;
 import org.mitre.harmony.matchers.VoterScores;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.schemaInfo.FilteredSchemaInfo;
@@ -16,7 +16,7 @@ public abstract class MatchMerger
 	protected FilteredSchemaInfo schema1, schema2;
 
 	/** Stores the match merger type mapping information */
-	private TypeMappings typeMappings;
+	private MatchTypeMappings typeMappings;
 	
 	/** Return the name of the match merger */
 	abstract public String getName();
@@ -26,7 +26,7 @@ public abstract class MatchMerger
 		{ this.schema1 = schema1; this.schema2 = schema2; this.typeMappings = null; }
 	
 	/** Initializes the match merger */
-	public void initialize(FilteredSchemaInfo schema1, FilteredSchemaInfo schema2, TypeMappings typeMappings)
+	public void initialize(FilteredSchemaInfo schema1, FilteredSchemaInfo schema2, MatchTypeMappings typeMappings)
 		{ this.schema1 = schema1; this.schema2 = schema2; this.typeMappings = typeMappings; initialize(); }
 	
 	/** Initializes the match merger */

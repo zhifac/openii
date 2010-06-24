@@ -20,9 +20,9 @@ import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.view.dialogs.matcher.wizard.WizardPanel;
 
 /** Constructs the match voter pane for the matcher wizard */
-public class MatchVoterPane extends WizardPanel implements ActionListener {
+public class SelectMatchersPane extends WizardPanel implements ActionListener {
 	// Defines the identifier for the match voter pane
-	static public final String IDENTIFIER = "MATCH_VOTER_PANEL";
+	static public final String IDENTIFIER = "SELECT_MATCHERS_PANEL";
 
 	// Set of checkboxes containing the match voter selection
 	private JPanel checkboxPane = null;
@@ -42,7 +42,7 @@ public class MatchVoterPane extends WizardPanel implements ActionListener {
 	}
 
 	/** Constructs the match voter pane */
-    public MatchVoterPane(HarmonyModel harmonyModel, ArrayList<MatchVoter> matchVoters) {
+    public SelectMatchersPane(HarmonyModel harmonyModel, ArrayList<MatchVoter> matchVoters) {
 		// Create pane for storing all match voters
 		checkboxPane = new JPanel();
 		checkboxPane.setBackground(Color.white);
@@ -66,7 +66,7 @@ public class MatchVoterPane extends WizardPanel implements ActionListener {
 
     /** Describes the next pane to display */
     public String getNextPanelDescriptor() {
-    	return TypePane.IDENTIFIER;
+    	return SelectMatchTypePane.IDENTIFIER;
     }
 
     /** Describes the previous pane that was displayed */
