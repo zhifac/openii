@@ -2,7 +2,7 @@
 // ALL RIGHTS RESERVED
 package org.mitre.harmony.matchers.voters;
 
-import org.mitre.harmony.matchers.TypeMappings;
+import org.mitre.harmony.matchers.MatchTypeMappings;
 import org.mitre.harmony.matchers.VoterScores;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.schemaInfo.FilteredSchemaInfo;
@@ -14,7 +14,7 @@ public abstract class MatchVoter
 	protected FilteredSchemaInfo schema1, schema2;
 
 	/** Stores the match merger type mapping information */
-	private TypeMappings typeMappings;
+	private MatchTypeMappings typeMappings;
 	
 	/** Stores if this is a default voter */
 	private boolean isDefault = false;
@@ -41,7 +41,7 @@ public abstract class MatchVoter
 		{ this.schema1 = schema1; this.schema2 = schema2; this.typeMappings = null; }
 	
 	/** Initializes the match voter */
-	final public void initialize(FilteredSchemaInfo schema1, FilteredSchemaInfo schema2, TypeMappings typeMappings)
+	final public void initialize(FilteredSchemaInfo schema1, FilteredSchemaInfo schema2, MatchTypeMappings typeMappings)
 		{ this.schema1 = schema1; this.schema2 = schema2; this.typeMappings = typeMappings; }
 
 	/** Generates scores for the specified graphs */

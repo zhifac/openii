@@ -99,7 +99,7 @@ public class MatcherManager
 		{ return getScores(schemaInfo1,schemaInfo2,voters,merger,null); }
 	
 	/** Run the matchers to calculate match scores */
-	static public MatchScores getScores(FilteredSchemaInfo schema1, FilteredSchemaInfo schema2, ArrayList<MatchVoter> voters, MatchMerger merger, TypeMappings typeMappings)
+	static public MatchScores getScores(FilteredSchemaInfo schema1, FilteredSchemaInfo schema2, ArrayList<MatchVoter> voters, MatchMerger merger, MatchTypeMappings typeMappings)
 	{
 		merger.initialize(schema1, schema2, typeMappings);
 		for(MatchVoter voter : voters)

@@ -14,16 +14,16 @@ import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
-import org.mitre.harmony.matchers.TypeMappings;
+import org.mitre.harmony.matchers.MatchTypeMappings;
 import org.mitre.harmony.matchers.mergers.MatchMerger;
 import org.mitre.harmony.matchers.voters.MatchVoter;
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.view.dialogs.matcher.wizard.WizardPanel;
 
 /** Constructs the match pane for the matcher wizard */
-public class MatchPane extends WizardPanel implements MatchListener {
+public class MatchingStatusPane extends WizardPanel implements MatchListener {
 	// Defines the identifier for the match voter pane
-	static public final String IDENTIFIER = "MATCH_PANEL";
+	static public final String IDENTIFIER = "MATCHING_STATUS_PANEL";
 
     /** Stores the Harmony model for reference */
     private HarmonyModel harmonyModel;
@@ -63,7 +63,7 @@ public class MatchPane extends WizardPanel implements MatchListener {
     }
 
 	/** Constructs the match pane */
-    public MatchPane(HarmonyModel harmonyModel, MatchMerger merger) {   
+    public MatchingStatusPane(HarmonyModel harmonyModel, MatchMerger merger) {   
     	this.harmonyModel = harmonyModel;
         this.merger = merger;
 
@@ -88,7 +88,7 @@ public class MatchPane extends WizardPanel implements MatchListener {
 
     /** Describes the previous pane that was displayed */
     public String getBackPanelDescriptor() {
-    	return TypePane.IDENTIFIER;
+    	return SelectMatchOptionsPane.IDENTIFIER;
     }
 
     /** Initializes the panel before being displayed */
@@ -100,15 +100,15 @@ public class MatchPane extends WizardPanel implements MatchListener {
     /** Generates the schema matches when the panel is being displayed */
     public void displayingPanel() {
     	// Retrieve the voter information
-    	MatchVoterPane matchVoterPane = (MatchVoterPane)getWizard().getPanel(MatchVoterPane.IDENTIFIER);
+    	SelectMatchersPane matchVoterPane = (SelectMatchersPane)getWizard().getPanel(SelectMatchersPane.IDENTIFIER);
     	ArrayList<MatchVoter> voters = matchVoterPane.getSelectedMatchVoters();
 
     	// Retrieve the type information
-    	TypePane typePane = (TypePane)getWizard().getPanel(TypePane.IDENTIFIER);
-    	TypeMappings typeMappings = typePane.getTypeMappings();
+    	SelectMatchTypePane typePane = (SelectMatchTypePane)getWizard().getPanel(SelectMatchTypePane.IDENTIFIER);
+    	MatchTypeMappings typeMappings = typePane.getMatchTypeMappings();
 
     	// Starts the match thread
-    	matchThread = new MatchThread(harmonyModel,voters,merger,typeMappings);
+    	matchThread = new MatchThread(harmonyModel, voters, merger, typeMappings);
         matchThread.addListener(this);
     	matchThread.start();
     }
