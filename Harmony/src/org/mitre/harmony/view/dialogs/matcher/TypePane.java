@@ -40,41 +40,38 @@ import org.mitre.schemastore.model.Relationship;
 import org.mitre.schemastore.model.SchemaElement;
 
 /** Constructs the type pane for the matcher wizard */
-public class TypePane extends WizardPanel implements ActionListener
-{
+public class TypePane extends WizardPanel implements ActionListener {
 	// Defines the identifier for the match voter pane
 	static public final String IDENTIFIER = "TYPE_PANEL";
-	
+
 	/** Stores the type configuration pane */
 	private TypeConfigPane typeConfigPane = null;
-	
+
 	/** Set of checkboxes containing the possible type pairings */
 	private JPanel checkboxes = new JPanel();
-	
+
 	/** Returns the text width */
-	private int getTextWidth(String text, Graphics g)
-		{ return (int)g.getFontMetrics().getStringBounds(text, g).getWidth(); }
-	
+	private int getTextWidth(String text, Graphics g) {
+		return (int)g.getFontMetrics().getStringBounds(text, g).getWidth();
+	}
+
 	/** Generates the type configuration pane */
-	private class TypeConfigPane extends JPanel implements ActionListener
-	{
+	private class TypeConfigPane extends JPanel implements ActionListener {
 		// Stores the configuration options
 		private JRadioButton matchAllButton = new JRadioButton("Match All");
 		private JRadioButton byTypeButton = new JRadioButton("By Type");
 		private JRadioButton customButton = new JRadioButton("Custom");	
-		
+
 		/** Constructs the type configuration pane */
-		private TypeConfigPane()
-		{
+		private TypeConfigPane() {
 			// Set the title
 			JLabel title = new JLabel("<html><u>Match Options</u></html");
-			
+
 			// Generates the option pane
 			JPanel optionPane = new JPanel();
 			ButtonGroup buttonGroup = new ButtonGroup();
 			optionPane.setLayout(new BoxLayout(optionPane,BoxLayout.Y_AXIS));
-			for(JRadioButton button : new JRadioButton[]{matchAllButton,byTypeButton,customButton})
-			{
+			for(JRadioButton button : new JRadioButton[]{matchAllButton,byTypeButton,customButton}) {
 				buttonGroup.add(button);
 				button.setFont(new Font("Arial",Font.PLAIN,12));
 				button.setFocusable(false);
@@ -82,7 +79,7 @@ public class TypePane extends WizardPanel implements ActionListener
 				optionPane.add(button);
 			}
 			matchAllButton.setSelected(true);
-			
+
 			// Generates the type configuration pane
 			setBorder(new EmptyBorder(0,5,0,15));
 			setLayout(new BorderLayout());
@@ -91,36 +88,34 @@ public class TypePane extends WizardPanel implements ActionListener
 		}
 
 		/** Handles the pressing of an option button */
-		public void actionPerformed(ActionEvent e)
-		{
+		public void actionPerformed(ActionEvent e) {
 			// Handles the selection of the "Match All" button
-			if(e.getSource().equals(matchAllButton))
-				for(Component component : checkboxes.getComponents())
+			if (e.getSource().equals(matchAllButton)) {
+				for (Component component : checkboxes.getComponents()) {
 					((TypeCheckBox)component).setSelected(true);
+				}
+			}
 
 			// Handles the selection of the "By Type" button
-			if(e.getSource().equals(byTypeButton))
-				for(Component component : checkboxes.getComponents())
-				{
+			if (e.getSource().equals(byTypeButton)) {
+				for(Component component : checkboxes.getComponents()) {
 					TypeCheckBox checkbox = (TypeCheckBox)component;
 					checkbox.setSelected(checkbox.sourceType.equals(checkbox.targetType));
 				}
+			}
 		}
 
 		/** Draws the type configuration pane */
-		public void paint(Graphics g)
-		{
+		public void paint(Graphics g) {
 			super.paint(g);
 			g.setColor(Color.lightGray);
 			g.drawLine(getWidth()-5,0,getWidth()-5,getHeight());
 		}
 	}
-	
+
 	/** Display the checkbox labels */
-	private class CheckboxLabels extends JPanel
-	{
-		public void paint(Graphics g)
-		{
+	private class CheckboxLabels extends JPanel {
+		public void paint(Graphics g) {
 			// Paints the background
 			g.setColor(new Color(0xd0,0xd0,0xd0));
 			g.fillPolygon(new int[]{5,5,getWidth()-10}, new int[]{10,getHeight()-5,getHeight()-5},3);
@@ -132,40 +127,39 @@ public class TypePane extends WizardPanel implements ActionListener
 			g.drawString("Right",2*(getWidth()-getTextWidth("Left",g))/3,getHeight()/3+5);
 		}
 	}
-	
+
 	/** Displays the specified type label */
-	private class TypeLabel extends JPanel
-	{
+	private class TypeLabel extends JPanel {
 		String label;
 		boolean vertical;
 
 		/** Constructs the label class */
-		private TypeLabel(String label, boolean vertical)
-		{
+		private TypeLabel(String label, boolean vertical) {
 			this.label=label; this.vertical=vertical;
 			setPreferredSize(vertical ? new Dimension(20,90) : new Dimension(90,20));
 		}
-		
+
 		/** Draws the label */
-		public void paint(Graphics g)
-		{
+		public void paint(Graphics g) {
 		    Graphics2D g2 = (Graphics2D)g;
-		    if(vertical) { g2.rotate(-Math.PI/2.0); g2.translate(-getHeight()+5, 0); }
-		    else g2.translate(getWidth()-getTextWidth(label, g)-5, 0);
+		    if (vertical) {
+		    	g2.rotate(-Math.PI/2.0);
+		    	g2.translate(-getHeight()+5, 0);
+		    } else {
+		    	g2.translate(getWidth()-getTextWidth(label, g)-5, 0);
+		    }
 		    g2.drawString(label, 0, 15);
 		}
 	}
-	
+
 	/** Class for storing a type checkbox */
-	private class TypeCheckBox extends JCheckBox
-	{
+	private class TypeCheckBox extends JCheckBox {
 		// Stores the source and target types
 		private Class<SchemaElement> sourceType;
 		private Class<SchemaElement> targetType;
-		
+
 		/** Initializes the type check box */
-		private TypeCheckBox(Class<SchemaElement> sourceType, Class<SchemaElement> targetType, boolean selected)
-		{
+		private TypeCheckBox(Class<SchemaElement> sourceType, Class<SchemaElement> targetType, boolean selected) {
 			this.sourceType = sourceType;
 			this.targetType = targetType;
 			setText("");
@@ -173,44 +167,42 @@ public class TypePane extends WizardPanel implements ActionListener
 			setSelected(selected);
 		}
 	}
-	
+
 	/** Returns the grid bag constraints */
-	private GridBagConstraints getGridBagConstraints(int xLoc, int yLoc)
-	{
+	private GridBagConstraints getGridBagConstraints(int xLoc, int yLoc) {
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = xLoc;
 		c.gridy = yLoc;
 		c.fill = GridBagConstraints.BOTH;
 		return c;
 	}
-    
+
 	/** Retrieve the types for the specified side */
-	private ArrayList<Class> getTypes(HarmonyModel harmonyModel, Integer side)
-	{
+	private ArrayList<Class> getTypes(HarmonyModel harmonyModel, Integer side) {
 		/** Class for defining the proper order for schema element types */
-		class TypeComparator implements Comparator<Class>
-		{
+		class TypeComparator implements Comparator<Class> {
 			/** Provides a type rank for the specified class */
-			private Integer getTypeRank(Class class1)
-			{
-				if(class1.equals(Entity.class)) return 1;
-				if(class1.equals(Attribute.class)) return 2;
-				if(class1.equals(Domain.class)) return 3;
-				if(class1.equals(DomainValue.class)) return 4;
-				if(class1.equals(Containment.class)) return 5;
-				if(class1.equals(Relationship.class)) return 6;
+			private Integer getTypeRank(Class class1) {
+				if (class1.equals(Entity.class))       { return 1; }
+				if (class1.equals(Attribute.class))    { return 2; }
+				if (class1.equals(Domain.class))       { return 3; }
+				if (class1.equals(DomainValue.class))  { return 4; }
+				if (class1.equals(Containment.class))  { return 5; }
+				if (class1.equals(Relationship.class)) { return 6; }
 				return 7;
 			}
-			
+
 			/** Returns a comparison value between two classes */
-			public int compare(Class class1, Class class2)
-				{ return getTypeRank(class1).compareTo(getTypeRank(class2)); }
+			public int compare(Class class1, Class class2) {
+				return getTypeRank(class1).compareTo(getTypeRank(class2));
+			}
 		}
 
 		// Identify the types on the specified side
 		HashSet<Class> types = new HashSet<Class>();
-		for(SchemaElement element : harmonyModel.getProjectManager().getSchemaElements(side))
+		for (SchemaElement element : harmonyModel.getProjectManager().getSchemaElements(side)) {
 			types.add(element.getClass());
+		}
 
 		// Return a sorted list of the types
 		ArrayList<Class> sortedTypes = new ArrayList<Class>(types);
@@ -219,34 +211,35 @@ public class TypePane extends WizardPanel implements ActionListener
 	}
 	
 	/** Generates the type grid pane */
-	private JPanel getTypeGridPane(HarmonyModel harmonyModel)
-	{
+	private JPanel getTypeGridPane(HarmonyModel harmonyModel) {
 		// Retrieve the source and target types
 		ArrayList<Class> sourceTypes = getTypes(harmonyModel, HarmonyConsts.LEFT);
 		ArrayList<Class> targetTypes = getTypes(harmonyModel, HarmonyConsts.RIGHT);
-		
+
 		// Generate the source labels
 		JPanel sourceLabels = new JPanel();
 		sourceLabels.setLayout(new GridLayout(sourceTypes.size(),1));
-		for(Class<SchemaElement> sourceType : sourceTypes)
+		for (Class<SchemaElement> sourceType : sourceTypes) {
 			sourceLabels.add(new TypeLabel(sourceType.getSimpleName(),false));
-		
+		}
+
 		// Generate the target labels
 		JPanel targetLabels = new JPanel();
 		targetLabels.setLayout(new GridLayout(1,targetTypes.size()));
-		for(Class<SchemaElement> targetType : targetTypes)
+		for (Class<SchemaElement> targetType : targetTypes) {
 			targetLabels.add(new TypeLabel(targetType.getSimpleName(),true));
-		
+		}
+
 		// Generate the checkbox grid
 		checkboxes.setLayout(new GridLayout(sourceTypes.size(),targetTypes.size()));
-		for(Class<SchemaElement> sourceType : sourceTypes)
-			for(Class<SchemaElement> targetType : targetTypes)
-			{
+		for (Class<SchemaElement> sourceType : sourceTypes) {
+			for (Class<SchemaElement> targetType : targetTypes) {
 				TypeCheckBox checkbox = new TypeCheckBox(sourceType,targetType,true);
 				checkbox.addActionListener(this);
 				checkboxes.add(checkbox);
 			}
-		
+		}
+
 		// Generate the type grid pane
 		JPanel gridPane = new JPanel();
 		gridPane.setLayout(new GridBagLayout());
@@ -256,49 +249,47 @@ public class TypePane extends WizardPanel implements ActionListener
 		gridPane.add(checkboxes,getGridBagConstraints(1,1));
 		return gridPane;
 	}
-	
+
 	/** Constructs the type pane */
-    public TypePane(HarmonyModel harmonyModel)
-    {
+    public TypePane(HarmonyModel harmonyModel) {
 		// Initialize the layout of the type pane
 		JPanel pane = getPanel();
 		pane.setBorder(new CompoundBorder(new EmptyBorder(10,10,10,10),new CompoundBorder(new LineBorder(Color.lightGray),new EmptyBorder(5,5,5,5))));
 		pane.setLayout(new BorderLayout());
 		pane.add(getTypeGridPane(harmonyModel),BorderLayout.EAST);
 		pane.add(typeConfigPane = new TypeConfigPane(),BorderLayout.WEST);
-   }
-       
+    }
+
     /** Describes the next pane to display */
-    public String getNextPanelDescriptor()
-    	{ return MatchPane.IDENTIFIER; }
-    
+    public String getNextPanelDescriptor() {
+    	return MatchPane.IDENTIFIER;
+    }
+
     /** Describes the previous pane that was displayed */
-    public String getBackPanelDescriptor()
-    	{ return MatchVoterPane.IDENTIFIER; }
+    public String getBackPanelDescriptor() {
+    	return MatchVoterPane.IDENTIFIER;
+    }
 
 	/** Returns the type mappings */
-	public TypeMappings getTypeMappings()
-	{
+	public TypeMappings getTypeMappings() {
 		// Retrieves all selected match voters from the dialog
 		TypeMappings typeMappings = null;
-		if(!typeConfigPane.matchAllButton.isSelected())
-		{
+		if (!typeConfigPane.matchAllButton.isSelected()) {
 			typeMappings = new TypeMappings();
-			for(Component component : checkboxes.getComponents())
-			{
+			for (Component component : checkboxes.getComponents()) {
 				TypeCheckBox checkbox = (TypeCheckBox)component;
-				if(checkbox.isSelected())
+				if (checkbox.isSelected()) {
 					typeMappings.addMapping(checkbox.sourceType, checkbox.targetType);
+				}
 			}
 		}
 		return typeMappings;
 	}
 
 	/** Updates the 'next' button whenever the checkboxes are changed */
-	public void actionPerformed(ActionEvent e)
-	{
+	public void actionPerformed(ActionEvent e) {
 		typeConfigPane.customButton.setSelected(true);
 		TypeMappings typeMappings = getTypeMappings();
-		getWizard().setNextFinishButtonEnabled(typeMappings==null || typeMappings.size()>0);
+		getWizard().setNextFinishButtonEnabled(typeMappings == null || typeMappings.size() > 0);
 	}
 }
