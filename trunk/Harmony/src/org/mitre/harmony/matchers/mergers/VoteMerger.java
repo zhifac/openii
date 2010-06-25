@@ -66,8 +66,9 @@ public class VoteMerger extends MatchMerger
 		{
 			// Retrieve the specified score
 			VoterScore score = summedScores.get(pair);
-			double positiveEvidence = score.getPositiveEvidence() + 0.001;
-			double totalEvidence = score.getTotalEvidence() + 0.001;
+			if(score.getTotalEvidence()<=0) continue;
+			double positiveEvidence = score.getPositiveEvidence();
+			double totalEvidence = score.getTotalEvidence();
 
 			// Calculate the match score
 			double evidenceRatio = positiveEvidence / totalEvidence;
