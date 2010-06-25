@@ -11,8 +11,7 @@ import org.mitre.schemastore.model.SchemaElement;
 /** Edit Distance Matcher Class */
 public class ExactDocumentationMatcher extends MatchVoter
 {
-
-	//max value that this matcher can return.  A scaling factor.
+	/** Max value that this matcher can return.  A scaling factor */
 	public static final double SCORE_CEILING = 10.0;
 	
 	/** Returns the name of the match voter */
@@ -48,18 +47,17 @@ public class ExactDocumentationMatcher extends MatchVoter
 
 	/** Matches a single pair of elements */
 	private static VoterScore matchElements(SchemaElement sourceElement, SchemaElement targetElement)
-	{
-		// Get character representations of the element descriptions
-		return matchStrings(sourceElement.getDescription(), targetElement.getDescription());
-	}
+		{ return matchStrings(sourceElement.getDescription(), targetElement.getDescription()); }
 	
-	private static VoterScore matchStrings(String sourceString, String targetString) {
-		if (sourceString.equalsIgnoreCase(targetString)) {
-			Double totalLength = new Double(sourceString.length() + targetString.length());
-			return new VoterScore(totalLength, totalLength);
-		} else {
-			return new VoterScore(new Double(0), new Double(0));
-		}
+	/** Returns a score for the matched strings */
+	private static VoterScore matchStrings(String sourceString, String targetString)
+	{
+		// Return no score if the strings don't match
+		if(!sourceString.equalsIgnoreCase(targetString)) return null;
+
+		// Otherwise, return a score equivalent to the total length of the string
+		Double totalLength = 2.0*sourceString.length();
+		return new VoterScore(totalLength, totalLength);
 	}
 	
 }
