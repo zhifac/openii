@@ -3,6 +3,7 @@
 package org.mitre.harmony.matchers;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -25,7 +26,10 @@ public class MatcherManager {
 
 	/** Stores a listing of all match mergers */
 	static private ArrayList<MatchMerger> mergers = new ArrayList<MatchMerger>();
-	
+
+	/** Stores a listing of all match voter options */
+	static private HashMap<String, ArrayList<MatcherOption>> voterOptions = new HashMap<String, ArrayList<MatcherOption>>();
+
 	/** Initializes the matcher manager with all defined match voters and mergers */
 	static {
 		try {
@@ -47,22 +51,52 @@ public class MatcherManager {
 						// get the element and its attribute
 						Element node = (Element)nodes.item(i);
 
+						MatchVoter voter = null;
 						try {
 							// create a new voter from this class id
 							Class voterClass = Class.forName(node.getAttribute("id"));
-							MatchVoter voter = (MatchVoter)voterClass.newInstance();
+							voter = (MatchVoter)voterClass.newInstance();
 	
 							// see if our voter is hidden or default
 							String attrHidden = node.getAttribute("hidden");
-							if (attrHidden.toLowerCase().equals("true")) { System.err.println("hidden is true"); voter.setHidden(true); }
+							if (attrHidden.toLowerCase().equals("true")) { voter.setHidden(true); }
 							String attrDefault = node.getAttribute("default");
-							if (attrDefault.toLowerCase().equals("true")) { System.err.println("default is true"); voter.setDefault(true); }
+							if (attrDefault.toLowerCase().equals("true")) { voter.setDefault(true); }
 
-							// add the voter to our master list
-							voters.add(voter);
 						} catch (Exception ee) {
-							System.err.println("(E) MatchManager - Failed to locate voter class " + node.getAttribute("id"));
+							System.err.println("(E) MatchManager - Failed to locate voter class: " + ee.getMessage());
 						}
+
+						ArrayList<MatcherOption> options = new ArrayList<MatcherOption>();
+						try {
+							// get all the options for this matcher
+							NodeList optionNodes = node.getElementsByTagName("option");
+							if (optionNodes != null && optionNodes.getLength() > 0) {
+								for (int j = 0; j < optionNodes.getLength(); j++) {
+									Element optionNode = (Element)optionNodes.item(j);
+
+									// get all attributes (we will test to see if they actually have data later)
+									String name = optionNode.getTextContent();
+									String id = optionNode.getAttribute("id");
+									String type = optionNode.getAttribute("type");
+									Boolean selected = (optionNode.getAttribute("selected") == "true" ? true : false);
+
+									// make sure our required options are defined
+									if (id == null || id.equals("")) { throw new Exception("No id defined for this option."); }
+									if (type == null || type.equals("")) { throw new Exception("No type defined for this option."); }
+									if (name == null || name.equals("")) { throw new Exception("No name defined for this option."); }
+
+									// add this option to our temporary options list
+									options.add(new MatcherOption(id, type, name, selected));									
+								}
+							}
+						} catch (Exception ee) {
+							System.err.println("(E) MatchManager - Failed to load voter options: " + ee.getMessage());
+						}
+
+						// add the voter to our master list
+						if (voter != null) { voters.add(voter); }
+						if (options.size() > 0) { voterOptions.put(voter.getClass().getName(), options); }
 					}
 				}
 			}
@@ -123,6 +157,15 @@ public class MatcherManager {
 	/** Returns the list of match mergers */
 	static public ArrayList<MatchMerger> getMergers() {
 		return mergers;
+	}
+
+	/** Return the list of options for a given voter */
+	static public ArrayList<MatcherOption> getVoterOptions(String id) {
+		if (voterOptions.containsKey(id)) {
+			return voterOptions.get(id);
+		} else {
+			return null;
+		}
 	}
 
 	/** Run the matchers to calculate match scores */
