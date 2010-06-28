@@ -219,99 +219,151 @@ public class EditProjectDialog extends Dialog implements ActionListener, ModifyL
 
 	/** Handles the actual import of the specified file */
 	protected void okPressed() {
-		String errorMessage = null;
-
 		// Gather the general information
 		String name = nameField.getText();
 		String author = authorField.getText();
 		String description = descriptionField.getText();
 
-		if (errorMessage == null) {
-			// Generate the list of schemas which have been selected
-			ArrayList<ProjectSchema> schemas = new ArrayList<ProjectSchema>();
-			for (Schema schema : schemaList.getSchemas()) {
-				schemas.add(new ProjectSchema(schema.getId(), schema.getName(), null));
-			}
+		try {
+			if (project == null) {
+				// this is a new project so we just create the project with whatever schemas
+				// and mappings are there and don't worry about mapping cells
 
-			if (project != null) {
-				// update an existing project
-				project.setName(name);
-				project.setAuthor(author);
-				project.setDescription(description);
-				project.setSchemas(schemas.toArray(new ProjectSchema[0]));
-				if (!OpenIIManager.updateProject(project)) {
-					errorMessage = "Unable to update project '" + project.getName() + "'.";
+				// generate the list of schemas which have been selected
+				ArrayList<ProjectSchema> schemas = new ArrayList<ProjectSchema>();
+				for (Schema schema : schemaList.getSchemas()) {
+					schemas.add(new ProjectSchema(schema.getId(), schema.getName(), null));
 				}
-			} else {
-				// create a new project
+
+				// create a new project and put it into the database
 				project = new Project(0, name, description, author, schemas.toArray(new ProjectSchema[0]));
 				Integer projectID = OpenIIManager.addProject(project);
 				if (projectID == null) {
-					errorMessage = "Unable to create project '" + project.getName() + "'.";
+					throw new Exception("Unable to create project '" + project.getName() + "'.");
 				} else {
 					project.setId(projectID);
 				}
-			}
-		}
 
-		if (errorMessage == null) {
-			// stores a list of the existing mappings so we can delete the rest
-			ArrayList<Integer> newMappings = new ArrayList<Integer>();
+				// add the new mappings to our project
+				// there are no old mappings, so we don't have to delete anything
+				for (MappingReference newMappingReference : mappingList.getMappings()) {
+					Mapping newMapping = new Mapping(newMappingReference.getId(), project.getId(), newMappingReference.getSourceId(), newMappingReference.getTargetId());
 
-			// add mappings in project or update a mapping that was edited
-			for (MappingReference newMappingReference : mappingList.getMappings()) {
-				Mapping newMapping = new Mapping(newMappingReference.getId(), newMappingReference.getProjectId(), newMappingReference.getSourceId(), newMappingReference.getTargetId());
-
-				// the mapping needs a project id
-				newMapping.setProjectId(project.getId());
-
-				if (newMappingReference.isModified()) {
-					try {
-						// create the exporter/importer manager
-						PorterManager manager = new PorterManager(RepositoryManager.getClient());
-
-						// create an exporter and export the mapping into a portable format
-						M3MappingExporter exporter = (M3MappingExporter) manager.getPorter(M3MappingExporter.class);
-						Document document = exporter.generateXMLDocument(project, OpenIIManager.getMapping(newMappingReference.getOldMappingId()), OpenIIManager.getMappingCells(newMappingReference.getOldMappingId()));
-
-						// create an importer and import the mapping from the portable format using the new target/source
-						M3MappingImporter importer = (M3MappingImporter) manager.getPorter(M3MappingImporter.class);
-						importer.initialize(document);
-						Integer mappingID = importer.importMapping(project, newMapping.getSourceId(), newMapping.getTargetId());
-						newMappings.add(mappingID);
-					} catch (Exception exception) {
-						exception.printStackTrace();
-						errorMessage = "Unable to set project mappings.";
-					}
-				} else {
 					Integer mappingID = OpenIIManager.addMapping(newMapping);
 					if (mappingID == null) {
-						errorMessage = "Unable to set project mappings.";
-					} else {
-						newMappings.add(mappingID);
+						throw new Exception("Unable to set project mappings.");
+					}
+				}
+			} else {
+				// this is an existing project, so we need to update the project information,
+				// save all mappings and mapping cells into an export, and then delete any removed mappings
+
+				// update basic project details
+				project.setName(name);
+				project.setAuthor(author);
+				project.setDescription(description);
+				if (!OpenIIManager.updateProject(project)) {
+					throw new Exception("Unable to update project '" + project.getName() + "'.");
+				}
+
+				// get list of schemas and mappings that are in our project now
+				ArrayList<ProjectSchema> oldSchemas = new ArrayList(Arrays.asList(project.getSchemas()));
+				ArrayList<ProjectSchema> newSchemas = new ArrayList<ProjectSchema>();
+				for (Schema newSchema : schemaList.getSchemas()) {
+					// see if this schema is already in our project and if it is then add that to our list
+					boolean foundOldSchema = false;
+					for (ProjectSchema oldSchema : oldSchemas) {
+						if (oldSchema.getId() == newSchema.getId()) {
+							newSchemas.add(oldSchema);
+							foundOldSchema = true;
+						}
+					}
+
+					// otherwise make a new ProjectSchema and use that instead
+					// this preserves the "Model" attribute of the ProjectSchema
+					if (!foundOldSchema) { 
+						newSchemas.add(new ProjectSchema(newSchema.getId(), newSchema.getName(), null));
+					}
+				}
+				ArrayList<MappingReference> newMappingReferences = mappingList.getMappings();
+
+				// export each mapping
+				try {
+					// create the exporter/importer manager
+					PorterManager manager = new PorterManager(RepositoryManager.getClient());
+
+					// create an exporter and export the mapping into a portable format
+					M3MappingExporter exporter = (M3MappingExporter)manager.getPorter(M3MappingExporter.class);
+
+					// go through all of our mappings and save them
+					for (MappingReference mapping : newMappingReferences) {
+						Integer oldMappingId = mapping.isModified() ? mapping.getOldMappingId() : mapping.getId();
+						if (oldMappingId != null) {
+							// our old mapping id will be null if this is a new mapping in an existing project
+							mapping.setExportDocument(exporter.generateXMLDocument(project, OpenIIManager.getMapping(oldMappingId), OpenIIManager.getMappingCells(oldMappingId)));
+						}
+					}
+				} catch (Exception exception) {
+					System.err.println(exception.getMessage());
+					exception.printStackTrace();
+					throw new Exception("Unable to modify project mappings. (export)");
+				}
+
+				// replace all the schemas in this project
+				project.setSchemas(newSchemas.toArray(new ProjectSchema[0]));
+				if (!OpenIIManager.updateProject(project)) {
+					throw new Exception("Unable to update project '" + project.getName() + "'.");
+				}
+
+				// re-import mappings with new schemas
+				ArrayList<Integer> newMappingIds = new ArrayList<Integer>();
+				try {
+					// create the exporter/importer manager
+					PorterManager manager = new PorterManager(RepositoryManager.getClient());
+
+					// create an importer and import the mapping from the portable format using the new target/source
+					M3MappingImporter importer = (M3MappingImporter)manager.getPorter(M3MappingImporter.class);
+
+					// go through all of our mappings and import them
+					for (MappingReference mapping : newMappingReferences) {
+						Integer mappingID;
+						Document document = mapping.getExportDocument();
+
+						if (document == null) {
+							// our document will be null if this is a new mapping in an existing project
+							Mapping newMapping = new Mapping(null, project.getId(), mapping.getSourceId(), mapping.getTargetId());
+							mappingID = OpenIIManager.addMapping(newMapping);
+						} else {
+							importer.initialize(mapping.getExportDocument());
+							mappingID = importer.importMapping(project, mapping.getSourceId(), mapping.getTargetId());
+						}
+
+						// this mapping is now on our list of mappings to keep
+						newMappingIds.add(mappingID);
+					}
+				} catch (Exception exception) {
+					System.err.println(exception.getMessage());
+					exception.printStackTrace();
+					throw new Exception("Unable to modify project mappings. (import)");
+				}
+
+				// delete mappings that are no longer in existence
+				for (Mapping mapping : OpenIIManager.getMappings(project.getId())) {
+					if (!newMappingIds.contains(mapping.getId())) {
+						if (!OpenIIManager.deleteMapping(mapping.getId())) {
+							throw new Exception("Unable to modify project mappings. (delete)");
+						}
 					}
 				}
 			}
 
-			// erase old mappings that don't exist anymore
-			for (Mapping mapping : OpenIIManager.getMappings(project.getId())) {
-				if (!newMappings.contains(mapping.getId())) { 
-					if (!OpenIIManager.deleteMapping(mapping.getId())) {
-						errorMessage = "Unable to delete project mappings.";
-					}
-				}
-			}
-		}
-
-		// Display error message if needed
-		if (errorMessage != null) {
+			// close our window
+			getShell().dispose();
+		} catch (Exception errorMessage) {
 			MessageBox messageBox = new MessageBox(getShell(), SWT.ERROR);
 			messageBox.setText("Error Saving Project");
-			messageBox.setMessage(errorMessage);
+			messageBox.setMessage(errorMessage.getMessage());
 			messageBox.open();
-			return;
-		} else {
-			getShell().dispose();
 		}
 	}
 }
