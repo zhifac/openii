@@ -34,22 +34,28 @@ public class WizardController implements ActionListener {
     /** Handles the pressing of the next button */
     private void nextButtonPressed() {
         // Identify the next panel
-        WizardPanel descriptor = wizard.getModel().getCurrentPanel();
-        String nextPanelDescriptor = descriptor.getNextPanelDescriptor();
+        WizardPanel panel = wizard.getModel().getCurrentPanel();
+        Integer nextPanelId = panel.getNextPanelId();
 
         // Goes to the next panel or shut down the wizard
-        if (nextPanelDescriptor == null) {
+        if (nextPanelId == null) {
             wizard.close(Wizard.FINISH_RETURN_CODE);
         } else {
-        	wizard.setCurrentPanel(nextPanelDescriptor);
+        	wizard.setCurrentPanel(nextPanelId);
         }
     }
 
     /** Handles the pressing of the back button */
     private void backButtonPressed() {
         WizardPanel panel = wizard.getModel().getCurrentPanel();
-        String backPanelDescriptor = panel.getBackPanelDescriptor();        
-        wizard.setCurrentPanel(backPanelDescriptor);        
+        Integer backPanelId = panel.getBackPanelId();
+
+        // goes to the previous panel or throws error
+        if (backPanelId == null) {
+        	wizard.close(Wizard.ERROR_RETURN_CODE);
+        } else {
+        	wizard.setCurrentPanel(backPanelId);
+        }
     }
 
     /** Resets the buttons to the rules of the currently displayed panel */
@@ -62,13 +68,14 @@ public class WizardController implements ActionListener {
         model.setProperty(WizardModel.CANCEL_BUTTON_TEXT_PROPERTY, "Cancel");
 
         // Set the back button
+        Integer backPanelId = panel.getBackPanelId();
         model.setProperty(WizardModel.BACK_BUTTON_TEXT_PROPERTY, "Back");
-        String backPanelDescriptor = panel.getBackPanelDescriptor();
-        model.setProperty(WizardModel.BACK_BUTTON_ENABLED_PROPERTY, (backPanelDescriptor != null));
+        model.setProperty(WizardModel.BACK_BUTTON_ENABLED_PROPERTY, (backPanelId != null));
 
         // Sets the next/finish button
+        Integer nextPanelId = panel.getNextPanelId();
         boolean isMatchPane = panel instanceof MatchingStatusPane;
-        boolean nextIsMatchPane = MatchingStatusPane.IDENTIFIER.equals(panel.getNextPanelDescriptor());
+        boolean nextIsMatchPane = (nextPanelId != null && Wizard.MATCHING_STATUS_PANEL == nextPanelId);
         model.setProperty(WizardModel.NEXT_BUTTON_ENABLED_PROPERTY, !isMatchPane);
         model.setProperty(WizardModel.NEXT_BUTTON_TEXT_PROPERTY, (isMatchPane || nextIsMatchPane ? "Run" : "Next"));
     }

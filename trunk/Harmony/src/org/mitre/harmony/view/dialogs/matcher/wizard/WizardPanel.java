@@ -11,7 +11,7 @@ abstract public class WizardPanel {
     private JPanel panel = new JPanel();
 
     /** Returns the wizard panel */
-    public final JPanel getPanel() {
+    final public JPanel getPanel() {
     	return panel;
     }
 
@@ -21,13 +21,32 @@ abstract public class WizardPanel {
     }
 
     /** Returns the wizard associated with this pane */
-    public final Wizard getWizard() {
+    final public Wizard getWizard() {
     	return wizard;
-    }   
+    }
 
-    // Defines the previous and next panels to be displayed
-    abstract public String getBackPanelDescriptor();
-    abstract public String getNextPanelDescriptor();
+    /** Returns the positions around this pane */
+	protected Integer panelId = null;
+
+	public Integer getPanelId() {
+		return panelId;
+	}
+
+	public Integer getBackPanelId() {
+		try {
+			return getWizard().getModel().getBackPanel(panelId).getPanelId();
+		} catch (NullPointerException e) {
+			return null;
+		}
+	}
+
+	public Integer getNextPanelId() {
+		try {
+			return getWizard().getModel().getNextPanel(panelId).getPanelId();
+		} catch (NullPointerException e) {
+			return null;
+		}
+	}
 
     // Allows panel to perform actions before, during, and after being displayed
     public void aboutToDisplayPanel() {}

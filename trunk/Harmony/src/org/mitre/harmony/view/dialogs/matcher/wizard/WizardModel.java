@@ -2,6 +2,7 @@ package org.mitre.harmony.view.dialogs.matcher.wizard;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 /** Class for managing the wizard model */
@@ -19,40 +20,58 @@ public class WizardModel {
     private WizardPanel currentPanel;
 
     /** Hashmap for referencing the wizard panels */
-    private HashMap<Object,WizardPanel> panelHashmap;
+    private ArrayList<WizardPanel> panels;
 
     /** Hashmap for referencing the properties */
-    private HashMap<String,Object> propertyHashmap;
+    private HashMap<String,Object> properties;
 
     /** Manages property listeners */
     private PropertyChangeSupport propertyChangeSupport;
 
     /** Constructs the wizard model */
     public WizardModel() {    
-        panelHashmap = new HashMap<Object,WizardPanel>();
-        propertyHashmap = new HashMap<String,Object>();
+        panels = new ArrayList<WizardPanel>();
+        properties = new HashMap<String,Object>();
         propertyChangeSupport = new PropertyChangeSupport(this);
     }
 
     /** Returns the currently displayed panel */
-    WizardPanel getCurrentPanel() {
+    public WizardPanel getCurrentPanel() {
     	return currentPanel;
     }
 
     /** Registers the specified panel */
-    void registerPanel(Object id, WizardPanel descriptor) {
-    	panelHashmap.put(id, descriptor);
+    public void registerPanel(WizardPanel descriptor, Integer id) {
+    	panels.add(id, descriptor);
+    }
+
+    /** Returns the back panel in our ordered hashmap */
+    public WizardPanel getBackPanel(Integer id) {
+    	try {
+    		return panels.get(id - 1);
+    	} catch (IndexOutOfBoundsException e) {
+    		return null;
+    	}
+    }
+
+    /** Returns the next panel in our ordered hashmap */
+    public WizardPanel getNextPanel(Integer id) {
+    	try {
+    		return panels.get(id + 1);
+    	} catch (IndexOutOfBoundsException e) {
+    		return null;
+    	}
     }
 
     /** Gets the specified panel */
-    WizardPanel getPanel(Object id) {
-    	return (WizardPanel)panelHashmap.get(id);
+    public WizardPanel getPanel(Integer id) {
+    	return panels.get(id);
     }
 
     /** Sets the current panel */
-    void setCurrentPanel(Object id) {
+    public void setCurrentPanel(Integer id) {
     	// Retrieve the panel to be displayed
-    	WizardPanel nextPanel = (WizardPanel)panelHashmap.get(id);
+    	WizardPanel nextPanel = panels.get(id);
 
         // Change panel and inform property listeners
         WizardPanel oldPanel = currentPanel;
@@ -63,15 +82,15 @@ public class WizardModel {
     }
 
     /** Retrieves the specified property */
-    Object getProperty(String property) {
-    	return propertyHashmap.get(property);
+    public Object getProperty(String property) {
+    	return properties.get(property);
     }
 
     /** Sets the specified property to the specified value */
-    void setProperty(String property, Object newValue) {    
+    public void setProperty(String property, Object newValue) {    
         Object oldValue = getProperty(property);
         if (!newValue.equals(oldValue)) {
-            propertyHashmap.put(property, newValue);
+            properties.put(property, newValue);
             firePropertyChange(property, oldValue, newValue);
         }
     }

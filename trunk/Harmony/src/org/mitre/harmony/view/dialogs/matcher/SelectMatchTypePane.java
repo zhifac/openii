@@ -41,14 +41,27 @@ import org.mitre.schemastore.model.SchemaElement;
 
 /** Constructs the type pane for the matcher wizard */
 public class SelectMatchTypePane extends WizardPanel implements ActionListener {
-	// Defines the identifier for the match voter pane
-	static public final String IDENTIFIER = "SELECT_MATCH_TYPE_PANEL";
+    /** Stores the Harmony model for reference */
+    private HarmonyModel harmonyModel;
 
 	/** Stores the type configuration pane */
 	private MatchTypeConfigPane typeConfigPane = null;
 
 	/** Set of checkboxes containing the possible type pairings */
 	private JPanel checkboxes = new JPanel();
+
+	/** Constructs the type pane */
+    public SelectMatchTypePane(Integer panelId, HarmonyModel harmonyModel) {
+    	this.panelId = panelId;
+    	this.harmonyModel = harmonyModel;
+
+		// Initialize the layout of the type pane
+		JPanel pane = getPanel();
+		pane.setBorder(new CompoundBorder(new EmptyBorder(10,10,10,10),new CompoundBorder(new LineBorder(Color.lightGray),new EmptyBorder(5,5,5,5))));
+		pane.setLayout(new BorderLayout());
+		pane.add(getTypeGridPane(harmonyModel), BorderLayout.EAST);
+		pane.add(typeConfigPane = new MatchTypeConfigPane(), BorderLayout.WEST);
+    }
 
 	/** Returns the text width */
 	private int getTextWidth(String text, Graphics g) {
@@ -249,26 +262,6 @@ public class SelectMatchTypePane extends WizardPanel implements ActionListener {
 		gridPane.add(checkboxes,getGridBagConstraints(1,1));
 		return gridPane;
 	}
-
-	/** Constructs the type pane */
-    public SelectMatchTypePane(HarmonyModel harmonyModel) {
-		// Initialize the layout of the type pane
-		JPanel pane = getPanel();
-		pane.setBorder(new CompoundBorder(new EmptyBorder(10,10,10,10),new CompoundBorder(new LineBorder(Color.lightGray),new EmptyBorder(5,5,5,5))));
-		pane.setLayout(new BorderLayout());
-		pane.add(getTypeGridPane(harmonyModel), BorderLayout.EAST);
-		pane.add(typeConfigPane = new MatchTypeConfigPane(), BorderLayout.WEST);
-    }
-
-    /** Describes the next pane to display */
-    public String getNextPanelDescriptor() {
-    	return SelectMatchOptionsPane.IDENTIFIER;
-    }
-
-    /** Describes the previous pane that was displayed */
-    public String getBackPanelDescriptor() {
-    	return SelectMatchersPane.IDENTIFIER;
-    }
 
 	/** Returns the type mappings */
 	public MatchTypeMappings getMatchTypeMappings() {

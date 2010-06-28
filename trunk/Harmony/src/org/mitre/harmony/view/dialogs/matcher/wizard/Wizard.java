@@ -22,6 +22,12 @@ public class Wizard extends WindowAdapter implements PropertyChangeListener {
     public static final int CANCEL_RETURN_CODE = 1;
     public static final int ERROR_RETURN_CODE = 2;
 
+    // Define the order of the wizard panels
+    public static final int SELECT_MATCHERS_PANEL = 0;
+    public static final int SELECT_MATCH_TYPE_PANEL = 1;
+    public static final int SELECT_MATCH_OPTIONS_PANEL = 2;
+    public static final int MATCHING_STATUS_PANEL = 3;
+
     // Define the wizard button command strings
     public static final String NEXT_BUTTON_ACTION_COMMAND = "NextButtonActionCommand";
     public static final String BACK_BUTTON_ACTION_COMMAND = "BackButtonActionCommand";
@@ -39,9 +45,6 @@ public class Wizard extends WindowAdapter implements PropertyChangeListener {
     private JButton backButton = new JButton();
     private JButton nextButton = new JButton();
     private JButton cancelButton = new JButton();
-
-    /** Stores the wizard return code */
-    private int returnCode;
 
     /** Generates a button with the specified action command */
     private JPanel generateButton(JButton button, String command) {
@@ -92,12 +95,11 @@ public class Wizard extends WindowAdapter implements PropertyChangeListener {
     }
 
     /** Shows the wizard dialog */
-    public int showDialog() {    
+    public void showDialog() {    
         wizardDialog.setModal(true);
         wizardDialog.pack();
         wizardDialog.setLocationRelativeTo(getDialog().getParent());
         wizardDialog.setVisible(true);
-        return returnCode;
     }
 
     /** Returns the wizard dialog */
@@ -111,29 +113,22 @@ public class Wizard extends WindowAdapter implements PropertyChangeListener {
     }
 
     /** Registers the specified panel */
-    public void registerWizardPanel(String id, WizardPanel panel) {
-        cardPanel.add(panel.getPanel(), id);
+    public void registerWizardPanel(WizardPanel panel) {
+        cardPanel.add(panel.getPanel(), panel.getPanelId().toString());
         panel.setWizard(this);
-        wizardModel.registerPanel(id, panel);        
+        wizardModel.registerPanel(panel, panel.getPanelId());
     }
 
     /** Retrieves the specified panel */
-    public WizardPanel getPanel(Object id) {
+    public WizardPanel getPanel(Integer id) {
     	return wizardModel.getPanel(id);
     }
 
     /** Sets the currently displayed panel */
-    public void setCurrentPanel(String id) {
-    	// Don't proceed if a bad id was given
-    	if (id == null) {
-            close(ERROR_RETURN_CODE);
-    	}
-
+    public void setCurrentPanel(Integer id) {
     	// Informs old panel that it is about to be hidden
         WizardPanel oldPanel = wizardModel.getCurrentPanel();
-        if (oldPanel != null) {
-        	oldPanel.aboutToHidePanel();
-        }
+        if (oldPanel != null) { oldPanel.aboutToHidePanel(); }
 
         // Informs the new panel that it is about to be displayed
         wizardModel.setCurrentPanel(id);
@@ -141,7 +136,7 @@ public class Wizard extends WindowAdapter implements PropertyChangeListener {
 
         // Informs the new panel that it is being displayed
         ((CardLayout)cardPanel.getLayout()).show(cardPanel, id.toString());
-        wizardModel.getCurrentPanel().displayingPanel();                
+        wizardModel.getCurrentPanel().displayingPanel();
     }
 
     /** Handles a change to a wizard property */
@@ -162,11 +157,6 @@ public class Wizard extends WindowAdapter implements PropertyChangeListener {
         	{ cancelButton.setEnabled(((Boolean)evt.getNewValue()).booleanValue()); }
     }
 
-    /** Returns the return code associated with the wizard */
-    public int getReturnCode() {
-    	return returnCode;
-    }
-
     /** Sets the back button as enabled/disabled */
     public void setBackButtonEnabled(boolean newValue) {
     	wizardModel.setProperty(WizardModel.BACK_BUTTON_ENABLED_PROPERTY, newValue);
@@ -183,9 +173,8 @@ public class Wizard extends WindowAdapter implements PropertyChangeListener {
     }
 
     /** Handles the closing of the wizard */
-    void close(int code) {
+    public void close(int code) {
         wizardModel.getCurrentPanel().aboutToHidePanel();
-        returnCode = code;
         wizardDialog.dispose();
     }
 }

@@ -18,13 +18,11 @@ import org.mitre.harmony.matchers.MatchTypeMappings;
 import org.mitre.harmony.matchers.mergers.MatchMerger;
 import org.mitre.harmony.matchers.voters.MatchVoter;
 import org.mitre.harmony.model.HarmonyModel;
+import org.mitre.harmony.view.dialogs.matcher.wizard.Wizard;
 import org.mitre.harmony.view.dialogs.matcher.wizard.WizardPanel;
 
 /** Constructs the match pane for the matcher wizard */
 public class MatchingStatusPane extends WizardPanel implements MatchListener {
-	// Defines the identifier for the match voter pane
-	static public final String IDENTIFIER = "MATCHING_STATUS_PANEL";
-
     /** Stores the Harmony model for reference */
     private HarmonyModel harmonyModel;
 
@@ -38,6 +36,26 @@ public class MatchingStatusPane extends WizardPanel implements MatchListener {
 	private JProgressBar voterProgressBar = new JProgressBar();
     private JLabel voterProgressBarLabel = new JLabel();
 	private JProgressBar overallProgressBar = new JProgressBar();
+
+	/** Constructs the match pane */
+    public MatchingStatusPane(Integer panelId, HarmonyModel harmonyModel, MatchMerger merger) {
+    	this.panelId = panelId;
+    	this.harmonyModel = harmonyModel;
+        this.merger = merger;
+
+		// Creates the progress pane
+		JPanel progressPane = new JPanel();
+		progressPane.setBorder(new CompoundBorder(new EmptyBorder(10,0,5,0),new CompoundBorder(new LineBorder(Color.gray), new EmptyBorder(5,10,5,10))));
+		progressPane.setLayout(new BoxLayout(progressPane,BoxLayout.Y_AXIS));
+		progressPane.add(generateProgressBarPane(voterProgressBarLabel, voterProgressBar));
+		progressPane.add(generateProgressBarPane(new JLabel("Overall Progress"), overallProgressBar));
+
+		// Create the match pane
+		JPanel pane = getPanel();
+		pane.setLayout(new BorderLayout());
+		pane.add(new JLabel("Progress of schema matching..."),BorderLayout.NORTH);
+		pane.add(progressPane,BorderLayout.CENTER);
+    }
 
     /** Constructs a progress pane */
     public JPanel generateProgressBarPane(JLabel label, JProgressBar progressBar) {
@@ -62,35 +80,6 @@ public class MatchingStatusPane extends WizardPanel implements MatchListener {
     	return pane;
     }
 
-	/** Constructs the match pane */
-    public MatchingStatusPane(HarmonyModel harmonyModel, MatchMerger merger) {   
-    	this.harmonyModel = harmonyModel;
-        this.merger = merger;
-
-		// Creates the progress pane
-		JPanel progressPane = new JPanel();
-		progressPane.setBorder(new CompoundBorder(new EmptyBorder(10,0,5,0),new CompoundBorder(new LineBorder(Color.gray), new EmptyBorder(5,10,5,10))));
-		progressPane.setLayout(new BoxLayout(progressPane,BoxLayout.Y_AXIS));
-		progressPane.add(generateProgressBarPane(voterProgressBarLabel, voterProgressBar));
-		progressPane.add(generateProgressBarPane(new JLabel("Overall Progress"), overallProgressBar));
-
-		// Create the match pane
-		JPanel pane = getPanel();
-		pane.setLayout(new BorderLayout());
-		pane.add(new JLabel("Progress of schema matching..."),BorderLayout.NORTH);
-		pane.add(progressPane,BorderLayout.CENTER);
-    }
-
-    /** Describes the next pane to display */
-    public String getNextPanelDescriptor() {
-    	return null;
-    }
-
-    /** Describes the previous pane that was displayed */
-    public String getBackPanelDescriptor() {
-    	return SelectMatchOptionsPane.IDENTIFIER;
-    }
-
     /** Initializes the panel before being displayed */
     public void aboutToDisplayPanel() {
     	getWizard().setBackButtonEnabled(false);
@@ -100,11 +89,11 @@ public class MatchingStatusPane extends WizardPanel implements MatchListener {
     /** Generates the schema matches when the panel is being displayed */
     public void displayingPanel() {
     	// Retrieve the voter information
-    	SelectMatchersPane matchVoterPane = (SelectMatchersPane)getWizard().getPanel(SelectMatchersPane.IDENTIFIER);
+    	SelectMatchersPane matchVoterPane = (SelectMatchersPane)getWizard().getPanel(Wizard.SELECT_MATCHERS_PANEL);
     	ArrayList<MatchVoter> voters = matchVoterPane.getSelectedMatchVoters();
 
     	// Retrieve the type information
-    	SelectMatchTypePane typePane = (SelectMatchTypePane)getWizard().getPanel(SelectMatchTypePane.IDENTIFIER);
+    	SelectMatchTypePane typePane = (SelectMatchTypePane)getWizard().getPanel(Wizard.SELECT_MATCH_TYPE_PANEL);
     	MatchTypeMappings typeMappings = typePane.getMatchTypeMappings();
 
     	// Starts the match thread
