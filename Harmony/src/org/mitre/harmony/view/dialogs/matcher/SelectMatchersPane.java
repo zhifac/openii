@@ -16,34 +16,18 @@ import javax.swing.border.EmptyBorder;
 
 import org.mitre.harmony.matchers.MatcherManager;
 import org.mitre.harmony.matchers.voters.MatchVoter;
-import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.view.dialogs.matcher.wizard.WizardPanel;
 
 /** Constructs the match voter pane for the matcher wizard */
 public class SelectMatchersPane extends WizardPanel implements ActionListener {
-	// Defines the identifier for the match voter pane
-	static public final String IDENTIFIER = "SELECT_MATCHERS_PANEL";
-
 	// Set of checkboxes containing the match voter selection
 	private JPanel checkboxPane = null;
 
-	/** Class for storing match voter checkbox items */
-	private class MatchVoterCheckBox extends JCheckBox {
-		// Stores the voter associated with this checkbox
-		private MatchVoter voter;
-
-		/** Initializes the match voter check box */
-		MatchVoterCheckBox(MatchVoter voter) {
-			this.voter = voter;
-			setText(voter.getName());
-			setBackground(Color.white);
-			setFocusable(false);
-		}
-	}
-
 	/** Constructs the match voter pane */
-    public SelectMatchersPane(HarmonyModel harmonyModel, ArrayList<MatchVoter> matchVoters) {
-		// Create pane for storing all match voters
+    public SelectMatchersPane(Integer panelId, ArrayList<MatchVoter> matchVoters) {
+    	this.panelId = panelId;
+
+    	// Create pane for storing all match voters
 		checkboxPane = new JPanel();
 		checkboxPane.setBackground(Color.white);
 		checkboxPane.setLayout(new BoxLayout(checkboxPane,BoxLayout.Y_AXIS));
@@ -64,15 +48,19 @@ public class SelectMatchersPane extends WizardPanel implements ActionListener {
 		pane.add(new JScrollPane(checkboxPane,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED),BorderLayout.CENTER);
     }
 
-    /** Describes the next pane to display */
-    public String getNextPanelDescriptor() {
-    	return SelectMatchTypePane.IDENTIFIER;
-    }
+	/** Class for storing match voter checkbox items */
+	private class MatchVoterCheckBox extends JCheckBox {
+		// Stores the voter associated with this checkbox
+		private MatchVoter voter;
 
-    /** Describes the previous pane that was displayed */
-    public String getBackPanelDescriptor() {
-    	return null;
-    }
+		/** Initializes the match voter check box */
+		MatchVoterCheckBox(MatchVoter voter) {
+			this.voter = voter;
+			setText(voter.getName());
+			setBackground(Color.white);
+			setFocusable(false);
+		}
+	}
 
 	/** Retrieves the selected list of match voters */
 	ArrayList<MatchVoter> getSelectedMatchVoters() {

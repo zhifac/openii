@@ -22,11 +22,29 @@ import org.mitre.harmony.view.dialogs.matcher.SelectMatchersPane;
 import org.mitre.harmony.view.dialogs.matcher.SelectMatchOptionsPane;
 import org.mitre.harmony.view.dialogs.matcher.SelectMatchTypePane;
 import org.mitre.harmony.view.dialogs.matcher.wizard.Wizard;
+import org.mitre.harmony.view.dialogs.matcher.wizard.WizardPanel;
 
 /** Menu to display all available matchers */
 public class MatcherMenu extends JMenu {
 	/** Stores the Harmony model */
 	private HarmonyModel harmonyModel;
+
+	/** Initializes the matcher menu to display all installed matchers */
+	public MatcherMenu(HarmonyModel harmonyModel) {
+		super("Matchers");
+		this.harmonyModel = harmonyModel;
+		setMnemonic(KeyEvent.VK_M);
+
+		// Place all matchers into menu
+		for (MatchMerger merger : MatcherManager.getMergers()) {
+			add(new MatcherMenuItem(merger));
+		}
+
+		// Place all match voters into menu
+		for (MatchVoter matchVoter : MatcherManager.getVisibleVoters()) {
+			add(new MatchVoterMenuItem(matchVoter));
+		}
+	}
 
 	/** Class for handling match voter menu items */
 	private class MatchVoterMenuItem extends JMenuItem implements ActionListener {
@@ -54,8 +72,8 @@ public class MatcherMenu extends JMenu {
 		private MatchMerger merger;
 
 		// Stores the menu items which may be selected
-		JMenuItem fullMatch = new JMenuItem("Full Match");
-		JMenuItem customMatch = new JMenuItem("Custom Match...");
+		JMenuItem fullMatch = new JMenuItem("Run All Matchers");
+		JMenuItem customMatch = new JMenuItem("Run Advanced Matchers...");
 
 		/** Initializes the matcher menu */
 		MatcherMenuItem(MatchMerger merger) {
@@ -93,30 +111,20 @@ public class MatcherMenu extends JMenu {
 		// Generate the match wizard
 		Wizard wizard = new Wizard(harmonyModel.getBaseFrame());
         wizard.getDialog().setTitle("Run Schema Matchers");
-        wizard.registerWizardPanel(SelectMatchersPane.IDENTIFIER, new SelectMatchersPane(harmonyModel,voters));
-        wizard.registerWizardPanel(SelectMatchTypePane.IDENTIFIER, new SelectMatchTypePane(harmonyModel));
-        wizard.registerWizardPanel(SelectMatchOptionsPane.IDENTIFIER, new SelectMatchOptionsPane(harmonyModel));
-        wizard.registerWizardPanel(MatchingStatusPane.IDENTIFIER, new MatchingStatusPane(harmonyModel,merger));
+
+        SelectMatchersPane     selectMatchersPane     = new SelectMatchersPane(Wizard.SELECT_MATCHERS_PANEL, voters);
+        SelectMatchTypePane    selectMatchTypePane    = new SelectMatchTypePane(Wizard.SELECT_MATCH_TYPE_PANEL, harmonyModel);
+        SelectMatchOptionsPane selectMatchOptionsPane = new SelectMatchOptionsPane(Wizard.SELECT_MATCH_OPTIONS_PANEL);
+        MatchingStatusPane     matchingStatusPane     = new MatchingStatusPane(Wizard.MATCHING_STATUS_PANEL, harmonyModel, merger);
+
+        // create instances of all of our panes and add them to the wizard
+        wizard.registerWizardPanel((WizardPanel)selectMatchersPane);
+        wizard.registerWizardPanel((WizardPanel)selectMatchTypePane);
+        wizard.registerWizardPanel((WizardPanel)selectMatchOptionsPane);
+        wizard.registerWizardPanel((WizardPanel)matchingStatusPane);
 
         // Specify the screen to be displayed
-        wizard.setCurrentPanel(custom ? SelectMatchersPane.IDENTIFIER : MatchingStatusPane.IDENTIFIER);
+        wizard.setCurrentPanel(custom ? selectMatchersPane.getPanelId() : matchingStatusPane.getPanelId());
         wizard.showDialog();
-	}
-
-	/** Initializes the matcher menu to display all installed matchers */
-	public MatcherMenu(HarmonyModel harmonyModel) {
-		super("Matchers");
-		this.harmonyModel = harmonyModel;
-		setMnemonic(KeyEvent.VK_M);
-
-		// Place all matchers into menu
-		for (MatchMerger merger : MatcherManager.getMergers()) {
-			add(new MatcherMenuItem(merger));
-		}
-
-		// Place all match voters into menu
-		for (MatchVoter matchVoter : MatcherManager.getVisibleVoters()) {
-			add(new MatchVoterMenuItem(matchVoter));
-		}
 	}
 }

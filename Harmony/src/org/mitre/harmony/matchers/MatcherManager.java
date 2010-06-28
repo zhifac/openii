@@ -72,6 +72,8 @@ public class MatcherManager {
 							// get all the options for this matcher
 							NodeList optionNodes = node.getElementsByTagName("option");
 							if (optionNodes != null && optionNodes.getLength() > 0) {
+								voter.setConfigurable(true); // we have options!
+
 								for (int j = 0; j < optionNodes.getLength(); j++) {
 									Element optionNode = (Element)optionNodes.item(j);
 
@@ -161,6 +163,7 @@ public class MatcherManager {
 
 	/** Return the list of options for a given voter */
 	static public ArrayList<MatcherOption> getVoterOptions(String id) {
+		// our "id" is the class name of the voter
 		if (voterOptions.containsKey(id)) {
 			return voterOptions.get(id);
 		} else {
