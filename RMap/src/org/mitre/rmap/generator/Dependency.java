@@ -202,7 +202,7 @@ public class Dependency {
 			}
 			// CASE: entity --> entity ==> replace with relationship 
 			else if (child instanceof Entity){
-				Relationship rel = new Relationship(cont.getId(),cont.getName(),cont.getChildID(),cont.getMin(),cont.getMax(),cont.getParentID(),1,1,inGraph.getSchema().getId());
+				Relationship rel = new Relationship(cont.getId(),cont.getName(),cont.getDescription(),cont.getChildID(),cont.getMin(),cont.getMax(),cont.getParentID(),1,1,inGraph.getSchema().getId());
 				if (!inGraph.deleteElement(cont.getId()))
 					System.err.println("[E] Dependency:renderRelational -- failed to delete containement " + cont.getName());
 				if (inGraph.addElement(rel) == false)
@@ -217,7 +217,7 @@ public class Dependency {
 				if (cont.getMax() != 1) {
 					String name = cont.getName() +"." + inGraph.getElement(cont.getParentID()).getName();
 					Entity domEntity = new Entity(maxID++,name,"desc",inGraph.getSchema().getId());
-					Relationship rel = new Relationship(maxID++,name,domEntity.getId(),cont.getMin(),cont.getMax(),cont.getParentID(),1,1,inGraph.getSchema().getId());
+					Relationship rel = new Relationship(maxID++,name,cont.getDescription(),domEntity.getId(),cont.getMin(),cont.getMax(),cont.getParentID(),1,1,inGraph.getSchema().getId());
 					Attribute domAttr = new Attribute(cont.getId(),cont.getName(),cont.getDescription(),domEntity.getId(),child.getId(),0,1,false,inGraph.getSchema().getId());
 					Attribute domEntityKey = new Attribute(maxID++,"ID","",domEntity.getId(),Dependency.INTEGER_DOMAIN_ID,1,1,true,inGraph.getSchema().getId());
 
