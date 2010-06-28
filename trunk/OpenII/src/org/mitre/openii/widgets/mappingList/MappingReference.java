@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.Schema;
+import org.w3c.dom.Document;
 
 /**
  * The entire goal of this class is to provide a readable toString method
@@ -30,6 +31,9 @@ public class MappingReference extends Mapping {
 
 	/** Stores the old target schema */
 	private Integer oldTargetId = null;
+
+	/** Stores the exported document containing this mapping */
+	private Document document = null;
 
 	/** Constructs the mapping */
 	MappingReference(Mapping mapping, List<Schema> schemas) {
@@ -70,6 +74,10 @@ public class MappingReference extends Mapping {
 		this.oldMappingId = oldMappingId;
 	}
 
+	public void setExportDocument(Document document) {
+		this.document = document;
+	}
+
 	public Integer getOldSourceId() {
 		return this.oldSourceId;
 	}
@@ -80,5 +88,9 @@ public class MappingReference extends Mapping {
 
 	public Integer getOldMappingId() {
 		return this.oldMappingId;
+	}
+
+	public Document getExportDocument() {
+		return this.document;
 	}
 }
