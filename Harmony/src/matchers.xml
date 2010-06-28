@@ -1,16 +1,28 @@
 <matchers>
-  <voters>
-    <voter default='true'>org.mitre.harmony.matchers.voters.EditDistanceMatcher</voter>
-    <voter default='true'>org.mitre.harmony.matchers.voters.DocumentationMatcher</voter>
-    <voter default='true'>org.mitre.harmony.matchers.voters.ExactStructureMatcher</voter>
-    <voter>org.mitre.harmony.matchers.voters.ThesaurusMatcher</voter>
-    <voter>org.mitre.harmony.matchers.voters.WordNetMatcher</voter>
-    <voter>org.mitre.harmony.matchers.voters.QuickDocumentationMatcher</voter>
-    <voter hidden='true'>org.mitre.harmony.matchers.voters.DocumentationOnlyMatcher</voter>
-    <voter hidden='true'>org.mitre.harmony.matchers.voters.ExactDocumentationMatcher</voter>    
-    <voter hidden='true'>org.mitre.harmony.matchers.voters.EntityMatcher</voter>
-  </voters>
-  <mergers>
-    <merger>org.mitre.harmony.matchers.mergers.VoteMerger</merger>
-  </mergers>
+  	<voters>
+	    <voter id="org.mitre.harmony.matchers.voters.EditDistanceMatcher" default="true"/>
+	    <voter id="org.mitre.harmony.matchers.voters.DocumentationMatcher" default="true">
+			<option id="UseName" type="checkbox" selected="true">Compare Names</option>
+			<option id="UseDescription" type="checkbox" selected="true">Compare Descriptions</option>
+	    </voter>
+	    <voter id="org.mitre.harmony.matchers.voters.ExactStructureMatcher" default="true">
+			<option id="UseName" type="checkbox" selected="true">Compare Names</option>
+			<option id="UseDescription" type="checkbox" selected="true">Compare Descriptions</option>
+	    </voter>
+	    <voter id="org.mitre.harmony.matchers.voters.ThesaurusMatcher" default="true">
+			<option id="UseName" type="checkbox" selected="true">Compare Names</option>
+			<option id="UseDescription" type="checkbox" selected="true">Compare Descriptions</option>
+	    </voter>
+	    <voter id="org.mitre.harmony.matchers.voters.WordNetMatcher">
+			<option id="UseName" type="checkbox" selected="true">Compare Names</option>
+			<option id="UseDescription" type="checkbox" selected="true">Compare Descriptions</option>
+	    </voter>
+	    <voter id="org.mitre.harmony.matchers.voters.QuickDocumentationMatcher"/>
+	    <voter id="org.mitre.harmony.matchers.voters.DocumentationOnlyMatcher" hidden="true"/>
+	    <voter id="org.mitre.harmony.matchers.voters.ExactDocumentationMatcher" hidden="true"/>
+	    <voter id="org.mitre.harmony.matchers.voters.EntityMatcher" hidden="true"/>
+  	</voters>
+  	<mergers>
+	    <merger id="org.mitre.harmony.matchers.mergers.VoteMerger"/>
+  	</mergers>
 </matchers>
