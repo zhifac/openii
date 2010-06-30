@@ -133,10 +133,10 @@ public class ConvertToXML
 		addElement(element,"MappingProjectId",mapping.getProjectId());
 		addElement(element,"MappingSourceId",mapping.getSourceId());
 		addElement(element,"MappingSourceName",sourceInfo.getSchema().getName());
-		addElement(element,"MappingSourceModel",sourceInfo.getModel());
+		addElement(element,"MappingSourceModel",sourceInfo.getModel().getClass().getName());
 		addElement(element,"MappingTargetId",mapping.getTargetId());
 		addElement(element,"MappingTargetName",targetInfo.getSchema().getName());
-		addElement(element,"MappingTargetModel",targetInfo.getModel());
+		addElement(element,"MappingTargetModel",targetInfo.getModel().getClass().getName());
 		return element;
 	}
 	
