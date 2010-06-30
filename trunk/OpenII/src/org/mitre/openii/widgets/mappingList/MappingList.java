@@ -4,8 +4,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
-import org.eclipse.jface.viewers.ISelectionChangedListener;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.events.SelectionEvent;
@@ -18,7 +16,7 @@ import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.Schema;
 
 /** Constructs a Mapping List */
-public class MappingList extends ListWithButtonBar implements SelectionListener, ISelectionChangedListener
+public class MappingList extends ListWithButtonBar implements SelectionListener
 {
 	/** Stores schemas from which mappings can be created */
 	private ArrayList<Schema> schemas = new ArrayList<Schema>();
@@ -29,125 +27,66 @@ public class MappingList extends ListWithButtonBar implements SelectionListener,
 	// Stores the various dialog fields
 	private TableViewer list = null;
 	private Button addButton = null;
-	private Button editButton = null;
 	private Button removeButton = null;
-
+	
 	/** Constructs the dialog */
-	public MappingList(Composite parent, String heading) {
-		super(parent, heading, "Mapping");
-
-		// create buttons down the right
-		addButton = addButton("Add...", this);
-		editButton = addButton("Edit...", this);
-		removeButton = addButton("Remove", this);
-
-		// the edit button should be invalid until something is selected
-		editButton.setEnabled(false);
-
-		// the remove button should be invalid until something is selected
-		removeButton.setEnabled(false);
-
+	public MappingList(Composite parent)
+	{
+		super(parent, null, "Mapping");
+		addButton = addButton("Add...",this);
+		removeButton = addButton("Remove",this);
 		list = getList();
 		list.setLabelProvider(new MappingLabelProvider());
-
-		// Listens for changes to the selected schemas
-		list.addSelectionChangedListener(this);
-	}
+	}	
 
 	/** Sets the schemas from which mappings can be generated */
-	public void setSchemas(ArrayList<Schema> schemas) {
-		this.schemas = schemas;
-	}
+	public void setSchemas(ArrayList<Schema> schemas)
+		{ this.schemas = schemas; }
 	
 	/** Sets the mappings currently in this list */
-	public void setMappings(ArrayList<Mapping> mappings) {
+	public void setMappings(ArrayList<Mapping> mappings)
+	{
 		ArrayList<MappingReference> mappingRefs = new ArrayList<MappingReference>();
-		for (Mapping mapping : mappings) {
-			mappingRefs.add(new MappingReference(mapping, schemas));
-		}
+		for(Mapping mapping : mappings)
+			mappingRefs.add(new MappingReference(mapping,schemas));
 		list.add(WidgetUtilities.sortList(mappingRefs).toArray());
 		
 		// Inform listeners of the change to displayed list items
-		for (ActionListener listener : listeners) {
+		for(ActionListener listener : listeners)
 			listener.actionPerformed(new ActionEvent(this,0,null));
-		}
 	}
 		
 	/** Returns the list of mappings */
-	public ArrayList<MappingReference> getMappings() {
-		ArrayList<MappingReference> mappings = new ArrayList<MappingReference>();
-		for (int i = 0; i < list.getTable().getItemCount(); i++) {
-			mappings.add((MappingReference) list.getElementAt(i));
-		}
+	public ArrayList<Mapping> getMappings()
+	{
+		ArrayList<Mapping> mappings = new ArrayList<Mapping>();
+		for(int i=0; i<list.getTable().getItemCount(); i++)
+			mappings.add(((Mapping)list.getElementAt(i)).copy());
 		return mappings;
 	}
 	
 	/** Adds a mapping list listener */
-	public void addListener(ActionListener listener) {
-		listeners.add(listener);
-	}
-
-	public void selectionChanged(SelectionChangedEvent event) {
-		// how many are selected
-		int selected = list.getTable().getSelectionCount();
-
-		// do not enable the edit button if some number other than one schemas are selected
-		if (editButton != null) {
-			if (selected == 1) {
-				editButton.setEnabled(true);
-			} else {
-				editButton.setEnabled(false);
-			}
-		}
-
-		// do not enable the remove button if zero schemas are selected
-		if (removeButton != null) {
-			if (selected > 0) {
-				removeButton.setEnabled(true);
-			} else {
-				removeButton.setEnabled(false);
-			}
-		}
-	}
+	public void addListener(ActionListener listener)
+		{ listeners.add(listener); }
 	
 	/** Handles the pressing of list buttons */
-	public void widgetSelected(SelectionEvent e) {
+	public void widgetSelected(SelectionEvent e)
+	{
 		// Handles the addition of mappings
-		if (e.getSource().equals(addButton)) {
-			MappingSelectionDialog dialog = new MappingSelectionDialog(getShell(), schemas, getMappings(), null);
-			if (dialog.open() == Window.OK) {
+		if(e.getSource().equals(addButton))
+		{
+			AddMappingsToListDialog dialog = new AddMappingsToListDialog(getShell(),schemas,getMappings());
+			if(dialog.open() == Window.OK)
 				list.add(dialog.getMapping());
-			}
-		}
-
-		// Handles the editing of a mapping
-		if (e.getSource().equals(editButton)) {
-			// get our old mapping for ease of access
-			Mapping oldMapping = (Mapping)list.getTable().getSelection()[0].getData();
-
-			MappingSelectionDialog dialog = new MappingSelectionDialog(getShell(), schemas, getMappings(), oldMapping);
-			if (dialog.open() == Window.OK) {
-				// get our new mapping and record what our old mapping was
-				MappingReference newMapping = dialog.getMapping();
-				newMapping.setOldSourceId(oldMapping.getSourceId());
-				newMapping.setOldTargetId(oldMapping.getTargetId());
-				newMapping.setOldMappingid(oldMapping.getId());
-
-				// swap out the mappings on the list
-				list.getTable().remove(list.getTable().getSelectionIndices());
-				list.add(newMapping);
-			}
 		}
 
 		// Handles the removal of mappings
-		if (e.getSource().equals(removeButton)) {
+		if(e.getSource().equals(removeButton))
 			list.getTable().remove(list.getTable().getSelectionIndices());
-		}
 		
 		// Inform listeners of the change to displayed list items
-		for (ActionListener listener : listeners) {
+		for(ActionListener listener : listeners)
 			listener.actionPerformed(new ActionEvent(this,0,null));
-		}
 	}
 
 	// Unused listener event

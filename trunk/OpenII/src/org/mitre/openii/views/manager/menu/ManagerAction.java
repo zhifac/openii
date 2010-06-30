@@ -45,7 +45,8 @@ public class ManagerAction extends Action
 							KEYWORD_SEARCH, CREATE_PROJECT_FROM_TAG,  EXPORT_SCHEMAS_BY_TAG,
 							DELETE_TAG_SCHEMA, NEW_PROJECT, IMPORT_PROJECT , MERGE_PROJECTS, EDIT_PROJECT,
 							EXPORT_PROJECT, DELETE_PROJECT, DELETE_PROJECT_SCHEMA, IMPORT_MAPPING,
-							AUTO_GENERATE_MATCHES, EXPORT_MAPPING, DELETE_MAPPING, GENERATE_VOCABULARY};
+							REPLACE_SCHEMA, AUTO_GENERATE_MATCHES, EXPORT_MAPPING, DELETE_MAPPING,
+							GENERATE_VOCABULARY};
 	
 	/** Stores the menu manager to which this action is tied */
 	private ManagerMenuManager menuManager;
@@ -87,6 +88,7 @@ public class ManagerAction extends Action
 			case DELETE_PROJECT: icon = "Delete.gif"; break;
 			case DELETE_PROJECT_SCHEMA: icon = "Delete.gif"; break;
 			case IMPORT_MAPPING: icon = "Import.gif"; break;
+			case REPLACE_SCHEMA: icon = "ReplaceSchema.gif"; break;
 			case AUTO_GENERATE_MATCHES : icon = "Mapping.gif"; break;
 			case EXPORT_MAPPING: icon = "Export.gif"; break;
 			case DELETE_MAPPING: icon = "Delete.gif"; break;
@@ -218,6 +220,10 @@ public class ManagerAction extends Action
 		/** Handles the importing of a mapping */
 		if(actionType == ActionType.IMPORT_MAPPING)
 			new ImportMappingDialog(shell,(Project)selection).open();
+		
+		/** Handles the replacing of a schema from a project */
+		if(actionType == ActionType.REPLACE_SCHEMA)
+			{}//new ReplaceSchemaDialog(shell,(Project)selection).open();
 		
 		/** Handles the auto-generation of a mapping's matches */
 		if ( actionType == ActionType.GENERATE_VOCABULARY )
