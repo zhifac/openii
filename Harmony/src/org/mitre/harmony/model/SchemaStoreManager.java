@@ -7,6 +7,8 @@ import java.util.Comparator;
 
 import org.mitre.schemastore.client.Repository;
 import org.mitre.schemastore.client.SchemaStoreClient;
+import org.mitre.schemastore.model.DataType;
+import org.mitre.schemastore.model.Function;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.Project;
@@ -121,6 +123,17 @@ public class SchemaStoreManager
 	public static Boolean deleteMapping(Integer mappingID) throws RemoteException
 		{ return client.deleteMapping(mappingID); }
 
+	//--------------------
+	// Function Functions
+	//--------------------
+	
+	/** Retrieves the mapping cell functions from the web service */
+	public static ArrayList<Function> getFunctions() throws RemoteException
+		{ return client.getFunctions(); }	
+	
+	/** Retrieves the mapping cell data types from the web service */
+	public static ArrayList<DataType> getDataTypes() throws RemoteException
+		{ return client.getDataTypes(); }	
 	
 	//--------------------
 	// Importer Functions
