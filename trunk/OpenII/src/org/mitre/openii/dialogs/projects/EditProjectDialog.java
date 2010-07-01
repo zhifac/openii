@@ -222,11 +222,21 @@ public class EditProjectDialog extends Dialog implements ActionListener, ModifyL
 		String author = authorField.getText();
 		String description = descriptionField.getText();
 
+		// Get the old list of project schemas
+		HashMap<Integer,ProjectSchema> projectSchemas = new HashMap<Integer,ProjectSchema>();
+		if(project!=null)
+			for(ProjectSchema projectSchema : project.getSchemas())
+				projectSchemas.put(projectSchema.getId(), projectSchema);
+		
 		// Generate the list of schemas which have been selected
 		ArrayList<ProjectSchema> schemas = new ArrayList<ProjectSchema>();
 		for(Schema schema : schemaList.getSchemas())
-			schemas.add(new ProjectSchema(schema.getId(), schema.getName(), null));
-
+		{
+			ProjectSchema projectSchema = projectSchemas.get(schema.getId());
+			if(projectSchema==null) projectSchema = new ProjectSchema(schema.getId(), schema.getName(), null);
+			schemas.add(projectSchema);
+		}
+		
 		// Handles the creation of a project
 		if(project==null)
 		{
