@@ -3,7 +3,6 @@
  */
 package org.mitre.harmony.view.dialogs.mappingCell;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -250,7 +249,6 @@ public class AddNewFunction extends JDialog implements MouseListener, MouseMotio
 		public void mouseMoved(MouseEvent e) {}
 		
 		public void actionPerformed(ActionEvent e) {
-			// TODO Auto-generated method stub
 			if(e.getActionCommand()=="function"){
 				//set function panel enabled
 				usingFunction = true;
