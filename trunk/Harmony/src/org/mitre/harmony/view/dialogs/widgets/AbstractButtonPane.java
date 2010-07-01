@@ -49,11 +49,11 @@ abstract public class AbstractButtonPane extends JPanel implements ActionListene
 	}
 
 	/** Relabels the specified button */
-	protected void relabelButton(Integer loc, String label)
+	public void relabelButton(Integer loc, String label)
 		{ buttons.get(loc).setText(label); }
 	
 	/** Enable the specified button */
-	protected void setEnabled(Integer loc, boolean enable)
+	public void setEnabled(Integer loc, boolean enable)
 		{ buttons.get(loc).setEnabled(enable); }
 	
 	/** Reacts to the buttons being pressed */
