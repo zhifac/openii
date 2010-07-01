@@ -11,6 +11,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -18,15 +19,18 @@ import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.border.TitledBorder;
 
 import org.mitre.harmony.model.HarmonyConsts;
 import org.mitre.harmony.model.HarmonyModel;
+import org.mitre.harmony.model.SchemaStoreManager;
+import org.mitre.schemastore.model.DataType;
+import org.mitre.schemastore.model.Function;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.schemaInfo.SchemaInfo;
 
@@ -38,201 +42,440 @@ public class MappingCellFunctionPane extends JPanel implements ActionListener, K
 {
 	/** Stores the Harmony model */
 	private HarmonyModel harmonyModel;
-
-
+	
 	/** Stores the list of mapping cells to which this dialog pertains */
-	private List<MappingCell> mappingCells2;
+	private List<MappingCell> mappingCells;
 	
 	// Components used within the mapping cell confidence pane
-	private JCheckBox acceptCheckbox;
-	private JCheckBox rejectCheckbox;
+	//private JCheckBox acceptCheckbox;
+	//private JCheckBox rejectCheckbox;
 	private JComboBox functionComboBox;
 	private JTextField formulaTextField;
-	private JComboBox variableComboBox;
+	private JComboBox[] variableComboBox = new JComboBox[5];
+	private JLabel[] selectVariableLabel = new JLabel[5];
+	private JLabel selectFunctionLabel = new JLabel("  Built-in Function:");;
+	private JLabel functionFormulaLabel;
+	//private JButton editButton;
+	
+	private int numParameters = 0;
+	private boolean canApplyFunc = true;
+	private int currentParameter =0; //for selected parameter
 	
 	private String currentExpression="";
 	
-	/** Indicates if all of the mapping cells are accepted */
-	private boolean mappingCellsAccepted()
-	{
-		for(MappingCell mappingCell : mappingCells2)
-			if(!mappingCell.isValidated() || mappingCell.getScore()!=1.0) return false;
-		return true;
-	}
+	private String functionName = "";
 
-	/** Indicates if all of the mapping cells are rejected */
-	private boolean mappingCellsRejected()
-	{
-		for(MappingCell mappingCell : mappingCells2)
-			if(!mappingCell.isValidated() || mappingCell.getScore()!=-1.0) return false;
-		return true;
-	}
+	private int selectedFuncIndex = 0; //for selected function to edit
+	
+	private LinkedList inputList = new LinkedList();
+	
+	private LinkedList functionList = new LinkedList();
+	
+	private LinkedList variables;
+	
+	private Integer output;
+	
+	private HashMap<Integer, String> inputHash;
+	
+	private MappingCellDialog mappingCDialog;
+	
+	//Titled borders
+	private TitledBorder title;
 	
 	/**
 	 * @return The generated function pane
 	 */
-	MappingCellFunctionPane(List<MappingCell> mappingCells1, HarmonyModel theHarmonyModel)
+	MappingCellFunctionPane(List<MappingCell> mappingCells, HarmonyModel theHarmonyModel, MappingCellDialog md)
 	{
-		this.mappingCells2 = mappingCells1;
+		this.mappingCells = mappingCells;
 		
 		this.harmonyModel = theHarmonyModel;
 		
-		//get selected schema id
+		this.mappingCDialog = md;
+		
+		//get schema id
 		HashSet<Integer> h = harmonyModel.getProjectManager().getSchemaIDs(HarmonyConsts.LEFT);
 		Iterator it = h.iterator();
-		Integer schemaID = null;
+		Integer leftSchemaID = null;
 	    while(it.hasNext()) {
 	      Object val = it.next();      
-	      schemaID = (Integer) val;  //assume only one schema on left side        
+	      leftSchemaID = (Integer) val;  //assume only one schema on left side        
 	    }
-
-	    //get selected elements
-		List<Integer> elementIdList = harmonyModel.getSelectedInfo().getSelectedElements(HarmonyConsts.LEFT);
-
-		LinkedList variables = new LinkedList();
+	    
+	    SchemaInfo leftSchemaInfo = harmonyModel.getSchemaManager().getSchemaInfo(leftSchemaID);
+	    
+	    //variable list
+	    variables = new LinkedList();
+	    
+	    //find the node names for selected elements
+	    inputHash = new HashMap();
+	    
+		LinkedList nameList = new LinkedList();
 		
-		//find the node names for selected elements
-		for(int i=0; i < elementIdList.size(); i++)
-		{
-			SchemaInfo schemaInfo = harmonyModel.getSchemaManager().getSchemaInfo(schemaID);
-			variables.add(schemaInfo.getDisplayName(elementIdList.get(i)));		
-		}
-				
+		LinkedList funcNamesToShow = new LinkedList();
+		
 		// Set up functionSelection info pane
 		JPanel functionSelectionPane = new JPanel();
-		functionSelectionPane.setLayout(new GridLayout(1,2));
-	
-		JLabel selectFunctionLabel = new JLabel("  Built-in Function:");
-		selectFunctionLabel.setFont(new Font("Arial", Font.BOLD, 11));
-		//functionSelectionPane.add(selectFunctionLabel);
-			
-		//set up combobox for function
-		String[] functionNames = { "SUM(arg1, arg2)", "CAT(arg1, arg2)", "MUL(arg1, arg2)", "ADD(arg1, arg2)", "SUB(arg1, arg2)", "Add new function" };
-		functionComboBox = new JComboBox(functionNames);
-		functionComboBox.setBackground(Color.WHITE);
-		functionComboBox.setFont(new Font("Arial", Font.PLAIN, 10));
-		functionComboBox.addActionListener(this);
 		
-		//variable input
-		JLabel selectVariableLabel = new JLabel("  Variables:");
-		selectVariableLabel.setFont(new Font("Arial", Font.BOLD, 11));
-		//functionSelectionPane.add(selectFunctionLabel);
+		//set title
+		title = BorderFactory.createTitledBorder("Mapping Function");
+		
+		//edit mode
+		boolean isEditMode = false;
+		
+		//determine if it is existing function mapping cell
+		if(mappingCells.size()==1 && !((((MappingCell)mappingCells.get(0)).getFunctionID().toString()).equals("450"))){
 			
-		//set up combobox for variable
-		String[] variableNames = new String[variables.size()];
-		for(int i=0; i<variables.size();i++){
-			variableNames[i] = (String)variables.get(i);
+			isEditMode = true;
+			
+			//An existing function mapping cell 
+			MappingCell funcMc = (MappingCell)mappingCells.get(0);
+			
+			//get the input list
+			Integer[] inputsId = funcMc.getInput();
+			numParameters = inputsId.length;
+			
+			for(int i=0; i< inputsId.length; i++){	
+				//SchemaInfo schemaInfo = harmonyModel.getSchemaManager().getSchemaInfo(leftSchemaID);
+				variables.add(leftSchemaInfo.getDisplayName(inputsId[i]));	
+				inputHash.put(inputsId[i], leftSchemaInfo.getDisplayName(inputsId[i]));
+			}
+			
+			//get output list
+			Integer outputId = funcMc.getOutput();
+			setOutput(outputId);
+			
+			//get function name
+			Integer funcId = funcMc.getFunctionID();
+			try {				
+				HashMap<Integer,DataType> dataTypes = new HashMap<Integer,DataType>();
+				for(DataType dataType : SchemaStoreManager.getDataTypes()){
+					dataTypes.put(dataType.getId(), dataType);
+				}
+						
+				for(Function function : SchemaStoreManager.getFunctions())
+				{
+					int numDataType=0;
+					functionList.add(function);
+					if(function.getId()==funcId){
+						this.setFunctionName(function.getName());
+						//System.out.println("It is a function mapping cell: " + this.getFunctionName());
+					}
+					String out = function.getName().toUpperCase() + "(";
+					for(Integer input : function.getInputTypes())
+					{
+						out += dataTypes.get(input).getName() + ",";
+						numDataType++;
+					}
+					nameList.add(new String(out.substring(0, out.length()-1))+ ")");
+					
+					//only show the function with the righ number of parameters
+					if(numParameters==numDataType){
+						funcNamesToShow.add(new String(out.substring(0, out.length()-1))+ ")");
+					}
+				}
+	
+				if(funcNamesToShow.size()==0){
+					canApplyFunc = false;
+				}
+				
+			}catch(Exception e) {
+				System.out.println(e.getStackTrace());
+			}
+		}
+		else {//create a new function mapping cell)
+
+		    //get selected elements
+			List<Integer> elementIdList = harmonyModel.getSelectedInfo().getSelectedElements(HarmonyConsts.LEFT);
+			
+			for(int i=0; i < elementIdList.size(); i++)
+			{
+				SchemaInfo schemaInfo = harmonyModel.getSchemaManager().getSchemaInfo(leftSchemaID);
+				variables.add(schemaInfo.getDisplayName(elementIdList.get(i)));	
+				inputHash.put((Integer)elementIdList.get(i), schemaInfo.getDisplayName(elementIdList.get(i)));
+			}
+			
+			numParameters = variables.size(); 
+			
+			//find the node names for selected elements on right
+			h = harmonyModel.getProjectManager().getSchemaIDs(HarmonyConsts.RIGHT);
+			it = h.iterator();
+			Integer rightSchemaID = null;
+			
+		    while(it.hasNext()) {
+		      Object val = it.next();      
+		      rightSchemaID = (Integer) val;  //assume only one schema on right side        
+		    }
+		    
+			List<Integer> rightElementIdList = harmonyModel.getSelectedInfo().getSelectedElements(HarmonyConsts.RIGHT);
+			String selectedNodeNameOnRight = "";
+			for(int i=0; i < rightElementIdList.size(); i++)
+			{
+				SchemaInfo rightSchemaInfo = harmonyModel.getSchemaManager().getSchemaInfo(rightSchemaID);
+				selectedNodeNameOnRight = rightSchemaInfo.getDisplayName(rightElementIdList.get(i));		
+			}
+				
+			//assume only one output:
+			if(rightElementIdList.size()==1){
+				setOutput(rightElementIdList.get(0));
+			}
+			else{
+				canApplyFunc = false;
+			}
+			
+			// Set up functionSelection info pane
+			//JPanel functionSelectionPane = new JPanel();
+			functionSelectionPane.setLayout(new GridLayout(1,2));
+		
+			//selectFunctionLabel = new JLabel("  Built-in Function:");
+			selectFunctionLabel.setFont(new Font("Arial", Font.BOLD, 11));
+			
+			try {
+				
+				HashMap<Integer,DataType> dataTypes = new HashMap<Integer,DataType>();
+				for(DataType dataType : SchemaStoreManager.getDataTypes()){
+					dataTypes.put(dataType.getId(), dataType);
+					//System.out.println("typeId=" + dataType.getId());
+				}
+						
+				for(Function function : SchemaStoreManager.getFunctions())
+				{
+					//functionNames[i]= new String(function.getName());
+					//System.out.println("i=" + i + "," + functionNames[i]);
+					int numDataType=0;
+					functionList.add(function);
+					String out = function.getName().toUpperCase() + "(";
+					for(Integer input : function.getInputTypes())
+					{
+						out += dataTypes.get(input).getName() + ",";
+						numDataType++;
+					}
+					nameList.add(new String(out.substring(0, out.length()-1))+ ")");
+					
+					//only show the function with the righ number of parameters
+					if(numParameters==numDataType){
+						funcNamesToShow.add(new String(out.substring(0, out.length()-1))+ ")");
+					}
+				}
+	
+				if(funcNamesToShow.size()==0){
+					canApplyFunc = false;
+				}
+				
+			}catch(Exception e) {
+				System.out.println(e.getStackTrace());
+			}
 		}
 			
-		variableComboBox = new JComboBox(variableNames);
-		variableComboBox.addActionListener(this);
-		variableComboBox.addKeyListener(this);
-		variableComboBox.setBackground(Color.WHITE);
-		variableComboBox.setFont(new Font("Arial", Font.PLAIN, 10));
-
+		String[] functionNames = new String[funcNamesToShow.size()+1];
+		
+		//functionNames[0]="<None>";
+		functionNames[funcNamesToShow.size()]="<Add Function>";
+		
+		//find the selected function index
+		for(int i=0; i< funcNamesToShow.size();i++ ){
+			functionNames[i] = (String) funcNamesToShow.get(i);
+			if(functionNames[i].contains((this.getFunctionName()).toUpperCase())&&isEditMode){
+				selectedFuncIndex = i;
+			}
+		}
+		//disable the function feature
+		if(!canApplyFunc){
+			String[] a = {"No Applicable Functions."};
+			functionComboBox = new JComboBox(a);
+			title.setTitleColor(Color.GRAY);
+			//disable the radio button
+			md.enableFunctionRadioButton(false);
+		}
+		//enable the function feature
+		else{
+			functionComboBox = new JComboBox(functionNames);
+			functionComboBox.setSelectedIndex(selectedFuncIndex);
+		}
+		functionComboBox.setBackground(Color.WHITE);
+		functionComboBox.setFont(new Font("Arial", Font.BOLD, 11));
+		functionComboBox.addActionListener(this);
+		
 		
 		//functionComboBox.setMaximumRowCount(50);
-		JPanel functionComboBoxPane = new JPanel(new FlowLayout());
+		JPanel functionComboBoxPane = new JPanel();
+		functionComboBoxPane.setLayout (new GridLayout(3, 2, 8, 0)); 
 		functionComboBoxPane.add(selectFunctionLabel);
 		functionComboBoxPane.add(functionComboBox);
-		functionComboBoxPane.add(selectVariableLabel);
-		functionComboBoxPane.add(variableComboBox);
 		
+		//variable input
+		String[] variableNames = new String[variables.size()+1];
+		variableNames[0]="";
+		for(int i =1; i< variables.size()+1; i++ ){
+			//set up combo box for variable
+			variableNames[i] = (String)variables.get(i-1);
+		}
+		
+
+		//multiple parameters
+
+		if(canApplyFunc){
+			
+			//enable function radio button
+			md.enableFunctionRadioButton(true);
+			
+			//Only show these parameters when the function list > 0
+			for(int i =0; i< variables.size(); i++ ){			
+				selectVariableLabel[i] = new JLabel("Parameter $" + (i+1) + ":", SwingConstants.RIGHT);
+				selectVariableLabel[i].setFont(new Font("Arial", Font.BOLD, 11));
+				
+				variableComboBox[i] = new JComboBox(variableNames);
+				variableComboBox[i].setEnabled(false);
+				
+				if(isEditMode){
+					variableComboBox[i].setEnabled(true);
+					variableComboBox[i].setSelectedIndex(i+1);
+				}
+				variableComboBox[i].addActionListener(this);
+				variableComboBox[i].addKeyListener(this);
+				variableComboBox[i].setBackground(Color.WHITE);
+				variableComboBox[i].setFont(new Font("Arial", Font.PLAIN, 11));
+
+
+	
+				functionComboBoxPane.add(selectVariableLabel[i]);
+				functionComboBoxPane.add(variableComboBox[i]);
+			}
+		}
 		functionSelectionPane.add(functionComboBoxPane);
 		
-		formulaTextField = new JTextField("Node C=");
-		formulaTextField.setFont(new Font("Tahoma", Font.PLAIN, 13));
+		//formulaTextField = new JTextField(selectedNodeNameOnRight + "=");
+		formulaTextField = new JTextField("Output = ");
+		formulaTextField.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		formulaTextField.setColumns(25);
 		formulaTextField.setSize(20, 6);
 		
+		if(isEditMode){
+			String variableExp = "(";
+			for(int i =1; i< variables.size()+1; i++ ){
+				variableExp = variableExp + variableNames[i];
+				if(i<variables.size()){
+					variableExp = variableExp + ",";
+				}
+				else{
+					variableExp = variableExp + ")";
+				}
+			}
+			String outputExp = "Output =" + this.getFunctionName()+ variableExp; 
+			addToExpression(outputExp);
+		}
 		formulaTextField.addKeyListener(this);
 		
 		currentExpression = formulaTextField.getText();
 		
 		JPanel functionDisplayPane = new JPanel(new FlowLayout());
 		
-		JButton editButton = new JButton("Edit...");
+		//editButton = new JButton("Validate...");
 		
-		JLabel functionFormulaLabel = new JLabel("  Function Expression:");
+		functionFormulaLabel = new JLabel("  Function Expression:");
 		functionFormulaLabel.setVerticalAlignment(SwingConstants.BOTTOM);
 		functionFormulaLabel.setHorizontalAlignment(SwingConstants.LEFT);
-		functionFormulaLabel.setFont(new Font("Arial", Font.PLAIN, 11));
+		functionFormulaLabel.setFont(new Font("Arial", Font.PLAIN, 10));
 		
 		functionDisplayPane.add(formulaTextField);
-		functionDisplayPane.add(editButton);
+		//functionDisplayPane.add(editButton);
 		
-		
-
 		
 		// Set up confidence pane
-		setBorder(BorderFactory.createTitledBorder("Mapping Function"));
-		//setLayout(new GridLayout(2,1));
-		//add(functionSelectionPane);
-		//add(functionGridPane);
+		setBorder(title);
 		
 		setLayout(new BorderLayout());
 		add(functionSelectionPane,BorderLayout.NORTH);
 		add(functionDisplayPane,BorderLayout.SOUTH);
-		//add(checkboxPane,BorderLayout.SOUTH);				
-		
-		
+		//add(checkboxPane,BorderLayout.SOUTH);					
 	}
 
-	/** Indicates if the mapping cells have been accepted */
-	boolean isAccepted()
-		{ return acceptCheckbox.isSelected(); }
-	
-	/** Indicates if the mapping cells have been rejected */
-	boolean isRejected()
-		{ return rejectCheckbox.isSelected(); }
 	
 	/** Handles the pressing of dialog buttons */
 	public void actionPerformed(ActionEvent e)
-	{
-		// If "Accept" checkbox chosen, unselect "Reject"
-		if(e.getSource()==acceptCheckbox)
-		{
-			if(acceptCheckbox.isSelected()) rejectCheckbox.setSelected(false);
-			else if(mappingCellsAccepted() || mappingCellsRejected()) acceptCheckbox.setSelected(true);
-		
-			//redraw mapping cell lines
-			//reDrawMappingCellLines();
-		}
-		
-		// If "Reject" checkbox chosen, unselect "Accept"
-		if(e.getSource()==rejectCheckbox)
-		{
-			if(rejectCheckbox.isSelected()) acceptCheckbox.setSelected(false);
-			else if(mappingCellsAccepted() || mappingCellsRejected()) rejectCheckbox.setSelected(true);
-		}
-		
+	{	
 		// function combobox
 		if(e.getSource()==functionComboBox)
 		{
+			//set all fileds to original
+			resetAllFields();
+			
 			String funName = (String)functionComboBox.getSelectedItem();
-			if(funName=="Add new function")
+			if(funName=="<Add Function>")
 			{
 			  //do something here to add a new function
+				AddNewFunction newFunction = new AddNewFunction(mappingCells, harmonyModel);
+				//newFunction.setLocation(adjustMouseLocation(e.getPoint(), null));
+				newFunction.setVisible(true);
+				
+				
+				System.out.println("To add new function");
+				//return;
+			}
+			else if(funName=="<None>")
+			{
+			  //do something here for selecting none function
+				System.out.println("None function.");
+				resetAllFields();
+				return;
 			}
 			else
-			{
+			{   
 				funName = funName.substring(0, funName.indexOf("("));
-		        System.out.println("function Name=" + funName);
+				setFunctionName(funName);
+		        //System.out.println("function Name=" + funName);
 		        addToExpression(funName+"(");
 		        formulaTextField.requestFocus();
+		        currentParameter = 0;
+		        variableComboBox[currentParameter].setEnabled(true);
 			}
 		}
 		
 		// variable combobox
-		if(e.getSource()==variableComboBox)
+
+		if(e.getSource()==variableComboBox[currentParameter]) 
 		{
-			String varName = (String)variableComboBox.getSelectedItem();
-	        System.out.println("varName=" + varName);
-	        addToExpression(varName);
+			String varName = (String)variableComboBox[currentParameter].getSelectedItem();
+	        //System.out.println("varName=" + varName);
+
+	        if((currentParameter+1)<numParameters){
+	        	currentParameter++;
+	        	variableComboBox[currentParameter].setEnabled(true);
+	        	addToExpression(varName + ",");
+	        	formulaTextField.setEnabled(false);
+	        	formulaTextField.setEditable(false);
+	        	
+	        	variableComboBox[currentParameter-1].setEnabled(false);
+	        	
+	        	//remove the selected item from the rest combobox
+	        	for(int i=currentParameter; i < numParameters; i++){
+	        		int rem = variableComboBox[currentParameter-1].getSelectedIndex();
+	        		variableComboBox[i].removeItemAt(rem);
+	        	}
+	        }
+	        else{
+	        	addToExpression(varName + ")");
+	        	formulaTextField.setEditable(false);
+	        	/*
+	        	functionComboBox.setEnabled(false);
+	    		for(int i=0; i< numParameters; i++){
+	    			variableComboBox[i].setEnabled(false);
+	    		}
+	    		*/
+	        	variableComboBox[currentParameter].setEnabled(false);
+	    		//editButton.setEnabled(true);
+	        	
+	        	//enable the OK button
+	    		mappingCDialog.setButtonPaneOK();
+	    		
+	    		formulaTextField.setEnabled(true);
+	        }
+	        
+        	//add to input array
+        	addToInput(varName);
+        	
 	        formulaTextField.requestFocus();
-		}
-		
-		
+		}	
 	}
 	
 	
@@ -240,7 +483,9 @@ public class MappingCellFunctionPane extends JPanel implements ActionListener, K
 	public void addToExpression(String item){
 		currentExpression+=item;
 		formulaTextField.setText(currentExpression);
-		
+		formulaTextField.setCaretPosition(0);
+		//formulaTextField.setEditable(false);
+		//formulaTextField.setEnabled(false);
 	}
 	
 	/** Handle the key typed event from the text field. */
@@ -260,7 +505,7 @@ public class MappingCellFunctionPane extends JPanel implements ActionListener, K
     	int id = e.getID();
     	if (id == KeyEvent.KEY_RELEASED) {
 	    	currentExpression = formulaTextField.getText();
-	    	System.out.println("Release currentExpression=" + currentExpression);
+	    	//System.out.println("Release currentExpression=" + currentExpression);
 	    	formulaTextField.setText(currentExpression);
     	}
     }
@@ -335,10 +580,117 @@ public class MappingCellFunctionPane extends JPanel implements ActionListener, K
 
     }
 
-    //Redw
-    //reDrawMappingCellLines()
-    {
+    //set enable fields
+    public void setDisable(boolean set){
+
+    	if(set==false && canApplyFunc){ 
+    		functionComboBox.setEnabled(true);
+    		formulaTextField.setEnabled(true);
+    		for(int i=0; i< numParameters; i++){
+    			variableComboBox[i].setEnabled(false);
+    			selectVariableLabel[i].setEnabled(true);
+    		}
+    		selectFunctionLabel.setEnabled(true);
+    		functionFormulaLabel.setEnabled(true);
+    		//editButton.setEnabled(true);
+
+    		//title.setTitleColor(Color.BLACK); //Not working?
+
+    	}
+    	else{
+    		functionComboBox.setEnabled(false);
+    		formulaTextField.setEnabled(false);
+    		if(canApplyFunc){ //Only shown the variables if the functions are there
+	    		for(int i=0; i< numParameters; i++){
+	    			variableComboBox[i].setEnabled(false);
+	    			selectVariableLabel[i].setEnabled(false);
+	    		}
+    		}
+    		selectFunctionLabel.setEnabled(false);
+    		functionFormulaLabel.setEnabled(false);
+    		//editButton.setEnabled(false);
+    		
+    		//title.setTitleColor(Color.GRAY);
+    	}
     	
     }
+    
+	public String getFunctionName() {
+		return functionName;
+	}
+
+	public void setFunctionName(String functionName) {
+		this.functionName = functionName;
+	}
+
+	public Integer[] getInputs() {
+		Integer[] inputs = new Integer[inputList.size()];
+		for(int i=0; i<inputList.size(); i++ ){
+			inputs[i] = (Integer)inputList.get(i);
+		}
+		return inputs;
+	}
+
+	public Integer getOutput() {
+		return output;
+	}
+
+	public void setOutput(Integer outputId) {
+		output = outputId;
+	}
+	
+	//for generating function mapping cell with inputs
+	public void addToInput(String name){
+		
+		Iterator iterator = inputHash.entrySet().iterator();
+
+		while( iterator. hasNext() ){
+
+			String element = (String) iterator.next().toString();
+			if(element.contains(name)){		 
+				System.out.println("iterator=" + element);
+				String id = element.substring(0, element.indexOf("="));
+				inputList.add(new Integer(id));
+			}
+		}
+	}
+
+	/** return the function Integer ID */
+	public Integer getFunctionId(){
+		
+		String funcName = this.getFunctionName();
+		Integer id = 10;
+		for(int i=0; i< functionList.size(); i++){
+			Function fn = (Function) functionList.get(i);
+			if(fn.getName().toLowerCase().equals(funcName.toLowerCase())){
+				id = fn.getId();
+			}
+		}
+		return id;
+	}
+	
+	//Empty all the items in parameter combobox and output function
+	public void resetAllFields(){
+		String[] variableNames = new String[variables.size()+1];
+		variableNames[0]="";
+		for(int i =1; i< variables.size()+1; i++ ){
+			//set up combobox for variable
+			variableNames[i] = (String)variables.get(i-1);
+		}
+		
+		for(int i=0; i< numParameters; i++){
+				variableComboBox[i].removeActionListener(this);
+				variableComboBox[i].removeAllItems();
+				for(int j=0; j<(variables.size()+1); j++){
+					variableComboBox[i].addItem(variableNames[j]);
+				}
+				variableComboBox[i].addActionListener(this);
+		}
+		currentExpression = "";	
+		addToExpression("Output=");
+		
+		//disable the OK button
+		mappingCDialog.setButtonPaneOKDisabled();
+	}
 }
 

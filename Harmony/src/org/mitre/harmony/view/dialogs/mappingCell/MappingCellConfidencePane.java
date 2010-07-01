@@ -114,4 +114,16 @@ public class MappingCellConfidencePane extends JPanel implements ActionListener
 			else if(mappingCellsAccepted() || mappingCellsRejected()) rejectCheckbox.setSelected(true);
 		}
 	}
+	
+	/** set enable fields */
+    public void setDisable(boolean set){
+    	if(set==false){
+    		acceptCheckbox.setEnabled(true);
+    		rejectCheckbox.setEnabled(true);
+    	}
+    	else{
+    		acceptCheckbox.setEnabled(false);
+    		rejectCheckbox.setEnabled(false);
+    	}
+    }
 }
