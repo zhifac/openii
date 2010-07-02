@@ -3,6 +3,7 @@
 package org.mitre.schemastore.model.schemaInfo;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 
 import org.mitre.schemastore.model.SchemaElement;
@@ -78,6 +79,20 @@ public class FilteredSchemaInfo extends HierarchicalSchemaInfo implements Schema
 	public FilteredSchemaInfo(HierarchicalSchemaInfo schemaInfo)
 		{ super(schemaInfo,schemaInfo.getModel()); }
 	
+	/** Copy the filtered schema info */
+	public FilteredSchemaInfo copy()
+	{
+		FilteredSchemaInfo schema = new FilteredSchemaInfo(this);
+		schema.minDepth = minDepth;
+		schema.maxDepth = maxDepth;
+		schema.hiddenElements = new HashSet<Integer>(hiddenElements);
+		return schema;
+	}
+	
+	/** Returns the list of hidden elements */
+	public ArrayList<Integer> getHiddenElements()
+		{ return new ArrayList<Integer>(hiddenElements); }
+	
 	/** Sets the filtered roots */
 	public void setFilteredRoots(ArrayList<Integer> filteredRootIDs)
 		{ this.filteredRootIDs = filteredRootIDs; reset(); }
@@ -91,7 +106,7 @@ public class FilteredSchemaInfo extends HierarchicalSchemaInfo implements Schema
 		{ this.maxDepth = maxDepth; reset(); }	
 
 	/** Sets the filter hidden elements */
-	public void setHiddenElements(ArrayList<Integer> hiddenElements)
+	public void setHiddenElements(Collection<Integer> hiddenElements)
 		{ this.hiddenElements = new HashSet<Integer>(hiddenElements); reset(); }
 	
 	/** Returns if the specified element is visible */

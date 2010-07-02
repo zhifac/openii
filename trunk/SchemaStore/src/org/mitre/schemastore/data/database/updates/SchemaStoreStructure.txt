@@ -83,7 +83,8 @@ CREATE TABLE project (
     id integer NOT NULL,
     name character varying(100),
     author character varying(100),
-    description character varying(4096)
+    description character varying(4096),
+    vocabulary_id integer
 );
 
 CREATE TABLE data_type (
@@ -273,6 +274,9 @@ ALTER TABLE mapping_cell
 
 ALTER TABLE mapping_cell
 	ADD CONSTRAINT mappingcell_function_id_fkey FOREIGN KEY (function_id) REFERENCES functions(id);
+
+ALTER TABLE project
+    ADD CONSTRAINT project_project_fkey FOREIGN KEY (vocabulary_id) REFERENCES project(id);
 
 ALTER TABLE project_schema
     ADD CONSTRAINT projectschema_project_fkey FOREIGN KEY (project_id) REFERENCES project(id);
