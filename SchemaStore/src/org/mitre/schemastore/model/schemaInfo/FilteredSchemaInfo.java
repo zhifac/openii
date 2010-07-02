@@ -69,6 +69,10 @@ public class FilteredSchemaInfo extends HierarchicalSchemaInfo implements Schema
 			findFilteredElements(elementID,depths);
 		}	
 	}
+
+	/** Resets the filters */
+	private void reset()
+		{ filteredElements = null; filteredRootIDs = null; }
 	
 	/** Constructs the filtered schema */
 	public FilteredSchemaInfo(HierarchicalSchemaInfo schemaInfo)
@@ -76,19 +80,19 @@ public class FilteredSchemaInfo extends HierarchicalSchemaInfo implements Schema
 	
 	/** Sets the filtered roots */
 	public void setFilteredRoots(ArrayList<Integer> filteredRootIDs)
-		{ this.filteredRootIDs = filteredRootIDs; }
+		{ this.filteredRootIDs = filteredRootIDs; reset(); }
 	
 	/** Sets the filter minimum depth */
 	public void setMinDepth(Integer minDepth)
-		{ this.minDepth = minDepth; }
+		{ this.minDepth = minDepth; reset(); }
 
 	/** Sets the filter maximum depth */
 	public void setMaxDepth(Integer maxDepth)
-		{ this.maxDepth = maxDepth; }	
+		{ this.maxDepth = maxDepth; reset(); }	
 
 	/** Sets the filter hidden elements */
 	public void setHiddenElements(ArrayList<Integer> hiddenElements)
-		{ this.hiddenElements = new HashSet<Integer>(hiddenElements); }
+		{ this.hiddenElements = new HashSet<Integer>(hiddenElements); reset(); }
 	
 	/** Returns if the specified element is visible */
 	public boolean isVisible(Integer elementID)
@@ -135,10 +139,8 @@ public class FilteredSchemaInfo extends HierarchicalSchemaInfo implements Schema
 	}
 
 	/** Clear the cached filtered elements if the schema has been modified */
-	public void schemaElementAdded(SchemaElement schemaElement)
-		{ filteredElements = null; filteredRootIDs = null; }
+	public void schemaElementAdded(SchemaElement schemaElement) { reset(); }
 
 	/** Clears the cached filtered elements if the schema has been modified */
-	public void schemaElementRemoved(SchemaElement schemaElement)
-		{ filteredElements = null; filteredRootIDs = null; }
+	public void schemaElementRemoved(SchemaElement schemaElement) { reset(); }
 }
