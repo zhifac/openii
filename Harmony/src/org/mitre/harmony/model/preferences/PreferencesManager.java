@@ -100,11 +100,7 @@ public class PreferencesManager extends AbstractManager<PreferencesListener> imp
 	{
 		// Only set preference if changed from original
 		if(newIgnoreMatchedElements!=getIgnoreMatchedElements())
-		{
 			ConfigManager.setParm("preferences.ignoreMatchedElements",Boolean.toString(newIgnoreMatchedElements));
-			for(PreferencesListener listener : getListeners())
-				listener.alphabetizedChanged();
-		}
 	}	
 	
 	// ------------- Preferences for storing the import and export directories -------------
