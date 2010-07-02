@@ -89,6 +89,24 @@ public class PreferencesManager extends AbstractManager<PreferencesListener> imp
 		}
 	}	
 	
+	// ------------- Preference for if matched elements should be ignored ------------
+
+	/** Returns the preference for if matched elements should be ignored */
+	public boolean getIgnoreMatchedElements()
+		{ try { return Boolean.parseBoolean(ConfigManager.getParm("preferences.ignoreMatchedElements")); } catch(Exception e) {} return false; }
+	
+	/** Set preference to ignore matched elements */
+	public void setIgnoredMatchedElements(boolean newIgnoreMatchedElements)
+	{
+		// Only set preference if changed from original
+		if(newIgnoreMatchedElements!=getIgnoreMatchedElements())
+		{
+			ConfigManager.setParm("preferences.ignoreMatchedElements",Boolean.toString(newIgnoreMatchedElements));
+			for(PreferencesListener listener : getListeners())
+				listener.alphabetizedChanged();
+		}
+	}	
+	
 	// ------------- Preferences for storing the import and export directories -------------
 	
 	/** Returns the import directory */
