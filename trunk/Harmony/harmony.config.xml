@@ -1,7 +1,8 @@
 <config>
   <extraMappingCellFields>[Transform]</extraMappingCellFields>
   <preferences>
-    <alphabetize>true</alphabetize>
+    <alphabetize>false</alphabetize>
+    <ignoreMatchedElements>true</ignoreMatchedElements>
     <showSchemaTypes>false</showSchemaTypes>
   </preferences>
   <repository>
