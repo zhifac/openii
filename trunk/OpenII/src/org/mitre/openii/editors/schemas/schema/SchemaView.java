@@ -3,6 +3,7 @@ package org.mitre.openii.editors.schemas.schema;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
@@ -100,6 +101,9 @@ public class SchemaView extends OpenIIEditor implements ISelectionChangedListene
 		SchemaMenuManager menuManager = new SchemaMenuManager(schemaViewer);
 		Menu menu = menuManager.createContextMenu(schemaViewer.getControl());
 		schemaViewer.getControl().setMenu(menu);
+		
+		// Add tool tips to the tree viewer
+		ColumnViewerToolTipSupport.enableFor(schemaViewer);
 	}
 
 	/** Generate the extension pane */

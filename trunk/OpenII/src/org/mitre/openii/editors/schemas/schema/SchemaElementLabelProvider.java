@@ -50,6 +50,14 @@ public class SchemaElementLabelProvider extends StyledCellLabelProvider
 		return element.toString();
 	}
 
+	/** Displays the tool tip for the specified element */
+	public String getToolTipText(Object element)
+	{
+		if(element instanceof SchemaElement)
+			return ((SchemaElement)element).getDescription();
+		return null;
+	}
+	
 	/** Updates the viewer cell */
 	public void update(ViewerCell cell)
 	{
