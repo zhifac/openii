@@ -2,7 +2,7 @@
 // ALL RIGHTS RESERVED
 package org.mitre.harmony.matchers.voters;
 
-import org.mitre.harmony.matchers.VoterScores;
+import org.mitre.harmony.matchers.MatcherScores;
 
 /** Documentation Matcher Class */
 public class DocumentationOnlyMatcher extends DocumentationMatcher
@@ -11,6 +11,6 @@ public class DocumentationOnlyMatcher extends DocumentationMatcher
 	public String getName() { return "Documentation Only Similarity"; }
 	
 	/** Generates scores for the specified elements */
-	public VoterScores match()
+	public MatcherScores match()
 		{ return generateVoteScores(false); }
 }

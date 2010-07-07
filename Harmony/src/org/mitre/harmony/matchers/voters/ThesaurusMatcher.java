@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
-import org.mitre.harmony.matchers.VoterScores;
+import org.mitre.harmony.matchers.MatcherScores;
 import org.mitre.schemastore.model.SchemaElement;
 
 /** Thesaurus Matcher Class */
@@ -22,7 +22,7 @@ public class ThesaurusMatcher extends BagMatcher
 	public String getName() { return "Documentation + Synonyms"; }
 
 	/** Generates match scores for the specified elements */
-	public VoterScores match()
+	public MatcherScores match()
 	{		
 		// Create word bags for the source elements
 		ArrayList<SchemaElement> sourceElements = schema1.getFilteredElements();

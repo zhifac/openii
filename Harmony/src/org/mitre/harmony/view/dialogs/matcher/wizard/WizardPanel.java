@@ -10,13 +10,16 @@ abstract public class WizardPanel {
 	/** Stores the panel */
     private JPanel panel = new JPanel();
 
+    /** Stores any ID that was given by the user */
+    protected String id = null;
+
     /** Returns the wizard panel */
     final public JPanel getPanel() {
     	return panel;
     }
 
     /** Sets the wizard associated with this pane */
-    final void setWizard(Wizard wizard) {
+    protected final void setWizard(Wizard wizard) {
     	this.wizard = wizard;
     }
 
@@ -25,31 +28,21 @@ abstract public class WizardPanel {
     	return wizard;
     }
 
-    /** Returns the positions around this pane */
-	protected Integer panelId = null;
-
-	public Integer getPanelId() {
-		return panelId;
-	}
-
-	public Integer getBackPanelId() {
-		try {
-			return getWizard().getModel().getBackPanel(panelId).getPanelId();
-		} catch (NullPointerException e) {
-			return null;
-		}
-	}
-
-	public Integer getNextPanelId() {
-		try {
-			return getWizard().getModel().getNextPanel(panelId).getPanelId();
-		} catch (NullPointerException e) {
-			return null;
-		}
-	}
-
     // Allows panel to perform actions before, during, and after being displayed
-    public void aboutToDisplayPanel() {}
-    public void displayingPanel() {}
-    public void aboutToHidePanel() {}
+    abstract public void aboutToDisplayPanel();
+    abstract public void displayingPanel();
+    abstract public void aboutToHidePanel();
+
+    // should contain an identifier for the panel that is unique
+    final public String toString() {
+    	if (id == null) {
+    		return this.getClass().getName();
+    	} else {
+    		StringBuffer string = new StringBuffer();
+    		string.append(this.getClass().getName());
+			string.append(" ");
+			string.append(id);
+    		return string.toString();
+    	}
+    }
 }

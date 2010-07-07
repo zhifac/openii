@@ -10,8 +10,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.StringTokenizer;
 
-import org.mitre.harmony.matchers.VoterScore;
-import org.mitre.harmony.matchers.VoterScores;
+import org.mitre.harmony.matchers.MatcherScore;
+import org.mitre.harmony.matchers.MatcherScores;
 import org.mitre.schemastore.model.SchemaElement;
 
 /**
@@ -27,7 +27,7 @@ public class WordNetMatcher extends BagMatcher
 		{ return "WordNet Thesaurus"; }
 	
 	/** Generates scores for the specified elements */
-	public VoterScores match()
+	public MatcherScores match()
 	{		
 		// Create word bags for the source and target elements
 		ArrayList<SchemaElement> sourceElements = schema1.getFilteredElements();
@@ -42,14 +42,14 @@ public class WordNetMatcher extends BagMatcher
 		HashMap<String, HashSet<Integer>> thesaurus = getThesaurus(thesaurusFile);
 		
 		// Generate the match scores
-		VoterScores scores = new VoterScores(SCORE_CEILING);
+		MatcherScores scores = new MatcherScores(SCORE_CEILING);
 		for(SchemaElement sourceElement : sourceElements)
 			for(SchemaElement targetElement : targetElements)
 			{
 				if(isAllowableMatch(sourceElement, targetElement))
 					if(scores.getScore(sourceElement.getId(), targetElement.getId())==null)
 					{
-						VoterScore score = findVoterScore(sourceElement,targetElement,thesaurus);
+						MatcherScore score = findVoterScore(sourceElement,targetElement,thesaurus);
 						if(score != null) scores.setScore(sourceElement.getId(), targetElement.getId(), score);
 					}
 				completedComparisons++;
@@ -83,7 +83,7 @@ public class WordNetMatcher extends BagMatcher
 	}
 	
 	/** Evaluate the score between the source and target element using the wordnet thesaurus */
-	private VoterScore findVoterScore(SchemaElement source, SchemaElement target, HashMap<String,HashSet<Integer>> thesaurus)
+	private MatcherScore findVoterScore(SchemaElement source, SchemaElement target, HashMap<String,HashSet<Integer>> thesaurus)
 	{
 		int matches = 0;
 		
@@ -130,7 +130,7 @@ public class WordNetMatcher extends BagMatcher
 		
 		// Return the voter score
 		if(matches>0)
-			return new VoterScore(1.0*matches, 1.0*sourceWords.size());
+			return new MatcherScore(1.0*matches, 1.0*sourceWords.size());
 		return null;
 	}
 }

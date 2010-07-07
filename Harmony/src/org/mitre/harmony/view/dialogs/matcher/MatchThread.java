@@ -30,7 +30,7 @@ public class MatchThread extends Thread
 	private HarmonyModel harmonyModel;
 
 	/** Stores the voters to be used in matching */
-	private ArrayList<MatchVoter> voters;
+	private ArrayList<MatchVoter> matchers;
 
 	/** Stores the merger to be used in matching */
 	private MatchMerger merger;
@@ -48,58 +48,54 @@ public class MatchThread extends Thread
 	private class ProgressThread extends Thread
 	{
 		/** Stores the total number of mappings being matched */
-		private Integer currentMapping=0, totalMappings=0;
+		private Integer currentMapping = 0, totalMappings = 0;
 
 		/** Stores the current mapping being matched */
 		private String leftSchema, rightSchema;
 
-		/** Stores the current voter being used */
-		private MatchVoter voter = null;
+		/** Stores the current matcher being used */
+		private MatchVoter matcher = null;
 
 		/** Indicates that the thread should be stopped */
-		private boolean stop=false;
+		private boolean stop = false;
 
 		/** Sets the total number of mappings */
-		void setTotalMappings(Integer totalMappings)
-		{
+		public void setTotalMappings(Integer totalMappings) {
 			this.currentMapping = -1;
 			this.totalMappings = totalMappings;
 		}
 
 		/** Sets the current schema pair being matched */
-		void setCurrentSchemaPair(String leftSchema, String rightSchema)
-		{
+		public void setCurrentSchemaPair(String leftSchema, String rightSchema) {
 			this.leftSchema = leftSchema;
 			this.rightSchema = rightSchema;
 			currentMapping++;
-			voter = null;
+			matcher = null;
 		}
 
 		/** Sets the current voter being used */
-		void setCurrentVoter(MatchVoter voter)
-			{ this.voter = voter; }
+		public void setCurrentMatcher(MatchVoter matcher) {
+			this.matcher = matcher;
+		}
 
 		/** Runs the thread */
-		public void run()
-		{
-			while(!stop)
-			{
+		public void run() {
+			while(!stop) {
 				// Update progress information
-				if(voter == null) { voter = voters.get(0); }
+				if (matcher == null) { matcher = matchers.get(0); }
 
 				// Update the schema progress
-				Double voterProgress = (100.0 * voter.getPercentComplete());
+				Double matcherProgress = (100.0 * matcher.getPercentComplete());
 				Double overallProgress = 0.0;
 
 				try {
-					Double votersProgress = ((100 * voters.indexOf(voter) + voterProgress) / voters.size());
+					Double votersProgress = ((100 * matchers.indexOf(matcher) + matcherProgress) / matchers.size());
 					overallProgress = new Double((100 * currentMapping + votersProgress) / totalMappings);
 				} catch(Exception e) {}
 
-				String status = "Matching " + leftSchema + " to " + rightSchema + " with " + voter.getName();
-				for(MatchListener listener : listeners)
-				{
-					listener.updateVoterProgress(voterProgress, status);
+				String status = "Matching " + leftSchema + " to " + rightSchema + " with " + matcher.getName();
+				for(MatchListener listener : listeners) {
+					listener.updateVoterProgress(matcherProgress, status);
 					listener.updateOverallProgress(overallProgress);
 				}
 
@@ -109,36 +105,38 @@ public class MatchThread extends Thread
 		}
 
 		/** Stops the progress thread */
-		public void stopThread()
-			{ stop=true; }
+		public void stopThread() {
+			stop = true;
+		}
 	}
 
 	/** Constructs the match thread */
-	MatchThread(HarmonyModel harmonyModel, ArrayList<MatchVoter> voters, MatchMerger merger, MatchTypeMappings typeMappings)
-	{
+	MatchThread(HarmonyModel harmonyModel, ArrayList<MatchVoter> matchers, MatchMerger merger, MatchTypeMappings typeMappings) {
 		this.harmonyModel = harmonyModel;
-		this.voters = voters;
+		this.matchers = matchers;
 		this.merger = merger;
 		this.typeMappings = typeMappings;
 	}	
 
 	/** Returns the generated matcher name */
-	private String getMatcherName()
-	{
+	private String getMatcherName() {
 		// Handles the case where all voters were used
-		if(voters.size() == MatcherManager.getVoters().size())
+		if (matchers.size() == MatcherManager.getMatchers().size()) {
 			return merger.getName() + "(All Voters)";
+		}
 
 		// Handles the case where a single voter was used
-		if(voters.size() == 1)
-			return voters.get(0).getName();
+		if (matchers.size() == 1) {
+			return matchers.get(0).getName();
+		}
 
 		// Handles the case where a subset of voters was used
 		String matcherName = merger.getName() + "(";
-		for(MatchVoter voter : voters)
-		{
-			if(matcherName.length() + voter.getName().length() > 45)
-				{ matcherName += "..., "; break; }
+		for (MatchVoter voter : matchers) {
+			if (matcherName.length() + voter.getName().length() > 45) {
+				matcherName += "..., ";
+				break;
+			}
 			matcherName += voter.getName() + ", ";
 		}
 		matcherName = matcherName.substring(0, matcherName.length() - 2) + ")";
@@ -146,11 +144,10 @@ public class MatchThread extends Thread
 	}
 
 	/** Returns the list of filtered schema info for the specified side */
-	private FilteredSchemaInfo getFilteredSchemaInfo(Integer schemaID, Integer side)
-	{
+	private FilteredSchemaInfo getFilteredSchemaInfo(Integer schemaID, Integer side) {
 		// Check to make sure that the schema is currently in focus
 		FilterManager filters = harmonyModel.getFilters();
-		if(!filters.inFocus(side, schemaID)) { return null; }
+		if (!filters.inFocus(side, schemaID)) { return null; }
 
 		// Create the filtered schema info object
 		HierarchicalSchemaInfo schemaInfo = harmonyModel.getSchemaManager().getSchemaInfo(schemaID);
@@ -158,8 +155,9 @@ public class MatchThread extends Thread
 
 		// Set the filter roots
 		Focus focus = filters.getFocus(side,schemaID);
-		if(focus != null && !focus.contains(schemaID))
+		if (focus != null && !focus.contains(schemaID)) {
 			filteredSchemaInfo.setFilteredRoots(focus.getFocusedIDs());
+		}
 
 		// Filter by minimum and maximum depth
 		filteredSchemaInfo.setMinDepth(filters.getMinDepth(side));
@@ -168,7 +166,7 @@ public class MatchThread extends Thread
 		// Hide all finished elements
 		ArrayList<Integer> hiddenElements = new ArrayList<Integer>();
 		hiddenElements.addAll(harmonyModel.getPreferences().getFinishedElements(schemaID));
-		if(focus != null) { hiddenElements.addAll(focus.getHiddenElements()); }
+		if (focus != null) { hiddenElements.addAll(focus.getHiddenElements()); }
 		filteredSchemaInfo.setHiddenElements(hiddenElements);
 		
 		// Return the filtered schema info object
@@ -176,11 +174,9 @@ public class MatchThread extends Thread
 	}
 
 	/** Runs the matchers on the specified schemas */
-	private void runMatch(Integer mappingID, FilteredSchemaInfo sourceSchema, FilteredSchemaInfo targetSchema, String matcherName, ProgressThread progressThread)
-	{
+	private void runMatch(Integer mappingID, FilteredSchemaInfo sourceSchema, FilteredSchemaInfo targetSchema, String matcherName, ProgressThread progressThread) {
 		// If matched elements should be ignored, hide all user matched elements
-		if(harmonyModel.getPreferences().getIgnoreMatchedElements())
-		{
+		if (harmonyModel.getPreferences().getIgnoreMatchedElements()) {
 			// Use copies of the filtered schema info
 			sourceSchema = sourceSchema.copy();
 			targetSchema = targetSchema.copy();
@@ -193,9 +189,8 @@ public class MatchThread extends Thread
 			// Identify all user matched elements
 			HashSet<Integer> sourceElements = new HashSet<Integer>(sourceSchema.getHiddenElements());
 			HashSet<Integer> targetElements = new HashSet<Integer>(targetSchema.getHiddenElements());
-			for(MappingCell mappingCell : mapping.getMappingCells())
-				if(mappingCell.isValidated())
-				{
+			for (MappingCell mappingCell : mapping.getMappingCells())
+				if(mappingCell.isValidated()) {
 					sourceElements.addAll(Arrays.asList(mappingCell.getInput()));
 					targetElements.add(mappingCell.getOutput());
 				}
@@ -207,21 +202,19 @@ public class MatchThread extends Thread
 		
 		// Generate the match scores for the left and right roots
 		merger.initialize(sourceSchema, targetSchema, typeMappings);
-		for(MatchVoter voter : voters)
-		{
-			progressThread.setCurrentVoter(voter);
-			voter.initialize(sourceSchema, targetSchema, typeMappings);
-			merger.addVoterScores(voter.match());
+		for (MatchVoter matcher : matchers) {
+			progressThread.setCurrentMatcher(matcher);
+			matcher.initialize(sourceSchema, targetSchema, typeMappings);
+			merger.addMatcherScores(matcher.match());
 		}
 		MatchScores matchScores =  merger.getMatchScores();
 
 		// Store the generated mapping cells
 		ArrayList<MappingCell> mappingCells = new ArrayList<MappingCell>();
 		MappingManager manager = harmonyModel.getMappingManager();
-		for(MatchScore matchScore : matchScores.getScores())
-		{	
+		for(MatchScore matchScore : matchScores.getScores()) {	
 			// Don't proceed if process has been stopped
-			if(stop) { return; }
+			if (stop) { return; }
 
 			// Don't store mapping cells which were already validated
 			Integer mappingCellID = manager.getMappingCellID(matchScore.getElement1(), matchScore.getElement2());
@@ -241,27 +234,29 @@ public class MatchThread extends Thread
 	}
 
 	/** Runs the thread */
-	public void run()
-	{
+	public void run() {
 		// Generate the matcher name
 		String matcherName = getMatcherName();
 
 		// Retrieve the visible mappings
 		ArrayList<ProjectMapping> mappings = new ArrayList<ProjectMapping>();
 		FilterManager filters = harmonyModel.getFilters();
-		for(ProjectMapping mapping : harmonyModel.getMappingManager().getMappings())
-			if(mapping.isVisible() && filters.inFocus(HarmonyConsts.LEFT, mapping.getSourceId()) && filters.inFocus(HarmonyConsts.RIGHT, mapping.getTargetId()))
+		for (ProjectMapping mapping : harmonyModel.getMappingManager().getMappings()) {
+			if (mapping.isVisible() && filters.inFocus(HarmonyConsts.LEFT, mapping.getSourceId()) && filters.inFocus(HarmonyConsts.RIGHT, mapping.getTargetId())) {
 				mappings.add(mapping);
+			}
+		}
 
 		// Gather up the schema info
 		HashMap<Integer,FilteredSchemaInfo> schemaInfoList = new HashMap<Integer,FilteredSchemaInfo>();
-		for(ProjectMapping mapping : mappings)
-		{
+		for (ProjectMapping mapping : mappings) {
 			Integer sourceID = mapping.getSourceId(), targetID = mapping.getTargetId();
-			if(!schemaInfoList.containsKey(sourceID))
+			if (!schemaInfoList.containsKey(sourceID)) {
 				schemaInfoList.put(sourceID, getFilteredSchemaInfo(sourceID,HarmonyConsts.LEFT));
-			if(!schemaInfoList.containsKey(targetID))
+			}
+			if (!schemaInfoList.containsKey(targetID)) {
 				schemaInfoList.put(targetID, getFilteredSchemaInfo(targetID,HarmonyConsts.RIGHT));
+			}
 		}
 
 		// Create a thread for monitoring the progress of the match process
@@ -270,10 +265,9 @@ public class MatchThread extends Thread
 		progressThread.setTotalMappings(mappings.size());
 
 		// Matches all left schemas to all right schemas
-		for(ProjectMapping mapping : mappings)
-		{
+		for (ProjectMapping mapping : mappings) {
 			// Don't proceed if the matching has been stopped
-			if(stop) { break; }
+			if (stop) { break; }
 
 			// Get schema info
 			FilteredSchemaInfo sourceSchema = schemaInfoList.get(mapping.getSourceId());
@@ -293,15 +287,18 @@ public class MatchThread extends Thread
 		progressThread.stopThread();
 
 		// Inform listeners when the matching is completed
-		for(MatchListener listener : listeners)
+		for (MatchListener listener : listeners) {
 			listener.matchCompleted();
+		}
 	}
 	
 	/** Stops the matching process */
-	public void stopThread()
-		{ stop = true; }
+	public void stopThread() {
+		stop = true;
+	}
 
 	/** Adds a match listener */
-	public void addListener(MatchListener listener)
-		{ listeners.add(listener); }
+	public void addListener(MatchListener listener) {
+		listeners.add(listener);
+	}
 }

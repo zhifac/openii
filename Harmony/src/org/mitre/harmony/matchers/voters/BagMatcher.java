@@ -6,15 +6,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.mitre.harmony.matchers.VoterScore;
-import org.mitre.harmony.matchers.VoterScores;
+import org.mitre.harmony.matchers.MatcherScore;
+import org.mitre.harmony.matchers.MatcherScores;
 import org.mitre.schemastore.model.SchemaElement;
 
 /** Bag Matcher Class */
 abstract public class BagMatcher extends MatchVoter
 {
 	/** Constant defining the score ceiling */
-	public final static double SCORE_CEILING=10;
+	public final static double SCORE_CEILING = 10;
 
 	/** Generates the word weights */
 	protected HashMap<String,Double> getWordWeights(List<SchemaElement> sourceElements, List<SchemaElement> targetElements, HashMap<Integer,WordBag> wordBags)
@@ -56,7 +56,7 @@ abstract public class BagMatcher extends MatchVoter
 	}
 
 	/** Compute the voter score */
-	protected static VoterScore computeScore(WordBag sourceBag, WordBag targetBag, HashMap<String,Double> wordWeights)
+	protected static MatcherScore computeScore(WordBag sourceBag, WordBag targetBag, HashMap<String,Double> wordWeights)
 	{
 		// Calculate the source score
 		Double sourceScore = 0.0;
@@ -78,11 +78,11 @@ abstract public class BagMatcher extends MatchVoter
 
 		// Return the voter score
 		if(intersectionScore ==0) return null;
-		return new VoterScore(intersectionScore, Math.min(sourceScore, targetScore));
+		return new MatcherScore(intersectionScore, Math.min(sourceScore, targetScore));
 	}
 	
 	/** Compute the voter scores */
-	protected VoterScores computeScores(List<SchemaElement> sourceElements, List<SchemaElement> targetElements, HashMap<Integer,WordBag> wordBags)
+	protected MatcherScores computeScores(List<SchemaElement> sourceElements, List<SchemaElement> targetElements, HashMap<Integer,WordBag> wordBags)
 	{
 		// Sets the completed and total comparisons
 		completedComparisons = 0;
@@ -92,7 +92,7 @@ abstract public class BagMatcher extends MatchVoter
 		HashMap<String,Double> wordWeights = getWordWeights(sourceElements, targetElements, wordBags);
 		
 		// Generate the scores
-		VoterScores scores = new VoterScores(SCORE_CEILING);
+		MatcherScores scores = new MatcherScores(SCORE_CEILING);
 		for(SchemaElement sourceElement : sourceElements)
 			for(SchemaElement targetElement : targetElements)
 			{
@@ -101,7 +101,7 @@ abstract public class BagMatcher extends MatchVoter
 					{
 						WordBag sourceBag = wordBags.get(sourceElement.getId());
 						WordBag targetBag = wordBags.get(targetElement.getId());
-						VoterScore score = computeScore(sourceBag, targetBag, wordWeights);
+						MatcherScore score = computeScore(sourceBag, targetBag, wordWeights);
 						if(score!=null) scores.setScore(sourceElement.getId(), targetElement.getId(), score);
 					}
 				completedComparisons++;

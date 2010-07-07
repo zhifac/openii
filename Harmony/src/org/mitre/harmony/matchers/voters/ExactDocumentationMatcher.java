@@ -4,8 +4,8 @@ package org.mitre.harmony.matchers.voters;
 
 import java.util.ArrayList;
 
-import org.mitre.harmony.matchers.VoterScore;
-import org.mitre.harmony.matchers.VoterScores;
+import org.mitre.harmony.matchers.MatcherScore;
+import org.mitre.harmony.matchers.MatcherScores;
 import org.mitre.schemastore.model.SchemaElement;
 
 /** Edit Distance Matcher Class */
@@ -19,7 +19,7 @@ public class ExactDocumentationMatcher extends MatchVoter
 		{ return "Exact Documentation Matcher"; }
 	
 	/** Generates scores for the specified elements */
-	public VoterScores match()
+	public MatcherScores match()
 	{
 		// Get the source and target elements
 		ArrayList<SchemaElement> sourceElements = schema1.getFilteredElements();
@@ -30,14 +30,14 @@ public class ExactDocumentationMatcher extends MatchVoter
 		totalComparisons = sourceElements.size() * targetElements.size();
 		
 		// Generate the scores
-		VoterScores scores = new VoterScores(SCORE_CEILING);		
+		MatcherScores scores = new MatcherScores(SCORE_CEILING);		
 		for(SchemaElement sourceElement : sourceElements)
 			for(SchemaElement targetElement : targetElements)
 				if(isAllowableMatch(sourceElement, targetElement))
 				{
 					if(scores.getScore(sourceElement.getId(), targetElement.getId())==null)
 					{
-						VoterScore score = matchElements(sourceElement, targetElement);
+						MatcherScore score = matchElements(sourceElement, targetElement);
 						if(score != null) scores.setScore(sourceElement.getId(), targetElement.getId(), score);
 					}
 					completedComparisons++;
@@ -46,18 +46,18 @@ public class ExactDocumentationMatcher extends MatchVoter
 	}
 
 	/** Matches a single pair of elements */
-	private static VoterScore matchElements(SchemaElement sourceElement, SchemaElement targetElement)
+	private static MatcherScore matchElements(SchemaElement sourceElement, SchemaElement targetElement)
 		{ return matchStrings(sourceElement.getDescription(), targetElement.getDescription()); }
 	
 	/** Returns a score for the matched strings */
-	private static VoterScore matchStrings(String sourceString, String targetString)
+	private static MatcherScore matchStrings(String sourceString, String targetString)
 	{
 		// Return no score if the strings don't match
 		if(!sourceString.equalsIgnoreCase(targetString)) return null;
 
 		// Otherwise, return a score equivalent to the total length of the string
 		Double totalLength = 2.0*sourceString.length();
-		return new VoterScore(totalLength, totalLength);
+		return new MatcherScore(totalLength, totalLength);
 	}
 	
 }

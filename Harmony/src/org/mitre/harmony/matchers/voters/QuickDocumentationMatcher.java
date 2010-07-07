@@ -7,8 +7,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 import org.mitre.harmony.matchers.ElementPair;
-import org.mitre.harmony.matchers.VoterScore;
-import org.mitre.harmony.matchers.VoterScores;
+import org.mitre.harmony.matchers.MatcherScore;
+import org.mitre.harmony.matchers.MatcherScores;
 import org.mitre.schemastore.model.SchemaElement;
 
 /** Quick Documentation Matcher Class */
@@ -19,14 +19,14 @@ public class QuickDocumentationMatcher extends EntityMatcher
 		{ return "Quick Documentation"; }
 	
 	/** Generates scores for the specified elements */
-	public VoterScores match()
+	public MatcherScores match()
 	{
 		// Retrieve the source and target entities
 		EntityMap sourceEntities = getEntities(schema1);
 		EntityMap targetEntities = getEntities(schema2);
 	
 		// Identify best matches between entities
-		VoterScores entityScores = match(sourceEntities, targetEntities);
+		MatcherScores entityScores = match(sourceEntities, targetEntities);
 		HashSet<ElementPair> bestMatches = getBestMatches(entityScores);
 
 		// Sets the completed and total comparisons
@@ -65,7 +65,7 @@ public class QuickDocumentationMatcher extends EntityMatcher
 		HashMap<String,Double> wordWeights = getWordWeights(new ArrayList<SchemaElement>(sourceElements), new ArrayList<SchemaElement>(targetElements), wordBags);
 		
 		// Generate element scores
-		VoterScores scores = new VoterScores(SCORE_CEILING);
+		MatcherScores scores = new MatcherScores(SCORE_CEILING);
 		for(ElementPair pair : pairs)
 		{
 			// Get the source and target elements
@@ -75,7 +75,7 @@ public class QuickDocumentationMatcher extends EntityMatcher
 			{
 				WordBag sourceBag = wordBags.get(sourceElement.getId());
 				WordBag targetBag = wordBags.get(targetElement.getId());
-				VoterScore score = computeScore(sourceBag, targetBag, wordWeights);
+				MatcherScore score = computeScore(sourceBag, targetBag, wordWeights);
 				if(score!=null) scores.setScore(sourceElement.getId(), targetElement.getId(), score);
 			}
 			completedComparisons++;
@@ -91,7 +91,7 @@ public class QuickDocumentationMatcher extends EntityMatcher
 	}
 	
 	/** Returns a list of the best matches */
-	private HashSet<ElementPair> getBestMatches(VoterScores scores)
+	private HashSet<ElementPair> getBestMatches(MatcherScores scores)
 	{
 		// Scan through voter scores to identify best matches
 		HashMap<Integer,Double> bestScores = new HashMap<Integer,Double>();
@@ -99,7 +99,7 @@ public class QuickDocumentationMatcher extends EntityMatcher
 		for(ElementPair elementPair : scores.getElementPairs())
 		{
 			// Calculate rough match score (not as accurate as through merger)
-			VoterScore voterScore = scores.getScore(elementPair);
+			MatcherScore voterScore = scores.getScore(elementPair);
 			Double score = voterScore.getPositiveEvidence()/voterScore.getTotalEvidence();
 			
 			// Determine if the element pair is best match

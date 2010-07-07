@@ -6,8 +6,8 @@ import java.util.HashMap;
 
 import org.mitre.harmony.matchers.ElementPair;
 import org.mitre.harmony.matchers.MatchScores;
-import org.mitre.harmony.matchers.VoterScore;
-import org.mitre.harmony.matchers.VoterScores;
+import org.mitre.harmony.matchers.MatcherScore;
+import org.mitre.harmony.matchers.MatcherScores;
 
 /**
  * The basic vote merger for merging together match voters
@@ -16,7 +16,7 @@ import org.mitre.harmony.matchers.VoterScores;
 public class VoteMerger extends MatchMerger
 {
 	/** Stores the current summation of voter scores */
-	private HashMap<ElementPair,VoterScore> summedScores = new HashMap<ElementPair,VoterScore>();
+	private HashMap<ElementPair,MatcherScore> summedScores = new HashMap<ElementPair,MatcherScore>();
 	
 	/** Returns the name associated with this match merger */
 	public String getName()
@@ -27,7 +27,7 @@ public class VoteMerger extends MatchMerger
 		{ summedScores.clear(); }
 	
 	/** Adds a new set of voter scores to the vote merger */
-	protected void addVoterScoresToMerger(VoterScores voterScores)
+	protected void addMatcherScoresToMerger(MatcherScores voterScores)
 	{
 		// Retrieve the score ceiling
 		Double scoreCeiling = voterScores.getScoreCeiling();
@@ -36,7 +36,7 @@ public class VoteMerger extends MatchMerger
 		for(ElementPair pair : voterScores.getElementPairs())
 		{
 			// Get the voter score for the specified pair of elements
-			VoterScore voterScore = voterScores.getScore(pair);
+			MatcherScore voterScore = voterScores.getScore(pair);
 				
 			// Calculate the positive evidence
 			double positiveEvidence = Math.min(scoreCeiling, voterScore.getPositiveEvidence());
@@ -49,11 +49,11 @@ public class VoteMerger extends MatchMerger
 				totalEvidence += Math.log(1+voterScore.getTotalEvidence()-scoreCeiling)/Math.log(2);
 				
 			// Generate and store the new summed score
-			VoterScore summedScore = summedScores.get(pair);
-			if(summedScore==null) summedScore = new VoterScore(0.0,0.0);
+			MatcherScore summedScore = summedScores.get(pair);
+			if(summedScore==null) summedScore = new MatcherScore(0.0,0.0);
 			Double newPositiveEvidence = summedScore.getPositiveEvidence() + positiveEvidence;
 			Double newTotalvidence = summedScore.getTotalEvidence() + totalEvidence;
-			VoterScore newSummedScore = new VoterScore(newPositiveEvidence,newTotalvidence);
+			MatcherScore newSummedScore = new MatcherScore(newPositiveEvidence,newTotalvidence);
 			summedScores.put(pair,newSummedScore);
 		}
 	}
@@ -65,7 +65,7 @@ public class VoteMerger extends MatchMerger
 		for(ElementPair pair : summedScores.keySet())
 		{
 			// Retrieve the specified score
-			VoterScore score = summedScores.get(pair);
+			MatcherScore score = summedScores.get(pair);
 			if(score.getTotalEvidence()<=0) continue;
 			double positiveEvidence = score.getPositiveEvidence();
 			double totalEvidence = score.getTotalEvidence();

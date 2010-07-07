@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
-import org.mitre.harmony.matchers.VoterScores;
+import org.mitre.harmony.matchers.MatcherScores;
 import org.mitre.schemastore.client.SchemaStoreClient;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
@@ -31,7 +31,7 @@ public class MappingMatcher extends BagMatcher
 	public String getName() { return "Mapping"; }
 
 	/** Generates match scores for the specified elements */
-	public VoterScores match()
+	public MatcherScores match()
 	{				
 		// Create word bags for the source elements
 		ArrayList<SchemaElement> sourceElements = schema1.getFilteredElements();
@@ -58,7 +58,7 @@ public class MappingMatcher extends BagMatcher
 			// Generate the match scores
 			return computeScores(sourceElements, targetElements, wordBags);
 		}
-		return new VoterScores(SCORE_CEILING);
+		return new MatcherScores(SCORE_CEILING);
 	}
 
 	/** Returns the associated mappings */

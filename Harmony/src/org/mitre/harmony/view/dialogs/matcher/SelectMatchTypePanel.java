@@ -30,6 +30,7 @@ import javax.swing.border.LineBorder;
 import org.mitre.harmony.matchers.MatchTypeMappings;
 import org.mitre.harmony.model.HarmonyConsts;
 import org.mitre.harmony.model.HarmonyModel;
+import org.mitre.harmony.view.dialogs.matcher.wizard.Wizard;
 import org.mitre.harmony.view.dialogs.matcher.wizard.WizardPanel;
 import org.mitre.schemastore.model.Attribute;
 import org.mitre.schemastore.model.Containment;
@@ -40,10 +41,7 @@ import org.mitre.schemastore.model.Relationship;
 import org.mitre.schemastore.model.SchemaElement;
 
 /** Constructs the type pane for the matcher wizard */
-public class SelectMatchTypePane extends WizardPanel implements ActionListener {
-    /** Stores the Harmony model for reference */
-    private HarmonyModel harmonyModel;
-
+public class SelectMatchTypePanel extends WizardPanel implements ActionListener {
 	/** Stores the type configuration pane */
 	private MatchTypeConfigPane typeConfigPane = null;
 
@@ -51,16 +49,15 @@ public class SelectMatchTypePane extends WizardPanel implements ActionListener {
 	private JPanel checkboxes = new JPanel();
 
 	/** Constructs the type pane */
-    public SelectMatchTypePane(Integer panelId, HarmonyModel harmonyModel) {
-    	this.panelId = panelId;
-    	this.harmonyModel = harmonyModel;
+    public SelectMatchTypePanel(Wizard wizard, HarmonyModel harmonyModel) {
+    	super.setWizard(wizard);
 
 		// Initialize the layout of the type pane
-		JPanel pane = getPanel();
-		pane.setBorder(new CompoundBorder(new EmptyBorder(10,10,10,10),new CompoundBorder(new LineBorder(Color.lightGray),new EmptyBorder(5,5,5,5))));
-		pane.setLayout(new BorderLayout());
-		pane.add(getTypeGridPane(harmonyModel), BorderLayout.EAST);
-		pane.add(typeConfigPane = new MatchTypeConfigPane(), BorderLayout.WEST);
+		JPanel panel = getPanel();
+		panel.setBorder(new CompoundBorder(new EmptyBorder(10,10,10,10),new CompoundBorder(new LineBorder(Color.lightGray),new EmptyBorder(5,5,5,5))));
+		panel.setLayout(new BorderLayout());
+		panel.add(getTypeGridPane(harmonyModel), BorderLayout.EAST);
+		panel.add(typeConfigPane = new MatchTypeConfigPane(), BorderLayout.WEST);
     }
 
 	/** Returns the text width */
@@ -264,7 +261,7 @@ public class SelectMatchTypePane extends WizardPanel implements ActionListener {
 	}
 
 	/** Returns the type mappings */
-	public MatchTypeMappings getMatchTypeMappings() {
+	private MatchTypeMappings getMatchTypeMappings() {
 		// Retrieves all selected match voters from the dialog
 		MatchTypeMappings matchTypeMappings = null;
 		if (!typeConfigPane.matchAllButton.isSelected()) {
@@ -283,6 +280,17 @@ public class SelectMatchTypePane extends WizardPanel implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		typeConfigPane.customButton.setSelected(true);
 		MatchTypeMappings matchTypeMappings = getMatchTypeMappings();
-		getWizard().setNextFinishButtonEnabled(matchTypeMappings == null || matchTypeMappings.size() > 0);
+    	getWizard().setSelectedMatchTypeMappings(matchTypeMappings);
+		getWizard().setNextButtonEnabled(matchTypeMappings == null || matchTypeMappings.size() > 0);
 	}
+
+    /** Handles the hiding of the match pane */
+    public void aboutToHidePanel() {
+    }
+
+    /** called right before this pane is displayed */
+	public void aboutToDisplayPanel() {}
+
+	/** called when this pane is displayed */
+	public void displayingPanel() {}
 }

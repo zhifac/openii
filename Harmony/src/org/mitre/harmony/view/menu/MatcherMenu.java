@@ -11,6 +11,7 @@ import javax.swing.AbstractAction;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 
 import org.mitre.harmony.matchers.MatcherManager;
 import org.mitre.harmony.matchers.mergers.MatchMerger;
@@ -19,33 +20,28 @@ import org.mitre.harmony.matchers.voters.MatchVoter;
 import org.mitre.harmony.model.HarmonyConsts;
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.project.ProjectManager;
-import org.mitre.harmony.view.dialogs.matcher.MatchingStatusPane;
-import org.mitre.harmony.view.dialogs.matcher.SelectMatchersPane;
-import org.mitre.harmony.view.dialogs.matcher.SelectMatchOptionsPane;
-import org.mitre.harmony.view.dialogs.matcher.SelectMatchTypePane;
 import org.mitre.harmony.view.dialogs.matcher.wizard.Wizard;
-import org.mitre.harmony.view.dialogs.matcher.wizard.WizardPanel;
 
 /** Menu to display all available matchers */
-public class MatcherMenu extends AbstractMenu
-{
+public class MatcherMenu extends AbstractMenu {
 	/** Stores the Harmony model */
 	private HarmonyModel harmonyModel;
 
 	/** Initializes the matcher menu to display all installed matchers */
-	public MatcherMenu(HarmonyModel harmonyModel)
-	{
+	public MatcherMenu(HarmonyModel harmonyModel) {
 		super("Matchers");
 		this.harmonyModel = harmonyModel;
 		setMnemonic(KeyEvent.VK_M);
 
 		// Place all matchers into menu
-		for (MatchMerger merger : MatcherManager.getMergers())
+		for (MatchMerger merger : MatcherManager.getMergers()) {
 			add(new MatcherMenuItem(merger));
+		}
 
 		// Place all match voters into menu
-		for (MatchVoter matchVoter : MatcherManager.getVisibleVoters())
+		for (MatchVoter matchVoter : MatcherManager.getVisibleMatchers()) {
 			add(new MatchVoterMenuItem(matchVoter));
+		}
 
 		// Add a menu checkbox to specify if user matched elements should be ignored in matching
 		addSeparator();
@@ -53,41 +49,38 @@ public class MatcherMenu extends AbstractMenu
 	}
 
 	/** Class for handling match voter menu items */
-	private class MatchVoterMenuItem extends JMenuItem implements ActionListener
-	{
+	private class MatchVoterMenuItem extends JMenuItem implements ActionListener {
 		// Stores the voter associated with this menu item
 		private MatchVoter voter;
 
 		/** Initializes the match voter menu item */
-		MatchVoterMenuItem(MatchVoter voter)
-		{
+		MatchVoterMenuItem(MatchVoter voter) {
 			this.voter = voter;
 			setText(voter.getName());
 			addActionListener(this);
 		}
 
 		/** Handles the selection of this match voter */
-		public void actionPerformed(ActionEvent e)
-		{
+		public void actionPerformed(ActionEvent e) {
+			if (!checkSchemasExist()) { return; }
+
 			ArrayList<MatchVoter> voters = new ArrayList<MatchVoter>();
 			voters.add(voter);
-			launchMatchWizard(voters,new VoteMerger(),false);
+			launchMatchWizard(voters, new VoteMerger(), false);
 		}
 	}
 
 	/** Class for handling matcher menu */
-	private class MatcherMenuItem extends JMenu implements ActionListener
-	{
+	private class MatcherMenuItem extends JMenu implements ActionListener {
 		// Stores the voter associated with this menu
 		private MatchMerger merger;
 
 		// Stores the menu items which may be selected
 		JMenuItem fullMatch = new JMenuItem("Run All Matchers");
-		JMenuItem customMatch = new JMenuItem("Run Advanced Matchers...");
+		JMenuItem customMatch = new JMenuItem("Run Custom Matchers...");
 
 		/** Initializes the matcher menu */
-		MatcherMenuItem(MatchMerger merger)
-		{
+		MatcherMenuItem(MatchMerger merger) {
 			this.merger = merger;
 			setText(merger.getName());
 
@@ -101,51 +94,44 @@ public class MatcherMenu extends AbstractMenu
 		}
 
 		/** Handles the selection of this match voter */
-		public void actionPerformed(ActionEvent e)
-		{
-			// No need to proceed if no schemas exist on a specific side
-			ProjectManager projectManager = harmonyModel.getProjectManager();
-			Integer leftSchemas = projectManager.getSchemaElements(HarmonyConsts.LEFT).size();
-			Integer rightSchemas = projectManager.getSchemaElements(HarmonyConsts.RIGHT).size();
-			if (leftSchemas.equals(0) || rightSchemas.equals(0)) { return; }
+		public void actionPerformed(ActionEvent e) {
+			if (!checkSchemasExist()) { return; }
 
 			// Run the matcher (through the matcher wizard)
-			if (e.getSource() == fullMatch)
-				launchMatchWizard(MatcherManager.getDefaultVoters(), merger, false);
-			else if (e.getSource() == customMatch)
-				launchMatchWizard(MatcherManager.getDefaultVoters(), merger, true);
+			if (e.getSource() == fullMatch) {
+				launchMatchWizard(MatcherManager.getDefaultMatchers(), merger, false);
+			} else if (e.getSource() == customMatch) {
+				launchMatchWizard(MatcherManager.getDefaultMatchers(), merger, true);
+			}
 		}
 	}
 
+	private boolean checkSchemasExist() {
+		// No need to proceed if no schemas exist on a specific side
+		ProjectManager projectManager = harmonyModel.getProjectManager();
+		Integer leftSchemas = projectManager.getSchemaElements(HarmonyConsts.LEFT).size();
+		Integer rightSchemas = projectManager.getSchemaElements(HarmonyConsts.RIGHT).size();
+
+		// if no schemas are open, tell the user wtf
+		if (leftSchemas.equals(0) || rightSchemas.equals(0)) {
+			JOptionPane.showMessageDialog(getParent(), "No schemas are currently open to match.", "Matching Error", JOptionPane.ERROR_MESSAGE);
+			return false;
+		}
+
+		return true;
+	}
+
 	/** Launches the matcher wizard */
-	private void launchMatchWizard(ArrayList<MatchVoter> voters, MatchMerger merger, boolean custom)
-	{
+	private void launchMatchWizard(ArrayList<MatchVoter> voters, MatchMerger merger, boolean custom) {
 		// Generate the match wizard
-		Wizard wizard = new Wizard(harmonyModel.getBaseFrame());
+		Wizard wizard = new Wizard(harmonyModel);
         wizard.getDialog().setTitle("Run Schema Matchers");
-
-        // Generate the various wizard panes
-        SelectMatchersPane selectMatchersPane = new SelectMatchersPane(Wizard.SELECT_MATCHERS_PANEL, voters);
-        SelectMatchTypePane selectMatchTypePane = new SelectMatchTypePane(Wizard.SELECT_MATCH_TYPE_PANEL, harmonyModel);
-        SelectMatchOptionsPane selectMatchOptionsPane = new SelectMatchOptionsPane(Wizard.SELECT_MATCH_OPTIONS_PANEL);
-        MatchingStatusPane matchingStatusPane = new MatchingStatusPane(Wizard.MATCHING_STATUS_PANEL, harmonyModel, merger);
-
-        // Register the wizard panes
-        wizard.registerWizardPanel((WizardPanel)selectMatchersPane);
-        wizard.registerWizardPanel((WizardPanel)selectMatchTypePane);
-        wizard.registerWizardPanel((WizardPanel)selectMatchOptionsPane);
-        wizard.registerWizardPanel((WizardPanel)matchingStatusPane);
-
-        // Specify the screen to be displayed
-        wizard.setCurrentPanel(custom ? selectMatchersPane.getPanelId() : matchingStatusPane.getPanelId());
-        wizard.showDialog();
+        wizard.showDialog(voters, merger, custom);
 	}
 
 	/** Action for ignoring the matched elements */
-	private class IgnoreMatchedElementsAction extends AbstractAction
-	{
-		public void actionPerformed(ActionEvent e)
-		{
+	private class IgnoreMatchedElementsAction extends AbstractAction {
+		public void actionPerformed(ActionEvent e) {
 			boolean isSelected = ((JCheckBoxMenuItem)(e.getSource())).isSelected();			
 			harmonyModel.getPreferences().setIgnoredMatchedElements(isSelected);
 		}

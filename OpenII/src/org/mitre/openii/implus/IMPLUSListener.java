@@ -482,7 +482,7 @@ public class IMPLUSListener implements OpenIIListener {
 	 */
 	public void mappingModified(Integer mappingID) {
 		System.out.println("IMPLUS: mappingModified");
-		PLUSObject nv = markAsModified(loadOpenIIPLUSObject(MAPPING, mappingID)); 
+		markAsModified(loadOpenIIPLUSObject(MAPPING, mappingID)); 
 	}
 
 	/**
@@ -567,7 +567,7 @@ public class IMPLUSListener implements OpenIIListener {
 	 */	
 	public void projectModified(Integer projectID) {
 		System.out.println("IMPLUS: projectModified"); 
-		PLUSObject nv = markAsModified(loadOpenIIPLUSObject("project", projectID));
+		markAsModified(loadOpenIIPLUSObject("project", projectID));
 	}
 
 	/**
@@ -583,7 +583,7 @@ public class IMPLUSListener implements OpenIIListener {
 	public void schemaAdded(Integer schemaID) {
 		System.out.println("IMPLUS: schemaAdded");
 		Repository repo = RepositoryManager.getSelectedRepository();
-		Schema sch = OpenIIManager.getSchema(schemaID); 
+		Schema sch = OpenIIManager.getSchema(schemaID);
 		
 		try { 
 			PLUSObject obj = createPLUSDataObject(SCHEMA, schemaID); 
@@ -607,7 +607,7 @@ public class IMPLUSListener implements OpenIIListener {
 	 */
 	public void schemaModified(Integer schemaID) {
 		System.out.println("IMPLUS: schemaModified"); 		
-		PLUSObject nv = markAsModified(loadOpenIIPLUSObject(SCHEMA, schemaID));
+		markAsModified(loadOpenIIPLUSObject(SCHEMA, schemaID));
 	}
 
 	/**

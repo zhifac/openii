@@ -21,16 +21,16 @@ import org.w3c.dom.NodeList;
  * @author CWOLF
  */
 public class MatcherManager {
-	/** Stores a listing of all match voters */
-	static private ArrayList<MatchVoter> voters = new ArrayList<MatchVoter>();
+	/** Stores a listing of all match */
+	static private ArrayList<MatchVoter> matchers = new ArrayList<MatchVoter>();
 
 	/** Stores a listing of all match mergers */
 	static private ArrayList<MatchMerger> mergers = new ArrayList<MatchMerger>();
 
-	/** Stores a listing of all match voter options */
-	static private HashMap<String, ArrayList<MatcherOption>> voterOptions = new HashMap<String, ArrayList<MatcherOption>>();
+	/** Stores a listing of all matcher options */
+	static private HashMap<String, ArrayList<MatcherOption>> matcherOptions = new HashMap<String, ArrayList<MatcherOption>>();
 
-	/** Initializes the matcher manager with all defined match voters and mergers */
+	/** Initializes the matcher manager with all defined matchers and mergers */
 	static {
 		try {
 			// using factory get an instance of document builder
@@ -43,28 +43,28 @@ public class MatcherManager {
 			// get the root element
 			Element root = dom.getDocumentElement();
 
-			// get all voters
+			// get all matchers
 			{
-				NodeList nodes = root.getElementsByTagName("voter");
+				NodeList nodes = root.getElementsByTagName("matcher");
 				if (nodes != null && nodes.getLength() > 0) {
 					for (int i = 0; i < nodes.getLength(); i++) {
 						// get the element and its attribute
 						Element node = (Element)nodes.item(i);
 
-						MatchVoter voter = null;
+						MatchVoter matcher = null;
 						try {
-							// create a new voter from this class id
-							Class voterClass = Class.forName(node.getAttribute("id"));
-							voter = (MatchVoter)voterClass.newInstance();
+							// create a new matcher from this class id
+							Class matcherClass = Class.forName(node.getAttribute("id"));
+							matcher = (MatchVoter)matcherClass.newInstance();
 	
-							// see if our voter is hidden or default
+							// see if our matcher is hidden or default
 							String attrHidden = node.getAttribute("hidden");
-							if (attrHidden.toLowerCase().equals("true")) { voter.setHidden(true); }
+							if (attrHidden.toLowerCase().equals("true")) { matcher.setHidden(true); }
 							String attrDefault = node.getAttribute("default");
-							if (attrDefault.toLowerCase().equals("true")) { voter.setDefault(true); }
+							if (attrDefault.toLowerCase().equals("true")) { matcher.setDefault(true); }
 
 						} catch (Exception ee) {
-							System.err.println("(E) MatchManager - Failed to locate voter class: " + ee.getMessage());
+							System.err.println("(E) MatchManager - Failed to locate matcher class: " + ee.getMessage());
 						}
 
 						ArrayList<MatcherOption> options = new ArrayList<MatcherOption>();
@@ -72,8 +72,6 @@ public class MatcherManager {
 							// get all the options for this matcher
 							NodeList optionNodes = node.getElementsByTagName("option");
 							if (optionNodes != null && optionNodes.getLength() > 0) {
-								voter.setConfigurable(true); // we have options!
-
 								for (int j = 0; j < optionNodes.getLength(); j++) {
 									Element optionNode = (Element)optionNodes.item(j);
 
@@ -90,15 +88,18 @@ public class MatcherManager {
 
 									// add this option to our temporary options list
 									options.add(new MatcherOption(id, type, name, selected));									
+									matcher.setConfigurable(true); // we have options!
 								}
 							}
 						} catch (Exception ee) {
-							System.err.println("(E) MatchManager - Failed to load voter options: " + ee.getMessage());
+							System.err.println("(E) MatchManager - Failed to load matcher options: " + ee.getMessage());
 						}
 
-						// add the voter to our master list
-						if (voter != null) { voters.add(voter); }
-						if (options.size() > 0) { voterOptions.put(voter.getClass().getName(), options); }
+						// if the matcher has options, add them to the options list
+						if (options.size() > 0) { matcherOptions.put(matcher.getClass().getName(), options); }
+
+						// add the matcher to our master list
+						if (matcher != null) { matchers.add(matcher); }
 					}
 				}
 			}
@@ -112,11 +113,11 @@ public class MatcherManager {
 						Element node = (Element)nodes.item(i);
 
 						try {
-							// create a new voter from this class id
+							// create a new merger from this class id
 							Class mergerClass = Class.forName(node.getAttribute("id"));
 							MatchMerger merger = (MatchMerger)mergerClass.newInstance();
 	
-							// add the voter to our master list
+							// add the merger to our master list
 							mergers.add(merger);
 						} catch (Exception ee) {
 							System.err.println("(E) MatchManager - Failed to locate merger class " + node.getAttribute("id"));
@@ -129,31 +130,31 @@ public class MatcherManager {
 		}
 	}
 
-	/** Returns the list of match voters */
-	static public ArrayList<MatchVoter> getVoters() {
-		return voters;
+	/** Returns the list of match matchers */
+	static public ArrayList<MatchVoter> getMatchers() {
+		return matchers;
 	}
 
-	/** Returns the list of default match voters */
-	static public ArrayList<MatchVoter> getDefaultVoters() {
-		ArrayList<MatchVoter> defaultVoters = new ArrayList<MatchVoter>();
-		for(MatchVoter voter : voters) {
-			if (voter.isDefault()) {
-				defaultVoters.add(voter);
+	/** Returns the list of default matchers */
+	static public ArrayList<MatchVoter> getDefaultMatchers() {
+		ArrayList<MatchVoter> defaultMatchers = new ArrayList<MatchVoter>();
+		for(MatchVoter matcher : matchers) {
+			if (matcher.isDefault()) {
+				defaultMatchers.add(matcher);
 			}
 		}
-		return defaultVoters;
+		return defaultMatchers;
 	}
 
-	/** Returns the list of visible match voters */
-	static public ArrayList<MatchVoter> getVisibleVoters() {
-		ArrayList<MatchVoter> visibleVoters = new ArrayList<MatchVoter>();
-		for (MatchVoter voter : voters) {
-			if (!voter.isHidden()) {
-				visibleVoters.add(voter);
+	/** Returns the list of visible matchers */
+	static public ArrayList<MatchVoter> getVisibleMatchers() {
+		ArrayList<MatchVoter> visibleMatchers = new ArrayList<MatchVoter>();
+		for (MatchVoter matcher : matchers) {
+			if (!matcher.isHidden()) {
+				visibleMatchers.add(matcher);
 			}
 		}
-		return visibleVoters;
+		return visibleMatchers;
 	}
 	
 	/** Returns the list of match mergers */
@@ -161,27 +162,27 @@ public class MatcherManager {
 		return mergers;
 	}
 
-	/** Return the list of options for a given voter */
-	static public ArrayList<MatcherOption> getVoterOptions(String id) {
-		// our "id" is the class name of the voter
-		if (voterOptions.containsKey(id)) {
-			return voterOptions.get(id);
+	/** Return the list of options for a given matcher */
+	static public ArrayList<MatcherOption> getMatcherOptions(String id) {
+		// our "id" is the class name of the matcher
+		if (matcherOptions.containsKey(id)) {
+			return matcherOptions.get(id);
 		} else {
 			return null;
 		}
 	}
 
 	/** Run the matchers to calculate match scores */
-	static public MatchScores getScores(FilteredSchemaInfo schemaInfo1, FilteredSchemaInfo schemaInfo2, ArrayList<MatchVoter> voters, MatchMerger merger) {
-		return getScores(schemaInfo1, schemaInfo2, voters, merger, null);
+	static public MatchScores getScores(FilteredSchemaInfo schemaInfo1, FilteredSchemaInfo schemaInfo2, ArrayList<MatchVoter> matchers, MatchMerger merger) {
+		return getScores(schemaInfo1, schemaInfo2, matchers, merger, null);
 	}
 	
 	/** Run the matchers to calculate match scores */
-	static public MatchScores getScores(FilteredSchemaInfo schema1, FilteredSchemaInfo schema2, ArrayList<MatchVoter> voters, MatchMerger merger, MatchTypeMappings typeMappings) {
+	static public MatchScores getScores(FilteredSchemaInfo schema1, FilteredSchemaInfo schema2, ArrayList<MatchVoter> matchers, MatchMerger merger, MatchTypeMappings typeMappings) {
 		merger.initialize(schema1, schema2, typeMappings);
-		for (MatchVoter voter : voters) {
-			voter.initialize(schema1, schema2, typeMappings);
-			merger.addVoterScores(voter.match());
+		for (MatchVoter matcher : matchers) {
+			matcher.initialize(schema1, schema2, typeMappings);
+			merger.addMatcherScores(matcher.match());
 		}
 		return merger.getMatchScores();
 	}

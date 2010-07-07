@@ -2,18 +2,30 @@ package org.mitre.harmony.view.dialogs.matcher.wizard;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
-import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.WindowAdapter;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
 import javax.swing.border.EmptyBorder;
+
+import org.mitre.harmony.matchers.MatchTypeMappings;
+import org.mitre.harmony.matchers.MatcherManager;
+import org.mitre.harmony.matchers.MatcherOption;
+import org.mitre.harmony.matchers.mergers.MatchMerger;
+import org.mitre.harmony.matchers.voters.MatchVoter;
+import org.mitre.harmony.model.HarmonyModel;
+import org.mitre.harmony.view.dialogs.matcher.SelectMatchersPanel;
+import org.mitre.harmony.view.dialogs.matcher.SelectMatchTypePanel;
+import org.mitre.harmony.view.dialogs.matcher.SelectMatchOptionsPanel;
+import org.mitre.harmony.view.dialogs.matcher.MatchingStatusPanel;
 
 /** Class defining the wizard */
 public class Wizard extends WindowAdapter implements PropertyChangeListener {
@@ -41,32 +53,38 @@ public class Wizard extends WindowAdapter implements PropertyChangeListener {
     /** Store reference to the panel for showing the wizard panel */
     private JPanel cardPanel;
 
+    // references the harmony model
+    private HarmonyModel harmonyModel;
+
     // References to the various wizard buttons
     private JButton backButton = new JButton();
     private JButton nextButton = new JButton();
     private JButton cancelButton = new JButton();
 
-    /** Generates a button with the specified action command */
-    private JPanel generateButton(JButton button, String command) {
-    	// Generate the button
-     	button.setActionCommand(command);
-    	button.addActionListener(wizardController);
-    	button.setFocusable(false);
+    // references controlling the panels
+    private WizardPanel currentPanel = null;
+    private HashMap<String, WizardPanel> panels = new HashMap<String, WizardPanel>();
 
-    	// Generate the button pane
-    	JPanel pane = new JPanel();
-    	pane.setBorder(new EmptyBorder(5,5,5,5));
-    	pane.setLayout(new BorderLayout());
-    	pane.add(button,BorderLayout.CENTER);
-    	return pane; 
-    }
+    // stores the list of matchers that the user has selected
+    private ArrayList<MatchVoter> selectedMatchers = null;
+
+    // stores the list of types that the user has selected
+    private MatchTypeMappings selectedMatchTypeMappings = null;
+
+    // stores the list of matcher options that the user has selected
+    private HashMap<String, ArrayList<MatcherOption>> selectedMatcherOptions = new HashMap<String, ArrayList<MatcherOption>>();
+
+    // stores the "advanced" mode flag
+    private boolean advancedMode = true;
 
     /** Constructs the wizard */
-    public Wizard(Frame owner) {
+    public Wizard(HarmonyModel harmonyModel) {
+    	this.harmonyModel = harmonyModel;
+
     	// Initialize the wizard model and controller
-        wizardController = new WizardController(this);       
+        wizardController = new WizardController(this);
     	wizardModel = new WizardModel();
-        wizardModel.addPropertyChangeListener(this);       
+        wizardModel.addPropertyChangeListener(this);
 
         // Generate the pane for displaying the wizard panel
         cardPanel = new JPanel();
@@ -87,19 +105,70 @@ public class Wizard extends WindowAdapter implements PropertyChangeListener {
         buttonPanel.add(buttonPane, java.awt.BorderLayout.SOUTH);
 
         // Generate the wizard dialog
-        wizardDialog = new JDialog(owner);         
+        wizardDialog = new JDialog(harmonyModel.getBaseFrame());
         wizardDialog.getContentPane().setLayout(new BorderLayout());
         wizardDialog.getContentPane().add(cardPanel, java.awt.BorderLayout.CENTER);
         wizardDialog.getContentPane().add(buttonPanel, java.awt.BorderLayout.SOUTH);
         wizardDialog.addWindowListener(this);
     }
 
-    /** Shows the wizard dialog */
-    public void showDialog() {    
-        wizardDialog.setModal(true);
-        wizardDialog.pack();
-        wizardDialog.setLocationRelativeTo(getDialog().getParent());
-        wizardDialog.setVisible(true);
+    /** Generates a button with the specified action command */
+    private JPanel generateButton(JButton button, String command) {
+    	// Generate the button
+     	button.setActionCommand(command);
+    	button.addActionListener(wizardController);
+    	button.setFocusable(false);
+
+    	// Generate the button pane
+    	JPanel pane = new JPanel();
+    	pane.setBorder(new EmptyBorder(5,5,5,5));
+    	pane.setLayout(new BorderLayout());
+    	pane.add(button,BorderLayout.CENTER);
+    	return pane; 
+    }
+
+    /** Resets the buttons to the rules of the currently displayed panel */
+    private void resetButtonsToPanelRules() {
+        // set the cancel button
+        wizardModel.setProperty(WizardModel.CANCEL_BUTTON_TEXT_PROPERTY, "Cancel");
+
+        // set the back button
+        // the back button is enabled as long as there is a panel to go back to
+        WizardPanel backPanel = getBackPanel();
+        wizardModel.setProperty(WizardModel.BACK_BUTTON_TEXT_PROPERTY, "Back");
+        wizardModel.setProperty(WizardModel.BACK_BUTTON_ENABLED_PROPERTY, (backPanel != null));
+
+        // sets the next/finish button
+        // if we are on the last panel (the matching status panel) disable the "next" and "back" button
+        // if we are on the second to last panel, turn the "next" button into a "finish" button
+        WizardPanel nextPanel = getNextPanel();
+        boolean currentIsMatchPane = getCurrentPanel() instanceof MatchingStatusPanel;
+        boolean nextIsMatchPane = (nextPanel != null && nextPanel instanceof MatchingStatusPanel);
+        wizardModel.setProperty(WizardModel.NEXT_BUTTON_ENABLED_PROPERTY, !currentIsMatchPane);
+        wizardModel.setProperty(WizardModel.NEXT_BUTTON_TEXT_PROPERTY, (currentIsMatchPane || nextIsMatchPane ? "Run" : "Next"));
+    }
+
+    /** Handles a change to a wizard property */
+    public void propertyChange(PropertyChangeEvent evt) {
+    	// change the buttons on the panel to match the rules of the current panel
+        if (evt.getPropertyName().equals(WizardModel.CURRENT_PANEL_DESCRIPTOR_PROPERTY))
+        	{ resetButtonsToPanelRules(); }
+
+        // set the text on the panel buttons to match the rules of the current panel
+        if (evt.getPropertyName().equals(WizardModel.NEXT_BUTTON_TEXT_PROPERTY))
+        	{ nextButton.setText(evt.getNewValue().toString()); }
+        if (evt.getPropertyName().equals(WizardModel.BACK_BUTTON_TEXT_PROPERTY))
+        	{ backButton.setText(evt.getNewValue().toString()); }
+        if (evt.getPropertyName().equals(WizardModel.CANCEL_BUTTON_TEXT_PROPERTY))
+        	{ cancelButton.setText(evt.getNewValue().toString()); }
+
+        // set the enabled state of the panel buttons to match the rules of the current panel
+        if (evt.getPropertyName().equals(WizardModel.NEXT_BUTTON_ENABLED_PROPERTY))
+        	{ nextButton.setEnabled(((Boolean)evt.getNewValue()).booleanValue()); }
+        if (evt.getPropertyName().equals(WizardModel.BACK_BUTTON_ENABLED_PROPERTY))
+        	{ backButton.setEnabled(((Boolean)evt.getNewValue()).booleanValue()); }
+        if (evt.getPropertyName().equals(WizardModel.CANCEL_BUTTON_ENABLED_PROPERTY))
+        	{ cancelButton.setEnabled(((Boolean)evt.getNewValue()).booleanValue()); }
     }
 
     /** Returns the wizard dialog */
@@ -112,69 +181,229 @@ public class Wizard extends WindowAdapter implements PropertyChangeListener {
     	return wizardModel;
     }
 
-    /** Registers the specified panel */
-    public void registerWizardPanel(WizardPanel panel) {
-        cardPanel.add(panel.getPanel(), panel.getPanelId().toString());
-        panel.setWizard(this);
-        wizardModel.registerPanel(panel, panel.getPanelId());
-    }
-
-    /** Retrieves the specified panel */
-    public WizardPanel getPanel(Integer id) {
-    	return wizardModel.getPanel(id);
-    }
-
-    /** Sets the currently displayed panel */
-    public void setCurrentPanel(Integer id) {
-    	// Informs old panel that it is about to be hidden
-        WizardPanel oldPanel = wizardModel.getCurrentPanel();
-        if (oldPanel != null) { oldPanel.aboutToHidePanel(); }
-
-        // Informs the new panel that it is about to be displayed
-        wizardModel.setCurrentPanel(id);
-        wizardModel.getCurrentPanel().aboutToDisplayPanel();
-
-        // Informs the new panel that it is being displayed
-        ((CardLayout)cardPanel.getLayout()).show(cardPanel, id.toString());
-        wizardModel.getCurrentPanel().displayingPanel();
-    }
-
-    /** Handles a change to a wizard property */
-    public void propertyChange(PropertyChangeEvent evt) {    
-        if (evt.getPropertyName().equals(WizardModel.CURRENT_PANEL_DESCRIPTOR_PROPERTY))
-        	{ wizardController.resetButtonsToPanelRules(); }
-        if (evt.getPropertyName().equals(WizardModel.NEXT_BUTTON_TEXT_PROPERTY))
-        	{ nextButton.setText(evt.getNewValue().toString()); }
-        if (evt.getPropertyName().equals(WizardModel.BACK_BUTTON_TEXT_PROPERTY))
-        	{ backButton.setText(evt.getNewValue().toString()); }
-        if (evt.getPropertyName().equals(WizardModel.CANCEL_BUTTON_TEXT_PROPERTY))
-        	{ cancelButton.setText(evt.getNewValue().toString()); }
-        if (evt.getPropertyName().equals(WizardModel.NEXT_BUTTON_ENABLED_PROPERTY))
-        	{ nextButton.setEnabled(((Boolean)evt.getNewValue()).booleanValue()); }
-        if (evt.getPropertyName().equals(WizardModel.BACK_BUTTON_ENABLED_PROPERTY))
-        	{ backButton.setEnabled(((Boolean)evt.getNewValue()).booleanValue()); }
-        if (evt.getPropertyName().equals(WizardModel.CANCEL_BUTTON_ENABLED_PROPERTY))
-        	{ cancelButton.setEnabled(((Boolean)evt.getNewValue()).booleanValue()); }
-    }
-
     /** Sets the back button as enabled/disabled */
     public void setBackButtonEnabled(boolean newValue) {
     	wizardModel.setProperty(WizardModel.BACK_BUTTON_ENABLED_PROPERTY, newValue);
     }
 
     /** Sets the next button as enabled/disabled */
-    public void setNextFinishButtonEnabled(boolean newValue) {
+    public void setNextButtonEnabled(boolean newValue) {
     	wizardModel.setProperty(WizardModel.NEXT_BUTTON_ENABLED_PROPERTY, newValue);
-    }
-
-    /* Sets the cancel button as enabled/disabled */
-    public void setCancelButtonEnabled(boolean newValue) {
-    	wizardModel.setProperty(WizardModel.CANCEL_BUTTON_ENABLED_PROPERTY, newValue);
     }
 
     /** Handles the closing of the wizard */
     public void close(int code) {
-        wizardModel.getCurrentPanel().aboutToHidePanel();
+        getCurrentPanel().aboutToHidePanel();
         wizardDialog.dispose();
+    }
+
+    /** Shows the wizard dialog */
+    public void showDialog(ArrayList<MatchVoter> matchers, MatchMerger merger, boolean custom) {
+    	// create our list of panels that could possibly exist
+		addPanel(new SelectMatchersPanel(this, matchers));
+		addPanel(new SelectMatchTypePanel(this, harmonyModel));
+    	addPanel(new MatchingStatusPanel(this, harmonyModel, merger));
+
+    	// this is all panels that contain options
+    	for (MatchVoter matcher : MatcherManager.getVisibleMatchers()) {
+    		if (matcher.isConfigurable()) {
+    			addPanel(new SelectMatchOptionsPanel(this, matcher.getClass().getName()));
+    		}
+    	}
+
+    	if (custom) {
+    		// load the matcher choosing panel
+    		setCurrentPanel(SelectMatchersPanel.class.getName());
+    	} else {
+    		// just run the matching status panel
+    		setCurrentPanel(MatchingStatusPanel.class.getName());
+    	}
+
+        wizardDialog.setModal(true);
+        wizardDialog.pack();
+        wizardDialog.setLocationRelativeTo(getDialog().getParent());
+        wizardDialog.setVisible(true);
+    }
+
+    /** BELOW ARE METHODS TO DETERMINE WHICH PANEL TO SHOW */
+    private String getMatchOptionsPanelId(MatchVoter matcher) {
+    	StringBuffer string = new StringBuffer();
+    	string.append(SelectMatchOptionsPanel.class.getName());
+    	string.append(" ");
+    	string.append(matcher.getClass().getName());
+    	return string.toString();
+    }
+
+    public void addPanel(WizardPanel panel) {
+        // if we don't have this panel in our list of panels already, put it there
+        if (!panels.containsKey(panel.toString())) {
+        	cardPanel.add(panel.getPanel(), panel.toString());
+        	panels.put(panel.toString(), panel);
+        }
+    }
+
+    public WizardPanel getCurrentPanel() {
+    	return currentPanel;
+    }
+
+    public void setCurrentPanel(String id) {
+    	WizardPanel panel = panels.get(id);
+
+    	// Informs old panel that it is about to be hidden
+        WizardPanel oldPanel = currentPanel;
+        if (oldPanel != null) { oldPanel.aboutToHidePanel(); }
+
+        // Informs the new panel that it is about to be displayed
+        currentPanel = panel;
+        if (oldPanel != currentPanel) { wizardModel.firePropertyChange(WizardModel.CURRENT_PANEL_DESCRIPTOR_PROPERTY, oldPanel, currentPanel); }
+        currentPanel.aboutToDisplayPanel();
+
+        // Informs the new panel that it is being displayed
+        ((CardLayout)cardPanel.getLayout()).show(cardPanel, currentPanel.toString());
+        currentPanel.displayingPanel();
+    }
+
+    public WizardPanel getNextPanel() {
+    	if (currentPanel == null) { return null; }
+
+    	// Panel 1: SelectMatchersPanel
+    	if (currentPanel instanceof SelectMatchersPanel) {
+    		// if we are in advanced mode, go to the match type panel, otherwise go to the last panel
+    		if (getAdvancedMode())  { return panels.get(SelectMatchTypePanel.class.getName()); }
+    		if (!getAdvancedMode()) { return panels.get(MatchingStatusPanel.class.getName()); }
+    	}
+
+    	// Panel 2: SelectMatchTypePanel
+    	if (currentPanel instanceof SelectMatchTypePanel) {
+    		// find the first matcher selected that has options and return that
+    		for (MatchVoter matcher : getSelectedMatchers()) {
+    			// only look at matchers that have options
+    			if (matcher.isConfigurable()) {
+    				return panels.get(getMatchOptionsPanelId(matcher));
+    			}
+        	}
+
+    		// if we are here, it means that no selected matchers had options, so we go to the status panel
+    		return panels.get(MatchingStatusPanel.class.getName());
+    	}
+
+    	// Panel 3: SelectMatchOptionsPanel
+    	if (currentPanel instanceof SelectMatchOptionsPanel) {
+    		// figure out which panel we are currently looking at, then choose the next one
+    		String lastPanelId = null;
+    		for (MatchVoter matcher : getSelectedMatchers()) {
+    			// only look at matchers that have options
+    			if (matcher.isConfigurable()) {
+					// see if the last matcher option panel is the panel currently being shown
+					// if it is, then we want to show this matcher's options panel
+    				if (lastPanelId != null && lastPanelId.equals(currentPanel.toString())) {
+    					return panels.get(getMatchOptionsPanelId(matcher));
+    				}
+    				lastPanelId = getMatchOptionsPanelId(matcher);
+    			}
+        	}
+
+    		// if we are here, it means that no selected matchers had options, so we go to the status panel
+    		return panels.get(MatchingStatusPanel.class.getName());
+    	}
+
+    	// Panel 4: MatchingStatusPanel
+    	if (currentPanel instanceof MatchingStatusPanel) {
+    		// the back/next buttons are disabled on the matching status panel
+    		return null;
+    	}
+
+    	return null;
+    }
+    
+    public WizardPanel getBackPanel() {
+    	if (currentPanel == null) { return null; }
+
+    	// Panel 1: SelectMatchersPanel
+    	if (currentPanel instanceof SelectMatchersPanel) {
+    		// there are no more panels before this one
+    		return null;
+    	}
+
+    	// Panel 2: SelectMatchTypePanel
+    	if (currentPanel instanceof SelectMatchTypePanel) {
+    		// we would only be at the select match type panel if we were in "advanced" mode
+    		return panels.get(SelectMatchersPanel.class.getName());
+    	}
+
+    	// Panel 3: SelectMatchOptionsPanel
+    	if (currentPanel instanceof SelectMatchOptionsPanel) {
+    		// figure out which panel we are currently looking at, then choose the previous one
+    		String lastPanelId = null;
+    		for (MatchVoter matcher : getSelectedMatchers()) {
+    			// only look at matchers that have options
+    			if (matcher.isConfigurable()) {
+					// see if this matcher option panel is the panel currently being shown
+					// if it is, then we want to show the last matcher's options panel
+    				if (lastPanelId != null && currentPanel.toString().equals(getMatchOptionsPanelId(matcher))) {
+    					return panels.get(lastPanelId);
+    				}
+    				lastPanelId = getMatchOptionsPanelId(matcher);
+    			}
+        	}
+
+    		// if we are here, it means that no selected matchers had options, so we go to the match type panel
+    		return panels.get(SelectMatchTypePanel.class.getName());
+    	}
+
+    	// Panel 4: MatchingStatusPanel
+    	if (currentPanel instanceof MatchingStatusPanel) {
+    		// the back/next buttons are disabled on the matching status panel
+    		return null;
+    	}
+
+    	return null;
+    }
+
+    /** BELOW ARE METHODS TO GET/SET DETAILS ABOUT THE MATCHER OPTIONS */
+
+    /** Returns the list of matchers that were selected by the user.
+        If the user did not select any matchers, return the default list. */
+    public ArrayList<MatchVoter> getSelectedMatchers() {
+    	if (selectedMatchers == null) {
+    		selectedMatchers = MatcherManager.getDefaultMatchers();
+    	}
+    	return selectedMatchers;
+    }
+    
+    public void setSelectedMatchers(ArrayList<MatchVoter> selectedMatchers) {
+    	this.selectedMatchers = selectedMatchers; 
+    }
+
+    /** Return what matcher type mappings have been chosen.
+     *  If no types have been selected, the default is just "null" */
+    public MatchTypeMappings getSelectedMatchTypeMappings() {
+    	return selectedMatchTypeMappings;
+    }
+
+    public void setSelectedMatchTypeMappings(MatchTypeMappings selectedMatchTypeMappings) {
+    	this.selectedMatchTypeMappings = selectedMatchTypeMappings;
+    }
+
+    /** Return any options selected for the specified matcher class.
+        If no options have been selected, it returns the default option set for that matcher. */
+    public ArrayList<MatcherOption> getSelectedMatcherOptions(String id) {
+    	if (!selectedMatcherOptions.containsKey(id)) {
+    		return MatcherManager.getMatcherOptions(id);
+    	}
+    	return selectedMatcherOptions.get(id);
+    }
+
+    public void setSelectedMatcherOptions(String id, ArrayList<MatcherOption> selectedMatcherOptions) {
+    	this.selectedMatcherOptions.put(id, selectedMatcherOptions);
+    }
+
+    /** Return whether we are running in "advanced" mode */
+    public void setAdvancedMode(boolean advancedMode) {
+    	this.advancedMode = advancedMode;
+    }
+    
+    public boolean getAdvancedMode() {
+    	return advancedMode;
     }
 }

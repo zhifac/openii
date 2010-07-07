@@ -161,7 +161,7 @@ public class QuickAlignEditor extends OpenIIEditor implements SelectionListener
 		
 		// Run matchers on the unassigned mapping cells
 		HashMap<Integer,ArrayList<Integer>> matches = new HashMap<Integer,ArrayList<Integer>>();
-		ArrayList<MatchVoter> voters = MatcherManager.getDefaultVoters();
+		ArrayList<MatchVoter> voters = MatcherManager.getDefaultMatchers();
 		voters.add(new MappingMatcher(RepositoryManager.getClient()));
 		MatchScores matchScores = MatcherManager.getScores(sourceFilter, targetFilter, voters, new VoteMerger());
 

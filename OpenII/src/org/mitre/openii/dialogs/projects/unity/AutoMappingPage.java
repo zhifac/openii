@@ -130,7 +130,7 @@ class AutoMappingPage extends WizardPage implements ModifyListener, SelectionLis
 		group.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
 		// Construct a list of all voters that can be selected
-		for (MatchVoter voter : MatcherManager.getVisibleVoters()) {
+		for (MatchVoter voter : MatcherManager.getVisibleMatchers()) {
 			MatchVoterCheckBox checkBox = new MatchVoterCheckBox(group, voter);
 			checkBox.addSelectionListener(this);
 			voterCheckBoxes.add(checkBox);

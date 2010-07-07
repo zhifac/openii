@@ -5,7 +5,7 @@ package org.mitre.harmony.matchers.voters;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.mitre.harmony.matchers.VoterScores;
+import org.mitre.harmony.matchers.MatcherScores;
 import org.mitre.schemastore.model.Containment;
 import org.mitre.schemastore.model.Entity;
 import org.mitre.schemastore.model.SchemaElement;
@@ -23,7 +23,7 @@ public class EntityMatcher extends BagMatcher
 		{ return "Entity Only"; }
 	
 	/** Generates scores for the specified elements */
-	public VoterScores match()
+	public MatcherScores match()
 	{
 		EntityMap sourceEntities = getEntities(schema1);
 		EntityMap targetEntities = getEntities(schema2);		
@@ -31,7 +31,7 @@ public class EntityMatcher extends BagMatcher
 	}
 	
 	/** Generates scores for the specified source and target entities */
-	protected VoterScores match(EntityMap sourceEntities, EntityMap targetEntities)
+	protected MatcherScores match(EntityMap sourceEntities, EntityMap targetEntities)
 	{
 		// Generate the word bags for each entity
 		HashMap<Integer,WordBag> wordBags = new HashMap<Integer,WordBag>();
