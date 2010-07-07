@@ -5,7 +5,7 @@ package org.mitre.harmony.matchers.voters;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.mitre.harmony.matchers.VoterScores;
+import org.mitre.harmony.matchers.MatcherScores;
 import org.mitre.schemastore.model.SchemaElement;
 
 /** Documentation Matcher Class */
@@ -15,7 +15,7 @@ public class DocumentationMatcher extends BagMatcher
 	public String getName() { return "Documentation Similarity"; }
 	
 	/** Generates the word bags for the schema elements */
-	protected VoterScores generateVoteScores(boolean useLabels)
+	protected MatcherScores generateVoteScores(boolean useLabels)
 	{
 		HashMap<Integer,WordBag> wordBags = new HashMap<Integer,WordBag>();
 
@@ -34,6 +34,6 @@ public class DocumentationMatcher extends BagMatcher
 	}
 	
 	/** Generates scores for the specified elements */
-	public VoterScores match()
+	public MatcherScores match()
 		{ return generateVoteScores(true); }
 }

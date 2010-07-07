@@ -4,20 +4,20 @@ import java.util.HashMap;
 import java.util.Set;
 
 /** Class for storing voter scores */
-public class VoterScores
+public class MatcherScores
 {	
 	/** Stores the score ceiling being used for these voter scores */
 	private Double scoreCeiling = null;
 	
 	/** Hash map for storing the voter scores */
-	private HashMap<ElementPair,VoterScore> scores = new HashMap<ElementPair,VoterScore>();
+	private HashMap<ElementPair,MatcherScore> scores = new HashMap<ElementPair,MatcherScore>();
 	
 	/** Constructs the voter scores object */
-	public VoterScores(Double scoreCeiling)
+	public MatcherScores(Double scoreCeiling)
 		{ this.scoreCeiling = scoreCeiling; }
 	
 	/** Sets the specified voter score */
-	public void setScore(Integer element1, Integer element2, VoterScore score)
+	public void setScore(Integer element1, Integer element2, MatcherScore score)
 		{ if(score!=null) scores.put(new ElementPair(element1,element2),score); }
 
 	/** Returns the score ceiling provided for these voter scores */
@@ -29,10 +29,10 @@ public class VoterScores
 		{ return scores.keySet(); }
 	
 	/** Returns the requested voter score */
-	public VoterScore getScore(ElementPair elementPair)
+	public MatcherScore getScore(ElementPair elementPair)
 		{ return scores.get(elementPair); }
 
 	/** Returns the requested voter score */
-	public VoterScore getScore(Integer element1, Integer element2)
+	public MatcherScore getScore(Integer element1, Integer element2)
 		{ return getScore(new ElementPair(element1,element2)); }
 }

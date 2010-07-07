@@ -4,8 +4,8 @@ package org.mitre.harmony.matchers.voters;
 
 import java.util.ArrayList;
 
-import org.mitre.harmony.matchers.VoterScore;
-import org.mitre.harmony.matchers.VoterScores;
+import org.mitre.harmony.matchers.MatcherScore;
+import org.mitre.harmony.matchers.MatcherScores;
 import org.mitre.schemastore.model.SchemaElement;
 
 /** Edit Distance Matcher Class */
@@ -30,7 +30,7 @@ public class EditDistanceMatcher extends MatchVoter
 	public String getName() { return "Name Similarity"; }
 	
 	/** Generates scores for the specified elements */
-	public VoterScores match()
+	public MatcherScores match()
 	{
 		// Get the source and target elements
 		ArrayList<SchemaElement> sourceElements = schema1.getFilteredElements();
@@ -41,14 +41,14 @@ public class EditDistanceMatcher extends MatchVoter
 		totalComparisons = sourceElements.size() * targetElements.size();
 		
 		// Generate the scores
-		VoterScores scores = new VoterScores(SCORE_CEILING);		
+		MatcherScores scores = new MatcherScores(SCORE_CEILING);		
 		for(SchemaElement sourceElement : sourceElements)
 			for(SchemaElement targetElement : targetElements)
 			{
 				if(isAllowableMatch(sourceElement, targetElement))
 					if(scores.getScore(sourceElement.getId(), targetElement.getId())==null)
 					{
-						VoterScore score = matchElements(sourceElement, targetElement);
+						MatcherScore score = matchElements(sourceElement, targetElement);
 						if(score != null) scores.setScore(sourceElement.getId(), targetElement.getId(), score);
 					}
 				completedComparisons++;
@@ -57,13 +57,13 @@ public class EditDistanceMatcher extends MatchVoter
 	}
 
 	/** Matches a single pair of elements */
-	private static VoterScore matchElements(SchemaElement sourceElement, SchemaElement targetElement)
+	private static MatcherScore matchElements(SchemaElement sourceElement, SchemaElement targetElement)
 	{
 		// Get character representations of the element names
 		return matchStrings(sourceElement.getName(), targetElement.getName());
 	}
 	
-	private static VoterScore matchStrings(String sourceString, String targetString) {
+	private static MatcherScore matchStrings(String sourceString, String targetString) {
 		char[] source = sourceString.toLowerCase().toCharArray();
 		char[] target = targetString.toLowerCase().toCharArray();
 		
@@ -97,12 +97,12 @@ public class EditDistanceMatcher extends MatchVoter
 		double totalEvidence = positive - negative;
 		
 		// modify what this procedure returns to return a MatchScore object.
-		return new VoterScore(positiveEvidence / CHARS_PER_EVIDENCE, totalEvidence / CHARS_PER_EVIDENCE);				
+		return new MatcherScore(positiveEvidence / CHARS_PER_EVIDENCE, totalEvidence / CHARS_PER_EVIDENCE);				
 	}
 	
 	public static void main(String[] args) {
 		System.out.println("" + "," + "");
-		VoterScore result = matchStrings("", "");
+		MatcherScore result = matchStrings("", "");
 		System.out.println(result.getPositiveEvidence());
 		System.out.println(result.getTotalEvidence());
 		System.out.println("Jolly" + "," + "Jolly");

@@ -3,7 +3,7 @@
 package org.mitre.harmony.matchers.voters;
 
 import org.mitre.harmony.matchers.MatchTypeMappings;
-import org.mitre.harmony.matchers.VoterScores;
+import org.mitre.harmony.matchers.MatcherScores;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.schemaInfo.FilteredSchemaInfo;
 
@@ -55,7 +55,7 @@ public abstract class MatchVoter {
 	}
 
 	/** Generates scores for the specified graphs */
-	abstract public VoterScores match();
+	abstract public MatcherScores match();
 	
 	/** Indicates if the specified elements can validly be mapped together */
 	final protected boolean isAllowableMatch(SchemaElement element1, SchemaElement element2) {

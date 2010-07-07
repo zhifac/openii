@@ -1,7 +1,7 @@
 package org.mitre.harmony.matchers;
 
 /** Class for storing a match score */
-public class VoterScore
+public class MatcherScore
 {
 	/** Stores the positive evidence */
 	private Double positiveEvidence;
@@ -10,11 +10,11 @@ public class VoterScore
 	private Double totalEvidence;
 	
 	/** Constructs the voter score */
-	public VoterScore(Double score)
+	public MatcherScore(Double score)
 		{ this.positiveEvidence = score; this.totalEvidence = 1.0; }	
 	
 	/** Constructs the voter score */
-	public VoterScore(Double positiveEvidence, Double totalEvidence)
+	public MatcherScore(Double positiveEvidence, Double totalEvidence)
 		{ this.positiveEvidence = positiveEvidence; this.totalEvidence = totalEvidence; }
 	
 	/** Returns the positive evidence */

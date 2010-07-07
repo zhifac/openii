@@ -22,7 +22,7 @@ import org.mitre.harmony.view.dialogs.matcher.wizard.Wizard;
 import org.mitre.harmony.view.dialogs.matcher.wizard.WizardPanel;
 
 /** Constructs the match pane for the matcher wizard */
-public class MatchingStatusPane extends WizardPanel implements MatchListener {
+public class MatchingStatusPanel extends WizardPanel implements MatchListener {
     /** Stores the Harmony model for reference */
     private HarmonyModel harmonyModel;
 
@@ -38,23 +38,23 @@ public class MatchingStatusPane extends WizardPanel implements MatchListener {
 	private JProgressBar overallProgressBar = new JProgressBar();
 
 	/** Constructs the match pane */
-    public MatchingStatusPane(Integer panelId, HarmonyModel harmonyModel, MatchMerger merger) {
-    	this.panelId = panelId;
+    public MatchingStatusPanel(Wizard wizard, HarmonyModel harmonyModel, MatchMerger merger) {
+    	super.setWizard(wizard);
     	this.harmonyModel = harmonyModel;
         this.merger = merger;
 
 		// Creates the progress pane
-		JPanel progressPane = new JPanel();
-		progressPane.setBorder(new CompoundBorder(new EmptyBorder(10,0,5,0),new CompoundBorder(new LineBorder(Color.gray), new EmptyBorder(5,10,5,10))));
-		progressPane.setLayout(new BoxLayout(progressPane,BoxLayout.Y_AXIS));
-		progressPane.add(generateProgressBarPane(voterProgressBarLabel, voterProgressBar));
-		progressPane.add(generateProgressBarPane(new JLabel("Overall Progress"), overallProgressBar));
+		JPanel panel = new JPanel();
+		panel.setBorder(new CompoundBorder(new EmptyBorder(10,0,5,0),new CompoundBorder(new LineBorder(Color.gray), new EmptyBorder(5,10,5,10))));
+		panel.setLayout(new BoxLayout(panel,BoxLayout.Y_AXIS));
+		panel.add(generateProgressBarPane(voterProgressBarLabel, voterProgressBar));
+		panel.add(generateProgressBarPane(new JLabel("Overall Progress"), overallProgressBar));
 
 		// Create the match pane
 		JPanel pane = getPanel();
 		pane.setLayout(new BorderLayout());
 		pane.add(new JLabel("Progress of schema matching..."),BorderLayout.NORTH);
-		pane.add(progressPane,BorderLayout.CENTER);
+		pane.add(panel,BorderLayout.CENTER);
     }
 
     /** Constructs a progress pane */
@@ -83,21 +83,19 @@ public class MatchingStatusPane extends WizardPanel implements MatchListener {
     /** Initializes the panel before being displayed */
     public void aboutToDisplayPanel() {
     	getWizard().setBackButtonEnabled(false);
-    	getWizard().setNextFinishButtonEnabled(false);
+    	getWizard().setNextButtonEnabled(false);
     }
 
     /** Generates the schema matches when the panel is being displayed */
     public void displayingPanel() {
-    	// Retrieve the voter information
-    	SelectMatchersPane matchVoterPane = (SelectMatchersPane)getWizard().getPanel(Wizard.SELECT_MATCHERS_PANEL);
-    	ArrayList<MatchVoter> voters = matchVoterPane.getSelectedMatchVoters();
+    	// retrieve matcher information
+    	ArrayList<MatchVoter> matchers = getWizard().getSelectedMatchers();
 
-    	// Retrieve the type information
-    	SelectMatchTypePane typePane = (SelectMatchTypePane)getWizard().getPanel(Wizard.SELECT_MATCH_TYPE_PANEL);
-    	MatchTypeMappings typeMappings = typePane.getMatchTypeMappings();
+    	// retriever matcher information
+    	MatchTypeMappings typeMappings = getWizard().getSelectedMatchTypeMappings();
 
     	// Starts the match thread
-    	matchThread = new MatchThread(harmonyModel, voters, merger, typeMappings);
+    	matchThread = new MatchThread(harmonyModel, matchers, merger, typeMappings);
         matchThread.addListener(this);
     	matchThread.start();
     }

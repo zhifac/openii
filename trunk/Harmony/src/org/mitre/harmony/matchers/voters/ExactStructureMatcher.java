@@ -5,8 +5,8 @@ package org.mitre.harmony.matchers.voters;
 import java.util.ArrayList;
 import java.util.HashSet;
 
-import org.mitre.harmony.matchers.VoterScore;
-import org.mitre.harmony.matchers.VoterScores;
+import org.mitre.harmony.matchers.MatcherScore;
+import org.mitre.harmony.matchers.MatcherScores;
 import org.mitre.schemastore.model.SchemaElement;
 
 /** Exact Structure Matcher Class */
@@ -16,7 +16,7 @@ public class ExactStructureMatcher extends MatchVoter
 	public String getName() { return "Exact Structure"; }
 	
 	/** Generates scores for the specified elements */
-	public VoterScores match()
+	public MatcherScores match()
 	{
 		// Get the source elements
 		ArrayList<SchemaElement> sourceElements = schema1.getFilteredElements();
@@ -26,7 +26,7 @@ public class ExactStructureMatcher extends MatchVoter
 		totalComparisons = sourceElements.size();
 		
 		// Go through all source elements
-		VoterScores scores = new VoterScores(100.0);
+		MatcherScores scores = new MatcherScores(100.0);
 		for(SchemaElement sourceElement : sourceElements)
 		{
 			// Retrieve all matching target elements
@@ -46,7 +46,7 @@ public class ExactStructureMatcher extends MatchVoter
 	
 			// Set scores for the matching target elements
 			for(Integer targetID : targetIDs)
-				scores.setScore(sourceElement.getId(), targetID, new VoterScore(100.0,100.0));								
+				scores.setScore(sourceElement.getId(), targetID, new MatcherScore(100.0,100.0));								
 
 			// Update the completed comparison count
 			completedComparisons++;

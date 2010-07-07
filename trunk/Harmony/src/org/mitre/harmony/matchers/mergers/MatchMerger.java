@@ -5,7 +5,7 @@ package org.mitre.harmony.matchers.mergers;
 import org.mitre.harmony.matchers.ElementPair;
 import org.mitre.harmony.matchers.MatchScores;
 import org.mitre.harmony.matchers.MatchTypeMappings;
-import org.mitre.harmony.matchers.VoterScores;
+import org.mitre.harmony.matchers.MatcherScores;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.schemaInfo.FilteredSchemaInfo;
 
@@ -33,13 +33,13 @@ public abstract class MatchMerger
 	abstract protected void initialize();
 	
 	/** Feeds voter scores into the merger */
-	public void addVoterScores(VoterScores scores)
+	public void addMatcherScores(MatcherScores scores)
 	{
 		// Add all scores to merger if no type mapping is set
-		if(typeMappings==null) { addVoterScoresToMerger(scores); return; }
+		if(typeMappings==null) { addMatcherScoresToMerger(scores); return; }
 		
 		// Otherwise, filter out all scores which are not part of the type mapping
-		VoterScores filteredScores = new VoterScores(scores.getScoreCeiling());
+		MatcherScores filteredScores = new MatcherScores(scores.getScoreCeiling());
 		for(ElementPair elementPair : scores.getElementPairs())
 		{
 			// Get the elements being mapped together
@@ -49,11 +49,11 @@ public abstract class MatchMerger
 			if(!typeMappings.isMapped(sourceElement,targetElement)) continue;
 			filteredScores.setScore(sourceElement.getId(), targetElement.getId(), scores.getScore(elementPair));
 		}
-		addVoterScoresToMerger(filteredScores);
+		addMatcherScoresToMerger(filteredScores);
 	}
 
 	/** Feeds voter scores into the merger */
-	abstract protected void addVoterScoresToMerger(VoterScores scores);
+	abstract protected void addMatcherScoresToMerger(MatcherScores scores);
 	
 	/** Retrieve match scores from the merger */
 	abstract public MatchScores getMatchScores();	
