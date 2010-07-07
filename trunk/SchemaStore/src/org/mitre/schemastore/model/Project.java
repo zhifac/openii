@@ -5,6 +5,8 @@ package org.mitre.schemastore.model;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import org.mitre.schemastore.model.schemaInfo.model.SchemaModel;
+
 /**
  * Class for storing a project
  * @author CWOLF
@@ -60,7 +62,16 @@ public class Project implements Serializable
 				schemaIDs.add(schema.getId());
 		return schemaIDs.toArray(new Integer[0]);
 	}
-
+	
+	/** Retrieves the schema model for the specified schema */
+	public SchemaModel getSchemaModel(Integer schemaID)
+	{
+		for(ProjectSchema schema : schemas)
+			if(schema.getId().equals(schemaID))
+				schema.geetSchemaModel();
+		return null;
+	}
+	
 	/** Returns the hash code */
 	public int hashCode()
 		{ return id.hashCode(); }
