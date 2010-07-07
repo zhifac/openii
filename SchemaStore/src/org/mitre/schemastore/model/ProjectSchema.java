@@ -43,8 +43,7 @@ public class ProjectSchema implements Serializable
 	public void setName(String name) { this.name = name; }
 	public void setModel(String model) { this.model = model; }
 	
-	/** Retrieves the schema model */
-	/** DO NOT RENAME FUNCTION! OTHERWISE BREAKS WSDL */
+	/** Retrieves the schema model - THIS FUNCTION IS NOT MISPELLED */
 	public SchemaModel geetSchemaModel()
 	{
 		for(SchemaModel schemaModel : HierarchicalSchemaInfo.getSchemaModels())
@@ -52,8 +51,7 @@ public class ProjectSchema implements Serializable
 		return null;
 	}
 	
-	/** Stores the schema model */
-	/** DO NOT RENAME FUNCTION! OTHERWISE BREAKS WSDL */
+	/** Stores the schema model - THIS FUNCTION IS NOT MISPELLED */
 	public void seetSchemaModel(SchemaModel schemaModel)
 		{ model = schemaModel.getClass().getName(); }
 	
