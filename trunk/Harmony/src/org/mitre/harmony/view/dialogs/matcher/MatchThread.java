@@ -11,6 +11,8 @@ import org.mitre.harmony.matchers.MatchScore;
 import org.mitre.harmony.matchers.MatchScores;
 import org.mitre.harmony.matchers.MatchTypeMappings;
 import org.mitre.harmony.matchers.MatcherManager;
+import org.mitre.harmony.matchers.MatcherOption;
+import org.mitre.harmony.matchers.MatcherScores;
 import org.mitre.harmony.matchers.mergers.MatchMerger;
 import org.mitre.harmony.matchers.voters.MatchVoter;
 import org.mitre.harmony.model.HarmonyConsts;
@@ -24,19 +26,21 @@ import org.mitre.schemastore.model.schemaInfo.FilteredSchemaInfo;
 import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
 
 /** Constructs the match pane for the matcher wizard */
-public class MatchThread extends Thread
-{
+public class MatchThread extends Thread {
 	/** Stores the harmony model */
 	private HarmonyModel harmonyModel;
-
-	/** Stores the voters to be used in matching */
-	private ArrayList<MatchVoter> matchers;
 
 	/** Stores the merger to be used in matching */
 	private MatchMerger merger;
 
+	/** Stores the voters to be used in matching */
+	private ArrayList<MatchVoter> matchers;
+
+	/** Stores the matcher options to be used in matching */
+	private HashMap<String, ArrayList<MatcherOption>> options;
+
 	/** Stores the type mappings to be used in matching */
-	private MatchTypeMappings typeMappings;
+	private MatchTypeMappings types;
 
 	/** Used to halt the running of the matchers */
 	private boolean stop = false;
@@ -111,11 +115,12 @@ public class MatchThread extends Thread
 	}
 
 	/** Constructs the match thread */
-	MatchThread(HarmonyModel harmonyModel, ArrayList<MatchVoter> matchers, MatchMerger merger, MatchTypeMappings typeMappings) {
+	MatchThread(HarmonyModel harmonyModel, MatchMerger merger, ArrayList<MatchVoter> matchers, MatchTypeMappings types, HashMap<String, ArrayList<MatcherOption>> options) {
 		this.harmonyModel = harmonyModel;
-		this.matchers = matchers;
 		this.merger = merger;
-		this.typeMappings = typeMappings;
+		this.matchers = matchers;
+		this.types = types;
+		this.options = options;
 	}	
 
 	/** Returns the generated matcher name */
@@ -201,11 +206,17 @@ public class MatchThread extends Thread
 		}
 		
 		// Generate the match scores for the left and right roots
-		merger.initialize(sourceSchema, targetSchema, typeMappings);
+		merger.initialize(sourceSchema, targetSchema, types);
 		for (MatchVoter matcher : matchers) {
+			// createa a progress thread based on this matcher
 			progressThread.setCurrentMatcher(matcher);
-			matcher.initialize(sourceSchema, targetSchema, typeMappings);
-			merger.addMatcherScores(matcher.match());
+
+			// initialize the matcher and have it match things
+			matcher.initialize(sourceSchema, targetSchema, types, options.get(matcher.getClass().getName()));
+			MatcherScores scores = matcher.match();
+
+			// merger the matcher's resulting scores together
+			merger.addMatcherScores(scores);
 		}
 		MatchScores matchScores =  merger.getMatchScores();
 

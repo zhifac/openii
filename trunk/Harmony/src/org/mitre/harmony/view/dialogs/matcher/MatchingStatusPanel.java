@@ -4,7 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.GridLayout;
-import java.util.ArrayList;
 
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
@@ -14,9 +13,7 @@ import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
-import org.mitre.harmony.matchers.MatchTypeMappings;
 import org.mitre.harmony.matchers.mergers.MatchMerger;
-import org.mitre.harmony.matchers.voters.MatchVoter;
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.view.dialogs.matcher.wizard.Wizard;
 import org.mitre.harmony.view.dialogs.matcher.wizard.WizardPanel;
@@ -88,14 +85,8 @@ public class MatchingStatusPanel extends WizardPanel implements MatchListener {
 
     /** Generates the schema matches when the panel is being displayed */
     public void displayingPanel() {
-    	// retrieve matcher information
-    	ArrayList<MatchVoter> matchers = getWizard().getSelectedMatchers();
-
-    	// retriever matcher information
-    	MatchTypeMappings typeMappings = getWizard().getSelectedMatchTypeMappings();
-
     	// Starts the match thread
-    	matchThread = new MatchThread(harmonyModel, matchers, merger, typeMappings);
+    	matchThread = new MatchThread(harmonyModel, merger, getWizard().getSelectedMatchers(), getWizard().getSelectedMatchTypeMappings(), getWizard().getSelectedMatcherOptions());
         matchThread.addListener(this);
     	matchThread.start();
     }

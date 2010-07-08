@@ -79,7 +79,7 @@ public class MatcherManager {
 									String name = optionNode.getTextContent();
 									String id = optionNode.getAttribute("id");
 									String type = optionNode.getAttribute("type");
-									Boolean selected = (optionNode.getAttribute("selected") == "true" ? true : false);
+									Boolean selected = (optionNode.getAttribute("selected").toLowerCase().equals("true") ? true : false);
 
 									// make sure our required options are defined
 									if (id == null || id.equals("")) { throw new Exception("No id defined for this option."); }
@@ -172,6 +172,16 @@ public class MatcherManager {
 		}
 	}
 
+	/** Return the details about one matcher */
+	static public MatchVoter getMatcher(String id) {
+		for (int i = 0; i < matchers.size(); i++) {
+			if (matchers.get(i).getClass().getName().equals(id)) {
+				return matchers.get(i);
+			}
+		}
+		return null;
+	}
+
 	/** Run the matchers to calculate match scores */
 	static public MatchScores getScores(FilteredSchemaInfo schemaInfo1, FilteredSchemaInfo schemaInfo2, ArrayList<MatchVoter> matchers, MatchMerger merger) {
 		return getScores(schemaInfo1, schemaInfo2, matchers, merger, null);
@@ -181,7 +191,7 @@ public class MatcherManager {
 	static public MatchScores getScores(FilteredSchemaInfo schema1, FilteredSchemaInfo schema2, ArrayList<MatchVoter> matchers, MatchMerger merger, MatchTypeMappings typeMappings) {
 		merger.initialize(schema1, schema2, typeMappings);
 		for (MatchVoter matcher : matchers) {
-			matcher.initialize(schema1, schema2, typeMappings);
+			matcher.initialize(schema1, schema2, typeMappings, getMatcherOptions(matcher.getClass().getName()));
 			merger.addMatcherScores(matcher.match());
 		}
 		return merger.getMatchScores();

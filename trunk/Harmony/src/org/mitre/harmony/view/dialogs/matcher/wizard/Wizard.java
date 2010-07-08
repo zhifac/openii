@@ -387,9 +387,13 @@ public class Wizard extends WindowAdapter implements PropertyChangeListener {
 
     /** Return any options selected for the specified matcher class.
         If no options have been selected, it returns the default option set for that matcher. */
+    public HashMap<String, ArrayList<MatcherOption>> getSelectedMatcherOptions() {
+    	return selectedMatcherOptions;
+    }
+
     public ArrayList<MatcherOption> getSelectedMatcherOptions(String id) {
     	if (!selectedMatcherOptions.containsKey(id)) {
-    		return MatcherManager.getMatcherOptions(id);
+    		selectedMatcherOptions.put(id, MatcherManager.getMatcherOptions(id));
     	}
     	return selectedMatcherOptions.get(id);
     }
