@@ -10,6 +10,7 @@ import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
 import org.mitre.schemastore.search.SearchResult;
 
+
 /** Class for various focus controls */
 public class FocusController
 {
