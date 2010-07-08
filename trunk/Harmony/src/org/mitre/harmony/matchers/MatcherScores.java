@@ -3,6 +3,8 @@ package org.mitre.harmony.matchers;
 import java.util.HashMap;
 import java.util.Set;
 
+import org.mitre.schemastore.model.SchemaElement;
+
 /** Class for storing voter scores */
 public class MatcherScores
 {	
@@ -17,9 +19,13 @@ public class MatcherScores
 		{ this.scoreCeiling = scoreCeiling; }
 	
 	/** Sets the specified voter score */
-	public void setScore(Integer element1, Integer element2, MatcherScore score)
-		{ if(score!=null) scores.put(new ElementPair(element1,element2),score); }
+	public void setScore(Integer element1ID, Integer element2ID, MatcherScore score)
+		{ if(score!=null) scores.put(new ElementPair(element1ID,element2ID),score); }
 
+	/** Sets the specified voter score */
+	public void setScore(SchemaElement element1, SchemaElement element2, MatcherScore score)
+		{ setScore(element1.getId(),element2.getId(),score); }
+	
 	/** Returns the score ceiling provided for these voter scores */
 	public Double getScoreCeiling()
 		{ return scoreCeiling; }
@@ -33,6 +39,10 @@ public class MatcherScores
 		{ return scores.get(elementPair); }
 
 	/** Returns the requested voter score */
-	public MatcherScore getScore(Integer element1, Integer element2)
-		{ return getScore(new ElementPair(element1,element2)); }
+	public MatcherScore getScore(Integer element1ID, Integer element2ID)
+		{ return getScore(new ElementPair(element1ID,element2ID)); }
+
+	/** Returns the requested voter score */
+	public MatcherScore getScore(SchemaElement element1, SchemaElement element2)
+		{ return getScore(element1.getId(), element2.getId()); }
 }
