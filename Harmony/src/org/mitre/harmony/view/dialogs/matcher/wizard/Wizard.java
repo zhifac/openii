@@ -72,7 +72,7 @@ public class Wizard extends WindowAdapter implements PropertyChangeListener {
     private MatchTypeMappings selectedMatchTypeMappings = null;
 
     // stores the list of matcher options that the user has selected
-    private HashMap<String, ArrayList<MatcherOption>> selectedMatcherOptions = new HashMap<String, ArrayList<MatcherOption>>();
+    private HashMap<String, HashMap<String, MatcherOption>> selectedMatcherOptions = new HashMap<String, HashMap<String, MatcherOption>>();
 
     // stores the "advanced" mode flag
     private boolean advancedMode = true;
@@ -387,18 +387,18 @@ public class Wizard extends WindowAdapter implements PropertyChangeListener {
 
     /** Return any options selected for the specified matcher class.
         If no options have been selected, it returns the default option set for that matcher. */
-    public HashMap<String, ArrayList<MatcherOption>> getSelectedMatcherOptions() {
+    public HashMap<String, HashMap<String, MatcherOption>> getSelectedMatcherOptions() {
     	return selectedMatcherOptions;
     }
 
-    public ArrayList<MatcherOption> getSelectedMatcherOptions(String id) {
+    public HashMap<String, MatcherOption> getSelectedMatcherOptions(String id) {
     	if (!selectedMatcherOptions.containsKey(id)) {
     		selectedMatcherOptions.put(id, MatcherManager.getMatcherOptions(id));
     	}
     	return selectedMatcherOptions.get(id);
     }
 
-    public void setSelectedMatcherOptions(String id, ArrayList<MatcherOption> selectedMatcherOptions) {
+    public void setSelectedMatcherOptions(String id, HashMap<String, MatcherOption> selectedMatcherOptions) {
     	this.selectedMatcherOptions.put(id, selectedMatcherOptions);
     }
 

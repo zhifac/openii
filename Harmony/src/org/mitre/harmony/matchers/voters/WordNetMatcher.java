@@ -88,9 +88,13 @@ public class WordNetMatcher extends BagMatcher {
 	private MatcherScore findVoterScore(SchemaElement source, SchemaElement target, HashMap<String,HashSet<Integer>> thesaurus) {
 		int matches = 0;
 
+		// see if we are going to use the name of the schema element or the description provided with the schema element
+		boolean useName = options.get("UseName").getSelected();
+		boolean useDescription = options.get("UseDescription").getSelected();
+
 		// Compile sets of words contained in both source and target elements
-		WordBag sourceWordBag = new WordBag(source);
-		WordBag targetWordBag = new WordBag(target);
+		WordBag sourceWordBag = new WordBag(source, useName, useDescription);
+		WordBag targetWordBag = new WordBag(target, useName, useDescription);
 
 		// Get text in both.
 		ArrayList<String> sourceWords = sourceWordBag.getWords();

@@ -3,7 +3,7 @@ package org.mitre.harmony.view.dialogs.matcher;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
-import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
@@ -20,7 +20,7 @@ import org.mitre.harmony.view.dialogs.matcher.wizard.Wizard;
 import org.mitre.harmony.view.dialogs.matcher.wizard.WizardPanel;
 
 public class SelectMatchOptionsPanel extends WizardPanel {
-	private ArrayList<MatcherOption> options = null;
+	private HashMap<String, MatcherOption> options = null;
 
 	/** Constructs the type pane */
     public SelectMatchOptionsPanel(Wizard wizard, String id) {
@@ -50,9 +50,9 @@ public class SelectMatchOptionsPanel extends WizardPanel {
 		optionsPanel.setLayout(new BoxLayout(optionsPanel, BoxLayout.Y_AXIS));
 
 		// try to read each option and create a component for it
-		for (int i = 0; i < options.size(); i++) {
+		for (String key : options.keySet()) {
 			try {
-				MatcherOption option = options.get(i);
+				MatcherOption option = options.get(key);
 
 				// checkbox
 				if (option.getType().equals("checkbox")) {

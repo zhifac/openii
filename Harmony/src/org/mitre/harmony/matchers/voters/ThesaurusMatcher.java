@@ -23,17 +23,21 @@ public class ThesaurusMatcher extends BagMatcher {
 	}
 
 	/** Generates match scores for the specified elements */
-	public MatcherScores match() {		
+	public MatcherScores match() {
+		// see if we are going to use the name of the schema element or the description provided with the schema element
+		boolean useName = options.get("UseName").getSelected();
+		boolean useDescription = options.get("UseDescription").getSelected();
+
 		// Create word bags for the source elements
 		ArrayList<SchemaElement> sourceElements = schema1.getFilteredElements();
 		for (SchemaElement sourceElement : sourceElements) {
-			wordBags.put(sourceElement.getId(), new WordBag(sourceElement));
+			wordBags.put(sourceElement.getId(), new WordBag(sourceElement, useName, useDescription));
 		}
 		
 		// Create word bags for the target elements
 		ArrayList<SchemaElement> targetElements = schema2.getFilteredElements();
 		for (SchemaElement targetElement : targetElements) {
-			wordBags.put(targetElement.getId(), new WordBag(targetElement));
+			wordBags.put(targetElement.getId(), new WordBag(targetElement, useName, useDescription));
 		}
 
 		// Get the thesaurus and acronym dictionaries

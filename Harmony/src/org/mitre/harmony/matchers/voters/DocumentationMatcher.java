@@ -16,19 +16,23 @@ public class DocumentationMatcher extends BagMatcher {
 	}
 	
 	/** Generates the word bags for the schema elements */
-	protected MatcherScores generateVoteScores(boolean useLabels) {
-		HashMap<Integer,WordBag> wordBags = new HashMap<Integer,WordBag>();
+	protected MatcherScores generateVoteScores() {
+		HashMap<Integer, WordBag> wordBags = new HashMap<Integer, WordBag>();
+
+		// see if we are going to use the name of the schema element or the description provided with the schema element
+		boolean useName = options.get("UseName").getSelected();
+		boolean useDescription = options.get("UseDescription").getSelected();
 
 		// Create word bags for the source elements
 		ArrayList<SchemaElement> sourceElements = schema1.getFilteredElements();
 		for (SchemaElement sourceElement : sourceElements) {
-			wordBags.put(sourceElement.getId(), new WordBag(sourceElement,useLabels));
+			wordBags.put(sourceElement.getId(), new WordBag(sourceElement, useName, useDescription));
 		}
 		
 		// Create word bags for the target elements
 		ArrayList<SchemaElement> targetElements = schema2.getFilteredElements();
 		for (SchemaElement targetElement : targetElements) {
-			wordBags.put(targetElement.getId(), new WordBag(targetElement,useLabels));
+			wordBags.put(targetElement.getId(), new WordBag(targetElement, useName, useDescription));
 		}
 		
 		// Generate the voter scores
@@ -37,6 +41,6 @@ public class DocumentationMatcher extends BagMatcher {
 	
 	/** Generates scores for the specified elements */
 	public MatcherScores match() {
-		return generateVoteScores(true);
+		return generateVoteScores();
 	}
 }
