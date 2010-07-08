@@ -28,7 +28,7 @@ public class MatcherManager {
 	static private ArrayList<MatchMerger> mergers = new ArrayList<MatchMerger>();
 
 	/** Stores a listing of all matcher options */
-	static private HashMap<String, ArrayList<MatcherOption>> matcherOptions = new HashMap<String, ArrayList<MatcherOption>>();
+	static private HashMap<String, HashMap<String, MatcherOption>> matcherOptions = new HashMap<String, HashMap<String, MatcherOption>>();
 
 	/** Initializes the matcher manager with all defined matchers and mergers */
 	static {
@@ -67,7 +67,7 @@ public class MatcherManager {
 							System.err.println("(E) MatchManager - Failed to locate matcher class: " + ee.getMessage());
 						}
 
-						ArrayList<MatcherOption> options = new ArrayList<MatcherOption>();
+						HashMap<String, MatcherOption> options = new HashMap<String, MatcherOption>();
 						try {
 							// get all the options for this matcher
 							NodeList optionNodes = node.getElementsByTagName("option");
@@ -87,7 +87,7 @@ public class MatcherManager {
 									if (name == null || name.equals("")) { throw new Exception("No name defined for this option."); }
 
 									// add this option to our temporary options list
-									options.add(new MatcherOption(id, type, name, selected));									
+									options.put(id, new MatcherOption(id, type, name, selected));
 									matcher.setConfigurable(true); // we have options!
 								}
 							}
@@ -163,7 +163,7 @@ public class MatcherManager {
 	}
 
 	/** Return the list of options for a given matcher */
-	static public ArrayList<MatcherOption> getMatcherOptions(String id) {
+	static public HashMap<String, MatcherOption> getMatcherOptions(String id) {
 		// our "id" is the class name of the matcher
 		if (matcherOptions.containsKey(id)) {
 			return matcherOptions.get(id);

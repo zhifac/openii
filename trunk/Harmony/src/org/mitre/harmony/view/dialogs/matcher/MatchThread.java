@@ -36,8 +36,8 @@ public class MatchThread extends Thread {
 	/** Stores the voters to be used in matching */
 	private ArrayList<MatchVoter> matchers;
 
-	/** Stores the matcher options to be used in matching */
-	private HashMap<String, ArrayList<MatcherOption>> options;
+	/** Stores the matcher options to be used in matching by the id of the matchers */
+	private HashMap<String, HashMap<String, MatcherOption>> options;
 
 	/** Stores the type mappings to be used in matching */
 	private MatchTypeMappings types;
@@ -115,7 +115,7 @@ public class MatchThread extends Thread {
 	}
 
 	/** Constructs the match thread */
-	MatchThread(HarmonyModel harmonyModel, MatchMerger merger, ArrayList<MatchVoter> matchers, MatchTypeMappings types, HashMap<String, ArrayList<MatcherOption>> options) {
+	MatchThread(HarmonyModel harmonyModel, MatchMerger merger, ArrayList<MatchVoter> matchers, MatchTypeMappings types, HashMap<String, HashMap<String, MatcherOption>> options) {
 		this.harmonyModel = harmonyModel;
 		this.merger = merger;
 		this.matchers = matchers;
@@ -195,7 +195,7 @@ public class MatchThread extends Thread {
 			HashSet<Integer> sourceElements = new HashSet<Integer>(sourceSchema.getHiddenElements());
 			HashSet<Integer> targetElements = new HashSet<Integer>(targetSchema.getHiddenElements());
 			for (MappingCell mappingCell : mapping.getMappingCells())
-				if(mappingCell.isValidated()) {
+				if (mappingCell.isValidated()) {
 					sourceElements.addAll(Arrays.asList(mappingCell.getInput()));
 					targetElements.add(mappingCell.getOutput());
 				}
@@ -208,7 +208,7 @@ public class MatchThread extends Thread {
 		// Generate the match scores for the left and right roots
 		merger.initialize(sourceSchema, targetSchema, types);
 		for (MatchVoter matcher : matchers) {
-			// createa a progress thread based on this matcher
+			// create a progress thread based on this matcher
 			progressThread.setCurrentMatcher(matcher);
 
 			// initialize the matcher and have it match things
@@ -223,7 +223,7 @@ public class MatchThread extends Thread {
 		// Store the generated mapping cells
 		ArrayList<MappingCell> mappingCells = new ArrayList<MappingCell>();
 		MappingManager manager = harmonyModel.getMappingManager();
-		for(MatchScore matchScore : matchScores.getScores()) {	
+		for (MatchScore matchScore : matchScores.getScores()) {	
 			// Don't proceed if process has been stopped
 			if (stop) { return; }
 
@@ -290,8 +290,11 @@ public class MatchThread extends Thread {
 			progressThread.setCurrentSchemaPair(leftName,rightName);
 
 			// Run the matcher of the current pair of schemas
-			try { runMatch(mapping.getId(), sourceSchema, targetSchema, matcherName, progressThread); }
-			catch (Exception e) { System.out.println("(E) MatchThread.run - " + e.getMessage()); }
+			try {
+				runMatch(mapping.getId(), sourceSchema, targetSchema, matcherName, progressThread);
+			} catch (Exception e) {
+				System.out.println("(E) MatchThread.run - " + e.getMessage());
+			}
 		}
 
 		// Stops the progress thread

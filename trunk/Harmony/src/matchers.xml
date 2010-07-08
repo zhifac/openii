@@ -1,26 +1,31 @@
 <harmony>
   	<matchers>
-	    <matcher id="org.mitre.harmony.matchers.voters.EditDistanceMatcher" default="true"/>
-	    <matcher id="org.mitre.harmony.matchers.voters.DocumentationMatcher" default="true">
-			<option id="UseName" type="checkbox" selected="true">Compare Names</option>
-			<option id="UseDescription" type="checkbox" selected="true">Compare Descriptions</option>
+	    <matcher default="true" id="org.mitre.harmony.matchers.voters.EditDistanceMatcher"/>
+	    <matcher default="true" id="org.mitre.harmony.matchers.voters.DocumentationMatcher">
+			<option id="UseName" type="checkbox" selected="true">Compare Entity Names</option>
+			<option id="UseDescription" type="checkbox" selected="true">Compare Documentation</option>
 	    </matcher>
-	    <matcher id="org.mitre.harmony.matchers.voters.ExactStructureMatcher" default="true">
-			<option id="UseName" type="checkbox" selected="true">Compare Names</option>
-			<option id="UseDescription" type="checkbox" selected="true">Compare Descriptions</option>
+	    <matcher default="true" id="org.mitre.harmony.matchers.voters.ExactStructureMatcher">
+			<option id="UseName" type="checkbox" selected="true">Compare Entity Names</option>
+			<option id="UseDescription" type="checkbox" selected="true">Compare Documentation</option>
 	    </matcher>
-	    <matcher id="org.mitre.harmony.matchers.voters.ThesaurusMatcher" default="true">
-			<option id="UseName" type="checkbox" selected="true">Compare Names</option>
-			<option id="UseDescription" type="checkbox" selected="true">Compare Descriptions</option>
+	    <matcher default="true" id="org.mitre.harmony.matchers.voters.ThesaurusMatcher">
+			<option id="UseName" type="checkbox" selected="true">Compare Entity Names</option>
+			<option id="UseDescription" type="checkbox" selected="true">Compare Documentation</option>
 	    </matcher>
 	    <matcher id="org.mitre.harmony.matchers.voters.WordNetMatcher">
-			<option id="UseName" type="checkbox" selected="true">Compare Names</option>
-			<option id="UseDescription" type="checkbox" selected="true">Compare Descriptions</option>
+			<option id="UseName" type="checkbox" selected="true">Compare Entity Names</option>
+			<option id="UseDescription" type="checkbox" selected="true">Compare Documentation</option>
 	    </matcher>
-	    <matcher id="org.mitre.harmony.matchers.voters.QuickDocumentationMatcher"/>
-	    <matcher id="org.mitre.harmony.matchers.voters.DocumentationOnlyMatcher" hidden="true"/>
-	    <matcher id="org.mitre.harmony.matchers.voters.ExactDocumentationMatcher" hidden="true"/>
-	    <matcher id="org.mitre.harmony.matchers.voters.EntityMatcher" hidden="true"/>
+	    <matcher id="org.mitre.harmony.matchers.voters.QuickDocumentationMatcher">
+			<option id="UseName" type="checkbox" selected="true">Compare Entity Names</option>
+			<option id="UseDescription" type="checkbox" selected="true">Compare Documentation</option>
+	    </matcher>
+	    <matcher hidden="true" id="org.mitre.harmony.matchers.voters.EntityMatcher">
+			<option id="UseName" type="checkbox" selected="true">Compare Entity Names</option>
+			<option id="UseDescription" type="checkbox" selected="true">Compare Documentation</option>
+	    </matcher>
+	    <matcher hidden="true" id="org.mitre.harmony.matchers.voters.ExactDocumentationMatcher"/>
   	</matchers>
   	<mergers>
 	    <merger id="org.mitre.harmony.matchers.mergers.VoteMerger"/>

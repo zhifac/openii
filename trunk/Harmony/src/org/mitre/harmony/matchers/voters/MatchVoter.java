@@ -2,7 +2,7 @@
 // ALL RIGHTS RESERVED
 package org.mitre.harmony.matchers.voters;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.mitre.harmony.matchers.MatchTypeMappings;
 import org.mitre.harmony.matchers.MatcherOption;
@@ -19,7 +19,7 @@ public abstract class MatchVoter {
 	private MatchTypeMappings types;
 
 	/** Stores the options specified for this matcher */
-	private ArrayList<MatcherOption> options;
+	protected HashMap<String, MatcherOption> options;
 
 	/** Stores if this is a default voter */
 	private boolean isDefault = false;
@@ -54,7 +54,7 @@ public abstract class MatchVoter {
 	}
 
 	/** Initializes the match voter */
-	final public void initialize(FilteredSchemaInfo schema1, FilteredSchemaInfo schema2, MatchTypeMappings types, ArrayList<MatcherOption> options) {
+	final public void initialize(FilteredSchemaInfo schema1, FilteredSchemaInfo schema2, MatchTypeMappings types, HashMap<String, MatcherOption> options) {
 		this.schema1 = schema1;
 		this.schema2 = schema2;
 		this.types = types;
