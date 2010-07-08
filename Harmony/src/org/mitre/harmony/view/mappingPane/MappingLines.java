@@ -7,11 +7,9 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Image;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Stroke;
-import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -134,7 +132,7 @@ public class MappingLines implements MappingListener, FiltersListener, SchemaTre
 			}
 			
 			//For functional mapping cell lines
-			if(!mappingCellLines.getHidden()&& mappingCellLines.getHasFunction())
+			if(!mappingCellLines.getHidden()&& mappingCellLines.isIdentityFunction())
 			{
 				// Cycle through all mapping cell lines
 				for(MappingCellLine line : mappingCellLines.getLines())
@@ -189,7 +187,7 @@ public class MappingLines implements MappingListener, FiltersListener, SchemaTre
 				}
 			}
 			//For function mapping cells
-			if(!mappingCell.getHidden()&& mappingCell.getHasFunction())
+			if(!mappingCell.getHidden()&& mappingCell.isIdentityFunction())
 			{
 				// Cycle through all mapping cell lines
 				for(MappingCellLine line : mappingCell.getLines())
@@ -270,18 +268,10 @@ public class MappingLines implements MappingListener, FiltersListener, SchemaTre
 	/** Handles the addition of a mapping cell */
 	public void mappingCellsAdded(Integer mappingID, List<MappingCell> mappingCells)
 	{
-		for(MappingCell mappingCell : mappingCells){
-			
-				MappingCellLines ml = new MappingCellLines(mappingPane,mappingCell.getId(),harmonyModel);
-				
-				//need to change this when the database is redesigned for this 
-				if((mappingCell.getFunctionID().toString()).equals(("450"))){
-					ml.setHasFunction(false);
-				}
-				else{
-					ml.setHasFunction(true);
-				}
-				getLines().put(mappingCell.getId(), ml);		
+		for(MappingCell mappingCell : mappingCells)
+		{	
+			MappingCellLines ml = new MappingCellLines(mappingPane,mappingCell.getId(),harmonyModel);
+			getLines().put(mappingCell.getId(), ml);		
 		}
 		updateHierarchicalFilterAsNeeded(mappingCells);
 		fireLinesModified();
@@ -381,7 +371,7 @@ public class MappingLines implements MappingListener, FiltersListener, SchemaTre
 					if(line.intersects(g.getClipBounds()))
 					{
 						// Store line information
-						if(line.isVisible()||mappingCell.getHasFunction()){
+						if(line.isVisible()||mappingCell.isIdentityFunction()){
 							visibleLines.add(color.getRGB()+","+(int)line.x1+","+(int)line.y1+","+(int)line.x2+","+(int)line.y2);
 						}
 						else{

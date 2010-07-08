@@ -126,8 +126,8 @@ public class MappingCellFunctionPane extends JPanel implements ActionListener, K
 		boolean isEditMode = false;
 		
 		//determine if it is existing function mapping cell
-		if(mappingCells.size()==1 && !((((MappingCell)mappingCells.get(0)).getFunctionID().toString()).equals("450"))){
-			
+		if(mappingCells.size()==1 && !((((MappingCell)mappingCells.get(0)).isIdentityFunction())))
+		{	
 			isEditMode = true;
 			
 			//An existing function mapping cell 

@@ -4,7 +4,6 @@ package org.mitre.harmony.view.dialogs.mappingCell;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Font;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -20,11 +19,8 @@ import java.util.Date;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.BorderFactory;
-import javax.swing.ButtonGroup;
 import javax.swing.JDialog;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JRadioButton;
 import javax.swing.KeyStroke;
 
 import org.mitre.harmony.model.HarmonyModel;
@@ -104,7 +100,7 @@ public class MappingCellDialog extends JDialog implements MouseListener, MouseMo
 							else{
 							*/
 							//for existing function mapping cell
-							if(mappingCells.size()==1 && !((((MappingCell)mappingCells.get(0)).getFunctionID().toString()).equals("450"))
+							if(mappingCells.size()==1 && !((((MappingCell)mappingCells.get(0)).isIdentityFunction()))
 									&&functionPane.getInputs().length==0&&!functionPane.getFunctionName().equals("<None>")){
 								//no change
 								System.out.println("functionName=" +functionPane.getFunctionName());
@@ -211,7 +207,7 @@ public class MappingCellDialog extends JDialog implements MouseListener, MouseMo
 		//Determine if it is a function mapping cell for edition
 		if(mappingCells.size()==1){
 			for(MappingCell mappingCell : mappingCells){
-				if(!(mappingCell.getFunctionID().toString()).equals("450")){
+				if(!(mappingCell.isIdentityFunction())){
 					//It is a function mapping cell
 					//confidenceRadioButton.setSelected(false);
 					//functionRadioButton.setSelected(true);
