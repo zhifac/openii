@@ -112,7 +112,9 @@ public class MappingCellFunctionPane extends JPanel implements ActionListener, K
 	    
 		LinkedList nameList = new LinkedList();
 		
+		//Function name in the list
 		LinkedList funcNamesToShow = new LinkedList();
+		funcNamesToShow.add("<None>");
 		
 		// Set up functionSelection info pane
 		JPanel functionSelectionPane = new JPanel();
@@ -169,7 +171,7 @@ public class MappingCellFunctionPane extends JPanel implements ActionListener, K
 					}
 					nameList.add(new String(out.substring(0, out.length()-1))+ ")");
 					
-					//only show the function with the righ number of parameters
+					//only show the function with the right number of parameters
 					if(numParameters==numDataType){
 						funcNamesToShow.add(new String(out.substring(0, out.length()-1))+ ")");
 					}
@@ -412,11 +414,12 @@ public class MappingCellFunctionPane extends JPanel implements ActionListener, K
 				System.out.println("To add new function");
 				//return;
 			}
-			else if(funName=="<None>")
+			else if(funName=="<None>" || funName=="Identity")
 			{
 			  //do something here for selecting none function
-				System.out.println("None function.");
+				setFunctionName(funName);
 				resetAllFields();
+				mappingCDialog.setButtonPaneOK();
 				return;
 			}
 			else
