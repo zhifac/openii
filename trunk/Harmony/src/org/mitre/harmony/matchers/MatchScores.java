@@ -24,7 +24,7 @@ public class MatchScores
 		{ return scores.get(new ElementPair(element1ID,element2ID)); }
 	
 	/** Gets a match score */
-	public Double getScore(SchemaElement element1, SchemaElement element2, Double score)
+	public Double getScore(SchemaElement element1, SchemaElement element2)
 		{ return getScore(element1.getId(),element2.getId()); }
 	
 	/** Get match scores */
