@@ -217,13 +217,13 @@ public class MatchThread extends Thread
 			if (stop) { return; }
 
 			// Don't store mapping cells which were already validated
-			Integer mappingCellID = manager.getMappingCellID(matchScore.getElement1(), matchScore.getElement2());
+			Integer mappingCellID = manager.getMappingCellID(matchScore.getSourceID(), matchScore.getTargetID());
 			if (mappingCellID != null && manager.getMappingCell(mappingCellID).isValidated()) { continue; }
 
 			// Get the mapping cell properties
-			Integer id = manager.getMappingCellID(matchScore.getElement1(), matchScore.getElement2());
-			Integer input = matchScore.getElement1();
-			Integer output = matchScore.getElement2();
+			Integer id = manager.getMappingCellID(matchScore.getSourceID(), matchScore.getTargetID());
+			Integer input = matchScore.getSourceID();
+			Integer output = matchScore.getTargetID();
 			Double score = matchScore.getScore();
 			Date date = Calendar.getInstance().getTime();
 

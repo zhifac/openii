@@ -3,26 +3,26 @@ package org.mitre.harmony.matchers;
 /** Class for storing a match score */
 public class MatchScore
 {
-	/** Stores element1 */
-	private Integer element1;
+	/** Stores the source ID */
+	private Integer sourceID;
 	
-	/** Stores element2 */
-	private Integer element2;
+	/** Stores the target ID */
+	private Integer targetID;
 	
 	/** Stores the score */
 	private Double score;
 	
 	/** Constructs the match score */
-	public MatchScore(Integer element1, Integer element2, Double score)
-		{ this.element1 = element1; this.element2 = element2; this.score = score;	}
+	public MatchScore(Integer sourceID, Integer targetID, Double score)
+		{ this.sourceID = sourceID; this.targetID = targetID; this.score = score;	}
 	
-	/** Returns element1 */
-	public Integer getElement1()
-		{ return element1; }
+	/** Returns the source ID */
+	public Integer getSourceID()
+		{ return sourceID; }
 	
-	/** Returns element2 */
-	public Integer getElement2()
-		{ return element2; }
+	/** Returns the target ID */
+	public Integer getTargetID()
+		{ return targetID; }
 	
 	/** Returns the match score */
 	public Double getScore()
