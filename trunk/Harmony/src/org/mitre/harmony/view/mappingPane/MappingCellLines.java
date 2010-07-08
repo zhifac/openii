@@ -3,7 +3,10 @@
 package org.mitre.harmony.view.mappingPane;
 
 import java.awt.Color;
+import java.awt.Point;
+import java.awt.geom.Line2D;
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
@@ -36,6 +39,17 @@ class MappingCellLines
 	/** Indicates if the mapping cell is hidden from display */
 	private Boolean hidden;
 	
+	/** Indicates if the mapping cell is associated with function*/
+	private Boolean hasFunction;
+	
+	public Boolean getHasFunction() {
+		return hasFunction;
+	}
+
+	public void setHasFunction(Boolean bool) {
+		this.hasFunction = bool;
+	}
+
 	/** List of lines associated with the mapping cell */
 	private ArrayList<MappingCellLine> lines;
 
@@ -151,6 +165,34 @@ class MappingCellLines
 		}
 	}
 	
+	/** Calculates all of the lines connecting the specified left and right nodes */
+	private void getLines(Integer[] leftID, Integer rightID)
+	{
+		//for identity
+		if(!this.hasFunction){
+			getLines(leftID[0], rightID);
+		}
+		
+		//For function
+		//We assume to add only the first set of function lines 
+		//no matter how many matching pair in the schema tree.
+		
+		else{
+			FunctionMappingCellLines fmclines = new FunctionMappingCellLines(mappingPane, leftID, rightID);
+			
+			LinkedList<Line2D.Double> lineSegments = fmclines.getLines();
+			for(int i=0; i<lineSegments.size(); i++){				
+				if(lines!=null){
+					Point source = new Point((int)lineSegments.get(i).x1,(int)lineSegments.get(i).y1);
+					Point target = new Point((int)lineSegments.get(i).x2,(int)lineSegments.get(i).y2);
+					lines.add(new MappingCellLine(source, target));
+					//System.out.println("There are " + i + "lines." + source.toString()+":" + target.toString());
+				}
+			}
+		}
+	}
+	
+	
 	/** Initializes the mapping cell lines */
 	MappingCellLines(MappingPane mappingPane, Integer mappingCellID, HarmonyModel harmonyModel)
 	{
@@ -170,7 +212,8 @@ class MappingCellLines
 		{
 			lines = new ArrayList<MappingCellLine>();
 			MappingCell mappingCell = harmonyModel.getMappingManager().getMappingCell(mappingCellID);
-			getLines(mappingCell.getFirstInput(),mappingCell.getOutput());
+			//getLines(mappingCell.getFirstInput(),mappingCell.getOutput());
+			getLines(mappingCell.getInput(),mappingCell.getOutput());
 		}
 		return lines==null ? new ArrayList<MappingCellLine>() : new ArrayList<MappingCellLine>(lines);
 	}
