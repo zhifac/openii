@@ -156,7 +156,8 @@ public class FunctionPane extends JPanel implements MouseListener, MouseMotionLi
 			}
 
 			// Reinitialize the left and right paths for future use
-			startPoint = null; endPoint = null; repaint();
+			startPoint = null; endPoint = null; 
+			repaint();
 		}
 	}
 
