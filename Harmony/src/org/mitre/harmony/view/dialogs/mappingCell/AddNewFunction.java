@@ -84,57 +84,7 @@ public class AddNewFunction extends JDialog implements MouseListener, MouseMotio
 				if(label.equals("OK"))
 				{
 					//For confience setting
-					if(!usingFunction){
-						// Throw out mapping cells if they have been rejected
-						if(confidencePane.isRejected()){
-							harmonyModel.getMappingManager().deleteMappingCells(mappingCells);
-						}
-						else
-						{			
-							// Adjust the mapping cells to reflect changes
-							ArrayList<MappingCell> newMappingCells = annotationPane.getMappingCells();
-							harmonyModel.getMappingManager().setMappingCells(newMappingCells);
-							
-							// If the mapping cells were accepted, validate as needed
-							if(confidencePane.isAccepted()){
-								harmonyModel.getMappingManager().validateMappingCells(newMappingCells);
-							}
-						}
-					}
-					else{
-						if(functionPane.getFunctionName()==null||functionPane.getFunctionName()==""){
-							//No function selected
-							System.out.println("No function selected.");									
-						}
-						else{
-							//using the function matching
-							//generate a new function mapping cell
-							MappingManager manager = harmonyModel.getMappingManager();
-				
-							//get the mapping ID:
-							Integer mappingId = mappingCells.get(0).getMappingId();			
-							//System.out.println("mappingID=" + mappingId);
-							String author = System.getProperty("user.name");
-							Date date = Calendar.getInstance().getTime();
-							//String function = IdentityFunction.class.getCanonicalName();
-							String function = functionPane.getFunctionName();
-							System.out.println("FuncName=" + function);
-							Integer[] inputs = functionPane.getInputs();
-							Integer output = functionPane.getOutput();
-							Integer functionID = functionPane.getFunctionId();
-							
-							System.out.println("output=" + output);
-							
-							//delete mapping cells
-							harmonyModel.getMappingManager().deleteMappingCells(mappingCells);
-							
-							//create a function mappingcell
-							MappingCell mappingCell = MappingCell.createFunctionMappingCell(null, mappingId, inputs, output, functionID, author, date, null);    	
-							
-							//MappingCell mappingCell = MappingCell.createValidatedMappingCell(id, mappingID, new Integer[]{leftID}, rightID, author, date, function, null);
-							manager.getMapping(mappingId).setMappingCells(Arrays.asList(new MappingCell[]{mappingCell}));	
-						}
-					}
+					
 				}
 					
 				
@@ -249,20 +199,7 @@ public class AddNewFunction extends JDialog implements MouseListener, MouseMotio
 		public void mouseMoved(MouseEvent e) {}
 		
 		public void actionPerformed(ActionEvent e) {
-			if(e.getActionCommand()=="function"){
-				//set function panel enabled
-				usingFunction = true;
-				functionPane.setDisable(false);
-				confidencePane.setDisable(true);
-				btPane.setEnabled(0, false); //set the OK button to dis enabled. 
-			}
-			else{
-				//set confidence panel enabled
-				usingFunction = false;
-				functionPane.setDisable(true);
-				confidencePane.setDisable(false);
-				btPane.setEnabled(0, true); //set the OK button to enabled.
-			}
+			
 		}
 		
 		//set buttonPane OK enabled.
