@@ -28,6 +28,9 @@ public class MappingCellConfidencePane extends JPanel implements ActionListener
 	private JCheckBox acceptCheckbox;
 	private JCheckBox rejectCheckbox;
 	
+	//Functional Panel
+	private MappingCellFunctionPane functionPanel;
+	
 	/** Indicates if all of the mapping cells are accepted */
 	private boolean mappingCellsAccepted()
 	{
@@ -47,9 +50,11 @@ public class MappingCellConfidencePane extends JPanel implements ActionListener
 	/**
 	 * @return The generated confidence pane
 	 */
-	MappingCellConfidencePane(List<MappingCell> mappingCells)
+	MappingCellConfidencePane(List<MappingCell> mappingCells, MappingCellFunctionPane funcPanel)
 	{
 		this.mappingCells = mappingCells;
+		
+		this.functionPanel = funcPanel;
 		
 		// Initialize checkboxes
 		acceptCheckbox = new JCheckBox("Accept");
@@ -103,15 +108,27 @@ public class MappingCellConfidencePane extends JPanel implements ActionListener
 		// If "Accept" checkbox chosen, unselect "Reject"
 		if(e.getSource()==acceptCheckbox)
 		{
-			if(acceptCheckbox.isSelected()) rejectCheckbox.setSelected(false);
-			else if(mappingCellsAccepted() || mappingCellsRejected()) acceptCheckbox.setSelected(true);
+			if(acceptCheckbox.isSelected()) {
+				rejectCheckbox.setSelected(false);
+				
+				//set the function panel
+				functionPanel.setDisable(false);
+			}
+			else if(mappingCellsAccepted() || mappingCellsRejected()) {
+				acceptCheckbox.setSelected(true);
+			}
 		}
 		
 		// If "Reject" checkbox chosen, unselect "Accept"
 		if(e.getSource()==rejectCheckbox)
 		{
-			if(rejectCheckbox.isSelected()) acceptCheckbox.setSelected(false);
-			else if(mappingCellsAccepted() || mappingCellsRejected()) rejectCheckbox.setSelected(true);
+			if(rejectCheckbox.isSelected()) {
+				acceptCheckbox.setSelected(false);
+				functionPanel.setDisable(true);
+			}
+			else if(mappingCellsAccepted() || mappingCellsRejected()) {
+				rejectCheckbox.setSelected(true);
+			}
 		}
 	}
 	
