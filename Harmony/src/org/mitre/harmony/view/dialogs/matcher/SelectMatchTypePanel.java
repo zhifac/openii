@@ -67,7 +67,7 @@ public class SelectMatchTypePanel extends WizardPanel implements ActionListener 
 
 	/** Generates the type configuration pane */
 	private class MatchTypeConfigPane extends JPanel implements ActionListener {
-		// Stores the configuration optionsf
+		// Stores the configuration options
 		private JRadioButton matchAllButton = new JRadioButton("Match All");
 		private JRadioButton byTypeButton = new JRadioButton("Match By Type");
 		private JRadioButton customButton = new JRadioButton("Custom");	

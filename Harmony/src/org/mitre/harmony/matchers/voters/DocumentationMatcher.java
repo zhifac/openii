@@ -9,31 +9,34 @@ import org.mitre.harmony.matchers.MatcherScores;
 import org.mitre.schemastore.model.SchemaElement;
 
 /** Documentation Matcher Class */
-public class DocumentationMatcher extends BagMatcher
-{
+public class DocumentationMatcher extends BagMatcher {
 	/** Returns the name of the match voter */
-	public String getName() { return "Documentation Similarity"; }
+	public String getName() {
+		return "Documentation Similarity";
+	}
 	
 	/** Generates the word bags for the schema elements */
-	protected MatcherScores generateVoteScores(boolean useLabels)
-	{
+	protected MatcherScores generateVoteScores(boolean useLabels) {
 		HashMap<Integer,WordBag> wordBags = new HashMap<Integer,WordBag>();
 
 		// Create word bags for the source elements
 		ArrayList<SchemaElement> sourceElements = schema1.getFilteredElements();
-		for(SchemaElement sourceElement : sourceElements)
+		for (SchemaElement sourceElement : sourceElements) {
 			wordBags.put(sourceElement.getId(), new WordBag(sourceElement,useLabels));
+		}
 		
 		// Create word bags for the target elements
 		ArrayList<SchemaElement> targetElements = schema2.getFilteredElements();
-		for (SchemaElement targetElement : targetElements)
+		for (SchemaElement targetElement : targetElements) {
 			wordBags.put(targetElement.getId(), new WordBag(targetElement,useLabels));
+		}
 		
 		// Generate the voter scores
 		return computeScores(sourceElements, targetElements, wordBags);
 	}
 	
 	/** Generates scores for the specified elements */
-	public MatcherScores match()
-		{ return generateVoteScores(true); }
+	public MatcherScores match() {
+		return generateVoteScores(true);
+	}
 }
