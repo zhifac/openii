@@ -15,16 +15,19 @@ public class ExactStructureMatcher extends MatchVoter {
 	public String getName() {
 		return "Exact Structure";
 	}
-	
+
 	/** Generates scores for the specified elements */
 	public MatcherScores match() {
+		boolean useName = options.get("UseName").getSelected();
+		boolean useDescription = options.get("UseDescription").getSelected();
+
 		// Get the source elements
 		ArrayList<SchemaElement> sourceElements = schema1.getFilteredElements();
-		
+
 		// Sets the current and total comparisons
 		completedComparisons = 0;
 		totalComparisons = sourceElements.size();
-		
+
 		// Go through all source elements
 		MatcherScores scores = new MatcherScores(100.0);
 		for (SchemaElement sourceElement : sourceElements) {
@@ -36,7 +39,7 @@ public class ExactStructureMatcher extends MatchVoter {
 				for (SchemaElement element : sourcePath) {
 					path.add(schema1.getDisplayName(element.getId()));
 				}
-				
+
 				// Identify all target paths
 				for (Integer targetID : schema2.getPathIDs(path)) {
 					if (schema2.isVisible(targetID)) {
@@ -44,7 +47,7 @@ public class ExactStructureMatcher extends MatchVoter {
 					}
 				}
 			}
-	
+
 			// Set scores for the matching target elements
 			for (Integer targetID : targetIDs) {
 				scores.setScore(sourceElement.getId(), targetID, new MatcherScore(100.0,100.0));

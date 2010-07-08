@@ -1,11 +1,8 @@
 <harmony>
   	<matchers>
 	    <matcher default="true" id="org.mitre.harmony.matchers.voters.EditDistanceMatcher"/>
+	    <matcher default="true" id="org.mitre.harmony.matchers.voters.ExactStructureMatcher"/>
 	    <matcher default="true" id="org.mitre.harmony.matchers.voters.DocumentationMatcher">
-			<option id="UseName" type="checkbox" selected="true">Compare Entity Names</option>
-			<option id="UseDescription" type="checkbox" selected="true">Compare Documentation</option>
-	    </matcher>
-	    <matcher default="true" id="org.mitre.harmony.matchers.voters.ExactStructureMatcher">
 			<option id="UseName" type="checkbox" selected="true">Compare Entity Names</option>
 			<option id="UseDescription" type="checkbox" selected="true">Compare Documentation</option>
 	    </matcher>
