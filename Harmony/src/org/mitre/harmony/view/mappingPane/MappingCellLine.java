@@ -41,6 +41,15 @@ class MappingCellLine extends Line2D.Double
 		setLine(sourcePt,targetPt);
 	}
 	
+	/** for line segment in function mapping cell line */
+	MappingCellLine(Point sourcePt, Point targetPt)
+	{		
+		// Define the mapping cell line
+		setLine(sourcePt,targetPt);
+	}
+	
 	/** Returns if the mapping cell line is visible */
 	boolean isVisible() { return visible; }
+	
+	
 }

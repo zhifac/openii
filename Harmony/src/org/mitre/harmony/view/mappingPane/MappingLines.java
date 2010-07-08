@@ -4,11 +4,17 @@ package org.mitre.harmony.view.mappingPane;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Stroke;
+import java.awt.Toolkit;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashSet;
@@ -16,6 +22,7 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
 
+import javax.imageio.ImageIO;
 import javax.swing.JViewport;
 
 import org.mitre.harmony.model.HarmonyConsts;
@@ -106,6 +113,8 @@ public class MappingLines implements MappingListener, FiltersListener, SchemaTre
 		{
 			// Examine all non-hidden mapping cells
 			MappingCellLines mappingCellLines = (MappingCellLines)mappingCells.nextElement();
+			
+			//For regular mapping cell lines
 			if(!mappingCellLines.getHidden())
 			{
 				// Cycle through all mapping cell lines
@@ -121,6 +130,27 @@ public class MappingLines implements MappingListener, FiltersListener, SchemaTre
 							shortestDist = dist;
 						}
 					}
+				}			
+			}
+			
+			//For functional mapping cell lines
+			if(!mappingCellLines.getHidden()&& mappingCellLines.getHasFunction())
+			{
+				// Cycle through all mapping cell lines
+				for(MappingCellLine line : mappingCellLines.getLines())
+				{
+					// Examines all visible lines
+					//if(line.isVisible())
+					if(true)
+					{
+						// If shortest distance between point/line, mark as current closest
+						double dist = line.ptSegDistSq(point.x,point.y);
+						if(dist<shortestDist && dist<101) {
+							bestMappingCell = mappingCellLines.getMappingCellID();
+							shortestDist = dist;
+						}
+					}
+					
 				}
 			}
 		}
@@ -148,6 +178,24 @@ public class MappingLines implements MappingListener, FiltersListener, SchemaTre
 				{
 					// Examines all visible lines
 					if(line.isVisible())
+					{
+						// Add mapping cell to list if intersects region
+						if(region==null || line.intersects(region))
+						{
+							selMappingCells.add(mappingCell.getMappingCellID());
+							break;
+						}
+					}
+				}
+			}
+			//For function mapping cells
+			if(!mappingCell.getHidden()&& mappingCell.getHasFunction())
+			{
+				// Cycle through all mapping cell lines
+				for(MappingCellLine line : mappingCell.getLines())
+				{
+					// Examines all visible lines
+					//if(line.isVisible())
 					{
 						// Add mapping cell to list if intersects region
 						if(region==null || line.intersects(region))
@@ -222,8 +270,19 @@ public class MappingLines implements MappingListener, FiltersListener, SchemaTre
 	/** Handles the addition of a mapping cell */
 	public void mappingCellsAdded(Integer mappingID, List<MappingCell> mappingCells)
 	{
-		for(MappingCell mappingCell : mappingCells)
-			getLines().put(mappingCell.getId(),new MappingCellLines(mappingPane,mappingCell.getId(),harmonyModel));
+		for(MappingCell mappingCell : mappingCells){
+			
+				MappingCellLines ml = new MappingCellLines(mappingPane,mappingCell.getId(),harmonyModel);
+				
+				//need to change this when the database is redesigned for this 
+				if((mappingCell.getFunctionID().toString()).equals(("450"))){
+					ml.setHasFunction(false);
+				}
+				else{
+					ml.setHasFunction(true);
+				}
+				getLines().put(mappingCell.getId(), ml);		
+		}
 		updateHierarchicalFilterAsNeeded(mappingCells);
 		fireLinesModified();
 	}
@@ -322,9 +381,12 @@ public class MappingLines implements MappingListener, FiltersListener, SchemaTre
 					if(line.intersects(g.getClipBounds()))
 					{
 						// Store line information
-						if(line.isVisible())
+						if(line.isVisible()||mappingCell.getHasFunction()){
 							visibleLines.add(color.getRGB()+","+(int)line.x1+","+(int)line.y1+","+(int)line.x2+","+(int)line.y2);
-						else hiddenLines.add((int)line.x1+","+(int)line.y1+","+(int)line.x2+","+(int)line.y2);
+						}
+						else{
+							hiddenLines.add((int)line.x1+","+(int)line.y1+","+(int)line.x2+","+(int)line.y2);
+						}
 					}
 				}
 			}
@@ -344,6 +406,7 @@ public class MappingLines implements MappingListener, FiltersListener, SchemaTre
 		((Graphics2D)g).setStroke(defaultStroke);
 		for(String visibleLine : visibleLines)
 		{
+			//Draw the lines
 			String info[] = visibleLine.split(",");
 			g.setColor(new Color(Integer.parseInt(info[0])));
 			g.drawLine(Integer.parseInt(info[1]),Integer.parseInt(info[2]),
@@ -351,8 +414,41 @@ public class MappingLines implements MappingListener, FiltersListener, SchemaTre
 			
 			//Draw circles to the edge of the lines
 			int circleSize = 2;
-			g.fillOval(Integer.parseInt(info[1])-1,Integer.parseInt(info[2])-4, 4*circleSize, 4*circleSize);
-			g.fillOval(Integer.parseInt(info[3])-6,Integer.parseInt(info[4])-5, 4*circleSize, 4*circleSize);
+			
+
+			Component functionPane = mappingPane.getFunctionPane();
+			String minX = functionPane.getWidth() + "";
+			String midX = functionPane.getWidth() + functionPane.getWidth()/2 + "";
+			String maxX = functionPane.getWidth()*2 + "";
+			
+			//lines with Function
+			if(info[1].equals(midX) && info[3].equals(maxX)){
+				//Ending line
+				g.fillOval(Integer.parseInt(info[3])-6,Integer.parseInt(info[4])-5, 4*circleSize, 4*circleSize);
+				//adding function graph here
+				BufferedImage functionImage = null;
+				try{
+					functionImage = ImageIO.read(new File("src\\org\\mitre\\harmony\\view\\graphics\\funcLogo2.png")); 
+				} catch (IOException ex) { 
+				
+				}
+				int width = 20;
+				int height = 23;
+				int x= Integer.parseInt(info[1])-10;
+				int y = Integer.parseInt(info[2])-10;
+		        g.drawImage(functionImage, x, y, width, height, null);  
+			}
+			else if(info[1].equals(minX) && info[3].equals(midX)){
+				//beginning line
+				g.fillOval(Integer.parseInt(info[1])-1,Integer.parseInt(info[2])-4, 4*circleSize, 4*circleSize);			
+			}
+			//line without a function
+			else{  
+				g.fillOval(Integer.parseInt(info[1])-1,Integer.parseInt(info[2])-4, 4*circleSize, 4*circleSize);			
+				g.fillOval(Integer.parseInt(info[3])-6,Integer.parseInt(info[4])-5, 4*circleSize, 4*circleSize);
+			}
+			
+			//draw highlight dash extended lines
 		}
 	}		
 	
