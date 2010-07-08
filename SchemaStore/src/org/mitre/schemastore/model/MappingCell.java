@@ -26,6 +26,9 @@ import java.util.Date;
  */
 public class MappingCell implements Serializable
 {
+	/** Defines the identify function */
+	private static final Integer IDENTIFY_FUNCTION = 450;
+	
 	/** Stores the mapping cell id */
 	private Integer id = -1;
 
@@ -62,7 +65,7 @@ public class MappingCell implements Serializable
     
     /** Constructs an identity mapping cell */
     static public MappingCell createIdentityMappingCell(Integer id, Integer mappingId, Integer input, Integer output, String author, Date modificationDate, String notes)
-    	{ return new MappingCell(id, mappingId, new Integer[]{input}, output, 1.0, 450, author, modificationDate, notes); }
+    	{ return new MappingCell(id, mappingId, new Integer[]{input}, output, 1.0, IDENTIFY_FUNCTION, author, modificationDate, notes); }
     
     /** Constructs a function mapping cell */
     static public MappingCell createFunctionMappingCell(Integer id, Integer mappingId, Integer inputs[], Integer output, Integer functionID, String author, Date modificationDate, String notes)
@@ -86,8 +89,7 @@ public class MappingCell implements Serializable
 	public String getAuthor() { return author==null ? "" : author; }
 	public Date getModificationDate() { return modificationDate; }
 	public String getNotes() { return notes==null ? "" : notes; }
-	public Boolean isValidated() { return functionID!=null; }
-
+	
 	// Handles all mapping cell setters
 	public void setId(Integer id) { this.id = id; }
 	public void setMappingId(Integer mappingId) { this.mappingId = mappingId; }
@@ -101,11 +103,19 @@ public class MappingCell implements Serializable
     
    /** @deprecated This version assumes only one input */
 	public Integer getFirstInput() {  if( input != null && input.length>0 ) return input[0]; else return null; }
-
+	
 	/** Returns the string representing the modification date */
 	public String getDate()
 		{ return modificationDate==null ? "" : DateFormat.getDateInstance(DateFormat.MEDIUM).format(modificationDate); }
 
+	/** Indicates if the mapping cell has been validated */
+	public Boolean isValidated()
+		{ return functionID!=null; }
+	
+	/** Indicates if the identity function is being used */
+	public Boolean isIdentityFunction()
+		{ return functionID==null || functionID.equals(IDENTIFY_FUNCTION); }
+	
 	/** Returns the hash code */
 	public int hashCode()
 		{ return id.hashCode(); }
