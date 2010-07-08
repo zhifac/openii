@@ -36,19 +36,11 @@ class MappingCellLines
 	/** Stores the Harmony model */
 	private HarmonyModel harmonyModel;
 	
+	/** Stores if the mapping cell is an identity function */
+	private Boolean isIdentityFunction;
+	
 	/** Indicates if the mapping cell is hidden from display */
 	private Boolean hidden;
-	
-	/** Indicates if the mapping cell is associated with function*/
-	private Boolean hasFunction;
-	
-	public Boolean getHasFunction() {
-		return hasFunction;
-	}
-
-	public void setHasFunction(Boolean bool) {
-		this.hasFunction = bool;
-	}
 
 	/** List of lines associated with the mapping cell */
 	private ArrayList<MappingCellLine> lines;
@@ -140,55 +132,46 @@ class MappingCellLines
 	}
 	
 	/** Calculates all of the lines connecting the specified left and right nodes */
-	private void getLines(Integer leftID, Integer rightID)
-	{
-		// Retrieve the left and right schema trees
-		SchemaTreeImp leftTree = mappingPane.getTree(HarmonyConsts.LEFT);
-		SchemaTreeImp rightTree = mappingPane.getTree(HarmonyConsts.RIGHT);
-
-		// Cycle through all combination of source and target nodes
-		TreeNodePairs nodePairs = new TreeNodePairs(leftID,rightID);
-		for(TreeNodePair pair : nodePairs.pairs)
-		{
-			// Only create lines if they are within the specified depths
-			if(!harmonyModel.getFilters().isVisibleNode(HarmonyConsts.LEFT,pair.leftNode)) continue;
-			if(!harmonyModel.getFilters().isVisibleNode(HarmonyConsts.RIGHT,pair.rightNode)) continue;
-			
-			// Only create lines if they are visible on the screen (saves processing time)
-			Integer leftRow = leftTree.getNodeRow(pair.leftNode);
-			Integer rightRow = rightTree.getNodeRow(pair.rightNode);
-			if(leftRow<leftTree.firstVisibleRow && rightRow<rightTree.firstVisibleRow) continue;
-			if(leftRow>leftTree.lastVisibleRow && rightRow>rightTree.lastVisibleRow) continue;
-			
-			// Add line linking the left and right nodes
-			if(lines!=null) lines.add(new MappingCellLine(mappingPane,pair.leftNode,pair.rightNode));
-		}
-	}
-	
-	/** Calculates all of the lines connecting the specified left and right nodes */
 	private void getLines(Integer[] leftID, Integer rightID)
 	{
-		//for identity
-		if(!this.hasFunction){
-			getLines(leftID[0], rightID);
+		// Handles simple lines
+		if(isIdentityFunction)
+		{
+			// Retrieve the left and right schema trees
+			SchemaTreeImp leftTree = mappingPane.getTree(HarmonyConsts.LEFT);
+			SchemaTreeImp rightTree = mappingPane.getTree(HarmonyConsts.RIGHT);
+
+			// Cycle through all combination of source and target nodes
+			TreeNodePairs nodePairs = new TreeNodePairs(leftID[0],rightID);
+			for(TreeNodePair pair : nodePairs.pairs)
+			{
+				// Only create lines if they are within the specified depths
+				if(!harmonyModel.getFilters().isVisibleNode(HarmonyConsts.LEFT,pair.leftNode)) continue;
+				if(!harmonyModel.getFilters().isVisibleNode(HarmonyConsts.RIGHT,pair.rightNode)) continue;
+				
+				// Only create lines if they are visible on the screen (saves processing time)
+				Integer leftRow = leftTree.getNodeRow(pair.leftNode);
+				Integer rightRow = rightTree.getNodeRow(pair.rightNode);
+				if(leftRow<leftTree.firstVisibleRow && rightRow<rightTree.firstVisibleRow) continue;
+				if(leftRow>leftTree.lastVisibleRow && rightRow>rightTree.lastVisibleRow) continue;
+				
+				// Add line linking the left and right nodes
+				if(lines!=null) lines.add(new MappingCellLine(mappingPane,pair.leftNode,pair.rightNode));
+			}
 		}
-		
-		//For function
-		//We assume to add only the first set of function lines 
-		//no matter how many matching pair in the schema tree.
-		
-		else{
-			FunctionMappingCellLines fmclines = new FunctionMappingCellLines(mappingPane, leftID, rightID);
-			
+	
+		// Handles complex lines
+		else
+		{
+			FunctionMappingCellLines fmclines = new FunctionMappingCellLines(mappingPane, leftID, rightID);			
 			LinkedList<Line2D.Double> lineSegments = fmclines.getLines();
-			for(int i=0; i<lineSegments.size(); i++){				
-				if(lines!=null){
+			for(int i=0; i<lineSegments.size(); i++)
+				if(lines!=null)
+				{
 					Point source = new Point((int)lineSegments.get(i).x1,(int)lineSegments.get(i).y1);
 					Point target = new Point((int)lineSegments.get(i).x2,(int)lineSegments.get(i).y2);
 					lines.add(new MappingCellLine(source, target));
-					//System.out.println("There are " + i + "lines." + source.toString()+":" + target.toString());
 				}
-			}
 		}
 	}
 	
@@ -205,6 +188,10 @@ class MappingCellLines
 	Integer getMappingCellID()
 		{ return mappingCellID; }
 	
+	/** Indicates if the mapping cell is an identify function */
+	Boolean isIdentityFunction()
+		{ return isIdentityFunction; }
+	
 	/** Returns the list of lines associated with this mapping cell */
 	synchronized ArrayList<MappingCellLine> getLines()
 	{
@@ -212,7 +199,7 @@ class MappingCellLines
 		{
 			lines = new ArrayList<MappingCellLine>();
 			MappingCell mappingCell = harmonyModel.getMappingManager().getMappingCell(mappingCellID);
-			//getLines(mappingCell.getFirstInput(),mappingCell.getOutput());
+			isIdentityFunction = mappingCell.isIdentityFunction();
 			getLines(mappingCell.getInput(),mappingCell.getOutput());
 		}
 		return lines==null ? new ArrayList<MappingCellLine>() : new ArrayList<MappingCellLine>(lines);
