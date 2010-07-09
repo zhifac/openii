@@ -41,7 +41,6 @@
       <editor name="Harmony" extensions="project" icon="icons/Harmony.gif" class="org.mitre.openii.editors.projects.HarmonyEditor" id="HarmonyEditor"></editor>
       <editor name="M3 Model" extensions="project" icon="icons/Project.gif" class="org.mitre.openii.editors.projects.M3ProjectEditor" id="M3ProjectEditor"></editor>
       <editor name="VocabView" extensions="project" icon="icons/Harmony.gif" class="org.mitre.openii.editors.projects.VocabEditor" id="VocabEditor"></editor>
-      <editor name="NWayMatchView" extensions="project" icon="icons/Harmony.gif" class="org.mitre.openii.editors.projects.NWayMatchEditor" id="NWayMatchEditor"></editor>
       <editor name="Harmony" extensions="mapping" icon="icons/Harmony.gif" class="org.mitre.openii.editors.projects.HarmonyEditor" id="HarmonyEditor"></editor>
       <editor name="M3 Model" extensions="mapping" icon="icons/Mapping.gif" class="org.mitre.openii.editors.mappings.M3MappingEditor" id="M3MappingEditor"></editor>
       <editor name="QuickAlign" extensions="mapping" icon="icons/Mapping.gif" class="org.mitre.openii.editors.mappings.QuickAlignEditor" id="QuickAlignEditor"></editor>
