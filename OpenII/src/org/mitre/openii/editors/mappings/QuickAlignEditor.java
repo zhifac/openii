@@ -2,6 +2,7 @@ package org.mitre.openii.editors.mappings;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -30,6 +31,7 @@ import org.mitre.openii.model.RepositoryManager;
 import org.mitre.openii.widgets.BasicWidgets;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
+import org.mitre.schemastore.model.Project;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.schemaInfo.FilteredSchemaInfo;
 import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
@@ -125,58 +127,47 @@ public class QuickAlignEditor extends OpenIIEditor implements SelectionListener
 		return matches;
 	}
 	
-	/** Sorts the specified list of match IDs */
-	private ArrayList<Integer> sortMatches(ArrayList<Integer> matchIDs, Integer sourceID, MatchScores matchScores)
+	/** Sorts the list of matches */
+	private ArrayList<MatchScore> sortMatches(ArrayList<MatchScore> matches)
 	{
-		// Generate a hash map of the scores
-		HashMap<Double,ArrayList<Integer>> scores = new HashMap<Double,ArrayList<Integer>>();
-		for(Integer matchID : matchIDs)
-		{
-			Double score = matchScores.getScore(sourceID, matchID);
-			ArrayList<Integer> scoreElements = scores.get(score);
-			if(scoreElements==null) scores.put(score, scoreElements=new ArrayList<Integer>());
-			scoreElements.add(matchID);
-		}
+		/** Compares two matches to one another */
+		class ScoreComparator implements Comparator<MatchScore>
+			{ public int compare(MatchScore score1, MatchScore score2)
+				{ return score1.getScore().compareTo(score2.getScore()); } }
 
-		// Generate a sorted list of scores
-		ArrayList<Double> sortedScores = new ArrayList<Double>(scores.keySet());
-		Collections.sort(sortedScores);
-		
-		// Generate a sorted list of the match IDs
-		ArrayList<Integer> sortedIDs = new ArrayList<Integer>();
-		for(int i=sortedScores.size()-1; i>=0; i--)
-			sortedIDs.addAll(scores.get(sortedScores.get(i)));
-		
-		// Trim and return list of sorted matches
-		if(sortedIDs.size()>20) sortedIDs = new ArrayList<Integer>(sortedIDs.subList(0,20));
-		return sortedIDs;
+		// Sort the list of matches
+		Collections.sort(matches, new ScoreComparator());
+
+		// Return the list of matches (trimmed to the top 10)
+		if(matches.size()>10) matches = new ArrayList<MatchScore>(matches.subList(0,10));
+		return matches;
 	}
 	
 	/** Retrieves the suggested matches */
-	private HashMap<Integer,ArrayList<Integer>> getSuggestedMatches(HierarchicalSchemaInfo sourceInfo, HierarchicalSchemaInfo targetInfo)
+	private HashMap<Integer,ArrayList<MatchScore>> getSuggestedMatches(HierarchicalSchemaInfo sourceInfo, HierarchicalSchemaInfo targetInfo)
 	{		
 		// Retrieve the source and target schemas
 		FilteredSchemaInfo sourceFilter = new FilteredSchemaInfo(sourceInfo);
 		FilteredSchemaInfo targetFilter = new FilteredSchemaInfo(targetInfo);
 		
 		// Run matchers on the unassigned mapping cells
-		HashMap<Integer,ArrayList<Integer>> matches = new HashMap<Integer,ArrayList<Integer>>();
 		ArrayList<MatchVoter> voters = MatcherManager.getDefaultMatchers();
 		voters.add(new MappingMatcher(RepositoryManager.getClient()));
 		MatchScores matchScores = MatcherManager.getScores(sourceFilter, targetFilter, voters, new VoteMerger());
 
 		// Generate list of potential matches for each source element
+		HashMap<Integer,ArrayList<MatchScore>> matches = new HashMap<Integer,ArrayList<MatchScore>>();
 		for(MatchScore score : matchScores.getScores())
 		{
-			ArrayList<Integer> matchList = matches.get(score.getElement1());
+			ArrayList<MatchScore> matchList = matches.get(score.getSourceID());
 			if(matchList==null)
-				matches.put(score.getElement1(), matchList=new ArrayList<Integer>());
-			matchList.add(score.getElement2());
+				matches.put(score.getSourceID(), matchList=new ArrayList<MatchScore>());
+			matchList.add(score);
 		}
 		
-		// Sort matches and trim to top 20
+		// Sort matches and trim to top 10
 		for(Integer sourceID : matches.keySet())
-			matches.put(sourceID, sortMatches(matches.get(sourceID), sourceID, matchScores));
+			matches.put(sourceID, sortMatches(matches.get(sourceID)));
 		return matches;
 	}
 	
@@ -185,12 +176,13 @@ public class QuickAlignEditor extends OpenIIEditor implements SelectionListener
 	{
 		// Retrieve the mapping and source/target schemas
 		Mapping mapping = OpenIIManager.getMapping(elementID);
-		HierarchicalSchemaInfo sourceInfo = new HierarchicalSchemaInfo(OpenIIManager.getSchemaInfo(mapping.getSourceId()));
-		HierarchicalSchemaInfo targetInfo = new HierarchicalSchemaInfo(OpenIIManager.getSchemaInfo(mapping.getTargetId()));
+		Project project = OpenIIManager.getProject(mapping.getProjectId());
+		HierarchicalSchemaInfo sourceInfo = new HierarchicalSchemaInfo(OpenIIManager.getSchemaInfo(mapping.getSourceId()),project.getSchemaModel(mapping.getSourceId()));
+		HierarchicalSchemaInfo targetInfo = new HierarchicalSchemaInfo(OpenIIManager.getSchemaInfo(mapping.getTargetId()),project.getSchemaModel(mapping.getTargetId()));
 		
 		// Retrieve the mapping information
 		HashMap<Integer,Integer> userMatches = getUserMatches();
-		HashMap<Integer,ArrayList<Integer>> suggestedMatches = getSuggestedMatches(sourceInfo,targetInfo);
+		HashMap<Integer,ArrayList<MatchScore>> suggestedMatches = getSuggestedMatches(sourceInfo,targetInfo);
 
 		// Display the alignment pane
 		Composite pane = new Composite(scrollPane, SWT.DIALOG_TRIM);
@@ -216,9 +208,9 @@ public class QuickAlignEditor extends OpenIIEditor implements SelectionListener
 			// Populate the selection box
 			matchPane.add("<None>");
 			if(userMatch!=null) matchPane.add(targetInfo.getElement(userMatch));
-			for(Integer targetID : suggestedMatches.get(sourceElement.getId()))
-				if(!targetID.equals(userMatch))
-					matchPane.add(targetInfo.getElement(targetID));
+			for(MatchScore match : suggestedMatches.get(sourceElement.getId()))
+				if(!match.getTargetID().equals(userMatch))
+					matchPane.add(targetInfo.getElement(match.getTargetID()));
 			
 			// Mark the selection
 			matchPane.select(userMatch==null ? 0 : 1);
