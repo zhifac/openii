@@ -131,7 +131,7 @@ public class AffinityEditor extends OpenIIEditor implements SelectionClickedList
 				
 				// Launch Proximity
 				String referenceSchema = ((MenuItem)e.widget).getText();
-				VennDiagramSetsMatrix matrix = new VennDiagramSetsMatrix(referenceSchema, schemas, matchScoreComputer, 1);		
+				VennDiagramSetsMatrix matrix = new VennDiagramSetsMatrix(referenceSchema, schemas, matchScoreComputer);		
 				EditorManager.launchEditor("ProximityView", matrix);			
 			}
 		}
@@ -221,7 +221,7 @@ public class AffinityEditor extends OpenIIEditor implements SelectionClickedList
 		else
 		{
 			Object object = ((EditorInput)getEditorInput()).getElement();
-			schemaIDs = new ArrayList<Integer>((Collection)object);
+			schemaIDs = new ArrayList<Integer>((Collection<Integer>)object);
 			setPartName(schemaIDs.size()==OpenIIManager.getSchemaIDs().size() ? "All Schemas" : "*New Tag");
 		}
 		
