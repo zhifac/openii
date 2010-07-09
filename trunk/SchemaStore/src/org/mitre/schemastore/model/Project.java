@@ -68,7 +68,7 @@ public class Project implements Serializable
 	{
 		for(ProjectSchema schema : schemas)
 			if(schema.getId().equals(schemaID))
-				schema.geetSchemaModel();
+				return schema.geetSchemaModel();
 		return null;
 	}
 	
