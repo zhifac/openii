@@ -85,7 +85,7 @@ public class MappingProcessor {
 		Informant.status("Calling Harmony matching algorithms...");
 		MatchScores matchScores = MatcherManager.getScores(schemaInfo1, schemaInfo2, voters, new VoteMerger());
 		for (MatchScore score : matchScores.getScores())
-			mappingCells.add(MappingCell.createProposedMappingCell(null, mappingID, score.getElement1(), score.getElement2(), score.getScore(), "MatchMaker Auto Gen", new Date(System.currentTimeMillis()), ""));
+			mappingCells.add(MappingCell.createProposedMappingCell(null, mappingID, score.getSourceID(), score.getTargetID(), score.getScore(), "MatchMaker Auto Gen", new Date(System.currentTimeMillis()), ""));
 
 		// Save the mapping. Delete if saving fails
 		Informant.status("Saving APIMatch...");
