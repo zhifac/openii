@@ -1,4 +1,4 @@
-package org.mitre.openii.editors.schemas.schema;
+package org.mitre.openii.widgets.schemaTree;
 
 import org.eclipse.jface.viewers.StyledCellLabelProvider;
 import org.eclipse.jface.viewers.ViewerCell;
@@ -23,10 +23,10 @@ public class SchemaElementLabelProvider extends StyledCellLabelProvider
 	private static final Color WHITE = Display.getCurrent().getSystemColor(SWT.COLOR_WHITE); 
 	
 	/** Holds a reference to the schema view */
-	private SchemaView schemaView = null;
+	private SchemaTree schemaView = null;
 	
 	/** Constructs the content provider */
-	public SchemaElementLabelProvider(SchemaView schemaView)
+	public SchemaElementLabelProvider(SchemaTree schemaView)
 		{ this.schemaView = schemaView; }
 
 	/** Returns the image associated with the specified element */
