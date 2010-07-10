@@ -1,4 +1,4 @@
-package org.mitre.openii.editors.schemas.schema;
+package org.mitre.openii.widgets.schemaTree;
 
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
