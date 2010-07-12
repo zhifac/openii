@@ -15,9 +15,9 @@ import javax.swing.border.LineBorder;
 
 import org.mitre.harmony.matchers.MatcherOption;
 import org.mitre.harmony.matchers.MatcherManager;
-import org.mitre.harmony.view.dialogs.matcher.options.CheckBox;
 import org.mitre.harmony.view.dialogs.matcher.wizard.Wizard;
 import org.mitre.harmony.view.dialogs.matcher.wizard.WizardPanel;
+import org.mitre.harmony.view.dialogs.matcher.wizard.options.CheckBox;
 
 public class SelectMatchOptionsPanel extends WizardPanel {
 	private HashMap<String, MatcherOption> options = null;
@@ -54,21 +54,12 @@ public class SelectMatchOptionsPanel extends WizardPanel {
 			try {
 				MatcherOption option = options.get(key);
 
-				// checkbox
-				if (option.getType().equals("checkbox")) {
-					optionsPanel.add(new CheckBox(option));
-				}
-
-				// input field
-				//else if (option.getType().equals("text")) {
-				//}
-
-				// other option types may follow at a later date
-				//else if (option.getType().equals("")) {
-				//}
-
-				else {
-					throw new Exception("Option type '" + option.getType() + "' specified on " + option.getId() + " in configuration for " + id + " not defined.");
+				switch (option.getType()) {
+					case CHECKBOX:
+						optionsPanel.add(new CheckBox(option));
+						break;
+					default:
+						throw new Exception("Option type '" + option.getType() + "' specified on " + option.getId() + " in configuration for " + id + " not defined.");
 				}
 			} catch (Exception e) {
 				JOptionPane.showMessageDialog(getPanel(), e.getMessage(), "Error Parsing Matcher Options", JOptionPane.ERROR_MESSAGE);

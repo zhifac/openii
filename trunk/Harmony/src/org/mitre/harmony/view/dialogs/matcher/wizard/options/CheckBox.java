@@ -1,4 +1,4 @@
-package org.mitre.harmony.view.dialogs.matcher.options;
+package org.mitre.harmony.view.dialogs.matcher.wizard.options;
 
 import java.awt.Component;
 import java.awt.Font;
