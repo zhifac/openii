@@ -5,6 +5,8 @@ package org.mitre.harmony.matchers.voters;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.mitre.harmony.matchers.MatcherManager;
+import org.mitre.harmony.matchers.MatcherOption;
 import org.mitre.harmony.matchers.MatcherScores;
 import org.mitre.schemastore.model.SchemaElement;
 
@@ -20,8 +22,10 @@ public class DocumentationMatcher extends BagMatcher {
 		HashMap<Integer, WordBag> wordBags = new HashMap<Integer, WordBag>();
 
 		// see if we are going to use the name of the schema element or the description provided with the schema element
-		boolean useName = options.get("UseName").getSelected();
-		boolean useDescription = options.get("UseDescription").getSelected();
+		MatcherOption useNameObject = MatcherManager.getMatcherOption(this.getClass().getName(), "UseName");
+		boolean useName = (useNameObject != null) ? useNameObject.getSelected() : true;
+		MatcherOption useDescriptionObject = MatcherManager.getMatcherOption(this.getClass().getName(), "UseDescription");
+		boolean useDescription = (useDescriptionObject != null) ? useDescriptionObject.getSelected() : true;
 
 		// Create word bags for the source elements
 		ArrayList<SchemaElement> sourceElements = schema1.getFilteredElements();

@@ -2,27 +2,50 @@ package org.mitre.harmony.matchers;
 
 public class MatcherOption {
 	private String id;
-	private String type;
+	private Types type;
 	private String name;
-	private Boolean selected; // using the object Boolean so that it can be set to "null" if needed
+	private String value = null;
+	private Boolean selected = null;
 
-	public MatcherOption(String id, String type, String name, Boolean selected) {
+	public static enum Types {
+		CHECKBOX
+	}
+
+	public MatcherOption(String id, String type, String name, String value) throws Exception {
 		this.id = id;
-		this.type = type.toLowerCase();
 		this.name = name;
-		this.selected = selected;
+
+		// convert our type into the Types enum
+		type = type.toLowerCase();
+		if (type.equals("checkbox")) {
+			this.type = Types.CHECKBOX;
+		} else {
+			throw new Exception("Could not process matcher type " + type + ".");
+		}
+
+		// convert our value into a boolean if it is
+		if (value.toLowerCase().equals("true") || value.toLowerCase().equals("on") || value.toLowerCase().equals("enabled")) {
+			this.selected = true;
+		}
+		if (value.toLowerCase().equals("false") || value.toLowerCase().equals("off") || value.toLowerCase().equals("disabled")) {
+			this.selected = false;
+		}
 	}
 
 	public String getId() {
 		return this.id;
 	}
 
-	public String getType() {
+	public Types getType() {
 		return this.type;
 	}
 
 	public String getName() {
 		return this.name;
+	}
+
+	public String getValue() {
+		return this.value;
 	}
 
 	/** Get and set the value of this option.
