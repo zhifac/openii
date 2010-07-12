@@ -18,9 +18,6 @@ public class ExactStructureMatcher extends MatchVoter {
 
 	/** Generates scores for the specified elements */
 	public MatcherScores match() {
-		boolean useName = options.get("UseName").getSelected();
-		boolean useDescription = options.get("UseDescription").getSelected();
-
 		// Get the source elements
 		ArrayList<SchemaElement> sourceElements = schema1.getFilteredElements();
 
