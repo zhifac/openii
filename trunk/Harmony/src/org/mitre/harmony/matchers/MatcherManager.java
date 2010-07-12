@@ -79,7 +79,11 @@ public class MatcherManager {
 									String name = optionNode.getTextContent();
 									String id = optionNode.getAttribute("id");
 									String type = optionNode.getAttribute("type");
-									Boolean selected = (optionNode.getAttribute("selected").toLowerCase().equals("true") ? true : false);
+
+									// get some of the different fields that may contain values
+									String optionValue = null;
+									String selected = optionNode.getAttribute("selected");
+									if (selected != null) { optionValue = optionNode.getAttribute("selected"); }
 
 									// make sure our required options are defined
 									if (id == null || id.equals("")) { throw new Exception("No id defined for this option."); }
@@ -87,7 +91,7 @@ public class MatcherManager {
 									if (name == null || name.equals("")) { throw new Exception("No name defined for this option."); }
 
 									// add this option to our temporary options list
-									options.put(id, new MatcherOption(id, type, name, selected));
+									options.put(id, new MatcherOption(id, type, name, optionValue));
 									matcher.setConfigurable(true); // we have options!
 								}
 							}
@@ -170,6 +174,16 @@ public class MatcherManager {
 		} else {
 			return null;
 		}
+	}
+
+	/** Return the specific matcher option for the given matcher */
+	static public MatcherOption getMatcherOption(String id, String option) {
+		if (matcherOptions.containsKey(id)) {
+			if (matcherOptions.get(id).containsKey(option)) {
+				return matcherOptions.get(id).get(option);
+			}
+		}
+		return null;
 	}
 
 	/** Return the details about one matcher */

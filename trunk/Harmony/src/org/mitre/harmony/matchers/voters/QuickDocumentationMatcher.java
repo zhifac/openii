@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 import org.mitre.harmony.matchers.ElementPair;
+import org.mitre.harmony.matchers.MatcherManager;
+import org.mitre.harmony.matchers.MatcherOption;
 import org.mitre.harmony.matchers.MatcherScore;
 import org.mitre.harmony.matchers.MatcherScores;
 import org.mitre.schemastore.model.SchemaElement;
@@ -21,8 +23,10 @@ public class QuickDocumentationMatcher extends EntityMatcher
 	/** Generates scores for the specified elements */
 	public MatcherScores match() {
 		// see if we are going to use the name of the schema element or the description provided with the schema element
-		boolean useName = options.get("UseName").getSelected();
-		boolean useDescription = options.get("UseDescription").getSelected();
+		MatcherOption useNameObject = MatcherManager.getMatcherOption(this.getClass().getName(), "UseName");
+		boolean useName = (useNameObject != null) ? useNameObject.getSelected() : true;
+		MatcherOption useDescriptionObject = MatcherManager.getMatcherOption(this.getClass().getName(), "UseDescription");
+		boolean useDescription = (useDescriptionObject != null) ? useDescriptionObject.getSelected() : true;
 
 		// Retrieve the source and target entities
 		EntityMap sourceEntities = getEntities(schema1);
