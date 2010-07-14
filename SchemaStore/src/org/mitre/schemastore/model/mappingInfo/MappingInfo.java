@@ -55,6 +55,14 @@ public class MappingInfo implements Serializable
 	public Mapping getMapping()
 		{ return mapping; }
 
+	/** Sets the specified mapping cell */
+	public void setMappingCell(MappingCell mappingCell)
+		{ mappingCellHash.put(getKey(mappingCell),mappingCell); }
+	
+	/** Deletes the specified mapping cell */
+	public void deleteMappingCell(MappingCell mappingCell)
+		{ mappingCellHash.remove(getKey(mappingCell)); }
+	
 	/** Returns the specified mapping cell */
 	public MappingCell getMappingCell(Integer inputID, Integer outputID)
 		{ return mappingCellHash.get(getKey(new Integer[]{inputID},outputID)); }
