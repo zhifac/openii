@@ -11,66 +11,6 @@ import java.util.ArrayList;
  */
 public class Vocabulary implements Serializable
 {
-	/** Stores a vocabulary associated element */
-	static public class AssociatedElement
-	{
-		/** Stores the schema ID */
-		private Integer schemaID;
-		
-		/** Stores the schema element */
-		private Integer elementID;
-	
-		/** Stores the element name */
-		private String name;
-		
-		/** Constructs the associated element */
-		public AssociatedElement(Integer schemaID, Integer elementID, String name)
-			{ this.schemaID = schemaID; this.elementID = elementID; this.name = name; }
-
-		// Handles all of the associated element getters
-		public Integer getSchemaID() { return schemaID; }
-		public Integer getElementID() { return elementID; }
-		public String getName() { return name; }
-		
-		// Handles all of the associated element setters
-		public void setSchemaID(Integer schemaID) { this.schemaID = schemaID; }
-		public void setElementID(Integer elementID) { this.elementID = elementID; }
-		public void setName(String name) { this.name = name; }
-	}
-	
-	/** Stores a vocabulary term */
-	static public class Term
-	{
-		/** Stores the term ID */
-		private Integer id;
-		
-		/** Stores the term name */
-		private String name;
-		
-		/** Stores the list of associated elements */
-		private AssociatedElement[] elements;
-
-		/** Constructs the default term */ public Term() {}
-		
-		/** Constructs the term */
-		public Term(Integer id, String name, AssociatedElement[] elements)
-			{ this.id = id; this.name = name; this.elements = elements; }
-
-		/** Copies the term */
-		public Term copy()
-			{ return new Term(id, name, elements.clone()); }
-		
-		// Handles all of the term getters
-		public Integer getId() { return id; }
-		public String getName() { return name; }
-		public AssociatedElement[] getElements() { return elements; }
-
-		// Handles all of the term setters
-		public void setId(Integer id) { this.id = id; }
-		public void setName(String name) { this.name = name; }
-		public void setElements(AssociatedElement[] elements) { this.elements = elements; }
-	}
-	
 	/** Stores the project associated with this vocabulary */
 	private Integer projectID;
 	

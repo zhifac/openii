@@ -12,15 +12,15 @@ import java.util.HashSet;
 import java.util.List;
 
 import org.mitre.schemastore.data.DataManager;
+import org.mitre.schemastore.model.AssociatedElement;
 import org.mitre.schemastore.model.Entity;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.Project;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
+import org.mitre.schemastore.model.Term;
 import org.mitre.schemastore.model.Vocabulary;
-import org.mitre.schemastore.model.Vocabulary.AssociatedElement;
-import org.mitre.schemastore.model.Vocabulary.Term;
 import org.mitre.schemastore.model.mappingInfo.MappingInfo;
 
 /**
