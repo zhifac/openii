@@ -22,6 +22,7 @@ import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.Term;
 import org.mitre.schemastore.model.Vocabulary;
 import org.mitre.schemastore.model.mappingInfo.MappingInfo;
+import org.mitre.schemastore.model.schemaInfo.SchemaInfo;
 
 /**
  * Handles the saving of a vocabulary to the schema store web service
@@ -29,8 +30,17 @@ import org.mitre.schemastore.model.mappingInfo.MappingInfo;
  */
 public class SaveVocabulary
 {			
-	/** Generate an list of terms with IDs aligned with the old vocabulary */
-	static private ArrayList<Term> alignTerms(DataManager manager, Vocabulary oldVocabulary, Vocabulary newVocabulary)
+	/** Retrieves the specified schema */
+	static private SchemaInfo getSchema(DataManager manager, Integer schemaID)
+	{
+		Schema schema = manager.getSchemaCache().getSchema(schemaID);
+		ArrayList<Integer> parentIDs = manager.getSchemaRelationshipCache().getParents(schemaID);
+		ArrayList<SchemaElement> elements = manager.getSchemaElementCache().getSchemaElements(schemaID);
+		return new SchemaInfo(schema, parentIDs, elements);
+	}
+	
+	/** Generates a list of terms aligned with repository IDs */
+	static private ArrayList<Term> getAlignedTerms(DataManager manager, Vocabulary oldVocabulary, Vocabulary newVocabulary)
 	{
 		// Gather up references to old terms
 		HashMap<Integer,Term> oldTerms = new HashMap<Integer,Term>();
@@ -45,26 +55,69 @@ public class SaveVocabulary
 			Term oldTerm = oldTerms.get(term.getId());
 			if(oldTerm==null) term.setId(null);
 			alignedTerms.add(term);
-
-			// Update term name if needed
-			if(oldTerm!=null && !oldTerm.getName().equals(term.getName()))
-			{
-				SchemaElement element = manager.getSchemaElementCache().getSchemaElement(term.getId());
-				element.setName(term.getName());
-				manager.getSchemaElementCache().updateSchemaElement(element);
-			}
 		}
 		return alignedTerms;
+	}
+	
+	/** Generates a list of mappings based on the vocabulary */
+	static private HashMap<Integer,MappingInfo> getMappings(DataManager manager, Project project, Integer vocabularyID, List<Term> terms) throws Exception
+	{
+		// Retrieve the project schemas for validation
+		HashMap<Integer,SchemaInfo> schemas = new HashMap<Integer,SchemaInfo>();
+		for(Integer schemaID : project.getSchemaIDs())
+			schemas.put(schemaID, getSchema(manager,schemaID));
+		
+		// Generate the mappings
+		HashMap<Integer,MappingInfo> mappings = new HashMap<Integer,MappingInfo>();
+		Date date = Calendar.getInstance().getTime();
+		for(Term term : terms)
+			for(AssociatedElement element : term.getElements())
+			{
+				// Verify that the schema and element exist
+				SchemaInfo schema = schemas.get(element.getSchemaID());
+				if(schema==null || !schema.containsElement(element.getElementID()))
+					throw new Exception("Invalid schemas or elements referenced in vocabulary!");
+				
+				// Get the mapping for which a cell needs to be added
+				MappingInfo mappingInfo = mappings.get(element.getSchemaID());
+				if(mappingInfo==null)
+				{
+					Mapping mapping = new Mapping(null,project.getId(),element.getSchemaID(),vocabularyID);
+					mappingInfo = new MappingInfo(mapping,new ArrayList<MappingCell>());
+					mappings.put(element.getSchemaID(),mappingInfo);
+				}
+				
+				// Adds a mapping cell 
+				MappingCell mappingCell = MappingCell.createIdentityMappingCell(null, mappingInfo.getId(), element.getElementID(), term.getId(), "AUTO", date, null);
+				mappingInfo.getMappingCells().set(mappingCell);
+			}
+		return mappings;
 	}
 	
 	/** Adds new terms to the vocabulary */
 	static private void addNewTerms(DataManager manager, Integer vocabularyID, List<Term> terms) throws Exception
 	{
+		// Retrieve the vocabulary schema
+		SchemaInfo schema = getSchema(manager, vocabularyID);
+		
 		// Identify all terms the need to be created
 		ArrayList<Term> newTerms = new ArrayList<Term>();
 		for(Term term : terms)
-			if(term.getId()==null) newTerms.add(term);
-
+		{
+			if(term.getId()!=null)
+			{
+				// Swap out term names in the vocabulary schema if needed
+				String name = schema.getElement(term.getId()).getName();
+				if(!term.getName().equals(name))
+				{
+					SchemaElement element = manager.getSchemaElementCache().getSchemaElement(term.getId());
+					element.setName(term.getName());
+					manager.getSchemaElementCache().updateSchemaElement(element);
+				}
+			}
+			else newTerms.add(term);
+		}		
+		
 		// Create the new terms
 		Integer counter = manager.getUniversalIDs(newTerms.size());
 		ArrayList<SchemaElement> newEntities = new ArrayList<SchemaElement>();
@@ -81,29 +134,8 @@ public class SaveVocabulary
 	}
 	
 	/** Updates the vocabulary mappings */
-	static private void updateMappings(DataManager manager, Integer projectID, Integer vocabularyID, List<Term> terms) throws Exception
+	static private void updateMappings(DataManager manager, Integer projectID, Integer vocabularyID, HashMap<Integer,MappingInfo> mappings) throws Exception
 	{
-		// Get the date for use in all generated mapping cells
-		Date date = Calendar.getInstance().getTime();
-		
-		// Generate the vocabulary mappings based on the new terms
-		HashMap<Integer,MappingInfo> mappings = new HashMap<Integer,MappingInfo>();
-		for(Term term : terms)
-			for(AssociatedElement element : term.getElements())
-			{
-				// Get the mapping for which a cell needs to be added
-				MappingInfo mappingInfo = mappings.get(element.getSchemaID());
-				if(mappingInfo==null)
-				{
-					Mapping mapping = new Mapping(null,projectID,element.getSchemaID(),vocabularyID);
-					mappingInfo = new MappingInfo(mapping,new ArrayList<MappingCell>());
-				}
-				
-				// Adds a mapping cell 
-				MappingCell mappingCell = MappingCell.createIdentityMappingCell(null, mappingInfo.getId(), element.getElementID(), term.getId(), "AUTO", date, null);
-				mappingInfo.getMappingCells().set(mappingCell);
-			}
-
 		// Populate vocabulary mappings
 		ArrayList<Mapping> oldMappings = manager.getProjectCache().getVocabularyMappings(projectID);
 		for(MappingInfo mapping : mappings.values())
@@ -147,27 +179,30 @@ public class SaveVocabulary
 	/** Saves the specified vocabulary into the web services */
 	static boolean saveVocabulary(DataManager manager, Vocabulary vocabulary) throws RemoteException
 	{		
-		Integer projectID = vocabulary.getProjectID();
-		
-		// First get the old vocabulary (or create if necessary)
-		Integer vocabularyID = manager.getProjectCache().getVocabularyID(vocabulary.getProjectID());
-		if(vocabularyID==null)
-		{
-			Project project = manager.getProjectCache().getProject(projectID);
-			Schema schema = new Schema(null,"Vocabulary for " + project.getName(),"AUTO",null,null,null,false);
-			vocabularyID = manager.getSchemaCache().addSchema(schema);
-			if(vocabularyID==null || !manager.getProjectCache().setVocabularyID(projectID,vocabularyID)) return false;
-		}
-		Vocabulary oldVocabulary = GetVocabulary.getVocabulary(manager,projectID);
-	
-		// Update the vocabulary
 		try {
+			// Get the referenced project
+			Integer projectID = vocabulary.getProjectID();
+			Project project = manager.getProjectCache().getProject(projectID);
+			if(project==null) throw new Exception("Vocabulary contains invalid project");
+		
+			// First get the old vocabulary (or create if necessary)
+			Integer vocabularyID = manager.getProjectCache().getVocabularyID(vocabulary.getProjectID());
+			if(vocabularyID==null)
+			{
+				Schema schema = new Schema(null,"Vocabulary for " + project.getName(),"AUTO",null,null,null,false);
+				vocabularyID = manager.getSchemaCache().addSchema(schema);
+				if(vocabularyID==null || !manager.getProjectCache().setVocabularyID(projectID,vocabularyID))
+					throw new Exception("Failed to create vocabulary schema");
+			}
+			Vocabulary oldVocabulary = GetVocabulary.getVocabulary(manager,projectID);
+	
 			// Align the terms between the old and new vocabulary
-			ArrayList<Term> alignedTerms = alignTerms(manager, oldVocabulary,vocabulary);
+			ArrayList<Term> alignedTerms = getAlignedTerms(manager,oldVocabulary,vocabulary);
+			HashMap<Integer,MappingInfo> mappings = getMappings(manager, project, vocabularyID, alignedTerms);
 
 			// Swap out terms from the vocabulary
 			addNewTerms(manager, vocabularyID, alignedTerms);
-			updateMappings(manager, projectID, vocabularyID, alignedTerms);
+			updateMappings(manager, projectID, vocabularyID, mappings);
 			removeOldTerms(manager, Arrays.asList(oldVocabulary.getTerms()), alignedTerms);
 		}
 		catch(Exception e) { System.out.println("(E) VocabularyCache:setVocabulary: "+e.getMessage()); return false; }

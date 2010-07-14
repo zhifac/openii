@@ -164,14 +164,14 @@ public class ProjectDataCalls extends AbstractDataCalls
 
 			// Get the vocabulary ID
 			Integer vocabularyID = null;
-			ResultSet rs = stmt.executeQuery("SELECT vocabulary_id FROM project WHERE project_id="+projectID);
+			ResultSet rs = stmt.executeQuery("SELECT vocabulary_id FROM project WHERE id="+projectID);
 			if(rs.next()) vocabularyID = rs.getInt("vocabulary_id");
-			if(vocabularyID==null && vocabularyMappings) return mappings;
+			if(vocabularyID==null || vocabularyID.equals(0) && vocabularyMappings) return mappings;
 			
 			// Construct the mapping query
 			String query = "SELECT id,source_id,target_id FROM mapping WHERE project_id="+projectID;
 			if(vocabularyID!=null)
-				query += " AND targetID" + (vocabularyMappings?"=":"!=") + vocabularyID;
+				query += " AND target_id" + (vocabularyMappings?"=":"!=") + vocabularyID;
 
 			// Retrieve the mappings
 			rs = stmt.executeQuery(query);
@@ -379,8 +379,9 @@ public class ProjectDataCalls extends AbstractDataCalls
 		Integer vocabularyID = null;
 		try {			
 			Statement stmt = connection.getStatement();
-			ResultSet rs = stmt.executeQuery("SELECT vocabulary_id FROM project WHERE project_id="+projectID);
+			ResultSet rs = stmt.executeQuery("SELECT vocabulary_id FROM project WHERE id="+projectID);
 			if(rs.next()) vocabularyID = rs.getInt("vocabulary_id");
+			if(vocabularyID!=null && vocabularyID.equals(0)) vocabularyID=null;
 			stmt.close();
 		}
 		catch(SQLException e) { System.out.println("(E) VocabularyDataCalls:getVocabularyID: "+e.getMessage()); }
@@ -393,7 +394,7 @@ public class ProjectDataCalls extends AbstractDataCalls
 		boolean success = false;
 		try {			
 			Statement stmt = connection.getStatement();
-			stmt.executeUpdate("UPDATE project SET vocabulary_id="+vocabularyID);	
+			stmt.executeUpdate("UPDATE project SET vocabulary_id="+vocabularyID+" WHERE id="+projectID);	
 			stmt.close();
 			connection.commit();
 			success = true;
@@ -413,7 +414,7 @@ public class ProjectDataCalls extends AbstractDataCalls
 		boolean success = false;
 		try {			
 			Statement stmt = connection.getStatement();
-			stmt.executeUpdate("UPDATE project SET vocabulary_id=NULL");	
+			stmt.executeUpdate("UPDATE project SET vocabulary_id=NULL WHERE id="+projectID);	
 			stmt.close();
 			connection.commit();
 			success = true;

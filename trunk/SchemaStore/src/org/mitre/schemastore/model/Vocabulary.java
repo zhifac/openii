@@ -30,8 +30,8 @@ public class Vocabulary implements Serializable
 	public Vocabulary copy()
 	{
 		ArrayList<Term> copiedTerms = new ArrayList<Term>();
-		for(Term term : terms) copiedTerms.add(term.copy());
-		return new Vocabulary(getProjectID(),getSchemaIDs().clone(),copiedTerms.toArray(new Term[0]));
+		if(terms!=null) for(Term term : terms) copiedTerms.add(term.copy());
+		return new Vocabulary(getProjectID(),getSchemaIDs()==null?null:getSchemaIDs().clone(),copiedTerms.toArray(new Term[0]));
 	}
 	
 	// Handles all of the vocabulary getters
