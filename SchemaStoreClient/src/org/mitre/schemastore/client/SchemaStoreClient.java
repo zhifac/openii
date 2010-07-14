@@ -28,6 +28,7 @@ import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.SchemaElementList;
 import org.mitre.schemastore.model.Subtype;
 import org.mitre.schemastore.model.Tag;
+import org.mitre.schemastore.model.Vocabulary;
 import org.mitre.schemastore.model.schemaInfo.SchemaInfo;
 import org.mitre.schemastore.servlet.SchemaStore;
 import org.mitre.schemastore.servlet.SchemaStoreProxy;
@@ -602,4 +603,16 @@ public class SchemaStoreClient
 	/** Saves the mapping cells to the web service */
 	public boolean saveMappingCells(Integer mappingID, ArrayList<MappingCell> mappingCells) throws RemoteException
 		{ return (Boolean)callMethod("saveMappingCells",new Object[] {mappingID,mappingCells.toArray(new MappingCell[0])}); }
+
+	/** Gets the specified vocabulary from the web service */
+	public Vocabulary getVocabulary(Integer projectID) throws RemoteException
+		{ return (Vocabulary)callMethod("getVocabulary",new Object[] {projectID}); }
+	
+	/** Saves the vocabulary to the web service */
+	public boolean saveVocabulary(Vocabulary vocabulary) throws RemoteException
+		{ return (Boolean)callMethod("saveVocabulary",new Object[] {vocabulary}); }
+	
+	/** Deletes the specified vocabulary from the web service */
+	public boolean deleteVocabulary(Integer projectID) throws RemoteException
+		{ return (Boolean)callMethod("deleteVocabulary",new Object[] {projectID}); }
 }
