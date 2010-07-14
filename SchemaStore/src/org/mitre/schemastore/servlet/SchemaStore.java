@@ -28,6 +28,7 @@ import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.SchemaElementList;
 import org.mitre.schemastore.model.Subtype;
 import org.mitre.schemastore.model.Tag;
+import org.mitre.schemastore.model.Vocabulary;
 
 /**
  * Web service for retrieving schema information from SchemaStore
@@ -528,4 +529,16 @@ public class SchemaStore
 				mappingCellArray.add(mappingCell.copy());
 		return SaveMappingCells.saveMappingCells(getManager(),mappingID,mappingCellArray);
 	}
+
+	/** Web service to retrieve a project vocabulary */
+	public Vocabulary getVocabulary(int projectID) throws RemoteException
+		{ return GetVocabulary.getVocabulary(getManager(),projectID); }
+	
+	/** Web service to save the vocabulary */
+	public boolean saveVocabulary(Vocabulary vocabulary) throws RemoteException
+		{ return SaveVocabulary.saveVocabulary(getManager(),vocabulary.copy()); }
+
+	/** Web service to delete the vocabulary */
+	public boolean deleteVocabulary(Integer projectID) throws RemoteException
+		{ return DeleteVocabulary.deleteVocabulary(getManager(),projectID); }
 }
