@@ -12,7 +12,7 @@ import java.util.ArrayList;
 public class Vocabulary implements Serializable
 {
 	/** Stores a vocabulary associated element */
-	public class AssociatedElement
+	static public class AssociatedElement
 	{
 		/** Stores the schema ID */
 		private Integer schemaID;
@@ -39,8 +39,11 @@ public class Vocabulary implements Serializable
 	}
 	
 	/** Stores a vocabulary term */
-	public class Term
+	static public class Term
 	{
+		/** Stores the term ID */
+		private Integer id;
+		
 		/** Stores the term name */
 		private String name;
 		
@@ -50,18 +53,20 @@ public class Vocabulary implements Serializable
 		/** Constructs the default term */ public Term() {}
 		
 		/** Constructs the term */
-		public Term(String name, AssociatedElement[] elements)
-			{ this.name = name; this.elements = elements; }
+		public Term(Integer id, String name, AssociatedElement[] elements)
+			{ this.id = id; this.name = name; this.elements = elements; }
 
 		/** Copies the term */
 		public Term copy()
-			{ return new Term(name, elements.clone()); }
+			{ return new Term(id, name, elements.clone()); }
 		
 		// Handles all of the term getters
+		public Integer getId() { return id; }
 		public String getName() { return name; }
 		public AssociatedElement[] getElements() { return elements; }
 
 		// Handles all of the term setters
+		public void setId(Integer id) { this.id = id; }
 		public void setName(String name) { this.name = name; }
 		public void setElements(AssociatedElement[] elements) { this.elements = elements; }
 	}
