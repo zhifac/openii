@@ -4,10 +4,10 @@ package org.mitre.schemastore.servlet;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import org.mitre.schemastore.data.DataManager;
 import org.mitre.schemastore.model.MappingCell;
+import org.mitre.schemastore.model.mappingInfo.MappingCellHash;
 
 /**
  * Handles the saving of a mapping to the schema store web service
@@ -15,32 +15,6 @@ import org.mitre.schemastore.model.MappingCell;
  */
 public class SaveMappingCells
 {	
-	/** Private class for referencing mapping cell IDs */
-	static private class MappingCellHashMap extends HashMap<String,MappingCell>
-	{
-		/** Generates a reference table key */
-		private String getKey(MappingCell mappingCell)
-		{
-			StringBuffer key = new StringBuffer("");
-			for(Integer input : mappingCell.getInput())
-				key.append(input + " ");
-			key.append(mappingCell.getOutput());
-			return key.toString();
-		}
-			
-		/** Constructs the mapping cell reference table */
-		private MappingCellHashMap(ArrayList<MappingCell> mappingCells)
-			{ for(MappingCell mappingCell : mappingCells) put(getKey(mappingCell),mappingCell); }
-
-		/** Retrieves the ID for the specified mapping cell */
-		private MappingCell getMappingCell(MappingCell mappingCell)
-			{ return get(getKey(mappingCell)); }
-
-		/** Indicates if the hash map contains the specified mapping cell */
-		private boolean contains(MappingCell mappingCell)
-			{ return containsKey(getKey(mappingCell)); }
-	}
-	
 	/** Saves the specified mapping into the web services */
 	static Boolean saveMappingCells(DataManager manager, Integer mappingID, ArrayList<MappingCell> mappingCells) throws RemoteException
 	{		
@@ -48,13 +22,13 @@ public class SaveMappingCells
 		ArrayList<MappingCell> oldMappingCells = manager.getProjectCache().getMappingCells(mappingID);
 		
 		// Build reference tables for the old and new mapping cells
-		MappingCellHashMap oldMappingCellRefs = new MappingCellHashMap(oldMappingCells);
-		MappingCellHashMap mappingCellRefs = new MappingCellHashMap(mappingCells);
+		MappingCellHash oldMappingCellRefs = new MappingCellHash(oldMappingCells);
+		MappingCellHash mappingCellRefs = new MappingCellHash(mappingCells);
 
 		// Align mapping cell IDs with old mapping cell IDs
 		for(MappingCell mappingCell : mappingCells)
 		{
-			MappingCell oldMappingCell = oldMappingCellRefs.getMappingCell(mappingCell);
+			MappingCell oldMappingCell = oldMappingCellRefs.get(mappingCell.getInput(),mappingCell.getOutput());
 			mappingCell.setId(oldMappingCell==null ? null : oldMappingCell.getId());
 		}
 			
@@ -66,7 +40,7 @@ public class SaveMappingCells
 		{
 			// Removes all mapping cells that are no longer used
 			for(MappingCell oldMappingCell : oldMappingCells)
-				if(!mappingCellRefs.contains(oldMappingCell))
+				if(!mappingCellRefs.contains(oldMappingCell.getInput(),oldMappingCell.getOutput()))
 					if(!manager.getProjectCache().deleteMappingCell(oldMappingCell.getId())) success = false;
 					
 			// Adds or updates all new mapping cells
@@ -94,7 +68,7 @@ public class SaveMappingCells
 		{
 			for(MappingCell mappingCell : manager.getProjectCache().getMappingCells(mappingID))
 			{
-				MappingCell oldMappingCell = oldMappingCellRefs.getMappingCell(mappingCell);
+				MappingCell oldMappingCell = oldMappingCellRefs.get(mappingCell.getInput(),mappingCell.getOutput());
 				if(oldMappingCell==null) manager.getProjectCache().deleteMappingCell(mappingCell.getId());
 				else manager.getProjectCache().updateMappingCell(oldMappingCell);
 			}
