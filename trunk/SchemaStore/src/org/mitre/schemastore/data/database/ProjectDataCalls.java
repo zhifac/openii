@@ -156,19 +156,32 @@ public class ProjectDataCalls extends AbstractDataCalls
 	//----------------------------------
 
 	/** Retrieves the list of mappings for the specified project ID */
-	public ArrayList<Mapping> getMappings(Integer projectID)
+	public ArrayList<Mapping> getMappings(Integer projectID, boolean vocabularyMappings)
 	{
 		ArrayList<Mapping> mappings = new ArrayList<Mapping>();
 		try {
 			Statement stmt = connection.getStatement();
-			ResultSet rs = stmt.executeQuery("SELECT id,source_id,target_id FROM mapping WHERE project_id="+projectID);
+
+			// Get the vocabulary ID
+			Integer vocabularyID = null;
+			ResultSet rs = stmt.executeQuery("SELECT vocabulary_id FROM project WHERE project_id="+projectID);
+			if(rs.next()) vocabularyID = rs.getInt("vocabulary_id");
+			if(vocabularyID==null && vocabularyMappings) return mappings;
+			
+			// Construct the mapping query
+			String query = "SELECT id,source_id,target_id FROM mapping WHERE project_id="+projectID;
+			if(vocabularyID!=null)
+				query += " AND targetID" + (vocabularyMappings?"=":"!=") + vocabularyID;
+
+			// Retrieve the mappings
+			rs = stmt.executeQuery(query);
 			while(rs.next())
 				mappings.add(new Mapping(rs.getInt("id"),projectID,rs.getInt("source_id"),rs.getInt("target_id")));
 			stmt.close();
 		} catch(SQLException e) { System.out.println("(E) ProjectDataCalls:getMappings: "+e.getMessage()); }
 		return mappings;		
 	}
-
+	
 	/** Retrieves the specified mapping */
 	public Mapping getMapping(Integer mappingID)
 	{
@@ -352,6 +365,63 @@ public class ProjectDataCalls extends AbstractDataCalls
 		{
 			try { connection.rollback(); } catch(SQLException e2) {}
 			System.out.println("(E) ProjectDataCalls:deleteMappingCell: "+e.getMessage());
+		}
+		return success;
+	}
+	
+	//-------------------------------------------
+	// Handles the vocabulary ID in the Database
+	//-------------------------------------------
+	
+	/** Returns the project vocabulary schema id from the repository */
+	public Integer getVocabularyID(Integer projectID)
+	{
+		Integer vocabularyID = null;
+		try {			
+			Statement stmt = connection.getStatement();
+			ResultSet rs = stmt.executeQuery("SELECT vocabulary_id FROM project WHERE project_id="+projectID);
+			if(rs.next()) vocabularyID = rs.getInt("vocabulary_id");
+			stmt.close();
+		}
+		catch(SQLException e) { System.out.println("(E) VocabularyDataCalls:getVocabularyID: "+e.getMessage()); }
+		return vocabularyID;
+	}
+	
+	/** Sets the project vocabulary schema id in the repository */
+	public boolean setVocabularyID(Integer projectID, Integer vocabularyID)
+	{
+		boolean success = false;
+		try {			
+			Statement stmt = connection.getStatement();
+			stmt.executeUpdate("UPDATE project SET vocabulary_id="+vocabularyID);	
+			stmt.close();
+			connection.commit();
+			success = true;
+		}
+		catch(SQLException e)
+		{
+			try { connection.rollback(); } catch(SQLException e2) {}
+			System.out.println("(E) VocabularyDataCalls:setVocabularyID: "+e.getMessage());
+		}
+		return success;
+	}
+
+	
+	/** Deletes the project vocabulary ID from the project in the repository */
+	public boolean deleteVocabularyID(Integer projectID)
+	{
+		boolean success = false;
+		try {			
+			Statement stmt = connection.getStatement();
+			stmt.executeUpdate("UPDATE project SET vocabulary_id=NULL");	
+			stmt.close();
+			connection.commit();
+			success = true;
+		}
+		catch(SQLException e)
+		{
+			try { connection.rollback(); } catch(SQLException e2) {}
+			System.out.println("(E) VocabularyDataCalls:deleteVocabularyID: "+e.getMessage());
 		}
 		return success;
 	}

@@ -51,8 +51,12 @@ public class ProjectCache extends DataCache
 
 	/** Returns a listing of mappings for the specified project */
 	public ArrayList<Mapping> getMappings(Integer projectID)
-		{ return dataCalls.getMappings(projectID); }
+		{ return dataCalls.getMappings(projectID,false); }
 
+	/** Returns a listing of the vocabulary mappings for the specified project */
+	public ArrayList<Mapping> getVocabularyMappings(Integer projectID)
+		{ return dataCalls.getMappings(projectID,true); }
+	
 	/** Retrieve the specified mapping */
 	public Mapping getMapping(Integer mappingID)
 		{ return dataCalls.getMapping(mappingID); }
@@ -89,4 +93,16 @@ public class ProjectCache extends DataCache
 	/** Delete the specified mapping cell */
 	public Boolean deleteMappingCell(Integer mappingCellID)
 		{ return dataCalls.deleteMappingCell(mappingCellID); }
+
+	/** Gets the vocabulary ID for the specified project */
+	public Integer getVocabularyID(Integer projectID)
+		{ return dataCalls.getVocabularyID(projectID); }
+
+	/** Sets the project vocabulary id in the repository */
+	public boolean setVocabularyID(Integer projectID, Integer vocabularyID)
+		{ return dataCalls.setVocabularyID(projectID, vocabularyID); }
+	
+	/** Deletes the project vocabulary ID from the project in the repository */
+	public boolean deleteVocabularyID(Integer projectID)
+		{ return dataCalls.deleteVocabularyID(projectID); }
 }
