@@ -23,8 +23,7 @@ public class MappingInfo implements Serializable
 	public MappingInfo(Mapping mapping, ArrayList<MappingCell> mappingCells)
 	{
 		this.mapping = mapping;
-		for(MappingCell mappingCell : mappingCells)
-			mappingCellHash.set(mappingCell);
+		mappingCellHash = new MappingCellHash(mappingCells);
 	}		
 
 	/** Copy the mapping info */

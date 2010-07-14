@@ -13,7 +13,7 @@ import org.mitre.schemastore.model.MappingCell;
 public class MappingCellHash
 {	
 	/** Stores the mapping cells */
-	private HashMap<String,MappingCell> mappingCellHash;
+	private HashMap<String,MappingCell> mappingCellHash = new HashMap<String,MappingCell>();
 
 	/** Constructs the hash map key */
 	private String getKey(Integer[] inputIDs, Integer outputID)
