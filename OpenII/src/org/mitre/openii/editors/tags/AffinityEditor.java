@@ -18,7 +18,6 @@ import org.mitre.affinity.clusters.ClusterGroup;
 import org.mitre.affinity.model.AffinityModel;
 import org.mitre.affinity.model.AffinitySchemaManager;
 import org.mitre.affinity.model.AffinitySchemaStoreManager;
-import org.mitre.affinity.model.ClusterManager;
 import org.mitre.affinity.model.ISchemaManager;
 import org.mitre.affinity.view.application.AffinityPane;
 import org.mitre.affinity.view.application.LoadProgressDialog;
@@ -55,7 +54,6 @@ public class AffinityEditor extends OpenIIEditor implements SelectionClickedList
 	
 	/** All Affinity instances running in OpenII use the same schema and cluster manager */
 	private static final ISchemaManager schemaManager = new AffinitySchemaManager();
-	private static final ClusterManager clusterManager = new ClusterManager();
 	
 	/** Stores the Affinity pane */
 	private AffinityPane affinity = null;
@@ -226,7 +224,7 @@ public class AffinityEditor extends OpenIIEditor implements SelectionClickedList
 		}
 		
 		// Generate the affinity pane
-		this.affinityModel =  new AffinityModel(schemaManager, clusterManager);
+		this.affinityModel =  new AffinityModel(schemaManager);
 		affinity = new AffinityPane(parent, SWT.NONE, affinityModel, schemaIDs, progressDlg);		
 		
 		// Indicate that Affinity has launched
