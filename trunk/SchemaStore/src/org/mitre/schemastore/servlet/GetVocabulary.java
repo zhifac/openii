@@ -43,13 +43,11 @@ public class GetVocabulary
 		ArrayList<Mapping> mappings = manager.getProjectCache().getVocabularyMappings(projectID);
 		
 		// Generate the vocabulary terms
-		ArrayList<Integer> schemaIDs = new ArrayList<Integer>();
 		HashMap<Integer,Term> terms = new HashMap<Integer,Term>();
 		for(Mapping mapping : mappings)
 		{
 			// Get the ID of the schema involved in the vocabulary
 			Integer schemaID = mapping.getSourceId();
-			schemaIDs.add(schemaID);
 			
 			// Add the mapped elements to the vocabulary term list
 			HashMap<Integer,SchemaElement> schemaElements = getSchemaElements(manager,schemaID);
@@ -69,6 +67,6 @@ public class GetVocabulary
 		}
 		
 		// Generate the vocabulary
-		return new Vocabulary(projectID, schemaIDs.toArray(new Integer[0]), terms.values().toArray(new Term[0]));
+		return new Vocabulary(projectID, terms.values().toArray(new Term[0]));
 	}
 }
