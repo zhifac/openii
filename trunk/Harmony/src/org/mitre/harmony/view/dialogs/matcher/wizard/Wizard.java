@@ -199,6 +199,9 @@ public class Wizard extends WindowAdapter implements PropertyChangeListener {
 
     /** Shows the wizard dialog */
     public void showDialog(ArrayList<MatchVoter> matchers, MatchMerger merger, boolean custom) {
+    	// since we were given a list of matchers, set those to be our list when we return what was selected
+    	setSelectedMatchers(matchers);
+
     	// create our list of panels that could possibly exist
 		addPanel(new SelectMatchersPanel(this, matchers));
 		addPanel(new SelectMatchTypePanel(this, harmonyModel));
