@@ -495,6 +495,10 @@ public class SchemaStore
 	public boolean deleteMappingCell(int mappingCellID)
 		{ return getManager().getProjectCache().deleteMappingCell(mappingCellID); }
 
+	/** Web service indicating if a project has a vocabulary */
+	public boolean hasVocabulary(int projectID)
+		{ return getManager().getProjectCache().getVocabularyID(projectID)!=null; }
+	
 	//-------------------------------
 	// Handles Annotation Operations
 	//-------------------------------
