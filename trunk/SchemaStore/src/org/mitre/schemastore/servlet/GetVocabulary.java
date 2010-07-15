@@ -56,7 +56,11 @@ public class GetVocabulary
 				// Get the term
 				Integer termID = mappingCell.getOutput();
 				Term term = terms.get(termID);
-				if(term==null) term = new Term(termID,vocabularyElements.get(termID).getName(),new AssociatedElement[0]);
+				if(term==null)
+				{
+					SchemaElement element = vocabularyElements.get(termID);
+					term = new Term(termID,element.getName(),element.getDescription(),new AssociatedElement[0]);
+				}
 				
 				// Add the associated element
 				SchemaElement element = schemaElements.get(mappingCell.getInput()[0]);
