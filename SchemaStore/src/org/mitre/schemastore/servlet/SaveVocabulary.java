@@ -107,11 +107,13 @@ public class SaveVocabulary
 			if(term.getId()!=null)
 			{
 				// Swap out term names in the vocabulary schema if needed
-				String name = schema.getElement(term.getId()).getName();
-				if(!term.getName().equals(name))
+				SchemaElement oldElement = schema.getElement(term.getId());
+				String description = term.getDescription()==null ? "" : term.getDescription();
+				if(!term.getName().equals(oldElement.getName()) || !description.equals(oldElement.getDescription()))
 				{
 					SchemaElement element = manager.getSchemaElementCache().getSchemaElement(term.getId());
 					element.setName(term.getName());
+					element.setDescription(term.getDescription());
 					manager.getSchemaElementCache().updateSchemaElement(element);
 				}
 			}
