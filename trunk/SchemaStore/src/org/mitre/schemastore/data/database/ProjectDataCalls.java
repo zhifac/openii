@@ -166,7 +166,7 @@ public class ProjectDataCalls extends AbstractDataCalls
 			Integer vocabularyID = null;
 			ResultSet rs = stmt.executeQuery("SELECT vocabulary_id FROM project WHERE id="+projectID);
 			if(rs.next()) vocabularyID = rs.getInt("vocabulary_id");
-			if(vocabularyID==null || vocabularyID.equals(0) && vocabularyMappings) return mappings;
+			if((vocabularyID==null || vocabularyID.equals(0)) && vocabularyMappings) return mappings;
 			
 			// Construct the mapping query
 			String query = "SELECT id,source_id,target_id FROM mapping WHERE project_id="+projectID;
