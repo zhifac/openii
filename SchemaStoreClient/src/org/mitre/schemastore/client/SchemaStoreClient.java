@@ -569,6 +569,10 @@ public class SchemaStoreClient
 		return mappingCells==null ? new ArrayList<MappingCell>() : new ArrayList<MappingCell>(Arrays.asList(mappingCells));
 	}
 
+	/** Indicates if the specified project has a vocabulary from the web service */
+	public boolean hasVocabulary(Integer projectID) throws RemoteException
+		{ return (Boolean)callMethod("hasVocabulary",new Object[] {projectID}); }
+	
 	//----------------------
 	// Annotation Functions
 	//----------------------
