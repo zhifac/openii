@@ -62,12 +62,7 @@ public class SchemaCache extends DataCache
 	
 	/** Indicates that the schema is able to be deleted */
 	public boolean isDeletable(Integer schemaID)
-	{
-		Integer children = getManager().getSchemaRelationshipCache().getChildren(schemaID).size();
-		Integer dataSources = getManager().getDataSourceCache().getDataSources(schemaID).size();
-		Integer mappings = getManager().getProjectCache().getSchemaProjectIDs(schemaID).size();
-		return children==0 && dataSources==0 && mappings==0;
-	}
+		{ return getDeletableSchemas().contains(schemaID); }
 	
 	/** Returns the list of deletable schemas */
 	public ArrayList<Integer> getDeletableSchemas()

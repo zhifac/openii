@@ -117,6 +117,7 @@ public class SchemaDataCalls extends AbstractDataCalls
 			ResultSet rs = stmt.executeQuery("SELECT id FROM \"schema\" " +
 											 "EXCEPT SELECT schema_id AS id FROM data_source " +
 											 "EXCEPT SELECT schema_id AS id FROM project_schema " +
+											 "EXCEPT SELECT vocabulary_id AS id FROM project " +
 											 "EXCEPT SELECT base_id AS id FROM extensions");
 			while(rs.next())
 				schemas.add(rs.getInt("id"));
