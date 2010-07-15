@@ -51,6 +51,7 @@ public class EditorManager
 	{
 		IEditorRegistry registry = PlatformUI.getWorkbench().getEditorRegistry();
 		IEditorDescriptor editor = registry.getDefaultEditor(EditorManager.getEditorType(element));
+		if(element instanceof String && element.equals("All Schemas")) element = OpenIIManager.getSchemaIDs();			
 		if(editor!=null) launchEditor(editor.getId(), element);
 	}
 }

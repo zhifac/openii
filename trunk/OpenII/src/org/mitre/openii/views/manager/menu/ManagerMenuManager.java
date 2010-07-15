@@ -43,17 +43,6 @@ public class ManagerMenuManager extends MenuManager implements IMenuListener
 	public Object getElement()
 		{ return element; }
 	
-	/** Returns the id associated with the selected element */
-	public Integer getElementID()
-	{
-		if(element instanceof Schema) return ((Schema)element).getId();
-		if(element instanceof SchemaInTag) return ((SchemaInTag)element).getSchema().getId();
-		if(element instanceof SchemaInProject) return ((SchemaInProject)element).getSchema().getId();
-		if(element instanceof Tag) return ((Tag)element).getId();
-		if(element instanceof Mapping) return ((Mapping)element).getId();
-		return null;
-	}
-	
 	/** Generates the editor menu */
 	private void getEditorMenu(IMenuManager menuManager)
 	{
