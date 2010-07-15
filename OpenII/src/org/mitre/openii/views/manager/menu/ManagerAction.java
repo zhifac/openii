@@ -221,10 +221,6 @@ public class ManagerAction extends Action
 		if(actionType == ActionType.IMPORT_MAPPING)
 			new ImportMappingDialog(shell,(Project)selection).open();
 		
-		/** Handles the replacing of a schema from a project */
-		if(actionType == ActionType.REPLACE_SCHEMA)
-			{}//new ReplaceSchemaDialog(shell,(Project)selection).open();
-		
 		/** Handles the auto-generation of a mapping's matches */
 		if ( actionType == ActionType.GENERATE_VOCABULARY )
 			new WizardDialog(shell, new GenerateVocabularyWizard((Project)selection)).open();
@@ -238,7 +234,5 @@ public class ManagerAction extends Action
 		/** Handles the deletion of a mapping */
 		if(actionType == ActionType.DELETE_MAPPING)
 			DeleteMappingDialog.delete(shell,(Mapping)selection);
-		
-		
 	}
 }

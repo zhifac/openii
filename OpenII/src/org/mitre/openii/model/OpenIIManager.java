@@ -494,6 +494,11 @@ public class OpenIIManager
 	public static void fireMappingDeleted(Integer mappingID)
 		{ for(OpenIIListener listener : listeners.get()) listener.mappingDeleted(mappingID); }
 	
+	//------------ Vocabulary Functionality -------------
+	
+	public static boolean hasVocabulary(Integer projectID)
+		{ try { return RepositoryManager.getClient().hasVocabulary(projectID); } catch(Exception e) { return false; } }
+	
 	//------------ Function Functionality -------------
 	
 	public static Function getFunction(Integer functionID)

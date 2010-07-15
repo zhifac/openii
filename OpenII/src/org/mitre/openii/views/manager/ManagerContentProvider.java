@@ -65,7 +65,7 @@ public class ManagerContentProvider implements ITreeContentProvider
 		// Handles project elements
 		if(element instanceof Project)
 		{
-			// Retrieve the project schemas label
+			// Generate the project schemas list
 			Integer projectID = ((Project)element).getId();
 			SchemasInProject schemasInProject = schemasInProjectList.get(projectID);
 			if(schemasInProject==null) schemasInProjectList.put(projectID, schemasInProject = new SchemasInProject(projectID));
@@ -74,6 +74,7 @@ public class ManagerContentProvider implements ITreeContentProvider
 			ArrayList<Object> elements = new ArrayList<Object>();
 			elements.addAll(WidgetUtilities.sortList(OpenIIManager.getMappings(projectID)));
 			elements.add(schemasInProject);
+			if(OpenIIManager.hasVocabulary(projectID)) elements.add(new VocabularyInProject(projectID));
 			return elements.toArray();
 		}
 		
