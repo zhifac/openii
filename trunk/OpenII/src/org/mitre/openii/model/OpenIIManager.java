@@ -18,6 +18,7 @@ import org.mitre.schemastore.model.Project;
 import org.mitre.schemastore.model.ProjectSchema;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.Tag;
+import org.mitre.schemastore.model.Vocabulary;
 import org.mitre.schemastore.model.schemaInfo.SchemaInfo;
 import org.mitre.schemastore.porters.Porter;
 import org.mitre.schemastore.porters.PorterManager.PorterType;
@@ -498,7 +499,10 @@ public class OpenIIManager
 	
 	public static boolean hasVocabulary(Integer projectID)
 		{ try { return RepositoryManager.getClient().hasVocabulary(projectID); } catch(Exception e) { return false; } }
-	
+
+	public static Vocabulary getVocabulary(Integer projectID)
+		{ try { return RepositoryManager.getClient().getVocabulary(projectID); } catch(Exception e) { return null; } }
+
 	//------------ Function Functionality -------------
 	
 	public static Function getFunction(Integer functionID)

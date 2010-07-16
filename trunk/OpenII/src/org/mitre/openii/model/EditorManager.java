@@ -7,10 +7,12 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.mitre.openii.views.manager.SchemaInProject;
 import org.mitre.openii.views.manager.SchemaInTag;
+import org.mitre.openii.views.manager.VocabularyInProject;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.Project;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.Tag;
+import org.mitre.schemastore.model.Vocabulary;
 
 /**
  * Manages editor actions
@@ -25,6 +27,7 @@ public class EditorManager
 		if((element instanceof String && element.equals("All Schemas")) || element instanceof Tag) return Tag.class;
 		if(element instanceof Project) return Project.class;
 		if(element instanceof Mapping) return Mapping.class;
+		if(element instanceof VocabularyInProject) return Vocabulary.class;
 		return null;
 	}
 	

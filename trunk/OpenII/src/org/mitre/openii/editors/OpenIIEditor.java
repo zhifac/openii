@@ -15,6 +15,7 @@ import org.mitre.openii.model.OpenIIListener;
 import org.mitre.openii.model.OpenIIManager;
 import org.mitre.openii.views.manager.SchemaInProject;
 import org.mitre.openii.views.manager.SchemaInTag;
+import org.mitre.openii.views.manager.VocabularyInProject;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.Project;
 import org.mitre.schemastore.model.Schema;
@@ -40,6 +41,7 @@ abstract public class OpenIIEditor extends EditorPart implements OpenIIListener
 		if(element instanceof Tag) elementID = ((Tag)element).getId();
 		if(element instanceof Project) elementID = ((Project)element).getId();
 		if(element instanceof Mapping) elementID = ((Mapping)element).getId();
+		if(element instanceof VocabularyInProject) elementID = ((VocabularyInProject)element).getProjectID();
 
 		// Set the title
 		if(element instanceof Mapping)
