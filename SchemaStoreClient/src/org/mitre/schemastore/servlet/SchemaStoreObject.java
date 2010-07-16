@@ -16,14 +16,15 @@ public interface SchemaStoreObject extends java.rmi.Remote {
     public boolean compress() throws java.rmi.RemoteException;
     public org.mitre.schemastore.model.Tag[] getTags() throws java.rmi.RemoteException;
     public boolean setAnnotation(int elementID, java.lang.String attribute, java.lang.String value) throws java.rmi.RemoteException;
+    public boolean updateAttribute(org.mitre.schemastore.model.Attribute attribute) throws java.rmi.RemoteException;
     public int addProject(org.mitre.schemastore.model.Project project) throws java.rmi.RemoteException;
     public org.mitre.schemastore.model.Relationship getRelationship(int relationshipID) throws java.rmi.RemoteException;
     public org.mitre.schemastore.model.Entity getEntity(int entityID) throws java.rmi.RemoteException;
-    public boolean updateAttribute(org.mitre.schemastore.model.Attribute attribute) throws java.rmi.RemoteException;
-    public int addSubtype(org.mitre.schemastore.model.Subtype subtype) throws java.rmi.RemoteException;
     public int addSchema(org.mitre.schemastore.model.Schema schema) throws java.rmi.RemoteException;
     public org.mitre.schemastore.model.Schema[] getSchemas() throws java.rmi.RemoteException;
+    public int addSubtype(org.mitre.schemastore.model.Subtype subtype) throws java.rmi.RemoteException;
     public org.mitre.schemastore.model.Function getFunction(int functionID) throws java.rmi.RemoteException;
+    public int addEntity(org.mitre.schemastore.model.Entity entity) throws java.rmi.RemoteException;
     public org.mitre.schemastore.model.Function[] getFunctions() throws java.rmi.RemoteException;
     public int importSchema(org.mitre.schemastore.model.Schema schema, org.mitre.schemastore.model.SchemaElementList schemaElementList) throws java.rmi.RemoteException;
     public org.mitre.schemastore.model.DataSource getDataSource(int dataSourceID) throws java.rmi.RemoteException;
@@ -50,7 +51,6 @@ public interface SchemaStoreObject extends java.rmi.Remote {
     public int getRootSchema(int schema1ID, int schema2ID) throws java.rmi.RemoteException;
     public int[] getSchemaPath(int rootID, int schemaID) throws java.rmi.RemoteException;
     public boolean setParentSchemas(int schemaID, int[] parentIDs) throws java.rmi.RemoteException;
-    public int addEntity(org.mitre.schemastore.model.Entity entity) throws java.rmi.RemoteException;
     public int addDomain(org.mitre.schemastore.model.Domain domain) throws java.rmi.RemoteException;
     public int addDomainValue(org.mitre.schemastore.model.DomainValue domainValue) throws java.rmi.RemoteException;
     public int addRelationship(org.mitre.schemastore.model.Relationship relationship) throws java.rmi.RemoteException;
@@ -98,6 +98,7 @@ public interface SchemaStoreObject extends java.rmi.Remote {
     public int addMappingCell(org.mitre.schemastore.model.MappingCell mappingCell) throws java.rmi.RemoteException;
     public boolean updateMappingCell(org.mitre.schemastore.model.MappingCell mappingCell) throws java.rmi.RemoteException;
     public boolean deleteMappingCell(int mappingCellID) throws java.rmi.RemoteException;
+    public boolean hasVocabulary(int projectID) throws java.rmi.RemoteException;
     public boolean saveMappingCells(int mappingID, org.mitre.schemastore.model.MappingCell[] mappingCells) throws java.rmi.RemoteException;
     public org.mitre.schemastore.model.Vocabulary getVocabulary(int projectID) throws java.rmi.RemoteException;
     public boolean saveVocabulary(org.mitre.schemastore.model.Vocabulary vocabulary) throws java.rmi.RemoteException;
