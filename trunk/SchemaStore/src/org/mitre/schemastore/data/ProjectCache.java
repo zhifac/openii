@@ -66,11 +66,20 @@ public class ProjectCache extends DataCache
 	{
 		Integer mappingID = 0;
 		try {
-			ArrayList<Integer> schemaIDs = new ArrayList<Integer>(Arrays.asList(dataCalls.getProject(mapping.getProjectId()).getSchemaIDs()));
+			// Get the project and vocabulary IDs
+			Integer projectID = mapping.getProjectId();
+			Integer vocabularyID = dataCalls.getVocabularyID(projectID);
+
+			// Verify that the mapping is legal
+			ArrayList<Integer> schemaIDs = new ArrayList<Integer>(Arrays.asList(dataCalls.getProject(projectID).getSchemaIDs()));
+			if(vocabularyID!=null) schemaIDs.add(vocabularyID);
 			if(mapping.getSourceId().equals(mapping.getTargetId())) return 0;
 			if(!schemaIDs.contains(mapping.getSourceId()) || !schemaIDs.contains(mapping.getTargetId())) return 0;
+
+			// Generate the mapping
 			mappingID = dataCalls.addMapping(mapping);
-		} catch(Exception e) {}
+		}
+		catch(Exception e) {}
 		return mappingID;
 	}
 
