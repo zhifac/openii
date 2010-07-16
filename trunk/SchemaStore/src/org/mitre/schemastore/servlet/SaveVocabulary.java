@@ -39,6 +39,20 @@ public class SaveVocabulary
 		return new SchemaInfo(schema, parentIDs, elements);
 	}
 	
+	/** Validate terms against the schemas they are referencing */
+	static private boolean validateTerms(HashMap<Integer,SchemaInfo> schemas, Term[] terms)
+	{
+		for(Term term : terms)
+			for(AssociatedElement element : term.getElements())
+			{
+				// Verify that the schema and element exist
+				SchemaInfo schema = schemas.get(element.getSchemaID());
+				if(schema==null || !schema.containsElement(element.getElementID()))
+					return false;
+			}
+		return true;
+	}
+	
 	/** Generates a list of terms aligned with repository IDs */
 	static private ArrayList<Term> getAlignedTerms(DataManager manager, Vocabulary oldVocabulary, Vocabulary newVocabulary)
 	{
@@ -62,22 +76,12 @@ public class SaveVocabulary
 	/** Generates a list of mappings based on the vocabulary */
 	static private HashMap<Integer,MappingInfo> getMappings(DataManager manager, Project project, Integer vocabularyID, List<Term> terms) throws Exception
 	{
-		// Retrieve the project schemas for validation
-		HashMap<Integer,SchemaInfo> schemas = new HashMap<Integer,SchemaInfo>();
-		for(Integer schemaID : project.getSchemaIDs())
-			schemas.put(schemaID, getSchema(manager,schemaID));
-		
 		// Generate the mappings
 		HashMap<Integer,MappingInfo> mappings = new HashMap<Integer,MappingInfo>();
 		Date date = Calendar.getInstance().getTime();
 		for(Term term : terms)
 			for(AssociatedElement element : term.getElements())
 			{
-				// Verify that the schema and element exist
-				SchemaInfo schema = schemas.get(element.getSchemaID());
-				if(schema==null || !schema.containsElement(element.getElementID()))
-					throw new Exception("Invalid schemas or elements referenced in vocabulary!");
-				
 				// Get the mapping for which a cell needs to be added
 				MappingInfo mappingInfo = mappings.get(element.getSchemaID());
 				if(mappingInfo==null)
@@ -186,7 +190,16 @@ public class SaveVocabulary
 			Integer projectID = vocabulary.getProjectID();
 			Project project = manager.getProjectCache().getProject(projectID);
 			if(project==null) throw new Exception("Vocabulary contains invalid project");
-		
+	
+			// Retrieve the referenced project schemas
+			HashMap<Integer,SchemaInfo> schemas = new HashMap<Integer,SchemaInfo>();
+			for(Integer schemaID : project.getSchemaIDs())
+				schemas.put(schemaID, getSchema(manager,schemaID));
+
+			// Validate the terms to make sure they all reference valid elements
+			if(!validateTerms(schemas,vocabulary.getTerms()))
+				throw new Exception("Invalid schemas or elements referenced in vocabulary!");
+			
 			// First get the old vocabulary (or create if necessary)
 			Integer vocabularyID = manager.getProjectCache().getVocabularyID(vocabulary.getProjectID());
 			if(vocabularyID==null)
@@ -200,10 +213,13 @@ public class SaveVocabulary
 	
 			// Align the terms between the old and new vocabulary
 			ArrayList<Term> alignedTerms = getAlignedTerms(manager,oldVocabulary,vocabulary);
-
+			
+			// Generate the vocabulary mappings
+			HashMap<Integer,MappingInfo> mappings = getMappings(manager, project, vocabularyID, alignedTerms);
+			
 			// Swap out terms from the vocabulary
 			addNewTerms(manager, vocabularyID, alignedTerms);
-			updateMappings(manager, projectID, vocabularyID, getMappings(manager, project, vocabularyID, alignedTerms));
+			updateMappings(manager, projectID, vocabularyID, mappings);
 			removeOldTerms(manager, Arrays.asList(oldVocabulary.getTerms()), alignedTerms);
 		}
 		catch(Exception e) { System.out.println("(E) VocabularyCache:setVocabulary: "+e.getMessage()); return false; }

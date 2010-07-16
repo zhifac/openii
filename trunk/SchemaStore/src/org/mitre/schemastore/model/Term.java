@@ -3,6 +3,8 @@
 package org.mitre.schemastore.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Class for storing a vocabulary term
@@ -50,5 +52,26 @@ public class Term implements Serializable
 		for(AssociatedElement element : elements)
 			if(element.getSchemaID().equals(schemaID)) return element;
 		return null;
+	}
+	
+	/** Adds an associated element to the term */
+	public void addAssociatedElement(AssociatedElement newElement)
+	{
+		ArrayList<AssociatedElement> elements = new ArrayList<AssociatedElement>(Arrays.asList(this.elements));
+		for(AssociatedElement element : elements)
+			if(element.getSchemaID().equals(newElement.getSchemaID()))
+				elements.remove(element);
+		elements.add(newElement);	
+		this.elements = elements.toArray(new AssociatedElement[0]);
+	}
+	
+	/** Removes the associated element from the term */
+	public void removeAssociatedElement(AssociatedElement oldElement)
+	{
+		ArrayList<AssociatedElement> elements = new ArrayList<AssociatedElement>(Arrays.asList(this.elements));
+		for(AssociatedElement element : elements)
+			if(element.getSchemaID().equals(oldElement.getSchemaID()) && element.getElementID().equals(oldElement.getElementID()))
+				elements.remove(element);
+		this.elements = elements.toArray(new AssociatedElement[0]);		
 	}
 }

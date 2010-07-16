@@ -4,9 +4,7 @@ package org.mitre.schemastore.servlet;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 
 import org.mitre.schemastore.data.DataManager;
 import org.mitre.schemastore.model.AssociatedElement;
@@ -60,13 +58,13 @@ public class GetVocabulary
 				{
 					SchemaElement element = vocabularyElements.get(termID);
 					term = new Term(termID,element.getName(),element.getDescription(),new AssociatedElement[0]);
+					terms.put(termID, term);
 				}
 				
 				// Add the associated element
 				SchemaElement element = schemaElements.get(mappingCell.getInput()[0]);
 				AssociatedElement associatedElement = new AssociatedElement(schemaID, element.getId(), element.getName());
-				List<AssociatedElement> associatedElements = Arrays.asList(term.getElements());
-				associatedElements.add(associatedElement);
+				term.addAssociatedElement(associatedElement);
 			}
 		}
 		

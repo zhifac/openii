@@ -4,6 +4,7 @@ package org.mitre.schemastore.model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 
 /**
@@ -39,6 +40,22 @@ public class Vocabulary implements Serializable
 	// Handles all of the vocabulary setters
 	public void setProjectID(Integer projectID) { this.projectID = projectID; }
 	public void setTerms(Term[] terms) { this.terms = terms; }
+	
+	/** Adds a term to the vocabulary */
+	public void addTerm(Term newTerm)
+	{
+		ArrayList<Term> terms = new ArrayList<Term>(Arrays.asList(this.terms));
+		terms.add(newTerm);
+		this.terms = terms.toArray(new Term[0]);
+	}
+	
+	/** Removes the term from the vocabulary */
+	public void removeTerm(Term oldTerm)
+	{
+		ArrayList<Term> terms = new ArrayList<Term>(Arrays.asList(this.terms));
+		terms.remove(oldTerm);
+		this.terms = terms.toArray(new Term[0]);		
+	}
 	
 	/** Returns the schemas used in this vocabulary */
 	public Integer[] getSchemaIDs()
