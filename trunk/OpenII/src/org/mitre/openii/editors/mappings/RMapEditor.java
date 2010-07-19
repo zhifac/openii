@@ -9,7 +9,6 @@ import org.eclipse.swt.awt.SWT_AWT;
 import org.eclipse.swt.widgets.Composite;
 import org.mitre.harmony.model.SchemaStoreManager;
 import org.mitre.openii.editors.OpenIIEditor;
-import org.mitre.openii.model.EditorInput;
 import org.mitre.openii.model.RepositoryManager;
 import org.mitre.rmap.model.RMapHarmonyModel;
 import org.mitre.rmap.view.RMapFrame;
@@ -32,8 +31,8 @@ public class RMapEditor extends OpenIIEditor
 			harmonyModel = new RMapHarmonyModel(frame);
 
 			// Load in the selected project
-			Object object = ((EditorInput)getEditorInput()).getElement();
-			Integer projectID = object instanceof Project ? ((Project)object).getId() : ((Mapping)object).getProjectId();
+			Object element = getElement();
+			Integer projectID = element instanceof Project ? ((Project)element).getId() : ((Mapping)element).getProjectId();
 
 			// Retrieve project information from repository
 			Project project = null;
@@ -55,7 +54,7 @@ public class RMapEditor extends OpenIIEditor
 			harmonyModel.getProjectManager().setModified(false);
 
 			// Display the harmony frame
-			RMapFrame rmapFrame = new RMapFrame(harmonyModel, RepositoryManager.getClient(), elementID);
+			RMapFrame rmapFrame = new RMapFrame(harmonyModel, RepositoryManager.getClient(), getElementID());
 			setContentPane(rmapFrame);
 		}		
 	}

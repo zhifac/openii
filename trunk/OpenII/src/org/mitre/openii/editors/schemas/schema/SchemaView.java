@@ -17,8 +17,8 @@ public class SchemaView extends OpenIIEditor
 	private void generateExtensionPane(Composite parent)
 	{
 		// Retrieve the parent and children schemas
-		ArrayList<Integer> parentIDs = OpenIIManager.getParentSchemas(elementID);
-		ArrayList<Integer> childIDs = OpenIIManager.getChildrenSchemas(elementID);
+		ArrayList<Integer> parentIDs = OpenIIManager.getParentSchemas(getElementID());
+		ArrayList<Integer> childIDs = OpenIIManager.getChildrenSchemas(getElementID());
 		
 		// Only draw pane if there are parent or children IDs to display
 		if(parentIDs.size()>0 || childIDs.size()>0)
@@ -48,7 +48,7 @@ public class SchemaView extends OpenIIEditor
 		pane.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		
 		// Layout the menu pane and tree pane
-		new SchemaTree(pane, elementID);
+		new SchemaTree(pane, getElementID());
 		generateExtensionPane(pane);
 	}
 }

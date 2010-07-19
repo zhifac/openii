@@ -44,7 +44,7 @@ public class VocabEditor extends OpenIIEditor
 	public void createPartControl(final Composite parent)
 	{
 		try {
-			Vocabulary vocabulary = OpenIIManager.getVocabulary(elementID);
+			Vocabulary vocabulary = OpenIIManager.getVocabulary(getElementID());
 			Integer[] schemaIDs = vocabulary.getSchemaIDs();
 			String[] schemaNames = getSchemaNames(schemaIDs);		
 			ArrayList<String[]> rows = generateRows(schemaIDs, vocabulary.getTerms());

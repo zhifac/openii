@@ -41,6 +41,7 @@ public class IMPLUSListener implements OpenIIListener {
 	public static final String TAG = "tag";
 	public static final String SCHEMA = "schema";
 	public static final String MAPPING = "mapping";
+	public static final String VOCABULARY = "vocabulary";
 	public static final String DATASOURCE = "dataSource";
 	
 	/** Which user to use when loading and writing lineage records.  By default, it's the admin. */
@@ -702,6 +703,38 @@ public class IMPLUSListener implements OpenIIListener {
 			e.printStackTrace();
 		} // End catch 		
 	} // End tag
+	
+	/**
+	 * @see OpenIIListener#vocabularyAdded(Integer)
+	 */	
+	public void vocabularyAdded(Integer projectID)
+	{
+		try { 
+			PLUSObject obj = createPLUSDataObject(VOCABULARY, projectID); 
+			obj.writeToDB(); 
+		} catch(Exception e) { 
+			System.err.println("IM-PLUS: " + e); 
+			e.printStackTrace(); 
+		}
+	} // End schemaAdded
+	
+	/**
+	 * @see OpenIIListener#vocabularyModified(Integer)
+	 */	
+	public void vocabularyModified(Integer projectID)
+	{
+		System.out.println("IMPLUS: vocabularyModified");
+		markAsModified(loadOpenIIPLUSObject(VOCABULARY, projectID)); 	
+	}
+	
+	/**
+	 * @see OpenIIListener#vocabularyDeleted(Integer)
+	 */	
+	public void vocabularyDeleted(Integer projectID)
+	{
+		System.out.println("IMPLUS: vocabularyDeleted");
+		markAsDeleted(loadOpenIIPLUSObject(VOCABULARY, projectID)); 		
+	}
 	
 	private class SimpleDiff { 
 		protected ArrayList <String> added;

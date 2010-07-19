@@ -497,12 +497,32 @@ public class OpenIIManager
 	
 	//------------ Vocabulary Functionality -------------
 	
+	/** Indicates if the project has a vocabulary */
 	public static boolean hasVocabulary(Integer projectID)
 		{ try { return RepositoryManager.getClient().hasVocabulary(projectID); } catch(Exception e) { return false; } }
 
+	/** Retrieves the vocabulary for the specified project */
 	public static Vocabulary getVocabulary(Integer projectID)
 		{ try { return RepositoryManager.getClient().getVocabulary(projectID); } catch(Exception e) { return null; } }
 
+	/** Deletes the vocabulary for the specified project */
+	public static boolean deleteVocabulary(Integer projectID)
+	{
+		try {
+			if(RepositoryManager.getClient().deleteVocabulary(projectID))
+				{ fireMappingDeleted(projectID); return true; }
+		} catch(Exception e) {}
+		return false;
+	}
+	
+	/** Inform listeners that the vocabulary was saved */
+	public static void fireVocabularyModified(Integer projectID)
+		{ for(OpenIIListener listener : listeners.get()) listener.vocabularyModified(projectID); }
+	
+	/** Inform listeners that the vocabulary was removed */
+	public static void fireVocabularyDeleted(Integer projectID)
+		{ for(OpenIIListener listener : listeners.get()) listener.vocabularyDeleted(projectID); }
+	
 	//------------ Function Functionality -------------
 	
 	public static Function getFunction(Integer functionID)

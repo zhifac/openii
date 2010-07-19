@@ -90,7 +90,7 @@ public class ExplorerView extends OpenIIEditor {
 			browser.addLocationListener(locationListener);
 		
 			// Determine what URL corresponds to this schema element.
-			String u = explorer.urlForElement(elementID);
+			String u = explorer.urlForElement(getElementID());
 			
 			// Generate the HTML page corresponding to that element.
 			explorer.generatePage(SchemaExplorer.elementIDFromURL(u));

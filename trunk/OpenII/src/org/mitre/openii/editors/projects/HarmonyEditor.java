@@ -35,8 +35,8 @@ public class HarmonyEditor extends OpenIIEditor
 			harmonyModel = new HarmonyModel(frame);
 
 			// Load in the selected project
-			Object object = ((EditorInput)getEditorInput()).getElement();
-			Integer projectID = object instanceof Project ? ((Project)object).getId() : ((Mapping)object).getProjectId();
+			Object element = getElement();
+			Integer projectID = element instanceof Project ? ((Project)element).getId() : ((Mapping)element).getProjectId();
 			ProjectController.loadProject(harmonyModel,projectID);
 			
 			// Display the harmony frame
@@ -51,10 +51,10 @@ public class HarmonyEditor extends OpenIIEditor
 			if(!initializationCompleted)
 			{
 				// Select the mapping(s) to display
-				Object object = ((EditorInput)getEditorInput()).getElement();
-				if(object instanceof Mapping)
+				Object element = getElement();
+				if(element instanceof Mapping)
 				{
-					Mapping mapping = (Mapping)object;
+					Mapping mapping = (Mapping)element;
 					harmonyModel.getMappingManager().getMapping(mapping.getId()).setVisibility(true);
 					harmonyModel.getMappingManager().setMappingLock(true);
 				}

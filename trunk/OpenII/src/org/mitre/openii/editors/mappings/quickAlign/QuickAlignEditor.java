@@ -1,4 +1,4 @@
-package org.mitre.openii.editors.mappings;
+package org.mitre.openii.editors.mappings.quickAlign;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -121,7 +121,7 @@ public class QuickAlignEditor extends OpenIIEditor implements SelectionListener
 	private HashMap<Integer,Integer> getUserMatches()
 	{
 		HashMap<Integer,Integer> matches = new HashMap<Integer,Integer>();
-		for(MappingCell mappingCell : OpenIIManager.getMappingCells(elementID))
+		for(MappingCell mappingCell : OpenIIManager.getMappingCells(getElementID()))
 			if(mappingCell.isValidated())
 				matches.put(mappingCell.getInput()[0], mappingCell.getOutput());
 		return matches;
@@ -171,11 +171,41 @@ public class QuickAlignEditor extends OpenIIEditor implements SelectionListener
 		return matches;
 	}
 	
-	/** Generates the alignment pane */
-	private void generateAlignmentPane(ScrolledComposite scrollPane)
+	/** Generates the filter pane */
+	private void generateFilterPane(Composite parent)
 	{
+		// Constructs the filter pane
+		Composite pane = new Composite(parent, SWT.NONE);
+		pane.setLayout(new GridLayout(2,false));
+		
+		// Constructs the selection pane
+		Composite selectionPane = new Composite(pane, SWT.NONE);
+		selectionPane.setLayout(new GridLayout(1,false));
+		BasicWidgets.createTextField(pane, "Source");
+		BasicWidgets.createTextField(pane, "Target");		
+		
+		// Construct the save button
+		Button button = BasicWidgets.createButton(pane, "Align", this);
+		button.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));		
+	}
+	
+	/** Generates the info pane */
+	private void generateInfoPane(Composite parent)
+	{
+		
+	}
+	
+	/** Generates the alignment pane */
+	private void generateAlignmentPane(Composite parent)
+	{
+		// Constructs the scroll pane
+		ScrolledComposite scrollPane = new ScrolledComposite(parent, SWT.BORDER | SWT.V_SCROLL);
+		scrollPane.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+		scrollPane.setExpandHorizontal(true);
+		scrollPane.setExpandVertical(true);
+		
 		// Retrieve the mapping and source/target schemas
-		Mapping mapping = OpenIIManager.getMapping(elementID);
+		Mapping mapping = OpenIIManager.getMapping(getElementID());
 		Project project = OpenIIManager.getProject(mapping.getProjectId());
 		HierarchicalSchemaInfo sourceInfo = new HierarchicalSchemaInfo(OpenIIManager.getSchemaInfo(mapping.getSourceId()),project.getSchemaModel(mapping.getSourceId()));
 		HierarchicalSchemaInfo targetInfo = new HierarchicalSchemaInfo(OpenIIManager.getSchemaInfo(mapping.getTargetId()),project.getSchemaModel(mapping.getTargetId()));
@@ -208,9 +238,11 @@ public class QuickAlignEditor extends OpenIIEditor implements SelectionListener
 			// Populate the selection box
 			matchPane.add("<None>");
 			if(userMatch!=null) matchPane.add(targetInfo.getElement(userMatch));
-			for(MatchScore match : suggestedMatches.get(sourceElement.getId()))
-				if(!match.getTargetID().equals(userMatch))
-					matchPane.add(targetInfo.getElement(match.getTargetID()));
+			ArrayList<MatchScore> matches = suggestedMatches.get(sourceElement.getId());
+			if(matches!=null)
+				for(MatchScore match : matches)
+					if(!match.getTargetID().equals(userMatch))
+						matchPane.add(targetInfo.getElement(match.getTargetID()));
 			
 			// Mark the selection
 			matchPane.select(userMatch==null ? 0 : 1);
@@ -223,25 +255,15 @@ public class QuickAlignEditor extends OpenIIEditor implements SelectionListener
 		// Constructs the main pane
 		Composite pane = new Composite(parent, SWT.DIALOG_TRIM);
 		pane.setLayout(new GridLayout(1,false));
-
-		// Construct the save button
-		Button button = BasicWidgets.createButton(pane, "Save", this);
-		button.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));
-		
-		// Constructs the scroll pane
-		ScrolledComposite scrollPane = new ScrolledComposite(pane, SWT.BORDER | SWT.V_SCROLL);
-		scrollPane.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-		scrollPane.setExpandHorizontal(true);
-		scrollPane.setExpandVertical(true);
-		
-		// Generate the alignment pane
-		generateAlignmentPane(scrollPane);
+		generateFilterPane(pane);
+		generateAlignmentPane(pane);
+		generateInfoPane(pane);
 	}
 
 	/** Handles the selection of the save button */
 	public void widgetSelected(SelectionEvent e)
 	{
-		ArrayList<MappingCell> mappingCells = OpenIIManager.getMappingCells(elementID);
+		ArrayList<MappingCell> mappingCells = OpenIIManager.getMappingCells(getElementID());
 
 		// Update mapping cells based on changes to the match panes
 		for(MatchPane matchPane : matchPanes)
@@ -260,12 +282,12 @@ public class QuickAlignEditor extends OpenIIEditor implements SelectionListener
 			else
 			{
 				Integer targetID = matchPane.getElement().getId();
-				mappingCells.add(MappingCell.createIdentityMappingCell(null, elementID, sourceID, targetID, System.getProperty("user.name"), new Date(), ""));
+				mappingCells.add(MappingCell.createIdentityMappingCell(null, getElementID(), sourceID, targetID, System.getProperty("user.name"), new Date(), ""));
 			}
 		}		
 		
 		// Save the mapping cells before closing
-		if(OpenIIManager.saveMappingCells(elementID, mappingCells))
+		if(OpenIIManager.saveMappingCells(getElementID(), mappingCells))
 			closeEditor();
 	}
 	

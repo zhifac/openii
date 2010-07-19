@@ -40,12 +40,12 @@
       <editor name="Affinity" extensions="tag" icon="icons/Harmony.gif" class="org.mitre.openii.editors.tags.AffinityEditor" id="AffinityEditor"></editor>  	
       <editor name="Harmony" extensions="project" icon="icons/Harmony.gif" class="org.mitre.openii.editors.projects.HarmonyEditor" id="HarmonyEditor"></editor>
       <editor name="M3 Model" extensions="project" icon="icons/Project.gif" class="org.mitre.openii.editors.projects.M3ProjectEditor" id="M3ProjectEditor"></editor>
-      <editor name="VocabView" extensions="project" icon="icons/Harmony.gif" class="org.mitre.openii.editors.projects.VocabEditor" id="VocabEditor"></editor>
       <editor name="Harmony" extensions="mapping" icon="icons/Harmony.gif" class="org.mitre.openii.editors.projects.HarmonyEditor" id="HarmonyEditor"></editor>
       <editor name="M3 Model" extensions="mapping" icon="icons/Mapping.gif" class="org.mitre.openii.editors.mappings.M3MappingEditor" id="M3MappingEditor"></editor>
-      <editor name="QuickAlign" extensions="mapping" icon="icons/Mapping.gif" class="org.mitre.openii.editors.mappings.QuickAlignEditor" id="QuickAlignEditor"></editor>
+      <editor name="QuickAlign" extensions="mapping" icon="icons/Mapping.gif" class="org.mitre.openii.editors.mappings.quickAlign.QuickAlignEditor" id="QuickAlignEditor"></editor>
    	  <editor name="RMap" extensions="mapping" icon="icons/RMap.gif" class="org.mitre.openii.editors.mappings.RMapEditor" id="RMapEditor"></editor>
-    </extension>
+      <editor name="VocabView" extensions="vocabulary" icon="icons/Vocabulary.gif" class="org.mitre.openii.editors.vocabulary.VocabEditor" id="VocabEditor"></editor>
+   </extension>
 
    <!-- Declares the OpenII menu -->
    <extension point="org.eclipse.ui.menus">
