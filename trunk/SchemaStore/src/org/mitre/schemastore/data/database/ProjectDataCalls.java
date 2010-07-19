@@ -84,12 +84,30 @@ public class ProjectDataCalls extends AbstractDataCalls
 	{
 		Integer projectID = 0;
 		try {
+			// Generate prepared statements for creating the project
+			PreparedStatement projectStmt = connection.getPreparedStatement("INSERT INTO project(id,name,description,author) VALUES(?,?,?,?)");
+			PreparedStatement schemaStmt = connection.getPreparedStatement("INSERT INTO project_schema(project_id,schema_id,model) VALUES(?,?,?)");
+
+			// Insert the project
 			projectID = getUniversalIDs(1);
-			Statement stmt = connection.getStatement();
-			stmt.executeUpdate("INSERT INTO project(id,name,description,author) VALUES("+projectID+",'"+scrub(project.getName(),100)+"','"+scrub(project.getDescription(),4096)+"','"+scrub(project.getAuthor(),100)+"')");
+			projectStmt.setInt(1, projectID);
+			projectStmt.setString(2, scrub(project.getName(),100));
+			projectStmt.setString(3, scrub(project.getDescription(),4096));
+			projectStmt.setString(4, scrub(project.getAuthor(),100));
+			projectStmt.execute();
+			
+			// Insert the project schemas
 			for(ProjectSchema schema : project.getSchemas())
-				stmt.executeUpdate("INSERT INTO project_schema(project_id,schema_id,model) VALUES("+projectID+","+schema.getId()+",'"+schema.getModel()+"')");
-			stmt.close();
+			{
+				schemaStmt.setInt(1,projectID);
+				schemaStmt.setInt(2, schema.getId());
+				schemaStmt.setString(3, schema.getModel());
+				schemaStmt.execute();
+			}
+				
+			// Close and commit
+			projectStmt.close();
+			schemaStmt.close();
 			connection.commit();
 		}
 		catch(SQLException e)
@@ -106,12 +124,35 @@ public class ProjectDataCalls extends AbstractDataCalls
 	{
 		boolean success = false;
 		try {
-			Statement stmt = connection.getStatement();
-			stmt.executeUpdate("UPDATE project SET name='"+scrub(project.getName(),100)+"', description='"+scrub(project.getDescription(),4096)+"', author='"+scrub(project.getAuthor(),100)+"' WHERE id="+project.getId());
-			stmt.executeUpdate("DELETE FROM project_schema WHERE project_id="+project.getId());
+			// Generate prepared statements for creating the project
+			PreparedStatement projectStmt = connection.getPreparedStatement("UPDATE project SET name=?, description=?, author=? WHERE id=?");
+			PreparedStatement deleteSchemaStmt = connection.getPreparedStatement("DELETE FROM project_schema WHERE project_id=?");
+			PreparedStatement insertSchemaStmt = connection.getPreparedStatement("INSERT INTO project_schema(project_id,schema_id,model) VALUES(?,?,?)");
+			
+			// Update the project
+			projectStmt.setString(1, scrub(project.getName(),100));
+			projectStmt.setString(2, scrub(project.getDescription(),4096));
+			projectStmt.setString(3, scrub(project.getAuthor(),100));
+			projectStmt.setInt(4, project.getId());
+			projectStmt.execute();
+			
+			// Delete the old project schemas
+			deleteSchemaStmt.setInt(1, project.getId());
+			deleteSchemaStmt.execute();
+			
+			// Update the project schemas
 			for(ProjectSchema schema : project.getSchemas())
-				stmt.executeUpdate("INSERT INTO project_schema(project_id,schema_id,model) VALUES("+project.getId()+","+schema.getId()+",'"+schema.getModel()+"')");
-			stmt.close();
+			{
+				insertSchemaStmt.setInt(1, project.getId());
+				insertSchemaStmt.setInt(2, schema.getId());
+				insertSchemaStmt.setString(3, schema.getModel());
+				insertSchemaStmt.execute();
+			}
+
+			// Close and commit
+			projectStmt.close();
+			deleteSchemaStmt.close();
+			insertSchemaStmt.close();
 			connection.commit();
 			success = true;
 		}
