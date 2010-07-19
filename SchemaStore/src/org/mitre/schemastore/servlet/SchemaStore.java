@@ -543,6 +543,6 @@ public class SchemaStore
 		{ return SaveVocabulary.saveVocabulary(getManager(),vocabulary.copy()); }
 
 	/** Web service to delete the vocabulary */
-	public boolean deleteVocabulary(Integer projectID) throws RemoteException
+	public boolean deleteVocabulary(int projectID) throws RemoteException
 		{ return DeleteVocabulary.deleteVocabulary(getManager(),projectID); }
 }
