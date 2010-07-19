@@ -32,7 +32,7 @@ public class M3ProjectEditor extends OpenIIEditor
 		{
 			Integer id = schema.getId();
 			String name = OpenIIManager.getSchema(id).getName();
-			String model = schema.getModel();
+			String model = schema.getModel()==null ? "<default>" : schema.getModel();
 			rows.add(new Object[]{id,name,model});
 		}
 		ExpandBarWidgets.createTablePane(bar, "Schemas", fields, rows);
