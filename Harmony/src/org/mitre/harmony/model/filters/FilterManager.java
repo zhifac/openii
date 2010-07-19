@@ -309,7 +309,8 @@ public class FilterManager extends AbstractManager<FiltersListener> implements M
 		if(getFilter(BEST_FILTER))
 		{
 			// Gather up all elements associated with the mapping cell
-			ArrayList<Integer> elementIDs = new ArrayList<Integer>(mappingCell.getOutput());
+			ArrayList<Integer> elementIDs = new ArrayList<Integer>();
+			elementIDs.add(mappingCell.getOutput());
 			elementIDs.addAll(Arrays.asList(mappingCell.getInput()));
 
 			// Determine if considered a "best" mapping cell
