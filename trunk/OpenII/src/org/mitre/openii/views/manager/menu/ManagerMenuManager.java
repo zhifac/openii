@@ -50,25 +50,30 @@ public class ManagerMenuManager extends MenuManager implements IMenuListener
 		// Retrieve the editor registry
 		IEditorRegistry registry = PlatformUI.getWorkbench().getEditorRegistry();
 		
-		// Retrieve the list of available editors
-		IEditorDescriptor editors[] = registry.getEditors(EditorManager.getEditorType(element));
-		if(editors.length > 0)
+		// Get the editor type for the specified element
+		String editorType = EditorManager.getEditorType(element);
+		if(editorType!=null)
 		{
-			// Display the menu for the default editor
-			IEditorDescriptor defaultEditor = registry.getDefaultEditor(EditorManager.getEditorType(element));			
-			menuManager.add(new EditorAction(this,"Open",defaultEditor));
-			
-			// Display the menu to select an editor
-			if(editors.length > 1)
+			// Retrieve the list of available editors for the specified type
+			IEditorDescriptor editors[] = registry.getEditors(editorType);
+			if(editors.length > 0)
 			{
-				MenuManager editorMenu = new MenuManager("Open With");
-				for(IEditorDescriptor editor : editors)
+				// Display the menu for the default editor
+				IEditorDescriptor defaultEditor = registry.getDefaultEditor(EditorManager.getEditorType(element));			
+				menuManager.add(new EditorAction(this,"Open",defaultEditor));
+				
+				// Display the menu to select an editor
+				if(editors.length > 1)
 				{
-					EditorAction action = new EditorAction(this,editor.getLabel(),editor);
-					if(editor.equals(defaultEditor)) action.setChecked(true);
-					editorMenu.add(action);
+					MenuManager editorMenu = new MenuManager("Open With");
+					for(IEditorDescriptor editor : editors)
+					{
+						EditorAction action = new EditorAction(this,editor.getLabel(),editor);
+						if(editor.equals(defaultEditor)) action.setChecked(true);
+						editorMenu.add(action);
+					}
+					menuManager.add(editorMenu);
 				}
-				menuManager.add(editorMenu);
 			}
 		}
 	}
