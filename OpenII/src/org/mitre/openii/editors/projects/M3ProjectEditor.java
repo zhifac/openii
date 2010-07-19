@@ -28,7 +28,7 @@ public class M3ProjectEditor extends OpenIIEditor
 		// Generate the schemas table
 		String[] fields = new String[]{"ID","Name","Model"};
 		ArrayList<Object[]> rows = new ArrayList<Object[]>();
-		for(ProjectSchema schema : OpenIIManager.getProject(elementID).getSchemas())
+		for(ProjectSchema schema : OpenIIManager.getProject(getElementID()).getSchemas())
 		{
 			Integer id = schema.getId();
 			String name = OpenIIManager.getSchema(id).getName();
@@ -43,11 +43,11 @@ public class M3ProjectEditor extends OpenIIEditor
 	{
 		// Retrieve information about all schemas in the mapping
 		HashMap<Integer,SchemaInfo> schemaInfoList = new HashMap<Integer,SchemaInfo>();
-		for(Integer schemaID : OpenIIManager.getProject(elementID).getSchemaIDs())
+		for(Integer schemaID : OpenIIManager.getProject(getElementID()).getSchemaIDs())
 			schemaInfoList.put(schemaID, OpenIIManager.getSchemaInfo(schemaID));
 		
 		// Cycle through all mappings
-		for(Mapping mapping : OpenIIManager.getMappings(elementID))
+		for(Mapping mapping : OpenIIManager.getMappings(getElementID()))
 		{
 			// Retrieve the source and target schemas
 			SchemaInfo sourceSchema = schemaInfoList.get(mapping.getSourceId());
@@ -100,7 +100,7 @@ public class M3ProjectEditor extends OpenIIEditor
 	public void createPartControl(Composite parent)
 	{
 		// Retrieve the project and project schemas
-		Project project = OpenIIManager.getProject(elementID);
+		Project project = OpenIIManager.getProject(getElementID());
 		ArrayList<Integer> schemaIDs = new ArrayList<Integer>(Arrays.asList(project.getSchemaIDs()));
 		Collections.sort(schemaIDs);
 			

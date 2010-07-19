@@ -21,7 +21,7 @@ public class M3MappingEditor extends OpenIIEditor
 	/** Generates the mappings panes */
 	private void generateMappingsPanes(ExpandBar bar)
 	{
-		Mapping mapping = OpenIIManager.getMapping(elementID);
+		Mapping mapping = OpenIIManager.getMapping(getElementID());
 		
 		// Retrieve the source and target schemas
 		SchemaInfo sourceSchema = OpenIIManager.getSchemaInfo(mapping.getSourceId());

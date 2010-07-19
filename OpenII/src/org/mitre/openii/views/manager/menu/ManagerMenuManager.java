@@ -15,6 +15,7 @@ import org.mitre.openii.model.OpenIIManager;
 import org.mitre.openii.views.manager.ManagerView;
 import org.mitre.openii.views.manager.SchemaInProject;
 import org.mitre.openii.views.manager.SchemaInTag;
+import org.mitre.openii.views.manager.VocabularyInProject;
 import org.mitre.openii.views.manager.menu.ManagerAction.ActionType;
 import org.mitre.schemastore.model.DataSource;
 import org.mitre.schemastore.model.Mapping;
@@ -157,13 +158,17 @@ public class ManagerMenuManager extends MenuManager implements IMenuListener
 			menuManager.add(new ManagerAction(this,"Delete Mapping",ActionType.DELETE_MAPPING));
 		}
 		
-		// Display the menu for a selection project schema
+		// Display the menu for a selected project schema
 		if(element instanceof SchemaInProject)
 		{
 			menuManager.add(new ManagerAction(this,"Export Schema",ActionType.EXPORT_SCHEMA));
 			if(((SchemaInProject)element).isDeletable())
 				menuManager.add(new ManagerAction(this,"Remove Schema from Project",ActionType.DELETE_PROJECT_SCHEMA));
 		}
+		
+		// Display the menu for a selected project vocabulary
+		if(element instanceof VocabularyInProject)
+			menuManager.add(new ManagerAction(this,"Delete Vocabulary",ActionType.DELETE_VOCABULARY));
 		
 		// Display the menu for a selected data source
 		if(element instanceof DataSource)

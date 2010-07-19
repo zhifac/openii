@@ -14,6 +14,7 @@ import org.mitre.openii.dialogs.projects.DeleteProjectDialog;
 import org.mitre.openii.dialogs.projects.EditProjectDialog;
 import org.mitre.openii.dialogs.projects.ExportProjectDialog;
 import org.mitre.openii.dialogs.projects.MergeProjectsDialog;
+import org.mitre.openii.dialogs.projects.ReplaceSchemaDialog;
 import org.mitre.openii.dialogs.projects.importer.ImportProjectDialog;
 import org.mitre.openii.dialogs.projects.unity.GenerateVocabularyWizard;
 import org.mitre.openii.dialogs.schemas.CreateDataSourceDialog;
@@ -27,9 +28,11 @@ import org.mitre.openii.dialogs.schemas.importer.ImportSchemaDialog;
 import org.mitre.openii.dialogs.tags.DeleteTagDialog;
 import org.mitre.openii.dialogs.tags.EditTagDialog;
 import org.mitre.openii.dialogs.tags.SearchDialog;
+import org.mitre.openii.dialogs.vocabulary.DeleteVocabularyDialog;
 import org.mitre.openii.model.OpenIIManager;
 import org.mitre.openii.views.manager.SchemaInProject;
 import org.mitre.openii.views.manager.SchemaInTag;
+import org.mitre.openii.views.manager.VocabularyInProject;
 import org.mitre.schemastore.model.DataSource;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.Project;
@@ -46,7 +49,7 @@ public class ManagerAction extends Action
 							DELETE_TAG_SCHEMA, NEW_PROJECT, IMPORT_PROJECT , MERGE_PROJECTS, EDIT_PROJECT,
 							EXPORT_PROJECT, DELETE_PROJECT, DELETE_PROJECT_SCHEMA, IMPORT_MAPPING,
 							REPLACE_SCHEMA, AUTO_GENERATE_MATCHES, EXPORT_MAPPING, DELETE_MAPPING,
-							GENERATE_VOCABULARY};
+							GENERATE_VOCABULARY, DELETE_VOCABULARY};
 	
 	/** Stores the menu manager to which this action is tied */
 	private ManagerMenuManager menuManager;
@@ -92,6 +95,7 @@ public class ManagerAction extends Action
 			case AUTO_GENERATE_MATCHES : icon = "Mapping.gif"; break;
 			case EXPORT_MAPPING: icon = "Export.gif"; break;
 			case DELETE_MAPPING: icon = "Delete.gif"; break;
+			case DELETE_VOCABULARY: icon = "Delete.gif"; break;
 		}		
 		setImageDescriptor(OpenIIActivator.getImageDescriptor("icons/"+icon));
 	}
@@ -220,11 +224,19 @@ public class ManagerAction extends Action
 		/** Handles the importing of a mapping */
 		if(actionType == ActionType.IMPORT_MAPPING)
 			new ImportMappingDialog(shell,(Project)selection).open();
+
+		/** Handles the replacing of a schema from a project */
+//		if(actionType == ActionType.REPLACE_SCHEMA)
+//			new ReplaceSchemaDialog(shell,(Project)selection).open();
 		
 		/** Handles the auto-generation of a mapping's matches */
 		if ( actionType == ActionType.GENERATE_VOCABULARY )
 			new WizardDialog(shell, new GenerateVocabularyWizard((Project)selection)).open();
-
+	
+		/** Handles the deletion of a project's vocabulary */
+		if ( actionType == ActionType.DELETE_VOCABULARY )
+			DeleteVocabularyDialog.delete(shell,(VocabularyInProject)selection);
+		
 		// ----------------- Mapping Actions ----------------------
 		
 		/** Handles the exporting of a mapping */

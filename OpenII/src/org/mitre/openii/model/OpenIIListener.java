@@ -52,4 +52,13 @@ public interface OpenIIListener
 	
 	/** Informs the listener that the specified mapping has been deleted */
 	public void mappingDeleted(Integer mappingID);
+	
+	/** Informs the listener that the specified vocabulary has been added */
+	public void vocabularyAdded(Integer projectID);
+	
+	/** Informs the listener that the specified vocabulary has been saved */
+	public void vocabularyModified(Integer projectID);
+	
+	/** Informs the listener that the specified vocabulary has been deleted */
+	public void vocabularyDeleted(Integer projectID);
 }

@@ -25,7 +25,6 @@ import org.mitre.affinity.view.venn_diagram.view.event.VennDiagramListener;
 import org.mitre.affinity.view.venn_diagram.view.swt.SWTVennDiagramMatrix_KNeighbors;
 import org.mitre.openii.editors.OpenIIEditor;
 import org.mitre.openii.editors.tags.AffinityEditor;
-import org.mitre.openii.model.EditorInput;
 import org.mitre.openii.model.EditorManager;
 import org.mitre.openii.model.OpenIIManager;
 import org.mitre.openii.model.RepositoryManager;
@@ -50,6 +49,15 @@ public class ProximityView extends OpenIIEditor implements VennDiagramListener
 	private VennDiagramEvent currSelectionEvent;
 	private Menu menu;
 	
+	/** Return the schema ID associated with this view */
+	protected Integer getElementID()
+	{
+		Object element = getElement();
+		if(element instanceof VennDiagramSetsMatrix)
+			return ((VennDiagramSetsMatrix)element).getMatrixEntry(0, 0).getSchema1().getId();
+		else return super.getElementID();
+	}
+	
 	/** Reduces the schema list to 9 comparison schemas */
 	private ArrayList<Integer> reduceSchemaList(ArrayList<Integer> schemaIDs)
 	{
@@ -65,7 +73,7 @@ public class ProximityView extends OpenIIEditor implements VennDiagramListener
 			HashMap<Integer,Double> schemaDistances = new HashMap<Integer,Double>();
 			for(Integer schemaID : schemaIDs)
 			{
-				Double score = schemaID.equals(elementID) ? 0.0 : distanceGrid.get(elementID, schemaID);
+				Double score = schemaID.equals(getElementID()) ? 0.0 : distanceGrid.get(getElementID(), schemaID);
 				schemaDistances.put(schemaID,score);
 			}
 			
@@ -85,7 +93,7 @@ public class ProximityView extends OpenIIEditor implements VennDiagramListener
 	public void createPartControl(final Composite parent)
 	{
 		// Retrieve the element to be displayed in the proximity view
-		Object element = ((EditorInput)getEditorInput()).getElement();
+		Object element = getElement();
 
 		// Generate the matrix object
 		VennDiagramSetsMatrix matrix = null;	
@@ -96,7 +104,6 @@ public class ProximityView extends OpenIIEditor implements VennDiagramListener
 
 			// Sets the selected schema information
 			Schema schema = matrix.getMatrixEntry(0, 0).getSchema1();
-			elementID = schema.getId();
 			setPartName(schema.getName());
 		}
 		
@@ -127,7 +134,7 @@ public class ProximityView extends OpenIIEditor implements VennDiagramListener
 			}			
 			
 			// Generate the matrix
-			String schemaName = OpenIIManager.getSchema(elementID).getName();
+			String schemaName = OpenIIManager.getSchema(getElementID()).getName();
 			matrix = new VennDiagramSetsMatrix(schemaName, schemas, AffinityEditor.matchScoreComputer);
 		}
 		

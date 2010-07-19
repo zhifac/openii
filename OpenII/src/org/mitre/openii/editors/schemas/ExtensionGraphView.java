@@ -27,7 +27,7 @@ public class ExtensionGraphView extends OpenIIEditor implements ExtensionsPaneLi
 	public void createPartControl(Composite parent)
 	{		
 		// Constructs the extensions pane
-		extensionsPane = GalaxyManager.getExtensionPane(elementID);
+		extensionsPane = GalaxyManager.getExtensionPane(getElementID());
 		extensionsPane.addExtensionsPaneListener(this);
 		
 		// Construct the applet pane to contain the Harmony frame
@@ -59,7 +59,7 @@ public class ExtensionGraphView extends OpenIIEditor implements ExtensionsPaneLi
 	/** Handles the addition of a schema */
 	public void schemaAdded(Integer schemaID)
 	{
-		if(Schemas.getAssociatedSchemas(schemaID).contains(elementID))
+		if(Schemas.getAssociatedSchemas(schemaID).contains(getElementID()))
 			{ Schemas.resetSchema(schemaID); extensionsPane.addSchema(schemaID); }
 		super.schemaAdded(schemaID);
 	}

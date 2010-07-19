@@ -45,7 +45,7 @@ public class M3SchemaView extends OpenIIEditor
 	private void generateElementPanes(ExpandBar bar)
 	{
 		// Get the schema info
-		SchemaInfo schemaInfo = OpenIIManager.getSchemaInfo(elementID);
+		SchemaInfo schemaInfo = OpenIIManager.getSchemaInfo(getElementID());
 
 		// Generate the entities table
 		String[] fields = new String[]{"ID","Name","Description"};
@@ -179,7 +179,7 @@ public class M3SchemaView extends OpenIIEditor
 
 		// Creates the properties pane
 		ArrayList<String> attributes = new ArrayList<String>();
-		Schema schema = OpenIIManager.getSchema(elementID);
+		Schema schema = OpenIIManager.getSchema(getElementID());
 		attributes.add("Name:"+schema.getName()+" ("+schema.getId()+")");
 		attributes.add("Author:"+schema.getAuthor());
 		attributes.add("Source:"+schema.getSource());

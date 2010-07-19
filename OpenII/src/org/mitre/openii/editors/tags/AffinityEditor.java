@@ -211,15 +211,14 @@ public class AffinityEditor extends OpenIIEditor implements SelectionClickedList
 		
 		// Generate the list of schemas to be clustered
 		ArrayList<Integer> schemaIDs = null;
-		if(elementID!=null)
+		if(getElementID()!=null)
 		{
-			schemaIDs = OpenIIManager.getTagSchemas(elementID);			
-			schemaIDs.addAll(OpenIIManager.getChildTagSchemas(elementID));			
+			schemaIDs = OpenIIManager.getTagSchemas(getElementID());			
+			schemaIDs.addAll(OpenIIManager.getChildTagSchemas(getElementID()));			
 		}
 		else
 		{
-			Object object = ((EditorInput)getEditorInput()).getElement();
-			schemaIDs = new ArrayList<Integer>((Collection<Integer>)object);
+			schemaIDs = new ArrayList<Integer>((Collection<Integer>)getElement());
 			setPartName(schemaIDs.size()==OpenIIManager.getSchemaIDs().size() ? "All Schemas" : "*New Tag");
 		}
 		
