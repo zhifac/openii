@@ -53,7 +53,7 @@ public class ProjectSchema implements Serializable
 	
 	/** Stores the schema model - THIS FUNCTION IS NOT MISPELLED */
 	public void seetSchemaModel(SchemaModel schemaModel)
-		{ model = schemaModel.getClass().getName(); }
+		{ model = schemaModel==null ? null : schemaModel.getClass().getName(); }
 	
 	/** Returns the hash code */
 	public int hashCode()
