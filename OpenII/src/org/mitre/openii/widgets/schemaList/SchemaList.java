@@ -3,12 +3,12 @@ package org.mitre.openii.widgets.schemaList;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
-import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -19,10 +19,14 @@ import org.mitre.openii.model.OpenIIManager;
 import org.mitre.openii.widgets.ListWithButtonBar;
 import org.mitre.openii.widgets.WidgetUtilities;
 import org.mitre.schemastore.model.Schema;
+import org.mitre.schemastore.model.schemaInfo.model.SchemaModel;
 
 /** Constructs a Schema List */
 public class SchemaList extends ListWithButtonBar implements SelectionListener, ISelectionChangedListener
-{
+{	
+	/** Stores the schema models */
+	private HashMap<Integer,SchemaModel> models = null;
+	
 	/** Stores the locked schemas (prohibited from being removed) */
 	private HashSet<Integer> lockedIDs = new HashSet<Integer>();
 	
@@ -30,23 +34,38 @@ public class SchemaList extends ListWithButtonBar implements SelectionListener, 
 	private ArrayList<ActionListener> listeners = new ArrayList<ActionListener>();
 	
 	// Stores the various dialog fields
-	private TableViewer list = null;
 	private Button addButton = null;
-	private Button searchButton = null;
+	private Button editButton = null;
 	private Button removeButton = null;
+	
+	/** Returns the headers for the schema list */
+	static private ArrayList<String> getHeaders(boolean displayModel)
+	{
+		ArrayList<String> headers = new ArrayList<String>();
+		headers.add("Schema");
+		if(displayModel) headers.add("Model");
+		return headers;
+	}
 	
 	/** Constructs the dialog */
 	public SchemaList(Composite parent, String heading)
+		{ this(parent,heading,null); }
+	
+	/** Constructs the dialog */
+	public SchemaList(Composite parent, String heading, HashMap<Integer,SchemaModel> models)
 	{
-		super(parent, heading, "Schema");
+		super(parent, heading, getHeaders(models!=null));
+		this.models = models;
+
+		// Generate the buttons associated with the list
 		addButton = addButton("Add...",this);
-		searchButton = addButton("Find...",this);
+		if(models!=null) editButton = addButton("Edit...",this);
 		removeButton = addButton("Remove",this);
-		list = getList();
-		list.setLabelProvider(new SchemaLabelProvider());
-		
-		// Listens for changes to the selected schemas
-		list.addSelectionChangedListener(this);
+
+		// Generate the schema list
+		getColumn(0).setLabelProvider(new SchemaLabelProvider());
+		if(models!=null) getColumn(1).setLabelProvider(new ModelLabelProvider(models));
+		getList().addSelectionChangedListener(this);
 	}	
 
 	/** Sets the schemas to be displayed in the list */
@@ -56,7 +75,7 @@ public class SchemaList extends ListWithButtonBar implements SelectionListener, 
 		ArrayList<Schema> schemas = new ArrayList<Schema>();
 		for(Integer schemaID : schemaIDs)
 			schemas.add(OpenIIManager.getSchema(schemaID));
-		list.add(WidgetUtilities.sortList(schemas).toArray());
+		getList().add(WidgetUtilities.sortList(schemas).toArray());
 		
 		// Inform listeners of the change to displayed list items
 		for(ActionListener listener : listeners)
@@ -71,8 +90,8 @@ public class SchemaList extends ListWithButtonBar implements SelectionListener, 
 	public ArrayList<Schema> getSchemas()
 	{
 		ArrayList<Schema> schemas = new ArrayList<Schema>();
-		for(int i=0; i<list.getTable().getItemCount(); i++)
-			schemas.add((Schema)list.getElementAt(i));
+		for(int i=0; i<getList().getTable().getItemCount(); i++)
+			schemas.add((Schema)getList().getElementAt(i));
 		return schemas;
 	}
 	
@@ -84,6 +103,10 @@ public class SchemaList extends ListWithButtonBar implements SelectionListener, 
 		return schemaIDs;
 	}
 	
+	/** Returns the schema models */
+	public HashMap<Integer,SchemaModel> getSchemaModels()
+		{ return models; }
+	
 	/** Adds a schema list listener */
 	public void addListener(ActionListener listener)
 		{ listeners.add(listener); }
@@ -92,7 +115,7 @@ public class SchemaList extends ListWithButtonBar implements SelectionListener, 
 	public void selectionChanged(SelectionChangedEvent e)
 	{
 		boolean enabled = true;
-		for(TableItem item : list.getTable().getSelection())
+		for(TableItem item : getList().getTable().getSelection())
 			enabled &= !lockedIDs.contains(((Schema)item.getData()).getId());
 		removeButton.setEnabled(enabled);
 	}
@@ -105,16 +128,39 @@ public class SchemaList extends ListWithButtonBar implements SelectionListener, 
 		{
 			AddSchemasToListDialog dialog = new AddSchemasToListDialog(getShell(),getSchemas());
 			if(dialog.open() == Window.OK)
-				list.add(dialog.getResult());
+				getList().add(dialog.getResult());
 		}
 			
-		// Handles the search for schemas
-		if(e.getSource().equals(searchButton))
-			new QuerySchemasForListDialog(getShell()).open();
+		// Handles the editing of a schema
+		if(e.getSource().equals(editButton))
+		{
+			// Get the selected schemas
+			ArrayList<Integer> schemaIDs = new ArrayList<Integer>();
+			for(int i : getList().getTable().getSelectionIndices())
+				schemaIDs.add(((Schema)getList().getElementAt(i)).getId());
+			if(schemaIDs.size()==0) return;
+				
+			// Determine the current model for the selected schemas
+			SchemaModel model = models.get(schemaIDs.get(0));
+			for(int i=1; i<schemaIDs.size(); i++)
+				if(model==null || !model.equals(models.get(schemaIDs.get(i)))) model=null;
 
+			// Launch the model selection dialog
+			EditProjectSchemaDialog dialog = new EditProjectSchemaDialog(getShell(),model);
+			if(dialog.open() == Window.OK)
+			{
+				// Update the selected schema models
+				model = dialog.getSchemaModel();
+				for(Integer schemaID : schemaIDs)
+					models.put(schemaID, model);
+				for(int i : getList().getTable().getSelectionIndices())
+					getList().replace(getList().getElementAt(i), i);
+			}
+		}
+		
 		// Handles the removal of schemas
 		if(e.getSource().equals(removeButton))
-			list.getTable().remove(list.getTable().getSelectionIndices());
+			getList().getTable().remove(getList().getTable().getSelectionIndices());
 		
 		// Inform listeners of the change to displayed list items
 		for(ActionListener listener : listeners)

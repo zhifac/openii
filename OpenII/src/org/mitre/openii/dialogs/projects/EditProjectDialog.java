@@ -32,6 +32,7 @@ import org.mitre.schemastore.model.Project;
 import org.mitre.schemastore.model.ProjectSchema;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.Tag;
+import org.mitre.schemastore.model.schemaInfo.model.SchemaModel;
 
 /** Constructs the Edit Project Dialog */
 public class EditProjectDialog extends Dialog implements ActionListener, ModifyListener, ISelectionChangedListener
@@ -95,14 +96,21 @@ public class EditProjectDialog extends Dialog implements ActionListener, ModifyL
 	/** Creates the project schema pane */
 	private void createSchemaPane(Composite parent)
 	{
+		// Get the schema models
+		HashMap<Integer,SchemaModel> models = new HashMap<Integer,SchemaModel>();
+		if(project!=null)
+			for(ProjectSchema schema : project.getSchemas())
+				models.put(schema.getId(), schema.geetSchemaModel());
+		
 		// Construct the pane for showing the project schemas
 		Group pane = new Group(parent, SWT.NONE);
 		pane.setText("Schemas");
 		pane.setLayout(new GridLayout(1, false));
 
 		// Generate the schema list
-		schemaList = new SchemaList(pane, null);
-		schemaList.setWidth(300);
+		schemaList = new SchemaList(pane, null, models);
+		schemaList.setWidth(0,200);
+		schemaList.setWidth(1,100);
 		schemaList.addListener(this);
 	}
 
@@ -116,7 +124,7 @@ public class EditProjectDialog extends Dialog implements ActionListener, ModifyL
 		
 		// Construct the list of mappings
 		mappingList = new MappingList(pane);
-		mappingList.setWidth(300);
+		mappingList.setWidth(0,300);
 		mappingList.addListener(this);
 	}
 
@@ -221,19 +229,16 @@ public class EditProjectDialog extends Dialog implements ActionListener, ModifyL
 		String name = nameField.getText();
 		String author = authorField.getText();
 		String description = descriptionField.getText();
-
-		// Get the old list of project schemas
-		HashMap<Integer,ProjectSchema> projectSchemas = new HashMap<Integer,ProjectSchema>();
-		if(project!=null)
-			for(ProjectSchema projectSchema : project.getSchemas())
-				projectSchemas.put(projectSchema.getId(), projectSchema);
+		
+		// Gets the list of schema models
+		HashMap<Integer,SchemaModel> models = schemaList.getSchemaModels();
 		
 		// Generate the list of schemas which have been selected
 		ArrayList<ProjectSchema> schemas = new ArrayList<ProjectSchema>();
 		for(Schema schema : schemaList.getSchemas())
 		{
-			ProjectSchema projectSchema = projectSchemas.get(schema.getId());
-			if(projectSchema==null) projectSchema = new ProjectSchema(schema.getId(), schema.getName(), null);
+			ProjectSchema projectSchema = new ProjectSchema(schema.getId(), schema.getName(), null);
+			projectSchema.seetSchemaModel(models.get(schema.getId()));
 			schemas.add(projectSchema);
 		}
 		

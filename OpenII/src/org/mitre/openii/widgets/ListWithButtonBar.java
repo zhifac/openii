@@ -1,5 +1,8 @@
 package org.mitre.openii.widgets;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
@@ -18,13 +21,17 @@ public class ListWithButtonBar extends Composite
 	private TableViewer list = null;
 	
 	/** Stores the list viewer column */
-	private TableViewerColumn column = null;
+	private ArrayList<TableViewerColumn> columns = new ArrayList<TableViewerColumn>();
 	
 	/** Stores the button pane */
 	private Composite buttonPane = null;
 	
 	/** Constructs the dialog list */
-	public ListWithButtonBar(Composite parent, String heading, String listHeader)
+	public ListWithButtonBar(Composite parent, String heading, String header)
+		{ this(parent, heading, new ArrayList<String>(Arrays.asList(new String[]{header}))); }
+	
+	/** Constructs the dialog list */
+	public ListWithButtonBar(Composite parent, String heading, ArrayList<String> headers)
 	{
 		super(parent, SWT.NONE);
 		setLayout(new GridLayout(1,false));
@@ -53,11 +60,15 @@ public class ListWithButtonBar extends Composite
 		table.setLinesVisible(true);
 		table.setLayoutData(new GridData(GridData.FILL_VERTICAL));
 
-		// Add the list header
-		column = new TableViewerColumn(list, SWT.NONE);
-		column.getColumn().setText(listHeader);
-		column.getColumn().setWidth(200);
-
+		// Add the list headers
+		for(String header : headers)
+		{
+			TableViewerColumn column = new TableViewerColumn(list, SWT.NONE);
+			column.getColumn().setText(header);
+			column.getColumn().setWidth(200);
+			columns.add(column);
+		}
+		
 		// Construct the button pane
 		buttonPane = new Composite(listPane, SWT.NONE);
 		layout = new GridLayout(1,false);
@@ -66,9 +77,13 @@ public class ListWithButtonBar extends Composite
 		buttonPane.setLayoutData(new GridData(GridData.VERTICAL_ALIGN_BEGINNING));
 	}
 	
-	/** Sets the width of this list */
-	public void setWidth(int width)
-		{ column.getColumn().setWidth(width); }
+	/** Returns the specified column */
+	public TableViewerColumn getColumn(int index)
+		{ return columns.get(index); }
+	
+	/** Sets the width of the specified column */
+	public void setWidth(int index, int width)
+		{ getColumn(index).getColumn().setWidth(width); }
 	
 	/** Adds a button to the dialog list */
 	public Button addButton(String label, SelectionListener listener)
