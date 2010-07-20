@@ -4,10 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
-import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
-import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyEvent;
@@ -21,7 +19,6 @@ import org.mitre.openii.model.OpenIIManager;
 import org.mitre.openii.widgets.BasicWidgets;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
-import org.mitre.schemastore.model.schemaInfo.model.SchemaModel;
 import org.mitre.schemastore.search.Search;
 import org.mitre.schemastore.search.SearchResult;
 
@@ -35,7 +32,7 @@ public class SchemaTree extends Composite implements ISelectionChangedListener, 
 	private HashMap<Integer,SearchResult> searchResults = new HashMap<Integer,SearchResult>();
 	
 	// Stores the various dialog fields
-	private ComboViewer modelList = null;
+	private SchemaModelSelector modelSelector = null;
 	private Text searchField = null;
 	private TreeViewer schemaViewer = null;
 	
@@ -51,20 +48,8 @@ public class SchemaTree extends Composite implements ISelectionChangedListener, 
 		menuPane.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 	
 		// Construct the model pane
-		Composite modelPane = new Composite(menuPane, SWT.NONE);
-		modelPane.setLayout(new GridLayout(2,false));
-		modelPane.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-		
-		// Displays the models available for selection
-		BasicWidgets.createLabel(modelPane,"Model");
-		modelList = new ComboViewer(modelPane);
-		for(SchemaModel model : HierarchicalSchemaInfo.getSchemaModels())
-		{
-			modelList.add(model);
-			if(model.getClass().equals(schema.getModel().getClass()))
-				modelList.setSelection(new StructuredSelection(model));
-		}
-		modelList.addSelectionChangedListener(this);
+		modelSelector = new SchemaModelSelector(menuPane);
+		modelSelector.addSelectionChangedListener(this);
 		
 		// Construct the search pane
 		Composite searchPane = new Composite(menuPane, SWT.NONE);
@@ -138,8 +123,7 @@ public class SchemaTree extends Composite implements ISelectionChangedListener, 
 	/** Handles changes to the schema model */
 	public void selectionChanged(SelectionChangedEvent e)
 	{
-		SchemaModel model = (SchemaModel)((StructuredSelection)modelList.getSelection()).getFirstElement();
-		schema.setModel(model);
+		schema.setModel(modelSelector.getSchemaModel());
 		schemaViewer.refresh();
 	}
 
