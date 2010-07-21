@@ -325,6 +325,7 @@ public class SchemaInfo implements Serializable
 		{
 			public int compare(SchemaElement e1, SchemaElement e2)
 			{
+				if(e1.getClass().equals(e2.getClass())) return e1.getId().compareTo(e2.getId());
 				if(e1 instanceof Domain) return -1; if(e2 instanceof Domain) return 1;
 				if(e1 instanceof DomainValue) return -1; if(e2 instanceof DomainValue) return 1;
 				if(e1 instanceof Entity) return -1; if(e2 instanceof Entity) return 1;
