@@ -9,22 +9,19 @@ import java.util.HashSet;
 import org.mitre.harmony.matchers.ElementPair;
 import org.mitre.harmony.matchers.MatcherScore;
 import org.mitre.harmony.matchers.MatcherScores;
+import org.mitre.harmony.matchers.voters.bagMatcher.WordBag;
 import org.mitre.schemastore.model.SchemaElement;
 
 /** Quick Documentation Matcher Class */
-public class QuickDocumentationMatcher extends EntityMatcher
+public class QuickMatcher extends EntityMatcher
 {
 	/** Returns the name of the match voter */
 	public String getName()
-		{ return "Quick Documentation"; }
+		{ return "Quick Matcher"; }
 	
-	/** Generates scores for the specified elements */
-	public MatcherScores match()
-	{
-		// Determine if the name and description should be used
-		boolean useName = options.get("UseName").isSelected();
-		boolean useDescription = options.get("UseDescription").isSelected();
-
+	/** Generates scores for the specified elements */ @Override
+	public MatcherScores generateScores()
+	{		
 		// Retrieve the source and target entities
 		EntityMap sourceEntities = getEntities(schema1);
 		EntityMap targetEntities = getEntities(schema2);
@@ -48,9 +45,9 @@ public class QuickDocumentationMatcher extends EntityMatcher
 						{
 							// Get word bags for source and target
 							WordBag sourceBag = wordBags.get(source.getId());
-							if(sourceBag == null) { wordBags.put(source.getId(), sourceBag = new WordBag(source, useName, useDescription)); }
+							if(sourceBag == null) { wordBags.put(source.getId(), sourceBag = generateWordBag(source)); }
 							WordBag targetBag = wordBags.get(target.getId());
-							if(targetBag == null) { wordBags.put(target.getId(), targetBag = new WordBag(target, useName, useDescription)); }
+							if(targetBag == null) { wordBags.put(target.getId(), targetBag = generateWordBag(target)); }
 
 							// Stores the element pair
 							pairs.add(new ElementPair(source.getId(), target.getId()));

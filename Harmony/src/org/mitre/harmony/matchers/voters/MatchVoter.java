@@ -14,6 +14,12 @@ import org.mitre.schemastore.model.schemaInfo.FilteredSchemaInfo;
 /** MatchVoter Interface - A match voter scores source-target linkages based on a specific algorithm */	
 public abstract class MatchVoter
 {
+	// Constants for the major option names
+	protected static final String NAME = "UseName";
+	protected static final String DESCRIPTION = "UseDescription";
+	protected static final String THESAURUS = "UseThesaurus";
+	protected static final String HIERARCHY = "UseHierarchy";
+	
 	// Stores the match merger schema information
 	protected FilteredSchemaInfo schema1, schema2;
 
