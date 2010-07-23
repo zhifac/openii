@@ -16,7 +16,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Text;
 import org.mitre.harmony.matchers.MatcherManager;
-import org.mitre.harmony.matchers.voters.MatchVoter;
+import org.mitre.harmony.matchers.matchers.Matcher;
 import org.mitre.openii.model.OpenIIManager;
 import org.mitre.openii.widgets.BasicWidgets;
 import org.mitre.schemastore.model.Mapping;
@@ -27,7 +27,7 @@ class AutoMappingPage extends WizardPage implements ModifyListener, SelectionLis
 
 	private Text authorField;
 	private Text descriptionField;
-	private ArrayList<MatchVoterCheckBox> voterCheckBoxes = new ArrayList<MatchVoterCheckBox>();
+	private ArrayList<MatcherCheckBox> matcherCheckBoxes = new ArrayList<MatcherCheckBox>();
 	private ArrayList<String> selectedVoters = new ArrayList<String>();
 	private ArrayList<Pair<ProjectSchema>> newMappings = new ArrayList<Pair<ProjectSchema>>();
 
@@ -129,11 +129,11 @@ class AutoMappingPage extends WizardPage implements ModifyListener, SelectionLis
 		group.setLayout(new GridLayout(2, false));
 		group.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
-		// Construct a list of all voters that can be selected
-		for (MatchVoter voter : MatcherManager.getVisibleMatchers()) {
-			MatchVoterCheckBox checkBox = new MatchVoterCheckBox(group, voter);
+		// Construct a list of all matchers that can be selected
+		for(Matcher matcher : MatcherManager.getVisibleMatchers()) {
+			MatcherCheckBox checkBox = new MatcherCheckBox(group, matcher);
 			checkBox.addSelectionListener(this);
-			voterCheckBoxes.add(checkBox);
+			matcherCheckBoxes.add(checkBox);
 		}
 	}
 
@@ -164,7 +164,7 @@ class AutoMappingPage extends WizardPage implements ModifyListener, SelectionLis
 		if (authorField.getText().equals("")) authorField.setText(System.getProperty("user.name"));
 
 		// Set voters to a set of optimized choices (hard coded)
-		for (MatchVoterCheckBox checkbox : voterCheckBoxes)
+		for (MatcherCheckBox checkbox : matcherCheckBoxes)
 			if (checkbox.getName().equals("Documentation Similarity") || /*
 																		 * checkbox.getName().equals("Documentation + Synonyms"
 																		 * ) ||
@@ -194,14 +194,14 @@ class AutoMappingPage extends WizardPage implements ModifyListener, SelectionLis
 	}
 
 	/**
-	 * Returns user selected match voters
+	 * Returns user selected matchers
 	 * 
 	 * @return
 	 */
-	ArrayList<MatchVoter> getMatchVoters() {
-		ArrayList<MatchVoter> result = new ArrayList<MatchVoter>();
-		for (MatchVoterCheckBox checkBox : voterCheckBoxes)
-			if (checkBox.checkBox.getSelection()) result.add(checkBox.voter);
+	ArrayList<Matcher> getMatchers() {
+		ArrayList<Matcher> result = new ArrayList<Matcher>();
+		for (MatcherCheckBox checkBox : matcherCheckBoxes)
+			if (checkBox.checkBox.getSelection()) result.add(checkBox.matcher);
 		return result;
 	}
 
@@ -213,16 +213,16 @@ class AutoMappingPage extends WizardPage implements ModifyListener, SelectionLis
 		return descriptionField.getText();
 	}
 
-	private class MatchVoterCheckBox {
-		// Stores the voter associated with this checkbox
-		private MatchVoter voter;
+	private class MatcherCheckBox {
+		// Stores the matcher associated with this checkbox
+		private Matcher matcher;
 		private Button checkBox;
 
-		/** Initializes the match voter check box */
-		MatchVoterCheckBox(Composite parent, MatchVoter voter) {
+		/** Initializes the matcher check box */
+		MatcherCheckBox(Composite parent, Matcher matcher) {
 			checkBox = new Button(parent, SWT.CHECK);
-			this.voter = voter;
-			checkBox.setText(voter.getName());
+			this.matcher = matcher;
+			checkBox.setText(matcher.getName());
 		}
 
 		void addSelectionListener(SelectionListener listener) {
@@ -230,7 +230,7 @@ class AutoMappingPage extends WizardPage implements ModifyListener, SelectionLis
 		}
 
 		String getName() {
-			return voter.getName();
+			return matcher.getName();
 		}
 
 	}
