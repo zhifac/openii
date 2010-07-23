@@ -7,8 +7,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 import org.mitre.harmony.matchers.ElementPair;
-import org.mitre.harmony.matchers.MatcherManager;
-import org.mitre.harmony.matchers.MatcherOption;
 import org.mitre.harmony.matchers.MatcherScore;
 import org.mitre.harmony.matchers.MatcherScores;
 import org.mitre.schemastore.model.SchemaElement;
@@ -21,12 +19,11 @@ public class QuickDocumentationMatcher extends EntityMatcher
 		{ return "Quick Documentation"; }
 	
 	/** Generates scores for the specified elements */
-	public MatcherScores match() {
-		// see if we are going to use the name of the schema element or the description provided with the schema element
-		MatcherOption useNameObject = MatcherManager.getMatcherOption(this.getClass().getName(), "UseName");
-		boolean useName = (useNameObject != null) ? useNameObject.getSelected() : true;
-		MatcherOption useDescriptionObject = MatcherManager.getMatcherOption(this.getClass().getName(), "UseDescription");
-		boolean useDescription = (useDescriptionObject != null) ? useDescriptionObject.getSelected() : true;
+	public MatcherScores match()
+	{
+		// Determine if the name and description should be used
+		boolean useName = options.get("UseName").isSelected();
+		boolean useDescription = options.get("UseDescription").isSelected();
 
 		// Retrieve the source and target entities
 		EntityMap sourceEntities = getEntities(schema1);
@@ -43,29 +40,27 @@ public class QuickDocumentationMatcher extends EntityMatcher
 		// Generate the word bags
 		HashMap<Integer,WordBag> wordBags = new HashMap<Integer,WordBag>();
 		ArrayList<ElementPair> pairs = new ArrayList<ElementPair>();
-		for (ElementPair bestMatch : bestMatches) {
-			for (SchemaElement source : sourceEntities.get(schema1.getElement(bestMatch.getSourceElement()))) {
-				if (schema1.isVisible(source.getId())) {
-					for (SchemaElement target : targetEntities.get(schema2.getElement(bestMatch.getTargetElement()))) {
-						if (schema2.isVisible(target.getId())) {
+		for(ElementPair bestMatch : bestMatches)
+			for(SchemaElement source : sourceEntities.get(schema1.getElement(bestMatch.getSourceElement())))
+				if(schema1.isVisible(source.getId()))
+					for(SchemaElement target : targetEntities.get(schema2.getElement(bestMatch.getTargetElement())))
+						if(schema2.isVisible(target.getId()))
+						{
 							// Get word bags for source and target
 							WordBag sourceBag = wordBags.get(source.getId());
-							if (sourceBag == null) { wordBags.put(source.getId(), sourceBag = new WordBag(source, useName, useDescription)); }
+							if(sourceBag == null) { wordBags.put(source.getId(), sourceBag = new WordBag(source, useName, useDescription)); }
 							WordBag targetBag = wordBags.get(target.getId());
-							if (targetBag == null) { wordBags.put(target.getId(), targetBag = new WordBag(target, useName, useDescription)); }
+							if(targetBag == null) { wordBags.put(target.getId(), targetBag = new WordBag(target, useName, useDescription)); }
 
 							// Stores the element pair
 							pairs.add(new ElementPair(source.getId(), target.getId()));
 						}
-					}
-				}
-			}
-		}
 
 		// Calculate the word weights
 		HashSet<SchemaElement> sourceElements = new HashSet<SchemaElement>();
 		HashSet<SchemaElement> targetElements = new HashSet<SchemaElement>();
-		for (ElementPair pair : pairs) {
+		for (ElementPair pair : pairs)
+		{
 			sourceElements.add(schema1.getElement(pair.getSourceElement()));
 			targetElements.add(schema2.getElement(pair.getTargetElement()));
 		}
@@ -73,52 +68,55 @@ public class QuickDocumentationMatcher extends EntityMatcher
 		
 		// Generate element scores
 		MatcherScores scores = new MatcherScores(SCORE_CEILING);
-		for (ElementPair pair : pairs) {
+		for (ElementPair pair : pairs)
+		{
 			// Get the source and target elements
 			SchemaElement sourceElement = schema1.getElement(pair.getSourceElement());
 			SchemaElement targetElement = schema2.getElement(pair.getTargetElement());
-			if (scores.getScore(sourceElement.getId(), targetElement.getId()) == null) {
+			if(scores.getScore(sourceElement.getId(), targetElement.getId()) == null)
+			{
 				WordBag sourceBag = wordBags.get(sourceElement.getId());
 				WordBag targetBag = wordBags.get(targetElement.getId());
 				MatcherScore score = computeScore(sourceBag, targetBag, wordWeights);
-				if (score != null) { scores.setScore(sourceElement.getId(), targetElement.getId(), score); }
+				if(score != null) { scores.setScore(sourceElement.getId(), targetElement.getId(), score); }
 			}
 			completedComparisons++;
 		}		
 		
 		// Transfer over entity scores
-		for (ElementPair elementPair : entityScores.getElementPairs()) {
-			if (schema1.isVisible(elementPair.getSourceElement()) && schema2.isVisible(elementPair.getTargetElement())) {
+		for (ElementPair elementPair : entityScores.getElementPairs())
+			if (schema1.isVisible(elementPair.getSourceElement()) && schema2.isVisible(elementPair.getTargetElement()))
 				scores.setScore(elementPair.getSourceElement(), elementPair.getTargetElement(), entityScores.getScore(elementPair));
-			}
-		}
 		
 		// Return the generated scores
 		return scores;
 	}
 
 	/** Returns a list of the best matches */
-	private HashSet<ElementPair> getBestMatches(MatcherScores scores) {
+	private HashSet<ElementPair> getBestMatches(MatcherScores scores)
+	{
 		// Scan through voter scores to identify best matches
 		HashMap<Integer,Double> bestScores = new HashMap<Integer,Double>();
 		HashMap<Integer,ArrayList<ElementPair>> bestPairs = new HashMap<Integer,ArrayList<ElementPair>>();
-		for (ElementPair elementPair : scores.getElementPairs()) {
+		for (ElementPair elementPair : scores.getElementPairs())
+		{
 			// Calculate rough match score (not as accurate as through merger)
 			MatcherScore voterScore = scores.getScore(elementPair);
 			Double score = voterScore.getPositiveEvidence()/voterScore.getTotalEvidence();
 			
 			// Determine if the element pair is best match
-			for (Integer elementID : new Integer[]{elementPair.getSourceElement(),elementPair.getTargetElement()}) {
+			for (Integer elementID : new Integer[]{elementPair.getSourceElement(),elementPair.getTargetElement()})
+			{
 				Double elementScore = bestScores.get(elementID);
-				if (elementScore == null || score >= elementScore) {
+				if (elementScore == null || score >= elementScore)
+				{
 					// Updates the best score
 					bestScores.put(elementID, score);
 					
 					// Updates the best element pairs
 					ArrayList<ElementPair> elementPairs = bestPairs.get(elementID);
-					if (!score.equals(elementScore)) {
+					if (!score.equals(elementScore))
 						bestPairs.put(elementID, elementPairs = new ArrayList<ElementPair>());
-					}
 					elementPairs.add(elementPair);
 				}
 			}
@@ -126,9 +124,8 @@ public class QuickDocumentationMatcher extends EntityMatcher
 		
 		// Return the best matches
 		HashSet<ElementPair> bestMatches = new HashSet<ElementPair>();
-		for (ArrayList<ElementPair> elementPairs : bestPairs.values()) {
+		for (ArrayList<ElementPair> elementPairs : bestPairs.values())
 			bestMatches.addAll(elementPairs);
-		}
 		return bestMatches;
 	}
 }

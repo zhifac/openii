@@ -5,46 +5,40 @@ package org.mitre.harmony.matchers.voters;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.mitre.harmony.matchers.MatcherManager;
-import org.mitre.harmony.matchers.MatcherOption;
 import org.mitre.harmony.matchers.MatcherScores;
 import org.mitre.schemastore.model.SchemaElement;
 
 /** Documentation Matcher Class */
-public class DocumentationMatcher extends BagMatcher {
+public class DocumentationMatcher extends BagMatcher
+{
 	/** Returns the name of the match voter */
-	public String getName() {
-		return "Documentation Similarity";
-	}
+	public String getName()
+		{ return "Documentation Similarity"; }
 	
 	/** Generates the word bags for the schema elements */
-	protected MatcherScores generateVoteScores() {
+	protected MatcherScores generateVoteScores()
+	{
 		HashMap<Integer, WordBag> wordBags = new HashMap<Integer, WordBag>();
 
-		// see if we are going to use the name of the schema element or the description provided with the schema element
-		MatcherOption useNameObject = MatcherManager.getMatcherOption(this.getClass().getName(), "UseName");
-		boolean useName = (useNameObject != null) ? useNameObject.getSelected() : true;
-		MatcherOption useDescriptionObject = MatcherManager.getMatcherOption(this.getClass().getName(), "UseDescription");
-		boolean useDescription = (useDescriptionObject != null) ? useDescriptionObject.getSelected() : true;
+		// Determine if the name and description should be included
+		boolean useName = options.get("UseName").isSelected();
+		boolean useDescription = options.get("UseDescription").isSelected();
 
 		// Create word bags for the source elements
 		ArrayList<SchemaElement> sourceElements = schema1.getFilteredElements();
-		for (SchemaElement sourceElement : sourceElements) {
+		for(SchemaElement sourceElement : sourceElements)
 			wordBags.put(sourceElement.getId(), new WordBag(sourceElement, useName, useDescription));
-		}
 		
 		// Create word bags for the target elements
 		ArrayList<SchemaElement> targetElements = schema2.getFilteredElements();
-		for (SchemaElement targetElement : targetElements) {
+		for(SchemaElement targetElement : targetElements)
 			wordBags.put(targetElement.getId(), new WordBag(targetElement, useName, useDescription));
-		}
 		
 		// Generate the voter scores
 		return computeScores(sourceElements, targetElements, wordBags);
 	}
 	
 	/** Generates scores for the specified elements */
-	public MatcherScores match() {
-		return generateVoteScores();
-	}
+	public MatcherScores match()
+		{ return generateVoteScores(); }
 }

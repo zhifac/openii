@@ -2,6 +2,7 @@
 // ALL RIGHTS RESERVED
 package org.mitre.harmony.matchers.voters;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.mitre.harmony.matchers.MatchTypeMappings;
@@ -11,7 +12,8 @@ import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.schemaInfo.FilteredSchemaInfo;
 
 /** MatchVoter Interface - A match voter scores source-target linkages based on a specific algorithm */	
-public abstract class MatchVoter {
+public abstract class MatchVoter
+{
 	// Stores the match merger schema information
 	protected FilteredSchemaInfo schema1, schema2;
 
@@ -19,7 +21,7 @@ public abstract class MatchVoter {
 	private MatchTypeMappings types;
 
 	/** Stores the options specified for this matcher */
-	protected HashMap<String, MatcherOption> options;
+	protected HashMap<String, MatcherOption> options = new HashMap<String,MatcherOption>();
 
 	/** Stores if this is a default voter */
 	private boolean isDefault = false;
@@ -27,50 +29,64 @@ public abstract class MatchVoter {
 	/** Stores if this is a hidden voter */
 	private boolean isHidden = false;
 
-	/** Stores if this has configurable options */
-	private boolean isConfigurable = false;
-
 	// Stores the completed and total number of comparisons that need to be performed
 	protected int completedComparisons = 0, totalComparisons = 1;
 
+	/** Constructs the match voter */
+	public MatchVoter()
+	{
+		for(MatcherOption option : getMatcherOptions())
+			options.put(option.getName(), option);
+	}
+	
 	/** Return the name of the match voter */
 	abstract public String getName();
 
+	/** Returns the list of options associated with the match voter */
+	protected ArrayList<MatcherOption> getMatcherOptions() { return new ArrayList<MatcherOption>(); }
+	
 	// Match voter getters
 	final public boolean isDefault() { return isDefault; }
 	final public boolean isHidden() { return isHidden; }
-	final public boolean isConfigurable() { return isConfigurable; }
 
 	// Match voter setters
 	final public void setDefault(boolean isDefault) { this.isDefault = isDefault; }
 	final public void setHidden(boolean isHidden) { this.isHidden = isHidden; }
-	final public void setConfigurable(boolean isConfigurable) { this.isConfigurable = isConfigurable; }
 
 	/** Initializes the match voter */
-	final public void initialize(FilteredSchemaInfo schema1, FilteredSchemaInfo schema2) {
-		this.schema1 = schema1;
-		this.schema2 = schema2;
-		this.types = null;
-	}
+	final public void initialize(FilteredSchemaInfo schema1, FilteredSchemaInfo schema2)
+		{ this.schema1 = schema1; this.schema2 = schema2; this.types = null; }
 
 	/** Initializes the match voter */
-	final public void initialize(FilteredSchemaInfo schema1, FilteredSchemaInfo schema2, MatchTypeMappings types, HashMap<String, MatcherOption> options) {
-		this.schema1 = schema1;
-		this.schema2 = schema2;
-		this.types = types;
-		this.options = options;
-	}
+	final public void initialize(FilteredSchemaInfo schema1, FilteredSchemaInfo schema2, MatchTypeMappings types)
+		{ this.schema1 = schema1; this.schema2 = schema2; this.types = types; }
 
+	/** Gets the list of options */
+	final public ArrayList<MatcherOption> getOptions()
+		{ return new ArrayList<MatcherOption>(options.values()); }
+	
+	/**Gets the specified matcher option */
+	final public String getOption(String name)
+	{
+		MatcherOption option = options.get(name);
+		return option!=null ? option.getValue() : null;
+	}
+	
+	/** Sets the specified option */
+	final public void setOption(String name, String value)
+	{
+		MatcherOption option = options.get(name);
+		if(option!=null) option.setValue(value);
+	}
+	
 	/** Generates scores for the specified graphs */
 	abstract public MatcherScores match();
 
 	/** Indicates if the specified elements can validly be mapped together */
-	final protected boolean isAllowableMatch(SchemaElement element1, SchemaElement element2) {
-		return types == null || types.isMapped(element1, element2);
-	}
+	final protected boolean isAllowableMatch(SchemaElement element1, SchemaElement element2)
+		{ return types == null || types.isMapped(element1, element2); }
 
 	/** Indicates the completion percentage of the matcher */
-	final public double getPercentComplete() {
-		return 1.0 * completedComparisons / totalComparisons;
-	}
+	final public double getPercentComplete()
+		{ return 1.0 * completedComparisons / totalComparisons; }
 }

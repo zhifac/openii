@@ -23,25 +23,25 @@ import org.mitre.harmony.model.project.ProjectManager;
 import org.mitre.harmony.view.dialogs.matcher.wizard.Wizard;
 
 /** Menu to display all available matchers */
-public class MatcherMenu extends AbstractMenu {
+public class MatcherMenu extends AbstractMenu
+{
 	/** Stores the Harmony model */
 	private HarmonyModel harmonyModel;
 
 	/** Initializes the matcher menu to display all installed matchers */
-	public MatcherMenu(HarmonyModel harmonyModel) {
+	public MatcherMenu(HarmonyModel harmonyModel)
+	{
 		super("Matchers");
 		this.harmonyModel = harmonyModel;
 		setMnemonic(KeyEvent.VK_M);
 
 		// Place all matchers into menu
-		for (MatchMerger merger : MatcherManager.getMergers()) {
+		for(MatchMerger merger : MatcherManager.getMergers())
 			add(new MatcherMenuItem(merger));
-		}
 
 		// Place all match voters into menu
-		for (MatchVoter matchVoter : MatcherManager.getVisibleMatchers()) {
+		for(MatchVoter matchVoter : MatcherManager.getVisibleMatchers())
 			add(new MatchVoterMenuItem(matchVoter));
-		}
 
 		// Add a menu checkbox to specify if user matched elements should be ignored in matching
 		addSeparator();
@@ -49,20 +49,23 @@ public class MatcherMenu extends AbstractMenu {
 	}
 
 	/** Class for handling match voter menu items */
-	private class MatchVoterMenuItem extends JMenuItem implements ActionListener {
+	private class MatchVoterMenuItem extends JMenuItem implements ActionListener
+	{
 		// Stores the voter associated with this menu item
 		private MatchVoter voter;
 
 		/** Initializes the match voter menu item */
-		MatchVoterMenuItem(MatchVoter voter) {
+		MatchVoterMenuItem(MatchVoter voter)
+		{
 			this.voter = voter;
 			setText(voter.getName());
 			addActionListener(this);
 		}
 
 		/** Handles the selection of this match voter */
-		public void actionPerformed(ActionEvent e) {
-			if (!checkSchemasExist()) { return; }
+		public void actionPerformed(ActionEvent e)
+		{
+			if(!checkSchemasExist()) return;
 
 			ArrayList<MatchVoter> voters = new ArrayList<MatchVoter>();
 			voters.add(voter);
@@ -71,7 +74,8 @@ public class MatcherMenu extends AbstractMenu {
 	}
 
 	/** Class for handling matcher menu */
-	private class MatcherMenuItem extends JMenu implements ActionListener {
+	private class MatcherMenuItem extends JMenu implements ActionListener
+	{
 		// Stores the voter associated with this menu
 		private MatchMerger merger;
 
@@ -80,7 +84,8 @@ public class MatcherMenu extends AbstractMenu {
 		JMenuItem customMatch = new JMenuItem("Run Custom Matchers...");
 
 		/** Initializes the matcher menu */
-		MatcherMenuItem(MatchMerger merger) {
+		MatcherMenuItem(MatchMerger merger)
+		{
 			this.merger = merger;
 			setText(merger.getName());
 
@@ -94,26 +99,28 @@ public class MatcherMenu extends AbstractMenu {
 		}
 
 		/** Handles the selection of this match voter */
-		public void actionPerformed(ActionEvent e) {
-			if (!checkSchemasExist()) { return; }
+		public void actionPerformed(ActionEvent e)
+		{
+			if(!checkSchemasExist()) { return; }
 
 			// Run the matcher (through the matcher wizard)
-			if (e.getSource() == fullMatch) {
+			if(e.getSource() == fullMatch)
 				launchMatchWizard(MatcherManager.getDefaultMatchers(), merger, false);
-			} else if (e.getSource() == customMatch) {
+			else if (e.getSource() == customMatch)
 				launchMatchWizard(MatcherManager.getDefaultMatchers(), merger, true);
-			}
 		}
 	}
 
-	private boolean checkSchemasExist() {
+	private boolean checkSchemasExist()
+	{
 		// No need to proceed if no schemas exist on a specific side
 		ProjectManager projectManager = harmonyModel.getProjectManager();
 		Integer leftSchemas = projectManager.getSchemaElements(HarmonyConsts.LEFT).size();
 		Integer rightSchemas = projectManager.getSchemaElements(HarmonyConsts.RIGHT).size();
 
 		// if no schemas are open, tell the user wtf
-		if (leftSchemas.equals(0) || rightSchemas.equals(0)) {
+		if(leftSchemas.equals(0) || rightSchemas.equals(0))
+		{
 			JOptionPane.showMessageDialog(getParent(), "No schemas are currently open to match.", "Matching Error", JOptionPane.ERROR_MESSAGE);
 			return false;
 		}
@@ -122,16 +129,14 @@ public class MatcherMenu extends AbstractMenu {
 	}
 
 	/** Launches the matcher wizard */
-	private void launchMatchWizard(ArrayList<MatchVoter> voters, MatchMerger merger, boolean custom) {
-		// Generate the match wizard
-		Wizard wizard = new Wizard(harmonyModel);
-        wizard.getDialog().setTitle("Run Schema Matchers");
-        wizard.showDialog(voters, merger, custom);
-	}
+	private void launchMatchWizard(ArrayList<MatchVoter> voters, MatchMerger merger, boolean custom)
+		{ new Wizard(voters, merger, custom, harmonyModel); }
 
 	/** Action for ignoring the matched elements */
-	private class IgnoreMatchedElementsAction extends AbstractAction {
-		public void actionPerformed(ActionEvent e) {
+	private class IgnoreMatchedElementsAction extends AbstractAction
+	{
+		public void actionPerformed(ActionEvent e)
+		{
 			boolean isSelected = ((JCheckBoxMenuItem)(e.getSource())).isSelected();			
 			harmonyModel.getPreferences().setIgnoredMatchedElements(isSelected);
 		}
