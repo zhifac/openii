@@ -270,7 +270,7 @@ public class MatchTypePane extends WizardPanel
 	/** Returns the type mappings */
 	public MatchTypeMappings getMatchTypeMappings()
 	{
-		// Retrieves all selected match voters from the dialog
+		// Retrieves all selected matchers from the dialog
 		MatchTypeMappings matchTypeMappings = null;
 		if (!typeConfigPane.matchAllButton.isSelected())
 		{

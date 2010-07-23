@@ -12,8 +12,8 @@ import org.mitre.harmony.matchers.MatchScores;
 import org.mitre.harmony.matchers.MatchTypeMappings;
 import org.mitre.harmony.matchers.MatcherManager;
 import org.mitre.harmony.matchers.MatcherScores;
+import org.mitre.harmony.matchers.matchers.Matcher;
 import org.mitre.harmony.matchers.mergers.MatchMerger;
-import org.mitre.harmony.matchers.voters.MatchVoter;
 import org.mitre.harmony.model.HarmonyConsts;
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.filters.FilterManager;
@@ -33,8 +33,8 @@ public class MatchThread extends Thread
 	/** Stores the merger to be used in matching */
 	private MatchMerger merger;
 
-	/** Stores the voters to be used in matching */
-	private ArrayList<MatchVoter> matchers;
+	/** Stores the matchers to be used in matching */
+	private ArrayList<Matcher> matchers;
 
 	/** Stores the type mappings to be used in matching */
 	private MatchTypeMappings types;
@@ -55,7 +55,7 @@ public class MatchThread extends Thread
 		private String leftSchema, rightSchema;
 
 		/** Stores the current matcher being used */
-		private MatchVoter matcher = null;
+		private Matcher matcher = null;
 
 		/** Indicates that the thread should be stopped */
 		private boolean stop = false;
@@ -76,8 +76,8 @@ public class MatchThread extends Thread
 			matcher = null;
 		}
 
-		/** Sets the current voter being used */
-		public void setCurrentMatcher(MatchVoter matcher)
+		/** Sets the current matcher being used */
+		public void setCurrentMatcher(Matcher matcher)
 			{ this.matcher = matcher; }
 
 		/** Runs the thread */
@@ -93,14 +93,14 @@ public class MatchThread extends Thread
 				Double overallProgress = 0.0;
 
 				try {
-					Double votersProgress = ((100 * matchers.indexOf(matcher) + matcherProgress) / matchers.size());
-					overallProgress = new Double((100 * currentMapping + votersProgress) / totalMappings);
+					Double matchersProgress = ((100 * matchers.indexOf(matcher) + matcherProgress) / matchers.size());
+					overallProgress = new Double((100 * currentMapping + matchersProgress) / totalMappings);
 				} catch(Exception e) {}
 
 				String status = "Matching " + leftSchema + " to " + rightSchema + " with " + matcher.getName();
 				for(MatchListener listener : listeners)
 				{
-					listener.updateVoterProgress(matcherProgress, status);
+					listener.updateMatcherProgress(matcherProgress, status);
 					listener.updateOverallProgress(overallProgress);
 				}
 
@@ -115,7 +115,7 @@ public class MatchThread extends Thread
 	}
 
 	/** Constructs the match thread */
-	MatchThread(HarmonyModel harmonyModel, MatchMerger merger, ArrayList<MatchVoter> matchers, MatchTypeMappings types)
+	MatchThread(HarmonyModel harmonyModel, MatchMerger merger, ArrayList<Matcher> matchers, MatchTypeMappings types)
 	{
 		this.harmonyModel = harmonyModel;
 		this.merger = merger;
@@ -126,21 +126,21 @@ public class MatchThread extends Thread
 	/** Returns the generated matcher name */
 	private String getMatcherName()
 	{
-		// Handles the case where all voters were used
+		// Handles the case where all matchers were used
 		if(matchers.size() == MatcherManager.getMatchers().size())
-			return merger.getName() + "(All Voters)";
+			return merger.getName() + "(All Matchers)";
 
-		// Handles the case where a single voter was used
+		// Handles the case where a single matcher was used
 		if(matchers.size() == 1)
 			return matchers.get(0).getName();
 
-		// Handles the case where a subset of voters was used
+		// Handles the case where a subset of matchers was used
 		String matcherName = merger.getName() + "(";
-		for(MatchVoter voter : matchers)
+		for(Matcher matcher : matchers)
 		{
-			if(matcherName.length() + voter.getName().length() > 45)
+			if(matcherName.length() + matcher.getName().length() > 45)
 				{ matcherName += "..., "; break; }
-			matcherName += voter.getName() + ", ";
+			matcherName += matcher.getName() + ", ";
 		}
 		matcherName = matcherName.substring(0, matcherName.length() - 2) + ")";
 		return matcherName;
@@ -208,7 +208,7 @@ public class MatchThread extends Thread
 		
 		// Generate the match scores for the left and right roots
 		merger.initialize(sourceSchema, targetSchema, types);
-		for(MatchVoter matcher : matchers)
+		for(Matcher matcher : matchers)
 		{
 			// create a progress thread based on this matcher
 			progressThread.setCurrentMatcher(matcher);

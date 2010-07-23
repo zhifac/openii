@@ -7,8 +7,8 @@ import java.util.ArrayList;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.mitre.harmony.matchers.matchers.Matcher;
 import org.mitre.harmony.matchers.mergers.MatchMerger;
-import org.mitre.harmony.matchers.voters.MatchVoter;
 import org.mitre.schemastore.model.schemaInfo.FilteredSchemaInfo;
 import org.mitre.schemastore.porters.PorterList;
 import org.w3c.dom.Document;
@@ -22,7 +22,7 @@ import org.w3c.dom.NodeList;
 public class MatcherManager
 {
 	/** Stores a listing of all match */
-	static private ArrayList<MatchVoter> matchers = new ArrayList<MatchVoter>();
+	static private ArrayList<Matcher> matchers = new ArrayList<Matcher>();
 
 	/** Stores a listing of all match mergers */
 	static private ArrayList<MatchMerger> mergers = new ArrayList<MatchMerger>();
@@ -52,7 +52,7 @@ public class MatcherManager
 					try {
 						// create a new matcher from this class id
 						Class matcherClass = Class.forName(node.getAttribute("id"));
-						MatchVoter matcher = (MatchVoter)matcherClass.newInstance();
+						Matcher matcher = (Matcher)matcherClass.newInstance();
 
 						// see if our matcher is hidden or default
 						String attrHidden = node.getAttribute("hidden");
@@ -103,23 +103,23 @@ public class MatcherManager
 	}
 
 	/** Returns the list of match matchers */
-	static public ArrayList<MatchVoter> getMatchers()
+	static public ArrayList<Matcher> getMatchers()
 		{ return matchers; }
 
 	/** Returns the list of default matchers */
-	static public ArrayList<MatchVoter> getDefaultMatchers()
+	static public ArrayList<Matcher> getDefaultMatchers()
 	{
-		ArrayList<MatchVoter> defaultMatchers = new ArrayList<MatchVoter>();
-		for(MatchVoter matcher : matchers)
+		ArrayList<Matcher> defaultMatchers = new ArrayList<Matcher>();
+		for(Matcher matcher : matchers)
 			if(matcher.isDefault()) defaultMatchers.add(matcher);
 		return defaultMatchers;
 	}
 
 	/** Returns the list of visible matchers */
-	static public ArrayList<MatchVoter> getVisibleMatchers()
+	static public ArrayList<Matcher> getVisibleMatchers()
 	{
-		ArrayList<MatchVoter> visibleMatchers = new ArrayList<MatchVoter>();
-		for(MatchVoter matcher : matchers)
+		ArrayList<Matcher> visibleMatchers = new ArrayList<Matcher>();
+		for(Matcher matcher : matchers)
 			if (!matcher.isHidden()) visibleMatchers.add(matcher);
 		return visibleMatchers;
 	}
@@ -129,7 +129,7 @@ public class MatcherManager
 		{ return mergers; }
 
 	/** Return the details about one matcher */
-	static public MatchVoter getMatcher(String id)
+	static public Matcher getMatcher(String id)
 	{
 		for(int i = 0; i < matchers.size(); i++)
 			if(matchers.get(i).getClass().getName().equals(id))
@@ -138,14 +138,14 @@ public class MatcherManager
 	}
 
 	/** Run the matchers to calculate match scores */
-	static public MatchScores getScores(FilteredSchemaInfo schemaInfo1, FilteredSchemaInfo schemaInfo2, ArrayList<MatchVoter> matchers, MatchMerger merger)
+	static public MatchScores getScores(FilteredSchemaInfo schemaInfo1, FilteredSchemaInfo schemaInfo2, ArrayList<Matcher> matchers, MatchMerger merger)
 		{ return getScores(schemaInfo1, schemaInfo2, matchers, merger, null); }
 	
 	/** Run the matchers to calculate match scores */
-	static public MatchScores getScores(FilteredSchemaInfo schema1, FilteredSchemaInfo schema2, ArrayList<MatchVoter> matchers, MatchMerger merger, MatchTypeMappings typeMappings)
+	static public MatchScores getScores(FilteredSchemaInfo schema1, FilteredSchemaInfo schema2, ArrayList<Matcher> matchers, MatchMerger merger, MatchTypeMappings typeMappings)
 	{
 		merger.initialize(schema1, schema2, typeMappings);
-		for(MatchVoter matcher : matchers)
+		for(Matcher matcher : matchers)
 		{
 			matcher.initialize(schema1, schema2, typeMappings);
 			merger.addMatcherScores(matcher.match());

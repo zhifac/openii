@@ -8,8 +8,8 @@ package org.mitre.harmony.view.dialogs.matcher;
  */
 public interface MatchListener
 {
-	/** Indicates the current progress of the voters */
-	public void updateVoterProgress(Double percentComplete, String status);
+	/** Indicates the current progress of the matchers */
+	public void updateMatcherProgress(Double percentComplete, String status);
 
 	/** Indicates the current progress of the matching of schema pairs */
 	public void updateOverallProgress(Double percentComplete);

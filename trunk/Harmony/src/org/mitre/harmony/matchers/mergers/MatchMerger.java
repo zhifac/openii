@@ -9,7 +9,7 @@ import org.mitre.harmony.matchers.MatcherScores;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.schemaInfo.FilteredSchemaInfo;
 
-/** Matcher Interface - A match merger merged together the results of multiple match voters */
+/** Matcher Interface - A match merger merged together the results of multiple matchers */
 public abstract class MatchMerger
 {
 	// Stores the match merger schema information
@@ -32,7 +32,7 @@ public abstract class MatchMerger
 	/** Initializes the match merger */
 	abstract protected void initialize();
 	
-	/** Feeds voter scores into the merger */
+	/** Feeds matcher scores into the merger */
 	public void addMatcherScores(MatcherScores scores)
 	{
 		// Add all scores to merger if no type mapping is set
@@ -52,7 +52,7 @@ public abstract class MatchMerger
 		addMatcherScoresToMerger(filteredScores);
 	}
 
-	/** Feeds voter scores into the merger */
+	/** Feeds matcher scores into the merger */
 	abstract protected void addMatcherScoresToMerger(MatcherScores scores);
 	
 	/** Retrieve match scores from the merger */

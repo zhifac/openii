@@ -1,6 +1,6 @@
 // (c) The MITRE Corporation 2006
 // ALL RIGHTS RESERVED
-package org.mitre.harmony.matchers.voters.bagMatcher;
+package org.mitre.harmony.matchers.matchers.bagMatcher;
 
 /*
 The website http://www.tartarus.org/~martin/PorterStemmer reads:

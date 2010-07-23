@@ -10,12 +10,12 @@ import org.mitre.harmony.matchers.MatcherScore;
 import org.mitre.harmony.matchers.MatcherScores;
 
 /**
- * The basic vote merger for merging together match voters
+ * The basic vote merger for merging together matchers
  * @author CWOLF
  */
 public class VoteMerger extends MatchMerger
 {
-	/** Stores the current summation of voter scores */
+	/** Stores the current summation of matcher scores */
 	private HashMap<ElementPair,MatcherScore> summedScores = new HashMap<ElementPair,MatcherScore>();
 	
 	/** Returns the name associated with this match merger */
@@ -26,27 +26,27 @@ public class VoteMerger extends MatchMerger
 	protected void initialize()
 		{ summedScores.clear(); }
 	
-	/** Adds a new set of voter scores to the vote merger */
-	protected void addMatcherScoresToMerger(MatcherScores voterScores)
+	/** Adds a new set of matcher scores to the vote merger */
+	protected void addMatcherScoresToMerger(MatcherScores matcherScores)
 	{
 		// Retrieve the score ceiling
-		Double scoreCeiling = voterScores.getScoreCeiling();
+		Double scoreCeiling = matcherScores.getScoreCeiling();
 
-		// Push all of the voter scores into the summed scores
-		for(ElementPair pair : voterScores.getElementPairs())
+		// Push all of the matcher scores into the summed scores
+		for(ElementPair pair : matcherScores.getElementPairs())
 		{
-			// Get the voter score for the specified pair of elements
-			MatcherScore voterScore = voterScores.getScore(pair);
+			// Get the matcher score for the specified pair of elements
+			MatcherScore matcherScore = matcherScores.getScore(pair);
 				
 			// Calculate the positive evidence
-			double positiveEvidence = Math.min(scoreCeiling, voterScore.getPositiveEvidence());
-			if(voterScore.getPositiveEvidence() > scoreCeiling)
-				positiveEvidence += Math.log(1+voterScore.getPositiveEvidence()-scoreCeiling)/Math.log(2);
+			double positiveEvidence = Math.min(scoreCeiling, matcherScore.getPositiveEvidence());
+			if(matcherScore.getPositiveEvidence() > scoreCeiling)
+				positiveEvidence += Math.log(1+matcherScore.getPositiveEvidence()-scoreCeiling)/Math.log(2);
 
 			// Calculate the total evidence
-			double totalEvidence = Math.min(scoreCeiling, voterScore.getTotalEvidence());
-			if(voterScore.getTotalEvidence() > scoreCeiling)
-				totalEvidence += Math.log(1+voterScore.getTotalEvidence()-scoreCeiling)/Math.log(2);
+			double totalEvidence = Math.min(scoreCeiling, matcherScore.getTotalEvidence());
+			if(matcherScore.getTotalEvidence() > scoreCeiling)
+				totalEvidence += Math.log(1+matcherScore.getTotalEvidence()-scoreCeiling)/Math.log(2);
 				
 			// Generate and store the new summed score
 			MatcherScore summedScore = summedScores.get(pair);

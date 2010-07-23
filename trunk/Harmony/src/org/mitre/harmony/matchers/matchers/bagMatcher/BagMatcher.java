@@ -1,6 +1,6 @@
 // (c) The MITRE Corporation 2006
 // ALL RIGHTS RESERVED
-package org.mitre.harmony.matchers.voters.bagMatcher;
+package org.mitre.harmony.matchers.matchers.bagMatcher;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,11 +10,11 @@ import org.mitre.harmony.matchers.MatcherOption;
 import org.mitre.harmony.matchers.MatcherScore;
 import org.mitre.harmony.matchers.MatcherScores;
 import org.mitre.harmony.matchers.MatcherOption.OptionType;
-import org.mitre.harmony.matchers.voters.MatchVoter;
+import org.mitre.harmony.matchers.matchers.Matcher;
 import org.mitre.schemastore.model.SchemaElement;
 
 /** Bag Matcher Class */
-abstract public class BagMatcher extends MatchVoter
+abstract public class BagMatcher extends Matcher
 {
 	/** Constant defining the score ceiling */
 	public final static double SCORE_CEILING = 10;
@@ -97,7 +97,7 @@ abstract public class BagMatcher extends MatchVoter
 		return wordWeights;
 	}
 
-	/** Compute the voter score */
+	/** Compute the matcher score */
 	protected static MatcherScore computeScore(WordBag sourceBag, WordBag targetBag, HashMap<String,Double> wordWeights)
 	{
 		// Calculate the source score
@@ -118,12 +118,12 @@ abstract public class BagMatcher extends MatchVoter
 			intersectionScore += count * wordWeights.get(word);
 		}
 
-		// Return the voter score
+		// Return the matcher score
 		if(intersectionScore == 0) { return null; }
 		return new MatcherScore(intersectionScore, Math.min(sourceScore, targetScore));
 	}
 
-	/** Compute the voter scores */
+	/** Compute the matcher scores */
 	protected MatcherScores computeScores(List<SchemaElement> sourceElements, List<SchemaElement> targetElements, HashMap<Integer,WordBag> wordBags)
 	{
 		// Sets the completed and total comparisons

@@ -1,13 +1,13 @@
 // (c) The MITRE Corporation 2006
 // ALL RIGHTS RESERVED
-package org.mitre.harmony.matchers.voters;
+package org.mitre.harmony.matchers.matchers;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.mitre.harmony.matchers.MatcherScores;
-import org.mitre.harmony.matchers.voters.bagMatcher.BagMatcher;
-import org.mitre.harmony.matchers.voters.bagMatcher.WordBag;
+import org.mitre.harmony.matchers.matchers.bagMatcher.BagMatcher;
+import org.mitre.harmony.matchers.matchers.bagMatcher.WordBag;
 import org.mitre.schemastore.model.Containment;
 import org.mitre.schemastore.model.Entity;
 import org.mitre.schemastore.model.SchemaElement;
@@ -20,7 +20,7 @@ public class EntityMatcher extends BagMatcher
 	/** Defines the entity map class */
 	protected class EntityMap extends HashMap<SchemaElement,ArrayList<SchemaElement>> {};
 	
-	/** Returns the name of the match voter */
+	/** Returns the name of the matcher */
 	public String getName()
 		{ return "Entity Matcher"; }
 	

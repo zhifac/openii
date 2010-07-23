@@ -16,14 +16,14 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
 import org.mitre.harmony.matchers.MatcherOption;
-import org.mitre.harmony.matchers.voters.MatchVoter;
+import org.mitre.harmony.matchers.matchers.Matcher;
 import org.mitre.harmony.view.dialogs.matcher.wizard.Wizard;
 import org.mitre.harmony.view.dialogs.matcher.wizard.WizardPanel;
 
 public class MatcherOptionsPane extends WizardPanel
 {
 	/** Stores the matcher associated with these options */
-	private MatchVoter matcher;
+	private Matcher matcher;
 	
 	/** Generates an option pane */
 	private class OptionPane extends JPanel implements ActionListener
@@ -54,7 +54,7 @@ public class MatcherOptionsPane extends WizardPanel
 	}
 	
 	/** Constructs the type pane */
-    public MatcherOptionsPane(Wizard wizard, MatchVoter matcher)
+    public MatcherOptionsPane(Wizard wizard, Matcher matcher)
     {
     	super(wizard);
     	this.matcher = matcher;
@@ -85,6 +85,6 @@ public class MatcherOptionsPane extends WizardPanel
     	{ return getClass().getSimpleName() + " - " + matcher.getName(); }
     
     /** Returns the matcher associated with this option pane */
-    public MatchVoter getMatcher()
+    public Matcher getMatcher()
     	{ return matcher; }
 }

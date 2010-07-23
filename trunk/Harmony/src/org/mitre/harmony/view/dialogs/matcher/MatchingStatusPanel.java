@@ -31,8 +31,8 @@ public class MatchingStatusPanel extends WizardPanel implements MatchListener
     private MatchThread matchThread = null;
 
     // Stores references to components in the Match Pane
-	private JProgressBar voterProgressBar = new JProgressBar();
-    private JLabel voterProgressBarLabel = new JLabel();
+	private JProgressBar matcherProgressBar = new JProgressBar();
+    private JLabel matcherProgressBarLabel = new JLabel();
 	private JProgressBar overallProgressBar = new JProgressBar();
 
 	/** Constructs the match pane */
@@ -46,7 +46,7 @@ public class MatchingStatusPanel extends WizardPanel implements MatchListener
 		JPanel panel = new JPanel();
 		panel.setBorder(new CompoundBorder(new EmptyBorder(10,0,5,0),new CompoundBorder(new LineBorder(Color.gray), new EmptyBorder(5,10,5,10))));
 		panel.setLayout(new BoxLayout(panel,BoxLayout.Y_AXIS));
-		panel.add(generateProgressBarPane(voterProgressBarLabel, voterProgressBar));
+		panel.add(generateProgressBarPane(matcherProgressBarLabel, matcherProgressBar));
 		panel.add(generateProgressBarPane(new JLabel("Overall Progress"), overallProgressBar));
 
 		// Create the match pane
@@ -92,11 +92,11 @@ public class MatchingStatusPanel extends WizardPanel implements MatchListener
     public void aboutToHidePanel()
     	{ matchThread.stopThread(); }
 
-    /** Updates the progress of the voters */
-	public void updateVoterProgress(Double percentComplete, String status)
+    /** Updates the progress of the matchers */
+	public void updateMatcherProgress(Double percentComplete, String status)
 	{
-		voterProgressBar.setValue(percentComplete.intValue());
-		voterProgressBarLabel.setText(status);
+		matcherProgressBar.setValue(percentComplete.intValue());
+		matcherProgressBarLabel.setText(status);
 	}
 
     /** Updates the progress of the schemas */

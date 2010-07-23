@@ -14,9 +14,9 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
 import org.mitre.harmony.matchers.MatcherManager;
+import org.mitre.harmony.matchers.matchers.Matcher;
 import org.mitre.harmony.matchers.mergers.MatchMerger;
 import org.mitre.harmony.matchers.mergers.VoteMerger;
-import org.mitre.harmony.matchers.voters.MatchVoter;
 import org.mitre.harmony.model.HarmonyConsts;
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.project.ProjectManager;
@@ -37,59 +37,59 @@ public class MatcherMenu extends AbstractMenu
 
 		// Place all matchers into menu
 		for(MatchMerger merger : MatcherManager.getMergers())
-			add(new MatcherMenuItem(merger));
+			add(new MergerMenuItem(merger));
 
-		// Place all match voters into menu
-		for(MatchVoter matchVoter : MatcherManager.getVisibleMatchers())
-			add(new MatchVoterMenuItem(matchVoter));
+		// Place all matchers into menu
+		for(Matcher matcher : MatcherManager.getVisibleMatchers())
+			add(new MatcherMenuItem(matcher));
 
 		// Add a menu checkbox to specify if user matched elements should be ignored in matching
 		addSeparator();
 		add(createCheckboxItem("Ignore Matched Elements", harmonyModel.getPreferences().getIgnoreMatchedElements(), new IgnoreMatchedElementsAction()));
 	}
 
-	/** Class for handling match voter menu items */
-	private class MatchVoterMenuItem extends JMenuItem implements ActionListener
+	/** Class for handling matcher menu items */
+	private class MatcherMenuItem extends JMenuItem implements ActionListener
 	{
-		// Stores the voter associated with this menu item
-		private MatchVoter voter;
+		// Stores the matcher associated with this menu item
+		private Matcher matcher;
 
-		/** Initializes the match voter menu item */
-		MatchVoterMenuItem(MatchVoter voter)
+		/** Initializes the matcher menu item */
+		MatcherMenuItem(Matcher matcher)
 		{
-			this.voter = voter;
-			setText(voter.getName());
+			this.matcher = matcher;
+			setText(matcher.getName());
 			addActionListener(this);
 		}
 
-		/** Handles the selection of this match voter */
+		/** Handles the selection of this matcher */
 		public void actionPerformed(ActionEvent e)
 		{
 			if(!checkSchemasExist()) return;
 
-			ArrayList<MatchVoter> voters = new ArrayList<MatchVoter>();
-			voters.add(voter);
-			launchMatchWizard(voters, new VoteMerger(), false);
+			ArrayList<Matcher> matchers = new ArrayList<Matcher>();
+			matchers.add(matcher);
+			launchMatchWizard(matchers, new VoteMerger(), false);
 		}
 	}
 
-	/** Class for handling matcher menu */
-	private class MatcherMenuItem extends JMenu implements ActionListener
+	/** Class for handling merger menu */
+	private class MergerMenuItem extends JMenu implements ActionListener
 	{
-		// Stores the voter associated with this menu
+		// Stores the matcher associated with this menu
 		private MatchMerger merger;
 
 		// Stores the menu items which may be selected
 		JMenuItem fullMatch = new JMenuItem("Run All Matchers");
 		JMenuItem customMatch = new JMenuItem("Run Custom Matchers...");
 
-		/** Initializes the matcher menu */
-		MatcherMenuItem(MatchMerger merger)
+		/** Initializes the merger menu */
+		MergerMenuItem(MatchMerger merger)
 		{
 			this.merger = merger;
 			setText(merger.getName());
 
-			// Creates a full match menu item
+			// Creates a full merger menu item
 			fullMatch.addActionListener(this);
 			add(fullMatch);
 
@@ -98,7 +98,7 @@ public class MatcherMenu extends AbstractMenu
 			add(customMatch);
 		}
 
-		/** Handles the selection of this match voter */
+		/** Handles the selection of this merger */
 		public void actionPerformed(ActionEvent e)
 		{
 			if(!checkSchemasExist()) { return; }
@@ -111,6 +111,7 @@ public class MatcherMenu extends AbstractMenu
 		}
 	}
 
+	/** Make sure that schema actually exist to be merged */
 	private boolean checkSchemasExist()
 	{
 		// No need to proceed if no schemas exist on a specific side
@@ -129,8 +130,8 @@ public class MatcherMenu extends AbstractMenu
 	}
 
 	/** Launches the matcher wizard */
-	private void launchMatchWizard(ArrayList<MatchVoter> voters, MatchMerger merger, boolean custom)
-		{ new Wizard(voters, merger, custom, harmonyModel); }
+	private void launchMatchWizard(ArrayList<Matcher> matchers, MatchMerger merger, boolean custom)
+		{ new Wizard(matchers, merger, custom, harmonyModel); }
 
 	/** Action for ignoring the matched elements */
 	private class IgnoreMatchedElementsAction extends AbstractAction
