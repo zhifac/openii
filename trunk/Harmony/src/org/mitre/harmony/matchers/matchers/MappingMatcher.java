@@ -6,10 +6,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
+import org.mitre.harmony.matchers.MatcherManager;
 import org.mitre.harmony.matchers.MatcherScores;
 import org.mitre.harmony.matchers.matchers.bagMatcher.BagMatcher;
 import org.mitre.harmony.matchers.matchers.bagMatcher.WordBag;
-import org.mitre.schemastore.client.SchemaStoreClient;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.Project;
@@ -19,15 +19,8 @@ import org.mitre.schemastore.model.schemaInfo.SchemaInfo;
 /** Mapping Matcher Class */
 public class MappingMatcher extends BagMatcher
 {
-	/** Stores the SchemaStore client */
-	private SchemaStoreClient client = null;
-
 	/** Stores the word bag used for this matcher */
 	private HashMap<Integer, WordBag> wordBags = new HashMap<Integer, WordBag>();
-	
-	/** Initializes the Mapping Matcher class */
-	public MappingMatcher(SchemaStoreClient client)
-		{ this.client = client; }
 	
 	/** Returns the name of the matcher */
 	public String getName()
@@ -36,7 +29,10 @@ public class MappingMatcher extends BagMatcher
 	/** Generates match scores for the specified elements */ @Override
 	public MatcherScores generateScores()
 	{
-		// Create word bags for the source elements
+		// Only proceed if the client is set (otherwise, the mappings can't be accessed)
+		if(MatcherManager.getClient()==null) return new MatcherScores(SCORE_CEILING);
+		
+		// Create word bags for the source elementsx
 		ArrayList<SchemaElement> sourceElements = schema1.getFilteredElements();
 		for(SchemaElement sourceElement : sourceElements)
 			wordBags.put(sourceElement.getId(), generateWordBag(sourceElement));
@@ -69,8 +65,8 @@ public class MappingMatcher extends BagMatcher
 	{
 		ArrayList<Mapping> mappings = new ArrayList<Mapping>();
 		try {
-			for(Project project : client.getProjects())
-				for(Mapping mapping : client.getMappings(project.getId()))
+			for(Project project : MatcherManager.getClient().getProjects())
+				for(Mapping mapping : MatcherManager.getClient().getMappings(project.getId()))
 					if(mapping.getSourceId().equals(schemaID) || mapping.getTargetId().equals(schemaID))
 						mappings.add(mapping);
 		} catch(Exception e) {}
@@ -83,10 +79,10 @@ public class MappingMatcher extends BagMatcher
 		try {
 			// Identify the associated schema
 			boolean isSource = !mapping.getSourceId().equals(schema1) && !mapping.getSourceId().equals(schema2);
-			SchemaInfo schema = client.getSchemaInfo(isSource ? mapping.getSourceId() : mapping.getTargetId());
+			SchemaInfo schema = MatcherManager.getClient().getSchemaInfo(isSource ? mapping.getSourceId() : mapping.getTargetId());
 
 			// Find associated elements
-			for(MappingCell mappingCell : client.getMappingCells(mapping.getId()))
+			for(MappingCell mappingCell : MatcherManager.getClient().getMappingCells(mapping.getId()))
 				if(mappingCell.isValidated())
 				{
 					// Get reference IDs
