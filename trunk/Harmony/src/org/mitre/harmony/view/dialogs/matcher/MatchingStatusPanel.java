@@ -19,7 +19,8 @@ import org.mitre.harmony.view.dialogs.matcher.wizard.Wizard;
 import org.mitre.harmony.view.dialogs.matcher.wizard.WizardPanel;
 
 /** Constructs the match pane for the matcher wizard */
-public class MatchingStatusPanel extends WizardPanel implements MatchListener {
+public class MatchingStatusPanel extends WizardPanel implements MatchListener
+{
     /** Stores the Harmony model for reference */
     private HarmonyModel harmonyModel;
 
@@ -35,8 +36,9 @@ public class MatchingStatusPanel extends WizardPanel implements MatchListener {
 	private JProgressBar overallProgressBar = new JProgressBar();
 
 	/** Constructs the match pane */
-    public MatchingStatusPanel(Wizard wizard, HarmonyModel harmonyModel, MatchMerger merger) {
-    	super.setWizard(wizard);
+    public MatchingStatusPanel(Wizard wizard, HarmonyModel harmonyModel, MatchMerger merger)
+    {
+    	super(wizard);
     	this.harmonyModel = harmonyModel;
         this.merger = merger;
 
@@ -48,14 +50,14 @@ public class MatchingStatusPanel extends WizardPanel implements MatchListener {
 		panel.add(generateProgressBarPane(new JLabel("Overall Progress"), overallProgressBar));
 
 		// Create the match pane
-		JPanel pane = getPanel();
-		pane.setLayout(new BorderLayout());
-		pane.add(new JLabel("Progress of schema matching..."),BorderLayout.NORTH);
-		pane.add(panel,BorderLayout.CENTER);
+		setLayout(new BorderLayout());
+		add(new JLabel("Progress of schema matching..."),BorderLayout.NORTH);
+		add(panel,BorderLayout.CENTER);
     }
 
     /** Constructs a progress pane */
-    public JPanel generateProgressBarPane(JLabel label, JProgressBar progressBar) {
+    public JPanel generateProgressBarPane(JLabel label, JProgressBar progressBar)
+    {
 		// Creates progress bar to show that processing is occurring
         progressBar.setStringPainted(true);
 
@@ -77,38 +79,31 @@ public class MatchingStatusPanel extends WizardPanel implements MatchListener {
     	return pane;
     }
 
-    /** Initializes the panel before being displayed */
-    public void aboutToDisplayPanel() {
-    	getWizard().setBackButtonEnabled(false);
-    	getWizard().setNextButtonEnabled(false);
-    }
-
-    /** Generates the schema matches when the panel is being displayed */
-    public void displayingPanel() {
+    /** Generates the schema matches when the panel is being displayed */ @Override
+    public void displayingPanel()
+    {
     	// Starts the match thread
-    	matchThread = new MatchThread(harmonyModel, merger, getWizard().getSelectedMatchers(), getWizard().getSelectedMatchTypeMappings(), getWizard().getSelectedMatcherOptions());
+    	matchThread = new MatchThread(harmonyModel, merger, getWizard().getSelectedMatchers(), getWizard().getSelectedMatchTypes());
         matchThread.addListener(this);
     	matchThread.start();
     }
 
-    /** Handles the hiding of the match pane */
-    public void aboutToHidePanel() {
-    	matchThread.stopThread();
-    }
+    /** Handles the hiding of the match pane */ @Override
+    public void aboutToHidePanel()
+    	{ matchThread.stopThread(); }
 
     /** Updates the progress of the voters */
-	public void updateVoterProgress(Double percentComplete, String status) {
+	public void updateVoterProgress(Double percentComplete, String status)
+	{
 		voterProgressBar.setValue(percentComplete.intValue());
 		voterProgressBarLabel.setText(status);
 	}
 
     /** Updates the progress of the schemas */
-	public void updateOverallProgress(Double percentComplete) {
-		overallProgressBar.setValue(percentComplete.intValue());
-	}
+	public void updateOverallProgress(Double percentComplete)
+		{ overallProgressBar.setValue(percentComplete.intValue()); }
 
 	/** Handles the completion of the matching */
-	public void matchCompleted() {
-		getWizard().getDialog().dispose();
-	}
+	public void matchCompleted()
+		{ getWizard().close(); }
 }

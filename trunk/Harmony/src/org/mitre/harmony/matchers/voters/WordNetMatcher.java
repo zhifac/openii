@@ -10,8 +10,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.StringTokenizer;
 
-import org.mitre.harmony.matchers.MatcherManager;
-import org.mitre.harmony.matchers.MatcherOption;
 import org.mitre.harmony.matchers.MatcherScore;
 import org.mitre.harmony.matchers.MatcherScores;
 import org.mitre.schemastore.model.SchemaElement;
@@ -22,14 +20,15 @@ import org.mitre.schemastore.model.SchemaElement;
  * Date:   Jan 22, 2009
  * A thesaurus matcher that uses the wordnet dictionary
  */
-public class WordNetMatcher extends BagMatcher {
+public class WordNetMatcher extends BagMatcher
+{
 	/** Returns the name of the match voter */
-	public String getName() {
-		return "WordNet Thesaurus";
-	}
+	public String getName()
+		{ return "WordNet Thesaurus"; }
 	
 	/** Generates scores for the specified elements */
-	public MatcherScores match() {		
+	public MatcherScores match()
+	{
 		// Create word bags for the source and target elements
 		ArrayList<SchemaElement> sourceElements = schema1.getFilteredElements();
 		ArrayList<SchemaElement> targetElements = schema2.getFilteredElements();
@@ -44,57 +43,54 @@ public class WordNetMatcher extends BagMatcher {
 		
 		// Generate the match scores
 		MatcherScores scores = new MatcherScores(SCORE_CEILING);
-		for (SchemaElement sourceElement : sourceElements) {
-			for(SchemaElement targetElement : targetElements) {
-				if (isAllowableMatch(sourceElement, targetElement)) {
-					if (scores.getScore(sourceElement.getId(), targetElement.getId()) == null) {
+		for(SchemaElement sourceElement : sourceElements)
+			for(SchemaElement targetElement : targetElements)
+			{
+				if(isAllowableMatch(sourceElement, targetElement))
+					if(scores.getScore(sourceElement.getId(), targetElement.getId()) == null)
+					{
 						MatcherScore score = findVoterScore(sourceElement,targetElement,thesaurus);
-						if (score != null) {
+						if(score != null)
 							scores.setScore(sourceElement.getId(), targetElement.getId(), score);
-						}
 					}
-				}
 				completedComparisons++;
 			}
-		}
 		return scores;
 	}
 	
 	/** Get the specified dictionary from file */
-	private static HashMap<String, HashSet<Integer>> getThesaurus(URL dictionaryFile) {
+	private static HashMap<String, HashSet<Integer>> getThesaurus(URL dictionaryFile)
+	{
 		HashMap<String,HashSet<Integer>> thesaurus = new HashMap<String,HashSet<Integer>>();
-
 		try {
 			BufferedReader br = new BufferedReader(new InputStreamReader(dictionaryFile.openStream()));
 			String line;
-			while((line = br.readLine()) != null) {
+			while((line = br.readLine()) != null)
+			{
 				StringTokenizer scan = new StringTokenizer(line);
 
 				// Collect the word and senset
 				String word = scan.nextToken();
 				HashSet<Integer> synList = new HashSet<Integer>();
-				while (scan.hasMoreTokens()) {
+				while (scan.hasMoreTokens())
 					synList.add(new Integer(scan.nextToken()));
-				}
 				
 				// Add entry to the dictionary
 				thesaurus.put(word,synList);
 	        } 
-		} catch (java.io.IOException e) {
-			System.out.println("(E) WordNetMatcher:getThesaurus - " + e.getMessage());
 		}
+		catch (java.io.IOException e) { System.out.println("(E) WordNetMatcher:getThesaurus - " + e.getMessage()); }
 		return thesaurus;
 	}
 	
 	/** Evaluate the score between the source and target element using the wordnet thesaurus */
-	private MatcherScore findVoterScore(SchemaElement source, SchemaElement target, HashMap<String,HashSet<Integer>> thesaurus) {
+	private MatcherScore findVoterScore(SchemaElement source, SchemaElement target, HashMap<String,HashSet<Integer>> thesaurus)
+	{
 		int matches = 0;
 
 		// see if we are going to use the name of the schema element or the description provided with the schema element
-		MatcherOption useNameObject = MatcherManager.getMatcherOption(this.getClass().getName(), "UseName");
-		boolean useName = (useNameObject != null) ? useNameObject.getSelected() : true;
-		MatcherOption useDescriptionObject = MatcherManager.getMatcherOption(this.getClass().getName(), "UseDescription");
-		boolean useDescription = (useDescriptionObject != null) ? useDescriptionObject.getSelected() : true;
+		boolean useName = options.get("UseName").isSelected();
+		boolean useDescription = options.get("UseDescription").isSelected();
 
 		// Compile sets of words contained in both source and target elements
 		WordBag sourceWordBag = new WordBag(source, useName, useDescription);
@@ -105,45 +101,41 @@ public class WordNetMatcher extends BagMatcher {
 		ArrayList<String> targetWords = targetWordBag.getWords();
 
 		// Swap word sets to make sure smaller word set is used in outer loop
-		if (sourceWords.size()>targetWords.size()) {
+		if(sourceWords.size()>targetWords.size())
+		{
 			ArrayList<String> tempWords = sourceWords;
 			sourceWords = targetWords;
 			targetWords = tempWords;
 		}
 		
 		// Cycle through each source word
-		for (String sourceWord : sourceWords) {
+		for(String sourceWord : sourceWords)
+		{
 			// Retrieve the senset for the  source word
 			HashSet<Integer> sourceSenset = thesaurus.get(sourceWord);
-			if (sourceSenset == null) { continue; }
+			if(sourceSenset == null) continue;
 			
 			// Cycle through each target word
-			for (String targetWord : targetWords) {
+			for(String targetWord : targetWords)
+			{
 				// Retrieve the senset for the target word
 				HashSet<Integer> targetSenset = thesaurus.get(targetWord);
-				if (targetSenset == null) { continue; }
+				if(targetSenset == null) continue;
 
 				// Check for match
 				boolean match = false;
-				for (Integer sourceSen : sourceSenset) {
-					if (targetSenset.contains(sourceSen)) {
-						match = true;
-						break;
-					}
-				}
+				for(Integer sourceSen : sourceSenset)
+					if(targetSenset.contains(sourceSen))
+						{ match = true; break; }
 
 				// If match found, mark as such and continue
-				if (match) {
-					matches++;
-					continue;
-				}
+				if(match) matches++;
 			}
 		}
 		
 		// Return the voter score
-		if (matches > 0) {
+		if (matches > 0)
 			return new MatcherScore(1.0*matches, 1.0*sourceWords.size());
-		}
 		return null;
 	}
 }

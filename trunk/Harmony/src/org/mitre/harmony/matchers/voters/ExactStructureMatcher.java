@@ -10,14 +10,15 @@ import org.mitre.harmony.matchers.MatcherScores;
 import org.mitre.schemastore.model.SchemaElement;
 
 /** Exact Structure Matcher Class */
-public class ExactStructureMatcher extends MatchVoter {
+public class ExactStructureMatcher extends MatchVoter
+{
 	/** Returns the name of the match voter */
-	public String getName() {
-		return "Exact Structure";
-	}
+	public String getName()
+		{ return "Exact Structure"; }
 
 	/** Generates scores for the specified elements */
-	public MatcherScores match() {
+	public MatcherScores match()
+	{
 		// Get the source elements
 		ArrayList<SchemaElement> sourceElements = schema1.getFilteredElements();
 
@@ -27,28 +28,26 @@ public class ExactStructureMatcher extends MatchVoter {
 
 		// Go through all source elements
 		MatcherScores scores = new MatcherScores(100.0);
-		for (SchemaElement sourceElement : sourceElements) {
+		for (SchemaElement sourceElement : sourceElements)
+		{
 			// Retrieve all matching target elements
 			HashSet<Integer> targetIDs = new HashSet<Integer>();
-			for (ArrayList<SchemaElement> sourcePath : schema1.getPaths(sourceElement.getId())) {
+			for (ArrayList<SchemaElement> sourcePath : schema1.getPaths(sourceElement.getId()))
+			{
 				// Retrieve the source path
 				ArrayList<String> path = new ArrayList<String>();
-				for (SchemaElement element : sourcePath) {
+				for (SchemaElement element : sourcePath)
 					path.add(schema1.getDisplayName(element.getId()));
-				}
 
 				// Identify all target paths
-				for (Integer targetID : schema2.getPathIDs(path)) {
-					if (schema2.isVisible(targetID)) {
+				for (Integer targetID : schema2.getPathIDs(path))
+					if (schema2.isVisible(targetID))
 						targetIDs.add(targetID);
-					}
-				}
 			}
 
 			// Set scores for the matching target elements
-			for (Integer targetID : targetIDs) {
+			for (Integer targetID : targetIDs)
 				scores.setScore(sourceElement.getId(), targetID, new MatcherScore(100.0,100.0));
-			}
 
 			// Update the completed comparison count
 			completedComparisons++;
