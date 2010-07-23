@@ -40,22 +40,29 @@ public class XMIImporter extends SchemaImporter {
 	private HashMap<String, Domain> domains = new HashMap<String, Domain>();
 
 	private void processDomain(Node n) throws Exception {
-		String name = n.getNodeName();
+		String nodeName = n.getNodeName();
 		String ref = n.getAttributes().getNamedItem("base_Class").getNodeValue();
-		SchemaElement referent = elements.get(ref);
+		SchemaElement referentElement = elements.get(ref);
 		String domainName = null;
 
-		if (referent == null) {
-			System.err.println("No referent for domain " + name + " with base_Class " + ref);
+		if (referentElement == null) {
+			System.err.println("No referent for domain " + nodeName + " with base_Class " + ref);
 			return;
 		}
 
-		if (name.contains("thecustomprofile")) domainName = name.substring(name.indexOf(":") + 1);
-		else if (name.contains("EAUML:table")) domainName = referent.getName();
-		else return;
+		if (nodeName.contains("thecustomprofile")) domainName = nodeName.substring(nodeName.indexOf(":") + 1);
+		else if (nodeName.contains("EAUML:table")) domainName = referentElement.getName();
+		else return; 
+		
+		System.out.println( " === DOMAIN for " + referentElement.getName() + " = " + domainName); 
+		
+		// Entities cannot have 
+		String description = referentElement.getDescription(); 
+		String newDescrString = (description.length()==0)? "" : description.concat("\n"); 
+		referentElement.setDescription( newDescrString.concat("(Value type: " + domainName + ")") );
 
-		referent.setDescription(referent.getDescription() + "\n (Value type: " + domainName + ")");
-
+		
+		
 		// The following code doesn't work because an Entity for a vocabulary
 		// cannot have domain types.
 		Domain domain = domains.get(domainName);
@@ -84,7 +91,9 @@ public class XMIImporter extends SchemaImporter {
 				try {
 					String docs = n.getAttributes().getNamedItem("documentation").getNodeValue();
 					System.out.println("DOCUMENTATION for " + n.getNodeName() + ": " + docs);
-					schemaElement.setDescription(docs);
+					String existingDescription = schemaElement.getDescription(); 
+					String newDescription = (existingDescription.length()==0) ? "" : existingDescription.concat("\n"); 
+					schemaElement.setDescription(newDescription.concat(docs));
 				} catch (NullPointerException e) {
 					;
 				}
@@ -288,18 +297,16 @@ public class XMIImporter extends SchemaImporter {
 	}
 
 	public static void main(String[] args) throws Exception {
-		Repository repository = new Repository(Repository.DERBY, new URI("file:///c:/eclipse/schemastore/"), "schemastore", "postgres", "postgres");
-
-		SchemaStoreClient client = new SchemaStoreClient(repository);
-
-		XMIImporter xmi = new XMIImporter();
-		xmi.setClient(client);
-
-		URI uri = new URI("file:///C:/TED.xml");
-
-		// System.out.println("Importing.");
-		Integer schemaID = xmi.importSchema("Schema " + new Date(), "Author", "Description", uri);
-		System.out.println("Finished importing." + schemaID);
+		// Display the schemas found within the repository
+		try {
+			Repository repository = new Repository(Repository.POSTGRES,new URI("ygg.mitre.org"),"d3","postgres","postgres");
+			SchemaStoreClient client = new SchemaStoreClient(repository);
+			
+			XMIImporter importer = new XMIImporter(); 
+			importer.setClient(client); 
+			importer.importSchema("TED", "haoli", "test xmi importer", new URI("file:///C:/TEDVocabulary.xml")); 
+		}
+		catch(Exception e) { e.printStackTrace(); }
 	}
 }
 
