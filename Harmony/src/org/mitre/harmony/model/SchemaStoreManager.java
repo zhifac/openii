@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
+import org.mitre.harmony.matchers.MatcherManager;
 import org.mitre.schemastore.client.Repository;
 import org.mitre.schemastore.client.SchemaStoreClient;
 import org.mitre.schemastore.model.DataType;
@@ -34,14 +35,14 @@ public class SchemaStoreManager
 	/** Sets the connection using the provided service address */
 	public static boolean setConnection(Repository repository)
 	{
-		try { client = new SchemaStoreClient(repository); }
+		try { setConnection(new SchemaStoreClient(repository)); }
 		catch(Exception e) { System.out.println("(E)SchemaStoreManager.setConnection - " + e.getMessage()); return false; }
 		return true;
 	}
 	
 	/** Sets the connection using the provided SchemaStoreClient object */
 	public static void setConnection(SchemaStoreClient newClient)
-		{ client = newClient; }
+		{ client = newClient; MatcherManager.setClient(client); }
 		
 	//------------------
 	// Schema Functions

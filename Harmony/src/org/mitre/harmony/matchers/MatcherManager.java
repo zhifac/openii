@@ -9,6 +9,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.mitre.harmony.matchers.matchers.Matcher;
 import org.mitre.harmony.matchers.mergers.MatchMerger;
+import org.mitre.schemastore.client.SchemaStoreClient;
 import org.mitre.schemastore.model.schemaInfo.FilteredSchemaInfo;
 import org.mitre.schemastore.porters.PorterList;
 import org.w3c.dom.Document;
@@ -21,6 +22,9 @@ import org.w3c.dom.NodeList;
  */
 public class MatcherManager
 {
+	/** Stores the client associated with this manager */
+	static private SchemaStoreClient client;
+	
 	/** Stores a listing of all match */
 	static private ArrayList<Matcher> matchers = new ArrayList<Matcher>();
 
@@ -101,7 +105,7 @@ public class MatcherManager
 		}
 		catch (Exception e) { System.err.println("(E) MatcherManager - matchers.xml has failed to load! " + e.getMessage()); }
 	}
-
+	
 	/** Returns the list of match matchers */
 	static public ArrayList<Matcher> getMatchers()
 		{ return matchers; }
@@ -137,6 +141,14 @@ public class MatcherManager
 		return null;
 	}
 
+	/** Sets the client for these matchers */
+	static public void setClient(SchemaStoreClient clientIn)
+		{ client = clientIn; }
+	
+	/** Returns the client set for these matchers */
+	static public SchemaStoreClient getClient()
+		{ return client; }
+	
 	/** Run the matchers to calculate match scores */
 	static public MatchScores getScores(FilteredSchemaInfo schemaInfo1, FilteredSchemaInfo schemaInfo2, ArrayList<Matcher> matchers, MatchMerger merger)
 		{ return getScores(schemaInfo1, schemaInfo2, matchers, merger, null); }
