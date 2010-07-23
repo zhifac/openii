@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 
-import org.mitre.harmony.matchers.voters.MatchVoter;
+import org.mitre.harmony.matchers.matchers.Matcher;
 import org.mitre.openii.model.OpenIIManager;
 import org.mitre.openii.model.RepositoryManager;
 import org.mitre.schemastore.model.Entity;
@@ -47,10 +47,10 @@ public class Unity {
 		return generateVocabulary(null, null, null, null);
 	}
 
-	public Vocabulary replaceVocabulary(ArrayList<MatchVoter> voters, String name, String author, String description) throws Exception {
+	public Vocabulary replaceVocabulary(ArrayList<Matcher> matchers, String name, String author, String description) throws Exception {
 		vocabulary = new Vocabulary(project);
 		if (vocabulary.exists()) vocabulary.deleteVocabularySchema();
-		return generateVocabulary(voters, name, author, description);
+		return generateVocabulary(matchers, name, author, description);
 	}
 
 	/**
@@ -58,8 +58,8 @@ public class Unity {
 	 * to cluster the mappings. A new core schema is created with a new schema element added to each synset.
 	 * 
 	 * @param project
-	 * @param voters
-	 *            default voters will be used if null
+	 * @param matchers
+	 *            default matchers will be used if null
 	 * @param name
 	 *            name of the core
 	 * @param author
@@ -69,11 +69,11 @@ public class Unity {
 	 * @return a vocabulary object
 	 * @throws Exception
 	 */
-	public Vocabulary generateVocabulary(ArrayList<MatchVoter> voters, String name, String author, String description) throws Exception {
+	public Vocabulary generateVocabulary(ArrayList<Matcher> matchers, String name, String author, String description) throws Exception {
 		vocabulary = new Vocabulary(project);
 		if (vocabulary.exists()) return vocabulary;
 
-		if (voters == null) voters = MappingProcessor.getDefaultMatchVoters();
+		if (matchers == null) matchers = MappingProcessor.getDefaultMatchers();
 		if (name == null) name = project.getName() + Vocabulary._VOCABULARY_TAG;
 		if (author == null) author = System.getProperty("user.name");
 		if (description == null) description = "Unity auto-generated vocabulary";
@@ -81,7 +81,7 @@ public class Unity {
 		// Ensure that all pair-wise mappings already exist
 		try {
 			System.out.println(" Running all matches ... ");
-			MappingProcessor.run(project, voters);
+			MappingProcessor.run(project, matchers);
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new Exception("Match all error. " + e.getMessage());

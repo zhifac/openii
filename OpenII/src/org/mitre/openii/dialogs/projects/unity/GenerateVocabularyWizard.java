@@ -68,7 +68,7 @@ public class GenerateVocabularyWizard extends Wizard {
 	public boolean performFinish() {
 		try {
 			Unity unity = new Unity(project);
-			unity.generateVocabulary(autoMappingPage.getMatchVoters(), matchMakerPage.getVocabularyName(), matchMakerPage.getAuthor(), matchMakerPage.getDescription());
+			unity.generateVocabulary(autoMappingPage.getMatchers(), matchMakerPage.getVocabularyName(), matchMakerPage.getAuthor(), matchMakerPage.getDescription());
 
 			String exportPath = matchMakerPage.getVocabExportFilePath();
 			if (exportPath.length() > 0) unity.exportVocabulary(new File(exportPath));

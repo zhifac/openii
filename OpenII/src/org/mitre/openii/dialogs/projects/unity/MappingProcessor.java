@@ -8,11 +8,11 @@ import java.util.HashMap;
 import org.mitre.harmony.matchers.MatchScore;
 import org.mitre.harmony.matchers.MatchScores;
 import org.mitre.harmony.matchers.MatcherManager;
+import org.mitre.harmony.matchers.matchers.DocumentationMatcher;
+import org.mitre.harmony.matchers.matchers.EditDistanceMatcher;
+import org.mitre.harmony.matchers.matchers.ExactMatcher;
+import org.mitre.harmony.matchers.matchers.Matcher;
 import org.mitre.harmony.matchers.mergers.VoteMerger;
-import org.mitre.harmony.matchers.voters.DocumentationMatcher;
-import org.mitre.harmony.matchers.voters.EditDistanceMatcher;
-import org.mitre.harmony.matchers.voters.ExactStructureMatcher;
-import org.mitre.harmony.matchers.voters.MatchVoter;
 import org.mitre.openii.model.OpenIIManager;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
@@ -33,14 +33,14 @@ public class MappingProcessor {
 	/** Stores the permutation list of project schemas */
 	private Permuter<ProjectSchema> permuter;
 
-	/** MatchVoters **/
-	private ArrayList<MatchVoter> voters = null;
+	/** Matchers **/
+	private ArrayList<Matcher> matchers = null;
 
 	/** Constructs the match enumeration object */
-	public MappingProcessor(Project project, Permuter<ProjectSchema> permuter, ArrayList<MatchVoter> voters) {
+	public MappingProcessor(Project project, Permuter<ProjectSchema> permuter, ArrayList<Matcher> voters) {
 		this.projectID = project.getId();
 		this.permuter = permuter;
-		this.voters = (voters == null) ? getDefaultMatchVoters() : voters;
+		this.matchers = (voters == null) ? getDefaultMatchers() : voters;
 	}
 
 	/** Returns the number of mappings in need of doing */
@@ -83,7 +83,7 @@ public class MappingProcessor {
 		// Generate the mapping cells
 		ArrayList<MappingCell> mappingCells = new ArrayList<MappingCell>();
 		Informant.status("Calling Harmony matching algorithms...");
-		MatchScores matchScores = MatcherManager.getScores(schemaInfo1, schemaInfo2, voters, new VoteMerger());
+		MatchScores matchScores = MatcherManager.getScores(schemaInfo1, schemaInfo2, matchers, new VoteMerger());
 		for (MatchScore score : matchScores.getScores())
 			mappingCells.add(MappingCell.createProposedMappingCell(null, mappingID, score.getSourceID(), score.getTargetID(), score.getScore(), "MatchMaker Auto Gen", new Date(System.currentTimeMillis()), ""));
 
@@ -100,13 +100,13 @@ public class MappingProcessor {
 		System.gc();
 	}
 
-	public static ArrayList<MatchVoter> getDefaultMatchVoters() {
-		ArrayList<MatchVoter> voters = new ArrayList<MatchVoter>();
-		voters.add(new DocumentationMatcher());
+	public static ArrayList<Matcher> getDefaultMatchers() {
+		ArrayList<Matcher> matchers = new ArrayList<Matcher>();
+		matchers.add(new DocumentationMatcher());
 		// voters.add(new ThesaurusMatcher());
-		voters.add(new EditDistanceMatcher());
-		voters.add(new ExactStructureMatcher());
-		return voters;
+		matchers.add(new EditDistanceMatcher());
+		matchers.add(new ExactMatcher());
+		return matchers;
 	}
 
 	/**
@@ -114,7 +114,7 @@ public class MappingProcessor {
 	 * 
 	 * @return number of pairwise matches
 	 */
-	static public int run(Project project, ArrayList<MatchVoter> voters) throws Exception {
+	static public int run(Project project, ArrayList<Matcher> matchers) throws Exception {
 		int numMatches = 0;
 		// Generate a hash of project schemas
 		HashMap<Integer, ProjectSchema> schemas = new HashMap<Integer, ProjectSchema>();
@@ -139,7 +139,7 @@ public class MappingProcessor {
 		// Run the mapping processor on un-run mappings
 		Informant.stage("Running Harmony Matches");
 		Informant.progress(0);
-		MappingProcessor mappingProcessor = new MappingProcessor(project, permuter, voters);
+		MappingProcessor mappingProcessor = new MappingProcessor(project, permuter, matchers);
 		int current = 0, total = mappingProcessor.size();
 
 		while (mappingProcessor.hasMoreMappings()) {

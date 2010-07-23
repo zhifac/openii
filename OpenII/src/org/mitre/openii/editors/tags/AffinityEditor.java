@@ -30,14 +30,13 @@ import org.mitre.affinity.view.venn_diagram.model.CachedFilteredSchemaInfo;
 import org.mitre.affinity.view.venn_diagram.model.HarmonyMatchScoreComputer;
 import org.mitre.affinity.view.venn_diagram.model.IMatchScoreComputer;
 import org.mitre.affinity.view.venn_diagram.model.VennDiagramSetsMatrix;
+import org.mitre.harmony.matchers.matchers.DocumentationMatcher;
+import org.mitre.harmony.matchers.matchers.EditDistanceMatcher;
+import org.mitre.harmony.matchers.matchers.ExactMatcher;
+import org.mitre.harmony.matchers.matchers.Matcher;
 import org.mitre.harmony.matchers.mergers.VoteMerger;
-import org.mitre.harmony.matchers.voters.DocumentationMatcher;
-import org.mitre.harmony.matchers.voters.EditDistanceMatcher;
-import org.mitre.harmony.matchers.voters.ExactStructureMatcher;
-import org.mitre.harmony.matchers.voters.MatchVoter;
 import org.mitre.openii.dialogs.tags.EditTagDialog;
 import org.mitre.openii.editors.OpenIIEditor;
-import org.mitre.openii.model.EditorInput;
 import org.mitre.openii.model.EditorManager;
 import org.mitre.openii.model.OpenIIManager;
 import org.mitre.openii.model.RepositoryManager;
@@ -71,11 +70,11 @@ public class AffinityEditor extends OpenIIEditor implements SelectionClickedList
 	public static IMatchScoreComputer matchScoreComputer; 
 	static
 	{
-		ArrayList<MatchVoter> voters = new ArrayList<MatchVoter>();
-		voters.add(new EditDistanceMatcher());
-		voters.add(new DocumentationMatcher());
-		voters.add(new ExactStructureMatcher());		
-		matchScoreComputer = new HarmonyMatchScoreComputer(voters, new VoteMerger());
+		ArrayList<Matcher> matchers = new ArrayList<Matcher>();
+		matchers.add(new EditDistanceMatcher());
+		matchers.add(new DocumentationMatcher());
+		matchers.add(new ExactMatcher());		
+		matchScoreComputer = new HarmonyMatchScoreComputer(matchers, new VoteMerger());
 	}
 
 	/** Defines the various types of events */
