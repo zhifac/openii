@@ -9,11 +9,11 @@ public class MatcherScore
 	/** Stores the total evidence */
 	private Double totalEvidence;
 	
-	/** Constructs the voter score */
+	/** Constructs the matcher score */
 	public MatcherScore(Double score)
 		{ this.positiveEvidence = score; this.totalEvidence = 1.0; }	
 	
-	/** Constructs the voter score */
+	/** Constructs the matcher score */
 	public MatcherScore(Double positiveEvidence, Double totalEvidence)
 		{ this.positiveEvidence = positiveEvidence; this.totalEvidence = totalEvidence; }
 	

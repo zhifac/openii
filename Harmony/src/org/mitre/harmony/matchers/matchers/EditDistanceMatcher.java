@@ -1,6 +1,6 @@
 // (c) The MITRE Corporation 2006
 // ALL RIGHTS RESERVED
-package org.mitre.harmony.matchers.voters;
+package org.mitre.harmony.matchers.matchers;
 
 import java.util.ArrayList;
 
@@ -9,7 +9,7 @@ import org.mitre.harmony.matchers.MatcherScores;
 import org.mitre.schemastore.model.SchemaElement;
 
 /** Edit Distance Matcher Class */
-public class EditDistanceMatcher extends MatchVoter
+public class EditDistanceMatcher extends Matcher
 {
 	// Scoring penalties
 	public static final double PREFIX_PENALTY = -0.5;
@@ -26,8 +26,8 @@ public class EditDistanceMatcher extends MatchVoter
 	// Scoring bonuses
 	public static final double MATCH_BONUS = 1;
 
-	/** Returns the name of the match voter */
-	public String getName() { return "Name Similarity"; }
+	/** Returns the name of the matcher */
+	public String getName() { return "Name Similarity Matcher"; }
 	
 	/** Generates scores for the specified elements */
 	public MatcherScores match()

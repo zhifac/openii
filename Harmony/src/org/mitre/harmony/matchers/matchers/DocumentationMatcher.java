@@ -1,6 +1,6 @@
 // (c) The MITRE Corporation 2006
 // ALL RIGHTS RESERVED
-package org.mitre.harmony.matchers.voters;
+package org.mitre.harmony.matchers.matchers;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -12,8 +12,8 @@ import java.util.HashMap;
 import org.mitre.harmony.matchers.MatcherOption;
 import org.mitre.harmony.matchers.MatcherScores;
 import org.mitre.harmony.matchers.MatcherOption.OptionType;
-import org.mitre.harmony.matchers.voters.bagMatcher.BagMatcher;
-import org.mitre.harmony.matchers.voters.bagMatcher.WordBag;
+import org.mitre.harmony.matchers.matchers.bagMatcher.BagMatcher;
+import org.mitre.harmony.matchers.matchers.bagMatcher.WordBag;
 import org.mitre.schemastore.model.SchemaElement;
 
 /** Word Matcher Class */
@@ -22,7 +22,7 @@ public class DocumentationMatcher extends BagMatcher
 	/** Stores the word bag used for this matcher */
 	private HashMap<Integer, WordBag> wordBags = new HashMap<Integer, WordBag>();
 	
-	/** Returns the name of the match voter */
+	/** Returns the name of the matcher */
 	public String getName()
 		{ return "Documentation Matcher"; }
 

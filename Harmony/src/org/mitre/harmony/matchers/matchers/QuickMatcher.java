@@ -1,6 +1,6 @@
 // (c) The MITRE Corporation 2006
 // ALL RIGHTS RESERVED
-package org.mitre.harmony.matchers.voters;
+package org.mitre.harmony.matchers.matchers;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,13 +9,13 @@ import java.util.HashSet;
 import org.mitre.harmony.matchers.ElementPair;
 import org.mitre.harmony.matchers.MatcherScore;
 import org.mitre.harmony.matchers.MatcherScores;
-import org.mitre.harmony.matchers.voters.bagMatcher.WordBag;
+import org.mitre.harmony.matchers.matchers.bagMatcher.WordBag;
 import org.mitre.schemastore.model.SchemaElement;
 
 /** Quick Documentation Matcher Class */
 public class QuickMatcher extends EntityMatcher
 {
-	/** Returns the name of the match voter */
+	/** Returns the name of the matcher */
 	public String getName()
 		{ return "Quick Matcher"; }
 	
@@ -92,14 +92,14 @@ public class QuickMatcher extends EntityMatcher
 	/** Returns a list of the best matches */
 	private HashSet<ElementPair> getBestMatches(MatcherScores scores)
 	{
-		// Scan through voter scores to identify best matches
+		// Scan through matcher scores to identify best matches
 		HashMap<Integer,Double> bestScores = new HashMap<Integer,Double>();
 		HashMap<Integer,ArrayList<ElementPair>> bestPairs = new HashMap<Integer,ArrayList<ElementPair>>();
 		for (ElementPair elementPair : scores.getElementPairs())
 		{
 			// Calculate rough match score (not as accurate as through merger)
-			MatcherScore voterScore = scores.getScore(elementPair);
-			Double score = voterScore.getPositiveEvidence()/voterScore.getTotalEvidence();
+			MatcherScore matcherScore = scores.getScore(elementPair);
+			Double score = matcherScore.getPositiveEvidence()/matcherScore.getTotalEvidence();
 			
 			// Determine if the element pair is best match
 			for (Integer elementID : new Integer[]{elementPair.getSourceElement(),elementPair.getTargetElement()})

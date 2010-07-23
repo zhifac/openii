@@ -25,7 +25,7 @@ public class ElementPair
 	public int hashCode()
 		{ return sourceElement*sourceElement + targetElement; }
 	
-	/** Indicates if two voter scores are equivalent */
+	/** Indicates if two element pairs are equivalent */
 	public boolean equals(Object object)
 	{
 		if(!(object instanceof ElementPair)) return false;

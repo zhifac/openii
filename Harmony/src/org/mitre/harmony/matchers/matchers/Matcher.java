@@ -1,6 +1,6 @@
 // (c) The MITRE Corporation 2006
 // ALL RIGHTS RESERVED
-package org.mitre.harmony.matchers.voters;
+package org.mitre.harmony.matchers.matchers;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -11,8 +11,8 @@ import org.mitre.harmony.matchers.MatcherScores;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.schemaInfo.FilteredSchemaInfo;
 
-/** MatchVoter Interface - A match voter scores source-target linkages based on a specific algorithm */	
-public abstract class MatchVoter
+/** Matcher Interface - A matcher scores source-target linkages based on a specific algorithm */	
+public abstract class Matcher
 {
 	// Constants for the major option names
 	protected static final String NAME = "UseName";
@@ -29,41 +29,41 @@ public abstract class MatchVoter
 	/** Stores the options specified for this matcher */
 	protected LinkedHashMap<String, MatcherOption> options = new LinkedHashMap<String,MatcherOption>();
 
-	/** Stores if this is a default voter */
+	/** Stores if this is a default matcher */
 	private boolean isDefault = false;
 
-	/** Stores if this is a hidden voter */
+	/** Stores if this is a hidden matcher */
 	private boolean isHidden = false;
 
 	// Stores the completed and total number of comparisons that need to be performed
 	protected int completedComparisons = 0, totalComparisons = 1;
 
-	/** Constructs the match voter */
-	public MatchVoter()
+	/** Constructs the matcher */
+	public Matcher()
 	{
 		for(MatcherOption option : getMatcherOptions())
 			options.put(option.getName(), option);
 	}
 	
-	/** Return the name of the match voter */
+	/** Return the name of the matcher */
 	abstract public String getName();
 
-	/** Returns the list of options associated with the match voter */
+	/** Returns the list of options associated with the matcher */
 	protected ArrayList<MatcherOption> getMatcherOptions() { return new ArrayList<MatcherOption>(); }
 	
-	// Match voter getters
+	// Matcher getters
 	final public boolean isDefault() { return isDefault; }
 	final public boolean isHidden() { return isHidden; }
 
-	// Match voter setters
+	// Matcher setters
 	final public void setDefault(boolean isDefault) { this.isDefault = isDefault; }
 	final public void setHidden(boolean isHidden) { this.isHidden = isHidden; }
 
-	/** Initializes the match voter */
+	/** Initializes the matcher */
 	final public void initialize(FilteredSchemaInfo schema1, FilteredSchemaInfo schema2)
 		{ this.schema1 = schema1; this.schema2 = schema2; this.types = null; }
 
-	/** Initializes the match voter */
+	/** Initializes the matcher */
 	final public void initialize(FilteredSchemaInfo schema1, FilteredSchemaInfo schema2, MatchTypeMappings types)
 		{ this.schema1 = schema1; this.schema2 = schema2; this.types = types; }
 

@@ -12,8 +12,8 @@ import javax.swing.border.EmptyBorder;
 
 import org.mitre.harmony.matchers.MatchTypeMappings;
 import org.mitre.harmony.matchers.MatcherManager;
+import org.mitre.harmony.matchers.matchers.Matcher;
 import org.mitre.harmony.matchers.mergers.MatchMerger;
-import org.mitre.harmony.matchers.voters.MatchVoter;
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.view.dialogs.matcher.MatchingStatusPanel;
 import org.mitre.harmony.view.dialogs.matcher.MatcherOptionsPane;
@@ -36,13 +36,13 @@ public class Wizard extends JDialog
     private Integer currentIndex = 0;
 
     /** Constructs the wizard */
-    public Wizard(ArrayList<MatchVoter> matchers, MatchMerger merger, boolean custom, HarmonyModel harmonyModel)
+    public Wizard(ArrayList<Matcher> matchers, MatchMerger merger, boolean custom, HarmonyModel harmonyModel)
     {
     	super(harmonyModel.getBaseFrame());
 
     	// Create the list of wizard panels
     	panels.add(new MatcherSelectionPane(this, matchers));
-    	for(MatchVoter matcher : MatcherManager.getVisibleMatchers())
+    	for(Matcher matcher : MatcherManager.getVisibleMatchers())
     		if(matcher.getOptions().size()>0)
     			panels.add(new MatcherOptionsPane(this, matcher));
     	panels.add(new MatchTypePane(this, harmonyModel));
@@ -93,7 +93,7 @@ public class Wizard extends JDialog
 		
 		// Otherwise, identify the next pane backward
 		int backIndex = currentIndex-1;
-		HashSet<MatchVoter> matchers = new HashSet<MatchVoter>(getSelectedMatchers());
+		HashSet<Matcher> matchers = new HashSet<Matcher>(getSelectedMatchers());
 		while(backIndex>=0)
 		{
 			WizardPanel panel = panels.get(backIndex);
@@ -109,7 +109,7 @@ public class Wizard extends JDialog
 	public Integer getNextIndex()
 	{
 		int nextIndex = currentIndex+1;
-		HashSet<MatchVoter> matchers = new HashSet<MatchVoter>(getSelectedMatchers());
+		HashSet<Matcher> matchers = new HashSet<Matcher>(getSelectedMatchers());
 		while(nextIndex<panels.size())
 		{
 			WizardPanel panel = panels.get(nextIndex);
@@ -148,12 +148,12 @@ public class Wizard extends JDialog
     }
 
     /** Returns the selected matchers */
-    public ArrayList<MatchVoter> getSelectedMatchers()
+    public ArrayList<Matcher> getSelectedMatchers()
     {
     	for(WizardPanel panel : panels)
     		if(panel instanceof MatcherSelectionPane)
     			return ((MatcherSelectionPane)panel).getSelectedMatchers();
-    	return new ArrayList<MatchVoter>();
+    	return new ArrayList<Matcher>();
     }
 
     /** Returns the selected match types */

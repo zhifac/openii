@@ -1,6 +1,6 @@
 // (c) The MITRE Corporation 2006
 // ALL RIGHTS RESERVED
-package org.mitre.harmony.matchers.voters;
+package org.mitre.harmony.matchers.matchers;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -12,8 +12,8 @@ import java.util.StringTokenizer;
 
 import org.mitre.harmony.matchers.MatcherScore;
 import org.mitre.harmony.matchers.MatcherScores;
-import org.mitre.harmony.matchers.voters.bagMatcher.BagMatcher;
-import org.mitre.harmony.matchers.voters.bagMatcher.WordBag;
+import org.mitre.harmony.matchers.matchers.bagMatcher.BagMatcher;
+import org.mitre.harmony.matchers.matchers.bagMatcher.WordBag;
 import org.mitre.schemastore.model.SchemaElement;
 
 /**
@@ -24,9 +24,9 @@ import org.mitre.schemastore.model.SchemaElement;
  */
 public class WordNetMatcher extends BagMatcher
 {
-	/** Returns the name of the match voter */
+	/** Returns the name of the matcher */
 	public String getName()
-		{ return "WordNet Thesaurus"; }
+		{ return "WordNet Matcher"; }
 	
 	/** Generates scores for the specified elements */ @Override
 	public MatcherScores generateScores()
@@ -51,7 +51,7 @@ public class WordNetMatcher extends BagMatcher
 				if(isAllowableMatch(sourceElement, targetElement))
 					if(scores.getScore(sourceElement.getId(), targetElement.getId()) == null)
 					{
-						MatcherScore score = findVoterScore(sourceElement,targetElement,thesaurus);
+						MatcherScore score = findMatcherScore(sourceElement,targetElement,thesaurus);
 						if(score != null)
 							scores.setScore(sourceElement.getId(), targetElement.getId(), score);
 					}
@@ -86,7 +86,7 @@ public class WordNetMatcher extends BagMatcher
 	}
 	
 	/** Evaluate the score between the source and target element using the wordnet thesaurus */
-	private MatcherScore findVoterScore(SchemaElement source, SchemaElement target, HashMap<String,HashSet<Integer>> thesaurus)
+	private MatcherScore findMatcherScore(SchemaElement source, SchemaElement target, HashMap<String,HashSet<Integer>> thesaurus)
 	{
 		int matches = 0;
 
@@ -131,7 +131,7 @@ public class WordNetMatcher extends BagMatcher
 			}
 		}
 		
-		// Return the voter score
+		// Return the matcher score
 		if (matches > 0)
 			return new MatcherScore(1.0*matches, 1.0*sourceWords.size());
 		return null;

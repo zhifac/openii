@@ -6,7 +6,7 @@
  * </p>
  */
 
-package org.mitre.harmony.matchers.voters.bagMatcher;
+package org.mitre.harmony.matchers.matchers.bagMatcher;
 
 import java.util.ArrayList;
 import java.util.Arrays;

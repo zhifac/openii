@@ -13,24 +13,24 @@ import javax.swing.JScrollPane;
 import javax.swing.border.EmptyBorder;
 
 import org.mitre.harmony.matchers.MatcherManager;
-import org.mitre.harmony.matchers.voters.MatchVoter;
+import org.mitre.harmony.matchers.matchers.Matcher;
 import org.mitre.harmony.view.dialogs.matcher.wizard.Wizard;
 import org.mitre.harmony.view.dialogs.matcher.wizard.WizardPanel;
 
-/** Constructs the match voter pane for the matcher wizard */
+/** Constructs the matcher pane for the matcher wizard */
 public class MatcherSelectionPane extends WizardPanel
 {
-	/** Class for storing match voter check box items */
+	/** Class for storing matcher check box items */
 	private class MatchersCheckBox extends JCheckBox 
 	{
-		/** Stores the voter associated with this check box */
-		private MatchVoter voter;
+		/** Stores the matcher associated with this check box */
+		private Matcher matcher;
 
-		/** initializes the match voter check box */
-		private MatchersCheckBox(MatchVoter voter)
+		/** initializes the match matcher check box */
+		private MatchersCheckBox(Matcher matcher)
 		{
-			this.voter = voter;
-			setText(voter.getName());
+			this.matcher = matcher;
+			setText(matcher.getName());
 			setBackground(Color.white);
 			setFocusable(false);
 		}
@@ -42,18 +42,18 @@ public class MatcherSelectionPane extends WizardPanel
 	/** Check box indicating if advanced mode should be run */
 	private JCheckBox advancedCheckbox = null;
 
-	/** Constructs the match voter pane */
-    public MatcherSelectionPane(Wizard wizard, ArrayList<MatchVoter> matchers)
+	/** Constructs the matcher pane */
+    public MatcherSelectionPane(Wizard wizard, ArrayList<Matcher> matchers)
     {
     	super(wizard);
 
-    	// Create pane for storing all match voters
+    	// Create pane for storing all matchers
 		checkboxPane = new JPanel();
 		checkboxPane.setBackground(Color.white);
 		checkboxPane.setLayout(new BoxLayout(checkboxPane,BoxLayout.Y_AXIS));
 
 		// Populate the matchers into the check list
-		for (MatchVoter matcher : MatcherManager.getVisibleMatchers())
+		for (Matcher matcher : MatcherManager.getVisibleMatchers())
 		{
 			MatchersCheckBox checkbox = new MatchersCheckBox(matcher);
 			checkbox.setSelected(matchers.contains(matcher));
@@ -65,21 +65,21 @@ public class MatcherSelectionPane extends WizardPanel
     	advancedCheckbox.setFocusable(false);
     	advancedCheckbox.setBorder(new EmptyBorder(8,0,0,0));
 		
-		// Place list of match voters in center of pane
+		// Place list of matchers in center of pane
 		setBorder(new EmptyBorder(20,20,20,20));
 		setLayout(new BorderLayout());
-		add(new JLabel("Please select which match voters to use:"),BorderLayout.NORTH);
+		add(new JLabel("Please select which matchers to use:"),BorderLayout.NORTH);
 		add(new JScrollPane(checkboxPane, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED), BorderLayout.CENTER);
 		add(advancedCheckbox, BorderLayout.SOUTH);
     }
 
-	/** Returns the list of match voters */
-	public ArrayList<MatchVoter> getSelectedMatchers()
+	/** Returns the list of matchers */
+	public ArrayList<Matcher> getSelectedMatchers()
 	{
-		ArrayList<MatchVoter> selectedMatchers = new ArrayList<MatchVoter>();
+		ArrayList<Matcher> selectedMatchers = new ArrayList<Matcher>();
 		for(Component checkbox : checkboxPane.getComponents())
 			if(((MatchersCheckBox)checkbox).isSelected())
-				selectedMatchers.add(((MatchersCheckBox)checkbox).voter);
+				selectedMatchers.add(((MatchersCheckBox)checkbox).matcher);
 		return selectedMatchers;
 	}
 

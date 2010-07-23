@@ -1,6 +1,6 @@
 // (c) The MITRE Corporation 2006
 // ALL RIGHTS RESERVED
-package org.mitre.harmony.matchers.voters;
+package org.mitre.harmony.matchers.matchers;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,9 +14,9 @@ import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
 
 /** Exact Matcher Class */
-public class ExactMatcher extends MatchVoter
+public class ExactMatcher extends Matcher
 {	
-	/** Returns the name of the match voter */
+	/** Returns the name of the matcher */
 	public String getName()
 		{ return "Exact Matcher"; }
 
