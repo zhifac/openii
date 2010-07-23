@@ -6,7 +6,7 @@
  * </p>
  */
 
-package org.mitre.harmony.matchers.voters;
+package org.mitre.harmony.matchers.voters.bagMatcher;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,12 +16,14 @@ import java.util.Hashtable;
 import org.mitre.schemastore.model.SchemaElement;
 
 /** Class for storing a word bag */
-public class WordBag {
+public class WordBag
+{
 	/** Stores a list of all stop words */
 	private static HashSet<String> stopwords = null;
 	
 	/** Initializes the list of stop words */
-	static {
+	static
+	{
 		String[] stopwordArray =
 			{"a", "i", "the", "of", "and", "that", "for", "by",
 			 "as", "be", "or", "this", "then", "we",
@@ -63,54 +65,41 @@ public class WordBag {
 	}
 
 	/** Stores a list of all processed words */
-	public Hashtable<String, Integer> wordMap = new Hashtable<String, Integer>();	
+	private Hashtable<String, Integer> wordMap = new Hashtable<String, Integer>();	
 	
 	/** Splits text into a list of words by camelCase and non-alphanumeric symbols */
-	private ArrayList<String> tokenize(String text) {
+	private ArrayList<String> tokenize(String text)
+	{
 		text = text.replaceAll("([a-z0-9])(A-Z)","$1 $2");
-		for (int j = 0; j < (text.length() - 1); j++) {
-			if (Character.isLowerCase(text.charAt(j)) && Character.isUpperCase(text.charAt(j+1))) {
+		for(int j = 0; j < (text.length() - 1); j++)
+			if(Character.isLowerCase(text.charAt(j)) && Character.isUpperCase(text.charAt(j+1)))
 				text = text.substring(0, j+1)+" "+text.substring(j+1);
-			}
-		}
 		return new ArrayList<String>(Arrays.asList(text.split("[^a-zA-Z0-9]+")));
 	}
 	
-	/** Construct the word bag for the given schema element */
-	public WordBag(SchemaElement element) {
-		addElement(element);
-	}
-
-	/** Construct the word bag for the given schema element with parameters set for the usage of names and documentation */
-	public WordBag(SchemaElement element, boolean useName, boolean useDescription) {
-		addElement(element, useName, useDescription);
-	}
-	
 	/** Adds schema elements to the word bag */
-	public void addElement(SchemaElement element) {
-		addElement(element, true, true);
-	}
-	
-	/** Adds schema elements to the word bag */
-	public void addElement(SchemaElement element, boolean useName, boolean useDescription) {
+	void addElement(SchemaElement element, boolean useName, boolean useDescription)
+	{
 		String text = "";
-		if (useName)        { text += (element.getName() == null) ? "" : element.getName() + " "; }
-		if (useDescription) { text += (element.getDescription() == null) ? "" : element.getDescription(); }
+		if(useName) text += (element.getName() == null) ? "" : element.getName() + " ";
+		if(useDescription) text += (element.getDescription() == null) ? "" : element.getDescription();
 		addWords(tokenize(text.trim()));
 	}
 
 	/** Add words to the word bag */
-	public void addWords(ArrayList<String> words) {
+	public void addWords(ArrayList<String> words)
+	{
 		// Don't proceed if no words were provided
-		if (words == null) { return; }
+		if(words == null) { return; }
 		
 		// Cycle through all words
-		for (String word : words) {
+		for(String word : words)
+		{
 			// Make word lower case
 			word = word.toLowerCase();
 
-			// Don't proceed if stopword
-			if (stopwords.contains(word)) { continue; }
+			// Don't proceed if stop word
+			if(stopwords.contains(word)) continue;
 
 			// Stem the word
 			Stemmer s = new Stemmer();
@@ -120,35 +109,35 @@ public class WordBag {
 
 			// Add word to word map
 			Integer count = wordMap.get(word);
-			if (count == null) { count = 0; }
+			if(count == null) count = 0;
 			wordMap.put(word, count+1);
 		}
 	}	
 
 	/** Removes a word from the word bag */
-	public void removeWord(String word) {
-		wordMap.remove(word);
-	}
+	public void removeWord(String word)
+		{ wordMap.remove(word); }
 
 	/** Returns the list of unique words found in the word bag */
-	public ArrayList<String> getDistinctWords() {
-		return new ArrayList<String>(wordMap.keySet());
-	}
+	public ArrayList<String> getDistinctWords()
+		{ return new ArrayList<String>(wordMap.keySet()); }
 
 	/** Returns the list of words found in the word bag */
-	public ArrayList<String> getWords() {
+	public ArrayList<String> getWords()
+	{
 		ArrayList<String> words = new ArrayList<String>();
-		for (String word : wordMap.keySet()) {
+		for(String word : wordMap.keySet())
+		{
 			Integer count = wordMap.get(word);
-			for (int i = 0; i < count; i++) {
+			for(int i = 0; i < count; i++)
 				words.add(word);
-			}
 		}
 		return words;
 	}
 	
 	/** Returns a weight indicating the uniqueness of the specified word */
-	public Integer getWordCount(String word) {
+	public Integer getWordCount(String word)
+	{
 		Integer wordCount = wordMap.get(word);
 		return (wordCount == null) ? 0 : wordCount;
 	}

@@ -2,43 +2,101 @@
 // ALL RIGHTS RESERVED
 package org.mitre.harmony.matchers.voters;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
+import org.mitre.harmony.matchers.MatcherOption;
 import org.mitre.harmony.matchers.MatcherScores;
+import org.mitre.harmony.matchers.MatcherOption.OptionType;
+import org.mitre.harmony.matchers.voters.bagMatcher.BagMatcher;
+import org.mitre.harmony.matchers.voters.bagMatcher.WordBag;
 import org.mitre.schemastore.model.SchemaElement;
 
-/** Documentation Matcher Class */
+/** Word Matcher Class */
 public class DocumentationMatcher extends BagMatcher
 {
+	/** Stores the word bag used for this matcher */
+	private HashMap<Integer, WordBag> wordBags = new HashMap<Integer, WordBag>();
+	
 	/** Returns the name of the match voter */
 	public String getName()
-		{ return "Documentation Similarity"; }
-	
-	/** Generates the word bags for the schema elements */
-	protected MatcherScores generateVoteScores()
+		{ return "Documentation Matcher"; }
+
+	/** Returns the list of options associated with the word matcher */
+	public ArrayList<MatcherOption> getMatcherOptions()
 	{
-		HashMap<Integer, WordBag> wordBags = new HashMap<Integer, WordBag>();
-
-		// Determine if the name and description should be included
-		boolean useName = options.get("UseName").isSelected();
-		boolean useDescription = options.get("UseDescription").isSelected();
-
+		ArrayList<MatcherOption> options = super.getMatcherOptions();
+		options.add(new MatcherOption(OptionType.CHECKBOX,THESAURUS,"false"));
+		return options;
+	}
+	
+	/** Generates match scores for the specified elements */ @Override
+	public MatcherScores generateScores()
+	{
 		// Create word bags for the source elements
 		ArrayList<SchemaElement> sourceElements = schema1.getFilteredElements();
 		for(SchemaElement sourceElement : sourceElements)
-			wordBags.put(sourceElement.getId(), new WordBag(sourceElement, useName, useDescription));
+			wordBags.put(sourceElement.getId(), generateWordBag(sourceElement));
 		
 		// Create word bags for the target elements
 		ArrayList<SchemaElement> targetElements = schema2.getFilteredElements();
 		for(SchemaElement targetElement : targetElements)
-			wordBags.put(targetElement.getId(), new WordBag(targetElement, useName, useDescription));
+			wordBags.put(targetElement.getId(), generateWordBag(targetElement));
+
+		// Add thesaurus words if requested
+		if(options.get(THESAURUS).isSelected())
+		{
+			// Get the thesaurus and acronym dictionaries
+			URL thesaurusFile = getClass().getResource("dictionary.txt");
+			HashMap<String, ArrayList<String>> thesaurus = getDictionary(thesaurusFile);
+			URL acronymFile = getClass().getResource("acronyms.txt");
+			HashMap<String, ArrayList<String>> acronyms = getDictionary(acronymFile);
 		
-		// Generate the voter scores
+			// Add synonyms to the word bags
+			addSynonyms(sourceElements, acronyms, true); 
+			addSynonyms(targetElements, acronyms, true); 
+			addSynonyms(sourceElements, thesaurus, false);
+		}
+		
+		// Generate the match scores
 		return computeScores(sourceElements, targetElements, wordBags);
 	}
 	
-	/** Generates scores for the specified elements */
-	public MatcherScores match()
-		{ return generateVoteScores(); }
+	/** Get the specified dictionary from file */
+	private HashMap<String, ArrayList<String>> getDictionary(URL dictionaryFile)
+	{
+		HashMap<String, ArrayList<String>> dictionary = new HashMap<String, ArrayList<String>>();
+		try {
+			BufferedReader br = new BufferedReader(new InputStreamReader(dictionaryFile.openStream()));
+			String line;
+			while((line = br.readLine()) != null)
+			{
+				String word = line.replaceAll(":.*","");
+				String synonyms[] = line.replaceAll("^[^:]+:","").split(": ");
+				dictionary.put(word, new ArrayList<String>(Arrays.asList(synonyms)));
+	        } 
+		}
+		catch (java.io.IOException e) { System.out.println("(E) ThesaurusMatcher.getDictionary - " + e); }
+		return dictionary;
+	}
+
+	/** Adds synonyms to the list of elements */
+	private void addSynonyms(ArrayList<SchemaElement> elements, HashMap<String, ArrayList<String>> dictionary, boolean isAbbreviation)
+	{	
+		// Cycle through all elements
+		for(SchemaElement element : elements)
+		{
+			WordBag wordBag = wordBags.get(element.getId());
+			for(String word : wordBag.getWords())
+				if(dictionary.containsKey(word))
+				{
+					wordBag.addWords(dictionary.get(word));
+					if(isAbbreviation) wordBag.removeWord(word);
+				}
+		}
+	}
 }

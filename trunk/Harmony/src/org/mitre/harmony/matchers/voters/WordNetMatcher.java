@@ -12,6 +12,8 @@ import java.util.StringTokenizer;
 
 import org.mitre.harmony.matchers.MatcherScore;
 import org.mitre.harmony.matchers.MatcherScores;
+import org.mitre.harmony.matchers.voters.bagMatcher.BagMatcher;
+import org.mitre.harmony.matchers.voters.bagMatcher.WordBag;
 import org.mitre.schemastore.model.SchemaElement;
 
 /**
@@ -26,8 +28,8 @@ public class WordNetMatcher extends BagMatcher
 	public String getName()
 		{ return "WordNet Thesaurus"; }
 	
-	/** Generates scores for the specified elements */
-	public MatcherScores match()
+	/** Generates scores for the specified elements */ @Override
+	public MatcherScores generateScores()
 	{
 		// Create word bags for the source and target elements
 		ArrayList<SchemaElement> sourceElements = schema1.getFilteredElements();
@@ -88,13 +90,9 @@ public class WordNetMatcher extends BagMatcher
 	{
 		int matches = 0;
 
-		// see if we are going to use the name of the schema element or the description provided with the schema element
-		boolean useName = options.get("UseName").isSelected();
-		boolean useDescription = options.get("UseDescription").isSelected();
-
 		// Compile sets of words contained in both source and target elements
-		WordBag sourceWordBag = new WordBag(source, useName, useDescription);
-		WordBag targetWordBag = new WordBag(target, useName, useDescription);
+		WordBag sourceWordBag = generateWordBag(source);
+		WordBag targetWordBag = generateWordBag(target);
 
 		// Get text in both.
 		ArrayList<String> sourceWords = sourceWordBag.getWords();

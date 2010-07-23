@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.mitre.harmony.matchers.MatcherScores;
+import org.mitre.harmony.matchers.voters.bagMatcher.BagMatcher;
+import org.mitre.harmony.matchers.voters.bagMatcher.WordBag;
 import org.mitre.schemastore.model.Containment;
 import org.mitre.schemastore.model.Entity;
 import org.mitre.schemastore.model.SchemaElement;
@@ -20,10 +22,10 @@ public class EntityMatcher extends BagMatcher
 	
 	/** Returns the name of the match voter */
 	public String getName()
-		{ return "Entity Only"; }
+		{ return "Entity Matcher"; }
 	
-	/** Generates scores for the specified elements */
-	public MatcherScores match()
+	/** Generates scores for the specified elements */ @Override
+	public MatcherScores generateScores()
 	{
 		EntityMap sourceEntities = getEntities(schema1);
 		EntityMap targetEntities = getEntities(schema2);		
@@ -37,8 +39,13 @@ public class EntityMatcher extends BagMatcher
 		HashMap<Integer,WordBag> wordBags = new HashMap<Integer,WordBag>();
 		for(EntityMap entities : new EntityMap[]{sourceEntities,targetEntities})
 			for(SchemaElement entity : entities.keySet())
-				wordBags.put(entity.getId(), generateWordBag(entity,entities.get(entity)));
-		
+			{
+				WordBag wordBag = generateWordBag(entity);
+				for(SchemaElement element : entities.get(entity))
+					addElementToWordBag(wordBag, element);
+				wordBags.put(entity.getId(), wordBag);
+			}
+				
 		// Generate the scores
 		return computeScores(new ArrayList<SchemaElement>(sourceEntities.keySet()), new ArrayList<SchemaElement>(targetEntities.keySet()), wordBags);
 	}
@@ -67,19 +74,5 @@ public class EntityMatcher extends BagMatcher
 			if(visible) entityMap.put(entity,elements);
 		}
 		return entityMap;
-	}
-	
-	/** Generates a word bag for the given entity */
-	private WordBag generateWordBag(SchemaElement entity, ArrayList<SchemaElement> elements)
-	{
-		// Determine if the name and description should be used
-		boolean useName = options.get("UseName").isSelected();
-		boolean useDescription = options.get("UseDescription").isSelected();
-
-		// Generate the word bag
-		WordBag wordBag = new WordBag(entity, useName, useDescription);
-		for(SchemaElement element : elements)
-			wordBag.addElement(element, useName, useDescription);
-		return wordBag;
 	}
 }

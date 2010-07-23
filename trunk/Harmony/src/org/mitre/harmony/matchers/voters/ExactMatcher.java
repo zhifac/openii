@@ -15,12 +15,7 @@ import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
 
 /** Exact Matcher Class */
 public class ExactMatcher extends MatchVoter
-{
-	// Constants for the option names
-	private static final String NAME = "UseName";
-	private static final String DESCRIPTION = "UseDescription";
-	private static final String HIERARCHY = "UseHierarchy";
-	
+{	
 	/** Returns the name of the match voter */
 	public String getName()
 		{ return "Exact Matcher"; }
@@ -124,6 +119,7 @@ public class ExactMatcher extends MatchVoter
 		// Don't proceed if neither "name" nor "description" option selected
 		if(!options.get(NAME).isSelected() && !options.get(DESCRIPTION).isSelected())
 			return new MatcherScores(100.0);
+
 		// Generate the matches
 		if(options.get(HIERARCHY).isSelected())
 			return getExactHierarchicalMatches();

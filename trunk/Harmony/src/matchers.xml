@@ -1,11 +1,10 @@
 <harmony>
   	<matchers>
 	    <matcher default="true" id="org.mitre.harmony.matchers.voters.EditDistanceMatcher"/>
-	    <matcher default="true" id="org.mitre.harmony.matchers.voters.ExactMatcher"/>
 	    <matcher default="true" id="org.mitre.harmony.matchers.voters.DocumentationMatcher"/>
-	    <matcher default="true" id="org.mitre.harmony.matchers.voters.ThesaurusMatcher"/>
+	    <matcher default="true" id="org.mitre.harmony.matchers.voters.ExactMatcher"/>
+	    <matcher id="org.mitre.harmony.matchers.voters.QuickMatcher"/>
 	    <matcher id="org.mitre.harmony.matchers.voters.WordNetMatcher"/>
-	    <matcher id="org.mitre.harmony.matchers.voters.QuickDocumentationMatcher"/>
 	    <matcher hidden="true" id="org.mitre.harmony.matchers.voters.EntityMatcher"/>
   	</matchers>
   	<mergers>

@@ -1,6 +1,6 @@
 // (c) The MITRE Corporation 2006
 // ALL RIGHTS RESERVED
-package org.mitre.harmony.matchers.voters;
+package org.mitre.harmony.matchers.voters.bagMatcher;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,6 +10,7 @@ import org.mitre.harmony.matchers.MatcherOption;
 import org.mitre.harmony.matchers.MatcherScore;
 import org.mitre.harmony.matchers.MatcherScores;
 import org.mitre.harmony.matchers.MatcherOption.OptionType;
+import org.mitre.harmony.matchers.voters.MatchVoter;
 import org.mitre.schemastore.model.SchemaElement;
 
 /** Bag Matcher Class */
@@ -22,9 +23,39 @@ abstract public class BagMatcher extends MatchVoter
 	public ArrayList<MatcherOption> getMatcherOptions()
 	{
 		ArrayList<MatcherOption> options = new ArrayList<MatcherOption>();
-		options.add(new MatcherOption(OptionType.CHECKBOX,"UseName","true"));
-		options.add(new MatcherOption(OptionType.CHECKBOX,"UseDescription","true"));
+		options.add(new MatcherOption(OptionType.CHECKBOX,NAME,"true"));
+		options.add(new MatcherOption(OptionType.CHECKBOX,DESCRIPTION,"true"));
 		return options;
+	}
+	
+	/** Generates the scores for the specified elements */
+	abstract public MatcherScores generateScores();
+	
+	/** Generates scores for the specified elements */ @Override
+	final public MatcherScores match()
+	{
+		// Don't proceed if neither "name" nor "description" option selected
+		if(!options.get(NAME).isSelected() && !options.get(DESCRIPTION).isSelected())
+			return new MatcherScores(100.0);
+
+		// Generate the match scoresx
+		return generateScores();
+	}
+	
+	/** Generate a word bag for the specified element */
+	public WordBag generateWordBag(SchemaElement element)
+	{
+		WordBag wordBag = new WordBag();
+		addElementToWordBag(wordBag, element);
+		return wordBag;
+	}
+	
+	/** Adds an element to the word bag */
+	public void addElementToWordBag(WordBag wordBag, SchemaElement element)
+	{
+		boolean useName = options.get(NAME).isSelected();
+		boolean useDescription = options.get(DESCRIPTION).isSelected();
+		wordBag.addElement(element, useName, useDescription);
 	}
 	
 	/** Generates the word weights */
