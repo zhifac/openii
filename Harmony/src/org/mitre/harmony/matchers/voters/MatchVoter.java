@@ -3,7 +3,7 @@
 package org.mitre.harmony.matchers.voters;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 import org.mitre.harmony.matchers.MatchTypeMappings;
 import org.mitre.harmony.matchers.MatcherOption;
@@ -21,7 +21,7 @@ public abstract class MatchVoter
 	private MatchTypeMappings types;
 
 	/** Stores the options specified for this matcher */
-	protected HashMap<String, MatcherOption> options = new HashMap<String,MatcherOption>();
+	protected LinkedHashMap<String, MatcherOption> options = new LinkedHashMap<String,MatcherOption>();
 
 	/** Stores if this is a default voter */
 	private boolean isDefault = false;
