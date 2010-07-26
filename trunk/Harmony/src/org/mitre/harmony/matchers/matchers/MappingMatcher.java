@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
-import org.mitre.harmony.matchers.MatcherManager;
 import org.mitre.harmony.matchers.MatcherScores;
 import org.mitre.harmony.matchers.matchers.bagMatcher.BagMatcher;
 import org.mitre.harmony.matchers.matchers.bagMatcher.WordBag;
@@ -30,9 +29,9 @@ public class MappingMatcher extends BagMatcher
 	public MatcherScores generateScores()
 	{
 		// Only proceed if the client is set (otherwise, the mappings can't be accessed)
-		if(MatcherManager.getClient()==null) return new MatcherScores(SCORE_CEILING);
+		if(client==null) return new MatcherScores(SCORE_CEILING);
 		
-		// Create word bags for the source elementsx
+		// Create word bags for the source elements
 		ArrayList<SchemaElement> sourceElements = schema1.getFilteredElements();
 		for(SchemaElement sourceElement : sourceElements)
 			wordBags.put(sourceElement.getId(), generateWordBag(sourceElement));
@@ -65,8 +64,8 @@ public class MappingMatcher extends BagMatcher
 	{
 		ArrayList<Mapping> mappings = new ArrayList<Mapping>();
 		try {
-			for(Project project : MatcherManager.getClient().getProjects())
-				for(Mapping mapping : MatcherManager.getClient().getMappings(project.getId()))
+			for(Project project : client.getProjects())
+				for(Mapping mapping : client.getMappings(project.getId()))
 					if(mapping.getSourceId().equals(schemaID) || mapping.getTargetId().equals(schemaID))
 						mappings.add(mapping);
 		} catch(Exception e) {}
@@ -79,10 +78,10 @@ public class MappingMatcher extends BagMatcher
 		try {
 			// Identify the associated schema
 			boolean isSource = !mapping.getSourceId().equals(schema1) && !mapping.getSourceId().equals(schema2);
-			SchemaInfo schema = MatcherManager.getClient().getSchemaInfo(isSource ? mapping.getSourceId() : mapping.getTargetId());
+			SchemaInfo schema = client.getSchemaInfo(isSource ? mapping.getSourceId() : mapping.getTargetId());
 
 			// Find associated elements
-			for(MappingCell mappingCell : MatcherManager.getClient().getMappingCells(mapping.getId()))
+			for(MappingCell mappingCell : client.getMappingCells(mapping.getId()))
 				if(mappingCell.isValidated())
 				{
 					// Get reference IDs
