@@ -9,8 +9,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.mitre.harmony.matchers.matchers.Matcher;
 import org.mitre.harmony.matchers.mergers.MatchMerger;
-import org.mitre.schemastore.client.SchemaStoreClient;
-import org.mitre.schemastore.model.schemaInfo.FilteredSchemaInfo;
 import org.mitre.schemastore.porters.PorterList;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -22,9 +20,6 @@ import org.w3c.dom.NodeList;
  */
 public class MatcherManager
 {
-	/** Stores the client associated with this manager */
-	static private SchemaStoreClient client;
-	
 	/** Stores a listing of all match */
 	static private ArrayList<Matcher> matchers = new ArrayList<Matcher>();
 
@@ -139,29 +134,5 @@ public class MatcherManager
 			if(matchers.get(i).getClass().getName().equals(id))
 				return matchers.get(i);
 		return null;
-	}
-
-	/** Sets the client for these matchers */
-	static public void setClient(SchemaStoreClient clientIn)
-		{ client = clientIn; }
-	
-	/** Returns the client set for these matchers */
-	static public SchemaStoreClient getClient()
-		{ return client; }
-	
-	/** Run the matchers to calculate match scores */
-	static public MatchScores getScores(FilteredSchemaInfo schemaInfo1, FilteredSchemaInfo schemaInfo2, ArrayList<Matcher> matchers, MatchMerger merger)
-		{ return getScores(schemaInfo1, schemaInfo2, matchers, merger, null); }
-	
-	/** Run the matchers to calculate match scores */
-	static public MatchScores getScores(FilteredSchemaInfo schema1, FilteredSchemaInfo schema2, ArrayList<Matcher> matchers, MatchMerger merger, MatchTypeMappings typeMappings)
-	{
-		merger.initialize(schema1, schema2, typeMappings);
-		for(Matcher matcher : matchers)
-		{
-			matcher.initialize(schema1, schema2, typeMappings);
-			merger.addMatcherScores(matcher.match());
-		}
-		return merger.getMatchScores();
 	}
 }
