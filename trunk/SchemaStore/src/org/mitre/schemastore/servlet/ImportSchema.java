@@ -5,7 +5,6 @@ package org.mitre.schemastore.servlet;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 
 import org.mitre.schemastore.data.DataManager;
@@ -14,11 +13,11 @@ import org.mitre.schemastore.model.Attribute;
 import org.mitre.schemastore.model.Containment;
 import org.mitre.schemastore.model.Domain;
 import org.mitre.schemastore.model.DomainValue;
-import org.mitre.schemastore.model.Entity;
 import org.mitre.schemastore.model.Relationship;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.Subtype;
+import org.mitre.schemastore.model.schemaInfo.SchemaInfo;
 
 /**
  * Handles the importation of a schema to the schema store web service
@@ -26,24 +25,6 @@ import org.mitre.schemastore.model.Subtype;
  */
 public class ImportSchema
 {
-	/** Private class for sorting schema elements before importing */
-	static private class SchemaElementComparator implements Comparator<SchemaElement>
-	{
-		public int compare(SchemaElement so1, SchemaElement so2)
-		{
-			if(so1.getClass().equals(so2.getClass())) return so1.getId().compareTo(so2.getId());
-			if(so1.getClass()==Entity.class) return -1; if(so2.getClass()==Entity.class) return 1;
-			if(so1.getClass()==Domain.class) return -1; if(so2.getClass()==Domain.class) return 1;
-			if(so1.getClass()==Attribute.class) return -1; if(so2.getClass()==Attribute.class) return 1;
-			if(so1.getClass()==DomainValue.class) return -1; if(so2.getClass()==DomainValue.class) return 1;
-			if(so1.getClass()==Relationship.class) return -1; if(so2.getClass()==Relationship.class) return 1;
-			if(so1.getClass()==Subtype.class) return -1; if(so2.getClass()==Subtype.class) return 1;
-			if(so1.getClass()==Containment.class) return -1; if(so2.getClass()==Containment.class) return 1;		
-			if(so1.getClass()==Alias.class) return -1; if(so2.getClass()==Alias.class) return 1;		
-			return 1;
-		}
-	}
-	
 	/** Generate element references */
 	static private HashMap<Integer,ArrayList<SchemaElement>> generateElementRefs(ArrayList<SchemaElement> elements)
 	{
@@ -171,7 +152,7 @@ public class ImportSchema
 			elements = tempElements;
 			
 			// Sort the schema elements to prevent dependency issues
-			Collections.sort(elements,new SchemaElementComparator());
+			Collections.sort(elements,new SchemaInfo.SchemaElementComparator());
 
 			// Assign universal IDs to all elements
 			Integer elementID = manager.getUniversalIDs(elements.size());

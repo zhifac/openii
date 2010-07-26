@@ -24,6 +24,24 @@ import org.mitre.schemastore.model.Subtype;
  */
 public class SchemaInfo implements Serializable
 {
+	/** Private class for sorting schema elements before importing */
+	static public class SchemaElementComparator implements Comparator<SchemaElement>
+	{
+		public int compare(SchemaElement so1, SchemaElement so2)
+		{
+			if(so1.getClass().equals(so2.getClass())) return so1.getId().compareTo(so2.getId());
+			if(so1.getClass()==Entity.class) return -1; if(so2.getClass()==Entity.class) return 1;
+			if(so1.getClass()==Domain.class) return -1; if(so2.getClass()==Domain.class) return 1;
+			if(so1.getClass()==Attribute.class) return -1; if(so2.getClass()==Attribute.class) return 1;
+			if(so1.getClass()==DomainValue.class) return -1; if(so2.getClass()==DomainValue.class) return 1;
+			if(so1.getClass()==Relationship.class) return -1; if(so2.getClass()==Relationship.class) return 1;
+			if(so1.getClass()==Containment.class) return -1; if(so2.getClass()==Containment.class) return 1;		
+			if(so1.getClass()==Subtype.class) return -1; if(so2.getClass()==Subtype.class) return 1;
+			if(so1.getClass()==Alias.class) return -1; if(so2.getClass()==Alias.class) return 1;		
+			return 1;
+		}
+	}
+	
 	/** Private class for caching element data */
 	private class ElementCache implements Serializable
 	{
@@ -320,25 +338,8 @@ public class SchemaInfo implements Serializable
 	/** Adds a list of elements to the schema */
 	public boolean addElements(ArrayList<SchemaElement> elements)
 	{
-		/** Class for defining the proper order for inserting elements */
-		class ElementComparator implements Comparator<SchemaElement>
-		{
-			public int compare(SchemaElement e1, SchemaElement e2)
-			{
-				if(e1.getClass().equals(e2.getClass())) return e1.getId().compareTo(e2.getId());
-				if(e1 instanceof Domain) return -1; if(e2 instanceof Domain) return 1;
-				if(e1 instanceof DomainValue) return -1; if(e2 instanceof DomainValue) return 1;
-				if(e1 instanceof Entity) return -1; if(e2 instanceof Entity) return 1;
-				if(e1 instanceof Attribute) return -1; if(e2 instanceof Attribute) return 1;
-				if(e1 instanceof Relationship) return -1; if(e2 instanceof Relationship) return 1;
-				if(!(e1 instanceof Alias)) return -1; if(!(e2 instanceof Alias)) return 1;
-				return 0;
-			}
-		}
-
-		// Populates the schema with elements
 		boolean success = true;
-		Collections.sort(elements, new ElementComparator());
+		Collections.sort(elements, new SchemaElementComparator());
 		for(SchemaElement element : elements)
 			success &= addElement(element);
 		return success;
