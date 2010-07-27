@@ -22,26 +22,32 @@ public class MatchGenerator
 		public void matcherRun(Matcher matcher);
 	}
 	
-	// Stores the schemas being matched
-	FilteredSchemaInfo schema1, schema2;
+	/** Stores the matchers */
+	private ArrayList<Matcher> matchers;
+	
+	/** Stores the merger */
+	private MatchMerger merger;
+	
+	/** Stores the mapping for the type of schema elements to be matched */
+	private MatchTypeMappings typeMappings;
 	
 	/** Stores the list of match generation listeners */
 	private ArrayList<MatchGeneratorListener> listeners = new ArrayList<MatchGeneratorListener>();
 	
 	/** Constructs the match generator */
-	public MatchGenerator(FilteredSchemaInfo schema1, FilteredSchemaInfo schema2)
-		{ this.schema1 = schema1; this.schema2 = schema2; }
+	public MatchGenerator(ArrayList<Matcher> matchers, MatchMerger merger)
+		{ this(matchers, merger, null); }
+	
+	/** Constructs the match generator */
+	public MatchGenerator(ArrayList<Matcher> matchers, MatchMerger merger, MatchTypeMappings typeMappings)
+		{ this.matchers = matchers; this.merger = merger; this.typeMappings = typeMappings; }
 	
 	/** Adds a listener to the match generator */
 	public void addListener(MatchGeneratorListener listener)
 		{ listeners.add(listener); }
 	
 	/** Run the matchers to calculate match scores */
-	public MatchScores getScores(ArrayList<Matcher> matchers, MatchMerger merger)
-		{ return getScores(matchers, merger, null); }
-	
-	/** Run the matchers to calculate match scores */
-	public MatchScores getScores(ArrayList<Matcher> matchers, MatchMerger merger, MatchTypeMappings typeMappings)
+	public MatchScores getScores(FilteredSchemaInfo schema1, FilteredSchemaInfo schema2)
 	{
 		merger.initialize(schema1, schema2, typeMappings);
 		for(Matcher matcher : matchers)
