@@ -27,9 +27,8 @@ import org.mitre.affinity.view.event.SelectionClickedEvent;
 import org.mitre.affinity.view.event.SelectionClickedListener;
 import org.mitre.affinity.view.venn_diagram.VennDiagramUtils;
 import org.mitre.affinity.view.venn_diagram.model.CachedFilteredSchemaInfo;
-import org.mitre.affinity.view.venn_diagram.model.HarmonyMatchScoreComputer;
-import org.mitre.affinity.view.venn_diagram.model.IMatchScoreComputer;
 import org.mitre.affinity.view.venn_diagram.model.VennDiagramSetsMatrix;
+import org.mitre.harmony.matchers.MatchGenerator;
 import org.mitre.harmony.matchers.matchers.DocumentationMatcher;
 import org.mitre.harmony.matchers.matchers.EditDistanceMatcher;
 import org.mitre.harmony.matchers.matchers.ExactMatcher;
@@ -67,14 +66,14 @@ public class AffinityEditor extends OpenIIEditor implements SelectionClickedList
 	private Collection<Integer> selectedSchemas;
 	
 	/** Used to compute match scores between two schemas */
-	public static IMatchScoreComputer matchScoreComputer; 
+	public static MatchGenerator matchGenerator; 
 	static
 	{
 		ArrayList<Matcher> matchers = new ArrayList<Matcher>();
 		matchers.add(new EditDistanceMatcher());
 		matchers.add(new DocumentationMatcher());
 		matchers.add(new ExactMatcher());		
-		matchScoreComputer = new HarmonyMatchScoreComputer(matchers, new VoteMerger());
+		matchGenerator = new MatchGenerator(matchers, new VoteMerger());
 	}
 
 	/** Defines the various types of events */
@@ -128,7 +127,7 @@ public class AffinityEditor extends OpenIIEditor implements SelectionClickedList
 				
 				// Launch Proximity
 				String referenceSchema = ((MenuItem)e.widget).getText();
-				VennDiagramSetsMatrix matrix = new VennDiagramSetsMatrix(referenceSchema, schemas, matchScoreComputer);		
+				VennDiagramSetsMatrix matrix = new VennDiagramSetsMatrix(referenceSchema, schemas, matchGenerator);		
 				EditorManager.launchEditor("ProximityView", matrix);			
 			}
 		}

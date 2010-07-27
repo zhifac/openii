@@ -19,6 +19,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
+import org.mitre.harmony.matchers.MatchGenerator;
 import org.mitre.harmony.matchers.MatchScore;
 import org.mitre.harmony.matchers.MatchScores;
 import org.mitre.harmony.matchers.MatcherManager;
@@ -27,7 +28,6 @@ import org.mitre.harmony.matchers.matchers.Matcher;
 import org.mitre.harmony.matchers.mergers.VoteMerger;
 import org.mitre.openii.editors.OpenIIEditor;
 import org.mitre.openii.model.OpenIIManager;
-import org.mitre.openii.model.RepositoryManager;
 import org.mitre.openii.widgets.BasicWidgets;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
@@ -152,8 +152,8 @@ public class QuickAlignEditor extends OpenIIEditor implements SelectionListener
 		
 		// Run matchers on the unassigned mapping cells
 		ArrayList<Matcher> matchers = MatcherManager.getDefaultMatchers();
-		matchers.add(new MappingMatcher(RepositoryManager.getClient()));
-		MatchScores matchScores = MatcherManager.getScores(sourceFilter, targetFilter, matchers, new VoteMerger());
+		matchers.add(new MappingMatcher());
+		MatchScores matchScores = new MatchGenerator(matchers, new VoteMerger()).getScores(sourceFilter, targetFilter);
 
 		// Generate list of potential matches for each source element
 		HashMap<Integer,ArrayList<MatchScore>> matches = new HashMap<Integer,ArrayList<MatchScore>>();
