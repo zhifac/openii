@@ -26,13 +26,16 @@ public class MappingMatcher extends BagMatcher
 	public String getName()
 		{ return "Mapping Matcher"; }
 
+	/** Indicates that the matcher needs a repository client */
+	public boolean needsClient() { return true; }
+	
 	/** Generates match scores for the specified elements */ @Override
 	public MatcherScores generateScores()
 	{
 		// Only proceed if the client is set (otherwise, the mappings can't be accessed)
 		if(MatcherManager.getClient()==null) return new MatcherScores(SCORE_CEILING);
 		
-		// Create word bags for the source elementsx
+		// Create word bags for the source elements
 		ArrayList<SchemaElement> sourceElements = schema1.getFilteredElements();
 		for(SchemaElement sourceElement : sourceElements)
 			wordBags.put(sourceElement.getId(), generateWordBag(sourceElement));

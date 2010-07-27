@@ -48,6 +48,9 @@ public abstract class Matcher
 	/** Return the name of the matcher */
 	abstract public String getName();
 
+	/** Indicates if the matcher needs a repository client */
+	public boolean needsClient() { return false; }
+	
 	/** Returns the list of options associated with the matcher */
 	protected ArrayList<MatcherOption> getMatcherOptions() { return new ArrayList<MatcherOption>(); }
 	

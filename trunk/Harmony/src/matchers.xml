@@ -6,7 +6,7 @@
 	    <matcher default="true" id="org.mitre.harmony.matchers.matchers.ExactMatcher"/>
 	    <matcher id="org.mitre.harmony.matchers.matchers.QuickMatcher"/>
 	    <matcher id="org.mitre.harmony.matchers.matchers.WordNetMatcher"/>
-	    <matcher hidden="true" id="org.mitre.harmony.matchers.matchers.EntityMatcher"/>x
+	    <matcher hidden="true" id="org.mitre.harmony.matchers.matchers.EntityMatcher"/>
   	</matchers>
   	<mergers>
 	    <merger id="org.mitre.harmony.matchers.mergers.VoteMerger"/>
