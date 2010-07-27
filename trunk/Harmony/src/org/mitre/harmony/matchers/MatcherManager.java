@@ -10,7 +10,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.mitre.harmony.matchers.matchers.Matcher;
 import org.mitre.harmony.matchers.mergers.MatchMerger;
 import org.mitre.schemastore.client.SchemaStoreClient;
-import org.mitre.schemastore.model.schemaInfo.FilteredSchemaInfo;
 import org.mitre.schemastore.porters.PorterList;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -153,21 +152,5 @@ public class MatcherManager
 			if(matchers.get(i).getClass().getName().equals(id))
 				return matchers.get(i);
 		return null;
-	}
-	
-	/** Run the matchers to calculate match scores */
-	static public MatchScores getScores(FilteredSchemaInfo schema1, FilteredSchemaInfo schema2, ArrayList<Matcher> matchers, MatchMerger merger) throws Exception
-		{ return getScores(schema1, schema2, matchers, merger, null); }
-	
-	/** Run the matchers to calculate match scores */
-	static public MatchScores getScores(FilteredSchemaInfo schema1, FilteredSchemaInfo schema2, ArrayList<Matcher> matchers, MatchMerger merger, MatchTypeMappings typeMappings) throws Exception
-	{
-		merger.initialize(schema1, schema2, typeMappings);
-		for(Matcher matcher : matchers)
-		{
-			matcher.initialize(schema1, schema2, typeMappings);
-			merger.addMatcherScores(matcher.match());
-		}
-		return merger.getMatchScores();
 	}
 }
