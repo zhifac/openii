@@ -105,6 +105,20 @@ public class FilteredSchemaInfo extends HierarchicalSchemaInfo implements Schema
 	public void setMaxDepth(Integer maxDepth)
 		{ this.maxDepth = maxDepth; reset(); }	
 
+	/** Sets the filter visible elements */
+	public void setVisibleElements(Collection<Integer> visibleElements)
+	{
+		// Generate a list of hidden elements
+		HashSet<Integer> visibleHash = new HashSet<Integer>(visibleElements);
+		ArrayList<Integer> hiddenElements = new ArrayList<Integer>();
+		for(SchemaElement element : getElements(null))
+			if(!visibleHash.contains(element.getId()))
+				hiddenElements.add(element.getId());
+		
+		// Set the hidden elements
+		setHiddenElements(hiddenElements);
+	}
+	
 	/** Sets the filter hidden elements */
 	public void setHiddenElements(Collection<Integer> hiddenElements)
 		{ this.hiddenElements = new HashSet<Integer>(hiddenElements); reset(); }
