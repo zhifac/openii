@@ -117,8 +117,7 @@ public class XMIImporter extends SchemaImporter {
 
 						if (elements.get(aggId) == null) {
 							elements.put(aggId, new Containment(nextId(), "[" + parent.getName() + "->" + child.getName() + "]", "xmi:id=" + aggId, parent.getId(), child.getId(), 0, 1, 0));
-							// If the element had a [root]->elmeent containment
-							// relationship, remove that
+							// remove the element with a [root]->elmeent containment relationship 
 							if (elements.containsKey(childID + ".containment")) elements.remove(childID + ".containment");
 						}
 					} else if ("Generalization".equals(linkNode.getNodeName())) {
@@ -322,6 +321,6 @@ class Association {
 	}
 
 	public String toString() {
-		return xmiId;
+		return new String("(XMI_ID: "+xmiId + ")" );
 	}
 }
