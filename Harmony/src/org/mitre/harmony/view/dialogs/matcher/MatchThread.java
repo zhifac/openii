@@ -7,11 +7,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import org.mitre.harmony.matchers.MatchGenerator;
 import org.mitre.harmony.matchers.MatchScore;
 import org.mitre.harmony.matchers.MatchScores;
 import org.mitre.harmony.matchers.MatchTypeMappings;
 import org.mitre.harmony.matchers.MatcherManager;
-import org.mitre.harmony.matchers.MatcherScores;
+import org.mitre.harmony.matchers.MatchGenerator.MatchGeneratorListener;
 import org.mitre.harmony.matchers.matchers.Matcher;
 import org.mitre.harmony.matchers.mergers.MatchMerger;
 import org.mitre.harmony.model.HarmonyConsts;
@@ -46,7 +47,7 @@ public class MatchThread extends Thread
 	private ArrayList<MatchListener> listeners = new ArrayList<MatchListener>();
 
 	/** Class for monitoring match progress */
-	private class ProgressThread extends Thread
+	private class ProgressThread extends Thread implements MatchGeneratorListener
 	{
 		/** Stores the total number of mappings being matched */
 		private Integer currentMapping = 0, totalMappings = 0;
@@ -76,10 +77,10 @@ public class MatchThread extends Thread
 			matcher = null;
 		}
 
-		/** Sets the current matcher being used */
-		public void setCurrentMatcher(Matcher matcher)
+		/** Indicates the currently running matcher */
+		public void matcherRun(Matcher matcher)
 			{ this.matcher = matcher; }
-
+		
 		/** Runs the thread */
 		public void run()
 		{
@@ -207,20 +208,9 @@ public class MatchThread extends Thread
 		}
 		
 		// Generate the match scores for the left and right roots
-		merger.initialize(sourceSchema, targetSchema, types);
-		for(Matcher matcher : matchers)
-		{
-			// create a progress thread based on this matcher
-			progressThread.setCurrentMatcher(matcher);
-
-			// initialize the matcher and have it match things
-			matcher.initialize(sourceSchema, targetSchema, types);
-			MatcherScores scores = matcher.match();
-
-			// merger the matcher's resulting scores together
-			merger.addMatcherScores(scores);
-		}
-		MatchScores matchScores =  merger.getMatchScores();
+		MatchGenerator generator = new MatchGenerator(sourceSchema, targetSchema);
+		generator.addListener(progressThread);
+		MatchScores matchScores = generator.getScores(matchers, merger, types);
 
 		// Store the generated mapping cells
 		ArrayList<MappingCell> mappingCells = new ArrayList<MappingCell>();
