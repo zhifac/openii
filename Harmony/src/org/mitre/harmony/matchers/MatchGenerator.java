@@ -53,8 +53,8 @@ public class MatchGenerator
 		for(Matcher matcher : matchers)
 		{
 			// Make sure that the matcher can run
-			if(!matcher.needsClient() || MatcherManager.getClient()!=null)
-				System.out.println("The matcher \"" + matcher.getName() + "\" cannot run without reference the repository");
+			if(matcher.needsClient() && MatcherManager.getClient()==null)
+				System.out.println("The matcher \"" + matcher.getName() + "\" cannot run without referencing the repository");
 
 			// Inform listeners that the matcher is being run
 			for(MatchGeneratorListener listener : listeners)

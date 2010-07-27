@@ -149,18 +149,11 @@ public class Focus
 	{
 		if(hiddenElements==null)
 		{
-			// Generate the list of hidden IDs
-			HashSet<SchemaElement> elementsToCheck = new HashSet<SchemaElement>();
-			if(focusPaths.size()==0)
-				for(Integer hiddenID : hiddenIDs)
-					elementsToCheck.addAll(schemaInfo.getDescendantElements(hiddenID));
-			else elementsToCheck.addAll(schemaInfo.getElements(null));
-			
-			// Identify all of the hidden elements
 			hiddenElements = new HashSet<Integer>();
-			for(SchemaElement elementToCheck : elementsToCheck)
-				if(!contains(elementToCheck.getId()))
-					hiddenElements.add(elementToCheck.getId());
+			for(Integer hiddenID : hiddenIDs)
+				for(SchemaElement descendant : schemaInfo.getDescendantElements(hiddenID))
+					if(!contains(descendant.getId()))
+						hiddenElements.add(descendant.getId());
 		}
 		return hiddenElements;
 	}
