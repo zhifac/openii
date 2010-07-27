@@ -16,7 +16,7 @@ public class ElementPath
 
 	/** Returns the element ID */
 	public Integer getElementID()
-		{ return elementPath.get(elementPath.size()-1); }
+		{ return elementPath.size()==0 ? null : elementPath.get(elementPath.size()-1); }
 
 	/** Returns the size of the element path */
 	public Integer size()
