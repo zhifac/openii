@@ -8,7 +8,6 @@ import java.util.LinkedHashMap;
 import org.mitre.harmony.matchers.MatchTypeMappings;
 import org.mitre.harmony.matchers.MatcherOption;
 import org.mitre.harmony.matchers.MatcherScores;
-import org.mitre.schemastore.client.SchemaStoreClient;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.schemaInfo.FilteredSchemaInfo;
 
@@ -20,9 +19,6 @@ public abstract class Matcher
 	protected static final String DESCRIPTION = "UseDescription";
 	protected static final String THESAURUS = "UseThesaurus";
 	protected static final String HIERARCHY = "UseHierarchy";
-	
-	/** Stores the client associated with this manager */
-	protected SchemaStoreClient client;
 	
 	// Stores the match merger schema information
 	protected FilteredSchemaInfo schema1, schema2;
@@ -51,7 +47,7 @@ public abstract class Matcher
 	
 	/** Return the name of the matcher */
 	abstract public String getName();
-	
+
 	/** Returns the list of options associated with the matcher */
 	protected ArrayList<MatcherOption> getMatcherOptions() { return new ArrayList<MatcherOption>(); }
 	
@@ -64,12 +60,12 @@ public abstract class Matcher
 	final public void setHidden(boolean isHidden) { this.isHidden = isHidden; }
 
 	/** Initializes the matcher */
-	final public void initialize(SchemaStoreClient client, FilteredSchemaInfo schema1, FilteredSchemaInfo schema2)
-		{ initialize(client, schema1, schema2, null); }
+	final public void initialize(FilteredSchemaInfo schema1, FilteredSchemaInfo schema2)
+		{ this.schema1 = schema1; this.schema2 = schema2; this.types = null; }
 
 	/** Initializes the matcher */
-	final public void initialize(SchemaStoreClient client, FilteredSchemaInfo schema1, FilteredSchemaInfo schema2, MatchTypeMappings types)
-		{ this.client=client; this.schema1=schema1; this.schema2=schema2; this.types=types; }
+	final public void initialize(FilteredSchemaInfo schema1, FilteredSchemaInfo schema2, MatchTypeMappings types)
+		{ this.schema1 = schema1; this.schema2 = schema2; this.types = types; }
 
 	/** Gets the list of options */
 	final public ArrayList<MatcherOption> getOptions()
