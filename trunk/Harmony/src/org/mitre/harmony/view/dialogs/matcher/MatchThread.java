@@ -208,9 +208,9 @@ public class MatchThread extends Thread
 		}
 		
 		// Generate the match scores for the left and right roots
-		MatchGenerator generator = new MatchGenerator(sourceSchema, targetSchema);
+		MatchGenerator generator = new MatchGenerator(matchers, merger, types);
 		generator.addListener(progressThread);
-		MatchScores matchScores = generator.getScores(matchers, merger, types);
+		MatchScores matchScores = generator.getScores(sourceSchema, targetSchema);
 
 		// Store the generated mapping cells
 		ArrayList<MappingCell> mappingCells = new ArrayList<MappingCell>();
