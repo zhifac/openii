@@ -5,9 +5,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 
+import org.mitre.harmony.matchers.MatchGenerator;
 import org.mitre.harmony.matchers.MatchScore;
 import org.mitre.harmony.matchers.MatchScores;
-import org.mitre.harmony.matchers.MatcherManager;
 import org.mitre.harmony.matchers.matchers.DocumentationMatcher;
 import org.mitre.harmony.matchers.matchers.EditDistanceMatcher;
 import org.mitre.harmony.matchers.matchers.ExactMatcher;
@@ -83,7 +83,7 @@ public class MappingProcessor {
 		// Generate the mapping cells
 		ArrayList<MappingCell> mappingCells = new ArrayList<MappingCell>();
 		Informant.status("Calling Harmony matching algorithms...");
-		MatchScores matchScores = MatcherManager.getScores(schemaInfo1, schemaInfo2, matchers, new VoteMerger());
+		MatchScores matchScores = new MatchGenerator(matchers, new VoteMerger()).getScores(schemaInfo1, schemaInfo2);
 		for (MatchScore score : matchScores.getScores())
 			mappingCells.add(MappingCell.createProposedMappingCell(null, mappingID, score.getSourceID(), score.getTargetID(), score.getScore(), "MatchMaker Auto Gen", new Date(System.currentTimeMillis()), ""));
 

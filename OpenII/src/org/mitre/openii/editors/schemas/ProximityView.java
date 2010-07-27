@@ -135,7 +135,7 @@ public class ProximityView extends OpenIIEditor implements VennDiagramListener
 			
 			// Generate the matrix
 			String schemaName = OpenIIManager.getSchema(getElementID()).getName();
-			matrix = new VennDiagramSetsMatrix(schemaName, schemas, AffinityEditor.matchScoreComputer);
+			matrix = new VennDiagramSetsMatrix(schemaName, schemas, AffinityEditor.matchGenerator);
 		}
 		
 		// Launch the proximity view

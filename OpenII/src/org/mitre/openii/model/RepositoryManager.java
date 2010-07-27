@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
+import org.mitre.harmony.matchers.MatcherManager;
 import org.mitre.openii.application.OpenIIActivator;
 import org.mitre.schemastore.client.Repository;
 import org.mitre.schemastore.client.SchemaStoreClient;
@@ -117,11 +118,12 @@ public class RepositoryManager
 		selectedRepository = repository;
 		saveRepositories();
 		
-		// Set a default repository
+		// Set the repository
 		try { client = new SchemaStoreClient(getSelectedRepository()); }
 		catch(Exception e) { System.out.println("(E) RepositoryManager - " + e.getMessage()); }
-
-		// Rest the OpenII manager
+		MatcherManager.setClient(client);
+		
+		// Reset the OpenII manager
 		OpenIIManager.reset();
 	}
 	
