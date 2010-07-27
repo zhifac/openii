@@ -225,17 +225,17 @@ public class ManagerAction extends Action
 		if(actionType == ActionType.IMPORT_MAPPING)
 			new ImportMappingDialog(shell,(Project)selection).open();
 
-		/** Handles the replacing of a schema from a project */
-//		if(actionType == ActionType.REPLACE_SCHEMA)
-//			new ReplaceSchemaDialog(shell,(Project)selection).open();
-		
 		/** Handles the auto-generation of a mapping's matches */
-		if ( actionType == ActionType.GENERATE_VOCABULARY )
+		if(actionType == ActionType.GENERATE_VOCABULARY)
 			new WizardDialog(shell, new GenerateVocabularyWizard((Project)selection)).open();
 	
 		/** Handles the deletion of a project's vocabulary */
-		if ( actionType == ActionType.DELETE_VOCABULARY )
+		if(actionType == ActionType.DELETE_VOCABULARY)
 			DeleteVocabularyDialog.delete(shell,(VocabularyInProject)selection);
+
+		/** Handles the replacing of a schema from a project */
+		if(actionType == ActionType.REPLACE_SCHEMA)
+			new ReplaceSchemaDialog(shell,(SchemaInProject)selection).open();
 		
 		// ----------------- Mapping Actions ----------------------
 		

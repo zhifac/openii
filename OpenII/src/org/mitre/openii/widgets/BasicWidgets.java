@@ -1,5 +1,7 @@
 package org.mitre.openii.widgets;
 
+import org.eclipse.jface.viewers.ComboViewer;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.GC;
@@ -108,5 +110,15 @@ public class BasicWidgets
 	{
 		createLabel(parent,label);
 		return new OptionPane(parent, options, listener);
+	}
+	
+	/** Creates a combo field */
+	static public ComboViewer createComboField(Composite parent, String label, Object items[], ISelectionChangedListener listener)
+	{
+		createLabel(parent,label);
+		ComboViewer list = new ComboViewer(parent, SWT.NONE);
+		for(Object item : items) list.add(item);
+		list.addSelectionChangedListener(listener);
+		return list;
 	}
 }
