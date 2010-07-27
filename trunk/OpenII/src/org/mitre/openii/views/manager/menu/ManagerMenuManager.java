@@ -152,7 +152,6 @@ public class ManagerMenuManager extends MenuManager implements IMenuListener
 			menuManager.add(new ManagerAction(this,"Delete Project",ActionType.DELETE_PROJECT));
 			menuManager.add(new Separator());
 			menuManager.add(new ManagerAction(this,"Import Mapping",ActionType.IMPORT_MAPPING));
-			menuManager.add(new ManagerAction(this,"Replace Schema",ActionType.REPLACE_SCHEMA));
 			menuManager.add(new ManagerAction(this,"Generate Vocabulary...",ActionType.GENERATE_VOCABULARY));
 		}
 		
@@ -166,6 +165,7 @@ public class ManagerMenuManager extends MenuManager implements IMenuListener
 		// Display the menu for a selected project schema
 		if(element instanceof SchemaInProject)
 		{
+			menuManager.add(new ManagerAction(this,"Replace Schema",ActionType.REPLACE_SCHEMA));
 			menuManager.add(new ManagerAction(this,"Export Schema",ActionType.EXPORT_SCHEMA));
 			if(((SchemaInProject)element).isDeletable())
 				menuManager.add(new ManagerAction(this,"Remove Schema from Project",ActionType.DELETE_PROJECT_SCHEMA));
