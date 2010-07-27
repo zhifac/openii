@@ -167,11 +167,17 @@ public class MatchThread extends Thread
 		filteredSchemaInfo.setMinDepth(filters.getMinDepth(side));
 		filteredSchemaInfo.setMaxDepth(filters.getMaxDepth(side));
 
-		// Hide all finished elements
-		ArrayList<Integer> hiddenElements = new ArrayList<Integer>();
-		hiddenElements.addAll(harmonyModel.getPreferences().getFinishedElements(schemaID));
-		if(focus != null) { hiddenElements.addAll(focus.getHiddenElements()); }
-		filteredSchemaInfo.setHiddenElements(hiddenElements);
+		// Hide all finished and unfocused elements
+		ArrayList<Integer> finishedElements = harmonyModel.getPreferences().getFinishedElements(schemaID);
+		if(focus!=null)
+		{
+			HashSet<Integer> elementIDs = focus.getElementIDs();
+			for(Integer finishedElement : finishedElements)
+				elementIDs.remove(finishedElement);
+			filteredSchemaInfo.setVisibleElements(elementIDs);
+
+		}
+		else filteredSchemaInfo.setHiddenElements(finishedElements);
 		
 		// Return the filtered schema info object
 		return filteredSchemaInfo;
