@@ -72,7 +72,7 @@ public class TagDataCalls extends AbstractDataCalls
 		Tag tag = null;
 		try {
 			Statement stmt = connection.getStatement();
-			ResultSet rs = stmt.executeQuery("SELECT id,name,parent_id FROM tags where id " + (tagID==null ? " IS NULL" : " = " + tagID) );
+			ResultSet rs = stmt.executeQuery("SELECT id,name,parent_id FROM tags WHERE id = " + tagID);
 			if(rs.next())
 				tag = new Tag(rs.getInt("id"),rs.getString("name"),rs.getInt("parent_id"));
 			stmt.close();
