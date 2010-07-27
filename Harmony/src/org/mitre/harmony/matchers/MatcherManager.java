@@ -105,16 +105,30 @@ public class MatcherManager
 		}
 		catch (Exception e) { System.err.println("(E) MatcherManager - matchers.xml has failed to load! " + e.getMessage()); }
 	}
+
+	/** Sets the client for these matchers */
+	static public void setClient(SchemaStoreClient clientIn)
+		{ client = clientIn; }
+	
+	/** Returns the client set for these matchers */
+	static public SchemaStoreClient getClient()
+		{ return client; }
 	
 	/** Returns the list of match matchers */
 	static public ArrayList<Matcher> getMatchers()
-		{ return matchers; }
+	{
+		ArrayList<Matcher> matcherList = new ArrayList<Matcher>();
+		for(Matcher matcher : matchers)
+			if(!matcher.needsClient() || client!=null)
+				matcherList.add(matcher);
+		return matcherList;
+	}
 
 	/** Returns the list of default matchers */
 	static public ArrayList<Matcher> getDefaultMatchers()
 	{
 		ArrayList<Matcher> defaultMatchers = new ArrayList<Matcher>();
-		for(Matcher matcher : matchers)
+		for(Matcher matcher : getMatchers())
 			if(matcher.isDefault()) defaultMatchers.add(matcher);
 		return defaultMatchers;
 	}
@@ -123,7 +137,7 @@ public class MatcherManager
 	static public ArrayList<Matcher> getVisibleMatchers()
 	{
 		ArrayList<Matcher> visibleMatchers = new ArrayList<Matcher>();
-		for(Matcher matcher : matchers)
+		for(Matcher matcher : getMatchers())
 			if (!matcher.isHidden()) visibleMatchers.add(matcher);
 		return visibleMatchers;
 	}
@@ -140,21 +154,13 @@ public class MatcherManager
 				return matchers.get(i);
 		return null;
 	}
-
-	/** Sets the client for these matchers */
-	static public void setClient(SchemaStoreClient clientIn)
-		{ client = clientIn; }
-	
-	/** Returns the client set for these matchers */
-	static public SchemaStoreClient getClient()
-		{ return client; }
 	
 	/** Run the matchers to calculate match scores */
-	static public MatchScores getScores(FilteredSchemaInfo schemaInfo1, FilteredSchemaInfo schemaInfo2, ArrayList<Matcher> matchers, MatchMerger merger)
-		{ return getScores(schemaInfo1, schemaInfo2, matchers, merger, null); }
+	static public MatchScores getScores(FilteredSchemaInfo schema1, FilteredSchemaInfo schema2, ArrayList<Matcher> matchers, MatchMerger merger) throws Exception
+		{ return getScores(schema1, schema2, matchers, merger, null); }
 	
 	/** Run the matchers to calculate match scores */
-	static public MatchScores getScores(FilteredSchemaInfo schema1, FilteredSchemaInfo schema2, ArrayList<Matcher> matchers, MatchMerger merger, MatchTypeMappings typeMappings)
+	static public MatchScores getScores(FilteredSchemaInfo schema1, FilteredSchemaInfo schema2, ArrayList<Matcher> matchers, MatchMerger merger, MatchTypeMappings typeMappings) throws Exception
 	{
 		merger.initialize(schema1, schema2, typeMappings);
 		for(Matcher matcher : matchers)
