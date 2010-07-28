@@ -7,7 +7,6 @@ import java.io.IOException;
 
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.project.ProjectMapping;
-import org.mitre.schemastore.model.Project;
 import org.mitre.schemastore.porters.Exporter;
 import org.mitre.schemastore.porters.PorterManager.PorterType;
 import org.mitre.schemastore.porters.mappingExporters.MappingExporter;
@@ -30,9 +29,6 @@ public class ExportMappingDialog extends AbstractExportDialog
 	
 	/** Handles the export to the specified file */
 	protected void export(HarmonyModel harmonyModel, Exporter exporter, File file) throws IOException
-	{
-		Project project = harmonyModel.getProjectManager().getProject();
-		((MappingExporter)exporter).exportMapping(project, mapping, mapping.getMappingCells(), file);
-	}
+		{ ((MappingExporter)exporter).exportMapping(mapping, mapping.getMappingCells(), file); }
 }
 
