@@ -171,12 +171,30 @@ public class ConvertToXML
 	/** Retrieves the element path for the given element ID */
 	static private String getElementPath(Integer elementID, HierarchicalSchemaInfo schemaInfo)
 	{
-		ArrayList<ArrayList<SchemaElement>> paths = schemaInfo.getPaths(elementID);
-		if(paths==null || paths.size()==0) return null;
-		StringBuffer path = new StringBuffer();
-		for(SchemaElement element : paths.get(0))
-			path.append("/" + schemaInfo.getDisplayName(element.getId()).replaceAll("/","&#47;"));
-		return path.toString();
+		// Get element path
+		ArrayList<SchemaElement> elementPath = null;
+		for(ArrayList<SchemaElement> possiblePath : schemaInfo.getPaths(elementID))
+			if(elementPath==null || elementPath.size()>possiblePath.size())
+				elementPath = possiblePath;
+		if(elementPath==null || elementPath.size()==0) return null;
+
+		// Translate path to string
+		ArrayList<String> path = new ArrayList<String>();
+		for(SchemaElement element : elementPath)
+			path.add(schemaInfo.getDisplayName(element.getId()));
+		
+		// Calculate out a path ID (to help with ambiguous paths)
+		int pathID=0;
+		ArrayList<Integer> pathIDs = schemaInfo.getPathIDs(path);
+		for(pathID=0; pathID<pathIDs.size(); pathID++)
+			if(pathIDs.get(pathID).equals(elementID)) break;
+		
+		// Generate the path string
+		StringBuffer pathString = new StringBuffer();
+		for(String item : path)
+			pathString.append("/" + item.replaceAll("/","&#47;"));
+		pathString.append(":"+pathID);
+		return pathString.toString();
 	}	
 	
 	/** Generates the XML for the specified mapping cell */

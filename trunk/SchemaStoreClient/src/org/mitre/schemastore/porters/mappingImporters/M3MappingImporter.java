@@ -139,8 +139,8 @@ public class M3MappingImporter extends MappingImporter
 		try
 		{
 			// Retrieve info for the source and target schemas (using original schema names for matching purposes)
-			HierarchicalSchemaInfo sourceInfo = new HierarchicalSchemaInfo(client.getSchemaInfo(source.getId()),source.geetSchemaModel());
-			HierarchicalSchemaInfo targetInfo = new HierarchicalSchemaInfo(client.getSchemaInfo(target.getId()),target.geetSchemaModel());
+			HierarchicalSchemaInfo sourceInfo = new HierarchicalSchemaInfo(client.getSchemaInfo(source.getId()), source.geetSchemaModel());
+			HierarchicalSchemaInfo targetInfo = new HierarchicalSchemaInfo(client.getSchemaInfo(target.getId()), target.geetSchemaModel());
 			
 			// Generate the list of mapping cells
 			ArrayList<MappingCell> mappingCells = new ArrayList<MappingCell>();

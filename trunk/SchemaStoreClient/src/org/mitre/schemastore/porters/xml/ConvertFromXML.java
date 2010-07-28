@@ -245,14 +245,21 @@ public class ConvertFromXML
 	/** Retrieve the elementID for the given element path */
 	static private Integer getElementId(String pathString, HierarchicalSchemaInfo schemaInfo)
 	{
+		// Extract the path ID (used to help with ambiguous paths)
+		pathString = pathString.replaceFirst("/","");
+		Integer pathID = Integer.valueOf(pathString.replaceAll(".*:",""));
+		pathString = pathString.replaceFirst(":[^:]+$","");
+		
 		// Retrieve the schema and path
 		ArrayList<String> path = new ArrayList<String>();
-		for(String element : new ArrayList<String>(Arrays.asList(pathString.replaceFirst("/","").split("/"))))
+		for(String element : new ArrayList<String>(Arrays.asList(pathString.split("/"))))
 			path.add(element.replaceAll("&#47;","/"));
 		
 		// Retrieve the element ID
 		ArrayList<Integer> elementIDs = schemaInfo.getPathIDs(path);
-		return elementIDs.size()>0 ? elementIDs.get(0) : null;
+		if(elementIDs.size()>pathID) return elementIDs.get(pathID);
+		if(elementIDs.size()>0) return elementIDs.get(0);
+		return null;
 	}
 	
 	/** Retrieve the mapping cell paths from the specified XML */

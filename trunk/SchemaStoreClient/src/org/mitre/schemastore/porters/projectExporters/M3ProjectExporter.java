@@ -75,7 +75,7 @@ public class M3ProjectExporter extends ProjectExporter
 			{
 				M3MappingExporter mappingExporter = new M3MappingExporter();
 				mappingExporter.setClient(client);
-				mappingExporter.exportMapping(project, mapping, mappings.get(mapping), tempFile);
+				mappingExporter.exportMapping(mapping, mappings.get(mapping), tempFile);
 				zipUpFile(zipOut,mapping.getSourceId()+"-"+mapping.getTargetId()+".m3m",tempFile);
 			}
 			
