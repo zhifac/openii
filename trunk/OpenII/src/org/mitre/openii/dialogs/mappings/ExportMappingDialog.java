@@ -8,7 +8,6 @@ import org.eclipse.swt.widgets.Shell;
 import org.mitre.openii.model.OpenIIManager;
 import org.mitre.openii.widgets.porters.ExporterDialog;
 import org.mitre.schemastore.model.Mapping;
-import org.mitre.schemastore.model.Project;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.porters.PorterManager.PorterType;
 import org.mitre.schemastore.porters.mappingExporters.MappingExporter;
@@ -32,8 +31,7 @@ public class ExportMappingDialog
         {        	
 			try {
 				MappingExporter exporter = dialog.getExporter();
-				Project project = OpenIIManager.getProject(mapping.getProjectId());
-	        	exporter.exportMapping(project, mapping, OpenIIManager.getMappingCells(mapping.getId()), new File(filename));
+	        	exporter.exportMapping(mapping, OpenIIManager.getMappingCells(mapping.getId()), new File(filename));
 			}
 			catch(Exception e)
 			{
