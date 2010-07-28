@@ -15,7 +15,6 @@ import java.util.List;
 
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
-import org.mitre.schemastore.model.Project;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
 
@@ -67,9 +66,9 @@ public class UserMatchAnnotationExporter extends MappingExporter
 	/** Returns the file types associated with this converter */
 	public String getFileType()
 		{ return ".csv"; }
-	
+
 	/** Generates a list of matches for this project */
-	public void exportMapping(Project project, Mapping mapping, ArrayList<MappingCell> mappingCells, File file) throws IOException
+	public void exportMapping(Mapping mapping, ArrayList<MappingCell> mappingCells, File file) throws IOException
 	{
 		// Prepare to export source and target node information
 		BufferedWriter out = new BufferedWriter(new FileWriter(file));

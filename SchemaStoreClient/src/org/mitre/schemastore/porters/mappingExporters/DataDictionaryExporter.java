@@ -12,7 +12,6 @@ import java.util.HashSet;
 
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
-import org.mitre.schemastore.model.Project;
 import org.mitre.schemastore.model.SchemaElement;
 
 /**
@@ -34,7 +33,7 @@ public class DataDictionaryExporter extends MappingExporter
 		{ return ".csv"; }
 	
 	/** Generates a data dictionary for this mapping */
-	public void exportMapping(Project project, Mapping mapping, ArrayList<MappingCell> mappingCells, File file) throws IOException
+	public void exportMapping(Mapping mapping, ArrayList<MappingCell> mappingCells, File file) throws IOException
 	{
 		// Prepare to export source and target node information
 		BufferedWriter out = new BufferedWriter(new FileWriter(file));

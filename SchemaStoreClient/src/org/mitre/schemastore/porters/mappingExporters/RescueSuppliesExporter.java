@@ -10,7 +10,6 @@ import java.util.ArrayList;
 
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
-import org.mitre.schemastore.model.Project;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
 
@@ -33,7 +32,7 @@ public class RescueSuppliesExporter extends MappingExporter
 		{ return ".csv"; }
 	
 	/** Generates a data dictionary for this project */
-	public void exportMapping(Project project, Mapping mapping, ArrayList<MappingCell> mappingCells, File file) throws IOException
+	public void exportMapping(Mapping mapping, ArrayList<MappingCell> mappingCells, File file) throws IOException
 	{
 		// Get the mapped schemas
 		HierarchicalSchemaInfo sourceInfo = new HierarchicalSchemaInfo(client.getSchemaInfo(mapping.getSourceId()));
