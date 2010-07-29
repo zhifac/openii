@@ -166,8 +166,8 @@ public class SchemaStoreClient
 	}
 
 	/** Gets the specified tag from the web service */
-	public Schema getTag(Integer tagID) throws RemoteException
-		{ return (Schema)callMethod("getTag",new Object[] {tagID}); }
+	public Tag getTag(Integer tagID) throws RemoteException
+		{ return (Tag)callMethod("getTag",new Object[] {tagID}); }
 
 	/** Get the list of sub-categories for the specified tag from the web service */
 	public ArrayList<Tag> getSubcategories(Integer tagID) throws RemoteException
