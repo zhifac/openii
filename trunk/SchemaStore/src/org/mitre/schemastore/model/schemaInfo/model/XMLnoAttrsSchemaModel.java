@@ -25,11 +25,31 @@ public class XMLnoAttrsSchemaModel extends SchemaModel
 	{
 		ArrayList<SchemaElement> rootElements = new ArrayList<SchemaElement>();
 
-		// Find all containments whose roots are null
+		// Find all containments whose roots are null 
+		// and were not created by splitting 
 		for(SchemaElement element : schemaInfo.getElements(Containment.class))
-			if(((Containment)element).getParentID()==null)
-				rootElements.add(element);
-			
+			if(((Containment)element).getParentID()==null){
+				
+				Containment cont = (Containment)element;
+				boolean isSplit = false;
+				
+				for (SchemaElement se : schemaInfo.getElements(Containment.class)){
+					Containment cont2 = (Containment)se;
+									
+					if (!cont.getId().equals(cont2.getId())  
+							&& cont.getName().equals(cont2.getName()) 
+							&& cont.getDescription().equals(cont2.getDescription())
+							&& cont.getChildID().equals(cont2.getChildID())
+							&& cont2.getParentID() != null
+							&& !cont.getBase().equals(cont2.getBase()))
+					{
+						isSplit = true;
+					}
+				}
+				if (isSplit == false)
+					rootElements.add(element);
+				
+			}
 		return rootElements;
 	}
 	
