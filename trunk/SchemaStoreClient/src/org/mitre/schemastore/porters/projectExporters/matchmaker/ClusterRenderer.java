@@ -261,14 +261,4 @@ public class ClusterRenderer {
 		else return col;
 	}
 
-	private void printSchemaElementNode(SynsetTerm seNode, HSSFRow row) {
-		Integer colNum = getColumnIdx(seNode.schemaId);
-		if (colNum < 0) return;
-
-		HSSFCell cell = row.getCell(colNum);
-		if (cell == null) {
-			cell = row.createCell(colNum);
-			cell.setCellValue(new HSSFRichTextString(seNode.elementId.toString()));
-		}
-	}
 }
