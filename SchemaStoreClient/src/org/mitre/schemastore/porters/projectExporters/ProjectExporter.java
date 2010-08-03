@@ -36,7 +36,7 @@ public abstract class ProjectExporter extends Exporter
 	{
 		ArrayList<MappingCell> mappingCellsWithElement = new ArrayList<MappingCell>();
 		for(MappingCell mappingCell : mappingCells)
-			if(mappingCell.getFirstInput().equals(elementID) || mappingCell.getOutput().equals(elementID))
+			if(mappingCell.getInput()[0].equals(elementID) || mappingCell.getOutput().equals(elementID))
 				mappingCellsWithElement.add(mappingCell);
 		return mappingCellsWithElement;
 	}
