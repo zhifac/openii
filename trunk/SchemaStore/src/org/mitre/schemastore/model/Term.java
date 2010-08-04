@@ -22,9 +22,13 @@ public class Term implements Serializable
 	private String description;
 	
 	/** Stores the list of associated elements */
-	private AssociatedElement[] elements;
+	private AssociatedElement[] elements = new AssociatedElement[0];
 
 	/** Constructs the default term */ public Term() {}
+	
+	/** Constructs the term */
+	public Term(Integer id, String name, String description)
+		{ this.id = id; this.name = name; this.description = description; }
 	
 	/** Constructs the term */
 	public Term(Integer id, String name, String description, AssociatedElement[] elements)

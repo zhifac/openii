@@ -17,9 +17,13 @@ public class Vocabulary implements Serializable
 	private Integer projectID;
 	
 	/** Stores the list of terms which make up this vocabulary */
-	private Term[] terms;
+	private Term[] terms = new Term[0];
 	
 	/** Constructs the default vocabulary */ public Vocabulary() {}
+	
+	/** Constructs the vocabulary */
+	public Vocabulary(Integer projectID)
+		{ this.projectID = projectID; }
 	
 	/** Constructs the vocabulary */
 	public Vocabulary(Integer projectID, Term[] terms)
@@ -29,7 +33,7 @@ public class Vocabulary implements Serializable
 	public Vocabulary copy()
 	{
 		ArrayList<Term> copiedTerms = new ArrayList<Term>();
-		if(terms!=null) for(Term term : terms) copiedTerms.add(term.copy());
+		for(Term term : terms) copiedTerms.add(term.copy());
 		return new Vocabulary(getProjectID(),copiedTerms.toArray(new Term[0]));
 	}
 	
