@@ -23,17 +23,15 @@ public class GenerateVocabularyWizard extends Wizard {
 		setWindowTitle("Generate Vocabulary");
 		this.project = project;
 		initSchemas();
-		// Generate a hash of project schemas EXCLUDING schemas with _VOCABULARY_TAG tag
+		// Generate a hash of project schemas EXCLUDING schemas with
+		// _VOCABULARY_TAG tag
 	}
 
-	/** Get all of the schemas in this project that aren't vocabulary **/ 
+	/** Get all of the schemas in this project that aren't vocabulary **/
 	private void initSchemas() {
-		ArrayList<Integer> vocabIDs = OpenIIManager.getTagSchemas(Vocabulary.getVocabTag().getId());
 		schemas = new HashMap<Integer, ProjectSchema>();
 		for (ProjectSchema schema : project.getSchemas())
-			if (vocabIDs.size() <= 0 || !vocabIDs.contains(schema.getId())) {
-				schemas.put(schema.getId(), schema);
-			}
+			schemas.put(schema.getId(), schema);
 	}
 
 	public Project getProject() {
@@ -61,17 +59,24 @@ public class GenerateVocabularyWizard extends Wizard {
 
 	/** Indicates if the import process can be finished */
 	public boolean canFinish() {
-		return (matchMakerPage.isPageComplete()); // && autoMappingProgressPage.isPageComplete());
+		return (matchMakerPage.isPageComplete()); // &&
+													// autoMappingProgressPage.isPageComplete());
 	}
 
 	/** Imports the mapping once the wizard is complete */
 	public boolean performFinish() {
 		try {
 			Unity unity = new Unity(project);
-			unity.generateVocabulary(autoMappingPage.getMatchers(), matchMakerPage.getVocabularyName(), matchMakerPage.getAuthor(), matchMakerPage.getDescription());
+			// Create synsets 
+			unity.unify(); 
+			
+			// save new vocab
+			unity.saveVocabulary(); 
 
+			// export the vocabulary
 			String exportPath = matchMakerPage.getVocabExportFilePath();
-			if (exportPath.length() > 0) unity.exportVocabulary(new File(exportPath));
+			if (exportPath.length() > 0)
+				unity.exportVocabulary(new File(exportPath));
 			return true;
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
