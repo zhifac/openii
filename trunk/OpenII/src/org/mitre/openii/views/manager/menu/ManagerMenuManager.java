@@ -172,8 +172,10 @@ public class ManagerMenuManager extends MenuManager implements IMenuListener
 		}
 		
 		// Display the menu for a selected project vocabulary
-		if(element instanceof VocabularyInProject)
+		if(element instanceof VocabularyInProject) {
+			menuManager.add(new ManagerAction(this, "Export Vocabulary", ActionType.EXPORT_VOCABULARY)); 
 			menuManager.add(new ManagerAction(this,"Delete Vocabulary",ActionType.DELETE_VOCABULARY));
+		}
 		
 		// Display the menu for a selected data source
 		if(element instanceof DataSource)
