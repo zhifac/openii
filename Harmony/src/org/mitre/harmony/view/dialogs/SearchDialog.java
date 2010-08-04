@@ -61,9 +61,9 @@ public class SearchDialog extends JDialog implements KeyListener
 					harmonyModel.getSearchManager().runQuery(side, searchField.getText());
 	
 					// Set focus areas on search results
-					if(label.equals("Set Focus") || label.equals("Add to Focus"))
+					if(label.equals("Set Focus") || label.equals("Add Focus"))
 					{
-						boolean append = label.equals("Add to Focus");
+						boolean append = label.equals("Add Focus");
 						FocusController.setFocusOnSearchResults(harmonyModel, side, append);
 					}
 				}
