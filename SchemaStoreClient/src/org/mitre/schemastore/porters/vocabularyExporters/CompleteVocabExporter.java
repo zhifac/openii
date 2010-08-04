@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 
+import org.mitre.schemastore.model.AssociatedElement;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.Term;
 import org.mitre.schemastore.model.Vocabulary;
@@ -13,23 +14,30 @@ public class CompleteVocabExporter extends VocabularyExporter {
 	@Override
 	public void exportVocabulary(Vocabulary vocabulary, File file)
 			throws IOException {
-		PrintStream os = new PrintStream(file); 
+		PrintStream os = new PrintStream(file);
 		Integer[] schemaIDs = vocabulary.getSchemaIDs();
-		
-		// Print header 
-		os.print( "Vocabulary, Vocabulary Description, " ); 
-		for (Integer sid : schemaIDs )
-			os.print(client.getSchema(sid).getName() + ", Description, "); 
-		os.println("\n");
-		
-		// Print Term, associated elements, and respective description 
-		for ( Term term : vocabulary.getTerms() ) {
-			os.print( term.getName() + ", " + term.getDescription() + ",");
-			for ( Integer schemaID : vocabulary.getSchemaIDs() ) {
-				SchemaElement element = client.getSchemaElement(term.getAssociatedElement(schemaID).getElementID()); 
-				os.println( element.getName() + ", " + element.getDescription() + ", " ); 
+
+		// Print header
+		os.print("Vocabulary, Vocabulary Description, ");
+		for (Integer sid : schemaIDs)
+			os.print(client.getSchema(sid).getName() + ", Description, ");
+		os.print("\n");
+
+		// Print Term, associated elements, and respective description
+		for (Term term : vocabulary.getTerms()) {
+			os.print(term.getName() + ", " + term.getDescription() + ",");
+			for (Integer schemaID : vocabulary.getSchemaIDs()) {
+				AssociatedElement ae = term.getAssociatedElement(schemaID);
+				if (ae != null) {
+					SchemaElement element = client.getSchemaElement(ae
+							.getElementID());
+					if (element != null)
+						os.print(element.getName() + ", "
+								+ element.getDescription() + ", ");
+					else os.print(",,"); 
+				} else os.print(",,"); 
 			}
-			os.println("\n");
+			os.print("\n");
 		}
 		os.flush();
 		os.close();
@@ -37,7 +45,7 @@ public class CompleteVocabExporter extends VocabularyExporter {
 
 	@Override
 	public String getFileType() {
-		return ".csv"; 
+		return ".csv";
 	}
 
 	@Override
@@ -47,7 +55,7 @@ public class CompleteVocabExporter extends VocabularyExporter {
 
 	@Override
 	public String getName() {
-		return "Complete Vocabulary Exporter"; 
+		return "Complete Vocabulary Exporter";
 	}
 
 }
