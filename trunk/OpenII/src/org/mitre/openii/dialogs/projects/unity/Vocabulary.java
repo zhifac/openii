@@ -10,7 +10,7 @@ import org.mitre.schemastore.model.Project;
 import org.mitre.schemastore.model.ProjectSchema;
 import org.mitre.schemastore.model.Tag;
 import org.mitre.schemastore.porters.projectExporters.matchmaker.Synset;
-
+@Deprecated
 public class Vocabulary {
 
 	static public String _VOCABULARY_TAG = "_Vocabulary";
