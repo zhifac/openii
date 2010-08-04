@@ -338,7 +338,7 @@ public class MappingLines implements MappingListener, FiltersListener, SchemaTre
 		
 		// Modifies clip bounds to not include area covered by scroll bars
 		JViewport viewport = mappingPane.getTreeViewport(HarmonyConsts.LEFT);
-		g.setClip(0,0,mappingPane.getWidth(),viewport.getHeight());
+		g.setClip(functionPane.getX()+1,0,functionPane.getWidth()-3,viewport.getHeight());
 		
 		// Cycle through all non-hidden mapping cells to identify all lines to draw
 		Enumeration mappingCells = getLines().elements();
@@ -388,9 +388,9 @@ public class MappingLines implements MappingListener, FiltersListener, SchemaTre
 				{
 					// Draw the various markings on the end of the line segments
 					if(pt.getX()==minX)
-						g.fillOval((int)pt.getX()-1,(int)pt.getY()-4, circleSize, circleSize);	
+						g.fillOval((int)pt.getX()-4,(int)pt.getY()-4, circleSize, circleSize);	
 					else if(pt.getX()==maxX)
-						g.fillOval((int)pt.getX()-6,(int)pt.getY()-5, circleSize, circleSize);
+						g.fillOval((int)pt.getX()-6,(int)pt.getY()-4, circleSize, circleSize);
 					else if(pt.getX()==midX)
 						g.drawImage(functionIcon, (int)pt.getX()-10, (int)pt.getY()-9, 20, 18, null);  
 				}
