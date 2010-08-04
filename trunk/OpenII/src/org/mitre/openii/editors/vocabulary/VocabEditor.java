@@ -29,8 +29,11 @@ public class VocabEditor extends OpenIIEditor
 		ArrayList<String[]> rows = new ArrayList<String[]>();
 		for(Term term : terms)
 		{
-			String[] row = new String[schemaIDs.length];
-			for(int j = 0; j < schemaIDs.length; j++)
+			String[] row = new String[schemaIDs.length+1];
+			// First column is the vocabulary term 
+			row[0] = term.getName(); 
+			// The subsequent columns are source schema terms 
+			for(int j = 1; j < schemaIDs.length+1; j++)
 			{
 				AssociatedElement element = term.getAssociatedElement(schemaIDs[j]);
 				row[j] = (element==null) ?  "" : element.getName();
