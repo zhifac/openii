@@ -58,7 +58,7 @@ class MatchMakerPage extends WizardPage implements ModifyListener, SelectionList
 		// default values
 		if (authorField.getText().equals("")) authorField.setText(System.getProperty("user.name"));
 		if (vocabNameField.getText().equals("")) vocabNameField.setText( ((GenerateVocabularyWizard)(getWizard())).getProject().getName()+"_Vocabulary");
-		if (fileSelectionPane.getText().equals("")) fileSelectionPane.setText("C://" + getVocabularyName() + ".xls"); 
+		if (fileSelectionPane.getText().equals("")) fileSelectionPane.setText("C://" + getVocabularyName() + ".csv"); 
 		
 		vocabNameField.addModifyListener(this); 
 		authorField.addModifyListener(this); 
