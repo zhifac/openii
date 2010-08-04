@@ -39,17 +39,15 @@ public class Unity {
 	}
 
 	public Vocabulary unify() throws Exception {
-
 		// Generate synsets
 		synsetList = generateSynsets(project);
 		// Generate vocabulary terms
 		vocabulary = new Vocabulary(project.getId(), generateVocabTerms());
 
+		// save new vocab
+		OpenIIManager.saveVocabulary(vocabulary);
+		
 		return vocabulary;
-	}
-
-	public void saveVocabulary() throws RemoteException {
-		RepositoryManager.getClient().saveVocabulary(vocabulary);
 	}
 
 	private Term[] generateVocabTerms() {

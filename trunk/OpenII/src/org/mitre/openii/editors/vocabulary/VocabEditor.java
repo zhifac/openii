@@ -49,7 +49,7 @@ public class VocabEditor extends OpenIIEditor
 		try {
 			Vocabulary vocabulary = OpenIIManager.getVocabulary(getElementID());
 			Integer[] schemaIDs = vocabulary.getSchemaIDs();
-			String[] schemaNames = getSchemaNames(schemaIDs);		
+			String[] schemaNames = getSchemaNames(schemaIDs);	
 			ArrayList<String[]> rows = generateRows(schemaIDs, vocabulary.getTerms());
 			new SWTVocabDebugViewTwo(parent, SWT.NONE, schemaNames, rows);
 		}

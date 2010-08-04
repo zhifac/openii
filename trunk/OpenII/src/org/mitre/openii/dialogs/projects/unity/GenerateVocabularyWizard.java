@@ -69,9 +69,6 @@ public class GenerateVocabularyWizard extends Wizard {
 			Unity unity = new Unity(project);
 			// Create synsets 
 			unity.unify(); 
-			
-			// save new vocab
-			unity.saveVocabulary(); 
 
 			// export the vocabulary
 			String exportPath = matchMakerPage.getVocabExportFilePath();
