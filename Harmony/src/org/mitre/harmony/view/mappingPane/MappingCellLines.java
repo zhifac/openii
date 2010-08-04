@@ -3,16 +3,12 @@
 package org.mitre.harmony.view.mappingPane;
 
 import java.awt.Color;
-import java.awt.Point;
-import java.awt.geom.Line2D;
 import java.util.ArrayList;
-import java.util.LinkedList;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.mitre.harmony.model.HarmonyConsts;
 import org.mitre.harmony.model.HarmonyModel;
-import org.mitre.harmony.model.filters.FilterManager;
 import org.mitre.harmony.view.schemaTree.SchemaTree;
 import org.mitre.schemastore.model.MappingCell;
 
@@ -36,145 +32,150 @@ class MappingCellLines
 	/** Stores the Harmony model */
 	private HarmonyModel harmonyModel;
 	
-	/** Stores if the mapping cell is an identity function */
-	private Boolean isIdentityFunction;
-	
 	/** Indicates if the mapping cell is hidden from display */
 	private Boolean hidden;
 
 	/** List of lines associated with the mapping cell */
 	private ArrayList<MappingCellLine> lines;
 
-	/** Private class for storing a pair of tree nodes */
-	private class TreeNodePair
+	/** Private class for storing a node mapping */
+	private class NodeMapping
 	{
 		// Stores the pair of tree nodes
-		private DefaultMutableTreeNode leftNode, rightNode;
+		private ArrayList<DefaultMutableTreeNode> inputNodes;
+		private DefaultMutableTreeNode outputNode;
 		
-		/** Constructs the tree node pair */
-		private TreeNodePair(DefaultMutableTreeNode leftNode, DefaultMutableTreeNode rightNode)
-			{ this.leftNode=leftNode; this.rightNode=rightNode; }
+		/** Constructs a Node Mapping */
+		private NodeMapping(ArrayList<DefaultMutableTreeNode> inputNodes, DefaultMutableTreeNode outputNode)
+			{ this.inputNodes=inputNodes; this.outputNode=outputNode; }
 	}
 	
-	/** Private class for storing pairs of tree nodes */
-	private class TreeNodePairs
+	/** Returns the derivations for the various input node lists */
+	private ArrayList<ArrayList<DefaultMutableTreeNode>> getDerivations(ArrayList<DefaultMutableTreeNode> derivation, ArrayList<ArrayList<DefaultMutableTreeNode>> inputNodesList)
 	{
-		/** Stores the list of tree node pairs */
-		private ArrayList<TreeNodePair> pairs = new ArrayList<TreeNodePair>();
-		
-		/** Calculates the score for the pair of nodes */
-		private Double getScore(Integer direction, DefaultMutableTreeNode node1, DefaultMutableTreeNode node2)
+		ArrayList<ArrayList<DefaultMutableTreeNode>> derivations = new ArrayList<ArrayList<DefaultMutableTreeNode>>();
+		if(derivation.size()<inputNodesList.size())
 		{
-			Integer element1ID = SchemaTree.getElement(direction.equals(HarmonyConsts.LEFT) ? node1 : node2);
-			Integer element2ID = SchemaTree.getElement(direction.equals(HarmonyConsts.LEFT) ? node2 : node1);
-			Integer mappingID = harmonyModel.getMappingManager().getMappingCellID(element1ID, element2ID);
-			return mappingID==null ? 0.0 : harmonyModel.getMappingManager().getMappingCell(mappingID).getScore();
-		}
-		
-		/** Constructs the tree node pairs */
-		private TreeNodePairs(Integer leftID, Integer rightID)
-		{
-			// Retrieve the left and right schema trees
-			SchemaTreeImp leftTree = mappingPane.getTree(HarmonyConsts.LEFT);
-			SchemaTreeImp rightTree = mappingPane.getTree(HarmonyConsts.RIGHT);
-			
-			// Create the list of all node pairs
-			for(DefaultMutableTreeNode leftNode : leftTree.getSchemaElementNodes(leftID))
-				for(DefaultMutableTreeNode rightNode : rightTree.getSchemaElementNodes(rightID))
-					pairs.add(new TreeNodePair(leftNode,rightNode));
-			
-			// Only proceed if hierarchical filtering is on and more than one node pair exists
-			if(!harmonyModel.getFilters().getFilter(FilterManager.HIERARCHY_FILTER)) return;
-			if(pairs.size()<2) return;
-			
-			// Eliminate all node pairs where there exists a better hierarchical match
-			PAIR1_LOOP: for(int loc1=0; loc1<pairs.size(); loc1++)
-				PAIR2_LOOP: for(int loc2=loc1+1; loc2<pairs.size(); loc2++)
-				{
-					// Define the two tree nodes being compared
-					TreeNodePair pair1 = pairs.get(loc1);
-					TreeNodePair pair2 = pairs.get(loc2);
-					
-					// Identify the focal node and matched nodes
-					Integer direction = null;
-					DefaultMutableTreeNode focalNode=null, match1=null, match2=null;
-					if(pair1.leftNode.equals(pair2.leftNode))
-					{
-						direction=HarmonyConsts.LEFT; focalNode=pair1.leftNode;
-						match1=pair1.rightNode; match2=pair2.rightNode;
-					}
-					else if(pair1.rightNode.equals(pair2.rightNode))
-					{
-						direction=HarmonyConsts.RIGHT; focalNode=pair1.rightNode;
-						match1=pair1.leftNode; match2=pair2.leftNode;
-					}
-					if(focalNode==null) continue;
-
-					// Shift the matched nodes to the first unique parent node
-					while(SchemaTree.getElement(match1).equals(SchemaTree.getElement(match2)))
-					{
-						match1 = (DefaultMutableTreeNode)match1.getParent();
-						match2 = (DefaultMutableTreeNode)match2.getParent();
-						if(SchemaTree.getElement(match1)==null || SchemaTree.getElement(match2)==null) break;
-					}
-					
-					// Identify the better matched node based on context
-					while(focalNode.getParent()!=null)
-					{
-						focalNode = (DefaultMutableTreeNode)focalNode.getParent();
-						Double pair1Score = getScore(direction,focalNode,match1);
-						Double pair2Score = getScore(direction,focalNode,match2);
-						if(pair1Score>pair2Score+0.1) { pairs.remove(loc2--); break PAIR2_LOOP; }
-						if(pair2Score>pair1Score+0.1) { pairs.remove(loc1--); break PAIR1_LOOP; }
-					}
-				}
-		}
-	}
-	
-	/** Calculates all of the lines connecting the specified left and right nodes */
-	private void getLines(Integer[] leftID, Integer rightID)
-	{
-		// Handles simple lines
-		if(isIdentityFunction)
-		{
-			// Retrieve the left and right schema trees
-			SchemaTreeImp leftTree = mappingPane.getTree(HarmonyConsts.LEFT);
-			SchemaTreeImp rightTree = mappingPane.getTree(HarmonyConsts.RIGHT);
-
-			// Cycle through all combination of source and target nodes
-			TreeNodePairs nodePairs = new TreeNodePairs(leftID[0],rightID);
-			for(TreeNodePair pair : nodePairs.pairs)
+			for(DefaultMutableTreeNode node : inputNodesList.get(derivation.size()))
 			{
-				// Only create lines if they are within the specified depths
-				if(!harmonyModel.getFilters().isVisibleNode(HarmonyConsts.LEFT,pair.leftNode)) continue;
-				if(!harmonyModel.getFilters().isVisibleNode(HarmonyConsts.RIGHT,pair.rightNode)) continue;
-				
-				// Only create lines if they are visible on the screen (saves processing time)
-				Integer leftRow = leftTree.getNodeRow(pair.leftNode);
-				Integer rightRow = rightTree.getNodeRow(pair.rightNode);
-				if(leftRow<leftTree.firstVisibleRow && rightRow<rightTree.firstVisibleRow) continue;
-				if(leftRow>leftTree.lastVisibleRow && rightRow>rightTree.lastVisibleRow) continue;
-				
-				// Add line linking the left and right nodes
-				if(lines!=null) lines.add(new MappingCellLine(mappingPane,pair.leftNode,pair.rightNode));
+				derivation.add(node);
+				derivations.addAll(getDerivations(derivation,inputNodesList));
+				derivation.remove(derivation.size()-1);
 			}
 		}
-	
-		// Handles complex lines
-		else
-		{
-			FunctionMappingCellLines fmclines = new FunctionMappingCellLines(mappingPane, leftID, rightID);			
-			LinkedList<Line2D.Double> lineSegments = fmclines.getLines();
-			for(int i=0; i<lineSegments.size(); i++)
-				if(lines!=null)
-				{
-					Point source = new Point((int)lineSegments.get(i).x1,(int)lineSegments.get(i).y1);
-					Point target = new Point((int)lineSegments.get(i).x2,(int)lineSegments.get(i).y2);
-					lines.add(new MappingCellLine(source, target));
-				}
-		}
+		else derivations.add(new ArrayList<DefaultMutableTreeNode>(derivation));
+		return derivations;
 	}
 	
+	/** Calculates the score for the pair of nodes */
+	private Double getScore(Integer direction, DefaultMutableTreeNode node1, DefaultMutableTreeNode node2)
+	{
+		Integer element1ID = SchemaTree.getElement(direction.equals(HarmonyConsts.LEFT) ? node1 : node2);
+		Integer element2ID = SchemaTree.getElement(direction.equals(HarmonyConsts.LEFT) ? node2 : node1);
+		Integer mappingID = harmonyModel.getMappingManager().getMappingCellID(element1ID, element2ID);
+		return mappingID==null ? 0.0 : harmonyModel.getMappingManager().getMappingCell(mappingID).getScore();
+	}
+	
+	/** Generate the list of node mappings */
+	private ArrayList<NodeMapping> getNodeMappings(MappingCell mappingCell)
+	{
+		ArrayList<NodeMapping> nodeMappings = new ArrayList<NodeMapping>();
+		
+		// Retrieve the left and right schema trees
+		SchemaTreeImp leftTree = mappingPane.getTree(HarmonyConsts.LEFT);
+		SchemaTreeImp rightTree = mappingPane.getTree(HarmonyConsts.RIGHT);
+
+		// Convert mapping cell IDs into nodes
+		ArrayList<ArrayList<DefaultMutableTreeNode>> inputNodesList = new ArrayList<ArrayList<DefaultMutableTreeNode>>();
+		for(Integer inputID : mappingCell.getInput())
+			inputNodesList.add(leftTree.getSchemaElementNodes(inputID));
+		ArrayList<DefaultMutableTreeNode> outputNodes = rightTree.getSchemaElementNodes(mappingCell.getOutput());
+		
+		// Generate all node mappings
+		for(ArrayList<DefaultMutableTreeNode> inputNodes : getDerivations(new ArrayList<DefaultMutableTreeNode>(),inputNodesList))
+			for(DefaultMutableTreeNode outputNode : outputNodes)
+				nodeMappings.add(new NodeMapping(inputNodes,outputNode));
+	
+		// Only proceed if hierarchical filtering is on and more than one node pair exists
+//		if(harmonyModel.getFilters().getFilter(FilterManager.HIERARCHY_FILTER) && nodeMappings.size()>=2)
+//		{
+//			// Eliminate all node pairs where there exists a better hierarchical match
+//			PAIR1_LOOP: for(int loc1=0; loc1<nodeMappings.size(); loc1++)
+//				PAIR2_LOOP: for(int loc2=loc1+1; loc2<nodeMappings.size(); loc2++)
+//				{
+//					// Define the two tree nodes being compared
+//					NodeMapping pair1 = nodeMappings.get(loc1);
+//					NodeMapping pair2 = nodeMappings.get(loc2);
+//					
+//					// Identify the focal node and matched nodes
+//					Integer direction = null;
+//					DefaultMutableTreeNode focalNode=null, match1=null, match2=null;
+//					if(pair1.leftNode.equals(pair2.leftNode))
+//					{
+//						direction=HarmonyConsts.LEFT; focalNode=pair1.leftNode;
+//						match1=pair1.rightNode; match2=pair2.rightNode;
+//					}
+//					else if(pair1.rightNode.equals(pair2.rightNode))
+//					{
+//						direction=HarmonyConsts.RIGHT; focalNode=pair1.rightNode;
+//						match1=pair1.leftNode; match2=pair2.leftNode;
+//					}
+//					if(focalNode==null) continue;
+//	
+//					// Shift the matched nodes to the first unique parent node
+//					while(SchemaTree.getElement(match1).equals(SchemaTree.getElement(match2)))
+//					{
+//						match1 = (DefaultMutableTreeNode)match1.getParent();
+//						match2 = (DefaultMutableTreeNode)match2.getParent();
+//						if(SchemaTree.getElement(match1)==null || SchemaTree.getElement(match2)==null) break;
+//					}
+//					
+//					// Identify the better matched node based on context
+//					while(focalNode.getParent()!=null)
+//					{
+//						focalNode = (DefaultMutableTreeNode)focalNode.getParent();
+//						Double pair1Score = getScore(direction,focalNode,match1);
+//						Double pair2Score = getScore(direction,focalNode,match2);
+//						if(pair1Score>pair2Score+0.1) { nodeMappings.remove(loc2--); break PAIR2_LOOP; }
+//						if(pair2Score>pair1Score+0.1) { nodeMappings.remove(loc1--); break PAIR1_LOOP; }
+//					}
+//				}
+//		}
+		
+		return nodeMappings;
+	}
+	
+	/** Generate all of the lines which make up the mapping cell */
+	private void generateLines()
+	{
+		MappingCell mappingCell = harmonyModel.getMappingManager().getMappingCell(mappingCellID);
+		
+		// Retrieve the left and right schema trees
+		SchemaTreeImp leftTree = mappingPane.getTree(HarmonyConsts.LEFT);
+		SchemaTreeImp rightTree = mappingPane.getTree(HarmonyConsts.RIGHT);
+
+		// Cycle through all combination of source and target nodes
+		for(NodeMapping nodeMapping : getNodeMappings(mappingCell))
+		{
+			// Only create lines if they are within the specified depths
+			for(DefaultMutableTreeNode inputNode : nodeMapping.inputNodes)
+				if(!harmonyModel.getFilters().isVisibleNode(HarmonyConsts.LEFT,inputNode)) continue;
+			if(!harmonyModel.getFilters().isVisibleNode(HarmonyConsts.RIGHT,nodeMapping.outputNode)) continue;
+			
+			// Only create lines if they are visible on the screen (saves processing time)
+			Integer outputRow = rightTree.getNodeRow(nodeMapping.outputNode);
+			for(DefaultMutableTreeNode inputNode : nodeMapping.inputNodes)
+			{
+				Integer inputRow = leftTree.getNodeRow(inputNode);
+				if(inputRow<leftTree.firstVisibleRow && outputRow<rightTree.firstVisibleRow) continue;
+				if(inputRow>leftTree.lastVisibleRow && outputRow>rightTree.lastVisibleRow) continue;
+			}
+			
+			// Add line linking the left and right nodes
+			lines = new ArrayList<MappingCellLine>();
+			lines.add(new MappingCellLine(mappingPane,nodeMapping.inputNodes,nodeMapping.outputNode,mappingCell.isIdentityFunction()));
+		}
+	}
 	
 	/** Initializes the mapping cell lines */
 	MappingCellLines(MappingPane mappingPane, Integer mappingCellID, HarmonyModel harmonyModel)
@@ -188,20 +189,10 @@ class MappingCellLines
 	Integer getMappingCellID()
 		{ return mappingCellID; }
 	
-	/** Indicates if the mapping cell is an identify function */
-	Boolean isIdentityFunction()
-		{ return isIdentityFunction; }
-	
 	/** Returns the list of lines associated with this mapping cell */
 	synchronized ArrayList<MappingCellLine> getLines()
 	{
-		if(!getHidden() && lines==null)
-		{
-			lines = new ArrayList<MappingCellLine>();
-			MappingCell mappingCell = harmonyModel.getMappingManager().getMappingCell(mappingCellID);
-			isIdentityFunction = mappingCell.isIdentityFunction();
-			getLines(mappingCell.getInput(),mappingCell.getOutput());
-		}
+		if(!getHidden() && lines==null) generateLines();
 		return lines==null ? new ArrayList<MappingCellLine>() : new ArrayList<MappingCellLine>(lines);
 	}
 	
