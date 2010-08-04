@@ -29,6 +29,7 @@ import org.mitre.openii.dialogs.tags.DeleteTagDialog;
 import org.mitre.openii.dialogs.tags.EditTagDialog;
 import org.mitre.openii.dialogs.tags.SearchDialog;
 import org.mitre.openii.dialogs.vocabulary.DeleteVocabularyDialog;
+import org.mitre.openii.dialogs.vocabulary.ExportVocabularyDialog;
 import org.mitre.openii.model.OpenIIManager;
 import org.mitre.openii.views.manager.SchemaInProject;
 import org.mitre.openii.views.manager.SchemaInTag;
@@ -49,7 +50,7 @@ public class ManagerAction extends Action
 							DELETE_TAG_SCHEMA, NEW_PROJECT, IMPORT_PROJECT , MERGE_PROJECTS, EDIT_PROJECT,
 							EXPORT_PROJECT, DELETE_PROJECT, DELETE_PROJECT_SCHEMA, IMPORT_MAPPING,
 							REPLACE_SCHEMA, AUTO_GENERATE_MATCHES, EXPORT_MAPPING, DELETE_MAPPING,
-							GENERATE_VOCABULARY, DELETE_VOCABULARY};
+							GENERATE_VOCABULARY, DELETE_VOCABULARY, EXPORT_VOCABULARY};
 	
 	/** Stores the menu manager to which this action is tied */
 	private ManagerMenuManager menuManager;
@@ -96,6 +97,7 @@ public class ManagerAction extends Action
 			case EXPORT_MAPPING: icon = "Export.gif"; break;
 			case DELETE_MAPPING: icon = "Delete.gif"; break;
 			case DELETE_VOCABULARY: icon = "Delete.gif"; break;
+			case EXPORT_VOCABULARY: icon = "Export.gif"; break;
 		}		
 		setImageDescriptor(OpenIIActivator.getImageDescriptor("icons/"+icon));
 	}
@@ -232,6 +234,9 @@ public class ManagerAction extends Action
 		/** Handles the deletion of a project's vocabulary */
 		if(actionType == ActionType.DELETE_VOCABULARY)
 			DeleteVocabularyDialog.delete(shell,(VocabularyInProject)selection);
+		
+		if (actionType == ActionType.EXPORT_VOCABULARY)
+			ExportVocabularyDialog.export(shell, (VocabularyInProject)selection); 
 
 		/** Handles the replacing of a schema from a project */
 		if(actionType == ActionType.REPLACE_SCHEMA)
