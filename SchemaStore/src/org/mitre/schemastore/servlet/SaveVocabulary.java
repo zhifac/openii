@@ -178,7 +178,8 @@ public class SaveVocabulary
 		// Identify all old terms that are no longer used
 		boolean success = true;
 		for(Term term : oldTerms)
-			success &= manager.getSchemaElementCache().deleteSchemaElement(term.getId());
+			if(!termIDs.contains(term.getId()))
+				success &= manager.getSchemaElementCache().deleteSchemaElement(term.getId());
 		return success;
 	}
 	
@@ -222,7 +223,7 @@ public class SaveVocabulary
 			updateMappings(manager, projectID, vocabularyID, mappings);
 			removeOldTerms(manager, Arrays.asList(oldVocabulary.getTerms()), alignedTerms);
 		}
-		catch(Exception e) { System.out.println("(E) VocabularyCache:setVocabulary: "+e.getMessage()); return false; }
+		catch(Exception e) { System.out.println("(E) SaveVocabulary:saveVocabulary: "+e.getMessage()); return false; }
 		return true;
 	}
 }

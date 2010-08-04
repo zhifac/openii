@@ -37,11 +37,13 @@ public class GetVocabulary
 		if(vocabularyID==null) return null;
 		HashMap<Integer,SchemaElement> vocabularyElements = getSchemaElements(manager, vocabularyID);		
 		
-		// Get the vocabulary mappings
-		ArrayList<Mapping> mappings = manager.getProjectCache().getVocabularyMappings(projectID);
-		
 		// Generate the vocabulary terms
 		HashMap<Integer,Term> terms = new HashMap<Integer,Term>();
+		for(SchemaElement element : vocabularyElements.values())
+			terms.put(element.getId(), new Term(element.getId(),element.getName(),element.getDescription()));			
+		
+		// Get the associated elements for the vocabulary terms
+		ArrayList<Mapping> mappings = manager.getProjectCache().getVocabularyMappings(projectID);
 		for(Mapping mapping : mappings)
 		{
 			// Get the ID of the schema involved in the vocabulary
@@ -54,12 +56,6 @@ public class GetVocabulary
 				// Get the term
 				Integer termID = mappingCell.getOutput();
 				Term term = terms.get(termID);
-				if(term==null)
-				{
-					SchemaElement element = vocabularyElements.get(termID);
-					term = new Term(termID,element.getName(),element.getDescription(),new AssociatedElement[0]);
-					terms.put(termID, term);
-				}
 				
 				// Add the associated element
 				SchemaElement element = schemaElements.get(mappingCell.getInput()[0]);
