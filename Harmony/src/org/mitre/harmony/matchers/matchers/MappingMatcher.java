@@ -91,7 +91,7 @@ public class MappingMatcher extends BagMatcher
 					// Get reference IDs
 					ArrayList<Integer> referenceIDs = new ArrayList<Integer>();
 					if(isSource) referenceIDs.add(mappingCell.getOutput());
-					else referenceIDs.addAll(Arrays.asList(mappingCell.getInput()));
+					else referenceIDs.addAll(Arrays.asList(mappingCell.getElementInputIDs()));
 					
 					// Get the word bags
 					ArrayList<WordBag> bags = new ArrayList<WordBag>();
@@ -104,7 +104,7 @@ public class MappingMatcher extends BagMatcher
 	
 					// Get associated IDs
 					ArrayList<Integer> associatedIDs = new ArrayList<Integer>();
-					if(isSource) associatedIDs.addAll(Arrays.asList(mappingCell.getInput()));
+					if(isSource) associatedIDs.addAll(Arrays.asList(mappingCell.getElementInputIDs()));
 					else associatedIDs.add(mappingCell.getOutput());
 					
 					// Add in associated terms

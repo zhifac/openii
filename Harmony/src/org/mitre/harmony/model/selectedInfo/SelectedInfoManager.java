@@ -141,7 +141,7 @@ public class SelectedInfoManager extends AbstractManager<SelectedInfoListener> i
 		{
 			// Identify the elements for the mapping cell
 			MappingCell mappingCell = getModel().getMappingManager().getMappingCell(mappingCellID);
-			Integer element1 = mappingCell.getFirstInput();
+			Integer element1 = mappingCell.getElementInputIDs()[0];
 			Integer element2 = mappingCell.getOutput();
 			
 			// Mark selected elements

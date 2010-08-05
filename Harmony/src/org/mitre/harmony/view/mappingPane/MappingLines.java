@@ -207,7 +207,7 @@ public class MappingLines implements MappingListener, FiltersListener, SchemaTre
 				// Generate list of elements still in need of checking
 				ArrayList<Integer> elementIDs = new ArrayList<Integer>();
 				if(!affectedElementIDs.contains(mappingCell.getOutput())) elementIDs.add(mappingCell.getOutput());
-				for(Integer elementID : mappingCell.getInput())
+				for(Integer elementID : mappingCell.getElementInputIDs())
 					if(!affectedElementIDs.contains(elementID)) elementIDs.add(mappingCell.getOutput());
 
 				// Gather up hierarchically affected element IDs

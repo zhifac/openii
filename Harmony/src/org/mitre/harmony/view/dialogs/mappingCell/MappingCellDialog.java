@@ -27,6 +27,7 @@ import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.project.MappingManager;
 import org.mitre.harmony.view.dialogs.widgets.AbstractButtonPane;
 import org.mitre.schemastore.model.MappingCell;
+import org.mitre.schemastore.model.MappingCellInput;
 
 /**
  * Displays the dialog which allows mapping cells to be accepted/rejected
@@ -119,7 +120,7 @@ public class MappingCellDialog extends JDialog implements MouseListener, MouseMo
 								//String function = IdentityFunction.class.getCanonicalName();
 								String function = functionPane.getFunctionName();
 								System.out.println("FuncName=" + function);
-								Integer[] inputs = functionPane.getInputs();
+								MappingCellInput[] inputs = functionPane.getInputs();
 								Integer output = functionPane.getOutput();
 								Integer functionID = functionPane.getFunctionId();
 								

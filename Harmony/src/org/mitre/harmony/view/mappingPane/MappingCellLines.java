@@ -9,6 +9,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.mitre.harmony.model.HarmonyConsts;
 import org.mitre.harmony.model.HarmonyModel;
+import org.mitre.harmony.model.filters.FilterManager;
 import org.mitre.harmony.view.schemaTree.SchemaTree;
 import org.mitre.schemastore.model.MappingCell;
 
@@ -87,7 +88,7 @@ class MappingCellLines
 
 		// Convert mapping cell IDs into nodes
 		ArrayList<ArrayList<DefaultMutableTreeNode>> inputNodesList = new ArrayList<ArrayList<DefaultMutableTreeNode>>();
-		for(Integer inputID : mappingCell.getInput())
+		for(Integer inputID : mappingCell.getElementInputIDs())
 			inputNodesList.add(leftTree.getSchemaElementNodes(inputID));
 		ArrayList<DefaultMutableTreeNode> outputNodes = rightTree.getSchemaElementNodes(mappingCell.getOutput());
 		
@@ -97,50 +98,51 @@ class MappingCellLines
 				nodeMappings.add(new NodeMapping(inputNodes,outputNode));
 	
 		// Only proceed if hierarchical filtering is on and more than one node pair exists
-//		if(harmonyModel.getFilters().getFilter(FilterManager.HIERARCHY_FILTER) && nodeMappings.size()>=2)
-//		{
-//			// Eliminate all node pairs where there exists a better hierarchical match
-//			PAIR1_LOOP: for(int loc1=0; loc1<nodeMappings.size(); loc1++)
-//				PAIR2_LOOP: for(int loc2=loc1+1; loc2<nodeMappings.size(); loc2++)
-//				{
-//					// Define the two tree nodes being compared
-//					NodeMapping pair1 = nodeMappings.get(loc1);
-//					NodeMapping pair2 = nodeMappings.get(loc2);
-//					
-//					// Identify the focal node and matched nodes
-//					Integer direction = null;
-//					DefaultMutableTreeNode focalNode=null, match1=null, match2=null;
-//					if(pair1.leftNode.equals(pair2.leftNode))
-//					{
-//						direction=HarmonyConsts.LEFT; focalNode=pair1.leftNode;
-//						match1=pair1.rightNode; match2=pair2.rightNode;
-//					}
-//					else if(pair1.rightNode.equals(pair2.rightNode))
-//					{
-//						direction=HarmonyConsts.RIGHT; focalNode=pair1.rightNode;
-//						match1=pair1.leftNode; match2=pair2.leftNode;
-//					}
-//					if(focalNode==null) continue;
-//	
-//					// Shift the matched nodes to the first unique parent node
-//					while(SchemaTree.getElement(match1).equals(SchemaTree.getElement(match2)))
-//					{
-//						match1 = (DefaultMutableTreeNode)match1.getParent();
-//						match2 = (DefaultMutableTreeNode)match2.getParent();
-//						if(SchemaTree.getElement(match1)==null || SchemaTree.getElement(match2)==null) break;
-//					}
-//					
-//					// Identify the better matched node based on context
-//					while(focalNode.getParent()!=null)
-//					{
-//						focalNode = (DefaultMutableTreeNode)focalNode.getParent();
-//						Double pair1Score = getScore(direction,focalNode,match1);
-//						Double pair2Score = getScore(direction,focalNode,match2);
-//						if(pair1Score>pair2Score+0.1) { nodeMappings.remove(loc2--); break PAIR2_LOOP; }
-//						if(pair2Score>pair1Score+0.1) { nodeMappings.remove(loc1--); break PAIR1_LOOP; }
-//					}
-//				}
-//		}
+		if(harmonyModel.getFilters().getFilter(FilterManager.HIERARCHY_FILTER) && nodeMappings.size()>=2)
+			if(inputNodesList.size()==1)
+			{
+				// Eliminate all node pairs where there exists a better hierarchical match
+				PAIR1_LOOP: for(int loc1=0; loc1<nodeMappings.size(); loc1++)
+					PAIR2_LOOP: for(int loc2=loc1+1; loc2<nodeMappings.size(); loc2++)
+					{
+						// Define the two tree nodes being compared
+						NodeMapping pair1 = nodeMappings.get(loc1);
+						NodeMapping pair2 = nodeMappings.get(loc2);
+						
+						// Identify the focal node and matched nodes
+						Integer direction = null;
+						DefaultMutableTreeNode focalNode=null, match1=null, match2=null;
+						if(pair1.inputNodes.get(0).equals(pair2.inputNodes.get(0)))
+						{
+							direction=HarmonyConsts.LEFT; focalNode=pair1.inputNodes.get(0);
+							match1=pair1.outputNode; match2=pair2.outputNode;
+						}
+						else if(pair1.outputNode.equals(pair2.outputNode))
+						{
+							direction=HarmonyConsts.RIGHT; focalNode=pair1.outputNode;
+							match1=pair1.inputNodes.get(0); match2=pair2.inputNodes.get(0);
+						}
+						if(focalNode==null) continue;
+		
+						// Shift the matched nodes to the first unique parent node
+						while(SchemaTree.getElement(match1).equals(SchemaTree.getElement(match2)))
+						{
+							match1 = (DefaultMutableTreeNode)match1.getParent();
+							match2 = (DefaultMutableTreeNode)match2.getParent();
+							if(SchemaTree.getElement(match1)==null || SchemaTree.getElement(match2)==null) break;
+						}
+						
+						// Identify the better matched node based on context
+						while(focalNode.getParent()!=null)
+						{
+							focalNode = (DefaultMutableTreeNode)focalNode.getParent();
+							Double pair1Score = getScore(direction,focalNode,match1);
+							Double pair2Score = getScore(direction,focalNode,match2);
+							if(pair1Score>pair2Score+0.1) { nodeMappings.remove(loc2--); break PAIR2_LOOP; }
+							if(pair2Score>pair1Score+0.1) { nodeMappings.remove(loc1--); break PAIR1_LOOP; }
+						}
+					}
+			}
 		
 		return nodeMappings;
 	}
@@ -148,9 +150,10 @@ class MappingCellLines
 	/** Generate all of the lines which make up the mapping cell */
 	private void generateLines()
 	{
-		MappingCell mappingCell = harmonyModel.getMappingManager().getMappingCell(mappingCellID);
-		
+		lines = new ArrayList<MappingCellLine>();
+	
 		// Retrieve the left and right schema trees
+		MappingCell mappingCell = harmonyModel.getMappingManager().getMappingCell(mappingCellID);
 		SchemaTreeImp leftTree = mappingPane.getTree(HarmonyConsts.LEFT);
 		SchemaTreeImp rightTree = mappingPane.getTree(HarmonyConsts.RIGHT);
 
@@ -172,7 +175,6 @@ class MappingCellLines
 			}
 			
 			// Add line linking the left and right nodes
-			lines = new ArrayList<MappingCellLine>();
 			lines.add(new MappingCellLine(mappingPane,nodeMapping.inputNodes,nodeMapping.outputNode,mappingCell.isIdentityFunction()));
 		}
 	}

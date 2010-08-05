@@ -271,7 +271,7 @@ public class FilterManager extends AbstractManager<FiltersListener> implements M
 			{
 				// Make sure that all elements referenced by the mapping cell do exist
 				MappingCell mappingCell = getModel().getMappingManager().getMappingCell(mappingCellID);
-				for(Integer inputID : mappingCell.getInput())
+				for(Integer inputID : mappingCell.getElementInputIDs())
 					if(!leftIDs.contains(inputID)) continue MAPPING_CELL_LOOP;
 				if(!rightIDs.contains(mappingCell.getOutput())) continue;
 				mappingCells.add(mappingCell);
@@ -311,7 +311,7 @@ public class FilterManager extends AbstractManager<FiltersListener> implements M
 			// Gather up all elements associated with the mapping cell
 			ArrayList<Integer> elementIDs = new ArrayList<Integer>();
 			elementIDs.add(mappingCell.getOutput());
-			elementIDs.addAll(Arrays.asList(mappingCell.getInput()));
+			elementIDs.addAll(Arrays.asList(mappingCell.getElementInputIDs()));
 
 			// Determine if considered a "best" mapping cell
 			boolean best = false;
