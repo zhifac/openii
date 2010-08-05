@@ -18,7 +18,6 @@ import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Text;
 import org.mitre.openii.widgets.BasicWidgets;
-import org.mitre.schemastore.porters.vocabularyExporters.VocabularyExporter;
 
 class MatchMakerPage extends WizardPage implements ModifyListener,
 		SelectionListener {
@@ -67,8 +66,6 @@ class MatchMakerPage extends WizardPage implements ModifyListener,
 			vocabNameField.setText(((GenerateVocabularyWizard) (getWizard()))
 					.getProject().getName()
 					+ " vocabulary");
-		if (fileSelectionPane.getText().equals(""))
-			fileSelectionPane.setText("C://" + getVocabularyName() + ".csv");
 
 		vocabNameField.addModifyListener(this);
 		authorField.addModifyListener(this);
