@@ -6,8 +6,9 @@ import java.io.IOException;
 import org.mitre.schemastore.model.Vocabulary;
 import org.mitre.schemastore.porters.Exporter;
 
-public abstract class VocabularyExporter extends Exporter {
-
-	 abstract public void exportVocabulary (Vocabulary vocabulary, File file)  throws IOException; 
-
+/** Abstract Schema Exporter class */
+public abstract class VocabularyExporter extends Exporter
+{
+	/** Exports the specified vocabulary to the specified file */
+	abstract public void exportVocabulary(Vocabulary vocabulary, File file) throws IOException;
 }
