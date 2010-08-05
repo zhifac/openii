@@ -30,12 +30,13 @@ import org.mitre.schemastore.porters.projectExporters.ProjectExporter;
 import org.mitre.schemastore.porters.projectImporters.ProjectImporter;
 import org.mitre.schemastore.porters.schemaExporters.SchemaExporter;
 import org.mitre.schemastore.porters.schemaImporters.SchemaImporter;
+import org.mitre.schemastore.porters.vocabularyExporters.VocabularyExporter;
 
 /** Class for managing the various porters */
 public class PorterManager
 {
 	// Constants for references the various porter lists
-	static public enum PorterType {SCHEMA_IMPORTERS, SCHEMA_EXPORTERS, PROJECT_IMPORTERS, PROJECT_EXPORTERS, MAPPING_IMPORTERS, MAPPING_EXPORTERS};
+	static public enum PorterType {SCHEMA_IMPORTERS, SCHEMA_EXPORTERS, PROJECT_IMPORTERS, PROJECT_EXPORTERS, MAPPING_IMPORTERS, MAPPING_EXPORTERS, VOCABULARY_EXPORTERS};
 	
 	/** Stores listings of the porters */
 	private HashMap<PorterType,PorterList<? extends Porter>> porters = new HashMap<PorterType,PorterList<? extends Porter>>();
@@ -61,6 +62,7 @@ public class PorterManager
 		porters.put(PorterType.PROJECT_EXPORTERS, new PorterList<ProjectExporter>(buffer,"projectExporter",client));
 		porters.put(PorterType.MAPPING_IMPORTERS, new PorterList<MappingImporter>(buffer,"mappingImporter",client));
 		porters.put(PorterType.MAPPING_EXPORTERS, new PorterList<MappingExporter>(buffer,"mappingExporter",client));
+		porters.put(PorterType.VOCABULARY_EXPORTERS, new PorterList<VocabularyExporter>(buffer, "vocabularyExporter", client));
 	}
 	
 	/** Returns the list of specified porters */ @SuppressWarnings("unchecked")
