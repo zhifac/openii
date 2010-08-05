@@ -113,7 +113,7 @@ public class SchemaExplorer {
 						continue; 
 					}
 					
-					Integer [] inputs = mc.getInput();
+					Integer [] inputs = mc.getElementInputIDs();
 					for(int x=0; x<inputs.length; x++)
 						if(inputs[x].equals(e.getId()))
 						{
@@ -150,8 +150,8 @@ public class SchemaExplorer {
 	public String formatMapping(SchemaElement source, MappingCell cell) throws RemoteException {
 		int other;
 		
-		if(cell.getInput()[0].equals(source.getId())) other = cell.getOutput();
-		else other = cell.getInput()[0];
+		if(cell.getElementInputIDs()[0].equals(source.getId())) other = cell.getOutput();
+		else other = cell.getElementInputIDs()[0];
 		
 		SchemaStoreClient client = RepositoryManager.getClient();		
 		SchemaElement e = client.getSchemaElement(other); 

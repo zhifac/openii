@@ -13,6 +13,7 @@ import org.mitre.openii.model.OpenIIManager;
 import org.mitre.openii.widgets.ExpandBarWidgets;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
+import org.mitre.schemastore.model.MappingCellInput;
 import org.mitre.schemastore.model.schemaInfo.SchemaInfo;
 
 /** Constructs the Mapping View */
@@ -43,9 +44,11 @@ public class M3MappingEditor extends OpenIIEditor
 		{
 			// Gather mapping cell input and output information
 			String inputs = "";
-			for(Integer input : mappingCell.getInput())
-				inputs += sourceSchema.getElement(input).getName() + " (" + input  + "), ";
-			if(inputs.length()>2) inputs = inputs.substring(0,inputs.length()-2);
+			for(MappingCellInput input : mappingCell.getInputs())
+			{
+				if(input.isConstant()) inputs += input.getConstant();
+				else inputs += sourceSchema.getElement(input.getElementID()).getName() + " (" + input.getElementID() + "), ";
+			}
 			String output = targetSchema.getElement(mappingCell.getOutput()).getName() + " (" + mappingCell.getOutput() + ")";
 			
 			// Gather general mapping cell information
