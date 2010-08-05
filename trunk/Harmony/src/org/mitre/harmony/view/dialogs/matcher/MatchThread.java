@@ -204,7 +204,7 @@ public class MatchThread extends Thread
 			for(MappingCell mappingCell : mapping.getMappingCells())
 				if(mappingCell.isValidated())
 				{
-					sourceElements.addAll(Arrays.asList(mappingCell.getInput()));
+					sourceElements.addAll(Arrays.asList(mappingCell.getElementInputIDs()));
 					targetElements.add(mappingCell.getOutput());
 				}
 

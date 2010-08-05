@@ -25,7 +25,7 @@ class ElementConfHashTable extends Hashtable<Integer,Double> implements MappingL
 	private ArrayList<Integer> getElementIDs(MappingCell mappingCell)
 	{
 		ArrayList<Integer> elementIDs = new ArrayList<Integer>();
-		elementIDs.addAll(Arrays.asList(mappingCell.getInput()));
+		elementIDs.addAll(Arrays.asList(mappingCell.getElementInputIDs()));
 		elementIDs.add(mappingCell.getOutput());
 		return elementIDs;
 	}

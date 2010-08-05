@@ -153,7 +153,7 @@ public class ProjectMapping extends Mapping
 			{
 				// Get information about the mapping cell to be stored
 				Integer mappingCellID = ++harmonyModel.getMappingManager().maxID;
-				Integer inputIDs[] = mappingCell.getInput();
+				Integer inputIDs[] = mappingCell.getElementInputIDs();
 				Integer outputID = mappingCell.getOutput();
 				mappingCell.setId(mappingCellID);
 				if(mappingCell.getDate()==null)
@@ -218,7 +218,7 @@ public class ProjectMapping extends Mapping
 			// Retrieve the various mapping cell fields
 			Integer id = mappingCell.getId();
 			Integer mappingID = mappingCell.getMappingId();
-			Integer inputID = mappingCell.getFirstInput();
+			Integer inputID = mappingCell.getElementInputIDs()[0];
 			Integer outputID = mappingCell.getOutput();
 			String author = System.getProperty("user.name");
 			Date date = Calendar.getInstance().getTime();		
@@ -246,10 +246,10 @@ public class ProjectMapping extends Mapping
 		{
 			// Remove the mapping cell from the hash and key caches
 			mappingCellHash.remove(mappingCell.getId());
-			mappingCellsByKey.remove(getKey(mappingCell.getInput(),mappingCell.getOutput()));
+			mappingCellsByKey.remove(getKey(mappingCell.getElementInputIDs(),mappingCell.getOutput()));
 
 			// Remove the mapping cell from the element reference
-			ArrayList<Integer> elementIDs = new ArrayList<Integer>(Arrays.asList(mappingCell.getInput()));
+			ArrayList<Integer> elementIDs = new ArrayList<Integer>(Arrays.asList(mappingCell.getElementInputIDs()));
 			elementIDs.add(mappingCell.getOutput());
 			for(Integer elementID : elementIDs)
 			{

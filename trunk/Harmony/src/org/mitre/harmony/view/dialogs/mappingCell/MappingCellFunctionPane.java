@@ -18,7 +18,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import javax.swing.BorderFactory;
-import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -32,6 +31,7 @@ import org.mitre.harmony.model.SchemaStoreManager;
 import org.mitre.schemastore.model.DataType;
 import org.mitre.schemastore.model.Function;
 import org.mitre.schemastore.model.MappingCell;
+import org.mitre.schemastore.model.MappingCellInput;
 import org.mitre.schemastore.model.schemaInfo.SchemaInfo;
 
 /**
@@ -134,13 +134,14 @@ public class MappingCellFunctionPane extends JPanel implements ActionListener, K
 			MappingCell funcMc = (MappingCell)mappingCells.get(0);
 			
 			//get the input list
-			Integer[] inputsId = funcMc.getInput();
+			MappingCellInput[] inputsId = funcMc.getInputs();
 			numParameters = inputsId.length;
 			
-			for(int i=0; i< inputsId.length; i++){	
-				//SchemaInfo schemaInfo = harmonyModel.getSchemaManager().getSchemaInfo(leftSchemaID);
-				variables.add(leftSchemaInfo.getDisplayName(inputsId[i]));	
-				inputHash.put(inputsId[i], leftSchemaInfo.getDisplayName(inputsId[i]));
+			for(int i=0; i< inputsId.length; i++)
+			{
+				Integer elementID = inputsId[i].getElementID();
+				variables.add(leftSchemaInfo.getDisplayName(elementID));	
+				inputHash.put(elementID, leftSchemaInfo.getDisplayName(elementID));
 			}
 			
 			//get output list
@@ -626,10 +627,10 @@ public class MappingCellFunctionPane extends JPanel implements ActionListener, K
 		this.functionName = functionName;
 	}
 
-	public Integer[] getInputs() {
-		Integer[] inputs = new Integer[inputList.size()];
+	public MappingCellInput[] getInputs() {
+		MappingCellInput[] inputs = new MappingCellInput[inputList.size()];
 		for(int i=0; i<inputList.size(); i++ ){
-			inputs[i] = (Integer)inputList.get(i);
+			inputs[i] = new MappingCellInput((Integer)inputList.get(i));
 		}
 		return inputs;
 	}

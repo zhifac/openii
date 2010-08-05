@@ -3,6 +3,7 @@
   <preferences>
     <alphabetize>false</alphabetize>
     <ignoreMatchedElements>true</ignoreMatchedElements>
+    <importDir>C:\chris\projects\Harmony\Schemas</importDir>
     <showSchemaTypes>false</showSchemaTypes>
   </preferences>
   <repository>
