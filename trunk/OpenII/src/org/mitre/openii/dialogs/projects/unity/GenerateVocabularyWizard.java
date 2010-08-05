@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.eclipse.jface.wizard.Wizard;
+import org.mitre.openii.model.OpenIIManager;
+import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.Project;
 import org.mitre.schemastore.model.ProjectSchema;
 
@@ -57,11 +59,22 @@ public class GenerateVocabularyWizard extends Wizard {
 	/** Imports the mapping once the wizard is complete */
 	public boolean performFinish() {
 		try {
+			// This is a temporary constructor that also includes running the mappings
 			new MappingProcessor(project, autoMappingPage.getNewMappings(), autoMappingPage.getMatchers());
+			
+			ArrayList<Mapping> mappings = new ArrayList<Mapping>(); 
+			// construct the list of mappings selected
+			for (Pair<ProjectSchema> pair : autoMappingPage.getSelectedMappings() ) {
+				for ( Mapping m : OpenIIManager.getMappings(project.getId()) ) {
+					if ( pair.getItem1().getId().equals(m.getSourceId()) && pair.getItem2().getId().equals(m.getTargetId()) || 
+							pair.getItem2().getId().equals(m.getTargetId()) && pair.getItem1().getId().equals(m.getSourceId()) ) 
+						mappings.add(m); 
+				}
+			}
 			
 			// Create synsets
 			Unity unity = new Unity(project);
-			unity.unify();
+			unity.unify( mappings );
 
 			// export the vocabulary
 			String exportPath = matchMakerPage.getVocabExportFilePath();
