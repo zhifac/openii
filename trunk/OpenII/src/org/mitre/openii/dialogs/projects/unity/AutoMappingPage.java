@@ -23,7 +23,8 @@ import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.Project;
 import org.mitre.schemastore.model.ProjectSchema;
 
-class AutoMappingPage extends WizardPage implements ModifyListener, SelectionListener {
+class AutoMappingPage extends WizardPage implements ModifyListener,
+		SelectionListener {
 
 	private Text authorField;
 	private Text descriptionField;
@@ -57,15 +58,19 @@ class AutoMappingPage extends WizardPage implements ModifyListener, SelectionLis
 	}
 
 	/**
-	 * Not all of the mappings exists in the project yet. This display should list the mappings that already exist and
-	 * the ones that will be automatically generated.
+	 * Not all of the mappings exists in the project yet. This display should
+	 * list the mappings that already exist and the ones that will be
+	 * automatically generated.
 	 * 
 	 * @param pane
 	 */
 	private void createMappingList(Composite parent) {
-		Project project = ((GenerateVocabularyWizard) this.getWizard()).getProject();
-		HashMap<Integer, ProjectSchema> schemas = ((GenerateVocabularyWizard) this.getWizard()).getSchemas();
-		Permuter<ProjectSchema> permuter = new Permuter<ProjectSchema>(new ArrayList<ProjectSchema>(schemas.values()));
+		Project project = ((GenerateVocabularyWizard) this.getWizard())
+				.getProject();
+		HashMap<Integer, ProjectSchema> schemas = ((GenerateVocabularyWizard) this
+				.getWizard()).getSchemas();
+		Permuter<ProjectSchema> permuter = new Permuter<ProjectSchema>(
+				new ArrayList<ProjectSchema>(schemas.values()));
 		ArrayList<Pair<ProjectSchema>> excludeList = new ArrayList<Pair<ProjectSchema>>();
 
 		// Display existing schemas
@@ -73,16 +78,19 @@ class AutoMappingPage extends WizardPage implements ModifyListener, SelectionLis
 		projectSchemaGroup.setText("Project Schemas");
 		projectSchemaGroup.setLayout(new GridLayout(1, false));
 		for (ProjectSchema schema : schemas.values())
-			BasicWidgets.createText(projectSchemaGroup, null).setText(schema.getName());
+			BasicWidgets.createText(projectSchemaGroup, null).setText(
+					schema.getName());
 
 		// Generate a group for existing mappings
 		for (Mapping mapping : OpenIIManager.getMappings(project.getId())) {
 			ProjectSchema schema1 = schemas.get(mapping.getSourceId());
 			ProjectSchema schema2 = schemas.get(mapping.getTargetId());
-			if ( schema1 == null || schema2 == null ) continue;
-			
-			Pair<ProjectSchema> exclude = new Pair<ProjectSchema>(schema1, schema2);
-			
+			if (schema1 == null || schema2 == null)
+				continue;
+
+			Pair<ProjectSchema> exclude = new Pair<ProjectSchema>(schema1,
+					schema2);
+
 			permuter.addExcludedPair(exclude);
 			excludeList.add(exclude);
 		}
@@ -92,13 +100,18 @@ class AutoMappingPage extends WizardPage implements ModifyListener, SelectionLis
 		existGroup.setLayout(new GridLayout(1, false));
 		existGroup.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
-		if (excludeList.size() == 0) new Text(existGroup, SWT.ITALIC).setText("No mappings have been created for the project");
-		else for (Pair<ProjectSchema> exclude : excludeList) {
-			Button mapped = new Button(existGroup, SWT.CHECK);
-			mapped.setText(((ProjectSchema) exclude.getItem1()).getName() + " to " + ((ProjectSchema) exclude.getItem2()).getName());
-			mapped.setSelection(true);
-			mapped.setEnabled(false);
-		}
+		if (excludeList.size() == 0)
+			new Text(existGroup, SWT.ITALIC)
+					.setText("No mappings have been created for the project");
+		else
+			for (Pair<ProjectSchema> exclude : excludeList) {
+				Button mapped = new Button(existGroup, SWT.CHECK);
+				mapped.setText(((ProjectSchema) exclude.getItem1()).getName()
+						+ " to "
+						+ ((ProjectSchema) exclude.getItem2()).getName());
+				mapped.setSelection(true);
+				mapped.setEnabled(true);
+			}
 
 		// Generate group for new mappings to be added
 		Group newGroup = new Group(parent, SWT.NONE);
@@ -109,13 +122,15 @@ class AutoMappingPage extends WizardPage implements ModifyListener, SelectionLis
 			while (permuter.hasMoreElements()) {
 				Pair<ProjectSchema> pair = permuter.nextElement();
 				Button unmapped = new Button(newGroup, SWT.CHECK);
-				unmapped.setText(((ProjectSchema) pair.getItem1()).getName() + " to " + ((ProjectSchema) pair.getItem2()).getName());
-				unmapped.setEnabled(false);
+				unmapped.setText(((ProjectSchema) pair.getItem1()).getName()
+						+ " to " + ((ProjectSchema) pair.getItem2()).getName());
+				unmapped.setEnabled(true);
 				unmapped.setSelection(true);
 				newMappings.add(pair);
 			}
-		} else 
-			new Text (newGroup, SWT.ITALIC).setText("No new mappings will be added."); 
+		} else
+			new Text(newGroup, SWT.ITALIC)
+					.setText("No new mappings will be added.");
 	}
 
 	ArrayList<Pair<ProjectSchema>> getNewMappings() {
@@ -130,7 +145,7 @@ class AutoMappingPage extends WizardPage implements ModifyListener, SelectionLis
 		group.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
 		// Construct a list of all matchers that can be selected
-		for(Matcher matcher : MatcherManager.getVisibleMatchers()) {
+		for (Matcher matcher : MatcherManager.getVisibleMatchers()) {
 			MatcherCheckBox checkBox = new MatcherCheckBox(group, matcher);
 			checkBox.addSelectionListener(this);
 			matcherCheckBoxes.add(checkBox);
@@ -147,7 +162,8 @@ class AutoMappingPage extends WizardPage implements ModifyListener, SelectionLis
 
 		// Generate the properties to be displayed by the info pane
 		authorField = BasicWidgets.createTextField(group, "Author");
-		descriptionField = BasicWidgets.createTextField(group, "Description", 4);
+		descriptionField = BasicWidgets
+				.createTextField(group, "Description", 4);
 
 		// Add listeners to the fields to monitor for changes
 		authorField.addModifyListener(this);
@@ -161,34 +177,33 @@ class AutoMappingPage extends WizardPage implements ModifyListener, SelectionLis
 	// Select default author and selected matchers
 	public void setDefaultFields() {
 		// Set author to system user name by default
-		if (authorField.getText().equals("")) authorField.setText(System.getProperty("user.name"));
+		if (authorField.getText().equals(""))
+			authorField.setText(System.getProperty("user.name"));
 
 		// Set voters to a set of optimized choices (hard coded)
 		for (MatcherCheckBox checkbox : matcherCheckBoxes)
-			if (checkbox.getName().equals("Documentation Similarity") || /*
-																		 * checkbox.getName().equals("Documentation + Synonyms"
-																		 * ) ||
-																		 */checkbox.getName().equals("Name Similarity") || checkbox.getName().equals("Exact Structure")) {
-				checkbox.checkBox.setSelection(true);
-				selectedVoters.add(checkbox.getName());
+			for (Matcher matcher : MatcherManager.getDefaultMatchers()) {
+				if (checkbox.getName().equals(matcher.getName())) {
+					checkbox.checkBox.setSelection(true);
+					selectedVoters.add(checkbox.getName());
+				}
 			}
+		updatePageCompleteStatus();
 	}
 
-	public void widgetDefaultSelected(SelectionEvent arg0) {}
+	public void widgetDefaultSelected(SelectionEvent arg0) {
+	}
 
 	private void updatePageCompleteStatus() {
-		setPageComplete(selectedVoters.size() > 0 && authorField.getText().trim().length() > 0 /*
-																								 * &&
-																								 * descriptionField.getText
-																								 * ().trim().length() >
-																								 * 0
-																								 */);
+		setPageComplete(!(newMappings.size() > 0 && selectedVoters.size() == 0));
 	}
 
 	public void widgetSelected(SelectionEvent event) {
 		Button voterButton = (Button) event.widget;
-		if (voterButton.getSelection()) selectedVoters.add(voterButton.getText());
-		else selectedVoters.remove(voterButton.getText());
+		if (voterButton.getSelection())
+			selectedVoters.add(voterButton.getText());
+		else
+			selectedVoters.remove(voterButton.getText());
 
 		updatePageCompleteStatus();
 	}
@@ -201,14 +216,15 @@ class AutoMappingPage extends WizardPage implements ModifyListener, SelectionLis
 	ArrayList<Matcher> getMatchers() {
 		ArrayList<Matcher> result = new ArrayList<Matcher>();
 		for (MatcherCheckBox checkBox : matcherCheckBoxes)
-			if (checkBox.checkBox.getSelection()) result.add(checkBox.matcher);
+			if (checkBox.checkBox.getSelection())
+				result.add(checkBox.matcher);
 		return result;
 	}
 
 	String getAuthor() {
 		return authorField.getText();
 	}
-	
+
 	String getMappingDescription() {
 		return descriptionField.getText();
 	}

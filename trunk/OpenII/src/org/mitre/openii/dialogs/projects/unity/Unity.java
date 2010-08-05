@@ -38,7 +38,7 @@ public class Unity {
 		return vocabulary;
 	}
 
-	public Vocabulary unify() throws Exception {
+	public Vocabulary unify() throws RemoteException {
 		// Generate synsets
 		synsetList = generateSynsets(project);
 		// Generate vocabulary terms
@@ -46,7 +46,6 @@ public class Unity {
 
 		// save new vocab
 		OpenIIManager.saveVocabulary(vocabulary);
-		
 		return vocabulary;
 	}
 
@@ -61,9 +60,9 @@ public class Unity {
 
 	// TODO hook this up with one of the Vocabulary exporters
 	public void exportVocabulary(File file) throws IOException {
-		CompleteVocabExporter exporter = new CompleteVocabExporter(); 
-		exporter.setClient(RepositoryManager.getClient()); 
-		exporter.exportVocabulary(vocabulary, file); 
+		CompleteVocabExporter exporter = new CompleteVocabExporter();
+		exporter.setClient(RepositoryManager.getClient());
+		exporter.exportVocabulary(vocabulary, file);
 	}
 
 	// Render synsets without the vocabulary terms to

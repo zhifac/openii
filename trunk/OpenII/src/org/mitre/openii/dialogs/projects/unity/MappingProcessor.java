@@ -8,6 +8,7 @@ import java.util.HashMap;
 import org.mitre.harmony.matchers.MatchGenerator;
 import org.mitre.harmony.matchers.MatchScore;
 import org.mitre.harmony.matchers.MatchScores;
+import org.mitre.harmony.matchers.MatcherManager;
 import org.mitre.harmony.matchers.matchers.DocumentationMatcher;
 import org.mitre.harmony.matchers.matchers.EditDistanceMatcher;
 import org.mitre.harmony.matchers.matchers.ExactMatcher;
@@ -40,7 +41,20 @@ public class MappingProcessor {
 	public MappingProcessor(Project project, Permuter<ProjectSchema> permuter, ArrayList<Matcher> voters) {
 		this.projectID = project.getId();
 		this.permuter = permuter;
-		this.matchers = (voters == null) ? getDefaultMatchers() : voters;
+		this.matchers = (voters == null) ? MatcherManager.getDefaultMatchers() : voters;
+	}
+	
+	public MappingProcessor(Project project, ArrayList<Pair<ProjectSchema>> newMappings, ArrayList<Matcher> voters) {
+		this.projectID = project.getId();
+		this.matchers = (voters == null) ? MatcherManager.getDefaultMatchers() : voters;
+		
+		for ( Pair<ProjectSchema> pair: newMappings )
+			try {
+				processMapping(pair);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} 
 	}
 
 	/** Returns the number of mappings in need of doing */
@@ -67,6 +81,10 @@ public class MappingProcessor {
 
 		// Gather up the schemas in need of matching
 		Pair<ProjectSchema> pair = (Pair<ProjectSchema>) permuter.nextElement();
+		processMapping(pair); 
+	}
+	
+	private void processMapping( Pair<ProjectSchema> pair) throws Exception {
 		Informant.status("Matching " + pair.getItem1().getName() + " to " + pair.getItem2().getName());
 		FilteredSchemaInfo schemaInfo1 = getSchemaInfo(pair.getItem1());
 		FilteredSchemaInfo schemaInfo2 = getSchemaInfo(pair.getItem2());
@@ -98,15 +116,6 @@ public class MappingProcessor {
 
 		// Perform garbage collection
 		System.gc();
-	}
-
-	public static ArrayList<Matcher> getDefaultMatchers() {
-		ArrayList<Matcher> matchers = new ArrayList<Matcher>();
-		matchers.add(new DocumentationMatcher());
-		// voters.add(new ThesaurusMatcher());
-		matchers.add(new EditDistanceMatcher());
-		matchers.add(new ExactMatcher());
-		return matchers;
 	}
 
 	/**
