@@ -12,6 +12,7 @@ import java.util.ArrayList;
 
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
+import org.mitre.schemastore.model.MappingCellInput;
 import org.mitre.schemastore.model.Project;
 import org.mitre.schemastore.model.ProjectSchema;
 
@@ -301,10 +302,10 @@ public class ProjectDataCalls extends AbstractDataCalls
                 String notes = rs.getString("notes");
               
                 // Get the list of mapping inputs
-                ArrayList<Integer> inputs = new ArrayList<Integer>();
+                ArrayList<MappingCellInput> inputs = new ArrayList<MappingCellInput>();
                 for(String input : rs.getString("input_ids").split(","))
-                	inputs.add(Integer.parseInt(input.trim()));
-                Integer[] inputArray = inputs.toArray(new Integer[0]);
+                	inputs.add(MappingCellInput.parse(input.trim()));
+                MappingCellInput[] inputArray = inputs.toArray(new MappingCellInput[0]);
                 
                 // Store the mapping cell
                 mappingCells.add(new MappingCell(cellID,mappingID,inputArray,output,score,functionID,author,date,notes));
@@ -336,8 +337,8 @@ public class ProjectDataCalls extends AbstractDataCalls
 
             // Generate the input IDs
             String inputIDs = "";
-            for(Integer input : mappingCell.getInput())
-            	inputIDs += input + ",";
+            for(MappingCellInput input : mappingCell.getInputs())
+            	inputIDs += input.toString().replaceAll(",","&#44;") + ",";
             inputIDs = inputIDs.substring(0, inputIDs.length()-1);
 
             // Stores the validated mapping cell

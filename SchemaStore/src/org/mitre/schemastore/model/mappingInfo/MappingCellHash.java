@@ -27,7 +27,7 @@ public class MappingCellHash
 
 	/** Constructs the hash map key */
 	private String getKey(MappingCell mappingCell)
-		{ return getKey(mappingCell.getInput(),mappingCell.getOutput()); }
+		{ return getKey(mappingCell.getElementInputIDs(),mappingCell.getOutput()); }
 	
 	/** Constructs the mapping cell hash */
 	public MappingCellHash(ArrayList<MappingCell> mappingCells)

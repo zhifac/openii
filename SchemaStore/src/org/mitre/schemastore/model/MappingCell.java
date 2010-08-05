@@ -18,6 +18,7 @@ package org.mitre.schemastore.model;
 
 import java.io.Serializable;
 import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 /**
@@ -36,7 +37,7 @@ public class MappingCell implements Serializable
 	private Integer mappingId;
 
 	/** Stores the first mapping cell element */
-	private Integer[] input;
+	private MappingCellInput[] inputs;
 
 	/** Stores the second mapping cell element */
 	private Integer output;
@@ -61,28 +62,28 @@ public class MappingCell implements Serializable
 
     /** Constructs a score-based mapping cell */
     static public MappingCell createProposedMappingCell(Integer id, Integer mappingId, Integer input, Integer output, Double score, String author, Date modificationDate, String notes)
-    	{ return new MappingCell(id, mappingId, new Integer[]{input}, output, score, null, author, modificationDate, notes); }
+    	{ return new MappingCell(id, mappingId, new MappingCellInput[]{new MappingCellInput(input)}, output, score, null, author, modificationDate, notes); }
     
     /** Constructs an identity mapping cell */
     static public MappingCell createIdentityMappingCell(Integer id, Integer mappingId, Integer input, Integer output, String author, Date modificationDate, String notes)
-    	{ return new MappingCell(id, mappingId, new Integer[]{input}, output, 1.0, IDENTIFY_FUNCTION, author, modificationDate, notes); }
+    	{ return new MappingCell(id, mappingId, new MappingCellInput[]{new MappingCellInput(input)}, output, 1.0, IDENTIFY_FUNCTION, author, modificationDate, notes); }
     
     /** Constructs a function mapping cell */
-    static public MappingCell createFunctionMappingCell(Integer id, Integer mappingId, Integer inputs[], Integer output, Integer functionID, String author, Date modificationDate, String notes)
+    static public MappingCell createFunctionMappingCell(Integer id, Integer mappingId, MappingCellInput inputs[], Integer output, Integer functionID, String author, Date modificationDate, String notes)
     	{ return new MappingCell(id, mappingId, inputs, output, 1.0, functionID, author, modificationDate, notes); }
    
     /** Constructs a mapping cell */
-    public MappingCell(Integer id, Integer mappingId, Integer[] input, Integer output, Double score, Integer functionID, String author, Date modificationDate, String notes)
-		{ this.id=id; this.mappingId=mappingId; this.input=input; this.output=output; this.score=score; this.functionID=functionID; this.author=author; this.modificationDate=modificationDate; this.notes=notes; }
+    public MappingCell(Integer id, Integer mappingId, MappingCellInput[] inputs, Integer output, Double score, Integer functionID, String author, Date modificationDate, String notes)
+		{ this.id=id; this.mappingId=mappingId; this.inputs=inputs; this.output=output; this.score=score; this.functionID=functionID; this.author=author; this.modificationDate=modificationDate; this.notes=notes; }
     
 	/** Copies the mapping cell */
 	public MappingCell copy()
-		{ return new MappingCell(getId(),getMappingId(),getInput(),getOutput(),getScore(),getFunctionID(),getAuthor(),getModificationDate(),getNotes()); }
+		{ return new MappingCell(getId(),getMappingId(),getInputs(),getOutput(),getScore(),getFunctionID(),getAuthor(),getModificationDate(),getNotes()); }
 
 	// Handles all mapping cell getters
 	public Integer getId() { return id; }
 	public Integer getMappingId() { return mappingId; }
-    public Integer[] getInput() { return input; }
+    public MappingCellInput[] getInputs() { return inputs; }
     public Integer getOutput() { return output; }
 	public Double getScore() { return score; }
     public Integer getFunctionID() { return functionID; }
@@ -93,17 +94,23 @@ public class MappingCell implements Serializable
 	// Handles all mapping cell setters
 	public void setId(Integer id) { this.id = id; }
 	public void setMappingId(Integer mappingId) { this.mappingId = mappingId; }
-    public void setInput(Integer[] input) {this.input = input; }
+    public void setInputs(MappingCellInput[] inputs) {this.inputs = inputs; }
     public void setOutput(Integer output) {this.output = output; }
 	public void setScore(Double score) { this.score = score; }
 	public void setFunctionID(Integer functionID) { this.functionID=functionID; }
 	public void setAuthor(String author) { this.author = author==null ? "" : author; }
 	public void setModificationDate(Date modificationDate) { this.modificationDate = modificationDate; }
     public void setNotes(String notes) { this.notes = notes==null ? "" : notes; }
-    
-   /** @deprecated This version assumes only one input */
-	public Integer getFirstInput() {  if( input != null && input.length>0 ) return input[0]; else return null; }
 	
+    /** Returns the list of element inputs */
+    public Integer[] getElementInputIDs()
+    { 
+    	ArrayList<Integer> inputIDs = new ArrayList<Integer>();
+    	for(MappingCellInput input : inputs)
+    		if(input.getElementID()!=null) inputIDs.add(input.getElementID());
+    	return inputIDs.toArray(new Integer[0]);
+    }
+    
 	/** Returns the string representing the modification date */
 	public String getDate()
 		{ return modificationDate==null ? "" : DateFormat.getDateInstance(DateFormat.MEDIUM).format(modificationDate); }
@@ -130,5 +137,9 @@ public class MappingCell implements Serializable
 
 	/** String representation of the mapping cell */
 	public String toString()
-		{ return "("+input[0]+","+output+") -> "+score; }
+	{
+		StringBuffer inputString = new StringBuffer();
+		for(MappingCellInput input : inputs) inputString.append(input.toString()+",");
+		return "("+inputString.substring(0,inputString.length()-1)+":"+output+") -> "+score;
+	}
 }

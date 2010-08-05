@@ -58,7 +58,7 @@ public class GetVocabulary
 				Term term = terms.get(termID);
 				
 				// Add the associated element
-				SchemaElement element = schemaElements.get(mappingCell.getInput()[0]);
+				SchemaElement element = schemaElements.get(mappingCell.getInputs()[0].getElementID());
 				AssociatedElement associatedElement = new AssociatedElement(schemaID, element.getId(), element.getName());
 				term.addAssociatedElement(associatedElement);
 			}

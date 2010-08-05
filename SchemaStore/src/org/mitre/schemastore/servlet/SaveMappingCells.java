@@ -28,7 +28,7 @@ public class SaveMappingCells
 		// Align mapping cell IDs with old mapping cell IDs
 		for(MappingCell mappingCell : mappingCells)
 		{
-			MappingCell oldMappingCell = oldMappingCellRefs.get(mappingCell.getInput(),mappingCell.getOutput());
+			MappingCell oldMappingCell = oldMappingCellRefs.get(mappingCell.getElementInputIDs(),mappingCell.getOutput());
 			mappingCell.setId(oldMappingCell==null ? null : oldMappingCell.getId());
 		}
 			
@@ -40,7 +40,7 @@ public class SaveMappingCells
 		{
 			// Removes all mapping cells that are no longer used
 			for(MappingCell oldMappingCell : oldMappingCells)
-				if(!mappingCellRefs.contains(oldMappingCell.getInput(),oldMappingCell.getOutput()))
+				if(!mappingCellRefs.contains(oldMappingCell.getElementInputIDs(),oldMappingCell.getOutput()))
 					if(!manager.getProjectCache().deleteMappingCell(oldMappingCell.getId())) success = false;
 					
 			// Adds or updates all new mapping cells
@@ -68,7 +68,7 @@ public class SaveMappingCells
 		{
 			for(MappingCell mappingCell : manager.getProjectCache().getMappingCells(mappingID))
 			{
-				MappingCell oldMappingCell = oldMappingCellRefs.get(mappingCell.getInput(),mappingCell.getOutput());
+				MappingCell oldMappingCell = oldMappingCellRefs.get(mappingCell.getElementInputIDs(),mappingCell.getOutput());
 				if(oldMappingCell==null) manager.getProjectCache().deleteMappingCell(mappingCell.getId());
 				else manager.getProjectCache().updateMappingCell(oldMappingCell);
 			}

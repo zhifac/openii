@@ -38,16 +38,16 @@
   </ns1:operation>
   <ns1:operation name="compress" qname="ns10:compress" returnQName="ns10:compressReturn" returnType="xsd:boolean" soapAction="" xmlns:ns10="http://servlet.schemastore.mitre.org" xmlns:xsd="http://www.w3.org/2001/XMLSchema"/>
   <ns1:operation name="getTags" qname="ns11:getTags" returnQName="ns11:getTagsReturn" returnType="ns12:Tag" soapAction="" xmlns:ns11="http://servlet.schemastore.mitre.org" xmlns:ns12="http://model.schemastore.mitre.org"/>
-  <ns1:operation name="setAnnotation" qname="ns13:setAnnotation" returnQName="ns13:setAnnotationReturn" returnType="xsd:boolean" soapAction="" xmlns:ns13="http://servlet.schemastore.mitre.org" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-   <ns1:parameter qname="ns13:elementID" type="xsd:int"/>
-   <ns1:parameter qname="ns13:attribute" type="xsd:string"/>
-   <ns1:parameter qname="ns13:value" type="xsd:string"/>
+  <ns1:operation name="updateAttribute" qname="ns13:updateAttribute" returnQName="ns13:updateAttributeReturn" returnType="xsd:boolean" soapAction="" xmlns:ns13="http://servlet.schemastore.mitre.org" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <ns1:parameter qname="ns13:attribute" type="ns14:Attribute" xmlns:ns14="http://model.schemastore.mitre.org"/>
   </ns1:operation>
-  <ns1:operation name="updateAttribute" qname="ns14:updateAttribute" returnQName="ns14:updateAttributeReturn" returnType="xsd:boolean" soapAction="" xmlns:ns14="http://servlet.schemastore.mitre.org" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-   <ns1:parameter qname="ns14:attribute" type="ns15:Attribute" xmlns:ns15="http://model.schemastore.mitre.org"/>
+  <ns1:operation name="setAnnotation" qname="ns15:setAnnotation" returnQName="ns15:setAnnotationReturn" returnType="xsd:boolean" soapAction="" xmlns:ns15="http://servlet.schemastore.mitre.org" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <ns1:parameter qname="ns15:elementID" type="xsd:int"/>
+   <ns1:parameter qname="ns15:attribute" type="xsd:string"/>
+   <ns1:parameter qname="ns15:value" type="xsd:string"/>
   </ns1:operation>
-  <ns1:operation name="addProject" qname="ns16:addProject" returnQName="ns16:addProjectReturn" returnType="xsd:int" soapAction="" xmlns:ns16="http://servlet.schemastore.mitre.org" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-   <ns1:parameter qname="ns16:project" type="ns17:Project" xmlns:ns17="http://model.schemastore.mitre.org"/>
+  <ns1:operation name="getFunction" qname="ns16:getFunction" returnQName="ns16:getFunctionReturn" returnType="ns17:Function" soapAction="" xmlns:ns16="http://servlet.schemastore.mitre.org" xmlns:ns17="http://model.schemastore.mitre.org">
+   <ns1:parameter qname="ns16:functionID" type="xsd:int" xmlns:xsd="http://www.w3.org/2001/XMLSchema"/>
   </ns1:operation>
   <ns1:operation name="getRelationship" qname="ns18:getRelationship" returnQName="ns18:getRelationshipReturn" returnType="ns19:Relationship" soapAction="" xmlns:ns18="http://servlet.schemastore.mitre.org" xmlns:ns19="http://model.schemastore.mitre.org">
    <ns1:parameter qname="ns18:relationshipID" type="xsd:int" xmlns:xsd="http://www.w3.org/2001/XMLSchema"/>
@@ -55,20 +55,20 @@
   <ns1:operation name="getEntity" qname="ns20:getEntity" returnQName="ns20:getEntityReturn" returnType="ns21:Entity" soapAction="" xmlns:ns20="http://servlet.schemastore.mitre.org" xmlns:ns21="http://model.schemastore.mitre.org">
    <ns1:parameter qname="ns20:entityID" type="xsd:int" xmlns:xsd="http://www.w3.org/2001/XMLSchema"/>
   </ns1:operation>
-  <ns1:operation name="addSchema" qname="ns22:addSchema" returnQName="ns22:addSchemaReturn" returnType="xsd:int" soapAction="" xmlns:ns22="http://servlet.schemastore.mitre.org" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-   <ns1:parameter qname="ns22:schema" type="ns23:Schema" xmlns:ns23="http://model.schemastore.mitre.org"/>
+  <ns1:operation name="addSubtype" qname="ns22:addSubtype" returnQName="ns22:addSubtypeReturn" returnType="xsd:int" soapAction="" xmlns:ns22="http://servlet.schemastore.mitre.org" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <ns1:parameter qname="ns22:subtype" type="ns23:Subtype" xmlns:ns23="http://model.schemastore.mitre.org"/>
   </ns1:operation>
-  <ns1:operation name="getSchemas" qname="ns24:getSchemas" returnQName="ns24:getSchemasReturn" returnType="ns25:Schema" soapAction="" xmlns:ns24="http://servlet.schemastore.mitre.org" xmlns:ns25="http://model.schemastore.mitre.org"/>
-  <ns1:operation name="addSubtype" qname="ns26:addSubtype" returnQName="ns26:addSubtypeReturn" returnType="xsd:int" soapAction="" xmlns:ns26="http://servlet.schemastore.mitre.org" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-   <ns1:parameter qname="ns26:subtype" type="ns27:Subtype" xmlns:ns27="http://model.schemastore.mitre.org"/>
+  <ns1:operation name="addProject" qname="ns24:addProject" returnQName="ns24:addProjectReturn" returnType="xsd:int" soapAction="" xmlns:ns24="http://servlet.schemastore.mitre.org" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <ns1:parameter qname="ns24:project" type="ns25:Project" xmlns:ns25="http://model.schemastore.mitre.org"/>
   </ns1:operation>
-  <ns1:operation name="getFunction" qname="ns28:getFunction" returnQName="ns28:getFunctionReturn" returnType="ns29:Function" soapAction="" xmlns:ns28="http://servlet.schemastore.mitre.org" xmlns:ns29="http://model.schemastore.mitre.org">
-   <ns1:parameter qname="ns28:functionID" type="xsd:int" xmlns:xsd="http://www.w3.org/2001/XMLSchema"/>
+  <ns1:operation name="addSchema" qname="ns26:addSchema" returnQName="ns26:addSchemaReturn" returnType="xsd:int" soapAction="" xmlns:ns26="http://servlet.schemastore.mitre.org" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <ns1:parameter qname="ns26:schema" type="ns27:Schema" xmlns:ns27="http://model.schemastore.mitre.org"/>
   </ns1:operation>
-  <ns1:operation name="addEntity" qname="ns30:addEntity" returnQName="ns30:addEntityReturn" returnType="xsd:int" soapAction="" xmlns:ns30="http://servlet.schemastore.mitre.org" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-   <ns1:parameter qname="ns30:entity" type="ns31:Entity" xmlns:ns31="http://model.schemastore.mitre.org"/>
+  <ns1:operation name="getSchemas" qname="ns28:getSchemas" returnQName="ns28:getSchemasReturn" returnType="ns29:Schema" soapAction="" xmlns:ns28="http://servlet.schemastore.mitre.org" xmlns:ns29="http://model.schemastore.mitre.org"/>
+  <ns1:operation name="getFunctions" qname="ns30:getFunctions" returnQName="ns30:getFunctionsReturn" returnType="ns31:Function" soapAction="" xmlns:ns30="http://servlet.schemastore.mitre.org" xmlns:ns31="http://model.schemastore.mitre.org"/>
+  <ns1:operation name="addEntity" qname="ns32:addEntity" returnQName="ns32:addEntityReturn" returnType="xsd:int" soapAction="" xmlns:ns32="http://servlet.schemastore.mitre.org" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <ns1:parameter qname="ns32:entity" type="ns33:Entity" xmlns:ns33="http://model.schemastore.mitre.org"/>
   </ns1:operation>
-  <ns1:operation name="getFunctions" qname="ns32:getFunctions" returnQName="ns32:getFunctionsReturn" returnType="ns33:Function" soapAction="" xmlns:ns32="http://servlet.schemastore.mitre.org" xmlns:ns33="http://model.schemastore.mitre.org"/>
   <ns1:operation name="importSchema" qname="ns34:importSchema" returnQName="ns34:importSchemaReturn" returnType="xsd:int" soapAction="" xmlns:ns34="http://servlet.schemastore.mitre.org" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
    <ns1:parameter qname="ns34:schema" type="ns35:Schema" xmlns:ns35="http://model.schemastore.mitre.org"/>
    <ns1:parameter qname="ns34:schemaElementList" type="ns36:SchemaElementList" xmlns:ns36="http://model.schemastore.mitre.org"/>
@@ -355,18 +355,20 @@
   <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns190:DomainValue" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:org.mitre.schemastore.model.DomainValue" xmlns:ns190="http://model.schemastore.mitre.org"/>
   <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns191:Subtype" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:org.mitre.schemastore.model.Subtype" xmlns:ns191="http://model.schemastore.mitre.org"/>
   <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns192:Entity" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:org.mitre.schemastore.model.Entity" xmlns:ns192="http://model.schemastore.mitre.org"/>
-  <ns1:arrayMapping innerType="ns194:Attribute" languageSpecificType="java:org.mitre.schemastore.model.Attribute[]" qname="ns193:ArrayOf_tns1_Attribute" xmlns:ns193="http://servlet.schemastore.mitre.org" xmlns:ns194="http://model.schemastore.mitre.org"/>
-  <ns1:arrayMapping innerType="ns196:Alias" languageSpecificType="java:org.mitre.schemastore.model.Alias[]" qname="ns195:ArrayOf_tns1_Alias" xmlns:ns195="http://servlet.schemastore.mitre.org" xmlns:ns196="http://model.schemastore.mitre.org"/>
-  <ns1:arrayMapping innerType="ns198:Containment" languageSpecificType="java:org.mitre.schemastore.model.Containment[]" qname="ns197:ArrayOf_tns1_Containment" xmlns:ns197="http://servlet.schemastore.mitre.org" xmlns:ns198="http://model.schemastore.mitre.org"/>
-  <ns1:arrayMapping innerType="ns200:AssociatedElement" languageSpecificType="java:org.mitre.schemastore.model.AssociatedElement[]" qname="ns199:ArrayOf_tns1_AssociatedElement" xmlns:ns199="http://servlet.schemastore.mitre.org" xmlns:ns200="http://model.schemastore.mitre.org"/>
-  <ns1:arrayMapping innerType="ns202:Term" languageSpecificType="java:org.mitre.schemastore.model.Term[]" qname="ns201:ArrayOf_tns1_Term" xmlns:ns201="http://servlet.schemastore.mitre.org" xmlns:ns202="http://model.schemastore.mitre.org"/>
-  <ns1:arrayMapping innerType="xsd:int" languageSpecificType="java:int[]" qname="ns203:ArrayOf_xsd_int" xmlns:ns203="http://servlet.schemastore.mitre.org" xmlns:xsd="http://www.w3.org/2001/XMLSchema"/>
-  <ns1:arrayMapping innerType="ns205:ProjectSchema" languageSpecificType="java:org.mitre.schemastore.model.ProjectSchema[]" qname="ns204:ArrayOf_tns1_ProjectSchema" xmlns:ns204="http://servlet.schemastore.mitre.org" xmlns:ns205="http://model.schemastore.mitre.org"/>
-  <ns1:arrayMapping innerType="ns207:Subtype" languageSpecificType="java:org.mitre.schemastore.model.Subtype[]" qname="ns206:ArrayOf_tns1_Subtype" xmlns:ns206="http://servlet.schemastore.mitre.org" xmlns:ns207="http://model.schemastore.mitre.org"/>
-  <ns1:arrayMapping innerType="ns209:Relationship" languageSpecificType="java:org.mitre.schemastore.model.Relationship[]" qname="ns208:ArrayOf_tns1_Relationship" xmlns:ns208="http://servlet.schemastore.mitre.org" xmlns:ns209="http://model.schemastore.mitre.org"/>
-  <ns1:arrayMapping innerType="ns211:DomainValue" languageSpecificType="java:org.mitre.schemastore.model.DomainValue[]" qname="ns210:ArrayOf_tns1_DomainValue" xmlns:ns210="http://servlet.schemastore.mitre.org" xmlns:ns211="http://model.schemastore.mitre.org"/>
-  <ns1:arrayMapping innerType="ns213:Entity" languageSpecificType="java:org.mitre.schemastore.model.Entity[]" qname="ns212:ArrayOf_tns1_Entity" xmlns:ns212="http://servlet.schemastore.mitre.org" xmlns:ns213="http://model.schemastore.mitre.org"/>
-  <ns1:arrayMapping innerType="ns215:Domain" languageSpecificType="java:org.mitre.schemastore.model.Domain[]" qname="ns214:ArrayOf_tns1_Domain" xmlns:ns214="http://servlet.schemastore.mitre.org" xmlns:ns215="http://model.schemastore.mitre.org"/>
+  <ns1:typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns193:MappingCellInput" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:org.mitre.schemastore.model.MappingCellInput" xmlns:ns193="http://model.schemastore.mitre.org"/>
+  <ns1:arrayMapping innerType="ns195:Attribute" languageSpecificType="java:org.mitre.schemastore.model.Attribute[]" qname="ns194:ArrayOf_tns1_Attribute" xmlns:ns194="http://servlet.schemastore.mitre.org" xmlns:ns195="http://model.schemastore.mitre.org"/>
+  <ns1:arrayMapping innerType="ns197:Alias" languageSpecificType="java:org.mitre.schemastore.model.Alias[]" qname="ns196:ArrayOf_tns1_Alias" xmlns:ns196="http://servlet.schemastore.mitre.org" xmlns:ns197="http://model.schemastore.mitre.org"/>
+  <ns1:arrayMapping innerType="ns199:Containment" languageSpecificType="java:org.mitre.schemastore.model.Containment[]" qname="ns198:ArrayOf_tns1_Containment" xmlns:ns198="http://servlet.schemastore.mitre.org" xmlns:ns199="http://model.schemastore.mitre.org"/>
+  <ns1:arrayMapping innerType="ns201:AssociatedElement" languageSpecificType="java:org.mitre.schemastore.model.AssociatedElement[]" qname="ns200:ArrayOf_tns1_AssociatedElement" xmlns:ns200="http://servlet.schemastore.mitre.org" xmlns:ns201="http://model.schemastore.mitre.org"/>
+  <ns1:arrayMapping innerType="ns203:Term" languageSpecificType="java:org.mitre.schemastore.model.Term[]" qname="ns202:ArrayOf_tns1_Term" xmlns:ns202="http://servlet.schemastore.mitre.org" xmlns:ns203="http://model.schemastore.mitre.org"/>
+  <ns1:arrayMapping innerType="xsd:int" languageSpecificType="java:int[]" qname="ns204:ArrayOf_xsd_int" xmlns:ns204="http://servlet.schemastore.mitre.org" xmlns:xsd="http://www.w3.org/2001/XMLSchema"/>
+  <ns1:arrayMapping innerType="ns206:ProjectSchema" languageSpecificType="java:org.mitre.schemastore.model.ProjectSchema[]" qname="ns205:ArrayOf_tns1_ProjectSchema" xmlns:ns205="http://servlet.schemastore.mitre.org" xmlns:ns206="http://model.schemastore.mitre.org"/>
+  <ns1:arrayMapping innerType="ns208:Subtype" languageSpecificType="java:org.mitre.schemastore.model.Subtype[]" qname="ns207:ArrayOf_tns1_Subtype" xmlns:ns207="http://servlet.schemastore.mitre.org" xmlns:ns208="http://model.schemastore.mitre.org"/>
+  <ns1:arrayMapping innerType="ns210:Relationship" languageSpecificType="java:org.mitre.schemastore.model.Relationship[]" qname="ns209:ArrayOf_tns1_Relationship" xmlns:ns209="http://servlet.schemastore.mitre.org" xmlns:ns210="http://model.schemastore.mitre.org"/>
+  <ns1:arrayMapping innerType="ns212:MappingCellInput" languageSpecificType="java:org.mitre.schemastore.model.MappingCellInput[]" qname="ns211:ArrayOf_tns1_MappingCellInput" xmlns:ns211="http://servlet.schemastore.mitre.org" xmlns:ns212="http://model.schemastore.mitre.org"/>
+  <ns1:arrayMapping innerType="ns214:DomainValue" languageSpecificType="java:org.mitre.schemastore.model.DomainValue[]" qname="ns213:ArrayOf_tns1_DomainValue" xmlns:ns213="http://servlet.schemastore.mitre.org" xmlns:ns214="http://model.schemastore.mitre.org"/>
+  <ns1:arrayMapping innerType="ns216:Entity" languageSpecificType="java:org.mitre.schemastore.model.Entity[]" qname="ns215:ArrayOf_tns1_Entity" xmlns:ns215="http://servlet.schemastore.mitre.org" xmlns:ns216="http://model.schemastore.mitre.org"/>
+  <ns1:arrayMapping innerType="ns218:Domain" languageSpecificType="java:org.mitre.schemastore.model.Domain[]" qname="ns217:ArrayOf_tns1_Domain" xmlns:ns217="http://servlet.schemastore.mitre.org" xmlns:ns218="http://model.schemastore.mitre.org"/>
  </ns1:service>
  <ns1:service name="AdminService" provider="java:MSG">
   <ns1:parameter name="allowedMethods" value="AdminService"/>
