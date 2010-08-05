@@ -208,12 +208,12 @@ public class UserMatchAnnotationExporter extends MappingExporter
 			System.out.println("sourceInfo="+sourceInfo.getHierarchicalElements().size());
 			System.out.println("sourceInfo="+sourceInfo.getElementCount());*/
 			
-   			SchemaElement element1 = sourceInfo.getElement(mappingCell.getInput()[0]);
+   			SchemaElement element1 = sourceInfo.getElement(mappingCell.getElementInputIDs()[0]);
    			SchemaElement element2 = targetInfo.getElement(mappingCell.getOutput());
 
    			if (element1 == null || element2 == null) {
    				System.out.println("Error in addMappingCell: " 
-   						+ mappingCell.getInput()[0] + ", "
+   						+ mappingCell.getElementInputIDs()[0] + ", "
    						+ mappingCell.getOutput());
    			}
    			
@@ -238,12 +238,12 @@ public class UserMatchAnnotationExporter extends MappingExporter
 				System.out.println("target NULL");
 			}
 			
-   			SchemaElement element1 = source.getElement(mappingCell.getInput()[0]);
+   			SchemaElement element1 = source.getElement(mappingCell.getElementInputIDs()[0]);
    			SchemaElement element2 = target.getElement(mappingCell.getOutput());
 
    			if (element1 == null || element2 == null) {
    				System.out.println("Error in addMappingCell: " 
-   						+ mappingCell.getInput()[0] + ", "
+   						+ mappingCell.getElementInputIDs()[0] + ", "
    						+ mappingCell.getOutput());
    			}
    			

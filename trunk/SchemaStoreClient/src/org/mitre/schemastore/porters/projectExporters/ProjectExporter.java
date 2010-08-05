@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -36,7 +37,7 @@ public abstract class ProjectExporter extends Exporter
 	{
 		ArrayList<MappingCell> mappingCellsWithElement = new ArrayList<MappingCell>();
 		for(MappingCell mappingCell : mappingCells)
-			if(mappingCell.getInput()[0].equals(elementID) || mappingCell.getOutput().equals(elementID))
+			if(Arrays.asList(mappingCell.getElementInputIDs()).contains(elementID) || mappingCell.getOutput().equals(elementID))
 				mappingCellsWithElement.add(mappingCell);
 		return mappingCellsWithElement;
 	}

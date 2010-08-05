@@ -11,6 +11,7 @@ import org.mitre.schemastore.model.Function;
 import org.mitre.schemastore.model.FunctionImp;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
+import org.mitre.schemastore.model.MappingCellInput;
 import org.mitre.schemastore.model.Relationship;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
@@ -204,11 +205,15 @@ public class ConvertToXML
 
 		// Retrieve the input and output paths
 		ArrayList<String> inputPaths = new ArrayList<String>();
-		for(Integer input : mappingCell.getInput())
+		for(MappingCellInput input : mappingCell.getInputs())
 		{
-			String inputPath = getElementPath(input,sourceInfo);
-			if(inputPath==null) return null;
-			inputPaths.add(inputPath);
+			if(input.getElementID()!=null) 
+			{
+				String inputPath = getElementPath(input.getElementID(),sourceInfo);
+				if(inputPath==null) return null;
+				inputPaths.add(inputPath);
+			}
+			else inputPaths.add("");
 		}
 		String outputPath = getElementPath(mappingCell.getOutput(),targetInfo);
 		if(outputPath==null) return null;
@@ -225,10 +230,10 @@ public class ConvertToXML
 		addElement(element,"MappingCellNotes",mappingCell.getNotes());			
 		
 		// Generate the mapping cell inputs XML elements
-		for(int i=0; i<mappingCell.getInput().length; i++)
+		for(int i=0; i<mappingCell.getInputs().length; i++)
 		{
 			Element inputElement = addElement(element,"MappingCellInput",null);
-			addElement(inputElement,"MappingCellInputId",mappingCell.getInput()[i]);			
+			addElement(inputElement,"MappingCellInputId",mappingCell.getInputs()[i]);
 			addElement(inputElement,"MappingCellInputPath",inputPaths.get(i));				
 		}
 		

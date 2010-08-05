@@ -62,7 +62,7 @@ public class PieChartExporter extends ProjectExporter
    			{
    				// Get the affected element IDs
     			ArrayList<Integer> elementIDs = new ArrayList<Integer>();
-    			if(isSource) elementIDs.addAll(Arrays.asList(mappingCell.getInput()));
+    			if(isSource) elementIDs.addAll(Arrays.asList(mappingCell.getElementInputIDs()));
     			else elementIDs.add(mappingCell.getOutput());
     			
     			// Stores the scores

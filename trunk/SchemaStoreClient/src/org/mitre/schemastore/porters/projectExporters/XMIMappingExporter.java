@@ -65,10 +65,10 @@ public class XMIMappingExporter extends ProjectExporter {
 		 */
 		for(MappingCell mc : mappingCells) { 
 			System.out.println("Got mappingCell " + mc + ": " + 
-					modelElements.get(mc.getInput()[0]) + " => " + 
+					modelElements.get(mc.getElementInputIDs()[0]) + " => " + 
 					modelElements.get(mc.getOutput())); 
 										
-			Integer [] inputs = mc.getInput();
+			Integer [] inputs = mc.getElementInputIDs();
 			Integer output = mc.getOutput();
 			
 			for(int y=0; y<inputs.length; y++) { 

@@ -50,7 +50,7 @@ public class DataDictionaryExporter extends MappingExporter
     		if(mappingCell.getAuthor().equals("User") && mappingCell.getScore()>0)
     		{
     			// Gets the elements associated with the mapping cell
-    			SchemaElement inputElement = elements.get(mappingCell.getFirstInput());
+    			SchemaElement inputElement = elements.get(mappingCell.getElementInputIDs()[0]);
     			SchemaElement outputElement = elements.get(mappingCell.getOutput());
     			
     			// Display the pairing of schema elements
