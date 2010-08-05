@@ -10,10 +10,12 @@
       <schemaImporter>org.mitre.schemastore.porters.schemaImporters.SpreadsheetImporter</schemaImporter>
       <schemaImporter>org.mitre.schemastore.porters.schemaImporters.DomainValueImporter</schemaImporter>
       <schemaImporter>org.mitre.schemastore.porters.schemaImporters.HierarchicalDomainValueImporter2</schemaImporter>
+      <schemaImporter>org.mitre.schemastore.porters.schemaImporters.HierarchicalExcelImporter</schemaImporter>
       <schemaImporter>org.mitre.schemastore.porters.schemaImporters.GSIPImporter</schemaImporter>
       <schemaImporter>org.mitre.schemastore.porters.schemaImporters.GDBImporter</schemaImporter>
       <schemaImporter>org.mitre.schemastore.porters.schemaImporters.DocumentImporter</schemaImporter>
       <schemaImporter>org.mitre.schemastore.porters.schemaImporters.RescueSuppliesImporter</schemaImporter>
+      <schemaImporter>org.mitre.schemastore.porters.schemaImporters.XMIImporter</schemaImporter>
     </schemaImporters>
     <projectImporters>
     	<projectImporter>org.mitre.schemastore.porters.projectImporters.M3ProjectImporter</projectImporter>
@@ -43,5 +45,9 @@
 	  <mappingExporter>org.mitre.schemastore.porters.mappingExporters.UserMatchAnnotationDBExporter</mappingExporter>
 	  <mappingExporter>org.mitre.schemastore.porters.mappingExporters.RescueSuppliesExporter</mappingExporter>
     </mappingExporters>
+    <vocabularyExporters>
+    	<vocabularyExporter>org.mitre.schemastore.porters.vocabularyExporters.VocabTermExporter</vocabularyExporter>
+    	<vocabularyExporter>org.mitre.schemastore.porters.vocabularyExporters.CompleteVocabExporter</vocabularyExporter>
+    </vocabularyExporters>
   </exporters>
 </porters>
