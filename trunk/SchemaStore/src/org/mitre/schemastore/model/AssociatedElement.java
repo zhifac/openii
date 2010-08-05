@@ -5,7 +5,7 @@ package org.mitre.schemastore.model;
 import java.io.Serializable;
 
 /**
- * Class for storing a vocabulary
+ * Class for storing an element associated with a vocabulary term
  * @author CWOLF
  */
 public class AssociatedElement implements Serializable
