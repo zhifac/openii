@@ -697,6 +697,7 @@ public class OpenIIManager {
 		return false;
 	}
 
+	/** Save the  specified vocabulary */
 	public static boolean saveVocabulary(Vocabulary vocabulary) {
 		try {
 			RepositoryManager.getClient().saveVocabulary(vocabulary);
