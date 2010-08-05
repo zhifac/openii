@@ -123,7 +123,7 @@ public class QuickAlignEditor extends OpenIIEditor implements SelectionListener
 		HashMap<Integer,Integer> matches = new HashMap<Integer,Integer>();
 		for(MappingCell mappingCell : OpenIIManager.getMappingCells(getElementID()))
 			if(mappingCell.isValidated())
-				matches.put(mappingCell.getInput()[0], mappingCell.getOutput());
+				matches.put(mappingCell.getElementInputIDs()[0], mappingCell.getOutput());
 		return matches;
 	}
 	
@@ -274,7 +274,7 @@ public class QuickAlignEditor extends OpenIIEditor implements SelectionListener
 			if(matchPane.getElement()==null)
 			{
 				for(MappingCell mappingCell : new ArrayList<MappingCell>(mappingCells))
-					if(mappingCell.getInput()[0].equals(sourceID))
+					if(mappingCell.getElementInputIDs()[0].equals(sourceID))
 						mappingCells.remove(mappingCell);
 			}
 

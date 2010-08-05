@@ -31,12 +31,8 @@ public class MappingCellMerger
 		HashMap<String,ArrayList<MappingCell>> mappingCellHash = new HashMap<String,ArrayList<MappingCell>>();
 		for(MappingCell mappingCell : mappingCells)
 		{
-			// Generate hash key
-			Integer element1 = mappingCell.getFirstInput();
-			Integer element2 = mappingCell.getOutput();
-			String key = element1<element2 ? element1+"-"+element2 : element2+"-"+element1;
-			
 			// Place mapping cell in hash map
+			String key = mappingCell.toString();
 			ArrayList<MappingCell> mappingCellList = mappingCellHash.get(key);
 			if(mappingCellList==null) mappingCellHash.put(key, mappingCellList = new ArrayList<MappingCell>());
 			mappingCellList.add(mappingCell);

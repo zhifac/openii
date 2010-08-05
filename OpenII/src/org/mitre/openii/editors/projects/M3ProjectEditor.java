@@ -15,6 +15,7 @@ import org.mitre.openii.model.OpenIIManager;
 import org.mitre.openii.widgets.ExpandBarWidgets;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
+import org.mitre.schemastore.model.MappingCellInput;
 import org.mitre.schemastore.model.Project;
 import org.mitre.schemastore.model.ProjectSchema;
 import org.mitre.schemastore.model.schemaInfo.SchemaInfo;
@@ -69,8 +70,11 @@ public class M3ProjectEditor extends OpenIIEditor
 			{
 				// Gather mapping cell input and output information
 				String inputs = "";
-				for(Integer input : mappingCell.getInput())
-					inputs += sourceSchema.getElement(input).getName() + " (" + input  + "), ";
+				for(MappingCellInput input : mappingCell.getInputs())
+				{
+					if(input.isConstant()) inputs += input.getConstant();
+					else inputs += sourceSchema.getElement(input.getElementID()).getName() + " (" + input.getElementID() + "), ";
+				}
 				if(inputs.length()>2) inputs = inputs.substring(0,inputs.length()-2);
 				String output = targetSchema.getElement(mappingCell.getOutput()).getName() + " (" + mappingCell.getOutput() + ")";
 				

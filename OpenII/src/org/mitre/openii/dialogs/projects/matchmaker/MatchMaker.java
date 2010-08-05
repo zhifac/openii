@@ -92,7 +92,7 @@ public class MatchMaker {
 			
 			for (MappingCell mappingCell : mcList) {
 				// Loop through mapping cells input cluster nodes
-				for (SynsetTerm inputNode : getClusterNodeList(mappingCell.getInput())) {
+				for (SynsetTerm inputNode : getClusterNodeList(mappingCell.getElementInputIDs())) {
 					// Loop through mapping cells output cluster nodes
 					for (SynsetTerm outputNode : getClusterNode(mappingCell.getOutput())) {
 						// Add the nodes and score to each other's score list.
