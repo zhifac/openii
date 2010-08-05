@@ -38,9 +38,10 @@ public class Unity {
 		return vocabulary;
 	}
 
-	public Vocabulary unify() throws RemoteException {
+	public Vocabulary unify(ArrayList<Mapping> inputMappings)
+			throws RemoteException {
 		// Generate synsets
-		synsetList = generateSynsets(project);
+		synsetList = generateSynsets(project, inputMappings);
 		// Generate vocabulary terms
 		vocabulary = new Vocabulary(project.getId(), generateVocabTerms());
 
@@ -88,16 +89,16 @@ public class Unity {
 	 * 
 	 * @throws RemoteException
 	 **/
-	public static ArrayList<Synset> generateSynsets(Project project)
-			throws RemoteException {
-		HashMap<Mapping, ArrayList<MappingCell>> mappings = new HashMap<Mapping, ArrayList<MappingCell>>();
-		for (Mapping mapping : OpenIIManager.getMappings(project.getId()))
-			mappings.put(mapping, OpenIIManager
-					.getMappingCells(mapping.getId()));
+	public static ArrayList<Synset> generateSynsets(Project project,
+			ArrayList<Mapping> inputMappings) throws RemoteException {
+		HashMap<Mapping, ArrayList<MappingCell>> mappingCellHash = new HashMap<Mapping, ArrayList<MappingCell>>();
+		for (Mapping mapping : inputMappings)
+			mappingCellHash.put(mapping, OpenIIManager.getMappingCells(mapping
+					.getId()));
 
 		MatchMakerExporter matchMaker = new MatchMakerExporter();
 		matchMaker.setClient(RepositoryManager.getClient());
-		matchMaker.initialize(project, mappings);
+		matchMaker.initialize(project, mappingCellHash);
 
 		System.out.println(" Cluster all matches...");
 		ClusterNode cluster = matchMaker.cluster();
@@ -110,7 +111,7 @@ public class Unity {
 		Term resultTerm = null;
 		AssociatedElement[] assocElements = new AssociatedElement[synset.nodes
 				.size()];
-		SchemaElement connicalBase = null;
+		SchemaElement baseElement = null;
 		try {
 			for (int i = 0; i < synset.nodes.size(); i++) {
 				SynsetTerm synsetTerm = synset.nodes.get(i);
@@ -122,17 +123,27 @@ public class Unity {
 				// Use authority schema term if available
 				if (synsetTerm.schemaId.equals(getAuthoritativeSchemaId())
 						&& synsetTerm.elementName.length() > 0)
-					connicalBase = RepositoryManager.getClient()
+					baseElement = RepositoryManager.getClient()
 							.getSchemaElement(synsetTerm.elementId);
+			}
+
+			// Use a random term name if cannot find a name
+			if (baseElement == null) {
+				for (SynsetTerm t : synset.nodes)
+					if (t.elementName.length() > 0) {
+						baseElement = RepositoryManager.getClient()
+								.getSchemaElement(t.elementId);
+						break;
+					}
 			}
 		} catch (RemoteException e1) {
 			// Do nothing
 		}
 
-		resultTerm = (connicalBase == null) ? new Term(null, new String(),
-				new String(), assocElements) : new Term(null, connicalBase
-				.getName(), connicalBase.getDescription(), assocElements);
+		resultTerm = (baseElement == null) ? new Term(null, new String(),
+				new String(), assocElements) : new Term(null, baseElement
+				.getName(), baseElement.getDescription(), assocElements);
+
 		return resultTerm;
 	}
-
 }

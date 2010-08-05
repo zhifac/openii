@@ -30,7 +30,9 @@ class AutoMappingPage extends WizardPage implements ModifyListener,
 	private Text descriptionField;
 	private ArrayList<MatcherCheckBox> matcherCheckBoxes = new ArrayList<MatcherCheckBox>();
 	private ArrayList<String> selectedVoters = new ArrayList<String>();
-	private ArrayList<Pair<ProjectSchema>> newMappings = new ArrayList<Pair<ProjectSchema>>();
+	private ArrayList<Pair<ProjectSchema>> newMappingList = new ArrayList<Pair<ProjectSchema>>();
+	private ArrayList<Pair<ProjectSchema>> existingMappingList = new ArrayList<Pair<ProjectSchema>>();
+	private HashMap<String, Pair<ProjectSchema>> mappingHash = new HashMap<String, Pair<ProjectSchema>>();
 
 	public AutoMappingPage() {
 		super("AutoMappingPage");
@@ -71,7 +73,6 @@ class AutoMappingPage extends WizardPage implements ModifyListener,
 				.getWizard()).getSchemas();
 		Permuter<ProjectSchema> permuter = new Permuter<ProjectSchema>(
 				new ArrayList<ProjectSchema>(schemas.values()));
-		ArrayList<Pair<ProjectSchema>> excludeList = new ArrayList<Pair<ProjectSchema>>();
 
 		// Display existing schemas
 		Group projectSchemaGroup = new Group(parent, SWT.NONE);
@@ -92,7 +93,8 @@ class AutoMappingPage extends WizardPage implements ModifyListener,
 					schema2);
 
 			permuter.addExcludedPair(exclude);
-			excludeList.add(exclude);
+			existingMappingList.add(exclude);
+
 		}
 
 		Group existGroup = new Group(parent, SWT.NONE);
@@ -100,17 +102,39 @@ class AutoMappingPage extends WizardPage implements ModifyListener,
 		existGroup.setLayout(new GridLayout(1, false));
 		existGroup.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
-		if (excludeList.size() == 0)
+		if (existingMappingList.size() == 0)
 			new Text(existGroup, SWT.ITALIC)
 					.setText("No mappings have been created for the project");
 		else
-			for (Pair<ProjectSchema> exclude : excludeList) {
+			for (Pair<ProjectSchema> exclude : existingMappingList) {
 				Button mapped = new Button(existGroup, SWT.CHECK);
-				mapped.setText(((ProjectSchema) exclude.getItem1()).getName()
+				String pairName = ((ProjectSchema) exclude.getItem1())
+						.getName()
 						+ " to "
-						+ ((ProjectSchema) exclude.getItem2()).getName());
+						+ ((ProjectSchema) exclude.getItem2()).getName();
+				mapped.setText(pairName);
 				mapped.setSelection(true);
 				mapped.setEnabled(true);
+				mappingHash.put(pairName, exclude);
+				mapped.addSelectionListener(new SelectionListener() {
+					
+					@Override
+					public void widgetSelected(SelectionEvent sevent) {
+						Button mappingButton = (Button) sevent.widget;
+						if (mappingButton.getSelection()) {
+							existingMappingList.add(mappingHash.get(mappingButton.getText()));
+						} else
+							existingMappingList.remove(mappingHash.get(mappingButton.getText()));
+
+						updatePageCompleteStatus();						
+					}
+					
+					@Override
+					public void widgetDefaultSelected(SelectionEvent arg0) {
+						// TODO Auto-generated method stub
+						
+					}
+				});
 			}
 
 		// Generate group for new mappings to be added
@@ -122,11 +146,31 @@ class AutoMappingPage extends WizardPage implements ModifyListener,
 			while (permuter.hasMoreElements()) {
 				Pair<ProjectSchema> pair = permuter.nextElement();
 				Button unmapped = new Button(newGroup, SWT.CHECK);
-				unmapped.setText(((ProjectSchema) pair.getItem1()).getName()
-						+ " to " + ((ProjectSchema) pair.getItem2()).getName());
+				String pairName=((ProjectSchema) pair.getItem1()).getName()
+				+ " to " + ((ProjectSchema) pair.getItem2()).getName();
+				unmapped.setText(pairName);
 				unmapped.setEnabled(true);
 				unmapped.setSelection(true);
-				newMappings.add(pair);
+				mappingHash.put(pairName, pair ); 
+				unmapped.addSelectionListener(new SelectionListener() {
+
+					@Override
+					public void widgetSelected(SelectionEvent sevent) {
+						Button mappingButton = (Button) sevent.widget;
+						if (mappingButton.getSelection()) {
+							newMappingList.add(mappingHash.get(mappingButton.getText()));
+						} else
+							newMappingList.remove(mappingHash.get(mappingButton.getText()));
+
+						updatePageCompleteStatus();
+					}
+
+					@Override
+					public void widgetDefaultSelected(SelectionEvent arg0) {
+						// TODO Auto-generated method stub
+
+					}
+				});
 			}
 		} else
 			new Text(newGroup, SWT.ITALIC)
@@ -134,7 +178,13 @@ class AutoMappingPage extends WizardPage implements ModifyListener,
 	}
 
 	ArrayList<Pair<ProjectSchema>> getNewMappings() {
-		return newMappings;
+		return newMappingList;
+	}
+
+	ArrayList<Pair<ProjectSchema>> getSelectedMappings() {
+		ArrayList<Pair<ProjectSchema>> result = existingMappingList;
+		result.addAll(newMappingList);
+		return result;
 	}
 
 	private void createMatcherList(Composite parent) {
@@ -195,17 +245,24 @@ class AutoMappingPage extends WizardPage implements ModifyListener,
 	}
 
 	private void updatePageCompleteStatus() {
-		setPageComplete(!(newMappings.size() > 0 && selectedVoters.size() == 0));
+		setPageComplete(!(newMappingList.size() > 0 && selectedVoters.size() == 0)
+				&& getSelectedMappings().size() > 0);
 	}
 
 	public void widgetSelected(SelectionEvent event) {
-		Button voterButton = (Button) event.widget;
-		if (voterButton.getSelection())
-			selectedVoters.add(voterButton.getText());
-		else
-			selectedVoters.remove(voterButton.getText());
+		if (matcherCheckBoxes.contains(event.getSource())) {
+			Button voterButton = (Button) event.widget;
+			if (voterButton.getSelection())
+				selectedVoters.add(voterButton.getText());
+			else
+				selectedVoters.remove(voterButton.getText());
 
-		updatePageCompleteStatus();
+			updatePageCompleteStatus();
+		}
+	}
+
+	public boolean canFinish() {
+		return false;
 	}
 
 	/**
