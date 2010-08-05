@@ -50,7 +50,7 @@ public class RescueSuppliesExporter extends MappingExporter
 			if(mappingCell.isValidated())
 			{
 				// Get the source and target elements
-				SchemaElement sourceElement = sourceInfo.getElement(mappingCell.getInput()[0]);
+				SchemaElement sourceElement = sourceInfo.getElement(mappingCell.getElementInputIDs()[0]);
 				SchemaElement targetElement = targetInfo.getElement(mappingCell.getOutput());
 
 				// Identify the labels

@@ -167,11 +167,11 @@ public class ExcelExporter extends MappingExporter
 		// Iterate over each mapping cell pairing (grouped by element container)
 		for(SchemaElement targetBase : mappingCellHash.keySet())
 			for(MappingCell mappingCell : mappingCellHash.get(targetBase))
-				for(Integer sourceID : mappingCell.getInput())
+				for(Integer inputID : mappingCell.getElementInputIDs())
 				{
 					// Retrieve the source and target element
-					SchemaElement sourceElement = findElementByID(sourceID);
-					SchemaElement sourceBase = getContainingElement(sourceID);
+					SchemaElement sourceElement = findElementByID(inputID);
+					SchemaElement sourceBase = getContainingElement(inputID);
 					SchemaElement targetElement = findElementByID(mappingCell.getOutput());
 
 					// Parse out extra field information

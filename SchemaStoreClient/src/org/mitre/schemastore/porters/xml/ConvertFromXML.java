@@ -15,6 +15,7 @@ import org.mitre.schemastore.model.Function;
 import org.mitre.schemastore.model.FunctionImp;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
+import org.mitre.schemastore.model.MappingCellInput;
 import org.mitre.schemastore.model.ProjectSchema;
 import org.mitre.schemastore.model.Relationship;
 import org.mitre.schemastore.model.Schema;
@@ -291,15 +292,20 @@ public class ConvertFromXML
 		if(outputID==null) return null;
 	
 		// Retrieve the mapping cell inputs
-		ArrayList<Integer> inputIDs = new ArrayList<Integer>();
+		ArrayList<MappingCellInput> inputs = new ArrayList<MappingCellInput>();
 		for(Element inputElement : getElements(element,"MappingCellInput"))
 		{
-			Integer inputID = getElementId(getValue(inputElement,"MappingCellInputPath"),sourceInfo);
-			if(inputID==null) return null;
-			inputIDs.add(inputID);
+			MappingCellInput input = MappingCellInput.parse(getValue(inputElement,"MappingCellInputId"));
+			if(input!=null && input.isConstant()) inputs.add(input);
+			else
+			{
+				Integer inputID = getElementId(getValue(inputElement,"MappingCellInputPath"),sourceInfo);
+				if(inputID==null) return null;
+				inputs.add(new MappingCellInput(inputID));
+			}
 		}
 		
 		// Return the generated mapping cell
-		return new MappingCell(id, null, inputIDs.toArray(new Integer[0]), outputID, score, functionID, author, date, notes);
+		return new MappingCell(id, null, inputs.toArray(new MappingCellInput[0]), outputID, score, functionID, author, date, notes);
 	}
 }

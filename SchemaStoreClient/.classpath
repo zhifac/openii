@@ -21,5 +21,7 @@
 	<classpathentry kind="lib" path="lib/jfreechart-1.0.2.jar"/>
 	<classpathentry kind="lib" path="lib/jcommon-1.0.5.jar"/>
 	<classpathentry kind="lib" path="lib/poi-3.5-beta5-20090219.jar"/>
+	<classpathentry kind="lib" path="C:/eclipse/plugins/javax.wsdl_1.6.2.v201005080631.jar"/>
+	<classpathentry kind="lib" path="C:/eclipse/plugins/org.apache.commons.logging_1.0.4.v201005080501.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>
