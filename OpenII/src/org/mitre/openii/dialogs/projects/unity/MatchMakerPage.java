@@ -29,7 +29,7 @@ class MatchMakerPage extends WizardPage implements ModifyListener, SelectionList
 		super("Match Maker Page");
 		setTitle("Vocabulary Information");
 		setDescription("Generate vocabulary with Unity.");
-		setPageComplete(false); 
+		setPageComplete(true); 
 	}
 
 	/** Constructs the Mapping Properties page */
@@ -57,7 +57,7 @@ class MatchMakerPage extends WizardPage implements ModifyListener, SelectionList
 		
 		// default values
 		if (authorField.getText().equals("")) authorField.setText(System.getProperty("user.name"));
-		if (vocabNameField.getText().equals("")) vocabNameField.setText( ((GenerateVocabularyWizard)(getWizard())).getProject().getName()+"_Vocabulary");
+		if (vocabNameField.getText().equals("")) vocabNameField.setText( ((GenerateVocabularyWizard)(getWizard())).getProject().getName()+" vocabulary");
 		if (fileSelectionPane.getText().equals("")) fileSelectionPane.setText("C://" + getVocabularyName() + ".csv"); 
 		
 		vocabNameField.addModifyListener(this); 
@@ -78,7 +78,10 @@ class MatchMakerPage extends WizardPage implements ModifyListener, SelectionList
 	public String getVocabExportFilePath() { return fileSelectionPane.getText(); } 
 
 	public void modifyText(ModifyEvent arg0) {
-		setPageComplete(getVocabularyName().length() > 0 && getAuthor().length() > 0 && getDescription().length() > 0);
+	}
+
+	public boolean canFinish() {
+		return true; 
 	}
 
 	public void widgetDefaultSelected(SelectionEvent arg0) {

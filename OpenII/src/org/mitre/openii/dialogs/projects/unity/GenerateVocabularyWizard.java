@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.eclipse.jface.wizard.Wizard;
-import org.mitre.openii.model.OpenIIManager;
 import org.mitre.schemastore.model.Project;
 import org.mitre.schemastore.model.ProjectSchema;
 
@@ -15,7 +14,6 @@ public class GenerateVocabularyWizard extends Wizard {
 	private HashMap<Integer, ProjectSchema> schemas;
 	private AutoMappingPage autoMappingPage;
 	private MatchMakerPage matchMakerPage;
-	private AutoMappingProgressPage autoMappingProgressPage;
 
 	/** Constructs the generate-vocabulary wizard */
 	public GenerateVocabularyWizard(Project project) {
@@ -23,8 +21,6 @@ public class GenerateVocabularyWizard extends Wizard {
 		setWindowTitle("Generate Vocabulary");
 		this.project = project;
 		initSchemas();
-		// Generate a hash of project schemas EXCLUDING schemas with
-		// _VOCABULARY_TAG tag
 	}
 
 	/** Get all of the schemas in this project that aren't vocabulary **/
@@ -41,16 +37,11 @@ public class GenerateVocabularyWizard extends Wizard {
 	/** Adds the pages associated with the import process */
 	public void addPages() {
 		addPage(autoMappingPage = new AutoMappingPage());
-		// addPage(autoMappingProgressPage = new AutoMappingProgressPage());
 		addPage(matchMakerPage = new MatchMakerPage());
 	}
 
 	AutoMappingPage getAutoMappingPropertiesPage() {
 		return autoMappingPage;
-	}
-
-	AutoMappingProgressPage getAutoMappingProgressPage() {
-		return autoMappingProgressPage;
 	}
 
 	MatchMakerPage getMatchMakerPage() {
@@ -59,16 +50,18 @@ public class GenerateVocabularyWizard extends Wizard {
 
 	/** Indicates if the import process can be finished */
 	public boolean canFinish() {
-		return (matchMakerPage.isPageComplete()); // &&
-													// autoMappingProgressPage.isPageComplete());
+		return (autoMappingPage.isPageComplete() && matchMakerPage
+				.isPageComplete());
 	}
 
 	/** Imports the mapping once the wizard is complete */
 	public boolean performFinish() {
 		try {
+			new MappingProcessor(project, autoMappingPage.getNewMappings(), autoMappingPage.getMatchers());
+			
+			// Create synsets
 			Unity unity = new Unity(project);
-			// Create synsets 
-			unity.unify(); 
+			unity.unify();
 
 			// export the vocabulary
 			String exportPath = matchMakerPage.getVocabExportFilePath();
