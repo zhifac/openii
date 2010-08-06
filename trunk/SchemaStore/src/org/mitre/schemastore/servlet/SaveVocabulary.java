@@ -215,12 +215,9 @@ public class SaveVocabulary
 			// Align the terms between the old and new vocabulary
 			ArrayList<Term> alignedTerms = getAlignedTerms(manager,oldVocabulary,vocabulary);
 			
-			// Generate the vocabulary mappings
-			HashMap<Integer,MappingInfo> mappings = getMappings(manager, project, vocabularyID, alignedTerms);
-			
 			// Swap out terms from the vocabulary
 			addNewTerms(manager, vocabularyID, alignedTerms);
-			updateMappings(manager, projectID, vocabularyID, mappings);
+			updateMappings(manager, projectID, vocabularyID, getMappings(manager, project, vocabularyID, alignedTerms));
 			removeOldTerms(manager, Arrays.asList(oldVocabulary.getTerms()), alignedTerms);
 		}
 		catch(Exception e) { System.out.println("(E) SaveVocabulary:saveVocabulary: "+e.getMessage()); return false; }
