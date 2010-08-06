@@ -5,7 +5,7 @@ package org.mitre.schemastore.search;
 /**
  * Holds a search result
  */
-public class SearchResult
+public class SchemaSearchResult
 {
 	/** Stores if the element name matched */
 	private boolean nameMatched;
@@ -14,7 +14,7 @@ public class SearchResult
 	private boolean descriptionMatched;
 
 	/** Constructor used to initialize the search result */
-	public SearchResult(boolean nameMatched, boolean descriptionMatched)
+	public SchemaSearchResult(boolean nameMatched, boolean descriptionMatched)
 		{ this.nameMatched = nameMatched; this.descriptionMatched = descriptionMatched; }
 
 	/** Returns if the name matched */

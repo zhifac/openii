@@ -64,6 +64,7 @@
             <fatjar.manifest/>
             <fatjar.filesource path="build/classes">
 				<fatjar.exclude relpath="org/mitre/schemastore/client/"/>
+				<fatjar.exclude relpath="org/mitre/schemastore/search/"/>
 				<fatjar.exclude relpath="org/mitre/schemastore/servlet/"/>
             </fatjar.filesource>
             <fatjar.jarsource file="lib/antlr.jar" relpath=""/>
