@@ -13,7 +13,7 @@ import org.mitre.schemastore.model.DomainValue;
 import org.mitre.schemastore.model.Relationship;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
-import org.mitre.schemastore.search.SearchResult;
+import org.mitre.schemastore.search.SchemaSearchResult;
 
 public class SchemaElementLabelProvider extends StyledCellLabelProvider
 {
@@ -71,7 +71,7 @@ public class SchemaElementLabelProvider extends StyledCellLabelProvider
 		{
 			// Get the search result
 			SchemaElement schemaElement = (SchemaElement)element;
-			SearchResult searchResult = schemaView.getSearchResult(schemaElement.getId());
+			SchemaSearchResult searchResult = schemaView.getSearchResult(schemaElement.getId());
 
 			// Assign the background color
 			Color color = WHITE;
