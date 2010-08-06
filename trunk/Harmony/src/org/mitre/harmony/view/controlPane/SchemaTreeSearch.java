@@ -12,14 +12,14 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import org.mitre.harmony.model.HarmonyModel;
-import org.mitre.harmony.model.search.SearchListener;
+import org.mitre.harmony.model.search.HarmonySearchListener;
 import org.mitre.harmony.view.schemaTree.SchemaTree;
 
 /**
  * Handles all keyword searching done of schema tree
  * @author CWOLF
  */
-public class SchemaTreeSearch extends JPanel implements KeyListener, SearchListener
+public class SchemaTreeSearch extends JPanel implements KeyListener, HarmonySearchListener
 {
 	/** Indicates the SchemaTree to which this search is tied */
 	private SchemaTree tree;

@@ -6,7 +6,7 @@ package org.mitre.harmony.model.search;
  * Interface used by all Harmony search listeners
  * @author CWOLF
  */
-public interface SearchListener
+public interface HarmonySearchListener
 {
 	/** Indicates that the highlighted areas have been modified */
 	public void highlightSettingChanged();

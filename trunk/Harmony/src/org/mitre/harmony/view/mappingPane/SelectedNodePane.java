@@ -14,7 +14,7 @@ import javax.swing.JTextPane;
 import javax.swing.border.EmptyBorder;
 
 import org.mitre.harmony.model.HarmonyModel;
-import org.mitre.harmony.model.search.SearchListener;
+import org.mitre.harmony.model.search.HarmonySearchListener;
 import org.mitre.harmony.model.selectedInfo.SelectedInfoListener;
 import org.mitre.schemastore.model.Domain;
 import org.mitre.schemastore.model.DomainValue;
@@ -25,7 +25,7 @@ import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
  * Pane used to display source or target node info in the NodeInfoPane
  * @author CWOLF
  */
-class SelectedNodePane extends JPanel implements SelectedInfoListener, SearchListener
+class SelectedNodePane extends JPanel implements SelectedInfoListener, HarmonySearchListener
 {
 	/** Defines the color for the blue background */
 	static private final Color BLUE = new Color(100,100,255);

@@ -6,7 +6,7 @@ import org.mitre.harmony.model.filters.FilterManager;
 import org.mitre.harmony.model.preferences.PreferencesManager;
 import org.mitre.harmony.model.project.MappingManager;
 import org.mitre.harmony.model.project.ProjectManager;
-import org.mitre.harmony.model.search.SearchManager;
+import org.mitre.harmony.model.search.HarmonySearchManager;
 import org.mitre.harmony.model.selectedInfo.SelectedInfoManager;
 
 /** Class for monitoring for changes in the project */
@@ -24,7 +24,7 @@ public class HarmonyModel
 	protected FilterManager filterManager = new FilterManager(this);
 	protected PreferencesManager preferencesManager = new PreferencesManager(this);
 	protected SelectedInfoManager selectedInfoManager = new SelectedInfoManager(this);
-	protected SearchManager searchManager = new SearchManager(this);
+	protected HarmonySearchManager searchManager = new HarmonySearchManager(this);
 
 	/** Constructs the Harmony model */
 	public HarmonyModel(Frame baseFrame)
@@ -57,7 +57,7 @@ public class HarmonyModel
 		{ return selectedInfoManager; }
 
 	/** Returns the search manager */
-	public SearchManager getSearchManager()
+	public HarmonySearchManager getSearchManager()
 		{ return searchManager; }
 	
 	/** Returns the schema manager */
