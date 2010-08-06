@@ -19,8 +19,8 @@ import org.mitre.openii.model.OpenIIManager;
 import org.mitre.openii.widgets.BasicWidgets;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
-import org.mitre.schemastore.search.Search;
-import org.mitre.schemastore.search.SearchResult;
+import org.mitre.schemastore.search.SchemaSearchResult;
+import org.mitre.schemastore.search.SearchManager;
 
 /** Constructs a Schema Tree */
 public class SchemaTree extends Composite implements ISelectionChangedListener, KeyListener
@@ -29,7 +29,7 @@ public class SchemaTree extends Composite implements ISelectionChangedListener, 
 	private HierarchicalSchemaInfo schema = null;
 	
 	/** Stores the search results */
-	private HashMap<Integer,SearchResult> searchResults = new HashMap<Integer,SearchResult>();
+	private HashMap<Integer,SchemaSearchResult> results = new HashMap<Integer,SchemaSearchResult>();
 	
 	// Stores the various dialog fields
 	private SchemaModelSelector modelSelector = null;
@@ -117,8 +117,8 @@ public class SchemaTree extends Composite implements ISelectionChangedListener, 
 		{ return schema; }
 	
 	/** Returns the search result for the specified schema element */
-	SearchResult getSearchResult(Integer elementID)
-		{ return searchResults.get(elementID); }
+	SchemaSearchResult getSearchResult(Integer elementID)
+		{ return results.get(elementID); }
 	
 	/** Handles changes to the schema model */
 	public void selectionChanged(SelectionChangedEvent e)
@@ -132,8 +132,8 @@ public class SchemaTree extends Composite implements ISelectionChangedListener, 
 	{
 		if(e.character==SWT.CR)
 		{
-			searchResults = Search.runQuery(searchField.getText(), schema);
-			for(Integer elementID : searchResults.keySet())
+			results = SearchManager.search(searchField.getText(), schema);
+			for(Integer elementID : results.keySet())
 				for(ArrayList<SchemaElement> path : schema.getPaths(elementID))
 					for(SchemaElement element : path)
 						schemaViewer.expandToLevel(element,1);					

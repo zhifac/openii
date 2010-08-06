@@ -63,13 +63,11 @@ public class ReplaceSchemaDialog extends Dialog implements ISelectionChangedList
 		
 		// Construct the main pane
 		Composite pane = new Composite(parent, SWT.DIALOG_TRIM);
-		GridLayout layout = new GridLayout();
-		layout.numColumns = 1;
-		pane.setLayout(layout);
+		pane.setLayout(new GridLayout(1,false));
 		
 		// Construct the schema pane
 		Composite schemaPane = new Composite(pane, SWT.NONE);
-		layout = new GridLayout(2,false);
+		GridLayout layout = new GridLayout(2,false);
 		layout.marginWidth = 8;
 		schemaPane.setLayout(layout);
 		schemaList = BasicWidgets.createComboField(schemaPane, "Replacement", schemas.toArray(), this);

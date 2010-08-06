@@ -33,10 +33,10 @@ public class VocabEditor extends OpenIIEditor
 			// First column is the vocabulary term 
 			row[0] = term.getName(); 
 			// The subsequent columns are source schema terms 
-			for(int j = 1; j < schemaIDs.length+1; j++)
+			for(int j = 0; j < schemaIDs.length; j++)
 			{
 				AssociatedElement element = term.getAssociatedElement(schemaIDs[j]);
-				row[j] = (element==null) ?  "" : element.getName();
+				row[j+1] = (element==null) ?  "" : element.getName();
 			}
 			rows.add(row);
 		}

@@ -1,6 +1,7 @@
 package org.mitre.openii.dialogs.tags;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -13,12 +14,13 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
-import org.mitre.galaxy.model.SelectedObjects;
-import org.mitre.galaxy.model.search.SearchManager;
 import org.mitre.openii.application.OpenIIActivator;
 import org.mitre.openii.model.OpenIIManager;
+import org.mitre.openii.model.RepositoryManager;
 import org.mitre.openii.widgets.BasicWidgets;
 import org.mitre.schemastore.model.Tag;
+import org.mitre.schemastore.search.RepositorySearchResult;
+import org.mitre.schemastore.search.SearchManager;
 
 /** Constructs the Search Dialog */
 public class SearchDialog extends Dialog implements ModifyListener
@@ -46,13 +48,12 @@ public class SearchDialog extends Dialog implements ModifyListener
 	{			
 		// Construct the main pane
 		Composite pane = new Composite(parent, SWT.DIALOG_TRIM);
-		GridLayout layout = new GridLayout();
-		layout.numColumns = 1;
-		pane.setLayout(layout);
-	
+		pane.setLayout(new GridLayout(1,false));
+		pane.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		
 		// Construct the keyword pane
 		Composite keywordPane = new Composite(pane, SWT.NONE);
-		layout = new GridLayout(2,false);
+		GridLayout layout = new GridLayout(2,false);
 		layout.marginWidth = 8;
 		keywordPane.setLayout(layout);
 		keywordPane.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
@@ -85,20 +86,21 @@ public class SearchDialog extends Dialog implements ModifyListener
 	protected void okPressed()
 	{		
 		// Identify the selected tags
-		ArrayList<Integer> tags = null;
+		ArrayList<Integer> tagIDs = null;
 		if(tag!=null)
 		{
-			tags = new ArrayList<Integer>();
-			tags.add(tag.getId());
-			for(int i=0; i<tags.size(); i++)
-				for(Tag tag : OpenIIManager.getSubcategories(tags.get(i)))
-					if(!tags.contains(tag.getId())) tags.add(tag.getId());
+			tagIDs = new ArrayList<Integer>();
+			tagIDs.add(tag.getId());
+			for(int i=0; i<tagIDs.size(); i++)
+				for(Tag tag : OpenIIManager.getSubcategories(tagIDs.get(i)))
+					if(!tagIDs.contains(tag.getId())) tagIDs.add(tag.getId());
 		}
 		
 		// Run the search
-		SelectedObjects.setSelectedTags(tags);
-		SearchManager.searchFor(keywordField.getText());
-		
+		try {
+			HashMap<Integer, RepositorySearchResult> results = SearchManager.search(keywordField.getText(), tagIDs, RepositoryManager.getClient());
+		} catch(Exception e) { System.out.println("(E) SearchDialog: Failed to search for schemas by keyword"); }
+			
 		// Display the results
 		
 		

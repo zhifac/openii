@@ -118,7 +118,6 @@ class AutoMappingPage extends WizardPage implements ModifyListener,
 				mappingHash.put(pairName, exclude);
 				mapped.addSelectionListener(new SelectionListener() {
 					
-					@Override
 					public void widgetSelected(SelectionEvent sevent) {
 						Button mappingButton = (Button) sevent.widget;
 						if (mappingButton.getSelection()) {
@@ -129,7 +128,6 @@ class AutoMappingPage extends WizardPage implements ModifyListener,
 						updatePageCompleteStatus();						
 					}
 					
-					@Override
 					public void widgetDefaultSelected(SelectionEvent arg0) {
 						// TODO Auto-generated method stub
 						
@@ -154,7 +152,6 @@ class AutoMappingPage extends WizardPage implements ModifyListener,
 				mappingHash.put(pairName, pair ); 
 				unmapped.addSelectionListener(new SelectionListener() {
 
-					@Override
 					public void widgetSelected(SelectionEvent sevent) {
 						Button mappingButton = (Button) sevent.widget;
 						if (mappingButton.getSelection()) {
@@ -165,7 +162,6 @@ class AutoMappingPage extends WizardPage implements ModifyListener,
 						updatePageCompleteStatus();
 					}
 
-					@Override
 					public void widgetDefaultSelected(SelectionEvent arg0) {
 						// TODO Auto-generated method stub
 
