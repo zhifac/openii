@@ -11,13 +11,13 @@ import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.project.MappingListener;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
-import org.mitre.schemastore.search.Search;
-import org.mitre.schemastore.search.SearchResult;
+import org.mitre.schemastore.search.SchemaSearchResult;
+import org.mitre.schemastore.search.SearchManager;
 
 /**
  * Manages searches run within Harmony
  */
-public class SearchManager extends AbstractManager<SearchListener> implements MappingListener
+public class HarmonySearchManager extends AbstractManager<HarmonySearchListener> implements MappingListener
 {
 	/** Stores the left query */
 	private String leftQuery = "";
@@ -29,13 +29,13 @@ public class SearchManager extends AbstractManager<SearchListener> implements Ma
 	private boolean highlightAll = true;
 	
 	/** Stores the left matches */
-	private HashMap<Integer,SearchResult> leftMatches = new HashMap<Integer,SearchResult>();
+	private HashMap<Integer,SchemaSearchResult> leftMatches = new HashMap<Integer,SchemaSearchResult>();
 
 	/** Stores the right matches */
-	private HashMap<Integer,SearchResult> rightMatches = new HashMap<Integer,SearchResult>();
+	private HashMap<Integer,SchemaSearchResult> rightMatches = new HashMap<Integer,SchemaSearchResult>();
 
 	/** Constructor used to initialize the selected info */
-	public SearchManager(HarmonyModel harmonyModel)
+	public HarmonySearchManager(HarmonyModel harmonyModel)
 		{ super(harmonyModel); }
 	
 	/** Returns the query for the specified side */
@@ -43,11 +43,11 @@ public class SearchManager extends AbstractManager<SearchListener> implements Ma
 		{ return side.equals(HarmonyConsts.LEFT) ? leftQuery : rightQuery; }
 	
 	/** Returns the result for the specified element and side */
-	public SearchResult getResult(Integer elementID, Integer side)
+	public SchemaSearchResult getResult(Integer elementID, Integer side)
 		{ return getMatches(side).get(elementID); }
 	
 	/** Returns the matches for the specified side */
-	public HashMap<Integer,SearchResult> getMatches(Integer side)
+	public HashMap<Integer,SchemaSearchResult> getMatches(Integer side)
 		{ return side.equals(HarmonyConsts.LEFT) ? leftMatches : rightMatches; }
 	
 	/** Runs the specified query */
@@ -57,19 +57,19 @@ public class SearchManager extends AbstractManager<SearchListener> implements Ma
 		if(side.equals(HarmonyConsts.LEFT)) leftQuery = query; else rightQuery = query;
 		
 		// Retrieve the list of matches
-		HashMap<Integer,SearchResult> matches = side==HarmonyConsts.LEFT ? leftMatches : rightMatches;
+		HashMap<Integer,SchemaSearchResult> matches = side==HarmonyConsts.LEFT ? leftMatches : rightMatches;
 		matches.clear();
 		
 		// Only proceed with finding matches if keyword given
 		for(Integer schemaID : getModel().getProjectManager().getSchemaIDs(side))
 		{
 			HierarchicalSchemaInfo schema = getModel().getSchemaManager().getSchemaInfo(schemaID);
-			HashMap<Integer,SearchResult> results = Search.runQuery(query,schema);
+			HashMap<Integer,SchemaSearchResult> results = SearchManager.search(query,schema);
 			matches.putAll(results);
 		}
 		
 		// Select all tree nodes which match search criteria
-		for(SearchListener listener : getListeners())
+		for(HarmonySearchListener listener : getListeners())
 			listener.searchResultsModified(side);
 	}
 	
@@ -86,7 +86,7 @@ public class SearchManager extends AbstractManager<SearchListener> implements Ma
 		if(highlightAll!=this.highlightAll)
 		{
 			this.highlightAll = highlightAll;
-			for(SearchListener listener : getListeners())
+			for(HarmonySearchListener listener : getListeners())
 				listener.highlightSettingChanged();
 		}
 	}

@@ -26,7 +26,7 @@ import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
 import org.mitre.schemastore.model.schemaInfo.model.SchemaModel;
-import org.mitre.schemastore.search.SearchResult;
+import org.mitre.schemastore.search.SchemaSearchResult;
 
 /**
  * Renders schema tree node
@@ -80,7 +80,7 @@ class SchemaTreeRenderer extends DefaultTreeCellRenderer
 		boolean isFinished = false;
 		
 		// Keeps track if match for search
-		SearchResult result = null;
+		SchemaSearchResult result = null;
 		
 		// Retrieves the object to be rendered
 		Object obj = ((DefaultMutableTreeNode)value).getUserObject();

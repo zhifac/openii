@@ -8,7 +8,7 @@ import org.mitre.harmony.model.filters.ElementPath;
 import org.mitre.harmony.model.filters.Focus;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
-import org.mitre.schemastore.search.SearchResult;
+import org.mitre.schemastore.search.SchemaSearchResult;
 
 
 /** Class for various focus controls */
@@ -24,7 +24,7 @@ public class FocusController
 				paths.put(focus.getSchemaID(), new ArrayList<ElementPath>(focus.getFocusedPaths()));
 		
 		// Construct new focused paths based on matches
-		HashMap<Integer,SearchResult> matches = harmonyModel.getSearchManager().getMatches(side);
+		HashMap<Integer,SchemaSearchResult> matches = harmonyModel.getSearchManager().getMatches(side);
 		for(Integer schemaID : harmonyModel.getProjectManager().getSchemaIDs(side))
 		{
 			// Retrieve the schema paths
