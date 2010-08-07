@@ -17,9 +17,10 @@ public class VocabEditor extends OpenIIEditor
 	/** Retrieve the schema names to be used as column headers */
 	private String[] getSchemaNames(Integer[] schemaIDs)
 	{
-		String[] schemaNames = new String[schemaIDs.length];
+		String[] schemaNames = new String[schemaIDs.length+1];
+		schemaNames[0] = "Vocabulary"; 
 		for(int i=0; i < schemaIDs.length; i++)
-			schemaNames[i] = OpenIIManager.getSchema(schemaIDs[i]).getName();
+			schemaNames[i+1] = OpenIIManager.getSchema(schemaIDs[i]).getName();
 		return schemaNames;
 	}
 	
@@ -32,8 +33,9 @@ public class VocabEditor extends OpenIIEditor
 			String[] row = new String[schemaIDs.length+1];
 			// First column is the vocabulary term 
 			row[0] = term.getName(); 
+			
 			// The subsequent columns are source schema terms 
-			for(int j = 0; j < schemaIDs.length; j++)
+			for(int j = 0; j < schemaIDs.length ; j++)
 			{
 				AssociatedElement element = term.getAssociatedElement(schemaIDs[j]);
 				row[j+1] = (element==null) ?  "" : element.getName();
@@ -48,7 +50,7 @@ public class VocabEditor extends OpenIIEditor
 	{
 		try {
 			Vocabulary vocabulary = OpenIIManager.getVocabulary(getElementID());
-			Integer[] schemaIDs = vocabulary.getSchemaIDs();
+			Integer[] schemaIDs = vocabulary.getSchemaIDs(); 
 			String[] schemaNames = getSchemaNames(schemaIDs);	
 			ArrayList<String[]> rows = generateRows(schemaIDs, vocabulary.getTerms());
 			new SWTVocabDebugViewTwo(parent, SWT.NONE, schemaNames, rows);

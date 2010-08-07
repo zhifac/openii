@@ -25,17 +25,17 @@ public class Permuter<T> implements java.util.Enumeration<Pair<T>> {
 	private int loc1 = 0, loc2 = 0;
 
 	/** Stores list of excluded permutations */
-	private ArrayList<Pair<T>> excludedPairs = new ArrayList<Pair<T>>();
+//	private ArrayList<Pair<T>> excludedPairs = new ArrayList<Pair<T>>();
 
 	/** Constructs the permuter */
 	public Permuter(ArrayList<T> items) {
 		this.items = items;
 	}
 
-	/** Add a blocked pair */
-	public void addExcludedPair(Pair<T> pair) {
-		excludedPairs.add(pair);
-	}
+//	/** Add a blocked pair */
+//	public void addExcludedPair(Pair<T> pair) {
+//		excludedPairs.add(pair);
+//	}
 
 	/** Determines if there are any more permutations */
 	// public boolean hasMoreElements()
@@ -47,7 +47,7 @@ public class Permuter<T> implements java.util.Enumeration<Pair<T>> {
 
 	/** Returns the permutation count */
 	public int size() {
-		return (items.size() * (items.size() - 1)) / 2 - excludedPairs.size();
+		return (items.size() * (items.size() - 1)) / 2 ; // - excludedPairs.size();
 	}
 
 	/** Returns the next pair of elements in the permutation */
@@ -64,7 +64,7 @@ public class Permuter<T> implements java.util.Enumeration<Pair<T>> {
 
 		// Return the next pair in this permutation
 		Pair<T> pair = new Pair<T>(items.get(loc1), items.get(loc2));
-		if (excludedPairs.contains(pair)) return nextElement();
+//		if (excludedPairs.contains(pair)) return nextElement();
 		return pair;
 	}
 }

@@ -23,8 +23,7 @@ import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.Project;
 import org.mitre.schemastore.model.ProjectSchema;
 
-class AutoMappingPage extends WizardPage implements ModifyListener,
-		SelectionListener {
+class AutoMappingPage extends WizardPage implements ModifyListener {
 
 	private Text authorField;
 	private Text descriptionField;
@@ -92,9 +91,7 @@ class AutoMappingPage extends WizardPage implements ModifyListener,
 			Pair<ProjectSchema> exclude = new Pair<ProjectSchema>(schema1,
 					schema2);
 
-			permuter.addExcludedPair(exclude);
 			existingMappingList.add(exclude);
-
 		}
 
 		Group existGroup = new Group(parent, SWT.NONE);
@@ -117,20 +114,22 @@ class AutoMappingPage extends WizardPage implements ModifyListener,
 				mapped.setEnabled(true);
 				mappingHash.put(pairName, exclude);
 				mapped.addSelectionListener(new SelectionListener() {
-					
+
 					public void widgetSelected(SelectionEvent sevent) {
 						Button mappingButton = (Button) sevent.widget;
 						if (mappingButton.getSelection()) {
-							existingMappingList.add(mappingHash.get(mappingButton.getText()));
+							existingMappingList.add(mappingHash
+									.get(mappingButton.getText()));
 						} else
-							existingMappingList.remove(mappingHash.get(mappingButton.getText()));
+							existingMappingList.remove(mappingHash
+									.get(mappingButton.getText()));
 
-						updatePageCompleteStatus();						
+						updatePageCompleteStatus();
 					}
-					
+
 					public void widgetDefaultSelected(SelectionEvent arg0) {
 						// TODO Auto-generated method stub
-						
+
 					}
 				});
 			}
@@ -143,28 +142,32 @@ class AutoMappingPage extends WizardPage implements ModifyListener,
 		if (permuter.size() > 0) {
 			while (permuter.hasMoreElements()) {
 				Pair<ProjectSchema> pair = permuter.nextElement();
+				if (existingMappingList.contains(pair))
+					continue;
+				newMappingList.add(pair);
+
 				Button unmapped = new Button(newGroup, SWT.CHECK);
-				String pairName=((ProjectSchema) pair.getItem1()).getName()
-				+ " to " + ((ProjectSchema) pair.getItem2()).getName();
+				String pairName = ((ProjectSchema) pair.getItem1()).getName()
+						+ " to " + ((ProjectSchema) pair.getItem2()).getName();
 				unmapped.setText(pairName);
 				unmapped.setEnabled(true);
 				unmapped.setSelection(true);
-				mappingHash.put(pairName, pair ); 
+				mappingHash.put(pairName, pair);
 				unmapped.addSelectionListener(new SelectionListener() {
 
 					public void widgetSelected(SelectionEvent sevent) {
 						Button mappingButton = (Button) sevent.widget;
 						if (mappingButton.getSelection()) {
-							newMappingList.add(mappingHash.get(mappingButton.getText()));
+							newMappingList.add(mappingHash.get(mappingButton
+									.getText()));
 						} else
-							newMappingList.remove(mappingHash.get(mappingButton.getText()));
+							newMappingList.remove(mappingHash.get(mappingButton
+									.getText()));
 
 						updatePageCompleteStatus();
 					}
 
 					public void widgetDefaultSelected(SelectionEvent arg0) {
-						// TODO Auto-generated method stub
-
 					}
 				});
 			}
@@ -178,7 +181,8 @@ class AutoMappingPage extends WizardPage implements ModifyListener,
 	}
 
 	ArrayList<Pair<ProjectSchema>> getSelectedMappings() {
-		ArrayList<Pair<ProjectSchema>> result = existingMappingList;
+		ArrayList<Pair<ProjectSchema>> result = new ArrayList<Pair<ProjectSchema>>();
+		result.addAll(existingMappingList); 
 		result.addAll(newMappingList);
 		return result;
 	}
@@ -193,7 +197,20 @@ class AutoMappingPage extends WizardPage implements ModifyListener,
 		// Construct a list of all matchers that can be selected
 		for (Matcher matcher : MatcherManager.getVisibleMatchers()) {
 			MatcherCheckBox checkBox = new MatcherCheckBox(group, matcher);
-			checkBox.addSelectionListener(this);
+			checkBox.addSelectionListener(new SelectionListener() {
+				public void widgetSelected(SelectionEvent event) {
+					Button voterButton = (Button) event.widget;
+					if (voterButton.getSelection())
+						selectedVoters.add(voterButton.getText());
+					else
+						selectedVoters.remove(voterButton.getText());
+
+					updatePageCompleteStatus();
+				}
+
+				public void widgetDefaultSelected(SelectionEvent arg0) {
+				}
+			});
 			matcherCheckBoxes.add(checkBox);
 		}
 	}
@@ -237,24 +254,12 @@ class AutoMappingPage extends WizardPage implements ModifyListener,
 		updatePageCompleteStatus();
 	}
 
-	public void widgetDefaultSelected(SelectionEvent arg0) {
-	}
-
 	private void updatePageCompleteStatus() {
-		setPageComplete(!(newMappingList.size() > 0 && selectedVoters.size() == 0)
-				&& getSelectedMappings().size() > 0);
-	}
-
-	public void widgetSelected(SelectionEvent event) {
-		if (matcherCheckBoxes.contains(event.getSource())) {
-			Button voterButton = (Button) event.widget;
-			if (voterButton.getSelection())
-				selectedVoters.add(voterButton.getText());
-			else
-				selectedVoters.remove(voterButton.getText());
-
-			updatePageCompleteStatus();
-		}
+		if (newMappingList.size() > 0 && selectedVoters.size() == 0) {
+			setPageComplete(false);
+			return;
+		} else
+			setPageComplete(getSelectedMappings().size() > 0);
 	}
 
 	public boolean canFinish() {
