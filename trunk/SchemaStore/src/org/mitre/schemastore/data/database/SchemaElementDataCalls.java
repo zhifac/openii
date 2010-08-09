@@ -517,7 +517,7 @@ public class SchemaElementDataCalls extends AbstractDataCalls
 				elements.add(new DomainValue(rs.getInt("id"),rs.getString("value"),rs.getString("description"),rs.getInt("domain_id"),rs.getInt("schema_id")));
 
 			// Gets the schema relationships
-			rs = stmt.executeQuery("SELECT id,name,left_id,left_min,left_max,right_id,right_min,right_max,schema_id FROM relationship WHERE "+baseFilter+" AND " + nameFilter);
+			rs = stmt.executeQuery("SELECT id,name,description,left_id,left_min,left_max,right_id,right_min,right_max,schema_id FROM relationship WHERE "+baseFilter+" AND " + nameFilter);
 			while(rs.next())
 			{
 				Integer id = rs.getInt("id");
