@@ -111,7 +111,6 @@ class MatchMakerPage extends WizardPage implements ModifyListener,
 		// TODO Auto-generated method stub
 	}
 
-	@Override
 	public void widgetSelected(SelectionEvent e) {
 		FileDialog dialog = new FileDialog(getShell(), SWT.SAVE); 
 		dialog.setFilterExtensions(new String[] { "*.csv" });
