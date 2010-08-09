@@ -7,12 +7,17 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.mitre.openii.editors.OpenIIEditor;
+import org.mitre.openii.model.EditorManager;
 import org.mitre.openii.model.OpenIIManager;
 import org.mitre.openii.widgets.schemaTree.SchemaTree;
+import org.mitre.schemastore.model.Schema;
 
 /** Constructs the Hierarchical View */
 public class SchemaView extends OpenIIEditor
 {	
+	/** Stores the schema tree displayed in this view */
+	private SchemaTree schemaTree = null;
+	
 	/** Generate the extension pane */
 	private void generateExtensionPane(Composite parent)
 	{
@@ -48,7 +53,18 @@ public class SchemaView extends OpenIIEditor
 		pane.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		
 		// Layout the menu pane and tree pane
-		new SchemaTree(pane, getElementID());
+		schemaTree = new SchemaTree(pane, getElementID());
 		generateExtensionPane(pane);
+	}
+	
+	/** Runs a search for the specified keyword */
+	private void searchFor(String keyword)
+		{ schemaTree.searchFor(keyword); }
+	
+	/** Launches the editor */
+	static public void launchEditor(Schema schema, String keyword)
+	{
+		SchemaView schemaView = (SchemaView)EditorManager.launchEditor("SchemaView", schema);
+		if(schemaView!=null) schemaView.searchFor(keyword);
 	}
 }
