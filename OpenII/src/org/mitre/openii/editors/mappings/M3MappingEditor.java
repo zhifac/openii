@@ -49,6 +49,7 @@ public class M3MappingEditor extends OpenIIEditor
 				if(input.isConstant()) inputs += input.getConstant();
 				else inputs += sourceSchema.getElement(input.getElementID()).getName() + " (" + input.getElementID() + "), ";
 			}
+			if(inputs.length()>2) inputs = inputs.substring(0,inputs.length()-2);
 			String output = targetSchema.getElement(mappingCell.getOutput()).getName() + " (" + mappingCell.getOutput() + ")";
 			
 			// Gather general mapping cell information
