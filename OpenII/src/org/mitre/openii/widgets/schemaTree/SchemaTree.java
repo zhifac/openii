@@ -123,6 +123,10 @@ public class SchemaTree extends Composite implements ISelectionChangedListener, 
 	/** Searches for the specified keyword */
 	public void searchFor(String keyword)
 	{
+		// Update the search field keyword
+		searchField.setText(keyword);
+		
+		// Highlight all matches in the schema
 		results = SearchManager.search(keyword, schema);
 		for(Integer elementID : results.keySet())
 			for(ArrayList<SchemaElement> path : schema.getPaths(elementID))
