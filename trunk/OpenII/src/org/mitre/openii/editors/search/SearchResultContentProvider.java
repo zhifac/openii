@@ -9,6 +9,9 @@ import org.mitre.schemastore.search.RepositorySearchResult;
 
 public class SearchResultContentProvider implements ITreeContentProvider
 {
+	/** Constant indicating how may results should be initially shown */
+	private static final Integer RESULT_COUNT = 15;
+	
 	/** Holds a reference to the search result */
 	private RepositorySearchResult result;
 	
@@ -28,14 +31,14 @@ public class SearchResultContentProvider implements ITreeContentProvider
 		if(!element.equals("More..."))
 		{
 			ArrayList<Object> items = new ArrayList<Object>(primaryMatches);
-			if(items.size()>5)
+			if(items.size()>RESULT_COUNT)
 			{
-				items = new ArrayList<Object>(items.subList(0,5));
+				items = new ArrayList<Object>(items.subList(0,RESULT_COUNT));
 				items.add(new String("More..."));				
 			}
 			return items.toArray();
 		}
-		return primaryMatches.subList(5,primaryMatches.size()).toArray();
+		return primaryMatches.subList(RESULT_COUNT,primaryMatches.size()).toArray();
 	}
 
 	/** Return the parent element for the specified element */
