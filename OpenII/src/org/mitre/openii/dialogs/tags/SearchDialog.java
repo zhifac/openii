@@ -1,7 +1,6 @@
 package org.mitre.openii.dialogs.tags;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -15,12 +14,10 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.mitre.openii.application.OpenIIActivator;
+import org.mitre.openii.editors.search.SearchView;
 import org.mitre.openii.model.OpenIIManager;
-import org.mitre.openii.model.RepositoryManager;
 import org.mitre.openii.widgets.BasicWidgets;
 import org.mitre.schemastore.model.Tag;
-import org.mitre.schemastore.search.RepositorySearchResult;
-import org.mitre.schemastore.search.SearchManager;
 
 /** Constructs the Search Dialog */
 public class SearchDialog extends Dialog implements ModifyListener
@@ -96,14 +93,9 @@ public class SearchDialog extends Dialog implements ModifyListener
 					if(!tagIDs.contains(tag.getId())) tagIDs.add(tag.getId());
 		}
 		
-		// Run the search
-		try {
-			HashMap<Integer, RepositorySearchResult> results = SearchManager.search(keywordField.getText(), tagIDs, RepositoryManager.getClient());
-		} catch(Exception e) { System.out.println("(E) SearchDialog: Failed to search for schemas by keyword"); }
+		// Launch the search results viewer
+		SearchView.launchEditor(keywordField.getText(), tagIDs);
 			
-		// Display the results
-		
-		
 		// Close the search dialog
 		getShell().dispose();
 	}

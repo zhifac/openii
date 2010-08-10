@@ -120,6 +120,17 @@ public class SchemaTree extends Composite implements ISelectionChangedListener, 
 	SchemaSearchResult getSearchResult(Integer elementID)
 		{ return results.get(elementID); }
 	
+	/** Searches for the specified keyword */
+	public void searchFor(String keyword)
+	{
+		results = SearchManager.search(keyword, schema);
+		for(Integer elementID : results.keySet())
+			for(ArrayList<SchemaElement> path : schema.getPaths(elementID))
+				for(SchemaElement element : path)
+					schemaViewer.expandToLevel(element,1);					
+		schemaViewer.refresh();
+	}
+	
 	/** Handles changes to the schema model */
 	public void selectionChanged(SelectionChangedEvent e)
 	{
@@ -129,17 +140,7 @@ public class SchemaTree extends Composite implements ISelectionChangedListener, 
 
 	/** Runs the search query (when ENTER is pressed) */
 	public void keyReleased(KeyEvent e)
-	{
-		if(e.character==SWT.CR)
-		{
-			results = SearchManager.search(searchField.getText(), schema);
-			for(Integer elementID : results.keySet())
-				for(ArrayList<SchemaElement> path : schema.getPaths(elementID))
-					for(SchemaElement element : path)
-						schemaViewer.expandToLevel(element,1);					
-			schemaViewer.refresh();
-		}
-	}
+		{ if(e.character==SWT.CR) searchFor(searchField.getText()); }
 	
 	// Unused event listeners
 	public void keyPressed(KeyEvent e) {}
