@@ -19,7 +19,7 @@ import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
 public class SearchManager
 {	
 	/** Indicates if the keyword is contained within the specified string */
-	static private boolean matches(String keyword, String text)
+	static private boolean matches(String text, String keyword)
 		{ return text.matches("(?i).*" + keyword.replaceAll("\\*",".*") + ".*"); }
 	
 	/** Searches for the specified repository */
