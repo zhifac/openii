@@ -43,7 +43,7 @@ public class PrimaryMatches
 	/** Object storing primary match information */
 	private HashMap<SchemaElement,ArrayList<SchemaElement>> primaryMatches = new HashMap<SchemaElement,ArrayList<SchemaElement>>();
 
-	/** Indicates if subsumed matches are even possible */
+	/** Indicates if subsumed matches are even possible */ @SuppressWarnings("rawtypes")
 	static private boolean subsumedMatchesPossible(ArrayList<SchemaElement> matches)
 	{
 		HashSet<Class> types = new HashSet<Class>();
@@ -127,6 +127,7 @@ public class PrimaryMatches
 	public ArrayList<SchemaElement> getSubsumedMatches(SchemaElement primaryMatch)
 	{
 		ArrayList<SchemaElement> subsumedMatches = primaryMatches.get(primaryMatch);
+		if(subsumedMatches==null) subsumedMatches = new ArrayList<SchemaElement>();
 		Collections.sort(subsumedMatches,new SchemaElementComparator());
 		return subsumedMatches;
 	}
