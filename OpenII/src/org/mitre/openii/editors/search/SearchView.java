@@ -11,13 +11,18 @@ import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IPersistableElement;
@@ -27,6 +32,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.EditorPart;
 import org.mitre.openii.application.OpenIIActivator;
+import org.mitre.openii.dialogs.tags.EditTagDialog;
 import org.mitre.openii.editors.schemas.schema.SchemaView;
 import org.mitre.openii.model.OpenIIManager;
 import org.mitre.openii.model.RepositoryManager;
@@ -35,8 +41,11 @@ import org.mitre.schemastore.search.RepositorySearchResult;
 import org.mitre.schemastore.search.SearchManager;
 
 /** Constructs the Search Viewer */
-public class SearchView extends EditorPart
+public class SearchView extends EditorPart implements SelectionListener
 {
+	/** Stores the list of matched schema IDs */
+	private ArrayList<Integer> schemaIDs = new ArrayList<Integer>();
+	
 	/** Private class to transfer the search input to the viewer */
 	static private class SearchInput implements IEditorInput
 	{
@@ -72,8 +81,11 @@ public class SearchView extends EditorPart
 		/** Stores the schema being displayed */
 		private Integer schemaID = null;
 		
+		/** Stores the schema label */
+		private CLabel label = null;
+		
 		/** Displays the schema label */
-		private void displayLabel(String text)
+		private void displayLabel(Composite parent, String text)
 		{			
 			// Define the label font style
 			FontData fontData = new FontData();
@@ -81,24 +93,23 @@ public class SearchView extends EditorPart
 			fontData.setStyle(SWT.BOLD);
 			
 			// Generate the label
-			CLabel label = new CLabel(this, SWT.NONE);
+			label = new CLabel(parent, SWT.NONE);
 			label.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 			label.setFont(new Font(Display.getCurrent(), fontData));
 			label.setLeftMargin(6);
 			label.setImage(OpenIIActivator.getImage("Schema.gif"));
 			label.setText(text);
+			label.setCursor(new Cursor(getDisplay(), SWT.CURSOR_HAND));
+			label.addMouseListener(this);
 		}
 		
 		/** Displays the schema matches */
-		private void displayMatches(SchemaInfo schema, RepositorySearchResult result)
+		private void displayMatches(Composite parent, SchemaInfo schema, RepositorySearchResult result)
 		{
 			// Construct the scroll pane
-			ScrolledComposite scrollPane = new ScrolledComposite(this, SWT.V_SCROLL);
+			ScrolledComposite scrollPane = new ScrolledComposite(parent, SWT.V_SCROLL);
 			scrollPane.setExpandHorizontal(true);
 			scrollPane.setExpandVertical(true);
-			GridLayout layout = new GridLayout(1,false);
-			layout.marginHeight = 0; layout.marginWidth = 0;
-			scrollPane.setLayout(layout);
 			scrollPane.setLayoutData(new GridData(GridData.FILL_BOTH));
 			
 			// Display the matched schema elements
@@ -119,26 +130,24 @@ public class SearchView extends EditorPart
 			super(parent, SWT.BORDER);
 			setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 			GridLayout layout = new GridLayout(1,false);
-			layout.marginHeight = 0; layout.marginWidth = 0;
 			layout.horizontalSpacing = 0; layout.verticalSpacing = 0;
 			setLayout(layout);
 			setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-			addMouseListener(this);
 
 			// Display the schema label and match panes
 			schemaID = result.getSchemaID();
 			SchemaInfo schema = OpenIIManager.getSchemaInfo(schemaID);
-			displayLabel(schema.getSchema().getName());
-			displayMatches(schema, result);
+			displayLabel(this, schema.getSchema().getName());
+			displayMatches(this, schema, result);
 		}
 
 		/** Launches the schema pane (with keyword search) */
-		public void mouseDoubleClick(MouseEvent arg0)
+		public void mouseDoubleClick(MouseEvent e)
 			{ SchemaView.launchEditor(OpenIIManager.getSchema(schemaID),"\\b"+getKeyword()+"\\b"); }
-
+		
 		// Unused event listeners
-		public void mouseDown(MouseEvent arg0) {}
-		public void mouseUp(MouseEvent arg0) {}
+		public void mouseDown(MouseEvent e) {}
+		public void mouseUp(MouseEvent e) {}
 	}
 	
 	/** Gets the keyword */
@@ -153,6 +162,35 @@ public class SearchView extends EditorPart
 		setPartName("Search Results");
 	}
 	
+	/** Generate the header */
+	private void generateHeader(Composite parent, String keyword)
+	{
+		// Construct the header pane
+		Composite headerPane = new Composite(parent, SWT.NONE);
+		GridLayout layout = new GridLayout(2,false);
+		layout.marginHeight = 0; layout.marginWidth = 0;
+		headerPane.setLayout(layout);
+		headerPane.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+	
+		// Display label indicating search term
+		Composite labelPane = new Composite(headerPane, SWT.NONE);
+		labelPane.setLayout(new GridLayout(1,false));
+		Label label = new Label(labelPane, SWT.NONE);
+		label.setText("Search Results for: " + keyword);
+		
+		// Construct the button pane
+		Composite buttonPane = new Composite(headerPane, SWT.NONE);
+		layout = new GridLayout(1,false);
+		layout.marginHeight = 0; layout.marginWidth = 0;
+		buttonPane.setLayout(layout);
+		buttonPane.setLayoutData(new GridData(GridData.FILL_HORIZONTAL | GridData.HORIZONTAL_ALIGN_END));
+		
+		// Display a button for saving search results as tag
+		Button saveButton = new Button(buttonPane, SWT.NONE);
+		saveButton.setText("Save as Tag");
+		saveButton.addSelectionListener(this);
+	}
+	
 	/** Displays the Search View */
 	public void createPartControl(Composite parent)
 	{
@@ -164,17 +202,15 @@ public class SearchView extends EditorPart
 		// Run the search and display results
 		try {
 			HashMap<Integer, RepositorySearchResult> results = SearchManager.search(keyword, tagIDs, RepositoryManager.getClient());
-
+			schemaIDs = new ArrayList<Integer>(results.keySet());
+			
 			// Constructs the main pane
 			Composite pane = new Composite(parent, SWT.DIALOG_TRIM);
 			pane.setLayout(new GridLayout(1,false));
 			pane.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 			
 			// Display label indicating search term
-			Composite labelPane = new Composite(pane, SWT.NONE);
-			labelPane.setLayout(new GridLayout(1,false));
-			Label label = new Label(labelPane, SWT.NONE);
-			label.setText("Search Results for: " + keyword);
+			generateHeader(pane, keyword);
 			
 			// Construct the scroll pane
 			ScrolledComposite scrollPane = new ScrolledComposite(pane, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
@@ -200,6 +236,14 @@ public class SearchView extends EditorPart
 		}
 		catch(Exception e) { System.out.println("(E) SearchViewer: Failed to search for schemas by keyword"); }
 	}
+
+	/** Saves the search results as a tagged group */
+	public void widgetSelected(SelectionEvent e)
+	{
+		Shell shell = getSite().getWorkbenchWindow().getShell();
+		EditTagDialog dlg = new EditTagDialog(shell, null, null, new ArrayList<Integer>(schemaIDs));						
+		dlg.open();	
+	}
 	
 	// Default instantiations of editor functions
 	public boolean isDirty() { return false; }
@@ -207,6 +251,9 @@ public class SearchView extends EditorPart
 	public void doSave(IProgressMonitor arg0) {}
 	public void doSaveAs() {}
 	public void setFocus() {}
+
+	// Unused event listeners
+	public void widgetDefaultSelected(SelectionEvent arg0) {}
 	
 	/** Launches the editor */
 	static public void launchEditor(String keyword, ArrayList<Integer> tagIDs)
