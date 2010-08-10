@@ -21,7 +21,7 @@ public class EditorInput implements IEditorInput
 		this.element = element;
 	}
 
-	/** eturns the editor type */
+	/** Returns the editor type */
 	public EditorType getType()
 		{ return type; }
 	
@@ -34,7 +34,5 @@ public class EditorInput implements IEditorInput
 	public String getName() { return ""; }
 	public IPersistableElement getPersistable() { return null; }
 	public String getToolTipText() { return ""; }
-
-	@SuppressWarnings("unchecked")
-	public Object getAdapter(Class arg0) { return null; }
+	public Object getAdapter(@SuppressWarnings("rawtypes") Class arg0) { return null; }
 }
