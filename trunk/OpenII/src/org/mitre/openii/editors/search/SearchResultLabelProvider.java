@@ -1,8 +1,13 @@
 package org.mitre.openii.editors.search;
 
+import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.eclipse.jface.viewers.StyledCellLabelProvider;
 import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
@@ -18,19 +23,21 @@ import org.mitre.schemastore.model.schemaInfo.SchemaInfo;
 public class SearchResultLabelProvider extends StyledCellLabelProvider
 {
 	// Defines the various referenced colors
+	private static final Color BLACK = Display.getCurrent().getSystemColor(SWT.COLOR_BLACK); 
 	private static final Color YELLOW = Display.getCurrent().getSystemColor(SWT.COLOR_YELLOW); 
-	private static final Color ORANGE = new Color(Display.getCurrent(), 255, 200, 145); 
-	private static final Color WHITE = Display.getCurrent().getSystemColor(SWT.COLOR_WHITE); 
 	
 	/** Holds a reference to the schema */
 	private SchemaInfo schema = null;
 
-	/** Holds a reference to the keyword */
-	private String keyword = null;
+	/** Holds the keyword pattern */
+	private Pattern pattern = null;
 	
 	/** Constructs the content provider */
 	public SearchResultLabelProvider(SchemaInfo schema, String keyword)
-		{ this.schema = schema; this.keyword = keyword; }
+	{
+		this.schema = schema;
+		pattern = Pattern.compile("(?i)\\b" + keyword + "\\b");
+	}
 
 	/** Returns the image associated with the specified element */
 	public Image getImage(Object element)
@@ -68,25 +75,18 @@ public class SearchResultLabelProvider extends StyledCellLabelProvider
 	
 	/** Updates the viewer cell */
 	public void update(ViewerCell cell)
-	{
+	{		
 		// Set up the cell text and image
 		Object element = cell.getElement();
 		cell.setImage(getImage(element));
 		cell.setText(getText(element));
 
-		// Highlight cells which match the search results
-//		if(element instanceof SchemaElement)
-//		{
-//			// Get the search result
-//			SchemaElement schemaElement = (SchemaElement)element;
-//			SchemaSearchResult searchResult = schemaView.getSearchResult(schemaElement.getId());
-//
-//			// Assign the background color
-//			Color color = WHITE;
-//			if(searchResult!=null)
-//				{ color = searchResult.nameMatched() ? YELLOW : searchResult.descriptionMatched() ? ORANGE : WHITE; }
-//			cell.setBackground(color);
-//		}
+		// Highlight keyword references in the text
+		ArrayList<StyleRange> styleRanges = new ArrayList<StyleRange>();
+		Matcher matcher = pattern.matcher(getText(element));
+		while(matcher.find())
+			styleRanges.add(new StyleRange(matcher.start(),matcher.end()-matcher.start(),BLACK,YELLOW));			
+		cell.setStyleRanges(styleRanges.toArray(new StyleRange[0]));
 		
 		super.update(cell);
 	}
