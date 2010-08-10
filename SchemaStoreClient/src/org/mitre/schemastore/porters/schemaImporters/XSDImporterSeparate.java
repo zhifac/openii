@@ -73,15 +73,12 @@ public class XSDImporterSeparate extends SchemaImporter
 			e1.printStackTrace();
 		}
 		
-		
 		// Initialize the importer
 		//xsdImporter.uri = new URI("C:/ecf-v4.0-spec/xsd/message/ECF-4.0-CaseListQueryMessage.xsd");
 		xsdImporter.uri = new URI("C:/tempSchemas/niem-2.1/niem/domains/maritime/2.1/maritime.xsd");
 		xsdImporter.initialize();
 	}
-		
 
-	
 	/************************* class variables ********************************/
 	
 	// Stores the M3 schema elements (entities, attributes, domain, relationships, etc.) 
@@ -1156,7 +1153,7 @@ public class XSDImporterSeparate extends SchemaImporter
 	
 	/** Returns the importer name */
 	public String getName()
-		{ return "XSD Importer"; }
+		{ return "XSD Importer Separate"; }
 	
 	/** Returns the importer description */
 	public String getDescription()
@@ -1691,4 +1688,21 @@ public class XSDImporterSeparate extends SchemaImporter
 	
 } // end XSDImporter class
 
+/** Private class for sorting schema elements */
+class SchemaElementComparator implements Comparator<SchemaElement>
+{
+	public int compare(SchemaElement element1, SchemaElement element2)
+	{
+		// Retrieve the base schemas for the specified elements
+		Integer base1 = element1.getBase(); if(base1==null) base1=-1;
+		Integer base2 = element2.getBase(); if(base2==null) base2=-1;
+		
+		// Returns a comparator value for the compared elements
+		if(!base1.equals(base2))
+			return base1.compareTo(base2);
+		if(element1.getClass()!=element2.getClass())
+			return element1.getClass().toString().compareTo(element2.getClass().toString());
+		return element1.getId().compareTo(element2.getId());
+	}
+}
 
