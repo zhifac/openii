@@ -47,7 +47,7 @@ import org.mitre.schemastore.porters.ImporterException.ImporterExceptionType;
 
 
 /**
- * XSDMergedImporter: Class for importing XSD files into the M3 Format
+ * XSDImporter: Class for importing XSD files into the M3 Format
  * 
  * @author DBURDICK
  */
@@ -96,37 +96,9 @@ public class XSDImporter extends SchemaImporter
 	/** Stores the unique "Any" entity **/
 	private Entity anyEntity;
 
-//	/** Store the parentID arrays for each schema by schemaID **/
-//	private static HashMap<Integer, HashSet<Integer>> _parentIDsBySchemaID  = new HashMap<Integer,HashSet<Integer>>();
-//	
-//	/** Stores merge sets (sets of schemaIDs that are merged to a 
-//		single schema because they form a cycle in the extends graph  **/
-//	private static HashMap<Integer,HashSet<Integer>> _mergeSets = new HashMap<Integer,HashSet<Integer>>();
-//	
-//	private static HashMap<Integer,String> _NSprefixBySchemaID = new HashMap<Integer,String>();
-//	
-//	private static HashMap<String, org.mitre.schemastore.model.Schema> _schemasByNSPrefix = new HashMap<String,org.mitre.schemastore.model.Schema>();
-//	
-//	/** Store the schemaElements by namespace prefix **/
-//	private static HashMap<String, HashSet<SchemaElement>> _schemaElementsByNSPrefix = new HashMap<String,HashSet<SchemaElement>>();
-//	
-//	/** Store the namespace prefix by schema element ID **/
-//	private static HashMap<Integer, String> _NSPrefixByElementID = new HashMap<Integer,String>();
-//	
-//	/** Store the namespace prefix associated with schema element **/
-//	private static HashMap<String,String> _nsPreByNS = new HashMap<String,String>();
-//	
-//	/** used in cycle detection **/
-//	private static ArrayList<Integer> _activeSet = new ArrayList<Integer>();
-//	
-//	private static HashMap<Integer,Integer> _translationTable = new HashMap<Integer,Integer>();
-//	
-//	private static HashSet<SchemaElement> _masterElementList = new HashSet<SchemaElement>();
-//	
-//	private static HashMap<Integer,Integer> _reverseTempTranslationTable = new HashMap<Integer,Integer>();
-//	
 	private static HashSet<Integer> _seenAttrsInAttrGroup = new HashSet<Integer>();
 
+	private static HashMap<String,Entity> _attrGroupEntitySet = new HashMap<String,Entity>();
 	
 	
 	/** Initializes the importer for the specified URI 
@@ -144,7 +116,7 @@ public class XSDImporter extends SchemaImporter
            
 	     }catch (Exception e) {
 	     
-	          	String message = new String("[E] xsdMergedImporter -- " + 
+	          	String message = new String("[E] xsdImporter -- " + 
 	          			"Likely a security exception - you " +
 	                		"must allow modification to system properties if " +
 	                		"you want to use the proxy");
@@ -189,7 +161,7 @@ public class XSDImporter extends SchemaImporter
 	
 	/** Returns the importer name */
 	public String getName()
-		{ return "XSD Importer Merged"; }
+		{ return "XSD Importer"; }
 	
 	/** Returns the importer description */
 	public String getDescription()
@@ -318,7 +290,7 @@ public class XSDImporter extends SchemaImporter
 	} // end method processSimpleType
 
 
-	private static HashMap<String,Entity> _attrGroupEntitySet = new HashMap<String,Entity>();
+	
 	
 	/**
 	 * processComplexType: creates M3 Entity for the passed ComplexType 
@@ -547,86 +519,29 @@ public class XSDImporter extends SchemaImporter
 				elementDecl = elementDecl.getReference();
 		} catch (IllegalStateException e) {}{}
 		
-		/** if containment references elements in same namespace, leave alone **/
-		if (origElementDecl.getSchema().getTargetNamespace().equals(
-				elementDecl.getSchema().getTargetNamespace()))
-		{
-			Containment containment = new Containment(nextAutoInc(),elementDecl.getName(),this.getDocumentation(elementDecl),((parent != null) ? parent.getId() : null),-1,origMin,origMax,0);
-		
-			if (_schemaElementsHS.containsKey(origHashcode) == false){
-				_schemaElementsHS.put(origHashcode, containment);
-				
-			}
-
-			XMLType childElementType = null;
-			try { 
-				childElementType = elementDecl.getType();
-			} catch (IllegalStateException e){} 
-			if ((childElementType == null) || (childElementType instanceof SimpleType) || (childElementType instanceof AnyType)) 				
-				processSimpleType(childElementType, containment);
 	
-			else if (childElementType instanceof ComplexType)
-				processComplexType((ComplexType)childElementType,containment);
-
-			else 
-				System.err.println("(E) XSDImporter:processElement -- Encountered object named " 
-					+ elementDecl.getName() + " with unknown type " 
-					+  ((childElementType == null)? null : childElementType.getClass()));
+		Containment containment = new Containment(nextAutoInc(),elementDecl.getName(),this.getDocumentation(elementDecl),((parent != null) ? parent.getId() : null),-1,origMin,origMax,0);
+	
+		if (_schemaElementsHS.containsKey(origHashcode) == false){
+			_schemaElementsHS.put(origHashcode, containment);
+			
 		}
-		else {
-			
-			/** create Containment for Element **/  		
-			Containment origContainment = new Containment(nextAutoInc(),origElementDecl.getName(),this.getDocumentation(elementDecl),((parent != null) ? parent.getId() : null),-1,origMin,origMax,0);
-			if (_schemaElementsHS.containsKey(origContainment.hashCode()) == false)
-			{
-				_schemaElementsHS.put(origContainment.hashCode(), origContainment);
-				
-			}
 
-			XMLType childElementType = null;
-			try { 
-				childElementType = origElementDecl.getType();
-			} catch (IllegalStateException e){} 
-			
-			if ((childElementType == null) || (childElementType instanceof SimpleType) || (childElementType instanceof AnyType)) 				
-				processSimpleType(childElementType, origContainment);
+		XMLType childElementType = null;
+		try { 
+			childElementType = elementDecl.getType();
+		} catch (IllegalStateException e){} 
+		if ((childElementType == null) || (childElementType instanceof SimpleType) || (childElementType instanceof AnyType)) 				
+			processSimpleType(childElementType, containment);
+
+		else if (childElementType instanceof ComplexType)
+			processComplexType((ComplexType)childElementType,containment);
+
+		else 
+			System.err.println("(E) XSDImporter:processElement -- Encountered object named " 
+				+ elementDecl.getName() + " with unknown type " 
+				+  ((childElementType == null)? null : childElementType.getClass()));
 	
-			else if (childElementType instanceof ComplexType)
-				processComplexType((ComplexType)childElementType,origContainment);
-
-			else 
-				System.err.println("(E) XSDImporter:processElement -- Encountered object named " 
-					+ origElementDecl.getName() + " with unknown type " 
-					+  ((childElementType == null)? null : childElementType.getClass()));
-					
-			/** This assumes the referenced element is a top-level element **/
-			Containment refContainment = new Containment(nextAutoInc(),elementDecl.getName(),this.getDocumentation(elementDecl),null,-1,origMin,origMax,0);
-			if (_schemaElementsHS.containsKey(refContainment.hashCode()) == false)
-			{
-				_schemaElementsHS.put(refContainment.hashCode(), refContainment);
-				
-			}
-
-			XMLType childElementType2 = null;
-			try { 
-				childElementType2 = elementDecl.getType();
-			} catch (IllegalStateException e){} 
-			
-			if ((childElementType2 == null) || (childElementType2 instanceof SimpleType) || (childElementType2 instanceof AnyType)) 				
-				processSimpleType(childElementType2, refContainment);
-	
-			else if (childElementType2 instanceof ComplexType)
-				processComplexType((ComplexType)childElementType2,refContainment);
-
-			else 
-				System.err.println("(E) XSDImporter:processElement -- Encountered object named " 
-					+ elementDecl.getName() + " with unknown type " 
-					+  ((childElementType2 == null)? null : childElementType2.getClass()));
-			
-			/** create subtype **/
-			//Subtype subtype = new Subtype(nextAutoInc(),origContainment.getId(),refContainment.getId(),0);
-			//_schemaElementsHS.put(subtype.hashCode(), subtype);
-		}
 		
 	} // end method
 
