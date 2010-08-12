@@ -45,12 +45,7 @@ import org.mitre.schemastore.porters.ImporterException.ImporterExceptionType;
 
 
 public class XSDImporter extends SchemaImporter
-{
-	
-	private static final String DEFAULT_NAMESPACE = "urn:mitre.org:M3";
-
-	
-	
+{	
 	// Stores the M3 schema elements (entities, attributes, domain, relationships, etc.) 
 	private HashMap<Integer, SchemaElement> schemaElementsHS = new HashMap<Integer, SchemaElement>();
 	private HashMap<String,Domain> domainList = new HashMap<String,Domain>();
@@ -212,19 +207,18 @@ public class XSDImporter extends SchemaImporter
 			Relationship rel = new Relationship(nextId(),parent.getName(),"",((Attribute)parent).getEntityID(),0,1,this.anyEntity.getId(),0,rightMax,0);
 			schemaElementsHS.put(rel.hashCode(),rel);
 			
-			// TODO: set the domain of the parent attribute to 
-			// TODO: should we remove the attribute with type Any?
-			((Attribute)parent).setDomainID(domainList.get(DEFAULT_NAMESPACE + " " + "Any").getId());
+			/** remove the attribute if type ANY is involved **/
+			schemaElementsHS.remove(parent.getId());
+			
 			
 		}
 		else {
 	
 			// find Domain for SimpleType (generated if required)
 			Domain domain = new Domain(nextId(), typeName, (passedType == null ? "" : this.getDocumentation(passedType)), 0);
-			//TODO: fix passedType namespace
-			String passedTypeNamespace = passedType == null ? DEFAULT_NAMESPACE : passedType.getSchema().getTargetNamespace();
-			if (domainList.containsKey(passedTypeNamespace + " " + domain.getName()) == false) {
-				domainList.put(passedTypeNamespace + " " + domain.getName(),domain);
+			
+			if (domainList.containsKey(domain.getName()) == false) {
+				domainList.put(domain.getName(),domain);
 				schemaElementsHS.put(domain.hashCode(), domain);
 				
 				if (passedType != null && passedType instanceof SimpleType && !(passedType instanceof Union)){
@@ -232,8 +226,6 @@ public class XSDImporter extends SchemaImporter
 					Enumeration<?> facets = ((SimpleType)passedType).getFacets("enumeration");
 					while (facets.hasMoreElements()) {
 						Facet facet = (Facet) facets.nextElement();
-						// TODO: Uncomment this to use the DOMAINVALUE NAME as documentation
-						//DomainValue domainValue = new DomainValue(nextId(), facet.getValue(), facet.getValue(), domain.getId(), 0);
 						DomainValue domainValue = new DomainValue(nextId(), facet.getValue(), this.getDocumentation(facet), domain.getId(), 0);
 						schemaElementsHS.put(domainValue.hashCode(), domainValue);	
 					}
@@ -254,7 +246,7 @@ public class XSDImporter extends SchemaImporter
 			}
 	 
 			// attached Domain as child to passed Attribute / Containment / Subtype
-			domain = domainList.get(passedTypeNamespace + " " + domain.getName()); 
+			domain = domainList.get(domain.getName()); 
 			if (parent instanceof Attribute)
 				((Attribute)parent).setDomainID(domain.getId());
 			else if (parent instanceof Containment)
@@ -288,7 +280,7 @@ public class XSDImporter extends SchemaImporter
 			try {
 				// get Attributes for current complexType
 				Enumeration<?> attrDecls = passedType.getAttributeDecls(); 
-				boolean sawSimpleContentVal = false;
+			//	boolean sawSimpleContentVal = false;
 				while (attrDecls.hasMoreElements()){
 				
 					AttributeDecl attrDecl = (AttributeDecl)attrDecls.nextElement();
@@ -302,20 +294,20 @@ public class XSDImporter extends SchemaImporter
 					boolean containsID = attrDecl.getSimpleType() != null && attrDecl.getSimpleType().getName() != null && attrDecl.getSimpleType().getName().equals("ID");
 					
 					Attribute attr = new Attribute(nextId(),(attrDecl.getName() == null ? "" : attrDecl.getName()),getDocumentation(attrDecl),entity.getId(),-1,(attrDecl.isRequired()? 1 : 0), 1, containsID, 0); 
-					if (attr.getName().equalsIgnoreCase("simpleContentValue")){
-						sawSimpleContentVal = true;
-					}
+				//	if (attr.getName().equalsIgnoreCase("simpleContentValue")){
+				//		sawSimpleContentVal = true;
+				//	}
 					//schemaElementsHS.put(origHashcode, attr);
 					schemaElementsHS.put(nextId(), attr);
 					processSimpleType(attrDecl.getSimpleType(), attr);
 				}
 				
-				if (passedType.isSimpleContent()){
-					Attribute simpleContentAttr = new Attribute(nextId(),(sawSimpleContentVal ? "simpleContentValue2" : "simpleContentValue"),"added attribute to handle simpleContent",entity.getId(),-1, 0, 1, false, 0);  
+			//	if (passedType.isSimpleContent()){
+			//		Attribute simpleContentAttr = new Attribute(nextId(),(sawSimpleContentVal ? "simpleContentValue2" : "simpleContentValue"),"added attribute to handle simpleContent",entity.getId(),-1, 0, 1, false, 0);  
 					//schemaElementsHS.put(origHashcode, attr);
-					schemaElementsHS.put(nextId(), simpleContentAttr);
-					processSimpleType(null, simpleContentAttr);
-				}
+			//		schemaElementsHS.put(nextId(), simpleContentAttr);
+			//		processSimpleType(null, simpleContentAttr);
+			//	}
 				
 			} catch (IllegalStateException e){}
 				 
@@ -377,7 +369,7 @@ public class XSDImporter extends SchemaImporter
 			
 			// For WildCard, create containment child to "Any" domain
 			if (obj instanceof Wildcard){
-				Domain anyDomain = domainList.get(DEFAULT_NAMESPACE + " " + "Any");
+				Domain anyDomain = domainList.get("Any");
 				Containment containment = new Containment(nextId(),"Any", this.getDocumentation((Annotated)obj), parent.getId(), anyDomain.getId(), 0, 1, 0);
 				schemaElementsHS.put(containment.hashCode(), containment);
 				
@@ -494,31 +486,31 @@ public class XSDImporter extends SchemaImporter
 
 		Domain domain = new Domain(nextId(), ANY, "The Any wildcard domain", 0);
 		schemaElementsHS.put(domain.hashCode(), domain);
-		domainList.put(DEFAULT_NAMESPACE + " " + ANY, domain);
+		domainList.put(ANY, domain);
 
 		domain = new Domain(nextId(), INTEGER,"The Integer domain", 0);
 		schemaElementsHS.put(domain.hashCode(), domain);
-		domainList.put(DEFAULT_NAMESPACE + " " + INTEGER, domain);
+		domainList.put(INTEGER, domain);
 		
 		domain = new Domain(nextId(), REAL,"The Real domain", 0);
 		schemaElementsHS.put(domain.hashCode(), domain);
-		domainList.put(DEFAULT_NAMESPACE + " " + REAL, domain);
+		domainList.put(REAL, domain);
 		
 		domain = new Domain(nextId(), STRING,"The String domain", 0);
 		schemaElementsHS.put(domain.hashCode(), domain);
-		domainList.put(DEFAULT_NAMESPACE + " " + STRING, domain);
+		domainList.put(STRING, domain);
 		
 		domain = new Domain(nextId(), "string","The string domain", 0);
 		schemaElementsHS.put(domain.hashCode(), domain);
-		domainList.put(DEFAULT_NAMESPACE + " " + "string", domain);
+		domainList.put("string", domain);
 		
 		domain = new Domain(nextId(), DATETIME,"The DateTime domain", 0);
 		schemaElementsHS.put(domain.hashCode(), domain);
-		domainList.put(DEFAULT_NAMESPACE + " " + DATETIME, domain);
+		domainList.put(DATETIME, domain);
 		
 		domain = new Domain(nextId(), BOOLEAN,"The Boolean domain", 0);
 		schemaElementsHS.put(domain.hashCode(), domain);
-		domainList.put(DEFAULT_NAMESPACE + " " + BOOLEAN, domain);
+		domainList.put(BOOLEAN, domain);
 	}
 	
 } // end class
