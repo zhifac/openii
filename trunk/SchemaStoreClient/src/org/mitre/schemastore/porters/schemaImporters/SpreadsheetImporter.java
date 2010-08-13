@@ -16,11 +16,9 @@
 
 package org.mitre.schemastore.porters.schemaImporters;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -29,8 +27,6 @@ import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.mitre.schemastore.client.Repository;
-import org.mitre.schemastore.client.SchemaStoreClient;
 import org.mitre.schemastore.model.Attribute;
 import org.mitre.schemastore.model.Domain;
 import org.mitre.schemastore.model.Entity;
@@ -53,14 +49,15 @@ import org.mitre.schemastore.porters.ImporterException.ImporterExceptionType;
  *
  */
 public class SpreadsheetImporter extends SchemaImporter {
-	protected HSSFWorkbook _excelWorkbook;
-	private URI _excelURI;
-	private HashMap<String, Entity> _entities;
-	private HashMap<String, Attribute> _attributes;
+	protected HSSFWorkbook workbook;
+	private URI sourceURI;
+	private HashMap<String, Entity> entities;
+	private HashMap<String, Attribute> attributes;
 	protected int[] cellTypes;
 	protected String[] attributeNames;
 	protected ArrayList<SchemaElement> schemaElements = new ArrayList<SchemaElement>();
 	private HashMap<String, Domain> domainList = new HashMap<String, Domain>();
+	protected String documentation = "";
 
 	public SpreadsheetImporter() {
 		loadDomains();
@@ -68,28 +65,27 @@ public class SpreadsheetImporter extends SchemaImporter {
 
 	// get rid of characters
 	protected String cleanup(String s) {
-		s = s.trim().replaceAll("'", "''").replaceAll("\"", "\\\"");
-
-		return s;
+		return s.trim().replaceAll("'", "''").replaceAll("\"", "\\\"");
 	}
 
 	protected String getCellValStr(HSSFCell cell) {
-		if (cell.getCellType() == HSSFCell.CELL_TYPE_BOOLEAN) {
-			return Boolean.toString(cell.getBooleanCellValue());
-		} else if (cell.getCellType() == HSSFCell.CELL_TYPE_NUMERIC) {
-			return Double.toString(cell.getNumericCellValue());
-		} else if (cell.getCellType() == HSSFCell.CELL_TYPE_STRING) {
-			return cleanup(cell.getRichStringCellValue().toString());
-		} else if (cell.getCellType() == HSSFCell.CELL_TYPE_BLANK) {
-			return "";
-		} else if (cell.getCellType() == HSSFCell.CELL_TYPE_FORMULA) {
-			return cell.getCellFormula();
-		} else if (cell.getCellType() == HSSFCell.CELL_TYPE_ERROR) {
-			return String.valueOf(cell.getErrorCellValue());
-		} else if (cell.getCellType() == 1024) {
-			return String.valueOf(cell.getDateCellValue());
-		} else {
-			return "";
+		switch (cell.getCellType()) {
+			case HSSFCell.CELL_TYPE_BOOLEAN:
+				return Boolean.toString(cell.getBooleanCellValue());
+			case HSSFCell.CELL_TYPE_NUMERIC:
+				return Double.toString(cell.getNumericCellValue());
+			case HSSFCell.CELL_TYPE_STRING:
+				return cleanup(cell.getRichStringCellValue().toString());
+			case HSSFCell.CELL_TYPE_BLANK:
+				return "";
+			case HSSFCell.CELL_TYPE_FORMULA:
+				return cell.getCellFormula();
+			case HSSFCell.CELL_TYPE_ERROR:
+				return String.valueOf(cell.getErrorCellValue());
+			case 1024:
+				return String.valueOf(cell.getDateCellValue());
+			default:
+				return "";
 		}
 	}
 
@@ -99,45 +95,39 @@ public class SpreadsheetImporter extends SchemaImporter {
 	 * represent a date
 	 */
 	protected int getCellDataType(HSSFCell cell) {
-		if (cell == null) return HSSFCell.CELL_TYPE_BLANK;
-	    try
-	    {
+		if (cell == null) { return HSSFCell.CELL_TYPE_BLANK; }
+	    try {
 	        java.util.Date isItDate= cell.getDateCellValue();
-            if( isItDate != null && !cell.getCellStyle().getDataFormatString().contains("#") &&
-                !cell.getCellStyle().getDataFormatString().equalsIgnoreCase("General") )
-            {
+            if (isItDate != null &&
+            	!cell.getCellStyle().getDataFormatString().contains("#") &&
+            	!cell.getCellStyle().getDataFormatString().equalsIgnoreCase("General")) {
                 return 1024;
             }
-        }
-        catch (RuntimeException e)
-        {
-            //it's a String...moving on
+        } catch (RuntimeException e) {
+            // it's a String...moving on
         }
 		return cell.getCellType();
 	}
 
-	protected String documentation = "";
-
 	/**
 	 * Derive the schema from the contents of an Excel workbook
+	 * This is where the magic happens!
 	 */
 	protected void generate() {
-		int numSheets = _excelWorkbook.getNumberOfSheets();
+		int numSheets = workbook.getNumberOfSheets();
 
 		// iterate and load individual work sheets
 		for (int s = 0; s < numSheets; s++) {
-			HSSFSheet sheet = _excelWorkbook.getSheetAt(s);
+			HSSFSheet sheet = workbook.getSheetAt(s);
 			HSSFRow topRow = sheet.getRow(0); //first logical row
 
-			if (topRow == null || topRow.getCell(0) == null) {
-				continue;
-			}
+			if (topRow == null || topRow.getCell(0) == null) { continue; }
 
-			String sheetName = _excelWorkbook.getSheetName(s);
+			String sheetName = workbook.getSheetName(s);
 			Entity tblEntity = new Entity(nextId(), sheetName, "", 0);
-			_entities.put(sheetName, tblEntity);
+			entities.put(sheetName, tblEntity);
 
-			//			String topLeftCell = getCellValStr(topRow.getCell(0));
+			//String topLeftCell = getCellValStr(topRow.getCell(0));
 			cellTypes = new int[topRow.getLastCellNum()];
 			Arrays.fill(cellTypes, -1);
 
@@ -152,9 +142,8 @@ public class SpreadsheetImporter extends SchemaImporter {
 			for (int i = 0; i < cellTypes.length; i++) {
 				if (attributeNames[i].length() > 0) {
 					Domain domain = domainList.get(translateType(cellTypes[i]));
-					attribute = new Attribute(nextId(), attributeNames[i], documentation,
-							tblEntity.getId(), domain.getId(), null, null, false, 0);
-					_attributes.put(attribute.getName(), attribute);
+					attribute = new Attribute(nextId(), attributeNames[i], documentation, tblEntity.getId(), domain.getId(), null, null, false, 0);
+					attributes.put(attribute.getName(), attribute);
 				}
 			}
 		}
@@ -168,7 +157,7 @@ public class SpreadsheetImporter extends SchemaImporter {
 		// the first row has the attribute names in them
 		for (int i = 1; i <= sheet.getLastRowNum(); i++) {
 			HSSFRow row = sheet.getRow(i);
-			if (row == null) continue;
+			if (row == null) { continue; }
 
 			int currentCellType;
 			for (int j = 0; j < colCount; j++) {
@@ -178,11 +167,9 @@ public class SpreadsheetImporter extends SchemaImporter {
 				//System.out.print(getCellValStr(row.getCell(j)) + " is a ");
 				currentCellType = getCellDataType(row.getCell(j));
 				//System.out.println( translateType(currentCellType ) + " and the date format is " + row.getCell(j).getCellStyle().getDataFormatString() );
-				if (cellTypes[j] == -1
-						|| (cellTypes[j] == HSSFCell.CELL_TYPE_BLANK && cellTypes[j] != currentCellType)) {
+				if (cellTypes[j] == -1 || (cellTypes[j] == HSSFCell.CELL_TYPE_BLANK && cellTypes[j] != currentCellType)) {
 					cellTypes[j] = currentCellType;
-				} else if (cellTypes[j] != currentCellType
-						&& currentCellType != HSSFCell.CELL_TYPE_BLANK) {
+				} else if (cellTypes[j] != currentCellType && currentCellType != HSSFCell.CELL_TYPE_BLANK) {
 					//they don't match to default to String
 					cellTypes[j] = HSSFCell.CELL_TYPE_STRING;
 				}
@@ -192,21 +179,19 @@ public class SpreadsheetImporter extends SchemaImporter {
 
 	public String translateType(int hssfType) {
 		switch (hssfType) {
-		case HSSFCell.CELL_TYPE_BOOLEAN:
-			return BOOLEAN;
-		case HSSFCell.CELL_TYPE_NUMERIC:
-			return REAL;
-		case HSSFCell.CELL_TYPE_BLANK:
-		case HSSFCell.CELL_TYPE_STRING:
-			return STRING;
-		case HSSFCell.CELL_TYPE_ERROR:
-			throw new RuntimeException(
-					"There appears to be an error in the formulas in the spreadsheet");
-		case HSSFCell.CELL_TYPE_FORMULA:
-			throw new RuntimeException(
-					"Formulas are not valid return types.  The spreadsheet was processed incorrectly");
-        case 1024:
-			return DATETIME;
+			case HSSFCell.CELL_TYPE_BOOLEAN:
+				return BOOLEAN;
+			case HSSFCell.CELL_TYPE_NUMERIC:
+				return REAL;
+			case HSSFCell.CELL_TYPE_BLANK:
+			case HSSFCell.CELL_TYPE_STRING:
+				return STRING;
+			case HSSFCell.CELL_TYPE_ERROR:
+				throw new RuntimeException("There appears to be an error in the formulas in the spreadsheet");
+			case HSSFCell.CELL_TYPE_FORMULA:
+				throw new RuntimeException("Formulas are not valid return types.  The spreadsheet was processed incorrectly");
+			case 1024:
+				return DATETIME;
 		}
 		return STRING;
 	}
@@ -230,46 +215,33 @@ public class SpreadsheetImporter extends SchemaImporter {
 	public ArrayList<String> getFileTypes() {
 		ArrayList<String> filetypes = new ArrayList<String>(3);
 		filetypes.add("xls");
-		filetypes.add("csv");
-
-		// filetypes.add("xlsx");
 		return filetypes;
 	}
 
 	protected void initialize() throws ImporterException {
 		try {
-			InputStream excelStream;
-			_entities = new HashMap<String, Entity>();
-			_attributes = new HashMap<String, Attribute>();
+			InputStream fileStream;
+			entities = new HashMap<String, Entity>();
+			attributes = new HashMap<String, Attribute>();
 
 			// Do nothing if the excel sheet has been cached.
-			if ((_excelURI != null) && _excelURI.equals(uri)) { return; }
+			if ((sourceURI != null) && sourceURI.equals(uri)) { return; }
 
-			_excelURI = uri;
-			excelStream = _excelURI.toURL().openStream();
-			_excelWorkbook = new HSSFWorkbook(excelStream);
-			excelStream.close();
+			sourceURI = uri;
+			fileStream = sourceURI.toURL().openStream();
+			workbook = new HSSFWorkbook(fileStream);
+			fileStream.close();
 		} catch (IOException e) {
 			throw new ImporterException(ImporterExceptionType.PARSE_FAILURE, e.getMessage());
 		}
 	}
 
-	protected ArrayList<SchemaElement> generateSchemaElementList() {
-
-		for (Entity e : _entities.values())
-			schemaElements.add(e);
-
-		for (Attribute a : _attributes.values())
-			schemaElements.add(a);
-
-		return schemaElements;
-	}
-
 	/** Generate the schema elements */
-	public ArrayList<SchemaElement> generateSchemaElements() throws ImporterException
-	{
+	public ArrayList<SchemaElement> generateSchemaElements() throws ImporterException {
 		generate();
-		return generateSchemaElementList();
+		for (Entity e : entities.values()) { schemaElements.add(e); }
+		for (Attribute a : attributes.values()) { schemaElements.add(a); }
+		return schemaElements;
 	}
 
 	/**
@@ -292,14 +264,5 @@ public class SpreadsheetImporter extends SchemaImporter {
 		domain = new Domain(SchemaImporter.nextId(), BOOLEAN, "The Boolean domain", 0);
 		schemaElements.add(domain);
 		domainList.put(BOOLEAN, domain);
-	}
-
-	public static void main(String[] args) throws IOException, URISyntaxException, ImporterException {
-		File excel = new File(args[0]);
-		SpreadsheetImporter tester = new SpreadsheetImporter();
-		Repository repository = new Repository(Repository.DERBY,new URI("."),"schemastore","postgres","postgres");
-		SchemaStoreClient client = new SchemaStoreClient(repository);
-		tester.setClient(client);
-		tester.importSchema(excel.getName(), "", "", excel.toURI());
 	}
 }

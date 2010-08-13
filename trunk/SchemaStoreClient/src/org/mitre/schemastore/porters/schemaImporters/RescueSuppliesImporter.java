@@ -12,26 +12,25 @@ import org.mitre.schemastore.porters.ImporterException;
  * RescueSuppliesImporter imports a supply list from Excel containing two columns (supplies type and amount)
  * @author Chris Wolf
  */
-public class RescueSuppliesImporter extends ExcelImporter
-{
+public class RescueSuppliesImporter extends ExcelImporter {
 	/** Returns the importer name */
-	public String getName()
-		{ return "Rescue Supplies Importer"; }
+	public String getName() {
+		return "Rescue Supplies Importer";
+	}
 
 	/** Returns the importer description */
-	public String getDescription()
-		{ return "Imports a supplies list from Excel"; }
+	public String getDescription() {
+		return "Imports a supplies list from Excel";
+	}
 
 	/** Generate the schema elements */
-	protected ArrayList<SchemaElement> generateSchemaElements() throws ImporterException
-	{
+	protected ArrayList<SchemaElement> generateSchemaElements() throws ImporterException {
 		// Retrieve the Excel workbook sheet
-		HSSFSheet sheet = excelWorkbook.getSheetAt(0);
+		HSSFSheet sheet = workbook.getSheetAt(0);
 		
 		// Generate the schema elements
 		ArrayList<SchemaElement> schemaElements = new ArrayList<SchemaElement>();
-		for(int i=1; i<=sheet.getLastRowNum(); i++)
-		{
+		for (int i = 1; i <= sheet.getLastRowNum(); i++) {
 			try {
 				// Retrieve information from the row
 				HSSFRow row = sheet.getRow(i);

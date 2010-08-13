@@ -19,56 +19,54 @@ import org.mitre.schemastore.porters.ImporterException;
  *
  */
 public class HierarchicalDomainValueImporter extends DomainValueImporter {
-	protected HashMap<String, Subtype> _subtypes = new HashMap<String, Subtype>();
-	
+	protected HashMap<String, Subtype> subtypes = new HashMap<String, Subtype>();
 
 	protected ArrayList<SchemaElement> generateSchemaElements() throws ImporterException {
-		int numSheets = excelWorkbook.getNumberOfSheets();
-		ArrayList<SchemaElement> _schemaElements = new ArrayList<SchemaElement>();
-		
+		int numSheets = workbook.getNumberOfSheets();
+		ArrayList<SchemaElement> schemaElements = new ArrayList<SchemaElement>();
 
 		// iterate and load individual work sheets
 		for (int s = 0; s < numSheets; s++) {
-			HSSFSheet sheet = excelWorkbook.getSheetAt(s);
-			if (sheet == null) break;
+			HSSFSheet sheet = workbook.getSheetAt(s);
+			if (sheet == null) { break; }
 			
 			// iterate through rows and create table/attribute nodes
 			for (int i = sheet.getFirstRowNum(); i <= sheet.getLastRowNum(); i++) {
 				HSSFRow row = sheet.getRow(i);
-				if (row == null || row.getPhysicalNumberOfCells() == 0) break;
+				if (row == null || row.getPhysicalNumberOfCells() == 0) { break; }
 
 				String domainName = "";
 				String parentValueStr = "";
 				String domainValueStr = "";
 				String documentation = "";
-				
+
 				// get domain name, assume cell contains string value
 				HSSFCell domainCell = row.getCell(0);
 				HSSFCell parentCell = row.getCell(1);
 				HSSFCell valueCell = row.getCell(2);
 				HSSFCell descrCell = row.getCell(3);
-				
+
 				// Ignore rows without domain specified
-				if ( domainCell != null ) domainName = getCellValue(domainCell);
+				if (domainCell != null) { domainName = getCellValue(domainCell); }
 				// Get domain value
-				if (descrCell != null ) domainValueStr = getCellValue(valueCell);
+				if (descrCell != null) { domainValueStr = getCellValue(valueCell); }
 				// Get parent value
-				if (parentCell != null) parentValueStr = getCellValue(parentCell);
+				if (parentCell != null) { parentValueStr = getCellValue(parentCell); }
 				// Get documentation value
-				if (descrCell != null) documentation = getCellValue(descrCell);
-				
-				if (domainName.length() == 0) break; 
+				if (descrCell != null) { documentation = getCellValue(descrCell); }
+
+				if (domainName.length() == 0) { break; } 
 
 				Domain domain;
 				DomainValue domainValue;
 				DomainValue parentValue;
 
 				// Create domain
-				domain = _domains.get(domainName);
+				domain = domains.get(domainName);
 				if (domain == null ){
 					domain = new Domain(nextId(), domainName, "", 0);
-					_domains.put(domainName, domain);
-					_schemaElements.add(domain);
+					domains.put(domainName, domain);
+					schemaElements.add(domain);
 				} 
 
 				// Set documentation for domain only rows
@@ -80,42 +78,39 @@ public class HierarchicalDomainValueImporter extends DomainValueImporter {
 				
 				// Create a domain value
 				String valueHashKey = domainName + "/" + domainValueStr;
-				domainValue = _domainValues.get(valueHashKey);
+				domainValue = domainValues.get(valueHashKey);
 				if (domainValue == null) {
 					domainValue = new DomainValue(nextId(), domainValueStr, documentation, domain.getId(), 0);
-					_domainValues.put(valueHashKey, domainValue);
-					_schemaElements.add(domainValue);
+					domainValues.put(valueHashKey, domainValue);
+					schemaElements.add(domainValue);
 				}
 
 				// Create a subtype relationship for the parent
 				if (parentCell != null) {
 					// First get parent DomainValue
 					String parentHashKey = domainName + "/" + parentValueStr;
-					parentValue = _domainValues.get(parentHashKey);
+					parentValue = domainValues.get(parentHashKey);
 					if (parentValue == null) parentValue = new DomainValue(nextId(), parentValueStr, "", domain.getId(), 0);
 
 					// Then create subtype
 					String subtypeHash = parentValue.getId() + "/" + valueHashKey;
-					if (!_subtypes.containsKey(subtypeHash)) {
+					if (!subtypes.containsKey(subtypeHash)) {
 						Subtype subtype = new Subtype(nextId(), parentValue.getId(), domainValue.getId(), 0);
-						_subtypes.put(subtypeHash, subtype);
-						_schemaElements.add(subtype);
+						subtypes.put(subtypeHash, subtype);
+						schemaElements.add(subtype);
 					}
 				} // End creating subtype
 			} // End iterating through all rows
-		}// End iterating all sheets
+		} // End iterating all sheets
 
-		return _schemaElements;
+		return schemaElements;
 	}
 
-	@Override
 	public String getDescription() {
 		return "Imports Excel formatted domain and domain values with hierarchy information with parent names specified ";
 	}
 
-	@Override
 	public String getName() {
 		return "Hierarchical Domain Value Importer";
 	}
-
 }

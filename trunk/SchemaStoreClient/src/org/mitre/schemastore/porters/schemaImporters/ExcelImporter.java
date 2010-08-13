@@ -27,13 +27,12 @@ import org.mitre.schemastore.porters.ImporterException.ImporterExceptionType;
  * 
  */
 
-public abstract class ExcelImporter extends SchemaImporter
-{
-	protected HSSFWorkbook excelWorkbook;
-	protected HashMap<String, Entity> _entities;
-	protected HashMap<String, Attribute> _attributes;
-	protected ArrayList<SchemaElement> _schemaElements;
-	protected HashMap<String, Subtype> _subtypes; 
+public abstract class ExcelImporter extends SchemaImporter {
+	protected HSSFWorkbook workbook;
+	protected HashMap<String, Entity> entities;
+	protected HashMap<String, Attribute> attributes;
+	protected ArrayList<SchemaElement> schemaElements;
+	protected HashMap<String, Subtype> subtypes; 
 	protected static Domain D_ANY = new Domain(nextId(), ANY, null, 0);
 	
 	/** Scrub the cell value */
@@ -41,42 +40,51 @@ public abstract class ExcelImporter extends SchemaImporter
 		{ return s.trim().replaceAll("'", "\'").replaceAll("\"", "\\\""); }
 
 	/** Returns the cell value */
-	protected String getCellValue(HSSFCell cell)
-	{
-		if (cell == null) return "";
-		else if (cell.getCellType() == HSSFCell.CELL_TYPE_BOOLEAN) return Boolean.toString(cell.getBooleanCellValue());
-		else if (cell.getCellType() == HSSFCell.CELL_TYPE_NUMERIC) return Double.toString(cell.getNumericCellValue());
-		else if (cell.getCellType() == HSSFCell.CELL_TYPE_STRING) return scrub(cell.getRichStringCellValue().toString());
-		else if (cell.getCellType() == HSSFCell.CELL_TYPE_BLANK) return "";
-		else if (cell.getCellType() == HSSFCell.CELL_TYPE_FORMULA) return cell.getCellFormula().trim();
-		else if (cell.getCellType() == HSSFCell.CELL_TYPE_ERROR) return String.valueOf(cell.getErrorCellValue()).trim();
-		else return "";
+	protected String getCellValue(HSSFCell cell) {
+		switch (cell.getCellType()) {
+			case HSSFCell.CELL_TYPE_BOOLEAN:
+				return Boolean.toString(cell.getBooleanCellValue());
+			case HSSFCell.CELL_TYPE_NUMERIC:
+				return Double.toString(cell.getNumericCellValue());
+			case HSSFCell.CELL_TYPE_STRING:
+				return scrub(cell.getRichStringCellValue().toString());
+			case HSSFCell.CELL_TYPE_BLANK:
+				return "";
+			case HSSFCell.CELL_TYPE_FORMULA:
+				return cell.getCellFormula().trim();
+			case HSSFCell.CELL_TYPE_ERROR:
+				return String.valueOf(cell.getErrorCellValue()).trim();
+			default:
+				return "";
+		}
 	}
 
 	/** Returns the importer URI type */
-	public URIType getURIType()
-		{ return URIType.FILE; }
+	public URIType getURIType() {
+		return URIType.FILE;
+	}
 
 	/** Returns the importer URI file types */
-	public ArrayList<String> getFileTypes()
-		{ return new ArrayList<String>(Arrays.asList(new String[]{"xls","csv"})); }
+	public ArrayList<String> getFileTypes() {
+		return new ArrayList<String>(Arrays.asList(new String[]{"xls","csv"}));
+	}
 
 	/** Initializes the excel importer */
-	protected void initialize() throws ImporterException
-	{
+	protected void initialize() throws ImporterException{
 		try {
 			// Clear out the hash maps
-			_entities = new HashMap<String, Entity>();
-			_attributes = new HashMap<String, Attribute>();
-			_subtypes = new HashMap<String, Subtype>();
-			_schemaElements = new ArrayList<SchemaElement>();
+			entities = new HashMap<String, Entity>();
+			attributes = new HashMap<String, Attribute>();
+			subtypes = new HashMap<String, Subtype>();
+			schemaElements = new ArrayList<SchemaElement>();
 
 			// Connect to the Excel workbook
 			InputStream excelStream;
 			excelStream = uri.toURL().openStream();
-			excelWorkbook = new HSSFWorkbook(excelStream);
+			workbook = new HSSFWorkbook(excelStream);
 			excelStream.close();
+		} catch (IOException e) {
+			throw new ImporterException(ImporterExceptionType.PARSE_FAILURE, e.getMessage());
 		}
-		catch (IOException e) { throw new ImporterException(ImporterExceptionType.PARSE_FAILURE, e.getMessage()); }
 	}
 }

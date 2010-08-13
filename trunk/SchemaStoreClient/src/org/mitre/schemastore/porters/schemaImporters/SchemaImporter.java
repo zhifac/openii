@@ -26,8 +26,7 @@ import org.mitre.schemastore.porters.ImporterException;
 import org.mitre.schemastore.porters.ImporterException.ImporterExceptionType;
 
 /** Abstract Schema Importer class */
-public abstract class SchemaImporter extends Importer
-{
+public abstract class SchemaImporter extends Importer {
 	// Defines the various base domain types
 	public static final String ANY = "Any";
 	public static final String INTEGER = "Integer";
@@ -35,55 +34,62 @@ public abstract class SchemaImporter extends Importer
 	public static final String STRING = "String";
 	public static final String DATETIME = "DateTime";
 	public static final String BOOLEAN = "Boolean";
-	
+
 	/** Stores a auto-increment counter for handing out IDs */
 	private static Integer autoIncrementedId = 0;
-	
+
 	/** Returns the next available ID */
-	public static Integer nextId()
-		{ return autoIncrementedId++; }
-	
+	public static Integer nextId() {
+		return autoIncrementedId++;
+	}
+
 	/** Initializes the schema structures */
 	protected void initialize() throws ImporterException {}
-	
+
 	/** Returns the list of schemas which this schema extends */
-	protected ArrayList<Integer> generateExtendedSchemaIDs() throws ImporterException { return new ArrayList<Integer>(); }
-	
+	protected ArrayList<Integer> generateExtendedSchemaIDs() throws ImporterException {
+		return new ArrayList<Integer>();
+	}
+
 	/** Returns the schema elements for the specified URI */
-	protected ArrayList<SchemaElement> generateSchemaElements() throws ImporterException { return new ArrayList<SchemaElement>(); }
-	
+	protected ArrayList<SchemaElement> generateSchemaElements() throws ImporterException {
+		return new ArrayList<SchemaElement>();
+	}
+
 	/** Generate the schema */
-	public Schema getSchema(URI uri) throws ImporterException { return null; }
-	
+	public Schema getSchema(URI uri) throws ImporterException {
+		return null;
+	}
+
 	/** Return the schema elements */
-	final public ArrayList<SchemaElement> getSchemaElements(URI uri) throws ImporterException
-	{
+	final public ArrayList<SchemaElement> getSchemaElements(URI uri) throws ImporterException {
 		// Schema elements can generated separately only for file importers
-		if(getURIType()!=URIType.FILE)
+		if (getURIType() != URIType.FILE) {
 			throw new ImporterException(ImporterExceptionType.PARSE_FAILURE,"Schema elements can only be retrieved for file importers");
+		}
 
 		// Generate the schema elements
 		this.uri = uri;
 		initialize();
 		return generateSchemaElements();
 	}
-	
+
 	/** Imports the specified URI */
-	final public Integer importSchema(String name, String author, String description, URI uri) throws ImporterException
-	{
+	final public Integer importSchema(String name, String author, String description, URI uri) throws ImporterException {
 		// Initialize the importer
 		this.uri = uri;
 		initialize();
 
 		// Generate the schema
 		Schema schema = getSchema(uri);
-		if(schema==null)
-			schema = new Schema(nextId(),name,author,uri==null?"":uri.toString(),getName(),description,false);
-		
+		if (schema == null) {
+			schema = new Schema(nextId(), name, author, (uri == null ? "" : uri.toString()), getName(), description, false);
+		}
+
 		// Generate the schema elements and extensions
 		ArrayList<SchemaElement> schemaElements = generateSchemaElements();
 		ArrayList<Integer> extendedSchemaIDs = generateExtendedSchemaIDs();
-		
+
 		// Imports the schema
 		boolean success = false;
 		try {
@@ -93,16 +99,17 @@ public abstract class SchemaImporter extends Importer
 			success = client.setParentSchemas(schema.getId(), extendedSchemaIDs);
 
 			// Lock the schema if needed
-			if(success && (getURIType()==URIType.M3MODEL || getURIType()==URIType.FILE))
+			if (success && (getURIType() == URIType.M3MODEL || getURIType() == URIType.FILE)) {
 				client.lockSchema(schema.getId());
-		}
-		catch(Exception e) {}
+			}
+		} catch(Exception e) {}
 
 		// Delete the schema if import wasn't totally successful
-		if(!success)
-		{
-			try { client.deleteSchema(schema.getId()); } catch(Exception e) {}
-			throw new ImporterException(ImporterExceptionType.IMPORT_FAILURE,"A failure occured in transferring the schema to the repository");
+		if (!success) {
+			try {
+				client.deleteSchema(schema.getId());
+			} catch(Exception e) {}
+			throw new ImporterException(ImporterExceptionType.IMPORT_FAILURE, "A failure occured in transferring the schema to the repository");
 		}
 
 		// Returns the id of the imported schema
