@@ -17,25 +17,26 @@ import org.mitre.schemastore.porters.ImporterException;
  * @author HAOLI
  * 
  */
-public class HierarchicalExcelImporter extends ExcelImporter
-{
+public class HierarchicalExcelImporter extends ExcelImporter {
 	/** Returns the importer name */
-	public String getName()
-		{ return "Hierarchical Excel Importer"; }
+	public String getName() {
+		return "Hierarchical Excel Importer";
+	}
 	
 	/** Returns the importer description */
-	public String getDescription()
-		{ return "Imports Excel formatted schema with hierarchy column. "; }
+	public String getDescription() {
+		return "Imports Excel formatted schema with hierarchy column. ";
+	}
 
 	/** Generate the schema elements */
 	protected ArrayList<SchemaElement> generateSchemaElements() throws ImporterException {
-		int numSheets = excelWorkbook.getNumberOfSheets();
-		_schemaElements = new ArrayList<SchemaElement>();
-		_schemaElements.add(D_ANY);
+		int numSheets = workbook.getNumberOfSheets();
+		schemaElements = new ArrayList<SchemaElement>();
+		schemaElements.add(D_ANY);
 
 		// iterate and load individual work sheets
 		for (int s = 0; s < numSheets; s++) {
-			HSSFSheet sheet = excelWorkbook.getSheetAt(s);
+			HSSFSheet sheet = workbook.getSheetAt(s);
 
 			// iterate through rows and create table/attribute nodes
 			for (int i = sheet.getFirstRowNum(); i <= sheet.getLastRowNum(); i++) {
@@ -50,42 +51,44 @@ public class HierarchicalExcelImporter extends ExcelImporter
 				Attribute attribute;
 
 				// Create an entity for table name
-				if (tblName.length() == 0) break;
-				tblEntity = _entities.get(tblName);
+				if (tblName.length() == 0) { break; }
+				tblEntity = entities.get(tblName);
 				if (tblEntity == null) {
 					tblEntity = new Entity(nextId(), tblName, "", 0);
-					_entities.put(tblName, tblEntity);
-					_schemaElements.add(tblEntity);
+					entities.put(tblName, tblEntity);
+					schemaElements.add(tblEntity);
 				}
 
 				// Create an attribute for each attribute name
 				if (attName.length() > 0) {
-					attribute = _attributes.get(attName);
+					attribute = attributes.get(attName);
 					if (attribute == null) {
 						attribute = new Attribute(nextId(), attName, documentation, tblEntity.getId(), D_ANY.getId(), null, null, false, 0);
-						_attributes.put(attName, attribute);
-						_schemaElements.add(attribute);
+						attributes.put(attName, attribute);
+						schemaElements.add(attribute);
 					}
-				} else if (documentation.length() > 0) tblEntity.setDescription(documentation);
+				} else if (documentation.length() > 0) {
+					tblEntity.setDescription(documentation);
+				}
 
 				// Create a subtype
 				if (parent.length() > 0) {
-					parentEntity = _entities.get(parent);
+					parentEntity = entities.get(parent);
 					if (parentEntity == null) {
 						parentEntity = new Entity(nextId(), parent, "", 0);
-						_entities.put(parent, parentEntity);
-						_schemaElements.add(parentEntity);
+						entities.put(parent, parentEntity);
+						schemaElements.add(parentEntity);
 					}
 
-					if (_subtypes.get(parentEntity.getName() + "." + tblEntity.getName()) == null) {
+					if (subtypes.get(parentEntity.getName() + "." + tblEntity.getName()) == null) {
 						Subtype subtype = new Subtype(nextId(), parentEntity.getId(), tblEntity.getId(), 0);
-						_subtypes.put(parentEntity.getName() + "." + tblEntity.getName(), subtype);
-						_schemaElements.add(subtype);
+						subtypes.put(parentEntity.getName() + "." + tblEntity.getName(), subtype);
+						schemaElements.add(subtype);
 					}
 				}
 			} // End for loop
 		}
 
-		return _schemaElements;
+		return schemaElements;
 	}
 }
