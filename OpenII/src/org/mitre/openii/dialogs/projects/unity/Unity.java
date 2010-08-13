@@ -4,13 +4,19 @@ import java.io.File;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 
+import org.mitre.openii.dialogs.projects.unity.DisjointSetForest.ContainerMethod;
 import org.mitre.openii.model.OpenIIManager;
 import org.mitre.openii.model.RepositoryManager;
 import org.mitre.schemastore.model.AssociatedElement;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
+import org.mitre.schemastore.model.MappingCellInput;
 import org.mitre.schemastore.model.Project;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.Term;
@@ -38,6 +44,15 @@ public class Unity {
 		return vocabulary;
 	}
 
+	/**
+	 * Uses hierarchical clustering algorithm as provided by MatchMakerExporter
+	 * to cluster NxN mappings into synsets (or clusters). Give each synset a
+	 * connonical term and creates a vocabulary
+	 * 
+	 * @param inputMappings
+	 * @return vocabulary object
+	 * @throws RemoteException
+	 */
 	public Vocabulary unify(ArrayList<Mapping> inputMappings)
 			throws RemoteException {
 		// Generate synsets
@@ -47,6 +62,100 @@ public class Unity {
 
 		// save new vocab
 		OpenIIManager.saveVocabulary(vocabulary);
+		return vocabulary;
+	}
+
+	/**
+	 * Use DisjointSetForest to
+	 * 
+	 * @param inputMappings
+	 * @return
+	 */
+	public Vocabulary DSFUnify(ArrayList<Mapping> inputMappings) {
+		// Find participating schemas the mappings
+		final HashSet<Integer> schemaIDs = new HashSet<Integer>();
+		final HashMap<Mapping, ArrayList<MappingCell>> mappingCellHash = new HashMap<Mapping, ArrayList<MappingCell>>();
+		for (Mapping m : inputMappings) {
+			schemaIDs.add(m.getSourceId());
+			schemaIDs.add(m.getTargetId());
+			mappingCellHash.put(m, OpenIIManager.getMappingCells(m.getId()));
+		}
+
+		// Create synsetTerm for each schema element
+		final HashMap<String, SynsetTerm> synsetTerms = new HashMap<String, SynsetTerm>();
+		Iterator<Integer> sItr = schemaIDs.iterator();
+		while (sItr.hasNext()) {
+			Integer sID = sItr.next();
+			for (SchemaElement ele : OpenIIManager.getSchemaInfo(sID)
+					.getElements(null)) {
+				SynsetTerm newSynsetTerm = new SynsetTerm(sID, ele.getId(),
+						ele.getName());
+
+				synsetTerms.put(new String(sID + "-" + ele.getId()),
+						newSynsetTerm);
+			}
+		}
+
+		// The containers are the schemas
+		ContainerMethod<SynsetTerm> method = new ContainerMethod<SynsetTerm>() {
+			public int getContainerFor(SynsetTerm v) {
+				return v.schemaId;
+			}
+		};
+
+		// Disjoint Set Forest
+		DisjointSetForest<SynsetTerm> dsf = new DisjointSetForest<SynsetTerm>(
+				synsetTerms.values().toArray(new SynsetTerm[0]), method,
+				schemaIDs.size());
+
+		for (Mapping mapping : inputMappings) {
+			Integer inputSchema = mapping.getSourceId();
+			Integer outputSchema = mapping.getTargetId();
+
+			ArrayList<MappingCell> mcList = mappingCellHash.get(mapping);
+
+			// First sort the mapping cells (not sure if it's going from small
+			// to big
+			MappingCell[] mcArray = mcList.toArray(new MappingCell[0]);
+			Arrays.sort(mcArray, new Comparator<MappingCell>() {
+				public int compare(MappingCell mc1, MappingCell mc2) {
+					if (mc1.isValidated() && mc2.isValidated () ) 
+						return -(mc1.getScore().compareTo(mc2.getScore())); 
+					else if ( mc1.isValidated() ) return 1; 
+					else if ( mc2.isValidated() ) return -1; 
+					else return -(mc1.getScore().compareTo(mc2.getScore())); 
+				}
+			});
+
+			// Then call DisjointSetForest merge on the mapping cells.
+			for (MappingCell mc : mcArray) {
+				for (MappingCellInput input : mc.getInputs())
+					dsf.merge(
+							synsetTerms.get(new String(inputSchema + "-"
+									+ input.getElementID())),
+							synsetTerms.get(new String(outputSchema + "-"
+									+ mc.getOutput())), mc.isValidated());
+			}
+		}
+
+		// Now that DSF is done, reorganize the data into synsets
+		HashMap<Integer, Synset> synsets = new HashMap<Integer, Synset>();
+		for (SynsetTerm term : synsetTerms.values()) {
+			int root = dsf.find(term);
+			Synset termSet = synsets.get(new Integer(root));
+			if (termSet == null) {
+				termSet = new Synset(term);
+				synsets.put(new Integer(root), termSet);
+			} else
+				termSet.add(term);
+		}
+
+		synsetList= new ArrayList<Synset>(synsets.values()); 
+		vocabulary = new Vocabulary(project.getId(), generateVocabTerms());
+
+		// save new vocab
+		OpenIIManager.saveVocabulary(vocabulary);
+
 		return vocabulary;
 	}
 
@@ -60,7 +169,8 @@ public class Unity {
 	}
 
 	// TODO hook this up with one of the Vocabulary exporters
-	public void exportVocabulary(File file) throws IOException {
+	public static void exportVocabulary(Vocabulary vocabulary, File file)
+			throws IOException {
 		CompleteVocabExporter exporter = new CompleteVocabExporter();
 		exporter.setClient(RepositoryManager.getClient());
 		exporter.exportVocabulary(vocabulary, file);
@@ -93,8 +203,8 @@ public class Unity {
 			ArrayList<Mapping> inputMappings) throws RemoteException {
 		HashMap<Mapping, ArrayList<MappingCell>> mappingCellHash = new HashMap<Mapping, ArrayList<MappingCell>>();
 		for (Mapping mapping : inputMappings)
-			mappingCellHash.put(mapping, OpenIIManager.getMappingCells(mapping
-					.getId()));
+			mappingCellHash.put(mapping,
+					OpenIIManager.getMappingCells(mapping.getId()));
 
 		MatchMakerExporter matchMaker = new MatchMakerExporter();
 		matchMaker.setClient(RepositoryManager.getClient());
@@ -141,9 +251,14 @@ public class Unity {
 		}
 
 		resultTerm = (baseElement == null) ? new Term(null, new String(),
-				new String(), assocElements) : new Term(null, baseElement
-				.getName(), baseElement.getDescription(), assocElements);
+				new String(), assocElements) : new Term(null,
+				baseElement.getName(), baseElement.getDescription(),
+				assocElements);
 
 		return resultTerm;
+	}
+
+	public void exportVocabulary(File file) throws IOException {
+		Unity.exportVocabulary(this.vocabulary, file);
 	}
 }

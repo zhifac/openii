@@ -74,12 +74,12 @@ public class GenerateVocabularyWizard extends Wizard {
 			
 			// Create synsets
 			Unity unity = new Unity(project);
-			unity.unify( mappings );
+			unity.DSFUnify( mappings );
 
 			// export the vocabulary
 			String exportPath = matchMakerPage.getVocabExportFilePath();
 			if (exportPath.length() > 0)
-				unity.exportVocabulary(new File(exportPath));
+				unity.exportVocabulary( new File(exportPath));
 			return true;
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
