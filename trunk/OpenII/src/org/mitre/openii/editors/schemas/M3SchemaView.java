@@ -133,10 +133,10 @@ public class M3SchemaView extends OpenIIEditor
 		for(SchemaElement element : getElements(schemaInfo,Relationship.class))
 		{
 			Relationship relationship = (Relationship)element;
-			String left = schemaInfo.getElement(relationship.getLeftID()).getName() + " (" + relationship.getLeftID() + ")";
+			String left = schemaInfo.getDisplayName(relationship.getLeftID()) + " (" + relationship.getLeftID() + ")";
 			Integer leftMin = relationship.getLeftMin();
 			Integer leftMax = relationship.getLeftMax();
-			String right = schemaInfo.getElement(relationship.getRightID()).getName() + " (" + relationship.getRightID() + ")";
+			String right = schemaInfo.getDisplayName(relationship.getRightID()) + " (" + relationship.getRightID() + ")";
 			Integer rightMin = relationship.getRightMin();
 			Integer rightMax = relationship.getRightMax();
 			String description = relationship.getDescription();
@@ -150,8 +150,8 @@ public class M3SchemaView extends OpenIIEditor
 		for(SchemaElement element : getElements(schemaInfo,Containment.class))
 		{
 			Containment containment = (Containment)element;
-			String parentElement = containment.getParentID()==null ? "" : schemaInfo.getElement(containment.getParentID()).getName() + " (" + containment.getParentID() + ")";
-			String childElement = schemaInfo.getElement(containment.getChildID()).getName() + " (" + containment.getChildID() + ")";
+			String parentElement = containment.getParentID()==null ? "" : schemaInfo.getDisplayName(containment.getParentID()) + " (" + containment.getParentID() + ")";
+			String childElement = schemaInfo.getDisplayName(containment.getChildID()) + " (" + containment.getChildID() + ")";
 			Integer min = containment.getMin();
 			Integer max = containment.getMax();
 			String description = containment.getDescription();
@@ -165,8 +165,8 @@ public class M3SchemaView extends OpenIIEditor
 		for(SchemaElement element : getElements(schemaInfo,Subtype.class))
 		{
 			Subtype subtype = (Subtype)element;
-			String parentElement = schemaInfo.getElement(subtype.getParentID()).getName() + " (" + subtype.getParentID() + ")";
-			String childElement = schemaInfo.getElement(subtype.getChildID()).getName() + " (" + subtype.getChildID() + ")";
+			String parentElement = schemaInfo.getDisplayName(subtype.getParentID()) + " (" + subtype.getParentID() + ")";
+			String childElement = schemaInfo.getDisplayName(subtype.getChildID()) + " (" + subtype.getChildID() + ")";
 			String description = subtype.getDescription();
 			rows.add(getDataRow(subtype,parentElement,childElement,description));
 		}
@@ -178,7 +178,7 @@ public class M3SchemaView extends OpenIIEditor
 		for(SchemaElement element : getElements(schemaInfo,Alias.class))
 		{
 			Alias alias = (Alias)element;
-			String aliasedElement = schemaInfo.getElement(alias.getElementID()).getName() + " (" + alias.getElementID() + ")";
+			String aliasedElement = schemaInfo.getDisplayName(alias.getElementID()) + " (" + alias.getElementID() + ")";
 			rows.add(getDataRow(alias,aliasedElement));
 		}
 		ExpandBarWidgets.createTablePane(bar, "Aliases", fields, rows);
