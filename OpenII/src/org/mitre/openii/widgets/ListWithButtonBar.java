@@ -54,7 +54,7 @@ public class ListWithButtonBar extends Composite
 		listPane.setLayoutData(gridData);
 		
 		// Create the dialog list
-		list = new TableViewer(listPane);
+		list = new TableViewer(listPane, SWT.BORDER | SWT.FULL_SELECTION);
 		Table table = list.getTable();
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
