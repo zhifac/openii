@@ -3,8 +3,14 @@ package org.mitre.openii.widgets;
 import java.util.ArrayList;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.dnd.Clipboard;
+import org.eclipse.swt.dnd.TextTransfer;
+import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
@@ -14,6 +20,40 @@ import org.eclipse.swt.widgets.TableItem;
 /** Class for constructing a table widgets*/
 public class TableWidget
 {
+	/** Class for handling copy key events */
+	static private class KeyMonitor implements KeyListener
+	{
+		/** Stores the table being monitored */
+		private Table table = null;
+
+		/** Constructs the key monitor */
+		private KeyMonitor(Table table)
+			{ this.table = table; table.addKeyListener(this); }
+
+		/** Checks to see if a selected item should be copied */
+		public void keyPressed(KeyEvent e)
+		{
+			// Copy the text if requested
+			if(e.stateMask==SWT.CONTROL && (e.keyCode==SWT.INSERT || e.character=='c'))
+			{
+				// Gets the text to copy to the clipboard
+				StringBuffer text = new StringBuffer();
+				for(TableItem item : table.getSelection())
+					for(int i=0; i<table.getColumnCount(); i++)
+						text.append(item.getText(i) + (i<table.getColumnCount()-1?", ":"\n"));
+					
+				// Copy the text to the clipboard
+				Clipboard clipboard = new Clipboard(Display.getCurrent());
+				TextTransfer textTransfer = TextTransfer.getInstance();
+				clipboard.setContents(new Object[]{text.substring(0,text.length()-1)}, new Transfer[]{textTransfer});
+				clipboard.dispose();
+			}
+		}
+
+		// Unused event listeners
+		public void keyReleased(KeyEvent e) {}
+	}
+	
 	/** Class for sorting table columns */
 	static class ColumnListener implements Listener
 	{
@@ -56,9 +96,9 @@ public class TableWidget
 	
 	/** Function to create a table */
 	static public Table createTable(Composite parent, String fields[], ArrayList<Object[]> rows)
-	{		
+	{
 		// Create the table
-		Table table = new Table(parent, SWT.SINGLE | SWT.BORDER | SWT.FULL_SELECTION);
+		Table table = new Table(parent, SWT.MULTI | SWT.BORDER | SWT.FULL_SELECTION);
 		table.setLinesVisible (true);
 		table.setHeaderVisible (true);
 		GridData data = new GridData(SWT.FILL, SWT.FILL, true, true);
@@ -80,6 +120,7 @@ public class TableWidget
 		for(int i=0; i<table.getColumnCount(); i++) table.getColumn(i).pack();
 		
 		// Returns the create table
+		new KeyMonitor(table);
 		return table;
 	}
 }
