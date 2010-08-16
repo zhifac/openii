@@ -15,32 +15,34 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Text;
-import org.mitre.harmony.matchers.MatcherManager;
 import org.mitre.harmony.matchers.matchers.Matcher;
 import org.mitre.openii.model.OpenIIManager;
 import org.mitre.openii.widgets.BasicWidgets;
+import org.mitre.openii.widgets.matchers.MatchersPane;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.Project;
 import org.mitre.schemastore.model.ProjectSchema;
 
-class AutoMappingPage extends WizardPage implements ModifyListener {
-
-	private Text authorField;
-	private Text descriptionField;
-	private ArrayList<MatcherCheckBox> matcherCheckBoxes = new ArrayList<MatcherCheckBox>();
-	private ArrayList<String> selectedVoters = new ArrayList<String>();
+class AutoMappingPage extends WizardPage implements ModifyListener, SelectionListener
+{
+	private Text authorField = null;
+	private Text descriptionField = null;
+	private MatchersPane matchersPane = null;
 	private ArrayList<Pair<ProjectSchema>> newMappingList = new ArrayList<Pair<ProjectSchema>>();
 	private ArrayList<Pair<ProjectSchema>> existingMappingList = new ArrayList<Pair<ProjectSchema>>();
 	private HashMap<String, Pair<ProjectSchema>> mappingHash = new HashMap<String, Pair<ProjectSchema>>();
 
-	public AutoMappingPage() {
+	/** Constructs the auto-mapping pane */
+	public AutoMappingPage()
+	{
 		super("AutoMappingPage");
 		setTitle("Auto Mapping");
 		setDescription("Ensure that all pair-wise mappings exists for all of the schemas in selected project.");
 	}
-
+	
 	/** Constructs the Mapping Properties page */
-	public void createControl(Composite parent) {
+	public void createControl(Composite parent)
+	{
 		// Construct the main pane
 		Composite pane = new Composite(parent, SWT.NONE);
 		pane.setLayout(new GridLayout(1, false));
@@ -48,24 +50,42 @@ class AutoMappingPage extends WizardPage implements ModifyListener {
 
 		// Generate the pane components
 		createInfoPane(pane);
-		createMatcherList(pane);
+		matchersPane = new MatchersPane(pane, this);
 		createMappingList(pane);
 
-		// Make the default importer selections
-		setDefaultFields();
+		// Set default author if none given
+		if (authorField.getText().equals(""))
+			authorField.setText(System.getProperty("user.name"));
+		updatePageCompleteStatus();
 
-		// // Displays the control
+		// Displays the control
 		setControl(pane);
 	}
 
+	/** Creates the importer info pane */
+	private void createInfoPane(Composite parent)
+	{
+		// Construct the pane for showing the info for the selected importer
+		Group group = new Group(parent, SWT.NONE);
+		group.setText("Properties");
+		group.setLayout(new GridLayout(2, false));
+		group.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+
+		// Generate the properties to be displayed by the info pane
+		authorField = BasicWidgets.createTextField(group, "Author");
+		descriptionField = BasicWidgets.createTextField(group, "Description", 4);
+
+		// Add listeners to the fields to monitor for changes
+		authorField.addModifyListener(this);
+		descriptionField.addModifyListener(this);
+	}
+	
 	/**
-	 * Not all of the mappings exists in the project yet. This display should
-	 * list the mappings that already exist and the ones that will be
-	 * automatically generated.
-	 * 
-	 * @param pane
+	 * Not all of the mappings exists in the project yet. This display should list the
+	 * mappings that already exist and the ones that will be automatically generated.
 	 */
-	private void createMappingList(Composite parent) {
+	private void createMappingList(Composite parent)
+	{
 		Project project = ((GenerateVocabularyWizard) this.getWizard())
 				.getProject();
 		HashMap<Integer, ProjectSchema> schemas = ((GenerateVocabularyWizard) this
@@ -187,126 +207,33 @@ class AutoMappingPage extends WizardPage implements ModifyListener {
 		return result;
 	}
 
-	private void createMatcherList(Composite parent) {
-		// Construct a group for matchers
-		Group group = new Group(parent, SWT.NONE);
-		group.setText("Matchers");
-		group.setLayout(new GridLayout(2, false));
-		group.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+	/** Returns the mapping author */
+	String getAuthor()
+		{ return authorField.getText(); }
 
-		// Construct a list of all matchers that can be selected
-		for (Matcher matcher : MatcherManager.getVisibleMatchers()) {
-			MatcherCheckBox checkBox = new MatcherCheckBox(group, matcher);
-			checkBox.addSelectionListener(new SelectionListener() {
-				public void widgetSelected(SelectionEvent event) {
-					Button voterButton = (Button) event.widget;
-					if (voterButton.getSelection())
-						selectedVoters.add(voterButton.getText());
-					else
-						selectedVoters.remove(voterButton.getText());
+	/** Returns the mapping description */
+	String getMappingDescription()
+		{ return descriptionField.getText(); }
+	
+	/** Returns the selected matchers */
+	ArrayList<Matcher> getMatchers()
+		{ return matchersPane.getMatchers(); }
+	 
+	/** Rechecks if the page is complete when text is modified */
+	public void modifyText(ModifyEvent event)
+		{ updatePageCompleteStatus(); }
 
-					updatePageCompleteStatus();
-				}
+	/** Rechecks if the page is complete when matchers are selected */
+	public void widgetSelected(SelectionEvent arg0)
+		{ updatePageCompleteStatus(); }
 
-				public void widgetDefaultSelected(SelectionEvent arg0) {
-				}
-			});
-			matcherCheckBoxes.add(checkBox);
-		}
+	/** Updates the page complete status */
+	private void updatePageCompleteStatus()
+	{
+		boolean notComplete = newMappingList.size()>0 && matchersPane.getMatchers().size()==0;
+		setPageComplete(!notComplete && getSelectedMappings().size()>0);
 	}
 
-	/** Creates the importer info pane */
-	private void createInfoPane(Composite parent) {
-		// Construct the pane for showing the info for the selected importer
-		Group group = new Group(parent, SWT.NONE);
-		group.setText("Properties");
-		group.setLayout(new GridLayout(2, false));
-		group.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-
-		// Generate the properties to be displayed by the info pane
-		authorField = BasicWidgets.createTextField(group, "Author");
-		descriptionField = BasicWidgets
-				.createTextField(group, "Description", 4);
-
-		// Add listeners to the fields to monitor for changes
-		authorField.addModifyListener(this);
-		descriptionField.addModifyListener(this);
-	}
-
-	public void modifyText(ModifyEvent event) {
-		updatePageCompleteStatus();
-	}
-
-	// Select default author and selected matchers
-	public void setDefaultFields() {
-		// Set author to system user name by default
-		if (authorField.getText().equals(""))
-			authorField.setText(System.getProperty("user.name"));
-
-		// Set voters to a set of optimized choices (hard coded)
-		for (MatcherCheckBox checkbox : matcherCheckBoxes)
-			for (Matcher matcher : MatcherManager.getDefaultMatchers()) {
-				if (checkbox.getName().equals(matcher.getName())) {
-					checkbox.checkBox.setSelection(true);
-					selectedVoters.add(checkbox.getName());
-				}
-			}
-		updatePageCompleteStatus();
-	}
-
-	private void updatePageCompleteStatus() {
-		if (newMappingList.size() > 0 && selectedVoters.size() == 0) {
-			setPageComplete(false);
-			return;
-		} else
-			setPageComplete(getSelectedMappings().size() > 0);
-	}
-
-	public boolean canFinish() {
-		return false;
-	}
-
-	/**
-	 * Returns user selected matchers
-	 * 
-	 * @return
-	 */
-	ArrayList<Matcher> getMatchers() {
-		ArrayList<Matcher> result = new ArrayList<Matcher>();
-		for (MatcherCheckBox checkBox : matcherCheckBoxes)
-			if (checkBox.checkBox.getSelection())
-				result.add(checkBox.matcher);
-		return result;
-	}
-
-	String getAuthor() {
-		return authorField.getText();
-	}
-
-	String getMappingDescription() {
-		return descriptionField.getText();
-	}
-
-	private class MatcherCheckBox {
-		// Stores the matcher associated with this checkbox
-		private Matcher matcher;
-		private Button checkBox;
-
-		/** Initializes the matcher check box */
-		MatcherCheckBox(Composite parent, Matcher matcher) {
-			checkBox = new Button(parent, SWT.CHECK);
-			this.matcher = matcher;
-			checkBox.setText(matcher.getName());
-		}
-
-		void addSelectionListener(SelectionListener listener) {
-			checkBox.addSelectionListener(listener);
-		}
-
-		String getName() {
-			return matcher.getName();
-		}
-
-	}
-
+	// Unused event listener
+	public void widgetDefaultSelected(SelectionEvent arg0) {}
 }
