@@ -4,6 +4,7 @@ package org.mitre.harmony.view.dialogs.mappingCell;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.Insets;
 import java.util.ArrayList;
@@ -84,9 +85,17 @@ public class MappingCellAnnotationPane extends JPanel
 	/** Generates the fields pane */
 	private JPanel getFieldsPane(AnnotationFields fields)
 	{
-		// Initialize annotation fields
+		// Construct the date field
 		dateField = new JTextField(fields.getDate()); dateField.setMargin(new Insets(1,1,1,1));
+		dateField.setEnabled(false);
+		dateField.setBorder(BorderFactory.createEtchedBorder(Color.white,Color.gray));
+		dateField.setDisabledTextColor(Color.gray);
+
+		// Construct the author field
 		authorField = new JTextField(fields.getAuthor()); authorField.setMargin(new Insets(1,1,1,1));
+		authorField.setCaretPosition(0);
+
+		// Construct the extra fields
 		for(String field : fields.getExtraFields())
 		{
 			JTextField extraField = new JTextField(fields.getExtraField(field)); 
@@ -94,17 +103,13 @@ public class MappingCellAnnotationPane extends JPanel
 			extraFields.add(extraField);
 		}
 
-		// Lock the date field from being changed
-		dateField.setEnabled(false);
-		dateField.setBorder(BorderFactory.createEtchedBorder(Color.white,Color.gray));
-		dateField.setDisabledTextColor(Color.gray);
-
 		// Build a pane with all of the annotation field boxes
 		JPanel fieldPane = new JPanel();
 		fieldPane.setLayout(new GridLayout(2+fields.getExtraFields().size(),1));
 		fieldPane.add(dateField);
 		fieldPane.add(authorField);
 		for(JTextField extraField : extraFields) fieldPane.add(extraField);
+		fieldPane.setPreferredSize(new Dimension(200,0));
 		return fieldPane;
 	}
 	
