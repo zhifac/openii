@@ -350,7 +350,7 @@ public class ProjectDataCalls extends AbstractDataCalls
             stmt.setDouble(5, mappingCell.getScore());
             if(mappingCell.getFunctionID()==null) stmt.setNull(6, Types.INTEGER);
             else stmt.setInt(6, mappingCell.getFunctionID());
-            stmt.setString(7, scrub(mappingCell.getAuthor(),100));
+            stmt.setString(7, scrub(mappingCell.getAuthor(),400));
             stmt.setDate(8, date);
             stmt.setString(9, scrub(mappingCell.getNotes(),4096));
             stmt.executeUpdate();

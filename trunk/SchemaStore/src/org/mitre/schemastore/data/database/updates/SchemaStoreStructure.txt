@@ -129,7 +129,7 @@ CREATE TABLE mapping_cell (
 	output_id integer NOT NULL,
 	score numeric(6,3) NOT NULL,
 	function_id integer,
-	author character varying(100),
+	author character varying(400),
 	modification_date date,
 	notes character varying(4096)
 );
