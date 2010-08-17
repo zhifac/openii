@@ -136,13 +136,9 @@ public class MatchThread extends Thread
 			return matchers.get(0).getName();
 
 		// Handles the case where a subset of matchers was used
-		String matcherName = merger.getName() + "(";
+		String matcherName = merger.getName() + " (";
 		for(Matcher matcher : matchers)
-		{
-			if(matcherName.length() + matcher.getName().length() > 45)
-				{ matcherName += "..., "; break; }
 			matcherName += matcher.getName() + ", ";
-		}
 		matcherName = matcherName.substring(0, matcherName.length() - 2) + ")";
 		return matcherName;
 	}
