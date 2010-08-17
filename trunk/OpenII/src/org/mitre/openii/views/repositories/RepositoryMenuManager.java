@@ -35,7 +35,7 @@ public class RepositoryMenuManager extends MenuManager implements IMenuListener
 		else if(repository instanceof Repository)
 		{
 			menuManager.add(new RepositoryAction(this,"Edit Repository",RepositoryAction.EDIT_REPOSITORY));
-			menuManager.add(new RepositoryAction(this,"Delete Repository",RepositoryAction.DELETE_REPOSITORY));
+			menuManager.add(new RepositoryAction(this,"Remove Repository",RepositoryAction.REMOVE_REPOSITORY));
 			menuManager.add(new Separator());
 			menuManager.add(new RepositoryAction(this,"Compress Repository",RepositoryAction.COMPRESS_REPOSITORY));
 		}
