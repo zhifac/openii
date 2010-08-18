@@ -22,7 +22,7 @@ public class OptionPane extends Composite
 		{
 			Button button = new Button(this, SWT.RADIO);
 			button.setText(option);
-			button.addSelectionListener(listener);
+			if(listener!=null) button.addSelectionListener(listener);
 		}
 		
 		// Select the first option
