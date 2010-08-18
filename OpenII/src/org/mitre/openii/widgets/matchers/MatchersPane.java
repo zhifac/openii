@@ -4,6 +4,8 @@ import java.util.ArrayList;
 
 import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Font;
@@ -60,7 +62,7 @@ public class MatchersPane
 	}
 	
 	/** Stores a matcher check box */
-	private class MatcherCheckBox
+	private class MatcherCheckBox implements MouseListener
 	{
 		/** Stores the matcher associated with the check box */
 		private Matcher matcher;
@@ -95,6 +97,7 @@ public class MatchersPane
 				label.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_BLUE));
 				label.setText("(Settings)");
 				label.setCursor(new Cursor(Display.getCurrent(), SWT.CURSOR_HAND));
+				label.addMouseListener(this);
 				
 				// Set the matcher tool tip
 				new MatcherParametersDisplay(label, matcher);
@@ -108,6 +111,14 @@ public class MatchersPane
 		/** Returns the matcher associated with this check box */
 		private Matcher getMatcher()
 			{ return matcher; }
+
+		/** Launches a pane to edit matcher parameters */
+		public void mouseUp(MouseEvent e)
+			{ new EditMatcherParametersDialog(checkbox.getShell(),matcher).open(); }
+
+		// Unused listener events
+		public void mouseDown(MouseEvent e) {}
+		public void mouseDoubleClick(MouseEvent e) {}
 	}
 	
 	/** Stores the list of matcher checkboxes */
