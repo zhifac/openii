@@ -14,17 +14,23 @@ import java.util.ArrayList;
  * 
  */
 public class Synset implements Comparable<Synset> {
-	public ArrayList<SynsetTerm> nodes;
+	public ArrayList<SynsetTerm> terms;
 
 	public SynsetTerm leastNode = null;
 
+
+	public Synset() {
+		terms = new ArrayList<SynsetTerm>();
+	}
+
 	public Synset(SynsetTerm n) {
-		nodes = new ArrayList<SynsetTerm>();
+		this(); 
 		add(n);
 	}
 
 	public void add(SynsetTerm n) {
-		nodes.add(n);
+		if (!terms.contains(n))
+			terms.add(n);
 		updateLeastNode(n);
 	}
 
@@ -33,8 +39,8 @@ public class Synset implements Comparable<Synset> {
 	 * @param two
 	 */
 	public void combine(Synset two) {
-		nodes.ensureCapacity(nodes.size() + two.nodes.size());
-		nodes.addAll(two.nodes);
+//		nodes.ensureCapacity(nodes.size() + two.nodes.size());
+		terms.addAll(two.terms);
 		updateLeastNode(two.leastNode);
 	}
 	
@@ -44,9 +50,9 @@ public class Synset implements Comparable<Synset> {
 	 * @return a new synset that's consisted of the removed term
 	 */
 	public Synset remove(SynsetTerm removeTerm) {
-		for ( SynsetTerm term : nodes )
+		for ( SynsetTerm term : terms )
 			if ( term.equals(removeTerm) ) { 
-				nodes.remove(term);
+				terms.remove(term);
 				break;
 			}
 		updateLeastNode(null);
@@ -57,7 +63,7 @@ public class Synset implements Comparable<Synset> {
 	private void updateLeastNode(SynsetTerm n) {
 		if ( n == null )
 		{
-			for ( SynsetTerm term : nodes ) {
+			for ( SynsetTerm term : terms ) {
 				if (leastNode == null || leastNode.compareTo(n) > 0) 
 					leastNode = term;
 			}
@@ -75,10 +81,10 @@ public class Synset implements Comparable<Synset> {
 		int i;
 		int j;
 		float maxDist = 0;
-		for (i = 0; i < this.nodes.size(); i++) {
-			Node t_node = this.nodes.get(i);
-			for (j = 0; j < two.nodes.size(); j++) {
-				Node s_node = two.nodes.get(j);
+		for (i = 0; i < this.terms.size(); i++) {
+			Node t_node = this.terms.get(i);
+			for (j = 0; j < two.terms.size(); j++) {
+				Node s_node = two.terms.get(j);
 				int m = t_node.pointers.indexOf(s_node);
 				if (m == -1) continue;
 				// return 0;
@@ -95,10 +101,10 @@ public class Synset implements Comparable<Synset> {
 	public float simpleLinkage(Synset two) {
 		int i, j;
 		float minDist = 1;
-		for (i = 0; i < this.nodes.size(); i++) {
-			Node t_node = this.nodes.get(i);
-			for (j = 0; j < two.nodes.size(); j++) {
-				Node s_node = two.nodes.get(j);
+		for (i = 0; i < this.terms.size(); i++) {
+			Node t_node = this.terms.get(i);
+			for (j = 0; j < two.terms.size(); j++) {
+				Node s_node = two.terms.get(j);
 				int m = t_node.pointers.indexOf(s_node);
 				if (m == -1) return 0;
 				float st_dist = t_node.distances.get(m).floatValue();
@@ -109,17 +115,27 @@ public class Synset implements Comparable<Synset> {
 	}
 
 	public void groupEcombine(Synset two) {
-		nodes.ensureCapacity(nodes.size() + two.nodes.size());
-		nodes.addAll(two.nodes);
+		terms.ensureCapacity(terms.size() + two.terms.size());
+		terms.addAll(two.terms);
 		updateLeastNode(two.leastNode);
 	}
 
 	public ArrayList<SynsetTerm> getGroup() {
-		return nodes;
+		return terms;
 	}
 
 	public int compareTo(Synset other) {
 		return this.leastNode.compareTo(other.leastNode);
+	}
+	
+	public boolean equals(Synset other) {
+		if ( this.terms.size() != other.terms.size() ) return false; 
+		
+		for ( SynsetTerm thisNode: terms ) 
+			if ( !other.terms.contains(thisNode) )
+				return false;
+		
+		return true;
 	}
 
 	/**
@@ -129,7 +145,7 @@ public class Synset implements Comparable<Synset> {
 	 * @return SynsetTerm
 	 */
 	public SynsetTerm getTerm(Integer baseSchema) {
-		for (SynsetTerm n : nodes)
+		for (SynsetTerm n : terms)
 			if (n.schemaId.equals( baseSchema)) return n;
 		return null;
 	}
