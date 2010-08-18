@@ -1,4 +1,4 @@
-package org.mitre.openii.dialogs.projects.matchmaker;
+package org.mitre.openii.dialogs.projects.unity;
 
 import java.util.ArrayList;
 
@@ -34,11 +34,10 @@ public class SynsetTerm implements Comparable<SynsetTerm> {
 	}
 	
 	public int compareTo(SynsetTerm o) {
-		return this.toString().compareToIgnoreCase(o.toString());
+		return this.toString().compareTo(o.toString());
 	}
 
 	public String toString() {
 		return schemaId + elementName + elementId;
 	}
-
 } // End SynsetTerm

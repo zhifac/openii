@@ -1,9 +1,9 @@
-package org.mitre.openii.dialogs.projects.matchmaker;
+package org.mitre.openii.dialogs.projects.unity;
 
 import java.util.ArrayList;
 
 /**
- * A Synset is an arraylist of terms. 
+ * A Synset is an arraylist of terms.
  * 
  * A Synset is just an arraylist of Nodes, that can do a few tricks. This object
  * came from Michael Morse's clustering code, with lots of modifications by
@@ -19,18 +19,24 @@ public class Synset implements Comparable<Synset> {
 
 	public SynsetTerm leastNode = null;
 
-	public Synset(SynsetTerm n) {
+	public Synset() {
 		terms = new ArrayList<SynsetTerm>();
+	}
+
+	public Synset(SynsetTerm n) {
+		this();
 		add(n);
 	}
 
 	public void add(SynsetTerm n) {
-		terms.add(n);
+		if (!terms.contains(n))
+			terms.add(n);
 		updateLeastNode(n);
 	}
 
 	private void updateLeastNode(SynsetTerm n) {
-		if (leastNode == null || leastNode.compareTo(n) > 0) leastNode = n;
+		if (leastNode == null || leastNode.compareTo(n) > 0)
+			leastNode = n;
 	}
 
 	/**
@@ -48,7 +54,8 @@ public class Synset implements Comparable<Synset> {
 			for (j = 0; j < two.terms.size(); j++) {
 				SynsetTerm s_node = two.terms.get(j);
 				int m = t_node.pointers.indexOf(s_node);
-				if (m == -1) continue;
+				if (m == -1)
+					continue;
 				// return 0;
 				float st_dist = t_node.distances.get(m).floatValue();
 				if (maxDist < st_dist) {
@@ -68,9 +75,11 @@ public class Synset implements Comparable<Synset> {
 			for (j = 0; j < two.terms.size(); j++) {
 				SynsetTerm s_node = two.terms.get(j);
 				int m = t_node.pointers.indexOf(s_node);
-				if (m == -1) return 0;
+				if (m == -1)
+					return 0;
 				float st_dist = t_node.distances.get(m).floatValue();
-				if (minDist > st_dist) minDist = st_dist;
+				if (minDist > st_dist)
+					minDist = st_dist;
 			}
 		}
 		return minDist;
@@ -98,7 +107,8 @@ public class Synset implements Comparable<Synset> {
 	 */
 	public SynsetTerm getTerm(Integer baseSchema) {
 		for (SynsetTerm n : terms)
-			if (n.schemaId == baseSchema) return n;
+			if (n.schemaId == baseSchema)
+				return n;
 		return null;
 	}
 
