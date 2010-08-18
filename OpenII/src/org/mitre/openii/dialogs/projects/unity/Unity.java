@@ -25,7 +25,6 @@ import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
 import org.mitre.schemastore.model.schemaInfo.model.SchemaModel;
 import org.mitre.schemastore.porters.projectExporters.MatchMakerExporter;
 import org.mitre.schemastore.porters.projectExporters.matchmaker.ClusterNode;
-import org.mitre.schemastore.porters.projectExporters.matchmaker.ClusterRenderer;
 import org.mitre.schemastore.porters.projectExporters.matchmaker.Synset;
 import org.mitre.schemastore.porters.projectExporters.matchmaker.SynsetTerm;
 import org.mitre.schemastore.porters.vocabularyExporters.CompleteVocabExporter;
@@ -185,7 +184,7 @@ public class Unity {
 	private ArrayList<Synset> normalizeSet(Synset synset) {
 		// Build a hash of schema ID to corresponding synset term list
 		HashMap<Integer, ArrayList<SynsetTerm>> schemaTermHash = new HashMap<Integer, ArrayList<SynsetTerm>>();
-		for (SynsetTerm term : synset.nodes) {
+		for (SynsetTerm term : synset.terms) {
 			if (!schemaTermHash.containsKey(term.schemaId))
 				schemaTermHash.put(term.schemaId, new ArrayList<SynsetTerm>());
 			schemaTermHash.get(term.schemaId).add(term);
@@ -215,7 +214,7 @@ public class Unity {
 		return result;
 	}
 
-	private void printVocab() {
+	void printVocab() {
 		for (Term t : vocabulary.getTerms()) {
 			System.out.print(t.getName() + ", ");
 			for (AssociatedElement e : t.getElements())
@@ -240,12 +239,6 @@ public class Unity {
 		exporter.exportVocabulary(vocabulary, file);
 	}
 
-	// Render synsets without the vocabulary terms to
-	public void exportSynsets(File file) throws IOException {
-		ClusterRenderer render = new ClusterRenderer(synsetList, RepositoryManager.getClient(), project.getSchemaIDs());
-		render.print(file);
-	}
-
 	public Integer getAuthoritativeSchemaId() {
 		if (authoritySchemaId == 0 && project.getSchemaIDs().length > 0)
 			authoritySchemaId = project.getSchemaIDs()[0];
@@ -256,13 +249,13 @@ public class Unity {
 		authoritySchemaId = id;
 	}
 
-	/**
-	 * Generate synsets from all matches by using MatchMaker's cluster
-	 * (Implemented as part of the MatchMakerExporter
-	 * 
-	 * @throws RemoteException
-	 **/
-	public static ArrayList<Synset> generateSynsets(Project project, ArrayList<Mapping> inputMappings) throws RemoteException {
+//	/**
+//	 * Generate synsets from all matches by using MatchMaker's cluster
+//	 * (Implemented as part of the MatchMakerExporter
+//	 * 
+//	 * @throws RemoteException
+//	 **/
+	public static ArrayList<org.mitre.schemastore.porters.projectExporters.matchmaker.Synset> generateSynsets(Project project, ArrayList<Mapping> inputMappings) throws RemoteException {
 		HashMap<Mapping, ArrayList<MappingCell>> mappingCellHash = new HashMap<Mapping, ArrayList<MappingCell>>();
 		for (Mapping mapping : inputMappings)
 			mappingCellHash.put(mapping, OpenIIManager.getMappingCells(mapping.getId()));
@@ -280,14 +273,14 @@ public class Unity {
 	/** generates a canonical term from the synset **/
 	protected Term generateConnicalTerm(Synset synset) {
 		Term resultTerm = null;
-		AssociatedElement[] assocElements = new AssociatedElement[synset.nodes.size()];
+		AssociatedElement[] assocElements = new AssociatedElement[synset.terms.size()];
 		SchemaElement baseElement = null;
 		try {
-			for (int i = 0; i < synset.nodes.size(); i++) {
-				SynsetTerm synsetTerm = synset.nodes.get(i);
+			for (int i = 0; i < synset.terms.size(); i++) {
+				SynsetTerm synsetTerm = synset.terms.get(i);
 
 				// Create associated elements
-				assocElements[i] = new AssociatedElement(synsetTerm.schemaId, synsetTerm.elementId, synsetTerm.name);
+				assocElements[i] = new AssociatedElement(synsetTerm.schemaId, synsetTerm.elementId, synsetTerm.elementName);
 
 				// Use authority schema term if available
 				if (synsetTerm.schemaId.equals(getAuthoritativeSchemaId()) && synsetTerm.elementName.length() > 0)
@@ -296,7 +289,7 @@ public class Unity {
 
 			// Use a random term name if cannot find a name
 			if (baseElement == null) {
-				for (SynsetTerm t : synset.nodes)
+				for (SynsetTerm t : synset.terms)
 					if (t.elementName.length() > 0) {
 						baseElement = RepositoryManager.getClient().getSchemaElement(t.elementId);
 						break;
