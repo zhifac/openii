@@ -158,11 +158,11 @@ class MappingCellLines
 		SchemaTreeImp rightTree = mappingPane.getTree(HarmonyConsts.RIGHT);
 
 		// Cycle through all combination of source and target nodes
-		for(NodeMapping nodeMapping : getNodeMappings(mappingCell))
+		MAPPING_CELL_LOOP: for(NodeMapping nodeMapping : getNodeMappings(mappingCell))
 		{
 			// Only create lines if they are within the specified depths
 			for(DefaultMutableTreeNode inputNode : nodeMapping.inputNodes)
-				if(!harmonyModel.getFilters().isVisibleNode(HarmonyConsts.LEFT,inputNode)) continue;
+				if(!harmonyModel.getFilters().isVisibleNode(HarmonyConsts.LEFT,inputNode)) continue MAPPING_CELL_LOOP;
 			if(!harmonyModel.getFilters().isVisibleNode(HarmonyConsts.RIGHT,nodeMapping.outputNode)) continue;
 			
 			// Only create lines if they are visible on the screen (saves processing time)
