@@ -156,7 +156,7 @@ public class ClusterNode {
 					growing.groupEcombine(synsets.get(spot2));
 					removeCluster(spot2);
 
-					if (growing.nodes.size() >= schemaCount) {
+					if (growing.terms.size() >= schemaCount) {
 						completedClusters.add(growing);
 						removeCluster(spot1);
 					}

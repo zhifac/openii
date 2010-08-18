@@ -22,7 +22,7 @@ public class SynsetTerm extends Node implements Comparable<SynsetTerm> {
 	}
 
 	public int compareTo(SynsetTerm o) {
-		return this.toString().compareToIgnoreCase(o.toString());
+		return this.toString().compareTo(o.toString());
 	}
 
 	public String toString() {
