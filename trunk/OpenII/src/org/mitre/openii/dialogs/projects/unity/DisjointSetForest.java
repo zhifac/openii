@@ -83,7 +83,7 @@ public class DisjointSetForest<V extends Comparable<V>> {
 	 * @param allowNxN
 	 *            If set, two objects from the same container can be merged.
 	 */
-	public void merge(V v1, V v2, boolean allowNxN) {
+	public boolean merge(V v1, V v2, boolean allowNxN) {
 		int v1Root = find(v1);
 		int v2Root = find(v2);
 		BitSet bm1 = getBitMap(v1Root);
@@ -93,7 +93,10 @@ public class DisjointSetForest<V extends Comparable<V>> {
 			bm1.or(bm2);
 			int newRoot = find(v1);
 			bitMaps[newRoot] = bm1;
+			return true;
 		}
+		
+		return false; 
 	}
 
 	/**
