@@ -28,5 +28,10 @@ public class SynsetTerm extends Node implements Comparable<SynsetTerm> {
 	public String toString() {
 		return schemaId + elementName + elementId;
 	}
+	
+	public boolean equals(SynsetTerm o) {
+		return this.compareTo(o)==0; 
+	}
+	
 
 } // End SynsetTerm
