@@ -150,7 +150,7 @@ public class XSDImporter extends SchemaImporter
 		}
 		catch(Exception e) { 			
 			e.printStackTrace();
-			//throw new ImporterException(ImporterExceptionType.PARSE_FAILURE,e.getMessage()); 
+			throw new ImporterException(ImporterExceptionType.PARSE_FAILURE,e.getMessage()); 
 		}
 	}
 
@@ -555,7 +555,12 @@ public class XSDImporter extends SchemaImporter
 		
 		StringBuffer documentation = new StringBuffer("");
 		documentation.append(appendDocumentation(element));
-		return documentation.toString();
+		
+		// post-process documentation string to remove 
+		String retVal = documentation.toString();
+		retVal = retVal.replaceAll("\\s+", " ");
+		
+		return retVal;
 	}
 
 	/**

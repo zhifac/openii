@@ -138,6 +138,9 @@ public class XSDImporterSeparate extends SchemaImporter
 	
 	private static String _fileNamePrefix = null;
 	
+	private static HashMap<String,Entity> _attrGroupEntitySet = new HashMap<String,Entity>();
+	
+	
 	/** Initializes the importer for the specified URI 
 	 * @throws ImporterException 
 	 * @throws URISyntaxException */
@@ -921,7 +924,8 @@ public class XSDImporterSeparate extends SchemaImporter
 			}
 			else if (!(se instanceof Domain))
 			{
-				System.out.println("[E] XSDMergedImporter -- not inserting more than Domains ");
+			
+				System.out.println("[E] XSDMergedImporter -- not inserting more than Domains --- " + se.getName() + " --- " + se.getDescription());
 				throw new Exception();
 			}
 		}
@@ -1287,7 +1291,6 @@ public class XSDImporterSeparate extends SchemaImporter
 	} // end method processSimpleType
 
 
-	private static HashMap<String,Entity> _attrGroupEntitySet = new HashMap<String,Entity>();
 	
 	/**
 	 * processComplexType: creates M3 Entity for the passed ComplexType 
@@ -1619,7 +1622,13 @@ public class XSDImporterSeparate extends SchemaImporter
 	{	
 		StringBuffer documentation = new StringBuffer("");
 		documentation.append(appendDocumentation(element));
-		return documentation.toString();
+		
+		// post-process documentation string to remove 
+		String retVal = documentation.toString();
+		retVal = retVal.replaceAll("\\s+", " ");
+		
+		return retVal;
+		
 	}
 
 	/**
