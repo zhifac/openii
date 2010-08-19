@@ -128,8 +128,10 @@ public class Unity {
 
 			// Then call DisjointSetForest merge on the mapping cells.
 			for (MappingCell mc : mcArray) {
-				for (MappingCellInput input : mc.getInputs())
-					dsf.merge(synsetTerms.get(new String(inputSchema + "-" + input.getElementID())), synsetTerms.get(new String(outputSchema + "-" + mc.getOutput())), mc.isValidated());
+				for (MappingCellInput input : mc.getInputs()) {
+					boolean merged = dsf.merge(synsetTerms.get(new String(inputSchema + "-" + input.getElementID())), synsetTerms.get(new String(outputSchema + "-" + mc.getOutput())), mc.isValidated());
+					System.out.println( (merged ? "merge " : "not merged " ) + " = " + inputSchema + "-" + input.getElementID() + " && " + outputSchema + "-" + mc.getOutput());
+				}
 			}
 		}
 
@@ -213,12 +215,13 @@ public class Unity {
 			
 			ArrayList<SynsetTerm> termList = schemaTermHash.get(schemas.get(schemaIDX));
 			int termFrequency = totalSynsets / termList.size();
-			
+
 			for (int termIDX = 0; termIDX < termList.size(); termIDX++) {
 				SynsetTerm term = termList.get(termIDX);
 
-				for (int i = 0; i < termFrequency; i++)
-					result.get(termIDX + termList.size() * i).add(term); 
+				for (int i = 0; i < termFrequency; i++) {
+					result.get(termIDX + termList.size() * i).add(term);
+				}
 			}
 		}
 		return result;
