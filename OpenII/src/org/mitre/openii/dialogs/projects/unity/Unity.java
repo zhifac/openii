@@ -34,7 +34,7 @@ public class Unity {
 	private Project project;
 	private Vocabulary vocabulary;
 	private int authoritySchemaId = 0;
-	private ArrayList<Synset> synsetList = null;
+//	private ArrayList<Synset> synsetList = null;
 
 	public Unity(Project project) {
 		this.project = project;
@@ -56,9 +56,9 @@ public class Unity {
 	 */
 	public Vocabulary unify(ArrayList<Mapping> inputMappings) throws RemoteException {
 		// Generate synsets
-		synsetList = generateSynsets(project, inputMappings);
+		ArrayList<Synset> synsetList = generateSynsets(project, inputMappings);
 		// Generate vocabulary terms
-		vocabulary = new Vocabulary(project.getId(), generateVocabTerms());
+		vocabulary = new Vocabulary(project.getId(), generateVocabTerms(synsetList));
 
 		// save new vocab
 		OpenIIManager.saveVocabulary(vocabulary);
@@ -147,6 +147,10 @@ public class Unity {
 				termSet.add(term);
 		}
 
+/**
+ * The following code is code & debugging code for creating cross product of NxN synsets
+ 
+		
 		// Printing synsets for debugging before normalization
 		for (Synset s : synsets.values()) {
 			for (SynsetTerm t : s.terms)
@@ -168,11 +172,13 @@ public class Unity {
 				System.out.print(t.schemaId + "-" + t.elementName + "-" + t.elementId + " ,");
 			System.out.println();
 		}
+*/
 
 		long endDSF = System.currentTimeMillis();
 		
 		// Generate connonical terms for each synset
-		vocabulary = new Vocabulary(project.getId(), generateVocabTerms());
+//		synsetList = new ArrayList<Synset>( synsets.values() ); 
+		vocabulary = new Vocabulary(project.getId(), generateVocabTerms(new ArrayList<Synset> (synsets.values() )));
 		// Save new vocab
 		OpenIIManager.saveVocabulary(vocabulary);
 		
@@ -219,6 +225,7 @@ public class Unity {
 			for (int termIDX = 0; termIDX < termList.size(); termIDX++) {
 				SynsetTerm term = termList.get(termIDX);
 
+				// TODO There is a bug in determination of the index for where the result IDX is
 				for (int i = 0; i < termFrequency; i++) {
 					result.get(termIDX + termList.size() * i).add(term);
 				}
@@ -236,16 +243,21 @@ public class Unity {
 		}
 	}
 
-	private Term[] generateVocabTerms() {
-		Term[] termArray = new Term[synsetList.size()];
+	private Term[] generateVocabTerms(ArrayList<Synset> list ) {
+		Term[] termArray = new Term[list.size()];
 
 		// Create a canonical term for each synset
-		for (int t = 0; t < synsetList.size(); t++)
-			termArray[t] = generateConnicalTerm(synsetList.get(t));
+		for (int t = 0; t < list.size(); t++)
+			termArray[t] = generateConnicalTerm(list.get(t));
 		return termArray;
 	}
 
-	// TODO hook this up with one of the Vocabulary exporters
+	/**
+	 * Use one default vocabulary exporter to export the vocabulary to file
+	 * @param vocabulary
+	 * @param file
+	 * @throws IOException
+	 */
 	public static void exportVocabulary(Vocabulary vocabulary, File file) throws IOException {
 		CompleteVocabExporter exporter = new CompleteVocabExporter();
 		exporter.setClient(RepositoryManager.getClient());
@@ -262,12 +274,12 @@ public class Unity {
 		authoritySchemaId = id;
 	}
 
-	// /**
-	// * Generate synsets from all matches by using MatchMaker's cluster
-	// * (Implemented as part of the MatchMakerExporter
-	// *
-	// * @throws RemoteException
-	// **/
+	 /**
+	 * Generate synsets from all matches by using MatchMaker's cluster
+	 * (Implemented as part of the MatchMakerExporter
+	 *
+	 * @throws RemoteException
+	 **/
 	public static ArrayList<org.mitre.schemastore.porters.projectExporters.matchmaker.Synset> generateSynsets(Project project, ArrayList<Mapping> inputMappings) throws RemoteException {
 		HashMap<Mapping, ArrayList<MappingCell>> mappingCellHash = new HashMap<Mapping, ArrayList<MappingCell>>();
 		for (Mapping mapping : inputMappings)
@@ -313,7 +325,6 @@ public class Unity {
 		}
 
 		resultTerm = (baseElement == null) ? new Term(null, new String(), new String(), assocElements) : new Term(null, baseElement.getName(), baseElement.getDescription(), assocElements);
-
 		return resultTerm;
 	}
 
