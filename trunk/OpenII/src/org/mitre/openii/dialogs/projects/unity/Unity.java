@@ -72,6 +72,8 @@ public class Unity {
 	 * @return
 	 */
 	public Vocabulary DSFUnify(ArrayList<Mapping> inputMappings) {
+		long start = System.currentTimeMillis();
+		
 		// Find participating schemas the mappings
 		final HashSet<Integer> schemaIDs = new HashSet<Integer>();
 		final HashMap<Mapping, ArrayList<MappingCell>> mappingCellHash = new HashMap<Mapping, ArrayList<MappingCell>>();
@@ -103,7 +105,6 @@ public class Unity {
 
 		// Disjoint Set Forest
 		DisjointSetForest<SynsetTerm> dsf = new DisjointSetForest<SynsetTerm>(synsetTerms.values().toArray(new SynsetTerm[0]), method, schemaIDs.size());
-
 		for (Mapping mapping : inputMappings) {
 			Integer inputSchema = mapping.getSourceId();
 			Integer outputSchema = mapping.getTargetId();
@@ -143,40 +144,47 @@ public class Unity {
 			} else
 				termSet.add(term);
 		}
-//		Printing synsets for debugging 
-//		for( Synset s : synsets.values() ){
-//			for ( SynsetTerm t : s.nodes ) 
-//				System.out.print(t.schemaId+"-" + t.elementName +",");
-//			System.out.println(); 
-//		}
-				
-		
-		// Normalize synsets for NxN mappings, ie synsets with N>1 elements from one schema
+
+		// Printing synsets for debugging before normalization
+		for (Synset s : synsets.values()) {
+			for (SynsetTerm t : s.terms)
+				System.out.print(t.schemaId + "-" + t.elementName + "-" + t.elementId + " ,");
+			System.out.println();
+		}
+
+		// Normalize synsets for NxN mappings, ie synsets with N>1 elements from
+		// one schema
 		synsetList = new ArrayList<Synset>();
 		for (Synset synset : synsets.values())
 			synsetList.addAll(normalizeSet(synset));
 
-		
-//		Printing synsets for debugging 
-//		System.out.println( "--------------------------------"); 
-//		
-//		for( Synset s : synsetList ){
-//			for ( SynsetTerm t : s.nodes ) 
-//				System.out.print(t.schemaId+"-" + t.elementName +",");
-//			System.out.println(); 
-//		}
+		// Printing synsets for debugging
+		System.out.println("-------------------------------- after normalization");
 
+		for (Synset s : synsetList) {
+			for (SynsetTerm t : s.terms)
+				System.out.print(t.schemaId + "-" + t.elementName + "-" + t.elementId + " ,");
+			System.out.println();
+		}
+
+		long endDSF = System.currentTimeMillis();
+		
 		// Generate connonical terms for each synset
 		vocabulary = new Vocabulary(project.getId(), generateVocabTerms());
 		// Save new vocab
 		OpenIIManager.saveVocabulary(vocabulary);
+		
+		long afterSave = System.currentTimeMillis(); 
+		
+		System.out.println("DSF time " + (endDSF-start)/ new Double(1000)/new Double(60) + " minutes" ); 
+		System.out.println("Save time " + (afterSave - endDSF ) / new Double(1000)/new Double(60) + " minutes "); 
 		return vocabulary;
 	}
 
 	/**
-	 * Synsets at the end of DSF may have more than one element from one schema
-	 * participating. This normalization function creates multiple synset for
-	 * added elements.
+	 * FAILED FIRST ATTEMPT Synsets at the end of DSF may have more than one
+	 * element from one schema participating. This normalization function
+	 * creates multiple synset for added elements.
 	 * 
 	 * @param synset
 	 * @return
@@ -202,13 +210,15 @@ public class Unity {
 
 		ArrayList<Integer> schemas = new ArrayList<Integer>(schemaTermHash.keySet());
 		for (int schemaIDX = 0; schemaIDX < schemas.size(); schemaIDX++) {
+			
 			ArrayList<SynsetTerm> termList = schemaTermHash.get(schemas.get(schemaIDX));
 			int termFrequency = totalSynsets / termList.size();
-
+			
 			for (int termIDX = 0; termIDX < termList.size(); termIDX++) {
 				SynsetTerm term = termList.get(termIDX);
+
 				for (int i = 0; i < termFrequency; i++)
-					result.get(termIDX * termFrequency + i).add(term);
+					result.get(termIDX + termList.size() * i).add(term); 
 			}
 		}
 		return result;
@@ -218,7 +228,7 @@ public class Unity {
 		for (Term t : vocabulary.getTerms()) {
 			System.out.print(t.getName() + ", ");
 			for (AssociatedElement e : t.getElements())
-				System.out.print(e.getSchemaID()+"-" + e.getElementID() +", ");
+				System.out.print(e.getSchemaID() + "-" + e.getElementID() + ", ");
 			System.out.println();
 		}
 	}
@@ -249,12 +259,12 @@ public class Unity {
 		authoritySchemaId = id;
 	}
 
-//	/**
-//	 * Generate synsets from all matches by using MatchMaker's cluster
-//	 * (Implemented as part of the MatchMakerExporter
-//	 * 
-//	 * @throws RemoteException
-//	 **/
+	// /**
+	// * Generate synsets from all matches by using MatchMaker's cluster
+	// * (Implemented as part of the MatchMakerExporter
+	// *
+	// * @throws RemoteException
+	// **/
 	public static ArrayList<org.mitre.schemastore.porters.projectExporters.matchmaker.Synset> generateSynsets(Project project, ArrayList<Mapping> inputMappings) throws RemoteException {
 		HashMap<Mapping, ArrayList<MappingCell>> mappingCellHash = new HashMap<Mapping, ArrayList<MappingCell>>();
 		for (Mapping mapping : inputMappings)
