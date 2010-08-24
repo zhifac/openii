@@ -12,15 +12,17 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.mitre.harmony.matchers.matchers.Matcher;
 import org.mitre.openii.application.OpenIIActivator;
+import org.mitre.openii.dialogs.projects.unity.MappingProcessor;
 import org.mitre.openii.dialogs.projects.unity.Pair;
 import org.mitre.openii.dialogs.projects.unity.Permuter;
 import org.mitre.openii.model.OpenIIManager;
@@ -56,16 +58,16 @@ public class BatchMatchDialog extends Dialog implements ActionListener, ModifyLi
 	protected Control createDialogArea(Composite parent) {
 		// Construct the main pane
 		Composite pane = new Composite(parent, SWT.DIALOG_TRIM);
-		RowLayout layout = new RowLayout(SWT.VERTICAL);
-		layout.fill = true;
+		
+		GridLayout layout = new GridLayout(1, false);
 		pane.setLayout(layout);
+		layout.marginLeft = 8; 
+		layout.marginRight = 8; 
 
 		// Generate the pane components
 		createInfoPane(pane);
 		createMappingPane(pane);
-		// matchersPane = new MatchersPane(pane, this);
-
-		// Return the generated pane
+		matchersPane = new MatchersPane(pane, this);
 		return pane;
 	}
 
@@ -87,14 +89,15 @@ public class BatchMatchDialog extends Dialog implements ActionListener, ModifyLi
 
 		Permuter<ProjectSchema> permuter = new Permuter<ProjectSchema>(new ArrayList<ProjectSchema>(schemaArray.values()));
 
-		Group mappingGroup = new Group(pane, SWT.NONE);
-		mappingGroup.setText("Project Mappings");
-		mappingGroup.setLayout(new GridLayout(1, false));
+		Group mappingPane = new Group(pane, SWT.NONE);
+		mappingPane.setText("Selet new mappings to create");
+		mappingPane.setLayout(new GridLayout(1, false));
+		mappingPane.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
 		// Create a check box for each mapping pair
 		while (permuter.hasMoreElements()) {
 			Pair<ProjectSchema> currMappingPair = permuter.nextElement();
-			Button mappingButton = new Button(mappingGroup, SWT.CHECK);
+			Button mappingButton = new Button(mappingPane, SWT.CHECK);
 			String pairName = ((ProjectSchema) currMappingPair.getItem1()).getName() + " to " + ((ProjectSchema) currMappingPair.getItem2()).getName();
 			mappingHash.put(pairName, currMappingPair);
 			boolean exist = existingMappingList.contains(currMappingPair);
@@ -121,7 +124,7 @@ public class BatchMatchDialog extends Dialog implements ActionListener, ModifyLi
 		}
 	}
 
-	public ArrayList<Pair<ProjectSchema>> getSelectedNewMappings() {
+	ArrayList<Pair<ProjectSchema>> getSelectedNewMappings() {
 		return selectedNewMappingList;
 	}
 
@@ -129,6 +132,10 @@ public class BatchMatchDialog extends Dialog implements ActionListener, ModifyLi
 		Group pane = new Group(parent, SWT.NONE);
 		pane.setText("General Info");
 		pane.setLayout(new GridLayout(2, false));
+		GridData gridData = new GridData(GridData.FILL_HORIZONTAL); 
+		gridData.widthHint = 400; 
+		pane.setLayoutData(gridData);
+		
 
 		// Generate the properties to be displayed by the info pane
 		authorField = BasicWidgets.createTextField(pane, "Author");
@@ -146,8 +153,15 @@ public class BatchMatchDialog extends Dialog implements ActionListener, ModifyLi
 		return control;
 	}
 
+	/** Returns the selected matchers */
+	ArrayList<Matcher> getMatchers() {
+		return matchersPane.getMatchers();
+	}
+
 	// /** Handles the actual import of the specified file */
 	protected void okPressed() {
+		new MappingProcessor(project, getSelectedNewMappings(), getMatchers());
+		getShell().dispose();
 	}
 
 	public void modifyText(ModifyEvent arg0) {
@@ -158,7 +172,16 @@ public class BatchMatchDialog extends Dialog implements ActionListener, ModifyLi
 	private void updateButton() {
 		boolean complete = authorField.getText().length() > 0;
 		complete &= selectedNewMappingList.size() > 0;
+		complete &= getMatchers().size() > 0; 
 		getButton(IDialogConstants.OK_ID).setEnabled(complete);
+	}
+	
+	String getAuthor() {
+		return authorField.getText(); 
+	}
+	
+	String getDescription() {
+		return descriptionField.getText(); 
 	}
 
 	public void actionPerformed(ActionEvent arg0) {
@@ -170,7 +193,7 @@ public class BatchMatchDialog extends Dialog implements ActionListener, ModifyLi
 	}
 
 	public void widgetSelected(SelectionEvent arg0) {
-		// TODO Auto-generated method stub
+		updateButton();
 	}
 
 }

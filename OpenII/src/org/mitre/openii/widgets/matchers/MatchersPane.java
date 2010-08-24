@@ -125,13 +125,14 @@ public class MatchersPane
 	/** Stores the list of matcher checkboxes */
 	private ArrayList<MatcherCheckBox> checkboxes = new ArrayList<MatcherCheckBox>();
 	
+	
 	/** Constructs the Matchers Pane */
 	public MatchersPane(Composite parent, SelectionListener listener)
 	{
 		// Create a group panel for displaying the matchers
 		Group group = new Group(parent, SWT.NONE);
 		group.setText("Matchers");
-		group.setLayout(new RowLayout());
+		group.setLayout(new GridLayout(1, false)); 
 		group.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
 		// Construct a list of all matchers that can be selected
