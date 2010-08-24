@@ -10,7 +10,7 @@ import org.mitre.openii.application.OpenIIActivator;
 import org.mitre.openii.dialogs.mappings.DeleteMappingDialog;
 import org.mitre.openii.dialogs.mappings.ExportMappingDialog;
 import org.mitre.openii.dialogs.mappings.importer.ImportMappingDialog;
-import org.mitre.openii.dialogs.projects.BatchMatchWizard;
+import org.mitre.openii.dialogs.projects.BatchMatchDialog;
 import org.mitre.openii.dialogs.projects.DeleteProjectDialog;
 import org.mitre.openii.dialogs.projects.EditProjectDialog;
 import org.mitre.openii.dialogs.projects.ExportProjectDialog;
@@ -294,7 +294,7 @@ public class ManagerAction extends Action {
 					(Project) selection)).open();
 
 		if (actionType == ActionType.BATCH_MATCH)
-			new WizardDialog(shell, new BatchMatchWizard((Project) selection)).open();
+			new BatchMatchDialog(shell, (Project) selection).open();
 
 		/** Handles the deletion of a project's vocabulary */
 		if (actionType == ActionType.DELETE_VOCABULARY)
