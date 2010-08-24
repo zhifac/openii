@@ -127,30 +127,26 @@ public class BatchMatchDialog extends Dialog implements ActionListener, ModifyLi
 		return control;
 	}
 
-//	/** Handles the actual import of the specified file */
+	/** Handles the actual import of the specified file */
 	protected void okPressed() {
 
 	}
 
-	@Override
 	public void modifyText(ModifyEvent arg0) {
 		// TODO Auto-generated method stub
 
 	}
 
-	@Override
 	public void actionPerformed(ActionEvent arg0) {
 		// TODO Auto-generated method stub
 
 	}
 
-	@Override
 	public void widgetDefaultSelected(SelectionEvent arg0) {
 		// TODO Auto-generated method stub
 
 	}
 
-	@Override
 	public void widgetSelected(SelectionEvent arg0) {
 		// TODO Auto-generated method stub
 
