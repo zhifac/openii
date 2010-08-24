@@ -1,0 +1,136 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+		<link REL="STYLESHEET" TYPE="text/css" HREF="./../../support/standard.css"/>
+		<title>OpenII Help System</title>
+	</head>
+	<body>
+	  	<iframe src="./../../header.html" width="100%" height="30" scrolling="no" frameborder="0"></iframe>
+		<div id="content">
+			<h1>The MITRE Meta-Model (M3)</h1>
+			
+			<p>M3 was designed to include many of the features common to multiple familiar modeling languages,
+			including XML Schema, RDF Schema, and the relational model.  Fundamentally, the M3 model is an
+			extended entity-relationship (EER) modeling language.  At the core of any ER model are a set of
+			entities (with associated attributes) and relationships among the entities.  M3 extends the ER
+			model by introducing constructs common to modern modeling languages, such as containments, subtype
+			relationships, and domains.</p>
+			
+			<p>At the core of M3 is the notion of a schema element.  A <em>schema element</em> represents any
+			modeling construct that can be uniquely identified.  Virtually every schema element includes a name
+			and (human-readable) documentation.</p>
+			
+			<p>An <em>entity</em> is a schema element that represents information about a set of related
+			real-world objects.  Associated with each entity is a set of attributes.  An <em>attribute</em>
+			creates a binding between an instance of an entity and a data value (or set of data values).
+			Thus, for each attribute, M3 notes the associated entity, the "domain" of possible values, and
+			minimum/maximum cardinality constraints for the attribute.</p>
+			
+			<p>For each entity, M3 allows a set of its attributes to form a key.  For simplicity, M3 assumes
+			that an entity will have at most one key, although the key can involve multiple attributes.</p>
+			
+			<p>A <em>domain</em> represents a set of values.  Many common domains are built into M3, such as
+			strings, integers, reals, etc.  Custom domains can also be added, which enumerate a set of
+			possible <em>domain values</em>.</p>
+			
+			<p><em>Relationships</em> are used to connect entities to each other.  A relationship is an
+			arbitrary binary relationship between two entities.  In addition to capturing the name and
+			documentation for a relationship, M3 includes minimum/maximum cardinality constraints on either
+			side of the relationship.  (In practice, most models do not (directly) support arbitrary
+			relationships, so many-to-many relationships are rarely observed.)</p>
+			
+			<p>More specifically, <em>containments</em> represent a structural relationship between a parent
+			entity and a child element (either an entity or a domain).  Minimum/maximum cardinality constraints
+			are also supported, indicating how many  child instances or data values can be associated with a
+			given parent instance.  (Note that if the parent entity is unspecified, then the containment
+			links the schema itself to the child entity; this is used in XML schema to denote root-level
+			tags.)</p>
+			
+			<p>Any of these elements can be organized into semantic hierarchies using the <em>subtype</em>
+			relationship.  For entities, the subtype relationship indicates that all instances of the child
+			entity are also instances of the parent entity.  For relationships, attributes and containments,
+			a subtype relationship indicates that the child element is more specific than the parent.  (For
+			example, Father is more specific than Parent, a relationship that links the Person entity to
+			itself.) 
+			
+			<p>Of course, different data sources capture different information about a given entity.  The
+			<em>derivation</em> relationship indicates that one schema includes the elements from another
+			schema.  The elements of the base schema can be further extended by a) adding new attributes to
+			an entity, b) adding new elements (such as entities or containments) or c) adding new domain
+			values to a domain.  At this time, constraints such as keys or cardinality constraints cannot
+			be modified.</p>
+			
+			<p>Note that most object-oriented (OO) modeling languages conflate derivation and subsets.  In M3,
+			one can add new attributes to an entity using derivation.  The derived entity represents the
+			same set of real-world instances, albeit with more information.  To conform to standard OO usage,
+			the subtype relationship allows both adding new attributes and restricting the set of corresponding
+			real-world instances.</p>
+			
+			<p>Table 1 shows how the M3 constructs relate to other common metamodels.</p>
+			
+			<table border="1">
+			<caption>Table 1: Relationship between M3 and other common modeling languages.</caption>
+			<tr>
+				<th>M3</th>
+				<th>SQL</th>
+				<th>XML</th>
+				<th>RDFS</th>
+				<th>UML</th>
+			</tr>
+			<tr>
+				<td>Entity</td>
+				<td>Table</td>
+				<td>Complex type</td>
+				<td>Class</td>
+				<td>Class</td>
+			</tr>
+			<tr>
+				<td>Attribute</td>
+				<td>Column</td>
+				<td>Attribtue</td>
+				<td>Datatype property</td>
+				<td>Attribute</td>
+			</tr>
+			<tr>
+				<td>Relationship</td>
+				<td>Inferred from foreign keys</td>
+				<td>n/a</td>
+				<td>Object property</td>
+				<td>Association</td>
+			</tr>
+			<tr>
+				<td>Subtype</td>
+				<td>n/a</td>
+				<td>Extends</td>
+				<td>Subclass</td>
+				<td>Subclass</td>
+			</tr>
+			<tr>
+				<td>Containment</td>
+				<td>n/a</td>
+				<td>Element</td>
+				<td>n/a</td>
+				<td>Composition/Aggregation</td>
+			</tr>
+			<tr>
+				<td>Domain</td>
+				<td>Built-in type</td>
+				<td>Simple type/Enumeration</td>
+				<td>Built-in type</td>
+				<td>Atomic types/Enumeration</td>
+			</tr>
+			<tr>
+				<td>Derivation</td>
+				<td>n/a</td>
+				<td>n/a</td>
+				<td>n/a</td>
+				<td>n/a</td>
+			</tr>
+			</table>
+			
+			<p>Chris, add information about projects and mappings here.</p>
+
+		</div>
+	</body>
+</html>
