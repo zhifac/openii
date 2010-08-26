@@ -90,8 +90,8 @@ public class BatchMatchDialog extends Dialog implements ActionListener, ModifyLi
 	void updateMappingGroupPane() {
 		System.out.println("update mapping group..."); 
 		
-//		HashMap<Integer, ArrayList<Integer>> schemaGroups = getSchemaGroups(project.getSchemaIDs(), checkedMappingList);
-		HashMap<Integer, ArrayList<Integer>> schemaGroups = getSchemaGroups(project);
+		HashMap<Integer, ArrayList<Integer>> schemaGroups = getSchemaGroups(project.getSchemaIDs(), checkedMappingList);
+//		HashMap<Integer, ArrayList<Integer>> schemaGroups = getSchemaGroups(project);
 		mappingGroupPane.setLayout(new GridLayout(schemaGroups.keySet().size(), false));
 
 		for (ArrayList<Integer> group : schemaGroups.values()) {
