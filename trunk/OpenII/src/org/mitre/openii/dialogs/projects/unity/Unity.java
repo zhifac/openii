@@ -67,7 +67,7 @@ public class Unity {
 	}
 
 	/**
-	 * Use DisjointSetForest to
+	 * Use DisjointSetForest to generate synsets from pair wise matches
 	 * 
 	 * @param inputMappings
 	 * @return
