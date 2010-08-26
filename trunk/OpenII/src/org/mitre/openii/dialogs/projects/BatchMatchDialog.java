@@ -10,8 +10,6 @@ import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.MouseMoveListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
@@ -26,10 +24,10 @@ import org.eclipse.swt.widgets.Text;
 import org.mitre.harmony.matchers.matchers.Matcher;
 import org.mitre.openii.application.OpenIIActivator;
 import org.mitre.openii.dialogs.projects.unity.DisjointSetForest;
+import org.mitre.openii.dialogs.projects.unity.DisjointSetForest.ContainerMethod;
 import org.mitre.openii.dialogs.projects.unity.MappingProcessor;
 import org.mitre.openii.dialogs.projects.unity.Pair;
 import org.mitre.openii.dialogs.projects.unity.Permuter;
-import org.mitre.openii.dialogs.projects.unity.DisjointSetForest.ContainerMethod;
 import org.mitre.openii.model.OpenIIManager;
 import org.mitre.openii.widgets.BasicWidgets;
 import org.mitre.openii.widgets.matchers.MatchersPane;
@@ -48,6 +46,7 @@ public class BatchMatchDialog extends Dialog implements ActionListener, ModifyLi
 	private ArrayList<Pair<ProjectSchema>> checkedMappingList = new ArrayList<Pair<ProjectSchema>>();
 	private HashMap<String, Pair<ProjectSchema>> mappingHash = new HashMap<String, Pair<ProjectSchema>>();
 	private Group mappingGroupPane;
+	private ArrayList<Group> groupPanes;
 
 	public BatchMatchDialog(Shell shell, Project project) {
 		super(shell);
@@ -88,28 +87,31 @@ public class BatchMatchDialog extends Dialog implements ActionListener, ModifyLi
 	}
 
 	void updateMappingGroupPane() {
-		System.out.println("update mapping group..."); 
-		
+		// Update the minimum spanning tree for mappings 
 		HashMap<Integer, ArrayList<Integer>> schemaGroups = getSchemaGroups(project.getSchemaIDs(), checkedMappingList);
-//		HashMap<Integer, ArrayList<Integer>> schemaGroups = getSchemaGroups(project);
-		mappingGroupPane.setLayout(new GridLayout(schemaGroups.keySet().size(), false));
+		
+		// Dispose old mapping groups
+		if (groupPanes != null && groupPanes.size() > 0)
+			for ( Group g : groupPanes ) g.dispose(); 
+		groupPanes = new ArrayList<Group>();
+		
+		// Set new layout according to new grouping size
+		mappingGroupPane.setLayout(new GridLayout(schemaGroups.keySet().size(), false ));
 
+		// Paint groups with dots indicating schemas 
 		for (ArrayList<Integer> group : schemaGroups.values()) {
-			Group groupPane = new Group(mappingGroupPane, SWT.BORDER );
+			Group groupPane = new Group(mappingGroupPane, SWT.NONE);
+			groupPanes.add(groupPane); 
 			GridLayout layout = new GridLayout(group.size(), true);
 			groupPane.setLayout(layout);
-			
+
 			for (Integer schemaID : group) {
-				System.out.print(schemaID + ", "); 
 				Label slabel = new Label(groupPane, SWT.NONE);
 				slabel.setText("*");
 				slabel.setToolTipText(OpenIIManager.getSchema(schemaID).getName());
 			}
-			System.out.println();
-			
-			mappingGroupPane.redraw(); 
+			mappingGroupPane.layout(true, true);
 		}
-		
 	}
 
 	// Integer[] schemas, ArrayList<Pair<ProjectSchema>> merges
