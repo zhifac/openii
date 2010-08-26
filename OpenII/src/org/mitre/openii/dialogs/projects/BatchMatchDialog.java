@@ -10,6 +10,8 @@ import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseMoveListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
@@ -18,13 +20,16 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.mitre.harmony.matchers.matchers.Matcher;
 import org.mitre.openii.application.OpenIIActivator;
+import org.mitre.openii.dialogs.projects.unity.DisjointSetForest;
 import org.mitre.openii.dialogs.projects.unity.MappingProcessor;
 import org.mitre.openii.dialogs.projects.unity.Pair;
 import org.mitre.openii.dialogs.projects.unity.Permuter;
+import org.mitre.openii.dialogs.projects.unity.DisjointSetForest.ContainerMethod;
 import org.mitre.openii.model.OpenIIManager;
 import org.mitre.openii.widgets.BasicWidgets;
 import org.mitre.openii.widgets.matchers.MatchersPane;
@@ -40,7 +45,9 @@ public class BatchMatchDialog extends Dialog implements ActionListener, ModifyLi
 	private Text authorField;
 	private Text descriptionField;
 	private ArrayList<Pair<ProjectSchema>> selectedNewMappingList = new ArrayList<Pair<ProjectSchema>>();
+	private ArrayList<Pair<ProjectSchema>> checkedMappingList = new ArrayList<Pair<ProjectSchema>>();
 	private HashMap<String, Pair<ProjectSchema>> mappingHash = new HashMap<String, Pair<ProjectSchema>>();
+	private Group mappingGroupPane;
 
 	public BatchMatchDialog(Shell shell, Project project) {
 		super(shell);
@@ -58,17 +65,99 @@ public class BatchMatchDialog extends Dialog implements ActionListener, ModifyLi
 	protected Control createDialogArea(Composite parent) {
 		// Construct the main pane
 		Composite pane = new Composite(parent, SWT.DIALOG_TRIM);
-		
+
 		GridLayout layout = new GridLayout(1, false);
 		pane.setLayout(layout);
-		layout.marginLeft = 8; 
-		layout.marginRight = 8; 
+		layout.marginLeft = 8;
+		layout.marginRight = 8;
 
 		// Generate the pane components
 		createInfoPane(pane);
 		createMappingPane(pane);
+		createMappingGroupPane(pane);
 		matchersPane = new MatchersPane(pane, this);
 		return pane;
+	}
+
+	private void createMappingGroupPane(Composite parent) {
+		mappingGroupPane = new Group(parent, SWT.NONE);
+		mappingGroupPane.setText("Mapping Groups");
+		mappingGroupPane.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		mappingGroupPane.setRedraw(true);
+		updateMappingGroupPane();
+	}
+
+	void updateMappingGroupPane() {
+		System.out.println("update mapping group..."); 
+		
+//		HashMap<Integer, ArrayList<Integer>> schemaGroups = getSchemaGroups(project.getSchemaIDs(), checkedMappingList);
+		HashMap<Integer, ArrayList<Integer>> schemaGroups = getSchemaGroups(project);
+		mappingGroupPane.setLayout(new GridLayout(schemaGroups.keySet().size(), false));
+
+		for (ArrayList<Integer> group : schemaGroups.values()) {
+			Group groupPane = new Group(mappingGroupPane, SWT.BORDER );
+			GridLayout layout = new GridLayout(group.size(), true);
+			groupPane.setLayout(layout);
+			
+			for (Integer schemaID : group) {
+				System.out.print(schemaID + ", "); 
+				Label slabel = new Label(groupPane, SWT.NONE);
+				slabel.setText("*");
+				slabel.setToolTipText(OpenIIManager.getSchema(schemaID).getName());
+			}
+			System.out.println();
+			
+			mappingGroupPane.redraw(); 
+		}
+		
+	}
+
+	// Integer[] schemas, ArrayList<Pair<ProjectSchema>> merges
+	HashMap<Integer, ArrayList<Integer>> getSchemaGroups(Integer[] schemas, ArrayList<Pair<ProjectSchema>> merges) {
+		HashMap<Integer, ArrayList<Integer>> schemaGroups = new HashMap<Integer, ArrayList<Integer>>();
+		ContainerMethod<Integer> method = new ContainerMethod<Integer>() {
+			public int getContainerFor(Integer v) {
+				return v;
+			}
+		};
+
+		DisjointSetForest<Integer> dsf = new DisjointSetForest<Integer>(schemas, method, schemas.length);
+		for (Pair<ProjectSchema> mapping : merges)
+			dsf.merge(mapping.getItem1().getId(), mapping.getItem2().getId(), false);
+
+		for (Integer schemaId : schemas) {
+			Integer root = new Integer(dsf.find(schemaId));
+			if (!schemaGroups.containsKey(root))
+				schemaGroups.put(root, new ArrayList<Integer>());
+			schemaGroups.get(root).add(schemaId);
+		}
+
+		return schemaGroups;
+
+	}
+
+	HashMap<Integer, ArrayList<Integer>> getSchemaGroups(Project project) {
+		HashMap<Integer, ArrayList<Integer>> schemaGroups = new HashMap<Integer, ArrayList<Integer>>();
+		Integer[] schemas = project.getSchemaIDs();
+		ContainerMethod<Integer> method = new ContainerMethod<Integer>() {
+			public int getContainerFor(Integer v) {
+				return v;
+			}
+		};
+
+		DisjointSetForest<Integer> dsf = new DisjointSetForest<Integer>(schemas, method, schemas.length);
+		for (Mapping mapping : OpenIIManager.getMappings(project.getId())) {
+			dsf.merge(mapping.getSourceId(), mapping.getTargetId(), false);
+		}
+
+		for (Integer schemaId : schemas) {
+			Integer root = new Integer(dsf.find(schemaId));
+			if (!schemaGroups.containsKey(root))
+				schemaGroups.put(root, new ArrayList<Integer>());
+			schemaGroups.get(root).add(schemaId);
+		}
+
+		return schemaGroups;
 	}
 
 	private void createMappingPane(Composite pane) {
@@ -106,14 +195,19 @@ public class BatchMatchDialog extends Dialog implements ActionListener, ModifyLi
 			mappingButton.setEnabled(!exist);
 			if (!exist)
 				selectedNewMappingList.add(currMappingPair);
+			checkedMappingList.add(currMappingPair);
 
 			mappingButton.addSelectionListener(new SelectionListener() {
 				public void widgetSelected(SelectionEvent event) {
 					Button mappingButton = (Button) event.widget;
-					if (mappingButton.getSelection())
+					if (mappingButton.getSelection()) {
 						selectedNewMappingList.add(mappingHash.get(mappingButton.getText()));
-					else
+						checkedMappingList.add(mappingHash.get(mappingButton.getText()));
+					} else {
 						selectedNewMappingList.remove(mappingHash.get(mappingButton.getText()));
+						checkedMappingList.remove(mappingHash.get(mappingButton.getText()));
+					}
+					updateMappingGroupPane();
 					updateButton();
 				}
 
@@ -128,14 +222,17 @@ public class BatchMatchDialog extends Dialog implements ActionListener, ModifyLi
 		return selectedNewMappingList;
 	}
 
+	ArrayList<Pair<ProjectSchema>> getSelectedMappings() {
+		return checkedMappingList;
+	}
+
 	private void createInfoPane(Composite parent) {
 		Group pane = new Group(parent, SWT.NONE);
 		pane.setText("General Info");
 		pane.setLayout(new GridLayout(2, false));
-		GridData gridData = new GridData(GridData.FILL_HORIZONTAL); 
-		gridData.widthHint = 400; 
+		GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
+		gridData.widthHint = 400;
 		pane.setLayoutData(gridData);
-		
 
 		// Generate the properties to be displayed by the info pane
 		authorField = BasicWidgets.createTextField(pane, "Author");
@@ -172,16 +269,16 @@ public class BatchMatchDialog extends Dialog implements ActionListener, ModifyLi
 	private void updateButton() {
 		boolean complete = authorField.getText().length() > 0;
 		complete &= selectedNewMappingList.size() > 0;
-		complete &= getMatchers().size() > 0; 
+		complete &= getMatchers().size() > 0;
 		getButton(IDialogConstants.OK_ID).setEnabled(complete);
 	}
-	
+
 	String getAuthor() {
-		return authorField.getText(); 
+		return authorField.getText();
 	}
-	
+
 	String getDescription() {
-		return descriptionField.getText(); 
+		return descriptionField.getText();
 	}
 
 	public void actionPerformed(ActionEvent arg0) {
