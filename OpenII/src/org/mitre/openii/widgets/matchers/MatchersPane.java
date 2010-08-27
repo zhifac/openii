@@ -12,6 +12,7 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -124,14 +125,15 @@ public class MatchersPane
 	/** Stores the list of matcher checkboxes */
 	private ArrayList<MatcherCheckBox> checkboxes = new ArrayList<MatcherCheckBox>();
 	
-	
 	/** Constructs the Matchers Pane */
 	public MatchersPane(Composite parent, SelectionListener listener)
 	{
 		// Create a group panel for displaying the matchers
 		Group group = new Group(parent, SWT.NONE);
 		group.setText("Matchers");
-		group.setLayout(new GridLayout(1, false)); 
+		RowLayout layout = new RowLayout();
+		layout.pack = false;
+		group.setLayout(layout); 
 		group.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
 		// Construct a list of all matchers that can be selected

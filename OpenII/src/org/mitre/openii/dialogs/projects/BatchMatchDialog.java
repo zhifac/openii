@@ -61,20 +61,27 @@ public class BatchMatchDialog extends Dialog implements ActionListener, ModifyLi
 	}
 
 	/** Creates the contents for the Import Schema Dialog */
-	protected Control createDialogArea(Composite parent) {
+	protected Control createDialogArea(Composite parent)
+	{
 		// Construct the main pane
 		Composite pane = new Composite(parent, SWT.DIALOG_TRIM);
-
+		
+		// Set the pane layout
 		GridLayout layout = new GridLayout(1, false);
+		layout.marginWidth = 8;
 		pane.setLayout(layout);
-		layout.marginLeft = 8;
-		layout.marginRight = 8;
+		
+		// Define the pane width
+		GridData gridData = new GridData(GridData.FILL_HORIZONTAL); 
+		gridData.widthHint = 400; 
+		pane.setLayoutData(gridData);
 
 		// Generate the pane components
 		createInfoPane(pane);
 		createMappingPane(pane);
 		createMappingGroupPane(pane);
 		matchersPane = new MatchersPane(pane, this);
+		
 		return pane;
 	}
 
