@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.Wizard;
 import org.mitre.openii.model.OpenIIManager;
 import org.mitre.schemastore.model.Mapping;
@@ -40,6 +41,7 @@ public class GenerateVocabularyWizard extends Wizard {
 	public void addPages() {
 		addPage(autoMappingPage = new AutoMappingPage());
 		addPage(matchMakerPage = new MatchMakerPage());
+		getShell().setSize(500,650);
 	}
 
 	AutoMappingPage getAutoMappingPropertiesPage() {
