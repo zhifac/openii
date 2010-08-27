@@ -10,7 +10,7 @@ public class RepositoryAction extends Action
 	// Constants defining the various Manager action types available
 	static final int ADD_REPOSITORY = 0;
 	static final int EDIT_REPOSITORY = 1;
-	static final int REMOVE_REPOSITORY = 2;
+	static final int DISCONNECT_REPOSITORY = 2;
 	static final int COMPRESS_REPOSITORY = 3;
 	
 	/** Stores the menu manager to which this action is tied */
@@ -33,7 +33,7 @@ public class RepositoryAction extends Action
 		{
 			case ADD_REPOSITORY: icon = "Repository.gif"; break;
 			case EDIT_REPOSITORY: icon = "Edit.gif"; break;
-			case REMOVE_REPOSITORY: icon = "Delete.gif"; break;
+			case DISCONNECT_REPOSITORY: icon = "Delete.gif"; break;
 			case COMPRESS_REPOSITORY: icon = "Compress.gif"; break;
 		}		
 		setImageDescriptor(OpenIIActivator.getImageDescriptor("icons/"+icon));
@@ -53,9 +53,9 @@ public class RepositoryAction extends Action
 		if(actionType == EDIT_REPOSITORY)
 			new EditRepositoryDialog(shell,menuManager.getRepository()).open();
 		
-		/** Handles the deleting of a repository */
-		if(actionType == REMOVE_REPOSITORY)
-			DeleteRepositoryDialog.delete(shell,menuManager.getRepository());
+		/** Handles the disconnecting of a repository */
+		if(actionType == DISCONNECT_REPOSITORY)
+			DisconnectRepositoryDialog.disconnect(shell,menuManager.getRepository());
 		
 		/** Handles the compressing of a repository */
 		if(actionType == COMPRESS_REPOSITORY)
