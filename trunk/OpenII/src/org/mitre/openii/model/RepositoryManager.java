@@ -146,8 +146,8 @@ public class RepositoryManager
 			listener.repositoryAdded(repository);
 	}
 	
-	/** Deletes the specified repository */
-	public static void deleteRepository(Repository repository)
+	/** Disconnects the specified repository */
+	public static void disconnectRepository(Repository repository)
 	{
 		repositories.remove(repository);
 		saveRepositories();
