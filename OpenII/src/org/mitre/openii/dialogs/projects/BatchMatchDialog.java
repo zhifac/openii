@@ -97,6 +97,7 @@ public class BatchMatchDialog extends Dialog implements ModifyListener, Selectio
 
 	public BatchMatchDialog(Shell shell, Project project) {
 		super(shell);
+		setShellStyle( SWT.RESIZE);
 		this.project = project;
 	}
 
@@ -125,8 +126,8 @@ public class BatchMatchDialog extends Dialog implements ModifyListener, Selectio
 		pane.setLayout(layout);
 		
 		// Define the pane width
-		GridData gridData = new GridData(GridData.FILL_HORIZONTAL); 
-		gridData.widthHint = 400; 
+		GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
+		gridData.widthHint = 450; 
 		pane.setLayoutData(gridData);
 
 		// Generate the pane components
@@ -143,7 +144,6 @@ public class BatchMatchDialog extends Dialog implements ModifyListener, Selectio
 		pane.setText("General Info");
 		pane.setLayout(new GridLayout(2, false));
 		GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
-		gridData.widthHint = 400;
 		pane.setLayoutData(gridData);
 
 		// Generate the properties to be displayed by the info pane
