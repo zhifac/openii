@@ -41,7 +41,7 @@ public class GenerateVocabularyWizard extends Wizard {
 	public void addPages() {
 		addPage(autoMappingPage = new AutoMappingPage());
 		addPage(matchMakerPage = new MatchMakerPage());
-		getShell().setSize(500,650);
+		getShell().setSize(500, 650);
 	}
 
 	AutoMappingPage getAutoMappingPropertiesPage() {
@@ -54,34 +54,33 @@ public class GenerateVocabularyWizard extends Wizard {
 
 	/** Indicates if the import process can be finished */
 	public boolean canFinish() {
-		return (autoMappingPage.isPageComplete() && matchMakerPage
-				.isPageComplete());
+		return (autoMappingPage.isPageComplete() && matchMakerPage.isPageComplete());
 	}
 
 	/** Imports the mapping once the wizard is complete */
 	public boolean performFinish() {
 		try {
-			// This is a temporary constructor that also includes running the mappings
+			// This is a temporary constructor that also includes running the
+			// mappings
 			new MappingProcessor(project, autoMappingPage.getNewMappings(), autoMappingPage.getMatchers());
-			
-			ArrayList<Mapping> mappings = new ArrayList<Mapping>(); 
+
+			ArrayList<Mapping> mappings = new ArrayList<Mapping>();
 			// construct the list of mappings selected
-			for (Pair<ProjectSchema> pair : autoMappingPage.getSelectedMappings() ) {
-				for ( Mapping m : OpenIIManager.getMappings(project.getId()) ) {
-					if ( pair.getItem1().getId().equals(m.getSourceId()) && pair.getItem2().getId().equals(m.getTargetId()) || 
-							pair.getItem2().getId().equals(m.getTargetId()) && pair.getItem1().getId().equals(m.getSourceId()) ) 
-						mappings.add(m); 
+			for (Pair<ProjectSchema> pair : autoMappingPage.getSelectedMappings()) {
+				for (Mapping m : OpenIIManager.getMappings(project.getId())) {
+					if (pair.getItem1().getId().equals(m.getSourceId()) && pair.getItem2().getId().equals(m.getTargetId()) || pair.getItem2().getId().equals(m.getTargetId()) && pair.getItem1().getId().equals(m.getSourceId()))
+						mappings.add(m);
 				}
 			}
-			
+
 			// Create synsets
-			Unity unity = new Unity(project);
-			unity.DSFUnify( mappings );
+			UnityHC unity = new UnityHC(project);
+			unity.unify(mappings);
 
 			// export the vocabulary
 			String exportPath = matchMakerPage.getVocabExportFilePath();
 			if (exportPath.length() > 0)
-				unity.exportVocabulary( new File(exportPath));
+				unity.exportVocabulary(new File(exportPath));
 			return true;
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
