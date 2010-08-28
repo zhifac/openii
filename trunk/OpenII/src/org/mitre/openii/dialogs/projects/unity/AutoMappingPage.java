@@ -23,8 +23,7 @@ import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.Project;
 import org.mitre.schemastore.model.ProjectSchema;
 
-class AutoMappingPage extends WizardPage implements ModifyListener, SelectionListener
-{
+class AutoMappingPage extends WizardPage implements ModifyListener, SelectionListener {
 	private Text authorField = null;
 	private Text descriptionField = null;
 	private MatchersPane matchersPane = null;
@@ -33,16 +32,14 @@ class AutoMappingPage extends WizardPage implements ModifyListener, SelectionLis
 	private HashMap<String, Pair<ProjectSchema>> mappingHash = new HashMap<String, Pair<ProjectSchema>>();
 
 	/** Constructs the auto-mapping pane */
-	public AutoMappingPage()
-	{
+	public AutoMappingPage() {
 		super("AutoMappingPage");
 		setTitle("Auto Mapping");
 		setDescription("Ensure that all pair-wise mappings exists for all of the schemas in selected project.");
 	}
-	
+
 	/** Constructs the Mapping Properties page */
-	public void createControl(Composite parent)
-	{
+	public void createControl(Composite parent) {
 		// Construct the main pane
 		Composite pane = new Composite(parent, SWT.NONE);
 		pane.setLayout(new GridLayout(1, false));
@@ -63,8 +60,7 @@ class AutoMappingPage extends WizardPage implements ModifyListener, SelectionLis
 	}
 
 	/** Creates the importer info pane */
-	private void createInfoPane(Composite parent)
-	{
+	private void createInfoPane(Composite parent) {
 		// Construct the pane for showing the info for the selected importer
 		Group group = new Group(parent, SWT.NONE);
 		group.setText("Properties");
@@ -79,27 +75,23 @@ class AutoMappingPage extends WizardPage implements ModifyListener, SelectionLis
 		authorField.addModifyListener(this);
 		descriptionField.addModifyListener(this);
 	}
-	
+
 	/**
-	 * Not all of the mappings exists in the project yet. This display should list the
-	 * mappings that already exist and the ones that will be automatically generated.
+	 * Not all of the mappings exists in the project yet. This display should
+	 * list the mappings that already exist and the ones that will be
+	 * automatically generated.
 	 */
-	private void createMappingList(Composite parent)
-	{
-		Project project = ((GenerateVocabularyWizard) this.getWizard())
-				.getProject();
-		HashMap<Integer, ProjectSchema> schemas = ((GenerateVocabularyWizard) this
-				.getWizard()).getSchemas();
-		Permuter<ProjectSchema> permuter = new Permuter<ProjectSchema>(
-				new ArrayList<ProjectSchema>(schemas.values()));
+	private void createMappingList(Composite parent) {
+		Project project = ((GenerateVocabularyWizard) this.getWizard()).getProject();
+		HashMap<Integer, ProjectSchema> schemas = ((GenerateVocabularyWizard) this.getWizard()).getSchemas();
+		Permuter<ProjectSchema> permuter = new Permuter<ProjectSchema>(new ArrayList<ProjectSchema>(schemas.values()));
 
 		// Display existing schemas
 		Group projectSchemaGroup = new Group(parent, SWT.NONE);
 		projectSchemaGroup.setText("Project Schemas");
 		projectSchemaGroup.setLayout(new GridLayout(1, false));
 		for (ProjectSchema schema : schemas.values())
-			BasicWidgets.createText(projectSchemaGroup, null).setText(
-					schema.getName());
+			BasicWidgets.createText(projectSchemaGroup, null).setText(schema.getName());
 
 		// Generate a group for existing mappings
 		for (Mapping mapping : OpenIIManager.getMappings(project.getId())) {
@@ -108,8 +100,7 @@ class AutoMappingPage extends WizardPage implements ModifyListener, SelectionLis
 			if (schema1 == null || schema2 == null)
 				continue;
 
-			Pair<ProjectSchema> exclude = new Pair<ProjectSchema>(schema1,
-					schema2);
+			Pair<ProjectSchema> exclude = new Pair<ProjectSchema>(schema1, schema2);
 
 			existingMappingList.add(exclude);
 		}
@@ -120,15 +111,11 @@ class AutoMappingPage extends WizardPage implements ModifyListener, SelectionLis
 		existGroup.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
 		if (existingMappingList.size() == 0)
-			new Text(existGroup, SWT.ITALIC)
-					.setText("No mappings have been created for the project");
+			new Text(existGroup, SWT.ITALIC).setText("No mappings have been created for the project");
 		else
 			for (Pair<ProjectSchema> exclude : existingMappingList) {
 				Button mapped = new Button(existGroup, SWT.CHECK);
-				String pairName = ((ProjectSchema) exclude.getItem1())
-						.getName()
-						+ " to "
-						+ ((ProjectSchema) exclude.getItem2()).getName();
+				String pairName = ((ProjectSchema) exclude.getItem1()).getName() + " to " + ((ProjectSchema) exclude.getItem2()).getName();
 				mapped.setText(pairName);
 				mapped.setSelection(true);
 				mapped.setEnabled(true);
@@ -138,18 +125,15 @@ class AutoMappingPage extends WizardPage implements ModifyListener, SelectionLis
 					public void widgetSelected(SelectionEvent sevent) {
 						Button mappingButton = (Button) sevent.widget;
 						if (mappingButton.getSelection()) {
-							existingMappingList.add(mappingHash
-									.get(mappingButton.getText()));
+							existingMappingList.add(mappingHash.get(mappingButton.getText()));
 						} else
-							existingMappingList.remove(mappingHash
-									.get(mappingButton.getText()));
+							existingMappingList.remove(mappingHash.get(mappingButton.getText()));
 
 						updatePageCompleteStatus();
 					}
 
 					public void widgetDefaultSelected(SelectionEvent arg0) {
 						// TODO Auto-generated method stub
-
 					}
 				});
 			}
@@ -167,8 +151,7 @@ class AutoMappingPage extends WizardPage implements ModifyListener, SelectionLis
 				newMappingList.add(pair);
 
 				Button unmapped = new Button(newGroup, SWT.CHECK);
-				String pairName = ((ProjectSchema) pair.getItem1()).getName()
-						+ " to " + ((ProjectSchema) pair.getItem2()).getName();
+				String pairName = ((ProjectSchema) pair.getItem1()).getName() + " to " + ((ProjectSchema) pair.getItem2()).getName();
 				unmapped.setText(pairName);
 				unmapped.setEnabled(true);
 				unmapped.setSelection(true);
@@ -178,11 +161,9 @@ class AutoMappingPage extends WizardPage implements ModifyListener, SelectionLis
 					public void widgetSelected(SelectionEvent sevent) {
 						Button mappingButton = (Button) sevent.widget;
 						if (mappingButton.getSelection()) {
-							newMappingList.add(mappingHash.get(mappingButton
-									.getText()));
+							newMappingList.add(mappingHash.get(mappingButton.getText()));
 						} else
-							newMappingList.remove(mappingHash.get(mappingButton
-									.getText()));
+							newMappingList.remove(mappingHash.get(mappingButton.getText()));
 
 						updatePageCompleteStatus();
 					}
@@ -192,8 +173,7 @@ class AutoMappingPage extends WizardPage implements ModifyListener, SelectionLis
 				});
 			}
 		} else
-			new Text(newGroup, SWT.ITALIC)
-					.setText("No new mappings will be added.");
+			new Text(newGroup, SWT.ITALIC).setText("No new mappings will be added.");
 	}
 
 	ArrayList<Pair<ProjectSchema>> getNewMappings() {
@@ -202,38 +182,43 @@ class AutoMappingPage extends WizardPage implements ModifyListener, SelectionLis
 
 	ArrayList<Pair<ProjectSchema>> getSelectedMappings() {
 		ArrayList<Pair<ProjectSchema>> result = new ArrayList<Pair<ProjectSchema>>();
-		result.addAll(existingMappingList); 
+		result.addAll(existingMappingList);
 		result.addAll(newMappingList);
 		return result;
 	}
 
 	/** Returns the mapping author */
-	String getAuthor()
-		{ return authorField.getText(); }
+	String getAuthor() {
+		return authorField.getText();
+	}
 
 	/** Returns the mapping description */
-	String getMappingDescription()
-		{ return descriptionField.getText(); }
-	
+	String getMappingDescription() {
+		return descriptionField.getText();
+	}
+
 	/** Returns the selected matchers */
-	ArrayList<Matcher> getMatchers()
-		{ return matchersPane.getMatchers(); }
-	 
+	ArrayList<Matcher> getMatchers() {
+		return matchersPane.getMatchers();
+	}
+
 	/** Rechecks if the page is complete when text is modified */
-	public void modifyText(ModifyEvent event)
-		{ updatePageCompleteStatus(); }
+	public void modifyText(ModifyEvent event) {
+		updatePageCompleteStatus();
+	}
 
 	/** Rechecks if the page is complete when matchers are selected */
-	public void widgetSelected(SelectionEvent arg0)
-		{ updatePageCompleteStatus(); }
+	public void widgetSelected(SelectionEvent arg0) {
+		updatePageCompleteStatus();
+	}
 
 	/** Updates the page complete status */
-	private void updatePageCompleteStatus()
-	{
-		boolean notComplete = newMappingList.size()>0 && matchersPane.getMatchers().size()==0;
-		setPageComplete(!notComplete && getSelectedMappings().size()>0);
+	private void updatePageCompleteStatus() {
+		boolean notComplete = newMappingList.size() > 0 && matchersPane.getMatchers().size() == 0;
+		setPageComplete(!notComplete && getSelectedMappings().size() > 0);
 	}
 
 	// Unused event listener
-	public void widgetDefaultSelected(SelectionEvent arg0) {}
+	public void widgetDefaultSelected(SelectionEvent arg0) {
+	}
 }

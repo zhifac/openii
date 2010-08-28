@@ -16,7 +16,6 @@ import java.util.ArrayList;
  */
 public class Synset implements Comparable<Synset> {
 	public ArrayList<SynsetTerm> terms;
-
 	public SynsetTerm leastNode = null;
 
 	public Synset() {
@@ -66,30 +65,7 @@ public class Synset implements Comparable<Synset> {
 		return maxDist;
 	}
 
-	// Returns minimum distance between two synsets
-	public float simpleLinkage(Synset two) {
-		int i, j;
-		float minDist = 1;
-		for (i = 0; i < this.terms.size(); i++) {
-			SynsetTerm t_node = this.terms.get(i);
-			for (j = 0; j < two.terms.size(); j++) {
-				SynsetTerm s_node = two.terms.get(j);
-				int m = t_node.pointers.indexOf(s_node);
-				if (m == -1)
-					return 0;
-				float st_dist = t_node.distances.get(m).floatValue();
-				if (minDist > st_dist)
-					minDist = st_dist;
-			}
-		}
-		return minDist;
-	}
-
-	public void combineSynsets(Synset two) {
-		terms.ensureCapacity(terms.size() + two.terms.size());
-		terms.addAll(two.terms);
-		updateLeastNode(two.leastNode);
-	}
+	
 
 	public ArrayList<SynsetTerm> getGroup() {
 		return terms;
@@ -110,6 +86,25 @@ public class Synset implements Comparable<Synset> {
 			if (n.schemaId == baseSchema)
 				return n;
 		return null;
+	}
+
+	/**
+	 * Make a deep copy of the synset from the schemastore exporter synset to
+	 * the current one. This is a very temporary fix until we are done comparing
+	 * old unity using hierarchical clustering vs disjoint set forest
+	 * 
+	 * @param oldSynset
+	 * @return
+	 */
+	static public Synset copy(org.mitre.schemastore.porters.projectExporters.matchmaker.Synset oldSynset) {
+		Synset newSynset = new Synset();
+		for (org.mitre.schemastore.porters.projectExporters.matchmaker.SynsetTerm oldTerm : oldSynset.terms) {
+			SynsetTerm newTerm = new SynsetTerm(oldTerm.schemaId, oldTerm.elementId, oldTerm.elementName);
+			newSynset.add(newTerm);
+			if (oldTerm.equals(oldSynset.leastNode))
+				newSynset.leastNode = newTerm;
+		}
+		return newSynset;
 	}
 
 }

@@ -23,13 +23,9 @@ import org.mitre.schemastore.model.Term;
 import org.mitre.schemastore.model.Vocabulary;
 import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
 import org.mitre.schemastore.model.schemaInfo.model.SchemaModel;
-import org.mitre.schemastore.porters.projectExporters.MatchMakerExporter;
-import org.mitre.schemastore.porters.projectExporters.matchmaker.ClusterNode;
-import org.mitre.schemastore.porters.projectExporters.matchmaker.Synset;
-import org.mitre.schemastore.porters.projectExporters.matchmaker.SynsetTerm;
 import org.mitre.schemastore.porters.vocabularyExporters.CompleteVocabExporter;
 
-public class Unity {
+public class UnityDSF {
 
 	private Project project;
 	private Vocabulary vocabulary;
@@ -37,32 +33,12 @@ public class Unity {
 
 	// private ArrayList<Synset> synsetList = null;
 
-	public Unity(Project project) {
+	public UnityDSF(Project project) {
 		this.project = project;
 		this.vocabulary = OpenIIManager.getVocabulary(project.getId());
 	}
 
 	public Vocabulary getVocabulary() {
-		return vocabulary;
-	}
-
-	/**
-	 * Uses hierarchical clustering algorithm as provided by MatchMakerExporter
-	 * to cluster NxN mappings into synsets (or clusters). Give each synset a
-	 * connonical term and creates a vocabulary
-	 * 
-	 * @param inputMappings
-	 * @return vocabulary object
-	 * @throws RemoteException
-	 */
-	public Vocabulary unify(ArrayList<Mapping> inputMappings) throws RemoteException {
-		// Generate synsets
-		ArrayList<Synset> synsetList = generateSynsets(project, inputMappings);
-		// Generate vocabulary terms
-		vocabulary = new Vocabulary(project.getId(), generateVocabTerms(synsetList));
-
-		// save new vocab
-		OpenIIManager.saveVocabulary(vocabulary);
 		return vocabulary;
 	}
 
@@ -75,7 +51,7 @@ public class Unity {
 	public Vocabulary DSFUnify(ArrayList<Mapping> inputMappings) {
 		long start = System.currentTimeMillis();
 
-		// Find participating schemas the mappings
+		// Find participating schemas from the mappings
 		final HashSet<Integer> schemaIDs = new HashSet<Integer>();
 		final HashMap<Mapping, ArrayList<MappingCell>> mappingCellHash = new HashMap<Mapping, ArrayList<MappingCell>>();
 		for (Mapping m : inputMappings) {
@@ -148,25 +124,18 @@ public class Unity {
 				termSet.add(term);
 		}
 
-		// Normalize synsets for NxN mappings, ie synsets with N>1 elements from
-		// one schema
-//		ArrayList<Synset> synsetList = new ArrayList<Synset>();
-//		for (Synset synset : synsets.values())
-//			synsetList.addAll(normalizeSet(synset));
-
 		long endDSF = System.currentTimeMillis();
+		System.out.println("DSF time " + (endDSF - start) / new Double(1000) / new Double(60) + " minutes");
+		
 		// Generate connonical terms for each synset
 		vocabulary = new Vocabulary(project.getId(), generateVocabTerms(new ArrayList<Synset>(synsets.values())));
-
 		// Use the following line if normalization is used. 
-		//		vocabulary = new Vocabulary(project.getId(), generateVocabTerms(synsetList));
+		//	vocabulary = new Vocabulary(project.getId(), generateVocabTerms(synsetList));
 		
 		// Save new vocab
 		OpenIIManager.saveVocabulary(vocabulary);
-
+		
 		long afterSave = System.currentTimeMillis();
-
-		System.out.println("DSF time " + (endDSF - start) / new Double(1000) / new Double(60) + " minutes");
 		System.out.println("Save time " + (afterSave - endDSF) / new Double(1000) / new Double(60) + " minutes ");
 		return vocabulary;
 	}
@@ -231,15 +200,6 @@ public class Unity {
 		return result;
 	}
 
-	void printVocab() {
-		for (Term t : vocabulary.getTerms()) {
-			System.out.print(t.getName() + ", ");
-			for (AssociatedElement e : t.getElements())
-				System.out.print(e.getSchemaID() + "-" + e.getElementID() + ", ");
-			System.out.println();
-		}
-	}
-
 	private Term[] generateVocabTerms(ArrayList<Synset> list) {
 		Term[] termArray = new Term[list.size()];
 
@@ -270,27 +230,6 @@ public class Unity {
 
 	public void setAuthoritativeSchemaId(Integer id) {
 		authoritySchemaId = id;
-	}
-
-	/**
-	 * Generate synsets from all matches by using MatchMaker's cluster
-	 * (Implemented as part of the MatchMakerExporter
-	 * 
-	 * @throws RemoteException
-	 **/
-	public static ArrayList<org.mitre.schemastore.porters.projectExporters.matchmaker.Synset> generateSynsets(Project project, ArrayList<Mapping> inputMappings) throws RemoteException {
-		HashMap<Mapping, ArrayList<MappingCell>> mappingCellHash = new HashMap<Mapping, ArrayList<MappingCell>>();
-		for (Mapping mapping : inputMappings)
-			mappingCellHash.put(mapping, OpenIIManager.getMappingCells(mapping.getId()));
-
-		MatchMakerExporter matchMaker = new MatchMakerExporter();
-		matchMaker.setClient(RepositoryManager.getClient());
-		matchMaker.initialize(project, mappingCellHash);
-
-		System.out.println(" Cluster all matches...");
-		ClusterNode cluster = matchMaker.cluster();
-		System.out.println(" Cluster complete ");
-		return cluster.synsets;
 	}
 
 	/** generates a canonical term from the synset **/
@@ -327,6 +266,6 @@ public class Unity {
 	}
 
 	public void exportVocabulary(File file) throws IOException {
-		Unity.exportVocabulary(this.vocabulary, file);
+		UnityDSF.exportVocabulary(this.vocabulary, file);
 	}
 }
