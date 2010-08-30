@@ -30,7 +30,7 @@ public class SchemaElementLabelProvider extends StyledCellLabelProvider
 		{ this.schemaView = schemaView; }
 
 	/** Returns the image associated with the specified element */
-	public Image getImage(Object element)
+	public static Image getImage(Object element)
 	{
 		String imageName = "";
 		if(element instanceof Schema) imageName = "Schema.gif";
