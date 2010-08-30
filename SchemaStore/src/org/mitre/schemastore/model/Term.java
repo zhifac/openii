@@ -62,9 +62,6 @@ public class Term implements Serializable
 	public void addAssociatedElement(AssociatedElement newElement)
 	{
 		ArrayList<AssociatedElement> elements = new ArrayList<AssociatedElement>(Arrays.asList(this.elements));
-		for(AssociatedElement element : elements)
-			if(element.getSchemaID().equals(newElement.getSchemaID()))
-				elements.remove(element);
 		elements.add(newElement);	
 		this.elements = elements.toArray(new AssociatedElement[0]);
 	}
