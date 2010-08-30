@@ -18,7 +18,7 @@ public class BasicWidgets
 	/** Creates the specified label */
 	static public Label createLabel(Composite parent, String text)
 	{
-		Label label = new Label(parent, SWT.NONE);
+		Label label = new Label(parent, SWT.RIGHT);
 		label.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));
 		label.setText(text+": ");
 		return label;
