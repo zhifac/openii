@@ -50,40 +50,6 @@ public class BatchMatchDialog extends Dialog implements ModifyListener, Selectio
 
 	private static final long serialVersionUID = 5519403988358398471L;
 
-	/**
-	 * Given a set of mappings and schemas in a project, figure out the
-	 * connectedness, or minimum spanning tree in the mappings
-	 * 
-	 * @param project
-	 * @return HashMap<Integer, ArrayList<Integer>> The key is some root id
-	 *         which is arbitrary and doesn't matter much. The array that
-	 *         follows indicates the group of schema IDs that are connected to
-	 *         each other at least with one linkage.
-	 */
-	public static HashMap<Integer, ArrayList<Integer>> getMappingMST(Project project) {
-		HashMap<Integer, ArrayList<Integer>> schemaGroups = new HashMap<Integer, ArrayList<Integer>>();
-		Integer[] schemas = project.getSchemaIDs();
-		ContainerMethod<Integer> method = new ContainerMethod<Integer>() {
-			public int getContainerFor(Integer v) {
-				return v;
-			}
-		};
-
-		DisjointSetForest<Integer> dsf = new DisjointSetForest<Integer>(schemas, method, schemas.length);
-		for (Mapping mapping : OpenIIManager.getMappings(project.getId())) {
-			dsf.merge(mapping.getSourceId(), mapping.getTargetId(), false);
-		}
-
-		for (Integer schemaId : schemas) {
-			Integer root = new Integer(dsf.find(schemaId));
-			if (!schemaGroups.containsKey(root))
-				schemaGroups.put(root, new ArrayList<Integer>());
-			schemaGroups.get(root).add(schemaId);
-		}
-
-		return schemaGroups;
-	}
-
 	private Project project;
 	private MatchersPane matchersPane;
 	private Text authorField;
@@ -240,7 +206,7 @@ public class BatchMatchDialog extends Dialog implements ModifyListener, Selectio
 	 *         follows indicates the group of schema IDs that are connected to
 	 *         each other at least with one linkage.
 	 */
-	HashMap<Integer, ArrayList<Integer>> getMappingMST(Integer[] schemas, ArrayList<Pair<ProjectSchema>> merges) {
+	HashMap<Integer, ArrayList<Integer>> getMappingMST(Integer[] schemas, ArrayList<Pair<ProjectSchema>> mapped) {
 		HashMap<Integer, ArrayList<Integer>> schemaGroups = new HashMap<Integer, ArrayList<Integer>>();
 		ContainerMethod<Integer> method = new ContainerMethod<Integer>() {
 			public int getContainerFor(Integer v) {
@@ -249,7 +215,7 @@ public class BatchMatchDialog extends Dialog implements ModifyListener, Selectio
 		};
 
 		DisjointSetForest<Integer> dsf = new DisjointSetForest<Integer>(schemas, method, schemas.length);
-		for (Pair<ProjectSchema> mapping : merges)
+		for (Pair<ProjectSchema> mapping : mapped)
 			dsf.merge(mapping.getItem1().getId(), mapping.getItem2().getId(), false);
 
 		for (Integer schemaId : schemas) {
@@ -260,7 +226,6 @@ public class BatchMatchDialog extends Dialog implements ModifyListener, Selectio
 		}
 
 		return schemaGroups;
-
 	}
 
 	/** Returns the selected matchers */
