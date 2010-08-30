@@ -17,6 +17,7 @@ import org.mitre.openii.dialogs.projects.ExportProjectDialog;
 import org.mitre.openii.dialogs.projects.MergeProjectsDialog;
 import org.mitre.openii.dialogs.projects.ReplaceSchemaDialog;
 import org.mitre.openii.dialogs.projects.importer.ImportProjectDialog;
+import org.mitre.openii.dialogs.projects.unity.GenerateVocabularyDialog;
 import org.mitre.openii.dialogs.projects.unity.GenerateVocabularyWizard;
 import org.mitre.openii.dialogs.schemas.CreateDataSourceDialog;
 import org.mitre.openii.dialogs.schemas.DeleteDataSourceDialog;
@@ -45,7 +46,7 @@ import org.mitre.schemastore.model.Tag;
 public class ManagerAction extends Action {
 	// Constants defining the various Manager action types available
 	static enum ActionType {
-		IMPORT_SCHEMA, EDIT_SCHEMA, EXTEND_SCHEMA, EXPORT_SCHEMA, DELETE_SCHEMA, CREATE_DATA_SOURCE, DELETE_DATA_SOURCE, NEW_TAG, EDIT_TAG, DELETE_TAG, KEYWORD_SEARCH, CREATE_PROJECT_FROM_TAG, EXPORT_SCHEMAS_BY_TAG, DELETE_TAG_SCHEMA, NEW_PROJECT, IMPORT_PROJECT, MERGE_PROJECTS, EDIT_PROJECT, EXPORT_PROJECT, DELETE_PROJECT, DELETE_PROJECT_SCHEMA, IMPORT_MAPPING, REPLACE_SCHEMA, AUTO_GENERATE_MATCHES, EXPORT_MAPPING, DELETE_MAPPING, GENERATE_VOCABULARY, DELETE_VOCABULARY, EXPORT_VOCABULARY, BATCH_MATCH
+		IMPORT_SCHEMA, EDIT_SCHEMA, EXTEND_SCHEMA, EXPORT_SCHEMA, DELETE_SCHEMA, CREATE_DATA_SOURCE, DELETE_DATA_SOURCE, NEW_TAG, EDIT_TAG, DELETE_TAG, KEYWORD_SEARCH, CREATE_PROJECT_FROM_TAG, EXPORT_SCHEMAS_BY_TAG, DELETE_TAG_SCHEMA, NEW_PROJECT, IMPORT_PROJECT, MERGE_PROJECTS, EDIT_PROJECT, EXPORT_PROJECT, DELETE_PROJECT, DELETE_PROJECT_SCHEMA, IMPORT_MAPPING, REPLACE_SCHEMA, AUTO_GENERATE_MATCHES, EXPORT_MAPPING, DELETE_MAPPING, GENERATE_VOCABULARY_WIZARD, GENERATE_VOCABULARY, DELETE_VOCABULARY, EXPORT_VOCABULARY, BATCH_MATCH
 	};
 
 	/** Stores the menu manager to which this action is tied */
@@ -149,8 +150,11 @@ public class ManagerAction extends Action {
 		case EXPORT_VOCABULARY:
 			icon = "Export.gif";
 			break;
-		case GENERATE_VOCABULARY:
+		case GENERATE_VOCABULARY_WIZARD:
 			icon = "GenerateVocab.gif";
+			break;
+		case GENERATE_VOCABULARY:
+			icon = "GenerateVocab.gif"; 
 			break;
 		case BATCH_MATCH:
 			icon = "BatchMatch.gif";
@@ -289,12 +293,15 @@ public class ManagerAction extends Action {
 			new ImportMappingDialog(shell, (Project) selection).open();
 
 		/** Handles the auto-generation of a mapping's matches */
-		if (actionType == ActionType.GENERATE_VOCABULARY)
+		if (actionType == ActionType.GENERATE_VOCABULARY_WIZARD)
 			new WizardDialog(shell, new GenerateVocabularyWizard(
 					(Project) selection)).open();
 
 		if (actionType == ActionType.BATCH_MATCH)
 			new BatchMatchDialog(shell, (Project) selection).open();
+		
+		if (actionType == ActionType.GENERATE_VOCABULARY )
+			new GenerateVocabularyDialog(shell, (Project)selection).open(); 
 
 		/** Handles the deletion of a project's vocabulary */
 		if (actionType == ActionType.DELETE_VOCABULARY)

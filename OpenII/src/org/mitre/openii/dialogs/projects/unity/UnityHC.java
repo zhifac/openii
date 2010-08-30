@@ -57,12 +57,7 @@ public class UnityHC {
 		
 		// Generate vocabulary terms
 		vocabulary = new Vocabulary(project.getId(), generateVocabTerms(synsetList));
-
-		// save new vocab
-		OpenIIManager.saveVocabulary(vocabulary);
 		
-		long afterSave = System.currentTimeMillis();
-		System.out.println("Save time " + (afterSave - endUnify) / new Double(1000) / new Double(60) + " minutes ");
 		return vocabulary;
 	}
 

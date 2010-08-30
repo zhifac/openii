@@ -4,12 +4,12 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.Wizard;
 import org.mitre.openii.model.OpenIIManager;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.Project;
 import org.mitre.schemastore.model.ProjectSchema;
+import org.mitre.schemastore.model.Vocabulary;
 
 public class GenerateVocabularyWizard extends Wizard {
 
@@ -75,8 +75,9 @@ public class GenerateVocabularyWizard extends Wizard {
 
 			// Create synsets
 			UnityHC unity = new UnityHC(project);
-			unity.unify(mappings);
-
+			Vocabulary vocab = unity.unify(mappings);
+			OpenIIManager.saveVocabulary(vocab); 
+			
 			// export the vocabulary
 			String exportPath = matchMakerPage.getVocabExportFilePath();
 			if (exportPath.length() > 0)

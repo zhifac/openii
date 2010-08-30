@@ -48,7 +48,7 @@ public class UnityDSF {
 	 * @param inputMappings
 	 * @return
 	 */
-	public Vocabulary DSFUnify(ArrayList<Mapping> inputMappings) {
+	public Vocabulary unify(ArrayList<Mapping> inputMappings) {
 		long start = System.currentTimeMillis();
 
 		// Find participating schemas from the mappings
@@ -129,14 +129,10 @@ public class UnityDSF {
 		
 		// Generate connonical terms for each synset
 		vocabulary = new Vocabulary(project.getId(), generateVocabTerms(new ArrayList<Synset>(synsets.values())));
+		
 		// Use the following line if normalization is used. 
 		//	vocabulary = new Vocabulary(project.getId(), generateVocabTerms(synsetList));
 		
-		// Save new vocab
-		OpenIIManager.saveVocabulary(vocabulary);
-		
-		long afterSave = System.currentTimeMillis();
-		System.out.println("Save time " + (afterSave - endDSF) / new Double(1000) / new Double(60) + " minutes ");
 		return vocabulary;
 	}
 
