@@ -107,7 +107,7 @@ public class SearchView extends EditorPart implements SelectionListener
 		private void displayMatches(Composite parent, SchemaInfo schema, RepositorySearchResult result)
 		{
 			// Construct the scroll pane
-			ScrolledComposite scrollPane = new ScrolledComposite(parent, SWT.V_SCROLL);
+			ScrolledComposite scrollPane = new ScrolledComposite(parent, SWT.H_SCROLL | SWT.V_SCROLL);
 			scrollPane.setExpandHorizontal(true);
 			scrollPane.setExpandVertical(true);
 			scrollPane.setLayoutData(new GridData(GridData.FILL_BOTH));
@@ -143,7 +143,7 @@ public class SearchView extends EditorPart implements SelectionListener
 
 		/** Launches the schema pane (with keyword search) */
 		public void mouseDoubleClick(MouseEvent e)
-			{ SchemaView.launchEditor(OpenIIManager.getSchema(schemaID),"\\b"+getKeyword()+"\\b"); }
+			{ SchemaView.launchEditor(OpenIIManager.getSchema(schemaID),"\\b" + getKeyword().replaceAll("\\*",".*") + "\\b"); }
 		
 		// Unused event listeners
 		public void mouseDown(MouseEvent e) {}
