@@ -58,10 +58,12 @@ public class VocabViewCanvas extends Canvas {
 	private HashMap<Integer, Integer> schemaIDsToColNum;
 	private ArrayList<Term> termsArray; 	
 	private Table table;
+	private Vocabulary vocab;
 	
 	public VocabViewCanvas(Composite parent, int style, Vocabulary vocabulary) {		
 		super(parent, style | SWT.EMBEDDED);
 
+		vocab = vocabulary;
 		schemaIDs = vocabulary.getSchemaIDs();
 		setSchemaNames(schemaIDs);
 		numSchemas = schemaNames.length;
@@ -253,8 +255,8 @@ public class VocabViewCanvas extends Canvas {
 								changedTerm.setName(newName);
 								table.getItem(table.getSelectionIndex()).setText(0, newName);
 								
-								//does someTerm.setName("newCanonicalName"); save it to the database?
-
+								OpenIIManager.saveVocabulary(vocab);
+								
 								text.dispose();
 								editor.dispose();
 							}
@@ -273,9 +275,11 @@ public class VocabViewCanvas extends Canvas {
 									//changing the synset name to the new name in the view
 									Term changedTerm = termsArray.get(table.getSelectionIndex());
 									changedTerm.setName(newName);
+									
+									//OpenIIManager.
 									table.getItem(table.getSelectionIndex()).setText(0, newName);
 									
-									//does someTerm.setName("newCanonicalName"); save it to the database?
+									OpenIIManager.saveVocabulary(vocab);
 
 									text.dispose();
 									editor.dispose();
