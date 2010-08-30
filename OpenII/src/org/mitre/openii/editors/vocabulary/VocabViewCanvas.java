@@ -46,6 +46,7 @@ import org.eclipse.swt.widgets.Text;
 import org.mitre.openii.application.OpenIIActivator;
 import org.mitre.openii.model.OpenIIManager;
 import org.mitre.schemastore.model.AssociatedElement;
+import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.Term;
 import org.mitre.schemastore.model.Vocabulary;
 import org.mitre.schemastore.model.schemaInfo.SchemaInfo;
@@ -166,11 +167,9 @@ public class VocabViewCanvas extends Canvas {
 		TableItem tempI;
 		for(int i=0; i<termsArray.size(); i++){
 			tempI = new TableItem(table, SWT.NONE);
-
 			
 			tempI.setText(0, termsArray.get(i).getName());
-			
-						
+									
 			AssociatedElement[] elements = termsArray.get(i).getElements();
 			for(int j=0; j<elements.length; j++) {
 			/*for(int j=0; j<elements.length+1; j++) {
@@ -190,7 +189,8 @@ public class VocabViewCanvas extends Canvas {
 					Integer schemaID = elements[j].getSchemaID();
 					SchemaInfo si = OpenIIManager.getSchemaInfo(schemaID);
 					Integer eleID = elements[j].getElementID();
-					String className = si.getElement(eleID).getClass().toString();					
+					SchemaElement schemaEle = si.getElement(eleID);
+					//String className = schemaEle.getClass().toString();					
 					
 					int colNum = schemaIDsToColNum.get(elements[j].getSchemaID());
 					String current = tempI.getText(colNum);
@@ -200,7 +200,8 @@ public class VocabViewCanvas extends Canvas {
 						tempI.setText(colNum, current + ", " + ele.getName());
 					}	
 
-					tempI.setImage(colNum, getImageForClass(className));
+					Image img = org.mitre.openii.widgets.schemaTree.SchemaElementLabelProvider.getImage(schemaEle);
+					tempI.setImage(colNum, img);
 				//}
 			}
 						
@@ -358,7 +359,7 @@ public class VocabViewCanvas extends Canvas {
 	}
 
 	//getting the icons that represent the type of entity in a cell
-	private Image getImageForClass(String className){		
+	/*private Image getImageForClass(String className){		
 		if(className.compareTo("class org.mitre.schemastore.model.Containment") ==0){
 			return OpenIIActivator.getImage("Containment.jpg");
 		}else if(className.compareTo("class org.mitre.schemastore.model.DomainValue") ==0){
@@ -368,7 +369,7 @@ public class VocabViewCanvas extends Canvas {
 		}else{
 			return null;
 		}
-	}
+	} */
 	
 	//if sortBy= 1 it will sort from most to least GroupEs
 	//if sortBy= 2 it will sort from least to most GroupEs
