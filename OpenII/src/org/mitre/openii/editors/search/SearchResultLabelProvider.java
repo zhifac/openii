@@ -36,7 +36,10 @@ public class SearchResultLabelProvider extends StyledCellLabelProvider
 	public SearchResultLabelProvider(SchemaInfo schema, String keyword)
 	{
 		this.schema = schema;
-		pattern = Pattern.compile("(?i)\\b" + keyword + "\\b");
+		
+		// Store the pattern to search for
+		keyword = "\\b" + keyword.replaceAll("\\*",".*") + "\\b";
+		pattern = Pattern.compile("(?i)" + keyword);
 	}
 
 	/** Returns the image associated with the specified element */
