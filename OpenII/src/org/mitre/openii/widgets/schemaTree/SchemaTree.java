@@ -6,6 +6,7 @@ import java.util.HashMap;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.TreePath;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyEvent;
@@ -15,10 +16,11 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Text;
-import org.mitre.openii.model.OpenIIManager;
 import org.mitre.openii.widgets.BasicWidgets;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
+import org.mitre.schemastore.model.schemaInfo.SchemaInfo;
+import org.mitre.schemastore.model.schemaInfo.model.SchemaModel;
 import org.mitre.schemastore.search.SchemaSearchResult;
 import org.mitre.schemastore.search.SearchManager;
 
@@ -48,7 +50,7 @@ public class SchemaTree extends Composite implements ISelectionChangedListener, 
 		menuPane.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 	
 		// Construct the model pane
-		modelSelector = new SchemaModelSelector(menuPane);
+		modelSelector = new SchemaModelSelector(menuPane, schema.getModel());
 		modelSelector.addSelectionChangedListener(this);
 		
 		// Construct the search pane
@@ -91,7 +93,11 @@ public class SchemaTree extends Composite implements ISelectionChangedListener, 
 	}
 
 	/** Constructs the Schema Tree */
-	public SchemaTree(Composite parent, Integer schemaID)
+	public SchemaTree(Composite parent, SchemaInfo schema)
+		{ this(parent, schema, null); }
+	
+	/** Constructs the Schema Tree */
+	public SchemaTree(Composite parent, SchemaInfo schema, SchemaModel model)
 	{	
 		super(parent, SWT.NONE);
 		GridLayout layout = new GridLayout(1,false);
@@ -101,7 +107,7 @@ public class SchemaTree extends Composite implements ISelectionChangedListener, 
 		setLayoutData(new GridData(GridData.FILL_BOTH));
 		
 		// Retrieves the hierarchical schema
-		schema = new HierarchicalSchemaInfo(OpenIIManager.getSchemaInfo(schemaID));
+		this.schema = new HierarchicalSchemaInfo(schema,model);
 		
 		// Layout the menu pane and tree pane
 		generateMenuPane(this);
@@ -112,9 +118,31 @@ public class SchemaTree extends Composite implements ISelectionChangedListener, 
 		schemaViewer.refresh();
 	}
 
+	/** Sets the selected element */
+	public void setSelectedElement(Integer elementID)
+	{
+		for(TreePath path : schemaViewer.getExpandedTreePaths())
+			System.out.println(path.getLastSegment());
+		
+		// Expand out to the selected element
+		ArrayList<ArrayList<SchemaElement>> paths = schema.getPaths(elementID);
+		if(paths.size()>0)
+			for(SchemaElement element : paths.get(0))
+				schemaViewer.expandToLevel(element,1);
+		
+		// Set the selected element
+//		for(TreePath path : schemaViewer.getExpandedTreePaths())
+//			if(path.getLastSegment().equals(arg0))
+//		schemaViewer.setSelection(selection)
+	}
+	
 	/** Returns the schema associated with this view */
-	HierarchicalSchemaInfo getSchema()
+	public HierarchicalSchemaInfo getSchema()
 		{ return schema; }
+	
+	/** Returns the currently selected element */
+	public Integer getSelectedElement()
+		{ return ((SchemaElement)schemaViewer.getSelection()).getId(); }	
 	
 	/** Returns the search result for the specified schema element */
 	SchemaSearchResult getSearchResult(Integer elementID)

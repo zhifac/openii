@@ -53,7 +53,7 @@ public class SchemaView extends OpenIIEditor
 		pane.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		
 		// Layout the menu pane and tree pane
-		schemaTree = new SchemaTree(pane, getElementID());
+		schemaTree = new SchemaTree(pane, OpenIIManager.getSchemaInfo(getElementID()));
 		generateExtensionPane(pane);
 	}
 	
