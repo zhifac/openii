@@ -7,8 +7,7 @@
       <schemaImporter>org.mitre.schemastore.porters.schemaImporters.ExtendSchemaImporter</schemaImporter>
       <schemaImporter>org.mitre.schemastore.porters.schemaImporters.OWLImporter</schemaImporter>
       <schemaImporter>org.mitre.schemastore.porters.schemaImporters.XSDImporter</schemaImporter>
-       <schemaImporter>org.mitre.schemastore.porters.schemaImporters.XSDImporterMerged</schemaImporter>
-      <!--<schemaImporter>org.mitre.schemastore.porters.schemaImporters.XSDImporterSeparate</schemaImporter> -->
+	  <schemaImporter>org.mitre.schemastore.porters.schemaImporters.XSDImporterSeparate</schemaImporter> 
       <schemaImporter>org.mitre.schemastore.porters.schemaImporters.SpreadsheetImporter</schemaImporter>
       <schemaImporter>org.mitre.schemastore.porters.schemaImporters.DomainValueImporter</schemaImporter>
       <schemaImporter>org.mitre.schemastore.porters.schemaImporters.HierarchicalDomainValueImporter2</schemaImporter>
