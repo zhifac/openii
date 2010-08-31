@@ -29,13 +29,16 @@ public class UnityDSF {
 
 	private Project project;
 	private Vocabulary vocabulary;
-	private int authoritySchemaId = 0;
+	private ArrayList<Integer> rankedSchemas;
 
 	// private ArrayList<Synset> synsetList = null;
 
 	public UnityDSF(Project project) {
 		this.project = project;
 		this.vocabulary = OpenIIManager.getVocabulary(project.getId());
+		rankedSchemas = new ArrayList<Integer>();
+		for (Integer i : project.getSchemaIDs())
+			rankedSchemas.add(i);
 	}
 
 	public Vocabulary getVocabulary() {
@@ -126,13 +129,14 @@ public class UnityDSF {
 
 		long endDSF = System.currentTimeMillis();
 		System.out.println("DSF time " + (endDSF - start) / new Double(1000) / new Double(60) + " minutes");
-		
+
 		// Generate connonical terms for each synset
 		vocabulary = new Vocabulary(project.getId(), generateVocabTerms(new ArrayList<Synset>(synsets.values())));
-		
-		// Use the following line if normalization is used. 
-		//	vocabulary = new Vocabulary(project.getId(), generateVocabTerms(synsetList));
-		
+
+		// Use the following line if normalization is used.
+		// vocabulary = new Vocabulary(project.getId(),
+		// generateVocabTerms(synsetList));
+
 		return vocabulary;
 	}
 
@@ -218,14 +222,8 @@ public class UnityDSF {
 		exporter.exportVocabulary(vocabulary, file);
 	}
 
-	public Integer getAuthoritativeSchemaId() {
-		if (authoritySchemaId == 0 && project.getSchemaIDs().length > 0)
-			authoritySchemaId = project.getSchemaIDs()[0];
-		return authoritySchemaId;
-	}
-
-	public void setAuthoritativeSchemaId(Integer id) {
-		authoritySchemaId = id;
+	public ArrayList<Integer> getSchemaRanking() {
+		return this.rankedSchemas;
 	}
 
 	/** generates a canonical term from the synset **/
@@ -233,35 +231,39 @@ public class UnityDSF {
 		Term resultTerm = null;
 		AssociatedElement[] assocElements = new AssociatedElement[synset.terms.size()];
 		SchemaElement baseElement = null;
-		try {
-			for (int i = 0; i < synset.terms.size(); i++) {
-				SynsetTerm synsetTerm = synset.terms.get(i);
 
-				// Create associated elements
-				assocElements[i] = new AssociatedElement(synsetTerm.schemaId, synsetTerm.elementId, synsetTerm.elementName);
-
-				// Use authority schema term if available
-				if (synsetTerm.schemaId.equals(getAuthoritativeSchemaId()) && synsetTerm.elementName.length() > 0)
-					baseElement = RepositoryManager.getClient().getSchemaElement(synsetTerm.elementId);
-			}
-
-			// Use a random term name if cannot find a name
-			if (baseElement == null) {
-				for (SynsetTerm t : synset.terms)
-					if (t.elementName.length() > 0) {
-						baseElement = RepositoryManager.getClient().getSchemaElement(t.elementId);
-						break;
-					}
-			}
-		} catch (RemoteException e1) {
-			// Do nothing
+		// Create associated elements
+		for (int i = 0; i < synset.terms.size(); i++) {
+			SynsetTerm synsetTerm = synset.terms.get(i);
+			assocElements[i] = new AssociatedElement(synsetTerm.schemaId, synsetTerm.elementId, synsetTerm.elementName);
 		}
 
-		resultTerm = (baseElement == null) ? new Term(null, new String(), new String(), assocElements) : new Term(null, baseElement.getName(), baseElement.getDescription(), assocElements);
+		// Determine a vocab term based on schema ranking
+		try {
+			for (Integer authoritySchema : rankedSchemas) {
+				SynsetTerm term = synset.getTerm(authoritySchema);
+				if (term != null && term.elementName.length() > 0) {
+					baseElement = RepositoryManager.getClient().getSchemaElement(term.elementId);
+					break;
+				}
+			}
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
+
+		// Create and return Term object from Synset Term
+		if (baseElement == null)
+			resultTerm = new Term(null, new String(), new String(), assocElements);
+		else
+			resultTerm = new Term(null, baseElement.getName(), baseElement.getDescription(), assocElements);
 		return resultTerm;
 	}
 
 	public void exportVocabulary(File file) throws IOException {
 		UnityDSF.exportVocabulary(this.vocabulary, file);
+	}
+
+	public void setSchemaRanking(ArrayList<Integer> schemas) {
+		this.rankedSchemas = schemas;
 	}
 }
