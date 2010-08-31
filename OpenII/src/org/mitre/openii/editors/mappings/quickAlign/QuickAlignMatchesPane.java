@@ -1,6 +1,8 @@
 package org.mitre.openii.editors.mappings.quickAlign;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 
 import org.eclipse.swt.SWT;
@@ -30,59 +32,33 @@ public class QuickAlignMatchesPane extends Composite
 	/** Stores the info pane */
 	private QuickAlignInfoPane infoPane = null;
 	
-	/** Retrieves the user matches */
-	private HashMap<Integer,Integer> getUserMatches()
+	/** Generates a listing of matches hashed by input element */
+	private HashMap<Integer,ArrayList<MappingCell>> getMatches()
 	{
-		HashMap<Integer,Integer> matches = new HashMap<Integer,Integer>();
-		for(MappingCell mappingCell : OpenIIManager.getMappingCells(mappingInfo.getMapping().getId()))
-			if(mappingCell.isValidated())
-				matches.put(mappingCell.getElementInputIDs()[0], mappingCell.getOutput());
+		// Retrieve the matches
+		HashMap<Integer,ArrayList<MappingCell>> matches = new HashMap<Integer,ArrayList<MappingCell>>();
+		for(MappingCell mappingCell : mappingInfo.getMappingCells().get())
+			for(Integer inputID : mappingCell.getElementInputIDs())
+			{
+				ArrayList<MappingCell> mappingCells = matches.get(inputID);
+				if(mappingCells==null) matches.put(inputID, mappingCells=new ArrayList<MappingCell>());
+				mappingCells.add(mappingCell);
+			}
+		
+		// Compares two matches to one another
+		class ScoreComparator implements Comparator<MappingCell>
+			{ public int compare(MappingCell mappingCell1, MappingCell mappingCell2)
+				{ return mappingCell2.getScore().compareTo(mappingCell1.getScore()); } }
+
+		// Sort the list of matches and trim to the top 10
+		for(ArrayList<MappingCell> mappingCells : matches.values())
+		{
+			Collections.sort(mappingCells, new ScoreComparator());
+			if(mappingCells.size()>10) mappingCells = new ArrayList<MappingCell>(mappingCells.subList(0,10));
+		}
+		
 		return matches;
 	}
-	
-//	/** Sorts the list of matches */
-//	private ArrayList<MatchScore> sortMatches(ArrayList<MatchScore> matches)
-//	{
-//		/** Compares two matches to one another */
-//		class ScoreComparator implements Comparator<MatchScore>
-//			{ public int compare(MatchScore score1, MatchScore score2)
-//				{ return score1.getScore().compareTo(score2.getScore()); } }
-//
-//		// Sort the list of matches
-//		Collections.sort(matches, new ScoreComparator());
-//
-//		// Return the list of matches (trimmed to the top 10)
-//		if(matches.size()>10) matches = new ArrayList<MatchScore>(matches.subList(0,10));
-//		return matches;
-//	}
-//	
-//	/** Retrieves the suggested matches */
-//	private HashMap<Integer,ArrayList<MatchScore>> getSuggestedMatches(HierarchicalSchemaInfo sourceInfo, HierarchicalSchemaInfo targetInfo)
-//	{		
-//		// Retrieve the source and target schemas
-//		FilteredSchemaInfo sourceFilter = new FilteredSchemaInfo(sourceInfo);
-//		FilteredSchemaInfo targetFilter = new FilteredSchemaInfo(targetInfo);
-//		
-//		// Run matchers on the unassigned mapping cells
-//		ArrayList<Matcher> matchers = MatcherManager.getDefaultMatchers();
-//		matchers.add(new MappingMatcher());
-//		MatchScores matchScores = new MatchGenerator(matchers, new VoteMerger()).getScores(sourceFilter, targetFilter);
-//
-//		// Generate list of potential matches for each source element
-//		HashMap<Integer,ArrayList<MatchScore>> matches = new HashMap<Integer,ArrayList<MatchScore>>();
-//		for(MatchScore score : matchScores.getScores())
-//		{
-//			ArrayList<MatchScore> matchList = matches.get(score.getSourceID());
-//			if(matchList==null)
-//				matches.put(score.getSourceID(), matchList=new ArrayList<MatchScore>());
-//			matchList.add(score);
-//		}
-//		
-//		// Sort matches and trim to top 10
-//		for(Integer sourceID : matches.keySet())
-//			matches.put(sourceID, sortMatches(matches.get(sourceID)));
-//		return matches;
-//	}
 
 	/** Resize the match labels (to align with one another) */
 	private void alignMatchLabels(HierarchicalSchemaInfo sourceInfo, ArrayList<SchemaElement> sourceElements)
@@ -123,34 +99,16 @@ public class QuickAlignMatchesPane extends Composite
 		matchersPane.setLayout(layout);
 		
 		// Retrieve the mapping information
-		HashMap<Integer,Integer> userMatches = getUserMatches();
-//		HashMap<Integer,ArrayList<MatchScore>> suggestedMatches = getSuggestedMatches(sourceInfo,targetInfo);
+		HashMap<Integer,ArrayList<MappingCell>> matches = getMatches();
 		
 		// Display the source elements which need to be aligned
 		ArrayList<SchemaElement> sourceElements = sourceInfo.getHierarchicalElements();
 		for(SchemaElement sourceElement : sourceElements)
 		{
-//			// Display the source element label
-//			Label label = BasicWidgets.createLabel(pane, sourceElement.getName());
-//			GridData labelGridData = new GridData(GridData.HORIZONTAL_ALIGN_END | GridData.VERTICAL_ALIGN_BEGINNING);
-//			labelGridData.verticalIndent = 5;
-//			label.setLayoutData(labelGridData);
-			
 			// Create the match pane
 			QuickAlignMatchPane matchPane = new QuickAlignMatchPane(matchersPane,sourceElement);
+			matchPane.updateMatches(matches.get(sourceElement.getId()), targetInfo);
 			matchPanes.add(matchPane);
-			
-			// Determine if there is a user match
-			Integer userMatch = userMatches.get(sourceElement.getId());
-			
-			// Populate the selection box
-			matchPane.add("");
-			if(userMatch!=null) matchPane.add(targetInfo.getElement(userMatch));
-//			ArrayList<MatchScore> matches = suggestedMatches.get(sourceElement.getId());
-//			if(matches!=null)
-//				for(MatchScore match : matches)
-//					if(!match.getTargetID().equals(userMatch))
-//						matchPane.add(targetInfo.getElement(match.getTargetID()));
 		}
 
 		// Resize the labels to fit the text
