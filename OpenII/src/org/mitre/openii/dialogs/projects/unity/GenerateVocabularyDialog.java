@@ -8,29 +8,32 @@ import java.util.HashMap;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
-import org.eclipse.jface.viewers.CellEditor;
-import org.eclipse.jface.viewers.EditingSupport;
-import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.jface.viewers.TableViewerColumn;
-import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CCombo;
+import org.eclipse.swt.custom.TableEditor;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.mitre.openii.application.OpenIIActivator;
 import org.mitre.openii.dialogs.projects.unity.DisjointSetForest.ContainerMethod;
 import org.mitre.openii.model.OpenIIManager;
 import org.mitre.openii.widgets.BasicWidgets;
 import org.mitre.openii.widgets.OptionsPanel;
-import org.mitre.openii.widgets.schemaList.RankLabelProvider;
-import org.mitre.openii.widgets.schemaList.SchemaLabelProvider;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.Project;
 import org.mitre.schemastore.model.Vocabulary;
@@ -76,8 +79,7 @@ public class GenerateVocabularyDialog extends TitleAreaDialog implements ModifyL
 	private Text vocabName;
 	private HashMap<Integer, String> schemaNames;
 	private OptionsPanel groupOptions;
-	private HashMap<String, ArrayList<Integer>> mappingGroups = new HashMap<String, ArrayList<Integer>>();
-	private TableViewer list;
+	private HashMap<String, Table> mappingGroups = new HashMap<String, Table>();
 
 	public GenerateVocabularyDialog(Shell parentShell, Project project) {
 		super(parentShell);
@@ -86,8 +88,10 @@ public class GenerateVocabularyDialog extends TitleAreaDialog implements ModifyL
 
 		// Initialize schema names
 		schemaNames = new HashMap<Integer, String>();
-		for (Integer i : project.getSchemaIDs())
+		for (Integer i : project.getSchemaIDs()) {
 			schemaNames.put(i, OpenIIManager.getSchema(i).getName());
+			System.out.println( i + ": " + OpenIIManager.getSchema(i).getName());
+		}
 
 	}
 
@@ -109,7 +113,7 @@ public class GenerateVocabularyDialog extends TitleAreaDialog implements ModifyL
 	/** Creates the contents for the Import Schema Dialog */
 	protected Control createDialogArea(Composite parent) {
 		setTitle("Generating vocabulary... ");
-		setMessage("Current mappings provide the following groups of schemas. \nSelect a group to generate a vocabulary. ");
+		setMessage("Current mappings provide the following groups of schemas. \nSelect a group to generate a vocabulary. Rank the schemas to determine vocabulary authoritative source.  ");
 
 		// Construct the main pane
 		Composite pane = new Composite(parent, SWT.DIALOG_TRIM);
@@ -157,7 +161,7 @@ public class GenerateVocabularyDialog extends TitleAreaDialog implements ModifyL
 			Composite schemaPane = groupOptions.addOption(key);
 			schemaPane.setLayout(new GridLayout(1, false));
 			schemaPane.setLayoutData(new GridData(GridData.FILL_VERTICAL));
-			mappingGroups.put(key, schemas);
+			
 
 			// Add selection to the largest group
 			if (schemas.size() > maxGroupSize) {
@@ -165,52 +169,113 @@ public class GenerateVocabularyDialog extends TitleAreaDialog implements ModifyL
 				selectedOption = "Group " + (groupIDX + 1) + " schemas";
 			}
 
-			createSchemaTableView(schemaPane, schemas);
+			Table table = createSchemaRankTable(schemaPane, schemas);
+			
+			mappingGroups.put(key, table);
 			groupIDX++;
 		}
 		groupOptions.setOption(selectedOption);
+		groupOptions.getOption(); 
 	}
 
-	private void createSchemaTableView(Composite schemaPane, ArrayList<Integer> schemas) {
-		list = new TableViewer(schemaPane, SWT.BORDER | SWT.FULL_SELECTION);
-		Table table = list.getTable();
+	/** Create a table with schemas and its ranking of importance. Allow user to rank **/ 
+	private Table createSchemaRankTable(final Composite schemaPane, final ArrayList<Integer> schemas) {
+		final Table table = new Table(schemaPane, SWT.BORDER | SWT.FULL_SELECTION);
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
-		table.setLayoutData(new GridData(GridData.FILL_VERTICAL));
-		String[] headers = new String[] { "Schema", "Rank" };
-		ArrayList<TableViewerColumn> columns = new ArrayList<TableViewerColumn>();
-		// Add the list headers
-		for (String header : headers) {
-			TableViewerColumn column = new TableViewerColumn(list, SWT.NONE);
-			column.getColumn().setText(header);
-			column.getColumn().setWidth(200);
-			columns.add(column);
+
+		// Add columns
+		TableColumn schemaColumn = new TableColumn(table, SWT.NONE, 0);
+		schemaColumn.setText("Schema");
+		schemaColumn.setWidth(150);
+
+		TableColumn rankColumn = new TableColumn(table, SWT.NONE, 1);
+		rankColumn.setText("Rank");
+		rankColumn.setWidth(100);
+
+		// Populate each row with schema name and ranking
+		TableItem tableItem;
+		for (int i = 0; i < schemas.size(); i++) {
+			tableItem = new TableItem(table, SWT.NONE);
+			tableItem.setImage(0, OpenIIActivator.getImage("Schema.gif"));
+			tableItem.setText(0, OpenIIManager.getSchema(schemas.get(i)).getName());
+			tableItem.setData("id", schemas.get(i)); 
+			tableItem.setText(1, Integer.toString(i + 1));
 		}
 
-		columns.get(0).setLabelProvider(new SchemaLabelProvider());
-		HashMap<Integer, Integer> rankings = new HashMap<Integer, Integer>();
-		for (int i = 0; i < schemas.size(); i++)
-			rankings.put(schemas.get(i), i + 1);
-		columns.get(1).setLabelProvider(new RankLabelProvider(rankings));
-		columns.get(1).setEditingSupport(new EditingSupport(list){
+		// Add double click and edit text listener to ranking column
+		final int rankingColumn = 1;
+		final TableEditor editor = new TableEditor(table);
+		editor.horizontalAlignment = SWT.LEFT;
+		editor.grabHorizontal = true;
+		
+		// create combo options that allows the user to resort the importance of the schemas 
+		table.addListener(SWT.MouseDoubleClick, new Listener() {
+			public void handleEvent(Event event) {
+				// Get event location
+				Rectangle clientArea = table.getClientArea();
+				Point pt = new Point(event.x, event.y);
 
-			protected boolean canEdit(Object arg0) {return true; }
+				for (int tableItemIDX = table.getTopIndex(); tableItemIDX < table.getItemCount(); tableItemIDX++) {
+					// check if clicked in ranking column
+					boolean visible = false;
+					final TableItem item = table.getItem(tableItemIDX);
+					Rectangle rect = item.getBounds(rankingColumn);
+					if (rect.contains(pt)) {
+						final CCombo combo = new CCombo(table, SWT.READ_ONLY);
+						String[] options = new String[schemas.size()];
+						for (int i = 0; i < schemas.size(); i++) {
+							options[i] = Integer.toString(i + 1);
+							combo.add(options[i]);
+						}
 
-			protected CellEditor getCellEditor(Object arg0) {
-				return new TextCellEditor((Table)list.getControl());  }  
+						combo.addSelectionListener(new SelectionAdapter() {
+							public void widgetSelected(SelectionEvent event) {
+								// Reorder the rows after a new assignment
+								reorderTableRows(item, Integer.parseInt(item.getText(rankingColumn))-1, Integer.parseInt(combo.getText()) -1) ;
+								combo.dispose();
+							}
 
-			protected Object getValue(Object arg0) {
-				return (Integer) arg0; 
+							private void reorderTableRows(TableItem item, int oldIndex, int newIndex) {
+								String updateItemName = item.getText(0); 
+								if ( oldIndex == newIndex) return; 
+
+								// Move items backward if the item is moved forward 
+								else if (oldIndex > newIndex) {
+									for ( int i = oldIndex ; i > newIndex; i-- ) {
+										table.getItem(i).setText(0, table.getItem(i-1).getText()); 
+										table.getItem(i).setText(1, Integer.toString(i+1)); 
+									}
+								}
+
+								// Move items forward if the item is moved backward
+								else if ( oldIndex < newIndex) {
+									for ( int i = oldIndex   ; i < newIndex; i++ ) {
+										table.getItem(i).setText(0, table.getItem(i+1).getText()); 
+										table.getItem(i).setText(1, Integer.toString(i+1)); 
+									}
+								}
+								
+								table.getItem(newIndex).setText(0, updateItemName); 
+								table.getItem(newIndex).setText(1, Integer.toString(newIndex+1));
+							}
+						});
+
+						combo.setFocus();
+						combo.select(combo.indexOf(item.getText(rankingColumn)));
+						editor.setEditor(combo, item, rankingColumn);
+						return;
+					}
+					if (!visible && rect.intersects(clientArea))
+						visible = true;
+
+					if (!visible)
+						return;
+				}
 			}
-
-			protected void setValue(Object arg0, Object arg1) {
-			}
-			
 		});
-
-		for (int i = 0; i < schemas.size(); i++)
-			list.add(OpenIIManager.getSchema(schemas.get(i)));
-
+		
+		return table; 
 	}
 
 	private void createInfoPane(Composite parent) {
@@ -247,22 +312,33 @@ public class GenerateVocabularyDialog extends TitleAreaDialog implements ModifyL
 	// /** Handles the actual import of the specified file */
 	protected void okPressed() {
 		// Get the group of mappings that include schemas in the selected group
-		ArrayList<Integer> schemas = mappingGroups.get(groupOptions.getOption());
+	
+		ArrayList<Integer> schemas = getRankedSchemas(); 
 		ArrayList<Mapping> mappings = OpenIIManager.getMappings(project.getId());
 		ArrayList<Mapping> selectedMapping = new ArrayList<Mapping>();
 
 		for (Mapping m : mappings)
-			if (schemas.contains(m.getSourceId()) && schemas.contains(m.getTargetId())) {
+			if (schemas.contains(m.getSourceId()) && schemas.contains(m.getTargetId()))
 				selectedMapping.add(m);
-				System.out.println(" Added mappings " + m.getSourceId() + " and " + m.getTargetId());
-			} else
-				System.out.println(" --- mappings " + m.getSourceId() + " and " + m.getTargetId());
 
 		// Generate and save Vocabulary
 		UnityDSF unity = new UnityDSF(project);
+		unity.setSchemaRanking(schemas); 
 		Vocabulary vocab = unity.unify(selectedMapping);
 		OpenIIManager.saveVocabulary(vocab);
 
 		getShell().dispose();
+	}
+
+	/** Get the selected schema group and user ranks **/ 
+	private ArrayList<Integer> getRankedSchemas() {
+		ArrayList<Integer> schemas = new ArrayList<Integer>(); 
+		Table schemaTable = mappingGroups.get(groupOptions.getOption());
+		System.out.println ("okpressed: ") ; 
+		for ( TableItem item : schemaTable.getItems() ) {
+			System.out.println((Integer)item.getData("id") +": " + item.getText(0) );
+			schemas.add((Integer)item.getData("id") ); 
+		}
+		return schemas; 
 	}
 }

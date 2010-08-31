@@ -83,7 +83,7 @@ public class Synset implements Comparable<Synset> {
 	 */
 	public SynsetTerm getTerm(Integer baseSchema) {
 		for (SynsetTerm n : terms)
-			if (n.schemaId == baseSchema)
+			if (n.schemaId.equals( baseSchema) )
 				return n;
 		return null;
 	}

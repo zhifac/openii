@@ -3,7 +3,6 @@ package org.mitre.openii.dialogs.projects;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.jface.window.ToolTip;
@@ -266,7 +265,7 @@ public class BatchMatchDialog extends TitleAreaDialog implements ModifyListener,
 		getButton(IDialogConstants.OK_ID).setEnabled(complete);
 	}
 
-	void updateMappingGroupPane() {
+	private void updateMappingGroupPane() {
 		// Update the minimum spanning tree for mappings
 		HashMap<Integer, ArrayList<Integer>> schemaGroups = getMappingMST(project.getSchemaIDs(), checkedMappingList);
 
@@ -314,8 +313,7 @@ public class BatchMatchDialog extends TitleAreaDialog implements ModifyListener,
 		// Paint groups with stars indicating schemas
 		for (ArrayList<Integer> group : schemaGroups.values()) {
 			String stars = "";
-			for (Integer schemaID : group)
-				stars += "*";
+			for ( int i = 0; i<group.size(); i++ ) stars += "*"; 
 
 			// Create a button that contains the schema group
 			Button schemaGroupButton = new Button(schemaGroupPane, SWT.TOGGLE);
