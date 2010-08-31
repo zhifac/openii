@@ -90,7 +90,7 @@ public class GenerateVocabularyDialog extends TitleAreaDialog implements ModifyL
 		schemaNames = new HashMap<Integer, String>();
 		for (Integer i : project.getSchemaIDs()) {
 			schemaNames.put(i, OpenIIManager.getSchema(i).getName());
-			System.out.println( i + ": " + OpenIIManager.getSchema(i).getName());
+			System.out.println(i + ": " + OpenIIManager.getSchema(i).getName());
 		}
 
 	}
@@ -113,7 +113,7 @@ public class GenerateVocabularyDialog extends TitleAreaDialog implements ModifyL
 	/** Creates the contents for the Import Schema Dialog */
 	protected Control createDialogArea(Composite parent) {
 		setTitle("Generating vocabulary... ");
-		setMessage("Current mappings provide the following groups of schemas. \nSelect a group to generate a vocabulary. Rank the schemas to determine vocabulary authoritative source.  ");
+		setMessage("Select a group to generate a vocabulary. Rank the schemas to \n" + "determine vocabulary authoritative source.  ");
 
 		// Construct the main pane
 		Composite pane = new Composite(parent, SWT.DIALOG_TRIM);
@@ -125,7 +125,7 @@ public class GenerateVocabularyDialog extends TitleAreaDialog implements ModifyL
 
 		// Define the pane width
 		GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
-		gridData.widthHint = 450;
+		gridData.widthHint = 300;
 		pane.setLayoutData(gridData);
 
 		// Generate the pane components
@@ -161,7 +161,6 @@ public class GenerateVocabularyDialog extends TitleAreaDialog implements ModifyL
 			Composite schemaPane = groupOptions.addOption(key);
 			schemaPane.setLayout(new GridLayout(1, false));
 			schemaPane.setLayoutData(new GridData(GridData.FILL_VERTICAL));
-			
 
 			// Add selection to the largest group
 			if (schemas.size() > maxGroupSize) {
@@ -170,15 +169,18 @@ public class GenerateVocabularyDialog extends TitleAreaDialog implements ModifyL
 			}
 
 			Table table = createSchemaRankTable(schemaPane, schemas);
-			
+
 			mappingGroups.put(key, table);
 			groupIDX++;
 		}
 		groupOptions.setOption(selectedOption);
-		groupOptions.getOption(); 
+		groupOptions.getOption();
 	}
 
-	/** Create a table with schemas and its ranking of importance. Allow user to rank **/ 
+	/**
+	 * Create a table with schemas and its ranking of importance. Allow user to
+	 * rank
+	 **/
 	private Table createSchemaRankTable(final Composite schemaPane, final ArrayList<Integer> schemas) {
 		final Table table = new Table(schemaPane, SWT.BORDER | SWT.FULL_SELECTION);
 		table.setHeaderVisible(true);
@@ -199,7 +201,7 @@ public class GenerateVocabularyDialog extends TitleAreaDialog implements ModifyL
 			tableItem = new TableItem(table, SWT.NONE);
 			tableItem.setImage(0, OpenIIActivator.getImage("Schema.gif"));
 			tableItem.setText(0, OpenIIManager.getSchema(schemas.get(i)).getName());
-			tableItem.setData("id", schemas.get(i)); 
+			tableItem.setData("id", schemas.get(i));
 			tableItem.setText(1, Integer.toString(i + 1));
 		}
 
@@ -208,8 +210,9 @@ public class GenerateVocabularyDialog extends TitleAreaDialog implements ModifyL
 		final TableEditor editor = new TableEditor(table);
 		editor.horizontalAlignment = SWT.LEFT;
 		editor.grabHorizontal = true;
-		
-		// create combo options that allows the user to resort the importance of the schemas 
+
+		// create combo options that allows the user to resort the importance of
+		// the schemas
 		table.addListener(SWT.MouseDoubleClick, new Listener() {
 			public void handleEvent(Event event) {
 				// Get event location
@@ -232,32 +235,35 @@ public class GenerateVocabularyDialog extends TitleAreaDialog implements ModifyL
 						combo.addSelectionListener(new SelectionAdapter() {
 							public void widgetSelected(SelectionEvent event) {
 								// Reorder the rows after a new assignment
-								reorderTableRows(item, Integer.parseInt(item.getText(rankingColumn))-1, Integer.parseInt(combo.getText()) -1) ;
+								reorderTableRows(item, Integer.parseInt(item.getText(rankingColumn)) - 1, Integer.parseInt(combo.getText()) - 1);
 								combo.dispose();
 							}
 
 							private void reorderTableRows(TableItem item, int oldIndex, int newIndex) {
-								String updateItemName = item.getText(0); 
-								if ( oldIndex == newIndex) return; 
+								String updateItemName = item.getText(0);
+								if (oldIndex == newIndex)
+									return;
 
-								// Move items backward if the item is moved forward 
+								// Move items backward if the item is moved
+								// forward
 								else if (oldIndex > newIndex) {
-									for ( int i = oldIndex ; i > newIndex; i-- ) {
-										table.getItem(i).setText(0, table.getItem(i-1).getText()); 
-										table.getItem(i).setText(1, Integer.toString(i+1)); 
+									for (int i = oldIndex; i > newIndex; i--) {
+										table.getItem(i).setText(0, table.getItem(i - 1).getText());
+										table.getItem(i).setText(1, Integer.toString(i + 1));
 									}
 								}
 
-								// Move items forward if the item is moved backward
-								else if ( oldIndex < newIndex) {
-									for ( int i = oldIndex   ; i < newIndex; i++ ) {
-										table.getItem(i).setText(0, table.getItem(i+1).getText()); 
-										table.getItem(i).setText(1, Integer.toString(i+1)); 
+								// Move items forward if the item is moved
+								// backward
+								else if (oldIndex < newIndex) {
+									for (int i = oldIndex; i < newIndex; i++) {
+										table.getItem(i).setText(0, table.getItem(i + 1).getText());
+										table.getItem(i).setText(1, Integer.toString(i + 1));
 									}
 								}
-								
-								table.getItem(newIndex).setText(0, updateItemName); 
-								table.getItem(newIndex).setText(1, Integer.toString(newIndex+1));
+
+								table.getItem(newIndex).setText(0, updateItemName);
+								table.getItem(newIndex).setText(1, Integer.toString(newIndex + 1));
 							}
 						});
 
@@ -274,8 +280,8 @@ public class GenerateVocabularyDialog extends TitleAreaDialog implements ModifyL
 				}
 			}
 		});
-		
-		return table; 
+
+		return table;
 	}
 
 	private void createInfoPane(Composite parent) {
@@ -312,8 +318,8 @@ public class GenerateVocabularyDialog extends TitleAreaDialog implements ModifyL
 	// /** Handles the actual import of the specified file */
 	protected void okPressed() {
 		// Get the group of mappings that include schemas in the selected group
-	
-		ArrayList<Integer> schemas = getRankedSchemas(); 
+
+		ArrayList<Integer> schemas = getRankedSchemas();
 		ArrayList<Mapping> mappings = OpenIIManager.getMappings(project.getId());
 		ArrayList<Mapping> selectedMapping = new ArrayList<Mapping>();
 
@@ -323,22 +329,22 @@ public class GenerateVocabularyDialog extends TitleAreaDialog implements ModifyL
 
 		// Generate and save Vocabulary
 		UnityDSF unity = new UnityDSF(project);
-		unity.setSchemaRanking(schemas); 
+		unity.setSchemaRanking(schemas);
 		Vocabulary vocab = unity.unify(selectedMapping);
 		OpenIIManager.saveVocabulary(vocab);
 
 		getShell().dispose();
 	}
 
-	/** Get the selected schema group and user ranks **/ 
+	/** Get the selected schema group and user ranks **/
 	private ArrayList<Integer> getRankedSchemas() {
-		ArrayList<Integer> schemas = new ArrayList<Integer>(); 
+		ArrayList<Integer> schemas = new ArrayList<Integer>();
 		Table schemaTable = mappingGroups.get(groupOptions.getOption());
-		System.out.println ("okpressed: ") ; 
-		for ( TableItem item : schemaTable.getItems() ) {
-			System.out.println((Integer)item.getData("id") +": " + item.getText(0) );
-			schemas.add((Integer)item.getData("id") ); 
+		System.out.println("okpressed: ");
+		for (TableItem item : schemaTable.getItems()) {
+			System.out.println((Integer) item.getData("id") + ": " + item.getText(0));
+			schemas.add((Integer) item.getData("id"));
 		}
-		return schemas; 
+		return schemas;
 	}
 }
