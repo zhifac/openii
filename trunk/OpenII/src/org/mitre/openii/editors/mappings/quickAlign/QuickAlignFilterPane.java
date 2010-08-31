@@ -12,6 +12,7 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
@@ -30,9 +31,11 @@ import org.mitre.schemastore.model.schemaInfo.model.SchemaModel;
 /** Constructs the QuickAlign filter pane */
 public class QuickAlignFilterPane extends Composite implements SelectionListener
 {	
-	// Stores reference to the source and target panes
+	// Stores reference to the various widgets in this pane
 	private SchemaFocusPane sourcePane, targetPane;
-
+	private Button calculateButton, saveButton; 
+	private MatchersPane matchers = null;
+	
 	/** Private class for storing a schema's focus */
 	private class SchemaFocusPane extends Composite implements MouseListener
 	{
@@ -111,11 +114,12 @@ public class QuickAlignFilterPane extends Composite implements SelectionListener
 		layout.marginHeight=0; layout.marginWidth=0;
 		buttonPane.setLayout(layout);
 		buttonPane.setLayoutData(new GridData(GridData.FILL_HORIZONTAL | GridData.HORIZONTAL_ALIGN_END));		
-		BasicWidgets.createButton(buttonPane, "Calculate Alignment", listener);
-		BasicWidgets.createButton(buttonPane, "Save Mapping", listener);
-
+		calculateButton = BasicWidgets.createButton(buttonPane, "Calculate Alignment", listener);
+		saveButton = BasicWidgets.createButton(buttonPane, "Save Mapping", listener);
+		saveButton.setEnabled(false);
+		
 		// Constructs the matcher pane
-		new MatchersPane(this,this);
+		matchers = new MatchersPane(this,this);
 	}
 
 	/** Returns the source schema */
@@ -128,9 +132,7 @@ public class QuickAlignFilterPane extends Composite implements SelectionListener
 	
 	/** Handles changes to the matchers pane */
 	public void widgetSelected(SelectionEvent e)
-	{
-		
-	}
+		{ calculateButton.setEnabled(matchers.getMatchers().size()>0); }
 	
 	// Unused event listeners
 	public void widgetDefaultSelected(SelectionEvent e) {}

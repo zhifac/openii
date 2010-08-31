@@ -1,5 +1,7 @@
 package org.mitre.openii.editors.mappings.quickAlign;
 
+import java.util.ArrayList;
+
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
@@ -14,7 +16,9 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.mitre.openii.widgets.BasicWidgets;
+import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.SchemaElement;
+import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
 
 /** Constructs the Quick Alignment Mapping Editor */
 class QuickAlignMatchPane extends Composite implements MouseListener, SelectionListener
@@ -69,9 +73,31 @@ class QuickAlignMatchPane extends Composite implements MouseListener, SelectionL
 	void setSelected(boolean select)
 		{ setBackground(select ? HIGHLIGHT : DEFAULT); }
 	
-	/** Adds an element to the selection pane */
-	void add(Object object)
-		{ viewer.add(object); }
+	/** Updates the matches shown by this pane */
+	void updateMatches(ArrayList<MappingCell> mappingCells, HierarchicalSchemaInfo targetInfo)
+	{
+		// Generate the list of possible matches
+		ArrayList<SchemaElement> elements = new ArrayList<SchemaElement>();
+		if(mappingCells!=null)
+			for(MappingCell mappingCell : mappingCells)
+				elements.add(targetInfo.getElement(mappingCell.getOutput()));
+		
+		// Identify the selected element
+		SchemaElement selectedElement = getTargetElement();
+		if(selectedElement==null && mappingCells!=null)
+			if(mappingCells.size()>0 && mappingCells.get(0).isValidated())
+				selectedElement = elements.get(0);
+
+		// Replace elements in the list
+		viewer.getCombo().removeAll();
+		viewer.add("");
+		for(SchemaElement element : elements)
+			viewer.add(element);
+		
+		// Select the element as needed
+		if(selectedElement!=null)
+			viewer.setSelection(new StructuredSelection(selectedElement), true);
+	}
 
 	/** Returns the source element */
 	SchemaElement getSourceElement()
