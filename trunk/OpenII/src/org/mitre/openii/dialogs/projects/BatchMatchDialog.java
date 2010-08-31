@@ -5,6 +5,7 @@ import java.util.HashMap;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
@@ -46,7 +47,7 @@ import org.mitre.schemastore.model.ProjectSchema;
  * 
  */
 
-public class BatchMatchDialog extends Dialog implements ModifyListener, SelectionListener {
+public class BatchMatchDialog extends TitleAreaDialog implements ModifyListener, SelectionListener {
 
 	private static final long serialVersionUID = 5519403988358398471L;
 
@@ -63,14 +64,14 @@ public class BatchMatchDialog extends Dialog implements ModifyListener, Selectio
 
 	public BatchMatchDialog(Shell shell, Project project) {
 		super(shell);
-		setShellStyle( SWT.RESIZE);
+//		setShellStyle( SWT.RESIZE);
 		this.project = project;
 	}
 
 	/** Configures the dialog shell */
 	protected void configureShell(Shell shell) {
 		super.configureShell(shell);
-		shell.setImage(OpenIIActivator.getImage("BatchMatch.gif"));
+		setTitleImage(OpenIIActivator.getImage("BatchMatch.gif"));
 		shell.setText("Batch Generate Mappings");
 	}
 
@@ -83,6 +84,9 @@ public class BatchMatchDialog extends Dialog implements ModifyListener, Selectio
 
 	/** Creates the contents for the Import Schema Dialog */
 	protected Control createDialogArea(Composite parent) {
+		setTitle("Batch Generate Mappings"); 
+		setMessage("Generate multiple mappings with customize matchers. Disabled mappings already exist. "); 
+		
 		// Construct the main pane
 		Composite pane = new Composite(parent, SWT.DIALOG_TRIM);
 		
