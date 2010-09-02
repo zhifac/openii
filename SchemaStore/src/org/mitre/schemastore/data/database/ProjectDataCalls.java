@@ -9,6 +9,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
@@ -320,42 +321,48 @@ public class ProjectDataCalls extends AbstractDataCalls
 	}
 
 	/** Adds the specified mapping cell */
-	public Integer addMappingCell(MappingCell mappingCell)
-		{ return addMappingCell(mappingCell, true); }
+	public Integer addMappingCells(List<MappingCell> mappingCells)
+		{ return addMappingCells(mappingCells, true); }
 
 	/** Adds the specified mapping cell */
-	private Integer addMappingCell(MappingCell mappingCell, boolean commit)
+	private Integer addMappingCells(List<MappingCell> mappingCells, boolean commit)
 	{
-		// Define various insert statements
-        String mappingCellInsert = "INSERT INTO mapping_cell(id, mapping_id, input_ids, output_id, score, function_id, author, modification_date, notes) VALUES (?,?,?,?,?,?,?,?,?)";
-
-        // Insert the mapping cell
+        // Insert the mapping cells
         Integer mappingCellID = 0;
         try {
-            mappingCellID = getUniversalIDs(1);
-            Date date = new Date(mappingCell.getModificationDate().getTime());
+        	
+        	// Fetch the IDs to use for the mapping cells
+            mappingCellID = getUniversalIDs(mappingCells.size());
+            
+        	// Loop through the mapping cells
+            PreparedStatement stmt = connection.getPreparedStatement("INSERT INTO mapping_cell(id, mapping_id, input_ids, output_id, score, function_id, author, modification_date, notes) VALUES (?,?,?,?,?,?,?,?,?)");
+            for(int i=0; i<mappingCells.size(); i++)
+            {
+            	MappingCell mappingCell = mappingCells.get(i);
+            	Date date = new Date(mappingCell.getModificationDate().getTime());
 
-            // Generate the input IDs
-            String inputIDs = "";
-            for(MappingCellInput input : mappingCell.getInputs())
-            	inputIDs += input.toString().replaceAll(",","&#44;") + ",";
-            inputIDs = inputIDs.substring(0, inputIDs.length()-1);
+	            // Generate the input IDs
+	            String inputIDs = "";
+	            for(MappingCellInput input : mappingCell.getInputs())
+	            	inputIDs += input.toString().replaceAll(",","&#44;") + ",";
+	            inputIDs = inputIDs.substring(0, inputIDs.length()-1);
 
-            // Stores the validated mapping cell
-            PreparedStatement stmt = connection.getPreparedStatement(mappingCellInsert);
-            stmt.setInt(1, mappingCellID);
-            stmt.setInt(2, mappingCell.getMappingId());
-            stmt.setString(3, inputIDs);
-            stmt.setInt(4, mappingCell.getOutput());
-            stmt.setDouble(5, mappingCell.getScore());
-            if(mappingCell.getFunctionID()==null) stmt.setNull(6, Types.INTEGER);
-            else stmt.setInt(6, mappingCell.getFunctionID());
-            stmt.setString(7, scrub(mappingCell.getAuthor(),400));
-            stmt.setDate(8, date);
-            stmt.setString(9, scrub(mappingCell.getNotes(),4096));
-            stmt.executeUpdate();
+	            // Stores the validated mapping cell
+	            stmt.setInt(1, mappingCellID+i);
+	            stmt.setInt(2, mappingCell.getMappingId());
+	            stmt.setString(3, inputIDs);
+	            stmt.setInt(4, mappingCell.getOutput());
+	            stmt.setDouble(5, mappingCell.getScore());
+	            if(mappingCell.getFunctionID()==null) stmt.setNull(6, Types.INTEGER);
+	            else stmt.setInt(6, mappingCell.getFunctionID());
+	            stmt.setString(7, scrub(mappingCell.getAuthor(),400));
+	            stmt.setDate(8, date);
+	            stmt.setString(9, scrub(mappingCell.getNotes(),4096));
+	            stmt.addBatch();
+            }
+            stmt.executeBatch();
             stmt.close();
- 
+	            
         	// Commit the mapping cell to the database
         	if(commit) connection.commit();
         }
@@ -369,13 +376,18 @@ public class ProjectDataCalls extends AbstractDataCalls
 		return mappingCellID;
 	}
 
-	/** Updates the specified mapping cell */
-	public boolean updateMappingCell(MappingCell mappingCell)
+	/** Updates the specified mapping cells */
+	public boolean updateMappingCells(List<MappingCell> mappingCells)
 	{
+		// Get the list of mapping cell IDs
+		ArrayList<Integer> mappingCellIDs = new ArrayList<Integer>();
+		for(MappingCell mappingCell : mappingCells)
+			mappingCellIDs.add(mappingCell.getId());
+		
 		boolean success = true;
 		try {
-            success = success && deleteMappingCell( mappingCell.getId(), false );
-            success = success && (!addMappingCell( mappingCell, false ).equals(Integer.valueOf(0)));
+            success = success && deleteMappingCells(mappingCellIDs, false);
+            success = success && (!addMappingCells(mappingCells, false).equals(Integer.valueOf(0)));
 			if (success) connection.commit();
             else { connection.rollback(); return false; }
         }
@@ -388,17 +400,19 @@ public class ProjectDataCalls extends AbstractDataCalls
         return true;
 	}
 
-	/** Deletes the specified mapping cell */
-	public boolean deleteMappingCell(int mappingCellID)
-		{ return deleteMappingCell(mappingCellID, true); }
+	/** Deletes the specified mapping cells */
+	public boolean deleteMappingCells(List<Integer> mappingCellIDs)
+		{ return deleteMappingCells(mappingCellIDs, true); }
 
-    /** Deletes the specified mapping cell */
-	private boolean deleteMappingCell(int mappingCellID, boolean commit)
+    /** Deletes the specified mapping cells */
+	private boolean deleteMappingCells(List<Integer> mappingCellIDs, boolean commit)
 	{
 		boolean success = false;
 		try {
-			Statement stmt = connection.getStatement();
-            stmt.executeUpdate("DELETE FROM mapping_cell WHERE id="+mappingCellID);
+            PreparedStatement stmt = connection.getPreparedStatement("DELETE FROM mapping_cell WHERE id=?");
+			for(Integer mappingCellID : mappingCellIDs)
+				{ stmt.setInt(1,mappingCellID); stmt.addBatch(); }
+			stmt.executeBatch();
 			stmt.close();
             if(commit) connection.commit();
 			success = true;
@@ -406,7 +420,7 @@ public class ProjectDataCalls extends AbstractDataCalls
 		catch(SQLException e)
 		{
 			try { connection.rollback(); } catch(SQLException e2) {}
-			System.out.println("(E) ProjectDataCalls:deleteMappingCell: "+e.getMessage());
+			System.out.println("(E) ProjectDataCalls:deleteMappingCells: "+e.getMessage());
 		}
 		return success;
 	}

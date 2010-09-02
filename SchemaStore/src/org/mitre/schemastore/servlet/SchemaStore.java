@@ -484,16 +484,20 @@ public class SchemaStore
 		{ return getManager().getProjectCache().getMappingCells(mappingID).toArray(new MappingCell[0]); }
 
 	/** Web service to add the specified mapping cell */
-	public int addMappingCell(MappingCell mappingCell)
-		{ return getManager().getProjectCache().addMappingCell(mappingCell); }
+	public int addMappingCells(MappingCell[] mappingCells)
+		{ return getManager().getProjectCache().addMappingCells(Arrays.asList(mappingCells)); }
 
-	/** Web service to update the specified mapping cell */
-	public boolean updateMappingCell(MappingCell mappingCell)
-		{ return getManager().getProjectCache().updateMappingCell(mappingCell); }
+	/** Web service to update the specified mapping cells */
+	public boolean updateMappingCells(MappingCell[] mappingCells)
+		{ return getManager().getProjectCache().updateMappingCells(Arrays.asList(mappingCells)); }
 	
-	/** Web service to delete the specified mapping cell */
-	public boolean deleteMappingCell(int mappingCellID)
-		{ return getManager().getProjectCache().deleteMappingCell(mappingCellID); }
+	/** Web service to delete the specified mapping cells */
+	public boolean deleteMappingCells(int[] mappingCellIDs)
+	{
+		ArrayList<Integer> ids = new ArrayList<Integer>();
+		for(int mappingCellID : mappingCellIDs) ids.add(mappingCellID);
+		return getManager().getProjectCache().deleteMappingCells(ids);
+	}
 
 	/** Web service indicating if a project has a vocabulary */
 	public boolean hasVocabulary(int projectID)

@@ -4,6 +4,7 @@ package org.mitre.schemastore.data;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import org.mitre.schemastore.data.database.ProjectDataCalls;
 import org.mitre.schemastore.model.Mapping;
@@ -92,16 +93,16 @@ public class ProjectCache extends DataCache
 		{ return dataCalls.getMappingCells(mappingID); }
 
 	/** Add the specified mapping cell */
-	public Integer addMappingCell(MappingCell mappingCell)
-		{ return dataCalls.addMappingCell(mappingCell); }
+	public Integer addMappingCells(List<MappingCell> mappingCells)
+		{ return dataCalls.addMappingCells(mappingCells); }
 
-	/** Update the specified mapping cell */
-	public Boolean updateMappingCell(MappingCell mappingCell)
-		{ return dataCalls.updateMappingCell(mappingCell); }
+	/** Update the specified mapping cells */
+	public Boolean updateMappingCells(List<MappingCell> mappingCells)
+		{ return dataCalls.updateMappingCells(mappingCells); }
 
-	/** Delete the specified mapping cell */
-	public Boolean deleteMappingCell(Integer mappingCellID)
-		{ return dataCalls.deleteMappingCell(mappingCellID); }
+	/** Delete the specified mapping cells */
+	public Boolean deleteMappingCells(List<Integer> mappingCellIDs)
+		{ return dataCalls.deleteMappingCells(mappingCellIDs); }
 
 	/** Gets the vocabulary ID for the specified project */
 	public Integer getVocabularyID(Integer projectID)
