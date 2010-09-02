@@ -548,19 +548,27 @@ public class SchemaStoreClient
 		{ return (Boolean)callMethod("deleteMapping",new Object[] {mappingID}); }
 
 	/** Adds the specified mapping cell to the web service */
-	public Integer addMappingCell(MappingCell mappingCell) throws RemoteException
+	public Integer addMappingCells(ArrayList<MappingCell> mappingCells) throws RemoteException
 	{
-		Integer mappingCellID = (Integer)callMethod("addMappingCell",new Object[] {mappingCell});
+		Integer mappingCellID = (Integer)callMethod("addMappingCells",new Object[] {mappingCells.toArray(new MappingCell[0])});
 		return mappingCellID==0 ? null : mappingCellID;
 	}
 
 	/** Updates the specified mapping cell in the web service */
-	public boolean updateMappingCell(MappingCell mappingCell) throws RemoteException
-		{ return (Boolean)callMethod("updateMappingCell",new Object[] {mappingCell}); }
+	public boolean updateMappingCells(ArrayList<MappingCell> mappingCells) throws RemoteException
+		{ return (Boolean)callMethod("updateMappingCells",new Object[] {mappingCells.toArray(new MappingCell[0])}); }
 
 	/** Deletes the specified mapping from the web service */
-	public boolean deleteMappingCell(Integer mappingCellID) throws RemoteException
-		{ return (Boolean)callMethod("deleteMappingCell",new Object[] {mappingCellID}); }
+	public boolean deleteMappingCells(ArrayList<Integer> mappingCellIDs) throws RemoteException
+	{
+		int idList[] = new int[0];
+		if(mappingCellIDs!=null)
+		{
+			idList = new int[mappingCellIDs.size()];
+			for(int i=0; i<mappingCellIDs.size(); i++) idList[i] = mappingCellIDs.get(i);
+		}
+		return (Boolean)callMethod("deleteMappingCells",new Object[] {idList});
+	}
 
 	/** Gets the list of mapping cells for the specified mapping from the web service */
 	public ArrayList<MappingCell> getMappingCells(Integer mappingID) throws RemoteException
