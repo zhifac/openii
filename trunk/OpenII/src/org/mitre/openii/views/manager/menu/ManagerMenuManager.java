@@ -105,12 +105,16 @@ public class ManagerMenuManager extends MenuManager implements IMenuListener
 			if(!OpenIIManager.isDeletable(((Schema)element).getId())) deleteAction.setEnabled(false);
 			menuManager.add(deleteAction);
 
-			menuManager.add(new Separator());
-			
-			// Display option to create instance database
-			Action createDataSourceAction = new ManagerAction(this,"Create Instance Database",ActionType.CREATE_DATA_SOURCE);
-			if(!((((Schema)element).getType()).equals("Spreadsheet Importer"))) createDataSourceAction.setEnabled(false);
-			menuManager.add(createDataSourceAction);
+			// Display options based on schema type
+			String type = ((Schema)element).getType();
+			if(type.equals("Spreadsheet Importer") || type.equals("Taxonomy"))
+			{
+				menuManager.add(new Separator());
+				if(type.equals("Spreadsheet Importer"))
+					menuManager.add(new ManagerAction(this,"Create Instance Database",ActionType.CREATE_DATA_SOURCE));
+				if(type.equals("Taxonomy"))
+					menuManager.add(new ManagerAction(this,"Display Manifest",ActionType.DISPLAY_MANIFEST));				
+			}
 		}
 		
 		// Display the menu for a selected tag

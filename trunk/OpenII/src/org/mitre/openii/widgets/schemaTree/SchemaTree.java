@@ -129,11 +129,6 @@ public class SchemaTree extends Composite implements ISelectionChangedListener, 
 		if(paths.size()>0)
 			for(SchemaElement element : paths.get(0))
 				schemaViewer.expandToLevel(element,1);
-		
-		// Set the selected element
-//		for(TreePath path : schemaViewer.getExpandedTreePaths())
-//			if(path.getLastSegment().equals(arg0))
-//		schemaViewer.setSelection(selection)
 	}
 	
 	/** Returns the schema associated with this view */
@@ -143,6 +138,10 @@ public class SchemaTree extends Composite implements ISelectionChangedListener, 
 	/** Returns the currently selected element */
 	public Integer getSelectedElement()
 		{ return ((SchemaElement)schemaViewer.getSelection()).getId(); }	
+	
+	/** Locks the schema model */
+	public void lockModel()
+		{ modelSelector.setEnabled(false); }
 	
 	/** Returns the search result for the specified schema element */
 	SchemaSearchResult getSearchResult(Integer elementID)

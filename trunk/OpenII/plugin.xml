@@ -32,6 +32,7 @@
    <extension point="org.eclipse.ui.editors">      
       <editor name="AboutOpenII" icon="icons/About.gif" class="org.mitre.openii.editors.help.AboutOpenIIEditor" id="AboutOpenIIEditor"></editor>
       <editor name="Search" icon="icons/Search.gif" class="org.mitre.openii.editors.search.SearchView" id="SearchView"></editor>
+      <editor name="Manifest" icon="icons/File.gif" class="org.mitre.openii.editors.ManifestView" id="ManifestView"></editor>
       <editor name="Schema" extensions="schema" icon="icons/Schema.gif" class="org.mitre.openii.editors.schemas.schema.SchemaView" id="SchemaView"></editor>
       <editor name="Extension Graph" extensions="schema" icon="icons/Extensions.gif" class="org.mitre.openii.editors.schemas.ExtensionGraphView" id="ExtensionGraphView"></editor>
       <editor name="M3 Model" extensions="schema" icon="icons/Schema.gif" class="org.mitre.openii.editors.schemas.M3SchemaView" id="M3SchemaView"></editor>

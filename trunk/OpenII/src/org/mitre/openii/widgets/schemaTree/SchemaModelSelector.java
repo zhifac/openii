@@ -53,6 +53,10 @@ public class SchemaModelSelector extends Composite
 		return model instanceof SchemaModel ? (SchemaModel)model : null; 
 	}
 	
+	/** Handles the enabling of this component */
+	public void setEnabled(boolean enabled)
+		{ modelList.getCombo().setEnabled(enabled); }
+	
 	/** Adds a listener to the model selector */
 	public void addSelectionChangedListener(ISelectionChangedListener listener)
 		{ modelList.addSelectionChangedListener(listener); }
