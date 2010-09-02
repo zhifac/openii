@@ -3,6 +3,8 @@ package org.mitre.openii.editors.mappings.quickAlign;
 import java.util.ArrayList;
 
 import org.eclipse.jface.viewers.ComboViewer;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseEvent;
@@ -21,7 +23,7 @@ import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
 
 /** Constructs the Quick Alignment Mapping Editor */
-class QuickAlignMatchPane extends Composite implements MouseListener, SelectionListener
+class QuickAlignMatchPane extends Composite implements MouseListener, SelectionListener, ISelectionChangedListener
 {
 	// Stores constants for highlighting the pane
 	static private Color DEFAULT = Display.getCurrent().getSystemColor(SWT.COLOR_WHITE);
@@ -33,6 +35,15 @@ class QuickAlignMatchPane extends Composite implements MouseListener, SelectionL
 	// Stores various components used in the match pane */
 	private Label label = null;
 	private ComboViewer viewer = null;
+	
+	/** Gets the Matches pane */
+	private QuickAlignMatchesPane getMatchesPane()
+	{
+		Composite parent = getParent();
+		while(!(parent instanceof QuickAlignMatchesPane))
+			parent = parent.getParent();
+		return (QuickAlignMatchesPane)parent;
+	}
 	
 	/** Constructs the match pane */
 	QuickAlignMatchPane(Composite parent, SchemaElement sourceElement)
@@ -58,7 +69,7 @@ class QuickAlignMatchPane extends Composite implements MouseListener, SelectionL
 		// Listens for selection of pane
 		addMouseListener(this);
 		label.addMouseListener(this);
-		viewer.getCombo().addMouseListener(this);
+		viewer.addSelectionChangedListener(this);
 	}
 
 	/** Sets the label width */
@@ -109,15 +120,14 @@ class QuickAlignMatchPane extends Composite implements MouseListener, SelectionL
 		Object selection = ((StructuredSelection)viewer.getSelection()).getFirstElement();
 		return selection instanceof SchemaElement ? (SchemaElement)selection : null;
 	}
-
+	
+	/** Handles changes to the selected element */
+	public void selectionChanged(SelectionChangedEvent e)
+		{ getMatchesPane().setSelectedPane(this); }
+	
 	/** Handles the selection of the pane */
 	public void mouseDown(MouseEvent e)
-	{
-		Composite parent = getParent();
-		while(!(parent instanceof QuickAlignMatchesPane))
-			parent = parent.getParent();
-		((QuickAlignMatchesPane)parent).setSelectedPane(this);
-	}
+		{ getMatchesPane().setSelectedPane(this); }
 
 	// Unused event listeners
 	public void widgetDefaultSelected(SelectionEvent e) {}

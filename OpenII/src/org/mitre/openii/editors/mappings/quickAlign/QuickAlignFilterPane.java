@@ -16,6 +16,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
+import org.mitre.harmony.matchers.matchers.Matcher;
 import org.mitre.openii.model.OpenIIManager;
 import org.mitre.openii.widgets.BasicWidgets;
 import org.mitre.openii.widgets.matchers.MatchersPane;
@@ -33,7 +34,7 @@ public class QuickAlignFilterPane extends Composite implements SelectionListener
 {	
 	// Stores reference to the various widgets in this pane
 	private SchemaFocusPane sourcePane, targetPane;
-	private Button calculateButton, saveButton; 
+	private Button calculateButton; 
 	private MatchersPane matchers = null;
 	
 	/** Private class for storing a schema's focus */
@@ -89,7 +90,7 @@ public class QuickAlignFilterPane extends Composite implements SelectionListener
 	}
 	
 	/** Constructs the QuickAlign filter pane */
-	QuickAlignFilterPane(Composite parent, Mapping mapping, SelectionListener listener)
+	QuickAlignFilterPane(Composite parent, Mapping mapping, SelectionListener calculateListener, SelectionListener saveListener)
 	{
 		// Constructs the filter pane
 		super(parent, SWT.NONE);
@@ -114,9 +115,8 @@ public class QuickAlignFilterPane extends Composite implements SelectionListener
 		layout.marginHeight=0; layout.marginWidth=0;
 		buttonPane.setLayout(layout);
 		buttonPane.setLayoutData(new GridData(GridData.FILL_HORIZONTAL | GridData.HORIZONTAL_ALIGN_END));		
-		calculateButton = BasicWidgets.createButton(buttonPane, "Calculate Alignment", listener);
-		saveButton = BasicWidgets.createButton(buttonPane, "Save Mapping", listener);
-		saveButton.setEnabled(false);
+		calculateButton = BasicWidgets.createButton(buttonPane, "Calculate Alignment", calculateListener);
+		BasicWidgets.createButton(buttonPane, "Save Mapping", saveListener);
 		
 		// Constructs the matcher pane
 		matchers = new MatchersPane(this,this);
@@ -129,6 +129,10 @@ public class QuickAlignFilterPane extends Composite implements SelectionListener
 	/** Returns the target schema */
 	FilteredSchemaInfo getTargetSchema()
 		{ return targetPane.getSchema(); }
+	
+	/** Returns the list of matchers to use */
+	ArrayList<Matcher> getMatchers()
+		{ return matchers.getMatchers(); }
 	
 	/** Handles changes to the matchers pane */
 	public void widgetSelected(SelectionEvent e)
