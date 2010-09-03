@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
+import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TreePath;
@@ -117,7 +118,15 @@ public class SchemaTree extends Composite implements ISelectionChangedListener, 
 		schemaViewer.getTree().getItem(0).setExpanded(true);
 		schemaViewer.refresh();
 	}
+	
+	/** Returns the schema associated with this view */
+	public HierarchicalSchemaInfo getSchema()
+		{ return schema; }
 
+	/** Returns the currently selected element */
+	public Integer getSelectedElement()
+		{ return ((SchemaElement)schemaViewer.getSelection()).getId(); }		
+	
 	/** Sets the selected element */
 	public void setSelectedElement(Integer elementID)
 	{
@@ -131,13 +140,9 @@ public class SchemaTree extends Composite implements ISelectionChangedListener, 
 				schemaViewer.expandToLevel(element,1);
 	}
 	
-	/** Returns the schema associated with this view */
-	public HierarchicalSchemaInfo getSchema()
-		{ return schema; }
-	
-	/** Returns the currently selected element */
-	public Integer getSelectedElement()
-		{ return ((SchemaElement)schemaViewer.getSelection()).getId(); }	
+	/** Adds a double click listener to the schema tree */
+	public void addDoubleClickListener(IDoubleClickListener listener)
+		{ schemaViewer.addDoubleClickListener(listener); }
 	
 	/** Locks the schema model */
 	public void lockModel()
