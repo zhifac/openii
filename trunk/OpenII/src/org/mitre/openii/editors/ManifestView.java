@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.jface.viewers.DoubleClickEvent;
+import org.eclipse.jface.viewers.IDoubleClickListener;
+import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -11,6 +14,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
+import org.mitre.openii.editors.schemas.schema.SchemaView;
 import org.mitre.openii.model.OpenIIManager;
 import org.mitre.openii.widgets.schemaTree.SchemaTree;
 import org.mitre.schemastore.model.Domain;
@@ -19,13 +23,14 @@ import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.Project;
 import org.mitre.schemastore.model.Relationship;
+import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.Subtype;
 import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
 import org.mitre.schemastore.model.schemaInfo.SchemaInfo;
 
 /** Constructs the Manifest View */
-public class ManifestView extends OpenIIEditor
+public class ManifestView extends OpenIIEditor implements IDoubleClickListener
 {	
 	/** Provides unique ID values to the schema */
 	private int counter = -100;
@@ -89,7 +94,7 @@ public class ManifestView extends OpenIIEditor
 					String name = alignedSchema.getDisplayName(input) + " (" + alignedSchema.getSchema().getName() + ")";
 					String description = alignedElement.getDescription();
 					Integer entityID = manifestElement.getId();
-					manifest.addElement(new Relationship(counter--,name,description,entityID,null,null,domainID,null,null,null));
+					manifest.addElement(new Relationship(counter--,name,description,entityID,null,null,domainID,null,null,mapping.getSourceId()));
 				}
 			}
 		}
@@ -116,6 +121,15 @@ public class ManifestView extends OpenIIEditor
 		// Layout the menu pane and tree pane
 		SchemaTree schemaTree = new SchemaTree(pane, generateManifest(getElementID()));
 		schemaTree.lockModel();
+		schemaTree.addDoubleClickListener(this);
+	}
+
+	/** Handles the double clicking of an element */
+	public void doubleClick(DoubleClickEvent e)
+	{
+		Relationship relationship = (Relationship)((TreeSelection)e.getSelection()).getFirstElement();
+		Schema schema = OpenIIManager.getSchema(relationship.getBase());
+		SchemaView.launchEditor(schema, relationship.getName().replaceAll(" \\(.*", ""));
 	}
 	
 	// Default instantiations of editor functions
