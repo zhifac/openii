@@ -13,12 +13,12 @@ import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.mitre.openii.model.OpenIIManager;
 import org.mitre.openii.widgets.schemaTree.SchemaTree;
-import org.mitre.schemastore.model.Attribute;
 import org.mitre.schemastore.model.Domain;
 import org.mitre.schemastore.model.Entity;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.Project;
+import org.mitre.schemastore.model.Relationship;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.Subtype;
 import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
@@ -86,10 +86,10 @@ public class ManifestView extends OpenIIEditor
 				for(Integer input : mappingCell.getElementInputIDs())
 				{
 					SchemaElement alignedElement = alignedSchema.getElement(input);
-					String name = alignedSchema.getDisplayName(input);
+					String name = alignedSchema.getDisplayName(input) + " (" + alignedSchema.getSchema().getName() + ")";
 					String description = alignedElement.getDescription();
 					Integer entityID = manifestElement.getId();
-					manifest.addElement(new Attribute(counter--,name,description,entityID,domainID,null,null,false,null));
+					manifest.addElement(new Relationship(counter--,name,description,entityID,null,null,domainID,null,null,null));
 				}
 			}
 		}
