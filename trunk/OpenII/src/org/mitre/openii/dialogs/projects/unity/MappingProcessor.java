@@ -16,6 +16,7 @@ import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.Project;
 import org.mitre.schemastore.model.ProjectSchema;
+import org.mitre.schemastore.model.mappingInfo.MappingInfoExt;
 import org.mitre.schemastore.model.schemaInfo.FilteredSchemaInfo;
 import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
 
@@ -148,7 +149,7 @@ public class MappingProcessor {
 		for (Mapping mapping : OpenIIManager.getMappings(project.getId())) {
 			ProjectSchema schema1 = schemas.get(mapping.getSourceId());
 			ProjectSchema schema2 = schemas.get(mapping.getTargetId());
-
+			
 			// empty mapping object with mapping cell
 			if (OpenIIManager.getMappingCells(mapping.getId()).size() <= 0) {
 				OpenIIManager.deleteMapping(mapping.getId());

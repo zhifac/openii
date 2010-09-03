@@ -15,12 +15,14 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Listener;
@@ -206,13 +208,28 @@ public class GenerateVocabularyDialog extends TitleAreaDialog implements ModifyL
 		}
 
 		// Add double click and edit text listener to ranking column
-		final int rankingColumn = 1;
+		final int schemaCol = 0;
+		final int rankCol = 1;
 		final TableEditor editor = new TableEditor(table);
 		editor.horizontalAlignment = SWT.LEFT;
 		editor.grabHorizontal = true;
 
-		// create combo options that allows the user to resort the importance of
-		// the schemas
+		// create a cursor for mouseover ranking editor event
+		table.addListener(SWT.MouseHover, new Listener() {
+			public void handleEvent(Event event) {
+				Point pt = new Point(event.x, event.y);
+
+				for (int tableItemIDX = table.getTopIndex(); tableItemIDX < table.getItemCount(); tableItemIDX++) {
+					// check if clicked in ranking column
+					final TableItem item = table.getItem(tableItemIDX);
+					Rectangle rect = item.getBounds(rankCol);
+					if (rect.contains(pt)) 
+						table.setCursor(new Cursor(Display.getCurrent(), SWT.CURSOR_HAND)); 
+				}
+			}
+		}); 
+
+		// create combo options that allows the user to rank the schemas
 		table.addListener(SWT.MouseDoubleClick, new Listener() {
 			public void handleEvent(Event event) {
 				// Get event location
@@ -223,7 +240,7 @@ public class GenerateVocabularyDialog extends TitleAreaDialog implements ModifyL
 					// check if clicked in ranking column
 					boolean visible = false;
 					final TableItem item = table.getItem(tableItemIDX);
-					Rectangle rect = item.getBounds(rankingColumn);
+					Rectangle rect = item.getBounds(rankCol);
 					if (rect.contains(pt)) {
 						final CCombo combo = new CCombo(table, SWT.READ_ONLY);
 						String[] options = new String[schemas.size()];
@@ -235,12 +252,12 @@ public class GenerateVocabularyDialog extends TitleAreaDialog implements ModifyL
 						combo.addSelectionListener(new SelectionAdapter() {
 							public void widgetSelected(SelectionEvent event) {
 								// Reorder the rows after a new assignment
-								reorderTableRows(item, Integer.parseInt(item.getText(rankingColumn)) - 1, Integer.parseInt(combo.getText()) - 1);
+								reorderTableRows(item, Integer.parseInt(item.getText(rankCol)) - 1, Integer.parseInt(combo.getText()) - 1);
 								combo.dispose();
 							}
 
 							private void reorderTableRows(TableItem item, int oldIndex, int newIndex) {
-								String updateItemName = item.getText(0);
+								String updateItemName = item.getText(schemaCol);
 								if (oldIndex == newIndex)
 									return;
 
@@ -248,8 +265,8 @@ public class GenerateVocabularyDialog extends TitleAreaDialog implements ModifyL
 								// forward
 								else if (oldIndex > newIndex) {
 									for (int i = oldIndex; i > newIndex; i--) {
-										table.getItem(i).setText(0, table.getItem(i - 1).getText());
-										table.getItem(i).setText(1, Integer.toString(i + 1));
+										table.getItem(i).setText(schemaCol, table.getItem(i - 1).getText());
+										table.getItem(i).setText(rankCol, Integer.toString(i + 1));
 									}
 								}
 
@@ -257,19 +274,21 @@ public class GenerateVocabularyDialog extends TitleAreaDialog implements ModifyL
 								// backward
 								else if (oldIndex < newIndex) {
 									for (int i = oldIndex; i < newIndex; i++) {
-										table.getItem(i).setText(0, table.getItem(i + 1).getText());
-										table.getItem(i).setText(1, Integer.toString(i + 1));
+										table.getItem(i).setText(schemaCol, table.getItem(i + 1).getText());
+										table.getItem(i).setText(rankCol, Integer.toString(i + 1));
 									}
 								}
 
-								table.getItem(newIndex).setText(0, updateItemName);
-								table.getItem(newIndex).setText(1, Integer.toString(newIndex + 1));
+								// Finally update the moved item to the new row
+								table.getItem(newIndex).setText(schemaCol, updateItemName);
+								table.getItem(newIndex).setText(rankCol, Integer.toString(newIndex + 1));
+								table.setSelection(newIndex);
 							}
 						});
 
 						combo.setFocus();
-						combo.select(combo.indexOf(item.getText(rankingColumn)));
-						editor.setEditor(combo, item, rankingColumn);
+						combo.select(combo.indexOf(item.getText(rankCol)));
+						editor.setEditor(combo, item, rankCol);
 						return;
 					}
 					if (!visible && rect.intersects(clientArea))
@@ -280,6 +299,8 @@ public class GenerateVocabularyDialog extends TitleAreaDialog implements ModifyL
 				}
 			}
 		});
+		
+		table.setFocus(); 
 
 		return table;
 	}
