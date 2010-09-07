@@ -157,8 +157,8 @@ public class ManagerMenuManager extends MenuManager implements IMenuListener
 			menuManager.add(new Separator());
 			menuManager.add(new ManagerAction(this, "Batch Mapping", ActionType.BATCH_MATCH));
 			menuManager.add(new ManagerAction(this,"Import Mapping",ActionType.IMPORT_MAPPING));
-			menuManager.add(new ManagerAction(this,"Generate Vocabulary (DSF)",ActionType.GENERATE_VOCABULARY));
-			menuManager.add(new ManagerAction(this,"Generate Vocabulary (HC)",ActionType.GENERATE_VOCABULARY_WIZARD));
+			menuManager.add(new ManagerAction(this,"Generate Vocabulary (DSF-new)",ActionType.GENERATE_VOCABULARY));
+			menuManager.add(new ManagerAction(this,"Generate Vocabulary (HC-old)",ActionType.GENERATE_VOCABULARY_WIZARD));
 		}
 		
 		// Display the menu for a selected mapping
