@@ -18,19 +18,30 @@ package org.mitre.openii.editors.vocabulary;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.custom.TableEditor;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowData;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
@@ -38,7 +49,9 @@ import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
@@ -46,9 +59,13 @@ import org.eclipse.swt.widgets.Text;
 import org.mitre.openii.application.OpenIIActivator;
 import org.mitre.openii.model.OpenIIManager;
 import org.mitre.schemastore.model.AssociatedElement;
+import org.mitre.schemastore.model.Mapping;
+import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.Term;
 import org.mitre.schemastore.model.Vocabulary;
+import org.mitre.schemastore.model.mappingInfo.AssociatedElementHash;
+import org.mitre.schemastore.model.mappingInfo.MappingInfoExt;
 import org.mitre.schemastore.model.schemaInfo.SchemaInfo;
 
 
@@ -60,10 +77,14 @@ public class VocabViewCanvas extends Canvas {
 	private ArrayList<Term> termsArray; 	
 	private Table table;
 	private Vocabulary vocab;
+	private Composite viewsParent;
+	private ArrayList<Point> highlightedTableItems;
+	private ArrayList<Mapping> mappings;
 	
 	public VocabViewCanvas(Composite parent, int style, Vocabulary vocabulary) {		
 		super(parent, style | SWT.EMBEDDED);
-
+		viewsParent = parent;
+		
 		vocab = vocabulary;
 		schemaIDs = vocabulary.getSchemaIDs();
 		setSchemaNames(schemaIDs);
@@ -75,6 +96,12 @@ public class VocabViewCanvas extends Canvas {
 			Term t = terms[i];
 			termsArray.add(i, t);
 		}
+		
+		highlightedTableItems = new ArrayList<Point>();
+		
+		Integer projID = vocab.getProjectID();
+		mappings = OpenIIManager.getMappings(projID);
+
 		
 		createVocabView();
 	}
@@ -111,7 +138,7 @@ public class VocabViewCanvas extends Canvas {
 		id = id.scaledTo(25, 20);
 		Image iconImageScaled = new Image(display, id);	
 		buttonMostGroupEs.setImage(iconImageScaled);
-		buttonMostGroupEs.setToolTipText("Sorts from most elements in a row to least");
+		buttonMostGroupEs.setToolTipText("Sorts from most to least agreement (most elements in a row to least)");
 		
 		Button buttonLeastGroupEs = new Button(buttonsC, SWT.PUSH);
 		Image iconImage2 = OpenIIActivator.getImage("downIcon4.PNG");
@@ -119,9 +146,14 @@ public class VocabViewCanvas extends Canvas {
 		id2 = id2.scaledTo(25, 20);
 		Image iconImageScaled2 = new Image(display, id2);
 		buttonLeastGroupEs.setImage(iconImageScaled2);
-		buttonLeastGroupEs.setToolTipText("Sorts from least elements in a row to most");		 
+		buttonLeastGroupEs.setToolTipText("Sorts from least to most agreement (least elements in a row to most)");		 
 		
-		buttonsC.setLayoutData(new RowData(105, 30));
+		Button searchButton = new Button(buttonsC, SWT.PUSH);
+		searchButton.setText("Search");
+		searchButton.setToolTipText("Finds all occurences of a term in the spreadsheet (does not search documentation)");
+		
+		
+		buttonsC.setLayoutData(new RowData(155, 30));
 				
 		//creating spreadsheet-evidence split pane
 		final SashForm sash = new SashForm(this, SWT.VERTICAL);
@@ -158,18 +190,25 @@ public class VocabViewCanvas extends Canvas {
 			tempC.addListener(SWT.Selection, sortAlphabeticallyListener);
 
 			if(i==0){
-				tempC.setToolTipText("Double click a cell in the Vocabulary column to edit the Canonical term");
+				tempC.setToolTipText("Double click a cell in the Vocabulary column to edit the vocabulary term");
 			}
 		}
 		
+
+		//Color widghetLightShadow  = this.getDisplay().getSystemColor(SWT.COLOR_WIDGET_LIGHT_SHADOW);
 		
 		//create one row for each synset
 		TableItem tempI;
 		for(int i=0; i<termsArray.size(); i++){
 			tempI = new TableItem(table, SWT.NONE);
-			
+			//if(i%2 == 0){
+				//tempI.setBackground(widghetLightShadow);
+			//}
+		
 			tempI.setText(0, termsArray.get(i).getName());
-									
+			Font boldFont = new Font(Display.getDefault(), new FontData("Arial", 8, SWT.BOLD));
+			tempI.setFont(0, boldFont);
+			
 			AssociatedElement[] elements = termsArray.get(i).getElements();
 			for(int j=0; j<elements.length; j++) {
 			/*for(int j=0; j<elements.length+1; j++) {
@@ -180,7 +219,7 @@ public class VocabViewCanvas extends Canvas {
 					if(current == null || current == ""){
 						tempI.setText(colNum, "fakeEle");
 					}else{
-						tempI.setText(colNum, current + "\n" + "fakeEle");
+						tempI.setText(colNum, current + ", " + "fakeEle");
 					}	
 
 				}else{  */
@@ -209,9 +248,29 @@ public class VocabViewCanvas extends Canvas {
 		
 		
 		//creating evidence portion of the GUI
-		//final Text textControl = new Text(sash, SWT.MULTI | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
-		final StyledText textControl = new StyledText(sash, SWT.MULTI | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
-		textControl.setText("<Select a row in the table to see evidence for that synset>");
+		//final StyledText textControl = new StyledText(sash, SWT.MULTI | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
+		//textControl.setText("<Select a row in the table to see evidence for that synset>");
+
+		final Table evidenceTable = new Table(sash, SWT.BORDER);
+		evidenceTable.setHeaderVisible(true);
+		//evidenceTable.setLinesVisible(true);
+		TableColumn evidence_elementNameCol = new TableColumn(evidenceTable, SWT.NONE);
+		evidence_elementNameCol.setText("Element Name");
+		evidence_elementNameCol.setWidth(100);
+		//evidence_elementNameCol.addListener(SWT.Selection, sortResultsAlphabeticallyListener);
+		
+		TableColumn evidence_elementDescCol = new TableColumn(evidenceTable, SWT.NONE);
+		evidence_elementDescCol.setText("Description");
+		evidence_elementDescCol.setWidth(200);
+		//evidence_elementDescCol.addListener(SWT.Selection, sortResultsAlphabeticallyListener);
+		
+		TableColumn evidence_elementMatchesCol = new TableColumn(evidenceTable, SWT.NONE);
+		evidence_elementMatchesCol.setText("Related Elements");
+		evidence_elementMatchesCol.setWidth(200);
+		//evidence_elementNameCol.addListener(SWT.Selection, sortResultsAlphabeticallyListener);
+		
+		
+		
 		
 		sash.setWeights(new int[]{75, 25});
 		
@@ -238,6 +297,7 @@ public class VocabViewCanvas extends Canvas {
 						final TableEditor editor = new TableEditor(table);
 						final Text text = new Text(table, SWT.NONE);
 						text.setText(termsArray.get(table.getSelectionIndex()).getName());
+						
 						//System.out.println("prev name: " + termsArray.get(table.getSelectionIndex()).getName());
 						TableItem ti = table.getItem(table.getSelectionIndex());
 						editor.setEditor(text, ti, 0); 
@@ -298,40 +358,11 @@ public class VocabViewCanvas extends Canvas {
 			public void handleEvent(Event event){
 				Integer rowNumSelected = table.getSelectionIndex();
 				Term termSelected = termsArray.get(rowNumSelected);
-				String synset = termSelected.getName();				
-				String evidenceText = "\"" + synset + "\" \n\n";
-			
-				AssociatedElement[] aes = termSelected.getElements();
-				for(int i=0; i<aes.length; i++){
-						String elementName = aes[i].getName();
-						
-						Integer schemaID = aes[i].getSchemaID();
-						SchemaInfo si = OpenIIManager.getSchemaInfo(schemaID);
-
-						Integer eleID = aes[i].getElementID();
-						String elementDescription = si.getElement(eleID).getDescription();						
-						String containingSchemaName = si.getSchema().getName();
-						
-						evidenceText += elementName + ":\t\t" + elementDescription;
-						evidenceText += " (from " + containingSchemaName + ")\n";
-
-
-				}
-
-				
-				StyleRange style1 = new StyleRange();
-				style1.start = 0;
-				style1.length = synset.length() + 2;
-				style1.underline = true;
-
-				textControl.setText(evidenceText);	
-				textControl.setStyleRange(style1);
+				displayEvidence(evidenceTable, termSelected);
 			}
 		});
 
 
-		
-		
 		//sorting from most to least GroupEs 
 		buttonMostGroupEs.addListener(SWT.Selection, new Listener(){
 		public void handleEvent(Event event){
@@ -346,6 +377,12 @@ public class VocabViewCanvas extends Canvas {
 			sortTableItems(2, -1);
 		}
 	});
+		
+		searchButton.addListener(SWT.Selection, new Listener(){
+			public void handleEvent(Event event) {
+				createSearchDialog();
+			}
+		});
 
 		//adding resize capability so fills in space nicely
 		this.addListener(SWT.Resize, new Listener(){
@@ -358,18 +395,7 @@ public class VocabViewCanvas extends Canvas {
 		});	
 	}
 
-	//getting the icons that represent the type of entity in a cell
-	/*private Image getImageForClass(String className){		
-		if(className.compareTo("class org.mitre.schemastore.model.Containment") ==0){
-			return OpenIIActivator.getImage("Containment.jpg");
-		}else if(className.compareTo("class org.mitre.schemastore.model.DomainValue") ==0){
-			return OpenIIActivator.getImage("DomainValue.jpg");
-		}else if(className.compareTo("class org.mitre.schemastore.model.Attribute") ==0){
-			return OpenIIActivator.getImage("Attribute.jpg");				
-		}else{
-			return null;
-		}
-	} */
+
 	
 	//if sortBy= 1 it will sort from most to least GroupEs
 	//if sortBy= 2 it will sort from least to most GroupEs
@@ -413,6 +439,9 @@ public class VocabViewCanvas extends Canvas {
 					TableItem movedItem = new TableItem(table, SWT.NONE, j);
 					movedItem.setText(tempRow);
 					movedItem.setImage(tempImages);		
+					Font boldFont = new Font(Display.getDefault(), new FontData("Arial", 8, SWT.BOLD));
+					movedItem.setFont(0, boldFont);
+
 					
 					//need to reorder the Terms array too
 					Term temp = termsArray.get(i);
@@ -434,4 +463,232 @@ public class VocabViewCanvas extends Canvas {
 	private int getY(){
 		return this.getBounds().height;
 	}
+	
+	
+	//TO DO:
+	//1) if a user sorts a column in the real data table... update the y location in the data of the search results table & in the highlightedTableItems array
+	//2) autoscroll the table to selected item
+	
+	//creating the dialog that pops up when a user clicks on the search button
+	private void createSearchDialog(){
+		Display display = viewsParent.getDisplay();
+		final Shell searchDialog = new Shell(display, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
+		//final Shell searchDialog = new Shell(display);
+		searchDialog.setText("Vocabulary Search");
+		searchDialog.setLayout(new GridLayout(2, false));
+		searchDialog.setSize(400, 500);
+		
+		Label label = new Label(searchDialog, SWT.NULL);
+		label.setText("Search:");
+		final Text searchField = new Text(searchDialog, SWT.SEARCH);
+		searchField.setLayoutData(new GridData(GridData.FILL));
+		
+		final Table resultsTable = new Table(searchDialog, SWT.BORDER | SWT.FULL_SELECTION);
+		resultsTable.setHeaderVisible(true);
+		resultsTable.setLinesVisible(true);
+		GridData gd = new GridData();
+		gd.horizontalSpan = 2;
+		gd.heightHint = 250;
+		resultsTable.setLayoutData(gd);			
+
+		//adding Listener to sort columns alphabetically alphabetically
+	    Listener sortResultsAlphabeticallyListener = new Listener() {
+	        public void handleEvent(Event e) {
+	            //finding the column number
+	        	TableColumn col = (TableColumn)e.widget;
+	            int colNum = 0;
+	            for(int i=0; i<resultsTable.getColumnCount(); i++){
+	            	if(col == resultsTable.getColumn(i)){
+	            		colNum = i;
+	            	}
+	            }
+	            
+	            //sort items alphabetically base on that column
+	        	TableItem[] allRows = resultsTable.getItems();
+	    		//for each row in the table, starting with the 2nd
+	    		for(int i=1; i<allRows.length; i++){
+	    			//compare the row to all previously sorted rows
+	    			for(int j=0; j<i; j++){
+    					if(allRows[i].getText(colNum).compareToIgnoreCase(allRows[j].getText(colNum)) < 0){
+	    							String[] tempRow = new String[3];
+	    							Image[] tempImage = new Image[3];
+	    							Object tempData = allRows[i].getData();
+	    							for(int k=0; k<3; k++){
+	    								tempRow[k] = allRows[i].getText(k);
+	    								tempImage[k] = allRows[i].getImage(k);
+	    							}
+	    							
+	    							//get rid of the previous ith row
+	    							allRows[i].dispose();
+	    							
+	    							TableItem movedItem = new TableItem(resultsTable, SWT.NONE, j);
+	    							movedItem.setText(tempRow);
+	    							movedItem.setData(tempData);
+	    							movedItem.setImage(tempImage);
+	    							
+	    							//now work with new table items, and go on to next row
+	    							allRows = resultsTable.getItems();
+	    							break;
+	    				}
+	    			}
+	    		}
+	        }
+	    };
+	    
+		TableColumn synsetNameCol = new TableColumn(resultsTable, SWT.NONE);
+		synsetNameCol.setText("Vocabulary Term");
+		synsetNameCol.setWidth(100);
+		synsetNameCol.addListener(SWT.Selection, sortResultsAlphabeticallyListener);
+		
+		TableColumn schemaNameCol = new TableColumn(resultsTable, SWT.NONE);
+		schemaNameCol.setText("Source");
+		schemaNameCol.setWidth(100);
+		schemaNameCol.addListener(SWT.Selection, sortResultsAlphabeticallyListener);
+		
+		TableColumn textCol = new TableColumn(resultsTable, SWT.NONE);
+		textCol.setText("Source Term");
+		textCol.setWidth(100);
+		textCol.addListener(SWT.Selection, sortResultsAlphabeticallyListener);
+	
+	    
+		searchField.addSelectionListener(new SelectionAdapter(){
+			public void widgetDefaultSelected(SelectionEvent e){
+				String searchTerm = searchField.getText();
+				if(searchTerm != null && searchTerm != ""){
+					displaySearchResults(resultsTable, searchTerm);
+				}
+			}
+		});
+		
+
+		
+		resultsTable.addListener(SWT.Selection, new Listener(){
+			public void handleEvent(Event event){
+				//un-highlight any previously selected cells
+				for(int i=0; i<highlightedTableItems.size(); i++){
+					Point location = highlightedTableItems.get(i);
+					table.getItem(location.x).setBackground(location.y, table.getDisplay().getSystemColor(SWT.COLOR_LIST_BACKGROUND));
+				}
+				
+				//highlight the selected searchresults cell in the table
+				TableItem[] selectedItem = resultsTable.getSelection();
+				table.deselectAll();
+				for(int i=0; i<selectedItem.length; i++){
+					//System.out.println("selected: " + selectedItem[i].getText(0));
+					Point location = (Point)selectedItem[i].getData();
+					//System.out.println("location: " + location.x + " " + location.y);
+					table.setTopIndex(location.x);
+					table.getItem(location.x).setBackground(location.y, table.getDisplay().getSystemColor(SWT.COLOR_YELLOW));
+					highlightedTableItems.add(location);
+				}
+			}
+		});
+		
+		searchDialog.addDisposeListener(new DisposeListener(){
+			public void widgetDisposed(DisposeEvent e) {
+				//un-highlight any previously selected cells
+				for(int i=0; i<highlightedTableItems.size(); i++){
+					Point location = highlightedTableItems.get(i);
+					table.getItem(location.x).setBackground(location.y, table.getDisplay().getSystemColor(SWT.COLOR_LIST_BACKGROUND));
+				}
+			}
+		});
+		
+		searchDialog.pack();
+		searchDialog.open();
+	}
+	
+	//displays the evidence in the evidenceTable
+	private void displayEvidence(Table evidTable, Term selectedTerm){
+		//clear all of the previous table items
+		TableItem[] allRows = evidTable.getItems();
+		for(int i=0; i<allRows.length; i++){
+			allRows[i].dispose();
+		}
+
+		//add the first row to be the vocab term, and description
+		TableItem vocabItem = new TableItem(evidTable, SWT.NONE);
+		vocabItem.setText(0, selectedTerm.getName());
+		vocabItem.setText(1, selectedTerm.getDescription());
+		Font boldFont = new Font(Display.getDefault(), new FontData("Arial", 8, SWT.BOLD));
+		vocabItem.setFont(0, boldFont);
+		
+		//add in evidence for each element associated with the vocab term	
+		AssociatedElement[] aes = selectedTerm.getElements();
+		//System.out.println("saw this many associated elements: " + aes.length);
+
+		for(int i=0; i<aes.length; i++){
+				String elementName = aes[i].getName();
+		
+				//get the original element's ID and description
+				Integer schemaID = aes[i].getSchemaID();
+				SchemaInfo si = OpenIIManager.getSchemaInfo(schemaID);
+				Integer eleID = aes[i].getElementID();
+				String elementDescription = si.getElement(eleID).getDescription();						
+				String containingSchemaName = si.getSchema().getName();
+				
+				//System.out.println("creating Table Item " + i);
+				TableItem nextItem = new TableItem(evidTable, SWT.NONE);
+				//nextItem.setText(0, "(" + containingSchemaName + ")" + elementName);
+				nextItem.setText(0, elementName);
+				nextItem.setText(1, elementDescription);
+
+				String relatedElements = "TBD";
+				/*for(Mapping m : mappings){
+					ArrayList<MappingCell> mappingCells = OpenIIManager.getMappingCells(m.getId());					
+					MappingInfoExt mix = new MappingInfoExt(m, mappingCells);
+					AssociatedElementHash aeh = mix.getMappingCells();
+					ArrayList<MappingCell> alm = aeh.get(eleID);
+					for(MappingCell mc : alm){
+						System.out.println(mc.toString());
+						relatedElements += mc.toString();
+					}
+				} */
+				
+				//column 2 is for Related Elements
+				nextItem.setText(2, relatedElements);	
+		}
+	}
+	
+	
+	//displays the search results table in the search vocabulary dialog box
+	private void displaySearchResults(Table tableForSearchResults, String searchTerm){
+		//clear all of the previous table items
+		TableItem[] allRows = tableForSearchResults.getItems();
+		for(int i=0; i<allRows.length; i++){
+			allRows[i].dispose();
+		}
+
+		//want to find substrings
+		Pattern pattern = Pattern.compile("(?i)" + searchTerm);
+
+		//as items are found in the vocabulary viewer table, put the appropriate information in the search results table		
+		TableItem[] allVocabRows = table.getItems();
+		for(Integer i=0; i<allVocabRows.length; i++){
+			for(int j=0; j<table.getColumnCount(); j++){
+				String vocabCellText = allVocabRows[i].getText(j);
+				
+				//want to find substrings
+				Matcher matcher = pattern.matcher(vocabCellText);
+				
+				
+				if(matcher.find()){	
+				//if(vocabCellText.compareToIgnoreCase(searchTerm) == 0){
+					TableItem tempI = new TableItem(tableForSearchResults, SWT.NONE);
+					tempI.setText(0, allVocabRows[i].getText(0));
+					tempI.setText(1, table.getColumn(j).getText());
+					//tempI.setText(2, searchTerm);
+					tempI.setText(2, vocabCellText);
+					
+					tempI.setImage(2, allVocabRows[i].getImage(j));
+
+					Point location = new Point(i, j);
+					tempI.setData(location);
+				}
+			}
+			
+		}
+		
+	}
 }
+
