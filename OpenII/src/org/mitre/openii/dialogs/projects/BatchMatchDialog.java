@@ -7,6 +7,7 @@ import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionEvent;
@@ -51,19 +52,27 @@ public class BatchMatchDialog extends TitleAreaDialog implements ModifyListener,
 	private static final long serialVersionUID = 5519403988358398471L;
 
 	private Project project;
+	private ArrayList<Pair<ProjectSchema>> selectedNewMappingList = new ArrayList<Pair<ProjectSchema>>();
+	// private ArrayList<Pair<ProjectSchema>> checkedMappingList = new
+	// ArrayList<Pair<ProjectSchema>>();
+	private HashMap<String, Pair<ProjectSchema>> mappingHash = new HashMap<String, Pair<ProjectSchema>>();
+	private ArrayList<Pair<ProjectSchema>> existingMappingList = new ArrayList<Pair<ProjectSchema>>();;
+
 	private MatchersPane matchersPane;
 	private Text authorField;
 	private Text descriptionField;
-	private ArrayList<Pair<ProjectSchema>> selectedNewMappingList = new ArrayList<Pair<ProjectSchema>>();
-	private ArrayList<Pair<ProjectSchema>> checkedMappingList = new ArrayList<Pair<ProjectSchema>>();
-	private HashMap<String, Pair<ProjectSchema>> mappingHash = new HashMap<String, Pair<ProjectSchema>>();
-	private Group schemaGroupPane;
+
 	private ArrayList<Button> mappingButtons;
+
+	private Group schemaGroupPane;
+
 	private Group mappingPane;
+
+	private Group existMappingPane;
 
 	public BatchMatchDialog(Shell shell, Project project) {
 		super(shell);
-		setShellStyle( SWT.RESIZE | SWT.TITLE | SWT.CLOSE | SWT.V_SCROLL | SWT.V_SCROLL | SWT.SCROLL_PAGE );
+		setShellStyle(SWT.RESIZE | SWT.TITLE | SWT.CLOSE );
 		this.project = project;
 	}
 
@@ -83,20 +92,20 @@ public class BatchMatchDialog extends TitleAreaDialog implements ModifyListener,
 
 	/** Creates the contents for the Import Schema Dialog */
 	protected Control createDialogArea(Composite parent) {
-		setTitle("Batch Generate Mappings"); 
-		setMessage("Generate multiple mappings with customize matchers. Disabled mappings already exist. "); 
-		
+		setTitle("Batch Generate Mappings");
+		setMessage("Generate multiple mappings with customize matchers. Disabled mappings already exist. ");
+
 		// Construct the main pane
-		Composite pane = new Composite(parent, SWT.DIALOG_TRIM);
-		
+		Composite pane = new Composite(parent, SWT.DIALOG_TRIM );
+
 		// Set the pane layout
 		GridLayout layout = new GridLayout(1, false);
 		layout.marginWidth = 8;
 		pane.setLayout(layout);
-		
+
 		// Define the pane width
 		GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
-		gridData.widthHint = 450; 
+		gridData.widthHint = 450;
 		pane.setLayoutData(gridData);
 
 		// Generate the pane components
@@ -104,7 +113,7 @@ public class BatchMatchDialog extends TitleAreaDialog implements ModifyListener,
 		createMappingPane(pane);
 		createMappingGroupPane(pane);
 		matchersPane = new MatchersPane(pane, this);
-		
+
 		return pane;
 	}
 
@@ -127,6 +136,7 @@ public class BatchMatchDialog extends TitleAreaDialog implements ModifyListener,
 	private void createMappingGroupPane(Composite parent) {
 		schemaGroupPane = new Group(parent, SWT.NONE);
 		schemaGroupPane.setText("Mapping Groups");
+		schemaGroupPane.setToolTipText("Each group demonstrates connected schemas");
 		schemaGroupPane.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		schemaGroupPane.setRedraw(true);
 		updateMappingGroupPane();
@@ -135,7 +145,6 @@ public class BatchMatchDialog extends TitleAreaDialog implements ModifyListener,
 	private void createMappingPane(Composite pane) {
 		ProjectSchema[] schemas = project.getSchemas();
 		HashMap<Integer, ProjectSchema> schemaArray = new HashMap<Integer, ProjectSchema>();
-		ArrayList<Pair<ProjectSchema>> existingMappingList = new ArrayList<Pair<ProjectSchema>>();
 
 		for (ProjectSchema ps : schemas)
 			schemaArray.put(ps.getId(), ps);
@@ -143,32 +152,42 @@ public class BatchMatchDialog extends TitleAreaDialog implements ModifyListener,
 		for (Mapping mapping : OpenIIManager.getMappings(project.getId())) {
 			ProjectSchema schema1 = schemaArray.get(mapping.getSourceId());
 			ProjectSchema schema2 = schemaArray.get(mapping.getTargetId());
-			Pair<ProjectSchema> pair = new Pair<ProjectSchema>(schema1, schema2);
 			if (schema1 != null && schema2 != null)
-				existingMappingList.add(pair);
+				existingMappingList.add(new Pair<ProjectSchema>(schema1, schema2));
 		}
 
 		Permuter<ProjectSchema> permuter = new Permuter<ProjectSchema>(new ArrayList<ProjectSchema>(schemaArray.values()));
 
+		// New mapping pane
 		mappingPane = new Group(pane, SWT.NONE);
 		mappingPane.setText("Select new mappings to create");
 		mappingPane.setLayout(new GridLayout(1, false));
 		mappingPane.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		
+		// exist-mapping pane
+		existMappingPane = new Group(pane, SWT.NONE);
+		existMappingPane.setText("Existing mappings will be replaced if checked");
+		existMappingPane.setLayout(new GridLayout(1, false));
+		existMappingPane.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
 		// Create a check box for each mapping pair
 		while (permuter.hasMoreElements()) {
 			Pair<ProjectSchema> currMappingPair = permuter.nextElement();
-			Button mappingButton = new Button(mappingPane, SWT.CHECK);
-			String pairName = ((ProjectSchema) currMappingPair.getItem1()).getName() + " to " + ((ProjectSchema) currMappingPair.getItem2()).getName();
-			mappingHash.put(pairName, currMappingPair);
 			boolean exist = existingMappingList.contains(currMappingPair);
+			String pairName = getMappingHashKey(currMappingPair);
+
+			mappingHash.put(pairName, currMappingPair);
+			Button mappingButton;
+			if (!exist) {
+				mappingButton = new Button(mappingPane, SWT.CHECK);
+				mappingButton.setSelection(true);
+				selectedNewMappingList.add(currMappingPair);
+			} else {
+				mappingButton = new Button(existMappingPane, SWT.CHECK);
+				mappingButton.setSelection(false);
+			}
 			mappingButton.setData(currMappingPair);
 			mappingButton.setText(pairName);
-			mappingButton.setSelection(true);
-			mappingButton.setEnabled(!exist);
-			if (!exist)
-				selectedNewMappingList.add(currMappingPair);
-			checkedMappingList.add(currMappingPair);
 
 			mappingButton.addSelectionListener(new SelectionListener() {
 				public void widgetDefaultSelected(SelectionEvent event) {
@@ -177,18 +196,19 @@ public class BatchMatchDialog extends TitleAreaDialog implements ModifyListener,
 
 				public void widgetSelected(SelectionEvent event) {
 					Button mappingButton = (Button) event.widget;
-					if (mappingButton.getSelection()) {
+					if (mappingButton.getSelection())
 						selectedNewMappingList.add(mappingHash.get(mappingButton.getText()));
-						checkedMappingList.add(mappingHash.get(mappingButton.getText()));
-					} else {
+					else
 						selectedNewMappingList.remove(mappingHash.get(mappingButton.getText()));
-						checkedMappingList.remove(mappingHash.get(mappingButton.getText()));
-					}
 					updateMappingGroupPane();
 					updateButton();
 				}
 			});
 		}
+	}
+
+	private String getMappingHashKey(Pair<ProjectSchema> currMappingPair) {
+		return ((ProjectSchema) currMappingPair.getItem1()).getName() + " to " + ((ProjectSchema) currMappingPair.getItem2()).getName();
 	}
 
 	String getAuthor() {
@@ -236,10 +256,6 @@ public class BatchMatchDialog extends TitleAreaDialog implements ModifyListener,
 		return matchersPane.getMatchers();
 	}
 
-	ArrayList<Pair<ProjectSchema>> getSelectedMappings() {
-		return checkedMappingList;
-	}
-
 	ArrayList<Pair<ProjectSchema>> getSelectedNewMappings() {
 		return selectedNewMappingList;
 	}
@@ -248,17 +264,33 @@ public class BatchMatchDialog extends TitleAreaDialog implements ModifyListener,
 		updateButton();
 	}
 
-
-	
-	
 	// /** Handles the actual import of the specified file */
 	protected void okPressed() {
+		ArrayList<Mapping> mappings = OpenIIManager.getMappings(project.getId());
+
+		// delete existing mappings to be replaced from the schema store
+		Integer item1, item2, source, target;
+		for (Pair<ProjectSchema> pair : selectedNewMappingList) {
+			if (existingMappingList.contains(pair)) {
+				item1 = pair.getItem1().getId();
+				item2 = pair.getItem2().getId();
+				for (Mapping mapping : mappings) {
+					source = mapping.getSourceId();
+					target = mapping.getTargetId();
+					if ((item1.equals(source) && item2.equals(target)) || (item1.equals(target) && item2.equals(source)))
+						OpenIIManager.deleteMapping(mapping.getId());
+				}
+			}
+		}
+
+		// create new mappings
 		new MappingProcessor(project, getSelectedNewMappings(), getMatchers());
-		this.selectedNewMappingList.clear(); 
-		this.checkedMappingList.clear();
-		this.mappingHash.clear(); 
+
+		// clean up
+		this.selectedNewMappingList.clear();
+		this.mappingHash.clear();
 		this.mappingButtons.clear();
-		System.gc(); 
+		System.gc();
 		getShell().dispose();
 	}
 
@@ -271,8 +303,14 @@ public class BatchMatchDialog extends TitleAreaDialog implements ModifyListener,
 	}
 
 	private void updateMappingGroupPane() {
+		ArrayList<Pair<ProjectSchema>> mstMappings = new ArrayList<Pair<ProjectSchema>>();
+		mstMappings.addAll(existingMappingList);
+		for (Pair<ProjectSchema> newMapping : selectedNewMappingList)
+			if (!mstMappings.contains(newMapping))
+				mstMappings.add(newMapping);
+
 		// Update the minimum spanning tree for mappings
-		HashMap<Integer, ArrayList<Integer>> schemaGroups = getMappingMST(project.getSchemaIDs(), checkedMappingList);
+		HashMap<Integer, ArrayList<Integer>> schemaGroups = getMappingMST(project.getSchemaIDs(), mstMappings);
 
 		// Dispose old mapping groups
 		if (mappingButtons != null && mappingButtons.size() > 0)
@@ -289,23 +327,37 @@ public class BatchMatchDialog extends TitleAreaDialog implements ModifyListener,
 				Button button = (Button) e.widget;
 				ArrayList<Integer> schemaGroup = (ArrayList<Integer>) button.getData();
 				Control[] children = schemaGroupPane.getChildren();
-				Control[] mappingChildren = mappingPane.getChildren();
 
-				if ( !button.getSelection() ) {
-					button.setSelection(false); 
-					for (Control mappingButton : mappingChildren) 
+				// reset all of the selections to be off if the button was to
+				// turn off
+				if (!button.getSelection()) {
+					button.setSelection(false);
+					for (Control mappingButton : mappingPane.getChildren())
 						((Button) mappingButton).setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
+
+					for (Control mappingButton : existMappingPane.getChildren())
+						((Button) mappingButton).setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
+
 					return;
+
 				}
-				
-				// Change the look of the button
+
+				// Otherwise activate the button
 				for (int i = 0; i < children.length; i++)
 					if (e.widget != children[i] && children[i] instanceof Button && (children[i].getStyle() & SWT.TOGGLE) != 0)
 						((Button) children[i]).setSelection(false);
 				button.setSelection(true);
 
 				// Highlight the mapping cells
-				for (Control mappingButton : mappingChildren) {
+				for (Control mappingButton : mappingPane.getChildren()) {
+					Pair<ProjectSchema> pair = (Pair<ProjectSchema>) ((Button) mappingButton).getData();
+					if (schemaGroup.contains(pair.getItem1().getId()) || schemaGroup.contains(pair.getItem2().getId()))
+						((Button) mappingButton).setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
+					else
+						((Button) mappingButton).setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
+				}
+
+				for (Control mappingButton : existMappingPane.getChildren()) {
 					Pair<ProjectSchema> pair = (Pair<ProjectSchema>) ((Button) mappingButton).getData();
 					if (schemaGroup.contains(pair.getItem1().getId()) || schemaGroup.contains(pair.getItem2().getId()))
 						((Button) mappingButton).setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
@@ -318,7 +370,8 @@ public class BatchMatchDialog extends TitleAreaDialog implements ModifyListener,
 		// Paint groups with stars indicating schemas
 		for (ArrayList<Integer> group : schemaGroups.values()) {
 			String stars = "";
-			for ( int i = 0; i<group.size(); i++ ) stars += "*"; 
+			for (int i = 0; i < group.size(); i++)
+				stars += "*";
 
 			// Create a button that contains the schema group
 			Button schemaGroupButton = new Button(schemaGroupPane, SWT.TOGGLE);
