@@ -63,7 +63,7 @@ public class BatchMatchDialog extends TitleAreaDialog implements ModifyListener,
 
 	public BatchMatchDialog(Shell shell, Project project) {
 		super(shell);
-//		setShellStyle( SWT.RESIZE);
+		setShellStyle( SWT.RESIZE | SWT.TITLE | SWT.CLOSE | SWT.V_SCROLL | SWT.V_SCROLL | SWT.SCROLL_PAGE );
 		this.project = project;
 	}
 
@@ -151,7 +151,7 @@ public class BatchMatchDialog extends TitleAreaDialog implements ModifyListener,
 		Permuter<ProjectSchema> permuter = new Permuter<ProjectSchema>(new ArrayList<ProjectSchema>(schemaArray.values()));
 
 		mappingPane = new Group(pane, SWT.NONE);
-		mappingPane.setText("Selet new mappings to create");
+		mappingPane.setText("Select new mappings to create");
 		mappingPane.setLayout(new GridLayout(1, false));
 		mappingPane.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
@@ -254,6 +254,11 @@ public class BatchMatchDialog extends TitleAreaDialog implements ModifyListener,
 	// /** Handles the actual import of the specified file */
 	protected void okPressed() {
 		new MappingProcessor(project, getSelectedNewMappings(), getMatchers());
+		this.selectedNewMappingList.clear(); 
+		this.checkedMappingList.clear();
+		this.mappingHash.clear(); 
+		this.mappingButtons.clear();
+		System.gc(); 
 		getShell().dispose();
 	}
 
