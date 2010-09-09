@@ -39,6 +39,29 @@ public class AssociatedElementHash {
 			return new ArrayList<MappingCell>(0);
 	}
 
+	/** Returns a list of mappingCells by input element ID with minimum and/or maximum scores specified 
+	 * 
+	 * @param inputID schema element ID
+	 * @param minScore minimum mapping cell score
+	 * @param maxScore maximum mapping cell score
+	 * @return
+	 */
+	public ArrayList<MappingCell> get(Integer inputID, Integer minScore,
+			Integer maxScore) {
+		ArrayList<MappingCell> result = new ArrayList<MappingCell>();
+		for (MappingCell cell : get(inputID)) {
+			if (minScore != null && maxScore != null
+					&& cell.getScore() >= minScore
+					&& cell.getScore() <= maxScore)
+				result.add(cell);
+			else if (minScore != null && cell.getScore() >= minScore)
+				result.add(cell);
+			else if (maxScore != null && cell.getScore() <= maxScore)
+				result.add(cell);
+		}
+		return result;
+	}
+
 	/** Deletes the specified mapping cell */
 	public void delete(MappingCell mappingCell) {
 		for (Integer input : mappingCell.getElementInputIDs())
@@ -50,7 +73,7 @@ public class AssociatedElementHash {
 			mappingCellHash.get(output).remove(mappingCell);
 	}
 
-	/** Returns the specified mapping cell */
+	/** Returns the specified mapping cell with input and output IDs */
 	public MappingCell get(Integer inputID, Integer outputID) {
 		if (mappingCellHash.containsKey(inputID)) {
 			for (MappingCell cell : mappingCellHash.get(inputID))
