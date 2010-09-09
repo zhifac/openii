@@ -111,8 +111,12 @@ public class MappingProcessor {
 		ArrayList<MappingCell> mappingCells = new ArrayList<MappingCell>();
 		Informant.status("Calling Harmony matching algorithms...");
 		MatchScores matchScores = new MatchGenerator(matchers, new VoteMerger()).getScores(schemaInfo1, schemaInfo2);
+		String author = new String("Vote Merger("); 
+		for ( Matcher matcher: matchers  )
+			author += matcher.toString() + ";"; 
+		author += ")"; 
 		for (MatchScore score : matchScores.getScores())
-			mappingCells.add(MappingCell.createProposedMappingCell(null, mappingID, score.getSourceID(), score.getTargetID(), score.getScore(), "MatchMaker Auto Gen", new Date(System.currentTimeMillis()), ""));
+			mappingCells.add(MappingCell.createProposedMappingCell(null, mappingID, score.getSourceID(), score.getTargetID(), score.getScore(), author, new Date(System.currentTimeMillis()), ""));
 
 		// Save the mapping. Delete if saving fails
 		Informant.status("Saving APIMatch...");
@@ -158,8 +162,6 @@ public class MappingProcessor {
 				continue;
 			}
 
-			// permuter.addExcludedPair(new Pair<ProjectSchema>(schema1,
-			// schema2));
 			mappingProcessor.addExclusionMappingPair(new Pair<ProjectSchema>(schema1, schema2));
 			System.out.println("Generating  Matching Pair: " + schema1.getId() + " - " + schema2.getId());
 		}
