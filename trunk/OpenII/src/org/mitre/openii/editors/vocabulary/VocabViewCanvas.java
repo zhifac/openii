@@ -34,6 +34,7 @@ import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Image;
@@ -80,6 +81,7 @@ public class VocabViewCanvas extends Canvas {
 	private Composite viewsParent;
 	private ArrayList<Point> highlightedTableItems;
 	private ArrayList<Mapping> mappings;
+	private boolean confirmation;
 	
 	public VocabViewCanvas(Composite parent, int style, Vocabulary vocabulary) {		
 		super(parent, style | SWT.EMBEDDED);
@@ -102,7 +104,7 @@ public class VocabViewCanvas extends Canvas {
 		Integer projID = vocab.getProjectID();
 		mappings = OpenIIManager.getMappings(projID);
 
-		
+		confirmation = false;
 		createVocabView();
 	}
 	
@@ -148,6 +150,10 @@ public class VocabViewCanvas extends Canvas {
 		buttonLeastGroupEs.setImage(iconImageScaled2);
 		buttonLeastGroupEs.setToolTipText("Sorts from least to most agreement (least elements in a row to most)");		 
 		
+		Button mergeButton = new Button(buttonsC, SWT.PUSH);
+		mergeButton.setText("Merge");
+		mergeButton.setToolTipText("Merges two rows into a single row");
+		
 		Button searchButton = new Button(buttonsC, SWT.PUSH);
 		searchButton.setText("Search");
 		searchButton.setToolTipText("Finds all occurences of a term in the spreadsheet (does not search documentation)");
@@ -160,7 +166,7 @@ public class VocabViewCanvas extends Canvas {
 		
 		//creating table		
 		//final Table table = new Table(sash, SWT.BORDER | SWT.FULL_SELECTION);
-		table = new Table(sash, SWT.BORDER | SWT.FULL_SELECTION);
+		table = new Table(sash, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
 
@@ -253,24 +259,42 @@ public class VocabViewCanvas extends Canvas {
 
 		final Table evidenceTable = new Table(sash, SWT.BORDER);
 		evidenceTable.setHeaderVisible(true);
+
+
+				
 		//evidenceTable.setLinesVisible(true);
 		TableColumn evidence_elementNameCol = new TableColumn(evidenceTable, SWT.NONE);
-		evidence_elementNameCol.setText("Element Name");
+		evidence_elementNameCol.setText("Name");
 		evidence_elementNameCol.setWidth(100);
 		//evidence_elementNameCol.addListener(SWT.Selection, sortResultsAlphabeticallyListener);
 		
+
 		TableColumn evidence_elementDescCol = new TableColumn(evidenceTable, SWT.NONE);
 		evidence_elementDescCol.setText("Description");
-		evidence_elementDescCol.setWidth(200);
+		evidence_elementDescCol.setWidth(100);
 		//evidence_elementDescCol.addListener(SWT.Selection, sortResultsAlphabeticallyListener);
+
+		TableColumn evidence_elementSrcCol = new TableColumn(evidenceTable, SWT.NONE);
+		evidence_elementSrcCol.setText("Source");
+		evidence_elementSrcCol.setWidth(100);
+
 		
-		TableColumn evidence_elementMatchesCol = new TableColumn(evidenceTable, SWT.NONE);
-		evidence_elementMatchesCol.setText("Related Elements");
-		evidence_elementMatchesCol.setWidth(200);
+		TableColumn evidence_matcheScoreCol = new TableColumn(evidenceTable, SWT.NONE);
+		evidence_matcheScoreCol.setText("Match Score");
+		evidence_matcheScoreCol.setWidth(100);
+		
+		TableColumn evidence_elementMatchesNameCol = new TableColumn(evidenceTable, SWT.NONE);
+		evidence_elementMatchesNameCol.setText("Match Name");
+		evidence_elementMatchesNameCol.setWidth(100);
 		//evidence_elementNameCol.addListener(SWT.Selection, sortResultsAlphabeticallyListener);
 		
+		TableColumn evidence_elementMatchesDescCol = new TableColumn(evidenceTable, SWT.NONE);
+		evidence_elementMatchesDescCol.setText("Match Description");
+		evidence_elementMatchesDescCol.setWidth(100);
 		
-		
+		TableColumn evidence_elementMatchesSourceCol = new TableColumn(evidenceTable, SWT.NONE);
+		evidence_elementMatchesSourceCol.setText("Match Source");
+		evidence_elementMatchesSourceCol.setWidth(100);
 		
 		sash.setWeights(new int[]{75, 25});
 		
@@ -384,6 +408,23 @@ public class VocabViewCanvas extends Canvas {
 			}
 		});
 
+		
+		mergeButton.addListener(SWT.Selection, new Listener(){
+			public void handleEvent(Event event) {
+				// TODO Auto-generated method stub		
+				//first create dialog warning users
+				//boolen confirm = confirmAction();
+				System.out.println("selected merge button");
+				createWarningDialog();
+				if(confirmation){
+					int[] rowNumSelected = table.getSelectionIndices();
+					mergeRows(rowNumSelected);
+				}
+			}
+			
+		});
+		
+		
 		//adding resize capability so fills in space nicely
 		this.addListener(SWT.Resize, new Listener(){
 			public void handleEvent(Event event){
@@ -395,7 +436,67 @@ public class VocabViewCanvas extends Canvas {
 		});	
 	}
 
+	private void mergeRows(int[] selectedRows){
+		//create a new Term
+		Term newMergedTerm = new Term();
+		String newTermName = "";
+		
 
+		for(int i=0; i<selectedRows.length; i++){
+			Term currTerm = termsArray.get(selectedRows[i]);
+			if(i==selectedRows.length-1){
+				newTermName += currTerm.getName();
+			}else{
+				newTermName += currTerm.getName() + "-";
+			}
+			
+			//numElementsInNewTerm =+  termsArray.get(selectedRows[i]).getElements().length;
+		}
+		
+		newMergedTerm.setName("NewMergedTermTest");
+		
+		//AssociatedElement[] newMergedElements = new AssociatedElement[];
+		//newMergedTerm.setElements(newMergedElements);
+		
+		//merge all selected rows	
+	}
+	
+	/** creates the dialog that confirms a user really wanted to split or merge cells **/
+	private void createWarningDialog(){
+		Display display = viewsParent.getDisplay();
+		final Shell warningDialog = new Shell(display, SWT.TITLE| SWT.APPLICATION_MODAL);
+		warningDialog.setText("Warning");
+		warningDialog.setLayout(new GridLayout(2, false));
+		//searchDialog.setSize(400, 500);
+		
+		Label label = new Label(warningDialog, SWT.NULL);
+		label.setText("Are you sure you want to perform this action?");
+		GridData gd = new GridData();
+		gd.horizontalSpan = 2;
+		label.setLayoutData(gd);	
+		
+		Button okButton = new Button(warningDialog, SWT.NONE);
+		okButton.setText("Ok");
+		okButton.addListener(SWT.Selection, new Listener(){
+			public void handleEvent(Event event){
+				confirmation = true;
+				warningDialog.dispose();
+			}
+		});
+		
+		Button cancelButton = new Button(warningDialog, SWT.NONE);
+		cancelButton.setText("Cancel");
+		cancelButton.addListener(SWT.Selection, new Listener(){
+			public void handleEvent(Event event){
+				confirmation = false;
+				warningDialog.dispose();
+			}
+		});
+		
+		warningDialog.pack();
+		warningDialog.open();
+	}
+	
 	
 	//if sortBy= 1 it will sort from most to least GroupEs
 	//if sortBy= 2 it will sort from least to most GroupEs
@@ -464,12 +565,9 @@ public class VocabViewCanvas extends Canvas {
 		return this.getBounds().height;
 	}
 	
+
 	
-	//TO DO:
-	//1) if a user sorts a column in the real data table... update the y location in the data of the search results table & in the highlightedTableItems array
-	//2) autoscroll the table to selected item
-	
-	//creating the dialog that pops up when a user clicks on the search button
+	/**creating the dialog that pops up when a user clicks on the search button**/
 	private void createSearchDialog(){
 		Display display = viewsParent.getDisplay();
 		final Shell searchDialog = new Shell(display, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
@@ -483,7 +581,7 @@ public class VocabViewCanvas extends Canvas {
 		final Text searchField = new Text(searchDialog, SWT.SEARCH);
 		searchField.setLayoutData(new GridData(GridData.FILL));
 		
-		final Table resultsTable = new Table(searchDialog, SWT.BORDER | SWT.FULL_SELECTION);
+		final Table resultsTable = new Table(searchDialog, SWT.BORDER | SWT.FULL_SELECTION | SWT.RESIZE);
 		resultsTable.setHeaderVisible(true);
 		resultsTable.setLinesVisible(true);
 		GridData gd = new GridData();
@@ -598,7 +696,11 @@ public class VocabViewCanvas extends Canvas {
 		searchDialog.open();
 	}
 	
-	//displays the evidence in the evidenceTable
+	
+	
+	
+	/**displays the evidence in the evidenceTable**/
+	//0-name, 1-description, 2-source, 3- match score, 4-name of match, 5-match description, 6-match source
 	private void displayEvidence(Table evidTable, Term selectedTerm){
 		//clear all of the previous table items
 		TableItem[] allRows = evidTable.getItems();
@@ -606,20 +708,33 @@ public class VocabViewCanvas extends Canvas {
 			allRows[i].dispose();
 		}
 
+		
 		//add the first row to be the vocab term, and description
 		TableItem vocabItem = new TableItem(evidTable, SWT.NONE);
 		vocabItem.setText(0, selectedTerm.getName());
 		vocabItem.setText(1, selectedTerm.getDescription());
 		Font boldFont = new Font(Display.getDefault(), new FontData("Arial", 8, SWT.BOLD));
+		//vocabItem.setFont(0, boldFont);
 		vocabItem.setFont(0, boldFont);
 		
 		//add in evidence for each element associated with the vocab term	
 		AssociatedElement[] aes = selectedTerm.getElements();
 		//System.out.println("saw this many associated elements: " + aes.length);
 
+		Color lightShadow  = this.getDisplay().getSystemColor(SWT.COLOR_WIDGET_LIGHT_SHADOW);
+		Color white = this.getDisplay().getSystemColor(SWT.COLOR_WHITE);
+		Color currColor = white;
+		
 		for(int i=0; i<aes.length; i++){
 				String elementName = aes[i].getName();
 		
+				//want to alternate the table background color based on schema
+				if(i%2 == 0){
+					currColor = lightShadow;
+				}else{
+					currColor = white;
+				}
+				
 				//get the original element's ID and description
 				Integer schemaID = aes[i].getSchemaID();
 				SchemaInfo si = OpenIIManager.getSchemaInfo(schemaID);
@@ -627,31 +742,87 @@ public class VocabViewCanvas extends Canvas {
 				String elementDescription = si.getElement(eleID).getDescription();						
 				String containingSchemaName = si.getSchema().getName();
 				
-				//System.out.println("creating Table Item " + i);
+
 				TableItem nextItem = new TableItem(evidTable, SWT.NONE);
-				//nextItem.setText(0, "(" + containingSchemaName + ")" + elementName);
+
 				nextItem.setText(0, elementName);
 				nextItem.setText(1, elementDescription);
-
-				String relatedElements = "TBD";
-				/*for(Mapping m : mappings){
+				nextItem.setText(2, containingSchemaName);
+				nextItem.setBackground(currColor);
+				
+				
+				//for each mapping, we need to find any cells that map to the current element
+				for(Mapping m : mappings){
 					ArrayList<MappingCell> mappingCells = OpenIIManager.getMappingCells(m.getId());					
 					MappingInfoExt mix = new MappingInfoExt(m, mappingCells);
 					AssociatedElementHash aeh = mix.getMappingCells();
 					ArrayList<MappingCell> alm = aeh.get(eleID);
-					for(MappingCell mc : alm){
-						System.out.println(mc.toString());
-						relatedElements += mc.toString();
+					
+					Integer otherElementsSchemaID = null;
+					if(alm.size()!=0){
+						Integer srcSchemaID = m.getSourceId();
+						Integer trgSchemaID = m.getTargetId();
+						//need to get the schemaID for the element that mapped to the current element
+						if(srcSchemaID == trgSchemaID){
+							System.out.println("schema was mapped to self");
+						}
+						if(srcSchemaID == schemaID){
+							otherElementsSchemaID = trgSchemaID;
+						}else{
+							otherElementsSchemaID = srcSchemaID;
+						}
 					}
-				} */
-				
-				//column 2 is for Related Elements
-				nextItem.setText(2, relatedElements);	
+					
+					//add the name of the element and match score to the Related Elements string
+					for(int k=0; k<alm.size();k++){
+						MappingCell mc = alm.get(k);
+						//System.out.println(mc.toString());
+						
+						//get the ID of the other element
+						Integer[] elementIDs = mc.getElementInputIDs();
+						Integer otherElementsID = null;
+						for(int n=0; n<elementIDs.length; n++){
+							if(elementIDs[n] != eleID){
+								otherElementsID = elementIDs[n];
+							}
+						}
+						
+						String otherElementsContainingSchemaName = "";
+						String otherElementsName = "";
+						String score = "";
+						String otherElementsDescription = "";
+						if(otherElementsSchemaID != null && otherElementsID != null){
+							SchemaInfo otherElementsSchemaInfo = OpenIIManager.getSchemaInfo(otherElementsSchemaID);			
+							otherElementsContainingSchemaName = otherElementsSchemaInfo.getSchema().getName();
+							otherElementsName = otherElementsSchemaInfo.getElement(otherElementsID).getName();
+							otherElementsDescription = otherElementsSchemaInfo.getElement(otherElementsID).getDescription();
+							score = mc.getScore().toString();
+						}
+						
+						//if it is the first related element found then put it in the row with the initial element
+						//otherwise, create a new row for it
+						//0-name, 1-description, 2-source, 3- match score, 4-name of match, 5-match description, 6-match source
+						if(k==0){
+							nextItem.setText(3, score);
+							nextItem.setText(4, otherElementsName);
+							nextItem.setText(5, otherElementsDescription);
+							nextItem.setText(6, otherElementsContainingSchemaName);
+						}else{
+							TableItem newRelatedItem = new TableItem(evidTable, SWT.NONE);
+							newRelatedItem.setBackground(currColor);
+							newRelatedItem.setText(3, score);
+							newRelatedItem.setText(4, otherElementsName);
+							nextItem.setText(5, otherElementsDescription);
+							newRelatedItem.setText(6, otherElementsContainingSchemaName);
+						}
+					}
+				} 
 		}
 	}
 	
 	
-	//displays the search results table in the search vocabulary dialog box
+	
+	/**displays the search results table in the search vocabulary dialog box**/
 	private void displaySearchResults(Table tableForSearchResults, String searchTerm){
 		//clear all of the previous table items
 		TableItem[] allRows = tableForSearchResults.getItems();
