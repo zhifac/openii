@@ -223,11 +223,11 @@ public class GenerateVocabularyDialog extends TitleAreaDialog implements ModifyL
 					// check if clicked in ranking column
 					final TableItem item = table.getItem(tableItemIDX);
 					Rectangle rect = item.getBounds(rankCol);
-					if (rect.contains(pt)) 
-						table.setCursor(new Cursor(Display.getCurrent(), SWT.CURSOR_HAND)); 
+					if (rect.contains(pt))
+						table.setCursor(new Cursor(Display.getCurrent(), SWT.CURSOR_HAND));
 				}
 			}
-		}); 
+		});
 
 		// create combo options that allows the user to rank the schemas
 		table.addListener(SWT.MouseDoubleClick, new Listener() {
@@ -299,8 +299,8 @@ public class GenerateVocabularyDialog extends TitleAreaDialog implements ModifyL
 				}
 			}
 		});
-		
-		table.setFocus(); 
+
+		table.setFocus();
 
 		return table;
 	}
@@ -354,6 +354,16 @@ public class GenerateVocabularyDialog extends TitleAreaDialog implements ModifyL
 		Vocabulary vocab = unity.unify(selectedMapping);
 		OpenIIManager.saveVocabulary(vocab);
 
+		vocab = null;
+		schemas = null;
+		selectedMapping = null;
+		mappings = null;
+		schemaNames.clear(); 
+		project = null; 
+		mappingGroups.clear(); 
+		groupOptions.dispose(); 
+		
+		System.gc();
 		getShell().dispose();
 	}
 

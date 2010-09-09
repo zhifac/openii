@@ -16,7 +16,6 @@ import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.Project;
 import org.mitre.schemastore.model.ProjectSchema;
-import org.mitre.schemastore.model.mappingInfo.MappingInfoExt;
 import org.mitre.schemastore.model.schemaInfo.FilteredSchemaInfo;
 import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
 
@@ -126,6 +125,9 @@ public class MappingProcessor {
 		}
 
 		// Perform garbage collection
+		mapping = null; 
+		mappingCells.clear(); 
+		mappingCells = null; 
 		System.gc();
 	}
 
@@ -176,4 +178,5 @@ public class MappingProcessor {
 		Informant.progress(100);
 		return numMatches;
 	}
+
 }

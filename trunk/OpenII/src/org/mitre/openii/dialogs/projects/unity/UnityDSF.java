@@ -238,7 +238,7 @@ public class UnityDSF {
 			assocElements[i] = new AssociatedElement(synsetTerm.schemaId, synsetTerm.elementId, synsetTerm.elementName);
 		}
 
-		// Determine a vocab term based on schema ranking
+		// Determine a vocabulary term based on schema ranking
 		try {
 			for (Integer authoritySchema : rankedSchemas) {
 				SynsetTerm term = synset.getTerm(authoritySchema);
@@ -254,7 +254,7 @@ public class UnityDSF {
 		// Create and return Term object from Synset Term
 		if (baseElement == null)
 			resultTerm = new Term(null, new String(), new String(), assocElements);
-		else
+		else 
 			resultTerm = new Term(null, baseElement.getName(), baseElement.getDescription(), assocElements);
 		return resultTerm;
 	}
