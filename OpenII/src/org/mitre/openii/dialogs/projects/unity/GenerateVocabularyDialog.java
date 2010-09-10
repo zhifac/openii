@@ -198,23 +198,23 @@ public class GenerateVocabularyDialog extends TitleAreaDialog implements ModifyL
 		rankColumn.setWidth(100);
 
 		// Populate each row with schema name and ranking
+		final int schemaCol = 0;
+		final int rankCol = 1;
 		TableItem tableItem;
 		for (int i = 0; i < schemas.size(); i++) {
 			tableItem = new TableItem(table, SWT.NONE);
-			tableItem.setImage(0, OpenIIActivator.getImage("Schema.gif"));
-			tableItem.setText(0, OpenIIManager.getSchema(schemas.get(i)).getName());
+			tableItem.setImage(schemaCol, OpenIIActivator.getImage("Schema.gif"));
+			tableItem.setText(schemaCol, OpenIIManager.getSchema(schemas.get(i)).getName());
 			tableItem.setData("id", schemas.get(i));
-			tableItem.setText(1, Integer.toString(i + 1));
+			tableItem.setText(rankCol, Integer.toString(i + 1));
 		}
 
 		// Add double click and edit text listener to ranking column
-		final int schemaCol = 0;
-		final int rankCol = 1;
 		final TableEditor editor = new TableEditor(table);
 		editor.horizontalAlignment = SWT.LEFT;
 		editor.grabHorizontal = true;
 
-		// create a cursor for mouseover ranking editor event
+		// change cursor to hand for mouseover ranking editor event
 		table.addListener(SWT.MouseHover, new Listener() {
 			public void handleEvent(Event event) {
 				Point pt = new Point(event.x, event.y);
