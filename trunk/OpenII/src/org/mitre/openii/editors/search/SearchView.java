@@ -96,7 +96,6 @@ public class SearchView extends EditorPart implements SelectionListener
 			label = new CLabel(parent, SWT.NONE);
 			label.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 			label.setFont(new Font(Display.getCurrent(), fontData));
-			label.setLeftMargin(6);
 			label.setImage(OpenIIActivator.getImage("Schema.gif"));
 			label.setText(text);
 			label.setCursor(new Cursor(getDisplay(), SWT.CURSOR_HAND));
