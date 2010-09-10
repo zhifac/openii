@@ -720,6 +720,7 @@ public class VocabViewCanvas extends Canvas {
 
 		Color lightShadow = this.getDisplay().getSystemColor(SWT.COLOR_WIDGET_LIGHT_SHADOW);
 		Color white = this.getDisplay().getSystemColor(SWT.COLOR_WHITE);
+		Color highlight = this.getDisplay().getSystemColor(SWT.COLOR_INFO_BACKGROUND);
 		Color currColor = white;
 
 		for (int i = 0; i < aes.length; i++) {
@@ -735,9 +736,9 @@ public class VocabViewCanvas extends Canvas {
 			// get the original element's ID and description
 			Integer schemaID = aes[i].getSchemaID();
 			Integer eleID = aes[i].getElementID();
-			SchemaElement currElement = getSchemaElement(schemaID, eleID); 
-			String elementDescription = currElement.getDescription(); 
-			String containingSchemaName = getSchemaInfo(schemaID).getSchema().getName() ;
+			SchemaElement currElement = getSchemaElement(schemaID, eleID);
+			String elementDescription = currElement.getDescription();
+			String containingSchemaName = getSchemaInfo(schemaID).getSchema().getName();
 
 			TableItem nextItem = new TableItem(evidTable, SWT.NONE);
 
@@ -748,94 +749,114 @@ public class VocabViewCanvas extends Canvas {
 
 			// for each mapping, we need to find any cells that map to the
 			// current element
+			ArrayList<MappingCell> mappingCellList = new ArrayList<MappingCell>();
 			for (Mapping m : mappings) {
-				ArrayList<MappingCell> mappingCells = OpenIIManager.getMappingCells(m.getId());
-				MappingInfoExt mix = new MappingInfoExt(m, mappingCells);
+				MappingInfoExt mix = new MappingInfoExt(m, OpenIIManager.getMappingCells(m.getId()));
 				AssociatedElementHash aeh = mix.getMappingCells();
-				ArrayList<MappingCell> alm = aeh.get(eleID);
-				Collections.sort(alm, new Comparator<MappingCell>() {
-					public int compare(MappingCell cell1, MappingCell cell2) {
-						return cell1.getScore().compareTo(cell2.getScore()); 
-					}
-				});
+				for ( MappingCell mc : aeh.get(eleID) )
+					if ( !mappingCellList.contains(mc))
+						mappingCellList.add(mc); 
+			}
 
-//				Integer otherElementsSchemaID = null;
-//				if (alm.size() != 0) {
-//					Integer srcSchemaID = m.getSourceId();
-//					Integer trgSchemaID = m.getTargetId();
-//					// need to get the schemaID for the element that mapped to
-//					// the current element
-//					if (srcSchemaID == trgSchemaID) {
-//						System.out.println("schema was mapped to self");
-//					}
-//					if (srcSchemaID == schemaID) {
-//						otherElementsSchemaID = trgSchemaID;
-//					} else {
-//						otherElementsSchemaID = srcSchemaID;
-//					}
-//				}
-
-				// add the name of the element and match score to the Related
-				// Elements string
-				for (int k = 0; k < alm.size(); k++) {
-					MappingCell mc = alm.get(k);
-
-					Integer outputId = mc.getOutput();
-					Integer otherSchemaId = (schemaID.equals(m.getSourceId()) ) ? m.getTargetId() : m.getSourceId();
-					for (Integer inputId : mc.getElementInputIDs()) {
-						Integer otherElementId = (outputId.equals(eleID)) ? inputId : outputId;
-						SchemaElement otherElement = getSchemaElement(otherSchemaId, otherElementId);
-
-						TableItem currItem = (k == 0) ? nextItem : new TableItem(evidTable, SWT.NONE);
-						
-						currItem.setBackground(currColor);
-						
-						currItem.setText(3, mc.getScore().toString());
-						currItem.setText(4, otherElement.getName());
-						currItem.setText(5, otherElement.getDescription());
-						currItem.setText(6, OpenIIManager.getSchema(otherSchemaId).getName());
-					}
-
-//					// get the ID of the other element
-//					Integer[] elementIDs = mc.getElementInputIDs();
-//					Integer otherElementsID = null;
-//					for (int n = 0; n < elementIDs.length; n++) {
-//						if (elementIDs[n] != eleID) {
-//							otherElementsID = elementIDs[n];
-//						}
-//					}
-//
-//					String otherElementsContainingSchemaName = "";
-//					String otherElementsName = "";
-//					String score = "";
-//					String otherElementsDescription = "";
-//					if (otherElementsSchemaID != null && otherElementsID != null) {
-//						SchemaInfo otherElementsSchemaInfo = OpenIIManager.getSchemaInfo(otherElementsSchemaID);
-//						otherElementsContainingSchemaName = otherElementsSchemaInfo.getSchema().getName();
-//						otherElementsName = otherElementsSchemaInfo.getElement(otherElementsID).getName();
-//						otherElementsDescription = otherElementsSchemaInfo.getElement(otherElementsID).getDescription();
-//						score = mc.getScore().toString();
-//					}
-//
-//					// if it is the first related element found then put it in
-//					// the row with the initial element
-//					// otherwise, create a new row for it
-//					// 0-name, 1-description, 2-source, 3- match score, 4-name
-//					// of match, 5-match description, 6-match source
-//					if (k == 0) {
-//						nextItem.setText(3, score);
-//						nextItem.setText(4, otherElementsName);
-//						nextItem.setText(5, otherElementsDescription);
-//						nextItem.setText(6, otherElementsContainingSchemaName);
-//					} else {
-//						TableItem newRelatedItem = new TableItem(evidTable, SWT.NONE);
-//						newRelatedItem.setBackground(currColor);
-//						newRelatedItem.setText(3, score);
-//						newRelatedItem.setText(4, otherElementsName);
-//						nextItem.setText(5, otherElementsDescription);
-//						newRelatedItem.setText(6, otherElementsContainingSchemaName);
-//					}
+			Collections.sort(mappingCellList, new Comparator<MappingCell>() {
+				public int compare(MappingCell cell1, MappingCell cell2) {
+					return -(cell1.getScore().compareTo(cell2.getScore()));
 				}
+			});
+
+			// Integer otherElementsSchemaID = null;
+			// if (alm.size() != 0) {
+			// Integer srcSchemaID = m.getSourceId();
+			// Integer trgSchemaID = m.getTargetId();
+			// // need to get the schemaID for the element that mapped to
+			// // the current element
+			// if (srcSchemaID == trgSchemaID) {
+			// System.out.println("schema was mapped to self");
+			// }
+			// if (srcSchemaID == schemaID) {
+			// otherElementsSchemaID = trgSchemaID;
+			// } else {
+			// otherElementsSchemaID = srcSchemaID;
+			// }
+			// }
+
+			// add the name of the element and match score to the Related
+			// Elements string
+			for (int k = 0; k < mappingCellList.size(); k++) {
+				MappingCell mc = mappingCellList.get(k); 
+				Mapping m = OpenIIManager.getMapping(mc.getMappingId());
+				Integer outputId = mc.getOutput();
+				Integer otherSchemaId = (schemaID.equals(m.getSourceId())) ? m.getTargetId() : m.getSourceId();
+
+				for (Integer inputId : mc.getElementInputIDs()) {
+					Integer otherElementId = (outputId.equals(eleID)) ? inputId : outputId;
+					SchemaElement otherElement = getSchemaElement(otherSchemaId, otherElementId);
+
+					TableItem currItem = (k == 0) ? nextItem : new TableItem(evidTable, SWT.NONE);
+
+					// set background color
+					currItem.setBackground(currColor);
+
+					// highlight chosen element mapping cells
+					for (AssociatedElement ae : aes)
+						if (ae.getElementID().equals(otherElementId))
+							for (int c = 3; c <= 6; c++)
+								currItem.setBackground(c, highlight);
+
+					currItem.setText(3, mc.getScore().toString());
+					currItem.setText(4, otherElement.getName());
+					currItem.setText(5, otherElement.getDescription());
+					currItem.setText(6, OpenIIManager.getSchema(otherSchemaId).getName());
+				}
+
+				// // get the ID of the other element
+				// Integer[] elementIDs = mc.getElementInputIDs();
+				// Integer otherElementsID = null;
+				// for (int n = 0; n < elementIDs.length; n++) {
+				// if (elementIDs[n] != eleID) {
+				// otherElementsID = elementIDs[n];
+				// }
+				// }
+				//
+				// String otherElementsContainingSchemaName = "";
+				// String otherElementsName = "";
+				// String score = "";
+				// String otherElementsDescription = "";
+				// if (otherElementsSchemaID != null && otherElementsID !=
+				// null) {
+				// SchemaInfo otherElementsSchemaInfo =
+				// OpenIIManager.getSchemaInfo(otherElementsSchemaID);
+				// otherElementsContainingSchemaName =
+				// otherElementsSchemaInfo.getSchema().getName();
+				// otherElementsName =
+				// otherElementsSchemaInfo.getElement(otherElementsID).getName();
+				// otherElementsDescription =
+				// otherElementsSchemaInfo.getElement(otherElementsID).getDescription();
+				// score = mc.getScore().toString();
+				// }
+				//
+				// // if it is the first related element found then put it
+				// in
+				// // the row with the initial element
+				// // otherwise, create a new row for it
+				// // 0-name, 1-description, 2-source, 3- match score,
+				// 4-name
+				// // of match, 5-match description, 6-match source
+				// if (k == 0) {
+				// nextItem.setText(3, score);
+				// nextItem.setText(4, otherElementsName);
+				// nextItem.setText(5, otherElementsDescription);
+				// nextItem.setText(6, otherElementsContainingSchemaName);
+				// } else {
+				// TableItem newRelatedItem = new TableItem(evidTable,
+				// SWT.NONE);
+				// newRelatedItem.setBackground(currColor);
+				// newRelatedItem.setText(3, score);
+				// newRelatedItem.setText(4, otherElementsName);
+				// nextItem.setText(5, otherElementsDescription);
+				// newRelatedItem.setText(6,
+				// otherElementsContainingSchemaName);
+				// }
 			}
 		}
 	}
