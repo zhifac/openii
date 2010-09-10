@@ -17,11 +17,12 @@ public class AssociatedElementHash {
 	/** Sets the specified mapping cell */
 	public void set(MappingCell mappingCell) {
 		Integer output = mappingCell.getOutput();
+		if (!mappingCellHash.containsKey(output))
+			mappingCellHash.put(output, new ArrayList<MappingCell>());
+
 		for (Integer input : mappingCell.getElementInputIDs()) {
 			if (!mappingCellHash.containsKey(input))
 				mappingCellHash.put(input, new ArrayList<MappingCell>());
-			if (!mappingCellHash.containsKey(output))
-				mappingCellHash.put(output, new ArrayList<MappingCell>());
 
 			mappingCellHash.get(input).add(mappingCell);
 			mappingCellHash.get(output).add(mappingCell);
@@ -39,24 +40,31 @@ public class AssociatedElementHash {
 			return new ArrayList<MappingCell>(0);
 	}
 
-	/** Returns a list of mappingCells by input element ID with minimum and/or maximum scores specified 
+	/**
+	 * Returns a list of mappingCells by input element ID with minimum and/or
+	 * maximum scores specified
 	 * 
-	 * @param inputID schema element ID
-	 * @param minScore minimum mapping cell score
-	 * @param maxScore maximum mapping cell score
+	 * @param inputID
+	 *            schema element ID
+	 * @param minScore
+	 *            minimum mapping cell score
+	 * @param maxScore
+	 *            maximum mapping cell score
 	 * @return
 	 */
-	public ArrayList<MappingCell> get(Integer inputID, Integer minScore,
-			Integer maxScore) {
+	public ArrayList<MappingCell> get(Integer inputID, Double minScore,
+			Double maxScore) {
 		ArrayList<MappingCell> result = new ArrayList<MappingCell>();
 		for (MappingCell cell : get(inputID)) {
 			if (minScore != null && maxScore != null
-					&& cell.getScore() >= minScore
-					&& cell.getScore() <= maxScore)
+					&& cell.getScore().doubleValue() >= minScore.doubleValue()
+					&& cell.getScore().doubleValue() <= maxScore.doubleValue())
 				result.add(cell);
-			else if (minScore != null && cell.getScore() >= minScore)
+			else if (minScore != null
+					&& cell.getScore().doubleValue() >= minScore.doubleValue())
 				result.add(cell);
-			else if (maxScore != null && cell.getScore() <= maxScore)
+			else if (maxScore != null
+					&& cell.getScore().doubleValue() <= maxScore.doubleValue())
 				result.add(cell);
 		}
 		return result;
