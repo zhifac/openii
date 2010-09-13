@@ -20,6 +20,17 @@ public class SchemaMenuManager extends MenuManager implements IMenuListener
 		public void run()
 			{ viewer.expandToLevel(((TreeSelection)viewer.getSelection()).getPaths()[0], TreeViewer.ALL_LEVELS); }
 	}
+
+	/** Defines a private class defining the "Collapse All" action */
+	private class CollapseAllAction extends Action
+	{
+		/** Constructs the "Collapse All" action */
+		CollapseAllAction() { setText("Collapse All"); }
+		
+		/** Collapses the currently selected node in the tree */
+		public void run()
+			{ viewer.collapseToLevel(((TreeSelection)viewer.getSelection()).getPaths()[0], TreeViewer.ALL_LEVELS); }
+	}
 	
 	/** Stores reference to the tree viewer */
 	private TreeViewer viewer = null;
@@ -34,5 +45,8 @@ public class SchemaMenuManager extends MenuManager implements IMenuListener
 	
 	/** Generate the context menu before being displayed */
 	public void menuAboutToShow(IMenuManager menuManager)
-		{ menuManager.add(new ExpandAllAction()); }
+	{
+		menuManager.add(new ExpandAllAction());
+		menuManager.add(new CollapseAllAction());
+	}
 }
