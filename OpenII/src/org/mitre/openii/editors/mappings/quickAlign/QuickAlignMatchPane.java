@@ -18,11 +18,10 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.mitre.openii.widgets.BasicWidgets;
-import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
 
-/** Constructs the Quick Alignment Mapping Editor */
+/** Constructs the Quick Alignment Match Pane */
 class QuickAlignMatchPane extends Composite implements MouseListener, SelectionListener, ISelectionChangedListener
 {
 	// Stores constants for highlighting the pane
@@ -85,40 +84,47 @@ class QuickAlignMatchPane extends Composite implements MouseListener, SelectionL
 		{ setBackground(select ? HIGHLIGHT : DEFAULT); }
 	
 	/** Updates the matches shown by this pane */
-	void updateMatches(ArrayList<MappingCell> mappingCells, HierarchicalSchemaInfo targetInfo)
+	void updateMatches(ArrayList<QuickAlignMatch> matches, HierarchicalSchemaInfo targetInfo)
 	{
-		// Generate the list of possible matches
-		ArrayList<SchemaElement> elements = new ArrayList<SchemaElement>();
-		if(mappingCells!=null)
-			for(MappingCell mappingCell : mappingCells)
-				elements.add(targetInfo.getElement(mappingCell.getOutput()));
-		
-		// Identify the selected element
-		SchemaElement selectedElement = getTargetElement();
-		if(selectedElement==null && mappingCells!=null)
-			if(mappingCells.size()>0 && mappingCells.get(0).isValidated())
-				selectedElement = elements.get(0);
+		// Identify the selected match
+		QuickAlignMatch selectedMatch = getTargetMatch();
+		if(selectedMatch==null && matches!=null)
+			if(matches.size()>0 && matches.get(0).getMappingCell().isValidated())
+				selectedMatch = matches.get(0);
 
 		// Replace elements in the list
 		viewer.getCombo().removeAll();
 		viewer.add("");
-		for(SchemaElement element : elements)
-			viewer.add(element);
+		for(QuickAlignMatch match : matches)
+			viewer.add(match);
 		
 		// Select the element as needed
-		if(selectedElement!=null)
-			viewer.setSelection(new StructuredSelection(selectedElement), true);
+		if(selectedMatch!=null)
+			viewer.setSelection(new StructuredSelection(selectedMatch), true);
 	}
 
 	/** Returns the source element */
 	SchemaElement getSourceElement()
 		{ return sourceElement; }
 
-	/** Returns the target element */
-	SchemaElement getTargetElement()
+	/** Returns the potential matches */
+	ArrayList<QuickAlignMatch> getPotentialMatches()
+	{
+		ArrayList<QuickAlignMatch> matches = new ArrayList<QuickAlignMatch>();
+		for(int i=0; i<viewer.getCombo().getItemCount(); i++)
+		{
+			Object item = viewer.getElementAt(i);
+			if(item instanceof QuickAlignMatch)
+				matches.add((QuickAlignMatch)item);
+		}
+		return matches;
+	}
+	
+	/** Returns the target match */
+	QuickAlignMatch getTargetMatch()
 	{
 		Object selection = ((StructuredSelection)viewer.getSelection()).getFirstElement();
-		return selection instanceof SchemaElement ? (SchemaElement)selection : null;
+		return selection instanceof QuickAlignMatch ? (QuickAlignMatch)selection : null;
 	}
 	
 	/** Handles changes to the selected element */

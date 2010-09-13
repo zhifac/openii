@@ -19,6 +19,7 @@ import org.mitre.harmony.matchers.MatchScore;
 import org.mitre.harmony.matchers.MatchScores;
 import org.mitre.harmony.matchers.matchers.Matcher;
 import org.mitre.harmony.matchers.mergers.VoteMerger;
+import org.mitre.openii.model.OpenIIManager;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.mappingInfo.MappingCellHash;
@@ -41,29 +42,29 @@ public class QuickAlignMatchesPane extends Composite
 	private QuickAlignInfoPane infoPane = null;
 	
 	/** Generates a listing of matches hashed by input element */
-	private HashMap<Integer,ArrayList<MappingCell>> getMatches()
+	private HashMap<Integer,ArrayList<QuickAlignMatch>> getMatches()
 	{
 		// Retrieve the matches
-		HashMap<Integer,ArrayList<MappingCell>> matches = new HashMap<Integer,ArrayList<MappingCell>>();
+		HashMap<Integer,ArrayList<QuickAlignMatch>> matches = new HashMap<Integer,ArrayList<QuickAlignMatch>>();
 		for(MappingCell mappingCell : mappingInfo.getMappingCells().get())
 			for(Integer inputID : mappingCell.getElementInputIDs())
 			{
-				ArrayList<MappingCell> mappingCells = matches.get(inputID);
-				if(mappingCells==null) matches.put(inputID, mappingCells=new ArrayList<MappingCell>());
-				mappingCells.add(mappingCell);
+				ArrayList<QuickAlignMatch> elementMatches = matches.get(inputID);
+				if(elementMatches==null) matches.put(inputID, elementMatches=new ArrayList<QuickAlignMatch>());
+				elementMatches.add(new QuickAlignMatch(mappingCell,filterPane.getTargetSchema()));
 			}
 		
 		// Compares two matches to one another
-		class ScoreComparator implements Comparator<MappingCell>
-			{ public int compare(MappingCell mappingCell1, MappingCell mappingCell2)
-				{ return mappingCell2.getScore().compareTo(mappingCell1.getScore()); } }
+		class ScoreComparator implements Comparator<QuickAlignMatch>
+			{ public int compare(QuickAlignMatch match1, QuickAlignMatch match2)
+				{ return match2.getMappingCell().getScore().compareTo(match1.getMappingCell().getScore()); } }
 
 		// Sort the list of matches and trim to the top 10
 		for(Integer key : matches.keySet())
 		{
-			ArrayList<MappingCell> mappingCells = matches.get(key);
+			ArrayList<QuickAlignMatch> mappingCells = matches.get(key);
 			Collections.sort(mappingCells, new ScoreComparator());
-			if(mappingCells.size()>10) mappingCells = new ArrayList<MappingCell>(mappingCells.subList(0,10));
+			if(mappingCells.size()>10) mappingCells = new ArrayList<QuickAlignMatch>(mappingCells.subList(0,10));
 			matches.put(key, mappingCells);
 		}
 		
@@ -108,8 +109,8 @@ public class QuickAlignMatchesPane extends Composite
 		layout.horizontalSpacing = 1; layout.verticalSpacing = 1;
 		matchersPane.setLayout(layout);
 		
-		// Retrieve the mapping information
-		HashMap<Integer,ArrayList<MappingCell>> matches = getMatches();
+		// Retrieve the matches
+		HashMap<Integer,ArrayList<QuickAlignMatch>> matches = getMatches();
 		
 		// Display the source elements which need to be aligned
 		ArrayList<SchemaElement> sourceElements = filterPane.getSourceSchema().getHierarchicalElements();
@@ -148,12 +149,23 @@ public class QuickAlignMatchesPane extends Composite
 		infoPane = new QuickAlignInfoPane(this, filterPane.getSourceSchema(), filterPane.getTargetSchema());
 	}
 	
+	/** Returns the mapping info */
+	MappingInfo getMappingInfo()
+		{ return mappingInfo; }
+	
 	/** Handles the recalculation of matches */
 	void recalculateMatches()
 	{
 		// Retrieve the source and target schemas
 		FilteredSchemaInfo sourceFilter = filterPane.getSourceSchema();
 		FilteredSchemaInfo targetFilter = filterPane.getTargetSchema();
+		
+		// Hide elements which already have a selection
+		ArrayList<Integer> hiddenElements = new ArrayList<Integer>();
+		for(QuickAlignMatchPane matchPane : matchPanes)
+			if(matchPane.getTargetMatch()!=null)
+				hiddenElements.add(matchPane.getSourceElement().getId());
+		sourceFilter.setHiddenElements(hiddenElements);
 		
 		// Run matchers on the unassigned mapping cells
 		ArrayList<Matcher> matchers = filterPane.getMatchers();
@@ -177,12 +189,51 @@ public class QuickAlignMatchesPane extends Composite
 		}
 		
 		// Update the match panes
-		HashMap<Integer,ArrayList<MappingCell>> matches = getMatches();
+		HashMap<Integer,ArrayList<QuickAlignMatch>> matches = getMatches();
 		for(QuickAlignMatchPane matchPane : matchPanes)
 		{
-			ArrayList<MappingCell> elementMatches = matches.get(matchPane.getSourceElement());
+			ArrayList<QuickAlignMatch> elementMatches = matches.get(matchPane.getSourceElement());
 			matchPane.updateMatches(elementMatches, filterPane.getTargetSchema());
 		}
+	}
+	
+	/** Handles the saving of matches */
+	void saveMatches()
+	{
+		ArrayList<MappingCell> mappingCells = new ArrayList<MappingCell>();
+		for(QuickAlignMatchPane matchPane : matchPanes)
+		{
+			// Saves the selected match
+			QuickAlignMatch match = matchPane.getTargetMatch();
+			if(match!=null)
+			{
+				MappingCell mappingCell = match.getMappingCell();
+				if(!mappingCell.isValidated())
+				{
+					Integer id = mappingCell.getId();
+					Integer mappingID = mappingCell.getMappingId();
+					Integer input = mappingCell.getElementInputIDs()[0];
+					Integer output = mappingCell.getOutput();
+					String author = System.getProperty("user.name");
+					Date date = Calendar.getInstance().getTime();
+					String notes = mappingCell.getNotes();
+					mappingCell = MappingCell.createIdentityMappingCell(id, mappingID, input, output, author, date, notes);
+				}
+				mappingCells.add(mappingCell);
+			}
+
+			// If no selected matches, save the potential matches
+			else for(QuickAlignMatch potentialMatch : matchPane.getPotentialMatches())
+			{
+				MappingCell mappingCell = potentialMatch.getMappingCell();
+				if(mappingCell.isValidated())
+					{ mappingCell.setFunctionID(null); mappingCell.setScore(0.95); }
+				mappingCells.add(mappingCell);
+			}
+		}
+		
+		// Save the mapping cells
+		OpenIIManager.saveMappingCells(mappingInfo.getMapping().getId(), mappingCells);
 	}
 	
 	/** Sets the selected match pane */

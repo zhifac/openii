@@ -34,8 +34,7 @@ public class QuickAlignEditor extends OpenIIEditor
 	{
 		/** Handles the selection of the save button */
 		public void widgetSelected(SelectionEvent e)
-		{
-		}
+			{ matchesPane.saveMatches(); }
 		
 		// Unused listener event
 		public void widgetDefaultSelected(SelectionEvent e) {}
@@ -56,31 +55,4 @@ public class QuickAlignEditor extends OpenIIEditor
 		filterPane = new QuickAlignFilterPane(pane,mapping.getMapping(),new CalculateMatches(), new SaveMatches());
 		matchesPane = new QuickAlignMatchesPane(pane,mapping,filterPane);
 	}
-	
-//	ArrayList<MappingCell> mappingCells = OpenIIManager.getMappingCells(getElementID());
-	//
-//			// Update mapping cells based on changes to the match panes
-//			for(MatchPane matchPane : matchPanes)
-//			{
-//				Integer sourceID = matchPane.getSourceID();
-//				
-//				// Remove the mapping cell
-//				if(matchPane.getElement()==null)
-//				{
-//					for(MappingCell mappingCell : new ArrayList<MappingCell>(mappingCells))
-//						if(mappingCell.getElementInputIDs()[0].equals(sourceID))
-//							mappingCells.remove(mappingCell);
-//				}
-	//
-//				// Adds a mapping cell
-//				else
-//				{
-//					Integer targetID = matchPane.getElement().getId();
-//					mappingCells.add(MappingCell.createIdentityMappingCell(null, getElementID(), sourceID, targetID, System.getProperty("user.name"), new Date(), ""));
-//				}
-//			}		
-//			
-//			// Save the mapping cells before closing
-//			if(OpenIIManager.saveMappingCells(getElementID(), mappingCells))
-//				closeEditor();
 }
