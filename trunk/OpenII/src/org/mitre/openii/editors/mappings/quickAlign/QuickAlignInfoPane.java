@@ -107,8 +107,9 @@ public class QuickAlignInfoPane extends Canvas implements PaintListener
 		if(selectedMatchPane!=null) selectedMatchPane.setSelected(true);
 		
 		// Display the newly selected information
+		QuickAlignMatch match = selectedMatchPane.getTargetMatch();
 		sourcePane.setInfo(selectedMatchPane.getSourceElement());
-		targetPane.setInfo(selectedMatchPane.getTargetElement());
+		targetPane.setInfo(match==null ? null : match.getElement());
 	}
 	
 	/** Draws a line to divide the source and target element info */
