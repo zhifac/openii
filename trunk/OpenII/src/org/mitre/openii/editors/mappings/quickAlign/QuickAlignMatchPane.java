@@ -95,8 +95,9 @@ class QuickAlignMatchPane extends Composite implements MouseListener, SelectionL
 		// Replace elements in the list
 		viewer.getCombo().removeAll();
 		viewer.add("");
-		for(QuickAlignMatch match : matches)
-			viewer.add(match);
+		if(matches!=null)
+			for(QuickAlignMatch match : matches)
+				viewer.add(match);
 		
 		// Select the element as needed
 		if(selectedMatch!=null)
@@ -135,9 +136,28 @@ class QuickAlignMatchPane extends Composite implements MouseListener, SelectionL
 	public void mouseDown(MouseEvent e)
 		{ getMatchesPane().setSelectedPane(this); }
 
+	/** Allows manual selection of a target element */
+	public void widgetSelected(SelectionEvent e)
+	{
+//		QuickAlignMatchesPane matchesPane = getMatchesPane();
+//		matchesPane.g
+//		
+//		// Prepare the schema tree dialog
+//		SchemaTreeDialog dialog = new SchemaTreeDialog(getShell(),schema,schema.getModel());
+//		ArrayList<SchemaElement> rootIDs = schema.getFilteredRootElements();
+//		dialog.getSchemaTree().setSelectedElement(rootIDs.size()>0 ? rootIDs.get(0).getId() : null);
+//
+//		// Launch the schema tree dialog
+//		if(dialog.open()==Window.OK)
+//		{
+//			SchemaTree tree = dialog.getSchemaTree();
+//			schema.setModel(tree.getSchema().getModel());
+//			schema.setFilteredRoots(new ArrayList<Integer>(Arrays.asList(new Integer[]{tree.getSelectedElement()})));
+//		}
+	}
+	
 	// Unused event listeners
 	public void widgetDefaultSelected(SelectionEvent e) {}
-	public void widgetSelected(SelectionEvent e) {}
 	public void mouseDoubleClick(MouseEvent e) {}
 	public void mouseUp(MouseEvent e) {}
 }
