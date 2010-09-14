@@ -160,6 +160,7 @@ public class SchemaTree extends Composite implements ISelectionChangedListener, 
 		
 		// Highlight all matches in the schema
 		results = SearchManager.search(keyword, schema);
+		if(results.size()>0) schemaViewer.expandToLevel(2);
 		for(Integer elementID : results.keySet())
 			for(ArrayList<SchemaElement> path : schema.getPaths(elementID))
 				for(SchemaElement element : path)
