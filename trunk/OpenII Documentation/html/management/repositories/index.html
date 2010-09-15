@@ -9,8 +9,98 @@
 	  	<iframe src="./../../header.html" width="100%" height="30" scrolling="no" frameborder="0"></iframe>
 		<div id="content">
 			<h1>Repository Management</h1>
-			<p>
-			</p>
+			<div style="clear: both;"></div>
+			
+			<!-- REPOSITORY MANAGER -->
+			<div class="chapter">
+				<h3>The Repository Manager</h3>
+				<div style="float: right; margin-left: 10px; margin-top: 0px;">
+					<img src="./RepositoryPane.gif" alt="RepositoryPane" title="RepositoryPane" style="width: 257px; height: 167px;"/>
+				</div>
+				<p>
+					The OpenII tool suite operates using the concept of a schema repository.  Each such repository stores
+					the collection of schemas being analyzed, tags for grouping these schemas into categories, and
+					projects for analysing the associations between schemas.  OpenII has the ability to connect to any
+					such repository and display the stored data through a variety of different tools.  At the moment,
+					connection is limited to a single repository at a time.  To access a repository, a user only has
+					to select the repository they wish to access through the Repository pane.
+				</p>
+				<p>
+					Two notes need to be made about accessing repositories.  First, OpenII validates connections to
+					repositories to ensure that the connection actually exists.  Whenever a repository connection is
+					deemed invalid, this repository will be marked as such and locked from selection.  And when
+					the user changes the selected repository, all views associated with the old repository are
+					automatically closed to eliminate confusion.
+				</p>
+				<p>
+					Management of these repositories can be done using drop-down menus found within the Repository
+					pane.  To add a new repository, one can right-click on the "Repositories" folder and select the
+					"Add Repository" option.  To edit the connection settings for a repository, one can right-click
+					on the specific repository and select the "Edit Repository" option.  And to compress or remove
+					a repository, the repository can be right-clicked allowing for the specific option to be selected.
+				</p>
+			</div>
+
+			<!-- CONNECTING TO REPOSITORIES -->
+			<div class="chapter">
+				<h3>Connecting to Repositories</h3>
+				<div style="float: right; margin-left: 10px; margin-top: 0px;">
+					<img src="./CreateRepository.gif" alt="CreateRepository" title="CreateRepository" style="width: 438px; height: 397px;"/>
+				</div>
+				<p>
+					When OpenII is first launched, a default repository is created in the working directory of OpenII.
+					In order to connect to additional repositories, the user needs to right-click on the "Repositories"
+					folder and select the "Create Repository" menu option.  This will launch the displayed dialog which
+					provides three different ways for connecting to a repository.
+				</p>
+				<p>
+					The most common method for setting up a new repository is to make a local repository.  This type of
+					repository uses a Derby database to store information on the local machine.  Thus, the only setup
+					required of the user is to point to the directory where the database should be created and provide
+					a database name, username, and password.  While this is one of the easiest ways for setting up a
+					repository, the downside is that this type of repository can only be accessed locally to the machine
+					and thus can't be shared across a network.
+				</p>
+				<p>
+					For those wishing to create a repository accessable over a network, one can choose to create a remote
+					repository.  For this option, a postgres database is used.  Setup for this case is a little more
+					complicated in that the user must manually access the postgres instance through psql and create a
+					database using the command "CREATE DATABASE &lt;name&gt;".  Once created, the user only has to
+					declare the server on which the database is run along with the database name, username, and password.
+					Note that no port declaration is necessary.
+				</p>
+				<p>
+					A final approach for connecting to a repository is through a web service.  This approach is mainly
+					used by those who want to provide access throughout a network but want to better control access of the
+					underlying database.  Instructions on how to set up the web service version of the repository can
+					be found within the "Developers Zone" section of this documentation.  As for connecting to a web
+					service, it is as easy as specifying the url of the web service.
+				</p>
+			</div>
+
+			<!-- COMPRESSING REPOSITORIES -->
+			<div class="chapter">
+				<h3>Compressing Repositories</h3>
+				<p>
+					Due to the nature of the underlying databases being used, the memory footprint of the repositories
+					can bloat over time.  To combat this problem, a menu item has been provided to allow users to
+					compress the repository when they want to reduce the database memory usage.  This capability can 
+					be found by right-clicking the specific repository and selecting the "Compress Repository" option.
+				</p>
+			</div>
+
+			<!-- DISCONNECTING REPOSITORIES -->
+			<div class="chapter">
+				<h3>Disconnecting Repositories</h3>
+				<p>
+					When access to a repository is no longer required, the user may remove the repository from the
+					list of available repositories.  To perform this disconnection, right-click on the specific
+					repository and select the "Disconnect Repository" option.  Note that this action only disconnects
+					the repository from OpenII and does not actually delete the contents of the repository.  Deletion
+					can only occur by manually finding the database files (in the case of Derby) or accessing the
+					database (in the case of Postgres) and deleting the database there.
+				</p>
+			</div>
 		</div>
 	</body>
 </html>
