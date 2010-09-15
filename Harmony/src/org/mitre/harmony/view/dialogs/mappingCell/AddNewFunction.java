@@ -445,7 +445,6 @@ public class AddNewFunction extends JDialog implements MouseListener, MouseMotio
 		            replaceA =0;
 		            replaceB =0;
 	            }
-	            System.out.println(content.substring(replaceA, replaceB));
 			}
 		}
 		public void mouseReleased(MouseEvent e) { mousePosition=null; }
@@ -476,23 +475,6 @@ public class AddNewFunction extends JDialog implements MouseListener, MouseMotio
 			btPane.setEnabled(0, false);
 		}
 		
-		//for generating function inputs
-		/*
-		public void setInputType(String name){
-			
-			Iterator iterator = dataTypeHash.entrySet().iterator();
-
-			while( iterator. hasNext() ){
-
-				String element = (String) iterator.next().toString();
-				if(element.contains(name)){		 
-					//System.out.println("iterator=" + element);
-					String id = element.substring(0, element.indexOf("="));
-					inputList.add(new Integer(id));
-				}
-			}
-		}
-		*/
 		//for generating function output
 		public void setOutputType(String name){
 			String funcName = name.substring(0, name.indexOf("("));
@@ -552,7 +534,6 @@ public class AddNewFunction extends JDialog implements MouseListener, MouseMotio
 				HashMap<Integer,DataType> dataTypes = new HashMap<Integer,DataType>();
 				for(DataType dataType : SchemaStoreManager.getDataTypes()){
 					dataTypes.put(dataType.getId(), dataType);
-					//System.out.println("typeId=" + dataType.getId());
 				}
 				
 				for(Function function : SchemaStoreManager.getFunctions())
@@ -571,7 +552,6 @@ public class AddNewFunction extends JDialog implements MouseListener, MouseMotio
 							out += "$" + j++ + ",";
 						}
 						nameList.add(new String(out.substring(0, out.length()-1))+ ")");
-						//System.out.println(function.getName() +  " = " + new String(out.substring(0, out.length()-1))+ ")");
 					}
 					else{
 						int k = 1;
@@ -581,7 +561,6 @@ public class AddNewFunction extends JDialog implements MouseListener, MouseMotio
 							String parameter = "$" + k++;
 						}
 						nameList.add(function.getExpression());
-						//System.out.println(function.getName() +  " = " + function.getExpression());
 					}
 				}
 	
@@ -610,7 +589,6 @@ public class AddNewFunction extends JDialog implements MouseListener, MouseMotio
 	        else if( theList == functionJList){
 	            int index = theList.getSelectedIndex();
 	            String currentTypeName = (String)theList.getModel().getElementAt(index);
-	            //System.out.println("Name=" + typeName);
 	            LinkedList nameToShow = setDetailedList(currentTypeName);
 	            setModelElements(nameToShow);
 	        }
@@ -648,7 +626,6 @@ public class AddNewFunction extends JDialog implements MouseListener, MouseMotio
 		for(int i=0; i< functionList.size(); i++){
 			Integer output =((Function)functionList.get(i)).getOutputType();		
 			if(output.equals(typeId)){
-				//System.out.println("added a function.");
 				functionToShowList.add((Function)functionList.get(i));
 			}
 		}
