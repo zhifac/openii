@@ -425,20 +425,6 @@ public class AddNewFunction extends JDialog implements MouseListener, MouseMotio
 	            	
 	            
 	            //check to see if the selected item is a parameter
-	            /*
-	            boolean isParameter = false;
-	            for(int i = 0; i<dataTypeList.size(); i++){
-	    			
-	    			DataType dt = (DataType)dataTypeList.get(i);
-	                    
-	    			if(dt.getName().equals(selectedItem)){
-	    				isParameter = true;
-	    				LinkedList nameToShow = setDetailedList(selectedItem);
-	    	            setModelElements(nameToShow);
-	    				break;
-	    			}
-	            }
-	            */
 	            if(isParameter==false){
 					expTextField.setSelectionStart(0);
 		            expTextField.setSelectionEnd(0);
@@ -500,15 +486,6 @@ public class AddNewFunction extends JDialog implements MouseListener, MouseMotio
 		         if(item.contains("$")){
 		        	 idList.add(outputType); 
 		         }
-		         /*
-		         for(int i = 0; i<dataTypeList.size(); i++){		 			
-		 			DataType dt = (DataType)dataTypeList.get(i);		                 
-		 			if(dt.getName().equals(item)){		 
-		 				Integer id = dt.getId();
-		 				idList.add(id);
-		 			}
-		         }
-		         */
 		     }
 
 			Integer[] inputs = new Integer[idList.size()];
@@ -579,7 +556,7 @@ public class AddNewFunction extends JDialog implements MouseListener, MouseMotio
 		
 		//function selection value changed
 		public void valueChanged(ListSelectionEvent e) {
-			System.out.println("I am here now.");
+
 	        if (e.getValueIsAdjusting())
 	            return;
 
