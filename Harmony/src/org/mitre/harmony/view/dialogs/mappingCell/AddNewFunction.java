@@ -332,7 +332,7 @@ public class AddNewFunction extends JDialog implements MouseListener, MouseMotio
 			//functionDetailList = new JList(funcNameList.toArray());
 			functionDetailList = new JList(funcNameListModel);
 			functionDetailList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-			functionDetailList.setSelectedIndex(0);
+			//functionDetailList.setSelectedIndex(0);
 			functionDetailList.addListSelectionListener(this);
 			
 			
@@ -579,6 +579,7 @@ public class AddNewFunction extends JDialog implements MouseListener, MouseMotio
 		
 		//function selection value changed
 		public void valueChanged(ListSelectionEvent e) {
+			System.out.println("I am here now.");
 	        if (e.getValueIsAdjusting())
 	            return;
 
@@ -733,11 +734,24 @@ public class AddNewFunction extends JDialog implements MouseListener, MouseMotio
 		//verify function names and parameter orders
 		StringTokenizer st = new StringTokenizer(theFuncExp, "(),");
 		 
-	     while (st.hasMoreTokens()) {
-	    	 
+	     while (st.hasMoreTokens()) {   	 
 	         String item = (st.nextToken());
 	         if(item.contains("$")){
 	        	 //verify variable in right order;
+	        	 if(item.length()>2){
+	        		 valid = false;
+	        	 }
+	        	 else if(item.length()==2){
+	        		 try{
+	        			 int number = Integer.parseInt(item.substring(1,2));
+	        		 }
+	        		 catch(NumberFormatException e){
+	        			 valid = false;
+	        		 }
+	        	 }
+	        	 else{
+	        		 valid = false;
+	        	 }
 	         }
 	         else{
 	        	 //compare to the function names
