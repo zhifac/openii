@@ -1,0 +1,40 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+		<link REL="STYLESHEET" TYPE="text/css" HREF="./../../support/standard.css"/>
+		<title>OpenII Help System</title>
+	</head>
+	<body>
+	  	<iframe src="./../../header.html" width="100%" height="30" scrolling="no" frameborder="0"></iframe>
+		<div id="content">
+			<h1>M3 Schema Viewer</h1>
+			<div style="clear: both;"></div>
+			
+			<div class="chapter">
+				<p>
+					This view displays the raw data structured used to store schemas in the schema repository.  More is
+					discussed about this format in the "Developers" section of this documentation.  Displayed here is a
+					panel with the schema properties such as name, author, source, type, and description.  Following this
+					are panes to show each of the eight types of elements which make up schemas in the M3 model.  These
+					include Entities, Attributes, Domains, Domain Values, Subtypes, Containments, Relationships, and
+					Aliases.  For each of these element types, the actual data stored in the database tables are
+					revealed. 
+				</p>
+				<p>
+					This view is most beneficial to users who are working on developing importers in OpenII or want
+					better understanding of the underlying data model of the OpenII repository.  Whereas all other views
+					in OpenII show abstractions of schemas, this is the one view that shows the model in its complete
+					form.
+				</p>
+			</div>
+			
+			<div class="chapter">
+				<h3>Display of the M3 Schema Viewer</h3>
+				<center>
+					<img src="./M3SchemaViewer.gif" alt="M3SchemaViewer" title="M3SchemaViewer" style="width: 635px; height: 710px;"/>
+				</center>
+			</div>
+		</div>
+	</body>
+</html>

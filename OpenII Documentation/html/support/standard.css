@@ -132,6 +132,24 @@ div {
 	padding-bottom: 3px;
 }
 
+#content .inlineImage img {
+	display: inline;
+	float: right;
+	margin-left: 10px;
+	margin-top: 0px;
+}
+
+#content .textTable {
+	border-collapse: collapse;
+}
+
+#content .textTable th, td {
+	border: 1px solid black;
+	font-family: "Courier New", Times, serif;
+	padding-left: 5px;
+	padding-right: 15px;
+}
+
 #content .footnotes h3 {
 	font: bold 16pt arial,sans-serif;
 	padding: 0px;

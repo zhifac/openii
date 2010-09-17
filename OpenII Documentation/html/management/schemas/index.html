@@ -9,8 +9,152 @@
 	  	<iframe src="./../../header.html" width="100%" height="30" scrolling="no" frameborder="0"></iframe>
 		<div id="content">
 			<h1>Schema Management</h1>
-			<p>
-			</p>
+			<div style="clear: both;"></div>
+			
+			<!-- SCHEMA MANAGER -->
+			<div class="chapter">
+				<h3>Schema Manager</h3>
+				<div class="inlineImage">
+					<img src="./SchemasPane.gif" alt="SchemasPane" title="SchemasPane" style="width: 255px; height: 312px;"/>
+				</div>
+				<p>
+					One type of object held within the repository is the schema.  This object is used to represent
+					the data model being analysed.  Instead of being constrained to a single format (e.g. XML, Relational)
+					schemas are held in a more generalized Entity-Relationship format called the M3 model (discussed in
+					more depth in the "Developer Zone" section of the documentation).  Importers and exporters are
+					available to translate common formats to and from M3.
+				</p>
+				<p>
+					Viewing of available schemas is done through the displayed manager pane of OpenII which is shown here.
+					Browsing of schemas can be done in two ways.  One way to find schemas is by looking at the entire
+					list.  Alternatively, if schemas have been tagged by category (discussed below), the user can use
+					these tags to find schemas of interest.  One final way to find schemas if through an available
+					keyword search.
+				</p>
+				<p> 
+					To perform actions on the schema, the user only has to right-click on the schema for the available
+					actions to be shown.  Actions range from importing schemas, exporting schemas, searching for schemas,
+					tagging schemas, as well as viewing schemas.  Discussion of these various actions including the 
+					various schema views are all discussed in more depth below.
+				</p>
+			</div>
+
+			<!-- IMPORTING SCHEMAS -->
+			<div class="chapter">
+				<h3>Importing Schemas</h3>
+				<div class="inlineImage">
+					<img src="./ImportSchema.gif" alt="ImportSchema" title="ImportSchema" style="width: 438px; height: 526px;"/>
+				</div>
+				<p>
+					The first major action performed by anyone using the OpenII tool suite is to load schemas into the
+					framework for analysis.  To assist with this task, various importers are available for use.  To run
+					an importer, right-click on the "Schemas" folder and select the "Import Schema" option.  When this
+					action is performed, the displayed dialog is shown.  This dialog has the ability to import either a
+					single files or a group of files which exists in a single directory.  If the "file" option is selected,
+					the user is requested to provide a file location, schema name, author, and description.  If the
+					"directory" option is selected, the user must provide the file directory, author, and description.
+					The opportunity is also given for the user to select which directory files they want to import.
+					For this option, a schema name cannot be given with the importer instead using file names.
+				</p>
+				<p>	
+					Within the dialog, one other selection involves the type of importer.  This selection dictates which
+					types of files can be selected for importation.  The following is a listing of the main importers
+					available for use:
+				</p>
+				<ul>
+					<li><b>XSD Importer</b> - The workhorse of OpenII, the XSD importer imports all valid .xsd files.</li>
+					<li><b>SQL/DDL Importer</b> - Loads relational databases where an .sql file has been generated.</li>
+					<li><b>OWL Importer</b> - Works much like the XSD importer, but on OWL files.</li>
+					<li><b>Spreadsheet Importer</b> - Loads in schema information from a XSL file.</li>
+					<li><b>Domain Importer</b> - Loads in domain information from a formatted XSL file.</li>
+					<li><b>M3 Importer</b> - Imports files structured in OpenII native format.</li>
+				</ul>
+				<p>
+					For additional information on importer formats, click <b><a href="./importerFormats.html">here</a></b>.
+				</p>
+			</div>
+
+			<!-- MANAGING TAGS -->
+			<div class="chapter">
+				<h3>Managing Tags</h3>
+				<div class="inlineImage">
+					<img src="./CreateTag.gif" alt="CreateTag" title="CreateTag" style="width: 307px; height: 303px;"/>
+				</div>
+				<p>
+					Tags are a way to help organize schemas by category.  These tags are especially useful for
+					browsing and managing large repositories containing many schemas.  It is allowable for schemas
+					to be tagged into multiple categories.  And tags may be hierarchical in nature so that one can
+					create sub-categories.  Thus this hierarchical structure, a selection of a tag thus identifies all
+					schemas in the category as well as its subcategories.
+				</p>
+				<p>
+					To create a new tag, the user needs to right-click on the "Schemas" folder and select the "Add
+					Tag" option.  This selection launches the displayed dialog.  This dialog allows the assigning of a
+					tag name and schemas associated with the tag.  If a subtag is desired, right-click on the tag on
+					which the child tag should be added to get the same dialog.  In this case, only schemas not in
+					parent categories are selectable for addition into the category.
+				</p>
+				<p>
+					Once tags are created, they appear as new folders under the "Schemas" folder.  Expanding these
+					folders allow the user to view the schemas contained within.  Right-clicking on these tags also
+					allow specialized views to be launched which perform analysis on a group of schemas.  To remove
+					schemas from a tag can be done by right-clicking on the tag and deleting the "Edit Tag" option or
+					by right-clicking on the specific schema and selecting the "Remove Schema from Tag" option.
+				</p>
+			</div>
+
+			<!-- VIEWING SCHEMAS -->
+			<div class="chapter">
+				<h3>Viewing Schemas</h3>
+				<p>
+					One action which can be triggered by right-clicking a schema is the viewing of this schema through
+					one of the OpenII views.  Two of the main schema views are listed below:
+				</p>
+				<ul>
+					<li><b><a href="./schemaViewer.html">Schema Viewer</a></b> - Displays the schema in a tree structure with search capabilities.</li>
+					<li><b><a href="./m3SchemaViewer.html">M3 Schema Viewer</a></b> - Displays the raw repository format for the stored schema.</li>
+				</ul>
+				<p>
+					Additionally there are two views which operate on group of schemas.  To access the Affinity view,
+					right-click on any tag and find Affinity in the "Open With" sub-menu.  This will launch Affinity
+					on all schemas in the category.  This view can also be launched from the "All Schemas" folder.  The
+					Proximity view displays a group of schemas in reference to a single schema.  To launch this view,
+					right-click on any schema.  It will launch Proximity to focus on the selected schema in reference
+					to all schemas in the category in which this schema was selected.  A listing of these views can
+					be found below:
+				</p>
+				<ul>
+					<li><b><a href="./../../projects/affinity/index.html">Affinity</a></b> - Identifies/interprets associations between schemas.</li>
+					<li><b><a href="./../../projects/proximity/index.html">Proximity</a></b> - Interprets how a single schema associates with other schemas.</li>
+				</ul>
+			</div>
+
+			<!-- EXPORTING SCHEMAS -->
+			<div class="chapter">
+				<h3>Exporting Schemas</h3>
+				<p>
+					Several options are available for exporting schemas from the OpenII repository.  The available
+					formats are as follows:
+				</p>
+				<ul>
+					<li><b>XSD Exporter</b> - The XSD exporter exports the schema into a .xsd formatted file.</li>
+					<li><b>SQL Exporter</b> - The SQL exporter exports the schema into a .sql formatted file.</li>
+					<li><b>M3 Exporter</b> - Exports files structured in OpenII native format.</li>
+				</ul>
+			</div>
+
+			<!-- SEARCHING FOR SCHEMAS -->
+			<div class="chapter">
+				<h3>Searching for Schemas</h3>
+				<p>
+					In addition to browsing through schemas, keyword searching is available.  To launch this view,
+					right-click on the "All Schemas" folder or any tag upon which searching should occur.  This will
+					bring up a dialog prompting the user to enter a keyword.  Note that the keyword is case insensitive
+					and astricks can be used to indicate wildcard areas in the keyword.  Once a keyword is entered, the
+					<b><a href="./searchResultsViewer.html"> Search Results Viewer</a></b> is launched to display
+					any matched schemas.
+				</p>
+			</div>
 		</div>
 	</body>
 </html>

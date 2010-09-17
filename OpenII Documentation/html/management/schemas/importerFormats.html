@@ -1,0 +1,71 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+		<link REL="STYLESHEET" TYPE="text/css" HREF="./../../support/standard.css"/>
+		<title>OpenII Help System</title>
+	</head>
+	<body>
+	  	<iframe src="./../../header.html" width="100%" height="30" scrolling="no" frameborder="0"></iframe>
+		<div id="content">
+			<h1>Importer Formats</h1>
+			<div style="clear: both;"></div>
+			
+			<!-- SPREADSHEET IMPORTER -->
+			<div class="chapter">
+				<h3>Spreadsheet Importer</h3>
+				<p>
+					This importer is designed to import a simplified schema from a spreadsheet.  The format for this
+					file is a .xls file.  Each page in the spreadsheet is declared as an entity.  The columns in the
+					first row of the spreadsheet are identified as attributes.  And the domain of each attribute
+					is then derived from the types of the data found in each of these columns.  If multiple types
+					are found in a single column, the domain defaults to string.
+				</p>
+				<center><table><tr>
+					<td style="border: 0px;">
+						<b>Page 1</b>
+						<table class="textTable">
+							<tr><td>Attribute 1</td><td>Attribute 2</td></tr>
+							<tr><td>"ABC"</td><td>123</td></tr>							
+							<tr><td>"DEF"</td><td>456</td></tr>							
+							<tr><td>"GHI"</td><td>789</td></tr>							
+						</table>
+					</td>
+					<td style="border: 0px;">
+						<b>Page 2</b>
+						<table class="textTable">
+							<tr><td>Attribute 1</td><td>Attribute 2</td></tr>
+							<tr><td>"A1"</td><td>1/1/2001</td></tr>							
+							<tr><td>"B2"</td><td>2/2/2002</td></tr>							
+							<tr><td>"C3"</td><td>3/3/2003</td></tr>							
+						</table>
+					</td>
+				</tr></table></center>
+			</div>
+
+			<!-- DOMAIN IMPORTER -->
+			<div class="chapter">
+				<h3>Domain Importer</h3>
+				<p>
+					This importer is designed to import a simple set of domains and their domain values.  The format for
+					this file is a .xls file containing three columns.  The first column stores the domain name,
+					the second column stores the domain value, and the third column represents the associated description.
+					For columns where no domain value is given, the description is assigned to the domain.  Otherwise,
+					the description is assigned to the domain value.  An example is shown below.
+				</p>
+				<center><table class="textTable">
+					<tr><td>Domain 1</td><td></td><td>Description for Domain 1</td></tr>
+					<tr><td>Domain 1</td><td>Value 1</td><td>Description for Value 1 of Domain 1</td></tr>
+					<tr><td>Domain 1</td><td>Value 2</td><td>Description for Value 2 of Domain 1</td></tr>
+					<tr><td>Domain 1</td><td>Value 3</td><td>Description for Value 3 of Domain 1</td></tr>
+					<tr><td>Domain 1</td><td>Value 4</td><td>Description for Value 4 of Domain 1</td></tr>
+					<tr><td>Domain 2</td><td></td><td>Description for Domain 2</td></tr>
+					<tr><td>Domain 2</td><td>Value 1</td><td>Description for Value 1 of Domain 2</td></tr>
+					<tr><td>Domain 2</td><td>Value 2</td><td>Description for Value 2 of Domain 2</td></tr>
+					<tr><td>Domain 3</td><td></td><td>Description for Domain 3</td></tr>
+				</table></center>
+			</div>
+			
+		</div>
+	</body>
+</html>
