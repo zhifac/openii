@@ -18,7 +18,7 @@ import org.mitre.openii.dialogs.projects.MergeProjectsDialog;
 import org.mitre.openii.dialogs.projects.ReplaceSchemaDialog;
 import org.mitre.openii.dialogs.projects.importer.ImportProjectDialog;
 import org.mitre.openii.dialogs.projects.unity.GenerateVocabularyDialog;
-import org.mitre.openii.dialogs.projects.unity.GenerateVocabularyWizard;
+import org.mitre.openii.dialogs.projects.unity.GenerateVocabularyOldWizard;
 import org.mitre.openii.dialogs.schemas.CreateDataSourceDialog;
 import org.mitre.openii.dialogs.schemas.DeleteDataSourceDialog;
 import org.mitre.openii.dialogs.schemas.DeleteSchemaDialog;
@@ -245,7 +245,7 @@ public class ManagerAction extends Action
 
 		/** Handles the auto-generation of a mapping's matches */
 		if(actionType == ActionType.GENERATE_VOCABULARY_WIZARD)
-			new WizardDialog(shell, new GenerateVocabularyWizard((Project)selection)).open();
+			new WizardDialog(shell, new GenerateVocabularyOldWizard((Project)selection)).open();
 
 		if(actionType == ActionType.BATCH_MATCH)
 			new BatchMatchDialog(shell, (Project)selection).open();

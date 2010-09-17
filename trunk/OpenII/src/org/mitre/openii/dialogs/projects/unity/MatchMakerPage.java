@@ -63,7 +63,7 @@ class MatchMakerPage extends WizardPage implements ModifyListener,
 		if (authorField.getText().equals(""))
 			authorField.setText(System.getProperty("user.name"));
 		if (vocabNameField.getText().equals(""))
-			vocabNameField.setText(((GenerateVocabularyWizard) (getWizard()))
+			vocabNameField.setText(((GenerateVocabularyOldWizard) (getWizard()))
 					.getProject().getName()
 					+ " vocabulary");
 
