@@ -60,14 +60,12 @@ public class UnityProgressDialog extends Dialog implements UnityListener  {
 		unity.start(); 
 		vocab = unity.getVocabulary(); 
 		OpenIIManager.saveVocabulary(vocab);
-		
 		Display display = getParent().getDisplay();
 		while (!shell.isDisposed()  ) {
 			if (!display.readAndDispatch()) {
 				display.sleep();
 			}
 		}
-		
 		
 		return vocab;
 	}
