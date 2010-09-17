@@ -38,7 +38,6 @@ import org.mitre.openii.widgets.BasicWidgets;
 import org.mitre.openii.widgets.OptionsPanel;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.Project;
-import org.mitre.schemastore.model.Vocabulary;
 
 public class GenerateVocabularyDialog extends TitleAreaDialog implements ModifyListener, ActionListener {
 
@@ -339,32 +338,26 @@ public class GenerateVocabularyDialog extends TitleAreaDialog implements ModifyL
 	// /** Handles the actual import of the specified file */
 	protected void okPressed() {
 		// Get the group of mappings that include schemas in the selected group
-
-		ArrayList<Integer> schemas = getRankedSchemas();
+		ArrayList<Integer> rankedSchemas = getRankedSchemas();
 		ArrayList<Mapping> mappings = OpenIIManager.getMappings(project.getId());
 		ArrayList<Mapping> selectedMapping = new ArrayList<Mapping>();
 
 		for (Mapping m : mappings)
-			if (schemas.contains(m.getSourceId()) && schemas.contains(m.getTargetId()))
+			if (rankedSchemas.contains(m.getSourceId()) && rankedSchemas.contains(m.getTargetId()))
 				selectedMapping.add(m);
+		
 
-		// Generate and save Vocabulary
-		UnityDSF unity = new UnityDSF(project);
-		unity.setSchemaRanking(schemas);
-		Vocabulary vocab = unity.unify(selectedMapping);
-		OpenIIManager.saveVocabulary(vocab);
+		new UnityProgressDialog(getShell(), project, rankedSchemas, selectedMapping).open();
 
-		vocab = null;
-		schemas = null;
+		getShell().dispose();
+		rankedSchemas = null;
 		selectedMapping = null;
 		mappings = null;
-		schemaNames.clear(); 
-		project = null; 
-		mappingGroups.clear(); 
-		groupOptions.dispose(); 
-		
+		schemaNames.clear();
+		project = null;
+		mappingGroups.clear();
+		groupOptions.dispose();
 		System.gc();
-		getShell().dispose();
 	}
 
 	/** Get the selected schema group and user ranks **/

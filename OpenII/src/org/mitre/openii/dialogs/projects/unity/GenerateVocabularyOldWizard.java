@@ -11,7 +11,7 @@ import org.mitre.schemastore.model.Project;
 import org.mitre.schemastore.model.ProjectSchema;
 import org.mitre.schemastore.model.Vocabulary;
 
-public class GenerateVocabularyWizard extends Wizard {
+public class GenerateVocabularyOldWizard extends Wizard {
 
 	private Project project;
 	private HashMap<Integer, ProjectSchema> schemas;
@@ -19,7 +19,7 @@ public class GenerateVocabularyWizard extends Wizard {
 	private MatchMakerPage matchMakerPage;
 
 	/** Constructs the generate-vocabulary wizard */
-	public GenerateVocabularyWizard(Project project) {
+	public GenerateVocabularyOldWizard(Project project) {
 		super();
 		setWindowTitle("Generate Vocabulary");
 		this.project = project;

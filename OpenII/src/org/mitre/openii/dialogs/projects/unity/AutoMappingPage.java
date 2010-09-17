@@ -82,8 +82,8 @@ class AutoMappingPage extends WizardPage implements ModifyListener, SelectionLis
 	 * automatically generated.
 	 */
 	private void createMappingList(Composite parent) {
-		Project project = ((GenerateVocabularyWizard) this.getWizard()).getProject();
-		HashMap<Integer, ProjectSchema> schemas = ((GenerateVocabularyWizard) this.getWizard()).getSchemas();
+		Project project = ((GenerateVocabularyOldWizard) this.getWizard()).getProject();
+		HashMap<Integer, ProjectSchema> schemas = ((GenerateVocabularyOldWizard) this.getWizard()).getSchemas();
 		Permuter<ProjectSchema> permuter = new Permuter<ProjectSchema>(new ArrayList<ProjectSchema>(schemas.values()));
 
 		// Display existing schemas

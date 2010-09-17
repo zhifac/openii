@@ -7,8 +7,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 
 import org.mitre.openii.dialogs.projects.unity.DisjointSetForest.ContainerMethod;
 import org.mitre.openii.model.OpenIIManager;
@@ -25,13 +23,17 @@ import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
 import org.mitre.schemastore.model.schemaInfo.model.SchemaModel;
 import org.mitre.schemastore.porters.vocabularyExporters.CompleteVocabExporter;
 
-public class UnityDSF {
+public class UnityDSF extends Thread {
 
 	private Project project;
 	private Vocabulary vocabulary;
 	private ArrayList<Integer> rankedSchemas;
 
-	// private ArrayList<Synset> synsetList = null;
+	private ArrayList<UnityListener> listeners = new ArrayList<UnityListener>();
+	private ArrayList<Mapping> mappings = new ArrayList<Mapping>();
+	private boolean stop = false;
+	private int progressCount = 0;
+	private int totalProgress = 1;
 
 	public UnityDSF(Project project) {
 		this.project = project;
@@ -39,10 +41,27 @@ public class UnityDSF {
 		rankedSchemas = new ArrayList<Integer>();
 		for (Integer i : project.getSchemaIDs())
 			rankedSchemas.add(i);
+		setDaemon(true);
+	}
+
+	public UnityDSF(Project project, ArrayList<Mapping> mappings, ArrayList<Integer> rankedSchemas) {
+		this.project = project;
+		this.rankedSchemas = rankedSchemas;
+		this.mappings = mappings;
+		setDaemon(true);
 	}
 
 	public Vocabulary getVocabulary() {
 		return vocabulary;
+	}
+
+	public double getProgress() {
+		return (double) progressCount / (double) totalProgress;
+	}
+
+	public void stopThread() {
+		stop = true;
+		this.interrupt();
 	}
 
 	/**
@@ -51,23 +70,26 @@ public class UnityDSF {
 	 * @param inputMappings
 	 * @return
 	 */
-	public Vocabulary unify(ArrayList<Mapping> inputMappings) {
+	public void run() {
+		System.out.println("Start running unity thread...");
 		long start = System.currentTimeMillis();
+		notify("Preparing to generate vocabulary... "); 
 
-		// Find participating schemas from the mappings
-		final HashSet<Integer> schemaIDs = new HashSet<Integer>();
+		// Prepare mappingCellHash
 		final HashMap<Mapping, ArrayList<MappingCell>> mappingCellHash = new HashMap<Mapping, ArrayList<MappingCell>>();
-		for (Mapping m : inputMappings) {
-			schemaIDs.add(m.getSourceId());
-			schemaIDs.add(m.getTargetId());
-			mappingCellHash.put(m, OpenIIManager.getMappingCells(m.getId()));
+		ArrayList<MappingCell> tmpList;
+		totalProgress = 0;
+		for (Mapping m : this.mappings) {
+			tmpList = OpenIIManager.getMappingCells(m.getId());
+			mappingCellHash.put(m, tmpList);
+			totalProgress += tmpList.size();
 		}
+		if (totalProgress == 0)
+			totalProgress = 1;
 
 		// Create synsetTerm for each schema element
 		final HashMap<String, SynsetTerm> synsetTerms = new HashMap<String, SynsetTerm>();
-		Iterator<Integer> sItr = schemaIDs.iterator();
-		while (sItr.hasNext()) {
-			Integer sID = sItr.next();
+		for (Integer sID : rankedSchemas) {
 			SchemaModel schemaModel = project.getSchemaModel(sID);
 			HierarchicalSchemaInfo schemaInfo = new HierarchicalSchemaInfo(OpenIIManager.getSchemaInfo(sID), schemaModel);
 			for (SchemaElement ele : schemaInfo.getHierarchicalElements()) {
@@ -83,9 +105,11 @@ public class UnityDSF {
 			}
 		};
 
+		notify("Generating vocabulary... "); 
 		// Disjoint Set Forest
-		DisjointSetForest<SynsetTerm> dsf = new DisjointSetForest<SynsetTerm>(synsetTerms.values().toArray(new SynsetTerm[0]), method, schemaIDs.size());
-		for (Mapping mapping : inputMappings) {
+		DisjointSetForest<SynsetTerm> dsf = new DisjointSetForest<SynsetTerm>(synsetTerms.values().toArray(new SynsetTerm[0]), method, rankedSchemas.size());
+
+		for (Mapping mapping : this.mappings) {
 			Integer inputSchema = mapping.getSourceId();
 			Integer outputSchema = mapping.getTargetId();
 
@@ -108,10 +132,12 @@ public class UnityDSF {
 
 			// Then call DisjointSetForest merge on the mapping cells.
 			for (MappingCell mc : mcArray) {
+
 				for (MappingCellInput input : mc.getInputs()) {
 					boolean merged = dsf.merge(synsetTerms.get(new String(inputSchema + "-" + input.getElementID())), synsetTerms.get(new String(outputSchema + "-" + mc.getOutput())), mc.isValidated());
 					System.out.println((merged ? "merge " : "not merged ") + " = " + inputSchema + "-" + input.getElementID() + " && " + outputSchema + "-" + mc.getOutput());
 				}
+				notify(progressCount++);
 			}
 		}
 
@@ -132,12 +158,23 @@ public class UnityDSF {
 
 		// Generate connonical terms for each synset
 		vocabulary = new Vocabulary(project.getId(), generateVocabTerms(new ArrayList<Synset>(synsets.values())));
+		notify("Done!");
+		notify("Vocabulary is completed."); 
+		System.out.println("Done running unity.");
+	}
 
-		// Use the following line if normalization is used.
-		// vocabulary = new Vocabulary(project.getId(),
-		// generateVocabTerms(synsetList));
-
-		return vocabulary;
+	private void notify(int i) {
+		for ( UnityListener l : listeners) {
+			double progress = (double)i/(double)totalProgress;
+			l.updateProgress(progress);
+			l.updateProgressMessage("Progress... " + Double.toString(progress)); 
+		}
+	}
+	
+	private void notify(String message) {
+		for ( UnityListener l : listeners) {
+			l.updateProgressMessage(message); 
+		}
 	}
 
 	/**
@@ -254,7 +291,7 @@ public class UnityDSF {
 		// Create and return Term object from Synset Term
 		if (baseElement == null)
 			resultTerm = new Term(null, new String(), new String(), assocElements);
-		else 
+		else
 			resultTerm = new Term(null, baseElement.getName(), baseElement.getDescription(), assocElements);
 		return resultTerm;
 	}
@@ -265,5 +302,9 @@ public class UnityDSF {
 
 	public void setSchemaRanking(ArrayList<Integer> schemas) {
 		this.rankedSchemas = schemas;
+	}
+
+	public void addListener(UnityListener listener) {
+		listeners.add(listener);
 	}
 }
