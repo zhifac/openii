@@ -1,0 +1,46 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+		<link REL="STYLESHEET" TYPE="text/css" HREF="./../../support/standard.css"/>
+		<title>OpenII Help System</title>
+	</head>
+	<body>
+	  	<iframe src="./../../header.html" width="100%" height="30" scrolling="no" frameborder="0"></iframe>
+		<div id="content">
+			<h1>Schema Viewer</h1>
+			<div style="clear: both;"></div>
+
+			<div class="chapter">
+				<p>
+					This view is ideal for examining a schema and its structure.  In this view, all schema elements
+					are marked with symbols indicating their type (e.g. entity, domain, relationship).  The view is
+					also displayed in a hierarchical fashion based on its assigned schema model (see the section on
+					schema models for more information).  Initially, the default schema model it selected, but other
+					models can be selected through a drop-down menu to examine the schema structure in different ways.
+				</p>
+				<p>
+					One way to examine this schema is simply by expanding and collapsing the various parts of the 
+					schema tree.  This can be done one level at a time or by right-clicking on an element, this action
+					can be performed on all sub-elements.  Alternatively, a search bar is available to find specific
+					elements in the schema.  This search field takes regular expressions and will identify all elements
+					that match either on the name or description.  The tree is expanded to display all matched elements
+					and these elements are highlighted with name matches highlighted yellow and description matches
+					highlighted orange.
+				</p>
+				<p>
+					The OpenII tool suite allows schemas to be extended from other schemas.  In such cases, a pane will
+					appear at the bottom of the screen to show both what schemas the currently viewed schema extend as
+					well as extend from.
+				</p>
+			</div>
+			
+			<div class="chapter">
+				<h3>Display of the Schema Viewer</h3>
+				<center>
+					<img src="./SchemaViewer.gif" alt="SchemaViewer" title="SchemaViewer" style="width: 635px; height: 710px;"/>
+				</center>
+			</div>
+		</div>
+	</body>
+</html>
