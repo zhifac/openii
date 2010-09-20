@@ -134,7 +134,11 @@ public class SchemaStoreManager
 	
 	/** Retrieves the mapping cell data types from the web service */
 	public static ArrayList<DataType> getDataTypes() throws RemoteException
-		{ return client.getDataTypes(); }	
+		{ return client.getDataTypes(); }
+	
+	/** Add a mapping cell functions from the web service */
+	public static Integer addFunction(Function a) throws RemoteException
+		{ return client.addFunction(a); }	
 	
 	//--------------------
 	// Importer Functions
