@@ -1,5 +1,10 @@
 package org.mitre.openii.widgets.schemaTree;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.mitre.schemastore.model.Schema;
@@ -8,19 +13,33 @@ import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
 
 public class SchemaElementContentProvider implements ITreeContentProvider
 {
-	/** Holds a reference to the schema */
-	private HierarchicalSchemaInfo schema = null;
+	/** Holds a reference to the schema view */
+	private SchemaTree schemaView = null;
 	
 	/** Constructs the content provider */
-	public SchemaElementContentProvider(HierarchicalSchemaInfo schema)
-		{ this.schema = schema; }
+	public SchemaElementContentProvider(SchemaTree schemaView)
+		{ this.schemaView = schemaView; }
 	
 	/** Returns the children elements for the specified element */
 	public Object[] getChildren(Object element)
 	{
-		if(element instanceof String) return new Object[]{schema.getSchema()};
-		if(element instanceof Schema) return schema.getRootElements().toArray();
-		return schema.getChildElements(((SchemaElement)element).getId()).toArray();
+		// Gets the children elements
+		List<? extends Object> children = null;
+		HierarchicalSchemaInfo schema = schemaView.getSchema();
+		if(element instanceof String) children = Arrays.asList(new Object[]{schema.getSchema()});
+		else if(element instanceof Schema) children = schema.getRootElements();
+		else children = schema.getChildElements(((SchemaElement)element).getId());
+
+		// Alphabetize if needed
+		if(schemaView.isAlphabetized())
+		{
+			class ElementComparator implements Comparator<Object>
+				{ public int compare(Object object1, Object object2)
+					{ return object1.toString().compareToIgnoreCase(object2.toString()); } }
+			Collections.sort(children, new ElementComparator());
+		}
+		
+		return children.toArray();
 	}
 
 	/** Return the parent element for the specified element */

@@ -43,14 +43,15 @@ public class ManifestView extends OpenIIEditor implements IDoubleClickListener
 		if(manifestElement!=null) return manifestElement;
 
 		// Create the element
-		manifestElement = new Entity(element.getId(),taxonomy.getDisplayName(element.getId()),element.getDescription(),null);
+		manifestElement = new Entity(element.getId(),taxonomy.getDisplayName(element.getId()),element.getDescription(),manifest.getSchema().getId());
 		manifest.addElement(manifestElement);
 		
 		// Connect element to all parent elements
+		Integer taxonomyID = taxonomy.getSchema().getId();
 		for(SchemaElement parent : taxonomy.getParentElements(element.getId()))
 		{
 			SchemaElement manifestParent = generateBranch(parent, taxonomy, manifest);
-			manifest.addElement(new Subtype(counter--, manifestParent.getId(), manifestElement.getId(), null));
+			manifest.addElement(new Subtype(counter--, manifestParent.getId(), manifestElement.getId(), taxonomyID));
 		}
 		return manifestElement;
 	}
@@ -91,7 +92,7 @@ public class ManifestView extends OpenIIEditor implements IDoubleClickListener
 				for(Integer input : mappingCell.getElementInputIDs())
 				{
 					SchemaElement alignedElement = alignedSchema.getElement(input);
-					String name = alignedSchema.getDisplayName(input) + " (" + alignedSchema.getSchema().getName() + ")";
+					String name = alignedSchema.getDisplayName(input);
 					String description = alignedElement.getDescription();
 					Integer entityID = manifestElement.getId();
 					manifest.addElement(new Relationship(counter--,name,description,entityID,null,null,domainID,null,null,mapping.getSourceId()));

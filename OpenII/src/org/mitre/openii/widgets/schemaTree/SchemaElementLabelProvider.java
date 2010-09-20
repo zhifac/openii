@@ -1,5 +1,7 @@
 package org.mitre.openii.widgets.schemaTree;
 
+import java.util.HashMap;
+
 import org.eclipse.jface.viewers.StyledCellLabelProvider;
 import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.SWT;
@@ -7,6 +9,7 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
 import org.mitre.openii.application.OpenIIActivator;
+import org.mitre.openii.model.OpenIIManager;
 import org.mitre.schemastore.model.Attribute;
 import org.mitre.schemastore.model.Containment;
 import org.mitre.schemastore.model.DomainValue;
@@ -24,6 +27,9 @@ public class SchemaElementLabelProvider extends StyledCellLabelProvider
 	
 	/** Holds a reference to the schema view */
 	private SchemaTree schemaView = null;
+	
+	/** Stores a cache for schema names */
+	private HashMap<Integer,String> schemaCache = new HashMap<Integer,String>();
 	
 	/** Constructs the content provider */
 	public SchemaElementLabelProvider(SchemaTree schemaView)
@@ -43,11 +49,26 @@ public class SchemaElementLabelProvider extends StyledCellLabelProvider
 	}
 
 	/** Returns the name associated with the specified element */
-	public String getText(Object element)
+	public String getText(Object object)
 	{
-		if(element instanceof SchemaElement)
-			return schemaView.getSchema().getDisplayName(((SchemaElement)element).getId());
-		return element.toString();
+		String text = "";
+		if(object instanceof SchemaElement)
+		{
+			SchemaElement element = (SchemaElement)object;
+			text = schemaView.getSchema().getDisplayName(element.getId());
+			if(schemaView.showRoots())
+			{
+				Integer baseID = element.getBase();
+				if(!baseID.equals(schemaView.getSchema().getSchema().getId()))
+				{
+					String schema = schemaCache.get(baseID);
+					if(schema==null) schemaCache.put(baseID,schema = OpenIIManager.getSchema(baseID).getName());
+					text += " (" + schema + ")";
+				}
+			}
+		}
+		else text = object.toString();
+		return text;
 	}
 
 	/** Displays the tool tip for the specified element */
