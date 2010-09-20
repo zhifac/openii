@@ -48,6 +48,7 @@ import org.eclipse.swt.layout.RowData;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Canvas;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
@@ -84,7 +85,15 @@ public class VocabViewCanvas extends Canvas {
 	private ArrayList<Mapping> mappings;
 	private boolean confirmation;
 	private Hashtable<Integer, SchemaInfo> schemaInfos = new Hashtable<Integer, SchemaInfo>();
+	private boolean coloredTable;
 
+	private Color red =  this.getDisplay().getSystemColor(SWT.COLOR_RED);
+	private Color green =  this.getDisplay().getSystemColor(SWT.COLOR_GREEN);
+	private Color yellow =  this.getDisplay().getSystemColor(SWT.COLOR_YELLOW);
+	private Color white =  this.getDisplay().getSystemColor(SWT.COLOR_WHITE);
+	private Color lightYellow = new Color(this.getDisplay(), 255, 255, 128);
+	private Color lightGreen = new Color(this.getDisplay(), 128, 225, 128);
+	
 	public VocabViewCanvas(Composite parent, int style, Vocabulary vocabulary) {
 		super(parent, style | SWT.EMBEDDED);
 		viewsParent = parent;
@@ -132,10 +141,12 @@ public class VocabViewCanvas extends Canvas {
 
 		// creating sort buttons
 		Composite buttonsC = new Composite(this, SWT.NONE);
-		FillLayout fillLayout = new FillLayout();
-		fillLayout.type = SWT.HORIZONTAL;
-		buttonsC.setLayout(fillLayout);
-
+		//FillLayout fillLayout = new FillLayout();
+		//fillLayout.type = SWT.HORIZONTAL;
+		//buttonsC.setLayout(fillLayout);
+		GridLayout gl = new GridLayout(5, false);
+		buttonsC.setLayout(gl);
+		
 		Button buttonMostGroupEs = new Button(buttonsC, SWT.PUSH);
 		Image iconImage = OpenIIActivator.getImage("downIcon3.PNG");
 		ImageData id = iconImage.getImageData();
@@ -143,7 +154,8 @@ public class VocabViewCanvas extends Canvas {
 		Image iconImageScaled = new Image(display, id);
 		buttonMostGroupEs.setImage(iconImageScaled);
 		buttonMostGroupEs.setToolTipText("Sorts from most to least agreement (most elements in a row to least)");
-
+		
+		
 		Button buttonLeastGroupEs = new Button(buttonsC, SWT.PUSH);
 		Image iconImage2 = OpenIIActivator.getImage("downIcon4.PNG");
 		ImageData id2 = iconImage2.getImageData();
@@ -151,16 +163,43 @@ public class VocabViewCanvas extends Canvas {
 		Image iconImageScaled2 = new Image(display, id2);
 		buttonLeastGroupEs.setImage(iconImageScaled2);
 		buttonLeastGroupEs.setToolTipText("Sorts from least to most agreement (least elements in a row to most)");
+		
+		
+		//Button mergeButton = new Button(buttonsC, SWT.PUSH);
+		//mergeButton.setText("Merge");
+		//mergeButton.setToolTipText("Merges two rows into a single row");
 
-		Button mergeButton = new Button(buttonsC, SWT.PUSH);
-		mergeButton.setText("Merge");
-		mergeButton.setToolTipText("Merges two rows into a single row");
+		Label colorToggle = new Label(buttonsC, SWT.NONE);
+		colorToggle.setText("Color by Exact Name Match:");
+		final Combo colorCombo = new Combo(buttonsC, SWT.DROP_DOWN);	
+		colorCombo.add("On");
+		colorCombo.add("Off");
+		colorCombo.select(1);
+		coloredTable = false;
+		colorCombo.addSelectionListener(new SelectionAdapter() {			
+			public void widgetSelected(SelectionEvent e) {				
+				if(colorCombo.getSelectionIndex() != -1) {
+					if(colorCombo.getSelectionIndex() == 0){
+						System.out.println("color the table");
+						if(!coloredTable){
+							coloredTable=true;
+							colorTheTable();
+						}
+					}else{
+						System.out.println("do not color the table");
+						if(coloredTable){
+							coloredTable=false;
+							colorTheTable();
+						}
+					}
+				}
+			}
+		});
 
 		Button searchButton = new Button(buttonsC, SWT.PUSH);
 		searchButton.setText("Search");
 		searchButton.setToolTipText("Finds all occurences of a term in the spreadsheet (does not search documentation)");
-
-		buttonsC.setLayoutData(new RowData(155, 30));
+		
 
 		// creating spreadsheet-evidence split pane
 		final SashForm sash = new SashForm(this, SWT.VERTICAL);
@@ -200,8 +239,6 @@ public class VocabViewCanvas extends Canvas {
 			}
 		}
 
-		// Color widghetLightShadow =
-		// this.getDisplay().getSystemColor(SWT.COLOR_WIDGET_LIGHT_SHADOW);
 
 		// create one row for each synset
 		TableItem tempI;
@@ -211,22 +248,13 @@ public class VocabViewCanvas extends Canvas {
 			// tempI.setBackground(widghetLightShadow);
 			// }
 
-			tempI.setText(0, termsArray.get(i).getName());
+			String termName = termsArray.get(i).getName();
+			tempI.setText(0, termName);
 			Font boldFont = new Font(Display.getDefault(), new FontData("Arial", 8, SWT.BOLD));
 			tempI.setFont(0, boldFont);
 
 			AssociatedElement[] elements = termsArray.get(i).getElements();
 			for (int j = 0; j < elements.length; j++) {
-				/*
-				 * for(int j=0; j<elements.length+1; j++) {
-				 * if(j==elements.length){ //put in fake element in 2nd col to
-				 * test multi-term synsets int colNum = 2; String current =
-				 * tempI.getText(colNum); if(current == null || current == ""){
-				 * tempI.setText(colNum, "fakeEle"); }else{
-				 * tempI.setText(colNum, current + ", " + "fakeEle"); }
-				 * 
-				 * }else{
-				 */
 				AssociatedElement ele = elements[j];
 
 				Integer schemaID = elements[j].getSchemaID();
@@ -242,7 +270,7 @@ public class VocabViewCanvas extends Canvas {
 				} else {
 					tempI.setText(colNum, current + ", " + ele.getName());
 				}
-
+				
 				Image img = org.mitre.openii.widgets.schemaTree.SchemaElementLabelProvider.getImage(schemaEle);
 				tempI.setImage(colNum, img);
 				// }
@@ -258,9 +286,13 @@ public class VocabViewCanvas extends Canvas {
 		final Table evidenceTable = new Table(sash, SWT.BORDER);
 		evidenceTable.setHeaderVisible(true);
 
+		TableColumn evidence_elementSrcCol = new TableColumn(evidenceTable, SWT.NONE);
+		evidence_elementSrcCol.setText("Schema");
+		evidence_elementSrcCol.setWidth(100);
+
 		// evidenceTable.setLinesVisible(true);
 		TableColumn evidence_elementNameCol = new TableColumn(evidenceTable, SWT.NONE);
-		evidence_elementNameCol.setText("Name");
+		evidence_elementNameCol.setText("Term");
 		evidence_elementNameCol.setWidth(100);
 		// evidence_elementNameCol.addListener(SWT.Selection,
 		// sortResultsAlphabeticallyListener);
@@ -271,27 +303,24 @@ public class VocabViewCanvas extends Canvas {
 		// evidence_elementDescCol.addListener(SWT.Selection,
 		// sortResultsAlphabeticallyListener);
 
-		TableColumn evidence_elementSrcCol = new TableColumn(evidenceTable, SWT.NONE);
-		evidence_elementSrcCol.setText("Source");
-		evidence_elementSrcCol.setWidth(100);
-
 		TableColumn evidence_matcheScoreCol = new TableColumn(evidenceTable, SWT.NONE);
 		evidence_matcheScoreCol.setText("Match Score");
 		evidence_matcheScoreCol.setWidth(100);
 
+		TableColumn evidence_elementMatchesSourceCol = new TableColumn(evidenceTable, SWT.NONE);
+		evidence_elementMatchesSourceCol.setText("(Matched Term) Schema");
+		evidence_elementMatchesSourceCol.setWidth(100);
+
 		TableColumn evidence_elementMatchesNameCol = new TableColumn(evidenceTable, SWT.NONE);
-		evidence_elementMatchesNameCol.setText("Match Name");
+		evidence_elementMatchesNameCol.setText("(Matched) Term");
 		evidence_elementMatchesNameCol.setWidth(100);
 		// evidence_elementNameCol.addListener(SWT.Selection,
 		// sortResultsAlphabeticallyListener);
 
 		TableColumn evidence_elementMatchesDescCol = new TableColumn(evidenceTable, SWT.NONE);
-		evidence_elementMatchesDescCol.setText("Match Description");
+		evidence_elementMatchesDescCol.setText("(Matched Term) Description");
 		evidence_elementMatchesDescCol.setWidth(100);
 
-		TableColumn evidence_elementMatchesSourceCol = new TableColumn(evidenceTable, SWT.NONE);
-		evidence_elementMatchesSourceCol.setText("Match Source");
-		evidence_elementMatchesSourceCol.setWidth(100);
 
 		sash.setWeights(new int[] { 75, 25 });
 
@@ -408,7 +437,7 @@ public class VocabViewCanvas extends Canvas {
 			}
 		});
 
-		mergeButton.addListener(SWT.Selection, new Listener() {
+/*		mergeButton.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event event) {
 				// TODO Auto-generated method stub
 				// first create dialog warning users
@@ -421,7 +450,7 @@ public class VocabViewCanvas extends Canvas {
 				}
 			}
 
-		});
+		});*/
 
 		// adding resize capability so fills in space nicely
 		this.addListener(SWT.Resize, new Listener() {
@@ -499,6 +528,33 @@ public class VocabViewCanvas extends Canvas {
 		warningDialog.open();
 	}
 
+	
+	/**if coloredTabled is true then it will color table cells based on string match with vocab term **/
+	/**if coloredTable is false then it will color all table cells white **/
+	private void colorTheTable(){
+		TableItem[] allRows = table.getItems();
+		int numCols = table.getColumnCount();
+		
+		// for each row in the table, starting with the 2nd
+		for (int i = 0; i < allRows.length; i++) {
+			// compare the row to all previously sorted rows
+			String vocabTerm = allRows[i].getText(0);
+			for (int j = 1; j < numCols; j++) {
+				String currTerm = allRows[i].getText(j);
+				if(coloredTable){
+					if(currTerm.equalsIgnoreCase(vocabTerm)){
+						allRows[i].setBackground(j, lightGreen);
+					}else if(currTerm.equals("") == false){
+						allRows[i].setBackground(j, lightYellow);
+					}
+				}else{
+					allRows[i].setBackground(j, white);
+				}
+			}
+		}
+		
+	}
+	
 	// if sortBy= 1 it will sort from most to least GroupEs
 	// if sortBy= 2 it will sort from least to most GroupEs
 	// if sortBy= 3 it will sort from a to z, uses colIndex only for 3
@@ -530,7 +586,7 @@ public class VocabViewCanvas extends Canvas {
 					// rid of cur ith row
 					String[] tempRow = new String[schemaNames.length];
 					Image[] tempImages = new Image[schemaNames.length];
-
+					
 					for (int k = 0; k < schemaNames.length; k++) {
 						tempRow[k] = allRows[i].getText(k);
 						tempImages[k] = allRows[i].getImage(k);
@@ -556,6 +612,7 @@ public class VocabViewCanvas extends Canvas {
 				}
 			}
 		}
+		colorTheTable();
 	}
 
 	private int getX() {
@@ -639,12 +696,12 @@ public class VocabViewCanvas extends Canvas {
 		synsetNameCol.addListener(SWT.Selection, sortResultsAlphabeticallyListener);
 
 		TableColumn schemaNameCol = new TableColumn(resultsTable, SWT.NONE);
-		schemaNameCol.setText("Source");
+		schemaNameCol.setText("Schema");
 		schemaNameCol.setWidth(100);
 		schemaNameCol.addListener(SWT.Selection, sortResultsAlphabeticallyListener);
 
 		TableColumn textCol = new TableColumn(resultsTable, SWT.NONE);
-		textCol.setText("Source Term");
+		textCol.setText("Schema Term");
 		textCol.setWidth(100);
 		textCol.addListener(SWT.Selection, sortResultsAlphabeticallyListener);
 
@@ -696,8 +753,7 @@ public class VocabViewCanvas extends Canvas {
 	}
 
 	/** displays the evidence in the evidenceTable **/
-	// 0-name, 1-description, 2-source, 3- match score, 4-name of match, 5-match
-	// description, 6-match source
+	//0-schema, 1-term, 2-description, 3-score, 4-match schema, 5-match term, 6-match description
 	private void displayEvidence(Table evidTable, Term selectedTerm) {
 		// clear all of the previous table items
 		TableItem[] allRows = evidTable.getItems();
@@ -707,20 +763,26 @@ public class VocabViewCanvas extends Canvas {
 
 		// add the first row to be the vocab term, and description
 		TableItem vocabItem = new TableItem(evidTable, SWT.NONE);
-		vocabItem.setText(0, selectedTerm.getName());
-		vocabItem.setText(1, selectedTerm.getDescription());
+		vocabItem.setText(0, "Vocabulary");
+		vocabItem.setText(1, selectedTerm.getName());
+		vocabItem.setText(2, selectedTerm.getDescription());
 		Font boldFont = new Font(Display.getDefault(), new FontData("Arial", 8, SWT.BOLD));
-		// vocabItem.setFont(0, boldFont);
 		vocabItem.setFont(0, boldFont);
+		vocabItem.setFont(1, boldFont);
 
 		// add in evidence for each element associated with the vocab term
 		AssociatedElement[] aes = selectedTerm.getElements();
-		// System.out.println("saw this many associated elements: " +
-		// aes.length);
 
-		Color lightShadow = this.getDisplay().getSystemColor(SWT.COLOR_WIDGET_LIGHT_SHADOW);
+
+		//alternating background colors
 		Color white = this.getDisplay().getSystemColor(SWT.COLOR_WHITE);
-		Color highlight = this.getDisplay().getSystemColor(SWT.COLOR_INFO_BACKGROUND);
+		Color lightShadow = this.getDisplay().getSystemColor(SWT.COLOR_WIDGET_LIGHT_SHADOW);
+
+		//alternating
+		//Color highlightOnGray = new Color(this.getDisplay(), 255, 255, 0);
+		//Color highlightOnWhite = new Color(this.getDisplay(), 255, 255, 128);
+		//Font highlightFont = new Font(Display.getDefault(), new FontData("Arial", 8, SWT.ITALIC));
+		
 		Color currColor = white;
 
 		for (int i = 0; i < aes.length; i++) {
@@ -741,12 +803,12 @@ public class VocabViewCanvas extends Canvas {
 			String containingSchemaName = getSchemaInfo(schemaID).getSchema().getName();
 
 			TableItem nextItem = new TableItem(evidTable, SWT.NONE);
-
-			nextItem.setText(0, elementName);
-			nextItem.setText(1, elementDescription);
-			nextItem.setText(2, containingSchemaName);
+			nextItem.setText(1, elementName);
+			nextItem.setText(2, elementDescription);
+			nextItem.setText(0, containingSchemaName);
 			nextItem.setBackground(currColor);
-
+			nextItem.setForeground(this.getDisplay().getSystemColor(SWT.COLOR_BLACK));
+			
 			// for each mapping, we need to find any cells that map to the
 			// current element
 			ArrayList<MappingCell> mappingCellList = new ArrayList<MappingCell>();
@@ -764,21 +826,6 @@ public class VocabViewCanvas extends Canvas {
 				}
 			});
 
-			// Integer otherElementsSchemaID = null;
-			// if (alm.size() != 0) {
-			// Integer srcSchemaID = m.getSourceId();
-			// Integer trgSchemaID = m.getTargetId();
-			// // need to get the schemaID for the element that mapped to
-			// // the current element
-			// if (srcSchemaID == trgSchemaID) {
-			// System.out.println("schema was mapped to self");
-			// }
-			// if (srcSchemaID == schemaID) {
-			// otherElementsSchemaID = trgSchemaID;
-			// } else {
-			// otherElementsSchemaID = srcSchemaID;
-			// }
-			// }
 
 			// add the name of the element and match score to the Related
 			// Elements string
@@ -792,71 +839,35 @@ public class VocabViewCanvas extends Canvas {
 					Integer otherElementId = (outputId.equals(eleID)) ? inputId : outputId;
 					SchemaElement otherElement = getSchemaElement(otherSchemaId, otherElementId);
 
-					TableItem currItem = (k == 0) ? nextItem : new TableItem(evidTable, SWT.NONE);
-
+					//TableItem currItem = (k == 0) ? nextItem : new TableItem(evidTable, SWT.NONE);
+					TableItem currItem = new TableItem(evidTable, SWT.NONE);
 					// set background color
 					currItem.setBackground(currColor);
 
 					// highlight chosen element mapping cells
-					for (AssociatedElement ae : aes)
-						if (ae.getElementID().equals(otherElementId))
-							for (int c = 3; c <= 6; c++)
-								currItem.setBackground(c, highlight);
-
+					boolean found = false;
+					for (AssociatedElement ae : aes){
+						if(ae.getElementID().equals(otherElementId)){
+							found = true;
+						}
+					}
+					
+					if(!found){
+							for (int c = 3; c <= 6; c++){
+								//currItem.setBackground(c, highlightColor);
+								currItem.setForeground(c, this.getDisplay().getSystemColor(SWT.COLOR_DARK_RED));
+							}
+					}else{
+						currItem.setForeground(this.getDisplay().getSystemColor(SWT.COLOR_BLACK));
+					}
+				
+					//0-schema, 1-term, 2-description, 3-score, 4-match schema, 5-match term, 6-match description
 					currItem.setText(3, mc.getScore().toString());
-					currItem.setText(4, otherElement.getName());
-					currItem.setText(5, otherElement.getDescription());
-					currItem.setText(6, OpenIIManager.getSchema(otherSchemaId).getName());
+					currItem.setText(5, otherElement.getName());
+					currItem.setText(6, otherElement.getDescription());
+					currItem.setText(4, OpenIIManager.getSchema(otherSchemaId).getName());
 				}
 
-				// // get the ID of the other element
-				// Integer[] elementIDs = mc.getElementInputIDs();
-				// Integer otherElementsID = null;
-				// for (int n = 0; n < elementIDs.length; n++) {
-				// if (elementIDs[n] != eleID) {
-				// otherElementsID = elementIDs[n];
-				// }
-				// }
-				//
-				// String otherElementsContainingSchemaName = "";
-				// String otherElementsName = "";
-				// String score = "";
-				// String otherElementsDescription = "";
-				// if (otherElementsSchemaID != null && otherElementsID !=
-				// null) {
-				// SchemaInfo otherElementsSchemaInfo =
-				// OpenIIManager.getSchemaInfo(otherElementsSchemaID);
-				// otherElementsContainingSchemaName =
-				// otherElementsSchemaInfo.getSchema().getName();
-				// otherElementsName =
-				// otherElementsSchemaInfo.getElement(otherElementsID).getName();
-				// otherElementsDescription =
-				// otherElementsSchemaInfo.getElement(otherElementsID).getDescription();
-				// score = mc.getScore().toString();
-				// }
-				//
-				// // if it is the first related element found then put it
-				// in
-				// // the row with the initial element
-				// // otherwise, create a new row for it
-				// // 0-name, 1-description, 2-source, 3- match score,
-				// 4-name
-				// // of match, 5-match description, 6-match source
-				// if (k == 0) {
-				// nextItem.setText(3, score);
-				// nextItem.setText(4, otherElementsName);
-				// nextItem.setText(5, otherElementsDescription);
-				// nextItem.setText(6, otherElementsContainingSchemaName);
-				// } else {
-				// TableItem newRelatedItem = new TableItem(evidTable,
-				// SWT.NONE);
-				// newRelatedItem.setBackground(currColor);
-				// newRelatedItem.setText(3, score);
-				// newRelatedItem.setText(4, otherElementsName);
-				// nextItem.setText(5, otherElementsDescription);
-				// newRelatedItem.setText(6,
-				// otherElementsContainingSchemaName);
-				// }
 			}
 		}
 	}
