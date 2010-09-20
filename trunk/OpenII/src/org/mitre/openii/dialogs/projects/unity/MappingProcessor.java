@@ -111,10 +111,7 @@ public class MappingProcessor {
 		ArrayList<MappingCell> mappingCells = new ArrayList<MappingCell>();
 		Informant.status("Calling Harmony matching algorithms...");
 		MatchScores matchScores = new MatchGenerator(matchers, new VoteMerger()).getScores(schemaInfo1, schemaInfo2);
-		String author = new String("Vote Merger("); 
-		for ( Matcher matcher: matchers  )
-			author += matcher.toString() + ";"; 
-		author += ")"; 
+		String author = matchersToString(matchers); 
 		for (MatchScore score : matchScores.getScores())
 			mappingCells.add(MappingCell.createProposedMappingCell(null, mappingID, score.getSourceID(), score.getTargetID(), score.getScore(), author, new Date(System.currentTimeMillis()), ""));
 
@@ -133,6 +130,14 @@ public class MappingProcessor {
 		mappingCells.clear(); 
 		mappingCells = null; 
 		System.gc();
+	}
+
+	public static String matchersToString(ArrayList<Matcher> matcherList) {
+		String author = new String("Vote Merger("); 
+		for ( Matcher matcher: matcherList  )
+			author += matcher.getName() + ";"; 
+		author += ")"; 
+		return author; 
 	}
 
 	/**
