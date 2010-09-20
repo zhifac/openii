@@ -396,6 +396,10 @@ public class AddNewFunction extends JDialog implements MouseListener, MouseMotio
 		}
 		
 		public void mouseClicked(MouseEvent e) {
+			if(!(e.getSource() instanceof JTextField)) {
+				return;
+			}
+			
 			JTextField tf = (JTextField)e.getSource();
 			
 			//highlight the data type for replacement
