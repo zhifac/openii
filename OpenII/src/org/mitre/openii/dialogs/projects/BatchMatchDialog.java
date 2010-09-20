@@ -7,13 +7,19 @@ import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.ScrolledComposite;
+import org.eclipse.swt.custom.TableEditor;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -23,6 +29,9 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.mitre.harmony.matchers.matchers.Matcher;
 import org.mitre.openii.application.OpenIIActivator;
@@ -33,6 +42,7 @@ import org.mitre.openii.dialogs.projects.unity.Pair;
 import org.mitre.openii.dialogs.projects.unity.Permuter;
 import org.mitre.openii.model.OpenIIManager;
 import org.mitre.openii.widgets.BasicWidgets;
+import org.mitre.openii.widgets.WidgetUtilities;
 import org.mitre.openii.widgets.matchers.MatchersPane;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.Project;
@@ -68,7 +78,8 @@ public class BatchMatchDialog extends TitleAreaDialog implements ModifyListener,
 	private Group mappingPane;
 
 	private Group existMappingPane;
-
+	private Composite projectPane;
+	
 	public BatchMatchDialog(Shell shell, Project project) {
 		super(shell);
 		setShellStyle(SWT.RESIZE | SWT.TITLE | SWT.CLOSE );
@@ -166,9 +177,22 @@ public class BatchMatchDialog extends TitleAreaDialog implements ModifyListener,
 		// exist-mapping pane
 		existMappingPane = new Group(pane, SWT.NONE);
 		existMappingPane.setText("Existing mappings will be replaced if checked");
-		existMappingPane.setLayout(new GridLayout(1, false));
-		existMappingPane.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		existMappingPane.setLayout(new GridLayout(1,false));
+		GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
+		gridData.heightHint = 200;
+		existMappingPane.setLayoutData(gridData);
 
+		// Construct the scrolling pane for showing the mappings available for merging
+		ScrolledComposite scrolledPane = new ScrolledComposite(existMappingPane, SWT.BORDER | SWT.V_SCROLL);
+		scrolledPane.setLayoutData(new GridData(GridData.FILL_BOTH));
+
+		// Creates a project pane
+		projectPane = new Composite(scrolledPane, SWT.NONE);
+		//projectPane.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
+		projectPane.setLayout(new GridLayout(1,false));
+		
+		
+		
 		// Create a check box for each mapping pair
 		while (permuter.hasMoreElements()) {
 			Pair<ProjectSchema> currMappingPair = permuter.nextElement();
@@ -177,16 +201,19 @@ public class BatchMatchDialog extends TitleAreaDialog implements ModifyListener,
 
 			mappingHash.put(pairName, currMappingPair);
 			Button mappingButton;
+			//Button mappingButtonTest;
 			if (!exist) {
 				mappingButton = new Button(mappingPane, SWT.CHECK);
-				mappingButton.setSelection(true);
+				mappingButton.setSelection(true);				
 				selectedNewMappingList.add(currMappingPair);
 			} else {
-				mappingButton = new Button(existMappingPane, SWT.CHECK);
+				//mappingButton = new Button(existMappingPane, SWT.CHECK);
+				mappingButton = new Button(projectPane, SWT.CHECK);
 				mappingButton.setSelection(false);
 			}
 			mappingButton.setData(currMappingPair);
 			mappingButton.setText(pairName);
+
 
 			mappingButton.addSelectionListener(new SelectionListener() {
 				public void widgetDefaultSelected(SelectionEvent event) {
@@ -203,7 +230,15 @@ public class BatchMatchDialog extends TitleAreaDialog implements ModifyListener,
 					updateButton();
 				}
 			});
+			
 		}
+		
+		// Adjust scroll panes to fit content
+		scrolledPane.setContent(projectPane);
+		scrolledPane.setExpandVertical(true);
+		scrolledPane.setExpandHorizontal(true);
+		scrolledPane.setMinSize(projectPane.computeSize(SWT.DEFAULT, SWT.DEFAULT));
+
 	}
 
 	private String getMappingHashKey(Pair<ProjectSchema> currMappingPair) {
@@ -334,7 +369,8 @@ public class BatchMatchDialog extends TitleAreaDialog implements ModifyListener,
 					for (Control mappingButton : mappingPane.getChildren())
 						((Button) mappingButton).setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
 
-					for (Control mappingButton : existMappingPane.getChildren())
+					//for (Control mappingButton : existMappingPane.getChildren())
+					for (Control mappingButton : projectPane.getChildren())
 						((Button) mappingButton).setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
 
 					return;
@@ -356,7 +392,8 @@ public class BatchMatchDialog extends TitleAreaDialog implements ModifyListener,
 						((Button) mappingButton).setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
 				}
 
-				for (Control mappingButton : existMappingPane.getChildren()) {
+				//for (Control mappingButton : existMappingPane.getChildren()) {
+				for (Control mappingButton : projectPane.getChildren()) {
 					Pair<ProjectSchema> pair = (Pair<ProjectSchema>) ((Button) mappingButton).getData();
 					if (schemaGroup.contains(pair.getItem1().getId()) || schemaGroup.contains(pair.getItem2().getId()))
 						((Button) mappingButton).setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
