@@ -8,18 +8,13 @@ import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
-import org.eclipse.swt.custom.TableEditor;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -29,9 +24,6 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.TableColumn;
-import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.mitre.harmony.matchers.matchers.Matcher;
 import org.mitre.openii.application.OpenIIActivator;
@@ -42,7 +34,6 @@ import org.mitre.openii.dialogs.projects.unity.Pair;
 import org.mitre.openii.dialogs.projects.unity.Permuter;
 import org.mitre.openii.model.OpenIIManager;
 import org.mitre.openii.widgets.BasicWidgets;
-import org.mitre.openii.widgets.WidgetUtilities;
 import org.mitre.openii.widgets.matchers.MatchersPane;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.Project;
@@ -56,20 +47,17 @@ import org.mitre.schemastore.model.ProjectSchema;
  * 
  */
 
-public class BatchMatchDialog extends TitleAreaDialog implements ModifyListener, SelectionListener {
+public class BatchMatchDialog extends TitleAreaDialog implements SelectionListener {
 
 	private static final long serialVersionUID = 5519403988358398471L;
 
 	private Project project;
 	private ArrayList<Pair<ProjectSchema>> selectedNewMappingList = new ArrayList<Pair<ProjectSchema>>();
-	// private ArrayList<Pair<ProjectSchema>> checkedMappingList = new
-	// ArrayList<Pair<ProjectSchema>>();
 	private HashMap<String, Pair<ProjectSchema>> mappingHash = new HashMap<String, Pair<ProjectSchema>>();
 	private ArrayList<Pair<ProjectSchema>> existingMappingList = new ArrayList<Pair<ProjectSchema>>();;
 
 	private MatchersPane matchersPane;
 	private Text authorField;
-	private Text descriptionField;
 
 	private ArrayList<Button> mappingButtons;
 
@@ -96,7 +84,9 @@ public class BatchMatchDialog extends TitleAreaDialog implements ModifyListener,
 	/** Creates the contents for the Edit Project Dialog */
 	protected Control createContents(Composite parent) {
 		Control control = super.createContents(parent);
-		authorField.setText(System.getProperty("user.name"));
+		authorField.setText("(Auto set by matchers)");
+		authorField.setText(MappingProcessor.matchersToString(getMatchers())); 
+		authorField.setEnabled(false); 
 		return control;
 	}
 
@@ -135,12 +125,7 @@ public class BatchMatchDialog extends TitleAreaDialog implements ModifyListener,
 		pane.setLayoutData(gridData);
 
 		// Generate the properties to be displayed by the info pane
-		authorField = BasicWidgets.createTextField(pane, "Author");
-		descriptionField = BasicWidgets.createTextField(pane, "Description", 4);
-
-		// Add listeners to the fields to monitor for changes
-		authorField.addModifyListener(this);
-		descriptionField.addModifyListener(this);
+		authorField = BasicWidgets.createTextField(pane, "Author",2);
 	}
 
 	private void createMappingGroupPane(Composite parent) {
@@ -188,7 +173,6 @@ public class BatchMatchDialog extends TitleAreaDialog implements ModifyListener,
 
 		// Creates a project pane
 		projectPane = new Composite(scrolledPane, SWT.NONE);
-		//projectPane.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 		projectPane.setLayout(new GridLayout(1,false));
 		
 		
@@ -249,10 +233,6 @@ public class BatchMatchDialog extends TitleAreaDialog implements ModifyListener,
 		return authorField.getText();
 	}
 
-	String getDescription() {
-		return descriptionField.getText();
-	}
-
 	/**
 	 * Given a set of mappings and schemas in a project, figure out the
 	 * connectedness, or minimum spanning tree in the mappings
@@ -294,15 +274,12 @@ public class BatchMatchDialog extends TitleAreaDialog implements ModifyListener,
 		return selectedNewMappingList;
 	}
 
-	public void modifyText(ModifyEvent arg0) {
-		updateButton();
-	}
 
 	// /** Handles the actual import of the specified file */
 	protected void okPressed() {
 		ArrayList<Mapping> mappings = OpenIIManager.getMappings(project.getId());
 
-		// delete existing mappings to be replaced from the schema store
+		// delete old mappings that are to be replaced
 		Integer item1, item2, source, target;
 		for (Pair<ProjectSchema> pair : selectedNewMappingList) {
 			if (existingMappingList.contains(pair)) {
@@ -426,8 +403,14 @@ public class BatchMatchDialog extends TitleAreaDialog implements ModifyListener,
 		// TODO Auto-generated method stub
 	}
 
-	public void widgetSelected(SelectionEvent arg0) {
+	public void widgetSelected(SelectionEvent e) {
+		authorField.setText(getAutoAuthorString()); 
 		updateButton();
+	}
+	
+	/** Returns the author as auto generated by matcher names **/ 
+	private String getAutoAuthorString() {
+		return MappingProcessor.matchersToString(getMatchers());
 	}
 
 	/** Displays the matcher parameters */
