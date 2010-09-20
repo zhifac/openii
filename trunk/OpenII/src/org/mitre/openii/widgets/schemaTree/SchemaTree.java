@@ -12,8 +12,11 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Text;
@@ -26,7 +29,7 @@ import org.mitre.schemastore.search.SchemaSearchResult;
 import org.mitre.schemastore.search.SearchManager;
 
 /** Constructs a Schema Tree */
-public class SchemaTree extends Composite implements ISelectionChangedListener, KeyListener
+public class SchemaTree extends Composite implements SelectionListener, ISelectionChangedListener, KeyListener
 {	
 	/** Stores the hierarchical schema being displayed */
 	private HierarchicalSchemaInfo schema = null;
@@ -38,6 +41,8 @@ public class SchemaTree extends Composite implements ISelectionChangedListener, 
 	private SchemaModelSelector modelSelector = null;
 	private Text searchField = null;
 	private TreeViewer schemaViewer = null;
+	private Button alphabetize = null;
+	private Button showRoots = null;
 	
 	/** Generate the menu pane */
 	private void generateMenuPane(Composite parent)
@@ -80,9 +85,8 @@ public class SchemaTree extends Composite implements ISelectionChangedListener, 
 		schemaViewer.getTree().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		
 		// Populate the tree viewer
-		schemaViewer.setContentProvider(new SchemaElementContentProvider(schema));
+		schemaViewer.setContentProvider(new SchemaElementContentProvider(this));
 		schemaViewer.setLabelProvider(new SchemaElementLabelProvider(this));
-		schemaViewer.setInput("");
 		
 		// Add the tree popup menu
 		SchemaMenuManager menuManager = new SchemaMenuManager(schemaViewer);
@@ -93,6 +97,28 @@ public class SchemaTree extends Composite implements ISelectionChangedListener, 
 		ColumnViewerToolTipSupport.enableFor(schemaViewer);
 	}
 
+	/** Generate the option pane */
+	private void generateOptionPane(Composite parent)
+	{
+		// Construct the option pane
+		Composite optionPane = new Composite(parent, SWT.NONE);
+		GridLayout layout = new GridLayout(2,false);
+		layout.marginHeight = 0;
+		layout.marginWidth = 5;
+		optionPane.setLayout(layout);
+		optionPane.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+	
+		// Construct the alphabetize option
+		alphabetize = new Button(optionPane, SWT.CHECK);
+		alphabetize.setText("Alphabetize");
+		alphabetize.addSelectionListener(this);
+		
+		// Construct the show root option
+		showRoots = new Button(optionPane, SWT.CHECK);
+		showRoots.setText("Show Roots");
+		showRoots.addSelectionListener(this);
+	}
+	
 	/** Constructs the Schema Tree */
 	public SchemaTree(Composite parent, SchemaInfo schema)
 		{ this(parent, schema, null); }
@@ -113,8 +139,10 @@ public class SchemaTree extends Composite implements ISelectionChangedListener, 
 		// Layout the menu pane and tree pane
 		generateMenuPane(this);
 		generateTreePane(this);
+		generateOptionPane(this);
 
 		// Expand out the tree
+		schemaViewer.setInput("");
 		schemaViewer.getTree().getItem(0).setExpanded(true);
 		schemaViewer.refresh();
 	}
@@ -123,6 +151,14 @@ public class SchemaTree extends Composite implements ISelectionChangedListener, 
 	public HierarchicalSchemaInfo getSchema()
 		{ return schema; }
 
+	/** Indicates if the schema should be alphabetized */
+	public boolean isAlphabetized()
+		{ return alphabetize.getSelection(); }
+	
+	/** Indicates if the schema should show root schemas */
+	public boolean showRoots()
+		{ return showRoots.getSelection(); }
+	
 	/** Returns the currently selected element */
 	public Integer getSelectedElement()
 		{ return ((SchemaElement)schemaViewer.getSelection()).getId(); }		
@@ -167,6 +203,10 @@ public class SchemaTree extends Composite implements ISelectionChangedListener, 
 					schemaViewer.expandToLevel(element,1);					
 		schemaViewer.refresh();
 	}
+
+	/** Handles changes to the selected options */
+	public void widgetSelected(SelectionEvent e)
+		{ schemaViewer.refresh(); }
 	
 	/** Handles changes to the schema model */
 	public void selectionChanged(SelectionChangedEvent e)
@@ -178,7 +218,8 @@ public class SchemaTree extends Composite implements ISelectionChangedListener, 
 	/** Runs the search query (when ENTER is pressed) */
 	public void keyReleased(KeyEvent e)
 		{ if(e.character==SWT.CR) searchFor(searchField.getText()); }
-	
+
 	// Unused event listeners
 	public void keyPressed(KeyEvent e) {}
+	public void widgetDefaultSelected(SelectionEvent arg0) {}
 }
