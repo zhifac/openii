@@ -77,7 +77,6 @@ public class GenerateVocabularyDialog extends TitleAreaDialog implements ModifyL
 
 	private Project project;
 	private Text authorField;
-	private Text vocabName;
 	private HashMap<Integer, String> schemaNames;
 	private OptionsPanel groupOptions;
 	private HashMap<String, Table> mappingGroups = new HashMap<String, Table>();
@@ -106,8 +105,7 @@ public class GenerateVocabularyDialog extends TitleAreaDialog implements ModifyL
 	/** Creates the contents for the Edit Project Dialog */
 	protected Control createContents(Composite parent) {
 		Control control = super.createContents(parent);
-		authorField.setText("Set by matchers."); 
-//		vocabName.setText("Vocabulary for " + project.getName());
+		authorField.setText("Set by matchers.");
 		return control;
 	}
 
@@ -312,13 +310,13 @@ public class GenerateVocabularyDialog extends TitleAreaDialog implements ModifyL
 		pane.setLayoutData(gridData);
 
 		// Generate the properties to be displayed by the info pane
-//		vocabName = BasicWidgets.createTextField(pane, "Vocabulary");
+		// vocabName = BasicWidgets.createTextField(pane, "Vocabulary");
 		authorField = BasicWidgets.createTextField(pane, "Author");
-		authorField.setEnabled(false); 
+		authorField.setEnabled(false);
 
 		// Add listeners to the fields to monitor for changes
-//		vocabName.addModifyListener(this);
-//		authorField.addModifyListener(this);
+		// vocabName.addModifyListener(this);
+		// authorField.addModifyListener(this);
 	}
 
 	public void modifyText(ModifyEvent e) {
@@ -346,11 +344,11 @@ public class GenerateVocabularyDialog extends TitleAreaDialog implements ModifyL
 		for (Mapping m : mappings)
 			if (rankedSchemas.contains(m.getSourceId()) && rankedSchemas.contains(m.getTargetId()))
 				selectedMapping.add(m);
-		
 
-		new UnityProgressDialog(getShell(), project, rankedSchemas, selectedMapping).open();
+		UnityProgressDialog progressDialog = new UnityProgressDialog(getShell(), project, rankedSchemas, selectedMapping);
+		progressDialog.run();
 
-		getShell().dispose();
+		progressDialog.getParent().dispose(); 
 		rankedSchemas = null;
 		selectedMapping = null;
 		mappings = null;
