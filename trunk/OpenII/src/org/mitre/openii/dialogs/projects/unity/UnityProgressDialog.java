@@ -21,12 +21,12 @@ import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.Project;
 import org.mitre.schemastore.model.Vocabulary;
 
-public class UnityProgressDialog extends Dialog implements UnityListener  {
+public class UnityProgressDialog extends Dialog implements UnityListener, Runnable  {
 
 	private Shell shell;
 	private CLabel message;
-	protected String processMessage = "process......";
-	protected String shellTitle = "Progress..."; //
+	protected String processMessage = "Generating vocabulary ......";
+	protected String shellTitle = "Progress...";
 	private Composite progressBarComposite;
 	protected int processBarStyle = SWT.SMOOTH;
 	private ProgressBar progressBar;
@@ -39,6 +39,9 @@ public class UnityProgressDialog extends Dialog implements UnityListener  {
 	private ArrayList<Integer> rankedSchemas;
 	private ArrayList<Mapping> mappings;
 	private UnityDSF unity;
+	
+	/** unity is stopped iff the process is done running **/ 
+	private boolean stopped = false; 
 
 	public UnityProgressDialog(Shell parent, Project project, ArrayList<Integer> schemaSequence, ArrayList<Mapping> selectedMapping) {
 		super(parent);
@@ -47,7 +50,7 @@ public class UnityProgressDialog extends Dialog implements UnityListener  {
 		this.mappings = selectedMapping; 
 	}
 
-	public Object open() {
+	public void run() {
 		createContents(); // create window
 		shell.open();
 		shell.layout();
@@ -57,7 +60,7 @@ public class UnityProgressDialog extends Dialog implements UnityListener  {
 
 		// Start a new thread to generate the vocabuary 
 		unity.addListener(this); 
-		unity.start(); 
+		unity.run(); 
 		vocab = unity.getVocabulary(); 
 		OpenIIManager.saveVocabulary(vocab);
 		Display display = getParent().getDisplay();
@@ -66,8 +69,6 @@ public class UnityProgressDialog extends Dialog implements UnityListener  {
 				display.sleep();
 			}
 		}
-		
-		return vocab;
 	}
 
 	protected void createContents() {
@@ -105,7 +106,8 @@ public class UnityProgressDialog extends Dialog implements UnityListener  {
 		cancelButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				isClosed = true;
-				unity.stopThread(); 
+				stopped = false;
+				unity = null; 
 				shell.dispose(); 
 			}
 		});
@@ -114,8 +116,8 @@ public class UnityProgressDialog extends Dialog implements UnityListener  {
 		cancelButton.setEnabled(mayCancel);
 	}
 
-	public void updateProgress(Double percentComplete) {
-		this.progressBar.setSelection( percentComplete.intValue());
+	public void updateProgress(Integer percentComplete){
+		progressBar.setSelection( percentComplete);
 	}
 
 
@@ -123,6 +125,23 @@ public class UnityProgressDialog extends Dialog implements UnityListener  {
 		processMessageLabel.setText(message); 
 	}
 	
+	public void updateComplete( boolean completed ) {
+		if ( completed ) {
+			unity = null; 
+			isClosed = true; 
+			stopped = true; 
+			shell.getParent().dispose(); 
+			shell.dispose(); 
+		}
+	}
+
+	public boolean isClosed(){
+		return isClosed; 
+	}
+	
+	public boolean isStopped() {
+		return stopped; 
+	}
 	 
 
 }
