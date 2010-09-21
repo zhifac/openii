@@ -62,7 +62,8 @@ public class BatchMatchDialog extends TitleAreaDialog implements SelectionListen
 	private Group schemaGroupPane;
 
 	private Group mappingPane;
-
+	private Composite projectPane0;
+	
 	private Group existMappingPane;
 	private Composite projectPane;
 	
@@ -155,20 +156,28 @@ public class BatchMatchDialog extends TitleAreaDialog implements SelectionListen
 		mappingPane = new Group(pane, SWT.NONE);
 		mappingPane.setText("Select new mappings to create");
 		mappingPane.setLayout(new GridLayout(1, false));
-		mappingPane.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		GridData gd0 = new GridData(GridData.FILL_HORIZONTAL);
+		gd0.heightHint = 100;
+		mappingPane.setLayoutData(gd0);
+
+		ScrolledComposite scrolledPane0 = new ScrolledComposite(mappingPane, SWT.BORDER | SWT.V_SCROLL);
+		scrolledPane0.setLayoutData(new GridData(GridData.FILL_BOTH));
+		projectPane0 = new Composite(scrolledPane0, SWT.NONE);
+		projectPane0.setLayout(new GridLayout(1,false));
+
+		
 		
 		// exist-mapping pane
 		existMappingPane = new Group(pane, SWT.NONE);
 		existMappingPane.setText("Existing mappings will be replaced if checked");
 		existMappingPane.setLayout(new GridLayout(1,false));
 		GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
-		gridData.heightHint = 200;
+		gridData.heightHint = 100;
 		existMappingPane.setLayoutData(gridData);
 
 		// Construct the scrolling pane for showing the mappings available for merging
 		ScrolledComposite scrolledPane = new ScrolledComposite(existMappingPane, SWT.BORDER | SWT.V_SCROLL);
 		scrolledPane.setLayoutData(new GridData(GridData.FILL_BOTH));
-
 		// Creates a project pane
 		projectPane = new Composite(scrolledPane, SWT.NONE);
 		projectPane.setLayout(new GridLayout(1,false));
@@ -185,7 +194,8 @@ public class BatchMatchDialog extends TitleAreaDialog implements SelectionListen
 			Button mappingButton;
 			//Button mappingButtonTest;
 			if (!exist) {
-				mappingButton = new Button(mappingPane, SWT.CHECK);
+				//mappingButton = new Button(mappingPane, SWT.CHECK);
+				mappingButton = new Button(projectPane0, SWT.CHECK);
 				mappingButton.setSelection(true);				
 				selectedNewMappingList.add(currMappingPair);
 			} else {
@@ -216,10 +226,16 @@ public class BatchMatchDialog extends TitleAreaDialog implements SelectionListen
 		}
 		
 		// Adjust scroll panes to fit content
+		scrolledPane0.setContent(projectPane0);
+		scrolledPane0.setExpandVertical(true);
+		scrolledPane0.setExpandHorizontal(true);
+		scrolledPane0.setMinSize(projectPane0.computeSize(SWT.DEFAULT, SWT.DEFAULT));
+
 		scrolledPane.setContent(projectPane);
 		scrolledPane.setExpandVertical(true);
 		scrolledPane.setExpandHorizontal(true);
 		scrolledPane.setMinSize(projectPane.computeSize(SWT.DEFAULT, SWT.DEFAULT));
+		
 
 	}
 
@@ -341,7 +357,8 @@ public class BatchMatchDialog extends TitleAreaDialog implements SelectionListen
 				// turn off
 				if (!button.getSelection()) {
 					button.setSelection(false);
-					for (Control mappingButton : mappingPane.getChildren())
+					//for (Control mappingButton : mappingPane.getChildren())
+					for(Control mappingButton : projectPane0.getChildren())
 						((Button) mappingButton).setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
 
 					//for (Control mappingButton : existMappingPane.getChildren())
@@ -359,7 +376,8 @@ public class BatchMatchDialog extends TitleAreaDialog implements SelectionListen
 				button.setSelection(true);
 
 				// Highlight the mapping cells
-				for (Control mappingButton : mappingPane.getChildren()) {
+				//for (Control mappingButton : mappingPane.getChildren()) {
+				for(Control mappingButton : projectPane0.getChildren()){
 					Pair<ProjectSchema> pair = (Pair<ProjectSchema>) ((Button) mappingButton).getData();
 					if (schemaGroup.contains(pair.getItem1().getId()) || schemaGroup.contains(pair.getItem2().getId()))
 						((Button) mappingButton).setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));

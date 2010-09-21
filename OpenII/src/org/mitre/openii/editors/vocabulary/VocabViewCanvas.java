@@ -93,6 +93,7 @@ public class VocabViewCanvas extends Canvas {
 	private Color white =  this.getDisplay().getSystemColor(SWT.COLOR_WHITE);
 	private Color lightYellow = new Color(this.getDisplay(), 255, 255, 128);
 	private Color lightGreen = new Color(this.getDisplay(), 128, 225, 128);
+	private Color lightRed = new Color(this.getDisplay(), 255, 128, 128);
 	
 	public VocabViewCanvas(Composite parent, int style, Vocabulary vocabulary) {
 		super(parent, style | SWT.EMBEDDED);
@@ -180,13 +181,13 @@ public class VocabViewCanvas extends Canvas {
 			public void widgetSelected(SelectionEvent e) {				
 				if(colorCombo.getSelectionIndex() != -1) {
 					if(colorCombo.getSelectionIndex() == 0){
-						System.out.println("color the table");
+						//System.out.println("color the table");
 						if(!coloredTable){
 							coloredTable=true;
 							colorTheTable();
 						}
 					}else{
-						System.out.println("do not color the table");
+						//System.out.println("do not color the table");
 						if(coloredTable){
 							coloredTable=false;
 							colorTheTable();
@@ -544,7 +545,9 @@ public class VocabViewCanvas extends Canvas {
 				if(coloredTable){
 					if(currTerm.equalsIgnoreCase(vocabTerm)){
 						allRows[i].setBackground(j, lightGreen);
-					}else if(currTerm.equals("") == false){
+					}else if(currTerm.equals("") == true){
+						allRows[i].setBackground(j, lightRed);
+					}else{
 						allRows[i].setBackground(j, lightYellow);
 					}
 				}else{
