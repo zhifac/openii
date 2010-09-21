@@ -504,7 +504,7 @@ public class SchemaStore
 		{ return getManager().getProjectCache().getVocabularyID(projectID)!=null; }
 	
 	/** Web service to retrieve the list of the vocabulary mappings for the specified project */
-	public Mapping[] getVocabularyMappings(Integer projectID)
+	public Mapping[] getVocabularyMappings(int projectID)
 		{ return getManager().getProjectCache().getVocabularyMappings(projectID).toArray(new Mapping[0]); }
 	
 	//-------------------------------
