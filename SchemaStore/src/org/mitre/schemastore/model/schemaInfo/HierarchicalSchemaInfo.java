@@ -199,6 +199,14 @@ public class HierarchicalSchemaInfo extends SchemaInfo
 		return domainValues;
 	}
 
+	/** Returns the type name associated with the specified element (or NULL if element has no name) */
+	public SchemaElement getType(HierarchicalSchemaInfo schemaInfo, Integer elementID)
+		{ return model.getType(schemaInfo, elementID); }
+	
+	/** Returns the type display (allows overriding of the type) */
+	public String getTypeString(HierarchicalSchemaInfo schemaInfo, Integer elementID)
+		{ return model.getTypeString(schemaInfo, elementID); }
+	
 	/** Returns the list of all elements in this schema */
 	public ArrayList<SchemaElement> getHierarchicalElements()
 	{
