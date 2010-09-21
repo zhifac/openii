@@ -136,6 +136,7 @@ public class ManagerMenuManager extends MenuManager implements IMenuListener
 		// Display the menu for a selection tag schema
 		if(element instanceof SchemaInTag)
 		{
+			menuManager.add(new ManagerAction(this,"Edit Schema Properties",ActionType.EDIT_SCHEMA));
 			menuManager.add(new ManagerAction(this,"Export Schema",ActionType.EXPORT_SCHEMA));
 			menuManager.add(new ManagerAction(this,"Remove Schema from Tag",ActionType.DELETE_TAG_SCHEMA));
 		}
