@@ -125,8 +125,17 @@ public class ManagerAction extends Action
 
 		/** Handles the extending of a schema */
 		if(actionType == ActionType.EDIT_SCHEMA)
-			new EditSchemaDialog(shell, (Schema)selection).open();
-
+		{
+			Schema schema = null;
+			if(selection instanceof Schema)
+				schema = (Schema)selection;
+			else if(selection instanceof SchemaInTag)
+				schema = ((SchemaInTag)selection).getSchema();
+			else if(selection instanceof SchemaInProject)
+				schema = ((SchemaInProject)selection).getSchema();
+			new EditSchemaDialog(shell, schema).open();
+		}
+		
 		/** Handles the extending of a schema */
 		if(actionType == ActionType.EXTEND_SCHEMA)
 			new ExtendSchemaDialog(shell, (Schema)selection).open();
