@@ -15,6 +15,7 @@ import java.util.regex.Pattern;
 import org.mitre.schemastore.model.Containment;
 import org.mitre.schemastore.model.Domain;
 import org.mitre.schemastore.model.DomainValue;
+import org.mitre.schemastore.model.Entity;
 import org.mitre.schemastore.model.SchemaElement;
 
 import org.mitre.schemastore.model.schemaInfo.model.*;
@@ -85,18 +86,18 @@ public class HierarchicalSchemaInfo extends SchemaInfo
 		if(model==null)
 		{
 			// Determine the makeup of the schema
-			Integer totalCount=0, domainCount=0, containmentCount=0;
+			Integer totalCount=0, entityCount=0, domainCount=0, containmentCount=0;
 			for(SchemaElement element : getElements(null))
 			{
 				if(element instanceof Domain || element instanceof DomainValue) domainCount++;
-				if(element instanceof Containment && ((Containment)element).getName().length()>0)
-					containmentCount++;
+				if(element instanceof Containment && ((Containment)element).getName().length()>0) containmentCount++;
+				if(element instanceof Entity) entityCount++;
 				totalCount++;
 			}
 
 			// Identify which model to use
 			if(domainCount.equals(totalCount)) model = new DomainSchemaModel();
-			else if(containmentCount>0) model = new XMLSchemaModel();
+			else if(containmentCount>0 && (containmentCount<1000 || containmentCount/entityCount<3)) model = new XMLSchemaModel();
 			else model = new RelationalSchemaModel();
 		}
 		this.model = model;
