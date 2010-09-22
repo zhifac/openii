@@ -481,7 +481,7 @@ public class SchemaElementDataCalls extends AbstractDataCalls
 				baseFilter = "schema_id IN (";
 				for(Integer schemaID : schemaIDs)
 					baseFilter += schemaID + ",";
-				baseFilter = baseFilter.substring(0, baseFilter.length()-1) + ")";
+				baseFilter = substring(baseFilter, baseFilter.length()-1) + ")";
 			}
 			else baseFilter = "1=1";
 

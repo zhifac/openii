@@ -31,7 +31,15 @@ abstract class AbstractDataCalls
 		}
 		return word;
 	}
-
+	
+	/** Generates the substring of the specified word*/
+	String substring(String word, int length)
+	{
+		if(word!=null && word.length()>length)
+			word = word.substring(0,length);
+		return word;
+	}
+	
 	/** Retrieves a universal id */
 	public Integer getUniversalIDs(int count) throws SQLException
 	{
