@@ -38,6 +38,7 @@ import org.mitre.openii.widgets.BasicWidgets;
 import org.mitre.openii.widgets.OptionsPanel;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.Project;
+import org.mitre.schemastore.model.Vocabulary;
 
 public class GenerateVocabularyDialog extends TitleAreaDialog implements ModifyListener, ActionListener {
 
@@ -310,7 +311,6 @@ public class GenerateVocabularyDialog extends TitleAreaDialog implements ModifyL
 		pane.setLayoutData(gridData);
 
 		// Generate the properties to be displayed by the info pane
-		// vocabName = BasicWidgets.createTextField(pane, "Vocabulary");
 		authorField = BasicWidgets.createTextField(pane, "Author");
 		authorField.setEnabled(false);
 
@@ -324,7 +324,6 @@ public class GenerateVocabularyDialog extends TitleAreaDialog implements ModifyL
 	}
 
 	public void actionPerformed(ActionEvent e) {
-
 		validateFields();
 	}
 
@@ -345,10 +344,23 @@ public class GenerateVocabularyDialog extends TitleAreaDialog implements ModifyL
 			if (rankedSchemas.contains(m.getSourceId()) && rankedSchemas.contains(m.getTargetId()))
 				selectedMapping.add(m);
 
-		UnityProgressDialog progressDialog = new UnityProgressDialog(getShell(), project, rankedSchemas, selectedMapping);
+		UnityProgressDialog progressDialog = new UnityProgressDialog(getShell());
 		progressDialog.run();
 
-		progressDialog.getParent().dispose(); 
+		// Start a new thread to generate the vocabulary
+		Vocabulary vocab = null;
+		UnityDSF unity = new UnityDSF(project, selectedMapping, rankedSchemas);
+		unity.addListener(progressDialog);
+		unity.run();
+
+		// Save the vocabulary
+		vocab = unity.getVocabulary();
+		progressDialog.updateProgressMessage("Saving the vocabulary...");
+		OpenIIManager.saveVocabulary(vocab);
+		progressDialog.updateProgressMessage("Vocabulary completed.");
+		
+
+		progressDialog.killDialog();
 		rankedSchemas = null;
 		selectedMapping = null;
 		mappings = null;
