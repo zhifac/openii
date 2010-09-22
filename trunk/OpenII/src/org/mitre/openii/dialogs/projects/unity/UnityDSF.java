@@ -23,7 +23,7 @@ import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
 import org.mitre.schemastore.model.schemaInfo.model.SchemaModel;
 import org.mitre.schemastore.porters.vocabularyExporters.CompleteVocabExporter;
 
-public class UnityDSF /* extends Thread */{
+public class UnityDSF extends Thread {
 
 	private Project project;
 	private Vocabulary vocabulary;
@@ -33,6 +33,7 @@ public class UnityDSF /* extends Thread */{
 	private ArrayList<Mapping> mappings = new ArrayList<Mapping>();
 	private int progressCount = 0;
 	private int totalProgress = 1;
+	private boolean isStopped = false;
 
 	public UnityDSF(Project project) {
 		this.project = project;
@@ -56,13 +57,25 @@ public class UnityDSF /* extends Thread */{
 		return (double) progressCount / (double) totalProgress;
 	}
 
+	public void run() {
+		compileVocabulary();
+	}
+
+	public void stopUnity() {
+		isStopped = true;
+	}
+	
+	public boolean isStopped() {
+		return isStopped; 
+	}
+
 	/**
 	 * Use DisjointSetForest to generate synsets from pair wise matches
 	 * 
 	 * @param inputMappings
 	 * @return
 	 */
-	public void run() {
+	public void compileVocabulary() {
 		System.out.println("Start running unity thread...");
 		long start = System.currentTimeMillis();
 		notify("Preparing to generate vocabulary... ");
@@ -124,15 +137,10 @@ public class UnityDSF /* extends Thread */{
 
 			// Then call DisjointSetForest merge on the mapping cells.
 			for (MappingCell mc : mcArray) {
-
-				for (MappingCellInput input : mc.getInputs()) {
-					// boolean merged =
+				for (MappingCellInput input : mc.getInputs())
 					dsf.merge(synsetTerms.get(new String(inputSchema + "-" + input.getElementID())), synsetTerms.get(new String(outputSchema + "-" + mc.getOutput())), mc.isValidated());
-					// System.out.println((merged ? "merge " : "not merged ") +
-					// " = " + inputSchema + "-" + input.getElementID() + " && "
-					// + outputSchema + "-" + mc.getOutput());
-				}
-				notify(progressCount++);
+
+				notify(++progressCount);
 			}
 		}
 
@@ -155,15 +163,18 @@ public class UnityDSF /* extends Thread */{
 		// Generate connonical terms for each synset
 		vocabulary = new Vocabulary(project.getId(), generateVocabTerms(new ArrayList<Synset>(synsets.values())));
 		notify("Vocabulary is completed. Total time: " + dsfTime.toString() + " minutes");
+		
+		
 		System.out.println("Done running unity.");
+		
+		notifyComplete();
 
-		notifyComplete(); 
 	}
 
 	private void notifyComplete() {
 		for (UnityListener l : listeners) {
-			l.updateComplete(true); 
-		}		
+			l.updateComplete(true);
+		}
 	}
 
 	private void notify(int progressCount) {
