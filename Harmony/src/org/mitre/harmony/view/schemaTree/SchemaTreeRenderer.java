@@ -126,7 +126,7 @@ class SchemaTreeRenderer extends DefaultTreeCellRenderer
 			String text = "<html>" + name.replace("<","&lt;").replace(">","&gt;");
 			if(harmonyModel.getPreferences().getShowSchemaTypes())
 			{
-				String typeString = schemaInfo.getModel().getTypeString(schemaInfo,element.getId());
+				String typeString = schemaInfo.getTypeString(schemaInfo,element.getId());
 				if(typeString!=null) text += " <font color='#888888'>(" + typeString + ")</font>";
 			}
 			text += "</html>";
