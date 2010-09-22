@@ -93,9 +93,9 @@ public class ProjectDataCalls extends AbstractDataCalls
 			// Insert the project
 			projectID = getUniversalIDs(1);
 			projectStmt.setInt(1, projectID);
-			projectStmt.setString(2, project.getName().substring(0,100));
-			projectStmt.setString(3, project.getDescription().substring(0,4096));
-			projectStmt.setString(4, project.getAuthor().substring(0,100));
+			projectStmt.setString(2, substring(project.getName(),100));
+			projectStmt.setString(3, substring(project.getDescription(),4096));
+			projectStmt.setString(4, substring(project.getAuthor(),100));
 			projectStmt.execute();
 			
 			// Insert the project schemas
@@ -132,9 +132,9 @@ public class ProjectDataCalls extends AbstractDataCalls
 			PreparedStatement insertSchemaStmt = connection.getPreparedStatement("INSERT INTO project_schema(project_id,schema_id,model) VALUES(?,?,?)");
 			
 			// Update the project
-			projectStmt.setString(1, project.getName().substring(0,100));
-			projectStmt.setString(2, project.getDescription().substring(0,4096));
-			projectStmt.setString(3, project.getAuthor().substring(0,100));
+			projectStmt.setString(1, substring(project.getName(),100));
+			projectStmt.setString(2, substring(project.getDescription(),4096));
+			projectStmt.setString(3, substring(project.getAuthor(),100));
 			projectStmt.setInt(4, project.getId());
 			projectStmt.execute();
 			
@@ -345,7 +345,7 @@ public class ProjectDataCalls extends AbstractDataCalls
 	            String inputIDs = "";
 	            for(MappingCellInput input : mappingCell.getInputs())
 	            	inputIDs += input.toString().replaceAll(",","&#44;") + ",";
-	            inputIDs = inputIDs.substring(0, inputIDs.length()-1);
+	            inputIDs = substring(inputIDs, inputIDs.length()-1);
 
 	            // Stores the validated mapping cell
 	            stmt.setInt(1, mappingCellID+i);
@@ -355,9 +355,9 @@ public class ProjectDataCalls extends AbstractDataCalls
 	            stmt.setDouble(5, mappingCell.getScore());
 	            if(mappingCell.getFunctionID()==null) stmt.setNull(6, Types.INTEGER);
 	            else stmt.setInt(6, mappingCell.getFunctionID());
-	            stmt.setString(7, mappingCell.getAuthor().substring(0,400));
+	            stmt.setString(7, substring(mappingCell.getAuthor(),400));
 	            stmt.setDate(8, date);
-	            stmt.setString(9, mappingCell.getNotes().substring(0,4096));
+	            stmt.setString(9, substring(mappingCell.getNotes(),4096));
 	            stmt.addBatch();
             }
             stmt.executeBatch();
