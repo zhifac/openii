@@ -11,6 +11,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -58,7 +59,7 @@ public class MappingCellFunctionPane extends JPanel implements ActionListener, K
 	//private JButton editButton;
 	
 	private int numParameters = 0;
-	private boolean canApplyFunc = true;
+	private boolean hasAppliedFunction = true;
 	private int currentParameter =0; //for selected parameter
 	
 	private String currentExpression="";
@@ -134,14 +135,13 @@ public class MappingCellFunctionPane extends JPanel implements ActionListener, K
 			MappingCell funcMc = (MappingCell)mappingCells.get(0);
 			
 			//get the input list
-			MappingCellInput[] inputsId = funcMc.getInputs();
+			Integer[] inputsId = funcMc.getElementInputIDs();
 			numParameters = inputsId.length;
 			
-			for(int i=0; i< inputsId.length; i++)
-			{
-				Integer elementID = inputsId[i].getElementID();
-				variables.add(leftSchemaInfo.getDisplayName(elementID));	
-				inputHash.put(elementID, leftSchemaInfo.getDisplayName(elementID));
+			for(int i=0; i< inputsId.length; i++){	
+				//SchemaInfo schemaInfo = harmonyModel.getSchemaManager().getSchemaInfo(leftSchemaID);
+				variables.add(leftSchemaInfo.getDisplayName(inputsId[i]));	
+				inputHash.put(inputsId[i], leftSchemaInfo.getDisplayName(inputsId[i]));
 			}
 			
 			//get output list
@@ -162,7 +162,6 @@ public class MappingCellFunctionPane extends JPanel implements ActionListener, K
 					functionList.add(function);
 					if(function.getId()==funcId){
 						this.setFunctionName(function.getName());
-						//System.out.println("It is a function mapping cell: " + this.getFunctionName());
 					}
 					String out = function.getName().toUpperCase() + "(";
 					for(Integer input : function.getInputTypes())
@@ -175,11 +174,12 @@ public class MappingCellFunctionPane extends JPanel implements ActionListener, K
 					//only show the function with the right number of parameters
 					if(numParameters==numDataType){
 						funcNamesToShow.add(new String(out.substring(0, out.length()-1))+ ")");
+						Collections.sort(funcNamesToShow);
 					}
 				}
 	
 				if(funcNamesToShow.size()==0){
-					canApplyFunc = false;
+					hasAppliedFunction = false;
 				}
 				
 			}catch(Exception e) {
@@ -192,7 +192,7 @@ public class MappingCellFunctionPane extends JPanel implements ActionListener, K
 			List<Integer> elementIdList = harmonyModel.getSelectedInfo().getSelectedElements(HarmonyConsts.LEFT);
 			
 			for(int i=0; i < elementIdList.size(); i++)
-			{
+			{				
 				SchemaInfo schemaInfo = harmonyModel.getSchemaManager().getSchemaInfo(leftSchemaID);
 				variables.add(schemaInfo.getDisplayName(elementIdList.get(i)));	
 				inputHash.put((Integer)elementIdList.get(i), schemaInfo.getDisplayName(elementIdList.get(i)));
@@ -215,7 +215,7 @@ public class MappingCellFunctionPane extends JPanel implements ActionListener, K
 			for(int i=0; i < rightElementIdList.size(); i++)
 			{
 				SchemaInfo rightSchemaInfo = harmonyModel.getSchemaManager().getSchemaInfo(rightSchemaID);
-				selectedNodeNameOnRight = rightSchemaInfo.getDisplayName(rightElementIdList.get(i));		
+				selectedNodeNameOnRight = rightSchemaInfo.getDisplayName(rightElementIdList.get(i));
 			}
 				
 			//assume only one output:
@@ -223,7 +223,7 @@ public class MappingCellFunctionPane extends JPanel implements ActionListener, K
 				setOutput(rightElementIdList.get(0));
 			}
 			else{
-				canApplyFunc = false;
+				hasAppliedFunction = false;
 			}
 			
 			// Set up functionSelection info pane
@@ -238,13 +238,11 @@ public class MappingCellFunctionPane extends JPanel implements ActionListener, K
 				HashMap<Integer,DataType> dataTypes = new HashMap<Integer,DataType>();
 				for(DataType dataType : SchemaStoreManager.getDataTypes()){
 					dataTypes.put(dataType.getId(), dataType);
-					//System.out.println("typeId=" + dataType.getId());
 				}
 						
 				for(Function function : SchemaStoreManager.getFunctions())
 				{
 					//functionNames[i]= new String(function.getName());
-					//System.out.println("i=" + i + "," + functionNames[i]);
 					int numDataType=0;
 					functionList.add(function);
 					String out = function.getName().toUpperCase() + "(";
@@ -255,14 +253,14 @@ public class MappingCellFunctionPane extends JPanel implements ActionListener, K
 					}
 					nameList.add(new String(out.substring(0, out.length()-1))+ ")");
 					
-					//only show the function with the righ number of parameters
+					//only show the function with the right number of parameters
 					if(numParameters==numDataType){
 						funcNamesToShow.add(new String(out.substring(0, out.length()-1))+ ")");
 					}
 				}
 	
 				if(funcNamesToShow.size()==0){
-					canApplyFunc = false;
+					hasAppliedFunction = false;
 				}
 				
 			}catch(Exception e) {
@@ -278,12 +276,15 @@ public class MappingCellFunctionPane extends JPanel implements ActionListener, K
 		//find the selected function index
 		for(int i=0; i< funcNamesToShow.size();i++ ){
 			functionNames[i] = (String) funcNamesToShow.get(i);
+			
+			//for edit mode
 			if(functionNames[i].contains((this.getFunctionName()).toUpperCase())&&isEditMode){
 				selectedFuncIndex = i;
 			}
 		}
+		
 		//disable the function feature
-		if(!canApplyFunc){
+		if(!hasAppliedFunction){
 			String[] a = {"No Applicable Functions."};
 			functionComboBox = new JComboBox(a);
 			title.setTitleColor(Color.GRAY);
@@ -295,11 +296,11 @@ public class MappingCellFunctionPane extends JPanel implements ActionListener, K
 			functionComboBox = new JComboBox(functionNames);
 			functionComboBox.setSelectedIndex(selectedFuncIndex);
 		}
+		
 		functionComboBox.setBackground(Color.WHITE);
 		functionComboBox.setFont(new Font("Arial", Font.BOLD, 11));
 		functionComboBox.addActionListener(this);
-		
-		
+			
 		//functionComboBox.setMaximumRowCount(50);
 		JPanel functionComboBoxPane = new JPanel();
 		functionComboBoxPane.setLayout (new GridLayout(3, 2, 8, 0)); 
@@ -310,14 +311,13 @@ public class MappingCellFunctionPane extends JPanel implements ActionListener, K
 		String[] variableNames = new String[variables.size()+1];
 		variableNames[0]="";
 		for(int i =1; i< variables.size()+1; i++ ){
-			//set up combo box for variable
+			//set up combobox for variable
 			variableNames[i] = (String)variables.get(i-1);
 		}
 		
 
 		//multiple parameters
-
-		if(canApplyFunc){
+		if(hasAppliedFunction){
 			
 			//enable function radio button
 			md.enableFunctionRadioButton(true);
@@ -353,6 +353,7 @@ public class MappingCellFunctionPane extends JPanel implements ActionListener, K
 		formulaTextField.setColumns(25);
 		formulaTextField.setSize(20, 6);
 		
+		//for edit mode
 		if(isEditMode){
 			String variableExp = "(";
 			for(int i =1; i< variables.size()+1; i++ ){
@@ -367,6 +368,7 @@ public class MappingCellFunctionPane extends JPanel implements ActionListener, K
 			String outputExp = "Output =" + this.getFunctionName()+ variableExp; 
 			addToExpression(outputExp);
 		}
+		
 		formulaTextField.addKeyListener(this);
 		
 		currentExpression = formulaTextField.getText();
@@ -407,13 +409,14 @@ public class MappingCellFunctionPane extends JPanel implements ActionListener, K
 			if(funName=="<Add Function>")
 			{
 			  //do something here to add a new function
-				AddNewFunction newFunction = new AddNewFunction(mappingCells, harmonyModel);
+				AddNewFunction newFunctionPane = new AddNewFunction(mappingCells, harmonyModel, this);
 				//newFunction.setLocation(adjustMouseLocation(e.getPoint(), null));
-				newFunction.setVisible(true);
+				newFunctionPane.setVisible(true);
 				
-				
-				System.out.println("To add new function");
-				//return;
+		        currentParameter = 0;
+		        variableComboBox[currentParameter].setEnabled(true);
+		        
+				return;
 			}
 			else if(funName=="<None>" || funName=="Identity")
 			{
@@ -427,7 +430,7 @@ public class MappingCellFunctionPane extends JPanel implements ActionListener, K
 			{   
 				funName = funName.substring(0, funName.indexOf("("));
 				setFunctionName(funName);
-		        //System.out.println("function Name=" + funName);
+
 		        addToExpression(funName+"(");
 		        formulaTextField.requestFocus();
 		        currentParameter = 0;
@@ -440,7 +443,6 @@ public class MappingCellFunctionPane extends JPanel implements ActionListener, K
 		if(e.getSource()==variableComboBox[currentParameter]) 
 		{
 			String varName = (String)variableComboBox[currentParameter].getSelectedItem();
-	        //System.out.println("varName=" + varName);
 
 	        if((currentParameter+1)<numParameters){
 	        	currentParameter++;
@@ -509,7 +511,7 @@ public class MappingCellFunctionPane extends JPanel implements ActionListener, K
     	int id = e.getID();
     	if (id == KeyEvent.KEY_RELEASED) {
 	    	currentExpression = formulaTextField.getText();
-	    	//System.out.println("Release currentExpression=" + currentExpression);
+	    	
 	    	formulaTextField.setText(currentExpression);
     	}
     }
@@ -577,17 +579,17 @@ public class MappingCellFunctionPane extends JPanel implements ActionListener, K
         
         //Display information about the KeyEvent...
         
-        System.out.println(keyString);
-        System.out.println(modString);
-        System.out.println(locationString);
-        System.out.println(actionString);
+        //System.out.println(keyString);
+        //System.out.println(modString);
+        //System.out.println(locationString);
+        //System.out.println(actionString);
 
     }
 
     //set enable fields
     public void setDisable(boolean set){
 
-    	if(set==false && canApplyFunc){ 
+    	if(set==false && hasAppliedFunction){ 
     		functionComboBox.setEnabled(true);
     		formulaTextField.setEnabled(true);
     		for(int i=0; i< numParameters; i++){
@@ -604,7 +606,7 @@ public class MappingCellFunctionPane extends JPanel implements ActionListener, K
     	else{
     		functionComboBox.setEnabled(false);
     		formulaTextField.setEnabled(false);
-    		if(canApplyFunc){ //Only shown the variables if the functions are there
+    		if(hasAppliedFunction){ //Only shown the variables if the functions are there
 	    		for(int i=0; i< numParameters; i++){
 	    			variableComboBox[i].setEnabled(false);
 	    			selectVariableLabel[i].setEnabled(false);
@@ -652,7 +654,6 @@ public class MappingCellFunctionPane extends JPanel implements ActionListener, K
 
 			String element = (String) iterator.next().toString();
 			if(element.contains(name)){		 
-				System.out.println("iterator=" + element);
 				String id = element.substring(0, element.indexOf("="));
 				inputList.add(new Integer(id));
 			}
@@ -695,6 +696,28 @@ public class MappingCellFunctionPane extends JPanel implements ActionListener, K
 		
 		//disable the OK button
 		mappingCDialog.setButtonPaneOKDisabled();
+	}
+	
+	//showNewAddedFunction
+	public void showNewAddedFunction(String newFunction, String[] inputs){
+		
+		String functionToShow = newFunction + "(";
+
+		for(int i=0; i < inputs.length; i++){
+			functionToShow += inputs[i] + ",";
+		}
+		functionToShow = functionToShow.substring(0, functionToShow.length()-1) + ")";
+		setFunctionName(newFunction);
+		//Update function comboBox
+		functionComboBox.addItem(functionToShow);
+		functionComboBox.setSelectedIndex(functionComboBox.getItemCount()-1);
+		
+		//Update Variable ComboBoxes
+        addToExpression(newFunction+"(");
+        formulaTextField.requestFocus();
+        
+		//set OK Button enabled
+		mappingCDialog.setButtonPaneOK();
 	}
 }
 
