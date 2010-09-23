@@ -108,15 +108,19 @@ public class MappingManager extends AbstractManager<MappingListener>
 	}
 	
 	/** Adds the specified mapping */
-	public void addMapping(Mapping mapping)
+	public ProjectMapping addMapping(Mapping mapping)
 	{
 		// Adds the mapping
 		if(mapping.getId()==null) mapping.setId(maxID++);
-		mappings.add(new ProjectMapping(mapping,getModel()));
+		ProjectMapping projectMapping = new ProjectMapping(mapping,getModel());
+		mappings.add(projectMapping);
 
 		// Inform listeners that the mapping was added
 		for(MappingListener listener : getListeners())
 			listener.mappingAdded(mapping.getId());
+		
+		// Returns the project mapping
+		return projectMapping;
 	}
 
 	

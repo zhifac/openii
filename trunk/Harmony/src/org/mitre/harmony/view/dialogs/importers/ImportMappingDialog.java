@@ -171,8 +171,8 @@ public class ImportMappingDialog extends JDialog implements ActionListener, Care
 					
 					// Store the mapping
 					Mapping mapping = new Mapping(null,project.getId(),source.getId(),target.getId());
-					harmonyModel.getMappingManager().addMapping(mapping);
-					harmonyModel.getMappingManager().getMapping(mapping.getId()).setMappingCells(mappingCells);
+					ProjectMapping projectMapping = harmonyModel.getMappingManager().addMapping(mapping);
+					projectMapping.setMappingCells(mappingCells);
 					
 					// Display the mapping before shutting down
 					ProjectController.selectMappings(harmonyModel);
