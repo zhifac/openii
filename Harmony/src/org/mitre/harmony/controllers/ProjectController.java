@@ -6,12 +6,15 @@ import java.util.HashSet;
 
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.SchemaStoreManager;
+import org.mitre.harmony.model.project.MappingManager;
 import org.mitre.harmony.model.project.ProjectManager;
 import org.mitre.harmony.model.project.ProjectMapping;
 import org.mitre.harmony.view.dialogs.project.ProjectDialog;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.Project;
+import org.mitre.schemastore.model.ProjectSchema;
+import org.mitre.schemastore.model.mappingInfo.MappingInfo;
 
 /** Class for various project controls */
 public class ProjectController
@@ -35,16 +38,15 @@ public class ProjectController
 	{
 		// Retrieve project information from repository
 		Project project = null;
-		ArrayList<Mapping> mappings = new ArrayList<Mapping>();
-		ArrayList<ArrayList<MappingCell>> mappingCells = new ArrayList<ArrayList<MappingCell>>();
+		ArrayList<MappingInfo> mappings = new ArrayList<MappingInfo>();
 		try {
 			project = SchemaStoreManager.getProject(projectID);
 			for(Mapping mapping : SchemaStoreManager.getMappings(projectID))
 			{
-				mappings.add(mapping);
-				mappingCells.add(SchemaStoreManager.getMappingCells(mapping.getId()));					
-				for(MappingCell mappingCell : mappingCells.get(mappingCells.size()-1))
+				ArrayList<MappingCell> mappingCells = SchemaStoreManager.getMappingCells(mapping.getId());
+				for(MappingCell mappingCell : mappingCells)
 					mappingCell.setId(null);
+				mappings.add(new MappingInfo(mapping, mappingCells));
 			}
 		}
 		catch(Exception e) { System.out.println("(E) ProjectController:loadProject - " + e.getMessage()); return false; }
@@ -57,18 +59,42 @@ public class ProjectController
 		harmonyModel.getProjectManager().setProject(project);
 
 		// Sets the mapping information
-		for(int i=0; i<mappings.size(); i++)
+		MappingManager mappingManager = harmonyModel.getMappingManager();
+		for(MappingInfo mapping : mappings)
 		{
-			Mapping mapping = mappings.get(i);
-			harmonyModel.getMappingManager().addMapping(mapping);
-			harmonyModel.getMappingManager().getMapping(mapping.getId()).setMappingCells(mappingCells.get(i));
+			ProjectMapping projectMapping = mappingManager.addMapping(mapping.getMapping());
+			projectMapping.setMappingCells(mapping.getMappingCells().get());
 		}
 		
 		// Indicates that the project was successfully loaded
 		harmonyModel.getProjectManager().setModified(false);
 		return true;
 	}
-
+	
+	/** Loads the specified mapping */
+	static public boolean loadMapping(HarmonyModel harmonyModel, MappingInfo mappingInfo)
+	{
+		try {
+			// Create an array of the project schemas
+			ArrayList<ProjectSchema> schemas = new ArrayList<ProjectSchema>();
+			for(Integer schemaID : new Integer[]{mappingInfo.getSourceID(),mappingInfo.getTargetID()})
+				schemas.add(new ProjectSchema(schemaID, SchemaStoreManager.getSchema(schemaID).getName(), null));
+			
+			// Generate a new project to hold the mapping
+			newProject(harmonyModel);		
+			harmonyModel.getProjectManager().setSchemas(schemas);
+			
+			// Sets the mapping information
+			ProjectMapping projectMapping = harmonyModel.getMappingManager().addMapping(mappingInfo.getMapping());
+			projectMapping.setMappingCells(mappingInfo.getMappingCells().get());
+			
+			// Indicates that the project was successfully loaded
+			harmonyModel.getProjectManager().setModified(false);
+			return true;
+		}
+		catch(Exception e) { System.out.println("(E) ProjectController:loadProject - " + e.getMessage()); return false; }
+	}
+	
 	/** Automatically selects the mappings to display */
 	static public void selectMappings(HarmonyModel harmonyModel)
 	{
@@ -120,7 +146,7 @@ public class ProjectController
 			else
 			{
 				Integer projectID = SchemaStoreManager.addProject(project);
-				if(project!=null) project.setId(projectID);
+				if(projectID!=null) project.setId(projectID);
 				else throw new Exception("Failed to create project");
 			}
 
