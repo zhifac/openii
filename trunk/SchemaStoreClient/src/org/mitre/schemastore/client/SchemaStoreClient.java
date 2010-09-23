@@ -580,13 +580,6 @@ public class SchemaStoreClient
 	/** Indicates if the specified project has a vocabulary from the web service */
 	public boolean hasVocabulary(Integer projectID) throws RemoteException
 		{ return (Boolean)callMethod("hasVocabulary",new Object[] {projectID}); }
-
-	/** Gets the list of vocabulary mappings for the specified project from the web service */
-	public ArrayList<Mapping> getVocabularyMappings(Integer projectID) throws RemoteException
-	{
-		Mapping[] mappings = (Mapping[])callMethod("getVocabularyMappings",new Object[] {projectID});
-		return mappings==null ? new ArrayList<Mapping>() : new ArrayList<Mapping>(Arrays.asList(mappings));
-	}
 	
 	//----------------------
 	// Annotation Functions
