@@ -24,35 +24,68 @@ import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
  * 
  * @author HAOLI
  */
-public class MappingProcessor {
+public class MappingProcessor extends Thread {
 	/** Stores the project ID */
 	private Integer projectID;
 
 	/** Stores the permutation list of project schemas */
-	private Permuter<ProjectSchema> permuter;
-
-	private ArrayList<Pair<ProjectSchema>> exclusionMappings = new ArrayList<Pair<ProjectSchema>>();
+	private Permuter<ProjectSchema> permuter = null;
+	/** new mappings **/
+//	private ArrayList<Pair<ProjectSchema>> newMappings; // = new ArrayList<Pair<ProjectSchema>>();
+	private MappingList newMappings; 
+	/** excluded mapping list **/
+//	private ArrayList<Pair<ProjectSchema>> exclusionMappings; // = new ArrayList<Pair<ProjectSchema>>();
+	private MappingList exclusionMappings; 
 	/** Matchers **/
-	private ArrayList<Matcher> matchers = null;
+	private ArrayList<Matcher> matchers; // = new ArrayList<Matcher>();
+
+	private ProgressListener listener = null;
+
+	private Integer progress;
 
 	/** Constructs the match enumeration object */
 	public MappingProcessor(Project project, Permuter<ProjectSchema> permuter, ArrayList<Matcher> voters) {
 		this.projectID = project.getId();
 		this.permuter = permuter;
 		this.matchers = (voters == null) ? MatcherManager.getDefaultMatchers() : voters;
+		setDaemon(true);
 	}
 
-	public MappingProcessor(Project project, ArrayList<Pair<ProjectSchema>> newMappings, ArrayList<Matcher> voters) {
+	public MappingProcessor(Project project, ArrayList<Matcher> voters, MappingList newMappings ) {
 		this.projectID = project.getId();
 		this.matchers = (voters == null) ? MatcherManager.getDefaultMatchers() : voters;
+		this.newMappings =  newMappings; 
+		permuter = null;
+		setDaemon(true);
+	}
 
-		for (Pair<ProjectSchema> pair : newMappings)
+	/** Runs only the provided mappings **/
+	public void run() {
+		if (permuter != null) {
 			try {
-				processMapping(pair);
+				while (hasMoreMappings())
+					processNextMapping();
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+		} else {
+			int i = 0;
+			int total = newMappings.size();
+			progress = 0;
+			int progressInterval = new Double((double) 1 / (double) total * 100.0).intValue();
+			while ( newMappings.hasMore() ) {
+				Pair<ProjectSchema> pair = newMappings.next(); 
+				try {
+//					listener.updateProgressMessage("Processing mapping " + (i + 1) + " of " + total);
+					processMapping(pair);
+					i++;
+					progress = i * progressInterval;
+//					listener.updateProgress(progress);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}
 	}
 
 	/** Returns the number of mappings in need of doing */
@@ -80,15 +113,19 @@ public class MappingProcessor {
 		return fSchemaInfo;
 	}
 
-	/** Processes the next mapping */
+	/**
+	 * Processes the next mapping
+	 * 
+	 * @throws Exception
+	 */
 	public void processNextMapping() throws Exception {
 		// Don't proceed if no more mappings in need of creation
-		if (!permuter.hasMoreElements())
+		if (permuter == null)
 			return;
 
 		// Gather up the schemas in need of matching
 		Pair<ProjectSchema> pair = (Pair<ProjectSchema>) permuter.nextElement();
-		if (!isExcludedMappingPair(pair))
+		if (pair != null && !isExcludedMappingPair(pair))
 			processMapping(pair);
 	}
 
@@ -111,9 +148,18 @@ public class MappingProcessor {
 		ArrayList<MappingCell> mappingCells = new ArrayList<MappingCell>();
 		Informant.status("Calling Harmony matching algorithms...");
 		MatchScores matchScores = new MatchGenerator(matchers, new VoteMerger()).getScores(schemaInfo1, schemaInfo2);
-		String author = matchersToString(matchers); 
-		for (MatchScore score : matchScores.getScores())
+		String author = matchersToString(matchers);
+		ArrayList<MatchScore> scores = matchScores.getScores();
+		int totalScores = scores.size();
+		int updateInterval = totalScores / 10;
+		int ct = 0;
+		for (MatchScore score : scores) {
 			mappingCells.add(MappingCell.createProposedMappingCell(null, mappingID, score.getSourceID(), score.getTargetID(), score.getScore(), author, new Date(System.currentTimeMillis()), ""));
+//			if (ct % updateInterval == 0)
+//				listener.updateProgress(progress + (ct / totalScores * 100));
+//			else
+//				ct++;
+		}
 
 		// Save the mapping. Delete if saving fails
 		Informant.status("Saving APIMatch...");
@@ -121,23 +167,23 @@ public class MappingProcessor {
 			try {
 				OpenIIManager.deleteMapping(mappingID);
 			} catch (Exception e2) {
+				throw new Exception("Failed to delete mapping cells between " + pair);
 			}
-			throw new Exception("Failed to create mapping cells between " + pair);
 		}
 
 		// Perform garbage collection
-		mapping = null; 
-		mappingCells.clear(); 
-		mappingCells = null; 
+		mapping = null;
+		mappingCells.clear();
+		mappingCells = null;
 		System.gc();
 	}
 
 	public static String matchersToString(ArrayList<Matcher> matcherList) {
-		String author = new String("Vote Merger("); 
-		for ( Matcher matcher: matcherList  )
-			author += matcher.getName() + ";"; 
-		author += ")"; 
-		return author; 
+		String author = new String("Vote Merger(");
+		for (Matcher matcher : matcherList)
+			author += matcher.getName() + ";";
+		author += ")";
+		return author;
 	}
 
 	/**
@@ -160,7 +206,7 @@ public class MappingProcessor {
 		for (Mapping mapping : OpenIIManager.getMappings(project.getId())) {
 			ProjectSchema schema1 = schemas.get(mapping.getSourceId());
 			ProjectSchema schema2 = schemas.get(mapping.getTargetId());
-			
+
 			// empty mapping object with mapping cell
 			if (OpenIIManager.getMappingCells(mapping.getId()).size() <= 0) {
 				OpenIIManager.deleteMapping(mapping.getId());
@@ -184,6 +230,14 @@ public class MappingProcessor {
 		}
 		Informant.progress(100);
 		return numMatches;
+	}
+
+	public void setProgressListener(ProgressListener l) {
+		this.listener = l;
+	}
+
+	public int getNumMappings() {
+		return newMappings.size();
 	}
 
 }

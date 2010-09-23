@@ -29,7 +29,7 @@ public class UnityDSF extends Thread {
 	private Vocabulary vocabulary;
 	private ArrayList<Integer> rankedSchemas;
 
-	private ArrayList<UnityListener> listeners = new ArrayList<UnityListener>();
+	private ArrayList<ProgressListener> listeners = new ArrayList<ProgressListener>();
 	private ArrayList<Mapping> mappings = new ArrayList<Mapping>();
 	private int progressCount = 0;
 	private int totalProgress = 1;
@@ -41,12 +41,14 @@ public class UnityDSF extends Thread {
 		rankedSchemas = new ArrayList<Integer>();
 		for (Integer i : project.getSchemaIDs())
 			rankedSchemas.add(i);
+		setDaemon(true); 
 	}
 
 	public UnityDSF(Project project, ArrayList<Mapping> mappings, ArrayList<Integer> rankedSchemas) {
 		this.project = project;
 		this.rankedSchemas = rankedSchemas;
 		this.mappings = mappings;
+		setDaemon(true); 
 	}
 
 	public Vocabulary getVocabulary() {
@@ -58,15 +60,16 @@ public class UnityDSF extends Thread {
 	}
 
 	public void run() {
+		System.out.println("Start running unity thread...");
 		compileVocabulary();
 	}
 
 	public void stopUnity() {
 		isStopped = true;
 	}
-	
+
 	public boolean isStopped() {
-		return isStopped; 
+		return isStopped;
 	}
 
 	/**
@@ -75,8 +78,8 @@ public class UnityDSF extends Thread {
 	 * @param inputMappings
 	 * @return
 	 */
-	public void compileVocabulary() {
-		System.out.println("Start running unity thread...");
+	private void compileVocabulary() {
+		
 		long start = System.currentTimeMillis();
 		notify("Preparing to generate vocabulary... ");
 
@@ -163,22 +166,13 @@ public class UnityDSF extends Thread {
 		// Generate connonical terms for each synset
 		vocabulary = new Vocabulary(project.getId(), generateVocabTerms(new ArrayList<Synset>(synsets.values())));
 		notify("Vocabulary is completed. Total time: " + dsfTime.toString() + " minutes");
-		
-		
+
 		System.out.println("Done running unity.");
-		
-		notifyComplete();
-
-	}
-
-	private void notifyComplete() {
-		for (UnityListener l : listeners) {
-			l.updateComplete(true);
-		}
+		stopUnity(); 
 	}
 
 	private void notify(int progressCount) {
-		for (UnityListener l : listeners) {
+		for (ProgressListener l : listeners) {
 			Double progress = new Double((double) progressCount / (double) totalProgress * 100.0);
 			l.updateProgress(progress.intValue());
 			l.updateProgressMessage("Progress... " + progress.intValue() + "%");
@@ -186,7 +180,7 @@ public class UnityDSF extends Thread {
 	}
 
 	private void notify(String message) {
-		for (UnityListener l : listeners) {
+		for (ProgressListener l : listeners) {
 			l.updateProgressMessage(message);
 		}
 	}
@@ -318,7 +312,7 @@ public class UnityDSF extends Thread {
 		this.rankedSchemas = schemas;
 	}
 
-	public void addListener(UnityListener listener) {
+	public void addListener(ProgressListener listener) {
 		listeners.add(listener);
 	}
 }

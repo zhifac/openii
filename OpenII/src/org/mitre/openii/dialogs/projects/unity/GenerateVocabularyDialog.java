@@ -91,7 +91,6 @@ public class GenerateVocabularyDialog extends TitleAreaDialog implements ModifyL
 		schemaNames = new HashMap<Integer, String>();
 		for (Integer i : project.getSchemaIDs()) {
 			schemaNames.put(i, OpenIIManager.getSchema(i).getName());
-			System.out.println(i + ": " + OpenIIManager.getSchema(i).getName());
 		}
 
 	}
@@ -344,23 +343,34 @@ public class GenerateVocabularyDialog extends TitleAreaDialog implements ModifyL
 			if (rankedSchemas.contains(m.getSourceId()) && rankedSchemas.contains(m.getTargetId()))
 				selectedMapping.add(m);
 
-		UnityProgressDialog progressDialog = new UnityProgressDialog(getShell());
-		progressDialog.run();
+		// Close the generate vocab shell
+		getShell().dispose();
+
+		// Start a progress bar to monitor unity process
+		ProgressBarDialog progressDialog = new ProgressBarDialog(getParentShell());
 
 		// Start a new thread to generate the vocabulary
-		Vocabulary vocab = null;
 		UnityDSF unity = new UnityDSF(project, selectedMapping, rankedSchemas);
 		unity.addListener(progressDialog);
-		unity.run();
-
-		// Save the vocabulary
-		vocab = unity.getVocabulary();
-		progressDialog.updateProgressMessage("Saving the vocabulary...");
-		OpenIIManager.saveVocabulary(vocab);
-		progressDialog.updateProgressMessage("Vocabulary completed.");
 		
+		// Asynchronously run unity from the display 
+		getParentShell().getDisplay().syncExec(unity);
 
-		progressDialog.killDialog();
+		Vocabulary vocab  = unity.getVocabulary();
+		if ( vocab!= null && !progressDialog.isClosed() ) {
+			// Save the vocabulary
+			progressDialog.updateProgressMessage("Saving the vocabulary...");
+			OpenIIManager.saveVocabulary(unity.getVocabulary());
+			progressDialog.updateProgressMessage("Vocabulary completed!! ");
+
+			// Sleep a second to allow the message to be shown
+			try {Thread.sleep(2000);} catch (InterruptedException e) {} 
+			
+			// Close progress bar
+			progressDialog.killDialog();
+		}
+		
+		// kill the threads
 		rankedSchemas = null;
 		selectedMapping = null;
 		mappings = null;

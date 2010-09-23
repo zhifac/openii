@@ -62,7 +62,7 @@ public class GenerateVocabularyOldWizard extends Wizard {
 		try {
 			// This is a temporary constructor that also includes running the
 			// mappings
-			new MappingProcessor(project, autoMappingPage.getNewMappings(), autoMappingPage.getMatchers());
+			new MappingProcessor(project,  autoMappingPage.getMatchers(),new MappingList(autoMappingPage.getNewMappings()));
 
 			ArrayList<Mapping> mappings = new ArrayList<Mapping>();
 			// construct the list of mappings selected
