@@ -23,6 +23,7 @@ import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionListener;
 
+import org.mitre.harmony.Harmony;
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.view.dialogs.widgets.TitledPane;
 import org.mitre.schemastore.model.Project;
@@ -121,7 +122,11 @@ class ProjectPane extends JPanel implements MouseListener
 		projectList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		projectList.setCellRenderer(new ListRenderer());
 		projectList.setSelectedIndex(0);
-		projectList.addMouseListener(this);
+		
+		// Locks ability to switch projects if not in standalone mode
+		if(!(harmonyModel.getBaseFrame() instanceof Harmony))
+			projectList.addMouseListener(this);
+		else projectList.setEnabled(false);
 
 		// If in save mode, select current project
 		if(saveMode)

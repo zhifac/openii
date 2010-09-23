@@ -135,12 +135,13 @@ public class ProjectManager extends AbstractManager<ProjectListener> implements 
 	}
 	
 	/** Sets the project info */
-	public void setProjectInfo(String name, String author, String description)
+	public void setProjectInfo(Integer id, String name, String author, String description)
 	{
 		// Only save information if changes made
-		if(!name.equals(project.getName()) || !author.equals(project.getAuthor()) || !description.equals(project.getDescription()))
+		if(!id.equals(project.getId()) || !name.equals(project.getName()) || !author.equals(project.getAuthor()) || !description.equals(project.getDescription()))
 		{
 			// Sets the mapping
+			project.setId(id);
 			project.setName(name);
 			project.setAuthor(author);
 			project.setDescription(description);
