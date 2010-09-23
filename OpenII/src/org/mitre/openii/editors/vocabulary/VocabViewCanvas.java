@@ -76,7 +76,10 @@ import org.mitre.schemastore.model.Term;
 import org.mitre.schemastore.model.Vocabulary;
 import org.mitre.schemastore.model.mappingInfo.AssociatedElementHash;
 import org.mitre.schemastore.model.mappingInfo.MappingInfoExt;
+import org.mitre.schemastore.model.schemaInfo.FilteredSchemaInfo;
+import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
 import org.mitre.schemastore.model.schemaInfo.SchemaInfo;
+import org.mitre.schemastore.model.schemaInfo.model.SchemaModel;
 
 public class VocabViewCanvas extends Canvas {
 	private int numSchemas; // num schemas, including common vocab as a schema
@@ -557,6 +560,7 @@ public class VocabViewCanvas extends Canvas {
 		newItem.setText(0, newName);
 		Font boldFont = new Font(Display.getDefault(), new FontData("Arial", 8, SWT.BOLD));
 		newItem.setFont(0, boldFont);
+		colorTheTable();
 	}
 
 	
@@ -579,7 +583,7 @@ public class VocabViewCanvas extends Canvas {
 		for(int i=1; i<numSchemas; i++){
 			schemaCombo.add(schemaNames[i]);
 		}
-		schemaCombo.select(0);
+		//schemaCombo.select(0);
 
 		
 		Label label2 = new Label(addDialog, SWT.RIGHT);
@@ -608,8 +612,19 @@ public class VocabViewCanvas extends Canvas {
 				if(schemaCombo.getSelectionIndex() != -1){
 					if(elementCombo.getSelectionIndex() != -1){
 						Integer schemaID = schemaIDs[schemaCombo.getSelectionIndex()];
+						
 						SchemaInfo si = OpenIIManager.getSchemaInfo(schemaID);
+						
+						//should be hierarchical schema and ask for get hierarchical elements
+						//HierarchicalSchemaInfo hsi = new HierarchicalSchemaInfo();
+						//HierarchicalSchemaInfo hsi = new HierarchicalSchemaInfo(si);
+						//SchemaModel sm = hsi.getModel();
+						
 						ArrayList<SchemaElement> elements = si.getElements(null);
+						//ArrayList<SchemaElement> elements = sm.getRootElements(hsi);
+						//ArrayList<SchemaElement> elements = hsi.getElements(null);
+						
+						
 						SchemaElement se = elements.get(elementCombo.getSelectionIndex());
 						Integer elementID = se.getId();
 						AssociatedElement ae = new AssociatedElement(schemaID, elementID, se.getName());						
@@ -829,7 +844,7 @@ public class VocabViewCanvas extends Canvas {
 					tempI.setImage(colNum, img);
 				}
 						
-
+				colorTheTable();
 				editRowDialog.dispose();
 			}
 		});
