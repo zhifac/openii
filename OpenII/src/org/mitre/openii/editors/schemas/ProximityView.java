@@ -31,8 +31,6 @@ import org.mitre.openii.model.RepositoryManager;
 import org.mitre.openii.views.manager.SchemaInProject;
 import org.mitre.openii.views.manager.SchemaInTag;
 import org.mitre.schemastore.model.Mapping;
-import org.mitre.schemastore.model.Project;
-import org.mitre.schemastore.model.ProjectSchema;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.schemaInfo.FilteredSchemaInfo;
 import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
@@ -156,17 +154,13 @@ public class ProximityView extends OpenIIEditor implements VennDiagramListener
 			public void widgetSelected(SelectionEvent e)
 			{
 				try {
-					// Create a temporary project with the selected schemas
+					// Launch Harmony to display a mapping between the two selected schemas
 					Schema schema1 = currSelectionEvent.getSets().getSchema1();
 					Schema schema2 = currSelectionEvent.getSets().getSchema2();
-					Project project = createProject(schema1,schema2);
-	
-					// Launch the Harmony editor on the temporary project
-					EditorManager.launchDefaultEditor(project);
-					
-					// Delete the temporary project
-					RepositoryManager.getClient().deleteProject(project.getId());
-				} catch(Exception e2) { System.out.println("(E)ProximityView: Failed to launch Harmony"); }
+					Mapping mapping = new Mapping(null,null,schema1.getId(),schema2.getId());
+					EditorManager.launchEditor("HarmonyEditor", mapping);
+				}
+				catch(Exception e2) { System.out.println("(E)ProximityView: Failed to launch Harmony"); }
 			}
 		};
 		
@@ -176,23 +170,6 @@ public class ProximityView extends OpenIIEditor implements VennDiagramListener
 		item.setText("Open schemas in Harmony");
 		item.addSelectionListener(menuListener);		
 		return menu;
-	}
-	
-	/** Create a temporary project using the given schemas */
-	private Project createProject(Schema schema1, Schema schema2) throws Exception
-	{
-		// Retrieve the project info
-		ProjectSchema leftSchema = new ProjectSchema(schema1.getId(), schema1.getName(), null);
-		ProjectSchema rightSchema = new ProjectSchema(schema2.getId(), schema2.getName(), null);
-		ProjectSchema[] schemas = new ProjectSchema[]{leftSchema,rightSchema};
-		String pair = schema1.getName() + " to " + schema2.getName();
-		
-		// Generate the project
-		Project project = new Project(null,pair,"Mapping from " + pair,"",schemas);
-		project.setId(RepositoryManager.getClient().addProject(project));
-		Mapping mapping = new Mapping(null,project.getId(),schema1.getId(),schema2.getId());
-		RepositoryManager.getClient().addMapping(mapping);
-		return project;
 	}
 
 	/** Show right-click menu with option to open the schemas corresponding to the selected schema pair in Harmony */

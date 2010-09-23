@@ -676,6 +676,15 @@ public class OpenIIManager {
 		}
 	}
 
+	/** Returns the list of vocabulary mappings */
+	public static ArrayList<Mapping> getVocabularyMappings(Integer projectID) {
+		try {
+			return RepositoryManager.getClient().getVocabularyMappings(projectID);
+		} catch (Exception e) {
+			return new ArrayList<Mapping>();
+		}
+	}
+	
 	/** Retrieves the vocabulary for the specified project */
 	public static Vocabulary getVocabulary(Integer projectID) {
 		try {
