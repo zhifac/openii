@@ -8,12 +8,20 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.layout.RowLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.TableItem;
 import org.mitre.affinity.clusters.ClusterGroup;
 import org.mitre.affinity.model.AffinityModel;
 import org.mitre.affinity.model.AffinitySchemaManager;
@@ -23,6 +31,7 @@ import org.mitre.affinity.view.application.AffinityPane;
 import org.mitre.affinity.view.application.LoadProgressDialog;
 import org.mitre.affinity.view.application.StackTraceDialog;
 import org.mitre.affinity.view.cluster_details.ClusterDetailsDlg;
+import org.mitre.affinity.view.cluster_details.ClusterDetailsPane;
 import org.mitre.affinity.view.event.SelectionClickedEvent;
 import org.mitre.affinity.view.event.SelectionClickedListener;
 import org.mitre.affinity.view.venn_diagram.VennDiagramUtils;
@@ -39,8 +48,13 @@ import org.mitre.openii.editors.OpenIIEditor;
 import org.mitre.openii.model.EditorManager;
 import org.mitre.openii.model.OpenIIManager;
 import org.mitre.openii.model.RepositoryManager;
+import org.mitre.schemastore.model.AssociatedElement;
 import org.mitre.schemastore.model.Schema;
+import org.mitre.schemastore.model.SchemaElement;
+import org.mitre.schemastore.model.Term;
 import org.mitre.schemastore.model.schemaInfo.FilteredSchemaInfo;
+import org.mitre.schemastore.model.schemaInfo.SchemaInfo;
+import org.mitre.openii.widgets.matchers.MatchersPane;
 
 /**
  * Constructs the Affinity View
@@ -66,14 +80,16 @@ public class AffinityEditor extends OpenIIEditor implements SelectionClickedList
 	private Collection<Integer> selectedSchemas;
 	
 	/** Used to compute match scores between two schemas */
-	public static MatchGenerator matchGenerator; 
+	public static MatchGenerator matchGenerator;
+	public static MatchGenerator matchGeneratorOld; 
 	static
 	{
+		//need to get the ArrayList of Matchers by calling matchersPane.getMatchers(); rather than adding
 		ArrayList<Matcher> matchers = new ArrayList<Matcher>();
 		matchers.add(new EditDistanceMatcher());
 		matchers.add(new DocumentationMatcher());
 		matchers.add(new ExactMatcher());		
-		matchGenerator = new MatchGenerator(matchers, new VoteMerger());
+		matchGeneratorOld = new MatchGenerator(matchers, new VoteMerger());
 	}
 
 	/** Defines the various types of events */
@@ -116,7 +132,7 @@ public class AffinityEditor extends OpenIIEditor implements SelectionClickedList
 			if(type==AffinityEventType.LAUNCH_PROXIMITY)
 			{
 				// Generate the list of schemas to launch in Proximity
-				ArrayList<FilteredSchemaInfo> schemas = new ArrayList<FilteredSchemaInfo>();
+				final ArrayList<FilteredSchemaInfo> schemas = new ArrayList<FilteredSchemaInfo>();
 				Iterator<Integer> iter = selectedCluster.getSchemaIDs().iterator();
 				while(iter.hasNext())
 				{
@@ -126,9 +142,45 @@ public class AffinityEditor extends OpenIIEditor implements SelectionClickedList
 				}
 				
 				// Launch Proximity
-				String referenceSchema = ((MenuItem)e.widget).getText();
-				VennDiagramSetsMatrix matrix = new VennDiagramSetsMatrix(referenceSchema, schemas, matchGenerator);		
-				EditorManager.launchEditor("ProximityView", matrix);			
+				final String referenceSchema = ((MenuItem)e.widget).getText();				
+				
+				
+				//creating the dialog for selecting matchers to be used in Proximity
+				Display display = getSite().getWorkbenchWindow().getShell().getDisplay();
+				final Shell chooseMatchersDialog = new Shell(display, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
+				
+				chooseMatchersDialog.setText("Select Matchers for Proxmity");
+				chooseMatchersDialog.setLayout(new GridLayout(1, false));
+	
+				final MatchersPane matchersPane = new MatchersPane(chooseMatchersDialog, this);
+					
+				Composite okayCancelPane = new Composite(chooseMatchersDialog, SWT.NONE);
+				RowLayout rowLayout = new RowLayout(); 
+				okayCancelPane.setLayout(rowLayout);
+				
+				Button okayButton = new Button(okayCancelPane, SWT.PUSH);
+				okayButton.setText("Ok");
+				okayButton.addListener(SWT.Selection, new Listener() {
+					public void handleEvent(Event event) {
+						ArrayList<Matcher> matchers = matchersPane.getMatchers();
+						chooseMatchersDialog.dispose();
+						
+						matchGenerator = new MatchGenerator(matchers, new VoteMerger());
+						VennDiagramSetsMatrix matrix = new VennDiagramSetsMatrix(referenceSchema, schemas, matchGenerator);	
+						EditorManager.launchEditor("ProximityView", matrix);	
+					}
+				});
+				
+				Button cancelButton = new Button(okayCancelPane, SWT.PUSH);
+				cancelButton.setText("Cancel");
+				cancelButton.addListener(SWT.Selection, new Listener() {
+					public void handleEvent(Event event) {
+						chooseMatchersDialog.dispose();
+					}
+				});
+				
+				chooseMatchersDialog.pack();
+				chooseMatchersDialog.open();
 			}
 		}
 	}
