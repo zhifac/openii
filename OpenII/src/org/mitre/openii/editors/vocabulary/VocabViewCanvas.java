@@ -33,8 +33,11 @@ import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
@@ -54,6 +57,8 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
@@ -61,7 +66,9 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.mitre.openii.application.OpenIIActivator;
 import org.mitre.openii.model.OpenIIManager;
+import org.mitre.openii.widgets.BasicWidgets;
 import org.mitre.schemastore.model.AssociatedElement;
+import org.mitre.schemastore.model.Entity;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.SchemaElement;
@@ -284,7 +291,7 @@ public class VocabViewCanvas extends Canvas {
 		// SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
 		// textControl.setText("<Select a row in the table to see evidence for that synset>");
 
-		final Table evidenceTable = new Table(sash, SWT.BORDER);
+		final Table evidenceTable = new Table(sash, SWT.BORDER | SWT.SINGLE);
 		evidenceTable.setHeaderVisible(true);
 
 		TableColumn evidence_elementSrcCol = new TableColumn(evidenceTable, SWT.NONE);
@@ -327,7 +334,7 @@ public class VocabViewCanvas extends Canvas {
 
 		// adding listener that allows someone to edit the canonical term if a
 		// cell in the Vocabulary column is double clicked
-		table.addListener(SWT.MouseDoubleClick, new Listener() {
+		/*table.addListener(SWT.MouseDoubleClick, new Listener() {
 			public void handleEvent(Event event) {
 				// get bounds for the Vocabulary column
 				int startXforVocab = 0;
@@ -406,7 +413,7 @@ public class VocabViewCanvas extends Canvas {
 					}
 				}
 			}
-		});
+		});*/
 
 		// adding the Listener to the table so that evidence can be displayed in
 		// the bottom pane
@@ -416,6 +423,58 @@ public class VocabViewCanvas extends Canvas {
 				Term termSelected = termsArray.get(rowNumSelected);
 				displayEvidence(evidenceTable, termSelected);
 			}
+		});
+		
+		table.addMouseListener(new MouseListener(){
+			public void mouseDoubleClick(MouseEvent e) {	
+			}
+
+			public void mouseDown(MouseEvent e) {
+				if(e.button == 3){
+					//System.out.println("right clicked on a table item");
+				    Menu menu = new Menu(table.getShell(), SWT.POP_UP);
+				    MenuItem addNewRowItem = new MenuItem(menu, SWT.PUSH);
+				    addNewRowItem.setText("Create row");
+				    addNewRowItem.addSelectionListener(new SelectionListener(){
+						public void widgetDefaultSelected(SelectionEvent e) {
+						}
+
+						public void widgetSelected(SelectionEvent e) {
+							//System.out.println("Create a row");
+							createRowCreationDialog();
+						}				    	
+				    });
+				    
+				    MenuItem editRowItem = new MenuItem(menu, SWT.PUSH);
+				    editRowItem.setText("Edit row");
+				    editRowItem.addSelectionListener(new SelectionListener(){
+						public void widgetDefaultSelected(SelectionEvent e) {}
+
+						public void widgetSelected(SelectionEvent e) {
+							//System.out.println("Edit a row");
+							createRowEditingDialog();
+						}				    	
+				    });
+
+				    MenuItem delRowItem = new MenuItem(menu, SWT.PUSH);
+				    delRowItem.setText("Delete row");
+				    delRowItem.addSelectionListener(new SelectionListener(){
+						public void widgetDefaultSelected(SelectionEvent e) {}
+
+						public void widgetSelected(SelectionEvent e) {
+							createWarningDialog();
+						}				    	
+				    });
+
+				    Point pt = new Point(e.x, e.y);
+				    pt = table.toDisplay(pt);
+				    menu.setLocation(pt.x, pt.y);
+				    menu.setVisible(true);
+				}
+			}
+
+			public void mouseUp(MouseEvent e) {				
+			}			
 		});
 
 		// sorting from most to least GroupEs
@@ -465,44 +524,389 @@ public class VocabViewCanvas extends Canvas {
 		});
 	}
 
-	private void mergeRows(int[] selectedRows) {
-		// create a new Term
-		Term newMergedTerm = new Term();
-		String newTermName = "";
+	/** deletes the selectedRow number from the table and the vocabulary **/
+	private void deleteRow(int selectedRow){
+			//remove the deleted row from the table
+			TableItem[] allRows = table.getItems();
+			allRows[selectedRow].dispose();
 
-		for (int i = 0; i < selectedRows.length; i++) {
-			Term currTerm = termsArray.get(selectedRows[i]);
-			if (i == selectedRows.length - 1) {
-				newTermName += currTerm.getName();
-			} else {
-				newTermName += currTerm.getName() + "-";
-			}
+			//saving the deletion to the database
+			Term deletedTerm = termsArray.get(selectedRow);
+			vocab.removeTerm(deletedTerm);
+			OpenIIManager.saveVocabulary(vocab);			
 
-			// numElementsInNewTerm =+
-			// termsArray.get(selectedRows[i]).getElements().length;
-		}
-
-		newMergedTerm.setName("NewMergedTermTest");
-
-		// AssociatedElement[] newMergedElements = new AssociatedElement[];
-		// newMergedTerm.setElements(newMergedElements);
-
-		// merge all selected rows
+			//removed the deleted row from the terms array
+			termsArray.remove(selectedRow);
+	}
+	
+	/** adds a row with the name directly below the selected row **/
+	private void addRow(String newName){
+		//create new term
+		Term newTerm = new Term();
+		newTerm.setName(newName);
+		
+		//add new term to the database
+		vocab.addTerm(newTerm);
+		OpenIIManager.saveVocabulary(vocab);
+	
+		//add the new term to the terms array
+		termsArray.add(table.getSelectionIndex(), newTerm);
+			
+		//add the new term to the table
+		TableItem newItem = new TableItem(table, SWT.NONE, table.getSelectionIndex());
+		newItem.setText(0, newName);
+		Font boldFont = new Font(Display.getDefault(), new FontData("Arial", 8, SWT.BOLD));
+		newItem.setFont(0, boldFont);
 	}
 
+	
+	/**creates the dialog that allows a user to add a new term to a row when editing**/
+	private void createAddElementToTermDialog(Display display, final Table currElementsTable){
+		Term term = termsArray.get(table.getSelectionIndex());
+		//Display display = viewsParent.getDisplay();
+		final Shell addDialog = new Shell(display, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
+		addDialog.setText("Add Element to " + term.getName());
+		GridLayout layout = new GridLayout();
+		layout.numColumns = 2;
+		addDialog.setLayout(layout);
+		
+
+		Label label = new Label(addDialog, SWT.RIGHT);
+		label.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));
+		label.setText("From Schema: ");
+
+		final Combo schemaCombo = new Combo(addDialog, SWT.DROP_DOWN | SWT.READ_ONLY);		
+		for(int i=1; i<numSchemas; i++){
+			schemaCombo.add(schemaNames[i]);
+		}
+		schemaCombo.select(0);
+
+		
+		Label label2 = new Label(addDialog, SWT.RIGHT);
+		label2.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));
+		label2.setText("Add Term: ");
+		final Combo elementCombo = new Combo(addDialog, SWT.DROP_DOWN | SWT.READ_ONLY);		
+
+		Composite okayCancelPane = new Composite(addDialog, SWT.NONE);
+		RowLayout rowLayout = new RowLayout(); 
+		okayCancelPane.setLayout(rowLayout);
+		
+	
+		Button okButton = new Button(okayCancelPane, SWT.NONE);
+		okButton.setText("Ok");
+		Button cancelButton = new Button(okayCancelPane, SWT.NONE);
+
+		cancelButton.setText("Cancel");
+		cancelButton.addListener(SWT.Selection, new Listener() {
+			public void handleEvent(Event event) {
+				addDialog.dispose();
+			}
+		});
+		
+		okButton.addListener(SWT.Selection, new Listener(){
+			public void handleEvent(Event event) {
+				if(schemaCombo.getSelectionIndex() != -1){
+					if(elementCombo.getSelectionIndex() != -1){
+						Integer schemaID = schemaIDs[schemaCombo.getSelectionIndex()];
+						SchemaInfo si = OpenIIManager.getSchemaInfo(schemaID);
+						ArrayList<SchemaElement> elements = si.getElements(null);
+						SchemaElement se = elements.get(elementCombo.getSelectionIndex());
+						Integer elementID = se.getId();
+						AssociatedElement ae = new AssociatedElement(schemaID, elementID, se.getName());						
+						Term selectedTerm = termsArray.get(table.getSelectionIndex());
+						selectedTerm.addAssociatedElement(ae);
+						
+						TableItem ti = new TableItem(currElementsTable, SWT.NONE);
+						ti.setText(0, si.getSchema().getName());	
+						ti.setText(1, se.getName());			
+						ti.setData(ae);					
+					}
+				}
+				addDialog.dispose();
+			}
+		});
+		
+		
+		schemaCombo.addSelectionListener(new SelectionAdapter() {			
+			public void widgetSelected(SelectionEvent e) {				
+				if(schemaCombo.getSelectionIndex() != -1) {
+					elementCombo.removeAll();
+							
+					ArrayList<SchemaElement> elements = OpenIIManager.getSchemaInfo(schemaIDs[schemaCombo.getSelectionIndex()]).getElements(null);
+					for(SchemaElement ele : elements){
+						elementCombo.add(ele.getName());
+					}
+					elementCombo.select(0);
+				}
+			}
+		});
+
+		addDialog.pack();
+		addDialog.open();
+		
+	}
+
+
+	/**creates the dialog that allows a user to edit a row **/
+	private void createRowEditingDialog(){
+		//TO DO: create a row that allows a user to add or remove terms from any synsets
+		Display display = viewsParent.getDisplay();
+		final Shell editRowDialog = new Shell(display, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
+		editRowDialog.setText("Edit");
+		GridLayout layout = new GridLayout();
+		layout.numColumns = 1;
+		editRowDialog.setLayout(layout);
+		editRowDialog.setSize(100, 50);
+		
+		//adding the Vocab Name field
+		Composite pane = new Composite(editRowDialog, SWT.NONE);
+		GridLayout paneLayout = new GridLayout(2,false);
+		paneLayout.marginWidth = 8;
+		pane.setLayout(paneLayout);
+		
+		Label label = new Label(pane, SWT.RIGHT);
+		label.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));
+		label.setText("Vocabularly Term Name: ");
+		
+		final Text text = new Text(pane, SWT.BORDER);
+		GridData gd0 = new GridData(GridData.FILL_HORIZONTAL);
+		text.setLayoutData(gd0);
+		text.setText(termsArray.get(table.getSelectionIndex()).getName());
+		
+		Composite elementsLabelPane = new Composite(editRowDialog, SWT.NONE);
+		GridLayout elementsLabelPaneLayout = new GridLayout(1,false);
+		elementsLabelPane.setLayout(elementsLabelPaneLayout);
+		Label schemasLable = new Label(elementsLabelPane, SWT.NONE);
+		schemasLable.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING));
+		schemasLable.setText("Terms Mapped to Vocabularly Term: ");
+		
+		//creating the list of elements currently in the vocabulary object
+		Composite elementsPane = new Composite(editRowDialog, SWT.NONE);
+		GridLayout elementsPaneLayout = new GridLayout(2, false);
+		layout.marginHeight = 0;
+		layout.marginWidth = 0;
+		elementsPane.setLayout(elementsPaneLayout);
+		GridData gd = new GridData(GridData.FILL_HORIZONTAL);
+		gd.heightHint=150;
+		elementsPane.setLayoutData(gd);
+		
+		final Table currElements = new Table(elementsPane, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
+		currElements.setHeaderVisible(true);
+		currElements.setLinesVisible(true);
+		currElements.setLayoutData(new GridData(GridData.FILL_VERTICAL));
+		
+		TableColumn schema = new TableColumn(currElements, SWT.NONE);
+		schema.setWidth(100);
+		schema.setText("Schema");
+		TableColumn elements = new TableColumn(currElements, SWT.NONE);
+		elements.setWidth(100);
+		elements.setText("Term");
+		
+		//now need to add the data to the columns
+		//final Term editedTerm = termsArray.get(table.getSelectionIndex());
+		final AssociatedElement[] uneditedTermElements = termsArray.get(table.getSelectionIndex()).getElements();
+		for(int i=0; i<uneditedTermElements.length; i++){
+			AssociatedElement ele = uneditedTermElements[i];
+			
+			TableItem ti = new TableItem(currElements, SWT.NONE);
+			//get the name of the schema associated with the element
+			Integer schemaID = ele.getSchemaID();
+			SchemaInfo si = OpenIIManager.getSchemaInfo(schemaID);
+			ti.setText(0, si.getSchema().getName());
+			
+			Integer eleID = ele.getElementID();
+			SchemaElement schemaEle = si.getElement(eleID);
+			ti.setText(1, schemaEle.getName());			
+			
+			ti.setData(ele);
+		}
+		
+		
+		Composite buttonPane = new Composite(elementsPane, SWT.NONE);
+		layout = new GridLayout(1, true);
+		layout.marginHeight=0;
+		layout.marginWidth=0;
+		buttonPane.setLayout(layout);
+		buttonPane.setLayoutData(new GridData(GridData.VERTICAL_ALIGN_BEGINNING));
+		
+		Button addButton = new Button(buttonPane, SWT.NONE);
+		addButton.setText("Add...");
+		Button removeButton = new Button(buttonPane, SWT.NONE);
+		removeButton.setText("Remove");
+		removeButton.addListener(SWT.Selection, new Listener(){
+			public void handleEvent(Event event) {
+				Term term = termsArray.get(table.getSelectionIndex());
+				AssociatedElement ae = (AssociatedElement) currElements.getItem(currElements.getSelectionIndex()).getData();
+
+				//TO DO: Something is not working in this line
+				//System.out.println("TO DO: fix term.removeAssociatedElement(ae) because it hangs");
+				//term.removeAssociatedElement(ae);
+
+				//temp fix
+				AssociatedElement[] prevList = term.getElements();
+				AssociatedElement[] newList = new AssociatedElement[prevList.length-1];
+				int currPos=0;
+				for(int i=0; i<prevList.length; i++){
+					if(prevList[i] != ae){
+						newList[currPos] = prevList[i];
+						currPos++;
+					}
+				}
+				
+				termsArray.get(table.getSelectionIndex()).setElements(newList);
+				
+				//remove selected element from the table
+				currElements.getItem(currElements.getSelectionIndex()).dispose();
+				
+			}
+		});
+		
+		addButton.addListener(SWT.Selection, new Listener(){
+			public void handleEvent(Event event) {
+				createAddElementToTermDialog(editRowDialog.getDisplay(), currElements);	
+			}
+		});
+		
+		Composite okayRemovePane = new Composite(elementsPane, SWT.NONE);
+		RowLayout rowLayout = new RowLayout(); 
+		okayRemovePane.setLayout(rowLayout);
+
+	
+		Button okButton = new Button(okayRemovePane, SWT.NONE);
+		okButton.setText("Ok");
+		okButton.addListener(SWT.Selection, new Listener() {
+			public void handleEvent(Event event) {
+				//get the term that was edited
+				Term changedTerm = termsArray.get(table.getSelectionIndex());
+				
+				//change the name of the synset in the actual Term and save changes to the repository
+				String newName = text.getText();
+				changedTerm.setName(newName);
+
+				/*System.out.println("about to save changes to vocab, revised term should have: ");
+				AssociatedElement[] aea = changedTerm.getElements();
+				for(int i=0; i<aea.length; i++){
+					System.out.println(aea[i].getName());
+				}
+				
+				Term[] tempTermsTest = new Term[termsArray.size()];
+				int start=0;
+				for(Term t : termsArray){
+					tempTermsTest[start] = t;
+					System.out.println("terms include: " + t.getName());
+					start++;
+				}
+				vocab.setTerms(tempTermsTest);*/
+				OpenIIManager.saveVocabulary(vocab);
+
+				//update the vocab viewer table to reflect the name change 
+				//update the row in the table
+				int rownum = table.getSelectionIndex();
+				table.getItem(rownum).dispose();
+				
+				TableItem tempI = new TableItem(table, SWT.NONE, rownum);
+				tempI.setText(0, newName);
+				Font boldFont = new Font(Display.getDefault(), new FontData("Arial", 8, SWT.BOLD));
+				tempI.setFont(0, boldFont);
+
+				AssociatedElement[] elements = changedTerm.getElements();
+				for (int j = 0; j < elements.length; j++) {
+					AssociatedElement ele = elements[j];
+					Integer schemaID = elements[j].getSchemaID();
+					SchemaInfo si = OpenIIManager.getSchemaInfo(schemaID);
+					Integer eleID = elements[j].getElementID();
+					SchemaElement schemaEle = si.getElement(eleID);
+
+					int colNum = schemaIDsToColNum.get(elements[j].getSchemaID());
+					String current = tempI.getText(colNum);
+					if (current == null || current == "") {
+						tempI.setText(colNum, ele.getName());
+					} else {
+						tempI.setText(colNum, current + ", " + ele.getName());
+					}
+					
+					Image img = org.mitre.openii.widgets.schemaTree.SchemaElementLabelProvider.getImage(schemaEle);
+					tempI.setImage(colNum, img);
+				}
+						
+
+				editRowDialog.dispose();
+			}
+		});
+
+		Button cancelButton = new Button(okayRemovePane, SWT.NONE);
+		cancelButton.setText("Cancel");
+		cancelButton.addListener(SWT.Selection, new Listener() {
+			public void handleEvent(Event event) {
+				//do not want to save any of the changes that may have been made in terms of adding or removing elements
+				//returning the associated elements to the initial state
+				termsArray.get(table.getSelectionIndex()).setElements(uneditedTermElements);
+				editRowDialog.dispose();
+			}
+		});
+
+		editRowDialog.pack();
+		editRowDialog.open();			
+	}
+
+
+	/** creates the dialog that allows a user to add a row to the table **/
+	private void createRowCreationDialog(){
+		Display display = viewsParent.getDisplay();
+		final Shell rowCreationDialog = new Shell(display, SWT.TITLE | SWT.APPLICATION_MODAL);
+		rowCreationDialog.setText("Create");
+		rowCreationDialog.setLayout(new GridLayout(2, false));
+
+		Label label = new Label(rowCreationDialog, SWT.RIGHT);
+		label.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));
+		label.setText("Vocabularly Term Name: ");
+
+		final Text text = new Text(rowCreationDialog, SWT.BORDER);		
+		GridData gd0 = new GridData(GridData.FILL_HORIZONTAL);
+		text.setLayoutData(gd0);
+		text.setText("<name>");
+		
+		
+		Composite okayRemovePane = new Composite(rowCreationDialog, SWT.NONE);
+		RowLayout rowLayout = new RowLayout(); 
+		okayRemovePane.setLayout(rowLayout);
+		
+		Button okButton = new Button(okayRemovePane, SWT.NONE);
+		okButton.setText("Ok");
+		okButton.addListener(SWT.Selection, new Listener() {
+			public void handleEvent(Event event) {
+				//confirmed addition, go ahead and add the new row
+				addRow(text.getText());
+				rowCreationDialog.dispose();
+			}
+		});
+
+		Button cancelButton = new Button(okayRemovePane, SWT.NONE);
+		cancelButton.setText("Cancel");
+		cancelButton.addListener(SWT.Selection, new Listener() {
+			public void handleEvent(Event event) {
+				rowCreationDialog.dispose();
+			}
+		});
+
+		rowCreationDialog.pack();
+		rowCreationDialog.open();
+		
+	}
+
+	
 	/**
-	 * creates the dialog that confirms a user really wanted to split or merge
-	 * cells
+	 * creates the dialog that confirms a user really wanted to delete a row
+	 * if answer is yes, then the row will be permanently deleted by calling deleteRow()
 	 **/
 	private void createWarningDialog() {
 		Display display = viewsParent.getDisplay();
 		final Shell warningDialog = new Shell(display, SWT.TITLE | SWT.APPLICATION_MODAL);
 		warningDialog.setText("Warning");
 		warningDialog.setLayout(new GridLayout(2, false));
-		// searchDialog.setSize(400, 500);
 
 		Label label = new Label(warningDialog, SWT.NULL);
-		label.setText("Are you sure you want to perform this action?");
+		label.setText("Are you sure you want to delete this row?");
 		GridData gd = new GridData();
 		gd.horizontalSpan = 2;
 		label.setLayoutData(gd);
@@ -511,7 +915,8 @@ public class VocabViewCanvas extends Canvas {
 		okButton.setText("Ok");
 		okButton.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event event) {
-				confirmation = true;
+				//confirmed the deletion, go ahead and delete the row
+				deleteRow(table.getSelectionIndex());
 				warningDialog.dispose();
 			}
 		});
@@ -626,6 +1031,8 @@ public class VocabViewCanvas extends Canvas {
 		return this.getBounds().height;
 	}
 
+	
+	
 	/** creating the dialog that pops up when a user clicks on the search button **/
 	private void createSearchDialog() {
 		Display display = viewsParent.getDisplay();
@@ -722,7 +1129,23 @@ public class VocabViewCanvas extends Canvas {
 				// un-highlight any previously selected cells
 				for (int i = 0; i < highlightedTableItems.size(); i++) {
 					Point location = highlightedTableItems.get(i);
-					table.getItem(location.x).setBackground(location.y, table.getDisplay().getSystemColor(SWT.COLOR_LIST_BACKGROUND));
+					
+					//make background white if it's in vocab column or the appropriate color otherwise
+					if(location.y == 0 || coloredTable==false){
+						table.getItem(location.x).setBackground(location.y, table.getDisplay().getSystemColor(SWT.COLOR_LIST_BACKGROUND));
+					}else{
+						//need to find appropriate background color
+						String vocabTerm = table.getItem(location.x).getText(0);
+						String currTerm = table.getItem(location.x).getText(location.y);
+						if(currTerm.equalsIgnoreCase(vocabTerm)){
+							table.getItem(location.x).setBackground(location.y, lightGreen);
+						}else if(currTerm.equals("") == true){
+							table.getItem(location.x).setBackground(location.y, lightRed);
+						}else{
+							table.getItem(location.x).setBackground(location.y, lightYellow);
+						}							
+					}
+
 				}
 
 				// highlight the selected searchresults cell in the table
@@ -746,7 +1169,22 @@ public class VocabViewCanvas extends Canvas {
 				// un-highlight any previously selected cells
 				for (int i = 0; i < highlightedTableItems.size(); i++) {
 					Point location = highlightedTableItems.get(i);
-					table.getItem(location.x).setBackground(location.y, table.getDisplay().getSystemColor(SWT.COLOR_LIST_BACKGROUND));
+					
+					//make background white if it's in vocab column or the appropriate color otherwise
+					if(location.y == 0 || coloredTable==false){
+						table.getItem(location.x).setBackground(location.y, table.getDisplay().getSystemColor(SWT.COLOR_LIST_BACKGROUND));
+					}else{
+						//need to find appropriate background color
+						String vocabTerm = table.getItem(location.x).getText(0);
+						String currTerm = table.getItem(location.x).getText(location.y);
+						if(currTerm.equalsIgnoreCase(vocabTerm)){
+							table.getItem(location.x).setBackground(location.y, lightGreen);
+						}else if(currTerm.equals("") == true){
+							table.getItem(location.x).setBackground(location.y, lightRed);
+						}else{
+							table.getItem(location.x).setBackground(location.y, lightYellow);
+						}							
+					}
 				}
 			}
 		});
@@ -755,6 +1193,7 @@ public class VocabViewCanvas extends Canvas {
 		searchDialog.open();
 	}
 
+	
 	/** displays the evidence in the evidenceTable **/
 	//0-schema, 1-term, 2-description, 3-score, 4-match schema, 5-match term, 6-match description
 	private void displayEvidence(Table evidTable, Term selectedTerm) {
@@ -880,6 +1319,7 @@ public class VocabViewCanvas extends Canvas {
 		return getSchemaInfo(schemaId).getElement(elementId);
 	}
 
+	
 	private SchemaInfo getSchemaInfo(Integer schemaId) {
 		SchemaInfo info;
 		if (!schemaInfos.containsKey(schemaId)) {
@@ -890,6 +1330,7 @@ public class VocabViewCanvas extends Canvas {
 		return info;
 	}
 
+	
 	/** displays the search results table in the search vocabulary dialog box **/
 	private void displaySearchResults(Table tableForSearchResults, String searchTerm) {
 		// clear all of the previous table items
