@@ -11,9 +11,9 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.EditorPart;
 import org.mitre.openii.model.EditorInput;
+import org.mitre.openii.model.EditorManager.EditorType;
 import org.mitre.openii.model.OpenIIListener;
 import org.mitre.openii.model.OpenIIManager;
-import org.mitre.openii.model.EditorManager.EditorType;
 import org.mitre.openii.views.manager.SchemaInProject;
 import org.mitre.openii.views.manager.SchemaInTag;
 import org.mitre.openii.views.manager.VocabularyInProject;
@@ -91,7 +91,24 @@ abstract public class OpenIIEditor extends EditorPart implements OpenIIListener
 	
 	/** Dispose of the editor pane if referencing the deleted schema */
 	public void schemaDeleted(Integer schemaID)
-		{ if(getElementID().equals(schemaID)) closeEditor(); }
+	{
+		// Check to see if editor showing the schema
+		if(schemaID.equals(getElementID())) closeEditor();
+
+		// Check to see if editor showing group of schemas containing schema
+		else if(getElement() instanceof ArrayList)
+			for(Object listID : (ArrayList<?>)getElement())
+				{ if(schemaID.equals(listID))
+					{ closeEditor(); return; } }
+		
+		// Check to see if editor showing mapping containing schema
+		else if(getElement() instanceof Mapping)
+		{
+			Mapping mapping = (Mapping)getElement();
+			if(mapping.getSourceId().equals(schemaID) || mapping.getTargetId().equals(schemaID))
+				closeEditor();
+		}
+	}
 	
 	/** Dispose of the editor pane if referencing the deleted tag */
 	public void tagDeleted(Integer tagID)
