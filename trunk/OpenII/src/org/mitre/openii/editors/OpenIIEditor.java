@@ -112,19 +112,24 @@ abstract public class OpenIIEditor extends EditorPart implements OpenIIListener
 	
 	/** Dispose of the editor pane if referencing the deleted tag */
 	public void tagDeleted(Integer tagID)
-		{ if(getElementID().equals(tagID)) closeEditor(); }
+		{ if(tagID.equals(getElementID())) closeEditor(); }
 
 	/** Dispose of the editor pane if referencing the deleted project */
 	public void projectDeleted(Integer projectID)
-		{ if(getElementID().equals(projectID)) closeEditor(); }
+	{
+		if(projectID.equals(getElementID())) closeEditor();
+		else if(getElement() instanceof Mapping)
+			if(projectID.equals(((Mapping)getElement()).getProjectId()))
+				closeEditor();
+	}
 
 	/** Dispose of the editor pane if referencing the deleted mapping */
 	public void mappingDeleted(Integer mappingID)
-		{ if(getElementID().equals(mappingID)) closeEditor(); }
+		{ if(mappingID.equals(getElementID())) closeEditor(); }
 
 	/** Dispose of the editor pane if referencing the deleted vocabulary */
 	public void vocabularyDeleted(Integer projectID)
-		{ if(getEditorType()==EditorType.VOCABULARY && getElementID().equals(projectID)) closeEditor(); }
+		{ if(getEditorType()==EditorType.VOCABULARY && projectID.equals(getElementID())) closeEditor(); }
 	
 	// Unused event listeners
 	public void schemaAdded(Integer schemaID) {}
