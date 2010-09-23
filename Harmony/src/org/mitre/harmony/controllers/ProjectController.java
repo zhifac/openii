@@ -175,7 +175,7 @@ public class ProjectController
 			
 			// Updates the mapping has reflect the changes
 			ProjectManager projectManager = harmonyModel.getProjectManager();
-			projectManager.setProjectInfo(project.getName(), project.getAuthor(), project.getDescription());
+			projectManager.setProjectInfo(project.getId(), project.getName(), project.getAuthor(), project.getDescription());
 			projectManager.setModified(false);
 			return true;
 		}

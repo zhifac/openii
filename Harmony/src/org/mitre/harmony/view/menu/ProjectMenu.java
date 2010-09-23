@@ -167,7 +167,7 @@ class ProjectMenu extends AbstractMenu implements MenuListener
 	{
 		public void actionPerformed(ActionEvent e)
 		{
-    		if(harmonyModel.getBaseFrame() instanceof Harmony)
+    		if(harmonyModel.getBaseFrame() instanceof Harmony || harmonyModel.getProjectManager().getProject().getId()==null)
     			new SaveMappingDialog(harmonyModel);
     		else ProjectController.saveProject(harmonyModel,harmonyModel.getProjectManager().getProject());
 		}
