@@ -27,6 +27,7 @@ import org.mitre.harmony.matchers.matchers.Matcher;
 import org.mitre.openii.application.OpenIIActivator;
 import org.mitre.openii.dialogs.projects.unity.DisjointSetForest;
 import org.mitre.openii.dialogs.projects.unity.DisjointSetForest.ContainerMethod;
+import org.mitre.openii.dialogs.projects.unity.MappingList;
 import org.mitre.openii.dialogs.projects.unity.MappingProcessor;
 import org.mitre.openii.dialogs.projects.unity.Pair;
 import org.mitre.openii.dialogs.projects.unity.Permuter;
@@ -50,9 +51,9 @@ public class BatchMatchDialog extends TitleAreaDialog implements SelectionListen
 	private static final long serialVersionUID = 5519403988358398471L;
 
 	private Project project;
-	private ArrayList<Pair<ProjectSchema>> selectedNewMappingList = new ArrayList<Pair<ProjectSchema>>();
 	private HashMap<String, Pair<ProjectSchema>> mappingHash = new HashMap<String, Pair<ProjectSchema>>();
-	private ArrayList<Pair<ProjectSchema>> existingMappingList = new ArrayList<Pair<ProjectSchema>>();;
+	private MappingList selectedNewMappingList = new MappingList();
+	private MappingList existingMappingList = new MappingList(); 
 
 	private MatchersPane matchersPane;
 	private Text authorField;
@@ -257,7 +258,7 @@ public class BatchMatchDialog extends TitleAreaDialog implements SelectionListen
 	 *         follows indicates the group of schema IDs that are connected to
 	 *         each other at least with one linkage.
 	 */
-	HashMap<Integer, ArrayList<Integer>> getMappingMST(Integer[] schemas, ArrayList<Pair<ProjectSchema>> mapped) {
+	HashMap<Integer, ArrayList<Integer>> getMappingMST(Integer[] schemas, MappingList mapped) {
 		HashMap<Integer, ArrayList<Integer>> schemaGroups = new HashMap<Integer, ArrayList<Integer>>();
 		ContainerMethod<Integer> method = new ContainerMethod<Integer>() {
 			public int getContainerFor(Integer v) {
@@ -266,7 +267,7 @@ public class BatchMatchDialog extends TitleAreaDialog implements SelectionListen
 		};
 
 		DisjointSetForest<Integer> dsf = new DisjointSetForest<Integer>(schemas, method, schemas.length);
-		for (Pair<ProjectSchema> mapping : mapped)
+		for (Pair<ProjectSchema> mapping : mapped.getList())
 			dsf.merge(mapping.getItem1().getId(), mapping.getItem2().getId(), false);
 
 		for (Integer schemaId : schemas) {
@@ -284,7 +285,7 @@ public class BatchMatchDialog extends TitleAreaDialog implements SelectionListen
 		return matchersPane.getMatchers();
 	}
 
-	ArrayList<Pair<ProjectSchema>> getSelectedNewMappings() {
+	MappingList getSelectedNewMappings() {
 		return selectedNewMappingList;
 	}
 
@@ -295,7 +296,7 @@ public class BatchMatchDialog extends TitleAreaDialog implements SelectionListen
 
 		// delete old mappings that are to be replaced
 		Integer item1, item2, source, target;
-		for (Pair<ProjectSchema> pair : selectedNewMappingList) {
+		for (Pair<ProjectSchema> pair : selectedNewMappingList.getList()) {
 			if (existingMappingList.contains(pair)) {
 				item1 = pair.getItem1().getId();
 				item2 = pair.getItem2().getId();
@@ -308,11 +309,26 @@ public class BatchMatchDialog extends TitleAreaDialog implements SelectionListen
 			}
 		}
 
-		// create new mappings
-		new MappingProcessor(project, getSelectedNewMappings(), getMatchers());
+		// Close the generate vocab shell
+//		getShell().dispose();
 
+		// create a new progress bar 
+//		ProgressBarDialog progressBar = new ProgressBarDialog(getParentShell()); 
+		
+		// create new mappings
+		MappingProcessor mappingProcess = new MappingProcessor(project, getMatchers(), getSelectedNewMappings());
+//		mappingProcess.setProgressListener(progressBar);
+//		getParentShell().getDisplay().asyncExec(mappingProcess); 
+
+//		progressBar.updateProgressMessage("Done!"); 
+		
+		// Sleep a second to allow the message to be shown
+//		try {Thread.sleep(2000);} catch (InterruptedException e) {} 
+//		progressBar.killDialog();
+		
+		mappingProcess.run(); 
+		
 		// clean up
-		this.selectedNewMappingList.clear();
 		this.mappingHash.clear();
 		this.mappingButtons.clear();
 		System.gc();
@@ -327,10 +343,12 @@ public class BatchMatchDialog extends TitleAreaDialog implements SelectionListen
 		getButton(IDialogConstants.OK_ID).setEnabled(complete);
 	}
 
+	/** updates the mapping group pane with the latest minimal spanning tree **/ 
 	private void updateMappingGroupPane() {
-		ArrayList<Pair<ProjectSchema>> mstMappings = new ArrayList<Pair<ProjectSchema>>();
+		
+		MappingList mstMappings = new MappingList();
 		mstMappings.addAll(existingMappingList);
-		for (Pair<ProjectSchema> newMapping : selectedNewMappingList)
+		for (Pair<ProjectSchema> newMapping : selectedNewMappingList.getList())
 			if (!mstMappings.contains(newMapping))
 				mstMappings.add(newMapping);
 
@@ -376,7 +394,6 @@ public class BatchMatchDialog extends TitleAreaDialog implements SelectionListen
 				button.setSelection(true);
 
 				// Highlight the mapping cells
-				//for (Control mappingButton : mappingPane.getChildren()) {
 				for(Control mappingButton : projectPane0.getChildren()){
 					Pair<ProjectSchema> pair = (Pair<ProjectSchema>) ((Button) mappingButton).getData();
 					if (schemaGroup.contains(pair.getItem1().getId()) || schemaGroup.contains(pair.getItem2().getId()))
@@ -385,7 +402,6 @@ public class BatchMatchDialog extends TitleAreaDialog implements SelectionListen
 						((Button) mappingButton).setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
 				}
 
-				//for (Control mappingButton : existMappingPane.getChildren()) {
 				for (Control mappingButton : projectPane.getChildren()) {
 					Pair<ProjectSchema> pair = (Pair<ProjectSchema>) ((Button) mappingButton).getData();
 					if (schemaGroup.contains(pair.getItem1().getId()) || schemaGroup.contains(pair.getItem2().getId()))

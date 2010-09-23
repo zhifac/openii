@@ -15,7 +15,7 @@ import org.eclipse.swt.widgets.ProgressBar;
 import org.eclipse.swt.widgets.Shell;
 import org.mitre.openii.application.OpenIIActivator;
 
-public class UnityProgressDialog extends Dialog implements UnityListener, Runnable {
+public class ProgressBarDialog extends Dialog implements ProgressListener {
 
 	private Shell shell;
 	private CLabel message;
@@ -30,11 +30,8 @@ public class UnityProgressDialog extends Dialog implements UnityListener, Runnab
 	private boolean mayCancel = true;
 	private boolean isClosed = false;
 
-	public UnityProgressDialog(Shell parent) {
+	public ProgressBarDialog(Shell parent) {
 		super(parent);
-	}
-
-	public void run() {
 		createContents(); // create window
 		shell.open();
 		shell.layout();
@@ -42,7 +39,6 @@ public class UnityProgressDialog extends Dialog implements UnityListener, Runnab
 
 	public void killDialog() {
 		isClosed = true;
-		shell.getParent().dispose();
 		shell.close();
 		shell.dispose();
 	}
@@ -52,7 +48,7 @@ public class UnityProgressDialog extends Dialog implements UnityListener, Runnab
 	}
 
 	synchronized protected void createContents() {
-		shell = new Shell(getParent(), SWT.TITLE | SWT.PRIMARY_MODAL );
+		shell = new Shell(getParent(), SWT.TITLE | SWT.PRIMARY_MODAL);
 		shell.setText(shellTitle);
 		shell.setImage(OpenIIActivator.getImage("GenerateVocab.gif"));
 
@@ -60,7 +56,6 @@ public class UnityProgressDialog extends Dialog implements UnityListener, Runnab
 		gridLayout.verticalSpacing = 10;
 		shell.setLayout(gridLayout);
 		shell.setSize(483, 181);
-		shell.setLocation(shell.getParent().getLocation().x, shell.getParent().getLocation().y);
 
 		final Composite composite = new Composite(shell, SWT.NONE);
 		composite.setLayoutData(new GridData(GridData.FILL, GridData.CENTER, true, false));
@@ -106,10 +101,6 @@ public class UnityProgressDialog extends Dialog implements UnityListener, Runnab
 
 	synchronized public void updateProgressMessage(String m) {
 		processMessageLabel.setText(m);
-	}
-
-	synchronized public void updateComplete(boolean completed) {
-		// DO Nothing
 	}
 
 }
