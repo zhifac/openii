@@ -19,8 +19,8 @@ public class ProgressBarDialog extends Dialog implements ProgressListener {
 
 	private Shell shell;
 	private CLabel message;
-	protected String processMessage = "Generating vocabulary ......";
-	protected String shellTitle = "Progress for vocabulary generation";
+	protected String processMessage = "";
+	protected String shellTitle = "";
 	private Composite progressBarComposite;
 	protected int processBarStyle = SWT.SMOOTH;
 	private ProgressBar progressBar;
@@ -32,6 +32,10 @@ public class ProgressBarDialog extends Dialog implements ProgressListener {
 
 	public ProgressBarDialog(Shell parent) {
 		super(parent);
+		shellTitle = "Progress...";
+	}
+	
+	public void open(){
 		createContents(); // create window
 		shell.open();
 		shell.layout();
@@ -46,11 +50,16 @@ public class ProgressBarDialog extends Dialog implements ProgressListener {
 	public boolean isClosed() {
 		return isClosed;
 	}
+	
+	public void setProcessMessage( String title ) {
+		processMessage = title; 
+	}
+	
+	
 
 	synchronized protected void createContents() {
 		shell = new Shell(getParent(), SWT.TITLE | SWT.PRIMARY_MODAL);
 		shell.setText(shellTitle);
-		shell.setImage(OpenIIActivator.getImage("GenerateVocab.gif"));
 
 		final GridLayout gridLayout = new GridLayout();
 		gridLayout.verticalSpacing = 10;

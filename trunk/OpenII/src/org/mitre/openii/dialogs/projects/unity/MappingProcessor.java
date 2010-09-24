@@ -76,16 +76,26 @@ public class MappingProcessor extends Thread {
 			while ( newMappings.hasMore() ) {
 				Pair<ProjectSchema> pair = newMappings.next(); 
 				try {
-//					listener.updateProgressMessage("Processing mapping " + (i + 1) + " of " + total);
+					notify("Processing mapping " + (i + 1) + " of " + total);
 					processMapping(pair);
 					i++;
 					progress = i * progressInterval;
-//					listener.updateProgress(progress);
+					notify(progress);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
 		}
+	}
+
+	private void notify(Integer pct) {
+		if (listener != null ) 
+			listener.updateProgress(pct); 
+	}
+
+	private void notify(String msg) {
+		if ( listener != null ) 
+			listener.updateProgressMessage(msg); 
 	}
 
 	/** Returns the number of mappings in need of doing */
@@ -150,15 +160,8 @@ public class MappingProcessor extends Thread {
 		MatchScores matchScores = new MatchGenerator(matchers, new VoteMerger()).getScores(schemaInfo1, schemaInfo2);
 		String author = matchersToString(matchers);
 		ArrayList<MatchScore> scores = matchScores.getScores();
-		int totalScores = scores.size();
-		int updateInterval = totalScores / 10;
-		int ct = 0;
 		for (MatchScore score : scores) {
 			mappingCells.add(MappingCell.createProposedMappingCell(null, mappingID, score.getSourceID(), score.getTargetID(), score.getScore(), author, new Date(System.currentTimeMillis()), ""));
-//			if (ct % updateInterval == 0)
-//				listener.updateProgress(progress + (ct / totalScores * 100));
-//			else
-//				ct++;
 		}
 
 		// Save the mapping. Delete if saving fails
@@ -232,7 +235,7 @@ public class MappingProcessor extends Thread {
 		return numMatches;
 	}
 
-	public void setProgressListener(ProgressListener l) {
+	public void addProgressListener(ProgressListener l) {
 		this.listener = l;
 	}
 

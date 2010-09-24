@@ -31,6 +31,7 @@ import org.mitre.openii.dialogs.projects.unity.MappingList;
 import org.mitre.openii.dialogs.projects.unity.MappingProcessor;
 import org.mitre.openii.dialogs.projects.unity.Pair;
 import org.mitre.openii.dialogs.projects.unity.Permuter;
+import org.mitre.openii.dialogs.projects.unity.ProgressBarDialog;
 import org.mitre.openii.model.OpenIIManager;
 import org.mitre.openii.widgets.BasicWidgets;
 import org.mitre.openii.widgets.matchers.MatchersPane;
@@ -309,22 +310,25 @@ public class BatchMatchDialog extends TitleAreaDialog implements SelectionListen
 			}
 		}
 
-		// Close the generate vocab shell
-//		getShell().dispose();
-
-		// create a new progress bar 
-//		ProgressBarDialog progressBar = new ProgressBarDialog(getParentShell()); 
 		
 		// create new mappings
 		MappingProcessor mappingProcess = new MappingProcessor(project, getMatchers(), getSelectedNewMappings());
-//		mappingProcess.setProgressListener(progressBar);
-//		getParentShell().getDisplay().asyncExec(mappingProcess); 
 
-//		progressBar.updateProgressMessage("Done!"); 
+		// Close the generate vocab shell
+		getShell().dispose();
+		
+		// create a new progress bar 
+		ProgressBarDialog progressBar = new ProgressBarDialog(getParentShell());
+		progressBar.setProcessMessage("Generating batch matches..."); 
+		progressBar.open(); 
+		
+		mappingProcess.addProgressListener(progressBar);
+		getParentShell().getDisplay().syncExec(mappingProcess); 
+		progressBar.updateProgressMessage("Finished!"); 
 		
 		// Sleep a second to allow the message to be shown
-//		try {Thread.sleep(2000);} catch (InterruptedException e) {} 
-//		progressBar.killDialog();
+		try {Thread.sleep(2000);} catch (InterruptedException e) {} 
+		progressBar.killDialog();
 		
 		mappingProcess.run(); 
 		
