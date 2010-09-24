@@ -91,6 +91,7 @@ public class SchemaElementCache extends DataCache
 	/** Adds the specified schema elements */
 	public boolean addSchemaElements(ArrayList<SchemaElement> schemaElements)
 	{
+		if(schemaElements.size()==0) return true;
 		Schema schema = getManager().getSchemaCache().getSchema(schemaElements.get(0).getBase());
 		if(schema!=null && !schema.getLocked())
 			return dataCalls.addSchemaElements(schemaElements);
