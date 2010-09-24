@@ -348,6 +348,8 @@ public class GenerateVocabularyDialog extends TitleAreaDialog implements ModifyL
 
 		// Start a progress bar to monitor unity process
 		ProgressBarDialog progressDialog = new ProgressBarDialog(getParentShell());
+		progressDialog.setProcessMessage("Generating vocabulary ..." ); 
+		progressDialog.open(); 
 
 		// Start a new thread to generate the vocabulary
 		UnityDSF unity = new UnityDSF(project, selectedMapping, rankedSchemas);
