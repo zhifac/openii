@@ -613,17 +613,13 @@ public class VocabViewCanvas extends Canvas {
 					if(elementCombo.getSelectionIndex() != -1){
 						Integer schemaID = schemaIDs[schemaCombo.getSelectionIndex()];
 						
+						SchemaModel model = OpenIIManager.getProject(vocab.getProjectID()).getSchemaModel(schemaID);
 						SchemaInfo si = OpenIIManager.getSchemaInfo(schemaID);
+						HierarchicalSchemaInfo schema = new HierarchicalSchemaInfo(si, model);
 						
-						//should be hierarchical schema and ask for get hierarchical elements
-						//HierarchicalSchemaInfo hsi = new HierarchicalSchemaInfo();
-						//HierarchicalSchemaInfo hsi = new HierarchicalSchemaInfo(si);
-						//SchemaModel sm = hsi.getModel();
-						
-						ArrayList<SchemaElement> elements = si.getElements(null);
-						//ArrayList<SchemaElement> elements = sm.getRootElements(hsi);
-						//ArrayList<SchemaElement> elements = hsi.getElements(null);
-						
+							
+						//ArrayList<SchemaElement> elements = si.getElements(null);
+						ArrayList<SchemaElement> elements = schema.getHierarchicalElements();
 						
 						SchemaElement se = elements.get(elementCombo.getSelectionIndex());
 						Integer elementID = se.getId();
@@ -647,7 +643,17 @@ public class VocabViewCanvas extends Canvas {
 				if(schemaCombo.getSelectionIndex() != -1) {
 					elementCombo.removeAll();
 							
-					ArrayList<SchemaElement> elements = OpenIIManager.getSchemaInfo(schemaIDs[schemaCombo.getSelectionIndex()]).getElements(null);
+					Integer schemaID = schemaIDs[schemaCombo.getSelectionIndex()];
+					SchemaInfo si = OpenIIManager.getSchemaInfo(schemaID);
+					SchemaModel model = OpenIIManager.getProject(vocab.getProjectID()).getSchemaModel(schemaID);
+					HierarchicalSchemaInfo schema = new HierarchicalSchemaInfo(si, model);
+					
+						
+					//ArrayList<SchemaElement> elements = si.getElements(null);
+					ArrayList<SchemaElement> elements = schema.getHierarchicalElements();
+					
+					
+					//ArrayList<SchemaElement> elements = OpenIIManager.getSchemaInfo(schemaIDs[schemaCombo.getSelectionIndex()]).getElements(null);
 					for(SchemaElement ele : elements){
 						elementCombo.add(ele.getName());
 					}
