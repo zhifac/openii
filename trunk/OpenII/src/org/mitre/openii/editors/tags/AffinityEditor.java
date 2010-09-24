@@ -150,10 +150,20 @@ public class AffinityEditor extends OpenIIEditor implements SelectionClickedList
 				final Shell chooseMatchersDialog = new Shell(display, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
 				
 				chooseMatchersDialog.setText("Select Matchers for Proxmity");
-				chooseMatchersDialog.setLayout(new GridLayout(1, false));
-	
-				final MatchersPane matchersPane = new MatchersPane(chooseMatchersDialog, this);
-					
+				GridLayout gl = new GridLayout(1, false);
+				chooseMatchersDialog.setLayout(gl);
+
+				
+				Composite pane = new Composite(chooseMatchersDialog, SWT.NONE);
+				GridLayout layout = new GridLayout(1, false);
+				layout.marginWidth = 8;
+				pane.setLayout(layout);
+				GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
+				gridData.widthHint = 450;
+				pane.setLayoutData(gridData);
+				
+				final MatchersPane matchersPane = new MatchersPane(pane, this);
+				
 				Composite okayCancelPane = new Composite(chooseMatchersDialog, SWT.NONE);
 				RowLayout rowLayout = new RowLayout(); 
 				okayCancelPane.setLayout(rowLayout);
