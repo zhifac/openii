@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.HashMap;
 
 import org.mitre.harmony.matchers.MatchGenerator;
+import org.mitre.harmony.matchers.MatchGenerator.MatchGeneratorListener;
 import org.mitre.harmony.matchers.MatchScore;
 import org.mitre.harmony.matchers.MatchScores;
 import org.mitre.harmony.matchers.MatcherManager;
@@ -24,30 +25,40 @@ import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
  * 
  * @author HAOLI
  */
-public class MappingProcessor extends Thread {
+public class MappingProcessor extends Thread implements MatchGeneratorListener {
 	/** Stores the project ID */
 	private Integer projectID;
 
 	/** Stores the permutation list of project schemas */
 	private Permuter<ProjectSchema> permuter = null;
-	/** new mappings **/
-//	private ArrayList<Pair<ProjectSchema>> newMappings; // = new ArrayList<Pair<ProjectSchema>>();
-	private MappingList newMappings; 
-	/** excluded mapping list **/
-//	private ArrayList<Pair<ProjectSchema>> exclusionMappings; // = new ArrayList<Pair<ProjectSchema>>();
-	private MappingList exclusionMappings; 
-	/** Matchers **/
-	private ArrayList<Matcher> matchers; // = new ArrayList<Matcher>();
 
+	/** new mappings **/
+	private MappingList newMappings; 
+
+	/** excluded mapping list **/
+	private MappingList exclusionMappings; 
+	
+	/** Matchers **/
+	private ArrayList<Matcher> matchers; 
+
+	// Progress bar listener 
 	private ProgressListener listener = null;
 
-	private Integer progress;
+	private Double progress;
+
+	private Double mappingProgressInterval;
+	
+	private Double matcherProgressInterval; 
 
 	/** Constructs the match enumeration object */
 	public MappingProcessor(Project project, Permuter<ProjectSchema> permuter, ArrayList<Matcher> voters) {
 		this.projectID = project.getId();
 		this.permuter = permuter;
 		this.matchers = (voters == null) ? MatcherManager.getDefaultMatchers() : voters;
+		progress = 0.0;
+		mappingProgressInterval = 1.0 / newMappings.size() * 100.0;
+		matcherProgressInterval = mappingProgressInterval / matchers.size() * 1.0;  
+
 		setDaemon(true);
 	}
 
@@ -55,6 +66,9 @@ public class MappingProcessor extends Thread {
 		this.projectID = project.getId();
 		this.matchers = (voters == null) ? MatcherManager.getDefaultMatchers() : voters;
 		this.newMappings =  newMappings; 
+		progress = 0.0;
+		mappingProgressInterval = 1.0 / newMappings.size() * 100.0;
+		matcherProgressInterval = mappingProgressInterval / matchers.size() * 1.0;  
 		permuter = null;
 		setDaemon(true);
 	}
@@ -69,18 +83,15 @@ public class MappingProcessor extends Thread {
 				e.printStackTrace();
 			}
 		} else {
-			int i = 0;
-			int total = newMappings.size();
-			progress = 0;
-			int progressInterval = new Double((double) 1 / (double) total * 100.0).intValue();
+			int mappingIDX = 0;
 			while ( newMappings.hasMore() ) {
 				Pair<ProjectSchema> pair = newMappings.next(); 
 				try {
-					notify("Processing mapping " + (i + 1) + " of " + total);
+					notify("Processing mapping " + (mappingIDX + 1) + " of " + newMappings.size() +": " + pair.getItem1().getName() + " to " + pair.getItem2().getName());
 					processMapping(pair);
-					i++;
-					progress = i * progressInterval;
-					notify(progress);
+					mappingIDX++;
+					progress = mappingIDX * mappingProgressInterval * 1.0;
+					notify(progress.intValue());
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -140,7 +151,6 @@ public class MappingProcessor extends Thread {
 	}
 
 	private void processMapping(Pair<ProjectSchema> pair) throws Exception {
-		Informant.status("Matching " + pair.getItem1().getName() + " to " + pair.getItem2().getName());
 		FilteredSchemaInfo schemaInfo1 = getSchemaInfo(pair.getItem1());
 		FilteredSchemaInfo schemaInfo2 = getSchemaInfo(pair.getItem2());
 
@@ -150,14 +160,13 @@ public class MappingProcessor extends Thread {
 		if (mappingID == null)
 			throw new Exception("Failed to create mapping between " + pair);
 
-		// Prepare to generate the mapping cells
-		Informant.status("Preparing to match " + pair);
-		Informant.status("Schema A has " + schemaInfo1.getElementCount() + " elements and schema B has " + schemaInfo2.getElementCount());
-
 		// Generate the mapping cells
 		ArrayList<MappingCell> mappingCells = new ArrayList<MappingCell>();
-		Informant.status("Calling Harmony matching algorithms...");
-		MatchScores matchScores = new MatchGenerator(matchers, new VoteMerger()).getScores(schemaInfo1, schemaInfo2);
+		MatchGenerator matchGenerator = new MatchGenerator(matchers, new VoteMerger()); 
+		matchGenerator.addListener(this); 
+		MatchScores matchScores = matchGenerator.getScores(schemaInfo1, schemaInfo2);
+		
+		
 		String author = matchersToString(matchers);
 		ArrayList<MatchScore> scores = matchScores.getScores();
 		for (MatchScore score : scores) {
@@ -165,7 +174,6 @@ public class MappingProcessor extends Thread {
 		}
 
 		// Save the mapping. Delete if saving fails
-		Informant.status("Saving APIMatch...");
 		if (!OpenIIManager.saveMappingCells(mappingID, mappingCells)) {
 			try {
 				OpenIIManager.deleteMapping(mappingID);
@@ -241,6 +249,12 @@ public class MappingProcessor extends Thread {
 
 	public int getNumMappings() {
 		return newMappings.size();
+	}
+
+	/** Updates the progress listener with matcher progress **/
+	public void matcherRun(Matcher matcher) {
+		progress = progress + matcher.getPercentComplete() * matcherProgressInterval.doubleValue() ;
+		notify(progress.intValue()); 
 	}
 
 }
