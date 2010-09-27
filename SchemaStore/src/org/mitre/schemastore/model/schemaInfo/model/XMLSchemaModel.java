@@ -3,6 +3,7 @@
 package org.mitre.schemastore.model.schemaInfo.model;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import org.mitre.schemastore.model.Attribute;
 import org.mitre.schemastore.model.Containment;
@@ -61,14 +62,30 @@ public class XMLSchemaModel extends SchemaModel
 		// Identify the parent ID for which containments need to be found
 		SchemaElement element = schemaInfo.getElement(elementID);
 		Integer parentID = null;
-		if(element instanceof Containment) parentID = ((Containment)element).getParentID();
-		if(element instanceof Attribute) parentID = ((Attribute)element).getEntityID();
-		
-		// Find all containments one level higher up the schema
-		if(parentID!=null)
-			for(Containment containment : schemaInfo.getContainments(parentID))
-				if(containment.getChildID().equals(parentID))
-					parentElements.add(containment);
+		if (element instanceof Containment) parentID = ((Containment)element).getParentID();
+		if (element instanceof Attribute) parentID = ((Attribute)element).getEntityID();
+
+		// Expand the parent to include all of its children.
+		// Let A be a super-class of B with attributes x and y, respectively.
+		// Let C be a containment that links P1 to A.
+		// Let D be a containment that links P2 to B.
+		// The children of C is x.
+		// The children of D are x and y.
+		// Therefore, the parents of x are C and D.
+		// The parents of y is C.
+		if (parentID != null) {
+			// For A, descendants = {A,B}.  For B, descendants = {B}.
+			ArrayList<Integer> descendants = getSubTypes(schemaInfo, parentID);
+			for (Integer descendantID : descendants) {
+				// Get all containments that reference A or B.
+				for (Containment containment : schemaInfo.getContainments(descendantID)) {
+					// If the containment references A or B, add it to the result.
+					if (containment.getChildID().equals(descendantID)) {
+						parentElements.add(containment);
+					}
+				}
+			}
+		}
 			
 		return parentElements;
 	}
@@ -88,29 +105,7 @@ public class XMLSchemaModel extends SchemaModel
 			
 			
 				// Build list of all IDs for super-type entities
-				ArrayList<Integer> superTypeIDs = new ArrayList<Integer>();
-				ArrayList<Boolean> processedIDs= new ArrayList<Boolean>();
-				superTypeIDs.add(childID);
-				processedIDs.add(false);
-				
-				boolean workLeft = true;
-				while (workLeft){
-					for (int i = 0; i<superTypeIDs.size();i++){
-						if (processedIDs.get(i).equals(false)){
-							for (Subtype s : schemaInfo.getSubTypes(superTypeIDs.get(i))){
-								if (s.getChildID().equals(superTypeIDs.get(i))){
-									superTypeIDs.add(s.getParentID());
-									processedIDs.add(false);
-								}
-							}
-							processedIDs.set(i, true);
-						}
-					}
-					workLeft = false;
-					for (int i = 0; i<superTypeIDs.size();i++)
-						if (processedIDs.get(i).equals(false))
-							workLeft = true;
-				}
+				ArrayList<Integer> superTypeIDs = getSuperTypes(schemaInfo, childID);
 					
 				// Retrieves all containments whose parent is the child ID
 				for (Integer id : superTypeIDs)
@@ -126,6 +121,56 @@ public class XMLSchemaModel extends SchemaModel
 		}
 			
 		return childElements;
+	}
+	
+	private ArrayList<Integer> getSuperTypes(HierarchicalSchemaInfo schemaInfo, Integer childID) {
+		// Initializes the result with the indicated schema element.
+		ArrayList<Integer> result = new ArrayList<Integer>();
+		HashSet<Integer> processed = new HashSet<Integer>();
+		result.add(childID);
+		
+		// If the result contains unprocessed ids, look for them.
+		while (result.size() != processed.size()) {
+			for (Integer id : result) {
+				// Don't process an id that we've seen before.
+				if (!processed.contains(id)) {
+					for (Subtype s : schemaInfo.getSubTypes(id)) {
+						Integer parentID = s.getParentID();
+						if (!processed.contains(parentID)) {
+							// This id is a parent type that's never been seen before.
+							result.add(parentID);
+						}
+						processed.add(id);
+					}
+				}
+			}
+		}
+		return result;
+	}
+
+	private ArrayList<Integer> getSubTypes(HierarchicalSchemaInfo schemaInfo, Integer parentID) {
+		// Initializes the result with the indicated schema element.
+		ArrayList<Integer> result = new ArrayList<Integer>();
+		HashSet<Integer> processed = new HashSet<Integer>();
+		result.add(parentID);
+		
+		// If the result contains unprocessed ids, look for them.
+		while (result.size() != processed.size()) {
+			for (Integer id : result) {
+				// Don't process an id that we've seen before.
+				if (!processed.contains(id)) {
+					for (Subtype s : schemaInfo.getSubTypes(id)) {
+						Integer childID = s.getChildID();
+						if (!processed.contains(childID)) {
+							// This id is a child type that's never been seen before.
+							result.add(childID);
+						}
+						processed.add(id);
+					}
+				}
+			}
+		}
+		return result;
 	}
 
 	/** Returns the domains of the specified element in this schema */
