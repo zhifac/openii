@@ -3,7 +3,6 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/SchemaStore"/>
 	<classpathentry kind="lib" path="lib/activation-1.1.jar"/>
-	<classpathentry kind="lib" path="lib/antlr.jar"/>
 	<classpathentry kind="lib" path="lib/axis.jar"/>
 	<classpathentry kind="lib" path="lib/commons-discovery-0.2.jar"/>
 	<classpathentry kind="lib" path="lib/jaxrpc.jar"/>
@@ -23,7 +22,5 @@
 	<classpathentry kind="lib" path="lib/jcommon-1.0.5.jar"/>
 	<classpathentry kind="lib" path="lib/poi-3.5-beta5-20090219.jar"/>
 	<classpathentry kind="lib" path="lib/opencsv-2.2.jar"/>
-	<classpathentry kind="lib" path="C:/eclipse/plugins/javax.wsdl_1.6.2.v201005080631.jar"/>
-	<classpathentry kind="lib" path="C:/eclipse/plugins/org.apache.commons.logging_1.0.4.v201005080501.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

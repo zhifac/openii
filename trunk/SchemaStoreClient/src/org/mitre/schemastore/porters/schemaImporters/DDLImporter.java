@@ -2,96 +2,81 @@
 
 package org.mitre.schemastore.porters.schemaImporters;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.net.URI;
 import java.util.ArrayList;
 
-import org.antlr.runtime.ANTLRFileStream;
-import org.antlr.runtime.CommonTokenStream;
 import org.mitre.schemastore.client.Repository;
 import org.mitre.schemastore.client.SchemaStoreClient;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.porters.ImporterException;
 import org.mitre.schemastore.porters.ImporterException.ImporterExceptionType;
-import org.mitre.schemastore.porters.schemaImporters.ddl.SqlLexer;
-import org.mitre.schemastore.porters.schemaImporters.ddl.SqlParser;
+import org.mitre.schemastore.porters.schemaImporters.ddl.parser.Parser;
+import org.mitre.schemastore.porters.schemaImporters.ddl.parser.SchemaBuilder;
+import org.mitre.schemastore.porters.schemaImporters.ddl.parser.Tables;
 
-
-/**
- * DOCUMENT ME!
- *
- * @author $author$
- * @version $Revision: 1.2 $
- */
-public class DDLImporter extends SchemaImporter
-{
+public class DDLImporter extends SchemaImporter {
 	/** Returns the importer name */
-	public String getName()
-		{ return "SQL/DDL Importer"; }
+	public String getName() {
+		return "SQL/DDL Importer";
+	}
 
 	/** Returns the importer description */
-	public String getDescription()
-		{ return "This importer can be used to import schemas from a ddl format"; }
+	public String getDescription() {
+		return "This importer can be used to import schemas from a DDL format.";
+	}
 
 	/** Returns the importer URI type */
-	public URIType getURIType()
-		{ return URIType.FILE; }
+	public URIType getURIType() {
+		return URIType.FILE;
+	}
 
 	/** Returns the importer URI file types */
-	public ArrayList<String> getFileTypes()
-	{
+	public ArrayList<String> getFileTypes() {
 		ArrayList<String> fileTypes = new ArrayList<String>();
-		fileTypes.add(".ddl"); fileTypes.add(".sql");
+		fileTypes.add(".ddl");
+		fileTypes.add(".sql");
 		return fileTypes;
 	}
 
 	/** Returns the schema elements from the specified URI */
-	public ArrayList<SchemaElement> generateSchemaElements() throws ImporterException
-	{
+	public ArrayList<SchemaElement> generateSchemaElements() throws ImporterException {
 		try {
-	        SqlLexer lexer = new SqlLexer( new ANTLRFileStream( uri.getPath() ) );
-	        CommonTokenStream tokens = new CommonTokenStream( lexer );
-	        SqlParser parser = new SqlParser( tokens );
+			// load the file
+			String line = null;
+			StringBuffer ddl = new StringBuffer();
+			BufferedReader in = new BufferedReader(new FileReader(new File(uri)));
+			while ((line = in.readLine()) !=  null) { ddl.append(line + "\n"); }
+			in.close();
 
-	        try
-	        {
-	            //parse the entire script
-	            //parser.sql_script(  );
-	            while(true)
-	            {
-	                // try
-	                // {
-	                    parser.sql_stmt();
-	                // }
-	            //     catch (NoViableAltException e)
-	            //     {
-                //         System.out.print( e.getClass().getName() + ": " );
-	            //         e.printStackTrace();
-	            //         return parser.getSchemaObjects();
-	            //     }
-	            }
-	        }
-	        catch ( Exception e )
-	        {
-	            if( e.getMessage()==null || !e.getMessage().contains("<EOF>") )
-                {
-                    System.out.println( this.getClass().getName() + " ( loadSchem ): " + e.getClass().getName());
-                    e.printStackTrace( System.err );
-                }
-	        }
-	        return parser.getSchemaObjects();
+			// get a list of commands from the file
+			ArrayList<ArrayList<String>> commands = Parser.parseForCommands(ddl.toString());
+
+			// create a DDL parser and send it the commands
+			Parser parser = new Parser();
+			for (int i = 0; i < commands.size(); i++) {
+				parser.parse(commands.get(i));
+			}
+
+			// get our tables that we've parsed out
+			Tables tableObj = parser.getTables();
+
+			// do something with the tables we've parsed out
+			SchemaBuilder builder = new SchemaBuilder(tableObj);
+			return builder.getSchemaObjects();
+		} catch (Exception e) {
+			throw new ImporterException(ImporterExceptionType.PARSE_FAILURE, e.getMessage());
 		}
-		catch(Exception e) { System.out.print( e.getClass().getName() + ": " ); e.printStackTrace();
-        throw new ImporterException(ImporterExceptionType.PARSE_FAILURE,e.getMessage()); }
 	}
-
 
 	public static void main(String[] args) throws Exception {
 		File ddlFile = new File(args[0]);
 		DDLImporter tester = new DDLImporter();
-		Repository repository = new Repository(Repository.DERBY,new URI("."),"schemastore","postgres","postgres");
+		Repository repository = new Repository(Repository.DERBY,new URI("/home/plockaby"),"schemastore","postgres","postgres");
 		SchemaStoreClient client = new SchemaStoreClient(repository);
 		tester.setClient(client);
 		tester.importSchema(ddlFile.getName(), "", "", ddlFile.toURI());
-	}
+	} 
 }

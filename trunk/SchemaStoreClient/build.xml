@@ -21,13 +21,13 @@
 	    <javac srcdir="src" destdir="build/classes" deprecation="on" debug="on" source="1.6" target="1.6">
 	    	<classpath>
     	    	<path path="${SchemaStore}/build/classes"/>
-       	    	<path path="lib/antlr.jar"/>
        	    	<path path="lib/axis.jar"/>
        	    	<path path="lib/castor-1.2-xml-schema.jar"/>
        	    	<path path="lib/jaxrpc.jar"/>
 	    		<path path="lib/jcommon-1.0.5.jar"/>
        	    	<path path="lib/jena.jar"/>
 	    		<path path="lib/jfreechart-1.0.2.jar"/>
+       	    	<path path="lib/jtopas.jar"/>
 	    		<path path="lib/poi-3.5-beta5-20090219.jar"/>
 	    		<path path="lib/xercesImpl.jar"/>
             </classpath>
@@ -67,7 +67,6 @@
 				<fatjar.exclude relpath="org/mitre/schemastore/search/"/>
 				<fatjar.exclude relpath="org/mitre/schemastore/servlet/"/>
             </fatjar.filesource>
-            <fatjar.jarsource file="lib/antlr.jar" relpath=""/>
             <fatjar.jarsource file="lib/arq.jar" relpath=""/>
             <fatjar.jarsource file="lib/castor-1.2-xml.jar" relpath=""/>
             <fatjar.jarsource file="lib/castor-1.2-xml-schema.jar" relpath=""/>
@@ -75,6 +74,7 @@
     		<fatjar.jarsource file="lib/jcommon-1.0.5.jar" relpath=""/>
             <fatjar.jarsource file="lib/jena.jar" relpath=""/>
     		<fatjar.jarsource file="lib/jfreechart-1.0.2.jar" relpath=""/>
+            <fatjar.jarsource file="lib/jtopas.jar" relpath=""/>
         	<fatjar.jarsource file="lib/poi-3.5-beta5-20090219.jar" relpath=""/>
             <fatjar.jarsource file="lib/xercesImpl.jar" relpath=""/>
         </fatjar.build>
