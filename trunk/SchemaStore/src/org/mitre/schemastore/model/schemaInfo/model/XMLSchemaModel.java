@@ -3,7 +3,7 @@
 package org.mitre.schemastore.model.schemaInfo.model;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.Arrays;
 
 import org.mitre.schemastore.model.Attribute;
 import org.mitre.schemastore.model.Containment;
@@ -123,54 +123,32 @@ public class XMLSchemaModel extends SchemaModel
 		return childElements;
 	}
 	
-	private ArrayList<Integer> getSuperTypes(HierarchicalSchemaInfo schemaInfo, Integer childID) {
-		// Initializes the result with the indicated schema element.
-		ArrayList<Integer> result = new ArrayList<Integer>();
-		HashSet<Integer> processed = new HashSet<Integer>();
-		result.add(childID);
-		
-		// If the result contains unprocessed ids, look for them.
-		while (result.size() != processed.size()) {
-			for (Integer id : result) {
-				// Don't process an id that we've seen before.
-				if (!processed.contains(id)) {
-					for (Subtype s : schemaInfo.getSubTypes(id)) {
-						Integer parentID = s.getParentID();
-						if (!processed.contains(parentID)) {
-							// This id is a parent type that's never been seen before.
-							result.add(parentID);
-						}
-						processed.add(id);
-					}
-				}
-			}
+	/** Identify the super types of the specified element */
+	private ArrayList<Integer> getSuperTypes(HierarchicalSchemaInfo schemaInfo, Integer childID)
+	{
+		ArrayList<Integer> elementIDs = new ArrayList<Integer>(Arrays.asList(new Integer[]{childID}));
+		for(int i=0; i<elementIDs.size(); i++)
+		{
+			Integer parentID = elementIDs.get(i);
+			for(Subtype subtype : schemaInfo.getSubTypes(parentID))
+				if(!elementIDs.contains(subtype.getParentID()))
+					elementIDs.add(subtype.getParentID());
 		}
-		return result;
+		return elementIDs;
 	}
 
-	private ArrayList<Integer> getSubTypes(HierarchicalSchemaInfo schemaInfo, Integer parentID) {
-		// Initializes the result with the indicated schema element.
-		ArrayList<Integer> result = new ArrayList<Integer>();
-		HashSet<Integer> processed = new HashSet<Integer>();
-		result.add(parentID);
-		
-		// If the result contains unprocessed ids, look for them.
-		while (result.size() != processed.size()) {
-			for (Integer id : result) {
-				// Don't process an id that we've seen before.
-				if (!processed.contains(id)) {
-					for (Subtype s : schemaInfo.getSubTypes(id)) {
-						Integer childID = s.getChildID();
-						if (!processed.contains(childID)) {
-							// This id is a child type that's never been seen before.
-							result.add(childID);
-						}
-						processed.add(id);
-					}
-				}
-			}
+	/** Identify the sub types of the specified element */
+	private ArrayList<Integer> getSubTypes(HierarchicalSchemaInfo schemaInfo, Integer parentID)
+	{
+		ArrayList<Integer> elementIDs = new ArrayList<Integer>(Arrays.asList(new Integer[]{parentID}));
+		for(int i=0; i<elementIDs.size(); i++)
+		{
+			Integer childID = elementIDs.get(i);
+			for(Subtype subtype : schemaInfo.getSubTypes(childID))
+				if(!elementIDs.contains(subtype.getChildID()))
+					elementIDs.add(subtype.getChildID());
 		}
-		return result;
+		return elementIDs;
 	}
 
 	/** Returns the domains of the specified element in this schema */
