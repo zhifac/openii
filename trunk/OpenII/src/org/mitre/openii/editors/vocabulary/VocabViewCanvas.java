@@ -803,6 +803,7 @@ public class VocabViewCanvas extends Canvas {
 				//change the name of the synset in the actual Term and save changes to the repository
 				String newName = text.getText();
 				changedTerm.setName(newName);
+				//changedTerm.setDescription("");
 
 				/*System.out.println("about to save changes to vocab, revised term should have: ");
 				AssociatedElement[] aea = changedTerm.getElements();
@@ -1219,23 +1220,32 @@ public class VocabViewCanvas extends Canvas {
 	//0-schema, 1-term, 2-description, 3-score, 4-match schema, 5-match term, 6-match description
 	private void displayEvidence(Table evidTable, Term selectedTerm) {
 		// clear all of the previous table items
+		
 		TableItem[] allRows = evidTable.getItems();
 		for (int i = 0; i < allRows.length; i++) {
 			allRows[i].dispose();
 		}
 
+		
 		// add the first row to be the vocab term, and description
 		TableItem vocabItem = new TableItem(evidTable, SWT.NONE);
 		vocabItem.setText(0, "Vocabulary");
 		vocabItem.setText(1, selectedTerm.getName());
-		vocabItem.setText(2, selectedTerm.getDescription());
+		
+		String forDescription = null;
+		if(selectedTerm.getDescription() != null){
+			forDescription = selectedTerm.getDescription();
+		}else{
+			forDescription = "";
+		}
+			
+		vocabItem.setText(2, forDescription);
 		Font boldFont = new Font(Display.getDefault(), new FontData("Arial", 8, SWT.BOLD));
 		vocabItem.setFont(0, boldFont);
 		vocabItem.setFont(1, boldFont);
 
 		// add in evidence for each element associated with the vocab term
 		AssociatedElement[] aes = selectedTerm.getElements();
-
 
 		//alternating background colors
 		Color white = this.getDisplay().getSystemColor(SWT.COLOR_WHITE);
