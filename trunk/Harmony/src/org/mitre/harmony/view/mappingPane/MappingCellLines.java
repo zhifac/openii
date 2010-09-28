@@ -138,8 +138,8 @@ class MappingCellLines
 							focalNode = (DefaultMutableTreeNode)focalNode.getParent();
 							Double pair1Score = getScore(direction,focalNode,match1);
 							Double pair2Score = getScore(direction,focalNode,match2);
-							if(pair1Score>pair2Score+0.1) { nodeMappings.remove(loc2--); break PAIR2_LOOP; }
-							if(pair2Score>pair1Score+0.1) { nodeMappings.remove(loc1--); break PAIR1_LOOP; }
+							if(pair1Score>pair2Score+0.1) { nodeMappings.remove(loc2--); continue PAIR2_LOOP; }
+							if(pair2Score>pair1Score+0.1) { nodeMappings.remove(loc1--); continue PAIR1_LOOP; }
 						}
 					}
 			}
