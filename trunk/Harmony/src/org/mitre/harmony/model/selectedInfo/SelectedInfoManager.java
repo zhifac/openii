@@ -135,20 +135,12 @@ public class SelectedInfoManager extends AbstractManager<SelectedInfoListener> i
 		// Identify changes to the elements required by the newly selected mapping cells
 		ArrayList<Integer> selectedLeftElements = new ArrayList<Integer>();
 		ArrayList<Integer> selectedRightElements = new ArrayList<Integer>();		
-		HashSet<Integer> leftElements = getModel().getProjectManager().getSchemaElementIDs(HarmonyConsts.LEFT);
-		HashSet<Integer> rightElements = getModel().getProjectManager().getSchemaElementIDs(HarmonyConsts.RIGHT);
 		for(Integer mappingCellID : getSelectedMappingCells())
 		{
 			// Identify the elements for the mapping cell
 			MappingCell mappingCell = getModel().getMappingManager().getMappingCell(mappingCellID);
-			Integer element1 = mappingCell.getElementInputIDs()[0];
-			Integer element2 = mappingCell.getOutput();
-			
-			// Mark selected elements
-			if(leftElements.contains(element1) && rightElements.contains(element2))
-				{ selectedLeftElements.add(element1); selectedRightElements.add(element2); }
-			if(leftElements.contains(element2) && rightElements.contains(element1))
-				{ selectedLeftElements.add(element2); selectedRightElements.add(element1); }
+			selectedLeftElements.addAll(Arrays.asList(mappingCell.getElementInputIDs()));
+			selectedRightElements.add(mappingCell.getOutput());
 		}
 
 		// Update the elements
