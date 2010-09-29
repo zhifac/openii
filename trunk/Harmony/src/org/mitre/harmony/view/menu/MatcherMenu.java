@@ -45,7 +45,7 @@ public class MatcherMenu extends AbstractMenu
 
 		// Add a menu checkbox to specify if user matched elements should be ignored in matching
 		addSeparator();
-		add(createCheckboxItem("Ignore Matched Elements", harmonyModel.getPreferences().getIgnoreMatchedElements(), new IgnoreMatchedElementsAction()));
+		add(createCheckboxItem("Ignore Validated Elements", harmonyModel.getPreferences().getIgnoreMatchedElements(), new IgnoreMatchedElementsAction()));
 	}
 
 	/** Class for handling matcher menu items */
