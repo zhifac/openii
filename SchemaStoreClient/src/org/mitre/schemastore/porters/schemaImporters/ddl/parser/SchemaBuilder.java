@@ -71,11 +71,21 @@ public class SchemaBuilder {
         }
 
         // get all foreign keys and process the relationships between tables
+        ArrayList<String> relatedTables = new ArrayList<String>();
         ArrayList<ForeignKey> foreignKeys = tableObj.getForeignKeys();
         for (int i = 0; i < foreignKeys.size(); i++) {
         	ForeignKey foreignKey = foreignKeys.get(i);
+
+        	// get the ids in the schema store for the tables based on their names
         	int sourceId = tableIds.get(foreignKey.getSourceTable());
         	int targetId = tableIds.get(foreignKey.getTargetTable());
+
+        	// if we already have a relationship between these two tables don't store it again
+        	// if we do NOT have a relationship then record that we do now
+        	if (relatedTables.contains(sourceId + "-" + targetId)) { continue; }
+        	relatedTables.add(sourceId + "-" + targetId);
+
+        	// create the relationship and add it to the list of schema objects
         	Relationship relationship = new Relationship(SchemaImporter.nextId(), foreignKey.getName(), "", sourceId, 1, 1, targetId, 1, 1, schema.getId());
         	schemaObjects.add(relationship);
         }
