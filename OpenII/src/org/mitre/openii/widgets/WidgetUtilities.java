@@ -14,7 +14,7 @@ public class WidgetUtilities
 		class ItemComparator implements Comparator<Object>
 		{
 			public int compare(Object item1, Object item2)
-				{ return item1.toString().toLowerCase().compareTo(item2.toString().toLowerCase()); }
+				{ return item1.toString().compareToIgnoreCase(item2.toString()); }
 		}
 		
 		Collections.sort(list, new ItemComparator());
