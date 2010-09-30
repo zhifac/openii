@@ -16,8 +16,10 @@ import org.mitre.schemastore.model.DomainValue;
 import org.mitre.schemastore.model.Relationship;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
+import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
 import org.mitre.schemastore.search.SchemaSearchResult;
 
+/** Defines the labels shown in the Schema Tree */
 public class SchemaElementLabelProvider extends StyledCellLabelProvider
 {
 	// Defines the various referenced colors
@@ -25,7 +27,7 @@ public class SchemaElementLabelProvider extends StyledCellLabelProvider
 	private static final Color ORANGE = new Color(Display.getCurrent(), 255, 200, 145); 
 	private static final Color WHITE = Display.getCurrent().getSystemColor(SWT.COLOR_WHITE); 
 	
-	/** Holds a reference to the schema view */
+	/** Stores a reference to the schema view */
 	private SchemaTree schemaView = null;
 	
 	/** Stores a cache for schema names */
@@ -54,16 +56,28 @@ public class SchemaElementLabelProvider extends StyledCellLabelProvider
 		String text = "";
 		if(object instanceof SchemaElement)
 		{
+			HierarchicalSchemaInfo schema = schemaView.getSchema();
+			
+			// Display the element name
 			SchemaElement element = (SchemaElement)object;
-			text = schemaView.getSchema().getDisplayName(element.getId());
-			if(schemaView.showRoots())
+			text = schema.getDisplayName(element.getId());
+			
+			// Displays the type of each element if requested
+			if(schemaView.showTypes())
+			{
+				SchemaElement type = schema.getType(schema, element.getId());
+				if(type!=null) text += " (" + type.getName() + ")";
+			}
+			
+			// Displays the base schemas of each element if requested
+			if(schemaView.showBaseSchemas())
 			{
 				Integer baseID = element.getBase();
 				if(!baseID.equals(schemaView.getSchema().getSchema().getId()))
 				{
-					String schema = schemaCache.get(baseID);
-					if(schema==null) schemaCache.put(baseID,schema = OpenIIManager.getSchema(baseID).getName());
-					text += " (" + schema + ")";
+					String schemaName = schemaCache.get(baseID);
+					if(schemaName==null) schemaCache.put(baseID,schemaName = OpenIIManager.getSchema(baseID).getName());
+					text += " <- " + schemaName;
 				}
 			}
 		}

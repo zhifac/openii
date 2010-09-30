@@ -42,7 +42,8 @@ public class SchemaTree extends Composite implements SelectionListener, ISelecti
 	private Text searchField = null;
 	private TreeViewer schemaViewer = null;
 	private Button alphabetize = null;
-	private Button showRoots = null;
+	private Button showTypes = null;
+	private Button showBaseSchemas = null;
 	
 	/** Generate the menu pane */
 	private void generateMenuPane(Composite parent)
@@ -87,6 +88,7 @@ public class SchemaTree extends Composite implements SelectionListener, ISelecti
 		// Populate the tree viewer
 		schemaViewer.setContentProvider(new SchemaElementContentProvider(this));
 		schemaViewer.setLabelProvider(new SchemaElementLabelProvider(this));
+		schemaViewer.setSorter(new SchemaElementSorter(this));
 		
 		// Add the tree popup menu
 		SchemaMenuManager menuManager = new SchemaMenuManager(schemaViewer);
@@ -98,25 +100,30 @@ public class SchemaTree extends Composite implements SelectionListener, ISelecti
 	}
 
 	/** Generate the option pane */
-	private void generateOptionPane(Composite parent)
+	private void generateOptionsPane(Composite parent)
 	{
 		// Construct the option pane
-		Composite optionPane = new Composite(parent, SWT.NONE);
-		GridLayout layout = new GridLayout(2,false);
+		Composite optionsPane = new Composite(parent, SWT.NONE);
+		GridLayout layout = new GridLayout(3,false);
 		layout.marginHeight = 0;
 		layout.marginWidth = 5;
-		optionPane.setLayout(layout);
-		optionPane.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		optionsPane.setLayout(layout);
+		optionsPane.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 	
 		// Construct the alphabetize option
-		alphabetize = new Button(optionPane, SWT.CHECK);
+		alphabetize = new Button(optionsPane, SWT.CHECK);
 		alphabetize.setText("Alphabetize");
 		alphabetize.addSelectionListener(this);
+
+		// Construct the show base schemas option
+		showTypes = new Button(optionsPane, SWT.CHECK);
+		showTypes.setText("Show Types");
+		showTypes.addSelectionListener(this);
 		
-		// Construct the show root option
-		showRoots = new Button(optionPane, SWT.CHECK);
-		showRoots.setText("Show Roots");
-		showRoots.addSelectionListener(this);
+		// Construct the show base schemas option
+		showBaseSchemas = new Button(optionsPane, SWT.CHECK);
+		showBaseSchemas.setText("Show Base Schemas");
+		showBaseSchemas.addSelectionListener(this);
 	}
 	
 	/** Constructs the Schema Tree */
@@ -139,7 +146,7 @@ public class SchemaTree extends Composite implements SelectionListener, ISelecti
 		// Layout the menu pane and tree pane
 		generateMenuPane(this);
 		generateTreePane(this);
-		generateOptionPane(this);
+		generateOptionsPane(this);
 
 		// Expand out the tree
 		schemaViewer.setInput("");
@@ -155,9 +162,13 @@ public class SchemaTree extends Composite implements SelectionListener, ISelecti
 	public boolean isAlphabetized()
 		{ return alphabetize.getSelection(); }
 	
-	/** Indicates if the schema should show root schemas */
-	public boolean showRoots()
-		{ return showRoots.getSelection(); }
+	/** Indicates if the schema should show types */
+	public boolean showTypes()
+		{ return showTypes.getSelection(); }
+	
+	/** Indicates if the schema should show base schemas */
+	public boolean showBaseSchemas()
+		{ return showBaseSchemas.getSelection(); }
 	
 	/** Returns the currently selected element */
 	public Integer getSelectedElement()
