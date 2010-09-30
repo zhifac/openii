@@ -1,19 +1,16 @@
 package org.mitre.openii.widgets.schemaTree;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-
+import org.eclipse.jface.viewers.ILazyTreeContentProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
 
+/** Provides Content to the Schema Tree */
 public class SchemaElementContentProvider implements ITreeContentProvider
 {
-	/** Holds a reference to the schema view */
+	/** Stores a reference to the schema view */
 	private SchemaTree schemaView = null;
 	
 	/** Constructs the content provider */
@@ -23,23 +20,10 @@ public class SchemaElementContentProvider implements ITreeContentProvider
 	/** Returns the children elements for the specified element */
 	public Object[] getChildren(Object element)
 	{
-		// Gets the children elements
-		List<? extends Object> children = null;
 		HierarchicalSchemaInfo schema = schemaView.getSchema();
-		if(element instanceof String) children = Arrays.asList(new Object[]{schema.getSchema()});
-		else if(element instanceof Schema) children = schema.getRootElements();
-		else children = schema.getChildElements(((SchemaElement)element).getId());
-
-		// Alphabetize if needed
-		if(schemaView.isAlphabetized())
-		{
-			class ElementComparator implements Comparator<Object>
-				{ public int compare(Object object1, Object object2)
-					{ return object1.toString().compareToIgnoreCase(object2.toString()); } }
-			Collections.sort(children, new ElementComparator());
-		}
-		
-		return children.toArray();
+		if(element instanceof String) return new Object[]{schema.getSchema()};
+		if(element instanceof Schema) return schema.getRootElements().toArray();
+		return schema.getChildElements(((SchemaElement)element).getId()).toArray();
 	}
 
 	/** Return the parent element for the specified element */
@@ -57,4 +41,6 @@ public class SchemaElementContentProvider implements ITreeContentProvider
 	// Unused functions
 	public void dispose() {}
 	public void inputChanged(Viewer arg0, Object arg1, Object arg2) {}
+	public void updateChildCount(Object arg0, int arg1) {}
+	public void updateElement(Object arg0, int arg1) {}
 }
