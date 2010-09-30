@@ -105,7 +105,7 @@ public class GenerateVocabularyDialog extends TitleAreaDialog implements ModifyL
 	/** Creates the contents for the Edit Project Dialog */
 	protected Control createContents(Composite parent) {
 		Control control = super.createContents(parent);
-		authorField.setText("Set by matchers.");
+		authorField.setText( System.getProperty("user.name") );
 		return control;
 	}
 
@@ -311,11 +311,11 @@ public class GenerateVocabularyDialog extends TitleAreaDialog implements ModifyL
 
 		// Generate the properties to be displayed by the info pane
 		authorField = BasicWidgets.createTextField(pane, "Author");
-		authorField.setEnabled(false);
+		authorField.setEnabled(true);
 
 		// Add listeners to the fields to monitor for changes
 		// vocabName.addModifyListener(this);
-		// authorField.addModifyListener(this);
+		authorField.addModifyListener(this);
 	}
 
 	public void modifyText(ModifyEvent e) {
@@ -348,30 +348,33 @@ public class GenerateVocabularyDialog extends TitleAreaDialog implements ModifyL
 
 		// Start a progress bar to monitor unity process
 		ProgressBarDialog progressDialog = new ProgressBarDialog(getParentShell());
-		progressDialog.setProcessMessage("Generating vocabulary ..." ); 
-		progressDialog.open(); 
+		progressDialog.setProcessMessage("Generating vocabulary ...");
+		progressDialog.open();
 
 		// Start a new thread to generate the vocabulary
 		UnityDSF unity = new UnityDSF(project, selectedMapping, rankedSchemas);
 		unity.addListener(progressDialog);
-		
-		// Asynchronously run unity from the display 
+
+		// Asynchronously run unity from the display
 		getParentShell().getDisplay().syncExec(unity);
 
-		Vocabulary vocab  = unity.getVocabulary();
-		if ( vocab!= null && !progressDialog.isClosed() ) {
+		Vocabulary vocab = unity.getVocabulary();
+		if (vocab != null && !progressDialog.isClosed()) {
 			// Save the vocabulary
 			progressDialog.updateProgressMessage("Saving the vocabulary...");
 			OpenIIManager.saveVocabulary(unity.getVocabulary());
 			progressDialog.updateProgressMessage("Vocabulary completed!! ");
 
 			// Sleep a second to allow the message to be shown
-			try {Thread.sleep(2000);} catch (InterruptedException e) {} 
-			
+			try {
+				Thread.sleep(2000);
+			} catch (InterruptedException e) {
+			}
+
 			// Close progress bar
 			progressDialog.killDialog();
 		}
-		
+
 		// kill the threads
 		rankedSchemas = null;
 		selectedMapping = null;
