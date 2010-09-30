@@ -93,6 +93,7 @@ public class Column extends Element {
 			return false;
 		}
 	}
+
 	public static int getColumnTypeConversion(String value) throws Exception {
 		if (value != null) {
 			value = value.toUpperCase();
@@ -119,7 +120,8 @@ public class Column extends Element {
 			value.equals("SERIAL4") ||
 			value.equals("SERIAL8") ||
 			value.equals("INT8") ||
-			value.equals("OID")) {
+			value.equals("OID") ||
+			value.equals("UNIQUEIDENTIFIER")) {
 			return Column.COLUMN_TYPE_INTEGER;
 		}
 
@@ -191,7 +193,8 @@ public class Column extends Element {
 			value.equals("TEMPORAL") ||
 			value.equals("SMALLDATETIME") ||
 			value.equals("TIMESPAN") ||
-			value.equals("TIMETZ")) {
+			value.equals("TIMETZ") ||
+			value.equals("SASODATE")) {
 			return Column.COLUMN_TYPE_DATETIME;
 		}
 
