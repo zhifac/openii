@@ -1,6 +1,5 @@
 package org.mitre.openii.widgets.schemaTree;
 
-import org.eclipse.jface.viewers.ILazyTreeContentProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.mitre.schemastore.model.Schema;
