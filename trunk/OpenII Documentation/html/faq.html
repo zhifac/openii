@@ -11,158 +11,58 @@
 			<h1>Frequently Asked Questions</h1>
 			<div style="clear: both;"></div>
 
+			<a name="top"></a>
 			<ol>
-				<li><a href="#faq01">What NIEM related tasks are facilitated by the OpenII tool suite?</a></li>
-				<li><a href="#faq02">Does OpenII help with producing a NIEM IEPD?</a></li>
-				<li><a href="#faq03">Why do NIEM schemata consume so much memory and CPU cycles in OpenII?</a></li>
-				<li><a href="#faq04">What is the most successful way of viewing large schemata in OpenII?</a></li>
-				<li><a href="#faq05">What is the OpenII neutral schema format for XSD and Relational schema?</a></li>
-				<li><a href="#faq06">What is the meaning of the symbol displayed on the left of a schema node name?</a></li>
-				<li><a href="#faq07">What is a schema model view in OpenII and how does it relate to XSD?</a></li>
-				<li><a href="#faq08">How do I change the model view used to display a schema in OpenII?</a></li>
-				<li><a href="#faq09">How do I view code lists (Domains) in OpenII?</a></li>
-				<li><a href="#faq10">How can I improve the performance and results of very large schema matching?</a></li>
-				<li><a href="#faq11">What are the different types of matching done in Proximity, Harmony and Unity?</a></li>
-				<li><a href="#faq12">What does the evidence bar in Harmony do?</a></li>
-				<li><a href="#faq13">Why does the exact matcher produce less than a 100% evidence score?</a></li>
-				<li><a href="#faq14">Why doesn't the Name Similarity Matcher produce a high evidence score for two schema elements with the same string name?</a></li>
-				<li><a href="#faq15">Why do some nodes have more than one mapping line even when the Best Filter is on?</a></li>
-				<li><a href="#faq16">How long should it take to match large schemata?</a></li>
-				<li><a href="#faq17">Why does it take a long time to save a project?</a></li>
-				<li><a href="#faq18">How can I know in which XML namespace a schema element is defined?</a></li>
-				<li><a href="#faq19">Why do I see square brackets around a schema element name in Harmony?</a></li>
-				<li><a href="#faq20">Why are there so many matches with low evidence scores?</a></li>
-				<li><a href="#faq21">What is a good range of evidence scores for viewing successful mappings?</a></li>
-				<li><a href="#faq22">Can OpenII import UML models?</a></li>
-				<li><a href="#faq23">What does "Ignore Matched Elements" do in the Matching Dialog?</a></li>
-				<li><a href="#faq24">Why do my existing matches get over-written when I run another matcher?</a></li>
-				<li><a href="#faq25">Why do I get a parse error when importing an XML Schema?</a></li>
-				<li><a href="#faq26">Why am I getting a parse error when importing the exdl-have.xsd schema from niem-2.1?</a></li>
-				<li><a href="#faq27">Does Affinity include domain values (code list values and documentation) when clustering similar schemata?</a></li>
+
+				<li><a href="#faq01">What is the most successful way of viewing large schemata in OpenII?</a></li>
+				<li><a href="#faq02">What is the OpenII neutral schema format for XSD and Relational schema?</a></li>
+				<li><a href="#faq03">What is the meaning of the symbol displayed on the left of a schema node name?</a></li>
+				<li><a href="#faq04">What is a schema model view in OpenII and how does it relate to XSD?</a></li>
+				<li><a href="#faq05">How do I change the model view used to display a schema in OpenII?</a></li>
+				<li><a href="#faq06">How do I view code lists (Domains) in OpenII?</a></li>
+				<li><a href="#faq07">How can I improve the performance and results of very large schema matching?</a></li>
+				<li><a href="#faq08">What are the different types of matching done in Proximity, Harmony and Unity?</a></li>
+				<li><a href="#faq09">What does the evidence bar in Harmony do?</a></li>
+				<li><a href="#faq10">Why does the exact matcher produce less than a 100% evidence score for identical strings?</a></li>
+				<li><a href="#faq11">Why doesn't the Name Similarity Matcher produce a high evidence score for two schema elements with the same string name?</a></li>
+				<li><a href="#faq12">Why do some nodes have more than one mapping line even when the Best Filter is on?</a></li>
+				<li><a href="#faq13">How long should it take to match large schemata?</a></li>
+				<li><a href="#faq14">Why does it take a long time to save a project?</a></li>
+				<li><a href="#faq15">How can I know in which XML namespace a schema element is defined?</a></li>
+				<li><a href="#faq16">Why do I see square brackets around a schema element name in Harmony?</a></li>
+				<li><a href="#faq17">Why are there so many matches with low evidence scores?</a></li>
+				<li><a href="#faq18">What is a good range of evidence scores for viewing successful mappings?</a></li>
+				<li><a href="#faq19">Can OpenII import UML models?</a></li>
+				<li><a href="#faq20">What does "Ignore Validated Elements" do in the Matching Dialog?</a></li>
+				<li><a href="#faq21">Why do my existing matches get over-written when I run another matcher?</a></li>
+				<li><a href="#faq22">Why do I get a parse error when importing an XML Schema?</a></li>
+				<li><a href="#faq23">Why am I getting a parse error when importing the exdl-have.xsd schema from niem-2.1?</a></li>
+				<li><a href="#faq24">Does Affinity include domain values (code list values and documentation) when clustering similar schemata?</a></li>
+				<li><a href="#faq25">What NIEM related tasks are facilitated by the OpenII tool suite?</a></li>
+				<li><a href="#faq26">Does OpenII help produce NIEM IEPD artifacts?</a></li>
+				<li><a href="#faq27">Why do NIEM schemata consume so much memory and CPU cycles in OpenII?</a></li>
 			</ol>
 
 			<ol>
 				<li>
 					<div class="chapter">
-						<h3><a name="faq01">What NIEM related tasks are facilitated by the OpenII tool suite?</a></h3>
-
-						<ul>
-							<li>
-								NIEM Domain Maintenance:
-								<ol>
-									<li>
-										Find content overlap between NIEM Domains;
-									</li> 
-									<li>
-										Determine re-use of NIEM core components;
-									</li> 
-									<li>
-										Review newly proposed NIEM core or domain content for
-										uniqueness and its proper reuse of existing concepts.
-									</li> 
-								</ol>
-							</li>
-
-							<li>
-								Discover Common Business Data Components used across programs:
-								<ol> 
-									<li>
-										Examine schemata across the enterprise to find popular
-										data concepts to standardize into ready-to-use NIEM
-										exchange components.
-									</li>
-								</ol>
-							</li>
-
-							<li>
-								Search IEPD Libraries for reusable data components.
-							</li>
-
-							<li>
-								Evaluate IEPD NIEM data component re-use.
-							</li>
-
-							<li>
-								Generate mapping spreadsheets between business data components and
-								NIEM data components.  The exported spread sheet can be used as
-								part of the IEPD package.  
-							</li>
-
-							<li>
-								Generate mapping spreadsheets between source repository or target
-								repository and your exchange schema.
-							</li>
-
-							<li>
-								Map exchange schemata to the enterprise conceptual data model:
-								<ol>
-									<li> 
-										Determine which schemata are represented by the enterprise
-										conceptual data model
-									</li>
-									<li> 
-										Determine where there are gaps in the enterprise conceptual
-										data model for existing or planned exchange schemata.
-									</li>
-								</ol>
-							</li>
-						</ul>
-					</div>
-				</li>
-
-				<li>
-					<div class="chapter">
-						<h3><a name="faq02">Does OpenII help with producing a NIEM IEPD?</a></h3>
-
-						The current OpenII tools were not designed to produce NIEM IEPD artifacts.
-						There are several other tools used in the NIEM community that are
-						specifically for the purpose of creating IEPD artifacts.  But the OpenII
-						framework is designed to support integration with other tools. Additionally
-						there are many analysis tasks needed before and after IEPD implementation.<br/><br/>
-
-						The current OpenII tools were designed to explore schemata and to find and
-						present correspondences.  These tasks are needed in the early stages of
-						planning an exchange and finding relevant reusable data components. The
-						tools can be used to explore existing IEPD schemata and to explore and map
-						NIEM to a business domain model.  After the IEPD is created, OpenII can be
-						used to map the exchange schema to source and target repository schemata.
-						There are several NIEM related tasks listed in <a href="#faq01">FAQ 1</a>
-						for which OpenII can help.  There are also enterprise data management
-						activities that can benefit from OpenII capabilities.<br/><br/>
-					</div>
-				</li>
-
-				<li>
-					<div class="chapter">
-						<h3><a name="faq03">Why do NIEM schemata consume so much memory and CPU cycles in OpenII?</a></h3>
-
-						NIEM core and NIEM domain schemata contain a large number of data
-						components to begin with.  Adhering to the NDR, the data components are all
-						defined globally and then repeatedly referenced in numerous containments.
-						The Open II schema view displays all the repeated references to data
-						components.  For example, NIEM Core may have about two thousand unique XSD
-						elements, but when fully expanded into an OpenII containment hierarchy view
-						it will have about eleven thousand schema display nodes.<br/><br/>
-					</div>
-				</li>
-
-				<li>
-					<div class="chapter">
-						<h3><a name="faq04">What is the most successful way of viewing large schemata in OpenII?</a></h3>
+						<h3><a name="faq01">What is the most successful way of viewing large schemata in OpenII?</a></h3>
 
 						Because NIEM Core and the domain schemata are large and employ a lot of
 						data component re-use, OpenII's hierarchical schema view of NIEM can
 						overwhelm OpenII memory and degrade matching and viewing performance.
 						To avoid these issues, we recommend that NIEM Core and NIEM Domain schemata
 						always be viewed in the "Relational" model view (a data type hierarchy
-						rather than a containment hierarchy).  (See <a href="#faq07">FAQ 7</a> and
-						<a href="#faq08">FAQ 8</a>.)<br/><br/>
+						rather than a containment hierarchy).  (See <a href="#faq04">FAQ 4</a> and
+						<a href="#faq05">FAQ 5</a>.)<br/><br/>
+
+						[<a href="#top">top</a>]
 					</div>
 				</li>
 
 				<li>
 					<div class="chapter">
-						<h3><a name="faq05">What is the OpenII neutral schema format for XSD and Relational schema?</a></h3>
+						<h3><a name="faq02">What is the OpenII neutral schema format for XSD and Relational schema?</a></h3>
 
 						OpenII''s neutral model is the MITRE Meta Model (M3).  OpenII schemata
 						persist in a relational database and are managed by the OpenII tool,
@@ -172,16 +72,18 @@
 						popular meta-data formalisms.<br/><br/>
 
 						<img src="./support/faq/faq05_chart.png"/>
+
+						[<a href="#top">top</a>]
 					</div>
 				</li>
 
 				<li>
 					<div class="chapter">
-						<h3><a name="faq06">What is the meaning of the symbol displayed on the left of a schema node name?</a></h3>
+						<h3><a name="faq03">What is the meaning of the symbol displayed on the left of a schema node name?</a></h3>
 
 						This table shows the meaning of symbols displayed next to schema nodes in
 						OpenII.  The terminology used for schema element types in the table below
-						is based on the M3 OpenII SchemaStore meta-model. (See <a href="#faq05">FAQ 5</a>)<br/><br/>
+						is based on the M3 OpenII SchemaStore meta-model. (See <a href="#faq02">FAQ 2</a>)<br/><br/>
 
 						<table>
 							<thead>
@@ -224,12 +126,14 @@
 								</tr>
 							</tbody>
 						</table>
+
+						[<a href="#top">top</a>]
 					</div>
 				</li>
 
 				<li>
 					<div class="chapter">
-						<h3><a name="faq07">What is a schema model view in OpenII and how does it relate to XSD?</a></h3>
+						<h3><a name="faq04">What is a schema model view in OpenII and how does it relate to XSD?</a></h3>
 
 						In Harmony and the OpenII Schema Viewer there are different choices for
 						viewing a schema called model views.  Those choices show different aspects
@@ -242,7 +146,7 @@
 							<li>
 								The <b>XML</b> view displays a hierarchical tree of M3
 								containments.  These M3 containments correspond to XML elements.
-								(See <a href="#faq05">FAQ 5</a>)  XML types correspond to M3
+								(See <a href="#faq02">FAQ 2</a>)  XML types correspond to M3
 								Entities and are not depicted in this view.  The element properties
 								are displayed underneath the element.
 							</li>
@@ -279,15 +183,17 @@
 						performance issues with large XML schemata, OpenII will automatically
 						switch from the default view to a Relational view when a certain threshold
 						is passed.<br/><br/>
+
+						[<a href="#top">top</a>]
 					</div>
 				</li>
 
 				<li>
 					<div class="chapter">
-						<h3><a name="faq08">How do I change the model view used to display a schema in OpenII?</a></h3>
+						<h3><a name="faq05">How do I change the model view used to display a schema in OpenII?</a></h3>
 
 						The schemata are displayed using a default model view based on their
-						original format at the time of ingest into SchemaStore. (See <a href="#faq06">FAQ 6b</a>)
+						original format at the time of ingest into SchemaStore. (See <a href="#faq03">FAQ 3b</a>)
 						Here are two useful techniques for changing the model view of a schema.
 
 						<ol>
@@ -310,25 +216,29 @@
 								model view chosen.
 							</li>
 						</ol> 
+
+						[<a href="#top">top</a>]
 					</div>
 				</li>
 
 				<li>
 					<div class="chapter">
-						<h3><a name="faq09">How do I view code lists (Domains) in OpenII?</a></h3>
+						<h3><a name="faq06">How do I view code lists (Domains) in OpenII?</a></h3>
 
-						There are multiple model views for an OpenII schema. See <a href="#faq06">FAQ 6</a>
+						There are multiple model views for an OpenII schema. See <a href="#faq03">FAQ 3</a>
 						explaining some of those.  To view domains and domain values (enumerated
 						values) that are part of a schema or comprise the whole schema, switch the
 						model view to "Domain".  This will show the domain data components in the
 						schema and their associated value lists in both the schema viewer and the
-						Harmony tool. (See <a href="#faq08">FAQ 8</a> on how to switch views.)<br/><br/>
+						Harmony tool. (See <a href="#faq05">FAQ 5</a> on how to switch views.)<br/><br/>
+
+						[<a href="#top">top</a>]
 					</div>
 				</li>
 
 				<li>
 					<div class="chapter">
-						<h3><a name="faq10">How can I improve the performance and results of very large schema matching?</a></h3>
+						<h3><a name="faq07">How can I improve the performance and results of very large schema matching?</a></h3>
 
 						For large schemata there are certain rules of engagement that if followed
 						then performance will not become too much of an issue.  Here are some tips
@@ -337,9 +247,11 @@
 						<ul>
 							<li>
 								First, for large XSD schemata, particular NIEM Core and the NIEM
-								Domains, the schema model view [<a href="#faq07">FAQ 7</a> and 
-								<a href="#faq08">8</a>] should be Relational.  This will ensure
-								best performance in viewing and matching operations. There are two
+								Domains, the schema model view [<a href="#faq04">FAQ 4</a> and 
+								<a href="#faq05">5</a>] should be Relational.  This will ensure
+								best performance in viewing and matching operations. The first
+								group is recommendations to be followed before running a match and
+								the second group is for after the matchers have run. There are two
 								groups of additional tips listed next that should be used for
 								additional improvement in matching and viewing operations. (If an
 								XML view is preferred, make sure to use these tips to reduce
@@ -423,7 +335,7 @@
 										<ul>
 											<li>
 												The Best Filter, if checked will only allow the highest scored
-												mapping between nodes be displayed.  See <a href="#faq13">FAQ 13</a>
+												mapping between nodes be displayed.  See <a href="#faq12">FAQ 12</a>
 												for more detail on what a "Best" match is. 
 											</li>
 
@@ -446,7 +358,7 @@
 												The Hierarchy Filter works on duplicate matches that are
 												automatically generated from multiple references to the same
 												data component. NIEM schemas have a lot of this as explained
-												in <a href="#faq03">FAQ 3</a>. Checking or un-checking this
+												in <a href="#faq27">FAQ 27</a>. Checking or un-checking this
 												filter can make a difference in the number of mapping lines
 												displayed -- but only when viewing the schema in XML model
 												view.  If schemata do not repeatedly reference its own data
@@ -473,12 +385,14 @@
 
 						The choice of matchers and settings for an automatic matching operation
 						will depend partly on your matching goals.<br/><br/>  
+
+						[<a href="#top">top</a>]
 					</div>
 				</li>
 
 				<li>
 					<div class="chapter">
-						<h3><a name="faq11">What are the different types of matching done in Proximity, Harmony and Unity?</a></h3>
+						<h3><a name="faq08">What are the different types of matching done in Proximity, Harmony and Unity?</a></h3>
 
 						The Harmony documentation explains how to execute automatic matching and
 						also explains the individual matchers themselves.  As of this writing, some
@@ -539,23 +453,27 @@
 								synonyms and uses those as the thesaurus.
 							</li>
 						</ul>
+
+						[<a href="#top">top</a>]
 					</div>
 				</li>
 
 				<li>
 					<div class="chapter">
-						<h3><a name="faq12">What does the evidence bar in Harmony do?</a></h3>
+						<h3><a name="faq09">What does the evidence bar in Harmony do?</a></h3>
 
 						Every match is given a score.  The slider bar on the right side in a
 						Harmony window can be moved to change which mapping lines are shown.  Use
 						this bar to reduce clutter when examining matches.  Clicking on a mapping
-						line will cause its score to be marked in the evidence bar.<br/><br/>
+						line will cause its score to be marked on the evidence bar.<br/><br/>
+
+						[<a href="#top">top</a>]
 					</div>
 				</li>
 
 				<li>
 					<div class="chapter">
-						<h3><a name="faq13">Why does the exact matcher produce less than a 100% evidence score?</a></h3>
+						<h3><a name="faq10">Why does the exact matcher produce less than a 100% evidence score for identical strings?</a></h3>
 
 						The exact matcher matches whole strings in the node name and/or the
 						documentation string.  And if the Hierarchal matching option is checked it
@@ -565,12 +483,14 @@
 						fish tank or military tank.  That final determination that two elements are
 						the same is reserved for the user.  Only a user accepted match has an
 						evidence score of 100%.<br/><br/>
+
+						[<a href="#top">top</a>]
 					</div>
 				</li>
 
 				<li>
 					<div class="chapter">
-						<h3><a name="faq14">Why doesn't the Name Similarity Matcher produce a high evidence score for two schema elements with the same string name?</a></h3>
+						<h3><a name="faq11">Why doesn't the Name Similarity Matcher produce a high evidence score for two schema elements with the same string name?</a></h3>
 
 						This Name Similarity matcher takes into account the number of characters in
 						the node name.  Two short node names (such as "Id") that are equal still
@@ -578,58 +498,65 @@
 						letters in their names to support a higher score.  In contrast, two node
 						names such as "PersonFirstName" and "PersonName" have more evidence to
 						support a match because there are a more characters overall and many of
-						those are the same.  See <a href="#faq11">FAQ 11</a> for more information
+						those are the same.  See <a href="#faq08">FAQ 8</a> for more information
 						on the Matchers.<br/><br/>
+
+						[<a href="#top">top</a>]
 					</div>
 				</li>
 
 				<li>
 					<div class="chapter">
-						<h3><a name="faq15">Why do some nodes have more than one mapping line even when the Best Filter is on?</a></h3>
+						<h3><a name="faq12">Why do some nodes have more than one mapping line even when the Best Filter is on?</a></h3>
 
 						Even though the Best Filter in Harmony is checked, some nodes may have more
 						than one mapping line attached to it.  There may be more than one best
-						match, a tie for the high score.  In this case Harmony shows multiple lines.
-						The other reason for multiple mapping lines from one node is that the best
-						matches are shown for nodes from the left schema to the right schema and
-						from the right schema to the left schema.  Both mapping directions are
-						considered.  A node in the left schema may have one best match in the right
-						schema, but a different right schema node might find its best match in that
-						same left schema node.  So there may be two map lines coming from one node,
-						but they represent the best from left to right and the best from right to
-						left for that node.<br/><br/> 
+						match because of a tie for the highest score.  In this case Harmony shows
+						multiple lines. The other reason for multiple mapping lines from a node is
+						that the best matches are shown for nodes from the left schema to the right
+						schema and from the right schema to the left schema.  Both mapping
+						directions are considered.  A node in the left schema may have one best
+						match in the right schema, but a different right schema node might find its
+						best match in that same left schema node.  If this happens there will be
+						two map lines coming from one node.<br/><br/> 
+
+						[<a href="#top">top</a>]
 					</div>
 				</li>
 
 				<li>
 					<div class="chapter">
-						<h3><a name="faq16">How long should it take to match large schemata?</a></h3>
+						<h3><a name="faq13">How long should it take to match large schemata?</a></h3>
 
-						If the tips are followed in <a href="#faq10">FAQ 10</a> for matching large
+						If the tips are followed in <a href="#faq07">FAQ 7</a> for matching large
 						schemata, the matching should be finished in a couple of minutes or less.
 						But if large schema with many interrelationships as found in NIEM domains,
 						are matched and the performance tips are not followed then the matching
 						could take hours.  In this case, the matching process may run out of memory
 						which at the time of writing was set to a limit of one gigabyte for the
 						OpenII application.<br/><br/>
+
+						[<a href="#top">top</a>]
 					</div>
 				</li>
 
 				<li>
 					<div class="chapter">
-						<h3><a name="faq17">Why does it take a long time to save a project?</a></h3>
+						<h3><a name="faq14">Why does it take a long time to save a project?</a></h3>
 
 						When a project is saved all the mappings are saved whether or not they are
 						currently visible. There are many ways to filter the mapping lines from
 						view making it easier to evaluate the mappings, but they are still present.
 						If the project contains large schemata with many mappings it will take some
 						time to store in SchemaStore.<br/><br/>
+
+						[<a href="#top">top</a>]
 					</div>
 				</li>
 
 				<li>
 					<div class="chapter">
-						<h3><a name="faq18">How can I know in which XML namespace a schema element is defined?</a></h3>
+						<h3><a name="faq15">How can I know in which XML namespace a schema element is defined?</a></h3>
 
 						NIEM XML Schemata rely heavily on namespaces for scoping definitions.  The
 						most commonly used OpenII XML importer does not separate data components
@@ -662,12 +589,14 @@
 						new schema name should reflect the IEPD to which they belong.  For example
 						names should be changed from the cryptic "nc" to something like "Federal
 						Traveler NIEM Core" schema or "Emergency Alert NIEM Core" schema.<br/><br/>
+
+						[<a href="#top">top</a>]
 					</div>
 				</li>
 
 				<li>
 					<div class="chapter">
-						<h3><a name="faq19">Why do I see square brackets around a schema element name in Harmony?</a></h3>
+						<h3><a name="faq16">Why do I see square brackets around a schema element name in Harmony?</a></h3>
 
 						Although it is not allowed in NIEM conformant schemata, some XML Schema
 						developers choose to create anonymous types.  When those anonymous types
@@ -677,12 +606,14 @@
 						"PersonTattoo" would be displayed as [PersonTattoo].  Of course in a NIEM
 						conformant schema, this complex type would have been given a name such as
 						"PersonTattooType", so there should not be any square brackets.<br/><br/>
+
+						[<a href="#top">top</a>]
 					</div>
 				</li>
 
 				<li>
 					<div class="chapter">
-						<h3><a name="faq20">Why are there so many matches with low evidence scores?</a></h3>
+						<h3><a name="faq17">Why are there so many matches with low evidence scores?</a></h3>
 
 						Harmony matchers are built to be over inclusive, to err on the side of
 						matching elements that have only a remote possibility of being an actual
@@ -697,12 +628,14 @@
 						be different for different schema and project types.  The user may be
 						willing to automatically reject matches below a certain cut-off point to
 						save manual evaluation time.<br/><br/> 
+
+						[<a href="#top">top</a>]
 					</div>
 				</li>
 
 				<li>
 					<div class="chapter">
-						<h3><a name="faq21">What is a good range of evidence scores for viewing successful mappings?</a></h3>
+						<h3><a name="faq18">What is a good range of evidence scores for viewing successful mappings?</a></h3>
 
 						For NIEM schemata, we recommend setting the evidence bar to .4 to begin
 						with.  After examining, annotating and accepting or rejecting matches from
@@ -718,12 +651,14 @@
 						score column in descending order.  Glance down the mapping rows until the
 						matches start to look consistently bad.  That will determine your evidence
 						score cutoff.<br/><br/>
+
+						[<a href="#top">top</a>]
 					</div>
 				</li>
 
 				<li>
 					<div class="chapter">
-						<h3><a name="faq22">Can OpenII import UML models?</a></h3>
+						<h3><a name="faq19">Can OpenII import UML models?</a></h3>
 
 						OpenII has one XMI importer that works with a subset of XMI exported from
 						the UML tool called EA Architect.  This XMI importer was created by a
@@ -752,34 +687,41 @@
 						format. This importer can easily be plugged into the OpenII framework to
 						become one of the many different schema importers available in the OpenII
 						Import tool.<br/><br/>
+
+						[<a href="#top">top</a>]
 					</div>
 				</li>
 
 				<li>
 					<div class="chapter">
-						<h3><a name="faq23">What does "Ignore Matched Elements" do in the Matching Dialog?</a></h3>
+						<h3><a name="faq20">What does "Ignore Validated Elements" do in the Matching Dialog?</a></h3>
 
-						Normally each run of the automatic matchers will overwrite existing matches
-						if they have been user accepted.  And if the matches are accepted, normally
-						running another match may add mappings to nodes already with mappings.  But
-						if the "Ignore Matched Elements" option at the bottom of the Matchers menu
-						is checked, then running subsequent matches will not add mappings to nodes
-						already with user accepted matches.<br/><br/>
+						The only way to prevent matches from being overwritten is to accept them
+						before running another matcher.  But even if the matches are accepted,
+						running another matcher may add mappings to nodes already with existing
+						mappings.  If you'd rather not get additional matches for user accepted
+						matches then choose "Ignore Validated Elements" option at the bottom of the
+						Matchers menu.  With this option selected subsequent matches will not add
+						mappings to nodes already having used accepted matches.<br/><br/>
+
+						[<a href="#top">top</a>]
 					</div>
 				</li>
 
 				<li>
 					<div class="chapter">
-						<h3><a name="faq24">Why do my existing matches get over-written when I run another matcher?</a></h3>
+						<h3><a name="faq21">Why do my existing matches get over-written when I run another matcher?</a></h3>
 
 						To avoid losing existing matches when executing another matching run, you
 						must manually accept the matches you want to keep.<br/><br/>
+
+						[<a href="#top">top</a>]
 					</div>
 				</li>
 
 				<li>
 					<div class="chapter">
-						<h3><a name="faq25">Why do I get a parse error when importing an XML Schema?</a></h3>
+						<h3><a name="faq22">Why do I get a parse error when importing an XML Schema?</a></h3>
 
 						The XML Schema file must be valid and must be correctly referencing any
 						import file locations.  XML Spy does not warn against all syntax errors,
@@ -790,12 +732,14 @@
 						Every now and then, the importer hiccups and an error will halt the
 						process.  Try importing the schema again and it may be successful the
 						second time around.<br/><br/>
+
+						[<a href="#top">top</a>]
 					</div>
 				</li>
 
 				<li>
 					<div class="chapter">
-						<h3><a name="faq26">Why am I getting a parse error when importing the exdl-have.xsd schema from niem-2.1?</a></h3>
+						<h3><a name="faq23">Why am I getting a parse error when importing the exdl-have.xsd schema from niem-2.1?</a></h3>
 
 						There is an XML syntax error in the file located here:<br/>
 						<blockquote>
@@ -805,12 +749,14 @@
 						To fix the syntax error, change line number 478.  Add another pound sign in
 						front of "#other" so that it has two pound signs like this: "##other". Save
 						the file, then re-import <tt>exdl-have.xsd</tt>.<br/><br/> 
+
+						[<a href="#top">top</a>]
 					</div>
 				</li>
 
 				<li>
 					<div class="chapter">
-						<h3><a name="faq27">Does Affinity include domain values (code list values and documentation) when clustering similar schemata?</a></h3>
+						<h3><a name="faq24">Does Affinity include domain values (code list values and documentation) when clustering similar schemata?</a></h3>
 
 						Affinity was designed for clustering many schemata to find those that are
 						semantically similar.  The cluster functions in Affinity use the words
@@ -827,6 +773,121 @@
 						module to OpenII, a user can re-import the domains to make OpenII treat the
 						domain value as an element and the domain value documentation as an element
 						definition.  This has not been tried at the time of writing this FAQ.<br/><br/> 
+
+						[<a href="#top">top</a>]
+					</div>
+				</li>
+
+				<li>
+					<div class="chapter">
+						<h3><a name="faq25">What NIEM related tasks are facilitated by the OpenII tool suite?</a></h3>
+
+						<ul>
+							<li>
+								NIEM Domain Maintenance:
+								<ol>
+									<li>
+										Find content overlap between NIEM Domains;
+									</li> 
+									<li>
+										Determine re-use of NIEM core components;
+									</li> 
+									<li>
+										Review newly proposed NIEM core or domain content for
+										uniqueness and its proper reuse of existing concepts.
+									</li> 
+								</ol>
+							</li>
+
+							<li>
+								Discover Common Business Data Components used across programs:
+								<ol> 
+									<li>
+										Examine schemata across the enterprise to find popular
+										data concepts to standardize into ready-to-use NIEM
+										exchange components.
+									</li>
+								</ol>
+							</li>
+
+							<li>
+								Search IEPD Libraries for reusable data components.
+							</li>
+
+							<li>
+								Evaluate IEPD NIEM data component re-use.
+							</li>
+
+							<li>
+								Generate mapping spreadsheets between business data components and
+								NIEM data components.  The exported spread sheet can be used as
+								part of the IEPD package.  
+							</li>
+
+							<li>
+								Generate mapping spreadsheets between source repository or target
+								repository and your exchange schema.
+							</li>
+
+							<li>
+								Map exchange schemata to the enterprise conceptual data model:
+								<ol>
+									<li> 
+										Determine which schemata are represented by the enterprise
+										conceptual data model
+									</li>
+									<li> 
+										Determine where there are gaps in the enterprise conceptual
+										data model for existing or planned exchange schemata.
+									</li>
+								</ol>
+							</li>
+						</ul>
+						[<a href="#top">top</a>]
+					</div>
+				</li>
+
+				<li>
+					<div class="chapter">
+						<h3><a name="faq26">Does OpenII help produce NIEM IEPD artifacts?</a></h3>
+
+						The current OpenII tools were not designed to produce NIEM IEPD articats.
+						But there are many analysis tasks done before and after IEPD implementation
+						that can be facilitated by OpenII tools. There are several other tools
+						used in the NIEM community that are specifically for IEPD artifact
+						production. Because the OpenII framework is designed to support integration
+						with other tools it can be part of a solution to supporting the entire IEPD
+						lifecycle. Additionally there are many analysis tasks needed before and
+						after IEPD implementation.<br/><br/>
+
+						The current OpenII tools were designed to explore schemata and to find and
+						present correspondences.  These tasks are needed in the early stages of
+						planning an exchange and also in finding relevant reusable data components.
+						The tools can be used to explore existing IEPD schemata and to map NIEM to
+						a business domain model.  After the IEPD is finalized, OpenII can be used
+						to map the exchange schema to source and target repository schemata. There
+						are several NIEM related tasks listed in <a href="#faq25">FAQ 25</a> for
+						which OpenII can help.  There are also enterprise data management activities
+						that can benefit from OpenII capabilities.<br/><br/>
+
+						[<a href="#top">top</a>]
+					</div>
+				</li>
+
+				<li>
+					<div class="chapter">
+						<h3><a name="faq27">Why do NIEM schemata consume so much memory and CPU cycles in OpenII?</a></h3>
+
+						NIEM core and NIEM domain schemata contain a large number of data
+						components to begin with.  Adhering to the NDR, the data components are all
+						defined globally and then repeatedly referenced in numerous containments.
+						The Open II schema view displays all the repeated references to data
+						components.  For example, NIEM Core may have about two thousand unique XSD
+						elements, but when fully expanded into an OpenII containment hierarchy view
+						it will have about eleven thousand schema display nodes. See <a href="#fa07">FAQ 7</a>
+						or ways to improve performance with large schemata.<br/><br/>
+
+						[<a href="#top">top</a>]
 					</div>
 				</li>
 			</ol>
