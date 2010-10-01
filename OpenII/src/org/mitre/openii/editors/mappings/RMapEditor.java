@@ -63,7 +63,7 @@ public class RMapEditor extends OpenIIEditor
 	public void createPartControl(Composite parent)
 	{
 		// Connects the SchemaStoreClient to Harmony's SchemaStoreManager
-		SchemaStoreManager.setConnection(RepositoryManager.getClient());
+		SchemaStoreManager.setClient(RepositoryManager.getClient());
 		
 		// Constructs the AWT frame
 		Composite swtAwtComponent = new Composite(parent, SWT.EMBEDDED);
