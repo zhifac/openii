@@ -4,7 +4,6 @@
 
 package org.mitre.harmony.view.dialogs.importers;
 
-import java.awt.Component;
 import java.net.URI;
 import java.util.ArrayList;
 
@@ -19,8 +18,8 @@ import org.mitre.schemastore.porters.projectImporters.ProjectImporter;
 public class ImportProjectDialog extends AbstractImportDialog
 {	
 	/** Constructs the importer dialog */
-	public ImportProjectDialog(Component parent, HarmonyModel harmonyModel)
-		{ super(parent, harmonyModel); setVisible(true); }
+	public ImportProjectDialog(HarmonyModel harmonyModel)
+		{ super(harmonyModel.getBaseFrame(), harmonyModel); setVisible(true); }
 	
 	/** Returns the type of importer being run */
 	protected String getImporterType() { return "Project"; }

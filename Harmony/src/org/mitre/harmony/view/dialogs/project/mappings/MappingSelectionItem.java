@@ -9,8 +9,8 @@ import javax.swing.BoxLayout;
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 
-import org.mitre.harmony.Harmony;
 import org.mitre.harmony.model.HarmonyModel;
+import org.mitre.harmony.model.HarmonyModel.InstantiationType;
 import org.mitre.harmony.view.dialogs.widgets.Link;
 import org.mitre.schemastore.model.Mapping;
 
@@ -33,7 +33,6 @@ class MappingSelectionItem extends JPanel implements ActionListener
 	MappingSelectionItem(HarmonyModel harmonyModel, Mapping mapping, boolean selected)
 	{
 		this.mapping = mapping;
-		boolean standaloneMode = harmonyModel.getBaseFrame() instanceof Harmony;	
 		
 		// Generate the mapping label
 		String sourceName = harmonyModel.getSchemaManager().getSchema(mapping.getSourceId()).getName();
@@ -49,7 +48,8 @@ class MappingSelectionItem extends JPanel implements ActionListener
 		checkbox.addActionListener(this);
 	
 		// Initialize the delete link
-		if(standaloneMode) deleteMapping = new Link("Delete",this);
+		if(harmonyModel.getInstantiationType()!=InstantiationType.EMBEDDED)
+			deleteMapping = new Link("Delete",this);
 		
 		// Constructs the check box pane
 		JPanel checkboxPane = new JPanel();

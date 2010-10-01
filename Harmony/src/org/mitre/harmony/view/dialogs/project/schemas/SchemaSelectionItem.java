@@ -9,8 +9,8 @@ import javax.swing.BoxLayout;
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 
-import org.mitre.harmony.Harmony;
 import org.mitre.harmony.model.HarmonyModel;
+import org.mitre.harmony.model.HarmonyModel.InstantiationType;
 import org.mitre.schemastore.model.Schema;
 
 /** Schema selection item class */
@@ -26,13 +26,12 @@ class SchemaSelectionItem extends JPanel implements ActionListener
 	SchemaSelectionItem(Schema schema, HarmonyModel harmonyModel)
 	{
 		this.schema = schema;
-		boolean standaloneMode = harmonyModel.getBaseFrame() instanceof Harmony;	
 		
 		// Initialize the check box
 		checkbox = new JCheckBox(schema.getName());
 		checkbox.setOpaque(false);
 		checkbox.setFocusable(false);
-		checkbox.setEnabled(standaloneMode);
+		checkbox.setEnabled(harmonyModel.getInstantiationType()!=InstantiationType.EMBEDDED);
 		checkbox.addActionListener(this);
 		
 		// Constructs the check box pane

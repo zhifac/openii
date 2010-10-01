@@ -105,8 +105,10 @@ public class Harmony extends JFrame implements ProjectListener, WindowListener
 		catch(Exception e) { repository = new Repository(Repository.DERBY,new File("").toURI(),"schemastore","postgres","postgres"); }			
 			
 		// Launch Harmony
-		if(SchemaStoreManager.setConnection(repository)) new Harmony();
-		else System.out.println("(E) Failed to connect to SchemaStore");
+		try {
+			SchemaStoreManager.setClient(repository);
+			new Harmony();
+		} catch(Exception e) { System.out.println("(E) Failed to connect to SchemaStore"); }
 	}
 
 	// Unused event listeners

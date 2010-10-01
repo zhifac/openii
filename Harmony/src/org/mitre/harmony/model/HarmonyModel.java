@@ -2,6 +2,7 @@ package org.mitre.harmony.model;
 
 import java.awt.Frame;
 
+import org.mitre.harmony.Harmony;
 import org.mitre.harmony.model.filters.FilterManager;
 import org.mitre.harmony.model.preferences.PreferencesManager;
 import org.mitre.harmony.model.project.MappingManager;
@@ -9,9 +10,14 @@ import org.mitre.harmony.model.project.ProjectManager;
 import org.mitre.harmony.model.search.HarmonySearchManager;
 import org.mitre.harmony.model.selectedInfo.SelectedInfoManager;
 
+import sun.applet.AppletViewer;
+
 /** Class for monitoring for changes in the project */
 public class HarmonyModel
 {
+	/** Stores Harmony instantiation types */
+	static public enum InstantiationType {STANDALONE,WEBAPP,EMBEDDED};
+	
 	// Stores the base frame for the particular model
 	protected Frame baseFrame = null;
 	
@@ -43,6 +49,14 @@ public class HarmonyModel
 	/** Returns the base frame */
 	public Frame getBaseFrame()
 		{ return baseFrame; }
+	
+	/** Returns the instantiation type */
+	public InstantiationType getInstantiationType()
+	{
+		if(baseFrame instanceof Harmony) return InstantiationType.STANDALONE;
+		if(baseFrame instanceof AppletViewer) return InstantiationType.WEBAPP;
+		return InstantiationType.EMBEDDED;
+	}
 	
 	/** Returns the filters */
 	public FilterManager getFilters()
