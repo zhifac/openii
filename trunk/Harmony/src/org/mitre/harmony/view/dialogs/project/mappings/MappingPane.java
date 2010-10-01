@@ -14,7 +14,7 @@ import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 
-import org.mitre.harmony.Harmony;
+import org.mitre.harmony.model.HarmonyModel.InstantiationType;
 import org.mitre.harmony.view.dialogs.project.ProjectDialog;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.Schema;
@@ -35,7 +35,6 @@ public class MappingPane extends JPanel implements ActionListener
 	public MappingPane(ProjectDialog projectDialog)
 	{
 		this.projectDialog = projectDialog;
-		boolean standaloneMode = projectDialog.getHarmonyModel().getBaseFrame() instanceof Harmony;	
 		
 		// Initializes the mapping selection and display panes
 		mappingSelectionPane = new MappingSelectionPane(projectDialog.getHarmonyModel());
@@ -46,7 +45,7 @@ public class MappingPane extends JPanel implements ActionListener
 		// Create the import schema button
 		JButton button = new JButton("Add Mapping");
 		button.setFocusable(false);
-		button.setEnabled(standaloneMode);
+		button.setEnabled(projectDialog.getHarmonyModel().getInstantiationType()!=InstantiationType.EMBEDDED);
 		button.addActionListener(this);
 		
 		// Constructs the mapping pane

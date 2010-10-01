@@ -15,9 +15,9 @@ import javax.swing.KeyStroke;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 
-import org.mitre.harmony.Harmony;
 import org.mitre.harmony.controllers.ProjectController;
 import org.mitre.harmony.model.HarmonyModel;
+import org.mitre.harmony.model.HarmonyModel.InstantiationType;
 import org.mitre.harmony.model.project.ProjectMapping;
 import org.mitre.harmony.view.dialogs.exporters.ExportMappingDialog;
 import org.mitre.harmony.view.dialogs.exporters.ExportProjectDialog;
@@ -60,7 +60,7 @@ class ProjectMenu extends AbstractMenu implements MenuListener
 		setMnemonic(KeyEvent.VK_P);
 		
 		// Set up menu for stand-alone mode
-		if(harmonyModel.getBaseFrame() instanceof Harmony)
+		if(harmonyModel.getInstantiationType()!=InstantiationType.EMBEDDED)
 		{	
 			// Constructs the new, open, and save menu items
 			JMenuItem newProject = createMenuItem("New", KeyEvent.VK_N, new CreateProjectAction());
@@ -167,7 +167,7 @@ class ProjectMenu extends AbstractMenu implements MenuListener
 	{
 		public void actionPerformed(ActionEvent e)
 		{
-    		if(harmonyModel.getBaseFrame() instanceof Harmony || harmonyModel.getProjectManager().getProject().getId()==null)
+    		if(harmonyModel.getInstantiationType()!=InstantiationType.EMBEDDED || harmonyModel.getProjectManager().getProject().getId()==null)
     			new SaveMappingDialog(harmonyModel);
     		else ProjectController.saveProject(harmonyModel,harmonyModel.getProjectManager().getProject());
 		}
@@ -178,7 +178,7 @@ class ProjectMenu extends AbstractMenu implements MenuListener
 	{
 		public void actionPerformed(ActionEvent e)
 		{
-    		ImportProjectDialog dialog = new ImportProjectDialog(harmonyModel.getBaseFrame(),harmonyModel);
+    		ImportProjectDialog dialog = new ImportProjectDialog(harmonyModel);
     		while(dialog.isDisplayable()) try { Thread.sleep(500); } catch(Exception e2) {}
     		ProjectController.selectMappings(harmonyModel);
 		}
@@ -190,7 +190,7 @@ class ProjectMenu extends AbstractMenu implements MenuListener
     
 	/** Action for launching the "Import Mapping" dialog */
 	private class ImportMappingAction extends AbstractAction
-		{ public void actionPerformed(ActionEvent e) { new ImportMappingDialog(harmonyModel.getBaseFrame(),harmonyModel); } }
+		{ public void actionPerformed(ActionEvent e) { new ImportMappingDialog(harmonyModel); } }
     
 	/** Action for launching the configuration dialog */
 	private class ProjectSettingsAction extends AbstractAction

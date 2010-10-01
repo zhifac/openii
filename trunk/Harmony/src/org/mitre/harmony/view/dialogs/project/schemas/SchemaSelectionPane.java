@@ -16,8 +16,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.border.EmptyBorder;
 
-import org.mitre.harmony.Harmony;
 import org.mitre.harmony.model.HarmonyModel;
+import org.mitre.harmony.model.HarmonyModel.InstantiationType;
 import org.mitre.harmony.view.dialogs.schema.SchemaDialog;
 import org.mitre.schemastore.model.Schema;
 
@@ -83,7 +83,7 @@ class SchemaSelectionPane extends JPanel implements ActionListener
 		setBorder(new EmptyBorder(0,0,0,5));
 		setLayout(new BorderLayout());
 		add(schemaScrollPane,BorderLayout.CENTER);
-		if(harmonyModel.getBaseFrame() instanceof Harmony) 
+		if(harmonyModel.getInstantiationType()!=InstantiationType.EMBEDDED) 
 		{
 			// Create the import schema button
 			JButton button = new JButton("Manage Schemas");

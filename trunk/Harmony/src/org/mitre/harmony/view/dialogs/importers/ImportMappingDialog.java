@@ -6,7 +6,6 @@ package org.mitre.harmony.view.dialogs.importers;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -32,8 +31,8 @@ import javax.swing.event.CaretListener;
 
 import org.mitre.harmony.controllers.ProjectController;
 import org.mitre.harmony.model.HarmonyModel;
-import org.mitre.harmony.model.SchemaStoreManager;
 import org.mitre.harmony.model.project.ProjectMapping;
+import org.mitre.harmony.model.SchemaStoreManager;
 import org.mitre.harmony.view.dialogs.widgets.AbstractButtonPane;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
@@ -249,7 +248,7 @@ public class ImportMappingDialog extends JDialog implements ActionListener, Care
 	}
 
 	/** Constructs the mapping importer dialog */
-	public ImportMappingDialog(Component parent, HarmonyModel harmonyModel)
+	public ImportMappingDialog(HarmonyModel harmonyModel)
 	{
 		super(harmonyModel.getBaseFrame());
 		this.harmonyModel = harmonyModel;

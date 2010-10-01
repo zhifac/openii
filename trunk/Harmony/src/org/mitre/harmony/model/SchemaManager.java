@@ -1,12 +1,13 @@
 package org.mitre.harmony.model;
 
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
+import org.mitre.schemastore.model.schemaInfo.SchemaInfo;
+import org.mitre.schemastore.model.schemaInfo.model.SchemaModel;
 
 /**
  * Class for managing the schemas in the schema repository
@@ -38,12 +39,8 @@ public class SchemaManager
 	public void initSchemas()
 	{
 		schemas = new HashMap<Integer,Schema>();
-		try {
-			for(Schema schema : SchemaStoreManager.getSchemas())
-				schemas.put(schema.getId(),schema);
-		}
-		catch(RemoteException e)
-			{ System.out.println("(E) SchemaManager.initSchemas - " + e.getMessage()); }
+		for(Schema schema : SchemaStoreManager.getSchemas())
+			schemas.put(schema.getId(),schema);
 	}
 	
 	/** Returns a list of all schemas */
@@ -83,10 +80,7 @@ public class SchemaManager
 	{
 		if(schemas==null) initSchemas();
 		if(!schemas.containsKey(schemaID))
-		{
-			try { schemas.put(schemaID, SchemaStoreManager.getSchema(schemaID)); }
-			catch(RemoteException e) { System.out.println("(E) SchemaManager.getSchema - " + e.getMessage()); }
-		}
+			schemas.put(schemaID, SchemaStoreManager.getSchema(schemaID));
 		return schemas.get(schemaID);
 	}
 
@@ -110,14 +104,12 @@ public class SchemaManager
 		// Fill cache if needed
 		if(!schemaInfoList.containsKey(schemaID))
 		{
-			try {
-				HierarchicalSchemaInfo schemaInfo = SchemaStoreManager.getSchemaInfo(schemaID);
-				schemaInfo.setModel(harmonyModel.getProjectManager().getSchemaModel(schemaID));
-				for(SchemaElement schemaElement : schemaInfo.getElements(null))
-					schemaElements.put(schemaElement.getId(), schemaElement);
-				schemaInfoList.put(schemaID, schemaInfo);
-			}
-			catch(RemoteException e) { schemaInfoList.put(schemaID,null); }
+			SchemaInfo schemaInfo = SchemaStoreManager.getSchemaInfo(schemaID);
+			SchemaModel model = harmonyModel.getProjectManager().getSchemaModel(schemaID);
+			HierarchicalSchemaInfo hSchemaInfo = new HierarchicalSchemaInfo(schemaInfo,model);
+			for(SchemaElement schemaElement : hSchemaInfo.getElements(null))
+				schemaElements.put(schemaElement.getId(), schemaElement);
+			schemaInfoList.put(schemaID, hSchemaInfo);
 		}
 		return schemaInfoList.get(schemaID);
 	}
@@ -130,10 +122,7 @@ public class SchemaManager
 	public SchemaElement getSchemaElement(Integer schemaElementID)
 	{
 		if(!schemaElements.containsKey(schemaElementID))
-		{
-			try { schemaElements.put(schemaElementID, SchemaStoreManager.getSchemaElement(schemaElementID)); }
-			catch(RemoteException e) {}
-		}
+			schemaElements.put(schemaElementID, SchemaStoreManager.getSchemaElement(schemaElementID));
 		return schemaElements.get(schemaElementID);
 	}
 
