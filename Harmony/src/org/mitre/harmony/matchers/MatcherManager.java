@@ -10,7 +10,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.mitre.harmony.matchers.matchers.Matcher;
 import org.mitre.harmony.matchers.mergers.MatchMerger;
 import org.mitre.schemastore.client.SchemaStoreClient;
-import org.mitre.schemastore.porters.PorterList;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
