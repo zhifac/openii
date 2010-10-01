@@ -39,7 +39,7 @@ public class MatcherManager
 			DocumentBuilder db = dbf.newDocumentBuilder();
 
 			// parse using builder to get dom representation of the xml file
-			Document dom = db.parse(PorterList.class.getResourceAsStream("/matchers.xml"));
+			Document dom = db.parse(MatcherManager.class.getResourceAsStream("/matchers.xml"));
 
 			// get the root element
 			Element root = dom.getDocumentElement();
