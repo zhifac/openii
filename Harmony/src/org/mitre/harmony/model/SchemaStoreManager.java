@@ -81,6 +81,7 @@ public class SchemaStoreManager
 		URLConnection connection = getServletConnection();
 		ObjectOutputStream out = new ObjectOutputStream(connection.getOutputStream());
 		out.writeObject(functionName);
+		out.writeObject(inputs.length);
 		for(Object input : inputs) out.writeObject(input);
 		out.flush();
 		out.close();
@@ -220,12 +221,10 @@ public class SchemaStoreManager
 	// Importer Functions
 	//--------------------
 	
-	/** Gets the list of available schema importers */ @SuppressWarnings("unchecked")
+	/** Gets the list of available schema importers */
 	static public ArrayList<SchemaImporter> getSchemaImporters()
 	{
 		ArrayList<SchemaImporter> importers = new ArrayList<SchemaImporter>();
-		
-		// Fetch the schema importers from the client
 		if(client!=null)
 		{
 			// Sorts the importers alphabetically
@@ -242,12 +241,7 @@ public class SchemaStoreManager
 					importers.remove(importer);
 			}
 			Collections.sort(importers, new ImporterComparator());
-		}
-
-		// Fetch schema importers remotely
-		if(codeBase!=null)
-			importers = (ArrayList<SchemaImporter>)callFunction("getSchemaImporters",new Object[] {});
-	
+		}	
 		return importers;
 	}
 
@@ -256,18 +250,14 @@ public class SchemaStoreManager
 	{
 		if(client!=null)
 			return (M3ProjectImporter)new PorterManager(client).getPorter(M3ProjectImporter.class);
-		if(codeBase!=null)
-			return (M3ProjectImporter)callFunction("getM3ProjectImporter",new Object[] {});		
 		return null;
 	}
 
-	/** Returns the specified list of porters */ @SuppressWarnings("unchecked")
+	/** Returns the specified list of porters */
 	static public <T extends Porter> ArrayList<T> getPorters(PorterType type)
 	{
 		if(client!=null)
 			return new PorterManager(client).getPorters(type);
-		if(codeBase!=null)
-			return (ArrayList<T>)callFunction("getPorters",new Object[] {type});;		
 		return null;
 	}
 }

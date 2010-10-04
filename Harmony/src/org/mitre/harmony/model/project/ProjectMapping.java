@@ -220,7 +220,7 @@ public class ProjectMapping extends Mapping
 			Integer mappingID = mappingCell.getMappingId();
 			Integer inputID = mappingCell.getElementInputIDs()[0];
 			Integer outputID = mappingCell.getOutput();
-			String author = System.getProperty("user.name");
+			String author = harmonyModel.getUserName();
 			Date date = Calendar.getInstance().getTime();		
 			String notes = mappingCell.getNotes();
 	
