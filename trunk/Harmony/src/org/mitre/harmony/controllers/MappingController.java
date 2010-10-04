@@ -88,7 +88,7 @@ public class MappingController
 		for(ProjectMapping mapping : harmonyModel.getMappingManager().getMappings())
 		{
 			// Identify all computer generated links
-			ArrayList<MappingCell> mappingCellsToDelete = new ArrayList<MappingCell>();
+			HashSet<MappingCell> mappingCellsToDelete = new HashSet<MappingCell>();
 			for(Integer mappingCellID : mapping.getMappingCellsByElement(elementID))
 			{
 				MappingCell mappingCell = mapping.getMappingCell(mappingCellID);
@@ -96,7 +96,7 @@ public class MappingController
 			}		
 			
 			// Delete all Mark all visible links as user selected and all others as rejected
-			mapping.deleteMappingCells(mappingCellsToDelete);
+			mapping.deleteMappingCells(new ArrayList<MappingCell>(mappingCellsToDelete));
 		}
 	}
 }
