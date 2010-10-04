@@ -113,7 +113,7 @@ class ProjectPane extends JPanel implements MouseListener
 		if(saveMode)
 		{
 			Project newProject = harmonyModel.getProjectManager().getProject().copy();
-			newProject.setId(null); newProject.setName(""); newProject.setAuthor(System.getProperty("user.name"));
+			newProject.setId(null); newProject.setName(""); newProject.setAuthor(harmonyModel.getUserName());
 			projects.add(0,newProject);
 		}
 		

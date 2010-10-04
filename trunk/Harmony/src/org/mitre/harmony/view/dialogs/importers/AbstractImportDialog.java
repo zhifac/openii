@@ -128,7 +128,7 @@ abstract public class AbstractImportDialog extends JDialog
 		
 		// Initialize the author
 		authorField.setBorder(new LineBorder(Color.gray));
-		authorField.setText(System.getProperty("user.name"));
+		authorField.setText(harmonyModel.getUserName());
 		
 		// Initialize the description
 		descriptionField.setBorder(new LineBorder(Color.gray));

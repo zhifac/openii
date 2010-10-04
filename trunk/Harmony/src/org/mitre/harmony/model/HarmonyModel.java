@@ -1,6 +1,7 @@
 package org.mitre.harmony.model;
 
 import java.awt.Frame;
+import java.net.InetAddress;
 
 import org.mitre.harmony.Harmony;
 import org.mitre.harmony.model.filters.FilterManager;
@@ -10,7 +11,7 @@ import org.mitre.harmony.model.project.ProjectManager;
 import org.mitre.harmony.model.search.HarmonySearchManager;
 import org.mitre.harmony.model.selectedInfo.SelectedInfoManager;
 
-import sun.applet.AppletViewer;
+import sun.awt.windows.WEmbeddedFrame;
 
 /** Class for monitoring for changes in the project */
 public class HarmonyModel
@@ -54,8 +55,18 @@ public class HarmonyModel
 	public InstantiationType getInstantiationType()
 	{
 		if(baseFrame instanceof Harmony) return InstantiationType.STANDALONE;
-		if(baseFrame instanceof AppletViewer) return InstantiationType.WEBAPP;
-		return InstantiationType.EMBEDDED;
+		try { if(baseFrame instanceof WEmbeddedFrame) return InstantiationType.EMBEDDED; } catch(Exception e) {}
+		return InstantiationType.WEBAPP;
+	}
+	
+	/** Returns the user name */
+	public String getUserName()
+	{
+		try {
+			if(getInstantiationType()==InstantiationType.WEBAPP)
+				return InetAddress.getLocalHost().getHostName();
+			return System.getProperty("user.name");
+		} catch(Exception e) { return ""; }
 	}
 	
 	/** Returns the filters */

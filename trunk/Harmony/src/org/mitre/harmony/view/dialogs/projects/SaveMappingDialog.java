@@ -5,6 +5,7 @@ package org.mitre.harmony.view.dialogs.projects;
 import java.awt.BorderLayout;
 
 import javax.swing.JDialog;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
@@ -82,6 +83,8 @@ public class SaveMappingDialog extends JDialog implements ListSelectionListener
 	public SaveMappingDialog(HarmonyModel harmonyModel)
 	{
 		super(harmonyModel.getBaseFrame());
+		
+		try {
 		this.harmonyModel = harmonyModel;
 		setTitle("Save Project As");
 		setModal(true);
@@ -90,6 +93,13 @@ public class SaveMappingDialog extends JDialog implements ListSelectionListener
 		pack();
 		setLocationRelativeTo(harmonyModel.getBaseFrame());
 		setVisible(true);
+		} catch(Exception e) {
+			 JOptionPane.showMessageDialog(harmonyModel.getBaseFrame(), e.getMessage(),
+                     "Info", JOptionPane.INFORMATION_MESSAGE);
+
+			
+		}
+		repaint();
 	}
 
 	/** Handles a change to the selected project list */

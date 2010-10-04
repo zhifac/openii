@@ -115,7 +115,7 @@ public class MappingCellDialog extends JDialog implements MouseListener, MouseMo
 								//get the mapping ID:
 								Integer mappingId = mappingCells.get(0).getMappingId();			
 								//System.out.println("mappingID=" + mappingId);
-								String author = System.getProperty("user.name");
+								String author = harmonyModel.getUserName();
 								Date date = Calendar.getInstance().getTime();
 								//String function = IdentityFunction.class.getCanonicalName();
 								String function = functionPane.getFunctionName();
