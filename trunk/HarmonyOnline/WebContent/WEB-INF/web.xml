@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app id="WebApp_ID" version="2.4" xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+	<display-name>Harmony</display-name>
+	<context-param>
+		<param-name>connectionType</param-name>
+		<param-value>derby</param-value>
+	</context-param>
+	<context-param>
+		<param-name>connectionLocation</param-name>
+		<param-value>.</param-value>
+	</context-param>
+	<context-param>
+		<param-name>connectionDatabase</param-name>
+		<param-value>schemastore</param-value>
+	</context-param>
+	<context-param>
+		<param-name>connectionUsername</param-name>
+		<param-value>postgres</param-value>
+	</context-param>
+	<context-param>
+		<param-name>connectionPassword</param-name>
+		<param-value>postgres</param-value>
+	</context-param>
+	<servlet>
+		<description></description>
+		<display-name>HarmonyServlet</display-name>
+		<servlet-name>HarmonyServlet</servlet-name>
+		<servlet-class>org.mitre.harmony.servlets.HarmonyServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>HarmonyServlet</servlet-name>
+		<url-pattern>/HarmonyServlet</url-pattern>
+	</servlet-mapping>
+	<welcome-file-list>
+		<welcome-file>Harmony.html</welcome-file>
+	</welcome-file-list>
+</web-app>

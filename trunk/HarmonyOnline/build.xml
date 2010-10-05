@@ -1,0 +1,67 @@
+<project name="galaxy" default="build" basedir=".">
+
+    <!-- DO NOT DELETE - these are required when running ant outside Eclipse.  -->
+    <!-- If you need to delete these, contact Jeff Hoyt and he'll figure out a way to work around it. -->
+    <!-- This requires fatjar.jar to be in your ant's lib directory -->
+    <property name="fjepPath" value="fatjar.jar"/>
+    <taskdef name="fatjar.build" classname="net.sf.fjep.anttask.FJBuildTask" classpath="${fjepPath}"/>
+    <typedef name="fatjar.manifest" classname="net.sf.fjep.anttask.FJManifestType" classpath="${fjepPath}"/>
+    <typedef name="fatjar.exclude" classname="net.sf.fjep.anttask.FJExcludeType" classpath="${fjepPath}"/>
+    <typedef name="fatjar.jarsource" classname="net.sf.fjep.anttask.FJJarSourceType" classpath="${fjepPath}"/>
+    <typedef name="fatjar.filesource" classname="net.sf.fjep.anttask.FJFileSourceType" classpath="${fjepPath}"/>
+
+    <!-- Compiles the code -->
+	<target name="compile">
+	    <mkdir dir="WebContent/WEB-INF/classes"/>
+	    <javac srcdir="src" destdir="WebContent/WEB-INF/classes" deprecation="on" debug="on" source="1.6" target="1.6">
+    		<classpath>
+   	    		<path path="WebContent/GalaxyApplet/lib/SchemaStoreClient.jar"/>
+        	</classpath>
+    	</javac>
+	    <javac srcdir="WebContent/GalaxyApplet" destdir="WebContent/GalaxyApplet" deprecation="on" debug="on" source="1.6" target="1.6">
+	    	<classpath>
+       	    	<path path="WebContent/GalaxyApplet/prefuse.jar"/>
+       	    	<path path="WebContent/GalaxyApplet/SchemaStoreModel.jar"/>
+            </classpath>
+        </javac>
+    </target>
+	
+	<!-- Builds the Galaxy jar file -->
+    <target name="buildGalaxyJar" depends="compile">
+        <fatjar.build output="Galaxy.jar">
+            <fatjar.manifest/>
+            <fatjar.filesource path="WebContent/GalaxyApplet">
+                <fatjar.exclude relpath="prefuse.jar"/>
+                <fatjar.exclude relpath="SchemaStoreModel.jar"/>
+            	<fatjar.exclude regexp=".*\.svn.*"/>
+            </fatjar.filesource>
+        </fatjar.build>
+    </target>
+	
+	<!-- Builds the Galaxy war file -->
+    <target name="buildGalaxyWar" depends="compile">
+        <fatjar.build output="Galaxy.war">
+            <fatjar.manifest/>
+            <fatjar.filesource path="WebContent">
+            	<fatjar.exclude regexp=".*\.svn.*"/>
+            </fatjar.filesource>
+            <fatjar.filesource path="WebContent/GalaxyApplet" relpath="WEB-INF/classes">
+            	<fatjar.exclude regexp=".*\.svn.*"/>
+            </fatjar.filesource>           
+            <fatjar.filesource path="WebContent/WEB-INF/SchemaStoreClient.jar" relpath="WEB-INF/lib"/>
+       </fatjar.build>
+    </target>
+	
+	<!-- Builds the Galaxy jar files -->
+    <target name="build">
+    	<antcall target="buildGalaxyJar"/>
+    	<antcall target="buildGalaxyWar"/>
+   </target>	
+	
+	<!-- Cleans up the constructed jar files -->
+	<target name="clean">
+		<delete file="Galaxy.jar"/>
+	    <delete file="Galaxy.war"/>
+    </target>
+	
+</project>
