@@ -32,17 +32,15 @@
 	    		<path path="lib/xercesImpl.jar"/>
             </classpath>
         </javac>
-		<copy file="src/porters.xml" todir="build/classes"/>
     </target>
 
 	<!-- Builds the SchemaStoreClient jar -->
     <target name="buildSchemaStoreClient" depends="compile">
         <fatjar.build output="SchemaStoreClient.jar">
             <fatjar.manifest/>
-            <fatjar.filesource path="build/classes">
-				<fatjar.exclude relpath="org/mitre/schemastore/porters/"/>
-				<fatjar.exclude relpath="porters.xml"/>
-            </fatjar.filesource>
+            <fatjar.filesource path="build/classes/org/mitre/schemastore/client" relpath="org/mitre/schemastore/client"/>
+            <fatjar.filesource path="build/classes/org/mitre/schemastore/servlet" relpath="org/mitre/schemastore/servlet"/>
+            <fatjar.filesource path="build/classes/org/mitre/schemastore/search" relpath="org/mitre/schemastore/search"/>
             <fatjar.filesource path="${SchemaStore}/build/classes"/>
             <fatjar.jarsource file="lib/activation-1.1.jar" relpath=""/>
             <fatjar.jarsource file="lib/axis.jar" relpath=""/>
@@ -62,11 +60,8 @@
     <target name="buildSchemaStorePorters" depends="compile">
         <fatjar.build output="SchemaStorePorters.jar">
             <fatjar.manifest/>
-            <fatjar.filesource path="build/classes">
-				<fatjar.exclude relpath="org/mitre/schemastore/client/"/>
-				<fatjar.exclude relpath="org/mitre/schemastore/search/"/>
-				<fatjar.exclude relpath="org/mitre/schemastore/servlet/"/>
-            </fatjar.filesource>
+            <fatjar.filesource path="build/classes/org/mitre/schemastore/porters" relpath="org/mitre/schemastore/porters"/>
+            <fatjar.filesource path="src/porters.xml"/>
             <fatjar.jarsource file="lib/arq.jar" relpath=""/>
             <fatjar.jarsource file="lib/castor-1.2-xml.jar" relpath=""/>
             <fatjar.jarsource file="lib/castor-1.2-xml-schema.jar" relpath=""/>
@@ -80,10 +75,19 @@
         </fatjar.build>
     </target>
 
+	<!-- Builds the SchemaStoreSearch jar -->
+    <target name="buildSchemaStoreSearch" depends="compile">
+        <fatjar.build output="SchemaStoreSearch.jar">
+            <fatjar.manifest/>
+            <fatjar.filesource path="build/classes/org/mitre/schemastore/search" relpath="org/mitre/schemastore/search"/>
+        </fatjar.build>
+    </target>
+
 	<!-- Builds the SchemaStore jars -->
     <target name="build">
     	<antcall target="buildSchemaStoreClient"/>
     	<antcall target="buildSchemaStorePorters"/>
+    	<antcall target="buildSchemaStoreSearch"/>
    </target>
 
 	<!-- Cleans up the constructed jar files -->
@@ -92,6 +96,7 @@
 		<delete dir="build/classes"/>
 	    <delete file="SchemaStoreClient.jar"/>
 		<delete file="SchemaStorePorters.jar"/>
+		<delete file="SchemaStoreSearch.jar"/>
     </target>
 
 </project>
