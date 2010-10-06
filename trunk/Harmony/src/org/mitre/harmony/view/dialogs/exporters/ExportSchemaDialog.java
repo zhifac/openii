@@ -10,7 +10,7 @@ import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.porters.Exporter;
-import org.mitre.schemastore.porters.PorterManager.PorterType;
+import org.mitre.schemastore.porters.PorterType;
 import org.mitre.schemastore.porters.schemaExporters.SchemaExporter;
 
 /**

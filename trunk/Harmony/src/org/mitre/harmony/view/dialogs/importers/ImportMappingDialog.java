@@ -40,7 +40,7 @@ import org.mitre.schemastore.model.Project;
 import org.mitre.schemastore.model.ProjectSchema;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.porters.Importer;
-import org.mitre.schemastore.porters.PorterManager.PorterType;
+import org.mitre.schemastore.porters.PorterType;
 import org.mitre.schemastore.porters.mappingImporters.MappingCellPaths;
 import org.mitre.schemastore.porters.mappingImporters.MappingImporter;
 

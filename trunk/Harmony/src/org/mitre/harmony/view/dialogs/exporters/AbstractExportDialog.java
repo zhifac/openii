@@ -2,18 +2,35 @@
 // ALL RIGHTS RESERVED
 package org.mitre.harmony.view.dialogs.exporters;
 
+import java.applet.Applet;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.GridLayout;
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.Vector;
 
+import javax.swing.BorderFactory;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
 import javax.swing.JFileChooser;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
 import javax.swing.filechooser.FileFilter;
 
 import org.mitre.harmony.model.HarmonyModel;
+import org.mitre.harmony.model.HarmonyModel.InstantiationType;
 import org.mitre.harmony.model.SchemaStoreManager;
+import org.mitre.harmony.view.dialogs.widgets.AbstractButtonPane;
 import org.mitre.schemastore.porters.Exporter;
-import org.mitre.schemastore.porters.PorterManager.PorterType;
+import org.mitre.schemastore.porters.PorterType;
 
 /**
  * Abstract dialog for exporting
@@ -44,14 +61,94 @@ abstract class AbstractExportDialog
 			{ return exporter.getName() + "(" + exporter.getFileType() + ")"; }
 	}
 	
+	/** Dialog for selecting exporter to use for export via web application */
+	private class WebAppDialog extends JDialog
+	{
+		/** Stores the Harmony model */
+		private HarmonyModel harmonyModel;
+		
+		/** Stores the selected exporter */
+		private JComboBox exporterList = null;
+		
+		/** Private class for defining the button pane */
+		private class ButtonPane extends AbstractButtonPane
+		{
+			/** Constructs the button pane */
+			private ButtonPane()
+				{ super(new String[]{"OK","Cancel"},1,2); }
+
+			/** Handles selection of button */
+			protected void buttonPressed(String label)
+			{
+				if(label.equals("OK"))
+				{
+					Applet applet = harmonyModel.getApplet();
+					if(applet!=null)
+					{
+						// Display 
+						
+					    try { applet.getAppletContext().showDocument(new URL("javascript:helloWorld()")); }
+					    catch(MalformedURLException me) {}
+					}
+				}
+				dispose();
+			}
+		}
+		
+		/** Initializes the search dialog */
+		public WebAppDialog(HarmonyModel harmonyModel)
+		{
+			super(harmonyModel.getBaseFrame());
+			this.harmonyModel = harmonyModel;
+			
+			// Initialize the exporter list
+			ArrayList<String> exporters = SchemaStoreManager.getPorterNames(getExporterType());
+			exporterList = new JComboBox(new Vector<String>(exporters));
+			exporterList.setBackground(Color.white);
+			exporterList.setFocusable(false);
+			exporterList.setSelectedIndex(0);			
+			
+			// Create the info pane
+			JPanel infoPane = new JPanel();
+			infoPane.setBorder(new CompoundBorder(new EmptyBorder(5,5,0,5),new CompoundBorder(new LineBorder(Color.gray),new EmptyBorder(8,8,8,8))));
+			infoPane.setLayout(new GridLayout(2,1));
+			infoPane.add(new JLabel("Select an exporter:"));
+			infoPane.add(exporterList);
+			
+			// Generate the main dialog pane
+			JPanel pane = new JPanel();
+			pane.setBorder(BorderFactory.createLineBorder(Color.black));
+			pane.setLayout(new BorderLayout());
+			pane.add(infoPane,BorderLayout.CENTER);
+			pane.add(new ButtonPane(),BorderLayout.SOUTH);
+			
+			// Initialize the dialog parameters
+			setTitle(getDialogTitle());
+	    	setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+			setContentPane(pane);
+			setSize(200,150);
+			setResizable(false);
+			setLocationRelativeTo(harmonyModel.getBaseFrame());
+			pack();
+			setVisible(true);
+		}
+	}
+	
 	/** Abstract class for defining the type of exporters */
 	abstract protected PorterType getExporterType();
 	
 	/** Abstract class for exporting to the specified file */
 	abstract protected void export(HarmonyModel harmonyModel, Exporter exporter, File file) throws IOException;
+
+	/** Abstract class for exporting to the specified file */
+//	abstract protected void exportViaWebApp(HarmonyModel harmonyModel, Exporter exporter, File file) throws IOException;
 	
-	/** Allows user to export */
-	public void export(HarmonyModel harmonyModel)
+	/** Returns the dialog title */
+	private String getDialogTitle()
+		{ return "Export " + (getExporterType()==PorterType.PROJECT_EXPORTERS ? "Project" : "Mapping"); }
+	
+	/** Exports via local client */
+	private void exportViaLocalClient(HarmonyModel harmonyModel)
 	{
 		// Initialize the file chooser
 		JFileChooser chooser = new JFileChooser(harmonyModel.getPreferences().getExportDir());
@@ -64,7 +161,7 @@ abstract class AbstractExportDialog
 			chooser.addChoosableFileFilter(new ExportFileFilter(exporter));
 
 		// Display the dialog for selecting which exporter to use
-		if(chooser.showDialog(harmonyModel.getBaseFrame(),"Export")==JFileChooser.APPROVE_OPTION)
+		if(chooser.showDialog(harmonyModel.getBaseFrame(),getDialogTitle())==JFileChooser.APPROVE_OPTION)
 		{
 			// Retrieve the selected file and exporter from the file chooser
 			File file = chooser.getSelectedFile();
@@ -94,5 +191,13 @@ abstract class AbstractExportDialog
 						"Export Error",JOptionPane.ERROR_MESSAGE);
 			}
 		}
+	}
+	
+	/** Allows user to export */
+	public void export(HarmonyModel harmonyModel)
+	{		
+		if(harmonyModel.getInstantiationType()!=InstantiationType.WEBAPP)
+			exportViaLocalClient(harmonyModel);
+		else new WebAppDialog(harmonyModel);
 	}
 }

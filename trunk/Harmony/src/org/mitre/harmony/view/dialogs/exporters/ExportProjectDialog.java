@@ -13,7 +13,7 @@ import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.Project;
 import org.mitre.schemastore.porters.Exporter;
-import org.mitre.schemastore.porters.PorterManager.PorterType;
+import org.mitre.schemastore.porters.PorterType;
 import org.mitre.schemastore.porters.projectExporters.ProjectExporter;
 
 /**

@@ -8,7 +8,7 @@ import java.io.IOException;
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.project.ProjectMapping;
 import org.mitre.schemastore.porters.Exporter;
-import org.mitre.schemastore.porters.PorterManager.PorterType;
+import org.mitre.schemastore.porters.PorterType;
 import org.mitre.schemastore.porters.mappingExporters.MappingExporter;
 
 /**
