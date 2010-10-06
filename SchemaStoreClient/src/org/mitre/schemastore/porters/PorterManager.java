@@ -35,9 +35,6 @@ import org.mitre.schemastore.porters.vocabularyExporters.VocabularyExporter;
 /** Class for managing the various porters */
 public class PorterManager
 {
-	// Constants for references the various porter lists
-	static public enum PorterType {SCHEMA_IMPORTERS, SCHEMA_EXPORTERS, PROJECT_IMPORTERS, PROJECT_EXPORTERS, MAPPING_IMPORTERS, MAPPING_EXPORTERS, VOCABULARY_EXPORTERS};
-	
 	/** Stores listings of the porters */
 	private HashMap<PorterType,PorterList<? extends Porter>> porters = new HashMap<PorterType,PorterList<? extends Porter>>();
 	

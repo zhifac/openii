@@ -75,11 +75,12 @@
         </fatjar.build>
     </target>
 
-	<!-- Builds the SchemaStoreSearch jar -->
-    <target name="buildSchemaStoreSearch" depends="compile">
-        <fatjar.build output="SchemaStoreSearch.jar">
+	<!-- Builds the SchemaStoreUtilities jar -->
+    <target name="buildSchemaStoreUtilities" depends="compile">
+        <fatjar.build output="SchemaStoreUtilities.jar">
             <fatjar.manifest/>
             <fatjar.filesource path="build/classes/org/mitre/schemastore/search" relpath="org/mitre/schemastore/search"/>
+            <fatjar.filesource path="build/classes/org/mitre/schemastore/porters/PorterType.class" relpath="org/mitre/schemastore/porters"/>
         </fatjar.build>
     </target>
 
@@ -87,7 +88,7 @@
     <target name="build">
     	<antcall target="buildSchemaStoreClient"/>
     	<antcall target="buildSchemaStorePorters"/>
-    	<antcall target="buildSchemaStoreSearch"/>
+    	<antcall target="buildSchemaStoreUtilities"/>
    </target>
 
 	<!-- Cleans up the constructed jar files -->
@@ -96,7 +97,7 @@
 		<delete dir="build/classes"/>
 	    <delete file="SchemaStoreClient.jar"/>
 		<delete file="SchemaStorePorters.jar"/>
-		<delete file="SchemaStoreSearch.jar"/>
+		<delete file="SchemaStoreUtilities.jar"/>
     </target>
 
 </project>
