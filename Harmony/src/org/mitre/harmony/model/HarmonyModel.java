@@ -1,5 +1,7 @@
 package org.mitre.harmony.model;
 
+import java.applet.Applet;
+import java.awt.Container;
 import java.awt.Frame;
 import java.net.InetAddress;
 
@@ -11,16 +13,14 @@ import org.mitre.harmony.model.project.ProjectManager;
 import org.mitre.harmony.model.search.HarmonySearchManager;
 import org.mitre.harmony.model.selectedInfo.SelectedInfoManager;
 
-import sun.awt.windows.WEmbeddedFrame;
-
 /** Class for monitoring for changes in the project */
 public class HarmonyModel
 {
 	/** Stores Harmony instantiation types */
 	static public enum InstantiationType {STANDALONE,WEBAPP,EMBEDDED};
 	
-	// Stores the base frame for the particular model
-	protected Frame baseFrame = null;
+	// Stores the container hosting Harmony
+	protected Container container = null;
 	
 	// Stores the managers associated with the currently displayed mapping
 	protected SchemaManager schemaManager = new SchemaManager(this);
@@ -34,9 +34,9 @@ public class HarmonyModel
 	protected HarmonySearchManager searchManager = new HarmonySearchManager(this);
 
 	/** Constructs the Harmony model */
-	public HarmonyModel(Frame baseFrame)
+	public HarmonyModel(Container container)
 	{
-		this.baseFrame = baseFrame;
+		this.container = container;
 
 		// Add listeners to the various model objects
 		filterManager.addListener(selectedInfoManager);
@@ -49,15 +49,25 @@ public class HarmonyModel
 	
 	/** Returns the base frame */
 	public Frame getBaseFrame()
-		{ return baseFrame; }
+	{
+		if(container instanceof Frame) return (Frame)container;
+		Container parent = container.getParent();
+		while(!(parent instanceof Frame))
+			parent = parent.getParent();
+		return (Frame)parent;
+	}
 	
 	/** Returns the instantiation type */
 	public InstantiationType getInstantiationType()
 	{
-		if(baseFrame instanceof Harmony) return InstantiationType.STANDALONE;
-		try { if(baseFrame instanceof WEmbeddedFrame) return InstantiationType.EMBEDDED; } catch(Exception e) {}
-		return InstantiationType.WEBAPP;
+		if(container instanceof Harmony) return InstantiationType.STANDALONE;
+		if(container instanceof Applet) return InstantiationType.WEBAPP;
+		return InstantiationType.EMBEDDED;
 	}
+	
+	/** Returns the applet if a web application */
+	public Applet getApplet()
+		{ return getInstantiationType()==InstantiationType.WEBAPP ? (Applet)container : null; }
 	
 	/** Returns the user name */
 	public String getUserName()

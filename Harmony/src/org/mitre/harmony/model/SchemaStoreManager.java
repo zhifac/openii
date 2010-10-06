@@ -29,7 +29,7 @@ import org.mitre.schemastore.model.schemaInfo.SchemaInfo;
 import org.mitre.schemastore.porters.Importer.URIType;
 import org.mitre.schemastore.porters.Porter;
 import org.mitre.schemastore.porters.PorterManager;
-import org.mitre.schemastore.porters.PorterManager.PorterType;
+import org.mitre.schemastore.porters.PorterType;
 import org.mitre.schemastore.porters.projectImporters.M3ProjectImporter;
 import org.mitre.schemastore.porters.schemaImporters.SchemaImporter;
 
@@ -92,17 +92,17 @@ public class SchemaStoreManager
 	}
 	
 	/** Manages calls to the SchemaStore client method */
-	static private Object callClient(String name, Object args[]) throws RemoteException
+	static private Object callClient(String name, Object inputs[]) throws RemoteException
 	{
 		// Create an array of types
-		Class<?> types[] = new Class[args.length];
-		for(int i=0; i<args.length; i++)
-			types[i] = (args[i]==null) ? Integer.class : args[i].getClass();
+		Class<?> types[] = new Class[inputs.length];
+		for(int i=0; i<inputs.length; i++)
+			types[i] = (inputs[i]==null) ? Integer.class : inputs[i].getClass();
 			
 		// Calls the SchemaStore method
 		try {
 			Method method = client.getClass().getDeclaredMethod(name, types);
-			return method.invoke(client, args);
+			return method.invoke(client, inputs);
 		} catch(Exception e) { return new RemoteException("Unable to call method " + name); }
 	}
 
@@ -256,8 +256,13 @@ public class SchemaStoreManager
 	/** Returns the specified list of porters */
 	static public <T extends Porter> ArrayList<T> getPorters(PorterType type)
 	{
-		if(client!=null)
-			return new PorterManager(client).getPorters(type);
+		if(client!=null) return new PorterManager(client).getPorters(type);
+		return null;
+	}
+	/** Returns the specified list of porter names */ @SuppressWarnings("unchecked")
+	static public ArrayList<String> getPorterNames(PorterType type)
+	{
+		if(codeBase!=null) return (ArrayList<String>)callFunction("getPorterNames",new Object[] {type});
 		return null;
 	}
 }
