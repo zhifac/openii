@@ -70,7 +70,7 @@ public class SchemaDialog extends JDialog implements ListSelectionListener
 			
 			// Handles the export of a schema
 			else if(label.equals("Export"))
-				new ExportSchemaDialog(getSchema()).export(harmonyModel);
+				new ExportSchemaDialog(getSchema()).export(harmonyModel,SchemaDialog.this);
 			
 			// Handles the displaying of info for a schema
 			else if(label.equals("Usage"))
@@ -129,7 +129,7 @@ public class SchemaDialog extends JDialog implements ListSelectionListener
 	/** Initializes the schema dialog */
 	public SchemaDialog(HarmonyModel harmonyModel, ArrayList<Integer> lockedSchemas)
 	{
-		super(harmonyModel.getBaseFrame());
+		super(harmonyModel.getBaseFrame(), true);
 		this.harmonyModel = harmonyModel;
 		this.lockedSchemas = lockedSchemas;
 		
@@ -142,7 +142,6 @@ public class SchemaDialog extends JDialog implements ListSelectionListener
 		
 		// Set up loader dialog layout and contents
 		setTitle("Schema Manager");
-		setModal(true);
     	setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		setContentPane(pane);
 		pack();
