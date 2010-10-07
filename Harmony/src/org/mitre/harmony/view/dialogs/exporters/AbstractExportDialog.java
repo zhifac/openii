@@ -5,6 +5,7 @@ package org.mitre.harmony.view.dialogs.exporters;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.GridLayout;
+import java.awt.Window;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -92,9 +93,9 @@ abstract class AbstractExportDialog
 		}
 		
 		/** Initializes the search dialog */
-		public WebServiceDialog(HarmonyModel harmonyModel)
+		public WebServiceDialog(HarmonyModel harmonyModel, Window parent)
 		{
-			super(harmonyModel.getBaseFrame());
+			super(parent);
 			this.harmonyModel = harmonyModel;
 			
 			// Initialize the exporter list
@@ -120,11 +121,12 @@ abstract class AbstractExportDialog
 			
 			// Initialize the dialog parameters
 			setTitle(getDialogTitle());
+			setModal(true);
 	    	setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 			setContentPane(pane);
 			setSize(200,150);
 			setResizable(false);
-			setLocationRelativeTo(harmonyModel.getBaseFrame());
+			setLocationRelativeTo(parent);
 			pack();
 			setVisible(true);
 		}
@@ -141,8 +143,13 @@ abstract class AbstractExportDialog
 	
 	/** Returns the dialog title */
 	private String getDialogTitle()
-		{ return "Export " + (getExporterType()==PorterType.PROJECT_EXPORTERS ? "Project" : "Mapping"); }
-	
+	{
+		if(getExporterType()==PorterType.SCHEMA_EXPORTERS) return "Export Schema";
+		if(getExporterType()==PorterType.PROJECT_EXPORTERS) return "Export Project";
+		if(getExporterType()==PorterType.MAPPING_EXPORTERS) return "Export Mapping";
+		return null;
+	}
+		
 	/** Exports via local client */
 	private void exportViaLocalClient(HarmonyModel harmonyModel)
 	{
@@ -190,10 +197,10 @@ abstract class AbstractExportDialog
 	}
 	
 	/** Allows user to export */
-	public void export(HarmonyModel harmonyModel)
+	public void export(HarmonyModel harmonyModel, Window parent)
 	{		
 		if(harmonyModel.getInstantiationType()!=InstantiationType.WEBAPP)
 			exportViaLocalClient(harmonyModel);
-		else new WebServiceDialog(harmonyModel);
+		else new WebServiceDialog(harmonyModel, parent);
 	}
 }
