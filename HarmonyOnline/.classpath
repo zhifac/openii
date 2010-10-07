@@ -11,6 +11,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="WebContent/HarmonyApplet/Harmony.jar" sourcepath="/Harmony/src"/>
 	<classpathentry kind="lib" path="WebContent/HarmonyApplet/SchemaStoreModel.jar"/>
-	<classpathentry kind="lib" path="WebContent/HarmonyApplet/SchemaStoreSearch.jar"/>
+	<classpathentry kind="lib" path="WebContent/HarmonyApplet/SchemaStoreUtilities.jar"/>
 	<classpathentry kind="output" path="WebContent/WEB-INF/classes"/>
 </classpath>

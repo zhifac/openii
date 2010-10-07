@@ -5,8 +5,6 @@ package org.mitre.harmony.view;
 import java.applet.Applet;
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Container;
-import java.awt.Frame;
 
 import javax.swing.JPanel;
 import javax.swing.border.CompoundBorder;
@@ -26,14 +24,8 @@ public class HarmonyApplet extends Applet
 	/** Constructs the applet */
 	public void init()
 	{
-		// Retrieve the applet frame
-		Container parent = getParent();
-		while(!(parent instanceof Frame))
-			parent = parent.getParent();
-		Frame frame = (Frame)parent;
-		
 		// Generate the Harmony pane
-		harmonyModel = new HarmonyModel(frame);
+		harmonyModel = new HarmonyModel(this);
 		JPanel harmonyPane = new JPanel();
 		harmonyPane.setBorder(new CompoundBorder(new EmptyBorder(2,2,2,2),new LineBorder(Color.gray)));
 		harmonyPane.setLayout(new BorderLayout());

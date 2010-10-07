@@ -5,6 +5,8 @@
     <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
     <title>Harmony</title>
     <script>
+
+      // Expand the Harmony pane to full screen
       function calcDimensions()
       {
         if (navigator.appName.indexOf("Microsoft") != -1)
@@ -18,6 +20,8 @@
           height=window.innerHeight;
         }
       }
+
+      // Resize the Harmony pane to keep it full screen
       function resize()
       {
         calcDimensions();
@@ -25,13 +29,21 @@
         document.myApplet.height = height;
         window.scroll(0,0);
       }
+
+	  // Displays "Hello World"
+	  function exportFile(filename)
+	  {
+		  document.location.href = "ExportServlet?filename="+filename;
+ 	  }
+      
     </script>
   </head>
   
   <SCRIPT LANGUAGE="JavaScript"><!--
     calcDimensions();
     document.write("<body topmargin=0 leftmargin=0 marginwidth=0 marginheight=0 onload=resize() onresize=resize()>");
-    document.write("  <applet name=myApplet code=org/mitre/harmony/view/HarmonyApplet.class codebase=HarmonyApplet archive=Harmony.jar,SchemaStoreModel.jar,SchemaStoreSearch.jar width=",width," height=",height,"></applet>");
+    document.write("  <applet name=myApplet code=org/mitre/harmony/view/HarmonyApplet.class codebase=HarmonyApplet archive=Harmony.jar,SchemaStoreModel.jar,SchemaStoreUtilities.jar width=",width," height=",height,"></applet>");
     document.write("</body>");
   --></script>
+
 </html>
