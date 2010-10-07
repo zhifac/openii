@@ -259,10 +259,15 @@ public class SchemaStoreManager
 		if(client!=null) return new PorterManager(client).getPorters(type);
 		return null;
 	}
+	
 	/** Returns the specified list of porter names */ @SuppressWarnings("unchecked")
 	static public ArrayList<String> getPorterNames(PorterType type)
 	{
 		if(codeBase!=null) return (ArrayList<String>)callFunction("getPorterNames",new Object[] {type});
 		return null;
 	}
+	
+	/** Exports the data through the specified exporter */
+	static public String exportData(PorterType type, String exporter, ArrayList<Object> data)
+		{ return (String)callFunction("exportData",new Object[] {type,exporter,data}); }
 }
