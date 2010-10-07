@@ -5,6 +5,8 @@ import java.awt.Container;
 import java.awt.Frame;
 import java.net.InetAddress;
 
+import javax.swing.JOptionPane;
+
 import org.mitre.harmony.Harmony;
 import org.mitre.harmony.model.filters.FilterManager;
 import org.mitre.harmony.model.preferences.PreferencesManager;
@@ -49,13 +51,7 @@ public class HarmonyModel
 	
 	/** Returns the base frame */
 	public Frame getBaseFrame()
-	{
-		if(container instanceof Frame) return (Frame)container;
-		Container parent = container.getParent();
-		while(!(parent instanceof Frame))
-			parent = parent.getParent();
-		return (Frame)parent;
-	}
+		{ return JOptionPane.getFrameForComponent(container); }
 	
 	/** Returns the instantiation type */
 	public InstantiationType getInstantiationType()
