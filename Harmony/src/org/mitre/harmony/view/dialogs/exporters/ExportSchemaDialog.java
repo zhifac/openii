@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import org.mitre.harmony.model.HarmonyModel;
+import org.mitre.harmony.model.SchemaStoreManager;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.porters.Exporter;
@@ -29,10 +30,19 @@ public class ExportSchemaDialog extends AbstractExportDialog
 	/** Declares the export type */
 	protected PorterType getExporterType() { return PorterType.SCHEMA_EXPORTERS; }
 	
+	/** Retrieves the schema elements */
+	private ArrayList<SchemaElement> getSchemaElements(HarmonyModel harmonyModel)
+		{ return harmonyModel.getSchemaManager().getSchemaElements(schema.getId(), null); }
+	
 	/** Handles the export to the specified file */
 	protected void export(HarmonyModel harmonyModel, Exporter exporter, File file) throws IOException
+		{ ((SchemaExporter)exporter).exportSchema(schema, getSchemaElements(harmonyModel), file); }
+	
+	/** Handles the export through a web service */
+	protected String exportViaWebService(HarmonyModel harmonyModel, String exporter)
 	{
-		ArrayList<SchemaElement> schemaElements = harmonyModel.getSchemaManager().getSchemaElements(schema.getId(), null);
-		((SchemaExporter)exporter).exportSchema(schema, schemaElements, file);
+		ArrayList<Object> data = new ArrayList<Object>();
+		data.add(schema); data.add(getSchemaElements(harmonyModel));
+		return SchemaStoreManager.exportData(getExporterType(), exporter, data);
 	}
 }

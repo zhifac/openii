@@ -2,7 +2,6 @@
 // ALL RIGHTS RESERVED
 package org.mitre.harmony.view.dialogs.exporters;
 
-import java.applet.Applet;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.GridLayout;
@@ -61,8 +60,8 @@ abstract class AbstractExportDialog
 			{ return exporter.getName() + "(" + exporter.getFileType() + ")"; }
 	}
 	
-	/** Dialog for selecting exporter to use for export via web application */
-	private class WebAppDialog extends JDialog
+	/** Dialog for selecting exporter to use for export via web service */
+	private class WebServiceDialog extends JDialog
 	{
 		/** Stores the Harmony model */
 		private HarmonyModel harmonyModel;
@@ -82,21 +81,18 @@ abstract class AbstractExportDialog
 			{
 				if(label.equals("OK"))
 				{
-					Applet applet = harmonyModel.getApplet();
-					if(applet!=null)
-					{
-						// Display 
-						
-					    try { applet.getAppletContext().showDocument(new URL("javascript:helloWorld()")); }
-					    catch(MalformedURLException me) {}
-					}
+					try {
+						String filename = exportViaWebService(harmonyModel, (String)exporterList.getSelectedItem());
+						if(filename!=null)
+							harmonyModel.getApplet().getAppletContext().showDocument(new URL("javascript:exportFile(\""+filename+"\")"));
+					} catch(MalformedURLException me) {}
 				}
 				dispose();
 			}
 		}
 		
 		/** Initializes the search dialog */
-		public WebAppDialog(HarmonyModel harmonyModel)
+		public WebServiceDialog(HarmonyModel harmonyModel)
 		{
 			super(harmonyModel.getBaseFrame());
 			this.harmonyModel = harmonyModel;
@@ -141,7 +137,7 @@ abstract class AbstractExportDialog
 	abstract protected void export(HarmonyModel harmonyModel, Exporter exporter, File file) throws IOException;
 
 	/** Abstract class for exporting to the specified file */
-//	abstract protected void exportViaWebApp(HarmonyModel harmonyModel, Exporter exporter, File file) throws IOException;
+	abstract protected String exportViaWebService(HarmonyModel harmonyModel, String exporter);
 	
 	/** Returns the dialog title */
 	private String getDialogTitle()
@@ -198,6 +194,6 @@ abstract class AbstractExportDialog
 	{		
 		if(harmonyModel.getInstantiationType()!=InstantiationType.WEBAPP)
 			exportViaLocalClient(harmonyModel);
-		else new WebAppDialog(harmonyModel);
+		else new WebServiceDialog(harmonyModel);
 	}
 }
