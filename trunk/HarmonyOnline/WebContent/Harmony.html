@@ -11,8 +11,12 @@
       {
         if (navigator.appName.indexOf("Microsoft") != -1)
         {
-          width=document.documentElement.clientWidth;
-          height=document.documentElement.clientHeight-4;
+          width=0; height=0;  
+          if(document.body)
+          {
+           	width=document.body.clientWidth;
+            height=document.body.clientHeight-4;
+          }
         }
         else
         {
@@ -25,9 +29,13 @@
       function resize()
       {
         calcDimensions();
-        document.myApplet.width = width;
-        document.myApplet.height = height;
-        window.scroll(0,0);
+        var applet = document.getElementById('harmonyApplet');
+        if(applet)
+        {
+          applet.width = width;
+          applet.height = height;
+          window.scroll(0,0);
+        }
       }
 
 	  // Displays "Hello World"
@@ -42,7 +50,7 @@
   <SCRIPT LANGUAGE="JavaScript"><!--
     calcDimensions();
     document.write("<body topmargin=0 leftmargin=0 marginwidth=0 marginheight=0 onload=resize() onresize=resize()>");
-    document.write("  <applet name=myApplet code=org/mitre/harmony/view/HarmonyApplet.class codebase=HarmonyApplet archive=Harmony.jar,SchemaStoreModel.jar,SchemaStoreUtilities.jar width=",width," height=",height,"></applet>");
+    document.write("  <applet id='harmonyApplet' code=org/mitre/harmony/view/HarmonyApplet.class codebase=HarmonyApplet archive=Harmony.jar,SchemaStoreModel.jar,SchemaStoreUtilities.jar width=",width," height=",height,"></applet>");
     document.write("</body>");
   --></script>
 
