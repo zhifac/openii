@@ -118,7 +118,7 @@ public class HarmonyServlet extends HttpServlet
 	
 	/** Returns a temporary file with the provided name */
 	private File getFile(String filename) throws IOException
-		{ return File.createTempFile("Temp", "__" + filename.replaceAll("\\s","_")); }
+		{ return File.createTempFile("Temp", "__" + filename.replaceAll("[^\\w\\.]+","")); }
 	
 	/** Handles the exporting of data */ @SuppressWarnings("unchecked")
 	private String exportData(PorterType type, String exporterName, ArrayList<Object> data)
