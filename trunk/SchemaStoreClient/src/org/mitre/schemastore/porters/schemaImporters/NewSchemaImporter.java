@@ -2,6 +2,8 @@
 
 package org.mitre.schemastore.porters.schemaImporters;
 
+import org.mitre.schemastore.porters.URIType;
+
 /** Importer for generating new schemas */
 public class NewSchemaImporter extends SchemaImporter
 {

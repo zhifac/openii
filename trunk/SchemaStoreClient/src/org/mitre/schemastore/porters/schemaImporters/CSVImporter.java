@@ -11,6 +11,7 @@ import org.mitre.schemastore.model.Entity;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.porters.ImporterException;
 import org.mitre.schemastore.porters.ImporterException.ImporterExceptionType;
+import org.mitre.schemastore.porters.URIType;
 
 import au.com.bytecode.opencsv.CSVReader;
 

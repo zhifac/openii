@@ -10,6 +10,7 @@ import java.util.ArrayList;
 
 import org.mitre.schemastore.model.*;
 import org.mitre.schemastore.porters.ImporterException;
+import org.mitre.schemastore.porters.URIType;
 
 
 public class DocumentImporter extends SchemaImporter {

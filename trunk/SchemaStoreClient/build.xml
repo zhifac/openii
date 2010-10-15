@@ -79,8 +79,13 @@
     <target name="buildSchemaStoreUtilities" depends="compile">
         <fatjar.build output="SchemaStoreUtilities.jar">
             <fatjar.manifest/>
-            <fatjar.filesource path="build/classes/org/mitre/schemastore/search" relpath="org/mitre/schemastore/search"/>
+            <fatjar.filesource path="build/classes/org/mitre/schemastore/client/SchemaStoreClient.class" relpath="org/mitre/schemastore/client"/>
             <fatjar.filesource path="build/classes/org/mitre/schemastore/porters/PorterType.class" relpath="org/mitre/schemastore/porters"/>
+            <fatjar.filesource path="build/classes/org/mitre/schemastore/porters/Porter.class" relpath="org/mitre/schemastore/porters"/>
+            <fatjar.filesource path="build/classes/org/mitre/schemastore/porters/Importer.class" relpath="org/mitre/schemastore/porters"/>
+            <fatjar.filesource path="build/classes/org/mitre/schemastore/porters/Exporter.class" relpath="org/mitre/schemastore/porters"/>
+            <fatjar.filesource path="build/classes/org/mitre/schemastore/porters/URIType.class" relpath="org/mitre/schemastore/porters"/>
+            <fatjar.filesource path="build/classes/org/mitre/schemastore/search" relpath="org/mitre/schemastore/search"/>
         </fatjar.build>
     </target>
 

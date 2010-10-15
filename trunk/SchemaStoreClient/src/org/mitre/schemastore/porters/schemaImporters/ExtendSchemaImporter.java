@@ -4,6 +4,8 @@ package org.mitre.schemastore.porters.schemaImporters;
 
 import java.util.ArrayList;
 
+import org.mitre.schemastore.porters.URIType;
+
 /** Importer for extending schemas within the repository */
 public class ExtendSchemaImporter extends SchemaImporter
 {

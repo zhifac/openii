@@ -16,6 +16,7 @@ import org.mitre.schemastore.model.ProjectSchema;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.porters.ImporterException;
 import org.mitre.schemastore.porters.ImporterException.ImporterExceptionType;
+import org.mitre.schemastore.porters.URIType;
 import org.mitre.schemastore.porters.mappingImporters.M3MappingImporter;
 import org.mitre.schemastore.porters.schemaImporters.M3SchemaImporter;
 

@@ -20,6 +20,7 @@ import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
 import org.mitre.schemastore.model.schemaInfo.model.CompleteSchemaModel;
 import org.mitre.schemastore.porters.ImporterException;
 import org.mitre.schemastore.porters.ImporterException.ImporterExceptionType;
+import org.mitre.schemastore.porters.URIType;
 import org.mitre.schemastore.porters.xml.ConvertFromXML;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
