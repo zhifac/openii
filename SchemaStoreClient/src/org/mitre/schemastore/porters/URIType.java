@@ -16,18 +16,5 @@
 
 package org.mitre.schemastore.porters;
 
-import java.net.URI;
-import java.util.ArrayList;
-
 /** Abstract Importer class */
-public abstract class Importer extends Porter
-{
-	/** Stores the URI being imported */
-	protected URI uri;
-	
-	/** Returns the importer URI type */
-	abstract public URIType getURIType();
-	
-	/** Returns the importer URI file types (only needed when URI type is FILE) */
-	public ArrayList<String> getFileTypes() { return new ArrayList<String>(); }
-}
+public enum URIType {NONE, SCHEMA, FILE, M3MODEL, URI};

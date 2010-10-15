@@ -13,6 +13,7 @@ import org.mitre.schemastore.client.SchemaStoreClient;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.porters.ImporterException;
 import org.mitre.schemastore.porters.ImporterException.ImporterExceptionType;
+import org.mitre.schemastore.porters.URIType;
 import org.mitre.schemastore.porters.schemaImporters.ddl.parser.Parser;
 import org.mitre.schemastore.porters.schemaImporters.ddl.parser.SchemaBuilder;
 import org.mitre.schemastore.porters.schemaImporters.ddl.parser.Tables;

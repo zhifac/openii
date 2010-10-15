@@ -24,6 +24,7 @@ import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.porters.Importer;
 import org.mitre.schemastore.porters.ImporterException;
 import org.mitre.schemastore.porters.ImporterException.ImporterExceptionType;
+import org.mitre.schemastore.porters.URIType;
 
 /** Abstract Schema Importer class */
 public abstract class SchemaImporter extends Importer {

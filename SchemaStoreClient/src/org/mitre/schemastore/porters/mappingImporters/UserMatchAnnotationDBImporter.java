@@ -17,6 +17,7 @@ import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
 import org.mitre.schemastore.porters.ImporterException;
 import org.mitre.schemastore.porters.ImporterException.ImporterExceptionType;
+import org.mitre.schemastore.porters.URIType;
 
 public class UserMatchAnnotationDBImporter extends MappingImporter
 {
