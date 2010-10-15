@@ -39,7 +39,7 @@ public class ExportSchemaDialog extends AbstractExportDialog
 		{ ((SchemaExporter)exporter).exportSchema(schema, getSchemaElements(harmonyModel), file); }
 	
 	/** Handles the export through a web service */
-	protected String exportViaWebService(HarmonyModel harmonyModel, String exporter)
+	protected String exportViaWebService(HarmonyModel harmonyModel, Exporter exporter)
 	{
 		ArrayList<Object> data = new ArrayList<Object>();
 		data.add(schema); data.add(getSchemaElements(harmonyModel));

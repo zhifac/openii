@@ -83,7 +83,7 @@ abstract class AbstractExportDialog
 				if(label.equals("OK"))
 				{
 					try {
-						String filename = exportViaWebService(harmonyModel, (String)exporterList.getSelectedItem());
+						String filename = exportViaWebService(harmonyModel, (Exporter)exporterList.getSelectedItem());
 						if(filename!=null)
 							harmonyModel.getApplet().getAppletContext().showDocument(new URL("javascript:exportFile(\""+filename+"\")"));
 					} catch(MalformedURLException me) {}
@@ -139,7 +139,7 @@ abstract class AbstractExportDialog
 	abstract protected void export(HarmonyModel harmonyModel, Exporter exporter, File file) throws IOException;
 
 	/** Abstract class for exporting to the specified file */
-	abstract protected String exportViaWebService(HarmonyModel harmonyModel, String exporter);
+	abstract protected String exportViaWebService(HarmonyModel harmonyModel, Exporter exporter);
 	
 	/** Returns the dialog title */
 	private String getDialogTitle()

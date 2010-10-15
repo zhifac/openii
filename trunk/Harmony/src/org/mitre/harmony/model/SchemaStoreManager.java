@@ -24,6 +24,7 @@ import org.mitre.schemastore.model.Project;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.schemaInfo.SchemaInfo;
+import org.mitre.schemastore.porters.Exporter;
 import org.mitre.schemastore.porters.Porter;
 import org.mitre.schemastore.porters.PorterManager;
 import org.mitre.schemastore.porters.PorterType;
@@ -264,6 +265,6 @@ public class SchemaStoreManager
 	}
 	
 	/** Exports the data through the specified exporter */
-	static public String exportData(PorterType type, String exporter, ArrayList<Object> data)
-		{ return (String)callFunction("exportData",new Object[] {type,exporter,data}); }
+	static public String exportData(PorterType type, Exporter exporter, ArrayList<Object> data)
+		{ return (String)callFunction("exportData",new Object[] {type,exporter.toString(),data}); }
 }
