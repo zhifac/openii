@@ -101,7 +101,7 @@ abstract public class AbstractImportDialog extends JDialog
 		selectionLabel.setVerticalAlignment(SwingConstants.CENTER);
 		
 		// Generate the selection list
-		ArrayList<Importer> importers = SchemaStoreManager.getPorters(getPorterType());
+		ArrayList<Importer> importers = SchemaStoreManager.getPorters(getImporterType());
 		selectionList = new JComboBox(new Vector<Importer>(importers));
 		selectionList.setBackground(Color.white);
 		selectionList.setFocusable(false);
@@ -177,7 +177,7 @@ abstract public class AbstractImportDialog extends JDialog
 	}
 	
 	/** Returns the type of importer being run */
-	abstract public PorterType getPorterType();
+	abstract protected PorterType getImporterType();
 	
 	/** Returns the list of used names */
 	abstract protected ArrayList<String> getUsedNames();
@@ -188,9 +188,9 @@ abstract public class AbstractImportDialog extends JDialog
 	/** Returns the dialog title */
 	private String getDialogTitle()
 	{
-		if(getPorterType()==PorterType.SCHEMA_IMPORTERS) return "Import Schema";
-		if(getPorterType()==PorterType.PROJECT_IMPORTERS) return "Import Project";
-		if(getPorterType()==PorterType.MAPPING_IMPORTERS) return "Import Mapping";
+		if(getImporterType()==PorterType.SCHEMA_IMPORTERS) return "Import Schema";
+		if(getImporterType()==PorterType.PROJECT_IMPORTERS) return "Import Project";
+		if(getImporterType()==PorterType.MAPPING_IMPORTERS) return "Import Mapping";
 		return null;
 	}
 	

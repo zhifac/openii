@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.mitre.harmony.model.HarmonyModel;
+import org.mitre.harmony.model.SchemaStoreManager;
 import org.mitre.harmony.model.project.ProjectMapping;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
@@ -23,7 +24,7 @@ import org.mitre.schemastore.porters.projectExporters.ProjectExporter;
 public class ExportProjectDialog extends AbstractExportDialog
 {
 	/** Declares the export type */
-	public PorterType getPorterType() { return PorterType.PROJECT_EXPORTERS; }
+	protected PorterType getExporterType() { return PorterType.PROJECT_EXPORTERS; }
 	
 	/** Retrieves the project */
 	private Project getProject(HarmonyModel harmonyModel)
@@ -44,7 +45,7 @@ public class ExportProjectDialog extends AbstractExportDialog
 		{ ((ProjectExporter)exporter).exportProject(getProject(harmonyModel), getMappings(harmonyModel), file); }
 	
 	/** Handles the export through a web service */
-	public ArrayList<Object> getData(HarmonyModel harmonyModel)
+	protected String exportViaWebService(HarmonyModel harmonyModel, String exporter)
 	{		
 		// Retrieve the mappings
 		HashMap<Mapping,ArrayList<MappingCell>> completeMappings = getMappings(harmonyModel);
@@ -59,6 +60,6 @@ public class ExportProjectDialog extends AbstractExportDialog
 		// Export the data
 		ArrayList<Object> data = new ArrayList<Object>();	
 		data.add(getProject(harmonyModel)); data.add(mappings); data.add(mappingCells);
-		return data;
+		return SchemaStoreManager.exportData(getExporterType(), exporter, data);
 	}
 }

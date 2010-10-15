@@ -33,7 +33,7 @@ public class ImportSchemaDialog extends AbstractImportDialog implements ActionLi
 	}
 	
 	/** Returns the type of importer being run */
-	public PorterType getPorterType() { return PorterType.SCHEMA_IMPORTERS; }
+	protected PorterType getImporterType() { return PorterType.SCHEMA_IMPORTERS; }
 
 	/** Returns the list of used schema names */
 	protected ArrayList<String> getUsedNames()

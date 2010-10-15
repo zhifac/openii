@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import org.mitre.harmony.model.HarmonyModel;
+import org.mitre.harmony.model.SchemaStoreManager;
 import org.mitre.harmony.model.project.ProjectMapping;
 import org.mitre.schemastore.porters.Exporter;
 import org.mitre.schemastore.porters.PorterType;
@@ -26,18 +27,18 @@ public class ExportMappingDialog extends AbstractExportDialog
 		{ this.mapping = mapping; }
 	
 	/** Declares the export type */
-	public PorterType getPorterType() { return PorterType.MAPPING_EXPORTERS; }
-
-	/** Handles the export through a web service */
-	public ArrayList<Object> getData(HarmonyModel harmonyModel)
-	{
-		ArrayList<Object> data = new ArrayList<Object>();
-		data.add(mapping.copy()); data.add(mapping.getMappingCells());
-		return data;
-	}
+	protected PorterType getExporterType() { return PorterType.MAPPING_EXPORTERS; }
 	
 	/** Handles the export to the specified file */
 	protected void export(HarmonyModel harmonyModel, Exporter exporter, File file) throws IOException
 		{ ((MappingExporter)exporter).exportMapping(mapping, mapping.getMappingCells(), file); }
+
+	/** Handles the export through a web service */
+	protected String exportViaWebService(HarmonyModel harmonyModel, String exporter)
+	{
+		ArrayList<Object> data = new ArrayList<Object>();
+		data.add(mapping.copy()); data.add(mapping.getMappingCells());
+		return SchemaStoreManager.exportData(getExporterType(), exporter, data);
+	}
 }
 
