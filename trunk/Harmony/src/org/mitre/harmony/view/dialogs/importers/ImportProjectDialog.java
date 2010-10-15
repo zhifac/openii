@@ -9,9 +9,8 @@ import java.util.ArrayList;
 
 import org.mitre.harmony.controllers.ProjectController;
 import org.mitre.harmony.model.HarmonyModel;
-import org.mitre.harmony.model.SchemaStoreManager;
 import org.mitre.schemastore.model.Project;
-import org.mitre.schemastore.porters.Importer;
+import org.mitre.schemastore.porters.PorterType;
 import org.mitre.schemastore.porters.projectImporters.ProjectImporter;
 
 /** Class for displaying the project importer dialog */
@@ -22,15 +21,7 @@ public class ImportProjectDialog extends AbstractImportDialog
 		{ super(harmonyModel.getBaseFrame(), harmonyModel); setVisible(true); }
 	
 	/** Returns the type of importer being run */
-	protected String getImporterType() { return "Project"; }
-
-	/** Returns the importers from which the user can select */
-	protected ArrayList<Importer> getImporters()
-	{
-		ArrayList<Importer> importers = new ArrayList<Importer>();
-		importers.add(SchemaStoreManager.getM3ProjectImporter());
-		return importers;
-	}
+	protected PorterType getImporterType() { return PorterType.PROJECT_IMPORTERS; }
 
 	/** Returns the list of used project names */
 	protected ArrayList<String> getUsedNames()

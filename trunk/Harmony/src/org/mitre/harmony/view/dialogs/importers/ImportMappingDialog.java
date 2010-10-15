@@ -31,8 +31,8 @@ import javax.swing.event.CaretListener;
 
 import org.mitre.harmony.controllers.ProjectController;
 import org.mitre.harmony.model.HarmonyModel;
-import org.mitre.harmony.model.project.ProjectMapping;
 import org.mitre.harmony.model.SchemaStoreManager;
+import org.mitre.harmony.model.project.ProjectMapping;
 import org.mitre.harmony.view.dialogs.widgets.AbstractButtonPane;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;

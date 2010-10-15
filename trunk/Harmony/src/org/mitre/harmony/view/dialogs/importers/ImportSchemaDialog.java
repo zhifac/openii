@@ -15,10 +15,9 @@ import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
 
 import org.mitre.harmony.model.HarmonyModel;
-import org.mitre.harmony.model.SchemaStoreManager;
 import org.mitre.schemastore.model.Schema;
-import org.mitre.schemastore.porters.Importer;
-import org.mitre.schemastore.porters.Importer.URIType;
+import org.mitre.schemastore.porters.PorterType;
+import org.mitre.schemastore.porters.URIType;
 import org.mitre.schemastore.porters.schemaImporters.SchemaImporter;
 
 /** Class for displaying the schema importer dialog */
@@ -34,16 +33,7 @@ public class ImportSchemaDialog extends AbstractImportDialog implements ActionLi
 	}
 	
 	/** Returns the type of importer being run */
-	protected String getImporterType() { return "Schema"; }
-
-	/** Returns the importers from which the user can select */
-	protected ArrayList<Importer> getImporters()
-	{
-		ArrayList<Importer> importers = new ArrayList<Importer>();
-		for(SchemaImporter importer : SchemaStoreManager.getSchemaImporters())
-			importers.add(importer);
-		return importers;
-	}
+	protected PorterType getImporterType() { return PorterType.SCHEMA_IMPORTERS; }
 
 	/** Returns the list of used schema names */
 	protected ArrayList<String> getUsedNames()

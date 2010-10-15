@@ -25,8 +25,10 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
 import org.mitre.harmony.model.HarmonyModel;
+import org.mitre.harmony.model.SchemaStoreManager;
 import org.mitre.harmony.view.dialogs.widgets.AbstractButtonPane;
 import org.mitre.schemastore.porters.Importer;
+import org.mitre.schemastore.porters.PorterType;
 
 /**
  * Abstract dialog for importing
@@ -99,7 +101,8 @@ abstract public class AbstractImportDialog extends JDialog
 		selectionLabel.setVerticalAlignment(SwingConstants.CENTER);
 		
 		// Generate the selection list
-		selectionList = new JComboBox(new Vector<Importer>(getImporters()));
+		ArrayList<Importer> importers = SchemaStoreManager.getPorters(getImporterType());
+		selectionList = new JComboBox(new Vector<Importer>(importers));
 		selectionList.setBackground(Color.white);
 		selectionList.setFocusable(false);
 		selectionList.setSelectedIndex(0);
@@ -165,7 +168,7 @@ abstract public class AbstractImportDialog extends JDialog
 		mainPane.add(new ButtonPane(), BorderLayout.SOUTH);
 		
 		// Initialize the dialog pane
-		setTitle("Import " + getImporterType());
+		setTitle(getDialogTitle());
 		setModal(true);
     	setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		setContentPane(mainPane);
@@ -174,16 +177,22 @@ abstract public class AbstractImportDialog extends JDialog
 	}
 	
 	/** Returns the type of importer being run */
-	abstract protected String getImporterType();
-	
-	/** Returns the importers from which the user can select */
-	abstract protected ArrayList<Importer> getImporters();
+	abstract protected PorterType getImporterType();
 	
 	/** Returns the list of used names */
 	abstract protected ArrayList<String> getUsedNames();
 	
 	/** Imports the currently specified item */
 	abstract protected void importItem(String name, String author, String description, URI uri) throws Exception;
+	
+	/** Returns the dialog title */
+	private String getDialogTitle()
+	{
+		if(getImporterType()==PorterType.SCHEMA_IMPORTERS) return "Import Schema";
+		if(getImporterType()==PorterType.PROJECT_IMPORTERS) return "Import Project";
+		if(getImporterType()==PorterType.MAPPING_IMPORTERS) return "Import Mapping";
+		return null;
+	}
 	
 	/** Returns the currently selected importer */
 	public Importer getImporter()
