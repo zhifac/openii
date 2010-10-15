@@ -21,7 +21,7 @@ public class ImportProjectDialog extends AbstractImportDialog
 		{ super(harmonyModel.getBaseFrame(), harmonyModel); setVisible(true); }
 	
 	/** Returns the type of importer being run */
-	protected PorterType getImporterType() { return PorterType.PROJECT_IMPORTERS; }
+	public PorterType getPorterType() { return PorterType.PROJECT_IMPORTERS; }
 
 	/** Returns the list of used project names */
 	protected ArrayList<String> getUsedNames()
