@@ -12,8 +12,6 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 
 import org.mitre.harmony.matchers.MatcherManager;
 import org.mitre.schemastore.client.Repository;
@@ -26,10 +24,10 @@ import org.mitre.schemastore.model.Project;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.schemaInfo.SchemaInfo;
-import org.mitre.schemastore.porters.Importer.URIType;
 import org.mitre.schemastore.porters.Porter;
 import org.mitre.schemastore.porters.PorterManager;
 import org.mitre.schemastore.porters.PorterType;
+import org.mitre.schemastore.porters.URIType;
 import org.mitre.schemastore.porters.projectImporters.M3ProjectImporter;
 import org.mitre.schemastore.porters.schemaImporters.SchemaImporter;
 
@@ -220,50 +218,48 @@ public class SchemaStoreManager
 	//--------------------
 	// Importer Functions
 	//--------------------
-	
-	/** Gets the list of available schema importers */
-	static public ArrayList<SchemaImporter> getSchemaImporters()
-	{
-		ArrayList<SchemaImporter> importers = new ArrayList<SchemaImporter>();
-		if(client!=null)
-		{
-			// Sorts the importers alphabetically
-			class ImporterComparator implements Comparator<SchemaImporter>
-				{ public int compare(SchemaImporter importer1, SchemaImporter importer2)
-					{ return importer1.getName().compareTo(importer2.getName()); } }
-
-			// Retrieves the list of available importers
-			importers = new PorterManager(client).getPorters(PorterType.SCHEMA_IMPORTERS);
-			for(SchemaImporter importer : new ArrayList<SchemaImporter>(importers))
-			{
-				URIType uriType = importer.getURIType();
-				if(uriType.equals(URIType.NONE) || uriType.equals(URIType.SCHEMA))
-					importers.remove(importer);
-			}
-			Collections.sort(importers, new ImporterComparator());
-		}	
-		return importers;
-	}
-
-	/** Gets the M3 Project importer */
-	static public M3ProjectImporter getM3ProjectImporter()
-	{
-		if(client!=null)
-			return (M3ProjectImporter)new PorterManager(client).getPorter(M3ProjectImporter.class);
-		return null;
-	}
 
 	/** Returns the specified list of porters */
-	static public <T extends Porter> ArrayList<T> getPorters(PorterType type)
+	static private ArrayList<Porter> getPorterObjects(PorterType type)
 	{
-		if(client!=null) return new PorterManager(client).getPorters(type);
-		return null;
+		// For project importers, only use the M3 Project Importer
+		if(type.equals(PorterType.PROJECT_IMPORTERS))
+		{
+			SchemaImporter importer = (SchemaImporter)new PorterManager(client).getPorter(M3ProjectImporter.class);
+			ArrayList<Porter> porters = new ArrayList<Porter>();
+			porters.add(importer);
+			return porters;
+		}
+		
+		// Get the specified list of porters
+		ArrayList<Porter> porters = new PorterManager(client).getPorters(type);
+
+		// For schema importers, filter out unavailable importers
+		if(type.equals(PorterType.SCHEMA_IMPORTERS))
+			for(Porter porter : new ArrayList<Porter>(porters))
+			{
+				URIType uriType = ((SchemaImporter)porter).getURIType();
+				if(uriType.equals(URIType.NONE) || uriType.equals(URIType.SCHEMA))
+					porters.remove(porter);
+			}
+
+		// Return the list of porters
+		return porters;
 	}
 	
-	/** Returns the specified list of porter names */ @SuppressWarnings("unchecked")
-	static public ArrayList<String> getPorterNames(PorterType type)
+	/** Returns the specified list of porter */ @SuppressWarnings("unchecked")
+	static private ArrayList<Porter> getRemotePorters(PorterType type)
+		{ return (ArrayList<Porter>)callFunction("getPorters",new Object[] {type}); }
+	
+	/** Returns the specified list of porters */ @SuppressWarnings("unchecked")
+	static public <T extends Porter> ArrayList<T> getPorters(PorterType type)
 	{
-		if(codeBase!=null) return (ArrayList<String>)callFunction("getPorterNames",new Object[] {type});
+		try{
+		if(client!=null) return (ArrayList<T>)getPorterObjects(type);
+		else if(codeBase!=null) return (ArrayList<T>)getRemotePorters(type);
+		}
+		catch(Exception e) { e.printStackTrace(); }
+		
 		return null;
 	}
 	

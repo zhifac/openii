@@ -22,7 +22,7 @@ import javax.swing.filechooser.FileFilter;
 
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.schemastore.porters.Importer;
-import org.mitre.schemastore.porters.Importer.URIType;
+import org.mitre.schemastore.porters.URIType;
 
 /** URI parameter class */
 public class UriParameter extends JPanel implements ActionListener

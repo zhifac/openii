@@ -99,8 +99,8 @@ abstract class AbstractExportDialog
 			this.harmonyModel = harmonyModel;
 			
 			// Initialize the exporter list
-			ArrayList<String> exporters = SchemaStoreManager.getPorterNames(getExporterType());
-			exporterList = new JComboBox(new Vector<String>(exporters));
+			ArrayList<Exporter> exporters = SchemaStoreManager.getPorters(getExporterType());
+			exporterList = new JComboBox(new Vector<Exporter>(exporters));
 			exporterList.setBackground(Color.white);
 			exporterList.setFocusable(false);
 			exporterList.setSelectedIndex(0);			
