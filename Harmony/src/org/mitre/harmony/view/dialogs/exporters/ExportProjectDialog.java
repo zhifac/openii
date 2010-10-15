@@ -45,7 +45,7 @@ public class ExportProjectDialog extends AbstractExportDialog
 		{ ((ProjectExporter)exporter).exportProject(getProject(harmonyModel), getMappings(harmonyModel), file); }
 	
 	/** Handles the export through a web service */
-	protected String exportViaWebService(HarmonyModel harmonyModel, String exporter)
+	protected String exportViaWebService(HarmonyModel harmonyModel, Exporter exporter)
 	{		
 		// Retrieve the mappings
 		HashMap<Mapping,ArrayList<MappingCell>> completeMappings = getMappings(harmonyModel);

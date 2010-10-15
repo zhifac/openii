@@ -34,7 +34,7 @@ public class ExportMappingDialog extends AbstractExportDialog
 		{ ((MappingExporter)exporter).exportMapping(mapping, mapping.getMappingCells(), file); }
 
 	/** Handles the export through a web service */
-	protected String exportViaWebService(HarmonyModel harmonyModel, String exporter)
+	protected String exportViaWebService(HarmonyModel harmonyModel, Exporter exporter)
 	{
 		ArrayList<Object> data = new ArrayList<Object>();
 		data.add(mapping.copy()); data.add(mapping.getMappingCells());
