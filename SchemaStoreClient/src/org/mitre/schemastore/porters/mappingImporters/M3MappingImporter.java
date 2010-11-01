@@ -132,13 +132,17 @@ public class M3MappingImporter extends MappingImporter
 	}
 	
 	/** Returns the imported mapping cells */
-	public ArrayList<MappingCell> getMappingCells(HierarchicalSchemaInfo sourceInfo, HierarchicalSchemaInfo targetInfo) throws ImporterException
+	public ArrayList<MappingCell> getMappingCells() throws ImporterException
 	{
 		// Clear out the unidentified mapping cells
 		unidentifiedMappingCellPaths.clear();
-
+		
 		try
 		{
+			// Get the source and target info
+			HierarchicalSchemaInfo sourceInfo = new HierarchicalSchemaInfo(client.getSchemaInfo(source.getId()), getSourceSchema().geetSchemaModel());
+			HierarchicalSchemaInfo targetInfo = new HierarchicalSchemaInfo(client.getSchemaInfo(target.getId()), getTargetSchema().geetSchemaModel());
+			
 			// Generate the list of mapping cells
 			ArrayList<MappingCell> mappingCells = new ArrayList<MappingCell>();
 			for (Element element : getElements("MappingCell"))

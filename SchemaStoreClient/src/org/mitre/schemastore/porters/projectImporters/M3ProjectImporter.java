@@ -14,7 +14,6 @@ import java.util.zip.ZipInputStream;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.ProjectSchema;
 import org.mitre.schemastore.model.Schema;
-import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
 import org.mitre.schemastore.porters.ImporterException;
 import org.mitre.schemastore.porters.ImporterException.ImporterExceptionType;
 import org.mitre.schemastore.porters.URIType;
@@ -123,14 +122,10 @@ public class M3ProjectImporter extends ProjectImporter
 					target.setId(schemaIDMap.get(target.getId()));
 					schemas.add(source); schemas.add(target);
 
-					// Get the schema info objects
-					HierarchicalSchemaInfo sourceInfo = new HierarchicalSchemaInfo(client.getSchemaInfo(source.getId()), source.geetSchemaModel());
-					HierarchicalSchemaInfo targetInfo = new HierarchicalSchemaInfo(client.getSchemaInfo(target.getId()), target.geetSchemaModel());
-					
 					// Retrieve the mapping cells
 					Mapping mapping = new Mapping(null,null,source.getId(),target.getId());
 					mappingImporter.setSchemas(source.getId(), target.getId());
-					mappings.add(new MappingContainer(mapping, mappingImporter.getMappingCells(sourceInfo,targetInfo)));
+					mappings.add(new MappingContainer(mapping, mappingImporter.getMappingCells()));
 				}
 			}
 			

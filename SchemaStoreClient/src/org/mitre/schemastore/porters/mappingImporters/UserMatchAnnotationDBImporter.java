@@ -148,7 +148,7 @@ public class UserMatchAnnotationDBImporter extends MappingImporter
 	}
 
 	/** Returns the mapping cells from the specified URI */
-	public ArrayList<MappingCell> getMappingCells(HierarchicalSchemaInfo hsi1, HierarchicalSchemaInfo hsi2) throws ImporterException
+	public ArrayList<MappingCell> getMappingCells() throws ImporterException
 	{
 		ArrayList<MappingCell> mappingCells = new ArrayList<MappingCell>();
 		
@@ -157,9 +157,14 @@ public class UserMatchAnnotationDBImporter extends MappingImporter
 		
 		// Retrieve mapping cells from database
 		try {
+			
+			// Get the source and target info
+			HierarchicalSchemaInfo hsi1 = new HierarchicalSchemaInfo(client.getSchemaInfo(source.getId()), getSourceSchema().geetSchemaModel());
+			HierarchicalSchemaInfo hsi2 = new HierarchicalSchemaInfo(client.getSchemaInfo(target.getId()), getTargetSchema().geetSchemaModel());
+			
 			Statement stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery("select * from T_Matchlink");
-			
+						
 			while(rs.next())
 			{
 				String notes = rs.getString("linkNote");
