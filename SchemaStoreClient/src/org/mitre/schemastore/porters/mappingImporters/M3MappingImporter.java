@@ -17,7 +17,6 @@ import org.mitre.schemastore.model.FunctionImp;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.ProjectSchema;
 import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
-import org.mitre.schemastore.model.schemaInfo.model.CompleteSchemaModel;
 import org.mitre.schemastore.porters.ImporterException;
 import org.mitre.schemastore.porters.ImporterException.ImporterExceptionType;
 import org.mitre.schemastore.porters.URIType;
@@ -133,17 +132,13 @@ public class M3MappingImporter extends MappingImporter
 	}
 	
 	/** Returns the imported mapping cells */
-	public ArrayList<MappingCell> getMappingCells() throws ImporterException
+	public ArrayList<MappingCell> getMappingCells(HierarchicalSchemaInfo sourceInfo, HierarchicalSchemaInfo targetInfo) throws ImporterException
 	{
 		// Clear out the unidentified mapping cells
 		unidentifiedMappingCellPaths.clear();
 
 		try
 		{
-			// Retrieve info for the source and target schemas (using original schema names for matching purposes)
-			HierarchicalSchemaInfo sourceInfo = new HierarchicalSchemaInfo(client.getSchemaInfo(source.getId()), new CompleteSchemaModel());
-			HierarchicalSchemaInfo targetInfo = new HierarchicalSchemaInfo(client.getSchemaInfo(target.getId()), new CompleteSchemaModel());
-			
 			// Generate the list of mapping cells
 			ArrayList<MappingCell> mappingCells = new ArrayList<MappingCell>();
 			for (Element element : getElements("MappingCell"))
