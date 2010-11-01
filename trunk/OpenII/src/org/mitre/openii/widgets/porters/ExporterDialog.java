@@ -9,7 +9,7 @@ import org.mitre.openii.model.OpenIIManager;
 import org.mitre.openii.model.RepositoryManager;
 import org.mitre.schemastore.porters.Exporter;
 import org.mitre.schemastore.porters.PorterManager;
-import org.mitre.schemastore.porters.PorterManager.PorterType;
+import org.mitre.schemastore.porters.PorterType;
 
 /** Constructs the Exporter Dialog class */
 public class ExporterDialog

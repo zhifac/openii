@@ -29,8 +29,8 @@ import org.mitre.openii.widgets.URIField;
 import org.mitre.openii.widgets.porters.ImporterSelector;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.Project;
-import org.mitre.schemastore.porters.Importer.URIType;
-import org.mitre.schemastore.porters.PorterManager.PorterType;
+import org.mitre.schemastore.porters.URIType;
+import org.mitre.schemastore.porters.PorterType;
 import org.mitre.schemastore.porters.mappingImporters.MappingImporter;
 
 /**

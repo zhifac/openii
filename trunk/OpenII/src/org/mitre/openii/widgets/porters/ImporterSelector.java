@@ -14,8 +14,8 @@ import org.mitre.openii.widgets.WidgetUtilities;
 import org.mitre.schemastore.porters.Importer;
 import org.mitre.schemastore.porters.Porter;
 import org.mitre.schemastore.porters.PorterManager;
-import org.mitre.schemastore.porters.Importer.URIType;
-import org.mitre.schemastore.porters.PorterManager.PorterType;
+import org.mitre.schemastore.porters.URIType;
+import org.mitre.schemastore.porters.PorterType;
 
 /** Constructs the Importer Selector */
 public class ImporterSelector extends ComboViewer implements ISelectionChangedListener

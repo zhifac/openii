@@ -22,7 +22,7 @@ import org.mitre.schemastore.model.Tag;
 import org.mitre.schemastore.model.Vocabulary;
 import org.mitre.schemastore.model.schemaInfo.SchemaInfo;
 import org.mitre.schemastore.porters.Porter;
-import org.mitre.schemastore.porters.PorterManager.PorterType;
+import org.mitre.schemastore.porters.PorterType;
 
 /**
  * Generates the schema store connection for use by all components
