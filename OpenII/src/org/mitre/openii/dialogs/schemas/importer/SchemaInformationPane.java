@@ -15,7 +15,7 @@ import org.mitre.openii.widgets.BasicWidgets;
 import org.mitre.openii.widgets.OptionPane;
 import org.mitre.openii.widgets.URIField;
 import org.mitre.schemastore.model.Schema;
-import org.mitre.schemastore.porters.Importer.URIType;
+import org.mitre.schemastore.porters.URIType;
 import org.mitre.schemastore.porters.schemaImporters.SchemaImporter;
 
 /** Class for storing schema information for the files to be imported */

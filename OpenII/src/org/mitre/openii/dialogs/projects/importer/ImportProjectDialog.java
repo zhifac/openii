@@ -19,7 +19,7 @@ import org.mitre.openii.widgets.BasicWidgets;
 import org.mitre.openii.widgets.URIField;
 import org.mitre.openii.widgets.porters.ImporterSelector;
 import org.mitre.schemastore.model.Project;
-import org.mitre.schemastore.porters.PorterManager.PorterType;
+import org.mitre.schemastore.porters.PorterType;
 import org.mitre.schemastore.porters.projectImporters.ProjectImporter;
 
 /** Constructs the Import Schema Dialog */

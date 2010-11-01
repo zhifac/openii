@@ -9,7 +9,7 @@ import org.mitre.openii.model.OpenIIManager;
 import org.mitre.openii.widgets.porters.ExporterDialog;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.schemaInfo.SchemaInfo;
-import org.mitre.schemastore.porters.PorterManager.PorterType;
+import org.mitre.schemastore.porters.PorterType;
 import org.mitre.schemastore.porters.schemaExporters.SchemaExporter;
 
 /** Constructs the Export Schema Dialog class */
