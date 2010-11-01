@@ -26,6 +26,8 @@ import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.Project;
 import org.mitre.schemastore.model.ProjectSchema;
+import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
+import org.mitre.schemastore.model.schemaInfo.model.SchemaModel;
 import org.mitre.schemastore.porters.Importer;
 import org.mitre.schemastore.porters.ImporterException;
 import org.mitre.schemastore.porters.ImporterException.ImporterExceptionType;
@@ -56,7 +58,7 @@ public abstract class MappingImporter extends Importer
 		{ return new HashMap<Function, ArrayList<FunctionImp>>(); }
 	
 	/** Returns the mapping cells from the specified URI */
-	abstract public ArrayList<MappingCell> getMappingCells() throws ImporterException;
+	abstract public ArrayList<MappingCell> getMappingCells(HierarchicalSchemaInfo source, HierarchicalSchemaInfo target) throws ImporterException;
 	
 	/** Initializes the importer for the specified URI */
 	final public void initialize(URI uri) throws ImporterException
@@ -136,9 +138,19 @@ public abstract class MappingImporter extends Importer
 		// Set the schema information
 		setSchemas(sourceID, targetID);
 		
+		// Get the schema info objects
+		HierarchicalSchemaInfo sourceInfo=null, targetInfo=null;
+		try {
+			SchemaModel sourceModel = project.getSchemaModel(source.getId());
+			SchemaModel targetModel = project.getSchemaModel(target.getId());
+			sourceInfo = new HierarchicalSchemaInfo(client.getSchemaInfo(source.getId()), sourceModel);
+			targetInfo = new HierarchicalSchemaInfo(client.getSchemaInfo(target.getId()), targetModel);
+		}
+		catch(Exception e) { throw new ImporterException(ImporterExceptionType.IMPORT_FAILURE, "A failure occurred in fetching the schemas associated with this mapping. " + e.getMessage()); }
+
 		// Generate the mapping and mapping cells
 		Mapping mapping = new Mapping(null, project.getId(), source.getId(), target.getId());
-		ArrayList<MappingCell> mappingCells = getMappingCells();
+		ArrayList<MappingCell> mappingCells = getMappingCells(sourceInfo,targetInfo);
 			
 		// Imports the mapping (and associated functions)
 		try {
