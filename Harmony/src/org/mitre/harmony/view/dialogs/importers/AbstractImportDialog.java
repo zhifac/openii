@@ -7,6 +7,7 @@ package org.mitre.harmony.view.dialogs.importers;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
@@ -92,8 +93,9 @@ abstract public class AbstractImportDialog extends JDialog
 						// Run the importer through the webapp
 						if(webapp)
 						{
+							AbstractImportDialog.this.setVisible(false);
 							Importer importer = (Importer)selectionList.getSelectedItem();
-							URL javascriptCall = new URL("javascript:importFile(\""+importer+"\",\""+name+"\",\""+author+"\",\""+description+"\")");
+							URL javascriptCall = new URL("javascript:importFile(\""+importer+"\")");
 							harmonyModel.getApplet().getAppletContext().showDocument(javascriptCall);
 						}
 						
@@ -153,6 +155,7 @@ abstract public class AbstractImportDialog extends JDialog
 		descriptionField.setRows(5);
 		descriptionField.setLineWrap(true);
 		descriptionField.setWrapStyleWord(true);
+		descriptionField.setPreferredSize(new Dimension(300,descriptionField.getHeight()));
 		
 		// Initialize the uri
 		uriField = new UriParameter(harmonyModel);

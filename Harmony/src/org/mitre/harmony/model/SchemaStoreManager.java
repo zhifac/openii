@@ -226,9 +226,9 @@ public class SchemaStoreManager
 		// For project importers, only use the M3 Project Importer
 		if(type.equals(PorterType.PROJECT_IMPORTERS))
 		{
-			SchemaImporter importer = (SchemaImporter)new PorterManager(client).getPorter(M3ProjectImporter.class);
+			Porter porter = (Porter)new PorterManager(client).getPorter(M3ProjectImporter.class);
 			ArrayList<Porter> porters = new ArrayList<Porter>();
-			porters.add(importer);
+			porters.add(porter);
 			return porters;
 		}
 		
