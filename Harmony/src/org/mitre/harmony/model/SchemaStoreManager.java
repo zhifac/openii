@@ -240,7 +240,7 @@ public class SchemaStoreManager
 			for(Porter porter : new ArrayList<Porter>(porters))
 			{
 				URIType uriType = ((SchemaImporter)porter).getURIType();
-				if(uriType.equals(URIType.NONE) || uriType.equals(URIType.SCHEMA))
+				if(uriType==URIType.SCHEMA)
 					porters.remove(porter);
 			}
 
