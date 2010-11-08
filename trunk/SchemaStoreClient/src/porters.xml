@@ -1,7 +1,6 @@
 <porters>
   <importers>
     <schemaImporters>
-      <schemaImporter>org.mitre.schemastore.porters.schemaImporters.NewSchemaImporter</schemaImporter>
       <schemaImporter>org.mitre.schemastore.porters.schemaImporters.M3SchemaImporter</schemaImporter>
       <schemaImporter>org.mitre.schemastore.porters.schemaImporters.DDLImporter</schemaImporter>
       <schemaImporter>org.mitre.schemastore.porters.schemaImporters.ExtendSchemaImporter</schemaImporter>

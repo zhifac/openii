@@ -2,6 +2,7 @@
 
 package org.mitre.schemastore.porters.schemaImporters;
 
+import java.net.URI;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -48,14 +49,19 @@ public class GSIPImporter extends SchemaImporter {
     public String getDescription()  { return "This imports schemas from the NAS-specific Access MDB"; }
 
 	/** Returns the importer URI type */
-	public URIType getURIType() { return URIType.FILE; }
+	public URIType getURIType() { return URIType.LIST; }
 	
-	/** Returns the importer URI file types */
-	public ArrayList<String> getFileTypes()
+	/** Returns the list of URIs which can be selected from (only needed when URI type is LIST) */
+	public ArrayList<URI> getList()
 	{
-		ArrayList<String> fileTypes = new ArrayList<String>();
-		fileTypes.add(".mdb");
-		return fileTypes;
+		/** Replace with the real way of accessing list items */
+		ArrayList<URI> items = new ArrayList<URI>();
+		try {
+			items.add(new URI("Item1"));
+			items.add(new URI("Item2"));
+			items.add(new URI("Item3"));
+		} catch(Exception e) {}
+		return items;
 	}
 	
 	/** Initializes the importer for the specified URI */

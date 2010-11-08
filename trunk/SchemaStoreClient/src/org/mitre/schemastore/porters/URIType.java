@@ -17,4 +17,4 @@
 package org.mitre.schemastore.porters;
 
 /** Abstract Importer class */
-public enum URIType {NONE, SCHEMA, FILE, M3MODEL, URI};
+public enum URIType {SCHEMA, FILE, M3MODEL, URI, LIST};

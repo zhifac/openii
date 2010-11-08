@@ -30,4 +30,7 @@ public abstract class Importer extends Porter
 	
 	/** Returns the importer URI file types (only needed when URI type is FILE) */
 	public ArrayList<String> getFileTypes() { return new ArrayList<String>(); }
+	
+	/** Returns the list of URIs which can be selected from (only needed when URI type is LIST) */
+	public ArrayList<URI> getList() { return new ArrayList<URI>(); }
 }
