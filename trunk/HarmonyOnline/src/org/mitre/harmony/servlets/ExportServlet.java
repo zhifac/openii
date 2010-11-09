@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 
-import javax.activation.MimetypesFileTypeMap;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -31,7 +30,6 @@ public class ExportServlet extends HttpServlet
 
 		// Prepare the header to be outputted
 		response.setContentType("text;charset=UTF-8");
-//		response.setContentType(new MimetypesFileTypeMap().getContentType(file));
 		response.setHeader("Content-disposition","attachment; filename="+filename);
 		
 		// Traverse through all lines stored in the results file and output this information to file
