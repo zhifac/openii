@@ -43,6 +43,6 @@ public class ExportSchemaDialog extends AbstractExportDialog
 	{
 		ArrayList<Object> data = new ArrayList<Object>();
 		data.add(schema); data.add(getSchemaElements(harmonyModel));
-		return SchemaStoreManager.exportData(getExporterType(), exporter, data);
+		return SchemaStoreManager.exportData(exporter, data);
 	}
 }

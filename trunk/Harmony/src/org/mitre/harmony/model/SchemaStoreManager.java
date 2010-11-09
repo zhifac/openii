@@ -274,7 +274,15 @@ public class SchemaStoreManager
 		return null;
 	}
 	
+	/** Imports the data through the specified importer */
+	static public Integer importData(Importer importer, String name, String author, String description, URI uri)
+		{ return (Integer)callFunction("importData",new Object[] {importer,name,author,description,uri}); }
+	
+	/** Returns imported mapping cells through the specified importer */ @SuppressWarnings("unchecked")
+	static public ArrayList<MappingCell> getImportedMappingCells(Importer importer, Integer sourceID, Integer targetID, URI uri)
+		{ return (ArrayList<MappingCell>)callFunction("getImportedMappingCells",new Object[] {importer,sourceID,targetID,uri}); }
+	
 	/** Exports the data through the specified exporter */
-	static public String exportData(PorterType type, Exporter exporter, ArrayList<Object> data)
-		{ return (String)callFunction("exportData",new Object[] {type,exporter.toString(),data}); }
+	static public String exportData(Exporter exporter, ArrayList<Object> data)
+		{ return (String)callFunction("exportData",new Object[] {exporter,data}); }
 }

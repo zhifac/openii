@@ -108,8 +108,9 @@ public class URIParameter extends JPanel implements ActionListener
 	{
 		String value = fileField.getText();
 		if(value==null || value.length()==0) return null;
-		if(importer.getURIType()==URIType.URI) try { return new URI(value); } catch(Exception e) { return null; }
-		else return new File(value).toURI();
+		if(importer.getURIType()==URIType.FILE || importer.getURIType()==URIType.M3MODEL)
+			return new File(value).toURI();
+		else try { return new URI(value); } catch(Exception e) { return null; }
 	}
 	
 	/** Handles the pressing of the file button */

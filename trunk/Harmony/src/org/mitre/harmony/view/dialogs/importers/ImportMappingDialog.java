@@ -32,6 +32,7 @@ import javax.swing.event.CaretListener;
 import org.mitre.harmony.controllers.ProjectController;
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.SchemaStoreManager;
+import org.mitre.harmony.model.HarmonyModel.InstantiationType;
 import org.mitre.harmony.model.project.ProjectMapping;
 import org.mitre.harmony.view.dialogs.widgets.AbstractButtonPane;
 import org.mitre.schemastore.model.Mapping;
@@ -40,6 +41,7 @@ import org.mitre.schemastore.model.Project;
 import org.mitre.schemastore.model.ProjectSchema;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.porters.Importer;
+import org.mitre.schemastore.porters.ImporterException;
 import org.mitre.schemastore.porters.PorterType;
 import org.mitre.schemastore.porters.mappingImporters.MappingCellPaths;
 import org.mitre.schemastore.porters.mappingImporters.MappingImporter;
@@ -131,6 +133,24 @@ public class ImportMappingDialog extends JDialog implements ActionListener, Care
 		public ButtonPane()
 			{ super(new String[]{"OK", "Cancel"},1,2); }
 
+		/** Get the mapping cells from the selected importer */
+		private ArrayList<MappingCell> getMappingCells(Integer sourceID, Integer targetID, URI uri) throws ImporterException
+		{
+			// Get mapping cells
+			MappingImporter importer = (MappingImporter)getImporter();
+			importer.initialize(uri);
+			importer.setSchemas(sourceID, targetID);
+			ArrayList<MappingCell> mappingCells = importer.getMappingCells();
+			
+			// Display a dialog with any ignored mapping cells
+			ArrayList<MappingCellPaths> paths = importer.getUnidentifiedMappingCellPaths();
+			if(paths.size()>0)
+				new UnidentifiedMappingCellsDialog(ImportMappingDialog.this, paths);
+
+			// Return the mapping cells
+			return mappingCells;
+		}
+		
 		/** Handles selection of button */
 		protected void buttonPressed(String label)
 		{
@@ -154,10 +174,10 @@ public class ImportMappingDialog extends JDialog implements ActionListener, Care
 						}
 							
 					// Retrieve the mapping cells from the importer
-					MappingImporter importer = (MappingImporter)getImporter();
-					importer.initialize(uri);
-					importer.setSchemas(source.getId(), target.getId());
-					ArrayList<MappingCell> mappingCells = importer.getMappingCells();
+					ArrayList<MappingCell> mappingCells = null;
+					if(harmonyModel.getInstantiationType()!=InstantiationType.WEBAPP)
+						mappingCells = getMappingCells(source.getId(), target.getId(), uri);
+					else SchemaStoreManager.getImportedMappingCells(getImporter(), source.getId(), target.getId(), uri);
 					for(MappingCell mappingCell : mappingCells) mappingCell.setId(null);
 
 					// Add schemas to the project
@@ -176,11 +196,6 @@ public class ImportMappingDialog extends JDialog implements ActionListener, Care
 					// Display the mapping before shutting down
 					ProjectController.selectMappings(harmonyModel);
 					dispose();
-					
-					// Display a dialog with any ignored mapping cells
-					ArrayList<MappingCellPaths> paths = importer.getUnidentifiedMappingCellPaths();
-					if(paths.size()>0)
-						new UnidentifiedMappingCellsDialog(ImportMappingDialog.this, paths);
 				}
 				catch(Exception e)
 					{ JOptionPane.showMessageDialog(this,e.getMessage(),"Import Error",JOptionPane.ERROR_MESSAGE); }
