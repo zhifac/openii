@@ -9,12 +9,16 @@ import java.io.ObjectOutputStream;
 import java.lang.reflect.Method;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.mitre.harmony.view.GenericExporter;
+import org.mitre.harmony.view.GenericImporter;
 import org.mitre.schemastore.client.Repository;
 import org.mitre.schemastore.client.SchemaStoreClient;
 import org.mitre.schemastore.model.Mapping;
@@ -23,12 +27,16 @@ import org.mitre.schemastore.model.Project;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.porters.Exporter;
+import org.mitre.schemastore.porters.Importer;
 import org.mitre.schemastore.porters.Porter;
 import org.mitre.schemastore.porters.PorterManager;
 import org.mitre.schemastore.porters.PorterType;
+import org.mitre.schemastore.porters.URIType;
 import org.mitre.schemastore.porters.mappingExporters.MappingExporter;
 import org.mitre.schemastore.porters.projectExporters.ProjectExporter;
+import org.mitre.schemastore.porters.projectImporters.M3ProjectImporter;
 import org.mitre.schemastore.porters.schemaExporters.SchemaExporter;
+import org.mitre.schemastore.porters.schemaImporters.SchemaImporter;
 
 /**
  * Servlet for returning the information from the database
@@ -74,15 +82,22 @@ public class HarmonyServlet extends HttpServlet
 				args[i] = in.readObject();
 
 			// Retrieves the requested porters
-			if(functionName.equals("getPorterNames"))
-			{
-				ArrayList<String> porterNames = new ArrayList<String>();
-				ArrayList<Porter> porters = new PorterManager(client).getPorters((PorterType)args[0]);
-				for(Porter porter : porters)
-					porterNames.add(porter.getName());
-				output = porterNames;
-			}
+			if(functionName.equals("getPorters"))
+				output = getPorters((PorterType)args[0]);
 
+			// Retrieves the requested URI list from the specified porter
+			else if(functionName.equals("getImporterURIList"))
+			{
+				GenericImporter importer = ((GenericImporter)args[0]);
+				for(Object porter : new PorterManager(client).getPorters(importer.getType()))
+				{
+					Importer currImporter = (Importer)porter;
+					if(importer.getName().equals(currImporter.getName()))
+						if(importer.getDescription().equals(currImporter.getDescription()))
+							{ output = currImporter.getList(); break; }
+				}
+			}
+		
 			// Exports the data through the specified exporter
 			else if(functionName.equals("exportData"))
 			{
@@ -114,6 +129,42 @@ public class HarmonyServlet extends HttpServlet
 			out.writeObject(output);
 			out.close();
 		} catch(IOException e) { System.out.println("(E) HarmonyServlet.doPost - " + e.getMessage()); }
+	}
+	
+	/** Returns the requested list of exporter names */
+	private ArrayList<Porter> getPorters(PorterType type)
+	{
+		ArrayList<Porter> porters = new ArrayList<Porter>();
+		
+		// Retrieve the porters
+		for(Object porter : new PorterManager(client).getPorters(type))
+		{
+			// For schema importers, filter out unavailable importers
+			if(type.equals(PorterType.SCHEMA_IMPORTERS))
+			{
+				URIType uriType = ((SchemaImporter)porter).getURIType();
+				if(uriType.equals(URIType.SCHEMA)) continue;
+			}
+		
+			// For project importers, only allow the M3 Project Importer
+			if(type.equals(PorterType.PROJECT_IMPORTERS) && !(porter instanceof M3ProjectImporter))
+				continue;
+			
+			// Add the porter to the list
+			if(porter instanceof Importer) porters.add(new GenericImporter(type,(Importer)porter));
+			if(porter instanceof Exporter) porters.add(new GenericExporter(type,(Exporter)porter));
+		}
+
+		// Sort the porters
+		class PorterComparator implements Comparator<Porter>
+		{
+			public int compare(Porter porter1, Porter porter2)
+				{ return porter1.getName().compareTo(porter2.getName()); }			
+		}
+		Collections.sort(porters,new PorterComparator());
+		
+		// Return the porters
+		return porters;
 	}
 	
 	/** Returns a temporary file with the provided name */
