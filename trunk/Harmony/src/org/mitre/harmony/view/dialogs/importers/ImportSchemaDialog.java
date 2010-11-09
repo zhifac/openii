@@ -27,7 +27,6 @@ public class ImportSchemaDialog extends AbstractImportDialog implements ActionLi
 	public ImportSchemaDialog(Component parent, HarmonyModel harmonyModel)
 	{
 		super(parent, harmonyModel);
-		selectionList.addActionListener(this);
 		uriField.addListener(this);
 		setVisible(true);
 	}
@@ -55,12 +54,10 @@ public class ImportSchemaDialog extends AbstractImportDialog implements ActionLi
 	/** Handles the selection of the importer */
 	public void actionPerformed(ActionEvent e)
 	{
-		// Initialize the importer pane
-		SchemaImporter importer = (SchemaImporter)getImporter();
-		boolean isM3SchemaImporter = importer.getURIType()==URIType.M3MODEL;
-		uriField.setImporter(getImporter());
+		super.actionPerformed(e);
 
-		// Lock down the name and description fields for archive importers
+		// Lock fields when importing a M3 schema 
+		boolean isM3SchemaImporter = getImporter().getURIType()==URIType.M3MODEL;
 		nameField.setEditable(!isM3SchemaImporter);
 		descriptionField.setEditable(!isM3SchemaImporter);
 		descriptionField.setBackground(isM3SchemaImporter ? new Color(0xeeeeee) : Color.white);
@@ -69,9 +66,9 @@ public class ImportSchemaDialog extends AbstractImportDialog implements ActionLi
 	/** Handles changes to the uri */
 	public void caretUpdate(CaretEvent e)
 	{
-		SchemaImporter importer = (SchemaImporter)selectionList.getSelectedItem();
 		if(uriField.getURI()!=null)
 			try {
+				SchemaImporter importer = (SchemaImporter)selectionList.getSelectedItem();
 				Schema schema = importer.getSchema(uriField.getURI());
 				if(schema!=null)
 				{
@@ -79,6 +76,6 @@ public class ImportSchemaDialog extends AbstractImportDialog implements ActionLi
 					authorField.setText(schema.getAuthor());
 					descriptionField.setText(schema.getDescription());
 				}
-			} catch(Exception e2) { System.out.println("(E) ImporterDialog.caretUpdate - " + e2.getMessage()); }
+			} catch(Exception e2) {}
 	}
 }

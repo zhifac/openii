@@ -8,6 +8,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
 import java.rmi.RemoteException;
@@ -25,6 +26,7 @@ import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.schemaInfo.SchemaInfo;
 import org.mitre.schemastore.porters.Exporter;
+import org.mitre.schemastore.porters.Importer;
 import org.mitre.schemastore.porters.Porter;
 import org.mitre.schemastore.porters.PorterManager;
 import org.mitre.schemastore.porters.PorterType;
@@ -221,7 +223,7 @@ public class SchemaStoreManager
 	//--------------------
 
 	/** Returns the specified list of porters */
-	static private ArrayList<Porter> getPorterObjects(PorterType type)
+	static private ArrayList<Porter> getLocalPorters(PorterType type)
 	{
 		// For project importers, only use the M3 Project Importer
 		if(type.equals(PorterType.PROJECT_IMPORTERS))
@@ -248,16 +250,24 @@ public class SchemaStoreManager
 		return porters;
 	}
 	
-	/** Returns the specified list of porter */ @SuppressWarnings("unchecked")
-	static private ArrayList<Porter> getRemotePorters(PorterType type)
-		{ return (ArrayList<Porter>)callFunction("getPorters",new Object[] {type}); }
-	
 	/** Returns the specified list of porters */ @SuppressWarnings("unchecked")
 	static public <T extends Porter> ArrayList<T> getPorters(PorterType type)
 	{
 		try{
-		if(client!=null) return (ArrayList<T>)getPorterObjects(type);
-		else if(codeBase!=null) return (ArrayList<T>)getRemotePorters(type);
+			if(client!=null) return (ArrayList<T>)getLocalPorters(type);
+			if(codeBase!=null) return (ArrayList<T>)callFunction("getPorters",new Object[] {type});
+		}
+		catch(Exception e) { e.printStackTrace(); }
+		
+		return null;
+	}
+
+	/** Returns the URI list for the specific porter */ @SuppressWarnings("unchecked")
+	static public ArrayList<URI> getImporterURIList(Importer importer)
+	{
+		try{
+			if(client!=null) return importer.getList();
+			if(codeBase!=null) return (ArrayList<URI>)callFunction("getImporterURIList",new Object[] {importer});
 		}
 		catch(Exception e) { e.printStackTrace(); }
 		
