@@ -8,6 +8,8 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
@@ -32,18 +34,16 @@ import org.mitre.harmony.model.SchemaStoreManager;
 import org.mitre.harmony.view.dialogs.widgets.AbstractButtonPane;
 import org.mitre.schemastore.porters.Importer;
 import org.mitre.schemastore.porters.PorterType;
+import org.mitre.schemastore.porters.URIType;
 
 /**
  * Abstract dialog for importing
  * @author CWOLF
  */
-abstract public class AbstractImportDialog extends JDialog
+abstract public class AbstractImportDialog extends JDialog implements ActionListener
 {		
 	/** Stores the harmony model */
 	protected HarmonyModel harmonyModel;
-	
-	/** Indicates if this this dialog is operating as a webapp or not */
-	private boolean webapp = false;
 	
 	/** Flag indicating if import was successful */
 	private boolean successful = false;
@@ -53,19 +53,20 @@ abstract public class AbstractImportDialog extends JDialog
 	protected JTextField nameField = new JTextField();
 	protected JTextField authorField = new JTextField();
 	protected JTextArea descriptionField = new JTextArea();
-	protected UriParameter uriField;	
+	protected URIParameter uriField;
+	protected ButtonPane buttonPane;
 	
 	/** Private class for defining the button pane */
 	private class ButtonPane extends AbstractButtonPane
 	{
 		/** Constructs the button pane */
 		public ButtonPane()
-			{ super(new String[]{webapp?"Continue":"OK", "Cancel"},1,2); }
+			{ super(new String[]{"OK", "Cancel"},1,2); }
 
 		/** Handles selection of button */
 		protected void buttonPressed(String label)
 		{
-			if(label.equals(webapp?"Continue":"OK"))
+			if(!label.equals("Cancel"))
 			{
 				// Retrieve the information from the various fields
 				String name = nameField.getText();
@@ -84,14 +85,14 @@ abstract public class AbstractImportDialog extends JDialog
 				// Update highlighting
 				nameField.setBackground(name.length()>0 ? Color.white : Color.yellow);
 				authorField.setBackground(author.length()>0 ? Color.white : Color.yellow);
-				uriField.setBackground(uri!=null ? Color.white : Color.yellow);
+				if(uriField.isEnabled()) uriField.setBackground(uri!=null ? Color.white : Color.yellow);
 				
 				// If completed, run importer
-				if(name.length()>0 && author.length()>0 && (webapp || uri!=null))
+				if(name.length()>0 && author.length()>0 && (!uriField.isEnabled() || uri!=null))
 				{
 					try {
 						// Run the importer through the webapp
-						if(webapp)
+						if(label.equals("Continue"))
 						{
 							AbstractImportDialog.this.setVisible(false);
 							Importer importer = (Importer)selectionList.getSelectedItem();
@@ -122,7 +123,7 @@ abstract public class AbstractImportDialog extends JDialog
 		selectionList = new JComboBox(new Vector<Importer>(importers));
 		selectionList.setBackground(Color.white);
 		selectionList.setFocusable(false);
-		selectionList.setSelectedIndex(0);
+		selectionList.addActionListener(this);
 		
 		// Generate the importer list pane
 		JPanel importerPane = new JPanel();
@@ -158,8 +159,7 @@ abstract public class AbstractImportDialog extends JDialog
 		descriptionField.setPreferredSize(new Dimension(300,descriptionField.getHeight()));
 		
 		// Initialize the uri
-		uriField = new UriParameter(harmonyModel);
-		uriField.setImporter(getImporter());
+		uriField = new URIParameter(harmonyModel);
 		
 		// Generates the information pane
 		ParameterPane pane = new ParameterPane();
@@ -167,7 +167,7 @@ abstract public class AbstractImportDialog extends JDialog
 		pane.addParameter("Name", nameField);
 		pane.addParameter("Author", authorField);
 		pane.addParameter("Description", descriptionField);
-		if(!webapp) pane.addParameter("File / URI", uriField);
+		pane.addParameter("Location", uriField);
 		return pane;
 	}
 	
@@ -176,7 +176,6 @@ abstract public class AbstractImportDialog extends JDialog
 	{
 		super(harmonyModel.getBaseFrame());
 		this.harmonyModel = harmonyModel;
-		webapp = harmonyModel.getInstantiationType()==InstantiationType.WEBAPP;
 		
 		// Initialize the main pane
 		JPanel mainPane = new JPanel();
@@ -184,7 +183,10 @@ abstract public class AbstractImportDialog extends JDialog
 		mainPane.setLayout(new BorderLayout());
 		mainPane.add(getSelectionPane(),BorderLayout.NORTH);
 		mainPane.add(getInformationPane(),BorderLayout.CENTER);
-		mainPane.add(new ButtonPane(), BorderLayout.SOUTH);
+		mainPane.add(buttonPane = new ButtonPane(), BorderLayout.SOUTH);
+		
+		// Initialize the selected importer
+		selectionList.setSelectedIndex(0);
 		
 		// Initialize the dialog pane
 		setTitle(getDialogTitle());
@@ -193,6 +195,21 @@ abstract public class AbstractImportDialog extends JDialog
 		setContentPane(mainPane);
 		pack();
 		setLocationRelativeTo(parent);
+	}
+	
+	/** Handles changes to the selected importer */
+	public void actionPerformed(ActionEvent e)
+	{
+		// Check to see if web app and if a file is required for the importer
+		boolean webapp = harmonyModel.getInstantiationType()==InstantiationType.WEBAPP;
+		boolean fileRequired = getImporter().getURIType()==URIType.FILE || getImporter().getURIType()==URIType.M3MODEL;
+		
+		// Activate the URI field as needed
+		uriField.setImporter(getImporter());
+		uriField.setEnabled(!(webapp && fileRequired));
+		
+		// Set the button to show either "OK" or "Continue"
+		buttonPane.relabelButton(0, webapp && fileRequired ? "Continue" : "OK");
 	}
 	
 	/** Returns the type of importer being run */
