@@ -60,6 +60,6 @@ public class ExportProjectDialog extends AbstractExportDialog
 		// Export the data
 		ArrayList<Object> data = new ArrayList<Object>();	
 		data.add(getProject(harmonyModel)); data.add(mappings); data.add(mappingCells);
-		return SchemaStoreManager.exportData(getExporterType(), exporter, data);
+		return SchemaStoreManager.exportData(exporter, data);
 	}
 }

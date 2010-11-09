@@ -9,6 +9,8 @@ import java.util.ArrayList;
 
 import org.mitre.harmony.controllers.ProjectController;
 import org.mitre.harmony.model.HarmonyModel;
+import org.mitre.harmony.model.SchemaStoreManager;
+import org.mitre.harmony.model.HarmonyModel.InstantiationType;
 import org.mitre.schemastore.model.Project;
 import org.mitre.schemastore.porters.PorterType;
 import org.mitre.schemastore.porters.projectImporters.ProjectImporter;
@@ -32,13 +34,18 @@ public class ImportProjectDialog extends AbstractImportDialog
 		return usedNames;
 	}
 	
-	/** Imports the currently specified item */
+	/** Imports the currently specified project */
 	protected void importItem(String name, String author, String description, URI uri) throws Exception
 	{
+		Integer projectID = null;
+		
 		// Import the project
 		ProjectImporter importer = (ProjectImporter)selectionList.getSelectedItem();
-		importer.initialize(uri);
-		Integer projectID = importer.importProject(name, author, description);
+		if(harmonyModel.getInstantiationType()==InstantiationType.WEBAPP)
+			projectID = SchemaStoreManager.importData(importer, name, author, description, uri);
+		else { importer.initialize(uri); projectID = importer.importProject(name, author, description); }
+
+		// Load the imported project
 		ProjectController.loadProject(harmonyModel,projectID);
 	}
 }

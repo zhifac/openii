@@ -15,7 +15,10 @@ import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
 
 import org.mitre.harmony.model.HarmonyModel;
+import org.mitre.harmony.model.HarmonyModel.InstantiationType;
+import org.mitre.harmony.model.SchemaStoreManager;
 import org.mitre.schemastore.model.Schema;
+import org.mitre.schemastore.porters.Importer;
 import org.mitre.schemastore.porters.PorterType;
 import org.mitre.schemastore.porters.URIType;
 import org.mitre.schemastore.porters.schemaImporters.SchemaImporter;
@@ -43,11 +46,17 @@ public class ImportSchemaDialog extends AbstractImportDialog implements ActionLi
 		return usedNames;
 	}
 	
-	/** Imports the currently specified item */
+	/** Imports the specified schema locally */
+	private void importItemLocally(Importer importer, String name, String author, String description, URI uri) throws Exception
+		{ ((SchemaImporter)importer).importSchema(name, author, description, uri); }
+	
+	/** Imports the currently specified schema */
 	protected void importItem(String name, String author, String description, URI uri) throws Exception
 	{
-		SchemaImporter importer = (SchemaImporter)selectionList.getSelectedItem();
-		importer.importSchema(name, author, description, uri);
+		Importer importer = (Importer)selectionList.getSelectedItem();
+		if(harmonyModel.getInstantiationType()!=InstantiationType.WEBAPP)
+			importItemLocally(importer,name,author,description,uri);
+		else SchemaStoreManager.importData(importer, name, author, description, uri);
 		harmonyModel.getSchemaManager().initSchemas();
 	}
 	

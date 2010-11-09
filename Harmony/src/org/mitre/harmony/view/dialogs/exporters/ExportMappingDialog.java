@@ -38,7 +38,7 @@ public class ExportMappingDialog extends AbstractExportDialog
 	{
 		ArrayList<Object> data = new ArrayList<Object>();
 		data.add(mapping.copy()); data.add(mapping.getMappingCells());
-		return SchemaStoreManager.exportData(getExporterType(), exporter, data);
+		return SchemaStoreManager.exportData(exporter, data);
 	}
 }
 
