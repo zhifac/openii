@@ -33,8 +33,10 @@ import org.mitre.schemastore.porters.PorterManager;
 import org.mitre.schemastore.porters.PorterType;
 import org.mitre.schemastore.porters.URIType;
 import org.mitre.schemastore.porters.mappingExporters.MappingExporter;
+import org.mitre.schemastore.porters.mappingImporters.MappingImporter;
 import org.mitre.schemastore.porters.projectExporters.ProjectExporter;
 import org.mitre.schemastore.porters.projectImporters.M3ProjectImporter;
+import org.mitre.schemastore.porters.projectImporters.ProjectImporter;
 import org.mitre.schemastore.porters.schemaExporters.SchemaExporter;
 import org.mitre.schemastore.porters.schemaImporters.SchemaImporter;
 
@@ -97,11 +99,28 @@ public class HarmonyServlet extends HttpServlet
 							{ output = currImporter.getList(); break; }
 				}
 			}
-		
+	
+			// Imports data through the specified importer
+			else if(functionName.equals("importData"))
+			{
+				output = importData((GenericImporter)args[0],(String)args[1],(String)args[2],(String)args[3],(URI)args[4]);
+				if(output==null) throw new Exception("Failed to import data");
+			}		
+
+			// Retrieves the imported mapping cells
+			else if(functionName.equals("getImportedMappingCells"))
+			{
+				MappingImporter importer = (MappingImporter)args[0];
+				importer.initialize((URI)args[3]);
+				importer.setSchemas((Integer)args[1], (Integer)args[2]);
+				output = importer.getMappingCells();
+				if(output==null) throw new Exception("Failed to retrieve imported mapping cells");
+			}				
+			
 			// Exports the data through the specified exporter
 			else if(functionName.equals("exportData"))
 			{
-				output = exportData((PorterType)args[0],(String)args[1],(ArrayList<Object>)args[2]);
+				output = exportData((GenericExporter)args[0],(ArrayList<Object>)args[1]);
 				if(output==null) throw new Exception("Failed to export data");			
 			}
 				
@@ -167,19 +186,49 @@ public class HarmonyServlet extends HttpServlet
 		return porters;
 	}
 	
+	/** Retrieves the specified porter */
+	private Porter getPorter(PorterType type, String name)
+	{
+		ArrayList<Porter> porters = new PorterManager(client).getPorters(type);
+		for(Porter porter : porters)
+			if(porter.getName().equals(name)) return porter;
+		return null;
+	}
+	
+	/** Handles the importing of data */
+	private Integer importData(GenericImporter genericImporter, String name, String author, String description, URI uri)
+	{
+		// Retrieve the importer
+		Importer importer = (Importer)getPorter(genericImporter.getType(), genericImporter.getName());
+		if(importer==null) return null;
+		
+		try {	
+			// Run the schema importer
+			if(importer instanceof SchemaImporter)
+				return ((SchemaImporter)importer).importSchema(name, author, description, uri);
+				
+			// Run the project importer
+			if(importer instanceof ProjectImporter)
+			{
+				// Import the project
+				ProjectImporter projectImporter = (ProjectImporter)importer;
+				projectImporter.initialize(uri);
+				return projectImporter.importProject(name, author, description);
+			}
+
+		} catch(Exception e) {}
+		return null;
+	}
+	
 	/** Returns a temporary file with the provided name */
 	private File getFile(String filename) throws IOException
 		{ return File.createTempFile("Temp", "__" + filename.replaceAll("[^\\w\\.]+","")); }
 	
 	/** Handles the exporting of data */ @SuppressWarnings("unchecked")
-	private String exportData(PorterType type, String exporterName, ArrayList<Object> data)
+	private String exportData(GenericExporter genericExporter, ArrayList<Object> data)
 	{
 		// Retrieve the exporter
-		Exporter exporter = null;
-		ArrayList<Exporter> exporters = new PorterManager(client).getPorters(type);
-		for(Exporter currExporter : exporters)
-			if(currExporter.getName().equals(exporterName))
-				{ exporter = currExporter; break; }
+		Exporter exporter = (Exporter)getPorter(genericExporter.getType(), genericExporter.getName());
 		if(exporter==null) return null;
 		
 		// Export the data
