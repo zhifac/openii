@@ -79,7 +79,6 @@ public class UnityDSF extends Thread {
 	 * @return
 	 */
 	private void compileVocabulary() {
-		
 		long start = System.currentTimeMillis();
 		notify("Preparing to generate vocabulary... ");
 
@@ -277,7 +276,7 @@ public class UnityDSF extends Thread {
 		AssociatedElement[] assocElements = new AssociatedElement[synset.terms.size()];
 		SchemaElement baseElement = null;
 
-		// Create associated elements
+		// Create associated elements for the vocabulary term
 		for (int i = 0; i < synset.terms.size(); i++) {
 			SynsetTerm synsetTerm = synset.terms.get(i);
 			assocElements[i] = new AssociatedElement(synsetTerm.schemaId, synsetTerm.elementId, synsetTerm.elementName);
