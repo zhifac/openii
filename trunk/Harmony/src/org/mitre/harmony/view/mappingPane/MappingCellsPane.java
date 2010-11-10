@@ -6,8 +6,6 @@ import java.awt.Graphics;
 
 import javax.swing.JPanel;
 
-import org.mitre.harmony.model.HarmonyModel;
-
 /**
  * Holds mapping cell pane which manages display of all mapping cells between schemas
  * @author CWOLF
@@ -18,7 +16,7 @@ public class MappingCellsPane extends JPanel
 	private MappingPane mappingPane;
 	
 	/** Initializes the link pane */
-	public MappingCellsPane(MappingPane mappingPane, HarmonyModel harmonyModel)
+	public MappingCellsPane(MappingPane mappingPane)
 		{ this.mappingPane = mappingPane; setOpaque(false); }
 
 	/** Paints all links */
