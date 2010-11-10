@@ -53,7 +53,7 @@ abstract public class AbstractImportDialog extends JDialog implements ActionList
 	protected JTextField nameField = new JTextField();
 	protected JTextField authorField = new JTextField();
 	protected JTextArea descriptionField = new JTextArea();
-	protected URIParameter uriField;
+	protected UriParameter uriField;
 	protected ButtonPane buttonPane;
 	
 	/** Private class for defining the button pane */
@@ -159,7 +159,7 @@ abstract public class AbstractImportDialog extends JDialog implements ActionList
 		descriptionField.setPreferredSize(new Dimension(300,descriptionField.getHeight()));
 		
 		// Initialize the uri
-		uriField = new URIParameter(harmonyModel);
+		uriField = new UriParameter(harmonyModel);
 		
 		// Generates the information pane
 		ParameterPane pane = new ParameterPane();
