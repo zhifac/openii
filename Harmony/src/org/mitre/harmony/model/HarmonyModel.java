@@ -22,7 +22,7 @@ public class HarmonyModel
 	static public enum InstantiationType {STANDALONE,WEBAPP,EMBEDDED};
 	
 	// Stores the container hosting Harmony
-	protected Container container = null;
+	protected Container baseFrame = null;
 	
 	// Stores the managers associated with the currently displayed mapping
 	protected SchemaManager schemaManager = new SchemaManager(this);
@@ -36,9 +36,9 @@ public class HarmonyModel
 	protected HarmonySearchManager searchManager = new HarmonySearchManager(this);
 
 	/** Constructs the Harmony model */
-	public HarmonyModel(Container container)
+	public HarmonyModel(Container baseFrame)
 	{
-		this.container = container;
+		this.baseFrame = baseFrame;
 
 		// Add listeners to the various model objects
 		filterManager.addListener(selectedInfoManager);
@@ -51,19 +51,19 @@ public class HarmonyModel
 	
 	/** Returns the base frame */
 	public Frame getBaseFrame()
-		{ return JOptionPane.getFrameForComponent(container); }
+		{ return JOptionPane.getFrameForComponent(baseFrame); }
 	
 	/** Returns the instantiation type */
 	public InstantiationType getInstantiationType()
 	{
-		if(container instanceof Harmony) return InstantiationType.STANDALONE;
-		if(container instanceof Applet) return InstantiationType.WEBAPP;
+		if(baseFrame instanceof Harmony) return InstantiationType.STANDALONE;
+		if(baseFrame instanceof Applet) return InstantiationType.WEBAPP;
 		return InstantiationType.EMBEDDED;
 	}
 	
 	/** Returns the applet if a web application */
 	public Applet getApplet()
-		{ return getInstantiationType()==InstantiationType.WEBAPP ? (Applet)container : null; }
+		{ return getInstantiationType()==InstantiationType.WEBAPP ? (Applet)baseFrame : null; }
 	
 	/** Returns the user name */
 	public String getUserName()
