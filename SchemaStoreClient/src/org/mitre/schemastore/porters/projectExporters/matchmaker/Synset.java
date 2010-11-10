@@ -15,10 +15,8 @@ import java.util.ArrayList;
  */
 public class Synset implements Comparable<Synset> {
 	public ArrayList<SynsetTerm> terms;
-
 	public SynsetTerm leastNode = null;
-
-
+	
 	public Synset() {
 		terms = new ArrayList<SynsetTerm>();
 	}

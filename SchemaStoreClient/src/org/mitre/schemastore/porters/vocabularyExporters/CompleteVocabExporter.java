@@ -45,8 +45,8 @@ public class CompleteVocabExporter extends VocabularyExporter {
 					SchemaElement element = client.getSchemaElement(ae
 							.getElementID());
 					if (element != null)
-						os.print(element.getName() + ", "
-								+ element.getDescription() + ", ");
+						os.print(scrubComma(element.getName()) + ", "
+								+ scrubComma(element.getDescription()) + ", ");
 					else os.print(",,"); 
 				} else os.print(",,"); 
 			}
@@ -54,6 +54,10 @@ public class CompleteVocabExporter extends VocabularyExporter {
 		}
 		os.flush();
 		os.close();
+	}
+
+	private String scrubComma(String name) {
+		return name.replaceAll(",", "/,");
 	}
 
 	@Override
