@@ -255,6 +255,7 @@ public class GenerateVocabularyDialog extends TitleAreaDialog implements ModifyL
 
 							private void reorderTableRows(TableItem item, int oldIndex, int newIndex) {
 								String updateItemName = item.getText(schemaCol);
+								Integer updateItemData = (Integer)item.getData("id"); 
 								if (oldIndex == newIndex)
 									return;
 
@@ -264,6 +265,7 @@ public class GenerateVocabularyDialog extends TitleAreaDialog implements ModifyL
 									for (int i = oldIndex; i > newIndex; i--) {
 										table.getItem(i).setText(schemaCol, table.getItem(i - 1).getText());
 										table.getItem(i).setText(rankCol, Integer.toString(i + 1));
+										table.getItem(i).setData("id", (Integer)table.getItem(i-1).getData("id"));
 									}
 								}
 
@@ -273,12 +275,14 @@ public class GenerateVocabularyDialog extends TitleAreaDialog implements ModifyL
 									for (int i = oldIndex; i < newIndex; i++) {
 										table.getItem(i).setText(schemaCol, table.getItem(i + 1).getText());
 										table.getItem(i).setText(rankCol, Integer.toString(i + 1));
+										table.getItem(i).setData("id", (Integer) table.getItem(i+1).getData("id")); 
 									}
 								}
 
 								// Finally update the moved item to the new row
 								table.getItem(newIndex).setText(schemaCol, updateItemName);
 								table.getItem(newIndex).setText(rankCol, Integer.toString(newIndex + 1));
+								table.getItem(newIndex).setData("id",updateItemData );
 								table.setSelection(newIndex);
 							}
 						});
@@ -362,7 +366,7 @@ public class GenerateVocabularyDialog extends TitleAreaDialog implements ModifyL
 		if (vocab != null && !progressDialog.isClosed()) {
 			// Save the vocabulary
 			progressDialog.updateProgressMessage("Saving the vocabulary...");
-			OpenIIManager.saveVocabulary(unity.getVocabulary());
+			OpenIIManager.saveVocabulary(vocab);
 			progressDialog.updateProgressMessage("Vocabulary completed!! ");
 
 			// Sleep a second to allow the message to be shown
@@ -390,10 +394,12 @@ public class GenerateVocabularyDialog extends TitleAreaDialog implements ModifyL
 	private ArrayList<Integer> getRankedSchemas() {
 		ArrayList<Integer> schemas = new ArrayList<Integer>();
 		Table schemaTable = mappingGroups.get(groupOptions.getOption());
-		System.out.println("okpressed: ");
+		System.out.println("schema ranking: ");
+		int i = 0; 
 		for (TableItem item : schemaTable.getItems()) {
 			System.out.println((Integer) item.getData("id") + ": " + item.getText(0));
-			schemas.add((Integer) item.getData("id"));
+			schemas.add(i, (Integer) item.getData("id"));
+			i++; 
 		}
 		return schemas;
 	}
