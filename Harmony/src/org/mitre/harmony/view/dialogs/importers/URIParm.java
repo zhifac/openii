@@ -26,7 +26,7 @@ import org.mitre.schemastore.porters.Importer;
 import org.mitre.schemastore.porters.URIType;
 
 /** URI parameter class */
-public class URIParameter extends JPanel implements ActionListener
+public class URIParm extends JPanel implements ActionListener
 {
 	/** Stores the Harmony model */
 	private HarmonyModel harmonyModel;
@@ -61,7 +61,7 @@ public class URIParameter extends JPanel implements ActionListener
 	}
 	
 	/** Constructs the file parameter */
-	public URIParameter(HarmonyModel harmonyModel)
+	public URIParm(HarmonyModel harmonyModel)
 	{
 		this.harmonyModel = harmonyModel;
 		
@@ -124,11 +124,9 @@ public class URIParameter extends JPanel implements ActionListener
 		// Handles the selection of an item from a list for importing
 		if(importer.getURIType()==URIType.LIST)
 		{
-			URIListDialog listDialog =new URIListDialog((JDialog)dialog,SchemaStoreManager.getImporterURIList(importer));
-			while(listDialog.isVisible())
-				try { Thread.sleep(250); } catch(Exception e2) {}
-			if(listDialog.getURI()!=null)	
-				fileField.setText(listDialog.getURI().toString());
+			URIListDialog listDialog = new URIListDialog((JDialog)dialog,SchemaStoreManager.getImporterURIList(importer));
+			while(listDialog.isVisible()) try { Thread.sleep(500); } catch(Exception e2) {}
+			fileField.setText(listDialog.getURI().toString());
 		}
 		
 		// Handles the retrieval of a file for importing
