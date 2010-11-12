@@ -109,7 +109,7 @@ public class MappingPane extends JDesktopPane implements ComponentListener, Line
 		
 		// Set up the various layers to be displayed
 		add(mainPane,DEFAULT_LAYER);
-		add(linkPane = new MappingCellsPane(this,harmonyModel),PALETTE_LAYER);
+		add(linkPane = new MappingCellsPane(this),PALETTE_LAYER);
 		add(leftInfoPane = new SelectedNodePane(HarmonyConsts.LEFT,harmonyModel),MODAL_LAYER);
 		add(rightInfoPane = new SelectedNodePane(HarmonyConsts.RIGHT,harmonyModel),MODAL_LAYER);
 		add(mousePane = new MousePane(this,harmonyModel),DRAG_LAYER);
