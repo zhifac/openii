@@ -6,7 +6,7 @@ import java.awt.Insets;
 import java.util.ArrayList;
 import java.util.HashSet;
 
-import javax.swing.JDialog;
+import javax.swing.JInternalFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
@@ -15,13 +15,13 @@ import org.mitre.harmony.matchers.MatcherManager;
 import org.mitre.harmony.matchers.matchers.Matcher;
 import org.mitre.harmony.matchers.mergers.MatchMerger;
 import org.mitre.harmony.model.HarmonyModel;
-import org.mitre.harmony.view.dialogs.matcher.MatchingStatusPanel;
-import org.mitre.harmony.view.dialogs.matcher.MatcherOptionsPane;
 import org.mitre.harmony.view.dialogs.matcher.MatchTypePane;
+import org.mitre.harmony.view.dialogs.matcher.MatcherOptionsPane;
 import org.mitre.harmony.view.dialogs.matcher.MatcherSelectionPane;
+import org.mitre.harmony.view.dialogs.matcher.MatchingStatusPanel;
 
 /** Class defining the wizard */
-public class Wizard extends JDialog
+public class Wizard extends JInternalFrame
 {
     /** Stores a list of the various wizard panels */
     private ArrayList<WizardPanel> panels = new ArrayList<WizardPanel>();
@@ -38,7 +38,7 @@ public class Wizard extends JDialog
     /** Constructs the wizard */
     public Wizard(ArrayList<Matcher> matchers, MatchMerger merger, boolean custom, HarmonyModel harmonyModel)
     {
-    	super(harmonyModel.getBaseFrame());
+    	super("Run Schema Matchers");
 
     	// Create the list of wizard panels
     	panels.add(new MatcherSelectionPane(this, matchers));
@@ -65,10 +65,7 @@ public class Wizard extends JDialog
     	if(!custom) setCurrentPanel(panels.size()-1);
         
     	// Generate the wizard dialog
-        setTitle("Run Schema Matchers");
-        setLocationRelativeTo(harmonyModel.getBaseFrame());
         setContentPane(pane);
-        setModal(true);
         pack();
         setVisible(true);
     }

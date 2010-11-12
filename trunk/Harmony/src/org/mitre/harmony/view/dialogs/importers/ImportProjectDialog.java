@@ -20,7 +20,7 @@ public class ImportProjectDialog extends AbstractImportDialog
 {	
 	/** Constructs the importer dialog */
 	public ImportProjectDialog(HarmonyModel harmonyModel)
-		{ super(harmonyModel.getBaseFrame(), harmonyModel); setVisible(true); }
+		{ super(harmonyModel); setVisible(true); }
 	
 	/** Returns the type of importer being run */
 	protected PorterType getImporterType() { return PorterType.PROJECT_IMPORTERS; }

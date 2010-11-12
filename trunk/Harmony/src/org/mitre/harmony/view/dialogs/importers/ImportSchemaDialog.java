@@ -5,7 +5,6 @@
 package org.mitre.harmony.view.dialogs.importers;
 
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.URI;
@@ -27,9 +26,9 @@ import org.mitre.schemastore.porters.schemaImporters.SchemaImporter;
 public class ImportSchemaDialog extends AbstractImportDialog implements ActionListener, CaretListener
 {	
 	/** Constructs the importer dialog */
-	public ImportSchemaDialog(Component parent, HarmonyModel harmonyModel)
+	public ImportSchemaDialog(HarmonyModel harmonyModel)
 	{
-		super(parent, harmonyModel);
+		super(harmonyModel);
 		uriField.addListener(this);
 		setVisible(true);
 	}

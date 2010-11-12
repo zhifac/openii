@@ -6,7 +6,6 @@ package org.mitre.harmony.view.dialogs.importers;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -17,7 +16,7 @@ import java.util.Vector;
 
 import javax.swing.BoxLayout;
 import javax.swing.JComboBox;
-import javax.swing.JDialog;
+import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -40,7 +39,7 @@ import org.mitre.schemastore.porters.URIType;
  * Abstract dialog for importing
  * @author CWOLF
  */
-abstract public class AbstractImportDialog extends JDialog implements ActionListener
+abstract public class AbstractImportDialog extends JInternalFrame implements ActionListener
 {		
 	/** Stores the harmony model */
 	protected HarmonyModel harmonyModel;
@@ -91,7 +90,7 @@ abstract public class AbstractImportDialog extends JDialog implements ActionList
 				if(name.length()>0 && author.length()>0 && (!uriField.isEnabled() || uri!=null))
 				{
 					try {
-						// Run the importer through the webapp
+						// Run the importer through the web application
 						if(label.equals("Continue"))
 						{
 							AbstractImportDialog.this.setVisible(false);
@@ -172,9 +171,9 @@ abstract public class AbstractImportDialog extends JDialog implements ActionList
 	}
 	
 	/** Constructs the importer dialog */
-	public AbstractImportDialog(Component parent, HarmonyModel harmonyModel)
+	public AbstractImportDialog(HarmonyModel harmonyModel)
 	{
-		super(harmonyModel.getBaseFrame());
+		super();
 		this.harmonyModel = harmonyModel;
 		
 		// Initialize the main pane
@@ -190,11 +189,19 @@ abstract public class AbstractImportDialog extends JDialog implements ActionList
 		
 		// Initialize the dialog pane
 		setTitle(getDialogTitle());
-		setModal(true);
-    	setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		setContentPane(mainPane);
 		pack();
-		setLocationRelativeTo(parent);
+	}
+	
+	/** Handles the enabling of elements in this dialog */
+	public void setEnabled(boolean enabled)
+	{
+		selectionList.setEnabled(enabled);
+		nameField.setEnabled(enabled);
+		authorField.setEnabled(enabled);
+		descriptionField.setEnabled(enabled);
+		uriField.setEnabled(enabled);
+		buttonPane.setEnabled(enabled);
 	}
 	
 	/** Handles changes to the selected importer */

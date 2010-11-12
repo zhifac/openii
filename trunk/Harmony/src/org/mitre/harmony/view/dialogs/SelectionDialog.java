@@ -7,7 +7,7 @@ import java.awt.Color;
 import java.awt.GridLayout;
 
 import javax.swing.BorderFactory;
-import javax.swing.JDialog;
+import javax.swing.JInternalFrame;
 import javax.swing.JPanel;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
@@ -22,7 +22,7 @@ import org.mitre.harmony.view.dialogs.widgets.OptionPane;
  * Displays the search dialog for search for keywords in schemas
  * @author CWOLF
  */
-public class SelectionDialog extends JDialog
+public class SelectionDialog extends JInternalFrame
 {
 	// Constants for defining the selection dialog mode
 	static public final Integer SELECT = 0;
@@ -73,7 +73,7 @@ public class SelectionDialog extends JDialog
 	/** Initializes the search dialog */
 	public SelectionDialog(HarmonyModel harmonyModel, Integer mode)
 	{
-		super(harmonyModel.getBaseFrame());
+		super((mode==SELECT ? "Select" : "Remove") + " Links");
 		this.harmonyModel = harmonyModel;
 		this.mode = mode;
 		
@@ -109,12 +109,8 @@ public class SelectionDialog extends JDialog
 		pane.add(new ButtonPane(),BorderLayout.SOUTH);
 		
 		// Initialize the dialog parameters
-		setTitle((mode==SELECT ? "Select" : "Remove") + " Links");
-    	setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		setContentPane(pane);
 		setSize(200,250);
-		setResizable(false);
-		setLocationRelativeTo(harmonyModel.getBaseFrame());
 		pack();
 		setVisible(true);
 	}

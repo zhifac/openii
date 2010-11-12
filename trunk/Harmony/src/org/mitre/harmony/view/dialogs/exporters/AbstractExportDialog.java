@@ -5,7 +5,6 @@ package org.mitre.harmony.view.dialogs.exporters;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.GridLayout;
-import java.awt.Window;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -15,8 +14,8 @@ import java.util.Vector;
 
 import javax.swing.BorderFactory;
 import javax.swing.JComboBox;
-import javax.swing.JDialog;
 import javax.swing.JFileChooser;
+import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -62,7 +61,7 @@ abstract class AbstractExportDialog
 	}
 	
 	/** Dialog for selecting exporter to use for export via web service */
-	private class WebServiceDialog extends JDialog
+	private class WebServiceDialog extends JInternalFrame
 	{
 		/** Stores the Harmony model */
 		private HarmonyModel harmonyModel;
@@ -93,9 +92,9 @@ abstract class AbstractExportDialog
 		}
 		
 		/** Initializes the search dialog */
-		public WebServiceDialog(HarmonyModel harmonyModel, Window parent)
+		public WebServiceDialog(HarmonyModel harmonyModel)
 		{
-			super(parent);
+			super(getDialogTitle());
 			this.harmonyModel = harmonyModel;
 			
 			// Initialize the exporter list
@@ -120,13 +119,7 @@ abstract class AbstractExportDialog
 			pane.add(new ButtonPane(),BorderLayout.SOUTH);
 			
 			// Initialize the dialog parameters
-			setTitle(getDialogTitle());
-			setModal(true);
-	    	setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 			setContentPane(pane);
-			setSize(200,150);
-			setResizable(false);
-			setLocationRelativeTo(parent);
 			pack();
 			setVisible(true);
 		}
@@ -197,10 +190,10 @@ abstract class AbstractExportDialog
 	}
 	
 	/** Allows user to export */
-	public void export(HarmonyModel harmonyModel, Window parent)
+	public void export(HarmonyModel harmonyModel, JInternalFrame parentDialog)
 	{		
 		if(harmonyModel.getInstantiationType()!=InstantiationType.WEBAPP)
 			exportViaLocalClient(harmonyModel);
-		else new WebServiceDialog(harmonyModel, parent);
+		else harmonyModel.getDialogManager().showDialog(new WebServiceDialog(harmonyModel), parentDialog);
 	}
 }

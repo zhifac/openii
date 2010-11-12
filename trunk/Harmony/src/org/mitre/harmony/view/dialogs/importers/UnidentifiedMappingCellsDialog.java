@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.BoxLayout;
-import javax.swing.JDialog;
+import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -24,7 +24,7 @@ import org.mitre.schemastore.porters.mappingImporters.MappingCellPaths;
  * Displays the schema dialog
  * @author CWOLF
  */
-public class UnidentifiedMappingCellsDialog extends JDialog
+public class UnidentifiedMappingCellsDialog extends JInternalFrame
 {	
 	/** Constructs a pane to display a set of mapping cell pane */
 	private JPanel generateMappingCellPane(MappingCellPaths mappingCell)
@@ -56,9 +56,9 @@ public class UnidentifiedMappingCellsDialog extends JDialog
 	}
 
 	/** Initializes the Ignored Mapping Cells dialog */
-	public UnidentifiedMappingCellsDialog(JDialog parent, ArrayList<MappingCellPaths> mappingCells)
+	public UnidentifiedMappingCellsDialog(ArrayList<MappingCellPaths> mappingCells)
 	{
-		super(parent);
+		super("Unidentified Mapping Cells");
 
 		// Constructs the mapping cells pane 
 		JPanel mappingCellsPane = new JPanel();
@@ -76,12 +76,9 @@ public class UnidentifiedMappingCellsDialog extends JDialog
 		mappingCellScrollPane.setPreferredSize(new Dimension(400,200));
 		
 		// Set up loader dialog layout and contents
-		setTitle("Unidentified Mapping Cells");
-//		setModal(true);
-    	setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+		setClosable(true);
 		setContentPane(mappingCellScrollPane);
 		pack();
-		setLocationRelativeTo(parent);
 		setVisible(true);
    	}
 }

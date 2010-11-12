@@ -3,6 +3,7 @@
 package org.mitre.harmony.view.dialogs.project.mappings;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -13,7 +14,10 @@ import javax.swing.JPanel;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
+import javax.swing.event.InternalFrameEvent;
+import javax.swing.event.InternalFrameListener;
 
+import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.HarmonyModel.InstantiationType;
 import org.mitre.harmony.view.dialogs.project.ProjectDialog;
 import org.mitre.schemastore.model.Mapping;
@@ -23,13 +27,14 @@ import org.mitre.schemastore.model.Schema;
  * Displays the mapping pane for defining a project
  * @author CWOLF
  */
-public class MappingPane extends JPanel implements ActionListener
-{
+public class MappingPane extends JPanel implements ActionListener, InternalFrameListener
+{	
 	/** Stores the Project dialog */
 	private ProjectDialog projectDialog;
 	
 	// Stores the various panes used in this pane
 	private MappingSelectionPane mappingSelectionPane = null;
+	private JButton button = null;
 	
 	/** Initializes the Mapping pane */
 	public MappingPane(ProjectDialog projectDialog)
@@ -43,7 +48,7 @@ public class MappingPane extends JPanel implements ActionListener
 		mappingSelectionPane.setPreferredSize(new Dimension(300,0));
 		
 		// Create the import schema button
-		JButton button = new JButton("Add Mapping");
+		button = new JButton("Add Mapping");
 		button.setFocusable(false);
 		button.setEnabled(projectDialog.getHarmonyModel().getInstantiationType()!=InstantiationType.EMBEDDED);
 		button.addActionListener(this);
@@ -55,6 +60,10 @@ public class MappingPane extends JPanel implements ActionListener
 		add(button,BorderLayout.SOUTH);
    	}
 	
+	/** Handles the enabling of components in this dialog */
+	public void setEnabled(boolean enabled)
+		{ button.setEnabled(enabled); }
+	
 	/** Returns the declared mappings */
 	public ArrayList<Mapping> getMappings()
 		{ return mappingSelectionPane.getMappings(); }
@@ -62,18 +71,38 @@ public class MappingPane extends JPanel implements ActionListener
 	/** Handles the pressing of the "Add Mapping" button */
 	public void actionPerformed(ActionEvent e)
 	{
-		// Run the dialog to add a mapping
+		// Get the ProjectDialog pane
+		Component component = getParent();
+		while(!(component instanceof ProjectDialog))
+			component = component.getParent();
+		
+		// Get the current schemas and mappings
 		ArrayList<Schema> schemas = projectDialog.getSchemaPane().getSchemas();
 		ArrayList<Mapping> mappings = mappingSelectionPane.getMappings();
-		AddMappingDialog dialog = new AddMappingDialog(projectDialog.getHarmonyModel(), schemas, mappings);
-		try { while(dialog.isVisible()) Thread.sleep(1000); } catch(Exception e2) {}
 
-		// Add the mapping
-		Mapping mapping = dialog.getMapping();
-		if(mapping!=null) mappingSelectionPane.addMapping(mapping);
+		// Run the dialog to add a mapping
+		HarmonyModel harmonyModel = projectDialog.getHarmonyModel();
+		AddMappingDialog dialog = new AddMappingDialog(harmonyModel, schemas, mappings);
+		harmonyModel.getDialogManager().showDialog(dialog, (ProjectDialog)component);
+		dialog.addInternalFrameListener(this);
 	}
 	
 	/** Saves the project mappings */
 	public void save()
 		{ mappingSelectionPane.save(); }
+	
+	/** Updates the schema list when the schema dialog is closed */
+	public void internalFrameClosed(InternalFrameEvent e)
+	{
+		Mapping mapping = ((AddMappingDialog)e.getInternalFrame()).getMapping();
+		if(mapping!=null) mappingSelectionPane.addMapping(mapping);
+	}
+
+	// Unused event listeners
+	public void internalFrameOpened(InternalFrameEvent e) {}
+	public void internalFrameClosing(InternalFrameEvent e) {}
+	public void internalFrameIconified(InternalFrameEvent e) {}
+	public void internalFrameDeiconified(InternalFrameEvent e) {}
+	public void internalFrameActivated(InternalFrameEvent e) {}
+	public void internalFrameDeactivated(InternalFrameEvent e) {}
 }

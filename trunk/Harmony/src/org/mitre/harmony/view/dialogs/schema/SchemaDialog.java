@@ -9,13 +9,15 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Vector;
 
-import javax.swing.JDialog;
+import javax.swing.JInternalFrame;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.InternalFrameEvent;
+import javax.swing.event.InternalFrameListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -29,8 +31,20 @@ import org.mitre.schemastore.model.Schema;
  * Displays the schema dialog
  * @author CWOLF
  */
-public class SchemaDialog extends JDialog implements ListSelectionListener
+public class SchemaDialog extends JInternalFrame implements ListSelectionListener
 {
+	/** Stores the Harmony model */
+	private HarmonyModel harmonyModel;
+	
+	/** Stores locked schemas (can't be deleted) */
+	private ArrayList<Integer> lockedSchemas;
+	
+	/** Stores the schema list */
+	private JList schemaList = null;
+	
+	/** Stores the button pane */
+	private ButtonPane buttonPane = null;
+
 	/** Comparator used to alphabetize schemas */
 	private class SchemaComparator implements Comparator<Object>
 	{
@@ -39,7 +53,7 @@ public class SchemaDialog extends JDialog implements ListSelectionListener
 	}
 	
 	/** Private class for defining the button pane */
-	private class ButtonPane extends AbstractButtonPane
+	private class ButtonPane extends AbstractButtonPane implements InternalFrameListener
 	{
 		/** Constructs the button pane */
 		private ButtonPane()
@@ -50,10 +64,17 @@ public class SchemaDialog extends JDialog implements ListSelectionListener
 		}
 
 		/** Reconfigures the buttons based on the currently selected item */
-		private void reconfigure(boolean itemSelected, boolean deletable)
+		private void reconfigure()
 		{
-			setEnabled(1, itemSelected);
-			setEnabled(2, itemSelected);
+			// Enable buttons based on if a schema is selected
+			Schema schema = getSchema();
+			setEnabled(1, schema!=null);
+			setEnabled(2, schema!=null);
+
+			// Determine if the "Delete" or "Usage" label should be shown based on if schema is deletable
+			boolean deletable = schema!=null && harmonyModel.getSchemaManager().getDeletableSchemas().contains(schema.getId());
+			deletable = deletable && !harmonyModel.getProjectManager().getSchemaIDs().contains(schema.getId());
+			deletable = deletable && !lockedSchemas.contains(schema.getId());			
 			relabelButton(2, deletable?"Delete":"Usage");
 		}
 		
@@ -63,18 +84,21 @@ public class SchemaDialog extends JDialog implements ListSelectionListener
 			// Handles the import of a schema
 			if(label.equals("Import"))
 			{
-				ImportSchemaDialog dialog = new ImportSchemaDialog(SchemaDialog.this, harmonyModel);
-				while(dialog.isDisplayable()) try { Thread.sleep(500); } catch(Exception e2) {}
-				if(dialog.isSuccessful()) updateSchemaList();
+				ImportSchemaDialog dialog = new ImportSchemaDialog(harmonyModel);
+				dialog.addInternalFrameListener(this);
+				harmonyModel.getDialogManager().showDialog(dialog, SchemaDialog.this);
 			}
 			
 			// Handles the export of a schema
 			else if(label.equals("Export"))
-				new ExportSchemaDialog(getSchema()).export(harmonyModel,SchemaDialog.this);
+				new ExportSchemaDialog(getSchema()).export(harmonyModel, SchemaDialog.this);
 			
 			// Handles the displaying of info for a schema
 			else if(label.equals("Usage"))
-				new SchemaReferencesDialog(harmonyModel, getSchema());
+			{
+				SchemaReferencesDialog dialog = new SchemaReferencesDialog(harmonyModel, getSchema());
+				harmonyModel.getDialogManager().showDialog(dialog, SchemaDialog.this);
+			}
 			
 			// Handles the deletion of a schema
 			else if(label.equals("Delete"))
@@ -89,26 +113,33 @@ public class SchemaDialog extends JDialog implements ListSelectionListener
 			// Close down the search pane if "Close" selected
 			else if(label.equals("Close")) dispose();
 		}
+		
+		/** Updates the schema list when the schema dialog is closed */
+		public void internalFrameClosed(InternalFrameEvent e)
+			{ updateSchemaList(); }
+
+		// Unused event listeners
+		public void internalFrameOpened(InternalFrameEvent e) {}
+		public void internalFrameClosing(InternalFrameEvent e) {}
+		public void internalFrameIconified(InternalFrameEvent e) {}
+		public void internalFrameDeiconified(InternalFrameEvent e) {}
+		public void internalFrameActivated(InternalFrameEvent e) {}
+		public void internalFrameDeactivated(InternalFrameEvent e) {}
 	}
 
-	/** Stores the Harmony model */
-	private HarmonyModel harmonyModel;
-	
-	/** Stores locked schemas (can't be deleted) */
-	private ArrayList<Integer> lockedSchemas;
-	
-	/** Stores the schema list */
-	private JList schemaList = null;
-	
-	/** Stores the button pane */
-	private ButtonPane buttonPane = null;
-	
 	/** Updates the schema list */
 	private void updateSchemaList()
 	{
+		// Get the selected schema
+		Schema schema = getSchema();
+
+		// Update the schema list
 		Vector<Schema> schemas = new Vector<Schema>(harmonyModel.getSchemaManager().getSchemas());
 		Collections.sort(schemas, new SchemaComparator());		
 		schemaList.setListData(schemas);
+
+		// Set the schema
+		if(schema!=null) schemaList.setSelectedValue(schema, true);
 	}
 	
 	/** Generate schema list */
@@ -129,7 +160,7 @@ public class SchemaDialog extends JDialog implements ListSelectionListener
 	/** Initializes the schema dialog */
 	public SchemaDialog(HarmonyModel harmonyModel, ArrayList<Integer> lockedSchemas)
 	{
-		super(harmonyModel.getBaseFrame(), true);
+		super("Schema Manager");
 		this.harmonyModel = harmonyModel;
 		this.lockedSchemas = lockedSchemas;
 		
@@ -141,11 +172,8 @@ public class SchemaDialog extends JDialog implements ListSelectionListener
 		pane.add(buttonPane = new ButtonPane(), BorderLayout.SOUTH);
 		
 		// Set up loader dialog layout and contents
-		setTitle("Schema Manager");
-    	setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		setContentPane(pane);
 		pack();
-		setLocationRelativeTo(harmonyModel.getBaseFrame());
 		setVisible(true);
    	}
 
@@ -153,16 +181,14 @@ public class SchemaDialog extends JDialog implements ListSelectionListener
 	private Schema getSchema()
 		{ return (Schema)schemaList.getSelectedValue(); }
 	
+	/** Handles the enabling of this pane */
+	public void setEnabled(boolean enabled)
+	{
+		schemaList.setEnabled(enabled);
+		buttonPane.setEnabled(enabled);
+	}
+	
 	/** Handles changes to the selected schema */
 	public void valueChanged(ListSelectionEvent e)
-	{
-		// Retrieve the schema and information on if it can be deleted
-		Schema schema = getSchema();
-		boolean deletable = schema!=null && harmonyModel.getSchemaManager().getDeletableSchemas().contains(schema.getId());
-		deletable = deletable && !harmonyModel.getProjectManager().getSchemaIDs().contains(schema.getId());
-		deletable = deletable && !lockedSchemas.contains(schema.getId());
-		
-		// Update the ability to export and delete the schema
-		buttonPane.reconfigure(schema!=null,deletable);
-	}
+		{ buttonPane.reconfigure(); }
 }

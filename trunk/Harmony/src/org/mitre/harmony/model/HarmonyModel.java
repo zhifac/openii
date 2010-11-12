@@ -14,6 +14,7 @@ import org.mitre.harmony.model.project.MappingManager;
 import org.mitre.harmony.model.project.ProjectManager;
 import org.mitre.harmony.model.search.HarmonySearchManager;
 import org.mitre.harmony.model.selectedInfo.SelectedInfoManager;
+import org.mitre.harmony.view.dialogs.DialogManager;
 
 /** Class for monitoring for changes in the project */
 public class HarmonyModel
@@ -23,6 +24,9 @@ public class HarmonyModel
 	
 	// Stores the container hosting Harmony
 	protected Container baseFrame = null;
+	
+	// Stores reference to the dialog manager
+	protected DialogManager dialogManager = null;
 	
 	// Stores the managers associated with the currently displayed mapping
 	protected SchemaManager schemaManager = new SchemaManager(this);
@@ -52,6 +56,14 @@ public class HarmonyModel
 	/** Returns the base frame */
 	public Frame getBaseFrame()
 		{ return JOptionPane.getFrameForComponent(baseFrame); }
+	
+	/** Returns the dialog manager */
+	public DialogManager getDialogManager()
+		{ return dialogManager; }
+	
+	/** Sets the dialog manager */
+	public void setDialogManager(DialogManager dialogManager)
+		{ this.dialogManager = dialogManager; }
 	
 	/** Returns the instantiation type */
 	public InstantiationType getInstantiationType()

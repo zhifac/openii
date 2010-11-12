@@ -56,6 +56,10 @@ abstract public class AbstractButtonPane extends JPanel implements ActionListene
 	public void setEnabled(Integer loc, boolean enable)
 		{ buttons.get(loc).setEnabled(enable); }
 	
+	/** Handles the enabling of all buttons */
+	public void setEnabled(boolean enabled)
+		{ for(JButton button : buttons) button.setEnabled(enabled); }
+	
 	/** Reacts to the buttons being pressed */
 	public void actionPerformed(ActionEvent e)
 		{ buttonPressed(((JButton)e.getSource()).getText()); }

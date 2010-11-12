@@ -13,7 +13,7 @@ import java.util.HashSet;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JComboBox;
-import javax.swing.JDialog;
+import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
@@ -27,7 +27,7 @@ import org.mitre.schemastore.model.Schema;
  * Displays the dialog used for adding mappings
  * @author CWOLF
  */
-class AddMappingDialog extends JDialog implements ActionListener
+class AddMappingDialog extends JInternalFrame implements ActionListener
 {	
 	/** Stores the list of schemas associated with the project */
 	private ArrayList<Schema> schemas;
@@ -135,11 +135,11 @@ class AddMappingDialog extends JDialog implements ActionListener
 	/** Initializes the "Add Mapping" dialog */
 	AddMappingDialog(HarmonyModel harmonyModel, ArrayList<Schema> schemas, ArrayList<Mapping> mappings)
 	{
-		super(harmonyModel.getBaseFrame());
+		super("Add Mapping");
 		this.schemas = schemas;
 		this.mappings = mappings;
 		
-		// Generate the main dialog pane
+		// Generate the main dialog panex
 		JPanel pane = new JPanel();
 		pane.setBorder(BorderFactory.createLineBorder(Color.black));
 		pane.setLayout(new BorderLayout());
@@ -147,13 +147,8 @@ class AddMappingDialog extends JDialog implements ActionListener
 		pane.add(new ButtonPane(),BorderLayout.SOUTH);
 		
 		// Initialize the dialog parameters
-		setTitle("Add Mapping");
-    	setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		setContentPane(pane);
-		setModal(true);
-		setResizable(false);
 		pack();
-		setLocationRelativeTo(harmonyModel.getBaseFrame());
 		setVisible(true);
 	}
 	

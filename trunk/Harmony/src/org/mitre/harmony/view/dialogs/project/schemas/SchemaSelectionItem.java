@@ -46,6 +46,10 @@ class SchemaSelectionItem extends JPanel implements ActionListener
 		add(checkboxPane,BorderLayout.WEST);
 	}
 	
+	/** Handles the enabling of components in this dialog */
+	public void setEnabled(boolean enabled)
+		{ checkbox.setEnabled(enabled); }
+	
 	/** Returns the schema associated with this check box */
 	Schema getSchema()
 		{ return schema; }

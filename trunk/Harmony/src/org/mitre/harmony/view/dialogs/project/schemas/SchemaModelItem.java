@@ -53,6 +53,10 @@ class SchemaModelItem extends JPanel
 		add(new SchemaModelRow(modelSelection,new JLabel(schema.getName())));
 	}
 	
+	/** Handles the enabling of components in this dialog */
+	public void setEnabled(boolean enabled)
+		{ modelSelection.setEnabled(enabled); }
+	
 	/** Returns the schema associated with this item */
 	Schema getSchema() { return schema; }
 	

@@ -67,7 +67,7 @@ public class Harmony extends JFrame implements ProjectListener, WindowListener
 				"Save Mapping", JOptionPane.YES_NO_CANCEL_OPTION,
 				JOptionPane.WARNING_MESSAGE);
 		if(option==2) return;
-		if(option==0) new SaveMappingDialog(harmonyModel);
+		if(option==0) harmonyModel.getDialogManager().showDialog(new SaveMappingDialog(harmonyModel));
 		super.dispose();
 	}
 	

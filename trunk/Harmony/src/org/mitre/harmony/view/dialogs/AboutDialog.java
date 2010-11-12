@@ -15,7 +15,7 @@ import java.io.IOException;
 
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
-import javax.swing.JDialog;
+import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
@@ -28,7 +28,7 @@ import org.mitre.harmony.model.HarmonyModel;
  * Displays the dialog for displaying general information about Harmony
  * @author CWOLF
  */
-public class AboutDialog extends JDialog implements MouseListener, MouseMotionListener
+public class AboutDialog extends JInternalFrame implements MouseListener, MouseMotionListener
 {
 	/** Generates info pane */
 	private JPanel infoPane()
@@ -107,12 +107,10 @@ public class AboutDialog extends JDialog implements MouseListener, MouseMotionLi
 	/** Initializes About dialog */
 	public AboutDialog(HarmonyModel harmonyModel)
 	{
-		super(harmonyModel.getBaseFrame());
-		setTitle("About Harmony");
+		super("About Harmony");
 		setSize(600,390);
-    	setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+		setClosable(true);
 		setContentPane(aboutPane());
-    	setLocationRelativeTo(harmonyModel.getBaseFrame());
     	setVisible(true);
    	}
 	

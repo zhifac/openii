@@ -10,7 +10,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 
-import javax.swing.JDialog;
+import javax.swing.JInternalFrame;
 import javax.swing.JPanel;
 import javax.swing.border.LineBorder;
 
@@ -26,7 +26,7 @@ import org.mitre.schemastore.model.SchemaElement;
  * Displays the dialog which allows links to be accepted/rejected
  * @author CWOLF
  */
-public class SchemaStatisticsDialog extends JDialog
+public class SchemaStatisticsDialog extends JInternalFrame
 {
 	/** Schema for which the statistics are to be displayed */
 	private Integer schemaID;
@@ -94,7 +94,7 @@ public class SchemaStatisticsDialog extends JDialog
 	/** Initializes the link dialog */
 	public SchemaStatisticsDialog(Integer schemaID, HarmonyModel harmonyModel)
 	{
-		super(harmonyModel.getBaseFrame());
+		super("Statistics for Schema "+harmonyModel.getSchemaManager().getSchema(schemaID).getName());
 		this.harmonyModel = harmonyModel;
 		
 		// Initialize the selected schema
@@ -107,12 +107,9 @@ public class SchemaStatisticsDialog extends JDialog
 		pane.add(new MatchedNodeStatistics(),BorderLayout.CENTER);
 		
 		// Initialize the dialog parameters
-		setTitle("Statistics for Schema "+harmonyModel.getSchemaManager().getSchema(schemaID).getName());
-		setModal(true);
-		setResizable(false);
+		setClosable(true);
 		setContentPane(pane);
 		pack();
-    	setLocationRelativeTo(harmonyModel.getBaseFrame());
-		setVisible(true);
+ 		setVisible(true);
 	}
 }

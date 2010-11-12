@@ -5,7 +5,7 @@ package org.mitre.harmony.view.dialogs;
 import java.awt.BorderLayout;
 import java.awt.Color;
 
-import javax.swing.JDialog;
+import javax.swing.JInternalFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
@@ -17,7 +17,7 @@ import org.mitre.harmony.model.HarmonyModel;
  * Displays the dialog for displaying information on getting started with Harmony
  * @author CWOLF
  */
-public class GettingStartedDialog extends JDialog
+public class GettingStartedDialog extends JInternalFrame
 {
 	/** Initializes the "Getting Started" pane */
 	private JPanel gettingStartedPane()
@@ -77,14 +77,12 @@ public class GettingStartedDialog extends JDialog
 	/** Initializes "Getting Started" dialog */
 	public GettingStartedDialog(HarmonyModel harmonyModel)
 	{
-		super(harmonyModel.getBaseFrame());
+		super("Getting Started");
 		
 		// Initialize all settings for the project dialog
-		setTitle("Getting Started");
 		setSize(600,375);
-    	setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+		setClosable(true);
 		setContentPane(gettingStartedPane());
-    	setLocationRelativeTo(harmonyModel.getBaseFrame());
     	setVisible(true);
    	}
 }
