@@ -54,7 +54,7 @@ public class ImportMappingDialog extends JInternalFrame implements ActionListene
 	
 	// Stores the panes associated with this dialog
 	private JComboBox importerList = null;
-	private URIParm uriField = null;	
+	private URIParameter uriField = null;	
 	private SchemaSelector sourceSelector = new SchemaSelector();
 	private SchemaSelector targetSelector = new SchemaSelector();
 	private JCheckBox showAllSchemas = null;
@@ -239,7 +239,7 @@ public class ImportMappingDialog extends JInternalFrame implements ActionListene
 	private JPanel getInformationPane()
 	{
 		// Initialize the uri
-		uriField = new URIParm(harmonyModel);
+		uriField = new URIParameter(harmonyModel);
 		uriField.setImporter(getImporter());
 		uriField.setBorder(new EmptyBorder(0,0,2,0));
 		uriField.addListener(this);

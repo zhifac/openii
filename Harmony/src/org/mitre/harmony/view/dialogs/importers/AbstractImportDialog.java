@@ -52,7 +52,7 @@ abstract public class AbstractImportDialog extends JInternalFrame implements Act
 	protected JTextField nameField = new JTextField();
 	protected JTextField authorField = new JTextField();
 	protected JTextArea descriptionField = new JTextArea();
-	protected URIParm uriField;
+	protected URIParameter uriField;
 	protected ButtonPane buttonPane;
 	
 	/** Private class for defining the button pane */
@@ -158,7 +158,7 @@ abstract public class AbstractImportDialog extends JInternalFrame implements Act
 		descriptionField.setPreferredSize(new Dimension(300,descriptionField.getHeight()));
 		
 		// Initialize the uri
-		uriField = new URIParm(harmonyModel);
+		uriField = new URIParameter(harmonyModel);
 		
 		// Generates the information pane
 		ParameterPane pane = new ParameterPane();
