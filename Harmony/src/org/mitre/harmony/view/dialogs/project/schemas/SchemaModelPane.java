@@ -2,6 +2,7 @@ package org.mitre.harmony.view.dialogs.project.schemas;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 
 import javax.swing.BoxLayout;
@@ -53,6 +54,10 @@ public class SchemaModelPane extends JPanel
 		add(headerPane,BorderLayout.NORTH);
 		add(schemaScrollPane,BorderLayout.CENTER);
 	}
+	
+	/** Handles the enabling of components in this dialog */
+	public void setEnabled(boolean enabled)
+		{ for(Component item : schemaList.getComponents()) item.setEnabled(enabled); }
 	
 	/** Adds a schema to the pane */
 	void selectSchema(Integer schemaID)

@@ -11,7 +11,7 @@ import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
-import javax.swing.JDialog;
+import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -27,7 +27,7 @@ import org.mitre.harmony.view.dialogs.widgets.OptionPane;
  * Displays the search dialog for search for keywords in schemas
  * @author CWOLF
  */
-public class SearchDialog extends JDialog implements KeyListener
+public class SearchDialog extends JInternalFrame implements KeyListener
 {
 	/** Stores the Harmony model */
 	private HarmonyModel harmonyModel;
@@ -121,7 +121,7 @@ public class SearchDialog extends JDialog implements KeyListener
 	/** Initializes the search dialog */
 	public SearchDialog(HarmonyModel harmonyModel)
 	{
-		super(harmonyModel.getBaseFrame());
+		super("Search");
 		this.harmonyModel = harmonyModel;
 		
 		// Generate the main dialog pane
@@ -132,12 +132,9 @@ public class SearchDialog extends JDialog implements KeyListener
 		pane.add(new ButtonPane(),BorderLayout.SOUTH);
 		
 		// Initialize the dialog parameters
-		setTitle("Search");
-    	setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+    	setClosable(true);
 		setContentPane(pane);
-		setResizable(false);
 		pack();
-		setLocationRelativeTo(harmonyModel.getBaseFrame());
 		setVisible(true);
 	}
 	

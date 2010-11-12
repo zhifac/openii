@@ -18,7 +18,7 @@ import java.util.Vector;
 import javax.swing.BoxLayout;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
-import javax.swing.JDialog;
+import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -31,8 +31,8 @@ import javax.swing.event.CaretListener;
 
 import org.mitre.harmony.controllers.ProjectController;
 import org.mitre.harmony.model.HarmonyModel;
-import org.mitre.harmony.model.SchemaStoreManager;
 import org.mitre.harmony.model.HarmonyModel.InstantiationType;
+import org.mitre.harmony.model.SchemaStoreManager;
 import org.mitre.harmony.model.project.ProjectMapping;
 import org.mitre.harmony.view.dialogs.widgets.AbstractButtonPane;
 import org.mitre.schemastore.model.Mapping;
@@ -47,7 +47,7 @@ import org.mitre.schemastore.porters.mappingImporters.MappingCellPaths;
 import org.mitre.schemastore.porters.mappingImporters.MappingImporter;
 
 /** Class for displaying the mapping importer dialog */
-public class ImportMappingDialog extends JDialog implements ActionListener, CaretListener
+public class ImportMappingDialog extends JInternalFrame implements ActionListener, CaretListener
 {		
 	/** Stores the harmony model */
 	private HarmonyModel harmonyModel;
@@ -145,7 +145,7 @@ public class ImportMappingDialog extends JDialog implements ActionListener, Care
 			// Display a dialog with any ignored mapping cells
 			ArrayList<MappingCellPaths> paths = importer.getUnidentifiedMappingCellPaths();
 			if(paths.size()>0)
-				new UnidentifiedMappingCellsDialog(ImportMappingDialog.this, paths);
+				harmonyModel.getDialogManager().showDialog(new UnidentifiedMappingCellsDialog(paths));
 
 			// Return the mapping cells
 			return mappingCells;
@@ -265,7 +265,7 @@ public class ImportMappingDialog extends JDialog implements ActionListener, Care
 	/** Constructs the mapping importer dialog */
 	public ImportMappingDialog(HarmonyModel harmonyModel)
 	{
-		super(harmonyModel.getBaseFrame());
+		super("Import Mapping");
 		this.harmonyModel = harmonyModel;
 		
 		// Initialize the main pane
@@ -277,12 +277,8 @@ public class ImportMappingDialog extends JDialog implements ActionListener, Care
 		pane.add(buttons, BorderLayout.SOUTH);
 		
 		// Initialize the dialog pane
-		setTitle("Import Mapping");
-		setModal(true);
-    	setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		setContentPane(pane);
 		pack();
-		setLocationRelativeTo(harmonyModel.getBaseFrame());
 		setVisible(true);
 	}
 	

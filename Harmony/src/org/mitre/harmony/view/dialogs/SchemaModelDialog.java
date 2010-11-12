@@ -7,7 +7,7 @@ import java.awt.Color;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
-import javax.swing.JDialog;
+import javax.swing.JInternalFrame;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -23,7 +23,7 @@ import org.mitre.schemastore.model.schemaInfo.model.SchemaModel;
  * Displays the dialog which allows mapping cells to be accepted/rejected
  * @author CWOLF
  */
-public class SchemaModelDialog extends JDialog
+public class SchemaModelDialog extends JInternalFrame
 {
 	/** Stores the Harmony model */
 	private HarmonyModel harmonyModel;
@@ -56,7 +56,7 @@ public class SchemaModelDialog extends JDialog
 	/** Initializes the mapping cell dialog */
 	public SchemaModelDialog(Integer schemaID, HarmonyModel harmonyModel)
 	{
-		super(harmonyModel.getBaseFrame());
+		super("Select Schema Model");
 		
 		// Initialize the selected links
 		this.schemaID = schemaID;
@@ -84,12 +84,8 @@ public class SchemaModelDialog extends JDialog
 		pane.add(new ButtonPane(),BorderLayout.SOUTH);
 		
 		// Initialize the dialog parameters
-		setTitle("Select Schema Model");
-		setModal(true);
-    	setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		setContentPane(pane);
 		setSize(200,250);
-		setLocationRelativeTo(harmonyModel.getBaseFrame());
 		setVisible(true);
 	}
 }

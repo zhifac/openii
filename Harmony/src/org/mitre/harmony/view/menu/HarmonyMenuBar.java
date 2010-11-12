@@ -45,11 +45,23 @@ public class HarmonyMenuBar extends JMenuBar
 	    
 		/** Action for selecting links */
 		private class SelectLinksAction extends AbstractAction
-			{ public void actionPerformed(ActionEvent e) { new SelectionDialog(harmonyModel,SelectionDialog.SELECT); } }
+		{
+			public void actionPerformed(ActionEvent e)
+			{ 
+				SelectionDialog dialog = new SelectionDialog(harmonyModel,SelectionDialog.SELECT);
+				harmonyModel.getDialogManager().showDialog(dialog);
+			}
+		}
 	    
 		/** Action for removing links */
 		private class RemoveLinksAction extends AbstractAction
-			{ public void actionPerformed(ActionEvent e) { new SelectionDialog(harmonyModel,SelectionDialog.DELETE); } }
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				SelectionDialog dialog = new SelectionDialog(harmonyModel,SelectionDialog.DELETE);
+				harmonyModel.getDialogManager().showDialog(dialog);
+			}
+		}
 	}
 
 	/** Drop-down menu found under view menu bar heading */
@@ -141,7 +153,10 @@ public class HarmonyMenuBar extends JMenuBar
 		
 		/** Action for displaying the "Search" dialog */
 		private class SearchAction extends AbstractAction
-			{ public void actionPerformed(ActionEvent e) { new SearchDialog(harmonyModel); } }
+		{
+			public void actionPerformed(ActionEvent e)
+				{ harmonyModel.getDialogManager().showDialog(new SearchDialog(harmonyModel)); }
+		}
 	}
 	
 	/** Drop-down menu found under help menu bar heading */
@@ -161,11 +176,17 @@ public class HarmonyMenuBar extends JMenuBar
 		
 		/** Action for displaying the "About" dialog */
 		private class AboutAction extends AbstractAction
-			{ public void actionPerformed(ActionEvent e) { new AboutDialog(harmonyModel); } }
+		{
+			public void actionPerformed(ActionEvent e)
+				{ harmonyModel.getDialogManager().showDialog(new AboutDialog(harmonyModel)); }
+		}
 
 		/** Action for displaying the "Getting Started" dialog */
 		private class GettingStartedAction extends AbstractAction
-			{ public void actionPerformed(ActionEvent e) { new GettingStartedDialog(harmonyModel); } }
+		{
+			public void actionPerformed(ActionEvent e)
+				{ harmonyModel.getDialogManager().showDialog(new GettingStartedDialog(harmonyModel)); }
+		}
 	}
 	
 	/** Initializes the Harmony menu bar */

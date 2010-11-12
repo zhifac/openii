@@ -114,15 +114,15 @@ public class MatcherMenu extends AbstractMenu
 	/** Make sure that schema actually exist to be merged */
 	private boolean checkSchemasExist()
 	{
-		// No need to proceed if no schemas exist on a specific side
+		// Check to see how many schemas exist on each side of the project
 		ProjectManager projectManager = harmonyModel.getProjectManager();
 		Integer leftSchemas = projectManager.getSchemaElements(HarmonyConsts.LEFT).size();
 		Integer rightSchemas = projectManager.getSchemaElements(HarmonyConsts.RIGHT).size();
 
-		// if no schemas are open, tell the user wtf
+		// No need to proceed if no schemas exist on a specific side
 		if(leftSchemas.equals(0) || rightSchemas.equals(0))
 		{
-			JOptionPane.showMessageDialog(getParent(), "No schemas are currently open to match.", "Matching Error", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showInternalMessageDialog(getParent(), "No schemas are currently open to match.", "Matching Error", JOptionPane.ERROR_MESSAGE);
 			return false;
 		}
 
@@ -131,7 +131,7 @@ public class MatcherMenu extends AbstractMenu
 
 	/** Launches the matcher wizard */
 	private void launchMatchWizard(ArrayList<Matcher> matchers, MatchMerger merger, boolean custom)
-		{ new Wizard(matchers, merger, custom, harmonyModel); }
+		{ harmonyModel.getDialogManager().showDialog(new Wizard(matchers, merger, custom, harmonyModel)); }
 
 	/** Action for ignoring the matched elements */
 	private class IgnoreMatchedElementsAction extends AbstractAction

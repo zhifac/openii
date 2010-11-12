@@ -52,6 +52,13 @@ public class SchemaPane extends JPanel
 		add(schemaModelPane,BorderLayout.CENTER);
    	}
 	
+	/** Handles the enabling of components in this dialog */
+	public void setEnabled(boolean enabled)
+	{
+		schemaSelectionPane.setEnabled(enabled);
+		schemaModelPane.setEnabled(enabled);
+	}
+	
 	/** Returns the selected schemas */
 	public ArrayList<Schema> getSchemas()
 		{ return schemaSelectionPane.getSelectedSchemas(); }

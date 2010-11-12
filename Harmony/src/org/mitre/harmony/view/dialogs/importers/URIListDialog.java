@@ -8,7 +8,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Vector;
 
-import javax.swing.JDialog;
+import javax.swing.JInternalFrame;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -21,7 +21,7 @@ import org.mitre.harmony.view.dialogs.widgets.AbstractButtonPane;
  * Displays the URI list dialog
  * @author CWOLF
  */
-public class URIListDialog extends JDialog
+public class URIListDialog extends JInternalFrame
 {
 	/** Holds the selected URI */
 	private URI selectedURI = null;
@@ -61,9 +61,9 @@ public class URIListDialog extends JDialog
 	}
 	
 	/** Initializes the URI list dialog */
-	public URIListDialog(JDialog dialog, ArrayList<URI> uris)
+	public URIListDialog(ArrayList<URI> uris)
 	{
-		super(dialog, true);
+		super("Import Selector");
 		
 		// Constructs the content pane 
 		JPanel pane = new JPanel();
@@ -73,12 +73,8 @@ public class URIListDialog extends JDialog
 		pane.add(new ButtonPane(), BorderLayout.SOUTH);
 		
 		// Set up loader dialog layout and contents
-		setTitle("Import Selector");
-		setModal(true);
-    	setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		setContentPane(pane);
 		pack();
-		setLocationRelativeTo(dialog);
 		setVisible(true);
    	}
 

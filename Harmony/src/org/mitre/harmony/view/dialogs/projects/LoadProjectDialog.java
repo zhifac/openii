@@ -4,7 +4,7 @@ package org.mitre.harmony.view.dialogs.projects;
 
 import java.awt.BorderLayout;
 
-import javax.swing.JDialog;
+import javax.swing.JInternalFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
@@ -19,7 +19,7 @@ import org.mitre.schemastore.model.Project;
  * Class used for the loading of a mapping
  * @author CWOLF
  */
-public class LoadProjectDialog extends JDialog implements ListSelectionListener
+public class LoadProjectDialog extends JInternalFrame implements ListSelectionListener
 {	
 	/** Stores the Harmony model */
 	private HarmonyModel harmonyModel;
@@ -82,14 +82,10 @@ public class LoadProjectDialog extends JDialog implements ListSelectionListener
 	/** Constructs the dialog for loading projects */
 	public LoadProjectDialog(HarmonyModel harmonyModel)
 	{
-		super(harmonyModel.getBaseFrame());
+		super("Select Project");
 		this.harmonyModel = harmonyModel;
-		setTitle("Select Project");
-		setModal(true);
-    	setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		setContentPane(getMainPane());
 		pack();
-		setLocationRelativeTo(harmonyModel.getBaseFrame());
 		setVisible(true);
 	}
 

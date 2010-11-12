@@ -10,7 +10,7 @@ import java.awt.Font;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JComponent;
-import javax.swing.JDialog;
+import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
@@ -25,7 +25,7 @@ import org.mitre.schemastore.model.Schema;
 /**
  * Displays the dialog showing schema properties
  */
-public class SchemaPropertiesDialog extends JDialog
+public class SchemaPropertiesDialog extends JInternalFrame
 {
 	/** Displays the label */
 	private JPanel displayLabel(String name)
@@ -82,7 +82,7 @@ public class SchemaPropertiesDialog extends JDialog
 	/** Initializes the link dialog */
 	public SchemaPropertiesDialog(Integer schemaID, HarmonyModel harmonyModel)
 	{
-		super(harmonyModel.getBaseFrame());
+		super("Properties for Schema "+harmonyModel.getSchemaManager().getSchema(schemaID).getName());
 		Schema schema = harmonyModel.getSchemaManager().getSchema(schemaID);
 		
 		// Set up the main dialog pane
@@ -96,12 +96,9 @@ public class SchemaPropertiesDialog extends JDialog
 		pane.add(displayItem("Description",schema.getDescription(),3));
 		
 		// Initialize the dialog parameters
-		setTitle("Properties for Schema "+harmonyModel.getSchemaManager().getSchema(schemaID).getName());
-		setModal(true);
-		setResizable(false);
-    	setContentPane(pane);
-		pack();
-    	setLocationRelativeTo(harmonyModel.getBaseFrame());
+	   	setClosable(true);
+	   	setContentPane(pane);
+ 		pack();
 		setVisible(true);
 	}
 }

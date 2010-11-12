@@ -15,14 +15,17 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.InternalFrameEvent;
+import javax.swing.event.InternalFrameListener;
 
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.HarmonyModel.InstantiationType;
+import org.mitre.harmony.view.dialogs.project.ProjectDialog;
 import org.mitre.harmony.view.dialogs.schema.SchemaDialog;
 import org.mitre.schemastore.model.Schema;
 
 /** Class for allowing the selection of schemas */
-class SchemaSelectionPane extends JPanel implements ActionListener
+class SchemaSelectionPane extends JPanel implements ActionListener, InternalFrameListener
 {
 	/** Comparator used to alphabetize schemas */
 	private class SchemaComparator implements Comparator<Schema>
@@ -37,6 +40,9 @@ class SchemaSelectionPane extends JPanel implements ActionListener
 	/** Set of check boxes containing the schema selection */
 	private JPanel schemaList = null;
 
+	/** Stores the "Manage Schema" button */
+	private JButton button = new JButton("Manage Schemas");
+	
 	/** Create the schema list */
 	private void updateSchemaList()
 	{
@@ -86,7 +92,6 @@ class SchemaSelectionPane extends JPanel implements ActionListener
 		if(harmonyModel.getInstantiationType()!=InstantiationType.EMBEDDED) 
 		{
 			// Create the import schema button
-			JButton button = new JButton("Manage Schemas");
 			button.setFocusable(false);
 			button.addActionListener(this);
 
@@ -97,6 +102,13 @@ class SchemaSelectionPane extends JPanel implements ActionListener
 			pane.add(button,BorderLayout.CENTER);
 			add(pane,BorderLayout.SOUTH);
 		}
+	}
+	
+	/** Handles the enabling of components in this dialog */
+	public void setEnabled(boolean enabled)
+	{
+		for(Component item : schemaList.getComponents()) item.setEnabled(enabled);
+		button.setEnabled(enabled);
 	}
 	
 	/** Returns the list of selected schemas */
@@ -134,8 +146,26 @@ class SchemaSelectionPane extends JPanel implements ActionListener
 	/** Handles the import of a schema */
 	public void actionPerformed(ActionEvent e)
 	{
+		// Get the ProjectDialog pane
+		Component component = getParent();
+		while(!(component instanceof ProjectDialog))
+			component = component.getParent();
+		
+		// Display the schema dialog
 		SchemaDialog dialog = new SchemaDialog(harmonyModel, getSelectedSchemaIDs());
-		while(dialog.isDisplayable()) try { Thread.sleep(500); } catch(Exception e2) {}
-		updateSchemaList();
+		harmonyModel.getDialogManager().showDialog(dialog, (ProjectDialog)component);
+		dialog.addInternalFrameListener(this);
 	}
+	
+	/** Updates the schema list when the schema dialog is closed */
+	public void internalFrameClosed(InternalFrameEvent e)
+		{ updateSchemaList(); }
+
+	// Unused event listeners
+	public void internalFrameOpened(InternalFrameEvent e) {}
+	public void internalFrameClosing(InternalFrameEvent e) {}
+	public void internalFrameIconified(InternalFrameEvent e) {}
+	public void internalFrameDeiconified(InternalFrameEvent e) {}
+	public void internalFrameActivated(InternalFrameEvent e) {}
+	public void internalFrameDeactivated(InternalFrameEvent e) {}
 }

@@ -10,7 +10,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Vector;
 
-import javax.swing.JDialog;
+import javax.swing.JInternalFrame;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -26,7 +26,7 @@ import org.mitre.schemastore.model.Schema;
  * Displays the schema references dialog
  * @author CWOLF
  */
-public class SchemaReferencesDialog extends JDialog
+public class SchemaReferencesDialog extends JInternalFrame
 {
 	/** Comparator used to alphabetize schemas */
 	private class ObjectComparator implements Comparator<Object>
@@ -55,7 +55,7 @@ public class SchemaReferencesDialog extends JDialog
 	/** Initializes the schema references dialog */
 	public SchemaReferencesDialog(HarmonyModel harmonyModel, Schema schema)
 	{
-		super(harmonyModel.getBaseFrame());
+		super("Schema Usage Info");
 		
 		// Identify the dependent schemas
 		ArrayList<Schema> schemas = new ArrayList<Schema>();
@@ -84,12 +84,9 @@ public class SchemaReferencesDialog extends JDialog
 		pane.add(getTitledList("Projects",projects));
 		
 		// Set up loader dialog layout and contents
-		setTitle("Schema Usage Info");
-		setModal(true);
-    	setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+		setClosable(true);
 		setContentPane(pane);
 		pack();
-		setLocationRelativeTo(harmonyModel.getBaseFrame());
 		setVisible(true);
    	}
 }

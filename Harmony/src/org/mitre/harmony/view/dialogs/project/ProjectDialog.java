@@ -5,7 +5,7 @@ package org.mitre.harmony.view.dialogs.project;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
 
-import javax.swing.JDialog;
+import javax.swing.JInternalFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
@@ -19,7 +19,7 @@ import org.mitre.harmony.view.dialogs.widgets.AbstractButtonPane;
  * Displays the project dialog
  * @author CWOLF
  */
-public class ProjectDialog extends JDialog
+public class ProjectDialog extends JInternalFrame
 {
 	/** Stores the Harmony model */
 	private HarmonyModel harmonyModel;
@@ -27,6 +27,7 @@ public class ProjectDialog extends JDialog
 	// Stores the various panes used in this pane
 	private SchemaPane schemaPane = null;
 	private MappingPane mappingPane = null;
+	private ButtonPane buttonPane = null;
 	
 	/** Private class for defining the button pane */
 	private class ButtonPane extends AbstractButtonPane
@@ -54,7 +55,7 @@ public class ProjectDialog extends JDialog
 	/** Initializes the project dialog */
 	public ProjectDialog(HarmonyModel harmonyModel)
 	{
-		super(harmonyModel.getBaseFrame());
+		super("Project Configuration");
 		this.harmonyModel = harmonyModel;
 		
 		// Constructs the tabbed panes
@@ -68,18 +69,22 @@ public class ProjectDialog extends JDialog
 		pane.setBorder(new EmptyBorder(10,10,0,10));
 		pane.setLayout(new BorderLayout());
 		pane.add(infoPane,BorderLayout.CENTER);
-		pane.add(new ButtonPane(),BorderLayout.SOUTH);
+		pane.add(buttonPane = new ButtonPane(),BorderLayout.SOUTH);
 		
 		// Set up loader dialog layout and contents
-		setTitle("Project Configuration");
-		setModal(true);
-    	setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		setContentPane(pane);
 		pack();
 		setSize(550,getHeight());
-		setLocationRelativeTo(harmonyModel.getBaseFrame());
 		setVisible(true);
    	}
+	
+	/** Handles the enabling of components in this dialog */
+	public void setEnabled(boolean enabled)
+	{
+		schemaPane.setEnabled(enabled);
+		mappingPane.setEnabled(enabled);
+		buttonPane.setEnabled(enabled);
+	}
 	
 	/** Returns the harmony model */
 	public HarmonyModel getHarmonyModel()

@@ -12,6 +12,8 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
+import javax.swing.event.InternalFrameEvent;
+import javax.swing.event.InternalFrameListener;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 
@@ -42,7 +44,7 @@ class ProjectMenu extends AbstractMenu implements MenuListener
 
 		/** Handles the selection of a mapping menu item */
 		public void actionPerformed(ActionEvent e)
-			{ new ExportMappingDialog(mapping).export(harmonyModel,harmonyModel.getBaseFrame()); }
+			{ new ExportMappingDialog(mapping).export(harmonyModel, null); }
 	}
 	
 	/** Stores the Harmony model */
@@ -159,7 +161,10 @@ class ProjectMenu extends AbstractMenu implements MenuListener
 	private class OpenProjectAction extends AbstractAction
 	{
 		public void actionPerformed(ActionEvent e)
-			{ if(saveOldProject()) new LoadProjectDialog(harmonyModel); }
+		{
+			if(saveOldProject())
+				harmonyModel.getDialogManager().showDialog(new LoadProjectDialog(harmonyModel));
+		}
 	}
     
 	/** Action for saving the project */
@@ -168,37 +173,64 @@ class ProjectMenu extends AbstractMenu implements MenuListener
 		public void actionPerformed(ActionEvent e)
 		{
     		if(harmonyModel.getInstantiationType()!=InstantiationType.EMBEDDED || harmonyModel.getProjectManager().getProject().getId()==null)
-    			new SaveMappingDialog(harmonyModel);
+    			harmonyModel.getDialogManager().showDialog(new SaveMappingDialog(harmonyModel));
     		else ProjectController.saveProject(harmonyModel,harmonyModel.getProjectManager().getProject());
 		}
 	}
 	
 	/** Action for launching the "Import Project" dialog */
-	private class ImportProjectAction extends AbstractAction
+	private class ImportProjectAction extends AbstractAction implements InternalFrameListener
 	{
 		public void actionPerformed(ActionEvent e)
 		{
-    		ImportProjectDialog dialog = new ImportProjectDialog(harmonyModel);
-    		while(dialog.isDisplayable()) try { Thread.sleep(500); } catch(Exception e2) {}
-    		ProjectController.selectMappings(harmonyModel);
+			ImportProjectDialog dialog = new ImportProjectDialog(harmonyModel);
+			dialog.addInternalFrameListener(this);
+			harmonyModel.getDialogManager().showDialog(dialog);
 		}
+		
+		/** Reselect the mappings with the newly imported project */
+		public void internalFrameClosing(InternalFrameEvent e)
+			{ ProjectController.selectMappings(harmonyModel); }
+		
+		// Unused event listeners
+		public void internalFrameOpened(InternalFrameEvent e) {}
+		public void internalFrameClosed(InternalFrameEvent e) {}
+		public void internalFrameIconified(InternalFrameEvent e) {}
+		public void internalFrameDeiconified(InternalFrameEvent e) {}
+		public void internalFrameActivated(InternalFrameEvent e) {}
+		public void internalFrameDeactivated(InternalFrameEvent e) {}
 	}
     
 	/** Action for launching the "Export Project" dialog */
 	private class ExportProjectAction extends AbstractAction
-		{ public void actionPerformed(ActionEvent e) { new ExportProjectDialog().export(harmonyModel,harmonyModel.getBaseFrame()); } }
+	{
+		public void actionPerformed(ActionEvent e)
+			{ new ExportProjectDialog().export(harmonyModel,null); }
+	}
     
 	/** Action for launching the "Import Mapping" dialog */
 	private class ImportMappingAction extends AbstractAction
-		{ public void actionPerformed(ActionEvent e) { new ImportMappingDialog(harmonyModel); } }
+	{
+		public void actionPerformed(ActionEvent e)
+			{ harmonyModel.getDialogManager().showDialog(new ImportMappingDialog(harmonyModel)); }
+	}
     
 	/** Action for launching the configuration dialog */
 	private class ProjectSettingsAction extends AbstractAction
-		{ public void actionPerformed(ActionEvent e) { new ProjectDialog(harmonyModel); } }
+	{
+		public void actionPerformed(ActionEvent e)
+			{ harmonyModel.getDialogManager().showDialog(new ProjectDialog(harmonyModel)); }
+	}
     
 	/** Action for launching the schema management dialog */
 	private class ManageSchemaAction extends AbstractAction
-		{ public void actionPerformed(ActionEvent e) { new SchemaDialog(harmonyModel, new ArrayList<Integer>()); } }
+	{
+		public void actionPerformed(ActionEvent e)
+		{
+			SchemaDialog dialog = new SchemaDialog(harmonyModel, new ArrayList<Integer>());
+			harmonyModel.getDialogManager().showDialog(dialog);
+		}
+	}
  
 	/** Action for exiting Harmony */
 	private class ExitAction extends AbstractAction
