@@ -1,4 +1,4 @@
-<project name="galaxy" default="build" basedir=".">
+<project name="harmony" default="build" basedir=".">
 
     <!-- DO NOT DELETE - these are required when running ant outside Eclipse.  -->
     <!-- If you need to delete these, contact Jeff Hoyt and he'll figure out a way to work around it. -->
@@ -15,53 +15,42 @@
 	    <mkdir dir="WebContent/WEB-INF/classes"/>
 	    <javac srcdir="src" destdir="WebContent/WEB-INF/classes" deprecation="on" debug="on" source="1.6" target="1.6">
     		<classpath>
-   	    		<path path="WebContent/GalaxyApplet/lib/SchemaStoreClient.jar"/>
+   	    		<path path="WebContent/HarmonyApplet/lib/SchemaStoreClient.jar"/>
+   	    		<path path="WebContent/HarmonyApplet/lib/SchemaStorePorters.jar"/>
         	</classpath>
     	</javac>
-	    <javac srcdir="WebContent/GalaxyApplet" destdir="WebContent/GalaxyApplet" deprecation="on" debug="on" source="1.6" target="1.6">
+	    <javac srcdir="WebContent/HarmonyApplet" destdir="WebContent/HarmonyApplet" deprecation="on" debug="on" source="1.6" target="1.6">
 	    	<classpath>
-       	    	<path path="WebContent/GalaxyApplet/prefuse.jar"/>
-       	    	<path path="WebContent/GalaxyApplet/SchemaStoreModel.jar"/>
+       	    	<path path="WebContent/HarmonyApplet/Harmony.jar"/>
+       	    	<path path="WebContent/HarmonyApplet/SchemaStoreModel.jar"/>
+       	    	<path path="WebContent/HarmonyApplet/SchemaStoreUtilities.jar"/>
             </classpath>
         </javac>
     </target>
 	
-	<!-- Builds the Galaxy jar file -->
-    <target name="buildGalaxyJar" depends="compile">
-        <fatjar.build output="Galaxy.jar">
-            <fatjar.manifest/>
-            <fatjar.filesource path="WebContent/GalaxyApplet">
-                <fatjar.exclude relpath="prefuse.jar"/>
-                <fatjar.exclude relpath="SchemaStoreModel.jar"/>
-            	<fatjar.exclude regexp=".*\.svn.*"/>
-            </fatjar.filesource>
-        </fatjar.build>
-    </target>
-	
-	<!-- Builds the Galaxy war file -->
-    <target name="buildGalaxyWar" depends="compile">
-        <fatjar.build output="Galaxy.war">
+	<!-- Builds the Harmony war file -->
+    <target name="buildHarmonyWar" depends="compile">
+        <fatjar.build output="Harmony.war">
             <fatjar.manifest/>
             <fatjar.filesource path="WebContent">
             	<fatjar.exclude regexp=".*\.svn.*"/>
             </fatjar.filesource>
-            <fatjar.filesource path="WebContent/GalaxyApplet" relpath="WEB-INF/classes">
+            <fatjar.filesource path="WebContent/HarmonyApplet" relpath="WEB-INF/classes">
             	<fatjar.exclude regexp=".*\.svn.*"/>
             </fatjar.filesource>           
             <fatjar.filesource path="WebContent/WEB-INF/SchemaStoreClient.jar" relpath="WEB-INF/lib"/>
+            <fatjar.filesource path="WebContent/WEB-INF/SchemaStorePorters.jar" relpath="WEB-INF/lib"/>
        </fatjar.build>
     </target>
 	
-	<!-- Builds the Galaxy jar files -->
+	<!-- Builds the Harmony war files -->
     <target name="build">
-    	<antcall target="buildGalaxyJar"/>
-    	<antcall target="buildGalaxyWar"/>
+    	<antcall target="buildHarmonyWar"/>
    </target>	
 	
 	<!-- Cleans up the constructed jar files -->
 	<target name="clean">
-		<delete file="Galaxy.jar"/>
-	    <delete file="Galaxy.war"/>
+	    <delete file="Harmony.war"/>
     </target>
 	
 </project>
