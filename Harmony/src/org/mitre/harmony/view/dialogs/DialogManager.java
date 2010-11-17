@@ -13,7 +13,6 @@ import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
 
 import org.mitre.harmony.view.harmonyPane.HarmonyFrame;
-import org.mitre.harmony.view.mappingPane.MappingPane;
 
 /**
  * Manages the display of dialogs in Harmony (which are really internal frames)
@@ -21,29 +20,23 @@ import org.mitre.harmony.view.mappingPane.MappingPane;
  */
 public class DialogManager extends DefaultDesktopManager implements InternalFrameListener
 {
-	/** Stores reference to the MappingPane */
-	private MappingPane mappingPane = null;
+	/** Stores reference to the HarmonyFrame */
+	private HarmonyFrame harmonyFrame = null;
 	
 	/** Keep track of locked dialogs */
 	private HashMap<JInternalFrame, JInternalFrame> lockedDialogs = new HashMap<JInternalFrame,JInternalFrame>();
 	
-	/** Retrieves the Harmony menu bar */
+	/** Enable/disable the Harmony menu bar */
 	private void setMenuBarEnabled(boolean enabled)
 	{
-		// Get the menu bar
-		Component component = mappingPane;
-		while(!(component instanceof HarmonyFrame))
-			component = component.getParent();
-		JMenuBar menuBar = ((HarmonyFrame)component).getJMenuBar();
-		
-		// Enable/disable all menus
+		JMenuBar menuBar = harmonyFrame.getJMenuBar();
 		for(int i=0; i<menuBar.getMenuCount(); i++)
 			menuBar.getMenu(i).setEnabled(enabled);
 	}
 	
-	/** Constructs the MappingPane manager */
-	public DialogManager(MappingPane mappingPane)
-		{ this.mappingPane = mappingPane; }
+	/** Constructs the HarmonyFrame manager */
+	public DialogManager(HarmonyFrame harmonyFrame)
+		{ this.harmonyFrame = harmonyFrame; }
 
 	/** Shows a dialog (internal frame) on top of the mapping pane */
 	public void showDialog(JInternalFrame dialog)
@@ -52,7 +45,7 @@ public class DialogManager extends DefaultDesktopManager implements InternalFram
 	/** Shows a dialog (internal frame) on top of the mapping pane */
 	public void showDialog(JInternalFrame dialog, JInternalFrame parentDialog)
 	{
-		Component parent = parentDialog==null ? mappingPane : parentDialog;
+		Component parent = parentDialog==null ? harmonyFrame : parentDialog;
 		
 		// Disable the parent dialog and menu bar (cause modal type behavior)
 		if(parentDialog!=null)
@@ -65,7 +58,7 @@ public class DialogManager extends DefaultDesktopManager implements InternalFram
 		// Calculate the shift
 		Integer xShift=parent.getX(), yShift=parent.getY();
 		Component base = parent;
-		while(!(base instanceof MappingPane))
+		while(!(base.equals(harmonyFrame)))
 		{
 			base = base.getParent();
 			xShift += base.getX(); yShift += base.getY();
@@ -77,7 +70,7 @@ public class DialogManager extends DefaultDesktopManager implements InternalFram
 		dialog.setLocation(x, y);
 
 		// Display the dialog
-		mappingPane.add(dialog,JLayeredPane.POPUP_LAYER);
+		harmonyFrame.add(dialog,JLayeredPane.POPUP_LAYER);
 		activateFrame(dialog);
 		dialog.addInternalFrameListener(this);
 		try { dialog.setSelected(true); } catch(Exception e) {}
