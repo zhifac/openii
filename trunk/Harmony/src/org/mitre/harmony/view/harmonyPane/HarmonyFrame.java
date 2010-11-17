@@ -3,15 +3,18 @@
 package org.mitre.harmony.view.harmonyPane;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.util.HashSet;
 
-import javax.swing.JComponent;
+import javax.swing.JDesktopPane;
 import javax.swing.JInternalFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import org.mitre.harmony.model.HarmonyModel;
-import org.mitre.harmony.model.preferences.PreferencesListener;
+import org.mitre.harmony.view.dialogs.DialogManager;
 import org.mitre.harmony.view.mappingPane.MappingPane;
 import org.mitre.harmony.view.menu.HarmonyMenuBar;
 
@@ -20,35 +23,25 @@ import org.mitre.harmony.view.menu.HarmonyMenuBar;
  * 
  * @author CWOLF
  */
-public class HarmonyFrame extends JInternalFrame implements PreferencesListener
+public class HarmonyFrame extends JInternalFrame implements ComponentListener
 {
-	/** Stores a reference to the view pane */
-	private JPanel viewPane = new JPanel();
-
+	/** Stores a reference to the main pane */
+	private JPanel mainPane = new JPanel();
+	
 	/** Stores the Harmony model */
 	private HarmonyModel harmonyModel;
 	
-	/** Returns the view pane */
-	private JPanel getViewPane()
-	{
-		// Clear out the action map
-		getActionMap().clear();
-
-		// Generate the new view
-		JComponent view = new MappingPane(this,harmonyModel);
-		return new TitledPane(null, view);
-	}
-
 	/** Generates the main pane */
-	private JPanel getMainPane()
+	private JDesktopPane getMainPane()
 	{
 		// Initialize the various panes shown in the main Harmony pane
 		TitledPane evidencePane = new TitledPane("Evidence", new EvidencePane(harmonyModel));
 		TitledPane filterPane = new TitledPane("Filters", new FilterPane(harmonyModel));
 
 		// Layout the view pane of Harmony
+		JPanel viewPane = new JPanel();
 		viewPane.setLayout(new BorderLayout());
-		viewPane.add(getViewPane(), BorderLayout.CENTER);
+		viewPane.add(new TitledPane(null, new MappingPane(this,harmonyModel)), BorderLayout.CENTER);
 
 		// Layout the side pane of Harmony
 		JPanel sidePane = new JPanel();
@@ -57,11 +50,21 @@ public class HarmonyFrame extends JInternalFrame implements PreferencesListener
 		sidePane.add(filterPane, BorderLayout.SOUTH);
 
 		// Generate the main pane of Harmony
-		JPanel mainPane = new JPanel();
 		mainPane.setLayout(new BorderLayout());
 		mainPane.add(viewPane, BorderLayout.CENTER);
 		mainPane.add(sidePane, BorderLayout.EAST);
-		return mainPane;
+
+		// Generate the desktop pane
+		JDesktopPane desktopPane = new JDesktopPane();
+		desktopPane.add(mainPane,JDesktopPane.DEFAULT_LAYER);
+		desktopPane.addComponentListener(this);
+		
+		// Initialize the dialog manager
+		DialogManager dialogManager = new DialogManager(this);
+		harmonyModel.setDialogManager(dialogManager);
+		desktopPane.setDesktopManager(dialogManager);
+
+		return desktopPane;
 	}
 
 	/** Constructs the Harmony pane */
@@ -81,20 +84,19 @@ public class HarmonyFrame extends JInternalFrame implements PreferencesListener
 		setJMenuBar(new HarmonyMenuBar(harmonyModel));
 		setContentPane(getMainPane());
 		setVisible(true);
-
-		// Add a listener to monitor for the closing of the parent frame
-		harmonyModel.getPreferences().addListener(this);
 	}
 
-	/** Handles the changing of the displayed view */
-	public void displayedViewChanged()
+	/** Adjust the size of the various components when this pane is resized */
+	public void componentResized(ComponentEvent e)
 	{
-		viewPane.removeAll();
-		viewPane.add(getViewPane(), BorderLayout.CENTER);
-		viewPane.revalidate();
-		viewPane.repaint();
+		Component component = e.getComponent();
+		mainPane.setBounds(0,0,component.getWidth(),component.getHeight()); revalidate(); repaint();
 	}
-
+	
+	// Unused event listeners
+	public void componentShown(ComponentEvent e) {}
+	public void componentHidden(ComponentEvent e) {}
+	public void componentMoved(ComponentEvent e) {}
 	public void elementsMarkedAsFinished(Integer schemaID, HashSet<Integer> elementIDs) {}
 	public void elementsMarkedAsUnfinished(Integer schemaID, HashSet<Integer> elementIDs) {}
 	public void showSchemaTypesChanged() {}
