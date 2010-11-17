@@ -55,16 +55,17 @@ public class HarmonyFrame extends JInternalFrame implements ComponentListener
 		mainPane.add(sidePane, BorderLayout.EAST);
 
 		// Generate the desktop pane
-		JDesktopPane desktopPane = new JDesktopPane();
-		desktopPane.add(mainPane,JDesktopPane.DEFAULT_LAYER);
-		desktopPane.addComponentListener(this);
+		JDesktopPane desktop = new JDesktopPane();
+		desktop.setDragMode(JDesktopPane.OUTLINE_DRAG_MODE);
+		desktop.add(mainPane,JDesktopPane.DEFAULT_LAYER);
+		desktop.addComponentListener(this);
 		
 		// Initialize the dialog manager
 		DialogManager dialogManager = new DialogManager(this);
 		harmonyModel.setDialogManager(dialogManager);
-		desktopPane.setDesktopManager(dialogManager);
+		desktop.setDesktopManager(dialogManager);
 
-		return desktopPane;
+		return desktop;
 	}
 
 	/** Constructs the Harmony pane */
