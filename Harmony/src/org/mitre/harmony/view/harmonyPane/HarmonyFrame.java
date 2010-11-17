@@ -3,7 +3,6 @@
 package org.mitre.harmony.view.harmonyPane;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.util.HashSet;
@@ -25,7 +24,8 @@ import org.mitre.harmony.view.menu.HarmonyMenuBar;
  */
 public class HarmonyFrame extends JInternalFrame implements ComponentListener
 {
-	/** Stores a reference to the main pane */
+	// Stores reference to various panes in this frame
+	private JDesktopPane desktop = new JDesktopPane();
 	private JPanel mainPane = new JPanel();
 	
 	/** Stores the Harmony model */
@@ -55,10 +55,8 @@ public class HarmonyFrame extends JInternalFrame implements ComponentListener
 		mainPane.add(sidePane, BorderLayout.EAST);
 
 		// Generate the desktop pane
-		JDesktopPane desktop = new JDesktopPane();
 		desktop.setDragMode(JDesktopPane.OUTLINE_DRAG_MODE);
 		desktop.add(mainPane,JDesktopPane.DEFAULT_LAYER);
-		desktop.addComponentListener(this);
 		
 		// Initialize the dialog manager
 		DialogManager dialogManager = new DialogManager(this);
@@ -84,14 +82,16 @@ public class HarmonyFrame extends JInternalFrame implements ComponentListener
 		try { setMaximum(true); } catch (Exception e) {}
 		setJMenuBar(new HarmonyMenuBar(harmonyModel));
 		setContentPane(getMainPane());
+		addComponentListener(this);
 		setVisible(true);
 	}
 
 	/** Adjust the size of the various components when this pane is resized */
 	public void componentResized(ComponentEvent e)
 	{
-		Component component = e.getComponent();
-		mainPane.setBounds(0,0,component.getWidth(),component.getHeight()); revalidate(); repaint();
+		mainPane.setBounds(0,0,desktop.getWidth(),desktop.getHeight());
+		desktop.revalidate();
+		desktop.repaint();
 	}
 	
 	// Unused event listeners
