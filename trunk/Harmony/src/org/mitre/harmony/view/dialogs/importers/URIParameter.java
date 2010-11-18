@@ -10,8 +10,8 @@ import java.io.File;
 import java.net.URI;
 
 import javax.swing.JButton;
-import javax.swing.JDialog;
 import javax.swing.JFileChooser;
+import javax.swing.JInternalFrame;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.CompoundBorder;
@@ -118,7 +118,7 @@ public class URIParameter extends JPanel implements ActionListener
 	{
 		// Identify the dialog of which this pane is part of
 		Component dialog = getParent();
-		while(!(dialog instanceof JDialog))
+		while(!(dialog instanceof JInternalFrame))
 			dialog = dialog.getParent();
 		
 		// Handles the selection of an item from a list for importing
