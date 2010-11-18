@@ -8,6 +8,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.net.URI;
+import java.util.ArrayList;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -18,6 +19,8 @@ import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.event.CaretListener;
+import javax.swing.event.InternalFrameEvent;
+import javax.swing.event.InternalFrameListener;
 import javax.swing.filechooser.FileFilter;
 
 import org.mitre.harmony.model.HarmonyModel;
@@ -26,7 +29,7 @@ import org.mitre.schemastore.porters.Importer;
 import org.mitre.schemastore.porters.URIType;
 
 /** URI parameter class */
-public class URIParameter extends JPanel implements ActionListener
+public class URIParameter extends JPanel implements ActionListener, InternalFrameListener
 {
 	/** Stores the Harmony model */
 	private HarmonyModel harmonyModel;
@@ -124,9 +127,10 @@ public class URIParameter extends JPanel implements ActionListener
 		// Handles the selection of an item from a list for importing
 		if(importer.getURIType()==URIType.LIST)
 		{
-			URIListDialog listDialog = new URIListDialog(SchemaStoreManager.getImporterURIList(importer));
-			while(listDialog.isVisible()) try { Thread.sleep(500); } catch(Exception e2) {}
-			fileField.setText(listDialog.getURI().toString());
+			ArrayList<URI> uriList = SchemaStoreManager.getImporterURIList(importer);
+			URIListDialog listDialog = new URIListDialog(uriList);
+			harmonyModel.getDialogManager().showDialog(listDialog);
+			listDialog.addInternalFrameListener(this);
 		}
 		
 		// Handles the retrieval of a file for importing
@@ -150,6 +154,10 @@ public class URIParameter extends JPanel implements ActionListener
 		}
 	}
 	
+	/** Updates the schema list when the schema dialog is closed */
+	public void internalFrameClosed(InternalFrameEvent e)
+		{ fileField.setText(((URIListDialog)e.getInternalFrame()).getURI().toString()); }
+	
 	/** Adds a listener to the file field */
 	public void addListener(CaretListener listener)
 		{ fileField.addCaretListener(listener); }
@@ -157,4 +165,12 @@ public class URIParameter extends JPanel implements ActionListener
 	/** Removes a listener to the file field */
 	public void removeListener(CaretListener listener)
 		{ fileField.removeCaretListener(listener); }
+	
+	// Unused event listeners
+	public void internalFrameOpened(InternalFrameEvent e) {}
+	public void internalFrameClosing(InternalFrameEvent e) {}
+	public void internalFrameIconified(InternalFrameEvent e) {}
+	public void internalFrameDeiconified(InternalFrameEvent e) {}
+	public void internalFrameActivated(InternalFrameEvent e) {}
+	public void internalFrameDeactivated(InternalFrameEvent e) {}
 }
