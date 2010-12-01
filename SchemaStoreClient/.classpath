@@ -17,10 +17,12 @@
 	<classpathentry kind="lib" path="lib/icu4j_3_4.jar"/>
 	<classpathentry kind="lib" path="lib/xercesImpl.jar"/>
 	<classpathentry kind="lib" path="lib/jtopas.jar"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/jfreechart-1.0.2.jar"/>
 	<classpathentry kind="lib" path="lib/jcommon-1.0.5.jar"/>
 	<classpathentry kind="lib" path="lib/poi-3.5-beta5-20090219.jar"/>
 	<classpathentry kind="lib" path="lib/opencsv-2.2.jar"/>
+	<classpathentry kind="lib" path="lib/commons-lang-2.5.jar"/>
+	<classpathentry kind="lib" path="lib/jackcess-1.2.1.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

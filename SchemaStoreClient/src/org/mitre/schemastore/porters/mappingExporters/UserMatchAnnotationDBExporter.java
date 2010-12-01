@@ -2,15 +2,8 @@
 // ALL RIGHTS RESERVED
 package org.mitre.schemastore.porters.mappingExporters;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -19,14 +12,9 @@ import java.util.List;
 
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
-import org.mitre.schemastore.model.Project;
 import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
-import org.mitre.schemastore.porters.mappingExporters.UserMatchAnnotationExporter.CompressedList;
-import org.mitre.schemastore.porters.mappingExporters.UserMatchAnnotationExporter.CompressedMatch;
 
-import com.healthmarketscience.jackcess.Column;
 import com.healthmarketscience.jackcess.ColumnBuilder;
-import com.healthmarketscience.jackcess.DataType;
 import com.healthmarketscience.jackcess.Database;
 import com.healthmarketscience.jackcess.Table;
 import com.healthmarketscience.jackcess.TableBuilder;
@@ -59,16 +47,12 @@ public class UserMatchAnnotationDBExporter  extends UserMatchAnnotationExporter
 		
 		String schema1Name = client.getSchema(mapping.getSourceId()).getName();
 		String schema2Name = client.getSchema(mapping.getTargetId()).getName(); 	
-		String unqualifiedFileName = client.getProject(mapping.getProjectId()).getName()+" (" +schema1Name+"-to-"+schema2Name+").mdb";
-		String filename = file.getParentFile().getPath()+"\\" + scrubFileName(unqualifiedFileName);
-		System.out.println(filename);
 		com.healthmarketscience.jackcess.Database mdb = null;
 		
 		// Initializes the db for the specified URI
 		try {
 			//  connect to MS Access database
-			File outputMDB = new File(filename);
-			mdb = Database.create(Database.FileFormat.V2003, outputMDB);
+			mdb = Database.create(Database.FileFormat.V2003, file);
 			
 	        System.out.println ("Database connection established."); 			    
 	                      
@@ -172,7 +156,7 @@ public class UserMatchAnnotationDBExporter  extends UserMatchAnnotationExporter
 			mdb.close();
 		} //end try
 		catch(Exception e) { 
-		    System.err.println ("Error with database" +filename); 
+		    System.err.println ("Error with database" +file); 
 		    e.printStackTrace(); 
 		}
 	}
