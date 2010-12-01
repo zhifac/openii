@@ -26,7 +26,7 @@ public class UserMatchAnnotationDBImporter extends MappingImporter
 
 	/** Returns the importer name */
 	public String getName()
-		{ return "User Match Annotation DB Importer"; }
+		{ return "User Match Annotation DB Importer()"; }
 
 	/** Returns the importer description */
 	public String getDescription()

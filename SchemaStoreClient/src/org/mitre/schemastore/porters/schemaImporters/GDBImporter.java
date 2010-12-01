@@ -2,6 +2,7 @@
 
 package org.mitre.schemastore.porters.schemaImporters;
 
+import java.net.URI;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -10,6 +11,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Iterator;
 
 import org.mitre.schemastore.model.Attribute;
 import org.mitre.schemastore.model.Domain;
@@ -19,6 +21,8 @@ import org.mitre.schemastore.model.Containment;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.porters.ImporterException;
 import org.mitre.schemastore.porters.URIType;
+import com.healthmarketscience.jackcess.*;
+import com.healthmarketscience.jackcess.Index.ColumnDescriptor;
 
 /**
  * DOCUMENT ME!
@@ -32,46 +36,44 @@ public class GDBImporter extends SchemaImporter {
 	private ArrayList<Domain> _domains;
 	private ArrayList<DomainValue> _enumerants;
 	private ArrayList<Containment> _containments;
-	Connection conn = null; 
+	com.healthmarketscience.jackcess.Database mdb = null;
             
 	/** Returns the importer name */
-	public String getName() { return "GDB Importer"; }
+	public String getName() { return "GDB Importer~"; }
 
 	/** Returns the importer description */
     public String getDescription()  { return "This imports schemas from the NAS-specific Access MDB"; }
 
 	/** Returns the importer URI type */
-	public URIType getURIType() { return URIType.FILE; }
+    public URIType getURIType() { return URIType.LIST; }
 	
-	/** Returns the importer URI file types */
-	public ArrayList<String> getFileTypes()
+	/** Returns the list of URIs which can be selected from (only needed when URI type is LIST) */
+	public ArrayList<URI> getList()
 	{
-		ArrayList<String> fileTypes = new ArrayList<String>();
-		fileTypes.add(".mdb");
-		return fileTypes;
+		/** Replace with the real way of accessing list items */
+		ArrayList<URI> items = new ArrayList<URI>();
+		try {
+			items.add(new URI("Item1"));
+			items.add(new URI("Item2"));
+			items.add(new URI("./GDB.mdb"));	
+		} catch(Exception e) {}
+		return items;
 	}
 	
 	/** Initializes the importer for the specified URI */
 	protected void initialize() throws ImporterException {
 		String filename = "";
-		try {			
-			Class.forName("sun.jdbc.odbc.JdbcOdbcDriver");
-            // set this to a MS Access DB you have on your machine
-//            String filename = file.getPath();//"c:/hsip/test.mdb";
-
-			//uri comes in as file:/foo, needs to be foo
-			filename = uri.toString().substring(6);
+		try {
+			//uri comes in as ./foo, needs to be foo
+			filename = uri.toString().substring(2);
 			
 			//uris replace spaces with %20s.  Fix that.
 			filename = filename.replaceAll("%20"," ");
+			filename = "C:\\apache-tomcat-6.0.28\\webapps\\" + filename;
 			
 System.out.println(filename);
-			String database = "jdbc:odbc:Driver={Microsoft Access Driver (*.mdb)};DBQ=";
-            database+= filename + ";DriverID=22;READONLY=true}"; // add on to the end 
-            // now we can get the connection from the DriverManager
-            conn = DriverManager.getConnection( database ,"",""); 
-            //end file method
-		
+            java.io.File mdbFile = new java.io.File(filename);
+            mdb = com.healthmarketscience.jackcess.Database.open(mdbFile);
 			
 			
 			System.out.println ("Database connection established."); 
@@ -92,10 +94,6 @@ System.out.println(filename);
 	/** Returns the schema elements from the specified URI */
 	public ArrayList<SchemaElement> generateSchemaElements() throws ImporterException {	
 		generate();
-		try {
-			conn.close();
-		} 
-		catch (SQLException e) { e.printStackTrace();	}
 		return generateSchemaElementList();
 	}
 	
@@ -107,192 +105,162 @@ System.out.println(filename);
     	ResultSet entities = null;  
     	Statement selectEntities = null;
 		
-    	selectEntities = conn.createStatement();
-		
-		// Create nodes for abstract classes in T_AbstractTable -- added by Joel
-		String entitySQL = "SELECT name AS tableName, definition, description, "
-			+ " note AS entityNote, gdbTable_PK AS [key] FROM T_AbstractTable;";
-		entities=selectEntities.executeQuery(entitySQL); 
+    	Table t = mdb.getTable("T_AbstractTable");
+    	Cursor c = Cursor.createCursor(t);
 
-		while(entities.next()) {
-        	tblEntity = createEntity(entities, EntityKey);  			
+		while(c.moveToNextRow()) {
+			int i = 0;
+			String key = ((String) c.getCurrentRowValue(t.getColumn("gdbTable_PK")));  // key to get attributes.
+			Integer ID_FK = (Integer) c.getCurrentRowValue(t.getColumn("itemIdentifier_FK"));  // key to get attributes.
+			String tblName = ((String) c.getCurrentRowValue(t.getColumn("tableName"))).toLowerCase(); // note these match the columns in the  
+        	tblEntity = createEntity(key, ID_FK, tblName, EntityKey);  			
 			_entities.add(tblEntity);
 		}
 		
 		
 		// Create nodes for abstract classes in T_AbstractTable -- added by Joel
-		String schemaSQL = "SELECT P_IATStripIETName, P_IATStripNameSeparator, P_IATStripNameSpaces FROM T_Schema;";
-		ResultSet schema=selectEntities.executeQuery(schemaSQL); 
-		Boolean IATStripIETName=false;
-		String IATStripNameSeparator="";
-		Boolean IATStripNameSpaces=false;
-		schema.next();
-		IATStripIETName = schema.getBoolean("P_IATStripIETName");
-		IATStripNameSeparator = schema.getString("P_IATStripNameSeparator");
-       	IATStripNameSpaces = schema.getBoolean("P_IATStripNameSpaces");
+		t = mdb.getTable("T_Schema");
+    	c = Cursor.createCursor(t);
+    	c.moveToNextRow();
+		Boolean IATStripIETName=(Boolean) c.getCurrentRowValue(t.getColumn("P_IATStripIETName"));
+		String IATStripNameSeparator=(String) c.getCurrentRowValue(t.getColumn("P_IATStripNameSeparator"));
+		Boolean IATStripNameSpaces=(Boolean) c.getCurrentRowValue(t.getColumn("P_IATStripNameSpaces"));
        	if (IATStripIETName && IATStripNameSpaces)  { IATStripNameSeparator = " " + IATStripNameSeparator + " "; }
 		
-		
-        // Set of Features, with Package associations (2 levels deep). -- original, by Sarah, Joel added "key"
-        entitySQL = "SELECT t.tableName AS tableName, g.point as t_P, "
-        	+ " g.curve as t_C, t.gdbTable_PK AS FTID, g.surface as t_S, ts.note AS entityNote, "
-            + " ts.definition AS definition, ts.description AS description, "
-            + " ts.itemIdentifier_PK AS itemIdentifier_PK, t.gdbTable_PK AS key "
-            + " FROM T_Table t, T_TableSpecification ts, T_FeatureGeometry g "
-            + " WHERE t.itemIdentifier_FK=ts.itemIdentifier_PK AND g.itemIdentifier_FK=ts.itemIdentifier_PK "
-            + " ORDER BY 1 ";
-        entities=selectEntities.executeQuery(entitySQL); 
+       	t = mdb.getTable("T_Table");
+    	c = Cursor.createCursor(t);
 
-        while(entities.next()) {
-        	tblEntity = createEntity(entities, EntityKey);  			
-  			_entities.add(tblEntity);
-        	String FTID = entities.getString("FTID");  // key to get attributes.
-    		
-    		Statement selectAttributes = null;
-            selectAttributes = conn.createStatement();
+        while(c.moveToNextRow()) {
+        	Integer ID_FK = (Integer) c.getCurrentRowValue(t.getColumn("itemIdentifier_FK"));  // key to get attributes.
+        	String FTID = ((String) c.getCurrentRowValue(t.getColumn("gdbTable_PK")));  // key to get attributes.
+        	String tblName = ((String) c.getCurrentRowValue(t.getColumn("tableName"))).toLowerCase(); // note these match the columns in the  
+        	tblEntity = createEntity(FTID, ID_FK, tblName, EntityKey);  			
+  			_entities.add(tblEntity);  			
+        	    		
             // Find all attributes belonging to the feature type
-            String attributeSQL = "SELECT f.name AS attName, fs.definition AS definition, "
-            	+ " fs.description AS description, fs.datatypeNsgAlphaCode AS datatypeNsgAlphaCode, "
-                + " fs.note AS attNote, fs.structureSpecification AS structureSpecification, "
-                + " fs.rangeMinimum AS rMin, fs.rangeMaximum AS rMax, fs.generalDatatype as generalDatatype, "
-                + " f.gdbField_PK as DTID, f.infoAttID_FK as uniqueAttribute, "
-                + " fs.measure AS measure,  fs.length AS attLength, fs.lexical AS lexical, "
-                + " f.qualifiedPathName AS qualifiedPathName, fs.validRange AS validRange "
-                + " FROM T_Field f, T_FieldSpecification fs WHERE f.gdbTable_FK='"+ FTID + "'"
-                + " AND f.itemIdentifier_FK=fs.itemIdentifier_PK ORDER BY f.name ";
-            ResultSet attributes=null; 
-            attributes=selectAttributes.executeQuery(attributeSQL); 
-            Attribute attribute;            
+            Attribute attribute;        
+            Table t_att = mdb.getTable("T_Field");
+			Cursor c_att = Cursor.createCursor(t_att);			
             int a=0;
             Hashtable<String, Integer> datatypeIDs = new Hashtable<String, Integer>();
-            while(attributes.next()) {              	
-            	String attName= attributes.getString("attName");   
-            	
-            	//String qualifiedPathName = attributes.getString("qualifiedPathName");
+            while(c_att.moveToNextRow()) {
+            	String att_key = (String) c_att.getCurrentRowValue(t_att.getColumn("gdbTable_FK"));
+            	if (!att_key.equals(FTID)) { continue; }
+            	Integer attID= (Integer) c_att.getCurrentRowValue(t_att.getColumn("itemIdentifier_FK"));  
+            	String attName= (String) c_att.getCurrentRowValue(t_att.getColumn("name"));  
+            	String dtID = (String) c_att.getCurrentRowValue(t_att.getColumn("gdbField_PK")); // used to key on enumerants
+            	String uniqueAttribute = ""+((Integer) c_att.getCurrentRowValue(t_att.getColumn("infoAttID_FK")));
             	if (IATStripIETName) {
             		attName= concatNonNullFields(tblEntity.getName(), attName, IATStripNameSeparator);
             	}
-            	String attDefinition = attributes.getString("definition");
-            	attDefinition = concatNonNullFields(attDefinition, attributes.getString("description"), " [desc] ");
-            	attDefinition = concatNonNullFields(attDefinition, attributes.getString("attNote"), " [note] ");
-            	String generalDatatype = attributes.getString("generalDatatype");
-            	attDefinition = concatNonNullFields(attDefinition, generalDatatype, " [type] ");
-            	String lexical = attributes.getString("lexical");
-                if (lexical.equals("1")) { lexical ="Lexical"; }
-                else { lexical="Non-lexical"; }
+            	Table t_fs = mdb.getTable("T_FieldSpecification");
+    			Cursor c_fs = Cursor.createCursor(t_fs);
+    			c_fs.findRow(t_fs.getColumn("itemIdentifier_PK"), attID);
+    				String attDefinition = (String) c_fs.getCurrentRowValue(t_fs.getColumn("definition"));
+    				attDefinition = concatNonNullFields(attDefinition, ((String) c_fs.getCurrentRowValue(t_fs.getColumn("description"))), " [desc] ");
+    				attDefinition = concatNonNullFields(attDefinition, ((String) c_fs.getCurrentRowValue(t_fs.getColumn("note"))), " [note] ");
+    				String generalDatatype = (String) c_fs.getCurrentRowValue(t_fs.getColumn("generalDatatype"));
+    				attDefinition = concatNonNullFields(attDefinition, generalDatatype, " [type] ");
+    				String lexical = ((Boolean) c_fs.getCurrentRowValue(t_fs.getColumn("lexical")))+"";
+    				if (lexical.equalsIgnoreCase("true")) { lexical ="Lexical"; }
+    				else { lexical="Non-lexical"; }
                                                
-                String attLength = attributes.getString("attLength");
-                if ((attLength==null || attLength.equals("null") || attLength.equals(""))) { 
-                	attLength="Unlimited";
-                }                
-                if (!(generalDatatype.equals("Integer") || generalDatatype.equals("Boolean") || generalDatatype.equals("Real"))) {
-                	attDefinition = concatNonNullFields(attDefinition, lexical, " [lex] ");
-                	attDefinition = concatNonNullFields(attDefinition, attLength, " [len] ");
-                }
-                attDefinition = concatNonNullFields(attDefinition, attributes.getString("structureSpecification"), " [struc] ");
-                String measure = attributes.getString("measure");
+    				String attLength = ""+((Short) c_fs.getCurrentRowValue(t_fs.getColumn("length")));
+    				if ((attLength==null || attLength.equals("null") || attLength.equals(""))) { 
+    					attLength="Unlimited";
+    				}                
+    				if (!(generalDatatype.equals("Integer") || generalDatatype.equals("Boolean") || generalDatatype.equals("Real"))) {
+    					attDefinition = concatNonNullFields(attDefinition, lexical, " [lex] ");
+    					attDefinition = concatNonNullFields(attDefinition, attLength, " [len] ");
+    				}
+    				attDefinition = concatNonNullFields(attDefinition, ((String) c_fs.getCurrentRowValue(t_fs.getColumn("structureSpecification"))), " [struc] ");
+    				String measure = (String) c_fs.getCurrentRowValue(t_fs.getColumn("measure"));
+    				
+    				String validRange = (String) c_fs.getCurrentRowValue(t_fs.getColumn("validRange"));
+    				String rMin = ""+((Double) c_fs.getCurrentRowValue(t_fs.getColumn("rangeMinimum")));
+    				String rMax = ""+((Double) c_fs.getCurrentRowValue(t_fs.getColumn("rangeMaximum")));
             	
-            	String validRange = attributes.getString("validRange");
-            	String rMin = attributes.getString("rMin");
-                String rMax = attributes.getString("rMax");
-            	
-            	if (!generalDatatype.equals("Text")) {
-            		attDefinition = concatNonNullFields(attDefinition, measure, " [UoM] ");
-            		attDefinition = concatNonNullFields(attDefinition, validRange, " [range] ");
-            		attDefinition = concatNonNullFields(attDefinition, rMin, " [min] ");
-            		attDefinition = concatNonNullFields(attDefinition, rMax, " [max] ");    
-            	}
-                
-                String dtID = attributes.getString("DTID"); // used to key on enumerants
-                String datatype = attributes.getString("datatypeNsgAlphaCode");
-                String uniqueAttribute = attributes.getString("uniqueAttribute");
-                
-
-                String domainType = datatype;
-                String ignoreEnumerants="no";
-                
-                if (generalDatatype.equals("Enumeration")) {
-                	if (datatype.equals("Boolean")) { 
-                		ignoreEnumerants="yes";
-                		uniqueAttribute=datatype;
-                	}
-                }
-                else if (generalDatatype.equals("Integer")||generalDatatype.equals("Real")) {
-                	domainType = concatNonNullFields(domainType, measure, " : ");
-                	domainType = concatNonNullFields(domainType, validRange, " ");
-                	if (!((concatNonNullFields("",rMin,"")+concatNonNullFields("",rMax,"")).equals(""))) {
-                		domainType += " <";
-                		domainType = concatNonNullFields(domainType, rMin, "");
-                		if (!((concatNonNullFields("",rMin,"")).equals(""))) {
-                			domainType = concatNonNullFields(domainType, rMax, ", ");
-                		}
-                		else { domainType = concatNonNullFields(domainType, rMax, ""); }
-                		domainType += ">";
-                	}
-                }
-                else {
-                	domainType+= " : " +lexical;
+    				if (!generalDatatype.equals("Text")) {
+    					attDefinition = concatNonNullFields(attDefinition, measure, " [UoM] ");
+    					attDefinition = concatNonNullFields(attDefinition, validRange, " [range] ");
+            			attDefinition = concatNonNullFields(attDefinition, rMin, " [min] ");
+            			attDefinition = concatNonNullFields(attDefinition, rMax, " [max] ");    
+    				}                
+    				String datatype = (String) c_fs.getCurrentRowValue(t_fs.getColumn("datatypeNsgAlphaCode"));
+                              
+    				String domainType = datatype;
+    				String ignoreEnumerants="no";
+    				
+    				if (generalDatatype.equals("Enumeration")) {
+    					if (datatype.equals("Boolean")) { 
+    						ignoreEnumerants="yes";
+    						uniqueAttribute=datatype;
+    					}
+    				}
+    				else if (generalDatatype.equals("Integer")||generalDatatype.equals("Real")) {
+    					domainType = concatNonNullFields(domainType, measure, " : ");
+    					domainType = concatNonNullFields(domainType, validRange, " ");
+    					if (!((concatNonNullFields("",rMin,"")+concatNonNullFields("",rMax,"")).equals(""))) {
+    						domainType += " <";
+                			domainType = concatNonNullFields(domainType, rMin, "");
+                			if (!((concatNonNullFields("",rMin,"")).equals(""))) {
+                				domainType = concatNonNullFields(domainType, rMax, ", ");
+                			}
+                			else { domainType = concatNonNullFields(domainType, rMax, ""); }
+                			domainType += ">";
+    					}
+    				}
+    				else {
+    					domainType+= " : " +lexical;
                 	
-                	domainType+= " : " +attLength;
-                	if (!((generalDatatype.equals("Text")||generalDatatype.equals("Complex")))){
-                		domainType += " : ERROR";
-                	}
-                }                        	
+    					domainType+= " : " +attLength;
+    					if (!((generalDatatype.equals("Text")||generalDatatype.equals("Complex")))){
+    						domainType += " : ERROR";
+    					}
+    				}                        	
             	
-                if (! datatypeIDs.containsKey(uniqueAttribute)) {
-                	Domain domain = new Domain(nextId(), domainType, null, 0);
-        			_domains.add(domain);
-                	datatypeIDs.put(uniqueAttribute, domain.getId());
-                }         
-                else { ignoreEnumerants="yes"; }
+    				if (! datatypeIDs.containsKey(uniqueAttribute)) {
+    					Domain domain = new Domain(nextId(), domainType, null, 0);
+    					_domains.add(domain);
+    					datatypeIDs.put(uniqueAttribute, domain.getId());
+    				}         
+    				else { ignoreEnumerants="yes"; }
             	
-            	// create an attribute
-        		if (attName.length() > 0 ) {   
-      				a++;
-       				attribute = new Attribute(nextId(), attName, attDefinition, tblEntity.getId(), 
-       					datatypeIDs.get(uniqueAttribute), null, null, false, 0);
-       				_attributes.add(attribute);
-        		}
+    				// create an attribute
+    				if (attName.length() > 0 ) {   
+    					a++;
+    					attribute = new Attribute(nextId(), attName, attDefinition, tblEntity.getId(), 
+    							datatypeIDs.get(uniqueAttribute), null, null, false, 0);
+    					_attributes.add(attribute);
+    				}
         		
-        		if (ignoreEnumerants.equals("no")) { 
-        			Statement selectEnumerants = null;
-        			selectEnumerants = conn.createStatement();
-        			// Find any enumerants to this attribute (most will have none).
-        			String enumerantSQL = "SELECT cs.name AS enumName, cs.definition AS definition, "
-        				+ " cs.description AS description, cs.note AS enumNote "
-        				+ " FROM T_CodedValue c, T_CodedValueSpecification cs  WHERE " 
-        				+ " c.itemIdentifier_FK=cs.itemIdentifier_PK AND c.gdbField_FK='" + dtID + "'" 
-        				+ " ORDER BY cs.name";
-        			ResultSet enumerants=null; 
-        			enumerants=selectEnumerants.executeQuery(enumerantSQL); 
-        			while(enumerants.next()) {                	
-        				String enumName= enumerants.getString("enumName");
-        				String enumDefinition = enumerants.getString("definition");
-        				enumDefinition = concatNonNullFields(enumDefinition, enumerants.getString("description"), " [desc] ");
-        				enumDefinition = concatNonNullFields(enumDefinition, enumerants.getString("enumNote"), " [note] ");                    
-                    
-        				DomainValue enumerant = new DomainValue(nextId(), enumName, enumDefinition,
-                    		datatypeIDs.get(uniqueAttribute), 0);
-        				_enumerants.add(enumerant);
-        			}
-        			selectEnumerants.close();        		
-        		} 
+    				if (ignoreEnumerants.equals("no")) { 
+    					Table t_enum = mdb.getTable("T_CodedValue");
+    					Cursor c_enum = Cursor.createCursor(t_enum);
+    					// Find any enumerants to this attribute (most will have none).
+    					while(c_enum.moveToNextRow()) { 
+    						String e_key = (String) c_enum.getCurrentRowValue(t_enum.getColumn("gdbField_FK"));
+    						if (!e_key.equals(dtID)) { continue; }
+    						Integer enumID= (Integer) c_enum.getCurrentRowValue(t_enum.getColumn("itemIdentifier_FK"));
+    						Table t_cs = mdb.getTable("T_CodedValueSpecification");
+    		    			Cursor c_cs = Cursor.createCursor(t_cs);
+    		    			c_cs.findRow(t_cs.getColumn("itemIdentifier_PK"), enumID);
+    		    			String enumName= (String) c_cs.getCurrentRowValue(t_cs.getColumn("name"));
+    						String enumDefinition = (String) c_cs.getCurrentRowValue(t_cs.getColumn("definition"));    		    			
+    						enumDefinition = concatNonNullFields(enumDefinition, 
+    							((String) c_cs.getCurrentRowValue(t_cs.getColumn("description"))), " [desc] ");
+    						enumDefinition = concatNonNullFields(enumDefinition, 
+    								((String) c_cs.getCurrentRowValue(t_cs.getColumn("note"))), " [note] ");
+    						DomainValue enumerant = new DomainValue(nextId(), enumName, enumDefinition,
+    								datatypeIDs.get(uniqueAttribute), 0);
+    						_enumerants.add(enumerant);
+    					} 		
+    				}
             } // while attributes
-            selectAttributes.close();
         } // while Entities
-		selectEntities.close();
-		
-		addContainments(EntityKey);
-		
-    	if (conn != null) { 
-		    try { 
-		        conn.close (); 
-		        System.out.println ("Schema Elements generated.  Database connection closed."); 
-		    } 
-		    catch (Exception e) { /* ignore close errors */ } 
-		}
+		addContainments();
       }
-      catch (SQLException e) { e.printStackTrace(); }
+      catch (Exception e) { e.printStackTrace(); }
 	}
 
 	
@@ -327,18 +295,28 @@ System.out.println(filename);
 	}
 	
 	//given a ResultSet (iterated elsewhere) with fields "tableName, definition, description, entityNote", return new Entity
-	private Entity createEntity(ResultSet entities, HashMap<String, Integer> EntityKey){
-		String tblName = null;
-		String definition = null;
-		String key = null;
-		
+	private Entity createEntity(String key, Integer FK, String tblName, HashMap<String, Integer> EntityKey){
+		String definition = null;				
 		try {
-			tblName = entities.getString("tableName").toLowerCase(); // note these match the columns in the  
+			Table t = mdb.getTable("T_TableSpecification");
+			Column col = t.getColumn("itemIdentifier_PK");
+			String iName = "";
+			Iterator<Index> it = t.getIndexes().iterator();
+			while ( it.hasNext()) {
+				Index i = it.next();	
+				if (i.getColumns().size()==1 ){
+					ColumnDescriptor cd = i.getColumns().iterator().next();
+					if (cd.getColumn().equals(col)) { iName=i.getName(); }
+				}
+			}
+			Index index = t.getIndex(iName);
+			Cursor C = Cursor.createIndexCursor(t, index);
+			C.findRow(col, FK);			
 			tblName = firstLetterCapitalize(tblName);   //Make nicer looking with 1st-cap.        	
-			definition = entities.getString("definition");
-			definition = concatNonNullFields(definition, entities.getString("description"), " [desc] ");
-			definition = concatNonNullFields(definition, entities.getString("entityNote"), " [note] ");
-			key = entities.getString("key");
+			definition = (String) C.getCurrentRowValue(t.getColumn("definition"));
+			definition = concatNonNullFields(definition, ((String) C.getCurrentRowValue(t.getColumn("description"))), " [desc] ");
+			definition = concatNonNullFields(definition, ((String) C.getCurrentRowValue(t.getColumn("note"))), " [note] ");
+
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -349,19 +327,14 @@ System.out.println(filename);
 		return new Entity(id, tblName, definition, 0);
 	}
 	
-	private void addContainments(HashMap<String, Integer> EntityKey) {
+	private void addContainments() {
 		try {
-			Statement s = conn.createStatement();
-			
-			// Create nodes for abstract classes in T_AbstractTable -- added by Joel
-			String sql = "SELECT gdbTable_FK, parentGdbTable_FK FROM T_Containment;";
-			ResultSet rs = s.executeQuery(sql); 
-	
-			while(rs.next()) {
-				Integer childID = EntityKey.get(rs.getString("gdbTable_FK"));
-				Integer parentID = EntityKey.get(rs.getString("parentGdbTable_FK"));
+			Table t = mdb.getTable("T_Containment");
+	    	Cursor C = Cursor.createCursor(t);
+			while(C.moveToNextRow()) {
+				Integer childID = (Integer) C.getCurrentRowValue(t.getColumn("gdbTable_FK"));
+				Integer parentID = (Integer) C.getCurrentRowValue(t.getColumn("parentGdbTable_FK"));
 				Containment c = new Containment(nextId(), "Containment", null, parentID, childID, 0, 0, 0);
-System.out.println("Adding " + c.getName());
 				_containments.add(c);
 			}
 		}
