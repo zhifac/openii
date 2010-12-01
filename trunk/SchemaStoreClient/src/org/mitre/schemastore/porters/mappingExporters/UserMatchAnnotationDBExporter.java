@@ -11,14 +11,25 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.Project;
 import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
+import org.mitre.schemastore.porters.mappingExporters.UserMatchAnnotationExporter.CompressedList;
+import org.mitre.schemastore.porters.mappingExporters.UserMatchAnnotationExporter.CompressedMatch;
+
+import com.healthmarketscience.jackcess.Column;
+import com.healthmarketscience.jackcess.ColumnBuilder;
+import com.healthmarketscience.jackcess.DataType;
+import com.healthmarketscience.jackcess.Database;
+import com.healthmarketscience.jackcess.Table;
+import com.healthmarketscience.jackcess.TableBuilder;
 
 public class UserMatchAnnotationDBExporter  extends UserMatchAnnotationExporter
 {
@@ -43,75 +54,89 @@ public class UserMatchAnnotationDBExporter  extends UserMatchAnnotationExporter
 		{ return "This exporter can be used to export all pairings of terms within the mapping"; }
 	
 	/** Generates a list of the top 100 matches for this project */
-	public void exportMapping(Project project, Mapping mapping, ArrayList<MappingCell> mappingCells, File file) throws IOException
+	public void exportMapping(Mapping mapping, ArrayList<MappingCell> mappingCells, File file) throws IOException
 	{	
-		String schema1Name = project.getSchemas()[0].getName();
-		String schema2Name = project.getSchemas()[1].getName();	
-		String unqualifiedFileName = project.getName()+" (" +schema1Name+"-to-"+schema2Name+").mdb";
+		
+		String schema1Name = client.getSchema(mapping.getSourceId()).getName();
+		String schema2Name = client.getSchema(mapping.getTargetId()).getName(); 	
+		String unqualifiedFileName = client.getProject(mapping.getProjectId()).getName()+" (" +schema1Name+"-to-"+schema2Name+").mdb";
 		String filename = file.getParentFile().getPath()+"\\" + scrubFileName(unqualifiedFileName);
-		Connection conn;
+		System.out.println(filename);
+		com.healthmarketscience.jackcess.Database mdb = null;
 		
 		// Initializes the db for the specified URI
 		try {
 			//  connect to MS Access database
-			File outputMDB = fileCopy(file, filename);
-			
-			Class.forName("sun.jdbc.odbc.JdbcOdbcDriver");
-						
-			String database = "jdbc:odbc:Driver={Microsoft Access Driver (*.mdb)};DBQ=";
-            database+= outputMDB.getPath() + ";DriverID=22;READONLY=true}"; // add on to the end 
-            // now we can get the connection from the DriverManager
-            conn = DriverManager.getConnection( database ,"",""); 
+			File outputMDB = new File(filename);
+			mdb = Database.create(Database.FileFormat.V2003, outputMDB);
 			
 	        System.out.println ("Database connection established."); 			    
-	        
-	        // Delete the old table
-//FIXME CHECK IF EXISTS FIRST
-	        
-	        Statement s = conn.createStatement();
-			s.executeUpdate("DROP TABLE T_Schema");
-	        
-			// Create the table
-			s.execute("CREATE TABLE T_Schema (schema_PK INTEGER," +
-	        									"schemaName STRING," +
-	        									"schemaDescription MEMO, " +	        									
-	        									"schemaDateTime DATETIME)");
-			s.close();	        
+	                      
+	        Table t = new TableBuilder("T_Schema")
+	        .addColumn(new ColumnBuilder("schema_PK")
+	                   .setSQLType(Types.INTEGER)
+	                   .toColumn())
+	        .addColumn(new ColumnBuilder("schemaName")
+	                   .setSQLType(Types.VARCHAR)
+	                   .toColumn())
+	        .addColumn(new ColumnBuilder("schemaDescription")
+	                   .setSQLType(Types.LONGVARCHAR)
+	                   .toColumn())
+	        .addColumn(new ColumnBuilder("schemaDateTime")
+	                   .setSQLType(Types.DATE)
+	                   .toColumn())
+	        .toTable(mdb);
+
 						
-			int id1 = project.getSchemaIDs()[0];
-			int id2 = project.getSchemaIDs()[1];
+			int id1 = mapping.getSourceId();
+			int id2 = mapping.getTargetId();
+			Date today = new Date();
 			String schema1Des = client.getSchema(id1).getDescription();
 			String schema2Des = client.getSchema(id2).getDescription();
 
-			s = conn.createStatement();
-			s.execute("insert into T_Schema values("+id1+", '"+schema1Name+"', '"+schema1Des+"', Now())");
-			s.execute("insert into T_Schema values("+id2+", '"+schema2Name+"', '"+schema2Des+"', Now())");
-			s.close();
-
-			s = conn.createStatement();
-			// Create the table
-			s.execute("DELETE * FROM tblTimestamps");
-			s.close();	        
+			t.addRow(id1, schema1Name, schema1Des, today);
+			t.addRow(id2, schema2Name, schema2Des, today);
 			
-			s = conn.createStatement();
-			s.execute("insert into tblTimestamps values(Now())");			  
-			s.close();
 			
-	        s = conn.createStatement();
-	        s.executeUpdate("DROP TABLE T_MatchLink");
-	        
-	        // Create the table
-	        s.execute("CREATE TABLE T_MatchLink (linkIdentifier_PK INTEGER," +
-	        									"leftSchema_FK INTEGER," +
-	        									"leftNodePath MEMO," +
-	        									"rightSchema_FK INTEGER," +
-	        									"rightNodePath MEMO," +
-	        									"linkWeight STRING," +
-	        									"linkAuthor STRING," +
-	        									"linkDateTime STRING," +
-	        									"linkTransform STRING," +
-	        									"linkNote MEMO)");
-	        s.close();	        	        
+			Table t2 = new TableBuilder("tblTimestamps")
+	        .addColumn(new ColumnBuilder("exportDateTime")
+	                   .setSQLType(Types.DATE)
+	                   .toColumn())
+	        .toTable(mdb);
+			t2.addRow(today);
+    
+	        Table t3 = new TableBuilder("T_MatchLink")
+	        .addColumn(new ColumnBuilder("linkIdentifier_PK")
+	                   .setSQLType(Types.INTEGER)
+	                   .toColumn())
+	        .addColumn(new ColumnBuilder("leftSchema_FK")
+	                   .setSQLType(Types.INTEGER)
+	                   .toColumn())
+	        .addColumn(new ColumnBuilder("leftNodePath")
+	                   .setSQLType(Types.LONGVARCHAR)
+	                   .toColumn())
+	        .addColumn(new ColumnBuilder("rightSchema_FK")
+	                   .setSQLType(Types.INTEGER)
+	                   .toColumn())
+	        .addColumn(new ColumnBuilder("rightNodePath")
+	                   .setSQLType(Types.LONGVARCHAR)
+	                   .toColumn())           
+	        .addColumn(new ColumnBuilder("linkWeight")
+	                   .setSQLType(Types.VARCHAR)
+	                   .toColumn())
+	        .addColumn(new ColumnBuilder("linkAuthor")
+	                   .setSQLType(Types.VARCHAR)
+	                   .toColumn())
+	        .addColumn(new ColumnBuilder("linkDateTime")
+	                   .setSQLType(Types.VARCHAR)
+	                   .toColumn())      
+	        .addColumn(new ColumnBuilder("linkTransform")
+	                   .setSQLType(Types.VARCHAR)
+	                   .toColumn()) 
+	        .addColumn(new ColumnBuilder("linkNote")
+	                   .setSQLType(Types.LONGVARCHAR)
+	                   .toColumn())           
+	        .toTable(mdb);    	        
 
 	        HierarchicalSchemaInfo source = new HierarchicalSchemaInfo(client.getSchemaInfo(mapping.getSourceId()));
 			setSourceInfo(source);
@@ -126,7 +151,6 @@ public class UserMatchAnnotationDBExporter  extends UserMatchAnnotationExporter
 			}
 	   		List<CompressedMatch> matches = matchList.getMatches();
 			Collections.sort(matches);
-//			if(matches.size()>count) matches = matches.subList(0, count);
 	  		
 			int linkIdentifier_PK = 0; // the primary key for the table
 			for(CompressedMatch match : matches) { 
@@ -142,59 +166,15 @@ public class UserMatchAnnotationDBExporter  extends UserMatchAnnotationExporter
 				String linkDateTime = match.getDate();  if (linkDateTime==null|| linkDateTime.equals("null")) { linkDateTime=""; }
 				String linkTransform = match.getTransform();  if (linkTransform==null|| linkTransform.equals("null")) { linkTransform=""; }
 				String linkNote = match.getNotes();  if (linkNote==null|| linkNote.equals("null")) { linkNote=""; }
-				
-				// Escape any single 's by doubling them for the SQL insert query
-				// Some of these fields shouldn't ever have 's, but being safe.
-				leftNodePath = leftNodePath.replaceAll("'", "''");
-				rightNodePath = rightNodePath.replaceAll("'", "''");
-				linkAuthor = linkAuthor.replaceAll("'", "''");
-				linkDateTime = linkDateTime.replaceAll("'", "''");
-				linkTransform = linkTransform.replaceAll("'", "''");
-				linkNote = linkNote.replaceAll("'", "''");
-				
-
-  				// create a table      	         	
-  				
-				s = conn.createStatement();
-
-				s.execute("insert into T_MatchLink values( " +
-						linkIdentifier_PK + ", " + 
-						leftSchema_FK + ", " +
-						"'" + leftNodePath + "'" + ", " +
-						rightSchema_FK+ ", " +
-						"'" + rightNodePath + "'" + ", " +
-						linkWeight+ ", " +
-						"'" + linkAuthor + "'"+ ", " +
-						"'" + linkDateTime + "'"+ ", " +
-						"'" + linkTransform + "'"+ ", " +
-						"'" + linkNote + "'" + ")");	       
-				s.close();
-			}  // for matches loop		
-			conn.close();
+				t3.addRow(linkIdentifier_PK, leftSchema_FK, leftNodePath, rightSchema_FK, rightNodePath, 
+						""+linkWeight, linkAuthor, linkDateTime, linkTransform, linkNote);
+			}  // for matches loop	
+			mdb.close();
 		} //end try
 		catch(Exception e) { 
 		    System.err.println ("Error with database" +filename); 
 		    e.printStackTrace(); 
 		}
-	}
-	
-	
-	public File fileCopy(File inputFile, String filename) {
-		try {
-			File outputFile = new File(filename);
-			
-		 	BufferedInputStream bis = new BufferedInputStream(new FileInputStream(inputFile), 4096);
-	        BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(outputFile), 4096);
-	        int theChar;
-	        while ((theChar = bis.read()) != -1) {
-	           bos.write(theChar);
-	        }
-			bis.close();
-			bos.close();
-			return outputFile;
-		}
-		catch (IOException e) {	e.printStackTrace(); }
-		return null;
 	}
 	
 	public String scrubFileName(String original) {
