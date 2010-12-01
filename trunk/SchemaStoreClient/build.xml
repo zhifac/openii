@@ -30,6 +30,8 @@
        	    	<path path="lib/jtopas.jar"/>
 	    		<path path="lib/poi-3.5-beta5-20090219.jar"/>
 	    		<path path="lib/xercesImpl.jar"/>
+	    		<path path="lib/commons-lang-2.5.jar"/>
+	    		<path path="lib/jackcess-1.2.1.jar"/>
             </classpath>
         </javac>
     </target>
@@ -72,6 +74,8 @@
             <fatjar.jarsource file="lib/jtopas.jar" relpath=""/>
         	<fatjar.jarsource file="lib/poi-3.5-beta5-20090219.jar" relpath=""/>
             <fatjar.jarsource file="lib/xercesImpl.jar" relpath=""/>
+            <fatjar.jarsource file="lib/commons-lang-2.5.jar" relpath=""/>
+            <fatjar.jarsource file="lib/jackcess-1.2.1.jar" relpath=""/>
         </fatjar.build>
     </target>
 
