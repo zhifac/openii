@@ -222,7 +222,7 @@ public class HarmonyServlet extends HttpServlet
 	
 	/** Returns a temporary file with the provided name */
 	private File getFile(String filename) throws IOException
-		{ return File.createTempFile("Temp", "__" + filename.replaceAll("[^\\w\\.]+","")); }
+		{ return File.createTempFile("Temp", "__" + filename.replaceAll("[^\\w\\.\\-\\(\\)]+","")); }
 	
 	/** Handles the exporting of data */ @SuppressWarnings("unchecked")
 	private String exportData(GenericExporter genericExporter, ArrayList<Object> data)
@@ -267,9 +267,10 @@ public class HarmonyServlet extends HttpServlet
 			{
 				Mapping mapping = (Mapping)data.get(0);
 				ArrayList<MappingCell> mappingCells = (ArrayList<MappingCell>)data.get(1);
+				String project = client.getProject(mapping.getProjectId()).getName();
 				String schema1 = client.getSchema(mapping.getSourceId()).getName();
 				String schema2 = client.getSchema(mapping.getTargetId()).getName();
-				file = getFile(schema1 + " to " + schema2 + exporter.getFileType());
+				file = getFile(project+" (" +schema1 + "-to-" + schema2 + ")" + exporter.getFileType());
 				((MappingExporter)exporter).exportMapping(mapping, mappingCells, file);
 			}
 			
