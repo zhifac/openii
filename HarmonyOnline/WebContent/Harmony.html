@@ -5,7 +5,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
     <title>Harmony</title>
     <script>
-
+    
       // Expand the Harmony pane to full screen
       function calcDimensions()
       {
@@ -29,6 +29,8 @@
       function resize()
       {
         calcDimensions();
+
+		// Adjust the applet
         var applet = document.getElementById('harmonyApplet');
         if(applet)
         {
@@ -37,21 +39,93 @@
           window.scroll(0,0);
         }
       }
-
-	  // Displays "Hello World"
+    
+	  // Exports a file from Harmony
 	  function exportFile(filename)
 	  {
-		  document.location.href = "ExportServlet?filename="+filename;
+		document.location.href = "ExportServlet?filename="+filename;
  	  }
-      
+
+	  // Displays the dialog
+      function displayDialog()
+      {
+        // Adjust the positioning of the dialog    
+    	var dialog = document.getElementById("importDialog")
+		dialog.style.top = (height - parseInt(dialog.style.height))/2 + 'px';
+		dialog.style.left = (width - parseInt(dialog.style.width))/2 + 'px';
+
+        // Create a new iframe for use in bringing the dialog to the front
+        var hole = document.createElement('iframe');
+        hole.id='hole';
+        hole.style.position='absolute';
+        hole.setAttribute('frameborder','0');
+
+        // Make the iframe carve a hole in the applet in order to reveal the dialog
+        hole.style.left = parseInt(dialog.style.left);
+        hole.style.top = parseInt(dialog.style.top);
+        hole.style.width = dialog.style.width;
+        hole.style.height = dialog.style.height;
+        hole.style.zIndex = dialog.style.zIndex;
+
+        // Display the dialog
+        document.body.appendChild(hole);
+        dialog.style.visibility='visible';
+      }
+
+	  // Imports the file specified in the dialog
+	  function doImport(dialog)
+	  {
+		document.location.href = "ImportFile.jsp?filename="+filename;  
+		hideDialog(dialog);
+	  }
+	  
+	  // Hides the dialog
+      function hideDialog()
+      {
+		// Hide the dialog
+    	var dialog = document.getElementById("importDialog")
+		dialog.style.visibility='hidden'
+		document.getElementById('filename').value="";
+		document.getElementById('OK').disabled = true;
+		var hole = document.getElementById('hole');
+        document.body.removeChild(hole);
+
+        // Inform the Harmony applet that the import is complete
+    	document.getElementById('harmonyApplet').finishImport();
+      }
+
+      // Have the import dialog form import to a hidden frame
+ 	  window.onload = function()
+   	  {
+        document.getElementById('importDialogForm').onsubmit=function()
+        	{ document.getElementById('importDialogForm').target = 'importTarget'; }
+      }
+
     </script>
   </head>
-  
-  <SCRIPT LANGUAGE="JavaScript"><!--
-    calcDimensions();
-    document.write("<body topmargin=0 leftmargin=0 marginwidth=0 marginheight=0 onload=resize() onresize=resize()>");
-    document.write("  <applet id='harmonyApplet' code=org/mitre/harmony/view/HarmonyApplet.class codebase=HarmonyApplet archive=Harmony.jar,SchemaStoreModel.jar,SchemaStoreUtilities.jar width=",width," height=",height,"></applet>");
-    document.write("</body>");
-  --></script>
 
+  <body topmargin=0 leftmargin=0 marginwidth=0 marginheight=0 onresize=resize()>
+
+  <!-- Pane for importing items into Harmony -->
+  <div id='importDialog' style='display:block; border: gray 3px solid; width:360px; height:75px; background:white; position:absolute; z-index:1000; visibility:hidden;'>
+	<form id=importDialogForm action="ImportFile.jsp" method="post" enctype="multipart/form-data">
+	  <table valign='top' cellpadding=5 height=100% width=100%>
+	    <tr>
+	      <td align='right' nowrap='nowrap' valign='top'>&nbsp;&nbsp;&nbsp;&nbsp;Import File:</td>
+	      <td><input id='filename' name='filename' type='file' onChange=document.getElementById('OK').disabled=false></td>
+	    </tr>
+	  </table>
+      <table align='center'><tr><td>
+        <input type=submit style='width:80px;' id='OK' value='OK' disabled='disabled' onClick='hideDialog()'>
+        &nbsp;&nbsp;
+        <input type=button style='width:80px' id='Cancel' value='Cancel' onClick='hideDialog()'>
+      </td></tr></table>
+      <iframe id="importTarget" name="importTarget" src="" style="width:0;height:0;border:0px solid #fff;"></iframe>
+    </form>
+  </div>
+  
+  <!-- Pane for showing Harmony -->
+  <applet id='harmonyApplet' code=org/mitre/harmony/view/HarmonyApplet.class codebase=HarmonyApplet archive=Harmony.jar,SchemaStoreModel.jar,SchemaStoreUtilities.jar width=0 height=0></applet>
+  
+  </body>
 </html>
