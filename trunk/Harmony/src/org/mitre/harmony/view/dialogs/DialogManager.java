@@ -3,7 +3,7 @@
 package org.mitre.harmony.view.dialogs;
 
 import java.awt.Component;
-import java.util.HashMap;
+import java.util.Stack;
 
 import javax.swing.DefaultDesktopManager;
 import javax.swing.JInternalFrame;
@@ -23,8 +23,8 @@ public class DialogManager extends DefaultDesktopManager implements InternalFram
 	/** Stores reference to the HarmonyFrame */
 	private HarmonyFrame harmonyFrame = null;
 	
-	/** Keep track of locked dialogs */
-	private HashMap<JInternalFrame, JInternalFrame> lockedDialogs = new HashMap<JInternalFrame,JInternalFrame>();
+	/** Stores a stack of displayed dialogs */
+	private Stack<JInternalFrame> displayedDialogs = new Stack<JInternalFrame>();
 	
 	/** Enable/disable the Harmony menu bar */
 	private void setMenuBarEnabled(boolean enabled)
@@ -40,20 +40,14 @@ public class DialogManager extends DefaultDesktopManager implements InternalFram
 
 	/** Shows a dialog (internal frame) on top of the mapping pane */
 	public void showDialog(JInternalFrame dialog)
-		{ showDialog(dialog, null); }
-	
-	/** Shows a dialog (internal frame) on top of the mapping pane */
-	public void showDialog(JInternalFrame dialog, JInternalFrame parentDialog)
 	{
-		Component parent = parentDialog==null ? harmonyFrame : parentDialog;
+		Component parent = displayedDialogs.size()==0 ? harmonyFrame : displayedDialogs.peek();
 		
 		// Disable the parent dialog and menu bar (cause modal type behavior)
-		if(parentDialog!=null)
-		{
-			parentDialog.setEnabled(false);
-			lockedDialogs.put(parentDialog,dialog);
-		}
-		setMenuBarEnabled(false);
+		if(displayedDialogs.size()>0)
+			displayedDialogs.peek().setEnabled(false);
+		else setMenuBarEnabled(false);
+		displayedDialogs.push(dialog);
 		
 		// Calculate the shift
 		Integer xShift=parent.getX(), yShift=parent.getY();
@@ -71,33 +65,29 @@ public class DialogManager extends DefaultDesktopManager implements InternalFram
 
 		// Display the dialog
 		harmonyFrame.add(dialog,JLayeredPane.POPUP_LAYER);
-		activateFrame(dialog);
 		dialog.addInternalFrameListener(this);
 		try { dialog.setSelected(true); } catch(Exception e) {}
 	}
 
 	/** Only activate if no dialog has higher priority */
 	public void activateFrame(JInternalFrame dialog)
-		{ if(!lockedDialogs.containsKey(dialog)) super.activateFrame(dialog); }
+	{
+		if(displayedDialogs.peek().equals(dialog)) super.activateFrame(dialog);
+		else try { dialog.setSelected(false); } catch(Exception e) {}
+	}
 
 	/** Remove the priority flag */
 	public void internalFrameClosed(InternalFrameEvent e)
 	{
 		// Search for parent dialog
-		JInternalFrame dialog = e.getInternalFrame();
-		for(JInternalFrame parentDialog : lockedDialogs.keySet())
-			if(lockedDialogs.get(parentDialog).equals(dialog))
-			{
-				// Re-enable parent dialog
-				lockedDialogs.remove(parentDialog);
-				parentDialog.setEnabled(true);
-				try { parentDialog.setSelected(true); } catch(Exception e2) {}
-				break;
-			}
-		
-		// Reactivate the menu bar if no more dialogs exist
-		if(lockedDialogs.size()==0)
-			setMenuBarEnabled(true);
+		JInternalFrame dialog = displayedDialogs.pop();
+		dialog.removeInternalFrameListener(this);
+		if(displayedDialogs.size()>0)
+		{
+			displayedDialogs.peek().setEnabled(true);
+			try { displayedDialogs.peek().setSelected(true); } catch(Exception e2) {}
+		}
+		else setMenuBarEnabled(true);
 	}
 	
 	// Unused event listeners

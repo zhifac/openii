@@ -44,7 +44,7 @@ class ProjectMenu extends AbstractMenu implements MenuListener
 
 		/** Handles the selection of a mapping menu item */
 		public void actionPerformed(ActionEvent e)
-			{ new ExportMappingDialog(mapping).export(harmonyModel, null); }
+			{ new ExportMappingDialog(mapping).export(harmonyModel); }
 	}
 	
 	/** Stores the Harmony model */
@@ -205,7 +205,7 @@ class ProjectMenu extends AbstractMenu implements MenuListener
 	private class ExportProjectAction extends AbstractAction
 	{
 		public void actionPerformed(ActionEvent e)
-			{ new ExportProjectDialog().export(harmonyModel,null); }
+			{ new ExportProjectDialog().export(harmonyModel); }
 	}
     
 	/** Action for launching the "Import Mapping" dialog */
