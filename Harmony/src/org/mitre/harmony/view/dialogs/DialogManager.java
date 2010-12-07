@@ -39,13 +39,16 @@ public class DialogManager extends DefaultDesktopManager implements InternalFram
 		{ this.harmonyFrame = harmonyFrame; }
 
 	/** Shows a dialog (internal frame) on top of the mapping pane */
-	public void showDialog(JInternalFrame dialog)
+	public void openDialog(JInternalFrame dialog)
 	{
 		Component parent = displayedDialogs.size()==0 ? harmonyFrame : displayedDialogs.peek();
 		
 		// Disable the parent dialog and menu bar (cause modal type behavior)
 		if(displayedDialogs.size()>0)
+		{
+			try { displayedDialogs.peek().setSelected(false); } catch(Exception e) {}
 			displayedDialogs.peek().setEnabled(false);
+		}
 		else setMenuBarEnabled(false);
 		displayedDialogs.push(dialog);
 		
@@ -58,30 +61,25 @@ public class DialogManager extends DefaultDesktopManager implements InternalFram
 			xShift += base.getX(); yShift += base.getY();
 		}
 		
-		// Place the dialog
-		Integer x = xShift + (parent.getWidth()-dialog.getWidth())/2;
-		Integer y = yShift + (parent.getHeight()-dialog.getHeight())/2;
-		dialog.setLocation(x, y);
-
-		// Display the dialog
-		harmonyFrame.add(dialog,JLayeredPane.POPUP_LAYER);
-		dialog.addInternalFrameListener(this);
-		try { dialog.setSelected(true); } catch(Exception e) {}
+		if(dialog!=null)
+		{
+			// Place the dialog
+			Integer x = xShift + (parent.getWidth()-dialog.getWidth())/2;
+			Integer y = yShift + (parent.getHeight()-dialog.getHeight())/2;
+			dialog.setLocation(x, y);
+	
+			// Display the dialog
+			harmonyFrame.add(dialog,JLayeredPane.POPUP_LAYER);
+			dialog.addInternalFrameListener(this);
+			try { dialog.setSelected(true); } catch(Exception e) {}
+		}
 	}
 
-	/** Only activate if no dialog has higher priority */
-	public void activateFrame(JInternalFrame dialog)
+	/** Closes the topmost dialog */
+	private void closeDialog()
 	{
-		if(displayedDialogs.peek().equals(dialog)) super.activateFrame(dialog);
-		else try { dialog.setSelected(false); } catch(Exception e) {}
-	}
-
-	/** Remove the priority flag */
-	public void internalFrameClosed(InternalFrameEvent e)
-	{
-		// Search for parent dialog
 		JInternalFrame dialog = displayedDialogs.pop();
-		dialog.removeInternalFrameListener(this);
+		if(dialog!=null) dialog.removeInternalFrameListener(this);
 		if(displayedDialogs.size()>0)
 		{
 			displayedDialogs.peek().setEnabled(true);
@@ -89,6 +87,25 @@ public class DialogManager extends DefaultDesktopManager implements InternalFram
 		}
 		else setMenuBarEnabled(true);
 	}
+	
+	/** Locks the top dialog */
+	public void lockFrame()
+		{ openDialog(null); }
+	
+	/** Unlocks the top dialog */
+	public void unlockFrame()
+		{ closeDialog(); }
+
+	/** Only activate if no dialog has higher priority */
+	public void activateFrame(JInternalFrame dialog)
+	{
+		if(dialog.equals(displayedDialogs.peek())) super.activateFrame(dialog);
+		else try { dialog.setSelected(false); } catch(Exception e) {}
+	}
+
+	/** Closes the topmost dialog */
+	public void internalFrameClosed(InternalFrameEvent e)
+		{ closeDialog(); }
 	
 	// Unused event listeners
 	public void internalFrameOpened(InternalFrameEvent e) {}

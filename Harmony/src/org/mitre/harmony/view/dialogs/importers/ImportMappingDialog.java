@@ -145,7 +145,7 @@ public class ImportMappingDialog extends JInternalFrame implements ActionListene
 			// Display a dialog with any ignored mapping cells
 			ArrayList<MappingCellPaths> paths = importer.getUnidentifiedMappingCellPaths();
 			if(paths.size()>0)
-				harmonyModel.getDialogManager().showDialog(new UnidentifiedMappingCellsDialog(paths));
+				harmonyModel.getDialogManager().openDialog(new UnidentifiedMappingCellsDialog(paths));
 
 			// Return the mapping cells
 			return mappingCells;

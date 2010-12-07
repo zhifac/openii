@@ -83,7 +83,7 @@ public class MappingPane extends JPanel implements ActionListener, InternalFrame
 		// Run the dialog to add a mapping
 		HarmonyModel harmonyModel = projectDialog.getHarmonyModel();
 		AddMappingDialog dialog = new AddMappingDialog(harmonyModel, schemas, mappings);
-		harmonyModel.getDialogManager().showDialog(dialog);
+		harmonyModel.getDialogManager().openDialog(dialog);
 		dialog.addInternalFrameListener(this);
 	}
 	

@@ -468,7 +468,7 @@ public class SchemaTree extends JTree implements MappingListener, ProjectListene
 					if(mappingPane.getCursor()==Cursor.getPredefinedCursor(Cursor.HAND_CURSOR))
 					{
 						SchemaModelDialog dialog = new SchemaModelDialog(((Schema)object).getId(),harmonyModel);
-						harmonyModel.getDialogManager().showDialog(dialog);
+						harmonyModel.getDialogManager().openDialog(dialog);
 					}
 				}
 					

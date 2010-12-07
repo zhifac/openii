@@ -163,7 +163,7 @@ class ProjectMenu extends AbstractMenu implements MenuListener
 		public void actionPerformed(ActionEvent e)
 		{
 			if(saveOldProject())
-				harmonyModel.getDialogManager().showDialog(new LoadProjectDialog(harmonyModel));
+				harmonyModel.getDialogManager().openDialog(new LoadProjectDialog(harmonyModel));
 		}
 	}
     
@@ -173,7 +173,7 @@ class ProjectMenu extends AbstractMenu implements MenuListener
 		public void actionPerformed(ActionEvent e)
 		{
     		if(harmonyModel.getInstantiationType()!=InstantiationType.EMBEDDED || harmonyModel.getProjectManager().getProject().getId()==null)
-    			harmonyModel.getDialogManager().showDialog(new SaveMappingDialog(harmonyModel));
+    			harmonyModel.getDialogManager().openDialog(new SaveMappingDialog(harmonyModel));
     		else ProjectController.saveProject(harmonyModel,harmonyModel.getProjectManager().getProject());
 		}
 	}
@@ -185,7 +185,7 @@ class ProjectMenu extends AbstractMenu implements MenuListener
 		{
 			ImportProjectDialog dialog = new ImportProjectDialog(harmonyModel);
 			dialog.addInternalFrameListener(this);
-			harmonyModel.getDialogManager().showDialog(dialog);
+			harmonyModel.getDialogManager().openDialog(dialog);
 		}
 		
 		/** Reselect the mappings with the newly imported project */
@@ -212,14 +212,14 @@ class ProjectMenu extends AbstractMenu implements MenuListener
 	private class ImportMappingAction extends AbstractAction
 	{
 		public void actionPerformed(ActionEvent e)
-			{ harmonyModel.getDialogManager().showDialog(new ImportMappingDialog(harmonyModel)); }
+			{ harmonyModel.getDialogManager().openDialog(new ImportMappingDialog(harmonyModel)); }
 	}
     
 	/** Action for launching the configuration dialog */
 	private class ProjectSettingsAction extends AbstractAction
 	{
 		public void actionPerformed(ActionEvent e)
-			{ harmonyModel.getDialogManager().showDialog(new ProjectDialog(harmonyModel)); }
+			{ harmonyModel.getDialogManager().openDialog(new ProjectDialog(harmonyModel)); }
 	}
     
 	/** Action for launching the schema management dialog */
@@ -228,7 +228,7 @@ class ProjectMenu extends AbstractMenu implements MenuListener
 		public void actionPerformed(ActionEvent e)
 		{
 			SchemaDialog dialog = new SchemaDialog(harmonyModel, new ArrayList<Integer>());
-			harmonyModel.getDialogManager().showDialog(dialog);
+			harmonyModel.getDialogManager().openDialog(dialog);
 		}
 	}
  

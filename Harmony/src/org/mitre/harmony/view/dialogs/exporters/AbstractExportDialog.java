@@ -194,6 +194,6 @@ abstract class AbstractExportDialog
 	{		
 		if(harmonyModel.getInstantiationType()!=InstantiationType.WEBAPP)
 			exportViaLocalClient(harmonyModel);
-		else harmonyModel.getDialogManager().showDialog(new WebServiceDialog(harmonyModel));
+		else harmonyModel.getDialogManager().openDialog(new WebServiceDialog(harmonyModel));
 	}
 }
