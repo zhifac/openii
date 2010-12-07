@@ -38,4 +38,10 @@ public class HarmonyApplet extends Applet
 		// Connect to the remote schema store client
 		SchemaStoreManager.init(this);
 	}
+	
+	/** Informs the applet that the import is completed */
+	public void finishImport()
+	{
+		harmonyModel.getDialogManager().unlockFrame();
+	}
 }
