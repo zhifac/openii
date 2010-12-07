@@ -153,7 +153,7 @@ class SchemaSelectionPane extends JPanel implements ActionListener, InternalFram
 		
 		// Display the schema dialog
 		SchemaDialog dialog = new SchemaDialog(harmonyModel, getSelectedSchemaIDs());
-		harmonyModel.getDialogManager().showDialog(dialog, (ProjectDialog)component);
+		harmonyModel.getDialogManager().showDialog(dialog);
 		dialog.addInternalFrameListener(this);
 	}
 	

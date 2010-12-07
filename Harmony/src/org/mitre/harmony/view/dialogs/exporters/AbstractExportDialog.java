@@ -190,10 +190,10 @@ abstract class AbstractExportDialog
 	}
 	
 	/** Allows user to export */
-	public void export(HarmonyModel harmonyModel, JInternalFrame parentDialog)
+	public void export(HarmonyModel harmonyModel)
 	{		
 		if(harmonyModel.getInstantiationType()!=InstantiationType.WEBAPP)
 			exportViaLocalClient(harmonyModel);
-		else harmonyModel.getDialogManager().showDialog(new WebServiceDialog(harmonyModel), parentDialog);
+		else harmonyModel.getDialogManager().showDialog(new WebServiceDialog(harmonyModel));
 	}
 }
