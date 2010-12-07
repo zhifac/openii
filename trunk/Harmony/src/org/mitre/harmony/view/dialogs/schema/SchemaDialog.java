@@ -86,7 +86,7 @@ public class SchemaDialog extends JInternalFrame implements ListSelectionListene
 			{
 				ImportSchemaDialog dialog = new ImportSchemaDialog(harmonyModel);
 				dialog.addInternalFrameListener(this);
-				harmonyModel.getDialogManager().showDialog(dialog);
+				harmonyModel.getDialogManager().openDialog(dialog);
 			}
 			
 			// Handles the export of a schema
@@ -97,7 +97,7 @@ public class SchemaDialog extends JInternalFrame implements ListSelectionListene
 			else if(label.equals("Usage"))
 			{
 				SchemaReferencesDialog dialog = new SchemaReferencesDialog(harmonyModel, getSchema());
-				harmonyModel.getDialogManager().showDialog(dialog);
+				harmonyModel.getDialogManager().openDialog(dialog);
 			}
 			
 			// Handles the deletion of a schema

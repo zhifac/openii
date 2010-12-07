@@ -49,7 +49,7 @@ public class HarmonyMenuBar extends JMenuBar
 			public void actionPerformed(ActionEvent e)
 			{ 
 				SelectionDialog dialog = new SelectionDialog(harmonyModel,SelectionDialog.SELECT);
-				harmonyModel.getDialogManager().showDialog(dialog);
+				harmonyModel.getDialogManager().openDialog(dialog);
 			}
 		}
 	    
@@ -59,7 +59,7 @@ public class HarmonyMenuBar extends JMenuBar
 			public void actionPerformed(ActionEvent e)
 			{
 				SelectionDialog dialog = new SelectionDialog(harmonyModel,SelectionDialog.DELETE);
-				harmonyModel.getDialogManager().showDialog(dialog);
+				harmonyModel.getDialogManager().openDialog(dialog);
 			}
 		}
 	}
@@ -155,7 +155,7 @@ public class HarmonyMenuBar extends JMenuBar
 		private class SearchAction extends AbstractAction
 		{
 			public void actionPerformed(ActionEvent e)
-				{ harmonyModel.getDialogManager().showDialog(new SearchDialog(harmonyModel)); }
+				{ harmonyModel.getDialogManager().openDialog(new SearchDialog(harmonyModel)); }
 		}
 	}
 	
@@ -178,14 +178,14 @@ public class HarmonyMenuBar extends JMenuBar
 		private class AboutAction extends AbstractAction
 		{
 			public void actionPerformed(ActionEvent e)
-				{ harmonyModel.getDialogManager().showDialog(new AboutDialog(harmonyModel)); }
+				{ harmonyModel.getDialogManager().openDialog(new AboutDialog(harmonyModel)); }
 		}
 
 		/** Action for displaying the "Getting Started" dialog */
 		private class GettingStartedAction extends AbstractAction
 		{
 			public void actionPerformed(ActionEvent e)
-				{ harmonyModel.getDialogManager().showDialog(new GettingStartedDialog(harmonyModel)); }
+				{ harmonyModel.getDialogManager().openDialog(new GettingStartedDialog(harmonyModel)); }
 		}
 	}
 	

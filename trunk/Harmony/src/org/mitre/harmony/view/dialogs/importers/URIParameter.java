@@ -131,7 +131,7 @@ public class URIParameter extends JPanel implements ActionListener, InternalFram
 		{
 			ArrayList<URI> uriList = SchemaStoreManager.getImporterURIList(importer);
 			URIListDialog listDialog = new URIListDialog(uriList);
-			harmonyModel.getDialogManager().showDialog(listDialog);
+			harmonyModel.getDialogManager().openDialog(listDialog);
 			listDialog.addInternalFrameListener(this);
 		}
 
@@ -141,6 +141,7 @@ public class URIParameter extends JPanel implements ActionListener, InternalFram
 			try {
 				URL javascriptCall = new URL("javascript:displayDialog()");
 				harmonyModel.getApplet().getAppletContext().showDocument(javascriptCall);
+				harmonyModel.getDialogManager().lockFrame();
 			} catch(Exception e2) {}
 		}
 			

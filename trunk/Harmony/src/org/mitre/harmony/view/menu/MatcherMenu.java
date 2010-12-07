@@ -131,7 +131,7 @@ public class MatcherMenu extends AbstractMenu
 
 	/** Launches the matcher wizard */
 	private void launchMatchWizard(ArrayList<Matcher> matchers, MatchMerger merger, boolean custom)
-		{ harmonyModel.getDialogManager().showDialog(new Wizard(matchers, merger, custom, harmonyModel)); }
+		{ harmonyModel.getDialogManager().openDialog(new Wizard(matchers, merger, custom, harmonyModel)); }
 
 	/** Action for ignoring the matched elements */
 	private class IgnoreMatchedElementsAction extends AbstractAction

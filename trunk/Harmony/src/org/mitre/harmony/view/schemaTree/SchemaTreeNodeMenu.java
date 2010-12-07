@@ -159,14 +159,14 @@ class SchemaTreeNodeMenu extends JPopupMenu implements ActionListener
 		if(e.getSource()==statistics)
 		{
 			SchemaStatisticsDialog dialog = new SchemaStatisticsDialog(schemaID,harmonyModel);
-			harmonyModel.getDialogManager().showDialog(dialog);
+			harmonyModel.getDialogManager().openDialog(dialog);
 		}
 
 		// Handles the viewing of schema properties
 		if(e.getSource()==properties)
 		{
 			SchemaPropertiesDialog dialog = new SchemaPropertiesDialog(schemaID,harmonyModel);
-			harmonyModel.getDialogManager().showDialog(dialog);
+			harmonyModel.getDialogManager().openDialog(dialog);
 		}
 	}
 }
