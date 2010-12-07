@@ -8,6 +8,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.net.URI;
+import java.net.URL;
 import java.util.ArrayList;
 
 import javax.swing.JButton;
@@ -25,6 +26,7 @@ import javax.swing.filechooser.FileFilter;
 
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.SchemaStoreManager;
+import org.mitre.harmony.model.HarmonyModel.InstantiationType;
 import org.mitre.schemastore.porters.Importer;
 import org.mitre.schemastore.porters.URIType;
 
@@ -132,7 +134,16 @@ public class URIParameter extends JPanel implements ActionListener, InternalFram
 			harmonyModel.getDialogManager().showDialog(listDialog);
 			listDialog.addInternalFrameListener(this);
 		}
-		
+
+		// Handles the retrieval of a file for importing when running in a web application
+		else if(harmonyModel.getInstantiationType()==InstantiationType.WEBAPP)
+		{
+			try {
+				URL javascriptCall = new URL("javascript:displayDialog()");
+				harmonyModel.getApplet().getAppletContext().showDocument(javascriptCall);
+			} catch(Exception e2) {}
+		}
+			
 		// Handles the retrieval of a file for importing
 		else
 		{

@@ -10,7 +10,6 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.URI;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Vector;
 
@@ -28,12 +27,10 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
 import org.mitre.harmony.model.HarmonyModel;
-import org.mitre.harmony.model.HarmonyModel.InstantiationType;
 import org.mitre.harmony.model.SchemaStoreManager;
 import org.mitre.harmony.view.dialogs.widgets.AbstractButtonPane;
 import org.mitre.schemastore.porters.Importer;
 import org.mitre.schemastore.porters.PorterType;
-import org.mitre.schemastore.porters.URIType;
 
 /**
  * Abstract dialog for importing
@@ -89,19 +86,7 @@ abstract public class AbstractImportDialog extends JInternalFrame implements Act
 				// If completed, run importer
 				if(name.length()>0 && author.length()>0 && (!uriField.isEnabled() || uri!=null))
 				{
-					try {
-						// Run the importer through the web application
-						if(label.equals("Continue"))
-						{
-							AbstractImportDialog.this.setVisible(false);
-							Importer importer = (Importer)selectionList.getSelectedItem();
-							URL javascriptCall = new URL("javascript:importFile(\""+importer+"\")");
-							harmonyModel.getApplet().getAppletContext().showDocument(javascriptCall);
-						}
-						
-						// Run the importer locally
-						else { importItem(name, author, description, uri); successful=true; dispose(); }
-					}
+					try { importItem(name, author, description, uri); successful=true; dispose(); }
 					catch(Exception e2) { JOptionPane.showMessageDialog(null,e2.getMessage(),"Import Error",JOptionPane.ERROR_MESSAGE); }
 				}
 				else JOptionPane.showMessageDialog(AbstractImportDialog.this,"All fields must be completed before import!","Missing Fields",JOptionPane.ERROR_MESSAGE);
@@ -206,18 +191,7 @@ abstract public class AbstractImportDialog extends JInternalFrame implements Act
 	
 	/** Handles changes to the selected importer */
 	public void actionPerformed(ActionEvent e)
-	{
-		// Check to see if web app and if a file is required for the importer
-		boolean webapp = harmonyModel.getInstantiationType()==InstantiationType.WEBAPP;
-		boolean fileRequired = getImporter().getURIType()==URIType.FILE || getImporter().getURIType()==URIType.M3MODEL;
-		
-		// Activate the URI field as needed
-		uriField.setImporter(getImporter());
-		uriField.setEnabled(!(webapp && fileRequired));
-		
-		// Set the button to show either "OK" or "Continue"
-		buttonPane.relabelButton(0, webapp && fileRequired ? "Continue" : "OK");
-	}
+		{ uriField.setImporter(getImporter()); }
 	
 	/** Returns the type of importer being run */
 	abstract protected PorterType getImporterType();
