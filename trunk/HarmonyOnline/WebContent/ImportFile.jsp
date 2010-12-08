@@ -26,12 +26,7 @@
 				// If a boundary marker doesn't exist, parse as part of the passed in file
 				if (line.indexOf(boundary) == -1)
 					in.append(line+"\n");
-				else
-				{
-					System.out.println("A:"+br.readLine());
-					System.out.println("B:"+br.readLine());
-					System.out.println("C:"+br.readLine());
-				}
+				else { br.readLine(); br.readLine(); br.readLine(); }
 			}
 			
 			System.out.println(in.toString());
