@@ -1,10 +1,9 @@
-<!-- Copyright 2008 The MITRE Corporation. ALL RIGHTS RESERVED. -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-    <title>Harmony</title>
-    <script>
+    
+     <script>
     
       // Expand the Harmony pane to full screen
       function calcDimensions()
@@ -71,13 +70,6 @@
         document.body.appendChild(hole);
         dialog.style.visibility='visible';
       }
-
-	  // Imports the file specified in the dialog
-	  function doImport(dialog)
-	  {
-		document.location.href = "ImportFile.jsp?filename="+filename;  
-		hideDialog(dialog);
-	  }
 	  
 	  // Hides the dialog
       function hideDialog()
@@ -85,7 +77,6 @@
 		// Hide the dialog
     	var dialog = document.getElementById("importDialog")
 		dialog.style.visibility='hidden'
-		document.getElementById('filename').value="";
 		document.getElementById('OK').disabled = true;
 		var hole = document.getElementById('hole');
         document.body.removeChild(hole);
@@ -94,21 +85,15 @@
     	document.getElementById('harmonyApplet').finishImport();
       }
 
-      // Have the import dialog form import to a hidden frame
- 	  window.onload = function()
-   	  {
-        document.getElementById('importDialogForm').onsubmit=function()
-        	{ document.getElementById('importDialogForm').target = 'importTarget'; }
-      }
-
     </script>
+    
   </head>
 
   <body topmargin=0 leftmargin=0 marginwidth=0 marginheight=0 onresize=resize()>
 
   <!-- Pane for importing items into Harmony -->
   <div id='importDialog' style='display:block; border: gray 3px solid; width:360px; height:75px; background:white; position:absolute; z-index:1000; visibility:hidden;'>
-	<form id=importDialogForm action="ImportFile.jsp" method="post" enctype="multipart/form-data">
+	<form name=importDialogForm enctype="multipart/form-data" target="importTarget" method="post" action="ImportFile.jsp">
 	  <table valign='top' cellpadding=5 height=100% width=100%>
 	    <tr>
 	      <td align='right' nowrap='nowrap' valign='top'>&nbsp;&nbsp;&nbsp;&nbsp;Import File:</td>
@@ -120,8 +105,8 @@
         &nbsp;&nbsp;
         <input type=button style='width:80px' id='Cancel' value='Cancel' onClick='hideDialog()'>
       </td></tr></table>
-      <iframe id="importTarget" name="importTarget" src="" style="width:0;height:0;border:0px solid #fff;"></iframe>
     </form>
+    <iframe id="importTarget" name="importTarget" src="" style="width:0;height:0;border:0px solid #fff;"></iframe>
   </div>
   
   <!-- Pane for showing Harmony -->
