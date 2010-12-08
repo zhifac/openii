@@ -77,7 +77,8 @@
 		// Hide the dialog
     	var dialog = document.getElementById("importDialog")
 		dialog.style.visibility='hidden'
-		document.getElementById('OK').disabled = true;
+
+		// Remove the iframe hole
 		var hole = document.getElementById('hole');
         document.body.removeChild(hole);
 
