@@ -1,0 +1,129 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+		<link REL="STYLESHEET" TYPE="text/css" HREF="./../../support/standard.css"/>
+		<title>OpenII Help System</title>
+	</head>
+	<body>
+	  	<iframe src="./../../header.html" width="100%" height="30" scrolling="no" frameborder="0"></iframe>
+		<div id="content">
+			<h1>Overview</h1>
+
+			<div class="chapter">
+
+				<p>
+					Large enterprises, such as corporations, governments, and research consortia 
+					present chief information officers (CIOs) and information architects with distinct 
+					challenges. These enterprises have hundreds to thousands of data sources, making 
+					it extremely difficult to obtain a clear overview of the organization's information 
+					assets. This makes it challenging to quickly find opportunities for information sharing 
+					or consolidation. 					
+				</p>
+
+				<p> 
+					Affinity is a free, open source visualization and exploration tool that enables 
+					an organization to gain a clear overview of the relationships among its information 
+					assets. Affinity takes a group of schemas as input and clusters together semantically 
+					related schemas. As an example, suppose an organization had four data schemas: two about 
+					cars and two about real estate. Affinity will group the two car schemas together and group 
+					the two real estate schemas together. These relationships are visually 
+					represented in Affinity. A user can drill down into clusters to further explore the details 
+					and assess potential candidates for data sharing or consolidation.
+				</p>
+
+			</div>
+
+			<div class="chapter">
+				<a name="description"></a>
+				<h3>Description</h3>
+
+				<p>
+					Affinity provides an interface for viewing and exploring clustered objects (like schemas).
+					The figure below shows the main components required to use it: the Tag Manager and
+					Affinity itself.
+					
+					<img src="./../../support/affinity/images/affinityComponents.png" alt=""/>
+					
+
+				</p>
+
+				<a name="tagdescription"></a>
+				<h4>Tags</h4>
+				<p>
+					The Tag Manager allows a user to <a href="tags.html#creatingtags">tag schemas</a>. 
+					If a group of schemas share a common tag then they can be 
+					<a href="affinity.html#openingtags">opened with Affinity</a>. 
+				</p>
+				<p>					
+					Affinity utilizes OpenII's internal database (by default an open-source Apache Derby database)
+					to store schemas. The Tag Manager is one of the many tools that OpenII provides for working 
+					with the data repository so the user does not need to interact with the database directly. 
+				</p>
+
+				<a name="affinitydescription"></a>
+				<h4>Affinity</h4>
+				<p>
+					Affinity depicts schema clusters two different ways: using a <a href=affinity.html#2dview>2D view </a>(the left pane) 
+					and using a <a href="affinity.html#dendrogram">dendrogram</a> (the right pane). A user can 
+					explore the clusters in various ways.
+				</p>
+				<p>			
+					Affinity automatically creates the clusters without requiring any user input other than the Tag 
+					to be clustered. Clustering is based on similarity scores. The similarity scores are determined by treating 
+					each schema as a text document and calculating the size of the intersection divided 
+					by the size of the union of terms. 
+				</p>
+
+
+			</div>
+
+			<div class="chapter">
+				<a name="terminology"></a>
+				<h3>Terminology</h3>
+
+
+				<h4>2D View</h4>
+				<p>
+					A diagram used to show the degree of similarity between all schemas. A 2D View 
+					occupies the left pane of Affinity. 
+				</p>
+				
+				
+				<h4>Cluster</h4>
+				<p>
+					A group of schemas that Affinity has identified as being related. 
+				</p>
+				
+				
+				<h4>Dendrogram</h4>
+				<p>
+					A branching diagram used to show clusters. A dendrogram occupies the right pane 
+					of Affinity.
+				</p>
+				
+				
+				<h4>Schema</h4>
+				<p>
+					A structured representation of a set of concepts and the relationships between
+					them. Examples of schemas include database schemas, XML schemas, and OWL ontologies.
+				</p>
+				
+				<h4>Tag</h4>
+				<p>
+					A descriptive word used to label a schema.  Multiple schemas can share the 
+					same tag. 
+				</p>
+				
+				
+				<h4>Term</h4>
+				<p>
+					A word that appears in a schema. A term could be the name of a schema element or a
+					word that appears in its description. 
+				</p>
+
+			</div>
+			
+		</div>
+	</body>
+</html>

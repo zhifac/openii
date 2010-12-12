@@ -1,0 +1,230 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+		<link REL="STYLESHEET" TYPE="text/css" HREF="./../../support/standard.css"/>
+		<title>OpenII Help System</title>
+	</head>
+	<body>
+	  	<iframe src="./../../header.html" width="100%" height="30" scrolling="no" frameborder="0"></iframe>
+		<div id="content">
+			<h1>Affinity</h1>
+			
+			<div class="chapter">
+			<p>
+				A group of schemas sharing a common Tag can be <a href="affinity.html#openingtags">opened with Affinity</a>. 
+			</p>
+
+			<p>
+				Affinity clusters semantically related schemas and provides an interface for viewing and 
+				exploring the clusters.	Clusters are depicted two different ways: 
+				using a <a href="affinity.html#2dview">2D view</a> (the left pane) and using 
+				a <a href="affinity.html#dendrogram">dendrogram</a>(the right pane).
+			
+				<img src="./../../support/affinity/images/clustersOverview.png" alt=""/>
+			</p>
+			</div>
+			
+			<div class="chapter">
+				<a name="openingtags"></a>
+				<h3>Opening a Tag with Affinity</h3>
+
+				<p>
+					Once schemas share a common Tag then they can be opened with Affinity. 
+				</p>
+				<p>
+					Affinity can be opened by double clicking on a Tag name. 
+				</p>
+				<p>	
+					Alternatively, Affinity can be opened by right-clicking on a Tag and selecting <b>Open</b>, as shown
+					below.
+					
+					<img src="./../../support/affinity/images/openingAffinity.png" alt""/>
+				</p>
+				<p>						
+					If the Tag contains a lot of schemas or if the schemas in the Tag are large, a progress bar will appear 
+					while Affinity is opening. 
+				</p>
+			</div>
+			
+			
+			<div class="chapter">
+			<a name="viewingclusters"></a>
+			<h3>Viewing Clusters</h3>
+			
+				<a name="2dview"></a>
+				<h4>2D View</h4>
+				<p>
+					The 2D view is a diagram used to show the degree of similarity between all schemas. Schemas that appear close
+					together in the 2D view are generally the most semantically related. Schemas that appear farther apart are 
+					generally the least semantically related. Clusters are overlaid on the 2D view by circling the schemas in each cluster.
+				</p>
+
+				<p>
+					<img src="./../../support/affinity/images/2Doverview.png" alt""/>
+				</p>				
+				
+				<p>	
+					There are a number of options for interacting with the view. Most of these options are shown across the top 
+					of the 2D View:
+				</p>
+				
+				<p>
+					<img src="./../../support/affinity/images/2Dviewtoolbar.png" alt""/>
+				</p>	
+				
+				<p>	
+					<p><b>Hand icon</b>: enables panning the 2D View by clicking and dragging</br>
+					<b>Square icon</b>: enables selection of multiple schemas</br>
+					<b>Zoom</b>: specifies the zoom level</br>
+					<b>Plus and Minus icons</b>: an alternate method of specifying the zoom level</br>
+					<b>Text Size</b>: changes the text size for the names of the schemas</br>
+					<b>Clusters</b>: specifies if clusters are overlaid onto the 2D View and how</br>
+				</p>
+
+				<p>
+					There are additional options in Affinity's <b>View</b> menu, which currently appears on PCs
+					but not on Macs. Select <b>View</b> then <b>Craig-Ro-Gram Options</b> then options such as
+					<b>Show Tool Bar</b>. This results in the 2D View Tool Bar being hidden. 
+				</p>	
+								
+				<p>
+					<img src="./../../support/affinity/images/craigOptions.png" alt""/>
+				</p>
+				
+				<p>	
+					Options that can only be found in the menu are Show Tool Bar, Show Overview, 
+					Follow Concave Paths, and Set Cluster Spacing. All other options in the menu 
+					can be accomplished using the previously described 2D View Tool Bar.
+				</p>
+
+
+				<a name="dendrogram"></a>
+				<h4>Dendrogram</h4>
+
+				<p>
+					The dendrogram is a branching diagram used to show clusters.
+					Schemas that are most semantically related are connected by cross-bars farther to the left. Below is
+					an example of this.
+				</p>
+				
+				<p>					
+					<img src="./../../support/affinity/images/DendRelated.png" alt""/>
+				</p>
+
+				<p>
+					 As shown above, a dotted vertical line is used to indicate the current cut-off distance. 
+					 High cut-off distances (i.e., farther to the right) include larger more loosely related 
+					 clusters. As the <a href="affinity.html#cutoff">cut-off distance is lowered</a> (i.e., moved to 
+					 the left) the clusters become smaller and more tightly related.
+				</p>
+		
+				
+				<p>
+					Below is an example of what the Dendrogram looks like after the cut-off distance has been lowered.
+					Rather than one large cluster containing all schemas in the Tag, there are now three smaller clusters
+					each containing a subset of the schemas.
+				</p>
+				
+				<p> 					 
+					 <img src="./../../support/affinity/images/DendModCutoff.png" alt""/>
+				</p>
+					
+				<p>				
+					The color does not have meaning. It is only there to help visually distinguish adjacent clusters.
+					The top most cluster will always be colored blue with the rest alternating red then blue. 
+				</p>	
+				
+				<p>
+					The 2D view's cluster overlays use the colors from the dendrogram. 
+				</p>
+				
+				<p>
+					There are two options for modifying the dendrogram view. The red and blue alternating colors can
+					be turned off. The gray cluster backgrounds can also be turned on or off. To change
+					either of these options, Select <b>View</b> then <b>Dendrogram Options</b> then the option
+					you want to change (Show Alternating Colors or Shade Backgrounds).  Note that the View menu in Affinity currently 
+					appears on PCs but not on Macs.
+				</p>
+				
+				<p> 					 
+					 <img src="./../../support/affinity/images/dendroOptions.png" alt""/>
+				</p>
+				
+				<p>
+					After turning colors on or off the colors will not be updated in the 2D view until you interact with 
+					it in some way (e.g, pan).
+				</p>
+			
+			</div>
+			
+			<div class="chapter">
+			<a name="cutoff"></a>
+				<h3>Changing the Cluster Cut-Off Distance</h3>
+				<p>	 
+					High cut-off distances include larger more loosely related clusters. As the cut-off distance 
+					is lowered the clusters become smaller and more tightly related. 
+				</p>
+				<p>
+					 The cut-off distance can be changed using the slider that extends across the top of both the 2D View and 
+					 the Dendrogram. 
+				</p>
+				
+				<p>
+					<img src="./../../support/affinity/images/sliderOverview.png" alt""/>
+				</p>
+				
+
+				<p>
+					To change the cut-off distance, drag the right-most thumb across the slider. Or, for small or large jumps, click on
+					the arrows as shown in the image below. This will hop the right-most thumb from one cluster to the next. You'll notice
+					that the hops always leave the right-thumb directly above one of the small black tick marks. This is because
+					the small black tick marks on the slider indicate each cluster's cut-off distance.
+				</p>
+				
+				<p>
+					<img src="./../../support/affinity/images/DendSlider.png" alt""/>
+				</p>
+				
+				<p>
+					The paragraphs above described changing the maximum cut-off distance. The minimum cut-off distance may be useful
+					if you only want to see large loosely related clusters and eliminate the noise from smaller sub-clusters. To change
+					the minimum cut-off distance, move the left-most thumb across the slider. 
+				</p>
+					
+			</div>
+			
+			
+			<div class="chapter">
+			<a name="sharedterms"></a>
+			<h3>Viewing Terms Shared by Schemas in a Cluster</h3>
+			
+				<p>
+					It is sometimes useful to get more details about why certain schemas were clustered together.
+					This can be accomplished by viewing the terms shared by all schemas in a cluster. To do this, right-click on a 
+					cluster in the 2D view and select <b>View terms shared by schemas</b>, as shown below.
+				</p>
+	
+				<p>
+					<img src="./../../support/affinity/images/2DviewSharedTerms.png" alt""/>
+				</p>
+					
+				<p>	
+					A Terms in Cluster box, like the one shown below, will appear showing all of the terms that appeared in any
+					schema in the cluster. 
+ 				</p>
+ 
+ 				<p>
+ 					<img src="./../../support/affinity/images/2DviewSharedTermsDialog.png" alt""/>
+ 				</p>	
+ 					
+ 				<p>
+ 					Note that when right-clicking on a cluster in the 2D view you can also 
+ 					create a Tag that contains all schemas in that cluster, open the schemas from that cluster in
+ 					a new Affinity window (which will recalculate the layout since the input to Affinity is different), 
+ 					or you can open the cluster with Proximity.
+				</p>
+
+			</div>
+	</body>
+</html>
