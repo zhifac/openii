@@ -19,6 +19,7 @@ import javax.swing.JTextField;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
+import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
@@ -31,7 +32,7 @@ import org.mitre.schemastore.porters.Importer;
 import org.mitre.schemastore.porters.URIType;
 
 /** URI parameter class */
-public class URIParameter extends JPanel implements ActionListener, InternalFrameListener
+public class URIParameter extends JPanel implements ActionListener, CaretListener, InternalFrameListener
 {
 	/** Stores the Harmony model */
 	private HarmonyModel harmonyModel;
@@ -39,6 +40,9 @@ public class URIParameter extends JPanel implements ActionListener, InternalFram
 	/** Stores the specified importer */
 	private Importer importer = null;
 
+	/** Stores the URI */
+	private URI uri = null;
+	
 	// Stores components used in the panel
 	private JTextField fileField = new JTextField();
 	private JButton fileButton = new JButton("Browse...");
@@ -73,6 +77,7 @@ public class URIParameter extends JPanel implements ActionListener, InternalFram
 		// Initialize the file field
 		fileField.setColumns(20);
 		fileField.setBorder(new LineBorder(Color.gray));
+		fileField.addCaretListener(this);
 				
 		// Initializes the file button
 		fileButton.setBorder(new CompoundBorder(new LineBorder(Color.gray),new EmptyBorder(1,3,1,3)));
@@ -105,19 +110,18 @@ public class URIParameter extends JPanel implements ActionListener, InternalFram
 	{
 		this.importer = importer;
 		fileField.setText("");
+		fileField.setEditable(importer.getURIType()==URIType.URI);
 		fileButton.setVisible(importer.getURIType()!=URIType.URI);
 	}
+
+	/** Sets the URI */
+	public void setURI(URI uri, String displayName)
+		{ fileField.setText(displayName); this.uri = uri; }
 	
 	/** Returns the parameter URI */
 	public URI getURI()
-	{
-		String value = fileField.getText();
-		if(value==null || value.length()==0) return null;
-		if(importer.getURIType()==URIType.FILE || importer.getURIType()==URIType.M3MODEL)
-			return new File(value).toURI();
-		else try { return new URI(value); } catch(Exception e) { return null; }
-	}
-	
+		{ return uri; }
+
 	/** Handles the pressing of the file button */
 	public void actionPerformed(ActionEvent e)
 	{
@@ -164,6 +168,16 @@ public class URIParameter extends JPanel implements ActionListener, InternalFram
 				fileField.setText(path);
 			}
 		}
+	}
+	
+	/** Monitors changes to the file field */
+	public void caretUpdate(CaretEvent e)
+	{
+		String value = fileField.getText();
+		if(value==null || value.length()==0) uri = null;
+		if(importer.getURIType()==URIType.FILE || importer.getURIType()==URIType.M3MODEL)
+			uri = new File(value).toURI();
+		else try { uri = new URI(value); } catch(Exception e2) { uri = null; }
 	}
 	
 	/** Updates the schema list when the schema dialog is closed */

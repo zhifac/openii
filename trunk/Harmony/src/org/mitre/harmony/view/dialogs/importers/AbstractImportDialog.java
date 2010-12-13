@@ -178,6 +178,10 @@ abstract public class AbstractImportDialog extends JInternalFrame implements Act
 		pack();
 	}
 	
+	/** Sets the URI for this dialog */
+	public void setURI(URI uri, String displayName)
+		{ uriField.setURI(uri, displayName); }
+	
 	/** Handles the enabling of elements in this dialog */
 	public void setEnabled(boolean enabled)
 	{
