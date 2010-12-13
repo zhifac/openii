@@ -202,6 +202,9 @@ public class HarmonyServlet extends HttpServlet
 		Importer importer = (Importer)getPorter(genericImporter.getType(), genericImporter.getName());
 		if(importer==null) return null;
 		
+		// Identify the URI location
+		uri = new File(System.getProperty("java.io.tmpdir"),uri.toString()).toURI();		
+		
 		try {	
 			// Run the schema importer
 			if(importer instanceof SchemaImporter)
