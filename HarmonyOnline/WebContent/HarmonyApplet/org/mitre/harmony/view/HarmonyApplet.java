@@ -5,7 +5,9 @@ package org.mitre.harmony.view;
 import java.applet.Applet;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.net.URI;
 
+import javax.swing.JInternalFrame;
 import javax.swing.JPanel;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
@@ -13,6 +15,8 @@ import javax.swing.border.LineBorder;
 
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.SchemaStoreManager;
+import org.mitre.harmony.view.dialogs.importers.AbstractImportDialog;
+import org.mitre.harmony.view.dialogs.importers.ImportMappingDialog;
 import org.mitre.harmony.view.harmonyPane.HarmonyFrame;
 
 /** Class for displaying the Harmony Applet */
@@ -39,8 +43,21 @@ public class HarmonyApplet extends Applet
 		SchemaStoreManager.init(this);
 	}
 	
-	/** Informs the applet that the import is completed */
-	public void finishImport()
+	/** Handles the importation of a file */
+	public void importFile(String filename, String location)
+	{
+		try {
+			JInternalFrame dialog = harmonyModel.getDialogManager().getDialog();
+			if(dialog instanceof AbstractImportDialog)
+				((AbstractImportDialog)dialog).setURI(new URI(location), filename);
+			else if(dialog instanceof ImportMappingDialog)
+				((ImportMappingDialog)dialog).setURI(new URI(location), filename);
+		}
+		catch(Exception e) { System.out.println("(E)HarmonyApplet.importFile: " + e.getMessage()); }
+	}
+	
+	/** Informs the applet that the import dialog has been closed */
+	public void closeDialog()
 	{
 		harmonyModel.getDialogManager().unlockFrame();
 	}

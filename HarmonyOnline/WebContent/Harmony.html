@@ -72,7 +72,7 @@
       }
 	  
 	  // Hides the dialog
-      function hideDialog()
+      function closeDialog()
       {
 		// Hide the dialog
     	var dialog = document.getElementById("importDialog")
@@ -83,7 +83,7 @@
         document.body.removeChild(hole);
 
         // Inform the Harmony applet that the import is complete
-    	document.getElementById('harmonyApplet').finishImport();
+    	document.getElementById('harmonyApplet').closeDialog();
       }
 
     </script>
@@ -102,9 +102,9 @@
 	    </tr>
 	  </table>
       <table align='center'><tr><td>
-        <input type=submit style='width:80px;' id='OK' value='OK' disabled='disabled' onClick='hideDialog()'>
+        <input type=submit style='width:80px;' id='OK' value='OK' disabled='disabled'>
         &nbsp;&nbsp;
-        <input type=button style='width:80px' id='Cancel' value='Cancel' onClick='hideDialog()'>
+        <input type=button style='width:80px' id='Cancel' value='Cancel' onClick='closeDialog()'>
       </td></tr></table>
     </form>
     <iframe id="importTarget" name="importTarget" src="" style="width:0;height:0;border:0px solid #fff;"></iframe>
