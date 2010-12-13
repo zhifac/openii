@@ -38,6 +38,10 @@ public class DialogManager extends DefaultDesktopManager implements InternalFram
 	public DialogManager(HarmonyFrame harmonyFrame)
 		{ this.harmonyFrame = harmonyFrame; }
 
+	/** Returns the currently displayed dialog */
+	public JInternalFrame getDialog()
+		{ return displayedDialogs.peek(); }
+	
 	/** Shows a dialog (internal frame) on top of the mapping pane */
 	public void openDialog(JInternalFrame dialog)
 	{

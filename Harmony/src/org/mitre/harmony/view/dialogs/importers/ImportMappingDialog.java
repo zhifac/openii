@@ -281,6 +281,10 @@ public class ImportMappingDialog extends JInternalFrame implements ActionListene
 		pack();
 		setVisible(true);
 	}
+
+	/** Sets the URI for this dialog */
+	public void setURI(URI uri, String displayName)
+		{ uriField.setURI(uri, displayName); }
 	
 	/** Updates the displayed schemas */
 	void updateSchemas(boolean showAll)
