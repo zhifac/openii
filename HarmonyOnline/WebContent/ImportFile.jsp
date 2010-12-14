@@ -1,3 +1,5 @@
+<%@page import="java.io.DataInputStream"%>
+<%@page import="java.io.FileOutputStream"%>
 <%@page import="java.io.FileWriter"%>
 <%@page import="java.io.OutputStreamWriter"%>
 <%@page import="java.io.BufferedWriter"%>
@@ -17,41 +19,49 @@
     	File tempFile = null;
     
   		try {
-  			// Prepare to write to temp file
-  			BufferedWriter bw = null;
+  			// Prepare to retrieve data from the input stream
+ 			DataInputStream in = new DataInputStream (request.getInputStream());
+  			int formDataLength = request.getContentLength();
+  			byte dataBytes[] = new byte[formDataLength];
+ 
+  			// Retrieve data from the input stream
+  			int byteRead = 0, totalBytesRead = 0;
+  			while (totalBytesRead < formDataLength)
+  			{
+  				byteRead = in.read (dataBytes, totalBytesRead, formDataLength);
+  				totalBytesRead += byteRead;
+  			}
+ 			String file = new String(dataBytes);
+
+  			// Generate the temporary file
+   			String filename = file.substring(file.indexOf("filename=\"")+10);
+   			filename = filename.substring (0, filename.indexOf ("\n"));
+   			filename = filename.substring (filename.lastIndexOf ("\\") + 1,filename.indexOf ("\""));
+  			tempFile = File.createTempFile("ImportedFile", filename);
+  			FileOutputStream fileOut = new FileOutputStream(tempFile);
+
+			// Find the start position of the file block
+  			int pos;
+  			pos = file.indexOf("filename=\"");
+  			pos = file.indexOf("\n", pos) + 1;
+  			pos = file.indexOf("\n", pos) + 1;
+  			pos = file.indexOf("\n", pos) + 1;
+  			int startPos = ((file.substring(0, pos)).getBytes()).length;
+
+			// Find the end position of the file block
+  			String contentType = request.getContentType();
+ 			int lastIndex = contentType.lastIndexOf("=");
+  			String boundary = contentType.substring(lastIndex + 1,contentType.length());
+   			int boundaryLocation = file.indexOf(boundary, pos) - 4;
+  			int endPos = ((file.substring(0, boundaryLocation)).getBytes()).length;
   			
-	    	// Retrieve content boundary for use in reading in file
-	    	String contentType = request.getContentType();
-	    	int ind = contentType.indexOf("boundary="); 
-			String boundary = contentType.substring(ind+9);
-			
-			// Open up a stream to the passed in content
-			BufferedReader br=new BufferedReader(new InputStreamReader(request.getInputStream()));
-		
-			// Parse all file information as a set of query-watchlist match scores
-			for (String line; (line=br.readLine())!=null; )       
-			{             
-				// If a boundary marker doesn't exist, parse as part of the passed in file
-				if (line.indexOf(boundary) == -1)
-					bw.append(line+"\n");
-				else
-				{
-					String filename = br.readLine();
-					if(filename!=null && filename.startsWith("Content-Disposition:"))
-					{
-						filename = filename.replaceAll(".*filename=","").replaceAll("\"","");
-			  			tempFile = File.createTempFile("ImportedFile", filename);
-			  			bw = new BufferedWriter(new FileWriter(tempFile));
-					}
-					br.readLine(); br.readLine();
-				}
-			}
-			
-			bw.flush();
-			bw.close();
-    	}
-  		catch(Exception e) { System.out.println("(E)ImportFile: Failed to upload file - " + e.getMessage()); }
-	%>
+  			// Upload the file
+  			fileOut.write (dataBytes, startPos, (endPos - startPos));
+  			fileOut.flush ();
+  			fileOut.close ();
+	  	}
+  		catch(Exception e) { System.out.println("(E)ImportFile: Failed to upload file - " + e.getMessage()); }	
+   	%>
   
     <script>
       var filename = parent.document.getElementById('filename').value;
