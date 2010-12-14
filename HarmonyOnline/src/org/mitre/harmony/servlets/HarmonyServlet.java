@@ -100,6 +100,15 @@ public class HarmonyServlet extends HttpServlet
 				}
 			}
 	
+			// Retrieves the schema from the specified importer
+			else if(functionName.equals("getSchemaFromImporter"))
+			{
+				GenericImporter genericImporter = (GenericImporter)args[0];
+				SchemaImporter importer = (SchemaImporter)getPorter(genericImporter.getType(), genericImporter.getName());
+				URI uri = new File(System.getProperty("java.io.tmpdir"),((URI)args[1]).toString()).toURI();		
+				output = importer.getSchema(uri);
+			}
+			
 			// Imports data through the specified importer
 			else if(functionName.equals("importData"))
 			{
