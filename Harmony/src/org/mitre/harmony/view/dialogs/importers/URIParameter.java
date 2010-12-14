@@ -34,6 +34,9 @@ import org.mitre.schemastore.porters.URIType;
 /** URI parameter class */
 public class URIParameter extends JPanel implements ActionListener, CaretListener, InternalFrameListener
 {
+	/** Defines an interface to inform listeners of modifications to the URI */
+	interface URIListener { void uriModified(); }
+	
 	/** Stores the Harmony model */
 	private HarmonyModel harmonyModel;
 	
@@ -42,6 +45,9 @@ public class URIParameter extends JPanel implements ActionListener, CaretListene
 
 	/** Stores the URI */
 	private URI uri = null;
+	
+	/** Stores list of items listening to the URI parameter */
+	private ArrayList<URIListener> listeners = new ArrayList<URIListener>();
 	
 	// Stores components used in the panel
 	private JTextField fileField = new JTextField();
@@ -114,9 +120,20 @@ public class URIParameter extends JPanel implements ActionListener, CaretListene
 		fileButton.setVisible(importer.getURIType()!=URIType.URI);
 	}
 
-	/** Sets the URI */
+	/** Sets the URI (with a display name) */
 	public void setURI(URI uri, String displayName)
-		{ fileField.setText(displayName); this.uri = uri; }
+	{
+		this.uri = uri;
+		
+		// Update the file field
+		fileField.removeCaretListener(this);
+		fileField.setText(displayName);
+		fileField.addCaretListener(this);
+
+		// Inform listeners of the change to the URI
+		for(URIListener listener : listeners)
+			listener.uriModified();
+	}
 	
 	/** Returns the parameter URI */
 	public URI getURI()
@@ -173,11 +190,16 @@ public class URIParameter extends JPanel implements ActionListener, CaretListene
 	/** Monitors changes to the file field */
 	public void caretUpdate(CaretEvent e)
 	{
+		// Set the URI as needed
 		String value = fileField.getText();
 		if(value==null || value.length()==0) uri = null;
 		if(importer.getURIType()==URIType.FILE || importer.getURIType()==URIType.M3MODEL)
 			uri = new File(value).toURI();
 		else try { uri = new URI(value); } catch(Exception e2) { uri = null; }
+
+		// Inform listeners of the change to the URI
+		for(URIListener listener : listeners)
+			listener.uriModified();
 	}
 	
 	/** Updates the schema list when the schema dialog is closed */
@@ -185,12 +207,12 @@ public class URIParameter extends JPanel implements ActionListener, CaretListene
 		{ fileField.setText(((URIListDialog)e.getInternalFrame()).getURI().toString()); }
 	
 	/** Adds a listener to the file field */
-	public void addListener(CaretListener listener)
-		{ fileField.addCaretListener(listener); }
+	public void addListener(URIListener listener)
+		{ listeners.add(listener); }
 
 	/** Removes a listener to the file field */
-	public void removeListener(CaretListener listener)
-		{ fileField.removeCaretListener(listener); }
+	public void removeListener(URIListener listener)
+		{ listeners.remove(listener); }
 	
 	// Unused event listeners
 	public void internalFrameOpened(InternalFrameEvent e) {}

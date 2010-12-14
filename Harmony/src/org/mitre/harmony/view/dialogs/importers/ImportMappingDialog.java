@@ -26,14 +26,13 @@ import javax.swing.SwingConstants;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
-import javax.swing.event.CaretEvent;
-import javax.swing.event.CaretListener;
 
 import org.mitre.harmony.controllers.ProjectController;
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.HarmonyModel.InstantiationType;
 import org.mitre.harmony.model.SchemaStoreManager;
 import org.mitre.harmony.model.project.ProjectMapping;
+import org.mitre.harmony.view.dialogs.importers.URIParameter.URIListener;
 import org.mitre.harmony.view.dialogs.widgets.AbstractButtonPane;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
@@ -47,7 +46,7 @@ import org.mitre.schemastore.porters.mappingImporters.MappingCellPaths;
 import org.mitre.schemastore.porters.mappingImporters.MappingImporter;
 
 /** Class for displaying the mapping importer dialog */
-public class ImportMappingDialog extends JInternalFrame implements ActionListener, CaretListener
+public class ImportMappingDialog extends JInternalFrame implements ActionListener, URIListener
 {		
 	/** Stores the harmony model */
 	private HarmonyModel harmonyModel;
@@ -321,7 +320,7 @@ public class ImportMappingDialog extends JInternalFrame implements ActionListene
 	}
 
 	/** Handles changes to the specified file to import */
-	public void caretUpdate(CaretEvent e)
+	public void uriModified()
 	{	
 		ProjectSchema sourceSchema = null, targetSchema = null;
 		try {
