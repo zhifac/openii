@@ -13,11 +13,12 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
     <%
-		File tempFile = File.createTempFile("ImportedFile", ".tmp");
+    	// Holds the temporary file
+    	File tempFile = null;
     
   		try {
   			// Prepare to write to temp file
-  			BufferedWriter bw = new BufferedWriter(new FileWriter(tempFile));
+  			BufferedWriter bw = null;
   			
 	    	// Retrieve content boundary for use in reading in file
 	    	String contentType = request.getContentType();
@@ -33,7 +34,17 @@
 				// If a boundary marker doesn't exist, parse as part of the passed in file
 				if (line.indexOf(boundary) == -1)
 					bw.append(line+"\n");
-				else { br.readLine(); br.readLine(); br.readLine(); }
+				else
+				{
+					String filename = br.readLine();
+					if(filename!=null && filename.startsWith("Content-Disposition:"))
+					{
+						filename = filename.replaceAll(".*filename=","").replaceAll("\"","");
+			  			tempFile = File.createTempFile("ImportedFile", filename);
+			  			bw = new BufferedWriter(new FileWriter(tempFile));
+					}
+					br.readLine(); br.readLine();
+				}
 			}
 			
 			bw.flush();
