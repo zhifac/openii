@@ -261,6 +261,7 @@ public class HarmonyServlet extends HttpServlet
 			{
 				// Retrieve data
 				Project project = (Project)data.get(0);
+				if(project.getName()==null) project.setName("Project");
 				ArrayList<Mapping> mappings = (ArrayList<Mapping>)data.get(1);
 				ArrayList<ArrayList<MappingCell>> mappingCells = (ArrayList<ArrayList<MappingCell>>)data.get(2);
 				
