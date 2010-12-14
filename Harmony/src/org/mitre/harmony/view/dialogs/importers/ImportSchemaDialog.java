@@ -71,13 +71,23 @@ public class ImportSchemaDialog extends AbstractImportDialog implements ActionLi
 		descriptionField.setBackground(isM3SchemaImporter ? new Color(0xeeeeee) : Color.white);
 	}
 
+	/** Retrieve schema from importer locally */
+	private Schema getSchemaFromImporterLocally(Importer importer, URI uri) throws Exception
+		{ return ((SchemaImporter)importer).getSchema(uri); }
+	
 	/** Handles changes to the uri */
 	public void caretUpdate(CaretEvent e)
 	{
 		if(uriField.getURI()!=null)
 			try {
-				SchemaImporter importer = (SchemaImporter)selectionList.getSelectedItem();
-				Schema schema = importer.getSchema(uriField.getURI());
+				// Get the schema to be imported
+				Schema schema = null;
+				Importer importer = (Importer)selectionList.getSelectedItem();
+				if(harmonyModel.getInstantiationType()!=InstantiationType.WEBAPP)
+					schema = getSchemaFromImporterLocally(importer,uriField.getURI());
+				else schema = SchemaStoreManager.getSchemaFromImporter(importer,uriField.getURI());
+				
+				// Populate data fields from the schema
 				if(schema!=null)
 				{
 					nameField.setText(schema.getName());
