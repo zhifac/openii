@@ -10,12 +10,10 @@ import java.awt.event.ActionListener;
 import java.net.URI;
 import java.util.ArrayList;
 
-import javax.swing.event.CaretEvent;
-import javax.swing.event.CaretListener;
-
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.HarmonyModel.InstantiationType;
 import org.mitre.harmony.model.SchemaStoreManager;
+import org.mitre.harmony.view.dialogs.importers.URIParameter.URIListener;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.porters.Importer;
 import org.mitre.schemastore.porters.PorterType;
@@ -23,7 +21,7 @@ import org.mitre.schemastore.porters.URIType;
 import org.mitre.schemastore.porters.schemaImporters.SchemaImporter;
 
 /** Class for displaying the schema importer dialog */
-public class ImportSchemaDialog extends AbstractImportDialog implements ActionListener, CaretListener
+public class ImportSchemaDialog extends AbstractImportDialog implements ActionListener, URIListener
 {	
 	/** Constructs the importer dialog */
 	public ImportSchemaDialog(HarmonyModel harmonyModel)
@@ -76,7 +74,7 @@ public class ImportSchemaDialog extends AbstractImportDialog implements ActionLi
 		{ return ((SchemaImporter)importer).getSchema(uri); }
 	
 	/** Handles changes to the uri */
-	public void caretUpdate(CaretEvent e)
+	public void uriModified()
 	{
 		if(uriField.getURI()!=null)
 			try {
