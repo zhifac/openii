@@ -40,7 +40,6 @@ import org.mitre.schemastore.model.Project;
 import org.mitre.schemastore.model.ProjectSchema;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.porters.Importer;
-import org.mitre.schemastore.porters.ImporterException;
 import org.mitre.schemastore.porters.PorterType;
 import org.mitre.schemastore.porters.mappingImporters.MappingCellPaths;
 import org.mitre.schemastore.porters.mappingImporters.MappingImporter;
@@ -133,7 +132,7 @@ public class ImportMappingDialog extends JInternalFrame implements ActionListene
 			{ super(new String[]{"OK", "Cancel"},1,2); }
 
 		/** Get the mapping cells from the selected importer */
-		private ArrayList<MappingCell> getMappingCells(Integer sourceID, Integer targetID, URI uri) throws ImporterException
+		private ArrayList<MappingCell> getMappingCells(Integer sourceID, Integer targetID, URI uri) throws Exception
 		{
 			// Get mapping cells
 			MappingImporter importer = (MappingImporter)getImporter();
@@ -176,7 +175,7 @@ public class ImportMappingDialog extends JInternalFrame implements ActionListene
 					ArrayList<MappingCell> mappingCells = null;
 					if(harmonyModel.getInstantiationType()!=InstantiationType.WEBAPP)
 						mappingCells = getMappingCells(source.getId(), target.getId(), uri);
-					else SchemaStoreManager.getImportedMappingCells(getImporter(), source.getId(), target.getId(), uri);
+					else mappingCells = SchemaStoreManager.getImportedMappingCells(getImporter(), source.getId(), target.getId(), uri);
 					for(MappingCell mappingCell : mappingCells) mappingCell.setId(null);
 
 					// Add schemas to the project
@@ -319,19 +318,31 @@ public class ImportMappingDialog extends JInternalFrame implements ActionListene
 			updateSchemas(showAllSchemas.isSelected());
 	}
 
+	/** Retrieves the suggested schemas */
+	private ArrayList<ProjectSchema> getSuggestedSchemas() throws Exception
+	{
+		// Initialize the importer
+		MappingImporter importer = (MappingImporter)getImporter();
+		importer.initialize(uriField.getURI());
+
+		// Get the suggested schemas
+		ArrayList<ProjectSchema> schemas = new ArrayList<ProjectSchema>();
+		schemas.add(importer.getSourceSchema());
+		schemas.add(importer.getTargetSchema());
+		return schemas;
+	}
+	
 	/** Handles changes to the specified file to import */
 	public void uriModified()
-	{	
-		ProjectSchema sourceSchema = null, targetSchema = null;
-		try {
-			MappingImporter importer = (MappingImporter)getImporter();
-			importer.initialize(uriField.getURI());
-			sourceSchema = importer.getSourceSchema();
-			targetSchema = importer.getTargetSchema();
-		} catch(Exception e2) {}
-
+	{
+		// Retrieve the suggested schemas
+		ArrayList<ProjectSchema> schemas = new ArrayList<ProjectSchema>();
+		if(harmonyModel.getInstantiationType()!=InstantiationType.WEBAPP)
+			try { schemas = getSuggestedSchemas(); } catch(Exception e) {}
+		else schemas = SchemaStoreManager.getSuggestedSchemas(getImporter(), uriField.getURI());
+		
 		// Update the labeling on the source and schema panes
-		sourceSelector.setSchema(sourceSchema);
-		targetSelector.setSchema(targetSchema);
+		sourceSelector.setSchema(schemas.size()>0 ? schemas.get(0) : null);
+		targetSelector.setSchema(schemas.size()>1 ? schemas.get(1) : null);
 	}
 }
