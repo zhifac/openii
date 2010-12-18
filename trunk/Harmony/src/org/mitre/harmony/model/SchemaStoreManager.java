@@ -22,6 +22,7 @@ import org.mitre.schemastore.model.Function;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.Project;
+import org.mitre.schemastore.model.ProjectSchema;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.schemaInfo.SchemaInfo;
@@ -281,6 +282,10 @@ public class SchemaStoreManager
 	/** Imports the data through the specified importer */
 	static public Integer importData(Importer importer, String name, String author, String description, URI uri)
 		{ return (Integer)callFunction("importData",new Object[] {importer,name,author,description,uri}); }
+	
+	/** Retrieves the suggested schemas for the specified mapping */ @SuppressWarnings("unchecked")
+	static public ArrayList<ProjectSchema> getSuggestedSchemas(Importer importer, URI uri)
+		{ return (ArrayList<ProjectSchema>)callFunction("getSuggestedSchemas",new Object[] {importer,uri}); }
 	
 	/** Returns imported mapping cells through the specified importer */ @SuppressWarnings("unchecked")
 	static public ArrayList<MappingCell> getImportedMappingCells(Importer importer, Integer sourceID, Integer targetID, URI uri)
