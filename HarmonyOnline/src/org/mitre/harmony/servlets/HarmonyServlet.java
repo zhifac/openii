@@ -24,6 +24,7 @@ import org.mitre.schemastore.client.SchemaStoreClient;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.Project;
+import org.mitre.schemastore.model.ProjectSchema;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.porters.Exporter;
@@ -109,6 +110,22 @@ public class HarmonyServlet extends HttpServlet
 				output = importer.getSchema(uri);
 			}
 			
+			// Retrieves the schemas suggested by the mapping importer
+			else if(functionName.equals("getSuggestedSchemas"))
+			{
+				// Get the importer
+				GenericImporter genericImporter = (GenericImporter)args[0];
+				MappingImporter importer = (MappingImporter)getPorter(genericImporter.getType(), genericImporter.getName());
+				URI uri = new File(System.getProperty("java.io.tmpdir"),((URI)args[1]).toString()).toURI();		
+				importer.initialize(uri);
+
+				// Get the suggested schemas
+				ArrayList<ProjectSchema> schemas = new ArrayList<ProjectSchema>();
+				schemas.add(importer.getSourceSchema());
+				schemas.add(importer.getTargetSchema());
+				output = schemas;
+			}
+			
 			// Imports data through the specified importer
 			else if(functionName.equals("importData"))
 			{
@@ -119,8 +136,10 @@ public class HarmonyServlet extends HttpServlet
 			// Retrieves the imported mapping cells
 			else if(functionName.equals("getImportedMappingCells"))
 			{
-				MappingImporter importer = (MappingImporter)args[0];
-				importer.initialize((URI)args[3]);
+				GenericImporter genericImporter = (GenericImporter)args[0];
+				MappingImporter importer = (MappingImporter)getPorter(genericImporter.getType(), genericImporter.getName());
+				URI uri = new File(System.getProperty("java.io.tmpdir"),((URI)args[3]).toString()).toURI();		
+				importer.initialize(uri);
 				importer.setSchemas((Integer)args[1], (Integer)args[2]);
 				output = importer.getMappingCells();
 				if(output==null) throw new Exception("Failed to retrieve imported mapping cells");
