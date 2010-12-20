@@ -48,7 +48,7 @@
     	var dialog = document.getElementById("importDialog")
 		dialog.style.top = (height - parseInt(dialog.style.height))/2 + 'px';
 		dialog.style.left = (width - parseInt(dialog.style.width))/2 + 'px';
-
+		
         // Create a new iframe for use in bringing the dialog to the front
         var hole = document.createElement('iframe');
         hole.id='hole';
@@ -58,9 +58,9 @@
         // Make the iframe carve a hole in the applet in order to reveal the dialog
         hole.style.left = parseInt(dialog.style.left);
         hole.style.top = parseInt(dialog.style.top);
-        hole.style.width = dialog.style.width;
-        hole.style.height = dialog.style.height;
-        hole.style.zIndex = dialog.style.zIndex;
+        hole.style.width = parseInt(dialog.style.width)+6;
+        hole.style.height = parseInt(dialog.style.height)+6;
+        hole.style.zIndex = dialog.style.zIndex-1;
 
         // Display the dialog
         document.body.appendChild(hole);
@@ -108,6 +108,6 @@
   
   <!-- Pane for showing Harmony -->
   <applet id='harmonyApplet' code=org/mitre/harmony/view/HarmonyApplet.class codebase=HarmonyApplet archive=Harmony.jar,SchemaStoreModel.jar,SchemaStoreUtilities.jar width=0 height=0></applet>
-  
+
   </body>
 </html>
