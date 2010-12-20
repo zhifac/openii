@@ -10,12 +10,8 @@
       {
         if (navigator.appName.indexOf("Microsoft") != -1)
         {
-          width=0; height=0;  
-          if(document.body)
-          {
-           	width=document.body.clientWidth;
-            height=document.body.clientHeight-4;
-          }
+          width=document.documentElement.clientWidth;
+          height=document.documentElement.clientHeight-8;
         }
         else
         {
