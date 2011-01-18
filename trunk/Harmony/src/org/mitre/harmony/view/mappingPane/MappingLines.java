@@ -53,6 +53,9 @@ public class MappingLines implements MappingListener, FiltersListener, SchemaTre
 	/** Stores a list of the mapping cell lines */
 	private Hashtable<Integer, MappingCellLines> lines = null;
 	
+	/** Stores reference to the function icon */
+	private BufferedImage functionIcon = null;
+	
 	/** Stores schema tree mapping cell listeners */
 	private Vector<LinesListener> listeners = new Vector<LinesListener>();
 
@@ -307,6 +310,16 @@ public class MappingLines implements MappingListener, FiltersListener, SchemaTre
 	public void selectedElementsModified(Integer role) {}
 	public void displayedElementModified(Integer role) {}
 	
+	/** Returns the function icon */
+	private BufferedImage getFunctionIcon()
+	{
+		if(functionIcon!=null) return functionIcon;
+		try {
+			URL url = MappingLines.class.getResource("/org/mitre/harmony/view/graphics/Function.png");
+			return ImageIO.read(url);
+		} catch(IOException ex) { return null; }
+	}
+	
 	/** Draws all lines linking the source and target schema trees */
 	void paint(Graphics g)
 	{
@@ -317,13 +330,6 @@ public class MappingLines implements MappingListener, FiltersListener, SchemaTre
 			private Color color;
 			private VisibleLine(MappingCellLine line, Color color) { this.line = line; this.color = color; }
 		}
-		
-		// Stores the function icon
-		BufferedImage functionIcon = null;
-		try {
-			URL url = MappingLines.class.getResource("/org/mitre/harmony/view/graphics/Function.png");
-			functionIcon = ImageIO.read(url);
-		} catch(IOException ex) {}
 		
 		// Collects a listing of all visible and hidden lines
 		Stroke defaultStroke = ((Graphics2D)g).getStroke();
@@ -392,7 +398,7 @@ public class MappingLines implements MappingListener, FiltersListener, SchemaTre
 					else if(pt.getX()==maxX)
 						g.fillOval((int)pt.getX()-6,(int)pt.getY()-4, circleSize, circleSize);
 					else if(pt.getX()==midX)
-						g.drawImage(functionIcon, (int)pt.getX()-10, (int)pt.getY()-9, 20, 18, null);  
+						g.drawImage(getFunctionIcon(), (int)pt.getX()-10, (int)pt.getY()-9, 20, 18, null);  
 				}
 		}
 	}		
