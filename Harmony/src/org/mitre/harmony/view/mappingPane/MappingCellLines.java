@@ -156,7 +156,7 @@ class MappingCellLines
 		MappingCell mappingCell = harmonyModel.getMappingManager().getMappingCell(mappingCellID);
 		SchemaTreeImp leftTree = mappingPane.getTree(HarmonyConsts.LEFT);
 		SchemaTreeImp rightTree = mappingPane.getTree(HarmonyConsts.RIGHT);
-
+		
 		// Cycle through all combination of source and target nodes
 		MAPPING_CELL_LOOP: for(NodeMapping nodeMapping : getNodeMappings(mappingCell))
 		{
@@ -166,13 +166,16 @@ class MappingCellLines
 			if(!harmonyModel.getFilters().isVisibleNode(HarmonyConsts.RIGHT,nodeMapping.outputNode)) continue;
 			
 			// Only create lines if they are visible on the screen (saves processing time)
+			boolean visible = false;
 			Integer outputRow = rightTree.getNodeRow(nodeMapping.outputNode);
 			for(DefaultMutableTreeNode inputNode : nodeMapping.inputNodes)
 			{
 				Integer inputRow = leftTree.getNodeRow(inputNode);
-				if(inputRow<leftTree.firstVisibleRow && outputRow<rightTree.firstVisibleRow) continue;
-				if(inputRow>leftTree.lastVisibleRow && outputRow>rightTree.lastVisibleRow) continue;
+				visible |= (inputRow>=leftTree.firstVisibleRow || outputRow>=rightTree.firstVisibleRow) &&
+				           (inputRow<=leftTree.lastVisibleRow || outputRow<=rightTree.lastVisibleRow);
+				if(visible) break;
 			}
+			if(!visible) continue;
 			
 			// Add line linking the left and right nodes
 			lines.add(new MappingCellLine(mappingPane,nodeMapping.inputNodes,nodeMapping.outputNode,mappingCell.isIdentityFunction()));
