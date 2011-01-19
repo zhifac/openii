@@ -142,7 +142,7 @@ public class FilterManager extends AbstractManager<FiltersListener> implements M
 
 		// Adds the specified element to the focus
 		if(elementPath!=null) focus.addFocus(elementPath);
-		for(FiltersListener listener : getListeners()) listener.focusModified(side);
+		for(FiltersListener listener : getListeners()) listener.focusChanged(side);
 	}
 
 	/** Removes a focused element from the specified side */
@@ -152,7 +152,7 @@ public class FilterManager extends AbstractManager<FiltersListener> implements M
 		if(focus!=null)
 		{
 			focus.removeFocus(elementPath);
-			for(FiltersListener listener : getListeners()) listener.focusModified(side);
+			for(FiltersListener listener : getListeners()) listener.focusChanged(side);
 		}
 	}
 
@@ -161,7 +161,7 @@ public class FilterManager extends AbstractManager<FiltersListener> implements M
 	{
 		for(Focus focus : side==HarmonyConsts.LEFT ? leftFoci : rightFoci)
 			focus.removeAllFoci();
-		for(FiltersListener listener : getListeners()) listener.focusModified(side);		
+		for(FiltersListener listener : getListeners()) listener.focusChanged(side);		
 	}
 	
 	/** Hides an element on the specified side */
@@ -177,7 +177,7 @@ public class FilterManager extends AbstractManager<FiltersListener> implements M
 
 		// Adds the specified element to the hidden elements
 		focus.hideElement(elementID);
-		for(FiltersListener listener : getListeners()) listener.focusModified(side);
+		for(FiltersListener listener : getListeners()) listener.focusChanged(side);
 	}
 
 	/** Unhides an element on the specified side */
@@ -187,7 +187,7 @@ public class FilterManager extends AbstractManager<FiltersListener> implements M
 		if(focus!=null)
 		{
 			focus.unhideElement(elementID);
-			for(FiltersListener listener : getListeners()) listener.focusModified(side);
+			for(FiltersListener listener : getListeners()) listener.focusChanged(side);
 		}
 	}
 	
@@ -342,7 +342,7 @@ public class FilterManager extends AbstractManager<FiltersListener> implements M
 				if(!schemas.contains(focus.getSchemaID()))
 				{
 					foci.remove(focus);
-					for(FiltersListener listener : getListeners()) listener.focusModified(side);
+					for(FiltersListener listener : getListeners()) listener.focusChanged(side);
 				}
 		}
 	}
