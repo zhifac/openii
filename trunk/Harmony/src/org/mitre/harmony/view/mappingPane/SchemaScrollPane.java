@@ -179,7 +179,7 @@ public class SchemaScrollPane extends JScrollPane implements AdjustmentListener,
 		{ updateSearchResultRows(); }
 
 	/** Handles a change in focus */
-	public void focusModified(Integer side)
+	public void focusChanged(Integer side)
 		{ if(tree.getSide().equals(side)) updateSearchResultRows(); }
 	
 	/** Handles a change in depth */

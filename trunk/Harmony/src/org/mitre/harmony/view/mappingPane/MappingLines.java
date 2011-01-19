@@ -275,7 +275,7 @@ public class MappingLines implements MappingListener, FiltersListener, SchemaTre
 		{ updateHidden(); }
 	
 	/** Updates mapping cell lines when a focus is added */
-	public void focusModified(Integer side)
+	public void focusChanged(Integer side)
 		{ updateLines(); }
 	
 	/** Updates mapping cell lines when depth filters changed */

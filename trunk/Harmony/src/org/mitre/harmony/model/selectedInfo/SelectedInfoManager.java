@@ -224,7 +224,7 @@ public class SelectedInfoManager extends AbstractManager<SelectedInfoListener> i
 	//------------ Updates the selected information based on the occurrence of events ------------
 	
 	/** Unselect elements that are out of focus */
-	public void focusModified(Integer side)
+	public void focusChanged(Integer side)
 	{
 		// Identify all of the elements that are no longer visible
 		ArrayList<Integer> removedElements = new ArrayList<Integer>();
