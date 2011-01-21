@@ -47,7 +47,8 @@ public class FilterManager extends AbstractManager<FiltersListener> implements M
 	private ElementConfHashTable elementConfidences = null;
 	
 	/** Tracks items that are in focus */
-	private FocusHashTable focusHash = null;
+	private FocusHashTable leftFocusHash = null;
+	private FocusHashTable rightFocusHash = null;
 	
 	/** Constructor used to initializes the filters */
 	public FilterManager(HarmonyModel harmonyModel)
@@ -63,8 +64,8 @@ public class FilterManager extends AbstractManager<FiltersListener> implements M
 		maxLeftDepth = maxRightDepth = Integer.MAX_VALUE;
 		
 		// Initialize the focus hash
-		focusHash = new FocusHashTable();
-		addListener(focusHash);
+		leftFocusHash = new FocusHashTable(harmonyModel);
+		rightFocusHash = new FocusHashTable(harmonyModel);
 	}
 	
 	//-----------------------------
@@ -129,96 +130,74 @@ public class FilterManager extends AbstractManager<FiltersListener> implements M
 	// Handles focus
 	//---------------	
 	
+	/** Returns the specified focus hash */
+	private FocusHashTable getFocusHash(Integer side)
+		{ return side==HarmonyConsts.LEFT ? leftFocusHash : rightFocusHash; }
+	
 	/** Adds a focused element to the specified side */
 	public void addFocus(Integer side, Integer schemaID, ElementPath elementPath)
-	{
-		// Retrieve the focus associated with the specified schema
-		Focus focus = focusHash.getFocus(side,schemaID);
-		if(focus==null)
-		{
-			ArrayList<Focus> foci = focusHash.getFoci(side);
-			foci.add(focus = new Focus(schemaID, getModel()));
-		}
-
-		// Adds the specified element to the focus
-		if(elementPath!=null) focus.addFocus(elementPath);
+	{ 
+		getFocusHash(side).addFocus(schemaID, elementPath);
 		for(FiltersListener listener : getListeners()) listener.focusChanged(side);
 	}
 
 	/** Removes a focused element from the specified side */
 	public void removeFocus(Integer side, Integer schemaID, ElementPath elementPath)
 	{
-		Focus focus = focusHash.getFocus(side,schemaID);
-		if(focus!=null)
-		{
-			focus.removeFocus(elementPath);
-			for(FiltersListener listener : getListeners()) listener.focusChanged(side);
-		}
+		getFocusHash(side).removeFocus(schemaID, elementPath);
+		for(FiltersListener listener : getListeners()) listener.focusChanged(side);
 	}
 
 	/** Removes all foci from the specified side */
 	public void removeAllFoci(Integer side)
 	{
-		for(Focus focus : focusHash.getFoci(side))
-			focus.removeAllFoci();
+		getFocusHash(side).removeAllFoci(side);
 		for(FiltersListener listener : getListeners()) listener.focusChanged(side);		
 	}
 	
 	/** Hides an element on the specified side */
 	public void hideElement(Integer side, Integer schemaID, Integer elementID)
 	{
-		// Retrieve the focus associated with the specified schema
-		Focus focus = focusHash.getFocus(side,schemaID);
-		if(focus==null)
-		{
-			ArrayList<Focus> foci = focusHash.getFoci(side);
-			foci.add(focus = new Focus(schemaID, getModel()));
-		}
-
-		// Adds the specified element to the hidden elements
-		focus.hideElement(elementID);
+		getFocusHash(side).hideElement(schemaID, elementID);
 		for(FiltersListener listener : getListeners()) listener.focusChanged(side);
 	}
 
 	/** Unhides an element on the specified side */
 	public void unhideElement(Integer side, Integer schemaID, Integer elementID)
 	{
-		Focus focus = focusHash.getFocus(side,schemaID);
-		if(focus!=null)
-		{
-			focus.unhideElement(elementID);
-			for(FiltersListener listener : getListeners()) listener.focusChanged(side);
-		}
+		getFocusHash(side).unhideElement(schemaID, elementID);
+		for(FiltersListener listener : getListeners()) listener.focusChanged(side);
 	}
 	
 	/** Return the list of foci on the specified side */
 	public ArrayList<Focus> getFoci(Integer side)
-		{ return new ArrayList<Focus>(focusHash.getFoci(side)); }
+		{ return new ArrayList<Focus>(getFocusHash(side).getFoci()); }
 	
 	/** Returns the focus associated with the specified schema */
 	public Focus getFocus(Integer side, Integer schemaID)
-		{ return focusHash.getFocus(side, schemaID); }
+		{ return getFocusHash(side).getFocus(schemaID); }
 	
 	/** Indicates if the specified schema is in focus */
 	public boolean inFocus(Integer side, Integer schemaID)
-		{ return focusHash.inFocus(side, schemaID); }
+		{ return getFocusHash(side).inFocus(schemaID); }
 	
 	/** Indicates if the specified element is in focus */
 	public boolean inFocus(Integer side, Integer schemaID, Integer elementID)
-		{ return focusHash.inFocus(side, schemaID, elementID); }
+		{ return getFocusHash(side).inFocus(schemaID, elementID); }
 	
 	/** Indicates if the specified node is in focus */
 	public boolean inFocus(Integer side, DefaultMutableTreeNode node)
-		{ return focusHash.inFocus(side, node); }
+		{ return getFocusHash(side).inFocus(node); }
 	
 	/** Identifies all elements in focus on the specified side */
 	public HashSet<Integer> getFocusedElementIDs(Integer side)
 	{
 		HashSet<Integer> focusedElements = new HashSet<Integer>();
+		FocusHashTable focusHash = getFocusHash(side);
 		for(Integer schemaID : getModel().getProjectManager().getSchemaIDs(side))
-			if(focusHash.inFocus(side,schemaID))
+			if(focusHash.inFocus(schemaID))
 			{
-				Focus focus = focusHash.getFocus(side, schemaID);
+				Focus focus = focusHash.getFocus(schemaID);
 				if(focus==null)
 				{
 					HierarchicalSchemaInfo schema = getModel().getSchemaManager().getSchemaInfo(schemaID);
@@ -263,7 +242,7 @@ public class FilterManager extends AbstractManager<FiltersListener> implements M
 	public boolean isVisibleNode(Integer side, DefaultMutableTreeNode node)
 	{
 		// Check that the element is within focus
-		if(!focusHash.inFocus(side, node)) return false;
+		if(!getFocusHash(side).inFocus(node)) return false;
 		
 		// Check that the element is within depth
 		int depth = node.getPath().length-2;
@@ -312,7 +291,7 @@ public class FilterManager extends AbstractManager<FiltersListener> implements M
 		for(Integer side : sides)
 		{
 			HashSet<Integer> schemas = getModel().getProjectManager().getSchemaIDs(side);
-			ArrayList<Focus> foci = focusHash.getFoci(side);
+			ArrayList<Focus> foci = getFocusHash(side).getFoci();
 			for(Focus focus : new ArrayList<Focus>(foci))
 				if(!schemas.contains(focus.getSchemaID()))
 				{
