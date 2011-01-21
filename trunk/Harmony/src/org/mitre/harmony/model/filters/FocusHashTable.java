@@ -7,74 +7,85 @@ import java.util.HashMap;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
-import org.mitre.harmony.model.HarmonyConsts;
+import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.view.schemaTree.SchemaTree;
 
 /**
  * Keeps an updated listing of the items in focus
  * @author CWOLF
  */
-class FocusHashTable implements FiltersListener
+class FocusHashTable
 {
+	
 	/** Defines the private node hash class */
 	private class NodeHash extends HashMap<DefaultMutableTreeNode,Boolean> {};
-	
-	// Stores all focus filter settings
-	private ArrayList<Focus> leftFoci = new ArrayList<Focus>();
-	private ArrayList<Focus> rightFoci = new ArrayList<Focus>();
-	
-	// Stores a hash of nodes and if they are in focus
-	private NodeHash leftNodeHash = new NodeHash();
-	private NodeHash rightNodeHash = new NodeHash();
 
-	/** Return the list of foci on the specified side */
-	ArrayList<Focus> getFoci(Integer side)
-		{ return side==HarmonyConsts.LEFT ? leftFoci : rightFoci; }
+	/** Stores reference to the harmony model */
+	private HarmonyModel harmonyModel = null;
 	
-	/** Returns the number of focused elements on the specified side */
-	private Integer getFocusCount(Integer side)
-	{
-		Integer count = 0;
-		for(Focus focus : getFoci(side)) count += focus.getFocusedPaths().size();
-		return count;
-	}
+	/** Stores all focus filter settings */
+	private ArrayList<Focus> foci = new ArrayList<Focus>();
+	
+	/** Indicates if all items are currently in focus */
+	private Boolean focusExists = false;
+	
+	/** Stores a hash of nodes and if they are in focus */
+	private NodeHash nodeHash = new NodeHash();
+
+	/** Constructs the Focus Hash Table */
+	FocusHashTable(HarmonyModel harmonyModel)
+		{ this.harmonyModel = harmonyModel; }
+	
+	/** Return the list of foci on the specified side */
+	ArrayList<Focus> getFoci()
+		{ return new ArrayList<Focus>(foci); }
 	
 	/** Returns the focus associated with the specified schema */
-	Focus getFocus(Integer side, Integer schemaID)
+	Focus getFocus(Integer schemaID)
 	{
-		for(Focus focus : getFoci(side))
-			if(focus.getSchemaID().equals(schemaID)) return focus;
+		for(Focus focus : foci)
+			if(focus.getSchemaID().equals(schemaID))
+				return focus;
 		return null;
 	}
 	
 	/** Indicates if the specified schema is in focus */
-	boolean inFocus(Integer side, Integer schemaID)
+	boolean inFocus(Integer schemaID)
 	{
-		Focus focus = getFocus(side, schemaID);
-		if(focus==null || focus.getFocusedPaths().size()==0) return getFocusCount(side)==0;
-		return true;
+		// Determine if focus exists if needed
+		if(focusExists==null)
+		{
+			focusExists = false;
+			for(Focus focus : foci)
+				if(focus.getFocusedPaths().size()>0)
+					{ focusExists=true; break; }
+		}
+		
+		// Determine if the schema is within focus
+		if(!focusExists) return true;
+		Focus focus = getFocus(schemaID);
+		return focus!=null && focus.getFocusedPaths().size()>0;
 	}
 	
 	/** Indicates if the specified element is in focus */
-	boolean inFocus(Integer side, Integer schemaID, Integer elementID)
+	boolean inFocus(Integer schemaID, Integer elementID)
 	{
-		if(!inFocus(side,schemaID)) return false;
-		Focus focus = getFocus(side, schemaID);
+		if(!inFocus(schemaID)) return false;
+		Focus focus = getFocus(schemaID);
 		return focus==null || focus.contains(elementID);
 	}
 	
 	/** Indicates if the specified node is in focus */
-	boolean inFocus(Integer side, DefaultMutableTreeNode node)
+	boolean inFocus(DefaultMutableTreeNode node)
 	{
 		// Check hash first for information
-		NodeHash nodeHash = side==HarmonyConsts.LEFT ? leftNodeHash : rightNodeHash;
 		Boolean inFocus = nodeHash.get(node);
 		if(inFocus!=null) return inFocus;
 		
 		// Retrieve information manually
 		Integer schemaID = SchemaTree.getSchema(node);
-		if(!inFocus(side,schemaID)) return false;
-		Focus focus = getFocus(side, schemaID);
+		if(!inFocus(schemaID)) return false;
+		Focus focus = getFocus(schemaID);
 		inFocus = focus==null || focus.contains(node);
 		
 		// Store information in hash before returning
@@ -82,16 +93,58 @@ class FocusHashTable implements FiltersListener
 		return inFocus;
 	}
 	
-	/** Handles a change in focus */
-	public void focusChanged(Integer side)
+	/** Adds a focused element to the specified side */
+	public void addFocus(Integer schemaID, ElementPath elementPath)
 	{
-		if(side==HarmonyConsts.LEFT) leftNodeHash.clear();
-		else rightNodeHash.clear();
+		if(elementPath!=null)
+		{
+			// Retrieve the focus associated with the specified schema
+			Focus focus = getFocus(schemaID);
+			if(focus==null)
+				foci.add(focus = new Focus(schemaID, harmonyModel));
+	
+			// Adds the specified element to the focus
+			focus.addFocus(elementPath);
+			focusExists=true; nodeHash.clear();
+		}
+	}
+
+	/** Removes a focused element from the specified side */
+	public void removeFocus(Integer schemaID, ElementPath elementPath)
+	{
+		Focus focus = getFocus(schemaID);
+		if(focus!=null)
+		{
+			focus.removeFocus(elementPath);
+			focusExists=null; nodeHash.clear();
+		}
+	}
+
+	/** Removes all foci from the specified side */
+	public void removeAllFoci(Integer side)
+	{
+		for(Focus focus : getFoci()) focus.removeAllFoci();
+		focusExists=false; nodeHash.clear();
 	}
 	
-	// Unused event listeners
-	public void filterChanged(Integer filter) {}
-	public void confidenceChanged() {}
-	public void depthChanged(Integer side) {}
-	public void maxConfidenceChanged(Integer schemaObjectID) {}
+	/** Hides an element on the specified side */
+	public void hideElement(Integer schemaID, Integer elementID)
+	{
+		// Retrieve the focus associated with the specified schema
+		Focus focus = getFocus(schemaID);
+		if(focus==null)
+			foci.add(focus = new Focus(schemaID, harmonyModel));
+
+		// Adds the specified element to the hidden elements
+		focus.hideElement(elementID);
+		nodeHash.clear();
+	}
+
+	/** Unhides an element on the specified side */
+	public void unhideElement(Integer schemaID, Integer elementID)
+	{
+		Focus focus = getFocus(schemaID);
+		if(focus!=null) focus.unhideElement(elementID);
+		nodeHash.clear();
+	}
 }
