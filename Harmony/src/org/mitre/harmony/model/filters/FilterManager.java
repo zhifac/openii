@@ -14,7 +14,6 @@ import org.mitre.harmony.model.HarmonyConsts;
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.project.MappingListener;
 import org.mitre.harmony.model.project.ProjectMapping;
-import org.mitre.harmony.view.schemaTree.SchemaTree;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
@@ -38,10 +37,6 @@ public class FilterManager extends AbstractManager<FiltersListener> implements M
 	private double minConfThreshold;
 	private double maxConfThreshold;
 	
-	// Stores all focus filter settings
-	private ArrayList<Focus> leftFoci;
-	private ArrayList<Focus> rightFoci;
-	
 	// Stores all depth filter settings
 	private int minLeftDepth;
 	private int maxLeftDepth;
@@ -50,6 +45,9 @@ public class FilterManager extends AbstractManager<FiltersListener> implements M
 
 	/** Tracks element confidences when BEST is set */
 	private ElementConfHashTable elementConfidences = null;
+	
+	/** Tracks items that are in focus */
+	private FocusHashTable focusHash = null;
 	
 	/** Constructor used to initializes the filters */
 	public FilterManager(HarmonyModel harmonyModel)
@@ -61,10 +59,12 @@ public class FilterManager extends AbstractManager<FiltersListener> implements M
 		filters[USER_FILTER]=true; filters[SYSTEM_FILTER]=true; filters[HIERARCHY_FILTER]=true; filters[BEST_FILTER]=false;
 		minConfThreshold = ProjectMapping.MIN_CONFIDENCE;
 		maxConfThreshold = ProjectMapping.MAX_CONFIDENCE;
-		leftFoci = new ArrayList<Focus>();
-		rightFoci = new ArrayList<Focus>();
 		minLeftDepth = minRightDepth = 1;
 		maxLeftDepth = maxRightDepth = Integer.MAX_VALUE;
+		
+		// Initialize the focus hash
+		focusHash = new FocusHashTable();
+		addListener(focusHash);
 	}
 	
 	//-----------------------------
@@ -133,10 +133,10 @@ public class FilterManager extends AbstractManager<FiltersListener> implements M
 	public void addFocus(Integer side, Integer schemaID, ElementPath elementPath)
 	{
 		// Retrieve the focus associated with the specified schema
-		Focus focus = getFocus(side,schemaID);
+		Focus focus = focusHash.getFocus(side,schemaID);
 		if(focus==null)
 		{
-			ArrayList<Focus> foci = side==HarmonyConsts.LEFT ? leftFoci : rightFoci;
+			ArrayList<Focus> foci = focusHash.getFoci(side);
 			foci.add(focus = new Focus(schemaID, getModel()));
 		}
 
@@ -148,7 +148,7 @@ public class FilterManager extends AbstractManager<FiltersListener> implements M
 	/** Removes a focused element from the specified side */
 	public void removeFocus(Integer side, Integer schemaID, ElementPath elementPath)
 	{
-		Focus focus = getFocus(side,schemaID);
+		Focus focus = focusHash.getFocus(side,schemaID);
 		if(focus!=null)
 		{
 			focus.removeFocus(elementPath);
@@ -159,7 +159,7 @@ public class FilterManager extends AbstractManager<FiltersListener> implements M
 	/** Removes all foci from the specified side */
 	public void removeAllFoci(Integer side)
 	{
-		for(Focus focus : side==HarmonyConsts.LEFT ? leftFoci : rightFoci)
+		for(Focus focus : focusHash.getFoci(side))
 			focus.removeAllFoci();
 		for(FiltersListener listener : getListeners()) listener.focusChanged(side);		
 	}
@@ -168,10 +168,10 @@ public class FilterManager extends AbstractManager<FiltersListener> implements M
 	public void hideElement(Integer side, Integer schemaID, Integer elementID)
 	{
 		// Retrieve the focus associated with the specified schema
-		Focus focus = getFocus(side,schemaID);
+		Focus focus = focusHash.getFocus(side,schemaID);
 		if(focus==null)
 		{
-			ArrayList<Focus> foci = side==HarmonyConsts.LEFT ? leftFoci : rightFoci;
+			ArrayList<Focus> foci = focusHash.getFoci(side);
 			foci.add(focus = new Focus(schemaID, getModel()));
 		}
 
@@ -183,7 +183,7 @@ public class FilterManager extends AbstractManager<FiltersListener> implements M
 	/** Unhides an element on the specified side */
 	public void unhideElement(Integer side, Integer schemaID, Integer elementID)
 	{
-		Focus focus = getFocus(side,schemaID);
+		Focus focus = focusHash.getFocus(side,schemaID);
 		if(focus!=null)
 		{
 			focus.unhideElement(elementID);
@@ -193,57 +193,32 @@ public class FilterManager extends AbstractManager<FiltersListener> implements M
 	
 	/** Return the list of foci on the specified side */
 	public ArrayList<Focus> getFoci(Integer side)
-		{ return new ArrayList<Focus>(side==HarmonyConsts.LEFT ? leftFoci : rightFoci); }
-	
-	/** Returns the number of focused elements on the specified side */
-	public Integer getFocusCount(Integer side)
-	{
-		Integer count = 0;
-		for(Focus focus : getFoci(side)) count += focus.getFocusedPaths().size();
-		return count;
-	}
+		{ return new ArrayList<Focus>(focusHash.getFoci(side)); }
 	
 	/** Returns the focus associated with the specified schema */
 	public Focus getFocus(Integer side, Integer schemaID)
-	{
-		for(Focus focus : getFoci(side))
-			if(focus.getSchemaID().equals(schemaID)) return focus;
-		return null;
-	}
+		{ return focusHash.getFocus(side, schemaID); }
 	
 	/** Indicates if the specified schema is in focus */
 	public boolean inFocus(Integer side, Integer schemaID)
-	{
-		Focus focus = getFocus(side, schemaID);
-		if(focus==null || focus.getFocusedPaths().size()==0) return getFocusCount(side)==0;
-		return true;
-	}
+		{ return focusHash.inFocus(side, schemaID); }
 	
 	/** Indicates if the specified element is in focus */
 	public boolean inFocus(Integer side, Integer schemaID, Integer elementID)
-	{
-		if(!inFocus(side,schemaID)) return false;
-		Focus focus = getFocus(side, schemaID);
-		return focus==null || focus.contains(elementID);
-	}
-
+		{ return focusHash.inFocus(side, schemaID, elementID); }
+	
 	/** Indicates if the specified node is in focus */
 	public boolean inFocus(Integer side, DefaultMutableTreeNode node)
-	{
-		Integer schemaID = SchemaTree.getSchema(node);
-		if(!inFocus(side,schemaID)) return false;
-		Focus focus = getFocus(side, schemaID);
-		return focus==null || focus.contains(node);
-	}
+		{ return focusHash.inFocus(side, node); }
 	
 	/** Identifies all elements in focus on the specified side */
 	public HashSet<Integer> getFocusedElementIDs(Integer side)
 	{
 		HashSet<Integer> focusedElements = new HashSet<Integer>();
 		for(Integer schemaID : getModel().getProjectManager().getSchemaIDs(side))
-			if(inFocus(side,schemaID))
+			if(focusHash.inFocus(side,schemaID))
 			{
-				Focus focus = getFocus(side, schemaID);
+				Focus focus = focusHash.getFocus(side, schemaID);
 				if(focus==null)
 				{
 					HierarchicalSchemaInfo schema = getModel().getSchemaManager().getSchemaInfo(schemaID);
@@ -288,7 +263,7 @@ public class FilterManager extends AbstractManager<FiltersListener> implements M
 	public boolean isVisibleNode(Integer side, DefaultMutableTreeNode node)
 	{
 		// Check that the element is within focus
-		if(!inFocus(side, node)) return false;
+		if(!focusHash.inFocus(side, node)) return false;
 		
 		// Check that the element is within depth
 		int depth = node.getPath().length-2;
@@ -337,7 +312,7 @@ public class FilterManager extends AbstractManager<FiltersListener> implements M
 		for(Integer side : sides)
 		{
 			HashSet<Integer> schemas = getModel().getProjectManager().getSchemaIDs(side);
-			ArrayList<Focus> foci = side==HarmonyConsts.LEFT ? leftFoci : rightFoci;
+			ArrayList<Focus> foci = focusHash.getFoci(side);
 			for(Focus focus : new ArrayList<Focus>(foci))
 				if(!schemas.contains(focus.getSchemaID()))
 				{

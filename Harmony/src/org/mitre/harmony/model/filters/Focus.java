@@ -65,7 +65,7 @@ public class Focus
 	public ArrayList<Integer> getHiddenIDs() { return hiddenIDs; }
 	
 	/** Adds a focus */
-	public void addFocus(ElementPath elementPath)
+	void addFocus(ElementPath elementPath)
 	{
 		// Removes focus elements which are sub-items of the new focus 
 		if(elementPath.size()>0)
@@ -83,15 +83,15 @@ public class Focus
 	}
 	
 	/** Removes a focus */
-	public void removeFocus(ElementPath elementPath)
+	void removeFocus(ElementPath elementPath)
 		{ focusPaths.remove(elementPath); elementsInFocus=null; hiddenElements=null; }
 	
 	/** Removes all foci */
-	public void removeAllFoci()
+	void removeAllFoci()
 		{ focusPaths.clear(); elementsInFocus=null; hiddenElements=null; }
 	
 	/** Hides the specified element */
-	public void hideElement(Integer elementID)
+	void hideElement(Integer elementID)
 	{
 		// Get descendants of the specified element
 		ArrayList<Integer> descendantIDs = new ArrayList<Integer>();
@@ -110,7 +110,7 @@ public class Focus
 	}
 	
 	/** Unhides the specified element */
-	public void unhideElement(Integer elementID)
+	void unhideElement(Integer elementID)
 		{ hiddenIDs.remove(elementID); elementsInFocus=null; hiddenElements=null; }
 
 	/** Returns the list of elements in focus */
