@@ -5,9 +5,14 @@ import java.util.HashMap;
 
 import org.mitre.schemastore.model.MappingCell;
 
+/**
+ * Reverse index mapping cells by elementID whether the element is a source or a target. 
+ * @author HAOLI
+ *
+ */
 public class AssociatedElementHash {
 	/** Stores the mapping cells */
-	private HashMap<Integer, ArrayList<MappingCell>> mappingCellHash = new HashMap<Integer, ArrayList<MappingCell>>();
+	private HashMap<Integer, ArrayList<MappingCell>> idCellHash = new HashMap<Integer, ArrayList<MappingCell>>();
 
 	public AssociatedElementHash(ArrayList<MappingCell> mappingCells) {
 		for (MappingCell mappingCell : mappingCells)
@@ -17,15 +22,17 @@ public class AssociatedElementHash {
 	/** Sets the specified mapping cell */
 	public void set(MappingCell mappingCell) {
 		Integer output = mappingCell.getOutput();
-		if (!mappingCellHash.containsKey(output))
-			mappingCellHash.put(output, new ArrayList<MappingCell>());
+		if (!idCellHash.containsKey(output))
+			idCellHash.put(output, new ArrayList<MappingCell>()); 
+		if (!get(output).contains(mappingCell))
+			get(output).add(mappingCell); 
 
 		for (Integer input : mappingCell.getElementInputIDs()) {
-			if (!mappingCellHash.containsKey(input))
-				mappingCellHash.put(input, new ArrayList<MappingCell>());
+			if ( !idCellHash.containsKey(input))
+				idCellHash.put(input, new ArrayList<MappingCell>()); 
 
-			mappingCellHash.get(input).add(mappingCell);
-			mappingCellHash.get(output).add(mappingCell);
+			if (!get(input).contains(mappingCell))
+				get(input).add(mappingCell); 
 		}
 	}
 
@@ -34,8 +41,8 @@ public class AssociatedElementHash {
 	 * whether it be an input or an output
 	 **/
 	public ArrayList<MappingCell> get(Integer elementID) {
-		if (mappingCellHash.containsKey(elementID))
-			return mappingCellHash.get(elementID);
+		if (idCellHash.containsKey(elementID))
+			return idCellHash.get(elementID);
 		else
 			return new ArrayList<MappingCell>(0);
 	}
@@ -52,19 +59,14 @@ public class AssociatedElementHash {
 	 *            maximum mapping cell score
 	 * @return
 	 */
-	public ArrayList<MappingCell> get(Integer inputID, Double minScore,
-			Double maxScore) {
+	public ArrayList<MappingCell> get(Integer inputID, Double minScore, Double maxScore) {
 		ArrayList<MappingCell> result = new ArrayList<MappingCell>();
 		for (MappingCell cell : get(inputID)) {
-			if (minScore != null && maxScore != null
-					&& cell.getScore().doubleValue() >= minScore.doubleValue()
-					&& cell.getScore().doubleValue() <= maxScore.doubleValue())
+			if (minScore != null && maxScore != null && cell.getScore().doubleValue() >= minScore.doubleValue() && cell.getScore().doubleValue() <= maxScore.doubleValue())
 				result.add(cell);
-			else if (minScore != null
-					&& cell.getScore().doubleValue() >= minScore.doubleValue())
+			else if (minScore != null && cell.getScore().doubleValue() >= minScore.doubleValue())
 				result.add(cell);
-			else if (maxScore != null
-					&& cell.getScore().doubleValue() <= maxScore.doubleValue())
+			else if (maxScore != null && cell.getScore().doubleValue() <= maxScore.doubleValue())
 				result.add(cell);
 		}
 		return result;
@@ -73,18 +75,18 @@ public class AssociatedElementHash {
 	/** Deletes the specified mapping cell */
 	public void delete(MappingCell mappingCell) {
 		for (Integer input : mappingCell.getElementInputIDs())
-			if (mappingCellHash.containsKey(input))
-				mappingCellHash.get(input).remove(mappingCell);
+			if (idCellHash.containsKey(input))
+				idCellHash.get(input).remove(mappingCell);
 
 		Integer output = mappingCell.getOutput();
-		if (mappingCellHash.containsKey(output))
-			mappingCellHash.get(output).remove(mappingCell);
+		if (idCellHash.containsKey(output))
+			idCellHash.get(output).remove(mappingCell);
 	}
 
 	/** Returns the specified mapping cell with input and output IDs */
 	public MappingCell get(Integer inputID, Integer outputID) {
-		if (mappingCellHash.containsKey(inputID)) {
-			for (MappingCell cell : mappingCellHash.get(inputID))
+		if (idCellHash.containsKey(inputID)) {
+			for (MappingCell cell : idCellHash.get(inputID))
 				if (cell.getOutput().equals(outputID))
 					return cell;
 		}
