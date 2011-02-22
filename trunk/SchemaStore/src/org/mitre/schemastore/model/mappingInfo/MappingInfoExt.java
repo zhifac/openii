@@ -44,4 +44,13 @@ public class MappingInfoExt implements Serializable {
 	public AssociatedElementHash getMappingCells() {
 		return associatedElementHash;
 	}
+	
+	/** Copy the mapping info */
+	public MappingInfoExt copy()
+	{
+		ArrayList<MappingCell> mappingCells = new ArrayList<MappingCell>();
+		for(MappingCell mappingCell : associatedElementHash.get())
+			mappingCells.add(mappingCell);
+		return new MappingInfoExt(mapping.copy(),mappingCells);
+	}
 }
