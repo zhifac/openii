@@ -35,6 +35,18 @@ public class AssociatedElementHash {
 				get(input).add(mappingCell); 
 		}
 	}
+	
+	/** Returns all of the mapping cells */
+	public ArrayList<MappingCell> get()
+	{
+		ArrayList<MappingCell> allCells = new ArrayList<MappingCell>();
+		for ( ArrayList<MappingCell> oneList : idCellHash.values() ) {
+			for ( MappingCell cell : oneList)
+				if ( !allCells.contains(cell))
+					allCells.add(cell); 
+		}
+		return allCells;
+	}
 
 	/**
 	 * Returns a set of mappings cells related to the element ID regardless of
@@ -46,7 +58,7 @@ public class AssociatedElementHash {
 		else
 			return new ArrayList<MappingCell>(0);
 	}
-
+	
 	/**
 	 * Returns a list of mappingCells by input element ID with minimum and/or
 	 * maximum scores specified
