@@ -4,5 +4,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/SchemaStoreClient.jar" sourcepath="/SchemaStore/src"/>
 	<classpathentry kind="lib" path="lib/SchemaStorePorters.jar" sourcepath="/SchemaStoreClient/src"/>
+	<classpathentry kind="lib" path="lib/google-api-translate-java-0.95.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

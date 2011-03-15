@@ -39,7 +39,7 @@
  
  		<!-- Builds the Harmony jar file -->
         <fatjar.build output="Harmony.jar">
-            <fatjar.manifest mainclass="org.mitre.harmony.Harmony" classpath="SchemaStoreClient.jar SchemaStorePorters.jar"/>
+            <fatjar.manifest mainclass="org.mitre.harmony.Harmony" classpath="SchemaStoreClient.jar SchemaStorePorters.jar google-api-translate-java-0.95.jar"/>
             <fatjar.filesource path="bin"/>
         </fatjar.build>
 
@@ -48,7 +48,8 @@
             <fatjar.filesource path="Harmony.jar" relpath="Harmony"/>
             <fatjar.filesource path="lib/SchemaStoreClient.jar" relpath="Harmony"/>
             <fatjar.filesource path="lib/SchemaStorePorters.jar" relpath="Harmony"/>
-			<fatjar.filesource path="harmony.config.xml" relpath="Harmony"/>
+            <fatjar.filesource path="lib/google-api-translate-java-0.95.jar" relpath="Harmony"/>
+        	<fatjar.filesource path="harmony.config.xml" relpath="Harmony"/>
             <fatjar.filesource path="readme.txt" relpath="Harmony"/>
             <fatjar.filesource path="Harmony User Guide.doc" relpath="Harmony"/>
             <fatjar.filesource path="License.doc" relpath="Harmony"/>
