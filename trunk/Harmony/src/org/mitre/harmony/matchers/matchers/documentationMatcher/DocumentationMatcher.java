@@ -1,6 +1,6 @@
 // (c) The MITRE Corporation 2006
 // ALL RIGHTS RESERVED
-package org.mitre.harmony.matchers.matchers;
+package org.mitre.harmony.matchers.matchers.documentationMatcher;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -10,8 +10,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 
 import org.mitre.harmony.matchers.MatcherOption;
-import org.mitre.harmony.matchers.MatcherScores;
 import org.mitre.harmony.matchers.MatcherOption.OptionType;
+import org.mitre.harmony.matchers.MatcherScores;
 import org.mitre.harmony.matchers.matchers.bagMatcher.BagMatcher;
 import org.mitre.harmony.matchers.matchers.bagMatcher.WordBag;
 import org.mitre.schemastore.model.SchemaElement;
@@ -31,7 +31,21 @@ public class DocumentationMatcher extends BagMatcher
 	{
 		ArrayList<MatcherOption> options = super.getMatcherOptions();
 		options.add(new MatcherOption(OptionType.CHECKBOX,THESAURUS,"false"));
+		options.add(new MatcherOption(OptionType.CHECKBOX,TRANSLATE,"false"));
 		return options;
+	}
+	
+	/** Translate the elements if needed */
+	public void translateIfNeeded(ArrayList<SchemaElement> elements)
+	{
+		if(options.get(TRANSLATE).isSelected())
+			try
+			{
+				ArrayList<SchemaElement> translatedElements = ElementTranslator.translate(elements);
+				elements.clear();
+				elements.addAll(translatedElements);
+			}
+			catch(Exception e) { System.out.println("(E) " + e.getMessage()); }
 	}
 	
 	/** Generates match scores for the specified elements */ @Override
@@ -39,11 +53,13 @@ public class DocumentationMatcher extends BagMatcher
 	{
 		// Create word bags for the source elements
 		ArrayList<SchemaElement> sourceElements = schema1.getFilteredElements();
+		translateIfNeeded(sourceElements);
 		for(SchemaElement sourceElement : sourceElements)
 			wordBags.put(sourceElement.getId(), generateWordBag(sourceElement));
 		
 		// Create word bags for the target elements
 		ArrayList<SchemaElement> targetElements = schema2.getFilteredElements();
+		translateIfNeeded(targetElements);
 		for(SchemaElement targetElement : targetElements)
 			wordBags.put(targetElement.getId(), generateWordBag(targetElement));
 

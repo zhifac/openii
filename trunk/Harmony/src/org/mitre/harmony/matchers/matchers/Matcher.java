@@ -18,6 +18,7 @@ public abstract class Matcher
 	protected static final String NAME = "UseName";
 	protected static final String DESCRIPTION = "UseDescription";
 	protected static final String THESAURUS = "UseThesaurus";
+	protected static final String TRANSLATE = "UseTranslator";
 	protected static final String HIERARCHY = "UseHierarchy";
 	
 	// Stores the match merger schema information
