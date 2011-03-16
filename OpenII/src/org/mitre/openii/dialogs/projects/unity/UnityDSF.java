@@ -116,12 +116,16 @@ public class UnityDSF extends Thread {
 		// Disjoint Set Forest
 		DisjointSetForest<SynsetTerm> dsf = new DisjointSetForest<SynsetTerm>(synsetTerms.values().toArray(new SynsetTerm[0]), method, rankedSchemas.size());
 
-		for (Mapping mapping : this.mappings) {
+		for (Mapping mapping : this.mappings)
+		{
 			Integer inputSchema = mapping.getSourceId();
 			Integer outputSchema = mapping.getTargetId();
 
+			// Get the list of all matches above the threshold of 0.1
 			ArrayList<MappingCell> mcList = mappingCellHash.get(mapping);
-
+			for(int i=0; i<mcList.size(); i++)
+				if(mcList.get(i).getScore()<0.1) mcList.remove(i--);
+			
 			// First sort the mapping cells from high score to low
 			MappingCell[] mcArray = mcList.toArray(new MappingCell[0]);
 			Arrays.sort(mcArray, new Comparator<MappingCell>() {

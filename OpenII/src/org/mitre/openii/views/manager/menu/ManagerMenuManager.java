@@ -107,13 +107,10 @@ public class ManagerMenuManager extends MenuManager implements IMenuListener
 
 			// Display options based on schema type
 			String type = ((Schema)element).getType();
-			if(type.equals("Spreadsheet Importer") || type.equals("Taxonomy"))
+			if(type.equals("Spreadsheet Importer"))
 			{
 				menuManager.add(new Separator());
-				if(type.equals("Spreadsheet Importer"))
-					menuManager.add(new ManagerAction(this,"Create Instance Database",ActionType.CREATE_DATA_SOURCE));
-				if(type.equals("Taxonomy"))
-					menuManager.add(new ManagerAction(this,"Display Manifest",ActionType.DISPLAY_MANIFEST));				
+				menuManager.add(new ManagerAction(this,"Create Instance Database",ActionType.CREATE_DATA_SOURCE));
 			}
 		}
 		

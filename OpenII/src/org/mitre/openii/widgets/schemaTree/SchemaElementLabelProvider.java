@@ -84,7 +84,7 @@ public class SchemaElementLabelProvider extends StyledCellLabelProvider
 			if(schemaView.showBaseSchemas())
 			{
 				Integer baseID = element.getBase();
-				if(!baseID.equals(schemaView.getSchema().getSchema().getId()))
+				if(baseID!=null && !baseID.equals(schemaView.getSchema().getSchema().getId()))
 				{
 					String schemaName = schemaCache.get(baseID);
 					if(schemaName==null) schemaCache.put(baseID,schemaName = OpenIIManager.getSchema(baseID).getName());

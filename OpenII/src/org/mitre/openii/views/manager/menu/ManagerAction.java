@@ -32,7 +32,6 @@ import org.mitre.openii.dialogs.tags.EditTagDialog;
 import org.mitre.openii.dialogs.tags.SearchDialog;
 import org.mitre.openii.dialogs.vocabulary.DeleteVocabularyDialog;
 import org.mitre.openii.dialogs.vocabulary.ExportVocabularyDialog;
-import org.mitre.openii.model.EditorManager;
 import org.mitre.openii.model.OpenIIManager;
 import org.mitre.openii.views.manager.SchemaInProject;
 import org.mitre.openii.views.manager.SchemaInTag;
@@ -48,8 +47,8 @@ public class ManagerAction extends Action
 {
 	// Constants defining the various Manager action types available
 	static enum ActionType {IMPORT_SCHEMA, EDIT_SCHEMA, EXTEND_SCHEMA, EXPORT_SCHEMA, DELETE_SCHEMA,
-							CREATE_DATA_SOURCE, DELETE_DATA_SOURCE, DISPLAY_MANIFEST, NEW_TAG, EDIT_TAG,
-							DELETE_TAG, KEYWORD_SEARCH, CREATE_PROJECT_FROM_TAG, EXPORT_SCHEMAS_BY_TAG,
+							CREATE_DATA_SOURCE, DELETE_DATA_SOURCE, NEW_TAG, EDIT_TAG, DELETE_TAG,
+							KEYWORD_SEARCH, CREATE_PROJECT_FROM_TAG, EXPORT_SCHEMAS_BY_TAG,
 							DELETE_TAG_SCHEMA, NEW_PROJECT, IMPORT_PROJECT, MERGE_PROJECTS, EDIT_PROJECT,
 							EXPORT_PROJECT, DELETE_PROJECT, DELETE_PROJECT_SCHEMA, IMPORT_MAPPING,
 							REPLACE_SCHEMA, AUTO_GENERATE_MATCHES, EXPORT_MAPPING, DELETE_MAPPING,
@@ -81,7 +80,6 @@ public class ManagerAction extends Action
 			case DELETE_SCHEMA: icon = "Delete.gif"; break;
 			case CREATE_DATA_SOURCE: icon = "DataSource.gif"; break;
 			case DELETE_DATA_SOURCE: icon = "Delete.gif"; break;
-			case DISPLAY_MANIFEST: icon = "File.gif"; break;
 			case NEW_TAG: icon = "NewSchemaGroup.gif"; break;
 			case EDIT_TAG: icon = "Edit.gif"; break;
 			case DELETE_TAG: icon = "Delete.gif"; break;
@@ -164,10 +162,6 @@ public class ManagerAction extends Action
 		/** Handles the deletion of a data source */
 		if(actionType == ActionType.DELETE_DATA_SOURCE)
 			DeleteDataSourceDialog.delete(shell, (DataSource)selection);
-
-		/** Handles the launching of the manifest view */
-		if(actionType == ActionType.DISPLAY_MANIFEST)
-			EditorManager.launchEditor("ManifestView", (Schema)selection);
 		
 		// ----------------- Tag Actions ------------------
 
