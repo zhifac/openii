@@ -20,16 +20,19 @@ public class ElementTranslator
 		StringBuffer originalWords = new StringBuffer();
 		for(SchemaElement element : elements)
 		{
-			originalWords.append(element.getName() + "||||");
-			originalWords.append(element.getDescription() + "||||");
+			originalWords.append(element.getName() + " ||| ");
+			originalWords.append(element.getDescription() + " ||| ");
 		}
 		
 		// Run the translator
+		System.setProperty("http.proxyHost", "gatekeeper.mitre.org");
+		System.setProperty("http.nonProxyHosts", "*.mitre.org|localhost");
+		System.setProperty("http.proxyPort", "80");
 		Translate.setHttpReferrer("www.openintegration.org");
 		String translation = Translate.execute(originalWords.toString(), Language.AUTO_DETECT, Language.ENGLISH);
 		
 		// Store the results
-		String translatedWords[] = translation.toString().split("\\| \\| \\| \\|");
+		String translatedWords[] = translation.toString().split("\\|\\s?\\|\\s?\\|");
 		for(int i=0; i<elements.size(); i++)
 		{
 			SchemaElement element = elements.get(i).copy();
