@@ -18,6 +18,7 @@
 	    	<classpath>
     	    	<path path="lib/SchemaStoreClient.jar"/>
     	    	<path path="lib/SchemaStorePorters.jar"/>
+	   	    	<path path="lib/GoogleTranslate.jar"/>
             </classpath>
         </javac>
 		<copy todir="bin/org/mitre/harmony/view/graphics">
@@ -29,8 +30,10 @@
 	<!-- Builds the HarmonyMatchers jar -->
     <target name="buildHarmonyMatchers" depends="compile">
         <fatjar.build output="HarmonyMatchers.jar">
+            <fatjar.manifest/>
             <fatjar.filesource path="bin/org/mitre/harmony/matchers" relpath="org/mitre/harmony/matchers"/>
             <fatjar.filesource path="bin/matchers.xml" relpath=""/>
+            <fatjar.jarsource file="lib/GoogleTranslate.jar" relpath=""/>
         </fatjar.build>
     </target>
 
@@ -39,8 +42,9 @@
  
  		<!-- Builds the Harmony jar file -->
         <fatjar.build output="Harmony.jar">
-            <fatjar.manifest mainclass="org.mitre.harmony.Harmony" classpath="SchemaStoreClient.jar SchemaStorePorters.jar google-api-translate-java-0.95.jar"/>
-            <fatjar.filesource path="bin"/>
+            <fatjar.manifest mainclass="org.mitre.harmony.Harmony" classpath="SchemaStoreClient.jar SchemaStorePorters.jar"/>
+            <fatjar.filesource path="bin" relpath=""/>
+            <fatjar.jarsource file="lib/GoogleTranslate.jar" relpath=""/>
         </fatjar.build>
 
 		<!-- Package Harmony into a zip file -->
@@ -48,7 +52,6 @@
             <fatjar.filesource path="Harmony.jar" relpath="Harmony"/>
             <fatjar.filesource path="lib/SchemaStoreClient.jar" relpath="Harmony"/>
             <fatjar.filesource path="lib/SchemaStorePorters.jar" relpath="Harmony"/>
-            <fatjar.filesource path="lib/google-api-translate-java-0.95.jar" relpath="Harmony"/>
         	<fatjar.filesource path="harmony.config.xml" relpath="Harmony"/>
             <fatjar.filesource path="readme.txt" relpath="Harmony"/>
             <fatjar.filesource path="Harmony User Guide.doc" relpath="Harmony"/>
