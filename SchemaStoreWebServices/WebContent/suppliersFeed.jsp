@@ -43,8 +43,8 @@
 	feed.setDescription("Feed of suppliers supporting the relief effort");
 	feed.setLanguage("en-us" );
 	feed.setPublishedDate(new Date(System.currentTimeMillis()));
-	feed.setLink("http://implus.mitre.org:8080/PLUSv2/"); 
-	feed.setUri("http://implus.mitre.org:8080/PLUSv2/services/Search.jsp"); 
+	feed.setLink(request.getRequestURL().toString()); 
+	feed.setUri(request.getRequestURL().toString()); 
 	feed.setCopyright("(C) MITRE Corporation 2010"); 
 	feed.setFeedType("rss_2.0");
 	feed.setEntries(entries);
