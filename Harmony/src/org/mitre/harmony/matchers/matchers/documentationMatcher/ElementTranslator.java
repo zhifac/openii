@@ -20,8 +20,8 @@ public class ElementTranslator
 		StringBuffer originalWords = new StringBuffer();
 		for(SchemaElement element : elements)
 		{
-			originalWords.append(element.getName() + " ||| ");
-			originalWords.append(element.getDescription() + " ||| ");
+			originalWords.append(element.getName() + "\n|#|");
+			originalWords.append(element.getDescription() + "\n|#|");
 		}
 		
 		// Run the translator
@@ -32,7 +32,7 @@ public class ElementTranslator
 		String translation = Translate.execute(originalWords.toString(), Language.AUTO_DETECT, Language.ENGLISH);
 		
 		// Store the results
-		String translatedWords[] = translation.toString().split("\\|\\s?\\|\\s?\\|");
+		String translatedWords[] = translation.toString().split("\\s+\\|\\s?#\\s?\\|");
 		for(int i=0; i<elements.size(); i++)
 		{
 			SchemaElement element = elements.get(i).copy();
