@@ -27,7 +27,7 @@
 			// Create the entry
 			SyndEntry entry = new SyndEntryImpl();
 			entry.setTitle(element.getName());
-			entry.setLink(ServletUtils.getSupplierURL(request,schema.getId()));		
+			entry.setLink(ServletUtils.getSuppliesURL(request,schema.getId(),elementID));		
 			entry.setAuthor(schema.getName()); 
 			entry.setForeignMarkup(Arrays.asList(entryType));
 
