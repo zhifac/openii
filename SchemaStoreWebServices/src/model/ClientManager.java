@@ -22,7 +22,7 @@ public class ClientManager
 		if(client==null)
 		{
 			try {
-				Repository repository = new Repository(Repository.POSTGRES,new URI("platform-2.mitre.org"),"supplies","postgres","postgres");
+				Repository repository = new Repository(Repository.POSTGRES,new URI("localhost"),"supplies","postgres","postgres");
 //				Repository repository = new Repository(Repository.DERBY,new File("C:\\chris\\projects\\Flexidata\\Repositories").toURI(),"supplies","postgres","postgres");
 				client = new SchemaStoreClient(repository);
 			} catch(Exception e) { throw new RemoteException(e.getMessage()); }
