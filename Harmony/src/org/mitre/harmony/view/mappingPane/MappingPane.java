@@ -116,14 +116,14 @@ public class MappingPane extends JDesktopPane implements ComponentListener, Line
 		
 		// Register keyboard actions for accepting links
 		KeyStroke acceptKey = KeyStroke.getKeyStroke((char) KeyEvent.VK_SPACE);
-		parent.getInputMap(JPanel.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(acceptKey, "acceptLink");
+		parent.getInputMap(JPanel.WHEN_IN_FOCUSED_WINDOW).put(acceptKey, "acceptLink");
 		parent.getActionMap().put("acceptLink", new AcceptLink());
 		
 		// Register keyboard actions for deleting links
 		KeyStroke deleteKey = KeyStroke.getKeyStroke((char) KeyEvent.VK_DELETE);
-		parent.getInputMap(JPanel.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(deleteKey, "deleteLink");
+		parent.getInputMap(JPanel.WHEN_IN_FOCUSED_WINDOW).put(deleteKey, "deleteLink");
 		KeyStroke backspaceKey = KeyStroke.getKeyStroke((char) KeyEvent.VK_BACK_SPACE);
-		parent.getInputMap(JPanel.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(backspaceKey, "deleteLink");
+		parent.getInputMap(JPanel.WHEN_IN_FOCUSED_WINDOW).put(backspaceKey, "deleteLink");
 		parent.getActionMap().put("deleteLink", new RejectLink());
 		
 		// Adds listeners to watch for events where the mapping pane need to be redrawn
