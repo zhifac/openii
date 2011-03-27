@@ -13,7 +13,6 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.ProgressBar;
 import org.eclipse.swt.widgets.Shell;
-import org.mitre.openii.application.OpenIIActivator;
 
 public class ProgressBarDialog extends Dialog implements ProgressListener {
 
