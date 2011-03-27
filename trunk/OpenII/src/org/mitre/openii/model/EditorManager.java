@@ -59,6 +59,7 @@ public class EditorManager
 	static public void launchDefaultEditor(Object element)
 	{
 		String editorType = EditorManager.getEditorType(element);
+		if(editorType==null) return;
 		IEditorRegistry registry = PlatformUI.getWorkbench().getEditorRegistry();
 		IEditorDescriptor editor = registry.getDefaultEditor(editorType);
 		if(editor!=null) launchEditor(editor.getId(), element);
