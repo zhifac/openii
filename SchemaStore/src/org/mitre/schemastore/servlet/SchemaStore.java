@@ -27,6 +27,7 @@ import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.SchemaElementList;
 import org.mitre.schemastore.model.Subtype;
+import org.mitre.schemastore.model.Synonym;
 import org.mitre.schemastore.model.Tag;
 import org.mitre.schemastore.model.Vocabulary;
 
@@ -244,6 +245,10 @@ public class SchemaStore
 	public int addSubtype(Subtype subtype)
 		{ return getManager().getSchemaElementCache().addSchemaElement(subtype); }
 
+	/** Web service to add the specified synonym */
+	public int addSynonym(Synonym synonym)
+		{ return getManager().getSchemaElementCache().addSchemaElement(synonym); }
+
 	/** Web service to add the specified alias */
 	public int addAlias(Alias alias)
 		{ return getManager().getSchemaElementCache().addSchemaElement(alias); }
@@ -275,6 +280,10 @@ public class SchemaStore
 	/** Web service to update the specified subtype */
 	public boolean updateSubtype(Subtype subtype)
 		{ return getManager().getSchemaElementCache().updateSchemaElement(subtype); }
+
+	/** Web service to update the specified synonym */
+	public boolean updateSynonym(Synonym synonym)
+		{ return getManager().getSchemaElementCache().updateSchemaElement(synonym); }
 
 	/** Web service to update the specified alias */
 	public boolean updateAlias(Alias alias)
@@ -308,6 +317,10 @@ public class SchemaStore
 	public boolean deleteSubtype(int subtypeID)
 		{ return getManager().getSchemaElementCache().deleteSchemaElement(subtypeID); }
 
+	/** Web service to delete the specified synonym */
+	public boolean deleteSynonym(int synonymID)
+		{ return getManager().getSchemaElementCache().deleteSchemaElement(synonymID); }
+
 	/** Web service to delete the specified alias */
 	public boolean deleteAlias(int aliasID)
 		{ return getManager().getSchemaElementCache().deleteSchemaElement(aliasID); }
@@ -339,6 +352,10 @@ public class SchemaStore
 	/** Web service to get the specified subtype */
 	public Subtype getSubtype(int subtypeID)
 		{ return (Subtype)getManager().getSchemaElementCache().getSchemaElement(subtypeID); }
+	
+	/** Web service to get the specified synonym */
+	public Synonym getSynonym(int synonymID)
+		{ return (Synonym)getManager().getSchemaElementCache().getSchemaElement(synonymID); }
 
 	/** Web service to get the specified alias */
 	public Alias getAlias(int aliasID)

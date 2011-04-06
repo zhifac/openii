@@ -175,6 +175,14 @@ CREATE TABLE subtype (
     schema_id integer NOT NULL
 );
 
+CREATE TABLE synonym (
+	id integer NOT NULL,
+	name character varying(100) NOT NULL,
+	description character varying(4096),
+	element_id integer NOT NULL,
+	schema_id integer NOT NULL
+); 
+
 CREATE TABLE universal_id (
 	id integer NOT NULL
 );
@@ -225,6 +233,9 @@ ALTER TABLE relationship
 
 ALTER TABLE "schema"
     ADD CONSTRAINT schema_pkey PRIMARY KEY (id);
+
+ALTER TABLE synonym
+    ADD CONSTRAINT synonym_pkey PRIMARY KEY (id);
 
 ALTER TABLE data_type
     ADD CONSTRAINT datatype_pkey PRIMARY KEY (id);
@@ -308,6 +319,9 @@ ALTER TABLE relationship
 ALTER TABLE subtype
     ADD CONSTRAINT subtype_schema_fkey FOREIGN KEY (schema_id) REFERENCES "schema"(id);
 
+ALTER TABLE synonym
+    ADD CONSTRAINT synonym_schema_fkey FOREIGN KEY (schema_id) REFERENCES "schema"(id);
+
 ALTER TABLE functions
     ADD CONSTRAINT function_output_fkey FOREIGN KEY (output_type) REFERENCES data_type(id);
 
@@ -341,6 +355,8 @@ CREATE INDEX entity_schema_idx ON entity (schema_id);
 CREATE INDEX relationship_schema_idx ON relationship (schema_id);
 
 CREATE INDEX subtype_schema_idx ON subtype (schema_id);
+
+CREATE INDEX synonym_schema_idx ON synonym (schema_id);
 
 CREATE INDEX mappingcell_function_idx ON mapping_cell (function_id);
 

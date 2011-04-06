@@ -137,6 +137,7 @@ public class SchemaDataCalls extends AbstractDataCalls
 
 			// Delete the schema elements
 			stmt.executeUpdate("DELETE FROM alias WHERE schema_id="+schemaID);
+			stmt.executeUpdate("DELETE FROM synonym WHERE schema_id="+schemaID);
 			stmt.executeUpdate("DELETE FROM subtype WHERE schema_id="+schemaID);
 			stmt.executeUpdate("DELETE FROM containment WHERE schema_id="+schemaID);
 			stmt.executeUpdate("DELETE FROM relationship WHERE schema_id="+schemaID);

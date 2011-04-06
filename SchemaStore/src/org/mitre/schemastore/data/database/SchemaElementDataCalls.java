@@ -16,6 +16,7 @@ import org.mitre.schemastore.model.Entity;
 import org.mitre.schemastore.model.Relationship;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.Subtype;
+import org.mitre.schemastore.model.Synonym;
 
 /**
  * Handles schema element data calls in the database
@@ -131,8 +132,13 @@ public class SchemaElementDataCalls extends AbstractDataCalls
 				baseElements.add(new Subtype(id,parentID,childID,schemaID));
 			}
 
+			// Gets the schema synonyms
+			rs = stmt.executeQuery("SELECT id,name,description,element_id FROM synonym WHERE schema_id="+schemaID);
+			while(rs.next())
+				baseElements.add(new Synonym(rs.getInt("id"),rs.getString("name"),rs.getString("description"),rs.getInt("element_id"),schemaID));
+			
 			// Gets the schema aliases
-			rs = stmt.executeQuery("SELECT id,name,alias.element_id FROM alias WHERE schema_id="+schemaID);
+			rs = stmt.executeQuery("SELECT id,name,element_id FROM alias WHERE schema_id="+schemaID);
 			while(rs.next())
 				baseElements.add(new Alias(rs.getInt("id"),rs.getString("name"),rs.getInt("element_id"),schemaID));
 
@@ -238,6 +244,14 @@ public class SchemaElementDataCalls extends AbstractDataCalls
 				schemaElement = new Subtype(id,parentID,childID,base);
 			}
 
+			// Gets the specified synonym
+			else if(type.equals("synonym"))
+			{
+				rs = stmt.executeQuery("SELECT id,name,description,element_id FROM synonym WHERE id="+schemaElementID);
+				rs.next();
+				schemaElement = new Synonym(rs.getInt("id"),rs.getString("name"),rs.getString("description"),rs.getInt("element_id"),base);
+			}
+			
 			// Gets the specified alias
 			else if(type.equals("alias"))
 			{
@@ -301,6 +315,13 @@ public class SchemaElementDataCalls extends AbstractDataCalls
 		{
 			Subtype subtype = (Subtype)schemaElement;
 			stmt.addBatch("INSERT INTO subtype(id,parent_id,child_id,schema_id) VALUES("+id+","+subtype.getParentID()+","+subtype.getChildID()+","+baseID+")");
+		}
+
+		// Inserts a synonym
+		if(schemaElement instanceof Synonym)
+		{
+			Synonym synonym = (Synonym)schemaElement;
+			stmt.addBatch("INSERT INTO synonym(id,name,description,element_id,schema_id) VALUES("+id+",'"+name+"','"+description+"',"+synonym.getElementID()+","+baseID+")");
 		}
 
 		// Inserts an alias
@@ -414,6 +435,13 @@ public class SchemaElementDataCalls extends AbstractDataCalls
 			{
 				Subtype subtype = (Subtype)schemaElement;
 				stmt.executeUpdate("UPDATE subtype SET parent_id="+name+", child_id="+subtype.getChildID()+" WHERE id="+subtype.getId());
+			}
+
+			// Updates a synonym
+			if(schemaElement instanceof Synonym)
+			{
+				Synonym synonym = (Synonym)schemaElement;
+				stmt.executeUpdate("UPDATE synonym SET name='"+name+"', description='"+description+"', element_id='"+synonym.getElementID()+"' WHERE id="+synonym.getId());
 			}
 
 			// Updates an alias
@@ -548,6 +576,11 @@ public class SchemaElementDataCalls extends AbstractDataCalls
 				elements.add(new Containment(id,name,description,parentID,childID,min,max,schemaID));
 			}
 
+			// Gets the schema synonyms
+			rs = stmt.executeQuery("SELECT id,name,description,element_id,schema_id FROM synonym WHERE "+baseFilter+" AND " + nameFilter);
+			while(rs.next())
+				elements.add(new Synonym(rs.getInt("id"),rs.getString("name"),rs.getString("description"),rs.getInt("element_id"),rs.getInt("schema_id")));
+			
 			// Gets the schema aliases
 			rs = stmt.executeQuery("SELECT id,name,alias.element_id,schema_id FROM alias WHERE "+baseFilter+" AND " + nameFilter);
 			while(rs.next())

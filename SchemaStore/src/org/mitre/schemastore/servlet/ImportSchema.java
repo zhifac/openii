@@ -17,6 +17,7 @@ import org.mitre.schemastore.model.Relationship;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.Subtype;
+import org.mitre.schemastore.model.Synonym;
 import org.mitre.schemastore.model.schemaInfo.SchemaInfo;
 
 /**
@@ -94,6 +95,11 @@ public class ImportSchema
 				Subtype subtype = (Subtype)schemaElement;
 				if(subtype.getParentID().equals(oldID)) subtype.setParentID(newID);
 				if(subtype.getChildID().equals(oldID)) subtype.setChildID(newID);				
+			}
+			if(schemaElement instanceof Synonym)
+			{
+				Synonym synonym = (Synonym)schemaElement;
+				if(synonym.getElementID().equals(oldID)) synonym.setElementID(newID);
 			}
 			if(schemaElement instanceof Alias)
 			{
