@@ -16,6 +16,7 @@ import org.mitre.schemastore.model.Relationship;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.Subtype;
+import org.mitre.schemastore.model.Synonym;
 import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -119,6 +120,10 @@ public class ConvertToXML
 			addElement(element,"SubTypeParentId",subtype.getParentID());
 			addElement(element,"SubTypeChildId",subtype.getChildID());
 		}
+
+		// Generate XML for synonym schema elements
+		if(schemaElement instanceof Synonym)
+			addElement(element,"SynonymIdElement",((Synonym)schemaElement).getElementID());
 		
 		return element;
 	}	
