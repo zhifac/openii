@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 
 import org.mitre.schemastore.model.Alias;
 import org.mitre.schemastore.model.Attribute;
@@ -18,6 +19,7 @@ import org.mitre.schemastore.model.Relationship;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.Subtype;
+import org.mitre.schemastore.model.Synonym;
 
 /**
  * Class for storing the schema info
@@ -37,6 +39,7 @@ public class SchemaInfo implements Serializable
 			if(so1.getClass()==Relationship.class) return -1; if(so2.getClass()==Relationship.class) return 1;
 			if(so1.getClass()==Containment.class) return -1; if(so2.getClass()==Containment.class) return 1;		
 			if(so1.getClass()==Subtype.class) return -1; if(so2.getClass()==Subtype.class) return 1;
+			if(so1.getClass()==Synonym.class) return -1; if(so2.getClass()==Synonym.class) return 1;
 			if(so1.getClass()==Alias.class) return -1; if(so2.getClass()==Alias.class) return 1;		
 			return 1;
 		}
@@ -47,13 +50,19 @@ public class SchemaInfo implements Serializable
 	{
 		/** Stores the lists of elements of each type */
 		private HashMap<Class,ArrayList<SchemaElement>> typeLists = null;
+		
+		// Stores lists to access elements by the elements they reference 
 		private HashMap<Integer,ArrayList<Attribute>> attributeLists = null;
 		private HashMap<Integer,ArrayList<Containment>> containmentLists = null;
 		private HashMap<Integer,ArrayList<Relationship>> relationshipLists = null;
 		private HashMap<Integer,ArrayList<Subtype>> subtypeLists = null;
 		private HashMap<Integer,ArrayList<DomainValue>> domainValueLists = null;
+		private HashMap<Integer,ArrayList<Synonym>> synonymLists = null;
 		private HashMap<Integer,Alias> aliasList = null;
 
+		/** Stores a synonym lookup for specified words */
+		private HashMap<String,ArrayList<SchemaElement>> synonymsList = null;
+		
 		/** Resets the cache */
 		private void reset()
 		{
@@ -63,6 +72,8 @@ public class SchemaInfo implements Serializable
 			relationshipLists = null;
 			subtypeLists = null;
 			domainValueLists = null;
+			synonymLists = null;
+			synonymsList = null;
 			aliasList = null;
 		}
 
@@ -183,16 +194,100 @@ public class SchemaInfo implements Serializable
 			return domainValueList==null ? new ArrayList<DomainValue>() : domainValueList;
 		}
 
-		/** Retrieves the alias for the specified schema element */
-		private Alias getAlias(Integer elementID)
+		/** Refreshes the synonym list if needed */
+		private void refreshSynonymsIfNeeded()
+		{
+			if(synonymLists==null)
+			{
+				synonymLists = new HashMap<Integer,ArrayList<Synonym>>();
+				for(SchemaElement element : getElements(Synonym.class))
+				{
+					Synonym synonym = (Synonym)element;
+					addElement(synonym.getElementID(),synonym,synonymLists);
+				}
+			}			
+		}
+		
+		/** Retrieves the synonyms for the specified schema element */
+		private ArrayList<Synonym> getSynonyms(Integer elementID)
+		{
+			refreshSynonymsIfNeeded();
+			ArrayList<Synonym> synonymList = synonymLists.get(elementID);
+			return synonymList==null ? new ArrayList<Synonym>() : synonymList;
+		}
+		
+		/** Retrieves the elements for which synonyms exist */
+		private ArrayList<SchemaElement> getElementsContainingSynonyms()
+		{
+			refreshSynonymsIfNeeded();
+			ArrayList<SchemaElement> elements = new ArrayList<SchemaElement>();
+			for(Integer elementID : synonymLists.keySet())
+				elements.add(getElement(elementID));
+			return elements;
+		}
+		
+		/** Refresh the alias list if needed */
+		private void refreshAliasesIfNeeded()
 		{
 			if(aliasList==null)
 			{
 				aliasList = new HashMap<Integer,Alias>();
 				for(SchemaElement element : getElements(Alias.class))
-					aliasList.put(elementID,(Alias)element);
-			}
+					aliasList.put(((Alias)element).getElementID(),(Alias)element);
+			}			
+		}
+		
+		/** Retrieves the alias for the specified schema element */
+		private Alias getAlias(Integer elementID)
+		{
+			refreshAliasesIfNeeded();
 			return aliasList.get(elementID);
+		}
+
+		/** Retrieves the elements for which aliases exist */
+		private ArrayList<SchemaElement> getElementsContainingAliases()
+		{
+			refreshAliasesIfNeeded();
+			ArrayList<SchemaElement> elements = new ArrayList<SchemaElement>();
+			for(Integer elementID : aliasList.keySet())
+				elements.add(getElement(elementID));
+			return elements;
+		}
+		
+		/** Retrieves the list of synonyms for the specified word */
+		private ArrayList<SchemaElement> getSynonyms(String term)
+		{
+			// Generate the synonyms list if needed
+			if(synonymsList==null)
+			{
+				// Generate the list of all elements to examine for synonyms
+				HashSet<SchemaElement> elements = new HashSet<SchemaElement>();
+				elements.addAll(getElementsContainingSynonyms());
+				elements.addAll(getElementsContainingAliases());
+
+				// Generate the synonyms list
+				synonymsList = new HashMap<String,ArrayList<SchemaElement>>();
+				for(SchemaElement element : elements)
+				{
+					// Generate the list of synonyms
+					ArrayList<SchemaElement> synonyms = new ArrayList<SchemaElement>();
+					synonyms.add(element);
+					synonyms.addAll(getSynonyms(element.getId()));
+					synonyms.add(getAlias(element.getId()));
+					
+					// Generate the list of synonyms
+					for(SchemaElement synonym : synonyms)
+					{
+						String word = synonym.getName();
+						if(!synonymsList.containsKey(word))
+							synonymsList.put(word,synonyms);
+						else synonymsList.get(word).addAll(synonyms);
+					}
+				}
+			}
+			
+			// Retrieve the matched elements
+			return synonymsList.get(term);
 		}
 	}
 	private ElementCache cache = new ElementCache();
@@ -306,10 +401,26 @@ public class SchemaInfo implements Serializable
 	public ArrayList<DomainValue> getDomainValuesForDomain(Integer domainID)
 		{ return cache.getDomainValues(domainID); }
 
+	/** Returns the synonyms associated with the specified element */
+	public ArrayList<Synonym> getSynonyms(Integer elementID)
+		{ return cache.getSynonyms(elementID); }
+	
+	/** Returns the list of elements containing synonyms */
+	public ArrayList<SchemaElement> getElementsContainingSynonyms()
+		{ return cache.getElementsContainingSynonyms(); }
+	
 	/** Returns the alias associated with the specified element */
 	public Alias getAlias(Integer elementID)
 		{ return cache.getAlias(elementID); }
 
+	/** Returns the list of elements containing aliases */
+	public ArrayList<SchemaElement> getElementsContainingAliases()
+		{ return cache.getElementsContainingAliases(); }
+	
+	/** Returns the list of elements matching the specified term */
+	public ArrayList<SchemaElement> getSynonyms(String term)
+		{ return cache.getSynonyms(term); }	
+	
 	/** Returns the display name for the specified element */
 	public String getDisplayName(Integer elementID)
 	{
@@ -393,6 +504,11 @@ public class SchemaInfo implements Serializable
 			if(getElement(subtype.getParentID())==null) return false;
 			if(getElement(subtype.getChildID())==null) return false;
 		}
+		if(element instanceof Synonym)
+		{
+			Synonym synonym = (Synonym)element;
+			if(getElement(synonym.getElementID())==null) return false;
+		}
 		if(element instanceof Alias)
 		{
 			Alias alias = (Alias)element;
@@ -471,6 +587,11 @@ public class SchemaInfo implements Serializable
 				Subtype subtype = (Subtype)schemaElement;
 				if(subtype.getParentID().equals(oldID)) subtype.setParentID(newID);
 				if(subtype.getChildID().equals(oldID)) subtype.setChildID(newID);
+			}
+			if(schemaElement instanceof Synonym)
+			{
+				Synonym synonym = (Synonym)schemaElement;
+				if(synonym.getElementID().equals(oldID)) synonym.setElementID(newID);
 			}
 			if(schemaElement instanceof Alias)
 			{

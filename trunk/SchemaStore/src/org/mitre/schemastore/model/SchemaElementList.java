@@ -16,6 +16,7 @@ public class SchemaElementList
 	private Relationship[] relationships;
 	private Containment[] containments;
 	private Subtype[] subtypes;
+	private Synonym[] synonyms;
 	private Alias[] aliases;
 	
 	/** Provides a default constructor for this class */
@@ -32,6 +33,7 @@ public class SchemaElementList
 		ArrayList<DomainValue> domainValues = new ArrayList<DomainValue>();
 		ArrayList<Containment> containments = new ArrayList<Containment>();
 		ArrayList<Subtype> subtypes = new ArrayList<Subtype>();
+		ArrayList<Synonym> synonyms = new ArrayList<Synonym>();
 		ArrayList<Alias> aliases = new ArrayList<Alias>();
 		
 		// Place the schema elements in the proper arrays
@@ -44,6 +46,7 @@ public class SchemaElementList
 			if(schemaElement instanceof Relationship) relationships.add((Relationship)schemaElement);
 			if(schemaElement instanceof Containment) containments.add((Containment)schemaElement);
 			if(schemaElement instanceof Subtype) subtypes.add((Subtype)schemaElement);
+			if(schemaElement instanceof Synonym) synonyms.add((Synonym)schemaElement);
 			if(schemaElement instanceof Alias) aliases.add((Alias)schemaElement);
 		}
 		
@@ -55,6 +58,7 @@ public class SchemaElementList
 		this.relationships = relationships.toArray(new Relationship[0]);
 		this.containments = containments.toArray(new Containment[0]);
 		this.subtypes = subtypes.toArray(new Subtype[0]);
+		this.synonyms = synonyms.toArray(new Synonym[0]);
 		this.aliases = aliases.toArray(new Alias[0]);
 	}
 	
@@ -66,6 +70,7 @@ public class SchemaElementList
 	public Relationship[] getRelationships() { return relationships; }
 	public Containment[] getContainments() { return containments; }
 	public Subtype[] getSubtypes() { return subtypes; }
+	public Synonym[] getSynonyms() { return synonyms; }
 	public Alias[] getAliases() { return aliases; }
 
 	// Handles all setters for this class
@@ -76,6 +81,7 @@ public class SchemaElementList
 	public void setRelationships(Relationship[] relationships) { this.relationships = relationships; }
 	public void setContainments(Containment[] containments) { this.containments = containments; }
 	public void setSubtypes(Subtype[] subtypes) { this.subtypes = subtypes; }
+	public void setSynonyms(Synonym[] synonyms) { this.synonyms = synonyms; }
 	public void setAliases(Alias[] aliases) { this.aliases = aliases; }
 
 	/** Returns the schema elements */
@@ -89,6 +95,7 @@ public class SchemaElementList
 		schemaElements.addAll(Arrays.asList(relationships));
 		schemaElements.addAll(Arrays.asList(containments));
 		schemaElements.addAll(Arrays.asList(subtypes));
+		schemaElements.addAll(Arrays.asList(synonyms));
 		schemaElements.addAll(Arrays.asList(aliases));
 		return schemaElements.toArray(new SchemaElement[0]);
 	}
