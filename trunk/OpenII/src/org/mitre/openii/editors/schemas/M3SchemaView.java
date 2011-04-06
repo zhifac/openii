@@ -21,6 +21,7 @@ import org.mitre.schemastore.model.Relationship;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.Subtype;
+import org.mitre.schemastore.model.Synonym;
 import org.mitre.schemastore.model.schemaInfo.SchemaInfo;
 
 /** Constructs the Schema View */
@@ -172,6 +173,18 @@ public class M3SchemaView extends OpenIIEditor
 		}
 		ExpandBarWidgets.createTablePane(bar, "Subtypes", fields, rows);
 
+		// Generate the synonyms table
+		fields = getFields("Associated Element","Description");
+		rows = new ArrayList<Object[]>();
+		for(SchemaElement element : getElements(schemaInfo,Synonym.class))
+		{
+			Synonym synonym = (Synonym)element;
+			String associatedElement = schemaInfo.getDisplayName(synonym.getElementID()) + " (" + synonym.getElementID() + ")";
+			String description = synonym.getDescription();
+			rows.add(getDataRow(synonym,associatedElement,description));
+		}
+		ExpandBarWidgets.createTablePane(bar, "Synonyms", fields, rows);
+		
 		// Generate the aliases table
 		fields = getFields("Aliased Element");
 		rows = new ArrayList<Object[]>();
