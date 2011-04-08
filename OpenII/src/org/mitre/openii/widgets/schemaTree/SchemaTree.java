@@ -44,6 +44,9 @@ public class SchemaTree extends Composite implements SelectionListener, ISelecti
 	private Button alphabetize = null;
 	private Button showTypes = null;
 	private Button showBaseSchemas = null;
+	private boolean doalphabetize = false;
+	private boolean doshowTypes = false;
+	private boolean doshowBaseSchemas = false;
 	
 	/** Generate the menu pane */
 	private void generateMenuPane(Composite parent)
@@ -128,11 +131,16 @@ public class SchemaTree extends Composite implements SelectionListener, ISelecti
 	
 	/** Constructs the Schema Tree */
 	public SchemaTree(Composite parent, SchemaInfo schema)
-		{ this(parent, schema, null); }
+		{ this(parent, schema, null, false); }
 	
 	/** Constructs the Schema Tree */
 	public SchemaTree(Composite parent, SchemaInfo schema, SchemaModel model)
+		{ this(parent, schema, model, false); }
+	
+	/** Constructs the Schema Tree */
+	public SchemaTree(Composite parent, SchemaInfo schema, SchemaModel model, boolean treeonly)
 	{	
+					
 		super(parent, SWT.NONE);
 		GridLayout layout = new GridLayout(1,false);
 		layout.marginHeight = 0;
@@ -144,9 +152,9 @@ public class SchemaTree extends Composite implements SelectionListener, ISelecti
 		this.schema = new HierarchicalSchemaInfo(schema,model);
 		
 		// Layout the menu pane and tree pane
-		generateMenuPane(this);
+		if(!treeonly) generateMenuPane(this);
 		generateTreePane(this);
-		generateOptionsPane(this);
+		if(!treeonly) generateOptionsPane(this);
 
 		// Expand out the tree
 		schemaViewer.setInput("");
@@ -158,17 +166,46 @@ public class SchemaTree extends Composite implements SelectionListener, ISelecti
 	public HierarchicalSchemaInfo getSchema()
 		{ return schema; }
 
+	/** Returns the schema associated with this view */
+	public void setSchema(SchemaInfo schema, SchemaModel model)
+	{ 
+		this.schema = new HierarchicalSchemaInfo(schema,model);
+		//schemaViewer.getTree().getItem(0).setExpanded(true);
+		schemaViewer.refresh();
+		schemaViewer.expandToLevel(2);
+	}
+
 	/** Indicates if the schema should be alphabetized */
 	public boolean isAlphabetized()
-		{ return alphabetize.getSelection(); }
+		{ return doalphabetize; }
 	
 	/** Indicates if the schema should show types */
 	public boolean showTypes()
-		{ return showTypes.getSelection(); }
+		{ return doshowTypes; }
 	
 	/** Indicates if the schema should show base schemas */
 	public boolean showBaseSchemas()
-		{ return showBaseSchemas.getSelection(); }
+		{ return doshowBaseSchemas; }
+	
+	/** Indicates if the schema should be alphabetized */
+	public void doAlphabetized(boolean bool)
+		{ doalphabetize = bool;
+		  schemaViewer.refresh(); 
+		}
+
+	
+	/** Indicates if the schema should show types */
+	public void doShowTypes(boolean bool)
+		{ doshowTypes = bool;
+		  schemaViewer.refresh(); 
+		}
+
+	
+	/** Indicates if the schema should show base schemas */
+	public void doShowBaseSchemas(boolean bool)
+		{ doshowBaseSchemas = bool; 
+  		  schemaViewer.refresh(); 
+		}
 	
 	/** Returns the currently selected element */
 	public Integer getSelectedElement()
@@ -203,7 +240,7 @@ public class SchemaTree extends Composite implements SelectionListener, ISelecti
 	public void searchFor(String keyword)
 	{
 		// Update the search field keyword
-		searchField.setText(keyword);
+		if(searchField != null)searchField.setText(keyword);
 		
 		// Highlight all matches in the schema
 		results = SearchManager.search(keyword, schema);
@@ -217,7 +254,13 @@ public class SchemaTree extends Composite implements SelectionListener, ISelecti
 
 	/** Handles changes to the selected options */
 	public void widgetSelected(SelectionEvent e)
-		{ schemaViewer.refresh(); }
+	{ 
+		doalphabetize = alphabetize.getSelection();
+	    doshowTypes = showTypes.getSelection();
+		doshowBaseSchemas = showBaseSchemas.getSelection();
+
+		schemaViewer.refresh(); 
+	}
 	
 	/** Handles changes to the schema model */
 	public void selectionChanged(SelectionChangedEvent e)
