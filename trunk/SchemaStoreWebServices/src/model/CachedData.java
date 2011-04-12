@@ -2,12 +2,16 @@ package model;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 
 import org.mitre.schemastore.client.SchemaStoreClient;
 import org.mitre.schemastore.model.Project;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
+import org.mitre.schemastore.model.Term;
 import org.mitre.schemastore.model.Vocabulary;
 
 /** Stores the cached data */
@@ -78,5 +82,25 @@ public class CachedData
 	{
 		if(vocabularies==null) refresh();
 		return new ArrayList<Vocabulary>(vocabularies);
+	}
+	
+	/** Get the sorted list of terms */
+	static public ArrayList<Term> getTerms() throws RemoteException
+	{
+		// Retrieve the list of vocabulary terms
+		ArrayList<Term> terms = new ArrayList<Term>();
+		for(Vocabulary vocabulary : CachedData.getVocabularies())
+			terms.addAll(Arrays.asList(vocabulary.getTerms()));
+
+		// Sort the list of terms
+		class TermComparator implements Comparator<Term>
+		{
+			public int compare(Term term1, Term term2)
+				{ return term1.getName().compareTo(term2.getName()); }
+		}
+		Collections.sort(terms, new TermComparator());
+		
+		// Returns the list of terms
+		return terms;
 	}
 }
