@@ -50,8 +50,7 @@ public class ManagerAction extends Action
 							DELETE_TAG_SCHEMA, NEW_PROJECT, IMPORT_PROJECT, MERGE_PROJECTS, EDIT_PROJECT,
 							EXPORT_PROJECT, DELETE_PROJECT, DELETE_PROJECT_SCHEMA, IMPORT_MAPPING,
 							REPLACE_SCHEMA, AUTO_GENERATE_MATCHES, EXPORT_MAPPING, DELETE_MAPPING,
-							GENERATE_VOCABULARY_WIZARD, GENERATE_VOCABULARY, DELETE_VOCABULARY,
-							EXPORT_VOCABULARY, BATCH_MATCH};
+							GENERATE_VOCABULARY, DELETE_VOCABULARY, EXPORT_VOCABULARY, BATCH_MATCH};
 
 	/** Stores the menu manager to which this action is tied */
 	private ManagerMenuManager menuManager;
@@ -99,7 +98,6 @@ public class ManagerAction extends Action
 			case DELETE_MAPPING: icon = "Delete.gif"; break;
 			case DELETE_VOCABULARY: icon = "Delete.gif"; break;
 			case EXPORT_VOCABULARY: icon = "Export.gif"; break;
-			case GENERATE_VOCABULARY_WIZARD: icon = "GenerateVocab.gif"; break;
 			case GENERATE_VOCABULARY: icon = "GenerateVocab.gif";  break;
 			case BATCH_MATCH: icon = "BatchMatch.gif"; break;
 		}
