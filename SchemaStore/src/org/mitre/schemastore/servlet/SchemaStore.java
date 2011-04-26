@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.mitre.schemastore.data.DataManager;
+import org.mitre.schemastore.data.SchemaCache.SchemaType;
 import org.mitre.schemastore.data.database.Database;
 import org.mitre.schemastore.data.database.DatabaseConnection;
 import org.mitre.schemastore.model.Alias;
@@ -91,15 +92,19 @@ public class SchemaStore
 	
 	/** Web service to retrieve the list of schemas */
 	public Schema[] getSchemas()
-		{ return getManager().getSchemaCache().getSchemas().toArray(new Schema[0]); }
+		{ return getManager().getSchemaCache().getSchemas(SchemaType.SCHEMA).toArray(new Schema[0]); }
 
+	/** Web service to retrieve the list of thesauri */
+	public Schema[] getThesauri()
+		{ return getManager().getSchemaCache().getSchemas(SchemaType.THESAURUS).toArray(new Schema[0]); }
+	
 	/** Web service to retrieve the specified schema */
 	public Schema getSchema(int schemaID)
 		{ return getManager().getSchemaCache().getSchema(schemaID); }
 	
 	/** Web service to add the specified schema */
 	public int addSchema(Schema schema)
-		{ return getManager().getSchemaCache().addSchema(schema); }
+		{ return getManager().getSchemaCache().addSchema(schema,SchemaType.SCHEMA); }
 	
 	/** Web service to extend the specified schema */
 	public Schema extendSchema(int schemaID)
@@ -107,7 +112,7 @@ public class SchemaStore
 
 	/** Web service to update the specified schema */
 	public boolean updateSchema(Schema schema)
-		{ return getManager().getSchemaCache().updateSchema(schema); }
+		{ return getManager().getSchemaCache().updateSchema(schema,SchemaType.SCHEMA); }
 
 	/** Web service to unlock the specified schema */
 	public boolean unlockSchema(int schemaID)
