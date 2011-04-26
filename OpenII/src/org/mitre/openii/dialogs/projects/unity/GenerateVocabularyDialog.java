@@ -99,7 +99,6 @@ public class GenerateVocabularyDialog extends TitleAreaDialog implements ModifyL
 	protected void configureShell(Shell shell) {
 		super.configureShell(shell);
 		shell.setText("Generate Vocabulary");
-		setTitleImage(OpenIIActivator.getImage("GenerateVocab.gif"));
 	}
 
 	/** Creates the contents for the Edit Project Dialog */
