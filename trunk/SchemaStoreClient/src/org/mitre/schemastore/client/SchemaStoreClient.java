@@ -108,6 +108,13 @@ public class SchemaStoreClient
 		return schemas==null ? new ArrayList<Schema>() : new ArrayList<Schema>(Arrays.asList(schemas));
 	}
 
+	/** Gets the list of thesauri from the web service */
+	public ArrayList<Schema> getThesauri() throws RemoteException
+	{
+		Schema[] schemas = (Schema[])callMethod("getThesauri",new Object[] {});
+		return schemas==null ? new ArrayList<Schema>() : new ArrayList<Schema>(Arrays.asList(schemas));
+	}
+
 	/** Gets the specified schema from the web service */
 	public Schema getSchema(Integer schemaID) throws RemoteException
 		{ return (Schema)callMethod("getSchema",new Object[] {schemaID}); }
