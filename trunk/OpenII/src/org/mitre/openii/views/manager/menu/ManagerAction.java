@@ -50,7 +50,8 @@ public class ManagerAction extends Action
 							DELETE_TAG_SCHEMA, NEW_PROJECT, IMPORT_PROJECT, MERGE_PROJECTS, EDIT_PROJECT,
 							EXPORT_PROJECT, DELETE_PROJECT, DELETE_PROJECT_SCHEMA, IMPORT_MAPPING,
 							REPLACE_SCHEMA, AUTO_GENERATE_MATCHES, EXPORT_MAPPING, DELETE_MAPPING,
-							GENERATE_VOCABULARY, DELETE_VOCABULARY, EXPORT_VOCABULARY, BATCH_MATCH};
+							BATCH_MATCH, GENERATE_VOCABULARY, DELETE_VOCABULARY, EXPORT_VOCABULARY,
+							GENERATE_THESAURUS};
 
 	/** Stores the menu manager to which this action is tied */
 	private ManagerMenuManager menuManager;
@@ -96,10 +97,11 @@ public class ManagerAction extends Action
 			case AUTO_GENERATE_MATCHES: icon = "Mapping.gif"; break;
 			case EXPORT_MAPPING: icon = "Export.gif"; break;
 			case DELETE_MAPPING: icon = "Delete.gif"; break;
+			case BATCH_MATCH: icon = "BatchMatch.gif"; break;
+			case GENERATE_VOCABULARY: icon = "Vocabulary.gif";  break;
 			case DELETE_VOCABULARY: icon = "Delete.gif"; break;
 			case EXPORT_VOCABULARY: icon = "Export.gif"; break;
-			case GENERATE_VOCABULARY: icon = "GenerateVocab.gif";  break;
-			case BATCH_MATCH: icon = "BatchMatch.gif"; break;
+			case GENERATE_THESAURUS: icon = "Thesaurus.gif"; break;
 		}
 		setImageDescriptor(OpenIIActivator.getImageDescriptor("icons/" + icon));
 	}
@@ -245,15 +247,8 @@ public class ManagerAction extends Action
 		if(actionType == ActionType.BATCH_MATCH)
 			new BatchMatchDialog(shell, (Project)selection).open();
 		
-		if(actionType == ActionType.GENERATE_VOCABULARY )
+		if(actionType == ActionType.GENERATE_VOCABULARY)
 			new GenerateVocabularyDialog(shell, (Project)selection).open(); 
-
-		/** Handles the deletion of a project's vocabulary */
-		if(actionType == ActionType.DELETE_VOCABULARY)
-			DeleteVocabularyDialog.delete(shell, (VocabularyInProject)selection);
-
-		if(actionType == ActionType.EXPORT_VOCABULARY)
-			ExportVocabularyDialog.export(shell, (VocabularyInProject)selection);
 
 		/** Handles the replacing of a schema from a project */
 		if(actionType == ActionType.REPLACE_SCHEMA)
@@ -268,5 +263,19 @@ public class ManagerAction extends Action
 		/** Handles the deletion of a mapping */
 		if(actionType == ActionType.DELETE_MAPPING)
 			DeleteMappingDialog.delete(shell, (Mapping)selection);
+
+		// ----------------- Vocabulary Actions ----------------------		
+		
+		/** Exports the project's vocabulary */
+		if(actionType == ActionType.EXPORT_VOCABULARY)
+			ExportVocabularyDialog.export(shell, (VocabularyInProject)selection);
+
+		/** Handles the deletion of a project's vocabulary */
+		if(actionType == ActionType.DELETE_VOCABULARY)
+			DeleteVocabularyDialog.delete(shell, (VocabularyInProject)selection);
+
+		/** Generates a thesaurus from the vocabulary */
+		if(actionType == ActionType.GENERATE_THESAURUS)
+			System.out.println("Generate Thesaurus");
 	}
 }

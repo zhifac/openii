@@ -5,6 +5,7 @@ import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.swt.graphics.Image;
 import org.mitre.openii.application.OpenIIActivator;
 import org.mitre.openii.model.OpenIIManager;
+import org.mitre.schemastore.data.SchemaCache.SchemaType;
 import org.mitre.schemastore.model.DataSource;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.Project;
@@ -17,7 +18,11 @@ public class ManagerLabelProvider implements ILabelProvider
 	public Image getImage(Object element)
 	{
 		String imageName = "";
-		if(element instanceof Schema) imageName = "Schema.gif";
+		if(element instanceof Schema)
+		{
+			if(((Schema)element).getType().equals(SchemaType.THESAURUS)) imageName = "Thesaurus.gif";
+			else imageName = "Schema.gif";
+		}
 		else if(element instanceof SchemaInTag) imageName = "Schema.gif";
 		else if(element instanceof SchemasInProject) imageName = "Schemas.gif";
 		else if(element instanceof SchemaInProject) imageName = "Schema.gif";
@@ -27,6 +32,7 @@ public class ManagerLabelProvider implements ILabelProvider
 		else if(element instanceof Tag) imageName = "SchemaGroup.gif";
 		else if(element instanceof DataSource) imageName = "DataSource.gif";
 		else if(element==ManagerView.SCHEMAS_HEADER) imageName = "Schemas.gif";
+		else if(element==ManagerView.THESAURI_HEADER) imageName = "Thesauri.gif";
 		else if(element==ManagerView.ALL_SCHEMAS_HEADER) imageName = "SchemaGroup.gif";
 		else if(element==ManagerView.PROJECTS_HEADER) imageName = "Projects.gif";
 		return OpenIIActivator.getImage(imageName);

@@ -21,6 +21,7 @@ public class ManagerView extends ViewPart implements OpenIIListener, IDoubleClic
 	/** Stores constants for various tree labels */
 	static public final String SCHEMAS_HEADER = "Schemas";
 	static public final String ALL_SCHEMAS_HEADER = "All Schemas";
+	static public final String THESAURI_HEADER = "Thesauri";
 	static public final String PROJECTS_HEADER = "Projects";
 	
 	/** Stores a reference to the viewer */

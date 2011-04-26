@@ -25,7 +25,7 @@ public class ManagerContentProvider implements ITreeContentProvider
 		// Handles data categories
 		if(element instanceof String)
 		{
-			if(element.equals("")) return new String[] {ManagerView.SCHEMAS_HEADER,ManagerView.PROJECTS_HEADER};
+			if(element.equals("")) return new String[] {ManagerView.SCHEMAS_HEADER,ManagerView.PROJECTS_HEADER,ManagerView.THESAURI_HEADER};
 			if(element.equals(ManagerView.SCHEMAS_HEADER))
 			{
 				ArrayList<Object> tags = new ArrayList<Object>();
@@ -33,6 +33,7 @@ public class ManagerContentProvider implements ITreeContentProvider
 				tags.addAll(WidgetUtilities.sortList(OpenIIManager.getSubcategories(null)));
 				return tags.toArray();
 			}
+			if(element.equals(ManagerView.THESAURI_HEADER)) return WidgetUtilities.sortList(OpenIIManager.getThesauri()).toArray();
 			if(element.equals(ManagerView.ALL_SCHEMAS_HEADER)) return WidgetUtilities.sortList(OpenIIManager.getSchemas()).toArray();
 		    if(element.equals(ManagerView.PROJECTS_HEADER)) return WidgetUtilities.sortList(OpenIIManager.getProjects()).toArray();
 		}
