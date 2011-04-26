@@ -24,8 +24,11 @@ public class DeleteVocabulary
 		for(Mapping mapping : mappings)
 			success &= manager.getProjectCache().deleteMapping(mapping.getId());
 
-		// Pull the vocabulary reference from the mapping
+		// Pull the vocabulary schema
+		Integer vocabularyID = manager.getProjectCache().getVocabularyID(projectID);
 		if(success) success &= manager.getProjectCache().deleteVocabularyID(projectID);
+		if(success) success &= manager.getSchemaCache().deleteSchema(vocabularyID);
+		
 		return success;
 	}
 }

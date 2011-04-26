@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
+import org.mitre.schemastore.data.SchemaCache.SchemaType;
 import org.mitre.schemastore.model.Schema;
 
 /**
@@ -16,11 +17,18 @@ import org.mitre.schemastore.model.Schema;
 public class SchemaDataCalls extends AbstractDataCalls
 {	
 	/** Retrieves the list of schemas in the repository */
-	private ArrayList<Schema> retrieveSchemas(Integer schemaID)
+	private ArrayList<Schema> retrieveSchemas(Integer schemaID, SchemaType schemaType)
 	{
 		// Generate the SQL command
-		String command = "SELECT id,name,author,source,\"type\",description,locked FROM \"schema\"";
-		if(schemaID!=null) command += " WHERE id="+schemaID;
+		String command = "SELECT id,name,author,source,\"type\",description,locked FROM \"schema\" WHERE 1=1";
+		if(schemaID!=null) command += " AND id="+schemaID;
+		if(schemaType!=null)
+		{
+			if(schemaType!=SchemaType.SCHEMA)
+				command += " AND type='"+schemaType+"'";
+			else for(SchemaType value : SchemaType.values())
+				if(value!=SchemaType.SCHEMA) command += " AND type!='"+value+"'";
+		}
 		
 		// Retrieve the list of schemas
 		ArrayList<Schema> schemas = new ArrayList<Schema>();
@@ -38,13 +46,13 @@ public class SchemaDataCalls extends AbstractDataCalls
 	SchemaDataCalls(DatabaseConnection connection) { super(connection); }
 
 	/** Retrieves the list of schemas in the repository */
-	public ArrayList<Schema> getSchemas()
-		{ return retrieveSchemas(null); }
+	public ArrayList<Schema> getSchemas(SchemaType schemaType)
+		{ return retrieveSchemas(null,schemaType); }
 	
 	/** Retrieves the specified schema in the repository */
 	public Schema getSchema(Integer schemaID)
 	{
-		ArrayList<Schema> schemas = retrieveSchemas(schemaID);
+		ArrayList<Schema> schemas = retrieveSchemas(schemaID,null);
 		return schemas.size()==0 ? null : schemas.get(0);
 	}
 

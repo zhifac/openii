@@ -12,6 +12,7 @@ import java.util.HashSet;
 import java.util.List;
 
 import org.mitre.schemastore.data.DataManager;
+import org.mitre.schemastore.data.SchemaCache.SchemaType;
 import org.mitre.schemastore.model.AssociatedElement;
 import org.mitre.schemastore.model.Entity;
 import org.mitre.schemastore.model.Mapping;
@@ -205,8 +206,8 @@ public class SaveVocabulary
 			Integer vocabularyID = manager.getProjectCache().getVocabularyID(vocabulary.getProjectID());
 			if(vocabularyID==null)
 			{
-				Schema schema = new Schema(null,"Vocabulary for " + project.getName(),"AUTO",null,null,null,false);
-				vocabularyID = manager.getSchemaCache().addSchema(schema);
+				Schema schema = new Schema(null,"Vocabulary for " + project.getName(),"AUTO",null,"VOCABULARY",null,false);
+				vocabularyID = manager.getSchemaCache().addSchema(schema,SchemaType.VOCABULARY);
 				if(vocabularyID==null || !manager.getProjectCache().setVocabularyID(projectID,vocabularyID))
 					throw new Exception("Failed to create vocabulary schema");
 			}
