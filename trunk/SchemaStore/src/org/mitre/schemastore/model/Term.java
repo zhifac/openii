@@ -50,12 +50,14 @@ public class Term implements Serializable
 	public void setDescription(String description) { this.description = description; }
 	public void setElements(AssociatedElement[] elements) { this.elements = elements; }
 	
-	/** Gets the associated element for the specified schema */
-	public AssociatedElement getAssociatedElement(int schemaID)
+	/** Gets the associated elements for the specified schema */
+	public AssociatedElement[] getAssociatedElements(int schemaID)
 	{
+		ArrayList<AssociatedElement> Aelements = new ArrayList<AssociatedElement>();
 		for(AssociatedElement element : elements)
-			if(element.getSchemaID().equals(schemaID)) return element;
-		return null;
+			if(element.getSchemaID().equals(schemaID)) Aelements.add(element);
+		AssociatedElement[] retval = new AssociatedElement[Aelements.size()];
+		return Aelements.toArray(retval);
 	}
 	
 	/** Adds an associated element to the term */
