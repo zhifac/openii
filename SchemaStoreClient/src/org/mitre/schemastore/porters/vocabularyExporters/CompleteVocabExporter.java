@@ -40,15 +40,17 @@ public class CompleteVocabExporter extends VocabularyExporter {
 		for (Term term : vocabTerms) {
 			os.print(term.getName() + ", " + term.getDescription() + ",");
 			for (Integer schemaID : vocabulary.getSchemaIDs()) {
-				AssociatedElement ae = term.getAssociatedElement(schemaID);
-				if (ae != null) {
-					SchemaElement element = client.getSchemaElement(ae
-							.getElementID());
-					if (element != null)
-						os.print(scrubComma(element.getName()) + ", "
-								+ scrubComma(element.getDescription()) + ", ");
-					else os.print(",,"); 
-				} else os.print(",,"); 
+				AssociatedElement ae[] = term.getAssociatedElements(schemaID);
+				for (int i = 0; i < ae.length; i++){
+					if(ae[i] != null) {
+						SchemaElement element = client.getSchemaElement(ae[i]
+								.getElementID());
+						if (element != null)
+							os.print(scrubComma(element.getName()) + ", "
+									+ scrubComma(element.getDescription()) + ", ");
+						else os.print(",,"); 
+					} else os.print(",,"); 
+				}
 			}
 			os.print("\n");
 		}
