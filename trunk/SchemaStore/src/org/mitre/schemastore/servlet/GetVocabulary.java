@@ -59,7 +59,7 @@ public class GetVocabulary
 				
 				// Add the associated element
 				SchemaElement element = schemaElements.get(mappingCell.getInputs()[0].getElementID());
-				AssociatedElement associatedElement = new AssociatedElement(schemaID, element.getId(), element.getName());
+				AssociatedElement associatedElement = new AssociatedElement(schemaID, element.getId(), element.getName(), element.getDescription());
 				term.addAssociatedElement(associatedElement);
 			}
 		}

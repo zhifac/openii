@@ -105,8 +105,9 @@ public class SaveVocabulary
 		// Retrieve the vocabulary schema
 		SchemaInfo schema = getSchema(manager, vocabularyID);
 		
-		// Identify all terms the need to be created
+		// Identify all terms the need to be created and updated
 		ArrayList<Term> newTerms = new ArrayList<Term>();
+		ArrayList<SchemaElement> updatedElements = new ArrayList<SchemaElement>();
 		for(Term term : terms)
 		{
 			if(term.getId()!=null)
@@ -116,10 +117,10 @@ public class SaveVocabulary
 				String description = term.getDescription()==null ? "" : term.getDescription();
 				if(!term.getName().equals(oldElement.getName()) || !description.equals(oldElement.getDescription()))
 				{
-					SchemaElement element = manager.getSchemaElementCache().getSchemaElement(term.getId());
-					element.setName(term.getName());
-					element.setDescription(term.getDescription());
-					manager.getSchemaElementCache().updateSchemaElement(element);
+					SchemaElement updatedElement = oldElement.copy();
+					updatedElement.setName(term.getName());
+					updatedElement.setDescription(term.getDescription());
+					updatedElements.add(updatedElement);
 				}
 			}
 			else newTerms.add(term);
@@ -127,17 +128,18 @@ public class SaveVocabulary
 		
 		// Create the new terms
 		Integer counter = manager.getUniversalIDs(newTerms.size());
-		ArrayList<SchemaElement> newEntities = new ArrayList<SchemaElement>();
+		ArrayList<SchemaElement> newElements = new ArrayList<SchemaElement>();
 		for(Term term : newTerms)
 		{
 			Integer id = counter++;
 			term.setId(id);
-			newEntities.add(new Entity(id,term.getName(),"",vocabularyID));
+			newElements.add(new Entity(id,term.getName(),"",vocabularyID));
 		}
 		
-		// Add the new terms to the vocabulary schema
-		if(!manager.getSchemaElementCache().addSchemaElements(newEntities))
-			throw new Exception("Failed to update vocabulary schema");
+		// Add the new and updated terms to the vocabulary schema
+		boolean success = manager.getSchemaElementCache().addSchemaElements(newElements);
+		if(success) success = manager.getSchemaElementCache().updateSchemaElements(updatedElements);
+		if(!success) throw new Exception("Failed to update vocabulary schema");
 	}
 	
 	/** Updates the vocabulary mappings */
