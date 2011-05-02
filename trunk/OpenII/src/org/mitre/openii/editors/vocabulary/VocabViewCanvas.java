@@ -623,7 +623,7 @@ public class VocabViewCanvas extends Canvas {
 						
 						SchemaElement se = elements.get(elementCombo.getSelectionIndex());
 						Integer elementID = se.getId();
-						AssociatedElement ae = new AssociatedElement(schemaID, elementID, se.getName());						
+						AssociatedElement ae = new AssociatedElement(schemaID, elementID, se.getName(), se.getDescription());						
 						Term selectedTerm = termsArray.get(table.getSelectionIndex());
 						selectedTerm.addAssociatedElement(ae);
 						

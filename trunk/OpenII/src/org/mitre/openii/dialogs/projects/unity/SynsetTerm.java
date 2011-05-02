@@ -13,19 +13,21 @@ import java.util.ArrayList;
 
 public class SynsetTerm implements Comparable<SynsetTerm> {
 	public String elementName;
+	public String elementDescription;
 	public Integer elementId;
 	public Integer schemaId;
 	
 	public ArrayList<SynsetTerm> pointers;
 	public ArrayList<Double> distances;
 
-	public SynsetTerm(Integer schemaID, Integer elementId, String elementName) {
+	public SynsetTerm(Integer schemaID, Integer elementId, String elementName, String elementDescription) {
 		pointers = new ArrayList<SynsetTerm>();
 		distances = new ArrayList<Double>();
 
 		this.schemaId = schemaID;
 		this.elementId = elementId;
 		this.elementName = elementName;
+		this.elementDescription = elementDescription;
 	}
 
 	public void add(SynsetTerm t, Double d) {

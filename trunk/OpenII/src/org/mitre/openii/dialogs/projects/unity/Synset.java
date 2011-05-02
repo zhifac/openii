@@ -99,7 +99,7 @@ public class Synset implements Comparable<Synset> {
 	static public Synset copy(org.mitre.schemastore.porters.projectExporters.matchmaker.Synset oldSynset) {
 		Synset newSynset = new Synset();
 		for (org.mitre.schemastore.porters.projectExporters.matchmaker.SynsetTerm oldTerm : oldSynset.terms) {
-			SynsetTerm newTerm = new SynsetTerm(oldTerm.schemaId, oldTerm.elementId, oldTerm.elementName);
+			SynsetTerm newTerm = new SynsetTerm(oldTerm.schemaId, oldTerm.elementId, oldTerm.elementName, oldTerm.elementDescription);
 			newSynset.add(newTerm);
 			if (oldTerm.equals(oldSynset.leastNode))
 				newSynset.leastNode = newTerm;
