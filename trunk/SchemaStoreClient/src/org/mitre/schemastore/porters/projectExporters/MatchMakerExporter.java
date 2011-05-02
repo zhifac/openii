@@ -128,7 +128,7 @@ public class MatchMakerExporter extends ProjectExporter {
 				// get node from hashed cluster elements or create a new one
 				node = clusterElements.get(elementHashKey);
 				if (node == null) {
-					node = new SynsetTerm(sid, elementID, element.getName());
+					node = new SynsetTerm(sid, elementID, element.getName(), element.getDescription());
 					clusterElements.put(elementHashKey, node);
 				}
 
