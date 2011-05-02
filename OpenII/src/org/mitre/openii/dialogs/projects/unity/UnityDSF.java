@@ -100,7 +100,7 @@ public class UnityDSF extends Thread {
 			SchemaModel schemaModel = project.getSchemaModel(sID);
 			HierarchicalSchemaInfo schemaInfo = new HierarchicalSchemaInfo(OpenIIManager.getSchemaInfo(sID), schemaModel);
 			for (SchemaElement ele : schemaInfo.getHierarchicalElements()) {
-				SynsetTerm newSynsetTerm = new SynsetTerm(sID, ele.getId(), ele.getName());
+				SynsetTerm newSynsetTerm = new SynsetTerm(sID, ele.getId(), ele.getName(), ele.getDescription());
 				synsetTerms.put(new String(sID + "-" + ele.getId()), newSynsetTerm);
 			}
 		}
@@ -283,7 +283,7 @@ public class UnityDSF extends Thread {
 		// Create associated elements for the vocabulary term
 		for (int i = 0; i < synset.terms.size(); i++) {
 			SynsetTerm synsetTerm = synset.terms.get(i);
-			assocElements[i] = new AssociatedElement(synsetTerm.schemaId, synsetTerm.elementId, synsetTerm.elementName);
+			assocElements[i] = new AssociatedElement(synsetTerm.schemaId, synsetTerm.elementId, synsetTerm.elementName, synsetTerm.elementDescription);
 		}
 
 		// Determine a vocabulary term based on schema ranking
