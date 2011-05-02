@@ -78,34 +78,49 @@ public class SchemaElementCache extends DataCache
 		// Return filtered elements
 		return elements;
 	}
+
+	/** Checks to see if any of the specified schema elements are locked */
+	private boolean isLocked(ArrayList<SchemaElement> elements)
+	{
+		// Get the associated schema IDs
+		HashSet<Integer> schemaIDs = new HashSet<Integer>();
+		for(SchemaElement element : elements) schemaIDs.add(element.getBase());
+		
+		// Check to see if any of the schemas are locked
+		for(Integer schemaID : schemaIDs)
+			if(getManager().getSchemaCache().getSchema(schemaID).getLocked()) return true;
+		return false;
+	}
 	
 	/** Adds a schema element */
-	public Integer addSchemaElement(SchemaElement schemaElement)
+	public Integer addSchemaElement(SchemaElement element)
 	{
-		Schema schema = getManager().getSchemaCache().getSchema(schemaElement.getBase());
+		Schema schema = getManager().getSchemaCache().getSchema(element.getBase());
 		if(schema!=null && !schema.getLocked())
-			return dataCalls.addSchemaElement(schemaElement);
+			return dataCalls.addSchemaElement(element);
 		return 0;
 	}
 	
 	/** Adds the specified schema elements */
-	public boolean addSchemaElements(ArrayList<SchemaElement> schemaElements)
+	public boolean addSchemaElements(ArrayList<SchemaElement> elements)
+		{ return isLocked(elements) ? false : dataCalls.addSchemaElements(elements); }
+	
+	/** Updates a schema element */
+	public boolean updateSchemaElement(SchemaElement element)
 	{
-		if(schemaElements.size()==0) return true;
-		Schema schema = getManager().getSchemaCache().getSchema(schemaElements.get(0).getBase());
+		Schema schema = getManager().getSchemaCache().getSchema(element.getBase());
 		if(schema!=null && !schema.getLocked())
-			return dataCalls.addSchemaElements(schemaElements);
+		{
+			ArrayList<SchemaElement> elements = new ArrayList<SchemaElement>();
+			elements.add(element);
+			return dataCalls.updateSchemaElements(elements);
+		}
 		return false;
 	}
 	
-	/** Updates a schema element */
-	public boolean updateSchemaElement(SchemaElement schemaElement)
-	{
-		Schema schema = getManager().getSchemaCache().getSchema(schemaElement.getBase());
-		if(schema!=null && !schema.getLocked())
-			return dataCalls.updateSchemaElement(schemaElement);
-		return false;
-	}
+	/** Updates the specified schema elements */
+	public boolean updateSchemaElements(ArrayList<SchemaElement> elements)
+		{ return isLocked(elements) ? false : dataCalls.updateSchemaElements(elements); }
 	
 	/** Removes a schema element */
 	public boolean deleteSchemaElement(Integer schemaElementID)

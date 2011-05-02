@@ -377,91 +377,100 @@ public class SchemaElementDataCalls extends AbstractDataCalls
 		return true;
 	}
 
-	/** Updates the specified schema element */
-	public boolean updateSchemaElement(SchemaElement schemaElement)
+	/** Updates the specified schema elements */
+	private void updateSchemaElement(Statement stmt, SchemaElement schemaElement) throws SQLException
 	{
-		boolean success = false;
+		// Retrieve the schema element name, description, and base ID
+		String name = scrub(schemaElement.getName(),100);
+		String description = scrub(schemaElement.getDescription(),4096);
+
+		// Updates an entity
+		if(schemaElement instanceof Entity)
+		{
+			Entity entity = (Entity)schemaElement;
+			stmt.addBatch("UPDATE entity SET name='"+name+"', description='"+description+"' WHERE id="+entity.getId());
+		}
+
+		// Updates an attribute
+		if(schemaElement instanceof Attribute)
+		{
+			Attribute attribute = (Attribute)schemaElement;
+			stmt.addBatch("UPDATE attribute SET name='"+name+"', description='"+description+"', entity_id="+attribute.getEntityID()+", domain_id="+attribute.getDomainID()+", min="+attribute.getMin()+", max="+attribute.getMax()+" WHERE id="+attribute.getId());
+		}
+
+		// Updates a domain
+		if(schemaElement instanceof Domain)
+		{
+			Domain domain = (Domain)schemaElement;
+			stmt.addBatch("UPDATE \"domain\" SET name='"+name+"', description='"+description+"' WHERE id="+domain.getId());
+		}
+
+		// Updates an domain value
+		if(schemaElement instanceof DomainValue)
+		{
+			DomainValue domainValue = (DomainValue)schemaElement;
+			stmt.addBatch("UPDATE domainvalue SET value='"+name+"', description='"+description+"', domain_id="+domainValue.getDomainID()+" WHERE id="+domainValue.getId());
+		}
+
+		// Updates a relationship
+		if(schemaElement instanceof Relationship)
+		{
+			Relationship relationship = (Relationship)schemaElement;
+			stmt.addBatch("UPDATE relationship SET name='"+name+"', description='"+description+"', left_id="+relationship.getLeftID()+", left_min="+relationship.getLeftMin()+", left_max="+relationship.getLeftMax()+", right_id="+relationship.getRightID()+", right_min="+relationship.getRightMin()+", right_max="+relationship.getRightMax()+" WHERE id="+relationship.getId());
+		}
+
+		// Updates a containment relationship
+		if(schemaElement instanceof Containment)
+		{
+			Containment containment = (Containment)schemaElement;
+			stmt.addBatch("UPDATE containment SET name='"+name+"', description='"+description+"' parent_id="+containment.getParentID()+", child_id="+containment.getChildID()+", \"min\"="+containment.getMin()+", \"max\"="+containment.getMax()+" WHERE id="+containment.getId());
+		}
+
+		// Updates a subset relationship
+		if(schemaElement instanceof Subtype)
+		{
+			Subtype subtype = (Subtype)schemaElement;
+			stmt.addBatch("UPDATE subtype SET parent_id="+name+", child_id="+subtype.getChildID()+" WHERE id="+subtype.getId());
+		}
+
+		// Updates a synonym
+		if(schemaElement instanceof Synonym)
+		{
+			Synonym synonym = (Synonym)schemaElement;
+			stmt.addBatch("UPDATE synonym SET name='"+name+"', description='"+description+"', element_id='"+synonym.getElementID()+"' WHERE id="+synonym.getId());
+		}
+
+		// Updates an alias
+		if(schemaElement instanceof Alias)
+		{
+			Alias alias = (Alias)schemaElement;
+			stmt.addBatch("UPDATE alias SET name='"+name+"', element_id='"+alias.getElementID()+"' WHERE id="+alias.getId());
+		}
+	}
+
+	/** Updates the schema elements to the specified schema */
+	public boolean updateSchemaElements(ArrayList<SchemaElement> schemaElements)
+	{
 		try {
 			Statement stmt = connection.getStatement();
-
-			// Retrieve the schema element name, description, and base ID
-			String name = scrub(schemaElement.getName(),100);
-			String description = scrub(schemaElement.getDescription(),4096);
-
-			// Updates an entity
-			if(schemaElement instanceof Entity)
+			for(int i=0; i<schemaElements.size(); i++)
 			{
-				Entity entity = (Entity)schemaElement;
-				stmt.executeUpdate("UPDATE entity SET name='"+name+"', description='"+description+"' WHERE id="+entity.getId());
+				updateSchemaElement(stmt,schemaElements.get(i));
+				if(i%1000==999) stmt.executeBatch();
 			}
-
-			// Updates an attribute
-			if(schemaElement instanceof Attribute)
-			{
-				Attribute attribute = (Attribute)schemaElement;
-				stmt.executeUpdate("UPDATE attribute SET name='"+name+"', description='"+description+"', entity_id="+attribute.getEntityID()+", domain_id="+attribute.getDomainID()+", min="+attribute.getMin()+", max="+attribute.getMax()+" WHERE id="+attribute.getId());
-			}
-
-			// Updates a domain
-			if(schemaElement instanceof Domain)
-			{
-				Domain domain = (Domain)schemaElement;
-				stmt.executeUpdate("UPDATE \"domain\" SET name='"+name+"', description='"+description+"' WHERE id="+domain.getId());
-			}
-
-			// Updates an domain value
-			if(schemaElement instanceof DomainValue)
-			{
-				DomainValue domainValue = (DomainValue)schemaElement;
-				stmt.executeUpdate("UPDATE domainvalue SET value='"+name+"', description='"+description+"', domain_id="+domainValue.getDomainID()+" WHERE id="+domainValue.getId());
-			}
-
-			// Updates a relationship
-			if(schemaElement instanceof Relationship)
-			{
-				Relationship relationship = (Relationship)schemaElement;
-				stmt.executeUpdate("UPDATE relationship SET name='"+name+"', description='"+description+"', left_id="+relationship.getLeftID()+", left_min="+relationship.getLeftMin()+", left_max="+relationship.getLeftMax()+", right_id="+relationship.getRightID()+", right_min="+relationship.getRightMin()+", right_max="+relationship.getRightMax()+" WHERE id="+relationship.getId());
-			}
-
-			// Updates a containment relationship
-			if(schemaElement instanceof Containment)
-			{
-				Containment containment = (Containment)schemaElement;
-				stmt.executeUpdate("UPDATE containment SET name='"+name+"', description='"+description+"' parent_id="+containment.getParentID()+", child_id="+containment.getChildID()+", \"min\"="+containment.getMin()+", \"max\"="+containment.getMax()+" WHERE id="+containment.getId());
-			}
-
-			// Updates a subset relationship
-			if(schemaElement instanceof Subtype)
-			{
-				Subtype subtype = (Subtype)schemaElement;
-				stmt.executeUpdate("UPDATE subtype SET parent_id="+name+", child_id="+subtype.getChildID()+" WHERE id="+subtype.getId());
-			}
-
-			// Updates a synonym
-			if(schemaElement instanceof Synonym)
-			{
-				Synonym synonym = (Synonym)schemaElement;
-				stmt.executeUpdate("UPDATE synonym SET name='"+name+"', description='"+description+"', element_id='"+synonym.getElementID()+"' WHERE id="+synonym.getId());
-			}
-
-			// Updates an alias
-			if(schemaElement instanceof Alias)
-			{
-				Alias alias = (Alias)schemaElement;
-				stmt.executeUpdate("UPDATE alias SET name='"+name+"', element_id='"+alias.getElementID()+"' WHERE id="+alias.getId());
-			}
-
+			stmt.executeBatch();
 			stmt.close();
 			connection.commit();
-			success = true;
 		}
 		catch(SQLException e)
 		{
 			try { connection.rollback(); } catch(SQLException e2) {}
-			System.out.println("(E) SchemaElementDataCalls:updateSchemaElement: "+e.getMessage());
+			System.out.println("(E) SchemaElementDataCalls:updateSchemaElements: "+e.getMessage());
+			return false;
 		}
-		return success;
+		return true;
 	}
+
 
 	/** Deletes the specified schema element */
 	public boolean deleteSchemaElement(int schemaElementID)
