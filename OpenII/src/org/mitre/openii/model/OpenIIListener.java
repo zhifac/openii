@@ -61,4 +61,13 @@ public interface OpenIIListener
 	
 	/** Informs the listener that the specified vocabulary has been deleted */
 	public void vocabularyDeleted(Integer projectID);
+
+	/** Informs the listener that the specified thesaurus has been added */
+	public void thesaurusAdded(Integer thesaurusID);
+	
+	/** Informs the listener that the specified thesaurus has been saved */
+	public void thesaurusModified(Integer thesaurusID);
+	
+	/** Informs the listener that the specified thesaurus has been deleted */
+	public void thesaurusDeleted(Integer thesaurusID);
 }
