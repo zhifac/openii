@@ -9,7 +9,6 @@ import java.util.HashSet;
 
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.mitre.openii.application.OpenIIActivator;
-import org.mitre.openii.implus.IMPLUSListener;
 import org.mitre.openii.model.controllers.MappingCellMerger;
 import org.mitre.schemastore.model.DataSource;
 import org.mitre.schemastore.model.Function;
@@ -31,12 +30,6 @@ import org.mitre.schemastore.porters.PorterType;
  */
 public class OpenIIManager
 {
-	/**
-	 * If true, IM-PLUS will be activated and provenance will be captured on all
-	 * actions. If false, that code is disabled.
-	 */
-	static public boolean CAPTURE_PROVENANCE = false;
-
 	/** Caches the list of schemas currently available */
 	static private HashMap<Integer, Schema> schemas = null;
 
@@ -45,10 +38,6 @@ public class OpenIIManager
 
 	/** Stores listeners to the OpenII Manager */
 	static private ListenerGroup<OpenIIListener> listeners = new ListenerGroup<OpenIIListener>();
-
-	/** Initializes this class */
-	static
-		{ if(CAPTURE_PROVENANCE) addListener(IMPLUSListener.primary); reset(); }
 
 	/** Resets the OpenII caches */
 	static public void reset()
