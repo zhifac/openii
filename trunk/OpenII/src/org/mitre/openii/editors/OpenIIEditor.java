@@ -130,6 +130,10 @@ abstract public class OpenIIEditor extends EditorPart implements OpenIIListener
 	/** Dispose of the editor pane if referencing the deleted vocabulary */
 	public void vocabularyDeleted(Integer projectID)
 		{ if(getEditorType()==EditorType.VOCABULARY && projectID.equals(getElementID())) closeEditor(); }
+
+	/** Dispose of the editor pane if referencing the deleted thesaurus */
+	public void thesaurusDeleted(Integer thesaurusID)
+		{ if(thesaurusID.equals(getElementID())) closeEditor(); }
 	
 	// Unused event listeners
 	public void schemaAdded(Integer schemaID) {}
@@ -145,4 +149,6 @@ abstract public class OpenIIEditor extends EditorPart implements OpenIIListener
 	public void mappingModified(Integer mappingID) {}
 	public void vocabularyAdded(Integer projectID) {}
 	public void vocabularyModified(Integer projectID) {}
+	public void thesaurusAdded(Integer thesaurusID) {}
+	public void thesaurusModified(Integer thesaurusID) {}
 }
