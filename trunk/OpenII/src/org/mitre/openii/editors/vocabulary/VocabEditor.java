@@ -5,6 +5,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.mitre.openii.editors.OpenIIEditor;
 import org.mitre.openii.model.OpenIIManager;
 import org.mitre.schemastore.model.Vocabulary;
+import org.mitre.schemastore.model.VocabularyTerms;
 
 /** Constructs the Harmony View */
 public class VocabEditor extends OpenIIEditor {
@@ -12,8 +13,8 @@ public class VocabEditor extends OpenIIEditor {
 	/** Displays the VocabView */
 	public void createPartControl(final Composite parent) {
 		try {
-			Vocabulary vocabulary = OpenIIManager.getVocabulary(getElementID());
-			new VocabViewCanvas(parent, SWT.NONE, vocabulary);
+			VocabularyTerms terms = OpenIIManager.getVocabularyTerms(getElementID());
+			new VocabViewCanvas(parent, SWT.NONE, terms);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

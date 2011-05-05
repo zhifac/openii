@@ -26,7 +26,7 @@ import org.mitre.schemastore.model.Relationship;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.Term;
-import org.mitre.schemastore.model.Vocabulary;
+import org.mitre.schemastore.model.VocabularyTerms;
 import org.mitre.schemastore.model.schemaInfo.SchemaInfo;
 
 /** Constructs the Manifest View */
@@ -40,11 +40,11 @@ public class ManifestView extends OpenIIEditor implements IDoubleClickListener
 	{
 		// Fetch the vocabulary
 		Project project = OpenIIManager.getProject(projectID);
-		Vocabulary vocabulary = OpenIIManager.getVocabulary(projectID);
+		VocabularyTerms terms = OpenIIManager.getVocabularyTerms(projectID);
 		
 		// Retrieve all schema elements which might be referenced
 		HashMap<Integer,SchemaElement> elements = new HashMap<Integer,SchemaElement>();
-		for(Integer schemaID : vocabulary.getSchemaIDs())
+		for(Integer schemaID : terms.getSchemaIDs())
 		{
 			SchemaInfo info = OpenIIManager.getSchemaInfo(schemaID);
 			for(SchemaElement element : info.getElements(null))
@@ -60,7 +60,7 @@ public class ManifestView extends OpenIIEditor implements IDoubleClickListener
 		manifest.addElement(new Domain(domainID,"String","String",null));
 		
 		// Build a schema based on all items in the vocabulary
-		for(Term term : vocabulary.getTerms())
+		for(Term term : terms.getTerms())
 		{
 			// Add in the vocabulary term
 			Entity entity = new Entity(counter--,term.getName(),term.getDescription(),null);

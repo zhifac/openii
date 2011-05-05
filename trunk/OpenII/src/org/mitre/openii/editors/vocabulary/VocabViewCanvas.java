@@ -26,13 +26,8 @@ import java.util.regex.Pattern;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
-import org.eclipse.swt.custom.TableEditor;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
-import org.eclipse.swt.events.FocusEvent;
-import org.eclipse.swt.events.FocusListener;
-import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -44,7 +39,6 @@ import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowData;
@@ -66,17 +60,14 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.mitre.openii.application.OpenIIActivator;
 import org.mitre.openii.model.OpenIIManager;
-import org.mitre.openii.widgets.BasicWidgets;
 import org.mitre.schemastore.model.AssociatedElement;
-import org.mitre.schemastore.model.Entity;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.Term;
-import org.mitre.schemastore.model.Vocabulary;
+import org.mitre.schemastore.model.VocabularyTerms;
 import org.mitre.schemastore.model.mappingInfo.AssociatedElementHash;
 import org.mitre.schemastore.model.mappingInfo.MappingInfoExt;
-import org.mitre.schemastore.model.schemaInfo.FilteredSchemaInfo;
 import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
 import org.mitre.schemastore.model.schemaInfo.SchemaInfo;
 import org.mitre.schemastore.model.schemaInfo.model.SchemaModel;
@@ -89,7 +80,7 @@ public class VocabViewCanvas extends Canvas {
 	private HashMap<Integer, Integer> schemaIDsToColNum;
 	private ArrayList<Term> termsArray;
 	private Table table;
-	private Vocabulary vocab;
+	private VocabularyTerms vocabTerms;
 	private Composite viewsParent;
 	private ArrayList<Point> highlightedTableItems;
 	private ArrayList<Mapping> mappings;
@@ -105,16 +96,16 @@ public class VocabViewCanvas extends Canvas {
 	private Color lightGreen = new Color(this.getDisplay(), 128, 225, 128);
 	private Color lightRed = new Color(this.getDisplay(), 255, 128, 128);
 	
-	public VocabViewCanvas(Composite parent, int style, Vocabulary vocabulary) {
+	public VocabViewCanvas(Composite parent, int style, VocabularyTerms vocabTerms) {
 		super(parent, style | SWT.EMBEDDED);
 		viewsParent = parent;
 
-		vocab = vocabulary;
-		schemaIDs = vocabulary.getSchemaIDs();
+		this.vocabTerms = vocabTerms;
+		schemaIDs = vocabTerms.getSchemaIDs();
 		setSchemaNames(schemaIDs);
 		numSchemas = schemaNames.length;
 
-		Term[] terms = vocabulary.getTerms();
+		Term[] terms = vocabTerms.getTerms();
 		termsArray = new ArrayList<Term>();
 		for (int i = 0; i < terms.length; i++) {
 			Term t = terms[i];
@@ -123,7 +114,7 @@ public class VocabViewCanvas extends Canvas {
 
 		highlightedTableItems = new ArrayList<Point>();
 
-		Integer projID = vocab.getProjectID();
+		Integer projID = vocabTerms.getProjectID();
 		mappings = OpenIIManager.getMappings(projID);
 
 		confirmation = false;
@@ -535,8 +526,8 @@ public class VocabViewCanvas extends Canvas {
 
 			//saving the deletion to the database
 			Term deletedTerm = termsArray.get(selectedRow);
-			vocab.removeTerm(deletedTerm);
-			OpenIIManager.saveVocabulary(vocab);			
+			vocabTerms.removeTerm(deletedTerm);
+			OpenIIManager.saveVocabularyTerms(vocabTerms);			
 
 			//removed the deleted row from the terms array
 			termsArray.remove(selectedRow);
@@ -549,8 +540,8 @@ public class VocabViewCanvas extends Canvas {
 		newTerm.setName(newName);
 		
 		//add new term to the database
-		vocab.addTerm(newTerm);
-		OpenIIManager.saveVocabulary(vocab);
+		vocabTerms.addTerm(newTerm);
+		OpenIIManager.saveVocabularyTerms(vocabTerms);
 	
 		//add the new term to the terms array
 		termsArray.add(table.getSelectionIndex(), newTerm);
@@ -613,7 +604,7 @@ public class VocabViewCanvas extends Canvas {
 					if(elementCombo.getSelectionIndex() != -1){
 						Integer schemaID = schemaIDs[schemaCombo.getSelectionIndex()];
 						
-						SchemaModel model = OpenIIManager.getProject(vocab.getProjectID()).getSchemaModel(schemaID);
+						SchemaModel model = OpenIIManager.getProject(vocabTerms.getProjectID()).getSchemaModel(schemaID);
 						SchemaInfo si = OpenIIManager.getSchemaInfo(schemaID);
 						HierarchicalSchemaInfo schema = new HierarchicalSchemaInfo(si, model);
 						
@@ -645,7 +636,7 @@ public class VocabViewCanvas extends Canvas {
 							
 					Integer schemaID = schemaIDs[schemaCombo.getSelectionIndex()];
 					SchemaInfo si = OpenIIManager.getSchemaInfo(schemaID);
-					SchemaModel model = OpenIIManager.getProject(vocab.getProjectID()).getSchemaModel(schemaID);
+					SchemaModel model = OpenIIManager.getProject(vocabTerms.getProjectID()).getSchemaModel(schemaID);
 					HierarchicalSchemaInfo schema = new HierarchicalSchemaInfo(si, model);
 					
 						
@@ -819,7 +810,7 @@ public class VocabViewCanvas extends Canvas {
 					start++;
 				}
 				vocab.setTerms(tempTermsTest);*/
-				OpenIIManager.saveVocabulary(vocab);
+				OpenIIManager.saveVocabularyTerms(vocabTerms);
 
 				//update the vocab viewer table to reflect the name change 
 				//update the row in the table

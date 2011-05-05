@@ -38,7 +38,7 @@ import org.mitre.openii.widgets.BasicWidgets;
 import org.mitre.openii.widgets.OptionsPanel;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.Project;
-import org.mitre.schemastore.model.Vocabulary;
+import org.mitre.schemastore.model.VocabularyTerms;
 
 public class GenerateVocabularyDialog extends TitleAreaDialog implements ModifyListener, ActionListener {
 
@@ -361,11 +361,11 @@ public class GenerateVocabularyDialog extends TitleAreaDialog implements ModifyL
 		// Asynchronously run unity from the display
 		getParentShell().getDisplay().syncExec(unity);
 
-		Vocabulary vocab = unity.getVocabulary();
-		if (vocab != null && !progressDialog.isClosed()) {
+		VocabularyTerms terms = unity.getVocabularyTerms();
+		if (terms != null && !progressDialog.isClosed()) {
 			// Save the vocabulary
 			progressDialog.updateProgressMessage("Saving the vocabulary...");
-			OpenIIManager.saveVocabulary(vocab);
+			OpenIIManager.saveVocabularyTerms(terms);
 			progressDialog.updateProgressMessage("Vocabulary completed!! ");
 
 			// Sleep a second to allow the message to be shown

@@ -30,6 +30,7 @@ import org.mitre.openii.dialogs.tags.EditTagDialog;
 import org.mitre.openii.dialogs.tags.SearchDialog;
 import org.mitre.openii.dialogs.vocabulary.DeleteVocabularyDialog;
 import org.mitre.openii.dialogs.vocabulary.ExportVocabularyDialog;
+import org.mitre.openii.dialogs.vocabulary.GenerateThesaurusDialog;
 import org.mitre.openii.model.OpenIIManager;
 import org.mitre.openii.views.manager.SchemaInProject;
 import org.mitre.openii.views.manager.SchemaInTag;
@@ -276,6 +277,6 @@ public class ManagerAction extends Action
 
 		/** Generates a thesaurus from the vocabulary */
 		if(actionType == ActionType.GENERATE_THESAURUS)
-			System.out.println("Generate Thesaurus");
+			GenerateThesaurusDialog.generate(shell, (VocabularyInProject)selection);
 	}
 }

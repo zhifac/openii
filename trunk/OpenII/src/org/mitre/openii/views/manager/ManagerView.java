@@ -68,12 +68,11 @@ public class ManagerView extends ViewPart implements OpenIIListener, IDoubleClic
 	public void mappingAdded(Integer mappingID) { viewer.refresh(); }
 	public void mappingDeleted(Integer mappingID) { viewer.refresh(); }
 	public void mappingModified(Integer mappingID) { viewer.refresh(); }
-	public void vocabularyAdded(Integer projectID) { viewer.refresh(); }
-	public void vocabularyModified(Integer projectID) { viewer.refresh(); }
+	public void vocabularySaved(Integer projectID) { viewer.refresh(); }
 	public void vocabularyDeleted(Integer projectID) { viewer.refresh(); }
-	public void thesaurusAdded(Integer projectID) { viewer.refresh(); }
-	public void thesaurusModified(Integer projectID) { viewer.refresh(); }
-	public void thesaurusDeleted(Integer projectID) { viewer.refresh(); }
+	public void thesaurusAdded(Integer thesaurusID) { viewer.refresh(); }
+	public void thesaurusSaved(Integer thesaurusID) { viewer.refresh(); }
+	public void thesaurusDeleted(Integer thesaurusID) { viewer.refresh(); }
 
 	// Sets the focus in this view
 	public void setFocus() {}
