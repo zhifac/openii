@@ -11,25 +11,25 @@ import java.io.Serializable;
 public class Schema implements Serializable
 {	
 	/** Stores the schema id */
-	private Integer id;
+	protected Integer id;
 	
 	/** Stores the schema name */
-	private String name;
+	protected String name;
 	
 	/** Stores the schema author */
-	private String author;
+	protected String author;
 	
 	/** Stores the schema source */
-	private String source;
+	protected String source;
 
 	/** Stores the schema type */
-	private String type;
+	protected String type;
 	
 	/** Stores the schema description */
-	private String description;	
+	protected String description;	
 	
 	/** Indicates if the schema is locked */
-	private boolean locked;
+	protected boolean locked;
 	
 	/** Constructs a default schema */
 	public Schema() {}

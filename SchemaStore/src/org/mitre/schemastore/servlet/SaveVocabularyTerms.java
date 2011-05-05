@@ -12,7 +12,6 @@ import java.util.HashSet;
 import java.util.List;
 
 import org.mitre.schemastore.data.DataManager;
-import org.mitre.schemastore.data.SchemaCache.SchemaType;
 import org.mitre.schemastore.model.AssociatedElement;
 import org.mitre.schemastore.model.Entity;
 import org.mitre.schemastore.model.Mapping;
@@ -22,14 +21,15 @@ import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.Term;
 import org.mitre.schemastore.model.Vocabulary;
+import org.mitre.schemastore.model.VocabularyTerms;
 import org.mitre.schemastore.model.mappingInfo.MappingInfo;
 import org.mitre.schemastore.model.schemaInfo.SchemaInfo;
 
 /**
- * Handles the saving of a vocabulary to the schema store web service
+ * Handles the saving of a vocabulary's terms to the schema store web service
  * @author CWOLF
  */
-public class SaveVocabulary
+public class SaveVocabularyTerms
 {			
 	/** Retrieves the specified schema */
 	static private SchemaInfo getSchema(DataManager manager, Integer schemaID)
@@ -55,7 +55,7 @@ public class SaveVocabulary
 	}
 	
 	/** Generates a list of terms aligned with repository IDs */
-	static private ArrayList<Term> getAlignedTerms(DataManager manager, Vocabulary oldVocabulary, Vocabulary newVocabulary)
+	static private ArrayList<Term> getAlignedTerms(DataManager manager, VocabularyTerms oldVocabulary, VocabularyTerms newVocabulary)
 	{
 		// Gather up references to old terms
 		HashMap<Integer,Term> oldTerms = new HashMap<Integer,Term>();
@@ -187,11 +187,11 @@ public class SaveVocabulary
 	}
 	
 	/** Saves the specified vocabulary into the web services */
-	static boolean saveVocabulary(DataManager manager, Vocabulary vocabulary) throws RemoteException
+	static boolean saveVocabularyTerms(DataManager manager, VocabularyTerms terms) throws RemoteException
 	{		
 		try {
 			// Get the referenced project
-			Integer projectID = vocabulary.getProjectID();
+			Integer projectID = terms.getProjectID();
 			Project project = manager.getProjectCache().getProject(projectID);
 			if(project==null) throw new Exception("Vocabulary contains invalid project");
 	
@@ -201,29 +201,29 @@ public class SaveVocabulary
 				schemas.put(schemaID, getSchema(manager,schemaID));
 
 			// Validate the terms to make sure they all reference valid elements
-			if(!validateTerms(schemas,vocabulary.getTerms()))
+			if(!validateTerms(schemas,terms.getTerms()))
 				throw new Exception("Invalid schemas or elements referenced in vocabulary!");
 			
 			// First get the old vocabulary (or create if necessary)
-			Integer vocabularyID = manager.getProjectCache().getVocabularyID(vocabulary.getProjectID());
+			Integer vocabularyID = manager.getProjectCache().getVocabularyID(terms.getProjectID());
 			if(vocabularyID==null)
 			{
-				Schema schema = new Schema(null,"Vocabulary for " + project.getName(),"AUTO",null,"VOCABULARY",null,false);
-				vocabularyID = manager.getSchemaCache().addSchema(schema,SchemaType.VOCABULARY);
+				Vocabulary vocabulary = new Vocabulary(null,"Vocabulary for " + project.getName());
+				vocabularyID = manager.getSchemaCache().addSchema(vocabulary);
 				if(vocabularyID==null || !manager.getProjectCache().setVocabularyID(projectID,vocabularyID))
 					throw new Exception("Failed to create vocabulary schema");
 			}
-			Vocabulary oldVocabulary = GetVocabulary.getVocabulary(manager,projectID);
+			VocabularyTerms oldTerms = GetVocabularyTerms.getVocabularyTerms(manager,projectID);
 	
 			// Align the terms between the old and new vocabulary
-			ArrayList<Term> alignedTerms = getAlignedTerms(manager,oldVocabulary,vocabulary);
+			ArrayList<Term> alignedTerms = getAlignedTerms(manager,oldTerms,terms);
 			
 			// Swap out terms from the vocabulary
 			addNewTerms(manager, vocabularyID, alignedTerms);
 			updateMappings(manager, projectID, vocabularyID, getMappings(manager, project, vocabularyID, alignedTerms));
-			removeOldTerms(manager, Arrays.asList(oldVocabulary.getTerms()), alignedTerms);
+			removeOldTerms(manager, Arrays.asList(oldTerms.getTerms()), alignedTerms);
 		}
-		catch(Exception e) { System.out.println("(E) SaveVocabulary:saveVocabulary: "+e.getMessage()); return false; }
+		catch(Exception e) { System.out.println("(E) SaveVocabularyTerms:saveVocabularyTerms: "+e.getMessage()); return false; }
 		return true;
 	}
 }
