@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.mitre.schemastore.data.DataManager;
-import org.mitre.schemastore.data.SchemaCache.SchemaType;
 import org.mitre.schemastore.data.database.Database;
 import org.mitre.schemastore.data.database.DatabaseConnection;
 import org.mitre.schemastore.model.Alias;
@@ -31,7 +30,8 @@ import org.mitre.schemastore.model.Subtype;
 import org.mitre.schemastore.model.Synonym;
 import org.mitre.schemastore.model.Tag;
 import org.mitre.schemastore.model.Thesaurus;
-import org.mitre.schemastore.model.Vocabulary;
+import org.mitre.schemastore.model.ThesaurusTerms;
+import org.mitre.schemastore.model.VocabularyTerms;
 
 /**
  * Web service for retrieving schema information from SchemaStore
@@ -93,7 +93,7 @@ public class SchemaStore
 	
 	/** Web service to retrieve the list of schemas */
 	public Schema[] getSchemas()
-		{ return getManager().getSchemaCache().getSchemas(SchemaType.SCHEMA).toArray(new Schema[0]); }
+		{ return getManager().getSchemaCache().getSchemas(Schema.class).toArray(new Schema[0]); }
 	
 	/** Web service to retrieve the specified schema */
 	public Schema getSchema(int schemaID)
@@ -101,7 +101,7 @@ public class SchemaStore
 	
 	/** Web service to add the specified schema */
 	public int addSchema(Schema schema)
-		{ return getManager().getSchemaCache().addSchema(schema,SchemaType.SCHEMA); }
+		{ return getManager().getSchemaCache().addSchema(schema); }
 	
 	/** Web service to extend the specified schema */
 	public Schema extendSchema(int schemaID)
@@ -109,7 +109,7 @@ public class SchemaStore
 
 	/** Web service to update the specified schema */
 	public boolean updateSchema(Schema schema)
-		{ return getManager().getSchemaCache().updateSchema(schema,SchemaType.SCHEMA); }
+		{ return getManager().getSchemaCache().updateSchema(schema); }
 
 	/** Web service to unlock the specified schema */
 	public boolean unlockSchema(int schemaID)
@@ -136,16 +136,21 @@ public class SchemaStore
 	//------------------------------
 
 	/** Web service to retrieve the list of thesauri */
-	public Schema[] getThesauri()
-		{ return getManager().getSchemaCache().getSchemas(SchemaType.THESAURUS).toArray(new Schema[0]); }
+	public Thesaurus[] getThesauri()
+	{
+		ArrayList<Thesaurus> thesauri = new ArrayList<Thesaurus>();
+		for(Schema schema : getManager().getSchemaCache().getSchemas(Thesaurus.class))
+			thesauri.add(new Thesaurus(schema.getId(),schema.getName(),schema.getDescription()));
+		return thesauri.toArray(new Thesaurus[0]);
+	}
 
 	/** Web service to add a thesaurus */
-	public int addThesaurus(Schema thesaurus)
-		{ return getManager().getSchemaCache().addSchema(thesaurus,SchemaType.THESAURUS); }
+	public int addThesaurus(Thesaurus thesaurus)
+		{ return getManager().getSchemaCache().addSchema(thesaurus); }
 
 	/** Web service to update the specified thesaurus */
-	public boolean updateThesaurus(Schema thesaurus)
-		{ return getManager().getSchemaCache().updateSchema(thesaurus,SchemaType.THESAURUS); }
+	public boolean updateThesaurus(Thesaurus thesaurus)
+		{ return getManager().getSchemaCache().updateSchema(thesaurus); }
 	
 	/** Web service to delete the specified thesaurus */
 	public boolean deleteThesaurus(int thesaurusID)
@@ -578,22 +583,22 @@ public class SchemaStore
 	}
 
 	/** Web service to retrieve a project vocabulary */
-	public Vocabulary getVocabulary(int projectID) throws RemoteException
-		{ return GetVocabulary.getVocabulary(getManager(),projectID); }
+	public VocabularyTerms getVocabulary(int projectID) throws RemoteException
+		{ return GetVocabularyTerms.getVocabularyTerms(getManager(),projectID); }
 	
 	/** Web service to save the vocabulary */
-	public boolean saveVocabulary(Vocabulary vocabulary) throws RemoteException
-		{ return SaveVocabulary.saveVocabulary(getManager(),vocabulary.copy()); }
+	public boolean saveVocabulary(VocabularyTerms vocabulary) throws RemoteException
+		{ return SaveVocabularyTerms.saveVocabularyTerms(getManager(),vocabulary.copy()); }
 
 	/** Web service to delete the vocabulary */
 	public boolean deleteVocabulary(int projectID) throws RemoteException
 		{ return DeleteVocabulary.deleteVocabulary(getManager(),projectID); }
 
 	/** Web service to retrieve a thesaurus */
-	public Thesaurus getThesaurus(int thesaurusID) throws RemoteException
-		{ return GetThesaurus.getThesaurus(getManager(),thesaurusID); }
+	public ThesaurusTerms getThesaurusTerms(int thesaurusID) throws RemoteException
+		{ return GetThesaurusTerms.getThesaurusTerms(getManager(),thesaurusID); }
 	
 	/** Web service to save the thesaurus */
-	public boolean saveThesaurus(Thesaurus thesaurus) throws RemoteException
-		{ return SaveThesaurus.saveThesaurus(getManager(),thesaurus.copy()); }
+	public boolean saveThesaurusTerms(ThesaurusTerms terms) throws RemoteException
+		{ return SaveThesaurusTerms.saveThesaurusTerms(getManager(),terms.copy()); }
 }

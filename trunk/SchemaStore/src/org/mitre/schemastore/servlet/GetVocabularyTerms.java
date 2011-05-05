@@ -12,13 +12,13 @@ import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.Term;
-import org.mitre.schemastore.model.Vocabulary;
+import org.mitre.schemastore.model.VocabularyTerms;
 
 /**
- * Handles the retrieval of a vocabulary from the schema store web service
+ * Handles the retrieval of vocabulary terms from the schema store web service
  * @author CWOLF
  */
-public class GetVocabulary
+public class GetVocabularyTerms
 {		
 	/** Retrieves the schema elements for the specified schema ID */
 	static private HashMap<Integer,SchemaElement> getSchemaElements(DataManager manager, Integer schemaID)
@@ -29,8 +29,8 @@ public class GetVocabulary
 		return elements;
 	}
 	
-	/** Gets the specified vocabulary from the web services */
-	static Vocabulary getVocabulary(DataManager manager, Integer projectID) throws RemoteException
+	/** Gets the specified vocabulary terms from the web services */
+	static VocabularyTerms getVocabularyTerms(DataManager manager, Integer projectID) throws RemoteException
 	{		
 		// Get the vocabulary schema
 		Integer vocabularyID = manager.getProjectCache().getVocabularyID(projectID);
@@ -65,6 +65,6 @@ public class GetVocabulary
 		}
 		
 		// Generate the vocabulary
-		return new Vocabulary(projectID, terms.values().toArray(new Term[0]));
+		return new VocabularyTerms(projectID, terms.values().toArray(new Term[0]));
 	}
 }

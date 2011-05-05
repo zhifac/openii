@@ -10,39 +10,24 @@ import org.mitre.schemastore.model.Schema;
 /** Class for managing the current list of schemas in the schema repository */
 public class SchemaCache extends DataCache
 {
-	/** Enumeration for the type of schema */
-	public enum SchemaType {SCHEMA,VOCABULARY,THESAURUS};
-	
 	/** Stores reference to the schema data calls */
 	private SchemaDataCalls dataCalls = null;
-	
-	/** Indicates if the type is aligned */
-	private boolean isAlignedType(String type, SchemaType schemaType)
-	{
-		if(schemaType!=SchemaType.SCHEMA) return schemaType.toString().equals(type);
-		else for(SchemaType value : SchemaType.values())
-			if(value!=SchemaType.SCHEMA && value.toString().equals(type)) return false;
-		return true;
-	}
 	
 	/** Constructs the schema elements cache */
 	SchemaCache(DataManager manager, SchemaDataCalls dataCalls)
 		{ super(manager); this.dataCalls=dataCalls; }
 	
 	/** Returns a listing of all schemas */
-	public ArrayList<Schema> getSchemas(SchemaType schemaType)
-		{ return dataCalls.getSchemas(schemaType); }
+	public ArrayList<Schema> getSchemas(Class type)
+		{ return dataCalls.getSchemas(type); }
 	
 	/** Returns the specified schema */
 	public Schema getSchema(Integer schemaID)
 		{ return dataCalls.getSchema(schemaID); }
 
 	/** Adds the specified schema */
-	public Integer addSchema(Schema schema, SchemaType schemaType)
-	{
-		if(!isAlignedType(schema.getType(),schemaType)) return null;
-		return dataCalls.addSchema(schema);
-	}
+	public Integer addSchema(Schema schema)
+		{ return dataCalls.addSchema(schema); }
 
 	/** Extends the specified schema */
 	public Schema extendSchema(Integer schemaID)
@@ -54,16 +39,9 @@ public class SchemaCache extends DataCache
 	}
 	
 	/** Updates the specified schema */
-	public boolean updateSchema(Schema schema, SchemaType schemaType)
+	public boolean updateSchema(Schema schema)
 	{
-		// Don't update schema if doesn't exist
-		Schema oldSchema = getSchema(schema.getId());
-		if(oldSchema==null) return false;
-
-		// Don't update schema if type mismatch
-		if(!isAlignedType(schema.getType(),schemaType)) return false;
-
-		// Update the schema
+		if(getSchema(schema.getId())==null) return false;
 		return dataCalls.updateSchema(schema);
 	}
 	

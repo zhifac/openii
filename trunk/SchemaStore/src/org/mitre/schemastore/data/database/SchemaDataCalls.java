@@ -7,8 +7,10 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
-import org.mitre.schemastore.data.SchemaCache.SchemaType;
 import org.mitre.schemastore.model.Schema;
+import org.mitre.schemastore.model.Thesaurus;
+
+import com.sun.xml.internal.fastinfoset.vocab.Vocabulary;
 
 /**
  * Handles schema data calls in the database
@@ -17,17 +19,16 @@ import org.mitre.schemastore.model.Schema;
 public class SchemaDataCalls extends AbstractDataCalls
 {	
 	/** Retrieves the list of schemas in the repository */
-	private ArrayList<Schema> retrieveSchemas(Integer schemaID, SchemaType schemaType)
+	private ArrayList<Schema> retrieveSchemas(Integer schemaID, Class type)
 	{
 		// Generate the SQL command
 		String command = "SELECT id,name,author,source,\"type\",description,locked FROM \"schema\" WHERE 1=1";
 		if(schemaID!=null) command += " AND id="+schemaID;
-		if(schemaType!=null)
+		if(type!=null)
 		{
-			if(schemaType!=SchemaType.SCHEMA)
-				command += " AND type='"+schemaType+"'";
-			else for(SchemaType value : SchemaType.values())
-				if(value!=SchemaType.SCHEMA) command += " AND type!='"+value+"'";
+			if(type!=Schema.class)
+				command += " AND type='"+type.toString()+"'";
+			else command += " AND type!='"+Thesaurus.class.toString()+"' AND type!='"+Vocabulary.class.toString()+"'";
 		}
 		
 		// Retrieve the list of schemas
@@ -46,8 +47,8 @@ public class SchemaDataCalls extends AbstractDataCalls
 	SchemaDataCalls(DatabaseConnection connection) { super(connection); }
 
 	/** Retrieves the list of schemas in the repository */
-	public ArrayList<Schema> getSchemas(SchemaType schemaType)
-		{ return retrieveSchemas(null,schemaType); }
+	public ArrayList<Schema> getSchemas(Class type)
+		{ return retrieveSchemas(null,type); }
 	
 	/** Retrieves the specified schema in the repository */
 	public Schema getSchema(Integer schemaID)
