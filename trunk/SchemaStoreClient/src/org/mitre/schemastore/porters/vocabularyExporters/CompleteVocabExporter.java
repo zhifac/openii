@@ -9,15 +9,15 @@ import java.util.Comparator;
 import org.mitre.schemastore.model.AssociatedElement;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.Term;
-import org.mitre.schemastore.model.Vocabulary;
+import org.mitre.schemastore.model.VocabularyTerms;
 
 public class CompleteVocabExporter extends VocabularyExporter {
 
 	@Override
-	public void exportVocabulary(Vocabulary vocabulary, File file)
+	public void exportVocabulary(VocabularyTerms terms, File file)
 			throws IOException {
 		PrintStream os = new PrintStream(file);
-		Integer[] schemaIDs = vocabulary.getSchemaIDs();
+		Integer[] schemaIDs = terms.getSchemaIDs();
 
 		// Print header
 		os.print("Vocabulary, Vocabulary Description, ");
@@ -26,7 +26,7 @@ public class CompleteVocabExporter extends VocabularyExporter {
 		os.print("\n");
 
 		// Print Term, associated elements, and respective description
-		Term[] vocabTerms = vocabulary.getTerms();
+		Term[] vocabTerms = terms.getTerms();
 		Arrays.sort(vocabTerms, new Comparator<Term>() {
 
 			public int compare(Term o1, Term o2) {
@@ -39,7 +39,7 @@ public class CompleteVocabExporter extends VocabularyExporter {
 		
 		for (Term term : vocabTerms) {
 			os.print(term.getName() + ", " + term.getDescription() + ",");
-			for (Integer schemaID : vocabulary.getSchemaIDs()) {
+			for (Integer schemaID : terms.getSchemaIDs()) {
 				AssociatedElement ae[] = term.getAssociatedElements(schemaID);
 				for (int i = 0; i < ae.length; i++){
 					if(ae[i] != null) {
