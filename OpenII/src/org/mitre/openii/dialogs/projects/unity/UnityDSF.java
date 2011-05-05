@@ -18,7 +18,7 @@ import org.mitre.schemastore.model.MappingCellInput;
 import org.mitre.schemastore.model.Project;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.Term;
-import org.mitre.schemastore.model.Vocabulary;
+import org.mitre.schemastore.model.VocabularyTerms;
 import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
 import org.mitre.schemastore.model.schemaInfo.model.SchemaModel;
 import org.mitre.schemastore.porters.vocabularyExporters.CompleteVocabExporter;
@@ -26,7 +26,7 @@ import org.mitre.schemastore.porters.vocabularyExporters.CompleteVocabExporter;
 public class UnityDSF extends Thread {
 
 	private Project project;
-	private Vocabulary vocabulary;
+	private VocabularyTerms terms;
 	private ArrayList<Integer> rankedSchemas;
 
 	private ArrayList<ProgressListener> listeners = new ArrayList<ProgressListener>();
@@ -37,7 +37,7 @@ public class UnityDSF extends Thread {
 
 	public UnityDSF(Project project) {
 		this.project = project;
-		this.vocabulary = OpenIIManager.getVocabulary(project.getId());
+		this.terms = OpenIIManager.getVocabularyTerms(project.getId());
 		rankedSchemas = new ArrayList<Integer>();
 		for (Integer i : project.getSchemaIDs())
 			rankedSchemas.add(i);
@@ -51,8 +51,8 @@ public class UnityDSF extends Thread {
 		setDaemon(true); 
 	}
 
-	public Vocabulary getVocabulary() {
-		return vocabulary;
+	public VocabularyTerms getVocabularyTerms() {
+		return terms;
 	}
 
 	public double getProgress() {
@@ -167,7 +167,7 @@ public class UnityDSF extends Thread {
 		System.out.println("DSF time " + dsfTime.toString() + " minutes");
 
 		// Generate connonical terms for each synset
-		vocabulary = new Vocabulary(project.getId(), generateVocabTerms(new ArrayList<Synset>(synsets.values())));
+		terms = new VocabularyTerms(project.getId(), generateVocabTerms(new ArrayList<Synset>(synsets.values())));
 		notify("Vocabulary is completed. Total time: " + dsfTime.toString() + " minutes");
 
 		System.out.println("Done running unity.");
@@ -264,10 +264,10 @@ public class UnityDSF extends Thread {
 	 * @param file
 	 * @throws IOException
 	 */
-	public static void exportVocabulary(Vocabulary vocabulary, File file) throws IOException {
+	public static void exportVocabulary(VocabularyTerms terms, File file) throws IOException {
 		CompleteVocabExporter exporter = new CompleteVocabExporter();
 		exporter.setClient(RepositoryManager.getClient());
-		exporter.exportVocabulary(vocabulary, file);
+		exporter.exportVocabulary(terms, file);
 	}
 
 	public ArrayList<Integer> getSchemaRanking() {
@@ -308,7 +308,7 @@ public class UnityDSF extends Thread {
 	}
 
 	public void exportVocabulary(File file) throws IOException {
-		UnityDSF.exportVocabulary(this.vocabulary, file);
+		UnityDSF.exportVocabulary(this.terms, file);
 	}
 
 	public void setSchemaRanking(ArrayList<Integer> schemas) {

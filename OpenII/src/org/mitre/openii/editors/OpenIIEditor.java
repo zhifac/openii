@@ -21,6 +21,7 @@ import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.Project;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.Tag;
+import org.mitre.schemastore.model.Thesaurus;
 
 /** Constructs the OpenII Editor */
 abstract public class OpenIIEditor extends EditorPart implements OpenIIListener
@@ -62,6 +63,7 @@ abstract public class OpenIIEditor extends EditorPart implements OpenIIListener
 		if(element instanceof SchemaInTag) return ((SchemaInTag)element).getSchema().getId();
 		if(element instanceof SchemaInProject) return ((SchemaInProject)element).getSchema().getId();
 		if(element instanceof Schema) return ((Schema)element).getId();
+		if(element instanceof Thesaurus) return ((Thesaurus)element).getId();
 		if(element instanceof Tag) return ((Tag)element).getId();
 		if(element instanceof Project) return ((Project)element).getId();
 		if(element instanceof Mapping) return ((Mapping)element).getId();
@@ -147,8 +149,7 @@ abstract public class OpenIIEditor extends EditorPart implements OpenIIListener
 	public void projectsMerged(ArrayList<Integer> projectIDs, Integer mergedProjectID) {}
 	public void mappingAdded(Integer mappingID) {}
 	public void mappingModified(Integer mappingID) {}
-	public void vocabularyAdded(Integer projectID) {}
-	public void vocabularyModified(Integer projectID) {}
+	public void vocabularySaved(Integer projectID) {}
 	public void thesaurusAdded(Integer thesaurusID) {}
-	public void thesaurusModified(Integer thesaurusID) {}
+	public void thesaurusSaved(Integer thesaurusID) {}
 }

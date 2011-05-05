@@ -200,7 +200,7 @@ public class M3SchemaView extends OpenIIEditor
 	/** Displays the Schema View */
 	public void createPartControl(Composite parent)
 	{		
-		Schema schema = OpenIIManager.getSchema(getElementID());
+		Schema schema = (Schema)getElement();
 
 		// Generate references to parent schemas
 		ArrayList<Integer> ancestorIDs = OpenIIManager.getAncestorSchemas(schema.getId());

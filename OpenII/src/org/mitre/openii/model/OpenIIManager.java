@@ -18,7 +18,9 @@ import org.mitre.schemastore.model.Project;
 import org.mitre.schemastore.model.ProjectSchema;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.Tag;
-import org.mitre.schemastore.model.Vocabulary;
+import org.mitre.schemastore.model.Thesaurus;
+import org.mitre.schemastore.model.ThesaurusTerms;
+import org.mitre.schemastore.model.VocabularyTerms;
 import org.mitre.schemastore.model.schemaInfo.SchemaInfo;
 import org.mitre.schemastore.porters.Porter;
 import org.mitre.schemastore.porters.PorterType;
@@ -39,6 +41,9 @@ public class OpenIIManager
 	/** Stores listeners to the OpenII Manager */
 	static private ListenerGroup<OpenIIListener> listeners = new ListenerGroup<OpenIIListener>();
 
+	/** Initializes this class */
+	static { reset(); }
+	
 	/** Resets the OpenII caches */
 	static public void reset()
 	{
@@ -381,10 +386,10 @@ public class OpenIIManager
 	// ------------ Thesaurus Functionality -------------	
 	
 	/** Retrieves the list of thesauri */
-	public static ArrayList<Schema> getThesauri()
+	public static ArrayList<Thesaurus> getThesauri()
 	{
 		try { return RepositoryManager.getClient().getThesauri(); }
-		catch (Exception e) { return new ArrayList<Schema>(); }
+		catch (Exception e) { return new ArrayList<Thesaurus>(); }
 	}
 	
 	// ------------ Project Functionality -------------
@@ -631,10 +636,21 @@ public class OpenIIManager
 	}
 	
 	/** Retrieves the vocabulary for the specified project */
-	public static Vocabulary getVocabulary(Integer projectID)
+	public static VocabularyTerms getVocabularyTerms(Integer projectID)
 	{
-		try { return RepositoryManager.getClient().getVocabulary(projectID); }
+		try { return RepositoryManager.getClient().getVocabularyTerms(projectID); }
 		catch (Exception e) { return null; }
+	}
+
+	/** Save the  specified vocabulary */
+	public static boolean saveVocabularyTerms(VocabularyTerms terms)
+	{
+		try {
+			RepositoryManager.getClient().saveVocabularyTerms(terms);
+			fireVocabularySaved(terms.getProjectID()); 
+			return true;
+		} catch (RemoteException e) {}
+		return false;
 	}
 
 	/** Deletes the vocabulary for the specified project */
@@ -650,22 +666,11 @@ public class OpenIIManager
 		return false;
 	}
 
-	/** Save the  specified vocabulary */
-	public static boolean saveVocabulary(Vocabulary vocabulary)
-	{
-		try {
-			RepositoryManager.getClient().saveVocabulary(vocabulary);
-			fireVocabularyModified(vocabulary.getProjectID()); 
-			return true;
-		} catch (RemoteException e) {}
-		return false;
-	}
-
 	/** Inform listeners that the vocabulary was saved */
-	public static void fireVocabularyModified(Integer projectID)
+	public static void fireVocabularySaved(Integer projectID)
 	{
 		for(OpenIIListener listener : listeners.get())
-			listener.vocabularyModified(projectID);
+			listener.vocabularySaved(projectID);
 	}
 
 	/** Inform listeners that the vocabulary was removed */
@@ -675,6 +680,73 @@ public class OpenIIManager
 			listener.vocabularyDeleted(projectID);
 	}
 
+	// ------------ Thesaurus Functionality -------------
+	
+	/** Create a new thesaurus */
+	public static Integer addThesaurus(Thesaurus thesaurus)
+	{
+		Integer newId = null;
+		try {
+			newId = RepositoryManager.getClient().addThesaurus(thesaurus);
+			if(newId != null) fireThesaurusAdded(newId);
+		} catch (Exception e) {}
+		return newId;
+	}
+	
+	/** Retrieves the specified thesaurus */
+	public static ThesaurusTerms getThesaurusTerms(Integer thesaurusID)
+	{
+		try { return RepositoryManager.getClient().getThesaurusTerms(thesaurusID); }
+		catch (Exception e) { return null; }
+	}
+
+	/** Saves the specified thesaurus */
+	public static boolean saveThesaurusTerms(ThesaurusTerms terms)
+	{
+		try {
+			if(RepositoryManager.getClient().saveThesaurusTerms(terms))
+			{
+				fireThesaurusSaved(terms.getThesaurusId()); 
+				return true;
+			}
+		} catch (Exception e) {}
+		return false;
+	}
+
+	/** Deletes the specified thesuaurus */
+	public static boolean deleteThesaurus(Integer thesaurusID)
+	{
+		try {
+			if(RepositoryManager.getClient().deleteSchema(thesaurusID))
+			{
+				fireThesaurusDeleted(thesaurusID);
+				return true;
+			}
+		} catch (Exception e) { }
+		return false;
+	}
+
+	/** Inform listeners that the thesuaurus was added */
+	public static void fireThesaurusAdded(Integer thesaurusID)
+	{
+		for(OpenIIListener listener : listeners.get())
+			listener.thesaurusAdded(thesaurusID);
+	}
+
+	/** Inform listeners that the thesuaurus was saved */
+	public static void fireThesaurusSaved(Integer thesaurusID)
+	{
+		for(OpenIIListener listener : listeners.get())
+			listener.thesaurusSaved(thesaurusID);
+	}
+
+	/** Inform listeners that the vocabulary was removed */
+	public static void fireThesaurusDeleted(Integer thesaurusID)
+	{
+		for(OpenIIListener listener : listeners.get())
+			listener.thesaurusDeleted(thesaurusID);
+	}
+	
 	// ------------ Function Functionality -------------
 
 	public static Function getFunction(Integer functionID)

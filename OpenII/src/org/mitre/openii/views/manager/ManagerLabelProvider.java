@@ -5,12 +5,12 @@ import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.swt.graphics.Image;
 import org.mitre.openii.application.OpenIIActivator;
 import org.mitre.openii.model.OpenIIManager;
-import org.mitre.schemastore.data.SchemaCache.SchemaType;
 import org.mitre.schemastore.model.DataSource;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.Project;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.Tag;
+import org.mitre.schemastore.model.Thesaurus;
 
 public class ManagerLabelProvider implements ILabelProvider
 {
@@ -20,7 +20,7 @@ public class ManagerLabelProvider implements ILabelProvider
 		String imageName = "";
 		if(element instanceof Schema)
 		{
-			if(((Schema)element).getType().equals(SchemaType.THESAURUS)) imageName = "Thesaurus.gif";
+			if(((Schema)element).getType().equals(Thesaurus.class.toString())) imageName = "Thesaurus.gif";
 			else imageName = "Schema.gif";
 		}
 		else if(element instanceof SchemaInTag) imageName = "Schema.gif";

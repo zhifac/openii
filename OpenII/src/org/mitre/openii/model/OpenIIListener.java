@@ -54,19 +54,16 @@ public interface OpenIIListener
 	public void mappingDeleted(Integer mappingID);
 	
 	/** Informs the listener that the specified vocabulary has been added */
-	public void vocabularyAdded(Integer projectID);
-	
-	/** Informs the listener that the specified vocabulary has been saved */
-	public void vocabularyModified(Integer projectID);
+	public void vocabularySaved(Integer projectID);
 	
 	/** Informs the listener that the specified vocabulary has been deleted */
 	public void vocabularyDeleted(Integer projectID);
-
+	
 	/** Informs the listener that the specified thesaurus has been added */
 	public void thesaurusAdded(Integer thesaurusID);
 	
 	/** Informs the listener that the specified thesaurus has been saved */
-	public void thesaurusModified(Integer thesaurusID);
+	public void thesaurusSaved(Integer thesaurusID);
 	
 	/** Informs the listener that the specified thesaurus has been deleted */
 	public void thesaurusDeleted(Integer thesaurusID);

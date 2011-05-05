@@ -42,11 +42,10 @@ public class GalaxyManager
 		public void mappingAdded(Integer mappingID) {}
 		public void mappingDeleted(Integer mappingID) {}
 		public void mappingModified(Integer mappingID) {}
-		public void vocabularyAdded(Integer projectID) {}
-		public void vocabularyModified(Integer projectID) {}
+		public void vocabularySaved(Integer projectID) {}
 		public void vocabularyDeleted(Integer projectID) {}
 		public void thesaurusAdded(Integer projectID) {}
-		public void thesaurusModified(Integer projectID) {}
+		public void thesaurusSaved(Integer projectID) {}
 		public void thesaurusDeleted(Integer projectID) {}
 	}
 	static private OpenIIMonitor monitor = new OpenIIMonitor();
