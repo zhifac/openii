@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 
 import org.mitre.schemastore.model.Term;
-import org.mitre.schemastore.model.Vocabulary;
+import org.mitre.schemastore.model.VocabularyTerms;
 
 /**
  * @author HAOLI
@@ -17,7 +17,7 @@ import org.mitre.schemastore.model.Vocabulary;
 public class VocabTermExporter extends VocabularyExporter {
 
 	@Override
-	public void exportVocabulary( Vocabulary vocabulary, File file)
+	public void exportVocabulary( VocabularyTerms vocabulary, File file)
 			throws IOException {
 		PrintStream os = new PrintStream(file);
 		for ( Term term : vocabulary.getTerms() ) 

@@ -28,7 +28,9 @@ import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.SchemaElementList;
 import org.mitre.schemastore.model.Subtype;
 import org.mitre.schemastore.model.Tag;
-import org.mitre.schemastore.model.Vocabulary;
+import org.mitre.schemastore.model.Thesaurus;
+import org.mitre.schemastore.model.ThesaurusTerms;
+import org.mitre.schemastore.model.VocabularyTerms;
 import org.mitre.schemastore.model.schemaInfo.SchemaInfo;
 import org.mitre.schemastore.servlet.SchemaStore;
 import org.mitre.schemastore.servlet.SchemaStoreProxy;
@@ -108,13 +110,6 @@ public class SchemaStoreClient
 		return schemas==null ? new ArrayList<Schema>() : new ArrayList<Schema>(Arrays.asList(schemas));
 	}
 
-	/** Gets the list of thesauri from the web service */
-	public ArrayList<Schema> getThesauri() throws RemoteException
-	{
-		Schema[] schemas = (Schema[])callMethod("getThesauri",new Object[] {});
-		return schemas==null ? new ArrayList<Schema>() : new ArrayList<Schema>(Arrays.asList(schemas));
-	}
-
 	/** Gets the specified schema from the web service */
 	public Schema getSchema(Integer schemaID) throws RemoteException
 		{ return (Schema)callMethod("getSchema",new Object[] {schemaID}); }
@@ -161,6 +156,32 @@ public class SchemaStoreClient
 	public boolean deleteSchema(Integer schemaID) throws RemoteException
 		{ return (Boolean)callMethod("deleteSchema",new Object[] {schemaID}); }
 
+	//------------------------------
+	// Handles thesaurus operations
+	//------------------------------
+
+	/** Web service to retrieve the list of thesauri */
+	public ArrayList<Thesaurus> getThesauri() throws RemoteException
+	{
+		Thesaurus[] thesauri = (Thesaurus[])callMethod("getThesauri",new Object[] {});
+		return thesauri==null ? new ArrayList<Thesaurus>() : new ArrayList<Thesaurus>(Arrays.asList(thesauri));
+	}
+
+	/** Web service to add a thesaurus */
+	public int addThesaurus(Thesaurus thesaurus) throws RemoteException
+	{
+		Integer thesaurusID = (Integer)callMethod("addThesaurus",new Object[] {thesaurus});
+		return thesaurusID==0 ? null : thesaurusID;
+	}
+
+	/** Web service to update the specified thesaurus */
+	public boolean updateThesaurus(Thesaurus thesaurus) throws RemoteException
+		{ return (Boolean)callMethod("updateThesaurus",new Object[] {thesaurus}); }
+	
+	/** Web service to delete the specified thesaurus */
+	public boolean deleteThesaurus(int thesaurusID) throws RemoteException
+		{ return (Boolean)callMethod("deleteThesaurus",new Object[] {thesaurusID}); }
+	
 	//----------------------
 	// Schema Tag Functions
 	//----------------------
@@ -624,14 +645,22 @@ public class SchemaStoreClient
 		{ return (Boolean)callMethod("saveMappingCells",new Object[] {mappingID,mappingCells.toArray(new MappingCell[0])}); }
 
 	/** Gets the specified vocabulary from the web service */
-	public Vocabulary getVocabulary(Integer projectID) throws RemoteException
-		{ return (Vocabulary)callMethod("getVocabulary",new Object[] {projectID}); }
+	public VocabularyTerms getVocabularyTerms(Integer projectID) throws RemoteException
+		{ return (VocabularyTerms)callMethod("getVocabulary",new Object[] {projectID}); }
 	
 	/** Saves the vocabulary to the web service */
-	public boolean saveVocabulary(Vocabulary vocabulary) throws RemoteException
+	public boolean saveVocabularyTerms(VocabularyTerms vocabulary) throws RemoteException
 		{ return (Boolean)callMethod("saveVocabulary",new Object[] {vocabulary}); }
 	
 	/** Deletes the specified vocabulary from the web service */
 	public boolean deleteVocabulary(Integer projectID) throws RemoteException
 		{ return (Boolean)callMethod("deleteVocabulary",new Object[] {projectID}); }
+
+	/** Web service to retrieve a thesaurus */
+	public ThesaurusTerms getThesaurusTerms(int thesaurusID) throws RemoteException
+		{ return (ThesaurusTerms)callMethod("getThesaurusTerms",new Object[] {thesaurusID}); }
+	
+	/** Web service to save the thesaurus */
+	public boolean saveThesaurusTerms(ThesaurusTerms terms) throws RemoteException
+		{ return (Boolean)callMethod("saveThesaurusTerms",new Object[] {terms}); }
 }
