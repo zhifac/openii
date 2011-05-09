@@ -261,6 +261,11 @@ public class SchemaTree extends Composite implements SelectionListener, ISelecti
 
 		schemaViewer.refresh(); 
 	}
+
+	public TreeViewer getTreeViewer(){
+		return schemaViewer;
+	}
+	
 	
 	/** Handles changes to the schema model */
 	public void selectionChanged(SelectionChangedEvent e)
