@@ -131,6 +131,14 @@ public class SchemaElementLabelProvider extends StyledCellLabelProvider
 		styleRanges[1] = new StyleRange(text.length(),associatedInfo.length(),GRAY,WHITE);
 		cell.setStyleRanges(styleRanges);
 		
+		//set data field with ID
+		if(element instanceof SchemaElement)
+		{
+		    cell.getItem().setData("uid", ((SchemaElement)element).getId());
+		    cell.getItem().setData("description", ((SchemaElement)element).getDescription());
+		}
+		
+		
 		super.update(cell);
 	}
 }
