@@ -1,5 +1,7 @@
 package org.mitre.openii.application;
 
+import java.awt.Dimension;
+
 import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
 import org.eclipse.jface.window.Window;
@@ -39,7 +41,8 @@ public class OpenIIApplication implements IApplication
 	    public void preWindowOpen()
 	    {
 	        IWorkbenchWindowConfigurer configurer = getWindowConfigurer();
-	        configurer.setInitialSize(new Point(1024, 768));
+	        Dimension dim = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
+	        configurer.setInitialSize(new Point((int)(dim.getWidth()*0.75),(int)(dim.getHeight()*0.75))); 	        
 	        configurer.setShowMenuBar(true);
 	        configurer.setShowCoolBar(false);
 	        configurer.setShowStatusLine(false);
