@@ -15,7 +15,7 @@ public class Thesaurus extends Schema
 		this.name = name;
 		this.author = "";
 		this.source = "";
-		this.type = Thesaurus.class.toString();
+		this.type = Thesaurus.class.getName();
 		this.description = description;
 		this.locked = false;
 	}
