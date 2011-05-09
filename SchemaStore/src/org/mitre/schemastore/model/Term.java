@@ -63,6 +63,15 @@ public class Term implements Serializable
 	/** Adds an associated element to the term */
 	public void addAssociatedElement(AssociatedElement newElement)
 	{
+		//prevents duplication of elements
+		for(int i = 0; i < this.elements.length; i++){
+			if(this.elements[i].getElementID().equals(newElement.getElementID())){
+				if(this.elements[i].getSchemaID().equals(newElement.getSchemaID())){
+					return; //already associated,  just return
+				}
+			}
+		}
+			
 		ArrayList<AssociatedElement> elements = new ArrayList<AssociatedElement>(Arrays.asList(this.elements));
 		elements.add(newElement);	
 		this.elements = elements.toArray(new AssociatedElement[0]);
@@ -75,6 +84,17 @@ public class Term implements Serializable
 		for(AssociatedElement element : elements)
 			if(element.getSchemaID().equals(oldElement.getSchemaID()) && element.getElementID().equals(oldElement.getElementID()))
 				elements.remove(element);
+		this.elements = elements.toArray(new AssociatedElement[0]);		
+	}
+
+	/** Removes the associated element from the term */
+	public void removeAssociatedElement(Integer id, Integer schemaID)
+	{
+		ArrayList<AssociatedElement> elements = new ArrayList<AssociatedElement>(Arrays.asList(this.elements));
+		for(int i = 0; i < this.elements.length; i++){
+			if(this.elements[i].getSchemaID().equals(schemaID) && this.elements[i].getElementID().equals(id))
+				elements.remove(i);
+		}
 		this.elements = elements.toArray(new AssociatedElement[0]);		
 	}
 }
