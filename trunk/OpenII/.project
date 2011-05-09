@@ -25,4 +25,16 @@
 		<nature>org.eclipse.pde.PluginNature</nature>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>src/org/mitre/openii/editors/unity/UnityCanvas.java</name>
+			<type>1</type>
+			<location>C:/Users/psl/workspace/OpenII/src/org/mitre/openii/editors/unity/UnityCanvas.java</location>
+		</link>
+		<link>
+			<name>src/org/mitre/openii/editors/unity/UnityEditor.java</name>
+			<type>1</type>
+			<location>C:/Users/psl/workspace/OpenII/src/org/mitre/openii/editors/unity/UnityEditor.java</location>
+		</link>
+	</linkedResources>
 </projectDescription>
