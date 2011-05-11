@@ -17,47 +17,44 @@
 package org.mitre.openii.editors.unity;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
+import org.apache.commons.lang.WordUtils;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CTabFolder;
+import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.custom.SashForm;
-import org.eclipse.swt.custom.ScrolledComposite;
+import org.eclipse.swt.custom.StackLayout;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.custom.TableEditor;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
+import org.eclipse.swt.dnd.DND;
+import org.eclipse.swt.dnd.DragSource;
+import org.eclipse.swt.dnd.DragSourceEvent;
+import org.eclipse.swt.dnd.DragSourceListener;
+import org.eclipse.swt.dnd.DropTarget;
+import org.eclipse.swt.dnd.DropTargetEvent;
+import org.eclipse.swt.dnd.DropTargetListener;
+import org.eclipse.swt.dnd.FileTransfer;
+import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
-import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.ShellEvent;
+import org.eclipse.swt.events.ShellListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
-//import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.layout.RowData;
 import org.eclipse.swt.layout.RowLayout;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout; 
-import org.eclipse.swt.custom.StackLayout; 
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Combo;
@@ -67,44 +64,22 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
-import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.swt.dnd.*;
+import org.eclipse.swt.widgets.TreeItem;
 import org.mitre.openii.application.OpenIIActivator;
 import org.mitre.openii.model.OpenIIManager;
-import org.mitre.openii.widgets.BasicWidgets;
+import org.mitre.openii.widgets.schemaTree.SchemaTree;
 import org.mitre.schemastore.model.AssociatedElement;
-import org.mitre.schemastore.model.Attribute;
-import org.mitre.schemastore.model.Containment;
-import org.mitre.schemastore.model.DomainValue;
-import org.mitre.schemastore.model.Entity;
 import org.mitre.schemastore.model.Mapping;
-import org.mitre.schemastore.model.MappingCell;
-import org.mitre.schemastore.model.Relationship;
 import org.mitre.schemastore.model.Schema;
-import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.Term;
-import org.mitre.schemastore.model.Vocabulary;
 import org.mitre.schemastore.model.VocabularyTerms;
-import org.mitre.schemastore.model.mappingInfo.AssociatedElementHash;
-import org.mitre.schemastore.model.mappingInfo.MappingInfoExt;
-import org.mitre.schemastore.model.schemaInfo.FilteredSchemaInfo;
-import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
 import org.mitre.schemastore.model.schemaInfo.SchemaInfo;
 import org.mitre.schemastore.model.schemaInfo.model.SchemaModel;
-
-
-import org.eclipse.swt.custom.CTabFolder;
-import org.eclipse.swt.custom.CTabItem;
-import org.eclipse.swt.layout.FillLayout;
-import org.eclipse.swt.widgets.*;
-
-import org.mitre.openii.widgets.schemaTree.SchemaTree;
 
 public class UnityCanvas extends Composite {
 	private int numSchemas; // num schemas, including common vocab as a schema
@@ -180,7 +155,6 @@ public class UnityCanvas extends Composite {
     private Image CheckIcon = OpenIIActivator.getImage("checkicon.png");
     private Image saveIcon = OpenIIActivator.getImage("save.png");
     private Image needsaveIcon = OpenIIActivator.getImage("needsave.png");
-    private Listener mainListener;
     private boolean showTextWorkspace = true;
     private boolean showTextTableView = true;
     private Shell dialog;
@@ -193,6 +167,78 @@ public class UnityCanvas extends Composite {
 		viewsParent = parent;
 		vocab = vocabulary;
 
+		viewsParent.addListener(SWT.Dispose, new Listener() {
+			public void handleEvent(Event event) {
+				//event.doit = false; SWT bugged
+		  		if(saveVocab.getBackground().equals(red)){  			
+					dialog = new Shell(display, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
+					GridLayout dialogLayout = new GridLayout(2, true);
+					dialog.setLayout(dialogLayout);
+					dialog.setText("Exiting Unity");
+					dialog.setSize(200, 120);
+					dialog.setLocation(viewsParent.toDisplay(viewsParent.getBounds().x + (viewsParent.getBounds().width/2), viewsParent.getBounds().y + (viewsParent.getBounds().height/2)));
+					Label nameLabel = new Label(dialog, SWT.NONE);
+					nameLabel.setText("Vocabulary has been changed since last save");
+					GridData gridData = new GridData();
+					gridData.horizontalSpan = 2;
+					gridData.horizontalAlignment = GridData.FILL;
+					gridData.verticalAlignment = GridData.FILL;
+					gridData.grabExcessHorizontalSpace = true;
+					gridData.grabExcessVerticalSpace = false;
+					nameLabel.setLayoutData(gridData);
+					Label nameLabel2 = new Label(dialog, SWT.NONE);
+					nameLabel2.setText("Would you like to save?");
+					gridData = new GridData();
+					gridData.horizontalSpan = 2;
+					gridData.horizontalAlignment = GridData.FILL;
+					gridData.verticalAlignment = GridData.FILL;
+					gridData.grabExcessHorizontalSpace = true;
+					gridData.grabExcessVerticalSpace = false;
+					nameLabel2.setLayoutData(gridData);
+					Button ok = new Button(dialog, SWT.PUSH);
+					ok.setText(" Yes ");
+					ok.setSize(50, 20);
+					gridData = new GridData();
+					gridData.horizontalAlignment = GridData.END;
+					gridData.verticalAlignment = GridData.FILL;
+					gridData.grabExcessHorizontalSpace = false;
+					gridData.grabExcessVerticalSpace = false;
+					ok.setLayoutData(gridData);
+					Button cancel = new Button(dialog, SWT.PUSH);
+					cancel.setText(" No ");
+					cancel.setSize(50, 20);
+					gridData = new GridData();
+					gridData.horizontalAlignment = GridData.BEGINNING;
+					gridData.verticalAlignment = GridData.FILL;
+					gridData.grabExcessHorizontalSpace = false;
+					gridData.grabExcessVerticalSpace = false;
+					cancel.setLayoutData(gridData);
+
+					ok.addSelectionListener(new SelectionAdapter() {
+						public void widgetSelected(SelectionEvent e) {
+							OpenIIManager.saveVocabularyTerms(vocab);
+							dialog.close();
+						}
+					});				
+					cancel.addSelectionListener(new SelectionAdapter() {
+						public void widgetSelected(SelectionEvent e) {
+							dialog.close();
+						}
+					});				
+					
+
+					dialog.pack(true);
+					dialog.layout(true);
+					dialog.open();
+					
+					
+				}
+			}
+
+		});
+				
+		
+		
 		
 		schemaIDs = vocabulary.getSchemaIDs();
 		schemas = new Schema[schemaIDs.length];
@@ -217,7 +263,6 @@ public class UnityCanvas extends Composite {
 	private void createUnityView() {
 		display = this.getDisplay();
 		
-				
 		this.setBackground(null);
 		FillLayout layout = new FillLayout();
 		layout.type = SWT.VERTICAL;
@@ -621,6 +666,7 @@ public class UnityCanvas extends Composite {
 		tableview.setData("name", "tableview");
 		tableview.setHeaderVisible(true);
 		tableview.setLinesVisible(true);
+		tableview.setToolTipText("");
 		GridData gridData = new GridData();
 		gridData.horizontalSpan = 0;
 		gridData.minimumHeight = 0;
@@ -698,7 +744,6 @@ public class UnityCanvas extends Composite {
 			}
 		});				
 
-		
 		
 		
         DragSource source = new DragSource(tableview, DND.DROP_LINK | DND.DROP_MOVE | DND.DROP_COPY);
@@ -922,7 +967,8 @@ public class UnityCanvas extends Composite {
 		workspaceTable.setHeaderVisible(true);
 		workspaceTable.setLinesVisible(true);
 		workspaceTable.setData("name", "workspaceTable");
-		
+		workspaceTable.setToolTipText("");
+
 		
 		gridData = new GridData();
 		gridData.horizontalSpan = 0;
@@ -1492,8 +1538,6 @@ public class UnityCanvas extends Composite {
 			}
 		});
 
-		
-
 		//add drag and drop sources
 		
 		DragSource source = new DragSource(workspaceTable, DND.DROP_LINK | DND.DROP_MOVE | DND.DROP_COPY);
@@ -1577,6 +1621,7 @@ public class UnityCanvas extends Composite {
 				//System.out.println("change");
 				
 			}
+			
 			public void dragLeave(DropTargetEvent event) { 
 				//System.out.println("leave");
 		    } 
@@ -1843,7 +1888,7 @@ public class UnityCanvas extends Composite {
 
 	private void addTableListners() {
 		
-		mainListener = new Listener() {
+		Listener clickListener  = new Listener() {
 			int EDITABLECOLUMN = -1;
 			public void handleEvent(Event e) {
 		        if((e.stateMask & SWT.CTRL) > 0)
@@ -1989,6 +2034,81 @@ public class UnityCanvas extends Composite {
 			}
 
 		};
+		
+		Listener hoverListener  = new Listener() {
+			int EDITABLECOLUMN = -1;
+			public void handleEvent(Event e) {
+
+		        	// Identify the selected row
+					TableItem item = ((Table)(e.widget)).getItem(new Point(e.x,e.y));
+				    if (item == null)
+				    	return;
+					//System.out.println("theTable.getData(\"name\") = " + (String)(e.widget.getData("name")));
+					if(((String)(e.widget.getData("name"))).equals("workspaceTable") || (((String)(e.widget.getData("name"))).equals("tableview")))
+					{				
+						Table theTable = item.getParent();				
+					    int xoff = e.x;
+						Rectangle colrec = null;
+						int[] order = theTable.getColumnOrder();
+						for(int i = 0; i < theTable.getColumnCount(); i++) {
+							colrec = item.getBounds(order[i]);
+							//System.out.println("colrec x = " + colrec.x + "\n");
+							//System.out.println("xoff x = " + xoff + "\n");
+							if(colrec.x + colrec.width > xoff){
+								EDITABLECOLUMN = order[i];
+								break;
+							}
+						}
+
+						//System.out.println("EDITABLECOLUMN = " + EDITABLECOLUMN);
+						
+						Integer row = (Integer)(item.getData("uid"));
+						Integer col = (Integer)(theTable.getColumn(EDITABLECOLUMN).getData("uid"));
+						AssociatedElement element = null;
+						//System.out.println("draggedRow = " + draggedRow);
+						//System.out.println("draggedCol = " + draggedCol + "\n");
+						if(EDITABLECOLUMN > 1){
+							xoff = xoff - colrec.x;
+							AssociatedElement aElements[] = vocab.getTerms()[vocab.getTermIndex(row)].getAssociatedElements(col);
+							for(int i = 0; i < aElements.length; i++){
+								xoff = xoff - gc.textExtent(aElements[i].getName() + ",").x;
+								if(xoff <= 0){
+									element = aElements[i];
+									break;
+								}
+								xoff = xoff - gc.textExtent(" ").x;
+								if(i == aElements.length - 1){
+									element = aElements[i];
+									break;									
+								}
+							}
+						}
+				     
+				      
+				      
+				
+				      
+				      // Table tooltip
+					  String tooltipText = "";
+					  if(col == -201) {
+						  tooltipText += vocab.getTerms()[vocab.getTermIndex(row)].getName();
+						  tooltipText += "\n";//Description: ";
+						  tooltipText +=  WordUtils.wrap(vocab.getTerms()[vocab.getTermIndex(row)].getDescription(),60,"\n",true);
+					  } else if(col != -202) {
+						  if(element != null){
+							  tooltipText += element.getName();
+							  tooltipText += "\n";//Description: ";
+							  tooltipText +=  WordUtils.wrap(element.getDescription(),60,"\n",true);
+						  }					  
+					  }
+					  System.out.println("setting tooltip to "+ tooltipText);
+					  theTable.setToolTipText(tooltipText);
+					  
+				    }
+
+		        }
+
+		};
 
 			Listener scrollListener = new Listener() {
 				public void handleEvent(Event e) {
@@ -1999,13 +2119,15 @@ public class UnityCanvas extends Composite {
 
 		
 		//		display.addFilter(SWT.MouseDown,mainListener);
-			workspaceTable.addListener(SWT.MouseDown,mainListener);
+				workspaceTable.addListener(SWT.MouseDown,clickListener);
+				workspaceTable.addListener(SWT.MouseHover,hoverListener);
 			if(workspaceTable.getVerticalBar() != null)
 				workspaceTable.getVerticalBar().addListener(SWT.FocusIn, scrollListener);
 			if(workspaceTable.getHorizontalBar() != null)
 				workspaceTable.getHorizontalBar().addListener(SWT.FocusIn, scrollListener);
 			
-			tableview.addListener(SWT.MouseDown,mainListener);
+			tableview.addListener(SWT.MouseDown,clickListener);
+			tableview.addListener(SWT.MouseHover,hoverListener);
 			if(tableview.getVerticalBar() != null)
 				tableview.getVerticalBar().addListener(SWT.FocusIn, scrollListener);
 			if(tableview.getHorizontalBar() != null)
