@@ -36,7 +36,12 @@ public class Term implements Serializable
 
 	/** Copies the term */
 	public Term copy()
-		{ return new Term(id, name, description, elements.clone()); }
+	{
+		ArrayList<AssociatedElement> elementArray = new ArrayList<AssociatedElement>();
+		for(AssociatedElement element : elements)
+			elementArray.add(element.copy());		
+		return new Term(id, name, description, elementArray.toArray(new AssociatedElement[0]));
+	}
 	
 	// Handles all of the term getters
 	public Integer getId() { return id; }
@@ -61,20 +66,18 @@ public class Term implements Serializable
 	}
 	
 	/** Adds an associated element to the term */
-	public void addAssociatedElement(AssociatedElement newElement)
+	public boolean addAssociatedElement(AssociatedElement newElement)
 	{
-		//prevents duplication of elements
-		for(int i = 0; i < this.elements.length; i++){
-			if(this.elements[i].getElementID().equals(newElement.getElementID())){
-				if(this.elements[i].getSchemaID().equals(newElement.getSchemaID())){
-					return; //already associated,  just return
-				}
-			}
-		}
-			
+		// Don't add associated element if already exists
+		for(int i = 0; i < this.elements.length; i++)
+			if(this.elements[i].getElementID().equals(newElement.getElementID()))
+				if(this.elements[i].getSchemaID().equals(newElement.getSchemaID())) return false;
+
+		// Adds the element to the array
 		ArrayList<AssociatedElement> elements = new ArrayList<AssociatedElement>(Arrays.asList(this.elements));
 		elements.add(newElement);	
 		this.elements = elements.toArray(new AssociatedElement[0]);
+		return true;
 	}
 	
 	/** Removes the associated element from the term */
