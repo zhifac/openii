@@ -94,10 +94,9 @@ public class Term implements Serializable
 	public void removeAssociatedElement(Integer id, Integer schemaID)
 	{
 		ArrayList<AssociatedElement> elements = new ArrayList<AssociatedElement>(Arrays.asList(this.elements));
-		for(int i = 0; i < this.elements.length; i++){
+		for(int i = 0; i < this.elements.length; i++)
 			if(this.elements[i].getSchemaID().equals(schemaID) && this.elements[i].getElementID().equals(id))
 				elements.remove(i);
-		}
 		this.elements = elements.toArray(new AssociatedElement[0]);		
 	}
 }
