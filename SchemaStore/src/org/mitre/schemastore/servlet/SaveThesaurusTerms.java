@@ -6,6 +6,7 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
 import org.mitre.schemastore.data.DataManager;
@@ -23,7 +24,7 @@ import org.mitre.schemastore.model.schemaInfo.SchemaInfo;
  * @author CWOLF
  */
 public class SaveThesaurusTerms
-{				
+{
 	/** Generates a list of terms aligned with repository IDs */
 	static private ArrayList<Term> getAlignedTerms(DataManager manager, ThesaurusTerms oldThesaurus, ThesaurusTerms newThesaurus)
 	{
@@ -31,6 +32,26 @@ public class SaveThesaurusTerms
 		HashMap<Integer,Term> oldTerms = new HashMap<Integer,Term>();
 		for(Term term : oldThesaurus.getTerms())
 			oldTerms.put(term.getId(), term);
+		
+		// Clear out all duplicate associated elements
+		HashSet<String> currentTerms = new HashSet<String>();
+		for(Term term : newThesaurus.getTerms())
+		{
+			currentTerms.clear();
+
+			// Identify the list of non-duplicated elements
+			ArrayList<AssociatedElement> elements = new ArrayList<AssociatedElement>();
+			for(AssociatedElement element : term.getElements())
+			{
+				String key = element.getName() + "|||" + element.getDescription();
+				if(!currentTerms.contains(key)) elements.add(element);
+				currentTerms.add(key);
+			}
+
+			// Update the elements if duplicates were found
+			if(term.getElements().length!=elements.size())
+				term.setElements(elements.toArray(new AssociatedElement[0]));
+		}
 		
 		// Align terms while adjusting term name changes
 		ArrayList<Term> alignedTerms = new ArrayList<Term>();

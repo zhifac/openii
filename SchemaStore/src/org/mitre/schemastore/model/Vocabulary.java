@@ -15,7 +15,7 @@ public class Vocabulary extends Schema
 		this.name = name;
 		this.author = ""; 
 		this.source = "";
-		this.type = Vocabulary.class.getName();
+		this.type = Vocabulary.class.toString();
 		this.description = "";
 		this.locked = false;
 	}

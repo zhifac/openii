@@ -28,7 +28,7 @@ public class SchemaDataCalls extends AbstractDataCalls
 		{
 			if(type!=Schema.class)
 				command += " AND \"type\"='"+type.toString()+"'";
-			else command += " AND \"type\"!='"+Thesaurus.class.getName()+"' AND \"type\"!='"+Vocabulary.class.getName()+"'";
+			else command += " AND \"type\"!='"+Thesaurus.class+"' AND \"type\"!='"+Vocabulary.class+"'";
 		}
 		
 		// Retrieve the list of schemas
