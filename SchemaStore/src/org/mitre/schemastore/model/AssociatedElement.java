@@ -28,6 +28,10 @@ public class AssociatedElement implements Serializable
 	public AssociatedElement(Integer schemaID, Integer elementID, String name, String description)
 		{ this.schemaID = schemaID; this.elementID = elementID; this.name = name; this.description = description; }
 
+	/** Copies the associated element */
+	public AssociatedElement copy()
+		{ return new AssociatedElement(this.schemaID, this.elementID, this.name, this.description); }
+	
 	// Handles all of the associated element getters
 	public Integer getSchemaID() { return schemaID; }
 	public Integer getElementID() { return elementID; }
