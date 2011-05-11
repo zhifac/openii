@@ -42,7 +42,7 @@ public class OpenIIApplication implements IApplication
 	    {
 	        IWorkbenchWindowConfigurer configurer = getWindowConfigurer();
 	        Dimension dim = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
-	        configurer.setInitialSize(new Point((int)(dim.getWidth()),(int)(dim.getHeight()))); 	        
+	        configurer.setInitialSize(new Point((int)dim.getWidth(),(int)dim.getHeight())); 	        
 	        configurer.setShowMenuBar(true);
 	        configurer.setShowCoolBar(false);
 	        configurer.setShowStatusLine(false);
