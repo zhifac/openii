@@ -10,6 +10,7 @@ import org.mitre.schemastore.data.DataManager;
 import org.mitre.schemastore.data.database.Database;
 import org.mitre.schemastore.data.database.DatabaseConnection;
 import org.mitre.schemastore.model.Alias;
+import org.mitre.schemastore.model.Annotation;
 import org.mitre.schemastore.model.Attribute;
 import org.mitre.schemastore.model.Containment;
 import org.mitre.schemastore.model.DataSource;
@@ -553,11 +554,19 @@ public class SchemaStore
 
 	/** Web service to set an annotation */
 	public boolean setAnnotation(int elementID, String attribute, String value)
-		{ return getManager().setAnnotation(elementID, attribute, value.equals("")?null:value); }
+		{ return getManager().setAnnotation(elementID, null, attribute, value.equals("")?null:value); }
+
+	/** Web service to set an annotation */
+	public boolean setAnnotationWithGroup(int elementID, int groupID, String attribute, String value)
+		{ return getManager().setAnnotation(elementID, groupID, attribute, value.equals("")?null:value); }
 	
 	/** Web service to get an annotation */
 	public String getAnnotation(int elementID, String attribute)
 		{ return getManager().getAnnotation(elementID, attribute); }
+	
+	/** Web service to get the requested annotations */
+	public Annotation[] getAnnotations(int groupID, String attribute)
+		{ return getManager().getAnnotations(groupID, attribute).toArray(new Annotation[0]); }
 	
 	//--------------------
 	// Derived Operations

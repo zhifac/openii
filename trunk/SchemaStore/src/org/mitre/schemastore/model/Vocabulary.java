@@ -8,6 +8,9 @@ package org.mitre.schemastore.model;
  */
 public class Vocabulary extends Schema
 {
+	/** Constructs a default vocabulary */
+	public Vocabulary() {}
+	
 	/** Constructs a vocabulary */
 	public Vocabulary(Integer id, String name)
 	{

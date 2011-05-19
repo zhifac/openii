@@ -11,6 +11,7 @@ CREATE TABLE alias (
 
 CREATE TABLE annotation (
 	element_id integer NOT NULL,
+	group_id integer,
 	attribute character varying(50) NOT NULL,
 	value character varying(4096)
 );
@@ -363,6 +364,10 @@ CREATE INDEX mappingcell_function_idx ON mapping_cell (function_id);
 CREATE UNIQUE INDEX function_name_idx ON functions (name);
 
 CREATE UNIQUE INDEX function_implementation_idx ON function_implementation (function_id, language, dialect);
+
+CREATE INDEX annotation_element_idx ON annotation(element_id);
+
+CREATE INDEX annotation_group_idx ON annotation(group_id);
 
 //--------------
 // Create Views

@@ -7,6 +7,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
+import org.mitre.schemastore.model.Annotation;
+
 /**
  * Handles access to the database
  * @author CWOLF
@@ -111,13 +113,21 @@ public class Database
 	//-------------------------------------
 
 	/** Sets the specified annotation in the database */
-	public boolean setAnnotation(int elementID, String attribute, String value)
+	public boolean setAnnotation(int elementID, Integer groupID, String attribute, String value)
 	{
 		boolean success = false;
 		try {
 			Statement stmt = connection.getStatement();
-			stmt.executeUpdate("DELETE FROM annotation WHERE element_id="+elementID+" AND attribute='"+attribute+"'");
-			stmt.executeUpdate("INSERT INTO annotation(element_id,attribute,value) VALUES("+elementID+",'"+attribute+"','"+value+"')");
+			
+			// Delete old annotation
+			stmt.executeUpdate("DELETE FROM annotation WHERE element_id="+elementID +
+					  		   " AND attribute='"+attribute+"'" +
+					  		   " AND group_id " + (groupID==null ? "IS NOT NULL" : "="+groupID));
+
+			// Insert the new annotation
+			stmt.executeUpdate("INSERT INTO annotation(element_id,group_id,attribute,value)" +
+							   " VALUES("+elementID+","+groupID+",'"+attribute+"','"+value+"')");
+
 			stmt.close();
 			connection.commit();
 			success = true;
@@ -141,5 +151,19 @@ public class Database
 			stmt.close();
 		} catch(SQLException e) { System.out.println("(E) Database:getAnnotation: "+e.getMessage()); }
 		return value;
+	}
+
+	/** Gets the annotations for the specified group */
+	public ArrayList<Annotation> getAnnotations(int groupID, String attribute)
+	{
+		ArrayList<Annotation> annotations = new ArrayList<Annotation>();
+		try {
+			Statement stmt = connection.getStatement();
+			ResultSet rs = stmt.executeQuery("SELECT element_id, value FROM annotation WHERE group_id="+groupID+" AND attribute='"+attribute+"'");
+			while(rs.next())
+				annotations.add(new Annotation(rs.getInt("element_id"),rs.getString("value")));
+			stmt.close();
+		} catch(SQLException e) { System.out.println("(E) Database:getAnnotation: "+e.getMessage()); }
+		return annotations;
 	}
 }
