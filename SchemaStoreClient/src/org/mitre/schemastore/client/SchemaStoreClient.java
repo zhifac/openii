@@ -10,6 +10,7 @@ import java.util.Arrays;
 
 import org.mitre.schemastore.data.database.DatabaseConnection;
 import org.mitre.schemastore.model.Alias;
+import org.mitre.schemastore.model.Annotation;
 import org.mitre.schemastore.model.Attribute;
 import org.mitre.schemastore.model.Containment;
 import org.mitre.schemastore.model.DataSource;
@@ -617,9 +618,20 @@ public class SchemaStoreClient
 	public boolean setAnnotation(Integer elementID, String attribute, String value) throws RemoteException
 		{ return (Boolean)callMethod("setAnnotation",new Object[] {elementID,attribute,value}); }
 
+	/** Web service to set an annotation */
+	public boolean setAnnotationWithGroup(int elementID, int groupID, String attribute, String value) throws RemoteException
+		{ return (Boolean)callMethod("setAnnotationWithGroup",new Object[] {elementID,groupID,attribute,value}); }
+
 	/** Gets the annotation for the specified element and attribute */
 	public String getAnnotation(Integer elementID, String attribute) throws RemoteException
 		{ return (String)callMethod("getAnnotation",new Object[] {elementID,attribute}); }
+	
+	/** Web service to get the requested annotations */
+	public ArrayList<Annotation> getAnnotations(int groupID, String attribute) throws RemoteException
+	{
+		Annotation[] annotations = (Annotation[])callMethod("getAnnotations",new Object[] {groupID,attribute});
+		return annotations==null ? new ArrayList<Annotation>() : new ArrayList<Annotation>(Arrays.asList(annotations));
+	}
 
 	//-------------------
 	// Derived Functions

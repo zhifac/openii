@@ -86,6 +86,24 @@ public class SchemaStoreProxy implements org.mitre.schemastore.servlet.SchemaSto
     return schemaStore.getTags();
   }
   
+  public int addProject(org.mitre.schemastore.model.Project project) throws java.rmi.RemoteException{
+    if (schemaStore == null)
+      _initSchemaStoreProxy();
+    return schemaStore.addProject(project);
+  }
+  
+  public org.mitre.schemastore.model.Function getFunction(int functionID) throws java.rmi.RemoteException{
+    if (schemaStore == null)
+      _initSchemaStoreProxy();
+    return schemaStore.getFunction(functionID);
+  }
+  
+  public org.mitre.schemastore.model.Function[] getFunctions() throws java.rmi.RemoteException{
+    if (schemaStore == null)
+      _initSchemaStoreProxy();
+    return schemaStore.getFunctions();
+  }
+  
   public boolean setAnnotation(int elementID, java.lang.String attribute, java.lang.String value) throws java.rmi.RemoteException{
     if (schemaStore == null)
       _initSchemaStoreProxy();
@@ -110,22 +128,10 @@ public class SchemaStoreProxy implements org.mitre.schemastore.servlet.SchemaSto
     return schemaStore.updateAttribute(attribute);
   }
   
-  public org.mitre.schemastore.model.Function getFunction(int functionID) throws java.rmi.RemoteException{
-    if (schemaStore == null)
-      _initSchemaStoreProxy();
-    return schemaStore.getFunction(functionID);
-  }
-  
   public int addSubtype(org.mitre.schemastore.model.Subtype subtype) throws java.rmi.RemoteException{
     if (schemaStore == null)
       _initSchemaStoreProxy();
     return schemaStore.addSubtype(subtype);
-  }
-  
-  public int addProject(org.mitre.schemastore.model.Project project) throws java.rmi.RemoteException{
-    if (schemaStore == null)
-      _initSchemaStoreProxy();
-    return schemaStore.addProject(project);
   }
   
   public int addSchema(org.mitre.schemastore.model.Schema schema) throws java.rmi.RemoteException{
@@ -140,28 +146,22 @@ public class SchemaStoreProxy implements org.mitre.schemastore.servlet.SchemaSto
     return schemaStore.getSchemas();
   }
   
-  public org.mitre.schemastore.model.Function[] getFunctions() throws java.rmi.RemoteException{
+  public org.mitre.schemastore.model.DataSource getDataSource(int dataSourceID) throws java.rmi.RemoteException{
     if (schemaStore == null)
       _initSchemaStoreProxy();
-    return schemaStore.getFunctions();
+    return schemaStore.getDataSource(dataSourceID);
   }
   
-  public int addEntity(org.mitre.schemastore.model.Entity entity) throws java.rmi.RemoteException{
+  public org.mitre.schemastore.model.Alias getAlias(int aliasID) throws java.rmi.RemoteException{
     if (schemaStore == null)
       _initSchemaStoreProxy();
-    return schemaStore.addEntity(entity);
+    return schemaStore.getAlias(aliasID);
   }
   
   public int importSchema(org.mitre.schemastore.model.Schema schema, org.mitre.schemastore.model.SchemaElementList schemaElementList) throws java.rmi.RemoteException{
     if (schemaStore == null)
       _initSchemaStoreProxy();
     return schemaStore.importSchema(schema, schemaElementList);
-  }
-  
-  public org.mitre.schemastore.model.DataSource getDataSource(int dataSourceID) throws java.rmi.RemoteException{
-    if (schemaStore == null)
-      _initSchemaStoreProxy();
-    return schemaStore.getDataSource(dataSourceID);
   }
   
   public org.mitre.schemastore.model.Schema extendSchema(int schemaID) throws java.rmi.RemoteException{
@@ -206,19 +206,19 @@ public class SchemaStoreProxy implements org.mitre.schemastore.servlet.SchemaSto
     return schemaStore.deleteSchema(schemaID);
   }
   
-  public org.mitre.schemastore.model.Schema[] getThesauri() throws java.rmi.RemoteException{
+  public org.mitre.schemastore.model.Thesaurus[] getThesauri() throws java.rmi.RemoteException{
     if (schemaStore == null)
       _initSchemaStoreProxy();
     return schemaStore.getThesauri();
   }
   
-  public int addThesaurus(org.mitre.schemastore.model.Schema thesaurus) throws java.rmi.RemoteException{
+  public int addThesaurus(org.mitre.schemastore.model.Thesaurus thesaurus) throws java.rmi.RemoteException{
     if (schemaStore == null)
       _initSchemaStoreProxy();
     return schemaStore.addThesaurus(thesaurus);
   }
   
-  public boolean updateThesaurus(org.mitre.schemastore.model.Schema thesaurus) throws java.rmi.RemoteException{
+  public boolean updateThesaurus(org.mitre.schemastore.model.Thesaurus thesaurus) throws java.rmi.RemoteException{
     if (schemaStore == null)
       _initSchemaStoreProxy();
     return schemaStore.updateThesaurus(thesaurus);
@@ -324,6 +324,12 @@ public class SchemaStoreProxy implements org.mitre.schemastore.servlet.SchemaSto
     if (schemaStore == null)
       _initSchemaStoreProxy();
     return schemaStore.setParentSchemas(schemaID, parentIDs);
+  }
+  
+  public int addEntity(org.mitre.schemastore.model.Entity entity) throws java.rmi.RemoteException{
+    if (schemaStore == null)
+      _initSchemaStoreProxy();
+    return schemaStore.addEntity(entity);
   }
   
   public int addDomain(org.mitre.schemastore.model.Domain domain) throws java.rmi.RemoteException{
@@ -482,12 +488,6 @@ public class SchemaStoreProxy implements org.mitre.schemastore.servlet.SchemaSto
     return schemaStore.getSynonym(synonymID);
   }
   
-  public org.mitre.schemastore.model.Alias getAlias(int aliasID) throws java.rmi.RemoteException{
-    if (schemaStore == null)
-      _initSchemaStoreProxy();
-    return schemaStore.getAlias(aliasID);
-  }
-  
   public int getSchemaElementCount(int schemaID) throws java.rmi.RemoteException{
     if (schemaStore == null)
       _initSchemaStoreProxy();
@@ -638,6 +638,12 @@ public class SchemaStoreProxy implements org.mitre.schemastore.servlet.SchemaSto
     return schemaStore.hasVocabulary(projectID);
   }
   
+  public boolean setAnnotationWithGroup(int elementID, int groupID, java.lang.String attribute, java.lang.String value) throws java.rmi.RemoteException{
+    if (schemaStore == null)
+      _initSchemaStoreProxy();
+    return schemaStore.setAnnotationWithGroup(elementID, groupID, attribute, value);
+  }
+  
   public boolean saveMappingCells(int mappingID, org.mitre.schemastore.model.MappingCell[] mappingCells) throws java.rmi.RemoteException{
     if (schemaStore == null)
       _initSchemaStoreProxy();
@@ -678,6 +684,12 @@ public class SchemaStoreProxy implements org.mitre.schemastore.servlet.SchemaSto
     if (schemaStore == null)
       _initSchemaStoreProxy();
     return schemaStore.getAnnotation(elementID, attribute);
+  }
+  
+  public org.mitre.schemastore.model.Annotation[] getAnnotations(int groupID, java.lang.String attribute) throws java.rmi.RemoteException{
+    if (schemaStore == null)
+      _initSchemaStoreProxy();
+    return schemaStore.getAnnotations(groupID, attribute);
   }
   
   public int addAttribute(org.mitre.schemastore.model.Attribute attribute) throws java.rmi.RemoteException{

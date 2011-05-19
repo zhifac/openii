@@ -1,12 +1,8 @@
 package org.mitre.schemastore.client;
 
 import java.io.File;
-import java.util.ArrayList;
 
-import org.mitre.schemastore.model.Entity;
-import org.mitre.schemastore.model.Schema;
-import org.mitre.schemastore.model.SchemaElement;
-import org.mitre.schemastore.model.Synonym;
+import org.mitre.schemastore.model.Annotation;
 
 public class SchemaStoreTest
 {
@@ -19,11 +15,13 @@ public class SchemaStoreTest
 //			Repository repository = new Repository(Repository.SERVICE,new URI("http://ygg:8080/D3-develop/services/SchemaStore"),"","","");
 			SchemaStoreClient client = new SchemaStoreClient(repository);
 
-			Schema schema = new Schema(0,"test","cwolf","test","test","test",false);
-			ArrayList<SchemaElement> elements = new ArrayList<SchemaElement>();
-			elements.add(new Entity(1,"term1","",0));
-			elements.add(new Synonym(2,"synonym1","",1,0));
-			client.importSchema(schema, elements);
+			client.setAnnotation(12, "test", "test");
+			client.setAnnotationWithGroup(13, 20, "test", "test2");
+			client.setAnnotationWithGroup(14, 20, "test", "test3");
+
+			for(Annotation annotation : client.getAnnotations(20, "test"))
+				System.out.println(annotation.getValue());
+			
 		} catch(Exception e) { e.printStackTrace(); }
 	}
 }
