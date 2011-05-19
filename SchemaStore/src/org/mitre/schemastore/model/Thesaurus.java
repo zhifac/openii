@@ -8,6 +8,9 @@ package org.mitre.schemastore.model;
  */
 public class Thesaurus extends Schema
 {
+	/** Constructs a default thesaurus */
+	public Thesaurus() {}
+	
 	/** Constructs a thesaurus */
 	public Thesaurus(Integer id, String name, String description)
 	{

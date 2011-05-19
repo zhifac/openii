@@ -20,7 +20,7 @@ import org.mitre.schemastore.data.database.DatabaseConnection;
 public class DatabaseUpdates
 {
 	/** Stores the current version */
-	static private Integer currVersion = 15;
+	static private Integer currVersion = 16;
 
 	/** Retrieve the contents of a file as a buffered string */
 	static private StringBuffer getFileContents(String filename) throws IOException
@@ -159,6 +159,7 @@ public class DatabaseUpdates
 			if(version<13) new Version13Updates().runUpdates(connection);
 			if(version<14) new Version14Updates().runUpdates(connection);
 			if(version<15) new Version15Updates().runUpdates(connection); 
+			if(version<16) new Version16Updates().runUpdates(connection);
 			if(version>currVersion) throw new Exception("(E) Software must be updated to handle database version " + version);
 		}
 		catch (Exception e)

@@ -3,9 +3,11 @@
 package org.mitre.schemastore.data;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 import org.mitre.schemastore.data.database.Database;
 import org.mitre.schemastore.data.database.DatabaseConnection;
+import org.mitre.schemastore.model.Annotation;
 
 /** Class for managing the SchemaStore data */
 public class DataManager
@@ -52,11 +54,14 @@ public class DataManager
 		{ return database.getUniversalIDs(count); }
 	
 	/** Sets an annotation for the specified element */
-	public boolean setAnnotation(int elementID, String attribute, String value)
-		{ return database.setAnnotation(elementID, attribute, value); }
+	public boolean setAnnotation(int elementID, Integer groupID, String attribute, String value)
+		{ return database.setAnnotation(elementID, groupID, attribute, value); }
 
 	/** Gets the annotation for the specified element */
 	public String getAnnotation(int elementID, String attribute)
 		{ return database.getAnnotation(elementID, attribute); }
 
+	/** Gets the annotations for the specified group */
+	public ArrayList<Annotation> getAnnotations(int groupID, String attribute)
+		{ return database.getAnnotations(groupID, attribute); }
 }
