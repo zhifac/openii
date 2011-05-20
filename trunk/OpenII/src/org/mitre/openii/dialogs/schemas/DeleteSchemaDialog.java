@@ -10,11 +10,15 @@ public class DeleteSchemaDialog
 {
 	static public void delete(Shell shell, Schema schema)
 	{
-		boolean confirmed = MessageDialog.openConfirm(shell, "Confirm Delete", "Are you sure you want to delete schema '" + schema.getName() + "'?");
+		// Verify that the schema should be deleted
+		String label = schema.getClass().getName().replaceAll(".*\\.","").toLowerCase();		
+		boolean confirmed = MessageDialog.openConfirm(shell, "Confirm Delete", "Are you sure you want to delete "+label+" '" + schema.getName() + "'?");
+
+		// Delete the schema
 		if(confirmed)
 		{
 			boolean success = OpenIIManager.deleteSchema(schema.getId());
-			if(!success) MessageDialog.openError(shell, "Deletion Failure", "The schema failed to be properly deleted");
+			if(!success) MessageDialog.openError(shell, "Deletion Failure", "The "+label+" failed to be properly deleted");
 		}
 	}
 }
