@@ -22,6 +22,7 @@ import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.Project;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.Tag;
+import org.mitre.schemastore.model.Thesaurus;
 
 /** Handles the displaying of the Manager popup menu */
 public class ManagerMenuManager extends MenuManager implements IMenuListener
@@ -89,13 +90,22 @@ public class ManagerMenuManager extends MenuManager implements IMenuListener
 		}
 		
 		// Display the menu for the "All Schemas" header
-		if(element.equals(ManagerView.ALL_SCHEMAS_HEADER))
+		else if(element.equals(ManagerView.ALL_SCHEMAS_HEADER))
 		{
 			menuManager.add(new ManagerAction(this,"Keyword Search",ActionType.KEYWORD_SEARCH));			
 		}
 		
+		// Display the menu for the selected thesaurus
+		else if(element instanceof Thesaurus)
+		{
+			// Display schema options
+			menuManager.add(new ManagerAction(this,"Edit Thesaurus Properties",ActionType.EDIT_SCHEMA));
+			menuManager.add(new ManagerAction(this,"Export Thesaurus",ActionType.EXPORT_SCHEMA));
+			menuManager.add(new ManagerAction(this,"Delete Thesaurus",ActionType.DELETE_SCHEMA));
+		}
+		
 		// Display the menu for a selected schema
-		if(element instanceof Schema)
+		else if(element instanceof Schema)
 		{
 			// Display schema options
 			menuManager.add(new ManagerAction(this,"Edit Schema Properties",ActionType.EDIT_SCHEMA));
@@ -115,7 +125,7 @@ public class ManagerMenuManager extends MenuManager implements IMenuListener
 		}
 		
 		// Display the menu for a selected tag
-		if(element instanceof Tag)
+		else if(element instanceof Tag)
 		{
 			// Display tag options
 			menuManager.add(new ManagerAction(this,"Add Subcategory",ActionType.NEW_TAG));
@@ -131,7 +141,7 @@ public class ManagerMenuManager extends MenuManager implements IMenuListener
 		}
 		
 		// Display the menu for a selection tag schema
-		if(element instanceof SchemaInTag)
+		else if(element instanceof SchemaInTag)
 		{
 			menuManager.add(new ManagerAction(this,"Edit Schema Properties",ActionType.EDIT_SCHEMA));
 			menuManager.add(new ManagerAction(this,"Export Schema",ActionType.EXPORT_SCHEMA));
@@ -139,7 +149,7 @@ public class ManagerMenuManager extends MenuManager implements IMenuListener
 		}
 		
 		// Display the menu for the "Projects" header
-		if(element.equals(ManagerView.PROJECTS_HEADER))
+		else if(element.equals(ManagerView.PROJECTS_HEADER))
 		{
 			menuManager.add(new ManagerAction(this,"New Project",ActionType.NEW_PROJECT));
 			menuManager.add(new ManagerAction(this,"Import Project",ActionType.IMPORT_PROJECT));
@@ -147,7 +157,7 @@ public class ManagerMenuManager extends MenuManager implements IMenuListener
 		}
 
 		// Display the menu for a selected project
-		if(element instanceof Project)
+		else if(element instanceof Project)
 		{
 			menuManager.add(new ManagerAction(this,"Edit Project",ActionType.EDIT_PROJECT));
 			menuManager.add(new ManagerAction(this,"Export Project",ActionType.EXPORT_PROJECT));
@@ -159,14 +169,14 @@ public class ManagerMenuManager extends MenuManager implements IMenuListener
 		}
 		
 		// Display the menu for a selected mapping
-		if(element instanceof Mapping)
+		else if(element instanceof Mapping)
 		{
 			menuManager.add(new ManagerAction(this,"Export Mapping",ActionType.EXPORT_MAPPING));
 			menuManager.add(new ManagerAction(this,"Delete Mapping",ActionType.DELETE_MAPPING));
 		}
 		
 		// Display the menu for a selected project schema
-		if(element instanceof SchemaInProject)
+		else if(element instanceof SchemaInProject)
 		{
 			menuManager.add(new ManagerAction(this,"Edit Schema Properties",ActionType.EDIT_SCHEMA));
 			menuManager.add(new ManagerAction(this,"Replace Schema",ActionType.REPLACE_SCHEMA));
@@ -176,14 +186,14 @@ public class ManagerMenuManager extends MenuManager implements IMenuListener
 		}
 		
 		// Display the menu for a selected project vocabulary
-		if(element instanceof VocabularyInProject) {
+		else if(element instanceof VocabularyInProject) {
 			menuManager.add(new ManagerAction(this,"Generate Thesaurus",ActionType.GENERATE_THESAURUS));
 			menuManager.add(new ManagerAction(this, "Export Vocabulary", ActionType.EXPORT_VOCABULARY)); 
 			menuManager.add(new ManagerAction(this,"Delete Vocabulary",ActionType.DELETE_VOCABULARY));
 		}
 		
 		// Display the menu for a selected data source
-		if(element instanceof DataSource)
+		else if(element instanceof DataSource)
 			menuManager.add(new ManagerAction(this,"Delete Data Source",ActionType.DELETE_DATA_SOURCE));
 	}
 	
