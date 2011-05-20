@@ -14,6 +14,7 @@ import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.Project;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.Tag;
+import org.mitre.schemastore.model.Thesaurus;
 
 /**
  * Manages editor actions
@@ -22,17 +23,18 @@ import org.mitre.schemastore.model.Tag;
 public class EditorManager
 {
 	/** Enumeration of editor types */
-	static public enum EditorType {SCHEMA,TAG,PROJECT,MAPPING,VOCABULARY};
+	static public enum EditorType {SCHEMA,TAG,PROJECT,MAPPING,VOCABULARY,THESAURUS};
 
 	/** Returns the editor ID associated with the selected element */
 	static public String getEditorType(Object element)
 	{ 
 		EditorType type = null;
-		if(element instanceof Schema || element instanceof SchemaInTag || element instanceof SchemaInProject) type = EditorType.SCHEMA;
-		if((element instanceof String && element.equals(ManagerView.ALL_SCHEMAS_HEADER)) || element instanceof Tag) type = EditorType.TAG;
-		if(element instanceof Project) type = EditorType.PROJECT;
-		if(element instanceof Mapping) type = EditorType.MAPPING;
-		if(element instanceof VocabularyInProject) type = EditorType.VOCABULARY;
+		if(element instanceof Thesaurus) type=EditorType.THESAURUS;
+		else if(element instanceof Schema || element instanceof SchemaInTag || element instanceof SchemaInProject) type = EditorType.SCHEMA;
+		else if((element instanceof String && element.equals(ManagerView.ALL_SCHEMAS_HEADER)) || element instanceof Tag) type = EditorType.TAG;
+		else if(element instanceof Project) type = EditorType.PROJECT;
+		else if(element instanceof Mapping) type = EditorType.MAPPING;
+		else if(element instanceof VocabularyInProject) type = EditorType.VOCABULARY;
 		return type==null ? null : "." + type.toString().toLowerCase();
 	}
 	
