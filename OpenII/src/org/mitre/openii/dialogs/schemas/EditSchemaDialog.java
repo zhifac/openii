@@ -17,6 +17,7 @@ import org.mitre.openii.application.OpenIIActivator;
 import org.mitre.openii.model.OpenIIManager;
 import org.mitre.openii.widgets.BasicWidgets;
 import org.mitre.schemastore.model.Schema;
+import org.mitre.schemastore.model.Thesaurus;
 
 /** Constructs the Import Schema Dialog */
 public class EditSchemaDialog extends Dialog implements ModifyListener
@@ -42,8 +43,9 @@ public class EditSchemaDialog extends Dialog implements ModifyListener
 	protected void configureShell(Shell shell)
 	{
 		super.configureShell(shell);
-		shell.setImage(OpenIIActivator.getImage("Schema.gif"));
-		shell.setText("Edit Schema Properties");
+		String label = schema.getClass().getName().replaceAll(".*\\.","");		
+		shell.setImage(OpenIIActivator.getImage(label+".gif"));
+		shell.setText("Edit "+label+" Properties");
 	}
 
 	/** Creates the schema info pane */
@@ -57,15 +59,18 @@ public class EditSchemaDialog extends Dialog implements ModifyListener
 		
 		// Generate the properties to be displayed by the info pane
 		nameField = BasicWidgets.createTextField(group,"Name");
-		authorField = BasicWidgets.createTextField(group,"Author");
-		sourceField = BasicWidgets.createTextField(group,"Source");
-		typeField = BasicWidgets.createTextField(group,"Type");
+		if(!(schema instanceof Thesaurus))
+		{
+			authorField = BasicWidgets.createTextField(group,"Author");
+			sourceField = BasicWidgets.createTextField(group,"Source");
+			typeField = BasicWidgets.createTextField(group,"Type");
+		}
 		descriptionField = BasicWidgets.createTextField(group,"Description",4);
 		
 		// Add listeners to the fields to monitor for changes
 		nameField.addModifyListener(this);
-		authorField.addModifyListener(this);
-		descriptionField.addModifyListener(this);
+		if(authorField!=null) authorField.addModifyListener(this);
+		if(descriptionField!=null) descriptionField.addModifyListener(this);
 	}
 	
 	/** Creates the dialog area for the Import Schema Dialog */
@@ -90,9 +95,9 @@ public class EditSchemaDialog extends Dialog implements ModifyListener
 
 		// Set the general information fields
 		nameField.setText(schema.getName());
-		authorField.setText(schema.getAuthor());
-		sourceField.setText(schema.getSource());
-		typeField.setText(schema.getType());
+		if(authorField!=null) authorField.setText(schema.getAuthor());
+		if(sourceField!=null) sourceField.setText(schema.getSource());
+		if(typeField!=null) typeField.setText(schema.getType());
 		descriptionField.setText(schema.getDescription());
 		
 		return control;
@@ -101,7 +106,7 @@ public class EditSchemaDialog extends Dialog implements ModifyListener
 	/** Handles modifications to the various text fields */
 	public void modifyText(ModifyEvent e)
 	{   
-		boolean activate = nameField.getText().length()>0 && authorField.getText().length()>0;
+		boolean activate = nameField.getText().length()>0 && (authorField==null || authorField.getText().length()>0);
 		getButton(IDialogConstants.OK_ID).setEnabled(activate);
 	}
 	
@@ -110,18 +115,20 @@ public class EditSchemaDialog extends Dialog implements ModifyListener
 	{
 		// Retrieve new schema information
 		schema.setName(nameField.getText());
-		schema.setAuthor(authorField.getText());
-		schema.setSource(sourceField.getText()==null ? "" : sourceField.getText());
-		schema.setType(typeField.getText()==null ? "" : typeField.getText());
+		schema.setAuthor(authorField==null ? "" : authorField.getText());
+		schema.setSource(sourceField==null || sourceField.getText()==null ? "" : sourceField.getText());
+		schema.setType(typeField==null || typeField.getText()==null ? "" : typeField.getText());
 		schema.setDescription(descriptionField.getText());
 
 		// Update schema information
 		if(!OpenIIManager.updateSchema(schema))
 		{
+			String label = schema.getClass().getName().replaceAll(".*\\.","");
+			
 			// Display the error message if failed to update
 			MessageBox messageBox = new MessageBox(getShell(),SWT.ERROR);
-			messageBox.setText("Schema Generation Error");
-			messageBox.setMessage("Unable to update schema '" + schema.getName() + "'");
+			messageBox.setText(label+" Generation Error");
+			messageBox.setMessage("Unable to update "+label.toLowerCase()+" '" + schema.getName() + "'");
 			messageBox.open();
 		}					
 		else getShell().dispose();
