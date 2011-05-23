@@ -41,8 +41,7 @@ public class OpenIIApplication implements IApplication
 	    public void preWindowOpen()
 	    {
 	        IWorkbenchWindowConfigurer configurer = getWindowConfigurer();
-	        Dimension dim = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
-	        configurer.setInitialSize(new Point((int)dim.getWidth(),(int)dim.getHeight())); 	        
+	        configurer.setInitialSize(new Point(1024,768)); 	        	        
 	        configurer.setShowMenuBar(true);
 	        configurer.setShowCoolBar(false);
 	        configurer.setShowStatusLine(false);
@@ -50,7 +49,10 @@ public class OpenIIApplication implements IApplication
 	    
 		/** Displays the "OpenII Editor" on launch */
 		public void postWindowCreate()
-			{ EditorManager.launchEditor("AboutOpenIIEditor", null); }
+		{ 
+			EditorManager.launchEditor("AboutOpenIIEditor", null); 			
+			getWindowConfigurer().getWindow().getShell().setMaximized(true);	        	        
+		}
 	}
 	
 	/** Class for defining which perspectives should be displayed in the workbench */
