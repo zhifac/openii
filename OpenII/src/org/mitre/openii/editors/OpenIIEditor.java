@@ -151,5 +151,6 @@ abstract public class OpenIIEditor extends EditorPart implements OpenIIListener
 	public void mappingModified(Integer mappingID) {}
 	public void vocabularySaved(Integer projectID) {}
 	public void thesaurusAdded(Integer thesaurusID) {}
+	public void thesaurusModified(Integer thesaurusID) {}
 	public void thesaurusSaved(Integer thesaurusID) {}
 }

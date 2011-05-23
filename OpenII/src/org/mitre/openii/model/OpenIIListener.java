@@ -62,6 +62,9 @@ public interface OpenIIListener
 	/** Informs the listener that the specified thesaurus has been added */
 	public void thesaurusAdded(Integer thesaurusID);
 	
+	/** Informs the listener that the specified thesaurus has been modified */
+	public void thesaurusModified(Integer thesaurusID);
+	
 	/** Informs the listener that the specified thesaurus has been saved */
 	public void thesaurusSaved(Integer thesaurusID);
 	
