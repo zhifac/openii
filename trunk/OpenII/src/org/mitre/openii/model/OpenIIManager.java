@@ -391,6 +391,23 @@ public class OpenIIManager
 		try { return RepositoryManager.getClient().getThesauri(); }
 		catch (Exception e) { return new ArrayList<Thesaurus>(); }
 	}
+
+	/** Modifies a thesaurus in the repository */
+	public static boolean updateThesaurus(Thesaurus thesaurus)
+	{
+		try {
+			if(RepositoryManager.getClient().updateThesaurus(thesaurus))
+				{ fireThesaurusModified(thesaurus); return true; }
+		} catch (Exception e) {}
+		return false;
+	}
+
+	/** Inform listeners that a thesaurus was modified */
+	public static void fireThesaurusModified(Thesaurus thesaurus)
+	{
+		for(OpenIIListener listener : listeners.get())
+			listener.thesaurusModified(thesaurus.getId());
+	}
 	
 	// ------------ Project Functionality -------------
 

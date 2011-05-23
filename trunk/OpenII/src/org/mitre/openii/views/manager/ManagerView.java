@@ -71,6 +71,7 @@ public class ManagerView extends ViewPart implements OpenIIListener, IDoubleClic
 	public void vocabularySaved(Integer projectID) { viewer.refresh(); }
 	public void vocabularyDeleted(Integer projectID) { viewer.refresh(); }
 	public void thesaurusAdded(Integer thesaurusID) { viewer.refresh(); }
+	public void thesaurusModified(Integer thesaurusID) { viewer.refresh(); }
 	public void thesaurusSaved(Integer thesaurusID) { viewer.refresh(); }
 	public void thesaurusDeleted(Integer thesaurusID) { viewer.refresh(); }
 

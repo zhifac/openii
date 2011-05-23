@@ -1,4 +1,4 @@
-package org.mitre.openii.dialogs.schemas;
+package org.mitre.openii.dialogs.thesauri;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -16,37 +16,35 @@ import org.eclipse.swt.widgets.Text;
 import org.mitre.openii.application.OpenIIActivator;
 import org.mitre.openii.model.OpenIIManager;
 import org.mitre.openii.widgets.BasicWidgets;
-import org.mitre.schemastore.model.Schema;
+import org.mitre.schemastore.model.Thesaurus;
 
-/** Constructs the Import Schema Dialog */
-public class EditSchemaDialog extends Dialog implements ModifyListener
+/** Constructs the Import Thesaurus Dialog */
+public class EditThesaurusDialog extends Dialog implements ModifyListener
 {
-	/** Stores the schema being edited */
-	private Schema schema = null;
+	/** Stores the thesaurus being edited */
+	private Thesaurus thesaurus = null;
 	
 	// Stores the various dialog fields
 	private Text nameField = null;
-	private Text authorField = null;
-	private Text sourceField = null;
-	private Text typeField = null;
 	private Text descriptionField = null;
 	
 	/** Constructs the dialog */
-	public EditSchemaDialog(Shell parentShell, Schema schema)
+	public EditThesaurusDialog(Shell parentShell, Thesaurus thesaurus)
 	{
 		super(parentShell);
-		this.schema = schema;
+		this.thesaurus = thesaurus;
+		if(thesaurus==null) thesaurus = new Thesaurus(null,"","");
 	}	
 
 	/** Configures the dialog shell */
 	protected void configureShell(Shell shell)
 	{
 		super.configureShell(shell);
-		shell.setImage(OpenIIActivator.getImage("Schema.gif"));
-		shell.setText("Edit Schema Properties");
+		shell.setImage(OpenIIActivator.getImage("Thesaurus.gif"));
+		shell.setText("Edit Thesaurus Properties");
 	}
 
-	/** Creates the schema info pane */
+	/** Creates the thesaurus info pane */
 	private void createInfoPane(Composite parent)
 	{
 		// Construct the pane for showing the info for the selected importer
@@ -57,18 +55,13 @@ public class EditSchemaDialog extends Dialog implements ModifyListener
 		
 		// Generate the properties to be displayed by the info pane
 		nameField = BasicWidgets.createTextField(group,"Name");
-		authorField = BasicWidgets.createTextField(group,"Author");
-		sourceField = BasicWidgets.createTextField(group,"Source");
-		typeField = BasicWidgets.createTextField(group,"Type");
 		descriptionField = BasicWidgets.createTextField(group,"Description",4);
 		
 		// Add listeners to the fields to monitor for changes
 		nameField.addModifyListener(this);
-		authorField.addModifyListener(this);
-		descriptionField.addModifyListener(this);
 	}
 	
-	/** Creates the dialog area for the Import Schema Dialog */
+	/** Creates the dialog area for the Import Thesaurus Dialog */
 	protected Control createDialogArea(Composite parent)
 	{			
 		// Construct the main pane
@@ -89,11 +82,8 @@ public class EditSchemaDialog extends Dialog implements ModifyListener
 		Control control = super.createContents(parent);
 
 		// Set the general information fields
-		nameField.setText(schema.getName());
-		authorField.setText(schema.getAuthor());
-		sourceField.setText(schema.getSource());
-		typeField.setText(schema.getType());
-		descriptionField.setText(schema.getDescription());
+		nameField.setText(thesaurus.getName());
+		descriptionField.setText(thesaurus.getDescription());
 		
 		return control;
 	}
@@ -101,27 +91,33 @@ public class EditSchemaDialog extends Dialog implements ModifyListener
 	/** Handles modifications to the various text fields */
 	public void modifyText(ModifyEvent e)
 	{   
-		boolean activate = nameField.getText().length()>0 && authorField.getText().length()>0;
+		boolean activate = nameField.getText().length()>0;
 		getButton(IDialogConstants.OK_ID).setEnabled(activate);
 	}
 	
 	/** Handles the actual import of the specified file */
 	protected void okPressed()
 	{
-		// Retrieve new schema information
-		schema.setName(nameField.getText());
-		schema.setAuthor(authorField.getText());
-		schema.setSource(sourceField.getText()==null ? "" : sourceField.getText());
-		schema.setType(typeField.getText()==null ? "" : typeField.getText());
-		schema.setDescription(descriptionField.getText());
+		// Retrieve new thesaurus information
+		thesaurus.setName(nameField.getText());
+		thesaurus.setDescription(descriptionField.getText());
 
+		// Create or update the thesaurus information
+		boolean success = false;
+		if(thesaurus.getId()==null)
+		{
+			Integer id = OpenIIManager.addThesaurus(thesaurus);
+			if(id!=null) { thesaurus.setId(id); success=true; }
+		}
+		else success = OpenIIManager.updateThesaurus(thesaurus);
+		
 		// Update schema information
-		if(!OpenIIManager.updateSchema(schema))
+		if(!success)
 		{
 			// Display the error message if failed to update
 			MessageBox messageBox = new MessageBox(getShell(),SWT.ERROR);
-			messageBox.setText("Schema Generation Error");
-			messageBox.setMessage("Unable to update schema '" + schema.getName() + "'");
+			messageBox.setText("Thesaurus Generation Error");
+			messageBox.setMessage("Unable to update thesaurus '" + thesaurus.getName() + "'");
 			messageBox.open();
 		}					
 		else getShell().dispose();
