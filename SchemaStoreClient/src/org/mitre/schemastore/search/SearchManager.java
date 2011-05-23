@@ -114,4 +114,25 @@ public class SearchManager
 
 		return results;
 	}
+
+	/** Search the specified schema for elements with a given ID */
+	public static HashMap<Integer,SchemaSearchResult> search(Integer id, HierarchicalSchemaInfo schema)
+	{		
+		HashMap<Integer,SchemaSearchResult> results = new HashMap<Integer,SchemaSearchResult>();
+				
+		// Determine what elements match search criteria
+		for(SchemaElement element : schema.getHierarchicalElements())
+		{				
+			// Check to see if element name or description matches search criteria
+			boolean matched = element.getId().equals(id);
+
+			// Stores a new search result if needed
+			if(matched)
+				results.put(element.getId(), new SchemaSearchResult(true,true));
+		}
+
+		return results;
+	}
+
+
 }
