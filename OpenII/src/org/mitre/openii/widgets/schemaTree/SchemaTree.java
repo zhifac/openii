@@ -9,6 +9,7 @@ import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TreePath;
 import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.jface.action.MenuManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
@@ -166,13 +167,20 @@ public class SchemaTree extends Composite implements SelectionListener, ISelecti
 	public HierarchicalSchemaInfo getSchema()
 		{ return schema; }
 
-	/** Returns the schema associated with this view */
+	/** Sets the schema associated with this view */
 	public void setSchema(SchemaInfo schema, SchemaModel model)
 	{ 
 		this.schema = new HierarchicalSchemaInfo(schema,model);
 		//schemaViewer.getTree().getItem(0).setExpanded(true);
 		schemaViewer.refresh();
 		schemaViewer.expandToLevel(2);
+	}
+
+	/** Sets the menu manager */
+	public void setMenuManager(MenuManager manager)
+	{ 
+		Menu menu = manager.createContextMenu(schemaViewer.getControl());
+		schemaViewer.getControl().setMenu(menu);
 	}
 
 	/** Indicates if the schema should be alphabetized */
@@ -244,6 +252,19 @@ public class SchemaTree extends Composite implements SelectionListener, ISelecti
 		
 		// Highlight all matches in the schema
 		results = SearchManager.search(keyword, schema);
+		if(results.size()>0) schemaViewer.expandToLevel(2);
+		for(Integer elementID : results.keySet())
+			for(ArrayList<SchemaElement> path : schema.getPaths(elementID))
+				for(SchemaElement element : path)
+					schemaViewer.expandToLevel(element,1);					
+		schemaViewer.refresh();
+	}
+
+	/** Searches for the specified id */
+	public void searchFor(Integer id)
+	{
+		// Highlight all matches in the schema
+		results = SearchManager.search(id, schema);
 		if(results.size()>0) schemaViewer.expandToLevel(2);
 		for(Integer elementID : results.keySet())
 			for(ArrayList<SchemaElement> path : schema.getPaths(elementID))
