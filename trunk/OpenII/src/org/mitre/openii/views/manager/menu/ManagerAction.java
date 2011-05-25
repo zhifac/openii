@@ -29,6 +29,7 @@ import org.mitre.openii.dialogs.tags.DeleteTagDialog;
 import org.mitre.openii.dialogs.tags.EditTagDialog;
 import org.mitre.openii.dialogs.tags.SearchDialog;
 import org.mitre.openii.dialogs.thesauri.EditThesaurusDialog;
+import org.mitre.openii.dialogs.thesauri.ExportThesaurusDialog;
 import org.mitre.openii.dialogs.vocabulary.DeleteVocabularyDialog;
 import org.mitre.openii.dialogs.vocabulary.ExportVocabularyDialog;
 import org.mitre.openii.dialogs.vocabulary.GenerateThesaurusDialog;
@@ -54,7 +55,7 @@ public class ManagerAction extends Action
 							EXPORT_PROJECT, DELETE_PROJECT, DELETE_PROJECT_SCHEMA, IMPORT_MAPPING,
 							REPLACE_SCHEMA, AUTO_GENERATE_MATCHES, EXPORT_MAPPING, DELETE_MAPPING,
 							BATCH_MATCH, GENERATE_VOCABULARY, DELETE_VOCABULARY, EXPORT_VOCABULARY,
-							GENERATE_THESAURUS, EDIT_THESAURUS};
+							GENERATE_THESAURUS, EDIT_THESAURUS, EXPORT_THESAURUS};
 
 	/** Stores the menu manager to which this action is tied */
 	private ManagerMenuManager menuManager;
@@ -106,6 +107,7 @@ public class ManagerAction extends Action
 			case EXPORT_VOCABULARY: icon = "Export.gif"; break;
 			case GENERATE_THESAURUS: icon = "Thesaurus.gif"; break;
 			case EDIT_THESAURUS: icon = "Thesaurus.gif"; break;
+			case EXPORT_THESAURUS: icon = "Export.gif"; break;
 		}
 		setImageDescriptor(OpenIIActivator.getImageDescriptor("icons/" + icon));
 	}
@@ -287,5 +289,9 @@ public class ManagerAction extends Action
 		/** Handles the editing of the thesaurus properties */
 		if(actionType == ActionType.EDIT_THESAURUS)
 			new EditThesaurusDialog(shell, (Thesaurus)selection).open();
+		
+		/** Handles the editing of the thesaurus properties */
+		if(actionType == ActionType.EXPORT_THESAURUS)
+			ExportThesaurusDialog.export(shell, (Thesaurus)selection);
 	}
 }

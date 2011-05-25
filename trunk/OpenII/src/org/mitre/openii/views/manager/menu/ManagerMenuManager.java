@@ -100,7 +100,7 @@ public class ManagerMenuManager extends MenuManager implements IMenuListener
 		{
 			// Display schema options
 			menuManager.add(new ManagerAction(this,"Edit Thesaurus Properties",ActionType.EDIT_THESAURUS));
-			menuManager.add(new ManagerAction(this,"Export Thesaurus",ActionType.EXPORT_SCHEMA));
+			menuManager.add(new ManagerAction(this,"Export Thesaurus",ActionType.EXPORT_THESAURUS));
 			menuManager.add(new ManagerAction(this,"Delete Thesaurus",ActionType.DELETE_SCHEMA));
 		}
 		

@@ -29,8 +29,12 @@ public class ExporterDialog
 		this.exporterType = exporterType;
 		dialog = new FileDialog(shell, SWT.SAVE);
 		
+		// Generate the label
+		String label = exporterType.name().replaceAll("_EXPORTERS", "").toLowerCase();
+		label = label.substring(0,1).toUpperCase() + label.substring(1,label.length());
+		
 		// Initialize the file settings
-		dialog.setText("Export " + (exporterType.equals(PorterType.SCHEMA_EXPORTERS) ? "Schema" : exporterType.equals(PorterType.PROJECT_EXPORTERS) ? "Project" : "Mapping"));
+		dialog.setText("Export " + label);
 		dialog.setFileName(filename);
 		dialog.setFilterPath(OpenIIManager.getActiveDir());
 	
