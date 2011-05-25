@@ -60,7 +60,7 @@ public class ManagerMenuManager extends MenuManager implements IMenuListener
 			if(editors.length > 0)
 			{
 				// Display the menu for the default editor
-				IEditorDescriptor defaultEditor = registry.getDefaultEditor(EditorManager.getEditorType(element));			
+				IEditorDescriptor defaultEditor = registry.getDefaultEditor(editorType);			
 				menuManager.add(new EditorAction(this,"Open",defaultEditor));
 				
 				// Display the menu to select an editor
