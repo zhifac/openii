@@ -60,6 +60,7 @@ public class PorterManager
 		porters.put(PorterType.MAPPING_IMPORTERS, new PorterList<MappingImporter>(buffer,"mappingImporter",client));
 		porters.put(PorterType.MAPPING_EXPORTERS, new PorterList<MappingExporter>(buffer,"mappingExporter",client));
 		porters.put(PorterType.VOCABULARY_EXPORTERS, new PorterList<VocabularyExporter>(buffer, "vocabularyExporter", client));
+		porters.put(PorterType.THESAURUS_EXPORTERS, new PorterList<SchemaExporter>(buffer, "schemaExporter", client));
 	}
 	
 	/** Returns the list of specified porters */ @SuppressWarnings("unchecked")
