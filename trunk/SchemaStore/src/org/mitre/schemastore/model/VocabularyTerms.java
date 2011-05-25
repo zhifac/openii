@@ -141,9 +141,6 @@ public class VocabularyTerms implements Serializable
 		//now add Term back into cache
 		if(!deleted){
 			for(int i = 0; i < emts.length; i++){
-				System.out.println("size = " + emts.length );
-				System.out.println("schemaID = " + emts[i].getSchemaID());
-				System.out.println("elementID+ = " + emts[i].getElementID());
 				key = "" + emts[i].getElementID() + "_" + emts[i].getSchemaID();
 				if(ReverseLookupCache.containsKey(key)) {
 					Integer eterms[] = ReverseLookupCache.get(key);
