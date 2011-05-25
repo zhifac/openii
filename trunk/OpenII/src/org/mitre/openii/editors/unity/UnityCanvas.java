@@ -186,6 +186,12 @@ public class UnityCanvas extends Composite {
     private Image copyIcon = OpenIIActivator.getImage("copy.png");
     private Image seperatorIcon = OpenIIActivator.getImage("seperator.png");
     private Image clearIcon = OpenIIActivator.getImage("clear.png");
+    private Image alphaSortDownIcon = OpenIIActivator.getImage("alphaDown.png");
+    private Image alphaSortUpIcon = OpenIIActivator.getImage("alphaUp.png");
+    private Image StructuralSortIcon = OpenIIActivator.getImage("structurally.png");
+    private Image checkRemoveIcon = OpenIIActivator.getImage("checkRemove.png");
+    private Image checkSortUpIcon = OpenIIActivator.getImage("checkSortUp.png");
+    private Image checkSortDownIcon = OpenIIActivator.getImage("checkSortDown.png");
 
     private boolean showTextWorkspace = true;
     private boolean showTextTableView = true;
@@ -943,40 +949,8 @@ public class UnityCanvas extends Composite {
 		tempC1.setMoveable(false);
 		tempC1.setData("uid",new Integer(-202));
 		tempC1.setToolTipText("Checked");
-		tempC1.addListener(SWT.MouseHover, new Listener() {
-			public void handleEvent(Event e) { //does not work,  long standing SWT bug
-				System.out.println("button equals " + e.button);
-				
-				if(e.button == 1) {
-					//sort by checked
-					System.out.println("button 1 on column");
-				}
-				if(e.button == 3) {
-					Menu popupMenu = new Menu(workspaceTable);
-				    MenuItem checkItem = new MenuItem(popupMenu, SWT.CASCADE);
-				    checkItem.setImage(CheckIcon);
-				    checkItem.setText("Check All");
-				    MenuItem uncheckItem = new MenuItem(popupMenu, SWT.NONE);
-				    uncheckItem.setText("Uncheck All");
-				    new MenuItem(popupMenu, SWT.SEPARATOR); 
-				    MenuItem sort = new MenuItem(popupMenu, SWT.NONE);
-				    sort.setImage(CheckIcon);
-				    sort.setText("Sort by Checked");
-				    sort.addSelectionListener(new SelectionAdapter() {
-						public void widgetSelected(SelectionEvent e) {
-						}
-					});	
-				    workspaceTable.setMenu(popupMenu);
-				    workspaceTable.getMenu().setVisible(true);																	
-System.out.println("drawing column menu");
-				}
-			}
-		});
 		
-
-		
-		TableColumn tempC;
-		
+		TableColumn tempC;		
 		tempC = new TableColumn(workspaceTable, SWT.NONE);
 		tempC.setText("Vocabulary");
 		tempC.setMoveable(false);
@@ -1435,7 +1409,7 @@ System.out.println("drawing column menu");
 		Integer schema = getTreeSchemaID();
 		idssub = vocab.reverseLookup(id, schema);
 		String[] ids = new String[idssub.length];
-		System.out.println("adding " + id);
+		//System.out.println("adding " + id);
 				for(int y = 0; y < idssub.length; y++)
 		{
 			ids[y] = "" + idssub[y];
@@ -1962,21 +1936,13 @@ System.out.println("drawing column menu");
 			    Control oldEditor = editor.getEditor();
 			    if (oldEditor != null)
 			    	oldEditor.dispose();
-			    Menu oldmenu = workspaceTable.getMenu();
-			    if (oldmenu != null)
-			    	oldmenu.dispose();
-			    oldmenu = tableview.getMenu();
-			    if (oldmenu != null)
-			    {
-			    	oldmenu.dispose();
-			    	System.out.println("should be disposed " +  (oldmenu.isDisposed()));
-			    }
-		        System.out.println("widget = " + e.widget);
-		        if((e.button == 1 || e.button == 3) && e.widget instanceof Table && ((Table)(e.widget)).getSelectionCount() > 0){
+
+		        //System.out.println("widget = " + e.widget);
+		        if(e.button == 1 && e.widget instanceof Table && ((Table)(e.widget)).getSelectionCount() > 0){
 
 		        	// Identify the selected row
 					selectedItem = ((Table)(e.widget)).getItem(new Point(e.x,e.y));
-			        System.out.println("selectedItem = " + selectedItem);
+			        //System.out.println("selectedItem = " + selectedItem);
 				    if (selectedItem == null)
 				    	return;
 				    
@@ -2022,8 +1988,7 @@ System.out.println("drawing column menu");
 						}
 				     
 				      
-				      System.err.println("button " + e.button + " was pressed.");
-					  if(e.button == 1){
+				      //System.err.println("button " + e.button + " was pressed.");
 					      // The control that will be the editor must be a child of the
 					      // Table
 						  if(draggedCol == -201) {
@@ -2095,174 +2060,6 @@ System.out.println("drawing column menu");
 	//						  }
 				        	  updateTables((Integer)selectedItem.getData("uid"));						  
 						  }
-//					  } else if (e.button == 3) {
-					  } if (e.button == 3) {
-  System.out.println("button 3 on table " + theTable.getData("name"));	
-  System.out.println("draggedRow =  " + draggedRow);	
-
-							
-							Menu popupMenu = new Menu(theTable);
-							if(draggedCol == -202) {
-							    MenuItem checkItem = new MenuItem(popupMenu, SWT.CASCADE);
-							    checkItem.setImage(CheckIcon);
-							    checkItem.setText("Check");
-							    MenuItem uncheckItem = new MenuItem(popupMenu, SWT.NONE);
-							    uncheckItem.setText("Uncheck");
-							    theTable.setMenu(popupMenu);
-							    theTable.getMenu().setVisible(true);																		
-								
-							} else if (draggedCol == -201) {
-								if(activeTable.getSelectionCount() < 2) {
-								    MenuItem RenameItem = new MenuItem(popupMenu, SWT.CASCADE);
-								    RenameItem.setImage(renameIcon);
-								    RenameItem.setText("Rename Synset");
-								    RenameItem.addSelectionListener(new SelectionAdapter() {
-										public void widgetSelected(SelectionEvent e) {
-											renameSynset(activeTable);
-										}
-									});								    							    
-								    
-								    MenuItem changeDescItem = new MenuItem(popupMenu, SWT.NONE);
-								    changeDescItem.setImage(changeDescIcon);
-								    changeDescItem.setText("Edit Description");
-								    changeDescItem.addSelectionListener(new SelectionAdapter() {
-										public void widgetSelected(SelectionEvent e) {
-											descSynset(activeTable);
-										}
-									});								    
-								}
-							    
-							    if(theTable.getData("name").equals("workspaceTable")) {
-							    	MenuItem removeItem = new MenuItem(popupMenu, SWT.NONE);
-							    	removeItem.setImage(remove2Icon);
-							    	removeItem.setText("Remove from Workspace");
-							    	removeItem.addSelectionListener(new SelectionAdapter() {
-										public void widgetSelected(SelectionEvent e) {
-											removeFromWorkspace(workspaceTable.getSelectionIndex()+1);
-										} 
-									});				
-							    
-							    } else {
-							    	MenuItem addItem = new MenuItem(popupMenu, SWT.NONE);
-							    	addItem.setImage(insertIcon);
-							    	addItem.setText("Add to Workspace");
-							    	addItem.addSelectionListener(new SelectionAdapter() {
-										public void widgetSelected(SelectionEvent e) {
-											TableItem[] items = activeTable.getSelection();
-											String[] ids = new String[items.length];
-											for(int i = 0; i< items.length; i++)
-											{
-												ids[i] = "" + (Integer)items[i].getData("uid");
-											}
-											addToWorkspace(ids);
-										}
-									});				
-							    }
-							    MenuItem deleteItem = new MenuItem(popupMenu, SWT.NONE);
-							    deleteItem.setImage(deleteSynsetIcon);
-							    deleteItem.setText("Permanently Delete Synset");
-						    	deleteItem.addSelectionListener(new SelectionAdapter() {
-									public void widgetSelected(SelectionEvent e) {
-										deleteSynset(activeTable);
-									}
-								});	
-
-							    
-								new MenuItem(popupMenu, SWT.SEPARATOR);								
-							    if((e.widget.getData("name")).equals("workspaceTable")) {
-								    MenuItem tableItem = new MenuItem(popupMenu, SWT.NONE);
-								    tableItem.setImage(tableIcon);
-								    tableItem.setText("Show in Table");
-							    }
-							    MenuItem evidenceItem = new MenuItem(popupMenu, SWT.NONE);
-							    evidenceItem.setImage(evidenceIcon);
-							    evidenceItem.setText("Show Evidence");
-							    MenuItem closeMatchItem = new MenuItem(popupMenu, SWT.NONE);
-							    closeMatchItem.setImage(closeMatchIcon);
-							    closeMatchItem.setText("Show Close Matches");
-							    MenuItem contextItem = new MenuItem(popupMenu, SWT.NONE);
-							    contextItem.setImage(contextIcon);
-							    contextItem.setText("Show Context");
-							    theTable.setMenu(popupMenu);
-							    theTable.getMenu().setVisible(true);																		
-								
-							} else {
-														
-	System.out.println("copiedSchema = " + copiedSchema + " and draggedCol = " + draggedCol);	
-								
-								if(dragElement != null) {
-									MenuItem cutItem = new MenuItem(popupMenu, SWT.CASCADE);
-									cutItem.setImage(moveIcon);
-									cutItem.setText("Cut " + dragElement.getName());
-									cutItem.addSelectionListener(new SelectionAdapter() {
-										public void widgetSelected(SelectionEvent e) {
-											copyElementToClipboard(draggedCol,dragElement);
-											deleteTerm(draggedRow, dragElement);
-										}
-									});	
-								    MenuItem copyItem = new MenuItem(popupMenu, SWT.NONE);
-								    copyItem.setImage(copyIcon);
-								    copyItem.setText("Copy " + dragElement.getName());
-								    copyItem.addSelectionListener(new SelectionAdapter() {
-										public void widgetSelected(SelectionEvent e) {
-											copyElementToClipboard(draggedCol,dragElement);
-										}
-									});	
-								}
-								if(draggedCol.equals(copiedSchema) && copiedElement != null) {
-									MenuItem pasteItem = new MenuItem(popupMenu, SWT.CASCADE);
-									pasteItem.setImage(pasteIcon);
-									pasteItem.setText("Paste " + copiedElement.getName());
-									pasteItem.addSelectionListener(new SelectionAdapter() {
-										public void widgetSelected(SelectionEvent e) {
-											addTerm(draggedRow, copiedElement);
-										}
-									});	
-								}
-								if(dragElement != null) {
-								    MenuItem deleteItem = new MenuItem(popupMenu, SWT.NONE);
-								    deleteItem.setImage(deleteIcon);
-								    deleteItem.setText("Delete " + dragElement.getName());
-								    deleteItem.addSelectionListener(new SelectionAdapter() {
-										public void widgetSelected(SelectionEvent e) {
-											deleteTerm(draggedRow, dragElement);
-										}
-									});	
-								
-								    new MenuItem(popupMenu, SWT.SEPARATOR); 
-								    MenuItem treeItem = new MenuItem(popupMenu, SWT.NONE);
-								    treeItem.setImage(treeViewIcon);
-								    treeItem.setText("Show in Tree");
-								    treeItem.addSelectionListener(new SelectionAdapter() {
-										public void widgetSelected(SelectionEvent e) {
-											schemaSelector.select(EDITABLECOLUMN-2);
-											schemaSelector.setToolTipText("Displayed Schema is " + schemas[EDITABLECOLUMN-2].getName());
-											treeview.setSchema(schemaInfos[EDITABLECOLUMN-2],schemaModels[EDITABLECOLUMN-2]);
-											folder.setSelection(0);
-										    treeview.searchFor(dragElement.getElementID());
-										}
-									});	
-								    
-								    
-								    if((e.widget.getData("name")).equals("workspaceTable")) {
-									    MenuItem tableItem = new MenuItem(popupMenu, SWT.NONE);
-									    tableItem.setImage(tableIcon);
-									    tableItem.setText("Show in Table");
-								    }
-								    MenuItem evidenceItem = new MenuItem(popupMenu, SWT.NONE);
-								    evidenceItem.setImage(evidenceIcon);
-								    evidenceItem.setText("Show Evidence");
-								    MenuItem closeMatchItem = new MenuItem(popupMenu, SWT.NONE);
-								    closeMatchItem.setImage(closeMatchIcon);
-								    closeMatchItem.setText("Show Close Matches");
-								    MenuItem contextItem = new MenuItem(popupMenu, SWT.NONE);
-								    contextItem.setImage(contextIcon);
-								    contextItem.setText("Show Context");
-								}
-							    theTable.setMenu(popupMenu);
-							    theTable.getMenu().setVisible(true);
-							}
-					  }
 				    }
 
 		        }
@@ -2271,16 +2068,299 @@ System.out.println("drawing column menu");
 
 		};
 		
+		Listener menuListener = new Listener() {
+			int EDITABLECOLUMN = -1;
+			public void handleEvent(Event e) {
+//System.out.println("in menulistener");
+			    Menu oldmenu = workspaceTable.getMenu();
+			    if (oldmenu != null)
+			    	oldmenu.dispose();
+			    oldmenu = tableview.getMenu();
+			    if (oldmenu != null)
+			    	oldmenu.dispose();
+			    
+				Table theTable = ((Table)e.widget);
+				activeTable = (Table)(e.widget);
+
+				Point pt = display.map(null, theTable, new Point(e.x, e.y));
+
+				// Identify the selected row
+				selectedItem = theTable.getItem(pt);
+				//System.out.println("selectedItem = " + selectedItem);
+//				if (selectedItem == null) //fake to get column widths
+//					selectedItem = theTable.get
+
+
+
+				
+			    int xoff = 0;
+				int[] order = theTable.getColumnOrder();
+				for(int i = 0; i < theTable.getColumnCount(); i++) {					
+					xoff += theTable.getColumn(order[i]).getWidth();
+					//System.out.println("colrec x = " + colrec.x + "\n");
+					//System.out.println("xoff x = " + xoff + "\n");
+					if(xoff > pt.x){
+						xoff -= theTable.getColumn(order[i]).getWidth();
+						EDITABLECOLUMN = order[i];
+						break;
+					}
+				}
+				
+				draggedCol = (Integer)(theTable.getColumn(EDITABLECOLUMN).getData("uid"));								
+				Menu popupMenu = new Menu(theTable);				
+				
+				if(pt.y < theTable.getHeaderHeight())
+				{
+					if(draggedCol == -202) {
+					    MenuItem checkItem = new MenuItem(popupMenu, SWT.CASCADE);
+					    checkItem.setImage(CheckIcon);
+					    checkItem.setText("Check All");
+					    checkItem.addSelectionListener(new SelectionAdapter() {
+							public void widgetSelected(SelectionEvent e) {
+							}
+						});	
+					    MenuItem uncheckItem = new MenuItem(popupMenu, SWT.NONE);
+					    uncheckItem.setImage(checkRemoveIcon);
+					    uncheckItem.setText("Uncheck All");
+					    uncheckItem.addSelectionListener(new SelectionAdapter() {
+							public void widgetSelected(SelectionEvent e) {
+							}
+						});	
+					    new MenuItem(popupMenu, SWT.SEPARATOR); 
+					    MenuItem sortUp = new MenuItem(popupMenu, SWT.NONE);
+					    sortUp.setImage(checkSortUpIcon);
+					    sortUp.setText("Ascending by Checked");
+					    sortUp.addSelectionListener(new SelectionAdapter() {
+							public void widgetSelected(SelectionEvent e) {
+							}
+						});	
+					    MenuItem sortDown = new MenuItem(popupMenu, SWT.NONE);
+					    sortDown.setImage(checkSortDownIcon);
+					    sortDown.setText("Descending by Checked");
+					    sortDown.addSelectionListener(new SelectionAdapter() {
+							public void widgetSelected(SelectionEvent e) {
+							}
+						});	
+ 					} else { 
+
+					    MenuItem sortUp = new MenuItem(popupMenu, SWT.NONE);
+					    sortUp.setImage(alphaSortUpIcon);
+					    sortUp.setText("Ascending Alphabetical");
+					    sortUp.addSelectionListener(new SelectionAdapter() {
+							public void widgetSelected(SelectionEvent e) {
+							}
+						});	
+					    MenuItem sortDown = new MenuItem(popupMenu, SWT.NONE);
+					    sortDown.setImage(alphaSortDownIcon);
+					    sortDown.setText("Descending Alphabetical");
+					    sortDown.addSelectionListener(new SelectionAdapter() {
+							public void widgetSelected(SelectionEvent e) {
+							}
+						});	
+
+ 						
+ 						if (draggedCol != -201) {
+
+ 						    MenuItem structSort = new MenuItem(popupMenu, SWT.NONE);
+ 						    structSort.setImage(StructuralSortIcon);
+ 						    structSort.setText("Structurally");
+ 						    structSort.addSelectionListener(new SelectionAdapter() {
+ 								public void widgetSelected(SelectionEvent e) {
+ 								}
+ 							});	 							
+ 						
+ 						}			
+ 						
+ 					}
+
+				} else {
+					
+					draggedRow = (Integer)(selectedItem.getData("uid"));
+
+					if(draggedCol == -202) {
+					    MenuItem checkItem = new MenuItem(popupMenu, SWT.CASCADE);
+					    checkItem.setImage(CheckIcon);
+					    checkItem.setText("Check");
+					    MenuItem uncheckItem = new MenuItem(popupMenu, SWT.NONE);
+					    uncheckItem.setImage(checkRemoveIcon);
+					    uncheckItem.setText("Uncheck");
+						
+					} else if (draggedCol == -201) {
+						if(activeTable.getSelectionCount() < 2) {
+						    MenuItem RenameItem = new MenuItem(popupMenu, SWT.CASCADE);
+						    RenameItem.setImage(renameIcon);
+						    RenameItem.setText("Rename Synset");
+						    RenameItem.addSelectionListener(new SelectionAdapter() {
+								public void widgetSelected(SelectionEvent e) {
+									renameSynset(activeTable);
+								}
+							});								    							    
+						    
+						    MenuItem changeDescItem = new MenuItem(popupMenu, SWT.NONE);
+						    changeDescItem.setImage(changeDescIcon);
+						    changeDescItem.setText("Edit Description");
+						    changeDescItem.addSelectionListener(new SelectionAdapter() {
+								public void widgetSelected(SelectionEvent e) {
+									descSynset(activeTable);
+								}
+							});								    
+						}
+					    
+					    if(theTable.getData("name").equals("workspaceTable")) {
+					    	MenuItem removeItem = new MenuItem(popupMenu, SWT.NONE);
+					    	removeItem.setImage(remove2Icon);
+					    	removeItem.setText("Remove from Workspace");
+					    	removeItem.addSelectionListener(new SelectionAdapter() {
+								public void widgetSelected(SelectionEvent e) {
+									removeFromWorkspace(workspaceTable.getSelectionIndex()+1);
+								} 
+							});				
+					    
+					    } else {
+					    	MenuItem addItem = new MenuItem(popupMenu, SWT.NONE);
+					    	addItem.setImage(insertIcon);
+					    	addItem.setText("Add to Workspace");
+					    	addItem.addSelectionListener(new SelectionAdapter() {
+								public void widgetSelected(SelectionEvent e) {
+									TableItem[] items = activeTable.getSelection();
+									String[] ids = new String[items.length];
+									for(int i = 0; i< items.length; i++)
+									{
+										ids[i] = "" + (Integer)items[i].getData("uid");
+									}
+									addToWorkspace(ids);
+								}
+							});				
+					    }
+					    MenuItem deleteItem = new MenuItem(popupMenu, SWT.NONE);
+					    deleteItem.setImage(deleteSynsetIcon);
+					    deleteItem.setText("Permanently Delete Synset");
+				    	deleteItem.addSelectionListener(new SelectionAdapter() {
+							public void widgetSelected(SelectionEvent e) {
+								deleteSynset(activeTable);
+							}
+						});	
+
+					    
+						new MenuItem(popupMenu, SWT.SEPARATOR);								
+					    if((e.widget.getData("name")).equals("workspaceTable")) {
+						    MenuItem tableItem = new MenuItem(popupMenu, SWT.NONE);
+						    tableItem.setImage(tableIcon);
+						    tableItem.setText("Show in Table");
+					    }
+					    MenuItem evidenceItem = new MenuItem(popupMenu, SWT.NONE);
+					    evidenceItem.setImage(evidenceIcon);
+					    evidenceItem.setText("Show Evidence");
+					    MenuItem closeMatchItem = new MenuItem(popupMenu, SWT.NONE);
+					    closeMatchItem.setImage(closeMatchIcon);
+					    closeMatchItem.setText("Show Close Matches");
+					    MenuItem contextItem = new MenuItem(popupMenu, SWT.NONE);
+					    contextItem.setImage(contextIcon);
+					    contextItem.setText("Show Context");
+						
+					} else {
+												
+						dragElement = null;
+						AssociatedElement aElements[] = vocab.getTerms()[vocab.getTermIndex(draggedRow)].getAssociatedElements(draggedCol);
+						for(int i = 0; i < aElements.length; i++){
+							xoff = xoff - gc.textExtent(aElements[i].getName() + ",").x;
+							if(xoff <= 0){
+								dragElement = aElements[i];
+								break;
+							}
+							xoff = xoff - gc.textExtent(" ").x;
+							if(i == aElements.length - 1){
+								dragElement = aElements[i];
+								break;									
+							}
+						}
+
+						if(dragElement != null) {
+							MenuItem cutItem = new MenuItem(popupMenu, SWT.CASCADE);
+							cutItem.setImage(moveIcon);
+							cutItem.setText("Cut " + dragElement.getName());
+							cutItem.addSelectionListener(new SelectionAdapter() {
+								public void widgetSelected(SelectionEvent e) {
+									copyElementToClipboard(draggedCol,dragElement);
+									deleteTerm(draggedRow, dragElement);
+								}
+							});	
+						    MenuItem copyItem = new MenuItem(popupMenu, SWT.NONE);
+						    copyItem.setImage(copyIcon);
+						    copyItem.setText("Copy " + dragElement.getName());
+						    copyItem.addSelectionListener(new SelectionAdapter() {
+								public void widgetSelected(SelectionEvent e) {
+									copyElementToClipboard(draggedCol,dragElement);
+								}
+							});	
+						}
+						if(draggedCol.equals(copiedSchema) && copiedElement != null) {
+							MenuItem pasteItem = new MenuItem(popupMenu, SWT.CASCADE);
+							pasteItem.setImage(pasteIcon);
+							pasteItem.setText("Paste " + copiedElement.getName());
+							pasteItem.addSelectionListener(new SelectionAdapter() {
+								public void widgetSelected(SelectionEvent e) {
+									addTerm(draggedRow, copiedElement);
+								}
+							});	
+						}
+						if(dragElement != null) {
+						    MenuItem deleteItem = new MenuItem(popupMenu, SWT.NONE);
+						    deleteItem.setImage(deleteIcon);
+						    deleteItem.setText("Delete " + dragElement.getName());
+						    deleteItem.addSelectionListener(new SelectionAdapter() {
+								public void widgetSelected(SelectionEvent e) {
+									deleteTerm(draggedRow, dragElement);
+								}
+							});	
+						
+						    new MenuItem(popupMenu, SWT.SEPARATOR); 
+						    MenuItem treeItem = new MenuItem(popupMenu, SWT.NONE);
+						    treeItem.setImage(treeViewIcon);
+						    treeItem.setText("Show in Tree");
+						    treeItem.addSelectionListener(new SelectionAdapter() {
+								public void widgetSelected(SelectionEvent e) {
+									schemaSelector.select(EDITABLECOLUMN-2);
+									schemaSelector.setToolTipText("Displayed Schema is " + schemas[EDITABLECOLUMN-2].getName());
+									treeview.setSchema(schemaInfos[EDITABLECOLUMN-2],schemaModels[EDITABLECOLUMN-2]);
+									folder.setSelection(0);
+								    treeview.searchFor(dragElement.getElementID());
+								}
+							});	
+						    
+						    
+						    if((e.widget.getData("name")).equals("workspaceTable")) {
+							    MenuItem tableItem = new MenuItem(popupMenu, SWT.NONE);
+							    tableItem.setImage(tableIcon);
+							    tableItem.setText("Show in Table");
+						    }
+						    MenuItem evidenceItem = new MenuItem(popupMenu, SWT.NONE);
+						    evidenceItem.setImage(evidenceIcon);
+						    evidenceItem.setText("Show Evidence");
+						    MenuItem closeMatchItem = new MenuItem(popupMenu, SWT.NONE);
+						    closeMatchItem.setImage(closeMatchIcon);
+						    closeMatchItem.setText("Show Close Matches");
+						    MenuItem contextItem = new MenuItem(popupMenu, SWT.NONE);
+						    contextItem.setImage(contextIcon);
+						    contextItem.setText("Show Context");
+						}
+					}
+				}
+			    theTable.setMenu(popupMenu);
+			    theTable.getMenu().setVisible(true);																		
+			}
+		};
+		
 		Listener hoverListener  = new Listener() {
 			int EDITABLECOLUMN = -1;
 			public void handleEvent(Event e) {
 					activeTable = (Table)(e.widget);
 		        	// Identify the selected row
 					TableItem item = ((Table)(e.widget)).getItem(new Point(e.x,e.y));
-					System.out.println("item = " + item);
+//					System.out.println("item = " + item);
 				    if (item == null)
 				    {
-				    	System.out.println("item = null");
+//				    	System.out.println("item = null");
 						Menu popupMenu = new Menu(workspaceTable);
 					    MenuItem checkItem = new MenuItem(popupMenu, SWT.CASCADE);
 					    checkItem.setImage(CheckIcon);
@@ -2299,7 +2379,7 @@ System.out.println("drawing column menu");
 
 				    	return;
 				    }
-				    System.out.println("item = " + item);
+//				    System.out.println("item = " + item);
 					//System.out.println("theTable.getData(\"name\") = " + (String)(e.widget.getData("name")));
 					if(((String)(e.widget.getData("name"))).equals("workspaceTable") || (((String)(e.widget.getData("name"))).equals("tableview")))
 					{				
@@ -2374,17 +2454,22 @@ System.out.println("drawing column menu");
 					}
 		      };
 
+
 		
 		//		display.addFilter(SWT.MouseDown,mainListener);
 				workspaceTable.addMouseListener(clickListener);
+				workspaceTable.addListener(SWT.MenuDetect, menuListener);
 				workspaceTable.addListener(SWT.MouseHover,hoverListener);
 			if(workspaceTable.getVerticalBar() != null)
 				workspaceTable.getVerticalBar().addListener(SWT.FocusIn, scrollListener);
 			if(workspaceTable.getHorizontalBar() != null)
 				workspaceTable.getHorizontalBar().addListener(SWT.FocusIn, scrollListener);
 			
+			
+			
 //			tableview.addListener(SWT.MouseDown,clickListener);
 			tableview.addMouseListener(clickListener);
+			tableview.addListener(SWT.MenuDetect, menuListener);
 			tableview.addListener(SWT.MouseHover,hoverListener);			
 			if(tableview.getVerticalBar() != null)
 				tableview.getVerticalBar().addListener(SWT.FocusIn, scrollListener);
