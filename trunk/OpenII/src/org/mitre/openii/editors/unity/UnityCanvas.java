@@ -132,17 +132,22 @@ public class UnityCanvas extends Composite {
     private Button colorsettings;
 	private Combo colorSelectorT;
     private Button colorsettingsT;
+    private Label synsetLabel;
+    private Button colorsettingsE;
     private Canvas treeViewCanvas;
     private Canvas tableViewCanvas;
     private Canvas searchViewCanvas;
     private Canvas evidenceCanvas;
+    private Composite EvidenceView;
+    private GridData EvidenceViewGridData;
+    private GridLayout EvidenceViewLayout;
     private Canvas closeMatchCanvas;
     private Canvas contextCanvas;
     private Button newSynset;
-    private final SashForm main_sash = new SashForm(this, SWT.HORIZONTAL);		
-    private final CTabFolder folder = new CTabFolder(main_sash, SWT.TOP);
-	private final Canvas right_sash = new Canvas(main_sash, SWT.EMBEDDED);
-    private final Canvas workspace = new Canvas(right_sash, SWT.EMBEDDED);
+    private final Canvas main_sash = new Canvas(this, SWT.NONE);		
+    private final Canvas workspace = new Canvas(main_sash, SWT.EMBEDDED);
+	private final SashForm bottom_sash = new SashForm(main_sash, SWT.HORIZONTAL);
+    private final CTabFolder folder = new CTabFolder(bottom_sash, SWT.TOP);
     private final Composite buttonsC = new Composite(workspace, SWT.NONE);
     private final Canvas tablespace = new Canvas(workspace, SWT.EMBEDDED);
     private final StackLayout stackLayout = new StackLayout();
@@ -151,6 +156,7 @@ public class UnityCanvas extends Composite {
 	private final GC gc = new GC(workspaceTable);
     private final TableEditor editor = new TableEditor(workspaceTable);
     private final Composite buttonsD = new Canvas(workspace,SWT.NONE);
+	private final CTabFolder folder2 = new CTabFolder(bottom_sash, SWT.TOP);
     private Integer draggedCol = null;
     private Integer draggedRow = null;
     private Table activeTable = null;
@@ -234,6 +240,14 @@ public class UnityCanvas extends Composite {
 		layout.type = SWT.VERTICAL;
 		this.setLayout(layout);
 		
+		GridLayout msLayout = new GridLayout(1, true);
+		msLayout.marginWidth = 0;
+		msLayout.marginHeight = 0;
+		main_sash.setLayout(msLayout);
+
+		
+		createWorkspace(main_sash);
+		
 //		SashForm main_sash = new SashForm(this, SWT.HORIZONTAL);		
 	
 //		CTabFolder folder = new CTabFolder(main_sash, SWT.TOP);
@@ -246,16 +260,6 @@ public class UnityCanvas extends Composite {
 		item.setToolTipText("Tree View");
 		treeViewCanvas = new Canvas(folder, SWT.EMBEDDED);
 		item.setControl(treeViewCanvas);
-		GridLayout treelayout = new GridLayout(1, false);
-		treeViewCanvas.setLayout(treelayout);
-		GridLayout treeViewlayout = new GridLayout(1, false);
-		treeViewlayout.marginHeight = 0;
-		treeViewlayout.marginWidth = 0;
-		treeViewlayout.verticalSpacing = 0;
-		treeViewlayout.horizontalSpacing = 0;
-		treeViewlayout.marginBottom = 0;
-		treeViewCanvas.setLayout(treeViewlayout);
-
 		createTreeView(treeViewCanvas);
 		
 		item = new CTabItem(folder, SWT.NONE);
@@ -264,15 +268,6 @@ public class UnityCanvas extends Composite {
 		item.setToolTipText("Table View");
 		tableViewCanvas = new Canvas(folder, SWT.EMBEDDED);
 		item.setControl(tableViewCanvas);
-		GridLayout tablelayout = new GridLayout(1, false);
-		tableViewCanvas.setLayout(tablelayout);
-		GridLayout tableViewlayout = new GridLayout(1, false);
-		tableViewlayout.marginHeight = 0;
-		tableViewlayout.marginWidth = 0;
-		tableViewlayout.verticalSpacing = 0;
-		tableViewlayout.horizontalSpacing = 0;
-		tableViewlayout.marginBottom = 0;
-		tableViewCanvas.setLayout(tableViewlayout);
 		createTableView(tableViewCanvas);
 		
 		item = new CTabItem(folder, SWT.NONE);
@@ -288,19 +283,22 @@ public class UnityCanvas extends Composite {
 		folder.setBorderVisible(true);
 		folder.setSelectionBackground(display.getSystemColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT)); 
 
-//		SashForm right_sash = new SashForm(main_sash, SWT.VERTICAL);
-//		Canvas right_sash = new Canvas(main_sash, SWT.EMBEDDED);
-		GridLayout rightLayout = new GridLayout(1, false);
-		rightLayout.marginWidth = 0;
-		rightLayout.marginHeight = 0;
-		right_sash.setLayout(rightLayout);
+		GridLayout bottomLayout = new GridLayout(2, false);
+		bottomLayout.marginWidth = 0;
+		bottomLayout.marginHeight = 0;
+		bottom_sash.setLayout(bottomLayout);
 		
-		createWorkspace(right_sash);
+		GridData gridData = new GridData();
+		gridData.horizontalAlignment = GridData.FILL;
+		gridData.verticalAlignment = GridData.FILL;
+		gridData.grabExcessVerticalSpace = true;
+		gridData.grabExcessHorizontalSpace = true;
+		bottom_sash.setLayoutData(gridData);
 
-		CTabFolder folder2 = new CTabFolder(right_sash, SWT.TOP);
+		
 		folder2.setUnselectedCloseVisible(false);
 		folder2.setSimple(false);
-		GridData gridData = new GridData();
+		gridData = new GridData();
 		gridData.horizontalAlignment = GridData.FILL;
 		gridData.verticalAlignment = GridData.FILL;
 		gridData.grabExcessHorizontalSpace = true;
@@ -341,6 +339,15 @@ public class UnityCanvas extends Composite {
 	}
 
 	private void createTreeView(Composite parent) {
+
+		GridLayout treeViewlayout = new GridLayout(1, false);
+		treeViewlayout.marginHeight = 0;
+		treeViewlayout.marginWidth = 0;
+		treeViewlayout.verticalSpacing = 0;
+		treeViewlayout.horizontalSpacing = 0;
+		treeViewlayout.marginBottom = 0;
+		treeViewCanvas.setLayout(treeViewlayout);
+		
 		Composite treeButtons = new Composite(parent, SWT.NONE);
 //		CoolBar treeButtons = new CoolBar(parent, SWT.NONE);
 	    
@@ -544,6 +551,15 @@ public class UnityCanvas extends Composite {
 	}
 
 	private void createTableView(Composite parent) {
+		
+		GridLayout tableViewlayout = new GridLayout(1, false);
+		tableViewlayout.marginHeight = 0;
+		tableViewlayout.marginWidth = 0;
+		tableViewlayout.verticalSpacing = 0;
+		tableViewlayout.horizontalSpacing = 0;
+		tableViewlayout.marginBottom = 0;
+		parent.setLayout(tableViewlayout);
+		
 		Composite tableButtons = new Composite(parent, SWT.NONE);
 		RowLayout tableButtonlayout = new RowLayout();
 		tableButtonlayout.center = true;
@@ -552,10 +568,11 @@ public class UnityCanvas extends Composite {
 
 		colorSelectorT = new Combo(tableButtons, SWT.READ_ONLY | SWT.DROP_DOWN);
 		colorSelectorT.add("Not Colored");
-		colorSelectorT.add("Color by Canonical Match");
-		colorSelectorT.add("Color by Match Strength");
 		colorSelectorT.add("Color by Element Type");
-		colorSelectorT.add("Color by Instance Count");
+		colorSelectorT.add("Instance Count");
+		colorSelectorT.add("Canonical Match");
+		colorSelectorT.add("Match Strength (strongest)");
+		colorSelectorT.add("Match Strength (weakest)");
 		colorSelectorT.setToolTipText("No coloring applied");
 		colorSelectorT.select(0);
 
@@ -817,7 +834,7 @@ public class UnityCanvas extends Composite {
 
 	private void createWorkspace(Composite parent) {
 
-		workspace.setToolTipText("Drag Terms from the Tree or Table");
+		workspace.setToolTipText("Drag synsets from the Tree or Table to populate the workspace");
 
 		//Canvas workspace = new Canvas(parent, SWT.EMBEDDED);
 		GridLayout wslayout = new GridLayout(2, false);
@@ -851,21 +868,17 @@ public class UnityCanvas extends Composite {
 		
 		colorSelector = new Combo(buttonsC, SWT.READ_ONLY | SWT.DROP_DOWN);
 		colorSelector.add("Not Colored");
-		colorSelector.add("Color by Canonical Match");
-		colorSelector.add("Color by Match Strength");
 		colorSelector.add("Color by Element Type");
-		colorSelector.add("Color by Instance Count");
+		colorSelector.add("Instance Count");
+		colorSelector.add("Canonical Match");
+		colorSelector.add("Match Strength (strongest)");
+		colorSelector.add("Match Strength (weakest)");		
 		colorSelector.setToolTipText("No coloring applied");
 		colorSelector.select(0);
 
 		colorsettings = new Button(buttonsC, SWT.PUSH);
 		colorsettings.setImage(OpenIIActivator.getImage("color_settings.png"));
 		colorsettings.setToolTipText("Color Settings");
-		colorsettings.addListener(SWT.Selection, new Listener() {
-			public void handleEvent(Event event) {
-				colorsettings.setSelection(false);
-			}
-		});
 
 		Button showtext = new Button(buttonsC, SWT.TOGGLE);
 		showtext.setImage(showTextIcon);
@@ -970,7 +983,7 @@ public class UnityCanvas extends Composite {
 		}
         
 		//temp label
-		tempLabel.setText("\nDrag Terms from the Tree or Table");
+		tempLabel.setText("\nDrag synsets from the Tree or Table to populate the workspace");
 		tempLabel.setAlignment(SWT.CENTER);
 		tempLabel.setFont(LargeItalicFont);
 		tempLabel.setEditable(false);
@@ -1036,7 +1049,7 @@ public class UnityCanvas extends Composite {
 					buttons[i].dispose();
 				}
 				stackLayout.topControl = tempLabel;										
-				right_sash.layout();									
+				main_sash.layout();									
 
 			}
 		});				
@@ -1434,7 +1447,7 @@ public class UnityCanvas extends Composite {
 		if(buttons.length == 2) {
 			stackLayout.topControl = tempLabel;										
 		}
-		right_sash.layout();									
+		main_sash.layout();									
 
 	}
 	
@@ -1514,6 +1527,58 @@ public class UnityCanvas extends Composite {
 	}
 	
 	private void createEvidencePane(Composite parent) {
+		
+		GridLayout viewlayout = new GridLayout(2, false);
+		viewlayout.marginHeight = 0;
+		viewlayout.marginWidth = 0;
+		viewlayout.verticalSpacing = 0;
+		viewlayout.horizontalSpacing = 0;
+		viewlayout.marginBottom = 0;
+		parent.setLayout(viewlayout);
+		
+		Composite synsetLabelC = new Composite(parent, SWT.NONE);
+		RowLayout labellayout = new RowLayout();
+		//labellayout.center = true;
+		synsetLabelC.setLayout(labellayout);
+		synsetLabelC.setLayoutData(new GridData (SWT.BEGINNING, SWT.CENTER, true, false));
+		
+		synsetLabel = new Label(synsetLabelC, SWT.NONE);
+		synsetLabel.setText("");
+		synsetLabel.setFont(LargeBoldFont);
+		
+		Composite buttons = new Composite(parent, SWT.NONE);
+		RowLayout tableButtonlayout = new RowLayout();
+		//tableButtonlayout.center = true;
+		buttons.setLayout(tableButtonlayout);
+		buttons.setLayoutData(new GridData (SWT.END, SWT.CENTER, false, false));
+		
+		colorsettingsE = new Button(buttons, SWT.PUSH);
+		colorsettingsE.setImage(OpenIIActivator.getImage("color_settings.png"));
+		colorsettingsE.setToolTipText("Color Settings");
+		colorsettingsE.addListener(SWT.Selection, new Listener() {
+			public void handleEvent(Event event) {
+				colorsettingsE.setSelection(false);
+			}
+		});
+
+		EvidenceView = new Composite(parent, SWT.NONE);
+		GridData EvidenceViewGridData = new GridData();
+		EvidenceViewGridData.horizontalSpan = 2;
+		EvidenceViewGridData.minimumHeight = 0;
+		EvidenceViewGridData.verticalIndent = 0;
+		EvidenceViewGridData.horizontalAlignment = GridData.FILL;
+		EvidenceViewGridData.verticalAlignment = GridData.BEGINNING;
+		EvidenceViewGridData.grabExcessHorizontalSpace = true;
+		EvidenceViewGridData.grabExcessVerticalSpace = true;
+//		EvidenceView.setLayoutData(gridData);
+
+		GridLayout EvidenceViewLayout = new GridLayout(1, false);
+		EvidenceViewLayout.marginHeight = 0;
+		EvidenceViewLayout.marginWidth = 0;
+		EvidenceViewLayout.verticalSpacing = 0;
+		EvidenceViewLayout.horizontalSpacing = 0;
+		EvidenceViewLayout.marginBottom = 0;
+//		EvidenceView.setLayout(EVlayout);	
 
 	}
 
@@ -1533,6 +1598,84 @@ public class UnityCanvas extends Composite {
 			}
 		}
 		return false;
+	}
+	
+	public void updateDetailPane(Integer synsetID, Integer schemaID, Integer elementID){
+		System.err.println("updating detail pane");
+		EvidenceView.dispose();
+		EvidenceView = new Composite(evidenceCanvas, SWT.NONE);
+		EvidenceView.setLayoutData(EvidenceViewGridData);
+		EvidenceView.setLayout(EvidenceViewLayout);	
+
+		Term term = vocab.getTerms()[vocab.getTermIndex(synsetID)];
+		synsetLabel.setText(term.getName());
+
+		ArrayList<AssociatedElement> allElements = new ArrayList<AssociatedElement>();
+		
+		//loop through once to get all terms
+		for(int j = 0; j < schemaIDs.length; j++){
+			AssociatedElement[] elements = term.getAssociatedElements(schemas[j].getId());                             
+			for(int i = 0; i < elements.length; i++) {			
+				allElements.add(elements[i]);
+			}
+		}
+		
+		
+		//for each schema
+		for(int j = 0; j < schemaIDs.length; j++){
+			
+			Label schemaLabel = new Label(EvidenceView, SWT.NONE);
+			schemaLabel.setText(schemas[j].getName());
+			schemaLabel.setToolTipText(schemas[j].getDescription());
+			
+			Table EvidenceTable = new Table(EvidenceView, SWT.BORDER | SWT.NONE);
+			EvidenceTable.setData("name", "evidenceTable");
+			EvidenceTable.setHeaderVisible(true);
+			EvidenceTable.setLinesVisible(true);
+			EvidenceTable.setToolTipText("Evidence for X");
+			GridData gridData = new GridData();
+			gridData.horizontalSpan = 0;
+			gridData.minimumHeight = 0;
+			gridData.horizontalAlignment = GridData.FILL;
+			gridData.verticalAlignment = GridData.BEGINNING;
+			gridData.grabExcessHorizontalSpace = true;
+			gridData.grabExcessVerticalSpace = false;
+			EvidenceTable.setLayoutData(gridData);
+			
+			// creating one column for the status and the vocabulary
+			TableColumn tempC;
+			tempC = new TableColumn(EvidenceTable, SWT.NONE);
+			tempC.setText("Term");
+			tempC.setMoveable(false);
+			tempC.setData("uid",new Integer(-204));
+			tempC.setWidth(100);
+			//tempC.addListener(SWT.Selection, sortAlphabeticallyListener);
+			tempC.setToolTipText("Matched Schema Term");
+			// creating one column for each schema
+			for (int i = 0; i < allElements.size(); i++) {
+				tempC = new TableColumn(EvidenceTable, SWT.NONE);
+				tempC.setText(allElements.get(i).getName());
+				tempC.setData("uid",new Integer(schemas[i].getId()));
+				tempC.setWidth(50);
+				tempC.setMoveable(true);
+			      // tooltip
+				  String tooltipText = allElements.get(i).getName();
+				  tooltipText += "Schema - " + allElements.get(i).getSchemaID() + "\n";
+				  tooltipText += "\n";//Description: ";
+				  tooltipText +=  WordUtils.wrap(allElements.get(i).getDescription(),60,"\n",true);
+				tempC.setToolTipText(tooltipText);
+			}		
+
+			
+			AssociatedElement[] elements = term.getAssociatedElements(schemas[j].getId());                             
+			for(int i = 0; i < elements.length; i++) {			
+			//for each term
+				TableItem newItem = new TableItem(EvidenceTable, SWT.NONE, EvidenceTable.getItemCount()); 
+			}
+		}
+				
+		EvidenceView.getParent().layout();									
+	
 	}
 	
 	public void updateTables(Integer vocabID) {
@@ -1974,19 +2117,22 @@ public class UnityCanvas extends Composite {
 							dragElement = null;
 							AssociatedElement aElements[] = vocab.getTerms()[vocab.getTermIndex(draggedRow)].getAssociatedElements(draggedCol);
 							for(int i = 0; i < aElements.length; i++){
-								xoff = xoff - gc.textExtent(aElements[i].getName() + ",").x;
+								xoff = xoff - gc.textExtent(aElements[i].getName() + ", ").x;
 								if(xoff <= 0){
 									dragElement = aElements[i];
 									break;
 								}
-								xoff = xoff - gc.textExtent(" ").x;
 								if(i == aElements.length - 1){
 									dragElement = aElements[i];
 									break;									
 								}
 							}
 						}
-				     
+						if(dragElement != null) {
+							updateDetailPane(draggedRow, draggedCol, dragElement.getElementID());
+						} else {
+							updateDetailPane(draggedRow, draggedCol, new Integer(-1));							
+						}
 				      
 				      //System.err.println("button " + e.button + " was pressed.");
 					      // The control that will be the editor must be a child of the
@@ -2217,6 +2363,8 @@ public class UnityCanvas extends Composite {
 							});				
 					    
 					    } else {
+					    	
+					    	
 					    	MenuItem addItem = new MenuItem(popupMenu, SWT.NONE);
 					    	addItem.setImage(insertIcon);
 					    	addItem.setText("Add to Workspace");
@@ -2260,20 +2408,22 @@ public class UnityCanvas extends Composite {
 						
 					} else {
 												
+						System.err.println("xoff = " + xoff);
+						System.err.println("pt.x = " + pt.x);
 						dragElement = null;
 						AssociatedElement aElements[] = vocab.getTerms()[vocab.getTermIndex(draggedRow)].getAssociatedElements(draggedCol);
 						for(int i = 0; i < aElements.length; i++){
-							xoff = xoff - gc.textExtent(aElements[i].getName() + ",").x;
-							if(xoff <= 0){
+							xoff = xoff + gc.textExtent(aElements[i].getName() + ", ").x;
+							if(xoff >= pt.x){
 								dragElement = aElements[i];
 								break;
 							}
-							xoff = xoff - gc.textExtent(" ").x;
 							if(i == aElements.length - 1){
 								dragElement = aElements[i];
 								break;									
 							}
 						}
+						System.err.println("xoff after = " + xoff);
 
 						if(dragElement != null) {
 							MenuItem cutItem = new MenuItem(popupMenu, SWT.CASCADE);
@@ -2408,12 +2558,11 @@ public class UnityCanvas extends Composite {
 							xoff = xoff - colrec.x;
 							AssociatedElement aElements[] = vocab.getTerms()[vocab.getTermIndex(row)].getAssociatedElements(col);
 							for(int i = 0; i < aElements.length; i++){
-								xoff = xoff - gc.textExtent(aElements[i].getName() + ",").x;
+								xoff = xoff - gc.textExtent(aElements[i].getName() + ", ").x;
 								if(xoff <= 0){
 									element = aElements[i];
 									break;
 								}
-								xoff = xoff - gc.textExtent(" ").x;
 								if(i == aElements.length - 1){
 									element = aElements[i];
 									break;									
