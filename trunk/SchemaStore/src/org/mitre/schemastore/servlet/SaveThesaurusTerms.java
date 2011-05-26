@@ -25,6 +25,14 @@ import org.mitre.schemastore.model.schemaInfo.SchemaInfo;
  */
 public class SaveThesaurusTerms
 {
+	/** Retrieves the synonym from the list */
+	static private AssociatedElement getSynonym(String name, ArrayList<AssociatedElement> synonyms)
+	{
+		for(AssociatedElement synonym : synonyms)
+			if(synonym.getName().equals(name)) return synonym;
+		return null;
+	}
+	
 	/** Generates a list of terms aligned with repository IDs */
 	static private ArrayList<Term> getAlignedTerms(DataManager manager, ThesaurusTerms oldThesaurus, ThesaurusTerms newThesaurus)
 	{
@@ -34,23 +42,31 @@ public class SaveThesaurusTerms
 			oldTerms.put(term.getId(), term);
 		
 		// Clear out all duplicate associated elements
-		HashSet<String> currentTerms = new HashSet<String>();
 		for(Term term : newThesaurus.getTerms())
 		{
-			currentTerms.clear();
-
 			// Identify the list of non-duplicated elements
-			ArrayList<AssociatedElement> elements = new ArrayList<AssociatedElement>();
-			for(AssociatedElement element : term.getElements())
+			ArrayList<AssociatedElement> synonyms = new ArrayList<AssociatedElement>();
+			ELEMENT_LOOP: for(AssociatedElement element : term.getElements())
 			{
-				String key = element.getName() + "|||" + element.getDescription();
-				if(!currentTerms.contains(key)) elements.add(element);
-				currentTerms.add(key);
+				// Add synonym
+				AssociatedElement synonym = getSynonym(element.getName(),synonyms);
+				if(synonym!=null)
+				{
+					if(element.getDescription()!=null)
+					{
+						// Add description if unique
+						String description = synonym.getDescription();
+						for(String descriptionPart : description.split("\\|"))
+							if(element.getDescription().equals(descriptionPart)) continue ELEMENT_LOOP;
+						synonym.setDescription(description + "|" + element.getDescription().replaceAll("|",""));
+					}
+				}
+				else synonyms.add(element);
 			}
 
 			// Update the elements if duplicates were found
-			if(term.getElements().length!=elements.size())
-				term.setElements(elements.toArray(new AssociatedElement[0]));
+			if(term.getElements().length!=synonyms.size())
+				term.setElements(synonyms.toArray(new AssociatedElement[0]));
 		}
 		
 		// Align terms while adjusting term name changes
