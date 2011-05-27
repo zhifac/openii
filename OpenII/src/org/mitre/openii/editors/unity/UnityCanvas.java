@@ -43,6 +43,7 @@ import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.events.ShellEvent;
 import org.eclipse.swt.events.ShellListener;
 import org.eclipse.swt.events.MouseEvent;
@@ -81,9 +82,13 @@ import org.mitre.openii.widgets.schemaTree.SchemaMenuManager;
 import org.mitre.openii.widgets.schemaTree.SchemaTree;
 import org.mitre.schemastore.model.AssociatedElement;
 import org.mitre.schemastore.model.Mapping;
+import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.Schema;
+import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.Term;
 import org.mitre.schemastore.model.VocabularyTerms;
+import org.mitre.schemastore.model.mappingInfo.AssociatedElementHash;
+import org.mitre.schemastore.model.mappingInfo.MappingInfoExt;
 import org.mitre.schemastore.model.schemaInfo.SchemaInfo;
 import org.mitre.schemastore.model.schemaInfo.model.SchemaModel;
 
@@ -211,6 +216,7 @@ public class UnityCanvas extends Composite {
 		viewsParent = parent;
 		vocab = vocabulary;
 
+		mappings = OpenIIManager.getMappings(vocabulary.getProjectID());
 		
 		schemaIDs = vocabulary.getSchemaIDs();
 		schemas = new Schema[schemaIDs.length];
@@ -834,7 +840,7 @@ public class UnityCanvas extends Composite {
 
 	private void createWorkspace(Composite parent) {
 
-		workspace.setToolTipText("Drag synsets from the Tree or Table to populate the workspace");
+		workspace.setToolTipText("Drag from the Tree or Table to populate the workspace");
 
 		//Canvas workspace = new Canvas(parent, SWT.EMBEDDED);
 		GridLayout wslayout = new GridLayout(2, false);
@@ -983,7 +989,7 @@ public class UnityCanvas extends Composite {
 		}
         
 		//temp label
-		tempLabel.setText("\nDrag synsets from the Tree or Table to populate the workspace");
+		tempLabel.setText("\nDrag from the Tree or Table to populate the workspace");
 		tempLabel.setAlignment(SWT.CENTER);
 		tempLabel.setFont(LargeItalicFont);
 		tempLabel.setEditable(false);
@@ -1535,6 +1541,15 @@ public class UnityCanvas extends Composite {
 		viewlayout.horizontalSpacing = 0;
 		viewlayout.marginBottom = 0;
 		parent.setLayout(viewlayout);
+		GridData viewGridData = new GridData();
+		viewGridData.horizontalSpan = 2;
+		viewGridData.minimumHeight = 0;
+		viewGridData.verticalIndent = 0;
+		viewGridData.horizontalAlignment = GridData.FILL;
+		viewGridData.verticalAlignment = GridData.FILL;
+		viewGridData.grabExcessHorizontalSpace = true;
+		viewGridData.grabExcessVerticalSpace = true;
+		parent.setLayoutData(viewGridData);
 		
 		Composite synsetLabelC = new Composite(parent, SWT.NONE);
 		RowLayout labellayout = new RowLayout();
@@ -1562,7 +1577,7 @@ public class UnityCanvas extends Composite {
 		});
 
 		EvidenceView = new Composite(parent, SWT.NONE);
-		GridData EvidenceViewGridData = new GridData();
+		EvidenceViewGridData = new GridData();
 		EvidenceViewGridData.horizontalSpan = 2;
 		EvidenceViewGridData.minimumHeight = 0;
 		EvidenceViewGridData.verticalIndent = 0;
@@ -1572,7 +1587,7 @@ public class UnityCanvas extends Composite {
 		EvidenceViewGridData.grabExcessVerticalSpace = true;
 //		EvidenceView.setLayoutData(gridData);
 
-		GridLayout EvidenceViewLayout = new GridLayout(1, false);
+		EvidenceViewLayout = new GridLayout(1, false);
 		EvidenceViewLayout.marginHeight = 0;
 		EvidenceViewLayout.marginWidth = 0;
 		EvidenceViewLayout.verticalSpacing = 0;
@@ -1601,7 +1616,7 @@ public class UnityCanvas extends Composite {
 	}
 	
 	public void updateDetailPane(Integer synsetID, Integer schemaID, Integer elementID){
-		System.err.println("updating detail pane");
+//		System.err.println("updating detail pane");
 		EvidenceView.dispose();
 		EvidenceView = new Composite(evidenceCanvas, SWT.NONE);
 		EvidenceView.setLayoutData(EvidenceViewGridData);
@@ -1609,6 +1624,7 @@ public class UnityCanvas extends Composite {
 
 		Term term = vocab.getTerms()[vocab.getTermIndex(synsetID)];
 		synsetLabel.setText(term.getName());
+		evidenceCanvas.layout(true);
 
 		ArrayList<AssociatedElement> allElements = new ArrayList<AssociatedElement>();
 		
@@ -1619,62 +1635,226 @@ public class UnityCanvas extends Composite {
 				allElements.add(elements[i]);
 			}
 		}
+
+		Table EvidenceTable = new Table(EvidenceView, SWT.BORDER | SWT.HIDE_SELECTION | SWT.NO_FOCUS | SWT.NONE);
+		EvidenceTable.setData("name", "evidenceTable");
+		EvidenceTable.setHeaderVisible(true);
+		EvidenceTable.setLinesVisible(true);
+		GridData gridData = new GridData();
+		gridData.horizontalSpan = 0;
+		gridData.minimumHeight = 0;
+		gridData.horizontalAlignment = GridData.FILL;
+		gridData.verticalAlignment = GridData.BEGINNING;
+		gridData.grabExcessHorizontalSpace = true;
+		gridData.grabExcessVerticalSpace = false;
+		EvidenceTable.setLayoutData(gridData);
 		
+		// creating one column for the status and the vocabulary
+		TableColumn tempC;
+		tempC = new TableColumn(EvidenceTable, SWT.NONE);
+//		tempC.setText("Term");
+		tempC.setMoveable(false);
+		tempC.setData("uid",new Integer(-204));
+		tempC.setWidth(100);
+		//tempC.addListener(SWT.Selection, sortAlphabeticallyListener);
+		tempC.setToolTipText("Matched Schema Term");
+		// creating one column for each element
+		for (int i = 0; i < allElements.size(); i++) {
+			tempC = new TableColumn(EvidenceTable, SWT.NONE);
+			tempC.setText(allElements.get(i).getName());
+			tempC.setData("sid",allElements.get(i).getSchemaID());
+			tempC.setData("eid",allElements.get(i).getElementID());
+			tempC.setWidth(50);
+			tempC.setMoveable(true);
+			String schema = "";
+			for(int k = 0; k < schemas.length; k++){
+				if(schemas[k].getId().equals(allElements.get(i).getSchemaID())){
+					schema = schemas[k].getName();
+				}
+			}
+		      // tooltip
+			  String tooltipText = allElements.get(i).getName();
+			  tooltipText += "\nSchema - " + schema;
+			  tooltipText += "\n";//Description: ";
+			  tooltipText +=  WordUtils.wrap(allElements.get(i).getDescription(),60,"\n",true);
+			tempC.setToolTipText(tooltipText);
+		}		
 		
 		//for each schema
 		for(int j = 0; j < schemaIDs.length; j++){
 			
-			Label schemaLabel = new Label(EvidenceView, SWT.NONE);
-			schemaLabel.setText(schemas[j].getName());
-			schemaLabel.setToolTipText(schemas[j].getDescription());
+//			Label schemaLabel = new Label(EvidenceView, SWT.NONE);
+//			schemaLabel.setText(schemas[j].getName());
+//			schemaLabel.setToolTipText(schemas[j].getDescription());
 			
-			Table EvidenceTable = new Table(EvidenceView, SWT.BORDER | SWT.NONE);
-			EvidenceTable.setData("name", "evidenceTable");
-			EvidenceTable.setHeaderVisible(true);
-			EvidenceTable.setLinesVisible(true);
-			EvidenceTable.setToolTipText("Evidence for X");
-			GridData gridData = new GridData();
-			gridData.horizontalSpan = 0;
-			gridData.minimumHeight = 0;
-			gridData.horizontalAlignment = GridData.FILL;
-			gridData.verticalAlignment = GridData.BEGINNING;
-			gridData.grabExcessHorizontalSpace = true;
-			gridData.grabExcessVerticalSpace = false;
-			EvidenceTable.setLayoutData(gridData);
+					
+			AssociatedElement[] elements = term.getAssociatedElements(schemas[j].getId());                             			
 			
-			// creating one column for the status and the vocabulary
-			TableColumn tempC;
-			tempC = new TableColumn(EvidenceTable, SWT.NONE);
-			tempC.setText("Term");
-			tempC.setMoveable(false);
-			tempC.setData("uid",new Integer(-204));
-			tempC.setWidth(100);
-			//tempC.addListener(SWT.Selection, sortAlphabeticallyListener);
-			tempC.setToolTipText("Matched Schema Term");
-			// creating one column for each schema
-			for (int i = 0; i < allElements.size(); i++) {
-				tempC = new TableColumn(EvidenceTable, SWT.NONE);
-				tempC.setText(allElements.get(i).getName());
-				tempC.setData("uid",new Integer(schemas[i].getId()));
-				tempC.setWidth(50);
-				tempC.setMoveable(true);
-			      // tooltip
-				  String tooltipText = allElements.get(i).getName();
-				  tooltipText += "Schema - " + allElements.get(i).getSchemaID() + "\n";
-				  tooltipText += "\n";//Description: ";
-				  tooltipText +=  WordUtils.wrap(allElements.get(i).getDescription(),60,"\n",true);
-				tempC.setToolTipText(tooltipText);
-			}		
-
-			
-			AssociatedElement[] elements = term.getAssociatedElements(schemas[j].getId());                             
 			for(int i = 0; i < elements.length; i++) {			
 			//for each term
-				TableItem newItem = new TableItem(EvidenceTable, SWT.NONE, EvidenceTable.getItemCount()); 
+				TableItem newItem = new TableItem(EvidenceTable, SWT.NONE, EvidenceTable.getItemCount());
+				newItem.setText(0, elements[i].getName());
+
+				//add matching info here
+				// for each mapping, we need to find any cells that map to the
+				// current element
+				ArrayList<MappingCell> mappingCellList = new ArrayList<MappingCell>();
+				for (Mapping m : mappings) {
+					MappingInfoExt mix = new MappingInfoExt(m, OpenIIManager.getMappingCells(m.getId()));
+					AssociatedElementHash aeh = mix.getMappingCells();
+					for ( MappingCell mc : aeh.get(elements[i].getElementID()) )
+						if ( !mappingCellList.contains(mc))
+							mappingCellList.add(mc); 
+				}	
+				
+				for (int l = 0; l < allElements.size(); l++) {
+					for (int k = 0; k < mappingCellList.size(); k++) {
+						MappingCell mc = mappingCellList.get(k); 
+						Mapping m = OpenIIManager.getMapping(mc.getMappingId());
+						Integer outputId = mc.getOutput();
+						Integer otherSchemaId = (elements[i].getSchemaID().equals(m.getSourceId())) ? m.getTargetId() : m.getSourceId();
+						if(otherSchemaId.equals(elements[i].getSchemaID())){
+							break;
+						}
+						int otherSIndex = 0;
+						for(; otherSIndex < schemaIDs.length; otherSIndex++){
+							if(schemaIDs[otherSIndex].equals(otherSchemaId)) {
+								break;
+							}
+						}
+
+						for (Integer inputId : mc.getElementInputIDs()) {
+							Integer otherElementId = (outputId.equals(elements[i].getElementID())) ? inputId : outputId;
+							if(otherElementId.equals(EvidenceTable.getColumn(l+1).getData("eid")) && otherSchemaId.equals(EvidenceTable.getColumn(l+1).getData("sid")) ) {
+//System.out.println("otherElementId = " + otherElementId + "otherSchemaId = " + otherSchemaId + " score = " + mc.getScore().toString());
+								//								SchemaElement otherElement = schemaInfos[otherSIndex].getElement(otherElementId);
+								newItem.setText(l+1, mc.getScore().toString());
+								if(mc.getScore() >= .85) {
+									newItem.setBackground(l+1,green);
+								} else if(mc.getScore() >= .7) {
+									newItem.setBackground(l+1,green);
+								} else if(mc.getScore() >= .4) {
+									newItem.setBackground(l+1,yellow);
+								} else if(mc.getScore() >= .2) {
+									newItem.setBackground(l+1,red);
+								} else {
+									newItem.setBackground(l+1,red);
+								}
+							}
+							
+						}
+					
+					}
+				}
+				
+				
+				
+			    // tooltip
+			    String schema = "";
+			    for(int k = 0; k < schemas.length; k++){
+				  if(schemas[k].getId().equals(elements[i].getSchemaID())){
+				  	schema = schemas[k].getName();
+				  }
+			    }
+			    String tooltipText = elements[i].getName();
+			    tooltipText += "\nSchema - " + schema;
+			    tooltipText += "\n";//Description: ";
+			    tooltipText +=  WordUtils.wrap(elements[i].getDescription(),60,"\n",true);
+				newItem.setData("popup",tooltipText);
 			}
 		}
 				
-		EvidenceView.getParent().layout();									
+		EvidenceTable.addListener(SWT.MouseHover, new Listener() {
+			public void handleEvent(Event e) {
+					activeTable = (Table)(e.widget);
+		        	// Identify the selected row
+					TableItem item = ((Table)(e.widget)).getItem(new Point(e.x,e.y));
+				    if (activeTable.getColumn(0).getWidth() < e.x || item == null)
+				    {
+				    	activeTable.setToolTipText(null);
+				    }
+				    activeTable.setToolTipText((String)item.getData("popup"));
+		        }
+
+		});
+		
+/* These workarounds don't work
+		EvidenceTable.addListener(SWT.EraseItem, new Listener() {
+			public void handleEvent(Event event) {
+				event.detail &= ~SWT.HOT;	
+				if((event.detail & SWT.SELECTED) != 0) {
+					event.detail &= ~SWT.SELECTED;					
+				}						
+				int value = 0;
+				Table theTable = (Table)(event.widget);
+				theTable.deselectAll();
+				for(int i = 1; i < theTable.getColumnCount(); i++)
+				{
+					value = Integer.parseInt(theTable.getSelection()[0].getText(i));
+					if(value >= .85) {
+						theTable.getSelection()[0].setBackground(i,green);
+					} else if(value >= .7) {
+						theTable.getSelection()[0].setBackground(i,green);
+					} else if(value >= .4) {
+						theTable.getSelection()[0].setBackground(i,yellow);
+					} else if(value >= .2) {
+						theTable.getSelection()[0].setBackground(i,red);
+					} else {
+						theTable.getSelection()[0].setBackground(i,red);
+					}
+				}
+			}
+		});		
+
+		EvidenceTable.addSelectionListener(new SelectionListener() {
+            @Override
+            public void widgetSelected(SelectionEvent event) {
+				int value = 0;
+				Table theTable = (Table)(event.widget);
+				theTable.deselectAll();
+				for(int i = 1; i < theTable.getColumnCount(); i++)
+				{
+					value = Integer.parseInt(theTable.getSelection()[0].getText(i));
+					if(value >= .85) {
+						theTable.getSelection()[0].setBackground(i,green);
+					} else if(value >= .7) {
+						theTable.getSelection()[0].setBackground(i,green);
+					} else if(value >= .4) {
+						theTable.getSelection()[0].setBackground(i,yellow);
+					} else if(value >= .2) {
+						theTable.getSelection()[0].setBackground(i,red);
+					} else {
+						theTable.getSelection()[0].setBackground(i,red);
+					}
+				}
+            }
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent event) {
+				int value = 0;
+				Table theTable = (Table)(event.widget);
+				theTable.deselectAll();
+				for(int i = 1; i < theTable.getColumnCount(); i++)
+				{
+					value = Integer.parseInt(theTable.getSelection()[0].getText(i));
+					if(value >= .85) {
+						theTable.getSelection()[0].setBackground(i,green);
+					} else if(value >= .7) {
+						theTable.getSelection()[0].setBackground(i,green);
+					} else if(value >= .4) {
+						theTable.getSelection()[0].setBackground(i,yellow);
+					} else if(value >= .2) {
+						theTable.getSelection()[0].setBackground(i,red);
+					} else {
+						theTable.getSelection()[0].setBackground(i,red);
+					}
+				}
+			}
+
+		});
+	*/	
+		
+		evidenceCanvas.layout();
 	
 	}
 	
@@ -2510,23 +2690,6 @@ public class UnityCanvas extends Composite {
 //					System.out.println("item = " + item);
 				    if (item == null)
 				    {
-//				    	System.out.println("item = null");
-						Menu popupMenu = new Menu(workspaceTable);
-					    MenuItem checkItem = new MenuItem(popupMenu, SWT.CASCADE);
-					    checkItem.setImage(CheckIcon);
-					    checkItem.setText("Check All");
-					    MenuItem uncheckItem = new MenuItem(popupMenu, SWT.NONE);
-					    uncheckItem.setText("Uncheck All");
-					    new MenuItem(popupMenu, SWT.SEPARATOR); 
-					    MenuItem sort = new MenuItem(popupMenu, SWT.NONE);
-					    sort.setImage(CheckIcon);
-					    sort.setText("Sort by Checked");
-					    sort.addSelectionListener(new SelectionAdapter() {
-							public void widgetSelected(SelectionEvent e) {
-							}
-						});	
-					    workspaceTable.setMenu(popupMenu);
-
 				    	return;
 				    }
 //				    System.out.println("item = " + item);
@@ -2625,6 +2788,7 @@ public class UnityCanvas extends Composite {
 			if(tableview.getHorizontalBar() != null)
 				tableview.getHorizontalBar().addListener(SWT.FocusIn, scrollListener);
 
+			
 	
 			display.addFilter(SWT.MouseDown, new Listener() {	
 				public void handleEvent(Event e) {
