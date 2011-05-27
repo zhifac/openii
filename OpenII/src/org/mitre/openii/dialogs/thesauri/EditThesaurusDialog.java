@@ -32,10 +32,13 @@ public class EditThesaurusDialog extends Dialog implements ModifyListener
 	public EditThesaurusDialog(Shell parentShell, Thesaurus thesaurus)
 	{
 		super(parentShell);
-		this.thesaurus = thesaurus;
-		if(thesaurus==null) thesaurus = new Thesaurus(null,"","");
+		if(thesaurus==null) this.thesaurus = thesaurus!=null ? thesaurus : new Thesaurus(null,"","");
 	}	
 
+	/** Returns the associated thesaurus */
+	public Thesaurus getThesaurus()
+		{ return thesaurus; }
+	
 	/** Configures the dialog shell */
 	protected void configureShell(Shell shell)
 	{
@@ -113,7 +116,7 @@ public class EditThesaurusDialog extends Dialog implements ModifyListener
 		
 		// Update schema information
 		if(!success)
-		{
+		{			
 			// Display the error message if failed to update
 			MessageBox messageBox = new MessageBox(getShell(),SWT.ERROR);
 			messageBox.setText("Thesaurus Generation Error");
