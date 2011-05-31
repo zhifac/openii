@@ -767,6 +767,7 @@ public class OpenIIManager
 	
 	// ------------ Function Functionality -------------
 
+	/** Retrieves the specified function */
 	public static Function getFunction(Integer functionID)
 	{
 		try { return RepositoryManager.getClient().getFunction(functionID); }
@@ -775,6 +776,7 @@ public class OpenIIManager
 
 	// ------------- Annontation Functionality --------------
 	
+	/** Sets the specified annotation */
 	public static boolean setAnnotationWithGroup(Integer elementID, Integer groupID, String attribute, String value)
 	{
 		try { RepositoryManager.getClient().setAnnotationWithGroup(elementID, groupID, attribute, value); }
@@ -782,6 +784,7 @@ public class OpenIIManager
 		return true;
 	}
 	
+	/** Retrieves all annotations for the specified group */
 	public static ArrayList<Annotation> getAnnotations(Integer groupID, String attribute)
 	{
 		try { return RepositoryManager.getClient().getAnnotations(groupID, attribute); }
