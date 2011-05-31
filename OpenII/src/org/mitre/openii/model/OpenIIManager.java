@@ -10,6 +10,7 @@ import java.util.HashSet;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.mitre.openii.application.OpenIIActivator;
 import org.mitre.openii.model.controllers.MappingCellMerger;
+import org.mitre.schemastore.model.Annotation;
 import org.mitre.schemastore.model.DataSource;
 import org.mitre.schemastore.model.Function;
 import org.mitre.schemastore.model.Mapping;
@@ -772,6 +773,21 @@ public class OpenIIManager
 		catch (Exception e) { return null; }
 	}
 
+	// ------------- Annontation Functionality --------------
+	
+	public static boolean setAnnotationWithGroup(Integer elementID, Integer groupID, String attribute, String value)
+	{
+		try { RepositoryManager.getClient().setAnnotationWithGroup(elementID, groupID, attribute, value); }
+		catch(Exception e) { return false; }
+		return true;
+	}
+	
+	public static ArrayList<Annotation> getAnnotations(Integer groupID, String attribute)
+	{
+		try { return RepositoryManager.getClient().getAnnotations(groupID, attribute); }
+		catch(Exception e) { return new ArrayList<Annotation>(); }
+	}
+	
 	// ------------ Data Source Functionality -------------
 
 	/** Returns the data sources for the specified schema */
