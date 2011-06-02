@@ -9,8 +9,10 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
+import org.mitre.schemastore.model.AssociatedElement;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.MappingCellInput;
@@ -283,6 +285,42 @@ public class ProjectDataCalls extends AbstractDataCalls
 	// Handles Mapping Cells in the Database
 	//---------------------------------------
 
+	/** Returns a numeric list of the elements */
+	private String getNumericList(List<AssociatedElement> elements)
+	{
+		StringBuffer numericList = new StringBuffer();
+		for(AssociatedElement element : elements)
+			numericList.append(element.getElementID() + ",");
+		return numericList.subSequence(0, numericList.length()-1).toString();
+	}
+
+	/** Returns a string list of the elements */
+	private String getStringList(List<AssociatedElement> elements)
+	{
+		StringBuffer stringList = new StringBuffer();
+		for(AssociatedElement element : elements)
+			stringList.append("'" + element.getElementID() + "',");
+		return stringList.subSequence(0, stringList.length()-1).toString();
+	}
+
+	/** Returns a like list of the elements */
+	private String getLikeList(List<AssociatedElement> elements)
+	{
+		StringBuffer likeList = new StringBuffer();
+		for(AssociatedElement element : elements)
+			likeList.append("input_ids LIKE '%" + element.getElementID() + "%' OR ");
+		return likeList.subSequence(0, likeList.length()-5).toString();
+	}
+	
+	/** Splits apart the mapping cell inputs */
+	private MappingCellInput[] getInputs(String inputString)
+	{
+        ArrayList<MappingCellInput> inputs = new ArrayList<MappingCellInput>();
+        for(String input : inputString.split(","))
+        	inputs.add(MappingCellInput.parse(input.trim()));
+        return inputs.toArray(new MappingCellInput[0]);
+	}
+	
 	/** Retrieves the list of mapping cells in the repository for the specified mapping */
 	public ArrayList<MappingCell> getMappingCells(Integer mappingID)
 	{
@@ -295,21 +333,16 @@ public class ProjectDataCalls extends AbstractDataCalls
             {            	
                 // Retrieves the mapping cell info
                 int cellID = rs.getInt("id");
+                MappingCellInput[] inputs = getInputs(rs.getString("input_ids"));
                 Integer output = rs.getInt("output_id");
                 Double score = rs.getDouble("score");
                 Integer functionID = rs.getString("function_id")==null?null:rs.getInt("function_id");
                 String author = rs.getString("author");
                 Date date = rs.getDate("modification_date");
                 String notes = rs.getString("notes");
-              
-                // Get the list of mapping inputs
-                ArrayList<MappingCellInput> inputs = new ArrayList<MappingCellInput>();
-                for(String input : rs.getString("input_ids").split(","))
-                	inputs.add(MappingCellInput.parse(input.trim()));
-                MappingCellInput[] inputArray = inputs.toArray(new MappingCellInput[0]);
                 
                 // Store the mapping cell
-                mappingCells.add(new MappingCell(cellID,mappingID,inputArray,output,score,functionID,author,date,notes));
+                mappingCells.add(new MappingCell(cellID,mappingID,inputs,output,score,functionID,author,date,notes));
             }
             rs.close();
 
@@ -320,6 +353,120 @@ public class ProjectDataCalls extends AbstractDataCalls
 		return mappingCells;
 	}
 
+	/** Retrieves the list of mapping cells containing the specific element and above the specified score */
+	public ArrayList<MappingCell> getMappingCellsByElement(Integer projectID, List<AssociatedElement> elements, Double minScore)
+	{
+		ArrayList<MappingCell> mappingCells = new ArrayList<MappingCell>();
+		try {
+
+			// Generate hash of all existent elements
+			HashSet<String> elementHash = new HashSet<String>();
+			for(AssociatedElement element : elements)
+				elementHash.add(element.getSchemaID() + "_" + element.getElementID());
+			
+			// Generate the query
+			String query = "SELECT id,mapping_id,source_id,target_id,input_ids,output_id,score,function_id,author,modification_date,notes " +
+						   "FROM mapping_cell,mapping " +
+						   "WHERE mapping_id=mapping.id AND project_id=" + projectID + " AND score>=" + minScore + " AND " +
+						   "	  (output_id IN (" + getNumericList(elements) + ") OR " +
+						   "       (input_id NOT LIKE '%,%' AND input_id IN (" + getStringList(elements) + ")) OR " +
+						   "       (input_id LIKE '%,%' AND (" + getLikeList(elements) + ")))";
+				
+            // Retrieve mapping cells
+			Statement stmt = connection.getStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            while(rs.next())
+            {            	
+            	// Retrieve the mapping info
+                int mappingID = rs.getInt("mapping_id");
+                int sourceID = rs.getInt("source_id");
+                int targetID = rs.getInt("target_id");
+            	
+            	// Retrieves the mapping cell info
+                int cellID = rs.getInt("id");
+                MappingCellInput[] inputs = getInputs(rs.getString("input_ids"));
+                Integer output = rs.getInt("output_id");
+                Double score = rs.getDouble("score");
+                Integer functionID = rs.getString("function_id")==null?null:rs.getInt("function_id");
+                String author = rs.getString("author");
+                Date date = rs.getDate("modification_date");
+                String notes = rs.getString("notes");
+
+                // Check to make sure that mapping cell contains a referenced element
+                boolean exists = false;
+                if(elementHash.contains(targetID+"_"+output)) exists=true;
+                for(MappingCellInput input : inputs)
+                	if(elementHash.contains(sourceID+"_"+input.getElementID())) exists=true;
+                if(!exists) continue;
+                	
+                // Store the mapping cell
+                mappingCells.add(new MappingCell(cellID,mappingID,inputs,output,score,functionID,author,date,notes));
+            }
+            rs.close();
+
+            // Close the statements
+            stmt.close();
+		}
+		catch(SQLException e) { System.out.println("(E) ProjectDataCalls:getMappingCellsByElement: "+e.getMessage());}
+		return mappingCells;
+	}
+	
+	/** Retrieves the list of mapping cells connecting the specified elements in the specified project */
+	public ArrayList<MappingCell> getAssociatedMappingCells(Integer projectID, List<AssociatedElement> elements)
+	{
+		ArrayList<MappingCell> mappingCells = new ArrayList<MappingCell>();
+		try {
+
+			// Generate hash of all existent elements
+			HashSet<String> elementHash = new HashSet<String>();
+			for(AssociatedElement element : elements)
+				elementHash.add(element.getSchemaID() + "_" + element.getElementID());
+			
+			// Generate the query
+			String query = "SELECT id,mapping_id,source_id,target_id,input_ids,output_id,score,function_id,author,modification_date,notes " +
+						   "FROM mapping_cell,mapping " +
+						   "WHERE mapping_id=mapping.id AND project_id=" + projectID + " AND " +
+						   "	  output_id IN (" + getNumericList(elements) + ") AND " +
+						   "      ((input_id NOT LIKE '%,%' AND input_id IN (" + getStringList(elements) + ")) OR " +
+						   "       (input_id LIKE '%,%' AND (" + getLikeList(elements) + ")))";
+			
+            // Retrieve mapping cells
+			Statement stmt = connection.getStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            while(rs.next())
+            {            	
+            	// Retrieve the mapping info
+                int mappingID = rs.getInt("mapping_id");
+                int sourceID = rs.getInt("source_id");
+                int targetID = rs.getInt("target_id");
+            	
+                // Retrieves the mapping cell info
+                int cellID = rs.getInt("id");
+                MappingCellInput[] inputs = getInputs(rs.getString("input_ids"));
+                Integer output = rs.getInt("output_id");
+                Double score = rs.getDouble("score");
+                Integer functionID = rs.getString("function_id")==null?null:rs.getInt("function_id");
+                String author = rs.getString("author");
+                Date date = rs.getDate("modification_date");
+                String notes = rs.getString("notes");
+
+                // Check to make sure that mapping cell only consists of referenced elements
+                if(!elementHash.contains(targetID+"_"+output)) continue;
+                for(MappingCellInput input : inputs)
+                	if(!elementHash.contains(sourceID+"_"+input.getElementID())) continue;
+                
+                // Store the mapping cell
+                mappingCells.add(new MappingCell(cellID,mappingID,inputs,output,score,functionID,author,date,notes));
+            }
+            rs.close();
+
+            // Close the statements
+            stmt.close();
+		}
+		catch(SQLException e) { System.out.println("(E) ProjectDataCalls:getAssociatedMappingCells: "+e.getMessage());}
+		return mappingCells;
+	}
+	
 	/** Adds the specified mapping cell */
 	public Integer addMappingCells(List<MappingCell> mappingCells)
 		{ return addMappingCells(mappingCells, true); }

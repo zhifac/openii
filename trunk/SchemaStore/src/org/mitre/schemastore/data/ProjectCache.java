@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.mitre.schemastore.data.database.ProjectDataCalls;
+import org.mitre.schemastore.model.AssociatedElement;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.Project;
@@ -92,6 +93,14 @@ public class ProjectCache extends DataCache
 	public ArrayList<MappingCell> getMappingCells(Integer mappingID)
 		{ return dataCalls.getMappingCells(mappingID); }
 
+	/** Get all mapping cells containing the specific element and above the specified score */
+	public ArrayList<MappingCell> getMappingCellsByElement(Integer projectID, List<AssociatedElement> elements, Double minScore)
+		{ return dataCalls.getMappingCellsByElement(projectID, elements, minScore); }
+	
+	/** Get all mapping cells connecting the specified elements in the specified project */
+	public ArrayList<MappingCell> getAssociatedMappingCells(Integer projectID, List<AssociatedElement> elements)
+		{ return dataCalls.getAssociatedMappingCells(projectID, elements); }
+	
 	/** Add the specified mapping cell */
 	public Integer addMappingCells(List<MappingCell> mappingCells)
 		{ return dataCalls.addMappingCells(mappingCells); }
