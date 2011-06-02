@@ -100,7 +100,21 @@ public class AnnotationDataCalls extends AbstractDataCalls
 	}
 
 	/** Gets the annotations for the specified group */
-	public ArrayList<Annotation> getAnnotations(int groupID, String attribute)
+	public ArrayList<Annotation> getAnnotations(int elementID, String attribute)
+	{
+		ArrayList<Annotation> annotations = new ArrayList<Annotation>();
+		try {
+			Statement stmt = connection.getStatement();
+			ResultSet rs = stmt.executeQuery("SELECT group_id, value FROM annotation WHERE element_id="+elementID+" AND attribute LIKE '"+attribute+"%'");
+			while(rs.next())
+				annotations.add(new Annotation(elementID,rs.getInt("group_id"),attribute,rs.getString("value")));
+			stmt.close();
+		} catch(SQLException e) { System.out.println("(E) Database:getAnnotations: "+e.getMessage()); }
+		return annotations;
+	}
+	
+	/** Gets the annotations for the specified group */
+	public ArrayList<Annotation> getAnnotationsByGroup(int groupID, String attribute)
 	{
 		ArrayList<Annotation> annotations = new ArrayList<Annotation>();
 		try {
@@ -109,7 +123,7 @@ public class AnnotationDataCalls extends AbstractDataCalls
 			while(rs.next())
 				annotations.add(new Annotation(rs.getInt("element_id"),groupID,attribute,rs.getString("value")));
 			stmt.close();
-		} catch(SQLException e) { System.out.println("(E) Database:getAnnotations: "+e.getMessage()); }
+		} catch(SQLException e) { System.out.println("(E) Database:getAnnotationsByGroup: "+e.getMessage()); }
 		return annotations;
 	}
 	

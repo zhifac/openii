@@ -1588,6 +1588,21 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
      </sequence>
     </complexType>
    </element>
+   <element name="getAnnotationsByGroup">
+    <complexType>
+     <sequence>
+      <element name="groupID" type="xsd:int"/>
+      <element name="attribute" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getAnnotationsByGroupResponse">
+    <complexType>
+     <sequence>
+      <element maxOccurs="unbounded" name="getAnnotationsByGroupReturn" type="tns1:Annotation"/>
+     </sequence>
+    </complexType>
+   </element>
    <element name="getAnnotation">
     <complexType>
      <sequence>
@@ -1607,7 +1622,7 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
    <element name="getAnnotations">
     <complexType>
      <sequence>
-      <element name="groupID" type="xsd:int"/>
+      <element name="elementID" type="xsd:int"/>
       <element name="attribute" type="xsd:string"/>
      </sequence>
     </complexType>
@@ -2432,6 +2447,14 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
    <wsdl:message name="getProjectsRequest">
 
       <wsdl:part element="impl:getProjects" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="getAnnotationsByGroupRequest">
+
+      <wsdl:part element="impl:getAnnotationsByGroup" name="parameters">
 
       </wsdl:part>
 
@@ -3536,6 +3559,14 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
    <wsdl:message name="getMappingCellsResponse">
 
       <wsdl:part element="impl:getMappingCellsResponse" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="getAnnotationsByGroupResponse">
+
+      <wsdl:part element="impl:getAnnotationsByGroupResponse" name="parameters">
 
       </wsdl:part>
 
@@ -5226,6 +5257,18 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
        </wsdl:input>
 
          <wsdl:output message="impl:saveThesaurusTermsResponse" name="saveThesaurusTermsResponse">
+
+       </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getAnnotationsByGroup">
+
+         <wsdl:input message="impl:getAnnotationsByGroupRequest" name="getAnnotationsByGroupRequest">
+
+       </wsdl:input>
+
+         <wsdl:output message="impl:getAnnotationsByGroupResponse" name="getAnnotationsByGroupResponse">
 
        </wsdl:output>
 
@@ -7330,6 +7373,24 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
          </wsdl:input>
 
          <wsdl:output name="saveThesaurusTermsResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getAnnotationsByGroup">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="getAnnotationsByGroupRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="getAnnotationsByGroupResponse">
 
             <wsdlsoap:body use="literal"/>
 
