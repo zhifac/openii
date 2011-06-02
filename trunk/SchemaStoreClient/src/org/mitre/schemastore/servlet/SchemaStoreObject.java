@@ -118,8 +118,9 @@ public interface SchemaStoreObject extends java.rmi.Remote {
     public boolean deleteVocabulary(int projectID) throws java.rmi.RemoteException;
     public org.mitre.schemastore.model.ThesaurusTerms getThesaurusTerms(int thesaurusID) throws java.rmi.RemoteException;
     public boolean saveThesaurusTerms(org.mitre.schemastore.model.ThesaurusTerms terms) throws java.rmi.RemoteException;
+    public org.mitre.schemastore.model.Annotation[] getAnnotationsByGroup(int groupID, java.lang.String attribute) throws java.rmi.RemoteException;
     public java.lang.String getAnnotation(int elementID, int groupID, java.lang.String attribute) throws java.rmi.RemoteException;
-    public org.mitre.schemastore.model.Annotation[] getAnnotations(int groupID, java.lang.String attribute) throws java.rmi.RemoteException;
+    public org.mitre.schemastore.model.Annotation[] getAnnotations(int elementID, java.lang.String attribute) throws java.rmi.RemoteException;
     public int addAttribute(org.mitre.schemastore.model.Attribute attribute) throws java.rmi.RemoteException;
     public org.mitre.schemastore.model.Attribute getAttribute(int attributeID) throws java.rmi.RemoteException;
     public boolean isConnected() throws java.rmi.RemoteException;

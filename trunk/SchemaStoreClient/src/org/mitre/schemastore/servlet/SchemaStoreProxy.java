@@ -704,16 +704,22 @@ public class SchemaStoreProxy implements org.mitre.schemastore.servlet.SchemaSto
     return schemaStore.saveThesaurusTerms(terms);
   }
   
+  public org.mitre.schemastore.model.Annotation[] getAnnotationsByGroup(int groupID, java.lang.String attribute) throws java.rmi.RemoteException{
+    if (schemaStore == null)
+      _initSchemaStoreProxy();
+    return schemaStore.getAnnotationsByGroup(groupID, attribute);
+  }
+  
   public java.lang.String getAnnotation(int elementID, int groupID, java.lang.String attribute) throws java.rmi.RemoteException{
     if (schemaStore == null)
       _initSchemaStoreProxy();
     return schemaStore.getAnnotation(elementID, groupID, attribute);
   }
   
-  public org.mitre.schemastore.model.Annotation[] getAnnotations(int groupID, java.lang.String attribute) throws java.rmi.RemoteException{
+  public org.mitre.schemastore.model.Annotation[] getAnnotations(int elementID, java.lang.String attribute) throws java.rmi.RemoteException{
     if (schemaStore == null)
       _initSchemaStoreProxy();
-    return schemaStore.getAnnotations(groupID, attribute);
+    return schemaStore.getAnnotations(elementID, attribute);
   }
   
   public int addAttribute(org.mitre.schemastore.model.Attribute attribute) throws java.rmi.RemoteException{
