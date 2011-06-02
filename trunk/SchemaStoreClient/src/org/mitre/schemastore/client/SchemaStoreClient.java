@@ -11,6 +11,7 @@ import java.util.Arrays;
 import org.mitre.schemastore.data.database.DatabaseConnection;
 import org.mitre.schemastore.model.Alias;
 import org.mitre.schemastore.model.Annotation;
+import org.mitre.schemastore.model.AssociatedElement;
 import org.mitre.schemastore.model.Attribute;
 import org.mitre.schemastore.model.Containment;
 import org.mitre.schemastore.model.DataSource;
@@ -33,7 +34,7 @@ import org.mitre.schemastore.model.Thesaurus;
 import org.mitre.schemastore.model.ThesaurusTerms;
 import org.mitre.schemastore.model.VocabularyTerms;
 import org.mitre.schemastore.model.schemaInfo.SchemaInfo;
-import org.mitre.schemastore.servlet.SchemaStore;
+import org.mitre.schemastore.servlet.SchemaStoreObject;
 import org.mitre.schemastore.servlet.SchemaStoreProxy;
 
 /**
@@ -69,7 +70,7 @@ public class SchemaStoreClient
 	public SchemaStoreClient() throws RemoteException
 	{
 		try {
-			Constructor<?> constructor = SchemaStore.class.getConstructor(new Class<?>[]{});
+			Constructor<?> constructor = SchemaStoreObject.class.getConstructor(new Class<?>[]{});
 			schemaStore = constructor.newInstance(new Object[]{});
 		} catch(Exception e) { throw new RemoteException("(E) Failed to connect to SchemaStore: " + e.getMessage()); }
 	}
@@ -84,7 +85,7 @@ public class SchemaStoreClient
 				Integer type = repository.getType().equals(Repository.POSTGRES) ? DatabaseConnection.POSTGRES : DatabaseConnection.DERBY;
 				Class<?> types[] = new Class[] {Integer.class,String.class,String.class,String.class,String.class};
 				Object args[] = new Object[] {type,repository.getURI().toString(),repository.getDatabaseName(),repository.getDatabaseUser(),repository.getDatabasePassword()};
-				Constructor<?> constructor = SchemaStore.class.getConstructor(types);
+				Constructor<?> constructor = SchemaStoreObject.class.getConstructor(types);
 				schemaStore = constructor.newInstance(args);
 			}
 			else schemaStore = new SchemaStoreProxy(repository.getURI().toString());
@@ -606,6 +607,20 @@ public class SchemaStoreClient
 		return mappingCells==null ? new ArrayList<MappingCell>() : new ArrayList<MappingCell>(Arrays.asList(mappingCells));
 	}
 
+	/** Gets the list of mapping cells containing the at least one of the specified elements and the specified score */
+	public ArrayList<MappingCell> getMappingCellsByElement(int projectID, AssociatedElement element, double minScore) throws RemoteException
+	{
+		MappingCell[] mappingCells = (MappingCell[])callMethod("getMappingCellsByElement",new Object[] {projectID, element, minScore});
+		return mappingCells==null ? new ArrayList<MappingCell>() : new ArrayList<MappingCell>(Arrays.asList(mappingCells));
+	}
+
+	/** Gets the list of mapping cells connecting only the specified elements in the specified project */
+	public ArrayList<MappingCell> getAssociatedMappingCells(int projectID, ArrayList<AssociatedElement> elements) throws RemoteException
+	{
+		MappingCell[] mappingCells = (MappingCell[])callMethod("getAssociatedMappingCells",new Object[] {projectID, elements.toArray(new AssociatedElement[0])});
+		return mappingCells==null ? new ArrayList<MappingCell>() : new ArrayList<MappingCell>(Arrays.asList(mappingCells));
+	}
+	
 	/** Indicates if the specified project has a vocabulary from the web service */
 	public boolean hasVocabulary(Integer projectID) throws RemoteException
 		{ return (Boolean)callMethod("hasVocabulary",new Object[] {projectID}); }
@@ -615,24 +630,32 @@ public class SchemaStoreClient
 	//----------------------
 
 	/** Sets the annotation for the specified element and attribute */
-	public boolean setAnnotation(Integer elementID, String attribute, String value) throws RemoteException
-		{ return (Boolean)callMethod("setAnnotation",new Object[] {elementID,attribute,value}); }
+	public boolean setAnnotation(Integer elementID, Integer groupID, String attribute, String value) throws RemoteException
+		{ return (Boolean)callMethod("setAnnotation",new Object[] {elementID,groupID==null?0:groupID,attribute,value}); }
 
-	/** Web service to set an annotation */
-	public boolean setAnnotationWithGroup(int elementID, int groupID, String attribute, String value) throws RemoteException
-		{ return (Boolean)callMethod("setAnnotationWithGroup",new Object[] {elementID,groupID,attribute,value}); }
+	/** Sets the specified list of annotations */
+	public boolean setAnnotations(ArrayList<Annotation> annotations) throws RemoteException
+		{ return (Boolean)callMethod("setAnnotations",new Object[] {annotations.toArray(new Annotation[0])}); }
 
 	/** Gets the annotation for the specified element and attribute */
-	public String getAnnotation(Integer elementID, String attribute) throws RemoteException
-		{ return (String)callMethod("getAnnotation",new Object[] {elementID,attribute}); }
+	public String getAnnotation(Integer elementID, Integer groupID, String attribute) throws RemoteException
+		{ return (String)callMethod("getAnnotation",new Object[] {elementID,groupID==null?0:groupID,attribute}); }
 	
-	/** Web service to get the requested annotations */
+	/** Get the requested annotations by group */
 	public ArrayList<Annotation> getAnnotations(int groupID, String attribute) throws RemoteException
 	{
 		Annotation[] annotations = (Annotation[])callMethod("getAnnotations",new Object[] {groupID,attribute});
 		return annotations==null ? new ArrayList<Annotation>() : new ArrayList<Annotation>(Arrays.asList(annotations));
 	}
 
+	/** Clears the annotation for the specified element and attribute */
+	public boolean clearAnnotation(Integer elementID, Integer groupID, String attribute) throws RemoteException
+		{ return (Boolean)callMethod("clearAnnotation",new Object[] {elementID,groupID==null?0:groupID,attribute}); }
+	
+	/** Clears the requested annotations by group */
+	public boolean clearAnnotations(int groupID, String attribute) throws RemoteException
+		{ return (Boolean)callMethod("clearAnnotations",new Object[] {groupID,attribute}); }
+	
 	//-------------------
 	// Derived Functions
 	//-------------------
