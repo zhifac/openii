@@ -55,6 +55,7 @@ public class SchemaStoreClient
 		{
 			Class<?> type = args[i].getClass();
 			if(type==Integer.class) type = Integer.TYPE;
+			if(type==Double.class) type = Double.TYPE;
 			if(type==Boolean.class) type = Boolean.TYPE;
 			types[i] = type;
 		}
@@ -608,9 +609,9 @@ public class SchemaStoreClient
 	}
 
 	/** Gets the list of mapping cells containing the at least one of the specified elements and the specified score */
-	public ArrayList<MappingCell> getMappingCellsByElement(int projectID, AssociatedElement element, double minScore) throws RemoteException
+	public ArrayList<MappingCell> getMappingCellsByElement(int projectID, ArrayList<AssociatedElement> elements, double minScore) throws RemoteException
 	{
-		MappingCell[] mappingCells = (MappingCell[])callMethod("getMappingCellsByElement",new Object[] {projectID, element, minScore});
+		MappingCell[] mappingCells = (MappingCell[])callMethod("getMappingCellsByElement",new Object[] {projectID, elements.toArray(new AssociatedElement[0]), minScore});
 		return mappingCells==null ? new ArrayList<MappingCell>() : new ArrayList<MappingCell>(Arrays.asList(mappingCells));
 	}
 
