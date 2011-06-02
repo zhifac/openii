@@ -34,7 +34,7 @@ import org.mitre.schemastore.model.Thesaurus;
 import org.mitre.schemastore.model.ThesaurusTerms;
 import org.mitre.schemastore.model.VocabularyTerms;
 import org.mitre.schemastore.model.schemaInfo.SchemaInfo;
-import org.mitre.schemastore.servlet.SchemaStoreObject;
+import org.mitre.schemastore.servlet.SchemaStore;
 import org.mitre.schemastore.servlet.SchemaStoreProxy;
 
 /**
@@ -70,7 +70,7 @@ public class SchemaStoreClient
 	public SchemaStoreClient() throws RemoteException
 	{
 		try {
-			Constructor<?> constructor = SchemaStoreObject.class.getConstructor(new Class<?>[]{});
+			Constructor<?> constructor = SchemaStore.class.getConstructor(new Class<?>[]{});
 			schemaStore = constructor.newInstance(new Object[]{});
 		} catch(Exception e) { throw new RemoteException("(E) Failed to connect to SchemaStore: " + e.getMessage()); }
 	}
@@ -85,7 +85,7 @@ public class SchemaStoreClient
 				Integer type = repository.getType().equals(Repository.POSTGRES) ? DatabaseConnection.POSTGRES : DatabaseConnection.DERBY;
 				Class<?> types[] = new Class[] {Integer.class,String.class,String.class,String.class,String.class};
 				Object args[] = new Object[] {type,repository.getURI().toString(),repository.getDatabaseName(),repository.getDatabaseUser(),repository.getDatabasePassword()};
-				Constructor<?> constructor = SchemaStoreObject.class.getConstructor(types);
+				Constructor<?> constructor = SchemaStore.class.getConstructor(types);
 				schemaStore = constructor.newInstance(args);
 			}
 			else schemaStore = new SchemaStoreProxy(repository.getURI().toString());
@@ -640,11 +640,18 @@ public class SchemaStoreClient
 	/** Gets the annotation for the specified element and attribute */
 	public String getAnnotation(Integer elementID, Integer groupID, String attribute) throws RemoteException
 		{ return (String)callMethod("getAnnotation",new Object[] {elementID,groupID==null?0:groupID,attribute}); }
+
+	/** Get the requested annotations */
+	public ArrayList<Annotation> getAnnotations(int elementID, String attribute) throws RemoteException
+	{
+		Annotation[] annotations = (Annotation[])callMethod("getAnnotations",new Object[] {elementID,attribute});
+		return annotations==null ? new ArrayList<Annotation>() : new ArrayList<Annotation>(Arrays.asList(annotations));
+	}
 	
 	/** Get the requested annotations by group */
-	public ArrayList<Annotation> getAnnotations(int groupID, String attribute) throws RemoteException
+	public ArrayList<Annotation> getAnnotationsByGroup(int groupID, String attribute) throws RemoteException
 	{
-		Annotation[] annotations = (Annotation[])callMethod("getAnnotations",new Object[] {groupID,attribute});
+		Annotation[] annotations = (Annotation[])callMethod("getAnnotationsByGroup",new Object[] {groupID,attribute});
 		return annotations==null ? new ArrayList<Annotation>() : new ArrayList<Annotation>(Arrays.asList(annotations));
 	}
 
