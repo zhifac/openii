@@ -11,6 +11,7 @@ import org.mitre.schemastore.data.database.Database;
 import org.mitre.schemastore.data.database.DatabaseConnection;
 import org.mitre.schemastore.model.Alias;
 import org.mitre.schemastore.model.Annotation;
+import org.mitre.schemastore.model.AssociatedElement;
 import org.mitre.schemastore.model.Attribute;
 import org.mitre.schemastore.model.Containment;
 import org.mitre.schemastore.model.DataSource;
@@ -524,10 +525,6 @@ public class SchemaStore
 	public boolean deleteMapping(int mappingID)
 		{ return getManager().getProjectCache().deleteMapping(mappingID); }
 	
-	/** Web service to get the mapping cells for the specified mapping */
-	public MappingCell[] getMappingCells(int mappingID)
-		{ return getManager().getProjectCache().getMappingCells(mappingID).toArray(new MappingCell[0]); }
-
 	/** Web service to add the specified mapping cell */
 	public int addMappingCells(MappingCell[] mappingCells)
 		{ return getManager().getProjectCache().addMappingCells(Arrays.asList(mappingCells)); }
@@ -544,6 +541,18 @@ public class SchemaStore
 		return getManager().getProjectCache().deleteMappingCells(ids);
 	}
 
+	/** Web service to get the mapping cells for the specified mapping */
+	public MappingCell[] getMappingCells(int mappingID)
+		{ return getManager().getProjectCache().getMappingCells(mappingID).toArray(new MappingCell[0]); }
+
+	/** Web service to get all mapping cells containing the specific element and having above the specified score */
+	public MappingCell[] getMappingCellsByElement(int projectID, AssociatedElement elements[], double minScore)
+		{ return getManager().getProjectCache().getMappingCellsByElement(projectID, Arrays.asList(elements), minScore).toArray(new MappingCell[0]); }
+
+	/** Web service to get all mapping cells connecting the specified elements in the specified project */
+	public MappingCell[] getAssociatedMappingCells(int projectID, AssociatedElement elements[])
+		{ return getManager().getProjectCache().getAssociatedMappingCells(projectID, Arrays.asList(elements)).toArray(new MappingCell[0]); }
+	
 	/** Web service indicating if a project has a vocabulary */
 	public boolean hasVocabulary(int projectID)
 		{ return getManager().getProjectCache().getVocabularyID(projectID)!=null; }
@@ -553,20 +562,28 @@ public class SchemaStore
 	//-------------------------------
 
 	/** Web service to set an annotation */
-	public boolean setAnnotation(int elementID, String attribute, String value)
-		{ return getManager().setAnnotation(elementID, null, attribute, value.equals("")?null:value); }
+	public boolean setAnnotation(int elementID, int groupID, String attribute, String value)
+		{ return getManager().getAnnotationCache().setAnnotation(elementID, groupID, attribute, value.equals("")?null:value); }
 
-	/** Web service to set an annotation */
-	public boolean setAnnotationWithGroup(int elementID, int groupID, String attribute, String value)
-		{ return getManager().setAnnotation(elementID, groupID, attribute, value.equals("")?null:value); }
+	/** Web service to set annotations */
+	public boolean setAnnotations(Annotation[] annotations)
+		{ return getManager().getAnnotationCache().setAnnotations(Arrays.asList(annotations)); }
 	
-	/** Web service to get an annotation */
-	public String getAnnotation(int elementID, String attribute)
-		{ return getManager().getAnnotation(elementID, attribute); }
+	/** Web service to get an annotation for a specified group */
+	public String getAnnotation(int elementID, int groupID, String attribute)
+		{ return getManager().getAnnotationCache().getAnnotation(elementID, groupID, attribute); }
 	
 	/** Web service to get the requested annotations */
 	public Annotation[] getAnnotations(int groupID, String attribute)
-		{ return getManager().getAnnotations(groupID, attribute).toArray(new Annotation[0]); }
+		{ return getManager().getAnnotationCache().getAnnotations(groupID, attribute).toArray(new Annotation[0]); }
+
+	/** Web service to clear an annotation */
+	public boolean clearAnnotation(int elementID, int groupID, String attribute)
+		{ return getManager().getAnnotationCache().clearAnnotation(elementID, groupID, attribute); }
+	
+	/** Web service to clear the specified group annotations */
+	public boolean clearAnnotations(int groupID, String attribute)
+		{ return getManager().getAnnotationCache().clearAnnotations(groupID, attribute); }
 	
 	//--------------------
 	// Derived Operations

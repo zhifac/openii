@@ -3,11 +3,9 @@
 package org.mitre.schemastore.data;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 
 import org.mitre.schemastore.data.database.Database;
 import org.mitre.schemastore.data.database.DatabaseConnection;
-import org.mitre.schemastore.model.Annotation;
 
 /** Class for managing the SchemaStore data */
 public class DataManager
@@ -16,6 +14,7 @@ public class DataManager
 	private Database database = null;
 	
 	// Stores the various data caches
+	private AnnotationCache annotationCache = null;
 	private DataSourceCache dataSourceCache = null;
 	private TagCache tagCache = null;
 	private FunctionCache functionCache = null;
@@ -31,6 +30,7 @@ public class DataManager
 		this.database = new Database(connection);
 
 		// Constructs the data caches
+		annotationCache = new AnnotationCache(this,database.getAnnotationDataCalls());
 		dataSourceCache = new DataSourceCache(this,database.getDataSourceDataCalls());
 		tagCache = new TagCache(this,database.getTagDataCalls());
 		functionCache = new FunctionCache(this,database.getFunctionDataCalls());
@@ -41,6 +41,7 @@ public class DataManager
 	}
 	
 	// Returns the various data caches
+	public AnnotationCache getAnnotationCache() { return annotationCache; }
 	public DataSourceCache getDataSourceCache() { return dataSourceCache; }
 	public TagCache getTagCache() { return tagCache; }
 	public FunctionCache getFunctionCache() { return functionCache; }
@@ -52,16 +53,4 @@ public class DataManager
 	/** Retrieves a universal ID from the database */
 	public Integer getUniversalIDs(Integer count) throws SQLException
 		{ return database.getUniversalIDs(count); }
-	
-	/** Sets an annotation for the specified element */
-	public boolean setAnnotation(int elementID, Integer groupID, String attribute, String value)
-		{ return database.setAnnotation(elementID, groupID, attribute, value); }
-
-	/** Gets the annotation for the specified element */
-	public String getAnnotation(int elementID, String attribute)
-		{ return database.getAnnotation(elementID, attribute); }
-
-	/** Gets the annotations for the specified group */
-	public ArrayList<Annotation> getAnnotations(int groupID, String attribute)
-		{ return database.getAnnotations(groupID, attribute); }
 }
