@@ -574,7 +574,11 @@ public class SchemaStore
 		{ return getManager().getAnnotationCache().getAnnotation(elementID, groupID, attribute); }
 	
 	/** Web service to get the requested annotations */
-	public Annotation[] getAnnotations(int groupID, String attribute)
+	public Annotation[] getAnnotations(int elementID, String attribute)
+		{ return getManager().getAnnotationCache().getAnnotations(elementID, attribute).toArray(new Annotation[0]); }
+	
+	/** Web service to get the requested annotations */
+	public Annotation[] getAnnotationsByGroup(int groupID, String attribute)
 		{ return getManager().getAnnotationCache().getAnnotations(groupID, attribute).toArray(new Annotation[0]); }
 
 	/** Web service to clear an annotation */

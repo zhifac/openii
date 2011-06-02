@@ -31,8 +31,12 @@ public class AnnotationCache extends DataCache
 		{ return dataCalls.getAnnotation(elementID, groupID, attribute); }
 
 	/** Gets the annotations for the specified group */
-	public ArrayList<Annotation> getAnnotations(int groupID, String attribute)
-		{ return dataCalls.getAnnotations(groupID, attribute); }
+	public ArrayList<Annotation> getAnnotations(int elementID, String attribute)
+		{ return dataCalls.getAnnotations(elementID, attribute); }
+	
+	/** Gets the annotations for the specified group */
+	public ArrayList<Annotation> getAnnotationsByGroup(int groupID, String attribute)
+		{ return dataCalls.getAnnotationsByGroup(groupID, attribute); }
 	
  	/** Clears the specified annotation in the database */
  	public boolean clearAnnotation(int elementID, int groupID, String attribute)
