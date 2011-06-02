@@ -309,7 +309,7 @@ public class ProjectDataCalls extends AbstractDataCalls
 		StringBuffer likeList = new StringBuffer();
 		for(AssociatedElement element : elements)
 			likeList.append("input_ids LIKE '%" + element.getElementID() + "%' OR ");
-		return likeList.subSequence(0, likeList.length()-5).toString();
+		return likeList.subSequence(0, likeList.length()-4).toString();
 	}
 	
 	/** Splits apart the mapping cell inputs */
@@ -365,12 +365,12 @@ public class ProjectDataCalls extends AbstractDataCalls
 				elementHash.add(element.getSchemaID() + "_" + element.getElementID());
 			
 			// Generate the query
-			String query = "SELECT id,mapping_id,source_id,target_id,input_ids,output_id,score,function_id,author,modification_date,notes " +
+			String query = "SELECT mapping_cell.id,mapping_id,source_id,target_id,input_ids,output_id,score,function_id,author,modification_date,notes " +
 						   "FROM mapping_cell,mapping " +
 						   "WHERE mapping_id=mapping.id AND project_id=" + projectID + " AND score>=" + minScore + " AND " +
 						   "	  (output_id IN (" + getNumericList(elements) + ") OR " +
-						   "       (input_id NOT LIKE '%,%' AND input_id IN (" + getStringList(elements) + ")) OR " +
-						   "       (input_id LIKE '%,%' AND (" + getLikeList(elements) + ")))";
+						   "       (input_ids NOT LIKE '%,%' AND input_ids IN (" + getStringList(elements) + ")) OR " +
+						   "       (input_ids LIKE '%,%' AND (" + getLikeList(elements) + ")))";
 				
             // Retrieve mapping cells
 			Statement stmt = connection.getStatement();
@@ -423,12 +423,12 @@ public class ProjectDataCalls extends AbstractDataCalls
 				elementHash.add(element.getSchemaID() + "_" + element.getElementID());
 			
 			// Generate the query
-			String query = "SELECT id,mapping_id,source_id,target_id,input_ids,output_id,score,function_id,author,modification_date,notes " +
+			String query = "SELECT mapping_cell.id,mapping_id,source_id,target_id,input_ids,output_id,score,function_id,author,modification_date,notes " +
 						   "FROM mapping_cell,mapping " +
 						   "WHERE mapping_id=mapping.id AND project_id=" + projectID + " AND " +
 						   "	  output_id IN (" + getNumericList(elements) + ") AND " +
-						   "      ((input_id NOT LIKE '%,%' AND input_id IN (" + getStringList(elements) + ")) OR " +
-						   "       (input_id LIKE '%,%' AND (" + getLikeList(elements) + ")))";
+						   "      ((input_ids NOT LIKE '%,%' AND input_ids IN (" + getStringList(elements) + ")) OR " +
+						   "       (input_ids LIKE '%,%' AND (" + getLikeList(elements) + ")))";
 			
             // Retrieve mapping cells
 			Statement stmt = connection.getStatement();
