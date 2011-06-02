@@ -643,14 +643,14 @@ public class SchemaStoreClient
 		{ return (String)callMethod("getAnnotation",new Object[] {elementID,groupID==null?0:groupID,attribute}); }
 
 	/** Get the requested annotations */
-	public ArrayList<Annotation> getAnnotations(int elementID, String attribute) throws RemoteException
+	public ArrayList<Annotation> getAnnotations(Integer elementID, String attribute) throws RemoteException
 	{
 		Annotation[] annotations = (Annotation[])callMethod("getAnnotations",new Object[] {elementID,attribute});
 		return annotations==null ? new ArrayList<Annotation>() : new ArrayList<Annotation>(Arrays.asList(annotations));
 	}
 	
 	/** Get the requested annotations by group */
-	public ArrayList<Annotation> getAnnotationsByGroup(int groupID, String attribute) throws RemoteException
+	public ArrayList<Annotation> getAnnotationsByGroup(Integer groupID, String attribute) throws RemoteException
 	{
 		Annotation[] annotations = (Annotation[])callMethod("getAnnotationsByGroup",new Object[] {groupID,attribute});
 		return annotations==null ? new ArrayList<Annotation>() : new ArrayList<Annotation>(Arrays.asList(annotations));
@@ -661,7 +661,7 @@ public class SchemaStoreClient
 		{ return (Boolean)callMethod("clearAnnotation",new Object[] {elementID,groupID==null?0:groupID,attribute}); }
 	
 	/** Clears the requested annotations by group */
-	public boolean clearAnnotations(int groupID, String attribute) throws RemoteException
+	public boolean clearAnnotations(Integer groupID, String attribute) throws RemoteException
 		{ return (Boolean)callMethod("clearAnnotations",new Object[] {groupID,attribute}); }
 	
 	//-------------------
