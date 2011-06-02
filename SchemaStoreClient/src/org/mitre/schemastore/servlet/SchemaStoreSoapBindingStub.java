@@ -16,7 +16,7 @@ public class SchemaStoreSoapBindingStub extends org.apache.axis.client.Stub impl
     static org.apache.axis.description.OperationDesc [] _operations;
 
     static {
-        _operations = new org.apache.axis.description.OperationDesc[120];
+        _operations = new org.apache.axis.description.OperationDesc[121];
         _initOperationDesc1();
         _initOperationDesc2();
         _initOperationDesc3();
@@ -29,6 +29,7 @@ public class SchemaStoreSoapBindingStub extends org.apache.axis.client.Stub impl
         _initOperationDesc10();
         _initOperationDesc11();
         _initOperationDesc12();
+        _initOperationDesc13();
     }
 
     private static void _initOperationDesc1(){
@@ -1312,6 +1313,19 @@ public class SchemaStoreSoapBindingStub extends org.apache.axis.client.Stub impl
         org.apache.axis.description.OperationDesc oper;
         org.apache.axis.description.ParameterDesc param;
         oper = new org.apache.axis.description.OperationDesc();
+        oper.setName("getAnnotationsByGroup");
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://servlet.schemastore.mitre.org", "groupID"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "int"), int.class, false, false);
+        oper.addParameter(param);
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://servlet.schemastore.mitre.org", "attribute"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"), java.lang.String.class, false, false);
+        oper.addParameter(param);
+        oper.setReturnType(new javax.xml.namespace.QName("http://model.schemastore.mitre.org", "Annotation"));
+        oper.setReturnClass(org.mitre.schemastore.model.Annotation[].class);
+        oper.setReturnQName(new javax.xml.namespace.QName("http://servlet.schemastore.mitre.org", "getAnnotationsByGroupReturn"));
+        oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
+        oper.setUse(org.apache.axis.constants.Use.LITERAL);
+        _operations[110] = oper;
+
+        oper = new org.apache.axis.description.OperationDesc();
         oper.setName("getAnnotation");
         param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://servlet.schemastore.mitre.org", "elementID"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "int"), int.class, false, false);
         oper.addParameter(param);
@@ -1324,11 +1338,11 @@ public class SchemaStoreSoapBindingStub extends org.apache.axis.client.Stub impl
         oper.setReturnQName(new javax.xml.namespace.QName("http://servlet.schemastore.mitre.org", "getAnnotationReturn"));
         oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
         oper.setUse(org.apache.axis.constants.Use.LITERAL);
-        _operations[110] = oper;
+        _operations[111] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
         oper.setName("getAnnotations");
-        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://servlet.schemastore.mitre.org", "groupID"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "int"), int.class, false, false);
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://servlet.schemastore.mitre.org", "elementID"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "int"), int.class, false, false);
         oper.addParameter(param);
         param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://servlet.schemastore.mitre.org", "attribute"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"), java.lang.String.class, false, false);
         oper.addParameter(param);
@@ -1337,7 +1351,7 @@ public class SchemaStoreSoapBindingStub extends org.apache.axis.client.Stub impl
         oper.setReturnQName(new javax.xml.namespace.QName("http://servlet.schemastore.mitre.org", "getAnnotationsReturn"));
         oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
         oper.setUse(org.apache.axis.constants.Use.LITERAL);
-        _operations[111] = oper;
+        _operations[112] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
         oper.setName("addAttribute");
@@ -1348,7 +1362,7 @@ public class SchemaStoreSoapBindingStub extends org.apache.axis.client.Stub impl
         oper.setReturnQName(new javax.xml.namespace.QName("http://servlet.schemastore.mitre.org", "addAttributeReturn"));
         oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
         oper.setUse(org.apache.axis.constants.Use.LITERAL);
-        _operations[112] = oper;
+        _operations[113] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
         oper.setName("getAttribute");
@@ -1359,7 +1373,7 @@ public class SchemaStoreSoapBindingStub extends org.apache.axis.client.Stub impl
         oper.setReturnQName(new javax.xml.namespace.QName("http://servlet.schemastore.mitre.org", "getAttributeReturn"));
         oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
         oper.setUse(org.apache.axis.constants.Use.LITERAL);
-        _operations[113] = oper;
+        _operations[114] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
         oper.setName("isConnected");
@@ -1368,7 +1382,7 @@ public class SchemaStoreSoapBindingStub extends org.apache.axis.client.Stub impl
         oper.setReturnQName(new javax.xml.namespace.QName("http://servlet.schemastore.mitre.org", "isConnectedReturn"));
         oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
         oper.setUse(org.apache.axis.constants.Use.LITERAL);
-        _operations[114] = oper;
+        _operations[115] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
         oper.setName("getSchema");
@@ -1379,7 +1393,7 @@ public class SchemaStoreSoapBindingStub extends org.apache.axis.client.Stub impl
         oper.setReturnQName(new javax.xml.namespace.QName("http://servlet.schemastore.mitre.org", "getSchemaReturn"));
         oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
         oper.setUse(org.apache.axis.constants.Use.LITERAL);
-        _operations[115] = oper;
+        _operations[116] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
         oper.setName("addMapping");
@@ -1390,7 +1404,7 @@ public class SchemaStoreSoapBindingStub extends org.apache.axis.client.Stub impl
         oper.setReturnQName(new javax.xml.namespace.QName("http://servlet.schemastore.mitre.org", "addMappingReturn"));
         oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
         oper.setUse(org.apache.axis.constants.Use.LITERAL);
-        _operations[116] = oper;
+        _operations[117] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
         oper.setName("getMapping");
@@ -1401,7 +1415,7 @@ public class SchemaStoreSoapBindingStub extends org.apache.axis.client.Stub impl
         oper.setReturnQName(new javax.xml.namespace.QName("http://servlet.schemastore.mitre.org", "getMappingReturn"));
         oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
         oper.setUse(org.apache.axis.constants.Use.LITERAL);
-        _operations[117] = oper;
+        _operations[118] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
         oper.setName("addAlias");
@@ -1412,8 +1426,13 @@ public class SchemaStoreSoapBindingStub extends org.apache.axis.client.Stub impl
         oper.setReturnQName(new javax.xml.namespace.QName("http://servlet.schemastore.mitre.org", "addAliasReturn"));
         oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
         oper.setUse(org.apache.axis.constants.Use.LITERAL);
-        _operations[118] = oper;
+        _operations[119] = oper;
 
+    }
+
+    private static void _initOperationDesc13(){
+        org.apache.axis.description.OperationDesc oper;
+        org.apache.axis.description.ParameterDesc param;
         oper = new org.apache.axis.description.OperationDesc();
         oper.setName("getTag");
         param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://servlet.schemastore.mitre.org", "tagID"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "int"), int.class, false, false);
@@ -1423,7 +1442,7 @@ public class SchemaStoreSoapBindingStub extends org.apache.axis.client.Stub impl
         oper.setReturnQName(new javax.xml.namespace.QName("http://servlet.schemastore.mitre.org", "getTagReturn"));
         oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
         oper.setUse(org.apache.axis.constants.Use.LITERAL);
-        _operations[119] = oper;
+        _operations[120] = oper;
 
     }
 
@@ -5584,12 +5603,46 @@ public class SchemaStoreSoapBindingStub extends org.apache.axis.client.Stub impl
 }
     }
 
-    public java.lang.String getAnnotation(int elementID, int groupID, java.lang.String attribute) throws java.rmi.RemoteException {
+    public org.mitre.schemastore.model.Annotation[] getAnnotationsByGroup(int groupID, java.lang.String attribute) throws java.rmi.RemoteException {
         if (super.cachedEndpoint == null) {
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
         _call.setOperation(_operations[110]);
+        _call.setUseSOAPAction(true);
+        _call.setSOAPActionURI("");
+        _call.setEncodingStyle(null);
+        _call.setProperty(org.apache.axis.client.Call.SEND_TYPE_ATTR, Boolean.FALSE);
+        _call.setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS, Boolean.FALSE);
+        _call.setSOAPVersion(org.apache.axis.soap.SOAPConstants.SOAP11_CONSTANTS);
+        _call.setOperationName(new javax.xml.namespace.QName("http://servlet.schemastore.mitre.org", "getAnnotationsByGroup"));
+
+        setRequestHeaders(_call);
+        setAttachments(_call);
+ try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {new java.lang.Integer(groupID), attribute});
+
+        if (_resp instanceof java.rmi.RemoteException) {
+            throw (java.rmi.RemoteException)_resp;
+        }
+        else {
+            extractAttachments(_call);
+            try {
+                return (org.mitre.schemastore.model.Annotation[]) _resp;
+            } catch (java.lang.Exception _exception) {
+                return (org.mitre.schemastore.model.Annotation[]) org.apache.axis.utils.JavaUtils.convert(_resp, org.mitre.schemastore.model.Annotation[].class);
+            }
+        }
+  } catch (org.apache.axis.AxisFault axisFaultException) {
+  throw axisFaultException;
+}
+    }
+
+    public java.lang.String getAnnotation(int elementID, int groupID, java.lang.String attribute) throws java.rmi.RemoteException {
+        if (super.cachedEndpoint == null) {
+            throw new org.apache.axis.NoEndPointException();
+        }
+        org.apache.axis.client.Call _call = createCall();
+        _call.setOperation(_operations[111]);
         _call.setUseSOAPAction(true);
         _call.setSOAPActionURI("");
         _call.setEncodingStyle(null);
@@ -5618,12 +5671,12 @@ public class SchemaStoreSoapBindingStub extends org.apache.axis.client.Stub impl
 }
     }
 
-    public org.mitre.schemastore.model.Annotation[] getAnnotations(int groupID, java.lang.String attribute) throws java.rmi.RemoteException {
+    public org.mitre.schemastore.model.Annotation[] getAnnotations(int elementID, java.lang.String attribute) throws java.rmi.RemoteException {
         if (super.cachedEndpoint == null) {
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
-        _call.setOperation(_operations[111]);
+        _call.setOperation(_operations[112]);
         _call.setUseSOAPAction(true);
         _call.setSOAPActionURI("");
         _call.setEncodingStyle(null);
@@ -5634,7 +5687,7 @@ public class SchemaStoreSoapBindingStub extends org.apache.axis.client.Stub impl
 
         setRequestHeaders(_call);
         setAttachments(_call);
- try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {new java.lang.Integer(groupID), attribute});
+ try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {new java.lang.Integer(elementID), attribute});
 
         if (_resp instanceof java.rmi.RemoteException) {
             throw (java.rmi.RemoteException)_resp;
@@ -5657,7 +5710,7 @@ public class SchemaStoreSoapBindingStub extends org.apache.axis.client.Stub impl
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
-        _call.setOperation(_operations[112]);
+        _call.setOperation(_operations[113]);
         _call.setUseSOAPAction(true);
         _call.setSOAPActionURI("");
         _call.setEncodingStyle(null);
@@ -5691,7 +5744,7 @@ public class SchemaStoreSoapBindingStub extends org.apache.axis.client.Stub impl
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
-        _call.setOperation(_operations[113]);
+        _call.setOperation(_operations[114]);
         _call.setUseSOAPAction(true);
         _call.setSOAPActionURI("");
         _call.setEncodingStyle(null);
@@ -5725,7 +5778,7 @@ public class SchemaStoreSoapBindingStub extends org.apache.axis.client.Stub impl
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
-        _call.setOperation(_operations[114]);
+        _call.setOperation(_operations[115]);
         _call.setUseSOAPAction(true);
         _call.setSOAPActionURI("");
         _call.setEncodingStyle(null);
@@ -5759,7 +5812,7 @@ public class SchemaStoreSoapBindingStub extends org.apache.axis.client.Stub impl
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
-        _call.setOperation(_operations[115]);
+        _call.setOperation(_operations[116]);
         _call.setUseSOAPAction(true);
         _call.setSOAPActionURI("");
         _call.setEncodingStyle(null);
@@ -5793,7 +5846,7 @@ public class SchemaStoreSoapBindingStub extends org.apache.axis.client.Stub impl
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
-        _call.setOperation(_operations[116]);
+        _call.setOperation(_operations[117]);
         _call.setUseSOAPAction(true);
         _call.setSOAPActionURI("");
         _call.setEncodingStyle(null);
@@ -5827,7 +5880,7 @@ public class SchemaStoreSoapBindingStub extends org.apache.axis.client.Stub impl
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
-        _call.setOperation(_operations[117]);
+        _call.setOperation(_operations[118]);
         _call.setUseSOAPAction(true);
         _call.setSOAPActionURI("");
         _call.setEncodingStyle(null);
@@ -5861,7 +5914,7 @@ public class SchemaStoreSoapBindingStub extends org.apache.axis.client.Stub impl
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
-        _call.setOperation(_operations[118]);
+        _call.setOperation(_operations[119]);
         _call.setUseSOAPAction(true);
         _call.setSOAPActionURI("");
         _call.setEncodingStyle(null);
@@ -5895,7 +5948,7 @@ public class SchemaStoreSoapBindingStub extends org.apache.axis.client.Stub impl
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
-        _call.setOperation(_operations[119]);
+        _call.setOperation(_operations[120]);
         _call.setUseSOAPAction(true);
         _call.setSOAPActionURI("");
         _call.setEncodingStyle(null);
