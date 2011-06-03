@@ -692,8 +692,8 @@ public class SchemaStoreClient
 		{ return (VocabularyTerms)callMethod("getVocabulary",new Object[] {projectID}); }
 	
 	/** Saves the vocabulary to the web service */
-	public boolean saveVocabularyTerms(VocabularyTerms vocabulary) throws RemoteException
-		{ return (Boolean)callMethod("saveVocabulary",new Object[] {vocabulary}); }
+	public VocabularyTerms saveVocabularyTerms(VocabularyTerms vocabulary) throws RemoteException
+		{ return (VocabularyTerms)callMethod("saveVocabulary",new Object[] {vocabulary}); }
 	
 	/** Deletes the specified vocabulary from the web service */
 	public boolean deleteVocabulary(Integer projectID) throws RemoteException
