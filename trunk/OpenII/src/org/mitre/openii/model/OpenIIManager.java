@@ -11,6 +11,7 @@ import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.mitre.openii.application.OpenIIActivator;
 import org.mitre.openii.model.controllers.MappingCellMerger;
 import org.mitre.schemastore.model.Annotation;
+import org.mitre.schemastore.model.AssociatedElement;
 import org.mitre.schemastore.model.DataSource;
 import org.mitre.schemastore.model.Function;
 import org.mitre.schemastore.model.Mapping;
@@ -644,6 +645,20 @@ public class OpenIIManager
 			listener.mappingDeleted(mappingID);
 	}
 
+	/** Gets the list of mapping cells containing the at least one of the specified elements and the specified score */
+	public static ArrayList<MappingCell> getMappingCellsByElement(int projectID, ArrayList<AssociatedElement> element, double minScore) 
+	{
+		try { return RepositoryManager.getClient().getMappingCellsByElement(projectID, element, minScore); }
+		catch (Exception e) { return new ArrayList<MappingCell>(); }
+	}
+
+	/** Gets the list of mapping cells connecting only the specified elements in the specified project */
+	public static ArrayList<MappingCell> getAssociatedMappingCells(int projectID, ArrayList<AssociatedElement> elements) 
+	{
+		try { return RepositoryManager.getClient().getAssociatedMappingCells(projectID, elements); }
+		catch (Exception e) { return new ArrayList<MappingCell>(); }
+	}
+	
 	// ------------ Vocabulary Functionality -------------
 
 	/** Indicates if the project has a vocabulary */
@@ -661,14 +676,14 @@ public class OpenIIManager
 	}
 
 	/** Save the  specified vocabulary */
-	public static boolean saveVocabularyTerms(VocabularyTerms terms)
+	public static VocabularyTerms saveVocabularyTerms(VocabularyTerms terms)
 	{
 		try {
-			RepositoryManager.getClient().saveVocabularyTerms(terms);
+			VocabularyTerms ret = RepositoryManager.getClient().saveVocabularyTerms(terms);
 			fireVocabularySaved(terms.getProjectID()); 
-			return true;
+			return ret;
 		} catch (RemoteException e) {}
-		return false;
+		return null;
 	}
 
 	/** Deletes the vocabulary for the specified project */
@@ -777,11 +792,26 @@ public class OpenIIManager
 	// ------------- Annontation Functionality --------------
 	
 	/** Sets the specified annotation */
-	public static boolean setAnnotationWithGroup(Integer elementID, Integer groupID, String attribute, String value)
+	public static boolean setAnnotation(Integer elementID, Integer groupID, String attribute, String value)
 	{
-		try { RepositoryManager.getClient().setAnnotationWithGroup(elementID, groupID, attribute, value); }
+		try { RepositoryManager.getClient().setAnnotation(elementID, groupID, attribute, value); }
 		catch(Exception e) { return false; }
 		return true;
+	}
+	
+	/** Sets the specified list of annotations */
+	public static boolean setAnnotations(ArrayList<Annotation> annotations)
+	{
+		try { RepositoryManager.getClient().setAnnotations(annotations); }
+		catch(Exception e) { return false; }
+		return true;
+	}
+	
+	/** Gets the annotation for the specified element and attribute */
+	public static String getAnnotation(Integer elementID, Integer groupID, String attribute)
+	{
+		try { return RepositoryManager.getClient().getAnnotation(elementID, groupID, attribute); }
+		catch(Exception e) { return null; }
 	}
 	
 	/** Retrieves all annotations for the specified group */
@@ -789,6 +819,20 @@ public class OpenIIManager
 	{
 		try { return RepositoryManager.getClient().getAnnotations(groupID, attribute); }
 		catch(Exception e) { return new ArrayList<Annotation>(); }
+	}
+	
+	/** Clears the annotation for the specified element and attribute */
+	public static boolean clearAnnotation(Integer elementID, Integer groupID, String attribute)
+	{
+		try { return RepositoryManager.getClient().clearAnnotation(elementID, groupID, attribute); }
+		catch(Exception e) { return false; }		
+	}
+	
+	/** Clears the requested annotations by group */
+	public static boolean clearAnnotations(Integer groupID, String attribute)
+	{
+		try { return RepositoryManager.getClient().clearAnnotations(groupID, attribute); }
+		catch(Exception e) { return false; }		
 	}
 	
 	// ------------ Data Source Functionality -------------
