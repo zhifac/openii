@@ -256,7 +256,7 @@ public class UnityCanvas extends Composite {
 				mappings.put(m.getId(),m);			
 			}
 		}
-		ArrayList<Annotation> allAnnotations = OpenIIManager.getAnnotations(vocabulary.getProjectID(), "checked");
+		ArrayList<Annotation> allAnnotations = OpenIIManager.getAnnotationsByGroup(vocabulary.getProjectID(), "checked");
 System.err.println("retreiving annotations for " + vocabulary.getProjectID());
 		Iterator<Annotation> itr2 = allAnnotations.iterator();
 		while(itr2.hasNext()) {
