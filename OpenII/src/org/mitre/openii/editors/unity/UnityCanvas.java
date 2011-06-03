@@ -257,12 +257,12 @@ public class UnityCanvas extends Composite {
 			}
 		}
 		ArrayList<Annotation> allAnnotations = OpenIIManager.getAnnotationsByGroup(vocabulary.getProjectID(), "checked");
-System.err.println("retreiving annotations for " + vocabulary.getProjectID());
+//System.err.println("retreiving annotations for " + vocabulary.getProjectID());
 		Iterator<Annotation> itr2 = allAnnotations.iterator();
 		while(itr2.hasNext()) {
 			Annotation a = itr2.next();
 			if(a != null) {
-System.err.println("got annotation for " + a.getElementID());
+//System.err.println("got annotation for " + a.getElementID());
 				checkStatus.put(a.getElementID(), a);			
 			}
 		}
@@ -2454,7 +2454,7 @@ System.err.println("got annotation for " + a.getElementID());
 					Label pLabel = new Label(contextC, SWT.NONE);
 					pLabel.setBackground(white);
 					SchemaElement parentElement = parents.get(k);
-System.err.println("name = " + parentElement.getName());
+//System.err.println("name = " + parentElement.getName());
 					Image img =  SchemaElementImage;
 					if(parentElement instanceof DomainValue) img =  DomainValueImage;
 					else if(parentElement instanceof Attribute) img =  AttributeImage;
@@ -3307,8 +3307,8 @@ System.err.println("name = " + parentElement.getName());
 					    
 					} else {
 												
-						System.err.println("xoff = " + xoff);
-						System.err.println("pt.x = " + pt.x);
+						//System.err.println("xoff = " + xoff);
+						//System.err.println("pt.x = " + pt.x);
 						dragElement = null;
 						AssociatedElement aElements[] = vocab.getTerms()[vocab.getTermIndex(draggedRow)].getAssociatedElements(draggedCol);
 						for(int i = 0; i < aElements.length; i++){
@@ -3322,7 +3322,7 @@ System.err.println("name = " + parentElement.getName());
 								break;									
 							}
 						}
-						System.err.println("xoff after = " + xoff);
+						//System.err.println("xoff after = " + xoff);
 
 						if(dragElement != null) {
 							MenuItem cutItem = new MenuItem(popupMenu, SWT.CASCADE);
