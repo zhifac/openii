@@ -52,6 +52,8 @@ public class SchemaTreeMenuManager extends MenuManager implements IMenuListener
 		ShowInTable() { 
 			setText("Show in Table"); 
 			this.setImageDescriptor(tableIcon);
+			this.setEnabled(false);
+
 		}
 		
 		/** Collapses the currently selected node in the tree */
