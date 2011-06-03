@@ -815,11 +815,19 @@ public class OpenIIManager
 	}
 	
 	/** Retrieves all annotations for the specified group */
-	public static ArrayList<Annotation> getAnnotations(Integer groupID, String attribute)
+	public static ArrayList<Annotation> getAnnotations(Integer elementID, String attribute)
 	{
-		try { return RepositoryManager.getClient().getAnnotations(groupID, attribute); }
+		try { return RepositoryManager.getClient().getAnnotations(elementID, attribute); }
 		catch(Exception e) { return new ArrayList<Annotation>(); }
 	}
+	
+	/** Retrieves all annotations for the specified group */
+	public static ArrayList<Annotation> getAnnotationsByGroup(Integer groupID, String attribute)
+	{
+		try { return RepositoryManager.getClient().getAnnotationsByGroup(groupID, attribute); }
+		catch(Exception e) { return new ArrayList<Annotation>(); }
+	}
+	
 	
 	/** Clears the annotation for the specified element and attribute */
 	public static boolean clearAnnotation(Integer elementID, Integer groupID, String attribute)
