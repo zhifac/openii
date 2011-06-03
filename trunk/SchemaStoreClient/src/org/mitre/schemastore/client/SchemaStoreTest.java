@@ -1,9 +1,12 @@
 package org.mitre.schemastore.client;
 
-import java.io.File;
+import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 
-import org.mitre.schemastore.model.Annotation;
+import org.mitre.schemastore.model.AssociatedElement;
+import org.mitre.schemastore.model.Mapping;
+import org.mitre.schemastore.model.MappingCell;
 
 public class SchemaStoreTest
 {
@@ -11,25 +14,26 @@ public class SchemaStoreTest
 	{
 		// Display the schemas found within the repository
 		try {
-			Repository repository = new Repository(Repository.DERBY,new File(".").toURI(),"testStore","postgres","postgres");
-//			Repository repository = new Repository(Repository.POSTGRES,new URI("platform-2"),"schemastore","postgres","postgres");
+//			Repository repository = new Repository(Repository.DERBY,new File(".").toURI(),"testStore","postgres","postgres");
+			Repository repository = new Repository(Repository.POSTGRES,new URI("localhost"),"supplies","postgres","postgres");
 //			Repository repository = new Repository(Repository.SERVICE,new URI("http://ygg:8080/D3-develop/services/SchemaStore"),"","","");
 			SchemaStoreClient client = new SchemaStoreClient(repository);
-
-			client.setAnnotation(12, null, "test", "test");
-			client.setAnnotation(13, 20, "test", "test2");
-
-			ArrayList<Annotation> annotations = new ArrayList<Annotation>();
-			annotations.add(new Annotation(14, 20, "test", "test3"));
-			annotations.add(new Annotation(15, 20, "test2", "test4"));
-			annotations.add(new Annotation(16, 20, "test3", "test5"));
-			client.setAnnotations(annotations);
 			
-			System.out.println("A: " + client.getAnnotation(12, null, "test"));
-			System.out.println("B: " + client.getAnnotation(13, null, "test"));
-			System.out.println("C: " + client.getAnnotation(13, 20, "test"));
-			for(Annotation annotation : client.getAnnotations(20, "test"))
-				System.out.println(annotation.getValue());
+			Integer mappingID = 83452;
+			Mapping mapping = client.getMapping(mappingID);
+			for(MappingCell mappingCell : client.getMappingCells(mappingID))
+				System.out.println(Arrays.asList(mappingCell.getInputs()).toString() + " " + mappingCell.getOutput());
+			
+			System.out.println("A");
+			ArrayList<AssociatedElement> elements = new ArrayList<AssociatedElement>();
+			elements.add(new AssociatedElement(mapping.getTargetId(), 83389, "", ""));
+			for(MappingCell mappingCell : client.getMappingCellsByElement(mapping.getProjectId(), elements, 0.1))
+				System.out.println(Arrays.asList(mappingCell.getInputs()).toString() + " " + mappingCell.getOutput());
+
+			System.out.println("B");
+			elements.add(new AssociatedElement(mapping.getSourceId(), 82572, "", ""));
+			for(MappingCell mappingCell : client.getAssociatedMappingCells(mapping.getProjectId(), elements))
+				System.out.println(Arrays.asList(mappingCell.getInputs()).toString() + " " + mappingCell.getOutput());
 			
 		} catch(Exception e) { e.printStackTrace(); }
 	}
