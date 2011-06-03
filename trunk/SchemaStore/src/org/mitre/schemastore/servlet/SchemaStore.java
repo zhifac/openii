@@ -617,7 +617,7 @@ public class SchemaStore
 		{ return GetVocabularyTerms.getVocabularyTerms(getManager(),projectID); }
 	
 	/** Web service to save the vocabulary */
-	public boolean saveVocabulary(VocabularyTerms vocabulary) throws RemoteException
+	public VocabularyTerms saveVocabulary(VocabularyTerms vocabulary) throws RemoteException
 		{ return SaveVocabularyTerms.saveVocabularyTerms(getManager(),vocabulary.copy()); }
 
 	/** Web service to delete the vocabulary */

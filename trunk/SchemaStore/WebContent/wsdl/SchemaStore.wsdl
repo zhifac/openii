@@ -160,20 +160,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
      </sequence>
     </complexType>
    </element>
-   <element name="getFunction">
-    <complexType>
-     <sequence>
-      <element name="functionID" type="xsd:int"/>
-     </sequence>
-    </complexType>
-   </element>
-   <element name="getFunctionResponse">
-    <complexType>
-     <sequence>
-      <element name="getFunctionReturn" type="tns1:Function"/>
-     </sequence>
-    </complexType>
-   </element>
    <element name="updateAttribute">
     <complexType>
      <sequence>
@@ -185,6 +171,20 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
     <complexType>
      <sequence>
       <element name="updateAttributeReturn" type="xsd:boolean"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getFunction">
+    <complexType>
+     <sequence>
+      <element name="functionID" type="xsd:int"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getFunctionResponse">
+    <complexType>
+     <sequence>
+      <element name="getFunctionReturn" type="tns1:Function"/>
      </sequence>
     </complexType>
    </element>
@@ -237,16 +237,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
     <complexType>
      <sequence>
       <element maxOccurs="unbounded" name="getSchemasReturn" type="tns1:Schema"/>
-     </sequence>
-    </complexType>
-   </element>
-   <element name="getFunctions">
-    <complexType/>
-   </element>
-   <element name="getFunctionsResponse">
-    <complexType>
-     <sequence>
-      <element maxOccurs="unbounded" name="getFunctionsReturn" type="tns1:Function"/>
      </sequence>
     </complexType>
    </element>
@@ -1224,6 +1214,16 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
      </sequence>
     </complexType>
    </element>
+   <element name="getFunctions">
+    <complexType/>
+   </element>
+   <element name="getFunctionsResponse">
+    <complexType>
+     <sequence>
+      <element maxOccurs="unbounded" name="getFunctionsReturn" type="tns1:Function"/>
+     </sequence>
+    </complexType>
+   </element>
    <element name="getReferencedFunctions">
     <complexType>
      <sequence>
@@ -1462,6 +1462,21 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
      </sequence>
     </complexType>
    </element>
+   <element name="getAnnotationsByGroup">
+    <complexType>
+     <sequence>
+      <element name="groupID" type="xsd:int"/>
+      <element name="attribute" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getAnnotationsByGroupResponse">
+    <complexType>
+     <sequence>
+      <element maxOccurs="unbounded" name="getAnnotationsByGroupReturn" type="tns1:Annotation"/>
+     </sequence>
+    </complexType>
+   </element>
    <element name="clearAnnotation">
     <complexType>
      <sequence>
@@ -1542,7 +1557,7 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
    <element name="saveVocabularyResponse">
     <complexType>
      <sequence>
-      <element name="saveVocabularyReturn" type="xsd:boolean"/>
+      <element name="saveVocabularyReturn" type="tns1:VocabularyTerms"/>
      </sequence>
     </complexType>
    </element>
@@ -1585,21 +1600,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
     <complexType>
      <sequence>
       <element name="saveThesaurusTermsReturn" type="xsd:boolean"/>
-     </sequence>
-    </complexType>
-   </element>
-   <element name="getAnnotationsByGroup">
-    <complexType>
-     <sequence>
-      <element name="groupID" type="xsd:int"/>
-      <element name="attribute" type="xsd:string"/>
-     </sequence>
-    </complexType>
-   </element>
-   <element name="getAnnotationsByGroupResponse">
-    <complexType>
-     <sequence>
-      <element maxOccurs="unbounded" name="getAnnotationsByGroupReturn" type="tns1:Annotation"/>
      </sequence>
     </complexType>
    </element>
@@ -1822,17 +1822,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
      </extension>
     </complexContent>
    </complexType>
-   <complexType name="Function">
-    <sequence>
-     <element name="category" nillable="true" type="xsd:string"/>
-     <element name="description" nillable="true" type="xsd:string"/>
-     <element name="expression" nillable="true" type="xsd:string"/>
-     <element name="id" nillable="true" type="xsd:int"/>
-     <element name="inputTypes" nillable="true" type="impl:ArrayOf_xsd_int"/>
-     <element name="name" nillable="true" type="xsd:string"/>
-     <element name="outputType" nillable="true" type="xsd:int"/>
-    </sequence>
-   </complexType>
    <complexType name="Attribute">
     <complexContent>
      <extension base="tns1:SchemaElement">
@@ -1845,6 +1834,17 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
       </sequence>
      </extension>
     </complexContent>
+   </complexType>
+   <complexType name="Function">
+    <sequence>
+     <element name="category" nillable="true" type="xsd:string"/>
+     <element name="description" nillable="true" type="xsd:string"/>
+     <element name="expression" nillable="true" type="xsd:string"/>
+     <element name="id" nillable="true" type="xsd:int"/>
+     <element name="inputTypes" nillable="true" type="impl:ArrayOf_xsd_int"/>
+     <element name="name" nillable="true" type="xsd:string"/>
+     <element name="outputType" nillable="true" type="xsd:int"/>
+    </sequence>
    </complexType>
    <complexType name="Subtype">
     <complexContent>
@@ -2060,17 +2060,17 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
    </wsdl:message>
 
-   <wsdl:message name="getFunctionsResponse">
+   <wsdl:message name="getAliasResponse">
 
-      <wsdl:part element="impl:getFunctionsResponse" name="parameters">
+      <wsdl:part element="impl:getAliasResponse" name="parameters">
 
       </wsdl:part>
 
    </wsdl:message>
 
-   <wsdl:message name="getAliasResponse">
+   <wsdl:message name="getFunctionsResponse">
 
-      <wsdl:part element="impl:getAliasResponse" name="parameters">
+      <wsdl:part element="impl:getFunctionsResponse" name="parameters">
 
       </wsdl:part>
 
@@ -3212,17 +3212,17 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
    </wsdl:message>
 
-   <wsdl:message name="setAnnotationResponse">
+   <wsdl:message name="addDomainResponse">
 
-      <wsdl:part element="impl:setAnnotationResponse" name="parameters">
+      <wsdl:part element="impl:addDomainResponse" name="parameters">
 
       </wsdl:part>
 
    </wsdl:message>
 
-   <wsdl:message name="addDomainResponse">
+   <wsdl:message name="setAnnotationResponse">
 
-      <wsdl:part element="impl:addDomainResponse" name="parameters">
+      <wsdl:part element="impl:setAnnotationResponse" name="parameters">
 
       </wsdl:part>
 
@@ -4074,18 +4074,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
       </wsdl:operation>
 
-      <wsdl:operation name="getFunction">
-
-         <wsdl:input message="impl:getFunctionRequest" name="getFunctionRequest">
-
-       </wsdl:input>
-
-         <wsdl:output message="impl:getFunctionResponse" name="getFunctionResponse">
-
-       </wsdl:output>
-
-      </wsdl:operation>
-
       <wsdl:operation name="updateAttribute">
 
          <wsdl:input message="impl:updateAttributeRequest" name="updateAttributeRequest">
@@ -4093,6 +4081,18 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
        </wsdl:input>
 
          <wsdl:output message="impl:updateAttributeResponse" name="updateAttributeResponse">
+
+       </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getFunction">
+
+         <wsdl:input message="impl:getFunctionRequest" name="getFunctionRequest">
+
+       </wsdl:input>
+
+         <wsdl:output message="impl:getFunctionResponse" name="getFunctionResponse">
 
        </wsdl:output>
 
@@ -4141,18 +4141,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
        </wsdl:input>
 
          <wsdl:output message="impl:getSchemasResponse" name="getSchemasResponse">
-
-       </wsdl:output>
-
-      </wsdl:operation>
-
-      <wsdl:operation name="getFunctions">
-
-         <wsdl:input message="impl:getFunctionsRequest" name="getFunctionsRequest">
-
-       </wsdl:input>
-
-         <wsdl:output message="impl:getFunctionsResponse" name="getFunctionsResponse">
 
        </wsdl:output>
 
@@ -4962,6 +4950,18 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
       </wsdl:operation>
 
+      <wsdl:operation name="getFunctions">
+
+         <wsdl:input message="impl:getFunctionsRequest" name="getFunctionsRequest">
+
+       </wsdl:input>
+
+         <wsdl:output message="impl:getFunctionsResponse" name="getFunctionsResponse">
+
+       </wsdl:output>
+
+      </wsdl:operation>
+
       <wsdl:operation name="getReferencedFunctions">
 
          <wsdl:input message="impl:getReferencedFunctionsRequest" name="getReferencedFunctionsRequest">
@@ -5166,6 +5166,18 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
       </wsdl:operation>
 
+      <wsdl:operation name="getAnnotationsByGroup">
+
+         <wsdl:input message="impl:getAnnotationsByGroupRequest" name="getAnnotationsByGroupRequest">
+
+       </wsdl:input>
+
+         <wsdl:output message="impl:getAnnotationsByGroupResponse" name="getAnnotationsByGroupResponse">
+
+       </wsdl:output>
+
+      </wsdl:operation>
+
       <wsdl:operation name="clearAnnotation">
 
          <wsdl:input message="impl:clearAnnotationRequest" name="clearAnnotationRequest">
@@ -5257,18 +5269,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
        </wsdl:input>
 
          <wsdl:output message="impl:saveThesaurusTermsResponse" name="saveThesaurusTermsResponse">
-
-       </wsdl:output>
-
-      </wsdl:operation>
-
-      <wsdl:operation name="getAnnotationsByGroup">
-
-         <wsdl:input message="impl:getAnnotationsByGroupRequest" name="getAnnotationsByGroupRequest">
-
-       </wsdl:input>
-
-         <wsdl:output message="impl:getAnnotationsByGroupResponse" name="getAnnotationsByGroupResponse">
 
        </wsdl:output>
 
@@ -5598,24 +5598,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
       </wsdl:operation>
 
-      <wsdl:operation name="getFunction">
-
-         <wsdlsoap:operation soapAction=""/>
-
-         <wsdl:input name="getFunctionRequest">
-
-            <wsdlsoap:body use="literal"/>
-
-         </wsdl:input>
-
-         <wsdl:output name="getFunctionResponse">
-
-            <wsdlsoap:body use="literal"/>
-
-         </wsdl:output>
-
-      </wsdl:operation>
-
       <wsdl:operation name="updateAttribute">
 
          <wsdlsoap:operation soapAction=""/>
@@ -5627,6 +5609,24 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
          </wsdl:input>
 
          <wsdl:output name="updateAttributeResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getFunction">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="getFunctionRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="getFunctionResponse">
 
             <wsdlsoap:body use="literal"/>
 
@@ -5699,24 +5699,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
          </wsdl:input>
 
          <wsdl:output name="getSchemasResponse">
-
-            <wsdlsoap:body use="literal"/>
-
-         </wsdl:output>
-
-      </wsdl:operation>
-
-      <wsdl:operation name="getFunctions">
-
-         <wsdlsoap:operation soapAction=""/>
-
-         <wsdl:input name="getFunctionsRequest">
-
-            <wsdlsoap:body use="literal"/>
-
-         </wsdl:input>
-
-         <wsdl:output name="getFunctionsResponse">
 
             <wsdlsoap:body use="literal"/>
 
@@ -6930,6 +6912,24 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
       </wsdl:operation>
 
+      <wsdl:operation name="getFunctions">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="getFunctionsRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="getFunctionsResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
       <wsdl:operation name="getReferencedFunctions">
 
          <wsdlsoap:operation soapAction=""/>
@@ -7236,6 +7236,24 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
       </wsdl:operation>
 
+      <wsdl:operation name="getAnnotationsByGroup">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="getAnnotationsByGroupRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="getAnnotationsByGroupResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
       <wsdl:operation name="clearAnnotation">
 
          <wsdlsoap:operation soapAction=""/>
@@ -7373,24 +7391,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
          </wsdl:input>
 
          <wsdl:output name="saveThesaurusTermsResponse">
-
-            <wsdlsoap:body use="literal"/>
-
-         </wsdl:output>
-
-      </wsdl:operation>
-
-      <wsdl:operation name="getAnnotationsByGroup">
-
-         <wsdlsoap:operation soapAction=""/>
-
-         <wsdl:input name="getAnnotationsByGroupRequest">
-
-            <wsdlsoap:body use="literal"/>
-
-         </wsdl:input>
-
-         <wsdl:output name="getAnnotationsByGroupResponse">
 
             <wsdlsoap:body use="literal"/>
 
