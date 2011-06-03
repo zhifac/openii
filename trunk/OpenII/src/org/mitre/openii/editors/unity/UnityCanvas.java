@@ -17,7 +17,9 @@
 package org.mitre.openii.editors.unity;
 
 import java.util.ArrayList;
+import java.util.AbstractList;
 import java.util.HashMap;
+import java.util.Iterator;
 
 import org.apache.commons.lang.WordUtils;
 import org.eclipse.jface.action.Separator;
@@ -25,6 +27,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.custom.SashForm;
+import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.custom.StackLayout;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.custom.TableEditor;
@@ -81,16 +84,22 @@ import org.mitre.openii.model.OpenIIManager;
 import org.mitre.openii.widgets.schemaTree.SchemaMenuManager;
 import org.mitre.openii.widgets.schemaTree.SchemaTree;
 import org.mitre.schemastore.model.AssociatedElement;
+import org.mitre.schemastore.model.Attribute;
+import org.mitre.schemastore.model.Containment;
+import org.mitre.schemastore.model.DomainValue;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
+import org.mitre.schemastore.model.Relationship;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.Term;
 import org.mitre.schemastore.model.VocabularyTerms;
 import org.mitre.schemastore.model.mappingInfo.AssociatedElementHash;
 import org.mitre.schemastore.model.mappingInfo.MappingInfoExt;
+import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
 import org.mitre.schemastore.model.schemaInfo.SchemaInfo;
 import org.mitre.schemastore.model.schemaInfo.model.SchemaModel;
+import org.mitre.schemastore.model.Annotation;
 
 public class UnityCanvas extends Composite {
 	private int numSchemas; // num schemas, including common vocab as a schema
@@ -104,13 +113,15 @@ public class UnityCanvas extends Composite {
 	private VocabularyTerms vocab;
 	private Composite viewsParent;
 	private ArrayList<Point> highlightedTableItems;
-	private ArrayList<Mapping> mappings;
+	private HashMap<Integer, Mapping> mappings = new HashMap<Integer, Mapping>();
+    private HashMap<Integer, Annotation> checkStatus = new HashMap<Integer, Annotation>();
 	private boolean confirmation;
 //	private Hashtable<Integer, SchemaInfo> schemaInfos = new Hashtable<Integer, SchemaInfo>();
 	private boolean coloredTable;
 
 	private Color red =  this.getDisplay().getSystemColor(SWT.COLOR_RED);
 	private Color black =  this.getDisplay().getSystemColor(SWT.COLOR_BLACK);
+	private Color gray =  this.getDisplay().getSystemColor(SWT.COLOR_GRAY);
 	private Color green =  this.getDisplay().getSystemColor(SWT.COLOR_GREEN);
 	private Color yellow =  this.getDisplay().getSystemColor(SWT.COLOR_YELLOW);
 	private Color white =  this.getDisplay().getSystemColor(SWT.COLOR_WHITE);
@@ -137,18 +148,33 @@ public class UnityCanvas extends Composite {
     private Button colorsettings;
 	private Combo colorSelectorT;
     private Button colorsettingsT;
-    private Label synsetLabel;
+    private Label synsetLabel1;
+    private Label synsetLabel2;
+    private Label synsetLabel3;
     private Button colorsettingsE;
     private Canvas treeViewCanvas;
     private Canvas tableViewCanvas;
     private Canvas searchViewCanvas;
     private Canvas evidenceCanvas;
-    private Composite EvidenceView;
-    private GridData EvidenceViewGridData;
-    private GridLayout EvidenceViewLayout;
     private Canvas closeMatchCanvas;
     private Canvas contextCanvas;
+    private Composite EvidenceView;
+    private Composite closeMatchView;
+    private ScrolledComposite contextView;
+    private GridData EvidenceViewGridData;
+    private GridLayout EvidenceViewLayout;
+    private GridData closeMatchViewGridData;
+    private GridLayout closeMatchViewLayout;
+    private GridData contextViewGridData;
+    private GridLayout contextViewLayout;
+    private Integer evidenceSID = new Integer(-1);
+    private Integer closeMatchSID = new Integer(-1);
+    private Integer contextSID = new Integer(-1);
+    private Integer detailSID = new Integer(-1);     
+    private Integer detailScID = new Integer(-1);     
+    private Integer detailEID = new Integer(-1);     
     private Button newSynset;
+    private float minMatchScore = (float)0.20;
     private final Canvas main_sash = new Canvas(this, SWT.NONE);		
     private final Canvas workspace = new Canvas(main_sash, SWT.EMBEDDED);
 	private final SashForm bottom_sash = new SashForm(main_sash, SWT.HORIZONTAL);
@@ -203,7 +229,13 @@ public class UnityCanvas extends Composite {
     private Image checkRemoveIcon = OpenIIActivator.getImage("checkRemove.png");
     private Image checkSortUpIcon = OpenIIActivator.getImage("checkSortUp.png");
     private Image checkSortDownIcon = OpenIIActivator.getImage("checkSortDown.png");
-
+    private Image SchemaImage = OpenIIActivator.getImage("Schema.gif");
+    private Image DomainValueImage = OpenIIActivator.getImage("DomainValue.jpg");
+    private Image AttributeImage = OpenIIActivator.getImage("Attribute.jpg");
+    private Image ContainmentImage = OpenIIActivator.getImage("Containment.jpg");
+    private Image RelationshipImage = OpenIIActivator.getImage("Relationship.jpg");
+    private Image SchemaElementImage = OpenIIActivator.getImage("SchemaElement.jpg");
+    
     private boolean showTextWorkspace = true;
     private boolean showTextTableView = true;
     private Shell dialog;
@@ -216,7 +248,24 @@ public class UnityCanvas extends Composite {
 		viewsParent = parent;
 		vocab = vocabulary;
 
-		mappings = OpenIIManager.getMappings(vocabulary.getProjectID());
+		ArrayList<Mapping> rawmappings = OpenIIManager.getMappings(vocabulary.getProjectID());
+		Iterator<Mapping> itr = rawmappings.iterator();
+		while(itr.hasNext()) {
+			Mapping m = itr.next();
+			if(m != null) {
+				mappings.put(m.getId(),m);			
+			}
+		}
+		ArrayList<Annotation> allAnnotations = OpenIIManager.getAnnotations(vocabulary.getProjectID(), "checked");
+System.err.println("retreiving annotations for " + vocabulary.getProjectID());
+		Iterator<Annotation> itr2 = allAnnotations.iterator();
+		while(itr2.hasNext()) {
+			Annotation a = itr2.next();
+			if(a != null) {
+System.err.println("got annotation for " + a.getElementID());
+				checkStatus.put(a.getElementID(), a);			
+			}
+		}
 		
 		schemaIDs = vocabulary.getSchemaIDs();
 		schemas = new Schema[schemaIDs.length];
@@ -402,18 +451,21 @@ public class UnityCanvas extends Composite {
 		treeFilter1.setImage(OpenIIActivator.getImage("checkedFilter.png"));
 		treeFilter1.setToolTipText("Filter out checked terms");
 		treeFilter1.setVisible(true);
+		treeFilter1.setEnabled(false);
 //		treeFilter1.setLayoutData(new GridData (SWT.CENTER, SWT.CENTER, false, false));
 
 		Button treeFilter2 = new Button(treeButtons, SWT.TOGGLE);
 		treeFilter2.setImage(OpenIIActivator.getImage("greenFilter.png"));
 		treeFilter2.setToolTipText("Filter out terms in good matches");
 		treeFilter2.setVisible(true);
+		treeFilter2.setEnabled(false);
 //		treeFilter2.setLayoutData(new GridData (SWT.CENTER, SWT.CENTER, false, false));
 
 		Button treeFilter3 = new Button(treeButtons, SWT.TOGGLE);
 		treeFilter3.setImage(OpenIIActivator.getImage("yellowFilter.png"));
 		treeFilter3.setToolTipText("Filter out terms in average matches");
 		treeFilter3.setVisible(true);
+		treeFilter3.setEnabled(false);
 //		treeFilter3.setLayoutData(new GridData (SWT.CENTER, SWT.CENTER, false, false));
 		
 
@@ -573,6 +625,7 @@ public class UnityCanvas extends Composite {
 		tableButtons.setLayoutData(new GridData (SWT.FILL, SWT.TOP, true, false));
 
 		colorSelectorT = new Combo(tableButtons, SWT.READ_ONLY | SWT.DROP_DOWN);
+		colorSelectorT.setForeground(gray);
 		colorSelectorT.add("Not Colored");
 		colorSelectorT.add("Color by Element Type");
 		colorSelectorT.add("Instance Count");
@@ -581,10 +634,17 @@ public class UnityCanvas extends Composite {
 		colorSelectorT.add("Match Strength (weakest)");
 		colorSelectorT.setToolTipText("No coloring applied");
 		colorSelectorT.select(0);
+		colorSelectorT.addListener(SWT.Selection, new Listener() {
+			public void handleEvent(Event event) {
+				colorSelectorT.select(0);
+			}
+		});
 
+		
 		colorsettingsT = new Button(tableButtons, SWT.PUSH);
 		colorsettingsT.setImage(OpenIIActivator.getImage("color_settings.png"));
 		colorsettingsT.setToolTipText("Color Settings");
+		colorsettingsT.setEnabled(false);
 		colorsettingsT.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event event) {
 				colorsettingsT.setSelection(false);
@@ -605,6 +665,7 @@ public class UnityCanvas extends Composite {
 //		seperator3.setLayoutData(new GridData (SWT.CENTER, SWT.CENTER, false, false));
 		
 		sortSelector = new Combo(tableButtons, SWT.READ_ONLY | SWT.DROP_DOWN);
+		sortSelector.setForeground(gray);
 		sortSelector.add("Not Sorted");
 		sortSelector.add("Sort by Schema Matches");
 		sortSelector.add("Sort by Match Strength");
@@ -617,7 +678,12 @@ public class UnityCanvas extends Composite {
 		}
 		sortSelector.setToolTipText("No sorting applied");
 		sortSelector.select(0);
-		
+		sortSelector.addListener(SWT.Selection, new Listener() {
+			public void handleEvent(Event event) {
+				sortSelector.select(0);
+			}
+		});
+
 		
 		Label seperator2 = new Label(tableButtons, SWT.BITMAP);
 		seperator2.setImage(seperatorIcon);
@@ -626,6 +692,7 @@ public class UnityCanvas extends Composite {
 		Button tableFilter1 = new Button(tableButtons, SWT.TOGGLE);
 		tableFilter1.setImage(OpenIIActivator.getImage("checkedFilter.png"));
 		tableFilter1.setToolTipText("Filter out checked synsets");
+		tableFilter1.setEnabled(false);
 //		tableFilter1.setVisible(true);
 //		tableFilter1.setLayoutData(new GridData (SWT.CENTER, SWT.CENTER, false, false));
 //		tableFilter1.pack();
@@ -633,6 +700,7 @@ public class UnityCanvas extends Composite {
 		Button tableFilter2 = new Button(tableButtons, SWT.TOGGLE);
 		tableFilter2.setImage(OpenIIActivator.getImage("greenFilter.png"));
 		tableFilter2.setToolTipText("Filter out synsets with good matches");
+		tableFilter2.setEnabled(false);
 //		tableFilter2.setVisible(true);
 //		tableFilter2.setLayoutData(new GridData (SWT.CENTER, SWT.CENTER, false, false));
 //		tableFilter2.pack();
@@ -640,6 +708,7 @@ public class UnityCanvas extends Composite {
 		Button tableFilter3 = new Button(tableButtons, SWT.TOGGLE);
 		tableFilter3.setImage(OpenIIActivator.getImage("yellowFilter.png"));
 		tableFilter3.setToolTipText("Filter out synsets with average matches");
+		tableFilter3.setEnabled(false);
 //		tableFilter3.setVisible(true);
 //		tableFilter3.setLayoutData(new GridData (SWT.CENTER, SWT.CENTER, false, false));
 //		tableFilter3.pack();
@@ -647,6 +716,7 @@ public class UnityCanvas extends Composite {
 		Button tableFilter4 = new Button(tableButtons, SWT.TOGGLE);
 		tableFilter4.setImage(OpenIIActivator.getImage("singleton.png"));
 		tableFilter4.setToolTipText("Filter out singletons");		
+		tableFilter4.setEnabled(false);
 
 		
 		
@@ -696,7 +766,11 @@ public class UnityCanvas extends Composite {
 
 	        public void handleEvent(Event event) {
 	            TableItem item = (TableItem)event.item;
-				item.setData("uid", vocab.getTerms()[tableview.indexOf(item)].getId());
+	        	int ID = vocab.getTerms()[tableview.indexOf(item)].getId();
+				item.setData("uid", ID);
+				if(checkStatus.containsKey(ID)) { 
+					item.setImage(0,CheckIcon);
+				}
 				populateRow(item,showTextTableView);
 				item.setBackground(1, lightBlue);
 	        }
@@ -718,6 +792,7 @@ public class UnityCanvas extends Composite {
 		Label tslabel =new Label(tableSearch, SWT.NONE);
 		tslabel.setText("Search:");
 		textSearchTable = new Text(tableSearch, SWT.BORDER);
+		textSearchTable.setEnabled(false);
 		gridData = new GridData();
 		gridData.horizontalAlignment = GridData.FILL;
 		gridData.grabExcessHorizontalSpace = true;
@@ -725,7 +800,6 @@ public class UnityCanvas extends Composite {
 		
 		
 		//add listeners
-		
 		showtext.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				showTextTableView = !showTextTableView;
@@ -835,7 +909,19 @@ public class UnityCanvas extends Composite {
 	}
 
 	private void createSearchView(Composite parent) {
+		GridLayout tableViewlayout = new GridLayout(1, false);
+		tableViewlayout.marginHeight = 0;
+		tableViewlayout.marginWidth = 0;
+		tableViewlayout.verticalSpacing = 0;
+		tableViewlayout.horizontalSpacing = 0;
+		tableViewlayout.marginBottom = 0;
+		parent.setLayout(tableViewlayout);
 
+
+		Label TBD = new Label(parent, SWT.NONE);
+		TBD.setText("TBD");
+		parent.getParent().layout(true);
+		
 	}
 
 	private void createWorkspace(Composite parent) {
@@ -873,6 +959,7 @@ public class UnityCanvas extends Composite {
 		buttonsC.setLayoutData(gridData);
 		
 		colorSelector = new Combo(buttonsC, SWT.READ_ONLY | SWT.DROP_DOWN);
+		colorSelector.setForeground(gray);
 		colorSelector.add("Not Colored");
 		colorSelector.add("Color by Element Type");
 		colorSelector.add("Instance Count");
@@ -885,6 +972,7 @@ public class UnityCanvas extends Composite {
 		colorsettings = new Button(buttonsC, SWT.PUSH);
 		colorsettings.setImage(OpenIIActivator.getImage("color_settings.png"));
 		colorsettings.setToolTipText("Color Settings");
+		colorsettings.setEnabled(false);
 
 		Button showtext = new Button(buttonsC, SWT.TOGGLE);
 		showtext.setImage(showTextIcon);
@@ -982,7 +1070,7 @@ public class UnityCanvas extends Composite {
 			tempC = new TableColumn(workspaceTable, SWT.NONE);
 			tempC.setText(schemas[i].getName());
 			tempC.setData("uid",new Integer(schemas[i].getId()));
-			tempC.setWidth(100);
+			//tempC.setWidth((main_sash.getBounds().x - 120) / schemas.length);
 			tempC.setMoveable(true);
 			//tempC.addListener(SWT.Selection, sortAlphabeticallyListener);
 			tempC.setToolTipText(schemas[i].getName());
@@ -1021,6 +1109,7 @@ public class UnityCanvas extends Composite {
 		//add listeners
 		colorSelector.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event event) {
+				colorSelector.select(0);
 			}
 		});
 
@@ -1224,9 +1313,55 @@ public class UnityCanvas extends Composite {
 		
 		saveVocab.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				OpenIIManager.saveVocabularyTerms(vocab);
+				VocabularyTerms oldVocab = vocab;
+				vocab = OpenIIManager.saveVocabularyTerms(vocab);
+				//go through each item and update stuff if ID changed
+				Integer oldID = 0;
+				Integer newID = 0;
+				for(int i = 0; i < vocab.getTerms().length;i++)
+				{
+					oldID = oldVocab.getTerms()[i].getId();
+					newID = vocab.getTerms()[i].getId();
+					if(maxSafeID <= newID) maxSafeID = newID+1;
+					
+					if(newID != oldID) {
+						if(checkStatus.containsKey(oldID)) {
+							Annotation anno = checkStatus.remove(oldID);
+							anno.setElementID(newID);
+							checkStatus.put(newID, anno);
+						}
+						if(draggedRow == oldID)
+						{
+							draggedRow = newID;
+						}
+						if(evidenceSID == oldID)
+						{
+							evidenceSID = newID;
+						}
+						if(closeMatchSID == oldID)
+						{
+							closeMatchSID = newID;
+						}
+						if(contextSID == oldID)
+						{
+							contextSID = newID;
+						}
+						if(detailSID == oldID)
+						{
+							detailSID = newID;
+						}
+					}
+				}
+				OpenIIManager.clearAnnotations(vocab.getProjectID(), "checked");
+				ArrayList<Annotation> annoList = new ArrayList<Annotation>(checkStatus.values());
+				for(int a = 0; a < annoList.size(); a++){
+					System.err.println("element = " + annoList.get(a).getElementID());
+					System.err.println("project = " + annoList.get(a).getGroupID());
+					System.err.println("attribute = " + annoList.get(a).getAttribute());
+				}
+				OpenIIManager.setAnnotations(annoList);
 				((Button)e.widget).setBackground(green);
-				((Button)e.widget).setImage(saveIcon);
+				((Button)e.widget).setImage(saveIcon);				
 			}
 		});
 
@@ -1481,6 +1616,9 @@ public class UnityCanvas extends Composite {
 			item.setBackground(1, lightBlue);
 			item.setData("uid", termID);
 			populateRow(item, showTextWorkspace);
+			if(checkStatus.containsKey(termID)) {
+				item.setImage(0, CheckIcon);
+			}
 				
 			if(!inTable){
 				//add a button for each new entry
@@ -1557,9 +1695,9 @@ public class UnityCanvas extends Composite {
 		synsetLabelC.setLayout(labellayout);
 		synsetLabelC.setLayoutData(new GridData (SWT.BEGINNING, SWT.CENTER, true, false));
 		
-		synsetLabel = new Label(synsetLabelC, SWT.NONE);
-		synsetLabel.setText("");
-		synsetLabel.setFont(LargeBoldFont);
+		synsetLabel1 = new Label(synsetLabelC, SWT.NONE);
+		synsetLabel1.setText("");
+		synsetLabel1.setFont(LargeBoldFont);
 		
 		Composite buttons = new Composite(parent, SWT.NONE);
 		RowLayout tableButtonlayout = new RowLayout();
@@ -1570,6 +1708,7 @@ public class UnityCanvas extends Composite {
 		colorsettingsE = new Button(buttons, SWT.PUSH);
 		colorsettingsE.setImage(OpenIIActivator.getImage("color_settings.png"));
 		colorsettingsE.setToolTipText("Color Settings");
+		colorsettingsE.setEnabled(false);
 		colorsettingsE.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event event) {
 				colorsettingsE.setSelection(false);
@@ -1598,10 +1737,151 @@ public class UnityCanvas extends Composite {
 	}
 
 	private void createCloseMatchPane(Composite parent) {
+		
+		GridLayout viewlayout = new GridLayout(3, false);
+		viewlayout.marginHeight = 0;
+		viewlayout.marginWidth = 0;
+		viewlayout.verticalSpacing = 0;
+		viewlayout.horizontalSpacing = 0;
+		viewlayout.marginBottom = 0;
+		parent.setLayout(viewlayout);
+		GridData viewGridData = new GridData();
+		viewGridData.horizontalSpan = 3;
+		viewGridData.minimumHeight = 0;
+		viewGridData.verticalIndent = 0;
+		viewGridData.horizontalAlignment = GridData.FILL;
+		viewGridData.verticalAlignment = GridData.FILL;
+		viewGridData.grabExcessHorizontalSpace = true;
+		viewGridData.grabExcessVerticalSpace = true;
+		parent.setLayoutData(viewGridData);
+		
+		Composite synsetLabelC = new Composite(parent, SWT.NONE);
+		RowLayout labellayout = new RowLayout();
+		//labellayout.center = true;
+		synsetLabelC.setLayout(labellayout);
+		synsetLabelC.setLayoutData(new GridData (SWT.BEGINNING, SWT.CENTER, false, false));
+		
+		synsetLabel2 = new Label(synsetLabelC, SWT.NONE);
+		synsetLabel2.setText("");
+		synsetLabel2.setFont(LargeBoldFont);
+		
+		Composite matchS = new Composite(parent, SWT.NONE);
+		RowLayout matchSlayout = new RowLayout();
+		matchSlayout.center = true;
+		matchSlayout.fill = true;
+		matchSlayout.marginTop = 5;
+		//tableButtonlayout.center = true;
+		matchS.setLayout(matchSlayout);
+		matchS.setLayoutData(new GridData (SWT.CENTER, SWT.CENTER, true, false));
+
+		Composite buttons = new Composite(parent, SWT.NONE);
+		RowLayout tableButtonlayout = new RowLayout();
+		//tableButtonlayout.center = true;
+		buttons.setLayout(tableButtonlayout);
+		buttons.setLayoutData(new GridData (SWT.END, SWT.CENTER, false, false));
+		
+		
+		Label scoreL = new Label(matchS, SWT.NONE);
+		scoreL.setText("Match Score >= ");
+		Text scoreT = new Text(matchS, SWT.BORDER);
+		scoreT.setText(""+minMatchScore);
+		scoreT.addListener(SWT.KeyUp, new Listener() {  
+		     public void handleEvent(Event e) {  
+					if(e.character==SWT.CR) {
+						minMatchScore = Float.parseFloat(((Text)e.widget).getText());
+						updateDetailPane(detailSID, detailScID, detailEID);
+					}					
+		     }});
+
+		colorsettingsE = new Button(buttons, SWT.PUSH);
+		colorsettingsE.setImage(OpenIIActivator.getImage("color_settings.png"));
+		colorsettingsE.setToolTipText("Color Settings");
+		colorsettingsE.setEnabled(false);
+		colorsettingsE.addListener(SWT.Selection, new Listener() {
+			public void handleEvent(Event event) {
+				colorsettingsE.setSelection(false);
+			}
+		});
+
+		closeMatchView = new Composite(parent, SWT.NONE);
+		closeMatchViewGridData = new GridData();
+		closeMatchViewGridData.horizontalSpan = 2;
+		closeMatchViewGridData.minimumHeight = 0;
+		closeMatchViewGridData.verticalIndent = 0;
+		closeMatchViewGridData.horizontalAlignment = GridData.FILL;
+		closeMatchViewGridData.verticalAlignment = GridData.BEGINNING;
+		closeMatchViewGridData.grabExcessHorizontalSpace = true;
+		closeMatchViewGridData.grabExcessVerticalSpace = true;
+//		closeMatchView.setLayoutData(gridData);
+
+		closeMatchViewLayout = new GridLayout(1, false);
+		closeMatchViewLayout.marginHeight = 0;
+		closeMatchViewLayout.marginWidth = 0;
+		closeMatchViewLayout.verticalSpacing = 0;
+		closeMatchViewLayout.horizontalSpacing = 0;
+		closeMatchViewLayout.marginBottom = 0;
+//		closeMatchView.setLayout(EVlayout);	
 
 	}
 
 	private void createContextPane(Composite parent) {
+		GridLayout viewlayout = new GridLayout(2, false);
+		viewlayout.marginHeight = 0;
+		viewlayout.marginWidth = 0;
+		viewlayout.verticalSpacing = 0;
+		viewlayout.horizontalSpacing = 0;
+		viewlayout.marginBottom = 0;
+		parent.setLayout(viewlayout);
+		GridData viewGridData = new GridData();
+		viewGridData.horizontalAlignment = GridData.FILL;
+		viewGridData.verticalAlignment = GridData.FILL;
+		viewGridData.grabExcessHorizontalSpace = true;
+		viewGridData.grabExcessVerticalSpace = true;
+		parent.setLayoutData(viewGridData);
+		
+		Composite synsetLabelC = new Composite(parent, SWT.NONE);
+		RowLayout labellayout = new RowLayout();
+		//labellayout.center = true;
+		synsetLabelC.setLayout(labellayout);
+		synsetLabelC.setLayoutData(new GridData (SWT.BEGINNING, SWT.CENTER, true, false));
+		
+		synsetLabel3 = new Label(synsetLabelC, SWT.NONE);
+		synsetLabel3.setText("");
+		synsetLabel3.setFont(LargeBoldFont);
+		
+		Composite buttons = new Composite(parent, SWT.NONE);
+		RowLayout tableButtonlayout = new RowLayout();
+		//tableButtonlayout.center = true;
+		buttons.setLayout(tableButtonlayout);
+		buttons.setLayoutData(new GridData (SWT.END, SWT.CENTER, false, false));
+/*		
+		colorsettingsE = new Button(buttons, SWT.PUSH);
+		colorsettingsE.setImage(OpenIIActivator.getImage("color_settings.png"));
+		colorsettingsE.setToolTipText("Color Settings");
+		colorsettingsE.addListener(SWT.Selection, new Listener() {
+			public void handleEvent(Event event) {
+				colorsettingsE.setSelection(false);
+			}
+		});
+*/
+		contextView = new ScrolledComposite(parent, SWT.V_SCROLL);
+		contextViewGridData = new GridData();
+		contextViewGridData.horizontalSpan = 2;
+		contextViewGridData.minimumHeight = 0;
+		contextViewGridData.verticalIndent = 0;
+		contextViewGridData.horizontalAlignment = GridData.FILL;
+		contextViewGridData.verticalAlignment = GridData.BEGINNING;
+		contextViewGridData.grabExcessHorizontalSpace = true;
+		contextViewGridData.grabExcessVerticalSpace = true;
+		contextView.setLayoutData(contextViewGridData);
+
+		contextViewLayout = new GridLayout(2, false);
+		contextViewLayout.marginHeight = 4;
+		contextViewLayout.marginWidth = 4;
+		contextView.setLayout(contextViewLayout);	
+		new Composite(contextView, SWT.NONE); //dummy component
+		contextView.setExpandVertical(true);
+		contextView.setExpandHorizontal(false);
 
 	}
 
@@ -1616,25 +1896,42 @@ public class UnityCanvas extends Composite {
 	}
 	
 	public void updateDetailPane(Integer synsetID, Integer schemaID, Integer elementID){
+		detailSID = synsetID;
+		detailScID = schemaID;
+		detailEID = elementID;
+		if(folder2.getSelectionIndex() == 0 && !evidenceSID.equals(synsetID)) updateEvidence(synsetID, schemaID, elementID);
+		else if(folder2.getSelectionIndex() == 1 && !closeMatchSID.equals(synsetID)) updateCloseMatch(synsetID, schemaID, elementID);
+		else if(folder2.getSelectionIndex() == 2 && !contextSID.equals(synsetID)) updateContext(synsetID, schemaID, elementID);	
+	}	
+	
+	public void updateEvidence(Integer synsetID, Integer schemaID, Integer elementID){
 //		System.err.println("updating detail pane");
 		EvidenceView.dispose();
 		EvidenceView = new Composite(evidenceCanvas, SWT.NONE);
 		EvidenceView.setLayoutData(EvidenceViewGridData);
 		EvidenceView.setLayout(EvidenceViewLayout);	
 
+		evidenceSID = synsetID;
 		Term term = vocab.getTerms()[vocab.getTermIndex(synsetID)];
-		synsetLabel.setText(term.getName());
-		evidenceCanvas.layout(true);
+		synsetLabel1.setText(term.getName());
 
-		ArrayList<AssociatedElement> allElements = new ArrayList<AssociatedElement>();
-		
+		AssociatedElement[][] allElements = new AssociatedElement[schemaIDs.length][];
+		ArrayList<AssociatedElement> assElements = new ArrayList<AssociatedElement>();
+		int elementCount = 0;
+		TableItem showMeR = null;
+		TableColumn showMeC = null;
+		//int first = -1;
+		                  
 		//loop through once to get all terms
-		for(int j = 0; j < schemaIDs.length; j++){
-			AssociatedElement[] elements = term.getAssociatedElements(schemas[j].getId());                             
-			for(int i = 0; i < elements.length; i++) {			
-				allElements.add(elements[i]);
+		for(int j = 0; j < schemaIDs.length; j++){			
+			allElements[j] = term.getAssociatedElements(schemas[j].getId()); 
+			for(int i = 0; i < allElements[j].length; i++) {
+				assElements.add(allElements[j][i]);				
 			}
+			elementCount += allElements[j].length;
+		//	if(allElements[j].length > 0 && first < 0) { first = j;}
 		}
+		//if(elementCount < 2) {return;}
 
 		Table EvidenceTable = new Table(EvidenceView, SWT.BORDER | SWT.HIDE_SELECTION | SWT.NO_FOCUS | SWT.NONE);
 		EvidenceTable.setData("name", "evidenceTable");
@@ -1653,33 +1950,41 @@ public class UnityCanvas extends Composite {
 		TableColumn tempC;
 		tempC = new TableColumn(EvidenceTable, SWT.NONE);
 //		tempC.setText("Term");
-		tempC.setMoveable(false);
+		tempC.setMoveable(false);		
+		//tempC.setWidth(gc.textExtent(allElements[first][0].getName()).x + 20);
 		tempC.setData("uid",new Integer(-204));
-		tempC.setWidth(100);
 		//tempC.addListener(SWT.Selection, sortAlphabeticallyListener);
 		tempC.setToolTipText("Matched Schema Term");
 		// creating one column for each element
-		for (int i = 0; i < allElements.size(); i++) {
-			tempC = new TableColumn(EvidenceTable, SWT.NONE);
-			tempC.setText(allElements.get(i).getName());
-			tempC.setData("sid",allElements.get(i).getSchemaID());
-			tempC.setData("eid",allElements.get(i).getElementID());
-			tempC.setWidth(50);
-			tempC.setMoveable(true);
-			String schema = "";
-			for(int k = 0; k < schemas.length; k++){
-				if(schemas[k].getId().equals(allElements.get(i).getSchemaID())){
-					schema = schemas[k].getName();
+		for (int i = 0; i < allElements.length; i++) {
+			for(int j = 0; j < allElements[i].length; j++) {				
+				tempC = new TableColumn(EvidenceTable, SWT.NONE);
+				tempC.setText(allElements[i][j].getName());
+				tempC.setData("sid",allElements[i][j].getSchemaID());
+				tempC.setData("eid",allElements[i][j].getElementID());
+				tempC.setWidth(50);
+				//tempC.setWidth((folder2.getBounds().width - (gc.textExtent(allElements[first][0].getName()).x + 20))/elementCount);
+				tempC.setMoveable(true);
+				String schema = "";
+				for(int k = 0; k < schemas.length; k++){
+					if(schemas[k].getId().equals(allElements[i][j].getSchemaID())){
+						schema = schemas[k].getName();
+					}
+				}
+			      // tooltip
+				  String tooltipText = allElements[i][j].getName();
+				  tooltipText += "\nSchema - " + schema;
+				  tooltipText += "\n";//Description: ";
+				  tooltipText +=  WordUtils.wrap(allElements[i][j].getDescription(),60,"\n",true);
+				tempC.setToolTipText(tooltipText);
+				if(showMeC == null || (allElements[i][j].getSchemaID().equals(schemaID) && allElements[i][j].getElementID().equals(elementID))) {
+					showMeC = tempC;
 				}
 			}
-		      // tooltip
-			  String tooltipText = allElements.get(i).getName();
-			  tooltipText += "\nSchema - " + schema;
-			  tooltipText += "\n";//Description: ";
-			  tooltipText +=  WordUtils.wrap(allElements.get(i).getDescription(),60,"\n",true);
-			tempC.setToolTipText(tooltipText);
 		}		
 		
+		
+		ArrayList<MappingCell> mappingCellList = OpenIIManager.getAssociatedMappingCells(vocab.getProjectID(),assElements);
 		//for each schema
 		for(int j = 0; j < schemaIDs.length; j++){
 			
@@ -1688,82 +1993,86 @@ public class UnityCanvas extends Composite {
 //			schemaLabel.setToolTipText(schemas[j].getDescription());
 			
 					
-			AssociatedElement[] elements = term.getAssociatedElements(schemas[j].getId());                             			
-			
-			for(int i = 0; i < elements.length; i++) {			
+			for(int i = 0; i < allElements[j].length; i++) {			
 			//for each term
 				TableItem newItem = new TableItem(EvidenceTable, SWT.NONE, EvidenceTable.getItemCount());
-				newItem.setText(0, elements[i].getName());
+				newItem.setText(0, allElements[j][i].getName());
+				if(showMeR == null || (allElements[j][i].getSchemaID().equals(schemaID) && allElements[j][i].getElementID().equals(elementID))) {
+					showMeR = newItem;
+				}
 
+				
+				
 				//add matching info here
 				// for each mapping, we need to find any cells that map to the
 				// current element
-				ArrayList<MappingCell> mappingCellList = new ArrayList<MappingCell>();
-				for (Mapping m : mappings) {
+/*				ArrayList<MappingCell> mappingCellList = new ArrayList<MappingCell>();
+				for (Mapping m : mappings.values()) {
 					MappingInfoExt mix = new MappingInfoExt(m, OpenIIManager.getMappingCells(m.getId()));
 					AssociatedElementHash aeh = mix.getMappingCells();
-					for ( MappingCell mc : aeh.get(elements[i].getElementID()) )
+					for ( MappingCell mc : aeh.get(allElements[j][i].getElementID()) )
 						if ( !mappingCellList.contains(mc))
 							mappingCellList.add(mc); 
-				}	
-				
-				for (int l = 0; l < allElements.size(); l++) {
-					for (int k = 0; k < mappingCellList.size(); k++) {
-						MappingCell mc = mappingCellList.get(k); 
-						Mapping m = OpenIIManager.getMapping(mc.getMappingId());
-						Integer outputId = mc.getOutput();
-						Integer otherSchemaId = (elements[i].getSchemaID().equals(m.getSourceId())) ? m.getTargetId() : m.getSourceId();
-						if(otherSchemaId.equals(elements[i].getSchemaID())){
-							break;
-						}
-						int otherSIndex = 0;
-						for(; otherSIndex < schemaIDs.length; otherSIndex++){
-							if(schemaIDs[otherSIndex].equals(otherSchemaId)) {
+				}	*/
+				int count = 0;
+				for (int l = 0; l < allElements.length; l++) {
+					for (int n = 0; n < allElements[l].length; n++) {
+						count++;
+						for (int k = 0; k < mappingCellList.size(); k++) {
+							MappingCell mc = mappingCellList.get(k); 
+							Mapping m = mappings.get(mc.getMappingId());
+							Integer outputId = mc.getOutput();
+							Integer otherSchemaId = (allElements[j][i].getSchemaID().equals(m.getSourceId())) ? m.getTargetId() : m.getSourceId();
+							if(otherSchemaId.equals(allElements[j][i].getSchemaID())){
 								break;
 							}
-						}
-
-						for (Integer inputId : mc.getElementInputIDs()) {
-							Integer otherElementId = (outputId.equals(elements[i].getElementID())) ? inputId : outputId;
-							if(otherElementId.equals(EvidenceTable.getColumn(l+1).getData("eid")) && otherSchemaId.equals(EvidenceTable.getColumn(l+1).getData("sid")) ) {
-//System.out.println("otherElementId = " + otherElementId + "otherSchemaId = " + otherSchemaId + " score = " + mc.getScore().toString());
-								//								SchemaElement otherElement = schemaInfos[otherSIndex].getElement(otherElementId);
-								newItem.setText(l+1, mc.getScore().toString());
-								if(mc.getScore() >= .85) {
-									newItem.setBackground(l+1,green);
-								} else if(mc.getScore() >= .7) {
-									newItem.setBackground(l+1,green);
-								} else if(mc.getScore() >= .4) {
-									newItem.setBackground(l+1,yellow);
-								} else if(mc.getScore() >= .2) {
-									newItem.setBackground(l+1,red);
-								} else {
-									newItem.setBackground(l+1,red);
+							int otherSIndex = 0;
+							for(; otherSIndex < schemaIDs.length; otherSIndex++){
+								if(schemaIDs[otherSIndex].equals(otherSchemaId)) {
+									break;
 								}
 							}
-							
+	
+							for (Integer inputId : mc.getElementInputIDs()) {
+								Integer otherElementId = (outputId.equals(allElements[j][i].getElementID())) ? inputId : outputId;
+								if(otherElementId.equals(EvidenceTable.getColumn(count).getData("eid")) && otherSchemaId.equals(EvidenceTable.getColumn(count).getData("sid")) ) {
+	//System.out.println("otherElementId = " + otherElementId + "otherSchemaId = " + otherSchemaId + " score = " + mc.getScore().toString());
+									//								SchemaElement otherElement = schemaInfos[otherSIndex].getElement(otherElementId);
+									newItem.setText(count, mc.getScore().toString());
+									if(mc.getScore() >= .85) {
+										newItem.setBackground(count,green);
+									} else if(mc.getScore() >= .7) {
+										newItem.setBackground(count,green);
+									} else if(mc.getScore() >= .4) {
+										newItem.setBackground(count,yellow);
+									} else if(mc.getScore() >= .2) {
+										newItem.setBackground(count,red);
+									} else {
+										newItem.setBackground(count,red);
+									}
+								}
+								
+							}
+						
 						}
-					
 					}
 				}
 				
 				
 				
 			    // tooltip
-			    String schema = "";
-			    for(int k = 0; k < schemas.length; k++){
-				  if(schemas[k].getId().equals(elements[i].getSchemaID())){
-				  	schema = schemas[k].getName();
-				  }
-			    }
-			    String tooltipText = elements[i].getName();
-			    tooltipText += "\nSchema - " + schema;
+			    String tooltipText = allElements[j][i].getName();
+			    tooltipText += "\nSchema - " + schemas[j].getName();
 			    tooltipText += "\n";//Description: ";
-			    tooltipText +=  WordUtils.wrap(elements[i].getDescription(),60,"\n",true);
+			    tooltipText +=  WordUtils.wrap(allElements[j][i].getDescription(),60,"\n",true);
 				newItem.setData("popup",tooltipText);
 			}
 		}
 				
+		if(showMeR != null) EvidenceTable.showItem(showMeR);
+		if(showMeC != null) EvidenceTable.showColumn(showMeC);
+		if(showMeR != null) EvidenceTable.getColumn(0).setWidth(gc.textExtent(showMeR.getText()).x + 20);
+		
 		EvidenceTable.addListener(SWT.MouseHover, new Listener() {
 			public void handleEvent(Event e) {
 					activeTable = (Table)(e.widget);
@@ -1772,11 +2081,26 @@ public class UnityCanvas extends Composite {
 				    if (activeTable.getColumn(0).getWidth() < e.x || item == null)
 				    {
 				    	activeTable.setToolTipText(null);
+				    } else if(item.getData("popup") != null) {
+				    	activeTable.setToolTipText((String)item.getData("popup"));
 				    }
-				    activeTable.setToolTipText((String)item.getData("popup"));
 		        }
 
 		});
+		
+		EvidenceTable.addListener(SWT.Resize, new Listener() {	
+			public void handleEvent(Event e) {
+				Table table = ((Table)(e.widget));
+				if(table.getColumnCount() > 1) {
+					int size = 1+(table.getBounds().width - table.getColumn(0).getWidth())/(table.getColumnCount()-1);
+					for(int i = 1; i < table.getColumnCount(); i++)
+					{
+						table.getColumn(i).setWidth(size);
+					}
+				}
+			}
+		});
+
 		
 /* These workarounds don't work
 		EvidenceTable.addListener(SWT.EraseItem, new Listener() {
@@ -1854,8 +2178,332 @@ public class UnityCanvas extends Composite {
 		});
 	*/	
 		
-		evidenceCanvas.layout();
+		evidenceCanvas.layout(true);
 	
+	}
+	
+	public void updateCloseMatch(Integer synsetID, Integer schemaID, Integer elementID){
+//		System.err.println("updating detail pane");
+		closeMatchView.dispose();
+		closeMatchView = new Composite(closeMatchCanvas, SWT.NONE);
+		closeMatchView.setLayoutData(closeMatchViewGridData);
+		closeMatchView.setLayout(closeMatchViewLayout);	
+
+		Label TBD = new Label(closeMatchView, SWT.NONE);
+		TBD.setText("TBD");
+
+		
+		Term term = vocab.getTerms()[vocab.getTermIndex(synsetID)];
+		synsetLabel2.setText(term.getName());
+		closeMatchSID = synsetID;
+
+		AssociatedElement[][] allElements = new AssociatedElement[schemaIDs.length][];
+		ArrayList<AssociatedElement> assElements = new ArrayList<AssociatedElement>();
+		int elementCount = 0;
+		TableItem showMeR = null;
+		TableColumn showMeC = null;
+		//int first = -1;
+		                  
+		//loop through once to get all terms
+		for(int j = 0; j < schemaIDs.length; j++){			
+			allElements[j] = term.getAssociatedElements(schemas[j].getId()); 
+			for(int i = 0; i < allElements[j].length; i++) {
+				assElements.add(allElements[j][i]);				
+			}
+			elementCount += allElements[j].length;
+		//	if(allElements[j].length > 0 && first < 0) { first = j;}
+		}
+		//if(elementCount < 2) {return;}
+
+		Table EvidenceTable = new Table(EvidenceView, SWT.BORDER | SWT.HIDE_SELECTION | SWT.NO_FOCUS | SWT.NONE);
+		EvidenceTable.setData("name", "evidenceTable");
+		EvidenceTable.setHeaderVisible(true);
+		EvidenceTable.setLinesVisible(true);
+		GridData gridData = new GridData();
+		gridData.horizontalSpan = 0;
+		gridData.minimumHeight = 0;
+		gridData.horizontalAlignment = GridData.FILL;
+		gridData.verticalAlignment = GridData.BEGINNING;
+		gridData.grabExcessHorizontalSpace = true;
+		gridData.grabExcessVerticalSpace = false;
+		EvidenceTable.setLayoutData(gridData);
+		
+		// creating one column for the status and the vocabulary
+		TableColumn tempC;
+		tempC = new TableColumn(EvidenceTable, SWT.NONE);
+//		tempC.setText("Term");
+		tempC.setMoveable(false);		
+		//tempC.setWidth(gc.textExtent(allElements[first][0].getName()).x + 20);
+		tempC.setData("uid",new Integer(-204));
+		//tempC.addListener(SWT.Selection, sortAlphabeticallyListener);
+		tempC.setToolTipText("Matched Schema Term");
+		// creating one column for each element
+		for (int i = 0; i < allElements.length; i++) {
+			for(int j = 0; j < allElements[i].length; j++) {				
+				tempC = new TableColumn(EvidenceTable, SWT.NONE);
+				tempC.setText(allElements[i][j].getName());
+				tempC.setData("sid",allElements[i][j].getSchemaID());
+				tempC.setData("eid",allElements[i][j].getElementID());
+				tempC.setWidth(50);
+				//tempC.setWidth((folder2.getBounds().width - (gc.textExtent(allElements[first][0].getName()).x + 20))/elementCount);
+				tempC.setMoveable(true);
+				String schema = "";
+				for(int k = 0; k < schemas.length; k++){
+					if(schemas[k].getId().equals(allElements[i][j].getSchemaID())){
+						schema = schemas[k].getName();
+					}
+				}
+			      // tooltip
+				  String tooltipText = allElements[i][j].getName();
+				  tooltipText += "\nSchema - " + schema;
+				  tooltipText += "\n";//Description: ";
+				  tooltipText +=  WordUtils.wrap(allElements[i][j].getDescription(),60,"\n",true);
+				tempC.setToolTipText(tooltipText);
+				if(showMeC == null || (allElements[i][j].getSchemaID().equals(schemaID) && allElements[i][j].getElementID().equals(elementID))) {
+					showMeC = tempC;
+				}
+			}
+		}		
+		
+		
+		/*
+		ArrayList<MappingCell> mappingCellList = OpenIIManager.getAssociatedMappingCells(vocab.getProjectID(),assElements);
+		ArrayList<String> drawnRows = new ArrayList<String>();
+		//add terms  already in
+		for(int i = 0; i < assElements.size(); i++){
+			drawnRows.add(assElements.get(i).getElementID() + "_" + assElements.get(i).getSchemaID());
+			
+		}
+		for(int j = 0; j < mappingCellList.size(); j++){
+			MappingCell mc = mappingCellList.get(j);
+			AssociatedElement workElement = null;
+			Integer outputId = mc.getOutput();
+			Integer otherElementId = outputId;
+			for (Integer inputId : mc.getElementInputIDs()) {
+				otherElementId = (drawnRows.contains(outputId) ? inputId : outputId);			
+			}
+			
+			if(!drawnRows.contains(otherElementId + "_" + )){
+
+			}
+			drawnRows.add(workElement);				
+		}
+	
+							for (Integer inputId : mc.getElementInputIDs()) {
+								Integer otherElementId = (outputId.equals(allElements[j][i].getElementID())) ? inputId : outputId;
+								if(otherElementId.equals(EvidenceTable.getColumn(count).getData("eid")) && otherSchemaId.equals(EvidenceTable.getColumn(count).getData("sid")) ) {
+	//System.out.println("otherElementId = " + otherElementId + "otherSchemaId = " + otherSchemaId + " score = " + mc.getScore().toString());
+									//								SchemaElement otherElement = schemaInfos[otherSIndex].getElement(otherElementId);
+									newItem.setText(count, mc.getScore().toString());
+									if(mc.getScore() >= .85) {
+										newItem.setBackground(count,green);
+									} else if(mc.getScore() >= .7) {
+										newItem.setBackground(count,green);
+									} else if(mc.getScore() >= .4) {
+										newItem.setBackground(count,yellow);
+									} else if(mc.getScore() >= .2) {
+										newItem.setBackground(count,red);
+									} else {
+										newItem.setBackground(count,red);
+									}
+								}
+								
+							}
+						
+						}
+					}
+				}
+				
+				
+				
+			    // tooltip
+			    String tooltipText = allElements[j][i].getName();
+			    tooltipText += "\nSchema - " + schemas[j].getName();
+			    tooltipText += "\n";//Description: ";
+			    tooltipText +=  WordUtils.wrap(allElements[j][i].getDescription(),60,"\n",true);
+				newItem.setData("popup",tooltipText);
+			}
+		}
+				
+		EvidenceTable.showItem(showMeR);
+		EvidenceTable.showColumn(showMeC);
+		EvidenceTable.getColumn(0).setWidth(gc.textExtent(showMeR.getText()).x + 20);
+		
+		EvidenceTable.addListener(SWT.MouseHover, new Listener() {
+			public void handleEvent(Event e) {
+					activeTable = (Table)(e.widget);
+		        	// Identify the selected row
+					TableItem item = ((Table)(e.widget)).getItem(new Point(e.x,e.y));
+				    if (activeTable.getColumn(0).getWidth() < e.x || item == null)
+				    {
+				    	activeTable.setToolTipText(null);
+				    } else if(item.getData("popup") != null) {
+				    	activeTable.setToolTipText((String)item.getData("popup"));
+				    }
+		        }
+
+		});
+		
+		EvidenceTable.addListener(SWT.Resize, new Listener() {	
+			public void handleEvent(Event e) {
+				Table table = ((Table)(e.widget));
+				int size = 1+(table.getBounds().width - table.getColumn(0).getWidth())/(table.getColumnCount()-1);
+				for(int i = 1; i < table.getColumnCount(); i++)
+				{
+					table.getColumn(i).setWidth(size);
+				}
+			}
+		});
+
+		*/
+		
+		closeMatchCanvas.layout(true);
+		
+	}
+	
+	public void updateContext(Integer synsetID, Integer schemaID, Integer elementID){
+//		System.err.println("updating detail pane");
+		Composite tempComp = (Composite)contextView.getChildren()[0];
+		if(tempComp != null && !tempComp.isDisposed())
+		{
+			tempComp.dispose();
+		}
+		//contextView.setLayoutData(contextViewGridData);
+		
+		//contextView.setLayout(contextViewLayout);	
+//		contextView.setLayout(new GridLayout(1, false));
+//		System.err.println("minwidth = " + contextCanvas.getBounds().width);
+//		System.err.println("minheight = " + contextCanvas.getBounds().height);
+//		if(!contextView.isDisposed() && !contextCanvas.isDisposed()){
+//			contextView.setMinHeight(contextCanvas.getBounds().height);}
+//		contextView.setMinWidth(contextCanvas.getBounds().width);
+		
+		tempComp = new Composite(contextView, SWT.NONE);
+		contextView.setContent(tempComp);
+		tempComp.setSize(contextCanvas.getBounds().height*3, contextCanvas.getBounds().width);
+
+		tempComp.setLayout(new GridLayout(1, false));
+		tempComp.setLayoutData(contextViewGridData);
+
+		Term term = vocab.getTerms()[vocab.getTermIndex(synsetID)];
+		synsetLabel3.setText(term.getName());
+		contextSID = synsetID;
+
+		AssociatedElement[][] allElements = new AssociatedElement[schemaIDs.length][];
+		int elementCount = 0;
+		Composite showMeR = null;
+		                  
+		//loop through once to get all terms
+		for(int j = 0; j < schemaIDs.length; j++){			
+			allElements[j] = term.getAssociatedElements(schemas[j].getId()); 
+			elementCount += allElements[j].length;
+		}
+
+		GridData gridData = new GridData();
+		gridData.horizontalSpan = 2;
+		gridData.horizontalAlignment = GridData.FILL;
+		gridData.verticalAlignment = GridData.BEGINNING;
+		gridData.grabExcessHorizontalSpace = true;
+		gridData.grabExcessVerticalSpace = false;
+
+		ArrayList<SchemaElement> parents = null;
+		//for each schema
+		for(int j = 0; j < schemaIDs.length; j++){
+		
+					
+			for(int i = 0; i < allElements[j].length; i++) {			
+			//for each term
+				Composite termDetails = new Composite(tempComp, SWT.NONE);
+				termDetails.setLayoutData(gridData);
+				termDetails.setLayout(new GridLayout(1,true));
+				termDetails.setBackground(white);
+				HierarchicalSchemaInfo hsi = new HierarchicalSchemaInfo(schemaInfos[j], schemaModels[j]);
+				Label name = new Label(termDetails, SWT.NONE);
+				name.setText("  " + allElements[j][i].getName());
+				name.setBackground(white);
+
+				Label schemaname = new Label(termDetails, SWT.NONE);
+				schemaname.setText("  Schema - " + schemas[j].getName());
+				schemaname.setBackground(white);
+
+				Composite contextC = new Composite(termDetails,SWT.NONE);
+				contextC.setBackground(white);
+				contextC.setLayout(new GridLayout(3,false));
+				Label context = new Label(contextC, SWT.NONE);
+				context.setText("Context - ");
+				context.setBackground(white);
+				
+				parents = hsi.getAncestorElements(allElements[j][i].getElementID());
+				int k = 0;
+				String text = "";
+				for(; k < parents.size(); k++) {
+					text = "";
+					for(int l = 0; l < k; l++) {
+						text += "     ";
+					}
+					if(k > 0) {
+						text += "                  ";
+						contextC = new Composite(termDetails,SWT.NONE);
+						contextC.setBackground(white);
+						contextC.setLayout(new GridLayout(3,false));
+						Label spacerC = new Label(contextC, SWT.NONE);
+						spacerC.setBackground(white);
+						spacerC.setText(text);
+					}
+					Label iLabel = new Label(contextC, SWT.NONE);
+					Label pLabel = new Label(contextC, SWT.NONE);
+					pLabel.setBackground(white);
+					SchemaElement parentElement = parents.get(k);
+System.err.println("name = " + parentElement.getName());
+					Image img =  SchemaElementImage;
+					if(parentElement instanceof DomainValue) img =  DomainValueImage;
+					else if(parentElement instanceof Attribute) img =  AttributeImage;
+					else if(parentElement instanceof Containment) img =  ContainmentImage;
+					else if(parentElement instanceof Relationship) img =  RelationshipImage;
+					iLabel.setImage(img);
+					pLabel.setText(parentElement.getName());
+				}
+				text = "";
+				for(int l = 0; l < k; l++) {
+					text += "     ";
+				}
+				if(k > 0) {
+					text += "                  ";
+					contextC = new Composite(termDetails,SWT.NONE);
+					contextC.setBackground(white);
+					contextC.setLayout(new GridLayout(3,false));
+					Label spacerC = new Label(contextC, SWT.NONE);
+					spacerC.setText(text);
+					spacerC.setBackground(white);
+				}
+				Label iLabel = new Label(contextC, SWT.NONE);
+				Label pLabel = new Label(contextC, SWT.NONE);
+				SchemaElement selfElement = hsi.getType(hsi, allElements[j][i].getElementID());
+				pLabel.setText(allElements[j][i].getName());
+				pLabel.setAlignment(SWT.BEGINNING);
+				pLabel.setBackground(white);
+				Image img =  SchemaElementImage;
+				if(selfElement instanceof DomainValue) img =  DomainValueImage;
+				else if(selfElement instanceof Attribute) img =  AttributeImage;
+				else if(selfElement instanceof Containment) img =  ContainmentImage;
+				else if(selfElement instanceof Relationship) img =  RelationshipImage;
+				iLabel.setImage(img);
+				
+				Label descLabel = new Label(termDetails, SWT.NONE);
+				descLabel.setText("  Description - " + allElements[j][i].getDescription());
+				descLabel.setBackground(white);
+
+				if(showMeR == null || (allElements[j][i].getSchemaID().equals(schemaID) && allElements[j][i].getElementID().equals(elementID))) {
+					showMeR = termDetails;
+				}
+			}
+		}
+
+		//show item
+//		contextView.layout(true);
+		contextView.setSize(contextCanvas.getBounds().height, contextCanvas.getBounds().width);
+		contextCanvas.layout(true);
+		
 	}
 	
 	public void updateTables(Integer vocabID) {
@@ -1864,6 +2512,9 @@ public class UnityCanvas extends Composite {
 		for(int i = 0; i < workspaceItems.length; i++) {
 			if(workspaceItems[i].getData("uid").equals(vocabID)){
 				populateRow(workspaceItems[i], showTextWorkspace);
+				if(checkStatus.containsKey(vocabID)) {
+					workspaceItems[i].setImage(0, CheckIcon);
+				}
 				break;
 			}
 		}		
@@ -2218,7 +2869,48 @@ public class UnityCanvas extends Composite {
 
 					ok.addSelectionListener(new SelectionAdapter() {
 						public void widgetSelected(SelectionEvent e) {
-							OpenIIManager.saveVocabularyTerms(vocab);
+							VocabularyTerms oldVocab = vocab;
+							vocab = OpenIIManager.saveVocabularyTerms(vocab);
+							//go through each item and update stuff if ID changed
+							Integer oldID = 0;
+							Integer newID = 0;
+							for(int i = 0; i < vocab.getTerms().length;i++)
+							{
+								oldID = oldVocab.getTerms()[i].getId();
+								newID = vocab.getTerms()[i].getId();
+								if(maxSafeID <= newID) maxSafeID = newID+1;
+
+								if(newID != oldID) {
+									if(checkStatus.containsKey(oldID)) {
+										Annotation anno = checkStatus.remove(oldID);
+										anno.setElementID(newID);
+										checkStatus.put(newID, anno);
+									}
+									if(draggedRow == oldID)
+									{
+										draggedRow = newID;
+									}
+									if(evidenceSID == oldID)
+									{
+										evidenceSID = newID;
+									}
+									if(closeMatchSID == oldID)
+									{
+										closeMatchSID = newID;
+									}
+									if(contextSID == oldID)
+									{
+										contextSID = newID;
+									}
+									if(detailSID == oldID)
+									{
+										detailSID = newID;
+									}
+								}
+							}
+							OpenIIManager.clearAnnotations(vocab.getProjectID(), "checked");
+							ArrayList<Annotation> annoList = new ArrayList<Annotation>(checkStatus.values());
+							OpenIIManager.setAnnotations(annoList);
 							dialog.close();
 						}
 					});				
@@ -2376,9 +3068,15 @@ public class UnityCanvas extends Composite {
 						      editor.minimumHeight = selectedItem.getBounds(EDITABLECOLUMN).height;
 						      editor.minimumWidth = selectedItem.getBounds(EDITABLECOLUMN).width;
 						  } else if(draggedCol == -202) {
-	//						  if(not checked) {
+								if(checkStatus.containsKey(draggedRow)) { 
+									checkStatus.remove(draggedRow);
+								} else {
+									checkStatus.put(draggedRow,new Annotation(draggedRow,vocab.getProjectID(),"checked","true"));									
+								}
+								
+							  //						  if(not checked) {
 							  //System.out.println("setting image for " + EDITABLECOLUMN);
-							  	selectedItem.setImage(EDITABLECOLUMN,CheckIcon);						  
+//							  	selectedItem.setImage(EDITABLECOLUMN,CheckIcon);						  
 	//							+ set in vocab
 	//					  	  } else {
 	//						  	selectedItem.setImage(EDITABLECOLUMN,null);						  
@@ -2575,17 +3273,38 @@ public class UnityCanvas extends Composite {
 						    MenuItem tableItem = new MenuItem(popupMenu, SWT.NONE);
 						    tableItem.setImage(tableIcon);
 						    tableItem.setText("Show in Table");
+						    tableItem.setEnabled(false);
 					    }
 					    MenuItem evidenceItem = new MenuItem(popupMenu, SWT.NONE);
 					    evidenceItem.setImage(evidenceIcon);
 					    evidenceItem.setText("Show Evidence");
+					    evidenceItem.addSelectionListener(new SelectionAdapter() {
+							public void widgetSelected(SelectionEvent e) {								
+								folder2.setSelection(0);
+								updateDetailPane(draggedRow, draggedCol, null);
+							}
+						});	
+					    
 					    MenuItem closeMatchItem = new MenuItem(popupMenu, SWT.NONE);
 					    closeMatchItem.setImage(closeMatchIcon);
 					    closeMatchItem.setText("Show Close Matches");
+					    closeMatchItem.addSelectionListener(new SelectionAdapter() {
+							public void widgetSelected(SelectionEvent e) {								
+								folder2.setSelection(1);
+								updateDetailPane(draggedRow, draggedCol, null);
+							}
+						});	
+					    
 					    MenuItem contextItem = new MenuItem(popupMenu, SWT.NONE);
 					    contextItem.setImage(contextIcon);
 					    contextItem.setText("Show Context");
-						
+					    contextItem.addSelectionListener(new SelectionAdapter() {
+							public void widgetSelected(SelectionEvent e) {								
+								folder2.setSelection(2);
+								updateDetailPane(draggedRow, draggedCol, null);
+							}
+						});	
+					    
 					} else {
 												
 						System.err.println("xoff = " + xoff);
@@ -2663,16 +3382,37 @@ public class UnityCanvas extends Composite {
 							    MenuItem tableItem = new MenuItem(popupMenu, SWT.NONE);
 							    tableItem.setImage(tableIcon);
 							    tableItem.setText("Show in Table");
+							    tableItem.setEnabled(false);
 						    }
 						    MenuItem evidenceItem = new MenuItem(popupMenu, SWT.NONE);
 						    evidenceItem.setImage(evidenceIcon);
 						    evidenceItem.setText("Show Evidence");
+						    evidenceItem.addSelectionListener(new SelectionAdapter() {
+								public void widgetSelected(SelectionEvent e) {								
+									folder2.setSelection(0);
+									updateDetailPane(draggedRow, draggedCol, dragElement.getElementID());
+								}
+							});	
+						    
 						    MenuItem closeMatchItem = new MenuItem(popupMenu, SWT.NONE);
 						    closeMatchItem.setImage(closeMatchIcon);
 						    closeMatchItem.setText("Show Close Matches");
+						    closeMatchItem.addSelectionListener(new SelectionAdapter() {
+								public void widgetSelected(SelectionEvent e) {								
+									folder2.setSelection(1);
+									updateDetailPane(draggedRow, draggedCol, dragElement.getElementID());
+								}
+							});	
+						    
 						    MenuItem contextItem = new MenuItem(popupMenu, SWT.NONE);
 						    contextItem.setImage(contextIcon);
 						    contextItem.setText("Show Context");
+						    contextItem.addSelectionListener(new SelectionAdapter() {
+								public void widgetSelected(SelectionEvent e) {								
+									folder2.setSelection(2);
+									updateDetailPane(draggedRow, draggedCol, dragElement.getElementID());
+								}
+							});	
 						}
 					}
 				}
@@ -2802,8 +3542,29 @@ public class UnityCanvas extends Composite {
 				}
 			});
 			
-			
-			
+			workspaceTable.addListener(SWT.Resize, new Listener() {	
+				public void handleEvent(Event e) {
+					int size = 1+(((Table)(e.widget)).getBounds().width - workspaceTable.getColumn(0).getWidth()- workspaceTable.getColumn(1).getWidth())/(workspaceTable.getColumnCount()-2);
+					for(int i = 2; i < workspaceTable.getColumnCount(); i++)
+					{
+						workspaceTable.getColumn(i).setWidth(size);
+					}
+				}
+			});
+						
+			folder2.addSelectionListener(new SelectionListener () {
+
+				@Override
+				public void widgetDefaultSelected(SelectionEvent arg0) {
+					updateDetailPane(detailSID, detailScID, detailEID);
+				}
+
+				@Override
+				public void widgetSelected(SelectionEvent arg0) {
+					updateDetailPane(detailSID, detailScID, detailEID);
+				}
+				
+			});			
 	}
 	
 	public Integer getTreeSchemaID() {
