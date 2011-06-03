@@ -4,12 +4,10 @@ package org.mitre.schemastore.servlet;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 
 import org.mitre.schemastore.data.DataManager;
 import org.mitre.schemastore.model.AssociatedElement;
@@ -55,27 +53,24 @@ public class SaveVocabularyTerms
 	}
 	
 	/** Generates a list of terms aligned with repository IDs */
-	static private ArrayList<Term> getAlignedTerms(DataManager manager, VocabularyTerms oldVocabulary, VocabularyTerms newVocabulary)
+	static private void alignTerms(DataManager manager, VocabularyTerms oldVocabulary, VocabularyTerms newVocabulary)
 	{
 		// Gather up references to old terms
 		HashMap<Integer,Term> oldTerms = new HashMap<Integer,Term>();
 		for(Term term : oldVocabulary.getTerms())
 			oldTerms.put(term.getId(), term);
 		
-		// Align terms while adjusting term name changes
-		ArrayList<Term> alignedTerms = new ArrayList<Term>();
+		// Scrub the temporary IDs off terms which don't yet have universal IDs 
 		for(Term term : newVocabulary.getTerms())
 		{
 			// Set the aligned term
 			Term oldTerm = oldTerms.get(term.getId());
 			if(oldTerm==null) term.setId(null);
-			alignedTerms.add(term);
 		}
-		return alignedTerms;
 	}
 	
 	/** Generates a list of mappings based on the vocabulary */
-	static private HashMap<Integer,MappingInfo> getMappings(DataManager manager, Project project, Integer vocabularyID, List<Term> terms) throws Exception
+	static private HashMap<Integer,MappingInfo> getMappings(DataManager manager, Project project, Integer vocabularyID, Term[] terms) throws Exception
 	{
 		// Generate the mappings
 		HashMap<Integer,MappingInfo> mappings = new HashMap<Integer,MappingInfo>();
@@ -100,7 +95,7 @@ public class SaveVocabularyTerms
 	}
 	
 	/** Adds new terms to the vocabulary */
-	static private void addNewTerms(DataManager manager, Integer vocabularyID, List<Term> terms) throws Exception
+	static private void addNewTerms(DataManager manager, Integer vocabularyID, Term[] terms) throws Exception
 	{
 		// Retrieve the vocabulary schema
 		SchemaInfo schema = getSchema(manager, vocabularyID);
@@ -172,7 +167,7 @@ public class SaveVocabularyTerms
 	}
 	
 	/** Removes old terms from the vocabulary */
-	static private boolean removeOldTerms(DataManager manager, List<Term> oldTerms, List<Term> newTerms)
+	static private boolean removeOldTerms(DataManager manager, Term[] oldTerms, Term[] newTerms)
 	{
 		// Generate a hash of all new term references
 		HashSet<Integer> termIDs = new HashSet<Integer>();
@@ -187,7 +182,7 @@ public class SaveVocabularyTerms
 	}
 	
 	/** Saves the specified vocabulary into the web services */
-	static boolean saveVocabularyTerms(DataManager manager, VocabularyTerms terms) throws RemoteException
+	static VocabularyTerms saveVocabularyTerms(DataManager manager, VocabularyTerms terms) throws RemoteException
 	{		
 		try {
 			// Get the referenced project
@@ -216,14 +211,14 @@ public class SaveVocabularyTerms
 			VocabularyTerms oldTerms = GetVocabularyTerms.getVocabularyTerms(manager,projectID);
 	
 			// Align the terms between the old and new vocabulary
-			ArrayList<Term> alignedTerms = getAlignedTerms(manager,oldTerms,terms);
+			alignTerms(manager,oldTerms,terms);
 			
 			// Swap out terms from the vocabulary
-			addNewTerms(manager, vocabularyID, alignedTerms);
-			updateMappings(manager, projectID, vocabularyID, getMappings(manager, project, vocabularyID, alignedTerms));
-			removeOldTerms(manager, Arrays.asList(oldTerms.getTerms()), alignedTerms);
+			addNewTerms(manager, vocabularyID, terms.getTerms());
+			updateMappings(manager, projectID, vocabularyID, getMappings(manager, project, vocabularyID, terms.getTerms()));
+			removeOldTerms(manager, oldTerms.getTerms(), terms.getTerms());
 		}
-		catch(Exception e) { System.out.println("(E) SaveVocabularyTerms:saveVocabularyTerms: "+e.getMessage()); return false; }
-		return true;
+		catch(Exception e) { System.out.println("(E) SaveVocabularyTerms:saveVocabularyTerms: "+e.getMessage()); return null; }
+		return terms;
 	}
 }
