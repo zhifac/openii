@@ -1,7 +1,5 @@
 package org.mitre.openii.application;
 
-import java.awt.Dimension;
-
 import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
 import org.eclipse.jface.window.Window;
