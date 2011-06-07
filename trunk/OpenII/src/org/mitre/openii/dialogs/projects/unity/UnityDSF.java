@@ -188,66 +188,6 @@ public class UnityDSF extends Thread {
 		}
 	}
 
-	/**
-	 * FAILED FIRST ATTEMPT Synsets at the end of DSF may have more than one
-	 * element from one schema participating. This normalization function
-	 * creates multiple synset for added elements.
-	 * 
-	 * @param synset
-	 * @return
-	 */
-	private ArrayList<Synset> normalizeSet(Synset synset) {
-		// Build a hash of schema ID to corresponding synset term list
-
-		HashMap<Integer, ArrayList<SynsetTerm>> schemaTermHash = new HashMap<Integer, ArrayList<SynsetTerm>>();
-		for (SynsetTerm term : synset.terms) {
-			if (!schemaTermHash.containsKey(term.schemaId))
-				schemaTermHash.put(term.schemaId, new ArrayList<SynsetTerm>());
-			schemaTermHash.get(term.schemaId).add(term);
-		}
-
-		ArrayList<Integer> schemas = new ArrayList<Integer>(schemaTermHash.keySet());
-
-		// Calculate the total number of synsets
-		int totalSynsets = 1;
-		for (ArrayList<SynsetTerm> termList : schemaTermHash.values())
-			totalSynsets *= termList.size();
-
-		ArrayList<Synset> result = new ArrayList<Synset>(totalSynsets);
-		if (totalSynsets == 1) {
-			result.add(synset);
-			return result;
-		}
-
-		// Fill term in a total of (# of synset / # terms in schema) synsets.
-		for (int i = 0; i < totalSynsets; i++)
-			result.add(i, new Synset());
-
-		for (int schemaIDX = 0; schemaIDX < schemas.size(); schemaIDX++) {
-
-			ArrayList<SynsetTerm> termList = schemaTermHash.get(schemas.get(schemaIDX));
-
-			int offset = 1;
-			for (int s = schemaIDX; s < schemas.size() - 1; s++)
-				offset *= schemaTermHash.get(schemas.get(s + 1)).size();
-
-			int termIDX = 0;
-			int j = 0;
-			for (int i = 0; i < result.size(); i++) {
-				result.get(i).add(termList.get(termIDX));
-				j++;
-				if (j >= offset) {
-					j = 0;
-					termIDX++;
-					if (termIDX >= termList.size())
-						termIDX = 0;
-				}
-			}
-		}
-
-		return result;
-	}
-
 	private Term[] generateVocabTerms(ArrayList<Synset> list) {
 		Term[] termArray = new Term[list.size()];
 
