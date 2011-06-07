@@ -17,12 +17,10 @@
 package org.mitre.openii.editors.unity;
 
 import java.util.ArrayList;
-import java.util.AbstractList;
 import java.util.HashMap;
 import java.util.Iterator;
 
 import org.apache.commons.lang.WordUtils;
-import org.eclipse.jface.action.Separator;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
@@ -44,13 +42,11 @@ import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.events.ShellEvent;
-import org.eclipse.swt.events.ShellListener;
-import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
@@ -71,18 +67,18 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.TreeItem;
-import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.widgets.MenuItem;
 import org.mitre.openii.application.OpenIIActivator;
 import org.mitre.openii.model.OpenIIManager;
-import org.mitre.openii.widgets.schemaTree.SchemaMenuManager;
 import org.mitre.openii.widgets.schemaTree.SchemaTree;
+import org.mitre.schemastore.model.Annotation;
 import org.mitre.schemastore.model.AssociatedElement;
 import org.mitre.schemastore.model.Attribute;
 import org.mitre.schemastore.model.Containment;
@@ -94,46 +90,30 @@ import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.Term;
 import org.mitre.schemastore.model.VocabularyTerms;
-import org.mitre.schemastore.model.mappingInfo.AssociatedElementHash;
-import org.mitre.schemastore.model.mappingInfo.MappingInfoExt;
 import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
 import org.mitre.schemastore.model.schemaInfo.SchemaInfo;
 import org.mitre.schemastore.model.schemaInfo.model.SchemaModel;
-import org.mitre.schemastore.model.Annotation;
 
 public class UnityCanvas extends Composite {
-	private int numSchemas; // num schemas, including common vocab as a schema
 	private Integer[] schemaIDs;
 	private Schema[] schemas;
 	private SchemaInfo[] schemaInfos;
 	private SchemaModel[] schemaModels;
-	private String[] schemaNames; // schemaNames[0] will always be
-									// "Common Vocab"
-	private HashMap<Integer, Integer> schemaIDsToColNum;
 	private VocabularyTerms vocab;
 	private Composite viewsParent;
-	private ArrayList<Point> highlightedTableItems;
 	private HashMap<Integer, Mapping> mappings = new HashMap<Integer, Mapping>();
     private HashMap<Integer, Annotation> checkStatus = new HashMap<Integer, Annotation>();
-	private boolean confirmation;
-//	private Hashtable<Integer, SchemaInfo> schemaInfos = new Hashtable<Integer, SchemaInfo>();
-	private boolean coloredTable;
 
 	private Color red =  this.getDisplay().getSystemColor(SWT.COLOR_RED);
-	private Color black =  this.getDisplay().getSystemColor(SWT.COLOR_BLACK);
 	private Color gray =  this.getDisplay().getSystemColor(SWT.COLOR_GRAY);
 	private Color green =  this.getDisplay().getSystemColor(SWT.COLOR_GREEN);
 	private Color yellow =  this.getDisplay().getSystemColor(SWT.COLOR_YELLOW);
 	private Color white =  this.getDisplay().getSystemColor(SWT.COLOR_WHITE);
-	private Color lightYellow = new Color(this.getDisplay(), 255, 255, 128);
-	private Color lightGreen = new Color(this.getDisplay(), 128, 225, 128);
-	private Color lightRed = new Color(this.getDisplay(), 255, 128, 128);
 	private Color lightBlue = new Color(this.getDisplay(), 225, 225, 255);
 	private Font boldFont = new Font(Display.getDefault(), new FontData("Arial", 8, SWT.BOLD));
 	private Font ItalicFont = new Font(Display.getDefault(), new FontData("Arial", 8, SWT.ITALIC));
 	private Font LargeItalicFont = new Font(Display.getDefault(), new FontData("Arial", 10, SWT.ITALIC));
 	private Font LargeBoldFont = new Font(Display.getDefault(), new FontData("Arial", 14, SWT.NONE));
-	private Image[] images = new Image[6];
     private SchemaTree treeview = null;
 	private Table tableview = null;
     private Text textSearchTree;
@@ -229,7 +209,6 @@ public class UnityCanvas extends Composite {
     private Image checkRemoveIcon = OpenIIActivator.getImage("checkRemove.png");
     private Image checkSortUpIcon = OpenIIActivator.getImage("checkSortUp.png");
     private Image checkSortDownIcon = OpenIIActivator.getImage("checkSortDown.png");
-    private Image SchemaImage = OpenIIActivator.getImage("Schema.gif");
     private Image DomainValueImage = OpenIIActivator.getImage("DomainValue.jpg");
     private Image AttributeImage = OpenIIActivator.getImage("Attribute.jpg");
     private Image ContainmentImage = OpenIIActivator.getImage("Containment.jpg");
@@ -308,7 +287,7 @@ public class UnityCanvas extends Composite {
 //		CTabFolder folder = new CTabFolder(main_sash, SWT.TOP);
 		folder.setUnselectedCloseVisible(false);
 		folder.setSimple(false);
-		
+
 		CTabItem item = new CTabItem(folder, SWT.NONE);
 		item.setImage(treeViewIcon);
 		item.setText("Tree");
@@ -388,7 +367,7 @@ public class UnityCanvas extends Composite {
 		folder2.setBackground(null); 
 		folder2.setSelectionBackground(display.getSystemColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT)); 
 		folder2.setBorderVisible(true);
-		
+
 		addListners();
 		
 	}
@@ -2200,9 +2179,7 @@ public class UnityCanvas extends Composite {
 		AssociatedElement[][] allElements = new AssociatedElement[schemaIDs.length][];
 		ArrayList<AssociatedElement> assElements = new ArrayList<AssociatedElement>();
 		int elementCount = 0;
-		TableItem showMeR = null;
 		TableColumn showMeC = null;
-		//int first = -1;
 		                  
 		//loop through once to get all terms
 		for(int j = 0; j < schemaIDs.length; j++){			

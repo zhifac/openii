@@ -1,7 +1,5 @@
 package org.mitre.openii.editors.unity;
 
-import java.util.ArrayList;
-
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
@@ -10,10 +8,8 @@ import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.jface.viewers.TreeViewer;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.TreeItem;
 import org.mitre.openii.application.OpenIIActivator;
-import org.mitre.schemastore.model.AssociatedElement;
 
 /** Handles the displaying of the schema popup menu */
 public class SchemaTreeMenuManager extends MenuManager implements IMenuListener
