@@ -370,6 +370,7 @@ public class BatchMatchDialog extends TitleAreaDialog implements SelectionListen
 
 		// Toggles the highlighted mapping group buttons
 		Listener groupSelectionListener = new Listener() {
+			@SuppressWarnings("unchecked")
 			public void handleEvent(Event e) {
 				Button button = (Button) e.widget;
 				ArrayList<Integer> schemaGroup = (ArrayList<Integer>) button.getData();
