@@ -36,7 +36,7 @@ public class UBCUtils
 		// Launch the browser
 		UBCListener listener = new UBCListener();
 		browser.addProgressListener(listener);
-		browser.setUrl("http://www.google.com/search?q="+ubc+"&tbm=shop");    
+		browser.setUrl("http://www.google.com/search?sclient=psy&hl=en&site=webhp&tbm=shop&source=hp&q="+ubc+"&btnG=Search");    
 		
 		// Monitor for load of page
 		while(!shell.isDisposed())
