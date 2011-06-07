@@ -247,7 +247,7 @@ public class AffinityEditor extends OpenIIEditor implements SelectionClickedList
 		return menu;
 	}
 
-	/** Displays the Affinity View */
+	/** Displays the Affinity View */ @SuppressWarnings("unchecked")
 	public void createPartControl(final Composite parent)
 	{
 		// Connects the SchemaStoreClient to Affinity's SchemaStoreManager
