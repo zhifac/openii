@@ -54,8 +54,8 @@ public class UBCUtils
 				while(matcher.find())
 				{
 					if(phase==0 && matcher.group(1).equals(" class=pslimain")) { phase=1; continue; }
-					if(phase==1 && matcher.group(1).equals(" class=f")) { phase=2; continue; }
-					if(phase==2) { description=text.substring(matcher.end()).replaceAll("[<\r\n].*",""); break; }
+					if(phase==1 && matcher.group(1).equals(""))
+						{ description=text.substring(matcher.end()).replaceAll("[<\r\n].*",""); break; }
 				}
 
 				// Return the description
