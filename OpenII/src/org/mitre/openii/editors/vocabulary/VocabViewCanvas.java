@@ -84,13 +84,9 @@ public class VocabViewCanvas extends Canvas {
 	private Composite viewsParent;
 	private ArrayList<Point> highlightedTableItems;
 	private ArrayList<Mapping> mappings;
-	private boolean confirmation;
 	private Hashtable<Integer, SchemaInfo> schemaInfos = new Hashtable<Integer, SchemaInfo>();
 	private boolean coloredTable;
 
-	private Color red =  this.getDisplay().getSystemColor(SWT.COLOR_RED);
-	private Color green =  this.getDisplay().getSystemColor(SWT.COLOR_GREEN);
-	private Color yellow =  this.getDisplay().getSystemColor(SWT.COLOR_YELLOW);
 	private Color white =  this.getDisplay().getSystemColor(SWT.COLOR_WHITE);
 	private Color lightYellow = new Color(this.getDisplay(), 255, 255, 128);
 	private Color lightGreen = new Color(this.getDisplay(), 128, 225, 128);
@@ -117,7 +113,6 @@ public class VocabViewCanvas extends Canvas {
 		Integer projID = vocabTerms.getProjectID();
 		mappings = OpenIIManager.getMappings(projID);
 
-		confirmation = false;
 		createVocabView();
 	}
 
@@ -938,7 +933,6 @@ public class VocabViewCanvas extends Canvas {
 		cancelButton.setText("Cancel");
 		cancelButton.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event event) {
-				confirmation = false;
 				warningDialog.dispose();
 			}
 		});
