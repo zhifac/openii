@@ -46,6 +46,7 @@
       <editor name="QuickAlign" extensions="mapping" icon="icons/Mapping.gif" class="org.mitre.openii.editors.mappings.quickAlign.QuickAlignEditor" id="QuickAlignEditor"></editor>
    	  <editor name="RMap" extensions="mapping" icon="icons/RMap.gif" class="org.mitre.openii.editors.mappings.RMapEditor" id="RMapEditor"></editor>
       <editor name="Unity" extensions="vocabulary" icon="icons/Vocabulary.gif" class="org.mitre.openii.editors.unity.UnityEditor" id="UnityEditor"></editor>
+      <editor name="Vocabulary" extensions="vocabulary" icon="icons/Vocabulary.gif" class="org.mitre.openii.editors.vocabulary.VocabEditor" id="VocabEditor"></editor>
 	  <editor name="Manifest" extensions="vocabulary" icon="icons/Vocabulary.gif" class="org.mitre.openii.editors.vocabulary.ManifestView" id="ManifestView"></editor>
       <editor name="Thesaurus" extensions="thesaurus" icon="icons/Thesaurus.gif" class="org.mitre.openii.editors.thesauri.ThesaurusView" id="ThesaurusView"></editor>
    </extension>
