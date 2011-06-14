@@ -2,11 +2,12 @@ package org.mitre.openii.dialogs.projects.unity;
 
 import java.io.File;
 import java.io.IOException;
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 
 import org.mitre.openii.dialogs.projects.unity.DisjointSetForest.ContainerMethod;
 import org.mitre.openii.model.OpenIIManager;
@@ -23,8 +24,8 @@ import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
 import org.mitre.schemastore.model.schemaInfo.model.SchemaModel;
 import org.mitre.schemastore.porters.vocabularyExporters.CompleteVocabExporter;
 
-public class UnityDSF extends Thread {
-
+public class UnityDSF extends Thread
+{
 	private Project project;
 	private VocabularyTerms terms;
 	private ArrayList<Integer> rankedSchemas;
@@ -95,26 +96,26 @@ public class UnityDSF extends Thread {
 			totalProgress = 1;
 
 		// Create synsetTerm for each schema element
-		final HashMap<String, SynsetTerm> synsetTerms = new HashMap<String, SynsetTerm>();
+		final HashMap<String, SynsetElement> synsetElements = new HashMap<String, SynsetElement>();
 		for (Integer sID : rankedSchemas) {
 			SchemaModel schemaModel = project.getSchemaModel(sID);
 			HierarchicalSchemaInfo schemaInfo = new HierarchicalSchemaInfo(OpenIIManager.getSchemaInfo(sID), schemaModel);
 			for (SchemaElement ele : schemaInfo.getHierarchicalElements()) {
-				SynsetTerm newSynsetTerm = new SynsetTerm(sID, ele.getId(), ele.getName(), ele.getDescription());
-				synsetTerms.put(new String(sID + "-" + ele.getId()), newSynsetTerm);
+				SynsetElement newSynsetTerm = new SynsetElement(sID, ele.getId(), ele.getName(), ele.getDescription());
+				synsetElements.put(new String(sID + "-" + ele.getId()), newSynsetTerm);
 			}
 		}
 
 		// The containers are the schemas
-		ContainerMethod<SynsetTerm> method = new ContainerMethod<SynsetTerm>() {
-			public int getContainerFor(SynsetTerm v) {
-				return v.schemaId;
+		ContainerMethod<SynsetElement> method = new ContainerMethod<SynsetElement>() {
+			public int getContainerFor(SynsetElement element) {
+				return element.getSchemaID();
 			}
 		};
 
 		notify("Generating vocabulary... ");
 		// Disjoint Set Forest
-		DisjointSetForest<SynsetTerm> dsf = new DisjointSetForest<SynsetTerm>(synsetTerms.values().toArray(new SynsetTerm[0]), method, rankedSchemas.size());
+		DisjointSetForest<SynsetElement> dsf = new DisjointSetForest<SynsetElement>(synsetElements.values().toArray(new SynsetElement[0]), method, rankedSchemas.size());
 
 		for (Mapping mapping : this.mappings)
 		{
@@ -144,7 +145,7 @@ public class UnityDSF extends Thread {
 			// Then call DisjointSetForest merge on the mapping cells.
 			for (MappingCell mc : mcArray) {
 				for (MappingCellInput input : mc.getInputs())
-					dsf.merge(synsetTerms.get(new String(inputSchema + "-" + input.getElementID())), synsetTerms.get(new String(outputSchema + "-" + mc.getOutput())), mc.isValidated());
+					dsf.merge(synsetElements.get(new String(inputSchema + "-" + input.getElementID())), synsetElements.get(new String(outputSchema + "-" + mc.getOutput())), mc.isValidated());
 
 				notify(++progressCount);
 			}
@@ -152,7 +153,7 @@ public class UnityDSF extends Thread {
 
 		// Now that DSF is done, reorganize the data into synsets
 		HashMap<Integer, Synset> synsets = new HashMap<Integer, Synset>();
-		for (SynsetTerm term : synsetTerms.values()) {
+		for (SynsetElement term : synsetElements.values()) {
 			int root = dsf.find(term);
 			Synset termSet = synsets.get(new Integer(root));
 			if (termSet == null) {
@@ -214,37 +215,59 @@ public class UnityDSF extends Thread {
 		return this.rankedSchemas;
 	}
 
-	/** generates a canonical term from the synset **/
-	protected Term generateConnicalTerm(Synset synset) {
-		Term resultTerm = null;
-		AssociatedElement[] assocElements = new AssociatedElement[synset.terms.size()];
-		SchemaElement baseElement = null;
-
-		// Create associated elements for the vocabulary term
-		for (int i = 0; i < synset.terms.size(); i++) {
-			SynsetTerm synsetTerm = synset.terms.get(i);
-			assocElements[i] = new AssociatedElement(synsetTerm.schemaId, synsetTerm.elementId, synsetTerm.elementName, synsetTerm.elementDescription);
-		}
-
-		// Determine a vocabulary term based on schema ranking
-		try {
-			for (Integer authoritySchema : rankedSchemas) {
-				SynsetTerm term = synset.getTerm(authoritySchema);
-				if (term != null && term.elementName.length() > 0) {
-					baseElement = RepositoryManager.getClient().getSchemaElement(term.elementId);
-					break;
-				}
+	/** Generates a canonical term from the synset */
+	protected Term generateConnicalTerm(Synset synset)
+	{
+		// First, try to generate name based on common terms
+		String name = null;
+		for(boolean useDescription : new Boolean[]{false,true})
+		{
+			// Get all unique words used in each synset term
+			ArrayList<String> words = new ArrayList<String>();
+			if(synset.getElements().size()<=1) continue;
+			for(SynsetElement element : synset.getElements())
+			{
+				// Generate the list of words found in the elements
+				LinkedHashSet<String> elementWords = new LinkedHashSet<String>();
+				elementWords.addAll(Arrays.asList(element.getName().split("\\s+")));
+				if(useDescription) elementWords.addAll(Arrays.asList(element.getDescription().split("\\s+")));
+				for(String elementWord : elementWords) words.add(elementWord.replaceAll("\\W","").toLowerCase());
 			}
-		} catch (RemoteException e) {
-			e.printStackTrace();
+			
+			// Load the words into a hash table
+			LinkedHashMap<String,Integer> wordHash = new LinkedHashMap<String,Integer>();
+			Integer maxCount = 0;
+			for(String word : words)
+			{
+				Integer count = wordHash.get(word);
+				count = count==null ? 1 : count+1;
+				if(count>maxCount) maxCount=count;
+				wordHash.put(word, count);
+			}
+				
+			// If multiple items share words, generate name
+			if(maxCount>1)
+			{
+				name = "";
+				for(String word : wordHash.keySet())
+					if(wordHash.get(word).equals(maxCount)) name += " " + word;
+				name = name.trim();
+				break;
+			}
 		}
+		
+		// Otherwise, use highest ranked schema to determine vocabulary term
+		if(name==null)
+			for(Integer authoritySchema : rankedSchemas)
+			{
+				SynsetElement element = synset.getElementBySchemaID(authoritySchema);
+				if(element!=null && element.getName().length() > 0)
+					{ name = element.getName(); break; }
+			}
 
-		// Create and return Term object from Synset Term
-		if (baseElement == null)
-			resultTerm = new Term(null, new String(), new String(), assocElements);
-		else
-			resultTerm = new Term(null, baseElement.getName(), baseElement.getDescription(), assocElements);
-		return resultTerm;
+		// Create and return term object from Synset
+		AssociatedElement[] elements = new ArrayList<AssociatedElement>(synset.getElements()).toArray(new AssociatedElement[0]);
+		return new Term(null, name, "", elements);
 	}
 
 	public void exportVocabulary(File file) throws IOException {

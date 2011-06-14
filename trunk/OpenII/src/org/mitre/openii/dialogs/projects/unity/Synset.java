@@ -14,97 +14,50 @@ import java.util.ArrayList;
  * @author MDMORSE
  * 
  */
-public class Synset implements Comparable<Synset> {
-	public ArrayList<SynsetTerm> terms;
-	public SynsetTerm leastNode = null;
+public class Synset implements Comparable<Synset>
+{
+	/** Stores the list of synset elements */
+	private ArrayList<SynsetElement> elements = new ArrayList<SynsetElement>();
+	private SynsetElement leastNode = null;
 
-	public Synset() {
-		terms = new ArrayList<SynsetTerm>();
+	/** Constructs the synset */
+	public Synset(SynsetElement element)
+		{ add(element); }
+
+	/** Adds a term to the synset */
+	public void add(SynsetElement element)
+	{
+		if(!elements.contains(element)) elements.add(element);
+		if(leastNode == null || leastNode.compareTo(element)>0) leastNode = element;
 	}
 
-	public Synset(SynsetTerm n) {
-		this();
-		add(n);
-	}
-
-	public void add(SynsetTerm n) {
-		if (!terms.contains(n))
-			terms.add(n);
-		updateLeastNode(n);
-	}
-
-	private void updateLeastNode(SynsetTerm n) {
-		if (leastNode == null || leastNode.compareTo(n) > 0)
-			leastNode = n;
-	}
-
-	/**
-	 * full linkage. max distance is 1, least is 0 Simple Linkage
-	 * 
-	 * @param two
-	 * @return the largest distance between two Synset terms
-	 */
-	float completeLinkage(Synset two) {
-		int i;
-		int j;
-		float maxDist = 0;
-		for (i = 0; i < this.terms.size(); i++) {
-			SynsetTerm t_node = this.terms.get(i);
-			for (j = 0; j < two.terms.size(); j++) {
-				SynsetTerm s_node = two.terms.get(j);
-				int m = t_node.pointers.indexOf(s_node);
-				if (m == -1)
-					continue;
-				// return 0;
-				float st_dist = t_node.distances.get(m).floatValue();
-				if (maxDist < st_dist) {
-					maxDist = st_dist;
-				}
+	/** Calculates out the complete linkage between this synset and the specified synset */
+	double completeLinkage(Synset synset)
+	{
+		double maxDistance = 0;
+		for(SynsetElement element1 : elements)
+			for(SynsetElement element2 : synset.elements)
+			{
+				Double distance = element1.getDistance(element2);
+				if(distance!=null && distance>maxDistance)
+					maxDistance = distance;
 			}
-		}
-		return maxDist;
+		return maxDistance;
 	}
-
 	
+	/** Returns the synset elements that belong to this synset */
+	public ArrayList<SynsetElement> getElements()
+		{ return elements; }
 
-	public ArrayList<SynsetTerm> getGroup() {
-		return terms;
-	}
+	/** Compares two synsets to one another */
+	public int compareTo(Synset synset)
+		{ return this.leastNode.compareTo(synset.leastNode); }
 
-	public int compareTo(Synset other) {
-		return this.leastNode.compareTo(other.leastNode);
-	}
-
-	/**
-	 * returns the schemaelement node that belongs to the specified schema
-	 * 
-	 * @param baseSchema
-	 * @return SynsetTerm
-	 */
-	public SynsetTerm getTerm(Integer baseSchema) {
-		for (SynsetTerm n : terms)
-			if (n.schemaId.equals( baseSchema) )
-				return n;
+	/** Returns the synset element that belongs to the specified schema */
+	public SynsetElement getElementBySchemaID(Integer schemaID)
+	{
+		for(SynsetElement element : elements)
+			if(element.getSchemaID().equals(schemaID)) return element;
 		return null;
 	}
-
-	/**
-	 * Make a deep copy of the synset from the schemastore exporter synset to
-	 * the current one. This is a very temporary fix until we are done comparing
-	 * old unity using hierarchical clustering vs disjoint set forest
-	 * 
-	 * @param oldSynset
-	 * @return
-	 */
-	static public Synset copy(org.mitre.schemastore.porters.projectExporters.matchmaker.Synset oldSynset) {
-		Synset newSynset = new Synset();
-		for (org.mitre.schemastore.porters.projectExporters.matchmaker.SynsetTerm oldTerm : oldSynset.terms) {
-			SynsetTerm newTerm = new SynsetTerm(oldTerm.schemaId, oldTerm.elementId, oldTerm.elementName, oldTerm.elementDescription);
-			newSynset.add(newTerm);
-			if (oldTerm.equals(oldSynset.leastNode))
-				newSynset.leastNode = newTerm;
-		}
-		return newSynset;
-	}
-
 }
