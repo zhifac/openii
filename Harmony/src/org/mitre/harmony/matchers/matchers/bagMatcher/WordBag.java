@@ -13,6 +13,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Hashtable;
 
+import org.mitre.schemastore.model.AssociatedElement;
 import org.mitre.schemastore.model.SchemaElement;
 
 /** Class for storing a word bag */
@@ -25,7 +26,7 @@ public class WordBag
 	static
 	{
 		String[] stopwordArray =
-			{"a", "i", "the", "of", "and", "that", "for", "by",
+			{"a", "i", "the", "of", "and", "that", "for", "by", "oz",
 			 "as", "be", "or", "this", "then", "we",
 			 "which", "with", "at", "from", "under",
 			 "such", "there", "other", "if", "is",
@@ -86,6 +87,15 @@ public class WordBag
 		addWords(tokenize(text.trim()));
 	}
 
+	/** Adds associated elements to the word bag */
+	void addAssociatedElement(AssociatedElement element, boolean useName, boolean useDescription)
+	{
+		String text = "";
+		if(useName) text += (element.getName() == null) ? "" : element.getName() + " ";
+		if(useDescription) text += (element.getDescription() == null) ? "" : element.getDescription();
+		addWords(tokenize(text.trim()));
+	}
+	
 	/** Add words to the word bag */
 	public void addWords(ArrayList<String> words)
 	{
