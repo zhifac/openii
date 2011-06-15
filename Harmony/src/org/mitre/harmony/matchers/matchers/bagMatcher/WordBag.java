@@ -26,7 +26,7 @@ public class WordBag
 	static
 	{
 		String[] stopwordArray =
-			{"a", "i", "the", "of", "and", "that", "for", "by", "oz",
+			{"a", "i", "the", "of", "and", "that", "for", "by",
 			 "as", "be", "or", "this", "then", "we",
 			 "which", "with", "at", "from", "under",
 			 "such", "there", "other", "if", "is",
