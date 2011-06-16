@@ -38,7 +38,7 @@ import org.mitre.openii.widgets.BasicWidgets;
 import org.mitre.openii.widgets.OptionsPanel;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.Project;
-import org.mitre.schemastore.model.VocabularyTerms;
+import org.mitre.schemastore.model.terms.VocabularyTerms;
 
 public class GenerateVocabularyDialog extends TitleAreaDialog implements ModifyListener, ActionListener {
 

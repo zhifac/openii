@@ -18,16 +18,16 @@ import org.mitre.openii.editors.OpenIIEditor;
 import org.mitre.openii.editors.schemas.schema.SchemaView;
 import org.mitre.openii.model.OpenIIManager;
 import org.mitre.openii.widgets.schemaTree.SchemaTree;
-import org.mitre.schemastore.model.AssociatedElement;
 import org.mitre.schemastore.model.Domain;
 import org.mitre.schemastore.model.Entity;
 import org.mitre.schemastore.model.Project;
 import org.mitre.schemastore.model.Relationship;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
-import org.mitre.schemastore.model.Term;
-import org.mitre.schemastore.model.VocabularyTerms;
 import org.mitre.schemastore.model.schemaInfo.SchemaInfo;
+import org.mitre.schemastore.model.terms.AssociatedElement;
+import org.mitre.schemastore.model.terms.Term;
+import org.mitre.schemastore.model.terms.VocabularyTerms;
 
 /** Constructs the Manifest View */
 public class ManifestView extends OpenIIEditor implements IDoubleClickListener

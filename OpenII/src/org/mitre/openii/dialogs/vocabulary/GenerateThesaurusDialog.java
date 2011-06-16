@@ -7,8 +7,8 @@ import org.mitre.openii.dialogs.thesauri.EditThesaurusDialog;
 import org.mitre.openii.model.OpenIIManager;
 import org.mitre.openii.views.manager.VocabularyInProject;
 import org.mitre.schemastore.model.Thesaurus;
-import org.mitre.schemastore.model.ThesaurusTerms;
-import org.mitre.schemastore.model.VocabularyTerms;
+import org.mitre.schemastore.model.terms.ThesaurusTerms;
+import org.mitre.schemastore.model.terms.VocabularyTerms;
 
 /** Constructs the Generate Thesaurus Dialog class */
 public class GenerateThesaurusDialog

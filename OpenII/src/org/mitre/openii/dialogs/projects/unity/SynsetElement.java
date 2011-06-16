@@ -2,7 +2,7 @@ package org.mitre.openii.dialogs.projects.unity;
 
 import java.util.HashMap;
 
-import org.mitre.schemastore.model.AssociatedElement;
+import org.mitre.schemastore.model.terms.AssociatedElement;
 
 /**
  * This is an extension of an associated element which also tracks other associated elements

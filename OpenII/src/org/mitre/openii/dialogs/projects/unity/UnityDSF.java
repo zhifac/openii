@@ -12,16 +12,16 @@ import java.util.LinkedHashSet;
 import org.mitre.openii.dialogs.projects.unity.DisjointSetForest.ContainerMethod;
 import org.mitre.openii.model.OpenIIManager;
 import org.mitre.openii.model.RepositoryManager;
-import org.mitre.schemastore.model.AssociatedElement;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.MappingCellInput;
 import org.mitre.schemastore.model.Project;
 import org.mitre.schemastore.model.SchemaElement;
-import org.mitre.schemastore.model.Term;
-import org.mitre.schemastore.model.VocabularyTerms;
 import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
 import org.mitre.schemastore.model.schemaInfo.model.SchemaModel;
+import org.mitre.schemastore.model.terms.AssociatedElement;
+import org.mitre.schemastore.model.terms.Term;
+import org.mitre.schemastore.model.terms.VocabularyTerms;
 import org.mitre.schemastore.porters.vocabularyExporters.CompleteVocabExporter;
 
 public class UnityDSF extends Thread
@@ -220,17 +220,16 @@ public class UnityDSF extends Thread
 	{
 		// First, try to generate name based on common terms
 		String name = null;
-		for(boolean useDescription : new Boolean[]{false,true})
+
+		// Get all unique words used in each synset term
+		ArrayList<String> words = new ArrayList<String>();
+		if(synset.getElements().size()>=2)
 		{
-			// Get all unique words used in each synset term
-			ArrayList<String> words = new ArrayList<String>();
-			if(synset.getElements().size()<=1) continue;
 			for(SynsetElement element : synset.getElements())
 			{
 				// Generate the list of words found in the elements
 				LinkedHashSet<String> elementWords = new LinkedHashSet<String>();
 				elementWords.addAll(Arrays.asList(element.getName().split("\\s+")));
-				if(useDescription) elementWords.addAll(Arrays.asList(element.getDescription().split("\\s+")));
 				for(String elementWord : elementWords) words.add(elementWord.replaceAll("\\W","").toLowerCase());
 			}
 			
@@ -252,7 +251,6 @@ public class UnityDSF extends Thread
 				for(String word : wordHash.keySet())
 					if(wordHash.get(word).equals(maxCount)) name += " " + word;
 				name = name.trim();
-				break;
 			}
 		}
 		
