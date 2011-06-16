@@ -3,7 +3,7 @@ package org.mitre.schemastore.porters.vocabularyExporters;
 import java.io.File;
 import java.io.IOException;
 
-import org.mitre.schemastore.model.VocabularyTerms;
+import org.mitre.schemastore.model.terms.VocabularyTerms;
 import org.mitre.schemastore.porters.Exporter;
 
 /** Abstract Schema Exporter class */

@@ -14,7 +14,8 @@
       <schemaImporter>org.mitre.schemastore.porters.schemaImporters.GSIPImporter</schemaImporter>
       <schemaImporter>org.mitre.schemastore.porters.schemaImporters.GDBImporter</schemaImporter>
       <schemaImporter>org.mitre.schemastore.porters.schemaImporters.DocumentImporter</schemaImporter>
-      <schemaImporter>org.mitre.schemastore.porters.schemaImporters.RescueSuppliesImporter</schemaImporter>
+      <schemaImporter>org.mitre.schemastore.porters.schemaImporters.SuppliesImporter</schemaImporter>
+      <schemaImporter>org.mitre.schemastore.porters.schemaImporters.UBCImporter</schemaImporter>
       <schemaImporter>org.mitre.schemastore.porters.schemaImporters.XMIImporter</schemaImporter>
     </schemaImporters>
     <projectImporters>
