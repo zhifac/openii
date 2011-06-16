@@ -7,8 +7,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 
-import org.mitre.schemastore.model.Term;
-import org.mitre.schemastore.model.VocabularyTerms;
+import org.mitre.schemastore.model.terms.Term;
+import org.mitre.schemastore.model.terms.VocabularyTerms;
 
 /**
  * @author HAOLI

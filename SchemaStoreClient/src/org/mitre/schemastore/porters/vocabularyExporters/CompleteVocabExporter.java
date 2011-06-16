@@ -6,75 +6,61 @@ import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.Comparator;
 
-import org.mitre.schemastore.model.AssociatedElement;
-import org.mitre.schemastore.model.SchemaElement;
-import org.mitre.schemastore.model.Term;
-import org.mitre.schemastore.model.VocabularyTerms;
+import org.mitre.schemastore.model.terms.AssociatedElement;
+import org.mitre.schemastore.model.terms.Term;
+import org.mitre.schemastore.model.terms.VocabularyTerms;
 
-public class CompleteVocabExporter extends VocabularyExporter {
+public class CompleteVocabExporter extends VocabularyExporter
+{
+	/** Returns the name of the exporter */ @Override
+	public String getName()
+		{ return "Complete Vocabulary Exporter"; }
+	
+	/** Returns the description of the exporter */ @Override
+	public String getDescription()
+		{ return "Export the full vocabulary terms and their corresponding terms"; }
 
-	@Override
-	public void exportVocabulary(VocabularyTerms terms, File file)
-			throws IOException {
+	/** Returns the file type for this exporter */ @Override
+	public String getFileType()
+		{ return ".csv"; }
+
+	/** Exports the vocabulary */ @Override
+	public void exportVocabulary(VocabularyTerms terms, File file) throws IOException
+	{
+		// Display the column names
 		PrintStream os = new PrintStream(file);
-		Integer[] schemaIDs = terms.getSchemaIDs();
-
-		// Print header
-		os.print("Vocabulary, Vocabulary Description, ");
-		for (Integer sid : schemaIDs)
-			os.print(client.getSchema(sid).getName() + ", Description, ");
+		os.print("Vocabulary|");
+		for (Integer sid : terms.getSchemaIDs())
+			os.print(client.getSchema(sid).getName() + "|");
 		os.print("\n");
 
-		// Print Term, associated elements, and respective description
-		Term[] vocabTerms = terms.getTerms();
-		Arrays.sort(vocabTerms, new Comparator<Term>() {
-
-			public int compare(Term o1, Term o2) {
-				if ( o1.getElements().length > o2.getElements().length ) return -1; 
-				else if ( o1.getElements().length < o2.getElements().length ) return 1; 
-				return o1.getName().compareTo(o2.getName()); 
-			}
-			
-		}); 
+		// Sort terms based on number of matches
+		Term[] sortedTerms = terms.getTerms();
+		class TermComparator implements Comparator<Term>
+		{
+			public int compare(Term term1, Term term2)
+			{
+				if(term1.getElements().length > term2.getElements().length) return -1; 
+				else if(term1.getElements().length < term2.getElements().length) return 1; 
+				return term1.getName().compareTo(term2.getName()); 
+			}			
+		}
+		Arrays.sort(sortedTerms, new TermComparator());
 		
-		for (Term term : vocabTerms) {
-			os.print(term.getName() + ", " + term.getDescription() + ",");
-			for (Integer schemaID : terms.getSchemaIDs()) {
-				AssociatedElement ae[] = term.getAssociatedElements(schemaID);
-				for (int i = 0; i < ae.length; i++){
-					if(ae[i] != null) {
-						SchemaElement element = client.getSchemaElement(ae[i]
-								.getElementID());
-						if (element != null)
-							os.print(scrubComma(element.getName()) + ", "
-									+ scrubComma(element.getDescription()) + ", ");
-						else os.print(",,"); 
-					} else os.print(",,"); 
-				}
+		// Output the terms
+		for(Term sortedTerm : sortedTerms)
+		{
+			os.print(sortedTerm.getName() + "|");
+			for(Integer schemaID : terms.getSchemaIDs())
+			{
+				String value = "";
+				for(AssociatedElement element : sortedTerm.getAssociatedElements(schemaID))
+					value += element.getName() + ",";
+				os.print((value.length()==0 ? " " : value.substring(0,value.length()-1)) + "|");
 			}
 			os.print("\n");
 		}
 		os.flush();
 		os.close();
 	}
-
-	private String scrubComma(String name) {
-		return name.replaceAll(",", "/,");
-	}
-
-	@Override
-	public String getFileType() {
-		return ".csv";
-	}
-
-	@Override
-	public String getDescription() {
-		return "Export the full vocabulary terms and their corresponding terms";
-	}
-
-	@Override
-	public String getName() {
-		return "Complete Vocabulary Exporter";
-	}
-
 }

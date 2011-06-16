@@ -12,10 +12,10 @@ import org.mitre.schemastore.porters.ImporterException;
  * RescueSuppliesImporter imports a supply list from Excel containing two columns (supplies type and amount)
  * @author Chris Wolf
  */
-public class RescueSuppliesImporter extends ExcelImporter {
+public class SuppliesImporter extends ExcelImporter {
 	/** Returns the importer name */
 	public String getName() {
-		return "Rescue Supplies Importer";
+		return "Supplies Importer";
 	}
 
 	/** Returns the importer description */

@@ -32,6 +32,7 @@
 	    		<path path="lib/xercesImpl.jar"/>
 	    		<path path="lib/commons-lang-2.5.jar"/>
 	    		<path path="lib/jackcess-1.2.1.jar"/>
+	    		<path path="lib/opencsv-2.2.jar"/>
             </classpath>
         </javac>
     </target>
@@ -76,6 +77,7 @@
             <fatjar.jarsource file="lib/xercesImpl.jar" relpath=""/>
             <fatjar.jarsource file="lib/commons-lang-2.5.jar" relpath=""/>
             <fatjar.jarsource file="lib/jackcess-1.2.1.jar" relpath=""/>
+            <fatjar.jarsource file="lib/opencsv-2.2.jar" relpath=""/>
         </fatjar.build>
     </target>
 
