@@ -9,7 +9,7 @@ import org.mitre.openii.model.OpenIIManager;
 import org.mitre.openii.views.manager.VocabularyInProject;
 import org.mitre.openii.widgets.porters.ExporterDialog;
 import org.mitre.schemastore.model.Project;
-import org.mitre.schemastore.model.VocabularyTerms;
+import org.mitre.schemastore.model.terms.VocabularyTerms;
 import org.mitre.schemastore.porters.PorterType;
 import org.mitre.schemastore.porters.vocabularyExporters.VocabularyExporter;
 

@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.mitre.openii.editors.unity;
 
 import java.util.ArrayList;
@@ -79,7 +78,6 @@ import org.mitre.openii.application.OpenIIActivator;
 import org.mitre.openii.model.OpenIIManager;
 import org.mitre.openii.widgets.schemaTree.SchemaTree;
 import org.mitre.schemastore.model.Annotation;
-import org.mitre.schemastore.model.AssociatedElement;
 import org.mitre.schemastore.model.Attribute;
 import org.mitre.schemastore.model.Containment;
 import org.mitre.schemastore.model.DomainValue;
@@ -88,11 +86,14 @@ import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.Relationship;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
-import org.mitre.schemastore.model.Term;
-import org.mitre.schemastore.model.VocabularyTerms;
 import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
 import org.mitre.schemastore.model.schemaInfo.SchemaInfo;
 import org.mitre.schemastore.model.schemaInfo.model.SchemaModel;
+import org.mitre.schemastore.model.terms.AssociatedElement;
+import org.mitre.schemastore.model.terms.InvertedTermsByElement;
+import org.mitre.schemastore.model.terms.Term;
+import org.mitre.schemastore.model.terms.Terms;
+import org.mitre.schemastore.model.terms.VocabularyTerms;
 
 public class UnityCanvas extends Composite {
 	private Integer[] schemaIDs;
@@ -100,6 +101,7 @@ public class UnityCanvas extends Composite {
 	private SchemaInfo[] schemaInfos;
 	private SchemaModel[] schemaModels;
 	private VocabularyTerms vocab;
+	private InvertedTermsByElement invertedVocab;
 	private Composite viewsParent;
 	private HashMap<Integer, Mapping> mappings = new HashMap<Integer, Mapping>();
     private HashMap<Integer, Annotation> checkStatus = new HashMap<Integer, Annotation>();
@@ -226,6 +228,7 @@ public class UnityCanvas extends Composite {
 		super(parent, style );
 		viewsParent = parent;
 		vocab = vocabulary;
+		invertedVocab = new InvertedTermsByElement(vocab);
 
 		ArrayList<Mapping> rawmappings = OpenIIManager.getMappings(vocabulary.getProjectID());
 		Iterator<Mapping> itr = rawmappings.iterator();
@@ -488,18 +491,14 @@ public class UnityCanvas extends Composite {
 ////System.out.println("uid = " + treeview.getTreeViewer().getTree().getSelection()[0].getData("uid") + "\n");
 					TreeItem items[] = treeview.getTreeViewer().getTree().getSelection();
 					ArrayList<String> ids = new ArrayList<String>();
-					Integer idssub[];
 					draggedCol = getTreeSchemaID();
 					data2[0] = 	"" + items[0].getData("uid");						
 					dragElement = new AssociatedElement(draggedCol,(Integer)items[0].getData("uid"),items[0].getText(),(String)items[0].getData("description"));
 					for(int i = 0; i < items.length; i++)
 					{
-						idssub = vocab.reverseLookup((Integer)(items[i].getData("uid")), draggedCol);
-						////System.out.println("idssub.length = " + idssub.length);
-						for(int y = 0; y < idssub.length; y++)
-						{
-							ids.add("" + idssub[y]);
-						}
+						Terms terms = invertedVocab.getTerms(draggedCol,(Integer)(items[i].getData("uid")));
+						for(Term term : terms.getTerms())
+							ids.add("" + term.getId());
 					}
 					String idStrings[] = new String[ids.size()];
 					ids.toArray(idStrings);
@@ -808,11 +807,8 @@ public class UnityCanvas extends Composite {
         				ids[i] = "" + selected[i].getData("uid");
         			}
     				data = ids;
-    				if(draggedCol > -1){
-    					//event.data = workspaceTable.getItem(index).getText(index2);
-    					data2[0] = "" + vocab.getTerms()[vocab.getTermIndex((Integer)(selectedItem.getData("uid")))].getElements()[0].getElementID();
-    					//trim image
-    				}
+    				if(draggedCol > -1)
+    					data2[0] = "" + vocab.getTerm((Integer)selectedItem.getData("uid")).getElements()[0].getElementID();
     			} 
     			public void dragFinished (DragSourceEvent event) { 
     			} 
@@ -1185,6 +1181,7 @@ public class UnityCanvas extends Composite {
 						} else {
 							Term newTerm = new Term(maxSafeID++,textfield.getText(),"");
 							vocab.addTerm(newTerm);
+							invertedVocab.addTerm(newTerm);
 							tableview.setItemCount(tableview.getItemCount()+1);
 							TableItem item = new TableItem(workspaceTable, SWT.NONE, workspaceTable.getItemCount()); 
 							item.setData("uid", maxSafeID-1);
@@ -1233,6 +1230,7 @@ public class UnityCanvas extends Composite {
 							} else {
 								Term newTerm = new Term(maxSafeID++,textfield.getText(),"");
 								vocab.addTerm(newTerm);
+								invertedVocab.addTerm(newTerm);
 								tableview.setItemCount(tableview.getItemCount()+1);
 								TableItem item = new TableItem(workspaceTable, SWT.NONE, workspaceTable.getItemCount()); 
 								item.setData("uid", maxSafeID-1);
@@ -1361,7 +1359,7 @@ public class UnityCanvas extends Composite {
     			data[0] = "" + draggedRow;
 				if(draggedCol > -1){
 					//event.data = workspaceTable.getItem(index).getText(index2);
-					data2[0] = "" + vocab.getTerms()[vocab.getTermIndex((Integer)(selectedItem.getData("uid")))].getElements()[0].getElementID();
+					data2[0] = "" + vocab.getTerm((Integer)(selectedItem.getData("uid"))).getElements()[0].getElementID();
 					//trim image
 				}
 			} 
@@ -1446,15 +1444,11 @@ public class UnityCanvas extends Composite {
 						if(dropTarget != null) { posIndex = ttarget.indexOf(dropTarget); }
 					}
 					//System.out.println("posIndex = " + posIndex + "\n");
-					String [] data = ((String[])event.data);
-					if(data.length == 1 && data[0].equals(" "))
-					{
-						//there is no data,  just break
-						return;
-					}
-
-					
-					addToWorkspace(data, posIndex);
+					String[] data = ((String[])event.data);
+					if(data.length == 1 && data[0].equals(" ")) return;
+					ArrayList<Integer> termIDs = new ArrayList<Integer>();
+					for(String item : data) termIDs.add(Integer.parseInt(item));
+					addToWorkspace(termIDs, posIndex);
 				} else if(event.detail == DND.DROP_COPY || event.detail == DND.DROP_MOVE){
 //System.out.println("got = " + event.data + "\n");
 /*					if(draggedCol > -1){
@@ -1503,51 +1497,48 @@ public class UnityCanvas extends Composite {
 		    } 
 			public void dropAccept(DropTargetEvent event) { 
 			} 
-			public void drop(DropTargetEvent event) { 
-				//System.out.println("drop");
-					//adding row
-	//System.out.println("detail = " + event.detail + "\n");
-					String [] data = ((String[])event.data);
-					if(data.length == 1 && data[0].equals(" "))
-					{
-						//there is no data,  just break
-						return;
-					}
-					stackLayout.topControl = tempLabel;
-					addToWorkspace(data);
+			public void drop(DropTargetEvent event)
+			{
+				String[] data = ((String[])event.data);
+				if(data.length == 1 && data[0].equals(" ")) return;
+				stackLayout.topControl = tempLabel;
+				ArrayList<Integer> termIDs = new ArrayList<Integer>();
+				for(String item : data) termIDs.add(Integer.parseInt(item));
+				addToWorkspace(termIDs);
 			} 
 		});
 						
 	}
 	
-	//add a term to a synset
-	public void addTerm(Integer synsetID, AssociatedElement elem){
-		Term theTerm = vocab.getTerms()[(vocab.getTermIndex(synsetID))];
-		theTerm.addAssociatedElement(elem);
-		vocab.termUpdated(synsetID);
+	/** Add a term to the specified synset */
+	private void addTerm(Integer synsetID, AssociatedElement element)
+	{
+		Term term = vocab.getTerm(synsetID);
+		invertedVocab.removeTerm(term);
+		term.addAssociatedElement(element);
+		invertedVocab.addTerm(term);
 		updateTables(synsetID);
 	}
 
-	//delete a term to a synset
-	public void deleteTerm(Integer synsetID, AssociatedElement elem){
-		Term fromTerm = vocab.getTerms()[(vocab.getTermIndex(synsetID))];
-		fromTerm.removeAssociatedElement(elem.getElementID(),elem.getSchemaID());
-		vocab.termUpdated(synsetID);
+	/** Delete a term from the specified synset */
+	private void deleteTerm(Integer synsetID, AssociatedElement element)
+	{
+		Term term = vocab.getTerm(synsetID);
+		invertedVocab.removeTerm(term);
+		term.removeAssociatedElement(element);
+		invertedVocab.addTerm(term);
 		updateTables(synsetID);
 	}
 
 	//add synsets with term matching ID to workspace
-	public void addAssociatedSynsets(Integer id){
-		Integer[] idssub;
-		Integer schema = getTreeSchemaID();
-		idssub = vocab.reverseLookup(id, schema);
-		String[] ids = new String[idssub.length];
-		//System.out.println("adding " + id);
-				for(int y = 0; y < idssub.length; y++)
-		{
-			ids[y] = "" + idssub[y];
-		}
-		addToWorkspace(ids);
+	public void addAssociatedSynsets(Integer elementID)
+	{
+		Integer schemaID = getTreeSchemaID();
+		Terms terms = invertedVocab.getTerms(schemaID,elementID);
+		ArrayList<Integer> termIDs = new ArrayList<Integer>();
+		for(Term term : terms.getTerms())
+			termIDs.add(term.getId());
+		addToWorkspace(termIDs);
 	}
 	
 	public void removeFromWorkspace(Integer id) {
@@ -1571,17 +1562,14 @@ public class UnityCanvas extends Composite {
 
 	}
 	
-	public void addToWorkspace(String[] data) {
-		addToWorkspace(data, workspaceTable.getItemCount());
-	}
+	public void addToWorkspace(ArrayList<Integer> termIDs)
+		{ addToWorkspace(termIDs, workspaceTable.getItemCount()); }
 	
-	public void addToWorkspace(String[] data, int posIndex) {
-		for(int index = data.length -1; index > -1; index--)
+	public void addToWorkspace(ArrayList<Integer> termIDs, int posIndex)
+	{
+		for(Integer termID : termIDs)
 		{
-			//System.out.println("id = "+ data[index]);
-			Integer termID = new Integer(data[index]);
 			boolean inTable = false;
-			//check if its already in the table
 			for(int i = 0; i < workspaceTable.getItemCount(); i++)
 			{							
 				if(((Integer)workspaceTable.getItem(i).getData("uid")).equals(termID)) {
@@ -1623,10 +1611,11 @@ public class UnityCanvas extends Composite {
 				
 	}
 
-	private void populateRow(TableItem item, boolean showTerms) {
-	    int tableIndex = vocab.getTermIndex((Integer)item.getData("uid"));
-		String termName = vocab.getTerms()[tableIndex].getName();	
-		AssociatedElement[] elements = vocab.getTerms()[tableIndex].getElements();
+	private void populateRow(TableItem item, boolean showTerms)
+	{
+	    Term term = vocab.getTerm((Integer)item.getData("uid"));
+		String termName = term.getName();	
+		AssociatedElement[] elements = term.getElements();
 		for (int j = 0; j < workspaceTable.getColumnCount(); j++) {
 			int ID = ((Integer)workspaceTable.getColumn(j).getData("uid")).intValue();
 			if(ID == -202) {
@@ -1891,7 +1880,7 @@ public class UnityCanvas extends Composite {
 		EvidenceView.setLayout(EvidenceViewLayout);	
 
 		evidenceSID = synsetID;
-		Term term = vocab.getTerms()[vocab.getTermIndex(synsetID)];
+		Term term = vocab.getTerm(synsetID);
 		synsetLabel1.setText(term.getName());
 
 		AssociatedElement[][] allElements = new AssociatedElement[schemaIDs.length][];
@@ -2172,7 +2161,7 @@ public class UnityCanvas extends Composite {
 		TBD.setText("TBD");
 
 		
-		Term term = vocab.getTerms()[vocab.getTermIndex(synsetID)];
+		Term term = vocab.getTerm(synsetID);
 		synsetLabel2.setText(term.getName());
 		closeMatchSID = synsetID;
 
@@ -2362,7 +2351,7 @@ public class UnityCanvas extends Composite {
 		tempComp.setLayout(new GridLayout(1, false));
 		tempComp.setLayoutData(contextViewGridData);
 
-		Term term = vocab.getTerms()[vocab.getTermIndex(synsetID)];
+		Term term = vocab.getTerm(synsetID);
 		synsetLabel3.setText(term.getName());
 		contextSID = synsetID;
 
@@ -2515,7 +2504,7 @@ public class UnityCanvas extends Composite {
 	public void renameSynset(Table theTable) {
 		activeTable = theTable;
 		if(activeTable.getSelectionCount() >= 1){
-			Term theTerm = vocab.getTerms()[(vocab.getTermIndex((Integer)(activeTable.getSelection()[0].getData("uid"))))];
+			Term theTerm = vocab.getTerm((Integer)(activeTable.getSelection()[0].getData("uid")));
 			
 			dialog = new Shell(display, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
 			GridLayout dialogLayout = new GridLayout(2, true);
@@ -2567,7 +2556,7 @@ public class UnityCanvas extends Composite {
 			ok.addSelectionListener(new SelectionAdapter() {
 				public void widgetSelected(SelectionEvent e) {
 					if(activeTable.getSelectionCount() == 1){
-						Term theTerm = vocab.getTerms()[(vocab.getTermIndex((Integer)(activeTable.getSelection()[0].getData("uid"))))];
+						Term theTerm = vocab.getTerm((Integer)(activeTable.getSelection()[0].getData("uid")));
 						if(!textfield.getText().equals(theTerm.getName())){
 					    	if(doesNameExist(textfield.getText())){
 								errorLabel.setText(textfield.getText() + " already exists in vocabulary");
@@ -2596,7 +2585,7 @@ public class UnityCanvas extends Composite {
 				    if (e.character == SWT.CR)
 				    {
 						if(activeTable.getSelectionCount() == 1){
-							Term theTerm = vocab.getTerms()[(vocab.getTermIndex((Integer)(activeTable.getSelection()[0].getData("uid"))))];
+							Term theTerm = vocab.getTerm((Integer)(activeTable.getSelection()[0].getData("uid")));
 							if(!textfield.getText().equals(theTerm.getName())){
 								if(doesNameExist(textfield.getText())){
 									errorLabel.setText(textfield.getText() + " already exists in vocabulary");
@@ -2622,7 +2611,7 @@ public class UnityCanvas extends Composite {
 	public void descSynset (Table theTable) {
 		activeTable = theTable;
 		if(activeTable.getSelectionCount() == 1){
-			Term theTerm = vocab.getTerms()[(vocab.getTermIndex((Integer)(activeTable.getSelection()[0].getData("uid"))))];
+			Term theTerm = vocab.getTerm((Integer)(activeTable.getSelection()[0].getData("uid")));
 				
 
 			dialog = new Shell(display, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
@@ -2665,7 +2654,7 @@ public class UnityCanvas extends Composite {
 			ok.addSelectionListener(new SelectionAdapter() {
 				public void widgetSelected(SelectionEvent e) {
 					if(activeTable.getSelectionCount() == 1){
-						Term theTerm = vocab.getTerms()[(vocab.getTermIndex((Integer)(activeTable.getSelection()[0].getData("uid"))))];
+						Term theTerm = vocab.getTerm((Integer)(activeTable.getSelection()[0].getData("uid")));
 						if(!textfield.getText().equals(theTerm.getDescription())){
 					    	theTerm.setDescription(textfield.getText());
 				        	updateTables((Integer)selectedItem.getData("uid"));
@@ -2688,7 +2677,7 @@ public class UnityCanvas extends Composite {
 				    if (e.character == SWT.CR)
 				    {
 						if(activeTable.getSelectionCount() == 1){
-							Term theTerm = vocab.getTerms()[(vocab.getTermIndex((Integer)(activeTable.getSelection()[0].getData("uid"))))];
+							Term theTerm = vocab.getTerm((Integer)(activeTable.getSelection()[0].getData("uid")));
 							if(!textfield.getText().equals(theTerm.getDescription())){
 						    	theTerm.setDescription(textfield.getText());
 					        	updateTables((Integer)selectedItem.getData("uid"));
@@ -2766,7 +2755,8 @@ public class UnityCanvas extends Composite {
 					TableItem items[] = activeTable.getSelection();
 					for(int i = 0; i < items.length; i++){
 						Integer id = (Integer)items[i].getData("uid");
-						removeFromWorkspace(id);									
+						removeFromWorkspace(id);	
+						invertedVocab.removeTerm(vocab.getTerm(id));
 						vocab.removeTerm(id);
 					}
 					tableview.setItemCount(tableview.getItemCount()-items.length);
@@ -2964,7 +2954,7 @@ public class UnityCanvas extends Composite {
 						if(EDITABLECOLUMN > 1){
 							xoff = xoff - colrec.x;
 							dragElement = null;
-							AssociatedElement aElements[] = vocab.getTerms()[vocab.getTermIndex(draggedRow)].getAssociatedElements(draggedCol);
+							AssociatedElement aElements[] = vocab.getTerm(draggedRow).getAssociatedElements(draggedCol);
 							for(int i = 0; i < aElements.length; i++){
 								xoff = xoff - gc.textExtent(aElements[i].getName() + ", ").x;
 								if(xoff <= 0){
@@ -3006,7 +2996,7 @@ public class UnityCanvas extends Composite {
 							        public void focusLost(FocusEvent fe) {
 									    if (!selectedItem.isDisposed())
 									    {
-									    	Term theTerm = vocab.getTerms()[(vocab.getTermIndex((Integer)(selectedItem.getData("uid"))))];
+									    	Term theTerm = vocab.getTerm((Integer)(selectedItem.getData("uid")));
 								        	String text = ((StyledText)editor.getEditor()).getText();
 									    	if(!text.equals(theTerm.getName())) {
 										    	//System.out.println("writing to " +selectedItem.getData("uid"));
@@ -3023,7 +3013,7 @@ public class UnityCanvas extends Composite {
 							        public void keyReleased(KeyEvent e) {
 									    if (e.character == SWT.CR && !selectedItem.isDisposed())
 									    {
-									    	Term theTerm = vocab.getTerms()[(vocab.getTermIndex((Integer)(selectedItem.getData("uid"))))];
+									    	Term theTerm = vocab.getTerm((Integer)(selectedItem.getData("uid")));
 								        	String text = ((StyledText)editor.getEditor()).getText();
 								        	int index = ((StyledText)editor.getEditor()).getCaretOffset();
 								        	text = text.substring(0,index-2) + text.substring(index,text.length());
@@ -3226,12 +3216,10 @@ public class UnityCanvas extends Composite {
 					    	addItem.addSelectionListener(new SelectionAdapter() {
 								public void widgetSelected(SelectionEvent e) {
 									TableItem[] items = activeTable.getSelection();
-									String[] ids = new String[items.length];
-									for(int i = 0; i< items.length; i++)
-									{
-										ids[i] = "" + (Integer)items[i].getData("uid");
-									}
-									addToWorkspace(ids);
+									ArrayList<Integer> termIDs = new ArrayList<Integer>();
+									for(TableItem item : items)
+										termIDs.add((Integer)item.getData("uid"));
+									addToWorkspace(termIDs);
 								}
 							});				
 					    }
@@ -3284,10 +3272,8 @@ public class UnityCanvas extends Composite {
 					    
 					} else {
 												
-						//System.err.println("xoff = " + xoff);
-						//System.err.println("pt.x = " + pt.x);
 						dragElement = null;
-						AssociatedElement aElements[] = vocab.getTerms()[vocab.getTermIndex(draggedRow)].getAssociatedElements(draggedCol);
+						AssociatedElement aElements[] = vocab.getTerm(draggedRow).getAssociatedElements(draggedCol);
 						for(int i = 0; i < aElements.length; i++){
 							xoff = xoff + gc.textExtent(aElements[i].getName() + ", ").x;
 							if(xoff >= pt.x){
@@ -3436,7 +3422,7 @@ public class UnityCanvas extends Composite {
 						//System.out.println("draggedCol = " + draggedCol + "\n");
 						if(EDITABLECOLUMN > 1){
 							xoff = xoff - colrec.x;
-							AssociatedElement aElements[] = vocab.getTerms()[vocab.getTermIndex(row)].getAssociatedElements(col);
+							AssociatedElement aElements[] = vocab.getTerm(row).getAssociatedElements(col);
 							for(int i = 0; i < aElements.length; i++){
 								xoff = xoff - gc.textExtent(aElements[i].getName() + ", ").x;
 								if(xoff <= 0){
@@ -3457,9 +3443,9 @@ public class UnityCanvas extends Composite {
 				      // Table tooltip
 					  String tooltipText = "";
 					  if(col == -201) {
-						  tooltipText += vocab.getTerms()[vocab.getTermIndex(row)].getName();
+						  tooltipText += vocab.getTerm(row).getName();
 						  tooltipText += "\n";//Description: ";
-						  tooltipText +=  WordUtils.wrap(vocab.getTerms()[vocab.getTermIndex(row)].getDescription(),60,"\n",true);
+						  tooltipText +=  WordUtils.wrap(vocab.getTerm(row).getDescription(),60,"\n",true);
 					  } else if(col != -202) {
 						  if(element != null){
 							  tooltipText += element.getName();
@@ -3531,12 +3517,10 @@ public class UnityCanvas extends Composite {
 						
 			folder2.addSelectionListener(new SelectionListener () {
 
-				@Override
 				public void widgetDefaultSelected(SelectionEvent arg0) {
 					updateDetailPane(detailSID, detailScID, detailEID);
 				}
 
-				@Override
 				public void widgetSelected(SelectionEvent arg0) {
 					updateDetailPane(detailSID, detailScID, detailEID);
 				}

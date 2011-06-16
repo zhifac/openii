@@ -4,7 +4,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.mitre.openii.editors.OpenIIEditor;
 import org.mitre.openii.model.OpenIIManager;
-import org.mitre.schemastore.model.VocabularyTerms;
+import org.mitre.schemastore.model.terms.VocabularyTerms;
 
 /** Constructs the Harmony View */
 public class VocabEditor extends OpenIIEditor {

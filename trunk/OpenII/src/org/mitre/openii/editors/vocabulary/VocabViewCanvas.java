@@ -60,17 +60,17 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.mitre.openii.application.OpenIIActivator;
 import org.mitre.openii.model.OpenIIManager;
-import org.mitre.schemastore.model.AssociatedElement;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.SchemaElement;
-import org.mitre.schemastore.model.Term;
-import org.mitre.schemastore.model.VocabularyTerms;
 import org.mitre.schemastore.model.mappingInfo.AssociatedElementHash;
 import org.mitre.schemastore.model.mappingInfo.MappingInfoExt;
 import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
 import org.mitre.schemastore.model.schemaInfo.SchemaInfo;
 import org.mitre.schemastore.model.schemaInfo.model.SchemaModel;
+import org.mitre.schemastore.model.terms.AssociatedElement;
+import org.mitre.schemastore.model.terms.Term;
+import org.mitre.schemastore.model.terms.VocabularyTerms;
 
 public class VocabViewCanvas extends Canvas {
 	private int numSchemas; // num schemas, including common vocab as a schema
