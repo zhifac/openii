@@ -11,7 +11,6 @@ import org.mitre.schemastore.data.database.Database;
 import org.mitre.schemastore.data.database.DatabaseConnection;
 import org.mitre.schemastore.model.Alias;
 import org.mitre.schemastore.model.Annotation;
-import org.mitre.schemastore.model.AssociatedElement;
 import org.mitre.schemastore.model.Attribute;
 import org.mitre.schemastore.model.Containment;
 import org.mitre.schemastore.model.DataSource;
@@ -32,8 +31,9 @@ import org.mitre.schemastore.model.Subtype;
 import org.mitre.schemastore.model.Synonym;
 import org.mitre.schemastore.model.Tag;
 import org.mitre.schemastore.model.Thesaurus;
-import org.mitre.schemastore.model.ThesaurusTerms;
-import org.mitre.schemastore.model.VocabularyTerms;
+import org.mitre.schemastore.model.terms.AssociatedElement;
+import org.mitre.schemastore.model.terms.ThesaurusTerms;
+import org.mitre.schemastore.model.terms.VocabularyTerms;
 
 /**
  * Web service for retrieving schema information from SchemaStore

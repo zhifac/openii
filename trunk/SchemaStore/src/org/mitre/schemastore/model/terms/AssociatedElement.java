@@ -1,6 +1,6 @@
 // Copyright 2008 The MITRE Corporation. ALL RIGHTS RESERVED.
 
-package org.mitre.schemastore.model;
+package org.mitre.schemastore.model.terms;
 
 import java.io.Serializable;
 
@@ -43,4 +43,19 @@ public class AssociatedElement implements Serializable
 	public void setElementID(Integer elementID) { this.elementID = elementID; }
 	public void setName(String name) { this.name = name; }
 	public void setDescription(String description) { this.description = description; }
+
+	/** Declares a hash code for the specified associated element */
+	public int hashCode()
+		{ return getSchemaID().hashCode() + getElementID().hashCode(); }
+
+	/** Indicates that two associated elements are equal */
+	public boolean equals(Object object)
+	{
+		if(object instanceof AssociatedElement)
+		{
+			AssociatedElement element = (AssociatedElement)object;
+			return element.getSchemaID().equals(schemaID) && element.getElementID().equals(elementID);
+		}
+		return false;
+	}	
 }

@@ -9,14 +9,14 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.mitre.schemastore.data.DataManager;
-import org.mitre.schemastore.model.AssociatedElement;
 import org.mitre.schemastore.model.Entity;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.Synonym;
-import org.mitre.schemastore.model.Term;
-import org.mitre.schemastore.model.ThesaurusTerms;
 import org.mitre.schemastore.model.schemaInfo.SchemaInfo;
+import org.mitre.schemastore.model.terms.AssociatedElement;
+import org.mitre.schemastore.model.terms.Term;
+import org.mitre.schemastore.model.terms.ThesaurusTerms;
 
 /**
  * Handles the saving of a thesaurus to the schema store web service
