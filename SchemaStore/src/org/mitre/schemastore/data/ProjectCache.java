@@ -7,10 +7,10 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.mitre.schemastore.data.database.ProjectDataCalls;
-import org.mitre.schemastore.model.AssociatedElement;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.Project;
+import org.mitre.schemastore.model.terms.AssociatedElement;
 
 /** Class for managing the projects in the schema repository */
 public class ProjectCache extends DataCache

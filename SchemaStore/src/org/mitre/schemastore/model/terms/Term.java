@@ -1,10 +1,11 @@
 // Copyright 2008 The MITRE Corporation. ALL RIGHTS RESERVED.
 
-package org.mitre.schemastore.model;
+package org.mitre.schemastore.model.terms;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+
 
 /**
  * Class for storing a vocabulary term
@@ -42,7 +43,7 @@ public class Term implements Serializable
 			elementArray.add(element.copy());		
 		return new Term(id, name, description, elementArray.toArray(new AssociatedElement[0]));
 	}
-	
+
 	// Handles all of the term getters
 	public Integer getId() { return id; }
 	public String getName() { return name; }
@@ -54,6 +55,17 @@ public class Term implements Serializable
 	public void setName(String name) { this.name = name; }
 	public void setDescription(String description) { this.description = description; }
 	public void setElements(AssociatedElement[] elements) { this.elements = elements; }
+
+	/** Declares a hash code for the specified term */
+	public int hashCode()
+		{ return getId().hashCode(); }
+
+	/** Indicates that two terms are equal */
+	public boolean equals(Object object)
+	{
+		if(object instanceof Term) return ((Term)object).getId().equals(id);
+		return false;
+	}	
 	
 	/** Gets the associated elements for the specified schema */
 	public AssociatedElement[] getAssociatedElements(int schemaID)
@@ -86,7 +98,7 @@ public class Term implements Serializable
 		ArrayList<AssociatedElement> elements = new ArrayList<AssociatedElement>(Arrays.asList(this.elements));
 		for(AssociatedElement element : elements)
 			if(element.getSchemaID().equals(oldElement.getSchemaID()) && element.getElementID().equals(oldElement.getElementID()))
-				elements.remove(element);
+				{ elements.remove(element); break; }
 		this.elements = elements.toArray(new AssociatedElement[0]);		
 	}
 
@@ -96,7 +108,7 @@ public class Term implements Serializable
 		ArrayList<AssociatedElement> elements = new ArrayList<AssociatedElement>(Arrays.asList(this.elements));
 		for(int i = 0; i < this.elements.length; i++)
 			if(this.elements[i].getSchemaID().equals(schemaID) && this.elements[i].getElementID().equals(id))
-				elements.remove(i);
+				{ elements.remove(i); break; }
 		this.elements = elements.toArray(new AssociatedElement[0]);		
 	}
 }

@@ -7,12 +7,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.mitre.schemastore.data.DataManager;
-import org.mitre.schemastore.model.AssociatedElement;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.SchemaElement;
-import org.mitre.schemastore.model.Term;
-import org.mitre.schemastore.model.VocabularyTerms;
+import org.mitre.schemastore.model.terms.AssociatedElement;
+import org.mitre.schemastore.model.terms.Term;
+import org.mitre.schemastore.model.terms.VocabularyTerms;
 
 /**
  * Handles the retrieval of vocabulary terms from the schema store web service

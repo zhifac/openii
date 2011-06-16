@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<wsdl:definitions targetNamespace="http://servlet.schemastore.mitre.org" xmlns:apachesoap="http://xml.apache.org/xml-soap" xmlns:impl="http://servlet.schemastore.mitre.org" xmlns:intf="http://servlet.schemastore.mitre.org" xmlns:tns1="http://model.schemastore.mitre.org" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<wsdl:definitions targetNamespace="http://servlet.schemastore.mitre.org" xmlns:apachesoap="http://xml.apache.org/xml-soap" xmlns:impl="http://servlet.schemastore.mitre.org" xmlns:intf="http://servlet.schemastore.mitre.org" xmlns:tns1="http://model.schemastore.mitre.org" xmlns:tns2="http://terms.model.schemastore.mitre.org" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
 <!--WSDL created by Apache Axis version: 1.4
 Built on Apr 22, 2006 (06:55:48 PDT)-->
  <wsdl:types>
   <schema elementFormDefault="qualified" targetNamespace="http://servlet.schemastore.mitre.org" xmlns="http://www.w3.org/2001/XMLSchema">
+   <import namespace="http://terms.model.schemastore.mitre.org"/>
    <import namespace="http://model.schemastore.mitre.org"/>
    <element name="getDomain">
     <complexType>
@@ -160,20 +161,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
      </sequence>
     </complexType>
    </element>
-   <element name="updateAttribute">
-    <complexType>
-     <sequence>
-      <element name="attribute" type="tns1:Attribute"/>
-     </sequence>
-    </complexType>
-   </element>
-   <element name="updateAttributeResponse">
-    <complexType>
-     <sequence>
-      <element name="updateAttributeReturn" type="xsd:boolean"/>
-     </sequence>
-    </complexType>
-   </element>
    <element name="getFunction">
     <complexType>
      <sequence>
@@ -185,6 +172,20 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
     <complexType>
      <sequence>
       <element name="getFunctionReturn" type="tns1:Function"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="updateAttribute">
+    <complexType>
+     <sequence>
+      <element name="attribute" type="tns1:Attribute"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="updateAttributeResponse">
+    <complexType>
+     <sequence>
+      <element name="updateAttributeReturn" type="xsd:boolean"/>
      </sequence>
     </complexType>
    </element>
@@ -213,6 +214,16 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
     <complexType>
      <sequence>
       <element name="addProjectReturn" type="xsd:int"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getFunctions">
+    <complexType/>
+   </element>
+   <element name="getFunctionsResponse">
+    <complexType>
+     <sequence>
+      <element maxOccurs="unbounded" name="getFunctionsReturn" type="tns1:Function"/>
      </sequence>
     </complexType>
    </element>
@@ -1214,16 +1225,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
      </sequence>
     </complexType>
    </element>
-   <element name="getFunctions">
-    <complexType/>
-   </element>
-   <element name="getFunctionsResponse">
-    <complexType>
-     <sequence>
-      <element maxOccurs="unbounded" name="getFunctionsReturn" type="tns1:Function"/>
-     </sequence>
-    </complexType>
-   </element>
    <element name="getReferencedFunctions">
     <complexType>
      <sequence>
@@ -1421,7 +1422,7 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
     <complexType>
      <sequence>
       <element name="projectID" type="xsd:int"/>
-      <element maxOccurs="unbounded" name="elements" type="tns1:AssociatedElement"/>
+      <element maxOccurs="unbounded" name="elements" type="tns2:AssociatedElement"/>
       <element name="minScore" type="xsd:double"/>
      </sequence>
     </complexType>
@@ -1437,7 +1438,7 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
     <complexType>
      <sequence>
       <element name="projectID" type="xsd:int"/>
-      <element maxOccurs="unbounded" name="elements" type="tns1:AssociatedElement"/>
+      <element maxOccurs="unbounded" name="elements" type="tns2:AssociatedElement"/>
      </sequence>
     </complexType>
    </element>
@@ -1533,31 +1534,31 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
    <element name="getVocabularyResponse">
     <complexType>
      <sequence>
-      <element name="getVocabularyReturn" type="tns1:VocabularyTerms"/>
+      <element name="getVocabularyReturn" type="tns2:VocabularyTerms"/>
      </sequence>
     </complexType>
    </element>
-   <complexType name="ArrayOf_tns1_AssociatedElement">
+   <complexType name="ArrayOf_tns2_AssociatedElement">
     <sequence>
-     <element maxOccurs="unbounded" minOccurs="0" name="item" type="tns1:AssociatedElement"/>
+     <element maxOccurs="unbounded" minOccurs="0" name="item" type="tns2:AssociatedElement"/>
     </sequence>
    </complexType>
-   <complexType name="ArrayOf_tns1_Term">
+   <complexType name="ArrayOf_tns2_Term">
     <sequence>
-     <element maxOccurs="unbounded" minOccurs="0" name="item" type="tns1:Term"/>
+     <element maxOccurs="unbounded" minOccurs="0" name="item" type="tns2:Term"/>
     </sequence>
    </complexType>
    <element name="saveVocabulary">
     <complexType>
      <sequence>
-      <element name="vocabulary" type="tns1:VocabularyTerms"/>
+      <element name="vocabulary" type="tns2:VocabularyTerms"/>
      </sequence>
     </complexType>
    </element>
    <element name="saveVocabularyResponse">
     <complexType>
      <sequence>
-      <element name="saveVocabularyReturn" type="tns1:VocabularyTerms"/>
+      <element name="saveVocabularyReturn" type="tns2:VocabularyTerms"/>
      </sequence>
     </complexType>
    </element>
@@ -1585,14 +1586,14 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
    <element name="getThesaurusTermsResponse">
     <complexType>
      <sequence>
-      <element name="getThesaurusTermsReturn" type="tns1:ThesaurusTerms"/>
+      <element name="getThesaurusTermsReturn" type="tns2:ThesaurusTerms"/>
      </sequence>
     </complexType>
    </element>
    <element name="saveThesaurusTerms">
     <complexType>
      <sequence>
-      <element name="terms" type="tns1:ThesaurusTerms"/>
+      <element name="terms" type="tns2:ThesaurusTerms"/>
      </sequence>
     </complexType>
    </element>
@@ -1744,6 +1745,7 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
    </element>
   </schema>
   <schema elementFormDefault="qualified" targetNamespace="http://model.schemastore.mitre.org" xmlns="http://www.w3.org/2001/XMLSchema">
+   <import namespace="http://terms.model.schemastore.mitre.org"/>
    <import namespace="http://servlet.schemastore.mitre.org"/>
    <complexType name="SchemaElement">
     <sequence>
@@ -1822,6 +1824,17 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
      </extension>
     </complexContent>
    </complexType>
+   <complexType name="Function">
+    <sequence>
+     <element name="category" nillable="true" type="xsd:string"/>
+     <element name="description" nillable="true" type="xsd:string"/>
+     <element name="expression" nillable="true" type="xsd:string"/>
+     <element name="id" nillable="true" type="xsd:int"/>
+     <element name="inputTypes" nillable="true" type="impl:ArrayOf_xsd_int"/>
+     <element name="name" nillable="true" type="xsd:string"/>
+     <element name="outputType" nillable="true" type="xsd:int"/>
+    </sequence>
+   </complexType>
    <complexType name="Attribute">
     <complexContent>
      <extension base="tns1:SchemaElement">
@@ -1834,17 +1847,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
       </sequence>
      </extension>
     </complexContent>
-   </complexType>
-   <complexType name="Function">
-    <sequence>
-     <element name="category" nillable="true" type="xsd:string"/>
-     <element name="description" nillable="true" type="xsd:string"/>
-     <element name="expression" nillable="true" type="xsd:string"/>
-     <element name="id" nillable="true" type="xsd:int"/>
-     <element name="inputTypes" nillable="true" type="impl:ArrayOf_xsd_int"/>
-     <element name="name" nillable="true" type="xsd:string"/>
-     <element name="outputType" nillable="true" type="xsd:int"/>
-    </sequence>
    </complexType>
    <complexType name="Subtype">
     <complexContent>
@@ -1971,6 +1973,10 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
      <element name="score" nillable="true" type="xsd:double"/>
     </sequence>
    </complexType>
+  </schema>
+  <schema elementFormDefault="qualified" targetNamespace="http://terms.model.schemastore.mitre.org" xmlns="http://www.w3.org/2001/XMLSchema">
+   <import namespace="http://model.schemastore.mitre.org"/>
+   <import namespace="http://servlet.schemastore.mitre.org"/>
    <complexType name="AssociatedElement">
     <sequence>
      <element name="description" nillable="true" type="xsd:string"/>
@@ -1981,25 +1987,37 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
    </complexType>
    <complexType name="Term">
     <sequence>
-     <element maxOccurs="unbounded" name="associatedElements" nillable="true" type="impl:ArrayOf_tns1_AssociatedElement"/>
+     <element maxOccurs="unbounded" name="associatedElements" nillable="true" type="impl:ArrayOf_tns2_AssociatedElement"/>
      <element name="description" nillable="true" type="xsd:string"/>
-     <element name="elements" nillable="true" type="impl:ArrayOf_tns1_AssociatedElement"/>
+     <element name="elements" nillable="true" type="impl:ArrayOf_tns2_AssociatedElement"/>
      <element name="id" nillable="true" type="xsd:int"/>
      <element name="name" nillable="true" type="xsd:string"/>
     </sequence>
    </complexType>
-   <complexType name="VocabularyTerms">
+   <complexType name="Terms">
     <sequence>
-     <element name="projectID" nillable="true" type="xsd:int"/>
-     <element name="schemaIDs" nillable="true" type="impl:ArrayOf_xsd_int"/>
-     <element name="terms" nillable="true" type="impl:ArrayOf_tns1_Term"/>
+     <element maxOccurs="unbounded" name="term" nillable="true" type="tns2:Term"/>
+     <element name="terms" nillable="true" type="impl:ArrayOf_tns2_Term"/>
     </sequence>
    </complexType>
+   <complexType name="VocabularyTerms">
+    <complexContent>
+     <extension base="tns2:Terms">
+      <sequence>
+       <element name="projectID" nillable="true" type="xsd:int"/>
+       <element name="schemaIDs" nillable="true" type="impl:ArrayOf_xsd_int"/>
+      </sequence>
+     </extension>
+    </complexContent>
+   </complexType>
    <complexType name="ThesaurusTerms">
-    <sequence>
-     <element name="terms" nillable="true" type="impl:ArrayOf_tns1_Term"/>
-     <element name="thesaurusId" nillable="true" type="xsd:int"/>
-    </sequence>
+    <complexContent>
+     <extension base="tns2:Terms">
+      <sequence>
+       <element name="thesaurusId" nillable="true" type="xsd:int"/>
+      </sequence>
+     </extension>
+    </complexContent>
    </complexType>
   </schema>
  </wsdl:types>
@@ -2060,17 +2078,17 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
    </wsdl:message>
 
-   <wsdl:message name="getAliasResponse">
+   <wsdl:message name="getFunctionsResponse">
 
-      <wsdl:part element="impl:getAliasResponse" name="parameters">
+      <wsdl:part element="impl:getFunctionsResponse" name="parameters">
 
       </wsdl:part>
 
    </wsdl:message>
 
-   <wsdl:message name="getFunctionsResponse">
+   <wsdl:message name="getAliasResponse">
 
-      <wsdl:part element="impl:getFunctionsResponse" name="parameters">
+      <wsdl:part element="impl:getAliasResponse" name="parameters">
 
       </wsdl:part>
 
@@ -3212,17 +3230,17 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
    </wsdl:message>
 
-   <wsdl:message name="addDomainResponse">
+   <wsdl:message name="setAnnotationResponse">
 
-      <wsdl:part element="impl:addDomainResponse" name="parameters">
+      <wsdl:part element="impl:setAnnotationResponse" name="parameters">
 
       </wsdl:part>
 
    </wsdl:message>
 
-   <wsdl:message name="setAnnotationResponse">
+   <wsdl:message name="addDomainResponse">
 
-      <wsdl:part element="impl:setAnnotationResponse" name="parameters">
+      <wsdl:part element="impl:addDomainResponse" name="parameters">
 
       </wsdl:part>
 
@@ -4074,18 +4092,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
       </wsdl:operation>
 
-      <wsdl:operation name="updateAttribute">
-
-         <wsdl:input message="impl:updateAttributeRequest" name="updateAttributeRequest">
-
-       </wsdl:input>
-
-         <wsdl:output message="impl:updateAttributeResponse" name="updateAttributeResponse">
-
-       </wsdl:output>
-
-      </wsdl:operation>
-
       <wsdl:operation name="getFunction">
 
          <wsdl:input message="impl:getFunctionRequest" name="getFunctionRequest">
@@ -4093,6 +4099,18 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
        </wsdl:input>
 
          <wsdl:output message="impl:getFunctionResponse" name="getFunctionResponse">
+
+       </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="updateAttribute">
+
+         <wsdl:input message="impl:updateAttributeRequest" name="updateAttributeRequest">
+
+       </wsdl:input>
+
+         <wsdl:output message="impl:updateAttributeResponse" name="updateAttributeResponse">
 
        </wsdl:output>
 
@@ -4117,6 +4135,18 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
        </wsdl:input>
 
          <wsdl:output message="impl:addProjectResponse" name="addProjectResponse">
+
+       </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getFunctions">
+
+         <wsdl:input message="impl:getFunctionsRequest" name="getFunctionsRequest">
+
+       </wsdl:input>
+
+         <wsdl:output message="impl:getFunctionsResponse" name="getFunctionsResponse">
 
        </wsdl:output>
 
@@ -4950,18 +4980,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
       </wsdl:operation>
 
-      <wsdl:operation name="getFunctions">
-
-         <wsdl:input message="impl:getFunctionsRequest" name="getFunctionsRequest">
-
-       </wsdl:input>
-
-         <wsdl:output message="impl:getFunctionsResponse" name="getFunctionsResponse">
-
-       </wsdl:output>
-
-      </wsdl:operation>
-
       <wsdl:operation name="getReferencedFunctions">
 
          <wsdl:input message="impl:getReferencedFunctionsRequest" name="getReferencedFunctionsRequest">
@@ -5598,24 +5616,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
       </wsdl:operation>
 
-      <wsdl:operation name="updateAttribute">
-
-         <wsdlsoap:operation soapAction=""/>
-
-         <wsdl:input name="updateAttributeRequest">
-
-            <wsdlsoap:body use="literal"/>
-
-         </wsdl:input>
-
-         <wsdl:output name="updateAttributeResponse">
-
-            <wsdlsoap:body use="literal"/>
-
-         </wsdl:output>
-
-      </wsdl:operation>
-
       <wsdl:operation name="getFunction">
 
          <wsdlsoap:operation soapAction=""/>
@@ -5627,6 +5627,24 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
          </wsdl:input>
 
          <wsdl:output name="getFunctionResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="updateAttribute">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="updateAttributeRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="updateAttributeResponse">
 
             <wsdlsoap:body use="literal"/>
 
@@ -5663,6 +5681,24 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
          </wsdl:input>
 
          <wsdl:output name="addProjectResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getFunctions">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="getFunctionsRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="getFunctionsResponse">
 
             <wsdlsoap:body use="literal"/>
 
@@ -6905,24 +6941,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
          </wsdl:input>
 
          <wsdl:output name="getDataTypesResponse">
-
-            <wsdlsoap:body use="literal"/>
-
-         </wsdl:output>
-
-      </wsdl:operation>
-
-      <wsdl:operation name="getFunctions">
-
-         <wsdlsoap:operation soapAction=""/>
-
-         <wsdl:input name="getFunctionsRequest">
-
-            <wsdlsoap:body use="literal"/>
-
-         </wsdl:input>
-
-         <wsdl:output name="getFunctionsResponse">
 
             <wsdlsoap:body use="literal"/>
 
