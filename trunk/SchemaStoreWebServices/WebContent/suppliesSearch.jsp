@@ -6,9 +6,9 @@
 <%@page import="org.mitre.schemastore.model.Schema"%>
 <%@page import="java.util.HashMap"%>
 <%@page import="java.util.ArrayList"%>
-<%@page import="org.mitre.schemastore.model.AssociatedElement"%>
+<%@page import="org.mitre.schemastore.model.terms.AssociatedElement"%>
 <%@page import="org.mitre.schemastore.model.Project"%>
-<%@page import="org.mitre.schemastore.model.Term"%>
+<%@page import="org.mitre.schemastore.model.terms.Term"%>
 <%@page import="org.mitre.schemastore.model.Vocabulary"%>
 <%@page import="model.ClientManager"%>
 <%@page import="org.mitre.schemastore.client.SchemaStoreClient"%>

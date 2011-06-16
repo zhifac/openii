@@ -1,7 +1,7 @@
 <%@page import="java.util.Comparator"%>
 <%@page import="java.util.Collections"%>
 <%@page import="model.CachedData"%>
-<%@page import="org.mitre.schemastore.model.Term"%>
+<%@page import="org.mitre.schemastore.model.terms.Term"%>
 <%@page import="java.util.ArrayList"%>
 <%@page import="java.util.Arrays"%>
 <%@page import="model.ClientManager"%>

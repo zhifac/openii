@@ -11,8 +11,8 @@ import org.mitre.schemastore.client.SchemaStoreClient;
 import org.mitre.schemastore.model.Project;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
-import org.mitre.schemastore.model.Term;
-import org.mitre.schemastore.model.Vocabulary;
+import org.mitre.schemastore.model.terms.Term;
+import org.mitre.schemastore.model.terms.VocabularyTerms;
 
 /** Stores the cached data */
 public class CachedData
@@ -21,7 +21,7 @@ public class CachedData
 	static private SchemaStoreClient client = null;
 
 	/** Stores the list of vocabularies */
-	static private ArrayList<Vocabulary> vocabularies = null;
+	static private ArrayList<VocabularyTerms> vocabularyTermLists = null;
 	
 	/** Stores the list of schema names */
 	static private HashMap<Integer,Schema> schemas = null;
@@ -36,7 +36,7 @@ public class CachedData
 		if(client==null) client = ClientManager.getClient();
 
 		// Clear out the old cached data
-		vocabularies = new ArrayList<Vocabulary>();
+		vocabularyTermLists = new ArrayList<VocabularyTerms>();
 		schemas = new HashMap<Integer,Schema>();
 		schemaElements = new HashMap<Integer,SchemaElement>();
 		
@@ -57,8 +57,8 @@ public class CachedData
 		// Cache the vocabularies to be used in this search
 		for(Project project : projects)
 		{
-			Vocabulary vocabulary = client.getVocabulary(project.getId());
-			if(vocabulary!=null) vocabularies.add(vocabulary);
+			VocabularyTerms vocabularyTerms = client.getVocabularyTerms(project.getId());
+			if(vocabularyTerms!=null) vocabularyTermLists.add(vocabularyTerms);
 		}
 	}
 	
@@ -77,11 +77,11 @@ public class CachedData
 		return schemaElements.get(elementID);
 	}
 	
-	/** Get the list of vocabularies */
-	static public ArrayList<Vocabulary> getVocabularies() throws RemoteException
+	/** Get the list of vocabulary terms */
+	static public ArrayList<VocabularyTerms> getVocabularyTermLists() throws RemoteException
 	{
-		if(vocabularies==null) refresh();
-		return new ArrayList<Vocabulary>(vocabularies);
+		if(vocabularyTermLists==null) refresh();
+		return new ArrayList<VocabularyTerms>(vocabularyTermLists);
 	}
 	
 	/** Get the sorted list of terms */
@@ -89,8 +89,8 @@ public class CachedData
 	{
 		// Retrieve the list of vocabulary terms
 		ArrayList<Term> terms = new ArrayList<Term>();
-		for(Vocabulary vocabulary : CachedData.getVocabularies())
-			terms.addAll(Arrays.asList(vocabulary.getTerms()));
+		for(VocabularyTerms vocabularyTerms : CachedData.getVocabularyTermLists())
+			terms.addAll(Arrays.asList(vocabularyTerms.getTerms()));
 
 		// Sort the list of terms
 		class TermComparator implements Comparator<Term>

@@ -1,6 +1,5 @@
 package model;
 
-import java.io.File;
 import java.net.URI;
 import java.rmi.RemoteException;
 
@@ -22,7 +21,7 @@ public class ClientManager
 		if(client==null)
 		{
 			try {
-				Repository repository = new Repository(Repository.POSTGRES,new URI("localhost"),"assets","postgres","postgres");
+				Repository repository = new Repository(Repository.POSTGRES,new URI("localhost"),"supplies","postgres","postgres");
 //				Repository repository = new Repository(Repository.DERBY,new File("C:\\chris\\projects\\Flexidata\\Repositories").toURI(),"supplies","postgres","postgres");
 				client = new SchemaStoreClient(repository);
 			} catch(Exception e) { throw new RemoteException(e.getMessage()); }

@@ -3,8 +3,8 @@ package model;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.mitre.schemastore.model.AssociatedElement;
-import org.mitre.schemastore.model.Term;
+import org.mitre.schemastore.model.terms.AssociatedElement;
+import org.mitre.schemastore.model.terms.Term;
 
 /** Sorts the list of matched terms */
 public class MatchedTerms

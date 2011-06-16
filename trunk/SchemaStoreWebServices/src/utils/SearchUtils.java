@@ -6,9 +6,9 @@ import java.util.Arrays;
 import model.CachedData;
 import model.MatchedTerms;
 
-import org.mitre.schemastore.model.AssociatedElement;
-import org.mitre.schemastore.model.Term;
-import org.mitre.schemastore.model.Vocabulary;
+import org.mitre.schemastore.model.terms.AssociatedElement;
+import org.mitre.schemastore.model.terms.Term;
+import org.mitre.schemastore.model.terms.VocabularyTerms;
 
 /** Runs search utilities */
 public class SearchUtils
@@ -23,8 +23,8 @@ public class SearchUtils
 		// Generate the list of all terms to search
 		ArrayList<Term> terms = new ArrayList<Term>();
 		try {
-			for(Vocabulary vocabulary : CachedData.getVocabularies())
-				terms.addAll(Arrays.asList(vocabulary.getTerms()));
+			for(VocabularyTerms vocabularyTerms : CachedData.getVocabularyTermLists())
+				terms.addAll(Arrays.asList(vocabularyTerms.getTerms()));
 		} catch(Exception e) { System.out.println("(E) SearchUtils.getItems - " + e.getMessage()); }
 			
 		// First pass only retrieves items whose terms match the specified item
