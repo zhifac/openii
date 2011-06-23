@@ -1,6 +1,8 @@
 package org.mitre.schemastore.porters.schemaImporters.ddl.parser;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import org.mitre.schemastore.porters.schemaImporters.ddl.parser.schemaObjects.Column;
 import org.mitre.schemastore.porters.schemaImporters.ddl.parser.schemaObjects.Comment;
@@ -20,7 +22,7 @@ import de.susebox.jtopas.TokenizerSource;
 public class Parser {
 	private Tables tables = new Tables();
 
-	public static ArrayList<TokenDetail> parseForKeywords(String command, ArrayList<String> keywords, boolean parseForComments) {
+	public static ArrayList<TokenDetail> parseForKeywords(String command, List<String> keywords, boolean parseForComments) {
         ArrayList<TokenDetail> tokens = new ArrayList<TokenDetail>();
         command = command.trim();
 
@@ -204,23 +206,10 @@ public class Parser {
 		final int TOKEN_COLUMNS_AND_CONSTRAINTS = 4;
 
 		// parse our create statement with the list of keywords that we know of
-		ArrayList<String> keywords = new ArrayList<String>();
-		keywords.add("create");
-		keywords.add("global");
-		keywords.add("temporary");
-		keywords.add("table");
-		keywords.add("if");
-		keywords.add("not");
-		keywords.add("exists");
-		keywords.add("constraint");
-		keywords.add("references");
-		keywords.add("primary");
-		keywords.add("foreign");
-		keywords.add("key");
-		keywords.add("comment");
-		keywords.add("unique");
-		keywords.add("check");
-		ArrayList<TokenDetail> tokens = Parser.parseForKeywords(command, keywords, true);
+		String[] keywords = new String[]{"create","global","temporary","table","view","if","not","exists",
+										 "constraint","references","primary","foreign","key","comment",
+										 "unique","check","on","update","cascade"};
+		ArrayList<TokenDetail> tokens = Parser.parseForKeywords(command, Arrays.asList(keywords), true);
 
 		// go through our list of tokens and find the ones that are relevant to what we're doing
 		// then put together a properly formatted list and pass it to our table parser
@@ -246,9 +235,12 @@ public class Parser {
 
 			// STEP 2: look to see if we are creating a table
 			// if we run into the "TABLE" token, then the next thing we are going to look for is the name of the table
-			if (nextToken == TOKEN_TABLE) {
-				if (currentToken.getType() == Token.KEYWORD && currentToken.getValue().equals("TABLE")) {
-					nextToken = TOKEN_NAME;
+			if(nextToken == TOKEN_TABLE)
+			{
+				if(currentToken.getType() == Token.KEYWORD)
+				{
+					if(currentToken.getValue().equals("TABLE")) nextToken = TOKEN_NAME;
+					else if(currentToken.getValue().equals("VIEW")) return;
 				}
 				continue;
 			}
