@@ -205,42 +205,25 @@ public class Tables {
 		System.out.println("Finished adding comment.");
 	}
 
-	public void dropTables(ArrayList<String> tableNames) throws Exception {
-		// see if the tables can be dropped
-		// check that they exist and that they aren't a target of a foreign key
-		for (int i = 0; i < tableNames.size(); i++) {
-			if (!tables.containsKey(tableNames.get(i))) {
-				throw new Exception("Could not drop table '" + tableNames.get(i) + "'. Table does not exist.");
-			}
-
-			for (int j = 0; j < foreignKeys.size(); j++) {
-				if (foreignKeys.get(j).getTargetTable().equals(tableNames.get(i))) {
-					throw new Exception("Could not drop table '" + tableNames.get(i) + "'. Table is target of a foreign key.");
-				}
+	/** Drop the specified tables */
+	public void dropTables(ArrayList<String> tableNames) throws Exception
+	{
+		// Cycle through all tables
+		for(String tableName : tableNames)
+		{
+			// Remove table, columns, and primary keys
+			tables.remove(tableName);
+			columns.remove(tableName);
+			primaryKeys.remove(tableName);
+			
+			// Remove all foreign keys
+			for(int j=0; j<foreignKeys.size(); j++)
+			{
+				ForeignKey foreignKey = foreignKeys.get(j);
+				if(foreignKey.getSourceTable().equals(tableName) || foreignKey.getTargetTable().equals(tableName))
+					foreignKeys.remove(j--);
 			}
 		}
-
-		// drop the tables, remove primary kes and remove foreign keys where the table is the source
-		for (int i = 0; i < tableNames.size(); i++) {
-			// remove the table
-			System.out.println("Removing table '" + tableNames.get(i) + "'.");
-			tables.remove(tableNames.get(i));
-
-			// remove any primary keys
-			if (primaryKeys.containsKey(tableNames.get(i))) {
-				System.out.println("Removing primary key '" + primaryKeys.get(tableNames.get(i)).getName() + "' for table '" + tableNames.get(i) + "'.");
-				primaryKeys.remove(tableNames.get(i));
-			}
-
-			for (int j = 0; j < foreignKeys.size(); j++) {
-				if (foreignKeys.get(j).getSourceTable().equals(tableNames.get(i))) {
-					System.out.println("Removing foreign key '" + foreignKeys.get(j).getName() + "' for table '" + tableNames.get(i) + "'.");
-					foreignKeys.remove(j);
-				}
-			}
-			System.out.println("Finished removing table '" + tableNames.get(i) + "'");
-		}
-		System.out.println("Finished removing tables.");
 	}
 
 	// for adding elements to an already existing table
@@ -404,81 +387,36 @@ public class Tables {
 		if (tempTableComment != null) { tables.get(tableName).setDescription(tempTableComment); }
 	}
 
-	public void dropColumns(String tableName, ArrayList<String> columnNames) throws Exception {
-		// get the table we are dropping from
-		if (!tables.containsKey(tableName)) {
-			throw new Exception("Could not drop columns from table '" + tableName + "'. Table does not exist.");
-		}
-
-		for (int i = 0; i < columnNames.size(); i++) {
-			// make sure the column names exist
-			if (!columns.get(tableName).containsKey(columnNames.get(i))) {
-				throw new Exception("Could not drop column '" + columnNames.get(i) + "' from table '" + tableName + "'. Column does not exist.");
-			}
-		}
-
-		// make sure we aren't left without any columns
-		if (columnNames.size() >= columns.get(tableName).size()) {
-			throw new Exception("Could not drop columns from table '" + tableName + "'. Table would then have no columns.");
-		}
-
-		// remove the columns
-		for (int i = 0; i < columnNames.size(); i++) {
-			System.out.println("Removing column '" + columnNames.get(i) + "' from table '" + tableName + "'.");
-			columns.get(tableName).remove(columnNames.get(i));
-		}
-		System.out.println("Finished dropping columns from table '" + tableName + "'.");
-	}
-
-	public void dropConstraints(String tableName, ArrayList<String> constraintNames) throws Exception {
-		// get the table we are dropping from
-		if (!tables.containsKey(tableName)) {
-			throw new Exception("Could not drop constraints from table '" + tableName + "'. Table does not exist.");
-		}
-
-		// make sure the constraints exist
-		for (int i = 0; i < constraintNames.size(); i++) {
-			boolean constraintExists = false;
-			if (primaryKeys.get(tableName) != null && primaryKeys.get(tableName).equals(constraintNames.get(i))) {
-				constraintExists = true;
-			}
-			for (int j = 0; j < foreignKeys.size(); j++) {
-				if (foreignKeys.get(j).getSourceTable().equals(tableName) && foreignKeys.get(j).getName().equals(constraintNames.get(i))) {
-					constraintExists = true;
-				}
-			}
-			if (!constraintExists) {
-				throw new Exception("Could not drop constraints from table '" + tableName + "'. Constraint does not exist.");
-			}
-		}
-
-		// remove the constraints
-		for (int i = 0; i < constraintNames.size(); i++) {
-			if (primaryKeys.get(tableName) != null && primaryKeys.get(tableName).equals(constraintNames.get(i))) {
-				primaryKeys.remove(tableName);
-			}
-			for (int j = 0; j < foreignKeys.size(); j++) {
-				if (foreignKeys.get(j).getSourceTable().equals(tableName) && foreignKeys.get(j).getName().equals(constraintNames.get(i))) {
-					foreignKeys.remove(j);
-				}
-			}
+	/** Removes the specified columns from the table */
+	public void dropColumns(String tableName, ArrayList<String> columnNames) throws Exception
+	{
+		for(String columnName : columnNames)
+		{
+			HashMap<String,Column> tableColumns = columns.get(tableName);
+			if(tableColumns!=null) tableColumns.remove(columnName);
 		}
 	}
 
-	public void dropPrimaryKey(String tableName) throws Exception {
-		// get the table we are dropping from
-		if (!tables.containsKey(tableName)) {
-			throw new Exception("Could not drop primary key from table '" + tableName + "'. Table does not exist.");
-		}
+	/** Drops the specified constraints from the specified table */
+	public void dropConstraints(String tableName, ArrayList<String> constraintNames) throws Exception
+	{
+		// Cycle through each constraint
+		for(String constraintName : constraintNames)
+		{
+			// Remove primary key with constraint name
+			PrimaryKey primaryKey = primaryKeys.get(tableName);
+			if(primaryKey!=null) primaryKeys.remove(tableName);
 
-		// make sure the table has a primary key
-		if (primaryKeys.get(tableName) == null) {
-			throw new Exception("Could not drop primary key from table '" + tableName + "'. Table does not have a primary key.");
+			// Remove foreign keys with constraint name
+			for(int j=0; j<foreignKeys.size(); j++)
+				if(foreignKeys.get(j).getSourceTable().equals(tableName) && foreignKeys.get(j).getName().equals(constraintName))
+					foreignKeys.remove(j--);
 		}
-
-		// remove the primary key
-		primaryKeys.remove(tableName);
 	}
+
+	/** Drops the primary key for the specified table */
+	public void dropPrimaryKey(String tableName) throws Exception
+		{ primaryKeys.remove(tableName); }
 
 	public void renameTable(String oldName, String newName) throws Exception {
 		// make sure the old table exists
