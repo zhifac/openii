@@ -1011,6 +1011,7 @@ public class Parser {
 
 		String columnName = null;
 		String columnType = null;
+		boolean isNullable = true;
 		String constraintName = null;
 		ArrayList<String> primaryKeyColumns = new ArrayList<String>();
 		ArrayList<String> foreignKeySourceColumns = new ArrayList<String>();
@@ -1021,29 +1022,39 @@ public class Parser {
 		if (columnTokens.size() > 0) {
 			final int T_COLUMN_NAME = 1;
 			final int T_COLUMN_TYPE = 2;
+			final int T_COLUMN_NOT_NULL = 3;
 			int nextToken = T_COLUMN_NAME;
 
-			for (int i = 0; i < columnTokens.size(); i++) {
+			for (int i = 0; i < columnTokens.size(); i++)
+			{
 				TokenDetail currentToken = columnTokens.get(i);
 
-				if (nextToken == T_COLUMN_NAME) {
-					if (currentToken.getType() == Token.NORMAL || currentToken.getType() == Token.STRING) {
+				// Retrieve the column name
+				if (nextToken == T_COLUMN_NAME)
+					if (currentToken.getType() == Token.NORMAL || currentToken.getType() == Token.STRING)
+					{
 						columnName = Parser.cleanString(Parser.removeQuotes(currentToken.getValue()));
 						nextToken = T_COLUMN_TYPE;
 						continue;
 					}
-				}
 
-				if (nextToken == T_COLUMN_TYPE) {
-					if (currentToken.getType() == Token.NORMAL) {
+				// Retrieve the column type
+				if (nextToken == T_COLUMN_TYPE)
+					if (currentToken.getType() == Token.NORMAL)
+					{
 						columnType = Parser.cleanString(Parser.removeQuotes(currentToken.getValue()));
-						nextToken = 0;
+						nextToken = T_COLUMN_NOT_NULL;
 						continue;
 					}
-				}
+				
+				// Retrieve that the column is not null
+				if (nextToken == T_COLUMN_NOT_NULL)
+					if (currentToken.getValue().equals("NOT") && i < columnTokens.size()-1)
+						if (columnTokens.get(i+1).getValue().equals("NULL"))
+							{ isNullable = false; continue; }
 			}
 
-			elements.add(new Column(columnName, tableName, Column.getColumnTypeConversion(columnType)));
+			elements.add(new Column(columnName, tableName, columnType, isNullable));
 		}
 
 		// look for comments in the command
