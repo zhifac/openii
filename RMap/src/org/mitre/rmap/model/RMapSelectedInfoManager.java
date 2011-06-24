@@ -54,7 +54,7 @@ public class RMapSelectedInfoManager extends SelectedInfoManager {
 		for (Integer mappingCellID : getSelectedMappingCells()) {
 			// Identify the elements for the mapping cell
 			MappingCell mappingCell = harmonyModel.getMappingManager().getMappingCell(mappingCellID);
-			Integer[] element11 = mappingCell.getInput(); 
+			Integer[] element11 = mappingCell.getElementInputIDs(); 
 			Integer element2 = mappingCell.getOutput();
 			
 			boolean leftElementsContainInput = true;

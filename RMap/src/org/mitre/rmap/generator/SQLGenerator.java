@@ -15,13 +15,8 @@ public class SQLGenerator {
 	public static final String SKOLEM_TABLE_CHAR = "SK";
 	public static final String DELIM = "\"";
 
-	private Project project;
 	private ArrayList<String> targetExportTypes;
 	private Object exportType;	// contains the object that has our Export implementation
-
-	public SQLGenerator(Project project) {
-		this.project = project;
-	}
 
 	public ArrayList<String> getExportTypes() {
 		if (targetExportTypes == null) {
@@ -37,7 +32,7 @@ public class SQLGenerator {
 	public Boolean checkForErrors(ArrayList<Dependency> dependencies) throws SQLGeneratorException {
 		for (Dependency dependency : dependencies) {
 			for (MappingCell cell : dependency.getCoveredCorrespondences()) {
-				SchemaElement sourceElement = dependency.getSourceLogicalRelation().getMappingSchemaInfo().getElement(cell.getInput()[0]);
+				SchemaElement sourceElement = dependency.getSourceLogicalRelation().getMappingSchemaInfo().getElement(cell.getElementInputIDs()[0]);
 				SchemaElement targetElement = dependency.getTargetLogicalRelation().getMappingSchemaInfo().getElement(cell.getOutput());
 
 				if (sourceElement == null) {
@@ -231,7 +226,7 @@ public class SQLGenerator {
 					MappingCell cell = dependency.getCoveredCorrespondences().get(i);
 
 					// get the domain type for attribute
-					for (Integer inputId : cell.getInput()) {
+					for (Integer inputId : cell.getElementInputIDs()) {
 						String domainName = "String";
 						if (sourceSchemaInfo.getElement(inputId) instanceof Relationship) {
 							Integer entityId = ((Relationship)sourceSchemaInfo.getElement(inputId)).getRightID();
@@ -268,7 +263,7 @@ public class SQLGenerator {
 				for (int i=0 ; i < dependency.getCoveredCorrespondences().size(); i++) {
 					MappingCell cell = dependency.getCoveredCorrespondences().get(i);
 
-					for (Integer indexId : cell.getInput()){
+					for (Integer indexId : cell.getElementInputIDs()){
 						Integer pathId = 0;
 						if (sourceSchemaInfo.getElement(indexId) instanceof Relationship) {
 							pathId = dependency.getSourceLogicalRelation().getEntityIndicesByRel().get(dependency.getSourceLogicalRelation().getIDmappings_LR_to_SS().get(sourceSchemaInfo.getElement(indexId).getId())).get(0);
@@ -295,7 +290,6 @@ public class SQLGenerator {
 	// generates a collection of SQL statements (one per relation (i.e., PATH) in target logical relation)
 	// where SKOLEM tables are to be used for Attribute, generate SELECT statement from appropriate Skolem table
 	// to populate the Attribute
-	@SuppressWarnings("unchecked")
 	private HashMap<Integer,String> generateStatements(Dependency dependency, HashMap<Integer,Boolean> needToGen, HashMap<Integer,Boolean> needToGenSkolem) throws SQLGeneratorException {
 		HierarchicalSchemaInfo sourceSchemaGraph = dependency.getSourceLogicalRelation().getMappingSchemaInfo();
 		HierarchicalSchemaInfo targetSchemaGraph = dependency.getTargetLogicalRelation().getMappingSchemaInfo();
@@ -373,7 +367,7 @@ public class SQLGenerator {
 						for (int j = 0; j < dependency.getCoveredCorrespondences().size(); j++) {
 							MappingCell cell = dependency.getCoveredCorrespondences().get(j);
 
-							for (Integer inputId : cell.getInput()){
+							for (Integer inputId : cell.getElementInputIDs()){
 								Integer pathId = 0;
 								if (sourceSchemaGraph.getElement(inputId) instanceof Relationship) {
 									pathId = dependency.getSourceLogicalRelation().getEntityIndicesByRel().get(dependency.getSourceLogicalRelation().getIDmappings_LR_to_SS().get(sourceSchemaGraph.getElement(inputId).getId())).get(0);

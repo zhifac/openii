@@ -32,31 +32,20 @@ public class LogicalRelation {
 	 * @param inputs
 	 * @return
 	 */
-	public ArrayList<Integer[]> translate_SS_to_LR (Integer[] inputs){
-		ArrayList<Integer[]> retVal = null;
-		Integer product = 1;
-
-		for (int i : inputs){
-			if (IDmappings_SS_to_LR.get(i) == null) {
-				product = 0;
-			} else {
-				product *=  IDmappings_SS_to_LR.get(i).size();
-			}
-		}
-
-		if (product > 0){
-			retVal = new ArrayList<Integer[]>();
-			Integer[] output = new Integer[inputs.length];
-			for (int i=0; i<inputs.length; i++) {
-				output[i] = IDmappings_SS_to_LR.get(inputs[i]).get(0);
-			}
-			retVal.add(output);
-			if (product > 1) {
-				retVal.add(output);
-			}
-		}
+	public MappingCellInput[] translate_SS_to_LR (MappingCellInput[] inputs)
+	{
+		// First make sure a transformation is possible for the input IDs
+		for(MappingCellInput input : inputs)
+			if(IDmappings_SS_to_LR.get(input.getElementID()) == null) return null;
 		
-		return retVal;
+		// Transform the input IDs
+		MappingCellInput[] translatedInputs = new MappingCellInput[inputs.length];
+		for(int i=0; i<inputs.length; i++)
+		{
+			Integer translatedID = IDmappings_SS_to_LR.get(inputs[i].getElementID()).get(0);
+			translatedInputs[i] = new MappingCellInput(translatedID);
+		}
+		return translatedInputs;
 	}
 		
 	public int getPositionMappingSchemaEntitySet(Integer passedID){

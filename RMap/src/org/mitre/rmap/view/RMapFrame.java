@@ -348,7 +348,7 @@ public class RMapFrame extends JInternalFrame {
         	}
         	
         	// create the generator which has all of our SQL stuff in it
-    		SQLGenerator generator = new SQLGenerator(harmonyModel.getProjectManager().getProject());
+    		SQLGenerator generator = new SQLGenerator();
 
         	// if there is a problem with the dependencies, show a warning
         	try {
