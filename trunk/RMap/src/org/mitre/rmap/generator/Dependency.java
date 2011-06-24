@@ -62,7 +62,7 @@ public class Dependency {
 			cell.setMappingId(mapping.getId());
 
 			try {
-				Integer sourceCount = sourceLogicalRelation.getIDmappings_SS_to_LR().get(sourceLogicalRelation.getIDmappings_LR_to_SS().get(cell.getInput()[0])).size();
+				Integer sourceCount = sourceLogicalRelation.getIDmappings_SS_to_LR().get(sourceLogicalRelation.getIDmappings_LR_to_SS().get(cell.getElementInputIDs()[0])).size();
 				Integer targetCount = targetLogicalRelation.getIDmappings_SS_to_LR().get(targetLogicalRelation.getIDmappings_LR_to_SS().get(cell.getOutput())).size();
 				// TODO: Need to modify here to add "color" back to lines
 				if (sourceCount > 1 || targetCount > 1) {
@@ -91,11 +91,15 @@ public class Dependency {
 		for (LogicalRelation sourceLogRel : sourceLogRels) {
 			for (LogicalRelation targetLogRel : targetLogRels) {
 				ArrayList<MappingCell> coveredCorrespondences = new ArrayList<MappingCell>();
-				for (MappingCell correspondence : correspondences) {
-					if (sourceLogRel.translate_SS_to_LR(correspondence.getInput()) != null && targetLogRel.getIDmappings_SS_to_LR().get(correspondence.getOutput()) != null) {						
+				for (MappingCell correspondence : correspondences)
+				{
+					MappingCellInput[] inputs = sourceLogRel.translate_SS_to_LR(correspondence.getInputs());
+					ArrayList<Integer> outputs = targetLogRel.getIDmappings_SS_to_LR().get(correspondence.getOutput());
+					if(inputs!=null && outputs!=null)
+					{						
 						MappingCell correspondenceCopy = correspondence.copy();
-						correspondenceCopy.setInput(sourceLogRel.translate_SS_to_LR(correspondence.getInput()).get(0));
-						correspondenceCopy.setOutput(targetLogRel.getIDmappings_SS_to_LR().get(correspondence.getOutput()).get(0));
+						correspondenceCopy.setInputs(inputs);
+						correspondenceCopy.setOutput(outputs.get(0));
 						coveredCorrespondences.add(correspondenceCopy);
 					}
 				}
