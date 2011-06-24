@@ -11,6 +11,7 @@ import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.porters.schemaImporters.SchemaImporter;
 import org.mitre.schemastore.porters.schemaImporters.ddl.parser.schemaObjects.Column;
+import org.mitre.schemastore.porters.schemaImporters.ddl.parser.schemaObjects.Column.ColumnType;
 import org.mitre.schemastore.porters.schemaImporters.ddl.parser.schemaObjects.ForeignKey;
 import org.mitre.schemastore.porters.schemaImporters.ddl.parser.schemaObjects.PrimaryKey;
 import org.mitre.schemastore.porters.schemaImporters.ddl.parser.schemaObjects.Table;
@@ -23,7 +24,7 @@ public class SchemaBuilder {
     private HashMap<String, Integer> tableIds = new HashMap<String, Integer>();
 
     // mapping of string domain to Object Domain.  New domains will be added.
-    private HashMap<Integer, Domain> domainList = new HashMap<Integer, Domain>();
+    private HashMap<ColumnType, Domain> domainList = new HashMap<ColumnType, Domain>();
 
     /**
      *  Constructor - only loads in the Domain items.
@@ -65,7 +66,7 @@ public class SchemaBuilder {
         		if (primaryKey != null && primaryKey.getColumns().contains(columnName)) { isPrimaryKey = true; }
 
         		// create the new column/attribute and add it to the list
-        		Attribute attribute = new Attribute(SchemaImporter.nextId(), columnName, column.getDescription(), entity.getId(), domainList.get(column.getType()).getId(), 1, 1, isPrimaryKey, schema.getId());
+        		Attribute attribute = new Attribute(SchemaImporter.nextId(), columnName, column.getDescription(), entity.getId(), domainList.get(column.getType()).getId(), column.isNullable() ? 0 : 1, 1, isPrimaryKey, schema.getId());
         		schemaObjects.add(attribute);
         	}
         }
@@ -99,31 +100,31 @@ public class SchemaBuilder {
 		{
 			Domain domain = new Domain(SchemaImporter.nextId(), SchemaImporter.INTEGER, "The Integer domain", 0);
 			schemaObjects.add(domain);
-			domainList.put(Column.COLUMN_TYPE_INTEGER, domain);
+			domainList.put(ColumnType.INTEGER, domain);
 		}
 
 		{
 			Domain domain = new Domain(SchemaImporter.nextId(), SchemaImporter.REAL, "The Real domain", 0);
 			schemaObjects.add(domain);
-			domainList.put(Column.COLUMN_TYPE_REAL, domain);
+			domainList.put(ColumnType.REAL, domain);
 		}
 
 		{
 			Domain domain = new Domain(SchemaImporter.nextId(), SchemaImporter.STRING, "The String domain", 0);
 			schemaObjects.add(domain);
-			domainList.put(Column.COLUMN_TYPE_STRING, domain);
+			domainList.put(ColumnType.STRING, domain);
 		}
 
 		{
 			Domain domain = new Domain(SchemaImporter.nextId(), SchemaImporter.DATETIME, "The DateTime domain", 0);
 			schemaObjects.add(domain);
-			domainList.put(Column.COLUMN_TYPE_DATETIME, domain);
+			domainList.put(ColumnType.DATETIME, domain);
 		}
 
 		{
 			Domain domain = new Domain(SchemaImporter.nextId(), SchemaImporter.BOOLEAN, "The Boolean domain", 0);
 			schemaObjects.add(domain);
-			domainList.put(Column.COLUMN_TYPE_BOOLEAN, domain);
+			domainList.put(ColumnType.BOOLEAN, domain);
 		}
 	}
 

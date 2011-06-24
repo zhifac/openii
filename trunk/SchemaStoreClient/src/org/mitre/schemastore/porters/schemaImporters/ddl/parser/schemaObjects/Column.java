@@ -1,210 +1,89 @@
 package org.mitre.schemastore.porters.schemaImporters.ddl.parser.schemaObjects;
 
-public class Column extends Element {
-	// there are five data types that everything must be mapped to
-	public static final int COLUMN_TYPE_INTEGER = 1;
-	public static final int COLUMN_TYPE_REAL = 2;
-	public static final int COLUMN_TYPE_STRING = 3;
-	public static final int COLUMN_TYPE_DATETIME = 4;
-	public static final int COLUMN_TYPE_BOOLEAN = 5;
+import java.util.Arrays;
+import java.util.List;
 
+/** Stores a relational database column */
+public class Column extends Element
+{
+	/** Stores enumeration of the various column data type */
+	public static enum ColumnType {NONE,INTEGER,REAL,STRING,DATETIME,BOOLEAN};
+
+	/** Defines the various integer values */
+	private static final List<String> IntegerValues = Arrays.asList(new String[]{
+		"BIGINT","BIGSERIAL","DEC","DECIMAL","INT","INT8","INTEGER","NUM","NUMBER","NUMERIC","OID","SMALLINT",
+		"ROWID","ROWVERSION","SERIAL","SERIAL4","SERIAL8","TINYINT","UNIQUEIDENTIFIER","UROWID"});
+	
+	/** Defines the various real values	*/
+	private static final List<String> RealValues = Arrays.asList(new String[]{
+		"DOUBLE","FLOAT","REAL","BINARY_FLOAT","BINARY_DOUBLE","MONEY","SMALLMONEY","FLOAT4","FLOAT8"});
+
+	/** Defines the various string values */
+	private static final List<String> StringValues = Arrays.asList(new String[]{
+		"BLOB","CLOB","DBCLOB","IMAGE","BINARY","CHAR","CHARACTER","VARCHAR","VARCHAR2","VARGRAPHIC","VARBINARY",
+		"ENUM","LONG","LONGBLOB","LONGTEXT","MEDIUMBLOB","MEDIUMTEXT","NCHAR","NVARCHAR","NVARCHAR2","NATIONAL",
+		"NCLOB","TEXT","SET","BFILE","RAW","XMLTYPE","XML","CURSOR","UNIQUEID","BOX","BYTEA","CIDR","CIRCLE",
+		"INET","LINE","LSEG","MACADDR","PATH","POINT","POLYGON","GEOMETRY"});
+
+	/** Defines the various date/time values */
+	private static final List<String> DateTimeValues = Arrays.asList(new String[]{
+		"TIME","TIMESTAMP","DATE","DATETIME","INTERVAL","TEMPORAL","SMALLDATETIME","TIMESPAN","TIMETZ","SASODATE"});
+	
+	/** Defines the various boolean values */
+	private static final List<String> BooleanValues = Arrays.asList(new String[]{"BIT","BOOL","BOOLEAN"});
+	
+	// Stores various aspects about the relational database column
 	private String tableName = null;
 	private String description = null;
-	private int type = 0;
+	private ColumnType type = ColumnType.NONE;
+	private boolean isNullable = false;
 
-	public Column(String name, String tableName) throws Exception {
-		setTableName(tableName);
-		setName(name);
+	/** Constructs the column */
+	public Column(String name, String tableName, String type, boolean isNullable) throws Exception
+		{ setTableName(tableName); setName(name); setType(type); setIsNullable(isNullable); }
 
-		System.out.println("Generating column named '" + getName() + "' of type '" + getColumnTypeName(getType()) + "' on table '" + getTableName() + "'.");
-	}
-
-	public Column(String name, String tableName, int type) throws Exception {
-		setTableName(tableName);
-		setName(name);
-		setType(type);
-
-		System.out.println("Generating column named '" + getName() + "' of type '" + getColumnTypeName(getType()) + "' on table '" + getTableName() + "'.");
-	}
-
-	public Column(String name, String tableName, String type) throws Exception {
-		setTableName(tableName);
-		setName(name);
-		setType(getColumnTypeConversion(type));
-
-		System.out.println("Generating column named '" + getName() + "' of type '" + getColumnTypeName(getType()) + "' on table '" + getTableName() + "'.");
-	}
-
-	// setters
-	public void setTableName(String tableName) throws Exception {
-		if (tableName == null) { throw new Exception("Could not create primary key. No table name given."); }
+	// Column setters
+	public void setType(String type) throws Exception { this.type = getColumnTypeConversion(type); }
+	public void setIsNullable(boolean isNullable) { this.isNullable = isNullable; }
+	
+	/** Sets the table name associated with the column */
+	public void setTableName(String tableName) throws Exception
+	{
+		if(tableName==null) throw new Exception("Could not create primary key. No table name given.");
 		this.tableName = tableName.toUpperCase();
 	}
 
-	public void setType(String type) throws Exception {
-		this.type = getColumnTypeConversion(type);
-	}
-
-	public void setType(int type) {
-		this.type = type;
-	}
-
-	public void setDescription(String description) {
+	/** Sets the column description */
+	public void setDescription(String description)
+	{
 		if (description != null) { description = description.trim(); }
 		if (description != null && description.length() == 0) { description = null; }
 		this.description = description;
 	}
 
-	// getters
-	public int getType() {
-		return this.type;
-	}
+	// Column getters
+	public ColumnType getType() { return type; }
+	public String getTableName() { return tableName; }
+	public String getDescription() { return description; }
+	public boolean isNullable() { return isNullable; }
 
-	public String getTableName() {
-		return this.tableName;
-	}
+	/** Indicates if a given value is a valid column data type */
+	public static boolean isValidColumnType(String value)
+		{ try { getColumnTypeConversion(value); return true; } catch(Exception e) { return false; }}
 
-	public String getDescription() {
-		return this.description;
-	}
-
-	public static String getColumnTypeName(int value) throws Exception {
-		switch (value) {
-			case COLUMN_TYPE_INTEGER:
-				return "INTEGER";
-			case COLUMN_TYPE_REAL:
-				return "REAL";
-			case COLUMN_TYPE_STRING:
-				return "STRING";
-			case COLUMN_TYPE_DATETIME:
-				return "DATETIME";
-			case COLUMN_TYPE_BOOLEAN:
-				return "BOOLEAN";
-			default:
-				throw new Exception("Could not determine a name for the column type ID '" + value + "'.");
-		}
-	}
-
-	public static boolean isValidColumnType(String value) {
-		try {
-			getColumnTypeConversion(value);
-			return true;
-		} catch (Exception e) {
-			return false;
-		}
-	}
-
-	public static int getColumnTypeConversion(String value) throws Exception {
-		if (value != null) {
-			value = value.toUpperCase();
-		} else {
-			throw new Exception("Could not get column type. No column type given.");
-		}
-
-		// convert INTEGER
-		if (value.equals("BIGINT") ||
-			value.equals("DEC") ||
-			value.equals("DECIMAL") ||
-			value.equals("INT") ||
-			value.equals("INTEGER") ||
-			value.equals("NUM") ||
-			value.equals("NUMERIC") ||
-			value.equals("SMALLINT") ||
-			value.equals("NUMBER") ||
-			value.equals("ROWID") ||
-			value.equals("UROWID") ||
-			value.equals("ROWVERSION") ||
-			value.equals("TINYINT") ||
-			value.equals("BIGSERIAL") ||
-			value.equals("SERIAL") ||
-			value.equals("SERIAL4") ||
-			value.equals("SERIAL8") ||
-			value.equals("INT8") ||
-			value.equals("OID") ||
-			value.equals("UNIQUEIDENTIFIER")) {
-			return Column.COLUMN_TYPE_INTEGER;
-		}
-
-		// convert REAL
-		if (value.equals("DOUBLE") ||
-			value.equals("FLOAT") ||
-			value.equals("REAL") ||
-			value.equals("BINARY_FLOAT") ||
-			value.equals("BINARY_DOUBLE") ||
-			value.equals("MONEY") ||
-			value.equals("SMALLMONEY") ||
-			value.equals("FLOAT4") ||
-			value.equals("FLOAT8")) {
-			return Column.COLUMN_TYPE_REAL;
-		}
-
-		// convert STRING
-		if (value.equals("BLOB") ||
-			value.equals("CLOB") ||
-			value.equals("DBCLOB") ||
-			value.equals("IMAGE") ||
-			value.equals("BINARY") ||
-			value.equals("CHAR") ||
-			value.equals("CHARACTER") ||
-			value.equals("VARCHAR") ||
-			value.equals("VARCHAR2") ||
-			value.equals("VARGRAPHIC") ||
-			value.equals("VARBINARY") ||
-			value.equals("ENUM") ||
-			value.equals("LONG") ||
-			value.equals("LONGBLOB") ||
-			value.equals("LONGTEXT") ||
-			value.equals("MEDIUMBLOB") ||
-			value.equals("MEDIUMTEXT") ||
-			value.equals("NCHAR") ||
-			value.equals("NVARCHAR") ||
-			value.equals("NVARCHAR2") ||
-			value.equals("NATIONAL") ||
-			value.equals("NCLOB") ||
-			value.equals("TEXT") ||
-			value.equals("SET") ||
-			value.equals("BFILE") ||
-			value.equals("RAW") ||
-			value.equals("XMLTYPE") ||
-			value.equals("XML") ||
-			value.equals("CURSOR") ||
-			value.equals("UNIQUEID") ||
-			value.equals("BOX") ||
-			value.equals("BYTEA") ||
-			value.equals("CIDR") ||
-			value.equals("CIRCLE") ||
-			value.equals("INET") ||
-			value.equals("LINE") ||
-			value.equals("LSEG") ||
-			value.equals("MACADDR") ||
-			value.equals("PATH") ||
-			value.equals("POINT") ||
-			value.equals("POLYGON") ||
-			value.equals("GEOMETRY")) {
-			return Column.COLUMN_TYPE_STRING;
-		}
-
-		// convert DATETIME
-		if (value.equals("TIME") ||
-			value.equals("TIMESTAMP") ||
-			value.equals("DATE") ||
-			value.equals("DATETIME") ||
-			value.equals("INTERVAL") ||
-			value.equals("TEMPORAL") ||
-			value.equals("SMALLDATETIME") ||
-			value.equals("TIMESPAN") ||
-			value.equals("TIMETZ") ||
-			value.equals("SASODATE")) {
-			return Column.COLUMN_TYPE_DATETIME;
-		}
-
-		// convert BOOLEAN
-		if (value.equals("BIT") ||
-			value.equals("BOOL") ||
-			value.equals("BOOLEAN")) {
-			return Column.COLUMN_TYPE_BOOLEAN;
-		}
-
+	/** Converts from string to the needed column type */
+	public static ColumnType getColumnTypeConversion(String value) throws Exception
+	{
+		// Convert the value to upper case
+		if(value==null) throw new Exception("Could not get column type. No column type given");
+		value = value.toUpperCase();
+		
+		// Identify the column type
+		if(IntegerValues.contains(value)) return ColumnType.INTEGER;
+		if(RealValues.contains(value)) return ColumnType.REAL;
+		if(StringValues.contains(value)) return ColumnType.STRING;
+		if(DateTimeValues.contains(value)) return ColumnType.DATETIME;
+		if(BooleanValues.contains(value)) return ColumnType.BOOLEAN;
 		throw new Exception("Could not match data type to '" + value + "'.");
 	}
 }
