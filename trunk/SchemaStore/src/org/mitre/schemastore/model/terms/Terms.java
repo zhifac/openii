@@ -48,8 +48,11 @@ public class Terms implements Serializable
 	public void addTerm(Term newTerm)
 	{
 		ArrayList<Term> terms = new ArrayList<Term>(Arrays.asList(this.terms));
-		terms.add(newTerm);
-		this.terms = terms.toArray(new Term[0]);
+		if(!terms.contains(newTerm))
+		{
+			terms.add(newTerm);
+			this.terms = terms.toArray(new Term[0]);
+		}
 	}
 	
 	/** Removes a term from the term list */
