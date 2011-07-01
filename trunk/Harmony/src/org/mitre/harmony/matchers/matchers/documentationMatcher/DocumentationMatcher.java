@@ -101,16 +101,16 @@ public class DocumentationMatcher extends BagMatcher
 	}
 
 	/** Adds synonyms to the list of elements */
-	private void addSynonyms(ArrayList<SchemaElement> elements, HashMap<String, ArrayList<String>> dictionary, boolean isAbbreviation)
+	private void addSynonyms(ArrayList<SchemaElement> elements, HashMap<String, ArrayList<String>> thesaurus, boolean isAbbreviation)
 	{	
 		// Cycle through all elements
 		for(SchemaElement element : elements)
 		{
 			WordBag wordBag = wordBags.get(element.getId());
 			for(String word : wordBag.getWords())
-				if(dictionary.containsKey(word))
+				if(thesaurus.containsKey(word))
 				{
-					wordBag.addWords(dictionary.get(word));
+					wordBag.addWords(thesaurus.get(word));
 					if(isAbbreviation) wordBag.removeWord(word);
 				}
 		}

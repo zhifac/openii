@@ -12,9 +12,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.List;
 
-import org.mitre.schemastore.model.AssociatedElement;
 import org.mitre.schemastore.model.SchemaElement;
+import org.mitre.schemastore.model.terms.AssociatedElement;
+import org.mitre.schemastore.utils.Stemmer;
+import org.mitre.schemastore.utils.Tokenizer;
 
 /** Class for storing a word bag */
 public class WordBag
@@ -67,24 +70,14 @@ public class WordBag
 
 	/** Stores a list of all processed words */
 	private Hashtable<String, Integer> wordMap = new Hashtable<String, Integer>();	
-	
-	/** Splits text into a list of words by camelCase and non-alphanumeric symbols */
-	private ArrayList<String> tokenize(String text)
-	{
-		text = text.replaceAll("([a-z0-9])(A-Z)","$1 $2");
-		for(int j = 0; j < (text.length() - 1); j++)
-			if(Character.isLowerCase(text.charAt(j)) && Character.isUpperCase(text.charAt(j+1)))
-				text = text.substring(0, j+1)+" "+text.substring(j+1);
-		return new ArrayList<String>(Arrays.asList(text.split("[^a-zA-Z0-9]+")));
-	}
-	
+		
 	/** Adds schema elements to the word bag */
 	void addElement(SchemaElement element, boolean useName, boolean useDescription)
 	{
 		String text = "";
 		if(useName) text += (element.getName() == null) ? "" : element.getName() + " ";
 		if(useDescription) text += (element.getDescription() == null) ? "" : element.getDescription();
-		addWords(tokenize(text.trim()));
+		addWords(Tokenizer.tokenize(text.trim()));
 	}
 
 	/** Adds associated elements to the word bag */
@@ -93,11 +86,11 @@ public class WordBag
 		String text = "";
 		if(useName) text += (element.getName() == null) ? "" : element.getName() + " ";
 		if(useDescription) text += (element.getDescription() == null) ? "" : element.getDescription();
-		addWords(tokenize(text.trim()));
+		addWords(Tokenizer.tokenize(text.trim()));
 	}
 	
 	/** Add words to the word bag */
-	public void addWords(ArrayList<String> words)
+	public void addWords(List<String> words)
 	{
 		// Don't proceed if no words were provided
 		if(words == null) { return; }
@@ -112,10 +105,7 @@ public class WordBag
 			if(stopwords.contains(word)) continue;
 
 			// Stem the word
-			Stemmer s = new Stemmer();
-			s.add(word.toCharArray(), word.length());
-			s.stem();
-			word = s.toString();
+			word = Stemmer.stem(word);
 
 			// Add word to word map
 			Integer count = wordMap.get(word);
