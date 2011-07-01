@@ -19,7 +19,7 @@ public class Stemmer
 	private int lastChar;
 
 	/** Constructs the stemmer */
-	public Stemmer(String word)
+	private Stemmer(String word)
 	{
 		lastChar = word.length()-1;
 		this.word = new char[lastChar+50];
