@@ -7,7 +7,7 @@
 	<classpathentry exported="true" kind="lib" path="lib/Harmony.jar" sourcepath="/Harmony/src"/>
 	<classpathentry exported="true" kind="lib" path="lib/affinity/Prefuse.jar" sourcepath="OpenIIsrc.zip"/>
 	<classpathentry kind="lib" path="lib/Galaxy.jar" sourcepath="/Galaxy/WebContent"/>
-	<classpathentry exported="true" kind="lib" path="lib/RMap.jar" sourcepath="OpenIIsrc.zip"/>
+	<classpathentry exported="true" kind="lib" path="lib/RMap.jar" sourcepath="/RMap/src"/>
 	<classpathentry exported="true" kind="lib" path="lib/affinity/Affinity.jar" sourcepath="/Affinity/src"/>
 	<classpathentry exported="true" kind="lib" path="lib/affinity/edu.iu.iv.visualization.dendrogram.jar" sourcepath="OpenIIsrc.zip"/>
 	<classpathentry exported="true" kind="lib" path="lib/affinity/ivccore.jar" sourcepath="OpenIIsrc.zip"/>
