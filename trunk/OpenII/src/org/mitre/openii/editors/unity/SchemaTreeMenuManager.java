@@ -71,7 +71,7 @@ public class SchemaTreeMenuManager extends MenuManager implements IMenuListener
 		public void run()
 		{ 
 			TreeItem items[] =  viewer.getTree().getSelection();
-			Ucanvas.copyElementToClipboard(Ucanvas.getTreeSchemaID(),(Integer)(items[0].getData("uid")),items[0].getText(),(String)(items[0].getData("description")));
+			Ucanvas.copyElementToClipboard(Ucanvas.getTreeView().getTreeSchemaID(),(Integer)(items[0].getData("uid")),items[0].getText(),(String)(items[0].getData("description")));
 		}
 	}
 	
