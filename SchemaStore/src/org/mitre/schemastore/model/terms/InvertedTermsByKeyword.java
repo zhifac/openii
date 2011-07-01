@@ -14,6 +14,9 @@ public class InvertedTermsByKeyword implements Serializable
 {	
 	/** Stores the inverted list of terms by keyword */
 	private HashMap<String,Terms> invertedList = new HashMap<String,Terms>();
+
+	/** Constructs the terms */
+	public InvertedTermsByKeyword() {}	
 	
 	/** Constructs the terms */
 	public InvertedTermsByKeyword(Terms terms)
@@ -29,6 +32,10 @@ public class InvertedTermsByKeyword implements Serializable
 			terms.addTerm(term);
 		}
 	}
+	
+	/** Add a list of terms to the inverted list */
+	public void addTerms(Terms terms)
+		{ for(Term term : terms.getTerms()) addTerm(term); }
 	
 	/** Updates a term in the inverted list */
 	public void updateTerm(Term oldTerm, Term newTerm)
