@@ -40,7 +40,7 @@ public class GetThesaurusTerms
 			if(term==null)
 			{
 				SchemaElement termElement = schemaInfo.getElement(synonym.getElementID());
-				terms.put(termElement.getId(),new Term(termElement.getId(),termElement.getName(),termElement.getDescription()));
+				terms.put(termElement.getId(),term = new Term(termElement.getId(),termElement.getName(),termElement.getDescription()));
 			}
 
 			// Add the synonym
