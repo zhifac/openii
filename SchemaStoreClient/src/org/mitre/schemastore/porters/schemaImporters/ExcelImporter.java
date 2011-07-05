@@ -41,22 +41,18 @@ public abstract class ExcelImporter extends SchemaImporter {
 		{ return s.trim().replaceAll("'", "\'").replaceAll("\"", "\\\""); }
 
 	/** Returns the cell value */
-	protected String getCellValue(HSSFCell cell) {
-		switch (cell.getCellType()) {
-			case HSSFCell.CELL_TYPE_BOOLEAN:
-				return Boolean.toString(cell.getBooleanCellValue());
-			case HSSFCell.CELL_TYPE_NUMERIC:
-				return Double.toString(cell.getNumericCellValue());
-			case HSSFCell.CELL_TYPE_STRING:
-				return scrub(cell.getRichStringCellValue().toString());
-			case HSSFCell.CELL_TYPE_BLANK:
-				return "";
-			case HSSFCell.CELL_TYPE_FORMULA:
-				return cell.getCellFormula().trim();
-			case HSSFCell.CELL_TYPE_ERROR:
-				return String.valueOf(cell.getErrorCellValue()).trim();
-			default:
-				return "";
+	protected String getCellValue(HSSFCell cell)
+	{
+		if(cell==null) return "";
+		switch (cell.getCellType())
+		{
+			case HSSFCell.CELL_TYPE_BOOLEAN: return Boolean.toString(cell.getBooleanCellValue());
+			case HSSFCell.CELL_TYPE_NUMERIC: return Double.toString(cell.getNumericCellValue());
+			case HSSFCell.CELL_TYPE_STRING: return scrub(cell.getRichStringCellValue().toString());
+			case HSSFCell.CELL_TYPE_BLANK: return "";
+			case HSSFCell.CELL_TYPE_FORMULA: return cell.getCellFormula().trim();
+			case HSSFCell.CELL_TYPE_ERROR: return String.valueOf(cell.getErrorCellValue()).trim();
+			default: return "";
 		}
 	}
 
