@@ -21,8 +21,8 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.mitre.harmony.matchers.MatcherManager;
-import org.mitre.harmony.matchers.MatcherOption;
 import org.mitre.harmony.matchers.matchers.Matcher;
+import org.mitre.harmony.matchers.parameters.MatcherParameter;
 
 /** Constructs a pane displaying all of the matchers */
 public class MatchersPane
@@ -51,11 +51,11 @@ public class MatchersPane
 			header.setText("Parameters");
 			
 			// Display the matcher parameters
-			for(MatcherOption option : matcher.getOptions())
+			for(MatcherParameter parameter : matcher.getParameters())
 			{
-				Label parameter = new Label(pane, SWT.NONE);
-				parameter.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
-				parameter.setText(option.getName() + ": " + option.getValue());
+				Label label = new Label(pane, SWT.NONE);
+				label.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
+				label.setText(parameter.getName() + ": " + parameter.getValue());
 			}
 			
 			return pane;
@@ -90,7 +90,7 @@ public class MatchersPane
 			checkbox.addSelectionListener(listener);
 
 			// Allow settings to be modified if exist
-			if(matcher.getOptions().size()>0)
+			if(matcher.getParameters().size()>0)
 			{
 				// Display the settings pane
 				Label label = new Label(pane, SWT.NONE);
