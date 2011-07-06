@@ -1,21 +1,21 @@
-package org.mitre.harmony.matchers.options;
+package org.mitre.harmony.matchers.parameters;
 
-public abstract class MatcherOption
+public abstract class MatcherParameter
 {
-	// Stores the matcher option variables
+	// Stores the matcher parameter variables
 	private String name;
 	private String text;
 	private String value;
 
-	/** Constructs the matcher option */
-	public MatcherOption(String name, String value)
+	/** Constructs the matcher parameter */
+	public MatcherParameter(String name, String value)
 	{
 		this.name=name; this.value=value;
 		this.text=name.replaceAll("([a-z])([A-Z])","$1 $2");
 	}
 	
-	/** Constructs the matcher option */
-	public MatcherOption(String name, String text, String value)
+	/** Constructs the matcher parameter */
+	public MatcherParameter(String name, String text, String value)
 		{ this.name=name; this.text=text; this.value=value; }
 
 	// Getters for this class
@@ -23,7 +23,7 @@ public abstract class MatcherOption
 	public String getText() { return text; }
 	public String getValue() { return value; }
 
-	/** Sets the matcher option value */
+	/** Sets the matcher parameter value */
 	public void setValue(String value)
 		{ this.value = value; }
 }

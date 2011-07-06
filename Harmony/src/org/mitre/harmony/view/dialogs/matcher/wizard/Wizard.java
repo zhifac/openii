@@ -16,7 +16,7 @@ import org.mitre.harmony.matchers.matchers.Matcher;
 import org.mitre.harmony.matchers.mergers.MatchMerger;
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.view.dialogs.matcher.MatchTypePane;
-import org.mitre.harmony.view.dialogs.matcher.MatcherOptionsPane;
+import org.mitre.harmony.view.dialogs.matcher.MatcherParametersPane;
 import org.mitre.harmony.view.dialogs.matcher.MatcherSelectionPane;
 import org.mitre.harmony.view.dialogs.matcher.MatchingStatusPanel;
 
@@ -43,8 +43,8 @@ public class Wizard extends JInternalFrame
     	// Create the list of wizard panels
     	panels.add(new MatcherSelectionPane(this, matchers));
     	for(Matcher matcher : MatcherManager.getVisibleMatchers())
-    		if(matcher.getOptions().size()>0)
-    			panels.add(new MatcherOptionsPane(this, matcher));
+    		if(matcher.getParameters().size()>0)
+    			panels.add(new MatcherParametersPane(this, matcher));
     	panels.add(new MatchTypePane(this, harmonyModel));
     	panels.add(new MatchingStatusPanel(this, harmonyModel, merger));
 
@@ -94,9 +94,9 @@ public class Wizard extends JInternalFrame
 		while(backIndex>=0)
 		{
 			WizardPanel panel = panels.get(backIndex);
-			if(!(panel instanceof MatcherOptionsPane)) return backIndex;
+			if(!(panel instanceof MatcherParametersPane)) return backIndex;
 			if(inAdvancedMode())
-				if(matchers.contains(((MatcherOptionsPane)panel).getMatcher())) return backIndex;
+				if(matchers.contains(((MatcherParametersPane)panel).getMatcher())) return backIndex;
 			backIndex--;
 		}
 		return null;
@@ -110,9 +110,9 @@ public class Wizard extends JInternalFrame
 		while(nextIndex<panels.size())
 		{
 			WizardPanel panel = panels.get(nextIndex);
-			if(!(panel instanceof MatcherOptionsPane)) return nextIndex;
+			if(!(panel instanceof MatcherParametersPane)) return nextIndex;
 			if(inAdvancedMode())
-				if(matchers.contains(((MatcherOptionsPane)panel).getMatcher())) return nextIndex;
+				if(matchers.contains(((MatcherParametersPane)panel).getMatcher())) return nextIndex;
 			nextIndex++;
 		}
 		return null;

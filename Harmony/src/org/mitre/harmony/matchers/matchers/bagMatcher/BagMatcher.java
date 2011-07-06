@@ -9,8 +9,8 @@ import java.util.List;
 import org.mitre.harmony.matchers.MatcherScore;
 import org.mitre.harmony.matchers.MatcherScores;
 import org.mitre.harmony.matchers.matchers.Matcher;
-import org.mitre.harmony.matchers.options.MatcherCheckboxOption;
-import org.mitre.harmony.matchers.options.MatcherOption;
+import org.mitre.harmony.matchers.parameters.MatcherCheckboxParameter;
+import org.mitre.harmony.matchers.parameters.MatcherParameter;
 import org.mitre.schemastore.model.SchemaElement;
 
 /** Bag Matcher Class */
@@ -19,17 +19,17 @@ abstract public class BagMatcher extends Matcher
 	/** Constant defining the score ceiling */
 	public final static double SCORE_CEILING = 10;
 
-	// Stores the matcher options
-	private MatcherCheckboxOption name = new MatcherCheckboxOption(NAME,true);
-	private MatcherCheckboxOption description = new MatcherCheckboxOption(DESCRIPTION,true);
+	// Stores the matcher parameters
+	private MatcherCheckboxParameter name = new MatcherCheckboxParameter(NAME,true);
+	private MatcherCheckboxParameter description = new MatcherCheckboxParameter(DESCRIPTION,true);
 	
-	/** Returns the list of options associated with the bag matcher */
-	public ArrayList<MatcherOption> getMatcherOptions()
+	/** Returns the list of parameters associated with the bag matcher */
+	public ArrayList<MatcherParameter> getMatcherParameters()
 	{
-		ArrayList<MatcherOption> options = new ArrayList<MatcherOption>();
-		options.add(name);
-		options.add(description);
-		return options;
+		ArrayList<MatcherParameter> parameters = new ArrayList<MatcherParameter>();
+		parameters.add(name);
+		parameters.add(description);
+		return parameters;
 	}
 	
 	/** Generates the scores for the specified elements */

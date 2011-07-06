@@ -62,8 +62,8 @@ public class MatcherManager
 						String attrDefault = node.getAttribute("default");
 						if(attrDefault.toLowerCase().equals("true")) matcher.setDefault(true);
 
-						// Retrieve the options
-						NodeList optionNodes = node.getElementsByTagName("option");
+						// Retrieve the default parameters
+						NodeList optionNodes = node.getElementsByTagName("parameter");
 						if(optionNodes != null && optionNodes.getLength() > 0)
 						{
 							for(int j = 0; j < optionNodes.getLength(); j++)

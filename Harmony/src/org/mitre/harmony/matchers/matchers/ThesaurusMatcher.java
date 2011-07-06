@@ -9,8 +9,8 @@ import org.mitre.harmony.matchers.MatcherManager;
 import org.mitre.harmony.matchers.MatcherScores;
 import org.mitre.harmony.matchers.matchers.bagMatcher.BagMatcher;
 import org.mitre.harmony.matchers.matchers.bagMatcher.WordBag;
-import org.mitre.harmony.matchers.options.MatcherCheckboxOption;
-import org.mitre.harmony.matchers.options.MatcherOption;
+import org.mitre.harmony.matchers.parameters.MatcherCheckboxParameter;
+import org.mitre.harmony.matchers.parameters.MatcherParameter;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.Thesaurus;
 import org.mitre.schemastore.model.terms.InvertedTermsByKeyword;
@@ -22,8 +22,8 @@ public class ThesaurusMatcher extends BagMatcher
 	/** Stores the word bag used for this matcher */
 	private HashMap<Integer, WordBag> wordBags = new HashMap<Integer, WordBag>();
 	
-	/** Stores the list used for thesaurus options */
-	private HashMap<MatcherCheckboxOption,Thesaurus> thesauriOptions = new HashMap<MatcherCheckboxOption,Thesaurus>();
+	/** Stores the list used for thesaurus parameters */
+	private HashMap<MatcherCheckboxParameter,Thesaurus> thesauriParameters = new HashMap<MatcherCheckboxParameter,Thesaurus>();
 	
 	/** Returns the name of the matcher */
 	public String getName()
@@ -32,23 +32,23 @@ public class ThesaurusMatcher extends BagMatcher
 	/** Indicates that the matcher needs a repository client */
 	public boolean needsClient() { return true; }
 	
-	/** Returns the list of options associated with the thesaurus matcher */
-	public ArrayList<MatcherOption> getMatcherOptions()
+	/** Returns the list of parameters associated with the thesaurus matcher */
+	public ArrayList<MatcherParameter> getMatcherParameters()
 	{
-		// Clear out the old thesauri options
-		thesauriOptions.clear();
+		// Clear out the old thesauri parameters
+		thesauriParameters.clear();
 		
-		// Generate the thesaurus options
-		ArrayList<MatcherOption> options = super.getMatcherOptions();
+		// Generate the thesaurus parameters
+		ArrayList<MatcherParameter> parameters = super.getMatcherParameters();
 		try {
 			for(Thesaurus thesaurus : MatcherManager.getClient().getThesauri())
 			{
-				MatcherCheckboxOption option = new MatcherCheckboxOption(thesaurus.getName(),"Use \""+thesaurus.getName()+"\" Thesaurus",true);
-				options.add(option);
-				thesauriOptions.put(option, thesaurus);
+				MatcherCheckboxParameter parameter = new MatcherCheckboxParameter(thesaurus.getName(),"Use \""+thesaurus.getName()+"\" Thesaurus",true);
+				parameters.add(parameter);
+				thesauriParameters.put(parameter, thesaurus);
 			}
 		} catch(Exception e) {}
-		return options;
+		return parameters;
 	}
 	
 	/** Generates match scores for the specified elements */ @Override
@@ -56,8 +56,8 @@ public class ThesaurusMatcher extends BagMatcher
 	{
 		// Generate the list of selected thesauri
 		ArrayList<Thesaurus> thesauri = new ArrayList<Thesaurus>();
-		for(MatcherCheckboxOption option : thesauriOptions.keySet())
-			if(option.isSelected()) thesauri.add(thesauriOptions.get(option));
+		for(MatcherCheckboxParameter option : thesauriParameters.keySet())
+			if(option.isSelected()) thesauri.add(thesauriParameters.get(option));
 		if(thesauri.size()==0) return new MatcherScores(SCORE_CEILING);
 		
 		// Create word bags for the source elements

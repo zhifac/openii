@@ -7,14 +7,14 @@ import java.util.HashMap;
 
 import org.mitre.harmony.matchers.MatchTypeMappings;
 import org.mitre.harmony.matchers.MatcherScores;
-import org.mitre.harmony.matchers.options.MatcherOption;
+import org.mitre.harmony.matchers.parameters.MatcherParameter;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.schemaInfo.FilteredSchemaInfo;
 
 /** Matcher Interface - A matcher scores source-target linkages based on a specific algorithm */	
 public abstract class Matcher
 {
-	// Constants for the major option names
+	// Constants for the major parameter names
 	protected static final String NAME = "UseName";
 	protected static final String DESCRIPTION = "UseDescription";
 	protected static final String THESAURUS = "UseThesaurus";
@@ -27,7 +27,7 @@ public abstract class Matcher
 	/** Stores the match merger type mapping information */
 	private MatchTypeMappings types;
 
-	/** Stores the option defaults */
+	/** Stores the parameter defaults */
 	private HashMap<String,String> defaults = new HashMap<String,String>();
 	
 	/** Stores if this is a default matcher */
@@ -45,8 +45,8 @@ public abstract class Matcher
 	/** Indicates if the matcher needs a repository client */
 	public boolean needsClient() { return false; }
 	
-	/** Returns the list of options associated with the matcher */
-	protected ArrayList<MatcherOption> getMatcherOptions() { return new ArrayList<MatcherOption>(); }
+	/** Returns the list of parameters associated with the matcher */
+	protected ArrayList<MatcherParameter> getMatcherParameters() { return new ArrayList<MatcherParameter>(); }
 	
 	// Matcher getters
 	final public boolean isDefault() { return isDefaultMatcher; }
@@ -64,21 +64,21 @@ public abstract class Matcher
 	final public void initialize(FilteredSchemaInfo schema1, FilteredSchemaInfo schema2, MatchTypeMappings types)
 		{ this.schema1 = schema1; this.schema2 = schema2; this.types = types; }
 
-	/** Sets the option default */
+	/** Sets the parameter default */
 	final public void setDefault(String name, String value)
 		{ defaults.put(name,value); }
 
-	/** Retrieve the matcher options */
-	final public ArrayList<MatcherOption> getOptions()
+	/** Retrieve the matcher parameters */
+	final public ArrayList<MatcherParameter> getParameters()
 	{
-		ArrayList<MatcherOption> options = new ArrayList<MatcherOption>();
-		for(MatcherOption option : getMatcherOptions())
+		ArrayList<MatcherParameter> parameters = new ArrayList<MatcherParameter>();
+		for(MatcherParameter parameter : getMatcherParameters())
 		{
-			String value = defaults.get(option.getName());
-			if(value!=null) option.setValue(value);
-			options.add(option);
+			String value = defaults.get(parameter.getName());
+			if(value!=null) parameter.setValue(value);
+			parameters.add(parameter);
 		}
-		return options;
+		return parameters;
 	}
 	
 	/** Generates scores for the specified graphs */
