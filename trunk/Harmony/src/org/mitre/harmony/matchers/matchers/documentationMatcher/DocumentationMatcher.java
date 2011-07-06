@@ -12,16 +12,16 @@ import java.util.HashMap;
 import org.mitre.harmony.matchers.MatcherScores;
 import org.mitre.harmony.matchers.matchers.bagMatcher.BagMatcher;
 import org.mitre.harmony.matchers.matchers.bagMatcher.WordBag;
-import org.mitre.harmony.matchers.options.MatcherCheckboxOption;
-import org.mitre.harmony.matchers.options.MatcherOption;
+import org.mitre.harmony.matchers.parameters.MatcherCheckboxParameter;
+import org.mitre.harmony.matchers.parameters.MatcherParameter;
 import org.mitre.schemastore.model.SchemaElement;
 
 /** Word Matcher Class */
 public class DocumentationMatcher extends BagMatcher
 {
-	// Stores the matcher options
-	private MatcherCheckboxOption thesaurus = new MatcherCheckboxOption(THESAURUS,false);
-	private MatcherCheckboxOption translate = new MatcherCheckboxOption(TRANSLATE,false);
+	// Stores the matcher parameters
+	private MatcherCheckboxParameter thesaurus = new MatcherCheckboxParameter(THESAURUS,false);
+	private MatcherCheckboxParameter translate = new MatcherCheckboxParameter(TRANSLATE,false);
 	
 	/** Stores the word bag used for this matcher */
 	private HashMap<Integer, WordBag> wordBags = new HashMap<Integer, WordBag>();
@@ -31,9 +31,9 @@ public class DocumentationMatcher extends BagMatcher
 		{ return "Documentation Matcher"; }
 
 	/** Returns the list of options associated with the word matcher */
-	public ArrayList<MatcherOption> getMatcherOptions()
+	public ArrayList<MatcherParameter> getMatcherParameters()
 	{
-		ArrayList<MatcherOption> options = super.getMatcherOptions();
+		ArrayList<MatcherParameter> options = super.getMatcherParameters();
 		options.add(thesaurus);
 		options.add(translate);
 		return options;

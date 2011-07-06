@@ -16,76 +16,77 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
 import org.mitre.harmony.matchers.matchers.Matcher;
-import org.mitre.harmony.matchers.options.MatcherCheckboxOption;
-import org.mitre.harmony.matchers.options.MatcherOption;
+import org.mitre.harmony.matchers.parameters.MatcherCheckboxParameter;
+import org.mitre.harmony.matchers.parameters.MatcherParameter;
 import org.mitre.harmony.view.dialogs.matcher.wizard.Wizard;
 import org.mitre.harmony.view.dialogs.matcher.wizard.WizardPanel;
 
-public class MatcherOptionsPane extends WizardPanel
+/** Class for displaying a matchers parameters */
+public class MatcherParametersPane extends WizardPanel
 {
-	/** Stores the matcher associated with these options */
+	/** Stores the matcher associated with these parameters */
 	private Matcher matcher;
 	
-	/** Generates an option pane */
-	private class OptionPane extends JPanel implements ActionListener
+	/** Generates an parameter pane */
+	private class ParameterPane extends JPanel implements ActionListener
 	{
-		/** Stores the matcher option */
-		private MatcherCheckboxOption option;
+		/** Stores the matcher parameter */
+		private MatcherCheckboxParameter parameter;
 
-		/** Constructs the option pane */
-		public OptionPane(MatcherCheckboxOption option)
+		/** Constructs the parameter pane */
+		public ParameterPane(MatcherCheckboxParameter parameter)
 		{
-			this.option = option;
+			this.parameter = parameter;
 
-			// Create the option check box
-			JCheckBox checkbox = new JCheckBox(option.getText(),option.isSelected());
+			// Create the parameter check box
+			JCheckBox checkbox = new JCheckBox(parameter.getText(),parameter.isSelected());
 			checkbox.setFont(new Font("Arial", Font.PLAIN, 12));
 			checkbox.setAlignmentX(Component.LEFT_ALIGNMENT);
 			checkbox.addActionListener(this);
 
-			// Create the option pane
+			// Create the parameter pane
 			setBorder(new EmptyBorder(2,2,2,2));
 			setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 			add(checkbox);
 		}
 
-		/** Handles changes to the matcher option */
+		/** Handles changes to the matcher parameter */
 		public void actionPerformed(ActionEvent e)
-			{ option.setSelected(((JCheckBox)e.getSource()).isSelected()); }
+			{ parameter.setSelected(((JCheckBox)e.getSource()).isSelected()); }
 	}
 	
 	/** Constructs the type pane */
-    public MatcherOptionsPane(Wizard wizard, Matcher matcher)
+    public MatcherParametersPane(Wizard wizard, Matcher matcher)
     {
     	super(wizard);
     	this.matcher = matcher;
     	
     	// Generate the title for this panel
-		JLabel titleLabel = new JLabel("<html><u>" + matcher.getName() + " Options</u></html>");
+		JLabel titleLabel = new JLabel("<html><u>" + matcher.getName() + " Parameters</u></html>");
 		titleLabel.setBorder(new EmptyBorder(1,0,0,2));
 		
-		// Generate the options pane
-		JPanel optionsPanel = new JPanel();
-		optionsPanel.setLayout(new BoxLayout(optionsPanel, BoxLayout.Y_AXIS));
-		for(MatcherOption option : matcher.getOptions())
+		// Generate the parameters pane
+		JPanel parametersPanel = new JPanel();
+		parametersPanel.setLayout(new BoxLayout(parametersPanel, BoxLayout.Y_AXIS));
+		for(MatcherParameter parameter : matcher.getParameters())
 		{
-			// Handles a checkbox option
-			if(option instanceof MatcherCheckboxOption)
-				optionsPanel.add(new OptionPane((MatcherCheckboxOption)option));
+			// Handles a checkbox parameter
+			if(parameter instanceof MatcherCheckboxParameter)
+				parametersPanel.add(new ParameterPane((MatcherCheckboxParameter)parameter));
 		}
 
     	// Generate the panel
 		setBorder(new CompoundBorder(new EmptyBorder(10,10,10,10),new CompoundBorder(new LineBorder(Color.lightGray),new EmptyBorder(5,5,5,5))));
 		setLayout(new BorderLayout());
 		add(titleLabel, BorderLayout.NORTH);
-		add(optionsPanel, BorderLayout.CENTER);
+		add(parametersPanel, BorderLayout.CENTER);
     }
     
     /** Returns the ID for this pane */ @Override
     public String getID()
     	{ return getClass().getSimpleName() + " - " + matcher.getName(); }
     
-    /** Returns the matcher associated with this option pane */
+    /** Returns the matcher associated with this parameter pane */
     public Matcher getMatcher()
     	{ return matcher; }
 }

@@ -8,31 +8,31 @@ import java.util.HashSet;
 
 import org.mitre.harmony.matchers.MatcherScore;
 import org.mitre.harmony.matchers.MatcherScores;
-import org.mitre.harmony.matchers.options.MatcherCheckboxOption;
-import org.mitre.harmony.matchers.options.MatcherOption;
+import org.mitre.harmony.matchers.parameters.MatcherCheckboxParameter;
+import org.mitre.harmony.matchers.parameters.MatcherParameter;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
 
 /** Exact Matcher Class */
 public class ExactMatcher extends Matcher
 {
-	// Stores the matcher options
-	private MatcherCheckboxOption name = new MatcherCheckboxOption(NAME,true);
-	private MatcherCheckboxOption description = new MatcherCheckboxOption(DESCRIPTION,false);
-	private MatcherCheckboxOption hierarchy = new MatcherCheckboxOption(HIERARCHY,true);
+	// Stores the matcher parameters
+	private MatcherCheckboxParameter name = new MatcherCheckboxParameter(NAME,true);
+	private MatcherCheckboxParameter description = new MatcherCheckboxParameter(DESCRIPTION,false);
+	private MatcherCheckboxParameter hierarchy = new MatcherCheckboxParameter(HIERARCHY,true);
 	
 	/** Returns the name of the matcher */
 	public String getName()
 		{ return "Exact Matcher"; }
 
-	/** Returns the list of options associated with the bag matcher */
-	public ArrayList<MatcherOption> getMatcherOptions()
+	/** Returns the list of parameters associated with the bag matcher */
+	public ArrayList<MatcherParameter> getMatcherParameters()
 	{
-		ArrayList<MatcherOption> options = new ArrayList<MatcherOption>();
-		options.add(name);
-		options.add(description);
-		options.add(hierarchy);
-		return options;
+		ArrayList<MatcherParameter> parameters = new ArrayList<MatcherParameter>();
+		parameters.add(name);
+		parameters.add(description);
+		parameters.add(hierarchy);
+		return parameters;
 	}
 
 	/** Returns the element name and/or description */
