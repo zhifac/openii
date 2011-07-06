@@ -71,7 +71,7 @@ public class MatcherManager
 								Element optionNode = (Element)optionNodes.item(j);
 								String name = optionNode.getAttribute("name");
 								String value = optionNode.getAttribute("value");
-								matcher.setOption(name, value);
+								matcher.setDefault(name, value);
 							}
 						}
 

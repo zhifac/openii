@@ -6,11 +6,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.mitre.harmony.matchers.MatcherOption;
 import org.mitre.harmony.matchers.MatcherScore;
 import org.mitre.harmony.matchers.MatcherScores;
-import org.mitre.harmony.matchers.MatcherOption.OptionType;
 import org.mitre.harmony.matchers.matchers.Matcher;
+import org.mitre.harmony.matchers.options.MatcherCheckboxOption;
+import org.mitre.harmony.matchers.options.MatcherOption;
 import org.mitre.schemastore.model.SchemaElement;
 
 /** Bag Matcher Class */
@@ -19,12 +19,16 @@ abstract public class BagMatcher extends Matcher
 	/** Constant defining the score ceiling */
 	public final static double SCORE_CEILING = 10;
 
+	// Stores the matcher options
+	private MatcherCheckboxOption name = new MatcherCheckboxOption(NAME,true);
+	private MatcherCheckboxOption description = new MatcherCheckboxOption(DESCRIPTION,true);
+	
 	/** Returns the list of options associated with the bag matcher */
 	public ArrayList<MatcherOption> getMatcherOptions()
 	{
 		ArrayList<MatcherOption> options = new ArrayList<MatcherOption>();
-		options.add(new MatcherOption(OptionType.CHECKBOX,NAME,"true"));
-		options.add(new MatcherOption(OptionType.CHECKBOX,DESCRIPTION,"true"));
+		options.add(name);
+		options.add(description);
 		return options;
 	}
 	
@@ -35,7 +39,7 @@ abstract public class BagMatcher extends Matcher
 	final public MatcherScores match()
 	{
 		// Don't proceed if neither "name" nor "description" option selected
-		if(!options.get(NAME).isSelected() && !options.get(DESCRIPTION).isSelected())
+		if(!name.isSelected() && !description.isSelected())
 			return new MatcherScores(100.0);
 
 		// Generate the match scoresx
@@ -53,8 +57,8 @@ abstract public class BagMatcher extends Matcher
 	/** Adds an element to the word bag */
 	public void addElementToWordBag(WordBag wordBag, SchemaElement element)
 	{
-		boolean useName = options.get(NAME).isSelected();
-		boolean useDescription = options.get(DESCRIPTION).isSelected();
+		boolean useName = name.isSelected();
+		boolean useDescription = description.isSelected();
 		wordBag.addElement(element, useName, useDescription);
 	}
 	
