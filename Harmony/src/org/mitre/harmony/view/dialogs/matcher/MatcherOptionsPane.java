@@ -15,8 +15,9 @@ import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
-import org.mitre.harmony.matchers.MatcherOption;
 import org.mitre.harmony.matchers.matchers.Matcher;
+import org.mitre.harmony.matchers.options.MatcherCheckboxOption;
+import org.mitre.harmony.matchers.options.MatcherOption;
 import org.mitre.harmony.view.dialogs.matcher.wizard.Wizard;
 import org.mitre.harmony.view.dialogs.matcher.wizard.WizardPanel;
 
@@ -29,15 +30,15 @@ public class MatcherOptionsPane extends WizardPanel
 	private class OptionPane extends JPanel implements ActionListener
 	{
 		/** Stores the matcher option */
-		private MatcherOption option;
+		private MatcherCheckboxOption option;
 
 		/** Constructs the option pane */
-		public OptionPane(MatcherOption option)
+		public OptionPane(MatcherCheckboxOption option)
 		{
 			this.option = option;
 
 			// Create the option check box
-			JCheckBox checkbox = new JCheckBox(option.getName().replaceAll("([a-z])([A-Z])","$1 $2"),option.isSelected());
+			JCheckBox checkbox = new JCheckBox(option.getText(),option.isSelected());
 			checkbox.setFont(new Font("Arial", Font.PLAIN, 12));
 			checkbox.setAlignmentX(Component.LEFT_ALIGNMENT);
 			checkbox.addActionListener(this);
@@ -68,9 +69,9 @@ public class MatcherOptionsPane extends WizardPanel
 		optionsPanel.setLayout(new BoxLayout(optionsPanel, BoxLayout.Y_AXIS));
 		for(MatcherOption option : matcher.getOptions())
 		{
-			// Handles the various types of options
-			switch(option.getType())
-				{ case CHECKBOX: optionsPanel.add(new OptionPane(option)); break; }
+			// Handles a checkbox option
+			if(option instanceof MatcherCheckboxOption)
+				optionsPanel.add(new OptionPane((MatcherCheckboxOption)option));
 		}
 
     	// Generate the panel

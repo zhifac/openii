@@ -6,16 +6,21 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
-import org.mitre.harmony.matchers.MatcherOption;
 import org.mitre.harmony.matchers.MatcherScore;
 import org.mitre.harmony.matchers.MatcherScores;
-import org.mitre.harmony.matchers.MatcherOption.OptionType;
+import org.mitre.harmony.matchers.options.MatcherCheckboxOption;
+import org.mitre.harmony.matchers.options.MatcherOption;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
 
 /** Exact Matcher Class */
 public class ExactMatcher extends Matcher
-{	
+{
+	// Stores the matcher options
+	private MatcherCheckboxOption name = new MatcherCheckboxOption(NAME,true);
+	private MatcherCheckboxOption description = new MatcherCheckboxOption(DESCRIPTION,false);
+	private MatcherCheckboxOption hierarchy = new MatcherCheckboxOption(HIERARCHY,true);
+	
 	/** Returns the name of the matcher */
 	public String getName()
 		{ return "Exact Matcher"; }
@@ -24,9 +29,9 @@ public class ExactMatcher extends Matcher
 	public ArrayList<MatcherOption> getMatcherOptions()
 	{
 		ArrayList<MatcherOption> options = new ArrayList<MatcherOption>();
-		options.add(new MatcherOption(OptionType.CHECKBOX,NAME,"true"));
-		options.add(new MatcherOption(OptionType.CHECKBOX,DESCRIPTION,"false"));
-		options.add(new MatcherOption(OptionType.CHECKBOX,HIERARCHY,"true"));
+		options.add(name);
+		options.add(description);
+		options.add(hierarchy);
 		return options;
 	}
 
@@ -36,7 +41,7 @@ public class ExactMatcher extends Matcher
 		StringBuffer value = new StringBuffer();
 
 		// Retrieve name if the "name" option is set
-		if(options.get(NAME).isSelected())
+		if(name.isSelected())
 		{
 			// Get the name, trimming the edges and collapsing spaces to be one space long
 			String name = schema.getDisplayName(elementID) + " -> ";
@@ -45,7 +50,7 @@ public class ExactMatcher extends Matcher
 		}
 
 		// Retrieve description if the "description" option is set
-		if(options.get(DESCRIPTION).isSelected())
+		if(description.isSelected())
 		{
 			// Get the description, trimming the edges and collapsing spaces to be one space long
 			String description = schema.getElement(elementID).getDescription();
@@ -141,12 +146,12 @@ public class ExactMatcher extends Matcher
 	/** Generates scores for the specified elements */
 	public MatcherScores match() {
 		// Don't proceed if neither "name" nor "description" option selected
-		if (!options.get(NAME).isSelected() && !options.get(DESCRIPTION).isSelected()) {
+		if (!name.isSelected() && !description.isSelected()) {
 			return new MatcherScores(100.0);
 		}
 
 		// Generate the matches
-		if (options.get(HIERARCHY).isSelected()) {
+		if (hierarchy.isSelected()) {
 			return getExactHierarchicalMatches();
 		} else {
 			return getExactMatches();

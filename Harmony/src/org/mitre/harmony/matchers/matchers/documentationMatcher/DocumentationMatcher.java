@@ -9,16 +9,20 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
-import org.mitre.harmony.matchers.MatcherOption;
-import org.mitre.harmony.matchers.MatcherOption.OptionType;
 import org.mitre.harmony.matchers.MatcherScores;
 import org.mitre.harmony.matchers.matchers.bagMatcher.BagMatcher;
 import org.mitre.harmony.matchers.matchers.bagMatcher.WordBag;
+import org.mitre.harmony.matchers.options.MatcherCheckboxOption;
+import org.mitre.harmony.matchers.options.MatcherOption;
 import org.mitre.schemastore.model.SchemaElement;
 
 /** Word Matcher Class */
 public class DocumentationMatcher extends BagMatcher
 {
+	// Stores the matcher options
+	private MatcherCheckboxOption thesaurus = new MatcherCheckboxOption(THESAURUS,false);
+	private MatcherCheckboxOption translate = new MatcherCheckboxOption(TRANSLATE,false);
+	
 	/** Stores the word bag used for this matcher */
 	private HashMap<Integer, WordBag> wordBags = new HashMap<Integer, WordBag>();
 	
@@ -30,15 +34,15 @@ public class DocumentationMatcher extends BagMatcher
 	public ArrayList<MatcherOption> getMatcherOptions()
 	{
 		ArrayList<MatcherOption> options = super.getMatcherOptions();
-		options.add(new MatcherOption(OptionType.CHECKBOX,THESAURUS,"false"));
-		options.add(new MatcherOption(OptionType.CHECKBOX,TRANSLATE,"false"));
+		options.add(thesaurus);
+		options.add(translate);
 		return options;
 	}
 	
 	/** Translate the elements if needed */
 	public void translateIfNeeded(ArrayList<SchemaElement> elements)
 	{
-		if(options.get(TRANSLATE).isSelected())
+		if(translate.isSelected())
 			try
 			{
 				ArrayList<SchemaElement> translatedElements = ElementTranslator.translate(elements);
@@ -64,7 +68,7 @@ public class DocumentationMatcher extends BagMatcher
 			wordBags.put(targetElement.getId(), generateWordBag(targetElement));
 
 		// Add thesaurus words if requested
-		if(options.get(THESAURUS).isSelected())
+		if(thesaurus.isSelected())
 		{
 			// Get the thesaurus and acronym dictionaries
 			URL thesaurusFile = getClass().getResource("dictionary.txt");

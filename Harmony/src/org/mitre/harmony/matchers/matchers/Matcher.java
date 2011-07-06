@@ -3,11 +3,11 @@
 package org.mitre.harmony.matchers.matchers;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 
 import org.mitre.harmony.matchers.MatchTypeMappings;
-import org.mitre.harmony.matchers.MatcherOption;
 import org.mitre.harmony.matchers.MatcherScores;
+import org.mitre.harmony.matchers.options.MatcherOption;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.schemaInfo.FilteredSchemaInfo;
 
@@ -27,24 +27,17 @@ public abstract class Matcher
 	/** Stores the match merger type mapping information */
 	private MatchTypeMappings types;
 
-	/** Stores the options specified for this matcher */
-	protected LinkedHashMap<String, MatcherOption> options = new LinkedHashMap<String,MatcherOption>();
-
+	/** Stores the option defaults */
+	private HashMap<String,String> defaults = new HashMap<String,String>();
+	
 	/** Stores if this is a default matcher */
-	private boolean isDefault = false;
+	private boolean isDefaultMatcher = false;
 
 	/** Stores if this is a hidden matcher */
-	private boolean isHidden = false;
-
+	private boolean isHiddenMatcher = false;
+	
 	// Stores the completed and total number of comparisons that need to be performed
 	protected int completedComparisons = 0, totalComparisons = 1;
-
-	/** Constructs the matcher */
-	public Matcher()
-	{
-		for(MatcherOption option : getMatcherOptions())
-			options.put(option.getName(), option);
-	}
 	
 	/** Return the name of the matcher */
 	abstract public String getName();
@@ -56,12 +49,12 @@ public abstract class Matcher
 	protected ArrayList<MatcherOption> getMatcherOptions() { return new ArrayList<MatcherOption>(); }
 	
 	// Matcher getters
-	final public boolean isDefault() { return isDefault; }
-	final public boolean isHidden() { return isHidden; }
+	final public boolean isDefault() { return isDefaultMatcher; }
+	final public boolean isHidden() { return isHiddenMatcher; }
 
 	// Matcher setters
-	final public void setDefault(boolean isDefault) { this.isDefault = isDefault; }
-	final public void setHidden(boolean isHidden) { this.isHidden = isHidden; }
+	final public void setDefault(boolean isDefault) { this.isDefaultMatcher = isDefault; }
+	final public void setHidden(boolean isHidden) { this.isHiddenMatcher = isHidden; }
 
 	/** Initializes the matcher */
 	final public void initialize(FilteredSchemaInfo schema1, FilteredSchemaInfo schema2)
@@ -71,22 +64,21 @@ public abstract class Matcher
 	final public void initialize(FilteredSchemaInfo schema1, FilteredSchemaInfo schema2, MatchTypeMappings types)
 		{ this.schema1 = schema1; this.schema2 = schema2; this.types = types; }
 
-	/** Gets the list of options */
+	/** Sets the option default */
+	final public void setDefault(String name, String value)
+		{ defaults.put(name,value); }
+
+	/** Retrieve the matcher options */
 	final public ArrayList<MatcherOption> getOptions()
-		{ return new ArrayList<MatcherOption>(options.values()); }
-	
-	/**Gets the specified matcher option */
-	final public String getOption(String name)
 	{
-		MatcherOption option = options.get(name);
-		return option!=null ? option.getValue() : null;
-	}
-	
-	/** Sets the specified option */
-	final public void setOption(String name, String value)
-	{
-		MatcherOption option = options.get(name);
-		if(option!=null) option.setValue(value);
+		ArrayList<MatcherOption> options = new ArrayList<MatcherOption>();
+		for(MatcherOption option : getMatcherOptions())
+		{
+			String value = defaults.get(option.getName());
+			if(value!=null) option.setValue(value);
+			options.add(option);
+		}
+		return options;
 	}
 	
 	/** Generates scores for the specified graphs */
