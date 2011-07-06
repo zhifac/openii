@@ -9,9 +9,9 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
-import org.mitre.harmony.matchers.MatcherOption;
-import org.mitre.harmony.matchers.MatcherOption.OptionType;
 import org.mitre.harmony.matchers.matchers.Matcher;
+import org.mitre.harmony.matchers.parameters.MatcherCheckboxParameter;
+import org.mitre.harmony.matchers.parameters.MatcherParameter;
 import org.mitre.openii.application.OpenIIActivator;
 import org.mitre.openii.widgets.BasicWidgets;
 import org.mitre.openii.widgets.OptionPane;
@@ -22,8 +22,8 @@ public class EditMatcherParametersDialog extends Dialog
 	/** Stores the matcher being edited */
 	private Matcher matcher = null;
 	
-	// Stores the various dialog fields
-	private HashMap<String,OptionPane> parameterFields = new HashMap<String,OptionPane>();
+	// Stores the various matcher parameters
+	private HashMap<MatcherParameter,OptionPane> parameters = new HashMap<MatcherParameter,OptionPane>();
 	
 	/** Constructs the dialog */
 	public EditMatcherParametersDialog(Shell shell, Matcher matcher)
@@ -54,14 +54,14 @@ public class EditMatcherParametersDialog extends Dialog
 		parameterPane.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		
 		// Constructs the parameter fields
-		for(MatcherOption parameter : matcher.getOptions())
+		for(MatcherParameter parameter : matcher.getParameters())
 		{
 			// Only display check box parameters
-			if(parameter.getType().equals(OptionType.CHECKBOX))
+			if(parameter instanceof MatcherCheckboxParameter)
 			{
-				OptionPane optionPane = BasicWidgets.createRadioField(parameterPane, parameter.getName(), new String[]{"true","false"}, null);
-				optionPane.setOption(parameter.isSelected() ? "true" : "false");
-				parameterFields.put(parameter.getName(),optionPane);
+				OptionPane optionPane = BasicWidgets.createRadioField(parameterPane, parameter.getText(), new String[]{"true","false"}, null);
+				optionPane.setOption(((MatcherCheckboxParameter)parameter).isSelected() ? "true" : "false");
+				parameters.put(parameter,optionPane);
 			}
 		}
 		
@@ -72,10 +72,10 @@ public class EditMatcherParametersDialog extends Dialog
 	/** Handles the actual import of the specified file */
 	protected void okPressed()
 	{
-		for(String field : parameterFields.keySet())
+		for(MatcherParameter parameter : parameters.keySet())
 		{
-			OptionPane optionPane = parameterFields.get(field);
-			matcher.setOption(field, optionPane.getOption());
+			OptionPane optionPane = parameters.get(parameter);
+			parameter.setValue(optionPane.getOption());
 		}
 		getShell().dispose();
 	}
