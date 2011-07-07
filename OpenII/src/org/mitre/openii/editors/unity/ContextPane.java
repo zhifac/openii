@@ -152,7 +152,6 @@ public class ContextPane  {
 //		contextView.setMinWidth(contextCanvas.getBounds().width);
 		
 		tempComp = new Composite(contextView, SWT.NONE);
-		contextView.setContent(tempComp);
 		tempComp.setSize(synsetLabel3.getParent().getParent().getBounds().height*3, synsetLabel3.getParent().getParent().getBounds().width);
 
 		tempComp.setLayout(new GridLayout(1, false));
@@ -173,7 +172,7 @@ public class ContextPane  {
 		}
 
 		GridData gridData = new GridData();
-		gridData.horizontalSpan = 2;
+		gridData.horizontalSpan = 1;
 		gridData.horizontalAlignment = GridData.FILL;
 		gridData.verticalAlignment = GridData.BEGINNING;
 		gridData.grabExcessHorizontalSpace = true;
@@ -274,8 +273,11 @@ public class ContextPane  {
 
 		//show item
 //		contextView.layout(true);
-		contextView.setSize(synsetLabel3.getParent().getParent().getBounds().height, synsetLabel3.getParent().getParent().getBounds().width);
-		synsetLabel3.getParent().getParent().layout(true);
+//		contextView.setSize(synsetLabel3.getParent().getParent().getBounds().height, synsetLabel3.getParent().getParent().getBounds().width);
+//		tempComp.setSize(tempComp.computeSize(contextView.getBounds().width, SWT.DEFAULT, true));
+		contextView.setContent(tempComp);
+		//contextView.setSize(tempComp.getBounds().height,tempComp.getBounds().width);
+		contextView.getParent().layout(true);
 		
 	}
 }

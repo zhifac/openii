@@ -176,6 +176,8 @@ public class UnityCanvas extends Composite {
 		SashForm bottom_sash = new SashForm(main_sash, SWT.HORIZONTAL);
 		searchFolder = new CTabFolder(bottom_sash, SWT.TOP);
 		detailFolder = new CTabFolder(bottom_sash, SWT.TOP);
+		bottom_sash.setWeights(new int[] {1, 1});
+	      
 		
 //		SashForm main_sash = new SashForm(this, SWT.HORIZONTAL);		
 	
@@ -184,15 +186,6 @@ public class UnityCanvas extends Composite {
 		searchFolder.setSimple(false);
 
 		CTabItem item = new CTabItem(searchFolder, SWT.NONE);
-		item.setImage(treeViewIcon);
-		item.setText("Tree");
-		item.setToolTipText("Tree View");
-		treeViewCanvas = new Canvas(searchFolder, SWT.EMBEDDED);
-		item.setControl(treeViewCanvas);
-		treeView = new TreeView(this);
-		treeView.createTreeView(treeViewCanvas);
-		
-		item = new CTabItem(searchFolder, SWT.NONE);
 		item.setImage(tableIcon);
 		item.setText("Table");
 		item.setToolTipText("Table View");
@@ -200,6 +193,15 @@ public class UnityCanvas extends Composite {
 		item.setControl(tableViewCanvas);
 		tableView = new TableView(this);
 		tableView.createTableView(tableViewCanvas);
+		
+		item = new CTabItem(searchFolder, SWT.NONE);
+		item.setImage(treeViewIcon);
+		item.setText("Tree");
+		item.setToolTipText("Tree View");
+		treeViewCanvas = new Canvas(searchFolder, SWT.EMBEDDED);
+		item.setControl(treeViewCanvas);
+		treeView = new TreeView(this);
+		treeView.createTreeView(treeViewCanvas);
 		
 		item = new CTabItem(searchFolder, SWT.NONE);
 		item.setImage(searchIcon);
@@ -231,6 +233,7 @@ public class UnityCanvas extends Composite {
 		detailFolder.setUnselectedCloseVisible(false);
 		detailFolder.setSimple(false);
 		gridData = new GridData();
+		gridData.widthHint = 500;
 		gridData.horizontalAlignment = GridData.FILL;
 		gridData.verticalAlignment = GridData.FILL;
 		gridData.grabExcessHorizontalSpace = true;
@@ -332,6 +335,11 @@ public class UnityCanvas extends Composite {
 	    Term term = vocab.getTerm((Integer)item.getData("uid"));
 		String termName = term.getName();	
 		AssociatedElement[] elements = term.getElements();
+		if(checkStatus.containsKey(item.getData("uid"))) {
+			item.setImage(0, CheckIcon);
+		} else {
+			item.setImage(0, null);
+		}
 		for (int j = 0; j < this.getWorkspace().getTable().getColumnCount(); j++) {
 			int ID = ((Integer)this.getWorkspace().getTable().getColumn(j).getData("uid")).intValue();
 			if(ID == -202) {
@@ -399,9 +407,6 @@ public class UnityCanvas extends Composite {
 		for(int i = 0; i < workspaceItems.length; i++) {
 			if(workspaceItems[i].getData("uid").equals(vocabID)){
 				populateRow(workspaceItems[i], this.getWorkspace().showTextWorkspace);
-				if(checkStatus.containsKey(vocabID)) {
-					workspaceItems[i].setImage(0, CheckIcon);
-				}
 				break;
 			}
 		}		

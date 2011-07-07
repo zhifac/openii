@@ -146,7 +146,7 @@ public class Workspace  {
 		buttonsC.setLayoutData(gridData);
 		
 		colorSelector = new Combo(buttonsC, SWT.READ_ONLY | SWT.DROP_DOWN);
-		colorSelector.setForeground(gray);
+//		colorSelector.setForeground(gray);
 		colorSelector.add("Not Colored");
 		colorSelector.add("Color by Element Type");
 		colorSelector.add("Instance Count");
@@ -164,7 +164,7 @@ public class Workspace  {
 		colorsettings = new Button(buttonsC, SWT.PUSH);
 		colorsettings.setImage(OpenIIActivator.getImage("color_settings.png"));
 		colorsettings.setToolTipText("Color Settings");
-		colorsettings.setEnabled(false);
+//		colorsettings.setEnabled(false);
 		colorsettings.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event event) {
 				colorsettings.setSelection(false);
@@ -436,6 +436,8 @@ public class Workspace  {
 					if(ttarget.getItemCount() > 0) {
 						TableItem dropTarget = (TableItem)event.item;
 						if(dropTarget != null) { posIndex = ttarget.indexOf(dropTarget); }
+						else if(ttarget.getDisplay().map(null, ttarget, event.x, event.y).y  < ttarget.getHeaderHeight()){posIndex = 0;}
+
 					}
 					//System.out.println("posIndex = " + posIndex + "\n");
 					String[] data = ((String[])event.data);
@@ -547,9 +549,6 @@ public class Workspace  {
 			item.setBackground(1, lightBlue);
 			item.setData("uid", termID);
 			unityCanvas.populateRow(item, showTextWorkspace);
-			if(unityCanvas.getCheckStatus().containsKey(termID)) {
-				item.setImage(0, CheckIcon);
-			}
 				
 			if(!inTable){
 				//add a button for each new entry

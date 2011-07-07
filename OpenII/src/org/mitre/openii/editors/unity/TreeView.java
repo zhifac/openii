@@ -119,21 +119,21 @@ public class TreeView  {
 		treeFilter1.setImage(OpenIIActivator.getImage("checkedFilter.png"));
 		treeFilter1.setToolTipText("Filter out checked terms");
 		treeFilter1.setVisible(true);
-		treeFilter1.setEnabled(false);
+//		treeFilter1.setEnabled(false);
 	//	treeFilter1.setLayoutData(new GridData (SWT.CENTER, SWT.CENTER, false, false));
 	
 		Button treeFilter2 = new Button(treeButtons, SWT.TOGGLE);
 		treeFilter2.setImage(OpenIIActivator.getImage("greenFilter.png"));
 		treeFilter2.setToolTipText("Filter out terms in good matches");
 		treeFilter2.setVisible(true);
-		treeFilter2.setEnabled(false);
+//		treeFilter2.setEnabled(false);
 	//	treeFilter2.setLayoutData(new GridData (SWT.CENTER, SWT.CENTER, false, false));
 	
 		Button treeFilter3 = new Button(treeButtons, SWT.TOGGLE);
 		treeFilter3.setImage(OpenIIActivator.getImage("yellowFilter.png"));
 		treeFilter3.setToolTipText("Filter out terms in average matches");
 		treeFilter3.setVisible(true);
-		treeFilter3.setEnabled(false);
+//		treeFilter3.setEnabled(false);
 	//	treeFilter3.setLayoutData(new GridData (SWT.CENTER, SWT.CENTER, false, false));
 		
 	
