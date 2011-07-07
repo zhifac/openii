@@ -118,7 +118,7 @@ public class CloseMatchPane  {
 		colorsettingsE = new Button(buttons, SWT.PUSH);
 		colorsettingsE.setImage(OpenIIActivator.getImage("color_settings.png"));
 		colorsettingsE.setToolTipText("Color Settings");
-		colorsettingsE.setEnabled(false);
+//		colorsettingsE.setEnabled(false);
 		colorsettingsE.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event event) {
 				colorsettingsE.setSelection(false);

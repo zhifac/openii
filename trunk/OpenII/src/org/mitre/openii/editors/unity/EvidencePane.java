@@ -58,7 +58,6 @@ public class EvidencePane  {
     private Composite EvidenceView;
     private GridData EvidenceViewGridData;
     private GridLayout EvidenceViewLayout;
-    private GC gc = null;
 
     
     public Integer evidenceSID = new Integer(-1);
@@ -111,7 +110,7 @@ public class EvidencePane  {
 		colorsettingsE = new Button(buttons, SWT.PUSH);
 		colorsettingsE.setImage(OpenIIActivator.getImage("color_settings.png"));
 		colorsettingsE.setToolTipText("Color Settings");
-		colorsettingsE.setEnabled(false);
+//		colorsettingsE.setEnabled(false);
 		colorsettingsE.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event event) {
 				colorsettingsE.setSelection(false);
@@ -223,8 +222,6 @@ public class EvidencePane  {
 			}
 		}		
 		
-	    if(gc==null) gc = new GC(EvidenceTable);
-		
 		ArrayList<MappingCell> mappingCellList = OpenIIManager.getAssociatedMappingCells(unityCanvas.getVocabulary().getProjectID(),assElements);
 		//for each schema
 		for(int j = 0; j < unityCanvas.getSchemaIDs().length; j++){
@@ -312,7 +309,7 @@ public class EvidencePane  {
 				
 		if(showMeR != null) EvidenceTable.showItem(showMeR);
 		if(showMeC != null) EvidenceTable.showColumn(showMeC);
-		if(showMeR != null) EvidenceTable.getColumn(0).setWidth(gc.textExtent(showMeR.getText()).x + 20);
+		if(showMeR != null) EvidenceTable.getColumn(0).setWidth((new GC(EvidenceTable)).textExtent(showMeR.getText()).x + 10);
 		
 		EvidenceTable.addListener(SWT.MouseHover, new Listener() {
 			public void handleEvent(Event e) {

@@ -15,6 +15,8 @@
  */
 package org.mitre.openii.editors.unity;
 
+import java.util.ArrayList;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DragSource;
@@ -46,6 +48,7 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.mitre.openii.application.OpenIIActivator;
+import org.mitre.schemastore.model.terms.Term;
 
 
 public class TableView  {
@@ -57,6 +60,7 @@ public class TableView  {
 	private Combo colorSelectorT;
     private Button colorsettingsT;
     private boolean showTextTableView = true;
+    private int[] ordering;
 
     
 	private Color gray;
@@ -71,8 +75,15 @@ public class TableView  {
 
 	public TableView(UnityCanvas unity) {
 		unityCanvas = unity;
-		gray =  unity.getDisplay().getSystemColor(SWT.COLOR_GRAY);
+		gray =  unityCanvas.getDisplay().getSystemColor(SWT.COLOR_GRAY);
 		lightBlue = new Color(unity.getDisplay(), 225, 225, 255);
+		
+		//set initial ordering equal to default ordering
+		Term[] allterms = unityCanvas.getVocabulary().getTerms();
+		ordering = new int[allterms.length];
+		for(int i = 0; i < allterms.length; i++) {
+			ordering[i] = allterms[i].getId();
+		}
 
 	}
 	
@@ -95,7 +106,7 @@ public class TableView  {
 		tableButtons.setLayoutData(new GridData (SWT.FILL, SWT.TOP, true, false));
 
 		colorSelectorT = new Combo(tableButtons, SWT.READ_ONLY | SWT.DROP_DOWN);
-		colorSelectorT.setForeground(gray);
+//		colorSelectorT.setForeground(gray);
 		colorSelectorT.add("Not Colored");
 		colorSelectorT.add("Color by Element Type");
 		colorSelectorT.add("Instance Count");
@@ -114,7 +125,7 @@ public class TableView  {
 		colorsettingsT = new Button(tableButtons, SWT.PUSH);
 		colorsettingsT.setImage(OpenIIActivator.getImage("color_settings.png"));
 		colorsettingsT.setToolTipText("Color Settings");
-		colorsettingsT.setEnabled(false);
+//		colorsettingsT.setEnabled(false);
 		colorsettingsT.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event event) {
 				colorsettingsT.setSelection(false);
@@ -137,7 +148,7 @@ public class TableView  {
 		seperator3.setImage(seperatorIcon);
 		
 		sortSelector = new Combo(tableButtons, SWT.READ_ONLY | SWT.DROP_DOWN);
-		sortSelector.setForeground(gray);
+//		sortSelector.setForeground(gray);
 		sortSelector.add("Not Sorted");
 		sortSelector.add("Sort by Schema Matches");
 		sortSelector.add("Sort by Match Strength");
@@ -164,7 +175,7 @@ public class TableView  {
 		Button tableFilter1 = new Button(tableButtons, SWT.TOGGLE);
 		tableFilter1.setImage(OpenIIActivator.getImage("checkedFilter.png"));
 		tableFilter1.setToolTipText("Filter out checked synsets");
-		tableFilter1.setEnabled(false);
+//		tableFilter1.setEnabled(false);
 //		tableFilter1.setVisible(true);
 //		tableFilter1.setLayoutData(new GridData (SWT.CENTER, SWT.CENTER, false, false));
 //		tableFilter1.pack();
@@ -172,7 +183,7 @@ public class TableView  {
 		Button tableFilter2 = new Button(tableButtons, SWT.TOGGLE);
 		tableFilter2.setImage(OpenIIActivator.getImage("greenFilter.png"));
 		tableFilter2.setToolTipText("Filter out synsets with good matches");
-		tableFilter2.setEnabled(false);
+//		tableFilter2.setEnabled(false);
 //		tableFilter2.setVisible(true);
 //		tableFilter2.setLayoutData(new GridData (SWT.CENTER, SWT.CENTER, false, false));
 //		tableFilter2.pack();
@@ -180,7 +191,7 @@ public class TableView  {
 		Button tableFilter3 = new Button(tableButtons, SWT.TOGGLE);
 		tableFilter3.setImage(OpenIIActivator.getImage("yellowFilter.png"));
 		tableFilter3.setToolTipText("Filter out synsets with average matches");
-		tableFilter3.setEnabled(false);
+//		tableFilter3.setEnabled(false);
 //		tableFilter3.setVisible(true);
 //		tableFilter3.setLayoutData(new GridData (SWT.CENTER, SWT.CENTER, false, false));
 //		tableFilter3.pack();
@@ -188,7 +199,7 @@ public class TableView  {
 		Button tableFilter4 = new Button(tableButtons, SWT.TOGGLE);
 		tableFilter4.setImage(OpenIIActivator.getImage("singleton.png"));
 		tableFilter4.setToolTipText("Filter out singletons");		
-		tableFilter4.setEnabled(false);
+//		tableFilter4.setEnabled(false);
 
 		
 		
@@ -238,7 +249,7 @@ public class TableView  {
 
 	        public void handleEvent(Event event) {
 	            TableItem item = (TableItem)event.item;
-	        	int ID = unityCanvas.getVocabulary().getTerms()[tableview.indexOf(item)].getId();
+	        	int ID = ordering[tableview.indexOf(item)];
 				item.setData("uid", ID);
 				if(unityCanvas.getCheckStatus().containsKey(ID)) { 
 					item.setImage(0,CheckIcon);
@@ -264,7 +275,7 @@ public class TableView  {
 		Label tslabel =new Label(tableSearch, SWT.NONE);
 		tslabel.setText("Search:");
 		textSearchTable = new Text(tableSearch, SWT.BORDER);
-		textSearchTable.setEnabled(false);
+//		textSearchTable.setEnabled(false);
 		gridData = new GridData();
 		gridData.horizontalAlignment = GridData.FILL;
 		gridData.grabExcessHorizontalSpace = true;
@@ -313,7 +324,7 @@ public class TableView  {
         	}
         );
         
-		DropTarget target = new DropTarget (tableview, DND.DROP_COPY | DND.DROP_MOVE); 
+		DropTarget target = new DropTarget (tableview, DND.DROP_COPY | DND.DROP_MOVE | DND.DROP_LINK); 
 		target.setTransfer(new Transfer [] { FileTransfer.getInstance() });
 		target.addDropListener(new DropTargetListener () { 
 			public void dragEnter(DropTargetEvent event) { 
@@ -321,8 +332,13 @@ public class TableView  {
 				unityCanvas.eventDetail = DND.DROP_COPY;
 			} 
 			public void dragOver(DropTargetEvent event) { 
-				event.detail = DND.DROP_NONE;
-				unityCanvas.eventDetail = DND.DROP_NONE;
+				if(FileTransfer.getInstance().isSupportedType(event.currentDataType)){
+					event.detail = DND.DROP_LINK;					
+					unityCanvas.eventDetail = DND.DROP_LINK;
+				} else {
+					event.detail = DND.DROP_NONE;
+					unityCanvas.eventDetail = DND.DROP_NONE;
+				}
 				
 				if(event.item instanceof TableItem){
 						Rectangle colrec = null;
@@ -357,18 +373,33 @@ public class TableView  {
 			public void dropAccept(DropTargetEvent event) { 
 			} 
 			public void drop(DropTargetEvent event) { 
-				
+				if(event.detail == DND.DROP_LINK){
+					Table ttarget = (Table)((DropTarget)event.widget).getControl();
+					int posIndex = ttarget.getItemCount();
+					if(ttarget.getItemCount() > 0) {
+						TableItem dropTarget = (TableItem)event.item;
+						if(dropTarget != null) { posIndex = ttarget.indexOf(dropTarget); }
+						else if(ttarget.getDisplay().map(null, ttarget, event.x, event.y).y  < ttarget.getHeaderHeight()){posIndex = 0;}
+					}
+					String[] data = ((String[])event.data);
+					if(data.length == 1 && data[0].equals(" ")) return;
+					ArrayList<Integer> termIDs = new ArrayList<Integer>();
+					for(String item : data) termIDs.add(Integer.parseInt(item));
+					changeOrder(termIDs, posIndex);
+				} else if(event.detail == DND.DROP_COPY || event.detail == DND.DROP_MOVE){
 					Object target = event.item;
 					if(target instanceof TableItem){
 						Integer vocabID = (Integer)(((TableItem) target).getData("uid"));
-//System.out.println("vocabID = " + vocabID + " and draggedRow is " + draggedRow);
 						if(!vocabID.equals(unityCanvas.draggedRow)) {
 							unityCanvas.addTerm(vocabID, unityCanvas.dragElement);
 							if(event.detail == DND.DROP_MOVE){
 								unityCanvas.deleteTerm(unityCanvas.draggedRow, unityCanvas.dragElement);
 							}
 						}
-					}						
+					}		
+				} else {
+					
+				}
 			} 
 		});
 		
@@ -376,6 +407,35 @@ public class TableView  {
 		tableview.addListener(SWT.MenuDetect, new MenuListener(unityCanvas));
 		tableview.addListener(SWT.MouseHover, new HoverListener(unityCanvas));			
 
+	}
+	
+	public void changeOrder(ArrayList<Integer> ids, int position) {
+		int offset = 0;
+		int newordering[] = new int[ordering.length];
+		int index = 0;
+		
+		for(; index + offset < position && index < ordering.length; index++) {
+			if(ids.contains(new Integer(ordering[index]))) {
+				offset--;
+			} else {
+				newordering[index+offset] = ordering[index];
+			}
+		}
+		for(Integer id : ids) {
+			newordering[index+offset] = id;
+			offset++;
+		}
+		for(; index < ordering.length; index++)
+		{
+			if(ids.contains(new Integer(ordering[index]))) {
+				offset--;
+			} else {
+				newordering[index+offset] = ordering[index];
+			}			
+		}
+		ordering = newordering;
+		sortSelector.select(0);
+		resetTableView();
 	}
 	
 	public void adjustTableSize(int increment) {
