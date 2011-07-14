@@ -114,7 +114,7 @@ public class RenameSynsetListener implements Listener {
 								dialog.layout(true);
 							} else {
 						    	theTerm.setName(textfield.getText());
-						    	unityCanvas.updateTables((Integer)unityCanvas.selectedItem.getData("uid"));
+						    	unityCanvas.updateTables(new Integer[] {(Integer)unityCanvas.selectedItem.getData("uid")});
 							}
 						}
 						dialog.close();
@@ -143,7 +143,7 @@ public class RenameSynsetListener implements Listener {
 									dialog.layout(true);
 								} else {
 							    	theTerm.setName(textfield.getText());
-							    	unityCanvas.updateTables((Integer)unityCanvas.selectedItem.getData("uid"));
+							    	unityCanvas.updateTables(new Integer[] {(Integer)unityCanvas.selectedItem.getData("uid")});
 								}
 							}
 							dialog.close();

@@ -46,7 +46,6 @@ public class ClickListener implements MouseListener {
     private GC gc = null;
 	private Font ItalicFont = new Font(Display.getDefault(), new FontData("Arial", 8, SWT.ITALIC));
 
-
 	public ClickListener(UnityCanvas unity) {
 		unityCanvas = unity;
 	}
@@ -79,7 +78,9 @@ public class ClickListener implements MouseListener {
         	unityCanvas.selectedItem = ((Table)(e.widget)).getItem(new Point(e.x,e.y));
 	        //System.out.println("selectedItem = " + selectedItem);
 		    if (unityCanvas.selectedItem == null)
-		    	return;
+		    {
+		    	return;    	
+		    }
 		    
 			//System.out.println("theTable.getData(\"name\") = " + (String)(e.widget.getData("name")));
 			if(((String)(e.widget.getData("name"))).equals("workspaceTable") || (((String)(e.widget.getData("name"))).equals("tableview")))
@@ -127,6 +128,8 @@ public class ClickListener implements MouseListener {
 					unityCanvas.updateDetailPane(unityCanvas.draggedRow, unityCanvas.draggedCol, new Integer(-1));							
 				}
 		      
+					
+					
 		      //System.err.println("button " + e.button + " was pressed.");
 			      // The control that will be the editor must be a child of the
 			      // Table
@@ -155,7 +158,7 @@ public class ClickListener implements MouseListener {
 							    	if(!text.equals(theTerm.getName())) {
 								    	//System.out.println("writing to " +selectedItem.getData("uid"));
 								    	theTerm.setName(text);
-								    	unityCanvas.updateTables((Integer)unityCanvas.selectedItem.getData("uid"));
+								    	unityCanvas.updateTables(new Integer[] {(Integer)unityCanvas.selectedItem.getData("uid")});
 							    	}
 							    	unityCanvas.getEditor().getEditor().dispose();
 						        }
@@ -175,7 +178,7 @@ public class ClickListener implements MouseListener {
 							    	if(!text.equals(theTerm.getName())) {
 								    	//System.out.println("writing to " +selectedItem.getData("uid"));
 								    	theTerm.setName(text);
-								    	unityCanvas.updateTables((Integer)unityCanvas.selectedItem.getData("uid"));
+								    	unityCanvas.updateTables(new Integer[] {(Integer)unityCanvas.selectedItem.getData("uid")});
 							    	}
 							    	unityCanvas.getEditor().getEditor().dispose();
 						        }
@@ -203,10 +206,9 @@ public class ClickListener implements MouseListener {
 //						  	selectedItem.setImage(EDITABLECOLUMN,null);						  
 //							+ set in vocab
 //						  }
-						unityCanvas.updateTables((Integer)unityCanvas.selectedItem.getData("uid"));						  
+						unityCanvas.updateTables(new Integer[] {(Integer)unityCanvas.selectedItem.getData("uid")});						  
 				  }
 		    }
-
         }
 	
 	}

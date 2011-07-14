@@ -107,13 +107,14 @@ public class NewSynsetListener implements Listener {
 					Term newTerm = new Term(unityCanvas.maxSafeID++,textfield.getText(),"");
 					unityCanvas.getVocabulary().addTerm(newTerm);
 					unityCanvas.getInvertedVocab().addTerm(newTerm);
+					unityCanvas.getTableView().addTerm(newTerm.getId());
 					unityCanvas.getTableView().adjustTableSize(1);
 					TableItem item = new TableItem(unityCanvas.getWorkspace().getTable(), SWT.NONE, unityCanvas.getWorkspace().getTable().getItemCount()); 
 					item.setData("uid", unityCanvas.maxSafeID-1);
 					unityCanvas.populateRow(item, unityCanvas.getWorkspace().showTextWorkspace);
 					unityCanvas.getWorkspace().createRemoveButton();
 
-					unityCanvas.updateTables(unityCanvas.maxSafeID-1);
+					unityCanvas.updateTables(new Integer[] {unityCanvas.maxSafeID-1});
 					unityCanvas.getWorkspace().stackLayout.topControl = unityCanvas.getWorkspace().getTable();
 					unityCanvas.getWorkspace().getTable().getParent().getParent().getParent().layout(true);
 
@@ -142,13 +143,14 @@ public class NewSynsetListener implements Listener {
 						Term newTerm = new Term(unityCanvas.maxSafeID++,textfield.getText(),"");
 						unityCanvas.getVocabulary().addTerm(newTerm);
 						unityCanvas.getInvertedVocab().addTerm(newTerm);
+						unityCanvas.getTableView().addTerm(newTerm.getId());
 						unityCanvas.getTableView().adjustTableSize(1);
 						TableItem item = new TableItem(unityCanvas.getWorkspace().getTable(), SWT.NONE, unityCanvas.getWorkspace().getTable().getItemCount()); 
 						item.setData("uid", unityCanvas.maxSafeID-1);
 						unityCanvas.populateRow(item, unityCanvas.getWorkspace().showTextWorkspace);
 						unityCanvas.getWorkspace().createRemoveButton();
 
-						unityCanvas.updateTables(unityCanvas.maxSafeID-1);
+						unityCanvas.updateTables(new Integer[] {unityCanvas.maxSafeID-1});
 						unityCanvas.getWorkspace().stackLayout.topControl = unityCanvas.getWorkspace().getTable();
 						unityCanvas.getWorkspace().getTable().getParent().getParent().getParent().layout(true);
 

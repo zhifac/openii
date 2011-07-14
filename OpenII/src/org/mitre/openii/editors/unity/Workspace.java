@@ -182,6 +182,7 @@ public class Workspace  {
 				workspaceTable.clearAll();
 				for(int i = 0; i < workspaceItems.length; i++) {
 					unityCanvas.populateRow(workspaceItems[i],showTextWorkspace);
+					workspaceItems[i].setBackground(1, lightBlue);
 				}
 			}
 		});				
@@ -401,7 +402,7 @@ public class Workspace  {
 									if(workspaceTable.getColumn(order[i]).getData("uid").equals(unityCanvas.draggedCol)){
 										event.detail = DND.DROP_COPY;										
 										unityCanvas.eventDetail = DND.DROP_COPY;
-										if(unityCanvas.dragID == 3){
+										if(unityCanvas.dragID == 3 || unityCanvas.dragID == 2){
 											event.detail = unityCanvas.interfaceState;										
 											unityCanvas.eventDetail = unityCanvas.interfaceState;											
 										}
@@ -462,7 +463,7 @@ public class Workspace  {
 					if(target instanceof TableItem){
 						Integer vocabID = (Integer)(((TableItem) target).getData("uid"));
 //System.out.println("vocabID = " + vocabID + " and draggedRow is " + draggedRow);
-						if(!vocabID.equals(unityCanvas.draggedRow)) {
+						if(!vocabID.equals(unityCanvas.draggedRow) && unityCanvas.dragElement != null) {
 							unityCanvas.addTerm(vocabID, unityCanvas.dragElement);
 							if(event.detail == DND.DROP_MOVE){
 								unityCanvas.deleteTerm(unityCanvas.draggedRow, unityCanvas.dragElement);
@@ -525,7 +526,7 @@ public class Workspace  {
 			stackLayout.topControl = tempLabel;										
 		}
 		workspace.getParent().layout();									
-
+		unityCanvas.getTableView().resetTableView();
 	}
 	
 	public void addToWorkspace(ArrayList<Integer> termIDs)
@@ -571,7 +572,8 @@ public class Workspace  {
 			stackLayout.topControl = workspaceTable;
 			workspaceTable.getParent().getParent().getParent().layout(true);
 		}
-				
+		unityCanvas.getTableView().resetTableView();
+	
 	}
 
 

@@ -106,6 +106,7 @@ public class DeleteSynsetListener implements Listener {
 						unityCanvas.getWorkspace().removeFromWorkspace(id);	
 						unityCanvas.getInvertedVocab().removeTerm(unityCanvas.getVocabulary().getTerm(id));
 						unityCanvas.getVocabulary().removeTerm(id);
+						unityCanvas.getTableView().removeTerm(id);
 					}
 					unityCanvas.getTableView().adjustTableSize(0-items.length);
 					unityCanvas.getTableView().resetTableView();
