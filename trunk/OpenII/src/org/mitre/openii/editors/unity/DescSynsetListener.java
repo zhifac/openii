@@ -96,7 +96,7 @@ public class DescSynsetListener implements Listener {
 						Term theTerm = unityCanvas.getVocabulary().getTerm((Integer)(unityCanvas.activeTable.getSelection()[0].getData("uid")));
 						if(!textfield.getText().equals(theTerm.getDescription())){
 					    	theTerm.setDescription(textfield.getText());
-					    	unityCanvas.updateTables((Integer)unityCanvas.selectedItem.getData("uid"));
+					    	unityCanvas.updateTables(new Integer[] {(Integer)unityCanvas.selectedItem.getData("uid")});
 						}
 						dialog.close();
 
@@ -119,7 +119,7 @@ public class DescSynsetListener implements Listener {
 							Term theTerm = unityCanvas.getVocabulary().getTerm((Integer)(unityCanvas.activeTable.getSelection()[0].getData("uid")));
 							if(!textfield.getText().equals(theTerm.getDescription())){
 						    	theTerm.setDescription(textfield.getText());
-						    	unityCanvas.updateTables((Integer)unityCanvas.selectedItem.getData("uid"));
+						    	unityCanvas.updateTables(new Integer[] {(Integer)unityCanvas.selectedItem.getData("uid")});
 							}
 							dialog.close();
 

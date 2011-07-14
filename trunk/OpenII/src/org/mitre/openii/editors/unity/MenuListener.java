@@ -82,17 +82,18 @@ public class MenuListener implements Listener {
 		unityCanvas.activeTable = theTable;
 
 		Point pt = unityCanvas.getDisplay().map(null, theTable, new Point(e.x, e.y));
-
+				
 		// Identify the selected row
 		unityCanvas.selectedItem = theTable.getItem(pt);
 		//System.out.println("selectedItem = " + selectedItem);
 //			if (selectedItem == null) //fake to get column widths
 //				selectedItem = theTable.get
 
+//		pt = unityCanvas.getDisplay().map(unityCanvas, theTable, new Point(e.x, e.y));
 
 
 		
-	    int xoff = 0;
+	    int xoff = 0 - theTable.getHorizontalBar().getSelection();
 		int[] order = theTable.getColumnOrder();
 		for(int i = 0; i < theTable.getColumnCount(); i++) {					
 			xoff += theTable.getColumn(order[i]).getWidth();
@@ -108,7 +109,7 @@ public class MenuListener implements Listener {
 		unityCanvas.draggedCol = (Integer)(theTable.getColumn(EDITABLECOLUMN).getData("uid"));								
 		Menu popupMenu = new Menu(theTable);				
 		
-		if(pt.y < theTable.getHeaderHeight())
+		if(pt.y < theTable.getHeaderHeight() && theTable.getData("name").equals("tableview")) 
 		{
 			if(unityCanvas.draggedCol == -202) {
 			    MenuItem checkItem = new MenuItem(popupMenu, SWT.CASCADE);
@@ -116,6 +117,7 @@ public class MenuListener implements Listener {
 			    checkItem.setText("Check All");
 			    checkItem.addSelectionListener(new SelectionAdapter() {
 					public void widgetSelected(SelectionEvent e) {
+						unityCanvas.checkAll(true);
 					}
 				});	
 			    MenuItem uncheckItem = new MenuItem(popupMenu, SWT.NONE);
@@ -123,14 +125,17 @@ public class MenuListener implements Listener {
 			    uncheckItem.setText("Uncheck All");
 			    uncheckItem.addSelectionListener(new SelectionAdapter() {
 					public void widgetSelected(SelectionEvent e) {
+						unityCanvas.checkAll(false);
 					}
 				});	
+			    //only add sorting to tableview
 			    new MenuItem(popupMenu, SWT.SEPARATOR); 
 			    MenuItem sortUp = new MenuItem(popupMenu, SWT.NONE);
 			    sortUp.setImage(checkSortUpIcon);
 			    sortUp.setText("Ascending by Checked");
 			    sortUp.addSelectionListener(new SelectionAdapter() {
 					public void widgetSelected(SelectionEvent e) {
+						unityCanvas.getTableView().checkedSort(false);
 					}
 				});	
 			    MenuItem sortDown = new MenuItem(popupMenu, SWT.NONE);
@@ -138,15 +143,18 @@ public class MenuListener implements Listener {
 			    sortDown.setText("Descending by Checked");
 			    sortDown.addSelectionListener(new SelectionAdapter() {
 					public void widgetSelected(SelectionEvent e) {
+						unityCanvas.getTableView().checkedSort(true);
 					}
 				});	
-				} else { 
+			} else { 
 
+				//only add sorting to tableview
 			    MenuItem sortUp = new MenuItem(popupMenu, SWT.NONE);
 			    sortUp.setImage(alphaSortUpIcon);
 			    sortUp.setText("Ascending Alphabetical");
 			    sortUp.addSelectionListener(new SelectionAdapter() {
 					public void widgetSelected(SelectionEvent e) {
+						unityCanvas.getTableView().alphebetize(EDITABLECOLUMN, false);
 					}
 				});	
 			    MenuItem sortDown = new MenuItem(popupMenu, SWT.NONE);
@@ -154,6 +162,7 @@ public class MenuListener implements Listener {
 			    sortDown.setText("Descending Alphabetical");
 			    sortDown.addSelectionListener(new SelectionAdapter() {
 					public void widgetSelected(SelectionEvent e) {
+						unityCanvas.getTableView().alphebetize(EDITABLECOLUMN, true);
 					}
 				});	
 
@@ -165,13 +174,13 @@ public class MenuListener implements Listener {
 					    structSort.setText("Structurally");
 					    structSort.addSelectionListener(new SelectionAdapter() {
 							public void widgetSelected(SelectionEvent e) {
+								unityCanvas.getTableView().structureSort(EDITABLECOLUMN);									
 							}
 						});	 							
 					
 					}			
 					
 				}
-
 		} else {
 			
 			unityCanvas.draggedRow = (Integer)(unityCanvas.selectedItem.getData("uid"));
@@ -331,7 +340,7 @@ public class MenuListener implements Listener {
 				    treeItem.addSelectionListener(new SelectionAdapter() {
 						public void widgetSelected(SelectionEvent e) {
 							unityCanvas.getTreeView().selectSchema(EDITABLECOLUMN-2);
-							unityCanvas.getSearchFolder().setSelection(0);
+							unityCanvas.getSearchFolder().setSelection(1);
 							unityCanvas.getTreeView().searchTreeByID(unityCanvas.dragElement.getElementID());
 						
 						}

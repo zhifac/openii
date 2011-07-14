@@ -316,7 +316,7 @@ public class UnityCanvas extends Composite {
 		invertedVocab.removeTerm(term);
 		term.addAssociatedElement(element);
 		invertedVocab.addTerm(term);
-		updateTables(synsetID);
+		updateTables(new Integer[] {synsetID});
 	}
 
 	/** Delete a term from the specified synset */
@@ -326,7 +326,20 @@ public class UnityCanvas extends Composite {
 		invertedVocab.removeTerm(term);
 		term.removeAssociatedElement(element);
 		invertedVocab.addTerm(term);
-		updateTables(synsetID);
+		updateTables(new Integer[] {synsetID});
+	}
+
+	public void checkAll(boolean check) {
+		if(check) { //check all terms
+			for (Term term : vocab.getTerms()) {
+				if(!getCheckStatus().containsKey(term.getId())) {
+					getCheckStatus().put(term.getId(),new Annotation(term.getId(),vocab.getProjectID(),"checked","true"));									
+				}
+			}		
+		} else { //uncheck all terms
+			getCheckStatus().clear();
+		}
+		updateTables();
 	}
 
 
@@ -400,16 +413,26 @@ public class UnityCanvas extends Composite {
 		this.getWorkspace().addToWorkspace(termIDs);
 	}
 
+	public void updateTables () {
+		TableItem[] items = getWorkspace().getTable().getItems();
+		Integer[] ids = new Integer[items.length];
+		for(int i = 0; i < ids.length; i++) {
+			ids[i] = (Integer)items[i].getData("uid");
+		}
+		updateTables(ids);
+	}
 	
-	public void updateTables(Integer vocabID) {
+	public void updateTables(Integer[] vocabID) {
 		//find in workspace
-		TableItem[] workspaceItems = this.getWorkspace().getTable().getItems();
-		for(int i = 0; i < workspaceItems.length; i++) {
-			if(workspaceItems[i].getData("uid").equals(vocabID)){
-				populateRow(workspaceItems[i], this.getWorkspace().showTextWorkspace);
-				break;
-			}
-		}		
+		for(Integer id : vocabID) {
+			TableItem[] workspaceItems = this.getWorkspace().getTable().getItems();
+			for(int i = 0; i < workspaceItems.length; i++) {
+				if(workspaceItems[i].getData("uid").equals(id)){
+					populateRow(workspaceItems[i], this.getWorkspace().showTextWorkspace);
+					break;
+				}
+			}		
+		}
 
 		tableView.resetTableView();
 	
