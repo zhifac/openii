@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Created with Liquid XML Studio 1.0.8.0 (http://www.liquid-technologies.com) -->
+<xsd:schema xmlns="http://db.mitre.org/" targetNamespace="http://db.mitre.org/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <xsd:simpleType name="cl_l4priType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="$0" />
+      <xsd:enumeration value="$30k" />
+      <xsd:enumeration value="$50k" />
+      <xsd:enumeration value="$80k" />
+      <xsd:enumeration value="$100k" />
+      <xsd:enumeration value="$125k" />
+      <xsd:enumeration value="$150k" />
+      <xsd:enumeration value="$175k" />
+      <xsd:enumeration value="$200k" />
+      <xsd:enumeration value="$225k" />
+      <xsd:enumeration value="$250k" />
+      <xsd:enumeration value="$275k" />
+      <xsd:enumeration value="$300k" />
+      <xsd:enumeration value="$350k" />
+      <xsd:enumeration value="$400k" />
+      <xsd:enumeration value="$450k" />
+      <xsd:enumeration value="$500k" />
+      <xsd:enumeration value="$550k" />
+      <xsd:enumeration value="$650k" />
+      <xsd:enumeration value="$750k" />
+      <xsd:enumeration value="$850k" />
+      <xsd:enumeration value="$1m" />
+      <xsd:enumeration value="$1.25m" />
+      <xsd:enumeration value="$1.5m" />
+      <xsd:enumeration value="$1.75m" />
+      <xsd:enumeration value="$2m" />
+      <xsd:enumeration value="$2.25m" />
+      <xsd:enumeration value="$2.75m" />
+      <xsd:enumeration value="$3m" />
+      <xsd:enumeration value="$3.5m" />
+      <xsd:enumeration value="$4m" />
+      <xsd:enumeration value="$4.5m" />
+      <xsd:enumeration value="$5m" />
+      <xsd:enumeration value="$6m" />
+      <xsd:enumeration value="$8m" />
+      <xsd:enumeration value="$10m" />
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="ch_l4priType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="$30k" />
+      <xsd:enumeration value="$50k" />
+      <xsd:enumeration value="$80k" />
+      <xsd:enumeration value="$100k" />
+      <xsd:enumeration value="$125k" />
+      <xsd:enumeration value="$150k" />
+      <xsd:enumeration value="$175k" />
+      <xsd:enumeration value="$200k" />
+      <xsd:enumeration value="$225k" />
+      <xsd:enumeration value="$250k" />
+      <xsd:enumeration value="$275k" />
+      <xsd:enumeration value="$300k" />
+      <xsd:enumeration value="$350k" />
+      <xsd:enumeration value="$400k" />
+      <xsd:enumeration value="$450k" />
+      <xsd:enumeration value="$500k" />
+      <xsd:enumeration value="$550k" />
+      <xsd:enumeration value="$650k" />
+      <xsd:enumeration value="$750k" />
+      <xsd:enumeration value="$850k" />
+      <xsd:enumeration value="$1m" />
+      <xsd:enumeration value="$1.25m" />
+      <xsd:enumeration value="$1.5m" />
+      <xsd:enumeration value="$1.75m" />
+      <xsd:enumeration value="$2m" />
+      <xsd:enumeration value="$2.25m" />
+      <xsd:enumeration value="$2.75m" />
+      <xsd:enumeration value="$3m" />
+      <xsd:enumeration value="$3.5m" />
+      <xsd:enumeration value="$4m" />
+      <xsd:enumeration value="$4.5m" />
+      <xsd:enumeration value="$5m" />
+      <xsd:enumeration value="$6m" />
+      <xsd:enumeration value="$8m" />
+      <xsd:enumeration value="$10m" />
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="cl_bdsType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="1+" />
+      <xsd:enumeration value="2+" />
+      <xsd:enumeration value="3+" />
+      <xsd:enumeration value="4+" />
+      <xsd:enumeration value="5+" />
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="cl_bthType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="1+" />
+      <xsd:enumeration value="1 1/2+" />
+      <xsd:enumeration value="2+" />
+      <xsd:enumeration value="3+" />
+      <xsd:enumeration value="4+" />
+      <xsd:enumeration value="5+" />
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:complexType name="YahooRealEstateType">
+    <xsd:annotation>
+      <xsd:documentation> Yahoo Real Estate  </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="csz" type="xsd:string">
+        <xsd:annotation>
+          <xsd:documentation>City, State, or Zip</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="cl_l4pri" type="cl_l4priType">
+        <xsd:annotation>
+          <xsd:documentation>Price Range</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="ch_l4pri" type="ch_l4priType">
+        <xsd:annotation>
+          <xsd:documentation>Price Range to</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="cl_bds" type="cl_bdsType">
+        <xsd:annotation>
+          <xsd:documentation>Beds</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="cl_bth" type="cl_bthType">
+        <xsd:annotation>
+          <xsd:documentation>Baths</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:element name="YahooRealEstate" type="YahooRealEstateType">
+    <xsd:annotation>
+      <xsd:documentation> Yahoo Real Estate  </xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+</xsd:schema>

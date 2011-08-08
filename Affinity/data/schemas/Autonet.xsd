@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Created with Liquid XML Studio 1.0.8.0 (http://www.liquid-technologies.com) -->
+<xsd:schema xmlns="http://db.mitre.org/" targetNamespace="http://db.mitre.org/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <xsd:simpleType name="ContactType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="EMail" />
+      <xsd:enumeration value="Telephone" />
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="PurchaseType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="Now" />
+      <xsd:enumeration value="1-2 Weeks" />
+      <xsd:enumeration value="2-3 Weeks" />
+      <xsd:enumeration value="1 Mo. or more" />
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="VehicleTypeType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="Sport/Ute" />
+      <xsd:enumeration value="Car" />
+      <xsd:enumeration value="Van" />
+      <xsd:enumeration value="Truck" />
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="MakeType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="Any" />
+      <xsd:enumeration value="Acura" />
+      <xsd:enumeration value="Alfa Romeo" />
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="SecondMakeType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="none" />
+      <xsd:enumeration value="Acura" />
+      <xsd:enumeration value="Alfa Romeo" />
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="YearType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="Any Year" />
+      <xsd:enumeration value="1980-85" />
+      <xsd:enumeration value="1985-90" />
+      <xsd:enumeration value="1991" />
+      <xsd:enumeration value="1992" />
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="ColorType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="White" />
+      <xsd:enumeration value="Black" />
+      <xsd:enumeration value="Blue" />
+      <xsd:enumeration value="Red" />
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="OptionsType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value=" Air Conditioning	" />
+      <xsd:enumeration value=" Power Windows" />
+      <xsd:enumeration value=" 2 Door" />
+      <xsd:enumeration value=" 4 Door" />
+      <xsd:enumeration value=" Power Locks" />
+      <xsd:enumeration value=" Cruise Control	" />
+      <xsd:enumeration value=" Alloy Wheels		" />
+      <xsd:enumeration value=" Anti-Lock Brakes	" />
+      <xsd:enumeration value=" 1/2 Ton	" />
+      <xsd:enumeration value=" One Ton	" />
+      <xsd:enumeration value=" 3/4 Ton	" />
+      <xsd:enumeration value=" Tow Package	" />
+      <xsd:enumeration value=" Moon Roof	" />
+      <xsd:enumeration value=" Sun Roof	" />
+      <xsd:enumeration value=" Leather Interior	" />
+      <xsd:enumeration value=" Cassette Player	" />
+      <xsd:enumeration value=" Extended Cab	" />
+      <xsd:enumeration value=" Crew Cab	" />
+      <xsd:enumeration value=" Automatic	" />
+      <xsd:enumeration value=" 5 Speed	" />
+      <xsd:enumeration value=" CD Player	" />
+      <xsd:enumeration value=" 4 Wheel Drive" />
+      <xsd:enumeration value=" 2 Wheel Drive	" />
+      <xsd:enumeration value=" Sliding-rear-window	" />
+      <xsd:enumeration value=" Bench Seat" />
+      <xsd:enumeration value=" Bucket Seats" />
+      <xsd:enumeration value=" Long Bed	" />
+      <xsd:enumeration value=" Short Bed" />
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="PricetopType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="No Limit" />
+      <xsd:enumeration value="35,000-75,000" />
+      <xsd:enumeration value="25,000-35,000" />
+      <xsd:enumeration value="20,000-25,000" />
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:complexType name="AutomobileType">
+    <xsd:annotation>
+      <xsd:documentation> Autonet url is http://autonetmail.com/UsedVehiclePriceQuote.asp?  </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="email" type="xsd:string">
+        <xsd:annotation>
+          <xsd:documentation>E-mail Address (Required)</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="Telephone" type="xsd:string">
+        <xsd:annotation>
+          <xsd:documentation>Telephone (recommended)include Area Code</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="Name" type="xsd:string">
+        <xsd:annotation>
+          <xsd:documentation>Name (required)</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="Address" type="xsd:string">
+        <xsd:annotation>
+          <xsd:documentation>Address</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="City-State-Zip" type="xsd:string">
+        <xsd:annotation>
+          <xsd:documentation>City-State-Zip</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="Contact" type="ContactType">
+        <xsd:annotation>
+          <xsd:documentation>Mode of Contact</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="Purchase" type="PurchaseType">
+        <xsd:annotation>
+          <xsd:documentation>Approximate Purchase Date</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="VehicleType" type="VehicleTypeType">
+        <xsd:annotation>
+          <xsd:documentation>Vehicle type</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="Make" type="MakeType">
+        <xsd:annotation>
+          <xsd:documentation>Make</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="Model" type="xsd:string">
+        <xsd:annotation>
+          <xsd:documentation>Model(s)</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="SecondMake" type="SecondMakeType">
+        <xsd:annotation>
+          <xsd:documentation>2nd choice Make</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="SecondModel" type="xsd:string">
+        <xsd:annotation>
+          <xsd:documentation>2nd choice Model(s)</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="Year" type="YearType">
+        <xsd:annotation>
+          <xsd:documentation>Made In Or After</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="Color" type="ColorType">
+        <xsd:annotation>
+          <xsd:documentation>Color Preference</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="Options" type="OptionsType">
+        <xsd:annotation>
+          <xsd:documentation>documents (check preferred)</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="Pricetop" type="PricetopType">
+        <xsd:annotation>
+          <xsd:documentation>Price Limit</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="HowHeard" type="xsd:string">
+        <xsd:annotation>
+          <xsd:documentation>How did you hear about us</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:element name="Automobile" type="AutomobileType">
+    <xsd:annotation>
+      <xsd:documentation> Autonet url is http://autonetmail.com/UsedVehiclePriceQuote.asp?  </xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+</xsd:schema>

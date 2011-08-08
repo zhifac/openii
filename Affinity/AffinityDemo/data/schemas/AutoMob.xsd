@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Created with Liquid XML Studio 1.0.8.0 (http://www.liquid-technologies.com) -->
+<xsd:schema xmlns="http://db.mitre.org/" targetNamespace="http://db.mitre.org/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <xsd:simpleType name="makeType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="Acura" />
+      <xsd:enumeration value="Audi" />
+      <xsd:enumeration value="Bentley" />
+      <xsd:enumeration value="BMW" />
+      <xsd:enumeration value="Buick" />
+      <xsd:enumeration value="Cadillac" />
+      <xsd:enumeration value="Chevrolet" />
+      <xsd:enumeration value="Chrysler" />
+      <xsd:enumeration value="Dodge" />
+      <xsd:enumeration value="Ferrari" />
+      <xsd:enumeration value="Ford" />
+      <xsd:enumeration value="GMC" />
+      <xsd:enumeration value="Honda" />
+      <xsd:enumeration value="Hummer" />
+      <xsd:enumeration value="Hyundai" />
+      <xsd:enumeration value="Infiniti" />
+      <xsd:enumeration value="Isuzu" />
+      <xsd:enumeration value="Jaguar" />
+      <xsd:enumeration value="Jeep" />
+      <xsd:enumeration value="Kia" />
+      <xsd:enumeration value="Land Rover" />
+      <xsd:enumeration value="Lexus" />
+      <xsd:enumeration value="Lincoln" />
+      <xsd:enumeration value="Maserati" />
+      <xsd:enumeration value="Mazda" />
+      <xsd:enumeration value="Mercedes Benz" />
+      <xsd:enumeration value="Mercury" />
+      <xsd:enumeration value="MINI" />
+      <xsd:enumeration value="Mitsubishi" />
+      <xsd:enumeration value="Nissan" />
+      <xsd:enumeration value="Oldsmobile" />
+      <xsd:enumeration value="Pontiac" />
+      <xsd:enumeration value="Porsche" />
+      <xsd:enumeration value="Rolls Royce" />
+      <xsd:enumeration value="Saab" />
+      <xsd:enumeration value="Saturn" />
+      <xsd:enumeration value="Subaru" />
+      <xsd:enumeration value="Suzuki" />
+      <xsd:enumeration value="Toyota" />
+      <xsd:enumeration value="Volkswagen" />
+      <xsd:enumeration value="Volvo" />
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="yearType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="2003" />
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="modelnameType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="3.2CL" />
+      <xsd:enumeration value="3.2TL" />
+      <xsd:enumeration value="3.5RL" />
+      <xsd:enumeration value="MDX" />
+      <xsd:enumeration value="NSX" />
+      <xsd:enumeration value="RSX" />
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="packageType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="Type S Coupe" />
+      <xsd:enumeration value="Coupe" />
+      <xsd:enumeration value="Red Label Sedan" />
+      <xsd:enumeration value="T Sedan" />
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="ExteriorType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="Aegean Blue" />
+      <xsd:enumeration value="Anthracite" />
+      <xsd:enumeration value="Eternal Blue" />
+      <xsd:enumeration value="Naples Gold" />
+      <xsd:enumeration value="Nighthawk Black" />
+      <xsd:enumeration value="Noble Green" />
+      <xsd:enumeration value="San Marino Red" />
+      <xsd:enumeration value="Satin Silver" />
+      <xsd:enumeration value="Taffeta White" />
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="InteriorType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="Ebony" />
+      <xsd:enumeration value="Parchment" />
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="Best_Time_To_ContactType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="Anytime" />
+      <xsd:enumeration value="Mornings" />
+      <xsd:enumeration value="Afternoons" />
+      <xsd:enumeration value="Evenings" />
+      <xsd:enumeration value="Business Hours" />
+      <xsd:enumeration value="Weekends" />
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="time_frameType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="Within 48 hours" />
+      <xsd:enumeration value="Within a week" />
+      <xsd:enumeration value="Within two weeks" />
+      <xsd:enumeration value="Within a month" />
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="financeType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="Lease" />
+      <xsd:enumeration value="Loan" />
+      <xsd:enumeration value="Cash" />
+      <xsd:enumeration value="Credit Union" />
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:complexType name="AutomobileType">
+    <xsd:annotation>
+      <xsd:documentation> AutoMob url is http://www.automob.com  </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="make" type="makeType">
+        <xsd:annotation>
+          <xsd:documentation>Make</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="year" type="yearType">
+        <xsd:annotation>
+          <xsd:documentation>Year</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="modelname" type="modelnameType">
+        <xsd:annotation>
+          <xsd:documentation>Model</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="Zip" type="xsd:string">
+        <xsd:annotation>
+          <xsd:documentation>Your Zip</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="Name_First" type="xsd:string">
+        <xsd:annotation>
+          <xsd:documentation>Name First</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="Name_Last" type="xsd:string">
+        <xsd:annotation>
+          <xsd:documentation>Name Last</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="Address" type="xsd:string">
+        <xsd:annotation>
+          <xsd:documentation>Street Address (No city or state required)</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="Zipcode" type="xsd:string">
+        <xsd:annotation>
+          <xsd:documentation>Zip</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="E-mail" type="xsd:string">
+        <xsd:annotation>
+          <xsd:documentation>Email</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="DayPhone_1" type="xsd:string">
+        <xsd:annotation>
+          <xsd:documentation>Day Phone</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="DayPhone_2" type="xsd:string" />
+      <xsd:element name="DayPhone_3" type="xsd:string" />
+      <xsd:element name="DayPhone_Ext" type="xsd:string">
+        <xsd:annotation>
+          <xsd:documentation>Ext</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="EvePhone_1" type="xsd:string">
+        <xsd:annotation>
+          <xsd:documentation>Evening Phone</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="EvePhone_2" type="xsd:string" />
+      <xsd:element name="EvePhone_3" type="xsd:string" />
+      <xsd:element name="EvePhone_Ext" type="xsd:string">
+        <xsd:annotation>
+          <xsd:documentation>Ext</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="package" type="packageType">
+        <xsd:annotation>
+          <xsd:documentation>Select Package</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="Exterior" type="ExteriorType">
+        <xsd:annotation>
+          <xsd:documentation>Select Color (Exterior)</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="Interior" type="InteriorType">
+        <xsd:annotation>
+          <xsd:documentation>Select Color (Interior)</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="Best_Time_To_Contact" type="Best_Time_To_ContactType">
+        <xsd:annotation>
+          <xsd:documentation>Best Time To Contact</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="time_frame" type="time_frameType">
+        <xsd:annotation>
+          <xsd:documentation>Your timeframe</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="finance" type="financeType">
+        <xsd:annotation>
+          <xsd:documentation>Payment Method</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="Notes_to_dealer" type="xsd:string">
+        <xsd:annotation>
+          <xsd:documentation>Additional Comments (optional)</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:element name="Automobile" type="AutomobileType">
+    <xsd:annotation>
+      <xsd:documentation> AutoMob url is http://www.automob.com  </xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+</xsd:schema>

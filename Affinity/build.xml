@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+<project name="affinity" default="build" basedir=".">
+
+    <!-- DO NOT DELETE - these are required when running ant outside Eclipse.  -->
+    <!-- If you need to delete these, contact Jeff Hoyt and he'll figure out a way to work around it. -->
+    <!-- This requires fatjar.jar to be in your ant's lib directory -->
+    <property name="fjepPath" value="fatjar.jar"/>
+    <taskdef name="fatjar.build" classname="net.sf.fjep.anttask.FJBuildTask" classpath="${fjepPath}"/>
+    <typedef name="fatjar.manifest" classname="net.sf.fjep.anttask.FJManifestType" classpath="${fjepPath}"/>
+    <typedef name="fatjar.exclude" classname="net.sf.fjep.anttask.FJExcludeType" classpath="${fjepPath}"/>
+    <typedef name="fatjar.jarsource" classname="net.sf.fjep.anttask.FJJarSourceType" classpath="${fjepPath}"/>
+    <typedef name="fatjar.filesource" classname="net.sf.fjep.anttask.FJFileSourceType" classpath="${fjepPath}"/>
+
+    <!-- Compiles the code -->
+	<target name="compile">
+	    <mkdir dir="bin"/>
+	    <javac srcdir="src" destdir="bin" deprecation="on" debug="on" source="1.6" target="1.6">
+	    	<classpath>
+    	    	<path path="lib/org.eclipse.jface_3.4.2.M20090107-0800.jar"/>
+    	    	<path path="lib/mds-1.0.0.jar"/>
+    	    	<path path="lib/prefuse/Prefuse.jar"/>
+    	    	<path path="lib/ivc/edu.iu.iv.visualization.dendrogram.jar"/>
+    	    	<path path="lib/opencsv-1.8.jar"/>
+    	    	<path path="lib/SchemaStoreClient.jar"/>
+    	    	<path path="lib/SchemaStorePorters.jar"/>
+    	    	<path path="lib/HarmonyMatchers.jar"/>
+            </classpath>
+	    </javac>
+    </target>
+
+	<!-- Builds the Affinity jar -->
+    <target name="buildAffinity" depends="compile">
+        <fatjar.build output="Affinity.jar">
+            <fatjar.manifest mainclass="org.mitre.affinity.view.application.AffinityApplication"/>
+            <fatjar.filesource path="bin"/>
+            <fatjar.filesource path="src/affinity.xml" relpath=""/>
+            <fatjar.filesource path="icons" relpath="icons">
+        		<fatjar.exclude regexp=".*\\CVS.*"/>
+        	</fatjar.filesource>
+        </fatjar.build>
+    </target>
+
+	<!-- Builds the Affinity jar -->
+    <target name="build">
+    	<antcall target="buildAffinity"/>
+    </target>
+
+	<!-- Cleans up the constructed jar files -->
+	<target name="clean">
+		<delete dir="build/classes"/>
+	    <delete file="Affinity.jar"/>
+    </target>
+
+</project>
