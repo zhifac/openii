@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Created with Liquid XML Studio 1.0.8.0 (http://www.liquid-technologies.com) -->
+<xsd:schema xmlns="http://db.mitre.org/" targetNamespace="http://db.mitre.org/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <xsd:simpleType name="optSelltypeType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="Search for all cars" />
+      <xsd:enumeration value="Find new cars only" />
+      <xsd:enumeration value="Find used cars only" />
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="MakesType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="No Preference" />
+      <xsd:enumeration value="Acura" />
+      <xsd:enumeration value="American Motors" />
+      <xsd:enumeration value="American Promotions Cycles" />
+      <xsd:enumeration value="Audi" />
+      <xsd:enumeration value="BIGDOG" />
+      <xsd:enumeration value="BMW" />
+      <xsd:enumeration value="Buick" />
+      <xsd:enumeration value="Cadillac" />
+      <xsd:enumeration value="Chevrolet" />
+      <xsd:enumeration value="Chrysler" />
+      <xsd:enumeration value="Dodge" />
+      <xsd:enumeration value="Eagle" />
+      <xsd:enumeration value="Ford" />
+      <xsd:enumeration value="Geo" />
+      <xsd:enumeration value="GMC" />
+      <xsd:enumeration value="Harley-Davidson" />
+      <xsd:enumeration value="Honda" />
+      <xsd:enumeration value="Hyundai" />
+      <xsd:enumeration value="Infiniti" />
+      <xsd:enumeration value="Isuzu" />
+      <xsd:enumeration value="Jaguar" />
+      <xsd:enumeration value="Jeep" />
+      <xsd:enumeration value="KIA" />
+      <xsd:enumeration value="Land Rover" />
+      <xsd:enumeration value="Lexus" />
+      <xsd:enumeration value="Lincoln" />
+      <xsd:enumeration value="Mazda" />
+      <xsd:enumeration value="Mercedes" />
+      <xsd:enumeration value="Mercury" />
+      <xsd:enumeration value="Mitsubishi" />
+      <xsd:enumeration value="Nissan" />
+      <xsd:enumeration value="Oldsmobile" />
+      <xsd:enumeration value="Plymouth" />
+      <xsd:enumeration value="Pontiac" />
+      <xsd:enumeration value="Porsche" />
+      <xsd:enumeration value="Saab" />
+      <xsd:enumeration value="Saturn" />
+      <xsd:enumeration value="Subaru" />
+      <xsd:enumeration value="Suzuki" />
+      <xsd:enumeration value="Toyota" />
+      <xsd:enumeration value="Volvo" />
+      <xsd:enumeration value="VW" />
+      <xsd:enumeration value="YAMAHA" />
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="makemodelType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="No Preference" />
+      <xsd:enumeration value="200" />
+      <xsd:enumeration value="4000 Quattro" />
+      <xsd:enumeration value="80" />
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="PriceType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="No Preference" />
+      <xsd:enumeration value="$500 or Less" />
+      <xsd:enumeration value="$1000 or Less" />
+      <xsd:enumeration value="$2000 or Less" />
+      <xsd:enumeration value="$3000 or Less" />
+      <xsd:enumeration value="$4000 or Less" />
+      <xsd:enumeration value="$5000 or Less" />
+      <xsd:enumeration value="$10,000 or Less" />
+      <xsd:enumeration value="$15,000 or Less" />
+      <xsd:enumeration value="$20,000 or Less" />
+      <xsd:enumeration value="$25,000 or Less" />
+      <xsd:enumeration value="$30,000 or Less" />
+      <xsd:enumeration value="$35,000 or Less" />
+      <xsd:enumeration value="$40,000 or Less" />
+      <xsd:enumeration value="$45,000 or Less" />
+      <xsd:enumeration value="$50,000 or Less" />
+      <xsd:enumeration value="$55,000 or Less" />
+      <xsd:enumeration value="$60,000 or Less" />
+      <xsd:enumeration value="$70,000 or Less" />
+      <xsd:enumeration value="$80,000 or Less" />
+      <xsd:enumeration value="$90,000 or Less" />
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="SortOrderType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="Price" />
+      <xsd:enumeration value="Make/Model" />
+      <xsd:enumeration value="Dealer " />
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="rgn_idType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="All" />
+      <xsd:enumeration value="North" />
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="dealer_makesType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="All" />
+      <xsd:enumeration value="Acura" />
+      <xsd:enumeration value="American Motors" />
+      <xsd:enumeration value="American Promotions Cycles" />
+      <xsd:enumeration value="Audi" />
+      <xsd:enumeration value="BIGDOG" />
+      <xsd:enumeration value="BMW" />
+      <xsd:enumeration value="Buick" />
+      <xsd:enumeration value="Cadillac" />
+      <xsd:enumeration value="Chevrolet" />
+      <xsd:enumeration value="Chrysler" />
+      <xsd:enumeration value="Corvette" />
+      <xsd:enumeration value="Daewoo" />
+      <xsd:enumeration value="Daihatsu" />
+      <xsd:enumeration value="Datsun" />
+      <xsd:enumeration value="Dodge" />
+      <xsd:enumeration value="Eagle" />
+      <xsd:enumeration value="Ford" />
+      <xsd:enumeration value="Geo" />
+      <xsd:enumeration value="GMC" />
+      <xsd:enumeration value="Harley-Davidson" />
+      <xsd:enumeration value="Honda" />
+      <xsd:enumeration value="Hyundai" />
+      <xsd:enumeration value="Infiniti" />
+      <xsd:enumeration value="Isuzu" />
+      <xsd:enumeration value="Jaguar" />
+      <xsd:enumeration value="Jeep" />
+      <xsd:enumeration value="KIA" />
+      <xsd:enumeration value="Land Rover" />
+      <xsd:enumeration value="Lexus" />
+      <xsd:enumeration value="Lincoln" />
+      <xsd:enumeration value="Mazda" />
+      <xsd:enumeration value="Mercedes" />
+      <xsd:enumeration value="Mercury" />
+      <xsd:enumeration value="Mitsubishi" />
+      <xsd:enumeration value="Nissan" />
+      <xsd:enumeration value="Oldsmobile" />
+      <xsd:enumeration value="Plymouth" />
+      <xsd:enumeration value="Pontiac" />
+      <xsd:enumeration value="Porsche" />
+      <xsd:enumeration value="Saab" />
+      <xsd:enumeration value="Saturn" />
+      <xsd:enumeration value="Subaru" />
+      <xsd:enumeration value="Suzuki" />
+      <xsd:enumeration value="Toyota" />
+      <xsd:enumeration value="Volvo" />
+      <xsd:enumeration value="VW" />
+      <xsd:enumeration value="YAMAHA" />
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="dealerType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="Select a Dealer" />
+      <xsd:enumeration value="All Seasons Motorplex" />
+      <xsd:enumeration value="Bobby Duby Motors" />
+      <xsd:enumeration value="Brown Pontiac GMC" />
+      <xsd:enumeration value="Gene Messer Cadillac" />
+      <xsd:enumeration value="Gene Messer Chrysler Jeep" />
+      <xsd:enumeration value="Gene Messer Ford Mazda" />
+      <xsd:enumeration value="Greg Lair Pontiac - Buick - Oldsmobile - GMC" />
+      <xsd:enumeration value="Plainview Dodge" />
+      <xsd:enumeration value="Saturn of Amarillo" />
+      <xsd:enumeration value="Street Toyota Inc" />
+      <xsd:enumeration value="Suna Auto Mall" />
+      <xsd:enumeration value="Texas Dodge" />
+      <xsd:enumeration value="Whiteface Ford" />
+      <xsd:enumeration value="WW Used Cars" />
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:complexType name="AutomobileType">
+    <xsd:annotation>
+      <xsd:documentation> amarilloautochooser url is http://amarillo.autochooser.com/index.asp  </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="optSelltype" type="optSelltypeType" />
+      <xsd:element name="Makes" type="MakesType">
+        <xsd:annotation>
+          <xsd:documentation>Select up to five makes to show models desired</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="makemodel" type="makemodelType">
+        <xsd:annotation>
+          <xsd:documentation>then select up to five models</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="PRICE" type="PriceType">
+        <xsd:annotation>
+          <xsd:documentation>Select Price Range</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="SortOrder" type="SortOrderType">
+        <xsd:annotation>
+          <xsd:documentation>Sort vehicles by...</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="rgn_id" type="rgn_idType">
+        <xsd:annotation>
+          <xsd:documentation>Search by area</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="dealer_makes" type="dealer_makesType">
+        <xsd:annotation>
+          <xsd:documentation>Search by manufacturer</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="dealer" type="dealerType">
+        <xsd:annotation>
+          <xsd:documentation>dealer</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:element name="Automobile" type="AutomobileType">
+    <xsd:annotation>
+      <xsd:documentation> amarilloautochooser url is http://amarillo.autochooser.com/index.asp  </xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+</xsd:schema>

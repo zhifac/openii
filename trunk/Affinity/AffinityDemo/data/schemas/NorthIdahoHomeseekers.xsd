@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Created with Liquid XML Studio 1.0.8.0 (http://www.liquid-technologies.com) -->
+<xsd:schema xmlns="http://db.mitre.org/" targetNamespace="http://db.mitre.org/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <xsd:simpleType name="OfficeIdType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="Black Bear Realty" />
+      <xsd:enumeration value="Century 21 Beutler &amp; Associates" />
+      <xsd:enumeration value="Coldwell Banker Schneidmiller Realty" />
+      <xsd:enumeration value="Eborall Realty Inc./Leisure Park" />
+      <xsd:enumeration value="GMAC Real Estate Northwest" />
+      <xsd:enumeration value="Hope Realty" />
+      <xsd:enumeration value="International Realty Plus" />
+      <xsd:enumeration value="John L. Scott P.O.B." />
+      <xsd:enumeration value="Miner's Hat Realty" />
+      <xsd:enumeration value="Premier Properties" />
+      <xsd:enumeration value="River City Realty" />
+      <xsd:enumeration value="River Mountain Realty" />
+      <xsd:enumeration value="Silver Heritage Realty" />
+      <xsd:enumeration value="Tomlinson Black North Idaho" />
+      <xsd:enumeration value="Tomlinson Black Silver Valley Realty" />
+      <xsd:enumeration value="Treaty Rock Realty" />
+      <xsd:enumeration value="West Valley Insurance &amp; Realty" />
+      <xsd:enumeration value="Windermere - Coeur d'Alene Realty" />
+      <xsd:enumeration value="Windermere Resort Lifestyles" />
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="AgentIdType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="Barbara Bryan" />
+      <xsd:enumeration value="Black Bear Black Bear Realty" />
+      <xsd:enumeration value="Bob Ross" />
+      <xsd:enumeration value="Bob Schmand" />
+      <xsd:enumeration value="Bonnie Allan" />
+      <xsd:enumeration value="Brice Shoemaker" />
+      <xsd:enumeration value="Century 21 Beutler &amp; Associates" />
+      <xsd:enumeration value="Chad Salsbury" />
+      <xsd:enumeration value="Chuck Ryan" />
+      <xsd:enumeration value="Cindy Sweeney" />
+      <xsd:enumeration value="Coldwell Banker Schneidmiller Realty" />
+      <xsd:enumeration value="Dale Bunch" />
+      <xsd:enumeration value="Dave Daboll" />
+      <xsd:enumeration value="Denise Hall" />
+      <xsd:enumeration value="Dennis and Grace Buchnovics" />
+      <xsd:enumeration value="Diana Witherspoon" />
+      <xsd:enumeration value="Doug Landwehr" />
+      <xsd:enumeration value="Duffy Smock" />
+      <xsd:enumeration value="Emily Dishman" />
+      <xsd:enumeration value="Ginger Westly" />
+      <xsd:enumeration value="GMAC Real Estate" />
+      <xsd:enumeration value="Hope Realty" />
+      <xsd:enumeration value="International Realty Plus" />
+      <xsd:enumeration value="Jill Satterly" />
+      <xsd:enumeration value="Joe Dobson" />
+      <xsd:enumeration value="John Beutler" />
+      <xsd:enumeration value="John Weyant" />
+      <xsd:enumeration value="Johnny Wheeler" />
+      <xsd:enumeration value="Josephine Keller" />
+      <xsd:enumeration value="Josh Beebe" />
+      <xsd:enumeration value="Judy Cooper" />
+      <xsd:enumeration value="Keith Hanlon" />
+      <xsd:enumeration value="Ken Holehouse" />
+      <xsd:enumeration value="Kenneth Gimbel" />
+      <xsd:enumeration value="Larry Runkle" />
+      <xsd:enumeration value="Laura Fulton" />
+      <xsd:enumeration value="Linda wilhelm" />
+      <xsd:enumeration value="Loretta Reed" />
+      <xsd:enumeration value="Mallory Rains" />
+      <xsd:enumeration value="Marc Schaller" />
+      <xsd:enumeration value="Marcello Conigliaro" />
+      <xsd:enumeration value="Michael Icardo" />
+      <xsd:enumeration value="Mike McNamara" />
+      <xsd:enumeration value="Mike Parsons" />
+      <xsd:enumeration value="Miners Hat Reatly" />
+      <xsd:enumeration value="Nancy Johnson" />
+      <xsd:enumeration value="Nikki Arana" />
+      <xsd:enumeration value="Pat Krug" />
+      <xsd:enumeration value="Paul Sohrweide" />
+      <xsd:enumeration value="Premier Properties" />
+      <xsd:enumeration value="Randy Henley" />
+      <xsd:enumeration value="Randy &amp; Christy Oetken" />
+      <xsd:enumeration value="Richard Neve" />
+      <xsd:enumeration value="Rick Gunther" />
+      <xsd:enumeration value="River City Realty" />
+      <xsd:enumeration value="River Mountain Realty" />
+      <xsd:enumeration value="Roger Harte" />
+      <xsd:enumeration value="Sharon Culbreth" />
+      <xsd:enumeration value="Silver Heritage Realty" />
+      <xsd:enumeration value="Steve Huffaker" />
+      <xsd:enumeration value="Sue Fox" />
+      <xsd:enumeration value="Todd Kavanagh" />
+      <xsd:enumeration value="Tom Torgerson" />
+      <xsd:enumeration value="Tom and Anita Bryant" />
+      <xsd:enumeration value="Tomlinson Black Silver Valley" />
+      <xsd:enumeration value="Tomlinson Black North Idaho" />
+      <xsd:enumeration value="Tonda Barsuglia" />
+      <xsd:enumeration value="Treaty Rock Realty" />
+      <xsd:enumeration value="Wade Jacklin" />
+      <xsd:enumeration value="West Valley Realty" />
+      <xsd:enumeration value="Windermere RE Coeur d'Alene" />
+      <xsd:enumeration value="Windermere Resort Lifestyles Inc." />
+      <xsd:enumeration value="Young Burdette" />
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="BedsType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="3" />
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="BathsType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="2" />
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:complexType name="NorthIdahoHomeSeekersType">
+    <xsd:annotation>
+      <xsd:documentation> North Idaho Home Seekers  </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="OFFICE_ID" type="OfficeIdType">
+        <xsd:annotation>
+          <xsd:documentation>Real Estate Agency</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="AGENT_ID" type="AgentIdType">
+        <xsd:annotation>
+          <xsd:documentation>Realtor</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="BEDS" type="BedsType">
+        <xsd:annotation>
+          <xsd:documentation># of Bedrooms</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="BATHS" type="BathsType">
+        <xsd:annotation>
+          <xsd:documentation># of Bathrooms</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="FOOTAGE" type="xsd:string">
+        <xsd:annotation>
+          <xsd:documentation>Square footage</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="PRICE" type="xsd:string">
+        <xsd:annotation>
+          <xsd:documentation>Price range</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:element name="NorthIdahoHomeSeekers" type="NorthIdahoHomeSeekersType">
+    <xsd:annotation>
+      <xsd:documentation> North Idaho Home Seekers  </xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+</xsd:schema>

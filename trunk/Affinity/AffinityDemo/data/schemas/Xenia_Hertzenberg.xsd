@@ -1,0 +1,239 @@
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<xs:element name="Data" id="Data">
+		<xs:annotation>
+			<xs:documentation>Created by Xenia Hertzenberg</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="Books" id="Books" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation> If the book is paperback, hardover etc.</xs:documentation>
+						<xs:documentation> Fiction, textbook, romace, suspence etc. </xs:documentation>
+						<xs:documentation> from zero to five stars </xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:all>
+							<xs:element name="Author" type="xs:string" id="Books-Author">
+								<xs:annotation>
+									<xs:documentation/>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Title" type="xs:string" id="Books-Title">
+								<xs:annotation>
+									<xs:documentation/>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="ISBN" type="xs:string" id="Books-ISBN">
+								<xs:annotation>
+									<xs:documentation/>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Publisher" type="xs:string" id="Books-Publisher">
+								<xs:annotation>
+									<xs:documentation/>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Edition" type="xs:int" id="Books-Edition">
+								<xs:annotation>
+									<xs:documentation/>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Type" type="xs:string" id="Books-Type">
+								<xs:annotation>
+									<xs:documentation/>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="category" type="xs:string" id="Books-category">
+								<xs:annotation>
+									<xs:documentation/>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Keywords" type="xs:string" id="Books-Keywords">
+								<xs:annotation>
+									<xs:documentation/>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Price" type="xs:double" id="Books-Price">
+								<xs:annotation>
+									<xs:documentation/>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Discount" type="xs:double" id="Books-Discount">
+								<xs:annotation>
+									<xs:documentation/>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Rating" type="xs:int" id="Books-Rating">
+								<xs:annotation>
+									<xs:documentation/>
+								</xs:annotation>
+							</xs:element>
+						</xs:all>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="CDs" id="CDs" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation> Just like the ISBN number for books </xs:documentation>
+						<xs:documentation> Recording Company </xs:documentation>
+						<xs:documentation> single, special edition etc. </xs:documentation>
+						<xs:documentation> rock, jazz, latino etc. </xs:documentation>
+						<xs:documentation> from zero to five stars</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:all>
+							<xs:element name="Artist" type="xs:string" id="CDs-Artist">
+								<xs:annotation>
+									<xs:documentation/>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Title" type="xs:string" id="CDs-Title">
+								<xs:annotation>
+									<xs:documentation/>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="CD_ID" type="xs:string" id="CDs-CD_ID">
+								<xs:annotation>
+									<xs:documentation/>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="R_Company" type="xs:string" id="CDs-R_Company">
+								<xs:annotation>
+									<xs:documentation/>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Type" type="xs:string" id="CDs-Type">
+								<xs:annotation>
+									<xs:documentation/>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Genre" type="xs:string" id="CDs-Genre">
+								<xs:annotation>
+									<xs:documentation/>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Price" type="xs:double" id="CDs-Price">
+								<xs:annotation>
+									<xs:documentation/>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Discount" type="xs:double" id="CDs-Discount">
+								<xs:annotation>
+									<xs:documentation/>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Rating" type="xs:int" id="CDs-Rating">
+								<xs:annotation>
+									<xs:documentation/>
+								</xs:annotation>
+							</xs:element>
+						</xs:all>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="Warehouse" id="Warehouse" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation> how many items it can hold </xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:all>
+							<xs:element name="Warehouse_ID" type="xs:int" id="Warehouse-Warehouse_ID">
+								<xs:annotation>
+									<xs:documentation/>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Street" type="xs:string" id="Warehouse-Street">
+								<xs:annotation>
+									<xs:documentation/>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="City" type="xs:string" id="Warehouse-City">
+								<xs:annotation>
+									<xs:documentation/>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="State" type="xs:string" id="Warehouse-State">
+								<xs:annotation>
+									<xs:documentation/>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Zip" type="xs:int" id="Warehouse-Zip">
+								<xs:annotation>
+									<xs:documentation/>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="NumEmployees" type="xs:int" id="Warehouse-NumEmployees">
+								<xs:annotation>
+									<xs:documentation/>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Capacity" type="xs:int" id="Warehouse-Capacity">
+								<xs:annotation>
+									<xs:documentation/>
+								</xs:annotation>
+							</xs:element>
+						</xs:all>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="Contacts" id="Contacts" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>assistant manager, supervisor etc.</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:all>
+							<xs:element name="Contact_ID" type="xs:int" id="Contacts-Contact_ID">
+								<xs:annotation>
+									<xs:documentation/>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Warehouse_ID" type="xs:int" id="Contacts-Warehouse_ID">
+								<xs:annotation>
+									<xs:documentation/>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="phone_n" type="xs:int" id="Contacts-phone_n">
+								<xs:annotation>
+									<xs:documentation/>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="fax_n" type="xs:int" id="Contacts-fax_n">
+								<xs:annotation>
+									<xs:documentation/>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="name" type="xs:string" id="Contacts-name">
+								<xs:annotation>
+									<xs:documentation/>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Title" type="xs:string" id="Contacts-Title">
+								<xs:annotation>
+									<xs:documentation/>
+								</xs:annotation>
+							</xs:element>
+						</xs:all>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="Availability" id="Availability" minOccurs="0">
+					<xs:complexType>
+						<xs:all>
+							<xs:element name="Product_ID" type="xs:int" id="Availability-Product_ID">
+								<xs:annotation>
+									<xs:documentation/>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Warehouse_ID" type="xs:int" id="Availability-Warehouse_ID">
+								<xs:annotation>
+									<xs:documentation/>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Quantity" type="xs:int" id="Availability-Quantity">
+								<xs:annotation>
+									<xs:documentation/>
+								</xs:annotation>
+							</xs:element>
+						</xs:all>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

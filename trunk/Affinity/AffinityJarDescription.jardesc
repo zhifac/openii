@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="WINDOWS-1252" standalone="no"?>
+<jardesc>
+    <jar path="Affinity/Affinity.jar"/>
+    <options buildIfNeeded="true" compress="true" descriptionLocation="/Affinity/AffinityJarDescription.jardesc" exportErrors="true" exportWarnings="true" includeDirectoryEntries="false" overwrite="false" saveDescription="true" storeRefactorings="false" useSourceFolders="false"/>
+    <storedRefactorings deprecationInfo="true" structuralOnly="false"/>
+    <selectedProjects/>
+    <manifest generateManifest="true" mainClassHandleIdentifier="=Affinity/src&lt;org.mitre.affinity.view.application{AffinityApplication.java[AffinityApplication" manifestLocation="" manifestVersion="1.0" reuseManifest="false" saveManifest="false" usesManifest="true">
+        <sealing sealJar="false">
+            <packagesToSeal/>
+            <packagesToUnSeal/>
+        </sealing>
+    </manifest>
+    <selectedElements exportClassFiles="true" exportJavaFiles="false" exportOutputFolder="false">
+        <file path="/Affinity/icons/arrow_inout.png"/>
+        <file path="/Affinity/icons/cursor.png"/>
+        <file path="/Affinity/icons/arrow_out.png"/>
+        <file path="/Affinity/icons/grab_hand.png"/>
+        <file path="/Affinity/icons/zoom_out.png"/>
+        <file path="/Affinity/icons/selection.png"/>
+        <javaElement handleIdentifier="=Affinity/src"/>
+        <file path="/Affinity/icons/downIcon3.PNG"/>
+        <file path="/Affinity/icons/downIcon4.PNG"/>
+        <file path="/Affinity/icons/find.png"/>
+        <file path="/Affinity/icons/hand.png"/>
+        <file path="/Affinity/icons/zoom_in.png"/>
+    </selectedElements>
+    <fatjar builder="org.eclipse.jdt.ui.plain_jar_builder" launchConfig=""/>
+</jardesc>
