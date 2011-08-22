@@ -17,7 +17,7 @@
     <!-- Compiles the code -->
 	<target name="compile">
 	    <mkdir dir="build/classes"/>
-	    <javac srcdir="src" destdir="build/classes" deprecation="on" debug="on" source="1.6" target="1.6"/>
+	    <javac srcdir="src" destdir="build/classes" deprecation="on" debug="on" source="1.7" target="1.7"/>
 		<copy file="src/schemastore.xml" todir="build/classes"/>
 		<copy file="src/schemamodels.xml" todir="build/classes"/>
 		<copy file="src/org/mitre/schemastore/data/database/updates/SchemaStoreStructure.txt" todir="build/classes/org/mitre/schemastore/data/database/updates"/>
