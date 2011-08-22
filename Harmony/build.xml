@@ -16,9 +16,9 @@
 	    <mkdir dir="bin"/>
 	    <javac srcdir="src" destdir="bin" deprecation="on" debug="on" source="1.6" target="1.6">
 	    	<classpath>
-    	    	<path path="lib/SchemaStoreClient.jar"/>
-    	    	<path path="lib/SchemaStorePorters.jar"/>
-	   	    	<path path="lib/GoogleTranslate.jar"/>
+    	    	<path path="../lib/SchemaStoreClient.jar"/>
+    	    	<path path="../lib/SchemaStorePorters.jar"/>
+	   	    	<path path="../lib/GoogleTranslate.jar"/>
             </classpath>
         </javac>
 		<copy todir="bin/org/mitre/harmony/view/graphics">
