@@ -59,6 +59,7 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.mitre.openii.application.OpenIIActivator;
+import org.mitre.openii.editors.vocabulary.VocabularySort.AlignedSchemasSorter;
 import org.mitre.openii.model.OpenIIManager;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
@@ -72,7 +73,30 @@ import org.mitre.schemastore.model.terms.AssociatedElement;
 import org.mitre.schemastore.model.terms.Term;
 import org.mitre.schemastore.model.terms.VocabularyTerms;
 
-public class VocabViewCanvas extends Canvas {
+public class VocabViewCanvas extends Canvas
+{
+	/** Class used to cache information from the SchemaStore repository */
+	private class SchemaStoreCache
+	{
+		/** Stores the various schemas */
+		private Hashtable<Integer, SchemaInfo> schemas = new Hashtable<Integer, SchemaInfo>();
+		
+		/** Returns the requested schema */	
+		private SchemaInfo getSchemaInfo(Integer schemaID)
+		{
+			if(!schemas.containsKey(schemaID))
+				schemas.put(schemaID, OpenIIManager.getSchemaInfo(schemaID));
+			return schemas.get(schemaID);
+		}
+		
+		/** Returns the requested schema element */
+		private SchemaElement getSchemaElement(Integer schemaId, Integer elementId)
+			{ return getSchemaInfo(schemaId).getElement(elementId); }
+	}	
+	
+	/** Stores the cache used to reference SchemaStore */
+	private SchemaStoreCache cache = new SchemaStoreCache();
+	
 	private int numSchemas; // num schemas, including common vocab as a schema
 	private Integer[] schemaIDs;
 	private String[] schemaNames; // schemaNames[0] will always be
@@ -84,7 +108,6 @@ public class VocabViewCanvas extends Canvas {
 	private Composite viewsParent;
 	private ArrayList<Point> highlightedTableItems;
 	private ArrayList<Mapping> mappings;
-	private Hashtable<Integer, SchemaInfo> schemaInfos = new Hashtable<Integer, SchemaInfo>();
 	private boolean coloredTable;
 
 	private Color white =  this.getDisplay().getSystemColor(SWT.COLOR_WHITE);
@@ -207,18 +230,20 @@ public class VocabViewCanvas extends Canvas {
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
 
-		// adding Listener to sort columns alphabetically alphabetically
+		/** Sorts the terms alphabetically by the selected column */
 		Listener sortAlphabeticallyListener = new Listener() {
-			public void handleEvent(Event e) {
+			public void handleEvent(Event e)
+			{
+				// Identify the selected column
 				TableColumn col = (TableColumn) e.widget;
 				int colNum = 0;
-				for (int i = 0; i < table.getColumnCount(); i++) {
-					if (col == table.getColumn(i)) {
-						colNum = i;
-					}
-				}
+				for (int i = 0; i < table.getColumnCount(); i++)
+					if (col == table.getColumn(i)) colNum = i;
 
-				sortTableItems(3, colNum);
+				// Sort the table
+				Integer schemaID = null;
+				if(colNum>0) schemaID = vocabTerms.getSchemaIDs()[colNum-1];
+				sortTableItems(new VocabularySort.SpecifiedSchemaSorter(schemaID));
 			}
 		};
 
@@ -236,44 +261,8 @@ public class VocabViewCanvas extends Canvas {
 			}
 		}
 
-
-		// create one row for each synset
-		TableItem tempI;
-		for (int i = 0; i < termsArray.size(); i++) {
-			tempI = new TableItem(table, SWT.NONE);
-			// if(i%2 == 0){
-			// tempI.setBackground(widghetLightShadow);
-			// }
-
-			String termName = termsArray.get(i).getName();
-			tempI.setText(0, termName);
-			Font boldFont = new Font(Display.getDefault(), new FontData("Arial", 8, SWT.BOLD));
-			tempI.setFont(0, boldFont);
-
-			AssociatedElement[] elements = termsArray.get(i).getElements();
-			for (int j = 0; j < elements.length; j++) {
-				AssociatedElement ele = elements[j];
-
-				Integer schemaID = elements[j].getSchemaID();
-				SchemaInfo si = OpenIIManager.getSchemaInfo(schemaID);
-				Integer eleID = elements[j].getElementID();
-				SchemaElement schemaEle = si.getElement(eleID);
-				// String className = schemaEle.getClass().toString();
-
-				int colNum = schemaIDsToColNum.get(elements[j].getSchemaID());
-				String current = tempI.getText(colNum);
-				if (current == null || current == "") {
-					tempI.setText(colNum, ele.getName());
-				} else {
-					tempI.setText(colNum, current + ", " + ele.getName());
-				}
-				
-				Image img = org.mitre.openii.widgets.schemaTree.SchemaElementLabelProvider.getImage(schemaEle);
-				tempI.setImage(colNum, img);
-				// }
-			}
-
-		}
+		// Populate the table with term information
+		populateTable();
 
 		// creating evidence portion of the GUI
 		// final StyledText textControl = new StyledText(sash, SWT.MULTI |
@@ -320,89 +309,6 @@ public class VocabViewCanvas extends Canvas {
 
 
 		sash.setWeights(new int[] { 75, 25 });
-
-		// adding listener that allows someone to edit the canonical term if a
-		// cell in the Vocabulary column is double clicked
-		/*table.addListener(SWT.MouseDoubleClick, new Listener() {
-			public void handleEvent(Event event) {
-				// get bounds for the Vocabulary column
-				int startXforVocab = 0;
-				int[] orderOfCols = table.getColumnOrder();
-				for (int i = 0; i < orderOfCols.length; i++) {
-					int inputPos = orderOfCols[i];
-					if (inputPos == 0) {
-						// System.out.println("vocabulary is in col " + i);
-						break;
-					} else {
-						startXforVocab += table.getColumn(inputPos).getWidth();
-					}
-				}
-
-				if (event.getBounds().x > startXforVocab) {
-					if (event.getBounds().x < startXforVocab + table.getColumn(0).getWidth()) {
-						// System.out.println("double clicked: " +
-						// termsArray.get(table.getSelectionIndex()).getName());
-						// want to edit the canonical term
-						final TableEditor editor = new TableEditor(table);
-						final Text text = new Text(table, SWT.NONE);
-						text.setText(termsArray.get(table.getSelectionIndex()).getName());
-
-						// System.out.println("prev name: " +
-						// termsArray.get(table.getSelectionIndex()).getName());
-						TableItem ti = table.getItem(table.getSelectionIndex());
-						editor.setEditor(text, ti, 0);
-						editor.grabHorizontal = true;
-
-						text.addFocusListener(new FocusListener() {
-							public void focusGained(FocusEvent e) {
-								// do nothing when focus is gained
-							}
-
-							public void focusLost(FocusEvent e) {
-								String newName = text.getText();
-
-								// changing the synset name to the new name in
-								// the view
-								Term changedTerm = termsArray.get(table.getSelectionIndex());
-								changedTerm.setName(newName);
-								table.getItem(table.getSelectionIndex()).setText(0, newName);
-
-								OpenIIManager.saveVocabulary(vocab);
-
-								text.dispose();
-								editor.dispose();
-							}
-						});
-
-						text.addKeyListener(new KeyListener() {
-							public void keyPressed(KeyEvent e) {
-								// do nothing when initially pressed
-							}
-
-							public void keyReleased(KeyEvent e) {
-								if (e.keyCode == 13) {
-									// hit enter
-									String newName = text.getText();
-
-									// changing the synset name to the new name
-									// in the view
-									Term changedTerm = termsArray.get(table.getSelectionIndex());
-									changedTerm.setName(newName);
-
-									// OpenIIManager.
-									table.getItem(table.getSelectionIndex()).setText(0, newName);
-
-									OpenIIManager.saveVocabulary(vocab);
-
-									text.dispose();
-									editor.dispose();
-								}
-							}
-						});
-					}
-				}
-			}
-		});*/
 
 		// adding the Listener to the table so that evidence can be displayed in
 		// the bottom pane
@@ -466,40 +372,24 @@ public class VocabViewCanvas extends Canvas {
 			}			
 		});
 
-		// sorting from most to least GroupEs
+		/** Sort terms such that the most aligned schemas are on top */
 		buttonMostGroupEs.addListener(SWT.Selection, new Listener() {
-			public void handleEvent(Event event) {
-				sortTableItems(1, -1);
-			}
+			public void handleEvent(Event event)
+				{ sortTableItems(new AlignedSchemasSorter(true)); }
 		});
 
-		// sorting from least to most GroupEs
+		/** Sort terms such that the least aligned schemas are on top */
 		buttonLeastGroupEs.addListener(SWT.Selection, new Listener() {
-			public void handleEvent(Event event) {
-				sortTableItems(2, -1);
-			}
+			public void handleEvent(Event event)
+				{ sortTableItems(new AlignedSchemasSorter(false)); }
 		});
 
 		searchButton.addListener(SWT.Selection, new Listener() {
-			public void handleEvent(Event event) {
+			public void handleEvent(Event event)
+			{
 				createSearchDialog();
 			}
 		});
-
-/*		mergeButton.addListener(SWT.Selection, new Listener() {
-			public void handleEvent(Event event) {
-				// TODO Auto-generated method stub
-				// first create dialog warning users
-				// boolen confirm = confirmAction();
-				System.out.println("selected merge button");
-				createWarningDialog();
-				if (confirmation) {
-					int[] rowNumSelected = table.getSelectionIndices();
-					mergeRows(rowNumSelected);
-				}
-			}
-
-		});*/
 
 		// adding resize capability so fills in space nicely
 		this.addListener(SWT.Resize, new Listener() {
@@ -600,7 +490,7 @@ public class VocabViewCanvas extends Canvas {
 						Integer schemaID = schemaIDs[schemaCombo.getSelectionIndex()];
 						
 						SchemaModel model = OpenIIManager.getProject(vocabTerms.getProjectID()).getSchemaModel(schemaID);
-						SchemaInfo si = OpenIIManager.getSchemaInfo(schemaID);
+						SchemaInfo si = cache.getSchemaInfo(schemaID);
 						HierarchicalSchemaInfo schema = new HierarchicalSchemaInfo(si, model);
 						
 							
@@ -630,16 +520,12 @@ public class VocabViewCanvas extends Canvas {
 					elementCombo.removeAll();
 							
 					Integer schemaID = schemaIDs[schemaCombo.getSelectionIndex()];
-					SchemaInfo si = OpenIIManager.getSchemaInfo(schemaID);
+					SchemaInfo si = cache.getSchemaInfo(schemaID);
 					SchemaModel model = OpenIIManager.getProject(vocabTerms.getProjectID()).getSchemaModel(schemaID);
 					HierarchicalSchemaInfo schema = new HierarchicalSchemaInfo(si, model);
-					
-						
-					//ArrayList<SchemaElement> elements = si.getElements(null);
+										
 					ArrayList<SchemaElement> elements = schema.getHierarchicalElements();
 					
-					
-					//ArrayList<SchemaElement> elements = OpenIIManager.getSchemaInfo(schemaIDs[schemaCombo.getSelectionIndex()]).getElements(null);
 					for(SchemaElement ele : elements){
 						elementCombo.add(ele.getName());
 					}
@@ -718,7 +604,7 @@ public class VocabViewCanvas extends Canvas {
 			TableItem ti = new TableItem(currElements, SWT.NONE);
 			//get the name of the schema associated with the element
 			Integer schemaID = ele.getSchemaID();
-			SchemaInfo si = OpenIIManager.getSchemaInfo(schemaID);
+			SchemaInfo si = cache.getSchemaInfo(schemaID);
 			ti.setText(0, si.getSchema().getName());
 			
 			Integer eleID = ele.getElementID();
@@ -821,7 +707,7 @@ public class VocabViewCanvas extends Canvas {
 				for (int j = 0; j < elements.length; j++) {
 					AssociatedElement ele = elements[j];
 					Integer schemaID = elements[j].getSchemaID();
-					SchemaInfo si = OpenIIManager.getSchemaInfo(schemaID);
+					SchemaInfo si = cache.getSchemaInfo(schemaID);
 					Integer eleID = elements[j].getElementID();
 					SchemaElement schemaEle = si.getElement(eleID);
 
@@ -941,6 +827,46 @@ public class VocabViewCanvas extends Canvas {
 		warningDialog.open();
 	}
 
+	/** Populates the table with the provided terms */
+	private void populateTable()
+	{
+		// Define the font to use in displaying the terms
+		Font font = new Font(Display.getDefault(), new FontData("Arial", 8, SWT.BOLD));
+		
+		// Clear out the table
+		table.clearAll();
+		for(TableItem item : table.getItems())
+			item.dispose();
+		
+		// Add the terms to the table
+		for(Term term : termsArray)
+		{	
+			// Create the table item
+			TableItem item = new TableItem(table, SWT.NONE);
+			item.setText(0, term.getName());
+			item.setFont(0, font);
+
+			// Traverse through all associated elements
+			for(AssociatedElement element : term.getElements())
+			{
+				// Get the column associated with this element
+				Integer schemaID = element.getSchemaID();
+				int column = schemaIDsToColNum.get(schemaID);
+
+				// Add the element to the column
+				String currentText = item.getText(column);
+				if(currentText == null || currentText == "")
+					item.setText(column, element.getName());
+				else item.setText(column, currentText + ", " + element.getName());
+			
+				// Display the image associated with the specific type of element
+	//			SchemaInfo schemaInfo = cache.getSchemaInfo(schemaID);
+	//			SchemaElement schemaElement = schemaInfo.getElement(element.getElementID());
+	//			Image image = org.mitre.openii.widgets.schemaTree.SchemaElementLabelProvider.getImage(schemaElement);
+	//			item.setImage(column, image);
+			}
+		}
+	}
 	
 	/**if coloredTabled is true then it will color table cells based on string match with vocab term **/
 	/**if coloredTable is false then it will color all table cells white **/
@@ -970,63 +896,11 @@ public class VocabViewCanvas extends Canvas {
 		
 	}
 	
-	// if sortBy= 1 it will sort from most to least GroupEs
-	// if sortBy= 2 it will sort from least to most GroupEs
-	// if sortBy= 3 it will sort from a to z, uses colIndex only for 3
-	// basically, it's a helper function that does all the work
-	private void sortTableItems(int sortBy, int colIndex) {
-		TableItem[] allRows = table.getItems();
-
-		// for each row in the table, starting with the 2nd
-		for (int i = 1; i < allRows.length; i++) {
-			// compare the row to all previously sorted rows
-			for (int j = 0; j < i; j++) {
-				boolean move = false;
-				if (sortBy == 1 || sortBy == 2) {
-					int ithGroupEs = termsArray.get(i).getElements().length;
-					int jthGroupEs = termsArray.get(j).getElements().length;
-					if (sortBy == 1 && ithGroupEs > jthGroupEs) {
-						move = true;
-					} else if (sortBy == 2 && ithGroupEs < jthGroupEs) {
-						move = true;
-					}
-				} else if (sortBy == 3) {
-					if (allRows[i].getText(colIndex).compareToIgnoreCase(allRows[j].getText(colIndex)) < 0) {
-						move = true;
-					}
-				}
-
-				if (move == true) {
-					// create a temp tableItem that has all info, going to get
-					// rid of cur ith row
-					String[] tempRow = new String[schemaNames.length];
-					Image[] tempImages = new Image[schemaNames.length];
-					
-					for (int k = 0; k < schemaNames.length; k++) {
-						tempRow[k] = allRows[i].getText(k);
-						tempImages[k] = allRows[i].getImage(k);
-					}
-
-					// get rid of the previous ith row
-					allRows[i].dispose();
-
-					TableItem movedItem = new TableItem(table, SWT.NONE, j);
-					movedItem.setText(tempRow);
-					movedItem.setImage(tempImages);
-					Font boldFont = new Font(Display.getDefault(), new FontData("Arial", 8, SWT.BOLD));
-					movedItem.setFont(0, boldFont);
-
-					// need to reorder the Terms array too
-					Term temp = termsArray.get(i);
-					termsArray.remove(i);
-					termsArray.add(j, temp);
-
-					// now work with new table items, and go on to next row
-					allRows = table.getItems();
-					break;
-				}
-			}
-		}
+	/** Sorts the table items as specified */
+	private void sortTableItems(Comparator<Term> sorter)
+	{
+		Collections.sort(termsArray, sorter);
+		populateTable();
 		colorTheTable();
 	}
 
@@ -1256,9 +1130,9 @@ public class VocabViewCanvas extends Canvas {
 			// get the original element's ID and description
 			Integer schemaID = aes[i].getSchemaID();
 			Integer eleID = aes[i].getElementID();
-			SchemaElement currElement = getSchemaElement(schemaID, eleID);
+			SchemaElement currElement = cache.getSchemaElement(schemaID, eleID);
 			String elementDescription = currElement.getDescription();
-			String containingSchemaName = getSchemaInfo(schemaID).getSchema().getName();
+			String containingSchemaName = cache.getSchemaInfo(schemaID).getSchema().getName();
 
 			TableItem nextItem = new TableItem(evidTable, SWT.NONE);
 			nextItem.setText(1, elementName);
@@ -1295,7 +1169,7 @@ public class VocabViewCanvas extends Canvas {
 
 				for (Integer inputId : mc.getElementInputIDs()) {
 					Integer otherElementId = (outputId.equals(eleID)) ? inputId : outputId;
-					SchemaElement otherElement = getSchemaElement(otherSchemaId, otherElementId);
+					SchemaElement otherElement = cache.getSchemaElement(otherSchemaId, otherElementId);
 
 					//TableItem currItem = (k == 0) ? nextItem : new TableItem(evidTable, SWT.NONE);
 					TableItem currItem = new TableItem(evidTable, SWT.NONE);
@@ -1329,23 +1203,6 @@ public class VocabViewCanvas extends Canvas {
 			}
 		}
 	}
-
-	/** returns a schema element from the schema info hash table. **/
-	private SchemaElement getSchemaElement(Integer schemaId, Integer elementId) {
-		return getSchemaInfo(schemaId).getElement(elementId);
-	}
-
-	
-	private SchemaInfo getSchemaInfo(Integer schemaId) {
-		SchemaInfo info;
-		if (!schemaInfos.containsKey(schemaId)) {
-			info = OpenIIManager.getSchemaInfo(schemaId);
-			schemaInfos.put(schemaId, info);
-		} else
-			info = schemaInfos.get(schemaId);
-		return info;
-	}
-
 	
 	/** displays the search results table in the search vocabulary dialog box **/
 	private void displaySearchResults(Table tableForSearchResults, String searchTerm) {
