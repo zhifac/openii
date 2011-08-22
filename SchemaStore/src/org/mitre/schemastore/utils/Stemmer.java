@@ -251,8 +251,9 @@ public class Stemmer
 	/** Stems the specified word */
 	static public String stem(String word)
 	{
-		// Don't proceed if no word
-		if(word==null || word.length()==0) return "";
+		// Don't proceed if no word or a single character word
+		if(word==null) return "";
+		if(word.length()<=1) return word;
 		
 		// Perform the stemming
 		Stemmer stemmer = new Stemmer(word);
