@@ -9,8 +9,7 @@ import java.util.ArrayList;
 
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.Thesaurus;
-
-import com.sun.xml.internal.fastinfoset.vocab.Vocabulary;
+import org.mitre.schemastore.model.Vocabulary;
 
 /**
  * Handles schema data calls in the database
