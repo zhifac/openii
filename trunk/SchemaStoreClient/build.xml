@@ -18,7 +18,7 @@
 	<target name="compile">
 		<ant antfile="${SchemaStore}/build.xml" dir="${SchemaStore}" target="compile"/>
 	    <mkdir dir="build/classes"/>
-	    <javac srcdir="src" destdir="build/classes" deprecation="on" debug="on" source="1.6" target="1.6">
+	    <javac srcdir="src" destdir="build/classes" deprecation="on" debug="on" source="1.7" target="1.7">
 	    	<classpath>
     	    	<path path="${SchemaStore}/build/classes"/>
        	    	<path path="lib/axis.jar"/>

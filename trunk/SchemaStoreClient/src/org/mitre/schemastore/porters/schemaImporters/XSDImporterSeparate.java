@@ -12,7 +12,6 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 
-import org.exolab.castor.xml.Namespaces;
 import org.exolab.castor.xml.schema.Annotated;
 import org.exolab.castor.xml.schema.Annotation;
 import org.exolab.castor.xml.schema.AnyType;
