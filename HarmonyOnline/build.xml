@@ -13,7 +13,7 @@
     <!-- Compiles the code -->
 	<target name="compile">
 	    <mkdir dir="WebContent/WEB-INF/classes"/>
-	    <javac srcdir="src" destdir="WebContent/WEB-INF/classes" deprecation="on" debug="on" source="1.6" target="1.6">
+	    <javac srcdir="src" destdir="WebContent/WEB-INF/classes" deprecation="on" debug="on" source="1.7" target="1.7">
     		<classpath>
    	    		<path path="WebContent/HarmonyApplet/lib/SchemaStoreClient.jar"/>
    	    		<path path="WebContent/HarmonyApplet/lib/SchemaStorePorters.jar"/>
