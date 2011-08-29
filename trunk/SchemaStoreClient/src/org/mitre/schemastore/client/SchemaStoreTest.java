@@ -4,9 +4,9 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import org.mitre.schemastore.model.AssociatedElement;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
+import org.mitre.schemastore.model.terms.AssociatedElement;
 
 public class SchemaStoreTest
 {
