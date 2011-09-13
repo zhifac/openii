@@ -2,10 +2,15 @@ package org.mitre.schemastore.porters.schemaImporters;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.io.File;
 
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.mitre.schemastore.client.Repository;
+import org.mitre.schemastore.client.SchemaStoreClient;
 import org.mitre.schemastore.model.Domain;
 import org.mitre.schemastore.model.DomainValue;
 import org.mitre.schemastore.model.SchemaElement;
@@ -49,7 +54,7 @@ public class HierarchicalDomainValueImporter extends DomainValueImporter {
 				// Ignore rows without domain specified
 				if (domainCell != null) { domainName = getCellValue(domainCell); }
 				// Get domain value
-				if (descrCell != null) { domainValueStr = getCellValue(valueCell); }
+				if (valueCell != null) { domainValueStr = getCellValue(valueCell); }
 				// Get parent value
 				if (parentCell != null) { parentValueStr = getCellValue(parentCell); }
 				// Get documentation value
@@ -84,6 +89,10 @@ public class HierarchicalDomainValueImporter extends DomainValueImporter {
 					domainValues.put(valueHashKey, domainValue);
 					schemaElements.add(domainValue);
 				}
+				else
+				{
+					domainValue.setDescription(documentation);
+				}
 
 				// Create a subtype relationship for the parent
 				if (parentCell != null) {
@@ -112,5 +121,26 @@ public class HierarchicalDomainValueImporter extends DomainValueImporter {
 
 	public String getName() {
 		return "Hierarchical Domain Value Importer";
+	}
+	public static void main(String[] args)
+	{
+		try {
+		Repository repository = new Repository(Repository.DERBY,new File(".").toURI(),"testStore","postgres","postgres");
+//		Repository repository = new Repository(Repository.POSTGRES,new URI("localhost"),"supplies","postgres","postgres");
+//		Repository repository = new Repository(Repository.SERVICE,new URI("http://ygg:8080/D3-develop/services/SchemaStore"),"","","");
+		SchemaStoreClient client = new SchemaStoreClient(repository);
+		HierarchicalDomainValueImporter importer = new HierarchicalDomainValueImporter();
+		importer.setClient(client);
+
+	    System.out.println("I got here");
+		int schemaNumber = importer.importSchema("test3", "mgreer", "test import", new URI("file:/home/mary/Documents/test.xls"));
+		System.out.println("Here too");
+		System.out.println(schemaNumber);
+
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
 	}
 }
