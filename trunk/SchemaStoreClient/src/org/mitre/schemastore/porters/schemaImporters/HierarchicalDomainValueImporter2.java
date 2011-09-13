@@ -124,6 +124,6 @@ public class HierarchicalDomainValueImporter2 extends DomainValueImporter {
 	}
 
 	public String getName() {
-		return "Hierarchical Domain Value Importer";
+		return "Hierarchical Domain Value Importer 2";
 	}
 }
