@@ -13,7 +13,7 @@
 
    <windowImages/>
 
-   <launcher>
+   <launcher name="openii">
       <solaris/>
       <win useIco="false">
          <bmp/>
