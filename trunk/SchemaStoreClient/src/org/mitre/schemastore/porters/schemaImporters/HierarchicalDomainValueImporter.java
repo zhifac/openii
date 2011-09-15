@@ -25,6 +25,7 @@ import org.mitre.schemastore.porters.ImporterException;
  */
 public class HierarchicalDomainValueImporter extends DomainValueImporter {
 	protected HashMap<String, Subtype> subtypes = new HashMap<String, Subtype>();
+	protected HashMap<String, DomainValue>domainHash = new HashMap<String, DomainValue>();
 
 	protected ArrayList<SchemaElement> generateSchemaElements() throws ImporterException {
 		int numSheets = workbook.getNumberOfSheets();
@@ -44,12 +45,17 @@ public class HierarchicalDomainValueImporter extends DomainValueImporter {
 				String parentValueStr = "";
 				String domainValueStr = "";
 				String documentation = "";
+				String code = "";
+				String parentCode = "";
 
 				// get domain name, assume cell contains string value
 				HSSFCell domainCell = row.getCell(0);
 				HSSFCell parentCell = row.getCell(1);
-				HSSFCell valueCell = row.getCell(2);
-				HSSFCell descrCell = row.getCell(3);
+				HSSFCell parentCodeCell = row.getCell(2);
+				
+				HSSFCell valueCell = row.getCell(3);
+				HSSFCell codeCell = row.getCell(4);
+				HSSFCell descrCell = row.getCell(5);
 
 				// Ignore rows without domain specified
 				if (domainCell != null) { domainName = getCellValue(domainCell); }
@@ -59,6 +65,8 @@ public class HierarchicalDomainValueImporter extends DomainValueImporter {
 				if (parentCell != null) { parentValueStr = getCellValue(parentCell); }
 				// Get documentation value
 				if (descrCell != null) { documentation = getCellValue(descrCell); }
+				if (parentCodeCell != null) { parentCode = getCellValue(parentCodeCell);}
+				if (codeCell != null) { code = getCellValue(codeCell);}
 
 				if (domainName.length() == 0) { break; } 
 
@@ -83,10 +91,11 @@ public class HierarchicalDomainValueImporter extends DomainValueImporter {
 				
 				// Create a domain value
 				String valueHashKey = domainName + "/" + domainValueStr;
-				domainValue = domainValues.get(valueHashKey);
+				//domainValue = domainValues.get(valueHashKey);
+				domainValue = domainHash.get(code);
 				if (domainValue == null) {
 					domainValue = new DomainValue(nextId(), domainValueStr, documentation, domain.getId(), 0);
-					domainValues.put(valueHashKey, domainValue);
+					domainHash.put(code, domainValue);
 					schemaElements.add(domainValue);
 				}
 				else
@@ -97,10 +106,12 @@ public class HierarchicalDomainValueImporter extends DomainValueImporter {
 				// Create a subtype relationship for the parent
 				if (parentCell != null) {
 					// First get parent DomainValue
-					String parentHashKey = domainName + "/" + parentValueStr;
-					parentValue = domainValues.get(parentHashKey);
-					if (parentValue == null) parentValue = new DomainValue(nextId(), parentValueStr, "", domain.getId(), 0);
-
+					//String parentHashKey = domainName + "/" + parentValueStr;
+					//parentValue = domainValues.get(parentHashKey);
+					parentValue = domainHash.get(parentCode);
+					if (parentValue == null){ parentValue = new DomainValue(nextId(), parentValueStr, "", domain.getId(), 0);
+					 domainHash.put(parentCode, parentValue);
+					}
 					// Then create subtype
 					String subtypeHash = parentValue.getId() + "/" + valueHashKey;
 					if (!subtypes.containsKey(subtypeHash)) {
