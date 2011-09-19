@@ -13,7 +13,7 @@
 	<classpathentry kind="lib" path="lib/SchemaStoreWarehouse.jar" sourcepath="/SchemaStoreWarehouse"/>
 	<classpathentry kind="lib" path="lib/PLUSv2.jar"/>
 	<classpathentry kind="lib" path="lib/mysql-connector-java-5.0.7-bin.jar"/>
-	<classpathentry kind="lib" path="C:/Documents and Settings/mgreer/workspace/OpenII/lib/SchemaStoreClient.jar"/>
-	<classpathentry kind="lib" path="C:/Documents and Settings/mgreer/workspace/OpenII/lib/SchemaStorePorters.jar"/>
+	<classpathentry kind="lib" path="lib/SchemaStoreClient.jar"/>
+	<classpathentry kind="lib" path="lib/SchemaStorePorters.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
