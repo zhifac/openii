@@ -58,6 +58,9 @@ public class ExcelExporter extends MappingExporter
 	/** Stores the extra fields stored with the mapping cells */
 	private ArrayList<String> extraFields = new ArrayList<String>();
 	
+	/** Boolean to return all unmatched elements rather than just those in containers with a matched element */
+	private boolean includeAllUnmatched = false;
+	
 	/** Returns the exporter name */
 	public String getName()
 		{ return "Excel Exporter"; }
@@ -155,7 +158,7 @@ public class ExcelExporter extends MappingExporter
 	/** Generates the header */
 	private void generateHeader(PrintWriter out)
 	{
-		out.print("Source Type,Source Property,Source Documentation,Target Type,");
+		out.print("Schema, Source Type,Source Property,Source Documentation,Schema, Target Type,");
 		out.print("Target Property,Target Documentation,Score,Comment");
 		for(String extraField : extraFields) out.print(","+extraField);
 		out.println();
@@ -200,7 +203,7 @@ public class ExcelExporter extends MappingExporter
 	}
 	
 	/** Exports all unmatched elements, provided the container has at least one exported match */
-	private void exportUnmatchedElements(PrintWriter out)
+	private void exportUnmatchedElements(PrintWriter out) 
 	{
 		// Identify all target containers
 		HashSet<Integer> targetContainers = new HashSet<Integer>();
@@ -212,7 +215,7 @@ public class ExcelExporter extends MappingExporter
 		{
 			// Make sure that container was associated with at least one match
 			FlaggedArrayList elements = containerHash.get(baseID);
-			if(!elements.isFlagged()) continue;
+			if(!elements.isFlagged() && !includeAllUnmatched) continue;
 
 			// Determine if the container is part of the source or target schema	
 			boolean isSource = !targetContainers.contains(baseID);
@@ -221,8 +224,8 @@ public class ExcelExporter extends MappingExporter
 			// Display the unmatched elements which make up the container
 			for(SchemaElement child : containerHash.get(baseID))
 			{
-				String sourceString = isSource ? getElementString(base, child) : ",,";
-				String targetString = isSource ? ",," : getElementString(base, child);
+				String sourceString = isSource ? getElementString(base, child) : ",,,";
+				String targetString = isSource ? ",,," : getElementString(base, child);
 				out.println(sourceString + "," + targetString);
 			}
 		}
@@ -235,7 +238,7 @@ public class ExcelExporter extends MappingExporter
 	/** Generates a string for the specified base and element */
 	private String getElementString(SchemaElement base, SchemaElement element)
 	{
-		return "\"" + getDisplayName(base) + "\",\"" + getDisplayName(base,element) + "\"," +
+		return "\""+ getSchemaName(element)+"\",\"" + getDisplayName(base) + "\",\"" + getDisplayName(base,element) + "\"," +
 			   "\"" + (element==null?"":scrub(element.getDescription())) + "\"";
 	}
 	
@@ -251,12 +254,30 @@ public class ExcelExporter extends MappingExporter
 		if(targetInfo.containsElement(elementID)) return targetInfo.getElement(elementID);
 		return null;
 	}
-
+	/** Set includeAllUnmatchedElements so can decide if to export all unmatched elements or just those with
+	 * a match in the container
+	 */
+	protected void setIncludeAllUnmatched(boolean choice)
+	{
+		includeAllUnmatched = choice;
+	}
 	/** Finds the display name (which accounts for anonymous elements) by iterating through all available schemas */
 	private String getDisplayName(SchemaElement root, SchemaElement element)
 	{
 		if((element==null && root==null) || element.equals(root)) return "-";
 		return getDisplayName(element);
+	}
+	private String getSchemaName(SchemaElement element)
+	{
+		if (element == null) return "-";
+		try {
+		if (client.getSchema(element.getId()) == null) return"-";
+		return client.getSchema(element.getId()).getName();
+		}
+		catch (RemoteException remoteE)
+		{
+			return "-";
+		}
 	}
 	
 	/** Finds the display name (which accounts for anonymous elements) by iterating through all available schemas */
