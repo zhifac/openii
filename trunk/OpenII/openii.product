@@ -3,7 +3,6 @@
 
 <product name="OpenII" id="org.mitre.openii.product" application="org.mitre.openii.application" version="1.0.0" useFeatures="true" includeLaunchers="true">
 
-
    <configIni use="default">
    </configIni>
 
@@ -14,13 +13,12 @@
 
    <windowImages/>
 
-   <launcher name="openii">
+   <launcher name="OpenII">
       <solaris/>
       <win useIco="false">
          <bmp/>
       </win>
    </launcher>
-
 
    <vm>
    </vm>
