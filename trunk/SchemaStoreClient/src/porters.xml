@@ -43,6 +43,7 @@
     <mappingExporters>
 	  <mappingExporter>org.mitre.schemastore.porters.mappingExporters.DataDictionaryExporter</mappingExporter>
 	  <mappingExporter>org.mitre.schemastore.porters.mappingExporters.ExcelExporter</mappingExporter>
+	 <mappingExporter>org.mitre.schemastore.porters.mappingExporters.ExcelExporter2</mappingExporter>
 	  <mappingExporter>org.mitre.schemastore.porters.mappingExporters.M3MappingExporter</mappingExporter>
 	  <mappingExporter>org.mitre.schemastore.porters.mappingExporters.UserMatchAnnotationDBExporter</mappingExporter>
 	  <mappingExporter>org.mitre.schemastore.porters.mappingExporters.RescueSuppliesExporter</mappingExporter>
