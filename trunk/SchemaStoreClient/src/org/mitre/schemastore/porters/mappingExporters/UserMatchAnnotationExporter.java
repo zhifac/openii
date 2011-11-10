@@ -95,14 +95,20 @@ public class UserMatchAnnotationExporter extends MappingExporter
 	private HashSet<String> getPaths(Integer elementID)
 	{
 		HashSet<String> paths = new HashSet<String>();
-		for(HierarchicalSchemaInfo schemaInfo : new HierarchicalSchemaInfo[]{sourceInfo,targetInfo})
+		
+		for(HierarchicalSchemaInfo schemaInfo : new HierarchicalSchemaInfo[]{sourceInfo,targetInfo}) {
+
 			for(ArrayList<SchemaElement> pathElements : schemaInfo.getPaths(elementID))
 			{
 				StringBuffer path = new StringBuffer("");
-				for(SchemaElement element : pathElements)
-					path.append("#"+element.getName());
+				for(SchemaElement element : pathElements) {
+					if (element != null) {
+						path.append("#"+element.getName());
+					}
+				}
 				paths.add(path.toString());
 			}
+		}
 		return paths;			
 	}	
 
@@ -204,7 +210,7 @@ public class UserMatchAnnotationExporter extends MappingExporter
 				System.out.println("targetInfo NULL");
 			}
 			/*System.out.println("sourceInfo="+sourceInfo.getClass().getCanonicalName());
-			
+
 			System.out.println("sourceInfo="+sourceInfo.getHierarchicalElements().size());
 			System.out.println("sourceInfo="+sourceInfo.getElementCount());*/
 			
@@ -217,9 +223,13 @@ public class UserMatchAnnotationExporter extends MappingExporter
    						+ mappingCell.getOutput());
    			}
    			
+   			String fID ="";
+   			if (mappingCell.getFunctionID()!=null) { fID =  mappingCell.getFunctionID().toString(); }
+   			
    			CompressedMatch newMatch = new CompressedMatch(element1,element2,mappingCell.getScore(),
-   					mappingCell.getAuthor(),mappingCell.getModificationDate(),mappingCell.getFunctionID().toString(),
-   					mappingCell.getNotes());  	
+   					mappingCell.getAuthor(),mappingCell.getModificationDate(),fID,
+   					mappingCell.getNotes());
+
 
    			// Add match to list of compressed matches
    			String key = getKey(newMatch);
@@ -247,8 +257,11 @@ public class UserMatchAnnotationExporter extends MappingExporter
    						+ mappingCell.getOutput());
    			}
    			
+   			String fID ="";
+   			if (mappingCell.getFunctionID()!=null) { fID =  mappingCell.getFunctionID().toString(); }
+
    			CompressedMatch newMatch = new CompressedMatch(element1,element2,mappingCell.getScore(),
-   					mappingCell.getAuthor(),mappingCell.getModificationDate(),mappingCell.getFunctionID().toString(),
+   					mappingCell.getAuthor(),mappingCell.getModificationDate(),fID,
    					mappingCell.getNotes());  	
 
    			// Add match to list of compressed matches
