@@ -19,14 +19,17 @@ import org.mitre.schemastore.porters.ImporterException;
 import org.mitre.schemastore.porters.ImporterException.ImporterExceptionType;
 import org.mitre.schemastore.porters.URIType;
 
+import com.healthmarketscience.jackcess.*;
+
 public class UserMatchAnnotationDBImporter extends MappingImporter
 {
 	/** Stores the connection to the DB from which the mapping is being transferred */
-	Connection conn = null;
+	//Connection conn = null;
+	com.healthmarketscience.jackcess.Database mdb = null;
 
 	/** Returns the importer name */
 	public String getName()
-		{ return "User Match Annotation DB Importer()"; }
+		{ return "User Match Annotation DB Importer"; }
 
 	/** Returns the importer description */
 	public String getDescription()
@@ -49,18 +52,21 @@ public class UserMatchAnnotationDBImporter extends MappingImporter
 	{
 		String filename = "";
 		try {
-			Class.forName("sun.jdbc.odbc.JdbcOdbcDriver");
+			//Class.forName("sun.jdbc.odbc.JdbcOdbcDriver");
 			
 			//uri comes in as file:/foo, needs to be foo
 			filename = uri.toString().substring(6);
 			
 			//uris replace spaces with %20s.  Fix that.
 			filename = filename.replaceAll("%20"," "); 
-			String database = "jdbc:odbc:Driver={Microsoft Access Driver (*.mdb)};DBQ=";
-            database+= filename + ";DriverID=22;READONLY=true}"; // add on to the end 
+			//String database = "jdbc:odbc:Driver={Microsoft Access Driver (*.mdb)};DBQ=";
+            //database+= filename + ";DriverID=22;READONLY=true}"; // add on to the end 
             // now we can get the connection from the DriverManager
-            conn = DriverManager.getConnection( database ,"",""); 
+            //conn = DriverManager.getConnection( database ,"",""); 
             //end file method
+            
+            java.io.File mdbFile = new java.io.File(filename);
+            mdb = com.healthmarketscience.jackcess.Database.open(mdbFile);
 			
 			System.out.println ("Database connection established."); 
 		}
@@ -77,12 +83,15 @@ public class UserMatchAnnotationDBImporter extends MappingImporter
 		try {
 			ArrayList<Schema> schemas = client.getSchemas();
 		
-			Statement stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery("select * from T_Schema");
+			Table t = mdb.getTable("T_Schema");
+	    	Cursor c = Cursor.createCursor(t);
+			//Statement stmt = conn.createStatement();
+			//ResultSet rs = stmt.execute Query("select * from T_Schema");
 			int sourceID=-1;  int sourceMatch=0; 
 		
-			rs.next();
-			String sourceName = rs.getString("schemaName");
+			//rs.next();
+			c.moveToNextRow();
+			String sourceName = (String) c.getCurrentRowValue(t.getColumn("schemaName"));
 			for (int i=0; i<schemas.size(); i++) {
 				if (sourceName.equals(schemas.get(i).getName())) {
 					sourceMatch++;
@@ -114,12 +123,15 @@ public class UserMatchAnnotationDBImporter extends MappingImporter
 	public ProjectSchema getTargetSchema() { 
 		try {
 			ArrayList<Schema> schemas = client.getSchemas();
-			Statement stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery("select * from T_Schema");
+			Table t = mdb.getTable("T_Schema");
+	    	Cursor c = Cursor.createCursor(t);
+			//Statement stmt = conn.createStatement();
+			//ResultSet rs = stmt.execute Query("select * from T_Schema");
 			int targetID=-1; int targetMatch=0;
 			
-			rs.next(); rs.next();
-			String targetName = rs.getString("schemaName");
+			//rs.next(); rs.next();
+			c.moveToNextRow(); c.moveToNextRow();
+			String targetName = (String) c.getCurrentRowValue(t.getColumn("schemaName"));
 			for (int i=0; i<schemas.size(); i++) {
 				if (targetName.equals(schemas.get(i).getName())) {
 					targetMatch++;
@@ -157,23 +169,23 @@ public class UserMatchAnnotationDBImporter extends MappingImporter
 		
 		// Retrieve mapping cells from database
 		try {
+			HierarchicalSchemaInfo hsi1 = new HierarchicalSchemaInfo(client.getSchemaInfo(source.getId()), null);
+			HierarchicalSchemaInfo hsi2 = new HierarchicalSchemaInfo(client.getSchemaInfo(target.getId()), null);	
 			
-			// Get the source and target info
-			HierarchicalSchemaInfo hsi1 = new HierarchicalSchemaInfo(client.getSchemaInfo(source.getId()), getSourceSchema().geetSchemaModel());
-			HierarchicalSchemaInfo hsi2 = new HierarchicalSchemaInfo(client.getSchemaInfo(target.getId()), getTargetSchema().geetSchemaModel());
+			Table t = mdb.getTable("T_Matchlink");
+	    	Cursor c = Cursor.createCursor(t);
+			//Statement stmt = conn.createStatement();
+			//ResultSet rs = stmt.execute Query("select * from T_Matchlink");
 			
-			Statement stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery("select * from T_Matchlink");
-						
-			while(rs.next())
+			while(c.moveToNextRow())
 			{
-				String notes = rs.getString("linkNote");
+				String notes = (String) c.getCurrentRowValue(t.getColumn("linkNote"));
 				
 				// Path is stored in DB as "#parent#child#child"
 				// Chop the first #
-				String nodePath1 = rs.getString("leftNodePath").substring(1);
-				String nodePath2 = rs.getString("rightNodePath").substring(1);
-				String author = rs.getString("linkAuthor");
+				String nodePath1 = ((String) c.getCurrentRowValue(t.getColumn("leftNodePath"))).substring(1);
+				String nodePath2 = ((String) c.getCurrentRowValue(t.getColumn("rightNodePath"))).substring(1);
+				String author = (String) c.getCurrentRowValue(t.getColumn("linkAuthor"));
 				
 				ArrayList<String> path1 = new ArrayList<String>(Arrays.asList(nodePath1.split("#")));
 				ArrayList<String> path2 = new ArrayList<String>(Arrays.asList(nodePath2.split("#")));
@@ -192,21 +204,18 @@ public class UserMatchAnnotationDBImporter extends MappingImporter
 					int element2 = pathIds2.get(0);
 			
 					MappingCell cell = MappingCell.createIdentityMappingCell(null, null, element1, element2, author, Calendar.getInstance().getTime(), notes);
-					cell.setScore(rs.getDouble("linkWeight"));
+					//cell.setScore(((Double) c.getCurrentRowValue(t.getColumn("linkWeight"))));
+					cell.setScore(Double.parseDouble(c.getCurrentRowValue(t.getColumn("linkWeight")).toString()));
 					mappingCells.add(cell);
 				}
 			}
-			stmt.close();
+			//stmt.close();
 		}
 		catch (Exception e)
 		{
 		    System.err.println ("Error reading DB");
 		    e.printStackTrace();
 		}
-		try {
-			conn.close();
-		} 
-		catch (SQLException e) { e.printStackTrace();	}
 		return mappingCells;
 	}
 }
