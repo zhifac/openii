@@ -243,8 +243,21 @@ public class HierarchicalSchemaInfo extends SchemaInfo
 	/** Returns the paths from the root element to the partially built path */
 	private ArrayList<ArrayList<SchemaElement>> getPaths(ArrayList<SchemaElement> partialPath)
 	{
-		ArrayList<ArrayList<SchemaElement>> paths = new ArrayList<ArrayList<SchemaElement>>();
-		ArrayList<SchemaElement> parentElements = getParentElements(partialPath.get(0).getId());
+ArrayList<ArrayList<SchemaElement>> paths = new ArrayList<ArrayList<SchemaElement>>();
+		
+		Integer pID = null;
+
+		if (partialPath != null) {
+
+			if (partialPath.get(0) != null) {
+				
+				if (partialPath.get(0).getId() != null) {
+					pID = partialPath.get(0).getId();
+				}
+			}
+		}
+
+		ArrayList<SchemaElement> parentElements = getParentElements(pID);
 
 		// Handles case where root element has been reached
 		if(parentElements.size()==0)
