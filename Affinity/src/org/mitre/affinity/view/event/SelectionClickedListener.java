@@ -16,6 +16,6 @@
 
 package org.mitre.affinity.view.event;
 
-public interface SelectionClickedListener {
-	public void selectionClicked(SelectionClickedEvent event);
+public interface SelectionClickedListener<K> {
+	public void selectionClicked(SelectionClickedEvent<K> event);
 }

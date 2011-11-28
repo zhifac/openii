@@ -16,27 +16,24 @@
 
 package org.mitre.affinity.view.event;
 
-import org.mitre.affinity.clusters.ClusterGroup;
+import org.mitre.affinity.model.clusters.ClusterGroup;
 
-public abstract class AffinityListenerAdapter implements AffinityListener {
+public abstract class AffinityListenerAdapter<K> implements AffinityListener<K> {
+	@Override
+	public void clusterObjectSelected(K objectID, Object source) {}
 
-	public void clusterDoubleClicked(ClusterGroup cluster, Object source) {
-	}
+	@Override
+	public void clusterObjectUnselected(K objectID, Object source) {}
 
-	public void clusterSelected(ClusterGroup cluster, Object source) {
-	}
+	@Override
+	public void clusterObjectDoubleClicked(K objectID, Object source) {}
 
-	public void clusterUnselected(ClusterGroup cluster, Object source) {
-	}
+	@Override
+	public void clusterSelected(ClusterGroup<K> cluster, Object source) {}
 
-	public void schemaDoubleClicked(Integer schemaID, Object source) {
-	}
+	@Override
+	public void clusterUnselected(ClusterGroup<K> cluster, Object source) {}
 
-	public void schemaSelected(Integer schemaID, Object source) {
-	}
-
-	public void schemaUnselected(Integer schemaID, Object source) {
-	}
-
-	
+	@Override
+	public void clusterDoubleClicked(ClusterGroup<K> cluster, Object source) {}
 }

@@ -16,22 +16,14 @@
 
 package org.mitre.affinity.util;
 
-import java.util.ArrayList;
-import java.util.List;
 
 import org.eclipse.swt.graphics.Point;
-import org.mitre.affinity.clusters.ClusterGroup;
-import org.mitre.affinity.clusters.ClusterStep;
-import org.mitre.affinity.clusters.ClustersContainer;
-import org.mitre.affinity.clusters.DistanceGrid;
-import org.mitre.affinity.clusters.SchemaPairValues.Transformation;
-import org.mitre.affinity.clusters.clusterers.HierarchicalClusterer;
 import org.mitre.affinity.model.Position;
-import org.mitre.affinity.model.SchemaDocument;
-import org.mitre.schemastore.model.Schema;
-
+import org.mitre.affinity.model.clusters.DistanceGrid;
+import org.mitre.affinity.model.clusters.ClusterObjectPairValues.Transformation;
 
 public class AffinityUtils {
+	
 	private AffinityUtils() {}
 	
 	/**
@@ -149,7 +141,7 @@ public class AffinityUtils {
 	 * @param dg
 	 * @return
 	 */
-	public static ClustersContainer createClusters(List<SchemaDocument> schemas, DistanceGrid dg) {	
+	/*public static ClustersContainer createClusters(List<SchemaDocument> schemas, DistanceGrid dg) {	
 		ArrayList<Integer> schemaIDs = new ArrayList<Integer>();		 
 		for(Schema s : schemas) {
 			schemaIDs.add(s.getId());			
@@ -157,7 +149,7 @@ public class AffinityUtils {
 		
 		HierarchicalClusterer hc = new HierarchicalClusterer();
 		return hc.generateClusters(schemaIDs, dg);
-	}
+	}*/
 	
 	/**
 	 * Given a set of schemas and a set of cluster steps generated using hierarchical clustering,
@@ -168,7 +160,7 @@ public class AffinityUtils {
 	 * @param cc - The clusters container
 	 * @return
 	 */
-	public static ClustersContainer removeDuplicateClusterGroups(List<Integer> schemaIds, ClustersContainer cc) {
+	/*public static ClustersContainer removeDuplicateClusterGroups(List<Integer> schemaIds, ClustersContainer cc) {
 		ClustersContainer newCC = new ClustersContainer(schemaIds, cc.getDistanceGrid());
 		
 		int currStep = 0;
@@ -182,7 +174,7 @@ public class AffinityUtils {
 		}
 		
 		return newCC;
-	}
+	}*/
 	
 	/**
 	 * Given a set of schemas and a set of cluster steps generated using hierarchical clustering,
@@ -193,7 +185,7 @@ public class AffinityUtils {
 	 * @param cc
 	 * @return
 	 */
-	public static ClustersContainer normalizeClusterSteps(List<Integer> schemaIds, ClustersContainer cc) {
+	/*public static ClustersContainer normalizeClusterSteps(List schemaIds, ClustersContainer cc) {
 		ClustersContainer newCC = new ClustersContainer(schemaIds, cc.getDistanceGrid());
 		
 		//newCC.addClusterStep(cc.getClusterStep(0));
@@ -240,12 +232,12 @@ public class AffinityUtils {
 		}
 		
 		return newCC;
-	}
+	}*/
 	
 	/**
 	 * @return a sample distance grid 
 	 */
-	public static DistanceGrid createSampleDistancesGrid() {
+	public static DistanceGrid<Integer> createSampleDistancesGrid() {
 		/* The sample grid to create:
 		      d1	  d2	  d3	  d4	  d5	  d6	  d7	  d8	  d9
 		d1	1.000								
@@ -259,7 +251,7 @@ public class AffinityUtils {
 		d9	0.183	0.224	0.200	0.169	0.316	0.671	0.516	0.894	1.000
 		*/
 		
-		DistanceGrid dg = new DistanceGrid();
+		DistanceGrid<Integer> dg = new DistanceGrid<Integer>();
 		
 		dg.set(9, 1, 0.183);
 		dg.set(9, 2, 0.224);
@@ -324,7 +316,7 @@ public class AffinityUtils {
 		return dg;
 	}
 	
-	public static DistanceGrid createSampleDistancesGrid2() {
+	public static DistanceGrid<Integer> createSampleDistancesGrid2() {
 		/* The sample grid to create:
 		      d1	  d2	  d3	  d4	  d5	  
 		d1	0.000								
@@ -334,7 +326,7 @@ public class AffinityUtils {
 		d5	4.000	3.000	2.000	1.000	0.000		
 		*/
 		
-		DistanceGrid dg = new DistanceGrid();
+		DistanceGrid<Integer> dg = new DistanceGrid<Integer>();
 		
 		dg.set(5, 1, 4.000);
 		dg.set(5, 2, 3.000);

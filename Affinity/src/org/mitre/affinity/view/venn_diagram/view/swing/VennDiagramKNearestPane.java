@@ -19,7 +19,6 @@ package org.mitre.affinity.view.venn_diagram.view.swing;
 import java.awt.AlphaComposite;
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
@@ -34,27 +33,16 @@ import java.awt.event.MouseMotionListener;
 import java.awt.geom.Rectangle2D;
 
 import java.text.DecimalFormat;
-import java.util.Collection;
 
 import javax.swing.BorderFactory;
-import javax.swing.Box;
 import javax.swing.JDialog;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JSlider;
-import javax.swing.JTable;
 import javax.swing.SwingUtilities;
 import javax.swing.event.AncestorEvent;
 import javax.swing.event.AncestorListener;
 
-import org.eclipse.swt.SWT;
 import org.mitre.affinity.view.venn_diagram.model.VennDiagramSets;
-import org.mitre.affinity.view.venn_diagram.model.VennDiagramSets.MatchedSchemaElements;
-
-import org.mitre.schemastore.model.Schema;
-import org.mitre.schemastore.model.SchemaElement;
-import org.mitre.schemastore.model.schemaInfo.SchemaInfo;
 
 /**
  * Venn diagram pane contains a Venn diagram view of the set relationship between matched elements in two schemas
@@ -128,7 +116,7 @@ public class VennDiagramKNearestPane extends JPanel implements MinMaxSliderListe
 		private int maxSizeOfAllNschemas;
 		
 		/** Indicates which set mouse is currently over (1 = schema1, 2 = schema2, 3 = intersection) */
-		private int mouseOverSet = -1;
+		//private int mouseOverSet = -1;
 		
 		/** Whether or not the pop-up showing set elements is displayed as the user mouses over sets
 		 * (default is false) */
@@ -136,10 +124,10 @@ public class VennDiagramKNearestPane extends JPanel implements MinMaxSliderListe
 		
 		/** Position to display the pop-up dialog when the user mouses over a set, 
 		 * one of TOP, CENTER, or BOTTOM (default is CENTER) */
-		private MouseOverSetsPosition mouseOverSetsPosition;
+		//private MouseOverSetsPosition mouseOverSetsPosition;
 
 		//if set to 1 then this is a venn diagram of elements, if 2 then it shows entities
-		private int entityOrElement;
+		//private int entityOrElement;
 		
 		private String viewType;
 		
@@ -153,10 +141,10 @@ public class VennDiagramKNearestPane extends JPanel implements MinMaxSliderListe
 			this.viewType = "Venn Diagram";
 			this.maxSizeOfAllNschemas = maxSchema2Size;
 			this.ordinalPosition = ordinalPos;
-			this.entityOrElement = sets.getEntityOrElementVal();
+			//this.entityOrElement = sets.getEntityOrElementVal();
 			this.sets = sets;
 			this.mouseOverSetsEnabled = enableMouseOverSets;
-			this.mouseOverSetsPosition = mouseOverSetsPosition;
+			//this.mouseOverSetsPosition = mouseOverSetsPosition;
 			this.circle1 = new Circle(0, 0, 1);
 			this.circle2 = new Circle(0, 0, 1);
 			this.lineColors = new Color[2];		
@@ -289,13 +277,13 @@ public class VennDiagramKNearestPane extends JPanel implements MinMaxSliderListe
 
 			g2d.setFont(getFont());
 			FontMetrics fontMetrics = g2d.getFontMetrics();
-			int fontHeight = fontMetrics.getAscent();
+			//int fontHeight = fontMetrics.getAscent();
 			
 			setCircleDiameters(this.viewType.equals("Venn Diagram"));
 
 			
-			int numElements1 = sets.getSchema1AllElements().size();
-			int numElements2 = sets.getSchema2AllElements().size();
+			//int numElements1 = sets.getSchema1AllElements().size();
+			//int numElements2 = sets.getSchema2AllElements().size();
 
 			//adding in the percentage overlap
 			double uniA = sets.getSchema1UniqueElements().size();
@@ -304,17 +292,14 @@ public class VennDiagramKNearestPane extends JPanel implements MinMaxSliderListe
 			double totalB = sets.getSchema2AllElements().size();
 			
 			double percentUniqueA = (uniA/totalA)*100;
-			double percentUniqueB = (uniB/totalB)*100;
+			//double percentUniqueB = (uniB/totalB)*100;
 			
-			double percentIntersectA = (totalA-uniA)/totalA;
-			
-			
+			double percentIntersectA = (totalA-uniA)/totalA;			
 			
 			//Position and render the circles
 			int yPos = bounds.height/2;
 			circle1.y = yPos;
-			circle2.y = yPos;
-			
+			circle2.y = yPos;		
 			
 			if(this.viewType.equals("Venn Diagram")){
 				//draw the Venn Diagrams View		
@@ -389,15 +374,14 @@ public class VennDiagramKNearestPane extends JPanel implements MinMaxSliderListe
 				g2d.drawString(intersectA, (int)(leftSideCircleB + 4), circle1.y);
 
 			}else{
-				//DRAW BARS
-				
+				//DRAW BARS				
 				int y = bounds.height/2;
 				int barHeight = 20;
 				int refBarBottom = y - 2 - barHeight;
 				int nonrefBarBottom = y + 2;
 				
-				int totalCombosize = (int) (circle1.diameter + circle2.diameter);
-				int remainder = (bounds.width - totalCombosize)/2;
+				//int totalCombosize = (int) (circle1.diameter + circle2.diameter);
+				//int remainder = (bounds.width - totalCombosize)/2;
 				//int refBarLeft = remainder;
 				int refBarLeft = 2;
 				
@@ -478,12 +462,6 @@ public class VennDiagramKNearestPane extends JPanel implements MinMaxSliderListe
 				g2d.drawString(uniBPercentString, startXnonref, (int) (nonrefBarBottom + barHeight + intersectBStringSize.getHeight()));
 				
 			}
-			
-
-			
-	
-			
-	
 
 			//Label circles
 			g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.f)); 
@@ -491,7 +469,6 @@ public class VennDiagramKNearestPane extends JPanel implements MinMaxSliderListe
 			g2d.setColor(Color.BLACK);
 			Font fontSchemaNames = new Font(getFont().getName(), Font.PLAIN, 12);
 			g2d.setFont(fontSchemaNames);
-	
 			
 			String name = sets.getSchema2().getName();
 			Rectangle2D str2Size = fontMetrics.getStringBounds(name, g2d);	
@@ -506,9 +483,8 @@ public class VennDiagramKNearestPane extends JPanel implements MinMaxSliderListe
 				}
 				g2d.drawString(name, xPosName, 12);
 			}			
-			
 
-			double height = 0;
+			//double height = 0;
 /*			if(ordinalPosition != -1){
 				String pos = "Order: " + this.ordinalPosition;
 				Rectangle2D strSize = fontMetrics.getStringBounds(pos, g2d);	
@@ -536,15 +512,12 @@ public class VennDiagramKNearestPane extends JPanel implements MinMaxSliderListe
 			    	metric = "[" + this.ordinalPosition + "] Morse: " + metric;
 			    }
 
-
-			Rectangle2D strSize = fontMetrics.getStringBounds(metric, g2d);	
+			//Rectangle2D strSize = fontMetrics.getStringBounds(metric, g2d);	
 			float xPosForJ = 0;
 			float yPosForJ = (float)(bounds.height);
 			g2d.setColor(Color.BLACK);
 			g2d.setFont(new Font(getFont().getName(), Font.PLAIN, 12));
-			g2d.drawString(metric, xPosForJ, yPosForJ);
-			
-		
+			g2d.drawString(metric, xPosForJ, yPosForJ);		
 		}
 
 		private static JDialog dialog = null;

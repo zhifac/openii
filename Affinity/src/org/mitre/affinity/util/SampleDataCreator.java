@@ -24,11 +24,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.mitre.affinity.clusters.DistanceGrid;
-import org.mitre.affinity.clusters.distanceFunctions.DistanceFunction;
+import org.mitre.affinity.algorithms.distance_functions.DistanceFunction;
 import org.mitre.affinity.model.Position;
 import org.mitre.affinity.model.PositionGrid;
-import org.mitre.affinity.model.SchemaDocument;
+import org.mitre.affinity.model.clusters.DistanceGrid;
+import org.mitre.affinity.model.schemas.SchemaDocument;
 //import org.mitre.affinity.model.AffinitySchemaManager;
 
 //import org.mitre.schemastore.porters.schemaImporters.SchemaImporterException;
@@ -49,13 +49,12 @@ public class SampleDataCreator {
 	 * @return
 	 * @throws IOException
 	 */
-	@SuppressWarnings("unchecked")
 	public static SchemasAndPositionGrid parsePositionGridCSVFile(String fileName) throws IOException {
 		CSVReader reader = new CSVReader(new FileReader(fileName));		 
 	    List<String []> data = (List<String []>)reader.readAll();
 		
 	    List<Schema> schemas = new ArrayList<Schema>();
-	    PositionGrid pg = new PositionGrid(2);
+	    PositionGrid<Integer> pg = new PositionGrid<Integer>(2);
 	    
 	    int currRow = 0;	    
 	    for(String[] row : data) {
@@ -73,7 +72,7 @@ public class SampleDataCreator {
 	}
 	
 	public static SchemasAndDistanceGrid loadSchemas(String filePath,
-			List<Schema> schemas, DistanceFunction distanceFunction) {		
+			List<Schema> schemas, DistanceFunction<Integer, Schema> distanceFunction) {		
 		
 		XSDImporter xsdImporter = new XSDImporter();		
 		
@@ -106,13 +105,12 @@ public class SampleDataCreator {
 	 * @return
 	 * @throws IOException
 	 */
-	@SuppressWarnings("unchecked")
 	public static SchemasAndDistanceGrid parseDistanceGridCSVFile(String fileName) throws IOException {
 		CSVReader reader = new CSVReader(new FileReader(fileName));
 	    List<String []> data = (List<String []>)reader.readAll();
 		
 	    List<Schema> schemas = new ArrayList<Schema>();
-	    DistanceGrid dg = new DistanceGrid();
+	    DistanceGrid<Integer> dg = new DistanceGrid<Integer>();
 	    Map<Integer, Integer> idMap = new HashMap<Integer, Integer>();
 	    int currRow = 0;
 		for(String[] row : data) {
@@ -148,9 +146,9 @@ public class SampleDataCreator {
 	
 	public static class SchemasAndDistanceGrid {
 		public List<Schema> schemas;
-		public DistanceGrid dg;
+		public DistanceGrid<Integer> dg;
 		
-		public SchemasAndDistanceGrid(List<Schema> schemas, DistanceGrid dg) {
+		public SchemasAndDistanceGrid(List<Schema> schemas, DistanceGrid<Integer> dg) {
 			this.schemas = schemas;
 			this.dg = dg;
 		}
@@ -158,9 +156,9 @@ public class SampleDataCreator {
 	
 	public static class SchemasAndPositionGrid {
 		public List<Schema> schemas;
-		public PositionGrid pg;
+		public PositionGrid<Integer> pg;
 		
-		public SchemasAndPositionGrid(List<Schema> schemas, PositionGrid pg) {
+		public SchemasAndPositionGrid(List<Schema> schemas, PositionGrid<Integer> pg) {
 			this.schemas = schemas;
 			this.pg = pg;
 		}

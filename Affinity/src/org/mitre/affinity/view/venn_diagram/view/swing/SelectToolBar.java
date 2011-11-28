@@ -16,8 +16,6 @@
 
 package org.mitre.affinity.view.venn_diagram.view.swing;
 
-import java.util.List;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -26,8 +24,6 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
-import org.mitre.schemastore.model.Schema;
-
 
 public class SelectToolBar extends Composite{
 	private Composite toolBar;
@@ -59,9 +55,8 @@ public class SelectToolBar extends Composite{
 		searchField.setMessage("Schema Name");
 
 
-		searchField.addSelectionListener(new SelectionAdapter(){
-			public void widgetDefaultSelected(SelectionEvent e){
-				String searchingForSchema = searchField.getText();
+		searchField.addSelectionListener(new SelectionAdapter() {
+			public void widgetDefaultSelected(SelectionEvent e) {			
 				//System.out.println("find: " + searchField.getText());
 
 				//boolean found = false;

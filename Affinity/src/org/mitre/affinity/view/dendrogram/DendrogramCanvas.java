@@ -41,22 +41,17 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.ScrollBar;
-import org.mitre.affinity.clusters.ClusterGroup;
-import org.mitre.affinity.clusters.ClusterStep;
-import org.mitre.affinity.clusters.ClustersContainer;
-import org.mitre.affinity.util.SWTUtils;
-import org.mitre.affinity.view.craigrogram.SchemaCluster2DViewToolBar;
+import org.mitre.affinity.model.clusters.ClusterGroup;
+import org.mitre.affinity.model.clusters.ClusterStep;
+import org.mitre.affinity.model.clusters.ClustersContainer;
+import org.mitre.affinity.view.dendrogram.model.ClusterObjectDendrogramNode;
 import org.mitre.affinity.view.event.ClusterDistanceChangeEvent;
 import org.mitre.affinity.view.event.ClusterDistanceChangeListener;
 import org.mitre.affinity.view.event.SelectionChangedEvent;
 import org.mitre.affinity.view.event.SelectionChangedListener;
 import org.mitre.affinity.view.event.SelectionClickedEvent;
 import org.mitre.affinity.view.event.SelectionClickedListener;
-import org.mitre.schemastore.model.Schema;
 import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.layout.GridData;
-
-import edu.iu.iv.visualization.dendrogram.model.DendrogramNode;
 
 /**
  * Renders a dendrogram from a given set of clusters. 
@@ -64,28 +59,68 @@ import edu.iu.iv.visualization.dendrogram.model.DendrogramNode;
  * @author BETHYOST
  *
  */
-public class DendrogramCanvas extends Canvas implements ClusterDistanceChangeListener {
-	private final ClustersContainer cc;
+public class DendrogramCanvas<K, V> extends Canvas implements ClusterDistanceChangeListener {
 	
-
-	/** Maps schema id to its schema gui */
-	private Map<Integer, DendrogramSchemaGUI> schemas;	
-	
-	private DendrogramNode[] leaves; //this provides the schemas in the order they appear at the bottom of the dendrogram
 	private Composite parent;
 	
-	//schemaNumber followed by X location
-	protected Map<Integer, Integer> schemaXLocationsMap;
-	protected Map<Integer, Integer> schemaYLocationsMap;
-	protected Map<Integer, ClusterGroup> newSchemasToClusterGroups;
-	protected Map<Integer, Integer> fromNewSchemasToClustertoSchemaID;
+	private final ClustersContainer<K> cc;	
+
+	/** Maps original cluster object ID to its gui */
+	private Map<K, DendrogramClusterObjectGUI<K, V>> clusterObjects;	
+	
+	private ClusterObjectDendrogramNode<K>[] leaves; //this provides the cluster objects in the order they appear at the bottom of the dendrogram	
+	
+	/** Maps translated cluster object ID to its x location */
+	protected Map<Integer, Integer> clusterObjectXLocationsMap;
+	
+	/** Maps translated cluster object ID to its y location */
+	protected Map<Integer, Integer> clusterObjectYLocationsMap;
+	
+	/** Maps translated cluster object ID to its cluster group */
+	protected Map<Integer, ClusterGroup<K>> newClusterObjectsToClusterGroups;
+	
+	/** Maps original cluster object IDs to translated object IDs */
+	protected Map<K, Integer> fromNewClusterObjectsToClustertoObjectID;
+	
+	/** Maps translated cluster object IDs to translated object IDs for the first child in a cluster */
 	protected Map<Integer, Integer> firstChild;
+	
+	/** Maps translated cluster object IDs to translated object IDs for the second child in a cluster */
 	protected Map<Integer, Integer> secondChild;
 	
-	private int maxSchemaNameLength;
+	private int maxLabelLength;
+	
 	private boolean currentColorBlue;
+	
 	private boolean altTreeColors;
-	private boolean shadeBackground;
+	
+	private boolean shadeBackground;	
+	
+	/** We render the dendrogram on an image, and the image is scrolled */
+	private Image dendrogramImage;
+	
+	/** The highlight color */
+	private Color highlightColor;
+	
+	/** Listeners that have registered to received SelectionChangedEvents from this component */
+	private List<SelectionChangedListener<K>> selectionChangedListeners;
+	
+	/** Listeners that have registered to received SelectionClickedEvents from this component */
+	private List<SelectionClickedListener<K>> selectionClickedListeners;
+	
+	/** The currently selected cluster objects */	
+	private Collection<K> selectedClusterObjects;
+	
+	/** The currently selected cluster */
+	private ClusterGroup<K> selectedCluster = null;	
+	
+	/** Cached list of the bounding rectangles for all clusters to enable mouse hit detection  */
+	private Map<ClusterGroup<K>, Rectangle> clusterBounds;
+	
+	/** Font used to render a cluster object name when the cluster object is selected */
+	private Font selectedFont = new Font(Display.getDefault(), new FontData("Times", 18, SWT.ITALIC));
+	
+	private Point origin;
 	
 	Color white;
 	Color black;
@@ -99,59 +134,21 @@ public class DendrogramCanvas extends Canvas implements ClusterDistanceChangeLis
 	private int canvasWidth;
 	private int canvasHeight;
 	
-	/** We render the dendrogram on an image, and the image is scrolled */
-	private Image dendrogramImage;
-	
-	/** The highlight color */
-	private Color highlightColor;
-	
-	//private List<AffinityListener> affinityEventListeners;
-	
-	/** Listeners that have registered to received SelectionChangedEvents from this component */
-	private List<SelectionChangedListener> selectionChangedListeners;
-	
-	/** Listeners that have registered to received SelectionClickedEvents from this component */
-	private List<SelectionClickedListener> selectionClickedListeners;
-	
-	/** The currently selected schemas */	
-	//private Schema highlightedSchema = null;
-	private Collection<Integer> selectedSchemas;
-	
-	/** The currently selected cluster */
-	private ClusterGroup selectedCluster = null;
-	
-	/** Cached list of the bounding rectangles for all schema labels to enable mouse hit detection  */
-	//private Map<Integer, Rectangle> schemaBounds;
-	
-	/** Cached list of the bounding rectangles for all clusters to enable mouse hit detection  */
-	private Map<ClusterGroup, Rectangle> clusterBounds;
-	
-	/** Font used to render a schema name when the schema is selected */
-	//private Font selectedFont = SWTUtils.getFont(SWTUtils.NORMAL_BOLD_FONT);
-	//private Font selectedFont = SWTUtils.getFont(SWTUtils.LARGE_BOLD_FONT);
-	private Font selectedFont = new Font(Display.getDefault(), new FontData("Times", 18, SWT.ITALIC));
-	
-	private Point origin;
-	
 	//a DendroCanvas expects a ClustersContainer that has duplicate clusters removed
-	public DendrogramCanvas(Composite par, int style, ClustersContainer clustc, List<Schema> schemas, DendrogramNode[] leafs) {
+	public DendrogramCanvas(Composite par, int style, ClustersContainer<K> clustc, 
+			List<DendrogramClusterObjectGUI<K, V>> clusterObjects, ClusterObjectDendrogramNode<K>[] leafs) {
 		super(par, style | SWT.V_SCROLL);	
 		
-		//this.affinityEventListeners = new LinkedList<AffinityListener>();
-		this.selectedSchemas = new LinkedList<Integer>();		
-		this.selectionChangedListeners = new LinkedList<SelectionChangedListener>();
-		this.selectionClickedListeners = new LinkedList<SelectionClickedListener>();	
-		this.clusterBounds = new HashMap<ClusterGroup, Rectangle>();
-		/*this.clusterBounds = new TreeMap<ClusterGroup, Rectangle>(new Comparator<ClusterGroup>() {
-			public int compare(ClusterGroup arg0, ClusterGroup arg1) {				
-				return (arg0.getNumSchemas() - arg1.getNumSchemas());
-			}			
-		});*/
+		this.selectedClusterObjects = new LinkedList<K>();		
+		this.selectionChangedListeners = new LinkedList<SelectionChangedListener<K>>();
+		this.selectionClickedListeners = new LinkedList<SelectionClickedListener<K>>();	
+		this.clusterBounds = new HashMap<ClusterGroup<K>, Rectangle>();
 		parent = par;
 		cc = clustc;
-		this.schemas = new HashMap<Integer, DendrogramSchemaGUI>();
-		for(Schema schema : schemas) 
-			this.schemas.put(schema.getId(), new DendrogramSchemaGUI(schema));
+		this.clusterObjects = new HashMap<K, DendrogramClusterObjectGUI<K, V>>();
+		for(DendrogramClusterObjectGUI<K, V> clusterObject : clusterObjects) { 
+			this.clusterObjects.put(clusterObject.getObjectID(), clusterObject);
+		}
 		leaves = leafs;
 		
 		//starting value is set by default to 1.0 and 0.0
@@ -311,39 +308,38 @@ public class DendrogramCanvas extends Canvas implements ClusterDistanceChangeLis
 	}
 	
 	/**
-	 * Select a single schema.  Any previously selected schemas are unselected.
+	 * Select a single cluster object.  Any previously selected cluster objects are unselected.
 	 * 
-	 * @param schemaID
-	 */
-	public void setSelectedSchema(Integer schemaID) {
-		//Unselect any previously selected schemas 
-		//TO DO, when this is called, AUTOSCROLL
-		unselectAllSchemas();
+	 * @param objectID
+	 */	
+	public void setSelectedClusterObject(K objectID) {
+		//Unselect any previously selected cluster objects
+		//TODO: when this is called, AUTOSCROLL
+		unselectAllClusterObjects();
 		
-		if(schemaID != null) {
-			DendrogramSchemaGUI s =  schemas.get(schemaID);
-			if(s != null) {
-				s.setSelected(true);
-				selectedSchemas.add(schemaID);
+		if(objectID != null) {
+			DendrogramClusterObjectGUI<K, V> clusterObject =  clusterObjects.get(objectID);
+			if(clusterObject != null) {
+				clusterObject.setSelected(true);
+				selectedClusterObjects.add(objectID);
 			}
 		}
 	}
 	
 	/**
-	 * Select a group of schemas.  Any previously selected schemas are unselected.
+	 * Select a group of cluster objects.  Any previously selected cluster objects are unselected.
 	 * 
-	 * @param schemaIDs
+	 * @param objectIDs
 	 */
-	public void setSelectedSchemas(Collection<Integer> schemaIDs) {
-		//Unselect any previusly selected schemas
-		unselectAllSchemas();
-		
-		if(schemaIDs != null) {
-			for(Integer schemaID : schemaIDs) {
-				DendrogramSchemaGUI s =  schemas.get(schemaID);
-				if(s != null) {
-					s.setSelected(true);
-					selectedSchemas.add(schemaID);
+	public void setSelectedClusterObjects(Collection<K> objectIDs) {
+		//Unselect any previously selected cluster objects
+		unselectAllClusterObjects();		
+		if(objectIDs != null) {
+			for(K objectID : objectIDs) {
+				DendrogramClusterObjectGUI<K, V> clusterObject =  clusterObjects.get(objectID);
+				if(clusterObject != null) {
+					clusterObject.setSelected(true);
+					selectedClusterObjects.add(objectID);
 				}
 			}
 		}
@@ -354,111 +350,61 @@ public class DendrogramCanvas extends Canvas implements ClusterDistanceChangeLis
 	 * 
 	 * @param cluster
 	 */
-	public void setSelectedCluster(ClusterGroup cluster) {		
+	public void setSelectedCluster(ClusterGroup<K> cluster) {		
 		this.unselectAllClusters();		
 		this.selectedCluster = cluster;				
 	}
 	
 	/**
-	 * Unselect all schemas 
+	 * Unselect all cluster objects. 
 	 */
-	public void unselectAllSchemas() {
-		for(Integer schemaID : selectedSchemas) {
-			DendrogramSchemaGUI s = schemas.get(schemaID);
-			if(s != null)
-				s.setSelected(false);
+	public void unselectAllClusterObjects() {
+		for(K objectID : selectedClusterObjects) {
+			DendrogramClusterObjectGUI<K, V> clusterObject = clusterObjects.get(objectID);
+			if(clusterObject != null)
+				clusterObject.setSelected(false);
 		}
-		selectedSchemas.clear();
+		selectedClusterObjects.clear();
 	}
 	
 	/**
-	 * Unselect all clusters
+	 * Unselect all clusters.
 	 */
 	public void unselectAllClusters() {
 		this.selectedCluster = null;
 	}
 	
 	/**
-	 * Unselect all schemas and clusters
+	 * Unselect all cluster objects and clusters.
 	 */
-	public void unselectAllSchemasAndClusters() {
-		unselectAllSchemas();
+	public void unselectAllClusterObjectsAndClusters() {
+		unselectAllClusterObjects();
 		unselectAllClusters();
 	}
 	
-	//this method takes a cluster group and finds the ID's of it's children
-	//the ids it finds are the ones specific to this class used in the schemaXLocationsMap etc.
-	//this list will always contain exactly two Integers, one for each child in this binary tree
-	//the order does not indicate anything
-	public ArrayList<Integer> getChildrenIDs(ClusterGroup cg, int numOfOrig){
-		ArrayList<Integer> schemaIntegers = new ArrayList<Integer>();
-		//int clusA = -1;
-		//int clusB = -1;
-	/*	
-		if(cg == null) {
-			System.err.println("Error in DendrogramCanvas.getChildrenIDs(): encountered null ClusterGroup");
-			//return null;
-		}
-		
-		
-		
-		//this line is where the problem occurred
-		//System.out.println("size: " + cg.getNumSchemas());
-		ClusterGroup temp = null;
-		for(int i = numOfOrig-1; i>0; i--){
-		//for(Map.Entry<Integer, ClusterGroup> cgEntry : newSchemasToClusterGroups.entrySet()) {
-			ClusterGroup currCG = newSchemasToClusterGroups.get(i);
-			//ClusterGroup currCG = cgEntry.getValue();
-			//System.out.println(i + " is: " + currCG);
-			if(cg.contains(currCG)){
-				//System.out.println(cg + " contains " + currCG);
-				clusA = i;
-				//clusA = cgEntry.getKey();
-				
-				schemaIntegers.add(clusA);
-				Collection<Integer> origIDs = cg.getSchemaIDs();
-				temp = new ClusterGroup(origIDs);
-				temp.removeSchemas(currCG.getSchemaIDs());
-				break;
-			}
-		}
-		
-		//for(int i = newSchemasToClusterGroups.size(); i>0; i--){
-		for(int i = numOfOrig-1; i>0; i--){
-		//for(Map.Entry<Integer, ClusterGroup> cgEntry : newSchemasToClusterGroups.entrySet()) {
-			ClusterGroup currCG = newSchemasToClusterGroups.get(i);
-			//ClusterGroup currCG = cgEntry.getValue();
-			//System.out.println(i + " is: " + currCG);
-			if(currCG == null){
-				System.err.println("null cluster group");
-			}else if(temp.contains(currCG)){
-				//System.out.println(temp + " contains " + currCG);
-				clusB = i;
-				//clusB = cgEntry.getKey();
-				schemaIntegers.add(clusB);
-				break;
-			}
-		}	
-		
-		*/
-		schemaIntegers.add(firstChild.get(numOfOrig));
-		schemaIntegers.add(secondChild.get(numOfOrig));
-		return schemaIntegers;
+	//This method takes a cluster group and finds the ID's of it's children
+	//The ids it finds are the ones specific to this class used in the clusterObjectXLocationsMap etc.
+	//This list will always contain exactly two Integers, one for each child in this binary tree
+	//The order does not indicate anything
+	public ArrayList<Integer> getChildrenIDs(ClusterGroup<K> cg, Integer objectID) {	
+		ArrayList<Integer> objectIDs = new ArrayList<Integer>();
+		objectIDs.add(firstChild.get(objectID));
+		objectIDs.add(secondChild.get(objectID));
+		return objectIDs;
 	}
 	
-	//given a schemaID, draw in a given color all the way down that tree
-	public void colorTree(int numOfOrig, GC gcDendrogram, Color color, boolean useHighlightColor){				
+	//given a translated cluster object ID, draw in a given color all the way down that tree
+	public void colorTree(Integer objectID, GC gcDendrogram, Color color, boolean useHighlightColor) {		
 		//get children		
-		//if there are at least 2 schemas
+		//if there are at least 2 cluster objects
 		//if there is only one then you've hit the bottom of the tree and do nothing
-		ClusterGroup testClusGroupSize = newSchemasToClusterGroups.get(numOfOrig);
-		testClusGroupSize.setDendroColor(color);
-		//double cgVal = testClusGroupSize.getDistance();		
+		ClusterGroup<K> testClusGroupSize = newClusterObjectsToClusterGroups.get(objectID);
+		testClusGroupSize.setDendroColor(color);		
 		
 		//Change the color to the highlight color if this is the highlighted cluster
-		if(testClusGroupSize == selectedCluster)
+		if(testClusGroupSize == selectedCluster) {
 			useHighlightColor = true;
-			//color = highlightColor;
+		}
 		
 		//color children's connector		
 		gcDendrogram.setForeground(color);
@@ -467,42 +413,31 @@ public class DendrogramCanvas extends Canvas implements ClusterDistanceChangeLis
 		
 		Font normalFont = getFont();
 		
-		int currXVal = schemaXLocationsMap.get(numOfOrig);
-		int sizeOrig = testClusGroupSize.getNumSchemas();
-			if(sizeOrig>1){
-				ArrayList<Integer> children = getChildrenIDs(newSchemasToClusterGroups.get(numOfOrig), numOfOrig);
+		int currXVal = clusterObjectXLocationsMap.get(objectID);
+		int sizeOrig = testClusGroupSize.getNumClusterObjects();
+			if(sizeOrig > 1) {
+				ArrayList<Integer> children = getChildrenIDs(newClusterObjectsToClusterGroups.get(objectID), objectID);
 				Iterator<Integer> iter = children.iterator();
-				Integer aID = (Integer)iter.next();
-				Integer bID = (Integer)iter.next();
+				Integer aID = iter.next();
+				Integer bID = iter.next();
 			
 				//if portrait then draw the connector between children this way
-				Integer aX = schemaXLocationsMap.get(aID);
-				Integer aY = schemaYLocationsMap.get(aID);
-				Integer bX = schemaXLocationsMap.get(bID);
-				Integer bY = schemaYLocationsMap.get(bID);
+				Integer aX = clusterObjectXLocationsMap.get(aID);
+				Integer aY = clusterObjectYLocationsMap.get(aID);
+				Integer bX = clusterObjectXLocationsMap.get(bID);
+				Integer bY = clusterObjectYLocationsMap.get(bID);
 				
-				//if(shadeBackground) {					
 				int rectY;
 				int rectHeight;
 
-				if(aY<bY){
+				if(aY < bY) {
 					rectY = aY;
 					rectHeight = bY-aY;
-				}else{
+				} else {
 					rectY = bY;
 					rectHeight = aY-bY;
-				}				
-
-				/*if(cgVal <= 0.25){
-						gcDendrogram.setBackground(blue5);
-					}else if(cgVal <= 0.5){
-						gcDendrogram.setBackground(blue4);
-					}else if(cgVal <= 0.75){
-						gcDendrogram.setBackground(blue3);	
-					}else{
-						gcDendrogram.setBackground(blue2);
-					}*/
-
+				}
+				
 				//gcDendrogram.setAlpha(128);
 				if(shadeBackground) {
 					gcDendrogram.setBackground(lightGray);	
@@ -521,14 +456,13 @@ public class DendrogramCanvas extends Canvas implements ClusterDistanceChangeLis
 					clusterBounds.put(testClusGroupSize, 
 							new Rectangle(0, rectY-1, currXVal, rectHeight+2));
 				}
-				//}
 				
-				if(useHighlightColor)
-					gcDendrogram.setForeground(highlightColor);				
+				if(useHighlightColor) {
+					gcDendrogram.setForeground(highlightColor);
+				}
 				gcDendrogram.drawLine(aX, aY, currXVal, aY);
 				gcDendrogram.drawLine(bX, bY, currXVal, bY);
-				gcDendrogram.drawLine(currXVal, aY, currXVal, bY);
-				
+				gcDendrogram.drawLine(currXVal, aY, currXVal, bY);				
 
 				//drawing the tick marks for each cluster
 				gcDendrogram.setForeground(black);
@@ -537,36 +471,32 @@ public class DendrogramCanvas extends Canvas implements ClusterDistanceChangeLis
 				gcDendrogram.drawLine(currXVal, 0, currXVal, 6);
 				gcDendrogram.setForeground(color);
 				gcDendrogram.setLineWidth(3);
-				gcDendrogram.setAlpha(255);
-			
+				gcDendrogram.setAlpha(255);			
 				
 				//if the size of the left child isn't 1 then color everything below it
-				ClusterGroup aClusGroup = newSchemasToClusterGroups.get(aID);
-				int sizeA = aClusGroup.getNumSchemas();
+				ClusterGroup<K> aClusGroup = newClusterObjectsToClusterGroups.get(aID);
+				int sizeA = aClusGroup.getNumClusterObjects();
 				if(sizeA > 1) {
 					colorTree(aID, gcDendrogram, color, useHighlightColor);
 				}
 				else {
-					//Integer actualID = fromNewSchemasToClustertoSchemaID.get(aID);
-					//System.out.println("translation: " + fromNewSchemasToClustertoSchemaID);
-					//String schemaName = schemas.get(actualID).toString();
-					ClusterGroup schemaIDval = newSchemasToClusterGroups.get(aID);
-					Iterator<Integer> schemaVal = schemaIDval.iterator();
-					Integer clusterId = (Integer)schemaVal.next();
-					//System.out.println("D: trying to get aID: " + aID + " from " + clusterId);
-					DendrogramSchemaGUI schema = schemas.get(clusterId);
-					String schemaName = schema.schema.getName();
+					ClusterGroup<K> clusterObjectIDval = newClusterObjectsToClusterGroups.get(aID);
+					Iterator<K> clusterObjectVal = clusterObjectIDval.iterator();
+					K clusterId = clusterObjectVal.next();
+					DendrogramClusterObjectGUI<K, V> clusterObject = clusterObjects.get(clusterId);
+					String name = clusterObject.getLabel();
 					
-					int nameLength = schemaName.length();
+					int nameLength = name.length();
 					int xOffset = 0;
-					if(nameLength<maxSchemaNameLength){
-						xOffset = maxSchemaNameLength-nameLength;
+					if(nameLength<maxLabelLength){
+						xOffset = maxLabelLength - nameLength;
 					}					
-					//Render the schema name 
-					Integer yName = schemaYLocationsMap.get(aID)-6;
+					
+					//Render the cluster object name label 
+					Integer yName = clusterObjectYLocationsMap.get(aID) - 6;
 					gcDendrogram.setBackground(lightGray);		
 					
-					if(schema.isSelected()) {
+					if(clusterObject.isSelected()) {
 						//gcDendrogram.setForeground(highlightColor);
 						gcDendrogram.setForeground(black);
 						gcDendrogram.setFont(selectedFont);
@@ -575,46 +505,42 @@ public class DendrogramCanvas extends Canvas implements ClusterDistanceChangeLis
 						gcDendrogram.setForeground(black);
 						//gcDendrogram.setFont(normalFont);
 					}
-					gcDendrogram.drawString(schemaName, xOffset*5, yName, true);
+					gcDendrogram.drawString(name, xOffset*5, yName, true);
 					gcDendrogram.setFont(normalFont);
 					
-					//Cache the schema name string bounds to enable mouse hit detection
-					Point stringExtent = gcDendrogram.stringExtent(schemaName);				
-					if(schema.bounds != null) {						
-						schema.bounds.x = xOffset*5; schema.bounds.y = yName; 
-						schema.bounds.width = stringExtent.x; schema.bounds.height = stringExtent.y;
+					//Cache the label name string bounds to enable mouse hit detection
+					Point stringExtent = gcDendrogram.stringExtent(name);				
+					if(clusterObject.bounds != null) {						
+						clusterObject.bounds.x = xOffset*5; clusterObject.bounds.y = yName; 
+						clusterObject.bounds.width = stringExtent.x; clusterObject.bounds.height = stringExtent.y;
 					}
 					else {
-						schema.bounds =	new Rectangle(xOffset*5, yName, stringExtent.x, stringExtent.y);
+						clusterObject.bounds =	new Rectangle(xOffset*5, yName, stringExtent.x, stringExtent.y);
 					}
 					
 					gcDendrogram.setBackground(white);
 				}
-				//ClusterGroup bClusGroup = newSchemasToClusterGroups.get(bID);
-				int sizeB = aClusGroup.getNumSchemas();
-				if(sizeB > 1){
+				
+				int sizeB = aClusGroup.getNumClusterObjects();
+				if(sizeB > 1) {
 					colorTree(bID, gcDendrogram, color, useHighlightColor);
-				}else{
-					//String schemaName = schemas.get(bID).toString();
-					//Integer actualID = fromNewSchemasToClustertoSchemaID.get(bID);
-					//String schemaName = schemas.get(actualID).toString();
-					
-					ClusterGroup schemaIDval = newSchemasToClusterGroups.get(bID);
-					Iterator<Integer> schemaVal = schemaIDval.iterator();
-					Integer clusterId = (Integer)schemaVal.next();
+				} else {					
+					ClusterGroup<K> clusterObjectIDval = newClusterObjectsToClusterGroups.get(bID);
+					Iterator<K> clusterObjectVal = clusterObjectIDval.iterator();
+					K clusterId = clusterObjectVal.next();
 					//System.out.println("D: trying to get aID: " + aID + " from " + clusterId);
-					DendrogramSchemaGUI schema = schemas.get(clusterId);
-					String schemaName = schema.schema.getName();
+					DendrogramClusterObjectGUI<K, V> clusterObject = clusterObjects.get(clusterId);
+					String name = clusterObject.getLabel();
 					
-					int nameLength = schemaName.length();
+					int nameLength = name.length();
 					int xOffset = 0;
-					if(nameLength<maxSchemaNameLength){
-						xOffset = maxSchemaNameLength-nameLength;
+					if(nameLength < maxLabelLength){
+						xOffset = maxLabelLength - nameLength;
 					}
 					
-					Integer yName = schemaYLocationsMap.get(bID)-6;
+					Integer yName = clusterObjectYLocationsMap.get(bID)-6;
 					gcDendrogram.setBackground(lightGray);
-					if(schema.isSelected()) {
+					if(clusterObject.isSelected()) {
 						//gcDendrogram.setForeground(highlightColor);
 						gcDendrogram.setForeground(black);
 						gcDendrogram.setFont(selectedFont);
@@ -623,69 +549,56 @@ public class DendrogramCanvas extends Canvas implements ClusterDistanceChangeLis
 						gcDendrogram.setForeground(black);
 						gcDendrogram.setFont(normalFont);
 					}
-					gcDendrogram.drawString(schemaName, xOffset*5, yName, true);
+					gcDendrogram.drawString(name, xOffset*5, yName, true);
 					gcDendrogram.setFont(normalFont);
 					
-					//Cache the schema name string bounds to enable mouse hit detection
-					Point stringExtent = gcDendrogram.stringExtent(schemaName);
-					if(schema.bounds != null) {						
-						schema.bounds.x = xOffset*5; schema.bounds.y = yName; 
-						schema.bounds.width = stringExtent.x; schema.bounds.height = stringExtent.y;
+					//Cache the cluster object label name string bounds to enable mouse hit detection
+					Point stringExtent = gcDendrogram.stringExtent(name);
+					if(clusterObject.bounds != null) {						
+						clusterObject.bounds.x = xOffset*5; clusterObject.bounds.y = yName; 
+						clusterObject.bounds.width = stringExtent.x; clusterObject.bounds.height = stringExtent.y;
 					}
 					else {
-						schema.bounds = new Rectangle(xOffset*5, yName, stringExtent.x, stringExtent.y);
+						clusterObject.bounds = new Rectangle(xOffset*5, yName, stringExtent.x, stringExtent.y);
 					}
 					
 					gcDendrogram.setBackground(white);
 				}
 			//if the size of the right child isn't 1 then color everything below it
 			} else {
-				//only one schema, write the name in the color
-				//String schemaName = schemas.get(numOfOrig).toString();
-
-				//System.out.println("trying to get the actual schema name for point: " + numOfOrig);
-				//System.out.println("which contains cluster: " + newSchemasToClusterGroups.get(numOfOrig));
+				//only one cluster object, write the name in the color				
+				ClusterGroup<K> clusterObjectIDval = newClusterObjectsToClusterGroups.get(objectID);
+				Iterator<K> clusterObjectVal = clusterObjectIDval.iterator();
+				K clusterId = clusterObjectVal.next();
+				DendrogramClusterObjectGUI<K, V> clusterObject = clusterObjects.get(clusterId);
+				String name = clusterObject.getLabel();				
 				
-				//String schemaName = schemas.get(fromNewSchemasToClustertoSchemaID.get(numOfOrig)).toString();
-				
-				ClusterGroup schemaIDval = newSchemasToClusterGroups.get(numOfOrig);
-				Iterator<Integer> schemaVal = schemaIDval.iterator();
-				Integer clusterId = (Integer)schemaVal.next();
-				//System.out.println("D: trying to get aID: " + aID + " from " + clusterId);
-				DendrogramSchemaGUI schema = schemas.get(clusterId);
-				String schemaName = schema.schema.getName();
-				
-				//Integer actualID = fromNewSchemasToClustertoSchemaID.get(numOfOrig);
-				//String schemaName = schemas.get(actualID).toString();
-				
-				int nameLength = schemaName.length();
+				int nameLength = name.length();
 				int xOffset = 0;
-				if(nameLength<maxSchemaNameLength){
-					xOffset = maxSchemaNameLength-nameLength;
+				if(nameLength < maxLabelLength){
+					xOffset = maxLabelLength - nameLength;
 				}
 				
-				Integer yName = schemaYLocationsMap.get(numOfOrig)-6;
+				Integer yName = clusterObjectYLocationsMap.get(objectID)-6;
 				gcDendrogram.setBackground(lightGray);
-				if(schema.isSelected()) {
-					//gcDendrogram.setForeground(highlightColor);
+				if(clusterObject.isSelected()) {
 					gcDendrogram.setForeground(black);
 					gcDendrogram.setFont(selectedFont);
 				}
 				else {
 					gcDendrogram.setForeground(black);
-					//gcDendrogram.setFont(normalFont);
 				}
-				gcDendrogram.drawString(schemaName, xOffset*5, yName, true);
+				gcDendrogram.drawString(name, xOffset*5, yName, true);
 				gcDendrogram.setFont(normalFont);
 				
-				//Cache the schema name string bounds to enable mouse hit detection
-				Point stringExtent = gcDendrogram.stringExtent(schemaName);
-				if(schema.bounds != null) {					
-					schema.bounds.x = xOffset*5; schema.bounds.y = yName; 
-					schema.bounds.width = stringExtent.x; schema.bounds.height = stringExtent.y;
+				//Cache the cluster object label name string bounds to enable mouse hit detection
+				Point stringExtent = gcDendrogram.stringExtent(name);
+				if(clusterObject.bounds != null) {					
+					clusterObject.bounds.x = xOffset*5; clusterObject.bounds.y = yName; 
+					clusterObject.bounds.width = stringExtent.x; clusterObject.bounds.height = stringExtent.y;
 				}
 				else {
-					schema.bounds =	new Rectangle(xOffset*5, yName, stringExtent.x, stringExtent.y);
+					clusterObject.bounds =	new Rectangle(xOffset*5, yName, stringExtent.x, stringExtent.y);
 				}
 				
 				gcDendrogram.setBackground(white);
@@ -697,217 +610,196 @@ public class DendrogramCanvas extends Canvas implements ClusterDistanceChangeLis
 	//when you hit something that should be colored
 	//then color everything the appropriate color under that point
 	//note that this is meant to take the maxstep
-	public void determineColors(int numOfOrig, GC gcDendrogram, int maxVal){	
-		int clusterXVal = schemaXLocationsMap.get(numOfOrig);
+	public void determineColors(Integer objectID, GC gcDendrogram, int maxVal){	
+		int clusterXVal = clusterObjectXLocationsMap.get(objectID);
 		
 		Font normalFont = getFont();
 		
 		if(clusterXVal <= maxVal){
-			if(!altTreeColors){
+			if(!altTreeColors) {
 				//all will be blue
-				colorTree(numOfOrig, gcDendrogram, blue, false);
-			}else{
+				colorTree(objectID, gcDendrogram, blue, false);
+			} else {
 				//if this is true then the dendrogram should be colored
-				if(currentColorBlue){
-					//gcDendrogram.setForeground(blue);
+				if(currentColorBlue) {
 					currentColorBlue = false;
-					if(altTreeColors){
-						colorTree(numOfOrig, gcDendrogram, blue, false);
-					}else{
+					if(altTreeColors) {
+						colorTree(objectID, gcDendrogram, blue, false);
+					} else {
 						//all will be blue
-						colorTree(numOfOrig, gcDendrogram, blue, false);
+						colorTree(objectID, gcDendrogram, blue, false);
 					}
-				}else{
+				} else {
 					//gcDendrogram.setForeground(red);
 					currentColorBlue = true;
 					if(altTreeColors){
-						colorTree(numOfOrig, gcDendrogram, red, false);
+						colorTree(objectID, gcDendrogram, red, false);
 					}else{
 						//all will be blue
-						colorTree(numOfOrig, gcDendrogram, blue, false);
+						colorTree(objectID, gcDendrogram, blue, false);
 					}
 				}
 			}
-		}else{
+		} else {
 			//perhaps color the connection between numOfOrig gray
 			//only get here if the parent id: numOfOrig was above the maxValue
 			//check children to see if they are below bar and should be considered clustered
-			ClusterGroup testClusGroupSize = newSchemasToClusterGroups.get(numOfOrig);
-			int sizeOrig = testClusGroupSize.getNumSchemas();
-				if(sizeOrig>1){
+			ClusterGroup<K> testClusGroupSize = newClusterObjectsToClusterGroups.get(objectID);
+			int sizeOrig = testClusGroupSize.getNumClusterObjects();
+				if(sizeOrig > 1) {
 					//split the two cluster into two
 					//really we're looking for the two dendro points that make up this point
-					ArrayList<Integer> children = getChildrenIDs(newSchemasToClusterGroups.get(numOfOrig), numOfOrig);
+					ArrayList<Integer> children = getChildrenIDs(newClusterObjectsToClusterGroups.get(objectID), objectID);
 					Iterator<Integer> iter = children.iterator();
-					Integer aID = (Integer)iter.next();
-					Integer bID = (Integer)iter.next();
+					Integer aID = iter.next();
+					Integer bID = iter.next();
 				
 					//if the size of the left child isn't 1 then check to see if it fits
-					ClusterGroup aClusGroup = newSchemasToClusterGroups.get(aID);
-					int sizeA = aClusGroup.getNumSchemas();
-					if(sizeA > 1){
-						if(schemaXLocationsMap.get(aID)<=maxVal){
-							if(!altTreeColors){
+					ClusterGroup<K> aClusGroup = newClusterObjectsToClusterGroups.get(aID);
+					int sizeA = aClusGroup.getNumClusterObjects();
+					if(sizeA > 1) {
+						if(clusterObjectXLocationsMap.get(aID)<=maxVal) {
+							if(!altTreeColors) {
 								//all will be blue
 								colorTree(aID, gcDendrogram, blue, false);
-							}else{
-								if(currentColorBlue){
-									//gcDendrogram.setForeground(blue);
+							} else {
+								if(currentColorBlue) {
 									currentColorBlue = false;
 									colorTree(aID, gcDendrogram, blue, false);
-								}else{
+								} else {
 									currentColorBlue = true;
 									colorTree(aID, gcDendrogram, red, false);
 								}
 							}
-						}else{
+						} else {
 							determineColors(aID, gcDendrogram, maxVal);
 						}
-					}else{
+					} else {
 						//hit very bottom without reaching min, draw String in alternate color
-						//String schemaName = schemas.get(aID).toString();
-						//String schemaName = schemas.get(actualID).toString();
-						ClusterGroup schemaIDval = newSchemasToClusterGroups.get(aID);
-						Iterator<Integer> schemaVal = schemaIDval.iterator();
-						Integer clusterId = (Integer)schemaVal.next();
-						//System.out.println("D: trying to get aID: " + aID + " from " + clusterId);
-						DendrogramSchemaGUI schema = schemas.get(clusterId);
-						String schemaName = schema.schema.getName();						
+						ClusterGroup<K> clusterObjectIDval = newClusterObjectsToClusterGroups.get(aID);
+						Iterator<K> clusterObjectVal = clusterObjectIDval.iterator();
+						K clusterId = clusterObjectVal.next();
+						DendrogramClusterObjectGUI<K, V> clusterObject = clusterObjects.get(clusterId);
+						String name = clusterObject.getLabel();						
 						
-						int nameLength = schemaName.length();
+						int nameLength = name.length();
 						int xOffset = 0;
-						if(nameLength<maxSchemaNameLength){
-							xOffset = maxSchemaNameLength-nameLength;
+						if(nameLength < maxLabelLength){
+							xOffset = maxLabelLength - nameLength;
 						}
 						
-						Integer yName = schemaYLocationsMap.get(aID)-6;
-						if(schema.isSelected()) {
-							//gcDendrogram.setForeground(highlightColor);
-							//gcDendrogram.setForeground(gray);
+						Integer yName = clusterObjectYLocationsMap.get(aID)-6;
+						if(clusterObject.isSelected()) {
 							gcDendrogram.setForeground(black);
 							gcDendrogram.setFont(selectedFont);
 						}
 						else {
 							gcDendrogram.setForeground(gray);
-							//gcDendrogram.setFont(normalFont);
 						}
-						gcDendrogram.drawString(schemaName, xOffset*5, yName, true);
+						gcDendrogram.drawString(name, xOffset*5, yName, true);
 						gcDendrogram.setFont(normalFont);
 						
-						//Cache the schema name string bounds to enable mouse hit detection
-						Point stringExtent = gcDendrogram.stringExtent(schemaName);
-						if(schema.bounds != null) {							
-							schema.bounds.x = xOffset*5; schema.bounds.y = yName; 
-							schema.bounds.width = stringExtent.x; schema.bounds.height = stringExtent.y;
+						//Cache the cluster object label name string bounds to enable mouse hit detection
+						Point stringExtent = gcDendrogram.stringExtent(name);
+						if(clusterObject.bounds != null) {							
+							clusterObject.bounds.x = xOffset*5; clusterObject.bounds.y = yName; 
+							clusterObject.bounds.width = stringExtent.x; clusterObject.bounds.height = stringExtent.y;
 						}
 						else {
-							schema.bounds = new Rectangle(xOffset*5, yName, stringExtent.x, stringExtent.y);
+							clusterObject.bounds = new Rectangle(xOffset*5, yName, stringExtent.x, stringExtent.y);
 						}
 					}
-					ClusterGroup bClusGroup = newSchemasToClusterGroups.get(bID);
-					int sizeB = bClusGroup.getNumSchemas();
-					if(sizeB > 1){
-						if(schemaXLocationsMap.get(bID)<=maxVal){
-							if(!altTreeColors){
+					ClusterGroup<K> bClusGroup = newClusterObjectsToClusterGroups.get(bID);
+					int sizeB = bClusGroup.getNumClusterObjects();
+					if(sizeB > 1) {
+						if(clusterObjectXLocationsMap.get(bID) <= maxVal) {
+							if(!altTreeColors) {
 								//all will be blue
 								colorTree(bID, gcDendrogram, blue, false);
-							}else{
-								if(currentColorBlue){
+							} else {
+								if(currentColorBlue) {
 									gcDendrogram.setForeground(blue);
 									currentColorBlue = false;
 									colorTree(bID, gcDendrogram, blue, false);
-								}else{
+								} else {
 									gcDendrogram.setForeground(red);
 									currentColorBlue = true;
 									colorTree(bID, gcDendrogram, red, false);
 								}
 							}
-						}else{
-							//System.out.println("at line 315");
+						} else {
 							determineColors(bID, gcDendrogram, maxVal);
 						}
-					}else{
-						//String schemaName = schemas.get(bID).toString();
-						//String schemaName = schemas.get(actualID).toString();
-						ClusterGroup schemaIDval = newSchemasToClusterGroups.get(bID);
-						Iterator<Integer> schemaVal = schemaIDval.iterator();
-						Integer clusterId = (Integer)schemaVal.next();
-						//System.out.println("D: trying to get aID: " + aID + " from " + clusterId);
-						DendrogramSchemaGUI schema = schemas.get(clusterId);
-						String schemaName = schema.schema.getName();
+					} else {
+						ClusterGroup<K> clusterObjectIDval = newClusterObjectsToClusterGroups.get(bID);
+						Iterator<K> clusterObjectVal = clusterObjectIDval.iterator();
+						K clusterId = clusterObjectVal.next();
+						DendrogramClusterObjectGUI<K, V> clusterObject = clusterObjects.get(clusterId);
+						String name = clusterObject.getLabel();
 						
-						int nameLength = schemaName.length();
+						int nameLength = name.length();
 						int xOffset = 0;
-						if(nameLength<maxSchemaNameLength){
-							xOffset = maxSchemaNameLength-nameLength;
+						if(nameLength < maxLabelLength) {
+							xOffset = maxLabelLength - nameLength;
 						}
 						
-						Integer yName = schemaYLocationsMap.get(bID)-6;
+						Integer yName = clusterObjectYLocationsMap.get(bID)-6;
 											
-						if(schema.isSelected()) {
-							//gcDendrogram.setForeground(highlightColor);
-							//gcDendrogram.setForeground(gray);
+						if(clusterObject.isSelected()) {
 							gcDendrogram.setForeground(black);
 							gcDendrogram.setFont(selectedFont);
 						}
 						else {
 							gcDendrogram.setForeground(gray);
-							//gcDendrogram.setFont(normalFont);
 						}
-						gcDendrogram.drawString(schemaName, xOffset*5, yName, true);
+						gcDendrogram.drawString(name, xOffset*5, yName, true);
 						gcDendrogram.setFont(normalFont);
 						
-						//Cache the schema name string bounds to enable mouse hit detection
-						Point stringExtent = gcDendrogram.stringExtent(schemaName);
-						if(schema.bounds != null) {							
-							schema.bounds.x = xOffset*5; schema.bounds.y = yName; 
-							schema.bounds.width = stringExtent.x; schema.bounds.height = stringExtent.y;
+						//Cache the cluster object label name string bounds to enable mouse hit detection
+						Point stringExtent = gcDendrogram.stringExtent(name);
+						if(clusterObject.bounds != null) {							
+							clusterObject.bounds.x = xOffset*5; clusterObject.bounds.y = yName; 
+							clusterObject.bounds.width = stringExtent.x; clusterObject.bounds.height = stringExtent.y;
 						}
 						else {
-							schema.bounds = new Rectangle(xOffset*5, yName, stringExtent.x, stringExtent.y);
+							clusterObject.bounds = new Rectangle(xOffset*5, yName, stringExtent.x, stringExtent.y);
 						}
 						
 					}
 				//if the size of the right child isn't 1 then color everything below it
-				}else{
-					//only one schema, write the name in the color
-					//String schemaName = schemas.get(numOfOrig).toString();
-					//String schemaName = schemas.get(actualID).toString();
-					ClusterGroup schemaIDval = newSchemasToClusterGroups.get(numOfOrig);
-					Iterator<Integer> schemaVal = schemaIDval.iterator();
-					Integer clusterId = (Integer)schemaVal.next();
-					//System.out.println("D: trying to get aID: " + aID + " from " + clusterId);
-					DendrogramSchemaGUI schema = schemas.get(clusterId);
-					String schemaName = schema.schema.getName();
+				} else {
+					//only one cluster object, write the name in the color
+					ClusterGroup<K> clusterObjectIDval = newClusterObjectsToClusterGroups.get(objectID);
+					Iterator<K> clusterObjectVal = clusterObjectIDval.iterator();
+					K clusterId = clusterObjectVal.next();
+					DendrogramClusterObjectGUI<K, V> clusterObject = clusterObjects.get(clusterId);
+					String name = clusterObject.getLabel();
 					
-					int nameLength = schemaName.length();
+					int nameLength = name.length();
 					int xOffset = 0;
-					if(nameLength<maxSchemaNameLength){
-						xOffset = maxSchemaNameLength-nameLength;
+					if(nameLength<maxLabelLength){
+						xOffset = maxLabelLength-nameLength;
 					}	
-					Integer yName = schemaYLocationsMap.get(numOfOrig)-6;
+					Integer yName = clusterObjectYLocationsMap.get(objectID)-6;
 
-					if(schema.isSelected()) {
-						//gcDendrogram.setForeground(highlightColor);
-						//gcDendrogram.setForeground(gray);
+					if(clusterObject.isSelected()) {
 						gcDendrogram.setForeground(black);
 						gcDendrogram.setFont(selectedFont);
 					}
 					else {
 						gcDendrogram.setForeground(gray);
-						//gcDendrogram.setFont(normalFont);
 					}
-					gcDendrogram.drawString(schemaName, xOffset*5, yName, true);
+					gcDendrogram.drawString(name, xOffset*5, yName, true);
 					gcDendrogram.setFont(normalFont);
 					
-					//Cache the schema name string bounds to enable mouse hit detection
-					Point stringExtent = gcDendrogram.stringExtent(schemaName);
-					if(schema.bounds != null) {						
-						schema.bounds.x = xOffset*5; schema.bounds.y = yName; 
-						schema.bounds.width = stringExtent.x; schema.bounds.height = stringExtent.y;
+					//Cache the cluster object label name string bounds to enable mouse hit detection
+					Point stringExtent = gcDendrogram.stringExtent(name);
+					if(clusterObject.bounds != null) {						
+						clusterObject.bounds.x = xOffset*5; clusterObject.bounds.y = yName; 
+						clusterObject.bounds.width = stringExtent.x; clusterObject.bounds.height = stringExtent.y;
 					}
 					else {
-						schema.bounds = new Rectangle(xOffset*5, yName, stringExtent.x, stringExtent.y);
+						clusterObject.bounds = new Rectangle(xOffset*5, yName, stringExtent.x, stringExtent.y);
 					}
 				}
 		}		
@@ -915,7 +807,7 @@ public class DendrogramCanvas extends Canvas implements ClusterDistanceChangeLis
 	
 	public void drawDendrogram(GC gcDendrogram){
 		//determining the distance between leaves
-		//TODO: y distance between schema names is computed here
+		//y distance between cluster object names is computed here
 		int distanceBetween = (canvasHeight-5)/leaves.length;
 		int firstDistance = distanceBetween/2;
 
@@ -925,124 +817,111 @@ public class DendrogramCanvas extends Canvas implements ClusterDistanceChangeLis
 		gcDendrogram.setLineStyle(SWT.LINE_SOLID);
 		gcDendrogram.setForeground(gray);
 
-		schemaXLocationsMap = new HashMap<Integer, Integer>();
-		schemaYLocationsMap = new HashMap<Integer, Integer>();
+		clusterObjectXLocationsMap = new HashMap<Integer, Integer>();
+		clusterObjectYLocationsMap = new HashMap<Integer, Integer>();
 		//this is really dendro "points" to cluster groups
-		newSchemasToClusterGroups = new HashMap<Integer, ClusterGroup>();
+		newClusterObjectsToClusterGroups = new HashMap<Integer, ClusterGroup<K>>();
 		firstChild = new HashMap<Integer, Integer>();
 		secondChild = new HashMap<Integer, Integer>();
-		//only need a mapping from points in the dendrogram to schemaNumbers so we can pull out names
-		fromNewSchemasToClustertoSchemaID = new HashMap<Integer, Integer>(); //schemaID to dendroPoint(i.e., newSchemasToClusterGroups)
+		//only need a mapping from points in the dendrogram to cluster object IDs so we can pull out names
+		fromNewClusterObjectsToClustertoObjectID = new HashMap<K, Integer>(); //cluster object ID to dendroPoint(i.e., newClusterObjectsToClusterGroups)
 		Integer yDist;
 
-		//determining the maximum name length to help right align schema names
-		int maxNameLength = 0;
+		//determining the maximum name length to help right align cluster object labels
+		maxLabelLength = 0;
 		if(leaves != null){
 			for(int i=0; i<leaves.length; i++) {
-				Integer schemaNum = Integer.parseInt(leaves[i].getLabel());
-				//Integer schemaNum = ((SchemaDendrogramNode)leaves[i]).
-				String schemaName = schemas.get(schemaNum).schema.toString();
-				int schemaNameLength = schemaName.length();
-				if(schemaNameLength>maxNameLength){
-					maxNameLength = schemaNameLength;
+				K objectID = leaves[i].getObjectID();
+				String name = clusterObjects.get(objectID).getLabel();
+				int nameLength = name.length();
+				if(nameLength > maxLabelLength) {
+					maxLabelLength = nameLength;
 				}
 			}
 		}
-
-		maxSchemaNameLength = maxNameLength;
 		
 		//drawing the leaves, marking their locations
 		if(leaves != null) {
 			for(int i=0; i<leaves.length; i++) {
-				Integer schemaNum = Integer.parseInt(leaves[i].getLabel());
-				DendrogramSchemaGUI schema = schemas.get(schemaNum);
-				String schemaName = schema.schema.getName();
-				//just mapping this so we can later get the schemaName, dendrogram only cares about point
-				fromNewSchemasToClustertoSchemaID.put(schemaNum, i);
+				K objectID = leaves[i].getObjectID();
+				DendrogramClusterObjectGUI<K, V> clusterObject = clusterObjects.get(objectID);
+				String name = clusterObject.getLabel();
+				//just mapping this so we can later get the cluster object name, dendrogram only cares about point
+				fromNewClusterObjectsToClustertoObjectID.put(objectID, i);
 	
 				yDist = firstDistance+(i*distanceBetween);			
 				//schemaYLocationsMap.put(schemaNum, yDist);
 				//schemaXLocationsMap.put(schemaNum, (maxNameLength+5)*5);
-				schemaYLocationsMap.put(i, yDist);
-				schemaXLocationsMap.put(i, (maxNameLength+5)*5);
+				clusterObjectYLocationsMap.put(i, yDist);
+				clusterObjectXLocationsMap.put(i, (maxLabelLength+5)*5);
 				//System.out.println("created new ID:" + i);
-				int nameLength = schemaName.length();
+				int nameLength = name.length();
 				int xOffset = 0;
-				if(nameLength<maxNameLength){
-					xOffset = maxNameLength-nameLength;
+				if(nameLength < maxLabelLength){
+					xOffset = maxLabelLength - nameLength;
 				}
 				
-				if(schema.isSelected()) {
-					//gcDendrogram.setForeground(highlightColor);
-					//gcDendrogram.setForeground(gray);
+				if(clusterObject.isSelected()) {
 					gcDendrogram.setForeground(black);
 					gcDendrogram.setFont(selectedFont);
 				}
 				else {
 					gcDendrogram.setForeground(gray);
-					//gcDendrogram.setFont(normalFont);
 				}
-				gcDendrogram.drawString(schemaName, xOffset*5, yDist-6, true);
+				gcDendrogram.drawString(name, xOffset*5, yDist-6, true);
 				gcDendrogram.setFont(normalFont);
 				
-				//Cache the schema name string bounds to enable mouse hit detection
-				Point stringExtent = gcDendrogram.stringExtent(schemaName);
-				if(schema.bounds != null) {					
-					schema.bounds.x = xOffset*5; schema.bounds.y = yDist-6; 
-					schema.bounds.width = stringExtent.x; schema.bounds.height = stringExtent.y;
+				//Cache the cluster object name string bounds to enable mouse hit detection
+				Point stringExtent = gcDendrogram.stringExtent(name);
+				if(clusterObject.bounds != null) {					
+					clusterObject.bounds.x = xOffset*5; clusterObject.bounds.y = yDist-6; 
+					clusterObject.bounds.width = stringExtent.x; clusterObject.bounds.height = stringExtent.y;
 				}
 				else {
-					schema.bounds = new Rectangle(xOffset*5, yDist-6, stringExtent.x, stringExtent.y);
+					clusterObject.bounds = new Rectangle(xOffset*5, yDist-6, stringExtent.x, stringExtent.y);
 				}
 			}
 		}
 
-		int startDendroXPoint = (maxNameLength+5)*5;
+		int startDendroXPoint = (maxLabelLength+5)*5;
 		int numXpixels = (canvasWidth-20) -  startDendroXPoint;
 		
 		//scale no smaller than 100 pixels wide
 		if(numXpixels < 100){
 			numXpixels = 100;
-		}
-		
+		}	
 		
 		int step = 0;
-		for(ClusterStep cs : cc){
-			for(ClusterGroup cg : cs.getClusterGroups()){
-				if(step==0){
-					Iterator<Integer> cgIter = cg.iterator();
-					Integer clusterId = (Integer)cgIter.next();
-					//newSchemasToClusterGroups.put(clusterId, cg);
-					Integer translatedID = fromNewSchemasToClustertoSchemaID.get(clusterId);
-					newSchemasToClusterGroups.put(translatedID, cg);
+		for(ClusterStep<K> cs : cc){
+			for(ClusterGroup<K> cg : cs.getClusterGroups()){
+				if(step == 0) {
+					Iterator<K> cgIter = cg.iterator();
+					K clusterId = cgIter.next();
+					Integer translatedID = fromNewClusterObjectsToClustertoObjectID.get(clusterId);
+					newClusterObjectsToClusterGroups.put(translatedID, cg);
 					firstChild.put(translatedID, null);
 					secondChild.put(translatedID, null);
-					//note that we now have a continuously numbered map, where the cg's use the true schema numbers
-					//the fake maps we create below have nothing to do with real schemaID numbers
-					//all of the real schemaID numbers are put in at this step
-				}else{
-					//each schema is in it's own cluster at step 0, so we are not interested in that
-					//now need to find the two schemas that were combined
-					int groupSize = cg.getNumSchemas();
+					//note that we now have a continuously numbered map, where the cg's use the true cluster objectIDs.
+					//the fake maps we create below have nothing to do with real cluster objectIDs.
+					//all of the real cluster objectIDs are put in at this step
+				} else {
+					//each cluster object is in it's own cluster at step 0, so we are not interested in that
+					//now need to find the two cluster objects that were combined
+					int groupSize = cg.getNumClusterObjects();
 					if(groupSize == 2){
-						//connecting two schemas at the bottom level
-						Iterator<Integer> cgIter = cg.iterator();
-						Integer clusterAid = (Integer)cgIter.next();
-						Integer clusterBid = (Integer)cgIter.next();
+						//connecting two cluster objects at the bottom level
+						Iterator<K> cgIter = cg.iterator();
+						K clusterAid = cgIter.next();
+						K clusterBid = cgIter.next();
 						
-						Integer translatedID_A = fromNewSchemasToClustertoSchemaID.get(clusterAid);
-						Integer translatedID_B = fromNewSchemasToClustertoSchemaID.get(clusterBid);
-						//translated IDs are really the points in the dendrogram that correspond to that schemaIDs location
+						//translated IDs are really the points in the dendrogram that correspond to that cluster object IDs location
+						Integer translatedID_A = fromNewClusterObjectsToClustertoObjectID.get(clusterAid);
+						Integer translatedID_B = fromNewClusterObjectsToClustertoObjectID.get(clusterBid);
 						
-						//if portrait
-						//Integer aX = schemaXLocationsMap.get(clusterAid);
-						//Integer aY = schemaYLocationsMap.get(clusterAid);
-						//Integer bX = schemaXLocationsMap.get(clusterBid);
-						//Integer bY = schemaYLocationsMap.get(clusterBid);
-						Integer aX = schemaXLocationsMap.get(translatedID_A);
-						Integer aY = schemaYLocationsMap.get(translatedID_A);
-						Integer bX = schemaXLocationsMap.get(translatedID_B);
-						Integer bY = schemaYLocationsMap.get(translatedID_B);							
+						Integer aX = clusterObjectXLocationsMap.get(translatedID_A);
+						Integer aY = clusterObjectYLocationsMap.get(translatedID_A);
+						Integer bX = clusterObjectXLocationsMap.get(translatedID_B);
+						Integer bY = clusterObjectYLocationsMap.get(translatedID_B);							
 
 						//this will be between 0.0 and 1.0
 						double valXNotScaled = cg.getDistance();
@@ -1055,38 +934,34 @@ public class DendrogramCanvas extends Canvas implements ClusterDistanceChangeLis
 						//drawing the tick mark at top of canvas
 						gcDendrogram.setForeground(black);
 						gcDendrogram.setLineWidth(1);
-						//gcDendrogram.setAlpha(32);
 						gcDendrogram.drawLine(dendroX, 0, dendroX, 6);
 						gcDendrogram.setForeground(gray);
 						gcDendrogram.setLineWidth(1);
 						gcDendrogram.setAlpha(255);
 
-						//what do we put in to mark A and B as a new schema?
-						//let's create a new schema ID
-						int numSchemas = schemaXLocationsMap.size();
+						//what do we put in to mark A and B as a new cluster object?
+						//let's create a new cluster object ID
+						int numClusterObjects = clusterObjectXLocationsMap.size();
 					
-						//Note: it does not matter if it does match: cluster group schemaIDs are totally separated from labels for the map
+						//Note: it does not matter if it does match: cluster group objectIDs are totally separated from labels for the map
 						boolean uniqueIDFound = false;
-						Integer stepLabel = numSchemas;
+						Integer stepLabel = numClusterObjects;
 						while(!uniqueIDFound) {
-							if(!schemaXLocationsMap.containsKey(stepLabel)){
+							if(!clusterObjectXLocationsMap.containsKey(stepLabel)) {
 								uniqueIDFound = true;
-							}else{
+							} else {
 								stepLabel++;
-								System.err.println("should not have had to look for unique id");
 							}
 						}
 
 						//need new X and Y for clustered group
-						schemaXLocationsMap.put(stepLabel, dendroX);
-						schemaYLocationsMap.put(stepLabel, (Integer)((aY+bY)/2));
+						clusterObjectXLocationsMap.put(stepLabel, dendroX);
+						clusterObjectYLocationsMap.put(stepLabel, (Integer)((aY+bY)/2));
 
-						newSchemasToClusterGroups.put(stepLabel, cg);
+						newClusterObjectsToClusterGroups.put(stepLabel, cg);
 						firstChild.put(stepLabel, translatedID_A);
 						secondChild.put(stepLabel, translatedID_B);
-						
-						//System.out.println("created new ID:" + stepLabel + "putting " + cg);
-					}else{
+					} else {
 						//need to find the cluster groups from the previous step that make up this cluster group
 						//note this could be a cluster of size 3 if 2 were merged with one
 						
@@ -1095,57 +970,42 @@ public class DendrogramCanvas extends Canvas implements ClusterDistanceChangeLis
 						int clusA = -1;
 						int clusB = -1;
 						
-						ClusterGroup temp = null;
-						for(int i = newSchemasToClusterGroups.size()-1; i>=0; i--){
-						//for(ClusterGroup currCG : newSchemasToClusterGroups.values()) {
-						//for(Map.Entry<Integer, ClusterGroup> cgEntry : newSchemasToClusterGroups.entrySet()) {
-							ClusterGroup currCG = newSchemasToClusterGroups.get(i);
-							//ClusterGroup currCG = cgEntry.getValue();							
+						ClusterGroup<K> temp = null;
+						for(int i = newClusterObjectsToClusterGroups.size()-1; i>=0; i--) {
+							ClusterGroup<K> currCG = newClusterObjectsToClusterGroups.get(i);	
 							if(currCG == null) {
 								System.err.println("A Warning in DendrogramCanvas: encountered null ClusterGroup " + i);
-							} else if(cg.contains(currCG)){
-								//System.out.println(cg + " contains " + currCG);
-								//clusA = cgEntry.getKey();
+							} else if(cg.contains(currCG)) {
 								clusA = i;
-								Collection<Integer> origIDs = cg.getSchemaIDs();
-								temp = new ClusterGroup(origIDs);
-								temp.removeSchemas(currCG.getSchemaIDs());
+								Collection<K> origIDs = cg.getObjectIDs();
+								temp = new ClusterGroup<K>(origIDs);
+								temp.removeClusterObjects(currCG.getObjectIDs());
 								break;
 							}
 						}
 
-						for(int i = newSchemasToClusterGroups.size()-1; i>=0; i--){
-						//for(Map.Entry<Integer, ClusterGroup> cgEntry : newSchemasToClusterGroups.entrySet()) {
-							ClusterGroup currCG = newSchemasToClusterGroups.get(i);
-							//ClusterGroup currCG = cgEntry.getValue();						
+						for(int i = newClusterObjectsToClusterGroups.size()-1; i>=0; i--) {
+							ClusterGroup<K> currCG = newClusterObjectsToClusterGroups.get(i);
 							if(temp == null || currCG == null) {
 								System.err.println("B Warning in DendrogramCanvas: encountered null ClusterGroup " + i);
-							}else if(temp.contains(currCG)) {
-								//System.out.println(cg + " contains " + currCG);
+							} else if(temp.contains(currCG)) {
 								clusB = i;
-								//clusB = cgEntry.getKey();
 								break;
 							}
-						}	
-
-							
-						//if portrait
-						Integer aX = schemaXLocationsMap.get(clusA);
-						Integer aY = schemaYLocationsMap.get(clusA);
-						Integer bX = schemaXLocationsMap.get(clusB);
-						Integer bY = schemaYLocationsMap.get(clusB);						
+						}
+						
+						Integer aX = clusterObjectXLocationsMap.get(clusA);
+						Integer aY = clusterObjectYLocationsMap.get(clusA);
+						Integer bX = clusterObjectXLocationsMap.get(clusB);
+						Integer bY = clusterObjectYLocationsMap.get(clusB);						
 						
 						if(aX == null || aY == null || bX == null || bY == null) {
-							System.err.println("C Error in DendgrogramCanvas: Encountered null schemaID");
+							System.err.println("Error in DendgrogramCanvas: Encountered null objectID");
 							return;
 						}
 	
 						double valXNotScaled = cg.getDistance();
-						//int dendroX = (int)(numXpixels*valXNotScaled);
-						int dendroX = ((int)(numXpixels*valXNotScaled)) + startDendroXPoint;
-						
-						//System.out.println("drawing connector between group other than 3");						
-						//System.out.println("A: " + aX + "," + aY + " B: " + bX + ", " + bY);
+						int dendroX = ((int)(numXpixels*valXNotScaled)) + startDendroXPoint;						
 
 						gcDendrogram.drawLine(aX, aY, dendroX, aY);
 						gcDendrogram.drawLine(bX, bY, dendroX, bY);
@@ -1154,73 +1014,59 @@ public class DendrogramCanvas extends Canvas implements ClusterDistanceChangeLis
 						//drawing the tick mark at top of canvas
 						gcDendrogram.setForeground(black);
 						gcDendrogram.setLineWidth(1);
-						//gcDendrogram.setAlpha(32);
 						gcDendrogram.drawLine(dendroX, 0, dendroX, 6);
 						gcDendrogram.setForeground(gray);
 						gcDendrogram.setLineWidth(1);
 						gcDendrogram.setAlpha(255);
 						
-						//what do we put in to mark A and B as a new schema?
-						//let's create a new schema ID						
-						int numSchemas = schemaXLocationsMap.size();						
+						//what do we put in to mark A and B as a new cluster object?
+						//let's create a new cluster object ID
+						int numClusterObjects = clusterObjectXLocationsMap.size();						
 						boolean uniqueIDFound = false;
-						Integer stepLabel = numSchemas;
+						Integer stepLabel = numClusterObjects;
 						while(!uniqueIDFound) {
-							if(!schemaXLocationsMap.containsKey(stepLabel)){
+							if(!clusterObjectXLocationsMap.containsKey(stepLabel)) {
 								uniqueIDFound = true;
-							}else{
+							} else {
 								stepLabel++;
-								System.err.println("should not have had to look for a unique id");
 							}
 						}	
-						//System.out.println("Created new ID: " + stepLabel);
 						
-						schemaXLocationsMap.put(stepLabel, dendroX);
-						schemaYLocationsMap.put(stepLabel, (Integer)((aY+bY)/2));
+						clusterObjectXLocationsMap.put(stepLabel, dendroX);
+						clusterObjectYLocationsMap.put(stepLabel, (Integer)((aY+bY)/2));
 						
-						newSchemasToClusterGroups.put(stepLabel, cg);
+						newClusterObjectsToClusterGroups.put(stepLabel, cg);
 						firstChild.put(stepLabel, clusA);
 						secondChild.put(stepLabel, clusB);
-						//System.out.println("putting " + cg + " at " + stepLabel);
 					}	
 				}
 			}
 			step++; 
-		}	
-				
+		}					
 		//end Dendrogram creation code here		
 		
 		//when coloring the lines we want to go through the clusters in the reverse order from what they were put in
-		//then we can do all clusters below that
-		
+		//then we can do all clusters below that		
 		currentColorBlue = true;
 		
 		//this is the X location of the maximum simliarity bar
 		int maxdendroBarXloc = ((int)(numXpixels*maxBarDVal)) + startDendroXPoint;
-						
-		//gcDendrogram.setLineStyle(SWT.LINE_DOT);
+		
 		gcDendrogram.setLineWidth(2);
 		gcDendrogram.setForeground(black);
 		gcDendrogram.setLineStyle(SWT.LINE_DASH);
-//		gcDendrogram.setLineStyle(SWT.LINE_DASHDOT);
-		gcDendrogram.drawLine(maxdendroBarXloc, 0, maxdendroBarXloc, canvasHeight);
-		//System.out.println("drawing max slider bar: " + maxdendroBarXloc + " max y: " + canvasHeight + " min y: " + 0);
-		
+		gcDendrogram.drawLine(maxdendroBarXloc, 0, maxdendroBarXloc, canvasHeight);		
 		
 		//draw the location of the minimum similarity bar
 		int mindendroBarXloc = ((int)(numXpixels*minBarDVal)) + startDendroXPoint;
 		gcDendrogram.setLineWidth(1);
 		gcDendrogram.setForeground(gray);
-		gcDendrogram.drawLine(mindendroBarXloc, 0, mindendroBarXloc, canvasHeight);
-		
+		gcDendrogram.drawLine(mindendroBarXloc, 0, mindendroBarXloc, canvasHeight);		
 		
 		//start with the max cluster, the last put in
 		//and see if everything is below it
-		int maxSchemaID = schemaXLocationsMap.size()-1;
-		//System.out.println("maxID" + maxSchemaID);
-		//System.out.println(newSchemasToClusterGroups);
-		determineColors(maxSchemaID, gcDendrogram, maxdendroBarXloc);	
-	
+		int maxClusterObjectID = clusterObjectXLocationsMap.size() - 1;
+		determineColors(maxClusterObjectID, gcDendrogram, maxdendroBarXloc);	
 	}
 	
 	//note that min and max must be between 0.0 and 1.0
@@ -1237,48 +1083,41 @@ public class DendrogramCanvas extends Canvas implements ClusterDistanceChangeLis
 		
 		//always start with blue
 		//this prevents color from switching on repaint
-		//altTreeColors = false;
-		currentColorBlue = true;
-		//shadeBackground = true;
+		currentColorBlue = true;;
 		drawDendrogram(gc);
 	}	
 	
-	public void addSelectionChangedListener(SelectionChangedListener listener) {
+	public void addSelectionChangedListener(SelectionChangedListener<K> listener) {
 		selectionChangedListeners.add(listener);
 	}
 	
-	public void removeSelectionChangedListener(SelectionChangedListener listener) {
+	public void removeSelectionChangedListener(SelectionChangedListener<K> listener) {
 		selectionChangedListeners.remove(listener);
 	}
 	
-	public void addSelectionClickedListener(SelectionClickedListener listener) {
+	public void addSelectionClickedListener(SelectionClickedListener<K> listener) {
 		selectionClickedListeners.add(listener);
 	}
 	
-	public void removeSelectionClickedListener(SelectionClickedListener listener) {
+	public void removeSelectionClickedListener(SelectionClickedListener<K> listener) {
 		selectionClickedListeners.remove(listener);
 	}	
 	
-	/*
-	public void addAffinityEventListener(AffinityListener listener) {
-		this.affinityEventListeners.add(listener);
-	}
-	
-	public boolean removeAffinityEventListener(AffinityListener listener) {
-		return this.affinityEventListeners.remove(listener);
-	}*/
-	
 	protected void fireSelectionChangedEvent() {
 		if(!selectionChangedListeners.isEmpty()) {
-			SelectionChangedEvent event = new SelectionChangedEvent(this);
-			if(!selectedSchemas.isEmpty())
-				event.selectedSchemas = selectedSchemas;
-			if(selectedCluster != null) {
-				event.selectedClusters = new LinkedList<ClusterGroup>();
-				event.selectedClusters.add(selectedCluster);
+			Collection<K> selectedClusterObjects = null;
+			if(!this.selectedClusterObjects.isEmpty()) {
+				selectedClusterObjects = this.selectedClusterObjects;
 			}
-			for(SelectionChangedListener listener : selectionChangedListeners) 
+			List<ClusterGroup<K>> selectedClusters = null;
+			if(selectedCluster != null) {				
+				selectedClusters = new LinkedList<ClusterGroup<K>>();
+				selectedClusters.add(selectedCluster);
+			}
+			SelectionChangedEvent<K> event = new SelectionChangedEvent<K>(this, selectedClusterObjects, selectedClusters);
+			for(SelectionChangedListener<K> listener : selectionChangedListeners) {
 				listener.selectionChanged(event);
+			}
 		}
 	}
 	
@@ -1286,135 +1125,88 @@ public class DendrogramCanvas extends Canvas implements ClusterDistanceChangeLis
 	
 	protected void fireSelectionClickedEvent(int button, int stateMask, int clickCount, int x, int y) {
 		if(!selectionClickedListeners.isEmpty()) {
-			SelectionClickedEvent event = new SelectionClickedEvent(this, button, 
+			Collection<K> selectedClusterObjects = null;
+			if(!this.selectedClusterObjects.isEmpty()) {
+				selectedClusterObjects = this.selectedClusterObjects;
+			}
+			List<ClusterGroup<K>> selectedClusters = null;
+			if(selectedCluster != null) {				
+				selectedClusters = new LinkedList<ClusterGroup<K>>();
+				selectedClusters.add(selectedCluster);
+			}
+			SelectionClickedEvent<K> event = new SelectionClickedEvent<K>(this, 
+					selectedClusterObjects, selectedClusters, button, 
 					(stateMask == leftButtonCtrlStateMask) ? true : false, clickCount, x, y);			
-			if(!selectedSchemas.isEmpty())
-				event.selectedSchemas = selectedSchemas;
-			if(selectedCluster != null) {
-				event.selectedClusters = new LinkedList<ClusterGroup>();
-				event.selectedClusters.add(selectedCluster);
-			}
-			for(SelectionClickedListener listener : selectionClickedListeners) 
+			for(SelectionClickedListener<K> listener : selectionClickedListeners) { 
 				listener.selectionClicked(event);
-		}
-	}
-	
-	/*
-	protected void fireSchemaDoubleClickedEvent(Integer schemaID) {
-		if(!this.affinityEventListeners.isEmpty()) {
-			for(AffinityListener listener : this.affinityEventListeners) {				
-				listener.schemaDoubleClicked(schemaID, this);
 			}
 		}
-	}
-	
-	protected void fireSchemaSelectedEvent(Integer schemaID, boolean selected) {
-		if(!this.affinityEventListeners.isEmpty()) {
-			for(AffinityListener listener : this.affinityEventListeners) {
-				if(selected)
-					listener.schemaSelected(schemaID, this);
-				else
-					listener.schemaUnselected(schemaID, this);
-			}
-		}
-	}
-	
-	protected void fireClusterDoubleClickedEvent(ClusterGroup cluster) {
-		if(!this.affinityEventListeners.isEmpty()) {
-			for(AffinityListener listener : this.affinityEventListeners)  {
-				listener.clusterDoubleClicked(cluster, this);
-			}
-		}
-	}
-	
-	protected void fireClusterSelectedEvent(ClusterGroup cluster, boolean selected) {
-		if(!this.affinityEventListeners.isEmpty()) {
-			for(AffinityListener listener : this.affinityEventListeners) {
-				if(selected)
-					listener.clusterSelected(cluster, this);
-				else
-					listener.clusterUnselected(cluster, this);
-			}
-		}
-	}*/
+	}	
 	
 	/**
-	 * A mouse listener to determine if a schema or cluster was double-clicked.
+	 * A mouse listener to determine if a cluster object or cluster was double-clicked.
 	 *
 	 */
-	private class DendrogramMouseListener extends MouseAdapter {
-		/*public boolean schemaContainsPoint(Schema schema, int x, int y) {			
-			return schemaBounds.get(schema.getId()).contains(x, y);			
-		}*/
-		
-		public ClusterGroup getFirstClusterContainsPoint(int x, int y) {
-			ClusterGroup clickedCluster = null;
-			//System.out.println("For (" + x + ", " + y + ")");
-			for(Map.Entry<ClusterGroup, Rectangle> entry : clusterBounds.entrySet()) {
-				//System.out.println("Evaluating cluster: " + entry.getKey());
-				if(entry.getValue().contains(x, y)) { 
-					//return entry.getKey();
-					//System.out.println("Clusters value: " + entry.getValue());
-					ClusterGroup cluster = entry.getKey();
-					if(clickedCluster == null || cluster.getNumSchemas() < clickedCluster.getNumSchemas())
+	private class DendrogramMouseListener extends MouseAdapter {		
+		public ClusterGroup<K> getFirstClusterContainsPoint(int x, int y) {
+			ClusterGroup<K> clickedCluster = null;
+			for(Map.Entry<ClusterGroup<K>, Rectangle> entry : clusterBounds.entrySet()) {
+				if(entry.getValue().contains(x, y)) {
+					ClusterGroup<K> cluster = entry.getKey();
+					if(clickedCluster == null || cluster.getNumClusterObjects() < clickedCluster.getNumClusterObjects())
 						clickedCluster = cluster;
 				}
 			}
-			//return null;
 			return clickedCluster;
 		}
 		
 		@Override
-		//public void mouseDown(MouseEvent e) {}
 		public void mouseUp(MouseEvent e) {					
-			//First determine if a schema was clicked
-			Schema clickedSchema = null;
-			for(DendrogramSchemaGUI schema : schemas.values()) {			
+			//First determine if a cluster object was clicked
+			V clickedClusterObject = null;
+			for(DendrogramClusterObjectGUI<K, V> clusterObject : clusterObjects.values()) {			
 				int scrollAdjustedY = e.y + -1*(origin.y);
 				
-				if(schema.bounds.contains(e.x, scrollAdjustedY)) {
-					clickedSchema = schema.schema;					
-					if(!schema.selected) {	
-						//A single schema was selected
+				if(clusterObject.bounds.contains(e.x, scrollAdjustedY)) {
+					clickedClusterObject = clusterObject.getClusterObject();				
+					if(!clusterObject.isSelected()) {	
+						//A single cluster object was selected
 						
-						//Unselect any previously selected schemas or clusters
-						unselectAllSchemasAndClusters();						
-						selectedSchemas.add(schema.schema.getId());
+						//Unselect any previously selected cluster objects or clusters
+						unselectAllClusterObjectsAndClusters();						
+						selectedClusterObjects.add(clusterObject.getObjectID());
 						
-						//Mark the schema as selected
-						schema.setSelected(true);						
+						//Mark the cluster object as selected
+						clusterObject.setSelected(true);						
 						
 						redraw();
 						update();
 						
-						//Notify any SelectionChangedListeners that a single schema is currently selected
+						//Notify any SelectionChangedListeners that a single cluster object is currently selected
 						fireSelectionChangedEvent();
 					}					
 					
-					//Notify any SelectionClickedListeners that a single schema was double-clicked					
-					if(e.count == 2)
+					//Notify any SelectionClickedListeners that a single cluster object was double-clicked					
+					if(e.count == 2) {
 						fireSelectionClickedEvent(e.button, e.stateMask, e.count, e.x, e.y);
-						//fireSchemaDoubleClickedEvent(schema.getSchemaID());
+					}
 					
 					break;
 				}					
 			}							
 
-			//If no schema was clicked, determine if a cluster was clicked
-			if(clickedSchema == null) {	
-				//note that because the dendrogram can scroll, we need to adjust y based on scrolling
-				//System.out.println("about to adjust the y used: " + e.y);
+			//If no cluster object was clicked, determine if a cluster was clicked
+			if(clickedClusterObject == null) {	
+				//Note that because the dendrogram can scroll, we need to adjust y based on scrolling
 				int scrollAdjustedY = e.y + -1*(origin.y);
-				//System.out.println("new y is: " + scrollAdjustedY);
 				
-				//ClusterGroup cluster = getFirstClusterContainsPoint(e.x, e.y);
-				ClusterGroup cluster = getFirstClusterContainsPoint(e.x, scrollAdjustedY);
+				ClusterGroup<K> cluster = getFirstClusterContainsPoint(e.x, scrollAdjustedY);
 				if(cluster != null) {
 					if(cluster != selectedCluster) {
 						//A single cluster was selected		
 						
-						//Unselect any previously selected schemas or clusters
-						unselectAllSchemasAndClusters();										
+						//Unselect any previously selected cluster objects or clusters
+						unselectAllClusterObjectsAndClusters();										
 						
 						//Mark the cluster as selected						
 						selectedCluster = cluster;
@@ -1427,44 +1219,20 @@ public class DendrogramCanvas extends Canvas implements ClusterDistanceChangeLis
 					}					
 					
 					//Notify any SelectionClickedListeners that a single cluster was double-clicked				
-					if(e.count == 2)
-						//fireSelectionClickedEvent(e.button, e.stateMask, e.count, e.x, e.y);
+					if(e.count == 2) {
 						fireSelectionClickedEvent(e.button, e.stateMask, e.count, e.x, scrollAdjustedY);
-
-						//fireClusterDoubleClickedEvent(cluster.cg);
+					}
 				}
 				else {
-					//No schema or cluster was clicked, so unhighlight any previously highlighted schema or cluster
-					if(!selectedSchemas.isEmpty() || selectedCluster != null) {					 
-						unselectAllSchemasAndClusters();
+					//No cluster object or cluster was clicked, so unhighlight any previously highlighted cluster object or cluster
+					if(!selectedClusterObjects.isEmpty() || selectedCluster != null) {					 
+						unselectAllClusterObjectsAndClusters();
 						fireSelectionChangedEvent();
 						redraw();
 						update();
 					}
-					/*
-					if(highlightedSchema != null)  {
-						Schema prevHighlightedSchema = highlightedSchema;
-						highlightedSchema = null;
-						redraw();
-						update();
-						
-						//Notify any AffinityEventListeners that a schema was unselected						
-						fireSchemaSelectedEvent(prevHighlightedSchema.getId(), false);						
-					}
-					else if(highlightedCluster != null) {
-						ClusterGroup prevHighlightedCluster = highlightedCluster;
-						setClusterHighlighted(highlightedCluster, false);
-						redraw();
-						update();
-						
-						//Notify any AffinityEventListeners that a cluster was unselected
-						fireClusterSelectedEvent(prevHighlightedCluster, false);
-					}*/
 				}
 			}
 		}
-
-		//@Override			
-		//public void mouseDoubleClick(MouseEvent e) {}
 	}
 }

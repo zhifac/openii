@@ -17,7 +17,14 @@
 package org.mitre.affinity.view.event;
 
 public class AffinityEvent {
-	public Object source;
 	
+	public final Object source;
 	
+	protected AffinityEvent(Object source) {
+		this.source = source;
+	}
+
+	public Object getSource() {
+		return source;
+	}
 }

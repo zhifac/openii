@@ -18,10 +18,12 @@ package org.mitre.affinity.view.event;
 
 import java.util.Collection;
 
-import org.mitre.affinity.clusters.ClusterGroup;
+import org.mitre.affinity.model.clusters.ClusterGroup;
 
-public class SelectionClickedEvent extends SelectionEvent {
+public class SelectionClickedEvent<K> extends SelectionEvent<K> {
+	
 	public static final int LEFT_BUTTON = 1;
+	
 	public static final int RIGHT_BUTTON = 3;
 	
 	/** The number of the mouse button pressed that generated the event */
@@ -44,17 +46,19 @@ public class SelectionClickedEvent extends SelectionEvent {
 		super(eventSource);
 	}
 	
-	public SelectionClickedEvent(Object eventSource, Collection<Integer> selectedSchemas, Collection<ClusterGroup> selectedClusters) {
-		super(eventSource, selectedSchemas, selectedClusters);
+	public SelectionClickedEvent(Object eventSource, Collection<K> selectedClusterObjects, 
+			Collection<ClusterGroup<K>> selectedClusters) {
+		super(eventSource, selectedClusterObjects, selectedClusters);
 	}
 	
 	public SelectionClickedEvent(Object eventSource, int button, boolean controlDown, int clickCount, int x, int y) {
 		this(eventSource, null, null, button, controlDown, clickCount, x, y);
 	}
 	
-	public SelectionClickedEvent(Object eventSource, Collection<Integer> selectedSchemas, Collection<ClusterGroup> selectedClusters,
+	public SelectionClickedEvent(Object eventSource, Collection<K> selectedClusterObjects, 
+			Collection<ClusterGroup<K>> selectedClusters,
 			int button, boolean controlDown, int clickCount, int x, int y) {
-		super(eventSource, selectedSchemas, selectedClusters);
+		super(eventSource, selectedClusterObjects, selectedClusters);
 		this.button = button;
 		this.controlDown = controlDown; 
 		this.clickCount = clickCount;

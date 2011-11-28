@@ -21,28 +21,27 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
-public class PositionGrid implements Iterable<Entry<Integer, Position>> {
+
+/**
+ * @author cbonaceto
+ *
+ * @param <K>
+ */
+public class PositionGrid<K> implements Iterable<Entry<K, Position>> {
 	
-	/**
-	 * Maps schema id to its position in n-dimensional space 
-	 */
-	private final Map<Integer, Position> positions;
+	/** Maps cluster object id to its position in n-dimensional space */
+	private final Map<K, Position> positions;	
 	
-	
-	/**
-	 * The number of dimensions 
-	 */
+	/** The number of dimensions */
 	private final int numDimensions;
 	
 	private double xScaleFactor;
-	private double yScaleFactor;
 	
-	//private double xOffset = 0;
-	//private double yOffset = 0;
+	private double yScaleFactor;
 	
 	public PositionGrid(int numDimensions) {
 		this.numDimensions = numDimensions;
-		this.positions = new HashMap<Integer, Position>();
+		this.positions = new HashMap<K, Position>();
 	}
 	
 	/**
@@ -187,41 +186,41 @@ public class PositionGrid implements Iterable<Entry<Integer, Position>> {
 		}
 		//}
 		//return scaleFactor;
+	}	
+	
+	/** 
+	 * @param objectID the id of the cluster object whose position to retrieve
+	 * @return
+	 */
+	public Position getPosition(K objectID) {
+		return this.positions.get(objectID);
 	}
 	
 	
 	/**
-	 * @param schemaID: the id of the schema whose position to retrieve
-	 * @return the position
+	 * @param objectID the id of the schema whose position to set
+	 * @param pos the position to set
 	 */
-	public Position getPosition(Integer schemaID) {
-		return this.positions.get(schemaID);
-	}
-	
-	/**
-	 * @param schemaID: the id of the schema whose position to set
-	 * @param pos: the position to set
-	 */
-	public void setPosition(Integer schemaID, Position pos) {
+	public void setPosition(K objectID, Position pos) {
 		if(pos.getNumDimensions() != this.numDimensions) {
 			throw new java.lang.IllegalArgumentException("Error setting position: Must have " + this.numDimensions + "dimensions");
 		}
-		this.positions.put(schemaID, pos);
+		positions.put(objectID, pos);
 	}
 	
 	public Iterator<Position> getPositionsIter() {
-		return this.positions.values().iterator(); 
+		return positions.values().iterator(); 
 	}
 	
-	public Iterator<Integer> getSchemaIDsIter() {
-		return this.positions.keySet().iterator();
+	public Iterator<K> getObjectIDsIter() {
+		return positions.keySet().iterator();
 	}
 	
 	public int getNumDimensions() {
 		return numDimensions;
 	}
 
-	public Iterator<Entry<Integer, Position>> iterator() {		
-		return this.positions.entrySet().iterator();		
+	public Iterator<Entry<K, Position>> iterator() {		
+		return positions.entrySet().iterator();		
 	}
 }

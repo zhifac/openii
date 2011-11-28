@@ -43,7 +43,7 @@ public class AffinityConstants {
 	
 	private static final Map<IconType, Image> AFFINITY_ICONS = new HashMap<IconType, Image>();
 	
-	public static enum CursorType {PAN_CURSOR, PANNING_CURSOR, SELECT_MULTIPLE_SCHEMAS_CURSOR};
+	public static enum CursorType {PAN_CURSOR, PANNING_CURSOR, SELECT_MULTIPLE_OBJECTS_CURSOR};
 	
 	private static final Map<CursorType, Cursor> AFFINITY_CURSORS = new HashMap<CursorType, Cursor>();
 	
@@ -77,7 +77,7 @@ public class AffinityConstants {
 			case PANNING_CURSOR:
 				cursor = new Cursor(Display.getCurrent(), getAffinityIcon(IconType.PANNING_ICON).getImageData(), 8, 8);;				
 				break;
-			case SELECT_MULTIPLE_SCHEMAS_CURSOR:
+			case SELECT_MULTIPLE_OBJECTS_CURSOR:
 				cursor = Display.getCurrent().getSystemCursor(SWT.CURSOR_ARROW);
 				break;
 			}

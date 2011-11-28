@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="WINDOWS-1252" standalone="no"?>
 <jardesc>
-    <jar path="Affinity/Affinity.jar"/>
+    <jar path="Affinity/distrib/Affinity.jar"/>
     <options buildIfNeeded="true" compress="true" descriptionLocation="/Affinity/AffinityJarDescription.jardesc" exportErrors="true" exportWarnings="true" includeDirectoryEntries="false" overwrite="false" saveDescription="true" storeRefactorings="false" useSourceFolders="false"/>
     <storedRefactorings deprecationInfo="true" structuralOnly="false"/>
     <selectedProjects/>
-    <manifest generateManifest="true" mainClassHandleIdentifier="=Affinity/src&lt;org.mitre.affinity.view.application{AffinityApplication.java[AffinityApplication" manifestLocation="" manifestVersion="1.0" reuseManifest="false" saveManifest="false" usesManifest="true">
+    <manifest generateManifest="true" mainClassHandleIdentifier="=Affinity/src&lt;org.mitre.affinity.application{AffinityApplication.java[AffinityApplication" manifestLocation="" manifestVersion="1.0" reuseManifest="false" saveManifest="false" usesManifest="true">
         <sealing sealJar="false">
             <packagesToSeal/>
             <packagesToUnSeal/>
@@ -24,5 +24,4 @@
         <file path="/Affinity/icons/hand.png"/>
         <file path="/Affinity/icons/zoom_in.png"/>
     </selectedElements>
-    <fatjar builder="org.eclipse.jdt.ui.plain_jar_builder" launchConfig=""/>
 </jardesc>

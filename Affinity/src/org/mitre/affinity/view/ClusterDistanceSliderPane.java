@@ -45,16 +45,22 @@ import javax.swing.UIManager;
 import javax.swing.plaf.metal.MetalIconFactory;
 import javax.swing.plaf.metal.MetalSliderUI;
 
-import org.mitre.affinity.clusters.ClusterGroup;
-import org.mitre.affinity.clusters.ClusterStep;
-import org.mitre.affinity.clusters.ClustersContainer;
+import org.mitre.affinity.model.clusters.ClusterGroup;
+import org.mitre.affinity.model.clusters.ClusterStep;
+import org.mitre.affinity.model.clusters.ClustersContainer;
 import org.mitre.affinity.view.event.ClusterDistanceChangeEvent;
 import org.mitre.affinity.view.event.ClusterDistanceChangeListener;
 
-public class ClusterDistanceSliderPane extends JPanel {
+/**
+ * @author cbonaceto
+ *
+ */
+public class ClusterDistanceSliderPane<K, V> extends JPanel {
+	
 	protected static final long serialVersionUID = 1L;
 
 	private static final int minSize = 0;
+	
 	private static final int maxSize = 1000;
 	
 	private List<ClusterDistanceChangeListener> listeners;	
@@ -74,7 +80,7 @@ public class ClusterDistanceSliderPane extends JPanel {
 	private class ClusterDistanceSlider extends JSlider
 	{
 		protected static final long serialVersionUID = 1L;
-		private ClustersContainer allClusters;
+		private ClustersContainer<K> allClusters;
 		
 		/**
 		 * Class to handle display and action of the confidence slider
@@ -216,8 +222,8 @@ public class ClusterDistanceSliderPane extends JPanel {
 						// Paint the clustering indicator tick mark locations on the slider						
 						int numYpixels = min-max;
 						int step = 0;
-						for(ClusterStep cs : allClusters){
-							for(ClusterGroup cg : cs.getClusterGroups()){
+						for(ClusterStep<K> cs : allClusters){
+							for(ClusterGroup<K> cg : cs.getClusterGroups()){
 								if(step!=0){
 									//cg.getDistance() will be between 0.0 and 1.0									
 									int clustTickY = ((int)(numYpixels*cg.getDistance())) + max;
@@ -252,8 +258,8 @@ public class ClusterDistanceSliderPane extends JPanel {
 						//int numXpixels = min-max;
 						int numXpixels = max-min;
 						int step = 0;
-						for(ClusterStep cs : allClusters){
-							for(ClusterGroup cg : cs.getClusterGroups()){
+						for(ClusterStep<K> cs : allClusters){
+							for(ClusterGroup<K> cg : cs.getClusterGroups()){
 								if(step!=0){
 									//cg.getDistance() will be between 0.0 and 1.0									
 									int clustTickX = ((int)(numXpixels*cg.getDistance())) + min;
@@ -569,7 +575,7 @@ public class ClusterDistanceSliderPane extends JPanel {
 		/**
 		 * Initializes the confidence slider
 		 */
-		private ClusterDistanceSlider(ClustersContainer clusters, int orientation)
+		private ClusterDistanceSlider(ClustersContainer<K> clusters, int orientation)
 		{
 			// Initialize super class of confidence slider
 			super(minSize, maxSize);
@@ -607,7 +613,7 @@ public class ClusterDistanceSliderPane extends JPanel {
 	 * Initializes the confidence pane
 	 * @param clusters 
 	 */
-	public ClusterDistanceSliderPane(ClustersContainer clusters, int orientation)
+	public ClusterDistanceSliderPane(ClustersContainer<K> clusters, int orientation)
 	{
 		super();
 		

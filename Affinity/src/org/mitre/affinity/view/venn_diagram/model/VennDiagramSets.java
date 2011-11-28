@@ -39,6 +39,7 @@ public class VennDiagramSets
 {	
 	// Stores references to the schemas being compared
 	private SchemaInfo schema1;
+	
 	private SchemaInfo schema2;
 	
 	// Stores the minimum and maximum score thresholds

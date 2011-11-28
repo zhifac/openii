@@ -16,6 +16,6 @@
 
 package org.mitre.affinity.view.event;
 
-public interface SelectionChangedListener {
-	public void selectionChanged(SelectionChangedEvent event);
+public interface SelectionChangedListener<K> {
+	public void selectionChanged(SelectionChangedEvent<K> event);
 }

@@ -22,22 +22,23 @@ import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.mitre.affinity.view.ClusterStepSizeSliderPane;
 
-public class SWTClusterStepSizeSliderPane extends Canvas {
-	private ClusterStepSizeSliderPane clusterStepSizePane;
+public class SWTClusterStepSizeSliderPane<K, V> extends Canvas {
+	
+	private ClusterStepSizeSliderPane<K, V> clusterStepSizePane;
 
-	public SWTClusterStepSizeSliderPane(Composite parent, int style, SchemaCluster2DView schema2DPlot, 
+	public SWTClusterStepSizeSliderPane(Composite parent, int style, Cluster2DView<K, V> schema2DPlot, 
 			int minStep, int maxStep) {
 		super(parent, style | SWT.EMBEDDED);
 		
 		java.awt.Frame frame = SWT_AWT.new_Frame(this);		
 		java.awt.Panel panel = new java.awt.Panel(new java.awt.BorderLayout());
 		
-		this.clusterStepSizePane = new ClusterStepSizeSliderPane(schema2DPlot, minStep, maxStep);
+		this.clusterStepSizePane = new ClusterStepSizeSliderPane<K, V>(schema2DPlot, minStep, maxStep);
 		panel.add(this.clusterStepSizePane);	
 		frame.add(panel);	
 	}
 
-	public ClusterStepSizeSliderPane getClusterStepSizePane() {
+	public ClusterStepSizeSliderPane<K, V> getClusterStepSizePane() {
 		return clusterStepSizePane;
 	}
 }
