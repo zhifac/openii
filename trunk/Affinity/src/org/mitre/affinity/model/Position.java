@@ -28,14 +28,14 @@ import java.util.List;
  *
  */
 public class Position implements Iterable<Double> {
-	/**
-	 * The point in n-dimensional space
-	 */
+	
+	/** The point in n-dimensional space */
 	private final List<Double> pos;
+	
+	/** The number of dimensions */
 	private final int numDimensions;
 	
 	public Position(int numDimensions) {
-		//this.pos = new Double[numDimensions];
 		this.pos = new ArrayList<Double>(numDimensions);
 		for(int i=0 ; i<numDimensions; i++) {
 			this.pos.add(null);
@@ -49,7 +49,6 @@ public class Position implements Iterable<Double> {
 			this.pos.add(d);
 		}
 		this.numDimensions = pos.length;
-		//this.pos = pos;
 	}
 	
 	public Position(float[] pos) {
@@ -58,7 +57,6 @@ public class Position implements Iterable<Double> {
 			this.pos.add(f.doubleValue());
 		}
 		this.numDimensions = pos.length;
-		//this.pos = pos;
 	}
 	
 	public Position(Point2D point) {
@@ -66,23 +64,13 @@ public class Position implements Iterable<Double> {
 		this.pos.add(point.getX());
 		this.pos.add(point.getY());
 		this.numDimensions = 2;
-		/*
-		this.pos = new Double[2];
-		this.pos[0] = point.getX();
-		this.pos[1] = point.getY();
-		*/
 	}
 	
 	public Position(double x, double y) {
 		this.pos = new ArrayList<Double>(2);
 		this.pos.add(x);
 		this.pos.add(y);
-		this.numDimensions = 2;
-		/*
-		this.pos = new Double[2];
-		this.pos[0] = point.getX();
-		this.pos[1] = point.getY();
-		*/
+		this.numDimensions = 2;		
 	}
 	
 	public Position(Position position) {
@@ -113,7 +101,6 @@ public class Position implements Iterable<Double> {
 
 	@Override
 	public String toString() {
-		// TODO Auto-generated method stub
 		StringBuilder str = new StringBuilder("(");
 		boolean first = true;
 		for(Double d : this.pos) {

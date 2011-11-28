@@ -18,25 +18,26 @@ package org.mitre.affinity.view.event;
 
 import java.util.Collection;
 
-import org.mitre.affinity.clusters.ClusterGroup;
+import org.mitre.affinity.model.clusters.ClusterGroup;
 
-public class SelectionEvent {
+public class SelectionEvent<K> {
 	/** The object that generated the event */
-	public Object eventSource;
+	public final Object eventSource;
 	
-	/** Current selection of schemas */
-	public Collection<Integer> selectedSchemas;	
+	/** Current selection of cluster objects */
+	public final Collection<K> selectedClusterObjects;	
 	
 	/** Current seleciton of clusters */
-	public Collection<ClusterGroup> selectedClusters;
+	public final Collection<ClusterGroup<K>> selectedClusters;
 	
 	public SelectionEvent(Object eventSource) {
 		this(eventSource, null, null);
 	}
 	
-	public SelectionEvent(Object eventSource, Collection<Integer> selectedSchemas, Collection<ClusterGroup> selectedClusters) {
+	public SelectionEvent(Object eventSource, Collection<K> selectedClusterObjects, 
+			Collection<ClusterGroup<K>> selectedClusters) {
 		this.eventSource = eventSource;
-		this.selectedSchemas = selectedSchemas;
+		this.selectedClusterObjects = selectedClusterObjects;
 		this.selectedClusters = selectedClusters;
 	}
 	
@@ -44,10 +45,11 @@ public class SelectionEvent {
 		return eventSource;
 	}
 
-	public Collection<Integer> getSelectedSchemas() {
-		return selectedSchemas;
-	}	
-	public Collection<ClusterGroup> getSelectedClusters() {
+	public Collection<K> getSelectedClusterObjects() {
+		return selectedClusterObjects;
+	}
+
+	public Collection<ClusterGroup<K>> getSelectedClusters() {
 		return selectedClusters;
 	}
 }

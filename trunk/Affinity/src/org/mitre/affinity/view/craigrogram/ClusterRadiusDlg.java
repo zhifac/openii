@@ -32,15 +32,22 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.mitre.affinity.util.SWTUtils;
 
+/**
+ * @author cbonaceto
+ *
+ */
 public class ClusterRadiusDlg extends Dialog {	
+	
 	private Shell parent;
+	
 	private int style;
+	
 	private Shell dlgShell;
 	
 	private DialogModel dialogModel;
 	
 	//Dialog components
-	private Composite dlgPanel;
+	private Composite dlgPanel;	
 	private Combo radiusCombo;
 	
 	public ClusterRadiusDlg(Shell parent, int style) {

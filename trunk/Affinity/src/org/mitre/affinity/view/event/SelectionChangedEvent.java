@@ -18,15 +18,17 @@ package org.mitre.affinity.view.event;
 
 import java.util.Collection;
 
-import org.mitre.affinity.clusters.ClusterGroup;
+import org.mitre.affinity.model.clusters.ClusterGroup;
 
 
-public class SelectionChangedEvent extends SelectionEvent {
+public class SelectionChangedEvent<K> extends SelectionEvent<K> {
+	
 	public SelectionChangedEvent(Object eventSource) {
 		super(eventSource);
 	}
 	
-	public SelectionChangedEvent(Object eventSource, Collection<Integer> selectedSchemas, Collection<ClusterGroup> selectedClusters) {
-		super(eventSource, selectedSchemas, selectedClusters);
+	public SelectionChangedEvent(Object eventSource, Collection<K> selectedClusterObjects, 
+			Collection<ClusterGroup<K>> selectedClusters) {
+		super(eventSource, selectedClusterObjects, selectedClusters);
 	}
 }

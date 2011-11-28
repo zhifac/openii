@@ -35,14 +35,14 @@ import javax.swing.plaf.metal.MetalIconFactory;
 import javax.swing.plaf.metal.MetalSliderUI;
 
 import org.eclipse.swt.widgets.Display;
-import org.mitre.affinity.view.craigrogram.SchemaCluster2DView;
+import org.mitre.affinity.view.craigrogram.Cluster2DView;
 
-public class ClusterStepSizeSliderPane extends JPanel {
+public class ClusterStepSizeSliderPane<K, V> extends JPanel {
 	protected static final long serialVersionUID = 1;
 
 	//private int scaleRange = 100;
 	
-	private SchemaCluster2DView schema2DPlot;
+	private Cluster2DView<K, V> schema2DPlot;
 	
 	private int minStep = 1;
 	private int maxStep = 3;
@@ -261,7 +261,7 @@ public class ClusterStepSizeSliderPane extends JPanel {
 	/**
 	 * Initializes the confidence pane
 	 */
-	public ClusterStepSizeSliderPane(SchemaCluster2DView schema2DPlot, int minStep, int maxStep) 
+	public ClusterStepSizeSliderPane(Cluster2DView<K, V> schema2DPlot, int minStep, int maxStep) 
 	{
 		this.schema2DPlot = schema2DPlot;
 		this.minStep = minStep;

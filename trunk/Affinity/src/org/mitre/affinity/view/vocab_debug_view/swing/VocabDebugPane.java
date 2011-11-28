@@ -17,11 +17,8 @@
 package org.mitre.affinity.view.vocab_debug_view.swing;
 
 import java.awt.BorderLayout;
-import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Insets;
-import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -131,18 +128,19 @@ public class VocabDebugPane extends JPanel {
 	 * View used to help debug automatic generation of common vocabulary
 	 */
 	public static class VocabDebugView extends JPanel {
+		
 		private static final long serialVersionUID = 1L;		
+		
 		private VocabDebugViewSets data;
-		private String[] columnNames;
-		private Object[][] tableData;
-		private ArrayList<VennDiagramSets> allSets;
+		
+		//private String[] columnNames;
+		//private Object[][] tableData;
+		//private ArrayList<VennDiagramSets> allSets;
 		
 		public VocabDebugView(VocabDebugViewSets dataInput) {
 			super(true);	
 			data = dataInput;
-			allSets = data.getAllSets();
-
-					
+			//allSets = data.getAllSets();					
 			/*
 			this.addAncestorListener(new AncestorListener() {
 				public void ancestorAdded(AncestorEvent arg0) {}
@@ -159,19 +157,18 @@ public class VocabDebugPane extends JPanel {
 			return data;
 		}
 
-
 		public void paintComponent(Graphics g) {
 			Graphics2D g2d = (Graphics2D)g;
 
 			//Render the background
 			super.paintComponent(g2d);
-			Insets insets = this.getInsets();
-			Rectangle bounds = new Rectangle(insets.left + 1, insets.top + 1, getWidth() - insets.left - insets.right - 2,
-					getHeight() - insets.top - insets.bottom - 2);
+			//Insets insets = this.getInsets();
+			//Rectangle bounds = new Rectangle(insets.left + 1, insets.top + 1, getWidth() - insets.left - insets.right - 2,
+			//		getHeight() - insets.top - insets.bottom - 2);
 
-			g2d.setFont(getFont());
-			FontMetrics fontMetrics = g2d.getFontMetrics();
-			int fontHeight = fontMetrics.getAscent();
+			//g2d.setFont(getFont());
+			//FontMetrics fontMetrics = g2d.getFontMetrics();
+			//int fontHeight = fontMetrics.getAscent();
 		}
 	}
 }

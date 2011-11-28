@@ -22,7 +22,6 @@ import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.mitre.affinity.view.venn_diagram.model.VennDiagramSetsMatrix;
 import org.mitre.affinity.view.venn_diagram.view.swing.VennDiagramKNearestsMatrixPane;
-import org.mitre.affinity.view.venn_diagram.view.swing.VennDiagramMatrixPane;
 
 public class SWTVennDiagramMatrix_KNeighbors extends Canvas{
 	private final VennDiagramKNearestsMatrixPane vennDiagramMatrix;

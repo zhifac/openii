@@ -21,27 +21,28 @@ import org.eclipse.swt.awt.SWT_AWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
-import org.mitre.affinity.clusters.ClustersContainer;
+import org.mitre.affinity.model.clusters.ClustersContainer;
 import org.mitre.affinity.view.ClusterDistanceSliderPane;
 
 //testing this
-public class SWTClusterDistanceSliderPane extends Canvas {
-	private final ClusterDistanceSliderPane clusterDistanceSliderPane;
+public class SWTClusterDistanceSliderPane<K, V> extends Canvas {
+	
+	private final ClusterDistanceSliderPane<K, V> clusterDistanceSliderPane;
 
-	public SWTClusterDistanceSliderPane(Composite parent, int style, ClustersContainer clusters, int orientation) {
+	public SWTClusterDistanceSliderPane(Composite parent, int style, ClustersContainer<K> clusters, int orientation) {
 		super(parent, style | SWT.EMBEDDED);
 		
 		java.awt.Frame frame = SWT_AWT.new_Frame(this);		
 		java.awt.Panel panel = new java.awt.Panel(new java.awt.BorderLayout());
 		
-		this.clusterDistanceSliderPane = new ClusterDistanceSliderPane(clusters, orientation);
+		this.clusterDistanceSliderPane = new ClusterDistanceSliderPane<K, V>(clusters, orientation);
 		Color background = parent.getBackground();
 		clusterDistanceSliderPane.setBackground(new java.awt.Color(background.getRed(), background.getGreen(), background.getBlue()));
 		panel.add(this.clusterDistanceSliderPane);	
 		frame.add(panel);
 	}
 
-	public ClusterDistanceSliderPane getClusterDistanceSliderPane() {
+	public ClusterDistanceSliderPane<K, V> getClusterDistanceSliderPane() {
 		return clusterDistanceSliderPane;
 	}
 }

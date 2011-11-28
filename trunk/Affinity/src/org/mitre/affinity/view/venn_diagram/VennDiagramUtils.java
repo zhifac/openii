@@ -21,7 +21,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import org.mitre.affinity.model.ISchemaManager;
+import org.mitre.affinity.model.schemas.ISchemaManager;
 import org.mitre.affinity.view.venn_diagram.model.CachedFilteredSchemaInfo;
 import org.mitre.harmony.matchers.MatchGenerator;
 import org.mitre.harmony.matchers.MatcherManager;

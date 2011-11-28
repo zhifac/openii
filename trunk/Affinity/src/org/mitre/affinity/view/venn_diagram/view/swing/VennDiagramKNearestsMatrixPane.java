@@ -158,13 +158,8 @@ public class VennDiagramKNearestsMatrixPane extends JPanel implements MinMaxSlid
 		JLabel labelForView = new JLabel(textForViewLabel);	
 		labelForView.setForeground(Color.blue);
         labelForView.setFont(new Font(getFont().getName(), Font.BOLD, 18));
-
-        toolbarPane.add(labelForView);
-        
-
-        
-        add(toolbarPane, BorderLayout.NORTH);
-        
+        toolbarPane.add(labelForView);        
+        add(toolbarPane, BorderLayout.NORTH);        
 		
 		if(showMinMaxSlider) {
 			MinMaxSliderPane slider = new MinMaxSliderPane(JSlider.VERTICAL, 
@@ -172,16 +167,14 @@ public class VennDiagramKNearestsMatrixPane extends JPanel implements MinMaxSlid
 			slider.addMinMaxSliderListener(this);
 			slider.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
 			add(slider, BorderLayout.EAST);			
-		}
-		
+		}		
 		
 		JPanel schemaPane = new JPanel();
 		schemaPane.setLayout(new GridLayout(2, 0));
-		add(schemaPane, BorderLayout.CENTER);
-		        
+		add(schemaPane, BorderLayout.CENTER);		        
 		
 		JPanel matrixPane = new JPanel();
-		int numSchemas = matrix.getNumSchemas();
+		//int numSchemas = matrix.getNumSchemas();
 //		GridLayout gl = new GridLayout(0, numSchemas-1);
 		GridLayout gl = new GridLayout(0, 3);
 		gl.setHgap(2);
@@ -195,7 +188,7 @@ public class VennDiagramKNearestsMatrixPane extends JPanel implements MinMaxSlid
 			fontSize = 14;
 		}*/
 		Font font = new Font(getFont().getName(), Font.PLAIN, fontSize);	
-		int rowIndex = 0;
+		//int rowIndex = 0;
 		int countPos = 1;
 		//for(ArrayList<VennDiagramSets> row : matrix) {
 		for(ArrayList<VennDiagramSets> vdSet : matrix) {
@@ -324,13 +317,12 @@ public class VennDiagramKNearestsMatrixPane extends JPanel implements MinMaxSlid
 	
 	//sorts row of venn diagrams in the matrix using jaccard's distance
 	//basically orders the VD's 
-	private void sortRowByJaccards(){
+	protected void sortRowByJaccards(){
 		Comparator<VennDiagramSets> c = new Comparator<VennDiagramSets>(){
 			//returns negative integer if vd1 > vd2
 			//returns zero if vd1 = vd2
 			//returns positive integer if vd1 < vd2
 			public int compare(VennDiagramSets vd1, VennDiagramSets vd2) {
-				// TODO Auto-generated method stub
 				double j1=	vd1.getJaccards(matrix.getMinMatchScoreThreshold());
 				double j2 = vd2.getJaccards(matrix.getMinMatchScoreThreshold());
 				if(j1 < j2){
@@ -348,13 +340,12 @@ public class VennDiagramKNearestsMatrixPane extends JPanel implements MinMaxSlid
 
 	//sorts row by the number of unique elements in A
 	//basically orders the VD's 
-	private void sortRowByUniqueA(){
+	protected void sortRowByUniqueA(){
 		Comparator<VennDiagramSets> c = new Comparator<VennDiagramSets>(){
 			//returns negative integer if vd1 > vd2
 			//returns zero if vd1 = vd2
 			//returns positive integer if vd1 < vd2
-			public int compare(VennDiagramSets vd1, VennDiagramSets vd2) {
-				// TODO Auto-generated method stub
+			public int compare(VennDiagramSets vd1, VennDiagramSets vd2) {				
 				double s1=	vd1.getSchema1UniqueElements().size();
 				double s2 = vd2.getSchema1UniqueElements().size();
 				if(s1 > s2){
@@ -432,7 +423,7 @@ public class VennDiagramKNearestsMatrixPane extends JPanel implements MinMaxSlid
 				fireVennDiagramEvent(selectedVennDiagram.getSets(), ev.getX(), ev.getY(), ev.getButton(),
 						ev.isControlDown());
 			}
-		}else if(clickedComponent instanceof JList){
+		} else if(clickedComponent instanceof JList){
 			//System.out.println("Clicked a JList");
 			JTextPane jtp = new JTextPane();
 			StyledDocument sd = jtp.getStyledDocument();
@@ -468,7 +459,7 @@ public class VennDiagramKNearestsMatrixPane extends JPanel implements MinMaxSlid
 					forLabel = se.getDescription();
 					//dlg.setLocationRelativeTo(uniqueBList);
 				}
-				JLabel label = new JLabel(" " + forLabel + " ");
+				//JLabel label = new JLabel(" " + forLabel + " ");
 				
 				//trying to make sure it all fits nicely in the dialog box
 				/*Graphics g = this.getGraphics();
@@ -498,10 +489,8 @@ public class VennDiagramKNearestsMatrixPane extends JPanel implements MinMaxSlid
 				
 				dlg.pack();
 				dlg.toFront();
-				dlg.setVisible(true);
-				
-				
-			}else if(clickedComponent == this.matchedABList){
+				dlg.setVisible(true);				
+			} else if(clickedComponent == this.matchedABList){
 				JDialog dlg = new JDialog();
 				dlg.setAlwaysOnTop(true);
 				dlg.setResizable(true);
@@ -533,8 +522,6 @@ public class VennDiagramKNearestsMatrixPane extends JPanel implements MinMaxSlid
 				dlg.setContentPane(pane);
 				dlg.setTitle(forName);
 				*/
-				
-
 					try {
 						sd.insertString(sd.getLength(), mses.getMatchedElement(s1).getName() + ": ", bold);
 						sd.insertString(sd.getLength(), mses.getMatchedElement(s1).getDescription() + " \n", reg);
@@ -567,10 +554,8 @@ public class VennDiagramKNearestsMatrixPane extends JPanel implements MinMaxSlid
 			}	
 		}
 	}
-
 	
-	private void updateList(VennDiagramKNearestView selectedVennDiagram){
-		
+	private void updateList(VennDiagramKNearestView selectedVennDiagram) {		
 		//update list for SchemaA Unique elements
 		Set<SchemaElement> curr_seA = selectedVennDiagram.getSets().getSchema1UniqueElements();
 		
@@ -579,12 +564,7 @@ public class VennDiagramKNearestsMatrixPane extends JPanel implements MinMaxSlid
 		for(SchemaElement e : curr_seA){
 			this.uniqueAlistmodel.addElement(e);
 		}
-		uniqueAList.repaint();
-		
-		
-		
-		
-		
+		uniqueAList.repaint();		
 		
 		//update list for Matching Elements
 		List<MatchedSchemaElements> seAB = selectedVennDiagram.getSets().getIntersectElements();
@@ -595,8 +575,7 @@ public class VennDiagramKNearestsMatrixPane extends JPanel implements MinMaxSlid
 		for(MatchedSchemaElements e: seAB){
 			this.matchedABlistmodel.addElement(e);
 		}
-		matchedABList.repaint();
-		
+		matchedABList.repaint();		
 		
 		//update list for Schema B Unique Elements
 		Set<SchemaElement> seB = selectedVennDiagram.getSets().getSchema2UniqueElements();
@@ -610,13 +589,11 @@ public class VennDiagramKNearestsMatrixPane extends JPanel implements MinMaxSlid
 	public void mouseEntered(MouseEvent arg0) {}
 	public void mouseClicked(MouseEvent arg0) {}
 	public void mouseExited(MouseEvent arg0) {}
-	public void mouseReleased(MouseEvent arg0) {}
-	
+	public void mouseReleased(MouseEvent arg0) {}	
 	
 	public static class VennDiagramMatrixCell {
 		public VennDiagramKNearestView vennDiagram;
-		public boolean isSelected;
-		
+		public boolean isSelected;		
 	}
 
 	public void actionPerformed(ActionEvent e) {
@@ -627,14 +604,14 @@ public class VennDiagramKNearestsMatrixPane extends JPanel implements MinMaxSlid
 		for(VennDiagramKNearestView vennDiagram : vennDiagrams){
 			vennDiagram.setViewType(selectedItem);
 			vennDiagram.repaint();
-		}
-			
-	}
-	
+		}			
+	}	
 	
 	class MatchedCellRenderer extends JLabel implements ListCellRenderer {
-	    public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus)    
-	    {
+		
+		private static final long serialVersionUID = 1L;
+
+		public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
 	        MatchedSchemaElements mses = (MatchedSchemaElements)value;
 			Integer s1 = selectedVennDiagram.getSets().getSchema1().getId();
 			Integer s2 = selectedVennDiagram.getSets().getSchema2().getId();
@@ -657,12 +634,6 @@ public class VennDiagramKNearestsMatrixPane extends JPanel implements MinMaxSlid
 		   	}
 
 	        return this;
-	    }
-	    
-	    
+	    }	    
 	}
 }
-
-
-
-

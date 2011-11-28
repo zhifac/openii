@@ -17,7 +17,9 @@
 package org.mitre.affinity.view.event;
 
 public class ClusterDistanceChangeEvent {
+	
 	public final double newMinDistance;
+	
 	public final double newMaxDistance;
 	
 	public ClusterDistanceChangeEvent(double newMinDistance, double newMaxDistance) {

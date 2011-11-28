@@ -25,8 +25,8 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
-import org.mitre.affinity.model.AffinitySchemaManager;
-import org.mitre.affinity.model.AffinitySchemaStoreManager;
+import org.mitre.affinity.model.schemas.AffinitySchemaManager;
+import org.mitre.affinity.model.schemas.AffinitySchemaStoreManager;
 import org.mitre.affinity.util.SWTUtils;
 import org.mitre.affinity.view.venn_diagram.model.CachedFilteredSchemaInfo;
 import org.mitre.affinity.view.venn_diagram.model.VennDiagramSets;

@@ -16,17 +16,19 @@
 
 package org.mitre.affinity.view.event;
 
-import org.mitre.affinity.clusters.ClusterGroup;
+import org.mitre.affinity.model.clusters.ClusterGroup;
 
-public interface AffinityListener {
-	//public void schemasSelected(List<Integer> schemaIDs);
-	//public void 	
+public interface AffinityListener<K> {
 	
-	public void schemaSelected(Integer schemaID, Object source);
-	public void schemaUnselected(Integer schemaID, Object source);
-	public void schemaDoubleClicked(Integer schemaID, Object source);
+	public void clusterObjectSelected(K objectID, Object source);
 	
-	public void clusterSelected(ClusterGroup cluster, Object source);
-	public void clusterUnselected(ClusterGroup cluster, Object source);	
-	public void clusterDoubleClicked(ClusterGroup cluster, Object source);
+	public void clusterObjectUnselected(K objectID, Object source);
+	
+	public void clusterObjectDoubleClicked(K objectID, Object source);
+	
+	public void clusterSelected(ClusterGroup<K> cluster, Object source);
+	
+	public void clusterUnselected(ClusterGroup<K> cluster, Object source);
+	
+	public void clusterDoubleClicked(ClusterGroup<K> cluster, Object source);
 }

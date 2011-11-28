@@ -47,7 +47,7 @@ public class VennDiagramSetsMatrix implements Iterable<ArrayList<VennDiagramSets
 	
 	public VennDiagramSetsMatrix(List<FilteredSchemaInfo> schemaInfos, double minMatchScoreThreshold, double maxMatchScoreThreshold, MatchGenerator matchScoreComputer) {	
 		numSchemas = schemaInfos.size();
-		int numCols = numSchemas;
+		//int numCols = numSchemas;
 		int rowIndex = 0;
 		this.matrix = new ArrayList<ArrayList<VennDiagramSets>>(numSchemas);
 		this.minMatchScoreThreshold = minMatchScoreThreshold;
@@ -69,14 +69,14 @@ public class VennDiagramSetsMatrix implements Iterable<ArrayList<VennDiagramSets
 			}
 			matrix.add(row);
 			rowIndex++;
-			numCols--;
+			//numCols--;
 		}
 	}
 
 	/** constructor without min and max defined uses 1.0 for max and greatest stdDev for min **/
 	public VennDiagramSetsMatrix(List<FilteredSchemaInfo> schemaInfos, MatchGenerator matchScoreComputer) {	
 		numSchemas = schemaInfos.size();
-		int numCols = numSchemas;
+		//int numCols = numSchemas;
 		int rowIndex = 0;
 		this.matrix = new ArrayList<ArrayList<VennDiagramSets>>(numSchemas);
 		
@@ -100,7 +100,7 @@ public class VennDiagramSetsMatrix implements Iterable<ArrayList<VennDiagramSets
 			}
 			matrix.add(row);
 			rowIndex++;
-			numCols--;
+			//numCols--;
 		}
 
 		this.minMatchScoreThreshold = greatestStdDv();

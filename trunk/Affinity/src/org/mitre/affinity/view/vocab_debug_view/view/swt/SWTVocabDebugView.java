@@ -16,18 +16,11 @@
 
 package org.mitre.affinity.view.vocab_debug_view.view.swt;
 
-import java.awt.BorderLayout;
-import java.awt.Panel;
-
-import org.mitre.affinity.view.venn_diagram.model.VennDiagramSets;
-import org.mitre.affinity.view.venn_diagram.view.swing.VennDiagramPane;
 import org.mitre.affinity.view.vocab_debug_view.model.VocabDebugViewSets;
 import org.mitre.affinity.view.vocab_debug_view.swing.VocabDebugPane;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.awt.SWT_AWT;
-import org.eclipse.swt.layout.FillLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 
