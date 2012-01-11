@@ -58,8 +58,6 @@ public abstract class ZoomPanCanvas extends Canvas implements IRenderer, MouseLi
 	/** The ratio of the size of the overview area to the detail area */
 	protected float overviewToDetailRatio = 0.15f;
 	
-	//boolean zooming = false;
-	
 	/** Current pan x/y offsets */
 	private float dx, dy;
 	
@@ -110,7 +108,7 @@ public abstract class ZoomPanCanvas extends Canvas implements IRenderer, MouseLi
 		super(parent, style);
 		
 		this.panCursor = parent.getDisplay().getSystemCursor(SWT.CURSOR_SIZEALL);
-		this.normalCursor =  parent.getDisplay().getSystemCursor(SWT.CURSOR_ARROW);
+		this.normalCursor =  parent.getDisplay().getSystemCursor(SWT.CURSOR_ARROW);		
 		
 		this.parent = parent;
 		this.dx = 0;
@@ -149,15 +147,16 @@ public abstract class ZoomPanCanvas extends Canvas implements IRenderer, MouseLi
 		}*/
 		
 		//Render the background
-		Rectangle bounds = this.getBounds();
+		Rectangle bounds = getBounds();
 		//gc.setBackground(getBackground());
 		//gc.fillRectangle(bounds);
-		this.drawBackground(gc, bounds.x, bounds.y, bounds.width, bounds.height);
+		drawBackground(gc, bounds.x, bounds.y, bounds.width, bounds.height);
 		
 		//Render with zoom/pan transformation
-		if(this.zoomPanTransform != null)
-			this.zoomPanTransform.dispose();
-		this.zoomPanTransform = createZoomPanTransform();		
+		if(zoomPanTransform != null) {
+			zoomPanTransform.dispose();
+		}
+		zoomPanTransform = createZoomPanTransform();		
 		gc.setTransform(zoomPanTransform);				
 		/*
 		Font font = null;
@@ -172,7 +171,7 @@ public abstract class ZoomPanCanvas extends Canvas implements IRenderer, MouseLi
 		}
 		*/
 		renderingOverview = false;
-		this.render(gc, parent);
+		render(gc, parent);
 		//gc.drawImage(bufferedImage, 0, 0);
 		
 		//Render the overview
@@ -181,7 +180,7 @@ public abstract class ZoomPanCanvas extends Canvas implements IRenderer, MouseLi
 			//We always want to scale fonts when drawing the overview
 			//boolean origZoomFont = this.zoomFont;
 			//zoomFont = true;			
-			this.renderOverview(gc);			
+			renderOverview(gc);			
 			//zoomFont = origZoomFont;			
 		}
 		

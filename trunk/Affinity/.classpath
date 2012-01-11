@@ -12,5 +12,10 @@
 	<classpathentry kind="lib" path="lib/SchemaStoreClient.jar"/>
 	<classpathentry kind="lib" path="lib/SchemaStorePorters.jar"/>
 	<classpathentry kind="lib" path="lib/org.eclipse.jface_3.4.2.M20090107-0800.jar"/>
+	<classpathentry kind="lib" path="lib/jung/collections-generic-4.01.jar"/>
+	<classpathentry kind="lib" path="lib/jung/jung-algorithms-2.0.1.jar"/>
+	<classpathentry kind="lib" path="lib/jung/jung-graph-impl-2.0.1.jar"/>
+	<classpathentry kind="lib" path="lib/LinkCommunityFinder.jar"/>
+	<classpathentry kind="lib" path="lib/jung/jung-api-2.0.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

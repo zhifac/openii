@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.mitre.affinity.util;
+package org.mitre.affinity.view.swt;
 
 import java.util.HashMap;
 import java.util.Map;

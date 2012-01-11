@@ -27,7 +27,7 @@ import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
 
-public class AffinityConstants {
+public class AffinityConstants {	
 	public static ImageRegistry imageRegistry = null;
 	
 	/** Array containing possible zoom levels */
@@ -46,6 +46,12 @@ public class AffinityConstants {
 	public static enum CursorType {PAN_CURSOR, PANNING_CURSOR, SELECT_MULTIPLE_OBJECTS_CURSOR};
 	
 	private static final Map<CursorType, Cursor> AFFINITY_CURSORS = new HashMap<CursorType, Cursor>();
+	
+	/** Deafult diameter/size of cluster objects in the Craigrogram (pixels) */
+	public static final int CLUSTER_OBJECT_DIAMETER = 10;
+	
+	/** Default cluster radius increment in the Craigrogram (pixels) */
+	public static final int CLUSTER_RADIUS_INCREMENT = 5;
 	
 	private AffinityConstants() {}
 	

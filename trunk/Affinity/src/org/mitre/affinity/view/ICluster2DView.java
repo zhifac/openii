@@ -16,7 +16,13 @@
 
 package org.mitre.affinity.view;
 
-public interface ICluster2DView<K, V> extends IClusterView<K, V> {
+/**
+ * @author CBONACETO
+ *
+ * @param <K>
+ * @param <V>
+ */
+public interface ICluster2DView<K extends Comparable<K>, V> extends IClusterView<K, V> {
 	
 	public static enum Mode{PAN_AND_SELECT, SELECT_MULTIPLE_CLUSTER_OBJECTS};
 	

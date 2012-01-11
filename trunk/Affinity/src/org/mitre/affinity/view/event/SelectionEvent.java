@@ -20,7 +20,7 @@ import java.util.Collection;
 
 import org.mitre.affinity.model.clusters.ClusterGroup;
 
-public class SelectionEvent<K> {
+public class SelectionEvent<K extends Comparable<K>> {
 	/** The object that generated the event */
 	public final Object eventSource;
 	

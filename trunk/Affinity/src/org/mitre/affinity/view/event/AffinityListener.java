@@ -18,7 +18,7 @@ package org.mitre.affinity.view.event;
 
 import org.mitre.affinity.model.clusters.ClusterGroup;
 
-public interface AffinityListener<K> {
+public interface AffinityListener<K extends Comparable<K>> {
 	
 	public void clusterObjectSelected(K objectID, Object source);
 	

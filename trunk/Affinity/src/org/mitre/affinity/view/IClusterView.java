@@ -19,16 +19,16 @@ package org.mitre.affinity.view;
 import java.util.Collection;
 
 import org.mitre.affinity.model.clusters.ClusterGroup;
-import org.mitre.affinity.util.SWTUtils.TextSize;
 import org.mitre.affinity.view.event.SelectionChangedListener;
 import org.mitre.affinity.view.event.SelectionClickedListener;
+import org.mitre.affinity.view.swt.SWTUtils.TextSize;
 
 /**
  * @author cbonaceto
  *
  * @param <K>
  */
-public interface IClusterView<K, V> {
+public interface IClusterView<K extends Comparable<K>, V> {
 	
 	public void addSelectionChangedListener(SelectionChangedListener<K> listener);
 	

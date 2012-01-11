@@ -21,7 +21,7 @@ import java.util.Collection;
 import org.mitre.affinity.model.clusters.ClusterGroup;
 
 
-public class SelectionChangedEvent<K> extends SelectionEvent<K> {
+public class SelectionChangedEvent<K extends Comparable<K>> extends SelectionEvent<K> {
 	
 	public SelectionChangedEvent(Object eventSource) {
 		super(eventSource);

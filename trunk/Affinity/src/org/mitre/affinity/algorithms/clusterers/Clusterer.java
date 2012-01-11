@@ -16,17 +16,18 @@
 
 package org.mitre.affinity.algorithms.clusterers;
 
-import java.util.ArrayList;
+import java.util.Collection;
 
+import org.mitre.affinity.algorithms.IProgressMonitor;
 import org.mitre.affinity.model.clusters.ClustersContainer;
 import org.mitre.affinity.model.clusters.DistanceGrid;
 
 /** Clusterer Interface - A clusterer clusters the various schemas based on results of the distance grid */	
-public interface Clusterer<K>
-{
+public interface Clusterer<K extends Comparable<K>> {
 	/** Return the name of the clusterer */
 	public String getName();
 
 	/** Generates a set of clusters based on the distance grid */
-	public ClustersContainer<K> generateClusters(ArrayList<K> objectIDs, DistanceGrid<K> grid);
+	public ClustersContainer<K> generateClusters(Collection<K> objectIDs, DistanceGrid<K> grid,
+			IProgressMonitor progressMonitor);
 }

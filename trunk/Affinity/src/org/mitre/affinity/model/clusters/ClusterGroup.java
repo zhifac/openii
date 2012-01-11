@@ -34,7 +34,7 @@ import org.eclipse.swt.widgets.Display;
  * @param <K>
  * 
  */
-public class ClusterGroup<K> implements Iterable<K> {
+public class ClusterGroup<K extends Comparable<K>> implements Iterable<K> {
 	
 	/** Stores the list of objects associated with the cluster */
 	private SortedSet<K> objectIDs;

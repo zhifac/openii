@@ -17,8 +17,8 @@
 package org.mitre.affinity.model.clusters;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 
 /**
  * Contains the clusters.
@@ -28,7 +28,7 @@ import java.util.List;
  *@param <K>
  *
  */
-public class ClustersContainer<K> implements Iterable<ClusterStep<K>> {
+public class ClustersContainer<K extends Comparable<K>> implements Iterable<ClusterStep<K>> {
 	
 	/** Stores the distance grid used in generating these clusters */
 	private final DistanceGrid<K> grid;	
@@ -37,14 +37,14 @@ public class ClustersContainer<K> implements Iterable<ClusterStep<K>> {
 	private final ArrayList<ClusterStep<K>> clusterSteps = new ArrayList<ClusterStep<K>>();
 	
 	/** Stores list of all cluster objects in all clusters */
-	private final List<K> objectIDs;
+	private final Collection<K> objectIDs;
 	
 	/** Clusters Constructor */
-	public ClustersContainer(List<K> objectIDs, DistanceGrid<K> grid) {
+	public ClustersContainer(Collection<K> objectIDs, DistanceGrid<K> grid) {
 		this.grid = grid;
 		this.objectIDs = objectIDs;
 		
-		// Initialize the clusters such that the first step allows each schema to be in its own group
+		// Initialize the clusters such that the first step allows each cluster object to be in its own cluster group
 		ClusterStep<K> cs = new ClusterStep<K>();
 		for(K objectID : objectIDs) {
 			ClusterGroup<K> cg = new ClusterGroup<K>();
@@ -62,7 +62,7 @@ public class ClustersContainer<K> implements Iterable<ClusterStep<K>> {
 	/** Gets all of the objects in all clusters
 	 * @return
 	 */
-	public List<K> getObjectIDs() {
+	public Collection<K> getObjectIDs() {
 		return objectIDs;
 	}
 
@@ -95,7 +95,7 @@ public class ClustersContainer<K> implements Iterable<ClusterStep<K>> {
 	 * @param cc - The clusters container
 	 * @return
 	 */
-	public ClustersContainer<K> removeDuplicateClusterGroups(List<K> objectIds, ClustersContainer<K> cc) {
+	public ClustersContainer<K> removeDuplicateClusterGroups(Collection<K> objectIds, ClustersContainer<K> cc) {
 		ClustersContainer<K> newCC = new ClustersContainer<K>(objectIds, cc.getDistanceGrid());		
 		
 		int currStep = 0;

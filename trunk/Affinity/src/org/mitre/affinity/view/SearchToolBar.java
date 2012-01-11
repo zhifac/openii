@@ -32,7 +32,7 @@ import org.mitre.affinity.model.IClusterObjectManager;
  * @author cbonaceto
  *
  */
-public class SearchToolBar<K, V> extends Composite {
+public class SearchToolBar<K extends Comparable<K>, V> extends Composite {
 	
 	private Composite toolBar;
 	

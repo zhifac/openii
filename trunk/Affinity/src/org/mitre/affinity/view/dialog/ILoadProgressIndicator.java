@@ -22,6 +22,7 @@ package org.mitre.affinity.view.dialog;
  * @author CBONACETO
  *
  */
+@Deprecated
 public interface ILoadProgressIndicator {
 	public void setProgressText(String text);
 	

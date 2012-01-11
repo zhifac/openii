@@ -17,11 +17,13 @@
 package org.mitre.affinity.algorithms.dimensionality_reducers;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Random;
 
+import org.mitre.affinity.algorithms.IProgressMonitor;
 import org.mitre.affinity.model.Position;
 import org.mitre.affinity.model.PositionGrid;
 import org.mitre.affinity.model.clusters.ClusterObjectPairValue;
@@ -47,18 +49,18 @@ import prefuse.util.force_craig.SpringForce;
  * @author CBONACETO
  *
  */
-public class PrefuseForceDirectedMDS<K> implements IMultiDimScaler<K> {
+public class PrefuseForceDirectedMDS<K extends Comparable<K>> implements IMultiDimScaler<K> {
 	
 	/**
 	 * The number of simulator iterations to run in bringing the system to equilibrium
 	 * (about 1000 iterations seems to be enough) 
 	 */
-	private int numIterations = 2500;
+	private int numIterations = 1000; //previously 2500
 	
 	/**
 	 * List of cluster object IDs
 	 */
-	private ArrayList<K> objectIDs;
+	private Collection<K> objectIDs;
 	
 	public int getNumIterations() {
 		return numIterations;
@@ -68,29 +70,28 @@ public class PrefuseForceDirectedMDS<K> implements IMultiDimScaler<K> {
 		this.numIterations = numIterations;
 	}	
 
-	public ArrayList<K> getObjectIDs() {
+	public Collection<K> getObjectIDs() {
 		return objectIDs;
 	}
 
-	public void setObjectIDs(ArrayList<K> objectIDs) {
+	public void setObjectIDs(Collection<K> objectIDs) {
 		this.objectIDs = objectIDs;
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public PositionGrid<K> scaleDimensions(DistanceGrid<K> dg, boolean isSymmetric,
-			boolean isMetric, int numDimensions, boolean metric) {		
+			boolean isMetric, int numDimensions, boolean metric, IProgressMonitor progressMonitor) {		
 		
 //		System.out.println("Distance grid: " + dg);
 //		System.out.println("Size of dg is: " + dg.getValues().size());
 				
 		if(objectIDs == null) 
-			throw new IllegalArgumentException("Error in PrefuseForceDirectedMDS: Must first set objectIDs before running scaleDimensions.");
-
+			throw new IllegalArgumentException("Error in PrefuseForceDirectedMDS: Must first set objectIDs before running scaleDimensions.");		
 		
 		//Deterministic randomness
 		AbstractForce.rand = new Random(234L);
 		
-		ForceSimulator fs = runForceSimulator(objectIDs, dg, this.numIterations);
+		ForceSimulator fs = runForceSimulator(objectIDs, dg, this.numIterations, progressMonitor);
 		
 		PositionGrid<K> pg = new PositionGrid<K>(numDimensions);
 		
@@ -107,11 +108,17 @@ public class PrefuseForceDirectedMDS<K> implements IMultiDimScaler<K> {
 		return pg;
 	}
 	
-	protected ForceSimulator runForceSimulator(ArrayList<K> objectIDs, DistanceGrid<K> dg, int numIterations) {
+	protected ForceSimulator runForceSimulator(Collection<K> objectIDs, DistanceGrid<K> dg, int numIterations,
+			IProgressMonitor progressMonitor) {
 		ForceSimulator fs = new ForceSimulator();
 		fs.addForce(new NBodyForce());
 		fs.addForce(new SpringForce());
 		fs.addForce(new DragForce());
+		
+		if(progressMonitor != null) {
+			progressMonitor.setProgress(0);
+			progressMonitor.setNote("Initializing Forces");
+		}
 		
 		//Create a ForceItem for each schema
 		Map<K, ForceItemForClusterObject<K>> forceItems = new HashMap<K, ForceItemForClusterObject<K>>(); //maps object ID to ForceItem for that object
@@ -123,8 +130,7 @@ public class PrefuseForceDirectedMDS<K> implements IMultiDimScaler<K> {
 				
 		//System.out.println("About to add a spring for each distance grid entry");
 		//Add a spring for each distance grid entry where the spring length is the distance
-		for(ClusterObjectPairValue<K, Double> value : dg.getValues())
-		{
+		for(ClusterObjectPairValue<K, Double> value : dg.getValues()) {
 			//System.out.println("Pair is: " + value.getSchema1ID() + " " + value.getSchema2ID());
 			ForceItem fi1 = forceItems.get(value.getObject1ID());
 			ForceItem fi2 = forceItems.get(value.getObject2ID());	
@@ -132,12 +138,21 @@ public class PrefuseForceDirectedMDS<K> implements IMultiDimScaler<K> {
 		}
 		//System.out.println("finished adding a spring for each distance grid entry");
 		long timestep = 1000L;		
-		for ( int i = 0; i < numIterations; i++ ) {
+		float progressPerIteration = 100f/numIterations;
+		for (int i = 0; i < numIterations; i++)  {
 			// use an annealing schedule to set time step
 			timestep *= (1.0 - i/(double)numIterations);
 			long step = timestep+50;
 			// run simulator
-			fs.runSimulator(step);           
+			fs.runSimulator(step);
+			if(progressMonitor != null) {
+				progressMonitor.setProgress((int)(progressPerIteration * i));
+				progressMonitor.setNote("Simulating Force Interactions");
+			}
+		}
+		
+		if(progressMonitor != null) {
+			progressMonitor.setProgress(100);
 		}
 		
 		return fs;
@@ -252,7 +267,7 @@ public class PrefuseForceDirectedMDS<K> implements IMultiDimScaler<K> {
 		
 		PrefuseForceDirectedMDS<Integer> mds = new PrefuseForceDirectedMDS<Integer>();
 		mds.setObjectIDs(schemas);
-		PositionGrid<Integer> pg = mds.scaleDimensions(dg, true, false, 2, false);	
+		PositionGrid<Integer> pg = mds.scaleDimensions(dg, true, false, 2, false, null);	
 		
 		new MDSTester(schemas, dg, pg);
 	}

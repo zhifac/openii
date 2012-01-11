@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.mitre.affinity.util;
+package org.mitre.affinity.model.schemas;
 
 import java.io.FileReader;
 import java.io.IOException;
@@ -28,7 +28,6 @@ import org.mitre.affinity.algorithms.distance_functions.DistanceFunction;
 import org.mitre.affinity.model.Position;
 import org.mitre.affinity.model.PositionGrid;
 import org.mitre.affinity.model.clusters.DistanceGrid;
-import org.mitre.affinity.model.schemas.SchemaDocument;
 //import org.mitre.affinity.model.AffinitySchemaManager;
 
 //import org.mitre.schemastore.porters.schemaImporters.SchemaImporterException;

@@ -3,6 +3,10 @@ package org.mitre.affinity.model.schemas;
 import org.mitre.affinity.model.ClusterObjectProperties;
 import org.mitre.schemastore.model.Schema;
 
+/**
+ * @author CBONACETO
+ *
+ */
 public class SchemaClusterObject extends ClusterObjectProperties<Integer, Schema> {
 	
 	public SchemaClusterObject(Schema clusterObject) {

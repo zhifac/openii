@@ -21,14 +21,14 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Display;
-import org.mitre.affinity.util.SWTUtils;
+import org.mitre.affinity.view.swt.SWTUtils;
 
 /**
  * @author cbonaceto
  *
  * @param <K>
  */
-public abstract class BasicClusterObjectGUI<K, V> implements IClusterObjectGUI<K, V> {
+public abstract class BasicClusterObjectGUI<K extends Comparable<K>, V> implements IClusterObjectGUI<K, V> {
 	
 	/** The cluster object ID */
 	protected K objectID; 
@@ -52,9 +52,9 @@ public abstract class BasicClusterObjectGUI<K, V> implements IClusterObjectGUI<K
 	
 	protected boolean selected = false;
 	
-	/*public int compareTo(IClusterObjectGUI<K> arg0) {		
+	public int compareTo(IClusterObjectGUI<K, V> arg0) {		
 		return arg0.getObjectID().compareTo(objectID);
-	}*/
+	}
 	
 	@Override
 	public Font getSelectedFont() {

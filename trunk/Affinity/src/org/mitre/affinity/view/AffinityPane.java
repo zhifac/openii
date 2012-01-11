@@ -16,31 +16,17 @@
 
 package org.mitre.affinity.view;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.swing.SwingConstants;
 
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.Font;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.ControlListener;
-import org.eclipse.swt.events.MenuAdapter;
-import org.eclipse.swt.events.MenuEvent;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
@@ -50,48 +36,28 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Decorations;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Listener;
-import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Sash;
 import org.mitre.affinity.AffinityConstants;
-import org.mitre.affinity.algorithms.clusterers.Clusterer;
-import org.mitre.affinity.algorithms.dimensionality_reducers.IMultiDimScaler;
-import org.mitre.affinity.algorithms.dimensionality_reducers.PrefuseForceDirectedMDS;
-import org.mitre.affinity.algorithms.distance_functions.DistanceFunction;
-import org.mitre.affinity.algorithms.distance_functions.schemas.JaccardDistanceFunction;
-import org.mitre.affinity.model.AffinityModel;
+import org.mitre.affinity.model.IClusterObjectManager;
 import org.mitre.affinity.model.Position;
 import org.mitre.affinity.model.PositionGrid;
 import org.mitre.affinity.model.clusters.ClusterGroup;
-import org.mitre.affinity.model.clusters.ClusterObjectPairValues;
 import org.mitre.affinity.model.clusters.ClustersContainer;
-import org.mitre.affinity.model.clusters.DistanceGrid;
-import org.mitre.affinity.model.schemas.AffinitySchemaModel;
-import org.mitre.affinity.util.SWTUtils;
-import org.mitre.affinity.util.SWTUtils.TextSize;
-import org.mitre.affinity.view.craigrogram.ClusterRadiusDlg;
+import org.mitre.affinity.view.craigrogram.Cluster2DViewPane.SliderType;
 import org.mitre.affinity.view.craigrogram.OvalClusterObjectGUI;
 import org.mitre.affinity.view.craigrogram.SWTClusterDistanceSliderPane;
 import org.mitre.affinity.view.craigrogram.Cluster2DView;
 import org.mitre.affinity.view.craigrogram.Cluster2DViewPane;
-import org.mitre.affinity.view.craigrogram.Cluster2DViewPane.SliderType;
 import org.mitre.affinity.view.dendrogram.DendrogramCanvas;
 import org.mitre.affinity.view.dendrogram.DendrogramClusterObjectGUI;
-import org.mitre.affinity.view.dendrogram.model.ClusterObjectDendrogram;
-import org.mitre.affinity.view.dialog.ILoadProgressIndicator;
-import org.mitre.affinity.view.event.AffinityException;
+import org.mitre.affinity.view.event.ClusterDistanceChangeEvent;
 import org.mitre.affinity.view.event.SelectionChangedEvent;
 import org.mitre.affinity.view.event.SelectionChangedListener;
 import org.mitre.affinity.view.event.SelectionClickedListener;
-import org.mitre.schemastore.model.Schema;
-import org.mitre.schemastore.model.SchemaElement;
-import org.mitre.schemastore.model.schemaInfo.SchemaInfo;
-
+import org.mitre.affinity.view.swt.SWTUtils;
 
 /**
  * A pane with a linked "Craigrogram" and Dendrogram, and a cluster distance slider.
@@ -101,7 +67,7 @@ import org.mitre.schemastore.model.schemaInfo.SchemaInfo;
  * @param <K>
  * @param <V>
  */
-public class AffinityPane<K, V> extends Composite implements SelectionChangedListener<K> {
+public class AffinityPane<K extends Comparable<K>, V> extends Composite implements SelectionChangedListener<K> {
 	
 	/** Pane with the cluster distance slider */
 	private SWTClusterDistanceSliderPane<K, V> slider;
@@ -115,28 +81,29 @@ public class AffinityPane<K, V> extends Composite implements SelectionChangedLis
 	/** Pane above Dendrogram that allows user to search for a cluster object **/
 	private Composite searchToolBar;
 	
+	/** The cluster object manager */
+	protected IClusterObjectManager<K, V> clusterObjectManager;
+	
 	/** Mapping of cluster object id to a cached cluster object */
 	private Map<K, V> clusterObjectsMap; 
 	
 	/** Cluster object IDs of the cluster objects to be clustered */
-	private ArrayList<K> objectIDs;
+	private Collection<K> objectIDs;
 	
 	/** Percent of the screen the Craigrogram is using.  Starts out at 50. */
 	private int craigrogramPercent = 50;
 	
 	/** Whether or not the affinity pane was created successfully */
-	private boolean affinityPaneCreated;	
+	//private boolean affinityPaneCreated;	
 	
-	private boolean rescale = true;
+	//private boolean rescale = true;
 	
-	/** Contains the caught exception when there is an error creating the Craigrogram or Dendrogram */
-	private Exception exception;
 	
 	//Schema-specific code used for ground-truthing Affinity against "gold standard" schemas
-	private boolean showingSchemas = false;
-	private List<Schema> schemasForSavingStats;	
+	//private boolean showingSchemas = false;
+	/*private List<Schema> schemasForSavingStats;	
 	private ArrayList<Integer> schemaIDs;
-	private AffinitySchemaModel affinityModelForSavingStats; 
+	private AffinitySchemaModel affinityModelForSavingStats;*/
 	
 	/**
 	 * 
@@ -160,12 +127,28 @@ public class AffinityPane<K, V> extends Composite implements SelectionChangedLis
 				new PrefuseForceDirectedMDS<K>(), new HierarchicalClusterer<K>(), progressIndicator);
 	}*/	
 	
+	/**
+	 * Create a blank AffinityPane.
+	 * 
+	 * @param parent
+	 * @param style
+	 * @param searchHint
+	 * @param showingSchemas
+	 */
+	public AffinityPane(final Composite parent, int style, IClusterObjectManager<K, V> clusterObjectManager, String searchHint) {
+		super(parent, style);
+		//affinityPaneCreated = true;
+		//this.showingSchemas = showingSchemas;
+		this.clusterObjectManager = clusterObjectManager;
+		//createAffinityPane(null, null, null, null, null, searchHint);
+		createAffinityPane(searchHint);
+	}	
 	
 	/**
-	 * Creates an AffinityPane using the given cluster object IDs, dimensionality reduction algorithm,
+	 * Creates an AffinityPane using the given model, dimensionality reduction algorithm,
 	 * and clustering algorithm
 	 */
-	public AffinityPane(final Composite parent, int style, AffinityModel<K, V> affinityModel, ArrayList<K> objectIDs, 
+	/*public AffinityPane(final Composite parent, int style, AffinityModel<K, V> affinityModel, ArrayList<K> objectIDs, 
 			DistanceFunction<K, V> distanceFunction, IMultiDimScaler<K> mds, Clusterer<K> clusterer, 
 			ILoadProgressIndicator progressIndicator, String searchHint, boolean showingSchemas) {
 		super(parent, style);
@@ -239,8 +222,7 @@ public class AffinityPane<K, V> extends Composite implements SelectionChangedLis
 				}
 				createAffinityPane(objectIDs, clusterObjects, affinityModel.getClusters(), pg, 
 						affinityModel, searchHint);
-				affinityPaneCreated = true;	
-				
+				affinityPaneCreated = true;					
 			}
 		} catch(Exception ex) {
 			//There was an error creating the affinity pane
@@ -249,39 +231,86 @@ public class AffinityPane<K, V> extends Composite implements SelectionChangedLis
 			this.exception = ex;
 			if(ex.getMessage() != null && progressIndicator != null) 
 				progressIndicator.setErrorText(ex.getMessage());
-			if(progressIndicator != null) 
+			if(progressIndicator != null) {
 				progressIndicator.setProgressText("Could not launch Affinity due to errors!");
+			}
 		}
-	}
+	}*/
 	
 	/**
-	 * Creates an AffinityPane using the given cluster objects, clusters, position grid, and distance grid.
+	 * Creates an AffinityPane using the given cluster objects, clusters, and position grid.
 	 */
-	public AffinityPane(final Composite parent, int style, AffinityModel<K, V> affinityModel, 
-			ArrayList<K> objectIDs, List<V> clusterObjects, ClustersContainer<K> cc, 
-			PositionGrid<K> pg, String searchHint, boolean showingSchemas) {
+	public AffinityPane(final Composite parent, int style, IClusterObjectManager<K, V> clusterObjectManager, 
+			ArrayList<K> objectIDs, List<V> clusterObjects, ClustersContainer<K> clusters, 
+			PositionGrid<K> pg, String searchHint) {
 		super(parent, style);
+		this.clusterObjectManager = clusterObjectManager;
 		this.objectIDs = objectIDs;
-		this.showingSchemas = showingSchemas;
-		affinityPaneCreated = false;		
+		//this.showingSchemas = showingSchemas;
+		createAffinityPane(searchHint);	
+		setClusterObjectsAndClusters(objectIDs, clusterObjects, clusters, pg);
+		/*affinityPaneCreated = false;		
 		try {
-			createAffinityPane(objectIDs, clusterObjects, cc, pg, affinityModel, searchHint);
+			createAffinityPane(objectIDs, clusterObjects, clusters, pg, affinityModel, searchHint);			
 			affinityPaneCreated = true;
 		} catch(Exception ex) {
 			//There was an error creating the affinity pane
 			affinityPaneCreated = false;
 			ex.printStackTrace();	
 			this.exception = ex;
-		}
+		}*/
 	}
 	
-	public boolean isAffinityPaneCreated() {
-		return affinityPaneCreated;
-	}
+	/**
+	 * @param objectIDs
+	 * @param clusterObjects
+	 * @param clusters
+	 * @param pg
+	 */
+	public void setClusterObjectsAndClusters(ArrayList<K> objectIDs, Collection<V> clusterObjects, 
+			ClustersContainer<K> clusters, PositionGrid<K> pg) {
+		Display display = getDisplay();
+		Color black = display.getSystemColor(SWT.COLOR_BLACK);
+		Color mediumGray = new Color(display, 100, 100, 100);
+		Color lightGray = new Color(display, 150, 150, 150);
+		final List<IClusterObjectGUI<K, V>> craigrogramClusterObjectGUIs = new ArrayList<IClusterObjectGUI<K, V>>();
+		final List<DendrogramClusterObjectGUI<K, V>> dendrogramClusterObjectGUIs = new ArrayList<DendrogramClusterObjectGUI<K, V>>();
+		clusterObjectsMap = new HashMap<K, V>();
+		if(clusterObjects != null && !clusterObjects.isEmpty() && objectIDs != null && !objectIDs.isEmpty()) {
+			int i = 0;
+			for(V clusterObject : clusterObjects) {
+				K objectID = objectIDs.get(i);
+				String objectName = clusterObjectManager.getClusterObjectName(objectID);
+				clusterObjectsMap.put(objectID, clusterObject);
+				Position pos = pg.getPosition(objectID);
+				if(pos == null) {
+					System.err.println("Error: position for cluster object " + objectName + " is null");
+				}
+				OvalClusterObjectGUI<K, V> clusterObjectGUI = new OvalClusterObjectGUI<K, V>(getShell(), objectID, 
+						AffinityConstants.CLUSTER_OBJECT_DIAMETER, AffinityConstants.CLUSTER_OBJECT_DIAMETER);			
+				clusterObjectGUI.setLocation((int)pos.getDimensionValue(0), (int)pos.getDimensionValue(1));
+				clusterObjectGUI.setLabel(objectName);
+				clusterObjectGUI.setLabelColor(black);
+				clusterObjectGUI.setForeground(lightGray);
+				clusterObjectGUI.setBackground(lightGray);
+				clusterObjectGUI.setSelectedLineColor(mediumGray);
+				clusterObjectGUI.setShowLabel(true);
+				clusterObjectGUI.setToolTipText(objectName);		
+				craigrogramClusterObjectGUIs.add(clusterObjectGUI);
 
-	public Exception getException() {
-		return exception;
-	}
+				DendrogramClusterObjectGUI<K, V> dendrogramClusterObjectGUI = new DendrogramClusterObjectGUI<K, V>(objectID, clusterObject);
+				dendrogramClusterObjectGUI.setLabel(objectName);
+				dendrogramClusterObjectGUIs.add(dendrogramClusterObjectGUI);
+				i++;
+			}
+		}	
+		slider.setClusters(clusters);
+		dendrogram.setClusterObjectsAndClusters(dendrogramClusterObjectGUIs, clusters);
+		dendrogram.redraw();
+		craigrogram.setClusterObjectsAndClusters(craigrogramClusterObjectGUIs, clusters, pg);		
+		//craigrogram.fitInWindow();
+		//craigrogram.redraw();
+	}	
 	
 	public void addSelectionChangedListener(SelectionChangedListener<K> listener) {
 		craigrogram.getClusterObject2DPlot().addSelectionChangedListener(listener);
@@ -303,8 +332,16 @@ public class AffinityPane<K, V> extends Composite implements SelectionChangedLis
 		dendrogram.removeSelectionClickedListener(listener);
 	}	
 	
-	public ArrayList<K> getObjectIDs() {
+	public Collection<K> getObjectIDs() {
 		return objectIDs;
+	}
+	
+	public V getClusterObject(K objectID) {
+		return clusterObjectsMap.get(objectID);
+	}
+	
+	public Map<K, V> getClusterObjects() {
+		return clusterObjectsMap;
 	}
 
 	public Cluster2DView<K, V> getCraigrogram() {
@@ -317,6 +354,25 @@ public class AffinityPane<K, V> extends Composite implements SelectionChangedLis
 
 	public DendrogramCanvas<K, V> getDendrogram() {
 		return dendrogram;
+	}
+	
+	public void addClusterDistanceTickLocation(double distance, boolean highlighted) {
+		if(slider != null) {
+			slider.getClusterDistanceSliderPane().addClusterDistanceTickLocation(distance, highlighted);
+		}
+	}
+	
+	public void clearAdditionalClusterDistanceTickLocations() {
+		if(slider != null) {
+			slider.getClusterDistanceSliderPane().clearAdditionalClusterDistanceTickLocations();
+		}
+	}
+	
+	public void setClusterDistances(double minDistance, double maxDistance) {
+		slider.getClusterDistanceSliderPane().setClusterDistances(minDistance, maxDistance);
+		ClusterDistanceChangeEvent ev = new ClusterDistanceChangeEvent(minDistance, maxDistance);
+		dendrogram.clusterDistanceChanged(ev);
+		craigrogram.clusterDistanceChanged(ev);		
 	}
 	
 	//SelectionChangedListner method to highlight a cluster object/cluster in the dendrogram when highlighted
@@ -347,39 +403,45 @@ public class AffinityPane<K, V> extends Composite implements SelectionChangedLis
 		}	
 	}
 
-	@SuppressWarnings("unchecked")
-	protected void createAffinityPane(final ArrayList<K> objectIDs, final List<V> clusterObjects, 
-			final ClustersContainer<K> cc, final PositionGrid<K> pg, AffinityModel<K, V> affinityModel,
-			String searchHint) {		
-		setLayout(new FillLayout());
-		Display display = getDisplay();
+	//protected void createAffinityPane(final ArrayList<K> objectIDs, final List<V> clusterObjects, 
+    //		final ClustersContainer<K> cc, final PositionGrid<K> pg, AffinityModel<K, V> affinityModel,
+	//		String searchHint) {		
+	protected void createAffinityPane(String searchHint) {
+		//setLayout(new FillLayout());
 		
-		final Decorations decoration = new Decorations(this, SWT.NONE);
+		
+		/*final Decorations decoration = new Decorations(this, SWT.NONE);
 		GridLayout gl= new GridLayout(1, true);
 		gl.marginHeight = 1;	
 		gl.marginTop = 1;
 		gl.marginBottom = 1;
-		decoration.setLayout(gl);
+		decoration.setLayout(gl);*/
 		
-		int clusterObjectDiameter = 10;
+		//Create the menu
+		/*int clusterObjectDiameter = 10;
 		int radiusIncrement = 5;
-
-		//TODO: Probably should create the menu at the application level instead
-		createMenu(clusterObjects, decoration, this, radiusIncrement, affinityModel);
+		createMenu(decoration, this, radiusIncrement);*/
+		
+		GridLayout gl= new GridLayout(1, true);
+		gl.marginHeight = 1;	
+		gl.marginTop = 1;
+		gl.marginBottom = 1;
+		setLayout(gl);
 		
 		//Create pane with the cluster distance slider
-		Composite sliderPane = new Composite(decoration, SWT.NONE);
+		Composite sliderPane = new Composite(this, SWT.NONE);
 		sliderPane.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		sliderPane.setLayout(new FillLayout());
-		this.slider = new SWTClusterDistanceSliderPane<K, V>(sliderPane, SWT.NONE, cc, SwingConstants.HORIZONTAL);		
+		this.slider = new SWTClusterDistanceSliderPane<K, V>(sliderPane, SWT.NONE, null, SwingConstants.HORIZONTAL);		
 		
 		// Create sash that the Craigrogram and Dendrogram will be attached to		
-		final Composite pane = new Composite(decoration, SWT.NONE);
+		final Composite pane = new Composite(this, SWT.NONE);
 		pane.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		pane.setLayout(new FormLayout());
 		final Sash sash = new Sash(pane, SWT.VERTICAL);
 		this.craigrogramPercent = 50;
-		sash.setBackground(display.getSystemColor(SWT.COLOR_WHITE));		
+		Color white = getDisplay().getSystemColor(SWT.COLOR_WHITE);
+		sash.setBackground(white);		
 		final FormData sashData = new FormData ();
 		sashData.left = new FormAttachment (craigrogramPercent, 0);
 		sashData.top = new FormAttachment (0, 0);
@@ -387,53 +449,55 @@ public class AffinityPane<K, V> extends Composite implements SelectionChangedLis
 		sash.setLayoutData(sashData);		
 		
 		//Create the Craigrogram pane		
-		Color black = display.getSystemColor(SWT.COLOR_BLACK);
+		/*Color black = display.getSystemColor(SWT.COLOR_BLACK);
 		Color mediumGray = new Color(display, 100, 100, 100);
-		Color lightGray = new Color(display, 150, 150, 150);		
-		final List<IClusterObjectGUI<K, V>> craigrogramClusterObjectGUIs = new ArrayList<IClusterObjectGUI<K, V>>();
-		final List<DendrogramClusterObjectGUI<K, V>> dendrogramClusterObjectGUIs = new ArrayList<DendrogramClusterObjectGUI<K, V>>();
-		clusterObjectsMap = new HashMap<K, V>();
+		Color lightGray = new Color(display, 150, 150, 150);*/
 		
-		if(showingSchemas) {
+		/*if(showingSchemas) {
 			this.schemaIDs = (ArrayList<Integer>)objectIDs;
 			this.schemasForSavingStats = (List<Schema>)clusterObjects;
 			this.affinityModelForSavingStats = (AffinitySchemaModel)affinityModel;
-		}
+		}*/
 		
-		int i = 0;
-		for(V clusterObject : clusterObjects) {
-			K objectID = objectIDs.get(i);
-			String objectName = affinityModel.getClusterObjectManager().getClusterObjectName(objectID);
-			clusterObjectsMap.put(objectID, clusterObject);
-			Position pos = pg.getPosition(objectID);
-			if(pos == null) {
-				System.err.println("Error: position for cluster object " + objectName + " is null");
+		/*final List<IClusterObjectGUI<K, V>> craigrogramClusterObjectGUIs = new ArrayList<IClusterObjectGUI<K, V>>();
+		final List<DendrogramClusterObjectGUI<K, V>> dendrogramClusterObjectGUIs = new ArrayList<DendrogramClusterObjectGUI<K, V>>();
+		clusterObjectsMap = new HashMap<K, V>();
+		if(clusterObjects != null && !clusterObjects.isEmpty()) {
+			int i = 0;
+			for(V clusterObject : clusterObjects) {
+				K objectID = objectIDs.get(i);
+				String objectName = affinityModel.getClusterObjectManager().getClusterObjectName(objectID);
+				clusterObjectsMap.put(objectID, clusterObject);
+				Position pos = pg.getPosition(objectID);
+				if(pos == null) {
+					System.err.println("Error: position for cluster object " + objectName + " is null");
+				}
+				OvalClusterObjectGUI<K, V> clusterObjectGUI = new OvalClusterObjectGUI<K, V>(getShell(), objectID, 
+						clusterObjectDiameter, clusterObjectDiameter);			
+				clusterObjectGUI.setLocation((int)pos.getDimensionValue(0), (int)pos.getDimensionValue(1));
+				clusterObjectGUI.setLabel(objectName);
+				clusterObjectGUI.setLabelColor(black);
+				clusterObjectGUI.setForeground(lightGray);
+				clusterObjectGUI.setBackground(lightGray);
+				clusterObjectGUI.setSelectedLineColor(mediumGray);
+				clusterObjectGUI.setShowLabel(true);
+				clusterObjectGUI.setToolTipText(objectName);		
+				craigrogramClusterObjectGUIs.add(clusterObjectGUI);
+
+				DendrogramClusterObjectGUI<K, V> dendrogramClusterObjectGUI = new DendrogramClusterObjectGUI<K, V>(objectID, clusterObject);
+				dendrogramClusterObjectGUI.setLabel(objectName);
+				dendrogramClusterObjectGUIs.add(dendrogramClusterObjectGUI);
+				i++;
 			}
-			OvalClusterObjectGUI<K, V> clusterObjectGUI = new OvalClusterObjectGUI<K, V>(getShell(), objectID, 
-					clusterObjectDiameter, clusterObjectDiameter);			
-			clusterObjectGUI.setLocation((int)pos.getDimensionValue(0), (int)pos.getDimensionValue(1));
-			clusterObjectGUI.setLabel(objectName);
-			clusterObjectGUI.setLabelColor(black);
-			clusterObjectGUI.setForeground(lightGray);
-			clusterObjectGUI.setBackground(lightGray);
-			clusterObjectGUI.setSelectedLineColor(mediumGray);
-			clusterObjectGUI.setShowLabel(true);
-			clusterObjectGUI.setToolTipText(objectName);		
-			craigrogramClusterObjectGUIs.add(clusterObjectGUI);
-			
-			DendrogramClusterObjectGUI<K, V> dendrogramClusterObjectGUI = new DendrogramClusterObjectGUI<K, V>(objectID, clusterObject);
-			dendrogramClusterObjectGUI.setLabel(objectName);
-			dendrogramClusterObjectGUIs.add(dendrogramClusterObjectGUI);
-			i++;
-		}		
-				
-		this.craigrogram = new Cluster2DViewPane<K, V>(pane, SWT.BORDER, craigrogramClusterObjectGUIs, cc, 
-				pg, true, SliderType.NONE, 0, 1000);				
-		craigrogram.setLockAspectRatio(true);		
-		
+		}				
+		this.craigrogram = new Cluster2DViewPane<K, V>(pane, SWT.BORDER, true, SliderType.NONE, 0, 1000,
+				craigrogramClusterObjectGUIs, cc, pg);*/	
+		craigrogram = new Cluster2DViewPane<K, V>(pane, SWT.BORDER, true, SliderType.NONE, 0, 1000);
+		craigrogram.setLockAspectRatio(true);			
 		craigrogram.getClusterObject2DPlot().setShowClusters(true);
-		craigrogram.getClusterObject2DPlot().setStartRadius(clusterObjectDiameter/2 + radiusIncrement);		
-		craigrogram.getClusterObject2DPlot().setRadiusIncrement(radiusIncrement);
+		craigrogram.getClusterObject2DPlot().setStartRadius(AffinityConstants.CLUSTER_OBJECT_DIAMETER/2 + 
+				AffinityConstants.CLUSTER_RADIUS_INCREMENT);		
+		craigrogram.getClusterObject2DPlot().setRadiusIncrement(AffinityConstants.CLUSTER_RADIUS_INCREMENT);
 		craigrogram.getClusterObject2DPlot().setBackground(sash.getBackground());
 		craigrogram.getClusterObject2DPlot().setFillClusters(true);
 		FormData pane1Data = new FormData ();
@@ -443,14 +507,14 @@ public class AffinityPane<K, V> extends Composite implements SelectionChangedLis
 		pane1Data.bottom = new FormAttachment (100, 0);
 		craigrogram.setLayoutData(pane1Data);
 					
-		//create search/dendro combo pane
+		//Create search + dendrogram combo pane
 		final Composite searchPlusDendrogramPane = new Composite(pane, SWT.BORDER);	
 		FormLayout fl1 = new FormLayout();
 		searchPlusDendrogramPane.setLayout(fl1);
 		//Composite parent, int style, AffinityPane<K, V> ap, Map<K, V> clusterObjects, 
 		//String searchTextHint, ClusterObjectComparator<V> clusterObjectComparator
 		this.searchToolBar = new SearchToolBar<K, V>(searchPlusDendrogramPane,  SWT.NONE, this, 
-				affinityModel.getClusterObjectManager(), searchHint);
+				clusterObjectManager, searchHint);
 		
 		//Create the Dendrogram pane				
 		final Composite dendrogramPane = new Composite(searchPlusDendrogramPane, SWT.BORDER);
@@ -460,16 +524,11 @@ public class AffinityPane<K, V> extends Composite implements SelectionChangedLis
 		fd1.left = new FormAttachment (sash, 0);
 		fd1.right = new FormAttachment (100, 0);
 		fd1.bottom = new FormAttachment (100, 0);		
-		dendrogramPane.setLayoutData(fd1);
-		
-		dendrogramPane.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
-		
-		//dendrogram takes the leaves in order, uses IVC code to get these leaves - this would be easy to replace if need be		
-		ClusterObjectDendrogram<K, V> dendroStruct = new ClusterObjectDendrogram<K, V>(clusterObjects, objectIDs, cc.getDistanceGrid());
-		//Composite par, int style, ClustersContainer<K> clustc, 
-		//List<DendrogramSchemaGUI<K, V>> clusterObjects, SchemaDendrogramNode<K>[] leafs
-		this.dendrogram = new DendrogramCanvas<K, V>(dendrogramPane, SWT.DOUBLE_BUFFERED, cc,  
-				dendrogramClusterObjectGUIs, dendroStruct.getLeaves());
+		dendrogramPane.setLayoutData(fd1);		
+		dendrogramPane.setBackground(white);
+		/*this.dendrogram = new DendrogramCanvas<K, V>(dendrogramPane, SWT.DOUBLE_BUFFERED, cc,  
+		dendrogramClusterObjectGUIs);*/
+		dendrogram = new DendrogramCanvas<K, V>(dendrogramPane, SWT.DOUBLE_BUFFERED);		
 		dendrogram.setFont(SWTUtils.getFont(SWTUtils.NORMAL_FONT));
 		dendrogram.setSelectedFont(SWTUtils.getFont(SWTUtils.NORMAL_BOLD_FONT));
 		dendrogram.setBackground(dendrogramPane.getBackground());
@@ -506,264 +565,34 @@ public class AffinityPane<K, V> extends Composite implements SelectionChangedLis
 		});	
 		
 		//Add the resize listeners
-		decoration.addControlListener(new ControlListener() {
-			public void controlMoved(ControlEvent event) {}
-			
+		addControlListener(new ControlListener() {
+			public void controlMoved(ControlEvent event) {}			
 			public void controlResized(ControlEvent event) {
 				int craigrogramWidth = craigrogram.getSize().x;
 				if(craigrogramWidth > 0)
 					craigrogramPercent = (int)((float)craigrogramWidth/(craigrogramWidth + dendrogram.getSize().x) * 100);
 				sashData.left = new FormAttachment (craigrogramPercent, 0);				
-				decoration.layout();				
+				layout();				
 				craigrogram.resize();
 			}
 		});
 		
 		//Add listener to highlight cluster/schema in dendrogram when highlighted in craigrogram and vice-versa
 		addSelectionChangedListener(this);
-	}
-	
-	public V getClusterObject(K objectID) {
-		return clusterObjectsMap.get(objectID);
-	}
-	
-	public Map<K, V> getClusterObjects() {
-		return clusterObjectsMap;
-	}
+	}	
 
 	public void resize() {
 		craigrogram.resize();
 	}
 	
-	private HashMap<Integer, HashMap<Integer, Integer>> calculateGroundTruthOverlap(final List<Schema> schemas, AffinitySchemaModel affinityModel){
-		HashMap<Integer,HashMap<Integer, Integer>> groundTruthOverlap = new HashMap<Integer, HashMap<Integer, Integer>>();
-		//note: may need way to determine if they're from gold standard repository
-
-		//key is a schemaID, ArryaList of Integers is Integers for all elements in that schema
-		HashMap<Integer, ArrayList<String>> schemaElementParsedInts = new HashMap<Integer, ArrayList<String>>();
-		
-		//first parse each schema and create the ArrayList containing all element numbers	
-		for(int i=0; i<schemas.size(); i++){
-			Integer schemaIID = schemas.get(i).getId();
-			//System.out.println("creating schema: " + schemaIID);
-			SchemaInfo schemaIInfo = affinityModel.getSchemaManager().getSchemaInfo(schemaIID);
-			ArrayList<SchemaElement> elementsI = schemaIInfo.getElements(null);
-			ArrayList<String> schemasIntegers = new ArrayList<String>();
-
-           for(int j=0; j<elementsI.size(); j++) {        	 
-        	   String elementName = elementsI.get(j).getName();
-        	   int beginNum = elementName.indexOf("(");
-        	   int endNum = elementName.indexOf(")");
-        	   String num = new String();
-        	   for(int k=beginNum+1; k<endNum; k++){
-        		   //System.out.println(elementName.charAt(k));
-        		   num += elementName.charAt(k);
-        	   }
-        	   if(num != null && !num.equals("")){
-        		   //going to put the element in 
-        		   schemasIntegers.add(num);
-        	   }
-           }
-           schemaElementParsedInts.put(schemaIID, schemasIntegers);
-		}		
-		
-		//check to see how many in A match something in B (note we're only creating half of the matrix)
-		//enter that into the groundtruth Overlap hashmap
-		for(int i=0; i<schemas.size(); i++){
-			Integer schemaIID = schemas.get(i).getId();
-			ArrayList<String> schemaInums = schemaElementParsedInts.get(schemaIID);
-			HashMap<Integer, Integer> schemaIDtoOverlap = new HashMap<Integer, Integer>();
-			
-			for(int j=i+1; j<schemas.size(); j++){
-				Integer schemaJID = schemas.get(j).getId();
-				ArrayList<String> schemaJnums = schemaElementParsedInts.get(schemaJID);
-				int overlap = 0;
-				for(int k=0; k<schemaJnums.size(); k++){
-					if(schemaInums.contains(schemaJnums.get(k))){
-						overlap++;
-					}
-				}
-				schemaIDtoOverlap.put(schemaJID, overlap);
-			}
-			groundTruthOverlap.put(schemaIID, schemaIDtoOverlap);
-		}
-		return groundTruthOverlap;
-	}
-	
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public void writeToSpreadsheet(String selectedFileName){
-		final List<Schema> schemas = this.schemasForSavingStats;
-		AffinitySchemaModel affinityModel = this.affinityModelForSavingStats;
-
-		Workbook wb = new HSSFWorkbook();
-		Sheet sheet = wb.createSheet("Statistics");
-
-		HashMap<Integer, HashMap<Integer, Integer>> groundTruthOverlap = calculateGroundTruthOverlap(schemas, affinityModel);
-
-		String[] colNames = {"Schema A", "Schema B", 
-				"Size A", "Size B",
-				"Ground Truth Intersection Size", "Ground Truth Union Size",
-				"Jaccards (Ground Truth)", 
-				"Bag Size A", "Bag Size B", 
-				"Bag Intersection Size", "Bag Union Size" ,
-				"1- Jaccards (Bag Words)", "Jaccards (Bag Words)", 
-				"X coord (for A)", "Y coord (for A)", "X coord (for B)", "Y coord (for B)",
-		"Euclidean Distance Between A and B"};
-		Row headingRow = sheet.createRow(0);
-
-		CellStyle headingStyle= wb.createCellStyle();
-		Font headingFont = wb.createFont();
-		headingFont.setBoldweight(Font.BOLDWEIGHT_BOLD);
-		headingStyle.setFont(headingFont);
-
-		for(int i=0; i<colNames.length; i++){
-			Cell cell = headingRow.createCell(i);
-			cell.setCellValue(colNames[i]);
-			cell.setCellStyle(headingStyle);
-		}
-
-		int nextSchema = 1; //using this to only cover each pair once
-		int rowNum = 1;
-		Integer schemaAID, schemaBID;
-		String schemaAname, schemaBname;
-		int aXpos, aYpos, bXpos, bYpos;
-
-		JaccardDistanceFunction distanceFunction = new JaccardDistanceFunction();
-		DistanceGrid<Integer> dataDistGrid = distanceFunction.generateDistanceGrid(this.schemaIDs, affinityModel.getSchemaManager());
-		ClusterObjectPairValues<Integer, Double> schemaBagIntersectSizes = distanceFunction.getIntersections();
-		ClusterObjectPairValues<Integer, Double> schemaBagUnion = distanceFunction.getUnions();
-
-		IMultiDimScaler<Integer> mds = new PrefuseForceDirectedMDS<Integer>();
-		if(this.rescale) {
-			affinityModel.getClusters().getDistanceGrid().rescale(0.0, 1000.0);		
-		}
-		((PrefuseForceDirectedMDS)mds).setObjectIDs(this.schemaIDs);
-		PositionGrid<Integer> dataPosGrid = mds.scaleDimensions(affinityModel.getClusters().getDistanceGrid(), true, false, 2, false);
-
-		for(int i=0; i<schemaIDs.size(); i++){
-			schemaAID = schemaIDs.get(i);
-			schemaAname = affinityModel.getSchemaManager().getSchema(schemaAID).getName();
-			Position pos = dataPosGrid.getPosition(schemaAID);
-			aXpos = (int)pos.getDimensionValue(0);
-			aYpos = (int)pos.getDimensionValue(1);
-			HashMap<Integer, Integer> groundTruthForI = groundTruthOverlap.get(schemaAID);
-			int numElementsA = affinityModel.getSchemaManager().getSchemaInfo(schemaAID).getElements(null).size();
-			numElementsA--;//-1 because taking out the blank "" element that always appears
-
-
-			for(int j = nextSchema; j<schemaIDs.size(); j++){
-				schemaBID = schemaIDs.get(j);
-
-				Row dataRow = sheet.createRow(rowNum);
-
-				Cell nameAcell = dataRow.createCell(0);
-				nameAcell.setCellValue(schemaAID + " (" + schemaAname + ")");
-
-				Cell nameBcell = dataRow.createCell(1);
-				schemaBname = affinityModel.getSchemaManager().getSchema(schemaBID).getName();
-				nameBcell.setCellValue(schemaBID + " (" + schemaBname + ")");
-
-				//Size A
-				Cell Asize = dataRow.createCell(2);
-				Asize.setCellValue(numElementsA); 
-
-				//Size B
-				Cell Bsize = dataRow.createCell(3);
-				int numElementsB = affinityModel.getSchemaManager().getSchemaInfo(schemaBID).getElements(null).size();
-				numElementsB--;//-1 because taking out the blank "" element that always appears	        		
-				Bsize.setCellValue(numElementsB); 
-
-				//Ground Truth Intersection Size 
-				Cell overlapGroundTruth = dataRow.createCell(4);
-				double overlap = groundTruthForI.get(schemaBID);
-				overlapGroundTruth.setCellValue(overlap);        		
-
-				//Grount Truth Union Size
-				Cell groundTruthUnion = dataRow.createCell(5);
-				double unionSize = numElementsA + numElementsB - overlap;
-				groundTruthUnion.setCellValue(unionSize);
-
-				//Jaccards (Ground Truth)        		
-				Cell jaccardsGroundTruth = dataRow.createCell(6);
-				//jaccards ground truth is the size of the intersection over the size of the union
-				double jaccardsGT = overlap/unionSize;
-				//System.out.println(overlap + "/" + unionSize + "=" + jaccardsGT);
-				jaccardsGroundTruth.setCellValue(jaccardsGT);
-
-
-				Cell bagSizeA = dataRow.createCell(7);
-				bagSizeA.setCellValue(distanceFunction.getTermCount(schemaAID));
-
-				Cell bagSizeB = dataRow.createCell(8);
-				bagSizeB.setCellValue(distanceFunction.getTermCount(schemaBID));
-
-				Cell bagIntersectionSize = dataRow.createCell(9);
-				bagIntersectionSize.setCellValue(schemaBagIntersectSizes.get(schemaAID,schemaBID));
-
-				Cell bagUnionSize = dataRow.createCell(10);
-				bagUnionSize.setCellValue(schemaBagUnion.get(schemaAID,schemaBID));
-
-				Cell oneMjaccardAffinity  = dataRow.createCell(11);
-				oneMjaccardAffinity.setCellValue(dataDistGrid.get(schemaAID, schemaBID));
-
-				Cell jaccardAffinity = dataRow.createCell(12);
-				jaccardAffinity.setCellValue(1-(dataDistGrid.get(schemaAID, schemaBID)));
-
-				Cell aX = dataRow.createCell(13);
-				aX.setCellValue(aXpos);
-
-				Cell aY = dataRow.createCell(14);
-				aY.setCellValue(aYpos);
-
-				Cell bX = dataRow.createCell(15);
-				bXpos = (int)dataPosGrid.getPosition(schemaBID).getDimensionValue(0);
-				bX.setCellValue(bXpos);
-
-				Cell bY = dataRow.createCell(16);
-				bYpos = (int)dataPosGrid.getPosition(schemaBID).getDimensionValue(1);        		
-				bY.setCellValue((int)bYpos);
-
-				Cell euclidDist = dataRow.createCell(17);
-				//sqrt of (x-x)^2 + (y-y)^2
-				double xs = Math.pow((aXpos-bXpos), 2);
-				double ys = Math.pow((aYpos-bYpos), 2);
-				double euclid = Math.sqrt(xs+ys);
-				euclidDist.setCellValue(euclid);
-
-				rowNum++;
-			}
-			nextSchema++;
-		}
-
-		//resizing all the columns once all the data is in
-		for(int i=0; i<colNames.length; i++){
-			sheet.autoSizeColumn((short)i);
-		}
-
-
-		//save statistics to the selected spreadsheet
-		FileOutputStream out = null;
-		try {
-			out = new FileOutputStream(selectedFileName);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-
-		try {
-			wb.write(out);
-			out.close();
-		} catch (IOException e) {e.printStackTrace();}		
-	}	
-
-	protected void createMenu(final List<V> clusterObjects, final Decorations decoration, final Composite parent,
-			int radiusIncrement, final AffinityModel<K, V> affinityModel) {		
+	/*protected void createMenu(final Decorations decoration, final Composite parent, int radiusIncrement) {		
 		//Create menus
 		Menu menuBar = new Menu(decoration, SWT.BAR);
 		decoration.setMenuBar(menuBar);	
 		
 		//Create the File menu
 		MenuItem fileItem = new MenuItem(menuBar, SWT.CASCADE);
-		fileItem.setText("File");		
+		fileItem.setText("&File");		
 		Menu fileMenu = new Menu(decoration, SWT.DROP_DOWN);
 		fileItem.setMenu(fileMenu);		
 		
@@ -1035,10 +864,10 @@ public class AffinityPane<K, V> extends Composite implements SelectionChangedLis
 		shadeBackgroundsItem.addSelectionListener(new SelectionAdapter() {		
 			public void widgetSelected(SelectionEvent event) {			
 				boolean selected = ((MenuItem)event.getSource()).getSelection();				
-				dendrogram.setShadeClusters(selected);
+				dendrogram.setFillClusters(selected);
 				dendrogram.redraw();
 			}
 		});		
 		shadeBackgroundsItem.setSelection(true);	
-	}	
+	}*/	
 }

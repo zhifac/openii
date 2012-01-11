@@ -23,7 +23,7 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
 import org.mitre.affinity.view.BasicClusterObjectGUI;
 
-public class DendrogramClusterObjectGUI<K, V> extends BasicClusterObjectGUI<K, V> {
+public class DendrogramClusterObjectGUI<K extends Comparable<K>, V> extends BasicClusterObjectGUI<K, V> {
 	
 	/** Bounds of the rendered cluster object in the dendrogram */
 	protected Rectangle bounds = null;

@@ -24,7 +24,7 @@ package org.mitre.affinity.model.clusters;
  * @param <K>
  * @param <D>
  */
-public class ClusterObjectPairValue<K, D> {
+public class ClusterObjectPairValue<K extends Comparable<K>, D> {
 	
 	/** Stores the cluster object IDs */
 	private K object1ID, object2ID;

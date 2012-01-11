@@ -16,8 +16,9 @@
 
 package org.mitre.affinity.algorithms.dimensionality_reducers;
 
-import java.util.ArrayList;
+import java.util.Collection;
 
+import org.mitre.affinity.algorithms.IProgressMonitor;
 import org.mitre.affinity.model.PositionGrid;
 import org.mitre.affinity.model.clusters.DistanceGrid;
 
@@ -28,7 +29,7 @@ import org.mitre.affinity.model.clusters.DistanceGrid;
  * @author CBONACETO
  *
  */
-public interface IMultiDimScaler<K> {
+public interface IMultiDimScaler<K extends Comparable<K>> {
 	/**
 	 * @param dg: The distance grid
 	 * @param isSymmetric: Whether or not the distance grid is symmetric
@@ -38,19 +39,19 @@ public interface IMultiDimScaler<K> {
 	 * @return: A position grid that plots each schema in numDimensions-dimensional space
 	 */
 	public PositionGrid<K> scaleDimensions(DistanceGrid<K> dg, boolean isSymmetric, boolean isMetric, 
-			int numDimensions, boolean metric);
+			int numDimensions, boolean metric, IProgressMonitor progressMonitor);
 	
 	/**
 	 * Get the cluster object IDs.
 	 * 
 	 * @return
 	 */
-	public ArrayList<K> getObjectIDs();
+	public Collection<K> getObjectIDs();
 	
 	/**
 	 * Set the cluster object IDs.
 	 * 
 	 * @param objectIDs
 	 */
-	public void setObjectIDs(ArrayList<K> objectIDs);
+	public void setObjectIDs(Collection<K> objectIDs);
 }

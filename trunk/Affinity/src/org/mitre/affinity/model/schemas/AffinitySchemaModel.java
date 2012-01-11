@@ -16,10 +16,11 @@
 
 package org.mitre.affinity.model.schemas;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.mitre.affinity.algorithms.IProgressMonitor;
 import org.mitre.affinity.algorithms.clusterers.Clusterer;
 import org.mitre.affinity.algorithms.distance_functions.DistanceFunction;
 import org.mitre.affinity.model.AffinityModel;
@@ -62,9 +63,9 @@ public class AffinitySchemaModel extends AffinityModel<Integer, Schema> {
 	}
 	
 	@Override
-	public void generateClusters(ArrayList<Integer> objectIDs, DistanceFunction<Integer, Schema> distanceFunction,
-			Clusterer<Integer> clusterer) {
-		super.generateClusters(objectIDs, distanceFunction, clusterer);
+	public void generateClusters(Collection<Integer> objectIDs, DistanceFunction<Integer, Schema> distanceFunction,
+			Clusterer<Integer> clusterer, IProgressMonitor progressMonitor) {
+		super.generateClusters(objectIDs, distanceFunction, clusterer, progressMonitor);
 		this.clusterTermVectors = new HashMap<ClusterGroup<Integer>, ClusterTermVector>();
 	}	
 	

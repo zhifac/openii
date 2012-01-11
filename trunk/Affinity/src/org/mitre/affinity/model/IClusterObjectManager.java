@@ -1,24 +1,26 @@
 package org.mitre.affinity.model;
 
-import java.util.ArrayList;
+import java.util.Collection;
 
 /**
+ * Interface for implementations that manage the storage and retrieval
+ * of cluster objects.
  * 
  * @author cbonaceto
  *
- * @param <K>
+ * @param <K> 
  * @param <V>
  */
-public interface IClusterObjectManager<K, V> {	
+public interface IClusterObjectManager<K extends Comparable<K>, V> {	
 	
 	/** Returns a list of all cluster objects */
-	public ArrayList<V> getClusterObjects();
+	public Collection<V> getClusterObjects();
 	
 	/** Returns the list of all cluster object IDs */
-	public ArrayList<K> getClusterObjectIDs();
+	public Collection<K > getClusterObjectIDs();
 	
 	/** Returns the deletable cluster objects */
-	public ArrayList<K> getDeletableClusterObjects();	
+	public Collection<K> getDeletableClusterObjects();	
 	
 	/** Returns the specified cluster object */
 	public V getClusterObject(K objectID);

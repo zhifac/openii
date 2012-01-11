@@ -17,11 +17,13 @@
 package org.mitre.affinity.algorithms.dimensionality_reducers;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 import jp.sourceforge.talisman.mds.Item;
 import jp.sourceforge.talisman.mds.MdsMethod;
 import jp.sourceforge.talisman.mds.Table;
 
+import org.mitre.affinity.algorithms.IProgressMonitor;
 import org.mitre.affinity.model.Position;
 import org.mitre.affinity.model.PositionGrid;
 import org.mitre.affinity.model.clusters.ClusterObjectPairValue;
@@ -37,7 +39,7 @@ import org.mitre.affinity.util.AffinityUtils;
  */
 public class TalismanMDS implements IMultiDimScaler<Integer> {
 	
-	protected ArrayList<Integer> objectIDs;
+	protected Collection<Integer> objectIDs;
 
 	private TalismanMDS() {}	
 	
@@ -45,7 +47,7 @@ public class TalismanMDS implements IMultiDimScaler<Integer> {
 	 * @see org.mitre.affinity.dimensionality_reducers.IMultiDimScaler#scaleDimensions(org.mitre.affinity.clusters.DistanceGrid, boolean, boolean, int, boolean)
 	 */
 	public PositionGrid<Integer> scaleDimensions(DistanceGrid<Integer> dg, boolean isSymmetric, boolean isMetric, 
-			int numDimensions, boolean metric) {
+			int numDimensions, boolean metric, IProgressMonitor progressMonitor) {
 		
 		//Create the distance table MdsMethod() requires from the distance grid
 		Table<Integer> table = new Table<Integer>();
@@ -110,18 +112,18 @@ public class TalismanMDS implements IMultiDimScaler<Integer> {
 		}				
 		
 		TalismanMDS mds = new TalismanMDS();		
-		PositionGrid<Integer> pg = mds.scaleDimensions(dg, true, false, 2, false);		
+		PositionGrid<Integer> pg = mds.scaleDimensions(dg, true, false, 2, false, null);		
 		
 		new MDSTester(schemas, dg, pg);
 	}
 
 	@Override
-	public ArrayList<Integer> getObjectIDs() {
+	public Collection<Integer> getObjectIDs() {
 		return objectIDs;
 	}
 
 	@Override
-	public void setObjectIDs(ArrayList<Integer> objectIDs) {
+	public void setObjectIDs(Collection<Integer> objectIDs) {
 		this.objectIDs = objectIDs;
 	}
 }

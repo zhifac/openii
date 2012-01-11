@@ -20,7 +20,7 @@ import java.util.Collection;
 
 import org.mitre.affinity.model.clusters.ClusterGroup;
 
-public class SelectionClickedEvent<K> extends SelectionEvent<K> {
+public class SelectionClickedEvent<K extends Comparable<K>> extends SelectionEvent<K> {
 	
 	public static final int LEFT_BUTTON = 1;
 	

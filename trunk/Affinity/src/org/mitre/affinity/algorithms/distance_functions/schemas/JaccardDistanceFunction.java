@@ -17,9 +17,12 @@
 package org.mitre.affinity.algorithms.distance_functions.schemas;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import org.mitre.affinity.algorithms.IProgressMonitor;
+import org.mitre.affinity.algorithms.distance_functions.CommonDistanceMetrics;
 import org.mitre.affinity.algorithms.distance_functions.DistanceFunction;
 import org.mitre.affinity.model.IClusterObjectManager;
 import org.mitre.affinity.model.clusters.ClusterObjectPairValues;
@@ -59,8 +62,8 @@ public class JaccardDistanceFunction implements DistanceFunction<Integer, Schema
 		{ return termVectors.get(schemaID).getTerms().size(); }
 	
 	@Override
-	public DistanceGrid<Integer> generateDistanceGrid(ArrayList<Integer> objectIDs, 
-			IClusterObjectManager<Integer, Schema> clusterObjectManager) {
+	public DistanceGrid<Integer> generateDistanceGrid(Collection<Integer> objectIDs, 
+			IClusterObjectManager<Integer, Schema> clusterObjectManager, IProgressMonitor progressMonitor) {
 		if(!(clusterObjectManager instanceof ISchemaManager)) {
 			throw new IllegalArgumentException("Error using JaccardDistanceFunction: Can only be used with a schema manager.");
 		}
@@ -68,7 +71,8 @@ public class JaccardDistanceFunction implements DistanceFunction<Integer, Schema
 	}
 	
 	/** Generates a distance grid for the given schemas */
-	public DistanceGrid<Integer> generateDistanceGrid(ArrayList<Integer> schemaIDs, ISchemaManager schemaManager) {
+	public DistanceGrid<Integer> generateDistanceGrid(Collection<Integer> schemaIDs, ISchemaManager schemaManager) {
+		ArrayList<Integer> ids = new ArrayList<Integer>(schemaIDs);
 		// Generate the schema term vectors
 		for(Integer schemaID : schemaIDs) {
 			SchemaTermVector termVector = new SchemaTermVector(schemaManager.getSchemaInfo(schemaID));
@@ -76,25 +80,28 @@ public class JaccardDistanceFunction implements DistanceFunction<Integer, Schema
 		}
 
 		// Calculate each schema pair's union, intersection
-		for(int i=0; i<schemaIDs.size(); i++)
+		for(int i=0; i<schemaIDs.size(); i++) {
 			for(int j=i+1; j<schemaIDs.size(); j++)
-				calculateUnionAndIntersection(schemaIDs.get(i),schemaIDs.get(j));
+				calculateUnionAndIntersection(ids.get(i),ids.get(j));
+		}
 		
 		// Generate the distance grid
 		DistanceGrid<Integer> distances = new DistanceGrid<Integer>();
-		for(int i=0; i<schemaIDs.size(); i++)
+		for(int i=0; i<schemaIDs.size(); i++) {
 			for(int j=i+1; j<schemaIDs.size(); j++) {
 				// Retrieve the schema IDs
-				Integer schema1ID = schemaIDs.get(i);
-				Integer schema2ID = schemaIDs.get(j);
+				Integer schema1ID = ids.get(i);
+				Integer schema2ID = ids.get(j);
 
 				// Retrieve the intersection and union values
 				double intersection = intersections.get(schema1ID, schema2ID);
 				double union = unions.get(schema1ID,schema2ID);
 
-				// Calculate the distances
-				distances.set(schema1ID,schema2ID,1-(union==0 ? 0 : intersection/union));
+				// Calculate the distance using Jaccard
+				//distances.set(schema1ID,schema2ID,1-(union==0 ? 0 : intersection/union));
+				distances.set(schema1ID,schema2ID,CommonDistanceMetrics.computeJaccardDistance(union, intersection));
 			}
+		}
 		return distances;
 	}
 

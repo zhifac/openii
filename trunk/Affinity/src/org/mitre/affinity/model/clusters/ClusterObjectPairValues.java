@@ -28,7 +28,7 @@ import java.util.HashMap;
  * @param <K>
  * @param <D>
  */
-public class ClusterObjectPairValues<K, D> {	
+public class ClusterObjectPairValues<K extends Comparable<K>, D> {	
 	
 	/** Interface used to define how to transform an element */
 	public interface Transformation<D> { 
@@ -57,7 +57,11 @@ public class ClusterObjectPairValues<K, D> {
 
 	/** Returns the value for the given cluster object pair */
 	public D get(K object1ID, K object2ID) { 
-		return values.get(getKey(object1ID, object2ID)).getValue(); 
+		try { 
+			return values.get(getKey(object1ID, object2ID)).getValue();
+		} catch(NullPointerException ex) {
+			return null;
+		}
 	}
 
 	/** Returns all cluster object pair values */
