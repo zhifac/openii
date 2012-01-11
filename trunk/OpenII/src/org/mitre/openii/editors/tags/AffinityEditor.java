@@ -3,6 +3,7 @@ package org.mitre.openii.editors.tags;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -13,23 +14,29 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Decorations;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
-import org.mitre.affinity.clusters.ClusterGroup;
-import org.mitre.affinity.model.AffinityModel;
-import org.mitre.affinity.model.AffinitySchemaManager;
-import org.mitre.affinity.model.AffinitySchemaStoreManager;
-import org.mitre.affinity.model.ISchemaManager;
-import org.mitre.affinity.view.application.AffinityPane;
-import org.mitre.affinity.view.application.LoadProgressDialog;
-import org.mitre.affinity.view.application.StackTraceDialog;
-import org.mitre.affinity.view.cluster_details.ClusterDetailsDlg;
+import org.mitre.affinity.algorithms.clusterers.HierarchicalClusterer;
+import org.mitre.affinity.algorithms.dimensionality_reducers.PrefuseForceDirectedMDS;
+import org.mitre.affinity.algorithms.distance_functions.schemas.JaccardDistanceFunction;
+import org.mitre.affinity.controller.schemas.AffinitySchemaController;
+import org.mitre.affinity.model.clusters.ClusterGroup;
+import org.mitre.affinity.model.schemas.AffinitySchemaManager;
+import org.mitre.affinity.model.schemas.AffinitySchemaModel;
+import org.mitre.affinity.model.schemas.AffinitySchemaStoreManager;
+import org.mitre.affinity.model.schemas.ISchemaManager;
+import org.mitre.affinity.view.AffinityPane;
+import org.mitre.affinity.view.dialog.MultiTaskLoadProgressDialog;
+import org.mitre.affinity.view.dialog.StackTraceDialog;
+import org.mitre.affinity.view.drill_down.schemas.SchemaClusterDetailsDlg;
 import org.mitre.affinity.view.event.SelectionClickedEvent;
 import org.mitre.affinity.view.event.SelectionClickedListener;
+import org.mitre.affinity.view.menu.schemas.AffinityMenu_Schemas;
 import org.mitre.affinity.view.venn_diagram.VennDiagramUtils;
 import org.mitre.affinity.view.venn_diagram.model.CachedFilteredSchemaInfo;
 import org.mitre.affinity.view.venn_diagram.model.VennDiagramSetsMatrix;
@@ -51,22 +58,22 @@ import org.mitre.schemastore.model.schemaInfo.FilteredSchemaInfo;
 /**
  * Constructs the Affinity View
  */
-public class AffinityEditor extends OpenIIEditor implements SelectionClickedListener
+public class AffinityEditor extends OpenIIEditor implements SelectionClickedListener<Integer>
 {	
 	/** Stores the Affinity model */
-	private AffinityModel affinityModel;
+	private AffinitySchemaModel affinityModel;
 	
 	/** All Affinity instances running in OpenII use the same schema and cluster manager */
 	private static final ISchemaManager schemaManager = new AffinitySchemaManager();
 	
 	/** Stores the Affinity pane */
-	private AffinityPane affinity = null;
+	private AffinityPane<Integer, Schema> affinity = null;
 	
 	/**	Menu shown when the mouse is right clicked on a group of schemas or cluster */
 	private Menu affinityMenu;
 	
 	/** Currently selected cluster */	
-	private ClusterGroup selectedCluster;
+	private ClusterGroup<Integer> selectedCluster;
 	
 	/** Currently selected schemas */
 	private Collection<Integer> selectedSchemas;
@@ -112,7 +119,7 @@ public class AffinityEditor extends OpenIIEditor implements SelectionClickedList
 			if(type==AffinityEventType.DISPLAY_TERMS)
 			{
 				Shell shell = getSite().getWorkbenchWindow().getShell();
-				ClusterDetailsDlg dlg = new ClusterDetailsDlg(shell, SWT.APPLICATION_MODAL, affinityModel, selectedCluster);				
+				SchemaClusterDetailsDlg dlg = new SchemaClusterDetailsDlg(shell, SWT.APPLICATION_MODAL, affinityModel, selectedCluster);				
 				dlg.setVisible(true);								
 			}
 			
@@ -125,7 +132,7 @@ public class AffinityEditor extends OpenIIEditor implements SelectionClickedList
 			{
 				// Generate the list of schemas to launch in Proximity
 				final ArrayList<FilteredSchemaInfo> schemas = new ArrayList<FilteredSchemaInfo>();
-				Iterator<Integer> iter = selectedCluster.getSchemaIDs().iterator();
+				Iterator<Integer> iter = selectedCluster.getObjectIDs().iterator();
 				while(iter.hasNext())
 				{
 					CachedFilteredSchemaInfo schemaInfo = VennDiagramUtils.createCachedFilteredSchemaInfo(iter.next(), schemaManager);
@@ -219,8 +226,8 @@ public class AffinityEditor extends OpenIIEditor implements SelectionClickedList
 				MI.dispose();
 
 			// Place new schemas into menu
-			ArrayList<Integer> schemaIDsForSelection = selectedCluster.getSchemaIDs();
-			for(int i=0; i<selectedCluster.getNumSchemas(); i++)
+			ArrayList<Integer> schemaIDsForSelection = selectedCluster.getObjectIDs();
+			for(int i=0; i<selectedCluster.getNumClusterObjects(); i++)
 			{
 				Schema schema = schemaManager.getSchema(schemaIDsForSelection.get(i));
 				generateMenuItem(proximitySubMenu, schema.getName(), AffinityEventType.LAUNCH_PROXIMITY);
@@ -254,8 +261,9 @@ public class AffinityEditor extends OpenIIEditor implements SelectionClickedList
 		AffinitySchemaStoreManager.setConnection(RepositoryManager.getClient());
 	
 		// Create a dialog to show progress as Affinity loads
-		final LoadProgressDialog progressDlg = new LoadProgressDialog(parent.getShell());
-		progressDlg.setText("Opening Affinity");		
+		final MultiTaskLoadProgressDialog progressDlg = new MultiTaskLoadProgressDialog(parent.getShell(), 3);
+		progressDlg.setText("Opening Affinity");	
+		progressDlg.setCurrentTaskNote("Loading Schemas");
 		progressDlg.open();		
 		
 		// Construct the Affinity pane
@@ -273,52 +281,117 @@ public class AffinityEditor extends OpenIIEditor implements SelectionClickedList
 			schemaIDs = new ArrayList<Integer>((Collection<Integer>)getElement());
 			setPartName(schemaIDs.size()==OpenIIManager.getSchemaIDs().size() ? "All Schemas" : "*New Tag");
 		}
+		affinityModel =  new AffinitySchemaModel(schemaManager);
 		
-		// Generate the affinity pane
-		this.affinityModel =  new AffinityModel(schemaManager);
-		affinity = new AffinityPane(parent, SWT.NONE, affinityModel, schemaIDs, progressDlg);		
+		//Create the menu
+		final Decorations decorations = new Decorations(parent, SWT.NONE);
+		decorations.setLayout(new FillLayout());
+		AffinityMenu_Schemas menu = new AffinityMenu_Schemas(decorations, true, false);
+		
+		//Create a blank Affinity pane
+		affinity = new AffinityPane<Integer, Schema>(decorations, SWT.NONE, affinityModel.getClusterObjectManager(), "Schema Name");
+		
+		//Initialize the controller
+		AffinitySchemaController controller = new AffinitySchemaController(
+				affinity, affinity.getCraigrogramPane(), affinity.getDendrogram(), menu, affinityModel);
+		
+		//Get the schemas, then generate clusters and the position grid
+		Exception exception = null;
+		try {
+			//Get the schemas
+			List<Schema> schemas = new ArrayList<Schema>();
+			int i = 1;
+			int numSchemas = schemaIDs.size();			
+			int percentProgressPerSchema = 100/numSchemas;
+			for(Integer schemaID : schemaIDs) {			
+				Schema schema = affinityModel.getClusterObjectManager().getClusterObject(schemaID);
+				if(schema == null) {
+					System.err.println("Warning: schema " + schemaID + " not found");
+					progressDlg.setErrorNote("Error: schema " + schemaID + " not found");
+				}
+				else {
+					schemas.add(schema);
+				}				
+				progressDlg.setNote("Loading Schemas (" + i + "/" + numSchemas + ")");
+				progressDlg.setProgress(i * percentProgressPerSchema);
+				i++;
+			}
+			controller.setSchemaIDsAndSchemas(schemaIDs, schemas);
+			progressDlg.setNumTasksComplete(1);
+			
+			//Generate clusters and the distance grid
+			progressDlg.setCurrentTaskNote("Computing Clusters");
+			affinityModel.generateClusters(schemaIDs, new JaccardDistanceFunction(), 
+					new HierarchicalClusterer<Integer>(), progressDlg);
+			progressDlg.setNumTasksComplete(2);
+			
+			//Run the MDS algorithm to generate the position grid
+			progressDlg.setCurrentTaskNote("Computing 2D layout");
+			PrefuseForceDirectedMDS<Integer> mds = new PrefuseForceDirectedMDS<Integer>();			
+			affinityModel.generatePositionGrid(schemaIDs, mds, progressDlg);
+			progressDlg.setNumTasksComplete(3);
+			
+			//Populate the affinity pane	
+			affinity.setClusterObjectsAndClusters(schemaIDs, schemas, 
+					affinityModel.getClusters(), affinityModel.getPositionGrid());
+		} catch(Exception ex) {
+			exception = ex;
+		}
+		
+		// Populate the affinity pane		
+		/*affinity = new AffinityPane<Integer, Schema>(parent, SWT.NONE, affinityModel, schemaIDs, 
+				 new JaccardDistanceFunction(), new PrefuseForceDirectedMDS<Integer>(),
+				 new HierarchicalClusterer<Integer>(), progressDlg, "Enter Schema Name", true);*/		
 		
 		// Indicate that Affinity has launched
 		progressDlg.close();
 		
 		// Finish configuring Affinity
-		if(affinity.isAffinityPaneCreated())
+		affinity.getCraigrogram().debug = false;
+		affinity.addSelectionClickedListener(this);	
+		affinityMenu = generateMenu(affinity);
+		if(exception != null) {
+			// Show an error dialog if an exception was caught
+			StackTraceDialog stackTraceDlg = new StackTraceDialog(parent.getShell(), exception);			
+			stackTraceDlg.setMessage("Unable to launch Affinity due to:");
+			stackTraceDlg.open();
+		}
+		/*if(affinity.isAffinityPaneCreated()) 
 		{
 			affinity.getCraigrogram().debug = false;
 			affinity.addSelectionClickedListener(this);	
 			affinityMenu = generateMenu(affinity);
-		}
-		
-		// Show error dialog if Affinity pane failed to launch
-		else
+		} 
+		else 
 		{
+			// Show an error dialog if an exception was caught
 			StackTraceDialog stackTraceDlg = new StackTraceDialog(parent.getShell(), affinity.getException());			
 			stackTraceDlg.setMessage("Unable to launch Affinity due to:");
 			stackTraceDlg.open();
-		}
+		}*/
 	}	
 
 	/** Handles the selection of a group of schemas or cluster */
-	public void selectionClicked(SelectionClickedEvent event)
+	public void selectionClicked(SelectionClickedEvent<Integer> event)
 	{
 		// Handles the selection of a group of schemas
-		if(event.selectedSchemas!=null)
+		if(event.selectedClusterObjects!=null)
 		{
 			// Generate cluster around selected schemas
-			selectedCluster = new ClusterGroup();
-			selectedCluster.addSchemas(selectedSchemas);
+			selectedCluster = new ClusterGroup<Integer>();
+			selectedCluster.addClusterObjects(selectedSchemas);
 
 			// If only a single schema was double clicked, launch default schema editor
-			if(event.selectedSchemas.size()==1)
+			if(event.selectedClusterObjects.size()==1)
 			{
 				if(event.button==1 && event.clickCount==2)
-					EditorManager.launchDefaultEditor(schemaManager.getSchema(event.selectedSchemas.iterator().next()));		
+					EditorManager.launchDefaultEditor(schemaManager.getSchema(event.selectedClusterObjects.iterator().next()));		
 			}
 			
 			// Otherwise, if a group of schemas was right clicked display the menu
 			else if(event.button==3 || (event.button==1 && event.controlDown))
 			{
-				selectedSchemas = event.selectedSchemas;
+				selectedSchemas = event.selectedClusterObjects;
 				affinityMenu.setVisible(true);
 			}
 		}
@@ -328,13 +401,13 @@ public class AffinityEditor extends OpenIIEditor implements SelectionClickedList
 		{
 			// Get the selected cluster (and schemas)
 			selectedCluster = event.selectedClusters.iterator().next();
-			selectedSchemas = selectedCluster.getSchemaIDs();
+			selectedSchemas = selectedCluster.getObjectIDs();
 
 			// If the cluster was double clicked, show the cluster details
 			if(event.button==1 && event.clickCount==2)
 			{
 				Shell shell = getSite().getWorkbenchWindow().getShell();
-				ClusterDetailsDlg dlg = new ClusterDetailsDlg(shell, SWT.APPLICATION_MODAL, affinityModel, selectedCluster);				
+				SchemaClusterDetailsDlg dlg = new SchemaClusterDetailsDlg(shell, SWT.APPLICATION_MODAL, affinityModel, selectedCluster);				
 				dlg.setVisible(true);		
 			}			
 
