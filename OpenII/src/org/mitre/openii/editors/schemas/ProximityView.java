@@ -13,10 +13,10 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
-import org.mitre.affinity.clusters.DistanceGrid;
-import org.mitre.affinity.clusters.distanceFunctions.JaccardDistanceFunction;
-import org.mitre.affinity.model.AffinitySchemaManager;
-import org.mitre.affinity.model.AffinitySchemaStoreManager;
+import org.mitre.affinity.algorithms.distance_functions.schemas.JaccardDistanceFunction;
+import org.mitre.affinity.model.clusters.DistanceGrid;
+import org.mitre.affinity.model.schemas.AffinitySchemaManager;
+import org.mitre.affinity.model.schemas.AffinitySchemaStoreManager;
 import org.mitre.affinity.view.venn_diagram.VennDiagramUtils;
 import org.mitre.affinity.view.venn_diagram.model.CachedFilteredSchemaInfo;
 import org.mitre.affinity.view.venn_diagram.model.VennDiagramSetsMatrix;
@@ -65,7 +65,7 @@ public class ProximityView extends OpenIIEditor implements VennDiagramListener
 			// Run distance metrics on schemas
 			JaccardDistanceFunction distanceFunction = new JaccardDistanceFunction();
 			AffinitySchemaStoreManager.setConnection(RepositoryManager.getClient());
-			DistanceGrid distanceGrid = distanceFunction.generateDistanceGrid(schemaIDs, new AffinitySchemaManager());
+			DistanceGrid<Integer> distanceGrid = distanceFunction.generateDistanceGrid(schemaIDs, new AffinitySchemaManager());
 			
 			// Retrieve the distances for the aligned schema
 			HashMap<Integer,Double> schemaDistances = new HashMap<Integer,Double>();
