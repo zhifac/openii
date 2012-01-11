@@ -27,7 +27,7 @@ import java.util.Map.Entry;
  *
  * @param <K>
  */
-public class PositionGrid<K> implements Iterable<Entry<K, Position>> {
+public class PositionGrid<K extends Comparable<K>> implements Iterable<Entry<K, Position>> {
 	
 	/** Maps cluster object id to its position in n-dimensional space */
 	private final Map<K, Position> positions;	

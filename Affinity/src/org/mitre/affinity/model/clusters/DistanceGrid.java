@@ -23,7 +23,7 @@ package org.mitre.affinity.model.clusters;
  * @author cbonaceto
  *
  */
-public class DistanceGrid<K> extends ClusterObjectPairValues<K, Double> {	
+public class DistanceGrid<K extends Comparable<K>> extends ClusterObjectPairValues<K, Double> {	
 	
 	/** Rescales the values in the distance grid such that they are in the range [newMin newMax] */
 	public void rescale(double newMin, double newMax) {

@@ -29,7 +29,7 @@ import org.mitre.affinity.view.swt.IRenderer;
  * @author cbonaceto
  *
  */
-public interface IClusterObjectGUI<K, V> extends IRenderer {	
+public interface IClusterObjectGUI<K extends Comparable<K>, V> extends IRenderer, Comparable<IClusterObjectGUI<K, V>> {	
 	
 	public K getObjectID();	
 	public void setObjectID(K objectID);

@@ -17,7 +17,9 @@
 package org.mitre.affinity.algorithms.clusterers;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
+import org.mitre.affinity.algorithms.IProgressMonitor;
 import org.mitre.affinity.algorithms.distance_functions.RandomDistanceFunction;
 import org.mitre.affinity.model.clusters.ClusterGroup;
 import org.mitre.affinity.model.clusters.ClusterStep;
@@ -25,29 +27,67 @@ import org.mitre.affinity.model.clusters.ClustersContainer;
 import org.mitre.affinity.model.clusters.DistanceGrid;
 import org.mitre.affinity.model.schemas.AffinitySchemaManager;
 import org.mitre.schemastore.model.Schema;
-
-/** HierarchicalClusterer Class - will perform hierarchical clustering (configurable linkage Todo) */	
-public class HierarchicalClusterer<K> implements Clusterer<K> {
 	
-	private Linker<K> link;
+/**
+ *  HierarchicalClusterer performs hierachical clustering using a configurable linker. The 
+ *  default linker is the complete-linkage linker. 
+ * 
+ * @author CBONACETO
+ *
+ * @param <K>
+ */
+public class HierarchicalClusterer<K extends Comparable<K>> implements Clusterer<K> {
 	
-	/** Default constructor */
-	public HierarchicalClusterer(){
-		link = new CompleteLinker<K>();
+	private ILinker<K> linker;
+	
+	/** Default constructor creates a HierarchicalClusterer using the complete-linkage linker */
+	public HierarchicalClusterer() {
+		this(new CompleteLinker<K>());
 	}
 	
-	public ClustersContainer<K> generateClusters(ArrayList<K> objectIDs, DistanceGrid<K> grid){
+	/**
+	 * Constructor that takes the linker to use.
+	 * 
+	 * @param linker
+	 */
+	public HierarchicalClusterer(ILinker<K> linker) {
+		this.linker = linker;
+	}	
+	
+	public ILinker<K> getLinker() {
+		return linker;
+	}
+
+	public void setLinker(ILinker<K> linker) {
+		this.linker = linker;
+	}
+
+	public ClustersContainer<K> generateClusters(Collection<K> objectIDs, DistanceGrid<K> grid, 
+			IProgressMonitor progressMonitor){
+		//System.out.println("num objects: " + objectIDs.size());
 		ClustersContainer<K> cc = new ClustersContainer<K>(objectIDs, grid);
-		cluster(cc);
+		cluster(cc, progressMonitor);
 		return cc;
 	}
 	
 	/** Generates a set of clusters based on the distance grid */
-	public void cluster(ClustersContainer<K> cc){
+	public void cluster(ClustersContainer<K> cc) {
+		cluster(cc, null);
+	}
+	
+	/** Generates a set of clusters based on the distance grid */
+	public void cluster(ClustersContainer<K> cc, IProgressMonitor progressMonitor) {
 		//each clusters container is initialized with 1 cluster group per cluster object.  I.e., each cluster object
 		//is initially in its own cluster group at step 0.
 		
-		for(int counter=0; cc.getClusterStep(counter).getSize() > 1; counter++){
+		if(progressMonitor != null) {
+			progressMonitor.setMinimum(0);
+			progressMonitor.setMaximum(100);
+			progressMonitor.setProgress(0);			
+		}
+		float progressPerIteration = 100f/cc.getObjectIDs().size();
+		//System.err.println(cc.getObjectIDs().size());
+		for(int counter=0; cc.getClusterStep(counter).getSize() > 1; counter++) {
 			//get initial cluster step.
 			ClusterStep<K> cs1 = cc.getClusterStep(counter);
 			ArrayList<ClusterGroup<K>> cgs = new ArrayList<ClusterGroup<K>>(cs1.getClusterGroups());
@@ -57,8 +97,8 @@ public class HierarchicalClusterer<K> implements Clusterer<K> {
 			int bestN=0;
 			//compare the distances of the elements of each clusterGroup.
 			for(int m=0; m < cgs.size(); m++){
-				for(int n=m+1; n< cgs.size(); n++){
-					double tempDist = link.compare(cgs.get(m), cgs.get(n), cc.getDistanceGrid());
+				for(int n=m+1; n < cgs.size(); n++){
+					double tempDist = linker.compare(cgs.get(m), cgs.get(n), cc.getDistanceGrid());
 					//if this distance is the best so far, record its location.
 					if(tempDist < bestDist){
 						bestDist = tempDist;
@@ -83,6 +123,12 @@ public class HierarchicalClusterer<K> implements Clusterer<K> {
 			ClusterStep<K> cs2 = new ClusterStep<K>();
 			cs2.setGroups(cgs);
 			cc.addClusterStep(cs2);
+			if(progressMonitor != null) {
+				progressMonitor.setProgress((int)(counter * progressPerIteration));				
+			}
+		}
+		if(progressMonitor != null) {
+			progressMonitor.setProgress(100);
 		}
 	}
 	
@@ -97,34 +143,11 @@ public class HierarchicalClusterer<K> implements Clusterer<K> {
 		DistanceGrid<Integer> dm = new DistanceGrid<Integer>();
 		ArrayList<Integer> schemaAs = new ArrayList<Integer>();
 		schemaAs.add(1); schemaAs.add(2); schemaAs.add(3); schemaAs.add(4);schemaAs.add(5);		
-		dm = new RandomDistanceFunction<Integer, Schema>().generateDistanceGrid(schemaAs, new AffinitySchemaManager());
+		dm = new RandomDistanceFunction<Integer, Schema>().generateDistanceGrid(
+				schemaAs, new AffinitySchemaManager(), null);
 		
 		ClustersContainer<Integer> cc = new ClustersContainer<Integer>(schemaAs, dm);
 		hc.cluster(cc);
 		System.out.println(cc.toString());
-	}
-}
-
-/** Perform the comparison between two ClusterGroups */
-interface Linker<K> {
-	// return the distance between the two ClusterGroups.
-	public double compare(ClusterGroup<K> one, ClusterGroup<K> two, DistanceGrid<K> dg);
-}
-
-/** Perform Complete Linkage, i.e. return the maximum value between 2 cluster groups */
-class CompleteLinker<K> implements Linker<K> {
-	public double compare(ClusterGroup<K> one, ClusterGroup<K> two, DistanceGrid<K> dg){
-		double distance = Double.MIN_VALUE;
-		for(K objectA: one.getObjectIDs()){
-			for(K objectB: two.getObjectIDs()){
-				//System.out.println(dg);
-				Double tempDistance = dg.get(objectA, objectB);				
-				//System.out.println("Distance between " + schemaA + " and " + schemaB + ": " + tempDistance);
-				if(distance < tempDistance){
-					distance = tempDistance;
-				}
-			}
-		}
-		return distance;
 	}
 }

@@ -44,6 +44,8 @@ import org.eclipse.swt.widgets.ScrollBar;
 import org.mitre.affinity.model.clusters.ClusterGroup;
 import org.mitre.affinity.model.clusters.ClusterStep;
 import org.mitre.affinity.model.clusters.ClustersContainer;
+import org.mitre.affinity.view.IClusterView;
+import org.mitre.affinity.view.dendrogram.model.ClusterObjectDendrogram;
 import org.mitre.affinity.view.dendrogram.model.ClusterObjectDendrogramNode;
 import org.mitre.affinity.view.event.ClusterDistanceChangeEvent;
 import org.mitre.affinity.view.event.ClusterDistanceChangeListener;
@@ -51,6 +53,7 @@ import org.mitre.affinity.view.event.SelectionChangedEvent;
 import org.mitre.affinity.view.event.SelectionChangedListener;
 import org.mitre.affinity.view.event.SelectionClickedEvent;
 import org.mitre.affinity.view.event.SelectionClickedListener;
+import org.mitre.affinity.view.swt.SWTUtils.TextSize;
 import org.eclipse.swt.graphics.Rectangle;
 
 /**
@@ -59,11 +62,12 @@ import org.eclipse.swt.graphics.Rectangle;
  * @author BETHYOST
  *
  */
-public class DendrogramCanvas<K, V> extends Canvas implements ClusterDistanceChangeListener {
+public class DendrogramCanvas<K extends Comparable<K>, V> extends Canvas implements IClusterView<K, V>, ClusterDistanceChangeListener {
 	
 	private Composite parent;
 	
-	private final ClustersContainer<K> cc;	
+	/** The clusters */
+	private ClustersContainer<K> clusters;	
 
 	/** Maps original cluster object ID to its gui */
 	private Map<K, DendrogramClusterObjectGUI<K, V>> clusterObjects;	
@@ -120,6 +124,9 @@ public class DendrogramCanvas<K, V> extends Canvas implements ClusterDistanceCha
 	/** Font used to render a cluster object name when the cluster object is selected */
 	private Font selectedFont = new Font(Display.getDefault(), new FontData("Times", 18, SWT.ITALIC));
 	
+	/** Vertical scroll bar	 */
+	private ScrollBar scrollBar;
+	
 	private Point origin;
 	
 	Color white;
@@ -134,33 +141,30 @@ public class DendrogramCanvas<K, V> extends Canvas implements ClusterDistanceCha
 	private int canvasWidth;
 	private int canvasHeight;
 	
+	public DendrogramCanvas(Composite par, int style) {
+		this(par, style, null, null);
+	}
+	
 	//a DendroCanvas expects a ClustersContainer that has duplicate clusters removed
-	public DendrogramCanvas(Composite par, int style, ClustersContainer<K> clustc, 
-			List<DendrogramClusterObjectGUI<K, V>> clusterObjects, ClusterObjectDendrogramNode<K>[] leafs) {
+	public DendrogramCanvas(Composite par, int style, ClustersContainer<K> clusters, 
+			List<DendrogramClusterObjectGUI<K, V>> clusterObjects) {   //ClusterObjectDendrogramNode<K>[] leafs) {
 		super(par, style | SWT.V_SCROLL);	
-		
+		this.parent = par;
 		this.selectedClusterObjects = new LinkedList<K>();		
 		this.selectionChangedListeners = new LinkedList<SelectionChangedListener<K>>();
 		this.selectionClickedListeners = new LinkedList<SelectionClickedListener<K>>();	
 		this.clusterBounds = new HashMap<ClusterGroup<K>, Rectangle>();
-		parent = par;
-		cc = clustc;
 		this.clusterObjects = new HashMap<K, DendrogramClusterObjectGUI<K, V>>();
-		for(DendrogramClusterObjectGUI<K, V> clusterObject : clusterObjects) { 
-			this.clusterObjects.put(clusterObject.getObjectID(), clusterObject);
-		}
-		leaves = leafs;
 		
 		//starting value is set by default to 1.0 and 0.0
-		//maxBarDVal = 0.75;
 		maxBarDVal = 1.00;
 		minBarDVal = 0.00;
 		
-		//default is true for showing alt colors and background fill
+		//Default is true for showing alternating colors and background fill
 		altTreeColors = true;
 		shadeBackground = true;
 		
-		//getting the colors
+		//Initialize colors
 		white = this.getDisplay().getSystemColor(SWT.COLOR_WHITE);
 		black = this.getDisplay().getSystemColor(SWT.COLOR_BLACK);		
 		blue = this.getDisplay().getSystemColor(SWT.COLOR_BLUE);
@@ -173,15 +177,27 @@ public class DendrogramCanvas<K, V> extends Canvas implements ClusterDistanceCha
 		blue3 = new Color(this.getDisplay(), 107,174, 214);
 		blue4 = new Color(this.getDisplay(), 49, 130, 189);
 		blue5 = new Color(this.getDisplay(), 8, 81, 156);
-		highlightColor = green;
-		
-		this.addMouseListener(new DendrogramMouseListener());
+		highlightColor = green;		
 		
 		this.dendrogramImage = new Image(getDisplay(), 200, 300);
-		//final Point origin = new Point (0, 0); //Used in scrolling to know how much to offset by
-		this.origin = new Point(0, 0);
+		this.origin = new Point(0, 0); //Scrolling origin
 		
-		//redrawing the dendrogram
+		//Create vertical scrollbar
+		scrollBar = getVerticalBar();
+		scrollBar.addListener(SWT.Selection, new Listener () {
+			public void handleEvent (Event e) {
+				int vSelection = scrollBar.getSelection();
+				int destY = -vSelection - origin.y;
+				Rectangle rect = getBounds();
+				scroll(0, destY, 0, 0, rect.width, rect.height, false);
+				origin.y = -vSelection;
+			}
+		});
+		
+		//Add mouse listener
+		addMouseListener(new DendrogramMouseListener());
+		
+		//Add paint listener
 		this.addPaintListener(new PaintListener() {
 			public void paintControl(PaintEvent e) {
 				//render(e.gc, parent);
@@ -201,76 +217,95 @@ public class DendrogramCanvas<K, V> extends Canvas implements ClusterDistanceCha
 				}
 				imageGC.dispose();
 			}
-		});	
+		});		
 		
-		//Create vertical scrollbar
-		final ScrollBar vBar = getVerticalBar ();
-		vBar.addListener(SWT.Selection, new Listener () {
-			public void handleEvent (Event e) {
-				int vSelection = vBar.getSelection();
-				int destY = -vSelection - origin.y;
-				Rectangle rect = getBounds();
-				scroll(0, destY, 0, 0, rect.width, rect.height, false);
-				origin.y = -vSelection;
-			}
-		});
-		
-		//Resize listener
+		//Add resize listener
 		addListener(SWT.Resize,  new Listener () {
 			public void handleEvent (Event e) {
-				Rectangle client = getClientArea ();				
-				int distanceBetween = (client.height-5)/leaves.length;
-				
-				//int fontHeight = getFont().getFontData()[0].getHeight();
-				GC imageGC = new GC(dendrogramImage);
-				int fontHeight = imageGC.stringExtent("X").y;
-				imageGC.dispose();
-				
-				int minDistanceBetween = fontHeight + 4;
-				//int minHeight = 2 + fontHeight * leaves.length + minDistanceBetween * (leaves.length - 1);
-				int desiredHeight = client.height;
-				if(distanceBetween < minDistanceBetween) {
-					desiredHeight = minDistanceBetween * leaves.length + 5;
-				}
-				
-				//The dendrogram is always sized to fit within the canvas's width and to be 
-				//high enough to display all leaf node text at the minimum text height
-				if(dendrogramImage.getBounds().width != client.width || 
-						dendrogramImage.getBounds().height != desiredHeight) {
-					dendrogramImage.dispose();
-					if(client.width <= 0)
-						client.width = 10;
-					if(desiredHeight <= 0)
-						desiredHeight = 10;
-					dendrogramImage = new Image(getDisplay(), client.width, desiredHeight);
-				}				
-				
-				Rectangle rect = dendrogramImage.getBounds ();
-				//hBar.setMaximum (rect.width);
-				vBar.setMaximum (rect.height);
-				//hBar.setThumb (Math.min (rect.width, client.width));
-				vBar.setThumb (Math.min (rect.height, client.height));
-				//int hPage = rect.width - client.width;
-				int vPage = rect.height - client.height;
-				//int hSelection = hBar.getSelection ();
-				int vSelection = vBar.getSelection ();
-				//if (hSelection >= hPage) {
-				//	if (hPage <= 0) hSelection = 0;
-				//	origin.x = -hSelection;
-				//}
-				if (vSelection >= vPage) {
-					if (vPage <= 0) vSelection = 0;
-					origin.y = -vSelection;
-				}
-				redraw();
+				resizeDendrogramImage();
 			}
 		});
 		
-		//initial rendering of the dendrogram
-		//GC gc = new GC(this);
+		setClusterObjectsAndClusters(clusterObjects, clusters);
+	}
+	
+	public ClustersContainer<K> getClusters() {
+		return clusters;
+	}
+	
+	public void setClusterObjectsAndClusters(List<DendrogramClusterObjectGUI<K, V>> clusterObjects,
+			ClustersContainer<K> clusters) {
+		this.clusters = clusters;
+		this.clusterObjects.clear();
+		List<V> objects = new LinkedList<V>();
+		if(clusterObjects != null) {
+			for(DendrogramClusterObjectGUI<K, V> clusterObject : clusterObjects) { 
+				this.clusterObjects.put(clusterObject.getObjectID(), clusterObject);
+				objects.add(clusterObject.getClusterObject());
+			}
+		}
+		if(clusters != null && clusterObjects != null) {
+			//dendrogram takes the leaves in order, uses IVC code to get these leaves - this would be easy to replace if need be
+			Collection<K> objectIDs = new LinkedList<K>();
+			objectIDs.addAll(this.clusterObjects.keySet());		
+			this.leaves = new ClusterObjectDendrogram<K, V>(objects, objectIDs, clusters).getLeaves();
+		}		
+		resizeDendrogramImage();		
+		
+		//initial rendering of the dendrogram	
 		GC gc = new GC(dendrogramImage);
 		render(gc, parent);
 		gc.dispose();
+	}
+	
+	/** Called when the clusters and cluster objects are set or when the canvas size changes */
+	protected void resizeDendrogramImage() {
+		Rectangle client = getClientArea();
+		
+		//int fontHeight = getFont().getFontData()[0].getHeight();
+		GC imageGC = new GC(dendrogramImage);
+		int fontHeight = imageGC.stringExtent("X").y;
+		imageGC.dispose();
+		
+		int desiredHeight = client.height;				
+		if(leaves != null && leaves.length > 0) {
+			int distanceBetween = (client.height-5)/leaves.length;
+			int minDistanceBetween = fontHeight + 4;					
+			if(distanceBetween < minDistanceBetween) {
+				desiredHeight = minDistanceBetween * leaves.length + 5;
+			}
+		}				
+		
+		//The dendrogram is always sized to fit within the canvas's width and to be 
+		//high enough to display all leaf node text at the minimum text height
+		if(dendrogramImage.getBounds().width != client.width || 
+				dendrogramImage.getBounds().height != desiredHeight) {
+			dendrogramImage.dispose();
+			if(client.width <= 0)
+				client.width = 10;
+			if(desiredHeight <= 0)
+				desiredHeight = 10;
+			dendrogramImage = new Image(getDisplay(), client.width, desiredHeight);
+		}				
+		
+		Rectangle rect = dendrogramImage.getBounds ();
+		//hBar.setMaximum (rect.width);
+		scrollBar.setMaximum (rect.height);
+		//hBar.setThumb (Math.min (rect.width, client.width));
+		scrollBar.setThumb (Math.min (rect.height, client.height));
+		//int hPage = rect.width - client.width;
+		int vPage = rect.height - client.height;
+		//int hSelection = hBar.getSelection ();
+		int vSelection = scrollBar.getSelection ();
+		//if (hSelection >= hPage) {
+		//	if (hPage <= 0) hSelection = 0;
+		//	origin.x = -hSelection;
+		//}
+		if (vSelection >= vPage) {
+			if (vPage <= 0) vSelection = 0;
+			origin.y = -vSelection;
+		}
+		redraw();
 	}
 	
 	public Font getSelectedFont() {
@@ -298,14 +333,35 @@ public class DendrogramCanvas<K, V> extends Canvas implements ClusterDistanceCha
 	public void setMinBar(double val){
 		minBarDVal = val;
 	}
-
-	public void setShowClusters(boolean selected){
-		altTreeColors = selected;
+	
+	public boolean isShowClusters() {
+		return altTreeColors;
 	}
 
-	public void setShadeClusters(boolean selected){
-		shadeBackground = selected;
+	public void setShowClusters(boolean showClusters){
+		altTreeColors = showClusters;
 	}
+	
+	public boolean isFillClusters() {
+		return shadeBackground;
+	}
+	
+	@Override
+	public void setFillClusters(boolean fillClusters) {
+		shadeBackground = fillClusters;
+	}	
+	
+	@Override
+	public void setTextSize(TextSize textSize) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public TextSize getTextSize() {
+		// TODO Auto-generated method stub
+		return null;
+	}	
 	
 	/**
 	 * Select a single cluster object.  Any previously selected cluster objects are unselected.
@@ -334,7 +390,7 @@ public class DendrogramCanvas<K, V> extends Canvas implements ClusterDistanceCha
 	public void setSelectedClusterObjects(Collection<K> objectIDs) {
 		//Unselect any previously selected cluster objects
 		unselectAllClusterObjects();		
-		if(objectIDs != null) {
+		if(objectIDs != null && clusterObjects != null) {
 			for(K objectID : objectIDs) {
 				DendrogramClusterObjectGUI<K, V> clusterObject =  clusterObjects.get(objectID);
 				if(clusterObject != null) {
@@ -386,15 +442,22 @@ public class DendrogramCanvas<K, V> extends Canvas implements ClusterDistanceCha
 	//The ids it finds are the ones specific to this class used in the clusterObjectXLocationsMap etc.
 	//This list will always contain exactly two Integers, one for each child in this binary tree
 	//The order does not indicate anything
-	public ArrayList<Integer> getChildrenIDs(ClusterGroup<K> cg, Integer objectID) {	
-		ArrayList<Integer> objectIDs = new ArrayList<Integer>();
-		objectIDs.add(firstChild.get(objectID));
-		objectIDs.add(secondChild.get(objectID));
-		return objectIDs;
+	public ArrayList<Integer> getChildrenIDs(ClusterGroup<K> cg, Integer objectID) {
+		if(firstChild != null && secondChild != null) {
+			ArrayList<Integer> objectIDs = new ArrayList<Integer>();
+			objectIDs.add(firstChild.get(objectID));
+			objectIDs.add(secondChild.get(objectID));
+			return objectIDs;
+		}
+		return null;
 	}
 	
 	//given a translated cluster object ID, draw in a given color all the way down that tree
-	public void colorTree(Integer objectID, GC gcDendrogram, Color color, boolean useHighlightColor) {		
+	protected void colorTree(Integer objectID, GC gcDendrogram, Color color, boolean useHighlightColor) {
+		if(clusterObjects == null || clusterObjects.isEmpty()) {
+			return;
+		}
+		
 		//get children		
 		//if there are at least 2 cluster objects
 		//if there is only one then you've hit the bottom of the tree and do nothing
@@ -610,7 +673,11 @@ public class DendrogramCanvas<K, V> extends Canvas implements ClusterDistanceCha
 	//when you hit something that should be colored
 	//then color everything the appropriate color under that point
 	//note that this is meant to take the maxstep
-	public void determineColors(Integer objectID, GC gcDendrogram, int maxVal){	
+	protected void determineColors(Integer objectID, GC gcDendrogram, int maxVal) {
+		if(clusterObjects == null || clusterObjects.isEmpty()) {
+			return;
+		}
+		
 		int clusterXVal = clusterObjectXLocationsMap.get(objectID);
 		
 		Font normalFont = getFont();
@@ -630,7 +697,6 @@ public class DendrogramCanvas<K, V> extends Canvas implements ClusterDistanceCha
 						colorTree(objectID, gcDendrogram, blue, false);
 					}
 				} else {
-					//gcDendrogram.setForeground(red);
 					currentColorBlue = true;
 					if(altTreeColors){
 						colorTree(objectID, gcDendrogram, red, false);
@@ -805,18 +871,11 @@ public class DendrogramCanvas<K, V> extends Canvas implements ClusterDistanceCha
 		}		
 	}	
 	
-	public void drawDendrogram(GC gcDendrogram){
-		//determining the distance between leaves
-		//y distance between cluster object names is computed here
-		int distanceBetween = (canvasHeight-5)/leaves.length;
-		int firstDistance = distanceBetween/2;
-
-		Font normalFont = getFont();
+	public void drawDendrogram(GC gcDendrogram) {
+		if(clusterObjects == null || clusterObjects.isEmpty()) {
+			return;
+		}
 		
-		//drawing the entire dendrogram in gray first
-		gcDendrogram.setLineStyle(SWT.LINE_SOLID);
-		gcDendrogram.setForeground(gray);
-
 		clusterObjectXLocationsMap = new HashMap<Integer, Integer>();
 		clusterObjectYLocationsMap = new HashMap<Integer, Integer>();
 		//this is really dendro "points" to cluster groups
@@ -826,10 +885,16 @@ public class DendrogramCanvas<K, V> extends Canvas implements ClusterDistanceCha
 		//only need a mapping from points in the dendrogram to cluster object IDs so we can pull out names
 		fromNewClusterObjectsToClustertoObjectID = new HashMap<K, Integer>(); //cluster object ID to dendroPoint(i.e., newClusterObjectsToClusterGroups)
 		Integer yDist;
-
-		//determining the maximum name length to help right align cluster object labels
-		maxLabelLength = 0;
-		if(leaves != null){
+		Font normalFont = getFont();		
+		
+		//drawing the entire dendrogram in gray first
+		gcDendrogram.setLineStyle(SWT.LINE_SOLID);
+		gcDendrogram.setForeground(gray);		
+		
+		//drawing the leaves, marking their locations
+		if(leaves != null && leaves.length > 0) {
+			//determining the maximum name length to help right align cluster object labels
+			maxLabelLength = 0;
 			for(int i=0; i<leaves.length; i++) {
 				K objectID = leaves[i].getObjectID();
 				String name = clusterObjects.get(objectID).getLabel();
@@ -838,10 +903,12 @@ public class DendrogramCanvas<K, V> extends Canvas implements ClusterDistanceCha
 					maxLabelLength = nameLength;
 				}
 			}
-		}
-		
-		//drawing the leaves, marking their locations
-		if(leaves != null) {
+			
+			//determining the distance between leaves
+			//y distance between cluster object names is computed here
+			int distanceBetween = (canvasHeight-5)/leaves.length;
+			int firstDistance = distanceBetween/2;		
+			
 			for(int i=0; i<leaves.length; i++) {
 				K objectID = leaves[i].getObjectID();
 				DendrogramClusterObjectGUI<K, V> clusterObject = clusterObjects.get(objectID);
@@ -889,160 +956,162 @@ public class DendrogramCanvas<K, V> extends Canvas implements ClusterDistanceCha
 		//scale no smaller than 100 pixels wide
 		if(numXpixels < 100){
 			numXpixels = 100;
-		}	
+		}
 		
-		int step = 0;
-		for(ClusterStep<K> cs : cc){
-			for(ClusterGroup<K> cg : cs.getClusterGroups()){
-				if(step == 0) {
-					Iterator<K> cgIter = cg.iterator();
-					K clusterId = cgIter.next();
-					Integer translatedID = fromNewClusterObjectsToClustertoObjectID.get(clusterId);
-					newClusterObjectsToClusterGroups.put(translatedID, cg);
-					firstChild.put(translatedID, null);
-					secondChild.put(translatedID, null);
-					//note that we now have a continuously numbered map, where the cg's use the true cluster objectIDs.
-					//the fake maps we create below have nothing to do with real cluster objectIDs.
-					//all of the real cluster objectIDs are put in at this step
-				} else {
-					//each cluster object is in it's own cluster at step 0, so we are not interested in that
-					//now need to find the two cluster objects that were combined
-					int groupSize = cg.getNumClusterObjects();
-					if(groupSize == 2){
-						//connecting two cluster objects at the bottom level
+		if(clusters != null) {
+			int step = 0;
+			for(ClusterStep<K> cs : clusters){
+				for(ClusterGroup<K> cg : cs.getClusterGroups()){
+					if(step == 0) {
 						Iterator<K> cgIter = cg.iterator();
-						K clusterAid = cgIter.next();
-						K clusterBid = cgIter.next();
-						
-						//translated IDs are really the points in the dendrogram that correspond to that cluster object IDs location
-						Integer translatedID_A = fromNewClusterObjectsToClustertoObjectID.get(clusterAid);
-						Integer translatedID_B = fromNewClusterObjectsToClustertoObjectID.get(clusterBid);
-						
-						Integer aX = clusterObjectXLocationsMap.get(translatedID_A);
-						Integer aY = clusterObjectYLocationsMap.get(translatedID_A);
-						Integer bX = clusterObjectXLocationsMap.get(translatedID_B);
-						Integer bY = clusterObjectYLocationsMap.get(translatedID_B);							
-
-						//this will be between 0.0 and 1.0
-						double valXNotScaled = cg.getDistance();
-						int dendroX = ((int)(numXpixels*valXNotScaled)) + startDendroXPoint;
-						
-						gcDendrogram.drawLine(aX, aY, dendroX, aY);
-						gcDendrogram.drawLine(bX, bY, dendroX, bY);
-						gcDendrogram.drawLine(dendroX, aY, dendroX, bY);
-					
-						//drawing the tick mark at top of canvas
-						gcDendrogram.setForeground(black);
-						gcDendrogram.setLineWidth(1);
-						gcDendrogram.drawLine(dendroX, 0, dendroX, 6);
-						gcDendrogram.setForeground(gray);
-						gcDendrogram.setLineWidth(1);
-						gcDendrogram.setAlpha(255);
-
-						//what do we put in to mark A and B as a new cluster object?
-						//let's create a new cluster object ID
-						int numClusterObjects = clusterObjectXLocationsMap.size();
-					
-						//Note: it does not matter if it does match: cluster group objectIDs are totally separated from labels for the map
-						boolean uniqueIDFound = false;
-						Integer stepLabel = numClusterObjects;
-						while(!uniqueIDFound) {
-							if(!clusterObjectXLocationsMap.containsKey(stepLabel)) {
-								uniqueIDFound = true;
-							} else {
-								stepLabel++;
-							}
-						}
-
-						//need new X and Y for clustered group
-						clusterObjectXLocationsMap.put(stepLabel, dendroX);
-						clusterObjectYLocationsMap.put(stepLabel, (Integer)((aY+bY)/2));
-
-						newClusterObjectsToClusterGroups.put(stepLabel, cg);
-						firstChild.put(stepLabel, translatedID_A);
-						secondChild.put(stepLabel, translatedID_B);
+						K clusterId = cgIter.next();
+						Integer translatedID = fromNewClusterObjectsToClustertoObjectID.get(clusterId);
+						newClusterObjectsToClusterGroups.put(translatedID, cg);
+						firstChild.put(translatedID, null);
+						secondChild.put(translatedID, null);
+						//note that we now have a continuously numbered map, where the cg's use the true cluster objectIDs.
+						//the fake maps we create below have nothing to do with real cluster objectIDs.
+						//all of the real cluster objectIDs are put in at this step
 					} else {
-						//need to find the cluster groups from the previous step that make up this cluster group
-						//note this could be a cluster of size 3 if 2 were merged with one
-						
-						//go backwards through what was put in since last step should be most recent
-						//search for the two steps that make up this cluster group
-						int clusA = -1;
-						int clusB = -1;
-						
-						ClusterGroup<K> temp = null;
-						for(int i = newClusterObjectsToClusterGroups.size()-1; i>=0; i--) {
-							ClusterGroup<K> currCG = newClusterObjectsToClusterGroups.get(i);	
-							if(currCG == null) {
-								System.err.println("A Warning in DendrogramCanvas: encountered null ClusterGroup " + i);
-							} else if(cg.contains(currCG)) {
-								clusA = i;
-								Collection<K> origIDs = cg.getObjectIDs();
-								temp = new ClusterGroup<K>(origIDs);
-								temp.removeClusterObjects(currCG.getObjectIDs());
-								break;
-							}
-						}
+						//each cluster object is in it's own cluster at step 0, so we are not interested in that
+						//now need to find the two cluster objects that were combined
+						int groupSize = cg.getNumClusterObjects();
+						if(groupSize == 2){
+							//connecting two cluster objects at the bottom level
+							Iterator<K> cgIter = cg.iterator();
+							K clusterAid = cgIter.next();
+							K clusterBid = cgIter.next();
 
-						for(int i = newClusterObjectsToClusterGroups.size()-1; i>=0; i--) {
-							ClusterGroup<K> currCG = newClusterObjectsToClusterGroups.get(i);
-							if(temp == null || currCG == null) {
-								System.err.println("B Warning in DendrogramCanvas: encountered null ClusterGroup " + i);
-							} else if(temp.contains(currCG)) {
-								clusB = i;
-								break;
-							}
-						}
-						
-						Integer aX = clusterObjectXLocationsMap.get(clusA);
-						Integer aY = clusterObjectYLocationsMap.get(clusA);
-						Integer bX = clusterObjectXLocationsMap.get(clusB);
-						Integer bY = clusterObjectYLocationsMap.get(clusB);						
-						
-						if(aX == null || aY == null || bX == null || bY == null) {
-							System.err.println("Error in DendgrogramCanvas: Encountered null objectID");
-							return;
-						}
-	
-						double valXNotScaled = cg.getDistance();
-						int dendroX = ((int)(numXpixels*valXNotScaled)) + startDendroXPoint;						
+							//translated IDs are really the points in the dendrogram that correspond to that cluster object IDs location
+							Integer translatedID_A = fromNewClusterObjectsToClustertoObjectID.get(clusterAid);
+							Integer translatedID_B = fromNewClusterObjectsToClustertoObjectID.get(clusterBid);
 
-						gcDendrogram.drawLine(aX, aY, dendroX, aY);
-						gcDendrogram.drawLine(bX, bY, dendroX, bY);
-						gcDendrogram.drawLine(dendroX, aY, dendroX, bY);
-				
-						//drawing the tick mark at top of canvas
-						gcDendrogram.setForeground(black);
-						gcDendrogram.setLineWidth(1);
-						gcDendrogram.drawLine(dendroX, 0, dendroX, 6);
-						gcDendrogram.setForeground(gray);
-						gcDendrogram.setLineWidth(1);
-						gcDendrogram.setAlpha(255);
-						
-						//what do we put in to mark A and B as a new cluster object?
-						//let's create a new cluster object ID
-						int numClusterObjects = clusterObjectXLocationsMap.size();						
-						boolean uniqueIDFound = false;
-						Integer stepLabel = numClusterObjects;
-						while(!uniqueIDFound) {
-							if(!clusterObjectXLocationsMap.containsKey(stepLabel)) {
-								uniqueIDFound = true;
-							} else {
-								stepLabel++;
+							Integer aX = clusterObjectXLocationsMap.get(translatedID_A);
+							Integer aY = clusterObjectYLocationsMap.get(translatedID_A);
+							Integer bX = clusterObjectXLocationsMap.get(translatedID_B);
+							Integer bY = clusterObjectYLocationsMap.get(translatedID_B);							
+
+							//this will be between 0.0 and 1.0
+							double valXNotScaled = cg.getDistance();
+							int dendroX = ((int)(numXpixels*valXNotScaled)) + startDendroXPoint;
+
+							gcDendrogram.drawLine(aX, aY, dendroX, aY);
+							gcDendrogram.drawLine(bX, bY, dendroX, bY);
+							gcDendrogram.drawLine(dendroX, aY, dendroX, bY);
+
+							//drawing the tick mark at top of canvas
+							gcDendrogram.setForeground(black);
+							gcDendrogram.setLineWidth(1);
+							gcDendrogram.drawLine(dendroX, 0, dendroX, 6);
+							gcDendrogram.setForeground(gray);
+							gcDendrogram.setLineWidth(1);
+							gcDendrogram.setAlpha(255);
+
+							//what do we put in to mark A and B as a new cluster object?
+							//let's create a new cluster object ID
+							int numClusterObjects = clusterObjectXLocationsMap.size();
+
+							//Note: it does not matter if it does match: cluster group objectIDs are totally separated from labels for the map
+							boolean uniqueIDFound = false;
+							Integer stepLabel = numClusterObjects;
+							while(!uniqueIDFound) {
+								if(!clusterObjectXLocationsMap.containsKey(stepLabel)) {
+									uniqueIDFound = true;
+								} else {
+									stepLabel++;
+								}
 							}
+
+							//need new X and Y for clustered group
+							clusterObjectXLocationsMap.put(stepLabel, dendroX);
+							clusterObjectYLocationsMap.put(stepLabel, (Integer)((aY+bY)/2));
+
+							newClusterObjectsToClusterGroups.put(stepLabel, cg);
+							firstChild.put(stepLabel, translatedID_A);
+							secondChild.put(stepLabel, translatedID_B);
+						} else {
+							//need to find the cluster groups from the previous step that make up this cluster group
+							//note this could be a cluster of size 3 if 2 were merged with one
+
+							//go backwards through what was put in since last step should be most recent
+							//search for the two steps that make up this cluster group
+							int clusA = -1;
+							int clusB = -1;
+
+							ClusterGroup<K> temp = null;
+							for(int i = newClusterObjectsToClusterGroups.size()-1; i>=0; i--) {
+								ClusterGroup<K> currCG = newClusterObjectsToClusterGroups.get(i);	
+								if(currCG == null) {
+									System.err.println("A Warning in DendrogramCanvas: encountered null ClusterGroup " + i);
+								} else if(cg.contains(currCG)) {
+									clusA = i;
+									Collection<K> origIDs = cg.getObjectIDs();
+									temp = new ClusterGroup<K>(origIDs);
+									temp.removeClusterObjects(currCG.getObjectIDs());
+									break;
+								}
+							}
+
+							for(int i = newClusterObjectsToClusterGroups.size()-1; i>=0; i--) {
+								ClusterGroup<K> currCG = newClusterObjectsToClusterGroups.get(i);
+								if(temp == null || currCG == null) {
+									System.err.println("B Warning in DendrogramCanvas: encountered null ClusterGroup " + i);
+								} else if(temp.contains(currCG)) {
+									clusB = i;
+									break;
+								}
+							}
+
+							Integer aX = clusterObjectXLocationsMap.get(clusA);
+							Integer aY = clusterObjectYLocationsMap.get(clusA);
+							Integer bX = clusterObjectXLocationsMap.get(clusB);
+							Integer bY = clusterObjectYLocationsMap.get(clusB);						
+
+							if(aX == null || aY == null || bX == null || bY == null) {
+								System.err.println("Error in DendgrogramCanvas: Encountered null objectID");
+								return;
+							}
+
+							double valXNotScaled = cg.getDistance();
+							int dendroX = ((int)(numXpixels*valXNotScaled)) + startDendroXPoint;						
+
+							gcDendrogram.drawLine(aX, aY, dendroX, aY);
+							gcDendrogram.drawLine(bX, bY, dendroX, bY);
+							gcDendrogram.drawLine(dendroX, aY, dendroX, bY);
+
+							//drawing the tick mark at top of canvas
+							gcDendrogram.setForeground(black);
+							gcDendrogram.setLineWidth(1);
+							gcDendrogram.drawLine(dendroX, 0, dendroX, 6);
+							gcDendrogram.setForeground(gray);
+							gcDendrogram.setLineWidth(1);
+							gcDendrogram.setAlpha(255);
+
+							//what do we put in to mark A and B as a new cluster object?
+							//let's create a new cluster object ID
+							int numClusterObjects = clusterObjectXLocationsMap.size();						
+							boolean uniqueIDFound = false;
+							Integer stepLabel = numClusterObjects;
+							while(!uniqueIDFound) {
+								if(!clusterObjectXLocationsMap.containsKey(stepLabel)) {
+									uniqueIDFound = true;
+								} else {
+									stepLabel++;
+								}
+							}	
+
+							clusterObjectXLocationsMap.put(stepLabel, dendroX);
+							clusterObjectYLocationsMap.put(stepLabel, (Integer)((aY+bY)/2));
+
+							newClusterObjectsToClusterGroups.put(stepLabel, cg);
+							firstChild.put(stepLabel, clusA);
+							secondChild.put(stepLabel, clusB);
 						}	
-						
-						clusterObjectXLocationsMap.put(stepLabel, dendroX);
-						clusterObjectYLocationsMap.put(stepLabel, (Integer)((aY+bY)/2));
-						
-						newClusterObjectsToClusterGroups.put(stepLabel, cg);
-						firstChild.put(stepLabel, clusA);
-						secondChild.put(stepLabel, clusB);
-					}	
+					}
 				}
-			}
-			step++; 
-		}					
+				step++; 
+			}				
+		}
 		//end Dendrogram creation code here		
 		
 		//when coloring the lines we want to go through the clusters in the reverse order from what they were put in
@@ -1070,19 +1139,17 @@ public class DendrogramCanvas<K, V> extends Canvas implements ClusterDistanceCha
 	}
 	
 	//note that min and max must be between 0.0 and 1.0
-	public void render(GC gc, Composite parent) {		
-		//Rectangle bounds = getClientArea();
+	public void render(GC gc, Composite parent) {
+		//Draw the background
 		Rectangle bounds = this.dendrogramImage.getBounds();
 		canvasWidth = bounds.width;
 		canvasHeight = bounds.height;
-		
 		setBackground(white);
-		setForeground(blue);
-		
-		drawBackground(gc, bounds.x, bounds.y, bounds.width, bounds.height);
+		drawBackground(gc, bounds.x, bounds.y, bounds.width, bounds.height);		
 		
 		//always start with blue
 		//this prevents color from switching on repaint
+		setForeground(blue);
 		currentColorBlue = true;;
 		drawDendrogram(gc);
 	}	
@@ -1149,6 +1216,9 @@ public class DendrogramCanvas<K, V> extends Canvas implements ClusterDistanceCha
 	 */
 	private class DendrogramMouseListener extends MouseAdapter {		
 		public ClusterGroup<K> getFirstClusterContainsPoint(int x, int y) {
+			if(clusterBounds == null || clusterBounds.isEmpty()) {
+				return null;
+			}
 			ClusterGroup<K> clickedCluster = null;
 			for(Map.Entry<ClusterGroup<K>, Rectangle> entry : clusterBounds.entrySet()) {
 				if(entry.getValue().contains(x, y)) {
@@ -1163,6 +1233,9 @@ public class DendrogramCanvas<K, V> extends Canvas implements ClusterDistanceCha
 		@Override
 		public void mouseUp(MouseEvent e) {					
 			//First determine if a cluster object was clicked
+			if(clusterObjects == null || clusterObjects.isEmpty()) {
+				return;
+			}
 			V clickedClusterObject = null;
 			for(DendrogramClusterObjectGUI<K, V> clusterObject : clusterObjects.values()) {			
 				int scrollAdjustedY = e.y + -1*(origin.y);
@@ -1234,5 +1307,5 @@ public class DendrogramCanvas<K, V> extends Canvas implements ClusterDistanceCha
 				}
 			}
 		}
-	}
+	}	
 }

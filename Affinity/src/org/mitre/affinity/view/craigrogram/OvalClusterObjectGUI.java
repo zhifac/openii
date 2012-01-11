@@ -33,7 +33,7 @@ import org.mitre.affinity.view.BasicClusterObjectGUI;
  * @author CBONACETO
  *
  */
-public class OvalClusterObjectGUI<K, V> extends BasicClusterObjectGUI<K, V> {
+public class OvalClusterObjectGUI<K extends Comparable<K>, V> extends BasicClusterObjectGUI<K, V> {
 	
 	private Point size;
 	

@@ -16,8 +16,9 @@
 
 package org.mitre.affinity.algorithms.distance_functions;
 
-import java.util.ArrayList;
+import java.util.Collection;
 
+import org.mitre.affinity.algorithms.IProgressMonitor;
 import org.mitre.affinity.model.IClusterObjectManager;
 import org.mitre.affinity.model.clusters.DistanceGrid;
 	
@@ -30,11 +31,12 @@ import org.mitre.affinity.model.clusters.DistanceGrid;
  * @param <K>
  * @param <V>
  */
-public interface DistanceFunction<K, V> {
+public interface DistanceFunction<K extends Comparable<K>, V> {
 	/** Return the name of the distance metric */
 	public String getName();
 
 	/** Generates a distance grid for the given cluster objects */
-	public DistanceGrid<K> generateDistanceGrid(ArrayList<K> objectIDs, 
-			IClusterObjectManager<K, V> clusterObjectManager);
+	public DistanceGrid<K> generateDistanceGrid(Collection<K> objectIDs, 
+			IClusterObjectManager<K, V> clusterObjectManager, 
+			IProgressMonitor progressMonitor);
 }

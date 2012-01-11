@@ -17,21 +17,25 @@
 package org.mitre.affinity.algorithms.distance_functions;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
+import org.mitre.affinity.algorithms.IProgressMonitor;
 import org.mitre.affinity.model.IClusterObjectManager;
 import org.mitre.affinity.model.clusters.DistanceGrid;
 
 /** Distance Metric Interface - A distance metric fills in the distance grid between various schemas */	
-public class RandomDistanceFunction<K, V> implements DistanceFunction<K, V> {
+public class RandomDistanceFunction<K extends Comparable<K>, V> implements DistanceFunction<K, V> {
 	/** Return the name of the distance metric */
 	public String getName(){ return "Random Distance Function"; }
 
 	/** Generates a distance grid for the given schemas */
-	public DistanceGrid<K> generateDistanceGrid(ArrayList<K> objectIDs, IClusterObjectManager<K, V> clusterObjectManager){
+	public DistanceGrid<K> generateDistanceGrid(Collection<K> objectIDs, IClusterObjectManager<K, V> clusterObjectManager,
+			IProgressMonitor progressMonitor) {
 		DistanceGrid<K> dm = new DistanceGrid<K>();
+		ArrayList<K> ids = new ArrayList<K>(objectIDs);
 		for(int j =0; j < objectIDs.size(); j++){
 			for(int k = j+1; k < objectIDs.size(); k++){
-				dm.set(objectIDs.get(j), objectIDs.get(k), Math.random());
+				dm.set(ids.get(j), ids.get(k), Math.random());
 			}
 		}
 		return dm;

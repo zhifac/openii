@@ -33,7 +33,7 @@ import org.mitre.affinity.view.swt.ZoomPanCanvas;
  * @author cbonaceto
  *
  */
-public class ClusterObject2DView<K, V> extends ZoomPanCanvas implements IRenderer {	
+public class ClusterObject2DView<K extends Comparable<K>, V> extends ZoomPanCanvas implements IRenderer {	
 	
 	/** Cluster objects to render */
 	protected List<IClusterObjectGUI<K, V>> clusterObjects;	
@@ -48,57 +48,32 @@ public class ClusterObject2DView<K, V> extends ZoomPanCanvas implements IRendere
 	public ClusterObject2DView(final Composite parent, int style, List<IClusterObjectGUI<K, V>> clusterObjects) {		
 		super(parent, style);
 		this.clusterObjects = clusterObjects;
-		
-		//Add repaint listener
-		/*
-		this.addPaintListener(new PaintListener(){
-			public void paintControl(PaintEvent e){
-				render(e.gc, parent);
-			}
-		});
-		//this.addPaintListener(new DoubleBufferPaintListener(this, this));
-		 * 
-		 */
-		
-		/*
-		//Add mouse listener to show schema name when the mouse is over a schema
-		this.addMouseMoveListener(new MouseMoveListener() {
-			@Override
-			public void mouseMove(MouseEvent event) {
-				if(!schemaNamesVisible) {					
-					//First we need to transpose the mouse coordinates based on the current zoom/pan settings
-					Point translatedPoint = canvasPointToTranslatedPoint(event.x, event.y);
-					
-					//TODO: Make this more efficient
-					for(ISchemaGUI schema : Schema2DView.this.schemata){
-						if(schema.containsPoint(translatedPoint.x, translatedPoint.y))						
-							schema.setMouseOver(true);
-						else 
-							schema.setMouseOver(false);
-					}
-				}
-			}			
-		});*/
 	}	
 	
 	@Override
 	public void setFont(Font font) {		
 		super.setFont(font);
-		for(IClusterObjectGUI<K, V> object : clusterObjects) {
-			object.setFont(font);
+		if(clusterObjects != null) {
+			for(IClusterObjectGUI<K, V> object : clusterObjects) {
+				object.setFont(font);
+			}
 		}
 	}
 	
-	public void setSelectedFont(Font selectedFont) {		
-		for(IClusterObjectGUI<K, V> object : clusterObjects)
-			object.setSelectedFont(selectedFont);
+	public void setSelectedFont(Font selectedFont) {
+		if(clusterObjects != null) {
+			for(IClusterObjectGUI<K, V> object : clusterObjects)
+				object.setSelectedFont(selectedFont);
+		}
 	}
 	
 	public void setFonts(Font font, Font selectedFont) {
 		super.setFont(font);
-		for(IClusterObjectGUI<K, V> object : clusterObjects) {
-			object.setFont(font);
-			object.setSelectedFont(selectedFont);
+		if(clusterObjects != null) {
+			for(IClusterObjectGUI<K, V> object : clusterObjects) {
+				object.setFont(font);
+				object.setSelectedFont(selectedFont);
+			}
 		}
 	}	
 
@@ -110,9 +85,11 @@ public class ClusterObject2DView<K, V> extends ZoomPanCanvas implements IRendere
 	 * @return
 	 */
 	public IClusterObjectGUI<K, V> getFirstClusterObjectContainsPoint(int x, int y) {
-		for(IClusterObjectGUI<K, V> object : clusterObjects) {
-			if(object.containsPoint(x, y))
-				return object;
+		if(clusterObjects != null) {
+			for(IClusterObjectGUI<K, V> object : clusterObjects) {
+				if(object.containsPoint(x, y))
+					return object;
+			}
 		}
 		return null;
 	}
@@ -125,12 +102,15 @@ public class ClusterObject2DView<K, V> extends ZoomPanCanvas implements IRendere
 	 * @return
 	 */
 	public List<IClusterObjectGUI<K, V>> getAllClusterObjectsContainPoint(int x, int y) {
-		List<IClusterObjectGUI<K, V>> clusterObjects = new ArrayList<IClusterObjectGUI<K, V>>();
-		for(IClusterObjectGUI<K, V> object : this.clusterObjects) {
-			if(object.containsPoint(x, y))
-				clusterObjects.add(object);
-		}		
-		return clusterObjects;
+		if(clusterObjects != null) {
+			List<IClusterObjectGUI<K, V>> clusterObjects = new ArrayList<IClusterObjectGUI<K, V>>();
+			for(IClusterObjectGUI<K, V> object : this.clusterObjects) {
+				if(object.containsPoint(x, y))
+					clusterObjects.add(object);
+			}		
+			return clusterObjects;
+		}
+		return null;
 	}	
 
 	public List<IClusterObjectGUI<K, V>> getClusterObjects() {

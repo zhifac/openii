@@ -20,7 +20,7 @@ import org.mitre.affinity.model.clusters.ClusterGroup;
 
 import edu.iu.iv.visualization.dendrogram.model.BasicDendrogramNode;
 
-public class ClusterObjectDendrogramNode<K> extends BasicDendrogramNode {
+public class ClusterObjectDendrogramNode<K extends Comparable<K>> extends BasicDendrogramNode {
 	
 	private ClusterGroup<K> children;
 	

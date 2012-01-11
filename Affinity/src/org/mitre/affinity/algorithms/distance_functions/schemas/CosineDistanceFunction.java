@@ -16,10 +16,12 @@
 
 package org.mitre.affinity.algorithms.distance_functions.schemas;
 
+import java.util.Collection;
 import java.util.Vector;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
+import org.mitre.affinity.algorithms.IProgressMonitor;
 import org.mitre.affinity.algorithms.distance_functions.DistanceFunction;
 import org.mitre.affinity.model.IClusterObjectManager;
 import org.mitre.affinity.model.clusters.DistanceGrid;
@@ -60,8 +62,8 @@ public class CosineDistanceFunction implements DistanceFunction<Integer, Schema>
 	}	
 	
 	@Override
-	public DistanceGrid<Integer> generateDistanceGrid(ArrayList<Integer> objectIDs, 
-			IClusterObjectManager<Integer, Schema> clusterObjectManager) {
+	public DistanceGrid<Integer> generateDistanceGrid(Collection<Integer> objectIDs, 
+			IClusterObjectManager<Integer, Schema> clusterObjectManager, IProgressMonitor progressMonitor) {
 		if(!(clusterObjectManager instanceof ISchemaManager)) {
 			throw new IllegalArgumentException("Error using CosineDistanceFunction: Can only be used with a schema manager.");
 		}
@@ -69,17 +71,18 @@ public class CosineDistanceFunction implements DistanceFunction<Integer, Schema>
 	}
 
 	/** Generates a distance grid for the given schemas */
-	public DistanceGrid<Integer> generateDistanceGrid(ArrayList<Integer> schemaIDs, ISchemaManager schemaManager) {
+	public DistanceGrid<Integer> generateDistanceGrid(Collection<Integer> schemaIDs, ISchemaManager schemaManager) {
 		DistanceGrid<Integer> dm = new DistanceGrid<Integer>();
+		ArrayList<Integer> ids = new ArrayList<Integer>(schemaIDs);
 		Vector<SchemaTermVector> wordVectors = new Vector<SchemaTermVector>();		
 		for(int j =0; j < schemaIDs.size(); j++){
-			wordVectors.add(new SchemaTermVector(schemaManager.getSchemaInfo(schemaIDs.get(j))));
+			wordVectors.add(new SchemaTermVector(schemaManager.getSchemaInfo(ids.get(j))));
 		}
 		for(int j=0; j < schemaIDs.size(); j++){
 			for(int k = j; k < schemaIDs.size(); k++){
 				//if(schemaIDs.get(j) == 2329 && schemaIDs.get(k) == 3426)
 				//	System.out.println("hi");
-				dm.set(schemaIDs.get(j), schemaIDs.get(k), 1-cosineDoc(wordVectors.get(j),wordVectors.get(k)));
+				dm.set(ids.get(j), ids.get(k), 1-cosineDoc(wordVectors.get(j),wordVectors.get(k)));
 			}
 		}
 		return dm;

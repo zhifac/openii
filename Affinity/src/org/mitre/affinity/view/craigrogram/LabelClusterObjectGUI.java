@@ -32,7 +32,7 @@ import org.mitre.affinity.view.BasicClusterObjectGUI;
  * @author CBONACETO
  *
  */
-public class LabelClusterObjectGUI<K, V> extends BasicClusterObjectGUI<K, V> {
+public class LabelClusterObjectGUI<K extends Comparable<K>, V> extends BasicClusterObjectGUI<K, V> {
 	
 	private Label label;
 	

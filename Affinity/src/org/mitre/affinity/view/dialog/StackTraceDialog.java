@@ -29,7 +29,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
-import org.mitre.affinity.util.SWTUtils;
+import org.mitre.affinity.view.swt.SWTUtils;
 
 public class StackTraceDialog extends Dialog {
 	private Shell shell;

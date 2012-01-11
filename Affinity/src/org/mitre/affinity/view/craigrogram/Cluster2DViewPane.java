@@ -32,8 +32,6 @@ import org.mitre.affinity.model.Position;
 import org.mitre.affinity.model.PositionGrid;
 import org.mitre.affinity.model.clusters.ClusterGroup;
 import org.mitre.affinity.model.clusters.ClustersContainer;
-import org.mitre.affinity.util.SWTUtils;
-import org.mitre.affinity.util.SWTUtils.TextSize;
 import org.mitre.affinity.view.ClusterDistanceSliderPane;
 import org.mitre.affinity.view.IClusterObjectGUI;
 import org.mitre.affinity.view.ICluster2DView;
@@ -41,6 +39,8 @@ import org.mitre.affinity.view.event.ClusterDistanceChangeEvent;
 import org.mitre.affinity.view.event.ClusterDistanceChangeListener;
 import org.mitre.affinity.view.event.SelectionChangedListener;
 import org.mitre.affinity.view.event.SelectionClickedListener;
+import org.mitre.affinity.view.swt.SWTUtils;
+import org.mitre.affinity.view.swt.SWTUtils.TextSize;
 import org.mitre.affinity.view.swt.event.ZoomPanListener;
 
 /**
@@ -49,7 +49,7 @@ import org.mitre.affinity.view.swt.event.ZoomPanListener;
  * @author CBONACETO
  *
  */
-public class Cluster2DViewPane<K, V> extends Composite implements ICluster2DView<K, V>, ClusterDistanceChangeListener {
+public class Cluster2DViewPane<K extends Comparable<K>, V> extends Composite implements ICluster2DView<K, V>, ClusterDistanceChangeListener {
 	
 	public static enum SliderType {STEP_SIZE, CLUSTER_SIZE, NONE};	
 	
@@ -78,10 +78,16 @@ public class Cluster2DViewPane<K, V> extends Composite implements ICluster2DView
 	/** A slider bar used to set the min/max cluster size */
 	private SWTClusterDistanceSliderPane<K, V> clusterDistanceSlider;
 	
-	public Cluster2DViewPane(Composite parent, int style, 
+	public Cluster2DViewPane(Composite parent, int style, boolean showToolBar,
+			SliderType sliderType, int minValue, int maxValue) {
+		this(parent, style, showToolBar, sliderType, minValue, maxValue, 
+				null, null, null);
+	}
+	
+	public Cluster2DViewPane(Composite parent, int style, boolean showToolBar,
+			SliderType sliderType, int minValue, int maxValue,
 			final List<IClusterObjectGUI<K, V>> clusterObjects, final ClustersContainer<K> clusters,
-			final PositionGrid<K> pg, boolean showToolBar,
-			SliderType sliderType, int minValue, int maxValue) {		
+			final PositionGrid<K> pg) {		
 		super(parent, style);
 		
 		this.positionGrid = pg;		
@@ -134,7 +140,7 @@ public class Cluster2DViewPane<K, V> extends Composite implements ICluster2DView
 				this.clusterStepSlider.setLayoutData(new GridData(SWT.CENTER, SWT.FILL, false, true));
 			}
 		}		
-	}
+	}	
 	
 	public void setShowToolBar(boolean showToolBar) {		
 		if(showToolBar) {
@@ -162,7 +168,7 @@ public class Cluster2DViewPane<K, V> extends Composite implements ICluster2DView
 		return toolBar.getSize().y > 1;
 	}	
 	
-	public void fitInWindow() {
+	public void fitInWindow() {		
 		toolBar.setZoomSelectionIndex(4);		
 		clusterObject2DPlot.reset();
 		clusterObject2DPlot.redraw();
@@ -287,32 +293,45 @@ public class Cluster2DViewPane<K, V> extends Composite implements ICluster2DView
 			else
 				width = height;
 		}
-		//positionGrid.rescale(borderSize, width - borderSize, borderSize, height - borderSize);
-		//positionGrid.rescale(borderSize/2, width - borderSize*2, borderSize/2, height - borderSize*2);
-		positionGrid.rescale(0, width - borderSize*2, 0, height - borderSize*2);
+		
+		if(positionGrid != null) {
+			//positionGrid.rescale(borderSize, width - borderSize, borderSize, height - borderSize);
+			//positionGrid.rescale(borderSize/2, width - borderSize*2, borderSize/2, height - borderSize*2);
+			positionGrid.rescale(0, width - borderSize*2, 0, height - borderSize*2);
 
-		//Center the plot			
-		//positionGrid.translate(10, 20);
-		positionGrid.center(0, 0, size.x, size.y);
-		//positionGrid.center(borderSize/2, borderSize/2, width - borderSize*2, height - borderSize*2);
-
-		for(IClusterObjectGUI<K, V> c : clusterObject2DPlot.getClusterObjects()) {
-			Position pos = positionGrid.getPosition(c.getObjectID());
-			c.setLocation((int)pos.getDimensionValue(0), (int)pos.getDimensionValue(1));
+			//Center the plot			
+			//positionGrid.translate(10, 20);
+			positionGrid.center(0, 0, size.x, size.y);
+			//positionGrid.center(borderSize/2, borderSize/2, width - borderSize*2, height - borderSize*2);
 		}
 
-		clusterObject2DPlot.clusterObjectLocationsChanged();
-		clusterObject2DPlot.redraw();
-		//}
+		if(clusterObject2DPlot.getClusterObjects() != null) {
+			for(IClusterObjectGUI<K, V> c : clusterObject2DPlot.getClusterObjects()) {
+				Position pos = positionGrid.getPosition(c.getObjectID());
+				c.setLocation((int)pos.getDimensionValue(0), (int)pos.getDimensionValue(1));
+			}
+			clusterObject2DPlot.clusterObjectLocationsChanged();
+			clusterObject2DPlot.redraw();
+		}
 	}
 
 	public Cluster2DView<K, V> getClusterObject2DPlot() {
 		return clusterObject2DPlot;
 	}
 	
-	public PositionGrid<K> getPositionGrid() {
-		return positionGrid;
+	public void setClusterObjectsAndClusters(List<IClusterObjectGUI<K, V>> clusterObjects, 
+			ClustersContainer<K> clusters, PositionGrid<K> pg) {
+		clusterObject2DPlot.setClusterObjectsAndClusters(clusterObjects, clusters);
+		if(clusterDistanceSlider != null) {
+			clusterDistanceSlider.setClusters(clusters);
+		}
+		this.positionGrid = pg;
+		resize();
 	}
+	
+	/*public PositionGrid<K> getPositionGrid() {
+		return positionGrid;
+	}*/
 
 	public void setPositionGrid(PositionGrid<K> positionGrid) {
 		this.positionGrid = positionGrid;

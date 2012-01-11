@@ -31,11 +31,11 @@ import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.mitre.affinity.AffinityConstants;
 import org.mitre.affinity.AffinityConstants.IconType;
-import org.mitre.affinity.util.SWTUtils.TextSize;
 import org.mitre.affinity.view.ICluster2DView;
 import org.mitre.affinity.view.ICluster2DView.Mode;
+import org.mitre.affinity.view.swt.SWTUtils.TextSize;
 
-public class Cluster2DViewToolBar<K, V> extends Composite {
+public class Cluster2DViewToolBar<K extends Comparable<K>, V> extends Composite {
 	
 	/** The schema-cluster view this tool bar is tied to */
 	ICluster2DView<K, V> schemaCluster2DView;
@@ -127,10 +127,11 @@ public class Cluster2DViewToolBar<K, V> extends Composite {
 				int zoom = -1;
 				String zoomText = zoomCombo.getText();			
 				try {							
-					if(zoomText.endsWith("%"))
+					if(zoomText.endsWith("%")) {
 						zoom = Integer.parseInt(zoomText.substring(0, zoomText.length() - 1));
-					else						
+					} else {						
 						zoom = Integer.parseInt(zoomText);
+					}
 				} catch(Exception ex) {}	
 				if(zoom > 0) {
 					if(!zoomText.endsWith("%")) {

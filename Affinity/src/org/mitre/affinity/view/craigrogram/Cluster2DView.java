@@ -45,7 +45,6 @@ import org.eclipse.swt.widgets.Tracker;
 
 import org.mitre.affinity.AffinityConstants;
 import org.mitre.affinity.AffinityConstants.CursorType;
-import org.mitre.affinity.model.PositionGrid;
 import org.mitre.affinity.model.clusters.ClusterGroup;
 import org.mitre.affinity.model.clusters.ClusterStep;
 import org.mitre.affinity.model.clusters.ClustersContainer;
@@ -63,7 +62,7 @@ import org.mitre.affinity.view.event.SelectionClickedListener;
  * @param <K>
  * @param <V>
  */
-public class Cluster2DView<K, V> extends ClusterObject2DView<K, V> {
+public class Cluster2DView<K extends Comparable<K>, V> extends ClusterObject2DView<K, V> {
 	
 	private static final int leftButtonCtrlStateMask = SWT.BUTTON1 | SWT.CONTROL;
 	private static final int rightButtonCtrlStateMask = SWT.BUTTON3 | SWT.CONTROL;
@@ -90,10 +89,7 @@ public class Cluster2DView<K, V> extends ClusterObject2DView<K, V> {
 	protected Map<ClusterGroup<K>, ClusterLocation<K, V>> clusterLocationsMap;
 	
 	/**  Maps cluster object id to its associated cluster location */
-	protected Map<K, ClusterObjectLocation<K, V>> clusterObjectLocationsMap;
-	
-	/** The position grid that contains the x,y position of each cluster object */
-	protected PositionGrid<K> positionGrid;
+	protected Map<K, ClusterObjectLocation<K, V>> clusterObjectLocationsMap;	
 	
 	/** If true, filter on min/max cluster distance, otherwise filter on min/max step */
 	private boolean filterOnClusterDistance = true;
@@ -156,16 +152,20 @@ public class Cluster2DView<K, V> extends ClusterObject2DView<K, V> {
 	
 	/** Whether or not cluster objects are scaled when zooming */
 	private boolean zoomClusterObjects = false;
+	
+	public Cluster2DView(Composite parent, int style) {
+		this(parent, style, null, null);
+	}
 
 	public Cluster2DView(Composite parent, int style, 
 			List<IClusterObjectGUI<K, V>> clusterObjects, ClustersContainer<K> clusters) {
 		super(parent, style);
 		super.panCursor = AffinityConstants.getAffinityCursor(AffinityConstants.CursorType.PANNING_CURSOR);
 		this.setMode(Mode.PAN_AND_SELECT);
-		this.setClusterObjects(clusterObjects);
+		setClusterObjects(clusterObjects);
 		this.selectedClusterObjects = new TreeSet<IClusterObjectGUI<K, V>>();
-		this.selectedClusterObjectIDs = new TreeSet<K>();
-		this.setClusters(clusters);	
+		this.selectedClusterObjectIDs = new TreeSet<K>();		
+		setClusters(clusters);	
 		//this.affinityEventListeners = new LinkedList<AffinityListener>();
 		this.selectionChangedListeners = new LinkedList<SelectionChangedListener<K>>();
 		this.selectionClickedListeners = new LinkedList<SelectionClickedListener<K>>();		
@@ -262,6 +262,58 @@ public class Cluster2DView<K, V> extends ClusterObject2DView<K, V> {
 				break;
 			}
 		}
+	}
+	
+	/**
+	 * @param clusterObjects
+	 * @param clusters
+	 */
+	public void setClusterObjectsAndClusters(List<IClusterObjectGUI<K, V>> clusterObjects, 
+			ClustersContainer<K> clusters) {
+		setClusterObjects(clusterObjects);
+		setClusters(clusters);
+		
+		redraw();
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.mitre.affinity.view.craigrogram.ClusterObject2DView#setClusterObjects(java.util.List)
+	 */
+	@Override
+	public void setClusterObjects(List<IClusterObjectGUI<K, V>> clusterObjects) {
+		super.setClusterObjects(clusterObjects);
+		this.clusterObjectLocationsMap = new HashMap<K, ClusterObjectLocation<K, V>>();
+		if(clusterObjects != null) {
+			for(IClusterObjectGUI<K, V> clusterObject : clusterObjects) {
+				clusterObjectLocationsMap.put(clusterObject.getObjectID(), 
+						new ClusterObjectLocation<K, V>(clusterObject));
+			}
+		}
+		this.clusterPathsNeedRefresh = true;
+	}
+
+	/**
+	 * @return
+	 */
+	public ClustersContainer<K> getClusters() {
+		return clusters;
+	}
+
+	/**
+	 * Set teh clusters.
+	 * 
+	 * @param clusters the clusters
+	 */
+	public void setClusters(ClustersContainer<K> clusters) {
+		this.clusters = clusters;		 
+		this.minClusterStep = 0;
+		if(clusters != null) {
+			this.maxClusterStep = clusters.getNumClusterSteps() - 1;
+		}
+		else {
+			this.maxClusterStep = 0;
+		}
+		modelChanged();
 	}
 	
 	/**
@@ -416,9 +468,7 @@ public class Cluster2DView<K, V> extends ClusterObject2DView<K, V> {
 	public void setUseConcavitySkipLocic(boolean useConcavitySkipLocic) {
 		this.useConcavitySkipLocic = useConcavitySkipLocic;
 		this.clusterPathsNeedRefresh = true;
-	}
-	
-	
+	}	
 
 	public boolean isUseClusterObjectSkipLogic() {
 		return useClusterObjectSkipLogic;
@@ -505,17 +555,6 @@ public class Cluster2DView<K, V> extends ClusterObject2DView<K, V> {
 		this.maxClusterStep = maxClusterStep;
 		//this.clusterPathsNeedRefresh = true;
 	}
-		
-	@Override
-	public void setClusterObjects(List<IClusterObjectGUI<K, V>> clusterObjects) {
-		super.setClusterObjects(clusterObjects);
-		this.clusterObjectLocationsMap = new HashMap<K, ClusterObjectLocation<K, V>>();
-		for(IClusterObjectGUI<K, V> clusterObject : clusterObjects) {
-			clusterObjectLocationsMap.put(clusterObject.getObjectID(), 
-					new ClusterObjectLocation<K, V>(clusterObject));
-		}
-		this.clusterPathsNeedRefresh = true;
-	}
 
 	/**
 	 * @return the showClusters
@@ -571,17 +610,6 @@ public class Cluster2DView<K, V> extends ClusterObject2DView<K, V> {
 	public void setHighlightColor(Color highlightColor) {
 		this.highlightColor = highlightColor;
 	}	
-
-	public ClustersContainer<K> getClusters() {
-		return clusters;
-	}
-
-	public void setClusters(ClustersContainer<K> clusters) {
-		this.clusters = clusters;		 
-		this.minClusterStep = 0;
-		this.maxClusterStep = clusters.getNumClusterSteps() - 1;
-		this.modelChanged();
-	}
 	
 	public int getMaxClusterNestingLevel() {
 		return maxClusterNestingLevel;
@@ -600,6 +628,13 @@ public class Cluster2DView<K, V> extends ClusterObject2DView<K, V> {
 	}
 	
 	private void processClusters() {
+		this.clusterLocations = new ArrayList<List<ClusterLocation<K, V>>>();
+		this.clusterLocationsMap = new HashMap<ClusterGroup<K>, ClusterLocation<K, V>>();
+		
+		if(clusters == null) {
+			return;
+		}
+		
 		//Sort the clusters based on the position of the cluster object farthest to the left in each cluster
 		for(ClusterStep<K> cs : this.clusters) {			
 			List<List<ClusterObjectLocation<K, V>>> clusters = new ArrayList<List<ClusterObjectLocation<K, V>>>();			
@@ -614,8 +649,6 @@ public class Cluster2DView<K, V> extends ClusterObject2DView<K, V> {
 		}
 		
 		//Initialize the cluster locations
-		this.clusterLocations = new ArrayList<List<ClusterLocation<K, V>>>();
-		this.clusterLocationsMap = new HashMap<ClusterGroup<K>, ClusterLocation<K, V>>();
 		int step = 0;	
 		int clusterID = 0;
 		for(ClusterStep<K> cs : this.clusters) {		
@@ -687,7 +720,7 @@ public class Cluster2DView<K, V> extends ClusterObject2DView<K, V> {
 	@Override
 	public void render(GC gc, Composite parent) {
 		//Draw the clusters		
-		if(this.showClusters) {		
+		if(showClusters && clusters != null) {		
 			if(debug && this.clusterPathsNeedRefresh) {
 				Rectangle bounds = this.getBounds();
 				System.out.println("recalculating contours: " + bounds.width + ", " + bounds.height);
@@ -705,8 +738,7 @@ public class Cluster2DView<K, V> extends ClusterObject2DView<K, V> {
 				minStep = this.minClusterStep;
 				maxStep = this.maxClusterStep;
 			}
-
-			//for(int currStep=minClusterStep; currStep<=maxClusterStep; currStep++) {
+			
 			for(int currStep=minStep; currStep<=maxStep; currStep++) {
 				for(ClusterLocation<K, V> cluster : this.clusterLocations.get(currStep)) {					
 					/*boolean displayCluster = true;
@@ -721,7 +753,6 @@ public class Cluster2DView<K, V> extends ClusterObject2DView<K, V> {
 						cluster.contourRadius = radius;
 						
 						//gc.setLineWidth((this.clusterLocations.size()-currStep+1)/5);
-						//gc.setAlpha(alpha);					
 						if(cluster.getTotalNumClusterObjects() == 1) {
 							//Circle a single cluster object					
 							if(debug) {
@@ -1471,8 +1502,7 @@ public class Cluster2DView<K, V> extends ClusterObject2DView<K, V> {
 							gc.setAlpha(fillAlpha);						
 							gc.fillPath(cluster.contour);
 							gc.setAlpha(255);
-						}		
-						
+						}								
 						if(cluster.highlighted) {
 							gc.setForeground(highlightColor);
 							gc.setLineWidth(2);
@@ -1503,10 +1533,10 @@ public class Cluster2DView<K, V> extends ClusterObject2DView<K, V> {
 				}
 			}
 		} 
-		this.clusterPathsNeedRefresh = false;
+		clusterPathsNeedRefresh = false;
 
 		//Draw the cluster objects
-		if(clusterObjectLocationsMap != null) {	
+		if(clusterObjectLocationsMap != null && !clusterObjectLocationsMap.isEmpty()) {	
 			boolean zoomClusterObjects = this.zoomClusterObjects;
 			boolean zoomFont = this.zoomFont;
 			if(renderingOverview) {
@@ -1663,7 +1693,7 @@ public class Cluster2DView<K, V> extends ClusterObject2DView<K, V> {
 		return (double)((o2.location.y - o1.location.y))/(o2.location.x - o1.location.x);
 	}
 	
-	public static class ClusterLocation<K, V> {
+	public static class ClusterLocation<K extends Comparable<K>, V> {
 		
 		public Path contour;
 		
@@ -1980,7 +2010,7 @@ public class Cluster2DView<K, V> extends ClusterObject2DView<K, V> {
 		}
 	}
 
-	public static class ClusterObjectLocation<K, V> implements Comparable<ClusterObjectLocation<K, V>> {
+	public static class ClusterObjectLocation<K extends Comparable<K>, V> implements Comparable<ClusterObjectLocation<K, V>> {
 		
 		public IClusterObjectGUI<K, V> clusterObject;
 		
@@ -2046,7 +2076,6 @@ public class Cluster2DView<K, V> extends ClusterObject2DView<K, V> {
 
 		public void mouseMove(MouseEvent e) {			
 			if(startPoint != null && (Math.abs(startPoint.x - e.x) > 2 || Math.abs(startPoint.y - e.y) > 2)) {
-				//System.out.println("rendering");
 				//Create a tracker for selecting items when the mouse is pressed and moved more than 
 				//2 pixels in select mode
 				startPoint = null;

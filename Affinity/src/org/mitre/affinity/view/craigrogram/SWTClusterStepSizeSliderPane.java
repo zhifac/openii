@@ -22,7 +22,7 @@ import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.mitre.affinity.view.ClusterStepSizeSliderPane;
 
-public class SWTClusterStepSizeSliderPane<K, V> extends Canvas {
+public class SWTClusterStepSizeSliderPane<K extends Comparable<K>, V> extends Canvas {
 	
 	private ClusterStepSizeSliderPane<K, V> clusterStepSizePane;
 

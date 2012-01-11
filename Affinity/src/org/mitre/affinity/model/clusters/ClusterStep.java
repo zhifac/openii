@@ -24,7 +24,7 @@ import java.util.Iterator;
  *  This class maintains a history of these cluster groups, possibly useful for visualizing
  *  the clusters. 
  */
-public class ClusterStep<K> implements Iterable<ClusterGroup<K>> {
+public class ClusterStep<K extends Comparable<K>> implements Iterable<ClusterGroup<K>> {
 	
 	/** Stores the list of cluster groups */
 	private ArrayList<ClusterGroup<K>> clusterGroups;

@@ -30,7 +30,7 @@ import org.eclipse.swt.widgets.Dialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
-import org.mitre.affinity.util.SWTUtils;
+import org.mitre.affinity.view.swt.SWTUtils;
 
 /**
  * @author cbonaceto
@@ -115,6 +115,13 @@ public class ClusterRadiusDlg extends Dialog {
 		return new GridData(horizontalAlignment, SWT.CENTER, true, false);
 	}	
 	
+	public boolean isDisposed() {
+		if(dlgShell != null) {
+			return dlgShell.isDisposed();
+		}
+		return true;
+	}
+	
 	public boolean isVisible() {
 		if(this.dlgShell != null && !this.dlgShell.isDisposed())
 			return this.dlgShell.isVisible();
@@ -125,13 +132,13 @@ public class ClusterRadiusDlg extends Dialog {
 		boolean dlgVisible = this.isVisible();
 		if(visible && !dlgVisible) {
 			//Open the dialog
-			if(this.dlgShell.isDisposed()) {				
-				this.createDlg();				
+			if(dlgShell.isDisposed()) {				
+				createDlg();				
 			}
 			this.initControlsFromModel();
 			SWTUtils.centerShellOnControl(dlgShell, parent);
 			//SWTUtils.centerShellOnParent(parent, dlgShell);	
-			this.dlgShell.setVisible(true);			
+			dlgShell.setVisible(true);			
 			
 			Display display = dlgShell.getDisplay();
 			while (!dlgShell.isDisposed()) {
@@ -144,7 +151,7 @@ public class ClusterRadiusDlg extends Dialog {
 		}
 		else if(!visible && dlgVisible) {
 			//Close the dialog
-			this.dlgShell.setVisible(false);
+			dlgShell.setVisible(false);
 		}
 		return null;
 	}
@@ -155,20 +162,26 @@ public class ClusterRadiusDlg extends Dialog {
 	public void resetDialog() {		
 	}
 	
+	/**
+	 * Set the current radius.
+	 * 
+	 * @param radius
+	 */
 	public void setRadius(int radius) {
-		this.dialogModel.radius = radius;
-		this.radiusCombo.select(radius);
+		dialogModel.radius = radius;
+		radiusCombo.select(radius);
 	}
 	
 	private void initControlsFromModel() {
-		this.radiusCombo.select(this.dialogModel.radius);		
+		radiusCombo.select(this.dialogModel.radius);		
 	}
 
 	@Override
 	protected void finalize() throws Throwable {
 		super.finalize();
-		if(this.dlgShell != null && !this.dlgShell.isDisposed())
-			this.dlgShell.dispose();
+		if(dlgShell != null && !dlgShell.isDisposed()) {
+			dlgShell.dispose();
+		}
 	}
 	
 	public static class DialogModel {

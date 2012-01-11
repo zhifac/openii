@@ -27,7 +27,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Dialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
-import org.mitre.affinity.util.SWTUtils;
+import org.mitre.affinity.view.swt.SWTUtils;
 import org.mitre.affinity.view.venn_diagram.model.VennDiagramSets;
 import org.mitre.affinity.view.venn_diagram.model.VennDiagramSetsMatrix;
 

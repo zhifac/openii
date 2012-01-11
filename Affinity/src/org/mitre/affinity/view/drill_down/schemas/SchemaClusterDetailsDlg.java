@@ -27,7 +27,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.mitre.affinity.model.clusters.ClusterGroup;
 import org.mitre.affinity.model.schemas.AffinitySchemaModel;
-import org.mitre.affinity.util.SWTUtils;
+import org.mitre.affinity.view.swt.SWTUtils;
 
 /**
  * @author CBONACETO

@@ -24,8 +24,13 @@ import org.eclipse.swt.widgets.Composite;
 import org.mitre.affinity.model.clusters.ClustersContainer;
 import org.mitre.affinity.view.ClusterDistanceSliderPane;
 
-//testing this
-public class SWTClusterDistanceSliderPane<K, V> extends Canvas {
+/**
+ * @author CBONACETO
+ *
+ * @param <K>
+ * @param <V>
+ */
+public class SWTClusterDistanceSliderPane<K extends Comparable<K>, V> extends Canvas {
 	
 	private final ClusterDistanceSliderPane<K, V> clusterDistanceSliderPane;
 
@@ -40,6 +45,10 @@ public class SWTClusterDistanceSliderPane<K, V> extends Canvas {
 		clusterDistanceSliderPane.setBackground(new java.awt.Color(background.getRed(), background.getGreen(), background.getBlue()));
 		panel.add(this.clusterDistanceSliderPane);	
 		frame.add(panel);
+	}
+	
+	public void setClusters(ClustersContainer<K> clusters) {
+		clusterDistanceSliderPane.setClusters(clusters);
 	}
 
 	public ClusterDistanceSliderPane<K, V> getClusterDistanceSliderPane() {

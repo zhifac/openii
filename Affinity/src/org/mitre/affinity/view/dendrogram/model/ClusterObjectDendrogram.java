@@ -16,17 +16,17 @@
 
 package org.mitre.affinity.view.dendrogram.model;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.mitre.affinity.algorithms.clusterers.HierarchicalClusterer;
+//import org.mitre.affinity.algorithms.clusterers.HierarchicalClusterer;
 import org.mitre.affinity.model.clusters.ClusterGroup;
 import org.mitre.affinity.model.clusters.ClusterStep;
 import org.mitre.affinity.model.clusters.ClustersContainer;
-import org.mitre.affinity.model.clusters.DistanceGrid;
+//import org.mitre.affinity.model.clusters.DistanceGrid;
 
 import edu.iu.iv.visualization.dendrogram.model.BasicDendrogramNode;
 import edu.iu.iv.visualization.dendrogram.model.Dendrogram;
@@ -36,7 +36,7 @@ import edu.iu.iv.visualization.dendrogram.model.DendrogramNode;
  * @author CBONACETO
  *
  */
-public class ClusterObjectDendrogram<K, V> extends Dendrogram {
+public class ClusterObjectDendrogram<K extends Comparable<K>, V> extends Dendrogram {
 	
 	/**
 	 * @param root
@@ -46,13 +46,13 @@ public class ClusterObjectDendrogram<K, V> extends Dendrogram {
 	}
 	
 	/**
-	 * @param clusterObjects: List of cluster objects
-	 * @param dg: Distance grid with distance between each pair of cluster objects
-	 * @return: A dendrogram
-	 * @throws IllegalArgumentException
+	 * @param clusterObjects List of cluster objects
+	 * @param objectIDs List of cluster object IDs
+	 * @param cc the clusters
 	 */
-	public ClusterObjectDendrogram(List<V> clusterObjects, ArrayList<K> objectIDs, DistanceGrid<K> dg){
-		super(new DendrogramCreator<K, V>().createDendrogram(clusterObjects, objectIDs, dg));
+	//public ClusterObjectDendrogram(List<V> clusterObjects, Collection<K> objectIDs, DistanceGrid<K> dg, ClustersContainer<K> cc){
+	public ClusterObjectDendrogram(List<V> clusterObjects, Collection<K> objectIDs, ClustersContainer<K> cc) {
+		super(new DendrogramCreator<K, V>().createDendrogram(clusterObjects, objectIDs, cc));
 	}	
 		
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -158,43 +158,22 @@ public class ClusterObjectDendrogram<K, V> extends Dendrogram {
         return new Dendrogram(root);
 	}	
 	
-	protected static class DendrogramCreator<K, V> {
-		protected ClusterObjectDendrogramNode<K> createDendrogram(List<V> clusterObjects, ArrayList<K> objectIDs, DistanceGrid<K> dg) {	
-			/*ArrayList<K> objectIDs = new ArrayList<K>();		 
-		for(V clusterObject : clusterObjects) {
-			schemaIDs.add(s.getId());			
-		}*/
-
+	protected static class DendrogramCreator<K extends Comparable<K>, V> {
+		/*protected ClusterObjectDendrogramNode<K> createDendrogram(List<V> clusterObjects, Collection<K> objectIDs, DistanceGrid<K> dg) {
 			HierarchicalClusterer<K> hc = new HierarchicalClusterer<K>();
-			ClustersContainer<K> cc = hc.generateClusters(objectIDs, dg);		
-
-			//DEBUG CODE
-			/*
-		System.out.println("Schemas:");
-		for(SchemaDocument s : schemas) {
-			System.out.println(s.getId() + ": " + s.getName());
-		}
-		System.out.println("Distance Grid:");
-		for(Map.Entry<SchemaIDPair, Double> dgEntry : dg) {
-			System.out.println(dgEntry.getKey().getSchema1ID() + "," + dgEntry.getKey().getSchema2ID() + ": " + dgEntry.getValue());
-		}
-
-		System.out.println("Clusters: ");
-		printClusters(cc);	
-			 */	
-			//END DEBUG CODE
-
+			ClustersContainer<K> cc = hc.generateClusters(objectIDs, dg);
 			ClustersContainer<K> newCC = cc.removeDuplicateClusterGroups(objectIDs, cc);
 			return createDendrogram(clusterObjects, objectIDs, newCC);
-		}
-
+		}*/
+		
 		/**
-		 * @param schemaIDs: List of schema IDs
-		 * @param cc:  Cluster container
+		 * @param clusterObjects
+		 * @param objectIDs
+		 * @param cc
 		 * @return the root node
 		 */
 		@SuppressWarnings({ "rawtypes", "unchecked" })
-		protected ClusterObjectDendrogramNode<K> createDendrogram(List<V> clusterObjects, ArrayList<K> objectIDs, ClustersContainer<K> cc) {	
+		protected ClusterObjectDendrogramNode<K> createDendrogram(List<V> clusterObjects, Collection<K> objectIDs, ClustersContainer<K> cc) {	
 			Map<K, ClusterObjectDendrogramNode<K>> nodes = new HashMap<K, ClusterObjectDendrogramNode<K>>(); 
 			int i = 1;
 			for(K objectID : objectIDs) {
