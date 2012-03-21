@@ -20,8 +20,11 @@ import java.util.ArrayList;
 
 import org.apache.commons.lang.WordUtils;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
@@ -33,14 +36,22 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.mitre.openii.application.OpenIIActivator;
+import org.mitre.openii.model.OpenIIManager;
+import org.mitre.schemastore.model.Mapping;
+import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.terms.AssociatedElement;
 import org.mitre.schemastore.model.terms.Term;
 
 
 public class CloseMatchPane  {
 
+	private Color red;
+	private Color yellow;
+	private Color green;
+	
     private UnityCanvas unityCanvas;
     private Label synsetLabel2;
     private Composite closeMatchView;
@@ -55,6 +66,9 @@ public class CloseMatchPane  {
 
 	public CloseMatchPane(UnityCanvas unity) {
 		unityCanvas = unity;
+		red =  unityCanvas.getDisplay().getSystemColor(SWT.COLOR_RED);
+		yellow =  unityCanvas.getDisplay().getSystemColor(SWT.COLOR_YELLOW);
+		green =  unityCanvas.getDisplay().getSystemColor(SWT.COLOR_GREEN);
 
 	}
 	
@@ -169,6 +183,7 @@ public class CloseMatchPane  {
 		AssociatedElement[][] allElements = new AssociatedElement[unityCanvas.getSchemaIDs().length][];
 		ArrayList<AssociatedElement> assElements = new ArrayList<AssociatedElement>();
 		int elementCount = 0;
+		TableItem showMeR = null;
 		TableColumn showMeC = null;
 		                  
 		//loop through once to get all terms
@@ -181,7 +196,7 @@ public class CloseMatchPane  {
 		//	if(allElements[j].length > 0 && first < 0) { first = j;}
 		}
 		//if(elementCount < 2) {return;}
-
+/*
 		Table EvidenceTable = new Table(closeMatchView, SWT.BORDER | SWT.HIDE_SELECTION | SWT.NO_FOCUS | SWT.NONE);
 		EvidenceTable.setData("name", "evidenceTable");
 		EvidenceTable.setHeaderVisible(true);
@@ -195,6 +210,7 @@ public class CloseMatchPane  {
 		gridData.grabExcessVerticalSpace = false;
 		EvidenceTable.setLayoutData(gridData);
 		
+
 		// creating one column for the status and the vocabulary
 		TableColumn tempC;
 		tempC = new TableColumn(EvidenceTable, SWT.NONE);
@@ -230,31 +246,57 @@ public class CloseMatchPane  {
 					showMeC = tempC;
 				}
 			}
-		}		
+		}		*/
 		
-		
-		/*
-		ArrayList<MappingCell> mappingCellList = OpenIIManager.getAssociatedMappingCells(vocab.getProjectID(),assElements);
-		ArrayList<String> drawnRows = new ArrayList<String>();
-		//add terms  already in
-		for(int i = 0; i < assElements.size(); i++){
-			drawnRows.add(assElements.get(i).getElementID() + "_" + assElements.get(i).getSchemaID());
+/*		
+		ArrayList<MappingCell> mappingCellList = OpenIIManager.getMappingCellsByElement(unityCanvas.getVocabulary().getProjectID(),assElements,minMatchScore);
+		//for each schema
+		for(int j = 0; j < unityCanvas.getSchemaIDs().length; j++){
 			
-		}
-		for(int j = 0; j < mappingCellList.size(); j++){
-			MappingCell mc = mappingCellList.get(j);
-			AssociatedElement workElement = null;
-			Integer outputId = mc.getOutput();
-			Integer otherElementId = outputId;
-			for (Integer inputId : mc.getElementInputIDs()) {
-				otherElementId = (drawnRows.contains(outputId) ? inputId : outputId);			
-			}
+//			Label schemaLabel = new Label(EvidenceView, SWT.NONE);
+//			schemaLabel.setText(schemas[j].getName());
+//			schemaLabel.setToolTipText(schemas[j].getDescription());
 			
-			if(!drawnRows.contains(otherElementId + "_" + )){
+					
+			for(int i = 0; i < allElements[j].length; i++) {			
+			//for each term
+				TableItem newItem = new TableItem(EvidenceTable, SWT.NONE, EvidenceTable.getItemCount());
+				newItem.setText(0, allElements[j][i].getName());
+				if(showMeR == null || (allElements[j][i].getSchemaID().equals(schemaID) && allElements[j][i].getElementID().equals(elementID))) {
+					showMeR = newItem;
+				}
 
-			}
-			drawnRows.add(workElement);				
-		}
+				
+				
+				//add matching info here
+				// for each mapping, we need to find any cells that map to the
+				// current element
+				ArrayList<MappingCell> mappingCellList = new ArrayList<MappingCell>();
+				for (Mapping m : mappings.values()) {
+					MappingInfoExt mix = new MappingInfoExt(m, OpenIIManager.getMappingCells(m.getId()));
+					AssociatedElementHash aeh = mix.getMappingCells();
+					for ( MappingCell mc : aeh.get(allElements[j][i].getElementID()) )
+						if ( !mappingCellList.contains(mc))
+							mappingCellList.add(mc); 
+				}	
+				int count = 0;
+				for (int l = 0; l < allElements.length; l++) {
+					for (int n = 0; n < allElements[l].length; n++) {
+						count++;
+						for (int k = 0; k < mappingCellList.size(); k++) {
+							MappingCell mc = mappingCellList.get(k); 
+							Mapping m = unityCanvas.getMappings().get(mc.getMappingId());
+							Integer outputId = mc.getOutput();
+							Integer otherSchemaId = (allElements[j][i].getSchemaID().equals(m.getSourceId())) ? m.getTargetId() : m.getSourceId();
+							if(otherSchemaId.equals(allElements[j][i].getSchemaID())){
+								break;
+							}
+							int otherSIndex = 0;
+							for(; otherSIndex < unityCanvas.getSchemaIDs().length; otherSIndex++){
+								if(unityCanvas.getSchemaIDs()[otherSIndex].equals(otherSchemaId)) {
+									break;
+								}
+							}
 	
 							for (Integer inputId : mc.getElementInputIDs()) {
 								Integer otherElementId = (outputId.equals(allElements[j][i].getElementID())) ? inputId : outputId;
@@ -285,27 +327,27 @@ public class CloseMatchPane  {
 				
 			    // tooltip
 			    String tooltipText = allElements[j][i].getName();
-			    tooltipText += "\nSchema - " + schemas[j].getName();
+			    tooltipText += "\nSchema - " + unityCanvas.getSchemas()[j].getName();
 			    tooltipText += "\n";//Description: ";
 			    tooltipText +=  WordUtils.wrap(allElements[j][i].getDescription(),60,"\n",true);
 				newItem.setData("popup",tooltipText);
 			}
 		}
 				
-		EvidenceTable.showItem(showMeR);
-		EvidenceTable.showColumn(showMeC);
-		EvidenceTable.getColumn(0).setWidth(gc.textExtent(showMeR.getText()).x + 20);
+		if(showMeR != null) EvidenceTable.showItem(showMeR);
+		if(showMeC != null) EvidenceTable.showColumn(showMeC);
+		if(showMeR != null) EvidenceTable.getColumn(0).setWidth((new GC(EvidenceTable)).textExtent(showMeR.getText()).x + 10);
 		
 		EvidenceTable.addListener(SWT.MouseHover, new Listener() {
 			public void handleEvent(Event e) {
-					activeTable = (Table)(e.widget);
+				unityCanvas.activeTable = (Table)(e.widget);
 		        	// Identify the selected row
 					TableItem item = ((Table)(e.widget)).getItem(new Point(e.x,e.y));
-				    if (activeTable.getColumn(0).getWidth() < e.x || item == null)
+				    if (unityCanvas.activeTable.getColumn(0).getWidth() < e.x || item == null)
 				    {
-				    	activeTable.setToolTipText(null);
+				    	unityCanvas.activeTable.setToolTipText(null);
 				    } else if(item.getData("popup") != null) {
-				    	activeTable.setToolTipText((String)item.getData("popup"));
+				    	unityCanvas.activeTable.setToolTipText((String)item.getData("popup"));
 				    }
 		        }
 
@@ -314,15 +356,18 @@ public class CloseMatchPane  {
 		EvidenceTable.addListener(SWT.Resize, new Listener() {	
 			public void handleEvent(Event e) {
 				Table table = ((Table)(e.widget));
-				int size = 1+(table.getBounds().width - table.getColumn(0).getWidth())/(table.getColumnCount()-1);
-				for(int i = 1; i < table.getColumnCount(); i++)
-				{
-					table.getColumn(i).setWidth(size);
+				if(table.getColumnCount() > 1) {
+					int size = 1+(table.getBounds().width - table.getColumn(0).getWidth())/(table.getColumnCount()-1);
+					for(int i = 1; i < table.getColumnCount(); i++)
+					{
+						table.getColumn(i).setWidth(size);
+					}
 				}
 			}
 		});
 
 		*/
+	
 		
 		synsetLabel2.getParent().getParent().layout(true);
 		

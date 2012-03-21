@@ -108,7 +108,7 @@ public class ContextPane  {
 			}
 		});
 */
-		contextView = new ScrolledComposite(parent, SWT.V_SCROLL);
+		contextView = new ScrolledComposite(parent, SWT.V_SCROLL | SWT.H_SCROLL);
 		contextViewGridData = new GridData();
 		contextViewGridData.horizontalSpan = 2;
 		contextViewGridData.minimumHeight = 0;
@@ -125,7 +125,7 @@ public class ContextPane  {
 		contextView.setLayout(contextViewLayout);	
 		new Composite(contextView, SWT.NONE); //dummy component
 		contextView.setExpandVertical(true);
-		contextView.setExpandHorizontal(false);
+		contextView.setExpandHorizontal(true);
 
 		addListeners();
 	}
@@ -141,18 +141,8 @@ public class ContextPane  {
 		{
 			tempComp.dispose();
 		}
-		//contextView.setLayoutData(contextViewGridData);
-		
-		//contextView.setLayout(contextViewLayout);	
-//		contextView.setLayout(new GridLayout(1, false));
-//		System.err.println("minwidth = " + contextCanvas.getBounds().width);
-//		System.err.println("minheight = " + contextCanvas.getBounds().height);
-//		if(!contextView.isDisposed() && !contextCanvas.isDisposed()){
-//			contextView.setMinHeight(contextCanvas.getBounds().height);}
-//		contextView.setMinWidth(contextCanvas.getBounds().width);
 		
 		tempComp = new Composite(contextView, SWT.NONE);
-		tempComp.setSize(synsetLabel3.getParent().getParent().getBounds().height*3, synsetLabel3.getParent().getParent().getBounds().width);
 
 		tempComp.setLayout(new GridLayout(1, false));
 		tempComp.setLayoutData(contextViewGridData);
@@ -226,7 +216,6 @@ public class ContextPane  {
 					Label pLabel = new Label(contextC, SWT.NONE);
 					pLabel.setBackground(white);
 					SchemaElement parentElement = parents.get(k);
-//System.err.println("name = " + parentElement.getName());
 					Image img =  SchemaElementImage;
 					if(parentElement instanceof DomainValue) img =  DomainValueImage;
 					else if(parentElement instanceof Attribute) img =  AttributeImage;
@@ -272,12 +261,8 @@ public class ContextPane  {
 		}
 
 		//show item
-//		contextView.layout(true);
-//		contextView.setSize(synsetLabel3.getParent().getParent().getBounds().height, synsetLabel3.getParent().getParent().getBounds().width);
-//		tempComp.setSize(tempComp.computeSize(contextView.getBounds().width, SWT.DEFAULT, true));
 		contextView.setContent(tempComp);
-		//contextView.setSize(tempComp.getBounds().height,tempComp.getBounds().width);
 		contextView.getParent().layout(true);
-		
+		contextView.setMinSize(contextView.computeSize(SWT.DEFAULT, SWT.DEFAULT));		
 	}
 }
