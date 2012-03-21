@@ -101,14 +101,14 @@ public class DeleteSynsetListener implements Listener {
 			ok.addSelectionListener(new SelectionAdapter() {
 				public void widgetSelected(SelectionEvent e) {
 					TableItem items[] = unityCanvas.activeTable.getSelection();
-					for(int i = 0; i < items.length; i++){
+					for(int i = items.length-1; i >= 0 ; i--){
 						Integer id = (Integer)items[i].getData("uid");
 						unityCanvas.getWorkspace().removeFromWorkspace(id);	
 						unityCanvas.getInvertedVocab().removeTerm(unityCanvas.getVocabulary().getTerm(id));
 						unityCanvas.getVocabulary().removeTerm(id);
 						unityCanvas.getTableView().removeTerm(id);
 					}
-					unityCanvas.getTableView().adjustTableSize(0-items.length);
+//					unityCanvas.getTableView().adjustTableSize(0-items.length);
 					unityCanvas.getTableView().resetTableView();
 					unityCanvas.needSave(true);
 					dialog.close();
