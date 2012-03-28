@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?eclipse version="3.2"?>
+<?eclipse version="3.7"?>
 <plugin>
 
    <!-- Declares the OpenII application -->
@@ -18,21 +18,21 @@
 
    <!-- Declares the OpenII perspective -->
    <extension point="org.eclipse.ui.perspectives">
-      <perspective class="org.mitre.openii.application.OpenIIPerspective" fixed="false" icon="icons/Harmony.jpg" id="OpenIIPerspective" name="OpenII"></perspective>
+      <perspective class="org.mitre.openii.application.OpenIIPerspective" fixed="false" icon="icons/Harmony.gif" id="OpenIIPerspective" name="OpenII"></perspective>
    </extension>
  
    <!-- Declares the OpenII views -->
    <extension id="org.mitre.openii.views" point="org.eclipse.ui.views">
       <category name="OpenII" id="Ygg"></category>
-      <view name="Repositories" icon="icons/Repositories.gif" category="OpenII" class="org.mitre.openii.views.repositories.RepositoryView" id="RepositoryView"></view>
-      <view name="Manager" icon="icons/Manager.gif" category="OpenII" class="org.mitre.openii.views.manager.ManagerView" id="ManagerView"></view>
+      <view name="Repositories" icon="icons/Repositories.gif" category="Ygg" class="org.mitre.openii.views.repositories.RepositoryView" id="RepositoryView"></view>
+      <view name="Manager" icon="icons/Manager.gif" category="Ygg" class="org.mitre.openii.views.manager.ManagerView" id="ManagerView"></view>
     </extension>
 
    <!-- Declares the OpenII editors -->
    <extension point="org.eclipse.ui.editors">      
       <editor name="AboutOpenII" icon="icons/About.gif" class="org.mitre.openii.editors.help.AboutOpenIIEditor" id="AboutOpenIIEditor"></editor>
       <editor name="Search" icon="icons/Search.gif" class="org.mitre.openii.editors.search.SearchView" id="SearchView"></editor>
-      <editor name="Manifest" icon="icons/File.gif" class="org.mitre.openii.editors.ManifestView" id="ManifestView"></editor>
+      <editor name="Manifest" icon="icons/File.gif" class="org.mitre.openii.editors.vocabulary.ManifestView" id="ManifestView"></editor>
       <editor name="Schema" extensions="schema" icon="icons/Schema.gif" class="org.mitre.openii.editors.schemas.schema.SchemaView" id="SchemaView"></editor>
       <editor name="Extension Graph" extensions="schema" icon="icons/Extensions.gif" class="org.mitre.openii.editors.schemas.ExtensionGraphView" id="ExtensionGraphView"></editor>
       <editor name="M3 Model" extensions="schema" icon="icons/Schema.gif" class="org.mitre.openii.editors.schemas.M3SchemaView" id="M3SchemaView"></editor>

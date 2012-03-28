@@ -236,7 +236,7 @@ public class TableView  {
 		});				
 
 		Button tableFilter2 = new Button(tableButtons, SWT.TOGGLE);
-		tableFilter2.setImage(OpenIIActivator.getImage("greenFilter.png"));
+		tableFilter2.setImage(OpenIIActivator.getImage("greenfilter.png"));
 		tableFilter2.setToolTipText("Filter out synsets with good matches");
 //		tableFilter2.setEnabled(false);
 		tableFilter2.addSelectionListener(new SelectionAdapter() {
@@ -247,7 +247,7 @@ public class TableView  {
 		});				
 
 		Button tableFilter3 = new Button(tableButtons, SWT.TOGGLE);
-		tableFilter3.setImage(OpenIIActivator.getImage("yellowFilter.png"));
+		tableFilter3.setImage(OpenIIActivator.getImage("yellowfilter.png"));
 		tableFilter3.setToolTipText("Filter out synsets with average matches");
 //		tableFilter3.setEnabled(false);
 		tableFilter3.addSelectionListener(new SelectionAdapter() {
