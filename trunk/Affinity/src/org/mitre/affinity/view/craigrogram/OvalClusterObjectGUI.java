@@ -25,6 +25,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.ToolTip;
+import org.mitre.affinity.AffinityConstants;
 import org.mitre.affinity.view.BasicClusterObjectGUI;
 
 /**
@@ -39,7 +40,7 @@ public class OvalClusterObjectGUI<K extends Comparable<K>, V> extends BasicClust
 	
 	private Point labelSize;
 	
-	private Color labelColor = Display.getDefault().getSystemColor(SWT.COLOR_BLACK);
+	private Color labelColor = AffinityConstants.COLOR_CLUSTER_OBJECT_LABEL;
 	
 	private ToolTip toolTip;	
 	
@@ -47,9 +48,9 @@ public class OvalClusterObjectGUI<K extends Comparable<K>, V> extends BasicClust
 	
 	private int selectedLineWidth = 1;
 	
-	private Color selectedLineColor = Display.getDefault().getSystemColor(SWT.COLOR_GREEN);
+	private Color selectedLineColor = AffinityConstants.COLOR_CLUSTER_OBJECT_HIGHLIGHT_LINE;
 	
-	private Color selectedCircleColor = Display.getDefault().getSystemColor(SWT.COLOR_BLACK);
+	private Color selectedCircleColor = AffinityConstants.COLOR_CLUSTER_OBJECT_HIGHLIGHT_FILL;
 	
 	private Rectangle bounds;
 	

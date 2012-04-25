@@ -91,11 +91,13 @@ public class ClustersContainer<K extends Comparable<K>> implements Iterable<Clus
 	 * returns a set of cluster steps where duplicate clusters (i.e., clusters contained in prior steps)
 	 * have been removed.  (This essentially means we just leave the last cluster group in each cluster step).
 	 * 
-	 * @param schemaIds - The ids of each schema
+	 * @param objectIds - The IDs of each cluster object
 	 * @param cc - The clusters container
 	 * @return
 	 */
 	public ClustersContainer<K> removeDuplicateClusterGroups(Collection<K> objectIds, ClustersContainer<K> cc) {
+		//System.out.println("Clusters before removing duplicates: ");
+		//System.out.println(cc);
 		ClustersContainer<K> newCC = new ClustersContainer<K>(objectIds, cc.getDistanceGrid());		
 		
 		int currStep = 0;

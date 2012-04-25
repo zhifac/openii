@@ -31,14 +31,19 @@ import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.mitre.affinity.AffinityConstants;
 import org.mitre.affinity.AffinityConstants.IconType;
-import org.mitre.affinity.view.ICluster2DView;
-import org.mitre.affinity.view.ICluster2DView.Mode;
-import org.mitre.affinity.view.swt.SWTUtils.TextSize;
+import org.mitre.affinity.view.craigrogram.ICluster2DView.Mode;
+import org.mitre.affinity.AffinityConstants.TextSize;
 
+/**
+ * @author CBONACETO
+ *
+ * @param <K>
+ * @param <V>
+ */
 public class Cluster2DViewToolBar<K extends Comparable<K>, V> extends Composite {
 	
-	/** The schema-cluster view this tool bar is tied to */
-	ICluster2DView<K, V> schemaCluster2DView;
+	/** The cluster view this tool bar is tied to */
+	ICluster2DView<K, V> cluster2DView;
 	
 	//Tool bar widgets
 	private Composite toolBar;
@@ -51,9 +56,9 @@ public class Cluster2DViewToolBar<K extends Comparable<K>, V> extends Composite 
 	
 	private Button lockAspectRatioButton;
 
-	public Cluster2DViewToolBar(Composite parent, int style, ICluster2DView<K, V> schemaClusterView) {
+	public Cluster2DViewToolBar(Composite parent, int style, ICluster2DView<K, V> clusterView) {
 		super(parent, style);		
-		this.schemaCluster2DView = schemaClusterView;
+		this.cluster2DView = clusterView;
 		this.creatToolBar();
 	}
 	
@@ -75,8 +80,9 @@ public class Cluster2DViewToolBar<K extends Comparable<K>, V> extends Composite 
 	}
 	
 	public void setTextSizeSelection(TextSize textSize) {
-		if(textSizeCombo != null && !textSizeCombo.isDisposed())
+		if(textSizeCombo != null && !textSizeCombo.isDisposed()) {
 			textSizeCombo.select(textSize.ordinal());
+		}
 	}
 	
 	private void creatToolBar() {
@@ -85,7 +91,12 @@ public class Cluster2DViewToolBar<K extends Comparable<K>, V> extends Composite 
 		this.toolBar = new Composite(this, SWT.NONE);
 		toolBar.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));		
 		GridLayout gl = new GridLayout(12, false);
-		gl.marginHeight = 2;
+		
+		//gl.marginHeight = 2;
+		gl.marginHeight = 0;
+		gl.marginTop = 1;
+		gl.marginBottom = 0;	
+		
 		gl.marginWidth = 2;
 		gl.horizontalSpacing = 3;
 		toolBar.setLayout(gl);	
@@ -96,7 +107,7 @@ public class Cluster2DViewToolBar<K extends Comparable<K>, V> extends Composite 
 		panItem.setImage(AffinityConstants.getAffinityIcon(IconType.PAN_ICON));	
 		panItem.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				schemaCluster2DView.setMode(Mode.PAN_AND_SELECT);
+				cluster2DView.setMode(Mode.PAN_AND_SELECT);
 			}
 		});
 		ToolItem selectItem = new ToolItem(buttonBar, SWT.PUSH);
@@ -104,7 +115,7 @@ public class Cluster2DViewToolBar<K extends Comparable<K>, V> extends Composite 
 		selectItem.setToolTipText("Select Multiple Schemas");
 		selectItem.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				schemaCluster2DView.setMode(Mode.SELECT_MULTIPLE_CLUSTER_OBJECTS);
+				cluster2DView.setMode(Mode.SELECT_MULTIPLE_CLUSTER_OBJECTS);
 			}
 		});
 		
@@ -139,8 +150,8 @@ public class Cluster2DViewToolBar<K extends Comparable<K>, V> extends Composite 
 						//zoomCombo.setItem(0, zoomText + "%");
 					}									
 					//zoomLevels[0] = zoom;
-					schemaCluster2DView.setZoom(zoom/100.f);
-					schemaCluster2DView.redraw();
+					cluster2DView.setZoom(zoom/100.f);
+					cluster2DView.redraw();
 				}				
 			}
 			public void widgetSelected(SelectionEvent e) {
@@ -149,12 +160,12 @@ public class Cluster2DViewToolBar<K extends Comparable<K>, V> extends Composite 
 				if(selection >= 0) {
 					if(selection == zoomLevels.length) {
 						//Fit in window was selected
-						schemaCluster2DView.fitInWindow();
+						cluster2DView.fitInWindow();
 					}
 					else {
 						// Zoom to selected zoom level
-						schemaCluster2DView.setZoom(zoomLevels[selection]/100.f);
-						schemaCluster2DView.redraw();
+						cluster2DView.setZoom(zoomLevels[selection]/100.f);
+						cluster2DView.redraw();
 					}
 				}
 			}
@@ -167,9 +178,9 @@ public class Cluster2DViewToolBar<K extends Comparable<K>, V> extends Composite 
 		plus.setImage(AffinityConstants.getAffinityIcon(IconType.ZOOM_IN_ICON));
 		plus.addListener(SWT.Selection,  new Listener() {
 			public void handleEvent(Event event) {
-				schemaCluster2DView.zoomIn(1);
-				zoomCombo.setText(Integer.toString((int)(schemaCluster2DView.getZoom()*100)) + "%");				
-				schemaCluster2DView.redraw();
+				cluster2DView.zoomIn(1);
+				zoomCombo.setText(Integer.toString((int)(cluster2DView.getZoom()*100)) + "%");				
+				cluster2DView.redraw();
 			}
 		});
 		Button minus = new Button(toolBar, SWT.PUSH | SWT.CENTER);
@@ -180,11 +191,11 @@ public class Cluster2DViewToolBar<K extends Comparable<K>, V> extends Composite 
 		//minus.setToolTipText("Zoom Out, Also use \"-\" key or sroll wheel");
 		minus.addListener(SWT.Selection,  new Listener() {
 			public void handleEvent(Event event) {
-				schemaCluster2DView.zoomOut(1);
-				zoomCombo.setText(Integer.toString((int)(schemaCluster2DView.getZoom()*100)) + "%");
+				cluster2DView.zoomOut(1);
+				zoomCombo.setText(Integer.toString((int)(cluster2DView.getZoom()*100)) + "%");
 				//zoomCombo.setItem(0, Integer.toString((int)(schema2DPlot.getZoom()*100)) + "%");
 				//zoomCombo.select(0);
-				schemaCluster2DView.redraw();
+				cluster2DView.redraw();
 			}
 		});		
 		
@@ -203,20 +214,20 @@ public class Cluster2DViewToolBar<K extends Comparable<K>, V> extends Composite 
 					//TextSize textSize = TextSize.Normal;
 					switch(textSizeCombo.getSelectionIndex()) {
 					case 0: 
-						schemaCluster2DView.setClusterObjectNamesVisible(true);
-						schemaCluster2DView.setTextSize(TextSize.Small);
+						cluster2DView.setClusterObjectNamesVisible(true);
+						cluster2DView.setTextSize(TextSize.Small);
 						break;		
 					case 1: 
-						schemaCluster2DView.setClusterObjectNamesVisible(true);
-						schemaCluster2DView.setTextSize(TextSize.Normal);
+						cluster2DView.setClusterObjectNamesVisible(true);
+						cluster2DView.setTextSize(TextSize.Normal);
 						break;
 					case 2: 
-						schemaCluster2DView.setClusterObjectNamesVisible(true);
-						schemaCluster2DView.setTextSize(TextSize.Large);
+						cluster2DView.setClusterObjectNamesVisible(true);
+						cluster2DView.setTextSize(TextSize.Large);
 						break;
 					case 3: 
-						schemaCluster2DView.setClusterObjectNamesVisible(false);
-						schemaCluster2DView.redraw();
+						cluster2DView.setClusterObjectNamesVisible(false);
+						cluster2DView.redraw();
 						break;
 					}
 				}
@@ -227,10 +238,10 @@ public class Cluster2DViewToolBar<K extends Comparable<K>, V> extends Composite 
 		
 		/*this.lockAspectRatioButton = new Button(toolBar, SWT.CHECK);
 		lockAspectRatioButton.setText("Lock Aspect Ratio");
-		lockAspectRatioButton.setSelection(schemaCluster2DView.isLockAspectRatio());
+		lockAspectRatioButton.setSelection(cluster2DView.isLockAspectRatio());
 		lockAspectRatioButton.addListener(SWT.Selection,  new Listener() {
 			public void handleEvent(Event event) {
-				schemaCluster2DView.setLockAspectRatio(lockAspectRatioButton.getSelection());				
+				cluster2DView.setLockAspectRatio(lockAspectRatioButton.getSelection());				
 			}
 		});
 		*/
@@ -245,18 +256,18 @@ public class Cluster2DViewToolBar<K extends Comparable<K>, V> extends Composite 
 				if(clusterCombo.getSelectionIndex() != -1) {
 					switch(clusterCombo.getSelectionIndex()) {
 					case 0: 
-						schemaCluster2DView.setShowClusters(false);
+						cluster2DView.setShowClusters(false);
 						break;		
 					case 1: 
-						schemaCluster2DView.setShowClusters(true);
-						schemaCluster2DView.setFillClusters(false);
+						cluster2DView.setShowClusters(true);
+						cluster2DView.setFillClusters(false);
 						break;
 					case 2: 
-						schemaCluster2DView.setShowClusters(true);
-						schemaCluster2DView.setFillClusters(true);
+						cluster2DView.setShowClusters(true);
+						cluster2DView.setFillClusters(true);
 						break;
 					}
-					schemaCluster2DView.redraw();
+					cluster2DView.redraw();
 				}
 			}
 		});

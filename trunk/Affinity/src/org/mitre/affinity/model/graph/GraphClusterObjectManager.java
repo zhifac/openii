@@ -3,6 +3,8 @@ package org.mitre.affinity.model.graph;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.mitre.affinity.model.IClusterObjectManager;
 
@@ -21,10 +23,10 @@ public class GraphClusterObjectManager implements IClusterObjectManager<String, 
 	/** The graph */
 	protected UndirectedSparseGraph<Node, Edge> graph;
 	
-	/** The nodes in the graph (mapped by node value) */
+	/** The nodes in the graph (mapped by node Id) */
 	protected HashMap<String, GraphObject> nodes;
 	
-	/** The edges in the graph (mapped by edge name) */
+	/** The edges in the graph (mapped by edge Id) */
 	protected HashMap<String, GraphObject> edges;
 	
 	/** The cluster object type to use (default is Links) */
@@ -55,15 +57,69 @@ public class GraphClusterObjectManager implements IClusterObjectManager<String, 
 		if(graph != null) {
 			if(graph.getEdges() != null) {
 				for(Edge edge : graph.getEdges()) {
-					edges.put(edge.getEdgeName(), new GraphObject(edge));
+					edges.put(edge.getId(), new GraphObject(edge));
 				}
 			}
 			if(graph.getVertices() != null) {
 				for(Node node : graph.getVertices()) {
-					nodes.put(node.getValue(), new GraphObject(node));
+					nodes.put(node.getId(), new GraphObject(node));
 				}
 			}
 		}
+	}	
+	
+	/**
+	 * Gets all edges that connect two nodes contained in the given set of node Ids.
+	 * Edges that connect a node in the given set of nodes to a node outside the set are
+	 * not included.
+	 * 
+	 * @param nodeIds
+	 * @return the edge Ids 
+	 */
+	public Collection<String> getEdgesConnectingNodes(Collection<String> nodeIds) {
+		if(graph != null && nodeIds != null && !nodeIds.isEmpty()) {
+			HashSet<Node> nodes = new HashSet<Node>(nodeIds.size());
+			for(String nodeId : nodeIds) {
+				GraphObject node = this.nodes.get(nodeId);
+				if(node != null && node.getNode() != null) {
+					nodes.add(node.getNode());
+				}
+			}
+			return getEdgesConnectingNodes(nodes);
+		}
+		return null;
+	}
+	
+	/**
+	 * Gets all edges that connect two nodes contained in the given set of node Ids.
+	 * Edges that connect a node in the given set of nodes to a node outside the set are
+	 * not included.
+	 * 
+	 * @param nodes
+	 * @return
+	 */
+	public Collection<String> getEdgesConnectingNodes(Set<Node> nodes) {
+		HashSet<String> edges = new HashSet<String>();
+		if(graph != null && nodes != null && !nodes.isEmpty()) {
+			for(Node node : nodes) {
+				//System.out.println("node: " + node.getObjectId());
+				if(node != null) {
+					Collection<Edge> candidateEdges = graph.getIncidentEdges(node);
+					//System.out.println("incident edges: " +  candidateEdges);
+					if(candidateEdges != null) {
+						for(Edge edge : candidateEdges) {
+							//Make sure both the source node and destination node of the edge are in nodeIds
+							//System.out.println("testing " + edge.getSourceNode().getId() + ", " + edge.getDestNode().getId());
+							if(nodes.contains(edge.getSourceNode()) &&
+									nodes.contains(edge.getDestNode())) {
+								edges.add(edge.getId());
+							}
+						}
+					}
+				}
+			}
+		}
+		return edges;
 	}
 
 	@Override
@@ -199,7 +255,7 @@ public class GraphClusterObjectManager implements IClusterObjectManager<String, 
 	}
 
 	@Override
-	public String findClusterObject(String identifier) {		
+	public String findClusterObject(String identifier) {
 		HashMap<String, GraphObject> clusterObjects = null;
 		if(clusterObjectType == ClusterObjectType.Links) {
 			clusterObjects = edges;
@@ -209,8 +265,8 @@ public class GraphClusterObjectManager implements IClusterObjectManager<String, 
 		if(clusterObjects != null) {
 			GraphObject object = clusterObjects.get(identifier);
 			if(object == null) {
-				for(GraphObject o : clusterObjects.values()) {					
-					if(o.getObjectId() != null && o.getObjectId().equalsIgnoreCase(identifier)) {
+				for(GraphObject o : clusterObjects.values()) {
+					if(o.getName() != null && o.getName().equalsIgnoreCase(identifier)) {
 						object = o;
 						break;
 					}
@@ -218,7 +274,7 @@ public class GraphClusterObjectManager implements IClusterObjectManager<String, 
 			}
 			if(object != null) {
 				return object.getObjectId();
-			}
+			} 
 		}
 		return null;
 	}

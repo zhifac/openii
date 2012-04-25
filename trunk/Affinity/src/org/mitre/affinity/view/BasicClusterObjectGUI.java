@@ -16,12 +16,10 @@
 
 package org.mitre.affinity.view;
 
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.widgets.Display;
-import org.mitre.affinity.view.swt.SWTUtils;
+import org.mitre.affinity.AffinityConstants;
 
 /**
  * @author cbonaceto
@@ -36,13 +34,13 @@ public abstract class BasicClusterObjectGUI<K extends Comparable<K>, V> implemen
 	/** The cluster object */
 	protected V clusterObject;
 	
-	protected Color background = Display.getDefault().getSystemColor(SWT.COLOR_WHITE);
+	protected Color background = AffinityConstants.COLOR_WHITE;
 	
-	protected Color foreground = Display.getDefault().getSystemColor(SWT.COLOR_BLACK);
+	protected Color foreground = AffinityConstants.COLOR_BLACK;
 	
-	protected Font font = SWTUtils.getFont(SWTUtils.NORMAL_FONT);
+	protected Font font = AffinityConstants.getFont(AffinityConstants.NORMAL_FONT);
 	
-	protected Font selectedFont = SWTUtils.getFont(SWTUtils.NORMAL_BOLD_FONT);
+	protected Font selectedFont = AffinityConstants.getFont(AffinityConstants.NORMAL_BOLD_FONT);
 	
 	protected String label;
 	

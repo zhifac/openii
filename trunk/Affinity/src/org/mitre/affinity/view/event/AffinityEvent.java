@@ -27,4 +27,6 @@ public class AffinityEvent {
 	public Object getSource() {
 		return source;
 	}
+	
+	
 }

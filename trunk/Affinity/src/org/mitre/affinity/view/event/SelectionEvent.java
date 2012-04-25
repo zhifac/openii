@@ -20,9 +20,9 @@ import java.util.Collection;
 
 import org.mitre.affinity.model.clusters.ClusterGroup;
 
-public class SelectionEvent<K extends Comparable<K>> {
+public class SelectionEvent<K extends Comparable<K>> extends AffinityEvent {
 	/** The object that generated the event */
-	public final Object eventSource;
+	//public final Object eventSource;
 	
 	/** Current selection of cluster objects */
 	public final Collection<K> selectedClusterObjects;	
@@ -36,13 +36,14 @@ public class SelectionEvent<K extends Comparable<K>> {
 	
 	public SelectionEvent(Object eventSource, Collection<K> selectedClusterObjects, 
 			Collection<ClusterGroup<K>> selectedClusters) {
-		this.eventSource = eventSource;
+		super(eventSource);
+		//this.eventSource = eventSource;
 		this.selectedClusterObjects = selectedClusterObjects;
 		this.selectedClusters = selectedClusters;
 	}
 	
 	public Object getEventSource() {
-		return eventSource;
+		return source;
 	}
 
 	public Collection<K> getSelectedClusterObjects() {

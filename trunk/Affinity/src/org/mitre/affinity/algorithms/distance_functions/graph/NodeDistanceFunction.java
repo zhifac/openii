@@ -62,7 +62,7 @@ public class NodeDistanceFunction implements DistanceFunction<String, GraphObjec
 			IClusterObjectManager<String, GraphObject> clusterObjectManager,
 			IProgressMonitor progressMonitor) {
 		if(!(clusterObjectManager instanceof GraphClusterObjectManager)) {
-			throw new IllegalArgumentException("Cluster object manager must be a LinkCommunityClusterObjectManager");
+			throw new IllegalArgumentException("Cluster object manager must be a GraphClusterObjectManager");
 		}
 		UndirectedSparseGraph<Node, Edge> graph = ((GraphClusterObjectManager)clusterObjectManager).getGraph();
 		if(graph != null && graph.getVertexCount() > 0) {
@@ -78,7 +78,7 @@ public class NodeDistanceFunction implements DistanceFunction<String, GraphObjec
 					Set<Node> neighborsN2 = getNeighbors(n2, graph);
 					//TODO: Memory storage optimization - only store distance if < 1, have dg return 1 if distance is null
 					//System.out.println("Neighbors of " + n1.getValue() + ": " + neighborsN1);
-					dg.set(n1.getValue(), n2.getValue(), 
+					dg.set(n1.getId(), n2.getId(), 
 							CommonDistanceMetrics.computeJaccardDistance(neighborsN1, neighborsN2));
 					//System.out.println("Neigbors of " + n2.getValue() + ": " + neighborsN2);
 					//System.out.println("Distance from " + n1.getValue() + "->" + n2.getValue() + ": " + dg.get(n1.getValue(), n2.getValue()));
@@ -87,6 +87,31 @@ public class NodeDistanceFunction implements DistanceFunction<String, GraphObjec
 			return dg;
 		}
 		return null;
+	}
+	
+	/**
+	 * @param nodes
+	 * @param graph
+	 * @return
+	 */
+	public Set<Node> getCommonNeighbors(ArrayList<Node> nodes, UndirectedSparseGraph<Node, Edge> graph) {
+		Set<Node> commonNeighbors = new HashSet<Node>();
+		//ArrayList<Node> nodes = new ArrayList<Node>(graph.getVertices());
+		for(int i=0; i<nodes.size(); i++) {
+			Node n1 = nodes.get(i);
+			Set<Node> neighborsN1 = getNeighbors(n1, graph);
+			for(int j=i+1; j<nodes.size(); j++) {
+				Node n2 = nodes.get(j);
+				Set<Node> neighborsN2 = getNeighbors(n2, graph);
+				
+				//Add the neighbors that n1 and n2 have in common to the set
+				commonNeighbors.addAll(CommonDistanceMetrics.intersection(neighborsN1, neighborsN2));
+			}
+		}
+		for(Node node : nodes) {
+			commonNeighbors.remove(node);
+		}
+		return commonNeighbors;
 	}
 	
 	/**

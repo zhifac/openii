@@ -97,6 +97,7 @@ public class AffinityApplication implements SelectionClickedListener<Integer> {
 		//Initialize the controller
 		AffinitySchemaController controller = new AffinitySchemaController(
 				affinityPane, affinityPane.getCraigrogramPane(), affinityPane.getDendrogram(), menu, affinityModel);
+		affinityPane.setController(controller);
 		
 		//Create a dialog to show progress as Affinity starts up
 		final MultiTaskLoadProgressDialog progressDlg = new MultiTaskLoadProgressDialog(shell, 3);
@@ -316,8 +317,7 @@ public class AffinityApplication implements SelectionClickedListener<Integer> {
 					else if(s.getName().startsWith("igor"))
 						s.setName("SchoolFinance");
 				}
-				progressDlg.setNumTasksComplete(3);
-				
+				progressDlg.setNumTasksComplete(3);				
 
 				//Initialize the Affinity pane		
 				cc = cc.removeDuplicateClusterGroups(schemaIDs, cc);

@@ -28,19 +28,18 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 
+import org.mitre.affinity.AffinityConstants;
+import org.mitre.affinity.AffinityConstants.TextSize;
 import org.mitre.affinity.model.Position;
 import org.mitre.affinity.model.PositionGrid;
 import org.mitre.affinity.model.clusters.ClusterGroup;
 import org.mitre.affinity.model.clusters.ClustersContainer;
 import org.mitre.affinity.view.ClusterDistanceSliderPane;
 import org.mitre.affinity.view.IClusterObjectGUI;
-import org.mitre.affinity.view.ICluster2DView;
 import org.mitre.affinity.view.event.ClusterDistanceChangeEvent;
 import org.mitre.affinity.view.event.ClusterDistanceChangeListener;
 import org.mitre.affinity.view.event.SelectionChangedListener;
 import org.mitre.affinity.view.event.SelectionClickedListener;
-import org.mitre.affinity.view.swt.SWTUtils;
-import org.mitre.affinity.view.swt.SWTUtils.TextSize;
 import org.mitre.affinity.view.swt.event.ZoomPanListener;
 
 /**
@@ -53,7 +52,7 @@ public class Cluster2DViewPane<K extends Comparable<K>, V> extends Composite imp
 	
 	public static enum SliderType {STEP_SIZE, CLUSTER_SIZE, NONE};	
 	
-	/** The 2D plot with clusters shown */
+	/** The 2D plot with clusters */
 	private Cluster2DView<K, V> clusterObject2DPlot;
 	
 	/** Size of the text in the 2D plot */
@@ -88,33 +87,34 @@ public class Cluster2DViewPane<K extends Comparable<K>, V> extends Composite imp
 			SliderType sliderType, int minValue, int maxValue,
 			final List<IClusterObjectGUI<K, V>> clusterObjects, final ClustersContainer<K> clusters,
 			final PositionGrid<K> pg) {		
-		super(parent, style);
-		
-		this.positionGrid = pg;		
-	
-		boolean showSlider = false;
-		if(sliderType != SliderType.NONE) 
-			showSlider = true;
+		super(parent, style);		
+		this.positionGrid = pg;
+		boolean showSlider = sliderType != SliderType.NONE;		
 		
 		GridLayout gl = new GridLayout(); 
 		gl.makeColumnsEqualWidth = false;
 		gl.marginHeight = 0;
 		gl.marginTop = 0;
-		if(showSlider) 
+		
+		gl.marginWidth = 0;
+		gl.marginLeft = 0;
+		gl.marginRight = 0;
+		
+		if(showSlider) {
 			gl.numColumns = 2;
-		else
+		} else {
 			gl.numColumns = 1;
+		}
 		this.setLayout(gl);
 		
 		this.toolBar = new Cluster2DViewToolBar<K, V>(this, SWT.NONE, this);
 		if(showToolBar) {
 			toolBar.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-		}
-		else {
+		} else {
 			toolBar.setLayoutData(new GridData(0, 0));
 		}
 		
-		this.clusterObject2DPlot = new Cluster2DView<K, V>(this, SWT.DOUBLE_BUFFERED | SWT.NO_REDRAW_RESIZE, 
+		this.clusterObject2DPlot = new Cluster2DView<K, V>(this, SWT.DOUBLE_BUFFERED | SWT.NO_REDRAW_RESIZE | SWT.BORDER, 
 				clusterObjects, clusters);
 		this.clusterObject2DPlot.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		this.setTextSize(TextSize.Normal);
@@ -145,8 +145,7 @@ public class Cluster2DViewPane<K extends Comparable<K>, V> extends Composite imp
 	public void setShowToolBar(boolean showToolBar) {		
 		if(showToolBar) {
 			toolBar.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-		}
-		else {
+		} else {
 			toolBar.setLayoutData(new GridData(0, 0));
 		}	
 		this.layout();
@@ -156,11 +155,12 @@ public class Cluster2DViewPane<K extends Comparable<K>, V> extends Composite imp
 		return lockAspectRatio;
 	}
 
+	@Override
 	public void setLockAspectRatio(boolean lockAspectRatio) {
 		if(lockAspectRatio != this.lockAspectRatio) {			
 			this.lockAspectRatio = lockAspectRatio;			
 			toolBar.setLockAspectRatioSelection(lockAspectRatio);
-			this.resize();
+			resize();
 		}		
 	}
 
@@ -182,44 +182,50 @@ public class Cluster2DViewPane<K extends Comparable<K>, V> extends Composite imp
 		setZoom(percent/100.f);
 	}
 	
+	@Override
 	public float getZoom() {
 		return this.clusterObject2DPlot.getZoom();
 	}
 	
+	@Override
 	public void setZoom(float zoom) {
 		toolBar.setZoomSelectionText(Integer.toString((int)(zoom*100.f)) + "%");
 		clusterObject2DPlot.setZoom(zoom);
 		clusterObject2DPlot.redraw();
 	}
 	
+	@Override
 	public void zoomIn(int numLevels) {
 		this.clusterObject2DPlot.zoomIn(numLevels);
 	}
 
+	@Override
 	public void zoomOut(int numLevels) {
 		this.clusterObject2DPlot.zoomOut(numLevels);
 	}
 	
+	@Override
 	public TextSize getTextSize() {
 		return this.textSize;
 	}
 	
+	@Override
 	public void setTextSize(TextSize textSize) {
 		this.textSize = textSize;
 		Font font = null;
 		Font selectedFont = null;
 		switch(textSize) {
 		case Small: 
-			font = SWTUtils.getFont(SWTUtils.SMALL_FONT);
-			selectedFont = SWTUtils.getFont(SWTUtils.SMALL_BOLD_FONT);
+			font = AffinityConstants.getFont(AffinityConstants.SMALL_FONT);
+			selectedFont = AffinityConstants.getFont(AffinityConstants.SMALL_BOLD_FONT);
 			break;
 		case Normal: 
-			font = SWTUtils.getFont(SWTUtils.NORMAL_FONT);
-			selectedFont = SWTUtils.getFont(SWTUtils.NORMAL_BOLD_FONT);
+			font = AffinityConstants.getFont(AffinityConstants.NORMAL_FONT);
+			selectedFont = AffinityConstants.getFont(AffinityConstants.NORMAL_BOLD_FONT);
 			break;
 		case Large: 
-			font = SWTUtils.getFont(SWTUtils.LARGE_FONT);
-			selectedFont = SWTUtils.getFont(SWTUtils.LARGE_BOLD_FONT);
+			font = AffinityConstants.getFont(AffinityConstants.LARGE_FONT);
+			selectedFont = AffinityConstants.getFont(AffinityConstants.LARGE_BOLD_FONT);
 			break;
 		}
 		toolBar.setTextSizeSelection(textSize);
@@ -227,50 +233,62 @@ public class Cluster2DViewPane<K extends Comparable<K>, V> extends Composite imp
 		clusterObject2DPlot.redraw();
 	}
 	
+	@Override
 	public void addSelectionChangedListener(SelectionChangedListener<K> listener) {
 		this.clusterObject2DPlot.addSelectionChangedListener(listener);
 	}
 	
+	@Override
 	public void removeSelectionChangedListener(SelectionChangedListener<K> listener) {
 		this.clusterObject2DPlot.removeSelectionChangedListener(listener);
 	}
 	
+	@Override
 	public void addSelectionClickedListener(SelectionClickedListener<K> listener) {
 		this.clusterObject2DPlot.addSelectionClickedListener(listener);
 	}
 	
+	@Override
 	public void removeSelectionClickedListener(SelectionClickedListener<K> listener) {
 		this.clusterObject2DPlot.removeSelectionClickedListener(listener);
 	}	
 	
+	@Override
 	public void setSelectedClusterObject(K objectID) {
 		this.clusterObject2DPlot.setSelectedClusterObject(objectID);
 	}
 	
+	@Override
 	public void setSelectedClusterObjects(Collection<K> objectIDs) {
 		this.clusterObject2DPlot.setSelectedClusterObjects(objectIDs);	
 	}
 	
+	@Override
 	public void unselectAllClusterObjectsAndClusters() {
 		this.clusterObject2DPlot.unselectAllClusterObjectsAndClusters();
 	}
 	
+	@Override
 	public void setSelectedCluster(ClusterGroup<K> cluster) {
 		this.clusterObject2DPlot.setSelectedCluster(cluster);
 	}
 
+	@Override
 	public void setFillClusters(boolean fillClusters) {
 		this.clusterObject2DPlot.setFillClusters(fillClusters);
 	}
 	
+	@Override
 	public void setShowClusters(boolean showClusters) {
 		this.clusterObject2DPlot.setShowClusters(showClusters);
 	}
 	
+	@Override
 	public void setMode(Mode mode) {
 		this.clusterObject2DPlot.setMode(mode);
 	}	
 
+	@Override
 	public void resize() {	
 		Point size = clusterObject2DPlot.getSize();
 		
@@ -341,20 +359,51 @@ public class Cluster2DViewPane<K extends Comparable<K>, V> extends Composite imp
 		return clusterDistanceSlider.getClusterDistanceSliderPane();
 	}	
 	
+	@Override
 	public void redraw() {
 		this.clusterObject2DPlot.redraw();
-	}
+	}	
 
+	@Override
 	public void clusterDistanceChanged(ClusterDistanceChangeEvent event) {
-		this.clusterObject2DPlot.setMinClusterDistance(event.newMinDistance);
-		this.clusterObject2DPlot.setMaxClusterDistance(event.newMaxDistance);
+		setMinMaxClusterDistances(event.newMinDistance, event.newMaxDistance);
+	}
+	
+	@Override
+	public void setMinMaxClusterDistances(double minClusterDistance, double maxClusterDistance) {
+		this.clusterObject2DPlot.setMinClusterDistance(minClusterDistance);
+		this.clusterObject2DPlot.setMaxClusterDistance(maxClusterDistance);
 		this.clusterObject2DPlot.getDisplay().asyncExec(new Runnable() {
 			public void run() {
 				clusterObject2DPlot.redraw();
 			}});
 	}
 
+	@Override
+	public void setMinClusterDistance(double minClusterDistance) {
+		this.clusterObject2DPlot.setMinClusterDistance(minClusterDistance);
+		this.clusterObject2DPlot.getDisplay().asyncExec(new Runnable() {
+			public void run() {
+				clusterObject2DPlot.redraw();
+			}});
+	}
+
+	@Override
+	public void setMaxClusterDistance(double maxClusterDistance) {
+		this.clusterObject2DPlot.setMaxClusterDistance(maxClusterDistance);
+		this.clusterObject2DPlot.getDisplay().asyncExec(new Runnable() {
+			public void run() {
+				clusterObject2DPlot.redraw();
+			}});
+	}
+
+	@Override
 	public void setClusterObjectNamesVisible(boolean b) {
 		this.clusterObject2DPlot.setClusterObjectNamesVisible(b);		
 	}
+
+	@Override
+	public Composite getComposite() {
+		return this;
+	}	
 }

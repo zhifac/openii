@@ -31,16 +31,15 @@ import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.ScrollBar;
+import org.mitre.affinity.AffinityConstants;
 import org.mitre.affinity.model.clusters.ClusterGroup;
 import org.mitre.affinity.model.clusters.ClusterStep;
 import org.mitre.affinity.model.clusters.ClustersContainer;
@@ -53,7 +52,7 @@ import org.mitre.affinity.view.event.SelectionChangedEvent;
 import org.mitre.affinity.view.event.SelectionChangedListener;
 import org.mitre.affinity.view.event.SelectionClickedEvent;
 import org.mitre.affinity.view.event.SelectionClickedListener;
-import org.mitre.affinity.view.swt.SWTUtils.TextSize;
+import org.mitre.affinity.AffinityConstants.TextSize;
 import org.eclipse.swt.graphics.Rectangle;
 
 /**
@@ -104,7 +103,7 @@ public class DendrogramCanvas<K extends Comparable<K>, V> extends Canvas impleme
 	private Image dendrogramImage;
 	
 	/** The highlight color */
-	private Color highlightColor;
+	private Color highlightColor= AffinityConstants.COLOR_HIGHLIGHT;
 	
 	/** Listeners that have registered to received SelectionChangedEvents from this component */
 	private List<SelectionChangedListener<K>> selectionChangedListeners;
@@ -122,20 +121,23 @@ public class DendrogramCanvas<K extends Comparable<K>, V> extends Canvas impleme
 	private Map<ClusterGroup<K>, Rectangle> clusterBounds;
 	
 	/** Font used to render a cluster object name when the cluster object is selected */
-	private Font selectedFont = new Font(Display.getDefault(), new FontData("Times", 18, SWT.ITALIC));
+	private Font selectedFont = AffinityConstants.getFont(AffinityConstants.NORMAL_BOLD_FONT);
 	
 	/** Vertical scroll bar	 */
 	private ScrollBar scrollBar;
 	
 	private Point origin;
 	
-	Color white;
-	Color black;
-	Color red;
-	Color blue;
-	Color gray;
-	Color lightGray, blue1, blue2, blue3, blue4, blue5;
-	Color green;
+	Color white = AffinityConstants.COLOR_BACKGROUND;
+	Color black = AffinityConstants.COLOR_BLACK;
+	
+	Color blue = AffinityConstants.COLOR_CLUSTER_LINE_1;
+	Color red = AffinityConstants.COLOR_CLUSTER_LINE_2;
+	
+	Color gray= AffinityConstants.COLOR_GRAY;
+	Color lightGray= AffinityConstants.COLOR_CLUSTER_FILL_DENDROGRAM; 
+	//Color blue1, blue2, blue3, blue4, blue5;
+	
 	private double maxBarDVal;
 	private double minBarDVal;
 	private int canvasWidth;
@@ -165,19 +167,11 @@ public class DendrogramCanvas<K extends Comparable<K>, V> extends Canvas impleme
 		shadeBackground = true;
 		
 		//Initialize colors
-		white = this.getDisplay().getSystemColor(SWT.COLOR_WHITE);
-		black = this.getDisplay().getSystemColor(SWT.COLOR_BLACK);		
-		blue = this.getDisplay().getSystemColor(SWT.COLOR_BLUE);
-		red = this.getDisplay().getSystemColor(SWT.COLOR_RED);		
-		gray = this.getDisplay().getSystemColor(SWT.COLOR_GRAY);		
-		green = this.getDisplay().getSystemColor(SWT.COLOR_GREEN);		
-		lightGray = new Color(this.getDisplay(), 238, 238, 238);
-		blue1 = new Color(this.getDisplay(), 239, 243, 255);
+		/*blue1 = new Color(this.getDisplay(), 239, 243, 255);
 		blue2 = new Color(this.getDisplay(), 189, 215, 231);
 		blue3 = new Color(this.getDisplay(), 107,174, 214);
 		blue4 = new Color(this.getDisplay(), 49, 130, 189);
-		blue5 = new Color(this.getDisplay(), 8, 81, 156);
-		highlightColor = green;		
+		blue5 = new Color(this.getDisplay(), 8, 81, 156);*/
 		
 		this.dendrogramImage = new Image(getDisplay(), 200, 300);
 		this.origin = new Point(0, 0); //Scrolling origin
@@ -316,28 +310,44 @@ public class DendrogramCanvas<K extends Comparable<K>, V> extends Canvas impleme
 		this.selectedFont = selectedFont;
 	}
 
-	public void clusterDistanceChanged(ClusterDistanceChangeEvent event) {		
-		this.setMaxBar(event.newMaxDistance);
-		this.setMinBar(event.newMinDistance);
-		//System.out.println("saw a change in cluster distance to: " + event);
+	@Override
+	public void clusterDistanceChanged(ClusterDistanceChangeEvent event) {
+		setMinMaxClusterDistances(event.newMinDistance, event.newMaxDistance);
+	}	
+	
+	@Override
+	public void setMinMaxClusterDistances(double minClusterDistance, double maxClusterDistance) {
+		minBarDVal = minClusterDistance;
+		maxBarDVal = maxClusterDistance;
 		getDisplay().asyncExec(new Runnable() {
 			public void run() {
 				redraw();
-			}});		
+			}});
+	}
+
+	@Override
+	public void setMinClusterDistance(double minClusterDistance) {
+		minBarDVal = minClusterDistance;
+		getDisplay().asyncExec(new Runnable() {
+			public void run() {
+				redraw();
+			}});
+	}
+
+	@Override
+	public void setMaxClusterDistance(double maxClusterDistance) {
+		maxBarDVal = maxClusterDistance;
+		getDisplay().asyncExec(new Runnable() {
+			public void run() {
+				redraw();
+			}});
 	}	
-	
-	public void setMaxBar(double val){
-		maxBarDVal = val;
-	}
-	
-	public void setMinBar(double val){
-		minBarDVal = val;
-	}
 	
 	public boolean isShowClusters() {
 		return altTreeColors;
 	}
 
+	@Override
 	public void setShowClusters(boolean showClusters){
 		altTreeColors = showClusters;
 	}
@@ -353,8 +363,7 @@ public class DendrogramCanvas<K extends Comparable<K>, V> extends Canvas impleme
 	
 	@Override
 	public void setTextSize(TextSize textSize) {
-		// TODO Auto-generated method stub
-		
+		// TODO Auto-generated method stub		
 	}
 
 	@Override
@@ -368,6 +377,7 @@ public class DendrogramCanvas<K extends Comparable<K>, V> extends Canvas impleme
 	 * 
 	 * @param objectID
 	 */	
+	@Override
 	public void setSelectedClusterObject(K objectID) {
 		//Unselect any previously selected cluster objects
 		//TODO: when this is called, AUTOSCROLL
@@ -387,6 +397,7 @@ public class DendrogramCanvas<K extends Comparable<K>, V> extends Canvas impleme
 	 * 
 	 * @param objectIDs
 	 */
+	@Override
 	public void setSelectedClusterObjects(Collection<K> objectIDs) {
 		//Unselect any previously selected cluster objects
 		unselectAllClusterObjects();		
@@ -406,14 +417,15 @@ public class DendrogramCanvas<K extends Comparable<K>, V> extends Canvas impleme
 	 * 
 	 * @param cluster
 	 */
+	@Override
 	public void setSelectedCluster(ClusterGroup<K> cluster) {		
 		this.unselectAllClusters();		
 		this.selectedCluster = cluster;				
 	}
-	
+
 	/**
 	 * Unselect all cluster objects. 
-	 */
+	 */	
 	public void unselectAllClusterObjects() {
 		for(K objectID : selectedClusterObjects) {
 			DendrogramClusterObjectGUI<K, V> clusterObject = clusterObjects.get(objectID);
@@ -422,22 +434,23 @@ public class DendrogramCanvas<K extends Comparable<K>, V> extends Canvas impleme
 		}
 		selectedClusterObjects.clear();
 	}
-	
+
 	/**
 	 * Unselect all clusters.
 	 */
 	public void unselectAllClusters() {
 		this.selectedCluster = null;
 	}
-	
+
 	/**
 	 * Unselect all cluster objects and clusters.
 	 */
+	@Override
 	public void unselectAllClusterObjectsAndClusters() {
 		unselectAllClusterObjects();
 		unselectAllClusters();
 	}
-	
+
 	//This method takes a cluster group and finds the ID's of it's children
 	//The ids it finds are the ones specific to this class used in the clusterObjectXLocationsMap etc.
 	//This list will always contain exactly two Integers, one for each child in this binary tree
@@ -451,6 +464,52 @@ public class DendrogramCanvas<K extends Comparable<K>, V> extends Canvas impleme
 		}
 		return null;
 	}
+
+	@Override
+	public void addSelectionChangedListener(SelectionChangedListener<K> listener) {
+		selectionChangedListeners.add(listener);
+	}
+
+	@Override
+	public void removeSelectionChangedListener(SelectionChangedListener<K> listener) {
+		selectionChangedListeners.remove(listener);
+	}
+
+	@Override
+	public void addSelectionClickedListener(SelectionClickedListener<K> listener) {
+		selectionClickedListeners.add(listener);
+	}
+
+	@Override
+	public void removeSelectionClickedListener(SelectionClickedListener<K> listener) {
+		selectionClickedListeners.remove(listener);
+	}		
+
+	@Override
+	public void resize() {
+		//Does nothing
+	}
+
+	@Override
+	public Composite getComposite() {
+		return this;
+	}
+
+	//note that min and max must be between 0.0 and 1.0
+	public void render(GC gc, Composite parent) {
+		//Draw the background
+		Rectangle bounds = this.dendrogramImage.getBounds();
+		canvasWidth = bounds.width;
+		canvasHeight = bounds.height;
+		setBackground(white);
+		drawBackground(gc, bounds.x, bounds.y, bounds.width, bounds.height);		
+
+		//always start with blue
+		//this prevents color from switching on repaint
+		setForeground(blue);
+		currentColorBlue = true;;
+		drawDendrogram(gc);
+	}	
 	
 	//given a translated cluster object ID, draw in a given color all the way down that tree
 	protected void colorTree(Integer objectID, GC gcDendrogram, Color color, boolean useHighlightColor) {
@@ -559,13 +618,12 @@ public class DendrogramCanvas<K extends Comparable<K>, V> extends Canvas impleme
 					Integer yName = clusterObjectYLocationsMap.get(aID) - 6;
 					gcDendrogram.setBackground(lightGray);		
 					
+					gcDendrogram.setForeground(black);
 					if(clusterObject.isSelected()) {
-						//gcDendrogram.setForeground(highlightColor);
-						gcDendrogram.setForeground(black);
+						//gcDendrogram.setForeground(highlightColor);						
 						gcDendrogram.setFont(selectedFont);
 					}
 					else {
-						gcDendrogram.setForeground(black);
 						//gcDendrogram.setFont(normalFont);
 					}
 					gcDendrogram.drawString(name, xOffset*5, yName, true);
@@ -871,7 +929,7 @@ public class DendrogramCanvas<K extends Comparable<K>, V> extends Canvas impleme
 		}		
 	}	
 	
-	public void drawDendrogram(GC gcDendrogram) {
+	protected void drawDendrogram(GC gcDendrogram) {
 		if(clusterObjects == null || clusterObjects.isEmpty()) {
 			return;
 		}
@@ -1137,39 +1195,7 @@ public class DendrogramCanvas<K extends Comparable<K>, V> extends Canvas impleme
 		int maxClusterObjectID = clusterObjectXLocationsMap.size() - 1;
 		determineColors(maxClusterObjectID, gcDendrogram, maxdendroBarXloc);	
 	}
-	
-	//note that min and max must be between 0.0 and 1.0
-	public void render(GC gc, Composite parent) {
-		//Draw the background
-		Rectangle bounds = this.dendrogramImage.getBounds();
-		canvasWidth = bounds.width;
-		canvasHeight = bounds.height;
-		setBackground(white);
-		drawBackground(gc, bounds.x, bounds.y, bounds.width, bounds.height);		
 		
-		//always start with blue
-		//this prevents color from switching on repaint
-		setForeground(blue);
-		currentColorBlue = true;;
-		drawDendrogram(gc);
-	}	
-	
-	public void addSelectionChangedListener(SelectionChangedListener<K> listener) {
-		selectionChangedListeners.add(listener);
-	}
-	
-	public void removeSelectionChangedListener(SelectionChangedListener<K> listener) {
-		selectionChangedListeners.remove(listener);
-	}
-	
-	public void addSelectionClickedListener(SelectionClickedListener<K> listener) {
-		selectionClickedListeners.add(listener);
-	}
-	
-	public void removeSelectionClickedListener(SelectionClickedListener<K> listener) {
-		selectionClickedListeners.remove(listener);
-	}	
-	
 	protected void fireSelectionChangedEvent() {
 		if(!selectionChangedListeners.isEmpty()) {
 			Collection<K> selectedClusterObjects = null;
@@ -1214,7 +1240,7 @@ public class DendrogramCanvas<K extends Comparable<K>, V> extends Canvas impleme
 	 * A mouse listener to determine if a cluster object or cluster was double-clicked.
 	 *
 	 */
-	private class DendrogramMouseListener extends MouseAdapter {		
+	protected class DendrogramMouseListener extends MouseAdapter {		
 		public ClusterGroup<K> getFirstClusterContainsPoint(int x, int y) {
 			if(clusterBounds == null || clusterBounds.isEmpty()) {
 				return null;

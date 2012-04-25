@@ -12,7 +12,7 @@ import org.mitre.affinity.view.craigrogram.Cluster2DViewPane;
 import org.mitre.affinity.view.craigrogram.ClusterRadiusDlg;
 import org.mitre.affinity.view.dendrogram.DendrogramCanvas;
 import org.mitre.affinity.view.menu.AffinityMenu;
-import org.mitre.affinity.view.swt.SWTUtils.TextSize;
+import org.mitre.affinity.AffinityConstants.TextSize;
 
 /**
  * @author CBONACETO
@@ -20,7 +20,7 @@ import org.mitre.affinity.view.swt.SWTUtils.TextSize;
  * @param <K>
  * @param <V>
  */
-public class BasicAffinityController<K extends Comparable<K>, V> implements IAffinityController<K, V> {
+public abstract class BasicAffinityController<K extends Comparable<K>, V> implements IAffinityController<K, V> {
 	
 	/** Reference to the pane with the Craigrogram */	
 	protected Cluster2DViewPane<K, V> craigrogram;

@@ -1,0 +1,5 @@
+Implementation of link clustering as described in Yong-Yeol Ahn, James
+P. Bagrow & Sune Lehmann,Link communities reveal multiscale complexity
+in networks, Nature, Vol: 466, pp. 761¡V764 05 August 2010).
+
+Invoke through the main method of LinkClusterer.

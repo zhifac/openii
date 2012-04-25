@@ -58,7 +58,7 @@ public interface IClusterObjectGUI<K extends Comparable<K>, V> extends IRenderer
 	public Point getSize();
 	
 	/**
-	 * Returns true if the schema gui contains the point (x, y)
+	 * Returns true if the cluster object GUI contains the point (x, y)
 	 * 
 	 * @param x
 	 * @param y

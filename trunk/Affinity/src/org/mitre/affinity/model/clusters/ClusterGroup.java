@@ -19,12 +19,12 @@ package org.mitre.affinity.model.clusters;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.widgets.Display;
+import org.mitre.affinity.AffinityConstants;
 
 /**
  * Contains a set of objects that have been clustered.
@@ -42,7 +42,7 @@ public class ClusterGroup<K extends Comparable<K>> implements Iterable<K> {
 	/** The "distance" score for this cluster group computed by the clustering algorithm that generated it. */
 	private Double distance = 0D;	
 	
-	private Color dendroColor = Display.getDefault().getSystemColor(SWT.COLOR_BLACK);
+	private Color dendroColor = AffinityConstants.COLOR_FOREGROUND;
 	
 	/** Default Constructor */
 	public ClusterGroup() { 
@@ -95,10 +95,14 @@ public class ClusterGroup<K extends Comparable<K>> implements Iterable<K> {
 	 */
 	public boolean contains(ClusterGroup<K> cg) {
 		return objectIDs.containsAll(cg.objectIDs);
-	}
+	}	
 	
 	public boolean contains(Collection<K> objectIDs) {
 		return this.objectIDs.containsAll(objectIDs);
+	}
+	
+	public boolean containedBy(Set<K> objectIDs) {
+		return objectIDs.containsAll(this.objectIDs);
 	}
 	
 	public int getNumClusterObjects() {

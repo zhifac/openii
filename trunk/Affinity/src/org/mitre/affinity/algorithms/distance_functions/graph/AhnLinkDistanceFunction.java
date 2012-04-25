@@ -66,7 +66,7 @@ public class AhnLinkDistanceFunction implements DistanceFunction<String, GraphOb
 					distance = 1 - jaccard(edge1, edge2, keystone, g);
 				}
 				//TODO: Memory storage optimization - only store distance if < 1, have dg return 1 if distance is null
-				dg.set(edge1.getEdgeName(), edge2.getEdgeName(), distance);
+				dg.set(edge1.getId(), edge2.getId(), distance);
 			}
 		}		
 

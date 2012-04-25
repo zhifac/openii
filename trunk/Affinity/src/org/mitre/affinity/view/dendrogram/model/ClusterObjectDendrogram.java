@@ -193,7 +193,7 @@ public class ClusterObjectDendrogram<K extends Comparable<K>, V> extends Dendrog
 
 			//Convert ClusterContainer to a Dendrogram 
 			//Note: First cluster step (0) is the bottom of the Dendrogram
-			ClusterObjectDendrogramNode<K>[][] steps = new ClusterObjectDendrogramNode[cc.getNumClusterSteps()][];	
+			ClusterObjectDendrogramNode<K>[][] steps = new ClusterObjectDendrogramNode[cc.getNumClusterSteps()][];
 			ClusterObjectDendrogramNode<K> rootNode = null;
 			int step = 0;
 			for(ClusterStep<K> cs : cc) {
@@ -220,7 +220,7 @@ public class ClusterObjectDendrogram<K extends Comparable<K>, V> extends Dendrog
 					else if (step == 1) {
 						if(cg.getObjectIDs() == null || cg.getObjectIDs().size() != 2) {
 							throw new IllegalArgumentException
-							("Error rendering dendrogram: Each cluster group at step 1 must contain exactly 2 schemas.");
+							("Error rendering dendrogram: Each cluster group at step 1 must contain exactly 2 cluster objects.");
 						}										 
 						steps[step][cgIndex] = new ClusterObjectDendrogramNode(cg.getDistance().floatValue(),
 								nodes.get(cg.getObjectIDs().get(0)), 
@@ -283,7 +283,7 @@ public class ClusterObjectDendrogram<K extends Comparable<K>, V> extends Dendrog
 				}
 				step++;
 			}		
-			//return new SchemaDendrogram(rootNode);
+			//return new SchemaDendrogram(rootNode);			
 			return rootNode;
 		}
 
