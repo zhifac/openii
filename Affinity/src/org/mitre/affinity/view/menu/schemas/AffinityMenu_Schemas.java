@@ -19,7 +19,7 @@ public class AffinityMenu_Schemas extends AffinityMenu {
 	}	
 	
 	protected void createFileMenu(boolean createSaveStatsItem, boolean createFileExitItem) {
-		super.createFileMenu(false);
+		super.createFileMenu("&File", false);
 		//Add save statistics item to file menu to save ground truth information
 		if(createSaveStatsItem) {
 			createMenuItem(fileMenu, "Save Statistics", SWT.NONE,
@@ -29,6 +29,6 @@ public class AffinityMenu_Schemas extends AffinityMenu {
 		if(createFileExitItem) {
 			addExitItemToFileMenu();
 		}		
-		createViewMenu(true,  true);
+		createViewMenu("&View", true, true);
 	}
 }

@@ -16,7 +16,7 @@
 	    <mkdir dir="bin"/>
 	    <javac srcdir="src" destdir="bin" deprecation="on" debug="on" source="1.6" target="1.6">
 	    	<classpath>
-    	    	<path path="lib/org.eclipse.jface_3.4.2.M20090107-0800.jar"/>
+    	    	<path path="lib/jface/org.eclipse.jface_3.7.0.I20110522-1430.jar"/>
     	    	<path path="lib/mds-1.0.0.jar"/>
     	    	<path path="lib/prefuse/Prefuse.jar"/>
     	    	<path path="lib/ivc/edu.iu.iv.visualization.dendrogram.jar"/>
@@ -31,7 +31,7 @@
 	<!-- Builds the Affinity jar -->
     <target name="buildAffinity" depends="compile">
         <fatjar.build output="Affinity.jar">
-            <fatjar.manifest mainclass="org.mitre.affinity.view.application.AffinityApplication"/>
+            <fatjar.manifest mainclass="org.mitre.affinity.application.schemas.AffinityApplication"/>
             <fatjar.filesource path="bin"/>
             <fatjar.filesource path="src/affinity.xml" relpath=""/>
             <fatjar.filesource path="icons" relpath="icons">

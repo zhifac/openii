@@ -1,6 +1,8 @@
 package org.mitre.affinity.view.menu;
 
+import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MenuAdapter;
@@ -13,7 +15,7 @@ import org.eclipse.swt.widgets.MenuItem;
 import org.mitre.affinity.AffinityConstants;
 import org.mitre.affinity.view.menu.event.AffinityMenuItemListener;
 import org.mitre.affinity.view.menu.event.AffinityMenuListener;
-import org.mitre.affinity.view.swt.SWTUtils.TextSize;
+import org.mitre.affinity.AffinityConstants.TextSize;
 
 /**
  * Basic Affinity menu implementation that creates a File menu with an 
@@ -70,10 +72,10 @@ public class AffinityMenu {
 	protected MenuListener menuListener;
 	
 	/** List of listeners registered to receive menu item selection events */
-	protected LinkedList<AffinityMenuItemListener> menuItemListeners;
+	protected List<AffinityMenuItemListener> menuItemListeners;
 	
 	/** List of listeneres registered to receive menu events */
-	protected LinkedList<AffinityMenuListener> menuListeners;
+	protected List<AffinityMenuListener> menuListeners;
 	
 	/** Craigrogram menu items */	
 	protected MenuItem smallTextItem; 
@@ -104,8 +106,10 @@ public class AffinityMenu {
 		decorations.setMenuBar(menuBar);
 		menuItemListener = new MenuSelectionListener();
 		menuListener = new MenuListener();
-		menuItemListeners = new LinkedList<AffinityMenuItemListener>();
-		menuListeners = new LinkedList<AffinityMenuListener>();
+		menuItemListeners = Collections.synchronizedList(new LinkedList<AffinityMenuItemListener>());
+		//menuItemListeners = new LinkedList<AffinityMenuItemListener>();
+		menuListeners = Collections.synchronizedList(new LinkedList<AffinityMenuListener>());
+		//menuListeners = new LinkedList<AffinityMenuListener>();
 	}
 	
 	public AffinityMenu(Decorations decorations, boolean createFileMenu, boolean createViewMenu) {
@@ -122,10 +126,10 @@ public class AffinityMenu {
 		menuItemListeners = new LinkedList<AffinityMenuItemListener>();
 		menuListeners = new LinkedList<AffinityMenuListener>();
 		if(createFileMenu) {
-			createFileMenu(createFileExitItem);
+			createFileMenu("&File", createFileExitItem);
 		}
 		if(createViewMenu) {
-			createViewMenu(createCraigrogramOptions, createDendrogramOptions);
+			createViewMenu("&View", createCraigrogramOptions, createDendrogramOptions);
 		}
 	}
 	
@@ -174,42 +178,46 @@ public class AffinityMenu {
 	}
 	
 	public synchronized void addMenuItemListener(AffinityMenuItemListener listener) {
-		menuItemListeners.add(listener);
+		if(!menuItemListeners.contains(listener)) {
+			menuItemListeners.add(listener);
+		}
 	}
 	
 	public synchronized void removeMenuItemListener(AffinityMenuItemListener listener) {
 		menuItemListeners.remove(listener);
 	}
 	
-	protected synchronized void fireMenuItemEvent(MenuItem menuItem, Integer menuItemID, Integer parentMenuID) {
-		if(!menuItemListeners.isEmpty()) {
-			for(AffinityMenuItemListener listener : menuItemListeners) {
+	protected void fireMenuItemEvent(MenuItem menuItem, Integer menuItemID, Integer parentMenuID) {
+		if(!menuItemListeners.isEmpty()) {			
+			for(AffinityMenuItemListener listener : menuItemListeners.toArray(new AffinityMenuItemListener[menuItemListeners.size()])) {
 				listener.menuItemSelected(menuItem, menuItemID, parentMenuID);
 			}
 		}
 	}	
 	
 	public synchronized void addMenuListener(AffinityMenuListener listener) {
-		menuListeners.add(listener);
+		if(!menuListeners.contains(listener)) {
+			menuListeners.add(listener);
+		}
 	}
 	
 	public synchronized void removeMenuListener(AffinityMenuListener listener) {
 		menuListeners.remove(listener);
 	}
 	
-	protected synchronized void fireMenuEvent(Menu menu, Integer menuID, Integer parentMenuID, boolean menuShown) {
+	protected void fireMenuEvent(Menu menu, Integer menuID, Integer parentMenuID, boolean menuShown) {		
 		if(!menuListeners.isEmpty()) {
 			if(menuShown) {
-				for(AffinityMenuListener listener : menuListeners) {
+				for(AffinityMenuListener listener : menuListeners.toArray(new AffinityMenuListener[menuListeners.size()])) {
 					listener.menuShown(menu, menuID, parentMenuID);
 				}
 			}
 		}
 	}	
 
-	protected void createFileMenu(boolean createExitItem) {
+	protected void createFileMenu(String menuName, boolean createExitItem) {
 		if(fileMenu == null) {			
-			fileMenu = createTopLevelMenu("&File", SWT.DROP_DOWN, FILE_MENU);
+			fileMenu = createTopLevelMenu(menuName, SWT.DROP_DOWN, FILE_MENU);
 			if(createExitItem) {
 				addExitItemToFileMenu();
 			}
@@ -222,9 +230,9 @@ public class AffinityMenu {
 		}
 	}	
 	
-	protected void createViewMenu(boolean createCraigrogramOptions, boolean createDendrogramOptions) {
+	protected void createViewMenu(String menuName, boolean createCraigrogramOptions, boolean createDendrogramOptions) {
 		if(viewMenu == null) {
-			viewMenu = createTopLevelMenu("&View", SWT.DROP_DOWN, VIEW_MENU);
+			viewMenu = createTopLevelMenu(menuName, SWT.DROP_DOWN, VIEW_MENU);
 			if(createCraigrogramOptions) {
 				addCraigrogramOptionsToViewMenu();
 			}

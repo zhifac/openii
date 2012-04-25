@@ -1,0 +1,3084 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+<key attr.name="label" attr.type="string" for="node" id="label"/>
+<key attr.name="Edge Label" attr.type="string" for="edge" id="edgelabel"/>
+<key attr.name="weight" attr.type="double" for="edge" id="weight"/>
+<key attr.name="Edge Id" attr.type="string" for="edge" id="edgeid"/>
+<key attr.name="r" attr.type="int" for="node" id="r"/>
+<key attr.name="g" attr.type="int" for="node" id="g"/>
+<key attr.name="b" attr.type="int" for="node" id="b"/>
+<key attr.name="x" attr.type="float" for="node" id="x"/>
+<key attr.name="y" attr.type="float" for="node" id="y"/>
+<key attr.name="size" attr.type="float" for="node" id="size"/>
+<graph edgedefault="undirected">
+<node id="300001">
+<data key="label">300001</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">-351.512</data>
+<data key="y">-149.9849</data>
+</node>
+<node id="senate_111_2010_288">
+<data key="label">senate_111_2010_288</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">3.3130774</data>
+<data key="y">-117.10756</data>
+</node>
+<node id="300002">
+<data key="label">300002</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">-594.82196</data>
+<data key="y">-472.93967</data>
+</node>
+<node id="412251">
+<data key="label">412251</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">68.70189</data>
+<data key="y">776.60034</data>
+</node>
+<node id="300005">
+<data key="label">300005</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">344.48453</data>
+<data key="y">297.4711</data>
+</node>
+<node id="412326">
+<data key="label">412326</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">-462.5648</data>
+<data key="y">-570.0139</data>
+</node>
+<node id="412330">
+<data key="label">412330</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">863.06793</data>
+<data key="y">-334.62268</data>
+</node>
+<node id="300007">
+<data key="label">300007</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">-323.86722</data>
+<data key="y">-861.4104</data>
+</node>
+<node id="300009">
+<data key="label">300009</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">25.93594</data>
+<data key="y">269.96692</data>
+</node>
+<node id="300010">
+<data key="label">300010</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">-792.5566</data>
+<data key="y">-510.34827</data>
+</node>
+<node id="300011">
+<data key="label">300011</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">-12.020271</data>
+<data key="y">-338.9479</data>
+</node>
+<node id="400050">
+<data key="label">400050</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">-130.65761</data>
+<data key="y">-895.39667</data>
+</node>
+<node id="412384">
+<data key="label">412384</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">-125.586685</data>
+<data key="y">376.89145</data>
+</node>
+<node id="300014">
+<data key="label">300014</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">-593.4009</data>
+<data key="y">640.297</data>
+</node>
+<node id="300018">
+<data key="label">300018</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">122.57553</data>
+<data key="y">-433.306</data>
+</node>
+<node id="400064">
+<data key="label">400064</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">813.97894</data>
+<data key="y">324.94717</data>
+</node>
+<node id="300019">
+<data key="label">300019</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">652.80035</data>
+<data key="y">256.97958</data>
+</node>
+<node id="412246">
+<data key="label">412246</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">323.40286</data>
+<data key="y">131.30907</data>
+</node>
+<node id="300023">
+<data key="label">300023</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">-446.0647</data>
+<data key="y">-10.663857</data>
+</node>
+<node id="300025">
+<data key="label">300025</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">-271.1924</data>
+<data key="y">71.35016</data>
+</node>
+<node id="300026">
+<data key="label">300026</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">-164.63324</data>
+<data key="y">-416.99243</data>
+</node>
+<node id="412390">
+<data key="label">412390</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">754.3242</data>
+<data key="y">-50.991867</data>
+</node>
+<node id="412248">
+<data key="label">412248</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">516.1643</data>
+<data key="y">565.09766</data>
+</node>
+<node id="300027">
+<data key="label">300027</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">-108.73006</data>
+<data key="y">775.1098</data>
+</node>
+<node id="300034">
+<data key="label">300034</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">-195.53671</data>
+<data key="y">-66.58042</data>
+</node>
+<node id="300037">
+<data key="label">300037</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">362.822</data>
+<data key="y">470.8149</data>
+</node>
+<node id="300038">
+<data key="label">300038</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">504.6108</data>
+<data key="y">372.6678</data>
+</node>
+<node id="300040">
+<data key="label">300040</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">24.35608</data>
+<data key="y">625.61835</data>
+</node>
+<node id="300041">
+<data key="label">300041</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">-400.30127</data>
+<data key="y">644.649</data>
+</node>
+<node id="300043">
+<data key="label">300043</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">283.1191</data>
+<data key="y">-529.0669</data>
+</node>
+<node id="412378">
+<data key="label">412378</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">577.3958</data>
+<data key="y">-124.1862</data>
+</node>
+<node id="412223">
+<data key="label">412223</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">206.27278</data>
+<data key="y">522.72577</data>
+</node>
+<node id="300047">
+<data key="label">300047</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">-782.3147</data>
+<data key="y">127.27328</data>
+</node>
+<node id="300048">
+<data key="label">300048</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">-621.8689</data>
+<data key="y">-36.789154</data>
+</node>
+<node id="412324">
+<data key="label">412324</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">552.1912</data>
+<data key="y">-302.6771</data>
+</node>
+<node id="300051">
+<data key="label">300051</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">784.2922</data>
+<data key="y">-522.45593</data>
+</node>
+<node id="300054">
+<data key="label">300054</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">-675.57367</data>
+<data key="y">-329.8685</data>
+</node>
+<node id="300056">
+<data key="label">300056</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">699.2093</data>
+<data key="y">-382.83524</data>
+</node>
+<node id="412320">
+<data key="label">412320</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">-430.32608</data>
+<data key="y">157.78918</data>
+</node>
+<node id="300058">
+<data key="label">300058</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">290.08246</data>
+<data key="y">-705.6442</data>
+</node>
+<node id="300060">
+<data key="label">300060</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">122.96579</data>
+<data key="y">-601.2211</data>
+</node>
+<node id="400222">
+<data key="label">400222</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">-543.5107</data>
+<data key="y">-184.1979</data>
+</node>
+<node id="412242">
+<data key="label">412242</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">441.5821</data>
+<data key="y">-624.86865</data>
+</node>
+<node id="300061">
+<data key="label">300061</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">-306.86563</data>
+<data key="y">-303.28497</data>
+</node>
+<node id="300062">
+<data key="label">300062</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">-712.413</data>
+<data key="y">284.8844</data>
+</node>
+<node id="300063">
+<data key="label">300063</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">453.3192</data>
+<data key="y">4.4866085</data>
+</node>
+<node id="300064">
+<data key="label">300064</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">-152.8124</data>
+<data key="y">-230.73431</data>
+</node>
+<node id="300065">
+<data key="label">300065</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">649.6407</data>
+<data key="y">-646.28894</data>
+</node>
+<node id="300066">
+<data key="label">300066</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">428.89444</data>
+<data key="y">-437.92084</data>
+</node>
+<node id="300067">
+<data key="label">300067</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">-368.7183</data>
+<data key="y">-696.17065</data>
+</node>
+<node id="300068">
+<data key="label">300068</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">208.61223</data>
+<data key="y">-895.51685</data>
+</node>
+<node id="300070">
+<data key="label">300070</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">224.77606</data>
+<data key="y">694.4273</data>
+</node>
+<node id="412391">
+<data key="label">412391</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">656.46674</data>
+<data key="y">430.427</data>
+</node>
+<node id="412243">
+<data key="label">412243</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">376.09595</data>
+<data key="y">-848.8165</data>
+</node>
+<node id="300072">
+<data key="label">300072</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">-250.78053</data>
+<data key="y">698.5164</data>
+</node>
+<node id="400272">
+<data key="label">400272</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">903.0949</data>
+<data key="y">-164.21928</data>
+</node>
+<node id="412325">
+<data key="label">412325</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">157.5283</data>
+<data key="y">166.87122</data>
+</node>
+<node id="300073">
+<data key="label">300073</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">-39.436413</data>
+<data key="y">-539.2508</data>
+</node>
+<node id="300075">
+<data key="label">300075</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">372.5515</data>
+<data key="y">660.63684</data>
+</node>
+<node id="300076">
+<data key="label">300076</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">494.084</data>
+<data key="y">191.67032</data>
+</node>
+<node id="300078">
+<data key="label">300078</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">-465.97733</data>
+<data key="y">-344.6338</data>
+</node>
+<node id="300080">
+<data key="label">300080</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">-111.07578</data>
+<data key="y">170.15797</data>
+</node>
+<node id="300081">
+<data key="label">300081</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">760.1875</data>
+<data key="y">125.39487</data>
+</node>
+<node id="300082">
+<data key="label">300082</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">610.7335</data>
+<data key="y">58.155056</data>
+</node>
+<node id="300083">
+<data key="label">300083</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">-747.7168</data>
+<data key="y">-200.12099</data>
+</node>
+<node id="300084">
+<data key="label">300084</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">916.1563</data>
+<data key="y">7.0449076</data>
+</node>
+<node id="400357">
+<data key="label">400357</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">-337.8406</data>
+<data key="y">-473.99347</data>
+</node>
+<node id="300087">
+<data key="label">300087</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">189.44392</data>
+<data key="y">345.8354</data>
+</node>
+<node id="300088">
+<data key="label">300088</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">-272.6321</data>
+<data key="y">499.65973</data>
+</node>
+<node id="412323">
+<data key="label">412323</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">29.482376</data>
+<data key="y">-908.0325</data>
+</node>
+<node id="300089">
+<data key="label">300089</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">-788.73193</data>
+<data key="y">-47.61219</data>
+</node>
+<node id="300091">
+<data key="label">300091</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">-255.06851</data>
+<data key="y">255.20166</data>
+</node>
+<node id="300092">
+<data key="label">300092</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">-37.58865</data>
+<data key="y">-716.7726</data>
+</node>
+<node id="300093">
+<data key="label">300093</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">528.5424</data>
+<data key="y">-766.91425</data>
+</node>
+<node id="412244">
+<data key="label">412244</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">903.79596</data>
+<data key="y">185.45006</data>
+</node>
+<node id="400546">
+<data key="label">400546</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">-126.82951</data>
+<data key="y">568.9277</data>
+</node>
+<node id="400412">
+<data key="label">400412</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">578.5752</data>
+<data key="y">-503.7481</data>
+</node>
+<node id="400413">
+<data key="label">400413</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">-195.32909</data>
+<data key="y">-744.8582</data>
+</node>
+<node id="300098">
+<data key="label">300098</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">42.494034</data>
+<data key="y">451.96613</data>
+</node>
+<node id="412321">
+<data key="label">412321</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">728.09467</data>
+<data key="y">-214.12485</data>
+</node>
+<node id="412249">
+<data key="label">412249</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">-211.61877</data>
+<data key="y">-586.2616</data>
+</node>
+<node id="412247">
+<data key="label">412247</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">121.463974</data>
+<data key="y">-762.56903</data>
+</node>
+<node id="400432">
+<data key="label">400432</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">-604.9651</data>
+<data key="y">130.37259</data>
+</node>
+<node id="senate_111_2010_289">
+<data key="label">senate_111_2010_289</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">103.40828</data>
+<data key="y">-36.389355</data>
+</node>
+<node id="senate_111_2010_290">
+<data key="label">senate_111_2010_290</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">279.0866</data>
+<data key="y">-324.73495</data>
+</node>
+<node id="300042">
+<data key="label">300042</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">522.7241</data>
+<data key="y">750.09796</data>
+</node>
+<node id="senate_111_2010_291">
+<data key="label">senate_111_2010_291</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">395.9209</data>
+<data key="y">-208.81746</data>
+</node>
+<node id="300077">
+<data key="label">300077</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">665.2342</data>
+<data key="y">631.949</data>
+</node>
+<node id="senate_111_2010_292">
+<data key="label">senate_111_2010_292</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">261.30908</data>
+<data key="y">-52.227512</data>
+</node>
+<node id="400194">
+<data key="label">400194</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">333.05548</data>
+<data key="y">847.4327</data>
+</node>
+<node id="senate_111_2010_293">
+<data key="label">senate_111_2010_293</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">-616.5202</data>
+<data key="y">452.65668</data>
+</node>
+<node id="400054">
+<data key="label">400054</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">-904.0556</data>
+<data key="y">266.2101</data>
+</node>
+<node id="300021">
+<data key="label">300021</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">-829.4518</data>
+<data key="y">428.47812</data>
+</node>
+<node id="400576">
+<data key="label">400576</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">-750.05725</data>
+<data key="y">587.7852</data>
+</node>
+<node id="300030">
+<data key="label">300030</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">-375.53006</data>
+<data key="y">848.14996</data>
+</node>
+<node id="400105">
+<data key="label">400105</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">157.66</data>
+<data key="y">915.4867</data>
+</node>
+<node id="300052">
+<data key="label">300052</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">-220.28766</data>
+<data key="y">911.9816</data>
+</node>
+<node id="300055">
+<data key="label">300055</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">-535.54565</data>
+<data key="y">786.3561</data>
+</node>
+<node id="412380">
+<data key="label">412380</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">-33.652637</data>
+<data key="y">937.05273</data>
+</node>
+<node id="300071">
+<data key="label">300071</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">-942.3301</data>
+<data key="y">73.26015</data>
+</node>
+<node id="412322">
+<data key="label">412322</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">-932.8264</data>
+<data key="y">-127.75359</data>
+</node>
+<node id="400418">
+<data key="label">400418</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">-878.83636</data>
+<data key="y">-318.97446</data>
+</node>
+<node id="senate_111_2010_294">
+<data key="label">senate_111_2010_294</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">273.8728</data>
+<data key="y">-183.97433</data>
+</node>
+<node id="senate_111_2010_295">
+<data key="label">senate_111_2010_295</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">-376.60098</data>
+<data key="y">354.8804</data>
+</node>
+<node id="senate_111_2010_296">
+<data key="label">senate_111_2010_296</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">-471.1089</data>
+<data key="y">482.28455</data>
+</node>
+<node id="senate_111_2010_297">
+<data key="label">senate_111_2010_297</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">-534.96423</data>
+<data key="y">314.10635</data>
+</node>
+<node id="senate_111_2010_298">
+<data key="label">senate_111_2010_298</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">144.4685</data>
+<data key="y">-193.96483</data>
+</node>
+<node id="300006">
+<data key="label">300006</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">-661.5602</data>
+<data key="y">-650.6176</data>
+</node>
+<node id="300049">
+<data key="label">300049</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">-529.2791</data>
+<data key="y">-781.8206</data>
+</node>
+<node id="300100">
+<data key="label">300100</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">816.89435</data>
+<data key="y">515.2715</data>
+</node>
+<node id="senate_111_2010_299">
+<data key="label">senate_111_2010_299</data>
+<data key="size">10.0</data>
+<data key="r">153</data>
+<data key="g">153</data>
+<data key="b">153</data>
+<data key="x">-19.269228</data>
+<data key="y">43.150536</data>
+</node>
+<edge source="300001" target="senate_111_2010_288">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300001" target="senate_111_2010_289">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300001" target="senate_111_2010_290">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300001" target="senate_111_2010_291">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300001" target="senate_111_2010_292">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300001" target="senate_111_2010_294">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300001" target="senate_111_2010_298">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300001" target="senate_111_2010_299">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300002" target="senate_111_2010_288">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300002" target="senate_111_2010_289">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300002" target="senate_111_2010_292">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300002" target="senate_111_2010_294">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300002" target="senate_111_2010_295">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300002" target="senate_111_2010_298">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412251" target="senate_111_2010_288">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412251" target="senate_111_2010_289">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412251" target="senate_111_2010_293">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412251" target="senate_111_2010_295">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412251" target="senate_111_2010_296">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412251" target="senate_111_2010_297">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412251" target="senate_111_2010_299">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300005" target="senate_111_2010_288">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300005" target="senate_111_2010_289">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300005" target="senate_111_2010_290">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300005" target="senate_111_2010_291">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300005" target="senate_111_2010_292">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300005" target="senate_111_2010_294">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300005" target="senate_111_2010_298">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300005" target="senate_111_2010_299">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412326" target="senate_111_2010_288">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412326" target="senate_111_2010_289">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412326" target="senate_111_2010_290">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412326" target="senate_111_2010_291">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412326" target="senate_111_2010_292">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412326" target="senate_111_2010_294">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412326" target="senate_111_2010_298">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412326" target="senate_111_2010_299">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412330" target="senate_111_2010_288">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412330" target="senate_111_2010_289">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412330" target="senate_111_2010_290">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412330" target="senate_111_2010_291">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412330" target="senate_111_2010_292">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412330" target="senate_111_2010_294">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412330" target="senate_111_2010_298">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412330" target="senate_111_2010_299">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300007" target="senate_111_2010_288">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300007" target="senate_111_2010_289">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300007" target="senate_111_2010_292">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300007" target="senate_111_2010_294">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300007" target="senate_111_2010_298">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300007" target="senate_111_2010_299">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300009" target="senate_111_2010_288">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300009" target="senate_111_2010_289">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300009" target="senate_111_2010_290">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300009" target="senate_111_2010_291">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300009" target="senate_111_2010_292">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300009" target="senate_111_2010_294">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300009" target="senate_111_2010_298">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300009" target="senate_111_2010_299">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300010" target="senate_111_2010_288">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300011" target="senate_111_2010_288">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300011" target="senate_111_2010_289">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300011" target="senate_111_2010_290">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300011" target="senate_111_2010_291">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300011" target="senate_111_2010_292">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300011" target="senate_111_2010_294">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300011" target="senate_111_2010_298">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300011" target="senate_111_2010_299">
+<data key="weight">1.0</data>
+</edge>
+<edge source="400050" target="senate_111_2010_288">
+<data key="weight">1.0</data>
+</edge>
+<edge source="400050" target="senate_111_2010_289">
+<data key="weight">1.0</data>
+</edge>
+<edge source="400050" target="senate_111_2010_290">
+<data key="weight">1.0</data>
+</edge>
+<edge source="400050" target="senate_111_2010_291">
+<data key="weight">1.0</data>
+</edge>
+<edge source="400050" target="senate_111_2010_292">
+<data key="weight">1.0</data>
+</edge>
+<edge source="400050" target="senate_111_2010_294">
+<data key="weight">1.0</data>
+</edge>
+<edge source="400050" target="senate_111_2010_298">
+<data key="weight">1.0</data>
+</edge>
+<edge source="400050" target="senate_111_2010_299">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412384" target="senate_111_2010_288">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412384" target="senate_111_2010_289">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412384" target="senate_111_2010_291">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412384" target="senate_111_2010_292">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412384" target="senate_111_2010_293">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412384" target="senate_111_2010_295">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412384" target="senate_111_2010_296">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412384" target="senate_111_2010_297">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412384" target="senate_111_2010_298">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412384" target="senate_111_2010_299">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300014" target="senate_111_2010_288">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300014" target="senate_111_2010_289">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300014" target="senate_111_2010_293">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300014" target="senate_111_2010_295">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300014" target="senate_111_2010_296">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300014" target="senate_111_2010_297">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300018" target="senate_111_2010_288">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300018" target="senate_111_2010_289">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300018" target="senate_111_2010_290">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300018" target="senate_111_2010_291">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300018" target="senate_111_2010_292">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300018" target="senate_111_2010_294">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300018" target="senate_111_2010_298">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300018" target="senate_111_2010_299">
+<data key="weight">1.0</data>
+</edge>
+<edge source="400064" target="senate_111_2010_288">
+<data key="weight">1.0</data>
+</edge>
+<edge source="400064" target="senate_111_2010_289">
+<data key="weight">1.0</data>
+</edge>
+<edge source="400064" target="senate_111_2010_290">
+<data key="weight">1.0</data>
+</edge>
+<edge source="400064" target="senate_111_2010_291">
+<data key="weight">1.0</data>
+</edge>
+<edge source="400064" target="senate_111_2010_292">
+<data key="weight">1.0</data>
+</edge>
+<edge source="400064" target="senate_111_2010_294">
+<data key="weight">1.0</data>
+</edge>
+<edge source="400064" target="senate_111_2010_298">
+<data key="weight">1.0</data>
+</edge>
+<edge source="400064" target="senate_111_2010_299">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300019" target="senate_111_2010_288">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300019" target="senate_111_2010_289">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300019" target="senate_111_2010_290">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300019" target="senate_111_2010_291">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300019" target="senate_111_2010_292">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300019" target="senate_111_2010_294">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300019" target="senate_111_2010_298">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300019" target="senate_111_2010_299">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412246" target="senate_111_2010_288">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412246" target="senate_111_2010_289">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412246" target="senate_111_2010_290">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412246" target="senate_111_2010_291">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412246" target="senate_111_2010_292">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412246" target="senate_111_2010_294">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412246" target="senate_111_2010_298">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412246" target="senate_111_2010_299">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300023" target="senate_111_2010_288">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300023" target="senate_111_2010_289">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300023" target="senate_111_2010_292">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300023" target="senate_111_2010_293">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300023" target="senate_111_2010_295">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300023" target="senate_111_2010_296">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300023" target="senate_111_2010_297">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300023" target="senate_111_2010_298">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300023" target="senate_111_2010_299">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300025" target="senate_111_2010_288">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300025" target="senate_111_2010_289">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300025" target="senate_111_2010_291">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300025" target="senate_111_2010_292">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300025" target="senate_111_2010_294">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300025" target="senate_111_2010_295">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300025" target="senate_111_2010_296">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300025" target="senate_111_2010_298">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300025" target="senate_111_2010_299">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300026" target="senate_111_2010_288">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300026" target="senate_111_2010_289">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300026" target="senate_111_2010_290">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300026" target="senate_111_2010_291">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300026" target="senate_111_2010_292">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300026" target="senate_111_2010_294">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300026" target="senate_111_2010_298">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300026" target="senate_111_2010_299">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412390" target="senate_111_2010_288">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412390" target="senate_111_2010_289">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412390" target="senate_111_2010_290">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412390" target="senate_111_2010_291">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412390" target="senate_111_2010_292">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412390" target="senate_111_2010_294">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412390" target="senate_111_2010_298">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412390" target="senate_111_2010_299">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412248" target="senate_111_2010_288">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412248" target="senate_111_2010_289">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412248" target="senate_111_2010_292">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412248" target="senate_111_2010_294">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412248" target="senate_111_2010_298">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412248" target="senate_111_2010_299">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300027" target="senate_111_2010_288">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300027" target="senate_111_2010_293">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300027" target="senate_111_2010_295">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300027" target="senate_111_2010_296">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300027" target="senate_111_2010_297">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300027" target="senate_111_2010_299">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300034" target="senate_111_2010_288">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300034" target="senate_111_2010_289">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300034" target="senate_111_2010_290">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300034" target="senate_111_2010_291">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300034" target="senate_111_2010_292">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300034" target="senate_111_2010_294">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300034" target="senate_111_2010_298">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300034" target="senate_111_2010_299">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300037" target="senate_111_2010_288">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300037" target="senate_111_2010_289">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300037" target="senate_111_2010_290">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300037" target="senate_111_2010_291">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300037" target="senate_111_2010_292">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300037" target="senate_111_2010_294">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300037" target="senate_111_2010_298">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300037" target="senate_111_2010_299">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300038" target="senate_111_2010_288">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300038" target="senate_111_2010_289">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300038" target="senate_111_2010_290">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300038" target="senate_111_2010_291">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300038" target="senate_111_2010_292">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300038" target="senate_111_2010_294">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300038" target="senate_111_2010_298">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300038" target="senate_111_2010_299">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300040" target="senate_111_2010_288">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300040" target="senate_111_2010_289">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300040" target="senate_111_2010_293">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300040" target="senate_111_2010_295">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300040" target="senate_111_2010_296">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300040" target="senate_111_2010_297">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300040" target="senate_111_2010_299">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300041" target="senate_111_2010_288">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300041" target="senate_111_2010_289">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300041" target="senate_111_2010_293">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300041" target="senate_111_2010_295">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300041" target="senate_111_2010_296">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300041" target="senate_111_2010_297">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300041" target="senate_111_2010_299">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300043" target="senate_111_2010_288">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300043" target="senate_111_2010_289">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300043" target="senate_111_2010_290">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300043" target="senate_111_2010_291">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300043" target="senate_111_2010_292">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300043" target="senate_111_2010_294">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300043" target="senate_111_2010_298">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300043" target="senate_111_2010_299">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412378" target="senate_111_2010_288">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412378" target="senate_111_2010_289">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412378" target="senate_111_2010_290">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412378" target="senate_111_2010_291">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412378" target="senate_111_2010_292">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412378" target="senate_111_2010_294">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412378" target="senate_111_2010_298">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412378" target="senate_111_2010_299">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412223" target="senate_111_2010_288">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412223" target="senate_111_2010_289">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412223" target="senate_111_2010_290">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412223" target="senate_111_2010_291">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412223" target="senate_111_2010_292">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412223" target="senate_111_2010_298">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412223" target="senate_111_2010_299">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300047" target="senate_111_2010_288">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300047" target="senate_111_2010_293">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300047" target="senate_111_2010_295">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300047" target="senate_111_2010_296">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300047" target="senate_111_2010_297">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300047" target="senate_111_2010_299">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300048" target="senate_111_2010_288">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300048" target="senate_111_2010_289">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300048" target="senate_111_2010_293">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300048" target="senate_111_2010_295">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300048" target="senate_111_2010_296">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300048" target="senate_111_2010_297">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300048" target="senate_111_2010_299">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412324" target="senate_111_2010_288">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412324" target="senate_111_2010_289">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412324" target="senate_111_2010_290">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412324" target="senate_111_2010_291">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412324" target="senate_111_2010_292">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412324" target="senate_111_2010_294">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412324" target="senate_111_2010_298">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412324" target="senate_111_2010_299">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300051" target="senate_111_2010_288">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300051" target="senate_111_2010_289">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300051" target="senate_111_2010_290">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300051" target="senate_111_2010_291">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300051" target="senate_111_2010_292">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300051" target="senate_111_2010_294">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300051" target="senate_111_2010_298">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300054" target="senate_111_2010_288">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300054" target="senate_111_2010_289">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300054" target="senate_111_2010_293">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300054" target="senate_111_2010_295">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300054" target="senate_111_2010_296">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300054" target="senate_111_2010_297">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300054" target="senate_111_2010_299">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300056" target="senate_111_2010_288">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300056" target="senate_111_2010_289">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300056" target="senate_111_2010_290">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300056" target="senate_111_2010_291">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300056" target="senate_111_2010_292">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300056" target="senate_111_2010_294">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300056" target="senate_111_2010_298">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300056" target="senate_111_2010_299">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412320" target="senate_111_2010_288">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412320" target="senate_111_2010_289">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412320" target="senate_111_2010_293">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412320" target="senate_111_2010_295">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412320" target="senate_111_2010_296">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412320" target="senate_111_2010_297">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412320" target="senate_111_2010_298">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412320" target="senate_111_2010_299">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300058" target="senate_111_2010_288">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300058" target="senate_111_2010_289">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300058" target="senate_111_2010_290">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300058" target="senate_111_2010_291">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300058" target="senate_111_2010_292">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300058" target="senate_111_2010_294">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300058" target="senate_111_2010_298">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300058" target="senate_111_2010_299">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300060" target="senate_111_2010_288">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300060" target="senate_111_2010_289">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300060" target="senate_111_2010_290">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300060" target="senate_111_2010_291">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300060" target="senate_111_2010_292">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300060" target="senate_111_2010_294">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300060" target="senate_111_2010_298">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300060" target="senate_111_2010_299">
+<data key="weight">1.0</data>
+</edge>
+<edge source="400222" target="senate_111_2010_288">
+<data key="weight">1.0</data>
+</edge>
+<edge source="400222" target="senate_111_2010_289">
+<data key="weight">1.0</data>
+</edge>
+<edge source="400222" target="senate_111_2010_293">
+<data key="weight">1.0</data>
+</edge>
+<edge source="400222" target="senate_111_2010_294">
+<data key="weight">1.0</data>
+</edge>
+<edge source="400222" target="senate_111_2010_295">
+<data key="weight">1.0</data>
+</edge>
+<edge source="400222" target="senate_111_2010_296">
+<data key="weight">1.0</data>
+</edge>
+<edge source="400222" target="senate_111_2010_297">
+<data key="weight">1.0</data>
+</edge>
+<edge source="400222" target="senate_111_2010_299">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412242" target="senate_111_2010_288">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412242" target="senate_111_2010_289">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412242" target="senate_111_2010_290">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412242" target="senate_111_2010_291">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412242" target="senate_111_2010_292">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412242" target="senate_111_2010_294">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412242" target="senate_111_2010_298">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412242" target="senate_111_2010_299">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300061" target="senate_111_2010_288">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300061" target="senate_111_2010_289">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300061" target="senate_111_2010_290">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300061" target="senate_111_2010_291">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300061" target="senate_111_2010_292">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300061" target="senate_111_2010_294">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300061" target="senate_111_2010_298">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300061" target="senate_111_2010_299">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300062" target="senate_111_2010_288">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300062" target="senate_111_2010_289">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300062" target="senate_111_2010_293">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300062" target="senate_111_2010_295">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300062" target="senate_111_2010_296">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300062" target="senate_111_2010_297">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300062" target="senate_111_2010_299">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300063" target="senate_111_2010_288">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300063" target="senate_111_2010_289">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300063" target="senate_111_2010_290">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300063" target="senate_111_2010_291">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300063" target="senate_111_2010_292">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300063" target="senate_111_2010_294">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300063" target="senate_111_2010_298">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300063" target="senate_111_2010_299">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300064" target="senate_111_2010_288">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300064" target="senate_111_2010_289">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300064" target="senate_111_2010_290">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300064" target="senate_111_2010_291">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300064" target="senate_111_2010_292">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300064" target="senate_111_2010_294">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300064" target="senate_111_2010_298">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300064" target="senate_111_2010_299">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300065" target="senate_111_2010_288">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300065" target="senate_111_2010_289">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300065" target="senate_111_2010_290">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300065" target="senate_111_2010_291">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300065" target="senate_111_2010_292">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300065" target="senate_111_2010_294">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300065" target="senate_111_2010_298">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300065" target="senate_111_2010_299">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300066" target="senate_111_2010_288">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300066" target="senate_111_2010_289">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300066" target="senate_111_2010_290">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300066" target="senate_111_2010_291">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300066" target="senate_111_2010_292">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300066" target="senate_111_2010_294">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300066" target="senate_111_2010_298">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300066" target="senate_111_2010_299">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300067" target="senate_111_2010_288">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300067" target="senate_111_2010_289">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300067" target="senate_111_2010_290">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300067" target="senate_111_2010_291">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300067" target="senate_111_2010_292">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300067" target="senate_111_2010_298">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300067" target="senate_111_2010_299">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300068" target="senate_111_2010_288">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300068" target="senate_111_2010_289">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300068" target="senate_111_2010_290">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300068" target="senate_111_2010_291">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300068" target="senate_111_2010_292">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300068" target="senate_111_2010_294">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300068" target="senate_111_2010_298">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300068" target="senate_111_2010_299">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300070" target="senate_111_2010_288">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300070" target="senate_111_2010_289">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300070" target="senate_111_2010_292">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300070" target="senate_111_2010_294">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300070" target="senate_111_2010_298">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300070" target="senate_111_2010_299">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412391" target="senate_111_2010_288">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412391" target="senate_111_2010_289">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412391" target="senate_111_2010_290">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412391" target="senate_111_2010_291">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412391" target="senate_111_2010_292">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412391" target="senate_111_2010_294">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412391" target="senate_111_2010_298">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412391" target="senate_111_2010_299">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412243" target="senate_111_2010_288">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412243" target="senate_111_2010_289">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412243" target="senate_111_2010_290">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412243" target="senate_111_2010_291">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412243" target="senate_111_2010_292">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412243" target="senate_111_2010_294">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412243" target="senate_111_2010_298">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300072" target="senate_111_2010_288">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300072" target="senate_111_2010_289">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300072" target="senate_111_2010_293">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300072" target="senate_111_2010_295">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300072" target="senate_111_2010_296">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300072" target="senate_111_2010_297">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300072" target="senate_111_2010_299">
+<data key="weight">1.0</data>
+</edge>
+<edge source="400272" target="senate_111_2010_288">
+<data key="weight">1.0</data>
+</edge>
+<edge source="400272" target="senate_111_2010_289">
+<data key="weight">1.0</data>
+</edge>
+<edge source="400272" target="senate_111_2010_290">
+<data key="weight">1.0</data>
+</edge>
+<edge source="400272" target="senate_111_2010_291">
+<data key="weight">1.0</data>
+</edge>
+<edge source="400272" target="senate_111_2010_292">
+<data key="weight">1.0</data>
+</edge>
+<edge source="400272" target="senate_111_2010_294">
+<data key="weight">1.0</data>
+</edge>
+<edge source="400272" target="senate_111_2010_298">
+<data key="weight">1.0</data>
+</edge>
+<edge source="400272" target="senate_111_2010_299">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412325" target="senate_111_2010_288">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412325" target="senate_111_2010_289">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412325" target="senate_111_2010_290">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412325" target="senate_111_2010_291">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412325" target="senate_111_2010_292">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412325" target="senate_111_2010_294">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412325" target="senate_111_2010_298">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412325" target="senate_111_2010_299">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300073" target="senate_111_2010_288">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300073" target="senate_111_2010_289">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300073" target="senate_111_2010_290">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300073" target="senate_111_2010_291">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300073" target="senate_111_2010_292">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300073" target="senate_111_2010_294">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300073" target="senate_111_2010_298">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300073" target="senate_111_2010_299">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300075" target="senate_111_2010_288">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300075" target="senate_111_2010_289">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300075" target="senate_111_2010_292">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300075" target="senate_111_2010_294">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300075" target="senate_111_2010_295">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300075" target="senate_111_2010_298">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300075" target="senate_111_2010_299">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300076" target="senate_111_2010_288">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300076" target="senate_111_2010_289">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300076" target="senate_111_2010_290">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300076" target="senate_111_2010_291">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300076" target="senate_111_2010_292">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300076" target="senate_111_2010_294">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300076" target="senate_111_2010_298">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300076" target="senate_111_2010_299">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300078" target="senate_111_2010_288">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300078" target="senate_111_2010_289">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300078" target="senate_111_2010_290">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300078" target="senate_111_2010_291">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300078" target="senate_111_2010_292">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300078" target="senate_111_2010_294">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300078" target="senate_111_2010_298">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300078" target="senate_111_2010_299">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300080" target="senate_111_2010_288">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300080" target="senate_111_2010_289">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300080" target="senate_111_2010_290">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300080" target="senate_111_2010_291">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300080" target="senate_111_2010_292">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300080" target="senate_111_2010_294">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300080" target="senate_111_2010_298">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300080" target="senate_111_2010_299">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300081" target="senate_111_2010_288">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300081" target="senate_111_2010_289">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300081" target="senate_111_2010_290">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300081" target="senate_111_2010_291">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300081" target="senate_111_2010_292">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300081" target="senate_111_2010_294">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300081" target="senate_111_2010_298">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300081" target="senate_111_2010_299">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300082" target="senate_111_2010_288">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300082" target="senate_111_2010_289">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300082" target="senate_111_2010_290">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300082" target="senate_111_2010_291">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300082" target="senate_111_2010_292">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300082" target="senate_111_2010_294">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300082" target="senate_111_2010_298">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300082" target="senate_111_2010_299">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300083" target="senate_111_2010_288">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300083" target="senate_111_2010_289">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300083" target="senate_111_2010_293">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300083" target="senate_111_2010_295">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300083" target="senate_111_2010_296">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300083" target="senate_111_2010_297">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300084" target="senate_111_2010_288">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300084" target="senate_111_2010_289">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300084" target="senate_111_2010_290">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300084" target="senate_111_2010_291">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300084" target="senate_111_2010_292">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300084" target="senate_111_2010_294">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300084" target="senate_111_2010_298">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300084" target="senate_111_2010_299">
+<data key="weight">1.0</data>
+</edge>
+<edge source="400357" target="senate_111_2010_288">
+<data key="weight">1.0</data>
+</edge>
+<edge source="400357" target="senate_111_2010_289">
+<data key="weight">1.0</data>
+</edge>
+<edge source="400357" target="senate_111_2010_290">
+<data key="weight">1.0</data>
+</edge>
+<edge source="400357" target="senate_111_2010_291">
+<data key="weight">1.0</data>
+</edge>
+<edge source="400357" target="senate_111_2010_292">
+<data key="weight">1.0</data>
+</edge>
+<edge source="400357" target="senate_111_2010_294">
+<data key="weight">1.0</data>
+</edge>
+<edge source="400357" target="senate_111_2010_298">
+<data key="weight">1.0</data>
+</edge>
+<edge source="400357" target="senate_111_2010_299">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300087" target="senate_111_2010_288">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300087" target="senate_111_2010_289">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300087" target="senate_111_2010_290">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300087" target="senate_111_2010_291">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300087" target="senate_111_2010_292">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300087" target="senate_111_2010_294">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300087" target="senate_111_2010_298">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300087" target="senate_111_2010_299">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300088" target="senate_111_2010_288">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300088" target="senate_111_2010_289">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300088" target="senate_111_2010_293">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300088" target="senate_111_2010_295">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300088" target="senate_111_2010_296">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300088" target="senate_111_2010_297">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300088" target="senate_111_2010_299">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412323" target="senate_111_2010_288">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412323" target="senate_111_2010_289">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412323" target="senate_111_2010_290">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412323" target="senate_111_2010_291">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412323" target="senate_111_2010_292">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412323" target="senate_111_2010_294">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412323" target="senate_111_2010_298">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412323" target="senate_111_2010_299">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300089" target="senate_111_2010_288">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300089" target="senate_111_2010_289">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300089" target="senate_111_2010_293">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300089" target="senate_111_2010_299">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300091" target="senate_111_2010_288">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300091" target="senate_111_2010_289">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300091" target="senate_111_2010_292">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300091" target="senate_111_2010_293">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300091" target="senate_111_2010_295">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300091" target="senate_111_2010_296">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300091" target="senate_111_2010_297">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300091" target="senate_111_2010_298">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300091" target="senate_111_2010_299">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300092" target="senate_111_2010_288">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300092" target="senate_111_2010_289">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300092" target="senate_111_2010_290">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300092" target="senate_111_2010_291">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300092" target="senate_111_2010_292">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300092" target="senate_111_2010_294">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300092" target="senate_111_2010_298">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300092" target="senate_111_2010_299">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300093" target="senate_111_2010_288">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300093" target="senate_111_2010_289">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300093" target="senate_111_2010_290">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300093" target="senate_111_2010_291">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300093" target="senate_111_2010_292">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300093" target="senate_111_2010_294">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300093" target="senate_111_2010_298">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412244" target="senate_111_2010_288">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412244" target="senate_111_2010_289">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412244" target="senate_111_2010_290">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412244" target="senate_111_2010_291">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412244" target="senate_111_2010_292">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412244" target="senate_111_2010_294">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412244" target="senate_111_2010_298">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412244" target="senate_111_2010_299">
+<data key="weight">1.0</data>
+</edge>
+<edge source="400546" target="senate_111_2010_288">
+<data key="weight">1.0</data>
+</edge>
+<edge source="400546" target="senate_111_2010_289">
+<data key="weight">1.0</data>
+</edge>
+<edge source="400546" target="senate_111_2010_293">
+<data key="weight">1.0</data>
+</edge>
+<edge source="400546" target="senate_111_2010_295">
+<data key="weight">1.0</data>
+</edge>
+<edge source="400546" target="senate_111_2010_296">
+<data key="weight">1.0</data>
+</edge>
+<edge source="400546" target="senate_111_2010_297">
+<data key="weight">1.0</data>
+</edge>
+<edge source="400546" target="senate_111_2010_299">
+<data key="weight">1.0</data>
+</edge>
+<edge source="400412" target="senate_111_2010_288">
+<data key="weight">1.0</data>
+</edge>
+<edge source="400412" target="senate_111_2010_289">
+<data key="weight">1.0</data>
+</edge>
+<edge source="400412" target="senate_111_2010_290">
+<data key="weight">1.0</data>
+</edge>
+<edge source="400412" target="senate_111_2010_291">
+<data key="weight">1.0</data>
+</edge>
+<edge source="400412" target="senate_111_2010_292">
+<data key="weight">1.0</data>
+</edge>
+<edge source="400412" target="senate_111_2010_294">
+<data key="weight">1.0</data>
+</edge>
+<edge source="400412" target="senate_111_2010_298">
+<data key="weight">1.0</data>
+</edge>
+<edge source="400412" target="senate_111_2010_299">
+<data key="weight">1.0</data>
+</edge>
+<edge source="400413" target="senate_111_2010_288">
+<data key="weight">1.0</data>
+</edge>
+<edge source="400413" target="senate_111_2010_289">
+<data key="weight">1.0</data>
+</edge>
+<edge source="400413" target="senate_111_2010_290">
+<data key="weight">1.0</data>
+</edge>
+<edge source="400413" target="senate_111_2010_291">
+<data key="weight">1.0</data>
+</edge>
+<edge source="400413" target="senate_111_2010_292">
+<data key="weight">1.0</data>
+</edge>
+<edge source="400413" target="senate_111_2010_294">
+<data key="weight">1.0</data>
+</edge>
+<edge source="400413" target="senate_111_2010_298">
+<data key="weight">1.0</data>
+</edge>
+<edge source="400413" target="senate_111_2010_299">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300098" target="senate_111_2010_288">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300098" target="senate_111_2010_289">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300098" target="senate_111_2010_290">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300098" target="senate_111_2010_292">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300098" target="senate_111_2010_298">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300098" target="senate_111_2010_299">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412321" target="senate_111_2010_288">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412321" target="senate_111_2010_289">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412321" target="senate_111_2010_290">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412321" target="senate_111_2010_291">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412321" target="senate_111_2010_292">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412321" target="senate_111_2010_294">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412321" target="senate_111_2010_298">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412321" target="senate_111_2010_299">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412249" target="senate_111_2010_288">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412249" target="senate_111_2010_289">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412249" target="senate_111_2010_290">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412249" target="senate_111_2010_291">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412249" target="senate_111_2010_292">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412249" target="senate_111_2010_294">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412249" target="senate_111_2010_298">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412249" target="senate_111_2010_299">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412247" target="senate_111_2010_288">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412247" target="senate_111_2010_289">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412247" target="senate_111_2010_290">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412247" target="senate_111_2010_291">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412247" target="senate_111_2010_292">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412247" target="senate_111_2010_294">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412247" target="senate_111_2010_298">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412247" target="senate_111_2010_299">
+<data key="weight">1.0</data>
+</edge>
+<edge source="400432" target="senate_111_2010_288">
+<data key="weight">1.0</data>
+</edge>
+<edge source="400432" target="senate_111_2010_289">
+<data key="weight">1.0</data>
+</edge>
+<edge source="400432" target="senate_111_2010_293">
+<data key="weight">1.0</data>
+</edge>
+<edge source="400432" target="senate_111_2010_295">
+<data key="weight">1.0</data>
+</edge>
+<edge source="400432" target="senate_111_2010_296">
+<data key="weight">1.0</data>
+</edge>
+<edge source="400432" target="senate_111_2010_297">
+<data key="weight">1.0</data>
+</edge>
+<edge source="400432" target="senate_111_2010_299">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300042" target="senate_111_2010_290">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300042" target="senate_111_2010_291">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300042" target="senate_111_2010_292">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300042" target="senate_111_2010_294">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300042" target="senate_111_2010_298">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300077" target="senate_111_2010_291">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300077" target="senate_111_2010_292">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300077" target="senate_111_2010_294">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300077" target="senate_111_2010_298">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300077" target="senate_111_2010_299">
+<data key="weight">1.0</data>
+</edge>
+<edge source="400194" target="senate_111_2010_292">
+<data key="weight">1.0</data>
+</edge>
+<edge source="400194" target="senate_111_2010_293">
+<data key="weight">1.0</data>
+</edge>
+<edge source="400194" target="senate_111_2010_295">
+<data key="weight">1.0</data>
+</edge>
+<edge source="400194" target="senate_111_2010_298">
+<data key="weight">1.0</data>
+</edge>
+<edge source="400194" target="senate_111_2010_299">
+<data key="weight">1.0</data>
+</edge>
+<edge source="400054" target="senate_111_2010_293">
+<data key="weight">1.0</data>
+</edge>
+<edge source="400054" target="senate_111_2010_295">
+<data key="weight">1.0</data>
+</edge>
+<edge source="400054" target="senate_111_2010_296">
+<data key="weight">1.0</data>
+</edge>
+<edge source="400054" target="senate_111_2010_297">
+<data key="weight">1.0</data>
+</edge>
+<edge source="400054" target="senate_111_2010_299">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300021" target="senate_111_2010_293">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300021" target="senate_111_2010_295">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300021" target="senate_111_2010_296">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300021" target="senate_111_2010_297">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300021" target="senate_111_2010_299">
+<data key="weight">1.0</data>
+</edge>
+<edge source="400576" target="senate_111_2010_293">
+<data key="weight">1.0</data>
+</edge>
+<edge source="400576" target="senate_111_2010_295">
+<data key="weight">1.0</data>
+</edge>
+<edge source="400576" target="senate_111_2010_296">
+<data key="weight">1.0</data>
+</edge>
+<edge source="400576" target="senate_111_2010_297">
+<data key="weight">1.0</data>
+</edge>
+<edge source="400576" target="senate_111_2010_299">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300030" target="senate_111_2010_293">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300030" target="senate_111_2010_295">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300030" target="senate_111_2010_296">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300030" target="senate_111_2010_297">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300030" target="senate_111_2010_299">
+<data key="weight">1.0</data>
+</edge>
+<edge source="400105" target="senate_111_2010_293">
+<data key="weight">1.0</data>
+</edge>
+<edge source="400105" target="senate_111_2010_295">
+<data key="weight">1.0</data>
+</edge>
+<edge source="400105" target="senate_111_2010_296">
+<data key="weight">1.0</data>
+</edge>
+<edge source="400105" target="senate_111_2010_297">
+<data key="weight">1.0</data>
+</edge>
+<edge source="400105" target="senate_111_2010_299">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300052" target="senate_111_2010_293">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300052" target="senate_111_2010_295">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300052" target="senate_111_2010_296">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300052" target="senate_111_2010_297">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300052" target="senate_111_2010_299">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300055" target="senate_111_2010_293">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300055" target="senate_111_2010_295">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300055" target="senate_111_2010_296">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300055" target="senate_111_2010_297">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300055" target="senate_111_2010_299">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412380" target="senate_111_2010_293">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412380" target="senate_111_2010_295">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412380" target="senate_111_2010_296">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412380" target="senate_111_2010_297">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412380" target="senate_111_2010_299">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300071" target="senate_111_2010_293">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300071" target="senate_111_2010_295">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300071" target="senate_111_2010_296">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300071" target="senate_111_2010_297">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300071" target="senate_111_2010_299">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412322" target="senate_111_2010_293">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412322" target="senate_111_2010_295">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412322" target="senate_111_2010_296">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412322" target="senate_111_2010_297">
+<data key="weight">1.0</data>
+</edge>
+<edge source="412322" target="senate_111_2010_299">
+<data key="weight">1.0</data>
+</edge>
+<edge source="400418" target="senate_111_2010_293">
+<data key="weight">1.0</data>
+</edge>
+<edge source="400418" target="senate_111_2010_295">
+<data key="weight">1.0</data>
+</edge>
+<edge source="400418" target="senate_111_2010_296">
+<data key="weight">1.0</data>
+</edge>
+<edge source="400418" target="senate_111_2010_297">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300006" target="senate_111_2010_298">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300006" target="senate_111_2010_299">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300049" target="senate_111_2010_298">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300049" target="senate_111_2010_299">
+<data key="weight">1.0</data>
+</edge>
+<edge source="300100" target="senate_111_2010_298">
+<data key="weight">1.0</data>
+</edge>
+</graph>
+</graphml>

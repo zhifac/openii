@@ -18,12 +18,15 @@ package org.mitre.affinity.view;
 
 import java.util.Collection;
 
+import org.eclipse.swt.widgets.Composite;
 import org.mitre.affinity.model.clusters.ClusterGroup;
 import org.mitre.affinity.view.event.SelectionChangedListener;
 import org.mitre.affinity.view.event.SelectionClickedListener;
-import org.mitre.affinity.view.swt.SWTUtils.TextSize;
+import org.mitre.affinity.AffinityConstants.TextSize;
 
 /**
+ * Interface for implementations that display clusters.
+ * 
  * @author cbonaceto
  *
  * @param <K>
@@ -46,7 +49,25 @@ public interface IClusterView<K extends Comparable<K>, V> {
 	
 	public void setFillClusters(boolean fillClusters);
 	
-	public void redraw();
+	public void redraw();	
+	
+	public void resize();
+
+	/**
+	 * @param minClusterDistance
+	 */
+	public void setMinClusterDistance(double minClusterDistance);
+
+	/**
+	 * @param maxClusterDistance
+	 */
+	public void setMaxClusterDistance(double maxClusterDistance);
+	
+	/**
+	 * @param minClusterDistance
+	 * @param maxClusterDistance
+	 */
+	public void setMinMaxClusterDistances(double minClusterDistance, double maxClusterDistance);
 	
 	/**
 	 * Select a single cluster object.  Any previously selected cluster objects or clusters are unselected.
@@ -56,14 +77,14 @@ public interface IClusterView<K extends Comparable<K>, V> {
 	public void setSelectedClusterObject(K objectID);
 	
 	/**
-	 * Select a group of schemas.  Any previously selected schemas or clusters are unselected.
+	 * Select a group of cluster objects.  Any previously selected cluster objects or clusters are unselected.
 	 * 
-	 * @param schemaIDs
+	 * @param objectIDs
 	 */
 	public void setSelectedClusterObjects(Collection<K> objectIDs);
 	
 	/**
-	 * Unselect all schemas and clusters
+	 * Unselect all cluster objects and clusters.
 	 */
 	public void unselectAllClusterObjectsAndClusters();
 	
@@ -73,4 +94,6 @@ public interface IClusterView<K extends Comparable<K>, V> {
 	 * @param cluster
 	 */
 	public void setSelectedCluster(ClusterGroup<K> cluster);
+	
+	public Composite getComposite();
 }

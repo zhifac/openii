@@ -40,7 +40,6 @@ import org.eclipse.swt.graphics.Path;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Tracker;
 
 import org.mitre.affinity.AffinityConstants;
@@ -50,7 +49,7 @@ import org.mitre.affinity.model.clusters.ClusterStep;
 import org.mitre.affinity.model.clusters.ClustersContainer;
 import org.mitre.affinity.util.AffinityUtils;
 import org.mitre.affinity.view.IClusterObjectGUI;
-import org.mitre.affinity.view.ICluster2DView.Mode;
+import org.mitre.affinity.view.craigrogram.ICluster2DView.Mode;
 import org.mitre.affinity.view.event.SelectionChangedEvent;
 import org.mitre.affinity.view.event.SelectionChangedListener;
 import org.mitre.affinity.view.event.SelectionClickedEvent;
@@ -118,10 +117,10 @@ public class Cluster2DView<K extends Comparable<K>, V> extends ClusterObject2DVi
 	private int maxClusterNestingLevel = 0;
 	
 	/** The line color */
-	private Color lineColor = Display.getCurrent().getSystemColor(SWT.COLOR_RED);
+	private Color lineColor = AffinityConstants.COLOR_RED;
 	
 	/** The highlight color */
-	private Color highlightColor = Display.getCurrent().getSystemColor(SWT.COLOR_GREEN);
+	private Color highlightColor = AffinityConstants.COLOR_HIGHLIGHT;
 	
 	/** The currently selected cluster object(s) */	
 	private Set<IClusterObjectGUI<K, V>> selectedClusterObjects;
@@ -300,7 +299,7 @@ public class Cluster2DView<K extends Comparable<K>, V> extends ClusterObject2DVi
 	}
 
 	/**
-	 * Set teh clusters.
+	 * Set the clusters.
 	 * 
 	 * @param clusters the clusters
 	 */
@@ -375,11 +374,11 @@ public class Cluster2DView<K extends Comparable<K>, V> extends ClusterObject2DVi
 	 * 
 	 * @param cluster
 	 */
-	public void setSelectedCluster(ClusterLocation<K, V> cluster) {
+	public void setSelectedCluster(ClusterLocation<K, V> clusterLocation) {
 		unselectAllClusters();
-		if(cluster != null) {
-			this.selectedCluster = cluster;
-			cluster.setHighlighted(true);
+		if(clusterLocation != null) {
+			this.selectedCluster = clusterLocation;
+			clusterLocation.setHighlighted(true);
 		}
 	}
 	
@@ -392,15 +391,20 @@ public class Cluster2DView<K extends Comparable<K>, V> extends ClusterObject2DVi
 		}
 		selectedClusterObjects.clear();
 		selectedClusterObjectIDs.clear();
+		if(selectedCluster != null) {
+			for(ClusterObjectLocation<K, V> clusterObject : selectedCluster.allClusterObjectLocations) {
+				clusterObject.clusterObject.setSelected(false);
+			}
+		}
 	}
 	
 	/**
 	 * Unselect all clusters
 	 */
 	public void unselectAllClusters() {
-		if(this.selectedCluster != null) {
-			this.selectedCluster.setHighlighted(false);
-			this.selectedCluster = null;
+		if(selectedCluster != null) {
+			selectedCluster.setHighlighted(false);
+			selectedCluster = null;
 		}
 	}
 	
@@ -1695,16 +1699,18 @@ public class Cluster2DView<K extends Comparable<K>, V> extends ClusterObject2DVi
 	
 	public static class ClusterLocation<K extends Comparable<K>, V> {
 		
+		/** The cluster this cluster location is for */
+		public ClusterGroup<K> cg;
+		
 		public Path contour;
 		
-		public int contourRadius;
-		
-		public ClusterGroup<K> cg;
+		public int contourRadius;		
 		
 		public Integer clusterID;
 		
 		public double clusterDistance;
 		
+		/** Whether the cluster is highlighted */
 		public boolean highlighted = false;
 		
 		/** Clusters contained within this cluster location	 */
@@ -1915,6 +1921,12 @@ public class Cluster2DView<K extends Comparable<K>, V> extends ClusterObject2DVi
 
 		public void setHighlighted(boolean highlighted) {
 			this.highlighted = highlighted;
+			//Also highlight/un-highlight cluster objects within the cluster
+			if(allClusterObjectLocations != null) {
+				for(ClusterObjectLocation<K, V> clusterObject : allClusterObjectLocations) {
+					clusterObject.clusterObject.setSelected(highlighted);
+				}
+			}
 		}
 
 		public boolean containsCluster(ClusterLocation<K, V> clusterLocation) {
@@ -2012,8 +2024,10 @@ public class Cluster2DView<K extends Comparable<K>, V> extends ClusterObject2DVi
 
 	public static class ClusterObjectLocation<K extends Comparable<K>, V> implements Comparable<ClusterObjectLocation<K, V>> {
 		
+		/** The cluster object */
 		public IClusterObjectGUI<K, V> clusterObject;
 		
+		/** The cluster object ID */
 		public K objectID;
 		
 		public Point location;
@@ -2172,7 +2186,6 @@ public class Cluster2DView<K extends Comparable<K>, V> extends ClusterObject2DVi
 			}			
 			
 			//#if(mode != Mode.SELECT) return;
-
 			if(clickedClusterObject != null && e.button != 3) {
 				//A single cluster object was selected
 

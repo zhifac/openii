@@ -27,6 +27,7 @@ import org.mitre.affinity.model.PositionGrid;
 import org.mitre.affinity.model.clusters.ClusterObjectPairValues;
 import org.mitre.affinity.model.clusters.DistanceGrid;
 import org.mitre.affinity.model.schemas.AffinitySchemaModel;
+import org.mitre.affinity.model.schemas.ISchemaManager;
 import org.mitre.affinity.view.craigrogram.Cluster2DViewPane;
 import org.mitre.affinity.view.dendrogram.DendrogramCanvas;
 import org.mitre.affinity.view.dialog.StackTraceDialog;
@@ -36,6 +37,8 @@ import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.schemaInfo.SchemaInfo;
 
 /**
+ * Controller for the schema-based version of Affinity.
+ * 
  * @author CBONACETO
  *
  * @param <Integer>
@@ -47,19 +50,37 @@ public class AffinitySchemaController extends BasicAffinityController<Integer, S
 	private List<Schema> schemasForSavingStats;	
 	private ArrayList<Integer> schemaIDs;
 	private AffinitySchemaModel affinityModelForSavingStats;
-
+	
+	private ISchemaManager schemaManager;
+	
 	public AffinitySchemaController(Composite parentWindow,
 			Cluster2DViewPane<Integer, Schema> craigrogram,
-			DendrogramCanvas<Integer, Schema> dendrogram, AffinityMenu_Schemas menu,
+			DendrogramCanvas<Integer, Schema> dendrogram, 
+			AffinityMenu_Schemas menu,
 			AffinitySchemaModel affinityModel) {
 		super(parentWindow, craigrogram, dendrogram, menu);
 		this.affinityModelForSavingStats = affinityModel;
+		schemaManager = affinityModel.getSchemaManager();
 	}
 	
 	public void setSchemaIDsAndSchemas(ArrayList<Integer> schemaIDs, List<Schema> schemas) {
 		this.schemaIDs = schemaIDs;
 		this.schemasForSavingStats = schemas;
 	}	
+
+	@Override
+	public void findAndSelectClusterObject(String identifier) {
+		Integer schemaID = null;				
+		if(schemaManager != null) {
+			schemaID = schemaManager.findClusterObject(identifier);
+		}		
+		if(schemaID != null) {
+			dendrogram.setSelectedClusterObject(schemaID);
+			craigrogram.setSelectedClusterObject(schemaID);
+			dendrogram.redraw();
+			craigrogram.redraw();
+		}
+	}
 
 	@Override
 	protected boolean processMenuItemSelectedEvent(MenuItem menuItem,
@@ -91,7 +112,7 @@ public class AffinitySchemaController extends BasicAffinityController<Integer, S
 			}
 		}
 		return false;
-	}
+	}	
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	protected void writeToSpreadsheet(String selectedFileName){
@@ -309,6 +330,5 @@ public class AffinitySchemaController extends BasicAffinityController<Integer, S
 			groundTruthOverlap.put(schemaIID, schemaIDtoOverlap);
 		}
 		return groundTruthOverlap;
-	}	
-
+	}
 }

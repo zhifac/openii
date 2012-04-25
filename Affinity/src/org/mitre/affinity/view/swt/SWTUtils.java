@@ -16,97 +16,27 @@
 
 package org.mitre.affinity.view.swt;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.FontData;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Monitor;
 import org.eclipse.swt.widgets.Shell;
 
-//import org.eclipse.jface.resource.FontRegistry;
-
-public class SWTUtils {	
-	public static final String TITLE_FONT = "title";
-	public static final String SUBTITLE_FONT = "subtitle";
-	public static final String BODY_FONT = "body";
-	public static final String BOLD_BODY_FONT = "bold_body";
-	public static final String NOTATE_FONT = "notate";
+/**
+ * @author CBONACETO
+ *
+ */
+public class SWTUtils {		
 	
-	public static enum TextSize {Small, Normal, Large};
+	private SWTUtils() {}	
 	
-	public static final String LARGE_FONT = "large";
-	public static final String LARGE_BOLD_FONT = "large_bold";
-	public static final String NORMAL_FONT = "normal";
-	public static final String NORMAL_BOLD_FONT = "normal_bold";
-	public static final String SMALL_FONT = "small";
-	public static final String SMALL_BOLD_FONT = "small_bold";
-	
-	private static final Map<String, Font> fonts;	
-	static {
-		fonts = new HashMap<String, Font>();
-		fonts.put(TITLE_FONT, new Font(Display.getDefault(), new FontData("Arial", 10, SWT.BOLD)));
-		fonts.put(SUBTITLE_FONT, new Font(Display.getDefault(), new FontData("Arial", 8, SWT.BOLD)));
-		fonts.put(BODY_FONT, new Font(Display.getDefault(), new FontData("Arial", 8, SWT.NORMAL)));
-		fonts.put(BOLD_BODY_FONT, new Font(Display.getDefault(), new FontData("Arial", 8, SWT.BOLD)));
-		fonts.put(NOTATE_FONT, new Font(Display.getDefault(), new FontData("Arial", 7, SWT.BOLD)));
-		
-		fonts.put(SMALL_FONT, new Font(Display.getDefault(), new FontData("Arial", 7, SWT.NORMAL)));
-		fonts.put(SMALL_BOLD_FONT, new Font(Display.getDefault(), new FontData("Arial", 9, SWT.BOLD)));
-		fonts.put(NORMAL_FONT, new Font(Display.getDefault(), new FontData("Arial", 9, SWT.NORMAL)));
-		fonts.put(NORMAL_BOLD_FONT, new Font(Display.getDefault(), new FontData("Arial", 11, SWT.BOLD)));
-		fonts.put(LARGE_FONT, new Font(Display.getDefault(), new FontData("Arial", 11, SWT.NORMAL)));
-		fonts.put(LARGE_BOLD_FONT, new Font(Display.getDefault(), new FontData("Arial", 13, SWT.BOLD)));
-	}
-	
-	private SWTUtils() {}
-	
-	public static Font getFont(String fontType) {
-		return fonts.get(fontType);
-	}
-	
-	public static Label createTitleLabel(Composite parent, int style, String text) {
-		return createLabel(parent, style, text, TITLE_FONT);
-	}
-	
-	public static Label createSubTitleLabel(Composite parent, int style, String text) {
-		return createLabel(parent, style, text, SUBTITLE_FONT);
-	}
-	
-	public static Label createNotateLabel(Composite parent, int style, String text) {
-		return createLabel(parent, style, text, NOTATE_FONT);
-	}
-	
-	public static Label createLabel(Composite parent, int style, String text, String fontType) {
-		Label label = new Label(parent, style);
-		label.setText(text);
-		Font font = fonts.get(fontType);
-		if(font != null)
-			label.setFont(font);
-		label.setBackground(parent.getBackground());
-		return label;
-	}
-	
-	public static Link createLink(Composite parent, int style, String text) {
-		return createLink(parent, style, text, BODY_FONT);
-	}
-	
-	public static Link createLink(Composite parent, int style, String text, String fontType) {
-		Link link = new Link(parent, style);
-		link.setText("<A>" + text + "</A>");
-		Font font = fonts.get(fontType);
-		if(font != null)
-			link.setFont(font);
-		link.setBackground(parent.getBackground());
-		return link;
+	/** Get an AWT color given an SWT color */
+	public static java.awt.Color getAwtColor(Color color) {
+		if(color != null) {
+			return new java.awt.Color(color.getRed(), color.getGreen(), color.getBlue());
+		}
+		return null;
 	}
 	
 	public static void centerShellOnMonitor(Monitor monitor, Shell shell) {
@@ -158,14 +88,5 @@ public class SWTUtils {
 		}
 		
 		return new Point(xPoint, yPoint);
-	}
-
-	@Override
-	protected void finalize() throws Throwable {
-		for(Font font : fonts.values()) {
-			font.dispose();
-		}
-	}
-	
-	
+	}	
 }

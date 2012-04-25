@@ -73,10 +73,7 @@ public class ClusterDistanceSliderPane<K extends Comparable<K>, V> extends JPane
 	 */
 	public ClusterDistanceSliderPane(ClustersContainer<K> clusters, int orientation) {
 		super();
-		
-		//this.minSize = minSize;
-		//this.maxSize = maxSize;
-		this.listeners = new LinkedList<ClusterDistanceChangeListener>();
+		this.listeners = Collections.synchronizedList(new LinkedList<ClusterDistanceChangeListener>());
 				
 		setLayout(new BorderLayout());
 		
@@ -121,12 +118,29 @@ public class ClusterDistanceSliderPane<K extends Comparable<K>, V> extends JPane
 		slider.setClusters(clusters);
 	}
 	
-	public void addClusterDistanceChangeListener(ClusterDistanceChangeListener listener) {
-		this.listeners.add(listener);
+	public synchronized void addClusterDistanceChangeListener(ClusterDistanceChangeListener listener) {
+		if(!listeners.contains(listener)) {
+			listeners.add(listener);
+		}
 	}
 	
-	public boolean removeClusterDistanceChangeListener(ClusterDistanceChangeListener listener) {
-		return this.listeners.remove(listener);
+	public synchronized boolean removeClusterDistanceChangeListener(ClusterDistanceChangeListener listener) {
+		return listeners.remove(listener);
+	}
+	
+	/**
+	 * Notify listeners if slider value changed
+	 */
+	protected synchronized void fireClusterDistanceChangeEvent() {
+		if(listeners != null && !listeners.isEmpty()) {
+			//ClusterDistanceChangeEvent event = new ClusterDistanceChangeEvent((minValue/1000D), (maxValue/1000D));
+			//System.out.println("maxD = " + (maxD) + ", maxValue = " + (maxValue/1000D));
+			ClusterDistanceChangeEvent event = new ClusterDistanceChangeEvent(this, 
+					slider.sliderUI.minD, slider.sliderUI.maxD);
+			for(ClusterDistanceChangeListener listener : listeners) {
+				listener.clusterDistanceChanged(event);
+			}
+		}
 	}
 	
 	public void setClusterDistances(double minDistance, double maxDistance) {
@@ -585,7 +599,7 @@ public class ClusterDistanceSliderPane<K extends Comparable<K>, V> extends JPane
 				if(minValue!=origMinValue || maxValue!=origMaxValue) {
 					this.maxD = maxValue/1000D;
 					this.minD = minValue/1000D;
-					this.fireClusterDistanceChangeEvent();
+					fireClusterDistanceChangeEvent();
 				}
 			}
 	
@@ -646,7 +660,7 @@ public class ClusterDistanceSliderPane<K extends Comparable<K>, V> extends JPane
 					//Notify listeners that a slider value changed
 					this.maxD = clusterTickLocations.get(clusterTickIndex).distance;
 					this.minD = minValue/1000D;
-					this.fireClusterDistanceChangeEvent();
+					fireClusterDistanceChangeEvent();
 				}
 			}
 			
@@ -699,23 +713,9 @@ public class ClusterDistanceSliderPane<K extends Comparable<K>, V> extends JPane
 					//Notify listeners that a slider value changed
 					this.maxD = clusterTickLocations.get(clusterTickIndex).distance;
 					this.minD = minValue/1000D;				
-					this.fireClusterDistanceChangeEvent();
+					fireClusterDistanceChangeEvent();
 				}
-			}
-			
-			/**
-			 * Notify listeners if slider value changed
-			 */
-			protected void fireClusterDistanceChangeEvent() {
-				if(listeners != null && !listeners.isEmpty()) {
-					//ClusterDistanceChangeEvent event = new ClusterDistanceChangeEvent((minValue/1000D), (maxValue/1000D));
-					//System.out.println("maxD = " + (maxD) + ", maxValue = " + (maxValue/1000D));
-					ClusterDistanceChangeEvent event = new ClusterDistanceChangeEvent(minD, maxD);
-					for(ClusterDistanceChangeListener listener : listeners) {
-						listener.clusterDistanceChanged(event);
-					}
-				}
-			}
+			}			
 		}
 	}
 	

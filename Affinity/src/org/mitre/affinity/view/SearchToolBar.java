@@ -24,8 +24,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
-import org.mitre.affinity.model.IClusterObjectManager;
-
+import org.mitre.affinity.controller.IAffinityController;
 
 /**
  * 
@@ -38,24 +37,26 @@ public class SearchToolBar<K extends Comparable<K>, V> extends Composite {
 	
 	private Text searchField;
 	
-	IClusterObjectManager<K, V> clusterObjectManager;
+	private IAffinityController<K, V> controller;	
 	
-	AffinityPane<K, V> affinityPane;	
-	
-	public SearchToolBar(Composite parent, int style, AffinityPane<K, V> ap, 
-			IClusterObjectManager<K, V> clusterObjectManager, String searchTextHint) {
+	public SearchToolBar(Composite parent, int style,
+			IAffinityController<K, V> controller, String searchHint) {
 		super(parent, style);
-		this.clusterObjectManager = clusterObjectManager;
-		this.affinityPane = ap;
-		this.createToolBar(searchTextHint);
+		this.controller = controller;
+		this.createToolBar(searchHint);
 	}
 	
-	protected void createToolBar(String searchTextHint) {
+	protected void createToolBar(String searchHint) {
 		setLayout(new GridLayout(1, true));
 		toolBar = new Composite(this, SWT.NONE);
 		toolBar.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));		
 		GridLayout gl = new GridLayout(12, false);
-		gl.marginHeight = 2;
+		//gl.marginHeight = 2;
+		
+		gl.marginHeight = 0;
+		gl.marginTop = 2;
+		gl.marginBottom = 5;
+		
 		gl.marginWidth = 2;
 		gl.horizontalSpacing = 3;
 		toolBar.setLayout(gl);	
@@ -63,26 +64,34 @@ public class SearchToolBar<K extends Comparable<K>, V> extends Composite {
 		Label label = new Label(toolBar, SWT.CENTER);
 		label.setText("Search:");		
 		this.searchField = new Text(toolBar, SWT.SEARCH);
-		//searchField.setMessage("Schema Name");
-		searchField.setMessage(searchTextHint);
+		searchField.setMessage(searchHint);
 
 		searchField.addSelectionListener(new SelectionAdapter(){
 			public void widgetDefaultSelected(SelectionEvent e){
 				String searchingForClusterObject = searchField.getText();
-
-				K objectID = null;				
+				if(controller != null) {
+					controller.findAndSelectClusterObject(searchingForClusterObject);
+				}				
+				/*K objectID = null;				
 				if(clusterObjectManager != null) {
 					objectID = clusterObjectManager.findClusterObject(searchingForClusterObject);
-				}
-				
-				if(objectID != null){
+				}				
+				if(objectID != null) {
 					affinityPane.getDendrogram().setSelectedClusterObject(objectID);
 					affinityPane.getCraigrogram().setSelectedClusterObject(objectID);
 					affinityPane.getDendrogram().redraw();
 					affinityPane.getCraigrogram().redraw();
-				}
+				}*/
 			}
 		});		
+	}
+	
+	public void setController(IAffinityController<K, V> controller) {
+		this.controller = controller;
+	}
+
+	public void setSearchHint(String searchHint) {
+		searchField.setMessage(searchHint);
 	}
 	
 	public interface ClusterObjectComparator<V> {

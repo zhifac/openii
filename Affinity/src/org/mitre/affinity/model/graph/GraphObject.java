@@ -54,7 +54,12 @@ public class GraphObject {
 	}
 	
 	public String getObjectId() {
-		return getName();
+		if(node != null) {
+			return node.getId();
+		} else if(edge != null) {
+			return edge.getId();
+		}
+		return null;
 	}
 
 	public Object getClusterObject() {

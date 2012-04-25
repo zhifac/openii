@@ -1,6 +1,8 @@
 package org.mitre.affinity.view.dialog;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ShellAdapter;
+import org.eclipse.swt.events.ShellEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Dialog;
@@ -18,23 +20,23 @@ import org.mitre.affinity.view.swt.SWTUtils;
  *
  */
 public class MultiTaskLoadProgressDialog extends Dialog implements IProgressMonitor {
-	
+
 	private ProgressBar overallProgressBar;	
 	private ProgressBar currentTaskProgressBar;
-	
+
 	private Label overallProgressLabel;
 	private Label currentTaskLabel;	
 	private Label currentTaskProgressLabel;	
-	
+
 	private Label errorLabel;
-	
+
 	private Shell shell;
-	
+
 	//private Cursor standardCursor;	
 	//private Cursor waitCursor;
-	
+
 	private MultiTaskProgressMonitor progressMonitor;
-	
+
 	public MultiTaskLoadProgressDialog(Shell parent, int numTasks) {
 		this(parent, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL, numTasks); 
 	}
@@ -45,42 +47,66 @@ public class MultiTaskLoadProgressDialog extends Dialog implements IProgressMoni
 		progressMonitor.setMinimum(0);
 		progressMonitor.setMaximum(100);
 	}
-	
+
 	public boolean isDisposed() {
 		if(shell != null) {
 			return shell.isDisposed();
 		}
 		return true;
 	}
-	
-	public void setCurrentTaskNote(String note) {
-		if(currentTaskLabel != null && !currentTaskLabel.isDisposed()) {
-			currentTaskLabel.setText("Current Task: " + note);
+
+	public void setCurrentTaskNote(final String note) {
+		if(shell != null && !shell.isDisposed()) {
+			shell.getDisplay().asyncExec(new Runnable() {
+				public void run() {
+					if(currentTaskLabel != null && !currentTaskLabel.isDisposed()) {
+						currentTaskLabel.setText("Current Task: " + note);		
+					}
+				}
+			});
 		}
 	}
 
 	@Override
-	public void setNote(String note) {
-		if(currentTaskProgressLabel != null && !currentTaskProgressLabel.isDisposed()) {
-			currentTaskProgressLabel.setText(note);
+	public void setNote(final String note) {
+		if(shell != null && !shell.isDisposed()) {
+			shell.getDisplay().asyncExec(new Runnable() {
+				public void run() {
+					if(currentTaskProgressLabel != null && !currentTaskProgressLabel.isDisposed()) {
+						currentTaskProgressLabel.setText(note);
+					}
+				}
+			});		
 		}
 	}
 
 	@Override
-	public void setErrorNote(String errorNote) {
-		if(errorLabel != null && !errorLabel.isDisposed()) {
-			errorLabel.setText(errorNote);
+	public void setErrorNote(final String errorNote) {			
+		if(shell != null && !shell.isDisposed()) {
+			shell.getDisplay().asyncExec(new Runnable() {
+				public void run() {
+					if(errorLabel != null && !errorLabel.isDisposed()) {
+						errorLabel.setText(errorNote);
+					}
+				}
+			});	
 		}
 	}
-	
+
 	public int getOverallProgressMinimum() {
 		return progressMonitor.getMinimum();
 	}
-	
-	public void setOverallProgressMinimum(int minimum) {
+
+	public void setOverallProgressMinimum(final int minimum) {
 		progressMonitor.setMinimum(minimum);
-		if(overallProgressBar != null && !overallProgressBar.isDisposed()) {
-			overallProgressBar.setMinimum(minimum);
+		if(shell != null && !shell.isDisposed()) {
+			shell.getDisplay().asyncExec(new Runnable() {
+				public void run() {
+					if(overallProgressBar != null && !overallProgressBar.isDisposed()) {
+						overallProgressBar.setMinimum(minimum);
+					}
+				}
+			});
 		}
 	}
 
@@ -93,20 +119,32 @@ public class MultiTaskLoadProgressDialog extends Dialog implements IProgressMoni
 	}
 
 	@Override
-	public void setMinimum(int minimum) {
-		if(currentTaskProgressBar != null && !currentTaskProgressBar.isDisposed()) {
-			currentTaskProgressBar.setMinimum(minimum);
+	public void setMinimum(final int minimum) {
+		if(shell != null && !shell.isDisposed()) {
+			shell.getDisplay().asyncExec(new Runnable() {
+				public void run() {
+					if(currentTaskProgressBar != null && !currentTaskProgressBar.isDisposed()) {
+						currentTaskProgressBar.setMinimum(minimum);
+					}
+				}
+			});
 		}
 	}
-	
+
 	public int getOverallProgressMaximum() {
 		return progressMonitor.getMaximum();
 	}
-	
-	public void setOverallProgressMaximum(int maximum) {
+
+	public void setOverallProgressMaximum(final int maximum) {			
 		progressMonitor.setMaximum(maximum);
-		if(overallProgressBar != null && !overallProgressBar.isDisposed()) {
-			overallProgressBar.setMaximum(maximum);
+		if(shell != null && !shell.isDisposed()) {
+			shell.getDisplay().asyncExec(new Runnable() {
+				public void run() {
+					if(overallProgressBar != null && !overallProgressBar.isDisposed()) {
+						overallProgressBar.setMaximum(maximum);
+					}
+				}
+			});
 		}
 	}
 
@@ -119,12 +157,18 @@ public class MultiTaskLoadProgressDialog extends Dialog implements IProgressMoni
 	}
 
 	@Override
-	public void setMaximum(int maximum) {
-		if(currentTaskProgressBar != null && !currentTaskProgressBar.isDisposed()) {
-			currentTaskProgressBar.setMaximum(maximum);
+	public void setMaximum(final int maximum) {
+		if(shell != null && !shell.isDisposed()) {
+			shell.getDisplay().asyncExec(new Runnable() {
+				public void run() {
+					if(currentTaskProgressBar != null && !currentTaskProgressBar.isDisposed()) {
+						currentTaskProgressBar.setMaximum(maximum);
+					}
+				}
+			});
 		}
 	}
-	
+
 	public int getNumTasks() {
 		return progressMonitor.getNumTasks();
 	}
@@ -132,34 +176,44 @@ public class MultiTaskLoadProgressDialog extends Dialog implements IProgressMoni
 	public int getNumTasksComplete() {
 		return progressMonitor.getNumTasksComplete();
 	}
-	
+
 	public void setNumTasksComplete(int numTasksComplete) {
 		progressMonitor.setNumTasksComplete(numTasksComplete);
-		
-		//Update overall progress bar
-		updateOverallProgress();
+		if(shell != null && !shell.isDisposed()) {
+			shell.getDisplay().asyncExec(new Runnable() {
+				public void run() {
+					//Update overall progress bar
+					updateOverallProgress();
+				}
+			});
+		}
 	}
 
 	@Override
-	public void setProgress(int progress) {
+	public void setProgress(final int progress) {
 		progressMonitor.setProgress(progress);
-		
-		//Udpate current task progress bar
-		if(currentTaskProgressBar != null && !currentTaskProgressBar.isDisposed()) {
-			currentTaskProgressBar.setSelection(progress);
+		if(shell != null && !shell.isDisposed()) {
+			shell.getDisplay().asyncExec(new Runnable() {
+				public void run() {
+					//Update current task progress bar
+					if(currentTaskProgressBar != null && !currentTaskProgressBar.isDisposed()) {
+						currentTaskProgressBar.setSelection(progress);
+					}
+
+					//Update overall progress bar
+					updateOverallProgress();
+				}
+			});
 		}
-		
-		//Update overall progress bar
-		updateOverallProgress();		
 	}
-	
+
 	protected void updateOverallProgress() {
 		if(overallProgressBar != null && !overallProgressBar.isDisposed()) {
 			int progress = progressMonitor.getProgress();
 			overallProgressBar.setSelection(progress);
 			int progressPercent = 
 					(int)(((float)(progress + progressMonitor.getMinimum())/
-					(progressMonitor.getMaximum()-progressMonitor.getMinimum()) * 100f));
+							(progressMonitor.getMaximum()-progressMonitor.getMinimum()) * 100f));
 			//System.out.println(progressPercent);
 			overallProgressLabel.setText("Overall Progress: " + progressPercent + "%");
 			/*if(progress >= overallProgressBar.getMaximum() && shell.getCursor() != standardCursor) {
@@ -170,7 +224,7 @@ public class MultiTaskLoadProgressDialog extends Dialog implements IProgressMoni
 			}*/
 		}	
 	}
-	
+
 	public int getOverallProgress() {
 		return progressMonitor.getProgress();
 	}
@@ -190,9 +244,9 @@ public class MultiTaskLoadProgressDialog extends Dialog implements IProgressMoni
 
 	@Override
 	public void cancel() {
-		progressMonitor.cancel();
+		close();
 	}	
-	
+
 	public Shell getShell() {
 		return shell;
 	}
@@ -205,9 +259,9 @@ public class MultiTaskLoadProgressDialog extends Dialog implements IProgressMoni
 		//standardCursor = shell.getCursor();
 		//waitCursor = shell.getDisplay().getSystemCursor(SWT.CURSOR_APPSTARTING);
 		//shell.setCursor(waitCursor);
-		
+
 		new Label(shell, SWT.LEFT).setText("Please wait...");
-		
+
 		//Create overall progress label and progress bar
 		overallProgressLabel = new Label(shell, SWT.LEFT);
 		overallProgressLabel.setText("Overall Progress: 0%");
@@ -216,7 +270,7 @@ public class MultiTaskLoadProgressDialog extends Dialog implements IProgressMoni
 		overallProgressBar.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		overallProgressBar.setMinimum(0);
 		overallProgressBar.setMaximum(100);		
-		
+
 		//Create current task progress label, progress bar, and label showing the current task progress note
 		new Label(shell, SWT.LEFT);
 		currentTaskLabel = new Label(shell, SWT.LEFT);
@@ -230,28 +284,42 @@ public class MultiTaskLoadProgressDialog extends Dialog implements IProgressMoni
 		errorLabel = new Label(shell, SWT.LEFT);
 		errorLabel.setForeground(shell.getDisplay().getSystemColor(SWT.COLOR_RED));
 		errorLabel.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-		
+
 		shell.pack();
 		shell.setMinimumSize(300, shell.getSize().y);
 		SWTUtils.centerShellOnShell(shell, parent);
+		shell.addShellListener(new ShellAdapter() {
+			@Override
+			public void shellClosed(ShellEvent e) {
+				progressMonitor.cancel();
+			}
+			
+		});
 		shell.open();		
 	}
-	
+
 	public void close() {
-		if(!shell.isDisposed()) {
-			shell.close();
+		progressMonitor.cancel();		
+		if(shell != null && !shell.isDisposed()) {
+			shell.getDisplay().asyncExec(new Runnable() {
+				public void run() {
+					if(!shell.isDisposed()) {
+						shell.close();
+					}
+				}
+			});
 		}
 	}
-	
+
 	/** Test main */
 	public static void main(String[] args) {
 		Display display = new Display();
 		Shell shell = new Shell(display);
 		//shell.open();
-		
+
 		MultiTaskLoadProgressDialog dlg = new MultiTaskLoadProgressDialog(shell, 2);
 		dlg.open();
-		
+
 		for(int i = 0; i < 2; i++) {
 			if(i ==0) {
 				dlg.setCurrentTaskNote("Computing Clusters");
@@ -275,7 +343,7 @@ public class MultiTaskLoadProgressDialog extends Dialog implements IProgressMoni
 			dlg.setNumTasksComplete(i+1);
 			dlg.setNote("");
 		}
-		
+
 		while(!dlg.getShell().isDisposed()){
 			if(!display.readAndDispatch()){
 				display.sleep();

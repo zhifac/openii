@@ -17,6 +17,8 @@
 package org.mitre.affinity.view.dialog;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ShellAdapter;
+import org.eclipse.swt.events.ShellEvent;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -32,39 +34,52 @@ import org.mitre.affinity.view.swt.SWTUtils;
  *
  */
 public class LoadProgressDialog extends Dialog implements IProgressMonitor {	
-	
+
 	private ProgressBar progressBar;
-	
+
 	private Label progressLabel;
-	
+
 	private Label errorLabel;
-	
+
 	private Shell shell;
-	
+
 	private Cursor standardCursor;	
 	private Cursor waitCursor;
-	
+
 	private boolean cancelled;
 
 	public LoadProgressDialog(Shell parent) {
 		this(parent, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL); 
+
 	}
 
 	public LoadProgressDialog(Shell parent, int style) {
 		super(parent, style);
 	}
-	
+
 	@Override
-	public void setNote(String note) {
-		if(progressLabel != null && !progressLabel.isDisposed()) {
-			progressLabel.setText(note);
+	public void setNote(final String note) {
+		if(shell != null && !shell.isDisposed()) {
+			shell.getDisplay().asyncExec(new Runnable() {
+				public void run() {
+					if(progressLabel != null && !progressLabel.isDisposed()) {
+						progressLabel.setText(note);		
+					}
+				}
+			});
 		}
 	}
 
 	@Override
-	public void setErrorNote(String errorNote) {
-		if(errorLabel != null && !errorLabel.isDisposed()) {
-			errorLabel.setText(errorNote);
+	public void setErrorNote(final String errorNote) {
+		if(shell != null && !shell.isDisposed()) {
+			shell.getDisplay().asyncExec(new Runnable() {
+				public void run() {
+					if(errorLabel != null && !errorLabel.isDisposed()) {
+						errorLabel.setText(errorNote);		
+					}
+				}
+			});	
 		}
 	}
 
@@ -77,9 +92,15 @@ public class LoadProgressDialog extends Dialog implements IProgressMonitor {
 	}
 
 	@Override
-	public void setMinimum(int minimum) {
-		if(progressBar != null && !progressBar.isDisposed()) {
-			progressBar.setMinimum(minimum);
+	public void setMinimum(final int minimum) {
+		if(shell != null && !shell.isDisposed()) {
+			shell.getDisplay().asyncExec(new Runnable() {
+				public void run() {
+					if(progressBar != null && !progressBar.isDisposed()) {
+						progressBar.setMinimum(minimum);
+					}
+				}
+			});
 		}
 	}
 
@@ -92,25 +113,37 @@ public class LoadProgressDialog extends Dialog implements IProgressMonitor {
 	}
 
 	@Override
-	public void setMaximum(int maximum) {
-		if(progressBar != null && !progressBar.isDisposed()) {
-			progressBar.setMaximum(maximum);
+	public void setMaximum(final int maximum) {
+		if(shell != null && !shell.isDisposed()) {
+			shell.getDisplay().asyncExec(new Runnable() {
+				public void run() {
+					if(progressBar != null && !progressBar.isDisposed()) {
+						progressBar.setMaximum(maximum);
+					}
+				}
+			});
 		}
 	}
 
 	@Override
-	public void setProgress(int progress) {
-		if(progressBar != null && !progressBar.isDisposed()) {
-			progressBar.setSelection(progress);
-			if(progress >= progressBar.getMaximum() && shell.getCursor() != standardCursor) {
-				shell.setCursor(standardCursor);
-			}
-			else if(shell.getCursor() != waitCursor) {
-				shell.setCursor(waitCursor);
-			}
+	public void setProgress(final int progress) {
+		if(shell != null && !shell.isDisposed()) {
+			shell.getDisplay().asyncExec(new Runnable() {
+				public void run() {
+					if(progressBar != null && !progressBar.isDisposed()) {
+						progressBar.setSelection(progress);
+						if(progress >= progressBar.getMaximum() && shell.getCursor() != standardCursor) {
+							shell.setCursor(standardCursor);
+						}
+						else if(shell.getCursor() != waitCursor) {
+							shell.setCursor(waitCursor);
+						}
+					}
+				}
+			});
 		}
 	}
-	
+
 	@Override
 	public int getProgress() {
 		if(progressBar != null && !progressBar.isDisposed()) {
@@ -126,14 +159,15 @@ public class LoadProgressDialog extends Dialog implements IProgressMonitor {
 
 	@Override
 	public void cancel() {
-		cancelled = true;
+		close();
 	}	
-	
+
 	public Shell getShell() {
 		return shell;
 	}
 
 	public void open() {
+		cancelled = false;
 		Shell parent = getParent();
 		shell = new Shell(parent, getStyle());
 		shell.setText(getText());
@@ -141,7 +175,7 @@ public class LoadProgressDialog extends Dialog implements IProgressMonitor {
 		this.standardCursor = shell.getCursor();
 		this.waitCursor = shell.getDisplay().getSystemCursor(SWT.CURSOR_APPSTARTING);
 		shell.setCursor(waitCursor);
-		
+
 		new Label(shell, SWT.LEFT).setText("Please wait...");
 		this.progressBar = new ProgressBar(shell, SWT.SMOOTH | SWT.HORIZONTAL);
 		progressBar.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
@@ -152,19 +186,33 @@ public class LoadProgressDialog extends Dialog implements IProgressMonitor {
 		this.errorLabel = new Label(shell, SWT.LEFT);
 		errorLabel.setForeground(shell.getDisplay().getSystemColor(SWT.COLOR_RED));
 		errorLabel.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-		
+
 		shell.pack();
 		shell.setMinimumSize(300, shell.getSize().y);
 		SWTUtils.centerShellOnShell(shell, parent);
+		shell.addShellListener(new ShellAdapter() {
+			@Override
+			public void shellClosed(ShellEvent e) {
+				cancelled = true;
+			}
+			
+		});
 		shell.open();		
 	}
-	
+
 	public void close() {
-		if(!shell.isDisposed()) {
-			shell.close();
+		cancelled = true;
+		if(shell != null && !shell.isDisposed()) {
+			shell.getDisplay().asyncExec(new Runnable() {
+				public void run() {
+					if(!shell.isDisposed()) {
+						shell.close();
+					}
+				}
+			});
 		}
 	}	
-	
+
 	/*public void setProgressText(String text) {	
 	if(progressLabel != null && !progressLabel.isDisposed())
 		this.progressLabel.setText(text);
