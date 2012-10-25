@@ -85,7 +85,7 @@ public class TableView  {
     private Double greenAt = 0.7; //should be defined in color selector
     private Double yellowAt = 0.7; //should be defined in color selector
     
-	private Color gray;
+//	private Color gray;
 	private Color darkgray;
 	private Color lightBlue;
 	private Color yellow;
@@ -100,7 +100,7 @@ public class TableView  {
 
 	public TableView(UnityCanvas unity) {
 		unityCanvas = unity;
-		gray =  unityCanvas.getDisplay().getSystemColor(SWT.COLOR_GRAY);
+//		gray =  unityCanvas.getDisplay().getSystemColor(SWT.COLOR_GRAY);
 		darkgray =  unityCanvas.getDisplay().getSystemColor(SWT.COLOR_DARK_GRAY);
 		lightBlue = new Color(unity.getDisplay(), 225, 225, 255);
 		yellow = unityCanvas.getDisplay().getSystemColor(SWT.COLOR_YELLOW); 

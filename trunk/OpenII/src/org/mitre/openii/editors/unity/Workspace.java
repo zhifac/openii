@@ -70,7 +70,7 @@ public class Workspace  {
 
 	private Combo colorSelector;
     private Button colorsettings;
-	private Color gray;
+//	private Color gray;
 	private Color green;
 	private Color red;
 	private Color lightBlue;
@@ -94,7 +94,7 @@ public class Workspace  {
 
 	public Workspace(UnityCanvas unity) {
 		unityCanvas = unity;
-		gray = unityCanvas.getDisplay().getSystemColor(SWT.COLOR_GRAY);
+//		gray = unityCanvas.getDisplay().getSystemColor(SWT.COLOR_GRAY);
 		green = unityCanvas.getDisplay().getSystemColor(SWT.COLOR_GREEN);
 		red =  unityCanvas.getDisplay().getSystemColor(SWT.COLOR_RED);
 		lightBlue = new Color(unityCanvas.getDisplay(), 225, 225, 255);

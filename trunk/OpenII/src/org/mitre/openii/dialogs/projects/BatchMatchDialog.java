@@ -49,7 +49,7 @@ import org.mitre.schemastore.model.ProjectSchema;
 
 public class BatchMatchDialog extends TitleAreaDialog implements SelectionListener {
 
-	private static final long serialVersionUID = 5519403988358398471L;
+//	private static final long serialVersionUID = 5519403988358398471L;
 
 	private Project project;
 	private HashMap<String, Pair<ProjectSchema>> mappingHash = new HashMap<String, Pair<ProjectSchema>>();
