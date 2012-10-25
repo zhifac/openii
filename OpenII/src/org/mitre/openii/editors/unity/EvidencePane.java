@@ -156,7 +156,7 @@ public class EvidencePane  {
 
 		AssociatedElement[][] allElements = new AssociatedElement[unityCanvas.getSchemaIDs().length][];
 		ArrayList<AssociatedElement> assElements = new ArrayList<AssociatedElement>();
-		int elementCount = 0;
+//		int elementCount = 0;
 		TableItem showMeR = null;
 		TableColumn showMeC = null;
 		//int first = -1;
@@ -167,7 +167,7 @@ public class EvidencePane  {
 			for(int i = 0; i < allElements[j].length; i++) {
 				assElements.add(allElements[j][i]);				
 			}
-			elementCount += allElements[j].length;
+//			elementCount += allElements[j].length;
 		//	if(allElements[j].length > 0 && first < 0) { first = j;}
 		}
 		//if(elementCount < 2) {return;}

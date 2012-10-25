@@ -18,13 +18,9 @@ package org.mitre.openii.editors.unity;
 
 import java.util.ArrayList;
 
-import org.apache.commons.lang.WordUtils;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
-import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
@@ -34,23 +30,17 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
-import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.TableColumn;
-import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.mitre.openii.application.OpenIIActivator;
-import org.mitre.openii.model.OpenIIManager;
-import org.mitre.schemastore.model.Mapping;
-import org.mitre.schemastore.model.MappingCell;
 import org.mitre.schemastore.model.terms.AssociatedElement;
 import org.mitre.schemastore.model.terms.Term;
 
 
 public class CloseMatchPane  {
 
-	private Color red;
-	private Color yellow;
-	private Color green;
+//	private Color red;
+//	private Color yellow;
+//	private Color green;
 	
     private UnityCanvas unityCanvas;
     private Label synsetLabel2;
@@ -66,9 +56,9 @@ public class CloseMatchPane  {
 
 	public CloseMatchPane(UnityCanvas unity) {
 		unityCanvas = unity;
-		red =  unityCanvas.getDisplay().getSystemColor(SWT.COLOR_RED);
-		yellow =  unityCanvas.getDisplay().getSystemColor(SWT.COLOR_YELLOW);
-		green =  unityCanvas.getDisplay().getSystemColor(SWT.COLOR_GREEN);
+//		red =  unityCanvas.getDisplay().getSystemColor(SWT.COLOR_RED);
+//		yellow =  unityCanvas.getDisplay().getSystemColor(SWT.COLOR_YELLOW);
+//		green =  unityCanvas.getDisplay().getSystemColor(SWT.COLOR_GREEN);
 
 	}
 	
@@ -182,9 +172,9 @@ public class CloseMatchPane  {
 
 		AssociatedElement[][] allElements = new AssociatedElement[unityCanvas.getSchemaIDs().length][];
 		ArrayList<AssociatedElement> assElements = new ArrayList<AssociatedElement>();
-		int elementCount = 0;
-		TableItem showMeR = null;
-		TableColumn showMeC = null;
+//		int elementCount = 0;
+//		TableItem showMeR = null;
+//		TableColumn showMeC = null;
 		                  
 		//loop through once to get all terms
 		for(int j = 0; j < unityCanvas.getSchemaIDs().length; j++){			
@@ -192,7 +182,7 @@ public class CloseMatchPane  {
 			for(int i = 0; i < allElements[j].length; i++) {
 				assElements.add(allElements[j][i]);				
 			}
-			elementCount += allElements[j].length;
+//			elementCount += allElements[j].length;
 		//	if(allElements[j].length > 0 && first < 0) { first = j;}
 		}
 		//if(elementCount < 2) {return;}

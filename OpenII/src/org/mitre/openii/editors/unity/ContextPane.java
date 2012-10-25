@@ -152,13 +152,13 @@ public class ContextPane  {
 		contextSID = synsetID;
 
 		AssociatedElement[][] allElements = new AssociatedElement[unityCanvas.getSchemaIDs().length][];
-		int elementCount = 0;
+//		int elementCount = 0;
 		Composite showMeR = null;
 		                  
 		//loop through once to get all terms
 		for(int j = 0; j < unityCanvas.getSchemaIDs().length; j++){			
 			allElements[j] = term.getAssociatedElements(unityCanvas.getSchemas()[j].getId()); 
-			elementCount += allElements[j].length;
+//			elementCount += allElements[j].length;
 		}
 
 		GridData gridData = new GridData();

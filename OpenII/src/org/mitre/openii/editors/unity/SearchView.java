@@ -24,12 +24,12 @@ import org.eclipse.swt.widgets.Label;
 
 public class SearchView  {
 
-    private UnityCanvas unityCanvas;
+//    private UnityCanvas unityCanvas;
 
 
 
 	public SearchView(UnityCanvas unity) {
-		unityCanvas = unity;
+//		unityCanvas = unity;
 	}
 	
 	public void createSearchView(Composite parent) {
