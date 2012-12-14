@@ -166,7 +166,7 @@ public class EditRepositoryDialog extends TitleAreaDialog implements ActionListe
 				boolean local = repository.getType().equals(Repository.DERBY);
 				optionsPanel.setOption(DATABASE);
 				databaseType.setOption(local?LOCAL:REMOTE);
-				databaseURI.setMode(local ? URIField.DIRECTORY : URIField.URI);
+				databaseURI.setMode(local ? URIField.DIRECTORY : URIField.HOSTNAME);
 				databaseURI.getTextField().setText(uri);
 				databaseName.setText(repository.getDatabaseName());
 				databaseUser.setText(repository.getDatabaseUser());
@@ -190,7 +190,7 @@ public class EditRepositoryDialog extends TitleAreaDialog implements ActionListe
 	
 	/** Monitors changes to the radio field to know when to change the connection fields */
 	public void widgetSelected(SelectionEvent e)
-		{ databaseURI.setMode(databaseType.getOption().equals(LOCAL) ? URIField.DIRECTORY : URIField.URI); }
+		{ databaseURI.setMode(databaseType.getOption().equals(LOCAL) ? URIField.DIRECTORY : URIField.HOSTNAME); }
 
 	/** Validates the fields in order to activate the OK button */
 	private void validateFields()

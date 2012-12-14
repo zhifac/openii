@@ -27,6 +27,7 @@ public class URIField implements ModifyListener, SelectionListener
 	static public final Integer FILE = 0;
 	static public final Integer DIRECTORY = 1;
 	static public final Integer URI = 2;
+	static public final Integer HOSTNAME = 3;
 	
 	// Stores the various composite fields
 	private Label uriLabel = null;
@@ -95,7 +96,7 @@ public class URIField implements ModifyListener, SelectionListener
 		this.mode=mode;
 		
 		// Update the URI field mode
-		uriLabel.setText(mode==URI ? "URI: " : mode==FILE ? "File: " : "Directory: ");
+		uriLabel.setText(mode==HOSTNAME ? "Hostname: " : mode==URI ? "URI: " : mode==FILE ? "File: " : "Directory: ");
 		uriField.setText("");
 		checkURIValidity();
 
