@@ -6,9 +6,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URISyntaxException;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 
+import org.mitre.schemastore.client.Repository;
+import org.mitre.schemastore.client.SchemaStoreClient;
 import org.mitre.schemastore.model.Attribute;
 import org.mitre.schemastore.model.Domain;
 import org.mitre.schemastore.model.Entity;
@@ -55,7 +60,35 @@ public class OWLImporter extends SchemaImporter implements RDFErrorHandler {
 																					// domain,
 																					// ygg
 																					// domain>
-
+	/** testing main **/ 
+	public static void main(String[] args) throws URISyntaxException, ImporterException{
+		OWLImporter owlImporter = new OWLImporter();
+		String basePath = "file:/Users/mgreer/Downloads/";
+		String filePath = basePath + "SA-TT_Ontology_20130814.owl";
+        Repository repository = null;
+		try {
+			repository = new Repository(Repository.DERBY,new URI("C:/Temp/"),"schemastore","postgres","postgres");
+		} catch (URISyntaxException e2) {
+			e2.printStackTrace();
+		}		
+		try {
+			owlImporter.client = new SchemaStoreClient(repository);
+		} catch (RemoteException e1) {
+			e1.printStackTrace();
+		}
+			
+		// Initialize the importer
+		owlImporter.uri = new URI(filePath);
+		//xsdImporter.uri = new URI("C:/tempSchemas/niem-2.1/niem/domains/maritime/2.1/maritime.xsd");
+		owlImporter.initialize();
+		Collection<SchemaElement> elems = owlImporter.generateSchemaElements();
+		for (SchemaElement elem : elems)
+		{
+			System.out.println(elem);
+		}
+		
+	}
+	
 	/** Returns the importer name */
 	public String getName() {
 		return "OWL Importer";
@@ -270,6 +303,9 @@ public class OWLImporter extends SchemaImporter implements RDFErrorHandler {
 	// converts a data property range to domain.
 	private Domain convertRangeToDomain(OntProperty dataProp) {
 		OntResource propType = dataProp.getRange();
+		if (propType == null || propType.getLocalName() == null) {
+			return _domainList.get(ANY.toLowerCase());
+		}
 		Domain domain = _domainList.get(propType.getLocalName().toLowerCase());
 		if (domain == null) domain = _domainList.get(ANY.toLowerCase());
 		return domain;
