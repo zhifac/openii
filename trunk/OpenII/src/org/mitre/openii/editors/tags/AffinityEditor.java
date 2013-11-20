@@ -128,7 +128,7 @@ public class AffinityEditor extends OpenIIEditor implements SelectionClickedList
 				{ EditorManager.launchEditor("AffinityEditor", selectedSchemas); }
 		
 			// Launches Proximity with the selected schemas
-			if(type==AffinityEventType.LAUNCH_PROXIMITY)
+			if(type==AffinityEventType.LAUNCH_PROXIMITY && e.widget instanceof MenuItem)
 			{
 				// Generate the list of schemas to launch in Proximity
 				final ArrayList<FilteredSchemaInfo> schemas = new ArrayList<FilteredSchemaInfo>();
@@ -141,6 +141,9 @@ public class AffinityEditor extends OpenIIEditor implements SelectionClickedList
 				}
 				
 				// Launch Proximity
+
+
+
 				final String referenceSchema = ((MenuItem)e.widget).getText();				
 				
 				
