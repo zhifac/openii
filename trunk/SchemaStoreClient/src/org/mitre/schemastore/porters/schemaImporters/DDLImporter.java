@@ -73,7 +73,8 @@ public class DDLImporter extends SchemaImporter {
 	}
 
 	public static void main(String[] args) throws Exception {
-		File ddlFile = new File(args[0]);
+//		File ddlFile = new File(args[0]);
+		File ddlFile = new File("C:\\Users\\mgreer\\share\\My Documents\\CRS_PROD_schema_export.sql");
 		DDLImporter tester = new DDLImporter();
 		Repository repository = new Repository(Repository.DERBY,new URI("/home/plockaby"),"schemastore","postgres","postgres");
 		SchemaStoreClient client = new SchemaStoreClient(repository);

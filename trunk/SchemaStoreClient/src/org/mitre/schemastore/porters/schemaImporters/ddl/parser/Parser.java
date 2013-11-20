@@ -209,6 +209,7 @@ public class Parser {
 		String[] keywords = new String[]{"create","global","temporary","table","view","if","not","exists",
 										 "constraint","references","primary","foreign","key","comment",
 										 "unique","check","on","update","cascade"};
+
 		ArrayList<TokenDetail> tokens = Parser.parseForKeywords(command, Arrays.asList(keywords), true);
 
 		// go through our list of tokens and find the ones that are relevant to what we're doing
@@ -237,6 +238,8 @@ public class Parser {
 			// if we run into the "TABLE" token, then the next thing we are going to look for is the name of the table
 			if(nextToken == TOKEN_TABLE)
 			{
+				if (currentToken.getType() == Token.NORMAL && (currentToken.getValue().equalsIgnoreCase("database") ||
+						currentToken.getValue().equalsIgnoreCase("type"))) return;
 				if(currentToken.getType() == Token.KEYWORD)
 				{
 					if(currentToken.getValue().equals("TABLE")) nextToken = TOKEN_NAME;
@@ -275,6 +278,9 @@ public class Parser {
 
 
 				tableName = Parser.cleanString(Parser.removeSchema(Parser.removeQuotes(tableNameBuffer.toString())));
+				if (tableName.contains("NAS_SECTOR")) {
+					System.out.println("Get set");
+				}
 				if (tableName == null) { throw new Exception("Could not find the name of the table."); }
 
 				nextToken = TOKEN_COLUMNS_AND_CONSTRAINTS;
@@ -529,6 +535,7 @@ public class Parser {
 		final int TOKEN_ADD = 1;
 		final int TOKEN_OBJECT_TYPE = 2;
 		final int TOKEN_COLUMNS_AND_CONSTRAINTS = 3;
+		
 
 		// store information about what we've parsed
 		ArrayList<TokenDetail> currentColumnAndConstraintTokens = new ArrayList<TokenDetail>();
@@ -978,7 +985,6 @@ public class Parser {
 				if (currentToken.getValue().equals("UNIQUE")) {
 					currentlyProcessing = 0;
 				}
-
 				// these are what we're interested in
 				if (currentToken.getValue().equals("CONSTRAINT")) { currentlyProcessing = PROCESSING_CONSTRAINT; }
 				if (currentToken.getValue().equals("PRIMARY"))    { currentlyProcessing = PROCESSING_PRIMARY_KEY; }
@@ -1006,6 +1012,7 @@ public class Parser {
 				case PROCESSING_COMMENTS:
 					commentTokens.add(currentToken);
 					break;
+
 			}
 		}
 
@@ -1040,7 +1047,7 @@ public class Parser {
 
 				// Retrieve the column type
 				if (nextToken == T_COLUMN_TYPE)
-					if (currentToken.getType() == Token.NORMAL)
+					if (currentToken.getType() == Token.NORMAL || currentToken.getType() == Token.STRING)
 					{
 						columnType = Parser.cleanString(Parser.removeQuotes(currentToken.getValue()));
 						nextToken = T_COLUMN_NOT_NULL;
@@ -1132,6 +1139,7 @@ public class Parser {
 
 			elements.add(new PrimaryKey(constraintName, tableName, primaryKeyColumns));
 		}
+		
 
 		// look for any foreign key source information
 		if (foreignKeySourceTokens.size() >= 2) {
