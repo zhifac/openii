@@ -34,7 +34,10 @@ import com.hp.hpl.jena.ontology.Profile;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.RDFErrorHandler;
 import com.hp.hpl.jena.rdf.model.RDFReader;
+import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
+import com.hp.hpl.jena.vocabulary.DC;
 
 /**
  * Imports an OWL into the Yggdrasil repository
@@ -218,8 +221,15 @@ public class OWLImporter extends SchemaImporter implements RDFErrorHandler {
 			while (containerClsItr.hasNext()) {
 				OntClass containerCls = (OntClass) containerClsItr.next();
 				Entity entity = _entityList.get(containerCls.getLocalName());
+				Statement description = dataProp.getProperty(DC.description);
 				String comment = dataProp.getComment(null);
-				if (comment == null) comment = "";
+				
+				if (description == null){
+					if (comment==null) comment= "";
+				}
+				else{
+					comment = description.getString();
+				}
 
 				if (entity != null) {
 					Attribute attribute = new Attribute(nextId(), dataProp.getLocalName(), comment, entity.getId(), domain.getId(), null, null, false, 0);
@@ -291,7 +301,13 @@ public class OWLImporter extends SchemaImporter implements RDFErrorHandler {
 			OntClass ontClass = (OntClass) classes.next();
 			if (ontClass.getLocalName() == null) continue;
 			String comment = ontClass.getComment(null);
-			if (comment == null) comment = "";
+			Statement desc = ontClass.getProperty(DC.description);
+			if ( desc == null) {
+				if (comment == null) {
+					comment = "";
+				}
+			}
+			else comment = desc.getString();
 
 			Entity entity = new Entity(nextId(), ontClass.getLocalName(), comment, 0);
 			_entityList.put(entity.getName(), entity);

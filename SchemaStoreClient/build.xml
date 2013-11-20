@@ -33,6 +33,10 @@
 	    		<path path="lib/commons-lang-2.5.jar"/>
 	    		<path path="lib/jackcess-1.2.1.jar"/>
 	    		<path path="lib/opencsv-2.2.jar"/>
+	    		<path path="lib/avro-1.7.4.jar"/>
+	    		<path path="lib/avro-tools-1.7.4.jar"/>
+	    		<path path="lib/jackson-core-asl-1.9.13.jar"/>
+	    		<path path="lib/jackson-mapper-asl-1.9.13.jar"/>
             </classpath>
         </javac>
     </target>
@@ -78,6 +82,10 @@
             <fatjar.jarsource file="lib/commons-lang-2.5.jar" relpath=""/>
             <fatjar.jarsource file="lib/jackcess-1.2.1.jar" relpath=""/>
             <fatjar.jarsource file="lib/opencsv-2.2.jar" relpath=""/>
+        	<fatjar.jarsource file="lib/avro-1.7.4.jar" relpath=""/>
+        	<fatjar.jarsource file="lib/avro-tools-1.7.4.jar" relpath=""/>
+        	<fatjar.jarsource file="lib/jackson-core-asl-1.9.13.jar" relpath=""/>
+        	<fatjar.jarsource file="lib/jackson-mapper-asl-1.9.13.jar" relpath=""/>
         </fatjar.build>
     </target>
 

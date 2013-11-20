@@ -25,5 +25,10 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/javax.wsdl_1.6.2.v201012040545.jar"/>
 	<classpathentry kind="lib" path="lib/org.apache.commons.logging_1.0.4.v201101211617.jar"/>
+	<classpathentry kind="lib" path="C:/Users/mgreer/Documents/NetBeansProjects/AvroTest/lib/avro-1.7.4.jar" sourcepath="C:/Users/mgreer/Downloads/avro-1.7.4-sources.jar"/>
+	<classpathentry kind="lib" path="C:/Users/mgreer/Documents/NetBeansProjects/AvroTest/lib/avro-1.7.4-javadoc.jar"/>
+	<classpathentry kind="lib" path="C:/Users/mgreer/Documents/NetBeansProjects/AvroTest/lib/avro-tools-1.7.4.jar"/>
+	<classpathentry kind="lib" path="C:/Users/mgreer/Documents/NetBeansProjects/AvroTest/lib/jackson-core-asl-1.9.13.jar"/>
+	<classpathentry kind="lib" path="C:/Users/mgreer/Documents/NetBeansProjects/AvroTest/lib/jackson-mapper-asl-1.9.13.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

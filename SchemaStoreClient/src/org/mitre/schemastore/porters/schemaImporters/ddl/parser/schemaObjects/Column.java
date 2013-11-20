@@ -23,7 +23,7 @@ public class Column extends Element
 		"BLOB","CLOB","DBCLOB","IMAGE","BINARY","CHAR","CHARACTER","VARCHAR","VARCHAR2","VARGRAPHIC","VARBINARY",
 		"ENUM","LONG","LONGBLOB","LONGTEXT","MEDIUMBLOB","MEDIUMTEXT","NCHAR","NVARCHAR","NVARCHAR2","NATIONAL",
 		"NCLOB","TEXT","SET","BFILE","RAW","XMLTYPE","XML","CURSOR","UNIQUEID","BOX","BYTEA","CIDR","CIRCLE",
-		"INET","LINE","LSEG","MACADDR","PATH","POINT","POLYGON","GEOMETRY"});
+		"INET","LINE","LSEG","MACADDR","PATH","POINT","POLYGON","GEOMETRY", "SDO_GEOMETRY"});
 
 	/** Defines the various date/time values */
 	private static final List<String> DateTimeValues = Arrays.asList(new String[]{
@@ -77,7 +77,9 @@ public class Column extends Element
 		// Convert the value to upper case
 		if(value==null) throw new Exception("Could not get column type. No column type given");
 		value = value.toUpperCase();
-		
+		if (value.equalsIgnoreCase("SDO_GEOMETRY")){
+			System.out.println("get ready");
+		}
 		// Identify the column type
 		if(IntegerValues.contains(value)) return ColumnType.INTEGER;
 		if(RealValues.contains(value)) return ColumnType.REAL;
