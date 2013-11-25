@@ -212,12 +212,21 @@ public class OWLImporter extends SchemaImporter implements RDFErrorHandler {
 		ExtendedIterator dataProperties = _ontModel.listDatatypeProperties();
 		while (dataProperties.hasNext()) {
 			DatatypeProperty dataProp = (DatatypeProperty) dataProperties.next();
+			if (dataProp.getLocalName().equalsIgnoreCase("hasproblemtype")||dataProp.getLocalName().equalsIgnoreCase("hasproblemcategory")||dataProp.getLocalName().equalsIgnoreCase("hassanotifyid")) {
+				System.out.println(dataProp.getLocalName());
+				System.out.println(dataProp.toString());
+				System.out.println(dataProp.getDomain());
+				System.out.println(dataProp.listRange());
+			}
 			Domain domain = convertRangeToDomain(dataProp);
 
 			// create an attribute for each domain the data property belongs to
 			// DEBUG jean doesn't seem to return a valid domain for multiple
 			// domains
-			ExtendedIterator containerClsItr = dataProp.listDeclaringClasses(true);
+	//		ExtendedIterator containerClsItr = dataProp.listDeclaringClasses(true);
+	//		if (!containerClsItr.hasNext()){
+		ExtendedIterator		containerClsItr = dataProp.listDomain();
+		//	}
 			while (containerClsItr.hasNext()) {
 				OntClass containerCls = (OntClass) containerClsItr.next();
 				Entity entity = _entityList.get(containerCls.getLocalName());
