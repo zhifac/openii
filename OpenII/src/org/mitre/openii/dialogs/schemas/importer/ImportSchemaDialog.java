@@ -121,7 +121,7 @@ public class ImportSchemaDialog extends TitleAreaDialog implements ISelectionCha
 		ArrayList<URI> uris = new ArrayList<URI>();
 		URIField uriField = schemaInfoPane.getURIField();
 		if(uriField.getMode().equals(URIField.URI))
-			try { uris.add(uriField.getURI()); } catch(Exception e) { errorMessage="Invalid URI"; }
+			try { uris.addAll(importer.getAssociatedURIs(uriField.getTextField().getText())); } catch(Exception e) { errorMessage="Invalid URI"; }
 		else for(File file : fileSelectionPane.getSelectedFiles())
 			uris.add(file.toURI());
 		
@@ -129,7 +129,7 @@ public class ImportSchemaDialog extends TitleAreaDialog implements ISelectionCha
 		for(URI uri : uris)
 		{
 			try {
-				String name = schemaInfoPane.getName().equals("") ? new File(uri).getName() : schemaInfoPane.getName();
+				String name = schemaInfoPane.getName().equals("") ?((uriField.getMode().equals(URIField.URI))?"": new File(uri).getName() ): schemaInfoPane.getName();
 				Integer schemaID = importer.importSchema(name, schemaInfoPane.getAuthor(), schemaInfoPane.getDescription(), uri);
 				if(schemaID!=null)
 				{
@@ -168,7 +168,7 @@ public class ImportSchemaDialog extends TitleAreaDialog implements ISelectionCha
 			SchemaImporter importer = importerSelector.getImporter();
 			try {
 				File file = new File(uriString);
-				if(!uriField.getMode().equals(URIField.DIRECTORY))
+				if(!uriField.getMode().equals(URIField.DIRECTORY) && !uriField.getMode().equals(URIField.URI))
 				{
 					// Retrieve information about the schema
 					Schema schema = null;

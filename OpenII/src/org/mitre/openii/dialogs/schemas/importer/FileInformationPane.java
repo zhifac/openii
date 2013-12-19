@@ -51,6 +51,7 @@ public class FileInformationPane
 	/** Constructs the file selection pane */
 	FileInformationPane(Composite parent)
 	{
+
 		// Construct the pane for showing the selected files
 		Group group = new Group(parent, SWT.NONE);
 		group.setText("File Information");

@@ -63,9 +63,9 @@ public class SchemaInformationPane implements SelectionListener
 		uriField.getTextField().setText("");
 		
 		// Disable fields as needed in case of m3 exporter
-		nameField.setEnabled(!m3Importer);
-		authorField.setEnabled(!m3Importer);
-		descriptionField.setEnabled(!m3Importer);
+		nameField.setEnabled(!m3Importer || uriImporter);
+		authorField.setEnabled(!m3Importer || uriImporter);
+		descriptionField.setEnabled(!m3Importer || uriImporter);
 		
 		// Generate the list of extensions that are available
 		ArrayList<String> extensions = new ArrayList<String>();
@@ -75,6 +75,11 @@ public class SchemaInformationPane implements SelectionListener
 		// Display file field or URI depending on importer type
 		uriType.setOption("File");
 		uriField.setMode(uriImporter ? URIField.URI : URIField.FILE);
+		if (uriImporter) {
+			uriType.setVisible(false);
+		}else {
+			uriType.setVisible(true);
+		}
 		uriField.setDialogInfo("Import Schema", importer.getName()+" "+importer.getFileTypes(), extensions);
 
 		// Set focus on the file field
@@ -113,7 +118,7 @@ public class SchemaInformationPane implements SelectionListener
 	boolean isValid()
 	{
 		boolean valid = uriField.getTextField().getText().length()>0 && uriField.isValid();
-		valid &= uriType.getOption().equals("Directory") || nameField.getText().length()>0;
+		valid &= uriType.getOption().equals("Directory") || uriField.getMode()==URIField.URI || nameField.getText().length()>0;
 		valid &= !authorField.getEnabled() || authorField.getText().length()>0;
 		return valid;
 	}
