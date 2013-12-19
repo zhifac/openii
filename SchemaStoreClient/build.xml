@@ -25,7 +25,16 @@
        	    	<path path="lib/castor-1.2-xml-schema.jar"/>
        	    	<path path="lib/jaxrpc.jar"/>
 	    		<path path="lib/jcommon-1.0.5.jar"/>
-       	    	<path path="lib/jena.jar"/>
+       	    	<path path="lib/jena-core-2.11.0.jar"/>
+       	    	<path path="lib/jena-iri-1.0.0.jar"/>
+       	    	<path path="lib/javax.ws.rs-api-2.0.jar"/>
+           	   	<path path="lib/jersey-client.jar"/>
+	    		<path path="lib/jersey-common.jar"/>
+       	    	<path path="lib/gson-2.2.4.jar"/>
+	    		<path path="lib/guava-14.0.1.jar"/>
+	    		<path path="lib/hk2-api-2.2.0-b21.jar"/>
+	    		<path path="lib/hk2-locator-2.2.0-b21.jar"/>
+	    		<path path="lib/JSONOrgImp.jar"/>
 	    		<path path="lib/jfreechart-1.0.2.jar"/>
        	    	<path path="lib/jtopas.jar"/>
 	    		<path path="lib/poi-3.5-beta5-20090219.jar"/>
@@ -74,7 +83,19 @@
             <fatjar.jarsource file="lib/castor-1.2-xml-schema.jar" relpath=""/>
             <fatjar.jarsource file="lib/icu4j_3_4.jar" relpath=""/>
     		<fatjar.jarsource file="lib/jcommon-1.0.5.jar" relpath=""/>
-            <fatjar.jarsource file="lib/jena.jar" relpath=""/>
+   	    	<fatjar.jarsource file="lib/jena-core-2.11.0.jar" relpath=""/>
+        	<fatjar.jarsource file="lib/jena-iri-1.0.0.jar" relpath=""/>
+   	    	<fatjar.jarsource file="lib/javax.ws.rs-api-2.0.jar" relpath=""/>
+       	   	<fatjar.jarsource file="lib/jersey-client.jar" relpath=""/>
+        	<fatjar.jarsource file="lib/jersey-common.jar" relpath=""/>
+   	    	<fatjar.jarsource file="lib/gson-2.2.4.jar" relpath=""/>
+        	<fatjar.jarsource file="lib/guava-14.0.1.jar" relpath=""/>
+        	<fatjar.jarsource file="lib/hk2-api-2.2.0-b21.jar" relpath=""/>
+        	<fatjar.jarsource file="lib/hk2-locator-2.2.0-b21.jar" relpath=""/>
+        	<fatjar.jarsource file="lib/hk2-utils-2.2.0-b21.jar" relpath=""/>
+        	<fatjar.jarsource file="lib/javax.inject-2.2.0-b21.jar" relpath=""/>
+        	<fatjar.jarsource file="lib/cglib-2.2.0-b21.jar" relpath=""/>
+        	<fatjar.jarsource file="lib/JSONOrgImp.jar" relpath=""/>
     		<fatjar.jarsource file="lib/jfreechart-1.0.2.jar" relpath=""/>
             <fatjar.jarsource file="lib/jtopas.jar" relpath=""/>
         	<fatjar.jarsource file="lib/poi-3.5-beta5-20090219.jar" relpath=""/>
