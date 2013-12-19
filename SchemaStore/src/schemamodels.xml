@@ -10,4 +10,5 @@
   <schemaModel>org.mitre.schemastore.model.schemaInfo.model.GSIPSchemaModel</schemaModel>
   <schemaModel>org.mitre.schemastore.model.schemaInfo.model.CompleteSchemaModel</schemaModel>
   <schemaModel>org.mitre.schemastore.model.schemaInfo.model.MixedSchemaModel</schemaModel>
+  <schemaModel>org.mitre.schemastore.model.schemaInfo.model.OWLSchemaModel</schemaModel>
 </schemaModels>
