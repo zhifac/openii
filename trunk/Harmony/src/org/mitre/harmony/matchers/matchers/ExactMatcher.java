@@ -20,6 +20,7 @@ public class ExactMatcher extends Matcher
 	private MatcherCheckboxParameter name = new MatcherCheckboxParameter(NAME,true);
 	private MatcherCheckboxParameter description = new MatcherCheckboxParameter(DESCRIPTION,false);
 	private MatcherCheckboxParameter hierarchy = new MatcherCheckboxParameter(HIERARCHY,true);
+	private MatcherCheckboxParameter ignoreCase = new MatcherCheckboxParameter(IGNORECASE, false);
 	
 	/** Returns the name of the matcher */
 	public String getName()
@@ -32,6 +33,7 @@ public class ExactMatcher extends Matcher
 		parameters.add(name);
 		parameters.add(description);
 		parameters.add(hierarchy);
+		parameters.add(ignoreCase);
 		return parameters;
 	}
 
@@ -46,6 +48,9 @@ public class ExactMatcher extends Matcher
 			// Get the name, trimming the edges and collapsing spaces to be one space long
 			String name = schema.getDisplayName(elementID) + " -> ";
 			name = name.replaceAll("\\b\\s{2,}\\b", " ").trim();
+			if (ignoreCase.isSelected()) {
+				name = name.toLowerCase();
+			}
 			value.append(name);
 		}
 
@@ -55,6 +60,9 @@ public class ExactMatcher extends Matcher
 			// Get the description, trimming the edges and collapsing spaces to be one space long
 			String description = schema.getElement(elementID).getDescription();
 			description = description.replaceAll("\\b\\s{2,}\\b", " ").trim();
+			if (ignoreCase.isSelected()) {
+				description = description.toLowerCase();
+			}
 			if(description.length() > 0) { value.append(description); }
 		}
 		
