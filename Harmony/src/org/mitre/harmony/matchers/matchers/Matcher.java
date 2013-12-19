@@ -20,6 +20,7 @@ public abstract class Matcher
 	protected static final String THESAURUS = "UseThesaurus";
 	protected static final String TRANSLATE = "UseTranslator";
 	protected static final String HIERARCHY = "UseHierarchy";
+	protected static final String IGNORECASE = "IgnoreCase";
 	
 	// Stores the match merger schema information
 	protected FilteredSchemaInfo schema1, schema2;
