@@ -86,7 +86,9 @@ public class URIField implements ModifyListener, SelectionListener
 		{
 			for(String extension : dialogFilterExtensions)
 				dialogFilterExtension += extension + ";";
-			dialogFilterExtension = dialogFilterExtension.substring(0,dialogFilterExtension.length()-1);
+			if (!dialogFilterExtension.isEmpty()) {
+				dialogFilterExtension = dialogFilterExtension.substring(0,dialogFilterExtension.length()-1);
+			}
 		}
 	}
 	
