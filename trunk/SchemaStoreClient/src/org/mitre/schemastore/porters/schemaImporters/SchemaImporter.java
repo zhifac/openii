@@ -17,7 +17,9 @@
 package org.mitre.schemastore.porters.schemaImporters;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
@@ -61,7 +63,6 @@ public abstract class SchemaImporter extends Importer {
 	public Schema getSchema(URI uri) throws ImporterException {
 		return null;
 	}
-
 	/** Return the schema elements */
 	final public ArrayList<SchemaElement> getSchemaElements(URI uri) throws ImporterException {
 		// Schema elements can generated separately only for file importers
@@ -74,7 +75,18 @@ public abstract class SchemaImporter extends Importer {
 		initialize();
 		return generateSchemaElements();
 	}
-
+	public List<URI> getAssociatedURIs(String uriString) throws ImporterException
+	{
+		try {
+		List<URI> uris = new ArrayList<URI>();
+		URI uri = new URI(uriString);
+		uris.add(uri);
+		return uris;
+		}
+		catch (URISyntaxException e) {
+			throw new ImporterException(ImporterExceptionType.INVALID_URI, e.getMessage());
+		}
+	}
 	/** Imports the specified URI */
 	final public Integer importSchema(String name, String author, String description, URI uri) throws ImporterException {
 		// Initialize the importer

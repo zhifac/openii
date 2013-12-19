@@ -24,7 +24,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/javax.wsdl_1.6.2.v201012040545.jar"/>
 	<classpathentry kind="lib" path="lib/org.apache.commons.logging_1.0.4.v201101211617.jar"/>
-	<classpathentry kind="lib" path="C:/Users/mgreer/share/devel/OpenIIWorkspace/SchemaStoreClient/lib/avro-1.7.4.jar" sourcepath="C:/Users/mgreer/Downloads/avro-1.7.4-sources.jar"/>
 	<classpathentry kind="lib" path="lib/avro-1.7.4.jar"/>
 	<classpathentry kind="lib" path="lib/avro-tools-1.7.4.jar"/>
 	<classpathentry kind="lib" path="lib/jackson-core-asl-1.9.13.jar"/>
@@ -32,5 +31,16 @@
 	<classpathentry kind="lib" path="lib/jena-core-2.11.0.jar"/>
 	<classpathentry kind="lib" path="lib/jena-iri-1.0.0.jar"/>
 	<classpathentry kind="lib" path="lib/org.apache.commons.logging_1.0.4.v200706111724.jar"/>
+	<classpathentry kind="lib" path="lib/jersey-client.jar"/>
+	<classpathentry kind="lib" path="lib/javax.ws.rs-api-2.0.jar"/>
+	<classpathentry kind="lib" path="lib/gson-2.2.4.jar"/>
+	<classpathentry kind="lib" path="lib/JSONOrgImp.jar"/>
+	<classpathentry kind="lib" path="C:/Users/mgreer/share/devel/OpenIIWorkspace/SchemaStoreClient/lib/jersey-common.jar"/>
+	<classpathentry kind="lib" path="C:/Users/mgreer/share/devel/OpenIIWorkspace/SchemaStoreClient/lib/hk2-api-2.2.0-b21.jar"/>
+	<classpathentry kind="lib" path="C:/Users/mgreer/share/devel/OpenIIWorkspace/SchemaStoreClient/lib/guava-14.0.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/mgreer/share/devel/OpenIIWorkspace/SchemaStoreClient/lib/cglib-2.2.0-b21.jar"/>
+	<classpathentry kind="lib" path="C:/Users/mgreer/share/devel/OpenIIWorkspace/SchemaStoreClient/lib/hk2-locator-2.2.0-b21.jar"/>
+	<classpathentry kind="lib" path="C:/Users/mgreer/share/devel/OpenIIWorkspace/SchemaStoreClient/lib/hk2-utils-2.2.0-b21.jar"/>
+	<classpathentry kind="lib" path="C:/Users/mgreer/share/devel/OpenIIWorkspace/SchemaStoreClient/lib/javax.inject-2.2.0-b21.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

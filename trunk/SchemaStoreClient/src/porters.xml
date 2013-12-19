@@ -20,6 +20,8 @@
       <schemaImporter>org.mitre.schemastore.porters.schemaImporters.HierarchicalDomainValueImporter</schemaImporter>
       <schemaImporter>org.mitre.schemastore.porters.schemaImporters.AvroImporter</schemaImporter>
       <schemaImporter>org.mitre.schemastore.porters.schemaImporters.CAASD_AvroImporter</schemaImporter>
+      <schemaImporter>org.mitre.schemastore.porters.schemaImporters.HCatalogImporter</schemaImporter>
+      <schemaImporter>org.mitre.schemastore.porters.schemaImporters.HCatalogTableSchemaImporter</schemaImporter>
     </schemaImporters>
     <projectImporters>
     	<projectImporter>org.mitre.schemastore.porters.projectImporters.M3ProjectImporter</projectImporter>

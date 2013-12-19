@@ -32,6 +32,7 @@ import com.hp.hpl.jena.ontology.OntProperty;
 import com.hp.hpl.jena.ontology.OntResource;
 import com.hp.hpl.jena.ontology.Profile;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFErrorHandler;
 import com.hp.hpl.jena.rdf.model.RDFReader;
 import com.hp.hpl.jena.rdf.model.Resource;
@@ -85,10 +86,10 @@ public class OWLImporter extends SchemaImporter implements RDFErrorHandler {
 		//xsdImporter.uri = new URI("C:/tempSchemas/niem-2.1/niem/domains/maritime/2.1/maritime.xsd");
 		owlImporter.initialize();
 		Collection<SchemaElement> elems = owlImporter.generateSchemaElements();
-		for (SchemaElement elem : elems)
+/*		for (SchemaElement elem : elems)
 		{
 			System.out.println(elem);
-		}
+		}*/
 		
 	}
 	
@@ -195,13 +196,13 @@ public class OWLImporter extends SchemaImporter implements RDFErrorHandler {
 
 			// create a subType edge for for each direct parent class
 			Entity entity = _entityList.get(ontClass.getLocalName());
-			ExtendedIterator parentClasses = ontClass.listSuperClasses(true);
-			while (parentClasses.hasNext()) {
-				OntClass parent = (OntClass) parentClasses.next();
-				Entity parentEntity = _entityList.get(parent.getLocalName());
-				if (parentEntity == null) continue;
-
-				Subtype subtype = new Subtype(nextId(), parentEntity.getId(), entity.getId(), entity.getBase());
+			ExtendedIterator subClasses = ontClass.listSubClasses(true);
+			while (subClasses.hasNext()) {
+				OntClass child = (OntClass) subClasses.next();
+				Entity childEntity = _entityList.get(child.getLocalName());
+				if (childEntity == null) continue;
+//				System.out.println(entity.getName() + ": " + childEntity.getName());
+				Subtype subtype = new Subtype(nextId(), entity.getId(), childEntity.getId(), childEntity.getBase());
 				_schemaElements.add(subtype);
 			}
 		}
@@ -212,12 +213,12 @@ public class OWLImporter extends SchemaImporter implements RDFErrorHandler {
 		ExtendedIterator dataProperties = _ontModel.listDatatypeProperties();
 		while (dataProperties.hasNext()) {
 			DatatypeProperty dataProp = (DatatypeProperty) dataProperties.next();
-			if (dataProp.getLocalName().equalsIgnoreCase("hasproblemtype")||dataProp.getLocalName().equalsIgnoreCase("hasproblemcategory")||dataProp.getLocalName().equalsIgnoreCase("hassanotifyid")) {
+	/*		if (dataProp.getLocalName().equalsIgnoreCase("hasproblemtype")||dataProp.getLocalName().equalsIgnoreCase("hasproblemcategory")||dataProp.getLocalName().equalsIgnoreCase("hassanotifyid")) {
 				System.out.println(dataProp.getLocalName());
 				System.out.println(dataProp.toString());
 				System.out.println(dataProp.getDomain());
 				System.out.println(dataProp.listRange());
-			}
+			}*/
 			Domain domain = convertRangeToDomain(dataProp);
 
 			// create an attribute for each domain the data property belongs to
@@ -272,7 +273,7 @@ public class OWLImporter extends SchemaImporter implements RDFErrorHandler {
 				}
 
 				Entity leftEntity = _entityList.get(leftOntClass.getLocalName());
-				System.out.println("\tleft Entity for " + objProp.getLocalName() + " = " + leftOntClass.getLocalName());
+        		System.out.println("\tleft Entity for " + objProp.getLocalName() + " = " + leftOntClass.getLocalName());
 
 				// RIGHT entity
 				ExtendedIterator objPropRangeItr = objProp.listRange();
@@ -295,8 +296,9 @@ public class OWLImporter extends SchemaImporter implements RDFErrorHandler {
 					Integer leftClsMax = null;
 					Integer rightClsMin = null;
 					Integer rightClsMax = (relMax > 0) ? relMax : 0;
-
-					Relationship rel = new Relationship(nextId(), objProp.getLocalName(), "", leftEntity.getId(), leftClsMin, leftClsMax, rightEntity.getId(), rightClsMin, rightClsMax, 0);
+					Statement statement = objProp.getProperty(DC.description);
+					String comment = statement==null?"":statement.getString();
+					Relationship rel = new Relationship(nextId(), objProp.getLocalName(), comment, leftEntity.getId(), leftClsMin, leftClsMax, rightEntity.getId(), rightClsMin, rightClsMax, 0);
 					_schemaElements.add(rel);
 				}
 			}
