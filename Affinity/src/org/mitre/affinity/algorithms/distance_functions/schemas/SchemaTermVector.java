@@ -21,8 +21,14 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
+
+import org.mitre.schemastore.client.SchemaStoreClient;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.schemaInfo.SchemaInfo;
+import org.mitre.schemastore.porters.Porter;
+import org.mitre.schemastore.porters.PorterManager;
+import org.mitre.schemastore.porters.PorterType;
+import org.mitre.schemastore.porters.schemaImporters.SchemaImporter;
 
 /**
  * Create a term vector for a schema.  The vector contains a list
@@ -47,8 +53,22 @@ public class SchemaTermVector
 	/** Constructs the schema term vector from the schema */
 	public SchemaTermVector(SchemaInfo schema)
 	{	
+		ArrayList<Porter> importers = new PorterManager((SchemaStoreClient)null).getPorters(PorterType.SCHEMA_IMPORTERS);
+		String importerName = schema.getSchema().getType();
+		boolean done = false;
+		ArrayList<String> baseDomainNames = null;
+		for (int i = 0; i < importers.size() && !done; i++ ){
+			SchemaImporter importer = (SchemaImporter)importers.get(i);
+			if (importer.getName().equals(importerName)){
+				baseDomainNames = importer.getBaseDomainNames();
+				done = true;
+			}
+		}
+
 		for(SchemaElement schemaElement: schema.getElements(null))
-			if(!(schemaElement instanceof org.mitre.schemastore.model.DomainValue))
+			if(!(schemaElement instanceof org.mitre.schemastore.model.DomainValue) && 
+					(!done ||!(schemaElement instanceof org.mitre.schemastore.model.Domain)
+					|| !baseDomainNames.contains(schemaElement.getName())))
 				updateCount(schemaElement,true);
 	}
 	
