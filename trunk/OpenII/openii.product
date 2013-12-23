@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="OpenII" id="org.mitre.openii.product" application="org.mitre.openii.application" version="1.0.2650" useFeatures="true" includeLaunchers="true">
+<product name="OpenII" id="org.mitre.openii.product" application="org.mitre.openii.application" version="1.0.2652" useFeatures="true" includeLaunchers="true">
 
 
    <configIni use="default">
