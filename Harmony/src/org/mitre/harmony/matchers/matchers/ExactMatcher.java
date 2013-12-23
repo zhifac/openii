@@ -10,6 +10,9 @@ import org.mitre.harmony.matchers.MatcherScore;
 import org.mitre.harmony.matchers.MatcherScores;
 import org.mitre.harmony.matchers.parameters.MatcherCheckboxParameter;
 import org.mitre.harmony.matchers.parameters.MatcherParameter;
+import org.mitre.schemastore.model.Attribute;
+import org.mitre.schemastore.model.Domain;
+import org.mitre.schemastore.model.Relationship;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
 
@@ -21,6 +24,7 @@ public class ExactMatcher extends Matcher
 	private MatcherCheckboxParameter description = new MatcherCheckboxParameter(DESCRIPTION,false);
 	private MatcherCheckboxParameter hierarchy = new MatcherCheckboxParameter(HIERARCHY,true);
 	private MatcherCheckboxParameter ignoreCase = new MatcherCheckboxParameter(IGNORECASE, false);
+	private MatcherCheckboxParameter matchType = new MatcherCheckboxParameter(MATCHTYPE, false);
 	
 	/** Returns the name of the matcher */
 	public String getName()
@@ -34,6 +38,7 @@ public class ExactMatcher extends Matcher
 		parameters.add(description);
 		parameters.add(hierarchy);
 		parameters.add(ignoreCase);
+		parameters.add(matchType);
 		return parameters;
 	}
 
@@ -64,6 +69,29 @@ public class ExactMatcher extends Matcher
 				description = description.toLowerCase();
 			}
 			if(description.length() > 0) { value.append(description); }
+		}
+		if (matchType.isSelected()){
+			SchemaElement element = schema.getElement(elementID);
+			if (element instanceof Attribute){
+				Attribute att = (Attribute) element;
+				Integer domain = att.getDomainID();
+				if (domain != null) {
+					String domainDesc = schema.getDisplayName(domain);
+					if (ignoreCase.isSelected()) {
+						domainDesc = domainDesc.toLowerCase();
+					}
+					if (domainDesc.length() > 0 ) { value.append(domainDesc);}
+				}
+				
+			}else if (element instanceof Relationship) {
+				Relationship rel = (Relationship) element;
+				Integer rtId = rel.getRightID();
+				String rangeName = rtId == null?"":schema.getDisplayName(rtId);
+				if (ignoreCase.isSelected()) {
+					rangeName = rangeName.toLowerCase();
+				}
+				if (rangeName.length() > 0 ) { value.append(rangeName); }
+			}
 		}
 		
 		return value.toString();
