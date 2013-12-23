@@ -140,7 +140,16 @@ public class XSDImporterSeparate extends SchemaImporter
 	
 	private static HashMap<String,Entity> _attrGroupEntitySet = new HashMap<String,Entity>();
 	
-	
+	public XSDImporterSeparate() {
+		super();
+		baseDomains = new String[][]{{ANY + " ", "The Any wildcard domain"},
+		{INTEGER + " ","The Integer domain"},
+		{REAL + " ","The Real domain"},
+		{STRING + " ","The String domain"},
+		{"string" + " ","The string domain"},
+		{DATETIME + " ","The DateTime domain"},
+		{BOOLEAN + " ","The Boolean domain"}};
+	}
 	/** Initializes the importer for the specified URI 
 	 * @throws ImporterException 
 	 * @throws URISyntaxException */
@@ -1661,38 +1670,18 @@ public class XSDImporterSeparate extends SchemaImporter
 	}
 
 		
+	
 	/**
 	 * Function for loading the preset domains into the Schema and into a list
 	 * for use during Attribute creation
 	 */
 	private void loadDomains() {
+		for (int i = 0; i < baseDomains.length; i++){
+			Domain domain = new Domain(nextAutoInc(), baseDomains[i][0], baseDomains[i][1], 0);
+			_schemaElementsHS.put(domain.hashCode(), domain);
+			_domainList.put(baseDomains[i][0].trim(),  domain);
+		}
 
-		Domain domain = new Domain(nextAutoInc(), ANY + " ", "The Any wildcard domain", 0);
-		_schemaElementsHS.put(domain.hashCode(), domain);
-		_domainList.put(ANY, domain);
-
-		domain = new Domain(nextAutoInc(), INTEGER + " ","The Integer domain", 0);
-		_schemaElementsHS.put(domain.hashCode(), domain);
-		_domainList.put(domain.getName(), domain);
-		
-		domain = new Domain(nextAutoInc(), REAL + " ","The Real domain", 0);
-		_schemaElementsHS.put(domain.hashCode(), domain);
-		_domainList.put(domain.getName(), domain);
-		
-		domain = new Domain(nextAutoInc(), STRING + " ","The String domain", 0);
-		_schemaElementsHS.put(domain.hashCode(), domain);
-		_domainList.put(domain.getName(), domain);
-		
-		domain = new Domain(nextAutoInc(), "string" + " ","The string domain", 0);
-		_schemaElementsHS.put(domain.hashCode(), domain);
-		_domainList.put(domain.getName(), domain);
-		
-		domain = new Domain(nextAutoInc(), DATETIME + " ","The DateTime domain", 0);
-		_schemaElementsHS.put(domain.hashCode(), domain);
-		_domainList.put(domain.getName(), domain);
-		
-		domain = new Domain(nextAutoInc(), BOOLEAN + " ","The Boolean domain", 0);
-		_schemaElementsHS.put(domain.hashCode(), domain);
 	}
 	
 } // end XSDImporter class

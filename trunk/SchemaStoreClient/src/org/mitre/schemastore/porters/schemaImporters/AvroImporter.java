@@ -79,7 +79,16 @@ public class AvroImporter extends SchemaImporter {
 			}
 			
 		}
-			
+	public AvroImporter() {
+		super();
+		baseDomains = new String[][]{{INTEGER + " ","The integer domain", Type.INT.name()},
+		{INTEGER + " ", "The long domain", Type.LONG.name()},
+		{REAL + " ","The float domain", Type.FLOAT.name()}, 
+		{REAL + " ","The double domain", Type.DOUBLE.name()},
+		{BOOLEAN + " ", "The boolean domain", Type.BOOLEAN.name()},
+		{STRING + " ","The string domain", Type.STRING.name()}, 
+		{"bytes" + " ","The bytes domain", Type.BYTES.name()}};
+	}
 	/* returns the importer URI type */
 	@Override
 	public URIType getURIType() {
@@ -345,42 +354,19 @@ public class AvroImporter extends SchemaImporter {
 		_createContainment(dom, parent, name, doc, allowNull, noLimit, aliases);
 	}		
 	
-/**
- * Function for loading the preset domains into the Schema and into a list
- * for use during Attribute creation
- */
-private void loadDomains() {
-
-	Domain domain = new Domain(nextAutoInc(), INTEGER + " ","The integer domain", 0);
-	_schemaElementsAvro.put(domain.hashCode(), domain);
-	_domainList.put(Type.INT.name(), domain);
-	
-	domain = new Domain(nextAutoInc(), INTEGER + " ", "The long domain",0);
-	_schemaElementsAvro.put(domain.hashCode(), domain);
-	_domainList.put(Type.LONG.name(), domain);
-	
-	domain = new Domain(nextAutoInc(), REAL + " ","The float domain", 0);
-	_schemaElementsAvro.put(domain.hashCode(), domain);
-	_domainList.put(Type.FLOAT.name(), domain);
-	
-	domain = new Domain(nextAutoInc(), REAL + " ","The double domain", 0);
-	_schemaElementsAvro.put(domain.hashCode(), domain);
-	_domainList.put(Type.DOUBLE.name(), domain);
-	
-	
-	domain = new Domain(nextAutoInc(), BOOLEAN + " ", "The boolean domain", 0);
-	_schemaElementsAvro.put(domain.hashCode(), domain);
-	_domainList.put(Type.BOOLEAN.name(), domain);
-	
-	domain = new Domain(nextAutoInc(), STRING + " ","The string domain", 0);
-	_schemaElementsAvro.put(domain.hashCode(), domain);
-	_domainList.put(Type.STRING.name(), domain);
-	
-	domain = new Domain(nextAutoInc(), "bytes" + " ","The bytes domain", 0);
-	_schemaElementsAvro.put(domain.hashCode(), domain);
-	_domainList.put(Type.BYTES.name(), domain);
-	
+	/**
+	 * Function for loading the preset domains into the Schema and into a list
+	 * for use during Attribute creation
+	 */
+	private void loadDomains() {
+		for (int i = 0; i < baseDomains.length; i++){
+			Domain domain = new Domain(nextAutoInc(), baseDomains[i][0], baseDomains[i][1], 0);
+			_schemaElementsAvro.put(domain.hashCode(), domain);
+			_domainList.put(baseDomains[i][2],  domain);
+		}
+		
 	}
+
 }
 
 

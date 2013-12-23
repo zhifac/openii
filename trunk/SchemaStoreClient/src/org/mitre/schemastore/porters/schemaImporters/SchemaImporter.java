@@ -21,6 +21,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.mitre.schemastore.model.Domain;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.porters.Importer;
@@ -37,6 +38,9 @@ public abstract class SchemaImporter extends Importer {
 	public static final String STRING = "String";
 	public static final String DATETIME = "DateTime";
 	public static final String BOOLEAN = "Boolean";
+	protected String[][] baseDomains = {{ANY, "any domain"}, {INTEGER, "integer domain"},  {REAL, "real domain"},
+			{STRING, "string domain"},  {DATETIME, "date time domain"}, {BOOLEAN, "boolean domain"}};
+	protected ArrayList<String> baseDomainNames;
 
 	/** Stores a auto-increment counter for handing out IDs */
 	private static Integer autoIncrementedId = 0;
@@ -57,6 +61,16 @@ public abstract class SchemaImporter extends Importer {
 	/** Returns the schema elements for the specified URI */
 	protected ArrayList<SchemaElement> generateSchemaElements() throws ImporterException {
 		return new ArrayList<SchemaElement>();
+	}
+	public ArrayList<String> getBaseDomainNames() {
+		if (baseDomainNames == null) {
+			baseDomainNames = new ArrayList<String>();
+			for (int i = 0; i< baseDomains.length; i++){
+				baseDomainNames.add(baseDomains[i][0]);
+			}
+		}
+		return baseDomainNames;
+		
 	}
 
 	/** Generate the schema */

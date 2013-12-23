@@ -64,6 +64,22 @@ public class HCatalogImporter extends SchemaImporter{
 	protected WebHCatSchemaStoreClient _hcatClient = null;
 
 	
+	public HCatalogImporter() {
+		super();
+		baseDomains = new String[][]{{INTEGER, "The integer domain", DataType.INT.toString() },
+				{INTEGER, "The tinyint domain", DataType.TINYINT.toString()},
+				{INTEGER, "The smallint domain", DataType.SMALLINT.toString()},
+				{DATETIME, "The timestamp domain", DataType.TIMESTAMP.toString()},
+				{INTEGER, "The long domain", DataType.BIGINT.toString()},
+				{REAL, "The float", DataType.FLOAT.toString()},
+				{REAL, "The double domain", DataType.DOUBLE.toString()},
+				{REAL, "The decimal domain", DataType.DECIMAL.toString()},
+				{STRING, "The string domain", DataType.STRING.toString()},
+				{STRING, "The char domain", DataType.CHAR.toString()},
+				{STRING, "The varchar domain", DataType.VARCHAR.toString()},
+				{"bytes", "The binary domain", DataType.BINARY.toString()},
+				{"null", "The null domain", DataType.VOID.toString()}};
+	}
 
 	/** testing main **/ 
 	public static void main(String[] args) throws URISyntaxException, ImporterException{
@@ -368,64 +384,11 @@ protected void _processMap(MapDataType schema, SchemaElement parent, String name
 */
 private void loadDomains() {
 
-Domain domain = new Domain(nextAutoInc(), INTEGER + " ","The integer domain", 0);
-_schemaElementsHive.put(domain.hashCode(), domain);
-_domainList.put(DataType.INT, domain);
-
-domain = new Domain(nextAutoInc(), INTEGER + " ","The tinyint domain", 0);
-_schemaElementsHive.put(domain.hashCode(), domain);
-_domainList.put(DataType.TINYINT, domain);
-
-domain = new Domain(nextAutoInc(), INTEGER + " ","The smallint domain", 0);
-_schemaElementsHive.put(domain.hashCode(), domain);
-_domainList.put(DataType.SMALLINT, domain);
-
-domain = new Domain(nextAutoInc(), DATETIME + " ","The timestamp domain", 0);
-_schemaElementsHive.put(domain.hashCode(), domain);
-_domainList.put(DataType.TIMESTAMP, domain);
-
-domain = new Domain(nextAutoInc(), INTEGER + " ", "The long domain",0);
-_schemaElementsHive.put(domain.hashCode(), domain);
-_domainList.put(DataType.BIGINT, domain);
-
-domain = new Domain(nextAutoInc(), REAL + " ","The float domain", 0);
-_schemaElementsHive.put(domain.hashCode(), domain);
-_domainList.put(DataType.FLOAT, domain);
-
-domain = new Domain(nextAutoInc(), REAL + " ","The double domain", 0);
-_schemaElementsHive.put(domain.hashCode(), domain);
-_domainList.put(DataType.DOUBLE, domain);
-
-domain = new Domain(nextAutoInc(), REAL + " ","The decimal domain", 0);
-_schemaElementsHive.put(domain.hashCode(), domain);
-_domainList.put(DataType.DECIMAL, domain);
-
-
-domain = new Domain(nextAutoInc(), BOOLEAN + " ", "The boolean domain", 0);
-_schemaElementsHive.put(domain.hashCode(), domain);
-_domainList.put(DataType.BOOLEAN, domain);
-
-domain = new Domain(nextAutoInc(), STRING + " ","The string domain", 0);
-_schemaElementsHive.put(domain.hashCode(), domain);
-_domainList.put(DataType.STRING, domain);
-
-
-domain = new Domain(nextAutoInc(), STRING + " ","The char domain", 0);
-_schemaElementsHive.put(domain.hashCode(), domain);
-_domainList.put(DataType.CHAR, domain);
-
-domain = new Domain(nextAutoInc(), STRING + " ","The varchar domain", 0);
-_schemaElementsHive.put(domain.hashCode(), domain);
-_domainList.put(DataType.VARCHAR, domain);
-
-domain = new Domain(nextAutoInc(), "bytes" + " ","The binary domain", 0);
-_schemaElementsHive.put(domain.hashCode(), domain);
-_domainList.put(DataType.BINARY, domain);
-
-domain = new Domain(nextAutoInc(), "null" + " ","The null domain", 0);
-_schemaElementsHive.put(domain.hashCode(), domain);
-_domainList.put(DataType.VOID, domain);
-
+	for (int i = 0; i < baseDomains.length; i++){
+		Domain domain = new Domain(nextAutoInc(), baseDomains[i][0], baseDomains[i][1], 0);
+		_schemaElementsHive.put(domain.hashCode(), domain);
+		_domainList.put(DataType.valueOf(baseDomains[i][2]),  domain);
+	}
 }
 }
 

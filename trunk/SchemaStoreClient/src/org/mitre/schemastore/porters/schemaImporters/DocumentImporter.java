@@ -18,6 +18,11 @@ public class DocumentImporter extends SchemaImporter {
 	private ArrayList<SchemaElement> _schemaElements;
 	private static final Integer DOCUMENTATION_LENGTH = 4096;
 	
+	
+	public DocumentImporter() {
+		super();
+		baseDomains = new String[0][0];
+	}
 	/** Returns the importer name */
 	public String getName() { return "Document Importer"; }
 
