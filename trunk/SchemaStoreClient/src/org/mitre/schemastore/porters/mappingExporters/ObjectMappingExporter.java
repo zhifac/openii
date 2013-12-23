@@ -167,6 +167,7 @@ public class ObjectMappingExporter extends MappingExporter {
 		out.println();
 		out.print("M3NodeType,Schema Name,Entity Name,Attribute/Relationship,Description, Supertype/Domain/Right Element,");
 		out.print("M3NodeType,Schema Name,Entity Name,Attribute/Relationship,Description, Supertype/Domain/Right Element");
+		out.print(",Score,Note");
 		for(String extraField : extraFields) out.print(","+extraField);
 		out.println();
 	}
