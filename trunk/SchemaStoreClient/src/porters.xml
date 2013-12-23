@@ -51,6 +51,7 @@
 	  <mappingExporter>org.mitre.schemastore.porters.mappingExporters.M3MappingExporter</mappingExporter>
 	  <mappingExporter>org.mitre.schemastore.porters.mappingExporters.UserMatchAnnotationDBExporter</mappingExporter>
 	  <mappingExporter>org.mitre.schemastore.porters.mappingExporters.RescueSuppliesExporter</mappingExporter>
+	  <mappingExporter>org.mitre.schemastore.porters.mappingExporters.ObjectMappingExporter</mappingExporter>
     </mappingExporters>
     <vocabularyExporters>
     	<vocabularyExporter>org.mitre.schemastore.porters.vocabularyExporters.VocabTermExporter</vocabularyExporter>
