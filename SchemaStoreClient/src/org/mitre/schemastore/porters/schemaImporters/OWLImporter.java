@@ -92,7 +92,17 @@ public class OWLImporter extends SchemaImporter implements RDFErrorHandler {
 		}*/
 		
 	}
-	
+	public OWLImporter () {
+		super();
+		baseDomains = new String[][] {{ANY.toLowerCase(), "The Any wildcard domain"},
+		{INTEGER.toLowerCase(), "The Integer domain"},
+		{FLOAT.toLowerCase(), "The Float domain"},
+		{STRING.toLowerCase(), "The String domain"},
+		{BOOLEAN.toLowerCase(), "The Boolean domain"},
+		{DATETIME.toLowerCase(), "The DateTime domain"},
+		{DATE.toLowerCase(), "The Date domain"},
+		{TIME.toLowerCase(), "The Time domain"}};
+	}
 	/** Returns the importer name */
 	public String getName() {
 		return "OWL Importer";
@@ -149,14 +159,9 @@ public class OWLImporter extends SchemaImporter implements RDFErrorHandler {
 
 	/** Handles the loading of all default domains */
 	private void loadDomains() {
-		loadDomain(ANY.toLowerCase(), "The Any wildcard domain");
-		loadDomain(INTEGER.toLowerCase(), "The Integer domain");
-		loadDomain(FLOAT.toLowerCase(), "The Float domain");
-		loadDomain(STRING.toLowerCase(), "The String domain");
-		loadDomain(BOOLEAN.toLowerCase(), "The Boolean domain");
-		loadDomain(DATETIME.toLowerCase(), "The DateTime domain");
-		loadDomain(DATE.toLowerCase(), "The Date domain");
-		loadDomain(TIME.toLowerCase(), "The Time domain");
+		for (int i = 0; i < baseDomains.length; i++) {
+			loadDomain(baseDomains[i][0], baseDomains[i][1]);
+		}
 	}
 
 	/** Initializes the ontology model */

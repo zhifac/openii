@@ -61,6 +61,12 @@ public class SpreadsheetImporter extends SchemaImporter {
 	protected String documentation = "";
 
 	public SpreadsheetImporter() {
+		baseDomains = new String[][]{{INTEGER, "The Integer domain"},
+				{REAL, "The Real domain"},
+				{STRING, "The String domain"},
+				{DATETIME, "The DateTime domain"},
+				{BOOLEAN, "The Boolean domain"}};
+		
 		loadDomains();
 	}
 
@@ -250,20 +256,11 @@ public class SpreadsheetImporter extends SchemaImporter {
 	 * Attribute creation
 	 */
 	private void loadDomains() {
-		Domain domain = new Domain(SchemaImporter.nextId(), INTEGER, "The Integer domain", 0);
-		schemaElements.add(domain);
-		domainList.put(INTEGER, domain);
-		domain = new Domain(SchemaImporter.nextId(), REAL, "The Real domain", 0);
-		schemaElements.add(domain);
-		domainList.put(REAL, domain);
-		domain = new Domain(SchemaImporter.nextId(), STRING, "The String domain", 0);
-		schemaElements.add(domain);
-		domainList.put(STRING, domain);
-		domain = new Domain(SchemaImporter.nextId(), DATETIME, "The DateTime domain", 0);
-		schemaElements.add(domain);
-		domainList.put(DATETIME, domain);
-		domain = new Domain(SchemaImporter.nextId(), BOOLEAN, "The Boolean domain", 0);
-		schemaElements.add(domain);
-		domainList.put(BOOLEAN, domain);
+		for (int i = 0; i < baseDomains.length; i++){
+			Domain domain = new Domain(SchemaImporter.nextId(), baseDomains[i][0], baseDomains[i][1], 0);
+			schemaElements.add(domain);
+			domainList.put(baseDomains[i][0], domain);
+		}
+		
 	}
 }
