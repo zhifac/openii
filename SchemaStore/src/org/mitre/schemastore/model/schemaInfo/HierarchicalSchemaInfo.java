@@ -110,7 +110,13 @@ public class HierarchicalSchemaInfo extends SchemaInfo
 			if(domainCount.equals(totalCount)) model = new DomainSchemaModel();
 			else if(synonymCount+synonymEntities.size()==totalCount) model = new SynonymModel();
 			else if (subtypeCount>0 && relationshipCount>0) model = new OWLSchemaModel();
-			else if(containmentCount>0 && (containmentCount<1000 || containmentCount/entityCount<3)) model = new XMLSchemaModel();
+			else if(containmentCount>0 && (containmentCount<1000 || containmentCount/entityCount<3))  {
+				model = new XMLSchemaModel();
+				ArrayList root = model.getRootElements(this);
+				if (root == null || root.size()==0) {
+					model = new ContainingRelationshipSchemaModel();
+				}
+			}
 			else model = new RelationalSchemaModel();
 		}
 		this.model = model;
@@ -132,8 +138,9 @@ public class HierarchicalSchemaInfo extends SchemaInfo
 	public ArrayList<SchemaElement> getChildElements(Integer elementID, HashSet<Integer> pathIDs)
 	{
 		ArrayList<SchemaElement> childElements = new ArrayList<SchemaElement>();
-
-		for(SchemaElement childElement : getChildElements(elementID))
+		ArrayList<SchemaElement> baseChildElements = getChildElements(elementID);
+		if (baseChildElements != null){
+		for(SchemaElement childElement : baseChildElements)
 		{
 			// Don't add children if element already in branch
 			if(pathIDs.contains(childElement.getId())) continue;
@@ -150,12 +157,15 @@ public class HierarchicalSchemaInfo extends SchemaInfo
 			}
 
 			// Adds the child element to the list of children elements
-			childElements.add(childElement);
+			if (!childElements.contains(childElement)){
+				childElements.add(childElement);
+			}
 		}
-
+		}
 		// Retrieve child elements from the hierarchical schema info
 		return childElements;
 	}
+
 
 	/** Returns the ancestors of the specified element in this schema */
 	private void getAncestorElements(Integer elementID, HashSet<SchemaElement> ancestors)
