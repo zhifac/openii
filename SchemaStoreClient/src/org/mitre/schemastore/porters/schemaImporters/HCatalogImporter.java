@@ -16,6 +16,7 @@ import java.util.regex.Pattern;
 import org.mitre.schemastore.client.Repository;
 import org.mitre.schemastore.client.SchemaStoreClient;
 import org.mitre.schemastore.model.Alias;
+import org.mitre.schemastore.model.Attribute;
 import org.mitre.schemastore.model.Containment;
 import org.mitre.schemastore.model.Domain;
 import org.mitre.schemastore.model.DomainValue;
@@ -66,17 +67,17 @@ public class HCatalogImporter extends SchemaImporter{
 	
 	public HCatalogImporter() {
 		super();
-		baseDomains = new String[][]{{INTEGER, "The integer domain", DataType.INT.toString() },
-				{INTEGER, "The tinyint domain", DataType.TINYINT.toString()},
-				{INTEGER, "The smallint domain", DataType.SMALLINT.toString()},
-				{DATETIME, "The timestamp domain", DataType.TIMESTAMP.toString()},
-				{INTEGER, "The long domain", DataType.BIGINT.toString()},
-				{REAL, "The float", DataType.FLOAT.toString()},
-				{REAL, "The double domain", DataType.DOUBLE.toString()},
-				{REAL, "The decimal domain", DataType.DECIMAL.toString()},
-				{STRING, "The string domain", DataType.STRING.toString()},
-				{STRING, "The char domain", DataType.CHAR.toString()},
-				{STRING, "The varchar domain", DataType.VARCHAR.toString()},
+		baseDomains = new String[][]{{INTEGER + " ", "The integer domain", DataType.INT.toString() },
+				{INTEGER + " ", "The tinyint domain", DataType.TINYINT.toString()},
+				{INTEGER + " ", "The smallint domain", DataType.SMALLINT.toString()},
+				{DATETIME + " ", "The timestamp domain", DataType.TIMESTAMP.toString()},
+				{INTEGER + " ", "The long domain", DataType.BIGINT.toString()},
+				{REAL + " ", "The float", DataType.FLOAT.toString()},
+				{REAL + " ", "The double domain", DataType.DOUBLE.toString()},
+				{REAL + " ", "The decimal domain", DataType.DECIMAL.toString()},
+				{STRING + " ", "The string domain", DataType.STRING.toString()},
+				{STRING + " ", "The char domain", DataType.CHAR.toString()},
+				{STRING + " ", "The varchar domain", DataType.VARCHAR.toString()},
 				{"bytes", "The binary domain", DataType.BINARY.toString()},
 				{"null", "The null domain", DataType.VOID.toString()}};
 	}
@@ -268,7 +269,9 @@ protected void _processTable(HCatRestTable table, SchemaElement parent, String c
 		}
 
 	}
-	_createContainment(entity, parent, containerName, table.getComment(), false, false);
+	if (parent != null) {
+		_createContainment(entity, parent, containerName, table.getComment(), false, false);
+	}
 	}
 	catch (TokenizerException e){
 		throw new ImporterException(ImporterExceptionType.PARSE_FAILURE, e.getMessage());
@@ -306,7 +309,17 @@ protected void _processPrimitiveType(HiveDataType schema, SchemaElement parent, 
 	{
 		throw new ImporterException(ImporterExceptionType.IMPORT_FAILURE, "Domain value " + schema.getDataType().toString() + " doesn't exist in domain");
 	}
-		_createContainment(elem, parent, name, doc, allowNull, noLimit);
+		_createAttribute(elem, parent, name, doc, allowNull, noLimit);
+}
+protected void _createAttribute(SchemaElement domain, SchemaElement parent, String name, String doc,
+		boolean allowNull, boolean noLimit) {
+	_createAttribute(domain, parent, name, doc, allowNull, noLimit, false);
+}
+protected void _createAttribute(SchemaElement domain, SchemaElement parent, String name, String doc, 
+		boolean allowNull, boolean noLimit, boolean isKey) {
+	Attribute attr = new Attribute(nextAutoInc(), name, doc, parent!=null?parent.getId():0, domain.getId(), allowNull?0:1, noLimit?-1:1, isKey, 0);
+	_schemaElementsHive.put(attr.hashCode(), attr);
+	
 }
 
 protected void _processStruct(StructDataType schema, SchemaElement parent, String name, String doc, boolean allowNull, boolean noLimit) throws ImporterException
@@ -350,7 +363,7 @@ protected void _processUnion(UnionDataType schema, SchemaElement parent, String 
 		_createContainment(unionParent, parent, name, doc, allowNull, noLimit);
 		_schemaElementsHive.put(unionParent.hashCode(), unionParent);
 		for (HiveDataType subSchema : unionTypes) {
-			_processField(subSchema, unionParent, "[union]_" + name, doc, includesNull, false);
+			_processField(subSchema, unionParent, null, null, includesNull, false);
 		}
 	} 
 }
@@ -361,7 +374,7 @@ protected void _processArray(ArrayDataType schema, SchemaElement parent, String 
 		case MAP: Entity arrayParent = new Entity(nextAutoInc(), null, null, 0);
 		        _createContainment(arrayParent, parent, name, doc, true, true);
 		        _schemaElementsHive.put(arrayParent.hashCode(), arrayParent);
-		        _processField(schema.getListType(), arrayParent, "[array]_" + name, doc, false, false);
+		        _processField(schema.getListType(), arrayParent, null, null, false, false);
 			break;
 		default: _processField(schema.getListType(), parent, name, doc, true, true);
 	}
@@ -374,8 +387,8 @@ protected void _processMap(MapDataType schema, SchemaElement parent, String name
     _createContainment(mapParent, parent, name, doc, true, true);
     _schemaElementsHive.put(mapParent.hashCode(), mapParent);
 
-    _processField(schema.getKey(), mapParent, "[map_key]_" + name, doc, false, false); 
-    _processField(schema.getValue(), mapParent, "[map_value]_" + name, doc, false, false);
+    _processField(schema.getKey(), mapParent, null, null, false, false); 
+    _processField(schema.getValue(), mapParent, null, null, false, false);
 }
 
 /**

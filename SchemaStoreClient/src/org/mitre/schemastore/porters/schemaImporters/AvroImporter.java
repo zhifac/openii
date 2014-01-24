@@ -22,6 +22,7 @@ import org.apache.avro.io.DatumReader;
 import org.mitre.schemastore.client.Repository;
 import org.mitre.schemastore.client.SchemaStoreClient;
 import org.mitre.schemastore.model.Alias;
+import org.mitre.schemastore.model.Attribute;
 import org.mitre.schemastore.model.Containment;
 import org.mitre.schemastore.model.Domain;
 import org.mitre.schemastore.model.DomainValue;
@@ -87,7 +88,7 @@ public class AvroImporter extends SchemaImporter {
 		{REAL + " ","The double domain", Type.DOUBLE.name()},
 		{BOOLEAN + " ", "The boolean domain", Type.BOOLEAN.name()},
 		{STRING + " ","The string domain", Type.STRING.name()}, 
-		{"bytes" + " ","The bytes domain", Type.BYTES.name()}};
+		{"bytes","The bytes domain", Type.BYTES.name()}};
 	}
 	/* returns the importer URI type */
 	@Override
@@ -174,7 +175,7 @@ public class AvroImporter extends SchemaImporter {
 	    	for (org.apache.avro.Schema avroSchema : avroSchemas)
 	    	{
 	    		if (avroSchema.getType()==Type.RECORD) {
-	    		_processRecord(avroSchema, null, "["+ avroSchema.getName() + "]", null, false, false, null);
+	    		_processRecord(avroSchema, null, null, null, false, false, null);
 	    		}
 	    		else if (avroSchema.getType()==Type.ENUM){
 	    			_addEnum(avroSchema);
@@ -212,7 +213,9 @@ public class AvroImporter extends SchemaImporter {
 				_processField(entity, field, false, false);
 			}
 		}
-		_createContainment(entity, parent, containerName, doc, allowNull, noLimit, aliases);
+		if (parent != null) {
+			_createContainment(entity, parent, containerName, doc, allowNull, noLimit, aliases);
+		}
 	}
 	protected void _createContainment(SchemaElement child, SchemaElement parent, String name, String doc, boolean allowNull, boolean noLimit, Set<String> aliases)
 	{
@@ -259,13 +262,29 @@ public class AvroImporter extends SchemaImporter {
 		return field.doc();
 	}
 
+	protected void _createAttribute(SchemaElement domain, SchemaElement parent, String name, String doc,
+			boolean allowNull, boolean noLimit, Set<String> aliases) {
+		_createAttribute(domain, parent, name, doc, allowNull, noLimit, aliases, false);
+	}
+	protected void _createAttribute(SchemaElement domain, SchemaElement parent, String name, String doc, 
+			boolean allowNull, boolean noLimit, Set<String>aliases, boolean isKey) {
+		Attribute attr = new Attribute(nextAutoInc(), name, doc, parent!=null?parent.getId():0, domain.getId(), allowNull?0:1, noLimit?-1:1, isKey, 0);
+		_schemaElementsAvro.put(attr.hashCode(), attr);
+		if (aliases != null) {
+			for (String alias : aliases)
+			{
+				Alias aliasElem = new  Alias(nextAutoInc(), alias, attr.getId(), 0);
+				_schemaElementsAvro.put(aliasElem.hashCode(), aliasElem);
+			}
+		}
+	}
 	protected void _processPrimitiveType(org.apache.avro.Schema schema, SchemaElement parent, String name, String doc, boolean allowNull, boolean noLimit, Set<String> aliases) throws ImporterException {
 		SchemaElement elem = _domainList.get(schema.getType().name());
 		if (elem == null)
 		{
 			throw new ImporterException(ImporterExceptionType.IMPORT_FAILURE, "Domain value " + schema.getType().name() + " doesn't exist in domain");
 		}
-			_createContainment(elem, parent, name, doc, allowNull, noLimit, aliases);
+			_createAttribute(elem, parent, name, doc, allowNull, noLimit, aliases);
 	}
 	protected void _processUnion(org.apache.avro.Schema schema, SchemaElement parent, String name, String doc, boolean allowNull, boolean noLimit, Set<String> aliases) throws ImporterException
 	{
@@ -291,10 +310,11 @@ public class AvroImporter extends SchemaImporter {
 			_createContainment(unionParent, parent, name, doc, allowNull, noLimit, aliases);
 			_schemaElementsAvro.put(unionParent.hashCode(), unionParent);
 			for (org.apache.avro.Schema subSchema : unionTypes) {
-				_processField(subSchema, unionParent, "[union]_" + name, doc, includesNull, false, null);
+				_processField(subSchema, unionParent,  null, null, includesNull, false, null);
 			}
 		}
 	}
+
 
 	protected void _processArray(org.apache.avro.Schema schema, SchemaElement parent, String name, String doc, Set<String> aliases) throws ImporterException{
 		switch (schema.getElementType().getType()) {
@@ -302,7 +322,7 @@ public class AvroImporter extends SchemaImporter {
 			case MAP: Entity arrayParent = new Entity(nextAutoInc(), null, null, 0);
 			        _createContainment(arrayParent, parent, name, doc, true, true, aliases);
 			        _schemaElementsAvro.put(arrayParent.hashCode(), arrayParent);
-			        _processField(schema.getElementType(), arrayParent, "[array]_" + name, doc, false, false, null);
+			        _processField(schema.getElementType(), arrayParent, null, null, false, false, null);
 				break;
 			default: _processField(schema.getElementType(), parent, name, doc, true, true, aliases);
 		}
@@ -324,9 +344,9 @@ public class AvroImporter extends SchemaImporter {
 		Entity mapParent = new Entity(nextAutoInc(), null, null, 0);
         _createContainment(mapParent, parent, name, doc, true, true, aliases);
         _schemaElementsAvro.put(mapParent.hashCode(), mapParent);
-        _createContainment(_domainList.get(Type.STRING.name()), mapParent, "[map_key]_" + name, doc, false, false, null);
+        _createAttribute(_domainList.get(Type.STRING.name()), mapParent, null, null, false, false, null, true);
         
-        _processField(schema.getValueType(), mapParent, "[map_value]_" + name, doc, false, false, null);
+        _processField(schema.getValueType(), mapParent, null, null, false, false, null);
 	}
 	protected Domain _addEnum(org.apache.avro.Schema schema) {
 		Domain dom = _domainList.get(schema.getFullName());
@@ -351,7 +371,7 @@ public class AvroImporter extends SchemaImporter {
 	}
 	protected void _processEnum(org.apache.avro.Schema schema, SchemaElement parent, String name, String doc, boolean allowNull, boolean noLimit, Set<String> aliases){
 		Domain dom = _addEnum(schema);
-		_createContainment(dom, parent, name, doc, allowNull, noLimit, aliases);
+		_createAttribute(dom, parent, name, doc, allowNull, noLimit, aliases);
 	}		
 	
 	/**
