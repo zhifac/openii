@@ -18,6 +18,7 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 
 import org.mitre.harmony.model.HarmonyModel;
 import org.mitre.harmony.model.filters.Focus;
+import org.mitre.schemastore.model.Attribute;
 import org.mitre.schemastore.model.Containment;
 import org.mitre.schemastore.model.Domain;
 import org.mitre.schemastore.model.DomainValue;
@@ -129,6 +130,19 @@ class SchemaTreeRenderer extends DefaultTreeCellRenderer
 				String typeString = schemaInfo.getTypeString(schemaInfo,element.getId());
 				if(typeString!=null) text += " <font color='#888888'>(" + typeString + ")</font>";
 			}
+			if (harmonyModel.getPreferences().getShowSchemaTypes())
+			{
+				if (element instanceof Containment) {
+					Containment c = (Containment)element;
+					text += getCardinalityText(c.getMin(), c.getMax());
+					
+				}
+				else if (element instanceof Attribute) {
+					Attribute a = (Attribute)element;
+					text += getCardinalityText(a.getMin(), a.getMax());
+				}
+				
+			}
 			text += "</html>";
 			setText(text);
 			
@@ -180,5 +194,21 @@ class SchemaTreeRenderer extends DefaultTreeCellRenderer
 		
 		// Returns the rendered node
 		return this;
+	}
+	private String getCardinalityText(Integer min, Integer max) {
+		String s = "";
+		int mn = min==null?1:min;
+		int mx = max==null?1:max;
+		if (mn!=mx || mn != 1) {
+			s += " <font color='#888888'>[";
+			if (mn==mx) {
+				s +=  mn;
+			}
+			else {
+				s += mn + ".." + mx;
+			}
+			s += "] </font>";
+		}
+		return s;
 	}
 }

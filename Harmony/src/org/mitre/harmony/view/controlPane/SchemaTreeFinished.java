@@ -78,4 +78,5 @@ public class SchemaTreeFinished extends JPanel implements PreferencesListener, S
 	public void alphabetizedChanged() {}
 	public void displayedViewChanged() {}
 	public void showSchemaTypesChanged() {}
+	public void showCardinalityChanged() {}
 }

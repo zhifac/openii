@@ -540,6 +540,22 @@ public class SchemaTree extends JTree implements MappingListener, ProjectListene
 		}
 	}
 	
+	/** Handles preference changes */
+	public void showCardinalityChanged()
+	{
+		// Update all nodes which might be affected by showing node type
+		DefaultMutableTreeNode leaf = root.getFirstLeaf();
+		while(leaf!=null) {
+			((DefaultTreeModel)getModel()).nodeChanged(leaf);
+			leaf = leaf.getNextLeaf();
+		}
+		
+		// Inform listeners that schema tree nodes have changed
+		for(SchemaTreeListener listener : listeners) {
+			listener.schemaDisplayModified(this);
+		}
+	}
+	
 	/** Handles the marking of a element as finished */
 	public void elementsMarkedAsFinished(Integer schemaID, HashSet<Integer> elementIDs)
 	{
