@@ -33,7 +33,7 @@ public class RMap_1_to_N_SchemaModel extends SchemaModel
 			for (Relationship rel : orderRelationshipsByName(schemaInfo.getRelationships(entity.getId()))){
 				// convention:  LEFT --> FK --> RIGHT
 				Integer relFKSourceId = rel.getLeftID();
-				if ((rel.getRightMax() == null && rel.getRightMax() != 1) 
+				if ((rel.getRightMax() == null || rel.getRightMax() != 1) 
 						&& (rel.getLeftMax() != null && rel.getLeftMax() == 1))
 					relFKSourceId = rel.getRightID();
 			
