@@ -70,6 +70,21 @@ public class PreferencesManager extends AbstractManager<PreferencesListener> imp
 				listener.showSchemaTypesChanged();
 		}
 	}
+	/** Returns the preference for if cardinality should be displayed */
+	public boolean getShowCardinality()
+		{ try { return Boolean.parseBoolean(ConfigManager.getParm("preferences.showCardinality")); } catch(Exception e) {} return false; }
+	
+	/** Set preference to show schema types */
+	public void setShowCardinality(boolean newShowCardinality)
+	{
+		// Only set preference if changed from original
+		if(newShowCardinality!=getShowCardinality())
+		{
+			ConfigManager.setParm("preferences.showCardinality",Boolean.toString(newShowCardinality));
+			for(PreferencesListener listener : getListeners())
+				listener.showCardinalityChanged();
+		}
+	}
 	
 	// ------------- Preference for if schema nodes should be alphabetized ------------
 

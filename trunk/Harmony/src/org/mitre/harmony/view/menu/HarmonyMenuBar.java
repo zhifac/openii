@@ -76,6 +76,7 @@ public class HarmonyMenuBar extends JMenuBar
 			// Add view items to view drop-down menu
 		    add(createCheckboxItem("Alphabetize", harmonyModel.getPreferences().getAlphabetized(), new AlphabetizeAction()));
 		    add(createCheckboxItem("Show Types", harmonyModel.getPreferences().getShowSchemaTypes(), new ShowTypesAction()));
+		    add(createCheckboxItem("Show Cardinality", harmonyModel.getPreferences().getShowCardinality(), new ShowCardinalityAction()));
 		}
 	    
 		/** Action for alphabetizing sibling elements */
@@ -85,6 +86,16 @@ public class HarmonyMenuBar extends JMenuBar
 			{
 				boolean isSelected = ((JCheckBoxMenuItem)(e.getSource())).isSelected();
 				harmonyModel.getPreferences().setAlphabetized(isSelected);
+			}
+		}
+		 /** Action for showing cardinality */
+		/** Action for alphabetizing sibling elements */
+		private class ShowCardinalityAction extends AbstractAction
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				boolean isSelected = ((JCheckBoxMenuItem)(e.getSource())).isSelected();
+				harmonyModel.getPreferences().setShowCardinality(isSelected);
 			}
 		}
 
