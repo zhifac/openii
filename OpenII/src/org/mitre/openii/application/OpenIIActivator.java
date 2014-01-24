@@ -43,4 +43,8 @@ public class OpenIIActivator extends AbstractUIPlugin
 	/** Retrieves the specified image */
 	public static Image getImage(String imageName)
 		{ return getImageDescriptor("icons/"+imageName).createImage(); }
+	
+	public static ImageDescriptor getImageDescriptorForIcons(String imageName){
+		return getImageDescriptor("icons/" + imageName);
+	}
 }

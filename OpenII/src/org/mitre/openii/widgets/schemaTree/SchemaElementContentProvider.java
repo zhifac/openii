@@ -1,7 +1,10 @@
 package org.mitre.openii.widgets.schemaTree;
 
+import java.util.ArrayList;
+
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
+import org.mitre.schemastore.model.Domain;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
@@ -21,8 +24,33 @@ public class SchemaElementContentProvider implements ITreeContentProvider
 	{
 		HierarchicalSchemaInfo schema = schemaView.getSchema();
 		if(element instanceof String) return new Object[]{schema.getSchema()};
-		if(element instanceof Schema) return schema.getRootElements().toArray();
-		return schema.getChildElements(((SchemaElement)element).getId()).toArray();
+		ArrayList<SchemaElementWrapper> wrappers = new ArrayList<SchemaElementWrapper>();
+		ArrayList<SchemaElement> elements;
+		if (element instanceof Schema) {
+			elements = schema.getRootElements();
+			for (SchemaElement current : elements) {
+				wrappers.add(new SchemaElementWrapper(current));
+			}
+		} else {
+			SchemaElementWrapper wrapper = (SchemaElementWrapper)element;
+			if (!(wrapper.getPathIds().contains(schema.getType(schema, wrapper.getSchemaElement().getId())))){
+			elements = schema.getChildElements(wrapper.getSchemaElement().getId(), wrapper.getPathIds());
+			SchemaElement type = schema.getType(schema, wrapper.getSchemaElement().getId());
+			if (type instanceof Domain) {
+				type = null;
+			}
+			for (SchemaElement current : elements) {
+				SchemaElementWrapper w = wrapper.createChildWrapper(current);
+				wrappers.add(w);
+				if (type != null) {
+					w.insertTypeId(type.getId());
+
+			}
+			}
+		}
+		}
+
+		return wrappers.toArray();
 	}
 
 	/** Return the parent element for the specified element */

@@ -24,6 +24,7 @@ import java.util.Hashtable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.events.DisposeEvent;
@@ -61,8 +62,13 @@ import org.eclipse.swt.widgets.Text;
 import org.mitre.openii.application.OpenIIActivator;
 import org.mitre.openii.editors.vocabulary.VocabularySort.AlignedSchemasSorter;
 import org.mitre.openii.model.OpenIIManager;
+import org.mitre.schemastore.model.Attribute;
+import org.mitre.schemastore.model.Containment;
+import org.mitre.schemastore.model.DomainValue;
 import org.mitre.schemastore.model.Mapping;
 import org.mitre.schemastore.model.MappingCell;
+import org.mitre.schemastore.model.Relationship;
+import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
 import org.mitre.schemastore.model.mappingInfo.AssociatedElementHash;
 import org.mitre.schemastore.model.mappingInfo.MappingInfoExt;
@@ -96,7 +102,7 @@ public class VocabViewCanvas extends Canvas
 	
 	/** Stores the cache used to reference SchemaStore */
 	private SchemaStoreCache cache = new SchemaStoreCache();
-	
+	private HashMap<ImageDescriptor, Image> imageCache = new HashMap<ImageDescriptor, Image>();
 	private int numSchemas; // num schemas, including common vocab as a schema
 	private Integer[] schemaIDs;
 	private String[] schemaNames; // schemaNames[0] will always be
@@ -719,7 +725,7 @@ public class VocabViewCanvas extends Canvas
 						tempI.setText(colNum, current + ", " + ele.getName());
 					}
 					
-					Image img = org.mitre.openii.widgets.schemaTree.SchemaElementLabelProvider.getImage(schemaEle);
+					Image img = getImage(schemaEle);
 					tempI.setImage(colNum, img);
 				}
 						
@@ -742,8 +748,31 @@ public class VocabViewCanvas extends Canvas
 		editRowDialog.pack();
 		editRowDialog.open();			
 	}
-
-
+	/** Returns the image associated with the specified element */
+	private Image getImage(Object element)
+	{
+		String imageName = "";
+		if(element instanceof Schema) imageName = "Schema.gif";
+		else if(element instanceof DomainValue) imageName = "DomainValue.jpg";
+			else if(element instanceof Attribute) imageName = "Attribute.jpg";
+			else if(element instanceof Containment) imageName = "Containment.jpg";
+			else if(element instanceof Relationship) imageName = "Relationship.jpg";
+			else imageName = "SchemaElement.jpg";	
+		ImageDescriptor descriptor = OpenIIActivator.getImageDescriptorForIcons(imageName);
+		Image image = imageCache.get(descriptor);
+		if (image == null) {
+			image = descriptor.createImage();
+			imageCache.put(descriptor, image);
+		}
+		return image;
+	}
+	public void dispose() {
+		for (Image image : imageCache.values()) {
+			image.dispose();
+		}
+		imageCache.clear();
+		super.dispose();
+	}
 	/** creates the dialog that allows a user to add a row to the table **/
 	private void createRowCreationDialog(){
 		Display display = viewsParent.getDisplay();

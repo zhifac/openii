@@ -18,10 +18,10 @@ public class SchemaElementSorter extends ViewerSorter
 	/** Compares elements in the schema tree */
 	public int compare(Viewer viewer, Object object1, Object object2)
 	{
-		if(object1 instanceof SchemaElement && object2 instanceof SchemaElement)				
+		if(object1 instanceof SchemaElementWrapper && object2 instanceof SchemaElementWrapper)				
 		{
-			Integer element1ID = ((SchemaElement)object1).getId();
-			Integer element2ID = ((SchemaElement)object2).getId();
+			Integer element1ID = ((SchemaElementWrapper)object1).getSchemaElement().getId();
+			Integer element2ID = ((SchemaElementWrapper)object2).getSchemaElement().getId();
 			if(schemaView.isAlphabetized())
 			{
 				HierarchicalSchemaInfo schema = schemaView.getSchema();
