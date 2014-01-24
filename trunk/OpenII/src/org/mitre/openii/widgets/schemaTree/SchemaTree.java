@@ -48,6 +48,8 @@ public class SchemaTree extends Composite implements SelectionListener, ISelecti
 	private boolean doalphabetize = false;
 	private boolean doshowTypes = false;
 	private boolean doshowBaseSchemas = false;
+	private boolean doshowCardinality  = false;
+	private Button showCardinality = null;
 	
 	/** Generate the menu pane */
 	private void generateMenuPane(Composite parent)
@@ -128,6 +130,11 @@ public class SchemaTree extends Composite implements SelectionListener, ISelecti
 		showBaseSchemas = new Button(optionsPane, SWT.CHECK);
 		showBaseSchemas.setText("Show Base Schemas");
 		showBaseSchemas.addSelectionListener(this);
+		
+		//Construct the show cardinality option
+		showCardinality = new Button(optionsPane, SWT.CHECK);
+		showCardinality.setText("Show Cardinality");
+		showCardinality.addSelectionListener(this);
 	}
 	
 	/** Constructs the Schema Tree */
@@ -195,6 +202,11 @@ public class SchemaTree extends Composite implements SelectionListener, ISelecti
 	public boolean showBaseSchemas()
 		{ return doshowBaseSchemas; }
 	
+	/** Indicates if the schema should show cardinality */
+	public boolean showCardinality()
+		{ return doshowCardinality; }
+	
+	
 	/** Indicates if the schema should be alphabetized */
 	public void doAlphabetized(boolean bool)
 		{ doalphabetize = bool;
@@ -213,6 +225,15 @@ public class SchemaTree extends Composite implements SelectionListener, ISelecti
 	public void doShowBaseSchemas(boolean bool)
 		{ doshowBaseSchemas = bool; 
   		  schemaViewer.refresh(); 
+		}
+	
+	/** Indicates if the schema should show base schemas */
+	public void doShowCardinality(boolean bool)
+		{ 
+			if (doshowCardinality != bool){
+				doshowCardinality = bool; 
+  		  		schemaViewer.refresh(); 
+			}
 		}
 	
 	/** Returns the currently selected element */
@@ -279,6 +300,7 @@ public class SchemaTree extends Composite implements SelectionListener, ISelecti
 		doalphabetize = alphabetize.getSelection();
 	    doshowTypes = showTypes.getSelection();
 		doshowBaseSchemas = showBaseSchemas.getSelection();
+		doshowCardinality = showCardinality.getSelection();
 
 		schemaViewer.refresh(); 
 	}
