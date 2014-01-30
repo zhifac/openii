@@ -14,9 +14,14 @@ import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
  * Class for displaying domain hierarchy
  */
 public class DomainSchemaModel extends SchemaModel {
+
 	/** Returns the schema model name */
-	public String getName() {
-		return "Domain";
+	public String getName()
+	{ 
+		if (name == null) {
+			name = "Domain";
+		}
+		return name;
 	}
 
 	/** Returns the root domain elements in this schema */

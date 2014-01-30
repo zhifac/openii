@@ -23,8 +23,12 @@ public class GSIPSchemaModel extends SchemaModel
 
 	/** Returns the schema model name */
 	public String getName()
-		{ return "GSIP"; }
-	
+	{ 
+		if (name == null) {
+			name = "GSIP";
+		}
+		return name;
+	}
 	/** Returns the root elements in this schema */
 	public ArrayList<SchemaElement> getRootElements(HierarchicalSchemaInfo schemaInfo)
 	{

@@ -1,15 +1,15 @@
 <schemaModels>
-  <schemaModel>org.mitre.schemastore.model.schemaInfo.model.XMLSchemaModel</schemaModel>
-  <schemaModel>org.mitre.schemastore.model.schemaInfo.model.XMLnoAttrsSchemaModel</schemaModel>
-  <schemaModel>org.mitre.schemastore.model.schemaInfo.model.RelationalSchemaModel</schemaModel>
-  <schemaModel>org.mitre.schemastore.model.schemaInfo.model.DomainSchemaModel</schemaModel>
-  <schemaModel>org.mitre.schemastore.model.schemaInfo.model.SynonymModel</schemaModel>
-  <schemaModel>org.mitre.schemastore.model.schemaInfo.model.RMapSchemaModel</schemaModel>
-  <schemaModel>org.mitre.schemastore.model.schemaInfo.model.RMap_1_to_N_SchemaModel</schemaModel>
-  <schemaModel>org.mitre.schemastore.model.schemaInfo.model.RMap_N_to_1_SchemaModel</schemaModel>
-  <schemaModel>org.mitre.schemastore.model.schemaInfo.model.GSIPSchemaModel</schemaModel>
-  <schemaModel>org.mitre.schemastore.model.schemaInfo.model.CompleteSchemaModel</schemaModel>
-  <schemaModel>org.mitre.schemastore.model.schemaInfo.model.MixedSchemaModel</schemaModel>
-  <schemaModel>org.mitre.schemastore.model.schemaInfo.model.OWLSchemaModel</schemaModel>
-  <schemaModel>org.mitre.schemastore.model.schemaInfo.model.ContainingRelationshipSchemaModel</schemaModel>
+  <schemaModel><class>org.mitre.schemastore.model.schemaInfo.model.XMLSchemaModel</class><name>XML</name></schemaModel>
+  <schemaModel><class>org.mitre.schemastore.model.schemaInfo.model.XMLnoAttrsSchemaModel</class><name>XML - no Attrs</name></schemaModel>
+  <schemaModel><class>org.mitre.schemastore.model.schemaInfo.model.RelationalSchemaModel</class><name>Relational</name></schemaModel>
+  <schemaModel><class>org.mitre.schemastore.model.schemaInfo.model.DomainSchemaModel</class><name>Domain</name></schemaModel>
+  <schemaModel><class>org.mitre.schemastore.model.schemaInfo.model.SynonymModel</class></schemaModel>
+  <schemaModel><class>org.mitre.schemastore.model.schemaInfo.model.RMapSchemaModel</class></schemaModel>
+  <schemaModel><class>org.mitre.schemastore.model.schemaInfo.model.RMap_1_to_N_SchemaModel</class></schemaModel>
+  <schemaModel><class>org.mitre.schemastore.model.schemaInfo.model.RMap_N_to_1_SchemaModel</class></schemaModel>
+  <schemaModel><class>org.mitre.schemastore.model.schemaInfo.model.GSIPSchemaModel</class></schemaModel>
+  <schemaModel><class>org.mitre.schemastore.model.schemaInfo.model.CompleteSchemaModel</class></schemaModel>
+  <schemaModel><class>org.mitre.schemastore.model.schemaInfo.model.MixedSchemaModel</class></schemaModel>
+  <schemaModel><class>org.mitre.schemastore.model.schemaInfo.model.OWLSchemaModel</class></schemaModel>
+  <schemaModel><class>org.mitre.schemastore.model.schemaInfo.model.ContainingRelationshipSchemaModel</class></schemaModel>
 </schemaModels>

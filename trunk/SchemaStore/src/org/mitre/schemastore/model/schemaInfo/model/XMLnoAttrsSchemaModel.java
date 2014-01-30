@@ -18,7 +18,12 @@ public class XMLnoAttrsSchemaModel extends SchemaModel
 {
 	/** Returns the schema model name */
 	public String getName()
-		{ return "XML-NoAttrs"; }
+	{ 
+		if (name == null) {
+			name = "XML - noAttrs";
+		}
+		return name;
+	}
 	
 	/** Returns the root elements in this schema */
 	public ArrayList<SchemaElement> getRootElements(HierarchicalSchemaInfo schemaInfo)

@@ -11,9 +11,16 @@ import org.mitre.schemastore.model.Subtype;
 import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
 
 public class OWLSchemaModel extends RelationalSchemaModel {
+
 	/** Returns the schema model name */
 	public String getName()
-		{ return "OWL"; }
+	{ 
+		if (name == null) {
+			name = "OWL";
+		}
+		return name;
+	}
+	
 	/** Returns the type name associated with the specified element (or NULL if element has no name) */
 	public SchemaElement getType(HierarchicalSchemaInfo schemaInfo, Integer elementID)
 	{

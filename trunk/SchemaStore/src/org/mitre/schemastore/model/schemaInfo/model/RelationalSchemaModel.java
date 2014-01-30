@@ -20,7 +20,12 @@ public class RelationalSchemaModel extends SchemaModel
 {
 	/** Returns the schema model name */
 	public String getName()
-		{ return "Relational"; }
+	{ 
+		if (name == null) {
+			name = "Relational";
+		}
+		return name;
+	}
 	
 	/** Returns the root elements in this schema */
 	public ArrayList<SchemaElement> getRootElements(HierarchicalSchemaInfo schemaInfo)

@@ -18,9 +18,14 @@ import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
  * @author PMORK
  */
 public class MixedSchemaModel extends SchemaModel {
+
 	/** Returns the schema model name */
-	public String getName() {
-		return "Mixed";
+	public String getName()
+	{ 
+		if (name == null) {
+			name = "Mixed";
+		}
+		return name;
 	}
 
 	/** Returns the root elements in this schema */
