@@ -29,14 +29,21 @@ import org.mitre.schemastore.model.schemaInfo.model.*;
 public class HierarchicalSchemaInfo extends SchemaInfo
 {
 	// Pattern used to extract schema models
-	static private Pattern schemaModelPattern = Pattern.compile("<schemaModel>(.*?)</schemaModel>");
+	static private Pattern schemaModelPattern = Pattern.compile("<schemaModel>\\s*<class>\\s*(.*?\\S)?\\s*</class>\\s*(<name>\\s*(.*?\\S)?\\s*</name>)?\\s*</schemaModel>");
+
 
 	/** Stores the list of available schema models */
 	static private ArrayList<SchemaModel> schemaModels = null;
 
 	/** Stores the current model being used to interpret the schema info */
 	private SchemaModel model;
-
+	public static void main(String[] args){
+		initSchemaModels();
+		System.out.println(schemaModels.size());
+		for (SchemaModel model : schemaModels) {
+			System.out.println(model.getClass().getSimpleName() + " " + model.getName());
+		}
+	}
 	/** Initializes the schema models */
 	static private void initSchemaModels()
 	{
@@ -56,6 +63,10 @@ public class HierarchicalSchemaInfo extends SchemaInfo
 			while(schemaModelMatcher.find())
 				try {
 					SchemaModel schemaModel = (SchemaModel)Class.forName(schemaModelMatcher.group(1)).newInstance();
+					if (schemaModelMatcher.group(3) != null)
+					{
+						schemaModel.setName(schemaModelMatcher.group(3));
+					}
 					schemaModels.add(schemaModel);
 				} catch(Exception e) { System.out.println("HierarchicalSchemaInfo.initSchemaModels():  " + e.getMessage()); }
 		}

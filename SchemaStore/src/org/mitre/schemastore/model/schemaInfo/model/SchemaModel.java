@@ -13,8 +13,15 @@ import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
  */
 abstract public class SchemaModel
 {
+	String name = null;
+	
+	public void setName(String name) {
+		this.name = name;
+	}
 	/** Returns the name of the schema model */
-	abstract public String getName();
+	public String getName(){
+		return name;
+	}
 	
 	/** Returns the root elements in this schema */
 	abstract public ArrayList<SchemaElement> getRootElements(HierarchicalSchemaInfo schemaInfo);

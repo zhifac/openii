@@ -16,7 +16,12 @@ public class SynonymModel extends SchemaModel
 {
 	/** Returns the schema model name */
 	public String getName()
-		{ return "Synonym"; }
+	{ 
+		if (name == null) {
+			name = "Synonym";
+		}
+		return name;
+	}
 
 	/** Returns the list of elements which contain synonyms */
 	public ArrayList<SchemaElement> getRootElements(HierarchicalSchemaInfo schemaInfo)

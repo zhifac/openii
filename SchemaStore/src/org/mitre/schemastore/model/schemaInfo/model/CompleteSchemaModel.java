@@ -21,7 +21,12 @@ public class CompleteSchemaModel extends SchemaModel
 {
 	/** Returns the schema model name */
 	public String getName()
-		{ return "Complete"; }
+	{ 
+		if (name == null) {
+			name = "Complete";
+		}
+		return name;
+	}
 	
 	/** Returns the root elements in this schema */
 	public ArrayList<SchemaElement> getRootElements(HierarchicalSchemaInfo schemaInfo)

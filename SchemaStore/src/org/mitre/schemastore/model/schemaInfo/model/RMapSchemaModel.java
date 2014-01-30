@@ -20,7 +20,12 @@ public class RMapSchemaModel extends SchemaModel
 {
 	/** Returns the schema model name */
 	public String getName()
-		{ return "RMap"; }
+	{ 
+		if (name == null) {
+			name = "RMap";
+		}
+		return name;
+	}
 	
 	/** Returns the root elements in this schema -- entities at top level*/
 	public ArrayList<SchemaElement> getRootElements(HierarchicalSchemaInfo schemaInfo)

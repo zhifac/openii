@@ -19,7 +19,12 @@ public class XMLSchemaModel extends SchemaModel
 {
 	/** Returns the schema model name */
 	public String getName()
-		{ return "XML"; }
+	{ 
+		if (name == null) {
+			name = "XML";
+		}
+		return name;
+	}
 	
 	/** Returns the root elements in this schema */
 	public ArrayList<SchemaElement> getRootElements(HierarchicalSchemaInfo schemaInfo)

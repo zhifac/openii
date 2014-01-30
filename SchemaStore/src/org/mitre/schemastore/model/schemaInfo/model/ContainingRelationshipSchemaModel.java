@@ -13,9 +13,16 @@ import org.mitre.schemastore.model.Subtype;
 import org.mitre.schemastore.model.schemaInfo.HierarchicalSchemaInfo;
 
 public class ContainingRelationshipSchemaModel extends OWLSchemaModel {
+
 	/** Returns the schema model name */
 	public String getName()
-		{ return "Containing Relationship"; }
+	{ 
+		if (name == null) {
+			name = "Containing Relationship";
+		}
+		return name;
+	}
+		
 	
 	/** Returns the root elements in this schema */
 	public ArrayList<SchemaElement> getRootElements(HierarchicalSchemaInfo schemaInfo)
