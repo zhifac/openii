@@ -205,7 +205,7 @@ class SchemaTreeRenderer extends DefaultTreeCellRenderer
 				s +=  mn;
 			}
 			else {
-				s += mn + ".." + mx;
+				s += mn + ".." + ((mx==-1)?"n":mx);
 			}
 			s += "] </font>";
 		}
