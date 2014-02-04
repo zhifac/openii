@@ -86,7 +86,7 @@ public class ExactMatcher extends Matcher
 			}else if (element instanceof Relationship) {
 				Relationship rel = (Relationship) element;
 				Integer rtId = rel.getRightID();
-				String rangeName = rtId == null?"":schema.getDisplayName(rtId);
+				String rangeName = rtId == null?"":schema.getType(schema, elementID).toString();
 				if (ignoreCase.isSelected()) {
 					rangeName = rangeName.toLowerCase();
 				}
