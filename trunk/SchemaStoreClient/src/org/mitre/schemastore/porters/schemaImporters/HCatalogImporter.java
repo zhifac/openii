@@ -369,17 +369,17 @@ protected void _processUnion(UnionDataType schema, SchemaElement parent, String 
 }
 
 protected void _processArray(ArrayDataType schema, SchemaElement parent, String name, String doc) throws ImporterException{
-	switch (schema.getListType().getDataType()) {
-		case ARRAY:
-		case MAP: Entity arrayParent = new Entity(nextAutoInc(), null, null, 0);
-		        _createContainment(arrayParent, parent, name, doc, true, true);
-		        _schemaElementsHive.put(arrayParent.hashCode(), arrayParent);
-		        _processField(schema.getListType(), arrayParent, null, null, false, false);
-			break;
-		default: _processField(schema.getListType(), parent, name, doc, true, true);
-	}
-}
 
+		if (schema.getListType().getDataType() == DataType.MAP) {
+			Entity arrayParent = new Entity(nextAutoInc(), null, null, 0);
+			_createContainment(arrayParent, parent, name, doc, true, true);
+			_schemaElementsHive.put(arrayParent.hashCode(), arrayParent);
+			_processField(schema.getListType(), arrayParent, null, null, false,
+					false);
+		} else {
+			_processField(schema.getListType(), parent, name, doc, true, true);
+		}
+	}
 
 
 protected void _processMap(MapDataType schema, SchemaElement parent, String name, String doc) throws ImporterException{
