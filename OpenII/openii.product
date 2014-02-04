@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="OpenII" uid="org.mitre.openii.viewer" id="org.mitre.openii.product" application="org.mitre.openii.application" version="1.0.2660" useFeatures="true" includeLaunchers="true">
+<product name="OpenII" uid="org.mitre.openii.viewer" id="org.mitre.openii.product" application="org.mitre.openii.application" version="1.0.2675" useFeatures="true" includeLaunchers="true">
 
 
    <configIni use="default">
@@ -56,7 +56,7 @@
    </plugins>
 
    <features>
-      <feature id="OpenII_Documentation" version="1.0.0"/>
+      <feature id="OpenII_Documentation"/>
    </features>
 
    <configurations>
