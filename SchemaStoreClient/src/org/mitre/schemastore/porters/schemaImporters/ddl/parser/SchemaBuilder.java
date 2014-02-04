@@ -80,14 +80,20 @@ public class SchemaBuilder {
         	// get the ids in the schema store for the tables based on their names
         	int sourceId = tableIds.get(foreignKey.getSourceTable());
         	int targetId = tableIds.get(foreignKey.getTargetTable());
-
+        	boolean isNullable = false;
+        	if (foreignKey.getSourceColumns().size()==1) {
+        		Column column = tableObj.getColumns(foreignKey.getSourceTable()).get(foreignKey.getSourceColumns().get(0));
+        		if (column != null) {
+        			isNullable = column.isNullable();
+        		}
+        	}
         	// if we already have a relationship between these two tables don't store it again
         	// if we do NOT have a relationship then record that we do now
         	if (relatedTables.contains(sourceId + "-" + targetId)) { continue; }
         	relatedTables.add(sourceId + "-" + targetId);
 
         	// create the relationship and add it to the list of schema objects
-        	Relationship relationship = new Relationship(SchemaImporter.nextId(), foreignKey.getName(), "", sourceId, 1, 1, targetId, 1, 1, schema.getId());
+        	Relationship relationship = new Relationship(SchemaImporter.nextId(), foreignKey.getName(), "", targetId, isNullable?0:1, 1, sourceId, 0, -1, schema.getId());
         	schemaObjects.add(relationship);
         }
     }

@@ -317,14 +317,14 @@ public class AvroImporter extends SchemaImporter {
 
 
 	protected void _processArray(org.apache.avro.Schema schema, SchemaElement parent, String name, String doc, Set<String> aliases) throws ImporterException{
-		switch (schema.getElementType().getType()) {
-			case ARRAY:
-			case MAP: Entity arrayParent = new Entity(nextAutoInc(), null, null, 0);
+		if (schema.getElementType().getType() == Type.MAP ){
+				Entity arrayParent = new Entity(nextAutoInc(), null, null, 0);
 			        _createContainment(arrayParent, parent, name, doc, true, true, aliases);
 			        _schemaElementsAvro.put(arrayParent.hashCode(), arrayParent);
 			        _processField(schema.getElementType(), arrayParent, null, null, false, false, null);
-				break;
-			default: _processField(schema.getElementType(), parent, name, doc, true, true, aliases);
+		}
+		else{
+			 _processField(schema.getElementType(), parent, name, doc, true, true, aliases);
 		}
 	}
 
