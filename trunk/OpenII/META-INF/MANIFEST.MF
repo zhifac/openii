@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: OpenII Plug-in
 Bundle-SymbolicName: org.mitre.openii;singleton:=true
-Bundle-Version: 1.0.2675
+Bundle-Version: 1.0.2680
 Bundle-Activator: org.mitre.openii.application.OpenIIActivator
 Require-Bundle: org.eclipse.ui, org.eclipse.core.runtime
 Bundle-ActivationPolicy: lazy
@@ -531,8 +531,8 @@ Export-Package: about_files,
  org.castor.core.exceptions,
  org.castor.core.util,
  org.castor.mapping,
- org.castor.util,
- org.castor.util.concurrent,
+ org.castor.core.util,
+ org.castor.core.util.concurrent,
  org.castor.xml,
  org.exolab.castor,
  org.exolab.castor.core.exceptions,

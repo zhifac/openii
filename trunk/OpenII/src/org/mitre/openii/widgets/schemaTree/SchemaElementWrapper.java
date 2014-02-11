@@ -9,22 +9,27 @@ public class SchemaElementWrapper {
 	private SchemaElement element;
 	private ArrayList<Integer> pathList;
 	private Integer parentId = null;
+	private SchemaElementWrapper parent = null;
 	
 	public SchemaElementWrapper(SchemaElement elem) {
 		this(elem, new ArrayList<Integer>());
 
 	}
 	private SchemaElementWrapper(SchemaElement elem, ArrayList<Integer> pathList) {
+		this(elem, pathList, null);
+	}
+	private SchemaElementWrapper(SchemaElement elem, ArrayList<Integer> pathList, SchemaElementWrapper parent) {
 		this.element = elem;
 		if (pathList.size()>0) {
 			parentId = pathList.get(pathList.size()-1);
 		}
 		this.pathList = pathList;
 		pathList.add(elem.getId());
+		this.parent = parent;
 	}
 	public SchemaElementWrapper createChildWrapper(SchemaElement elem){
 		ArrayList<Integer> paths = (ArrayList<Integer>) pathList.clone();
-		return new SchemaElementWrapper(elem, paths);
+		return new SchemaElementWrapper(elem, paths, this);
 	}
 	public SchemaElement getSchemaElement() {
 		return element;
@@ -39,6 +44,9 @@ public class SchemaElementWrapper {
 	}
 	public void insertTypeId(Integer id) {
 		pathList.add(0, id);
+	}
+	public SchemaElementWrapper getParent() {
+		return parent;
 	}
 
 	@Override

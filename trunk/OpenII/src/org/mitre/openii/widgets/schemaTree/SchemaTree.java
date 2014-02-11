@@ -95,6 +95,7 @@ public class SchemaTree extends Composite implements SelectionListener, ISelecti
 		schemaViewer.setContentProvider(new SchemaElementContentProvider(this));
 		schemaViewer.setLabelProvider(new SchemaElementLabelProvider(this));
 		schemaViewer.setSorter(new SchemaElementSorter(this));
+
 		
 		// Add the tree popup menu
 		SchemaMenuManager menuManager = new SchemaMenuManager(schemaViewer);

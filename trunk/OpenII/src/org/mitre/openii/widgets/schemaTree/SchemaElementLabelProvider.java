@@ -69,8 +69,11 @@ public class SchemaElementLabelProvider extends StyledCellLabelProvider
 	public String getText(Object object)
 	{
 		String text = "";
-		if(object instanceof SchemaElementWrapper)
+		if(object instanceof SchemaElementWrapper) {
+
 			text = schemaView.getSchema().getDisplayName(((SchemaElementWrapper)object).getSchemaElement().getId());
+
+		}
 		else text = object.toString();
 		return text;
 	}
@@ -85,7 +88,13 @@ public class SchemaElementLabelProvider extends StyledCellLabelProvider
 			HierarchicalSchemaInfo schema = schemaView.getSchema();
 			SchemaElementWrapper wrap = (SchemaElementWrapper) object;
 			SchemaElement element = ((SchemaElementWrapper)object).getSchemaElement();
-
+			Attribute attr = null;
+			if (element instanceof Attribute) {
+				attr = (Attribute) element;
+				if (attr.isKey()) {
+					text += " {K}";
+				}
+			}
 			if (schemaView.showCardinality()) {
 				if (!(element instanceof Entity)) {
 					if (element instanceof Relationship) {
@@ -97,8 +106,8 @@ public class SchemaElementLabelProvider extends StyledCellLabelProvider
 							text += " [" + getCardinalityText(rel.getLeftMin(), rel.getLeftMax()) + "]";
 						}
 					}
-					if (element instanceof Attribute){
-						Attribute attr = (Attribute)element;
+					if (attr != null){
+
 						text += " [" + getCardinalityText(attr.getMin(), attr.getMax()) + "]";
 					}
 					if (element instanceof Containment) {
