@@ -436,6 +436,12 @@ public class SchemaInfo implements Serializable
 			Integer childID = ((Containment)element).getChildID();
 			return "[" + getDisplayName(childID) + "]";
 		}
+		if (element instanceof Attribute) {
+			Attribute attr = (Attribute)element;
+			
+			Integer domainID = attr.getDomainID();
+			return "[" + getDisplayName(domainID).trim() + "]";
+		}
 
 		// Otherwise, find name of containment associated with element
 		for(Containment containment : getContainments(elementID))
