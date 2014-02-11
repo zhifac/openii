@@ -6,6 +6,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
@@ -1200,19 +1201,19 @@ public class XSDImporterSeparate extends SchemaImporter
 		xmlSchema.getTargetNamespace();
 		
 		// Each root SimpleType should be translated into a Domain
-		Enumeration<?> simpleTypes = xmlSchema.getSimpleTypes();
-		while (simpleTypes.hasMoreElements())
-			processSimpleType((SimpleType) simpleTypes.nextElement(), null);
+		Collection<SimpleType> simpleTypes = xmlSchema.getSimpleTypes();
+		for (SimpleType simpleType : simpleTypes)
+			processSimpleType( simpleType, null);
 		
 		// Each root ComplexType should be translated into an Entity
-		Enumeration<?> complexTypes = xmlSchema.getComplexTypes();
-		while (complexTypes.hasMoreElements())
-			processComplexType((ComplexType) complexTypes.nextElement(), null);
+		Collection<ComplexType> complexTypes = xmlSchema.getComplexTypes();
+		for (ComplexType complexType : complexTypes)
+			processComplexType(complexType, null);
 		
 		// Each root Element should be translated into a Containment (with schema as parent)
-		Enumeration<?> elements = xmlSchema.getElementDecls();
-		while (elements.hasMoreElements()) 
-			processElement((ElementDecl) elements.nextElement(), null);
+		Collection<ElementDecl> elements = xmlSchema.getElementDecls();
+		for (ElementDecl element : elements) 
+			processElement(element, null);
 	}
 	
 	/**
