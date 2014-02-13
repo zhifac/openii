@@ -60,7 +60,24 @@ public class XSDImporter extends SchemaImporter
 	/** testing main **/ 
 	public static void main(String[] args) throws URISyntaxException, ImporterException{
 		XSDImporter xsdImporter = new XSDImporter();
-		
+		/** set the web proxy to import schemas on internet (if needed) **/
+		 try {
+	        String proxyHost = new String("gatekeeper.mitre.org");
+	        String proxyPort = new String("80");
+           System.getProperties().put( "http.proxyHost",proxyHost );
+           System.getProperties().put( "http.proxyPort",proxyPort );
+          
+	     }catch (Exception e) {
+	     
+	          	String message = new String("[E] XSDImporter -- " + 
+	          			"Likely a security exception - you " +
+	                		"must allow modification to system properties if " +
+	                		"you want to use the proxy");
+	          	e.printStackTrace();
+	          	
+				throw new ImporterException(ImporterExceptionType.PARSE_FAILURE,message);		 
+	     }
+
 		Repository repository = null;
 		try {
 			repository = new Repository(Repository.DERBY,new URI("C:/Temp/"),"schemastore","postgres","postgres");
@@ -74,7 +91,7 @@ public class XSDImporter extends SchemaImporter
 		}
 			
 		// Initialize the importer
-		xsdImporter.uri = new URI("C:/Users/mgreer/share/My%20Documents/structures.xsd");
+		xsdImporter.uri = new URI("C:/Users/mgreer/share/niem/domains/cbrn/3.0/cbrn.xsd");
 		//xsdImporter.uri = new URI("C:/tempSchemas/niem-2.1/niem/domains/maritime/2.1/maritime.xsd");
 		xsdImporter.initialize();
 		for (SchemaElement elem : xsdImporter.generateSchemaElements()) {
@@ -124,24 +141,7 @@ public class XSDImporter extends SchemaImporter
 	protected void initialize() throws ImporterException
 	{	
 		
-		/** set the web proxy to import schemas on internet (if needed) **/
-		 try {
-	        String proxyHost = new String("gatekeeper.mitre.org");
-	        String proxyPort = new String("80");
-            System.getProperties().put( "http.proxyHost",proxyHost );
-            System.getProperties().put( "http.proxyPort",proxyPort );
-           
-	     }catch (Exception e) {
-	     
-	          	String message = new String("[E] xsdImporter -- " + 
-	          			"Likely a security exception - you " +
-	                		"must allow modification to system properties if " +
-	                		"you want to use the proxy");
-	          	e.printStackTrace();
-	          	
-				throw new ImporterException(ImporterExceptionType.PARSE_FAILURE,message);
-				 
-	     }
+		
 
 		try {
 

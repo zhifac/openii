@@ -27,7 +27,7 @@ import org.mitre.schemastore.porters.ImporterException;
 import org.mitre.schemastore.porters.URIType;
 import org.mitre.schemastore.porters.ImporterException.ImporterExceptionType;
 import org.mitre.schemastore.porters.schemaImporters.hcatalog.WebHCatClient;
-import org.mitre.schemastore.porters.schemaImporters.hcatalog.WebHCatSchemaStoreClient;
+import org.mitre.schemastore.porters.schemaImporters.hcatalog.WebHCatClientForSchemaImport;
 import org.mitre.schemastore.porters.schemaImporters.hcatalog.gson.ArrayDataType;
 import org.mitre.schemastore.porters.schemaImporters.hcatalog.gson.HCatRestColumn;
 import org.mitre.schemastore.porters.schemaImporters.hcatalog.gson.HCatRestDatabase;
@@ -62,7 +62,7 @@ public class HCatalogImporter extends SchemaImporter{
 	/** stores the list of domains seen (used to import elements) **/
 	protected HashMap<DataType,Domain> _domainList = new HashMap<DataType,Domain>();
 	protected HiveDataType _hiveSchema = null;
-	protected WebHCatSchemaStoreClient _hcatClient = null;
+	protected WebHCatClientForSchemaImport _hcatClient = null;
 
 	
 	public HCatalogImporter() {
@@ -113,7 +113,7 @@ public class HCatalogImporter extends SchemaImporter{
 	public List<URI> getAssociatedURIs(String  uriString) throws ImporterException{
 
        try {
-		return WebHCatSchemaStoreClient.getURIsForDatabases(uriString);
+		return WebHCatClientForSchemaImport.getURIsForDatabases(uriString);
 	} catch (HCatalogRequestException e) {
 		throw new ImporterException(ImporterExceptionType.IMPORT_FAILURE, e.getMessage());
 	} catch (HCatalogParseException e) {
@@ -151,9 +151,9 @@ public class HCatalogImporter extends SchemaImporter{
 		}
 	}
 	
-	protected WebHCatSchemaStoreClient getHcatClient(URI uri) {
+	protected WebHCatClientForSchemaImport getHcatClient(URI uri) {
 		if (_hcatClient == null || !_hcatClient.getRequestedURI().toString().equals(uri.toString())) {
-			_hcatClient = new WebHCatSchemaStoreClient(uri);
+			_hcatClient = new WebHCatClientForSchemaImport(uri);
 		}
 		return _hcatClient;
 	}
@@ -215,7 +215,7 @@ protected void initialize() throws ImporterException
 
 public ArrayList<SchemaElement> generateSchemaElements() throws ImporterException {
 	try {
-    	WebHCatSchemaStoreClient currentClient = this.getHcatClient(uri);
+    	WebHCatClientForSchemaImport currentClient = this.getHcatClient(uri);
     	HiveDataType  currentSchema = currentClient.getSchema();
     	if (currentSchema.getDataType() == DataType.DATABASE){
     		_processDatabase((HCatRestDatabase)currentSchema);

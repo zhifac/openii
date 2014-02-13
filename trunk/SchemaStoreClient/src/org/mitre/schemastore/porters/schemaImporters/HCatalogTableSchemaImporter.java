@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.mitre.schemastore.porters.ImporterException;
 import org.mitre.schemastore.porters.ImporterException.ImporterExceptionType;
-import org.mitre.schemastore.porters.schemaImporters.hcatalog.WebHCatSchemaStoreClient;
+import org.mitre.schemastore.porters.schemaImporters.hcatalog.WebHCatClientForSchemaImport;
 import org.mitre.schemastore.porters.schemaImporters.hcatalog.parser.HCatalogParseException;
 import org.mitre.schemastore.porters.schemaImporters.hcatalog.parser.HCatalogRequestException;
 
@@ -15,7 +15,7 @@ public class HCatalogTableSchemaImporter extends HCatalogImporter {
 	public List<URI> getAssociatedURIs(String  uriString) throws ImporterException{
 
        try {
-		return WebHCatSchemaStoreClient.getURIsForTables(uriString);
+		return WebHCatClientForSchemaImport.getURIsForTables(uriString);
 	} catch (HCatalogRequestException e) {
 		throw new ImporterException(ImporterExceptionType.IMPORT_FAILURE, e.getMessage());
 	} catch (HCatalogParseException e) {

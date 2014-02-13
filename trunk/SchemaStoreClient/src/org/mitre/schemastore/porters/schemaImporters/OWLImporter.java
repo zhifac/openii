@@ -187,9 +187,17 @@ public class OWLImporter extends SchemaImporter implements RDFErrorHandler {
 		// Create a stream to read from and a model to read into.
 		InputStream ontologyStream = uri.toURL().openStream();
 		_ontModel = ModelFactory.createOntologyModel(language);
-		System.getProperties().put("proxySet","true");
-		   System.getProperties().put("proxyHost","gatekeeper-w.mitre.org");
-		   System.getProperties().put("proxyPort",80);
+		String proxyHost = System.getProperty("http.proxyHost");
+		String proxyPort = System.getProperty("http.proxyPort");
+		if (proxyHost != null) {
+			System.setProperty("proxySet", "true");
+			System.setProperty("proxyHost", proxyHost);
+			System.setProperty("proxyPort", proxyPort);
+		}
+		else {
+			System.setProperty("proxySet", "false");
+		}
+		
 
 		_ontModel.setDynamicImports(true);
 
