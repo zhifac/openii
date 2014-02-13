@@ -157,24 +157,7 @@ public class XSDImporterMerged extends SchemaImporter
 	protected void initialize() throws ImporterException
 	{	
 		
-		/** set the web proxy to import schemas on internet (if needed) **/
-		 try {
-	        String proxyHost = new String("gatekeeper.mitre.org");
-	        String proxyPort = new String("80");
-            System.getProperties().put( "http.proxyHost",proxyHost );
-            System.getProperties().put( "http.proxyPort",proxyPort );
-           
-	     }catch (Exception e) {
-	     
-	          	String message = new String("[E] xsdMergedImporter -- " + 
-	          			"Likely a security exception - you " +
-	                		"must allow modification to system properties if " +
-	                		"you want to use the proxy");
-	          	e.printStackTrace();
-	          	
-				throw new ImporterException(ImporterExceptionType.PARSE_FAILURE,message);
-				 
-	     }
+		
 
 		try {
 

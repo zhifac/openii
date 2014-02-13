@@ -9,7 +9,7 @@ import org.mitre.schemastore.porters.schemaImporters.hcatalog.gson.HiveDataType;
 import org.mitre.schemastore.porters.schemaImporters.hcatalog.parser.HCatalogParseException;
 import org.mitre.schemastore.porters.schemaImporters.hcatalog.parser.HCatalogRequestException;
 
-public class WebHCatSchemaStoreClient {
+public class WebHCatClientForSchemaImport {
 	
 	URI requestedURI;
 	private boolean isTableSpecific = false;
@@ -19,7 +19,7 @@ public class WebHCatSchemaStoreClient {
 	private WebHCatClient hCatClient;
 	private HiveDataType schema = null;
 	
-	public WebHCatSchemaStoreClient(URI uri) {
+	public WebHCatClientForSchemaImport(URI uri) {
 		requestedURI = uri;
 		int databaseIndex = uri.getPath().indexOf("/database/");
 		int pathLength = uri.getPath().length();
@@ -83,7 +83,7 @@ public class WebHCatSchemaStoreClient {
 	}
 	public static List<URI> getURIsForDatabases(String uriString) throws HCatalogRequestException, HCatalogParseException, URISyntaxException {
 		URI uri = new URI(addHttpProtocol(uriString));
-		WebHCatSchemaStoreClient client = new WebHCatSchemaStoreClient(uri);
+		WebHCatClientForSchemaImport client = new WebHCatClientForSchemaImport(uri);
 		List<URI> uris = new ArrayList<URI>();
 		if (client.isTableSpecific || client.isDatabaseSpecific) {    	
 			uris.add(uri);
@@ -108,7 +108,7 @@ public class WebHCatSchemaStoreClient {
 	}
 	public static List<URI> getURIsForTables(String uriString) throws HCatalogRequestException, HCatalogParseException, URISyntaxException {
 		URI uri = new URI(addHttpProtocol(uriString));
-		WebHCatSchemaStoreClient client = new WebHCatSchemaStoreClient(uri);
+		WebHCatClientForSchemaImport client = new WebHCatClientForSchemaImport(uri);
 		List<URI> uris = new ArrayList<URI>();
 		if (client.isTableSpecific)
 		{
