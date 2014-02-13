@@ -1,5 +1,6 @@
 package org.mitre.openii.model;
 
+import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -42,7 +43,13 @@ public class OpenIIManager
 
 	/** Stores listeners to the OpenII Manager */
 	static private ListenerGroup<OpenIIListener> listeners = new ListenerGroup<OpenIIListener>();
-
+	public static String HTTP_PROXY = "http.proxyHost";
+	public static String HTTP_PROXY_PORT = "http.proxyPort";
+	public static String HTTPS_PROXY = "https.proxyHost";
+	public static String HTTPS_PROXY_PORT = "https.proxyPort";
+	public static String HTTP_NON_PROXY_HOSTS = "http.nonProxyHosts";
+	public static String MANUAL_PROXY = "http.manualProxy";
+	static private final String[] PROXY_KEYS = {HTTP_PROXY, HTTP_PROXY_PORT, HTTPS_PROXY, HTTPS_PROXY_PORT, HTTP_NON_PROXY_HOSTS};
 	/** Initializes this class */
 	static { reset(); }
 	
@@ -89,6 +96,77 @@ public class OpenIIManager
 		try { preferences.save(); }
 		catch (Exception e) { System.out.println("(E)OpenIIManager.setActiveDir - Failed to save the active directory setting"); }
 	}
+	/** Gets saved proxy settings */
+	public static HashMap<String, String> getProxyFromSavedPreferences()
+		{ 
+		ScopedPreferenceStore preferences = (ScopedPreferenceStore) OpenIIActivator.getDefault().getPreferenceStore();
+		preferences.setDefault(MANUAL_PROXY, false);
+		try {
+			preferences.save();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			System.out.println("(E)OpenIIManager.getProxyFromSavedPreferences() - Failed to set default for manual proxy");
+		}
+		boolean isManual = preferences.getBoolean(MANUAL_PROXY);
+
+		HashMap<String, String> proxyProperties = new HashMap<String, String>();
+		for (String key : PROXY_KEYS) {
+			String value = preferences.getString(key);
+			proxyProperties.put(key, value);
+			if (isManual){
+			setSystemProperties(key, value);
+			}
+		}
+		proxyProperties.put(MANUAL_PROXY, Boolean.toString(isManual));
+		return proxyProperties;
+		}
+	
+	public static boolean  setProxySettings(HashMap<String, String> proxySettings) {
+		ScopedPreferenceStore preferences = (ScopedPreferenceStore) OpenIIActivator.getDefault().getPreferenceStore();
+		boolean success = true;
+		String isManualString = proxySettings.get(MANUAL_PROXY);
+
+		boolean isManual = isManualString != null && isManualString.equals("true");
+
+		preferences.setValue(MANUAL_PROXY, isManual);
+		for (String key : PROXY_KEYS) {
+			String propValue = proxySettings.get(key);
+			if (isManual) {
+			success &= setSystemProperties(key, propValue);
+			}
+			else {
+				success &= setSystemProperties(key, null);
+			}
+			preferences.setValue(key, propValue);
+		}
+		try { preferences.save(); }
+		catch (Exception e) { System.out.println("(E)OpenIIManager.setProxySettings - Failed to save proxy settings");
+		return false;
+		}
+
+		return success;
+		
+		
+	}
+	private static boolean setSystemProperties(String prop, String propValue) {
+		try {
+
+			if (propValue != null) {
+			System.setProperty(prop, propValue);
+			}
+			else
+			{
+				System.clearProperty(prop);
+			}
+		} catch(Exception e) {
+			 System.out.println("(E)OpenIIManager.setSystemProperties - Failed to change system proxy settings");
+			 System.out.println(e.getMessage());
+			 e.printStackTrace();
+				return false;
+		}
+		return true;
+	}
+
 
 	/** Returns the current porter preference */
 	public static Class<?> getPorterPreference(PorterType porterType)

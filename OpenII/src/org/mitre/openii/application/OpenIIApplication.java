@@ -14,6 +14,7 @@ import org.eclipse.ui.application.IWorkbenchWindowConfigurer;
 import org.eclipse.ui.application.WorkbenchAdvisor;
 import org.eclipse.ui.application.WorkbenchWindowAdvisor;
 import org.mitre.openii.model.EditorManager;
+import org.mitre.openii.model.OpenIIManager;
 
 /**
  * Class for controlling all aspects of the application's execution
@@ -49,7 +50,8 @@ public class OpenIIApplication implements IApplication
 		public void postWindowCreate()
 		{ 
 			EditorManager.launchEditor("AboutOpenIIEditor", null); 			
-			getWindowConfigurer().getWindow().getShell().setMaximized(true);	        	        
+			getWindowConfigurer().getWindow().getShell().setMaximized(true);
+			OpenIIManager.getProxyFromSavedPreferences();
 		}
 	}
 	
