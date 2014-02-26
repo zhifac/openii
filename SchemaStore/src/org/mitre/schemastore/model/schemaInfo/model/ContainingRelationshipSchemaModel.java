@@ -40,6 +40,9 @@ public class ContainingRelationshipSchemaModel extends OWLSchemaModel {
 		}
 		for (SchemaElement element : schemaInfo.getElements(Containment.class)){
 			Containment containment = (Containment) element;
+			if (containment.getParentID()== null) {
+				result.add(containment);
+			}
 			result.remove(schemaInfo.getElement(containment.getChildID()));
 		}
 		return result;
