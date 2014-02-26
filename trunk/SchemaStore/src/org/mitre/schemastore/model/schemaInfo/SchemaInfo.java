@@ -59,6 +59,7 @@ public class SchemaInfo implements Serializable
 		private HashMap<Integer,ArrayList<DomainValue>> domainValueLists = null;
 		private HashMap<Integer,ArrayList<Synonym>> synonymLists = null;
 		private HashMap<Integer,Alias> aliasList = null;
+		private HashMap<Integer, SchemaElement> domainElementList = null;
 
 		/** Stores a synonym lookup for specified words */
 		private HashMap<String,ArrayList<SchemaElement>> synonymsList = null;
@@ -75,6 +76,7 @@ public class SchemaInfo implements Serializable
 			synonymLists = null;
 			synonymsList = null;
 			aliasList = null;
+			domainElementList = null;
 		}
 
 		/** Adds an element to the list of elements */
@@ -192,6 +194,34 @@ public class SchemaInfo implements Serializable
 			}
 			ArrayList<DomainValue> domainValueList = domainValueLists.get(elementID);
 			return domainValueList==null ? new ArrayList<DomainValue>() : domainValueList;
+		}
+		private SchemaElement getItemWithNoNameDomain(Integer domainID) {
+			if (domainElementList == null) {
+				HashMap<Integer, Domain> map = new HashMap<Integer, Domain>();
+				
+				for (SchemaElement element : getElements(Domain.class)) {
+					Domain dom = (Domain) element;
+					if (element.getName() == null || element.getName().isEmpty()) {
+						map.put(dom.getId(),dom);
+					}
+				}
+				domainElementList = new HashMap<Integer, SchemaElement> ();
+				for (SchemaElement element : getElements(Containment.class)){
+					Containment con = (Containment)element;
+					Integer childId = con.getChildID();
+					if (map.containsKey(childId)) {
+						domainElementList.put(childId, con);
+					}
+				}
+				for (SchemaElement element : getElements(Attribute.class)) {
+					Attribute attr = (Attribute) element;
+					Integer domId = attr.getDomainID();
+					if (map.containsKey(domId)) {
+						domainElementList.put(domId, attr);
+					}
+				}
+			}
+			return domainElementList.get(domainID);
 		}
 
 		/** Refreshes the synonym list if needed */
@@ -442,7 +472,11 @@ public class SchemaInfo implements Serializable
 			Integer domainID = attr.getDomainID();
 			return "[" + getDisplayName(domainID).trim() + "]";
 		}
-
+		if (element instanceof Domain) {
+			SchemaElement parentOfDomain = cache.getItemWithNoNameDomain(element.getId());
+			return "[" + parentOfDomain.getName() + "]";
+			
+		}
 		// Otherwise, find name of containment associated with element
 		for(Containment containment : getContainments(elementID))
 			if(containment.getChildID().equals(elementID) && containment.getName().length()>0)

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import org.mitre.schemastore.model.Attribute;
 import org.mitre.schemastore.model.Containment;
+import org.mitre.schemastore.model.Domain;
 import org.mitre.schemastore.model.Entity;
 import org.mitre.schemastore.model.Relationship;
 import org.mitre.schemastore.model.SchemaElement;
@@ -36,7 +37,8 @@ public class OWLSchemaModel extends RelationalSchemaModel {
 			childElement = schemaInfo.getElement(((Relationship)element).getRightID());
 		}
 		
-		if (childElement != null && childElement.getName() != null && childElement.getName().length() > 0)
+		if (childElement != null && 
+				((childElement.getName() != null && childElement.getName().length() > 0) || childElement instanceof Domain))
 			return childElement;
 
 		return null;	
@@ -72,7 +74,11 @@ public class OWLSchemaModel extends RelationalSchemaModel {
 					childElements.add(schemaInfo.getElement(childID));
 			}
 		}
-
+		if (element instanceof Attribute)
+		{
+			Attribute attr = (Attribute) element;
+			childElements.addAll(schemaInfo.getDomainValuesForDomain(attr.getDomainID()));
+		}
 		return childElements;
 	}
 	

@@ -45,7 +45,7 @@ abstract public class SchemaModel
 	public String getTypeString(HierarchicalSchemaInfo schemaInfo, Integer elementID)
 	{
 		SchemaElement type = getType(schemaInfo,elementID);
-		return type==null ? null : type.getName();
+		return type==null ? null : schemaInfo.getDisplayName(elementID);
 	}
 	
 	/** Returns the name of the schema model */
