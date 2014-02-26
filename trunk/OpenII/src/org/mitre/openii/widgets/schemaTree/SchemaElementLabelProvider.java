@@ -122,7 +122,7 @@ public class SchemaElementLabelProvider extends StyledCellLabelProvider
 			if(schemaView.showTypes())
 			{
 				SchemaElement type = schema.getType(schema, element.getId());
-				if(type!=null) text += " (" + type.getName() + ")";
+				if(type!=null) text += " (" + schema.getDisplayName(type.getId())+ ")";
 			}
 			
 
