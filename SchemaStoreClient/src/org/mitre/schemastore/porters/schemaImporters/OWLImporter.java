@@ -20,6 +20,7 @@ import org.mitre.schemastore.client.Repository;
 import org.mitre.schemastore.client.SchemaStoreClient;
 import org.mitre.schemastore.model.Attribute;
 import org.mitre.schemastore.model.Domain;
+import org.mitre.schemastore.model.DomainValue;
 import org.mitre.schemastore.model.Entity;
 import org.mitre.schemastore.model.Relationship;
 import org.mitre.schemastore.model.SchemaElement;
@@ -30,6 +31,7 @@ import org.mitre.schemastore.porters.URIType;
 
 import com.hp.hpl.jena.ontology.CardinalityRestriction;
 import com.hp.hpl.jena.ontology.DatatypeProperty;
+import com.hp.hpl.jena.ontology.EnumeratedClass;
 import com.hp.hpl.jena.ontology.MaxCardinalityRestriction;
 import com.hp.hpl.jena.ontology.MinCardinalityRestriction;
 import com.hp.hpl.jena.ontology.ObjectProperty;
@@ -42,6 +44,7 @@ import com.hp.hpl.jena.ontology.Restriction;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFErrorHandler;
+import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.RDFReader;
 import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
@@ -79,8 +82,24 @@ public class OWLImporter extends SchemaImporter implements RDFErrorHandler {
 	public static void main(String[] args) throws URISyntaxException, ImporterException{
 		OWLImporter owlImporter = new OWLImporter();
 		String basePath = "file:/Users/mgreer/Downloads/";
-	//	String filePath = basePath + "SA-TT_Ontology_20130815.owl";
-		String filePath = basePath + "test.owl";
+		String filePath = basePath + "SA-TT_Ontology_20130815.owl";
+	//	String filePath = basePath + "test.owl";
+		 try {
+		        String proxyHost = new String("gatekeeper.mitre.org");
+		        String proxyPort = new String("80");
+	           System.getProperties().put( "http.proxyHost",proxyHost );
+	           System.getProperties().put( "http.proxyPort",proxyPort );
+	          
+		     }catch (Exception e) {
+		     
+		          	String message = new String("[E] XSDImporter -- " + 
+		          			"Likely a security exception - you " +
+		                		"must allow modification to system properties if " +
+		                		"you want to use the proxy");
+		          	e.printStackTrace();
+		          	
+					throw new ImporterException(ImporterExceptionType.PARSE_FAILURE,message);		 
+		     }
         Repository repository = null;
 		try {
 			repository = new Repository(Repository.DERBY,new URI("C:/Temp/"),"schemastore","postgres","postgres");
@@ -98,10 +117,10 @@ public class OWLImporter extends SchemaImporter implements RDFErrorHandler {
 		//xsdImporter.uri = new URI("C:/tempSchemas/niem-2.1/niem/domains/maritime/2.1/maritime.xsd");
 		owlImporter.initialize();
 		Collection<SchemaElement> elems = owlImporter.generateSchemaElements();
-/*		for (SchemaElement elem : elems)
+		for (SchemaElement elem : elems)
 		{
-			System.out.println(elem);
-		}*/
+			System.out.println(elem.getId() + " " +elem.getName() + " " + elem.getDescription() + " " + ((elem instanceof Attribute)?((Attribute)elem).getDomainID():""));
+		}
 		
 	}
 	public OWLImporter () {
@@ -114,6 +133,7 @@ public class OWLImporter extends SchemaImporter implements RDFErrorHandler {
 		{DATETIME.toLowerCase(), "The DateTime domain"},
 		{DATE.toLowerCase(), "The Date domain"},
 		{TIME.toLowerCase(), "The Time domain"}};
+		
 	}
 	/** Returns the importer name */
 	public String getName() {
@@ -218,7 +238,7 @@ public class OWLImporter extends SchemaImporter implements RDFErrorHandler {
 	}
 
 	private void getCardinalities() {
-        System.out.println( "== Non-Q MaxRestrictions ==");
+        
         for ( ExtendedIterator<Restriction> rs = 
 _ontModel.listRestrictions();
 rs.hasNext() ; ) {
@@ -376,7 +396,7 @@ r.asCardinalityRestriction();
 					System.out.println("Entity not found: " + leftOntClass.getLocalName());
 					continue;
 				}
-        		System.out.println("\tleft Entity for " + objProp.getLocalName() + " = " + leftOntClass.getLocalName());
+        		//System.out.println("\tleft Entity for " + objProp.getLocalName() + " = " + leftOntClass.getLocalName());
         		String dName = leftOntClass.getNameSpace() + leftOntClass.getLocalName();
         		Integer minCard = getMinCardinality(propCardinality, dName);
         		Integer maxCard = getMaxCardinality(propCardinality, dName);
@@ -394,15 +414,15 @@ r.asCardinalityRestriction();
 						System.out.println("Entity not found: " + rightOntResource.getLocalName());
 						continue;
 					}
-					System.out.println("\tright = " + rightCls.getLocalName() + "=>" + rightCls.getLocalName());
+				//	System.out.println("\tright = " + rightCls.getLocalName() + "=>" + rightCls.getLocalName());
 					
 					
 
 					int relMin = minCard == null?0:minCard;
 					int relMax = maxCard == null?-1:maxCard;
 			
-					System.out.println("cardinality = " + relMin);
-					System.out.println("cardinality = " + relMax);
+					//System.out.println("cardinality = " + relMin);
+					//System.out.println("cardinality = " + relMax);
 
 					Integer leftClsMin = null;
 					Integer leftClsMax = null;
@@ -442,11 +462,50 @@ r.asCardinalityRestriction();
 	// converts a data property range to domain.
 	private Domain convertRangeToDomain(OntProperty dataProp) {
 		OntResource propType = dataProp.getRange();
-		if (propType == null || propType.getLocalName() == null) {
-			return _domainList.get(ANY.toLowerCase());
+		Domain domain = null;
+		if (propType != null){
+		if (propType.getLocalName() == null) {
+			
+		//	System.out.println(propType.getRDFType().getLocalName());
+			if (propType.asClass().isEnumeratedClass()) {
+				domain = new Domain(nextId(),"","",0);
+				_schemaElements.add(domain);
+
+
+				ExtendedIterator<RDFNode> iter = propType.asClass().asEnumeratedClass().getOneOf().iterator();
+
+				while (iter.hasNext()) {
+					RDFNode enumType = iter.next();
+
+					DomainValue d = new DomainValue(nextId(),enumType.toString(), "", domain.getId(),0);
+					
+					_schemaElements.add(d);
+				}
+				
+			}
+		
 		}
-		Domain domain = _domainList.get(propType.getLocalName().toLowerCase());
+		else {
+			domain = _domainList.get(propType.getLocalName().toLowerCase());
+			if (domain == null) {
+				Statement description = propType.getProperty(DC.description);
+				String comment = propType.getComment(null);
+				
+				if (description == null){
+					if (comment==null) comment= "";
+				}
+				else{
+					comment = description.getString();
+				}
+
+				domain = new Domain(nextId(), propType.getLocalName(), comment, 0);
+				_schemaElements.add(domain);
+				_domainList.put(domain.getName().toLowerCase(), domain);
+			}
+		}
+		}
 		if (domain == null) domain = _domainList.get(ANY.toLowerCase());
+	//	System.out.println(domain.getName());
 		return domain;
 	}
 

@@ -128,7 +128,7 @@ public class XMIMappingExporter extends ProjectExporter {
 		String desc = elem.getDescription();
 		if(desc == null || "".equals(desc)) desc = "(None available)"; 
 		
-		if(type != null) tName = type.getName(); 
+		if(type != null) tName = owner.getDisplayName(type.getId()); 
 		thisnode.setDocs("<b>Type:</b> " + tName + "<br/>" + 
 				         "<b>Description:</b> " + desc);
 		

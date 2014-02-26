@@ -130,6 +130,8 @@ public class XSDImporterSeparate extends SchemaImporter
 	private static HashMap<Integer,Integer> _reverseTempTranslationTable = new HashMap<Integer,Integer>();
 	
 	private static HashSet<Integer> _seenAttrsInAttrGroup = new HashSet<Integer>();
+	
+	private static HashSet<String> _baseDomainSet;
 
 	private static Tag _tagForSchemas = null;
 	
@@ -143,13 +145,19 @@ public class XSDImporterSeparate extends SchemaImporter
 	
 	public XSDImporterSeparate() {
 		super();
+		_baseDomainSet = new HashSet<String>();
 		baseDomains = new String[][]{{ANY + " ", "The Any wildcard domain"},
 		{INTEGER + " ","The Integer domain"},
 		{REAL + " ","The Real domain"},
 		{STRING + " ","The String domain"},
 		{"string" + " ","The string domain"},
 		{DATETIME + " ","The DateTime domain"},
-		{BOOLEAN + " ","The Boolean domain"}};
+		{BOOLEAN + " ","The Boolean domain"},
+		{"StringDef ", "The default string domain"}};
+		for (int i = 0; i< baseDomains.length; i++) {
+			_baseDomainSet.add(baseDomains[i][0].toLowerCase());
+			
+		}
 	}
 	/** Initializes the importer for the specified URI 
 	 * @throws ImporterException 
@@ -1239,23 +1247,32 @@ public class XSDImporterSeparate extends SchemaImporter
 		else {
 	
 			// find Domain for SimpleType (generated if required)
-			Domain domain = new Domain(nextAutoInc(), typeName, (passedType == null ? "" : this.getDocumentation(passedType)), 0);
-		
-			if (_domainList.containsKey(domain.getName()) == false) {
-				_domainList.put(domain.getName(),domain);
-				_schemaElementsHS.put(domain.hashCode(), domain);
-				_schemaElems.put(domain.hashCode(), passedType);
+
 				
-				if (passedType != null && passedType instanceof SimpleType && !(passedType instanceof Union)){
-					// create DomainValues (if specified for SimpleType)
-					Enumeration<?> facets = ((SimpleType)passedType).getFacets("enumeration");
-					while (facets.hasMoreElements()) {
-						Facet facet = (Facet) facets.nextElement();
-						DomainValue domainValue = new DomainValue(nextAutoInc(), facet.getValue(), this.getDocumentation(facet), domain.getId(), 0);
-						_schemaElementsHS.put(domainValue.hashCode(), domainValue);
-						_schemaElems.put(domainValue.hashCode(), passedType);
+				Domain domain = _domainList.get(typeName);
+
+				boolean isEnumeration = passedType != null && passedType instanceof SimpleType && !(passedType instanceof Union) && ((SimpleType)passedType).hasFacet("enumeration");
+				boolean isBaseDomain =  domain != null && _baseDomainSet.contains(typeName.toLowerCase());
+				if (domain == null || (isEnumeration && isBaseDomain)) {
+					if (isEnumeration && (passedType.getName()== null || passedType.getName().isEmpty())) {
+						typeName = "";
 					}
-				}
+					 domain = new Domain(nextAutoInc(), typeName, (passedType == null ? "" : this.getDocumentation(passedType)), 0);
+					 if (!isBaseDomain) {
+						 _domainList.put(domain.getName(),domain);
+					 }
+					_schemaElementsHS.put(domain.hashCode(), domain);
+					
+					if (isEnumeration){
+						// create DomainValues (if specified for SimpleType)
+						Enumeration<?> facets = ((SimpleType)passedType).getFacets("enumeration");
+
+						while (facets.hasMoreElements()) {
+							Facet facet = (Facet) facets.nextElement();
+							DomainValue domainValue = new DomainValue(nextAutoInc(), facet.getValue(), this.getDocumentation(facet), domain.getId(), 0);
+							_schemaElementsHS.put(domainValue.hashCode(), domainValue);
+						}
+					}
 				
 				// TODO: process Union Types
 				else if (passedType != null && passedType instanceof Union){
@@ -1272,8 +1289,7 @@ public class XSDImporterSeparate extends SchemaImporter
 				}
 			}
 	 
-			// attached Domain as child to passed Attribute / Containment / Subtype
-			domain = _domainList.get(domain.getName()); 
+ 
 			if (parent instanceof Attribute)
 				((Attribute)parent).setDomainID(domain.getId());
 			else if (parent instanceof Containment)
@@ -1664,6 +1680,7 @@ public class XSDImporterSeparate extends SchemaImporter
 			Domain domain = new Domain(nextAutoInc(), baseDomains[i][0], baseDomains[i][1], 0);
 			_schemaElementsHS.put(domain.hashCode(), domain);
 			_domainList.put(baseDomains[i][0].trim(),  domain);
+			_baseDomainSet.add(baseDomains[i][0].toLowerCase());
 		}
 
 	}
