@@ -79,6 +79,13 @@ public class OWLSchemaModel extends RelationalSchemaModel {
 			Attribute attr = (Attribute) element;
 			childElements.addAll(schemaInfo.getDomainValuesForDomain(attr.getDomainID()));
 		}
+		if (element instanceof Containment) {
+			Containment con = (Containment)element;
+			SchemaElement e = schemaInfo.getElement(con.getChildID());
+			if (e instanceof Domain){
+				childElements.addAll(schemaInfo.getDomainValuesForDomain(e.getId()));
+			}
+		}
 		return childElements;
 	}
 	
