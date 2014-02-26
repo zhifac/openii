@@ -91,8 +91,9 @@ public class XSDImporter extends SchemaImporter
 		}
 			
 		// Initialize the importer
-		xsdImporter.uri = new URI("C:/Users/mgreer/share/niem/domains/cbrn/3.0/cbrn.xsd");
+		//xsdImporter.uri = new URI("C:/Users/mgreer/share/niem/domains/cbrn/3.0/cbrn.xsd");
 		//xsdImporter.uri = new URI("C:/tempSchemas/niem-2.1/niem/domains/maritime/2.1/maritime.xsd");
+		xsdImporter.uri = new URI("C:/Users/mgreer/share/devel/contlearn/accumulo/config/xsd/PanoptesAccumuloConf.xsd");
 		xsdImporter.initialize();
 		for (SchemaElement elem : xsdImporter.generateSchemaElements()) {
 			System.out.println(elem.getName() + ": " + elem.getDescription() + " - " + elem.getClass().toString());
@@ -124,6 +125,7 @@ public class XSDImporter extends SchemaImporter
 	private static HashSet<Integer> _seenAttrsInAttrGroup = new HashSet<Integer>();
 
 	private static HashMap<String,Entity> _attrGroupEntitySet = new HashMap<String,Entity>();
+	private static HashSet<String> _baseDomainSet;
 	
 	public XSDImporter() {
 		super();
@@ -133,7 +135,8 @@ public class XSDImporter extends SchemaImporter
 		{STRING + " ","The String domain"},
 		{"string" + " ","The string domain"},
 		{DATETIME + " ","The DateTime domain"},
-		{BOOLEAN + " ","The Boolean domain"}};
+		{BOOLEAN + " ","The Boolean domain"},
+		{"StringDef ", "The default string domain"}};
 	}
 	/** Initializes the importer for the specified URI 
 	 * @throws ImporterException 
@@ -150,6 +153,7 @@ public class XSDImporter extends SchemaImporter
 			_domainList = new HashMap<String, Domain>();
 			_attrGroupEntitySet = new HashMap<String,Entity>();
 			_seenAttrsInAttrGroup = new HashSet<Integer>();
+			_baseDomainSet = new HashSet<String>();
 			
 			/** Preset domains and then process this schema **/
 			loadDomains();
@@ -265,15 +269,24 @@ public class XSDImporter extends SchemaImporter
 		else {
 	
 			// find Domain for SimpleType (generated if required)
-			Domain domain = new Domain(nextAutoInc(), typeName, (passedType == null ? "" : this.getDocumentation(passedType)), 0);
-		
-			if (_domainList.containsKey(domain.getName()) == false) {
-				_domainList.put(domain.getName(),domain);
+			Domain domain = _domainList.get(typeName);
+
+			boolean isEnumeration = passedType != null && passedType instanceof SimpleType && !(passedType instanceof Union) && ((SimpleType)passedType).hasFacet("enumeration");
+			boolean isBaseDomain =  domain != null && _baseDomainSet.contains(typeName.toLowerCase());
+			if (domain == null || (isEnumeration && isBaseDomain)) {
+				if (isEnumeration && (passedType.getName()== null || passedType.getName().isEmpty())) {
+					typeName = "";
+				}
+				 domain = new Domain(nextAutoInc(), typeName, (passedType == null ? "" : this.getDocumentation(passedType)), 0);
+				 if (!isBaseDomain) {
+					 _domainList.put(domain.getName(),domain);
+				 }
 				_schemaElementsHS.put(domain.hashCode(), domain);
 				
-				if (passedType != null && passedType instanceof SimpleType && !(passedType instanceof Union)){
+				if (isEnumeration){
 					// create DomainValues (if specified for SimpleType)
 					Enumeration<?> facets = ((SimpleType)passedType).getFacets("enumeration");
+
 					while (facets.hasMoreElements()) {
 						Facet facet = (Facet) facets.nextElement();
 						DomainValue domainValue = new DomainValue(nextAutoInc(), facet.getValue(), this.getDocumentation(facet), domain.getId(), 0);
@@ -296,8 +309,7 @@ public class XSDImporter extends SchemaImporter
 				}
 			}
 	 
-			// attached Domain as child to passed Attribute / Containment / Subtype
-			domain = _domainList.get(domain.getName()); 
+
 			if (parent instanceof Attribute)
 				((Attribute)parent).setDomainID(domain.getId());
 			else if (parent instanceof Containment)
@@ -616,6 +628,7 @@ public class XSDImporter extends SchemaImporter
 			Domain domain = new Domain(nextAutoInc(), baseDomains[i][0], baseDomains[i][1], 0);
 			_schemaElementsHS.put(domain.hashCode(), domain);
 			_domainList.put(baseDomains[i][0].trim(),  domain);
+			_baseDomainSet.add(baseDomains[i][0].toLowerCase());
 		}
 		
 	}
