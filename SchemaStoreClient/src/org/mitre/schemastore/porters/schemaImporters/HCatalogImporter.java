@@ -23,6 +23,7 @@ import org.mitre.schemastore.model.DomainValue;
 import org.mitre.schemastore.model.Entity;
 import org.mitre.schemastore.model.Schema;
 import org.mitre.schemastore.model.SchemaElement;
+import org.mitre.schemastore.model.Subtype;
 import org.mitre.schemastore.porters.ImporterException;
 import org.mitre.schemastore.porters.URIType;
 import org.mitre.schemastore.porters.ImporterException.ImporterExceptionType;
@@ -265,7 +266,7 @@ protected void _processTable(HCatRestTable table, SchemaElement parent, String c
 		_reusableSchemaElements.put(fullname, entity);
 	
 		for (HCatRestColumn column : table.getAllColumns()){
-			_processField(column.getHiveType(), entity, column.getName(), column.getComment(), false, false);
+			_processField(column.getHiveType(), entity, column.getName(), column.getComment(), false, false, false);
 		}
 
 	}
@@ -288,28 +289,32 @@ protected void _createContainment(SchemaElement child, SchemaElement parent, Str
 	
 }
 
-protected void _processField(HiveDataType schema, SchemaElement parent, String name, String doc, 
-		boolean allowNull, boolean noLimit) throws ImporterException{
+protected SchemaElement _processField(HiveDataType schema, SchemaElement parent, String name, String doc, 
+		boolean allowNull, boolean noLimit, boolean isSubtype) throws ImporterException{
 	switch(schema.getDataType()){
-	case STRUCT : _processStruct((StructDataType)schema, parent, name, doc, allowNull, noLimit);
-	break;
-	case UNION:  _processUnion((UnionDataType)schema, parent, name, doc, allowNull, noLimit);
-	            break; 
-	case MAP: _processMap((MapDataType)schema, parent, name, doc );
-				break;
-	case ARRAY:  _processArray((ArrayDataType)schema, parent, name, doc );
-			    break;
-	default: _processPrimitiveType(schema, parent, name, doc, allowNull, noLimit);
+	case STRUCT : return _processStruct((StructDataType)schema, parent, name, doc, allowNull, noLimit, isSubtype);
+	
+	case UNION:  return _processUnion((UnionDataType)schema, parent, name, doc, allowNull, noLimit, isSubtype);
+	     
+	case MAP: return _processMap((MapDataType)schema, parent, name, doc, isSubtype );
+		
+	case ARRAY:  return _processArray((ArrayDataType)schema, parent, name, doc, isSubtype );
+			    
+	default: return _processPrimitiveType(schema, parent, name, doc, allowNull, noLimit, isSubtype);
 	}
 }
 
-protected void _processPrimitiveType(HiveDataType schema, SchemaElement parent, String name, String doc, boolean allowNull, boolean noLimit) throws ImporterException {
+protected SchemaElement _processPrimitiveType(HiveDataType schema, SchemaElement parent, String name, String doc, boolean allowNull, boolean noLimit, boolean isSubtype) throws ImporterException {
 	SchemaElement elem = _domainList.get(schema.getDataType());
 	if (elem == null)
 	{
 		throw new ImporterException(ImporterExceptionType.IMPORT_FAILURE, "Domain value " + schema.getDataType().toString() + " doesn't exist in domain");
 	}
+	if (!isSubtype) {
 		_createAttribute(elem, parent, name, doc, allowNull, noLimit);
+	}
+	return elem;
+		
 }
 protected void _createAttribute(SchemaElement domain, SchemaElement parent, String name, String doc,
 		boolean allowNull, boolean noLimit) {
@@ -322,7 +327,7 @@ protected void _createAttribute(SchemaElement domain, SchemaElement parent, Stri
 	
 }
 
-protected void _processStruct(StructDataType schema, SchemaElement parent, String name, String doc, boolean allowNull, boolean noLimit) throws ImporterException
+protected SchemaElement _processStruct(StructDataType schema, SchemaElement parent, String name, String doc, boolean allowNull, boolean noLimit, boolean isSubtype) throws ImporterException
 {
 	try {
 		SchemaElement entity = new Entity(nextAutoInc(), name, doc,0);
@@ -330,16 +335,18 @@ protected void _processStruct(StructDataType schema, SchemaElement parent, Strin
 
 	
 		for (HCatRestColumn column : schema.getColumns()){
-			_processField(column.getHiveType(), entity,  column.getName(), column.getComment(), allowNull, noLimit);
+			_processField(column.getHiveType(), entity,  column.getName(), column.getComment(), allowNull, noLimit, false);
 		}
-	
-		_createContainment(entity, parent, name, doc, false, false);
+		if (!isSubtype) {
+			_createContainment(entity, parent, name, doc, false, false);
+		}
+		return entity;
 	}
 	catch (TokenizerException e) {
 		throw new ImporterException(ImporterExceptionType.PARSE_FAILURE, e.getMessage());
 	}
 }
-protected void _processUnion(UnionDataType schema, SchemaElement parent, String name, String doc,  boolean allowNull, boolean noLimit) throws ImporterException
+protected SchemaElement _processUnion(UnionDataType schema, SchemaElement parent, String name, String doc,  boolean allowNull, boolean noLimit, boolean isSubtype) throws ImporterException
 {
 	boolean includesNull = allowNull;
 	ArrayList<HiveDataType> unionTypes = new ArrayList<HiveDataType>();
@@ -355,40 +362,54 @@ protected void _processUnion(UnionDataType schema, SchemaElement parent, String 
 	}
 	if (unionTypes.size()==1)
 	{
-		_processField(unionTypes.get(0), parent, name, doc, includesNull, noLimit);
+		return _processField(unionTypes.get(0), parent, name, doc, includesNull, noLimit, isSubtype);
 	}
 	else
 	{
 		Entity unionParent = new Entity(nextAutoInc(), null, null, 0);
-		_createContainment(unionParent, parent, name, doc, allowNull, noLimit);
+		if (!isSubtype) {
+			_createContainment(unionParent, parent, name, doc, allowNull, noLimit);
+		}
 		_schemaElementsHive.put(unionParent.hashCode(), unionParent);
 		for (HiveDataType subSchema : unionTypes) {
-			_processField(subSchema, unionParent, null, null, includesNull, false);
+			SchemaElement elem = _processField(subSchema, unionParent, null, null, includesNull, false, true);
+			Subtype subtype = new Subtype(nextAutoInc(), unionParent.getId(), elem.getId(), 0);
+			_schemaElementsHive.put(subtype.hashCode(), subtype);
 		}
+		return unionParent;
 	} 
 }
 
-protected void _processArray(ArrayDataType schema, SchemaElement parent, String name, String doc) throws ImporterException{
+protected SchemaElement _processArray(ArrayDataType schema, SchemaElement parent, String name, String doc, boolean isSubtype) throws ImporterException{
 
-		if (schema.getListType().getDataType() == DataType.MAP) {
+		if (schema.getListType().getDataType() == DataType.MAP || isSubtype) {
 			Entity arrayParent = new Entity(nextAutoInc(), null, null, 0);
-			_createContainment(arrayParent, parent, name, doc, true, true);
 			_schemaElementsHive.put(arrayParent.hashCode(), arrayParent);
+			if (!isSubtype) {
+				_createContainment(arrayParent, parent, name, doc, true, true);
+			}
 			_processField(schema.getListType(), arrayParent, null, null, false,
-					false);
+						false, false);
+			return arrayParent;
 		} else {
-			_processField(schema.getListType(), parent, name, doc, true, true);
+			return _processField(schema.getListType(), parent, name, doc, true, true, false);
 		}
 	}
 
 
-protected void _processMap(MapDataType schema, SchemaElement parent, String name, String doc) throws ImporterException{
+protected SchemaElement _processMap(MapDataType schema, SchemaElement parent, String name, String doc, boolean isSubtype) throws ImporterException{
 	Entity mapParent = new Entity(nextAutoInc(), null, null, 0);
-    _createContainment(mapParent, parent, name, doc, true, true);
     _schemaElementsHive.put(mapParent.hashCode(), mapParent);
+	if (!isSubtype){
+		_createContainment(mapParent, parent, name, doc, true, true);
+	}
+	_createAttribute(_domainList.get(schema.getKey().getDataType()), mapParent, null, null, false, false, true); 
+	_processField(schema.getValue(), mapParent, null, null, false, false, false);
+	
 
-    _processField(schema.getKey(), mapParent, null, null, false, false); 
-    _processField(schema.getValue(), mapParent, null, null, false, false);
+
+
+    return mapParent;
 }
 
 /**

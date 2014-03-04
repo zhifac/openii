@@ -60,18 +60,21 @@ public class CAASD_AvroImporter extends AvroImporter {
 	}
 
 	@Override
-	protected void _processPrimitiveType(org.apache.avro.Schema schema,
+	protected SchemaElement _processPrimitiveType(org.apache.avro.Schema schema,
 			SchemaElement parent, String name, String doc, boolean allowNull,
-			boolean noLimit, Set<String> aliases) throws ImporterException {
+			boolean noLimit, Set<String> aliases, boolean isSubtype) throws ImporterException {
+		SchemaElement elem = null;
 		if (currentEnumeration != null && !currentEnumeration.isEmpty()) {
 			org.apache.avro.Schema enumSchema = org.apache.avro.Schema
 					.createEnum(name + "_domain", doc, "", currentEnumeration);
-			_processEnum(enumSchema, parent, name, doc, allowNull, noLimit,
-					aliases);
+			elem= _processEnum(enumSchema, parent, name, doc, allowNull, noLimit,
+					aliases, isSubtype);
 		} else {
-			super._processPrimitiveType(schema, parent, name, doc, allowNull, noLimit, aliases);
+			elem =  super._processPrimitiveType(schema, parent, name, doc, allowNull, noLimit, aliases, isSubtype);
 		}
 		currentEnumeration = null;
+		return elem;
+
 	}
 
 	@Override

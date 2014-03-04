@@ -81,8 +81,8 @@ public class OWLImporter extends SchemaImporter implements RDFErrorHandler {
 	/** testing main **/ 
 	public static void main(String[] args) throws URISyntaxException, ImporterException{
 		OWLImporter owlImporter = new OWLImporter();
-		String basePath = "file:/Users/mgreer/Downloads/";
-		String filePath = basePath + "SA-TT_Ontology_20130815.owl";
+		String basePath = "file:/Users/mgreer/share/schemas/SA-TT/";
+		String filePath = basePath + "SA-TT_Ontology_V1-1_20140219.owl";
 	//	String filePath = basePath + "test.owl";
 		 try {
 		        String proxyHost = new String("gatekeeper.mitre.org");
@@ -117,10 +117,10 @@ public class OWLImporter extends SchemaImporter implements RDFErrorHandler {
 		//xsdImporter.uri = new URI("C:/tempSchemas/niem-2.1/niem/domains/maritime/2.1/maritime.xsd");
 		owlImporter.initialize();
 		Collection<SchemaElement> elems = owlImporter.generateSchemaElements();
-		for (SchemaElement elem : elems)
+	/*	for (SchemaElement elem : elems)
 		{
 			System.out.println(elem.getId() + " " +elem.getName() + " " + elem.getDescription() + " " + ((elem instanceof Attribute)?((Attribute)elem).getDomainID():""));
-		}
+		}*/
 		
 	}
 	public OWLImporter () {
@@ -324,43 +324,52 @@ r.asCardinalityRestriction();
 			DatatypeProperty dataProp = (DatatypeProperty) dataProperties.next();
 			String pName = dataProp.getNameSpace() + dataProp.getLocalName();
 			PropertyWrapper propCardinality = _cardinality.get(pName);
-	/*		if (dataProp.getLocalName().equalsIgnoreCase("hasproblemtype")||dataProp.getLocalName().equalsIgnoreCase("hasproblemcategory")||dataProp.getLocalName().equalsIgnoreCase("hassanotifyid")) {
+			/*		if (dataProp.getLocalName().equalsIgnoreCase("hasproblemtype")||dataProp.getLocalName().equalsIgnoreCase("hasproblemcategory")||dataProp.getLocalName().equalsIgnoreCase("hassanotifyid")) {
 				System.out.println(dataProp.getLocalName());
 				System.out.println(dataProp.toString());
 				System.out.println(dataProp.getDomain());
 				System.out.println(dataProp.listRange());
 			}*/
-			Domain domain = convertRangeToDomain(dataProp);
-			
+
+
 			// create an attribute for each domain the data property belongs to
 			// DEBUG jean doesn't seem to return a valid domain for multiple
 			// domains
-	//		ExtendedIterator containerClsItr = dataProp.listDeclaringClasses(true);
-	//		if (!containerClsItr.hasNext()){
-		ExtendedIterator		containerClsItr = dataProp.listDomain();
-		//	}
-			while (containerClsItr.hasNext()) {
-				OntClass containerCls = (OntClass) containerClsItr.next();
-				Entity entity = _entityList.get(containerCls.getLocalName());
-				String dName = null;
-				if (containerCls.getLocalName()!= null) {
-					dName = containerCls.getNameSpace() +containerCls.getLocalName();
-				}
-				
-				Statement description = dataProp.getProperty(DC.description);
-				String comment = dataProp.getComment(null);
-				
-				if (description == null){
-					if (comment==null) comment= "";
-				}
-				else{
-					comment = description.getString();
+			//		ExtendedIterator containerClsItr = dataProp.listDeclaringClasses(true);
+			//		if (!containerClsItr.hasNext()){
+			ExtendedIterator		containerClsItr = dataProp.listDomain();
+
+
+			//	}
+
+			if (containerClsItr.hasNext()) {
+				Domain domain = convertRangeToDomain(dataProp);
+
+				while (containerClsItr.hasNext()) {
+
+					OntClass containerCls = (OntClass) containerClsItr.next();
+					Entity entity = _entityList.get(containerCls.getLocalName());
+					String dName = null;
+					if (containerCls.getLocalName()!= null) {
+						dName = containerCls.getNameSpace() +containerCls.getLocalName();
+					}
+
+					Statement description = dataProp.getProperty(DC.description);
+					String comment = dataProp.getComment(null);
+
+					if (description == null){
+						if (comment==null) comment= "";
+					}
+					else{
+						comment = description.getString();
+					}
+
+					if (entity != null) {
+						Attribute attribute = new Attribute(nextId(), dataProp.getLocalName(), comment, entity.getId(), domain.getId(), getMinCardinality(propCardinality, dName), getMaxCardinality(propCardinality, dName), false, 0);
+						_schemaElements.add(attribute);
+					}
 				}
 
-				if (entity != null) {
-					Attribute attribute = new Attribute(nextId(), dataProp.getLocalName(), comment, entity.getId(), domain.getId(), getMinCardinality(propCardinality, dName), getMaxCardinality(propCardinality, dName), false, 0);
-					_schemaElements.add(attribute);
-				}
 			}
 		}
 	}
