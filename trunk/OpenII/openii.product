@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="OpenII" uid="org.mitre.openii.viewer" id="org.mitre.openii.product" application="org.mitre.openii.application" version="1.0.2690" useFeatures="true" includeLaunchers="true">
+<product name="OpenII" uid="org.mitre.openii.viewer" id="org.mitre.openii.product" application="org.mitre.openii.application" version="1.0.2695" useFeatures="true" includeLaunchers="true">
 
    <configIni use="default">
    </configIni>
 
    <launcherArgs>
-      <vmArgs>-Xmx1024m</vmArgs>
+      <vmArgs>-Xmx4096m</vmArgs>
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts</vmArgsMac>
    </launcherArgs>
 
