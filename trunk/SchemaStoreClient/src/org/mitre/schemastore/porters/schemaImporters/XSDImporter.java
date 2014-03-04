@@ -135,8 +135,7 @@ public class XSDImporter extends SchemaImporter
 		{STRING + " ","The String domain"},
 		{"string" + " ","The string domain"},
 		{DATETIME + " ","The DateTime domain"},
-		{BOOLEAN + " ","The Boolean domain"},
-		{"StringDef ", "The default string domain"}};
+		{BOOLEAN + " ","The Boolean domain"}};
 	}
 	/** Initializes the importer for the specified URI 
 	 * @throws ImporterException 
@@ -243,13 +242,13 @@ public class XSDImporter extends SchemaImporter
 	public void processSimpleType (XMLType passedType, SchemaElement parent)
 	{		
 		// assign the default type of String
-		String typeName = "StringDef" + " ";
+		String typeName = ANY + " ";
 		if ((passedType != null) && (passedType.getName() != null) && (passedType.getName().length() > 0)) 
 			typeName = passedType.getName() + " ";
 		
 		// handle "Any" type
 		if (passedType != null && passedType instanceof AnyType)
-			typeName = "Any" + " ";
+			typeName = ANY + " ";
 		
 		// handle IDREF / IDREFS -- generate relationship to "Any" entity
 		if (parent instanceof Attribute && (typeName.equals("IDREF") || typeName.equals("IDREFS"))){
@@ -510,8 +509,8 @@ public class XSDImporter extends SchemaImporter
 			
 			// For WildCard, create containment child to "Any" domain
 			if (obj instanceof Wildcard){
-				Domain anyDomain = _domainList.get("Any");
-				Containment containment = new Containment(nextAutoInc(),"Any", this.getDocumentation((Annotated)obj), parent.getId(), anyDomain.getId(), 0, 1, 0);
+				Domain anyDomain = _domainList.get(ANY + " ");
+				Containment containment = new Containment(nextAutoInc(),ANY, this.getDocumentation((Annotated)obj), parent.getId(), anyDomain.getId(), 0, 1, 0);
 				_schemaElementsHS.put(containment.hashCode(), containment);
 			}
 			// process Group item
