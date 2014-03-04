@@ -474,6 +474,9 @@ public class SchemaInfo implements Serializable
 		}
 		if (element instanceof Domain) {
 			SchemaElement parentOfDomain = cache.getItemWithNoNameDomain(element.getId());
+			if (parentOfDomain==null) {
+				return "[]";
+			}
 			return "[" + parentOfDomain.getName() + "]";
 			
 		}
@@ -482,7 +485,25 @@ public class SchemaInfo implements Serializable
 			if(containment.getChildID().equals(elementID) && containment.getName().length()>0)
 				return "[" + getDisplayName(containment.getId()) + "]";
 
-		// Otherwise, return nothing
+		// Otherwise, check to see if element has map or array containments
+		if (element instanceof Entity){
+			ArrayList<Containment> containments = new ArrayList<Containment>();
+			for (Containment containment : getContainments(elementID)) {
+				if (containment.getParentID().equals(elementID)) {
+					containments.add(containment);
+				}
+			}
+			ArrayList<Attribute> attributes = getAttributes(elementID);
+			
+			if (attributes.size() + containments.size() == 1) {
+				return "[array of " + getDisplayName(attributes.size()==0?containments.get(0).getChildID():attributes.get(0).getDomainID()).trim() + "]";
+			}
+			else if (containments.size() + attributes.size() == 2 && attributes.get(0).isKey()) {
+				return "[map of " + getDisplayName(attributes.get(0).getDomainID()).trim() + ", " +  getDisplayName(attributes.size()==1?containments.get(0).getChildID():attributes.get(1).getDomainID()).trim() + "]";
+			}else if (attributes.size() == 2 && attributes.get(1).isKey()) {
+				return "[map of " + getDisplayName(attributes.get(1).getDomainID()).trim() + ", "+ getDisplayName(attributes.get(0).getDomainID()).trim() + "]";
+			}
+		}
 		return "";
 	}
 
